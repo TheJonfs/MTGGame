@@ -38,6 +38,11 @@ export interface EffectContext {
   draw(player: number, count: number): void;
   addContinuousEffect(effect: ResolvedContinuousEffect): void;
   addMana(player: number, mana: string): void;
+  createToken(player: number, tokenId: string, count: number): void;
+  addCounters(objectId: string, kind: "+1/+1" | "-1/-1", count: number): void;
+  gainLife(player: number, amount: number): void;
+  /** Destruction by effect (CR 701.7); honors indestructible. Death itself is still the SBA's call. */
+  destroy(objectId: string): void;
 }
 
 export class NotImplementedError extends Error {
@@ -115,6 +120,27 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
   addMana: (e, ctx) => {
     if (e.type !== "addMana") throw new Error("resolver mismatch");
     for (const p of ctx.players("you")) ctx.addMana(p, e.mana);
+  },
+
+  createToken: (e, ctx) => {
+    if (e.type !== "createToken") throw new Error("resolver mismatch");
+    for (const p of ctx.players(e.who)) ctx.createToken(p, e.tokenId, e.count);
+  },
+
+  addCounters: (e, ctx) => {
+    if (e.type !== "addCounters") throw new Error("resolver mismatch");
+    const t = ctx.target(e.target);
+    if (t && t.kind === "object") ctx.addCounters(t.id, e.kind, e.count);
+  },
+
+  gainLife: (e, ctx) => {
+    if (e.type !== "gainLife") throw new Error("resolver mismatch");
+    for (const p of ctx.players(e.who)) ctx.gainLife(p, e.amount);
+  },
+
+  destroyAll: (e, ctx) => {
+    if (e.type !== "destroyAll") throw new Error("resolver mismatch");
+    for (const id of ctx.objectsInScope(e.scope)) ctx.destroy(id);
   },
 };
 

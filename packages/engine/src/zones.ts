@@ -70,6 +70,7 @@ export function moveObject(
       to,
       owner: obj.owner,
       controller: obj.controller,
+      controllerBefore: obj.controller,
     });
     return null;
   }
@@ -109,6 +110,7 @@ export function moveObject(
     to,
     owner: newObj.owner,
     controller: newObj.controller,
+    controllerBefore: obj.controller,
   });
   return newId;
 }
@@ -147,6 +149,7 @@ export function createObject(
     to: zone,
     owner,
     controller: owner,
+    controllerBefore: owner,
   });
   return id;
 }

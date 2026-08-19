@@ -9,10 +9,10 @@ import {
 } from "@shandalar/cards";
 import type { EngineCtx } from "./ctx.js";
 import { isLegalTarget } from "./targeting.js";
-import { dealDamage, drawCard } from "./ops.js";
-import { moveObject } from "./zones.js";
+import { dealDamage, drawCard, gainLife } from "./ops.js";
+import { createObject, moveObject } from "./zones.js";
 import { getObject, nextTimestamp, opponentOf, type PlayerId, type StackItem } from "./state.js";
-import { isCreature } from "./characteristics.js";
+import { characteristics, isCreature } from "./characteristics.js";
 
 /** Engine implementation of the cards package's EffectContext seam. */
 export function makeEffectContext(ctx: EngineCtx, item: StackItem): EffectContext {
@@ -112,5 +112,94 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem): EffectContex
         if (sym.color) pool[sym.color] += 1;
       }
     },
+
+    ...sharedOps(ctx),
+  };
+}
+
+/** Ops with no dependency on a stack item, shared with the init context. */
+function sharedOps(ctx: EngineCtx) {
+  return {
+    createToken(player: number, tokenId: string, count: number): void {
+      for (let i = 0; i < count; i++) {
+        createObject(ctx, tokenId, player as PlayerId, "battlefield", { isToken: true });
+      }
+    },
+
+    addCounters(objectId: string, kind: "+1/+1" | "-1/-1", count: number): void {
+      const obj = ctx.state.objects[objectId];
+      if (!obj || obj.zone !== "battlefield") return;
+      obj.counters[kind] = (obj.counters[kind] ?? 0) + count;
+    },
+
+    gainLife(player: number, amount: number): void {
+      gainLife(ctx, player as PlayerId, amount);
+    },
+
+    destroy(objectId: string): void {
+      const obj = ctx.state.objects[objectId];
+      if (!obj || obj.zone !== "battlefield") return;
+      if (characteristics(ctx, objectId).keywords.has("indestructible")) return;
+      moveObject(ctx, objectId, "graveyard");
+    },
+  };
+}
+
+/**
+ * Stack-item-less EffectContext for initialization-time effects — MatchSpec
+ * `effectAtStart` modifiers (ADR-012). No targets, no X.
+ */
+export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectContext {
+  return {
+    target(): ResolvedTarget | null {
+      throw new Error("initialization effects cannot target");
+    },
+    players(who: Who): PlayerId[] {
+      switch (who) {
+        case "you":
+          return [player];
+        case "opponent":
+          return [opponentOf(player)];
+        case "eachPlayer":
+          return [0, 1];
+      }
+    },
+    objectsInScope(scope: Scope): string[] {
+      switch (scope) {
+        case "creaturesYouControl":
+          return ctx.state.battlefield.filter(
+            (id) => getObject(ctx.state, id).controller === player && isCreature(ctx, id),
+          );
+        case "allCreatures":
+          return ctx.state.battlefield.filter((id) => isCreature(ctx, id));
+        default:
+          return [];
+      }
+    },
+    amount(a: Amount): number {
+      return a === "X" ? 0 : a;
+    },
+    dealDamage(target: ResolvedTarget, amount: number): void {
+      if (target.kind === "stackItem") throw new Error("cannot damage a stack item");
+      dealDamage(ctx, { id: "init", cardId: "init", controller: player }, target, amount, false);
+    },
+    bounce(objectId: string): void {
+      const obj = ctx.state.objects[objectId];
+      if (!obj || obj.zone !== "battlefield") return;
+      moveObject(ctx, objectId, "hand");
+    },
+    counterSpell(): void {
+      throw new Error("initialization effects cannot counter");
+    },
+    draw(player_: number, count: number): void {
+      for (let i = 0; i < count; i++) drawCard(ctx, player_ as PlayerId);
+    },
+    addContinuousEffect(): void {
+      throw new Error("initialization effects cannot create continuous effects (no source to bound them)");
+    },
+    addMana(): void {
+      throw new Error("initialization effects cannot add mana (pools empty before turn 1)");
+    },
+    ...sharedOps(ctx),
   };
 }

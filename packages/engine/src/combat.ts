@@ -23,18 +23,21 @@ export function eligibleAttackers(ctx: EngineCtx): string[] {
   });
 }
 
-export function declareAttackers(ctx: EngineCtx, attackers: string[]): void {
+/** Stage one attacker during incremental declaration (ADR-013). */
+export function stageAttacker(ctx: EngineCtx, id: string): void {
   const state = ctx.state;
-  const eligible = new Set(eligibleAttackers(ctx));
-  for (const id of attackers) {
-    if (!eligible.has(id)) throw new Error(`Illegal attacker: ${id}`);
+  if (state.combat.attackers.includes(id)) throw new Error(`Already declared attacking: ${id}`);
+  if (!eligibleAttackers(ctx).includes(id)) throw new Error(`Illegal attacker: ${id}`);
+  state.combat.attackers.push(id);
+}
+
+/** Commit the staged declaration: taps happen all at once, as if declared together (CR 508.1f). */
+export function commitAttackers(ctx: EngineCtx): void {
+  const state = ctx.state;
+  for (const id of state.combat.attackers) {
+    if (!characteristics(ctx, id).keywords.has("vigilance")) getObject(state, id).tapped = true;
   }
-  state.combat.attackers = [...attackers];
-  for (const id of attackers) {
-    const chars = characteristics(ctx, id);
-    if (!chars.keywords.has("vigilance")) getObject(state, id).tapped = true;
-  }
-  ctx.bus.emit("ATTACKERS_DECLARED", { attackers: [...attackers] });
+  ctx.bus.emit("ATTACKERS_DECLARED", { attackers: [...state.combat.attackers] });
 }
 
 export function eligibleBlockers(ctx: EngineCtx): string[] {
@@ -58,25 +61,37 @@ export function canBlock(ctx: EngineCtx, blockerId: string, attackerId: string):
   return true;
 }
 
-export function declareBlockers(ctx: EngineCtx, blocks: { blocker: string; attacker: string }[]): void {
+/** Stage one block during incremental declaration (ADR-013). */
+export function stageBlock(ctx: EngineCtx, blocker: string, attacker: string): void {
   const state = ctx.state;
-  const eligible = new Set(eligibleBlockers(ctx));
-  const seen = new Set<string>();
-  for (const { blocker, attacker } of blocks) {
-    if (!eligible.has(blocker)) throw new Error(`Illegal blocker: ${blocker}`);
-    if (seen.has(blocker)) throw new Error(`Blocker ${blocker} assigned twice`);
-    seen.add(blocker);
-    if (!state.combat.attackers.includes(attacker)) throw new Error(`Not an attacker: ${attacker}`);
-    if (!canBlock(ctx, blocker, attacker)) throw new Error(`${blocker} cannot block ${attacker}`);
-  }
-  state.combat.blocks = [...blocks];
-  for (const { blocker, attacker } of blocks) {
+  if (state.combat.blocks.some((b) => b.blocker === blocker)) throw new Error(`Blocker ${blocker} assigned twice`);
+  if (!eligibleBlockers(ctx).includes(blocker)) throw new Error(`Illegal blocker: ${blocker}`);
+  if (!state.combat.attackers.includes(attacker)) throw new Error(`Not an attacker: ${attacker}`);
+  if (!canBlock(ctx, blocker, attacker)) throw new Error(`${blocker} cannot block ${attacker}`);
+  state.combat.blocks.push({ blocker, attacker });
+}
+
+/**
+ * Commit the staged blocks. Aggregate legality (menace's two-blocker minimum,
+ * R-015) will be validated here. Initial damage order is declaration order;
+ * the attacker's controller re-orders multi-blocked attackers via
+ * orderBlocker actions (CR 509.2, ADR-011).
+ */
+export function commitBlockers(ctx: EngineCtx): void {
+  const state = ctx.state;
+  for (const { blocker, attacker } of state.combat.blocks) {
     state.combat.blocked[attacker] = true;
-    // Damage order: declaration order. Ordering is the attacker's choice per
-    // CR 509.2; deterministic interim for S1 (R-008 note).
     (state.combat.blockOrder[attacker] ??= []).push(blocker);
   }
-  ctx.bus.emit("BLOCKERS_DECLARED", { blocks: [...blocks] });
+  ctx.bus.emit("BLOCKERS_DECLARED", { blocks: [...state.combat.blocks] });
+}
+
+export function setBlockOrder(ctx: EngineCtx, attacker: string, order: string[]): void {
+  const current = ctx.state.combat.blockOrder[attacker] ?? [];
+  if ([...order].sort().join() !== [...current].sort().join()) {
+    throw new Error(`Block order for ${attacker} is not a permutation of its blockers`);
+  }
+  ctx.state.combat.blockOrder[attacker] = [...order];
 }
 
 export function combatHasFirstStrikers(ctx: EngineCtx): boolean {
@@ -114,22 +129,35 @@ export function assignCombatDamage(ctx: EngineCtx, firstStrikeStep: boolean): Da
     const attacker = state.objects[attackerId];
     if (!attacker || attacker.zone !== "battlefield") continue;
     if (!strikesInStep(ctx, attackerId, firstStrikeStep)) continue;
-    let power = characteristics(ctx, attackerId).power;
+    const attackerChars = characteristics(ctx, attackerId);
+    let power = attackerChars.power;
     if (power <= 0) continue;
+    const trample = attackerChars.keywords.has("trample");
 
     if (state.combat.blocked[attackerId]) {
       const blockers = (state.combat.blockOrder[attackerId] ?? []).filter(
         (b) => state.objects[b]?.zone === "battlefield",
       );
-      if (blockers.length === 0) continue; // blocked, all blockers gone: deals no damage (no trample)
-      // Assign lethal in order; remainder goes to the last blocker (509.2 simplified, no trample).
+      if (blockers.length === 0) {
+        // Blocked but every blocker left combat: only trample lets damage
+        // through to the player (CR 509.1h, 702.19e).
+        if (trample) out.push({ sourceId: attackerId, target: { kind: "player", player: defender }, amount: power });
+        continue;
+      }
+      // Assign at least lethal to each blocker in order (CR 510.1c). Without
+      // trample the remainder lands on the last blocker; with trample only
+      // lethal is assigned per blocker and the excess goes to the player.
       for (let i = 0; i < blockers.length && power > 0; i++) {
         const bId = blockers[i]!;
         const b = getObject(state, bId);
         const lethal = Math.max(0, characteristics(ctx, bId).toughness - b.damage);
-        const amount = i === blockers.length - 1 ? power : Math.min(power, Math.max(lethal, 0));
+        const isLast = i === blockers.length - 1;
+        const amount = trample ? Math.min(power, lethal) : isLast ? power : Math.min(power, lethal);
         if (amount > 0) out.push({ sourceId: attackerId, target: { kind: "object", id: bId }, amount });
         power -= amount;
+      }
+      if (trample && power > 0) {
+        out.push({ sourceId: attackerId, target: { kind: "player", player: defender }, amount: power });
       }
     } else {
       out.push({ sourceId: attackerId, target: { kind: "player", player: defender }, amount: power });

@@ -26,7 +26,7 @@ At session end, **overwrite `handoff.md`** using the template at the bottom of t
 
 ## Non-negotiable engineering principles
 
-1. **Determinism.** All randomness goes through the seeded RNG service (shuffles, random discard, coin flips). Same seed + same actions ⇒ identical game. Replay from log is a permanent test.
+1. **Determinism.** All *game* randomness goes through the seeded RNG service (shuffles, random discard, coin flips); agent-internal randomness is separate (ADR-015). Same seed + same actions ⇒ identical game. Replay from log is a permanent test.
 2. **Skeleton first.** Tier 0 systems in `docs/mechanics-manifest.md` §2 exist from Session 1 even when no card uses them. Adding a mechanic later must mean adding a rule to an existing step, never restructuring a step. *Trample is a rule about damage assignment, not a rewrite of combat.*
 3. **Cards are data.** Card definitions compose a fixed effect vocabulary (`docs/data-model.md`). Any card that can't be expressed is escalated, not scripted.
 4. **One zone-move primitive.** Every object movement between zones goes through `moveObject`, which fires events. No direct array manipulation of zones anywhere else.

@@ -11,12 +11,10 @@ import { targetCombinations } from "./targeting.js";
  * comes from these lists — the RandomAgent samples them, the (later) heuristic
  * agent evaluates them, the UI presents them.
  *
- * Composite attack/block declarations are enumerated exhaustively up to
- * ENUM_CAP combinations (deterministic prefix, smallest declarations first).
- * Block assignments are (attackers+1)^blockers, which explodes at sizes the
- * fuzzer can reach — the cap is an interim ruling flagged in the handoff.
+ * Attack/block declarations are incremental (ADR-013): declare-one or done.
+ * Enumeration is linear in board size; nothing is ever truncated.
+ * X costs enumerate one action per affordable X value (ADR-017).
  */
-export const ENUM_CAP = 4096;
 
 function sorcerySpeed(ctx: EngineCtx, player: PlayerId): boolean {
   return (
@@ -56,12 +54,16 @@ export function legalActions(ctx: EngineCtx, player: PlayerId): Action[] {
     if (!instantSpeed && !atSorcerySpeed) continue;
 
     const cost = parseManaCost(def.manaCost);
-    if (cost.xCount > 0) continue; // no X spell in the pool yet (R-022 slot)
-    if (!canPay(ctx, player, cost)) continue;
-
     const combos = targetCombinations(ctx, def.targets ?? [], player);
-    for (const targets of combos) {
-      actions.push({ type: "castSpell", objectId, targets });
+    if (combos.length === 0) continue;
+    if (cost.xCount === 0) {
+      if (!canPay(ctx, player, cost)) continue;
+      for (const targets of combos) actions.push({ type: "castSpell", objectId, targets });
+    } else {
+      // One action per affordable X (ADR-017). canPay is monotonic in x.
+      for (let x = 0; canPay(ctx, player, cost, x); x++) {
+        for (const targets of combos) actions.push({ type: "castSpell", objectId, targets, x });
+      }
     }
   }
 
@@ -81,11 +83,17 @@ export function legalActions(ctx: EngineCtx, player: PlayerId): Action[] {
       if (ability.kind !== "activated" || isManaAbility(ability)) return;
       if ((ability.timing ?? "instant") === "sorcery" && !atSorcerySpeed) return;
       if (ability.cost.tap && (obj.tapped || (obj.summoningSick && !ctx.defs.def(obj.cardId).keywords?.includes("haste")))) return;
-      const cost = ability.cost.mana ? parseManaCost(ability.cost.mana) : undefined;
-      if (cost && (cost.xCount > 0 || !canPay(ctx, player, cost))) return;
       if (ability.cost.sacrifice) return; // R-023 slot-only
-      for (const targets of targetCombinations(ctx, ability.targets ?? [], player)) {
-        actions.push({ type: "activateAbility", objectId: id, abilityIndex, targets });
+      const combos = targetCombinations(ctx, ability.targets ?? [], player);
+      if ((ability.targets ?? []).length > 0 && combos.length === 0) return;
+      const cost = ability.cost.mana ? parseManaCost(ability.cost.mana) : undefined;
+      if (!cost || cost.xCount === 0) {
+        if (cost && !canPay(ctx, player, cost)) return;
+        for (const targets of combos) actions.push({ type: "activateAbility", objectId: id, abilityIndex, targets });
+      } else {
+        for (let x = 0; canPay(ctx, player, cost, x); x++) {
+          for (const targets of combos) actions.push({ type: "activateAbility", objectId: id, abilityIndex, targets, x });
+        }
       }
     });
   }
@@ -93,58 +101,38 @@ export function legalActions(ctx: EngineCtx, player: PlayerId): Action[] {
   return actions;
 }
 
-/** All legal attack declarations (subsets of eligible attackers), capped. */
-export function attackDeclarations(ctx: EngineCtx): Action[] {
-  const eligible = eligibleAttackers(ctx);
-  const n = eligible.length;
-  const out: Action[] = [];
-  const total = 2 ** n;
-  // Masks in increasing popcount-ish order via plain numeric order: mask 0
-  // (attack with nothing) always first.
-  for (let mask = 0; mask < total && out.length < ENUM_CAP; mask++) {
-    const attackers = eligible.filter((_, i) => mask & (1 << i));
-    out.push({ type: "declareAttackers", attackers });
+/** Incremental attack declaration (ADR-013): done always first, then each not-yet-declared eligible attacker. */
+export function attackerChoices(ctx: EngineCtx): Action[] {
+  const staged = new Set(ctx.state.combat.attackers);
+  const out: Action[] = [{ type: "doneDeclaringAttackers" }];
+  for (const id of eligibleAttackers(ctx)) {
+    if (!staged.has(id)) out.push({ type: "declareAttacker", objectId: id });
   }
   return out;
 }
 
-/** All legal block assignments (each blocker: none or one attacker it can block), capped. */
-export function blockDeclarations(ctx: EngineCtx): Action[] {
-  const blockers = eligibleBlockers(ctx);
-  const attackers = ctx.state.combat.attackers.filter((id) => ctx.state.objects[id]);
-  const options: (string | null)[][] = blockers.map((b) => [
-    null,
-    ...attackers.filter((a) => canBlock(ctx, b, a)),
-  ]);
-
-  const out: Action[] = [];
-  const assignment: (string | null)[] = options.map(() => null);
-
-  const emit = () => {
-    const blocks: { blocker: string; attacker: string }[] = [];
-    assignment.forEach((a, i) => {
-      if (a !== null) blocks.push({ blocker: blockers[i]!, attacker: a });
-    });
-    out.push({ type: "declareBlockers", blocks });
-  };
-
-  const recurse = (i: number): void => {
-    if (out.length >= ENUM_CAP) return;
-    if (i === options.length) {
-      emit();
-      return;
+/** Incremental block declaration (ADR-013): done first, then every legal (blocker, attacker) pair not yet used. */
+export function blockerChoices(ctx: EngineCtx): Action[] {
+  const state = ctx.state;
+  const used = new Set(state.combat.blocks.map((b) => b.blocker));
+  const out: Action[] = [{ type: "doneDeclaringBlockers" }];
+  for (const blocker of eligibleBlockers(ctx)) {
+    if (used.has(blocker)) continue;
+    for (const attacker of state.combat.attackers) {
+      if (state.objects[attacker] && canBlock(ctx, blocker, attacker)) {
+        out.push({ type: "declareBlocker", blocker, attacker });
+      }
     }
-    for (const opt of options[i]!) {
-      assignment[i] = opt;
-      recurse(i + 1);
-      if (out.length >= ENUM_CAP) return;
-    }
-  };
-  recurse(0);
+  }
   return out;
 }
 
 /** Discard choices during cleanup (one per distinct card in hand). */
 export function discardChoices(ctx: EngineCtx, player: PlayerId): Action[] {
   return handByCard(ctx, player).map(({ objectId }) => ({ type: "discard", objectId }));
+}
+
+/** Bottoming choices after a mulligan keep (one per distinct card in hand, ADR-011). */
+export function bottomChoices(ctx: EngineCtx, player: PlayerId): Action[] {
+  return handByCard(ctx, player).map(({ objectId }) => ({ type: "bottomCard", objectId }));
 }

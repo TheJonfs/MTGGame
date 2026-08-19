@@ -1,5 +1,6 @@
-import type { Effect } from "@shandalar/cards";
+import { resolveEffect, type Effect } from "@shandalar/cards";
 import type { EngineCtx } from "./ctx.js";
+import { makeInitEffectContext } from "./effect-context.js";
 import { drawCard } from "./ops.js";
 import type { PlayerId } from "./state.js";
 import { createObject } from "./zones.js";
@@ -23,10 +24,15 @@ export function applyModifiers(ctx: EngineCtx, modifiers: Modifier[]): void {
       case "permanentOnBattlefield":
         createObject(ctx, m.cardId, m.player, "battlefield");
         break;
-      case "effectAtStart":
-        // Needs a stack-item-less effect context; no overworld exists to
-        // produce these yet. Escalated rather than guessed (CLAUDE.md §7).
-        throw new Error("effectAtStart modifiers are not implemented yet");
+      case "effectAtStart": {
+        const ectx = makeInitEffectContext(ctx, m.player);
+        for (const e of m.effects) resolveEffect(e, ectx);
+        break;
+      }
     }
   }
+  // Planner ruling (S2 brief fixture 14): modifiers apply before the first
+  // turn, and triggers collected during initialization are discarded — a
+  // permanentOnBattlefield Pelakka does not gain 7 life.
+  ctx.state.pendingTriggers = [];
 }

@@ -74,12 +74,16 @@ export function testPool(): Map<string, CardDef> {
 export type TargetDesc = { object: string } | { player: number } | { spell: string };
 
 export type ScriptEntry =
-  | { player: PlayerId; do: "cast"; card: string; targets?: TargetDesc[] }
+  | { player: PlayerId; do: "cast"; card: string; targets?: TargetDesc[]; x?: number }
   | { player: PlayerId; do: "playLand"; card: string }
+  /** Declarative multi-step: staged one declareAttacker/declareBlocker at a time, consumed when complete. */
   | { player: PlayerId; do: "attack"; attackers: string[] }
   | { player: PlayerId; do: "block"; blocks: { blocker: string; attacker: string }[] }
-  | { player: PlayerId; do: "activate"; card: string; abilityIndex: number; targets?: TargetDesc[] }
+  | { player: PlayerId; do: "activate"; card: string; abilityIndex: number; targets?: TargetDesc[]; x?: number }
   | { player: PlayerId; do: "chooseTriggerTargets"; targets: TargetDesc[] }
+  | { player: PlayerId; do: "orderTrigger"; card: string }
+  | { player: PlayerId; do: "orderBlocker"; blocker: string }
+  | { player: PlayerId; do: "bottom"; card: string }
   | { player: PlayerId; do: "discard"; card: string };
 
 export interface BattlefieldEntry {
@@ -196,79 +200,101 @@ export class TestGame {
     if (head && head.player === req.player) {
       const match = this.matchAction(head, req.actions);
       if (match) {
-        this.script.shift();
-        this.consumed.push(head);
-        return match;
+        if (match.consume) {
+          this.script.shift();
+          this.consumed.push(head);
+        }
+        return match.action;
       }
     }
-    // Default: pass for priority; first listed action (no attacks / no blocks /
-    // keep hand) everywhere else.
+    // Default: pass for priority; first listed action (done declaring /
+    // keep hand / first card) everywhere else.
     return req.actions[0]!;
   }
 
-  private matchAction(entry: ScriptEntry, actions: Action[]): Action | null {
+  /** Multiset difference: entries of `wanted` not yet present in `have`. */
+  private static missing(wanted: string[], have: string[]): string[] {
+    const pool = [...have];
+    return wanted.filter((w) => {
+      const i = pool.indexOf(w);
+      if (i === -1) return true;
+      pool.splice(i, 1);
+      return false;
+    });
+  }
+
+  private matchAction(entry: ScriptEntry, actions: Action[]): { action: Action; consume: boolean } | null {
     const state = this.game.state;
     const cardIdOf = (objectId: string) => getObject(state, objectId).cardId;
+    const one = (action: Action | undefined): { action: Action; consume: boolean } | null =>
+      action ? { action, consume: true } : null;
 
     switch (entry.do) {
       case "cast": {
         const wanted = (entry.targets ?? []).map((t) => this.resolveTargetDesc(t));
-        return (
+        return one(
           actions.find(
             (a) =>
               a.type === "castSpell" &&
               cardIdOf(a.objectId) === entry.card &&
+              a.x === entry.x &&
               JSON.stringify(a.targets) === JSON.stringify(wanted),
-          ) ?? null
+          ),
         );
       }
       case "playLand":
-        return actions.find((a) => a.type === "playLand" && cardIdOf(a.objectId) === entry.card) ?? null;
+        return one(actions.find((a) => a.type === "playLand" && cardIdOf(a.objectId) === entry.card));
       case "attack": {
-        const wanted = [...entry.attackers].sort();
-        return (
-          actions.find(
-            (a) =>
-              a.type === "declareAttackers" &&
-              JSON.stringify(a.attackers.map(cardIdOf).sort()) === JSON.stringify(wanted),
-          ) ?? null
-        );
+        // Stage the next wanted attacker; consume the entry with the last one.
+        const staged = state.combat.attackers.map(cardIdOf);
+        const missing = TestGame.missing(entry.attackers, staged);
+        const next = missing[0];
+        if (next === undefined) return null;
+        const action = actions.find((a) => a.type === "declareAttacker" && cardIdOf(a.objectId) === next);
+        return action ? { action, consume: missing.length === 1 } : null;
       }
       case "block": {
-        const wanted = [...entry.blocks]
-          .map((b) => `${b.blocker}->${b.attacker}`)
-          .sort();
-        return (
-          actions.find(
-            (a) =>
-              a.type === "declareBlockers" &&
-              JSON.stringify(a.blocks.map((b) => `${cardIdOf(b.blocker)}->${cardIdOf(b.attacker)}`).sort()) ===
-                JSON.stringify(wanted),
-          ) ?? null
+        const staged = state.combat.blocks.map((b) => `${cardIdOf(b.blocker)}->${cardIdOf(b.attacker)}`);
+        const wanted = entry.blocks.map((b) => `${b.blocker}->${b.attacker}`);
+        const missing = TestGame.missing(wanted, staged);
+        const next = missing[0];
+        if (next === undefined) return null;
+        const [blockerCard, attackerCard] = next.split("->");
+        const action = actions.find(
+          (a) =>
+            a.type === "declareBlocker" &&
+            cardIdOf(a.blocker) === blockerCard &&
+            cardIdOf(a.attacker) === attackerCard,
         );
+        return action ? { action, consume: missing.length === 1 } : null;
       }
       case "activate": {
         const wanted = (entry.targets ?? []).map((t) => this.resolveTargetDesc(t));
-        return (
+        return one(
           actions.find(
             (a) =>
               a.type === "activateAbility" &&
               cardIdOf(a.objectId) === entry.card &&
               a.abilityIndex === entry.abilityIndex &&
+              a.x === entry.x &&
               JSON.stringify(a.targets) === JSON.stringify(wanted),
-          ) ?? null
+          ),
         );
       }
       case "chooseTriggerTargets": {
         const wanted = entry.targets.map((t) => this.resolveTargetDesc(t));
-        return (
-          actions.find(
-            (a) => a.type === "chooseTriggerTargets" && JSON.stringify(a.targets) === JSON.stringify(wanted),
-          ) ?? null
+        return one(
+          actions.find((a) => a.type === "chooseTriggerTargets" && JSON.stringify(a.targets) === JSON.stringify(wanted)),
         );
       }
+      case "orderTrigger":
+        return one(actions.find((a) => a.type === "orderTrigger" && a.cardId === entry.card));
+      case "orderBlocker":
+        return one(actions.find((a) => a.type === "orderBlocker" && cardIdOf(a.blocker) === entry.blocker));
+      case "bottom":
+        return one(actions.find((a) => a.type === "bottomCard" && cardIdOf(a.objectId) === entry.card));
       case "discard":
-        return actions.find((a) => a.type === "discard" && cardIdOf(a.objectId) === entry.card) ?? null;
+        return one(actions.find((a) => a.type === "discard" && cardIdOf(a.objectId) === entry.card));
     }
   }
 }

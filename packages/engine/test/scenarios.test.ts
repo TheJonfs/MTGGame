@@ -4,8 +4,8 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { runFixture, TestGame, type FixtureSpec } from "./harness.js";
 import {
-  attackDeclarations,
-  blockDeclarations,
+  attackerChoices,
+  blockerChoices,
   canBlock,
   characteristics,
   eligibleAttackers,
@@ -69,8 +69,8 @@ describe("scenario fixtures (brief §fixtures)", () => {
     expect(chars.cantAttack).toBe(true);
     expect(chars.cantBlock).toBe(true);
     expect(eligibleAttackers(ctx)).toEqual([]);
-    // Only one legal declaration: attack with nothing.
-    expect(attackDeclarations(ctx)).toEqual([{ type: "declareAttackers", attackers: [] }]);
+    // Only one legal choice: done (attack with nothing).
+    expect(attackerChoices(ctx)).toEqual([{ type: "doneDeclaringAttackers" }]);
     // And from the other seat it can't block either.
     ctx.state.activePlayer = 1;
     expect(eligibleBlockers(ctx)).toEqual([]);
@@ -106,8 +106,8 @@ describe("scenario fixtures (brief §fixtures)", () => {
     const drake = tg.findBattlefield("wind_drake");
     const ogre = tg.findBattlefield("gray_ogre");
     expect(canBlock(ctx, ogre, drake)).toBe(false);
-    // The only legal block declaration is "no blocks".
-    expect(blockDeclarations(ctx)).toEqual([{ type: "declareBlockers", blocks: [] }]);
+    // The only legal choice is done (no blocks).
+    expect(blockerChoices(ctx)).toEqual([{ type: "doneDeclaringBlockers" }]);
   });
 
   it("10. Drawing from an empty library — loss at the next SBA check", async () => {

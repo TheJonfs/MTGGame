@@ -4,14 +4,17 @@ import { sameAction, type Action } from "./actions.js";
 import {
   assignCombatDamage,
   combatHasFirstStrikers,
+  commitAttackers,
+  commitBlockers,
   dealCombatDamage,
-  declareAttackers,
-  declareBlockers,
+  setBlockOrder,
+  stageAttacker,
+  stageBlock,
 } from "./combat.js";
 import type { EngineCtx } from "./ctx.js";
 import { expireEndOfTurnEffects } from "./characteristics.js";
 import { makeEffectContext } from "./effect-context.js";
-import { attackDeclarations, blockDeclarations, discardChoices, legalActions } from "./enumerator.js";
+import { attackerChoices, blockerChoices, bottomChoices, discardChoices, legalActions } from "./enumerator.js";
 import type { GameEventMap } from "./events.js";
 import { autoPay, emptyManaPools, tapForMana } from "./mana.js";
 import { applyModifiers, type Modifier } from "./modifiers.js";
@@ -36,11 +39,14 @@ import { createObject, moveObject } from "./zones.js";
 
 export type RequestPurpose =
   | "priority"
-  | "declareAttackers"
-  | "declareBlockers"
+  | "declareAttacker"
+  | "declareBlocker"
+  | "orderTriggers"
+  | "orderBlockerDamage"
+  | "chooseTarget"
   | "mulligan"
-  | "discard"
-  | "triggerTargets";
+  | "bottomCards"
+  | "discard";
 
 export interface ActionRequest {
   player: PlayerId;
@@ -96,6 +102,10 @@ export class Game {
       if (e.from === "battlefield" && e.to === "graveyard") {
         log.append({ t: "EVENT", name: "DIES", payload: { cardId: e.cardId, owner: e.owner } });
       }
+      // Landfall's event exists from S2 even though nothing listens yet (skeleton-first).
+      if (e.to === "battlefield" && e.newId && this.ctx.defs.def(e.cardId).types.includes("Land")) {
+        bus.emit("LAND_ENTERS_UNDER_YOUR_CONTROL", { objectId: e.newId, controller: e.controller });
+      }
     });
   }
 
@@ -132,7 +142,7 @@ export class Game {
     await this.mulligans();
   }
 
-  /** London mulligan, simplified (R-027): draw 7, bottom N; bottomed cards are the last N drawn (deterministic interim). */
+  /** London mulligan, simplified to sequential players (R-027): draw 7, bottom N — each bottomed card is a choice (ADR-011). */
   private async mulligans(): Promise<void> {
     const { state } = this.ctx;
     for (const player of [0, 1] as PlayerId[]) {
@@ -148,11 +158,12 @@ export class Game {
           p.library = this.ctx.rng.shuffle(p.library, "shuffle");
           for (let i = 0; i < this.rules.handSize; i++) drawCard(this.ctx, player);
         } else {
-          const p = state.players[player];
           for (let i = 0; i < mulls; i++) {
-            const last = p.hand[p.hand.length - 1];
-            if (last === undefined) break;
-            moveObject(this.ctx, last, "library", { position: "bottom" });
+            const choices = bottomChoices(this.ctx, player);
+            if (choices.length === 0) break;
+            const pick = choices.length === 1 ? choices[0]! : await this.request(player, "bottomCards", choices);
+            if (pick.type !== "bottomCard") throw new Error("expected bottomCard");
+            moveObject(this.ctx, pick.objectId, "library", { position: "bottom" });
           }
           break;
         }
@@ -215,28 +226,33 @@ export class Game {
         await this.priorityRound();
         break;
       case "DECLARE_ATTACKERS": {
-        const declarations = attackDeclarations(this.ctx);
-        // A single option (attack with nothing) is not a decision; skip the ask.
-        const chosen =
-          declarations.length === 1
-            ? declarations[0]!
-            : await this.request(active, "declareAttackers", declarations);
-        if (chosen.type !== "declareAttackers") throw new Error("expected declareAttackers");
-        declareAttackers(this.ctx, chosen.attackers);
+        // Incremental declaration (ADR-013): declare one attacker per action
+        // until done; taps commit all at once.
+        for (;;) {
+          const choices = attackerChoices(this.ctx);
+          // A lone "done" (nothing can attack / nothing left) is forced and silent (ADR-014).
+          const chosen = choices.length === 1 ? choices[0]! : await this.request(active, "declareAttacker", choices);
+          if (chosen.type === "doneDeclaringAttackers") break;
+          if (chosen.type !== "declareAttacker") throw new Error("expected declareAttacker/done");
+          stageAttacker(this.ctx, chosen.objectId);
+        }
+        commitAttackers(this.ctx);
         if (state.combat.attackers.length === 0) break; // skip rest of combat (CR 508.8)
         await this.priorityRound();
         break;
       }
       case "DECLARE_BLOCKERS": {
         if (state.combat.attackers.length === 0) break;
-        const declarations = blockDeclarations(this.ctx);
         const defender = opponentOf(active);
-        const chosen =
-          declarations.length === 1
-            ? declarations[0]!
-            : await this.request(defender, "declareBlockers", declarations);
-        if (chosen.type !== "declareBlockers") throw new Error("expected declareBlockers");
-        declareBlockers(this.ctx, chosen.blocks);
+        for (;;) {
+          const choices = blockerChoices(this.ctx);
+          const chosen = choices.length === 1 ? choices[0]! : await this.request(defender, "declareBlocker", choices);
+          if (chosen.type === "doneDeclaringBlockers") break;
+          if (chosen.type !== "declareBlocker") throw new Error("expected declareBlocker/done");
+          stageBlock(this.ctx, chosen.blocker, chosen.attacker);
+        }
+        commitBlockers(this.ctx);
+        await this.orderBlockerDamage();
         await this.priorityRound();
         break;
       }
@@ -268,6 +284,29 @@ export class Game {
     }
 
     emptyManaPools(this.ctx); // pools empty at end of every step (CR 500.4, no mana burn)
+  }
+
+  /**
+   * The attacking player orders blockers for each multi-blocked attacker
+   * (CR 509.2), one pick per action (ADR-011); the last blocker is forced.
+   */
+  private async orderBlockerDamage(): Promise<void> {
+    const { state } = this.ctx;
+    for (const attacker of state.combat.attackers) {
+      const blockers = state.combat.blockOrder[attacker];
+      if (!blockers || blockers.length < 2) continue;
+      const remaining = [...blockers];
+      const order: string[] = [];
+      while (remaining.length > 1) {
+        const actions: Action[] = remaining.map((blocker) => ({ type: "orderBlocker", attacker, blocker }));
+        const chosen = await this.request(state.activePlayer, "orderBlockerDamage", actions);
+        if (chosen.type !== "orderBlocker") throw new Error("expected orderBlocker");
+        order.push(chosen.blocker);
+        remaining.splice(remaining.indexOf(chosen.blocker), 1);
+      }
+      order.push(remaining[0]!);
+      setBlockOrder(this.ctx, attacker, order);
+    }
   }
 
   private async cleanup(): Promise<void> {

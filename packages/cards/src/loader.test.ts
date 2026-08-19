@@ -81,7 +81,7 @@ describe("validateCard rejections", () => {
     const { errors, warnings } = validateCard({
       ...base,
       types: ["Sorcery"],
-      spellEffect: [{ type: "destroyAll", scope: "allCreatures" }],
+      spellEffect: [{ type: "discard", count: 1, who: "opponent", mode: "random" }],
     });
     expect(errors).toEqual([]);
     expect(warnings.some((w) => w.includes("no resolver yet"))).toBe(true);

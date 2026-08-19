@@ -9,8 +9,12 @@ export interface GameEventMap extends Record<string, unknown> {
     from: ZoneName | null;
     to: ZoneName;
     owner: PlayerId;
+    /** Controller after the move (post-move object). */
     controller: PlayerId;
+    /** Controller before the move (ADR-016) — DIES/LTB trigger ownership reads this. */
+    controllerBefore: PlayerId;
   };
+  LAND_ENTERS_UNDER_YOUR_CONTROL: { objectId: string; controller: PlayerId };
   DAMAGE: {
     sourceId: string;
     sourceCardId: string;

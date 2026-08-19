@@ -27,7 +27,7 @@ Every `GameObject` has: `id` (fresh on every zone change), `cardId` (what it was
 
 ## 3. The zone-move primitive
 
-`moveObject(state, objectId, toZone, options)` is the *only* way objects change zones. It: creates a new object id, strips zone-specific state (damage, counters, attachments, tapped) unless the destination is the battlefield and options say otherwise, detaches anything attached to it (attachments get SBA-handled), emits `ZONE_CHANGE` with from/to so ETB/dies/LTB triggers can subscribe, and handles tokens ceasing to exist when leaving the battlefield.
+`moveObject(state, objectId, toZone, options)` is the *only* way objects change zones. It: creates a new object id, strips zone-specific state (damage, counters, attachments, tapped) unless the destination is the battlefield and options say otherwise, detaches anything attached to it (attachments get SBA-handled), emits `ZONE_CHANGE` with from/to **and the pre-move controller** (ADR-016) so ETB/dies/LTB triggers can subscribe, and handles tokens ceasing to exist when leaving the battlefield.
 
 ## 4. Events and triggers
 
@@ -41,7 +41,7 @@ The stack holds `StackItem = Spell | ActivatedAbility | TriggeredAbility`, each 
 
 Casting a spell: announce → choose targets (legality checked) → choose X → determine cost → pay cost (mana, tap, sacrifice) → spell is on the stack → SBAs → priority. Activating an ability is the same path without the zone move. Mana abilities do not use the stack.
 
-Resolution: re-check every target; if all illegal, the item is countered by rules ("fizzles"); otherwise effects apply in order and illegal targets are skipped. Then SBAs, then priority.
+Resolvers run against an `EffectContext` defined in `cards` and implemented in `engine` (ADR-012); a stack-item-less variant serves initialization (modifiers). Resolution: re-check every target; if all illegal, the item is countered by rules ("fizzles"); otherwise effects apply in order and illegal targets are skipped. Then SBAs, then priority.
 
 ## 6. Costs and mana
 
@@ -69,18 +69,18 @@ One function, run whenever a player would receive priority, looped until no chan
 
 ## 11. Legal-action enumerator
 
-`legalActions(state, playerId)` returns every action the player may take right now: pass priority, play land, cast spell (with all legal target combinations — bounded; see ADR-004), activate ability, tap land for mana, declare attackers (as one composite action with the set), declare blockers (composite). The RandomAgent picks uniformly; the HeuristicAgent evaluates; the UI presents. Everything the engine accepts must come from this list.
+`legalActions(state, playerId)` returns every action the player may take right now: pass priority, play land, cast spell (one action per legal target combination and per X value — ADR-017), activate ability, tap land for mana, declare one attacker / done declaring, declare one blocker for one attacker / done declaring (ADR-013). Declarations are incremental so legality is never truncated and the UI/agents can work one choice at a time. The RandomAgent picks uniformly; the HeuristicAgent evaluates; the UI presents. Everything the engine accepts must come from this list.
 
-## 12. Agents
+## 12. Agents (ADR-011)
 
 ```ts
 interface Agent {
-  chooseAction(view: GameView, actions: Action[]): Promise<Action>;
-  chooseTargets(view, spec, candidates): Promise<Target[]>;   // may be folded into actions in v1
-  chooseOne(view, prompt, options): Promise<option>;          // legend rule, sacrifice selection, trigger order
-  mulligan(view): Promise<boolean>;
+  chooseAction(view: GameView, request: DecisionRequest): Promise<Action>;
 }
+// DecisionRequest = { kind: "priority" | "declareAttacker" | "declareBlocker" | "orderTriggers" |
+//                    "orderBlockerDamage" | "chooseTarget" | "bottomCards" | "chooseOne" | ..., actions: Action[] }
 ```
+Every decision is an enumerated Action. The interface lives in `engine`. Agent-internal randomness is outside the game RNG (ADR-015).
 `GameView` is the state as seen by that player (hidden hands/libraries redacted). Session 1 ships `RandomAgent` only.
 
 ## 13. Match runner

@@ -33,9 +33,15 @@ export function runSBAs(ctx: EngineCtx): boolean {
 
     // Collect object actions first, apply together.
     const toGraveyard: string[] = [];
+    const annihilations: { id: string; n: number }[] = [];
     for (const id of [...state.battlefield]) {
       const obj = getObject(state, id);
       const def = ctx.defs.def(obj.cardId);
+
+      // +1/+1 and -1/-1 counters annihilate in pairs (CR 704.5q).
+      const plus = obj.counters["+1/+1"] ?? 0;
+      const minus = obj.counters["-1/-1"] ?? 0;
+      if (plus > 0 && minus > 0) annihilations.push({ id, n: Math.min(plus, minus) });
 
       if (isCreature(ctx, id)) {
         const chars = characteristics(ctx, id);
@@ -54,10 +60,15 @@ export function runSBAs(ctx: EngineCtx): boolean {
       }
     }
 
+    for (const { id, n } of annihilations) {
+      const obj = getObject(state, id);
+      obj.counters["+1/+1"]! -= n;
+      obj.counters["-1/-1"]! -= n;
+    }
     for (const id of new Set(toGraveyard)) {
       if (state.objects[id]) moveObject(ctx, id, "graveyard");
     }
-    if (toGraveyard.length > 0) changed = true;
+    if (toGraveyard.length > 0 || annihilations.length > 0) changed = true;
 
     if (!changed) break;
     anyChange = true;

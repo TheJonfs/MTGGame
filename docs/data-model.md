@@ -7,7 +7,7 @@
   "id": "lightning_bolt",           // stable snake_case; real cards use oracle name
   "name": "Lightning Bolt",
   "source": "real" | "custom",
-  "scryfallId": "…",                // real cards only; used by the art fetch step
+  "scryfallId": "…",                // real cards only; optional until the art session
   "manaCost": "{R}",                // "{X}{R}", "{3}{W}{W}", "" for lands
   "types": ["Instant"],             // Land, Creature, Instant, Sorcery, Enchantment, Artifact
   "subtypes": ["Goblin"],           // creature types, Aura, Equipment, basic land types
@@ -45,7 +45,7 @@ Triggered `event` values: `ENTERS_BATTLEFIELD`, `DIES`, `LEAVES_BATTLEFIELD`, `A
 | `exile` | `target` ref | |
 | `bounce` | `target` ref | to owner's hand |
 | `counter` | `target` ref (spell) | |
-| `draw` | `count`, `who` | |
+| `draw` | `count`, `who` | `who` ∈ `you` / `opponent` / `eachPlayer` / target |
 | `discard` | `count`, `who`, `mode`: `choose` / `random` | |
 | `gainLife` / `loseLife` | `amount`, `who` | |
 | `modifyPT` | `power`, `toughness`, `scope` or `target`, `duration` | pump, anthems, Drana |
@@ -55,14 +55,14 @@ Triggered `event` values: `ENTERS_BATTLEFIELD`, `DIES`, `LEAVES_BATTLEFIELD`, `A
 | `addCounters` | `kind`, `count`, `target` | +1/+1, −1/−1 |
 | `tapTarget` / `untapTarget` | `target` | |
 | `returnFromGraveyard` | `target` (own graveyard), `to`: `battlefield` / `hand` | Zombify, Regrowth |
-| `fight` | `target` (two creatures) | |
+| `fight` | `targets: [i, j]` (two target indices) | |
 | `gainControl` | `target`, `duration`: `UNTIL_SOURCE_LEAVES` | Control Magic |
 | `searchLibrary` | `predicate` (basic land only), `to` | maybe |
 | `addMana` | `mana` | lands, rocks (mana ability) |
 
 **Reserved, not implemented:** `copy`, `setPT`, `preventDamage`, `changeType`.
 
-Effects reference targets by index into the declared `targets` array (`"target": 0`) or by scope (`"scope": "creaturesYouControl" | "allCreatures" | "opponent" | "you"` …). `"X"` resolves from the stack item.
+Effects reference targets by index into the declared `targets` array (`"target": 0`) or by scope (`"scope": "creaturesYouControl" | "allCreatures" | "opponent" | "you" | "attached"` …). `attached` is the object an aura/equipment is attached to; required for Pacifism, Rancor, equipment statics. `"X"` resolves from the stack item.
 
 ## 4. Token definitions
 
@@ -82,7 +82,8 @@ type Modifier =
   | { type: "startingLife", player: 0|1, value: number }
   | { type: "extraCards", player: 0|1, count: number }
   | { type: "permanentOnBattlefield", player: 0|1, cardId: string }   // uses moveObject, same as Zombify
-  | { type: "effectAtStart", player: 0|1, effects: Effect[] };        // escape hatch: any vocabulary effect
+  | { type: "effectAtStart", player: 0|1, effects: Effect[] };        // escape hatch: any vocabulary effect; resolved via the
+                                                                      // stack-item-less EffectContext (ADR-012)
 
 interface MatchResult {
   winner: 0 | 1 | null; reason: "LIFE" | "DECKED" | "CONCEDE" | "MAX_TURNS" | "DRAW";
@@ -102,7 +103,7 @@ type ActionLogEntry =
   | { t: "RNG", purpose: "shuffle"|"discard"|"coin", value }
   | { t: "EVENT", name, payload }          // optional, for viewers; not needed for replay
 ```
-Replay consumes ACTION and RNG entries only.
+Replay consumes ACTION and RNG entries only. Per ADR-014, single-option decisions are not logged; `EVENT` entries are the full transcript for viewers.
 
 ## 7. Pool registry row
 
