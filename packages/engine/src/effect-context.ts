@@ -94,6 +94,12 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
           return ctx.state.battlefield.filter((id) => isCreature(ctx, id));
         case "attached":
           throw new Error(`scope "attached" is only valid on static abilities`);
+        case "self": {
+          // The resolving item's source, wherever it now is — Drana pumps
+          // herself on the battlefield; Rancor returns itself from the graveyard.
+          const id = item.sourceId ?? item.objectId;
+          return id && ctx.state.objects[id] ? [id] : [];
+        }
         case "you":
         case "opponent":
         case "eachPlayer":
@@ -198,6 +204,12 @@ function sharedOps(ctx: EngineCtx) {
       moveObject(ctx, objectId, "exile"); // not a death: no DIES trigger fires (700.4)
     },
 
+    returnFromGraveyard(objectId: string, to: "battlefield" | "hand"): void {
+      const obj = ctx.state.objects[objectId];
+      if (!obj || obj.zone !== "graveyard") return; // raced away: nothing to return
+      moveObject(ctx, objectId, to); // to battlefield fires ETB triggers normally
+    },
+
     fight(idA: string, idB: string): void {
       const a = ctx.state.objects[idA];
       const b = ctx.state.objects[idB];
@@ -300,7 +312,7 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
         case "allCreatures":
           return ctx.state.battlefield.filter((id) => isCreature(ctx, id));
         default:
-          return [];
+          return []; // no source at initialization: "self"/"attached" select nothing
       }
     },
     amount(a: Amount): number {

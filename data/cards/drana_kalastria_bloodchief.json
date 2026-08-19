@@ -1,0 +1,55 @@
+{
+  "id": "drana_kalastria_bloodchief",
+  "name": "Drana, Kalastria Bloodchief",
+  "source": "real",
+  "manaCost": "{3}{B}{B}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Vampire",
+    "Shaman"
+  ],
+  "supertypes": [
+    "Legendary"
+  ],
+  "power": 4,
+  "toughness": 4,
+  "keywords": [
+    "flying"
+  ],
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "mana": "{X}{B}{B}"
+      },
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "creature",
+          "zone": "battlefield"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyPT",
+          "power": 0,
+          "toughness": "-X",
+          "target": 0,
+          "duration": "UNTIL_END_OF_TURN"
+        },
+        {
+          "type": "modifyPT",
+          "power": "X",
+          "toughness": 0,
+          "scope": "self",
+          "duration": "UNTIL_END_OF_TURN"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

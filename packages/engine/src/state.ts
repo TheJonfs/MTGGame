@@ -30,7 +30,10 @@ export interface GameObject {
   id: string;
   cardId: string;
   owner: PlayerId;
+  /** Effective controller — what every "you control" check reads. Kept in sync with control statics (ADR-033). */
   controller: PlayerId;
+  /** Controller absent any control-changing static; set on battlefield entry. */
+  baseController: PlayerId;
   zone: ZoneName;
   isToken: boolean;
   // Battlefield-only state; stripped by moveObject on leaving.

@@ -1,0 +1,43 @@
+{
+  "id": "mystic_snake",
+  "name": "Mystic Snake",
+  "source": "real",
+  "manaCost": "{1}{G}{U}{U}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Snake"
+  ],
+  "power": 2,
+  "toughness": 2,
+  "keywords": [
+    "flash"
+  ],
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "condition": {
+        "source": "self"
+      },
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "spell",
+          "zone": "stack"
+        }
+      ],
+      "effects": [
+        {
+          "type": "counter",
+          "target": 0
+        }
+      ],
+      "optional": false
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

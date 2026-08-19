@@ -35,6 +35,8 @@ export function objectsInScope(ctx: EngineCtx, sourceId: string, scope: Scope, p
   switch (scope) {
     case "attached":
       return source.attachedTo && state.objects[source.attachedTo] ? [source.attachedTo] : [];
+    case "self":
+      return [sourceId];
     case "creaturesYouControl":
       return narrow(
         state.battlefield.filter((id) => {
@@ -76,8 +78,10 @@ export function characteristics(ctx: EngineCtx, objectId: string): Characteristi
 
   const applyEffect = (e: Effect, phase: "pt" | "grants") => {
     if (phase === "pt" && e.type === "modifyPT") {
-      result.power += e.power;
-      result.toughness += e.toughness;
+      // Statics carry literal deltas only ("X" P/T belongs to resolved
+      // abilities, which store numbers) — the validator enforces this.
+      result.power += typeof e.power === "number" ? e.power : 0;
+      result.toughness += typeof e.toughness === "number" ? e.toughness : 0;
     }
     if (phase === "grants" && e.type === "grantKeyword") result.keywords.add(e.keyword);
     if (phase === "grants" && e.type === "restrict") {

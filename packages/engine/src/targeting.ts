@@ -58,6 +58,10 @@ export function isLegalTarget(ctx: EngineCtx, spec: TargetSpec, target: Resolved
       const obj = state.objects[target.id];
       return !!obj && obj.zone === "graveyard" && obj.owner === by;
     }
+    case "creatureCardInYourGraveyard": {
+      if (!isLegalTarget(ctx, { ...spec, predicate: "cardInYourGraveyard" }, target, by)) return false;
+      return target.kind === "object" && ctx.defs.def(state.objects[target.id]!.cardId).types.includes("Creature");
+    }
   }
 }
 
@@ -77,7 +81,7 @@ export function targetCandidates(ctx: EngineCtx, spec: TargetSpec, by: PlayerId)
     const t: ResolvedTarget = { kind: "player", player };
     if (isLegalTarget(ctx, spec, t, by)) out.push(t);
   }
-  if (spec.predicate === "cardInYourGraveyard") {
+  if (spec.predicate === "cardInYourGraveyard" || spec.predicate === "creatureCardInYourGraveyard") {
     for (const id of state.players[by].graveyard) {
       const t: ResolvedTarget = { kind: "object", id };
       if (isLegalTarget(ctx, spec, t, by)) out.push(t);

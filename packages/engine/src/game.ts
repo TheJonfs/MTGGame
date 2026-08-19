@@ -41,6 +41,7 @@ import { createObject, moveObject } from "./zones.js";
 export type RequestPurpose =
   | "priority"
   | "chooseSacrifice"
+  | "legendRule"
   | "optionalTrigger"
   | "declareAttacker"
   | "declareBlocker"
@@ -333,9 +334,9 @@ export class Game {
     }
     for (const id of state.battlefield) getObject(state, id).damage = 0;
     expireEndOfTurnEffects(state);
-    // No priority in cleanup unless something triggered (CR 514.3a). S1 has no
-    // cleanup triggers, but the general path is kept for safety.
-    runSBAs(this.ctx);
+    // No priority in cleanup unless something triggered (CR 514.3a); the
+    // general path exists for safety.
+    await runSBAs(this.ctx, (player, purpose, actions) => this.request(player, purpose, actions));
     if (state.pendingTriggers.length > 0) await this.priorityRound();
   }
 
@@ -344,7 +345,7 @@ export class Game {
   /** SBAs then trigger placement, looped, before anyone receives priority (CR 117.5). */
   private async checkStateAndTriggers(): Promise<void> {
     for (;;) {
-      runSBAs(this.ctx);
+      await runSBAs(this.ctx, (player, purpose, actions) => this.request(player, purpose, actions));
       if (this.state.result) return;
       const placed = await placePendingTriggers(this.ctx, (player, purpose, actions) =>
         this.request(player, purpose, actions),

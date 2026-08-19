@@ -36,6 +36,7 @@ export const SCOPES = [
   "creaturesYouControl",
   "allCreatures",
   "attached",
+  "self",
   "you",
   "opponent",
   "eachPlayer",
@@ -61,6 +62,7 @@ export const TARGET_PREDICATES = [
   "player",
   "opponentPlayer",
   "cardInYourGraveyard",
+  "creatureCardInYourGraveyard",
 ] as const;
 export type TargetPredicate = (typeof TARGET_PREDICATES)[number];
 
@@ -73,6 +75,8 @@ export interface TargetSpec {
 /** ADR-028: amounts are literals, "X", or a minimal value reference (no arithmetic). */
 export type ValueRef = { ref: "targetPower"; target: number };
 export type Amount = number | "X" | ValueRef;
+/** P/T deltas may reference the stack item's X, positively or negated (Drana). */
+export type PTAmount = number | "X" | "-X";
 
 /** Effect vocabulary v1 (data-model §3). Reserved words are commented at the bottom. */
 export type Effect =
@@ -89,8 +93,8 @@ export type Effect =
   | { type: "loseLife"; amount: number | ValueRef; who: Who }
   | {
       type: "modifyPT";
-      power: number;
-      toughness: number;
+      power: PTAmount;
+      toughness: PTAmount;
       target?: number;
       scope?: Scope;
       subtype?: string;
@@ -104,9 +108,9 @@ export type Effect =
   | { type: "addCounters"; kind: "+1/+1" | "-1/-1"; count: number; target: number }
   | { type: "tapTarget"; target: number }
   | { type: "untapTarget"; target: number }
-  | { type: "returnFromGraveyard"; target: number; to: "battlefield" | "hand" }
+  | { type: "returnFromGraveyard"; target?: number; scope?: Scope; to: "battlefield" | "hand" }
   | { type: "fight"; targets: [number, number] }
-  | { type: "gainControl"; target: number; duration: "UNTIL_SOURCE_LEAVES" }
+  | { type: "gainControl"; scope: Scope } // static-only (ADR-033); targeted/EOT variant reserved
   | { type: "searchLibrary"; predicate: "basicLand"; to: "hand" | "battlefield" }
   | { type: "addMana"; mana: string };
 // Reserved, not implemented (data-model §3): copy, setPT, preventDamage, changeType.

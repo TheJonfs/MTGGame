@@ -37,7 +37,7 @@ Trigger `condition` (ADR-021, optional; default `{source:"self"}`): `{source: "s
 
 Events also include `ATTACHED` (ADR-026; emitted, no trigger uses it yet).
 
-Triggered `event` values: `ENTERS_BATTLEFIELD`, `DIES`, `LEAVES_BATTLEFIELD`, `ATTACKS`, `BLOCKS`, `DEALS_COMBAT_DAMAGE_TO_PLAYER`, `UPKEEP`, `END_STEP`, `LAND_ENTERS_UNDER_YOUR_CONTROL` (landfall), `SPELL_CAST` (opponent casts — for later). Each may carry `condition` predicates (source only, controller only, creature only, etc.).
+Triggered `event` values: `ENTERS_BATTLEFIELD`, `DIES` (battlefield→graveyard, for any permanent — Rancor is an aura with a DIES trigger), `LEAVES_BATTLEFIELD`, `ATTACKS`, `BLOCKS`, `DEALS_COMBAT_DAMAGE_TO_PLAYER`, `UPKEEP`, `END_STEP`, `LAND_ENTERS_UNDER_YOUR_CONTROL` (landfall), `SPELL_CAST` (opponent casts — for later). Each may carry `condition` predicates (source only, controller only, creature only, etc.).
 
 ## 3. Effect vocabulary (v1 — grows only by manifest decision)
 
@@ -59,9 +59,9 @@ Triggered `event` values: `ENTERS_BATTLEFIELD`, `DIES`, `LEAVES_BATTLEFIELD`, `A
 | `createToken` | `tokenId`, `count`, `who` | |
 | `addCounters` | `kind`, `count`, `target` | +1/+1, −1/−1 |
 | `tapTarget` / `untapTarget` | `target` | |
-| `returnFromGraveyard` | `target` (own graveyard), `to`: `battlefield` / `hand` | Zombify, Regrowth |
+| `returnFromGraveyard` | `target` (predicate `creatureCardInYourGraveyard`), `to`: `battlefield` / `hand` | Zombify (battlefield), Gravedigger (hand, optional ETB) |
 | `fight` | `targets: [i, j]` (two target indices) | all-or-nothing legality (ADR-022) |
-| `gainControl` | `target`, `duration`: `UNTIL_SOURCE_LEAVES` | Control Magic |
+| `gainControl` | static with `scope: attached` (Control Magic, ADR-033); targeted/EOT variant reserved for Threaten-style cards (not in ceiling) | |
 | `searchLibrary` | `predicate` (basic land only), `to` | maybe |
 | `addMana` | `mana` | lands, rocks (mana ability) |
 

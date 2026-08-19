@@ -63,3 +63,15 @@ Planner-maintained. Implementer proposes via handoff Concerns; planner records.
 **ADR-029 — Discard modes.** `ownerChooses` (Mind Rot), `random` (Hymn; game RNG, logged), `casterChooses` with optional filter (Duress: noncreature, nonland). Revealing a hand is a view-level effect: the choosing agent sees the revealed cards as candidates; the log records the choice.
 
 **ADR-030 — Ratifications from S3:** deathtouch assignment is the source's (510.1c) and fixture 6 was a planner error; fixture 1 split 1a/1b; `damageAll` landed on the `destroyAll` precedent; cost-side `{C}` is an accepted boundary; B–C decking rate noted as an M4 baselining data point. M3 split into S4 (removal, discard, conditions/scopes, Deck D) and S5 (control change, reanimation, legend rule, Drana, Mystic Snake).
+
+**ADR-031 — Async resolver seam.** `resolveEffect` and `EffectContext` ops that need a player decision are `Promise`-shaped. Resolvers never block on anything but DecisionRequests; determinism is preserved because every awaited decision is a logged Action. (S4 concern 1; ADR-012 amended.)
+
+**ADR-032 — Hand reveal is request payload.** Revealed cards ride on the DecisionRequest (`revealed: [...]`) for the chooser, for that decision only. `GameView` redaction is untouched. Ongoing-reveal effects are out of the ceiling. (S4 concern 2.)
+
+**ADR-033 — Static control effects.** "You control enchanted creature" is a static `gainControl` with `scope: attached` from the aura as source, applied in the ADR-003 control layer and ending when the aura leaves. Control change resets summoning sickness for the new controller (302.6) and again on reversion. Stolen objects keep `owner`; zone moves route by owner (bounce → owner's hand, death → owner's graveyard, 400.3). DIES/LTB triggers use pre-move controller (ADR-016).
+
+**ADR-034 — Fuzz suite structure.** Default `pnpm test` runs a 100-games-per-pairing smoke; `FUZZ_FULL=1 pnpm test` runs 500/pairing; the handoff's table comes from the CLI at 1,000/pairing. (S4 concern 7.)
+
+**ADR-035 — Ratifications from S4:** fixture 12 was a planner rules error (Nighthawk flies, 702.9c); fixture 9's second target; `opponentPlayer` predicate; `damageAll`/`destroyAll` precedent stands. B–D decking rate accepted as a baselining data point; no deck tuning for fuzz speed.
+
+**ADR-036 — Deck E (Simic) joins the slice** so Mystic Snake and Curiosity-on-fliers get fuzz coverage; ten pairings.

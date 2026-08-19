@@ -52,7 +52,7 @@ At session end, **overwrite `handoff.md`** using the template at the bottom of t
 - `docs/registries/rules-registry.md` — R-numbered entries: which Comprehensive Rules mechanics we implement, how, and known simplifications. Repo-canonical; you append, planner reviews.
 - `docs/registries/pool-registry.md` — the card pool: every card's status (planned / implemented / tested / cut) and the vocabulary words it uses. Repo-canonical.
 - `docs/briefs/` — numbered session briefs; never edit existing ones.
-- `packages/` — TypeScript monorepo (see engine-design §1).
+- `packages/` — TypeScript monorepo (see engine-design §1). Tests: `pnpm test` = smoke fuzz; `FUZZ_FULL=1 pnpm test` = full (ADR-034).
 - `data/cards/` — card definition files. `data/art/` — images (gitignored except custom-card folder).
 - `assets/` (later) — build-time fetched art.
 

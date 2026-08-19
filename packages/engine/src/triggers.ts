@@ -36,9 +36,13 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
     if (ev.to === "battlefield" && ev.newId) collect("ENTERS_BATTLEFIELD", ev.newId, ev.controller);
     if (ev.from === "battlefield") {
       // Look-back: the ability of the object that left fires even though the
-      // object is gone (engine-design §4), for whoever controlled it there.
-      if (ev.to === "graveyard") collect("DIES", ev.oldId, ev.controllerBefore);
-      collect("LEAVES_BATTLEFIELD", ev.oldId, ev.controllerBefore);
+      // battlefield object is gone (engine-design §4), for whoever controlled
+      // it there. The trigger's sourceId is the object's CURRENT identity
+      // (the graveyard card) so self-referencing effects — Rancor's return —
+      // can reach it; tokens that ceased keep the old id.
+      const sourceId = ev.newId || ev.oldId;
+      if (ev.to === "graveyard") collect("DIES", sourceId, ev.controllerBefore);
+      collect("LEAVES_BATTLEFIELD", sourceId, ev.controllerBefore);
     }
   });
 

@@ -53,6 +53,8 @@ export interface EffectContext {
   fight(idA: string, idB: string): void;
   /** Exile (CR 700.4: not a death — no DIES trigger). */
   exile(objectId: string): void;
+  /** Move a card from a graveyard to the battlefield or its owner's hand (Zombify, Gravedigger, Rancor's self-return). */
+  returnFromGraveyard(objectId: string, to: "battlefield" | "hand"): void;
   loseLife(player: number, amount: number): void;
   /**
    * Discard N from a player's hand per ADR-029. Chooser interaction makes
@@ -109,13 +111,16 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
 
   modifyPT: (e, ctx) => {
     if (e.type !== "modifyPT") throw new Error("resolver mismatch");
+    // P/T deltas may reference X, positively or negated (Drana: -0/-X and +X/+0).
+    const pt = (v: number | "X" | "-X"): number =>
+      v === "X" ? ctx.amount("X") : v === "-X" ? -ctx.amount("X") : v;
     for (const t of targeted(e, ctx)) {
       if (t.kind !== "object") continue;
       ctx.addContinuousEffect({
         kind: "modifyPT",
         objectId: t.id,
-        power: e.power,
-        toughness: e.toughness,
+        power: pt(e.power),
+        toughness: pt(e.toughness),
         duration: e.duration,
       });
     }
@@ -175,6 +180,13 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
   discard: async (e, ctx) => {
     if (e.type !== "discard") throw new Error("resolver mismatch");
     for (const p of ctx.players(e.who)) await ctx.discard(p, e.count, e.mode, e.filter);
+  },
+
+  returnFromGraveyard: (e, ctx) => {
+    if (e.type !== "returnFromGraveyard") throw new Error("resolver mismatch");
+    for (const t of targeted(e, ctx)) {
+      if (t.kind === "object") ctx.returnFromGraveyard(t.id, e.to);
+    }
   },
 
   destroyAll: (e, ctx) => {

@@ -1,20 +1,32 @@
+import type { Action } from "./actions.js";
 import { characteristics, isCreature } from "./characteristics.js";
+import { syncControl } from "./control.js";
 import type { EngineCtx } from "./ctx.js";
-import { getObject, opponentOf, type PlayerId } from "./state.js";
+import { getObject, type PlayerId } from "./state.js";
 import { moveObject } from "./zones.js";
+
+/** The one decision SBAs can require: which legendary to keep (704.5j, ADR-007). */
+export type SbaRequester = (player: PlayerId, purpose: "legendRule", actions: Action[]) => Promise<Action>;
 
 /**
  * State-based actions (R-007, CR 704). The ONLY place that decides a creature
  * is dead or a player has lost. Run whenever a player would receive priority;
  * loops until a pass makes no changes. All actions found in one pass are
- * applied together (CR 704.3).
+ * applied together (CR 704.3); the legend rule's keep-choice is interposed at
+ * the end of a pass (noted simplification, R-025).
+ *
+ * Each pass starts by syncing the control layer (ADR-033) — control statics
+ * apply/revert here, before anyone can observe stale control.
+ *
+ * The requester is only consulted for the legend rule; callers without one
+ * (unit tests on legend-free boards) may omit it.
  */
-export function runSBAs(ctx: EngineCtx): boolean {
+export async function runSBAs(ctx: EngineCtx, requester?: SbaRequester): Promise<boolean> {
   const state = ctx.state;
   let anyChange = false;
 
   for (;;) {
-    let changed = false;
+    let changed = syncControl(ctx);
 
     // Player losses (704.5a, 704.5c).
     for (const player of [0, 1] as PlayerId[]) {
@@ -80,6 +92,29 @@ export function runSBAs(ctx: EngineCtx): boolean {
       if (state.objects[id]) moveObject(ctx, id, "graveyard");
     }
     if (toGraveyard.length > 0 || annihilations.length > 0) changed = true;
+
+    // Legend rule (704.5j): per controller, same name, keep one. The keep is
+    // a DecisionRequest — never silent, since a group has >= 2 members.
+    for (const player of [0, 1] as PlayerId[]) {
+      const groups = new Map<string, string[]>();
+      for (const id of state.battlefield) {
+        const obj = getObject(state, id);
+        if (obj.controller !== player) continue;
+        const def = ctx.defs.def(obj.cardId);
+        if (!def.supertypes?.includes("Legendary")) continue;
+        (groups.get(def.name) ?? groups.set(def.name, []).get(def.name))!.push(id);
+      }
+      for (const [, ids] of groups) {
+        if (ids.length < 2) continue;
+        if (!requester) throw new Error("legend rule needs a requester (SBA choice, ADR-007)");
+        const chosen = await requester(player, "legendRule", ids.map((objectId) => ({ type: "keepLegend", objectId })));
+        if (chosen.type !== "keepLegend") throw new Error("expected keepLegend");
+        for (const id of ids) {
+          if (id !== chosen.objectId && state.objects[id]) moveObject(ctx, id, "graveyard");
+        }
+        changed = true;
+      }
+    }
 
     if (!changed) break;
     anyChange = true;

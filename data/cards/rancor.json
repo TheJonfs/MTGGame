@@ -1,0 +1,57 @@
+{
+  "id": "rancor",
+  "name": "Rancor",
+  "source": "real",
+  "manaCost": "{G}",
+  "types": [
+    "Enchantment"
+  ],
+  "subtypes": [
+    "Aura"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "creature",
+      "zone": "battlefield"
+    }
+  ],
+  "abilities": [
+    {
+      "kind": "static",
+      "effects": [
+        {
+          "type": "modifyPT",
+          "power": 2,
+          "toughness": 0,
+          "scope": "attached",
+          "duration": "WHILE_SOURCE_ON_BATTLEFIELD"
+        },
+        {
+          "type": "grantKeyword",
+          "keyword": "trample",
+          "scope": "attached",
+          "duration": "WHILE_SOURCE_ON_BATTLEFIELD"
+        }
+      ]
+    },
+    {
+      "kind": "triggered",
+      "event": "DIES",
+      "condition": {
+        "source": "self"
+      },
+      "effects": [
+        {
+          "type": "returnFromGraveyard",
+          "scope": "self",
+          "to": "hand"
+        }
+      ],
+      "optional": false
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

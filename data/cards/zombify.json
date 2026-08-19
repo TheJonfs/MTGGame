@@ -1,0 +1,26 @@
+{
+  "id": "zombify",
+  "name": "Zombify",
+  "source": "real",
+  "manaCost": "{3}{B}",
+  "types": [
+    "Sorcery"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "creatureCardInYourGraveyard",
+      "zone": "graveyard"
+    }
+  ],
+  "spellEffect": [
+    {
+      "type": "returnFromGraveyard",
+      "target": 0,
+      "to": "battlefield"
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

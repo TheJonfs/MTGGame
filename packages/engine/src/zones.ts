@@ -86,8 +86,9 @@ export function moveObject(
     cardId: obj.cardId,
     owner: obj.owner,
     // Control reverts to owner in non-battlefield zones; battlefield control
-    // belongs to whoever put it there (S1: always the owner casts it).
+    // belongs to whoever put it there (control statics re-apply via syncControl).
     controller: entersBattlefield ? obj.controller : obj.owner,
+    baseController: entersBattlefield ? obj.controller : obj.owner,
     zone: to,
     isToken: obj.isToken,
     tapped: entersBattlefield ? (options.tapped ?? false) : false,
@@ -137,6 +138,7 @@ export function createObject(
     cardId,
     owner,
     controller: owner,
+    baseController: owner,
     zone,
     isToken: opts.isToken ?? false,
     tapped: false,

@@ -173,8 +173,12 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
       validateEffects(a.effects, nTargets, err, warnings, cardId, { isStatic: true });
       if (Array.isArray(a.effects)) {
         for (const e of a.effects) {
-          if (isRecord(e) && !["modifyPT", "grantKeyword", "restrict"].includes(e.type as string)) {
-            err(`static ability cannot carry effect "${e.type}" (only modifyPT/grantKeyword/restrict)`);
+          if (isRecord(e) && !["modifyPT", "grantKeyword", "restrict", "gainControl"].includes(e.type as string)) {
+            err(`static ability cannot carry effect "${e.type}" (only modifyPT/grantKeyword/restrict/gainControl)`);
+          }
+          // Statics are interpreted live and have no X: literal deltas only.
+          if (isRecord(e) && e.type === "modifyPT" && (e.power === "X" || e.power === "-X" || e.toughness === "X" || e.toughness === "-X")) {
+            err(`static modifyPT cannot reference X`);
           }
         }
       }
@@ -221,8 +225,8 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     needWho(e, err);
   },
   modifyPT: (e, err) => {
-    needNumber(e, "power", err);
-    needNumber(e, "toughness", err);
+    needPT(e, "power", err);
+    needPT(e, "toughness", err);
     needTargetOrScope(e, err);
     needDuration(e, err);
   },
@@ -249,15 +253,15 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
   tapTarget: needTargetIndex,
   untapTarget: needTargetIndex,
   returnFromGraveyard: (e, err) => {
-    needTargetIndex(e, err);
+    needTargetOrScope(e, err);
     if (e.to !== "battlefield" && e.to !== "hand") err(`returnFromGraveyard "to" must be battlefield|hand`);
   },
   fight: (e, err) => {
     if (!Array.isArray(e.targets) || e.targets.length !== 2) err(`fight requires targets: [i, j]`);
   },
   gainControl: (e, err) => {
-    needTargetIndex(e, err);
-    if (e.duration !== "UNTIL_SOURCE_LEAVES") err(`gainControl duration must be UNTIL_SOURCE_LEAVES`);
+    // ADR-033: static-only, scope attached. Targeted/EOT variants are reserved.
+    if (e.scope !== "attached") err(`gainControl must be a static with scope "attached" (ADR-033)`);
   },
   searchLibrary: (e, err) => {
     if (e.predicate !== "basicLand") err(`searchLibrary predicate must be basicLand`);
@@ -286,6 +290,10 @@ function needAmount(e: Record<string, unknown>, err: (m: string) => void) {
 }
 function needNumber(e: Record<string, unknown>, key: string, err: (m: string) => void) {
   if (!Number.isInteger(e[key])) err(`"${key}" must be an integer`);
+}
+function needPT(e: Record<string, unknown>, key: string, err: (m: string) => void) {
+  const v = e[key];
+  if (!Number.isInteger(v) && v !== "X" && v !== "-X") err(`"${key}" must be an integer, "X", or "-X"`);
 }
 function needCount(e: Record<string, unknown>, err: (m: string) => void) {
   if (!Number.isInteger(e.count) || (e.count as number) < 1) err(`count must be a positive integer`);

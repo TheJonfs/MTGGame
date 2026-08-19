@@ -86,8 +86,19 @@ Status: `planned` / `implemented` / `tested` / `cut`.
 | goblin_chieftain | Goblin Chieftain | tested | haste, static modifyPT + grantKeyword scope{creaturesYouControl, Goblin, other} | ADR-020 first user; fixture 10 |
 | curiosity | Curiosity | tested | aura, triggered(DEALS_DAMAGE_TO_PLAYER, source attached, player opponentOfController, optional) draw | ADR-021/027 first user; fixtures 11a-c |
 
+## Session 5 additions
+
+| cardId | name | status | vocabulary | notes |
+|---|---|---|---|---|
+| control_magic | Control Magic | planned | aura, static gainControl(attached) | ADR-033; R-020 |
+| zombify | Zombify | planned | returnFromGraveyard(to battlefield) | |
+| gravedigger | Gravedigger | planned | triggered(ETB, optional) returnFromGraveyard(to hand) | |
+| rancor | Rancor | planned | aura, static modifyPT + grantKeyword(trample)(attached), triggered(DIES, self) return to owner's hand | aura with DIES trigger |
+| drana_kalastria_bloodchief | Drana, Kalastria Bloodchief | planned | flying, legendary, activated(X) modifyPT ×2 | legend rule (R-025); fizzle = no bonus |
+| mystic_snake | Mystic Snake | planned | flash, triggered(ETB) counter(target spell) | no new event needed |
+
 ## Ceiling anchors (not yet scheduled)
-Mystic Snake, Control Magic, Drana Kalastria Bloodchief, Rancor, Zombify, Gravedigger.
+Ceiling complete as of S5 (see mechanics-manifest §3). Further additions are card batches using existing vocabulary.
 
 ## Slice decklists (S4 brief Part 3; 40 cards each)
 - **A red:** 17 Mountain, 4 Raging Goblin, 2 Goblin Piker, 3 Lightning Bolt, 2 Shock, 2 Blaze, 3 Boggart Brute, 2 Siege-Gang Commander, 2 Bonesplitter, 2 Goblin Chieftain, 1 Pyroclasm.

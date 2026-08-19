@@ -253,7 +253,10 @@ describe("S2 fixtures — X, controller capture, wide boards, modifiers (brief 1
     });
     const ctx = tg.game.ctx;
     const wurm = tg.findBattlefield("pelakka_wurm");
-    getObject(ctx.state, wurm).controller = 1; // test-only flip (Control Magic is M3)
+    // Test-only steal: since S5, baseController is what control statics
+    // override — flipping it is the honest way to fake a steal (ADR-033).
+    getObject(ctx.state, wurm).controller = 1;
+    getObject(ctx.state, wurm).baseController = 1;
     shrink(tg, wurm, 7);
     runSBAs(ctx);
     await tg.game.priorityRound();

@@ -1,0 +1,41 @@
+{
+  "id": "gravedigger",
+  "name": "Gravedigger",
+  "source": "real",
+  "manaCost": "{3}{B}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Zombie"
+  ],
+  "power": 2,
+  "toughness": 2,
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "condition": {
+        "source": "self"
+      },
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "creatureCardInYourGraveyard",
+          "zone": "graveyard"
+        }
+      ],
+      "effects": [
+        {
+          "type": "returnFromGraveyard",
+          "target": 0,
+          "to": "hand"
+        }
+      ],
+      "optional": true
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

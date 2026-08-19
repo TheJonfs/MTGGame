@@ -1,0 +1,33 @@
+{
+  "id": "control_magic",
+  "name": "Control Magic",
+  "source": "real",
+  "manaCost": "{2}{U}{U}",
+  "types": [
+    "Enchantment"
+  ],
+  "subtypes": [
+    "Aura"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "creature",
+      "zone": "battlefield"
+    }
+  ],
+  "abilities": [
+    {
+      "kind": "static",
+      "effects": [
+        {
+          "type": "gainControl",
+          "scope": "attached"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}
