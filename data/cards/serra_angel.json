@@ -1,0 +1,21 @@
+{
+  "id": "serra_angel",
+  "name": "Serra Angel",
+  "source": "real",
+  "manaCost": "{3}{W}{W}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Angel"
+  ],
+  "power": 4,
+  "toughness": 4,
+  "art": {
+    "fallback": "rendered"
+  },
+  "keywords": [
+    "flying",
+    "vigilance"
+  ]
+}

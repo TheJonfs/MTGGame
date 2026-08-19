@@ -1,0 +1,26 @@
+{
+  "id": "shock",
+  "name": "Shock",
+  "source": "real",
+  "manaCost": "{R}",
+  "types": [
+    "Instant"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "anyTarget",
+      "zone": "any"
+    }
+  ],
+  "spellEffect": [
+    {
+      "type": "damage",
+      "amount": 2,
+      "target": 0
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

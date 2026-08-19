@@ -1,0 +1,20 @@
+{
+  "id": "suntail_hawk",
+  "name": "Suntail Hawk",
+  "source": "real",
+  "manaCost": "{W}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Bird"
+  ],
+  "power": 1,
+  "toughness": 1,
+  "art": {
+    "fallback": "rendered"
+  },
+  "keywords": [
+    "flying"
+  ]
+}

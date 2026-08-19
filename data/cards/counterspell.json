@@ -1,0 +1,25 @@
+{
+  "id": "counterspell",
+  "name": "Counterspell",
+  "source": "real",
+  "manaCost": "{U}{U}",
+  "types": [
+    "Instant"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "spell",
+      "zone": "stack"
+    }
+  ],
+  "spellEffect": [
+    {
+      "type": "counter",
+      "target": 0
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

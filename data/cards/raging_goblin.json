@@ -1,0 +1,21 @@
+{
+  "id": "raging_goblin",
+  "name": "Raging Goblin",
+  "source": "real",
+  "manaCost": "{R}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Goblin",
+    "Berserker"
+  ],
+  "power": 1,
+  "toughness": 1,
+  "art": {
+    "fallback": "rendered"
+  },
+  "keywords": [
+    "haste"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "id": "pacifism",
+  "name": "Pacifism",
+  "source": "real",
+  "manaCost": "{1}{W}",
+  "types": [
+    "Enchantment"
+  ],
+  "subtypes": [
+    "Aura"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "creature",
+      "zone": "battlefield"
+    }
+  ],
+  "abilities": [
+    {
+      "kind": "static",
+      "effects": [
+        {
+          "type": "restrict",
+          "what": "both",
+          "scope": "attached",
+          "duration": "WHILE_SOURCE_ON_BATTLEFIELD"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": "divination",
+  "name": "Divination",
+  "source": "real",
+  "manaCost": "{2}{U}",
+  "types": [
+    "Sorcery"
+  ],
+  "spellEffect": [
+    {
+      "type": "draw",
+      "count": 2,
+      "who": "you"
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

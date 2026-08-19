@@ -1,0 +1,17 @@
+{
+  "id": "hill_giant",
+  "name": "Hill Giant",
+  "source": "real",
+  "manaCost": "{3}{R}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Giant"
+  ],
+  "power": 3,
+  "toughness": 3,
+  "art": {
+    "fallback": "rendered"
+  }
+}

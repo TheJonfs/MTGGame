@@ -1,0 +1,38 @@
+{
+  "id": "cloudkin_seer",
+  "name": "Cloudkin Seer",
+  "source": "real",
+  "manaCost": "{2}{U}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Elemental",
+    "Wizard"
+  ],
+  "power": 2,
+  "toughness": 1,
+  "art": {
+    "fallback": "rendered"
+  },
+  "keywords": [
+    "flying"
+  ],
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "condition": {
+        "self": true
+      },
+      "effects": [
+        {
+          "type": "draw",
+          "count": 1,
+          "who": "you"
+        }
+      ],
+      "optional": false
+    }
+  ]
+}

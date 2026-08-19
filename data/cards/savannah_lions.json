@@ -1,0 +1,17 @@
+{
+  "id": "savannah_lions",
+  "name": "Savannah Lions",
+  "source": "real",
+  "manaCost": "{W}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Cat"
+  ],
+  "power": 2,
+  "toughness": 1,
+  "art": {
+    "fallback": "rendered"
+  }
+}

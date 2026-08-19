@@ -1,0 +1,25 @@
+{
+  "id": "boomerang",
+  "name": "Boomerang",
+  "source": "real",
+  "manaCost": "{U}{U}",
+  "types": [
+    "Instant"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "permanent",
+      "zone": "battlefield"
+    }
+  ],
+  "spellEffect": [
+    {
+      "type": "bounce",
+      "target": 0
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

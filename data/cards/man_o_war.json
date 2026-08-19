@@ -1,0 +1,40 @@
+{
+  "id": "man_o_war",
+  "name": "Man-o'-War",
+  "source": "real",
+  "manaCost": "{2}{U}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Jellyfish"
+  ],
+  "power": 2,
+  "toughness": 2,
+  "art": {
+    "fallback": "rendered"
+  },
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "condition": {
+        "self": true
+      },
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "creature",
+          "zone": "battlefield"
+        }
+      ],
+      "effects": [
+        {
+          "type": "bounce",
+          "target": 0
+        }
+      ],
+      "optional": false
+    }
+  ]
+}

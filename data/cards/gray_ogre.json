@@ -1,0 +1,17 @@
+{
+  "id": "gray_ogre",
+  "name": "Gray Ogre",
+  "source": "real",
+  "manaCost": "{2}{R}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Ogre"
+  ],
+  "power": 2,
+  "toughness": 2,
+  "art": {
+    "fallback": "rendered"
+  }
+}
