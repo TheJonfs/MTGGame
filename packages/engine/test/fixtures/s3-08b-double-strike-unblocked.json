@@ -1,0 +1,40 @@
+{
+  "name": "Unblocked double striker deals damage in both steps",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "DECLARE_ATTACKERS",
+    "players": [
+      {
+        "battlefield": [
+          "fencing_ace",
+          {
+            "card": "bonesplitter",
+            "attachedTo": "fencing_ace"
+          }
+        ]
+      },
+      {}
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "attack",
+      "attackers": [
+        "fencing_ace"
+      ]
+    }
+  ],
+  "run": [
+    {
+      "steps": [
+        "DECLARE_ATTACKERS",
+        "DECLARE_BLOCKERS",
+        "FIRST_STRIKE_DAMAGE",
+        "COMBAT_DAMAGE",
+        "COMBAT_END"
+      ]
+    }
+  ]
+}

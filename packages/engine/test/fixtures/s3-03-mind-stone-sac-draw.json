@@ -1,0 +1,34 @@
+{
+  "name": "Mind Stone: {1},{T},sac: draw",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "mind_stone",
+          "island"
+        ],
+        "library": [
+          "island",
+          "island"
+        ]
+      },
+      {}
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "activate",
+      "card": "mind_stone",
+      "abilityIndex": 1
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

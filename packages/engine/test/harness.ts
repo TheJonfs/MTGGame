@@ -45,6 +45,37 @@ const TEST_CARDS: CardDef[] = [
     art: { fallback: "rendered" },
   },
   {
+    // Goblin with a DIES trigger, for the sacrifice-cost trigger fixture (S3-2).
+    id: "test_goblin_martyr",
+    name: "Test Goblin Martyr",
+    source: "custom",
+    manaCost: "{R}",
+    types: ["Creature"],
+    subtypes: ["Goblin"],
+    power: 1,
+    toughness: 1,
+    abilities: [
+      {
+        kind: "triggered",
+        event: "DIES",
+        condition: { self: true },
+        effects: [{ type: "draw", count: 1, who: "you" }],
+        optional: false,
+      },
+    ],
+    art: { fallback: "rendered" },
+  },
+  {
+    // Pyroclasm-style mass damage (the real card is M3; hexproof fixture needs the behavior).
+    id: "test_pyroclasm",
+    name: "Test Pyroclasm",
+    source: "custom",
+    manaCost: "{1}{R}",
+    types: ["Sorcery"],
+    spellEffect: [{ type: "damageAll", amount: 2, scope: "allCreatures" }],
+    art: { fallback: "rendered" },
+  },
+  {
     id: "test_pinger",
     name: "Test Pinger",
     source: "custom",
@@ -93,6 +124,7 @@ export type ScriptEntry =
   | { player: PlayerId; do: "activate"; card: string; abilityIndex: number; targets?: TargetDesc[]; x?: number }
   | { player: PlayerId; do: "chooseTriggerTargets"; targets: TargetDesc[] }
   | { player: PlayerId; do: "orderTrigger"; card: string }
+  | { player: PlayerId; do: "sacrificeChoice"; card: string }
   | { player: PlayerId; do: "orderBlocker"; blocker: string }
   | { player: PlayerId; do: "bottom"; card: string }
   | { player: PlayerId; do: "discard"; card: string };
@@ -102,6 +134,8 @@ export interface BattlefieldEntry {
   attachedTo?: string;
   tapped?: boolean;
   summoningSick?: boolean;
+  /** Create as a token (ceases to exist on leaving the battlefield). */
+  token?: boolean;
 }
 
 export interface FixturePlayerSetup {
@@ -158,6 +192,7 @@ export class TestGame {
         const e: BattlefieldEntry = typeof entry === "string" ? { card: entry } : entry;
         const id = createObject(this.game.ctx, e.card, player, "battlefield", {
           ...(e.attachedTo ? { attachedTo: this.findBattlefield(e.attachedTo) } : {}),
+          ...(e.token ? { isToken: true } : {}),
         });
         const obj = getObject(state, id);
         obj.tapped = e.tapped ?? false;
@@ -206,7 +241,31 @@ export class TestGame {
 
   // ---------- scripted decisions ----------
 
+  /**
+   * Consume attack/block entries whose declarations were completed by a
+   * forced (single-option, silent) action that never reached decide().
+   */
+  gcScript(): void {
+    for (;;) {
+      const head = this.script[0];
+      if (!head) return;
+      const state = this.game.state;
+      const cardIdOf = (objectId: string) => getObject(state, objectId).cardId;
+      let satisfied = false;
+      if (head.do === "attack") {
+        satisfied = TestGame.missing(head.attackers, state.combat.attackers.map(cardIdOf)).length === 0;
+      } else if (head.do === "block") {
+        const staged = state.combat.blocks.map((b) => `${cardIdOf(b.blocker)}->${cardIdOf(b.attacker)}`);
+        satisfied = TestGame.missing(head.blocks.map((b) => `${b.blocker}->${b.attacker}`), staged).length === 0;
+      }
+      if (!satisfied) return;
+      this.script.shift();
+      this.consumed.push(head);
+    }
+  }
+
   private decide(req: ActionRequest): Action {
+    this.gcScript();
     const head = this.script[0];
     if (head && head.player === req.player) {
       const match = this.matchAction(head, req.actions);
@@ -300,6 +359,8 @@ export class TestGame {
       }
       case "orderTrigger":
         return one(actions.find((a) => a.type === "orderTrigger" && a.cardId === entry.card));
+      case "sacrificeChoice":
+        return one(actions.find((a) => a.type === "sacrifice" && cardIdOf(a.objectId) === entry.card));
       case "orderBlocker":
         return one(actions.find((a) => a.type === "orderBlocker" && cardIdOf(a.blocker) === entry.blocker));
       case "bottom":
@@ -313,6 +374,7 @@ export class TestGame {
 export async function runFixture(spec: FixtureSpec): Promise<TestGame> {
   const tg = new TestGame(spec);
   await tg.run(spec);
+  tg.gcScript();
   if (tg.consumed.length !== (spec.script ?? []).length) {
     const missed = (spec.script ?? []).slice(tg.consumed.length);
     throw new Error(`Fixture "${spec.name}": ${missed.length} script entries never matched: ${JSON.stringify(missed)}`);

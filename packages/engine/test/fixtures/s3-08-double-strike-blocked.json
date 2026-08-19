@@ -1,0 +1,54 @@
+{
+  "name": "Fencing Ace + Bonesplitter vs a 3/3: kills in first-strike step, unharmed",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "DECLARE_ATTACKERS",
+    "players": [
+      {
+        "battlefield": [
+          "fencing_ace",
+          {
+            "card": "bonesplitter",
+            "attachedTo": "fencing_ace"
+          }
+        ]
+      },
+      {
+        "battlefield": [
+          "centaur_courser"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "attack",
+      "attackers": [
+        "fencing_ace"
+      ]
+    },
+    {
+      "player": 1,
+      "do": "block",
+      "blocks": [
+        {
+          "blocker": "centaur_courser",
+          "attacker": "fencing_ace"
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "steps": [
+        "DECLARE_ATTACKERS",
+        "DECLARE_BLOCKERS",
+        "FIRST_STRIKE_DAMAGE",
+        "COMBAT_DAMAGE",
+        "COMBAT_END"
+      ]
+    }
+  ]
+}

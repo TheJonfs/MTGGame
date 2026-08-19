@@ -1,0 +1,35 @@
+{
+  "name": "Siege-Gang ETB: three red Goblin tokens",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "mountain",
+          "mountain",
+          "mountain",
+          "mountain",
+          "mountain"
+        ],
+        "hand": [
+          "siege_gang_commander"
+        ]
+      },
+      {}
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "siege_gang_commander"
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

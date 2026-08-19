@@ -1,0 +1,54 @@
+{
+  "name": "Warhammer'd 2/2: 5/2 trample lifelink through a 1/1 chump",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "DECLARE_ATTACKERS",
+    "players": [
+      {
+        "battlefield": [
+          "gray_ogre",
+          {
+            "card": "loxodon_warhammer",
+            "attachedTo": "gray_ogre"
+          }
+        ]
+      },
+      {
+        "battlefield": [
+          "raging_goblin"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "attack",
+      "attackers": [
+        "gray_ogre"
+      ]
+    },
+    {
+      "player": 1,
+      "do": "block",
+      "blocks": [
+        {
+          "blocker": "raging_goblin",
+          "attacker": "gray_ogre"
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "steps": [
+        "DECLARE_ATTACKERS",
+        "DECLARE_BLOCKERS",
+        "FIRST_STRIKE_DAMAGE",
+        "COMBAT_DAMAGE",
+        "COMBAT_END"
+      ]
+    }
+  ]
+}

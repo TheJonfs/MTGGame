@@ -1,0 +1,53 @@
+{
+  "name": "Siege-Gang activation: sac a token for 2 to the face",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "siege_gang_commander",
+          {
+            "card": "goblin_1_1",
+            "token": true
+          },
+          {
+            "card": "goblin_1_1",
+            "token": true
+          },
+          {
+            "card": "goblin_1_1",
+            "token": true
+          },
+          "mountain",
+          "mountain"
+        ]
+      },
+      {}
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "activate",
+      "card": "siege_gang_commander",
+      "abilityIndex": 1,
+      "targets": [
+        {
+          "player": 1
+        }
+      ]
+    },
+    {
+      "player": 0,
+      "do": "sacrificeChoice",
+      "card": "goblin_1_1"
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

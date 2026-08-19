@@ -1,0 +1,50 @@
+{
+  "name": "Blurred Mongoose: Counterspell targets it, resolves, does nothing",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "forest",
+          "forest"
+        ],
+        "hand": [
+          "blurred_mongoose"
+        ]
+      },
+      {
+        "battlefield": [
+          "island",
+          "island"
+        ],
+        "hand": [
+          "counterspell"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "blurred_mongoose"
+    },
+    {
+      "player": 1,
+      "do": "cast",
+      "card": "counterspell",
+      "targets": [
+        {
+          "spell": "blurred_mongoose"
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

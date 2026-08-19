@@ -8,6 +8,7 @@ export * from "./mana.js";
 export * from "./targeting.js";
 export * from "./ops.js";
 export * from "./sba.js";
+export * from "./sacrifice.js";
 export * from "./combat.js";
 export * from "./effect-context.js";
 export * from "./triggers.js";

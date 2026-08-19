@@ -1,0 +1,53 @@
+{
+  "name": "Deadly Recluse blocks Pelakka: lethal 2 assigned, 5 over; deathtouch kills the wurm",
+  "setup": {
+    "turn": 4,
+    "active": 1,
+    "step": "DECLARE_ATTACKERS",
+    "players": [
+      {
+        "battlefield": [
+          "deadly_recluse"
+        ]
+      },
+      {
+        "battlefield": [
+          "pelakka_wurm"
+        ],
+        "library": [
+          "forest"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 1,
+      "do": "attack",
+      "attackers": [
+        "pelakka_wurm"
+      ]
+    },
+    {
+      "player": 0,
+      "do": "block",
+      "blocks": [
+        {
+          "blocker": "deadly_recluse",
+          "attacker": "pelakka_wurm"
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "steps": [
+        "DECLARE_ATTACKERS",
+        "DECLARE_BLOCKERS",
+        "FIRST_STRIKE_DAMAGE",
+        "COMBAT_DAMAGE",
+        "COMBAT_END"
+      ]
+    }
+  ]
+}

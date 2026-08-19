@@ -1,0 +1,47 @@
+{
+  "name": "Sacrifice during cost payment fires the DIES trigger before the ability resolves",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "siege_gang_commander",
+          "test_goblin_martyr",
+          "mountain",
+          "mountain"
+        ],
+        "hand": [],
+        "library": [
+          "mountain",
+          "mountain"
+        ]
+      },
+      {}
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "activate",
+      "card": "siege_gang_commander",
+      "abilityIndex": 1,
+      "targets": [
+        {
+          "player": 1
+        }
+      ]
+    },
+    {
+      "player": 0,
+      "do": "sacrificeChoice",
+      "card": "test_goblin_martyr"
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

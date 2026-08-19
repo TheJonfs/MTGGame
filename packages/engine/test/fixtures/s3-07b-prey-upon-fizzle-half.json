@@ -1,0 +1,59 @@
+{
+  "name": "Prey Upon with the opponent's creature bounced: no damage either way (ADR-022)",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "grizzly_bears",
+          "forest"
+        ],
+        "hand": [
+          "prey_upon"
+        ]
+      },
+      {
+        "battlefield": [
+          "savannah_lions",
+          "island",
+          "island"
+        ],
+        "hand": [
+          "boomerang"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "prey_upon",
+      "targets": [
+        {
+          "object": "grizzly_bears"
+        },
+        {
+          "object": "savannah_lions"
+        }
+      ]
+    },
+    {
+      "player": 1,
+      "do": "cast",
+      "card": "boomerang",
+      "targets": [
+        {
+          "object": "savannah_lions"
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "name": "Warhammer'd Recluse (trample+deathtouch): 1 is lethal per blocker, rest tramples, lifelink",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "DECLARE_ATTACKERS",
+    "players": [
+      {
+        "battlefield": [
+          "deadly_recluse",
+          {
+            "card": "loxodon_warhammer",
+            "attachedTo": "deadly_recluse"
+          }
+        ]
+      },
+      {
+        "battlefield": [
+          "rumbling_baloth"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "attack",
+      "attackers": [
+        "deadly_recluse"
+      ]
+    },
+    {
+      "player": 1,
+      "do": "block",
+      "blocks": [
+        {
+          "blocker": "rumbling_baloth",
+          "attacker": "deadly_recluse"
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "steps": [
+        "DECLARE_ATTACKERS",
+        "DECLARE_BLOCKERS",
+        "FIRST_STRIKE_DAMAGE",
+        "COMBAT_DAMAGE",
+        "COMBAT_END"
+      ]
+    }
+  ]
+}
