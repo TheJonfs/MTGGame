@@ -69,32 +69,33 @@ Status: `planned` / `implemented` / `tested` / `cut`.
 
 | cardId | name | status | vocabulary | notes |
 |---|---|---|---|---|
-| swamp | Swamp | planned | addMana | |
-| doom_blade | Doom Blade | planned | destroy(nonblack creature) | |
-| terror | Terror | planned | destroy(nonartifact nonblack creature) | regeneration clause ignored |
-| swords_to_plowshares | Swords to Plowshares | planned | exile, gainLife(ref targetPower, controllerOfTarget) | ADR-028 |
-| wrath_of_god | Wrath of God | planned | destroyAll | |
-| pyroclasm | Pyroclasm | planned | damageAll(2) | |
-| duress | Duress | planned | discard(casterChooses, filter noncreature nonland) | ADR-029 |
-| mind_rot | Mind Rot | planned | discard(ownerChooses, 2) | |
-| hymn_to_tourach | Hymn to Tourach | planned | discard(random, 2) | power level flagged for later curation |
-| phyrexian_rager | Phyrexian Rager | planned | triggered(ETB) draw + loseLife | |
-| nekrataal | Nekrataal | planned | first strike, triggered(ETB) destroy(targeted) | |
-| vampire_nighthawk | Vampire Nighthawk | planned | flying, deathtouch, lifelink | keyword composition |
-| child_of_night | Child of Night | planned | lifelink | |
-| typhoid_rats | Typhoid Rats | planned | deathtouch | |
-| goblin_chieftain | Goblin Chieftain | planned | haste, static modifyPT + grantKeyword scope{creaturesYouControl, Goblin, other} | ADR-020 first user |
-| curiosity | Curiosity | planned | aura, triggered(DEALS_DAMAGE_TO_PLAYER, source attached, player opponentOfController, optional) draw | ADR-021/027 first user |
+| swamp | Swamp | tested | addMana | |
+| doom_blade | Doom Blade | tested | destroy(nonblack creature) | S4 fixture 1, 1b |
+| terror | Terror | tested | destroy(nonartifact nonblack creature) | regeneration clause ignored; fixture 1 |
+| swords_to_plowshares | Swords to Plowshares | tested | exile, gainLife(ref targetPower, controllerOfTarget) | ADR-028; fixtures 2, 2b |
+| wrath_of_god | Wrath of God | tested | destroyAll | fixture 3 |
+| pyroclasm | Pyroclasm | tested | damageAll(2) | fixture 4 |
+| duress | Duress | tested | discard(casterChooses, filter noncreature nonland) | ADR-029; fixtures 5, 5b; targets opponentPlayer (new predicate) |
+| mind_rot | Mind Rot | tested | discard(ownerChooses, 2) | fixtures 6, 6b |
+| hymn_to_tourach | Hymn to Tourach | tested | discard(random, 2) | power level flagged for later curation; fixture 7 |
+| phyrexian_rager | Phyrexian Rager | tested | triggered(ETB) draw + loseLife | fixture 8; first loseLife user |
+| nekrataal | Nekrataal | tested | first strike, triggered(ETB) destroy(targeted) | fixture 9; 603.3d path |
+| vampire_nighthawk | Vampire Nighthawk | tested | flying, deathtouch, lifelink | keyword composition; fixture 12 |
+| child_of_night | Child of Night | tested | lifelink | fixture 2 |
+| typhoid_rats | Typhoid Rats | tested | deathtouch | fixtures 4, 9 |
+| goblin_chieftain | Goblin Chieftain | tested | haste, static modifyPT + grantKeyword scope{creaturesYouControl, Goblin, other} | ADR-020 first user; fixture 10 |
+| curiosity | Curiosity | tested | aura, triggered(DEALS_DAMAGE_TO_PLAYER, source attached, player opponentOfController, optional) draw | ADR-021/027 first user; fixtures 11a-c |
 
 ## Ceiling anchors (not yet scheduled)
 Mystic Snake, Control Magic, Drana Kalastria Bloodchief, Rancor, Zombify, Gravedigger.
 
-## Slice decklists (S3 brief Part 3; 40 cards each)
-- **A red:** 17 Mountain, 4 Raging Goblin, 3 Goblin Piker, 1 Hill Giant, 3 Lightning Bolt, 2 Shock, 1 Brute Force, 2 Blaze, 3 Boggart Brute, 2 Siege-Gang Commander, 2 Bonesplitter.
-- **B white-blue:** 8 Plains, 9 Island, 3 Savannah Lions, 1 Suntail Hawk, 1 Wind Drake, 2 Serra Angel, 2 Man-o'-War, 2 Cloudkin Seer, 2 Counterspell, 1 Pacifism, 1 Raise the Alarm, 1 Glorious Anthem, 3 Fencing Ace, 1 Loxodon Warhammer, 2 Mind Stone, 1 Darksteel Myr.
+## Slice decklists (S4 brief Part 3; 40 cards each)
+- **A red:** 17 Mountain, 4 Raging Goblin, 2 Goblin Piker, 3 Lightning Bolt, 2 Shock, 2 Blaze, 3 Boggart Brute, 2 Siege-Gang Commander, 2 Bonesplitter, 2 Goblin Chieftain, 1 Pyroclasm.
+- **B white-blue:** 8 Plains, 9 Island, 2 Savannah Lions, 2 Serra Angel, 2 Man-o'-War, 2 Cloudkin Seer, 2 Counterspell, 1 Pacifism, 1 Raise the Alarm, 1 Glorious Anthem, 3 Fencing Ace, 1 Loxodon Warhammer, 1 Mind Stone, 2 Swords to Plowshares, 1 Wrath of God, 2 Curiosity.
 - **C green:** 17 Forest, 1 Grizzly Bears, 3 Elvish Visionary, 3 Timberland Guide, 2 Centaur Courser, 2 Rumbling Baloth, 2 Pelakka Wurm, 2 Giant Growth, 3 Prey Upon, 2 Deadly Recluse, 2 Gladecover Scout, 1 Blurred Mongoose.
+- **D black (new, S4):** 17 Swamp, 3 Typhoid Rats, 3 Child of Night, 3 Vampire Nighthawk, 3 Phyrexian Rager, 3 Nekrataal, 2 Doom Blade, 2 Terror, 2 Duress, 1 Mind Rot, 1 Hymn to Tourach.
 
-(Gray Ogre and Boomerang rotated out of the decks; both remain `tested` pool members.)
+(Rotated out of decks but still `tested` pool members: Gray Ogre, Boomerang, Hill Giant, Brute Force, Suntail Hawk, Wind Drake, Darksteel Myr.)
 
 ## Test-only cards (not pool members)
 `test_fs_soldier` (first strike body), `test_pinger` ({1},T: 1 damage), `test_wrath` ({2} sorcery, destroy all creatures), `test_goblin_martyr` ({R} 1/1 Goblin, dies: draw), `test_pyroclasm` ({1}{R} sorcery, 2 to all creatures) — live in the engine test harness, never in `data/cards/`. Per ADR-018 they are permanent fixtures: engine tests never depend on pool membership.
