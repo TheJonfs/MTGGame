@@ -1,0 +1,64 @@
+{
+  "entities": {
+    "icon-zone-graveyard": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:795ed8465f1cdccaa9027583fa10156ebdab29d1592cb9c4e45130f52106891f",
+      "renders": {
+        "canonical": {
+          "conditioned_on": "assets/images/icon-zone-graveyard/canonical.png",
+          "descriptor_hash": "sha256:795ed8465f1cdccaa9027583fa10156ebdab29d1592cb9c4e45130f52106891f",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/icon-zone-graveyard/canonical.png",
+          "rendered_at": "2026-08-19T19:04:15+00:00",
+          "thumb": "assets/thumbs/icon-zone-graveyard/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-female": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:38a35b3ad1227de328d697424e64f8f2af4b8adf8fe820804b09a34a42d43531",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:38a35b3ad1227de328d697424e64f8f2af4b8adf8fe820804b09a34a42d43531",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-female/canonical.png",
+          "rendered_at": "2026-08-19T19:04:33+00:00",
+          "thumb": "assets/thumbs/portrait-mage-female/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-you": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:ccbb94ad613105c0efa425a737d4d4fd44445a1ca94d73ebd3b8702819dc5923",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:ccbb94ad613105c0efa425a737d4d4fd44445a1ca94d73ebd3b8702819dc5923",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-you/canonical.png",
+          "rendered_at": "2026-08-19T18:57:48+00:00",
+          "thumb": "assets/thumbs/portrait-you/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "surface-wood": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:febdb4d8b3c4b115c57cd76c1871105c14a723841527e107267c122e55789bdc",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:febdb4d8b3c4b115c57cd76c1871105c14a723841527e107267c122e55789bdc",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/surface-wood/canonical.png",
+          "rendered_at": "2026-08-19T19:05:21+00:00",
+          "thumb": "assets/thumbs/surface-wood/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    }
+  }
+}

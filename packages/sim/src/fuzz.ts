@@ -1,3 +1,5 @@
+import { writeFileSync, mkdirSync } from "node:fs";
+import { join } from "node:path";
 import { loadCardPool, type CardDef } from "@shandalar/cards";
 import { runMatch, type MatchResult, type MatchSpec } from "@shandalar/engine";
 import { RandomAgent } from "@shandalar/agents";
@@ -40,6 +42,20 @@ export async function runPairingMatch(
   return runMatch(matchSpec(seed, a, b), cards, agents);
 }
 
+/** Saved-game file format the viewer loads (S6). */
+export function savedGame(spec: MatchSpec, result: MatchResult): string {
+  return JSON.stringify(
+    {
+      format: "shandalar-log-v1",
+      spec,
+      result: { winner: result.winner, reason: result.reason, turns: result.turns, finalLife: result.finalLife },
+      log: result.log,
+    },
+    null,
+    1,
+  );
+}
+
 export async function fuzzPairing(
   cards: Map<string, CardDef>,
   a: DeckKey,
@@ -47,6 +63,7 @@ export async function fuzzPairing(
   games: number,
   startSeed: number,
   onProgress?: (i: number) => void,
+  saveDir?: string,
 ): Promise<PairingReport> {
   const terminations: Record<string, number> = {};
   const errors: { seed: number; message: string }[] = [];
@@ -60,6 +77,10 @@ export async function fuzzPairing(
       terminations[result.reason] = (terminations[result.reason] ?? 0) + 1;
       totalTurns += result.turns;
       completed += 1;
+      if (saveDir) {
+        mkdirSync(saveDir, { recursive: true });
+        writeFileSync(join(saveDir, `${a}-${b}-${seed}.json`), savedGame(matchSpec(seed, a, b), result));
+      }
     } catch (e) {
       errors.push({ seed, message: (e as Error).stack ?? String(e) });
     }
@@ -81,12 +102,13 @@ export async function fuzz(
   gamesPerPairing: number,
   startSeed: number,
   onProgress?: (pairing: string, i: number) => void,
+  saveDir?: string,
 ): Promise<FuzzReport> {
   const pool = loadCardPool(cardsDir);
   const pairings: PairingReport[] = [];
   for (const [a, b] of PAIRINGS) {
     pairings.push(
-      await fuzzPairing(pool.cards, a, b, gamesPerPairing, startSeed, (i) => onProgress?.(`${a}-${b}`, i)),
+      await fuzzPairing(pool.cards, a, b, gamesPerPairing, startSeed, (i) => onProgress?.(`${a}-${b}`, i), saveDir),
     );
   }
   return {

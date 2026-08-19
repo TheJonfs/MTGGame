@@ -14,7 +14,9 @@ export type RngLogValue =
 export type ActionLogEntry<A> =
   | { t: "ACTION"; turn: number; step: string; player: number; action: A }
   | { t: "RNG"; purpose: RngPurpose; value: RngLogValue }
-  | { t: "EVENT"; name: string; payload: unknown };
+  /** seq/afterAction (ADR-040): stamped by ArrayLog so viewers can align events
+   *  to the action timeline without re-simulating. Replay ignores EVENT entries. */
+  | { t: "EVENT"; name: string; payload: unknown; seq?: number; afterAction?: number };
 
 /** Anything that accepts log entries; the engine owns the actual array. */
 export interface LogSink<A> {
@@ -23,7 +25,15 @@ export interface LogSink<A> {
 
 export class ArrayLog<A> implements LogSink<A> {
   readonly entries: ActionLogEntry<A>[] = [];
+  private eventSeq = 0;
+  private actionCount = 0;
   append(entry: ActionLogEntry<A>): void {
+    if (entry.t === "ACTION") this.actionCount += 1;
+    if (entry.t === "EVENT") {
+      // afterAction = index of the last ACTION entry emitted before this event
+      // (-1 for pre-game events such as setup zone changes).
+      entry = { ...entry, seq: this.eventSeq++, afterAction: this.actionCount - 1 };
+    }
     this.entries.push(entry);
   }
 }

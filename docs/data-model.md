@@ -106,10 +106,21 @@ Modifiers must be expressible in the same effect vocabulary as cards; no modifie
 type ActionLogEntry =
   | { t: "ACTION", turn, step, player, action: Action }
   | { t: "RNG", purpose: "shuffle"|"discard"|"coin", value }
-  | { t: "EVENT", name, payload }          // optional, for viewers; not needed for replay
+  | { t: "EVENT", name, payload, seq, afterAction }   // viewers only (ADR-040); not needed for replay
 ```
 Ordering/choice actions (`orderTrigger`, `orderBlocker`, …) carry the source **object id** as well as cardId so logs are human-readable (S3). Replay consumes ACTION and RNG entries only. Per ADR-014, single-option decisions are not logged; `EVENT` entries are the full transcript for viewers.
 
 ## 7. Pool registry row
 
 `| cardId | status (planned/implemented/tested/cut) | vocabulary words | sessions | notes |`
+
+## 8. Fixtures inbox entry (ADR-040)
+
+`fixtures-inbox/<seed>-t<turn>-a<actionIndex>.json`:
+```ts
+{ matchSpec: MatchSpec; actionIndex: number; turn: number; step: string;
+  note: string;                 // free text from the flagger ("why did Piker not block?")
+  expected?: string;            // optional: what the flagger thinks should have happened
+  flaggedAt: string; viewerVersion: string; }
+```
+A later session reads the inbox, reproduces via `replay(matchSpec.seed…, actionIndex)`, and either files a scenario fixture (and a rules-registry note) or records "working as intended" in the entry and moves it to `fixtures-inbox/closed/`.

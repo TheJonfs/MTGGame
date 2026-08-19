@@ -12,12 +12,14 @@ function arg(name: string, fallback: number): number {
 
 const games = arg("games", 100); // per pairing
 const seed = arg("seed", 1);
+const saveIdx = process.argv.indexOf("--save");
+const saveDir = saveIdx !== -1 ? process.argv[saveIdx + 1] : undefined;
 const cardsDir = join(dirname(fileURLToPath(import.meta.url)), "../../../data/cards");
 
 const started = Date.now();
 const report = await fuzz(cardsDir, games, seed, (pairing, i) => {
   if (i % 250 === 0) process.stderr.write(`  ${pairing}: ${i}/${games}\n`);
-});
+}, saveDir);
 const elapsed = ((Date.now() - started) / 1000).toFixed(1);
 
 console.log(`\nFuzz: ${report.totalGames} games (${games} per pairing) in ${elapsed}s, seeds ${seed}..${seed + games - 1}`);

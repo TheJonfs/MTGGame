@@ -3,3 +3,6 @@ dist/
 data/art/real/
 results/
 .DS_Store
+
+# Secrets
+.env

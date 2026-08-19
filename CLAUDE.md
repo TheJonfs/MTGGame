@@ -52,6 +52,10 @@ At session end, **overwrite `handoff.md`** using the template at the bottom of t
 - `docs/registries/rules-registry.md` — R-numbered entries: which Comprehensive Rules mechanics we implement, how, and known simplifications. Repo-canonical; you append, planner reviews.
 - `docs/registries/pool-registry.md` — the card pool: every card's status (planned / implemented / tested / cut) and the vocabulary words it uses. Repo-canonical.
 - `docs/briefs/` — numbered session briefs; never edit existing ones.
+- `docs/art-direction.md`, `docs/prompts/*.md`, `docs/art/printings.md` — visual direction, generation prompts, Scryfall printing rules. Planner-maintained.
+- `.claude/skills/imagegen/` — image generation skill (Gemini). Read its SKILL.md before generating assets.
+- `assets/generated/` — generated art (committed) with `MANIFEST.md`. `data/art/real/` — Scryfall images (gitignored).
+- `fixtures-inbox/` — flagged replay moments awaiting triage (data-model §8).
 - `packages/` — TypeScript monorepo (see engine-design §1). Tests: `pnpm test` = smoke fuzz; `FUZZ_FULL=1 pnpm test` = full (ADR-034).
 - `data/cards/` — card definition files. `data/art/` — images (gitignored except custom-card folder).
 - `assets/` (later) — build-time fetched art.

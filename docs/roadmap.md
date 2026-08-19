@@ -15,4 +15,4 @@ Milestones are engine-facing until M6. Each milestone is one or two sessions.
 | M6 | Overworld manifest + first slice | Separate manifest; map, one quest, one shop, collection; calls `runMatch` with modifiers. | One loop: travel → duel → reward. |
 | M7+ | AI v2, pool to ~150, overworld depth, replay viewer | | |
 
-Status: M3a complete (S4, 2026-08-19). Session 5 brief cut (M3b). After S5 the ceiling is fully implemented; M3.5 (replay viewer) follows.
+Status: **M3 complete — ceiling implemented (S5, 2026-08-19).** Session 6 brief cut (M3.5: viewer + art pass + Scryfall fetch). Pool growth to ~100 can interleave as card-batch sessions from here on.

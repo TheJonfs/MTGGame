@@ -9,7 +9,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc -p tsconfig.json",
-    "fuzz": "tsx packages/sim/src/fuzz-cli.ts"
+    "fuzz": "tsx packages/sim/src/fuzz-cli.ts",
+    "play-random": "tsx packages/sim/src/play-random-cli.ts",
+    "art:fetch": "tsx scripts/art-fetch.ts"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

@@ -75,3 +75,13 @@ Planner-maintained. Implementer proposes via handoff Concerns; planner records.
 **ADR-035 — Ratifications from S4:** fixture 12 was a planner rules error (Nighthawk flies, 702.9c); fixture 9's second target; `opponentPlayer` predicate; `damageAll`/`destroyAll` precedent stands. B–D decking rate accepted as a baselining data point; no deck tuning for fuzz speed.
 
 **ADR-036 — Deck E (Simic) joins the slice** so Mystic Snake and Curiosity-on-fliers get fuzz coverage; ten pairings.
+
+**ADR-037 — Ceiling complete (S5).** Every mechanic in mechanics-manifest §3 has a tested pool card. Vocabulary is frozen; further pool growth is card batches. Any new word requires a manifest amendment first.
+
+**ADR-038 — "Own graveyard only" is load-bearing.** Graveyard target candidates are enumerated from the targeting player's own graveyard; opponent-graveyard targeting would require generalizing `targetCandidates`. The manifest exclusion stands and is now an architectural assumption, not just curation. (S5 concern 3.)
+
+**ADR-039 — Control model has two inputs** (`baseController`, control statics) and a documented test convention (set both to stage a steal). A Threaten-style timed override would be a third input and needs its own ADR before any card enters. (S5 concern 4.)
+
+**ADR-040 — Event sequencing and the fixtures inbox.** EVENT log entries carry `seq` (monotonic) and `afterAction` (index of the last ACTION entry before them) so viewers can align events to the action timeline without re-simulating. The viewer's "flag this" writes `fixtures-inbox/<seed>-t<turn>-a<index>.json` per data-model §8; a later session converts inbox entries into scenario fixtures. (S5 suggested-next a/b.)
+
+**ADR-041 — Ratifications from S5:** deviations 1–2; no `characteristics()` caching until M4 measures it hot; legend-rule keep-choice at end of SBA pass accepted (704.3 nuance unobservable with current pool); B–D deck-out rate accepted as matchup property.

@@ -2,6 +2,12 @@
 
 Planner-maintained. Read before any UI or asset work (M3.5 onward). The replay viewer is the seed of the game UI; design it as the game.
 
+## 0. Decisions (2026-08-19)
+
+- **Style: ink and wash.** Warm black ink line art with limited watercolor washes (2–3 colors per image). Applies to portraits, icons, UI ornament, surfaces, the card frame, and later the overworld map. Rationale: sits beside painterly card art as a different layer rather than a weaker imitation; scales from icon to map; field-notebook/cartographic lineage suits a traveling-wizard world.
+- **Surface: aged wood**, warm and slightly desaturated, with parchment panels. Not felt.
+- **One frame, ours, for every card.** Real cards render in our ink-and-parchment frame with the real `art_crop` set in; the printed card (`normal` image) is available in the inspector. Unifies the table, makes custom cards first-class, and makes printing selection purely an art choice.
+
 ## 1. Direction: tabletop
 
 Warm, physical, card-first. The cards are the art; the chrome recedes. Not a dark-mode dashboard: saturated but restrained colors, a real-feeling play surface, panels that read as objects on or beside the table (a ledger, a stack of cards, a life counter) rather than as UI widgets. Lineage is Shandalar's table without 1997's chunkiness; contrast is the SFB viewer, which is deliberately analytic and cool — this is not that.
@@ -25,7 +31,7 @@ Board left ≈ 2/3, rail right ≈ 1/3. Bottom row: transport/controls (replay) 
 ## 3. Card presentation
 
 - Battlefield: art crop + name strip + P/T badge (counters and EOT modifiers reflected in the badge, delta-colored); tapped = rotated 90°; summoning sick = desaturated; attacking/blocking = moved to the lane; attached auras/equipment sit beside their host at reduced width.
-- Hand and inspector: full frame. Real cards use the Scryfall `normal` image; cards without art and the inspector's oracle text use the rendered-fallback frame (ADR-008) so typography is ours.
+- Hand and inspector: full frame — **always our frame** (ADR-008's rendered frame is now the only frame) with the Scryfall `art_crop` as art. Inspector offers a "printed card" toggle showing the `normal` image.
 - Hover anywhere → inspector updates. Click → pins.
 
 ## 4. Iconography (generate via the imagegen skill; SVG-traceable, single-color, 24px grid)
@@ -45,4 +51,4 @@ Each seat has a portrait (opponent portraits are overworld content later; for th
 
 ## 7. Open decisions for concepting
 
-Felt vs wood; log placement; whether the rendered-fallback frame imitates a classic frame shape or is our own design (lean: our own, so custom cards don't look like counterfeits); portrait style (painterly vs woodcut vs flat).
+Log placement (rail tab vs bottom row). Everything else in this section is decided (§0).
