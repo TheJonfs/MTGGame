@@ -1,0 +1,54 @@
+{
+  "name": "Rancor's host dies in combat: Rancor visits the graveyard and returns to hand",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "DECLARE_ATTACKERS",
+    "players": [
+      {
+        "battlefield": [
+          "grizzly_bears",
+          {
+            "card": "rancor",
+            "attachedTo": "grizzly_bears"
+          }
+        ]
+      },
+      {
+        "battlefield": [
+          "centaur_courser"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "attack",
+      "attackers": [
+        "grizzly_bears"
+      ]
+    },
+    {
+      "player": 1,
+      "do": "block",
+      "blocks": [
+        {
+          "blocker": "centaur_courser",
+          "attacker": "grizzly_bears"
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "steps": [
+        "DECLARE_ATTACKERS",
+        "DECLARE_BLOCKERS",
+        "FIRST_STRIKE_DAMAGE",
+        "COMBAT_DAMAGE",
+        "COMBAT_END"
+      ]
+    }
+  ]
+}

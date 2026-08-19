@@ -1,0 +1,40 @@
+{
+  "name": "Drana X=3 on herself: 7/1",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "drana_kalastria_bloodchief",
+          "swamp",
+          "swamp",
+          "swamp",
+          "swamp",
+          "swamp"
+        ]
+      },
+      {}
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "activate",
+      "card": "drana_kalastria_bloodchief",
+      "abilityIndex": 0,
+      "x": 3,
+      "targets": [
+        {
+          "object": "drana_kalastria_bloodchief"
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

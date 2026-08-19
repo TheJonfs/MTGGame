@@ -1,0 +1,72 @@
+{
+  "name": "Snake counters the Counterspell aimed at Serra Angel",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "plains",
+          "plains",
+          "plains",
+          "plains",
+          "plains",
+          "forest",
+          "forest",
+          "island",
+          "island"
+        ],
+        "hand": [
+          "serra_angel",
+          "mystic_snake"
+        ]
+      },
+      {
+        "battlefield": [
+          "island",
+          "island"
+        ],
+        "hand": [
+          "counterspell"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "serra_angel"
+    },
+    {
+      "player": 1,
+      "do": "cast",
+      "card": "counterspell",
+      "targets": [
+        {
+          "spell": "serra_angel"
+        }
+      ]
+    },
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "mystic_snake"
+    },
+    {
+      "player": 0,
+      "do": "chooseTriggerTargets",
+      "targets": [
+        {
+          "spell": "counterspell"
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

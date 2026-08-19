@@ -1,66 +1,66 @@
-# Handoff — after Session 04 (2026-08-19)
+# Handoff — after Session 05 (2026-08-19)
 
 ## State of the world
 
-M3a is done: the removal suite (targeted, mass, exile-with-value-ref), all three discard modes, the first trigger conditions beyond `self`, optional triggers, parameterized static scopes, and the ATTACHED event are all live, and mono-black Deck D brings the pool to 58 cards + 2 tokens, everything `tested`. Six pairings fuzz clean (500/pairing in the committed suite, 1,000/pairing CLI — 6,000 games, zero exceptions), replay byte-identical ×3 seeds ×6 pairings. 109 tests green. Every S4 mechanic slotted into existing machinery — the condition object, scope parameters, and value refs all landed as data extensions to structures that already existed, which is what ADR-020/021/028 were designed to guarantee.
+**The manifest ceiling is complete.** Every mechanic in mechanics-manifest §3 now has at least one real, tested pool card: control change, reanimation, regrowth, the legend rule, activated X with self-reference, flash, and the aura-with-a-dies-trigger all landed this session, each inside machinery that has existed since S1–S2. The pool is 64 cards + 2 tokens across five 40-card decks; ten pairings fuzz clean (10,000 CLI games this session, zero exceptions since S3's one fuzz-caught bug), replay byte-identical everywhere. 130 tests green; suite restructured per ADR-034 (13s smoke / 56s full). The three oldest architectural bets all paid out at face value: the S1 owner/controller split absorbed Control Magic without touching a single "you control" call site, ADR-007's SBA-choice hook took the legend rule as designed, and ADR-006 meant Drana/Rancor/Snake needed zero combat or stack changes.
 
 ## Done this session
 
-- **Part 0:** ATTACHED event with all four causes (ADR-026), wired into the EVENT stream; optional triggers as accept/decline DecisionRequests at resolution (ADR-027), never silent; value refs with an LKI snapshot taken at resolution start (ADR-028, CR 608.2h) plus `who: controllerOfTarget`; six pairings in fuzz and replay, committed suite at 500/pairing per the brief's timing rule (suite is ~22s).
-- **Part 1:** targeted `destroy` (indestructible-aware) and `exile` (no DIES, 700.4); predicates `nonartifactNonblackCreature` and `opponentPlayer` (Duress targets an *opponent*; flagging the addition per protocol); discard ×3 modes with filters, hand-reveal-in-request, and RNG-logged random mode; DEALS_DAMAGE_TO_PLAYER trigger event with battlefield-scan collection and ADR-021 condition evaluation (`source: attached`, `player: opponentOfController`); scope parameters `{subtype, cardType, other}`; a granted-haste bug fix (the enumerator's tap-ability sickness check read printed keywords, not characteristics — Chieftain-granted haste exposed it).
-- **Part 2:** sixteen cards encoded, Scryfall re-verified — the planner's table was again error-free on card facts.
-- **Part 3:** Deck D mono-black; A/B swaps; all four decklists recorded in the pool registry.
-- **Protocol:** fuzz-before-fixtures ran first (1,800 games, clean) and earned its keep — every subsequent fixture failure was a fixture bug, not an engine bug.
-- The resolver pipeline went async to carry discard's decision requests (`resolveEffect` returns a Promise; `EffectContext.discard` is the one async op). This touches ADR-012's seam shape; flagged below for ratification.
+- **Control change (R-020, ADR-033):** `syncControl` computes effective control (baseController overridden by control statics, latest timestamp wins) and writes it back to `obj.controller` at the top of every SBA pass — every existing reader untouched. Steal and reversion both set summoning sickness (302.6); zone moves route by owner (400.3); the opponent's equipment keeps buffing a stolen creature (301.5c); stolen tokens can be sacrificed by the thief and cease.
+- **Legend rule (R-025):** first SBA-with-a-choice. Per-controller name groups ≥2 issue a keepLegend DecisionRequest; rest to owners' graveyards. `runSBAs` is now async with an optional requester.
+- **Reanimation/regrowth (R-040):** `returnFromGraveyard` resolver + `creatureCardInYourGraveyard` predicate; Zombify to battlefield (new object, ETB fires, enters sick), Gravedigger optional-ETB to hand, fizzle on raced-away targets.
+- **Scope `self` (R-041):** resolves to the item's source wherever it now is — Drana pumps herself on the battlefield; Rancor returns itself from the graveyard. Enabler: DIES/LTB triggers now carry the card's current (graveyard) identity as sourceId.
+- **Drana:** `"-X"`/`"X"` P/T deltas on modifyPT (resolved at resolution; statics remain literal-only, validator-enforced); single-target fizzle means no self-bonus (608.2b).
+- **Mystic Snake:** flash path (in the enumerator since S1) gets its first card; ETB counter is pure stack timing as the brief ruled — no new event.
+- **Deck E (Simic), B/C/D swaps, ten pairings, ADR-034 suite structure.** Fuzz-before-fixtures: 3,000-game smoke clean before any fixture was written; zero engine bugs found by fixtures this session (second session running).
+- Fixtures S5-1..12 green as 21 tests.
 
 ## Deviations from the brief
 
-1. **Fixture 12 is impossible as written: Vampire Nighthawk has flying**, so a vanilla 4/4 can't block it (CR 702.9c — same class of slip as S3's fixture 6, now caught by principle 10 review before implementation). Implemented mirrored: the Nighthawk *blocks* an attacking 4/4 — identical keyword-composition assertions (deathtouch kills the 4/4, 4 kills the 2/3, lifelink gains 2).
-2. **Fixture 9 needed a second legal Nekrataal target** to produce a visible choice — with exactly one candidate the pick is forced and silent per ADR-014. Added Grizzly Bears to the board; the 603.3d no-target case and black-never-offered cases are as specified.
-3. **New target predicate `opponentPlayer`** added for Duress ("target opponent" ≠ "target player") — the S3 precedent ("add to the predicate set if absent") applied, but it wasn't pre-listed, so noting for ratification.
-4. **Hand reveal implemented as request payload, not GameView change** — the brief asked how reveal interacts with view redaction (see Concerns 2); the answer I shipped is "it doesn't touch the view at all."
+1. **Fixture 9c's bounce assertion direction:** the bounced creature goes to its owner's hand (400.3), the owner being the Rancor player's own side in that fixture — trivial fixture-authoring slip on my side, corrected in the test, no rules dispute.
+2. **Fixture 7's "Gravedigger racing" variant** implemented as the brief's other option (test-only removal from the graveyard while Zombify is on the stack) — nothing in the pool touches graveyards at instant speed, so the race is staged directly on the stack. Fizzle path asserted exactly.
+3. None otherwise — the brief's card table and rules citations were error-free (S4's pre-verification suggestions were incorporated; the Drana/Gravedigger/Snake pre-flags from my S4 handoff all checked out against Scryfall).
 
 ## Concerns
 
-1. **The async resolver seam (ADR-012 amendment wanted).** Discard's mid-resolution DecisionRequests forced `resolveEffect` and one EffectContext op to become async. It's mechanical and every existing resolver is unchanged in behavior, but the seam's signature is now `Promise`-shaped and future words (S5's reanimation targeting, legend-rule keeps) will lean on it. Planner should bless the shape in an ADR line so it's not an accident of implementation.
-2. **Hand reveal semantics — ratify the request-payload answer.** The revealed hand rides on the DecisionRequest (`revealed: [{objectId, cardId}]`), visible to the chooser for that decision only. GameView redaction is untouched, replay is unaffected (the pick is a logged action). The alternative (a stateful "revealed cards" view layer) buys nothing until a card has an ongoing reveal ("play with your hand revealed" — not in the ceiling). Recommend ratifying as the standing pattern.
-3. **Condition-object growth pressure: none yet — report as instructed.** Curiosity fit `{source, player}` exactly. The unexercised fields (`controller`, `type`, `subtype`) are validated but untested by any card; S5's Mystic Snake needs a SPELL_CAST event, not a richer condition. The first real pressure I can see is "whenever another creature you control dies" (aristocrats, post-S5) — still within the object. No predicate language needed.
-4. **Value refs: no arithmetic wanted yet.** `targetPower` covered Swords; Drana (S5) is `{X}{B}{B}` activation — X machinery, not value refs. Resist arithmetic until a card demands it (none in the ceiling does).
-5. **B–D fuzzes into grindy mirrors: 14.3% of games deck out** (vs ~0.5–6% elsewhere), mean 47 turns. Two removal-dense decks under random play trade everything and stall. Nothing is wrong — terminations are 100% — but (a) M4's evaluator baseline should expect pairing-dependent game shapes, and (b) if the planner wants fuzz games shorter, trimming D's removal density is the lever. Data point, not a defect.
-6. **The `sba-unattach` ATTACHED cause is unreachable by legal play today** (host-left detachment happens in moveObject first). It's tested via forced state and kept as defense-in-depth; a future effect that makes a host stop being a creature (excluded layer-4 territory) would be its first legal trigger. Noted so nobody hunts for a missing code path.
-7. **Suite time is ~22s** (fuzz-dominated). Fine for now; if S5 adds pairings or heavier decks, consider moving the big fuzz behind an env flag and keeping a 100-game smoke in the default suite.
+1. **Control-layer recomputation wants no caching yet — measured, not guessed.** `syncControl` is O(battlefield² × abilities) per SBA pass in the worst case, but the 10,000-game CLI run finished at the same ~88s/10k pace as S4's per-game cost. The brief asked whether `characteristics()` wants caching: fuzz timing says no. Revisit only if M4's lookahead (which will call `characteristics` in loops) measures hot.
+2. **Legend-rule ordering subtlety, for the record:** the keep-choice interposes at the end of an SBA pass rather than strictly inside the "simultaneous" set (CR 704.3). With the current pool there is no observable difference (nothing else in a pass can interact with the choice). Noted in R-025; a future card that cares (none in sight) would need the choice hoisted into the collection phase.
+3. **Zone-aware predicates held, one asymmetry noted.** Graveyard targeting reused the existing predicate/zone machinery without change. The asymmetry: battlefield/stack candidates are enumerated by scanning shared zones, graveyard candidates by scanning the targeting player's own graveyard — fine while every graveyard predicate is "your graveyard" (the manifest guarantees this), but an opponent-graveyard card would need `targetCandidates` generalized. Manifest excludes those; flagging so the exclusion is understood as load-bearing.
+4. **`baseController` is now state that test authors must know about.** A raw `controller` flip gets reverted by syncControl; the honest test-steal sets both fields. Implementer-notes documents it; the one S2 test that flipped raw control was updated. If the planner ever ratifies Threaten-style effects, they'll be a *third* control input (timed override), and ADR-033's model should be extended then, not before.
+5. **B–D deck-out rate keeps climbing: 24.6%** (14.3% in S4) — Zombify/Gravedigger recursion plus dense removal under random play. Games still terminate (mean 50 turns, cap 100). This is now clearly a property of the matchup, not noise; M4's baseline tables should treat decking as a legitimate outcome, and the replay viewer (M3.5) will make these grindy games actually watchable for diagnosis.
+6. **Suite time management worked** (ADR-034): 13s default, 56s full, CLI for handoff numbers. No action needed; recording that the structure held at ten pairings.
 
 ## Registry entries added/changed
 
-- rules-registry: R-016 (conditions + damage events), R-017 (parameterized scopes + granted-haste fix), R-021 (token-color note closed) rewritten; new rows R-035 (targeted destroy/exile), R-036 (discard), R-037 (optional triggers), R-038 (value refs), R-039 (ATTACHED).
-- pool-registry: S4 rows → `tested` with fixture references; Deck D + A/B swaps recorded; rotated-out list updated.
+- rules-registry: R-011 (control-change note closed), R-020 (control change), R-025 (legend rule) → `implemented`; new rows R-040 (reanimation/regrowth), R-041 (self-referencing effects), R-042 (flash first card). No remaining `slot-only` rows except excluded-by-manifest ones; R-006's single-symbol-producer note is the only live interim.
+- pool-registry: S5 rows → `tested`; five decklists recorded; **ceiling-anchors section replaced with the ceiling-complete note** per the planner's instruction.
 
 ## Test status
 
-109 passing / 0 skipped / 0 flaky, 8 files: core (7), cards (11), engine units (14), S1 (14), S2 (19), S3 (22), S4 (19), sim (3). `pnpm typecheck` clean. Suite ~22s.
+130 passing / 0 skipped / 0 flaky, 9 files: core (7), cards (11), engine units (14), S1 (14), S2 (19), S3 (22), S4 (19), S5 (21), sim (3). `pnpm typecheck` clean. Suite 13s default / 56s FUZZ_FULL.
 
-Fuzz summary (CLI, seeds 90000–90999, 1,000 games per pairing; handoff-only per Chris):
+Fuzz summary (CLI, seeds 110000–110999, 1,000 games per pairing):
 
-| Pairing | LIFE | DECKED | Mean turns |
-|---|---|---|---|
-| A–B | 958 | 42 | 41.0 |
-| A–C | 996 | 4 | 35.7 |
-| A–D | 973 | 27 | 41.7 |
-| B–C | 938 | 62 | 41.4 |
-| B–D | 857 | 143 | 46.7 |
-| C–D | 903 | 97 | 43.2 |
+| Pairing | LIFE | DECKED | Mean turns | | Pairing | LIFE | DECKED | Mean turns |
+|---|---|---|---|---|---|---|---|---|
+| A–B | 943 | 57 | 42.4 | | B–D | 754 | 246 | 50.1 |
+| A–C | 1000 | 0 | 32.5 | | B–E | 821 | 179 | 45.7 |
+| A–D | 971 | 29 | 41.5 | | C–D | 958 | 42 | 38.8 |
+| A–E | 973 | 27 | 38.6 | | C–E | 977 | 23 | 35.0 |
+| B–C | 954 | 46 | 38.1 | | D–E | 879 | 121 | 44.0 |
 
-Committed suite: 500/pairing at seeds 1–500, clean. Fuzz-before-fixtures smoke (1,800 games) was clean — zero engine bugs found by fixtures this session.
+FUZZ_FULL suite (500/pairing) also clean.
 
 ## Suggested next
 
-S5 per roadmap M3b: Control Magic (the S1 owner/controller split finally cashes in — watch summoning-sickness reset on control change, R-011's note), Zombify + Gravedigger (first graveyard targeting; `returnFromGraveyard` resolver and `cardInYourGraveyard` predicate exist untested), Rancor (graveyard-return trigger — a DIES-adjacent trigger on the aura itself), legend rule SBA (first SBA-with-a-choice; the DecisionRequest pattern is proven), Drana (activated X with modifyPT), Mystic Snake (flash exists; SPELL_CAST trigger event is the new piece — needs cast-time collection like DAMAGE got this session). The async resolver seam (Concern 1) should be ratified in the S5 ADR batch. Worth pre-verifying in the S5 brief: Gravedigger vs Zombify wording (hand vs battlefield), Drana's actual oracle text (it's "+X/+0 and target gets −0/−X" variants are commonly misremembered), and Mystic Snake's flash+ETB counter timing.
+M3.5, the replay viewer — and the engine side is ready for it: the EVENT stream already carries damage, zone changes, attachments, life, casts, and draws; the ACTION log carries every decision with object ids (the S4 orderTrigger fix was for exactly this). Two small engine affordances the viewer session might want, both cheap: (a) a `stepIndex`/sequence number on EVENT entries so a viewer can align events to the ACTION timeline without re-simulating, or alternatively a documented "reconstruct by replay" recipe (the replayer already produces every intermediate state — the viewer could ride it); (b) the fixtures-inbox format ("flag this → seed+turn") should be specified by the planner so the viewer writes what future briefs can consume. Beyond M3.5: the pool can now grow to ~100 with pure card batches (no vocabulary work), which can interleave with viewer/AI sessions at low risk.
 
 ## How to run
 
 ```
-pnpm install          # Node >= 22
-pnpm test             # full suite incl. 500 games x 6 pairings (~22s)
-pnpm typecheck        # strict tsc across all packages
-pnpm fuzz --games 1000 --seed 1   # fuzzer CLI, six pairings, errors reported with seed
+pnpm install                       # Node >= 22
+pnpm test                          # smoke suite: 100 games x 10 pairings (~13s)
+FUZZ_FULL=1 pnpm test              # full: 500/pairing (~56s)
+pnpm typecheck
+pnpm fuzz --games 1000 --seed 1    # CLI, ten pairings, errors reported with seed
 ```

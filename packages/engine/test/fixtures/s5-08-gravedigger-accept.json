@@ -1,0 +1,42 @@
+{
+  "name": "Gravedigger: optional ETB accepted returns the card to hand",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "swamp",
+          "swamp",
+          "swamp",
+          "swamp"
+        ],
+        "hand": [
+          "gravedigger"
+        ],
+        "graveyard": [
+          "typhoid_rats"
+        ]
+      },
+      {}
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "gravedigger"
+    },
+    {
+      "player": 0,
+      "do": "optional",
+      "accept": true
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

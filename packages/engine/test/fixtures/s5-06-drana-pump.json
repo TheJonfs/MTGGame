@@ -1,0 +1,44 @@
+{
+  "name": "Drana X=3: target 2/3 dies at toughness 0; Drana 7/4 until cleanup",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "drana_kalastria_bloodchief",
+          "swamp",
+          "swamp",
+          "swamp",
+          "swamp",
+          "swamp"
+        ]
+      },
+      {
+        "battlefield": [
+          "vampire_nighthawk"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "activate",
+      "card": "drana_kalastria_bloodchief",
+      "abilityIndex": 0,
+      "x": 3,
+      "targets": [
+        {
+          "object": "vampire_nighthawk"
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

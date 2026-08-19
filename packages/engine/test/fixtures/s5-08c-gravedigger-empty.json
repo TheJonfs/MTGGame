@@ -1,0 +1,34 @@
+{
+  "name": "Gravedigger with an empty graveyard: trigger never placed (603.3d)",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "swamp",
+          "swamp",
+          "swamp",
+          "swamp"
+        ],
+        "hand": [
+          "gravedigger"
+        ]
+      },
+      {}
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "gravedigger"
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

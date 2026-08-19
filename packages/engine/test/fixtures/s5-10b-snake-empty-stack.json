@@ -1,0 +1,34 @@
+{
+  "name": "Mystic Snake on an empty stack: trigger has no target and is never placed",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "forest",
+          "forest",
+          "island",
+          "island"
+        ],
+        "hand": [
+          "mystic_snake"
+        ]
+      },
+      {}
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "mystic_snake"
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

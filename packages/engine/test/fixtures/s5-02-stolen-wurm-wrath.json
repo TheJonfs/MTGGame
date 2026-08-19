@@ -1,0 +1,50 @@
+{
+  "name": "Stolen Pelakka dies to the thief's Wrath: owner's graveyard, thief draws (ADR-016)",
+  "setup": {
+    "turn": 4,
+    "active": 1,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "pelakka_wurm"
+        ],
+        "library": [
+          "mountain",
+          "mountain"
+        ]
+      },
+      {
+        "battlefield": [
+          {
+            "card": "control_magic",
+            "attachedTo": "pelakka_wurm"
+          },
+          "plains",
+          "plains",
+          "plains",
+          "plains"
+        ],
+        "hand": [
+          "wrath_of_god"
+        ],
+        "library": [
+          "swamp",
+          "swamp"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 1,
+      "do": "cast",
+      "card": "wrath_of_god"
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

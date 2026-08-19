@@ -1,0 +1,64 @@
+{
+  "name": "Counterspell the Snake itself: no ETB",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "forest",
+          "forest",
+          "island",
+          "island",
+          "mountain"
+        ],
+        "hand": [
+          "mystic_snake",
+          "lightning_bolt"
+        ]
+      },
+      {
+        "battlefield": [
+          "island",
+          "island"
+        ],
+        "hand": [
+          "counterspell"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "lightning_bolt",
+      "targets": [
+        {
+          "player": 1
+        }
+      ]
+    },
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "mystic_snake"
+    },
+    {
+      "player": 1,
+      "do": "cast",
+      "card": "counterspell",
+      "targets": [
+        {
+          "spell": "mystic_snake"
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

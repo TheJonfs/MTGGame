@@ -1,0 +1,50 @@
+{
+  "name": "Control Magic: steal, sickness, anthem attribution; Boomerang reverts",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "island",
+          "island",
+          "island",
+          "island",
+          "glorious_anthem"
+        ],
+        "hand": [
+          "control_magic"
+        ]
+      },
+      {
+        "battlefield": [
+          "grizzly_bears",
+          "glorious_anthem",
+          "island",
+          "island"
+        ],
+        "hand": [
+          "boomerang"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "control_magic",
+      "targets": [
+        {
+          "object": "grizzly_bears"
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

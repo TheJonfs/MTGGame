@@ -113,7 +113,7 @@ export function testPool(): Map<string, CardDef> {
 
 // ---------- Fixture format ----------
 
-export type TargetDesc = { object: string } | { player: number } | { spell: string };
+export type TargetDesc = { object: string } | { player: number } | { spell: string } | { graveyard: string };
 
 export type ScriptEntry =
   | { player: PlayerId; do: "cast"; card: string; targets?: TargetDesc[]; x?: number }
@@ -126,6 +126,7 @@ export type ScriptEntry =
   | { player: PlayerId; do: "orderTrigger"; card: string }
   | { player: PlayerId; do: "sacrificeChoice"; card: string }
   | { player: PlayerId; do: "optional"; accept: boolean }
+  | { player: PlayerId; do: "keepLegend"; card: string }
   | { player: PlayerId; do: "orderBlocker"; blocker: string }
   | { player: PlayerId; do: "bottom"; card: string }
   | { player: PlayerId; do: "discard"; card: string };
@@ -240,6 +241,15 @@ export class TestGame {
   private resolveTargetDesc(d: TargetDesc): ResolvedTarget {
     if ("object" in d) return { kind: "object", id: this.findBattlefield(d.object) };
     if ("player" in d) return { kind: "player", player: d.player };
+    if ("graveyard" in d) {
+      for (const p of [0, 1] as PlayerId[]) {
+        const id = this.game.state.players[p].graveyard.find(
+          (i) => getObject(this.game.state, i).cardId === d.graveyard,
+        );
+        if (id) return { kind: "object", id };
+      }
+      throw new Error(`No ${d.graveyard} in either graveyard`);
+    }
     const item = this.game.state.stack.find((s) => s.sourceCardId === d.spell);
     if (!item) throw new Error(`No ${d.spell} on the stack`);
     return { kind: "stackItem", id: item.id };
@@ -369,6 +379,8 @@ export class TestGame {
         return one(actions.find((a) => a.type === "sacrifice" && cardIdOf(a.objectId) === entry.card));
       case "optional":
         return one(actions.find((a) => a.type === (entry.accept ? "acceptOptional" : "declineOptional")));
+      case "keepLegend":
+        return one(actions.find((a) => a.type === "keepLegend" && cardIdOf(a.objectId) === entry.card));
       case "orderBlocker":
         return one(actions.find((a) => a.type === "orderBlocker" && cardIdOf(a.blocker) === entry.blocker));
       case "bottom":

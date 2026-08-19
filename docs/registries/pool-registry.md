@@ -90,21 +90,22 @@ Status: `planned` / `implemented` / `tested` / `cut`.
 
 | cardId | name | status | vocabulary | notes |
 |---|---|---|---|---|
-| control_magic | Control Magic | planned | aura, static gainControl(attached) | ADR-033; R-020 |
-| zombify | Zombify | planned | returnFromGraveyard(to battlefield) | |
-| gravedigger | Gravedigger | planned | triggered(ETB, optional) returnFromGraveyard(to hand) | |
-| rancor | Rancor | planned | aura, static modifyPT + grantKeyword(trample)(attached), triggered(DIES, self) return to owner's hand | aura with DIES trigger |
-| drana_kalastria_bloodchief | Drana, Kalastria Bloodchief | planned | flying, legendary, activated(X) modifyPT ×2 | legend rule (R-025); fizzle = no bonus |
-| mystic_snake | Mystic Snake | planned | flash, triggered(ETB) counter(target spell) | no new event needed |
+| control_magic | Control Magic | tested | aura, static gainControl(attached) | ADR-033; R-020; S5 fixtures 1–4 |
+| zombify | Zombify | tested | returnFromGraveyard(to battlefield) | fixtures 7–7c |
+| gravedigger | Gravedigger | tested | triggered(ETB, optional) returnFromGraveyard(to hand) | fixtures 8–8c |
+| rancor | Rancor | tested | aura, static modifyPT + grantKeyword(trample)(attached), triggered(DIES, self) return to owner's hand | scope `self` first user (R-041); fixtures 9–9c |
+| drana_kalastria_bloodchief | Drana, Kalastria Bloodchief | tested | flying, legendary, activated(X) modifyPT ×2 | legend rule (R-025); "-X" P/T deltas; fixtures 5–6c |
+| mystic_snake | Mystic Snake | tested | flash, triggered(ETB) counter(target spell) | fixtures 10–11 |
 
 ## Ceiling anchors (not yet scheduled)
 Ceiling complete as of S5 (see mechanics-manifest §3). Further additions are card batches using existing vocabulary.
 
-## Slice decklists (S4 brief Part 3; 40 cards each)
+## Slice decklists (S5 brief Part 3; 40 cards each)
 - **A red:** 17 Mountain, 4 Raging Goblin, 2 Goblin Piker, 3 Lightning Bolt, 2 Shock, 2 Blaze, 3 Boggart Brute, 2 Siege-Gang Commander, 2 Bonesplitter, 2 Goblin Chieftain, 1 Pyroclasm.
-- **B white-blue:** 8 Plains, 9 Island, 2 Savannah Lions, 2 Serra Angel, 2 Man-o'-War, 2 Cloudkin Seer, 2 Counterspell, 1 Pacifism, 1 Raise the Alarm, 1 Glorious Anthem, 3 Fencing Ace, 1 Loxodon Warhammer, 1 Mind Stone, 2 Swords to Plowshares, 1 Wrath of God, 2 Curiosity.
-- **C green:** 17 Forest, 1 Grizzly Bears, 3 Elvish Visionary, 3 Timberland Guide, 2 Centaur Courser, 2 Rumbling Baloth, 2 Pelakka Wurm, 2 Giant Growth, 3 Prey Upon, 2 Deadly Recluse, 2 Gladecover Scout, 1 Blurred Mongoose.
-- **D black (new, S4):** 17 Swamp, 3 Typhoid Rats, 3 Child of Night, 3 Vampire Nighthawk, 3 Phyrexian Rager, 3 Nekrataal, 2 Doom Blade, 2 Terror, 2 Duress, 1 Mind Rot, 1 Hymn to Tourach.
+- **B white-blue:** 8 Plains, 9 Island, 1 Savannah Lions, 2 Serra Angel, 2 Man-o'-War, 2 Cloudkin Seer, 2 Counterspell, 1 Pacifism, 1 Raise the Alarm, 1 Glorious Anthem, 2 Fencing Ace, 1 Loxodon Warhammer, 1 Mind Stone, 2 Swords to Plowshares, 1 Wrath of God, 2 Curiosity, 2 Control Magic.
+- **C green:** 17 Forest, 3 Elvish Visionary, 3 Timberland Guide, 2 Centaur Courser, 2 Rumbling Baloth, 2 Pelakka Wurm, 1 Giant Growth, 3 Prey Upon, 2 Deadly Recluse, 2 Gladecover Scout, 1 Blurred Mongoose, 2 Rancor.
+- **D black:** 17 Swamp, 2 Typhoid Rats, 2 Child of Night, 3 Vampire Nighthawk, 2 Phyrexian Rager, 3 Nekrataal, 2 Doom Blade, 1 Terror, 1 Duress, 1 Hymn to Tourach, 2 Drana, 2 Gravedigger, 2 Zombify.
+- **E Simic (new, S5):** 9 Forest, 8 Island, 3 Mystic Snake, 2 Counterspell, 2 Boomerang, 2 Wind Drake, 2 Man-o'-War, 2 Cloudkin Seer, 2 Curiosity, 3 Grizzly Bears, 3 Elvish Visionary, 2 Deadly Recluse.
 
 (Rotated out of decks but still `tested` pool members: Gray Ogre, Boomerang, Hill Giant, Brute Force, Suntail Hawk, Wind Drake, Darksteel Myr.)
 

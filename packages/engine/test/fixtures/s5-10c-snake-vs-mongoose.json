@@ -1,0 +1,47 @@
+{
+  "name": "Snake targets a Blurred Mongoose spell: counter resolves, does nothing",
+  "setup": {
+    "turn": 4,
+    "active": 1,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "forest",
+          "forest",
+          "island",
+          "island"
+        ],
+        "hand": [
+          "mystic_snake"
+        ]
+      },
+      {
+        "battlefield": [
+          "forest",
+          "forest"
+        ],
+        "hand": [
+          "blurred_mongoose"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 1,
+      "do": "cast",
+      "card": "blurred_mongoose"
+    },
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "mystic_snake"
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

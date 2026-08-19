@@ -1,0 +1,55 @@
+{
+  "name": "Rancor's target bounced in response: fizzles to graveyard, no return",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "forest",
+          "grizzly_bears"
+        ],
+        "hand": [
+          "rancor"
+        ]
+      },
+      {
+        "battlefield": [
+          "island",
+          "island"
+        ],
+        "hand": [
+          "boomerang"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "rancor",
+      "targets": [
+        {
+          "object": "grizzly_bears"
+        }
+      ]
+    },
+    {
+      "player": 1,
+      "do": "cast",
+      "card": "boomerang",
+      "targets": [
+        {
+          "object": "grizzly_bears"
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}
