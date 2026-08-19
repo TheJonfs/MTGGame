@@ -1,0 +1,21 @@
+{
+  "id": "darksteel_myr",
+  "name": "Darksteel Myr",
+  "source": "real",
+  "manaCost": "{3}",
+  "types": [
+    "Artifact",
+    "Creature"
+  ],
+  "subtypes": [
+    "Myr"
+  ],
+  "power": 0,
+  "toughness": 1,
+  "keywords": [
+    "indestructible"
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

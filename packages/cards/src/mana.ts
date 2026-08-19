@@ -3,6 +3,10 @@
 export const COLORS = ["W", "U", "B", "R", "G"] as const;
 export type Color = (typeof COLORS)[number];
 
+/** What a mana ability can produce: a color or colorless {C} (S3, Mind Stone). */
+export const MANA_SYMBOLS = ["W", "U", "B", "R", "G", "C"] as const;
+export type ManaSymbol = (typeof MANA_SYMBOLS)[number];
+
 export interface ManaCost {
   generic: number;
   xCount: number; // number of {X} symbols (Blaze has 1; no pool card has 2)
@@ -36,15 +40,14 @@ export function manaValue(cost: ManaCost, x = 0): number {
   return cost.generic + cost.xCount * x + COLORS.reduce((n, c) => n + cost.colored[c], 0);
 }
 
-/** Parse mana produced by addMana effects, e.g. "{R}" or "{G}{G}". Only colored/generic, no X. */
-export function parseManaProduction(text: string): { color?: Color; generic?: number }[] {
-  const out: { color?: Color; generic?: number }[] = [];
+/** Parse mana produced by addMana effects, e.g. "{R}", "{C}", "{G}{G}". No X. */
+export function parseManaProduction(text: string): { symbol: ManaSymbol }[] {
+  const out: { symbol: ManaSymbol }[] = [];
   let matchedLength = 0;
   for (const m of text.matchAll(SYMBOL_RE)) {
     matchedLength += m[0].length;
     const sym = m[1]!;
-    if ((COLORS as readonly string[]).includes(sym)) out.push({ color: sym as Color });
-    else if (/^\d+$/.test(sym)) out.push({ generic: parseInt(sym, 10) });
+    if ((MANA_SYMBOLS as readonly string[]).includes(sym)) out.push({ symbol: sym as ManaSymbol });
     else throw new Error(`Unknown mana production symbol {${sym}}`);
   }
   if (matchedLength !== text.length || out.length === 0) {

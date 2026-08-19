@@ -13,6 +13,7 @@
   "subtypes": ["Goblin"],           // creature types, Aura, Equipment, basic land types
   "supertypes": ["Legendary", "Basic"],
   "power": 2, "toughness": 1,       // creatures only
+  "colors": ["R"],                  // optional; derived from manaCost if absent; REQUIRED on token defs (ADR-019)
   "keywords": ["flying", "haste"],  // evergreen keyword list from the manifest
   "abilities": [ /* Ability[] */ ],
   "spellEffect": [ /* Effect[] */ ],// instants/sorceries; targets declared here
@@ -31,6 +32,8 @@ Every card's `art.fallback` is `"rendered"`: the UI draws a plain frame from car
   "timing": "instant" | "sorcery", "targets": [...], "effects": [...] }
 { "kind": "static", "effects": [ { "type": "modifyPT", "power": 1, "toughness": 1, "scope": "creaturesYouControl" } ] }
 ```
+
+Trigger `condition` (ADR-021, optional; default `{source:"self"}`): `{source: "self"|"other"|"any", controller: "you"|"opponent"|"any", type?: string[], subtype?: string[]}`. Only `self` is implemented through S3.
 
 Triggered `event` values: `ENTERS_BATTLEFIELD`, `DIES`, `LEAVES_BATTLEFIELD`, `ATTACKS`, `BLOCKS`, `DEALS_COMBAT_DAMAGE_TO_PLAYER`, `UPKEEP`, `END_STEP`, `LAND_ENTERS_UNDER_YOUR_CONTROL` (landfall), `SPELL_CAST` (opponent casts — for later). Each may carry `condition` predicates (source only, controller only, creature only, etc.).
 
@@ -55,18 +58,18 @@ Triggered `event` values: `ENTERS_BATTLEFIELD`, `DIES`, `LEAVES_BATTLEFIELD`, `A
 | `addCounters` | `kind`, `count`, `target` | +1/+1, −1/−1 |
 | `tapTarget` / `untapTarget` | `target` | |
 | `returnFromGraveyard` | `target` (own graveyard), `to`: `battlefield` / `hand` | Zombify, Regrowth |
-| `fight` | `targets: [i, j]` (two target indices) | |
+| `fight` | `targets: [i, j]` (two target indices) | all-or-nothing legality (ADR-022) |
 | `gainControl` | `target`, `duration`: `UNTIL_SOURCE_LEAVES` | Control Magic |
 | `searchLibrary` | `predicate` (basic land only), `to` | maybe |
 | `addMana` | `mana` | lands, rocks (mana ability) |
 
 **Reserved, not implemented:** `copy`, `setPT`, `preventDamage`, `changeType`.
 
-Effects reference targets by index into the declared `targets` array (`"target": 0`) or by scope (`"scope": "creaturesYouControl" | "allCreatures" | "opponent" | "you" | "attached"` …). `attached` is the object an aura/equipment is attached to; required for Pacifism, Rancor, equipment statics. `"X"` resolves from the stack item.
+Effects reference targets by index into the declared `targets` array (`"target": 0`) or by scope (`"scope": "creaturesYouControl" | "allCreatures" | "opponent" | "you" | "attached"` …). `attached` is the object an aura/equipment is attached to; required for Pacifism, Rancor, equipment statics. Scopes may be parameterized (ADR-020): `{"scope": "creaturesYouControl", "subtype": "Goblin"}`. `"X"` resolves from the stack item.
 
 ## 4. Token definitions
 
-Same schema as cards with `"isTokenDef": true` and no manaCost. E.g. `goblin_1_1`, `soldier_1_1`, `beast_4_4`.
+Same schema as cards with `"isTokenDef": true`, no manaCost, and a **required `colors`** field. E.g. `goblin_1_1` (R), `soldier_1_1` (W), `beast_4_4` (G).
 
 ## 5. MatchSpec / MatchResult
 
@@ -103,7 +106,7 @@ type ActionLogEntry =
   | { t: "RNG", purpose: "shuffle"|"discard"|"coin", value }
   | { t: "EVENT", name, payload }          // optional, for viewers; not needed for replay
 ```
-Replay consumes ACTION and RNG entries only. Per ADR-014, single-option decisions are not logged; `EVENT` entries are the full transcript for viewers.
+Ordering/choice actions (`orderTrigger`, `orderBlocker`, …) carry the source **object id** as well as cardId so logs are human-readable (S3). Replay consumes ACTION and RNG entries only. Per ADR-014, single-option decisions are not logged; `EVENT` entries are the full transcript for viewers.
 
 ## 7. Pool registry row
 

@@ -1,6 +1,6 @@
 {
-  "id": "soldier_1_1",
-  "name": "Soldier Token",
+  "id": "goblin_1_1",
+  "name": "Goblin Token",
   "source": "custom",
   "isTokenDef": true,
   "manaCost": "",
@@ -8,14 +8,14 @@
     "Creature"
   ],
   "subtypes": [
-    "Soldier"
+    "Goblin"
+  ],
+  "colors": [
+    "R"
   ],
   "power": 1,
   "toughness": 1,
   "art": {
     "fallback": "rendered"
-  },
-  "colors": [
-    "W"
-  ]
+  }
 }

@@ -67,6 +67,15 @@ export function validateCard(raw: unknown): ValidationResult {
     else for (const k of raw.keywords) if (!(KEYWORDS as readonly string[]).includes(k as string)) err(`unknown keyword "${k}"`);
   }
 
+  // ADR-019: colors optional on cards, required on token defs.
+  if (raw.colors !== undefined) {
+    if (!Array.isArray(raw.colors) || raw.colors.some((c) => !["W", "U", "B", "R", "G"].includes(c as string))) {
+      err(`"colors" must be an array of W|U|B|R|G`);
+    }
+  } else if (raw.isTokenDef === true) {
+    err(`token definitions require an explicit "colors" field (ADR-019)`);
+  }
+
   const declaredTargets = Array.isArray(raw.targets) ? (raw.targets as unknown[]) : [];
   if (raw.targets !== undefined) {
     for (const t of declaredTargets) validateTargetSpec(t, err);
@@ -120,18 +129,43 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
     }
     case "activated": {
       if (!isRecord(a.cost)) err(`activated ability missing cost`);
-      else if (a.cost.mana !== undefined && typeof a.cost.mana === "string") {
-        try {
-          parseManaCost(a.cost.mana);
-        } catch (e) {
-          err((e as Error).message);
+      else {
+        if (a.cost.mana !== undefined && typeof a.cost.mana === "string") {
+          try {
+            parseManaCost(a.cost.mana);
+          } catch (e) {
+            err((e as Error).message);
+          }
+        }
+        if (a.cost.sacrifice !== undefined) {
+          const pred = isRecord(a.cost.sacrifice) ? a.cost.sacrifice.predicate : undefined;
+          if (typeof pred !== "string" || !/^(self|creature(\.subtype:[A-Za-z]+)?)$/.test(pred)) {
+            err(`sacrifice predicate must be "self", "creature", or "creature.subtype:<Subtype>"`);
+          }
         }
       }
-      validateEffects(a.effects, nTargets, err, warnings, cardId);
+      if (a.equip === true) {
+        // Equip (CR 702.6): attach-only, exactly one own-creature target, no effects.
+        if (Array.isArray(a.effects) && a.effects.length > 0) err(`equip ability must have no effects`);
+        if (nTargets !== 1 || !isRecord(targets[0]) || (targets[0] as Record<string, unknown>).predicate !== "creatureYouControl") {
+          err(`equip ability must target exactly one creatureYouControl`);
+        }
+      } else {
+        validateEffects(a.effects, nTargets, err, warnings, cardId);
+      }
       break;
     }
     case "static": {
-      validateEffects(a.effects, nTargets, err, warnings, cardId);
+      // Statics are interpreted live by characteristics(), never resolved —
+      // no resolver warning, but only the continuous-effect words make sense.
+      validateEffects(a.effects, nTargets, err, warnings, cardId, { isStatic: true });
+      if (Array.isArray(a.effects)) {
+        for (const e of a.effects) {
+          if (isRecord(e) && !["modifyPT", "grantKeyword", "restrict"].includes(e.type as string)) {
+            err(`static ability cannot carry effect "${e.type}" (only modifyPT/grantKeyword/restrict)`);
+          }
+        }
+      }
       break;
     }
     default:
@@ -257,6 +291,7 @@ function validateEffects(
   err: (m: string) => void,
   warnings: string[],
   cardId: string,
+  opts: { isStatic?: boolean } = {},
 ): void {
   if (!Array.isArray(effects) || effects.length === 0) return err(`effects must be a non-empty array`);
   for (const e of effects) {
@@ -273,7 +308,7 @@ function validateEffects(
     if (Number.isInteger(e.target) && ((e.target as number) < 0 || (e.target as number) >= nTargets)) {
       err(`effect target index ${e.target} out of bounds (targets: ${nTargets})`);
     }
-    if (!IMPLEMENTED_EFFECT_TYPES.has(type)) {
+    if (!opts.isStatic && !IMPLEMENTED_EFFECT_TYPES.has(type)) {
       warnings.push(`${cardId}: uses effect "${type}" which has no resolver yet (will throw NotImplemented if resolved)`);
     }
   }

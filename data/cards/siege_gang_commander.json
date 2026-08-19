@@ -1,0 +1,58 @@
+{
+  "id": "siege_gang_commander",
+  "name": "Siege-Gang Commander",
+  "source": "real",
+  "manaCost": "{3}{R}{R}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Goblin"
+  ],
+  "power": 2,
+  "toughness": 2,
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "condition": {
+        "self": true
+      },
+      "effects": [
+        {
+          "type": "createToken",
+          "tokenId": "goblin_1_1",
+          "count": 3,
+          "who": "you"
+        }
+      ],
+      "optional": false
+    },
+    {
+      "kind": "activated",
+      "cost": {
+        "mana": "{1}{R}",
+        "sacrifice": {
+          "predicate": "creature.subtype:Goblin"
+        }
+      },
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "anyTarget",
+          "zone": "any"
+        }
+      ],
+      "effects": [
+        {
+          "type": "damage",
+          "amount": 2,
+          "target": 0
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

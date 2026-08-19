@@ -71,14 +71,29 @@ export function stageBlock(ctx: EngineCtx, blocker: string, attacker: string): v
   state.combat.blocks.push({ blocker, attacker });
 }
 
+/** Menace attackers blocked by exactly one creature make a declaration illegal (702.110b, R-015). */
+export function menaceViolations(ctx: EngineCtx): string[] {
+  const state = ctx.state;
+  return state.combat.attackers.filter((attacker) => {
+    if (!state.objects[attacker]) return false;
+    if (!characteristics(ctx, attacker).keywords.has("menace")) return false;
+    return state.combat.blocks.filter((b) => b.attacker === attacker).length === 1;
+  });
+}
+
 /**
  * Commit the staged blocks. Aggregate legality (menace's two-blocker minimum,
- * R-015) will be validated here. Initial damage order is declaration order;
- * the attacker's controller re-orders multi-blocked attackers via
- * orderBlocker actions (CR 509.2, ADR-011).
+ * R-015) is validated here; the enumerator never offers a "done" that would
+ * violate it. Initial damage order is declaration order; the attacker's
+ * controller re-orders multi-blocked attackers via orderBlocker actions
+ * (CR 509.2, ADR-011).
  */
 export function commitBlockers(ctx: EngineCtx): void {
   const state = ctx.state;
+  const violations = menaceViolations(ctx);
+  if (violations.length > 0) {
+    throw new Error(`Illegal block: menace attacker(s) blocked by exactly one creature: ${violations.join(", ")}`);
+  }
   for (const { blocker, attacker } of state.combat.blocks) {
     state.combat.blocked[attacker] = true;
     (state.combat.blockOrder[attacker] ??= []).push(blocker);
@@ -133,6 +148,7 @@ export function assignCombatDamage(ctx: EngineCtx, firstStrikeStep: boolean): Da
     let power = attackerChars.power;
     if (power <= 0) continue;
     const trample = attackerChars.keywords.has("trample");
+    const deathtouch = attackerChars.keywords.has("deathtouch");
 
     if (state.combat.blocked[attackerId]) {
       const blockers = (state.combat.blockOrder[attackerId] ?? []).filter(
@@ -150,7 +166,9 @@ export function assignCombatDamage(ctx: EngineCtx, firstStrikeStep: boolean): Da
       for (let i = 0; i < blockers.length && power > 0; i++) {
         const bId = blockers[i]!;
         const b = getObject(state, bId);
-        const lethal = Math.max(0, characteristics(ctx, bId).toughness - b.damage);
+        // With deathtouch, 1 damage counts as lethal for assignment (510.1c).
+        const remaining = Math.max(0, characteristics(ctx, bId).toughness - b.damage);
+        const lethal = deathtouch && remaining > 0 ? 1 : remaining;
         const isLast = i === blockers.length - 1;
         const amount = trample ? Math.min(power, lethal) : isLast ? power : Math.min(power, lethal);
         if (amount > 0) out.push({ sourceId: attackerId, target: { kind: "object", id: bId }, amount });

@@ -1,8 +1,10 @@
 import { isManaAbility, parseManaCost, type CardDef } from "@shandalar/cards";
 import type { Action } from "./actions.js";
-import { canBlock, eligibleAttackers, eligibleBlockers } from "./combat.js";
+import { canBlock, eligibleAttackers, eligibleBlockers, menaceViolations } from "./combat.js";
+import { characteristics } from "./characteristics.js";
+import { sacrificeCandidates } from "./sacrifice.js";
 import type { EngineCtx } from "./ctx.js";
-import { canPay, producibleColors } from "./mana.js";
+import { canPay, producibleSymbols } from "./mana.js";
 import { getObject, type PlayerId } from "./state.js";
 import { targetCombinations } from "./targeting.js";
 
@@ -71,7 +73,7 @@ export function legalActions(ctx: EngineCtx, player: PlayerId): Action[] {
   for (const id of state.battlefield) {
     const obj = getObject(state, id);
     if (obj.controller !== player) continue;
-    if (producibleColors(ctx, id).length > 0) actions.push({ type: "tapForMana", objectId: id });
+    if (producibleSymbols(ctx, id).length > 0) actions.push({ type: "tapForMana", objectId: id });
   }
 
   // Non-mana activated abilities (no S1 card has one; the path exists for equip).
@@ -81,17 +83,20 @@ export function legalActions(ctx: EngineCtx, player: PlayerId): Action[] {
     const def = ctx.defs.def(obj.cardId);
     (def.abilities ?? []).forEach((ability, abilityIndex) => {
       if (ability.kind !== "activated" || isManaAbility(ability)) return;
-      if ((ability.timing ?? "instant") === "sorcery" && !atSorcerySpeed) return;
+      const timing = ability.equip ? "sorcery" : (ability.timing ?? "instant"); // equip is sorcery-speed by rule (702.6b)
+      if (timing === "sorcery" && !atSorcerySpeed) return;
       if (ability.cost.tap && (obj.tapped || (obj.summoningSick && !ctx.defs.def(obj.cardId).keywords?.includes("haste")))) return;
-      if (ability.cost.sacrifice) return; // R-023 slot-only
+      if (ability.cost.sacrifice && sacrificeCandidates(ctx, player, id, ability.cost.sacrifice.predicate).length === 0) return;
       const combos = targetCombinations(ctx, ability.targets ?? [], player);
       if ((ability.targets ?? []).length > 0 && combos.length === 0) return;
       const cost = ability.cost.mana ? parseManaCost(ability.cost.mana) : undefined;
+      // A {T}-cost ability can't count its own source as a mana producer.
+      const exclude = ability.cost.tap ? [id] : [];
       if (!cost || cost.xCount === 0) {
-        if (cost && !canPay(ctx, player, cost)) return;
+        if (cost && !canPay(ctx, player, cost, 0, exclude)) return;
         for (const targets of combos) actions.push({ type: "activateAbility", objectId: id, abilityIndex, targets });
       } else {
-        for (let x = 0; canPay(ctx, player, cost, x); x++) {
+        for (let x = 0; canPay(ctx, player, cost, x, exclude); x++) {
           for (const targets of combos) actions.push({ type: "activateAbility", objectId: id, abilityIndex, targets, x });
         }
       }
@@ -111,17 +116,45 @@ export function attackerChoices(ctx: EngineCtx): Action[] {
   return out;
 }
 
-/** Incremental block declaration (ADR-013): done first, then every legal (blocker, attacker) pair not yet used. */
+/**
+ * Incremental block declaration (ADR-013): done first, then every legal
+ * (blocker, attacker) pair not yet used.
+ *
+ * Menace (R-015) shapes the list two ways: "done" is withheld while any
+ * menace attacker has exactly one staged blocker, and a first block onto a
+ * menace attacker is only offered when a second blocker could still join —
+ * so no staging sequence can dead-end.
+ */
 export function blockerChoices(ctx: EngineCtx): Action[] {
   const state = ctx.state;
   const used = new Set(state.combat.blocks.map((b) => b.blocker));
-  const out: Action[] = [{ type: "doneDeclaringBlockers" }];
-  for (const blocker of eligibleBlockers(ctx)) {
-    if (used.has(blocker)) continue;
-    for (const attacker of state.combat.attackers) {
-      if (state.objects[attacker] && canBlock(ctx, blocker, attacker)) {
-        out.push({ type: "declareBlocker", blocker, attacker });
+  const free = eligibleBlockers(ctx).filter((b) => !used.has(b));
+
+  const violations = menaceViolations(ctx);
+  if (violations.length > 0) {
+    // A menace attacker sits at exactly one blocker: the only legal
+    // continuations are blocks that fix it. The offer-time guard below
+    // guarantees a second candidate existed and nothing since consumed it.
+    const out: Action[] = [];
+    for (const blocker of free) {
+      for (const attacker of violations) {
+        if (canBlock(ctx, blocker, attacker)) out.push({ type: "declareBlocker", blocker, attacker });
       }
+    }
+    if (out.length === 0) throw new Error("blockerChoices: unfixable menace violation (enumerator bug)");
+    return out;
+  }
+
+  const out: Action[] = [{ type: "doneDeclaringBlockers" }];
+  for (const blocker of free) {
+    for (const attacker of state.combat.attackers) {
+      if (!state.objects[attacker] || !canBlock(ctx, blocker, attacker)) continue;
+      if (characteristics(ctx, attacker).keywords.has("menace")) {
+        const otherCandidates = free.filter((b2) => b2 !== blocker && canBlock(ctx, b2, attacker)).length;
+        // A lone block on a menace attacker with no possible second is a dead end.
+        if (state.combat.blocks.filter((b) => b.attacker === attacker).length === 0 && otherCandidates === 0) continue;
+      }
+      out.push({ type: "declareBlocker", blocker, attacker });
     }
   }
   return out;

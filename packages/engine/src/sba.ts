@@ -46,17 +46,26 @@ export function runSBAs(ctx: EngineCtx): boolean {
       if (isCreature(ctx, id)) {
         const chars = characteristics(ctx, id);
         if (chars.toughness <= 0) {
-          toGraveyard.push(id); // 704.5f — put into graveyard (not destruction)
-        } else if (obj.damage >= chars.toughness && !chars.keywords.has("indestructible")) {
-          toGraveyard.push(id); // 704.5g — destroyed by lethal damage
+          toGraveyard.push(id); // 704.5f — put into graveyard; indestructible does not help
+        } else if (!chars.keywords.has("indestructible")) {
+          if (obj.damage >= chars.toughness) {
+            toGraveyard.push(id); // 704.5g — destroyed by lethal damage
+          } else if (obj.damage > 0 && obj.deathtouchDamage) {
+            toGraveyard.push(id); // 704.5h — any deathtouch damage destroys (R-014)
+          }
         }
       }
 
-      // Aura attached to an illegal object or to nothing (704.5m, 704.5n).
-      if (def.subtypes?.includes("Aura")) {
-        const host = obj.attachedTo ? state.objects[obj.attachedTo] : undefined;
-        const legalHost = host && host.zone === "battlefield" && isCreature(ctx, host.id);
-        if (!legalHost) toGraveyard.push(id);
+      // Attachment legality (704.5m, 704.5n): an aura with an illegal or
+      // absent host dies; an equipment merely unattaches and stays.
+      const host = obj.attachedTo ? state.objects[obj.attachedTo] : undefined;
+      const legalHost = host && host.zone === "battlefield" && isCreature(ctx, host.id);
+      if (def.subtypes?.includes("Aura") && !legalHost) {
+        toGraveyard.push(id);
+      }
+      if (def.subtypes?.includes("Equipment") && obj.attachedTo && !legalHost) {
+        obj.attachedTo = null;
+        changed = true;
       }
     }
 

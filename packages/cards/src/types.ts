@@ -47,6 +47,8 @@ export type Who = "you" | "opponent" | "eachPlayer";
 /** Targeting predicates known to the engine (engine-design §10). */
 export const TARGET_PREDICATES = [
   "creature",
+  "creatureYouControl",
+  "creatureYouDontControl",
   "anyTarget",
   "spell",
   "permanent",
@@ -165,6 +167,10 @@ export interface TriggeredAbilityDef {
   optional?: boolean;
 }
 
+/**
+ * Sacrifice-cost predicates (R-023): "self", "creature", or
+ * "creature.subtype:<Subtype>" (e.g. Siege-Gang's "creature.subtype:Goblin").
+ */
 export interface ActivatedCost {
   mana?: string;
   tap?: boolean;
@@ -177,6 +183,8 @@ export interface ActivatedAbilityDef {
   timing?: "instant" | "sorcery";
   targets?: TargetSpec[];
   effects: Effect[];
+  /** Equip ability (CR 702.6): sorcery-timing attach of this permanent to the target. Effects must be empty. */
+  equip?: boolean;
 }
 
 export interface StaticAbilityDef {
@@ -197,6 +205,8 @@ export interface CardDef {
   supertypes?: string[];
   power?: number;
   toughness?: number;
+  /** ADR-019: explicit colors; derived from manaCost when absent; REQUIRED on token defs. */
+  colors?: ("W" | "U" | "B" | "R" | "G")[];
   keywords?: Keyword[];
   abilities?: AbilityDef[];
   spellEffect?: Effect[];
@@ -213,4 +223,14 @@ export function isManaAbility(a: AbilityDef): boolean {
     a.effects.length > 0 &&
     a.effects.every((e) => e.type === "addMana")
   );
+}
+
+/** Effective colors per ADR-019: the explicit field, else derived from mana cost symbols. */
+export function cardColors(def: CardDef): ("W" | "U" | "B" | "R" | "G")[] {
+  if (def.colors) return def.colors;
+  const out: ("W" | "U" | "B" | "R" | "G")[] = [];
+  for (const c of ["W", "U", "B", "R", "G"] as const) {
+    if (def.manaCost.includes(`{${c}}`)) out.push(c);
+  }
+  return out;
 }

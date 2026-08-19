@@ -1,0 +1,45 @@
+{
+  "id": "bonesplitter",
+  "name": "Bonesplitter",
+  "source": "real",
+  "manaCost": "{1}",
+  "types": [
+    "Artifact"
+  ],
+  "subtypes": [
+    "Equipment"
+  ],
+  "abilities": [
+    {
+      "kind": "static",
+      "effects": [
+        {
+          "type": "modifyPT",
+          "power": 2,
+          "toughness": 0,
+          "scope": "attached",
+          "duration": "WHILE_SOURCE_ON_BATTLEFIELD"
+        }
+      ]
+    },
+    {
+      "kind": "activated",
+      "equip": true,
+      "cost": {
+        "mana": "{1}"
+      },
+      "timing": "sorcery",
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "creatureYouControl",
+          "zone": "battlefield"
+        }
+      ],
+      "effects": []
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

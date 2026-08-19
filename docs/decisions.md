@@ -39,3 +39,13 @@ Planner-maintained. Implementer proposes via handoff Concerns; planner records.
 **ADR-017 — X enumeration.** X-cost casts/activations are enumerated once per affordable X value (0..max). Linear; no cap.
 
 **ADR-018 — Test-only cards are permanent fixtures.** Engine tests never depend on pool membership (the pool is curated by taste and will change). `test_fs_soldier`, `test_pinger`, and future synthetic cards stay; real pool cards add coverage, they don't replace it.
+
+**ADR-019 — Explicit `colors` field.** Card/token defs may carry `colors: ["W"|"U"|"B"|"R"|"G"]`. Derived from mana cost when absent; **required on token definitions** (validator error if missing); required on any card whose color differs from its mana cost (none in pool yet). Color predicates (nonblack etc.) read the field, never the mana cost. (S2 concern 2.)
+
+**ADR-020 — Parameterized scopes, not a predicate language.** Static/mass scopes are a closed enum (`creaturesYouControl`, `allCreatures`, `attached`, …) optionally narrowed by `{subtype}` / `{type}` parameters. Tribal anthems are `{scope:"creaturesYouControl", subtype:"Goblin"}`. Implement the parameter when the first tribal card enters (M3). (S2 concern 3.)
+
+**ADR-021 — Trigger condition object.** Triggered abilities may carry `condition: {source: "self"|"other"|"any", controller: "you"|"opponent"|"any", type?: [...], subtype?: [...]}`. `self` is the S1/S2 default. Implement beyond `self` in M3 with the first "whenever another creature" or "whenever you cast" card. (S2 concern 4.)
+
+**ADR-022 — Fight legality is all-or-nothing** (CR 701.12b): if either fighting creature is an illegal target or has left the battlefield at resolution, no damage is dealt. This is a generic fight rule in the resolver, not a card carve-out.
+
+**ADR-023 — Ratifications from S2:** Rumbling Baloth replaces Rhox Brute; S2 pool rows ratified; initialization-time triggers are discarded (modifiers are static starting conditions); `destroy` resolver waits for Doom Blade (M3).

@@ -81,6 +81,10 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem): EffectContex
     counterSpell(stackItemId: string): void {
       const idx = ctx.state.stack.findIndex((s) => s.id === stackItemId);
       if (idx === -1) return;
+      // "This spell can't be countered" (Blurred Mongoose): the counter
+      // resolves but does nothing to it.
+      const target = ctx.state.stack[idx]!;
+      if ((ctx.defs.def(target.sourceCardId).keywords ?? []).includes("cant be countered")) return;
       const [countered] = ctx.state.stack.splice(idx, 1);
       if (countered!.objectId) moveObject(ctx, countered!.objectId, "graveyard");
     },
@@ -108,9 +112,7 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem): EffectContex
 
     addMana(player: number, mana: string): void {
       const pool = ctx.state.players[player as PlayerId].manaPool;
-      for (const sym of parseManaProduction(mana)) {
-        if (sym.color) pool[sym.color] += 1;
-      }
+      for (const sym of parseManaProduction(mana)) pool[sym.symbol] += 1;
     },
 
     ...sharedOps(ctx),
@@ -141,6 +143,21 @@ function sharedOps(ctx: EngineCtx) {
       if (!obj || obj.zone !== "battlefield") return;
       if (characteristics(ctx, objectId).keywords.has("indestructible")) return;
       moveObject(ctx, objectId, "graveyard");
+    },
+
+    fight(idA: string, idB: string): void {
+      const a = ctx.state.objects[idA];
+      const b = ctx.state.objects[idB];
+      if (!a || !b || a.zone !== "battlefield" || b.zone !== "battlefield") return;
+      // Simultaneous (CR 701.12a): read both powers before dealing either side.
+      const powerA = characteristics(ctx, idA).power;
+      const powerB = characteristics(ctx, idB).power;
+      if (powerA > 0) {
+        dealDamage(ctx, { id: idA, cardId: a.cardId, controller: a.controller }, { kind: "object", id: idB }, powerA, false);
+      }
+      if (powerB > 0) {
+        dealDamage(ctx, { id: idB, cardId: b.cardId, controller: b.controller }, { kind: "object", id: idA }, powerB, false);
+      }
     },
   };
 }

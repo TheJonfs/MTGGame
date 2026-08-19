@@ -1,0 +1,21 @@
+{
+  "id": "boggart_brute",
+  "name": "Boggart Brute",
+  "source": "real",
+  "manaCost": "{2}{R}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Goblin",
+    "Warrior"
+  ],
+  "power": 3,
+  "toughness": 2,
+  "keywords": [
+    "menace"
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

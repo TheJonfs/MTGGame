@@ -19,9 +19,10 @@ export type Action =
   | { type: "doneDeclaringAttackers" }
   | { type: "declareBlocker"; blocker: string; attacker: string }
   | { type: "doneDeclaringBlockers" }
-  | { type: "orderTrigger"; index: number; cardId: string }
+  | { type: "orderTrigger"; index: number; cardId: string; objectId: string }
   | { type: "orderBlocker"; attacker: string; blocker: string }
   | { type: "chooseTriggerTargets"; targets: ResolvedTarget[] }
+  | { type: "sacrifice"; objectId: string }
   | { type: "mulligan" }
   | { type: "keepHand" }
   | { type: "bottomCard"; objectId: string }

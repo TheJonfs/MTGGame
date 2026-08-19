@@ -1,0 +1,33 @@
+{
+  "id": "prey_upon",
+  "name": "Prey Upon",
+  "source": "real",
+  "manaCost": "{G}",
+  "types": [
+    "Sorcery"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "creatureYouControl",
+      "zone": "battlefield"
+    },
+    {
+      "count": 1,
+      "predicate": "creatureYouDontControl",
+      "zone": "battlefield"
+    }
+  ],
+  "spellEffect": [
+    {
+      "type": "fight",
+      "targets": [
+        0,
+        1
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

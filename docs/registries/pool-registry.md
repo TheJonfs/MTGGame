@@ -48,8 +48,25 @@ Status: `planned` / `implemented` / `tested` / `cut`.
 | glorious_anthem | Glorious Anthem | tested | static modifyPT(creaturesYouControl) | |
 | soldier_1_1 | Soldier Token | tested | — | token def, `data/cards/tokens/` |
 
+## Session 3 additions
+
+| cardId | name | status | vocabulary | notes |
+|---|---|---|---|---|
+| siege_gang_commander | Siege-Gang Commander | planned | triggered(ETB) createToken ×3, activated(sac Goblin) damage | |
+| goblin_1_1 | Goblin Token | planned | — | token def, colors R |
+| boggart_brute | Boggart Brute | planned | menace | |
+| bonesplitter | Bonesplitter | planned | equipment, static modifyPT(attached) | |
+| loxodon_warhammer | Loxodon Warhammer | planned | equipment, static modifyPT + grantKeyword(trample, lifelink)(attached) | |
+| mind_stone | Mind Stone | planned | addMana {C}, activated(sac self) draw | first non-land producer |
+| darksteel_myr | Darksteel Myr | planned | indestructible | |
+| fencing_ace | Fencing Ace | planned | double strike | |
+| prey_upon | Prey Upon | planned | fight | ADR-022 |
+| deadly_recluse | Deadly Recluse | planned | reach, deathtouch | |
+| gladecover_scout | Gladecover Scout | planned | hexproof | |
+| blurred_mongoose | Blurred Mongoose | planned | shroud, can't be countered | |
+
 ## Ceiling anchors (not yet scheduled)
-Doom Blade, Terror, Swords to Plowshares, Wrath of God, Blaze, Pyroclasm, Mystic Snake, Control Magic, Drana Kalastria Bloodchief, Pelakka Wurm, Prey Upon, Raise the Alarm, Siege-Gang Commander, Glorious Anthem, Phyrexian Rager, Curiosity, Rancor, Loxodon Warhammer, Bonesplitter, Zombify, Giant Growth, Duress, Mind Stone.
+Doom Blade, Terror, Swords to Plowshares, Wrath of God, Pyroclasm, Mystic Snake, Control Magic, Drana Kalastria Bloodchief, Phyrexian Rager, Curiosity, Rancor, Zombify, Duress.
 
 ## Test-only cards (not pool members)
 `test_fs_soldier` (first strike body), `test_pinger` ({1},T: 1 damage), `test_wrath` ({2} sorcery, destroy all creatures) — live in the engine test harness, never in `data/cards/`. Per ADR-018 they are permanent fixtures: engine tests never depend on pool membership.

@@ -43,6 +43,12 @@ export interface EffectContext {
   gainLife(player: number, amount: number): void;
   /** Destruction by effect (CR 701.7); honors indestructible. Death itself is still the SBA's call. */
   destroy(objectId: string): void;
+  /**
+   * Two creatures fight (CR 701.12): each deals damage equal to its power to
+   * the other, simultaneously, with the creatures as damage sources (so
+   * deathtouch/lifelink apply). Callers have already verified both are legal.
+   */
+  fight(idA: string, idB: string): void;
 }
 
 export class NotImplementedError extends Error {
@@ -141,6 +147,22 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
   destroyAll: (e, ctx) => {
     if (e.type !== "destroyAll") throw new Error("resolver mismatch");
     for (const id of ctx.objectsInScope(e.scope)) ctx.destroy(id);
+  },
+
+  damageAll: (e, ctx) => {
+    if (e.type !== "damageAll") throw new Error("resolver mismatch");
+    const amount = ctx.amount(e.amount);
+    for (const id of ctx.objectsInScope(e.scope)) ctx.dealDamage({ kind: "object", id }, amount);
+  },
+
+  fight: (e, ctx) => {
+    if (e.type !== "fight") throw new Error("resolver mismatch");
+    // ADR-022: all-or-nothing. If either target is illegal at resolution,
+    // neither creature deals or takes damage.
+    const a = ctx.target(e.targets[0]);
+    const b = ctx.target(e.targets[1]);
+    if (!a || !b || a.kind !== "object" || b.kind !== "object") return;
+    ctx.fight(a.id, b.id);
   },
 };
 

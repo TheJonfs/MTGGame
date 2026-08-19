@@ -75,6 +75,7 @@ export async function placePendingTriggers(ctx: EngineCtx, request: ActionReques
           type: "orderTrigger",
           index,
           cardId: t.sourceCardId,
+          objectId: t.sourceId, // log readability (data-model §6, S3)
         }));
         const chosen = await request(controller, "orderTriggers", actions);
         if (chosen.type !== "orderTrigger") throw new Error("expected orderTrigger action");

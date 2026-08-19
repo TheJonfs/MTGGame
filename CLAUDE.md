@@ -34,6 +34,7 @@ At session end, **overwrite `handoff.md`** using the template at the bottom of t
 6. **Engine never imports overworld.** And never imports UI. Agents (human/AI/random) sit behind one interface.
 7. **Escalate, don't decide.** Rules ambiguities, mechanics not in the manifest, and card-pool changes go in the handoff's Concerns, not into code. Interim choices are allowed only when the brief says so, and must be logged.
 8. **Tests are the spec.** Scenario fixtures (board state → actions → assertions) accompany every mechanic and every card batch.
+9. **Oracle grounding.** No real-card fact (mana cost, P/T, types, text) is ever taken from memory — planner or implementer. Briefs carry Scryfall-verified stats; the implementer re-verifies against Scryfall before encoding and flags any mismatch with the brief. (S2 concern 1; two planner errors were caught this way.)
 
 ## Repository map
 

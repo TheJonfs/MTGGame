@@ -1,4 +1,4 @@
-import { COLORS, parseManaCost, type ResolvedTarget, type TargetSpec } from "@shandalar/cards";
+import { cardColors, type ResolvedTarget, type TargetSpec } from "@shandalar/cards";
 import { characteristics, isCreature } from "./characteristics.js";
 import type { EngineCtx } from "./ctx.js";
 import type { PlayerId } from "./state.js";
@@ -13,11 +13,6 @@ function canBeTargeted(ctx: EngineCtx, objectId: string, by: PlayerId): boolean 
   return true;
 }
 
-function cardColors(ctx: EngineCtx, cardId: string): string[] {
-  const cost = parseManaCost(ctx.defs.def(cardId).manaCost);
-  return COLORS.filter((c) => cost.colored[c] > 0);
-}
-
 /** Is `target` legal for `spec` right now, targeted by `by`? Used at cast and re-checked at resolution (CR 608.2b). */
 export function isLegalTarget(ctx: EngineCtx, spec: TargetSpec, target: ResolvedTarget, by: PlayerId): boolean {
   const state = ctx.state;
@@ -29,7 +24,16 @@ export function isLegalTarget(ctx: EngineCtx, spec: TargetSpec, target: Resolved
     }
     case "nonblackCreature": {
       if (!isLegalTarget(ctx, { ...spec, predicate: "creature" }, target, by)) return false;
-      return target.kind === "object" && !cardColors(ctx, state.objects[target.id]!.cardId).includes("B");
+      // ADR-019: color predicates read the explicit/derived colors field.
+      return target.kind === "object" && !cardColors(ctx.defs.def(state.objects[target.id]!.cardId)).includes("B");
+    }
+    case "creatureYouControl": {
+      if (!isLegalTarget(ctx, { ...spec, predicate: "creature" }, target, by)) return false;
+      return target.kind === "object" && state.objects[target.id]!.controller === by;
+    }
+    case "creatureYouDontControl": {
+      if (!isLegalTarget(ctx, { ...spec, predicate: "creature" }, target, by)) return false;
+      return target.kind === "object" && state.objects[target.id]!.controller !== by;
     }
     case "permanent": {
       if (target.kind !== "object") return false;

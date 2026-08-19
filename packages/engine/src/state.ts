@@ -1,4 +1,4 @@
-import type { CardDef, Color } from "@shandalar/cards";
+import type { CardDef, ManaSymbol } from "@shandalar/cards";
 import type { ResolvedTarget, Effect, TargetSpec, Keyword } from "@shandalar/cards";
 
 export type PlayerId = 0 | 1;
@@ -36,15 +36,18 @@ export interface GameObject {
   // Battlefield-only state; stripped by moveObject on leaving.
   tapped: boolean;
   damage: number;
+  /** True when any of the marked damage came from a deathtouch source (R-014). Cleared with damage. */
+  deathtouchDamage: boolean;
   summoningSick: boolean;
   attachedTo: string | null;
   counters: Record<string, number>;
 }
 
-export type ManaPool = Record<Color, number>;
+/** Pool slots per producible symbol; {C} is colorless, spendable only on generic costs (S3). */
+export type ManaPool = Record<ManaSymbol, number>;
 
 export function emptyPool(): ManaPool {
-  return { W: 0, U: 0, B: 0, R: 0, G: 0 };
+  return { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 };
 }
 
 export interface PlayerState {
@@ -75,6 +78,8 @@ export interface StackItem {
   targets: ResolvedTarget[];
   effects: Effect[];
   x: number;
+  /** Equip ability (CR 702.6): resolution attaches the source to the target. */
+  isEquip?: boolean;
 }
 
 /** A continuous effect created by a resolved spell/ability. Statics are computed live, not stored. */

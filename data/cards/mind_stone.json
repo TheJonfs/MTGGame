@@ -1,0 +1,43 @@
+{
+  "id": "mind_stone",
+  "name": "Mind Stone",
+  "source": "real",
+  "manaCost": "{2}",
+  "types": [
+    "Artifact"
+  ],
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "tap": true
+      },
+      "effects": [
+        {
+          "type": "addMana",
+          "mana": "{C}"
+        }
+      ]
+    },
+    {
+      "kind": "activated",
+      "cost": {
+        "mana": "{1}",
+        "tap": true,
+        "sacrifice": {
+          "predicate": "self"
+        }
+      },
+      "effects": [
+        {
+          "type": "draw",
+          "count": 1,
+          "who": "you"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

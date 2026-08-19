@@ -1,4 +1,5 @@
 import type { ResolvedTarget } from "@shandalar/cards";
+import { characteristics } from "./characteristics.js";
 import type { EngineCtx } from "./ctx.js";
 import { moveObject } from "./zones.js";
 import type { PlayerId } from "./state.js";
@@ -8,6 +9,12 @@ import type { PlayerId } from "./state.js";
  * game loop. Nothing here decides whether anything dies — that's SBAs.
  */
 
+/**
+ * Deal damage from a source. When the source is a creature currently on the
+ * battlefield, its deathtouch marks the damage (R-014, consulted by SBAs)
+ * and its lifelink gains its controller that much life, simultaneously with
+ * the damage (CR 702.15f) — combat and noncombat alike.
+ */
 export function dealDamage(
   ctx: EngineCtx,
   source: { id: string; cardId: string; controller: PlayerId },
@@ -16,6 +23,16 @@ export function dealDamage(
   combat: boolean,
 ): void {
   if (amount <= 0) return;
+
+  const sourceObj = ctx.state.objects[source.id];
+  let deathtouch = false;
+  let lifelink = false;
+  if (sourceObj && sourceObj.zone === "battlefield" && ctx.defs.def(sourceObj.cardId).types.includes("Creature")) {
+    const k = characteristics(ctx, source.id).keywords;
+    deathtouch = k.has("deathtouch");
+    lifelink = k.has("lifelink");
+  }
+
   if (target.kind === "player") {
     const player = target.player as PlayerId;
     const p = ctx.state.players[player];
@@ -33,6 +50,7 @@ export function dealDamage(
     const obj = ctx.state.objects[target.id];
     if (!obj || obj.zone !== "battlefield") return; // damage to a departed object is lost
     obj.damage += amount;
+    if (deathtouch) obj.deathtouchDamage = true;
     ctx.bus.emit("DAMAGE", {
       sourceId: source.id,
       sourceCardId: source.cardId,
@@ -41,7 +59,11 @@ export function dealDamage(
       amount,
       combat,
     });
+  } else {
+    return;
   }
+
+  if (lifelink) gainLife(ctx, source.controller, amount);
 }
 
 export function drawCard(ctx: EngineCtx, player: PlayerId): void {

@@ -20,6 +20,7 @@ import { autoPay, emptyManaPools, tapForMana } from "./mana.js";
 import { applyModifiers, type Modifier } from "./modifiers.js";
 import { drawCard } from "./ops.js";
 import { runSBAs } from "./sba.js";
+import { sacrificeCandidates } from "./sacrifice.js";
 import {
   emptyCombat,
   getObject,
@@ -39,6 +40,7 @@ import { createObject, moveObject } from "./zones.js";
 
 export type RequestPurpose =
   | "priority"
+  | "chooseSacrifice"
   | "declareAttacker"
   | "declareBlocker"
   | "orderTriggers"
@@ -367,7 +369,7 @@ export class Game {
           holder = opponentOf(holder);
         }
       } else {
-        this.applyPriorityAction(holder, chosen);
+        await this.applyPriorityAction(holder, chosen);
         passes = 0; // the acting player retains priority (CR 117.3c)
         await this.checkStateAndTriggers();
         if (state.result) return;
@@ -375,7 +377,7 @@ export class Game {
     }
   }
 
-  private applyPriorityAction(player: PlayerId, action: Action): void {
+  private async applyPriorityAction(player: PlayerId, action: Action): Promise<void> {
     const { state } = this.ctx;
     switch (action.type) {
       case "playLand": {
@@ -425,6 +427,16 @@ export class Game {
           this.ctx.bus.emit("TAPPED", { objectId: obj.id });
         }
         if (ability.cost.mana) autoPay(this.ctx, player, parseManaCost(ability.cost.mana), action.x ?? 0);
+        // Sacrifice is paid before the ability is on the stack (CR 601.2h,
+        // 602.2b); a resulting DIES trigger pends and is ordered normally.
+        if (ability.cost.sacrifice) {
+          const candidates = sacrificeCandidates(this.ctx, player, obj.id, ability.cost.sacrifice.predicate);
+          if (candidates.length === 0) throw new Error("no legal sacrifice");
+          const options: Action[] = candidates.map((objectId) => ({ type: "sacrifice", objectId }));
+          const pick = options.length === 1 ? options[0]! : await this.request(player, "chooseSacrifice", options);
+          if (pick.type !== "sacrifice") throw new Error("expected sacrifice");
+          moveObject(this.ctx, pick.objectId, "graveyard");
+        }
         state.stack.push({
           id: this.ctx.ids.next("stk"),
           kind: "ability",
@@ -435,6 +447,7 @@ export class Game {
           targets: action.targets,
           effects: ability.effects,
           x: action.x ?? 0,
+          ...(ability.equip ? { isEquip: true } : {}),
         });
         break;
       }
@@ -459,6 +472,17 @@ export class Game {
         if (item.objectId) moveObject(this.ctx, item.objectId, "graveyard");
         return;
       }
+    }
+
+    // Equip resolution (CR 702.6): attach the source to the target. Re-equip
+    // is just reassignment — attachment is a field, not a zone change.
+    if (item.isEquip) {
+      const equipment = item.sourceId ? state.objects[item.sourceId] : undefined;
+      const host = item.targets[0];
+      if (equipment && equipment.zone === "battlefield" && host?.kind === "object" && state.objects[host.id]) {
+        equipment.attachedTo = host.id;
+      }
+      return;
     }
 
     const ectx = makeEffectContext(this.ctx, item);

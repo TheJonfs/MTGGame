@@ -1,0 +1,21 @@
+{
+  "id": "blurred_mongoose",
+  "name": "Blurred Mongoose",
+  "source": "real",
+  "manaCost": "{1}{G}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Mongoose"
+  ],
+  "power": 2,
+  "toughness": 1,
+  "keywords": [
+    "shroud",
+    "cant be countered"
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}
