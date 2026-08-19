@@ -1,0 +1,50 @@
+{
+  "name": "First strike 2/1 blocked by 2/2: the 2/2 dies first, deals no damage back",
+  "setup": {
+    "turn": 3,
+    "active": 0,
+    "step": "DECLARE_ATTACKERS",
+    "players": [
+      {
+        "battlefield": [
+          "test_fs_soldier"
+        ]
+      },
+      {
+        "battlefield": [
+          "gray_ogre"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "attack",
+      "attackers": [
+        "test_fs_soldier"
+      ]
+    },
+    {
+      "player": 1,
+      "do": "block",
+      "blocks": [
+        {
+          "blocker": "gray_ogre",
+          "attacker": "test_fs_soldier"
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "steps": [
+        "DECLARE_ATTACKERS",
+        "DECLARE_BLOCKERS",
+        "FIRST_STRIKE_DAMAGE",
+        "COMBAT_DAMAGE",
+        "COMBAT_END"
+      ]
+    }
+  ]
+}

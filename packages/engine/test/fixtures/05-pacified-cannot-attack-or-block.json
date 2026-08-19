@@ -1,0 +1,24 @@
+{
+  "name": "Pacified creature is excluded from attack and block enumeration",
+  "setup": {
+    "turn": 3,
+    "active": 0,
+    "step": "DECLARE_ATTACKERS",
+    "players": [
+      {
+        "battlefield": [
+          "savannah_lions"
+        ]
+      },
+      {
+        "battlefield": [
+          {
+            "card": "pacifism",
+            "attachedTo": "savannah_lions"
+          }
+        ]
+      }
+    ]
+  },
+  "run": []
+}

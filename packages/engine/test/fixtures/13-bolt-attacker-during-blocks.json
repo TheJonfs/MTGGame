@@ -1,0 +1,64 @@
+{
+  "name": "Bolt the attacker during declare blockers: it dies before damage; blocker takes none",
+  "setup": {
+    "turn": 3,
+    "active": 0,
+    "step": "DECLARE_ATTACKERS",
+    "players": [
+      {
+        "battlefield": [
+          "hill_giant"
+        ]
+      },
+      {
+        "battlefield": [
+          "gray_ogre",
+          "mountain"
+        ],
+        "hand": [
+          "lightning_bolt"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "attack",
+      "attackers": [
+        "hill_giant"
+      ]
+    },
+    {
+      "player": 1,
+      "do": "block",
+      "blocks": [
+        {
+          "blocker": "gray_ogre",
+          "attacker": "hill_giant"
+        }
+      ]
+    },
+    {
+      "player": 1,
+      "do": "cast",
+      "card": "lightning_bolt",
+      "targets": [
+        {
+          "object": "hill_giant"
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "steps": [
+        "DECLARE_ATTACKERS",
+        "DECLARE_BLOCKERS",
+        "FIRST_STRIKE_DAMAGE",
+        "COMBAT_DAMAGE",
+        "COMBAT_END"
+      ]
+    }
+  ]
+}

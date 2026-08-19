@@ -1,0 +1,64 @@
+{
+  "name": "Brute Force the blocker during declare blockers: blocker survives, attacker dies",
+  "setup": {
+    "turn": 3,
+    "active": 0,
+    "step": "DECLARE_ATTACKERS",
+    "players": [
+      {
+        "battlefield": [
+          "hill_giant"
+        ]
+      },
+      {
+        "battlefield": [
+          "gray_ogre",
+          "mountain"
+        ],
+        "hand": [
+          "brute_force"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "attack",
+      "attackers": [
+        "hill_giant"
+      ]
+    },
+    {
+      "player": 1,
+      "do": "block",
+      "blocks": [
+        {
+          "blocker": "gray_ogre",
+          "attacker": "hill_giant"
+        }
+      ]
+    },
+    {
+      "player": 1,
+      "do": "cast",
+      "card": "brute_force",
+      "targets": [
+        {
+          "object": "gray_ogre"
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "steps": [
+        "DECLARE_ATTACKERS",
+        "DECLARE_BLOCKERS",
+        "FIRST_STRIKE_DAMAGE",
+        "COMBAT_DAMAGE",
+        "COMBAT_END"
+      ]
+    }
+  ]
+}

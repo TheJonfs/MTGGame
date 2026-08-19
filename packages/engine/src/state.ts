@@ -1,0 +1,191 @@
+import type { CardDef, Color } from "@shandalar/cards";
+import type { ResolvedTarget, Effect, TargetSpec, Keyword } from "@shandalar/cards";
+
+export type PlayerId = 0 | 1;
+
+export function opponentOf(p: PlayerId): PlayerId {
+  return p === 0 ? 1 : 0;
+}
+
+export type ZoneName = "library" | "hand" | "battlefield" | "graveyard" | "stack" | "exile";
+
+export const STEPS = [
+  "UNTAP",
+  "UPKEEP",
+  "DRAW",
+  "MAIN1",
+  "COMBAT_BEGIN",
+  "DECLARE_ATTACKERS",
+  "DECLARE_BLOCKERS",
+  "FIRST_STRIKE_DAMAGE",
+  "COMBAT_DAMAGE",
+  "COMBAT_END",
+  "MAIN2",
+  "END",
+  "CLEANUP",
+] as const;
+export type Step = (typeof STEPS)[number];
+
+export interface GameObject {
+  id: string;
+  cardId: string;
+  owner: PlayerId;
+  controller: PlayerId;
+  zone: ZoneName;
+  isToken: boolean;
+  // Battlefield-only state; stripped by moveObject on leaving.
+  tapped: boolean;
+  damage: number;
+  summoningSick: boolean;
+  attachedTo: string | null;
+  counters: Record<string, number>;
+}
+
+export type ManaPool = Record<Color, number>;
+
+export function emptyPool(): ManaPool {
+  return { W: 0, U: 0, B: 0, R: 0, G: 0 };
+}
+
+export interface PlayerState {
+  life: number;
+  library: string[]; // object ids, index 0 = top
+  hand: string[];
+  graveyard: string[];
+  exile: string[];
+  manaPool: ManaPool;
+  landsPlayedThisTurn: number;
+  attemptedDrawFromEmpty: boolean;
+  lost: boolean; // set by SBAs; game end computed from these
+  lostReason: "LIFE" | "DECKED" | null;
+}
+
+export type StackItemKind = "spell" | "ability" | "trigger";
+
+export interface StackItem {
+  id: string;
+  kind: StackItemKind;
+  /** Spell: the card object sitting in the stack zone. */
+  objectId?: string;
+  /** Ability/trigger: the battlefield object it came from. */
+  sourceId?: string;
+  sourceCardId: string;
+  controller: PlayerId;
+  targetSpecs: TargetSpec[];
+  targets: ResolvedTarget[];
+  effects: Effect[];
+  x: number;
+}
+
+/** A continuous effect created by a resolved spell/ability. Statics are computed live, not stored. */
+export interface StoredContinuousEffect {
+  kind: "modifyPT" | "grantKeyword" | "restrict";
+  objectId: string;
+  power?: number;
+  toughness?: number;
+  keyword?: Keyword;
+  what?: "attack" | "block" | "both";
+  duration: "UNTIL_END_OF_TURN" | "UNTIL_SOURCE_LEAVES" | "WHILE_SOURCE_ON_BATTLEFIELD";
+  sourceStackItemId: string;
+  timestamp: number;
+}
+
+export interface PendingTrigger {
+  sourceId: string;
+  sourceCardId: string;
+  controller: PlayerId;
+  abilityIndex: number;
+  timestamp: number;
+}
+
+export interface CombatState {
+  attackers: string[]; // object ids, declaration order
+  /** blocker id -> attacker id */
+  blocks: { blocker: string; attacker: string }[];
+  /** attacker id -> ordered blocker ids (damage order) */
+  blockOrder: Record<string, string[]>;
+  /** attackers that were blocked (stays true even if blockers leave) */
+  blocked: Record<string, boolean>;
+}
+
+export function emptyCombat(): CombatState {
+  return { attackers: [], blocks: [], blockOrder: {}, blocked: {} };
+}
+
+export interface GameResult {
+  winner: PlayerId | null;
+  reason: "LIFE" | "DECKED" | "CONCEDE" | "MAX_TURNS" | "DRAW";
+}
+
+export interface GameState {
+  turn: number;
+  activePlayer: PlayerId;
+  step: Step;
+  players: [PlayerState, PlayerState];
+  objects: Record<string, GameObject>;
+  battlefield: string[]; // shared, in timestamp order
+  stack: StackItem[]; // index 0 = bottom
+  continuousEffects: StoredContinuousEffect[];
+  pendingTriggers: PendingTrigger[];
+  combat: CombatState;
+  timestamp: number; // monotonic, for continuous-effect ordering
+  result: GameResult | null;
+}
+
+export function initialPlayerState(life: number): PlayerState {
+  return {
+    life,
+    library: [],
+    hand: [],
+    graveyard: [],
+    exile: [],
+    manaPool: emptyPool(),
+    landsPlayedThisTurn: 0,
+    attemptedDrawFromEmpty: false,
+    lost: false,
+    lostReason: null,
+  };
+}
+
+export function initialGameState(startingLife: number): GameState {
+  return {
+    turn: 0,
+    activePlayer: 0,
+    step: "CLEANUP", // advanced to turn 1 UNTAP by the game loop
+    players: [initialPlayerState(startingLife), initialPlayerState(startingLife)],
+    objects: {},
+    battlefield: [],
+    stack: [],
+    continuousEffects: [],
+    pendingTriggers: [],
+    combat: emptyCombat(),
+    timestamp: 0,
+    result: null,
+  };
+}
+
+export function getObject(state: GameState, id: string): GameObject {
+  const obj = state.objects[id];
+  if (!obj) throw new Error(`No such object: ${id}`);
+  return obj;
+}
+
+export function nextTimestamp(state: GameState): number {
+  state.timestamp += 1;
+  return state.timestamp;
+}
+
+/** The card pool the game reads definitions from. */
+export interface DefSource {
+  def(cardId: string): CardDef;
+}
+
+export function makeDefSource(cards: Map<string, CardDef>): DefSource {
+  return {
+    def(cardId: string): CardDef {
+      const d = cards.get(cardId);
+      if (!d) throw new Error(`Unknown cardId: ${cardId}`);
+      return d;
+    },
+  };
+}

@@ -1,0 +1,36 @@
+{
+  "name": "Synthetic tap ability: {1},T deal 1 damage (activated-ability stack path)",
+  "setup": {
+    "turn": 3,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "test_pinger",
+          "mountain",
+          "mountain"
+        ]
+      },
+      {}
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "activate",
+      "card": "test_pinger",
+      "abilityIndex": 0,
+      "targets": [
+        {
+          "player": 1
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

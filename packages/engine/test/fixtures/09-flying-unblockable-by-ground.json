@@ -1,0 +1,36 @@
+{
+  "name": "Flying attacker cannot be blocked by a non-flying, non-reach creature",
+  "setup": {
+    "turn": 3,
+    "active": 0,
+    "step": "DECLARE_ATTACKERS",
+    "players": [
+      {
+        "battlefield": [
+          "wind_drake"
+        ]
+      },
+      {
+        "battlefield": [
+          "gray_ogre"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "attack",
+      "attackers": [
+        "wind_drake"
+      ]
+    }
+  ],
+  "run": [
+    {
+      "steps": [
+        "DECLARE_ATTACKERS"
+      ]
+    }
+  ]
+}

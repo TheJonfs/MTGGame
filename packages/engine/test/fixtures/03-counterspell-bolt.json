@@ -1,0 +1,54 @@
+{
+  "name": "Counterspell a Bolt: Bolt to graveyard, no damage",
+  "setup": {
+    "turn": 3,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "mountain"
+        ],
+        "hand": [
+          "lightning_bolt"
+        ]
+      },
+      {
+        "battlefield": [
+          "island",
+          "island"
+        ],
+        "hand": [
+          "counterspell"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "lightning_bolt",
+      "targets": [
+        {
+          "player": 1
+        }
+      ]
+    },
+    {
+      "player": 1,
+      "do": "cast",
+      "card": "counterspell",
+      "targets": [
+        {
+          "spell": "lightning_bolt"
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

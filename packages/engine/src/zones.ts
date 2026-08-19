@@ -1,0 +1,152 @@
+import type { EngineCtx } from "./ctx.js";
+import { getObject, type GameObject, type PlayerId, type ZoneName } from "./state.js";
+
+export interface MoveOptions {
+  /** For library destinations. Default "top". */
+  position?: "top" | "bottom";
+  /** Entering the battlefield attached to a host (auras). */
+  attachedTo?: string;
+  /** Entering the battlefield tapped (reserved; "enters tapped" is allowed by manifest §4). */
+  tapped?: boolean;
+}
+
+function zoneArray(ctx: EngineCtx, zone: ZoneName, owner: PlayerId): string[] | null {
+  const p = ctx.state.players[owner];
+  switch (zone) {
+    case "library":
+      return p.library;
+    case "hand":
+      return p.hand;
+    case "graveyard":
+      return p.graveyard;
+    case "exile":
+      return p.exile;
+    case "battlefield":
+      return ctx.state.battlefield;
+    case "stack":
+      return null; // stack membership is via StackItems, not an id array
+  }
+}
+
+/**
+ * The one zone-move primitive (manifest §2, engine-design §3). Every object
+ * movement goes through here; nothing else touches zone arrays.
+ *
+ * Returns the new object id (objects get a fresh identity on every move,
+ * CR 400.7), or null if the object ceased to exist (token leaving battlefield).
+ */
+export function moveObject(
+  ctx: EngineCtx,
+  objectId: string,
+  to: ZoneName,
+  options: MoveOptions = {},
+): string | null {
+  const state = ctx.state;
+  const obj = getObject(state, objectId);
+  const from = obj.zone;
+
+  // Detach anything attached to the moving object; SBAs will clean the
+  // now-unattached auras up (CR 704.5m).
+  for (const other of Object.values(state.objects)) {
+    if (other.attachedTo === objectId) other.attachedTo = null;
+  }
+
+  // Remove from source zone array.
+  const fromArr = zoneArray(ctx, from, obj.owner);
+  if (fromArr) {
+    const i = fromArr.indexOf(objectId);
+    if (i === -1) throw new Error(`moveObject: ${objectId} not in its zone array (${from})`);
+    fromArr.splice(i, 1);
+  }
+  delete state.objects[objectId];
+
+  // Tokens cease to exist when they leave the battlefield (CR 111.7).
+  if (obj.isToken && from === "battlefield") {
+    ctx.bus.emit("ZONE_CHANGE", {
+      oldId: objectId,
+      newId: "",
+      cardId: obj.cardId,
+      from,
+      to,
+      owner: obj.owner,
+      controller: obj.controller,
+    });
+    return null;
+  }
+
+  const newId = ctx.ids.next("obj");
+  const entersBattlefield = to === "battlefield";
+  const card = ctx.defs.def(obj.cardId);
+  const newObj: GameObject = {
+    id: newId,
+    cardId: obj.cardId,
+    owner: obj.owner,
+    // Control reverts to owner in non-battlefield zones; battlefield control
+    // belongs to whoever put it there (S1: always the owner casts it).
+    controller: entersBattlefield ? obj.controller : obj.owner,
+    zone: to,
+    isToken: obj.isToken,
+    tapped: entersBattlefield ? (options.tapped ?? false) : false,
+    damage: 0,
+    summoningSick: entersBattlefield && card.types.includes("Creature"),
+    attachedTo: entersBattlefield ? (options.attachedTo ?? null) : null,
+    counters: {},
+  };
+  state.objects[newId] = newObj;
+
+  const toArr = zoneArray(ctx, to, newObj.owner);
+  if (toArr) {
+    if (to === "library" && options.position === "bottom") toArr.push(newId);
+    else if (to === "library") toArr.unshift(newId);
+    else toArr.push(newId);
+  }
+
+  ctx.bus.emit("ZONE_CHANGE", {
+    oldId: objectId,
+    newId,
+    cardId: obj.cardId,
+    from,
+    to,
+    owner: newObj.owner,
+    controller: newObj.controller,
+  });
+  return newId;
+}
+
+/** Create a brand-new object directly in a zone (game setup, tokens). */
+export function createObject(
+  ctx: EngineCtx,
+  cardId: string,
+  owner: PlayerId,
+  zone: ZoneName,
+  opts: { isToken?: boolean; attachedTo?: string } = {},
+): string {
+  const card = ctx.defs.def(cardId); // throws on unknown card
+  const id = ctx.ids.next("obj");
+  const obj: GameObject = {
+    id,
+    cardId,
+    owner,
+    controller: owner,
+    zone,
+    isToken: opts.isToken ?? false,
+    tapped: false,
+    damage: 0,
+    summoningSick: zone === "battlefield" && card.types.includes("Creature"),
+    attachedTo: opts.attachedTo ?? null,
+    counters: {},
+  };
+  ctx.state.objects[id] = obj;
+  const arr = zoneArray(ctx, zone, owner);
+  if (arr) arr.push(id);
+  ctx.bus.emit("ZONE_CHANGE", {
+    oldId: "",
+    newId: id,
+    cardId,
+    from: null,
+    to: zone,
+    owner,
+    controller: owner,
+  });
+  return id;
+}

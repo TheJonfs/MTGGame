@@ -1,0 +1,26 @@
+{
+  "name": "Drawing from an empty library loses at the next SBA check",
+  "setup": {
+    "turn": 4,
+    "active": 1,
+    "step": "UPKEEP",
+    "players": [
+      {
+        "library": [
+          "mountain",
+          "mountain"
+        ]
+      },
+      {
+        "library": []
+      }
+    ]
+  },
+  "run": [
+    {
+      "steps": [
+        "DRAW"
+      ]
+    }
+  ]
+}

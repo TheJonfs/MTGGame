@@ -1,0 +1,33 @@
+{
+  "name": "Man-o'-War ETB with no other creature: must target and bounce itself",
+  "setup": {
+    "turn": 3,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "island",
+          "island",
+          "island"
+        ],
+        "hand": [
+          "man_o_war"
+        ]
+      },
+      {}
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "man_o_war"
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

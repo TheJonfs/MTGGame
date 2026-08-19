@@ -27,3 +27,8 @@ export class ArrayLog<A> implements LogSink<A> {
     this.entries.push(entry);
   }
 }
+
+/** Discards entries. For RNG consumers whose draws must NOT enter the game log (e.g. agent-internal randomness). */
+export class NullLog<A> implements LogSink<A> {
+  append(_entry: ActionLogEntry<A>): void {}
+}

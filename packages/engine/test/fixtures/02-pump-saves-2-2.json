@@ -1,0 +1,54 @@
+{
+  "name": "Bolt a 2/2, Brute Force in response: survives; EOT pump ends; cleanup clears damage",
+  "setup": {
+    "turn": 3,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "mountain"
+        ],
+        "hand": [
+          "lightning_bolt"
+        ]
+      },
+      {
+        "battlefield": [
+          "gray_ogre",
+          "mountain"
+        ],
+        "hand": [
+          "brute_force"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "lightning_bolt",
+      "targets": [
+        {
+          "object": "gray_ogre"
+        }
+      ]
+    },
+    {
+      "player": 1,
+      "do": "cast",
+      "card": "brute_force",
+      "targets": [
+        {
+          "object": "gray_ogre"
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

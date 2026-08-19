@@ -1,0 +1,37 @@
+{
+  "name": "Cloudkin Seer ETB draws a card",
+  "setup": {
+    "turn": 3,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "island",
+          "island",
+          "island"
+        ],
+        "hand": [
+          "cloudkin_seer"
+        ],
+        "library": [
+          "island",
+          "wind_drake"
+        ]
+      },
+      {}
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "cloudkin_seer"
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}
