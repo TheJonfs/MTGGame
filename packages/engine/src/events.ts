@@ -15,6 +15,13 @@ export interface GameEventMap extends Record<string, unknown> {
     controllerBefore: PlayerId;
   };
   LAND_ENTERS_UNDER_YOUR_CONTROL: { objectId: string; controller: PlayerId };
+  /** ADR-026: every attach/unattach/re-attach. EVENT-stream only; no trigger consumes it yet. */
+  ATTACHED: {
+    objectId: string;
+    previousHost: string | null;
+    newHost: string | null;
+    cause: "aura-enter" | "equip" | "sba-unattach" | "host-left";
+  };
   DAMAGE: {
     sourceId: string;
     sourceCardId: string;

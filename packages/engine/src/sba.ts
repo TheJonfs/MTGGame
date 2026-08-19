@@ -64,7 +64,9 @@ export function runSBAs(ctx: EngineCtx): boolean {
         toGraveyard.push(id);
       }
       if (def.subtypes?.includes("Equipment") && obj.attachedTo && !legalHost) {
+        const previousHost = obj.attachedTo;
         obj.attachedTo = null;
+        ctx.bus.emit("ATTACHED", { objectId: id, previousHost, newHost: null, cause: "sba-unattach" });
         changed = true;
       }
     }

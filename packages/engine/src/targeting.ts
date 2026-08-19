@@ -27,6 +27,10 @@ export function isLegalTarget(ctx: EngineCtx, spec: TargetSpec, target: Resolved
       // ADR-019: color predicates read the explicit/derived colors field.
       return target.kind === "object" && !cardColors(ctx.defs.def(state.objects[target.id]!.cardId)).includes("B");
     }
+    case "nonartifactNonblackCreature": {
+      if (!isLegalTarget(ctx, { ...spec, predicate: "nonblackCreature" }, target, by)) return false;
+      return target.kind === "object" && !ctx.defs.def(state.objects[target.id]!.cardId).types.includes("Artifact");
+    }
     case "creatureYouControl": {
       if (!isLegalTarget(ctx, { ...spec, predicate: "creature" }, target, by)) return false;
       return target.kind === "object" && state.objects[target.id]!.controller === by;
@@ -45,6 +49,8 @@ export function isLegalTarget(ctx: EngineCtx, spec: TargetSpec, target: Resolved
       return isLegalTarget(ctx, { ...spec, predicate: "creature" }, target, by);
     case "player":
       return target.kind === "player";
+    case "opponentPlayer":
+      return target.kind === "player" && target.player !== by;
     case "spell":
       return target.kind === "stackItem" && state.stack.some((s) => s.id === target.id && s.kind === "spell");
     case "cardInYourGraveyard": {

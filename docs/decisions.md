@@ -49,3 +49,17 @@ Planner-maintained. Implementer proposes via handoff Concerns; planner records.
 **ADR-022 — Fight legality is all-or-nothing** (CR 701.12b): if either fighting creature is an illegal target or has left the battlefield at resolution, no damage is dealt. This is a generic fight rule in the resolver, not a card carve-out.
 
 **ADR-023 — Ratifications from S2:** Rumbling Baloth replaces Rhox Brute; S2 pool rows ratified; initialization-time triggers are discarded (modifiers are static starting conditions); `destroy` resolver waits for Doom Blade (M3).
+
+**ADR-024 — Fuzz-before-fixtures is protocol.** See CLAUDE.md session protocol. (S3 concern 1.)
+
+**ADR-025 — Rules claims cite CR.** CLAUDE.md principle 10. (S3 concern 2.)
+
+**ADR-026 — `ATTACHED` event.** Attach/unattach/re-attach emits an event with {object, previousHost, newHost, cause}. Needed by the replay viewer (M3.5) and by any "becomes attached/equipped" trigger later. Implemented in S4. (S3 concern 3.)
+
+**ADR-027 — Optional ("you may") triggers.** A triggered ability with `optional: true` asks its controller yes/no via a DecisionRequest on resolution (CR 603.5 / 608.2b). Curiosity is the first.
+
+**ADR-028 — Value references in effects.** Effect amounts may be `{"ref": "targetPower", "target": i}` (last known information at resolution, CR 608.2h) in addition to literals and `"X"`. `who` gains `controllerOfTarget`. Swords to Plowshares is the first user; kept deliberately minimal — no arithmetic, no counting.
+
+**ADR-029 — Discard modes.** `ownerChooses` (Mind Rot), `random` (Hymn; game RNG, logged), `casterChooses` with optional filter (Duress: noncreature, nonland). Revealing a hand is a view-level effect: the choosing agent sees the revealed cards as candidates; the log records the choice.
+
+**ADR-030 — Ratifications from S3:** deathtouch assignment is the source's (510.1c) and fixture 6 was a planner error; fixture 1 split 1a/1b; `damageAll` landed on the `destroyAll` precedent; cost-side `{C}` is an accepted boundary; B–C decking rate noted as an M4 baselining data point. M3 split into S4 (removal, discard, conditions/scopes, Deck D) and S5 (control change, reanimation, legend rule, Drana, Mystic Snake).

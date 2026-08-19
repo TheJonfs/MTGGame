@@ -48,7 +48,10 @@ export function moveObject(
   // Detach anything attached to the moving object; SBAs will clean the
   // now-unattached auras up (CR 704.5m).
   for (const other of Object.values(state.objects)) {
-    if (other.attachedTo === objectId) other.attachedTo = null;
+    if (other.attachedTo === objectId) {
+      other.attachedTo = null;
+      ctx.bus.emit("ATTACHED", { objectId: other.id, previousHost: objectId, newHost: null, cause: "host-left" });
+    }
   }
 
   // Remove from source zone array.
@@ -101,6 +104,9 @@ export function moveObject(
     if (to === "library" && options.position === "bottom") toArr.push(newId);
     else if (to === "library") toArr.unshift(newId);
     else toArr.push(newId);
+  }
+  if (entersBattlefield && options.attachedTo) {
+    ctx.bus.emit("ATTACHED", { objectId: newId, previousHost: null, newHost: options.attachedTo, cause: "aura-enter" });
   }
 
   ctx.bus.emit("ZONE_CHANGE", {

@@ -80,6 +80,8 @@ export interface StackItem {
   x: number;
   /** Equip ability (CR 702.6): resolution attaches the source to the target. */
   isEquip?: boolean;
+  /** "You may" trigger (ADR-027): controller is asked yes/no on resolution. */
+  isOptionalTrigger?: boolean;
 }
 
 /** A continuous effect created by a resolved spell/ability. Statics are computed live, not stored. */

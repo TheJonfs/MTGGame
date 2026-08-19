@@ -14,7 +14,7 @@ import {
 
 const CARD_TYPES: readonly CardType[] = ["Land", "Creature", "Instant", "Sorcery", "Enchantment", "Artifact"];
 const DURATIONS = ["WHILE_SOURCE_ON_BATTLEFIELD", "UNTIL_END_OF_TURN", "UNTIL_SOURCE_LEAVES"];
-const WHOS = ["you", "opponent", "eachPlayer"];
+const WHOS = ["you", "opponent", "eachPlayer", "target", "controllerOfTarget"];
 const ZONES = ["battlefield", "stack", "any", "graveyard"];
 
 export interface ValidationResult {
@@ -124,6 +124,18 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
   switch (a.kind) {
     case "triggered": {
       if (!TRIGGER_EVENTS.includes(a.event as never)) err(`unknown trigger event "${a.event}"`);
+      if (a.condition !== undefined) {
+        if (!isRecord(a.condition)) err(`trigger condition must be an object`);
+        else {
+          const c = a.condition;
+          if (c.source !== undefined && !["self", "attached", "other", "any"].includes(c.source as string)) {
+            err(`unknown condition source "${c.source}"`);
+          }
+          if (c.player !== undefined && !["opponentOfController", "controller", "any"].includes(c.player as string)) {
+            err(`unknown condition player "${c.player}"`);
+          }
+        }
+      }
       validateEffects(a.effects, nTargets, err, warnings, cardId);
       break;
     }
@@ -195,14 +207,17 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
   discard: (e, err) => {
     needCount(e, err);
     needWho(e, err);
-    if (e.mode !== "choose" && e.mode !== "random") err(`discard mode must be choose|random`);
+    if (e.mode !== "ownerChooses" && e.mode !== "random" && e.mode !== "casterChooses") {
+      err(`discard mode must be ownerChooses|random|casterChooses (ADR-029)`);
+    }
+    if (e.filter !== undefined && e.filter !== "noncreatureNonland") err(`unknown discard filter "${e.filter}"`);
   },
   gainLife: (e, err) => {
-    needNumber(e, "amount", err);
+    needAmount(e, err);
     needWho(e, err);
   },
   loseLife: (e, err) => {
-    needNumber(e, "amount", err);
+    needAmount(e, err);
     needWho(e, err);
   },
   modifyPT: (e, err) => {
@@ -258,8 +273,16 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
   },
 };
 
+function isValueRef(v: unknown): boolean {
+  return (
+    typeof v === "object" && v !== null && (v as Record<string, unknown>).ref === "targetPower" &&
+    Number.isInteger((v as Record<string, unknown>).target)
+  );
+}
 function needAmount(e: Record<string, unknown>, err: (m: string) => void) {
-  if (e.amount !== "X" && !Number.isInteger(e.amount)) err(`amount must be integer or "X"`);
+  if (e.amount !== "X" && !Number.isInteger(e.amount) && !isValueRef(e.amount)) {
+    err(`amount must be integer, "X", or {ref:"targetPower",target:i} (ADR-028)`);
+  }
 }
 function needNumber(e: Record<string, unknown>, key: string, err: (m: string) => void) {
   if (!Number.isInteger(e[key])) err(`"${key}" must be an integer`);

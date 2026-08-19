@@ -23,6 +23,8 @@ export type Action =
   | { type: "orderBlocker"; attacker: string; blocker: string }
   | { type: "chooseTriggerTargets"; targets: ResolvedTarget[] }
   | { type: "sacrifice"; objectId: string }
+  | { type: "acceptOptional" }
+  | { type: "declineOptional" }
   | { type: "mulligan" }
   | { type: "keepHand" }
   | { type: "bottomCard"; objectId: string }

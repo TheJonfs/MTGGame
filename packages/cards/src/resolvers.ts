@@ -1,4 +1,4 @@
-import type { Amount, Duration, Effect, EffectType, Keyword, Scope, Who } from "./types.js";
+import type { Amount, DiscardFilter, DiscardMode, Duration, Effect, EffectType, Keyword, Scope, Who } from "./types.js";
 
 /**
  * The seam between vocabulary and engine (engine-design §1 dependency rule):
@@ -21,6 +21,8 @@ export interface ResolvedContinuousEffect {
   what?: "attack" | "block" | "both";
   duration: Duration;
 }
+
+/** Player selection that needs target LKI resolves through the context (ADR-028). */
 
 export interface EffectContext {
   /** Re-checked target by index; null if the target is now illegal (skip it, CR 608.2b). */
@@ -49,6 +51,15 @@ export interface EffectContext {
    * deathtouch/lifelink apply). Callers have already verified both are legal.
    */
   fight(idA: string, idB: string): void;
+  /** Exile (CR 700.4: not a death — no DIES trigger). */
+  exile(objectId: string): void;
+  loseLife(player: number, amount: number): void;
+  /**
+   * Discard N from a player's hand per ADR-029. Chooser interaction makes
+   * this the one async op: ownerChooses/casterChooses issue DecisionRequests;
+   * random draws from the game RNG (logged).
+   */
+  discard(player: number, count: number, mode: DiscardMode, filter?: DiscardFilter): Promise<void>;
 }
 
 export class NotImplementedError extends Error {
@@ -58,7 +69,7 @@ export class NotImplementedError extends Error {
   }
 }
 
-export type EffectResolver = (effect: Effect, ctx: EffectContext) => void;
+export type EffectResolver = (effect: Effect, ctx: EffectContext) => void | Promise<void>;
 
 function targeted(effect: Effect & { target?: number; scope?: Scope }, ctx: EffectContext): ResolvedTarget[] {
   // Effects address objects either by declared-target index or by scope.
@@ -141,7 +152,29 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
 
   gainLife: (e, ctx) => {
     if (e.type !== "gainLife") throw new Error("resolver mismatch");
-    for (const p of ctx.players(e.who)) ctx.gainLife(p, e.amount);
+    for (const p of ctx.players(e.who)) ctx.gainLife(p, ctx.amount(e.amount));
+  },
+
+  loseLife: (e, ctx) => {
+    if (e.type !== "loseLife") throw new Error("resolver mismatch");
+    for (const p of ctx.players(e.who)) ctx.loseLife(p, ctx.amount(e.amount));
+  },
+
+  destroy: (e, ctx) => {
+    if (e.type !== "destroy") throw new Error("resolver mismatch");
+    const t = ctx.target(e.target);
+    if (t && t.kind === "object") ctx.destroy(t.id);
+  },
+
+  exile: (e, ctx) => {
+    if (e.type !== "exile") throw new Error("resolver mismatch");
+    const t = ctx.target(e.target);
+    if (t && t.kind === "object") ctx.exile(t.id);
+  },
+
+  discard: async (e, ctx) => {
+    if (e.type !== "discard") throw new Error("resolver mismatch");
+    for (const p of ctx.players(e.who)) await ctx.discard(p, e.count, e.mode, e.filter);
   },
 
   destroyAll: (e, ctx) => {
@@ -171,8 +204,8 @@ export const IMPLEMENTED_EFFECT_TYPES: ReadonlySet<EffectType> = new Set(
 );
 
 /** Resolve one effect. Unimplemented vocabulary throws NotImplementedError by design (brief Part 2). */
-export function resolveEffect(effect: Effect, ctx: EffectContext): void {
+export async function resolveEffect(effect: Effect, ctx: EffectContext): Promise<void> {
   const resolver = implemented[effect.type];
   if (!resolver) throw new NotImplementedError(effect.type);
-  resolver(effect, ctx);
+  await resolver(effect, ctx);
 }

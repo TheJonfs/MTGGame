@@ -22,6 +22,8 @@ At session start, read in this order:
 3. Your session brief: `docs/briefs/session-NN-brief.md` (highest-numbered unless Chris says otherwise).
 4. Whatever the brief tells you to read (typically `docs/engine-design.md`, `docs/data-model.md`, and named registry entries).
 
+**Fuzz before fixtures.** Whenever a session integrates new cards into the slice decks, run a fuzz smoke (≥300 games across all pairings) *before* writing scenario fixtures. Cost/payment/enumeration bugs live in random-line territory; fixtures rarely find them (S3 concern 1: `canPay` counted an ability's own tap-cost source as a producer, caught at seed 32).
+
 At session end, **overwrite `handoff.md`** using the template at the bottom of this file, and commit. Git history is the archive; never create `handoff-2.md` variants.
 
 ## Non-negotiable engineering principles
@@ -35,6 +37,7 @@ At session end, **overwrite `handoff.md`** using the template at the bottom of t
 7. **Escalate, don't decide.** Rules ambiguities, mechanics not in the manifest, and card-pool changes go in the handoff's Concerns, not into code. Interim choices are allowed only when the brief says so, and must be logged.
 8. **Tests are the spec.** Scenario fixtures (board state → actions → assertions) accompany every mechanic and every card batch.
 9. **Oracle grounding.** No real-card fact (mana cost, P/T, types, text) is ever taken from memory — planner or implementer. Briefs carry Scryfall-verified stats; the implementer re-verifies against Scryfall before encoding and flags any mismatch with the brief. (S2 concern 1; two planner errors were caught this way.)
+10. **Rules grounding.** Any non-obvious rules interaction asserted in a brief or fixture cites the Comprehensive Rules section. The implementer verifies cited rules the way it verifies Scryfall stats and flags disagreement rather than implementing the brief's reading. (S3 deviation 1 was a planner rules error on 510.1c.)
 
 ## Repository map
 

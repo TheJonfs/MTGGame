@@ -33,7 +33,9 @@ Every card's `art.fallback` is `"rendered"`: the UI draws a plain frame from car
 { "kind": "static", "effects": [ { "type": "modifyPT", "power": 1, "toughness": 1, "scope": "creaturesYouControl" } ] }
 ```
 
-Trigger `condition` (ADR-021, optional; default `{source:"self"}`): `{source: "self"|"other"|"any", controller: "you"|"opponent"|"any", type?: string[], subtype?: string[]}`. Only `self` is implemented through S3.
+Trigger `condition` (ADR-021, optional; default `{source:"self"}`): `{source: "self"|"attached"|"other"|"any", controller: "you"|"opponent"|"any", type?: string[], subtype?: string[], player?: "opponentOfController"|"controller"|"any"}`. `attached` = the object this aura/equipment is attached to (Curiosity). `player` narrows damage/draw events by the affected player, always relative to the ability's controller (CR 109.5, Curiosity rulings). Triggers may be `optional: true` (ADR-027).
+
+Events also include `ATTACHED` (ADR-026; emitted, no trigger uses it yet).
 
 Triggered `event` values: `ENTERS_BATTLEFIELD`, `DIES`, `LEAVES_BATTLEFIELD`, `ATTACKS`, `BLOCKS`, `DEALS_COMBAT_DAMAGE_TO_PLAYER`, `UPKEEP`, `END_STEP`, `LAND_ENTERS_UNDER_YOUR_CONTROL` (landfall), `SPELL_CAST` (opponent casts — for later). Each may carry `condition` predicates (source only, controller only, creature only, etc.).
 
@@ -49,8 +51,8 @@ Triggered `event` values: `ENTERS_BATTLEFIELD`, `DIES`, `LEAVES_BATTLEFIELD`, `A
 | `bounce` | `target` ref | to owner's hand |
 | `counter` | `target` ref (spell) | |
 | `draw` | `count`, `who` | `who` ∈ `you` / `opponent` / `eachPlayer` / target |
-| `discard` | `count`, `who`, `mode`: `choose` / `random` | |
-| `gainLife` / `loseLife` | `amount`, `who` | |
+| `discard` | `count`, `who`, `mode`: `ownerChooses` / `random` / `casterChooses`, `filter?` | ADR-029 |
+| `gainLife` / `loseLife` | `amount` (literal, `"X"`, or value ref — ADR-028), `who` (incl. `controllerOfTarget`) | |
 | `modifyPT` | `power`, `toughness`, `scope` or `target`, `duration` | pump, anthems, Drana |
 | `grantKeyword` | `keyword`, `target`/`scope`, `duration` | Rancor, equipment, pump-with-rider |
 | `restrict` | `what`: `attack` / `block` / `both`, `target`, `duration` | Pacifism |
@@ -65,7 +67,7 @@ Triggered `event` values: `ENTERS_BATTLEFIELD`, `DIES`, `LEAVES_BATTLEFIELD`, `A
 
 **Reserved, not implemented:** `copy`, `setPT`, `preventDamage`, `changeType`.
 
-Effects reference targets by index into the declared `targets` array (`"target": 0`) or by scope (`"scope": "creaturesYouControl" | "allCreatures" | "opponent" | "you" | "attached"` …). `attached` is the object an aura/equipment is attached to; required for Pacifism, Rancor, equipment statics. Scopes may be parameterized (ADR-020): `{"scope": "creaturesYouControl", "subtype": "Goblin"}`. `"X"` resolves from the stack item.
+Effects reference targets by index into the declared `targets` array (`"target": 0`). Amounts may be value references `{"ref": "targetPower", "target": i}` (ADR-028) or by scope (`"scope": "creaturesYouControl" | "allCreatures" | "opponent" | "you" | "attached"` …). `attached` is the object an aura/equipment is attached to; required for Pacifism, Rancor, equipment statics. Scopes may be parameterized (ADR-020): `{"scope": "creaturesYouControl", "subtype": "Goblin", "other": true}` (`other` excludes the source — Goblin Chieftain). `"X"` resolves from the stack item.
 
 ## 4. Token definitions
 

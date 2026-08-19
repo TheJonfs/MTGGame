@@ -12,21 +12,40 @@ export interface Characteristics {
   subtypes: string[];
 }
 
+/** ADR-020 scope parameters: optional subtype/type narrowing and source exclusion. */
+export interface ScopeParams {
+  subtype?: string;
+  cardType?: string;
+  other?: boolean;
+}
+
 /** Objects selected by a static ability's scope, from the source's point of view. */
-export function objectsInScope(ctx: EngineCtx, sourceId: string, scope: Scope): string[] {
+export function objectsInScope(ctx: EngineCtx, sourceId: string, scope: Scope, params: ScopeParams = {}): string[] {
   const state = ctx.state;
   const source = state.objects[sourceId];
   if (!source) return [];
+  const narrow = (ids: string[]): string[] =>
+    ids.filter((id) => {
+      if (params.other && id === sourceId) return false; // "other ... you control" (Goblin Chieftain)
+      const def = ctx.defs.def(getObject(state, id).cardId);
+      if (params.subtype && !(def.subtypes ?? []).includes(params.subtype)) return false;
+      if (params.cardType && !def.types.includes(params.cardType as never)) return false;
+      return true;
+    });
   switch (scope) {
     case "attached":
       return source.attachedTo && state.objects[source.attachedTo] ? [source.attachedTo] : [];
     case "creaturesYouControl":
-      return state.battlefield.filter((id) => {
-        const o = getObject(state, id);
-        return o.controller === source.controller && ctx.defs.def(o.cardId).types.includes("Creature");
-      });
+      return narrow(
+        state.battlefield.filter((id) => {
+          const o = getObject(state, id);
+          return o.controller === source.controller && ctx.defs.def(o.cardId).types.includes("Creature");
+        }),
+      );
     case "allCreatures":
-      return state.battlefield.filter((id) => ctx.defs.def(getObject(state, id).cardId).types.includes("Creature"));
+      return narrow(
+        state.battlefield.filter((id) => ctx.defs.def(getObject(state, id).cardId).types.includes("Creature")),
+      );
     case "you":
     case "opponent":
     case "eachPlayer":
@@ -77,7 +96,12 @@ export function characteristics(ctx: EngineCtx, objectId: string): Characteristi
       for (const e of ability.effects) {
         const scope = "scope" in e ? e.scope : undefined;
         if (!scope) continue;
-        if (objectsInScope(ctx, srcId, scope).includes(objectId)) staticHits.push(e);
+        const params = {
+          ...("subtype" in e && e.subtype ? { subtype: e.subtype } : {}),
+          ...("cardType" in e && e.cardType ? { cardType: e.cardType } : {}),
+          ...("other" in e && e.other ? { other: e.other } : {}),
+        };
+        if (objectsInScope(ctx, srcId, scope, params).includes(objectId)) staticHits.push(e);
       }
     }
   }

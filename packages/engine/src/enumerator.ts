@@ -85,7 +85,7 @@ export function legalActions(ctx: EngineCtx, player: PlayerId): Action[] {
       if (ability.kind !== "activated" || isManaAbility(ability)) return;
       const timing = ability.equip ? "sorcery" : (ability.timing ?? "instant"); // equip is sorcery-speed by rule (702.6b)
       if (timing === "sorcery" && !atSorcerySpeed) return;
-      if (ability.cost.tap && (obj.tapped || (obj.summoningSick && !ctx.defs.def(obj.cardId).keywords?.includes("haste")))) return;
+      if (ability.cost.tap && (obj.tapped || (obj.summoningSick && !characteristics(ctx, id).keywords.has("haste")))) return;
       if (ability.cost.sacrifice && sacrificeCandidates(ctx, player, id, ability.cost.sacrifice.predicate).length === 0) return;
       const combos = targetCombinations(ctx, ability.targets ?? [], player);
       if ((ability.targets ?? []).length > 0 && combos.length === 0) return;

@@ -41,6 +41,7 @@ import { createObject, moveObject } from "./zones.js";
 export type RequestPurpose =
   | "priority"
   | "chooseSacrifice"
+  | "optionalTrigger"
   | "declareAttacker"
   | "declareBlocker"
   | "orderTriggers"
@@ -54,6 +55,8 @@ export interface ActionRequest {
   player: PlayerId;
   purpose: RequestPurpose;
   actions: Action[];
+  /** ADR-029: cards revealed to the chooser for this decision only (Duress). */
+  revealed?: { objectId: string; cardId: string }[];
 }
 
 /** Live play wraps agents; replay feeds logged actions. Same seam for both. */
@@ -98,6 +101,7 @@ export class Game {
   private wireFactEvents(): void {
     const { bus, log } = this.ctx;
     bus.on("DAMAGE", (e) => log.append({ t: "EVENT", name: "DAMAGE", payload: e }));
+    bus.on("ATTACHED", (e) => log.append({ t: "EVENT", name: "ATTACHED", payload: e }));
     bus.on("CARD_DRAWN", (e) => log.append({ t: "EVENT", name: "CARD_DRAWN", payload: e }));
     bus.on("SPELL_CAST", (e) => log.append({ t: "EVENT", name: "SPELL_CAST", payload: e }));
     bus.on("ZONE_CHANGE", (e) => {
@@ -112,9 +116,17 @@ export class Game {
   }
 
   /** Ask the action source for a decision; validate and log it. */
-  private async request(player: PlayerId, purpose: RequestPurpose, actions: Action[]): Promise<Action> {
+  private async request(
+    player: PlayerId,
+    purpose: RequestPurpose,
+    actions: Action[],
+    revealed?: { objectId: string; cardId: string }[],
+  ): Promise<Action> {
     if (actions.length === 0) throw new Error(`request with no actions (${purpose})`);
-    const chosen = await this.source({ player, purpose, actions }, buildView(this.ctx, player));
+    const chosen = await this.source(
+      { player, purpose, actions, ...(revealed ? { revealed } : {}) },
+      buildView(this.ctx, player),
+    );
     if (!actions.some((a) => sameAction(a, chosen))) {
       throw new Error(`Agent for player ${player} returned an illegal action: ${JSON.stringify(chosen)}`);
     }
@@ -480,13 +492,27 @@ export class Game {
       const equipment = item.sourceId ? state.objects[item.sourceId] : undefined;
       const host = item.targets[0];
       if (equipment && equipment.zone === "battlefield" && host?.kind === "object" && state.objects[host.id]) {
+        const previousHost = equipment.attachedTo;
         equipment.attachedTo = host.id;
+        this.ctx.bus.emit("ATTACHED", { objectId: equipment.id, previousHost, newHost: host.id, cause: "equip" });
       }
       return;
     }
 
-    const ectx = makeEffectContext(this.ctx, item);
-    for (const effect of item.effects) resolveEffect(effect, ectx);
+    // Optional ("you may") triggers ask their controller on resolution
+    // (ADR-027, CR 603.5). Never silent: both options always exist.
+    if (item.isOptionalTrigger) {
+      const chosen = await this.request(item.controller, "optionalTrigger", [
+        { type: "acceptOptional" },
+        { type: "declineOptional" },
+      ]);
+      if (chosen.type === "declineOptional") return;
+    }
+
+    const ectx = makeEffectContext(this.ctx, item, (player, purpose, actions, revealed) =>
+      this.request(player, purpose, actions, revealed),
+    );
+    for (const effect of item.effects) await resolveEffect(effect, ectx);
 
     if (item.kind === "spell" && item.objectId && state.objects[item.objectId]) {
       const def = this.ctx.defs.def(item.sourceCardId);

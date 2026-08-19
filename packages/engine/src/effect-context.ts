@@ -1,22 +1,51 @@
 import {
   parseManaProduction,
   type Amount,
+  type DiscardFilter,
+  type DiscardMode,
   type EffectContext,
   type ResolvedContinuousEffect,
   type ResolvedTarget,
   type Scope,
   type Who,
 } from "@shandalar/cards";
+import type { Action } from "./actions.js";
 import type { EngineCtx } from "./ctx.js";
 import { isLegalTarget } from "./targeting.js";
-import { dealDamage, drawCard, gainLife } from "./ops.js";
+import { dealDamage, drawCard, gainLife, loseLife } from "./ops.js";
 import { createObject, moveObject } from "./zones.js";
 import { getObject, nextTimestamp, opponentOf, type PlayerId, type StackItem } from "./state.js";
 import { characteristics, isCreature } from "./characteristics.js";
 
+/**
+ * Decision seam for effects that ask a player something (ADR-029 discard).
+ * The Game provides its request(); the init context has none.
+ */
+export type EffectRequester = (
+  player: PlayerId,
+  purpose: "discard",
+  actions: Action[],
+  revealed?: { objectId: string; cardId: string }[],
+) => Promise<Action>;
+
+/** Last known information per target (CR 608.2h, ADR-028): captured at resolution start. */
+interface TargetLki {
+  power: number;
+  controller: PlayerId;
+}
+
 /** Engine implementation of the cards package's EffectContext seam. */
-export function makeEffectContext(ctx: EngineCtx, item: StackItem): EffectContext {
+export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: EffectRequester): EffectContext {
   const controller = item.controller;
+
+  // LKI snapshot before any effect applies: an object exiled by effect 1 can
+  // still feed effect 2's targetPower / controllerOfTarget (Swords).
+  const lki: (TargetLki | null)[] = item.targets.map((t) => {
+    if (t.kind !== "object") return null;
+    const obj = ctx.state.objects[t.id];
+    if (!obj || obj.zone !== "battlefield") return null;
+    return { power: characteristics(ctx, t.id).power, controller: obj.controller };
+  });
 
   const sourceForDamage = () => {
     // A spell's damage source is the spell object; an ability's is its source permanent.
@@ -43,6 +72,15 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem): EffectContex
           const active = ctx.state.activePlayer;
           return [active, opponentOf(active)];
         }
+        case "target": {
+          const t = item.targets[0];
+          return t?.kind === "player" ? [t.player as PlayerId] : [];
+        }
+        case "controllerOfTarget": {
+          // LKI controller of the first object target (ADR-028; Swords).
+          const snap = lki.find((l) => l !== null);
+          return snap ? [snap.controller] : [];
+        }
       }
     },
 
@@ -64,7 +102,11 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem): EffectContex
     },
 
     amount(a: Amount): number {
-      return a === "X" ? item.x : a;
+      if (a === "X") return item.x;
+      if (typeof a === "number") return a;
+      // ValueRef (ADR-028): last known information from the resolution snapshot.
+      const snap = lki[a.target];
+      return snap ? snap.power : 0;
     },
 
     dealDamage(target: ResolvedTarget, amount: number): void {
@@ -116,6 +158,7 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem): EffectContex
     },
 
     ...sharedOps(ctx),
+    ...discardOp(ctx, controller, requester),
   };
 }
 
@@ -138,11 +181,21 @@ function sharedOps(ctx: EngineCtx) {
       gainLife(ctx, player as PlayerId, amount);
     },
 
+    loseLife(player: number, amount: number): void {
+      loseLife(ctx, player as PlayerId, amount);
+    },
+
     destroy(objectId: string): void {
       const obj = ctx.state.objects[objectId];
       if (!obj || obj.zone !== "battlefield") return;
       if (characteristics(ctx, objectId).keywords.has("indestructible")) return;
       moveObject(ctx, objectId, "graveyard");
+    },
+
+    exile(objectId: string): void {
+      const obj = ctx.state.objects[objectId];
+      if (!obj || obj.zone !== "battlefield") return;
+      moveObject(ctx, objectId, "exile"); // not a death: no DIES trigger fires (700.4)
     },
 
     fight(idA: string, idB: string): void {
@@ -162,9 +215,63 @@ function sharedOps(ctx: EngineCtx) {
   };
 }
 
+/** ADR-029 discard implementation. `caster` = controller of the discarding effect. */
+function discardOp(ctx: EngineCtx, caster: PlayerId, requester?: EffectRequester) {
+  const matchesFilter = (cardId: string, filter?: DiscardFilter): boolean => {
+    if (!filter) return true;
+    const def = ctx.defs.def(cardId);
+    return !def.types.includes("Creature") && !def.types.includes("Land"); // noncreatureNonland
+  };
+
+  return {
+    async discard(playerNum: number, count: number, mode: DiscardMode, filter?: DiscardFilter): Promise<void> {
+      const player = playerNum as PlayerId;
+      for (let i = 0; i < count; i++) {
+        const hand = ctx.state.players[player].hand;
+        if (hand.length === 0) return;
+
+        if (mode === "random") {
+          const idx = ctx.rng.int(hand.length, "discard");
+          moveObject(ctx, hand[idx]!, "graveyard");
+          continue;
+        }
+
+        // Choice modes: one representative per cardId (identical picks are one decision).
+        const chooser = mode === "casterChooses" ? caster : player;
+        const seen = new Set<string>();
+        const candidates: string[] = [];
+        for (const id of hand) {
+          const cardId = getObject(ctx.state, id).cardId;
+          if (seen.has(cardId)) continue;
+          if (mode === "casterChooses" && !matchesFilter(cardId, filter)) continue;
+          seen.add(cardId);
+          candidates.push(id);
+        }
+        if (candidates.length === 0) return; // no filter match: nothing is discarded
+
+        let pickId = candidates[0]!;
+        if (candidates.length > 1) {
+          if (!requester) throw new Error("discard choice modes need an agent (not available at initialization)");
+          // Hand reveal (ADR-029): the chooser sees the revealed cards for
+          // this decision only, via the request payload.
+          const revealed =
+            mode === "casterChooses"
+              ? hand.map((id) => ({ objectId: id, cardId: getObject(ctx.state, id).cardId }))
+              : undefined;
+          const actions: Action[] = candidates.map((objectId) => ({ type: "discard", objectId }));
+          const pick = await requester(chooser, "discard", actions, revealed);
+          if (pick.type !== "discard") throw new Error("expected discard action");
+          pickId = pick.objectId;
+        }
+        moveObject(ctx, pickId, "graveyard");
+      }
+    },
+  };
+}
+
 /**
  * Stack-item-less EffectContext for initialization-time effects — MatchSpec
- * `effectAtStart` modifiers (ADR-012). No targets, no X.
+ * `effectAtStart` modifiers (ADR-012). No targets, no X, no agent choices.
  */
 export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectContext {
   return {
@@ -179,6 +286,9 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
           return [opponentOf(player)];
         case "eachPlayer":
           return [0, 1];
+        case "target":
+        case "controllerOfTarget":
+          throw new Error("initialization effects cannot reference targets");
       }
     },
     objectsInScope(scope: Scope): string[] {
@@ -194,7 +304,8 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
       }
     },
     amount(a: Amount): number {
-      return a === "X" ? 0 : a;
+      if (typeof a === "number") return a;
+      return 0; // no X, no LKI at initialization
     },
     dealDamage(target: ResolvedTarget, amount: number): void {
       if (target.kind === "stackItem") throw new Error("cannot damage a stack item");
@@ -218,5 +329,6 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
       throw new Error("initialization effects cannot add mana (pools empty before turn 1)");
     },
     ...sharedOps(ctx),
+    ...discardOp(ctx, player), // random mode works; choice modes throw without a requester
   };
 }

@@ -14,31 +14,61 @@ import { nextTimestamp, type PendingTrigger, type PlayerId, type StackItem } fro
  * controller, read from the ZONE_CHANGE payload (ADR-016).
  */
 export function wireTriggerCollection(ctx: EngineCtx): void {
-  ctx.bus.on("ZONE_CHANGE", (ev) => {
-    const def = ctx.defs.def(ev.cardId);
-    const abilities = def.abilities ?? [];
+  const pend = (sourceId: string, sourceCardId: string, controller: PlayerId, abilityIndex: number) => {
+    ctx.state.pendingTriggers.push({
+      sourceId,
+      sourceCardId,
+      controller,
+      abilityIndex,
+      timestamp: nextTimestamp(ctx.state),
+    });
+  };
 
+  // Zone-change-shaped events: the moving object's own abilities (self conditions).
+  ctx.bus.on("ZONE_CHANGE", (ev) => {
+    const abilities = ctx.defs.def(ev.cardId).abilities ?? [];
     const collect = (eventName: string, sourceId: string, controller: PlayerId) => {
       abilities.forEach((a, i) => {
         if (a.kind !== "triggered" || a.event !== eventName) return;
-        // Current conditions are all `self`; a trigger with no condition on
-        // these events is also about its own source.
-        ctx.state.pendingTriggers.push({
-          sourceId,
-          sourceCardId: ev.cardId,
-          controller,
-          abilityIndex: i,
-          timestamp: nextTimestamp(ctx.state),
-        });
+        pend(sourceId, ev.cardId, controller, i);
       });
     };
-
     if (ev.to === "battlefield" && ev.newId) collect("ENTERS_BATTLEFIELD", ev.newId, ev.controller);
     if (ev.from === "battlefield") {
       // Look-back: the ability of the object that left fires even though the
       // object is gone (engine-design §4), for whoever controlled it there.
       if (ev.to === "graveyard") collect("DIES", ev.oldId, ev.controllerBefore);
       collect("LEAVES_BATTLEFIELD", ev.oldId, ev.controllerBefore);
+    }
+  });
+
+  // Damage-to-player events: scanned across all battlefield permanents with
+  // condition evaluation (ADR-021; Curiosity is the first listener).
+  ctx.bus.on("DAMAGE", (ev) => {
+    if (ev.target.kind !== "player") return;
+    const damagedPlayer = ev.target.player;
+    for (const permId of [...ctx.state.battlefield]) {
+      const perm = ctx.state.objects[permId];
+      if (!perm) continue;
+      const abilities = ctx.defs.def(perm.cardId).abilities ?? [];
+      abilities.forEach((a, i) => {
+        if (a.kind !== "triggered") return;
+        if (a.event !== "DEALS_DAMAGE_TO_PLAYER" && !(a.event === "DEALS_COMBAT_DAMAGE_TO_PLAYER" && ev.combat)) {
+          return;
+        }
+        const cond = a.condition ?? {};
+        // source: whose damage counts. "attached" = the object this
+        // aura/equipment is attached to (Curiosity); "self" = the permanent itself.
+        const source = cond.source ?? "self";
+        if (source === "self" && ev.sourceId !== permId) return;
+        if (source === "attached" && (!perm.attachedTo || ev.sourceId !== perm.attachedTo)) return;
+        if (source === "other" && ev.sourceId === permId) return;
+        // player: which damaged player counts, relative to the ability's controller.
+        const playerCond = cond.player ?? "any";
+        if (playerCond === "opponentOfController" && damagedPlayer === perm.controller) return;
+        if (playerCond === "controller" && damagedPlayer !== perm.controller) return;
+        pend(permId, perm.cardId, perm.controller, i);
+      });
     }
   });
 }
@@ -133,5 +163,6 @@ async function buildTriggerItem(
     targets,
     effects: ability.effects,
     x: 0,
+    ...(ability.optional === true ? { isOptionalTrigger: true } : {}),
   };
 }

@@ -42,7 +42,11 @@ export const SCOPES = [
 ] as const;
 export type Scope = (typeof SCOPES)[number];
 
-export type Who = "you" | "opponent" | "eachPlayer";
+export type Who = "you" | "opponent" | "eachPlayer" | "target" | "controllerOfTarget";
+/** ADR-029 discard modes. */
+export type DiscardMode = "ownerChooses" | "random" | "casterChooses";
+export const DISCARD_FILTERS = ["noncreatureNonland"] as const;
+export type DiscardFilter = (typeof DISCARD_FILTERS)[number];
 
 /** Targeting predicates known to the engine (engine-design §10). */
 export const TARGET_PREDICATES = [
@@ -53,7 +57,9 @@ export const TARGET_PREDICATES = [
   "spell",
   "permanent",
   "nonblackCreature",
+  "nonartifactNonblackCreature",
   "player",
+  "opponentPlayer",
   "cardInYourGraveyard",
 ] as const;
 export type TargetPredicate = (typeof TARGET_PREDICATES)[number];
@@ -64,7 +70,9 @@ export interface TargetSpec {
   zone: "battlefield" | "stack" | "any" | "graveyard";
 }
 
-export type Amount = number | "X";
+/** ADR-028: amounts are literals, "X", or a minimal value reference (no arithmetic). */
+export type ValueRef = { ref: "targetPower"; target: number };
+export type Amount = number | "X" | ValueRef;
 
 /** Effect vocabulary v1 (data-model §3). Reserved words are commented at the bottom. */
 export type Effect =
@@ -76,19 +84,22 @@ export type Effect =
   | { type: "bounce"; target: number }
   | { type: "counter"; target: number }
   | { type: "draw"; count: number; who: Who }
-  | { type: "discard"; count: number; who: Who; mode: "choose" | "random" }
-  | { type: "gainLife"; amount: number; who: Who }
-  | { type: "loseLife"; amount: number; who: Who }
+  | { type: "discard"; count: number; who: Who; mode: DiscardMode; filter?: DiscardFilter }
+  | { type: "gainLife"; amount: number | ValueRef; who: Who }
+  | { type: "loseLife"; amount: number | ValueRef; who: Who }
   | {
       type: "modifyPT";
       power: number;
       toughness: number;
       target?: number;
       scope?: Scope;
+      subtype?: string;
+      cardType?: string;
+      other?: boolean;
       duration: Duration;
     }
-  | { type: "grantKeyword"; keyword: Keyword; target?: number; scope?: Scope; duration: Duration }
-  | { type: "restrict"; what: "attack" | "block" | "both"; target?: number; scope?: Scope; duration: Duration }
+  | { type: "grantKeyword"; keyword: Keyword; target?: number; scope?: Scope; subtype?: string; cardType?: string; other?: boolean; duration: Duration }
+  | { type: "restrict"; what: "attack" | "block" | "both"; target?: number; scope?: Scope; subtype?: string; cardType?: string; other?: boolean; duration: Duration }
   | { type: "createToken"; tokenId: string; count: number; who: Who }
   | { type: "addCounters"; kind: "+1/+1" | "-1/-1"; count: number; target: number }
   | { type: "tapTarget"; target: number }
@@ -134,6 +145,7 @@ export type TriggerEvent =
   | "LEAVES_BATTLEFIELD"
   | "ATTACKS"
   | "BLOCKS"
+  | "DEALS_DAMAGE_TO_PLAYER"
   | "DEALS_COMBAT_DAMAGE_TO_PLAYER"
   | "UPKEEP"
   | "END_STEP"
@@ -146,6 +158,7 @@ export const TRIGGER_EVENTS: readonly TriggerEvent[] = [
   "LEAVES_BATTLEFIELD",
   "ATTACKS",
   "BLOCKS",
+  "DEALS_DAMAGE_TO_PLAYER",
   "DEALS_COMBAT_DAMAGE_TO_PLAYER",
   "UPKEEP",
   "END_STEP",
@@ -153,9 +166,18 @@ export const TRIGGER_EVENTS: readonly TriggerEvent[] = [
   "SPELL_CAST",
 ];
 
-/** Trigger condition predicates. S1 uses only `self` (the trigger's own source). */
+/**
+ * Trigger condition object (ADR-021). Default {source: "self"}. `player`
+ * narrows player-affecting events (damage), relative to the ability's
+ * controller. The legacy `{self: true}` shorthand is still accepted.
+ */
 export interface TriggerCondition {
   self?: boolean;
+  source?: "self" | "attached" | "other" | "any";
+  controller?: "you" | "opponent" | "any";
+  type?: string[];
+  subtype?: string[];
+  player?: "opponentOfController" | "controller" | "any";
 }
 
 export interface TriggeredAbilityDef {

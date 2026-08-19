@@ -65,8 +65,29 @@ Status: `planned` / `implemented` / `tested` / `cut`.
 | gladecover_scout | Gladecover Scout | tested | hexproof | fixture 10 |
 | blurred_mongoose | Blurred Mongoose | tested | shroud, can't be countered | fixture 11 (R-032) |
 
+## Session 4 additions
+
+| cardId | name | status | vocabulary | notes |
+|---|---|---|---|---|
+| swamp | Swamp | planned | addMana | |
+| doom_blade | Doom Blade | planned | destroy(nonblack creature) | |
+| terror | Terror | planned | destroy(nonartifact nonblack creature) | regeneration clause ignored |
+| swords_to_plowshares | Swords to Plowshares | planned | exile, gainLife(ref targetPower, controllerOfTarget) | ADR-028 |
+| wrath_of_god | Wrath of God | planned | destroyAll | |
+| pyroclasm | Pyroclasm | planned | damageAll(2) | |
+| duress | Duress | planned | discard(casterChooses, filter noncreature nonland) | ADR-029 |
+| mind_rot | Mind Rot | planned | discard(ownerChooses, 2) | |
+| hymn_to_tourach | Hymn to Tourach | planned | discard(random, 2) | power level flagged for later curation |
+| phyrexian_rager | Phyrexian Rager | planned | triggered(ETB) draw + loseLife | |
+| nekrataal | Nekrataal | planned | first strike, triggered(ETB) destroy(targeted) | |
+| vampire_nighthawk | Vampire Nighthawk | planned | flying, deathtouch, lifelink | keyword composition |
+| child_of_night | Child of Night | planned | lifelink | |
+| typhoid_rats | Typhoid Rats | planned | deathtouch | |
+| goblin_chieftain | Goblin Chieftain | planned | haste, static modifyPT + grantKeyword scope{creaturesYouControl, Goblin, other} | ADR-020 first user |
+| curiosity | Curiosity | planned | aura, triggered(DEALS_DAMAGE_TO_PLAYER, source attached, player opponentOfController, optional) draw | ADR-021/027 first user |
+
 ## Ceiling anchors (not yet scheduled)
-Doom Blade, Terror, Swords to Plowshares, Wrath of God, Pyroclasm, Mystic Snake, Control Magic, Drana Kalastria Bloodchief, Phyrexian Rager, Curiosity, Rancor, Zombify, Duress.
+Mystic Snake, Control Magic, Drana Kalastria Bloodchief, Rancor, Zombify, Gravedigger.
 
 ## Slice decklists (S3 brief Part 3; 40 cards each)
 - **A red:** 17 Mountain, 4 Raging Goblin, 3 Goblin Piker, 1 Hill Giant, 3 Lightning Bolt, 2 Shock, 1 Brute Force, 2 Blaze, 3 Boggart Brute, 2 Siege-Gang Commander, 2 Bonesplitter.
