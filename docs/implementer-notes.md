@@ -62,6 +62,14 @@ Combat staging: declarations accumulate in `state.combat` uncommitted, then `com
 - **Scope `self` resolves "wherever the source now is"** — battlefield (Drana) or graveyard (Rancor). It is not a target and gets no legality re-check.
 - Suite structure per ADR-034: `pnpm test` = 100/pairing smoke (~13s); `FUZZ_FULL=1 pnpm test` = 500/pairing (~56s); handoff numbers from `pnpm fuzz --games 1000`.
 
+## S6 lessons (viewer, art, fetch)
+
+- **Registry edits must be verified**: my S5 close-out used `str.replace` with a stale source string and silently no-opped R-025 (the planner caught it). Every scripted doc edit now asserts the replacement landed. Check your replaces.
+- **The viewer re-implements zero rules.** `replayToDecision(log, k)` reconstructs state AND the DecisionRequest for decision k — the enumerated alternatives ADR-014 deliberately doesn't log. Perf on a 761-decision game: ~3ms early indices, ~40ms late ones, cached per index; no optimization warranted yet.
+- **Browser/Node split**: `@shandalar/cards` is browser-safe; the fs-bound loader moved to the `@shandalar/cards/loader` subpath export. The UI bundles card JSON via `import.meta.glob` and reads gitignored Scryfall art through a dev-server middleware (`/real-art/*`); `/__flag` POSTs write `fixtures-inbox/` entries.
+- **Render-skill realities**: Gemini returns JPEG bytes that the skill names `.png` (browsers sniff; harmless, noted in MANIFEST). The house style's "generous unpainted paper" fights edge-to-edge textures — crop the saturated center band for tiles. Icon PNGs composite over parchment with `mix-blend-mode: multiply`; traced SVGs (potrace, now a brew dep) are the first-class form.
+- Scryfall etiquette implemented per their docs: UA header, 150ms spacing, local cache, `unique=prints&order=released&dir=asc` + first `highres_scan` = the classic printings.
+
 ## Known interims / watch list
 
 See handoff Concerns for the authoritative list. Highlights: auto-pay greedy feasibility (correct while all producers are single-symbol — R-006); condition fields `controller`/`type`/`subtype` are validated but unexercised (first card to use them should add fixtures); value refs deliberately have no arithmetic (ADR-028 — resist until a card demands it); the `sba-unattach` ATTACHED cause is unreachable by legal play (test-forced only).

@@ -66,7 +66,9 @@ function CombatLane({ ctx, onHover, onClick, selected }: BoardProps) {
       <div className="lane-grid">
         {state.combat.attackers.map((attackerId) => {
           const attacker = state.objects[attackerId];
-          const blockers = (state.combat.blockOrder[attackerId] ?? []).filter((b) => state.objects[b]);
+          const ordered = state.combat.blockOrder[attackerId];
+          const staged = state.combat.blocks.filter((b) => b.attacker === attackerId).map((b) => b.blocker);
+          const blockers = (ordered ?? staged).filter((b) => state.objects[b]);
           return (
             <div className="combat-col" key={attackerId}>
               <div className="attacker-slot">

@@ -7,6 +7,9 @@ import { Transport } from "./components/Transport";
 import { LogPanel, buildLogLines } from "./components/LogPanel";
 
 const VIEWER_VERSION = "s6-0.1";
+/** Log placement is an open art-direction decision (§7): rail tab by default,
+ *  bottom row behind ?log=bottom for Chris to compare. */
+const LOG_BOTTOM = new URLSearchParams(window.location.search).get("log") === "bottom";
 
 function Loader({ onLoad }: { onLoad: (g: SavedGame) => void }) {
   const [error, setError] = useState<string | null>(null);
@@ -110,6 +113,7 @@ function Viewer({ game }: { game: SavedGame }) {
     setTimeout(() => setFlagNote(null), 4000);
   };
 
+  const logPanel = <LogPanel lines={logLines} current={index} onSeek={setIndex} />;
   return (
     <div className="app">
       <Board
@@ -136,10 +140,11 @@ function Viewer({ game }: { game: SavedGame }) {
               </label>
               {flagNote && <span style={{ color: "var(--brass)" }}>{flagNote}</span>}
             </div>
-            <LogPanel lines={logLines} current={index} onSeek={setIndex} />
+            {!LOG_BOTTOM && logPanel}
           </>
         }
       />
+      {LOG_BOTTOM && <div className="log-bottom">{logPanel}</div>}
       <Transport
         session={session}
         index={index}

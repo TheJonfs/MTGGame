@@ -161,6 +161,11 @@ body {
 .transport .where { font-family: var(--serif); font-size: 12px; min-width: 190px; }
 .transport .flag-btn { border-color: var(--danger); }
 
+.log-bottom { grid-column: 1; grid-row: 2; max-height: 180px; overflow: hidden; padding: 4px 14px 0; background: var(--parchment) url("/panel-parchment.png"); background-size: 512px; border-top: 3px solid var(--ink); }
+.app:has(.log-bottom) { grid-template-rows: 1fr auto auto; }
+.app:has(.log-bottom) .transport { grid-row: 3; border-top: 1.5px solid var(--ink-soft); }
+.app:has(.log-bottom) .rail { grid-row: 1 / 4; }
+
 .loader { display: grid; place-items: center; height: 100%; color: var(--parchment); font-family: var(--serif); }
 .loader .box { background: var(--parchment); color: var(--ink); border: 2px solid var(--ink); border-radius: 8px; padding: 28px 36px; text-align: center; }
 button.linkish { background: none; border: none; color: var(--brass); cursor: pointer; text-decoration: underline; font-size: 11px; }

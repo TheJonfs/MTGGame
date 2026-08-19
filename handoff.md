@@ -1,66 +1,56 @@
-# Handoff — after Session 05 (2026-08-19)
+# Handoff — after Session 06 (2026-08-19)
 
 ## State of the world
 
-**The manifest ceiling is complete.** Every mechanic in mechanics-manifest §3 now has at least one real, tested pool card: control change, reanimation, regrowth, the legend rule, activated X with self-reference, flash, and the aura-with-a-dies-trigger all landed this session, each inside machinery that has existed since S1–S2. The pool is 64 cards + 2 tokens across five 40-card decks; ten pairings fuzz clean (10,000 CLI games this session, zero exceptions since S3's one fuzz-caught bug), replay byte-identical everywhere. 130 tests green; suite restructured per ADR-034 (13s smoke / 56s full). The three oldest architectural bets all paid out at face value: the S1 owner/controller split absorbed Control Magic without touching a single "you control" call site, ADR-007's SBA-choice hook took the legend rule as designed, and ADR-006 meant Drana/Rancor/Snake needed zero combat or stack changes.
+M3.5 is delivered: the replay viewer runs as the seed of the game UI in the ratified ink-and-wash direction, the full first asset pass is generated and committed, and every real pool card has its Scryfall art fetched and its printing recorded. `pnpm viewer` serves it; load any `pnpm fuzz --save` / `pnpm play-random` log (a 761-decision sample game is bundled), scrub anywhere, and the board/stack/decision panel reconstruct **through the engine** — `replayToDecision(log, k)` returns both the state and the DecisionRequest whose alternatives ADR-014 chose not to log. Flag-this writes real fixtures-inbox entries (one demonstration entry is in the repo). 134 tests green including new permanent viewer-reconstruction and spot-check suites.
 
 ## Done this session
 
-- **Control change (R-020, ADR-033):** `syncControl` computes effective control (baseController overridden by control statics, latest timestamp wins) and writes it back to `obj.controller` at the top of every SBA pass — every existing reader untouched. Steal and reversion both set summoning sickness (302.6); zone moves route by owner (400.3); the opponent's equipment keeps buffing a stolen creature (301.5c); stolen tokens can be sacrificed by the thief and cease.
-- **Legend rule (R-025):** first SBA-with-a-choice. Per-controller name groups ≥2 issue a keepLegend DecisionRequest; rest to owners' graveyards. `runSBAs` is now async with an optional requester.
-- **Reanimation/regrowth (R-040):** `returnFromGraveyard` resolver + `creatureCardInYourGraveyard` predicate; Zombify to battlefield (new object, ETB fires, enters sick), Gravedigger optional-ETB to hand, fizzle on raced-away targets.
-- **Scope `self` (R-041):** resolves to the item's source wherever it now is — Drana pumps herself on the battlefield; Rancor returns itself from the graveyard. Enabler: DIES/LTB triggers now carry the card's current (graveyard) identity as sourceId.
-- **Drana:** `"-X"`/`"X"` P/T deltas on modifyPT (resolved at resolution; statics remain literal-only, validator-enforced); single-target fizzle means no self-bonus (608.2b).
-- **Mystic Snake:** flash path (in the enumerator since S1) gets its first card; ETB counter is pure stack timing as the brief ruled — no new event.
-- **Deck E (Simic), B/C/D swaps, ten pairings, ADR-034 suite structure.** Fuzz-before-fixtures: 3,000-game smoke clean before any fixture was written; zero engine bugs found by fixtures this session (second session running).
-- Fixtures S5-1..12 green as 21 tests.
+- **Part 0:** registry staleness fixed (R-007, R-025 — see Concerns 1); EVENT `seq`/`afterAction` (ADR-040); `replayToDecision` prefix replay returning `{state, request, taken, gameOver}`; `pnpm fuzz --save <dir>` and `pnpm play-random --seed S --decks A,B --save f.json` writing `shandalar-log-v1` files.
+- **Part 1 (art):** style samples approved by Chris (with two directed revisions: skull-and-crossbones tombstone, seamless wood; plus a female traveler portrait replacing the rival-mage placeholder so the seats are a matched pair); 20 icons generated and potrace-traced to committed SVGs (24px normalized, ink #2B2520); wood surface (center-band crop), parchment panel, frame-corner flourish, five-petal compass-rose card back; `assets/generated/MANIFEST.md` as human ledger over the skill's `assets/manifest.json`.
+- **Part 2 (fetch):** `pnpm art:fetch` — 64/64 real cards resolved (default oldest-highres rule + the printings.md overrides), `art_crop`+`normal` downloaded (14MB, gitignored), oracle text/artist/set captured to `data/art/real/oracle.json`, "Scryfall printings" section written into the pool registry. Idempotent; 150ms spacing; identified client. The classic picks all landed: Alpha Bolt/Serra/Terror/Wrath/Swords, Muth's Man-o'-War, Danforth's Hymn #38b, Revised basics.
+- **Part 3 (viewer):** `packages/ui` (Vite+React, engine/cards/core only; fs-bound loader split to `@shandalar/cards/loader` so the browser bundle is clean); board 2/3 + rail 1/3 + transport per art-direction §2; combat lane as aligned attacker/blocker columns (staged blocks render pre-commit too); our frame everywhere with art_crop set in, "printed card" toggle to the scan; battlefield tiles with live-characteristics P/T badges (delta-colored), tapped rotation, sick desaturation, attachment grouping; rail with portraits/life/zone-icons/mana glyphs, stack with target labels, decision panel showing taken + legal alternatives (+ Duress-style reveals), inspector with hover/pin; transport with keyboard (`←/→`, `shift+←/→`, space), speed, scrub; log as rail tab with `?log=bottom` variant for the §7 comparison; reveal-opponent-hand toggle; flag-this via dev endpoint with download fallback.
+- **DoD spot-checks:** permanent tests pin the three named behaviors in real fuzz games — Siege-Gang sacrifice choice (seed 300 A–B), Control Magic steal with 302.6 sickness (seed 307 B–E), Pacifism fizzle (seed 336 B–D) — plus a general reconstruction test (final state byte-identical, every sampled decision offers the taken action).
 
 ## Deviations from the brief
 
-1. **Fixture 9c's bounce assertion direction:** the bounced creature goes to its owner's hand (400.3), the owner being the Rancor player's own side in that fixture — trivial fixture-authoring slip on my side, corrected in the test, no rules dispute.
-2. **Fixture 7's "Gravedigger racing" variant** implemented as the brief's other option (test-only removal from the graveyard while Zombify is on the stack) — nothing in the pool touches graveyards at instant speed, so the race is staged directly on the stack. Fizzle path asserted exactly.
-3. None otherwise — the brief's card table and rules citations were error-free (S4's pre-verification suggestions were incorporated; the Drana/Gravedigger/Snake pre-flags from my S4 handoff all checked out against Scryfall).
+1. **Components read engine state through a view-ctx + selectors, not literal `GameView` objects.** The omniscient viewer needs both seats and live characteristics; `buildView` remains intact for play-mode redaction later. The seat-shaped selectors keep the play-mode path honest; flagging because Part 0.3's wording was stricter than what I shipped.
+2. **Icon candidates: one render each, re-roll on failure** (icons.md said 3–4 candidates per icon). 20 icons landed with three targeted re-rolls (exile ring source, tapped/plus retrace); generating 60–80 candidates felt like cost without benefit. Ratify or ask for candidate rounds on specific icons.
+3. **Transport glyphs are unicode at the moment** (⏮◀▶⏩ etc.), not drawn-in-ink SVGs (icons.md allows "standard glyphs in the same ink weight" — mine are standard but not ink). Cosmetic follow-up.
+4. **The skill's conventions won** where they conflicted with the brief: renders live in `assets/images/` + `assets/manifest.json` (the skill's hard rules forbid bypassing); `assets/generated/` holds derived assets (SVGs, crops) and `MANIFEST.md`. Also the skill directory is `gemini-image/`, not the docs' `imagegen/`. Ratify the layout note at the bottom of MANIFEST.md and fix the path in CLAUDE.md's repo map.
 
 ## Concerns
 
-1. **Control-layer recomputation wants no caching yet — measured, not guessed.** `syncControl` is O(battlefield² × abilities) per SBA pass in the worst case, but the 10,000-game CLI run finished at the same ~88s/10k pace as S4's per-game cost. The brief asked whether `characteristics()` wants caching: fuzz timing says no. Revisit only if M4's lookahead (which will call `characteristics` in loops) measures hot.
-2. **Legend-rule ordering subtlety, for the record:** the keep-choice interposes at the end of an SBA pass rather than strictly inside the "simultaneous" set (CR 704.3). With the current pool there is no observable difference (nothing else in a pass can interact with the choice). Noted in R-025; a future card that cares (none in sight) would need the choice hoisted into the collection phase.
-3. **Zone-aware predicates held, one asymmetry noted.** Graveyard targeting reused the existing predicate/zone machinery without change. The asymmetry: battlefield/stack candidates are enumerated by scanning shared zones, graveyard candidates by scanning the targeting player's own graveyard — fine while every graveyard predicate is "your graveyard" (the manifest guarantees this), but an opponent-graveyard card would need `targetCandidates` generalized. Manifest excludes those; flagging so the exclusion is understood as load-bearing.
-4. **`baseController` is now state that test authors must know about.** A raw `controller` flip gets reverted by syncControl; the honest test-steal sets both fields. Implementer-notes documents it; the one S2 test that flipped raw control was updated. If the planner ever ratifies Threaten-style effects, they'll be a *third* control input (timed override), and ADR-033's model should be extended then, not before.
-5. **B–D deck-out rate keeps climbing: 24.6%** (14.3% in S4) — Zombify/Gravedigger recursion plus dense removal under random play. Games still terminate (mean 50 turns, cap 100). This is now clearly a property of the matchup, not noise; M4's baseline tables should treat decking as a legitimate outcome, and the replay viewer (M3.5) will make these grindy games actually watchable for diagnosis.
-6. **Suite time management worked** (ADR-034): 13s default, 56s full, CLI for handoff numbers. No action needed; recording that the structure held at ten pairings.
+1. **My S5 registry edit silently no-opped — process bug, now guarded.** The planner's staleness warning was right: my scripted `str.replace` had a stale source string and did nothing, and I didn't verify. All scripted doc edits now assert their replacement landed. Worth a line in CLAUDE.md if you want it institutional: *doc edits verify their own diff*.
+2. **Log/EVENT gaps the viewer surfaced** (expected concern): (a) DAMAGE events carry object *ids* whose objects may be gone by read time — the log panel says "a creature" where a name would be better; a `targetCardId` in the payload fixes it cheaply. (b) Card defs carry no rules text — the frame's oracle line comes from `oracle.json` for real cards and a thin vocabulary-derived summary for customs/tokens; if custom cards matter visually, a `text` field on CardDef is the planner-level fix (ADR-008 touch-up).
+3. **Frame typography at small sizes** (expected concern): the 180px inspector frame is comfortable; 120px hand frames are legible for name/type but oracle at ~8px is squint territory. Recommendation for the play UI: hand frames drop oracle text (name/art/cost/P&T only) and let the inspector carry the text — that's how physical hands work anyway.
+4. **Prefix-replay performance is a non-issue at current scale** (expected concern): ~3ms early, ~40ms at decision 700 of a 59-turn game, cached per index; scrubbing feels instant after first touch. O(n²) cold-scrub of a 100-turn game would be ~seconds total; revisit only if M3.5+ logs get much longer (an incremental-resume replayer is the known next step if so).
+5. **Phyrexian Rager's "oldest highres" printing is PMEI** (a magazine-insert promo, Tedin art) — deterministic per printings.md but probably not the intent; suggest an `apc` override next time printings.md is touched. Only such oddity in 64 cards.
+6. **RandomAgent enchants its own creatures with Control Magic** (legal, dumb, discovered while hunting steal moments — most A–B/B–C Control Magics are self-enchants). Harmless for fuzz; M4's evaluator should know stealing your own creature is worth ~nothing.
+7. **The imported render skill held up well** — cache, conditioning, refusal handling all exercised; two findings for its next revision: Gemini returns JPEG bytes saved as `.png` (harmless, browsers sniff; noted in MANIFEST), and conditioning-on-canonical fights *intentional* revisions (the bordered-table surface kept reasserting itself until `--force` skipped conditioning).
 
 ## Registry entries added/changed
 
-- rules-registry: R-011 (control-change note closed), R-020 (control change), R-025 (legend rule) → `implemented`; new rows R-040 (reanimation/regrowth), R-041 (self-referencing effects), R-042 (flash first card). No remaining `slot-only` rows except excluded-by-manifest ones; R-006's single-symbol-producer note is the only live interim.
-- pool-registry: S5 rows → `tested`; five decklists recorded; **ceiling-anchors section replaced with the ceiling-complete note** per the planner's instruction.
+- rules-registry: R-007 and R-025 rewritten to current truth (Part 0.0; no new rules rows — the viewer adds no rules).
+- pool-registry: new "Scryfall printings (art:fetch)" section — 64 rows of set/collector/artist/scryfallId.
 
 ## Test status
 
-130 passing / 0 skipped / 0 flaky, 9 files: core (7), cards (11), engine units (14), S1 (14), S2 (19), S3 (22), S4 (19), S5 (21), sim (3). `pnpm typecheck` clean. Suite 13s default / 56s FUZZ_FULL.
+134 passing / 0 skipped / 0 flaky, 11 files: core (7), cards (11), engine units (14), S1 (14), S2 (19), S3 (22), S4 (19), S5 (21), sim replay+fuzz (3), viewer reconstruction (1), viewer spot-checks (3). `pnpm typecheck` + `tsc -p packages/ui` clean. Suite ~13s (ADR-034 smoke).
 
-Fuzz summary (CLI, seeds 110000–110999, 1,000 games per pairing):
-
-| Pairing | LIFE | DECKED | Mean turns | | Pairing | LIFE | DECKED | Mean turns |
-|---|---|---|---|---|---|---|---|---|
-| A–B | 943 | 57 | 42.4 | | B–D | 754 | 246 | 50.1 |
-| A–C | 1000 | 0 | 32.5 | | B–E | 821 | 179 | 45.7 |
-| A–D | 971 | 29 | 41.5 | | C–D | 958 | 42 | 38.8 |
-| A–E | 973 | 27 | 38.6 | | C–E | 977 | 23 | 35.0 |
-| B–C | 954 | 46 | 38.1 | | D–E | 879 | 121 | 44.0 |
-
-FUZZ_FULL suite (500/pairing) also clean.
+No fuzz table this session (no deck/engine changes); the 400-game `--save` corpus used for spot-check hunting was clean, as was the sample-game generation.
 
 ## Suggested next
 
-M3.5, the replay viewer — and the engine side is ready for it: the EVENT stream already carries damage, zone changes, attachments, life, casts, and draws; the ACTION log carries every decision with object ids (the S4 orderTrigger fix was for exactly this). Two small engine affordances the viewer session might want, both cheap: (a) a `stepIndex`/sequence number on EVENT entries so a viewer can align events to the ACTION timeline without re-simulating, or alternatively a documented "reconstruct by replay" recipe (the replayer already produces every intermediate state — the viewer could ride it); (b) the fixtures-inbox format ("flag this → seed+turn") should be specified by the planner so the viewer writes what future briefs can consume. Beyond M3.5: the pool can now grow to ~100 with pure card batches (no vocabulary work), which can interleave with viewer/AI sessions at low risk.
+Two candidate directions, either works: (a) **M4 heuristic agent** — the viewer makes agent behavior *visible*, which is exactly the debugging loop M4 wants; Concern 6 is already the first evaluator note. (b) **A card-batch session** (pool toward ~100, no vocabulary) — cheap, and it would exercise `art:fetch` + the viewer against unfamiliar cards. Small items worth folding into whichever brief comes next: DAMAGE `targetCardId` (Concern 2a), transport ink glyphs (Deviation 3), the CLAUDE.md path fix (Deviation 4), Rager override (Concern 5). For Chris meanwhile: `pnpm viewer`, open the printed URL, load the bundled sample or any file from `pnpm fuzz --save results/whatever` — and the Flag button files real inbox entries.
 
 ## How to run
 
 ```
-pnpm install                       # Node >= 22
-pnpm test                          # smoke suite: 100 games x 10 pairings (~13s)
-FUZZ_FULL=1 pnpm test              # full: 500/pairing (~56s)
-pnpm typecheck
-pnpm fuzz --games 1000 --seed 1    # CLI, ten pairings, errors reported with seed
+pnpm install
+pnpm viewer                          # dev server; open the printed localhost URL
+pnpm play-random --seed 7 --decks C,E --save results/game.json
+pnpm fuzz --games 50 --seed 1 --save results/logs   # per-game JSON logs
+pnpm art:fetch                       # idempotent Scryfall fetch
+pnpm test                            # 134 tests incl. viewer reconstruction (~13s)
 ```
