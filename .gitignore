@@ -1,0 +1,5 @@
+node_modules/
+dist/
+data/art/real/
+results/
+.DS_Store

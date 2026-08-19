@@ -1,0 +1,171 @@
+# Mechanics Manifest — v0.2 (ratified draft)
+
+Working title: *Shandalar-like*. A single-player game with two coupled engines: an MTG rules engine playing a curated pool of real cards, and an overworld/metagame engine handling travel, quests, and collection. This document scopes the **rules engine, its external contract, and the card pool**. The overworld gets its own manifest later.
+
+---
+
+## 1. Design principles (the things we check every decision against)
+
+1. **The pool is designed to the engine, not the engine to the pool.** A card enters the pool only if it is a composition of vocabulary the engine already speaks (or a vocabulary word we agree is worth adding for many cards). No single-card carve-outs. Ever.
+2. **Build the skeleton, not the features.** Tier 0 systems exist from the first commit even when no card uses them. Adding a mechanic later should mean adding a rule to an existing step, not restructuring a step. Litmus test: *trample must be a rule about damage assignment, not a rewrite of combat.*
+3. **Modern-evergreen mechanics, classical card selection where taste allows.** Serra Angel over a fifty-word modern angel. Mystic Snake over an exotic counter. Simple compositions of straightforward pieces.
+4. **Cards are data.** Card definitions are declarative compositions of keywords, costs, targets, and effects. A scripting escape hatch may exist but is treated as a code smell: reaching for it means either add a vocabulary word or cut the card.
+5. **Everything is testable as a scenario.** Board state in, assertion out. The scenario suite is both the regression suite and the specification the implementer works from.
+
+---
+
+## 1a. Engine contract — the seam to the overworld
+
+The rules engine is a **library with no main loop and no knowledge of the world**. It never sees inventory, gold, map, quests, or story. The overworld (and the test harness, and Monte Carlo) all drive it through the same contract.
+
+**Inputs (a `MatchSpec`):**
+- Two decklists (card IDs + counts), each validated against the pool.
+- A player agent per seat: `human` (UI-driven), `ai:<profile>` (heuristic, with deck-archetype hints), `random` (validation), possibly `llm-assisted` later. All agents implement one interface: *given game state + legal actions, return an action*; plus hooks for choices (targets, sacrifice selection, legend-rule keep).
+- Match rules: starting life, hand size, mulligan policy, optional overworld-imposed modifiers (e.g., "start with a Mountain in play") — kept to a small enumerated set.
+- RNG seed.
+
+**Outputs (a `MatchResult`):**
+- Winner / draw, reason (life, decking, concession), turn count, final life totals.
+- Full action log (replayable; feeds the replay viewer later).
+- A small set of derived facts for quest logic: damage dealt, creatures lost, cards drawn, whether specific cards were cast. Computed from the log, not tracked by the engine.
+
+**Hard rules:** the engine never imports overworld code; the overworld never reaches into engine state during a match except through the agent/UI interface. Card identity is shared via the pool definition file, which both sides read.
+
+---
+
+## 2. Tier 0 — the skeleton (present from day one, regardless of card usage)
+
+| System | Requirement | Why now |
+|---|---|---|
+| **Game objects & zones** | Library, hand, battlefield, graveyard, stack, exile. One `moveObject(obj, fromZone, toZone)` primitive that fires events. Objects get a new identity on zone change. | Half of Magic is zone-change triggers; exile needed for Swords. |
+| **Owner vs. controller** | Every permanent tracks owner and controller separately; "you control" predicates resolve via controller. Control change resets summoning sickness. | Control Magic is in the ceiling. Retrofit is ruinous. |
+| **Turn structure** | Untap, upkeep, draw, main 1, combat (begin, declare attackers, declare blockers, damage — with first/double strike sub-steps as a rule, not a special case — end), main 2, end, cleanup. Priority passes at every step where the rules say it does. | Haste, vigilance, flash, "until end of turn," and the AI all depend on this being real. |
+| **The stack & priority** | A real stack; both players receive priority; spells and abilities resolve LIFO; targets re-checked on resolution (fizzle if all illegal). | Counterspell, Boomerang-in-response, pump-in-response-to-Bolt. |
+| **Mana & costs** | Mana pool with colors; cost parsing including generic, colored, and **X** (in both spell costs and activated-ability costs); tap-as-cost; **sacrifice-[type]-as-cost**; costs paid before effect. | Blaze-style X, Drana, Siege-Gang. |
+| **Event bus + triggered abilities** | Triggers subscribe to events (ETB, dies, attacks, deals damage, draw, upkeep…). Triggers go on the stack. Persistent listeners live as long as their source. | ETB creatures, "whenever X, draw a card," Siege-Gang. |
+| **State-based actions** | One function: lethal damage, 0 toughness, 0 life, aura/equipment attached to illegal object, **legend rule (controller chooses which to keep)**. Called whenever a player would receive priority. SBAs may ask the controller a question via the agent interface. | Never let combat code decide who's dead. Legend rule is the first SBA requiring a player choice; the same hook serves sacrifice selection. |
+| **Continuous effects & characteristics** | `characteristics(obj)` computes current values from printed values + applied effects in a defined order. Must handle P/T modification (anthems, counters, pump), keyword granting (Rancor, equipment), **restrictions** (Pacifism: can't attack/block), and control (Control Magic). Effects have durations (static-while-present, until end of turn). | Anthems, Drana, Pacifism, equipment. This is the honest minimum of the layer system. |
+| **Targeting** | Declared at cast/activation with legality predicates (creature, nonblack creature, "any target," etc.); re-checked at resolution. | Doom Blade's color awareness, Bolt's "any target." |
+| **Combat** | Explicit steps. Damage **assignment** is a separate step from damage **dealing**. Blockers ordered; assignment rules are pluggable (trample, deathtouch modify assignment). | The trample principle. |
+| **Attachments** | Auras and equipment share one attach/detach system with legality checks in SBAs. Equip is an activated ability with sorcery-speed timing. | Pacifism, Rancor, Warhammer. |
+| **Legal-action enumerator** | Given a game state and priority holder, return all legal actions. | Random-move AI for validation; the real AI consumes the same API. |
+| **Deterministic RNG + replay** | Seeded shuffles; full action log; replayable games. | Monte Carlo balancing (SFB approach transfers directly). |
+
+---
+
+## 3. Tier 1 — the ceiling (everything we intend to support, eventually)
+
+**Keywords (evergreen):** flying, reach, first strike, double strike, trample, haste, vigilance, deathtouch, lifelink, menace, defender, flash, hexproof/shroud, indestructible, "can't be countered."
+
+**Spell/ability effects vocabulary:** damage (to any target, to creature, to player, mass to all creatures), destroy (targeted, mass, with predicates like nonblack), exile (targeted; with rider like Swords' lifegain), bounce, counter (spell / ability), draw N, discard (targeted / random / opponent chooses), gain/lose life, pump ±P/±T until EOT, grant keyword until EOT, tokens (create N of a defined token type), counters (+1/+1, −1/−1), tap/untap target, reanimate (spell- or ETB-trigger-based, **own graveyard**), regrowth (graveyard to hand), tutor (basic land only, if at all), fight (creature-sourced damage, both directions).
+
+**Permanent-based effects:** static anthems ("creatures you control get +1/+1"), keyword-granting statics, ETB / dies / attacks / upkeep / end-step triggers, "whenever [event], draw a card" repeatable triggers, activated abilities with tap/mana/X/sacrifice costs, auras (buffs, restrictions, **control change**), equipment (buffs, keyword grants; equip cost).
+
+**Zones exercised:** all six. Graveyard used for reanimate/regrowth/dies-triggers only — **no ordering, no counting cards in graveyard, no "target card in a graveyard" beyond own graveyard for reanimate/regrowth.**
+
+**Archetypes the ceiling must support:** mono/dual aggro, go-wide tokens + anthem, midrange fatties, control (counters + removal + finisher), tempo (bounce + fliers), light aristocrats (Siege-Gang, sac outlets), light reanimator, tribal via type predicates (Goblins).
+
+---
+
+## 4. Explicit exclusions (written down so we don't drift)
+
+| Excluded | Reason |
+|---|---|
+| Planeswalkers | Whole subsystem: loyalty, redirection, attack targets. |
+| Copy effects (Clone, Fork) | Deferred to "much later." Copiable values are a layer-1 subsystem. |
+| Regeneration | Old subsystem; Wrath just says "destroy all creatures." |
+| Protection | Bundle of four rules (DEBT). Use hexproof/shroud/indestructible instead. |
+| Type/color/text changing (Turn to Frog, Blood Moon) | Layers 4–5. |
+| Replacement effects generally (incl. damage prevention, "enters tapped" is OK as a special-cased ETB rule) | Whole subsystem. Revisit only if a *class* of cards demands it. |
+| Alternative costs, kicker, morph, cascade, storm, flashback, buyback | Each a mini-game. |
+| Banding, phasing, rampage, mana burn, interrupts | Historical. Nobody can explain banding. |
+| Non-land mana producers beyond simple rocks (Sol Ring-style "T: add") | Mana abilities that trigger/target are excluded; simple ones allowed. |
+| Graveyard ordering/counting (Nether Spirit, Delve, Threshold) | Explicitly out. |
+| Fireball-style split X damage, Ward, Prowess-family | Split assignment / reactive taxes / triggered stat changes each add a system for few cards. |
+| Legendary — *not excluded* | On-board legend rule implemented as an SBA with controller choice. |
+
+---
+
+## 5. Representative cards by role (calibration anchors, not a decklist)
+
+| Role | Card(s) | Vocabulary exercised |
+|---|---|---|
+| Red burn | Lightning Bolt, Shock, Blaze (XR: X to any target) | any-target damage, X costs |
+| Red mass | Pyroclasm | mass damage |
+| Black spot removal | Doom Blade, Terror | destroy w/ color predicate |
+| White removal suite | Swords to Plowshares, Pacifism, Wrath of God | exile+lifegain, restriction aura, mass destroy |
+| Blue interaction | Counterspell, Boomerang, Mystic Snake, Man-o'-War | counter, bounce, ETB-counter, ETB-bounce |
+| Blue finisher | Control Magic / Mind Control | control change |
+| White finisher | Serra Angel | flying, vigilance |
+| Black finisher | Drana, Kalastria Bloodchief | flying, XBB activation, −0/−X, +X/+0 EOT |
+| Green finisher | Pelakka Wurm | trample, ETB lifegain, dies-draw |
+| Green removal | Prey Upon | fight |
+| Mana rocks | Mind Stone–style simple rocks | T: add mana (no Sol Ring power level) |
+| Go-wide | Raise the Alarm, Siege-Gang Commander, Glorious Anthem | tokens, sac-as-cost, tribal predicate, anthem |
+| Card advantage | Divination, Phyrexian Rager, Curiosity / Coastal Piracy | draw, ETB draw, persistent trigger |
+| Auras | Rancor, Pacifism | keyword grant, graveyard-return trigger, restriction |
+| Equipment | Loxodon Warhammer, Bonesplitter | equip, keyword grant, P/T |
+| Reanimation | Zombify; a Karmic Guide–style ETB reanimator (no Echo) | own-graveyard reanimate, ETB w/ graveyard target |
+| Discard | Duress-style targeted, Hymn-style random | discard, RNG in effects |
+| Protection substitutes | hexproof / shroud / indestructible creatures | targeting predicates, SBA exemption |
+| Pump | Giant Growth, Brute Force | ±P/T until EOT |
+
+---
+
+## 6. Vertical slice (implementation session 1–2 target)
+
+**Goal:** two decks play complete, legal games against a random-legal-move AI with zero illegal states, exercising every Tier 0 system at least once.
+
+**Deck A — mono-red aggro (~40 cards):** Mountain; Raging Goblin (haste), Goblin Piker, Hill Giant, Bloodrock Cyclops (vanilla bodies at 1–4 mana); Lightning Bolt, Shock; Brute Force (pump); one 1R 2/1 first strike or menace body if we want a keyword beyond haste.
+
+**Deck B — white/blue skies (~40 cards):** Plains, Island; Savannah Lions, Suntail Hawk, Wind Drake, Serra Angel; Man-o'-War (ETB bounce), one ETB-draw flier (e.g., Cloudkin Seer or Sea Gate Oracle); Counterspell, Boomerang, Pacifism, Divination.
+
+**Systems validated by this slice:** turn structure, priority, stack (Counterspell), targeting + fizzle (Bolt vs. Brute Force in response), combat with flying/first strike/haste/vigilance, ETB triggers via event bus (Man-o'-War), attachments + restriction effect (Pacifism), two-color mana, SBAs, legal-action enumerator, deterministic replay.
+
+**Dies-trigger test cases (slice-adjacent, first batch after slice):** a dies trigger must fire identically whether death comes from combat damage, a spell, SBA 0-toughness, or Wrath. Pelakka Wurm is the canonical fixture.
+
+**Deliberately absent from slice:** X costs, tokens, anthems, equipment, control change, sacrifice costs, graveyard interaction, activated abilities other than equip. Each is a small subsequent session and each should slot into an existing step. If any of them requires restructuring a step, the skeleton failed and we fix the skeleton, not the card.
+
+---
+
+## 7. Card representation (proposal)
+
+- A card is a data record: name, cost, types/subtypes, P/T, keywords[], abilities[] where each ability is `{trigger | activation | static, cost?, targets[], effects[]}` composed from a fixed effect vocabulary.
+- Every card record carries an `art` field: a local asset path or asset ID, plus a **rendered fallback** generated from the card data itself (name, cost, type line, P/T, rules text in a plain frame). The game is fully playable with zero images present; custom cards without art look intentional, not broken.
+- A build step walks the pool, fetches **only** the needed Scryfall images for real cards into the asset folder, and merges with a custom-card art folder. Nothing fetched at runtime.
+- Tokens are card records that live only on the battlefield.
+- The vocabulary is enumerated in a single file. Adding a word is a design decision logged in this manifest.
+- Card definitions are the primary artifact Claude (planner) produces; the implementer builds the vocabulary.
+
+---
+
+## 8. Testing & analysis
+
+- **Scenario tests:** JSON/TS fixtures describing a board state, a sequence of actions, and expected end state. Written by planner as part of every card batch.
+- **Fuzzing:** random-legal-move vs. random-legal-move for thousands of games; assert no exceptions, no illegal states, games terminate.
+- **Monte Carlo:** seeded deck-vs-deck runs for balance and AI evaluation, same methodology as SFB.
+- **Replay viewer:** deferred, but the action log is designed for it from day one.
+
+---
+
+## 9. Resolved questions (v0.2)
+
+1. Green finisher: **Pelakka Wurm**.
+2. Reanimation: spell-based and ETB-trigger-based, own graveyard only; no Animate Dead–style auras.
+3. Fight: **in** (each color gets a removal approach).
+4. Mana rocks: simple "T: add" rocks **in**.
+5. Discard: targeted and random both **in**; RNG is a first-class engine service (also used for shuffling).
+6. Hexproof / shroud / indestructible: **in**, serving as protection's replacement.
+7. Legendary: on-board legend rule via SBA with controller choice.
+8. AI: accept that early AI will play control poorly (Control Magic, Wrath). Revisit at AI milestones.
+9. Art: build-time Scryfall fetch of only the pool's images; `art` pointer + rendered fallback on every card record.
+
+## 10. Still open
+
+- Exact slice decklists (40 cards each) — to be written as the first planner deliverable for the Claude Code handoff.
+- Effect vocabulary v1 — enumerate the words the slice needs, then the words the full ceiling needs, in one file.
+- Whether the overworld can impose match modifiers (Section 1a) at all in v1, or whether `MatchSpec` modifiers are deferred.
+
+---
+
+*Next step: convert Tier 0 + Section 1a + Section 6 into the first Claude Code handoff, following the SFB registry format.*
