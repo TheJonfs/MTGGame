@@ -29,8 +29,27 @@ Status: `planned` / `implemented` / `tested` / `cut`.
 | pacifism | Pacifism | tested | aura, restrict(both) | fixtures 4, 5; uses new `attached` scope |
 | divination | Divination | tested | draw | unit-covered (sorcery timing) + fuzz |
 
+## Session 2 additions
+
+(The S2 brief referenced this section but the planner had not created it; rows below are implementer-derived from the brief's Part 2 and card texts verified against Scryfall. Planner to ratify — especially the Rumbling Baloth substitution.)
+
+| cardId | name | status | vocabulary | notes |
+|---|---|---|---|---|
+| forest | Forest | tested | addMana | |
+| grizzly_bears | Grizzly Bears | tested | — | vanilla 2/2 |
+| elvish_visionary | Elvish Visionary | tested | triggered(ETB) draw | S2 fixture 9 |
+| timberland_guide | Timberland Guide | tested | triggered(ETB) addCounters | fixtures 8, 9; self-target edge like Man-o'-War |
+| centaur_courser | Centaur Courser | tested | — | vanilla 3/3; anthem + block-order fixtures |
+| rumbling_baloth | Rumbling Baloth | tested | — | vanilla 4/4; **substituted for the brief's Rhox Brute**, which is {2}{R}{G} (uncastable in mono-green); Chris-approved 2026-08-19 |
+| pelakka_wurm | Pelakka Wurm | tested | trample, triggered(ETB) gainLife, triggered(DIES) draw | dies-trigger quadruple fixture |
+| giant_growth | Giant Growth | tested | modifyPT(EOT) | |
+| blaze | Blaze | tested | damage(anyTarget, X) | X enumeration (ADR-017) |
+| raise_the_alarm | Raise the Alarm | tested | createToken | |
+| glorious_anthem | Glorious Anthem | tested | static modifyPT(creaturesYouControl) | |
+| soldier_1_1 | Soldier Token | tested | — | token def, `data/cards/tokens/` |
+
 ## Ceiling anchors (not yet scheduled)
 Doom Blade, Terror, Swords to Plowshares, Wrath of God, Blaze, Pyroclasm, Mystic Snake, Control Magic, Drana Kalastria Bloodchief, Pelakka Wurm, Prey Upon, Raise the Alarm, Siege-Gang Commander, Glorious Anthem, Phyrexian Rager, Curiosity, Rancor, Loxodon Warhammer, Bonesplitter, Zombify, Giant Growth, Duress, Mind Stone.
 
 ## Test-only cards (not pool members)
-`test_fs_soldier` (first strike body), `test_pinger` ({1},T: 1 damage) — live in the engine test harness, never in `data/cards/`. They cover paths the slice deliberately lacks (first strike combat, non-mana activated ability). Replace with real pool cards in M2 and consider retiring.
+`test_fs_soldier` (first strike body), `test_pinger` ({1},T: 1 damage), `test_wrath` ({2} sorcery, destroy all creatures) — live in the engine test harness, never in `data/cards/`. Per ADR-018 they are permanent fixtures: engine tests never depend on pool membership.

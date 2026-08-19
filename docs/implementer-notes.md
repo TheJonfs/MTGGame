@@ -34,6 +34,12 @@ Practical notes for future implementer sessions. Owned by the implementer; appen
 - The harness clears `pendingTriggers` after setup: fixtures describe a standing board, so setup-time ETBs must not fire.
 - Synthetic test-only cards (`test_fs_soldier`, `test_pinger`) live in the harness, validated through the normal validator. The slice pool has no first striker or non-mana activated ability; these keep those paths tested.
 
+## Decision protocol (post-S2)
+
+Every choice reaches agents as a request with an enumerated action list; single-option requests are auto-taken and unlogged (ADR-014). Multi-step choices are incremental: attack/block declarations (declare-one/done, ADR-013), blocker damage order (pick-next per multi-blocked attacker), trigger order (pick which goes on the stack next — first placed resolves LAST), mulligan bottoming (pick-per-card). When adding a new choice type: add the Action variant, a RequestPurpose, enumerate in order [safe-default-first, ...], and the harness gets a script-entry kind. The default-first convention matters — scripted fixtures and the "forced choice" auto-take both rely on actions[0] being the no-op/finish option.
+
+Combat staging: declarations accumulate in `state.combat` uncommitted, then `commitAttackers`/`commitBlockers` applies taps/flags all at once — CR's "declared together" semantics with incremental input.
+
 ## Known interims / watch list
 
-See handoff Concerns for the authoritative list. Highlights: composite attack/block enumeration capped at 4096 (ENUM_CAP), auto-pay greedy (correct only while all producers are mono-color), blocker damage order = declaration order, mulligan bottoming = last N cards.
+See handoff Concerns for the authoritative list. Highlights: auto-pay greedy feasibility (correct only while all producers are mono-color — R-006); token color derives from manaCost, so colored tokens read as colorless to future color predicates (R-021 note); trigger conditions are still `self`-only.
