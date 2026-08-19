@@ -1,0 +1,14 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "viewer",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "viewer"
+      ],
+      "port": 5173,
+      "autoPort": true
+    }
+  ]
+}

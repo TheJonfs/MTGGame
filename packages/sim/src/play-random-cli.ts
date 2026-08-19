@@ -1,7 +1,7 @@
 import { fileURLToPath } from "node:url";
 import { writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { loadCardPool } from "@shandalar/cards";
+import { loadCardPool } from "@shandalar/cards/loader";
 import { runPairingMatch, matchSpec, savedGame } from "./fuzz.js";
 import type { DeckKey } from "./slice-decks.js";
 

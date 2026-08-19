@@ -1,5 +1,6 @@
 import { ArrayLog, SeededRng } from "@shandalar/core";
-import { loadCardPool, validateCard, type CardDef, type ResolvedTarget } from "@shandalar/cards";
+import { loadCardPool } from "@shandalar/cards/loader";
+import { validateCard, type CardDef, type ResolvedTarget } from "@shandalar/cards";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import {

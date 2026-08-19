@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { loadCardPool } from "@shandalar/cards";
+import { loadCardPool } from "@shandalar/cards/loader";
 import { expandDecklist, replayGame } from "@shandalar/engine";
 import { fuzz, matchSpec, runPairingMatch } from "./fuzz.js";
 import { DECKS, PAIRINGS, type DeckKey } from "./slice-decks.js";

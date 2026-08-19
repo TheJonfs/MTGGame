@@ -1,0 +1,152 @@
+{
+  "matchSpec": {
+    "seed": 4242,
+    "players": [
+      {
+        "name": "WU Skies",
+        "decklist": [
+          {
+            "cardId": "plains",
+            "count": 8
+          },
+          {
+            "cardId": "island",
+            "count": 9
+          },
+          {
+            "cardId": "savannah_lions",
+            "count": 1
+          },
+          {
+            "cardId": "serra_angel",
+            "count": 2
+          },
+          {
+            "cardId": "man_o_war",
+            "count": 2
+          },
+          {
+            "cardId": "cloudkin_seer",
+            "count": 2
+          },
+          {
+            "cardId": "counterspell",
+            "count": 2
+          },
+          {
+            "cardId": "pacifism",
+            "count": 1
+          },
+          {
+            "cardId": "raise_the_alarm",
+            "count": 1
+          },
+          {
+            "cardId": "glorious_anthem",
+            "count": 1
+          },
+          {
+            "cardId": "fencing_ace",
+            "count": 2
+          },
+          {
+            "cardId": "loxodon_warhammer",
+            "count": 1
+          },
+          {
+            "cardId": "mind_stone",
+            "count": 1
+          },
+          {
+            "cardId": "swords_to_plowshares",
+            "count": 2
+          },
+          {
+            "cardId": "wrath_of_god",
+            "count": 1
+          },
+          {
+            "cardId": "curiosity",
+            "count": 2
+          },
+          {
+            "cardId": "control_magic",
+            "count": 2
+          }
+        ],
+        "agent": "random"
+      },
+      {
+        "name": "Mono Black",
+        "decklist": [
+          {
+            "cardId": "swamp",
+            "count": 17
+          },
+          {
+            "cardId": "typhoid_rats",
+            "count": 2
+          },
+          {
+            "cardId": "child_of_night",
+            "count": 2
+          },
+          {
+            "cardId": "vampire_nighthawk",
+            "count": 3
+          },
+          {
+            "cardId": "phyrexian_rager",
+            "count": 2
+          },
+          {
+            "cardId": "nekrataal",
+            "count": 3
+          },
+          {
+            "cardId": "doom_blade",
+            "count": 2
+          },
+          {
+            "cardId": "terror",
+            "count": 1
+          },
+          {
+            "cardId": "duress",
+            "count": 1
+          },
+          {
+            "cardId": "hymn_to_tourach",
+            "count": 1
+          },
+          {
+            "cardId": "drana_kalastria_bloodchief",
+            "count": 2
+          },
+          {
+            "cardId": "gravedigger",
+            "count": 2
+          },
+          {
+            "cardId": "zombify",
+            "count": 2
+          }
+        ],
+        "agent": "random"
+      }
+    ],
+    "rules": {
+      "startingLife": 20,
+      "handSize": 7,
+      "mulligan": "london",
+      "maxTurns": 100
+    },
+    "modifiers": []
+  },
+  "actionIndex": 201,
+  "turn": 22,
+  "step": "DECLARE_BLOCKERS",
+  "note": "Why did the token chump-block here instead of preserving the board? (endpoint test)",
+  "flaggedAt": "2026-08-19T19:50:37.513Z",
+  "viewerVersion": "s6-0.1"
+}

@@ -7,6 +7,10 @@
     ".": {
       "types": "./src/index.ts",
       "default": "./src/index.ts"
+    },
+    "./loader": {
+      "types": "./src/loader.ts",
+      "default": "./src/loader.ts"
     }
   },
   "dependencies": {

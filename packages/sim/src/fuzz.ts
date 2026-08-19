@@ -1,6 +1,7 @@
 import { writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
-import { loadCardPool, type CardDef } from "@shandalar/cards";
+import { loadCardPool } from "@shandalar/cards/loader";
+import type { CardDef } from "@shandalar/cards";
 import { runMatch, type MatchResult, type MatchSpec } from "@shandalar/engine";
 import { RandomAgent } from "@shandalar/agents";
 import { DECKS, PAIRINGS, type DeckKey } from "./slice-decks.js";

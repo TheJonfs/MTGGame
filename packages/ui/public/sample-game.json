@@ -1,0 +1,9415 @@
+{
+ "format": "shandalar-log-v1",
+ "spec": {
+  "seed": 4242,
+  "players": [
+   {
+    "name": "WU Skies",
+    "decklist": [
+     {
+      "cardId": "plains",
+      "count": 8
+     },
+     {
+      "cardId": "island",
+      "count": 9
+     },
+     {
+      "cardId": "savannah_lions",
+      "count": 1
+     },
+     {
+      "cardId": "serra_angel",
+      "count": 2
+     },
+     {
+      "cardId": "man_o_war",
+      "count": 2
+     },
+     {
+      "cardId": "cloudkin_seer",
+      "count": 2
+     },
+     {
+      "cardId": "counterspell",
+      "count": 2
+     },
+     {
+      "cardId": "pacifism",
+      "count": 1
+     },
+     {
+      "cardId": "raise_the_alarm",
+      "count": 1
+     },
+     {
+      "cardId": "glorious_anthem",
+      "count": 1
+     },
+     {
+      "cardId": "fencing_ace",
+      "count": 2
+     },
+     {
+      "cardId": "loxodon_warhammer",
+      "count": 1
+     },
+     {
+      "cardId": "mind_stone",
+      "count": 1
+     },
+     {
+      "cardId": "swords_to_plowshares",
+      "count": 2
+     },
+     {
+      "cardId": "wrath_of_god",
+      "count": 1
+     },
+     {
+      "cardId": "curiosity",
+      "count": 2
+     },
+     {
+      "cardId": "control_magic",
+      "count": 2
+     }
+    ],
+    "agent": "random"
+   },
+   {
+    "name": "Mono Black",
+    "decklist": [
+     {
+      "cardId": "swamp",
+      "count": 17
+     },
+     {
+      "cardId": "typhoid_rats",
+      "count": 2
+     },
+     {
+      "cardId": "child_of_night",
+      "count": 2
+     },
+     {
+      "cardId": "vampire_nighthawk",
+      "count": 3
+     },
+     {
+      "cardId": "phyrexian_rager",
+      "count": 2
+     },
+     {
+      "cardId": "nekrataal",
+      "count": 3
+     },
+     {
+      "cardId": "doom_blade",
+      "count": 2
+     },
+     {
+      "cardId": "terror",
+      "count": 1
+     },
+     {
+      "cardId": "duress",
+      "count": 1
+     },
+     {
+      "cardId": "hymn_to_tourach",
+      "count": 1
+     },
+     {
+      "cardId": "drana_kalastria_bloodchief",
+      "count": 2
+     },
+     {
+      "cardId": "gravedigger",
+      "count": 2
+     },
+     {
+      "cardId": "zombify",
+      "count": 2
+     }
+    ],
+    "agent": "random"
+   }
+  ],
+  "rules": {
+   "startingLife": 20,
+   "handSize": 7,
+   "mulligan": "london",
+   "maxTurns": 100
+  },
+  "modifiers": []
+ },
+ "result": {
+  "winner": 1,
+  "reason": "DECKED",
+  "turns": 59,
+  "finalLife": [
+   32,
+   1
+  ]
+ },
+ "log": [
+  {
+   "t": "RNG",
+   "purpose": "shuffle",
+   "value": {
+    "kind": "permutation",
+    "value": [
+     37,
+     1,
+     31,
+     28,
+     25,
+     7,
+     34,
+     0,
+     16,
+     9,
+     12,
+     32,
+     5,
+     6,
+     15,
+     27,
+     19,
+     23,
+     22,
+     3,
+     2,
+     14,
+     4,
+     20,
+     30,
+     33,
+     26,
+     17,
+     29,
+     39,
+     36,
+     11,
+     13,
+     8,
+     38,
+     24,
+     18,
+     35,
+     10,
+     21
+    ]
+   }
+  },
+  {
+   "t": "RNG",
+   "purpose": "shuffle",
+   "value": {
+    "kind": "permutation",
+    "value": [
+     39,
+     17,
+     8,
+     28,
+     37,
+     24,
+     7,
+     30,
+     14,
+     33,
+     25,
+     5,
+     20,
+     10,
+     1,
+     11,
+     12,
+     36,
+     22,
+     32,
+     13,
+     15,
+     35,
+     4,
+     31,
+     9,
+     2,
+     34,
+     26,
+     6,
+     29,
+     19,
+     23,
+     16,
+     27,
+     21,
+     18,
+     3,
+     38,
+     0
+    ]
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 0,
+   "afterAction": -1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 1,
+   "afterAction": -1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 2,
+   "afterAction": -1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 3,
+   "afterAction": -1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 4,
+   "afterAction": -1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 5,
+   "afterAction": -1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 6,
+   "afterAction": -1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 7,
+   "afterAction": -1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 8,
+   "afterAction": -1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 9,
+   "afterAction": -1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 10,
+   "afterAction": -1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 11,
+   "afterAction": -1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 12,
+   "afterAction": -1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 13,
+   "afterAction": -1
+  },
+  {
+   "t": "ACTION",
+   "turn": 0,
+   "step": "CLEANUP",
+   "player": 0,
+   "action": {
+    "type": "keepHand"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 0,
+   "step": "CLEANUP",
+   "player": 1,
+   "action": {
+    "type": "mulligan"
+   }
+  },
+  {
+   "t": "RNG",
+   "purpose": "shuffle",
+   "value": {
+    "kind": "permutation",
+    "value": [
+     2,
+     3,
+     10,
+     16,
+     28,
+     31,
+     37,
+     8,
+     18,
+     4,
+     15,
+     36,
+     19,
+     9,
+     12,
+     20,
+     11,
+     23,
+     33,
+     35,
+     24,
+     0,
+     34,
+     30,
+     32,
+     7,
+     26,
+     29,
+     39,
+     17,
+     21,
+     5,
+     38,
+     22,
+     14,
+     6,
+     27,
+     25,
+     13,
+     1
+    ]
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 14,
+   "afterAction": 1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 15,
+   "afterAction": 1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 16,
+   "afterAction": 1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 17,
+   "afterAction": 1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 18,
+   "afterAction": 1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 19,
+   "afterAction": 1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 20,
+   "afterAction": 1
+  },
+  {
+   "t": "ACTION",
+   "turn": 0,
+   "step": "CLEANUP",
+   "player": 1,
+   "action": {
+    "type": "keepHand"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 0,
+   "step": "CLEANUP",
+   "player": 1,
+   "action": {
+    "type": "bottomCard",
+    "objectId": "obj_105"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 1,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 1,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_82"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 1,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_110"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 21,
+   "afterAction": 6
+  },
+  {
+   "t": "ACTION",
+   "turn": 2,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 2,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 3,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 22,
+   "afterAction": 9
+  },
+  {
+   "t": "ACTION",
+   "turn": 3,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 3,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_86"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 3,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 3,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_113"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 3,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 3,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 3,
+   "step": "END",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 4,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 23,
+   "afterAction": 17
+  },
+  {
+   "t": "ACTION",
+   "turn": 4,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_110"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 4,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 4,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_108"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 4,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_115"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 5,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 24,
+   "afterAction": 22
+  },
+  {
+   "t": "ACTION",
+   "turn": 5,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_110"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 5,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 5,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_113"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 5,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 5,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_116"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 5,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_117"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 6,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 25,
+   "afterAction": 29
+  },
+  {
+   "t": "ACTION",
+   "turn": 6,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 6,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_115"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 6,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 6,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_111"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 6,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 6,
+   "step": "END",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_119"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 7,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 26,
+   "afterAction": 36
+  },
+  {
+   "t": "ACTION",
+   "turn": 7,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_110"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 7,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 7,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_117"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 7,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_113"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 7,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_120"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 7,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_83",
+    "targets": []
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "loxodon_warhammer",
+    "controller": 0
+   },
+   "seq": 27,
+   "afterAction": 42
+  },
+  {
+   "t": "ACTION",
+   "turn": 8,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_119"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 8,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 28,
+   "afterAction": 44
+  },
+  {
+   "t": "ACTION",
+   "turn": 8,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 8,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_118"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 8,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 8,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 8,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_115"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 8,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_126"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 8,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 9,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_117"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 9,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 29,
+   "afterAction": 53
+  },
+  {
+   "t": "ACTION",
+   "turn": 9,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_113"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 9,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_121"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 9,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 9,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 9,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_110"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 9,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_127"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 9,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_128"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 10,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_119"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 10,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_126"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 10,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_115"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 30,
+   "afterAction": 63
+  },
+  {
+   "t": "ACTION",
+   "turn": 10,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_125"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 10,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 10,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 10,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_129",
+    "targets": []
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "typhoid_rats",
+    "controller": 1
+   },
+   "seq": 31,
+   "afterAction": 67
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_121"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_87",
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_133"
+     }
+    ]
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "swords_to_plowshares",
+    "controller": 0
+   },
+   "seq": 32,
+   "afterAction": 69
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_85",
+    "targets": [
+     {
+      "kind": "stackItem",
+      "id": "stk_135"
+     }
+    ]
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "counterspell",
+    "controller": 0
+   },
+   "seq": 33,
+   "afterAction": 70
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_113"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 34,
+   "afterAction": 73
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_81",
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_133"
+     }
+    ]
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "curiosity",
+    "controller": 0
+   },
+   "seq": 35,
+   "afterAction": 77
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_143",
+    "previousHost": null,
+    "newHost": "obj_133",
+    "cause": "aura-enter"
+   },
+   "seq": 36,
+   "afterAction": 77
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_112"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "END",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 12,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 12,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_144"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 12,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_119"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 12,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 37,
+   "afterAction": 84
+  },
+  {
+   "t": "ACTION",
+   "turn": 12,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_126"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 12,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 12,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_145",
+    "targets": [
+     {
+      "kind": "player",
+      "player": 0
+     }
+    ]
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "duress",
+    "controller": 1
+   },
+   "seq": 38,
+   "afterAction": 87
+  },
+  {
+   "t": "ACTION",
+   "turn": 12,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 12,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "discard",
+    "objectId": "obj_84"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 12,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 12,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_130"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 12,
+   "step": "DECLARE_ATTACKERS",
+   "player": 1,
+   "action": {
+    "type": "doneDeclaringAttackers"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_144"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 39,
+   "afterAction": 94
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_113"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_121"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_150"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "END",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_151"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "END",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_110"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "END",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 14,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_119"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 14,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_130"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 14,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_115"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 14,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_126"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 14,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 40,
+   "afterAction": 109
+  },
+  {
+   "t": "ACTION",
+   "turn": 14,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_128"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 14,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_117"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 14,
+   "step": "DECLARE_ATTACKERS",
+   "player": 1,
+   "action": {
+    "type": "doneDeclaringAttackers"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_128"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_113"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_117"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_151"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_110"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_144"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 41,
+   "afterAction": 119
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_121"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_153"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "END",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_154"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 16,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 42,
+   "afterAction": 127
+  },
+  {
+   "t": "ACTION",
+   "turn": 16,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_119"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 16,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_130"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 16,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_115"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 16,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 16,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 16,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_126"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 16,
+   "step": "DECLARE_ATTACKERS",
+   "player": 1,
+   "action": {
+    "type": "doneDeclaringAttackers"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 16,
+   "step": "CLEANUP",
+   "player": 1,
+   "action": {
+    "type": "discard",
+    "objectId": "obj_103"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_128"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_117"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_144"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_110"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_121"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_154"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_113"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_151"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 43,
+   "afterAction": 143
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 18,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 44,
+   "afterAction": 146
+  },
+  {
+   "t": "ACTION",
+   "turn": 18,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_130"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 18,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_115"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 18,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_119"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 18,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_126"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 18,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_158"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 18,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_159"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 18,
+   "step": "DECLARE_ATTACKERS",
+   "player": 1,
+   "action": {
+    "type": "doneDeclaringAttackers"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_151"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_110"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_117"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_144"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_113"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_121"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_154"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_128"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 45,
+   "afterAction": 161
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_157"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_161"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 20,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_159"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 20,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_115"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 20,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_119"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 20,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 46,
+   "afterAction": 168
+  },
+  {
+   "t": "ACTION",
+   "turn": 20,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_126"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 20,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 20,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_162"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 20,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 20,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_163"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 20,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 20,
+   "step": "DECLARE_ATTACKERS",
+   "player": 1,
+   "action": {
+    "type": "declareAttacker",
+    "objectId": "obj_133"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 20,
+   "step": "DECLARE_ATTACKERS",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_130"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_133",
+    "sourceCardId": "typhoid_rats",
+    "sourceController": 1,
+    "target": {
+     "kind": "player",
+     "player": 0
+    },
+    "amount": 1,
+    "combat": true
+   },
+   "seq": 47,
+   "afterAction": 176
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_128"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_151"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_110"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_154"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_121"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_113"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_160",
+    "targets": []
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "raise_the_alarm",
+    "controller": 0
+   },
+   "seq": 48,
+   "afterAction": 183
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_144"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_161"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 49,
+   "afterAction": 187
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_117"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 22,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_115"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 22,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_159"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 22,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_130"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 22,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_126"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 22,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 50,
+   "afterAction": 194
+  },
+  {
+   "t": "ACTION",
+   "turn": 22,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 22,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_107",
+    "targets": []
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "child_of_night",
+    "controller": 1
+   },
+   "seq": 51,
+   "afterAction": 196
+  },
+  {
+   "t": "ACTION",
+   "turn": 22,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_170"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 22,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_174"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 22,
+   "step": "DECLARE_ATTACKERS",
+   "player": 1,
+   "action": {
+    "type": "declareAttacker",
+    "objectId": "obj_133"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 22,
+   "step": "DECLARE_BLOCKERS",
+   "player": 0,
+   "action": {
+    "type": "declareBlocker",
+    "blocker": "obj_166",
+    "attacker": "obj_133"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 22,
+   "step": "DECLARE_BLOCKERS",
+   "player": 0,
+   "action": {
+    "type": "doneDeclaringBlockers"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_133",
+    "sourceCardId": "typhoid_rats",
+    "sourceController": 1,
+    "target": {
+     "kind": "object",
+     "id": "obj_166"
+    },
+    "amount": 1,
+    "combat": true
+   },
+   "seq": 52,
+   "afterAction": 201
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_166",
+    "sourceCardId": "soldier_1_1",
+    "sourceController": 0,
+    "target": {
+     "kind": "object",
+     "id": "obj_133"
+    },
+    "amount": 1,
+    "combat": true
+   },
+   "seq": 53,
+   "afterAction": 201
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_143",
+    "previousHost": "obj_133",
+    "newHost": null,
+    "cause": "host-left"
+   },
+   "seq": 54,
+   "afterAction": 201
+  },
+  {
+   "t": "EVENT",
+   "name": "DIES",
+   "payload": {
+    "cardId": "typhoid_rats",
+    "owner": 1
+   },
+   "seq": 55,
+   "afterAction": 201
+  },
+  {
+   "t": "EVENT",
+   "name": "DIES",
+   "payload": {
+    "cardId": "soldier_1_1",
+    "owner": 0
+   },
+   "seq": 56,
+   "afterAction": 201
+  },
+  {
+   "t": "EVENT",
+   "name": "DIES",
+   "payload": {
+    "cardId": "curiosity",
+    "owner": 0
+   },
+   "seq": 57,
+   "afterAction": 201
+  },
+  {
+   "t": "ACTION",
+   "turn": 23,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_128"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 23,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_113"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 23,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_151"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 23,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 58,
+   "afterAction": 205
+  },
+  {
+   "t": "ACTION",
+   "turn": 23,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_117"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 23,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_121"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 23,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 23,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_154"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 23,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_124",
+    "abilityIndex": 1,
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_167"
+     }
+    ]
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 23,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_124",
+    "previousHost": null,
+    "newHost": "obj_167",
+    "cause": "equip"
+   },
+   "seq": 59,
+   "afterAction": 211
+  },
+  {
+   "t": "ACTION",
+   "turn": 23,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_161"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 23,
+   "step": "DECLARE_ATTACKERS",
+   "player": 0,
+   "action": {
+    "type": "declareAttacker",
+    "objectId": "obj_167"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 23,
+   "step": "DECLARE_BLOCKERS",
+   "player": 1,
+   "action": {
+    "type": "declareBlocker",
+    "blocker": "obj_173",
+    "attacker": "obj_167"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_167",
+    "sourceCardId": "soldier_1_1",
+    "sourceController": 0,
+    "target": {
+     "kind": "object",
+     "id": "obj_173"
+    },
+    "amount": 1,
+    "combat": true
+   },
+   "seq": 60,
+   "afterAction": 214
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_167",
+    "sourceCardId": "soldier_1_1",
+    "sourceController": 0,
+    "target": {
+     "kind": "player",
+     "player": 1
+    },
+    "amount": 3,
+    "combat": true
+   },
+   "seq": 61,
+   "afterAction": 214
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_173",
+    "sourceCardId": "child_of_night",
+    "sourceController": 1,
+    "target": {
+     "kind": "object",
+     "id": "obj_167"
+    },
+    "amount": 2,
+    "combat": true
+   },
+   "seq": 62,
+   "afterAction": 214
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_124",
+    "previousHost": "obj_167",
+    "newHost": null,
+    "cause": "host-left"
+   },
+   "seq": 63,
+   "afterAction": 214
+  },
+  {
+   "t": "EVENT",
+   "name": "DIES",
+   "payload": {
+    "cardId": "soldier_1_1",
+    "owner": 0
+   },
+   "seq": 64,
+   "afterAction": 214
+  },
+  {
+   "t": "EVENT",
+   "name": "DIES",
+   "payload": {
+    "cardId": "child_of_night",
+    "owner": 1
+   },
+   "seq": 65,
+   "afterAction": 214
+  },
+  {
+   "t": "ACTION",
+   "turn": 24,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_126"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 24,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_174"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 24,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_159"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 24,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_130"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 24,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_163"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 24,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 66,
+   "afterAction": 220
+  },
+  {
+   "t": "ACTION",
+   "turn": 24,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_119"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 24,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_115"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 24,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 24,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_180"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 24,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 24,
+   "step": "END",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 25,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_151"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 25,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_128"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 25,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_117"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 25,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_161"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 25,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 25,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 67,
+   "afterAction": 232
+  },
+  {
+   "t": "ACTION",
+   "turn": 25,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_121"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 25,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_113"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 25,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_144"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 25,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 25,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 25,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 25,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_181"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 25,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_110"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 25,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 25,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_154"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 26,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_130"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 26,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_181"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 26,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_119"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 26,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_126"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 26,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_174"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 26,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_115"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 26,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 68,
+   "afterAction": 249
+  },
+  {
+   "t": "ACTION",
+   "turn": 26,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_159"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 26,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_163"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 27,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_113"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 27,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_161"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 27,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_154"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 27,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_121"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 27,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_151"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 27,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_117"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 27,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_128"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 27,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 69,
+   "afterAction": 259
+  },
+  {
+   "t": "ACTION",
+   "turn": 27,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_110"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 27,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 27,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_184"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 27,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_185"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 27,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_144"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 27,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_140",
+    "targets": []
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "mind_stone",
+    "controller": 0
+   },
+   "seq": 70,
+   "afterAction": 265
+  },
+  {
+   "t": "ACTION",
+   "turn": 27,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_188"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 28,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_174"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 28,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_159"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 28,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_181"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 28,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_119"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 28,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_163"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 28,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 71,
+   "afterAction": 272
+  },
+  {
+   "t": "ACTION",
+   "turn": 28,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_130"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 28,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 28,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_115"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 28,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_155",
+    "targets": []
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "child_of_night",
+    "controller": 1
+   },
+   "seq": 72,
+   "afterAction": 276
+  },
+  {
+   "t": "ACTION",
+   "turn": 29,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_188"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 29,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_161"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 29,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 73,
+   "afterAction": 279
+  },
+  {
+   "t": "ACTION",
+   "turn": 29,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_128"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 29,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_113"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 29,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_151"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 29,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_144"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 29,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_154"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 29,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_110"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 29,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_117"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 29,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 29,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_121"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 29,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_193"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 29,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_185"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 29,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_194"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 29,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 30,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_163"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 30,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_181"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 30,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 74,
+   "afterAction": 295
+  },
+  {
+   "t": "ACTION",
+   "turn": 30,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_130"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 30,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_126"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 30,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_115"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 30,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 30,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_152",
+    "targets": [
+     {
+      "kind": "player",
+      "player": 1
+     }
+    ]
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "hymn_to_tourach",
+    "controller": 1
+   },
+   "seq": 75,
+   "afterAction": 300
+  },
+  {
+   "t": "ACTION",
+   "turn": 30,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_174"
+   }
+  },
+  {
+   "t": "RNG",
+   "purpose": "discard",
+   "value": {
+    "kind": "int",
+    "value": 6
+   }
+  },
+  {
+   "t": "RNG",
+   "purpose": "discard",
+   "value": {
+    "kind": "int",
+    "value": 4
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 30,
+   "step": "DECLARE_ATTACKERS",
+   "player": 1,
+   "action": {
+    "type": "doneDeclaringAttackers"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 31,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_161"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 31,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_113"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 31,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_185"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 31,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_151"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 31,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_110"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 31,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_144"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 31,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_128"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 31,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_154"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 31,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_188",
+    "abilityIndex": 1,
+    "targets": []
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "DIES",
+   "payload": {
+    "cardId": "mind_stone",
+    "owner": 0
+   },
+   "seq": 76,
+   "afterAction": 311
+  },
+  {
+   "t": "ACTION",
+   "turn": 31,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_117"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 31,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_194"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 31,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 77,
+   "afterAction": 314
+  },
+  {
+   "t": "ACTION",
+   "turn": 31,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 78,
+   "afterAction": 315
+  },
+  {
+   "t": "ACTION",
+   "turn": 31,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 31,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 31,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 31,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 31,
+   "step": "END",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_121"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 32,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_159"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 32,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_126"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 32,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_163"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 32,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_119"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 32,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_130"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 32,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_174"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 32,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_181"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 32,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_115"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 79,
+   "afterAction": 328
+  },
+  {
+   "t": "ACTION",
+   "turn": 32,
+   "step": "DECLARE_ATTACKERS",
+   "player": 1,
+   "action": {
+    "type": "declareAttacker",
+    "objectId": "obj_192"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_192",
+    "sourceCardId": "child_of_night",
+    "sourceController": 1,
+    "target": {
+     "kind": "player",
+     "player": 0
+    },
+    "amount": 2,
+    "combat": true
+   },
+   "seq": 80,
+   "afterAction": 329
+  },
+  {
+   "t": "ACTION",
+   "turn": 33,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_110"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 33,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_154"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 33,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_128"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 33,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_121"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 33,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_194"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 33,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_185"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 33,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 81,
+   "afterAction": 336
+  },
+  {
+   "t": "ACTION",
+   "turn": 33,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_151"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 33,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 33,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_204"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 33,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_113"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 33,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_144"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 33,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_169",
+    "targets": []
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "serra_angel",
+    "controller": 0
+   },
+   "seq": 82,
+   "afterAction": 342
+  },
+  {
+   "t": "ACTION",
+   "turn": 34,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_159"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 34,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_163"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 34,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_126"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 34,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_119"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 34,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 83,
+   "afterAction": 347
+  },
+  {
+   "t": "ACTION",
+   "turn": 34,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_189",
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_210"
+     }
+    ]
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "terror",
+    "controller": 1
+   },
+   "seq": 84,
+   "afterAction": 348
+  },
+  {
+   "t": "ACTION",
+   "turn": 34,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_174"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 34,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_181"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 34,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "DIES",
+   "payload": {
+    "cardId": "serra_angel",
+    "owner": 0
+   },
+   "seq": 85,
+   "afterAction": 351
+  },
+  {
+   "t": "ACTION",
+   "turn": 34,
+   "step": "DECLARE_ATTACKERS",
+   "player": 1,
+   "action": {
+    "type": "doneDeclaringAttackers"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 35,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_207"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 35,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_194"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 35,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_151"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 35,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_113"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 35,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_121"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 35,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_128"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 35,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 86,
+   "afterAction": 359
+  },
+  {
+   "t": "ACTION",
+   "turn": 35,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_144"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 35,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_154"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 35,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_161"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 35,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_185"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 35,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_117"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 35,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_110"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 35,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_203"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 35,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 35,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 35,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_217"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 36,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_181"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 36,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_126"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 36,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_130"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 36,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_119"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 36,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_163"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 36,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_115"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 36,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_174"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 36,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_159"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 87,
+   "afterAction": 377
+  },
+  {
+   "t": "ACTION",
+   "turn": 36,
+   "step": "DECLARE_ATTACKERS",
+   "player": 1,
+   "action": {
+    "type": "doneDeclaringAttackers"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 37,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_217"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 37,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_207"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 37,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_161"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 37,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_151"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 37,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_113"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 37,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_185"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 37,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_144"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 37,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_110"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 37,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_128"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 37,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_194"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 37,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_121"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 37,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 88,
+   "afterAction": 390
+  },
+  {
+   "t": "ACTION",
+   "turn": 37,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_219",
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_192"
+     }
+    ]
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "swords_to_plowshares",
+    "controller": 0
+   },
+   "seq": 89,
+   "afterAction": 391
+  },
+  {
+   "t": "ACTION",
+   "turn": 37,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_117"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 38,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 90,
+   "afterAction": 393
+  },
+  {
+   "t": "ACTION",
+   "turn": 38,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_130"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 38,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_119"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 38,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_174"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 38,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_159"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 38,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_163"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 38,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 38,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_104",
+    "targets": []
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "phyrexian_rager",
+    "controller": 1
+   },
+   "seq": 91,
+   "afterAction": 400
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 92,
+   "afterAction": 400
+  },
+  {
+   "t": "ACTION",
+   "turn": 38,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_229"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 38,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_230"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 39,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_154"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 39,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_161"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 39,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_128"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 39,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_194"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 39,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_151"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 39,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 93,
+   "afterAction": 408
+  },
+  {
+   "t": "ACTION",
+   "turn": 39,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_217"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 39,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_185"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 39,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 39,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_110"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 39,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_113"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 39,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 39,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_207"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 39,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_121"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 39,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_144"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 39,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_117"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 40,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_163"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 40,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_115"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 40,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_130"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 40,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_126"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 40,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_181"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 40,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_230"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 40,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_119"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 40,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 94,
+   "afterAction": 426
+  },
+  {
+   "t": "ACTION",
+   "turn": 40,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_159"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 40,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_174"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 40,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_232"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 40,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_233"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 40,
+   "step": "DECLARE_ATTACKERS",
+   "player": 1,
+   "action": {
+    "type": "declareAttacker",
+    "objectId": "obj_227"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_227",
+    "sourceCardId": "phyrexian_rager",
+    "sourceController": 1,
+    "target": {
+     "kind": "player",
+     "player": 0
+    },
+    "amount": 2,
+    "combat": true
+   },
+   "seq": 95,
+   "afterAction": 431
+  },
+  {
+   "t": "ACTION",
+   "turn": 41,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_110"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 41,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_217"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 41,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_128"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 41,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_161"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 41,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_113"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 41,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_194"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 41,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_117"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 41,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_121"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 41,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_154"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 41,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_185"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 41,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 96,
+   "afterAction": 442
+  },
+  {
+   "t": "ACTION",
+   "turn": 41,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_151"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 41,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_144"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 41,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 41,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_207"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 41,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 42,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_115"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 42,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_163"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 42,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_119"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 42,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_126"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 42,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_181"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 42,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_230"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 42,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_174"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 42,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_130"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 42,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_233"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 42,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 97,
+   "afterAction": 457
+  },
+  {
+   "t": "ACTION",
+   "turn": 42,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 42,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_159"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 42,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_235"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 42,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 42,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_236"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 42,
+   "step": "DECLARE_ATTACKERS",
+   "player": 1,
+   "action": {
+    "type": "doneDeclaringAttackers"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 43,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_110"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 43,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_121"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 43,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_151"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 43,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_185"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 43,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_144"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 43,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_113"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 43,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_161"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 43,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_154"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 43,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_207"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 43,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_194"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 43,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_117"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 43,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 98,
+   "afterAction": 475
+  },
+  {
+   "t": "ACTION",
+   "turn": 43,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 43,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 43,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_128"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 43,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 43,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_217"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 44,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 99,
+   "afterAction": 481
+  },
+  {
+   "t": "ACTION",
+   "turn": 44,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_181"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 44,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_126"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 44,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_230"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 44,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_233"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 44,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_174"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 44,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_119"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 44,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_159"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 44,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 44,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_115"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 44,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 44,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_130"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 44,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_163"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 44,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_236"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 44,
+   "step": "DECLARE_ATTACKERS",
+   "player": 1,
+   "action": {
+    "type": "declareAttacker",
+    "objectId": "obj_227"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_227",
+    "sourceCardId": "phyrexian_rager",
+    "sourceController": 1,
+    "target": {
+     "kind": "player",
+     "player": 0
+    },
+    "amount": 2,
+    "combat": true
+   },
+   "seq": 100,
+   "afterAction": 495
+  },
+  {
+   "t": "ACTION",
+   "turn": 44,
+   "step": "CLEANUP",
+   "player": 1,
+   "action": {
+    "type": "discard",
+    "objectId": "obj_106"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 45,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_151"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 45,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_154"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 45,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_128"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 45,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 101,
+   "afterAction": 500
+  },
+  {
+   "t": "ACTION",
+   "turn": 45,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_207"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 45,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_121"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 45,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_217"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 45,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 45,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_177",
+    "targets": []
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "cloudkin_seer",
+    "controller": 0
+   },
+   "seq": 102,
+   "afterAction": 505
+  },
+  {
+   "t": "ACTION",
+   "turn": 45,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 45,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_194"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 45,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 103,
+   "afterAction": 508
+  },
+  {
+   "t": "ACTION",
+   "turn": 45,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_231",
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_227"
+     }
+    ]
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "pacifism",
+    "controller": 0
+   },
+   "seq": 104,
+   "afterAction": 509
+  },
+  {
+   "t": "ACTION",
+   "turn": 45,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_161"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 45,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_248",
+    "previousHost": null,
+    "newHost": "obj_227",
+    "cause": "aura-enter"
+   },
+   "seq": 105,
+   "afterAction": 511
+  },
+  {
+   "t": "ACTION",
+   "turn": 45,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 45,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_185"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 46,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_236"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 46,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_230"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 46,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_174"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 46,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 106,
+   "afterAction": 517
+  },
+  {
+   "t": "ACTION",
+   "turn": 46,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_115"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 46,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_130"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 46,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_126"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 46,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_119"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 46,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 46,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_249"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 46,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_211",
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_243"
+     }
+    ]
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "doom_blade",
+    "controller": 1
+   },
+   "seq": 107,
+   "afterAction": 524
+  },
+  {
+   "t": "ACTION",
+   "turn": 46,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_233"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 46,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_224",
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_243"
+     }
+    ]
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "doom_blade",
+    "controller": 1
+   },
+   "seq": 108,
+   "afterAction": 526
+  },
+  {
+   "t": "ACTION",
+   "turn": 46,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_250"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "DIES",
+   "payload": {
+    "cardId": "cloudkin_seer",
+    "owner": 0
+   },
+   "seq": 109,
+   "afterAction": 527
+  },
+  {
+   "t": "EVENT",
+   "name": "FIZZLE",
+   "payload": {
+    "cardId": "doom_blade"
+   },
+   "seq": 110,
+   "afterAction": 527
+  },
+  {
+   "t": "ACTION",
+   "turn": 47,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_151"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 47,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_185"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 47,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_128"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 47,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 111,
+   "afterAction": 531
+  },
+  {
+   "t": "ACTION",
+   "turn": 47,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_207"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 47,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 47,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 47,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_121"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 47,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_113"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 47,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_217"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 47,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 47,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_144"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 47,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_161"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 47,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_258"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 47,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_154"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 47,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_240",
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_227"
+     }
+    ]
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "control_magic",
+    "controller": 0
+   },
+   "seq": 112,
+   "afterAction": 543
+  },
+  {
+   "t": "ACTION",
+   "turn": 47,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_194"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 47,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_259"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 47,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_110"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_262",
+    "previousHost": null,
+    "newHost": "obj_227",
+    "cause": "aura-enter"
+   },
+   "seq": 113,
+   "afterAction": 546
+  },
+  {
+   "t": "ACTION",
+   "turn": 47,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_234",
+    "targets": []
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "savannah_lions",
+    "controller": 0
+   },
+   "seq": 114,
+   "afterAction": 547
+  },
+  {
+   "t": "ACTION",
+   "turn": 47,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 48,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_119"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 48,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_174"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 48,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_115"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 48,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_130"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 48,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_163"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 48,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_159"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 48,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_181"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 48,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_230"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 48,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 115,
+   "afterAction": 557
+  },
+  {
+   "t": "ACTION",
+   "turn": 48,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_233"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 48,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_250"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 48,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_126"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 48,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 48,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 48,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_236"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 49,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_128"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 49,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_151"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 49,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 116,
+   "afterAction": 566
+  },
+  {
+   "t": "ACTION",
+   "turn": 49,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 49,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_245",
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_265"
+     }
+    ]
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "curiosity",
+    "controller": 0
+   },
+   "seq": 117,
+   "afterAction": 568
+  },
+  {
+   "t": "ACTION",
+   "turn": 49,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_194"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 49,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_185"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 49,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_121"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 49,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_144"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 49,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_113"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 49,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_259"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 49,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_110"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 49,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_270",
+    "previousHost": null,
+    "newHost": "obj_265",
+    "cause": "aura-enter"
+   },
+   "seq": 118,
+   "afterAction": 576
+  },
+  {
+   "t": "ACTION",
+   "turn": 49,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_124",
+    "abilityIndex": 1,
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_265"
+     }
+    ]
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 49,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_207"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 49,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_217"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 49,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_161"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 49,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_154"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_124",
+    "previousHost": null,
+    "newHost": "obj_265",
+    "cause": "equip"
+   },
+   "seq": 119,
+   "afterAction": 581
+  },
+  {
+   "t": "ACTION",
+   "turn": 49,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_124",
+    "abilityIndex": 1,
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_265"
+     }
+    ]
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_124",
+    "previousHost": "obj_265",
+    "newHost": "obj_265",
+    "cause": "equip"
+   },
+   "seq": 120,
+   "afterAction": 582
+  },
+  {
+   "t": "ACTION",
+   "turn": 49,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_182",
+    "targets": []
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "cloudkin_seer",
+    "controller": 0
+   },
+   "seq": 121,
+   "afterAction": 583
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 122,
+   "afterAction": 583
+  },
+  {
+   "t": "ACTION",
+   "turn": 49,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_267"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 49,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_124",
+    "abilityIndex": 1,
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_227"
+     }
+    ]
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_124",
+    "previousHost": "obj_265",
+    "newHost": "obj_227",
+    "cause": "equip"
+   },
+   "seq": 123,
+   "afterAction": 585
+  },
+  {
+   "t": "ACTION",
+   "turn": 49,
+   "step": "DECLARE_ATTACKERS",
+   "player": 0,
+   "action": {
+    "type": "declareAttacker",
+    "objectId": "obj_265"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_265",
+    "sourceCardId": "savannah_lions",
+    "sourceController": 0,
+    "target": {
+     "kind": "player",
+     "player": 1
+    },
+    "amount": 2,
+    "combat": true
+   },
+   "seq": 124,
+   "afterAction": 586
+  },
+  {
+   "t": "ACTION",
+   "turn": 49,
+   "step": "COMBAT_DAMAGE",
+   "player": 0,
+   "action": {
+    "type": "declineOptional"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 50,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_163"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 50,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_174"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 50,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_236"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 50,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_250"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 50,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_130"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 50,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_115"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 50,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_233"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 50,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_230"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 50,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_181"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 50,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_126"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 50,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_159"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 50,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 125,
+   "afterAction": 599
+  },
+  {
+   "t": "ACTION",
+   "turn": 50,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_119"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 51,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_144"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 51,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_154"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 51,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 126,
+   "afterAction": 603
+  },
+  {
+   "t": "ACTION",
+   "turn": 51,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_121"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 51,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_117"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 51,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 51,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_128"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 51,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_217"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 51,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_282",
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_265"
+     }
+    ]
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "control_magic",
+    "controller": 0
+   },
+   "seq": 127,
+   "afterAction": 609
+  },
+  {
+   "t": "ACTION",
+   "turn": 51,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_151"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 51,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_194"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 51,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_285",
+    "previousHost": null,
+    "newHost": "obj_265",
+    "cause": "aura-enter"
+   },
+   "seq": 128,
+   "afterAction": 612
+  },
+  {
+   "t": "ACTION",
+   "turn": 51,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_161"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 51,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_124",
+    "abilityIndex": 1,
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_227"
+     }
+    ]
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 51,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_185"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 51,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_124",
+    "previousHost": "obj_227",
+    "newHost": "obj_227",
+    "cause": "equip"
+   },
+   "seq": 129,
+   "afterAction": 616
+  },
+  {
+   "t": "ACTION",
+   "turn": 51,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_259"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 51,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 51,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_207"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 51,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_278"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 51,
+   "step": "DECLARE_ATTACKERS",
+   "player": 0,
+   "action": {
+    "type": "declareAttacker",
+    "objectId": "obj_265"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 51,
+   "step": "DECLARE_ATTACKERS",
+   "player": 0,
+   "action": {
+    "type": "doneDeclaringAttackers"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_265",
+    "sourceCardId": "savannah_lions",
+    "sourceController": 0,
+    "target": {
+     "kind": "player",
+     "player": 1
+    },
+    "amount": 2,
+    "combat": true
+   },
+   "seq": 130,
+   "afterAction": 622
+  },
+  {
+   "t": "ACTION",
+   "turn": 51,
+   "step": "COMBAT_DAMAGE",
+   "player": 0,
+   "action": {
+    "type": "acceptOptional"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 131,
+   "afterAction": 623
+  },
+  {
+   "t": "ACTION",
+   "turn": 51,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 52,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_163"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 52,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_115"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 52,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_181"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 52,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_236"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 52,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_119"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 52,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_230"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 52,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_130"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 52,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_233"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 52,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 132,
+   "afterAction": 633
+  },
+  {
+   "t": "ACTION",
+   "turn": 52,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_126"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 52,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_159"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 52,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_174"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 52,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 52,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 52,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_250"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 52,
+   "step": "CLEANUP",
+   "player": 1,
+   "action": {
+    "type": "discard",
+    "objectId": "obj_289"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 53,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_117"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 53,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_194"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 53,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_185"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 53,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_110"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 53,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_278"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 53,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_113"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 53,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_144"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 53,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_207"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 53,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 133,
+   "afterAction": 649
+  },
+  {
+   "t": "ACTION",
+   "turn": 53,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 53,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_124",
+    "abilityIndex": 1,
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_227"
+     }
+    ]
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 53,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_259"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 53,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_161"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 53,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_124",
+    "previousHost": "obj_227",
+    "newHost": "obj_227",
+    "cause": "equip"
+   },
+   "seq": 134,
+   "afterAction": 654
+  },
+  {
+   "t": "ACTION",
+   "turn": 53,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_277"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 53,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_124",
+    "abilityIndex": 1,
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_275"
+     }
+    ]
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 53,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_217"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 53,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_293"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_124",
+    "previousHost": "obj_227",
+    "newHost": "obj_275",
+    "cause": "equip"
+   },
+   "seq": 135,
+   "afterAction": 658
+  },
+  {
+   "t": "ACTION",
+   "turn": 53,
+   "step": "DECLARE_ATTACKERS",
+   "player": 0,
+   "action": {
+    "type": "declareAttacker",
+    "objectId": "obj_275"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 53,
+   "step": "DECLARE_ATTACKERS",
+   "player": 0,
+   "action": {
+    "type": "doneDeclaringAttackers"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_275",
+    "sourceCardId": "cloudkin_seer",
+    "sourceController": 0,
+    "target": {
+     "kind": "player",
+     "player": 1
+    },
+    "amount": 5,
+    "combat": true
+   },
+   "seq": 136,
+   "afterAction": 660
+  },
+  {
+   "t": "ACTION",
+   "turn": 54,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_233"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 54,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_230"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 54,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_174"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 54,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_181"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 54,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_236"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 54,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_130"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 54,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_250"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 54,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_126"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 54,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_115"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 54,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_163"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 54,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_159"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 54,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_119"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 137,
+   "afterAction": 672
+  },
+  {
+   "t": "ACTION",
+   "turn": 54,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_295"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 54,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_296"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 54,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 55,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_113"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 55,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_151"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 55,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_144"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 55,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_194"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 55,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_128"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 55,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_293"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 55,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_117"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 55,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_154"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 55,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_110"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 55,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_278"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 55,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_185"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 55,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_121"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 55,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_217"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 55,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 138,
+   "afterAction": 689
+  },
+  {
+   "t": "ACTION",
+   "turn": 55,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_259"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 55,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 55,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_216",
+    "targets": []
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "fencing_ace",
+    "controller": 0
+   },
+   "seq": 139,
+   "afterAction": 692
+  },
+  {
+   "t": "ACTION",
+   "turn": 55,
+   "step": "DECLARE_ATTACKERS",
+   "player": 0,
+   "action": {
+    "type": "declareAttacker",
+    "objectId": "obj_265"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 55,
+   "step": "DECLARE_ATTACKERS",
+   "player": 0,
+   "action": {
+    "type": "declareAttacker",
+    "objectId": "obj_275"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_265",
+    "sourceCardId": "savannah_lions",
+    "sourceController": 0,
+    "target": {
+     "kind": "player",
+     "player": 1
+    },
+    "amount": 2,
+    "combat": true
+   },
+   "seq": 140,
+   "afterAction": 694
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_275",
+    "sourceCardId": "cloudkin_seer",
+    "sourceController": 0,
+    "target": {
+     "kind": "player",
+     "player": 1
+    },
+    "amount": 5,
+    "combat": true
+   },
+   "seq": 141,
+   "afterAction": 694
+  },
+  {
+   "t": "ACTION",
+   "turn": 55,
+   "step": "COMBAT_DAMAGE",
+   "player": 0,
+   "action": {
+    "type": "acceptOptional"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 142,
+   "afterAction": 695
+  },
+  {
+   "t": "ACTION",
+   "turn": 55,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_302"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 55,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_303"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 56,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_159"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 56,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_130"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 56,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_236"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 56,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_250"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 56,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_163"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 56,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_119"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 56,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_115"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 56,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_181"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 56,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_174"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 56,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_230"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 56,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 143,
+   "afterAction": 708
+  },
+  {
+   "t": "ACTION",
+   "turn": 56,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_126"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 56,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_233"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 56,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_296"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 56,
+   "step": "CLEANUP",
+   "player": 1,
+   "action": {
+    "type": "discard",
+    "objectId": "obj_114"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 57,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_217"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 57,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_151"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 57,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_154"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 57,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_161"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 57,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_185"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 57,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_110"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 57,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_303"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 57,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_113"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 57,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_144"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 57,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_194"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 57,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_278"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 57,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_128"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 57,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_207"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 57,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 144,
+   "afterAction": 726
+  },
+  {
+   "t": "ACTION",
+   "turn": 57,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_121"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 57,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_259"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 57,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 57,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 57,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 57,
+   "step": "DECLARE_ATTACKERS",
+   "player": 0,
+   "action": {
+    "type": "declareAttacker",
+    "objectId": "obj_275"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 57,
+   "step": "DECLARE_ATTACKERS",
+   "player": 0,
+   "action": {
+    "type": "doneDeclaringAttackers"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 57,
+   "step": "DECLARE_ATTACKERS",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_293"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 57,
+   "step": "DECLARE_ATTACKERS",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 57,
+   "step": "DECLARE_BLOCKERS",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_117"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_275",
+    "sourceCardId": "cloudkin_seer",
+    "sourceController": 0,
+    "target": {
+     "kind": "player",
+     "player": 1
+    },
+    "amount": 5,
+    "combat": true
+   },
+   "seq": 145,
+   "afterAction": 736
+  },
+  {
+   "t": "ACTION",
+   "turn": 58,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_159"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 58,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_236"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 58,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_181"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 58,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_174"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 58,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_296"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 58,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_233"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 58,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_130"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 58,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_126"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 58,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 146,
+   "afterAction": 745
+  },
+  {
+   "t": "ACTION",
+   "turn": 58,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_115"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 58,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_250"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 58,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_119"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 58,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 58,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_230"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 58,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_163"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 58,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_266",
+    "targets": []
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "typhoid_rats",
+    "controller": 1
+   },
+   "seq": 147,
+   "afterAction": 752
+  },
+  {
+   "t": "ACTION",
+   "turn": 59,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_144"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 59,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_259"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 59,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_278"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 59,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_185"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 59,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_128"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 59,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_293"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 59,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "tapForMana",
+    "objectId": "obj_161"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 59,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  }
+ ]
+}

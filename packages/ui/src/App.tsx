@@ -1,0 +1,161 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { DecisionPoint } from "@shandalar/engine";
+import { loadOracle, loadPool, viewCtx, ReplaySession, type OracleEntry, type SavedGame } from "./engine-bridge";
+import { Board } from "./components/Board";
+import { Rail } from "./components/Rail";
+import { Transport } from "./components/Transport";
+import { LogPanel, buildLogLines } from "./components/LogPanel";
+
+const VIEWER_VERSION = "s6-0.1";
+
+function Loader({ onLoad }: { onLoad: (g: SavedGame) => void }) {
+  const [error, setError] = useState<string | null>(null);
+  const pick = (file: File) => {
+    file.text().then((text) => {
+      try {
+        const parsed = JSON.parse(text) as SavedGame;
+        if (parsed.format !== "shandalar-log-v1") throw new Error("not a shandalar-log-v1 file");
+        onLoad(parsed);
+      } catch (e) {
+        setError(String(e));
+      }
+    });
+  };
+  return (
+    <div className="loader">
+      <div className="box">
+        <h2 style={{ fontFamily: "var(--serif)", marginTop: 0 }}>Replay Viewer</h2>
+        <p>Open a saved game log (from <code>pnpm fuzz --save</code> or <code>pnpm play-random</code>).</p>
+        <input type="file" accept=".json" onChange={(e) => e.target.files?.[0] && pick(e.target.files[0])} />
+        <p>
+          <button
+            onClick={() =>
+              fetch("/sample-game.json")
+                .then((r) => r.json())
+                .then(onLoad)
+                .catch((e) => setError(String(e)))
+            }
+          >
+            Load the bundled sample game
+          </button>
+        </p>
+        {error && <p style={{ color: "var(--danger)" }}>{error}</p>}
+      </div>
+    </div>
+  );
+}
+
+function Viewer({ game }: { game: SavedGame }) {
+  const pool = useMemo(loadPool, []);
+  const session = useMemo(() => new ReplaySession(game, pool), [game, pool]);
+  const [oracle, setOracle] = useState<Record<string, OracleEntry>>({});
+  const [index, setIndex] = useState(0);
+  const [point, setPoint] = useState<DecisionPoint | null>(null);
+  const [playing, setPlaying] = useState(false);
+  const [speed, setSpeed] = useState(2);
+  const [hovered, setHovered] = useState<string | null>(null);
+  const [pinned, setPinned] = useState<string | null>(null);
+  const [printed, setPrinted] = useState(false);
+  const [reveal, setReveal] = useState(false);
+  const [replayMs, setReplayMs] = useState(0);
+  const [flagNote, setFlagNote] = useState<string | null>(null);
+  const seq = useRef(0);
+
+  useEffect(() => {
+    loadOracle().then(setOracle);
+  }, []);
+
+  useEffect(() => {
+    const mySeq = ++seq.current;
+    session.at(index).then((p) => {
+      if (seq.current === mySeq) {
+        setPoint(p);
+        setReplayMs(session.lastReplayMs);
+      }
+    });
+  }, [index, session]);
+
+  const logLines = useMemo(() => buildLogLines(game, pool), [game, pool]);
+
+  if (!point) return <div className="loader">reconstructing…</div>;
+  const ctx = viewCtx(point.state, pool);
+  const inspected = pinned ?? hovered;
+
+  const flag = async () => {
+    const note = window.prompt("What looks wrong or interesting here?", "");
+    if (note === null) return;
+    const info = session.decisions[Math.min(index, session.total - 1)];
+    const entry = {
+      matchSpec: game.spec,
+      actionIndex: index,
+      turn: info?.turn ?? 0,
+      step: info?.step ?? "",
+      note,
+      flaggedAt: new Date().toISOString(),
+      viewerVersion: VIEWER_VERSION,
+    };
+    try {
+      const resp = await fetch("/__flag", { method: "POST", body: JSON.stringify(entry) });
+      const j = (await resp.json()) as { ok: boolean; file?: string };
+      setFlagNote(j.ok ? `Flagged → ${j.file}` : "Flag failed");
+    } catch {
+      // Static build: no dev endpoint — download instead (brief Part 3).
+      const blob = new Blob([JSON.stringify(entry, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `${game.spec.seed}-t${entry.turn}-a${index}.json`;
+      a.click();
+      setFlagNote("Flag downloaded (no dev server)");
+    }
+    setTimeout(() => setFlagNote(null), 4000);
+  };
+
+  return (
+    <div className="app">
+      <Board
+        ctx={ctx}
+        oracle={oracle}
+        revealOpponent={reveal}
+        onHover={setHovered}
+        onClick={(id) => setPinned((p) => (p === id ? null : id))}
+        selected={pinned}
+      />
+      <Rail
+        ctx={ctx}
+        point={point}
+        poolMap={pool}
+        oracle={oracle}
+        inspected={inspected}
+        printed={printed}
+        onTogglePrinted={() => setPrinted((p) => !p)}
+        logTab={
+          <>
+            <div className="panel toggle-row">
+              <label>
+                <input type="checkbox" checked={reveal} onChange={(e) => setReveal(e.target.checked)} /> Reveal opponent hand
+              </label>
+              {flagNote && <span style={{ color: "var(--brass)" }}>{flagNote}</span>}
+            </div>
+            <LogPanel lines={logLines} current={index} onSeek={setIndex} />
+          </>
+        }
+      />
+      <Transport
+        session={session}
+        index={index}
+        setIndex={setIndex}
+        playing={playing}
+        setPlaying={setPlaying}
+        speed={speed}
+        setSpeed={setSpeed}
+        onFlag={flag}
+        replayMs={replayMs}
+      />
+    </div>
+  );
+}
+
+export default function App() {
+  const [game, setGame] = useState<SavedGame | null>(null);
+  return game ? <Viewer game={game} /> : <Loader onLoad={setGame} />;
+}
