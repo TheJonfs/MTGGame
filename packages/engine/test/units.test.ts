@@ -167,6 +167,17 @@ describe("legal-action enumerator", () => {
     expect(actions.some((a) => a.type === "castSpell")).toBe(false);
   });
 
+  it("dedupes by cardId in hand only — battlefield objects each get their own action (R-029)", () => {
+    const tg = board({
+      players: [{ battlefield: ["mountain", "mountain"], hand: ["lightning_bolt", "lightning_bolt"] }, {}],
+    });
+    const actions = legalActions(tg.game.ctx, 0);
+    // Two identical hand cards: one castSpell action set.
+    expect(actions.filter((a) => a.type === "castSpell" && a.targets[0]?.kind === "player" && a.targets[0].player === 1)).toHaveLength(1);
+    // Two identical battlefield lands: two distinct tapForMana actions.
+    expect(actions.filter((a) => a.type === "tapForMana")).toHaveLength(2);
+  });
+
   it("lands can only be played at sorcery speed, one per turn", () => {
     const tg = board({ players: [{ hand: ["mountain", "mountain"] }, {}] });
     const ctx = tg.game.ctx;

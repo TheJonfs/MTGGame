@@ -1,0 +1,35 @@
+{
+  "id": "elvish_visionary",
+  "name": "Elvish Visionary",
+  "source": "real",
+  "manaCost": "{1}{G}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Elf",
+    "Shaman"
+  ],
+  "power": 1,
+  "toughness": 1,
+  "art": {
+    "fallback": "rendered"
+  },
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "condition": {
+        "self": true
+      },
+      "effects": [
+        {
+          "type": "draw",
+          "count": 1,
+          "who": "you"
+        }
+      ],
+      "optional": false
+    }
+  ]
+}

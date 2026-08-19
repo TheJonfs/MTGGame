@@ -1,0 +1,32 @@
+{
+  "name": "Timberland Guide ETB: counter on itself when it is the only creature",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "forest",
+          "forest"
+        ],
+        "hand": [
+          "timberland_guide"
+        ]
+      },
+      {}
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "timberland_guide"
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

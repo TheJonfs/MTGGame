@@ -1,35 +1,53 @@
 import { loadCardPool, type CardDef } from "@shandalar/cards";
 import { runMatch, type MatchResult, type MatchSpec } from "@shandalar/engine";
 import { RandomAgent } from "@shandalar/agents";
-import { DECK_A_MONO_RED, DECK_B_WU_SKIES } from "./slice-decks.js";
+import { DECKS, PAIRINGS, type DeckKey } from "./slice-decks.js";
 
-export interface FuzzReport {
+export interface PairingReport {
+  pairing: string;
   games: number;
   terminations: Record<string, number>;
   meanTurns: number;
   errors: { seed: number; message: string }[];
 }
 
-export function sliceMatchSpec(seed: number): MatchSpec {
+export interface FuzzReport {
+  pairings: PairingReport[];
+  totalGames: number;
+  totalErrors: number;
+}
+
+export function matchSpec(seed: number, a: DeckKey, b: DeckKey): MatchSpec {
   return {
     seed,
     players: [
-      { name: "Red Aggro", decklist: DECK_A_MONO_RED, agent: "random" },
-      { name: "WU Skies", decklist: DECK_B_WU_SKIES, agent: "random" },
+      { name: DECKS[a].name, decklist: [...DECKS[a].decklist], agent: "random" },
+      { name: DECKS[b].name, decklist: [...DECKS[b].decklist], agent: "random" },
     ],
     rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 },
     modifiers: [],
   };
 }
 
-export async function runSliceMatch(cards: Map<string, CardDef>, seed: number): Promise<MatchResult> {
+export async function runPairingMatch(
+  cards: Map<string, CardDef>,
+  seed: number,
+  a: DeckKey = "A",
+  b: DeckKey = "B",
+): Promise<MatchResult> {
   // Distinct derived seeds per seat so the two agents don't mirror each other.
   const agents: [RandomAgent, RandomAgent] = [new RandomAgent(seed * 2 + 1), new RandomAgent(seed * 2 + 2)];
-  return runMatch(sliceMatchSpec(seed), cards, agents);
+  return runMatch(matchSpec(seed, a, b), cards, agents);
 }
 
-export async function fuzz(cardsDir: string, games: number, startSeed: number, onProgress?: (i: number) => void): Promise<FuzzReport> {
-  const pool = loadCardPool(cardsDir);
+export async function fuzzPairing(
+  cards: Map<string, CardDef>,
+  a: DeckKey,
+  b: DeckKey,
+  games: number,
+  startSeed: number,
+  onProgress?: (i: number) => void,
+): Promise<PairingReport> {
   const terminations: Record<string, number> = {};
   const errors: { seed: number; message: string }[] = [];
   let totalTurns = 0;
@@ -38,7 +56,7 @@ export async function fuzz(cardsDir: string, games: number, startSeed: number, o
   for (let i = 0; i < games; i++) {
     const seed = startSeed + i;
     try {
-      const result = await runSliceMatch(pool.cards, seed);
+      const result = await runPairingMatch(cards, seed, a, b);
       terminations[result.reason] = (terminations[result.reason] ?? 0) + 1;
       totalTurns += result.turns;
       completed += 1;
@@ -49,9 +67,31 @@ export async function fuzz(cardsDir: string, games: number, startSeed: number, o
   }
 
   return {
+    pairing: `${a}-${b}`,
     games,
     terminations,
     meanTurns: completed > 0 ? totalTurns / completed : 0,
     errors,
+  };
+}
+
+/** Fuzz every deck pairing (A–B, A–C, B–C). */
+export async function fuzz(
+  cardsDir: string,
+  gamesPerPairing: number,
+  startSeed: number,
+  onProgress?: (pairing: string, i: number) => void,
+): Promise<FuzzReport> {
+  const pool = loadCardPool(cardsDir);
+  const pairings: PairingReport[] = [];
+  for (const [a, b] of PAIRINGS) {
+    pairings.push(
+      await fuzzPairing(pool.cards, a, b, gamesPerPairing, startSeed, (i) => onProgress?.(`${a}-${b}`, i)),
+    );
+  }
+  return {
+    pairings,
+    totalGames: pairings.reduce((n, p) => n + p.games, 0),
+    totalErrors: pairings.reduce((n, p) => n + p.errors.length, 0),
   };
 }

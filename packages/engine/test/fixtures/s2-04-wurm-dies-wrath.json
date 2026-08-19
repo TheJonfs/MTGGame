@@ -1,0 +1,41 @@
+{
+  "name": "Pelakka Wurm dies to mass destroy: controller draws",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "mountain",
+          "mountain",
+          "savannah_lions"
+        ],
+        "hand": [
+          "test_wrath"
+        ]
+      },
+      {
+        "battlefield": [
+          "pelakka_wurm"
+        ],
+        "library": [
+          "forest",
+          "forest"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "test_wrath"
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

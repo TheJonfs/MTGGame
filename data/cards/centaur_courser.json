@@ -1,0 +1,18 @@
+{
+  "id": "centaur_courser",
+  "name": "Centaur Courser",
+  "source": "real",
+  "manaCost": "{2}{G}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Centaur",
+    "Warrior"
+  ],
+  "power": 3,
+  "toughness": 3,
+  "art": {
+    "fallback": "rendered"
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "name": "Blocker damage order: bears first kills bears, courser survives",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "DECLARE_ATTACKERS",
+    "players": [
+      {
+        "battlefield": [
+          "rumbling_baloth"
+        ]
+      },
+      {
+        "battlefield": [
+          "grizzly_bears",
+          "centaur_courser"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "attack",
+      "attackers": [
+        "rumbling_baloth"
+      ]
+    },
+    {
+      "player": 1,
+      "do": "block",
+      "blocks": [
+        {
+          "blocker": "grizzly_bears",
+          "attacker": "rumbling_baloth"
+        },
+        {
+          "blocker": "centaur_courser",
+          "attacker": "rumbling_baloth"
+        }
+      ]
+    },
+    {
+      "player": 0,
+      "do": "orderBlocker",
+      "blocker": "grizzly_bears"
+    }
+  ],
+  "run": [
+    {
+      "steps": [
+        "DECLARE_ATTACKERS",
+        "DECLARE_BLOCKERS",
+        "FIRST_STRIKE_DAMAGE",
+        "COMBAT_DAMAGE",
+        "COMBAT_END"
+      ]
+    }
+  ]
+}

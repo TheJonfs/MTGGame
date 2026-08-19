@@ -1,0 +1,28 @@
+{
+  "id": "giant_growth",
+  "name": "Giant Growth",
+  "source": "real",
+  "manaCost": "{G}",
+  "types": [
+    "Instant"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "creature",
+      "zone": "battlefield"
+    }
+  ],
+  "spellEffect": [
+    {
+      "type": "modifyPT",
+      "power": 3,
+      "toughness": 3,
+      "target": 0,
+      "duration": "UNTIL_END_OF_TURN"
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

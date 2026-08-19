@@ -1,0 +1,20 @@
+{
+  "id": "raise_the_alarm",
+  "name": "Raise the Alarm",
+  "source": "real",
+  "manaCost": "{1}{W}",
+  "types": [
+    "Instant"
+  ],
+  "spellEffect": [
+    {
+      "type": "createToken",
+      "tokenId": "soldier_1_1",
+      "count": 2,
+      "who": "you"
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

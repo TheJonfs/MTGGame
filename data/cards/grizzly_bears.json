@@ -1,0 +1,17 @@
+{
+  "id": "grizzly_bears",
+  "name": "Grizzly Bears",
+  "source": "real",
+  "manaCost": "{1}{G}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Bear"
+  ],
+  "power": 2,
+  "toughness": 2,
+  "art": {
+    "fallback": "rendered"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "name": "Blaze X=3 at a player",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "mountain",
+          "mountain",
+          "mountain",
+          "mountain"
+        ],
+        "hand": [
+          "blaze"
+        ]
+      },
+      {}
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "blaze",
+      "x": 3,
+      "targets": [
+        {
+          "player": 1
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

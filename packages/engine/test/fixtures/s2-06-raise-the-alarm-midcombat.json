@@ -1,0 +1,49 @@
+{
+  "name": "Raise the Alarm mid-combat: tokens arrive too late to block",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "DECLARE_ATTACKERS",
+    "players": [
+      {
+        "battlefield": [
+          "gray_ogre"
+        ]
+      },
+      {
+        "battlefield": [
+          "plains",
+          "plains"
+        ],
+        "hand": [
+          "raise_the_alarm"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "attack",
+      "attackers": [
+        "gray_ogre"
+      ]
+    },
+    {
+      "player": 1,
+      "do": "cast",
+      "card": "raise_the_alarm"
+    }
+  ],
+  "run": [
+    {
+      "steps": [
+        "DECLARE_ATTACKERS",
+        "DECLARE_BLOCKERS",
+        "FIRST_STRIKE_DAMAGE",
+        "COMBAT_DAMAGE",
+        "COMBAT_END"
+      ]
+    }
+  ]
+}

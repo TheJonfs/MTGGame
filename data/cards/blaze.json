@@ -1,0 +1,26 @@
+{
+  "id": "blaze",
+  "name": "Blaze",
+  "source": "real",
+  "manaCost": "{X}{R}",
+  "types": [
+    "Sorcery"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "anyTarget",
+      "zone": "any"
+    }
+  ],
+  "spellEffect": [
+    {
+      "type": "damage",
+      "amount": "X",
+      "target": 0
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

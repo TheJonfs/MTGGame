@@ -1,0 +1,18 @@
+{
+  "id": "soldier_1_1",
+  "name": "Soldier Token",
+  "source": "custom",
+  "isTokenDef": true,
+  "manaCost": "",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Soldier"
+  ],
+  "power": 1,
+  "toughness": 1,
+  "art": {
+    "fallback": "rendered"
+  }
+}

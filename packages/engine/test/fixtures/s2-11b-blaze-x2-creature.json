@@ -1,0 +1,44 @@
+{
+  "name": "Blaze X=2 kills a 2/2",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "mountain",
+          "mountain",
+          "mountain",
+          "mountain"
+        ],
+        "hand": [
+          "blaze"
+        ]
+      },
+      {
+        "battlefield": [
+          "grizzly_bears"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "blaze",
+      "x": 2,
+      "targets": [
+        {
+          "object": "grizzly_bears"
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

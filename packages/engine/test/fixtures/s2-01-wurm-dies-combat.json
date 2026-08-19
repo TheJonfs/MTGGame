@@ -1,0 +1,59 @@
+{
+  "name": "Pelakka Wurm dies in combat: controller draws via DIES trigger",
+  "setup": {
+    "turn": 4,
+    "active": 1,
+    "step": "DECLARE_ATTACKERS",
+    "players": [
+      {
+        "battlefield": [
+          "rumbling_baloth",
+          "rumbling_baloth"
+        ]
+      },
+      {
+        "battlefield": [
+          "pelakka_wurm"
+        ],
+        "library": [
+          "forest",
+          "forest"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 1,
+      "do": "attack",
+      "attackers": [
+        "pelakka_wurm"
+      ]
+    },
+    {
+      "player": 0,
+      "do": "block",
+      "blocks": [
+        {
+          "blocker": "rumbling_baloth",
+          "attacker": "pelakka_wurm"
+        },
+        {
+          "blocker": "rumbling_baloth",
+          "attacker": "pelakka_wurm"
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "steps": [
+        "DECLARE_ATTACKERS",
+        "DECLARE_BLOCKERS",
+        "FIRST_STRIKE_DAMAGE",
+        "COMBAT_DAMAGE",
+        "COMBAT_END"
+      ]
+    }
+  ]
+}

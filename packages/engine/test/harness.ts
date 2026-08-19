@@ -34,6 +34,17 @@ const TEST_CARDS: CardDef[] = [
     art: { fallback: "rendered" },
   },
   {
+    // Mass destroy for dies-trigger fixtures (Wrath itself is M3; the
+    // resolver is real, the card is not in the pool).
+    id: "test_wrath",
+    name: "Test Wrath",
+    source: "custom",
+    manaCost: "{2}",
+    types: ["Sorcery"],
+    spellEffect: [{ type: "destroyAll", scope: "allCreatures" }],
+    art: { fallback: "rendered" },
+  },
+  {
     id: "test_pinger",
     name: "Test Pinger",
     source: "custom",

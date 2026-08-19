@@ -1,0 +1,43 @@
+{
+  "id": "timberland_guide",
+  "name": "Timberland Guide",
+  "source": "real",
+  "manaCost": "{1}{G}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Human",
+    "Scout"
+  ],
+  "power": 1,
+  "toughness": 1,
+  "art": {
+    "fallback": "rendered"
+  },
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "condition": {
+        "self": true
+      },
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "creature",
+          "zone": "battlefield"
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounters",
+          "kind": "+1/+1",
+          "count": 1,
+          "target": 0
+        }
+      ],
+      "optional": false
+    }
+  ]
+}

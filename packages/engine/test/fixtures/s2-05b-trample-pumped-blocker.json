@@ -1,0 +1,67 @@
+{
+  "name": "Giant Growth on the blocker: trample assignment recomputes lethal",
+  "setup": {
+    "turn": 4,
+    "active": 1,
+    "step": "DECLARE_ATTACKERS",
+    "players": [
+      {
+        "battlefield": [
+          "grizzly_bears",
+          "forest"
+        ],
+        "hand": [
+          "giant_growth"
+        ]
+      },
+      {
+        "battlefield": [
+          "pelakka_wurm"
+        ],
+        "library": [
+          "forest"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 1,
+      "do": "attack",
+      "attackers": [
+        "pelakka_wurm"
+      ]
+    },
+    {
+      "player": 0,
+      "do": "block",
+      "blocks": [
+        {
+          "blocker": "grizzly_bears",
+          "attacker": "pelakka_wurm"
+        }
+      ]
+    },
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "giant_growth",
+      "targets": [
+        {
+          "object": "grizzly_bears"
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "steps": [
+        "DECLARE_ATTACKERS",
+        "DECLARE_BLOCKERS",
+        "FIRST_STRIKE_DAMAGE",
+        "COMBAT_DAMAGE",
+        "COMBAT_END"
+      ]
+    }
+  ]
+}

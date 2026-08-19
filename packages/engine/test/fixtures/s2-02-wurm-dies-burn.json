@@ -1,0 +1,68 @@
+{
+  "name": "Pelakka Wurm dies to stacked burn: controller draws",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "mountain",
+          "mountain",
+          "mountain"
+        ],
+        "hand": [
+          "lightning_bolt",
+          "lightning_bolt",
+          "shock"
+        ]
+      },
+      {
+        "battlefield": [
+          "pelakka_wurm"
+        ],
+        "library": [
+          "forest",
+          "forest"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "lightning_bolt",
+      "targets": [
+        {
+          "object": "pelakka_wurm"
+        }
+      ]
+    },
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "lightning_bolt",
+      "targets": [
+        {
+          "object": "pelakka_wurm"
+        }
+      ]
+    },
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "shock",
+      "targets": [
+        {
+          "object": "pelakka_wurm"
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}
