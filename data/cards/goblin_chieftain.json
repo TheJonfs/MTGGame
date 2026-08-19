@@ -1,0 +1,44 @@
+{
+  "id": "goblin_chieftain",
+  "name": "Goblin Chieftain",
+  "source": "real",
+  "manaCost": "{1}{R}{R}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Goblin"
+  ],
+  "power": 2,
+  "toughness": 2,
+  "art": {
+    "fallback": "rendered"
+  },
+  "keywords": [
+    "haste"
+  ],
+  "abilities": [
+    {
+      "kind": "static",
+      "effects": [
+        {
+          "type": "modifyPT",
+          "power": 1,
+          "toughness": 1,
+          "scope": "creaturesYouControl",
+          "subtype": "Goblin",
+          "other": true,
+          "duration": "WHILE_SOURCE_ON_BATTLEFIELD"
+        },
+        {
+          "type": "grantKeyword",
+          "keyword": "haste",
+          "scope": "creaturesYouControl",
+          "subtype": "Goblin",
+          "other": true,
+          "duration": "WHILE_SOURCE_ON_BATTLEFIELD"
+        }
+      ]
+    }
+  ]
+}

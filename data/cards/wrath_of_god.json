@@ -1,0 +1,18 @@
+{
+  "id": "wrath_of_god",
+  "name": "Wrath of God",
+  "source": "real",
+  "manaCost": "{2}{W}{W}",
+  "types": [
+    "Sorcery"
+  ],
+  "spellEffect": [
+    {
+      "type": "destroyAll",
+      "scope": "allCreatures"
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

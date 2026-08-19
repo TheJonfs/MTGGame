@@ -1,0 +1,44 @@
+{
+  "id": "nekrataal",
+  "name": "Nekrataal",
+  "source": "real",
+  "manaCost": "{2}{B}{B}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Human",
+    "Assassin"
+  ],
+  "power": 2,
+  "toughness": 1,
+  "art": {
+    "fallback": "rendered"
+  },
+  "keywords": [
+    "first strike"
+  ],
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "condition": {
+        "source": "self"
+      },
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "nonartifactNonblackCreature",
+          "zone": "battlefield"
+        }
+      ],
+      "effects": [
+        {
+          "type": "destroy",
+          "target": 0
+        }
+      ],
+      "optional": false
+    }
+  ]
+}

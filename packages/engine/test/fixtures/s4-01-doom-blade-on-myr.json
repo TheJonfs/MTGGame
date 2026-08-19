@@ -1,0 +1,41 @@
+{
+  "name": "Doom Blade legally targets indestructible Darksteel Myr; it survives (702.12b)",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "swamp",
+          "swamp"
+        ],
+        "hand": [
+          "doom_blade"
+        ]
+      },
+      {
+        "battlefield": [
+          "darksteel_myr"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "doom_blade",
+      "targets": [
+        {
+          "object": "darksteel_myr"
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

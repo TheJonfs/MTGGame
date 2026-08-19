@@ -1,0 +1,40 @@
+{
+  "id": "phyrexian_rager",
+  "name": "Phyrexian Rager",
+  "source": "real",
+  "manaCost": "{2}{B}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Phyrexian",
+    "Horror"
+  ],
+  "power": 2,
+  "toughness": 2,
+  "art": {
+    "fallback": "rendered"
+  },
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "condition": {
+        "source": "self"
+      },
+      "effects": [
+        {
+          "type": "draw",
+          "count": 1,
+          "who": "you"
+        },
+        {
+          "type": "loseLife",
+          "amount": 1,
+          "who": "you"
+        }
+      ],
+      "optional": false
+    }
+  ]
+}

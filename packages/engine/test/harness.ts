@@ -125,6 +125,7 @@ export type ScriptEntry =
   | { player: PlayerId; do: "chooseTriggerTargets"; targets: TargetDesc[] }
   | { player: PlayerId; do: "orderTrigger"; card: string }
   | { player: PlayerId; do: "sacrificeChoice"; card: string }
+  | { player: PlayerId; do: "optional"; accept: boolean }
   | { player: PlayerId; do: "orderBlocker"; blocker: string }
   | { player: PlayerId; do: "bottom"; card: string }
   | { player: PlayerId; do: "discard"; card: string };
@@ -167,9 +168,14 @@ export class TestGame {
   private script: ScriptEntry[] = [];
   /** Script entries that were matched and executed. */
   readonly consumed: ScriptEntry[] = [];
+  /** Every DecisionRequest the engine issued (for asserting purposes/reveals). */
+  readonly requests: ActionRequest[] = [];
 
   constructor(spec: FixtureSpec) {
-    const source: ActionSource = (req) => Promise.resolve(this.decide(req));
+    const source: ActionSource = (req) => {
+      this.requests.push(req);
+      return Promise.resolve(this.decide(req));
+    };
     this.game = new Game(testPool(), [[], []], new SeededRng(1, this.log), this.log, source);
     this.script = [...(spec.script ?? [])];
 
@@ -361,6 +367,8 @@ export class TestGame {
         return one(actions.find((a) => a.type === "orderTrigger" && a.cardId === entry.card));
       case "sacrificeChoice":
         return one(actions.find((a) => a.type === "sacrifice" && cardIdOf(a.objectId) === entry.card));
+      case "optional":
+        return one(actions.find((a) => a.type === (entry.accept ? "acceptOptional" : "declineOptional")));
       case "orderBlocker":
         return one(actions.find((a) => a.type === "orderBlocker" && cardIdOf(a.blocker) === entry.blocker));
       case "bottom":

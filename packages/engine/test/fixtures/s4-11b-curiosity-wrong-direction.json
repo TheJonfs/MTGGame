@@ -1,0 +1,41 @@
+{
+  "name": "Curiosity on the opponent's attacker: damage to the aura's controller does not trigger",
+  "setup": {
+    "turn": 4,
+    "active": 1,
+    "step": "DECLARE_ATTACKERS",
+    "players": [
+      {
+        "library": [
+          "island",
+          "island"
+        ]
+      },
+      {
+        "battlefield": [
+          "gray_ogre"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 1,
+      "do": "attack",
+      "attackers": [
+        "gray_ogre"
+      ]
+    }
+  ],
+  "run": [
+    {
+      "steps": [
+        "DECLARE_ATTACKERS",
+        "DECLARE_BLOCKERS",
+        "FIRST_STRIKE_DAMAGE",
+        "COMBAT_DAMAGE",
+        "COMBAT_END"
+      ]
+    }
+  ]
+}

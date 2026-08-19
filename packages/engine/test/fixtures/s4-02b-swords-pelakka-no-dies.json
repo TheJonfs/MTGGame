@@ -1,0 +1,43 @@
+{
+  "name": "Exiled Pelakka fires no DIES trigger (700.4)",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "plains"
+        ],
+        "hand": [
+          "swords_to_plowshares"
+        ]
+      },
+      {
+        "battlefield": [
+          "pelakka_wurm"
+        ],
+        "library": [
+          "forest"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "swords_to_plowshares",
+      "targets": [
+        {
+          "object": "pelakka_wurm"
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "id": "vampire_nighthawk",
+  "name": "Vampire Nighthawk",
+  "source": "real",
+  "manaCost": "{1}{B}{B}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Vampire",
+    "Shaman"
+  ],
+  "power": 2,
+  "toughness": 3,
+  "art": {
+    "fallback": "rendered"
+  },
+  "keywords": [
+    "flying",
+    "deathtouch",
+    "lifelink"
+  ]
+}

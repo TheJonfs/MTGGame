@@ -1,0 +1,40 @@
+{
+  "id": "curiosity",
+  "name": "Curiosity",
+  "source": "real",
+  "manaCost": "{U}",
+  "types": [
+    "Enchantment"
+  ],
+  "subtypes": [
+    "Aura"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "creature",
+      "zone": "battlefield"
+    }
+  ],
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "DEALS_DAMAGE_TO_PLAYER",
+      "condition": {
+        "source": "attached",
+        "player": "opponentOfController"
+      },
+      "effects": [
+        {
+          "type": "draw",
+          "count": 1,
+          "who": "you"
+        }
+      ],
+      "optional": true
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

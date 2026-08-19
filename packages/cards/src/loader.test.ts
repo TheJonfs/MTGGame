@@ -9,9 +9,9 @@ import { isManaAbility } from "./types.js";
 const CARDS_DIR = join(dirname(fileURLToPath(import.meta.url)), "../../../data/cards");
 
 describe("card pool loading", () => {
-  it("loads the full pool (S1–S3 additions + tokens) with no errors or warnings", () => {
+  it("loads the full pool (S1–S4 additions + tokens) with no errors or warnings", () => {
     const pool = loadCardPool(CARDS_DIR);
-    expect(pool.cards.size).toBe(44); // 20 S1 + 11 S2 + 11 S3 + 2 tokens
+    expect(pool.cards.size).toBe(60); // 20 S1 + 11 S2 + 11 S3 + 16 S4 + 2 tokens
     // Slice cards use only implemented vocabulary, so no warnings expected.
     expect(pool.warnings).toEqual([]);
   });

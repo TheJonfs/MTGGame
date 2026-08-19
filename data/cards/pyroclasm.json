@@ -1,0 +1,19 @@
+{
+  "id": "pyroclasm",
+  "name": "Pyroclasm",
+  "source": "real",
+  "manaCost": "{1}{R}",
+  "types": [
+    "Sorcery"
+  ],
+  "spellEffect": [
+    {
+      "type": "damageAll",
+      "amount": 2,
+      "scope": "allCreatures"
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

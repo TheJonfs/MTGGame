@@ -1,0 +1,27 @@
+{
+  "id": "hymn_to_tourach",
+  "name": "Hymn to Tourach",
+  "source": "real",
+  "manaCost": "{B}{B}",
+  "types": [
+    "Sorcery"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "player",
+      "zone": "any"
+    }
+  ],
+  "spellEffect": [
+    {
+      "type": "discard",
+      "count": 2,
+      "who": "target",
+      "mode": "random"
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

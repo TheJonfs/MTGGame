@@ -1,0 +1,49 @@
+{
+  "name": "Nekrataal ETB destroys a legal target",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "swamp",
+          "swamp",
+          "swamp",
+          "swamp"
+        ],
+        "hand": [
+          "nekrataal"
+        ]
+      },
+      {
+        "battlefield": [
+          "centaur_courser",
+          "grizzly_bears",
+          "typhoid_rats"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "nekrataal"
+    },
+    {
+      "player": 0,
+      "do": "chooseTriggerTargets",
+      "targets": [
+        {
+          "object": "centaur_courser"
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

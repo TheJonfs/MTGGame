@@ -1,0 +1,55 @@
+{
+  "name": "Curiosity on a double striker: two optional triggers, accept then decline",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "DECLARE_ATTACKERS",
+    "players": [
+      {
+        "battlefield": [
+          "fencing_ace",
+          {
+            "card": "curiosity",
+            "attachedTo": "fencing_ace"
+          }
+        ],
+        "library": [
+          "island",
+          "island",
+          "island"
+        ]
+      },
+      {}
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "attack",
+      "attackers": [
+        "fencing_ace"
+      ]
+    },
+    {
+      "player": 0,
+      "do": "optional",
+      "accept": true
+    },
+    {
+      "player": 0,
+      "do": "optional",
+      "accept": false
+    }
+  ],
+  "run": [
+    {
+      "steps": [
+        "DECLARE_ATTACKERS",
+        "DECLARE_BLOCKERS",
+        "FIRST_STRIKE_DAMAGE",
+        "COMBAT_DAMAGE",
+        "COMBAT_END"
+      ]
+    }
+  ]
+}

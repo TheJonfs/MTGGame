@@ -1,0 +1,25 @@
+{
+  "id": "doom_blade",
+  "name": "Doom Blade",
+  "source": "real",
+  "manaCost": "{1}{B}",
+  "types": [
+    "Instant"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "nonblackCreature",
+      "zone": "battlefield"
+    }
+  ],
+  "spellEffect": [
+    {
+      "type": "destroy",
+      "target": 0
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

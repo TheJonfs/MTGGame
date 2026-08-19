@@ -1,0 +1,55 @@
+{
+  "name": "Wrath: all but indestructible die simultaneously; aura dies, equipment stays, dies-draw fires",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "plains",
+          "plains",
+          "plains",
+          "plains",
+          {
+            "card": "savannah_lions"
+          },
+          {
+            "card": "bonesplitter",
+            "attachedTo": "savannah_lions"
+          },
+          "darksteel_myr"
+        ],
+        "hand": [
+          "wrath_of_god"
+        ]
+      },
+      {
+        "battlefield": [
+          "pelakka_wurm",
+          "vampire_nighthawk",
+          {
+            "card": "pacifism",
+            "attachedTo": "pelakka_wurm"
+          }
+        ],
+        "library": [
+          "forest",
+          "forest"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "wrath_of_god"
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

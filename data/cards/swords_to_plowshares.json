@@ -1,0 +1,33 @@
+{
+  "id": "swords_to_plowshares",
+  "name": "Swords to Plowshares",
+  "source": "real",
+  "manaCost": "{W}",
+  "types": [
+    "Instant"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "creature",
+      "zone": "battlefield"
+    }
+  ],
+  "spellEffect": [
+    {
+      "type": "exile",
+      "target": 0
+    },
+    {
+      "type": "gainLife",
+      "amount": {
+        "ref": "targetPower",
+        "target": 0
+      },
+      "who": "controllerOfTarget"
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

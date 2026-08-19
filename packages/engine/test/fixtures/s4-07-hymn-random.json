@@ -1,0 +1,43 @@
+{
+  "name": "Hymn: two random discards through the game RNG",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "swamp",
+          "swamp"
+        ],
+        "hand": [
+          "hymn_to_tourach"
+        ]
+      },
+      {
+        "hand": [
+          "counterspell",
+          "grizzly_bears",
+          "island"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "hymn_to_tourach",
+      "targets": [
+        {
+          "player": 1
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

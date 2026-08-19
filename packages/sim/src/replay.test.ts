@@ -8,8 +8,8 @@ import { DECKS, PAIRINGS, type DeckKey } from "./slice-decks.js";
 
 const CARDS_DIR = join(dirname(fileURLToPath(import.meta.url)), "../../../data/cards");
 
-describe("replay determinism (permanent fixture; S2 fixture 15)", () => {
-  it("replay(log) reproduces byte-identical final state, x3 seeds on all three pairings", async () => {
+describe("replay determinism (permanent fixture)", () => {
+  it("replay(log) reproduces byte-identical final state, x3 seeds on all six pairings", async () => {
     const pool = loadCardPool(CARDS_DIR);
     for (const [a, b] of PAIRINGS) {
       for (const seed of [42, 1337, 900913]) {
@@ -35,13 +35,13 @@ describe("replay determinism (permanent fixture; S2 fixture 15)", () => {
   });
 });
 
-describe("fuzz (S2 fixture 15)", () => {
-  it("1,000 games per pairing: zero exceptions, every game terminates", async () => {
-    const report = await fuzz(CARDS_DIR, 1000, 1);
+describe("fuzz (permanent; S4 brief Part 0.4)", () => {
+  it("500 games x 6 pairings: zero exceptions, every game terminates (CLI runs 1,000/pairing for the handoff)", async () => {
+    const report = await fuzz(CARDS_DIR, 500, 1);
     expect(report.totalErrors).toBe(0);
     for (const p of report.pairings) {
       const total = Object.values(p.terminations).reduce((x, y) => x + y, 0);
-      expect(total, p.pairing).toBe(1000);
+      expect(total, p.pairing).toBe(500);
     }
   }, 300_000);
 });

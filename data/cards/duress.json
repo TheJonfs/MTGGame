@@ -1,0 +1,28 @@
+{
+  "id": "duress",
+  "name": "Duress",
+  "source": "real",
+  "manaCost": "{B}",
+  "types": [
+    "Sorcery"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "opponentPlayer",
+      "zone": "any"
+    }
+  ],
+  "spellEffect": [
+    {
+      "type": "discard",
+      "count": 1,
+      "who": "target",
+      "mode": "casterChooses",
+      "filter": "noncreatureNonland"
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

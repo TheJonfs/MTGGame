@@ -1,0 +1,27 @@
+{
+  "id": "mind_rot",
+  "name": "Mind Rot",
+  "source": "real",
+  "manaCost": "{2}{B}",
+  "types": [
+    "Sorcery"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "player",
+      "zone": "any"
+    }
+  ],
+  "spellEffect": [
+    {
+      "type": "discard",
+      "count": 2,
+      "who": "target",
+      "mode": "ownerChooses"
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

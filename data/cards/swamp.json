@@ -1,0 +1,32 @@
+{
+  "id": "swamp",
+  "name": "Swamp",
+  "source": "real",
+  "manaCost": "",
+  "types": [
+    "Land"
+  ],
+  "subtypes": [
+    "Swamp"
+  ],
+  "supertypes": [
+    "Basic"
+  ],
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "tap": true
+      },
+      "effects": [
+        {
+          "type": "addMana",
+          "mana": "{B}"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

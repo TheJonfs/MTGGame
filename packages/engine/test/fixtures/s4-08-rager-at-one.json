@@ -1,0 +1,38 @@
+{
+  "name": "Phyrexian Rager at 1 life: the ETB loss is lethal at the next SBA check",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "life": 1,
+        "battlefield": [
+          "swamp",
+          "swamp",
+          "swamp"
+        ],
+        "hand": [
+          "phyrexian_rager"
+        ],
+        "library": [
+          "swamp",
+          "swamp"
+        ]
+      },
+      {}
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "phyrexian_rager"
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

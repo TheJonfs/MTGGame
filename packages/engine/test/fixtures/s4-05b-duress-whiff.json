@@ -1,0 +1,42 @@
+{
+  "name": "Duress against creatures and lands only: nothing is discarded",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "swamp"
+        ],
+        "hand": [
+          "duress"
+        ]
+      },
+      {
+        "hand": [
+          "grizzly_bears",
+          "island",
+          "forest"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "duress",
+      "targets": [
+        {
+          "player": 1
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "terror",
+  "name": "Terror",
+  "source": "real",
+  "manaCost": "{1}{B}",
+  "types": [
+    "Instant"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "nonartifactNonblackCreature",
+      "zone": "battlefield"
+    }
+  ],
+  "spellEffect": [
+    {
+      "type": "destroy",
+      "target": 0
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

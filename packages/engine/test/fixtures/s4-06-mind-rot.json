@@ -1,0 +1,54 @@
+{
+  "name": "Mind Rot: target player chooses two to discard",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "swamp",
+          "swamp",
+          "swamp"
+        ],
+        "hand": [
+          "mind_rot"
+        ]
+      },
+      {
+        "hand": [
+          "counterspell",
+          "grizzly_bears",
+          "island"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "mind_rot",
+      "targets": [
+        {
+          "player": 1
+        }
+      ]
+    },
+    {
+      "player": 1,
+      "do": "discard",
+      "card": "island"
+    },
+    {
+      "player": 1,
+      "do": "discard",
+      "card": "grizzly_bears"
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

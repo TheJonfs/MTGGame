@@ -1,0 +1,48 @@
+{
+  "name": "Duress: caster picks among noncreature-nonland cards in the revealed hand",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "swamp"
+        ],
+        "hand": [
+          "duress"
+        ]
+      },
+      {
+        "hand": [
+          "counterspell",
+          "boomerang",
+          "grizzly_bears",
+          "island"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "duress",
+      "targets": [
+        {
+          "player": 1
+        }
+      ]
+    },
+    {
+      "player": 0,
+      "do": "discard",
+      "card": "boomerang"
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}

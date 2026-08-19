@@ -1,0 +1,50 @@
+{
+  "name": "Baloth attacks, Nighthawk blocks: keyword composition \u2014 both die, controller gains 2",
+  "setup": {
+    "turn": 4,
+    "active": 1,
+    "step": "DECLARE_ATTACKERS",
+    "players": [
+      {
+        "battlefield": [
+          "vampire_nighthawk"
+        ]
+      },
+      {
+        "battlefield": [
+          "rumbling_baloth"
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 1,
+      "do": "attack",
+      "attackers": [
+        "rumbling_baloth"
+      ]
+    },
+    {
+      "player": 0,
+      "do": "block",
+      "blocks": [
+        {
+          "blocker": "vampire_nighthawk",
+          "attacker": "rumbling_baloth"
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "steps": [
+        "DECLARE_ATTACKERS",
+        "DECLARE_BLOCKERS",
+        "FIRST_STRIKE_DAMAGE",
+        "COMBAT_DAMAGE",
+        "COMBAT_END"
+      ]
+    }
+  ]
+}

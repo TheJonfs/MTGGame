@@ -1,0 +1,20 @@
+{
+  "id": "child_of_night",
+  "name": "Child of Night",
+  "source": "real",
+  "manaCost": "{1}{B}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Vampire"
+  ],
+  "power": 2,
+  "toughness": 1,
+  "art": {
+    "fallback": "rendered"
+  },
+  "keywords": [
+    "lifelink"
+  ]
+}

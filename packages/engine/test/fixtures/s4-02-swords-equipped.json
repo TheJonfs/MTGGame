@@ -1,0 +1,44 @@
+{
+  "name": "Swords a Bonesplitter'd Child of Night: exiled, controller gains 4 (LKI), splitter stays",
+  "setup": {
+    "turn": 4,
+    "active": 0,
+    "step": "MAIN1",
+    "players": [
+      {
+        "battlefield": [
+          "plains"
+        ],
+        "hand": [
+          "swords_to_plowshares"
+        ]
+      },
+      {
+        "battlefield": [
+          "child_of_night",
+          {
+            "card": "bonesplitter",
+            "attachedTo": "child_of_night"
+          }
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "player": 0,
+      "do": "cast",
+      "card": "swords_to_plowshares",
+      "targets": [
+        {
+          "object": "child_of_night"
+        }
+      ]
+    }
+  ],
+  "run": [
+    {
+      "priority": true
+    }
+  ]
+}
