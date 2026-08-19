@@ -111,3 +111,75 @@ Ceiling complete as of S5 (see mechanics-manifest §3). Further additions are ca
 
 ## Test-only cards (not pool members)
 `test_fs_soldier` (first strike body), `test_pinger` ({1},T: 1 damage), `test_wrath` ({2} sorcery, destroy all creatures), `test_goblin_martyr` ({R} 1/1 Goblin, dies: draw), `test_pyroclasm` ({1}{R} sorcery, 2 to all creatures) — live in the engine test harness, never in `data/cards/`. Per ADR-018 they are permanent fixtures: engine tests never depend on pool membership.
+
+## Scryfall printings (art:fetch)
+
+Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged rows appear in the session handoff, not here.
+
+| cardId | set | collector | artist | scryfallId |
+|---|---|---|---|---|
+| blaze | por | 118 | Gerry Grace | f175c959-3b5d-46a3-9194-fad2359bbff9 |
+| blurred_mongoose | inv | 183 | Heather Hudson | 4b073e3f-6a6f-495a-ab16-39d906b660f1 |
+| boggart_brute | ori | 133 | Igor Kieryluk | 9d735ebf-61a4-4507-9399-6d32c8903ded |
+| bonesplitter | pal03 | 8 | Darrell Riche | ae31d513-7412-4467-b497-a7183ff29a42 |
+| boomerang | leg | 48 | Brian Snõddy | b8286edd-644b-4135-8dca-af97f3920de3 |
+| brute_force | plc | 116 | Wayne Reynolds | 82d43220-1e4e-4b61-9844-51c8bb5dde35 |
+| centaur_courser | m10 | 172 | Vance Kovacs | 03354b67-7df2-4b4b-a996-a37550e58561 |
+| child_of_night | m10 | 88 | Ash Wood | e1f7a9a7-3679-4a18-a52a-e3a8ab16ad32 |
+| cloudkin_seer | m20 | 54 | Anastasia Ovchinnikova | e2111753-a930-403f-9d94-a86dfcb069da |
+| control_magic | lea | 52 | Dameon Willich | 7b52f459-c703-4a0b-9114-ff69eec61287 |
+| counterspell | lea | 54 | Mark Poole | 0df55e3f-14de-46ef-b6b1-616618724d9e |
+| curiosity | exo | 29 | Val Mayerik | fee17ef5-7e1a-42ae-b680-df81204df7dd |
+| darksteel_myr | som | 151 | Randis Albion | 0f5712cf-c6a9-4a2e-90db-8ca17c621724 |
+| deadly_recluse | m10 | 175 | Warren Mahy | 6ab810f1-21d6-4a98-b77a-e455370aa6cc |
+| divination | m10 | 49 | Howard Lyon | 3102cec9-1cdc-4946-a2dd-caf04eaa8b97 |
+| doom_blade | m10 | 93 | Chippy | 6e19acff-f3dd-417a-a9ab-ea3e36c1ba61 |
+| drana_kalastria_bloodchief | roe | 107 | Mike Bierek | aca8d295-e8e9-4213-bc9b-f1acf57fb520 |
+| duress | usg | 132 | Lawrence Snelly | ca367f49-0f4a-4b7f-8104-851893fbcd8a |
+| elvish_visionary | ala | 130 | D. Alexander Gregory | faccfa5f-4d89-4a86-92d7-36cb5a16c5c9 |
+| fencing_ace | rtr | 11 | David Rapoza | a42d3066-f4ec-4d28-83ab-e48141206c72 |
+| forest | 3ed | 304 | Christopher Rush | b6e1c2e9-5572-4242-985d-f509d628092b |
+| giant_growth | lea | 197 | Sandra Everingham | 367dbefe-3366-408e-9fcf-7dc00f8cc201 |
+| gladecover_scout | m12 | 178 | Allen Williams | 26710d5c-01d1-498b-9f54-521dfd195843 |
+| glorious_anthem | usg | 15 | Kev Walker | 61f867c5-0727-4408-b479-b81518daa0ec |
+| goblin_chieftain | m10 | 139 | Sam Wood | f5c8a4a4-1611-4188-9c59-8aefb016b5ad |
+| goblin_piker | p02 | 102 | DiTerlizzi | 2786834d-dbda-40ce-82a4-e518cd554312 |
+| gravedigger | por | 95 | Scott M. Fischer | b979d70e-d514-420f-886c-f60e2bb1861f |
+| gray_ogre | lea | 156 | Dan Frazier | 73ae5276-b607-4f23-a9d2-e8cc7b8e3693 |
+| grizzly_bears | lea | 199 | Jeff A. Menges | ce2d603a-3231-4a8c-bf39-1617586ea870 |
+| hill_giant | lea | 157 | Dan Frazier | 0ddb98e8-13fe-4786-83f7-b72c56db135a |
+| hymn_to_tourach | fem | 38b | Liz Danforth | 8601f082-7e43-44ef-97d0-dead272b7eb4 |
+| island | 3ed | 295 | Mark Poole | 22f6e971-349d-498b-ae01-ab81ce21772c |
+| lightning_bolt | lea | 161 | Christopher Rush | d573ef03-4730-45aa-93dd-e45ac1dbaf4a |
+| loxodon_warhammer | mrd | 201 | Jeremy Jarvis | a1a6e375-5c47-4447-9453-adf0038693e3 |
+| man_o_war | vis | 37 | Jon J Muth | 4dbf9bf9-75cd-4b25-a3a1-43b7e029700b |
+| mind_rot | 7ed | 147 | Adam Rex | 5681e85c-79d5-4300-bda6-4ae40bb7d5d4 |
+| mind_stone | wth | 153 | Adam Rex | 162e81d3-6cd4-4cb8-8ed8-cfbd8d34ca71 |
+| mountain | 3ed | 301 | Douglas Shuler | 30345500-d430-4280-bfe3-de297309f136 |
+| mystic_snake | apc | 112 | Daren Bader | f098a28c-5f9b-4a2c-b109-c342365eb948 |
+| nekrataal | vis | 66 | Adrian Smith | dba3e342-88b7-4692-a3f7-a3f56c0cf6b5 |
+| pacifism | mir | 32 | Robert Bliss | c891df1b-bae6-4d6d-85ee-42901c149f98 |
+| pelakka_wurm | roe | 204 | Daniel Ljunggren | 8e732593-0bdc-4dd4-9b07-9aa1a780e6e8 |
+| phyrexian_rager | pmei | 2000-5 | Mark Tedin | c0a29ba4-fe8b-442f-a8b5-8cce7c765011 |
+| plains | 3ed | 292 | Jesper Myrfors | 275c03f9-f9d2-45c5-a332-b3bee54e7065 |
+| prey_upon | isd | 200 | Dave Kendall | b7b3eaf0-4207-4bac-923d-29f348c95a35 |
+| pyroclasm | ice | 214 | Pat Lewis | 88040748-ad76-4b9a-bd4e-87e5980e9816 |
+| raging_goblin | por | 145 | Pete Venters | fed57a17-7847-4e60-bc40-4452880f12a3 |
+| raise_the_alarm | mrd | 16 | John Matson | 4be510c8-fc01-4374-ac04-7968d24480fe |
+| rancor | ulg | 110 | Kev Walker | 59e256c2-38df-4012-9308-ce17dd889e5f |
+| rumbling_baloth | m14 | 193 | Jesper Ejsing | d8610ff1-064b-4c75-a8df-d3b076370d1e |
+| savannah_lions | lea | 38 | Daniel Gelon | d05b92bd-797e-413f-a8b0-32e0937a1ee0 |
+| serra_angel | lea | 39 | Douglas Shuler | f8ac5006-91bd-4803-93da-f87cf196dd2f |
+| shock | sth | 98 | Randy Gallegos | f9b2ff2a-6dfe-4635-8da2-22d525e82b94 |
+| siege_gang_commander | scg | 103 | Christopher Moeller | 92e78cec-aaf9-4fe8-887b-b7e356d63315 |
+| suntail_hawk | jud | 28 | Heather Hudson | 5fbdae0b-b4aa-40ff-9017-b4349bd6b627 |
+| swamp | 3ed | 298 | Dan Frazier | 95e936cf-3bbb-4f3b-8e1a-4be1d4702b99 |
+| swords_to_plowshares | lea | 40 | Jeff A. Menges | 386ea9eb-abc1-4862-aa2d-8fb808d79490 |
+| terror | lea | 130 | Ron Spencer | 21004958-2c7e-4a55-bc80-411c4d780106 |
+| timberland_guide | avr | 197 | Zoltan Boros | ae80fefb-af78-4f98-8058-71b61e91842f |
+| typhoid_rats | isd | 120 | Kev Walker | 4490ce65-c73a-4809-abd1-ccc3175bd2a4 |
+| vampire_nighthawk | zen | 116 | Jason Chan | 44f19fe3-7a17-4c45-adfa-590f73dfebfa |
+| wind_drake | por | 77 | Zina Saunders | 5486d2dc-9a5d-4f58-a5ec-d94de54b852f |
+| wrath_of_god | lea | 45 | Quinton Hoover | a2788d69-6a3a-42f0-8736-cc6b57755ecd |
+| zombify | ody | 171 | Mark Romanoski | 513a2a6f-9ae6-42cb-b75f-6b45fc35f36e |
+
