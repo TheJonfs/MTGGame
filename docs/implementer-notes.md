@@ -40,6 +40,13 @@ Every choice reaches agents as a request with an enumerated action list; single-
 
 Combat staging: declarations accumulate in `state.combat` uncommitted, then `commitAttackers`/`commitBlockers` applies taps/flags all at once — CR's "declared together" semantics with incremental input.
 
+## S3 lessons
+
+- **Run the fuzzer the moment new cards enter the decks, before writing fixtures.** It found the Mind Stone canPay bug (a {T}-cost ability counting its own source as a producer) in 300 games; no planned fixture would have. Cost-feasibility bugs live in fuzz territory, not fixture territory.
+- **Scripted fixtures bind at the first legal moment.** The Siege-Gang fixture's "activate" matched in the priority window after the commander resolved but before its ETB trigger did — a legal line where the only sacrifice was the commander itself. If a script step depends on a trigger having resolved, put the prerequisite on the battlefield in setup instead of casting it in-script.
+- **Attachment is a field mutation, not a zone move.** Equip resolution and re-equip just set `attachedTo`; no ZONE_CHANGE fires. If a card ever triggers on "becomes attached", that needs a new event (noted in handoff).
+- Sacrifice-as-cost flows through `moveObject` during `applyPriorityAction` (now async); the DIES trigger pends and is placed *above* the paid-for ability at the next priority check — resolves first, which is CR-correct.
+
 ## Known interims / watch list
 
-See handoff Concerns for the authoritative list. Highlights: auto-pay greedy feasibility (correct only while all producers are mono-color — R-006); token color derives from manaCost, so colored tokens read as colorless to future color predicates (R-021 note); trigger conditions are still `self`-only.
+See handoff Concerns for the authoritative list. Highlights: auto-pay greedy feasibility (correct while all producers are single-symbol — R-006); trigger conditions are still `self`-only (ADR-021 sketch exists, M3 implements); parameterized scopes ratified but unimplemented until the first tribal card (ADR-020).

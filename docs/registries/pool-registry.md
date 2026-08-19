@@ -31,7 +31,7 @@ Status: `planned` / `implemented` / `tested` / `cut`.
 
 ## Session 2 additions
 
-(The S2 brief referenced this section but the planner had not created it; rows below are implementer-derived from the brief's Part 2 and card texts verified against Scryfall. Planner to ratify — especially the Rumbling Baloth substitution.)
+(Implementer-derived in S2; ratified by ADR-023, including the Rumbling Baloth substitution.)
 
 | cardId | name | status | vocabulary | notes |
 |---|---|---|---|---|
@@ -52,21 +52,28 @@ Status: `planned` / `implemented` / `tested` / `cut`.
 
 | cardId | name | status | vocabulary | notes |
 |---|---|---|---|---|
-| siege_gang_commander | Siege-Gang Commander | planned | triggered(ETB) createToken ×3, activated(sac Goblin) damage | |
-| goblin_1_1 | Goblin Token | planned | — | token def, colors R |
-| boggart_brute | Boggart Brute | planned | menace | |
-| bonesplitter | Bonesplitter | planned | equipment, static modifyPT(attached) | |
-| loxodon_warhammer | Loxodon Warhammer | planned | equipment, static modifyPT + grantKeyword(trample, lifelink)(attached) | |
-| mind_stone | Mind Stone | planned | addMana {C}, activated(sac self) draw | first non-land producer |
-| darksteel_myr | Darksteel Myr | planned | indestructible | |
-| fencing_ace | Fencing Ace | planned | double strike | |
-| prey_upon | Prey Upon | planned | fight | ADR-022 |
-| deadly_recluse | Deadly Recluse | planned | reach, deathtouch | |
-| gladecover_scout | Gladecover Scout | planned | hexproof | |
-| blurred_mongoose | Blurred Mongoose | planned | shroud, can't be countered | |
+| siege_gang_commander | Siege-Gang Commander | tested | triggered(ETB) createToken ×3, activated(sac Goblin) damage | S3 fixtures 1, 1b, 2 |
+| goblin_1_1 | Goblin Token | tested | — | token def, colors R (ADR-019) |
+| boggart_brute | Boggart Brute | tested | menace | fixtures 9–9c; dead-end-free enumeration |
+| bonesplitter | Bonesplitter | tested | equipment, static modifyPT(attached) | fixtures 4, 8 |
+| loxodon_warhammer | Loxodon Warhammer | tested | equipment, static modifyPT + grantKeyword(trample, lifelink)(attached) | fixtures 5, 6b, 13 |
+| mind_stone | Mind Stone | tested | addMana {C}, activated(sac self) draw | first non-land producer (R-033); fuzz-caught canPay fix |
+| darksteel_myr | Darksteel Myr | tested | indestructible | fixture 12 |
+| fencing_ace | Fencing Ace | tested | double strike | fixtures 8, 8b |
+| prey_upon | Prey Upon | tested | fight | ADR-022; fixtures 7, 7b, 13 |
+| deadly_recluse | Deadly Recluse | tested | reach, deathtouch | fixtures 6, 6b, 7 |
+| gladecover_scout | Gladecover Scout | tested | hexproof | fixture 10 |
+| blurred_mongoose | Blurred Mongoose | tested | shroud, can't be countered | fixture 11 (R-032) |
 
 ## Ceiling anchors (not yet scheduled)
 Doom Blade, Terror, Swords to Plowshares, Wrath of God, Pyroclasm, Mystic Snake, Control Magic, Drana Kalastria Bloodchief, Phyrexian Rager, Curiosity, Rancor, Zombify, Duress.
 
+## Slice decklists (S3 brief Part 3; 40 cards each)
+- **A red:** 17 Mountain, 4 Raging Goblin, 3 Goblin Piker, 1 Hill Giant, 3 Lightning Bolt, 2 Shock, 1 Brute Force, 2 Blaze, 3 Boggart Brute, 2 Siege-Gang Commander, 2 Bonesplitter.
+- **B white-blue:** 8 Plains, 9 Island, 3 Savannah Lions, 1 Suntail Hawk, 1 Wind Drake, 2 Serra Angel, 2 Man-o'-War, 2 Cloudkin Seer, 2 Counterspell, 1 Pacifism, 1 Raise the Alarm, 1 Glorious Anthem, 3 Fencing Ace, 1 Loxodon Warhammer, 2 Mind Stone, 1 Darksteel Myr.
+- **C green:** 17 Forest, 1 Grizzly Bears, 3 Elvish Visionary, 3 Timberland Guide, 2 Centaur Courser, 2 Rumbling Baloth, 2 Pelakka Wurm, 2 Giant Growth, 3 Prey Upon, 2 Deadly Recluse, 2 Gladecover Scout, 1 Blurred Mongoose.
+
+(Gray Ogre and Boomerang rotated out of the decks; both remain `tested` pool members.)
+
 ## Test-only cards (not pool members)
-`test_fs_soldier` (first strike body), `test_pinger` ({1},T: 1 damage), `test_wrath` ({2} sorcery, destroy all creatures) — live in the engine test harness, never in `data/cards/`. Per ADR-018 they are permanent fixtures: engine tests never depend on pool membership.
+`test_fs_soldier` (first strike body), `test_pinger` ({1},T: 1 damage), `test_wrath` ({2} sorcery, destroy all creatures), `test_goblin_martyr` ({R} 1/1 Goblin, dies: draw), `test_pyroclasm` ({1}{R} sorcery, 2 to all creatures) — live in the engine test harness, never in `data/cards/`. Per ADR-018 they are permanent fixtures: engine tests never depend on pool membership.
