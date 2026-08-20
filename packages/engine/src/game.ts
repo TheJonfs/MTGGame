@@ -1,5 +1,5 @@
 import { EventBus, IdGen, type LogSink, type Rng } from "@shandalar/core";
-import { parseManaCost, resolveEffect, type CardDef } from "@shandalar/cards";
+import { parseManaCost, resolveEffect, type CardDef, type Effect } from "@shandalar/cards";
 import { sameAction, type Action } from "./actions.js";
 import {
   assignCombatDamage,
@@ -52,12 +52,21 @@ export type RequestPurpose =
   | "bottomCards"
   | "discard";
 
+/** ADR-048: identity + pending effects of the thing asking for targets, so
+ * agents can classify (rule 8 / evaluation) without guessing the source. */
+export interface RequestSource {
+  cardId: string;
+  effects: Effect[];
+}
+
 export interface ActionRequest {
   player: PlayerId;
   purpose: RequestPurpose;
   actions: Action[];
   /** ADR-029: cards revealed to the chooser for this decision only (Duress). */
   revealed?: { objectId: string; cardId: string }[];
+  /** ADR-048: present on target-choice requests (trigger targets today). */
+  source?: RequestSource;
 }
 
 /** Live play wraps agents; replay feeds logged actions. Same seam for both. */
@@ -122,10 +131,11 @@ export class Game {
     purpose: RequestPurpose,
     actions: Action[],
     revealed?: { objectId: string; cardId: string }[],
+    source?: RequestSource,
   ): Promise<Action> {
     if (actions.length === 0) throw new Error(`request with no actions (${purpose})`);
     const chosen = await this.source(
-      { player, purpose, actions, ...(revealed ? { revealed } : {}) },
+      { player, purpose, actions, ...(revealed ? { revealed } : {}), ...(source ? { source } : {}) },
       buildView(this.ctx, player),
     );
     if (!actions.some((a) => sameAction(a, chosen))) {
@@ -169,6 +179,7 @@ export class Game {
         if (chosen.type === "mulligan") {
           mulls += 1;
           const p = state.players[player];
+          p.mulligans = mulls;
           while (p.hand.length > 0) moveObject(this.ctx, p.hand[0]!, "library");
           p.library = this.ctx.rng.shuffle(p.library, "shuffle");
           for (let i = 0; i < this.rules.handSize; i++) drawCard(this.ctx, player);
@@ -347,8 +358,8 @@ export class Game {
     for (;;) {
       await runSBAs(this.ctx, (player, purpose, actions) => this.request(player, purpose, actions));
       if (this.state.result) return;
-      const placed = await placePendingTriggers(this.ctx, (player, purpose, actions) =>
-        this.request(player, purpose, actions),
+      const placed = await placePendingTriggers(this.ctx, (player, purpose, actions, source) =>
+        this.request(player, purpose, actions, undefined, source),
       );
       if (!placed) return;
     }

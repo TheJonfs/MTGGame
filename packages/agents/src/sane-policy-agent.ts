@@ -1,14 +1,14 @@
 import { NullLog, SeededRng } from "@shandalar/core";
-import { parseManaCost, manaValue, type CardDef, type Effect, type ResolvedTarget } from "@shandalar/cards";
+import { parseManaCost, manaValue, type CardDef } from "@shandalar/cards";
 import type { Action, ActionRequest, Agent, GameView } from "@shandalar/engine";
+import { effectsForAction, preferSide } from "./effect-classification.js";
 
 /**
- * SanePolicyAgent (ADR-045, S7 brief Part 1): random choice within a
+ * SanePolicyAgent (ADR-045 as amended): random choice within a
  * policy-filtered action set. Every filter is a pure function over
- * (view, request) plus two pieces of per-instance memory that the view
- * doesn't carry (mulligans taken; attackers already blocked this combat).
- * This is a fuzzing/sparring floor, deliberately legible, NOT the AI —
- * no evaluation, no search (that's M4).
+ * (view, request) — ADR-048's view (mulliganCount, combat) retired the S7
+ * per-instance memory. This is a fuzzing/sparring floor, deliberately
+ * legible, NOT the AI — no evaluation, no search (that's M4).
  *
  * The seven rules, exactly as ratified:
  *  1. Mulligan: keep an effective-7 hand with 2–5 lands; effective 6, keep
@@ -42,25 +42,18 @@ import type { Action, ActionRequest, Agent, GameView } from "@shandalar/engine";
  *     grants, equips, draw auras) prefer its own side. Uniform random within
  *     the preferred tuples; if no tuple is on the preferred side, uniform
  *     over all (still casts — this is a filter, not an evaluator). Trigger
- *     targets (chooseTarget purpose) stay uniform: the request carries no
- *     source identity, so the effect can't be classified — escalated.
+ *     targets get the same preference via the request's ADR-048 source
+ *     identity. The classification table lives in effect-classification.ts,
+ *     shared with the M4 evaluator.
  *
  * PRNG conventions match RandomAgent (ADR-015): a private seeded PRNG,
  * never the game's logged RNG service.
  */
-/** Sign of a PTAmount for rule-8 classification: "X" counts +1, "-X" counts -1. */
-function ptSign(v: number | "X" | "-X"): number {
-  return v === "X" ? 1 : v === "-X" ? -1 : v;
-}
-
 export class SanePolicyAgent implements Agent {
   private readonly rng: SeededRng;
-  private mulligansTaken = 0;
-  /** Attackers already assigned a blocker this combat, keyed by turn: the
-   * view carries no combat state, and single-option requests are auto-taken
-   * (ADR-014) so a purpose-based reset could silently span turns. */
-  private blockedAttackers = new Set<string>();
-  private blocksTurn = -1;
+  // ADR-048 retired the S7 per-instance memory: mulligan count and staged
+  // blocks now come from the view, so every filter is a pure function of
+  // (view, request) as originally ratified.
 
   constructor(seed: number, private readonly defs: Map<string, CardDef>) {
     this.rng = new SeededRng(seed, new NullLog());
@@ -103,6 +96,14 @@ export class SanePolicyAgent implements Agent {
         return request.actions[0]!; // rule 6: first option, deterministic
       case "optionalTrigger":
         return request.actions.find((a) => a.type === "acceptOptional") ?? request.actions[0]!;
+      case "chooseTarget": {
+        // Rule 8 for trigger targets (ADR-048): the request carries the
+        // trigger's identity + effects; prefer the appropriate side.
+        const variants = request.source
+          ? preferSide(view, request.actions, request.source.effects)
+          : request.actions;
+        return this.rng.pick(variants, "pick");
+      }
       default:
         return this.rng.pick(request.actions, "pick"); // rule 7
     }
@@ -114,13 +115,11 @@ export class SanePolicyAgent implements Agent {
     const mull = request.actions.find((a) => a.type === "mulligan");
     if (!keep || !mull) return request.actions[0]!;
 
-    const effective = 7 - this.mulligansTaken;
+    const effective = 7 - view.mulliganCount;
     const lands = view.hand.filter((c) => this.isLand(c.cardId)).length;
     const keepIt =
       effective <= 5 ? true : effective === 7 ? lands >= 2 && lands <= 5 : lands >= 2;
-    if (keepIt) return keep;
-    this.mulligansTaken += 1;
-    return mull;
+    return keepIt ? keep : mull;
   }
 
   /** Rule 1 bottoming: highest-mana-value nonland first, ties by cardId; lands only when no nonland remains. */
@@ -171,7 +170,7 @@ export class SanePolicyAgent implements Agent {
     return this.rng.pick(variants, "pick");
   }
 
-  /** Rule 8: classify the cast's targeted effects and keep preferred-side tuples when any exist. */
+  /** Rule 8: classify the cast's targeted effects (shared table) and keep preferred-side tuples. */
   private preferTargetSide(view: GameView, variants: Action[]): Action[] {
     const first = variants[0]!;
     if (first.type !== "castSpell" && first.type !== "activateAbility") return variants;
@@ -183,57 +182,7 @@ export class SanePolicyAgent implements Agent {
         ? (view.hand.find((c) => c.objectId === first.objectId)?.cardId ?? objById.get(first.objectId) ?? "")
         : (objById.get(first.objectId) ?? ""),
     );
-    const effects: Effect[] =
-      first.type === "activateAbility"
-        ? (def.abilities?.[first.abilityIndex]?.kind === "activated"
-            ? (def.abilities[first.abilityIndex] as { effects: Effect[] }).effects
-            : [])
-        : (def.spellEffect ?? []);
-    // Auras/equipment carry their payload as abilities over scope "attached";
-    // an equip activation's meaning is likewise the equipment's statics.
-    const attachedEffects: Effect[] =
-      def.spellEffect === undefined || first.type === "activateAbility"
-        ? (def.abilities ?? []).flatMap((a) => ("effects" in a ? (a.effects as Effect[]) : []))
-        : [];
-    const all = [...effects, ...attachedEffects];
-
-    const negative = (e: Effect): boolean =>
-      e.type === "damage" ||
-      e.type === "destroy" ||
-      e.type === "exile" ||
-      e.type === "bounce" ||
-      e.type === "counter" ||
-      e.type === "tapTarget" ||
-      e.type === "restrict" ||
-      e.type === "gainControl" ||
-      (e.type === "loseLife" && e.who === "target") ||
-      (e.type === "discard" && e.who === "target") ||
-      (e.type === "addCounters" && e.kind === "-1/-1") ||
-      (e.type === "modifyPT" && ptSign(e.power) + ptSign(e.toughness) < 0);
-    const positive = (e: Effect): boolean =>
-      e.type === "grantKeyword" ||
-      e.type === "untapTarget" ||
-      (e.type === "addCounters" && e.kind === "+1/+1") ||
-      (e.type === "modifyPT" && ptSign(e.power) + ptSign(e.toughness) > 0) ||
-      e.type === "draw"; // draw auras (Curiosity) — the payload benefits the enchanted creature's side
-
-    const wantOpponent = all.some(negative) ? true : all.some(positive) ? false : null;
-    if (wantOpponent === null) return variants;
-
-    const me = view.you;
-    const sideOf = (t: ResolvedTarget): number | null => {
-      if (t.kind === "player") return t.player;
-      if (t.kind === "object") return view.battlefield.find((o) => o.id === t.id)?.controller ?? null;
-      return view.stack.find((s) => s.id === t.id)?.controller ?? null;
-    };
-    const preferred = variants.filter((a) => {
-      const ts = (a as { targets: ResolvedTarget[] }).targets;
-      return ts.every((t) => {
-        const side = sideOf(t);
-        return side !== null && (wantOpponent ? side !== me : side === me);
-      });
-    });
-    return preferred.length > 0 ? preferred : variants;
+    return preferSide(view, variants, effectsForAction(def, first));
   }
 
   /** Rule 5 attacks: every non-defender creature with base power ≥ 1, in enumeration order. */
@@ -248,12 +197,10 @@ export class SanePolicyAgent implements Agent {
     return done ?? request.actions[0]!;
   }
 
-  /** Rule 5 blocks: greedy, one blocker per attacker, biggest attacker first. */
+  /** Rule 5 blocks: greedy, one blocker per attacker, biggest attacker first.
+   * Already-blocked attackers come from view.combat (ADR-048), not memory. */
   private blockChoice(view: GameView, request: ActionRequest): Action {
-    if (view.turn !== this.blocksTurn) {
-      this.blockedAttackers.clear();
-      this.blocksTurn = view.turn;
-    }
+    const blockedAttackers = new Set(view.combat.blocks.map((b) => b.attacker));
     const done = request.actions.find((a) => a.type === "doneDeclaringBlockers");
     const blocks = request.actions.filter((a) => a.type === "declareBlocker") as Extract<
       Action,
@@ -266,7 +213,7 @@ export class SanePolicyAgent implements Agent {
     const objById = new Map(view.battlefield.map((o) => [o.id, o.cardId]));
     const d = (id: string) => this.def(objById.get(id) ?? "");
     const good = blocks.filter((b) => {
-      if (this.blockedAttackers.has(b.attacker)) return false;
+      if (blockedAttackers.has(b.attacker)) return false;
       const atk = d(b.attacker);
       const blk = d(b.blocker);
       if ((atk.keywords ?? []).includes("menace")) return false; // pair-planning is M4's job
@@ -282,8 +229,6 @@ export class SanePolicyAgent implements Agent {
       if (bDiff !== 0) return bDiff;
       return a.blocker.localeCompare(b.blocker);
     });
-    const chosen = ranked[0]!;
-    this.blockedAttackers.add(chosen.attacker);
-    return chosen;
+    return ranked[0]!;
   }
 }

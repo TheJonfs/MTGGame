@@ -61,6 +61,8 @@ export interface PlayerState {
   exile: string[];
   manaPool: ManaPool;
   landsPlayedThisTurn: number;
+  /** London mulligans taken (ADR-048: surfaced in the owner's view). */
+  mulligans: number;
   attemptedDrawFromEmpty: boolean;
   lost: boolean; // set by SBAs; game end computed from these
   lostReason: "LIFE" | "DECKED" | null;
@@ -151,6 +153,7 @@ export function initialPlayerState(life: number): PlayerState {
     exile: [],
     manaPool: emptyPool(),
     landsPlayedThisTurn: 0,
+    mulligans: 0,
     attemptedDrawFromEmpty: false,
     lost: false,
     lostReason: null,

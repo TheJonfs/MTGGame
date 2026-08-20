@@ -81,6 +81,8 @@ export type ActionRequester = (
   player: PlayerId,
   purpose: "chooseTarget" | "orderTriggers",
   actions: Action[],
+  /** ADR-048: identity of the trigger asking for targets. */
+  source?: { cardId: string; effects: import("@shandalar/cards").Effect[] },
 ) => Promise<Action>;
 
 /**
@@ -151,7 +153,10 @@ async function buildTriggerItem(
       targets = combos[0]!;
     } else {
       const actions: Action[] = combos.map((c) => ({ type: "chooseTriggerTargets", targets: c }));
-      const chosen = await request(trigger.controller, "chooseTarget", actions);
+      const chosen = await request(trigger.controller, "chooseTarget", actions, {
+        cardId: trigger.sourceCardId,
+        effects: ability.effects,
+      });
       if (chosen.type !== "chooseTriggerTargets") throw new Error("expected chooseTriggerTargets action");
       targets = chosen.targets;
     }
