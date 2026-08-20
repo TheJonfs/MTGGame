@@ -63,3 +63,6 @@ path, not a location convention.
 - API key: `GEMINI_API_KEY` in the project-root `.env` (gitignored) or
   the environment. Optional `GEMINI_IMAGE_MODEL` overrides the default
   (gemini-3.1-flash-image).
+- `--no-style` skips the style-bible preamble. Use it **only** for card
+  illustrations (ADR-052 exempts them from style.md); everything
+  interface- or world-facing keeps the house style.

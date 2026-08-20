@@ -15,6 +15,66 @@
         }
       }
     },
+    "card-cunning-tactician-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:12fe45018e9b6bd72e55548010a1dbd3e94ef2900c730f221165230cecfb63e8",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:12fe45018e9b6bd72e55548010a1dbd3e94ef2900c730f221165230cecfb63e8",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-cunning-tactician-1/canonical.png",
+          "rendered_at": "2026-08-20T19:48:20+00:00",
+          "thumb": "assets/thumbs/card-cunning-tactician-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-cunning-tactician-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:70164ee491890d96d81a1d8ef91a9d0a6042d8ed9b1f8e0322b4908cb6dd35ff",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:70164ee491890d96d81a1d8ef91a9d0a6042d8ed9b1f8e0322b4908cb6dd35ff",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-cunning-tactician-2/canonical.png",
+          "rendered_at": "2026-08-20T19:48:30+00:00",
+          "thumb": "assets/thumbs/card-cunning-tactician-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-cunning-tactician-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:d57588940b297af8db898dc1aaf1f462d5e1cfd98d5115796bbe56f54834b7a2",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:d57588940b297af8db898dc1aaf1f462d5e1cfd98d5115796bbe56f54834b7a2",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-cunning-tactician-3/canonical.png",
+          "rendered_at": "2026-08-20T19:48:38+00:00",
+          "thumb": "assets/thumbs/card-cunning-tactician-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-cunning-tactician-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:3df6629a83ce450ae01015c26e3bb7cb99a3909f9ce667a43f06caa8ce46e3d4",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:3df6629a83ce450ae01015c26e3bb7cb99a3909f9ce667a43f06caa8ce46e3d4",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-cunning-tactician-4/canonical.png",
+          "rendered_at": "2026-08-20T19:48:47+00:00",
+          "thumb": "assets/thumbs/card-cunning-tactician-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "frame-corner": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:d28d11aa234143cd5304958fd58e075d159e516f215b1f50aa8b18d081dac1d8",

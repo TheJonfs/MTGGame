@@ -221,6 +221,8 @@ def main() -> None:
                     help="optional aspect ratio, e.g. 1:1, 16:9, 3:4")
     ap.add_argument("--force", action="store_true",
                     help="re-render even on a cache hit")
+    ap.add_argument("--no-style", action="store_true",
+                    help="skip the style-bible preamble (card illustrations, ADR-052)")
     args = ap.parse_args()
 
     entity_path = Path(args.entity_file)
@@ -253,7 +255,7 @@ def main() -> None:
         die("GEMINI_API_KEY is not set (checked environment and project .env)")
     model = os.environ.get("GEMINI_IMAGE_MODEL", DEFAULT_MODEL)
 
-    style_block = extract_style_block(STYLE.read_text()) if STYLE.exists() else ""
+    style_block = "" if args.no_style else (extract_style_block(STYLE.read_text()) if STYLE.exists() else "")
     prompt_sections = [style_block, "Subject:\n" + descriptor]
     if args.variant_prompt:
         prompt_sections.append("Scene/mood for this rendering:\n" + args.variant_prompt)
