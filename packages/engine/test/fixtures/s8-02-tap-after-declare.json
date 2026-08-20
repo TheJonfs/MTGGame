@@ -1,0 +1,28 @@
+{
+  "name": "Tactician taps an already-declared blocker: the block stands (nothing in CR 506.4 removes it)",
+  "setup": {
+    "turn": 3,
+    "active": 0,
+    "step": "DECLARE_ATTACKERS",
+    "players": [
+      {
+        "battlefield": ["hill_giant", "cunning_tactician", "plains"]
+      },
+      {
+        "battlefield": ["grizzly_bears"]
+      }
+    ]
+  },
+  "script": [
+    { "player": 0, "do": "attack", "attackers": ["hill_giant"] },
+    { "player": 1, "do": "block", "blocks": [{ "blocker": "grizzly_bears", "attacker": "hill_giant" }] },
+    {
+      "player": 0,
+      "do": "activate",
+      "card": "cunning_tactician",
+      "abilityIndex": 0,
+      "targets": [{ "object": "grizzly_bears" }]
+    }
+  ],
+  "run": [{ "steps": ["DECLARE_ATTACKERS", "DECLARE_BLOCKERS", "COMBAT_DAMAGE"] }]
+}

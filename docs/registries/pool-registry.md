@@ -101,7 +101,7 @@ Status: `planned` / `implemented` / `tested` / `cut`.
 
 | cardId | name | status | vocabulary | notes |
 |---|---|---|---|---|
-| cunning_tactician | Cunning Tactician | planned | vigilance, activated({W}+T) tapTarget | **first custom card** (ADR-053); `source: custom`, `text` field; art per ADR-052 (4 candidates → Chris picks) |
+| cunning_tactician | Cunning Tactician | tested | vigilance, activated({W}+T) tapTarget | **first custom card** (ADR-053); `source: custom`, `text` field; s8 fixtures 1–3; first tapTarget user; art per ADR-052 (4 candidates → Chris picks) |
 
 Deck B swap (S8): −1 Savannah Lions, −1 Fencing Ace, +2 Cunning Tactician.
 
@@ -110,12 +110,12 @@ Ceiling complete as of S5 (see mechanics-manifest §3). Further additions are ca
 
 ## Slice decklists (S5 brief Part 3; 40 cards each)
 - **A red:** 17 Mountain, 4 Raging Goblin, 2 Goblin Piker, 3 Lightning Bolt, 2 Shock, 2 Blaze, 3 Boggart Brute, 2 Siege-Gang Commander, 2 Bonesplitter, 2 Goblin Chieftain, 1 Pyroclasm.
-- **B white-blue:** 8 Plains, 9 Island, 1 Savannah Lions, 2 Serra Angel, 2 Man-o'-War, 2 Cloudkin Seer, 2 Counterspell, 1 Pacifism, 1 Raise the Alarm, 1 Glorious Anthem, 2 Fencing Ace, 1 Loxodon Warhammer, 1 Mind Stone, 2 Swords to Plowshares, 1 Wrath of God, 2 Curiosity, 2 Control Magic.
+- **B white-blue (S8 swap: −1 Savannah Lions, −1 Fencing Ace, +2 Cunning Tactician):** 8 Plains, 9 Island, 2 Serra Angel, 2 Man-o'-War, 2 Cloudkin Seer, 2 Counterspell, 1 Pacifism, 1 Raise the Alarm, 1 Glorious Anthem, 1 Fencing Ace, 2 Cunning Tactician, 1 Loxodon Warhammer, 1 Mind Stone, 2 Swords to Plowshares, 1 Wrath of God, 2 Curiosity, 2 Control Magic.
 - **C green:** 17 Forest, 3 Elvish Visionary, 3 Timberland Guide, 2 Centaur Courser, 2 Rumbling Baloth, 2 Pelakka Wurm, 1 Giant Growth, 3 Prey Upon, 2 Deadly Recluse, 2 Gladecover Scout, 1 Blurred Mongoose, 2 Rancor.
 - **D black:** 17 Swamp, 2 Typhoid Rats, 2 Child of Night, 3 Vampire Nighthawk, 2 Phyrexian Rager, 3 Nekrataal, 2 Doom Blade, 1 Terror, 1 Duress, 1 Hymn to Tourach, 2 Drana, 2 Gravedigger, 2 Zombify.
 - **E Simic (new, S5):** 9 Forest, 8 Island, 3 Mystic Snake, 2 Counterspell, 2 Boomerang, 2 Wind Drake, 2 Man-o'-War, 2 Cloudkin Seer, 2 Curiosity, 3 Grizzly Bears, 3 Elvish Visionary, 2 Deadly Recluse.
 
-(Rotated out of decks but still `tested` pool members: Gray Ogre, Boomerang, Hill Giant, Brute Force, Suntail Hawk, Wind Drake, Darksteel Myr.)
+(Rotated out of decks but still `tested` pool members: Gray Ogre, Boomerang, Hill Giant, Brute Force, Suntail Hawk, Wind Drake, Darksteel Myr, Savannah Lions.)
 
 ## Test-only cards (not pool members)
 `test_fs_soldier` (first strike body), `test_pinger` ({1},T: 1 damage), `test_wrath` ({2} sorcery, destroy all creatures), `test_goblin_martyr` ({R} 1/1 Goblin, dies: draw), `test_pyroclasm` ({1}{R} sorcery, 2 to all creatures) — live in the engine test harness, never in `data/cards/`. Per ADR-018 they are permanent fixtures: engine tests never depend on pool membership.

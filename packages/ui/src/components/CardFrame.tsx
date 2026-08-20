@@ -154,7 +154,8 @@ export function CardFrame({
       {!hand && <div className="type-line">{oracle?.type_line ?? typeLine(def)}</div>}
       {!hand && (
         <div className="oracle">
-          <TextWithMana text={oracle?.oracle_text ?? derivedText(def)} />
+          {/* ADR-053: customs carry their own rules text; real cards use oracle.json. */}
+          <TextWithMana text={oracle?.oracle_text ?? (def.text || derivedText(def))} />
         </div>
       )}
       {isCreature && (

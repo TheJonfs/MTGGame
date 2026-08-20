@@ -12,6 +12,7 @@
   ],
   "power": 1,
   "toughness": 1,
+  "text": "",
   "art": {
     "asset": "/custom-art/soldier_1_1.png",
     "fallback": "rendered"

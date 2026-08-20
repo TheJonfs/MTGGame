@@ -1,0 +1,27 @@
+{
+  "name": "Vigilant Tactician attacks untapped (CR 702.21b) and still activates {W},{T} the same combat",
+  "setup": {
+    "turn": 3,
+    "active": 0,
+    "step": "DECLARE_ATTACKERS",
+    "players": [
+      {
+        "battlefield": ["cunning_tactician", "plains"]
+      },
+      {
+        "battlefield": ["grizzly_bears"]
+      }
+    ]
+  },
+  "script": [
+    { "player": 0, "do": "attack", "attackers": ["cunning_tactician"] },
+    {
+      "player": 0,
+      "do": "activate",
+      "card": "cunning_tactician",
+      "abilityIndex": 0,
+      "targets": [{ "object": "grizzly_bears" }]
+    }
+  ],
+  "run": [{ "steps": ["DECLARE_ATTACKERS", "DECLARE_BLOCKERS", "COMBAT_DAMAGE"] }]
+}

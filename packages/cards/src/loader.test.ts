@@ -11,7 +11,7 @@ const CARDS_DIR = join(dirname(fileURLToPath(import.meta.url)), "../../../data/c
 describe("card pool loading", () => {
   it("loads the full pool (S1–S5 additions + tokens) with no errors or warnings", () => {
     const pool = loadCardPool(CARDS_DIR);
-    expect(pool.cards.size).toBe(66); // 20 S1 + 11 S2 + 11 S3 + 16 S4 + 6 S5 + 2 tokens
+    expect(pool.cards.size).toBe(67); // 20 S1 + 11 S2 + 11 S3 + 16 S4 + 6 S5 + 2 tokens + 1 S8 (Cunning Tactician)
     // Slice cards use only implemented vocabulary, so no warnings expected.
     expect(pool.warnings).toEqual([]);
   });
@@ -41,6 +41,7 @@ describe("validateCard rejections", () => {
     id: "test",
     name: "Test",
     source: "custom",
+    text: "",
     manaCost: "{1}",
     types: ["Instant"],
     spellEffect: [{ type: "draw", count: 1, who: "you" }],
@@ -82,7 +83,7 @@ describe("validateCard rejections", () => {
       ...base,
       types: ["Sorcery"],
       targets: [{ count: 1, predicate: "creature", zone: "battlefield" }],
-      spellEffect: [{ type: "tapTarget", target: 0 }],
+      spellEffect: [{ type: "untapTarget", target: 0 }], // tapTarget got its resolver in S8 (ADR-053)
     });
     expect(errors).toEqual([]);
     expect(warnings.some((w) => w.includes("no resolver yet"))).toBe(true);

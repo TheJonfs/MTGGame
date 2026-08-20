@@ -234,6 +234,8 @@ export interface CardDef {
   /** ADR-019: explicit colors; derived from manaCost when absent; REQUIRED on token defs. */
   colors?: ("W" | "U" | "B" | "R" | "G")[];
   keywords?: Keyword[];
+  /** Custom cards only (ADR-053): rules text for the frame. Real cards source oracle.json. */
+  text?: string;
   abilities?: AbilityDef[];
   spellEffect?: Effect[];
   targets?: TargetSpec[];

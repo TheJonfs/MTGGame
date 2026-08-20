@@ -42,6 +42,13 @@ export function validateCard(raw: unknown): ValidationResult {
   }
   if (raw.source !== "real" && raw.source !== "custom") err(`"source" must be "real" | "custom"`);
 
+  // ADR-053: custom cards carry their rules text (real cards use oracle.json).
+  if (raw.source === "custom") {
+    if (typeof raw.text !== "string") err(`custom card missing string "text" (ADR-053)`);
+  } else if (raw.text !== undefined) {
+    err(`real card has a "text" field — real rules text comes from oracle.json (ADR-053)`);
+  }
+
   if (typeof raw.manaCost === "string") {
     try {
       parseManaCost(raw.manaCost);

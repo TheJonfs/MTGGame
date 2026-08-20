@@ -21,7 +21,7 @@ export const DECK_A_MONO_RED: { cardId: string; count: number }[] = [
 export const DECK_B_WU_SKIES: { cardId: string; count: number }[] = [
   { cardId: "plains", count: 8 },
   { cardId: "island", count: 9 },
-  { cardId: "savannah_lions", count: 1 },
+  // S8 swap (pool append): −1 Savannah Lions, −1 Fencing Ace, +2 Cunning Tactician
   { cardId: "serra_angel", count: 2 },
   { cardId: "man_o_war", count: 2 },
   { cardId: "cloudkin_seer", count: 2 },
@@ -29,7 +29,8 @@ export const DECK_B_WU_SKIES: { cardId: string; count: number }[] = [
   { cardId: "pacifism", count: 1 },
   { cardId: "raise_the_alarm", count: 1 },
   { cardId: "glorious_anthem", count: 1 },
-  { cardId: "fencing_ace", count: 2 },
+  { cardId: "fencing_ace", count: 1 },
+  { cardId: "cunning_tactician", count: 2 },
   { cardId: "loxodon_warhammer", count: 1 },
   { cardId: "mind_stone", count: 1 },
   { cardId: "swords_to_plowshares", count: 2 },

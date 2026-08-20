@@ -198,6 +198,13 @@ function sharedOps(ctx: EngineCtx) {
       moveObject(ctx, objectId, "graveyard");
     },
 
+    tap(objectId: string): void {
+      const obj = ctx.state.objects[objectId];
+      if (!obj || obj.zone !== "battlefield" || obj.tapped) return;
+      obj.tapped = true;
+      ctx.bus.emit("TAPPED", { objectId });
+    },
+
     exile(objectId: string): void {
       const obj = ctx.state.objects[objectId];
       if (!obj || obj.zone !== "battlefield") return;
