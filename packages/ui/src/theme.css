@@ -134,7 +134,7 @@ body {
 .frame {
   width: 180px;
   /* S8 feedback: real-card-thick black border, em-based so it scales */
-  border: 0.55em solid var(--ink); border-radius: 0.9em; padding: 6px; position: relative;
+  border: 0.8em solid var(--ink); border-radius: 1.05em; padding: 6px; position: relative;
   box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.4); font-size: 10px;
 }
 .frame.full { aspect-ratio: 63 / 88; display: flex; flex-direction: column; gap: 4px; }
@@ -176,9 +176,9 @@ body {
    band or tinted text box (S7 feedback round). em-sized: scales with frame. */
 .mana-chip {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 1.2em; height: 1.2em; border-radius: 50%; flex: none;
+  width: 1.1em; height: 1.1em; border-radius: 50%; flex: none;
   background: var(--parchment); border: 1px solid var(--ink);
-  vertical-align: -0.24em; font-weight: 700; line-height: 1;
+  vertical-align: -0.2em; font-weight: 700; line-height: 1;
   color: var(--ink); /* numbers stay ink even inside light-text name strips */
   /* S8 rider: lift off light bands (W chip on the white frame especially) */
   box-shadow: 0 0 0 0.5px rgba(43, 37, 32, 0.35), 0 1px 1.5px rgba(0, 0, 0, 0.3);
