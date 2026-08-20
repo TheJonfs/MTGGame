@@ -10,7 +10,9 @@ const BODY: Record<string, string> = {
 const BODY_TEX: Record<string, string> = {
   W: "w", U: "u", B: "b", R: "r", G: "g", C: "c", LAND: "land",
 };
-const LIGHT_TEXT = new Set(["U", "B", "R", "G", "LAND"]);
+/** Round 4: R dropped — the red frame texture is light enough up top that
+ * ink names read better there, matching white (Chris-directed). */
+const LIGHT_TEXT = new Set(["U", "B", "G", "LAND"]);
 
 const MANA_ICON: Record<string, string> = {
   W: "mana-white", U: "mana-blue", B: "mana-black", R: "mana-red", G: "mana-green",
