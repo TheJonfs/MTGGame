@@ -25,6 +25,7 @@ M3.75 is delivered: SanePolicyAgent plays watchable games (a bundled sane-vs-san
 - **Feedback round 4 (same day, Chris-directed):**
   - **Red names go ink** like white — the red texture's top is light enough (LIGHT_TEXT is now U/B/G/LAND).
   - **Chip centering root-caused:** measuring glyph geometry showed the ink bbox *was* centered — in a bbox inflated by dozens of paper-speck paths the S6 mana-icon traces carried (invisible at thin stroke, bolded into bubbles by the chip stroke, and shoving the real glyph off-center; the "tiny sun" was exactly this). All seven glyphs retraced with -t 1500 despeckle (-t 250 on mana-white — 1500 ate the sun's detached rays), chip strokes now ~9% of each glyph's size rather than a constant. Verified centered on rendered discs with crosshairs. The base rail/board icons got the clean retraces too.
+- **Feedback round 5 (same day, Chris-directed, final):** generic-cost numerals up to 0.95em/weight 800 in the chips; land names go ink like white and red (LIGHT_TEXT is now U/B/G only). Chris is taking the S7 state to the planner — next-brief candidates he named: **first custom card** (the CardDef `text` field, ADR-042's deferred trigger, has arrived) alongside the M4 design conversation.
 
 ## Stats (1,000 games/pairing; seeds 1..; reproduce with `pnpm agent-stats`; all numbers are the post-rule-8 agent)
 

@@ -181,7 +181,7 @@ body {
   color: var(--ink); /* numbers stay ink even inside light-text name strips */
 }
 .mana-chip img { width: 82%; height: 82%; mix-blend-mode: multiply; }
-.mana-chip span { font-size: 0.78em; }
+.mana-chip span { font-size: 0.95em; font-weight: 800; }
 
 /* Rail blocks */
 .status-block { display: flex; gap: 8px; align-items: center; }
