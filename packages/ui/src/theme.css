@@ -40,6 +40,8 @@
   --sans: Seravek, "Gill Sans", "Segoe UI", Verdana, sans-serif;
   --serif: "Iowan Old Style", Palatino, "Book Antiqua", Georgia, serif;
   --card-face: "IM Fell English", "Iowan Old Style", Palatino, Georgia, serif;
+  /* Round 3: aged yellower parchment for card text fields (old-school text box) */
+  --parchment-text: #e3d2a4;
 }
 
 * { box-sizing: border-box; }
@@ -139,8 +141,8 @@ body {
 .frame .corner { position: absolute; width: 16px; height: 16px; mix-blend-mode: multiply; opacity: 0.8; }
 .frame .name-strip {
   display: flex; justify-content: space-between; align-items: center; gap: 4px;
-  border: 1.2px solid var(--ink); border-radius: 4px; padding: 2px 5px; font-weight: 700;
-  font-family: var(--card-face); font-size: 1.18em; letter-spacing: 0.01em; flex: none;
+  padding: 1px 3px 3px; font-weight: 700;
+  font-family: var(--card-face); font-size: 1.22em; letter-spacing: 0.01em; flex: none;
 }
 .frame.mini .name-strip { margin-bottom: 4px; }
 .frame .art-window {
@@ -152,13 +154,13 @@ body {
 .frame .type-line {
   font-style: italic; font-family: var(--card-face); font-size: 1.08em;
   padding: 2px 5px; border: 1.2px solid var(--ink); border-radius: 3px; flex: none;
-  background: color-mix(in srgb, var(--frame-tint) 18%, var(--parchment));
+  background: color-mix(in srgb, var(--frame-tint) 14%, var(--parchment-text));
 }
 .frame.mini .type-line { margin-top: 4px; }
 .frame .oracle {
   padding: 3px 5px; white-space: pre-wrap; line-height: 1.3;
   border: 1.2px solid var(--ink); border-radius: 3px;
-  background: color-mix(in srgb, var(--frame-tint) 14%, var(--parchment));
+  background: color-mix(in srgb, var(--frame-tint) 10%, var(--parchment-text));
 }
 .frame.full .oracle { flex: 1; overflow-y: auto; padding-bottom: 15px; margin-bottom: 1px; }
 .frame.mini .oracle { min-height: 40px; margin-top: 3px; }

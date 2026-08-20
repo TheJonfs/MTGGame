@@ -59,6 +59,7 @@ descriptor blocks under `docs/art/subjects/`, composed with `docs/prompts/style.
 | assets/generated/surfaces/surface-wood.png | assets/images/surface-wood/canonical.png | center-crop 88%x72% to the saturated band (house style's unpainted-paper edges removed) |
 | assets/generated/tokens/{goblin_1_1,soldier_1_1}.png | assets/images/token-{goblin,soldier}/canonical.png | 5:4 center crop (35% upward bias) for the frame art window; copied to packages/ui/public/custom-art/, referenced by the token defs' art.asset (S7 feedback round) |
 | assets/generated/surfaces/frame-{w,u,b,r,g,gold,c,land}.jpg | assets/images/frame-texture-*/canonical.png | 512px JPEG q87 tiles; copied to packages/ui/public/frame-tex/, tiled at 280px as the frame body background (S7 feedback round 2) |
+| assets/generated/icons/chip-{w,u,b,r,g,c,t}.svg | assets/generated/icons/mana-*.svg, status-tapped.svg | bold chip variants: same traced paths with stroke-width 500 (path space) added, fattening every line for legibility at 13–20px chip size (S7 feedback round 3) |
 
 ## Conventions (S6, pending planner ratification)
 

@@ -18,6 +18,10 @@ M3.75 is delivered: SanePolicyAgent plays watchable games (a bundled sane-vs-san
   - **Mana chips recolored in the real-symbol style:** classic pale saturated disc colors (cream/light-blue/gray/salmon/light-green — colors only, not WotC's images) under our ink glyphs; generic/X/tap ride the neutral gray. Contrast problem solved at every size.
   - **Textured frame bodies:** eight rendered seamless textures (W ivory marble, U indigo water-wash, B dark crackle, R mottled red stone, G green-stained wood grain, gold hammered metal, artifact granite, land tan strata) via the skill — subjects `docs/art/subjects/frame-texture-*.md`, 512px tiles in `assets/generated/surfaces/`, tiled at 280px behind the panels. Five needed descriptor tightening and three of those also needed `--force` (conditioning kept reasserting bricks/boulders — the S6 lesson again).
   - **Card face font:** IM Fell English (SIL OFL, bundled woff2, no CDN) for name strips and type lines — old-print flair without WotC's fonts; body text stays in the workhorse faces.
+- **Feedback round 3 (same day, Chris-directed, from his screenshot):**
+  - **Bold chip glyphs:** the traced mana/tap icons are thin-stroke outlines that vanish at 13–20px chip size; chips now use derived bold variants (`chip-*.svg` — same paths, SVG stroke-width 500 in path space fattens every line). Verified legible at gallery and modal sizes.
+  - **Aged text field:** game-text and type-line panels moved to a darker, yellower parchment base (`--parchment-text` #e3d2a4, still color-tinted per identity) — the old-school yellowed text box.
+  - **Names directly on the frame:** the name band is gone; card names (IM Fell) sit on the textured body itself, light-on-dark with a soft shadow (ink on white/marble), classic-design style.
 
 ## Stats (1,000 games/pairing; seeds 1..; reproduce with `pnpm agent-stats`; all numbers are the post-rule-8 agent)
 

@@ -1,10 +1,6 @@
 import type { CardDef } from "@shandalar/cards";
 import { frameColors, type OracleEntry } from "../engine-bridge";
 
-const WASH: Record<string, string> = {
-  W: "var(--mana-w)", U: "var(--mana-u)", B: "var(--mana-b)",
-  R: "var(--mana-r)", G: "var(--mana-g)", C: "var(--mana-c)", LAND: "var(--wood)",
-};
 /** S7 feedback round: deep saturated 1993–97-style body colors for the frame. */
 const BODY: Record<string, string> = {
   W: "var(--frame-w)", U: "var(--frame-u)", B: "var(--frame-b)",
@@ -20,6 +16,12 @@ const MANA_ICON: Record<string, string> = {
   W: "mana-white", U: "mana-blue", B: "mana-black", R: "mana-red", G: "mana-green",
   C: "mana-colorless", T: "status-tapped",
 };
+/** Bold-stroke chip variants of the glyphs (round 3): the traced outlines
+ * vanish at chip size, so chips use fattened copies of the same paths. */
+const CHIP_ICON: Record<string, string> = {
+  W: "chip-w", U: "chip-u", B: "chip-b", R: "chip-r", G: "chip-g",
+  C: "chip-c", T: "chip-t",
+};
 
 /** Real-mana-symbol coloration (S7 feedback round 2): the classic pale
  * saturated disc colors under a black symbol. The five images are WotC's;
@@ -29,9 +31,9 @@ const CHIP_BG: Record<string, string> = {
 };
 const CHIP_NEUTRAL = "#cac5c0";
 
-/** One mana/tap symbol as a high-contrast chip: colored disc, ink symbol, ink ring. */
+/** One mana/tap symbol as a high-contrast chip: colored disc, bold ink symbol, ink ring. */
 export function ManaChip({ sym }: { sym: string }) {
-  const icon = MANA_ICON[sym];
+  const icon = CHIP_ICON[sym];
   return (
     <span className="mana-chip" style={{ background: CHIP_BG[sym] ?? CHIP_NEUTRAL }}>
       {icon ? <img src={`/icons/${icon}.svg`} alt={sym} /> : <span>{sym}</span>}
@@ -108,10 +110,6 @@ export function CardFrame({
   const colors = frameColors(def);
   const body = colors.length === 1 ? BODY[colors[0]!] : "var(--frame-gold)";
   const bodyTex = colors.length === 1 ? BODY_TEX[colors[0]!] : "gold";
-  const band =
-    colors.length === 1
-      ? WASH[colors[0]!]
-      : `linear-gradient(90deg, ${colors.map((c) => WASH[c]).join(", ")})`;
   const light = colors.length === 1 && LIGHT_TEXT.has(colors[0]!);
   const isReal = def.source === "real";
   const isCreature = def.types.includes("Creature");
@@ -131,7 +129,14 @@ export function CardFrame({
       <img className="corner" src="/frame-corner.png" style={{ right: 1, bottom: 1, transform: "scaleX(-1)" }} alt="" />
       <img className="corner" src="/frame-corner.png" style={{ left: 1, top: 1, transform: "scaleY(-1)" }} alt="" />
       <img className="corner" src="/frame-corner.png" style={{ right: 1, top: 1, transform: "scale(-1)" }} alt="" />
-      <div className="name-strip" style={{ background: band, color: light ? "var(--parchment)" : "var(--ink)" }}>
+      {/* Round 3: the name sits directly on the textured frame body (classic design). */}
+      <div
+        className="name-strip"
+        style={{
+          color: light ? "var(--parchment)" : "var(--ink)",
+          textShadow: light ? "0 1px 2px rgba(20,16,12,0.75)" : "0 1px 1px rgba(255,250,235,0.6)",
+        }}
+      >
         <span>{def.name}</span>
         <ManaCostRow cost={def.manaCost} />
       </div>
