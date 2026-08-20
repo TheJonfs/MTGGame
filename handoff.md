@@ -1,56 +1,86 @@
-# Handoff — after Session 06 (2026-08-19)
+# Handoff — after Session 07 (2026-08-20)
 
 ## State of the world
 
-M3.5 is delivered: the replay viewer runs as the seed of the game UI in the ratified ink-and-wash direction, the full first asset pass is generated and committed, and every real pool card has its Scryfall art fetched and its printing recorded. `pnpm viewer` serves it; load any `pnpm fuzz --save` / `pnpm play-random` log (a 761-decision sample game is bundled), scrub anywhere, and the board/stack/decision panel reconstruct **through the engine** — `replayToDecision(log, k)` returns both the state and the DecisionRequest whose alternatives ADR-014 chose not to log. Flag-this writes real fixtures-inbox entries (one demonstration entry is in the repo). 134 tests green including new permanent viewer-reconstruction and spot-check suites.
+M3.75 is delivered: SanePolicyAgent plays watchable games (a bundled sane-vs-sane sample loads from the viewer's start screen), the `/gallery` route puts all 66 pool cards + tokens in front of Chris with filters, captions, a printed-scan toggle, an inspector modal, and an art-note flow into `docs/art/art-notes.md`, and the ADR-044 riders are done (DAMAGE `targetCardId`, ink transport glyphs, Rager on Apocalypse art, registry hygiene confirmed). 135 tests green including the new permanent 100-game/pairing sane smoke. `pnpm viewer` serves both routes; `pnpm agent-stats` reproduces every number below.
 
 ## Done this session
 
-- **Part 0:** registry staleness fixed (R-007, R-025 — see Concerns 1); EVENT `seq`/`afterAction` (ADR-040); `replayToDecision` prefix replay returning `{state, request, taken, gameOver}`; `pnpm fuzz --save <dir>` and `pnpm play-random --seed S --decks A,B --save f.json` writing `shandalar-log-v1` files.
-- **Part 1 (art):** style samples approved by Chris (with two directed revisions: skull-and-crossbones tombstone, seamless wood; plus a female traveler portrait replacing the rival-mage placeholder so the seats are a matched pair); 20 icons generated and potrace-traced to committed SVGs (24px normalized, ink #2B2520); wood surface (center-band crop), parchment panel, frame-corner flourish, five-petal compass-rose card back; `assets/generated/MANIFEST.md` as human ledger over the skill's `assets/manifest.json`.
-- **Part 2 (fetch):** `pnpm art:fetch` — 64/64 real cards resolved (default oldest-highres rule + the printings.md overrides), `art_crop`+`normal` downloaded (14MB, gitignored), oracle text/artist/set captured to `data/art/real/oracle.json`, "Scryfall printings" section written into the pool registry. Idempotent; 150ms spacing; identified client. The classic picks all landed: Alpha Bolt/Serra/Terror/Wrath/Swords, Muth's Man-o'-War, Danforth's Hymn #38b, Revised basics.
-- **Part 3 (viewer):** `packages/ui` (Vite+React, engine/cards/core only; fs-bound loader split to `@shandalar/cards/loader` so the browser bundle is clean); board 2/3 + rail 1/3 + transport per art-direction §2; combat lane as aligned attacker/blocker columns (staged blocks render pre-commit too); our frame everywhere with art_crop set in, "printed card" toggle to the scan; battlefield tiles with live-characteristics P/T badges (delta-colored), tapped rotation, sick desaturation, attachment grouping; rail with portraits/life/zone-icons/mana glyphs, stack with target labels, decision panel showing taken + legal alternatives (+ Duress-style reveals), inspector with hover/pin; transport with keyboard (`←/→`, `shift+←/→`, space), speed, scrub; log as rail tab with `?log=bottom` variant for the §7 comparison; reveal-opponent-hand toggle; flag-this via dev endpoint with download fallback.
-- **DoD spot-checks:** permanent tests pin the three named behaviors in real fuzz games — Siege-Gang sacrifice choice (seed 300 A–B), Control Magic steal with 302.6 sickness (seed 307 B–E), Pacifism fizzle (seed 336 B–D) — plus a general reconstruction test (final state byte-identical, every sampled decision offers the taken action).
+- **Part 1 (ADR-045):** `SanePolicyAgent` in `packages/agents` — the seven ratified rules as documented filters over the enumerated action set, private PRNG per ADR-015, card defs injected for land/cost/P-T/keyword lookups. `--agents sane,random|…` wired into `pnpm fuzz` and `pnpm play-random` (default stays random,random); fuzz reports now carry win tallies. Engine-correctness suites keep RandomAgent; new committed smoke: 100 games × 10 pairings sane-vs-sane, zero errors, zero MAX_TURNS (~5s). Stats below from `pnpm agent-stats` (committed CLI; in-memory SPELL_CAST counting, nothing saved).
+- **Part 2 (ADR-046):** `/gallery` — pool registry is the membership/batch source (served raw by `/__registry`, parsed client-side; `cut` excluded, tokens included); our frame with per-card and global printed-scan toggles; captions name · SET #collector · artist from oracle.json; filters color/type/batch/deck + name search; click → 300px inspector modal; ✎ note buttons POST `/__art-note` → per-card bulleted entries in `docs/art/art-notes.md` (file created with lifecycle header; one demonstration entry under `blaze`; download fallback mirrors the flag button); ADR-043 size-comparison strip (battlefield tile / hand frame without oracle / inspector frame) whose subject follows the last-clicked card.
+- **Part 3 (ADR-044):** DAMAGE object payloads carry `targetCardId` (+ schema comment; viewer log now names damaged creatures, "a creature" fallback for pre-S7 logs). Five transport glyphs rendered via the gemini-image skill and potrace-traced to 24px ink SVGs (play/pause/step ▶|/jump ▶▶/end ▶▶|; right-facing masters mirrored in CSS for the left buttons). Phyrexian Rager refetched: APC #49, Mark Tedin, PMEI files replaced, registry row rewritten. R-007/R-025 verified still current (principle 11).
+- **DoD 1:** sane-vs-sane A-B seed 14 bundled as `sample-game-sane.json` + loader button — by eye: one mulligan (kept at 6), lands every turn, 21 spells cast, combat with blocks and 12 deaths, LIFE win turn 21.
+
+## Stats (1,000 games/pairing; seeds 1..; reproduce with `pnpm agent-stats`)
+
+**Sane vs random, per deck** (aggregated over 8 pairing/seating blocks, 4,000 games each): A 96.1%, B 96.0%, C 99.2%, D 100.0%, E 98.5%. No pairing/seating block below 89.7% (B vs D with random D). Sane never loses a D seat: 100.0% in all four D blocks.
+
+**Sane-vs-sane vs the random baseline** (same 10 pairings, 1,000 games each):
+
+| pairing | random: wins/terminations/turns | sane: wins/terminations/turns |
+|---|---|---|
+| A-B | 650-350, 942 LIFE/58 DECKED, 42.1 | 391-609, 1000 LIFE, 21.4 |
+| A-C | 372-628, 999/1, 32.9 | 324-676, 1000 LIFE, 15.2 |
+| A-D | 247-753, 972/28, 41.5 | 60-940, 1000 LIFE, 18.2 |
+| A-E | 443-557, 971/29, 39.0 | 470-530, 1000 LIFE, 19.9 |
+| B-C | 282-718, 944/56, 38.2 | 377-623, 1000 LIFE, 20.4 |
+| B-D | 185-815, 767/233, 49.1 | 156-844, 990/10, 25.5 |
+| B-E | 407-593, 818/182, 45.5 | 708-292, 993/7, 25.5 |
+| C-D | 321-679, 975/25, 38.0 | 207-793, 1000 LIFE, 18.1 |
+| C-E | 471-529, 988/12, 34.2 | 784-216, 1000 LIFE, 16.4 |
+| D-E | 817-183, 875/125, 44.3 | 988-12, 1000 LIFE, 18.8 |
+
+Mean turns halve (33–49 → 15–26); DECKED terminations collapse (749 → 17 across 10,000 games).
+
+**≥5-mana casts per game** (the number Chris wanted; 10,000 games each condition):
+
+| card | random | sane | ratio |
+|---|---|---|---|
+| siege_gang_commander | 0.126 | 0.234 | 1.9× |
+| pelakka_wurm | 0.044 | 0.156 | 3.5× |
+| serra_angel | 0.139 | 0.330 | 2.4× |
+| drana_kalastria_bloodchief | 0.115 | 0.262 | 2.3× |
+| wrath_of_god | 0.083 | 0.146 | 1.8× |
 
 ## Deviations from the brief
 
-1. **Components read engine state through a view-ctx + selectors, not literal `GameView` objects.** The omniscient viewer needs both seats and live characteristics; `buildView` remains intact for play-mode redaction later. The seat-shaped selectors keep the play-mode path honest; flagging because Part 0.3's wording was stricter than what I shipped.
-2. **Icon candidates: one render each, re-roll on failure** (icons.md said 3–4 candidates per icon). 20 icons landed with three targeted re-rolls (exile ring source, tapped/plus retrace); generating 60–80 candidates felt like cost without benefit. Ratify or ask for candidate rounds on specific icons.
-3. **Transport glyphs are unicode at the moment** (⏮◀▶⏩ etc.), not drawn-in-ink SVGs (icons.md allows "standard glyphs in the same ink weight" — mine are standard but not ink). Cosmetic follow-up.
-4. **The skill's conventions won** where they conflicted with the brief: renders live in `assets/images/` + `assets/manifest.json` (the skill's hard rules forbid bypassing); `assets/generated/` holds derived assets (SVGs, crops) and `MANIFEST.md`. Also the skill directory is `gemini-image/`, not the docs' `imagegen/`. Ratify the layout note at the bottom of MANIFEST.md and fix the path in CLAUDE.md's repo map.
+1. **Block rule: the "lethal-threatening" gate wasn't implementable as a pure function** — `GameView` carries no combat state (who's attacking), so total incoming damage can't be computed. Shipped: block when the blocker kills the attacker (trades OK) or safely absorbs ≥2 (attacker power ≥ 2 and blocker survives); never chump. Documented in the agent header. Ruling wanted: accept, or add `combat` to the view and revisit.
+2. **The agent carries two pieces of per-instance memory** despite Part 1's "every filter is a pure function over (view, request)": London mulligan count (the view always shows 7 cards) and attackers-already-blocked this combat (keyed by `view.turn` — a purpose-based reset can silently span turns because single-option requests are auto-taken, ADR-014). Both are view gaps, not policy sophistication. Ruling wanted: bless the memory, or add `mulligans`/`combat` view fields.
+3. **Menace attackers are never chosen as block targets** (two-blocker planning felt like M4 evaluation); when the enumerator withholds "done" mid-menace-block, the forced second blocker is random. Documented.
+4. **`pnpm agent-stats` committed** beyond the brief's letter so the handoff tables are reproducible, matching the "handoff numbers from the CLI" convention.
+5. **`ui` now depends on `sim`** via a new browser-safe `@shandalar/sim/decks` subpath (deck-membership filter). Direction is legal (ui → sim), but S6 described ui as engine/cards/core only — flagging the widened dependency.
+6. **The size strip's battlefield tile is a def-only re-render** (`StripTile`), not the stateful `CardTile` (which needs a live EngineCtx/GameObject). ~15 duplicated presentation lines; folding them would mean refactoring CardTile beyond scope.
 
 ## Concerns
 
-1. **My S5 registry edit silently no-opped — process bug, now guarded.** The planner's staleness warning was right: my scripted `str.replace` had a stale source string and did nothing, and I didn't verify. All scripted doc edits now assert their replacement landed. Worth a line in CLAUDE.md if you want it institutional: *doc edits verify their own diff*.
-2. **Log/EVENT gaps the viewer surfaced** (expected concern): (a) DAMAGE events carry object *ids* whose objects may be gone by read time — the log panel says "a creature" where a name would be better; a `targetCardId` in the payload fixes it cheaply. (b) Card defs carry no rules text — the frame's oracle line comes from `oracle.json` for real cards and a thin vocabulary-derived summary for customs/tokens; if custom cards matter visually, a `text` field on CardDef is the planner-level fix (ADR-008 touch-up).
-3. **Frame typography at small sizes** (expected concern): the 180px inspector frame is comfortable; 120px hand frames are legible for name/type but oracle at ~8px is squint territory. Recommendation for the play UI: hand frames drop oracle text (name/art/cost/P&T only) and let the inspector carry the text — that's how physical hands work anyway.
-4. **Prefix-replay performance is a non-issue at current scale** (expected concern): ~3ms early, ~40ms at decision 700 of a 59-turn game, cached per index; scrubbing feels instant after first touch. O(n²) cold-scrub of a 100-turn game would be ~seconds total; revisit only if M3.5+ logs get much longer (an incremental-resume replayer is the known next step if so).
-5. **Phyrexian Rager's "oldest highres" printing is PMEI** (a magazine-insert promo, Tedin art) — deterministic per printings.md but probably not the intent; suggest an `apc` override next time printings.md is touched. Only such oddity in 64 cards.
-6. **RandomAgent enchants its own creatures with Control Magic** (legal, dumb, discovered while hunting steal moments — most A–B/B–C Control Magics are self-enchants). Harmless for fuzz; M4's evaluator should know stealing your own creature is worth ~nothing.
-7. **The imported render skill held up well** — cache, conditioning, refusal handling all exercised; two findings for its next revision: Gemini returns JPEG bytes saved as `.png` (harmless, browsers sniff; noted in MANIFEST), and conditioning-on-canonical fights *intentional* revisions (the bordered-table surface kept reasserting itself until `--force` skipped conditioning).
+1. **What sane's rules distort most (M4 baseline notes, as the brief requested):** (a) the 80%-cast rule makes it an *activation* machine — the sample game has 22 activations/28 ATTACHED events, mostly Bonesplitter/Warhammer re-equip churn between own creatures; M4's evaluator needs "re-equipping the same host is worth ~0" alongside S6's Control-Magic-self-enchant note (that one still stands — sane targets randomly too). (b) Attack-with-everything + never-chump systematically favors removal-heavy decks: D's win rates jump from 65–82% (random) to 79–94% (sane mirrors). (c) All-in attacking means sane loses creatures to blocks it "should" foresee — fine for a floor, but expect M4's first win to be combat evaluation.
+2. **Base P/T only in combat filters:** the view has no live characteristics, so anthem/equipment/counter pumps are invisible to attack/block decisions (a 1/1 wearing +3/+0 still reads 1/1). Same root cause as deviations 1–2: the view is thinner than policies need. Suggest deciding once, at M4 design time, what the agent-facing view owes: `combat`, `mulligans`, live P/T (or a characteristics helper over the view).
+3. **Gallery at scale is a non-issue** (expected concern): 66 frames + art on one page render instantly, lazy-loaded, no jank; scrolling and filters feel native. One real finding: at 180px the white-mana glyph at 11px on light wash bands nearly vanishes — an icons/frame contrast note for the planner (visible on any W card's name strip).
+4. **`window.prompt` for note entry is functional but crude** — fine for a Chris-only tool; if notes get heavy use, an inline text field is a small follow-up.
+5. **Registry parsing is by column position** (`| cardId | name | status |`…) in the gallery; a registry column reorder would silently misread statuses. Acceptable for a dev tool reading a repo-canonical file; noting it because principle 11 has made me suspicious of silent doc/format drift.
 
 ## Registry entries added/changed
 
-- rules-registry: R-007 and R-025 rewritten to current truth (Part 0.0; no new rules rows — the viewer adds no rules).
-- pool-registry: new "Scryfall printings (art:fetch)" section — 64 rows of set/collector/artist/scryfallId.
+- pool-registry: `phyrexian_rager` printings row → `apc / 49 / Mark Tedin / 3addf34c…` (art:fetch rewrite of the whole printings section; only that row changed).
+- rules-registry: untouched — no new rules (ADR-045 keeps policies out of the engine); R-007/R-025 verified current.
 
 ## Test status
 
-134 passing / 0 skipped / 0 flaky, 11 files: core (7), cards (11), engine units (14), S1 (14), S2 (19), S3 (22), S4 (19), S5 (21), sim replay+fuzz (3), viewer reconstruction (1), viewer spot-checks (3). `pnpm typecheck` + `tsc -p packages/ui` clean. Suite ~13s (ADR-034 smoke).
+135 passing / 0 skipped / 0 flaky, 12 files: the S6 134 plus `sane-smoke.test.ts` (100 games × 10 pairings sane-vs-sane, zero errors, zero MAX_TURNS). `pnpm typecheck` + `tsc -p packages/ui` clean. Suite ~12.5s.
 
-No fuzz table this session (no deck/engine changes); the 400-game `--save` corpus used for spot-check hunting was clean, as was the sample-game generation.
+Fuzz this session: 3,000 mixed-agent smoke games during development (sane,sane / sane,random / random,sane × 1,000) — zero exceptions; the 20,000-game sane-vs-random and 20,000-game uniform-agent stats runs above were also error-free. No engine changes beyond the DAMAGE payload field, no new cards, so no random-agent re-baseline was needed.
 
 ## Suggested next
 
-Two candidate directions, either works: (a) **M4 heuristic agent** — the viewer makes agent behavior *visible*, which is exactly the debugging loop M4 wants; Concern 6 is already the first evaluator note. (b) **A card-batch session** (pool toward ~100, no vocabulary) — cheap, and it would exercise `art:fetch` + the viewer against unfamiliar cards. Small items worth folding into whichever brief comes next: DAMAGE `targetCardId` (Concern 2a), transport ink glyphs (Deviation 3), the CLAUDE.md path fix (Deviation 4), Rager override (Concern 5). For Chris meanwhile: `pnpm viewer`, open the printed URL, load the bundled sample or any file from `pnpm fuzz --save results/whatever` — and the Flag button files real inbox entries.
+Per the roadmap: the **M4 design conversation**. Inputs this session produced for it: the view-owes-policies question (Concern 2 / Deviations 1–2 — decide `combat`, `mulligans`, live-P/T access as one ADR), the evaluator seed notes (equip churn, self-Control-Magic, chump/no-chump), and sane as the sparring floor with per-deck baselines to beat. Small rider candidates for whichever brief comes next: inline note field in the gallery (Concern 4), W-glyph contrast on light bands (Concern 3), and a `pnpm gallery` alias that just prints the `/gallery` URL. For Chris meanwhile: `pnpm viewer` → "Load the sane-agents sample (S7)" to watch sane play, and `/gallery` to browse and annotate — notes land in `docs/art/art-notes.md` for the planner.
 
 ## How to run
 
 ```
 pnpm install
-pnpm viewer                          # dev server; open the printed localhost URL
-pnpm play-random --seed 7 --decks C,E --save results/game.json
-pnpm fuzz --games 50 --seed 1 --save results/logs   # per-game JSON logs
-pnpm art:fetch                       # idempotent Scryfall fetch
-pnpm test                            # 134 tests incl. viewer reconstruction (~13s)
+pnpm viewer                          # viewer at /, gallery at /gallery
+pnpm play-random --seed 14 --decks A,B --agents sane,sane --save results/g.json
+pnpm fuzz --games 100 --seed 1 --agents sane,random   # any of random|sane per seat
+pnpm agent-stats                     # the handoff's stats tables (~4 min); --games 20 for a quick pass
+pnpm test                            # 135 tests incl. sane smoke (~12.5s)
 ```
