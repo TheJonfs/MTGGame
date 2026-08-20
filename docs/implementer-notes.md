@@ -70,6 +70,16 @@ Combat staging: declarations accumulate in `state.combat` uncommitted, then `com
 - **Render-skill realities**: Gemini returns JPEG bytes that the skill names `.png` (browsers sniff; harmless, noted in MANIFEST). The house style's "generous unpainted paper" fights edge-to-edge textures — crop the saturated center band for tiles. Icon PNGs composite over parchment with `mix-blend-mode: multiply`; traced SVGs (potrace, now a brew dep) are the first-class form.
 - Scryfall etiquette implemented per their docs: UA header, 150ms spacing, local cache, `unique=prints&order=released&dir=asc` + first `highres_scan` = the classic printings.
 
+## Cold-start orientation (written at the S6→S7 session boundary)
+
+Things a fresh session might otherwise rediscover slowly:
+
+- **Seat conventions**: engine player 0 is always the first PlayerSpec; the viewer renders player 0 at the bottom as "You". In `pnpm play-random --decks B,D`, B is seat 0. The bundled `packages/ui/public/sample-game.json` is B(0) vs D(1), seed 4242.
+- **Tooling acquired along the way**: `potrace`/`mkbitmap` (brew) for icon tracing; headless Chrome was used ad hoc for icon contact sheets (`/tmp/trace/sheet.html` pattern); `GEMINI_API_KEY` lives in the gitignored `.env`; `.claude/settings.json` pre-allows the render script.
+- **The render skill conditions re-renders on the old canonical** — when *changing* a subject on purpose, pass `--force` to skip conditioning, or the old look reasserts itself (S6 surface lesson).
+- **Verification track record, for motivation**: principle 9 (Scryfall) caught 2 planner card errors in S2 and 1 uncastable card in S3's brief; principle 10 (CR citations) caught rules errors in S3 and S4 briefs; the S6 brief's registry-staleness warning caught my own silent no-op edit. Run the checks even when they feel ceremonial — every session where they existed, they fired.
+- **Session rhythm that has worked**: read protocol docs → apply planner appends verbatim (verify!) → Scryfall-verify any card batch → implement → **fuzz before fixtures** → fixtures → registries with asserted edits → handoff with Concerns as the centerpiece → commit and push. Deviations from briefs are fine when grounded; log every one.
+
 ## Known interims / watch list
 
 See handoff Concerns for the authoritative list. Highlights: auto-pay greedy feasibility (correct while all producers are single-symbol — R-006); condition fields `controller`/`type`/`subtype` are validated but unexercised (first card to use them should add fixtures); value refs deliberately have no arithmetic (ADR-028 — resist until a card demands it); the `sba-unattach` ATTACHED cause is unreachable by legal play (test-forced only).
