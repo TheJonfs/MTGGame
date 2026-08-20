@@ -65,7 +65,10 @@ export interface ActionRequest {
   actions: Action[];
   /** ADR-029: cards revealed to the chooser for this decision only (Duress). */
   revealed?: { objectId: string; cardId: string }[];
-  /** ADR-048: present on target-choice requests (trigger targets today). */
+  /** ADR-048: present on target-choice requests (trigger targets today).
+   * S8 concern 5 (noted per S9 rider): chooseSacrifice requests carry no
+   * source identity — fine while sacrifices are pure costs, but a future
+   * "sacrifice unless you pay" effect would want `source` here too. */
   source?: RequestSource;
 }
 

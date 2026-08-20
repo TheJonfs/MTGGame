@@ -3,11 +3,13 @@ import { join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
 import type { CardDef } from "@shandalar/cards";
 import { runMatch, type Agent, type MatchResult, type MatchSpec } from "@shandalar/engine";
-import { DEFAULT_TEMPERATURE, HeuristicAgent, RandomAgent, SanePolicyAgent, type Archetype } from "@shandalar/agents";
+import { difficultyProfile, HeuristicAgent, RandomAgent, SanePolicyAgent, type Archetype, type Difficulty } from "@shandalar/agents";
 import { DECKS, PAIRINGS, type DeckKey } from "./slice-decks.js";
 
-/** Agent kinds the sim knows how to construct (ADR-045, ADR-049). */
-export type AgentKind = "random" | "sane" | "heuristic";
+/** Agent kinds the sim knows how to construct (ADR-045, ADR-049). S9 Part 3:
+ * "heuristic" optionally takes a difficulty suffix — "heuristic:apprentice",
+ * "heuristic:master"; bare "heuristic" is journeyman. */
+export type AgentKind = "random" | "sane" | "heuristic" | `heuristic:${Difficulty}`;
 export type AgentPair = [AgentKind, AgentKind];
 
 /** Archetype per slice deck (ADR-050 profile input; defaults chosen by the implementer, tune in M4b). */
@@ -26,13 +28,14 @@ export function makeAgent(
   /** For "heuristic": this seat's deck and the opponent's (ADR-051 known-decklists). */
   seats?: { own: DeckKey; opponent: DeckKey },
 ): Agent {
-  if (kind === "heuristic") {
+  if (kind.startsWith("heuristic")) {
     if (!seats) throw new Error("heuristic agent needs deck context (own/opponent)");
-    return new HeuristicAgent(seed, cards, {
-      archetype: DECK_ARCHETYPES[seats.own],
-      opponentDecklist: [...DECKS[seats.opponent].decklist],
-      temperature: DEFAULT_TEMPERATURE,
-    });
+    const difficulty = (kind.split(":")[1] ?? "journeyman") as Difficulty;
+    return new HeuristicAgent(
+      seed,
+      cards,
+      difficultyProfile(difficulty, DECK_ARCHETYPES[seats.own], [...DECKS[seats.opponent].decklist]),
+    );
   }
   return kind === "sane" ? new SanePolicyAgent(seed, cards) : new RandomAgent(seed);
 }
@@ -40,8 +43,9 @@ export function makeAgent(
 export function parseAgentPair(s: string | undefined): AgentPair {
   if (!s) return ["random", "random"];
   const parts = s.split(",").map((p) => p.trim());
-  if (parts.length !== 2 || !parts.every((p) => p === "random" || p === "sane" || p === "heuristic")) {
-    throw new Error(`Bad --agents "${s}" (expected e.g. heuristic,sane)`);
+  const ok = (p: string) => p === "random" || p === "sane" || /^heuristic(:(apprentice|journeyman|master))?$/.test(p);
+  if (parts.length !== 2 || !parts.every(ok)) {
+    throw new Error(`Bad --agents "${s}" (expected e.g. heuristic,sane or heuristic:master,heuristic)`);
   }
   return parts as AgentPair;
 }

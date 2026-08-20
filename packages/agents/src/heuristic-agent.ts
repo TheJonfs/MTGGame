@@ -139,6 +139,7 @@ export class HeuristicAgent implements Agent {
    * the known list with mv 3..(their lands + 1), counted by copies — rather
    * than a flat "the list has something big" bonus. */
   private counterHoldBonus(view: GameView): number {
+    if (this.profile.holdTricks === false) return 0;
     const counterCard = view.hand.find((c) =>
       this.def(c.cardId)?.spellEffect?.some((e) => e.type === "counter"),
     );
@@ -167,6 +168,7 @@ export class HeuristicAgent implements Agent {
    * — a small pass bonus during our turn only, so it still comes down when
    * the board needs it and never delays on the opponent's turn. */
   private flashHoldBonus(view: GameView): number {
+    if (this.profile.holdTricks === false) return 0;
     if (view.activePlayer !== view.you) return 0;
     const me = view.you;
     const untappedLands = view.battlefield.filter(

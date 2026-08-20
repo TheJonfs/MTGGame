@@ -16,9 +16,33 @@ export interface AiProfile {
   opponentDecklist: { cardId: string; count: number }[];
   /** ADR-050 softmax temperature; higher = noisier (weak opponents run hot). */
   temperature: number;
+  /** S9 Part 3: hold counter/flash mana (journeyman+). Default true. */
+  holdTricks?: boolean;
 }
 
 export const DEFAULT_TEMPERATURE = 0.35;
+
+/** S9 Part 3 (roadmap M4): named difficulty profiles on existing machinery —
+ * these are the overworld's difficulty dials. Knobs documented in
+ * packages/agents/README.md. */
+export type Difficulty = "apprentice" | "journeyman" | "master";
+
+export function difficultyProfile(
+  difficulty: Difficulty,
+  deckArchetype: Archetype,
+  opponentDecklist: { cardId: string; count: number }[],
+): AiProfile {
+  switch (difficulty) {
+    case "apprentice":
+      // Runs hot, plays every deck like an aggro deck, never holds mana.
+      return { archetype: "aggro", opponentDecklist, temperature: 1.2, holdTricks: false };
+    case "journeyman":
+      return { archetype: deckArchetype, opponentDecklist, temperature: DEFAULT_TEMPERATURE, holdTricks: true };
+    case "master":
+      // Near-greedy selection over the same evaluator.
+      return { archetype: deckArchetype, opponentDecklist, temperature: 0.12, holdTricks: true };
+  }
+}
 
 /** Per-archetype exchange rates (mana units per unit of each term). */
 const WEIGHTS: Record<Archetype, { ownLife: number; oppLife: number; material: number; hand: number }> = {
