@@ -98,6 +98,14 @@ Things a fresh session might otherwise rediscover slowly:
 - **Fixture JSONs consume scripts head-first** — a script entry only matches when it's at the head AND its player/purpose matches, so interleaving multi-player combat scripts (attack → block → activate) works by ordering entries in game order.
 - **Custom-card validation ripples**: `text` required-iff-custom broke the five synthetic harness cards and a loader test's base card — grep for `source: "custom"` outside data/cards when changing card-level validation.
 
+## S9 lessons (M4b tuning)
+
+- **Wall-clock timings lie across laptop sleep.** A "293-second pathological game" and a ">600s stalled ladder" were both one sleep interval; the same seed replayed in 58ms. Before diagnosing perf regressions from wall time, re-run the exact seed — determinism makes reproduction free.
+- **Tune by control experiment, not by stacking**: the counter-hold rewrite was verified by running the same cells with the bonus forced to 0 (worth +4.5 on B mirrors, +1.75 on E). An env-flag kill-switch on the term being tuned costs one line and buys a real measurement.
+- **Archetype assignment is a tuning knob, not a label**: switching deck E's profile from control to midrange was worth +4.75 mirror points — more than any modeling change tried on E. When a deck underperforms, try its posture before its features.
+- **Revert no-delta changes** even when "obviously correct" (the Curiosity-credit experiment measured exactly 0.0 and came back out). The brief's "never by vibes" cuts both ways.
+- **Suite tiers (ADR-055)**: default 10.8s = 50/pairing fuzz + 20/cell mirror sanity; FUZZ_FULL = 500/pairing + 100/cell ladder + 1,000-game sane smoke. The 20/cell sanity bounds are deliberately loose (25% floor) — the 1,000/cell CLI is gate authority.
+
 ## Known interims / watch list
 
 See handoff Concerns for the authoritative list. Highlights: auto-pay greedy feasibility (correct while all producers are single-symbol — R-006); condition fields `controller`/`type`/`subtype` are validated but unexercised (first card to use them should add fixtures); value refs deliberately have no arithmetic (ADR-028 — resist until a card demands it); the `sba-unattach` ATTACHED cause is unreachable by legal play (test-forced only).

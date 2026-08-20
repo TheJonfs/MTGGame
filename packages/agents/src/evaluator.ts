@@ -39,7 +39,11 @@ export function difficultyProfile(
     case "journeyman":
       return { archetype: deckArchetype, opponentDecklist, temperature: DEFAULT_TEMPERATURE, holdTricks: true };
     case "master":
-      // Near-greedy selection over the same evaluator.
+      // Low-noise selection over the same evaluator. Measured (S9): 0.12 is
+      // +3.8% overall vs journeyman (8/10 mirror cells >=50%); 0.05 was NOT
+      // better (B mirrors collapsed to 41.6% — near-determinism at the top
+      // is exploitable). Temperature is a shallow lever up here; a real
+      // master gap needs an evaluator/search edge (M4c note).
       return { archetype: deckArchetype, opponentDecklist, temperature: 0.12, holdTricks: true };
   }
 }
