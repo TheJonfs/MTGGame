@@ -50,11 +50,12 @@ interface Printing {
 /** printings.md overrides. Everything else takes the default rule. */
 const OVERRIDES: Record<string, { set: string; collector?: string }> = {
   hymn_to_tourach: { set: "fem", collector: "38b" },
-  mountain: { set: "3ed" },
-  plains: { set: "3ed" },
-  island: { set: "3ed" },
-  swamp: { set: "3ed" },
-  forest: { set: "3ed" },
+  // S8 feedback round: Beta over Unlimited — black borders like the new frame.
+  mountain: { set: "leb" },
+  plains: { set: "leb" },
+  island: { set: "leb" },
+  swamp: { set: "leb" },
+  forest: { set: "leb" },
   mind_rot: { set: "7ed" },
   phyrexian_rager: { set: "apc" }, // ADR-044: oldest-highres resolved to PMEI (magazine promo)
 };

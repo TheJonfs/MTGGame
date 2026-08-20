@@ -13,7 +13,7 @@ Only where the default would pick something we don't want, or where a card has m
 | card | override set | reason / artist to confirm |
 |---|---|---|
 | Hymn to Tourach | fem, collector 38b | Fallen Empires has four arts; 38b is the Liz Danforth — planner's pick; ratify |
-| Basic lands (Mountain, Plains, Island, Swamp, Forest) | 3ed, first collector number of each type | one consistent classic cycle; Revised has three arts per basic — take the lowest number; ratify or pick others |
+| Basic lands (Mountain, Plains, Island, Swamp, Forest) | leb, first collector number of each type | one consistent classic cycle, black-bordered (S8 feedback round: Chris moved these from Revised to Beta to match the frame's black border) |
 | Mind Rot | 7ed | Adam Rex art over Portal's; taste |
 | Pyroclasm | default (ice) | planner has not seen the Ice Age art recently — implementer: flag if it reads poorly at art_crop |
 | Raging Goblin, Goblin Piker, Wind Drake, Suntail Hawk, Brute Force, Timberland Guide, Rumbling Baloth, Centaur Courser, Cloudkin Seer | default | originals are modern-era commons; no strong preference |

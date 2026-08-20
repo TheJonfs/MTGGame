@@ -146,7 +146,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | duress | usg | 132 | Lawrence Snelly | ca367f49-0f4a-4b7f-8104-851893fbcd8a |
 | elvish_visionary | ala | 130 | D. Alexander Gregory | faccfa5f-4d89-4a86-92d7-36cb5a16c5c9 |
 | fencing_ace | rtr | 11 | David Rapoza | a42d3066-f4ec-4d28-83ab-e48141206c72 |
-| forest | 3ed | 304 | Christopher Rush | b6e1c2e9-5572-4242-985d-f509d628092b |
+| forest | leb | 300 | Christopher Rush | b5a922eb-49c7-45f0-92bc-671d7a8758f4 |
 | giant_growth | lea | 197 | Sandra Everingham | 367dbefe-3366-408e-9fcf-7dc00f8cc201 |
 | gladecover_scout | m12 | 178 | Allen Williams | 26710d5c-01d1-498b-9f54-521dfd195843 |
 | glorious_anthem | usg | 15 | Kev Walker | 61f867c5-0727-4408-b479-b81518daa0ec |
@@ -157,19 +157,19 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | grizzly_bears | lea | 199 | Jeff A. Menges | ce2d603a-3231-4a8c-bf39-1617586ea870 |
 | hill_giant | lea | 157 | Dan Frazier | 0ddb98e8-13fe-4786-83f7-b72c56db135a |
 | hymn_to_tourach | fem | 38b | Liz Danforth | 8601f082-7e43-44ef-97d0-dead272b7eb4 |
-| island | 3ed | 295 | Mark Poole | 22f6e971-349d-498b-ae01-ab81ce21772c |
+| island | leb | 291 | Mark Poole | bff33e91-8e52-43f2-b8ae-603b456b08fc |
 | lightning_bolt | lea | 161 | Christopher Rush | d573ef03-4730-45aa-93dd-e45ac1dbaf4a |
 | loxodon_warhammer | mrd | 201 | Jeremy Jarvis | a1a6e375-5c47-4447-9453-adf0038693e3 |
 | man_o_war | vis | 37 | Jon J Muth | 4dbf9bf9-75cd-4b25-a3a1-43b7e029700b |
 | mind_rot | 7ed | 147 | Adam Rex | 5681e85c-79d5-4300-bda6-4ae40bb7d5d4 |
 | mind_stone | wth | 153 | Adam Rex | 162e81d3-6cd4-4cb8-8ed8-cfbd8d34ca71 |
-| mountain | 3ed | 301 | Douglas Shuler | 30345500-d430-4280-bfe3-de297309f136 |
+| mountain | leb | 297 | Douglas Shuler | 7af9c715-8d72-4eae-b412-fc89138ff588 |
 | mystic_snake | apc | 112 | Daren Bader | f098a28c-5f9b-4a2c-b109-c342365eb948 |
 | nekrataal | vis | 66 | Adrian Smith | dba3e342-88b7-4692-a3f7-a3f56c0cf6b5 |
 | pacifism | mir | 32 | Robert Bliss | c891df1b-bae6-4d6d-85ee-42901c149f98 |
 | pelakka_wurm | roe | 204 | Daniel Ljunggren | 8e732593-0bdc-4dd4-9b07-9aa1a780e6e8 |
 | phyrexian_rager | apc | 49 | Mark Tedin | 3addf34c-ea54-42a3-bccd-b73453d964d2 |
-| plains | 3ed | 292 | Jesper Myrfors | 275c03f9-f9d2-45c5-a332-b3bee54e7065 |
+| plains | leb | 288 | Jesper Myrfors | b7331b03-be66-419c-94bc-ed494c042ea3 |
 | prey_upon | isd | 200 | Dave Kendall | b7b3eaf0-4207-4bac-923d-29f348c95a35 |
 | pyroclasm | ice | 214 | Pat Lewis | 88040748-ad76-4b9a-bd4e-87e5980e9816 |
 | raging_goblin | por | 145 | Pete Venters | fed57a17-7847-4e60-bc40-4452880f12a3 |
@@ -181,7 +181,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | shock | sth | 98 | Randy Gallegos | f9b2ff2a-6dfe-4635-8da2-22d525e82b94 |
 | siege_gang_commander | scg | 103 | Christopher Moeller | 92e78cec-aaf9-4fe8-887b-b7e356d63315 |
 | suntail_hawk | jud | 28 | Heather Hudson | 5fbdae0b-b4aa-40ff-9017-b4349bd6b627 |
-| swamp | 3ed | 298 | Dan Frazier | 95e936cf-3bbb-4f3b-8e1a-4be1d4702b99 |
+| swamp | leb | 294 | Dan Frazier | d1309a80-a761-4b80-8cf1-1a8b83190511 |
 | swords_to_plowshares | lea | 40 | Jeff A. Menges | 386ea9eb-abc1-4862-aa2d-8fb808d79490 |
 | terror | lea | 130 | Ron Spencer | 21004958-2c7e-4a55-bc80-411c4d780106 |
 | timberland_guide | avr | 197 | Zoltan Boros | ae80fefb-af78-4f98-8058-71b61e91842f |

@@ -133,7 +133,8 @@ body {
    art box), color-tinted parchment panels, high-contrast mana chips. */
 .frame {
   width: 180px;
-  border: 2px solid var(--ink); border-radius: 9px; padding: 6px; position: relative;
+  /* S8 feedback: real-card-thick black border, em-based so it scales */
+  border: 0.55em solid var(--ink); border-radius: 0.9em; padding: 6px; position: relative;
   box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.4); font-size: 10px;
 }
 .frame.full { aspect-ratio: 63 / 88; display: flex; flex-direction: column; gap: 4px; }
@@ -142,7 +143,7 @@ body {
 .frame .name-strip {
   display: flex; justify-content: space-between; align-items: center; gap: 4px;
   padding: 1px 3px 3px; font-weight: 700;
-  font-family: var(--card-face); font-size: 1.22em; letter-spacing: 0.01em; flex: none;
+  font-family: var(--card-face); font-size: 1.05em; letter-spacing: 0.01em; flex: none;
 }
 .frame.mini .name-strip { margin-bottom: 4px; }
 .frame .art-window {
@@ -175,15 +176,16 @@ body {
    band or tinted text box (S7 feedback round). em-sized: scales with frame. */
 .mana-chip {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 1.35em; height: 1.35em; border-radius: 50%; flex: none;
+  width: 1.2em; height: 1.2em; border-radius: 50%; flex: none;
   background: var(--parchment); border: 1px solid var(--ink);
-  vertical-align: -0.28em; font-weight: 700; line-height: 1;
+  vertical-align: -0.24em; font-weight: 700; line-height: 1;
   color: var(--ink); /* numbers stay ink even inside light-text name strips */
   /* S8 rider: lift off light bands (W chip on the white frame especially) */
   box-shadow: 0 0 0 0.5px rgba(43, 37, 32, 0.35), 0 1px 1.5px rgba(0, 0, 0, 0.3);
 }
 .mana-chip img { width: 82%; height: 82%; mix-blend-mode: multiply; }
-.mana-chip span { font-size: 0.95em; font-weight: 800; }
+/* Generic-cost numerals fill the disc: serif face, near-full-height (S8 feedback) */
+.mana-chip span { font-family: var(--serif); font-size: 1.02em; font-weight: 700; transform: translateY(-0.02em); }
 
 /* Rail blocks */
 .status-block { display: flex; gap: 8px; align-items: center; }
@@ -245,7 +247,9 @@ button.linkish { background: none; border: none; color: var(--brass); cursor: po
 .gallery-grid { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; }
 .gallery-cell { cursor: pointer; }
 .gallery-cell .frame:hover { outline: 2.5px solid var(--brass); }
-.gallery-cell .caption, .gallery .caption { font-size: 10px; line-height: 1.3; margin-top: 3px; max-width: 192px; }
+.gallery-grid .frame { width: 240px; font-size: 13px; }
+.gallery-cell .caption, .gallery .caption { font-size: 10.5px; line-height: 1.3; margin-top: 3px; max-width: 248px; }
+.gallery-cell .printed-scan { width: 240px; }
 .strip-label { font-size: 10px; color: var(--ink-soft); margin-top: 4px; }
 .gallery-modal {
   position: fixed; inset: 0; background: rgba(43, 37, 32, 0.55); display: grid; place-items: center; z-index: 20;
@@ -258,7 +262,6 @@ button.linkish { background: none; border: none; color: var(--brass); cursor: po
 .gallery-modal-card .frame { width: 300px; font-size: 14px; }
 .printed-scan { width: 240px; border-radius: 12px; }
 .gallery-modal-card .printed-scan { width: 300px; }
-.gallery-cell .printed-scan { width: 192px; }
 
 .note-form { display: inline-flex; gap: 3px; align-items: center; }
 .note-form input { font-size: 10px; padding: 1px 4px; border: 1px solid var(--ink); border-radius: 3px; background: var(--parchment); color: var(--ink); width: 150px; }
