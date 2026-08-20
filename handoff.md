@@ -2,45 +2,49 @@
 
 ## State of the world
 
-M3.75 is delivered: SanePolicyAgent plays watchable games (a bundled sane-vs-sane sample loads from the viewer's start screen), the `/gallery` route puts all 66 pool cards + tokens in front of Chris with filters, captions, a printed-scan toggle, an inspector modal, and an art-note flow into `docs/art/art-notes.md`, and the ADR-044 riders are done (DAMAGE `targetCardId`, ink transport glyphs, Rager on Apocalypse art, registry hygiene confirmed). 135 tests green including the new permanent 100-game/pairing sane smoke. `pnpm viewer` serves both routes; `pnpm agent-stats` reproduces every number below.
+M3.75 is delivered: SanePolicyAgent plays watchable games (a bundled sane-vs-sane sample loads from the viewer's start screen), the `/gallery` route puts all 66 pool cards + tokens in front of Chris with filters, captions, a printed-scan toggle, an inspector modal, and an art-note flow into `docs/art/art-notes.md`, and the ADR-044 riders are done (DAMAGE `targetCardId`, ink transport glyphs, Rager on Apocalypse art, registry hygiene confirmed). A same-day feedback round from Chris added rule 8 (target-side preference — no more Bolting your own face), the retro frame (saturated 93–97-style body color, real-card 63:88 proportions in full mode, 5:4 art window, high-contrast mana chips in costs and rules text), and our own rendered token art. 135 tests green including the new permanent 100-game/pairing sane smoke. `pnpm viewer` serves both routes; `pnpm agent-stats` reproduces every number below.
 
 ## Done this session
 
 - **Part 1 (ADR-045):** `SanePolicyAgent` in `packages/agents` — the seven ratified rules as documented filters over the enumerated action set, private PRNG per ADR-015, card defs injected for land/cost/P-T/keyword lookups. `--agents sane,random|…` wired into `pnpm fuzz` and `pnpm play-random` (default stays random,random); fuzz reports now carry win tallies. Engine-correctness suites keep RandomAgent; new committed smoke: 100 games × 10 pairings sane-vs-sane, zero errors, zero MAX_TURNS (~5s). Stats below from `pnpm agent-stats` (committed CLI; in-memory SPELL_CAST counting, nothing saved).
 - **Part 2 (ADR-046):** `/gallery` — pool registry is the membership/batch source (served raw by `/__registry`, parsed client-side; `cut` excluded, tokens included); our frame with per-card and global printed-scan toggles; captions name · SET #collector · artist from oracle.json; filters color/type/batch/deck + name search; click → 300px inspector modal; ✎ note buttons POST `/__art-note` → per-card bulleted entries in `docs/art/art-notes.md` (file created with lifecycle header; one demonstration entry under `blaze`; download fallback mirrors the flag button); ADR-043 size-comparison strip (battlefield tile / hand frame without oracle / inspector frame) whose subject follows the last-clicked card.
 - **Part 3 (ADR-044):** DAMAGE object payloads carry `targetCardId` (+ schema comment; viewer log now names damaged creatures, "a creature" fallback for pre-S7 logs). Five transport glyphs rendered via the gemini-image skill and potrace-traced to 24px ink SVGs (play/pause/step ▶|/jump ▶▶/end ▶▶|; right-facing masters mirrored in CSS for the left buttons). Phyrexian Rager refetched: APC #49, Mark Tedin, PMEI files replaced, registry row rewritten. R-007/R-025 verified still current (principle 11).
-- **DoD 1:** sane-vs-sane A-B seed 14 bundled as `sample-game-sane.json` + loader button — by eye: one mulligan (kept at 6), lands every turn, 21 spells cast, combat with blocks and 12 deaths, LIFE win turn 21.
+- **DoD 1:** sane-vs-sane A-B bundled as `sample-game-sane.json` + loader button (regenerated at seed 22 after rule 8) — by eye: one mulligan (kept at 6), lands every turn, 23 spells cast, combat with blocks, LIFE win turn 23.
+- **Feedback round (same day, Chris-directed):**
+  - **Rule 8, target-side preference:** casts/activations classify their targeted effects over the vocabulary (damage/destroy/bounce/counter/restrict/steal/negative pump → prefer opponent-side target tuples; positive pump/keyword grants/equips/draw auras → own side; uniform within the preferred set, fall back to all if none). Verified: 300 games produced 0 self-face burn hits vs 384 at the opponent's face. Trigger targets stay uniform — see Concern 6.
+  - **Frame, retro pass:** saturated 93–97-style body colors across the whole frame (gold for multicolor), color-tinted parchment text panels, 5:4 art window matching the classic printed art box (measured from the Scryfall crops — no more top/bottom cropping), full-mode frames at real-card 63:88 proportions with the P/T cartouche clear of text; mini/hand frames keep their compression (ADR-043). Mana symbols everywhere are now chips (parchment disc, ink ring) — in cost rows and substituted inline for `{W}{2}{T}`-style tokens in rules text.
+  - **Token art:** our own renders (ink-and-wash goblin and soldier via the gemini-image skill; subjects `docs/art/subjects/token-*.md`), 5:4 crops in `assets/generated/tokens/`, wired through a now-live `art.asset` field on the token defs; battlefield tiles, gallery, and frames all use them. Chose own art over Scryfall pulls: tokens are custom defs (no oracle-grounding stake) and it keeps `art:fetch` real-cards-only.
 
-## Stats (1,000 games/pairing; seeds 1..; reproduce with `pnpm agent-stats`)
+## Stats (1,000 games/pairing; seeds 1..; reproduce with `pnpm agent-stats`; all numbers are the post-rule-8 agent)
 
-**Sane vs random, per deck** (aggregated over 8 pairing/seating blocks, 4,000 games each): A 96.1%, B 96.0%, C 99.2%, D 100.0%, E 98.5%. No pairing/seating block below 89.7% (B vs D with random D). Sane never loses a D seat: 100.0% in all four D blocks.
+**Sane vs random, per deck** (aggregated over 8 pairing/seating blocks, 4,000 games each): A 99.3%, B 97.3%, C 99.3%, D 100.0%, E 99.2%. No pairing/seating block below 93.0% (B vs D with random D). Sane never loses a D seat. (Pre-rule-8 these were 96.0–100% — targeting sanity was worth ~1–3 points, most of it to red aggro.)
 
 **Sane-vs-sane vs the random baseline** (same 10 pairings, 1,000 games each):
 
 | pairing | random: wins/terminations/turns | sane: wins/terminations/turns |
 |---|---|---|
-| A-B | 650-350, 942 LIFE/58 DECKED, 42.1 | 391-609, 1000 LIFE, 21.4 |
-| A-C | 372-628, 999/1, 32.9 | 324-676, 1000 LIFE, 15.2 |
-| A-D | 247-753, 972/28, 41.5 | 60-940, 1000 LIFE, 18.2 |
-| A-E | 443-557, 971/29, 39.0 | 470-530, 1000 LIFE, 19.9 |
-| B-C | 282-718, 944/56, 38.2 | 377-623, 1000 LIFE, 20.4 |
-| B-D | 185-815, 767/233, 49.1 | 156-844, 990/10, 25.5 |
-| B-E | 407-593, 818/182, 45.5 | 708-292, 993/7, 25.5 |
-| C-D | 321-679, 975/25, 38.0 | 207-793, 1000 LIFE, 18.1 |
-| C-E | 471-529, 988/12, 34.2 | 784-216, 1000 LIFE, 16.4 |
-| D-E | 817-183, 875/125, 44.3 | 988-12, 1000 LIFE, 18.8 |
+| A-B | 650-350, 942 LIFE/58 DECKED, 42.1 | 505-495, 1000 LIFE, 20.3 |
+| A-C | 372-628, 999/1, 32.9 | 388-612, 1000 LIFE, 15.2 |
+| A-D | 247-753, 972/28, 41.5 | 81-919, 1000 LIFE, 18.6 |
+| A-E | 443-557, 971/29, 39.0 | 633-367, 1000 LIFE, 19.3 |
+| B-C | 282-718, 944/56, 38.2 | 402-598, 1000 LIFE, 20.5 |
+| B-D | 185-815, 767/233, 49.1 | 143-857, 988/12, 25.0 |
+| B-E | 407-593, 818/182, 45.5 | 773-227, 991/9, 25.0 |
+| C-D | 321-679, 975/25, 38.0 | 162-838, 1000 LIFE, 18.2 |
+| C-E | 471-529, 988/12, 34.2 | 849-151, 1000 LIFE, 16.3 |
+| D-E | 817-183, 875/125, 44.3 | 991-9, 1000 LIFE, 18.5 |
 
-Mean turns halve (33–49 → 15–26); DECKED terminations collapse (749 → 17 across 10,000 games).
+Mean turns halve (33–49 → 15–25); DECKED terminations collapse (749 → 21 across 10,000 games).
 
 **≥5-mana casts per game** (the number Chris wanted; 10,000 games each condition):
 
 | card | random | sane | ratio |
 |---|---|---|---|
-| siege_gang_commander | 0.126 | 0.234 | 1.9× |
-| pelakka_wurm | 0.044 | 0.156 | 3.5× |
-| serra_angel | 0.139 | 0.330 | 2.4× |
-| drana_kalastria_bloodchief | 0.115 | 0.262 | 2.3× |
-| wrath_of_god | 0.083 | 0.146 | 1.8× |
+| siege_gang_commander | 0.126 | 0.228 | 1.8× |
+| pelakka_wurm | 0.044 | 0.150 | 3.4× |
+| serra_angel | 0.139 | 0.325 | 2.3× |
+| drana_kalastria_bloodchief | 0.115 | 0.276 | 2.4× |
+| wrath_of_god | 0.083 | 0.141 | 1.7× |
 
 ## Deviations from the brief
 
@@ -50,6 +54,8 @@ Mean turns halve (33–49 → 15–26); DECKED terminations collapse (749 → 17
 4. **`pnpm agent-stats` committed** beyond the brief's letter so the handoff tables are reproducible, matching the "handoff numbers from the CLI" convention.
 5. **`ui` now depends on `sim`** via a new browser-safe `@shandalar/sim/decks` subpath (deck-membership filter). Direction is legal (ui → sim), but S6 described ui as engine/cards/core only — flagging the widened dependency.
 6. **The size strip's battlefield tile is a def-only re-render** (`StripTile`), not the stateful `CardTile` (which needs a live EngineCtx/GameObject). ~15 duplicated presentation lines; folding them would mean refactoring CardTile beyond scope.
+7. **Rule 8 goes beyond the ratified ADR-045 seven rules** (Chris-directed in the feedback round, after watching a Bolt hit its caster). It stays a filter — classify, restrict target tuples to a side, uniform within — but the harmful/helpful table over the effect vocabulary is a first small step of evaluation living in `agents`. Planner should fold it into ADR-045's text or split an ADR.
+8. **Token defs gained live `art.asset` values** (`/custom-art/*.png`) — the schema field existed (ADR-008) but was unused; this is the first data/cards edit driven by art rather than rules. Logged since card files are otherwise sacrosanct.
 
 ## Concerns
 
@@ -58,6 +64,8 @@ Mean turns halve (33–49 → 15–26); DECKED terminations collapse (749 → 17
 3. **Gallery at scale is a non-issue** (expected concern): 66 frames + art on one page render instantly, lazy-loaded, no jank; scrolling and filters feel native. One real finding: at 180px the white-mana glyph at 11px on light wash bands nearly vanishes — an icons/frame contrast note for the planner (visible on any W card's name strip).
 4. **`window.prompt` for note entry is functional but crude** — fine for a Chris-only tool; if notes get heavy use, an inline text field is a small follow-up.
 5. **Registry parsing is by column position** (`| cardId | name | status |`…) in the gallery; a registry column reorder would silently misread statuses. Acceptable for a dev tool reading a repo-canonical file; noting it because principle 11 has made me suspicious of silent doc/format drift.
+6. **Trigger targets can't get rule-8 preference:** `chooseTriggerTargets` requests are issued *before* the stack item exists, and the request carries no source identity — so Nekrataal can still destroy its caster's own creature and Man-o'-War can self-bounce. The clean fix is engine-side (a `sourceCardId` on ActionRequest, or choosing targets after the item is on the stack) — escalating rather than changing the engine unbriefed. Fold into the M4 view/request ADR (Concern 2).
+7. **Frame layout notes for the planner after the retro pass:** the 63:88 full frame's fixed text box means long-text cards (Siege-Gang, Vampire Nighthawk reminder text) scroll at 180px gallery size — real-card behavior, the modal at 300px fits everything, but art-direction §3 may want a font-size step-down instead. And the white-mana chip fixed the old contrast complaint — the sun glyph is legible on every band now, but W's *body* color is necessarily light, so white cards are the least "saturated" of the five; that's period-accurate, flagging in case Chris wants W warmer.
 
 ## Registry entries added/changed
 

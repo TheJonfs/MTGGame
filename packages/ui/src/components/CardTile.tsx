@@ -44,6 +44,8 @@ export function CardTile({
     >
       {def.source === "real" ? (
         <img className="art" src={`/real-art/${obj.cardId}.art.jpg`} alt="" loading="lazy" />
+      ) : def.art?.asset ? (
+        <img className="art" src={def.art.asset} alt="" loading="lazy" />
       ) : (
         <div className="art" style={{ display: "grid", placeItems: "center", height: small ? 38 : 52 }}>
           <img src={`/icons/${def.types.includes("Land") ? "mana-colorless" : "zone-hand"}.svg`} width={22} alt="" style={{ mixBlendMode: "multiply" }} />

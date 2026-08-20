@@ -104,7 +104,7 @@ function HandRow({ ctx, player, faceDown, oracle, onHover, onClick, selected }: 
         const obj = getObject(ctx.state, id);
         return (
           <div key={id} onMouseEnter={() => onHover(id)} onClick={() => onClick(id)} style={{ cursor: "pointer" }}>
-            <CardFrame def={ctx.defs.def(obj.cardId)} oracle={oracle[obj.cardId]} mini />
+            <CardFrame def={ctx.defs.def(obj.cardId)} oracle={oracle[obj.cardId]} mini hand />
           </div>
         );
       })}

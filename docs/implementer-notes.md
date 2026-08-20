@@ -87,6 +87,7 @@ Things a fresh session might otherwise rediscover slowly:
 - **Sane games are ~2× shorter than random** (mean 15–26 vs 33–49 turns) and DECKED terminations nearly vanish; big-spell casts roughly double. Numbers: `pnpm agent-stats` (1,000 games/pairing, ~4 min).
 - **Icon tracing at S7**: paper specks inflate potrace's `--tight` bbox and off-center the glyph — bump `-t` (turd size) way up for solid glyphs (1500 worked; the glyph areas are ~40k). qlmanage renders SVGs at their declared width/height; scale a copy up for visual QA.
 - **Gallery data paths**: pool registry served raw by `/__registry` and parsed client-side (registry stays the source of truth); deck membership via the browser-safe `@shandalar/sim/decks` subpath (the sim root export pulls node:fs — same split as `@shandalar/cards/loader`); art notes append through `/__art-note` (same pattern as `/__flag`).
+- **Feedback round addenda**: rule 8 (target-side preference) classifies effects harmful/helpful over the vocabulary — but `chooseTriggerTargets` fires *before* the stack item exists, so trigger targets are unclassifiable from (view, request); escalated. Scryfall `art_crop`s for classic printings are ~5:4 (563×451) — the frame's art window uses `aspect-ratio: 5/4` so nothing crops. Mana chips are em-sized and force `color: var(--ink)` (a light-text name strip otherwise makes chip numerals parchment-on-parchment). Token art: custom defs use `art.asset` (first live use); UI serves it from `packages/ui/public/custom-art/`.
 
 ## Known interims / watch list
 

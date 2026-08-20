@@ -106,6 +106,8 @@ function StripTile({ def }: { def: CardDef }) {
     <div className="tile" title={def.name} style={{ cursor: "default" }}>
       {def.source === "real" ? (
         <img className="art" src={`/real-art/${def.id}.art.jpg`} alt="" />
+      ) : def.art?.asset ? (
+        <img className="art" src={def.art.asset} alt="" />
       ) : (
         <div className="art" style={{ display: "grid", placeItems: "center", height: 52 }}>
           <img src={`/icons/${def.types.includes("Land") ? "mana-colorless" : "zone-hand"}.svg`} width={22} alt="" style={{ mixBlendMode: "multiply" }} />

@@ -1,5 +1,5 @@
 import { NullLog, SeededRng } from "@shandalar/core";
-import { parseManaCost, manaValue, type CardDef } from "@shandalar/cards";
+import { parseManaCost, manaValue, type CardDef, type Effect, type ResolvedTarget } from "@shandalar/cards";
 import type { Action, ActionRequest, Agent, GameView } from "@shandalar/engine";
 
 /**
@@ -35,10 +35,24 @@ import type { Action, ActionRequest, Agent, GameView } from "@shandalar/engine";
  *  6. Choices: trigger order / damage order / sacrifice / legend keep take
  *     the first option (deterministic); optional triggers accept.
  *  7. Everything else: uniform random over the request's actions.
+ *  8. Target-side preference (S7 feedback round, Chris-directed): a spell or
+ *     activation whose targeted effects are harmful (damage, destroy, bounce,
+ *     counter, restrict/steal auras, negative pump, …) prefers target tuples
+ *     entirely on the opponent's side; helpful ones (positive pump, keyword
+ *     grants, equips, draw auras) prefer its own side. Uniform random within
+ *     the preferred tuples; if no tuple is on the preferred side, uniform
+ *     over all (still casts — this is a filter, not an evaluator). Trigger
+ *     targets (chooseTarget purpose) stay uniform: the request carries no
+ *     source identity, so the effect can't be classified — escalated.
  *
  * PRNG conventions match RandomAgent (ADR-015): a private seeded PRNG,
  * never the game's logged RNG service.
  */
+/** Sign of a PTAmount for rule-8 classification: "X" counts +1, "-X" counts -1. */
+function ptSign(v: number | "X" | "-X"): number {
+  return v === "X" ? 1 : v === "-X" ? -1 : v;
+}
+
 export class SanePolicyAgent implements Agent {
   private readonly rng: SeededRng;
   private mulligansTaken = 0;
@@ -77,7 +91,7 @@ export class SanePolicyAgent implements Agent {
       case "bottomCards":
         return this.bottomChoice(view, request);
       case "priority":
-        return this.priorityChoice(request);
+        return this.priorityChoice(view, request);
       case "declareAttacker":
         return this.attackChoice(view, request);
       case "declareBlocker":
@@ -127,8 +141,8 @@ export class SanePolicyAgent implements Agent {
     return ranked[0]!;
   }
 
-  /** Rules 2, 3, 4. */
-  private priorityChoice(request: ActionRequest): Action {
+  /** Rules 2, 3, 4, 8. */
+  private priorityChoice(view: GameView, request: ActionRequest): Action {
     const lands = request.actions.filter((a) => a.type === "playLand");
     if (lands.length > 0) return this.rng.pick(lands, "pick"); // rule 2
 
@@ -142,7 +156,8 @@ export class SanePolicyAgent implements Agent {
     }
     if (this.rng.int(5, "pick") === 0) return pass; // rule 4: pass 20%
 
-    // Uniform over castable objects, then uniform over that object's variants.
+    // Uniform over castable objects, then uniform over that object's variants
+    // (rule 8 first narrows each object's variants to the preferred side).
     const byObject = new Map<string, Action[]>();
     for (const a of casts) {
       const key =
@@ -152,7 +167,73 @@ export class SanePolicyAgent implements Agent {
       byObject.set(key, [...(byObject.get(key) ?? []), a]);
     }
     const group = this.rng.pick([...byObject.keys()].sort(), "pick");
-    return this.rng.pick(byObject.get(group)!, "pick");
+    const variants = this.preferTargetSide(view, byObject.get(group)!);
+    return this.rng.pick(variants, "pick");
+  }
+
+  /** Rule 8: classify the cast's targeted effects and keep preferred-side tuples when any exist. */
+  private preferTargetSide(view: GameView, variants: Action[]): Action[] {
+    const first = variants[0]!;
+    if (first.type !== "castSpell" && first.type !== "activateAbility") return variants;
+    if (first.targets.length === 0) return variants;
+
+    const objById = new Map(view.battlefield.map((o) => [o.id, o.cardId]));
+    const def = this.def(
+      first.type === "castSpell"
+        ? (view.hand.find((c) => c.objectId === first.objectId)?.cardId ?? objById.get(first.objectId) ?? "")
+        : (objById.get(first.objectId) ?? ""),
+    );
+    const effects: Effect[] =
+      first.type === "activateAbility"
+        ? (def.abilities?.[first.abilityIndex]?.kind === "activated"
+            ? (def.abilities[first.abilityIndex] as { effects: Effect[] }).effects
+            : [])
+        : (def.spellEffect ?? []);
+    // Auras/equipment carry their payload as abilities over scope "attached";
+    // an equip activation's meaning is likewise the equipment's statics.
+    const attachedEffects: Effect[] =
+      def.spellEffect === undefined || first.type === "activateAbility"
+        ? (def.abilities ?? []).flatMap((a) => ("effects" in a ? (a.effects as Effect[]) : []))
+        : [];
+    const all = [...effects, ...attachedEffects];
+
+    const negative = (e: Effect): boolean =>
+      e.type === "damage" ||
+      e.type === "destroy" ||
+      e.type === "exile" ||
+      e.type === "bounce" ||
+      e.type === "counter" ||
+      e.type === "tapTarget" ||
+      e.type === "restrict" ||
+      e.type === "gainControl" ||
+      (e.type === "loseLife" && e.who === "target") ||
+      (e.type === "discard" && e.who === "target") ||
+      (e.type === "addCounters" && e.kind === "-1/-1") ||
+      (e.type === "modifyPT" && ptSign(e.power) + ptSign(e.toughness) < 0);
+    const positive = (e: Effect): boolean =>
+      e.type === "grantKeyword" ||
+      e.type === "untapTarget" ||
+      (e.type === "addCounters" && e.kind === "+1/+1") ||
+      (e.type === "modifyPT" && ptSign(e.power) + ptSign(e.toughness) > 0) ||
+      e.type === "draw"; // draw auras (Curiosity) — the payload benefits the enchanted creature's side
+
+    const wantOpponent = all.some(negative) ? true : all.some(positive) ? false : null;
+    if (wantOpponent === null) return variants;
+
+    const me = view.you;
+    const sideOf = (t: ResolvedTarget): number | null => {
+      if (t.kind === "player") return t.player;
+      if (t.kind === "object") return view.battlefield.find((o) => o.id === t.id)?.controller ?? null;
+      return view.stack.find((s) => s.id === t.id)?.controller ?? null;
+    };
+    const preferred = variants.filter((a) => {
+      const ts = (a as { targets: ResolvedTarget[] }).targets;
+      return ts.every((t) => {
+        const side = sideOf(t);
+        return side !== null && (wantOpponent ? side !== me : side === me);
+      });
+    });
+    return preferred.length > 0 ? preferred : variants;
   }
 
   /** Rule 5 attacks: every non-defender creature with base power ≥ 1, in enumeration order. */

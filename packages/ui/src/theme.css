@@ -14,6 +14,15 @@
   --mana-c: #8e8a80;
   --danger: #b5432f;
   --boost: #4f7a3a;
+  /* Saturated 93-97-style frame body colors (S7 feedback round) */
+  --frame-w: #ddcf9e;
+  --frame-u: #33608f;
+  --frame-b: #423649;
+  --frame-r: #a63c28;
+  --frame-g: #40682e;
+  --frame-c: #8a7f6c;
+  --frame-gold: #b08a3e;
+  --frame-land: #8a744f;
   --sans: Seravek, "Gill Sans", "Segoe UI", Verdana, sans-serif;
   --serif: "Iowan Old Style", Palatino, "Book Antiqua", Georgia, serif;
 }
@@ -102,29 +111,59 @@ body {
 }
 
 /* Full card frame */
+/* Card frame — S7 feedback round: saturated 93–97-style body color (set inline),
+   real-card 63:88 proportions in full mode, 5:4 art window (the classic printed
+   art box), color-tinted parchment panels, high-contrast mana chips. */
 .frame {
-  width: 180px; background: var(--parchment) url("/panel-parchment.png"); background-size: 512px;
+  width: 180px;
   border: 2px solid var(--ink); border-radius: 9px; padding: 6px; position: relative;
   box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.4); font-size: 10px;
 }
+.frame.full { aspect-ratio: 63 / 88; display: flex; flex-direction: column; gap: 4px; }
 .frame.mini { width: 120px; font-size: 8px; padding: 4px; }
 .frame .corner { position: absolute; width: 16px; height: 16px; mix-blend-mode: multiply; opacity: 0.8; }
 .frame .name-strip {
   display: flex; justify-content: space-between; align-items: center; gap: 4px;
   border: 1.2px solid var(--ink); border-radius: 4px; padding: 2px 5px; font-weight: 700;
-  font-family: var(--serif);
+  font-family: var(--serif); flex: none;
 }
-.frame .art-window { border: 1.2px solid var(--ink); margin-top: 4px; height: 96px; overflow: hidden; background: var(--parchment-deep); display:flex; align-items:center; justify-content:center; }
-.frame.mini .art-window { height: 64px; }
+.frame.mini .name-strip { margin-bottom: 4px; }
+.frame .art-window {
+  border: 1.2px solid var(--ink); aspect-ratio: 5 / 4; width: 100%; overflow: hidden;
+  background: var(--parchment-deep); display: flex; align-items: center; justify-content: center; flex: none;
+}
 .frame .art-window img { width: 100%; height: 100%; object-fit: cover; }
-.frame .art-window img.placeholder { width: 40%; height: auto; mix-blend-mode: multiply; }
-.frame .type-line { font-style: italic; padding: 3px 1px 1px; border-bottom: 1px solid var(--ink-soft); }
-.frame .oracle { padding: 3px 1px; min-height: 40px; white-space: pre-wrap; line-height: 1.25; }
-.frame .pt-cartouche {
-  position: absolute; right: 5px; bottom: 5px; border: 1.5px solid var(--ink); background: var(--parchment);
-  border-radius: 5px; padding: 1px 6px; font-weight: 700; font-family: var(--serif);
+.frame .art-window img.placeholder { width: 40%; height: 40%; object-fit: contain; mix-blend-mode: multiply; }
+.frame .type-line {
+  font-style: italic; padding: 2px 5px; border: 1.2px solid var(--ink); border-radius: 3px; flex: none;
+  background: color-mix(in srgb, var(--frame-tint) 18%, var(--parchment));
 }
-.frame .mana-cost { display: flex; gap: 1px; font-weight: 700; font-size: 9px; }
+.frame.mini .type-line { margin-top: 4px; }
+.frame .oracle {
+  padding: 3px 5px; white-space: pre-wrap; line-height: 1.3;
+  border: 1.2px solid var(--ink); border-radius: 3px;
+  background: color-mix(in srgb, var(--frame-tint) 14%, var(--parchment));
+}
+.frame.full .oracle { flex: 1; overflow-y: auto; padding-bottom: 15px; margin-bottom: 1px; }
+.frame.mini .oracle { min-height: 40px; margin-top: 3px; }
+.frame .pt-cartouche {
+  position: absolute; right: 4px; bottom: 4px; border: 1.5px solid var(--ink); background: var(--parchment);
+  border-radius: 5px; padding: 1px 6px; font-weight: 700; font-family: var(--serif);
+  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+.frame .mana-cost { display: flex; gap: 0.15em; }
+
+/* Mana/tap symbols as chips: parchment disc + ink ring, legible on any wash
+   band or tinted text box (S7 feedback round). em-sized: scales with frame. */
+.mana-chip {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1.35em; height: 1.35em; border-radius: 50%; flex: none;
+  background: var(--parchment); border: 1px solid var(--ink);
+  vertical-align: -0.28em; font-weight: 700; line-height: 1;
+  color: var(--ink); /* numbers stay ink even inside light-text name strips */
+}
+.mana-chip img { width: 82%; height: 82%; mix-blend-mode: multiply; }
+.mana-chip span { font-size: 0.78em; }
 
 /* Rail blocks */
 .status-block { display: flex; gap: 8px; align-items: center; }
@@ -197,8 +236,6 @@ button.linkish { background: none; border: none; color: var(--brass); cursor: po
 }
 .gallery-modal-card { margin: 10px 0 6px; }
 .gallery-modal-card .frame { width: 300px; font-size: 14px; }
-.gallery-modal-card .frame .art-window { height: 160px; }
-.gallery-modal-card .frame .mana-cost { font-size: 13px; }
 .printed-scan { width: 240px; border-radius: 12px; }
 .gallery-modal-card .printed-scan { width: 300px; }
 .gallery-cell .printed-scan { width: 192px; }

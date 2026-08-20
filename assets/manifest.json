@@ -464,6 +464,36 @@
           "variant_prompt": null
         }
       }
+    },
+    "token-goblin": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:d27f67092180821e4ac8a4bd92cf0bc9822ec5b335b5d00d39a70072381677fb",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:d27f67092180821e4ac8a4bd92cf0bc9822ec5b335b5d00d39a70072381677fb",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/token-goblin/canonical.png",
+          "rendered_at": "2026-08-20T16:02:05+00:00",
+          "thumb": "assets/thumbs/token-goblin/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "token-soldier": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:68bcf8d9832d2071ad3d1924ce75f4fe1d1e07445ca144baed7b2b747ce6c948",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:68bcf8d9832d2071ad3d1924ce75f4fe1d1e07445ca144baed7b2b747ce6c948",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/token-soldier/canonical.png",
+          "rendered_at": "2026-08-20T16:02:15+00:00",
+          "thumb": "assets/thumbs/token-soldier/canonical.png",
+          "variant_prompt": null
+        }
+      }
     }
   }
 }

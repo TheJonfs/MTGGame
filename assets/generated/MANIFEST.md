@@ -39,6 +39,8 @@ descriptor blocks under `docs/art/subjects/`, composed with `docs/prompts/style.
 | assets/images/panel-parchment/canonical.png | docs/art/subjects/panel-parchment.md | canonical | gemini-3.1-flash-image | 2026-08-19 | kept |
 | assets/images/portrait-mage-female/canonical.png | docs/art/subjects/portrait-mage-female.md | canonical | gemini-3.1-flash-image | 2026-08-19 | kept |
 | assets/images/portrait-you/canonical.png | docs/art/subjects/portrait-you.md | canonical | gemini-3.1-flash-image | 2026-08-19 | kept |
+| assets/images/token-goblin/canonical.png | docs/art/subjects/token-goblin.md | canonical | gemini-3.1-flash-image | 2026-08-20 | kept |
+| assets/images/token-soldier/canonical.png | docs/art/subjects/token-soldier.md | canonical | gemini-3.1-flash-image | 2026-08-20 | kept |
 | assets/images/surface-wood/canonical.png | docs/art/subjects/surface-wood.md | canonical | gemini-3.1-flash-image | 2026-08-19 | kept |
 
 ## Derived assets (post-processed)
@@ -47,6 +49,7 @@ descriptor blocks under `docs/art/subjects/`, composed with `docs/prompts/style.
 |---|---|---|
 | assets/generated/icons/*.svg (25) | assets/images/icon-*/canonical.png | sips→mkbitmap(-f4 -s1 -t0.48)→potrace(-s --tight, -t60 despeckle on exile/tapped/plus; -t1500 on transport-pause/end); normalized to 24px, ink #2B2520. S7: five transport glyphs (play/pause/step/jump/end), right-facing masters mirrored in the UI for the left-facing buttons (ADR-044) |
 | assets/generated/surfaces/surface-wood.png | assets/images/surface-wood/canonical.png | center-crop 88%x72% to the saturated band (house style's unpainted-paper edges removed) |
+| assets/generated/tokens/{goblin_1_1,soldier_1_1}.png | assets/images/token-{goblin,soldier}/canonical.png | 5:4 center crop (35% upward bias) for the frame art window; copied to packages/ui/public/custom-art/, referenced by the token defs' art.asset (S7 feedback round) |
 
 ## Conventions (S6, pending planner ratification)
 
