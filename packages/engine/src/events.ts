@@ -27,6 +27,8 @@ export interface GameEventMap extends Record<string, unknown> {
     sourceCardId: string;
     sourceController: PlayerId;
     target: { kind: "player"; player: PlayerId } | { kind: "object"; id: string };
+    /** cardId of the damaged object (ADR-044) — objects may be gone by log-read time. */
+    targetCardId?: string;
     amount: number;
     combat: boolean;
   };

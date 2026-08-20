@@ -225,6 +225,81 @@
         }
       }
     },
+    "icon-transport-end": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:823c727ef36afbad4ccd37e5d3f5156cde049fabcab5c6481095dcc117f63655",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:823c727ef36afbad4ccd37e5d3f5156cde049fabcab5c6481095dcc117f63655",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/icon-transport-end/canonical.png",
+          "rendered_at": "2026-08-20T15:07:00+00:00",
+          "thumb": "assets/thumbs/icon-transport-end/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "icon-transport-jump": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:b3bae0c87a0de586e5f3a9654f8140e589cf2b1581c6a116d1cf86bbb6affd66",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:b3bae0c87a0de586e5f3a9654f8140e589cf2b1581c6a116d1cf86bbb6affd66",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/icon-transport-jump/canonical.png",
+          "rendered_at": "2026-08-20T15:06:53+00:00",
+          "thumb": "assets/thumbs/icon-transport-jump/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "icon-transport-pause": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:bca226ae7211a99bbf7985cc73abf4df9be47d9b06ea788df2516a741b3b33e7",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:bca226ae7211a99bbf7985cc73abf4df9be47d9b06ea788df2516a741b3b33e7",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/icon-transport-pause/canonical.png",
+          "rendered_at": "2026-08-20T15:06:37+00:00",
+          "thumb": "assets/thumbs/icon-transport-pause/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "icon-transport-play": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:45ce3e77ff7479841e0f11cf39aea783e8c19d7dc7592f955811a3e08b1d8117",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:45ce3e77ff7479841e0f11cf39aea783e8c19d7dc7592f955811a3e08b1d8117",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/icon-transport-play/canonical.png",
+          "rendered_at": "2026-08-20T15:06:30+00:00",
+          "thumb": "assets/thumbs/icon-transport-play/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "icon-transport-step": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:82ef1d117f0ba045da7d93d59583745a4b8ac16f7a51a9b62d462b012f4aa835",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:82ef1d117f0ba045da7d93d59583745a4b8ac16f7a51a9b62d462b012f4aa835",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/icon-transport-step/canonical.png",
+          "rendered_at": "2026-08-20T15:07:20+00:00",
+          "thumb": "assets/thumbs/icon-transport-step/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "icon-ui-flag": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:7d2fce52216eee4c8eb1fe976a4a60957251b430bedf3d88734d71793e622491",

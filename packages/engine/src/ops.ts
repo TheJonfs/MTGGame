@@ -56,6 +56,7 @@ export function dealDamage(
       sourceCardId: source.cardId,
       sourceController: source.controller,
       target: { kind: "object", id: target.id },
+      targetCardId: obj.cardId,
       amount,
       combat,
     });

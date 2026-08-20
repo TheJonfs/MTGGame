@@ -50,17 +50,29 @@ export function Transport({
     return () => clearTimeout(t);
   }, [playing, index, speed, setIndex, setPlaying, total]);
 
+  // Ink transport glyphs (ADR-044): right-facing masters mirrored for the
+  // left-facing buttons. step = ▶| (single action), jump = ▶▶ (step phase),
+  // end = ▶▶| (skip to end).
+  const glyph = (name: string, mirrored = false) => (
+    <img
+      src={`/icons/transport-${name}.svg`}
+      height={13}
+      style={{ mixBlendMode: "multiply", verticalAlign: -2, transform: mirrored ? "scaleX(-1)" : undefined }}
+      alt=""
+    />
+  );
+
   return (
     <div className="transport">
-      <button onClick={() => setIndex(0)} title="First">⏮</button>
-      <button onClick={() => setIndex(session.stepJump(index, -1))} title="Previous step (shift+←)">⏪</button>
-      <button onClick={() => setIndex(Math.max(index - 1, 0))} title="Previous action (←)">◀</button>
+      <button onClick={() => setIndex(0)} title="First">{glyph("end", true)}</button>
+      <button onClick={() => setIndex(session.stepJump(index, -1))} title="Previous step (shift+←)">{glyph("jump", true)}</button>
+      <button onClick={() => setIndex(Math.max(index - 1, 0))} title="Previous action (←)">{glyph("step", true)}</button>
       <button className={playing ? "playing" : ""} onClick={() => setPlaying(!playing)} title="Play/pause (space)">
-        {playing ? "❚❚" : "▶"}
+        {playing ? glyph("pause") : glyph("play")}
       </button>
-      <button onClick={() => setIndex(Math.min(index + 1, total))} title="Next action (→)">▶▶</button>
-      <button onClick={() => setIndex(session.stepJump(index, 1))} title="Next step (shift+→)">⏩</button>
-      <button onClick={() => setIndex(total)} title="Last">⏭</button>
+      <button onClick={() => setIndex(Math.min(index + 1, total))} title="Next action (→)">{glyph("step")}</button>
+      <button onClick={() => setIndex(session.stepJump(index, 1))} title="Next step (shift+→)">{glyph("jump")}</button>
+      <button onClick={() => setIndex(total)} title="Last">{glyph("end")}</button>
       <input type="range" min={0} max={total} value={index} onChange={(e) => setIndex(Number(e.target.value))} />
       <span className="where">
         {index >= total ? "Final state" : info ? `T${info.turn} · ${stepLabel(info.step)} · ${index + 1}/${total}` : ""}

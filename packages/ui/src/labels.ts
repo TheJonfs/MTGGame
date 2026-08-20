@@ -69,7 +69,13 @@ export function eventLabel(
   switch (name) {
     case "DAMAGE": {
       const target = payload.target as { kind: string; player?: number; id?: string };
-      const to = target.kind === "player" ? who(target.player) : "a creature";
+      const to =
+        target.kind === "player"
+          ? who(target.player)
+          : payload.targetCardId
+            ? cardName(pool, payload.targetCardId as string)
+            : "a creature"; // pre-ADR-044 logs lack targetCardId
+
       return `${cardName(pool, payload.sourceCardId as string)} deals ${payload.amount} damage to ${to}`;
     }
     case "DIES": return `${cardName(pool, payload.cardId as string)} dies`;

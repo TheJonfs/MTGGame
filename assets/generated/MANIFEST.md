@@ -31,6 +31,11 @@ descriptor blocks under `docs/art/subjects/`, composed with `docs/prompts/style.
 | assets/images/icon-zone-hand/canonical.png | docs/art/subjects/icon-zone-hand.md | canonical | gemini-3.1-flash-image | 2026-08-19 | kept |
 | assets/images/icon-zone-library/canonical.png | docs/art/subjects/icon-zone-library.md | canonical | gemini-3.1-flash-image | 2026-08-19 | kept |
 | assets/images/icon-zone-stack/canonical.png | docs/art/subjects/icon-zone-stack.md | canonical | gemini-3.1-flash-image | 2026-08-19 | kept |
+| assets/images/icon-transport-end/canonical.png | docs/art/subjects/icon-transport-end.md | canonical | gemini-3.1-flash-image | 2026-08-20 | kept |
+| assets/images/icon-transport-jump/canonical.png | docs/art/subjects/icon-transport-jump.md | canonical | gemini-3.1-flash-image | 2026-08-20 | kept |
+| assets/images/icon-transport-pause/canonical.png | docs/art/subjects/icon-transport-pause.md | canonical | gemini-3.1-flash-image | 2026-08-20 | kept |
+| assets/images/icon-transport-play/canonical.png | docs/art/subjects/icon-transport-play.md | canonical | gemini-3.1-flash-image | 2026-08-20 | kept |
+| assets/images/icon-transport-step/canonical.png | docs/art/subjects/icon-transport-step.md | canonical | gemini-3.1-flash-image | 2026-08-20 | kept (re-roll 1: first render was a desk scene, not a glyph) |
 | assets/images/panel-parchment/canonical.png | docs/art/subjects/panel-parchment.md | canonical | gemini-3.1-flash-image | 2026-08-19 | kept |
 | assets/images/portrait-mage-female/canonical.png | docs/art/subjects/portrait-mage-female.md | canonical | gemini-3.1-flash-image | 2026-08-19 | kept |
 | assets/images/portrait-you/canonical.png | docs/art/subjects/portrait-you.md | canonical | gemini-3.1-flash-image | 2026-08-19 | kept |
@@ -40,7 +45,7 @@ descriptor blocks under `docs/art/subjects/`, composed with `docs/prompts/style.
 
 | file | source | processing |
 |---|---|---|
-| assets/generated/icons/*.svg (20) | assets/images/icon-*/canonical.png | sips→mkbitmap(-f4 -s1 -t0.48)→potrace(-s --tight, -t60 despeckle on exile/tapped/plus); normalized to 24px, ink #2B2520 |
+| assets/generated/icons/*.svg (25) | assets/images/icon-*/canonical.png | sips→mkbitmap(-f4 -s1 -t0.48)→potrace(-s --tight, -t60 despeckle on exile/tapped/plus; -t1500 on transport-pause/end); normalized to 24px, ink #2B2520. S7: five transport glyphs (play/pause/step/jump/end), right-facing masters mirrored in the UI for the left-facing buttons (ADR-044) |
 | assets/generated/surfaces/surface-wood.png | assets/images/surface-wood/canonical.png | center-crop 88%x72% to the saturated band (house style's unpainted-paper edges removed) |
 
 ## Conventions (S6, pending planner ratification)

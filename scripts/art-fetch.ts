@@ -56,6 +56,7 @@ const OVERRIDES: Record<string, { set: string; collector?: string }> = {
   swamp: { set: "3ed" },
   forest: { set: "3ed" },
   mind_rot: { set: "7ed" },
+  phyrexian_rager: { set: "apc" }, // ADR-044: oldest-highres resolved to PMEI (magazine promo)
 };
 
 async function search(q: string): Promise<Printing[]> {
