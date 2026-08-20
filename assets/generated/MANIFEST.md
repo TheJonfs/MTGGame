@@ -11,6 +11,14 @@ descriptor blocks under `docs/art/subjects/`, composed with `docs/prompts/style.
 |---|---|---|---|---|---|
 | assets/images/card-back/canonical.png | docs/art/subjects/card-back.md | canonical | gemini-3.1-flash-image | 2026-08-19 | kept |
 | assets/images/frame-corner/canonical.png | docs/art/subjects/frame-corner.md | canonical | gemini-3.1-flash-image | 2026-08-19 | kept |
+| assets/images/frame-texture-b/canonical.png | docs/art/subjects/frame-texture-b.md | canonical | gemini-3.1-flash-image | 2026-08-20 | kept |
+| assets/images/frame-texture-c/canonical.png | docs/art/subjects/frame-texture-c.md | canonical | gemini-3.1-flash-image | 2026-08-20 | kept (descriptor tightened once, then --force: conditioning kept reasserting boulders) |
+| assets/images/frame-texture-g/canonical.png | docs/art/subjects/frame-texture-g.md | canonical | gemini-3.1-flash-image | 2026-08-20 | kept (descriptor tightened once: pale unstained stripes) |
+| assets/images/frame-texture-gold/canonical.png | docs/art/subjects/frame-texture-gold.md | canonical | gemini-3.1-flash-image | 2026-08-20 | kept |
+| assets/images/frame-texture-land/canonical.png | docs/art/subjects/frame-texture-land.md | canonical | gemini-3.1-flash-image | 2026-08-20 | kept (descriptor tightened once, then --force: stray objects, bare areas) |
+| assets/images/frame-texture-r/canonical.png | docs/art/subjects/frame-texture-r.md | canonical | gemini-3.1-flash-image | 2026-08-20 | kept (descriptor tightened once, then --force: kept rendering literal bricks) |
+| assets/images/frame-texture-u/canonical.png | docs/art/subjects/frame-texture-u.md | canonical | gemini-3.1-flash-image | 2026-08-20 | kept (descriptor tightened once: pale gaps) |
+| assets/images/frame-texture-w/canonical.png | docs/art/subjects/frame-texture-w.md | canonical | gemini-3.1-flash-image | 2026-08-20 | kept |
 | assets/images/icon-counter-minus/canonical.png | docs/art/subjects/icon-counter-minus.md | canonical | gemini-3.1-flash-image | 2026-08-19 | kept |
 | assets/images/icon-counter-plus/canonical.png | docs/art/subjects/icon-counter-plus.md | canonical | gemini-3.1-flash-image | 2026-08-19 | kept |
 | assets/images/icon-mana-black/canonical.png | docs/art/subjects/icon-mana-black.md | canonical | gemini-3.1-flash-image | 2026-08-19 | kept |
@@ -50,6 +58,7 @@ descriptor blocks under `docs/art/subjects/`, composed with `docs/prompts/style.
 | assets/generated/icons/*.svg (25) | assets/images/icon-*/canonical.png | sips→mkbitmap(-f4 -s1 -t0.48)→potrace(-s --tight, -t60 despeckle on exile/tapped/plus; -t1500 on transport-pause/end); normalized to 24px, ink #2B2520. S7: five transport glyphs (play/pause/step/jump/end), right-facing masters mirrored in the UI for the left-facing buttons (ADR-044) |
 | assets/generated/surfaces/surface-wood.png | assets/images/surface-wood/canonical.png | center-crop 88%x72% to the saturated band (house style's unpainted-paper edges removed) |
 | assets/generated/tokens/{goblin_1_1,soldier_1_1}.png | assets/images/token-{goblin,soldier}/canonical.png | 5:4 center crop (35% upward bias) for the frame art window; copied to packages/ui/public/custom-art/, referenced by the token defs' art.asset (S7 feedback round) |
+| assets/generated/surfaces/frame-{w,u,b,r,g,gold,c,land}.jpg | assets/images/frame-texture-*/canonical.png | 512px JPEG q87 tiles; copied to packages/ui/public/frame-tex/, tiled at 280px as the frame body background (S7 feedback round 2) |
 
 ## Conventions (S6, pending planner ratification)
 

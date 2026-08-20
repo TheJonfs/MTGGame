@@ -30,6 +30,126 @@
         }
       }
     },
+    "frame-texture-b": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:ee4b4267d64d79456286786cf5b66611f9fd1aa919cc86c340841aaff565f96e",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:ee4b4267d64d79456286786cf5b66611f9fd1aa919cc86c340841aaff565f96e",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/frame-texture-b/canonical.png",
+          "rendered_at": "2026-08-20T16:20:05+00:00",
+          "thumb": "assets/thumbs/frame-texture-b/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "frame-texture-c": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:acded4ecdbbd47bdb78270c93971ae82a17217b3ddd48ec717dfcdb033961706",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:acded4ecdbbd47bdb78270c93971ae82a17217b3ddd48ec717dfcdb033961706",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/frame-texture-c/canonical.png",
+          "rendered_at": "2026-08-20T16:23:45+00:00",
+          "thumb": "assets/thumbs/frame-texture-c/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "frame-texture-g": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:bbb02efde8d4461d14bfaafc48172667e5c59c30b4d3678e1ce4db9b46397888",
+      "renders": {
+        "canonical": {
+          "conditioned_on": "assets/images/frame-texture-g/canonical.png",
+          "descriptor_hash": "sha256:bbb02efde8d4461d14bfaafc48172667e5c59c30b4d3678e1ce4db9b46397888",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/frame-texture-g/canonical.png",
+          "rendered_at": "2026-08-20T16:22:33+00:00",
+          "thumb": "assets/thumbs/frame-texture-g/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "frame-texture-gold": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:9c3b204ef9c3b3123ec8283636a2f060098ae930319fecd6817b5a055cd17337",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:9c3b204ef9c3b3123ec8283636a2f060098ae930319fecd6817b5a055cd17337",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/frame-texture-gold/canonical.png",
+          "rendered_at": "2026-08-20T16:20:31+00:00",
+          "thumb": "assets/thumbs/frame-texture-gold/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "frame-texture-land": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:03a079f0c385c1c28123f4886ce597fff7b8c3b2774c08f62d48962022abecb9",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:03a079f0c385c1c28123f4886ce597fff7b8c3b2774c08f62d48962022abecb9",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/frame-texture-land/canonical.png",
+          "rendered_at": "2026-08-20T16:23:52+00:00",
+          "thumb": "assets/thumbs/frame-texture-land/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "frame-texture-r": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:1529334aa20af452abf145d7bcde0117bf1c36474c0d2f86baa1d12ef7d977df",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:1529334aa20af452abf145d7bcde0117bf1c36474c0d2f86baa1d12ef7d977df",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/frame-texture-r/canonical.png",
+          "rendered_at": "2026-08-20T16:23:37+00:00",
+          "thumb": "assets/thumbs/frame-texture-r/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "frame-texture-u": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:5e00d5fe78ab2144904b34424bb11a73337ca47798a295dfa53e56d230878e3f",
+      "renders": {
+        "canonical": {
+          "conditioned_on": "assets/images/frame-texture-u/canonical.png",
+          "descriptor_hash": "sha256:5e00d5fe78ab2144904b34424bb11a73337ca47798a295dfa53e56d230878e3f",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/frame-texture-u/canonical.png",
+          "rendered_at": "2026-08-20T16:22:10+00:00",
+          "thumb": "assets/thumbs/frame-texture-u/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "frame-texture-w": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:01b3971dda703abf3825fb79d3e495eed5d2573218c5596e932915cda7b0e402",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:01b3971dda703abf3825fb79d3e495eed5d2573218c5596e932915cda7b0e402",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/frame-texture-w/canonical.png",
+          "rendered_at": "2026-08-20T16:19:50+00:00",
+          "thumb": "assets/thumbs/frame-texture-w/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "icon-counter-minus": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:61ee1cff8967f038e6f98295aed1d74d89654c578ad8400bcd3a9a1bf5c9f40c",

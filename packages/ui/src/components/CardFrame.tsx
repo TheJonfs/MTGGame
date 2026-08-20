@@ -10,6 +10,10 @@ const BODY: Record<string, string> = {
   W: "var(--frame-w)", U: "var(--frame-u)", B: "var(--frame-b)",
   R: "var(--frame-r)", G: "var(--frame-g)", C: "var(--frame-c)", LAND: "var(--frame-land)",
 };
+/** Round 2: rendered per-color body textures (marble/water/crackle/stone/wood/gold). */
+const BODY_TEX: Record<string, string> = {
+  W: "w", U: "u", B: "b", R: "r", G: "g", C: "c", LAND: "land",
+};
 const LIGHT_TEXT = new Set(["U", "B", "R", "G", "LAND"]);
 
 const MANA_ICON: Record<string, string> = {
@@ -17,11 +21,19 @@ const MANA_ICON: Record<string, string> = {
   C: "mana-colorless", T: "status-tapped",
 };
 
-/** One mana/tap symbol as a high-contrast chip: parchment disc, ink ring (S7 feedback round). */
+/** Real-mana-symbol coloration (S7 feedback round 2): the classic pale
+ * saturated disc colors under a black symbol. The five images are WotC's;
+ * these are just colors. Generic/X/tap ride the neutral gray. */
+const CHIP_BG: Record<string, string> = {
+  W: "#fffbd5", U: "#aae0fa", B: "#cbc2bf", R: "#f9aa8f", G: "#9bd3ae",
+};
+const CHIP_NEUTRAL = "#cac5c0";
+
+/** One mana/tap symbol as a high-contrast chip: colored disc, ink symbol, ink ring. */
 export function ManaChip({ sym }: { sym: string }) {
   const icon = MANA_ICON[sym];
   return (
-    <span className="mana-chip">
+    <span className="mana-chip" style={{ background: CHIP_BG[sym] ?? CHIP_NEUTRAL }}>
       {icon ? <img src={`/icons/${icon}.svg`} alt={sym} /> : <span>{sym}</span>}
     </span>
   );
@@ -95,6 +107,7 @@ export function CardFrame({
   }
   const colors = frameColors(def);
   const body = colors.length === 1 ? BODY[colors[0]!] : "var(--frame-gold)";
+  const bodyTex = colors.length === 1 ? BODY_TEX[colors[0]!] : "gold";
   const band =
     colors.length === 1
       ? WASH[colors[0]!]
@@ -108,7 +121,11 @@ export function CardFrame({
   return (
     <div
       className={`frame${mini ? " mini" : " full"}${hand ? " hand" : ""}`}
-      style={{ background: body, ["--frame-tint" as string]: tint }}
+      style={{
+        background: `url(/frame-tex/frame-${bodyTex}.jpg) ${body}`,
+        backgroundSize: "280px",
+        ["--frame-tint" as string]: tint,
+      }}
     >
       <img className="corner" src="/frame-corner.png" style={{ left: 1, bottom: 1 }} alt="" />
       <img className="corner" src="/frame-corner.png" style={{ right: 1, bottom: 1, transform: "scaleX(-1)" }} alt="" />

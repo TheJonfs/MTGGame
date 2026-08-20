@@ -1,4 +1,18 @@
 /* Tabletop theme (art-direction §1): warm, physical, card-first. */
+
+/* Card-name face (S7 feedback round 2): IM Fell English (SIL OFL) — old-print
+   flair for names and type lines without touching WotC's fonts. */
+@font-face {
+  font-family: "IM Fell English";
+  font-style: normal;
+  src: url("/fonts/im-fell-english.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IM Fell English";
+  font-style: italic;
+  src: url("/fonts/im-fell-english-italic.woff2") format("woff2");
+}
+
 :root {
   --parchment: #ede3cc;
   --parchment-deep: #e3d5b5;
@@ -25,6 +39,7 @@
   --frame-land: #8a744f;
   --sans: Seravek, "Gill Sans", "Segoe UI", Verdana, sans-serif;
   --serif: "Iowan Old Style", Palatino, "Book Antiqua", Georgia, serif;
+  --card-face: "IM Fell English", "Iowan Old Style", Palatino, Georgia, serif;
 }
 
 * { box-sizing: border-box; }
@@ -125,7 +140,7 @@ body {
 .frame .name-strip {
   display: flex; justify-content: space-between; align-items: center; gap: 4px;
   border: 1.2px solid var(--ink); border-radius: 4px; padding: 2px 5px; font-weight: 700;
-  font-family: var(--serif); flex: none;
+  font-family: var(--card-face); font-size: 1.18em; letter-spacing: 0.01em; flex: none;
 }
 .frame.mini .name-strip { margin-bottom: 4px; }
 .frame .art-window {
@@ -135,7 +150,8 @@ body {
 .frame .art-window img { width: 100%; height: 100%; object-fit: cover; }
 .frame .art-window img.placeholder { width: 40%; height: 40%; object-fit: contain; mix-blend-mode: multiply; }
 .frame .type-line {
-  font-style: italic; padding: 2px 5px; border: 1.2px solid var(--ink); border-radius: 3px; flex: none;
+  font-style: italic; font-family: var(--card-face); font-size: 1.08em;
+  padding: 2px 5px; border: 1.2px solid var(--ink); border-radius: 3px; flex: none;
   background: color-mix(in srgb, var(--frame-tint) 18%, var(--parchment));
 }
 .frame.mini .type-line { margin-top: 4px; }
