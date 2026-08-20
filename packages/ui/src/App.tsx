@@ -40,6 +40,16 @@ function Loader({ onLoad }: { onLoad: (g: SavedGame) => void }) {
             }
           >
             Load the bundled sample game
+          </button>{" "}
+          <button
+            onClick={() =>
+              fetch("/sample-game-sane.json")
+                .then((r) => r.json())
+                .then(onLoad)
+                .catch((e) => setError(String(e)))
+            }
+          >
+            Load the sane-agents sample (S7)
           </button>
         </p>
         {error && <p style={{ color: "var(--danger)" }}>{error}</p>}

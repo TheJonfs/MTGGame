@@ -23,6 +23,9 @@ importers:
 
   packages/agents:
     dependencies:
+      '@shandalar/cards':
+        specifier: workspace:*
+        version: link:../cards
       '@shandalar/core':
         specifier: workspace:*
         version: link:../core

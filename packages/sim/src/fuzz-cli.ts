@@ -1,6 +1,6 @@
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { fuzz } from "./fuzz.js";
+import { fuzz, parseAgentPair } from "./fuzz.js";
 
 function arg(name: string, fallback: number): number {
   const i = process.argv.indexOf(`--${name}`);
@@ -14,17 +14,19 @@ const games = arg("games", 100); // per pairing
 const seed = arg("seed", 1);
 const saveIdx = process.argv.indexOf("--save");
 const saveDir = saveIdx !== -1 ? process.argv[saveIdx + 1] : undefined;
+const agentsIdx = process.argv.indexOf("--agents");
+const agents = parseAgentPair(agentsIdx !== -1 ? process.argv[agentsIdx + 1] : undefined);
 const cardsDir = join(dirname(fileURLToPath(import.meta.url)), "../../../data/cards");
 
 const started = Date.now();
 const report = await fuzz(cardsDir, games, seed, (pairing, i) => {
   if (i % 250 === 0) process.stderr.write(`  ${pairing}: ${i}/${games}\n`);
-}, saveDir);
+}, saveDir, agents);
 const elapsed = ((Date.now() - started) / 1000).toFixed(1);
 
-console.log(`\nFuzz: ${report.totalGames} games (${games} per pairing) in ${elapsed}s, seeds ${seed}..${seed + games - 1}`);
+console.log(`\nFuzz: ${report.totalGames} games (${games} per pairing, ${agents.join(" vs ")}) in ${elapsed}s, seeds ${seed}..${seed + games - 1}`);
 for (const p of report.pairings) {
-  console.log(`  ${p.pairing}: ${JSON.stringify(p.terminations)}, mean turns ${p.meanTurns.toFixed(1)}`);
+  console.log(`  ${p.pairing}: ${JSON.stringify(p.terminations)}, wins ${p.wins[0]}-${p.wins[1]}-${p.wins[2]}, mean turns ${p.meanTurns.toFixed(1)}`);
 }
 if (report.totalErrors > 0) {
   console.log(`\nERRORS (${report.totalErrors}):`);

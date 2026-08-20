@@ -1,0 +1,4707 @@
+{
+ "format": "shandalar-log-v1",
+ "spec": {
+  "seed": 14,
+  "players": [
+   {
+    "name": "Red Aggro",
+    "decklist": [
+     {
+      "cardId": "mountain",
+      "count": 17
+     },
+     {
+      "cardId": "raging_goblin",
+      "count": 4
+     },
+     {
+      "cardId": "goblin_piker",
+      "count": 2
+     },
+     {
+      "cardId": "lightning_bolt",
+      "count": 3
+     },
+     {
+      "cardId": "shock",
+      "count": 2
+     },
+     {
+      "cardId": "blaze",
+      "count": 2
+     },
+     {
+      "cardId": "boggart_brute",
+      "count": 3
+     },
+     {
+      "cardId": "siege_gang_commander",
+      "count": 2
+     },
+     {
+      "cardId": "bonesplitter",
+      "count": 2
+     },
+     {
+      "cardId": "goblin_chieftain",
+      "count": 2
+     },
+     {
+      "cardId": "pyroclasm",
+      "count": 1
+     }
+    ],
+    "agent": "sane"
+   },
+   {
+    "name": "WU Skies",
+    "decklist": [
+     {
+      "cardId": "plains",
+      "count": 8
+     },
+     {
+      "cardId": "island",
+      "count": 9
+     },
+     {
+      "cardId": "savannah_lions",
+      "count": 1
+     },
+     {
+      "cardId": "serra_angel",
+      "count": 2
+     },
+     {
+      "cardId": "man_o_war",
+      "count": 2
+     },
+     {
+      "cardId": "cloudkin_seer",
+      "count": 2
+     },
+     {
+      "cardId": "counterspell",
+      "count": 2
+     },
+     {
+      "cardId": "pacifism",
+      "count": 1
+     },
+     {
+      "cardId": "raise_the_alarm",
+      "count": 1
+     },
+     {
+      "cardId": "glorious_anthem",
+      "count": 1
+     },
+     {
+      "cardId": "fencing_ace",
+      "count": 2
+     },
+     {
+      "cardId": "loxodon_warhammer",
+      "count": 1
+     },
+     {
+      "cardId": "mind_stone",
+      "count": 1
+     },
+     {
+      "cardId": "swords_to_plowshares",
+      "count": 2
+     },
+     {
+      "cardId": "wrath_of_god",
+      "count": 1
+     },
+     {
+      "cardId": "curiosity",
+      "count": 2
+     },
+     {
+      "cardId": "control_magic",
+      "count": 2
+     }
+    ],
+    "agent": "sane"
+   }
+  ],
+  "rules": {
+   "startingLife": 20,
+   "handSize": 7,
+   "mulligan": "london",
+   "maxTurns": 100
+  },
+  "modifiers": []
+ },
+ "result": {
+  "winner": 0,
+  "reason": "LIFE",
+  "turns": 21,
+  "finalLife": [
+   12,
+   0
+  ]
+ },
+ "log": [
+  {
+   "t": "RNG",
+   "purpose": "shuffle",
+   "value": {
+    "kind": "permutation",
+    "value": [
+     37,
+     24,
+     18,
+     35,
+     15,
+     11,
+     9,
+     25,
+     33,
+     12,
+     39,
+     26,
+     2,
+     3,
+     20,
+     23,
+     38,
+     7,
+     34,
+     5,
+     36,
+     28,
+     30,
+     31,
+     8,
+     4,
+     32,
+     21,
+     1,
+     10,
+     27,
+     29,
+     0,
+     22,
+     14,
+     6,
+     13,
+     19,
+     16,
+     17
+    ]
+   }
+  },
+  {
+   "t": "RNG",
+   "purpose": "shuffle",
+   "value": {
+    "kind": "permutation",
+    "value": [
+     34,
+     37,
+     6,
+     32,
+     29,
+     22,
+     24,
+     27,
+     4,
+     19,
+     15,
+     13,
+     5,
+     3,
+     20,
+     23,
+     39,
+     9,
+     36,
+     28,
+     16,
+     31,
+     38,
+     8,
+     1,
+     30,
+     10,
+     35,
+     17,
+     2,
+     12,
+     7,
+     33,
+     25,
+     14,
+     0,
+     21,
+     18,
+     11,
+     26
+    ]
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 0,
+   "afterAction": -1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 1,
+   "afterAction": -1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 2,
+   "afterAction": -1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 3,
+   "afterAction": -1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 4,
+   "afterAction": -1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 5,
+   "afterAction": -1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 6,
+   "afterAction": -1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 7,
+   "afterAction": -1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 8,
+   "afterAction": -1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 9,
+   "afterAction": -1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 10,
+   "afterAction": -1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 11,
+   "afterAction": -1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 12,
+   "afterAction": -1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 13,
+   "afterAction": -1
+  },
+  {
+   "t": "ACTION",
+   "turn": 0,
+   "step": "CLEANUP",
+   "player": 0,
+   "action": {
+    "type": "keepHand"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 0,
+   "step": "CLEANUP",
+   "player": 1,
+   "action": {
+    "type": "mulligan"
+   }
+  },
+  {
+   "t": "RNG",
+   "purpose": "shuffle",
+   "value": {
+    "kind": "permutation",
+    "value": [
+     21,
+     34,
+     12,
+     3,
+     2,
+     31,
+     29,
+     26,
+     23,
+     39,
+     33,
+     36,
+     4,
+     19,
+     13,
+     10,
+     22,
+     1,
+     27,
+     32,
+     25,
+     6,
+     0,
+     7,
+     14,
+     9,
+     17,
+     24,
+     15,
+     8,
+     5,
+     38,
+     28,
+     30,
+     16,
+     11,
+     35,
+     18,
+     20,
+     37
+    ]
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 14,
+   "afterAction": 1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 15,
+   "afterAction": 1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 16,
+   "afterAction": 1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 17,
+   "afterAction": 1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 18,
+   "afterAction": 1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 19,
+   "afterAction": 1
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 20,
+   "afterAction": 1
+  },
+  {
+   "t": "ACTION",
+   "turn": 0,
+   "step": "CLEANUP",
+   "player": 1,
+   "action": {
+    "type": "keepHand"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 0,
+   "step": "CLEANUP",
+   "player": 1,
+   "action": {
+    "type": "bottomCard",
+    "objectId": "obj_102"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 1,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_85"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 1,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 1,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_82",
+    "targets": [
+     {
+      "kind": "player",
+      "player": 0
+     }
+    ]
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "lightning_bolt",
+    "controller": 0
+   },
+   "seq": 21,
+   "afterAction": 6
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_111",
+    "sourceCardId": "lightning_bolt",
+    "sourceController": 0,
+    "target": {
+     "kind": "player",
+     "player": 0
+    },
+    "amount": 3,
+    "combat": false
+   },
+   "seq": 22,
+   "afterAction": 6
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 23,
+   "afterAction": 6
+  },
+  {
+   "t": "ACTION",
+   "turn": 2,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_104"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 2,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 2,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 2,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 2,
+   "step": "END",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 3,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 3,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 24,
+   "afterAction": 13
+  },
+  {
+   "t": "ACTION",
+   "turn": 3,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_116",
+    "targets": [
+     {
+      "kind": "player",
+      "player": 0
+     }
+    ]
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "lightning_bolt",
+    "controller": 0
+   },
+   "seq": 25,
+   "afterAction": 14
+  },
+  {
+   "t": "ACTION",
+   "turn": 3,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_117",
+    "sourceCardId": "lightning_bolt",
+    "sourceController": 0,
+    "target": {
+     "kind": "player",
+     "player": 0
+    },
+    "amount": 3,
+    "combat": false
+   },
+   "seq": 26,
+   "afterAction": 15
+  },
+  {
+   "t": "ACTION",
+   "turn": 3,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 3,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_86"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 3,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 3,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 3,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 3,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 3,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_83",
+    "targets": []
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "raging_goblin",
+    "controller": 0
+   },
+   "seq": 27,
+   "afterAction": 22
+  },
+  {
+   "t": "ACTION",
+   "turn": 3,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 3,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 3,
+   "step": "END",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 4,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 28,
+   "afterAction": 26
+  },
+  {
+   "t": "ACTION",
+   "turn": 4,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 4,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_107"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 4,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_105",
+    "targets": []
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "mind_stone",
+    "controller": 1
+   },
+   "seq": 29,
+   "afterAction": 29
+  },
+  {
+   "t": "ACTION",
+   "turn": 4,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 4,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 4,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 4,
+   "step": "END",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 5,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 5,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 30,
+   "afterAction": 35
+  },
+  {
+   "t": "ACTION",
+   "turn": 5,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 5,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 5,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_87"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 5,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_81",
+    "targets": []
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "goblin_chieftain",
+    "controller": 0
+   },
+   "seq": 31,
+   "afterAction": 39
+  },
+  {
+   "t": "ACTION",
+   "turn": 5,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 5,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 5,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 5,
+   "step": "DECLARE_ATTACKERS",
+   "player": 0,
+   "action": {
+    "type": "declareAttacker",
+    "objectId": "obj_123"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 5,
+   "step": "DECLARE_ATTACKERS",
+   "player": 0,
+   "action": {
+    "type": "declareAttacker",
+    "objectId": "obj_133"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 5,
+   "step": "DECLARE_ATTACKERS",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 5,
+   "step": "DECLARE_BLOCKERS",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_123",
+    "sourceCardId": "raging_goblin",
+    "sourceController": 0,
+    "target": {
+     "kind": "player",
+     "player": 1
+    },
+    "amount": 2,
+    "combat": true
+   },
+   "seq": 32,
+   "afterAction": 46
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_133",
+    "sourceCardId": "goblin_chieftain",
+    "sourceController": 0,
+    "target": {
+     "kind": "player",
+     "player": 1
+    },
+    "amount": 2,
+    "combat": true
+   },
+   "seq": 33,
+   "afterAction": 46
+  },
+  {
+   "t": "ACTION",
+   "turn": 5,
+   "step": "COMBAT_DAMAGE",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 5,
+   "step": "COMBAT_END",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 5,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 5,
+   "step": "END",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 6,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_128",
+    "abilityIndex": 1,
+    "targets": []
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "DIES",
+   "payload": {
+    "cardId": "mind_stone",
+    "owner": 1
+   },
+   "seq": 34,
+   "afterAction": 51
+  },
+  {
+   "t": "ACTION",
+   "turn": 6,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 35,
+   "afterAction": 52
+  },
+  {
+   "t": "ACTION",
+   "turn": 6,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 36,
+   "afterAction": 53
+  },
+  {
+   "t": "ACTION",
+   "turn": 6,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 6,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_108"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 6,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_136",
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_123"
+     }
+    ]
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "pacifism",
+    "controller": 1
+   },
+   "seq": 37,
+   "afterAction": 56
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_141",
+    "previousHost": null,
+    "newHost": "obj_123",
+    "cause": "aura-enter"
+   },
+   "seq": 38,
+   "afterAction": 56
+  },
+  {
+   "t": "ACTION",
+   "turn": 7,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 39,
+   "afterAction": 57
+  },
+  {
+   "t": "ACTION",
+   "turn": 7,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 7,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_142"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 7,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_84",
+    "targets": []
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "bonesplitter",
+    "controller": 0
+   },
+   "seq": 40,
+   "afterAction": 60
+  },
+  {
+   "t": "ACTION",
+   "turn": 7,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 7,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_146",
+    "abilityIndex": 1,
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_123"
+     }
+    ]
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 7,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_146",
+    "previousHost": null,
+    "newHost": "obj_123",
+    "cause": "equip"
+   },
+   "seq": 41,
+   "afterAction": 63
+  },
+  {
+   "t": "ACTION",
+   "turn": 7,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_146",
+    "abilityIndex": 1,
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_123"
+     }
+    ]
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 7,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_146",
+    "previousHost": "obj_123",
+    "newHost": "obj_123",
+    "cause": "equip"
+   },
+   "seq": 42,
+   "afterAction": 65
+  },
+  {
+   "t": "ACTION",
+   "turn": 7,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_146",
+    "abilityIndex": 1,
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_123"
+     }
+    ]
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_146",
+    "previousHost": "obj_123",
+    "newHost": "obj_123",
+    "cause": "equip"
+   },
+   "seq": 43,
+   "afterAction": 66
+  },
+  {
+   "t": "ACTION",
+   "turn": 7,
+   "step": "DECLARE_ATTACKERS",
+   "player": 0,
+   "action": {
+    "type": "declareAttacker",
+    "objectId": "obj_133"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_133",
+    "sourceCardId": "goblin_chieftain",
+    "sourceController": 0,
+    "target": {
+     "kind": "player",
+     "player": 1
+    },
+    "amount": 2,
+    "combat": true
+   },
+   "seq": 44,
+   "afterAction": 67
+  },
+  {
+   "t": "ACTION",
+   "turn": 8,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 45,
+   "afterAction": 68
+  },
+  {
+   "t": "ACTION",
+   "turn": 8,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 8,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_103"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 8,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_150",
+    "targets": []
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "man_o_war",
+    "controller": 1
+   },
+   "seq": 46,
+   "afterAction": 71
+  },
+  {
+   "t": "ACTION",
+   "turn": 8,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 8,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "chooseTriggerTargets",
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_133"
+     }
+    ]
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 8,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 8,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 8,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 8,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 8,
+   "step": "END",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 9,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 9,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 47,
+   "afterAction": 80
+  },
+  {
+   "t": "ACTION",
+   "turn": 9,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 9,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 9,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 9,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 9,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 9,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 9,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_156",
+    "targets": []
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "goblin_chieftain",
+    "controller": 0
+   },
+   "seq": 48,
+   "afterAction": 87
+  },
+  {
+   "t": "ACTION",
+   "turn": 9,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 9,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 9,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_146",
+    "abilityIndex": 1,
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_160"
+     }
+    ]
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 9,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_146",
+    "previousHost": "obj_123",
+    "newHost": "obj_160",
+    "cause": "equip"
+   },
+   "seq": 49,
+   "afterAction": 91
+  },
+  {
+   "t": "ACTION",
+   "turn": 9,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 9,
+   "step": "END",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 10,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 50,
+   "afterAction": 94
+  },
+  {
+   "t": "ACTION",
+   "turn": 10,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 10,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_114"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 10,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_106",
+    "targets": []
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "fencing_ace",
+    "controller": 1
+   },
+   "seq": 51,
+   "afterAction": 97
+  },
+  {
+   "t": "ACTION",
+   "turn": 10,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_137",
+    "targets": [
+     {
+      "kind": "stackItem",
+      "id": "stk_165"
+     }
+    ]
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "counterspell",
+    "controller": 1
+   },
+   "seq": 52,
+   "afterAction": 98
+  },
+  {
+   "t": "ACTION",
+   "turn": 10,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 10,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 10,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 10,
+   "step": "DECLARE_ATTACKERS",
+   "player": 1,
+   "action": {
+    "type": "declareAttacker",
+    "objectId": "obj_154"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 10,
+   "step": "DECLARE_ATTACKERS",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 10,
+   "step": "DECLARE_BLOCKERS",
+   "player": 0,
+   "action": {
+    "type": "declareBlocker",
+    "blocker": "obj_160",
+    "attacker": "obj_154"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 10,
+   "step": "DECLARE_BLOCKERS",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_154",
+    "sourceCardId": "man_o_war",
+    "sourceController": 1,
+    "target": {
+     "kind": "object",
+     "id": "obj_160"
+    },
+    "targetCardId": "goblin_chieftain",
+    "amount": 2,
+    "combat": true
+   },
+   "seq": 53,
+   "afterAction": 105
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_160",
+    "sourceCardId": "goblin_chieftain",
+    "sourceController": 0,
+    "target": {
+     "kind": "object",
+     "id": "obj_154"
+    },
+    "targetCardId": "man_o_war",
+    "amount": 4,
+    "combat": true
+   },
+   "seq": 54,
+   "afterAction": 105
+  },
+  {
+   "t": "EVENT",
+   "name": "DIES",
+   "payload": {
+    "cardId": "man_o_war",
+    "owner": 1
+   },
+   "seq": 55,
+   "afterAction": 105
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_146",
+    "previousHost": "obj_160",
+    "newHost": null,
+    "cause": "host-left"
+   },
+   "seq": 56,
+   "afterAction": 105
+  },
+  {
+   "t": "EVENT",
+   "name": "DIES",
+   "payload": {
+    "cardId": "goblin_chieftain",
+    "owner": 0
+   },
+   "seq": 57,
+   "afterAction": 105
+  },
+  {
+   "t": "ACTION",
+   "turn": 10,
+   "step": "COMBAT_DAMAGE",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 10,
+   "step": "COMBAT_END",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 10,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 10,
+   "step": "END",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 58,
+   "afterAction": 111
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_172",
+    "targets": [
+     {
+      "kind": "player",
+      "player": 0
+     }
+    ]
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "shock",
+    "controller": 0
+   },
+   "seq": 59,
+   "afterAction": 112
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_173",
+    "sourceCardId": "shock",
+    "sourceController": 0,
+    "target": {
+     "kind": "player",
+     "player": 0
+    },
+    "amount": 2,
+    "combat": false
+   },
+   "seq": 60,
+   "afterAction": 114
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_146",
+    "abilityIndex": 1,
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_123"
+     }
+    ]
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_146",
+    "previousHost": null,
+    "newHost": "obj_123",
+    "cause": "equip"
+   },
+   "seq": 61,
+   "afterAction": 119
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_146",
+    "abilityIndex": 1,
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_123"
+     }
+    ]
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_146",
+    "previousHost": "obj_123",
+    "newHost": "obj_123",
+    "cause": "equip"
+   },
+   "seq": 62,
+   "afterAction": 122
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_146",
+    "abilityIndex": 1,
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_123"
+     }
+    ]
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_146",
+    "previousHost": "obj_123",
+    "newHost": "obj_123",
+    "cause": "equip"
+   },
+   "seq": 63,
+   "afterAction": 124
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 11,
+   "step": "END",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 12,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 64,
+   "afterAction": 129
+  },
+  {
+   "t": "ACTION",
+   "turn": 12,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 12,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_124"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 12,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_179",
+    "targets": []
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "glorious_anthem",
+    "controller": 1
+   },
+   "seq": 65,
+   "afterAction": 132
+  },
+  {
+   "t": "ACTION",
+   "turn": 12,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 12,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 12,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 12,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 12,
+   "step": "END",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 66,
+   "afterAction": 139
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_184"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_146",
+    "abilityIndex": 1,
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_123"
+     }
+    ]
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_146",
+    "previousHost": "obj_123",
+    "newHost": "obj_123",
+    "cause": "equip"
+   },
+   "seq": 67,
+   "afterAction": 145
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_157",
+    "targets": []
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "pyroclasm",
+    "controller": 0
+   },
+   "seq": 68,
+   "afterAction": 146
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_187",
+    "sourceCardId": "pyroclasm",
+    "sourceController": 0,
+    "target": {
+     "kind": "object",
+     "id": "obj_123"
+    },
+    "targetCardId": "raging_goblin",
+    "amount": 2,
+    "combat": false
+   },
+   "seq": 69,
+   "afterAction": 148
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_141",
+    "previousHost": "obj_123",
+    "newHost": null,
+    "cause": "host-left"
+   },
+   "seq": 70,
+   "afterAction": 148
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_146",
+    "previousHost": "obj_123",
+    "newHost": null,
+    "cause": "host-left"
+   },
+   "seq": 71,
+   "afterAction": 148
+  },
+  {
+   "t": "EVENT",
+   "name": "DIES",
+   "payload": {
+    "cardId": "raging_goblin",
+    "owner": 0
+   },
+   "seq": 72,
+   "afterAction": 148
+  },
+  {
+   "t": "EVENT",
+   "name": "DIES",
+   "payload": {
+    "cardId": "pacifism",
+    "owner": 1
+   },
+   "seq": 73,
+   "afterAction": 148
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "END",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 13,
+   "step": "END",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 14,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 14,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 74,
+   "afterAction": 158
+  },
+  {
+   "t": "ACTION",
+   "turn": 14,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 14,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 14,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_162"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 14,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 14,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 14,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 14,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 14,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 14,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 14,
+   "step": "END",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 14,
+   "step": "END",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 75,
+   "afterAction": 171
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_194"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_129",
+    "targets": []
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "siege_gang_commander",
+    "controller": 0
+   },
+   "seq": 76,
+   "afterAction": 175
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_146",
+    "abilityIndex": 1,
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_198"
+     }
+    ]
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_146",
+    "previousHost": null,
+    "newHost": "obj_198",
+    "cause": "equip"
+   },
+   "seq": 77,
+   "afterAction": 181
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 15,
+   "step": "END",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 16,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 78,
+   "afterAction": 186
+  },
+  {
+   "t": "ACTION",
+   "turn": 16,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 16,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_192"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 16,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 16,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 16,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 16,
+   "step": "END",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_198",
+    "abilityIndex": 1,
+    "targets": [
+     {
+      "kind": "player",
+      "player": 1
+     }
+    ]
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "sacrifice",
+    "objectId": "obj_198"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_146",
+    "previousHost": "obj_198",
+    "newHost": null,
+    "cause": "host-left"
+   },
+   "seq": 79,
+   "afterAction": 194
+  },
+  {
+   "t": "EVENT",
+   "name": "DIES",
+   "payload": {
+    "cardId": "siege_gang_commander",
+    "owner": 0
+   },
+   "seq": 80,
+   "afterAction": 194
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_198",
+    "sourceCardId": "siege_gang_commander",
+    "sourceController": 0,
+    "target": {
+     "kind": "player",
+     "player": 1
+    },
+    "amount": 2,
+    "combat": false
+   },
+   "seq": 81,
+   "afterAction": 196
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 82,
+   "afterAction": 198
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_208",
+    "targets": []
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "raging_goblin",
+    "controller": 0
+   },
+   "seq": 83,
+   "afterAction": 201
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_146",
+    "abilityIndex": 1,
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_201"
+     }
+    ]
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_146",
+    "previousHost": null,
+    "newHost": "obj_201",
+    "cause": "equip"
+   },
+   "seq": 84,
+   "afterAction": 206
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_146",
+    "abilityIndex": 1,
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_201"
+     }
+    ]
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_146",
+    "previousHost": "obj_201",
+    "newHost": "obj_201",
+    "cause": "equip"
+   },
+   "seq": 85,
+   "afterAction": 209
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "DECLARE_ATTACKERS",
+   "player": 0,
+   "action": {
+    "type": "declareAttacker",
+    "objectId": "obj_200"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "DECLARE_ATTACKERS",
+   "player": 0,
+   "action": {
+    "type": "declareAttacker",
+    "objectId": "obj_201"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "DECLARE_ATTACKERS",
+   "player": 0,
+   "action": {
+    "type": "declareAttacker",
+    "objectId": "obj_202"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "DECLARE_ATTACKERS",
+   "player": 0,
+   "action": {
+    "type": "declareAttacker",
+    "objectId": "obj_211"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "DECLARE_ATTACKERS",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "DECLARE_ATTACKERS",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "DECLARE_BLOCKERS",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "DECLARE_BLOCKERS",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_200",
+    "sourceCardId": "goblin_1_1",
+    "sourceController": 0,
+    "target": {
+     "kind": "player",
+     "player": 1
+    },
+    "amount": 1,
+    "combat": true
+   },
+   "seq": 86,
+   "afterAction": 221
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_201",
+    "sourceCardId": "goblin_1_1",
+    "sourceController": 0,
+    "target": {
+     "kind": "player",
+     "player": 1
+    },
+    "amount": 3,
+    "combat": true
+   },
+   "seq": 87,
+   "afterAction": 221
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_202",
+    "sourceCardId": "goblin_1_1",
+    "sourceController": 0,
+    "target": {
+     "kind": "player",
+     "player": 1
+    },
+    "amount": 1,
+    "combat": true
+   },
+   "seq": 88,
+   "afterAction": 221
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_211",
+    "sourceCardId": "raging_goblin",
+    "sourceController": 0,
+    "target": {
+     "kind": "player",
+     "player": 1
+    },
+    "amount": 1,
+    "combat": true
+   },
+   "seq": 89,
+   "afterAction": 221
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "COMBAT_DAMAGE",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "COMBAT_DAMAGE",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "COMBAT_END",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "COMBAT_END",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_146",
+    "abilityIndex": 1,
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_211"
+     }
+    ]
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_146",
+    "previousHost": "obj_201",
+    "newHost": "obj_211",
+    "cause": "equip"
+   },
+   "seq": 90,
+   "afterAction": 227
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 17,
+   "step": "END",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 18,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 91,
+   "afterAction": 230
+  },
+  {
+   "t": "ACTION",
+   "turn": 18,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 18,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "playLand",
+    "objectId": "obj_204"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 18,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_215",
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_211"
+     }
+    ]
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "control_magic",
+    "controller": 1
+   },
+   "seq": 92,
+   "afterAction": 233
+  },
+  {
+   "t": "ACTION",
+   "turn": 18,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_219",
+    "previousHost": null,
+    "newHost": "obj_211",
+    "cause": "aura-enter"
+   },
+   "seq": 93,
+   "afterAction": 234
+  },
+  {
+   "t": "ACTION",
+   "turn": 18,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 18,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 18,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 18,
+   "step": "END",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 94,
+   "afterAction": 240
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_220",
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_200"
+     }
+    ]
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "lightning_bolt",
+    "controller": 0
+   },
+   "seq": 95,
+   "afterAction": 241
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_221",
+    "sourceCardId": "lightning_bolt",
+    "sourceController": 0,
+    "target": {
+     "kind": "object",
+     "id": "obj_200"
+    },
+    "targetCardId": "goblin_1_1",
+    "amount": 3,
+    "combat": false
+   },
+   "seq": 96,
+   "afterAction": 243
+  },
+  {
+   "t": "EVENT",
+   "name": "DIES",
+   "payload": {
+    "cardId": "goblin_1_1",
+    "owner": 0
+   },
+   "seq": 97,
+   "afterAction": 243
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "COMBAT_BEGIN",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "DECLARE_ATTACKERS",
+   "player": 0,
+   "action": {
+    "type": "declareAttacker",
+    "objectId": "obj_201"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "DECLARE_ATTACKERS",
+   "player": 0,
+   "action": {
+    "type": "declareAttacker",
+    "objectId": "obj_202"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "DECLARE_ATTACKERS",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "DECLARE_ATTACKERS",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "DECLARE_BLOCKERS",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "DECLARE_BLOCKERS",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_201",
+    "sourceCardId": "goblin_1_1",
+    "sourceController": 0,
+    "target": {
+     "kind": "player",
+     "player": 1
+    },
+    "amount": 1,
+    "combat": true
+   },
+   "seq": 98,
+   "afterAction": 255
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_202",
+    "sourceCardId": "goblin_1_1",
+    "sourceController": 0,
+    "target": {
+     "kind": "player",
+     "player": 1
+    },
+    "amount": 1,
+    "combat": true
+   },
+   "seq": 99,
+   "afterAction": 255
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "COMBAT_DAMAGE",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "COMBAT_DAMAGE",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "COMBAT_END",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "COMBAT_END",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_146",
+    "abilityIndex": 1,
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_201"
+     }
+    ]
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_146",
+    "previousHost": "obj_211",
+    "newHost": "obj_201",
+    "cause": "equip"
+   },
+   "seq": 100,
+   "afterAction": 262
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_146",
+    "abilityIndex": 1,
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_201"
+     }
+    ]
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_146",
+    "previousHost": "obj_201",
+    "newHost": "obj_201",
+    "cause": "equip"
+   },
+   "seq": 101,
+   "afterAction": 265
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_146",
+    "abilityIndex": 1,
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_201"
+     }
+    ]
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_146",
+    "previousHost": "obj_201",
+    "newHost": "obj_201",
+    "cause": "equip"
+   },
+   "seq": 102,
+   "afterAction": 268
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_146",
+    "abilityIndex": 1,
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_201"
+     }
+    ]
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_146",
+    "previousHost": "obj_201",
+    "newHost": "obj_201",
+    "cause": "equip"
+   },
+   "seq": 103,
+   "afterAction": 271
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "MAIN2",
+   "player": 0,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_146",
+    "abilityIndex": 1,
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_202"
+     }
+    ]
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_146",
+    "previousHost": "obj_201",
+    "newHost": "obj_202",
+    "cause": "equip"
+   },
+   "seq": 104,
+   "afterAction": 273
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 19,
+   "step": "END",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 20,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 105,
+   "afterAction": 276
+  },
+  {
+   "t": "ACTION",
+   "turn": 20,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 20,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_229",
+    "targets": []
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "cloudkin_seer",
+    "controller": 1
+   },
+   "seq": 106,
+   "afterAction": 278
+  },
+  {
+   "t": "ACTION",
+   "turn": 20,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 20,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 1
+   },
+   "seq": 107,
+   "afterAction": 280
+  },
+  {
+   "t": "ACTION",
+   "turn": 20,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_234",
+    "targets": []
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "wrath_of_god",
+    "controller": 1
+   },
+   "seq": 108,
+   "afterAction": 281
+  },
+  {
+   "t": "ACTION",
+   "turn": 20,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "DIES",
+   "payload": {
+    "cardId": "goblin_1_1",
+    "owner": 0
+   },
+   "seq": 109,
+   "afterAction": 282
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_146",
+    "previousHost": "obj_202",
+    "newHost": null,
+    "cause": "host-left"
+   },
+   "seq": 110,
+   "afterAction": 282
+  },
+  {
+   "t": "EVENT",
+   "name": "DIES",
+   "payload": {
+    "cardId": "goblin_1_1",
+    "owner": 0
+   },
+   "seq": 111,
+   "afterAction": 282
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_219",
+    "previousHost": "obj_211",
+    "newHost": null,
+    "cause": "host-left"
+   },
+   "seq": 112,
+   "afterAction": 282
+  },
+  {
+   "t": "EVENT",
+   "name": "DIES",
+   "payload": {
+    "cardId": "raging_goblin",
+    "owner": 0
+   },
+   "seq": 113,
+   "afterAction": 282
+  },
+  {
+   "t": "EVENT",
+   "name": "DIES",
+   "payload": {
+    "cardId": "cloudkin_seer",
+    "owner": 1
+   },
+   "seq": 114,
+   "afterAction": 282
+  },
+  {
+   "t": "EVENT",
+   "name": "DIES",
+   "payload": {
+    "cardId": "control_magic",
+    "owner": 1
+   },
+   "seq": 115,
+   "afterAction": 282
+  },
+  {
+   "t": "ACTION",
+   "turn": 20,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 20,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 20,
+   "step": "MAIN2",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 20,
+   "step": "END",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "UPKEEP",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "UPKEEP",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "CARD_DRAWN",
+   "payload": {
+    "player": 0
+   },
+   "seq": 116,
+   "afterAction": 288
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "DRAW",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "DRAW",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "castSpell",
+    "objectId": "obj_241",
+    "targets": []
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "SPELL_CAST",
+   "payload": {
+    "cardId": "goblin_chieftain",
+    "controller": 0
+   },
+   "seq": 117,
+   "afterAction": 291
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_146",
+    "abilityIndex": 1,
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_244"
+     }
+    ]
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_146",
+    "previousHost": null,
+    "newHost": "obj_244",
+    "cause": "equip"
+   },
+   "seq": 118,
+   "afterAction": 296
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_146",
+    "abilityIndex": 1,
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_244"
+     }
+    ]
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_146",
+    "previousHost": "obj_244",
+    "newHost": "obj_244",
+    "cause": "equip"
+   },
+   "seq": 119,
+   "afterAction": 299
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "MAIN1",
+   "player": 0,
+   "action": {
+    "type": "activateAbility",
+    "objectId": "obj_146",
+    "abilityIndex": 1,
+    "targets": [
+     {
+      "kind": "object",
+      "id": "obj_244"
+     }
+    ]
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "ATTACHED",
+   "payload": {
+    "objectId": "obj_146",
+    "previousHost": "obj_244",
+    "newHost": "obj_244",
+    "cause": "equip"
+   },
+   "seq": 120,
+   "afterAction": 301
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "MAIN1",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "COMBAT_BEGIN",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "DECLARE_ATTACKERS",
+   "player": 0,
+   "action": {
+    "type": "declareAttacker",
+    "objectId": "obj_244"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "DECLARE_ATTACKERS",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "ACTION",
+   "turn": 21,
+   "step": "DECLARE_BLOCKERS",
+   "player": 1,
+   "action": {
+    "type": "pass"
+   }
+  },
+  {
+   "t": "EVENT",
+   "name": "DAMAGE",
+   "payload": {
+    "sourceId": "obj_244",
+    "sourceCardId": "goblin_chieftain",
+    "sourceController": 0,
+    "target": {
+     "kind": "player",
+     "player": 1
+    },
+    "amount": 4,
+    "combat": true
+   },
+   "seq": 121,
+   "afterAction": 306
+  }
+ ]
+}

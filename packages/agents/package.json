@@ -10,6 +10,7 @@
     }
   },
   "dependencies": {
+    "@shandalar/cards": "workspace:*",
     "@shandalar/core": "workspace:*",
     "@shandalar/engine": "workspace:*"
   }

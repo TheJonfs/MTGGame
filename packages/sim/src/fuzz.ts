@@ -2,15 +2,34 @@ import { writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
 import type { CardDef } from "@shandalar/cards";
-import { runMatch, type MatchResult, type MatchSpec } from "@shandalar/engine";
-import { RandomAgent } from "@shandalar/agents";
+import { runMatch, type Agent, type MatchResult, type MatchSpec } from "@shandalar/engine";
+import { RandomAgent, SanePolicyAgent } from "@shandalar/agents";
 import { DECKS, PAIRINGS, type DeckKey } from "./slice-decks.js";
+
+/** Agent kinds the sim knows how to construct (ADR-045). */
+export type AgentKind = "random" | "sane";
+export type AgentPair = [AgentKind, AgentKind];
+
+export function makeAgent(kind: AgentKind, seed: number, cards: Map<string, CardDef>): Agent {
+  return kind === "sane" ? new SanePolicyAgent(seed, cards) : new RandomAgent(seed);
+}
+
+export function parseAgentPair(s: string | undefined): AgentPair {
+  if (!s) return ["random", "random"];
+  const parts = s.split(",").map((p) => p.trim());
+  if (parts.length !== 2 || !parts.every((p) => p === "random" || p === "sane")) {
+    throw new Error(`Bad --agents "${s}" (expected e.g. sane,random)`);
+  }
+  return parts as AgentPair;
+}
 
 export interface PairingReport {
   pairing: string;
   games: number;
   terminations: Record<string, number>;
   meanTurns: number;
+  /** Wins by seat 0 / seat 1 / draws. */
+  wins: [number, number, number];
   errors: { seed: number; message: string }[];
 }
 
@@ -20,12 +39,12 @@ export interface FuzzReport {
   totalErrors: number;
 }
 
-export function matchSpec(seed: number, a: DeckKey, b: DeckKey): MatchSpec {
+export function matchSpec(seed: number, a: DeckKey, b: DeckKey, agents: AgentPair = ["random", "random"]): MatchSpec {
   return {
     seed,
     players: [
-      { name: DECKS[a].name, decklist: [...DECKS[a].decklist], agent: "random" },
-      { name: DECKS[b].name, decklist: [...DECKS[b].decklist], agent: "random" },
+      { name: DECKS[a].name, decklist: [...DECKS[a].decklist], agent: agents[0] },
+      { name: DECKS[b].name, decklist: [...DECKS[b].decklist], agent: agents[1] },
     ],
     rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 },
     modifiers: [],
@@ -37,10 +56,14 @@ export async function runPairingMatch(
   seed: number,
   a: DeckKey = "A",
   b: DeckKey = "B",
+  agentPair: AgentPair = ["random", "random"],
 ): Promise<MatchResult> {
   // Distinct derived seeds per seat so the two agents don't mirror each other.
-  const agents: [RandomAgent, RandomAgent] = [new RandomAgent(seed * 2 + 1), new RandomAgent(seed * 2 + 2)];
-  return runMatch(matchSpec(seed, a, b), cards, agents);
+  const agents: [Agent, Agent] = [
+    makeAgent(agentPair[0], seed * 2 + 1, cards),
+    makeAgent(agentPair[1], seed * 2 + 2, cards),
+  ];
+  return runMatch(matchSpec(seed, a, b, agentPair), cards, agents);
 }
 
 /** Saved-game file format the viewer loads (S6). */
@@ -65,22 +88,25 @@ export async function fuzzPairing(
   startSeed: number,
   onProgress?: (i: number) => void,
   saveDir?: string,
+  agentPair: AgentPair = ["random", "random"],
 ): Promise<PairingReport> {
   const terminations: Record<string, number> = {};
   const errors: { seed: number; message: string }[] = [];
+  const wins: [number, number, number] = [0, 0, 0];
   let totalTurns = 0;
   let completed = 0;
 
   for (let i = 0; i < games; i++) {
     const seed = startSeed + i;
     try {
-      const result = await runPairingMatch(cards, seed, a, b);
+      const result = await runPairingMatch(cards, seed, a, b, agentPair);
       terminations[result.reason] = (terminations[result.reason] ?? 0) + 1;
+      wins[result.winner ?? 2] += 1;
       totalTurns += result.turns;
       completed += 1;
       if (saveDir) {
         mkdirSync(saveDir, { recursive: true });
-        writeFileSync(join(saveDir, `${a}-${b}-${seed}.json`), savedGame(matchSpec(seed, a, b), result));
+        writeFileSync(join(saveDir, `${a}-${b}-${seed}.json`), savedGame(matchSpec(seed, a, b, agentPair), result));
       }
     } catch (e) {
       errors.push({ seed, message: (e as Error).stack ?? String(e) });
@@ -93,6 +119,7 @@ export async function fuzzPairing(
     games,
     terminations,
     meanTurns: completed > 0 ? totalTurns / completed : 0,
+    wins,
     errors,
   };
 }
@@ -104,12 +131,13 @@ export async function fuzz(
   startSeed: number,
   onProgress?: (pairing: string, i: number) => void,
   saveDir?: string,
+  agentPair: AgentPair = ["random", "random"],
 ): Promise<FuzzReport> {
   const pool = loadCardPool(cardsDir);
   const pairings: PairingReport[] = [];
   for (const [a, b] of PAIRINGS) {
     pairings.push(
-      await fuzzPairing(pool.cards, a, b, gamesPerPairing, startSeed, (i) => onProgress?.(`${a}-${b}`, i), saveDir),
+      await fuzzPairing(pool.cards, a, b, gamesPerPairing, startSeed, (i) => onProgress?.(`${a}-${b}`, i), saveDir, agentPair),
     );
   }
   return {
