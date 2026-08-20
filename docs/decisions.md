@@ -85,3 +85,13 @@ Planner-maintained. Implementer proposes via handoff Concerns; planner records.
 **ADR-040 — Event sequencing and the fixtures inbox.** EVENT log entries carry `seq` (monotonic) and `afterAction` (index of the last ACTION entry before them) so viewers can align events to the action timeline without re-simulating. The viewer's "flag this" writes `fixtures-inbox/<seed>-t<turn>-a<index>.json` per data-model §8; a later session converts inbox entries into scenario fixtures. (S5 suggested-next a/b.)
 
 **ADR-041 — Ratifications from S5:** deviations 1–2; no `characteristics()` caching until M4 measures it hot; legend-rule keep-choice at end of SBA pass accepted (704.3 nuance unobservable with current pool); B–D deck-out rate accepted as matchup property.
+
+**ADR-042 — Ratifications from S6:** viewer reads engine state via view-ctx + seat-shaped selectors (`buildView` intact for play-mode redaction); icons are one-render-with-targeted-rerolls; unicode transport glyphs accepted as cosmetic debt; the gemini-image skill's asset conventions are canonical (`assets/images/` + `assets/manifest.json` skill-owned; `assets/generated/` + `MANIFEST.md` derived/human; subjects in `docs/art/subjects/`). CardDef `text` field deferred until custom cards exist.
+
+**ADR-043 — Hand frames drop oracle text in the play UI** (name/art/cost/P&T only); the inspector carries rules text. Matches physical play and fixes 8px squint. (S6 concern 3; art-direction §3 updated.)
+
+**ADR-044 — Small-items rider for the next implementation session:** DAMAGE event payloads gain `targetCardId` (viewer log readability); transport glyphs redrawn in ink when convenient; Phyrexian Rager printing override to `apc` in printings.md (PMEI promo was the deterministic-but-unintended pick).
+
+**ADR-045 — SanePolicyAgent.** A policy-filtered random agent joins `agents`: random choice within a filtered legal-action set (mulligan keeps 2–5 land hands; always play a land; tap only toward an intended cast; prefer casting over passing; attack by simple filter). Purposes: watchable games, deeper fuzz coverage of expensive cards, and the bottom rung of M4's sparring ladder. RandomAgent remains the legality fuzzer — Sane never replaces it in the engine-correctness suites, and its policies live entirely in `agents` (never in the engine or enumerator).
+
+**ADR-046 — Card gallery + art notes.** A `/gallery` route in `packages/ui` renders every pool card in our frame (printed-scan toggle), grouped/filterable, with set/artist captions from the printings data. A per-card note button appends to `docs/art/art-notes.md` (same pattern as the fixtures inbox): Chris's browsing produces a work list the planner converts into printings.md overrides or frame fixes.

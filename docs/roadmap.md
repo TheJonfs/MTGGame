@@ -15,4 +15,6 @@ Milestones are engine-facing until M6. Each milestone is one or two sessions.
 | M6 | Overworld manifest + first slice | Separate manifest; map, one quest, one shop, collection; calls `runMatch` with modifiers. | One loop: travel → duel → reward. |
 | M7+ | AI v2, pool to ~150, overworld depth, replay viewer | | |
 
-Status: **M3 complete — ceiling implemented (S5, 2026-08-19).** Session 6 brief cut (M3.5: viewer + art pass + Scryfall fetch). Pool growth to ~100 can interleave as card-batch sessions from here on.
+Status: M3.5 complete (S6). **S7 = M3.75 instrumentation** (SanePolicyAgent + card gallery + small items), then the M4 design conversation, then M4 proper.
+
+| M3.75 (S7) | Instrumentation | SanePolicyAgent (ADR-045), card gallery + art notes (ADR-046), ADR-044 riders (DAMAGE targetCardId, ink transport glyphs, Rager refetch). | Chris can watch sane games and browse/annotate every card. |

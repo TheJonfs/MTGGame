@@ -37,6 +37,7 @@ At session end, **overwrite `handoff.md`** using the template at the bottom of t
 7. **Escalate, don't decide.** Rules ambiguities, mechanics not in the manifest, and card-pool changes go in the handoff's Concerns, not into code. Interim choices are allowed only when the brief says so, and must be logged.
 8. **Tests are the spec.** Scenario fixtures (board state → actions → assertions) accompany every mechanic and every card batch.
 9. **Oracle grounding.** No real-card fact (mana cost, P/T, types, text) is ever taken from memory — planner or implementer. Briefs carry Scryfall-verified stats; the implementer re-verifies against Scryfall before encoding and flags any mismatch with the brief. (S2 concern 1; two planner errors were caught this way.)
+11. **Verified doc edits.** Scripted edits to docs/registries assert their replacement landed; an edit that finds nothing to replace is a failure, not a no-op. (S6 concern 1 — an S5 registry edit silently no-opped.)
 10. **Rules grounding.** Any non-obvious rules interaction asserted in a brief or fixture cites the Comprehensive Rules section. The implementer verifies cited rules the way it verifies Scryfall stats and flags disagreement rather than implementing the brief's reading. (S3 deviation 1 was a planner rules error on 510.1c.)
 
 ## Repository map
@@ -53,7 +54,7 @@ At session end, **overwrite `handoff.md`** using the template at the bottom of t
 - `docs/registries/pool-registry.md` — the card pool: every card's status (planned / implemented / tested / cut) and the vocabulary words it uses. Repo-canonical.
 - `docs/briefs/` — numbered session briefs; never edit existing ones.
 - `docs/art-direction.md`, `docs/prompts/*.md`, `docs/art/printings.md` — visual direction, generation prompts, Scryfall printing rules. Planner-maintained.
-- `.claude/skills/imagegen/` — image generation skill (Gemini). Read its SKILL.md before generating assets.
+- `.claude/skills/gemini-image/` — image generation skill. Read its SKILL.md before generating assets; its conventions own `assets/images/` and `assets/manifest.json` (S6 deviation 4). Derived, UI-ready assets live in `assets/generated/` with `MANIFEST.md` as the human ledger; locked subject prompts in `docs/art/subjects/`.
 - `assets/generated/` — generated art (committed) with `MANIFEST.md`. `data/art/real/` — Scryfall images (gitignored).
 - `fixtures-inbox/` — flagged replay moments awaiting triage (data-model §8).
 - `packages/` — TypeScript monorepo (see engine-design §1). Tests: `pnpm test` = smoke fuzz; `FUZZ_FULL=1 pnpm test` = full (ADR-034).

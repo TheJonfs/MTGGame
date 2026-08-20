@@ -31,7 +31,7 @@ Board left ≈ 2/3, rail right ≈ 1/3. Bottom row: transport/controls (replay) 
 ## 3. Card presentation
 
 - Battlefield: art crop + name strip + P/T badge (counters and EOT modifiers reflected in the badge, delta-colored); tapped = rotated 90°; summoning sick = desaturated; attacking/blocking = moved to the lane; attached auras/equipment sit beside their host at reduced width.
-- Hand and inspector: full frame — **always our frame** (ADR-008's rendered frame is now the only frame) with the Scryfall `art_crop` as art. Inspector offers a "printed card" toggle showing the `normal` image.
+- Hand: full frame **without oracle text** (name/art/cost/P&T; ADR-043) — the inspector carries rules text. Inspector: full frame — **always our frame** (ADR-008's rendered frame is now the only frame) with the Scryfall `art_crop` as art. Inspector offers a "printed card" toggle showing the `normal` image.
 - Hover anywhere → inspector updates. Click → pins.
 
 ## 4. Iconography (generate via the imagegen skill; SVG-traceable, single-color, 24px grid)
