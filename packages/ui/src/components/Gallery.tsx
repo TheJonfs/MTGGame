@@ -63,8 +63,17 @@ function deckMembership(): Map<string, DeckKey[]> {
   return m;
 }
 
+/** Chosen art style + year for custom cards (ADR-052: Chris's pick, logged in MANIFEST). */
+const CUSTOM_ART_META: Record<string, { style: string; year: number }> = {
+  cunning_tactician: { style: "classical oil", year: 2026 },
+};
+
 function caption(def: CardDef, oracle?: OracleEntry | undefined): string {
-  if (!oracle) return def.isTokenDef ? "token" : "custom";
+  if (!oracle) {
+    if (def.isTokenDef) return "token";
+    const meta = CUSTOM_ART_META[def.id];
+    return meta ? `custom · ${meta.style} · ${meta.year}` : "custom";
+  }
   return `${oracle.set.toUpperCase()} #${oracle.collector_number} · ${oracle.artist}`;
 }
 
