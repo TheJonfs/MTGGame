@@ -228,6 +228,10 @@ export class HeuristicAgent implements Agent {
       score += c.controller === me ? -ownLossWeight * valueOf(id) : valueOf(id);
     }
     score += outcome.playerDamage[opp] * dmgWeight;
+    // S9 Part 1.1: our lifelink attackers' gains show up as negative own
+    // damage in the sim — credit them. (Opponent lifelink blockers already
+    // debit through negative playerDamage[opp].)
+    score += Math.max(0, -outcome.playerDamage[me]) * 0.2;
     if (view.life[opp] - outcome.playerDamage[opp] <= 0) score += 1000;
     this.simMemo.set(memoKey, score);
     return score;
@@ -252,7 +256,36 @@ export class HeuristicAgent implements Agent {
       : 0;
     const prevented = attacker.power - trampleThrough;
     const w = this.profile.archetype === "control" ? 0.3 : 0.2;
-    return (kills ? valueOf(attacker.id) : 0) - (dies ? valueOf(blocker.id) : 0) + prevented * w;
+    // S9 Part 1.1: blocking a lifelinker also denies its controller the
+    // lifegain — prevented damage counts again at the lifegain rate.
+    const lifelinkDenied = attacker.keywords.includes("lifelink") ? prevented * 0.25 : 0;
+    return (kills ? valueOf(attacker.id) : 0) - (dies ? valueOf(blocker.id) : 0) + prevented * w + lifelinkDenied;
+  }
+
+  /** Gain of double-blocking a menace attacker: kills if combined power is
+   * lethal; the attacker's damage fells blockers lethal-in-order (worst case
+   * for us: it takes the cheaper toughness first, maximizing kills). */
+  private pairBlockGain(view: GameView, b1: SimObject, b2: SimObject, attacker: SimObject): number {
+    const valueOf = (id: string) => {
+      const o = view.battlefield.find((x) => x.id === id);
+      return o ? objectValue(this.defs, o) : 1;
+    };
+    const aDeathtouch = attacker.keywords.includes("deathtouch");
+    const kills = b1.power + b2.power >= attacker.toughness - attacker.damage || b1.keywords.includes("deathtouch") || b2.keywords.includes("deathtouch");
+    let remaining = attacker.power;
+    let deadValue = 0;
+    for (const b of [b1, b2].sort((x, y) => x.toughness - y.toughness)) {
+      if (aDeathtouch ? remaining >= 1 : remaining >= b.toughness) {
+        deadValue += valueOf(b.id);
+        remaining -= aDeathtouch ? 1 : b.toughness;
+      }
+    }
+    const prevented = attacker.keywords.includes("trample")
+      ? Math.min(attacker.power, b1.toughness + b2.toughness)
+      : attacker.power;
+    const w = this.profile.archetype === "control" ? 0.3 : 0.2;
+    const lifelinkDenied = attacker.keywords.includes("lifelink") ? prevented * 0.25 : 0;
+    return (kills ? valueOf(attacker.id) : 0) - deadValue + prevented * w + lifelinkDenied;
   }
 
   private greedyBlocks(
@@ -271,19 +304,43 @@ export class HeuristicAgent implements Agent {
     const blocks: { blocker: string; attacker: string }[] = [];
     const blocked = new Set<string>();
 
+    const canBlock = (b: SimObject, a: SimObject) =>
+      !(a.keywords.includes("flying") && !b.keywords.includes("flying") && !b.keywords.includes("reach"));
+
     for (const b of available) {
       let best: { attacker: string; gain: number } | null = null;
       for (const a of attackerObjs) {
         if (blocked.has(a.id)) continue;
-        if (a.keywords.includes("menace")) continue; // pair-planning is beyond greedy v1
-        // Flying/reach legality (the enumerator enforces this in real play).
-        if (a.keywords.includes("flying") && !b.keywords.includes("flying") && !b.keywords.includes("reach")) continue;
+        if (a.keywords.includes("menace")) continue; // pairs handled below (S9 Part 1.2)
+        if (!canBlock(b, a)) continue;
         const gain = this.blockGain(view, b, a);
         if (best === null || gain > best.gain) best = { attacker: a.id, gain };
       }
       if (best && best.gain > 0) {
         blocks.push({ blocker: b.id, attacker: best.attacker });
         blocked.add(best.attacker);
+      }
+    }
+
+    // S9 Part 1.2: menace pair-planning — commit two blockers to a menace
+    // attacker when the pair exchange evaluates positive. Used by own blocks
+    // AND by the opponent model inside the attack sim, so menace attacks are
+    // no longer priced against a blocker model that can never answer them.
+    const free = () => available.filter((c) => !blocks.some((x) => x.blocker === c.id));
+    for (const a of attackerObjs) {
+      if (blocked.has(a.id) || !a.keywords.includes("menace")) continue;
+      const candidates = free().filter((b) => canBlock(b, a));
+      let best: { pair: [SimObject, SimObject]; gain: number } | null = null;
+      for (let i = 0; i < candidates.length; i++) {
+        for (let j = i + 1; j < candidates.length; j++) {
+          const gain = this.pairBlockGain(view, candidates[i]!, candidates[j]!, a);
+          if (best === null || gain > best.gain) best = { pair: [candidates[i]!, candidates[j]!], gain };
+        }
+      }
+      if (best && best.gain > 0) {
+        blocks.push({ blocker: best.pair[0].id, attacker: a.id });
+        blocks.push({ blocker: best.pair[1].id, attacker: a.id });
+        blocked.add(a.id);
       }
     }
 
