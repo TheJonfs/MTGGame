@@ -170,3 +170,35 @@ body {
 .loader .box { background: var(--parchment); color: var(--ink); border: 2px solid var(--ink); border-radius: 8px; padding: 28px 36px; text-align: center; }
 button.linkish { background: none; border: none; color: var(--brass); cursor: pointer; text-decoration: underline; font-size: 11px; }
 .toggle-row { display: flex; gap: 10px; font-size: 11px; align-items: center; }
+
+/* Gallery (ADR-046) */
+.gallery { height: 100%; overflow-y: auto; padding: 14px 18px; background: var(--parchment) url("/panel-parchment.png"); background-size: 512px; }
+.gallery-header {
+  display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 12px;
+  position: sticky; top: -14px; z-index: 5; background: var(--parchment); padding: 8px 6px;
+  border: 1.5px solid var(--ink); border-radius: 7px; box-shadow: 1px 2px 4px rgba(0,0,0,0.25);
+}
+.gallery-header input[type="text"], .gallery-header select {
+  font-family: var(--sans); font-size: 11px; background: var(--parchment); color: var(--ink);
+  border: 1.2px solid var(--ink); border-radius: 4px; padding: 3px 5px;
+}
+.gallery-header a.linkish { color: var(--brass); font-size: 11px; }
+.gallery-grid { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; }
+.gallery-cell { cursor: pointer; }
+.gallery-cell .frame:hover { outline: 2.5px solid var(--brass); }
+.gallery-cell .caption, .gallery .caption { font-size: 10px; line-height: 1.3; margin-top: 3px; max-width: 192px; }
+.strip-label { font-size: 10px; color: var(--ink-soft); margin-top: 4px; }
+.gallery-modal {
+  position: fixed; inset: 0; background: rgba(43, 37, 32, 0.55); display: grid; place-items: center; z-index: 20;
+}
+.gallery-modal-box {
+  background: var(--parchment) url("/panel-parchment.png"); background-size: 512px;
+  border: 2px solid var(--ink); border-radius: 9px; padding: 14px 18px; box-shadow: 3px 5px 14px rgba(0,0,0,0.5);
+}
+.gallery-modal-card { margin: 10px 0 6px; }
+.gallery-modal-card .frame { width: 300px; font-size: 14px; }
+.gallery-modal-card .frame .art-window { height: 160px; }
+.gallery-modal-card .frame .mana-cost { font-size: 13px; }
+.printed-scan { width: 240px; border-radius: 12px; }
+.gallery-modal-card .printed-scan { width: 300px; }
+.gallery-cell .printed-scan { width: 192px; }

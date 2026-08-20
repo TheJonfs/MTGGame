@@ -76,6 +76,9 @@ importers:
       '@shandalar/engine':
         specifier: workspace:*
         version: link:../engine
+      '@shandalar/sim':
+        specifier: workspace:*
+        version: link:../sim
       react:
         specifier: ^19.0.0
         version: 19.2.8

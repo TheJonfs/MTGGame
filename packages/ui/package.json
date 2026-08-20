@@ -7,6 +7,7 @@
     "@shandalar/cards": "workspace:*",
     "@shandalar/core": "workspace:*",
     "@shandalar/engine": "workspace:*",
+    "@shandalar/sim": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

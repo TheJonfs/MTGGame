@@ -52,15 +52,18 @@ export function CardFrame({
   mini,
   pt,
   showPrinted,
+  hand,
 }: {
   def: CardDef;
   oracle?: OracleEntry | undefined;
   mini?: boolean;
   pt?: { power: number; toughness: number } | null;
   showPrinted?: boolean;
+  /** ADR-043 hand variant: name/art/cost/P&T only — no type line, no oracle text. */
+  hand?: boolean;
 }) {
   if (showPrinted && oracle) {
-    return <img src={`/real-art/${def.id}.full.jpg`} alt={def.name} style={{ width: 240, borderRadius: 12 }} />;
+    return <img className="printed-scan" src={`/real-art/${def.id}.full.jpg`} alt={def.name} />;
   }
   const colors = frameColors(def);
   const band =
@@ -89,8 +92,8 @@ export function CardFrame({
           <img className="placeholder" src={`/icons/${placeholderIcon}.svg`} alt="" />
         )}
       </div>
-      <div className="type-line">{oracle?.type_line ?? typeLine(def)}</div>
-      <div className="oracle">{oracle?.oracle_text ?? derivedText(def)}</div>
+      {!hand && <div className="type-line">{oracle?.type_line ?? typeLine(def)}</div>}
+      {!hand && <div className="oracle">{oracle?.oracle_text ?? derivedText(def)}</div>}
       {isCreature && (
         <div className="pt-cartouche">
           {pt ? `${pt.power}/${pt.toughness}` : `${def.power}/${def.toughness}`}

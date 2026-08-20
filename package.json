@@ -12,6 +12,7 @@
     "fuzz": "tsx packages/sim/src/fuzz-cli.ts",
     "play-random": "tsx packages/sim/src/play-random-cli.ts",
     "art:fetch": "tsx scripts/art-fetch.ts",
+    "agent-stats": "tsx packages/sim/src/agent-stats-cli.ts",
     "viewer": "vite packages/ui"
   },
   "devDependencies": {

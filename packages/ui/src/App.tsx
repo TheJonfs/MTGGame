@@ -5,6 +5,7 @@ import { Board } from "./components/Board";
 import { Rail } from "./components/Rail";
 import { Transport } from "./components/Transport";
 import { LogPanel, buildLogLines } from "./components/LogPanel";
+import { Gallery } from "./components/Gallery";
 
 const VIEWER_VERSION = "s6-0.1";
 /** Log placement is an open art-direction decision (§7): rail tab by default,
@@ -172,5 +173,6 @@ function Viewer({ game }: { game: SavedGame }) {
 
 export default function App() {
   const [game, setGame] = useState<SavedGame | null>(null);
+  if (window.location.pathname === "/gallery") return <Gallery />;
   return game ? <Viewer game={game} /> : <Loader onLoad={setGame} />;
 }

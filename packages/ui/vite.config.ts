@@ -2,7 +2,7 @@ import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import { fileURLToPath } from "node:url";
 import { dirname, join, normalize } from "node:path";
-import { createReadStream, existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { createReadStream, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repo = join(here, "../..");
@@ -18,6 +18,53 @@ function shandalarDev(): Plugin {
         if (!file.startsWith(join(repo, "data/art/real")) || !existsSync(file)) return next();
         res.setHeader("Content-Type", file.endsWith(".json") ? "application/json" : "image/jpeg");
         createReadStream(file).pipe(res);
+      });
+      // Gallery (ADR-046): the pool registry is the gallery's source of truth.
+      server.middlewares.use("/__registry", (_req, res) => {
+        res.setHeader("Content-Type", "text/plain; charset=utf-8");
+        res.end(readFileSync(join(repo, "docs/registries/pool-registry.md"), "utf8"));
+      });
+      // Gallery art notes (ADR-046): append {cardId, note, date} to docs/art/art-notes.md,
+      // one bullet per note under a per-card heading. Same pattern as /__flag.
+      server.middlewares.use("/__art-note", (req, res, next) => {
+        if (req.method !== "POST") return next();
+        let body = "";
+        req.on("data", (c) => (body += c));
+        req.on("end", () => {
+          try {
+            const { cardId, note } = JSON.parse(body) as { cardId: string; note: string };
+            if (!cardId || !note) throw new Error("cardId and note required");
+            const file = join(repo, "docs/art/art-notes.md");
+            const HEADER = `# Art notes
+
+Per-card art/frame notes from gallery browsing (ADR-046). Lifecycle: Chris
+writes notes via the gallery's note button; the planner converts them into
+\`docs/art/printings.md\` overrides or frame fixes; entries are struck
+through (\`~~...~~\`) when resolved. Newest note last within each card.
+`;
+            let text = existsSync(file) ? readFileSync(file, "utf8") : HEADER;
+            const date = new Date().toISOString().slice(0, 10);
+            const bullet = `- ${date}: ${note.replace(/\r?\n/g, " ").trim()}`;
+            const heading = `## ${cardId}`;
+            const idx = text.indexOf(`\n${heading}\n`);
+            if (idx === -1) {
+              text = text.trimEnd() + `\n\n${heading}\n\n${bullet}\n`;
+            } else {
+              // Append the bullet at the end of this card's section (before the next heading).
+              const sectionStart = idx + 1 + heading.length;
+              const nextHeading = text.indexOf("\n## ", sectionStart);
+              const head = nextHeading === -1 ? text : text.slice(0, nextHeading);
+              const tail = nextHeading === -1 ? "" : text.slice(nextHeading + 1);
+              text = head.trimEnd() + `\n${bullet}\n` + (tail ? `\n${tail}` : "");
+            }
+            writeFileSync(file, text.endsWith("\n") ? text : text + "\n");
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify({ ok: true, file: "docs/art/art-notes.md" }));
+          } catch (e) {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ ok: false, error: String(e) }));
+          }
+        });
       });
       server.middlewares.use("/__flag", (req, res, next) => {
         if (req.method !== "POST") return next();
@@ -50,6 +97,8 @@ export default defineConfig({
       "@shandalar/core": join(repo, "packages/core/src/index.ts"),
       "@shandalar/cards": join(repo, "packages/cards/src/index.ts"),
       "@shandalar/engine": join(repo, "packages/engine/src/index.ts"),
+      // Browser-safe subpath only — the sim root exports pull in node:fs.
+      "@shandalar/sim/decks": join(repo, "packages/sim/src/slice-decks.ts"),
     },
   },
   server: { fs: { allow: [repo] }, port: Number(process.env.PORT) || 5173 },
