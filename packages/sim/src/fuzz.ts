@@ -3,22 +3,45 @@ import { join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
 import type { CardDef } from "@shandalar/cards";
 import { runMatch, type Agent, type MatchResult, type MatchSpec } from "@shandalar/engine";
-import { RandomAgent, SanePolicyAgent } from "@shandalar/agents";
+import { DEFAULT_TEMPERATURE, HeuristicAgent, RandomAgent, SanePolicyAgent, type Archetype } from "@shandalar/agents";
 import { DECKS, PAIRINGS, type DeckKey } from "./slice-decks.js";
 
-/** Agent kinds the sim knows how to construct (ADR-045). */
-export type AgentKind = "random" | "sane";
+/** Agent kinds the sim knows how to construct (ADR-045, ADR-049). */
+export type AgentKind = "random" | "sane" | "heuristic";
 export type AgentPair = [AgentKind, AgentKind];
 
-export function makeAgent(kind: AgentKind, seed: number, cards: Map<string, CardDef>): Agent {
+/** Archetype per slice deck (ADR-050 profile input; defaults chosen by the implementer, tune in M4b). */
+export const DECK_ARCHETYPES: Record<DeckKey, Archetype> = {
+  A: "aggro",
+  B: "control",
+  C: "midrange",
+  D: "midrange",
+  E: "control",
+};
+
+export function makeAgent(
+  kind: AgentKind,
+  seed: number,
+  cards: Map<string, CardDef>,
+  /** For "heuristic": this seat's deck and the opponent's (ADR-051 known-decklists). */
+  seats?: { own: DeckKey; opponent: DeckKey },
+): Agent {
+  if (kind === "heuristic") {
+    if (!seats) throw new Error("heuristic agent needs deck context (own/opponent)");
+    return new HeuristicAgent(seed, cards, {
+      archetype: DECK_ARCHETYPES[seats.own],
+      opponentDecklist: [...DECKS[seats.opponent].decklist],
+      temperature: DEFAULT_TEMPERATURE,
+    });
+  }
   return kind === "sane" ? new SanePolicyAgent(seed, cards) : new RandomAgent(seed);
 }
 
 export function parseAgentPair(s: string | undefined): AgentPair {
   if (!s) return ["random", "random"];
   const parts = s.split(",").map((p) => p.trim());
-  if (parts.length !== 2 || !parts.every((p) => p === "random" || p === "sane")) {
-    throw new Error(`Bad --agents "${s}" (expected e.g. sane,random)`);
+  if (parts.length !== 2 || !parts.every((p) => p === "random" || p === "sane" || p === "heuristic")) {
+    throw new Error(`Bad --agents "${s}" (expected e.g. heuristic,sane)`);
   }
   return parts as AgentPair;
 }
@@ -60,8 +83,8 @@ export async function runPairingMatch(
 ): Promise<MatchResult> {
   // Distinct derived seeds per seat so the two agents don't mirror each other.
   const agents: [Agent, Agent] = [
-    makeAgent(agentPair[0], seed * 2 + 1, cards),
-    makeAgent(agentPair[1], seed * 2 + 2, cards),
+    makeAgent(agentPair[0], seed * 2 + 1, cards, { own: a, opponent: b }),
+    makeAgent(agentPair[1], seed * 2 + 2, cards, { own: b, opponent: a }),
   ];
   return runMatch(matchSpec(seed, a, b, agentPair), cards, agents);
 }
