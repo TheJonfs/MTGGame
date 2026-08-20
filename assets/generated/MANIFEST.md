@@ -10,6 +10,10 @@ descriptor blocks under `docs/art/subjects/`, composed with `docs/prompts/style.
 | file | subject file | variant | model | date | status |
 |---|---|---|---|---|---|
 | assets/images/card-back/canonical.png | docs/art/subjects/card-back.md | canonical | gemini-3.1-flash-image | 2026-08-19 | kept |
+| assets/images/card-cunning-tactician-1/canonical.png | docs/art/subjects/card-cunning-tactician-1.md | canonical (classical oil) | gemini-3.1-flash-image | 2026-08-20 | candidate — Chris picks (ADR-052) |
+| assets/images/card-cunning-tactician-2/canonical.png | docs/art/subjects/card-cunning-tactician-2.md | canonical (ink-and-gouache) | gemini-3.1-flash-image | 2026-08-20 | candidate — Chris picks (ADR-052) |
+| assets/images/card-cunning-tactician-3/canonical.png | docs/art/subjects/card-cunning-tactician-3.md | canonical (watercolor storybook) | gemini-3.1-flash-image | 2026-08-20 | candidate — Chris picks (ADR-052) |
+| assets/images/card-cunning-tactician-4/canonical.png | docs/art/subjects/card-cunning-tactician-4.md | canonical (chiaroscuro portrait) | gemini-3.1-flash-image | 2026-08-20 | candidate — Chris picks (ADR-052) |
 | assets/images/frame-corner/canonical.png | docs/art/subjects/frame-corner.md | canonical | gemini-3.1-flash-image | 2026-08-19 | kept |
 | assets/images/frame-texture-b/canonical.png | docs/art/subjects/frame-texture-b.md | canonical | gemini-3.1-flash-image | 2026-08-20 | kept |
 | assets/images/frame-texture-c/canonical.png | docs/art/subjects/frame-texture-c.md | canonical | gemini-3.1-flash-image | 2026-08-20 | kept (descriptor tightened once, then --force: conditioning kept reasserting boulders) |

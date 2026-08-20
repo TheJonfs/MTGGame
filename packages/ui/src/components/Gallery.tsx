@@ -69,20 +69,22 @@ function caption(def: CardDef, oracle?: OracleEntry | undefined): string {
 }
 
 function NoteButton({ cardId, small }: { cardId: string; small?: boolean }) {
-  const [state, setState] = useState<"idle" | "saved" | "error">("idle");
+  const [state, setState] = useState<"idle" | "open" | "saved" | "error">("idle");
+  const [text, setText] = useState("");
   const submit = () => {
-    const note = window.prompt(`Art note for ${cardId} (appended to docs/art/art-notes.md):`);
-    if (!note?.trim()) return;
-    fetch("/__art-note", { method: "POST", body: JSON.stringify({ cardId, note: note.trim() }) })
+    const note = text.trim();
+    if (!note) return;
+    fetch("/__art-note", { method: "POST", body: JSON.stringify({ cardId, note }) })
       .then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         setState("saved");
+        setText("");
         setTimeout(() => setState("idle"), 1500);
       })
       .catch(() => {
         // Download fallback (mirrors the flag button): hand the entry to the user.
         const blob = new Blob(
-          [JSON.stringify({ cardId, note: note.trim(), date: new Date().toISOString().slice(0, 10) }, null, 2)],
+          [JSON.stringify({ cardId, note, date: new Date().toISOString().slice(0, 10) }, null, 2)],
           { type: "application/json" },
         );
         const a = document.createElement("a");
@@ -90,11 +92,35 @@ function NoteButton({ cardId, small }: { cardId: string; small?: boolean }) {
         a.download = `art-note-${cardId}.json`;
         a.click();
         setState("error");
+        setText("");
         setTimeout(() => setState("idle"), 1500);
       });
   };
+  if (state === "open") {
+    return (
+      <span className="note-form" onClick={(e) => e.stopPropagation()}>
+        <input
+          type="text"
+          autoFocus
+          placeholder={`Art note for ${cardId}…`}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") submit();
+            if (e.key === "Escape") { setText(""); setState("idle"); }
+          }}
+        />
+        <button className="linkish" onClick={submit}>save</button>
+        <button className="linkish" onClick={() => { setText(""); setState("idle"); }}>✕</button>
+      </span>
+    );
+  }
   return (
-    <button className="linkish" onClick={(e) => { e.stopPropagation(); submit(); }} title="Append an art note to docs/art/art-notes.md">
+    <button
+      className="linkish"
+      onClick={(e) => { e.stopPropagation(); setState("open"); }}
+      title="Append an art note to docs/art/art-notes.md"
+    >
       {state === "saved" ? "noted ✓" : state === "error" ? "saved as download" : small ? "✎" : "✎ note"}
     </button>
   );

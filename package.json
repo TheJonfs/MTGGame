@@ -14,7 +14,8 @@
     "art:fetch": "tsx scripts/art-fetch.ts",
     "agent-stats": "tsx packages/sim/src/agent-stats-cli.ts",
     "ladder": "tsx packages/sim/src/ladder-cli.ts",
-    "viewer": "vite packages/ui"
+    "viewer": "vite packages/ui",
+    "gallery": "vite packages/ui --open /gallery"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

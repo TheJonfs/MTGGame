@@ -179,6 +179,8 @@ body {
   background: var(--parchment); border: 1px solid var(--ink);
   vertical-align: -0.28em; font-weight: 700; line-height: 1;
   color: var(--ink); /* numbers stay ink even inside light-text name strips */
+  /* S8 rider: lift off light bands (W chip on the white frame especially) */
+  box-shadow: 0 0 0 0.5px rgba(43, 37, 32, 0.35), 0 1px 1.5px rgba(0, 0, 0, 0.3);
 }
 .mana-chip img { width: 82%; height: 82%; mix-blend-mode: multiply; }
 .mana-chip span { font-size: 0.95em; font-weight: 800; }
@@ -257,3 +259,6 @@ button.linkish { background: none; border: none; color: var(--brass); cursor: po
 .printed-scan { width: 240px; border-radius: 12px; }
 .gallery-modal-card .printed-scan { width: 300px; }
 .gallery-cell .printed-scan { width: 192px; }
+
+.note-form { display: inline-flex; gap: 3px; align-items: center; }
+.note-form input { font-size: 10px; padding: 1px 4px; border: 1px solid var(--ink); border-radius: 3px; background: var(--parchment); color: var(--ink); width: 150px; }
