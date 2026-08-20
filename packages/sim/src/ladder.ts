@@ -34,6 +34,13 @@ export interface LadderReport {
   gateMirror: boolean;
 }
 
+export interface LadderOptions {
+  /** Restrict to one pairing (tuning loops; S9 rider). */
+  cell?: [DeckKey, DeckKey];
+  /** Skip pairing cells, run mirrors only (cheap tuning deltas). */
+  mirrorsOnly?: boolean;
+}
+
 export async function runLadder(
   cardsDir: string,
   challenger: AgentKind,
@@ -41,12 +48,14 @@ export async function runLadder(
   gamesPerCell: number,
   startSeed: number,
   onProgress?: (cell: string, i: number) => void,
+  options: LadderOptions = {},
 ): Promise<LadderReport> {
   const pool = loadCardPool(cardsDir);
   const cells: LadderCell[] = [];
   const perDeck = { A: { wins: 0, games: 0 }, B: { wins: 0, games: 0 }, C: { wins: 0, games: 0 }, D: { wins: 0, games: 0 }, E: { wins: 0, games: 0 } };
 
-  for (const [a, b] of PAIRINGS) {
+  const pairings = options.cell ? [options.cell] : options.mirrorsOnly ? [] : PAIRINGS;
+  for (const [a, b] of pairings) {
     for (const challengerSeat of [0, 1] as const) {
       const agents: [AgentKind, AgentKind] =
         challengerSeat === 0 ? [challenger, baseline] : [baseline, challenger];
@@ -78,7 +87,8 @@ export async function runLadder(
 
   // Mirror cells: same deck on both sides — pure agent-skill measurement.
   const mirrors: LadderCell[] = [];
-  for (const d of Object.keys(perDeck) as DeckKey[]) {
+  const mirrorDecks = options.cell ? [] : (Object.keys(perDeck) as DeckKey[]);
+  for (const d of mirrorDecks) {
     for (const challengerSeat of [0, 1] as const) {
       const agents: [AgentKind, AgentKind] =
         challengerSeat === 0 ? [challenger, baseline] : [baseline, challenger];
@@ -105,10 +115,10 @@ export async function runLadder(
     }
   }
 
-  const gateAggregate = (Object.keys(perDeck) as DeckKey[]).every(
-    (d) => perDeck[d].wins * 2 > perDeck[d].games,
-  );
-  const gateMirror = mirrors.every((m) => m.challengerWins * 2 > m.games);
+  const gateAggregate =
+    cells.length > 0 &&
+    (Object.keys(perDeck) as DeckKey[]).every((d) => perDeck[d].games === 0 || perDeck[d].wins * 2 > perDeck[d].games);
+  const gateMirror = mirrors.length > 0 && mirrors.every((m) => m.challengerWins * 2 > m.games);
   return { challenger, baseline, cells, mirrors, perDeck, gateAggregate, gateMirror };
 }
 

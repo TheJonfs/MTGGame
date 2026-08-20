@@ -28,6 +28,12 @@ import { simulateCombat, viewCreatures, type SimObject } from "./combat-sim.js";
  */
 export class HeuristicAgent implements Agent {
   private readonly rng: SeededRng;
+  /** Attack-set sim memo (S9 Part 0.2): successive declareAttacker requests in
+   * one combat re-derive the same greedy plan, re-simulating identical sets.
+   * The board is stable during declarations (taps land at commit), so keying
+   * by turn + set + life is sound; cleared each new turn. */
+  private simMemo = new Map<string, number>();
+  private simMemoTurn = -1;
 
   constructor(
     seed: number,
@@ -194,6 +200,13 @@ export class HeuristicAgent implements Agent {
     attackers: string[],
   ): Promise<number> {
     if (attackers.length === 0) return 0;
+    if (this.simMemoTurn !== view.turn) {
+      this.simMemo.clear();
+      this.simMemoTurn = view.turn;
+    }
+    const memoKey = `${[...attackers].sort().join(",")}|${view.life[0]},${view.life[1]}`;
+    const hit = this.simMemo.get(memoKey);
+    if (hit !== undefined) return hit;
     const opp = (me === 0 ? 1 : 0) as PlayerId;
     const blocks = this.greedyBlocks(view, creatures, attackers, opp, /*lethalChumps*/ false);
     const outcome = await simulateCombat(creatures, me, attackers, blocks, [view.life[0], view.life[1]]);
@@ -216,6 +229,7 @@ export class HeuristicAgent implements Agent {
     }
     score += outcome.playerDamage[opp] * dmgWeight;
     if (view.life[opp] - outcome.playerDamage[opp] <= 0) score += 1000;
+    this.simMemo.set(memoKey, score);
     return score;
   }
 

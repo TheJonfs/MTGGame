@@ -34,13 +34,17 @@ const KEYWORD_BONUS: Record<string, number> = {
   reach: 0.2, hexproof: 0.4, shroud: 0.3, indestructible: 0.8,
 };
 
-/** Board value of one battlefield object, from the view's live characteristics. */
+/** Board value of one battlefield object, from the view's live characteristics.
+ * ADR-056: creatures carry their buffs (live stats), so auras and equipment
+ * themselves are worth ~0 standing material — an unattached equipment keeps a
+ * small salvage value (it can still be equipped later). Other non-creature
+ * permanents (mana rocks, global enchantments) keep half-mana standing. */
 export function objectValue(defs: Map<string, CardDef>, o: GameView["battlefield"][number]): number {
   const def = defs.get(o.cardId);
   const mv = def ? manaValue(parseManaCost(def.manaCost)) : 1;
   if (o.power === null || o.toughness === null) {
-    // Non-creature permanent: worth roughly half its mana in standing value
-    // (its statics/abilities pay the rest through the creatures they touch).
+    if (def?.subtypes?.includes("Aura")) return 0.05;
+    if (def?.subtypes?.includes("Equipment")) return o.attachedTo ? 0.05 : 0.3;
     return Math.max(0.5, mv * 0.5);
   }
   let v = Math.max(0.5, mv);
@@ -54,22 +58,6 @@ export function objectValue(defs: Map<string, CardDef>, o: GameView["battlefield
   return v;
 }
 
-/** Does this decklist contain mass removal? Vocabulary-driven (destroyAll/damageAll), no card names. */
-export function listHasSweeper(defs: Map<string, CardDef>, decklist: { cardId: string; count: number }[]): boolean {
-  return decklist.some(({ cardId }) => {
-    const def = defs.get(cardId);
-    const effects = [
-      ...(def?.spellEffect ?? []),
-      ...(def?.abilities ?? []).flatMap((a) => ("effects" in a ? a.effects : [])),
-    ];
-    return effects.some((e) => e.type === "destroyAll" || e.type === "damageAll");
-  });
-}
-
-/** Boards wider than this get their excess dampened when the opponent's list has sweepers. */
-const SWEEPER_BOARD_N = 3;
-const SWEEPER_DAMPEN = 0.5;
-
 export function evaluate(view: GameView, profile: AiProfile, defs: Map<string, CardDef>): number {
   const w = WEIGHTS[profile.archetype];
   const me = view.you;
@@ -82,19 +70,10 @@ export function evaluate(view: GameView, profile: AiProfile, defs: Map<string, C
   const mine = view.battlefield.filter((o) => o.controller === me);
   const theirs = view.battlefield.filter((o) => o.controller === opp);
 
+  // (S9 Part 0.4: the S8 sweeper-risk dampener is removed — no measured
+  // effect in any ladder table. A future risk model is a measured re-add.)
   let ownMaterial = 0;
-  const creatureValues: number[] = [];
-  for (const o of mine) {
-    const v = objectValue(defs, o);
-    ownMaterial += v;
-    if (o.power !== null) creatureValues.push(v);
-  }
-  // ADR-051 sweeper-risk dampener: when the known opponent list has mass
-  // removal, creatures beyond the Nth carry only part of their value.
-  if (creatureValues.length > SWEEPER_BOARD_N && listHasSweeper(defs, profile.opponentDecklist)) {
-    const excess = [...creatureValues].sort((a, b) => b - a).slice(SWEEPER_BOARD_N);
-    ownMaterial -= SWEEPER_DAMPEN * excess.reduce((x, y) => x + y, 0);
-  }
+  for (const o of mine) ownMaterial += objectValue(defs, o);
   let oppMaterial = 0;
   for (const o of theirs) oppMaterial += objectValue(defs, o);
 

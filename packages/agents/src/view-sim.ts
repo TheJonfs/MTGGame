@@ -20,8 +20,21 @@ export interface Prediction {
   unchanged: boolean;
 }
 
+/** Hand-rolled deep copy — GameView is plain data and structuredClone was
+ * the single hottest call in priority scoring (S9 Part 0.2 perf pass). */
 function clone(view: GameView): GameView {
-  return structuredClone(view);
+  return {
+    ...view,
+    life: [view.life[0], view.life[1]],
+    hand: view.hand.map((c) => ({ ...c })),
+    combat: {
+      attackers: [...view.combat.attackers],
+      blocks: view.combat.blocks.map((b) => ({ ...b })),
+    },
+    battlefield: view.battlefield.map((o) => ({ ...o, keywords: [...o.keywords] })),
+    stack: view.stack.map((s) => ({ ...s })),
+    graveyards: [[...view.graveyards[0]], [...view.graveyards[1]]],
+  };
 }
 
 function removeObject(view: GameView, id: string): void {
@@ -78,8 +91,6 @@ export function predictAction(
         toughness: d.types.includes("Creature") ? (d.toughness ?? 0) : null,
         keywords: [...(d.keywords ?? [])],
       });
-      // Equipment on an empty board can't do anything yet; slight discount.
-      if (d.subtypes?.includes("Equipment")) adjustment -= 0.2;
       return { view: next, adjustment, unchanged: false };
     }
     if (isAura) {
@@ -91,10 +102,9 @@ export function predictAction(
       const effects = (d.abilities ?? []).flatMap((a) => ("effects" in a ? (a.effects as Effect[]) : []));
       const cls = classifyEffects(effects);
       const steals = effects.some((e) => e.type === "gainControl");
-      // An aura's standing board value flows through its host — subtract the
-      // material the predicted battlefield entry will claim, so a mis-aimed
-      // aura can't score as "+2 mana of stuff" (book of shame: self-steal).
-      adjustment -= Math.max(0.5, manaValue(parseManaCost(d.manaCost)) * 0.5);
+      // ADR-056: the aura's standing value is ~0 in the evaluator now, so no
+      // standing-value patch is needed — self-steal ordering follows from
+      // accounting (book of shame verifies).
       if (hostObj) {
         const hv = objectValue(defs, hostObj);
         if (cls === "harmful" && hostObj.controller !== me) adjustment += steals ? 1.6 * hv : 0.7 * hv;

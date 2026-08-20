@@ -35,8 +35,8 @@ describe("replay determinism (permanent fixture)", () => {
   });
 });
 
-describe("fuzz (permanent; ADR-034)", () => {
-  const games = process.env.FUZZ_FULL ? 500 : 100;
+describe("fuzz (permanent; ADR-034/-055)", () => {
+  const games = process.env.FUZZ_FULL ? 500 : 50; // ADR-055: default tier trimmed to hit the ~15s suite target
   it(`${games} games x 10 pairings: zero exceptions, every game terminates (FUZZ_FULL=1 for 500; CLI 1,000/pairing for the handoff)`, async () => {
     const report = await fuzz(CARDS_DIR, games, 1);
     expect(report.totalErrors).toBe(0);

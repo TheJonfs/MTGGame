@@ -6,13 +6,26 @@ import { runLadder } from "./ladder.js";
 const CARDS_DIR = join(dirname(fileURLToPath(import.meta.url)), "../../../data/cards");
 
 /**
- * Ladder smoke (ADR-049; S8 brief Part 3): 100 games/cell committed; the
- * 1,000/cell CLI run (`pnpm ladder`) is the ship-gate authority. The smoke
- * asserts flake-resistant bounds rather than the exact gate: at 100 games a
- * true 55% cell fails a >50% check ~16% of the time, which would make the
- * suite unreliable — the bounds below are ~3σ below the measured rates.
+ * Ladder smokes (ADR-049/-055): the 1,000/cell CLI run (`pnpm ladder`) is
+ * the ship-gate authority; committed smokes assert flake-resistant bounds
+ * (at small n a true-55% cell fails a >50% check far too often for a suite).
+ *
+ * ADR-055 tiers: the default suite runs a 20/cell mirror sanity check
+ * (~2.5s, loose bounds); FUZZ_FULL adds the 100/cell smoke.
  */
-describe("ladder smoke (permanent; ADR-049)", () => {
+describe("ladder mirror sanity (default tier; ADR-055)", () => {
+  it("heuristic vs sane, 20/cell mirrors: overall majority, no cell collapses", async () => {
+    const report = await runLadder(CARDS_DIR, "heuristic", "sane", 20, 42, undefined, { mirrorsOnly: true });
+    const wins = report.mirrors.reduce((n, m) => n + m.challengerWins, 0);
+    const games = report.mirrors.reduce((n, m) => n + m.games, 0);
+    expect(wins * 2).toBeGreaterThan(games);
+    for (const m of report.mirrors) {
+      expect(m.challengerWins, `${m.pairing} seat${m.challengerSeat}`).toBeGreaterThanOrEqual(5); // 25% floor at n=20
+    }
+  }, 120_000);
+});
+
+(process.env.FUZZ_FULL ? describe : describe.skip)("ladder smoke (FUZZ_FULL tier; ADR-049/-055)", () => {
   it("heuristic vs sane, 100/cell: every mirror cell > 40%, overall mirror majority, zero surprises", async () => {
     const report = await runLadder(CARDS_DIR, "heuristic", "sane", 100, 42);
     for (const m of report.mirrors) {

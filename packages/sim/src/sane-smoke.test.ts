@@ -11,7 +11,9 @@ const CARDS_DIR = join(dirname(fileURLToPath(import.meta.url)), "../../../data/c
  * plays whole games cleanly. Replay determinism needs no sane-specific
  * test: replay feeds logged actions back and never calls agents.
  */
-describe("sane-vs-sane smoke (permanent; ADR-045)", () => {
+// ADR-055: the default tier's heuristic-vs-sane mirror sanity already runs
+// sane through 200 whole games; the dedicated 1,000-game smoke is FUZZ_FULL.
+(process.env.FUZZ_FULL ? describe : describe.skip)("sane-vs-sane smoke (FUZZ_FULL tier; ADR-045/-055)", () => {
   it("100 games x 10 pairings: zero exceptions, every game terminates, none by MAX_TURNS", async () => {
     const report = await fuzz(CARDS_DIR, 100, 1, undefined, undefined, ["sane", "sane"]);
     expect(report.totalErrors).toBe(0);
