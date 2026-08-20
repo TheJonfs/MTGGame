@@ -97,6 +97,14 @@ Status: `planned` / `implemented` / `tested` / `cut`.
 | drana_kalastria_bloodchief | Drana, Kalastria Bloodchief | tested | flying, legendary, activated(X) modifyPT ×2 | legend rule (R-025); "-X" P/T deltas; fixtures 5–6c |
 | mystic_snake | Mystic Snake | tested | flash, triggered(ETB) counter(target spell) | fixtures 10–11 |
 
+## Session 8 additions
+
+| cardId | name | status | vocabulary | notes |
+|---|---|---|---|---|
+| cunning_tactician | Cunning Tactician | planned | vigilance, activated({W}+T) tapTarget | **first custom card** (ADR-053); `source: custom`, `text` field; art per ADR-052 (4 candidates → Chris picks) |
+
+Deck B swap (S8): −1 Savannah Lions, −1 Fencing Ace, +2 Cunning Tactician.
+
 ## Ceiling anchors (not yet scheduled)
 Ceiling complete as of S5 (see mechanics-manifest §3). Further additions are card batches using existing vocabulary.
 

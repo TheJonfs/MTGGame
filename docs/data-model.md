@@ -16,6 +16,7 @@
   "colors": ["R"],                  // optional; derived from manaCost if absent; REQUIRED on token defs (ADR-019)
   "keywords": ["flying", "haste"],  // evergreen keyword list from the manifest
   "abilities": [ /* Ability[] */ ],
+  "text": "…",                      // custom cards only (ADR-053): rules text for the frame; real cards use oracle.json
   "spellEffect": [ /* Effect[] */ ],// instants/sorceries; targets declared here
   "targets": [ /* TargetSpec[] */ ],// for spells; abilities carry their own
   "art": { "asset": "art/real/lightning_bolt.jpg", "fallback": "rendered" }
