@@ -115,7 +115,7 @@ export class HeuristicAgent implements Agent {
   /** Exposed for the book-of-shame suite: the score one action would get. */
   scorePriorityAction(view: GameView, action: Action): number {
     if (action.type === "pass") {
-      return evaluate(view, this.profile, this.defs) + this.counterHoldBonus(view);
+      return evaluate(view, this.profile, this.defs) + this.counterHoldBonus(view) + this.flashHoldBonus(view);
     }
     if (action.type === "tapForMana") return -Infinity; // never standalone
     const pred = predictAction(view, action, this.defs);
@@ -134,19 +134,49 @@ export class HeuristicAgent implements Agent {
     return candidates[this.softmaxPick(scores)]!;
   }
 
-  /** ADR-051: passing with counter mana up is worth something while the known list still threatens. */
+  /** ADR-051 / S9 Part 2a: passing with counter mana up is worth something
+   * in proportion to what the opponent could actually cast soon — threats in
+   * the known list with mv 3..(their lands + 1), counted by copies — rather
+   * than a flat "the list has something big" bonus. */
   private counterHoldBonus(view: GameView): number {
     const counterCard = view.hand.find((c) =>
       this.def(c.cardId)?.spellEffect?.some((e) => e.type === "counter"),
     );
     if (!counterCard) return 0;
     const cost = this.mv(counterCard.cardId);
+    const me = view.you;
     const untappedLands = view.battlefield.filter(
-      (o) => o.controller === view.you && !o.tapped && this.def(o.cardId)?.types.includes("Land"),
+      (o) => o.controller === me && !o.tapped && this.def(o.cardId)?.types.includes("Land"),
     ).length;
     if (untappedLands < cost) return 0;
-    const threatens = this.profile.opponentDecklist.some(({ cardId }) => this.mv(cardId) >= 4);
-    return threatens ? 0.6 : 0.2;
+    const oppLands = view.battlefield.filter(
+      (o) => o.controller !== me && this.def(o.cardId)?.types.includes("Land"),
+    ).length;
+    const oppMana = oppLands + 1; // next turn's land drop
+    let threatCopies = 0;
+    for (const { cardId, count } of this.profile.opponentDecklist) {
+      const mv = this.mv(cardId);
+      if (mv >= 3 && mv <= oppMana && !this.def(cardId)?.types.includes("Land")) threatCopies += count;
+    }
+    if (threatCopies === 0) return 0;
+    return Math.min(0.9, 0.3 + 0.06 * threatCopies);
+  }
+
+  /** S9 Part 2b: an affordable flash creature is better cast at instant
+   * speed (ambush blocks, Snake-as-counterspell) than on our own main phase
+   * — a small pass bonus during our turn only, so it still comes down when
+   * the board needs it and never delays on the opponent's turn. */
+  private flashHoldBonus(view: GameView): number {
+    if (view.activePlayer !== view.you) return 0;
+    const me = view.you;
+    const untappedLands = view.battlefield.filter(
+      (o) => o.controller === me && !o.tapped && this.def(o.cardId)?.types.includes("Land"),
+    ).length;
+    const holdable = view.hand.some((c) => {
+      const d = this.def(c.cardId);
+      return d?.keywords?.includes("flash") && this.mv(c.cardId) <= untappedLands;
+    });
+    return holdable ? 0.35 : 0;
   }
 
   private softmaxPick(scores: number[]): number {

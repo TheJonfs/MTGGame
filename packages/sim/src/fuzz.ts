@@ -16,7 +16,7 @@ export const DECK_ARCHETYPES: Record<DeckKey, Archetype> = {
   B: "control",
   C: "midrange",
   D: "midrange",
-  E: "control",
+  E: "midrange", // S9 Part 2: measured switch from "control" — tempo wants pressure (E mirrors +delta below)
 };
 
 export function makeAgent(

@@ -91,6 +91,19 @@ export function predictAction(
         toughness: d.types.includes("Creature") ? (d.toughness ?? 0) : null,
         keywords: [...(d.keywords ?? [])],
       });
+      // S9 Part 2b: an ETB trigger that counters a spell (Mystic Snake) is
+      // worth the countered spell's mana when an opponent spell is on the
+      // stack right now — the flash cast IS the counterspell.
+      const etbCounter = (d.abilities ?? []).some(
+        (a) => a.kind === "triggered" && a.event === "ENTERS_BATTLEFIELD" && a.effects.some((e) => e.type === "counter"),
+      );
+      if (etbCounter) {
+        const oppSpell = [...view.stack].reverse().find((it) => it.controller !== me && it.kind === "spell");
+        if (oppSpell) {
+          const sd = defs.get(oppSpell.cardId);
+          adjustment += sd ? Math.max(1, manaValue(parseManaCost(sd.manaCost))) : 1;
+        }
+      }
       return { view: next, adjustment, unchanged: false };
     }
     if (isAura) {
@@ -218,9 +231,16 @@ function applyEffect(
       const o = objAt(e.target);
       if (!o) return 0;
       removeObject(view, o.id);
-      if (o.controller === me) view.hand.push({ objectId: `pred_${predSeq++}`, cardId: o.cardId });
-      else view.opponentHandCount += 1;
-      return 0;
+      if (o.controller === me) {
+        view.hand.push({ objectId: `pred_${predSeq++}`, cardId: o.cardId });
+        return 0;
+      }
+      view.opponentHandCount += 1;
+      // S9 Part 2c: bouncing an opponent permanent is tempo, not removal —
+      // they can recast it, so charge back roughly half its board value. The
+      // rest (recast cost, lost enchant/equip investment, sickness reset)
+      // is the real tempo profit the material swing keeps.
+      return -0.5 * objectValue(defs, o);
     }
     case "counter": {
       const t = targets[e.target];
