@@ -113,6 +113,10 @@ export class MatchController {
 
   phase: UiPhase = { kind: "waiting" };
   result: MatchResult | null = null;
+  /** Every object id ever seen → its cardId (CR 400.7 re-ids; play-log names). */
+  readonly idNames = new Map<string, string>();
+  /** Last spell to hit the stack (S10 playtest: the inspector snaps to it). */
+  snapCardId: string | null = null;
   /** Transient combat narration (S10 playtest: with no legal blockers there is
    * no pause, so an incoming attack could resolve invisibly — narrate it). */
   combatNotice: string | null = null;
@@ -177,11 +181,25 @@ export class MatchController {
       maxTurns: DEFAULT_RULES.maxTurns,
     });
 
+    // Dev handle for debugging live matches from the console.
+    (globalThis as { __mc?: MatchController }).__mc = this;
+
     // Combat visibility (S10 playtest): re-render on step changes so the lane
     // paints during auto-resolved combat, and narrate incoming attacks/damage
     // that produce no human pause (ADR-014 auto-takes pass-only windows).
     const bus = this.game.ctx.bus;
+    // Objects get fresh ids on every zone move (CR 400.7); track every id's
+    // cardId from live ZONE_CHANGE events so the play log can name historical
+    // actions. (Display-side masking keeps hidden info hidden.)
+    bus.on("ZONE_CHANGE", (e) => {
+      this.idNames.set(e.oldId, e.cardId);
+      this.idNames.set(e.newId, e.cardId);
+    });
     bus.on("STEP_BEGIN", () => this.emit());
+    bus.on("SPELL_CAST", (e) => {
+      this.snapCardId = e.cardId; // inspector snap — event-driven, so it fires
+      this.emit(); //              even when the spell resolves render-free
+    });
     bus.on("ATTACKERS_DECLARED", (e) => {
       const state = this.game.state;
       if (state.activePlayer === this.humanSeat) return; // your own attack is visible by construction

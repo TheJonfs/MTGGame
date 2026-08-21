@@ -139,23 +139,27 @@ function DecisionPanel({ ctx, point, poolMap }: { ctx: EngineCtx; point: Decisio
 export function Inspector({
   ctx,
   objectId,
+  fallbackCardId,
   oracle,
   printed,
   onTogglePrinted,
 }: {
   ctx: EngineCtx;
   objectId: string | null;
+  /** Play mode: a cardId to show when no object is hovered (stack snap). */
+  fallbackCardId?: string | null;
   oracle: Record<string, OracleEntry>;
   printed: boolean;
   onTogglePrinted: () => void;
 }) {
   const obj = objectId ? ctx.state.objects[objectId] : undefined;
+  const fallbackDef = !obj && fallbackCardId ? ctx.defs.def(fallbackCardId) : undefined;
   return (
     <div className="panel">
       <h3>
         <img src="/icons/ui-inspect.svg" width={15} style={{ mixBlendMode: "multiply" }} alt="" />
         Inspector
-        {obj && ctx.defs.def(obj.cardId).source === "real" && (
+        {(obj ? ctx.defs.def(obj.cardId).source === "real" : fallbackDef?.source === "real") && (
           <button className="linkish" onClick={onTogglePrinted}>{printed ? "our frame" : "printed card"}</button>
         )}
       </h3>
@@ -171,6 +175,10 @@ export function Inspector({
                 : null
             }
           />
+        </div>
+      ) : fallbackDef ? (
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <CardFrame def={fallbackDef} oracle={oracle[fallbackDef.id]} showPrinted={printed} />
         </div>
       ) : (
         <div style={{ fontSize: 11, color: "var(--ink-soft)" }}>Hover a card; click to pin.</div>

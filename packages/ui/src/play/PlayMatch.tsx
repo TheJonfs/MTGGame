@@ -4,7 +4,7 @@ import { STEPS, getObject, type PlayerId, type Step } from "@shandalar/engine";
 import { Board } from "../components/Board";
 import { Inspector, StackPanel, StatusBlock } from "../components/Rail";
 import { CardFrame } from "../components/CardFrame";
-import { actionLabel, cardName, stepLabel } from "../labels";
+import { actionLabel, cardName, eventLabel, stepLabel } from "../labels";
 import type { OracleEntry } from "../engine-bridge";
 import type { MatchController, UiPhase } from "./match-controller";
 
@@ -26,8 +26,7 @@ export function loadStops(): Set<Step> {
   }
 }
 
-function PromptBar({ c, phase }: { c: MatchController; phase: UiPhase }) {
-  const [confirmingConcede, setConfirmingConcede] = useState(false);
+function PromptBar({ c, phase, confirmLabel }: { c: MatchController; phase: UiPhase; confirmLabel: string | null }) {
   const [hold, setHold] = useState(false);
 
   const prompt = (() => {
@@ -41,7 +40,8 @@ function PromptBar({ c, phase }: { c: MatchController; phase: UiPhase }) {
       case "targeting":
         return `Choose a target (${phase.chosen.length + 1}/${phase.targetsNeeded}).`;
       case "confirmCast":
-        return "Confirm?";
+        // S10 playtest: say WHAT is being confirmed.
+        return confirmLabel ? `${confirmLabel} — confirm?` : "Confirm?";
       case "attackers":
         return "Declare attackers: click creatures to stage, then confirm.";
       case "blockers":
@@ -94,21 +94,13 @@ function PromptBar({ c, phase }: { c: MatchController; phase: UiPhase }) {
         </>
       )}
       <span style={{ flex: 1 }} />
-      {confirmingConcede ? (
-        <>
-          <span style={{ fontSize: 11 }}>Concede the game?</span>
-          <button className="danger" onClick={() => { c.concede(); setConfirmingConcede(false); }}>Yes, concede</button>
-          <button onClick={() => setConfirmingConcede(false)}>No</button>
-        </>
-      ) : (
-        <button onClick={() => setConfirmingConcede(true)}>Concede</button>
-      )}
     </div>
   );
 }
 
 function StopsFlyout({ c }: { c: MatchController }) {
   const [open, setOpen] = useState(false);
+  const [confirmingConcede, setConfirmingConcede] = useState(false);
   const [, force] = useState(0);
   const toggle = (s: Step) => {
     if (c.stops.has(s)) c.stops.delete(s);
@@ -118,7 +110,7 @@ function StopsFlyout({ c }: { c: MatchController }) {
   };
   return (
     <span className="stops-flyout">
-      <button className="linkish" onClick={() => setOpen(!open)}>stops ▾</button>
+      <button className="linkish" onClick={() => setOpen(!open)}>menu ▾</button>
       {open && (
         <div className="flyout">
           <div className="flyout-title">Always stop at…</div>
@@ -140,6 +132,15 @@ function StopsFlyout({ c }: { c: MatchController }) {
               {[0, 200, 400, 800].map((ms) => <option key={ms} value={ms}>{ms}ms</option>)}
             </select>
           </label>
+          <div className="flyout-title" style={{ marginTop: 6 }}>Match</div>
+          {confirmingConcede ? (
+            <div style={{ display: "flex", gap: 4 }}>
+              <button className="danger" onClick={() => { c.concede(); setConfirmingConcede(false); setOpen(false); }}>Concede</button>
+              <button onClick={() => setConfirmingConcede(false)}>Keep playing</button>
+            </div>
+          ) : (
+            <button onClick={() => setConfirmingConcede(true)}>Concede…</button>
+          )}
         </div>
       )}
     </span>
@@ -160,7 +161,7 @@ function Ribbon({ c }: { c: MatchController }) {
   );
 }
 
-function DialogModal({ c, phase, pool, oracle }: { c: MatchController; phase: Extract<UiPhase, { kind: "dialog" }>; pool: Map<string, CardDef>; oracle: Record<string, OracleEntry> }) {
+function DialogModal({ c, phase, pool, oracle, onHoverOption }: { c: MatchController; phase: Extract<UiPhase, { kind: "dialog" }>; pool: Map<string, CardDef>; oracle: Record<string, OracleEntry>; onHoverOption: (ids: string[] | null) => void }) {
   const req = phase.request;
   const state = c.game.state;
   const titles: Record<string, string> = {
@@ -185,6 +186,20 @@ function DialogModal({ c, phase, pool, oracle }: { c: MatchController; phase: Ex
     return null;
   };
   const asCards = req.actions.every((a) => cardOf(a) !== null);
+  // S10 playtest: hovering an option highlights the board permanent(s) it
+  // refers to — vital when two options share a card name.
+  const boardIdsOf = (a: (typeof req.actions)[number]): string[] => {
+    const ids: string[] = [];
+    if ("objectId" in a && typeof a.objectId === "string" && state.objects[a.objectId]?.zone === "battlefield") {
+      ids.push(a.objectId);
+    }
+    if ("targets" in a && Array.isArray(a.targets)) {
+      for (const t of a.targets as { kind: string; id?: string }[]) {
+        if (t.kind === "object" && t.id && state.objects[t.id]?.zone === "battlefield") ids.push(t.id);
+      }
+    }
+    return ids;
+  };
   return (
     <div className="gallery-modal">
       <div className="gallery-modal-box play-dialog">
@@ -211,6 +226,8 @@ function DialogModal({ c, phase, pool, oracle }: { c: MatchController; phase: Ex
                 key={i}
                 className={`dialog-option ${selected ? "selected" : ""}`}
                 onClick={() => c.selectDialog(i)}
+                onMouseEnter={() => onHoverOption(boardIdsOf(a))}
+                onMouseLeave={() => onHoverOption(null)}
               >
                 {asCards && cid ? (
                   <CardFrame def={pool.get(cid)!} oracle={oracle[cid]} mini hand />
@@ -250,7 +267,7 @@ function XModal({ c, phase }: { c: MatchController; phase: Extract<UiPhase, { ki
   );
 }
 
-function ZoneModal({ c, pool, oracle, zone, onClose }: { c: MatchController; pool: Map<string, CardDef>; oracle: Record<string, OracleEntry>; zone: { player: PlayerId; zone: "graveyard" | "exile" }; onClose: () => void }) {
+function ZoneModal({ c, pool, oracle, zone, printed, onClose }: { c: MatchController; pool: Map<string, CardDef>; oracle: Record<string, OracleEntry>; zone: { player: PlayerId; zone: "graveyard" | "exile" }; printed: boolean; onClose: () => void }) {
   const state = c.game.state;
   const ids = state.players[zone.player][zone.zone];
   const who = zone.player === c.humanSeat ? "Your" : "Opponent's";
@@ -265,9 +282,68 @@ function ZoneModal({ c, pool, oracle, zone, onClose }: { c: MatchController; poo
           {ids.length === 0 && <span style={{ fontSize: 11, color: "var(--ink-soft)" }}>empty</span>}
           {ids.map((id) => {
             const obj = getObject(state, id);
-            return <CardFrame key={id} def={pool.get(obj.cardId)!} oracle={oracle[obj.cardId]} mini />;
+            // S10 playtest: zone browsers follow the inspector's printed toggle.
+            return <CardFrame key={id} def={pool.get(obj.cardId)!} oracle={oracle[obj.cardId]} mini showPrinted={printed} />;
           })}
         </div>
+      </div>
+    </div>
+  );
+}
+
+/** S10 playtest: live play-by-play in the rail (actions + notable events).
+ * Objects get a fresh id on every zone move (CR 400.7), so historical action
+ * ids are dead by read time — ZONE_CHANGE events carry oldId/newId/cardId,
+ * which lets every id ever logged resolve to a card name. */
+function PlayLog({ c, pool }: { c: MatchController; pool: Map<string, CardDef> }) {
+  const state = c.game.state;
+  const you = c.humanSeat;
+  const nameOf = (objectId: string): string => {
+    const live = state.objects[objectId];
+    if (live) return cardName(pool, live.cardId);
+    const cardId = c.idNames.get(objectId);
+    return cardId ? cardName(pool, cardId) : "a card";
+  };
+  const label = (a: { type: string; objectId?: string; x?: number; blocker?: string; attacker?: string; cardId?: string }, mine: boolean): string => {
+    switch (a.type) {
+      case "playLand": return `Play ${nameOf(a.objectId!)}`;
+      case "castSpell": return `Cast ${nameOf(a.objectId!)}${a.x !== undefined ? ` (X=${a.x})` : ""}`;
+      case "activateAbility": return `Activate ${nameOf(a.objectId!)}`;
+      case "declareAttacker": return `Attack with ${nameOf(a.objectId!)}`;
+      case "declareBlocker": return `Block ${nameOf(a.attacker!)} with ${nameOf(a.blocker!)}`;
+      case "sacrifice": return `Sacrifice ${nameOf(a.objectId!)}`;
+      case "discard": return `Discard ${nameOf(a.objectId!)}`;
+      // Bottoming is hidden information — never name the opponent's card.
+      case "bottomCard": return mine ? `Bottom ${nameOf(a.objectId!)}` : "Bottom a card";
+      default: return actionLabel(state, pool, a as never);
+    }
+  };
+  const lines: string[] = [];
+  for (const e of c.log.entries) {
+    if (e.t === "ACTION") {
+      if (["pass", "tapForMana", "doneDeclaringAttackers", "doneDeclaringBlockers"].includes(e.action.type)) continue;
+      const who = e.player === you ? "You" : "Opp";
+      lines.push(`T${e.turn} ${who}: ${label(e.action as never, e.player === you)}`);
+    } else if (e.t === "EVENT") {
+      // CARD_DRAWN is noise; SPELL_CAST duplicates the cast ACTION line.
+      if (e.name === "CARD_DRAWN" || e.name === "SPELL_CAST") continue;
+      const text = eventLabel(pool, e.name, e.payload as Record<string, unknown>, you);
+      if (text) lines.push(text);
+    }
+  }
+  const recent = lines.slice(-60);
+  return (
+    <div className="panel play-log">
+      <h3>Play-by-play</h3>
+      <div
+        className="play-log-lines"
+        ref={(el) => {
+          if (el) el.scrollTop = el.scrollHeight;
+        }}
+      >
+        {recent.map((l, i) => (
+          <div key={i} className="log-line">{l}</div>
+        ))}
       </div>
     </div>
   );
@@ -288,6 +364,8 @@ export function PlayMatch({
   const [inspected, setInspected] = useState<string | null>(null);
   const [printed, setPrinted] = useState(true); // S10 playtest: default to the printed card
   const [zoneOpen, setZoneOpen] = useState<{ player: PlayerId; zone: "graveyard" | "exile" } | null>(null);
+  const [dialogHover, setDialogHover] = useState<string[] | null>(null);
+  const lastStackTop = useMemo(() => ({ id: null as string | null }), [c]);
 
   useEffect(() => c.onChange(() => force((n) => n + 1)), [c]);
   useEffect(() => {
@@ -298,8 +376,24 @@ export function PlayMatch({
   const phase = c.phase;
   const opp = (c.humanSeat === 0 ? 1 : 0) as PlayerId;
 
+  // S10 playtest: the inspector snaps to a spell arriving on the stack —
+  // driven by the controller's SPELL_CAST subscription (event-time, so it
+  // works even when the spell resolves without an intermediate render), and
+  // pinning the CARD since stack objects die on resolution (CR 400.7).
+  const snapCard = c.snapCardId;
+  useEffect(() => {
+    if (snapCard && snapCard !== lastStackTop.id) {
+      setInspected(null); // the snap wins until the player hovers something
+      lastStackTop.id = snapCard;
+    }
+  });
+
+  const confirmLabel =
+    phase.kind === "confirmCast" ? actionLabel(ctx.state, pool, phase.action) : null;
+
   const classFor = useMemo(() => {
     return (id: string): string => {
+      if (dialogHover?.includes(id)) return "target";
       switch (phase.kind) {
         case "priority":
           if (phase.castable.has(id) || phase.lands.has(id)) return "castable";
@@ -320,7 +414,7 @@ export function PlayMatch({
           return "";
       }
     };
-  }, [phase]);
+  }, [phase, dialogHover]);
 
   return (
     <div className="app play-app">
@@ -340,7 +434,7 @@ export function PlayMatch({
           bottomSeat={c.humanSeat}
           classFor={classFor}
         />
-        <PromptBar c={c} phase={phase} />
+        <PromptBar c={c} phase={phase} confirmLabel={confirmLabel} />
       </div>
       <div className="rail">
         <div
@@ -356,11 +450,12 @@ export function PlayMatch({
         >
           <StatusBlock ctx={ctx} player={c.humanSeat} youSeat={c.humanSeat} onZoneClick={(player, zone) => setZoneOpen({ player, zone })} />
         </div>
-        <Inspector ctx={ctx} objectId={inspected} oracle={oracle} printed={printed} onTogglePrinted={() => setPrinted(!printed)} />
+        <Inspector ctx={ctx} objectId={inspected} fallbackCardId={snapCard} oracle={oracle} printed={printed} onTogglePrinted={() => setPrinted(!printed)} />
+        <PlayLog c={c} pool={pool} />
       </div>
-      {phase.kind === "dialog" && <DialogModal c={c} phase={phase} pool={pool} oracle={oracle} />}
+      {phase.kind === "dialog" && <DialogModal c={c} phase={phase} pool={pool} oracle={oracle} onHoverOption={setDialogHover} />}
       {phase.kind === "chooseX" && <XModal c={c} phase={phase} />}
-      {zoneOpen && <ZoneModal c={c} pool={pool} oracle={oracle} zone={zoneOpen} onClose={() => setZoneOpen(null)} />}
+      {zoneOpen && <ZoneModal c={c} pool={pool} oracle={oracle} zone={zoneOpen} printed={printed} onClose={() => setZoneOpen(null)} />}
     </div>
   );
 }

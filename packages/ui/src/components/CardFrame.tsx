@@ -145,7 +145,14 @@ export function CardFrame({
       </div>
       <div className="art-window">
         {isReal ? (
-          <img src={`/real-art/${def.id}.art.jpg`} alt="" loading="lazy" />
+          // Mini/hand frames sit in halftone-moire territory (~210-320
+          // physical px): use the prefiltered .hand.jpg derivative there.
+          <img
+            src={`/real-art/${def.id}.${mini ? "hand" : "art"}.jpg`}
+            onError={(e) => { (e.target as HTMLImageElement).src = `/real-art/${def.id}.art.jpg`; }}
+            alt=""
+            loading="lazy"
+          />
         ) : def.art?.asset ? (
           <img src={def.art.asset} alt="" loading="lazy" />
         ) : (

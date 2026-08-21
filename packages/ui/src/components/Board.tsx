@@ -17,7 +17,7 @@ interface BoardProps {
 }
 
 /** Permanents of one controller, split lands / other, attachments grouped beside hosts. */
-function PermanentsRow({ ctx, player, onHover, onClick, selected, classFor }: BoardProps & { player: PlayerId }) {
+function PermanentsRow({ ctx, player, onHover, onClick, selected, classFor, mirrored }: BoardProps & { player: PlayerId; mirrored?: boolean }) {
   const state = ctx.state;
   const inCombat = new Set([...state.combat.attackers, ...state.combat.blocks.map((b) => b.blocker)]);
   const ids = state.battlefield.filter((id) => {
@@ -41,21 +41,32 @@ function PermanentsRow({ ctx, player, onHover, onClick, selected, classFor }: Bo
     <CardTile key={id} ctx={ctx} obj={getObject(state, id)} small={small} onHover={onHover} onClick={onClick} selected={selected === id} extraClass={classFor?.(id)} />
   );
 
-  return (
+  const creaturesRow = (
+    <div className="zone-row">
+      {rest.map((id) =>
+        attachments.has(id) ? (
+          <div className="host-group" key={id}>
+            {tile(id)}
+            {attachments.get(id)!.map((a) => tile(a, true))}
+          </div>
+        ) : (
+          tile(id)
+        ),
+      )}
+    </div>
+  );
+  const landsRow = <div className="zone-row lands">{lands.map((id) => tile(id, true))}</div>;
+  // S10 playtest: the opponent's lands sit nearest their hand (mirrored),
+  // their creatures nearest the center — like sitting across a real table.
+  return mirrored ? (
     <>
-      <div className="zone-row">
-        {rest.map((id) =>
-          attachments.has(id) ? (
-            <div className="host-group" key={id}>
-              {tile(id)}
-              {attachments.get(id)!.map((a) => tile(a, true))}
-            </div>
-          ) : (
-            tile(id)
-          ),
-        )}
-      </div>
-      <div className="zone-row lands">{lands.map((id) => tile(id, true))}</div>
+      {landsRow}
+      {creaturesRow}
+    </>
+  ) : (
+    <>
+      {creaturesRow}
+      {landsRow}
     </>
   );
 }
@@ -64,6 +75,18 @@ function PermanentsRow({ ctx, player, onHover, onClick, selected, classFor }: Bo
 function CombatLane({ ctx, onHover, onClick, selected, classFor }: BoardProps) {
   const state = ctx.state;
   if (state.combat.attackers.length === 0) return null;
+  // S10 playtest: combatants keep their attachments visible beside them —
+  // a Curiosity must not vanish when its host attacks.
+  const attachedTo = (hostId: string) =>
+    state.battlefield.filter((id) => getObject(state, id).attachedTo === hostId);
+  const withAttachments = (id: string) => (
+    <div className="host-group" key={id}>
+      <CardTile ctx={ctx} obj={getObject(state, id)} onHover={onHover} onClick={onClick} selected={selected === id} extraClass={classFor?.(id)} />
+      {attachedTo(id).map((a) => (
+        <CardTile key={a} ctx={ctx} obj={getObject(state, a)} small onHover={onHover} onClick={onClick} selected={selected === a} extraClass={classFor?.(a)} />
+      ))}
+    </div>
+  );
   return (
     <div className="combat-lane">
       <div className="lane-title">Combat — attackers above, blockers below, paired by column</div>
@@ -75,14 +98,8 @@ function CombatLane({ ctx, onHover, onClick, selected, classFor }: BoardProps) {
           const blockers = (ordered ?? staged).filter((b) => state.objects[b]);
           return (
             <div className="combat-col" key={attackerId}>
-              <div className="attacker-slot">
-                {attacker && <CardTile ctx={ctx} obj={attacker} onHover={onHover} onClick={onClick} selected={selected === attackerId} extraClass={classFor?.(attackerId)} />}
-              </div>
-              <div className="blocker-slot">
-                {blockers.map((b) => (
-                  <CardTile key={b} ctx={ctx} obj={getObject(state, b)} onHover={onHover} onClick={onClick} selected={selected === b} extraClass={classFor?.(b)} />
-                ))}
-              </div>
+              <div className="attacker-slot">{attacker && withAttachments(attackerId)}</div>
+              <div className="blocker-slot">{blockers.map((b) => withAttachments(b))}</div>
             </div>
           );
         })}
@@ -126,7 +143,7 @@ export function Board(props: BoardProps) {
       <div className="row-label">Opponent hand ({ctx.state.players[top].hand.length})</div>
       <HandRow {...props} player={top} faceDown={!revealOpponent} />
       <div className="row-label">Opponent battlefield</div>
-      <PermanentsRow {...props} player={top} />
+      <PermanentsRow {...props} player={top} mirrored />
       <CombatLane {...props} />
       <div className="row-label">Your battlefield</div>
       <PermanentsRow {...props} player={bottom} />

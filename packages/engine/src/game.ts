@@ -515,12 +515,17 @@ export class Game {
     }
 
     // Optional ("you may") triggers ask their controller on resolution
-    // (ADR-027, CR 603.5). Never silent: both options always exist.
+    // (ADR-027, CR 603.5). Never silent: both options always exist. The
+    // request carries the trigger's identity (ADR-048 source pattern; S10
+    // playtest: the UI must show WHAT is asking).
     if (item.isOptionalTrigger) {
-      const chosen = await this.request(item.controller, "optionalTrigger", [
-        { type: "acceptOptional" },
-        { type: "declineOptional" },
-      ]);
+      const chosen = await this.request(
+        item.controller,
+        "optionalTrigger",
+        [{ type: "acceptOptional" }, { type: "declineOptional" }],
+        undefined,
+        { cardId: item.sourceCardId, effects: item.effects },
+      );
       if (chosen.type === "declineOptional") return;
     }
 
