@@ -39,9 +39,14 @@ R-044 (library search, 701.19), R-045 (mana-ability colour choice, 605); pool re
 
 Default tier: **204 passed / 2 tier-skipped (206), ~11s — +6 engine fixtures (s15), +1 book-of-shame (9), +1 controller (Lotus line), loader count 70**. FUZZ_FULL: **206 passed (206), exit 0**. Typecheck clean. Gates 1,000/cell PASS (tables above). Browser-verified: the search dialog (seed 4, Growth T5) and the world unaffected; the Lotus picker headless (controller test).
 
+## Director verdicts (closing)
+
+- **Demonic Tutor human half: done — "worked out great."** The search dialog reads as the real thing; no felt-wrong items filed for it.
+- Still pending from earlier sessions, carried forward: S13 world-loop felt-wrong list, S14 editor usability list, portrait verdicts (five mages + the wurm, via the dev keep/reject buttons → MANIFEST).
+
 ## Suggested next
 
-Chris casts Demonic Tutor for exactly the card he wants (the brief's human half) and says whether the dialog felt real; then per the roadmap the M6b world-design round (ADR-064 backlog + more beasts) — world-sim is the instrument — and clocks/sieges, dungeons/bosses (where Lotus becomes reachable).
+Chris's remaining verdict lists above; then per the roadmap the M6b world-design round (ADR-064 backlog + more beasts) — world-sim is the instrument — and clocks/sieges, dungeons/bosses (where Lotus becomes reachable).
 
 ## How to run
 
