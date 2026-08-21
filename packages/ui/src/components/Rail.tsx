@@ -5,6 +5,16 @@ import { actionLabel, cardName, targetLabel } from "../labels";
 import type { OracleEntry } from "../engine-bridge";
 import { CardFrame } from "./CardFrame";
 
+/** S11 round 4: panel icons sit on an ivory chip; the chip is a wrapper so the
+ * stroke-dilation filter on the transparent SVG fattens the glyph, not the disc. */
+function IconChip({ src, alt, size = 24 }: { src: string; alt: string; size?: number }) {
+  return (
+    <span className="icon-chip" style={{ width: size, height: size }}>
+      <img src={src} alt={alt} />
+    </span>
+  );
+}
+
 const MANA_ICON: Record<string, string> = {
   W: "mana-white", U: "mana-blue", B: "mana-black", R: "mana-red", G: "mana-green", C: "mana-colorless",
 };
@@ -45,7 +55,7 @@ export function StatusBlock({
             {ctx.state.activePlayer === player ? " · active" : ""}
           </div>
           <div className="life">
-            <img src="/icons/stat-life.svg" width={24} height={24} alt="life" />
+            <IconChip src="/icons/stat-life.svg" alt="life" size={26} />
             {p.life}
           </div>
           <div className="zones">
@@ -58,7 +68,7 @@ export function StatusBlock({
                   onClick={zone && onZoneClick ? () => onZoneClick(player, zone) : undefined}
                   style={zone && onZoneClick ? { cursor: "pointer", textDecoration: "underline dotted" } : undefined}
                 >
-                  <img src={`/icons/${icon}.svg`} alt={icon} /> {n}
+                  <IconChip src={`/icons/${icon}.svg`} alt={icon} size={emphasizeHand && icon === "zone-hand" ? 26 : 23} /> {n}
                 </span>
               );
             })}
@@ -81,7 +91,7 @@ export function StackPanel({ ctx }: { ctx: EngineCtx }) {
   if (state.stack.length === 0) {
     return (
       <div className="panel stack-panel">
-        <h3><img src="/icons/zone-stack.svg" width={20} alt="" />Stack</h3>
+        <h3><IconChip src="/icons/zone-stack.svg" alt="" size={22} />Stack</h3>
         <div style={{ fontSize: 11, color: "var(--ink-soft)" }}>empty</div>
       </div>
     );
@@ -89,7 +99,7 @@ export function StackPanel({ ctx }: { ctx: EngineCtx }) {
   const defsPool = new Map(state.stack.map((s) => [s.sourceCardId, ctx.defs.def(s.sourceCardId)] as const));
   return (
     <div className="panel stack-panel">
-      <h3><img src="/icons/zone-stack.svg" width={20} alt="" />Stack (top resolves first)</h3>
+      <h3><IconChip src="/icons/zone-stack.svg" alt="" size={22} />Stack (top resolves first)</h3>
       {[...state.stack].reverse().map((item) => (
         <div className="item" key={item.id}>
           <div>
@@ -162,7 +172,7 @@ export function Inspector({
   return (
     <div className="panel">
       <h3>
-        <img src="/icons/ui-inspect.svg" width={20} alt="" />
+        <IconChip src="/icons/ui-inspect.svg" alt="" size={22} />
         Inspector
         {(obj ? ctx.defs.def(obj.cardId).source === "real" : fallbackDef?.source === "real") && (
           <button className="linkish" onClick={onTogglePrinted}>{printed ? "our frame" : "printed card"}</button>
