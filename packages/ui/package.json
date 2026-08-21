@@ -10,7 +10,8 @@
     "@shandalar/engine": "workspace:*",
     "@shandalar/sim": "workspace:*",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "@shandalar/world": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

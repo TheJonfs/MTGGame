@@ -80,7 +80,7 @@ Same schema as cards with `"isTokenDef": true`, no manaCost, and a **required `c
 interface MatchSpec {
   seed: number;
   players: [PlayerSpec, PlayerSpec];   // { name, decklist: {cardId, count}[], agent: AgentSpec }
-  rules: { startingLife: 20; handSize: 7; mulligan: "london"; maxTurns: 100 };
+  rules: { startingLife: 20; handSize: 7; mulligan: "london"; maxTurns: 100; ante: number };  // ante: top-n-nonland stake per side (0 = off; R-043)
   modifiers: Modifier[];                // applied at initialization only; empty in v1
 }
 
@@ -95,7 +95,8 @@ interface MatchResult {
   winner: 0 | 1 | null; reason: "LIFE" | "DECKED" | "CONCEDE" | "MAX_TURNS" | "DRAW";
   turns: number; finalLife: [number, number];
   log: ActionLogEntry[];
-  facts: { damageDealt: [n,n]; creaturesLost: [n,n]; cardsDrawn: [n,n]; spellsCast: Record<cardId, [n,n]> };
+  facts: { damageDealt: [n,n]; creaturesLost: [n,n]; cardsDrawn: [n,n]; spellsCast: Record<cardId, [n,n]>;
+           ante: { 0: cardId[], 1: cardId[] } };   // set-aside stakes per seat (may be short/empty on land-heavy tops)
 }
 ```
 

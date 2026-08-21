@@ -149,6 +149,15 @@ Things a fresh session might otherwise rediscover slowly:
 - **Acceptance through real duels is cheap at world life 10** (12 world tests incl. 200-seed fuzz + real duels run in ~0.2s); observe both outcomes across seeds instead of faking results.
 - **Modifiers apply after setup/mulligans** (ADR-002 initialization order): a test asserting modified life must drive past the mulligan dialog first.
 
+## S13 lessons (the visible world)
+
+- **A React-free controller per screen family pays off again**: `WorldController` is driven by the acceptance test exactly as the clicks drive it, and the duel is just a `MatchController` it owns — the play client needed only names/portraits, nothing structural.
+- **Overlay, don't stack**: screens that live "on" the map (town, parley) must be modal overlays; rendering them in the map's column squeezes the map to a sliver.
+- **Autosave at every consequence**, not just at "safe" moments — a reload (or dev HMR) between a purchase and the next town entry silently undid the purchase until autosave-on-buy went in.
+- **Dev HMR resets `useMemo` controllers**: during browser walkthroughs, batch edits between runs; an edit mid-duel throws the page back to the start screen (the autosave saves you, which is the point).
+- **SVG maps are cheap at this size** (40×28 cells = 1,120 rects + borders): no canvas needed; labels need clamping near edges; `preserveAspectRatio="xMidYMid meet"` on a `width="100%"` svg scales cleanly in a flex column.
+- **Scripted duel drivers need an "ignore activations" rule**, or a Bonesplitter equips itself every window until the mana is gone — slow, not wrong.
+
 ## Known interims / watch list
 
 See handoff Concerns for the authoritative list. Highlights: auto-pay greedy feasibility (correct while all producers are single-symbol — R-006); condition fields `controller`/`type`/`subtype` are validated but unexercised (first card to use them should add fixtures); value refs deliberately have no arithmetic (ADR-028 — resist until a card demands it); the `sba-unattach` ATTACHED cause is unreachable by legal play (test-forced only).

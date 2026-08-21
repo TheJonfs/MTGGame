@@ -414,3 +414,40 @@ button.primary { background: var(--brass); color: var(--parchment); border: 1.5p
 .play-log .log-line { padding: 0.5px 0; border-bottom: 1px dotted rgba(74, 64, 56, 0.15); }
 .dialog-cards .frame { flex: none; }         /* no flex squish (aspect fix) */
 .dialog-cards .printed-scan { width: 130px; flex: none; }
+
+
+/* ---------- World (S13): cartography + shell ---------- */
+.world-app { grid-template-rows: 1fr; }
+.world-app > div:first-child { display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+.world-map-wrap { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 10px 14px; overflow: hidden; }
+.world-map {
+  max-height: 100%; max-width: 100%; border: 2px solid var(--ink); border-radius: 6px;
+  background: var(--parchment); box-shadow: 2px 4px 12px rgba(0,0,0,0.45);
+}
+.world-map .region-label { font-family: var(--serif); font-size: 11px; font-weight: 700; fill: var(--ink); opacity: 0.8; letter-spacing: 0.04em; }
+.world-map .town-label { font-family: var(--serif); font-size: 10px; font-weight: 700; fill: var(--ink); }
+.world-chrome .stat { font-family: var(--serif); font-weight: 700; font-size: 15px; display: inline-flex; align-items: center; gap: 4px; }
+.world-chrome .stat img { width: 18px; height: 18px; }
+.world-rail .panel h3 { font-size: 13px; }
+.parley { max-width: 560px; }
+.parley-head { display: flex; gap: 14px; align-items: center; margin-bottom: 10px; }
+.parley-portrait { width: 96px; height: 96px; border-radius: 8px; border: 2px solid var(--ink); object-fit: cover; box-shadow: 1px 2px 4px rgba(0,0,0,0.3); }
+.parley-sub { font-size: 12px; color: var(--ink-soft); display: flex; gap: 8px; align-items: center; margin-top: 3px; }
+.tier-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 26px; height: 20px; padding: 0 5px; border-radius: 10px; border: 1.5px solid var(--ink); font-family: var(--serif); font-weight: 700; font-size: 12px; background: var(--parchment); }
+.tier-badge.t2 { background: var(--gold); }
+.tier-badge.t3 { background: var(--danger); color: var(--parchment); }
+.colour-id { display: inline-flex; gap: 2px; }
+.colour-pip { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--ink); }
+.colour-pip.c-W { background: var(--mana-w); } .colour-pip.c-U { background: var(--mana-u); } .colour-pip.c-B { background: var(--mana-b); }
+.colour-pip.c-R { background: var(--mana-r); } .colour-pip.c-G { background: var(--mana-g); } .colour-pip.c-C { background: var(--mana-c); }
+.parley-options { display: flex; flex-direction: column; gap: 8px; }
+.parley-options button { display: flex; flex-direction: column; align-items: flex-start; text-align: left; gap: 2px; padding: 8px 12px; font-size: 14px; font-weight: 700; font-family: var(--serif); }
+.parley-options button small { font-weight: 400; font-family: var(--sans); font-size: 11px; color: inherit; opacity: 0.85; }
+.parley-options button:disabled { opacity: 0.55; cursor: not-allowed; }
+.world-town { max-width: 760px; }
+.shop-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 8px 0; }
+.shop-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.shop-item .frame { flex: none; }
+.world-result { max-width: 640px; }
+.world-result .dialog-cards { margin: 6px 0 10px; }
+.world-collection .caption { font-size: 11px; }

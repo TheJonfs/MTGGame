@@ -145,6 +145,10 @@ export class MatchController {
   readonly seed: number;
   readonly humanSeat: PlayerId;
   aiDelayMs: number;
+  /** S13: display names per seat (the world's enemy names; "You"/deck name otherwise). */
+  readonly names: [string, string];
+  /** S13: portrait image per seat (world opponents carry one); null = default art. */
+  readonly portraits: [string | null, string | null];
 
   /** Per-step stops (persisted by the UI in localStorage). */
   stops = new Set<Step>();
@@ -217,6 +221,9 @@ export class MatchController {
       modifiers: custom ? custom.modifiers.map((m) => ({ ...m })) : [],
     };
     for (const p of this.spec.players) validateDecklist(pool, p.decklist);
+    this.names = [this.spec.players[0].name, this.spec.players[1].name];
+    const enemyPortrait = custom?.enemy.portrait ? `/portraits/${custom.enemy.portrait}.png` : null;
+    this.portraits = opts.humanSeat === 0 ? [null, enemyPortrait] : [enemyPortrait, null];
 
     const aiArchetype = custom ? custom.enemy.archetype : DECK_ARCHETYPES[opts.aiDeck!];
     const aiInner = new HeuristicAgent(

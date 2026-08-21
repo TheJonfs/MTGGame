@@ -6,3 +6,4 @@ export * from "./map.js";
 export * from "./generate.js";
 export * from "./state.js";
 export * from "./journey.js";
+export * from "./shop.js";

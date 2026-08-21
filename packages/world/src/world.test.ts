@@ -214,3 +214,36 @@ describe("acceptance journey (headless): walk → encounter → each parley bran
     }
   });
 });
+
+describe("town shops (S13 Part 3, headless)", () => {
+  it("stock is seeded by (seed, town, epoch): same now, same after load, different next epoch; region-coloured; never basics/tokens; priced by mana value", async () => {
+    const { rollShopStock, shopPrice, buyCard } = await import("./shop.js");
+    const { worldKnobs } = await import("./state.js");
+    const w = newWorld({ seed: 61, catalog, starterDeck: "C" });
+    const knobs = worldKnobs(w);
+    const town = w.map.towns[0]!;
+    const stock = rollShopStock(w, town, pool.cards, knobs);
+    expect(stock.length).toBe(knobs.shopStockSize);
+    const region = w.map.regions[town.region]!;
+    for (const item of stock) {
+      const def = pool.cards.get(item.cardId)!;
+      expect(def.types).not.toContain("Land");
+      for (const c of (await import("@shandalar/cards")).cardColors(def)) expect(region.color).toContain(c);
+      expect(item.price).toBe(shopPrice(def, knobs));
+      expect(item.price).toBeGreaterThanOrEqual(4);
+    }
+    expect(rollShopStock(deserializeWorld(serializeWorld(w)), town, pool.cards, knobs)).toEqual(stock);
+    w.player.stepsTaken += knobs.shopRefreshSteps; // next epoch
+    const later = rollShopStock(w, town, pool.cards, knobs);
+    expect(later.map((i) => i.cardId)).not.toEqual(stock.map((i) => i.cardId));
+    // Buying: gold down, collection up; refused when broke.
+    const gold = w.player.gold;
+    const cheap = [...stock].sort((a, b) => a.price - b.price)[0]!;
+    const r = buyCard(w, cheap);
+    expect(r.ok).toBe(true);
+    expect(w.player.gold).toBe(gold - cheap.price);
+    expect(w.player.collection[cheap.cardId]).toBeGreaterThanOrEqual(1);
+    w.player.gold = 0;
+    expect(buyCard(w, cheap).ok).toBe(false);
+  });
+});

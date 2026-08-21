@@ -608,14 +608,14 @@ export function PlayMatch({
           onClick={() => { if (phase.kind === "targeting" && phase.highlightPlayers.has(opp)) c.clickPlayer(opp); }}
           className={phase.kind === "targeting" && phase.highlightPlayers.has(opp) ? "player-target" : ""}
         >
-          <StatusBlock ctx={ctx} player={opp} youSeat={c.humanSeat} emphasizeHand onZoneClick={(player, zone) => setZoneOpen({ player, zone })} />
+          <StatusBlock ctx={ctx} player={opp} youSeat={c.humanSeat} emphasizeHand name={c.names[opp]} portraitSrc={c.portraits[opp]} onZoneClick={(player, zone) => setZoneOpen({ player, zone })} />
         </div>
         <StackPanel ctx={ctx} />
         <div
           onClick={() => { if (phase.kind === "targeting" && phase.highlightPlayers.has(c.humanSeat)) c.clickPlayer(c.humanSeat); }}
           className={phase.kind === "targeting" && phase.highlightPlayers.has(c.humanSeat) ? "player-target" : ""}
         >
-          <StatusBlock ctx={ctx} player={c.humanSeat} youSeat={c.humanSeat} emphasizeHand onZoneClick={(player, zone) => setZoneOpen({ player, zone })} />
+          <StatusBlock ctx={ctx} player={c.humanSeat} youSeat={c.humanSeat} emphasizeHand name={c.names[c.humanSeat]} portraitSrc={c.portraits[c.humanSeat]} onZoneClick={(player, zone) => setZoneOpen({ player, zone })} />
         </div>
         <PlayLog c={c} pool={pool} />
       </div>

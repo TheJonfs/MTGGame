@@ -31,6 +31,8 @@ export function StatusBlock({
   youSeat = 0,
   onZoneClick,
   emphasizeHand = false,
+  name,
+  portraitSrc,
 }: {
   ctx: EngineCtx;
   player: PlayerId;
@@ -41,6 +43,9 @@ export function StatusBlock({
   /** S11 (note 4): the opponent's hand is no longer drawn on the board — the
    * count here is its only display, so make it read at a glance. */
   emphasizeHand?: boolean;
+  /** S13: world duels name the enemy and show their portrait. */
+  name?: string;
+  portraitSrc?: string | null;
 }) {
   const p = ctx.state.players[player];
   const you = player === youSeat;
@@ -57,10 +62,10 @@ export function StatusBlock({
   return (
     <div className="panel">
       <div className="status-block">
-        <img className="portrait" src={you ? "/portrait-you.png" : "/portrait-opponent.png"} alt="" />
+        <img className="portrait" src={portraitSrc ?? (you ? "/portrait-you.png" : "/portrait-opponent.png")} alt="" />
         <div className="status-main">
           <div className="who">
-            {you ? "You" : "Opponent"}
+            {name ?? (you ? "You" : "Opponent")}
             {ctx.state.activePlayer === player ? " · active" : ""}
           </div>
           <div className="life">

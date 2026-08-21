@@ -4,6 +4,7 @@
  * saved log is reconstructed via replayToDecision for any decision index.
  * Nothing here re-implements a single rule.
  */
+import { catalogFrom as catalogFromJson } from "@shandalar/world";
 import { EventBus, IdGen, NullLog, SeededRng, type ActionLogEntry } from "@shandalar/core";
 import { cardColors, type CardDef } from "@shandalar/cards";
 import {
@@ -148,4 +149,17 @@ export function frameColors(def: CardDef): string[] {
   if (def.types.includes("Land")) return ["LAND"];
   const colors = cardColors(def);
   return colors.length > 0 ? colors : ["C"];
+}
+
+
+/** S13: the world catalog, bundled like the card pool (data/world/*.json). */
+export function loadWorldCatalog(): import("@shandalar/world").Catalog {
+  const modules = import.meta.glob("../../../data/world/*.json", { eager: true }) as Record<string, { default: unknown }>;
+  const byName = (name: string): unknown => {
+    const key = Object.keys(modules).find((k) => k.endsWith(`/${name}.json`));
+    if (!key) throw new Error(`data/world/${name}.json not bundled`);
+    return modules[key]!.default;
+  };
+  // Lazy require keeps the viewer bundle free of world code until /world is opened.
+  return catalogFromJson({ regions: byName("regions"), towns: byName("towns"), opponents: byName("opponents") });
 }
