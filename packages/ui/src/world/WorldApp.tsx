@@ -8,6 +8,7 @@ import { CardFrame } from "../components/CardFrame";
 import { PlayMatch, loadStops } from "../play/PlayMatch";
 import { WorldController, type NewGameChoice } from "./world-controller";
 import { WorldMapView } from "./WorldMap";
+import { FloatingCardInspector } from "./FloatingCardInspector";
 
 /**
  * /world (S13): the overworld shell — start → map → encounter/parley → duel
@@ -206,6 +207,7 @@ function DuelResultScreen({ c, pool, oracle, onWatch }: { c: WorldController; po
 
 function TownScreen({ c, pool, oracle }: { c: WorldController; pool: Map<string, CardDef>; oracle: Record<string, OracleEntry> }) {
   const [printed, setPrinted] = useState(true); // S13 (Chris): printed by default
+  const [inspect, setInspect] = useState<string | null>(null);
   if (c.screen.kind !== "town") return null;
   const { town, stock, notice } = c.screen;
   const w = c.world!;
@@ -221,7 +223,7 @@ function TownScreen({ c, pool, oracle }: { c: WorldController; pool: Map<string,
         </div>
         <div className="shop-grid">
           {stock.map((item: ShopItem) => (
-            <div key={item.cardId} className={`shop-item${item.remaining === 0 ? " sold-out" : ""}`}>
+            <div key={item.cardId} className={`shop-item${item.remaining === 0 ? " sold-out" : ""}`} onMouseEnter={() => setInspect(item.cardId)}>
               <div className="card-slot"><CardFrame def={pool.get(item.cardId)!} oracle={oracle[item.cardId]} showPrinted={printed} /></div>
               <div className="shop-buttons">
                 <button className={w.player.gold >= item.price && item.remaining > 0 ? "primary" : ""} disabled={w.player.gold < item.price || item.remaining === 0} onClick={() => c.buy(item)} title="buy to collection">
@@ -236,7 +238,7 @@ function TownScreen({ c, pool, oracle }: { c: WorldController; pool: Map<string,
         <div className="flyout-title" style={{ marginTop: 8 }}>Sell spares (half price; basics and deck copies excluded)</div>
         <div className="sell-row">
           {Object.entries(spares(w.player.collection, w.player.activeDeck)).map(([id, n]) => (
-            <button key={id} className="sell-chip" onClick={() => c.sell(id)} title={`sell one ${pool.get(id)?.name ?? id}`}>
+            <button key={id} className="sell-chip" onClick={() => c.sell(id)} onMouseEnter={() => setInspect(id)} title={`sell one ${pool.get(id)?.name ?? id}`}>
               {pool.get(id)?.name ?? id} ×{n} · {sellPrice(pool.get(id)!, c.knobs)}g
             </button>
           ))}
@@ -250,6 +252,7 @@ function TownScreen({ c, pool, oracle }: { c: WorldController; pool: Map<string,
           <button className="primary" onClick={() => c.leaveTown()}>Leave town</button>
         </p>
       </div>
+      <FloatingCardInspector def={inspect ? pool.get(inspect) ?? null : null} oracle={oracle} printed={printed} onTogglePrinted={() => setPrinted(!printed)} />
     </div>
   );
 }
@@ -258,6 +261,7 @@ function CollectionScreen({ c, pool, oracle }: { c: WorldController; pool: Map<s
   const w = c.world!;
   const [filter, setFilter] = useState<"all" | "W" | "U" | "B" | "R" | "G" | "land">("all");
   const [printed, setPrinted] = useState(true); // S13 (Chris): printed by default
+  const [inspect, setInspect] = useState<string | null>(null);
   const inDeck = new Map(w.player.activeDeck.map((e) => [e.cardId, e.count]));
   const entries = Object.entries(w.player.collection)
     .filter(([id]) => pool.has(id))
@@ -282,7 +286,7 @@ function CollectionScreen({ c, pool, oracle }: { c: WorldController; pool: Map<s
       </div>
       <div className="gallery-grid">
         {entries.map(([id, n]) => (
-          <div key={id} className="gallery-cell" style={{ textAlign: "center" }}>
+          <div key={id} className="gallery-cell" style={{ textAlign: "center" }} onMouseEnter={() => setInspect(id)}>
             <CardFrame def={pool.get(id)!} oracle={oracle[id]} showPrinted={printed} />
             <div className="caption">
               ×{n}{inDeck.has(id) ? ` · in deck ×${inDeck.get(id)}` : ""}
@@ -290,6 +294,7 @@ function CollectionScreen({ c, pool, oracle }: { c: WorldController; pool: Map<s
           </div>
         ))}
       </div>
+      <FloatingCardInspector def={inspect ? pool.get(inspect) ?? null : null} oracle={oracle} printed={printed} onTogglePrinted={() => setPrinted(!printed)} />
     </div>
   );
 }
@@ -301,6 +306,7 @@ function EditorScreen({ c, pool, oracle }: { c: WorldController; pool: Map<strin
   const [sort, setSort] = useState<"name" | "cost" | "colour">("cost");
   const [search, setSearch] = useState("");
   const [printed, setPrinted] = useState(true); // S14 round 1 (Chris): printed by default in the editor too
+  const [inspect, setInspect] = useState<string | null>(null); // S14 round 2: hover → floating inspector
   if (c.screen.kind !== "editor" || !c.world) return null;
   const { draft, name, notice } = c.screen;
   const w = c.world;
@@ -325,7 +331,7 @@ function EditorScreen({ c, pool, oracle }: { c: WorldController; pool: Map<strin
   const spareIds = Object.keys(sp).filter(passes).sort(order);
   const deckIds = draft.map((e) => e.cardId).filter(passes).sort(order);
   const cell = (id: string, n: number, onClick: () => void, label: string) => (
-    <div key={id} className="editor-card" onClick={onClick} title={label}>
+    <div key={id} className="editor-card" onClick={onClick} onMouseEnter={() => setInspect(id)} title={label}>
       <div className="editor-slot"><CardFrame def={pool.get(id)!} oracle={oracle[id]} showPrinted={printed} /></div>
       <div className="editor-count">×{n}</div>
     </div>
@@ -358,8 +364,10 @@ function EditorScreen({ c, pool, oracle }: { c: WorldController; pool: Map<strin
         </select>
         <button className="linkish" onClick={() => setPrinted(!printed)}>{printed ? "our frame" : "printed card"}</button>
         <button className="primary" disabled={!legality.ok} title={legality.ok ? "save this deck" : legality.reason} onClick={() => c.editorSave()}>Save deck</button>
+        <button onClick={() => c.editorReset()} title="discard draft changes (back to the saved deck)">Reset</button>
         <button onClick={() => c.editorClose()}>Cancel</button>
       </div>
+      <FloatingCardInspector def={inspect ? pool.get(inspect) ?? null : null} oracle={oracle} printed={printed} onTogglePrinted={() => setPrinted(!printed)} />
       {notice && <div style={{ color: "var(--danger)", fontSize: 12, padding: "0 6px 6px" }}>{notice}</div>}
       <div className="editor-panes">
         <div className="editor-pane">
@@ -496,7 +504,7 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
           {w.map.strongholds.map((f, i) => {
             const resident = w.opponents.find((o) => o.id === f.opponentId);
             return (
-              <div key={i} style={{ fontSize: 12, display: "flex", justifyContent: "space-between" }}>
+              <div key={i} style={{ fontSize: 12, display: "flex", justifyContent: "space-between", cursor: screen.kind === "map" ? "pointer" : "default" }} title="click to preview the path there" onClick={() => c.clickCell(f.at)}>
                 <span>{f.name ?? f.kind}</span><span style={{ color: resident?.defeated ? "var(--boost)" : "var(--danger)" }}>{resident?.defeated ? "cleared" : `${w.map.regions[f.region]?.name ?? ""} · waiting`}</span>
               </div>
             );

@@ -485,3 +485,7 @@ button.primary { background: var(--brass); color: var(--parchment); border: 1.5p
 .editor-slot { width: 92px; height: 129px; display: flex; align-items: center; justify-content: center; }
 .editor-slot .frame { width: 92px; font-size: 5.3px; }
 .editor-slot .printed-scan { width: 92px; height: auto; }
+
+.world-inspector { width: 232px; z-index: 25; }
+.world-inspector .drag-bar span:last-child { display: inline-flex; gap: 6px; }
+.editor-card { cursor: pointer; }

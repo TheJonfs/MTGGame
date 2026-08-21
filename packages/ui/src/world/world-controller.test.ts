@@ -96,6 +96,12 @@ describe("S14 acceptance: editor, shop v2, resume path, v1 migration", () => {
     c.editorAdd(spareId);
     c.editorRename("Scripted Goblins");
     expect(c.editorLegality().ok).toBe(true);
+    // Reset discards the draft (round 2), then redo the edit.
+    c.editorReset();
+    expect(scr().draft).toEqual(c.world!.player.activeDeck);
+    c.editorRemove(nonbasic);
+    c.editorAdd(spareId);
+    c.editorRename("Scripted Goblins");
     // Drive below the floor: save refused, deck untouched.
     for (let k = 0; k < 12; k++) c.editorRemove("mountain");
     expect(c.editorLegality().ok).toBe(false);

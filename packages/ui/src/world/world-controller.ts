@@ -271,6 +271,13 @@ export class WorldController {
     this.emit();
   }
 
+  /** Discard draft changes: back to the saved deck and name. */
+  editorReset(): void {
+    if (!this.world || this.screen.kind !== "editor") return;
+    this.screen = { ...this.screen, draft: this.world.player.activeDeck.map((e) => ({ ...e })), name: this.world.deckName, notice: "Draft reset to the saved deck." };
+    this.emit();
+  }
+
   editorRename(name: string): void {
     if (this.screen.kind !== "editor") return;
     this.screen = { ...this.screen, name };

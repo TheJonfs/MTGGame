@@ -18,6 +18,12 @@
 1. **Editor frames:** printed card by default in the editor too (toggle kept), in small fixed slots (92×129) so the deck pane fits ~6 per row — ADR-066's "table scale stays ours" read as hand/battlefield only; the editor is a browsing surface. Ratify or overrule.
 2. **"Where do I find the wurm?" → a prototype lair.** The generator now places ONE fixed point (`kind: "lair"`) in the wildest region — spaced from towns, carved reachable — with a resident (the catalog's first beast, else its highest-tier opponent) held out of the roaming roster (`OpponentInstance.fixedAt`). Walking onto the lair is a **certain** encounter with the resident until they are defeated; a cleared lair is ground. Map: red-ringed crag glyph with a hover label ("Lair of the Pelakka Wurm"), greyed when cleared; rail panel "Lairs" with status. Generator invariant test extended (every seed has one reachable lair; residents never roam; cleared lairs don't trigger). This is the fixed-point shape strongholds/dungeons will reuse (ADR-066's wurm now has an address). **Generator/catalog touch, director-directed — flag for the design round**; prior parts of generation are unchanged (the lair draws come last, so seed 7's map is identical to S13's).
 
+## Director round 2 (same day; Chris away — background additions)
+
+1. **Draggable floating card inspector** (`FloatingCardInspector`) for the world's browsing screens: hover any card in the **editor**, **shop** (stock and sell chips), or **collection** to see it full size; printed by default with the our-frame toggle; position remembered (`shandalar-world-inspector-pos`), collapsible; defaults to the lower right. Chris's ask.
+2. **Editor "Reset"** — discard draft changes back to the saved deck and name (tested).
+3. **Lairs panel rows are clickable** — on the map, a click previews the path to the lair (click the destination again to walk).
+
 ## Deviations from the brief
 
 1. **`deckName` is a fourth v2 field** (the brief's Part 2 asks for it "in the save"; Part 1 listed three). Cosmetic; flagged.
