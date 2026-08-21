@@ -169,6 +169,14 @@ Things a fresh session might otherwise rediscover slowly:
 
 - **Simulate the tour before tuning the knobs**: `pnpm world-sim` answers "what do the defaults produce?" in a minute (encounters/100 steps by tier, W/L by tier, life trajectory) — run it before and after any knob or catalog change, the way the ladder guards agent changes.
 
+## S15 lessons (tutor batch: search, Lotus)
+
+- **Request-payload reveal generalises**: the S4 discard `revealed` pattern carried `searchLibrary` unchanged — chooser-only, request-scoped, never logged. Any future "look at X" effect should take this shape before anyone reaches for a view field.
+- **Shuffle-after-search is the replay trap**: it must go through `ctx.rng.shuffle` (logged) — a local shuffle would replay to a different library. The fixture that replays a Growth/Tutor game byte-identical is the guard.
+- **Choice-bearing mana abilities are "not mana abilities" to every automatic path**: `isChoiceManaAbility` gates `producibleSymbols`, `tapForMana`, auto-pay, and the AI; the enumerator is the only place they appear (one action per colour). If a second choice shape ever comes (e.g., "any colour" per mana), widen the predicate, not the call sites.
+- **`import.meta.glob` is evaluated at dev-server start**: new card JSON needs a server restart before the browser sees it ("unknown card rampant_growth" mid-verification).
+- **Scripted drivers should take the non-default search option** (the S10 driver's "option 0" was `declineSearch`) — otherwise the dialog path is never exercised.
+
 ## Known interims / watch list
 
 See handoff Concerns for the authoritative list. Highlights: auto-pay greedy feasibility (correct while all producers are single-symbol — R-006); condition fields `controller`/`type`/`subtype` are validated but unexercised (first card to use them should add fixtures); value refs deliberately have no arithmetic (ADR-028 — resist until a card demands it); the `sba-unattach` ATTACHED cause is unreachable by legal play (test-forced only).

@@ -43,6 +43,7 @@ export function shopPoolFor(pool: Map<string, CardDef>, regionColor: string): Ca
   for (const def of pool.values()) {
     if ((def as { isTokenDef?: boolean }).isTokenDef) continue;
     if (def.types.includes("Land")) continue; // basics free; nonbasic lands are future collectible content
+    if (def.prizeOnly) continue; // ADR-068: Lotus is treasure, never stock
     const colors = cardColors(def);
     if (colors.every((c) => regionColor.includes(c))) out.push(def);
   }
@@ -64,7 +65,7 @@ export function rollShopStock(world: WorldState, town: Town, pool: Map<string, C
   const picked = rng.shuffle(candidates).slice(0, Math.min(knobs.shopStockSize, candidates.length));
   const sold = world.shops[town.index]?.epoch === epoch ? world.shops[town.index]!.sold : {};
   return picked.map((def) => {
-    const stock = 1 + rng.int(3); // 1–3 copies per row this epoch
+    const stock = 1 + rng.int(Math.max(1, knobs.shopRowCopies)); // 1..shopRowCopies copies per row this epoch
     const remaining = Math.max(0, stock - (sold[def.id] ?? 0));
     return { cardId: def.id, price: shopPrice(def, knobs), stock, remaining };
   });

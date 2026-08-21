@@ -105,6 +105,16 @@ Status: `planned` / `implemented` / `tested` / `cut`.
 
 Deck B swap (S8): −1 Savannah Lions, −1 Fencing Ace, +2 Cunning Tactician.
 
+## Session 15 additions (the tutor batch, ADR-068)
+
+| cardId | name | status | vocabulary | prizeOnly | notes |
+|---|---|---|---|---|---|
+| rampant_growth | Rampant Growth | implemented | searchLibrary(basicLand → battlefield, entersTapped) | no | Amendment 1; enters-tapped special ETB rule (manifest §4 sanctioned); landfall fires; shuffle after (CR 701.19) |
+| demonic_tutor | Demonic Tutor | implemented | searchLibrary(anyCard → hand) | no | Amendment 1; power-outlier drawer with Hymn (Shandalar-nasty by design) |
+| black_lotus | Black Lotus | implemented | activated({T}, sac self) addMana(choice 3 of any one colour) | **yes** | Amendment 2: five colour actions at activation, no stack; never auto-paid; never shop stock — boss/lair treasure (M6b content) |
+
+Deck swaps (S15, ADR-068): C −1 Forest −1 Centaur Courser +2 Rampant Growth; D −1 Zombify +1 Demonic Tutor; Lotus in no deck.
+
 ## Ceiling anchors (not yet scheduled)
 Ceiling complete as of S5 (see mechanics-manifest §3). Further additions are card batches using existing vocabulary.
 
@@ -126,6 +136,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 
 | cardId | set | collector | artist | scryfallId |
 |---|---|---|---|---|
+| black_lotus | lea | 232 | Christopher Rush | b0faa7f2-b547-42c4-a810-839da50dadfe |
 | blaze | por | 118 | Gerry Grace | f175c959-3b5d-46a3-9194-fad2359bbff9 |
 | blurred_mongoose | inv | 183 | Heather Hudson | 4b073e3f-6a6f-495a-ab16-39d906b660f1 |
 | boggart_brute | ori | 133 | Igor Kieryluk | 9d735ebf-61a4-4507-9399-6d32c8903ded |
@@ -140,6 +151,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | curiosity | exo | 29 | Val Mayerik | fee17ef5-7e1a-42ae-b680-df81204df7dd |
 | darksteel_myr | som | 151 | Randis Albion | 0f5712cf-c6a9-4a2e-90db-8ca17c621724 |
 | deadly_recluse | m10 | 175 | Warren Mahy | 6ab810f1-21d6-4a98-b77a-e455370aa6cc |
+| demonic_tutor | lea | 104 | Douglas Shuler | 711d4d54-5520-4de8-9b93-79902ed8e562 |
 | divination | m10 | 49 | Howard Lyon | 3102cec9-1cdc-4946-a2dd-caf04eaa8b97 |
 | doom_blade | m10 | 93 | Chippy | 6e19acff-f3dd-417a-a9ab-ea3e36c1ba61 |
 | drana_kalastria_bloodchief | roe | 107 | Mike Bierek | aca8d295-e8e9-4213-bc9b-f1acf57fb520 |
@@ -174,6 +186,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | pyroclasm | ice | 214 | Pat Lewis | 88040748-ad76-4b9a-bd4e-87e5980e9816 |
 | raging_goblin | por | 145 | Pete Venters | fed57a17-7847-4e60-bc40-4452880f12a3 |
 | raise_the_alarm | mrd | 16 | John Matson | 4be510c8-fc01-4374-ac04-7968d24480fe |
+| rampant_growth | mir | 235 | Pat Lewis | a9dd8043-4099-42bb-9d54-4efc8b38fe18 |
 | rancor | ulg | 110 | Kev Walker | 59e256c2-38df-4012-9308-ce17dd889e5f |
 | rumbling_baloth | m14 | 193 | Jesper Ejsing | d8610ff1-064b-4c75-a8df-d3b076370d1e |
 | savannah_lions | lea | 38 | Daniel Gelon | d05b92bd-797e-413f-a8b0-32e0937a1ee0 |

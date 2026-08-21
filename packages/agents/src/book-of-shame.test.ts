@@ -145,6 +145,30 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(one).toBeGreaterThan(pass - 5); // a real candidate, not a dead one
   });
 
+  it("Demonic Tutor never fetches a land while the hand holds ≥3 lands (S15 tutor policy); Growth picks the colour we need", () => {
+    const a = agent("midrange");
+    const view = mkView({
+      hand: [{ objectId: "h1", cardId: "swamp" }, { objectId: "h2", cardId: "swamp" }, { objectId: "h3", cardId: "swamp" }, { objectId: "h4", cardId: "vampire_nighthawk" }],
+      battlefield: [{ id: "l1", cardId: "swamp", controller: 0 }, { id: "l2", cardId: "swamp", controller: 0 }],
+    });
+    const req = {
+      player: 0 as const, purpose: "searchLibrary" as const,
+      actions: [{ type: "declineSearch" }, { type: "searchPick", objectId: "L1" }, { type: "searchPick", objectId: "L2" }, { type: "searchPick", objectId: "L3" }] as never[],
+      revealed: [{ objectId: "L1", cardId: "swamp" }, { objectId: "L2", cardId: "typhoid_rats" }, { objectId: "L3", cardId: "nekrataal" }],
+    };
+    const pick = a.searchChoice(view, req as never) as { type: string; objectId?: string };
+    expect(pick.type).toBe("searchPick");
+    expect(pick.objectId).not.toBe("L1"); // not the land
+    expect(pick.objectId).toBe("L2"); // castable soon (2 lands + 1 ≥ mv 2) beats the 4-drop
+    // Growth: a Simic hand short on blue picks the Island.
+    const g = mkView({ hand: [{ objectId: "h", cardId: "cloudkin_seer" }], battlefield: [{ id: "f", cardId: "forest", controller: 0 }] });
+    const greq = { player: 0 as const, purpose: "searchLibrary" as const, actions: [{ type: "declineSearch" }, { type: "searchPick", objectId: "F" }, { type: "searchPick", objectId: "I" }] as never[], revealed: [{ objectId: "F", cardId: "forest" }, { objectId: "I", cardId: "island" }] };
+    expect((a.searchChoice(g, greq as never) as { objectId?: string }).objectId).toBe("I");
+    // Lotus is never popped proactively by the AI (S15 v1 rule).
+    const lv = mkView({ battlefield: [{ id: "lotus", cardId: "black_lotus", controller: 0 }] });
+    expect(a.scorePriorityAction(lv, { type: "activateAbility", objectId: "lotus", abilityIndex: 0, targets: [], color: "G" })).toBe(-Infinity);
+  });
+
   it("chump-block into nothing has negative gain: no block beats losing the blocker for free", () => {
     const a = agent();
     const view = mkView({

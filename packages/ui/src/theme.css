@@ -489,3 +489,7 @@ button.primary { background: var(--brass); color: var(--parchment); border: 1.5p
 .world-inspector { width: 232px; z-index: 25; }
 .world-inspector .drag-bar span:last-child { display: inline-flex; gap: 6px; }
 .editor-card { cursor: pointer; }
+
+/* S15: Lotus colour picker + search dialog */
+.color-pick { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; padding: 6px 12px; }
+.decline-search { border: 1.5px dashed var(--ink-soft); border-radius: 6px; padding: 10px 14px; display: flex; align-items: center; font-family: var(--serif); font-weight: 700; }

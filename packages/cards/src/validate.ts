@@ -82,6 +82,8 @@ export function validateCard(raw: unknown): ValidationResult {
   } else if (raw.isTokenDef === true) {
     err(`token definitions require an explicit "colors" field (ADR-019)`);
   }
+  // ADR-068: prizeOnly (Black Lotus) — boolean when present; the pool registry column mirrors it.
+  if (raw.prizeOnly !== undefined && typeof raw.prizeOnly !== "boolean") err(`"prizeOnly" must be boolean (ADR-068)`);
 
   const declaredTargets = Array.isArray(raw.targets) ? (raw.targets as unknown[]) : [];
   if (raw.targets !== undefined) {
@@ -271,10 +273,18 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     if (e.scope !== "attached") err(`gainControl must be a static with scope "attached" (ADR-033)`);
   },
   searchLibrary: (e, err) => {
-    if (e.predicate !== "basicLand") err(`searchLibrary predicate must be basicLand`);
+    if (e.predicate !== "basicLand" && e.predicate !== "anyCard") err(`searchLibrary predicate must be basicLand|anyCard (ADR-068)`);
     if (e.to !== "hand" && e.to !== "battlefield") err(`searchLibrary "to" must be hand|battlefield`);
+    if (e.entersTapped !== undefined && e.to !== "battlefield") err(`searchLibrary entersTapped only applies to battlefield destination`);
   },
   addMana: (e, err) => {
+    if (e.choice) {
+      const ch = e.choice as { count?: unknown; anyOneColor?: unknown };
+      if (e.mana !== undefined) return err(`addMana: give mana OR choice, not both`);
+      if (!Number.isInteger(ch.count) || (ch.count as number) < 1) return err(`addMana choice.count must be a positive integer`);
+      if (ch.anyOneColor !== true) return err(`addMana choice.anyOneColor must be true (the only choice shape, ADR-068)`);
+      return;
+    }
     if (typeof e.mana !== "string") return err(`addMana missing mana`);
     try {
       parseManaProduction(e.mana);

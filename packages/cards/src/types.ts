@@ -111,8 +111,10 @@ export type Effect =
   | { type: "returnFromGraveyard"; target?: number; scope?: Scope; to: "battlefield" | "hand" }
   | { type: "fight"; targets: [number, number] }
   | { type: "gainControl"; scope: Scope } // static-only (ADR-033); targeted/EOT variant reserved
-  | { type: "searchLibrary"; predicate: "basicLand"; to: "hand" | "battlefield" }
-  | { type: "addMana"; mana: string };
+  /** ADR-068 Amendment 1: find-may-fail search; chooser sees matching library cards in the request payload; always shuffles after (CR 701.19). */
+  | { type: "searchLibrary"; predicate: "basicLand" | "anyCard"; to: "hand" | "battlefield"; entersTapped?: boolean }
+  /** ADR-068 Amendment 2: `mana` (fixed production) OR `choice` (Lotus: N mana of any one colour — a five-option choice at activation, no stack). */
+  | { type: "addMana"; mana?: string; choice?: { count: number; anyOneColor: true } };
 // Reserved, not implemented (data-model §3): copy, setPT, preventDamage, changeType.
 
 export type EffectType = Effect["type"];
@@ -241,6 +243,8 @@ export interface CardDef {
   targets?: TargetSpec[];
   art?: { asset?: string; fallback: "rendered" };
   isTokenDef?: boolean;
+  /** ADR-068: never shop stock — boss/lair treasure only (Black Lotus). Pool-registry column mirrored here so the world can filter. */
+  prizeOnly?: boolean;
 }
 
 /** An activated ability is a mana ability iff every effect is addMana and it has no targets (CR 605 simplification). */
@@ -252,6 +256,16 @@ export function isManaAbility(a: AbilityDef): boolean {
     a.effects.every((e) => e.type === "addMana")
   );
 }
+
+/** ADR-068 Amendment 2: a mana ability that carries a colour choice (Lotus) or a
+ * sacrifice cost is activated DELIBERATELY (one action per colour) — never by
+ * auto-pay, never by the bare `tapForMana` path. */
+export function isChoiceManaAbility(a: AbilityDef): boolean {
+  return isManaAbility(a) && a.kind === "activated" && (a.effects.some((e) => e.type === "addMana" && !!e.choice) || !!a.cost.sacrifice);
+}
+
+export const MANA_COLORS = ["W", "U", "B", "R", "G"] as const;
+export type ManaColor = (typeof MANA_COLORS)[number];
 
 /** Effective colors per ADR-019: the explicit field, else derived from mana cost symbols. */
 export function cardColors(def: CardDef): ("W" | "U" | "B" | "R" | "G")[] {

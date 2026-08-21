@@ -63,6 +63,8 @@ export class HeuristicAgent implements Agent {
         return this.targetChoice(view, request);
       case "optionalTrigger":
         return request.actions.find((a) => a.type === "acceptOptional") ?? request.actions[0]!;
+      case "searchLibrary":
+        return this.searchChoice(view, request);
       default:
         return request.actions[0]!;
     }
@@ -127,6 +129,11 @@ export class HeuristicAgent implements Agent {
     // pool — never a play, at any temperature (softmax noise had been
     // coin-flipping a 0.25-point gap at apprentice's 1.2).
     if ((action as { x?: number }).x === 0 && this.hasXCost(view, action)) return -Infinity;
+    // S15 v1: a choice-bearing mana ability (Lotus) is never activated
+    // proactively — the view-sim can't price floating mana, and popping the
+    // Lotus for nothing is the classic blunder. (Lotus is prize-only; a human
+    // holds it, the AI essentially never will.)
+    if (action.type === "activateAbility" && action.color !== undefined) return -Infinity;
     const pred = predictAction(view, action, this.defs, this.C);
     if (pred.unchanged) {
       // Friction: an action that visibly does nothing scores strictly below
@@ -134,6 +141,54 @@ export class HeuristicAgent implements Agent {
       return evaluate(view, this.profile, this.defs) - 0.25;
     }
     return evaluate(pred.view, this.profile, this.defs) + pred.adjustment;
+  }
+
+  /** S15 Part 3.1 — ranked tutor policy v1 (exposed for the book of shame).
+   * Growth (basics only): the basic of a colour we need most — coloured
+   * symbols in hand minus lands of that colour on our battlefield.
+   * Tutor (any card): if the hand is land-light (<2), a needed basic; else
+   * the best castable-soon nonland (mv ≤ lands+1), highest mv first — the
+   * discard/bottom ranking inverted; never a land while holding ≥3 lands. */
+  searchChoice(view: GameView, request: ActionRequest): Action {
+    const picks = request.actions.filter((a): a is Extract<Action, { type: "searchPick" }> => a.type === "searchPick");
+    const decline = request.actions.find((a) => a.type === "declineSearch") ?? request.actions[0]!;
+    if (picks.length === 0) return decline;
+    const cardOf = new Map((request.revealed ?? []).map((r) => [r.objectId, r.cardId]));
+    const me = view.you;
+    const myLands = view.battlefield.filter((o) => o.controller === me && this.def(o.cardId)?.types.includes("Land"));
+    const handLands = view.hand.filter((c) => this.def(c.cardId)?.types.includes("Land")).length;
+    // Colour need: symbols in hand costs minus lands producing that colour.
+    const need: Record<string, number> = { W: 0, U: 0, B: 0, R: 0, G: 0 };
+    for (const c of view.hand) {
+      const cost = this.def(c.cardId)?.manaCost ?? "";
+      for (const col of Object.keys(need)) need[col]! += (cost.match(new RegExp(`\\{${col}\\}`, "g")) ?? []).length;
+    }
+    for (const l of myLands) {
+      const prod = this.def(l.cardId)?.abilities?.flatMap((a) => ("effects" in a ? a.effects : []))?.find((e) => e.type === "addMana");
+      const m = prod && prod.type === "addMana" ? prod.mana ?? "" : "";
+      for (const col of Object.keys(need)) if (m.includes(`{${col}}`)) need[col]! -= 1;
+    }
+    const basicColor = (cardId: string): string | null => {
+      const d = this.def(cardId);
+      if (!d?.types.includes("Land")) return null;
+      const m = d.abilities?.flatMap((a) => ("effects" in a ? a.effects : [])).find((e) => e.type === "addMana");
+      const s = m && m.type === "addMana" ? m.mana ?? "" : "";
+      return (["W", "U", "B", "R", "G"].find((c) => s.includes(`{${c}}`)) as string | undefined) ?? null;
+    };
+    const lands = picks.filter((a) => this.def(cardOf.get(a.objectId) ?? "")?.types.includes("Land"));
+    const nonlands = picks.filter((a) => !lands.includes(a));
+    const bestLand = [...lands].sort((a, b) => (need[basicColor(cardOf.get(b.objectId) ?? "") ?? ""] ?? -99) - (need[basicColor(cardOf.get(a.objectId) ?? "") ?? ""] ?? -99))[0];
+    if (nonlands.length === 0) return bestLand ?? decline;
+    if (handLands < 2 && bestLand) return bestLand;
+    const castableSoon = (a: Extract<Action, { type: "searchPick" }>) => this.mv(cardOf.get(a.objectId) ?? "") <= myLands.length + 1;
+    const ranked = [...nonlands].sort((a, b) => {
+      const ca = castableSoon(a) ? 1 : 0, cb = castableSoon(b) ? 1 : 0;
+      if (ca !== cb) return cb - ca;
+      const d = this.mv(cardOf.get(b.objectId) ?? "") - this.mv(cardOf.get(a.objectId) ?? "");
+      if (d !== 0) return d;
+      return (cardOf.get(a.objectId) ?? "").localeCompare(cardOf.get(b.objectId) ?? "");
+    });
+    return ranked[0]!;
   }
 
   private hasXCost(view: GameView, action: Action): boolean {

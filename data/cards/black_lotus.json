@@ -1,0 +1,33 @@
+{
+  "id": "black_lotus",
+  "name": "Black Lotus",
+  "source": "real",
+  "manaCost": "{0}",
+  "types": [
+    "Artifact"
+  ],
+  "prizeOnly": true,
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "tap": true,
+        "sacrifice": {
+          "predicate": "self"
+        }
+      },
+      "effects": [
+        {
+          "type": "addMana",
+          "choice": {
+            "count": 3,
+            "anyOneColor": true
+          }
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

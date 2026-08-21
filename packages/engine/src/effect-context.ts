@@ -23,7 +23,7 @@ import { characteristics, isCreature } from "./characteristics.js";
  */
 export type EffectRequester = (
   player: PlayerId,
-  purpose: "discard",
+  purpose: "discard" | "searchLibrary",
   actions: Action[],
   revealed?: { objectId: string; cardId: string }[],
 ) => Promise<Action>;
@@ -165,6 +165,47 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
 
     ...sharedOps(ctx),
     ...discardOp(ctx, controller, requester),
+    ...searchOp(ctx, requester),
+  };
+}
+
+/** ADR-068 Amendment 1: search implementation. Candidates are the matching
+ * library cards, deduplicated by cardId for the request (one action per
+ * distinct card, like R-029's hand dedup); the chooser sees them as
+ * `revealed`; decline is always actions[0] (ADR-014 auto-takes it when
+ * nothing matches). The library is shuffled afterwards no matter what
+ * (CR 701.19) through the logged game RNG, so replay reproduces it. */
+function searchOp(ctx: EngineCtx, requester?: EffectRequester) {
+  return {
+    async searchLibrary(playerNum: number, predicate: "basicLand" | "anyCard", to: "hand" | "battlefield", entersTapped: boolean): Promise<void> {
+      const player = playerNum as PlayerId;
+      const p = ctx.state.players[player];
+      const matches = p.library.filter((id) => {
+        const def = ctx.defs.def(getObject(ctx.state, id).cardId);
+        if (predicate === "anyCard") return true;
+        return def.types.includes("Land") && (def.supertypes ?? []).includes("Basic");
+      });
+      const seen = new Set<string>();
+      const candidates: string[] = [];
+      for (const id of matches) {
+        const cardId = getObject(ctx.state, id).cardId;
+        if (seen.has(cardId)) continue;
+        seen.add(cardId);
+        candidates.push(id);
+      }
+      const actions: Action[] = [{ type: "declineSearch" }, ...candidates.map((objectId) => ({ type: "searchPick" as const, objectId }))];
+      let pick: Action = actions[0]!;
+      if (candidates.length > 0) {
+        if (!requester) throw new Error("searchLibrary needs an agent (not available at initialization)");
+        const revealed = candidates.map((objectId) => ({ objectId, cardId: getObject(ctx.state, objectId).cardId }));
+        pick = await requester(player, "searchLibrary", actions, revealed);
+      }
+      if (pick.type === "searchPick") {
+        moveObject(ctx, pick.objectId, to, to === "battlefield" ? { tapped: entersTapped } : {});
+      }
+      // Shuffle always follows a search (CR 701.19) — logged RNG, replay-covered.
+      p.library = ctx.rng.shuffle(p.library, "shuffle");
+    },
   };
 }
 
@@ -349,5 +390,6 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
     },
     ...sharedOps(ctx),
     ...discardOp(ctx, player), // random mode works; choice modes throw without a requester
+    ...searchOp(ctx), // throws if a match exists (no agent at initialization); no-match shuffles
   };
 }

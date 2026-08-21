@@ -81,6 +81,32 @@ const TEST_CARDS: CardDef[] = [
     art: { fallback: "rendered" },
   },
   {
+    // S15: a Lotus-shaped mana ability on an artifact WITH a DIES trigger, to
+    // prove sacrifice-as-cost ordering (mana first, trigger at the next check).
+    id: "test_lotus_martyr",
+    name: "Test Lotus Martyr",
+    source: "custom",
+    text: "",
+    manaCost: "{0}",
+    types: ["Artifact"],
+    abilities: [
+      { kind: "activated", cost: { tap: true, sacrifice: { predicate: "self" } }, effects: [{ type: "addMana", choice: { count: 3, anyOneColor: true } }] },
+      { kind: "triggered", event: "DIES", condition: { self: true }, effects: [{ type: "draw", count: 1, who: "you" }], optional: false },
+    ],
+    art: { fallback: "rendered" },
+  },
+  {
+    // S15: any-card search to the battlefield, so a searched ETB creature's trigger can be asserted.
+    id: "test_summon_from_library",
+    name: "Test Summon From Library",
+    source: "custom",
+    text: "",
+    manaCost: "{1}",
+    types: ["Sorcery"],
+    spellEffect: [{ type: "searchLibrary", predicate: "anyCard", to: "battlefield" }],
+    art: { fallback: "rendered" },
+  },
+  {
     id: "test_pinger",
     name: "Test Pinger",
     source: "custom",
@@ -127,7 +153,7 @@ export type ScriptEntry =
   /** Declarative multi-step: staged one declareAttacker/declareBlocker at a time, consumed when complete. */
   | { player: PlayerId; do: "attack"; attackers: string[] }
   | { player: PlayerId; do: "block"; blocks: { blocker: string; attacker: string }[] }
-  | { player: PlayerId; do: "activate"; card: string; abilityIndex: number; targets?: TargetDesc[]; x?: number }
+  | { player: PlayerId; do: "activate"; card: string; abilityIndex: number; targets?: TargetDesc[]; x?: number; color?: "W" | "U" | "B" | "R" | "G" }
   | { player: PlayerId; do: "chooseTriggerTargets"; targets: TargetDesc[] }
   | { player: PlayerId; do: "orderTrigger"; card: string }
   | { player: PlayerId; do: "sacrificeChoice"; card: string }
@@ -135,7 +161,9 @@ export type ScriptEntry =
   | { player: PlayerId; do: "keepLegend"; card: string }
   | { player: PlayerId; do: "orderBlocker"; blocker: string }
   | { player: PlayerId; do: "bottom"; card: string }
-  | { player: PlayerId; do: "discard"; card: string };
+  | { player: PlayerId; do: "discard"; card: string }
+  /** ADR-068: take this card from the search candidates, or decline (card omitted). */
+  | { player: PlayerId; do: "search"; card?: string };
 
 export interface BattlefieldEntry {
   card: string;
@@ -369,6 +397,7 @@ export class TestGame {
               cardIdOf(a.objectId) === entry.card &&
               a.abilityIndex === entry.abilityIndex &&
               a.x === entry.x &&
+              a.color === entry.color &&
               JSON.stringify(a.targets) === JSON.stringify(wanted),
           ),
         );
@@ -393,6 +422,10 @@ export class TestGame {
         return one(actions.find((a) => a.type === "bottomCard" && cardIdOf(a.objectId) === entry.card));
       case "discard":
         return one(actions.find((a) => a.type === "discard" && cardIdOf(a.objectId) === entry.card));
+      case "search":
+        return entry.card
+          ? one(actions.find((a) => a.type === "searchPick" && cardIdOf(a.objectId) === entry.card))
+          : one(actions.find((a) => a.type === "declineSearch"));
     }
   }
 }

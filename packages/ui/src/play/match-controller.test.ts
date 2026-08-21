@@ -4,6 +4,7 @@ import { dirname, join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
 import { expandDecklist, replayToDecision } from "@shandalar/engine";
 import { MatchController } from "./match-controller.js";
+import { DECKS } from "@shandalar/sim/decks";
 
 const CARDS_DIR = join(dirname(fileURLToPath(import.meta.url)), "../../../../data/cards");
 
@@ -14,14 +15,15 @@ const CARDS_DIR = join(dirname(fileURLToPath(import.meta.url)), "../../../../dat
  * acceptance floor; Chris's real match is the other half.
  */
 
-async function playScripted(seed: number, humanSeat: 0 | 1): Promise<MatchController & { stackStops: number; manualTaps: number; combatStops: number }> {
+async function playScripted(seed: number, humanSeat: 0 | 1, humanDeck: "A" | "C" | "D" = "A"): Promise<MatchController & { stackStops: number; manualTaps: number; combatStops: number; searches: number }> {
   const pool = loadCardPool(CARDS_DIR);
   let stackStops = 0;
   let manualTaps = 0;
   let combatStops = 0;
+  let searches = 0;
   const c = new MatchController(pool.cards, {
     humanSeat,
-    humanDeck: "A",
+    humanDeck,
     aiDeck: "D",
     difficulty: "journeyman",
     seed,
@@ -91,23 +93,30 @@ async function playScripted(seed: number, humanSeat: 0 | 1): Promise<MatchContro
         break;
       }
       case "dialog": {
-        c.selectDialog(0);
+        // S15: take the first matching card when searching (dialog path), else the safe default.
+        if (phase.request.purpose === "searchLibrary" && phase.request.actions.length > 1) { searches += 1; c.selectDialog(1); }
+        else c.selectDialog(0);
         c.confirmDialog();
         break;
       }
+      case "chooseColor":
+        c.chooseColor("W");
+        break;
     }
   }
   await done;
-  return Object.assign(c, { stackStops, manualTaps, combatStops });
+  return Object.assign(c, { stackStops, manualTaps, combatStops, searches });
 }
 
 describe("play-mode acceptance (headless; S10 DoD 1)", () => {
-  it("a scripted human plays complete games vs journeyman through the UI event path, both seats", async () => {
-    for (const [seed, seat] of [
-      [11, 0],
-      [12, 1],
+  it("a scripted human plays complete games vs journeyman through the UI event path, both seats (S15: Growth/Tutor decks; searches through the dialog)", async () => {
+    let searchActions = 0;
+    for (const [seed, seat, deck] of [
+      [11, 0, "C"],
+      [12, 1, "D"],
     ] as const) {
-      const c = await playScripted(seed, seat);
+      const c = await playScripted(seed, seat, deck);
+      searchActions += c.result!.log.filter((e) => e.t === "ACTION" && e.player === seat && ["searchPick", "declineSearch"].includes((e as { action: { type: string } }).action.type)).length;
       const result = c.result!;
       expect(["LIFE", "DECKED", "MAX_TURNS", "DRAW"]).toContain(result.reason);
       expect(result.turns).toBeGreaterThan(3);
@@ -141,7 +150,49 @@ describe("play-mode acceptance (headless; S10 DoD 1)", () => {
       const point = await replayToDecision(pool.cards, decklists, saved.log, mid);
       expect(point.state.turn).toBeGreaterThan(0);
     }
+    expect(searchActions).toBeGreaterThan(0); // a Growth/Tutor resolved through the dialog path in at least one game
   }, 120_000);
+
+  it("S15 Lotus line through the play client: cast Lotus, activate → chooseColor → confirm → three mana floating, Lotus in the graveyard", async () => {
+    const pool = loadCardPool(CARDS_DIR);
+    const c = new MatchController(pool.cards, {
+      humanSeat: 0,
+      seed: 3,
+      aiDelayMs: 0,
+      custom: {
+        human: { name: "You", decklist: [{ cardId: "black_lotus", count: 40 }] },
+        enemy: { name: "D", decklist: [...DECKS.D.decklist], difficulty: "journeyman", archetype: "midrange" },
+        rules: { startingLife: 20, ante: 0 },
+        modifiers: [],
+      },
+    });
+    c.start();
+    let guard = 0;
+    while (c.phase.kind !== "priority" && guard++ < 5000) {
+      await new Promise((r) => setTimeout(r, 0));
+      if (c.phase.kind === "dialog") { c.selectDialog(0); c.confirmDialog(); }
+    }
+    const lotusInHand = [...(c.phase as { castable: Map<string, unknown> }).castable.keys()][0]!;
+    c.clickHand(lotusInHand);
+    if (c.phase.kind === "confirmCast") c.confirmCast();
+    guard = 0;
+    while (c.phase.kind !== "priority" && guard++ < 5000) await new Promise((r) => setTimeout(r, 0));
+    const onBf = c.game.state.battlefield.find((id) => c.game.state.objects[id]!.cardId === "black_lotus")!;
+    expect(onBf).toBeTruthy();
+    expect((c.phase as { activatable: Map<string, unknown> }).activatable.has(onBf)).toBe(true);
+    c.clickBattlefield(onBf);
+    expect(c.phase.kind).toBe("chooseColor");
+    c.chooseColor("U");
+    expect(c.phase.kind).toBe("confirmCast");
+    c.confirmCast();
+    guard = 0;
+    while (c.phase.kind !== "priority" && guard++ < 5000) await new Promise((r) => setTimeout(r, 0));
+    expect(c.game.state.players[0].manaPool.U).toBe(3);
+    expect(c.game.state.players[0].graveyard.some((id) => c.game.state.objects[id]!.cardId === "black_lotus")).toBe(true);
+    c.concede();
+    guard = 0;
+    while (!c.result && guard++ < 2000) await new Promise((r) => setTimeout(r, 0));
+  }, 60_000);
 
   it("ADR-059 meaningfulness: X=0-only casts do not make a window meaningful", () => {
     const cast = (x?: number) => ({ type: "castSpell", objectId: "h1", ...(x !== undefined ? { x } : {}) }) as never;

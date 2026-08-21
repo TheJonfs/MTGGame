@@ -40,6 +40,14 @@ export interface EffectContext {
   draw(player: number, count: number): void;
   addContinuousEffect(effect: ResolvedContinuousEffect): void;
   addMana(player: number, mana: string): void;
+  /**
+   * ADR-068 Amendment 1: search the player's library for cards matching the
+   * predicate; the chooser sees the candidates (request payload, ADR-032
+   * pattern) and may take one (to hand, or to the battlefield, tapped if
+   * asked) or decline; the library is ALWAYS shuffled after (CR 701.19),
+   * through the logged game RNG. Async: it is a DecisionRequest.
+   */
+  searchLibrary(player: number, predicate: "basicLand" | "anyCard", to: "hand" | "battlefield", entersTapped: boolean): Promise<void>;
   createToken(player: number, tokenId: string, count: number): void;
   addCounters(objectId: string, kind: "+1/+1" | "-1/-1", count: number): void;
   gainLife(player: number, amount: number): void;
@@ -143,7 +151,15 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
 
   addMana: (e, ctx) => {
     if (e.type !== "addMana") throw new Error("resolver mismatch");
-    for (const p of ctx.players("you")) ctx.addMana(p, e.mana);
+    // Choice-bearing production (Lotus) is resolved at activation, not here:
+    // the engine adds the chosen colour directly (CR 605: no stack). A
+    // fixed-production ability that somehow reaches the stack still works.
+    if (e.mana) for (const p of ctx.players("you")) ctx.addMana(p, e.mana);
+  },
+
+  searchLibrary: async (e, ctx) => {
+    if (e.type !== "searchLibrary") throw new Error("resolver mismatch");
+    for (const p of ctx.players("you")) await ctx.searchLibrary(p, e.predicate, e.to, e.entersTapped === true);
   },
 
   createToken: (e, ctx) => {

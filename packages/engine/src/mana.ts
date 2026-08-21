@@ -7,6 +7,7 @@ import {
   type Color,
   type ManaCost,
   type ManaSymbol,
+  isChoiceManaAbility,
 } from "@shandalar/cards";
 import type { EngineCtx } from "./ctx.js";
 import { getObject, type PlayerId } from "./state.js";
@@ -32,8 +33,11 @@ export function producibleSymbols(ctx: EngineCtx, objectId: string): ManaSymbol[
   const out: ManaSymbol[] = [];
   for (const ability of ctx.defs.def(obj.cardId).abilities ?? []) {
     if (!isManaAbility(ability) || ability.kind !== "activated") continue;
+    // ADR-068 Amendment 2: choice-bearing / sacrifice-cost mana abilities
+    // (Lotus) are never auto-paid or bare-tapped — activated deliberately.
+    if (isChoiceManaAbility(ability)) continue;
     for (const e of ability.effects) {
-      if (e.type !== "addMana") continue;
+      if (e.type !== "addMana" || !e.mana) continue;
       for (const sym of parseManaProduction(e.mana)) out.push(sym.symbol);
     }
   }
@@ -82,7 +86,7 @@ export function canPay(
 /** Execute one mana ability of a permanent (non-stack action, CR 605). */
 export function tapForMana(ctx: EngineCtx, objectId: string): void {
   const obj = getObject(ctx.state, objectId);
-  const abilities = (ctx.defs.def(obj.cardId).abilities ?? []).filter(isManaAbility);
+  const abilities = (ctx.defs.def(obj.cardId).abilities ?? []).filter((a) => isManaAbility(a) && !isChoiceManaAbility(a));
   const ability = abilities[0];
   if (!ability || ability.kind !== "activated") throw new Error(`${obj.cardId} has no mana ability`);
   if (ability.cost.tap) {
@@ -92,7 +96,7 @@ export function tapForMana(ctx: EngineCtx, objectId: string): void {
   }
   const pool = ctx.state.players[obj.controller].manaPool;
   for (const e of ability.effects) {
-    if (e.type !== "addMana") continue;
+    if (e.type !== "addMana" || !e.mana) continue;
     for (const sym of parseManaProduction(e.mana)) pool[sym.symbol] += 1;
   }
 }

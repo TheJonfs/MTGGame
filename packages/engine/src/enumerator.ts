@@ -1,4 +1,4 @@
-import { isManaAbility, parseManaCost, type CardDef } from "@shandalar/cards";
+import { isManaAbility, parseManaCost, type CardDef, isChoiceManaAbility, MANA_COLORS } from "@shandalar/cards";
 import type { Action } from "./actions.js";
 import { canBlock, eligibleAttackers, eligibleBlockers, menaceViolations } from "./combat.js";
 import { characteristics } from "./characteristics.js";
@@ -82,7 +82,18 @@ export function legalActions(ctx: EngineCtx, player: PlayerId): Action[] {
     if (obj.controller !== player) continue;
     const def = ctx.defs.def(obj.cardId);
     (def.abilities ?? []).forEach((ability, abilityIndex) => {
-      if (ability.kind !== "activated" || isManaAbility(ability)) return;
+      if (ability.kind !== "activated") return;
+      // ADR-068 Amendment 2: a choice-bearing mana ability is offered as one
+      // deliberate action per colour (Lotus → five), never by auto-pay.
+      if (isChoiceManaAbility(ability)) {
+        if (ability.cost.tap && (obj.tapped || (obj.summoningSick && !characteristics(ctx, id).keywords.has("haste") && def.types.includes("Creature")))) return;
+        if (ability.cost.sacrifice && sacrificeCandidates(ctx, player, id, ability.cost.sacrifice.predicate).length === 0) return;
+        const cost = ability.cost.mana ? parseManaCost(ability.cost.mana) : undefined;
+        if (cost && !canPay(ctx, player, cost, 0, ability.cost.tap ? [id] : [])) return;
+        for (const color of MANA_COLORS) actions.push({ type: "activateAbility", objectId: id, abilityIndex, targets: [], color });
+        return;
+      }
+      if (isManaAbility(ability)) return;
       const timing = ability.equip ? "sorcery" : (ability.timing ?? "instant"); // equip is sorcery-speed by rule (702.6b)
       if (timing === "sorcery" && !atSorcerySpeed) return;
       if (ability.cost.tap && (obj.tapped || (obj.summoningSick && !characteristics(ctx, id).keywords.has("haste")))) return;

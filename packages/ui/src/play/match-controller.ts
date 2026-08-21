@@ -95,6 +95,12 @@ export type UiPhase =
       variants: Action[];
     }
   | {
+      /** S15 (ADR-068 Amendment 2): a choice-bearing mana ability — pick the colour. */
+      kind: "chooseColor";
+      sourceObjectId: string;
+      variants: Action[];
+    }
+  | {
       kind: "targeting";
       sourceObjectId: string;
       variants: Action[];
@@ -761,6 +767,11 @@ export class MatchController {
   // ---------- casting: X → targets → confirm ----------
 
   private beginCast(sourceObjectId: string, variants: Action[]): void {
+    if (variants.some((v) => (v as { color?: string }).color !== undefined)) {
+      this.phase = { kind: "chooseColor", sourceObjectId, variants };
+      this.emit();
+      return;
+    }
     const xs = [...new Set(variants.map((v) => (v as { x?: number }).x).filter((x): x is number => x !== undefined))];
     if (xs.length > 1) {
       this.phase = { kind: "chooseX", sourceObjectId, xs: xs.sort((a, b) => a - b), variants };
@@ -768,6 +779,14 @@ export class MatchController {
       return;
     }
     this.enterTargeting(sourceObjectId, variants);
+  }
+
+  chooseColor(color: "W" | "U" | "B" | "R" | "G"): void {
+    if (this.phase.kind !== "chooseColor") return;
+    const v = this.phase.variants.find((a) => (a as { color?: string }).color === color);
+    if (!v) return;
+    this.phase = { kind: "confirmCast", sourceObjectId: this.phase.sourceObjectId, action: v, offerManualTap: false };
+    this.emit();
   }
 
   chooseX(x: number): void {

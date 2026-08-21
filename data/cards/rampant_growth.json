@@ -1,0 +1,20 @@
+{
+  "id": "rampant_growth",
+  "name": "Rampant Growth",
+  "source": "real",
+  "manaCost": "{1}{G}",
+  "types": [
+    "Sorcery"
+  ],
+  "spellEffect": [
+    {
+      "type": "searchLibrary",
+      "predicate": "basicLand",
+      "to": "battlefield",
+      "entersTapped": true
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

@@ -65,6 +65,12 @@ The rules engine is a **library with no main loop and no knowledge of the world*
 
 **Archetypes the ceiling must support:** mono/dual aggro, go-wide tokens + anthem, midrange fatties, control (counters + removal + finisher), tempo (bounce + fliers), light aristocrats (Siege-Gang, sac outlets), light reanimator, tribal via type predicates (Goblins).
 
+### Amendments (ADR-037 process; dated)
+
+**2026-08-21 — ADR-068 Amendment 1 — search scope:** `searchLibrary` widens from "basic land only" to `predicate` ∈ {basicLand, anyCard}, destination ∈ {battlefield(+entersTapped), hand}. Search is a find-may-fail: the chooser sees their library in the DecisionRequest payload (ADR-032 pattern — request-scoped, no view change), may take a matching card or decline; **shuffle after search always (CR 701.19), via the logged game RNG**. Nothing reveals the chosen card's origin context to the opponent beyond what the card's destination makes public.
+
+**2026-08-21 — ADR-068 Amendment 2 — mana-ability choices:** a mana ability may carry a bounded choice (Lotus: "add three mana of any one colour" = a five-option DecisionRequest). Still no stack; the choice is a logged action; the enumerator offers one action per colour when the ability is activated deliberately, and auto-pay never activates choice-bearing mana abilities implicitly.
+
 ---
 
 ## 4. Explicit exclusions (written down so we don't drift)

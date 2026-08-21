@@ -40,10 +40,11 @@ export const DECK_B_WU_SKIES: { cardId: string; count: number }[] = [
 ];
 
 export const DECK_C_MONO_GREEN: { cardId: string; count: number }[] = [
-  { cardId: "forest", count: 17 },
+  { cardId: "forest", count: 16 }, // S15 (ADR-068): −1 Forest −1 Centaur Courser +2 Rampant Growth
   { cardId: "elvish_visionary", count: 3 },
   { cardId: "timberland_guide", count: 3 },
-  { cardId: "centaur_courser", count: 2 },
+  { cardId: "centaur_courser", count: 1 },
+  { cardId: "rampant_growth", count: 2 },
   { cardId: "rumbling_baloth", count: 2 },
   { cardId: "pelakka_wurm", count: 2 },
   { cardId: "giant_growth", count: 1 },
@@ -67,7 +68,8 @@ export const DECK_D_MONO_BLACK: { cardId: string; count: number }[] = [
   { cardId: "hymn_to_tourach", count: 1 },
   { cardId: "drana_kalastria_bloodchief", count: 2 },
   { cardId: "gravedigger", count: 2 },
-  { cardId: "zombify", count: 2 },
+  { cardId: "zombify", count: 1 }, // S15 (ADR-068): −1 Zombify +1 Demonic Tutor
+  { cardId: "demonic_tutor", count: 1 },
 ];
 
 export const DECK_E_SIMIC: { cardId: string; count: number }[] = [

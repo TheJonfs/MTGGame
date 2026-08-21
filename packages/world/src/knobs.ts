@@ -95,6 +95,11 @@ export const KNOBS = {
     unit: "gold per (1 + mana value)",
     description: "Shop price = round(shopPriceMultiplier × shopBasePrice × (1 + mana value)). A 1-drop is 8, a 3-drop 16, a 5-drop 24 at defaults. Basics are never sold (free and infinite).",
   }),
+  shopRowCopies: knob<number>({
+    default: 3,
+    unit: "copies (max per row)",
+    description: "Each shop row rolls 1..N copies per epoch (S14 dev-3 follow-up, registry-first). Depletion persists within the epoch; restock on the next.",
+  }),
   beastBuyOffMultiplier: knob<number>({
     default: 2,
     unit: "× buy-off price",

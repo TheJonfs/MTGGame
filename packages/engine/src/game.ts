@@ -1,5 +1,5 @@
 import { EventBus, IdGen, type LogSink, type Rng } from "@shandalar/core";
-import { parseManaCost, resolveEffect, type CardDef, type Effect } from "@shandalar/cards";
+import { parseManaCost, resolveEffect, type CardDef, type Effect, isChoiceManaAbility, parseManaProduction } from "@shandalar/cards";
 import { sameAction, type Action } from "./actions.js";
 import {
   assignCombatDamage,
@@ -50,7 +50,9 @@ export type RequestPurpose =
   | "chooseTarget"
   | "mulligan"
   | "bottomCards"
-  | "discard";
+  | "discard"
+  /** ADR-068 Amendment 1: pick a matching library card (request carries the candidates as `revealed`) or decline. */
+  | "searchLibrary";
 
 /** ADR-048: identity + pending effects of the thing asking for targets, so
  * agents can classify (rule 8 / evaluation) without guessing the source. */
@@ -511,6 +513,22 @@ export class Game {
           const pick = options.length === 1 ? options[0]! : await this.request(player, "chooseSacrifice", options);
           if (pick.type !== "sacrifice") throw new Error("expected sacrifice");
           moveObject(this.ctx, pick.objectId, "graveyard");
+        }
+        // ADR-068 Amendment 2: a choice-bearing mana ability (Lotus) resolves
+        // immediately — mana abilities don't use the stack (CR 605.3b); the
+        // colour choice is the logged action itself.
+        if (isChoiceManaAbility(ability)) {
+          const pool = state.players[player].manaPool;
+          for (const e of ability.effects) {
+            if (e.type !== "addMana") continue;
+            if (e.choice) {
+              if (!action.color) throw new Error("choice mana ability needs a colour");
+              pool[action.color] += e.choice.count;
+            } else if (e.mana) {
+              for (const sym of parseManaProduction(e.mana)) pool[sym.symbol] += 1;
+            }
+          }
+          break;
         }
         state.stack.push({
           id: this.ctx.ids.next("stk"),

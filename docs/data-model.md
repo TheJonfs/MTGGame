@@ -63,8 +63,8 @@ Triggered `event` values: `ENTERS_BATTLEFIELD`, `DIES` (battlefield→graveyard,
 | `returnFromGraveyard` | `target` (predicate `creatureCardInYourGraveyard`), `to`: `battlefield` / `hand` | Zombify (battlefield), Gravedigger (hand, optional ETB) |
 | `fight` | `targets: [i, j]` (two target indices) | all-or-nothing legality (ADR-022) |
 | `gainControl` | static with `scope: attached` (Control Magic, ADR-033); targeted/EOT variant reserved for Threaten-style cards (not in ceiling) | |
-| `searchLibrary` | `predicate` (basic land only), `to` | no pool card yet; resolver must shuffle after search (CR 701.19) when implemented |
-| `addMana` | `mana` | lands, rocks (mana ability) |
+| `searchLibrary` | `predicate` ∈ {basicLand, anyCard}, `to` ∈ {battlefield(+entersTapped), hand} | ADR-068 Amendment 1; find-may-fail via request-payload reveal (chooser only); **always shuffle after (CR 701.19, logged RNG)** |
+| `addMana` | `mana`, or `choice: {count, anyOneColor}` | lands, rocks; Lotus-style colour choice is a no-stack DecisionRequest (ADR-068 Amendment 2) |
 
 **Reserved, not implemented:** `copy`, `setPT`, `preventDamage`, `changeType`.
 

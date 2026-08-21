@@ -1,0 +1,19 @@
+{
+  "id": "demonic_tutor",
+  "name": "Demonic Tutor",
+  "source": "real",
+  "manaCost": "{1}{B}",
+  "types": [
+    "Sorcery"
+  ],
+  "spellEffect": [
+    {
+      "type": "searchLibrary",
+      "predicate": "anyCard",
+      "to": "hand"
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

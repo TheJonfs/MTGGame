@@ -13,7 +13,8 @@ export type Action =
   | { type: "pass" }
   | { type: "playLand"; objectId: string }
   | { type: "castSpell"; objectId: string; targets: ResolvedTarget[]; x?: number }
-  | { type: "activateAbility"; objectId: string; abilityIndex: number; targets: ResolvedTarget[]; x?: number }
+  /** `color` (ADR-068 Amendment 2): the chosen colour for a choice-bearing mana ability (Lotus) — one action per colour. */
+  | { type: "activateAbility"; objectId: string; abilityIndex: number; targets: ResolvedTarget[]; x?: number; color?: "W" | "U" | "B" | "R" | "G" }
   | { type: "tapForMana"; objectId: string }
   | { type: "declareAttacker"; objectId: string }
   | { type: "doneDeclaringAttackers" }
@@ -29,7 +30,11 @@ export type Action =
   | { type: "mulligan" }
   | { type: "keepHand" }
   | { type: "bottomCard"; objectId: string }
-  | { type: "discard"; objectId: string };
+  | { type: "discard"; objectId: string }
+  /** ADR-068 Amendment 1: take this library card (one action per distinct cardId among the matches)… */
+  | { type: "searchPick"; objectId: string }
+  /** …or find nothing (always offered first — the safe default; ADR-014 auto-takes it when nothing matches). */
+  | { type: "declineSearch" };
 
 export function sameAction(a: Action, b: Action): boolean {
   return JSON.stringify(a) === JSON.stringify(b);

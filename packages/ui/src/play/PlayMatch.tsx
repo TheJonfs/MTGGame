@@ -68,6 +68,8 @@ function PromptBar({ c, phase, confirmLabel }: { c: MatchController; phase: UiPh
         return "You have priority.";
       case "chooseX":
         return "Choose X.";
+      case "chooseColor":
+        return "Choose a colour of mana.";
       case "targeting":
         return `Choose a target (${phase.chosen.length + 1}/${phase.targetsNeeded}).`;
       case "confirmCast":
@@ -138,7 +140,7 @@ function PromptBar({ c, phase, confirmLabel }: { c: MatchController; phase: UiPh
           </label>
         </>
       )}
-      {(phase.kind === "targeting" || phase.kind === "chooseX") && (
+      {(phase.kind === "targeting" || phase.kind === "chooseX" || phase.kind === "chooseColor") && (
         <button onClick={() => c.cancel()}>Cancel</button>
       )}
       {phase.kind === "attackers" && (
@@ -319,7 +321,11 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption }: { c: MatchContro
     orderBlockerDamage: "Choose which blocker takes damage next",
     optionalTrigger: "Use this ability?",
     chooseTarget: "Choose targets",
+    searchLibrary: "Search your library",
   };
+  // S15 (ADR-068 Amendment 1): the search dialog — the matching cards as a
+  // grid (chooser only; the request's candidates), with Decline apart.
+  const isSearch = req.purpose === "searchLibrary";
   const sourceName = req.source ? cardName(pool, req.source.cardId) : null;
   // Render actions as cards where the choice is over cards (ADR-058).
   const cardOf = (a: (typeof req.actions)[number]): string | null => {
@@ -330,7 +336,7 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption }: { c: MatchContro
     if (a.type === "orderTrigger") return a.cardId;
     return null;
   };
-  const asCards = req.actions.every((a) => cardOf(a) !== null);
+  const asCards = isSearch || req.actions.every((a) => cardOf(a) !== null);
   // S10 playtest: hovering an option highlights the board permanent(s) it
   // refers to — vital when two options share a card name.
   const boardIdsOf = (a: (typeof req.actions)[number]): string[] => {
@@ -352,7 +358,7 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption }: { c: MatchContro
           {titles[req.purpose] ?? req.purpose}
           {sourceName ? <span style={{ fontWeight: 400 }}> — {sourceName}</span> : null}
         </h3>
-        {req.revealed && (
+        {req.revealed && !isSearch && (
           <div className="revealed-strip">
             <div className="flyout-title">Revealed:</div>
             <div className="dialog-cards">
@@ -362,10 +368,22 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption }: { c: MatchContro
             </div>
           </div>
         )}
+        {isSearch && (
+          <p style={{ fontSize: 11.5, color: "var(--ink-soft)", marginTop: 0 }}>
+            {req.actions.length - 1} matching card{req.actions.length === 2 ? "" : "s"} — pick one, or find nothing. Your library is shuffled either way.
+          </p>
+        )}
         <div className={asCards ? "dialog-cards" : "dialog-list"}>
           {req.actions.map((a, i) => {
             const cid = cardOf(a);
             const selected = phase.selected === i;
+            if (isSearch && a.type === "declineSearch") {
+              return (
+                <div key={i} className={`dialog-option decline-search ${selected ? "selected" : ""}`} onClick={() => c.selectDialog(i)}>
+                  <span>Find nothing</span>
+                </div>
+              );
+            }
             return (
               <div
                 key={i}
@@ -388,6 +406,29 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption }: { c: MatchContro
           <button className="primary" disabled={phase.selected === null} onClick={() => c.confirmDialog()}>
             Confirm
           </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** S15 (ADR-068 Amendment 2): Lotus — five colour buttons. */
+function ColorModal({ c }: { c: MatchController }) {
+  const colors = ["W", "U", "B", "R", "G"] as const;
+  const names: Record<string, string> = { W: "White", U: "Blue", B: "Black", R: "Red", G: "Green" };
+  return (
+    <div className="gallery-modal">
+      <div className="gallery-modal-box play-dialog">
+        <h3 style={{ marginTop: 0, fontFamily: "var(--serif)" }}>Add three mana of which colour?</h3>
+        <div className="dialog-list" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {colors.map((col) => (
+            <button key={col} className="color-pick" onClick={() => c.chooseColor(col)}>
+              <i className={`colour-pip c-${col}`} /> {names[col]}
+            </button>
+          ))}
+        </div>
+        <div style={{ marginTop: 8, textAlign: "right" }}>
+          <button onClick={() => c.cancel()}>Cancel</button>
         </div>
       </div>
     </div>
@@ -458,6 +499,10 @@ function PlayLog({ c, pool }: { c: MatchController; pool: Map<string, CardDef> }
       case "declareBlocker": return `Block ${nameOf(a.attacker!)} with ${nameOf(a.blocker!)}`;
       case "sacrifice": return `Sacrifice ${nameOf(a.objectId!)}`;
       case "discard": return `Discard ${nameOf(a.objectId!)}`;
+      // S15: the pick is hidden information for the opponent (Tutor → hand); the
+      // destination reveals what it reveals (Growth's land shows up on the board).
+      case "searchPick": return mine ? `Search: ${nameOf(a.objectId!)}` : "Searches their library and shuffles";
+      case "declineSearch": return mine ? "Search: found nothing" : "Searches their library and shuffles";
       // Bottoming is hidden information — never name the opponent's card.
       case "bottomCard": return mine ? `Bottom ${nameOf(a.objectId!)}` : "Bottom a card";
       default: return actionLabel(state, pool, a as never);
@@ -666,6 +711,7 @@ export function PlayMatch({
       <FloatingInspector ctx={ctx} objectId={inspected} fallbackCardId={snapCard} oracle={oracle} printed={printed} onTogglePrinted={() => setPrinted(!printed)} />
       {phase.kind === "dialog" && <DialogModal c={c} phase={phase} pool={pool} oracle={oracle} onHoverOption={setDialogHover} />}
       {phase.kind === "chooseX" && <XModal c={c} phase={phase} />}
+      {phase.kind === "chooseColor" && <ColorModal c={c} />}
       {zoneOpen && <ZoneModal c={c} pool={pool} oracle={oracle} zone={zoneOpen} printed={printed} onClose={() => setZoneOpen(null)} />}
     </div>
   );
