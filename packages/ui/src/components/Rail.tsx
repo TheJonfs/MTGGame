@@ -5,12 +5,14 @@ import { actionLabel, cardName, targetLabel } from "../labels";
 import type { OracleEntry } from "../engine-bridge";
 import { CardFrame } from "./CardFrame";
 
-/** S11 round 4: panel icons sit on an ivory chip; the chip is a wrapper so the
- * stroke-dilation filter on the transparent SVG fattens the glyph, not the disc. */
+/** S11 round 4: panel icons on an ivory chip. The glyph is a CSS MASK over
+ * solid ink (no <img>, no blur): five copies of the mask offset ±0.5px union
+ * into a crisp, evenly dilated stroke that stays centered. Weight knob:
+ * `--glyph-dilate` in theme.css. */
 function IconChip({ src, alt, size = 24 }: { src: string; alt: string; size?: number }) {
   return (
-    <span className="icon-chip" style={{ width: size, height: size }}>
-      <img src={src} alt={alt} />
+    <span className="icon-chip" style={{ width: size, height: size }} role="img" aria-label={alt} title={alt}>
+      <i className="glyph" style={{ "--icon": `url(${src})` } as React.CSSProperties} />
     </span>
   );
 }
@@ -45,33 +47,25 @@ export function StatusBlock({
     ["zone-exile", p.exile.length],
   ];
   const pool = MANA_SYMBOLS.filter((s) => p.manaPool[s] > 0);
+  const zoneLabel: Record<string, string> = { "zone-library": "library", "zone-graveyard": "graveyard", "zone-exile": "exile" };
+  // S11 round 4 (Chris): portrait | name / life / hand | a roomier column for
+  // library / graveyard / exile on the right — bigger figures, lighter glyphs.
   return (
     <div className="panel">
       <div className="status-block">
         <img className="portrait" src={you ? "/portrait-you.png" : "/portrait-opponent.png"} alt="" />
-        <div>
-          <div style={{ fontFamily: "var(--serif)", fontWeight: 700 }}>
+        <div className="status-main">
+          <div className="who">
             {you ? "You" : "Opponent"}
             {ctx.state.activePlayer === player ? " · active" : ""}
           </div>
           <div className="life">
-            <IconChip src="/icons/stat-life.svg" alt="life" size={26} />
+            <IconChip src="/icons/stat-life.svg" alt="life" size={28} />
             {p.life}
           </div>
-          <div className="zones">
-            {zones.map(([icon, n]) => {
-              const zone = icon === "zone-graveyard" ? "graveyard" : icon === "zone-exile" ? "exile" : null;
-              return (
-                <span
-                  key={icon}
-                  className={emphasizeHand && icon === "zone-hand" ? "hand-count" : undefined}
-                  onClick={zone && onZoneClick ? () => onZoneClick(player, zone) : undefined}
-                  style={zone && onZoneClick ? { cursor: "pointer", textDecoration: "underline dotted" } : undefined}
-                >
-                  <IconChip src={`/icons/${icon}.svg`} alt={icon} size={emphasizeHand && icon === "zone-hand" ? 26 : 23} /> {n}
-                </span>
-              );
-            })}
+          <div className={`hand-line${emphasizeHand ? " emph" : ""}`}>
+            <IconChip src="/icons/zone-hand.svg" alt="cards in hand" size={emphasizeHand ? 28 : 24} />
+            {p.hand.length}
             {pool.length > 0 && (
               <span className="mana-pool">
                 {pool.flatMap((s) => Array.from({ length: p.manaPool[s] }, (_, i) => (
@@ -80,6 +74,23 @@ export function StatusBlock({
               </span>
             )}
           </div>
+        </div>
+        <div className="status-zones">
+          {zones.filter(([icon]) => icon !== "zone-hand").map(([icon, n]) => {
+            const zone = icon === "zone-graveyard" ? "graveyard" : icon === "zone-exile" ? "exile" : null;
+            const clickable = !!(zone && onZoneClick);
+            return (
+              <div
+                key={icon}
+                className={`zone${clickable ? " clickable" : ""}`}
+                onClick={clickable ? () => onZoneClick!(player, zone!) : undefined}
+                title={zoneLabel[icon]}
+              >
+                <IconChip src={`/icons/${icon}.svg`} alt={zoneLabel[icon] ?? icon} size={26} />
+                <span className="count">{n}</span>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
