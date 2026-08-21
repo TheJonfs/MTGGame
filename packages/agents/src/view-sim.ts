@@ -1,7 +1,7 @@
 import { parseManaCost, manaValue, type CardDef, type Effect, type ResolvedTarget } from "@shandalar/cards";
 import type { Action, GameView } from "@shandalar/engine";
 import { classifyEffects, effectsForAction } from "./effect-classification.js";
-import { objectValue } from "./evaluator.js";
+import { DEFAULT_CONSTANTS, objectValue, type EvalConstants } from "./evaluator.js";
 
 /**
  * View-level action prediction (S8 brief Part 2): apply an action's visible
@@ -47,6 +47,7 @@ export function predictAction(
   view: GameView,
   action: Action,
   defs: Map<string, CardDef>,
+  constants: EvalConstants = DEFAULT_CONSTANTS,
 ): Prediction {
   const me = view.you;
   const next = clone(view);
@@ -133,7 +134,7 @@ export function predictAction(
       return { view: next, adjustment, unchanged: false };
     }
     // Instant/sorcery: apply its effects, card leaves hand.
-    for (const e of d.spellEffect ?? []) adjustment += applyEffect(next, e, targets, x, defs);
+    for (const e of d.spellEffect ?? []) adjustment += applyEffect(next, e, targets, x, defs, constants);
     return { view: next, adjustment, unchanged: false };
   }
 
@@ -165,7 +166,7 @@ export function predictAction(
     return { view: next, adjustment, unchanged: false };
   }
   const before = JSON.stringify(next);
-  for (const e of ability.effects) adjustment += applyEffect(next, e, targets, x, defs);
+  for (const e of ability.effects) adjustment += applyEffect(next, e, targets, x, defs, constants);
   const unchanged = adjustment === 0 && JSON.stringify(next) === before && !ability.cost.tap;
   return { view: next, adjustment, unchanged };
 }
@@ -177,6 +178,7 @@ function applyEffect(
   targets: ResolvedTarget[],
   x: number,
   defs: Map<string, CardDef>,
+  constants: EvalConstants,
 ): number {
   const me = view.you;
   const opp = me === 0 ? 1 : 0;
@@ -240,7 +242,7 @@ function applyEffect(
       // they can recast it, so charge back roughly half its board value. The
       // rest (recast cost, lost enchant/equip investment, sickness reset)
       // is the real tempo profit the material swing keeps.
-      return -0.5 * objectValue(defs, o);
+      return -0.5 * objectValue(defs, o, constants);
     }
     case "counter": {
       const t = targets[e.target];
@@ -258,7 +260,18 @@ function applyEffect(
       return 0;
     }
     case "discard": {
-      if (e.who === "target" || e.who === "opponent") view.opponentHandCount = Math.max(0, view.opponentHandCount - e.count);
+      // S11 (playtest): resolve WHO actually discards. The old code debited
+      // the opponent for every who:"target" discard, so Hymn-at-own-head
+      // scored identically to Hymn-at-theirs and softmax coin-flipped it.
+      const ps =
+        e.who === "you" ? [me]
+        : e.who === "opponent" ? [opp]
+        : e.who === "eachPlayer" ? [me, opp]
+        : targets.flatMap((t) => (t.kind === "player" ? [t.player] : []));
+      for (const p of ps) {
+        if (p === me) view.hand.length = Math.max(0, view.hand.length - e.count);
+        else view.opponentHandCount = Math.max(0, view.opponentHandCount - e.count);
+      }
       return 0;
     }
     case "gainLife": {

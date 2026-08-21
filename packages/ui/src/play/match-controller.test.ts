@@ -114,6 +114,64 @@ describe("play-mode acceptance (headless; S10 DoD 1)", () => {
     }
   }, 120_000);
 
+  it("ADR-059 meaningfulness: X=0-only casts do not make a window meaningful", () => {
+    const cast = (x?: number) => ({ type: "castSpell", objectId: "h1", ...(x !== undefined ? { x } : {}) }) as never;
+    const none = new Map();
+    // Blaze affordable only at X=0: not meaningful.
+    expect(MatchController.isMeaningful(new Map([["h1", [cast(0)]]]), none, none)).toBe(false);
+    // X=1 also enumerated: meaningful.
+    expect(MatchController.isMeaningful(new Map([["h1", [cast(0), cast(1)]]]), none, none)).toBe(true);
+    // Non-X spell (no x on the action): meaningful.
+    expect(MatchController.isMeaningful(new Map([["h1", [cast()]]]), none, none)).toBe(true);
+    // A land or an activation is always meaningful.
+    expect(MatchController.isMeaningful(none, new Map([["l1", { type: "playLand", objectId: "l1" } as never]]), none)).toBe(true);
+    expect(MatchController.isMeaningful(none, none, new Map([["b1", [{ type: "activateAbility" } as never]]]))).toBe(true);
+  });
+
+  it("fast-forward passes every window until the human's next turn or a decision that needs them", async () => {
+    const pool = loadCardPool(CARDS_DIR);
+    const c = new MatchController(pool.cards, {
+      humanSeat: 0,
+      humanDeck: "A",
+      aiDeck: "D",
+      difficulty: "journeyman",
+      seed: 21,
+      aiDelayMs: 0,
+    });
+    c.start();
+    // Reach the first own-turn pause (the MAIN1 anchor).
+    let guard = 0;
+    while (c.phase.kind !== "priority" && guard++ < 5000) {
+      await new Promise((r) => setTimeout(r, 0));
+      if (c.phase.kind === "dialog") { c.selectDialog(0); c.confirmDialog(); }
+    }
+    expect(c.phase.kind).toBe("priority");
+    const armedTurn = c.game.state.turn;
+    expect(c.game.state.activePlayer).toBe(0);
+
+    c.fastForwardToMyTurn();
+    expect(c.fastForwarding).toBe(true);
+
+    // Record every pause until the next one that isn't "waiting".
+    guard = 0;
+    while (c.phase.kind === "waiting" && !c.result && guard++ < 10000) {
+      await new Promise((r) => setTimeout(r, 0));
+    }
+    // FF has disarmed by the time anything pauses again…
+    expect(c.fastForwarding).toBe(false);
+    if (c.phase.kind === "priority") {
+      // …and a priority pause only happens back on the human's own next turn.
+      expect(c.game.state.activePlayer).toBe(0);
+      expect(c.game.state.turn).toBeGreaterThan(armedTurn);
+    } else {
+      // Otherwise the game genuinely needed the human (block, discard, …).
+      expect(["blockers", "dialog", "attackers", "gameOver"]).toContain(c.phase.kind);
+    }
+    c.concede();
+    let drain = 0;
+    while (!c.result && drain++ < 1000) await new Promise((r) => setTimeout(r, 0));
+  }, 60_000);
+
   it("concession ends the match with a CONCEDE result and a replayable partial log", async () => {
     const pool = loadCardPool(CARDS_DIR);
     const c = new MatchController(pool.cards, {

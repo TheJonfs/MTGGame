@@ -130,6 +130,10 @@ export class MatchController {
   private declQueue: Action[] | null = null;
   /** Last own-turn anchor stop already shown ("turn:step") — anchors pause once. */
   private anchorSeen: string | null = null;
+  /** Fast-forward to my next turn (ADR-059): auto-pass every priority window
+   * until the human's next turn begins, any non-priority request arrives, or
+   * an opponent stack item targets the human or their permanents. */
+  private ff: { sinceTurn: number; wasOwnTurn: boolean } | null = null;
 
   constructor(
     private readonly pool: Map<string, CardDef>,
@@ -203,10 +207,18 @@ export class MatchController {
     bus.on("ATTACKERS_DECLARED", (e) => {
       const state = this.game.state;
       if (state.activePlayer === this.humanSeat) return; // your own attack is visible by construction
+      // S11 playtest: name each attacker's keywords — an un-pausable combat
+      // (e.g. menace attackers vs one untapped blocker enumerates no legal
+      // block, so ADR-014 auto-takes "done") must SAY why it couldn't be
+      // blocked, not just that it happened.
       const names = e.attackers
         .map((id) => state.objects[id])
         .filter((o): o is NonNullable<typeof o> => !!o)
-        .map((o) => pool.get(o.cardId)?.name ?? o.cardId);
+        .map((o) => {
+          const def = pool.get(o.cardId);
+          const kw = def?.keywords?.length ? ` (${def.keywords.join(", ")})` : "";
+          return `${def?.name ?? o.cardId}${kw}`;
+        });
       if (names.length > 0) this.showNotice(`Opponent attacks with ${names.join(", ")}`);
     });
     bus.on("DAMAGE", (e) => {
@@ -223,7 +235,7 @@ export class MatchController {
       this.combatNotice = null;
       this.noticeTimer = null;
       this.emit();
-    }, 4000);
+    }, 2500); // S11 playtest: 4s lingered too long
     this.emit();
   }
 
@@ -314,6 +326,9 @@ export class MatchController {
       this.streamDeclarations(request);
       return;
     }
+    // Any non-priority request cancels fast-forward: the game needs YOU
+    // (blocks, discard, triggers) — it never skips a decision.
+    if (this.ff && request.purpose !== "priority") this.ff = null;
     switch (request.purpose) {
       case "priority":
         this.enterPriority(view, request);
@@ -348,7 +363,36 @@ export class MatchController {
    * wants main phases and end step as fixed anchors, not opt-in stops). */
   private static OWN_TURN_STOPS: ReadonlySet<string> = new Set(["MAIN1", "MAIN2", "END"]);
 
+  /** ADR-058/-059 "meaningful action" rule (exposed for tests): a window is
+   * meaningful when it offers a land, an activation, or a cast — except a
+   * cast whose only enumerated variants are X=0 (Blaze with no spare mana
+   * made every window pause; ADR-059 declares it non-meaningful). */
+  static isMeaningful(
+    castable: Map<string, Action[]>,
+    lands: Map<string, Action>,
+    activatable: Map<string, Action[]>,
+  ): boolean {
+    const xZeroOnly = (vs: Action[]) => vs.every((v) => (v as { x?: number }).x === 0);
+    return [...castable.values()].some((vs) => !xZeroOnly(vs)) || lands.size > 0 || activatable.size > 0;
+  }
+
   private enterPriority(view: GameView, request: ActionRequest): void {
+    // Fast-forward (ADR-059): pass every window until my next turn — unless
+    // an opponent stack item aims at me/mine (never skips a Duress).
+    if (this.ff) {
+      const reachedMyTurn =
+        view.activePlayer === this.humanSeat && (this.ff.wasOwnTurn ? view.turn > this.ff.sinceTurn : true);
+      if (reachedMyTurn || this.stackThreatensHuman()) {
+        this.ff = null;
+      } else {
+        const pass = request.actions.find((a) => a.type === "pass");
+        if (pass) {
+          this.human.submit(pass);
+          return;
+        }
+        this.ff = null; // no pass on offer: fall back to a normal pause
+      }
+    }
     const castable = new Map<string, Action[]>();
     const lands = new Map<string, Action>();
     const activatable = new Map<string, Action[]>();
@@ -372,7 +416,7 @@ export class MatchController {
         if (twin) castable.set(objectId, castable.get(twin)!);
       }
     }
-    const meaningful = castable.size > 0 || lands.size > 0 || activatable.size > 0;
+    const meaningful = MatchController.isMeaningful(castable, lands, activatable);
     const anchorKey = `${view.turn}:${view.step}`;
     const ownTurnAnchor =
       view.activePlayer === request.player &&
@@ -396,6 +440,36 @@ export class MatchController {
     if (this.phase.kind !== "priority") return;
     const pass = this.currentRequest().actions.find((a) => a.type === "pass");
     if (pass) this.submit(pass);
+  }
+
+  /** ADR-059: arm fast-forward from a paused priority window and pass it. */
+  fastForwardToMyTurn(): void {
+    if (this.phase.kind !== "priority") return;
+    const p = this.human.current();
+    if (!p) return;
+    this.ff = { sinceTurn: p.view.turn, wasOwnTurn: p.view.activePlayer === this.humanSeat };
+    this.pass();
+  }
+
+  get fastForwarding(): boolean {
+    return this.ff !== null;
+  }
+
+  /** An opponent-controlled stack item targeting the human or a human-controlled
+   * permanent (full state is fair game here — ADR-059 hidden-info honesty). */
+  private stackThreatensHuman(): boolean {
+    const seat = this.humanSeat;
+    const state = this.game.state;
+    return state.stack.some(
+      (item) =>
+        item.controller !== seat &&
+        item.targets.some(
+          (t) =>
+            (t.kind === "player" && t.player === seat) ||
+            (t.kind === "object" && state.objects[t.id]?.controller === seat) ||
+            (t.kind === "stackItem" && state.stack.some((s) => s.id === t.id && s.controller === seat)),
+        ),
+    );
   }
 
   clickHand(objectId: string): void {

@@ -15,6 +15,7 @@
     "art:tiles": "python3 scripts/art-tiles.py",
     "agent-stats": "tsx packages/sim/src/agent-stats-cli.ts",
     "ladder": "tsx packages/sim/src/ladder-cli.ts",
+    "weight-search": "tsx packages/sim/src/weight-search-cli.ts",
     "viewer": "vite packages/ui",
     "gallery": "vite packages/ui --open /gallery"
   },

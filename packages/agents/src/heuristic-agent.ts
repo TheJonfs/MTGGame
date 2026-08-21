@@ -2,7 +2,7 @@ import { NullLog, SeededRng } from "@shandalar/core";
 import { parseManaCost, manaValue, type CardDef } from "@shandalar/cards";
 import type { Action, ActionRequest, Agent, GameView, PlayerId } from "@shandalar/engine";
 import { preferSide, targetSide, classifyEffects } from "./effect-classification.js";
-import { evaluate, objectValue, type AiProfile } from "./evaluator.js";
+import { DEFAULT_CONSTANTS, deterrence, evaluate, objectValue, type AiProfile, type EvalConstants } from "./evaluator.js";
 import { predictAction } from "./view-sim.js";
 import { simulateCombat, viewCreatures, type SimObject } from "./combat-sim.js";
 
@@ -72,6 +72,10 @@ export class HeuristicAgent implements Agent {
     return this.defs.get(cardId);
   }
 
+  private get C(): EvalConstants {
+    return this.profile.constants ?? DEFAULT_CONSTANTS;
+  }
+
   private mv(cardId: string): number {
     const d = this.def(cardId);
     return d ? manaValue(parseManaCost(d.manaCost)) : 0;
@@ -118,7 +122,7 @@ export class HeuristicAgent implements Agent {
       return evaluate(view, this.profile, this.defs) + this.counterHoldBonus(view) + this.flashHoldBonus(view);
     }
     if (action.type === "tapForMana") return -Infinity; // never standalone
-    const pred = predictAction(view, action, this.defs);
+    const pred = predictAction(view, action, this.defs, this.C);
     if (pred.unchanged) {
       // Friction: an action that visibly does nothing scores strictly below
       // passing (kills same-host re-equip churn and no-benefit activations).
@@ -134,12 +138,25 @@ export class HeuristicAgent implements Agent {
     return candidates[this.softmaxPick(scores)]!;
   }
 
+  /** ADR-060.2 posture switch (exposed for tests): hold tricks only when not
+   * behind on board value — behind, holding mana is a luxury; develop instead. */
+  holdActive(view: GameView): boolean {
+    if (this.profile.holdTricks === false) return false;
+    const me = view.you;
+    let delta = 0;
+    for (const o of view.battlefield) {
+      const v = objectValue(this.defs, o, this.C);
+      delta += o.controller === me ? v : -v;
+    }
+    return delta >= -this.C.posture.behindThreshold;
+  }
+
   /** ADR-051 / S9 Part 2a: passing with counter mana up is worth something
    * in proportion to what the opponent could actually cast soon — threats in
    * the known list with mv 3..(their lands + 1), counted by copies — rather
    * than a flat "the list has something big" bonus. */
   private counterHoldBonus(view: GameView): number {
-    if (this.profile.holdTricks === false) return 0;
+    if (!this.holdActive(view)) return 0;
     const counterCard = view.hand.find((c) =>
       this.def(c.cardId)?.spellEffect?.some((e) => e.type === "counter"),
     );
@@ -168,7 +185,7 @@ export class HeuristicAgent implements Agent {
    * — a small pass bonus during our turn only, so it still comes down when
    * the board needs it and never delays on the opponent's turn. */
   private flashHoldBonus(view: GameView): number {
-    if (this.profile.holdTricks === false) return 0;
+    if (!this.holdActive(view)) return 0;
     if (view.activePlayer !== view.you) return 0;
     const me = view.you;
     const untappedLands = view.battlefield.filter(
@@ -225,7 +242,8 @@ export class HeuristicAgent implements Agent {
     return (next as Action | undefined) ?? done ?? request.actions[0]!;
   }
 
-  private async scoreAttackSet(
+  /** Exposed for the book-of-shame suite: score of one candidate attack set. */
+  async scoreAttackSet(
     view: GameView,
     creatures: SimObject[],
     me: PlayerId,
@@ -244,7 +262,7 @@ export class HeuristicAgent implements Agent {
     const outcome = await simulateCombat(creatures, me, attackers, blocks, [view.life[0], view.life[1]]);
     const valueOf = (id: string) => {
       const o = view.battlefield.find((b) => b.id === id);
-      return o ? objectValue(this.defs, o) : 1;
+      return o ? objectValue(this.defs, o, this.C) : 1;
     };
     // Exchange rates: aggro creatures exist to die profitably, and face
     // damage compounds (it never heals back in this pool); both are priced
@@ -264,6 +282,15 @@ export class HeuristicAgent implements Agent {
     // damage in the sim — credit them. (Opponent lifelink blockers already
     // debit through negative playerDamage[opp].)
     score += Math.max(0, -outcome.playerDamage[me]) * 0.2;
+    // ADR-060.1: attacking abandons defense — each non-vigilance attacker
+    // pays the deterrence it was providing (evaluate credits the same term
+    // to untapped holders; that asymmetry prices the Rats over-attack).
+    const oppCreatures = view.battlefield.filter((o) => o.controller !== me && o.power !== null);
+    for (const id of attackers) {
+      const o = view.battlefield.find((b) => b.id === id);
+      if (!o || o.keywords.includes("vigilance")) continue;
+      score -= deterrence(this.defs, o, oppCreatures, this.C);
+    }
     if (view.life[opp] - outcome.playerDamage[opp] <= 0) score += 1000;
     this.simMemo.set(memoKey, score);
     return score;
@@ -273,7 +300,7 @@ export class HeuristicAgent implements Agent {
   blockGain(view: GameView, blocker: SimObject, attacker: SimObject): number {
     const valueOf = (id: string) => {
       const o = view.battlefield.find((b) => b.id === id);
-      return o ? objectValue(this.defs, o) : 1;
+      return o ? objectValue(this.defs, o, this.C) : 1;
     };
     const aFirst = attacker.keywords.includes("first strike") || attacker.keywords.includes("double strike");
     const bFirst = blocker.keywords.includes("first strike") || blocker.keywords.includes("double strike");
@@ -300,7 +327,7 @@ export class HeuristicAgent implements Agent {
   private pairBlockGain(view: GameView, b1: SimObject, b2: SimObject, attacker: SimObject): number {
     const valueOf = (id: string) => {
       const o = view.battlefield.find((x) => x.id === id);
-      return o ? objectValue(this.defs, o) : 1;
+      return o ? objectValue(this.defs, o, this.C) : 1;
     };
     const aDeathtouch = attacker.keywords.includes("deathtouch");
     const kills = b1.power + b2.power >= attacker.toughness - attacker.damage || b1.keywords.includes("deathtouch") || b2.keywords.includes("deathtouch");
@@ -427,7 +454,7 @@ export class HeuristicAgent implements Agent {
 
   private boardValue(view: GameView, objectId: string): number {
     const o = view.battlefield.find((b) => b.id === objectId);
-    return o ? objectValue(this.defs, o) : 0;
+    return o ? objectValue(this.defs, o, this.C) : 0;
   }
 
   private targetChoice(view: GameView, request: ActionRequest): Action {

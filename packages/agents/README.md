@@ -11,23 +11,31 @@ randomness is a private seeded PRNG, never the game's logged RNG).
 
 ## Profile knobs (S9 Part 3 — the overworld's difficulty dials)
 
-An `AiProfile` is `{ archetype, opponentDecklist, temperature, holdTricks }`:
+An `AiProfile` is `{ archetype, opponentDecklist, temperature, holdTricks, constants }`:
 
 | knob | effect |
 |---|---|
 | `archetype` | evaluator exchange rates (`aggro`/`midrange`/`control` weights for life/material/hand) and combat damage pricing |
 | `opponentDecklist` | ADR-051 known-list input: counter-hold threat counting; never hidden zones |
 | `temperature` | ADR-050 softmax noise: near-ties are coin flips; higher = blunder more |
-| `holdTricks` | whether pass earns counter-hold / flash-hold bonuses |
+| `holdTricks` | whether pass earns counter-hold / flash-hold bonuses; when true, further conditioned on board posture (ADR-060.2: behind by more than `constants.posture.behindThreshold` → develop instead of holding) |
+| `constants` | S11 (ADR-060.3) `EvalConstants`: every evaluator constant (archetype weights, keyword bonuses, deterrence, posture threshold) carried per profile so agents with different vectors can share a game. Default `DEFAULT_CONSTANTS` (journeyman's hand-tuned vector); `pnpm weight-search` searches a master vector |
+
+**Deterrence (S11, ADR-060.1):** `evaluate` credits each untapped own
+creature the profit of its best threatened trade against the opponent's
+creatures (deathtouch trades up with anything; walls earn a fraction), and
+the attack sim debits the same term per non-vigilance attacker — so "hold
+the deathtoucher at home" and "attack into a death for nothing" finally
+price differently. Zero on an empty enemy board.
 
 `difficultyProfile(difficulty, deckArchetype, opponentDecklist)` builds the
 three named tiers:
 
-| difficulty | archetype | temperature | holdTricks |
-|---|---|---|---|
-| `apprentice` | always `aggro` (flat, punchy) | 1.2 | no |
-| `journeyman` | the deck's | 0.35 | yes |
-| `master` | the deck's | 0.12 | yes |
+| difficulty | archetype | temperature | holdTricks | constants |
+|---|---|---|---|---|
+| `apprentice` | always `aggro` (flat, punchy) | 1.2 | no | defaults |
+| `journeyman` | the deck's | 0.35 | yes | defaults |
+| `master` | the deck's | 0.12 | yes | `MASTER_CONSTANTS` (S11 weight-searched) |
 
 The sim layer accepts `heuristic:apprentice` / `heuristic` (= journeyman) /
 `heuristic:master` anywhere an agent kind goes (`pnpm fuzz --agents`,

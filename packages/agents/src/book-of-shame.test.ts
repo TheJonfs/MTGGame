@@ -4,7 +4,7 @@ import { dirname, join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
 import type { GameView } from "@shandalar/engine";
 import { HeuristicAgent } from "./heuristic-agent.js";
-import type { SimObject } from "./combat-sim.js";
+import { viewCreatures, type SimObject } from "./combat-sim.js";
 
 const CARDS_DIR = join(dirname(fileURLToPath(import.meta.url)), "../../../data/cards");
 const pool = loadCardPool(CARDS_DIR).cards;
@@ -110,6 +110,26 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(bolt({ kind: "object", id: "mine" })).toBeGreaterThan(ownFace); // even friendly fire beats your own face
   });
 
+  it("Hymn at own head: targeted discard at yourself scores below targeting the opponent and below passing", () => {
+    // S11, from Chris's playtest (seed 43, E vs D): master cast Hymn to
+    // Tourach on itself. view-sim's discard case ignored the chosen target,
+    // so both aims predicted the same view — an exact tie softmax coin-flips.
+    const a = agent("midrange");
+    const view = mkView({
+      hand: [
+        { objectId: "h_hymn", cardId: "hymn_to_tourach" },
+        { objectId: "h_other", cardId: "swamp" },
+        { objectId: "h_other2", cardId: "child_of_night" },
+      ],
+    });
+    const hymn = (player: number) =>
+      a.scorePriorityAction(view, { type: "castSpell", objectId: "h_hymn", targets: [{ kind: "player", player }] });
+    const pass = a.scorePriorityAction(view, { type: "pass" });
+    expect(hymn(1)).toBeGreaterThan(hymn(0));
+    expect(hymn(0)).toBeLessThan(pass);
+    expect(hymn(1)).toBeGreaterThan(pass);
+  });
+
   it("chump-block into nothing has negative gain: no block beats losing the blocker for free", () => {
     const a = agent();
     const view = mkView({
@@ -121,6 +141,25 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const chump: SimObject = { id: "chump", controller: 0, power: 2, toughness: 1, keywords: [], tapped: false, damage: 0 };
     const wurm: SimObject = { id: "wurm", controller: 1, power: 7, toughness: 7, keywords: ["trample"], tapped: false, damage: 0 };
     expect(a.blockGain(view, chump, wurm)).toBeLessThan(0);
+  });
+
+  it("deterrence (ADR-060.1): a deathtouch 1/1 facing a bigger board holds rather than attacking to die for nothing", async () => {
+    const a = agent("midrange");
+    const view = mkView({
+      battlefield: [
+        { id: "rats", cardId: "typhoid_rats", controller: 0 },
+        { id: "courser", cardId: "centaur_courser", controller: 1 },
+        { id: "bears", cardId: "grizzly_bears", controller: 1 },
+      ],
+    });
+    // Attacking scores below the empty attack set (0): the rat's deterrence
+    // as a stay-home deathtouch blocker exceeds its 1 unblocked damage.
+    expect(await a.scoreAttackSet(view, viewCreatures(view), 0, ["rats"])).toBeLessThan(0);
+    // With no opposing creatures there is nothing to deter — attack freely.
+    // (Fresh agent: the sim memo keys by turn/set/life, not board — sound in
+    // live play where the board is stable across one combat's declarations.)
+    const open = mkView({ battlefield: [{ id: "rats", cardId: "typhoid_rats", controller: 0 }] });
+    expect(await agent("midrange").scoreAttackSet(open, viewCreatures(open), 0, ["rats"])).toBeGreaterThan(0);
   });
 
   it("tapping an own creature with the Tactician for no benefit scores below passing", () => {

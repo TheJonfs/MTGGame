@@ -281,6 +281,22 @@ button.linkish { background: none; border: none; color: var(--brass); cursor: po
 .play-ribbon .who { color: var(--ink-soft); }
 .play-ribbon .who.you { color: var(--brass); font-weight: 700; }
 .play-ribbon .seed { font-size: 10px; color: var(--ink-soft); }
+/* S11 (Chris's rider): turn-order strip — one glyph per step, current lit,
+   tint says whose turn it is (brass = yours, danger-red = opponent's). */
+.phase-strip { display: inline-flex; gap: 1px; align-items: center; }
+.phase-chip {
+  width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center;
+  font-size: 11px; line-height: 1; color: var(--ink-soft); opacity: 0.45; border-radius: 3px;
+  border: 1px solid transparent; cursor: default;
+}
+.phase-chip.current { opacity: 1; font-weight: 700; }
+.phase-strip.you .phase-chip.current {
+  color: var(--parchment); background: var(--brass); border-color: var(--ink);
+  box-shadow: 0 0 5px var(--gold);
+}
+.phase-strip.opp .phase-chip.current {
+  color: var(--parchment); background: var(--danger); border-color: var(--ink);
+}
 .play-prompt { gap: 8px; }
 .play-prompt .prompt-text { font-family: var(--serif); font-size: 13px; font-weight: 600; }
 .play-prompt button.primary { background: var(--brass); color: var(--parchment); border-color: var(--ink); }

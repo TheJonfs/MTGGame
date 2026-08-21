@@ -32,7 +32,7 @@ function PromptBar({ c, phase, confirmLabel }: { c: MatchController; phase: UiPh
   const prompt = (() => {
     switch (phase.kind) {
       case "waiting":
-        return "Opponent is thinking…";
+        return c.fastForwarding ? "Fast-forwarding to your turn…" : "Opponent is thinking…";
       case "priority":
         return "You have priority.";
       case "chooseX":
@@ -61,7 +61,15 @@ function PromptBar({ c, phase, confirmLabel }: { c: MatchController; phase: UiPh
     <div className="transport play-prompt">
       <span className="prompt-text">{c.combatNotice ?? prompt}</span>
       {phase.kind === "priority" && (
-        <button className="primary" onClick={() => c.pass()}>Pass</button>
+        <>
+          <button className="primary" onClick={() => c.pass()}>Pass</button>
+          <button
+            title="Auto-pass every window until your next turn. Cancels if anything needs you — a block, a discard, or an opponent spell aimed at you or your permanents (ADR-059)."
+            onClick={() => c.fastForwardToMyTurn()}
+          >
+            ⏭ my turn
+          </button>
+        </>
       )}
       {phase.kind === "confirmCast" && (
         <>
@@ -147,13 +155,51 @@ function StopsFlyout({ c }: { c: MatchController }) {
   );
 }
 
+/** S11 (Chris's rider): the turn-order strip — one glyph per step, the
+ * current one lit, tinted by whose turn it is. Tooltips carry the names. */
+const STEP_GLYPHS: Record<Step, string> = {
+  UNTAP: "⟳",
+  UPKEEP: "✧",
+  DRAW: "⇩",
+  MAIN1: "Ⅰ",
+  COMBAT_BEGIN: "⚑",
+  DECLARE_ATTACKERS: "⚔",
+  DECLARE_BLOCKERS: "⛨",
+  FIRST_STRIKE_DAMAGE: "⚡",
+  COMBAT_DAMAGE: "✸",
+  COMBAT_END: "⚐",
+  MAIN2: "Ⅱ",
+  END: "☾",
+  CLEANUP: "⋯",
+};
+
+function PhaseStrip({ step, yourTurn }: { step: Step; yourTurn: boolean }) {
+  return (
+    <span className={`phase-strip ${yourTurn ? "you" : "opp"}`}>
+      {STEPS.map((s) => (
+        <span key={s} title={stepLabel(s)} className={`phase-chip${s === step ? " current" : ""}`}>
+          {STEP_GLYPHS[s]}
+        </span>
+      ))}
+    </span>
+  );
+}
+
 function Ribbon({ c }: { c: MatchController }) {
   const state = c.game.state;
   const yourTurn = state.activePlayer === c.humanSeat;
   return (
     <div className="play-ribbon">
-      <span className="turn">Turn {state.turn} · {stepLabel(state.step)}</span>
-      <span className={yourTurn ? "who you" : "who"}>{yourTurn ? "Your turn" : "Opponent's turn"}</span>
+      {state.turn === 0 ? (
+        // ADR-059: pre-game state reads "Turn 0 · Cleanup" — say what it is.
+        <span className="turn">Mulligans</span>
+      ) : (
+        <>
+          <span className="turn">Turn {state.turn} · {stepLabel(state.step)}</span>
+          <PhaseStrip step={state.step} yourTurn={yourTurn} />
+          <span className={yourTurn ? "who you" : "who"}>{yourTurn ? "Your turn" : "Opponent's turn"}</span>
+        </>
+      )}
       <span style={{ flex: 1 }} />
       <StopsFlyout c={c} />
       <span className="seed">seed {c.seed}</span>

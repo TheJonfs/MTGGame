@@ -114,6 +114,14 @@ Things a fresh session might otherwise rediscover slowly:
 - **Auto-pass interacts badly with X=0 casts** (Blaze makes every window "meaningful") — when defining "no meaningful action", think about degenerate enumerations, not just empty ones.
 - **The incremental declare protocol is UI-friendly as-is**: local staging + streaming the declarations on Confirm needs no engine support, and menace's two-blocker rule surfaces naturally as "done withheld" → re-open staging.
 
+## S11 lessons (M4c deterrence/posture/search + playtest fixes)
+
+- **A predictor that ignores the chosen target makes every aim score identical** — view-sim's `discard` case debited the opponent for every `who:"target"` discard, so master coin-flipped Hymn to Tourach onto its own head (Chris's playtest, seed 43). Low temperature doesn't save you from an exact tie. When adding a vocabulary word to view-sim, handle every `Who` arm; the `loseLife` case was the correct template all along.
+- **The sim memo keys by turn/set/life, not board** — sound live (the board is stable across one combat's declarations), but a test reusing one agent across different constructed views gets stale scores. Fresh agent per view in score-level tests.
+- **Deterrence shape matters more than its weight**: pricing a blocker's threatened trade at the opponent's GROSS loss held good attackers (Nighthawk) home and cost −1.55 mirror points; pricing the NET profit (their loss minus what our blocker gives back) let valuable attackers keep attacking and cost only −0.8 at twice the weight. When a posture term back-fires, check whether it charges the whole exchange or the profit.
+- **Deltas need a second seed batch**: the posture switch measured +2.0 on its target cell at seed 1 and −1.0 at seed 7001 (200/cell); at 500/cell paired it settled at ~+1. 200/cell is a screen, not a verdict — sign-check across seeds before believing any small delta.
+- **Scratch scripts belong outside the repo but must be `.mts`** (the scratchpad has no ESM package.json, so tsx treats `.ts` as CJS and top-level await dies). Absolute-path imports into the repo's `src/*.ts` resolve fine from there.
+
 ## Known interims / watch list
 
 See handoff Concerns for the authoritative list. Highlights: auto-pay greedy feasibility (correct while all producers are single-symbol — R-006); condition fields `controller`/`type`/`subtype` are validated but unexercised (first card to use them should add fixtures); value refs deliberately have no arithmetic (ADR-028 — resist until a card demands it); the `sba-unattach` ATTACHED cause is unreachable by legal play (test-forced only).
