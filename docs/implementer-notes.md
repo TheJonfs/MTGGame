@@ -106,6 +106,14 @@ Things a fresh session might otherwise rediscover slowly:
 - **Revert no-delta changes** even when "obviously correct" (the Curiosity-credit experiment measured exactly 0.0 and came back out). The brief's "never by vibes" cuts both ways.
 - **Suite tiers (ADR-055)**: default 10.8s = 50/pairing fuzz + 20/cell mirror sanity; FUZZ_FULL = 500/pairing + 100/cell ladder + 1,000-game sane smoke. The 20/cell sanity bounds are deliberately loose (25% floor) — the 1,000/cell CLI is gate authority.
 
+## S10 lessons (M5 playable UI)
+
+- **Put the interaction brain in a React-free class** (MatchController): every click handler calls a controller method, so the acceptance test drives literally the same event path as the UI — no DOM automation needed, and the React layer stays presentation-only.
+- **The promise bridge is all a human seat needs**: HumanAgent resolves the engine's `chooseAction` await from a UI callback, and `submit` validating against the pending request's action list means the UI cannot construct an illegal action even by bug.
+- **Event-loop starvation, not vitest config, was the FUZZ_FULL exit-code bug**: 90s of pure-microtask game loops never yield a macrotask turn, so the worker's RPC heartbeat times out. `await setTimeout(0)` every 25 games fixes it at the source; pool/parallelism knobs did not.
+- **Auto-pass interacts badly with X=0 casts** (Blaze makes every window "meaningful") — when defining "no meaningful action", think about degenerate enumerations, not just empty ones.
+- **The incremental declare protocol is UI-friendly as-is**: local staging + streaming the declarations on Confirm needs no engine support, and menace's two-blocker rule surfaces naturally as "done withheld" → re-open staging.
+
 ## Known interims / watch list
 
 See handoff Concerns for the authoritative list. Highlights: auto-pay greedy feasibility (correct while all producers are single-symbol — R-006); condition fields `controller`/`type`/`subtype` are validated but unexercised (first card to use them should add fixtures); value refs deliberately have no arithmetic (ADR-028 — resist until a card demands it); the `sba-unattach` ATTACHED cause is unreachable by legal play (test-forced only).
