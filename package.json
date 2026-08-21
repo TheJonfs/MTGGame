@@ -17,7 +17,8 @@
     "ladder": "tsx packages/sim/src/ladder-cli.ts",
     "weight-search": "tsx packages/sim/src/weight-search-cli.ts",
     "viewer": "vite packages/ui",
-    "gallery": "vite packages/ui --open /gallery"
+    "gallery": "vite packages/ui --open /gallery",
+    "knobs:doc": "tsx packages/world/src/knobs-doc-cli.ts"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

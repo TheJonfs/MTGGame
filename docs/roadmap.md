@@ -15,6 +15,6 @@ Milestones are engine-facing until M6. Each milestone is one or two sessions.
 | M6 | Overworld manifest + first slice | Separate manifest; map, one quest, one shop, collection; calls `runMatch` with modifiers. | One loop: travel → duel → reward. |
 | M7+ | AI v2, pool to ~150, overworld depth, replay viewer | | |
 
-Status: **M5 complete (S10)** — Chris plays and wins in the browser. Playtest evidence triggered M4c (ADR-060). **Session 11 brief cut: M4c + polish.** In parallel: the overworld (M6) design conversation begins planner-side. Parked: pool balance/curation (ADR-054).
+Status: M4c complete (S11) — gates hold; +8% closed by measurement; surgical 2-ply parked in the standing AI workstream (ADR-062). Overworld manifest ratified through v0.3. **Session 12 brief cut: M6a — the world slice** (engine ante, knobs registry, worldgen, wander, parley, ante duel, town+shop, save/load). Then M6b (deck editor, clock consumers, dungeons). Parked: pool balance/curation (ADR-054), tutor card batch (Growth + Demonic Tutor amendment + Lotus).
 
 | M3.75 (S7) | Instrumentation | SanePolicyAgent (ADR-045), card gallery + art notes (ADR-046), ADR-044 riders (DAMAGE targetCardId, ink transport glyphs, Rager refetch). | Chris can watch sane games and browse/annotate every card. |

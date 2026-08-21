@@ -21,6 +21,8 @@ function zoneArray(ctx: EngineCtx, zone: ZoneName, owner: PlayerId): string[] | 
       return p.graveyard;
     case "exile":
       return p.exile;
+    case "ante":
+      return p.ante;
     case "battlefield":
       return ctx.state.battlefield;
     case "stack":

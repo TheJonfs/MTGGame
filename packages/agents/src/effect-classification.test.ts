@@ -9,6 +9,7 @@ function viewWith(battlefield: { id: string; controller: 0 | 1 }[]): GameView {
     step: "MAIN1",
     activePlayer: 0,
     life: [20, 20],
+    startingLife: 20,
     hand: [],
     opponentHandCount: 0,
     librarySizes: [30, 30],

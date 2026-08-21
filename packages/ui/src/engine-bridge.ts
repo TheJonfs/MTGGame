@@ -120,6 +120,7 @@ export class ReplaySession {
         startingLife: this.game.spec.rules.startingLife,
         handSize: this.game.spec.rules.handSize,
         maxTurns: this.game.spec.rules.maxTurns,
+        ante: this.game.spec.rules.ante ?? 0,
       },
       this.game.spec.modifiers,
     );

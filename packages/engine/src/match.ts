@@ -18,7 +18,7 @@ export interface PlayerSpec {
 export interface MatchSpec {
   seed: number;
   players: [PlayerSpec, PlayerSpec];
-  rules: { startingLife: number; handSize: number; mulligan: "london"; maxTurns: number };
+  rules: { startingLife: number; handSize: number; mulligan: "london"; maxTurns: number; ante?: number };
   modifiers: Modifier[];
 }
 
@@ -27,6 +27,8 @@ export interface MatchFacts {
   creaturesLost: [number, number];
   cardsDrawn: [number, number];
   spellsCast: Record<string, [number, number]>;
+  /** S12 (R-043): each player's ante stakes (cardIds) — empty when rules.ante is 0 or the library held no nonlands. */
+  ante: [string[], string[]];
 }
 
 export interface MatchResult {
@@ -62,6 +64,7 @@ export function deriveFacts(cards: Map<string, CardDef>, log: ActionLogEntry<Act
     creaturesLost: [0, 0],
     cardsDrawn: [0, 0],
     spellsCast: {},
+    ante: [[], []],
   };
   for (const entry of log) {
     if (entry.t !== "EVENT") continue;
@@ -79,6 +82,9 @@ export function deriveFacts(cards: Map<string, CardDef>, log: ActionLogEntry<Act
         row[p.controller as PlayerId] += 1;
         break;
       }
+      case "ANTE_SET":
+        facts.ante[p.player as PlayerId] = [...(p.cardIds as string[])];
+        break;
       case "DIES": {
         const cardId = p.cardId as string;
         if (cards.get(cardId)?.types.includes("Creature")) {
@@ -109,6 +115,7 @@ export async function runMatch(spec: MatchSpec, cards: Map<string, CardDef>, age
     startingLife: spec.rules.startingLife ?? DEFAULT_RULES.startingLife,
     handSize: spec.rules.handSize ?? DEFAULT_RULES.handSize,
     maxTurns: spec.rules.maxTurns ?? DEFAULT_RULES.maxTurns,
+    ante: spec.rules.ante ?? DEFAULT_RULES.ante,
   });
   await game.run(spec.modifiers);
 

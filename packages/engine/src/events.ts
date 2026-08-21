@@ -15,6 +15,8 @@ export interface GameEventMap extends Record<string, unknown> {
     controllerBefore: PlayerId;
   };
   LAND_ENTERS_UNDER_YOUR_CONTROL: { objectId: string; controller: PlayerId };
+  /** S12 (R-043): a player's ante stakes were set aside at setup. Logged → facts.ante. */
+  ANTE_SET: { player: PlayerId; cardIds: string[]; objectIds: string[] };
   /** ADR-026: every attach/unattach/re-attach. EVENT-stream only; no trigger consumes it yet. */
   ATTACHED: {
     objectId: string;

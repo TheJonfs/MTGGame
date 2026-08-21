@@ -270,7 +270,10 @@ export class HeuristicAgent implements Agent {
     // within burn/alpha range.
     const ownLossWeight = { aggro: 0.6, midrange: 0.85, control: 1.0 }[this.profile.archetype];
     let dmgWeight = { aggro: 0.9, midrange: 0.55, control: 0.4 }[this.profile.archetype];
-    if (view.life[opp] <= 10) dmgWeight *= 1.5;
+    // S12 (Chris): race mode at 8 life OR half the starting life, whichever
+    // comes first — identical to the old fixed 10 at 20-life games, and no
+    // longer all-in from turn one when world life starts at 10.
+    if (view.life[opp] <= Math.max(8, view.startingLife / 2)) dmgWeight *= 1.5;
     let score = 0;
     for (const id of outcome.dead) {
       const c = creatures.find((s) => s.id === id);

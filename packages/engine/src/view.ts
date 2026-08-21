@@ -16,6 +16,8 @@ export interface GameView {
   step: string;
   activePlayer: PlayerId;
   life: [number, number];
+  /** S12: starting life of this game (world life in the overworld) — agents key race heuristics off it. */
+  startingLife: number;
   hand: { objectId: string; cardId: string }[];
   opponentHandCount: number;
   librarySizes: [number, number];
@@ -48,6 +50,7 @@ export function buildView(ctx: EngineCtx, player: PlayerId): GameView {
     step: s.step,
     activePlayer: s.activePlayer,
     life: [s.players[0].life, s.players[1].life],
+    startingLife: s.startingLife,
     hand: s.players[player].hand.map((id) => ({ objectId: id, cardId: getObject(s, id).cardId })),
     opponentHandCount: s.players[opp].hand.length,
     librarySizes: [s.players[0].library.length, s.players[1].library.length],

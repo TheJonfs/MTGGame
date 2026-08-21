@@ -35,7 +35,7 @@ three named tiers:
 |---|---|---|---|---|
 | `apprentice` | always `aggro` (flat, punchy) | 1.2 | no | defaults |
 | `journeyman` | the deck's | 0.35 | yes | defaults |
-| `master` | the deck's | 0.12 | yes | `MASTER_CONSTANTS` (S11 weight-searched) |
+| `master` | the deck's | 0.12 | yes | defaults (ADR-061: the S11 searched vector measured zero held-out edge and was reverted) |
 
 The sim layer accepts `heuristic:apprentice` / `heuristic` (= journeyman) /
 `heuristic:master` anywhere an agent kind goes (`pnpm fuzz --agents`,

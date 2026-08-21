@@ -66,7 +66,7 @@ describe("no-peeking (permanent; ADR-048)", () => {
           decklists,
           result.log,
           k,
-          { startingLife: 20, handSize: 7, maxTurns: 100 },
+          { startingLife: 20, handSize: 7, maxTurns: 100, ante: 0 },
           [],
         );
         const ctx = viewCtx(point.state, pool.cards);
@@ -115,7 +115,7 @@ describe("no-peeking (permanent; ADR-048)", () => {
       const keys = Object.keys(v).sort();
       expect(keys).toEqual([
         "activePlayer", "battlefield", "combat", "graveyards", "hand", "librarySizes",
-        "life", "mulliganCount", "opponentHandCount", "stack", "step", "turn", "you",
+        "life", "mulliganCount", "opponentHandCount", "stack", "startingLife", "step", "turn", "you",
       ]);
     }
   });

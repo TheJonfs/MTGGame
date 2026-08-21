@@ -18,6 +18,15 @@ import type { MatchController, UiPhase } from "./match-controller";
 const STOPS_KEY = "shandalar-stops";
 const DELAY_KEY = "shandalar-ai-delay";
 const OPP_SPELL_STOP_KEY = "shandalar-stop-opp-spells"; // S11 (note 2)
+const BLOCKERS_PAUSE_KEY = "shandalar-pause-blockers-untapped"; // S12 rider
+
+export function loadPauseBlockersWithUntapped(): boolean {
+  try {
+    return localStorage.getItem(BLOCKERS_PAUSE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
 const INSPECTOR_POS_KEY = "shandalar-inspector-pos"; // S11 (note 3)
 
 export function loadStopOnOpponentSpells(): boolean {
@@ -67,9 +76,11 @@ function PromptBar({ c, phase, confirmLabel }: { c: MatchController; phase: UiPh
       case "blockers":
         return phase.mustAddBlocker
           ? "A menace attacker needs a second blocker."
-          : phase.pendingBlocker
-            ? "Now click the attacker to block."
-            : "Declare blockers: click a blocker, then an attacker.";
+          : phase.options.size === 0
+            ? "No legal blocks (menace or evasion) — confirm to continue."
+            : phase.pendingBlocker
+              ? "Now click the attacker to block."
+              : "Declare blockers: click a blocker, then an attacker.";
       case "dialog":
         return "Make a choice.";
       case "gameOver":
@@ -175,6 +186,18 @@ function StopsFlyout({ c }: { c: MatchController }) {
               }}
             />{" "}
             opponent casts a spell
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              checked={c.pauseBlockersWithUntapped}
+              onChange={(e) => {
+                c.pauseBlockersWithUntapped = e.target.checked;
+                localStorage.setItem(BLOCKERS_PAUSE_KEY, e.target.checked ? "1" : "0");
+                force((n) => n + 1);
+              }}
+            />{" "}
+            blockers, even with no legal block
           </label>
           <div className="flyout-title" style={{ marginTop: 6 }}>AI pacing</div>
           <label>
@@ -507,6 +530,7 @@ export function PlayMatch({
   useEffect(() => c.onChange(() => force((n) => n + 1)), [c]);
   useEffect(() => {
     c.stopOnOpponentSpells = loadStopOnOpponentSpells();
+    c.pauseBlockersWithUntapped = loadPauseBlockersWithUntapped();
   }, [c]);
   useEffect(() => {
     if (c.phase.kind === "gameOver") onGameOver();

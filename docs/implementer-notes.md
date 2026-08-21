@@ -132,6 +132,14 @@ Things a fresh session might otherwise rediscover slowly:
 - **Browser-tool coordinates are in screenshot pixels, not viewport pixels** (screenshots come back scaled). Clicking with viewport coordinates lands off-target silently; read the screenshot size and click in that frame, or use refs.
 - **The attack-set memo keys by turn/set/life, not board** — sound in play, but a test that scores two different boards with one agent must use two agents.
 
+## S12 lessons (Parts 0–1: ante, knobs)
+
+- **A new zone is cheap when zones are arrays nothing iterates.** The ante zone is one `ZoneName`, one `PlayerState` array, one `zoneArray` case — it is invisible to predicates/scopes/counts *by construction*, not by guarding each reader. Prefer that shape for any future "set aside" zone.
+- **Fact-stream events over state inspection for results.** `facts.ante` comes from a logged `ANTE_SET` event, like every other fact — the overworld never reads engine state.
+- **Generated docs are the only docs that stay true.** `docs/knobs.md` is rendered from the registry and a test asserts the file matches; `pnpm knobs:doc` regenerates. Do this for any registry-shaped doc.
+- **Planner doc overwrites can regress implementer edits.** The S12 `decisions.md` silently reverted S11's ADR-058 amendment (stale copy). Diff planner-updated docs against HEAD at session start before trusting them.
+- **Zero-delta proofs beat zero-delta arguments.** The race-threshold change was argued identical at 20 life; re-running the S11 mirror seeds and getting the same 1361/2000 *proved* it in 20 seconds.
+
 ## Known interims / watch list
 
 See handoff Concerns for the authoritative list. Highlights: auto-pay greedy feasibility (correct while all producers are single-symbol — R-006); condition fields `controller`/`type`/`subtype` are validated but unexercised (first card to use them should add fixtures); value refs deliberately have no arithmetic (ADR-028 — resist until a card demands it); the `sba-unattach` ATTACHED cause is unreachable by legal play (test-forced only).

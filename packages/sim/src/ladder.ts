@@ -28,8 +28,10 @@ export interface LadderReport {
   mirrors: LadderCell[];
   /** Aggregated challenger record with each deck in its hands (pairing cells). */
   perDeck: Record<DeckKey, { wins: number; games: number }>;
-  /** Majority in every deck's hands, aggregated over its pairing cells. */
-  gateAggregate: boolean;
+  /** Majority in every deck's hands over its pairing cells — INFO, not a gate
+   * (ADR-061): deck imbalance dominates pairing cells (S8), so this can't pass
+   * for any agent; it cost two sessions of re-investigation as "gate/aggregate". */
+  perDeckMajority: boolean;
   /** Majority in every deck's MIRROR, both seatings — the deck-neutral gate. */
   gateMirror: boolean;
 }
@@ -117,11 +119,11 @@ export async function runLadder(
     }
   }
 
-  const gateAggregate =
+  const perDeckMajority =
     cells.length > 0 &&
     (Object.keys(perDeck) as DeckKey[]).every((d) => perDeck[d].games === 0 || perDeck[d].wins * 2 > perDeck[d].games);
   const gateMirror = mirrors.length > 0 && mirrors.every((m) => m.challengerWins * 2 > m.games);
-  return { challenger, baseline, cells, mirrors, perDeck, gateAggregate, gateMirror };
+  return { challenger, baseline, cells, mirrors, perDeck, perDeckMajority, gateMirror };
 }
 
 export function formatLadder(report: LadderReport): string {
@@ -142,7 +144,7 @@ export function formatLadder(report: LadderReport): string {
   for (const [d, r] of Object.entries(report.perDeck)) {
     lines.push(`    ${d}: ${r.wins}/${r.games} (${((100 * r.wins) / r.games).toFixed(1)}%)`);
   }
-  lines.push(`  gate/aggregate (majority in every deck's hands over pairings): ${report.gateAggregate ? "PASS" : "FAIL"}`);
+  lines.push(`  info/per-deck (majority in every deck's hands over pairings — deck-imbalance measure, NOT a gate; ADR-061): ${report.perDeckMajority ? "yes" : "no"}`);
   lines.push(`  gate/mirror (majority in every mirror, both seatings): ${report.gateMirror ? "PASS" : "FAIL"}`);
   return lines.join("\n");
 }

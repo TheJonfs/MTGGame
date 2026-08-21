@@ -18,7 +18,7 @@ describe("replay determinism (permanent fixture)", () => {
           pool.cards,
           [expandDecklist(DECKS[a].decklist as never), expandDecklist(DECKS[b].decklist as never)],
           live.log,
-          { startingLife: 20, handSize: 7, maxTurns: 100 },
+          { startingLife: 20, handSize: 7, maxTurns: 100, ante: 0 },
           matchSpec(seed, a, b).modifiers,
         );
         expect(replayed, `pairing ${a}-${b} seed ${seed}`).toBe(live.finalStateSerialized);

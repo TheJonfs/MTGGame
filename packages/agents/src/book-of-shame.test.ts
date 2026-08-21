@@ -38,6 +38,7 @@ function mkView(opts: { hand?: { objectId: string; cardId: string }[]; battlefie
     step: "MAIN1",
     activePlayer: 0,
     life: opts.life ?? [20, 20],
+    startingLife: 20,
     hand: opts.hand ?? [],
     opponentHandCount: 3,
     librarySizes: [20, 20],

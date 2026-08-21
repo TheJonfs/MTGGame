@@ -133,6 +133,10 @@ export class MatchController {
   /** S11: pause whenever the opponent casts a spell, even with no response
    * (default on; menu toggle, persisted by the UI). */
   stopOnOpponentSpells = true;
+  /** S12 rider (S11 concern 4): pause at declare blockers even when no block is
+   * legal (menace/flying) while I control any untapped creature — so an
+   * unblockable attack is seen, not auto-skipped. Default off; Chris to trial. */
+  pauseBlockersWithUntapped = false;
   /** Why the current pause happened, for the prompt ("Opponent cast X"). */
   stopReason: string | null = null;
   /** Opponent stack items already paused for (stack ids are unique per item). */
@@ -213,6 +217,7 @@ export class MatchController {
       startingLife: 20,
       handSize: 7,
       maxTurns: DEFAULT_RULES.maxTurns,
+      ante: DEFAULT_RULES.ante, // the world passes its knob here (S13)
     });
 
     // S11: observe lone-pass windows so an opponent's spell can be shown
@@ -798,13 +803,21 @@ export class MatchController {
     }
     const done = request.actions.some((a) => a.type === "doneDeclaringBlockers");
     const stagedPairs = this.phase.kind === "blockers" ? this.phase.stagedPairs : [];
-    if (options.size === 0 && done && stagedPairs.length === 0) {
+    if (options.size === 0 && done && stagedPairs.length === 0 && !(this.pauseBlockersWithUntapped && this.humanHasUntappedCreature())) {
       // No legal blocks at all: auto-done, no pause.
       this.human.submit(request.actions.find((a) => a.type === "doneDeclaringBlockers")!);
       return;
     }
     this.phase = { kind: "blockers", options, stagedPairs, pendingBlocker: null, mustAddBlocker: !done };
     this.emit();
+  }
+
+  private humanHasUntappedCreature(): boolean {
+    const st = this.game.state;
+    return st.battlefield.some((id) => {
+      const o = st.objects[id];
+      return !!o && o.controller === this.humanSeat && !o.tapped && this.pool.get(o.cardId)?.types.includes("Creature");
+    });
   }
 
   private clickBlockerOrAttacker(objectId: string): void {

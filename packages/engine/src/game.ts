@@ -79,9 +79,13 @@ export interface GameRules {
   startingLife: number;
   handSize: number;
   maxTurns: number;
+  /** S12 (R-043): stakes — after the shuffle, before hands, each library's top
+   * `ante` NONLAND cards move to the ante zone. 0 = off (the engine's default;
+   * the overworld passes its knob). */
+  ante: number;
 }
 
-export const DEFAULT_RULES: GameRules = { startingLife: 20, handSize: 7, maxTurns: 100 };
+export const DEFAULT_RULES: GameRules = { startingLife: 20, handSize: 7, maxTurns: 100, ante: 0 };
 
 export class Game {
   readonly ctx: EngineCtx;
@@ -122,6 +126,7 @@ export class Game {
     bus.on("ATTACHED", (e) => log.append({ t: "EVENT", name: "ATTACHED", payload: e }));
     bus.on("CARD_DRAWN", (e) => log.append({ t: "EVENT", name: "CARD_DRAWN", payload: e }));
     bus.on("SPELL_CAST", (e) => log.append({ t: "EVENT", name: "SPELL_CAST", payload: e }));
+    bus.on("ANTE_SET", (e) => log.append({ t: "EVENT", name: "ANTE_SET", payload: e }));
     bus.on("ZONE_CHANGE", (e) => {
       if (e.from === "battlefield" && e.to === "graveyard") {
         log.append({ t: "EVENT", name: "DIES", payload: { cardId: e.cardId, owner: e.owner } });
@@ -169,10 +174,38 @@ export class Game {
       }
       state.players[player].library = this.ctx.rng.shuffle(state.players[player].library, "shuffle");
     }
+    // S12 ante (R-043): after the shuffle, before hands — the top n NONLAND
+    // cards of each library are set aside as stakes (a shuffled library makes
+    // "top n" the CR 407 random pick; lands are skipped, not moved). An
+    // all-lands library antes fewer or none — reported as found.
+    if (this.rules.ante > 0) {
+      for (const player of [0, 1] as PlayerId[]) this.setAside(player, this.rules.ante);
+    }
     for (const player of [0, 1] as PlayerId[]) {
       for (let i = 0; i < this.rules.handSize; i++) drawCard(this.ctx, player);
     }
     await this.mulligans();
+  }
+
+  private setAside(player: PlayerId, n: number): void {
+    const p = this.state.players[player];
+    const picked: string[] = [];
+    for (const id of [...p.library]) {
+      if (picked.length >= n) break;
+      if (this.ctx.defs.def(getObject(this.state, id).cardId).types.includes("Land")) continue;
+      picked.push(id);
+    }
+    const objectIds: string[] = [];
+    const cardIds: string[] = [];
+    for (const id of picked) {
+      const cardId = getObject(this.state, id).cardId;
+      const newId = moveObject(this.ctx, id, "ante");
+      if (newId) {
+        objectIds.push(newId);
+        cardIds.push(cardId);
+      }
+    }
+    this.ctx.bus.emit("ANTE_SET", { player, cardIds, objectIds });
   }
 
   /** London mulligan, simplified to sequential players (R-027): draw 7, bottom N — each bottomed card is a choice (ADR-011). */

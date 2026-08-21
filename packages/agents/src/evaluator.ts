@@ -40,7 +40,7 @@ export interface EvalConstants {
 
 export const DEFAULT_TEMPERATURE = 0.35;
 
-/** S11 (ADR-060.3): master's evaluator vector, found by `pnpm weight-search`
+/** S11 (ADR-060.3): the vector `pnpm weight-search` found — NOT wired (ADR-061 reverted master to DEFAULT_CONSTANTS); kept as the record of the search
  * (coordinate descent, 80/cell search seed 11000000, verified 300/cell on
  * held-out seed 21000000). Seven moves survived three sweeps: flying 0.7→0.98,
  * double strike 1.2→0.857, haste 0.3→0.42, menace 0.4→0.286, aggro hand
@@ -88,14 +88,11 @@ export function difficultyProfile(
       return { archetype: deckArchetype, opponentDecklist, temperature: DEFAULT_TEMPERATURE, holdTricks: true };
     case "master":
       // Low-noise selection (S9: 0.12 beats 0.05 — near-determinism at the
-      // top is exploitable) over the S11 weight-searched vector (ADR-060.3).
-      return {
-        archetype: deckArchetype,
-        opponentDecklist,
-        temperature: 0.12,
-        holdTricks: true,
-        constants: MASTER_CONSTANTS,
-      };
+      // top is exploitable). ADR-061: master uses DEFAULT_CONSTANTS — the
+      // S11 searched vector's held-out edge was zero, and zero-delta
+      // discipline admits no exception; MASTER_CONSTANTS stays exported as
+      // the record of that search only.
+      return { archetype: deckArchetype, opponentDecklist, temperature: 0.12, holdTricks: true };
   }
 }
 
@@ -217,7 +214,7 @@ export function evaluate(view: GameView, profile: AiProfile, defs: Map<string, C
   return (
     w.material * (ownMaterial - oppMaterial) +
     w.ownLife * view.life[me] +
-    w.oppLife * (20 - view.life[opp]) +
+    w.oppLife * (view.startingLife - view.life[opp]) +
     w.hand * (view.hand.length - view.opponentHandCount) +
     deter
   );

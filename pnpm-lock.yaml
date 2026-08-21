@@ -102,6 +102,12 @@ importers:
         specifier: ^6.0.0
         version: 6.4.3(@types/node@24.13.3)(tsx@4.23.12)
 
+  packages/world:
+    dependencies:
+      '@shandalar/core':
+        specifier: workspace:*
+        version: link:../core
+
 packages:
 
   '@babel/code-frame@7.29.7':

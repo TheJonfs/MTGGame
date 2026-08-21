@@ -7,7 +7,9 @@ export function opponentOf(p: PlayerId): PlayerId {
   return p === 0 ? 1 : 0;
 }
 
-export type ZoneName = "library" | "hand" | "battlefield" | "graveyard" | "stack" | "exile";
+/** S12: "ante" is the stakes zone (CR 407 lineage, see R-043) — set aside at
+ * setup, invisible to every predicate/scope/count; only the overworld reads it. */
+export type ZoneName = "library" | "hand" | "battlefield" | "graveyard" | "stack" | "exile" | "ante";
 
 export const STEPS = [
   "UNTAP",
@@ -59,6 +61,8 @@ export interface PlayerState {
   hand: string[];
   graveyard: string[];
   exile: string[];
+  /** S12 ante stakes (R-043): set aside at setup; never drawn, searched, or counted. */
+  ante: string[];
   manaPool: ManaPool;
   landsPlayedThisTurn: number;
   /** London mulligans taken (ADR-048: surfaced in the owner's view). */
@@ -130,6 +134,8 @@ export interface GameResult {
 }
 
 export interface GameState {
+  /** S12: the life both players began at (world life in the overworld); agents read it from the view. */
+  startingLife: number;
   turn: number;
   activePlayer: PlayerId;
   step: Step;
@@ -151,6 +157,7 @@ export function initialPlayerState(life: number): PlayerState {
     hand: [],
     graveyard: [],
     exile: [],
+    ante: [],
     manaPool: emptyPool(),
     landsPlayedThisTurn: 0,
     mulligans: 0,
@@ -162,6 +169,7 @@ export function initialPlayerState(life: number): PlayerState {
 
 export function initialGameState(startingLife: number): GameState {
   return {
+    startingLife,
     turn: 0,
     activePlayer: 0,
     step: "CLEANUP", // advanced to turn 1 UNTAP by the game loop
