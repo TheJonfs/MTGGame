@@ -244,6 +244,32 @@ describe("play-mode acceptance (headless; S10 DoD 1)", () => {
     expect(result.facts.ante[1]).toHaveLength(1);
   }, 60_000);
 
+  it("S13 dev auto-win ends the match as an opponent concession in the human's favour (ante reported)", async () => {
+    const pool = loadCardPool(CARDS_DIR);
+    const c = new MatchController(pool.cards, {
+      humanSeat: 1,
+      custom: {
+        human: { name: "Tester", decklist: [{ cardId: "forest", count: 20 }, { cardId: "grizzly_bears", count: 10 }] },
+        enemy: { name: "Dummy", decklist: [{ cardId: "swamp", count: 20 }, { cardId: "typhoid_rats", count: 10 }], difficulty: "apprentice", archetype: "aggro" },
+        rules: { startingLife: 10, ante: 1 },
+        modifiers: [],
+      },
+      seed: 9,
+      aiDelayMs: 0,
+    });
+    const done = c.start();
+    let guard = 0;
+    while (c.phase.kind === "waiting" && guard++ < 2000) await new Promise((r) => setTimeout(r, 0));
+    c.autoWin();
+    guard = 0;
+    while (!c.result && guard++ < 1000) await new Promise((r) => setTimeout(r, 0));
+    const result = await done;
+    expect(result.reason).toBe("CONCEDE");
+    expect(result.winner).toBe(1);
+    expect(result.facts.ante[0]).toHaveLength(1);
+    expect(result.facts.ante[1]).toHaveLength(1);
+  }, 60_000);
+
   it("concession ends the match with a CONCEDE result and a replayable partial log", async () => {
     const pool = loadCardPool(CARDS_DIR);
     const c = new MatchController(pool.cards, {

@@ -363,6 +363,18 @@ export class MatchController {
     if (pending) this.human.submit(pending.request.actions[0]!);
   }
 
+  /** S13 round 2 (Chris): playtest convenience — end the duel as an opponent
+   * concession in the human's favour. The UI shows it only in dev builds
+   * (`import.meta.env.DEV`); production never exposes it. Same unwind as concede. */
+  autoWin(): void {
+    if (this.result || this.conceding) return;
+    this.conceding = true;
+    this.game.state.result = { winner: this.humanSeat, reason: "CONCEDE" };
+    this.stackStopResolve?.();
+    const pending = this.human.current();
+    if (pending) this.human.submit(pending.request.actions[0]!);
+  }
+
   /** Saved-game payload for the viewer route / download (shandalar-log-v1). */
   savedGame(): string {
     if (!this.result) throw new Error("match not finished");

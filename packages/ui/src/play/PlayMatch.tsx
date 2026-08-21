@@ -235,6 +235,11 @@ function StopsFlyout({ c }: { c: MatchController }) {
             </select>
           </label>
           <div className="flyout-title" style={{ marginTop: 6 }}>Match</div>
+          {import.meta.env.DEV && (
+            <button title="Dev builds only (S13): end the duel as an opponent concession in your favour" onClick={() => { c.autoWin(); setOpen(false); }}>
+              Auto-win (dev)
+            </button>
+          )}
           {confirmingConcede ? (
             <div style={{ display: "flex", gap: 4 }}>
               <button className="danger" onClick={() => { c.concede(); setConfirmingConcede(false); setOpen(false); }}>Concede</button>
@@ -637,12 +642,17 @@ export function PlayMatch({
         {(ctx.state.players[0].ante.length > 0 || ctx.state.players[1].ante.length > 0) && (
           <div className="panel stakes-panel">
             <h3>Stakes</h3>
-            <div style={{ fontSize: 12.5 }}>
-              You: <b>{ctx.state.players[c.humanSeat].ante.map((id) => cardName(pool, ctx.state.objects[id]!.cardId)).join(", ") || "—"}</b>
-            </div>
-            <div style={{ fontSize: 12.5 }}>
-              {c.names[opp]}: <b>{ctx.state.players[opp].ante.map((id) => cardName(pool, ctx.state.objects[id]!.cardId)).join(", ") || "—"}</b>
-            </div>
+            {([c.humanSeat, opp] as PlayerId[]).map((p) => (
+              <div key={p} style={{ fontSize: 12.5 }}>
+                {p === c.humanSeat ? "You" : c.names[opp]}:{" "}
+                {ctx.state.players[p].ante.length === 0 && <b>—</b>}
+                {ctx.state.players[p].ante.map((id, i) => (
+                  <b key={id} className="stake-card" onMouseEnter={() => setInspected(id)} title="hover to inspect">
+                    {i > 0 ? ", " : ""}{cardName(pool, ctx.state.objects[id]!.cardId)}
+                  </b>
+                ))}
+              </div>
+            ))}
           </div>
         )}
         <div

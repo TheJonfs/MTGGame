@@ -150,7 +150,7 @@ function DuelResultScreen({ c, pool, oracle, onWatch }: { c: WorldController; po
   const { record, duel, before, after } = c.screen;
   const won = record.outcome === "win";
   // S13 (Chris): printed card by default everywhere in the world (custom cards fall back to our frame).
-  const frames = (ids: string[]) => ids.map((id, i) => <CardFrame key={`${id}${i}`} def={pool.get(id)!} oracle={oracle[id]} mini showPrinted />);
+  const frames = (ids: string[]) => ids.map((id, i) => <div className="card-slot" key={`${id}${i}`}><CardFrame def={pool.get(id)!} oracle={oracle[id]} showPrinted /></div>);
   return (
     <div className="loader">
       <div className="box play-setup world-result">
@@ -203,7 +203,7 @@ function TownScreen({ c, pool, oracle }: { c: WorldController; pool: Map<string,
         <div className="shop-grid">
           {stock.map((item: ShopItem) => (
             <div key={item.cardId} className="shop-item">
-              <CardFrame def={pool.get(item.cardId)!} oracle={oracle[item.cardId]} mini showPrinted={printed} />
+              <div className="card-slot"><CardFrame def={pool.get(item.cardId)!} oracle={oracle[item.cardId]} showPrinted={printed} /></div>
               <button className={w.player.gold >= item.price ? "primary" : ""} disabled={w.player.gold < item.price} onClick={() => c.buy(item)}>
                 {item.price} gold
               </button>

@@ -22,6 +22,13 @@
 5. **Combat zoomed by:** with nothing castable your combat windows were lone passes, so the lane existed for milliseconds. New default-on stop **"attacks and blocks are declared"** (menu): pauses once when attackers are declared against you ("Opponent attacks with Boggart Brute (Bonesplitter).") and once when blocks are declared against your attack ("Opponent blocks: X ← Y." / "No blocks — your attack goes through."), via the request path or the `onLonePass` seam; fast-forward skips it. Your own attackers now sit visibly in the red zone at that pause. Acceptance test asserts the pause fires.
 6. **Enemy life jumping 10→8 during mulligans:** `startingLife` modifiers now apply at state creation, before setup; every other modifier still applies after setup (zones must exist). Still "initialization" per ADR-002 — **engine-ordering change, flagged for ratification**; the custom-path test asserts 8 at the very first pause.
 
+## Director round 2 (same day)
+
+1. **Shop/result sizing:** printed scans and our frame now share one 130×182 card slot (full frame scaled, scan at the same width); the collection's scans match our 180px frame.
+2. **Auto-win (dev):** `MatchController.autoWin()` ends the duel as an opponent concession in your favour (the world treats it as a win — stake claimed); the menu shows it **only in dev builds** (`import.meta.env.DEV`), so production never has it.
+3. **Stakes hover → inspector:** the Stakes panel's card names are hover targets; the ante objects are real state objects, so the inspector shows the card.
+4. **Director backlog for the next design round (M6b+), Chris's words banked verbatim:** larger regions; start the player in their starting deck's home region; towns more uniformly distributed; starting decks as 30-card mono-coloured decks; weaker starting enemies that *flee from you as you grow stronger* so low-level mobs needn't be fought late unless you want to. All are generator/catalog/encounter-table content — none touches the save format except possibly "home region" (a region→colour binding the catalog already carries).
+
 ## Deviations from the brief
 
 1. **Shop stock does not deplete** (slice). Depletion and selling need per-shop state — a `shops` field in a versioned save — so they're M6b (Concern 2). Epoch-based refresh is my proposal for "refresh rules open."

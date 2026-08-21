@@ -448,6 +448,13 @@ button.primary { background: var(--brass); color: var(--parchment); border: 1.5p
 .shop-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 8px 0; }
 .shop-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .shop-item .frame { flex: none; }
+/* S13 round 2 (Chris): printed scans and our frame share one card slot, same size. */
+.stake-card { cursor: help; text-decoration: underline dotted; }
+.card-slot { width: 130px; height: 182px; display: flex; align-items: center; justify-content: center; flex: none; }
+.card-slot .frame { width: 130px; font-size: 7.4px; }
+.card-slot .printed-scan { width: 130px; height: auto; }
+.world-collection .printed-scan { width: 180px; }
+.world-collection .gallery-cell { width: 186px; }
 .world-result { max-width: 640px; }
 .world-result .dialog-cards { margin: 6px 0 10px; }
 .world-collection .caption { font-size: 11px; }
