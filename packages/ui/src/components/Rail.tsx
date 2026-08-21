@@ -9,9 +9,21 @@ const MANA_ICON: Record<string, string> = {
   W: "mana-white", U: "mana-blue", B: "mana-black", R: "mana-red", G: "mana-green", C: "mana-colorless",
 };
 
-function StatusBlock({ ctx, player }: { ctx: EngineCtx; player: PlayerId }) {
+export function StatusBlock({
+  ctx,
+  player,
+  youSeat = 0,
+  onZoneClick,
+}: {
+  ctx: EngineCtx;
+  player: PlayerId;
+  /** Which seat is "You" (play mode may seat the human as player 1). */
+  youSeat?: PlayerId;
+  /** Play mode: open a zone browser (graveyard/exile are public). */
+  onZoneClick?: (player: PlayerId, zone: "graveyard" | "exile") => void;
+}) {
   const p = ctx.state.players[player];
-  const you = player === 0;
+  const you = player === youSeat;
   const zones: [string, number][] = [
     ["zone-hand", p.hand.length],
     ["zone-library", p.library.length],
@@ -33,11 +45,18 @@ function StatusBlock({ ctx, player }: { ctx: EngineCtx; player: PlayerId }) {
             {p.life}
           </div>
           <div className="zones">
-            {zones.map(([icon, n]) => (
-              <span key={icon}>
-                <img src={`/icons/${icon}.svg`} alt={icon} /> {n}
-              </span>
-            ))}
+            {zones.map(([icon, n]) => {
+              const zone = icon === "zone-graveyard" ? "graveyard" : icon === "zone-exile" ? "exile" : null;
+              return (
+                <span
+                  key={icon}
+                  onClick={zone && onZoneClick ? () => onZoneClick(player, zone) : undefined}
+                  style={zone && onZoneClick ? { cursor: "pointer", textDecoration: "underline dotted" } : undefined}
+                >
+                  <img src={`/icons/${icon}.svg`} alt={icon} /> {n}
+                </span>
+              );
+            })}
             {pool.length > 0 && (
               <span className="mana-pool">
                 {pool.flatMap((s) => Array.from({ length: p.manaPool[s] }, (_, i) => (
@@ -52,7 +71,7 @@ function StatusBlock({ ctx, player }: { ctx: EngineCtx; player: PlayerId }) {
   );
 }
 
-function StackPanel({ ctx }: { ctx: EngineCtx }) {
+export function StackPanel({ ctx }: { ctx: EngineCtx }) {
   const { state } = ctx;
   if (state.stack.length === 0) {
     return (
@@ -117,7 +136,7 @@ function DecisionPanel({ ctx, point, poolMap }: { ctx: EngineCtx; point: Decisio
   );
 }
 
-function Inspector({
+export function Inspector({
   ctx,
   objectId,
   oracle,

@@ -6,6 +6,7 @@ import { Rail } from "./components/Rail";
 import { Transport } from "./components/Transport";
 import { LogPanel, buildLogLines } from "./components/LogPanel";
 import { Gallery } from "./components/Gallery";
+import { PlayApp } from "./play/PlayApp";
 
 const VIEWER_VERSION = "s6-0.1";
 /** Log placement is an open art-direction decision (§7): rail tab by default,
@@ -52,6 +53,9 @@ function Loader({ onLoad }: { onLoad: (g: SavedGame) => void }) {
           >
             Load the sane-agents sample (S7)
           </button>
+        </p>
+        <p>
+          <a className="linkish" href="/play"><b>Play a match</b></a> · <a className="linkish" href="/gallery">card gallery</a>
         </p>
         {error && <p style={{ color: "var(--danger)" }}>{error}</p>}
       </div>
@@ -173,6 +177,12 @@ function Viewer({ game }: { game: SavedGame }) {
 
 export default function App() {
   const [game, setGame] = useState<SavedGame | null>(null);
+  const [replayFromPlay, setReplayFromPlay] = useState<SavedGame | null>(null);
   if (window.location.pathname === "/gallery") return <Gallery />;
+  if (window.location.pathname === "/play") {
+    // "Watch replay" hands the finished game straight to the viewer.
+    if (replayFromPlay) return <Viewer game={replayFromPlay} />;
+    return <PlayApp onWatchReplay={setReplayFromPlay} />;
+  }
   return game ? <Viewer game={game} /> : <Loader onLoad={setGame} />;
 }

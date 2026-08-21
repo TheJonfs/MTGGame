@@ -122,8 +122,9 @@ export function CardFrame({
     <div
       className={`frame${mini ? " mini" : " full"}${hand ? " hand" : ""}`}
       style={{
-        background: `url(/frame-tex/frame-${bodyTex}.jpg) ${body}`,
-        backgroundSize: "280px",
+        // one shorthand (position / size folded in) — mixing background with
+        // backgroundSize trips React's style-conflict warning on re-render
+        background: `${body} url(/frame-tex/frame-${bodyTex}.jpg) 0 0 / 280px repeat`,
         ["--frame-tint" as string]: tint,
       }}
     >

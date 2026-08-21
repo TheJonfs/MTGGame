@@ -8,6 +8,7 @@ export function CardTile({
   onHover,
   onClick,
   selected,
+  extraClass,
 }: {
   ctx: EngineCtx;
   obj: GameObject;
@@ -15,6 +16,8 @@ export function CardTile({
   selected?: boolean;
   onHover?: (id: string) => void;
   onClick?: (id: string) => void;
+  /** Play-mode interaction states (castable / target / staged / dimmed …). */
+  extraClass?: string | undefined;
 }) {
   const def = ctx.defs.def(obj.cardId);
   const isCreature = def.types.includes("Creature");
@@ -28,6 +31,7 @@ export function CardTile({
     obj.tapped ? "tapped" : "",
     obj.summoningSick && isCreature ? "sick" : "",
     selected ? "selected" : "",
+    extraClass ?? "",
   ]
     .filter(Boolean)
     .join(" ");

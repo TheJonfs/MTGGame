@@ -265,3 +265,61 @@ button.linkish { background: none; border: none; color: var(--brass); cursor: po
 
 .note-form { display: inline-flex; gap: 3px; align-items: center; }
 .note-form input { font-size: 10px; padding: 1px 4px; border: 1px solid var(--ink); border-radius: 3px; background: var(--parchment); color: var(--ink); width: 150px; }
+
+/* Play mode (S10, ADR-058) */
+.play-app { grid-template-rows: 1fr; }
+.play-app > div:first-child { display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+.play-app .board { flex: 1; }
+.play-ribbon {
+  display: flex; gap: 12px; align-items: center; padding: 5px 14px;
+  background: var(--parchment) url("/panel-parchment.png"); background-size: 512px;
+  border-bottom: 2px solid var(--ink); font-size: 12px;
+}
+.play-ribbon .turn { font-family: var(--serif); font-weight: 700; }
+.play-ribbon .who { color: var(--ink-soft); }
+.play-ribbon .who.you { color: var(--brass); font-weight: 700; }
+.play-ribbon .seed { font-size: 10px; color: var(--ink-soft); }
+.play-prompt { gap: 8px; }
+.play-prompt .prompt-text { font-family: var(--serif); font-size: 13px; font-weight: 600; }
+.play-prompt button.primary { background: var(--brass); color: var(--parchment); border-color: var(--ink); }
+.play-prompt button.danger { border-color: var(--danger); color: var(--danger); }
+.play-prompt .hold-toggle { font-size: 10.5px; display: flex; align-items: center; gap: 3px; }
+
+/* Interaction states — legality always from the enumerator via the controller */
+.tile.castable, .hand-card.castable .frame { outline: 2.5px solid var(--boost); cursor: pointer; }
+.tile.target { outline: 3px solid var(--danger); cursor: crosshair; }
+.tile.staged { outline: 3px solid var(--brass); transform: translateY(-6px); }
+.tile.pending { outline: 3px dashed var(--brass); }
+.tile.dim, .hand-card.dim .frame { filter: saturate(0.3) opacity(0.55); }
+.player-target .panel { outline: 3px solid var(--danger); cursor: crosshair; border-radius: 6px; }
+
+/* Stops flyout */
+.stops-flyout { position: relative; }
+.stops-flyout .flyout {
+  position: absolute; top: 20px; right: 0; z-index: 30; width: 170px;
+  background: var(--parchment); border: 1.5px solid var(--ink); border-radius: 6px;
+  padding: 8px; display: flex; flex-direction: column; gap: 3px; font-size: 11px;
+  box-shadow: 2px 3px 8px rgba(0,0,0,0.35);
+}
+.flyout-title { font-family: var(--serif); font-weight: 700; font-size: 11px; border-bottom: 1px solid var(--ink-soft); margin-bottom: 3px; }
+
+/* Play dialogs */
+.play-dialog { max-width: 640px; max-height: 80vh; overflow-y: auto; }
+.dialog-cards { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.dialog-list { display: flex; flex-direction: column; gap: 4px; }
+.dialog-option { cursor: pointer; padding: 4px; border-radius: 6px; border: 2px solid transparent; text-align: center; font-size: 12px; }
+.dialog-option:hover { background: rgba(176, 138, 62, 0.15); }
+.dialog-option.selected { border-color: var(--brass); background: rgba(176, 138, 62, 0.2); }
+.dialog-caption { font-size: 9.5px; margin-top: 2px; max-width: 120px; }
+.revealed-strip { margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--ink-soft); }
+
+/* Setup / end screens */
+.play-setup { max-width: 640px; }
+.deck-picker { display: flex; flex-direction: column; gap: 3px; font-size: 12px; }
+.deck-picker label.picked { color: var(--brass); font-weight: 700; }
+.end-stats { margin: 0 auto; font-size: 12px; border-collapse: collapse; }
+.end-stats td, .end-stats th { padding: 2px 12px; border-bottom: 1px solid var(--ink-soft); text-align: left; }
+.end-stats th { font-family: var(--serif); }
+button.primary { background: var(--brass); color: var(--parchment); border: 1.5px solid var(--ink); border-radius: 5px; padding: 4px 12px; cursor: pointer; font-size: 12px; }
+.play-setup button, .play-prompt button { font-family: var(--sans); background: var(--parchment); border: 1.5px solid var(--ink); border-radius: 5px; padding: 4px 10px; cursor: pointer; font-size: 12px; color: var(--ink); }
+.play-setup button.primary, .play-prompt button.primary { background: var(--brass); color: var(--parchment); }
