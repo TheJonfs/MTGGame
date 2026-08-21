@@ -1,89 +1,71 @@
-# Handoff — after Session 08 (2026-08-20)
+# Handoff — after Session 09 (2026-08-20)
 
 ## State of the world
 
-M4a is delivered: HeuristicAgent v1 (evaluator + view-prediction + simulated combat + softmax selection) beats SanePolicyAgent in **every deck's mirror, both seatings, 55–77%** at 1,000 games/cell, and beats random 99.5%+ everywhere; the ladder (`pnpm ladder`) measures it with pairing cells, mirror cells, and two explicit gates. The ADR-048 agent-facing view shipped (combat, mulligan count, live characteristics, trigger-source identity) with a permanent no-peeking test, and Cunning Tactician — the first custom card — is in deck B end to end: `tapTarget` resolver, `text` field, fixtures, Chris-picked classical-oil art in the frame, gallery caption "custom · classical oil · 2026". 148 tests green. One planner ruling wanted: which reading of the ship gate is canonical (see Concern 1).
+M4b is delivered and, in my view, **M4 is done**: HeuristicAgent passes both corrected gates at 1,000 games/cell — every mirror both seatings (56.9–76.5%) and every one of the 20 pairing cells at or above its sane-vs-sane baseline floor — with deck E's mirrors up ~+4 points from measured tuning (64.8/56.9, seat0 reaching the band). Three named difficulty profiles ride the existing temperature/weight/hold machinery: journeyman beats apprentice in all ten mirror cells (55–70%); master's edge over journeyman is real but shallow (+3.8% overall) — the honest finding is that temperature is a weak lever at the top (see Concerns). The suite is tiered per ADR-055 (default 10.8s; FUZZ_FULL ~101s, 149 green), the evaluator follows ADR-056 accounting with the book of shame green *from accounting rather than patches*, and every change this session carries a before/after ladder delta — including two experiments that measured zero and were reverted.
 
 ## Done this session
 
-- **Part 0 (ADR-048):** `GameView` gains `combat` (attackers + staged blocks), `mulliganCount`, and live characteristics (effective P/T + keywords) on every battlefield object; `ActionRequest` gains `source` (cardId + pending effects) on trigger-target requests — targets were already chosen at stack time, this adds identity only. Sane's S7 per-instance memory retired (pure functions again); rule 8 now covers trigger targets through the shared classification module. Permanent no-peeking test: seat views never contain opponent hand or either library, verified against ground-truth states across replayed games.
-- **Part 1 (evaluator v1):** `evaluate(view, profile)` in `agents` — mana-value-weighted board material with keyword bonuses and live-P/T deltas, archetype-weighted life/hand terms (aggro/midrange/control), and a vocabulary-driven sweeper-risk dampener (opponent's known list has destroyAll/damageAll → creatures beyond the 3rd carry half value). Shares rule 8's classification table. **Book of shame: five permanent score-ordering tests — three failed against the fresh policy and drove real fixes** (a mis-aimed aura claimed its own board value → self-Control-Magic scored positive; self-face burn was cheaper than any creature at aggro life weights → explicit self-damage penalty; no-benefit taps cost nothing → tap-cost friction).
-- **Part 2 (policy + combat):** priority actions scored by predicting the resulting view (view-sim: damage/removal/bounce/draw/tokens/counters/pumps — targeted `modifyPT` models Drana lethality, which alone took the D mirror from 46% to 72%); pass holds counter mana while the known opponent list threatens (ADR-051); softmax selection at profile temperature (ADR-050, default 0.35). Attacks: greedy set construction, each candidate set played through **the engine's real assignment/dealing/SBA functions on a throwaway state** (combat-sim, the one documented engine seam; synthetic defs carry the view's live stats so `characteristics()` reproduces them). Blocks: greedy per-creature gain, chumps only under lethal threat.
-- **Part 3 (ladder, ADR-049):** `pnpm ladder` — challenger vs baselines over all 10 pairings both seatings, plus **mirror cells** (same deck both sides, deck-neutral skill), two gates reported. Committed smoke: 100/cell vs sane with flake-resistant bounds (every mirror >40%, overall mirror majority; the 1,000/cell CLI is the gate authority). Full tables below.
-- **Part 4 (Cunning Tactician, ADR-052/053):** `tapTarget` resolver + `tap` context op (first user); CardDef `text` (validator: required iff custom, forbidden on real — rippled into the harness's five synthetic cards and both token defs); card JSON; deck B swap (−1 Savannah Lions, −1 Fencing Ace, +2 Tactician; registry decklist updated, Lions to rotated-out list); fixtures s8-01..03 (tap-before-declare denies the block CR 509.1a; tap-after-declare doesn't remove it; vigilance attack + same-combat activation CR 702.21b) + text-field validation + rule-8 tapTarget preference test; four art candidates rendered per card-art.md (`--no-style` added to the gemini-image skill for the ADR-052 exemption), **Chris picked #1 (classical oil)**, cropped 5:4, wired via `art.asset`, kept/rejected logged in MANIFEST.
-- **Riders:** inline gallery note field (replaces window.prompt; Enter saves, Esc cancels), `pnpm gallery`, chip contrast lift (subtle ring+shadow) on light bands.
-- **Feedback round (post-close, Chris-directed):** card names and mana chips scaled down to real-card proportion (name 1.22em→1.05em, chips 1.35em→1.2em) with the gallery relaid at 240px cards (fewer per row); generic-cost numerals moved to the serif face at near-disc height; frame border thickened to real-card weight (0.55em black, em-scaled so minis stay proportional); basics moved from Revised to **Beta** (leb, lowest collector — same five classic artists, now black-bordered to match the frame; printings.md and the registry printings section updated, art refetched).
+- **Part 0 (plumbing):**
+  - `pnpm ladder --cell A,B` and `--mirrors` (single-cell / mirrors-only tuning loops; rider).
+  - Combat-sim memoization (attack-set scores keyed by turn+set+life, cleared per turn) — honest speedup ~1%: combat sim isn't the bottleneck at this pool size. The real perf win was replacing `structuredClone` with a hand-rolled view copy (~8%); 200/cell mirrors 26.5s → 24.1s combined.
+  - **ADR-056 accounting:** auras 0.05 standing, equipment 0.05 attached / 0.3 salvage unattached, creatures carry buffs via live stats; the S8 aura standing-value patch and equipment-cast discount in view-sim are deleted. **Book of shame green with no patch** — self-Control-Magic ordering now falls out of the accounting, as the ADR intended.
+  - Sweeper dampener removed (S8 concern 2; zero measured effect). Mirror delta of the whole accounting change: neutral within noise — correct for a cleanup.
+  - **ADR-055 suite tiers:** default = 50/pairing fuzz + 20/cell mirror sanity (loose bounds: overall majority, 25% cell floor) = **10.8s**; FUZZ_FULL = 500/pairing fuzz + 100/cell ladder smoke + 1,000-game sane smoke = ~101s.
+- **Part 1 (combat model):** lifelink-aware blocks (denied lifegain credited at 0.25/damage; own lifelink attack gains credited via the sim's real life deltas) and menace pair-planning both directions (own blocks commit pairs when the exchange is positive — lethal-in-order worst-case death model — and the attack sim's opponent model pair-blocks too, so menace attacks are no longer priced against a model that can't answer them). **Mirror deltas: both neutral at 200/cell** — the fixes are correctness, not strength, at this pool size; A's pairing cells vs sane also barely moved in the final run (Boggart Brute overvaluation was smaller than S8 estimated).
+- **Part 2 (deck E, each measured at 200/cell mirrors, seed 777):**
+  - (a) Counter-hold v2: bonus scales with *castable* threats — copies in the known list with mv 3..(opponent's lands+1) — replacing the flat any-big-card bonus. Control experiment (bonus forced to 0): worth **+4.5 avg on B mirrors, +1.75 on E**.
+  - (b) Flash timing: pass on own main earns a small hold bonus while an affordable flash creature is in hand; casting an ETB-counter creature (Mystic Snake) with an opponent spell on the stack is credited the countered spell's mana. **Neutral on mirrors**; kept as modeling (no-cost, principled) — flagged as such.
+  - (c) Bounce as tempo: bouncing an opponent permanent charges back half its board value (they recast it); self-bounce unchanged. **E seat1 +1.5.**
+  - (d) **E archetype control → midrange** — the biggest E mover: **+4.75 avg** (56.0/53.0 → 60.5/60.5 at 200/cell). Posture beat every modeling change tried.
+  - Stopped at budget: E mirrors 64.8/56.9 at the final 1,000/cell (band is ~65 — seat0 is there, seat1 isn't). Reverted at zero delta: a Curiosity-credit term in attack scoring; a NO_COUNTER_HOLD experiment flag.
+- **Part 3 (difficulty profiles):** `difficultyProfile(apprentice|journeyman|master)` on existing knobs (archetype, temperature, holdTricks); agent kinds `heuristic:apprentice` etc. accepted everywhere; knobs documented in `packages/agents/README.md`. Measured at 500/cell mirrors: **journeyman > apprentice in all ten cells (55.4–69.8%)**; master(T=0.12) 53.8% overall vs journeyman with 8/10 cells ≥50; the T=0.05 sharpening experiment was **rejected by measurement** — B mirrors collapsed to 41.6% (near-determinism is exploitable).
+- **Riders:** `--cell`/`--mirrors` (above); S8 concern 5 noted in a comment at `ActionRequest.source`.
 
-## Ladder (1,000 games/cell, seeds 1..; reproduce with `pnpm ladder`)
+## Final gates (1,000 games/cell, seeds 1..; `pnpm ladder`)
 
-**Heuristic vs sane — mirrors (deck-neutral skill):** A 66.2/72.4, B 69.1/69.7, C 73.1/66.9, D 77.2/76.7, E 60.0/54.6 (seat0/seat1 %). **Mirror gate: PASS.**
+**Mirror gate (ADR-049 amended): PASS** — A 64.4/71.6, B 68.1/68.1, C 73.3/67.0, D 75.0/76.5, E 64.8/56.9 (S8: A 66.2/72.4, B 69.1/69.7, C 73.1/66.9, D 77.2/76.7, E 60.0/54.6 — E +3.5 avg, others flat within noise).
 
-**Heuristic vs sane — pairing cells (heuristic's deck in parentheses):**
+**Baseline-floor rider: PASS** — all 20 pairing cells ≥ their post-swap sane-vs-sane baselines (checked cell by cell; tightest: D-E seat0 98.7% vs baseline 98.7% — exactly at the floor; biggest skill margins remain A-D seat0 20.4% vs 8.1% and B-C seat0 59.0% vs 31.1%).
 
-| pairing | seat0 | seat1 |
-|---|---|---|
-| A-B | 74.3% (A) | 62.9% (B) |
-| A-C | 55.4% (A) | 80.5% (C) |
-| A-D | 22.0% (A) | 94.1% (D) |
-| A-E | 80.5% (A) | 51.4% (E) |
-| B-C | 59.7% (B) | 77.4% (C) |
-| B-D | 33.4% (B) | 92.3% (D) |
-| B-E | 80.4% (B) | 41.5% (E) |
-| C-D | 31.9% (C) | 91.4% (D) |
-| C-E | 91.3% (C) | 35.9% (E) |
-| D-E | 98.7% (D) | 4.3% (E) |
-
-Per-deck aggregate: A 58.0%, B 59.1%, C 70.3%, D 94.1%, E 33.3% → **aggregate gate: FAIL (E)**. Context: in the sane-vs-sane baselines E's pairings run 1.3–43% for whichever agent pilots E (E vs D is 987-13); every heuristic pairing cell beats its sane-vs-sane baseline (e.g. E vs D 4.3% vs 1.3% baseline, A vs D 22.0% vs 8.1%).
-
-**Heuristic vs random:** 99.0–100% in every pairing cell and mirror; both gates PASS. No rung regressions (random < sane < heuristic everywhere).
-
-## Baselines re-run
-
-- **Post-Part-0 (pre-swap) sane drift:** vs random per-deck 99.3/97.8/99.6/100.0/99.4 (S7: 99.3/97.3/99.3/100.0/99.2) — trigger-target rule 8 (Nekrataal no longer shooting its own creatures) is worth ~+0.3–0.5. Sane-vs-sane shifts within a point or two of S7.
-- **Post-swap (final) sane baselines:** vs random A 99.3 / B 96.1 / C 99.6 / D 100.0 / E 99.5. Sane-vs-sane: A-B 577-423, B-C 311-689, B-D 129-871, B-E 683-317 (rest unchanged). The swap costs *sane*-B a little (random targeting wastes Tactician taps; the curve got heavier) — the heuristic ladder above already includes the swap.
-- **≥5-mana casts/game (sane):** Siege-Gang 0.232, Pelakka 0.164, Serra 0.323, Drana 0.276, Wrath 0.143 — S7 coverage holds post-swap.
+Vs random (unchanged from S8's 99–100% everywhere; not re-run this session — no change touched the random rung).
 
 ## Deviations from the brief
 
-1. **The ladder ships two gates because "beats sane in every deck's hands" has no achievable per-pairing reading** (see Concern 1). I implemented: (a) per-deck aggregate over pairing cells, (b) per-mirror majority. Mirror passes, aggregate fails on E. The brief's DoD anticipated honest tables over forced tuning, so I stopped tuning at the session budget.
-2. **The committed ladder smoke asserts flake-resistant bounds, not the exact gate** — at 100 games/cell a true-55% mirror fails a >50% check ~16% of the time; the smoke asserts every mirror >40% plus overall mirror majority, and the 1,000/cell CLI remains the gate authority. Documented in the test header.
-3. **The gemini-image skill gained `--no-style`** (card art is ADR-052-exempt from style.md but the skill hard-wires the preamble; extending the script is the sanctioned path vs bypassing it). SKILL.md documents the only-for-card-art rule.
-4. **Trigger/discard/sacrifice choices in the heuristic use ranked heuristics, not full view-prediction** (max-value opponent target for harmful, min-value own card for discard/sacrifice) — cheap, legible, and sufficient for v1; full prediction there is M4b surface.
-5. **Spot-check re-baseline:** the deck B swap changed random-game trajectories, so the three S6 viewer spot-checks were re-hunted (same behaviors: Siege-Gang sacrifice seed 300@247, Control Magic steal 301@215 — now Grizzly Bears, Pacifism fizzle 568@834). Noted in the test header.
-6. **Token defs carry `text: ""`** — the validator's required-iff-custom reads tokens as customs (they are). Empty string; frames fall back to derived text.
+1. **Part 1's combat fixes measured neutral** where the brief expected movement ("stop overvaluing Boggart Brute attacks") — A mirrors and A pairing cells are flat. Kept (they're correctness), reported as such; S8 concern 3's estimate of the pair-block distortion was too high.
+2. **E stopped short of the 65 band on one seating** (64.8/56.9). Session budget honored per the brief's stop rule; the on-the-draw gap is the next E lead (see Concerns 2).
+3. **Flash-hold/Snake modeling kept despite neutral deltas** — unlike the reverted Curiosity credit, these change *when* E casts (watchability + correctness) at zero measured cost; called out so the planner can overrule the asymmetry with the "revert no-delta" rule if preferred.
+4. **The default-tier fuzz smoke dropped from 100 to 50 games/pairing** to hit ADR-055's ~15s target (suite is 10.8s); FUZZ_FULL keeps 500. ADR-034's smoke count is now tier-dependent — flag if that wants an ADR touch-up.
 
 ## Concerns
 
-1. **The ship gate needs a planner ruling (the M4a headline).** "Beats sane in every deck's hands, both seatings" (ADR-049) can mean: (a) every pairing cell — unachievable, deck imbalance dominates (sane-E loses E-D 987-13 to sane-D; no pilot overcomes that to >50%); (b) per-deck aggregate over pairings — currently fails on E at 33.3% even though every E cell beats its sane-baseline; (c) every mirror, both seatings — passes 54.6–77.2%. I recommend (c) as the skill gate plus "every pairing cell ≥ its sane-vs-sane baseline" as the no-regression rider (which v1 also satisfies). ADR text wants updating either way.
-2. **Which evaluator terms carried the win (for M4b):** targeted-removal prediction and the combat sim carry most of it; the Drana `modifyPT` fix alone was worth 26 mirror points, and the book-of-shame friction terms (aura standing-value subtraction, self-damage penalty, tap costs) each cured a visible pathology. **Dead weight so far:** the sweeper dampener (no measurable effect in any table — candidate for removal or a real risk model in M4b) and the counter-hold bonus (E still wins mirrors but 54.6–60.0% is the weakest — holding counters is modeled too crudely; E is where M4b should start).
-3. **Where greedy combat search visibly misplays (M4b feed):** (a) menace attackers are never blocked by the greedy model (pair-planning unimplemented) — fine defensively at this pool size, but the attack sim also assumes the *opponent* never pair-blocks, overvaluing Boggart Brute attacks; (b) the block model ignores lifelink denial (blocking a Nighthawk is undervalued by the 2 life the opponent doesn't gain); (c) attack sets are evaluated against one greedy response, not the opponent's actual policy — good enough vs sane, not vs itself.
-4. **Heuristic games are ~3× slower than sane games** (~9ms vs ~3ms; combat sim dominates). Ladder full run ~9 min. Fine for now; M4b tuning loops will feel it — memoizing attack-set sims within a combat is the cheap 2–3×.
-5. **`chooseSacrifice` requests carry no source identity** (unlike chooseTarget after ADR-048) — the heuristic sacrifices its lowest-value permanent, which is right for costs, but a future "sacrifice unless you pay" effect would want the source. Note for whenever ActionRequest grows again.
-6. **The evaluator counts aura/equipment standing value as material for both players symmetrically** — crude but unbiased; flagged because the view-sim already subtracts it for casts, so the two disagree philosophically. M4b should pick one story.
+1. **Master needs a real edge, not less noise (the M4c question).** Temperature is a shallow lever at the top: 0.12 buys +3.8% overall, 0.05 *loses* (B 41.6% — a deterministic policy is exploitable by a noisier one at equal evaluation). If a strong "master" tier matters for the overworld, M4c's shape is: a modest evaluator edge for master only (e.g., 2-ply on the handful of highest-stakes decisions, or master-tuned weights fit by ladder search). If the current gentle gradient is enough for difficulty dials, **M4 is done** — my recommendation: ship it, revisit only if playtesting wants a scarier top tier.
+2. **E's remaining gap is on the draw** (56.9 vs 64.8 on the play). E's game is tempo; a turn behind, its counter-holds and flash-holds cost development it can't afford. A "when behind, develop; when ahead, hold" posture switch (board-delta-conditioned holdTricks) is the obvious M4c/E lead — it's one condition, but it's a new evaluator input shape, so escalating rather than sneaking it in.
+3. **Dead weight found this session:** the sweeper dampener (removed), the Curiosity attack credit (measured 0.0, reverted), and T=0.05 master (rejected). Still unmeasured and suspicious: the keyword-bonus table's exact values (flying 0.7 etc. have never been individually tested) and the archetype hand weights — candidates for an automated weight-search pass if M4c happens.
+4. **Archetype-as-knob worked suspiciously well** (E control→midrange +4.75). B is the only remaining "control" deck; if B ever underperforms, try its posture first. Longer-term this suggests archetype should perhaps be *fit* per deck by ladder search rather than assigned by intuition — parked with the ADR-054 curation workstream since deck identity and pilot posture interact.
+5. **Vitest worker RPC-timeout noise on FUZZ_FULL** (also seen in S8): all 149 tests pass but the runner exits nonzero after a "Timeout calling onTaskUpdate" unhandled error during the 97s fuzz test. Cosmetic but it would break CI redness-as-signal; likely fixable with a vitest config bump (`teardownTimeout`/fewer workers for the FUZZ_FULL tier) — small follow-up.
 
 ## Registry entries added/changed
 
-- pool-registry: S8 section (cunning_tactician `tested`), deck B decklist row updated with the swap note, Savannah Lions moved to rotated-out.
-- rules-registry: no new rows — `tapTarget` is vocabulary (data-model), not a rules mechanic; combat/mulligan/view changes are engine surface, not rules simplifications. (Flag if the planner wants an R-row for the ADR-048 view contract.)
+None — no rules, no cards, no pool changes (tuning only, per the brief's out-of-scope). `DECK_ARCHETYPES.E` changed in `packages/sim` (code, not registry).
 
 ## Test status
 
-148 passing / 0 skipped / 0 flaky, 18 files: S1–S8 scenarios (14+19+22+19+21+4), engine units 14, core 7, cards 11 (re-baselined: pool 67, tapTarget→untapTarget as the unimplemented-vocab example), agents (rule-8 classification 2, book of shame 5), sim (replay+fuzz 3, sane smoke 1, ladder smoke 1, no-peeking 1, viewer reconstruction 1, viewer spot-checks 3 re-hunted). Suite ~50s (the ladder smoke is 33s of it — ADR-034 budget question for the planner if that grates). `pnpm typecheck` + `tsc -p packages/ui` clean.
-
-Fuzz: 1,000-game random and 1,000-game sane smokes clean post-swap; FUZZ_FULL 5,000-game run clean; the 60,000-game ladder and 50,000-game agent-stats runs surfaced zero engine errors.
+Default tier: 147 passing / 2 tier-skipped, **10.8s** (ADR-055 target met). FUZZ_FULL: **149 passing / 0 failing**, ~101s (plus the Concern 5 harness noise on exit). Book of shame 5/5 green post-ADR-056 with the patch deleted. `pnpm typecheck` clean. This session's measurement volume: ~90,000 ladder games across tuning deltas, control experiments, profile ladders, and the final gates — zero engine errors.
 
 ## Suggested next
 
-**M4b tuning** with the ladder as the loop: start with deck E (weakest mirrors; counter-hold and tempo modeling), lifelink-aware blocks, menace pair-planning, and the Concern 1 gate ruling written into ADR-049. Also worth considering: retire the sweeper dampener or make it real (Concern 2), and an `agents`-level perf pass (Concern 4) before tuning loops. Separately, the art pipeline is now proven end to end for customs — future custom cards are a data+art exercise (ADR-052 candidate rounds worked well; the `--no-style` flag is in).
+Per the roadmap, **M5 (playable UI) is unblocked** and I'd take it next — the agents are good enough to be worth playing against, and the difficulty dials exist. The M4c question (Concern 1) can wait for playtesting evidence. If the planner wants one more agent session first, the ranked E leads are Concern 2's posture switch and a weight-search pass over Concern 3's untested constants.
 
 ## How to run
 
 ```
 pnpm install
-pnpm ladder                                   # heuristic vs sane + random, 1,000/cell (~9 min); --games 50 for a look
-pnpm fuzz --games 100 --agents heuristic,sane # any of random|sane|heuristic per seat
-pnpm agent-stats                              # sane baselines + big-spell coverage
-pnpm gallery                                  # gallery (Cunning Tactician under S8 batch)
-pnpm viewer                                   # replay viewer
-pnpm test                                     # 148 tests (~50s incl. 100/cell ladder smoke)
+pnpm test                                        # default tier, 10.8s
+FUZZ_FULL=1 pnpm test                            # full tier (~101s; known harness noise on exit, Concern 5)
+pnpm ladder                                      # heuristic vs sane + random, 1,000/cell, both gates
+pnpm ladder --games 200 --mirrors                # cheap tuning deltas
+pnpm ladder --cell A,B --games 100               # single-pairing loop
+pnpm ladder --challenger heuristic:master --baselines heuristic --mirrors --games 500   # profile ladders
+pnpm viewer / pnpm gallery
 ```
