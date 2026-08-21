@@ -7,9 +7,19 @@
     ".": {
       "types": "./src/index.ts",
       "default": "./src/index.ts"
+    },
+    "./loader": {
+      "types": "./src/loader.ts",
+      "default": "./src/loader.ts"
     }
   },
   "dependencies": {
-    "@shandalar/core": "workspace:*"
+    "@shandalar/core": "workspace:*",
+    "@shandalar/cards": "workspace:*",
+    "@shandalar/engine": "workspace:*",
+    "@shandalar/sim": "workspace:*"
+  },
+  "devDependencies": {
+    "@shandalar/agents": "workspace:*"
   }
 }

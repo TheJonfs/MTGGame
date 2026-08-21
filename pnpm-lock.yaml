@@ -104,9 +104,22 @@ importers:
 
   packages/world:
     dependencies:
+      '@shandalar/cards':
+        specifier: workspace:*
+        version: link:../cards
       '@shandalar/core':
         specifier: workspace:*
         version: link:../core
+      '@shandalar/engine':
+        specifier: workspace:*
+        version: link:../engine
+      '@shandalar/sim':
+        specifier: workspace:*
+        version: link:../sim
+    devDependencies:
+      '@shandalar/agents':
+        specifier: workspace:*
+        version: link:../agents
 
 packages:
 

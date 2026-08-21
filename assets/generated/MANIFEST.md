@@ -51,6 +51,11 @@ descriptor blocks under `docs/art/subjects/`, composed with `docs/prompts/style.
 | assets/images/panel-parchment/canonical.png | docs/art/subjects/panel-parchment.md | canonical | gemini-3.1-flash-image | 2026-08-19 | kept |
 | assets/images/portrait-mage-female/canonical.png | docs/art/subjects/portrait-mage-female.md | canonical | gemini-3.1-flash-image | 2026-08-19 | kept |
 | assets/images/portrait-you/canonical.png | docs/art/subjects/portrait-you.md | canonical | gemini-3.1-flash-image | 2026-08-19 | kept |
+| assets/images/portrait-opponent-red/canonical.png | docs/art/subjects/portrait-opponent-red.md | canonical | gemini-3.1-flash-image | 2026-08-21 | candidate (S12 Part 2c; UI copy packages/ui/public/portraits/; Chris verdict pending) |
+| assets/images/portrait-opponent-white-blue/canonical.png | docs/art/subjects/portrait-opponent-white-blue.md | canonical | gemini-3.1-flash-image | 2026-08-21 | candidate (S12 Part 2c; UI copy packages/ui/public/portraits/; Chris verdict pending) |
+| assets/images/portrait-opponent-green/canonical.png | docs/art/subjects/portrait-opponent-green.md | canonical | gemini-3.1-flash-image | 2026-08-21 | candidate (S12 Part 2c; UI copy packages/ui/public/portraits/; Chris verdict pending) |
+| assets/images/portrait-opponent-black/canonical.png | docs/art/subjects/portrait-opponent-black.md | canonical | gemini-3.1-flash-image | 2026-08-21 | candidate (S12 Part 2c; UI copy packages/ui/public/portraits/; Chris verdict pending) |
+| assets/images/portrait-opponent-simic/canonical.png | docs/art/subjects/portrait-opponent-simic.md | canonical | gemini-3.1-flash-image | 2026-08-21 | candidate (S12 Part 2c; UI copy packages/ui/public/portraits/; Chris verdict pending) |
 | assets/images/token-goblin/canonical.png | docs/art/subjects/token-goblin.md | canonical | gemini-3.1-flash-image | 2026-08-20 | kept |
 | assets/images/token-soldier/canonical.png | docs/art/subjects/token-soldier.md | canonical | gemini-3.1-flash-image | 2026-08-20 | kept |
 | assets/images/surface-wood/canonical.png | docs/art/subjects/surface-wood.md | canonical | gemini-3.1-flash-image | 2026-08-19 | kept |

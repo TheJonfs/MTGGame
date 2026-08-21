@@ -14,6 +14,7 @@ import {
   type GameView,
   type MatchResult,
   type MatchSpec,
+  type Modifier,
   type PlayerId,
   type Step,
 } from "@shandalar/engine";
@@ -45,11 +46,30 @@ import { DECKS, DECK_ARCHETYPES, type DeckKey } from "@shandalar/sim/decks";
  *   nothing is re-derived in the UI.
  */
 
+/** S12 (Part 2b): an explicit duel — what the overworld hands the play
+ * client (ADR-002 consumed from the world side): named decklists, the enemy's
+ * AI profile inputs, world-life starting life, ante, and modifiers. */
+export interface CustomMatch {
+  human: { name: string; decklist: { cardId: string; count: number }[] };
+  enemy: {
+    name: string;
+    decklist: { cardId: string; count: number }[];
+    difficulty: Difficulty;
+    archetype: "aggro" | "midrange" | "control";
+    portrait?: string;
+  };
+  rules: { startingLife: number; ante: number };
+  modifiers: Modifier[];
+}
+
 export interface MatchOptions {
   humanSeat: PlayerId;
-  humanDeck: DeckKey;
-  aiDeck: DeckKey;
-  difficulty: Difficulty;
+  /** Slice-deck form (setup screen). Ignored when `custom` is given. */
+  humanDeck?: DeckKey;
+  aiDeck?: DeckKey;
+  difficulty?: Difficulty;
+  /** Explicit-spec form (the overworld's duel handoff). */
+  custom?: CustomMatch;
   /** Omit for a random seed (it is generated once and displayed). */
   seed?: number;
   /** Per-AI-decision pacing delay; live-tunable. Default 400ms. */
@@ -177,24 +197,32 @@ export class MatchController {
     this.aiDelayMs = opts.aiDelayMs ?? 400;
     this.seed = opts.seed ?? Math.floor(Math.random() * 1_000_000);
 
-    const humanPlayer = { name: "You", decklist: [...DECKS[opts.humanDeck].decklist], agent: "human" };
-    const aiPlayer = {
-      name: DECKS[opts.aiDeck].name,
-      decklist: [...DECKS[opts.aiDeck].decklist],
-      agent: `heuristic:${opts.difficulty}`,
-    };
+    const custom = opts.custom;
+    if (!custom && (!opts.humanDeck || !opts.aiDeck || !opts.difficulty)) {
+      throw new Error("MatchController: give either custom or humanDeck/aiDeck/difficulty");
+    }
+    const humanPlayer = custom
+      ? { name: custom.human.name, decklist: custom.human.decklist.map((e) => ({ ...e })), agent: "human" }
+      : { name: "You", decklist: [...DECKS[opts.humanDeck!].decklist], agent: "human" };
+    const aiDifficulty: Difficulty = custom ? custom.enemy.difficulty : opts.difficulty!;
+    const aiPlayer = custom
+      ? { name: custom.enemy.name, decklist: custom.enemy.decklist.map((e) => ({ ...e })), agent: `heuristic:${aiDifficulty}` }
+      : { name: DECKS[opts.aiDeck!].name, decklist: [...DECKS[opts.aiDeck!].decklist], agent: `heuristic:${aiDifficulty}` };
+    const startingLife = custom ? custom.rules.startingLife : 20;
+    const ante = custom ? custom.rules.ante : DEFAULT_RULES.ante;
     this.spec = {
       seed: this.seed,
       players: opts.humanSeat === 0 ? [humanPlayer, aiPlayer] : [aiPlayer, humanPlayer],
-      rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 },
-      modifiers: [],
+      rules: { startingLife, handSize: 7, mulligan: "london", maxTurns: 100, ante },
+      modifiers: custom ? custom.modifiers.map((m) => ({ ...m })) : [],
     };
     for (const p of this.spec.players) validateDecklist(pool, p.decklist);
 
+    const aiArchetype = custom ? custom.enemy.archetype : DECK_ARCHETYPES[opts.aiDeck!];
     const aiInner = new HeuristicAgent(
       this.seed * 2 + 7,
       pool,
-      difficultyProfile(opts.difficulty, DECK_ARCHETYPES[opts.aiDeck], [...DECKS[opts.humanDeck].decklist]),
+      difficultyProfile(aiDifficulty, aiArchetype, humanPlayer.decklist.map((e) => ({ ...e }))),
     );
     const delayed = new DelayedAgent(aiInner, () => (this.conceding ? 0 : this.aiDelayMs));
     const ai: Agent = {
@@ -214,10 +242,10 @@ export class MatchController {
       expandDecklist(this.spec.players[1].decklist),
     ];
     this.game = new Game(pool, decklists, rng, this.log, source, {
-      startingLife: 20,
+      startingLife,
       handSize: 7,
       maxTurns: DEFAULT_RULES.maxTurns,
-      ante: DEFAULT_RULES.ante, // the world passes its knob here (S13)
+      ante,
     });
 
     // S11: observe lone-pass windows so an opponent's spell can be shown

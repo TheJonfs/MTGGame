@@ -197,6 +197,45 @@ describe("play-mode acceptance (headless; S10 DoD 1)", () => {
     while (!c.result && drain++ < 1000) await new Promise((r) => setTimeout(r, 0));
   }, 60_000);
 
+  it("S12: the explicit-spec (overworld handoff) path — world-life starting life, ante, enemy modifier, named players", async () => {
+    const pool = loadCardPool(CARDS_DIR);
+    const c = new MatchController(pool.cards, {
+      humanSeat: 0,
+      seed: 77,
+      aiDelayMs: 0,
+      custom: {
+        human: { name: "Wanderer", decklist: [{ cardId: "mountain", count: 12 }, { cardId: "raging_goblin", count: 4 }, { cardId: "goblin_piker", count: 4 }, { cardId: "lightning_bolt", count: 4 }, { cardId: "shock", count: 4 }, { cardId: "boggart_brute", count: 2 }] },
+        enemy: { name: "Pale Edric", decklist: [{ cardId: "swamp", count: 12 }, { cardId: "typhoid_rats", count: 4 }, { cardId: "child_of_night", count: 4 }, { cardId: "doom_blade", count: 4 }, { cardId: "vampire_nighthawk", count: 4 }, { cardId: "gravedigger", count: 2 }], difficulty: "apprentice", archetype: "midrange", portrait: "portrait-opponent-black" },
+        rules: { startingLife: 10, ante: 1 },
+        modifiers: [{ type: "startingLife", player: 1, value: 8 }],
+      },
+    });
+    const done = c.start();
+    // Modifiers apply after setup/mulligans (ADR-002: initialization): drive to the first priority window.
+    let guard = 0;
+    while (c.phase.kind !== "priority" && !c.result && guard++ < 5000) {
+      await new Promise((r) => setTimeout(r, 0));
+      if (c.phase.kind === "dialog") { c.selectDialog(0); c.confirmDialog(); }
+    }
+    expect(c.spec.players[0].name).toBe("Wanderer");
+    expect(c.spec.players[1].name).toBe("Pale Edric");
+    expect(c.spec.players[1].agent).toBe("heuristic:apprentice");
+    expect(c.spec.rules.startingLife).toBe(10);
+    expect(c.spec.rules.ante).toBe(1);
+    expect(c.game.state.startingLife).toBe(10);
+    expect(c.game.state.players[0].life).toBe(10);
+    expect(c.game.state.players[1].life).toBe(8); // the enemy world-life modifier
+    expect(c.game.state.players[0].ante).toHaveLength(1);
+    expect(c.game.state.players[1].ante).toHaveLength(1);
+    c.concede();
+    guard = 0;
+    while (!c.result && guard++ < 1000) await new Promise((r) => setTimeout(r, 0));
+    const result = await done;
+    expect(result.reason).toBe("CONCEDE");
+    expect(result.facts.ante[0]).toHaveLength(1);
+    expect(result.facts.ante[1]).toHaveLength(1);
+  }, 60_000);
+
   it("concession ends the match with a CONCEDE result and a replayable partial log", async () => {
     const pool = loadCardPool(CARDS_DIR);
     const c = new MatchController(pool.cards, {

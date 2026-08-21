@@ -1,0 +1,63 @@
+{
+  "catalogVersion": "v0",
+  "regions": [
+    {
+      "id": "verdant_marches",
+      "name": "Verdant Marches",
+      "tier": "civilized",
+      "color": "G",
+      "townNames": [
+        "Oakhollow",
+        "Greenford",
+        "Thistlebury"
+      ]
+    },
+    {
+      "id": "coast_of_lanterns",
+      "name": "Coast of Lanterns",
+      "tier": "civilized",
+      "color": "U",
+      "townNames": [
+        "Lanternmouth",
+        "Saltquay",
+        "Gullhaven"
+      ]
+    },
+    {
+      "id": "brasshollow_vale",
+      "name": "Brasshollow Vale",
+      "tier": "civilized",
+      "color": "W",
+      "townNames": [
+        "Brasshollow",
+        "Whitewell",
+        "Kestrel's Rest"
+      ]
+    },
+    {
+      "id": "ashen_approach",
+      "name": "Ashen Approach",
+      "tier": "approach",
+      "color": "R",
+      "townNames": [
+        "Cinderpost"
+      ]
+    },
+    {
+      "id": "fenmire",
+      "name": "Fenmire",
+      "tier": "approach",
+      "color": "B",
+      "townNames": [
+        "Mirewatch"
+      ]
+    },
+    {
+      "id": "howling_wastes",
+      "name": "Howling Wastes",
+      "tier": "wild",
+      "color": "C",
+      "townNames": []
+    }
+  ]
+}

@@ -41,6 +41,8 @@ export interface LadderOptions {
   cell?: [DeckKey, DeckKey];
   /** Skip pairing cells, run mirrors only (cheap tuning deltas). */
   mirrorsOnly?: boolean;
+  /** S12: starting life for every game (world-life duels; default 20). */
+  startingLife?: number;
 }
 
 export async function runLadder(
@@ -67,7 +69,7 @@ export async function runLadder(
       let turns = 0;
       for (let i = 0; i < gamesPerCell; i++) {
         if (i % 25 === 0) await new Promise((r) => setTimeout(r, 0)); // event-loop air (see fuzz.ts)
-        const r = await runPairingMatch(pool.cards, cellSeed + i, a, b, agents);
+        const r = await runPairingMatch(pool.cards, cellSeed + i, a, b, agents, options.startingLife ?? 20);
         if (r.winner === challengerSeat) wins += 1;
         else if (r.winner === null) draws += 1;
         turns += r.turns;
@@ -101,7 +103,7 @@ export async function runLadder(
       let turns = 0;
       for (let i = 0; i < gamesPerCell; i++) {
         if (i % 25 === 0) await new Promise((r) => setTimeout(r, 0)); // event-loop air (see fuzz.ts)
-        const r = await runPairingMatch(pool.cards, cellSeed + i, d, d, agents);
+        const r = await runPairingMatch(pool.cards, cellSeed + i, d, d, agents, options.startingLife ?? 20);
         if (r.winner === challengerSeat) wins += 1;
         else if (r.winner === null) draws += 1;
         turns += r.turns;

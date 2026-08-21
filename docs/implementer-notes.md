@@ -140,6 +140,15 @@ Things a fresh session might otherwise rediscover slowly:
 - **Planner doc overwrites can regress implementer edits.** The S12 `decisions.md` silently reverted S11's ADR-058 amendment (stale copy). Diff planner-updated docs against HEAD at session start before trusting them.
 - **Zero-delta proofs beat zero-delta arguments.** The race-threshold change was argued identical at 20 life; re-running the S11 mirror seeds and getting the same 1361/2000 *proved* it in 20 seconds.
 
+## S12 lessons (Part 2: world core)
+
+- **The world never reaches inside a duel — and it didn't need to.** Enemy world life is the existing per-player `startingLife` modifier; ante comes back through `facts.ante`. Build the seam from the contract (`MatchSpec` → `runMatch` → `MatchResult`) and you get replayability of every duel for free.
+- **Two RNG streams, not one.** Generation is a pure function of the seed; the journey has its own serializable stream (`WorldRng` with explicit state — core's `SeededRng` has none). Regenerating a map can never perturb a saved journey, and a save resumes its rolls exactly.
+- **Carve, don't retry.** Connectivity after random rough terrain is cheapest to guarantee by clearing the cells along an ignore-terrain BFS path to each town/region heart — deterministic, bounded, no retry loops.
+- **Force the roll in tests through the knob layers** (`event: { encounterRatePerStep: 1 }`), not through test-only code paths — the registry's precedence merge is the test hook.
+- **Acceptance through real duels is cheap at world life 10** (12 world tests incl. 200-seed fuzz + real duels run in ~0.2s); observe both outcomes across seeds instead of faking results.
+- **Modifiers apply after setup/mulligans** (ADR-002 initialization order): a test asserting modified life must drive past the mulligan dialog first.
+
 ## Known interims / watch list
 
 See handoff Concerns for the authoritative list. Highlights: auto-pay greedy feasibility (correct while all producers are single-symbol — R-006); condition fields `controller`/`type`/`subtype` are validated but unexercised (first card to use them should add fixtures); value refs deliberately have no arithmetic (ADR-028 — resist until a card demands it); the `sba-unattach` ATTACHED cause is unreachable by legal play (test-forced only).

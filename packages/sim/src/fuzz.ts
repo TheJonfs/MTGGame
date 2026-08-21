@@ -58,14 +58,14 @@ export interface FuzzReport {
   totalErrors: number;
 }
 
-export function matchSpec(seed: number, a: DeckKey, b: DeckKey, agents: AgentPair = ["random", "random"]): MatchSpec {
+export function matchSpec(seed: number, a: DeckKey, b: DeckKey, agents: AgentPair = ["random", "random"], startingLife = 20): MatchSpec {
   return {
     seed,
     players: [
       { name: DECKS[a].name, decklist: [...DECKS[a].decklist], agent: agents[0] },
       { name: DECKS[b].name, decklist: [...DECKS[b].decklist], agent: agents[1] },
     ],
-    rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 },
+    rules: { startingLife, handSize: 7, mulligan: "london", maxTurns: 100 },
     modifiers: [],
   };
 }
@@ -76,13 +76,15 @@ export async function runPairingMatch(
   a: DeckKey = "A",
   b: DeckKey = "B",
   agentPair: AgentPair = ["random", "random"],
+  /** S12: world-life duels start low — the ladder can measure at 10 (`--life`). */
+  startingLife = 20,
 ): Promise<MatchResult> {
   // Distinct derived seeds per seat so the two agents don't mirror each other.
   const agents: [Agent, Agent] = [
     makeAgent(agentPair[0], seed * 2 + 1, cards, { own: a, opponent: b }),
     makeAgent(agentPair[1], seed * 2 + 2, cards, { own: b, opponent: a }),
   ];
-  return runMatch(matchSpec(seed, a, b, agentPair), cards, agents);
+  return runMatch(matchSpec(seed, a, b, agentPair, startingLife), cards, agents);
 }
 
 /** Saved-game file format the viewer loads (S6). */

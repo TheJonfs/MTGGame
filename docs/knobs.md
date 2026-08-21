@@ -18,6 +18,8 @@ Every overworld tunable (manifest principle 5). Difficulty bundles, regions, dun
 | `shopPriceMultiplier` | `1` | × base price | Scales every shop price (difficulty and region both override it). |
 | `startingWorldLife` | `10` | world life | World life at new game; duels start at current world life (engine startingLife is overridden every match). |
 | `starterSpares` | `10` | cards | Basics-and-commons added to the collection beside the starter deck at new game (the slice's only spare pool until the editor). |
+| `startingGold` | `20` | gold | Gold at new game (enough for one tier-1 buy-off, not two). |
+| `fleeOddsByTier` | `{"1":0.6,"2":0.5,"3":0.4}` | probability, by enemy tier | Parley flee contest: chance the escape succeeds (seeded). Success or failure, your ante is forfeit (manifest: fleeing forfeits yours); failure means the fight happens anyway. |
 
 ## Difficulty bundles
 

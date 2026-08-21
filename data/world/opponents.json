@@ -1,0 +1,170 @@
+{
+  "catalogVersion": "v0",
+  "opponents": [
+    {
+      "id": "a1",
+      "name": "Brann the Scorched",
+      "deck": "A",
+      "tier": 1,
+      "difficulty": "apprentice",
+      "portrait": "portrait-opponent-red",
+      "worldLife": 8,
+      "colors": "R"
+    },
+    {
+      "id": "a2",
+      "name": "Kessa Emberhand",
+      "deck": "A",
+      "tier": 2,
+      "difficulty": "journeyman",
+      "portrait": "portrait-opponent-red",
+      "worldLife": 10,
+      "colors": "R"
+    },
+    {
+      "id": "a3",
+      "name": "Varro Flamebrand",
+      "deck": "A",
+      "tier": 3,
+      "difficulty": "master",
+      "portrait": "portrait-opponent-red",
+      "worldLife": 12,
+      "colors": "R",
+      "knobs": {
+        "anteCount": 2
+      }
+    },
+    {
+      "id": "b1",
+      "name": "Sister Oriel",
+      "deck": "B",
+      "tier": 1,
+      "difficulty": "apprentice",
+      "portrait": "portrait-opponent-white-blue",
+      "worldLife": 8,
+      "colors": "WU"
+    },
+    {
+      "id": "b2",
+      "name": "Adept Maelin",
+      "deck": "B",
+      "tier": 2,
+      "difficulty": "journeyman",
+      "portrait": "portrait-opponent-white-blue",
+      "worldLife": 10,
+      "colors": "WU"
+    },
+    {
+      "id": "b3",
+      "name": "High Warden Sorrel",
+      "deck": "B",
+      "tier": 3,
+      "difficulty": "master",
+      "portrait": "portrait-opponent-white-blue",
+      "worldLife": 12,
+      "colors": "WU",
+      "knobs": {
+        "anteCount": 2
+      }
+    },
+    {
+      "id": "c1",
+      "name": "Old Hask",
+      "deck": "C",
+      "tier": 1,
+      "difficulty": "apprentice",
+      "portrait": "portrait-opponent-green",
+      "worldLife": 8,
+      "colors": "G"
+    },
+    {
+      "id": "c2",
+      "name": "Brennor of the Glade",
+      "deck": "C",
+      "tier": 2,
+      "difficulty": "journeyman",
+      "portrait": "portrait-opponent-green",
+      "worldLife": 10,
+      "colors": "G"
+    },
+    {
+      "id": "c3",
+      "name": "Thornmother Ysolde",
+      "deck": "C",
+      "tier": 3,
+      "difficulty": "master",
+      "portrait": "portrait-opponent-green",
+      "worldLife": 12,
+      "colors": "G",
+      "knobs": {
+        "anteCount": 2
+      }
+    },
+    {
+      "id": "d1",
+      "name": "Pale Edric",
+      "deck": "D",
+      "tier": 1,
+      "difficulty": "apprentice",
+      "portrait": "portrait-opponent-black",
+      "worldLife": 8,
+      "colors": "B"
+    },
+    {
+      "id": "d2",
+      "name": "Mistress Vael",
+      "deck": "D",
+      "tier": 2,
+      "difficulty": "journeyman",
+      "portrait": "portrait-opponent-black",
+      "worldLife": 10,
+      "colors": "B"
+    },
+    {
+      "id": "d3",
+      "name": "Lord Corvane",
+      "deck": "D",
+      "tier": 3,
+      "difficulty": "master",
+      "portrait": "portrait-opponent-black",
+      "worldLife": 12,
+      "colors": "B",
+      "knobs": {
+        "anteCount": 2
+      }
+    },
+    {
+      "id": "e1",
+      "name": "Tessaly Reed",
+      "deck": "E",
+      "tier": 1,
+      "difficulty": "apprentice",
+      "portrait": "portrait-opponent-simic",
+      "worldLife": 8,
+      "colors": "GU"
+    },
+    {
+      "id": "e2",
+      "name": "Pell of the Shallows",
+      "deck": "E",
+      "tier": 2,
+      "difficulty": "journeyman",
+      "portrait": "portrait-opponent-simic",
+      "worldLife": 10,
+      "colors": "GU"
+    },
+    {
+      "id": "e3",
+      "name": "Magister Quill",
+      "deck": "E",
+      "tier": 3,
+      "difficulty": "master",
+      "portrait": "portrait-opponent-simic",
+      "worldLife": 12,
+      "colors": "GU",
+      "knobs": {
+        "anteCount": 2
+      }
+    }
+  ]
+}

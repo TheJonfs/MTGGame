@@ -615,6 +615,81 @@
         }
       }
     },
+    "portrait-opponent-black": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:e3d7d684c57fbd485aa3bc6e74a4967ee3c011219d1db523e9b4bbe10e03314b",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:e3d7d684c57fbd485aa3bc6e74a4967ee3c011219d1db523e9b4bbe10e03314b",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-opponent-black/canonical.png",
+          "rendered_at": "2026-08-21T14:01:49+00:00",
+          "thumb": "assets/thumbs/portrait-opponent-black/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-opponent-green": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:f56bb6207a3d26d7160fcf36320b553ac649083632065ca630cf0d502b160e8e",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:f56bb6207a3d26d7160fcf36320b553ac649083632065ca630cf0d502b160e8e",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-opponent-green/canonical.png",
+          "rendered_at": "2026-08-21T14:01:40+00:00",
+          "thumb": "assets/thumbs/portrait-opponent-green/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-opponent-red": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:45b2145c1db1d4c94bd3f29fb30e6ca11e55561bebaec3e4b5e5f04ebdbdc45c",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:45b2145c1db1d4c94bd3f29fb30e6ca11e55561bebaec3e4b5e5f04ebdbdc45c",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-opponent-red/canonical.png",
+          "rendered_at": "2026-08-21T14:01:20+00:00",
+          "thumb": "assets/thumbs/portrait-opponent-red/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-opponent-simic": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:036baab07313fc1e954570c998c239fae2718831917c60804f9880960af0acca",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:036baab07313fc1e954570c998c239fae2718831917c60804f9880960af0acca",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-opponent-simic/canonical.png",
+          "rendered_at": "2026-08-21T14:01:59+00:00",
+          "thumb": "assets/thumbs/portrait-opponent-simic/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-opponent-white-blue": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:ae3bd31d159366b7789ce211f4bf7db61641f824029c63f47eff6037becda6ac",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:ae3bd31d159366b7789ce211f4bf7db61641f824029c63f47eff6037becda6ac",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-opponent-white-blue/canonical.png",
+          "rendered_at": "2026-08-21T14:01:29+00:00",
+          "thumb": "assets/thumbs/portrait-opponent-white-blue/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "portrait-you": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:ccbb94ad613105c0efa425a737d4d4fd44445a1ca94d73ebd3b8702819dc5923",
