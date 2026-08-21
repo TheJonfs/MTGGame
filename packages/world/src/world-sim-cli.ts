@@ -32,6 +32,9 @@ const seeds = Number(arg("seeds", "30"));
 const deck = arg("deck", "A") as DeckKey;
 const difficulty = arg("difficulty", "standard") as DifficultyName;
 const playerTier = arg("player", "journeyman") as Difficulty;
+// Measurement-only overrides (never written to the catalog): --tier1-life N sets every tier-1 enemy's world life.
+const tier1Life = Number(arg("tier1-life", "0"));
+if (tier1Life > 0) for (const o of catalog.opponents) if (o.tier === 1) o.worldLife = tier1Life;
 
 const stepsByTier: Record<string, number> = { civilized: 0, approach: 0, wild: 0 };
 const encountersByTier: Record<string, number> = { civilized: 0, approach: 0, wild: 0 };
@@ -81,7 +84,7 @@ for (let seed = 1; seed <= seeds; seed++) {
 }
 
 const pct = (a: number, b: number) => (b === 0 ? "—" : `${((100 * a) / b).toFixed(0)}%`);
-console.log(`world-sim: ${seeds} seeds, deck ${deck} (${playerTier} pilot), difficulty ${difficulty}, tour = all towns + the lair, fight everything`);
+console.log(`world-sim: ${seeds} seeds, deck ${deck} (${playerTier} pilot), difficulty ${difficulty}${tier1Life ? `, tier-1 life ${tier1Life}` : ""}, tour = all towns + the lair, fight everything`);
 console.log(`  steps/tour: ${(totalSteps / seeds).toFixed(0)} · tours completed alive: ${toursCompleted}/${seeds} · deaths (world life 0): ${deaths}`);
 for (const tier of ["civilized", "approach", "wild"]) {
   console.log(`  ${tier}: ${stepsByTier[tier]} steps, ${encountersByTier[tier]} encounters → ${stepsByTier[tier] ? ((100 * encountersByTier[tier]!) / stepsByTier[tier]!).toFixed(1) : "—"} per 100 steps`);
