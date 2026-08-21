@@ -15,6 +15,6 @@ Milestones are engine-facing until M6. Each milestone is one or two sessions.
 | M6 | Overworld manifest + first slice | Separate manifest; map, one quest, one shop, collection; calls `runMatch` with modifiers. | One loop: travel → duel → reward. |
 | M7+ | AI v2, pool to ~150, overworld depth, replay viewer | | |
 
-Status: M4a complete (S8) — HeuristicAgent v1 passes the corrected gates (ADR-049 amended). **Session 9 brief cut: M4b** — tuning (E/counter-tempo, combat model fixes), difficulty profiles, perf. Then M5 (playable UI) unblocks; pool balance parked as its own workstream (ADR-054).
+Status: M4 complete (S9). Interaction design ratified (ADR-058). **Session 10 brief cut: M5 playable UI.** Parked: M4c (on playtesting evidence), pool balance/curation (ADR-054), overworld (M6).
 
 | M3.75 (S7) | Instrumentation | SanePolicyAgent (ADR-045), card gallery + art notes (ADR-046), ADR-044 riders (DAMAGE targetCardId, ink transport glyphs, Rager refetch). | Chris can watch sane games and browse/annotate every card. |

@@ -63,7 +63,7 @@ Triggered `event` values: `ENTERS_BATTLEFIELD`, `DIES` (battlefield→graveyard,
 | `returnFromGraveyard` | `target` (predicate `creatureCardInYourGraveyard`), `to`: `battlefield` / `hand` | Zombify (battlefield), Gravedigger (hand, optional ETB) |
 | `fight` | `targets: [i, j]` (two target indices) | all-or-nothing legality (ADR-022) |
 | `gainControl` | static with `scope: attached` (Control Magic, ADR-033); targeted/EOT variant reserved for Threaten-style cards (not in ceiling) | |
-| `searchLibrary` | `predicate` (basic land only), `to` | maybe |
+| `searchLibrary` | `predicate` (basic land only), `to` | no pool card yet; resolver must shuffle after search (CR 701.19) when implemented |
 | `addMana` | `mana` | lands, rocks (mana ability) |
 
 **Reserved, not implemented:** `copy`, `setPT`, `preventDamage`, `changeType`.
