@@ -9,10 +9,14 @@ import { CardFrame } from "./CardFrame";
  * solid ink (no <img>, no blur): five copies of the mask offset ±0.5px union
  * into a crisp, evenly dilated stroke that stays centered. Weight knob:
  * `--glyph-dilate` in theme.css. */
+/** Bump when an icon file changes — mask images are cached hard by browsers
+ * (S11 round 4: the re-centred viewBoxes didn't show until the URL changed). */
+const ICON_VERSION = "s11c";
+
 function IconChip({ src, alt, size = 24, scale = 0.8 }: { src: string; alt: string; size?: number; scale?: number }) {
   return (
     <span className="icon-chip" style={{ width: size, height: size }} role="img" aria-label={alt} title={alt}>
-      <i className="glyph" style={{ "--icon": `url(${src})`, width: `${scale * 100}%`, height: `${scale * 100}%` } as React.CSSProperties} />
+      <i className="glyph" style={{ "--icon": `url(${src}?v=${ICON_VERSION})`, width: `${scale * 100}%`, height: `${scale * 100}%` } as React.CSSProperties} />
     </span>
   );
 }
