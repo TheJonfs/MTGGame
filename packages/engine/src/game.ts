@@ -241,8 +241,14 @@ export class Game {
   // ---------- Main loop ----------
 
   async run(modifiers: Modifier[] = []): Promise<void> {
+    // S13 (Chris): life modifiers apply at state creation, before mulligans,
+    // so the first view already shows the real totals (an enemy at world
+    // life 8 used to read 10 through the mulligan dialog, then jump). Every
+    // other modifier still applies after setup (zones must exist first).
+    // All of it is still "initialization" per ADR-002.
+    applyModifiers(this.ctx, modifiers.filter((m) => m.type === "startingLife"));
     await this.setup();
-    applyModifiers(this.ctx, modifiers); // hook always runs, empty in v1 (ADR-002)
+    applyModifiers(this.ctx, modifiers.filter((m) => m.type !== "startingLife")); // hook always runs (ADR-002)
     while (!this.state.result) {
       this.state.turn += 1;
       if (this.state.turn > this.rules.maxTurns) {

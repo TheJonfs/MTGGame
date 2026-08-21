@@ -131,6 +131,20 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(hymn(1)).toBeGreaterThan(pass);
   });
 
+  it("Blaze for X=0 is never a play (S13 playtest): scores −∞ below passing, while X=1 is a real option", () => {
+    const a = agent("aggro");
+    const view = mkView({
+      hand: [{ objectId: "h_blaze", cardId: "blaze" }],
+      battlefield: [{ id: "theirs", cardId: "grizzly_bears", controller: 1 }, { id: "m1", cardId: "mountain", controller: 0 }, { id: "m2", cardId: "mountain", controller: 0 }],
+    });
+    const zero = a.scorePriorityAction(view, { type: "castSpell", objectId: "h_blaze", x: 0, targets: [{ kind: "player", player: 1 }] });
+    const one = a.scorePriorityAction(view, { type: "castSpell", objectId: "h_blaze", x: 1, targets: [{ kind: "player", player: 1 }] });
+    const pass = a.scorePriorityAction(view, { type: "pass" });
+    expect(zero).toBe(-Infinity);
+    expect(Number.isFinite(one)).toBe(true);
+    expect(one).toBeGreaterThan(pass - 5); // a real candidate, not a dead one
+  });
+
   it("chump-block into nothing has negative gain: no block beats losing the blocker for free", () => {
     const a = agent();
     const view = mkView({

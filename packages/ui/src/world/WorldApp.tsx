@@ -149,7 +149,8 @@ function DuelResultScreen({ c, pool, oracle, onWatch }: { c: WorldController; po
   if (c.screen.kind !== "duelResult") return null;
   const { record, duel, before, after } = c.screen;
   const won = record.outcome === "win";
-  const frames = (ids: string[]) => ids.map((id, i) => <CardFrame key={`${id}${i}`} def={pool.get(id)!} oracle={oracle[id]} mini />);
+  // S13 (Chris): printed card by default everywhere in the world (custom cards fall back to our frame).
+  const frames = (ids: string[]) => ids.map((id, i) => <CardFrame key={`${id}${i}`} def={pool.get(id)!} oracle={oracle[id]} mini showPrinted />);
   return (
     <div className="loader">
       <div className="box play-setup world-result">
@@ -176,7 +177,7 @@ function DuelResultScreen({ c, pool, oracle, onWatch }: { c: WorldController; po
           </tbody>
         </table>
         <p>
-          <button className="primary" onClick={() => c.continueAfterDuel()}>{c.world!.gameOver ? "…" : "Continue"}</button>{" "}
+          <button className="primary" onClick={() => c.continueAfterDuel()}>{c.world!.gameOver ? "Your journey ends" : "Continue"}</button>{" "}
           <button onClick={onWatch}>Watch replay</button>
         </p>
       </div>
@@ -185,6 +186,7 @@ function DuelResultScreen({ c, pool, oracle, onWatch }: { c: WorldController; po
 }
 
 function TownScreen({ c, pool, oracle }: { c: WorldController; pool: Map<string, CardDef>; oracle: Record<string, OracleEntry> }) {
+  const [printed, setPrinted] = useState(true); // S13 (Chris): printed by default
   if (c.screen.kind !== "town") return null;
   const { town, stock, notice } = c.screen;
   const w = c.world!;
@@ -194,11 +196,14 @@ function TownScreen({ c, pool, oracle }: { c: WorldController; pool: Map<string,
       <div className="gallery-modal-box play-dialog world-town">
         <h2 style={{ fontFamily: "var(--serif)", marginTop: 0 }}>{town.name}</h2>
         <p style={{ fontSize: 12, marginTop: 0 }}>{region.name} · a safe town — <i>clock-free: deliberation costs nothing here</i> · you have <b>{w.player.gold}</b> gold</p>
-        <div className="flyout-title">Shop (buy only; stock refreshes every {c.knobs.shopRefreshSteps} steps)</div>
+        <div className="flyout-title">
+          Shop (buy only; stock refreshes every {c.knobs.shopRefreshSteps} steps)
+          <button className="linkish" onClick={() => setPrinted(!printed)}>{printed ? "our frame" : "printed card"}</button>
+        </div>
         <div className="shop-grid">
           {stock.map((item: ShopItem) => (
             <div key={item.cardId} className="shop-item">
-              <CardFrame def={pool.get(item.cardId)!} oracle={oracle[item.cardId]} mini />
+              <CardFrame def={pool.get(item.cardId)!} oracle={oracle[item.cardId]} mini showPrinted={printed} />
               <button className={w.player.gold >= item.price ? "primary" : ""} disabled={w.player.gold < item.price} onClick={() => c.buy(item)}>
                 {item.price} gold
               </button>
@@ -219,6 +224,7 @@ function TownScreen({ c, pool, oracle }: { c: WorldController; pool: Map<string,
 function CollectionScreen({ c, pool, oracle }: { c: WorldController; pool: Map<string, CardDef>; oracle: Record<string, OracleEntry> }) {
   const w = c.world!;
   const [filter, setFilter] = useState<"all" | "W" | "U" | "B" | "R" | "G" | "land">("all");
+  const [printed, setPrinted] = useState(true); // S13 (Chris): printed by default
   const inDeck = new Map(w.player.activeDeck.map((e) => [e.cardId, e.count]));
   const entries = Object.entries(w.player.collection)
     .filter(([id]) => pool.has(id))
@@ -238,12 +244,13 @@ function CollectionScreen({ c, pool, oracle }: { c: WorldController; pool: Map<s
           <button key={f} className={filter === f ? "primary" : ""} onClick={() => setFilter(f)}>{f}</button>
         ))}
         <span style={{ flex: 1 }} />
+        <button className="linkish" onClick={() => setPrinted(!printed)}>{printed ? "our frame" : "printed card"}</button>
         <button className="primary" onClick={() => c.closeCollection()}>Back</button>
       </div>
       <div className="gallery-grid">
         {entries.map(([id, n]) => (
           <div key={id} className="gallery-cell" style={{ textAlign: "center" }}>
-            <CardFrame def={pool.get(id)!} oracle={oracle[id]} />
+            <CardFrame def={pool.get(id)!} oracle={oracle[id]} showPrinted={printed} />
             <div className="caption">
               ×{n}{inDeck.has(id) ? ` · in deck ×${inDeck.get(id)}` : ""}
             </div>

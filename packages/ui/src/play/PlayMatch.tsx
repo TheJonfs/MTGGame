@@ -19,6 +19,16 @@ const STOPS_KEY = "shandalar-stops";
 const DELAY_KEY = "shandalar-ai-delay";
 const OPP_SPELL_STOP_KEY = "shandalar-stop-opp-spells"; // S11 (note 2)
 const BLOCKERS_PAUSE_KEY = "shandalar-pause-blockers-untapped"; // S12 rider
+const COMBAT_STOP_KEY = "shandalar-stop-combat"; // S13
+
+export function loadStopOnCombat(): boolean {
+  try {
+    const raw = localStorage.getItem(COMBAT_STOP_KEY);
+    return raw === null ? true : raw === "1";
+  } catch {
+    return true;
+  }
+}
 
 export function loadPauseBlockersWithUntapped(): boolean {
   try {
@@ -70,7 +80,7 @@ function PromptBar({ c, phase, confirmLabel }: { c: MatchController; phase: UiPh
         return `Tap lands to float mana${floating ? ` (pool: ${floating})` : ""}, then cast — auto-pay covers the rest.`;
       }
       case "stackStop":
-        return "The opponent's spell is on the stack.";
+        return c.stopReason && !c.stopReason.startsWith("Opponent cast") ? "Continue when ready." : "The opponent's spell is on the stack.";
       case "attackers":
         return "Declare attackers: click creatures to stage, then confirm.";
       case "blockers":
@@ -186,6 +196,18 @@ function StopsFlyout({ c }: { c: MatchController }) {
               }}
             />{" "}
             opponent casts a spell
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              checked={c.stopOnCombat}
+              onChange={(e) => {
+                c.stopOnCombat = e.target.checked;
+                localStorage.setItem(COMBAT_STOP_KEY, e.target.checked ? "1" : "0");
+                force((n) => n + 1);
+              }}
+            />{" "}
+            attacks and blocks are declared
           </label>
           <label>
             <input
@@ -531,6 +553,7 @@ export function PlayMatch({
   useEffect(() => {
     c.stopOnOpponentSpells = loadStopOnOpponentSpells();
     c.pauseBlockersWithUntapped = loadPauseBlockersWithUntapped();
+    c.stopOnCombat = loadStopOnCombat();
   }, [c]);
   useEffect(() => {
     if (c.phase.kind === "gameOver") onGameOver();
@@ -611,6 +634,17 @@ export function PlayMatch({
           <StatusBlock ctx={ctx} player={opp} youSeat={c.humanSeat} emphasizeHand name={c.names[opp]} portraitSrc={c.portraits[opp]} onZoneClick={(player, zone) => setZoneOpen({ player, zone })} />
         </div>
         <StackPanel ctx={ctx} />
+        {(ctx.state.players[0].ante.length > 0 || ctx.state.players[1].ante.length > 0) && (
+          <div className="panel stakes-panel">
+            <h3>Stakes</h3>
+            <div style={{ fontSize: 12.5 }}>
+              You: <b>{ctx.state.players[c.humanSeat].ante.map((id) => cardName(pool, ctx.state.objects[id]!.cardId)).join(", ") || "—"}</b>
+            </div>
+            <div style={{ fontSize: 12.5 }}>
+              {c.names[opp]}: <b>{ctx.state.players[opp].ante.map((id) => cardName(pool, ctx.state.objects[id]!.cardId)).join(", ") || "—"}</b>
+            </div>
+          </div>
+        )}
         <div
           onClick={() => { if (phase.kind === "targeting" && phase.highlightPlayers.has(c.humanSeat)) c.clickPlayer(c.humanSeat); }}
           className={phase.kind === "targeting" && phase.highlightPlayers.has(c.humanSeat) ? "player-target" : ""}

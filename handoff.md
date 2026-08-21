@@ -13,13 +13,24 @@
 - **Part 5 — acceptance (scripted half):** `world-controller.test.ts` drives the controller through the click path: new game → preview → walk to a town (encounters off via the event layer) → town autosave → `saveText`/`loadText` identical world; shop stock → buy (gold → collection) → collection open/close → leave; forced encounter (event layer rate 1) → buy-off or refusal by tier → flee → fled or caught-and-fought through the real play client; fight with world life 1 → the duel in the play client (`custom`: starting life 1, ante ≥1, enemy name + portrait) driven by the S10 scripted human → result screen with before/after → win returns to the map, loss → world life 0 → **game over**, and the autosave reloads onto the game-over screen. **Browser-verified** at seed 7: start, map, path preview to Whitewell, Sister Oriel (tier I) after two steps, parley, fight → play client at 10 life with libraries 32 (= 40 − 7 − 1 ante: Goblin Chieftain vs Curiosity), Control Magic and the stack stop inside a world duel, defeat narrated (stake lost, refill, 10→9), map with the journey tally, town overlay with 8 green-region cards, a purchase (20→12, "Bought Giant Growth for 8 gold"), collection with correct counts, Continue from autosave; no console errors throughout.
 - **Part 4's portrait verdicts**: the five candidates render in situ (parley reveal, encounter marker, play-client status block) — **Chris's verdict pending** (MANIFEST rows say so).
 
+## Director round 1 (Chris's first look, same day)
+
+1. *"Great to see it in action."*
+2. **Printed card by default** in the world screens (shop, collection, duel result), each with an "our frame / printed card" toggle; custom cards fall back to our frame automatically. The play board's hand stays our frame (ADR-043) — **ruling wanted** if Chris meant that too.
+3. **Ante visibility without bending the contract:** the engine picks the stake *after the shuffle* (CR-ante's random pick), so before the duel the world can only say "N random nonland cards each" (it does); the moment the duel starts the stake is known — the play rail now shows a **Stakes** panel ("You: Goblin Chieftain · Sister Oriel: Curiosity") in any ante game. Pre-choosing the card would need a new engine rule; not done.
+4. **Blaze for X=0 (apprentice, turn 1):** softmax noise — X=0 scored 0.25 below passing and apprentice runs at 1.2. Now an X-cost spell/ability at X=0 scores −∞ (never a play, like a bare `tapForMana`). Book-of-shame entry 8. Journeyman mirrors 200/cell: 1361 → **1373/2000 (+0.6)** — a small gain, not a cost.
+5. **Combat zoomed by:** with nothing castable your combat windows were lone passes, so the lane existed for milliseconds. New default-on stop **"attacks and blocks are declared"** (menu): pauses once when attackers are declared against you ("Opponent attacks with Boggart Brute (Bonesplitter).") and once when blocks are declared against your attack ("Opponent blocks: X ← Y." / "No blocks — your attack goes through."), via the request path or the `onLonePass` seam; fast-forward skips it. Your own attackers now sit visibly in the red zone at that pause. Acceptance test asserts the pause fires.
+6. **Enemy life jumping 10→8 during mulligans:** `startingLife` modifiers now apply at state creation, before setup; every other modifier still applies after setup (zones must exist). Still "initialization" per ADR-002 — **engine-ordering change, flagged for ratification**; the custom-path test asserts 8 at the very first pause.
+
 ## Deviations from the brief
 
 1. **Shop stock does not deplete** (slice). Depletion and selling need per-shop state — a `shops` field in a versioned save — so they're M6b (Concern 2). Epoch-based refresh is my proposal for "refresh rules open."
 2. **Two knobs added** (`shopRefreshSteps`, `shopBasePrice`) registry-first, per the brief's rule.
 3. **The walk is interrupted at the encounter cell and the remaining path is discarded** (you re-click after parley) — simplest and honest; a "resume path" button is an easy rider if it feels like friction.
 4. **Autosave is broader than "town entry + manual"**: also after every duel and purchase and before viewer hand-offs — consequences should never be lost to a reload (a dev-server HMR reset showed exactly that failure mode).
-5. **Play-client additions for world duels** (`names`, `portraits` on `MatchController`; `StatusBlock` props) — the S12 `custom` path was sufficient for the game; the names/portraits are presentation only.
+5. **Play-client additions for world duels** (`names`, `portraits` on `MatchController`; `StatusBlock` props; the Stakes panel) — the S12 `custom` path was sufficient for the game; these are presentation only.
+6. **Engine touched (director round 1, item 6):** `Game.run` applies `startingLife` modifiers before `setup()`; all other modifiers after, as before. Initialization-only semantics unchanged; ratify.
+7. **Agents touched (director round 1, item 4):** X=0 on X-cost spells/abilities is never a play — correctness (Chris's playtest), measured +0.6 on journeyman mirrors.
 
 ## Concerns
 
@@ -37,7 +48,7 @@ None (no rules, no cards). Knobs: `shopRefreshSteps`, `shopBasePrice` (docs/knob
 
 ## Test status
 
-Default tier: **183 passing / 2 tier-skipped, ~11s** (adds the shop test in `world` and the 4-test `WorldController` acceptance in `ui`). FUZZ_FULL: **185 passing, exit 0, ~96s**. Typecheck clean. Browser-verified per Part 5 above.
+Default tier: **184 passing / 2 tier-skipped, ~11s** (adds the shop test in `world`, the 4-test `WorldController` acceptance in `ui`, and book-of-shame entry 8 — the book is 8). FUZZ_FULL: **186 passing, exit 0, ~97s**. Director round 1 browser-verified: printed shop, enemy name/portrait + 8-vs-9 from the first view, Stakes panel, and the combat pause with attackers in the red zone. Typecheck clean. Browser-verified per Part 5 above.
 
 ## Suggested next
 

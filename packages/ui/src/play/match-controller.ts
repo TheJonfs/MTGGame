@@ -161,6 +161,11 @@ export class MatchController {
    * legal (menace/flying) while I control any untapped creature — so an
    * unblockable attack is seen, not auto-skipped. Default off; Chris to trial. */
   pauseBlockersWithUntapped = false;
+  /** S13 (Chris): combat was zooming by — pause once when attackers are
+   * declared against you, and once when blocks are declared against your
+   * attack, even with nothing to do, so the lane is seen. Default on. */
+  stopOnCombat = true;
+  private combatSeen = new Set<string>();
   /** Why the current pause happened, for the prompt ("Opponent cast X"). */
   stopReason: string | null = null;
   /** Opponent stack items already paused for (stack ids are unique per item). */
@@ -450,6 +455,38 @@ export class MatchController {
     return item ? { id: item.id, sourceCardId: item.sourceCardId } : null;
   }
 
+  /** S13: the combat moment worth a look, if we haven't paused for it yet —
+   * attackers declared against me (DECLARE_ATTACKERS, I defend) or blocks
+   * declared against my attack (DECLARE_BLOCKERS, I attack). */
+  private pendingCombatMoment(): { key: string; text: string } | null {
+    if (!this.stopOnCombat) return null;
+    const st = this.game.state;
+    if (st.combat.attackers.length === 0) return null;
+    const iAttack = st.activePlayer === this.humanSeat;
+    const name = (id: string) => {
+      const o = st.objects[id];
+      if (!o) return "a creature";
+      const base = this.pool.get(o.cardId)?.name ?? o.cardId;
+      const eq = st.battlefield.filter((x) => st.objects[x]?.attachedTo === id).map((x) => this.pool.get(st.objects[x]!.cardId)?.name ?? "");
+      return eq.length ? `${base} (${eq.join(", ")})` : base;
+    };
+    if (!iAttack && st.step === "DECLARE_ATTACKERS") {
+      const key = `${st.turn}:attack`;
+      if (this.combatSeen.has(key)) return null;
+      return { key, text: `Opponent attacks with ${st.combat.attackers.map(name).join(", ")}.` };
+    }
+    if (iAttack && st.step === "DECLARE_BLOCKERS") {
+      const key = `${st.turn}:blocks`;
+      if (this.combatSeen.has(key)) return null;
+      const blocks = st.combat.blocks;
+      const text = blocks.length === 0
+        ? "No blocks — your attack goes through."
+        : `Opponent blocks: ${blocks.map((b) => `${name(b.attacker)} ← ${name(b.blocker)}`).join("; ")}.`;
+      return { key, text };
+    }
+    return null;
+  }
+
   private markStackSeen(): void {
     for (const s of this.game.state.stack) this.seenStackItems.add(s.id);
   }
@@ -460,9 +497,15 @@ export class MatchController {
   private async onLonePass(player: PlayerId, view: GameView): Promise<void> {
     if (player !== this.humanSeat || this.conceding || this.ff) return;
     const oppSpell = this.pendingOpponentSpell();
-    if (!oppSpell) return;
+    const combatMoment = oppSpell ? null : this.pendingCombatMoment();
+    if (!oppSpell && !combatMoment) return;
     this.markStackSeen();
-    this.stopReason = `Opponent cast ${this.pool.get(oppSpell.sourceCardId)?.name ?? oppSpell.sourceCardId}.`;
+    if (combatMoment) {
+      this.combatSeen.add(combatMoment.key);
+      this.stopReason = combatMoment.text;
+    } else if (oppSpell) {
+      this.stopReason = `Opponent cast ${this.pool.get(oppSpell.sourceCardId)?.name ?? oppSpell.sourceCardId}.`;
+    }
     this.phase = { kind: "stackStop", view };
     this.emit();
     await new Promise<void>((resolve) => {
@@ -609,7 +652,8 @@ export class MatchController {
     // S11: an opponent spell on the stack we haven't paused for yet stops
     // the flow (fast-forward deliberately skips this; targeting cancels FF).
     const oppSpell = this.ff ? null : this.pendingOpponentSpell();
-    const stopHere = this.stops.has(view.step as Step) || this.holdArmed || ownTurnAnchor || oppSpell !== null;
+    const combatMoment = this.ff ? null : this.pendingCombatMoment();
+    const stopHere = this.stops.has(view.step as Step) || this.holdArmed || ownTurnAnchor || oppSpell !== null || combatMoment !== null;
     if (!meaningful && !stopHere) {
       const pass = request.actions.find((a) => a.type === "pass");
       if (pass) {
@@ -621,6 +665,10 @@ export class MatchController {
     this.holdArmed = false; // consumed by pausing
     this.markStackSeen();
     if (oppSpell) this.stopReason = `Opponent cast ${this.pool.get(oppSpell.sourceCardId)?.name ?? oppSpell.sourceCardId}.`;
+    if (combatMoment) {
+      this.combatSeen.add(combatMoment.key);
+      this.stopReason = combatMoment.text;
+    }
     this.phase = { kind: "priority", castable, lands, activatable, canPass: request.actions.some((a) => a.type === "pass") };
     this.emit();
   }

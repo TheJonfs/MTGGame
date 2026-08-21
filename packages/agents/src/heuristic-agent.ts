@@ -122,6 +122,11 @@ export class HeuristicAgent implements Agent {
       return evaluate(view, this.profile, this.defs) + this.counterHoldBonus(view) + this.flashHoldBonus(view);
     }
     if (action.type === "tapForMana") return -Infinity; // never standalone
+    // S13 (Chris's playtest: apprentice cast Blaze for X=0 on turn one): an
+    // X-cost spell or ability at X=0 spends the card/mana for nothing in this
+    // pool — never a play, at any temperature (softmax noise had been
+    // coin-flipping a 0.25-point gap at apprentice's 1.2).
+    if ((action as { x?: number }).x === 0 && this.hasXCost(view, action)) return -Infinity;
     const pred = predictAction(view, action, this.defs, this.C);
     if (pred.unchanged) {
       // Friction: an action that visibly does nothing scores strictly below
@@ -129,6 +134,20 @@ export class HeuristicAgent implements Agent {
       return evaluate(view, this.profile, this.defs) - 0.25;
     }
     return evaluate(pred.view, this.profile, this.defs) + pred.adjustment;
+  }
+
+  private hasXCost(view: GameView, action: Action): boolean {
+    if (action.type === "castSpell") {
+      const card = view.hand.find((c) => c.objectId === action.objectId);
+      const d = card ? this.def(card.cardId) : undefined;
+      return !!d && d.manaCost.includes("X");
+    }
+    if (action.type === "activateAbility") {
+      const o = view.battlefield.find((b) => b.id === action.objectId);
+      const ab = o ? this.def(o.cardId)?.abilities?.[action.abilityIndex] : undefined;
+      return !!ab && ab.kind === "activated" && typeof ab.cost.mana === "string" && ab.cost.mana.includes("X");
+    }
+    return false;
   }
 
   private priorityChoice(view: GameView, request: ActionRequest): Action {
