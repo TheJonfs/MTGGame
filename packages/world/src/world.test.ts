@@ -18,9 +18,10 @@ const catalog = loadCatalog(join(ROOT, "data/world"));
 const pool = loadCardPool(join(ROOT, "data/cards"));
 
 describe("catalog v0", () => {
-  it("loads and validates; 15 opponents over 5 decks × 3 tiers; every deck key exists", () => {
+  it("loads and validates; 15 mages over 5 decks × 3 tiers + 1 beast (ADR-066 PoC); every deck key exists", () => {
     expect(catalog.version).toBe("v0");
-    expect(catalog.opponents).toHaveLength(15);
+    expect(catalog.opponents).toHaveLength(16);
+    expect(catalog.opponents.filter((o) => (o.kind ?? "mage") === "mage")).toHaveLength(15);
     for (const o of catalog.opponents) expect(o.deck in DECKS).toBe(true);
     expect(catalog.regions.filter((r) => r.tier === "civilized").length).toBeGreaterThanOrEqual(2);
   });
@@ -215,13 +216,14 @@ describe("acceptance journey (headless): walk → encounter → each parley bran
   });
 });
 
-describe("town shops (S13 Part 3, headless)", () => {
-  it("stock is seeded by (seed, town, epoch): same now, same after load, different next epoch; region-coloured; never basics/tokens; priced by mana value", async () => {
-    const { rollShopStock, shopPrice, buyCard } = await import("./shop.js");
+describe("town shops (S13 Part 3 → S14 Part 3: depletion, restock, sell, buy-for-deck)", () => {
+  it("stock is seeded by (seed, town, epoch); rows carry stock/remaining; buying depletes and persists across save/load; a new epoch restocks", async () => {
+    const { rollShopStock, shopPrice, buyCard, syncShopState } = await import("./shop.js");
     const { worldKnobs } = await import("./state.js");
     const w = newWorld({ seed: 61, catalog, starterDeck: "C" });
     const knobs = worldKnobs(w);
     const town = w.map.towns[0]!;
+    syncShopState(w, town, knobs);
     const stock = rollShopStock(w, town, pool.cards, knobs);
     expect(stock.length).toBe(knobs.shopStockSize);
     const region = w.map.regions[town.region]!;
@@ -230,20 +232,183 @@ describe("town shops (S13 Part 3, headless)", () => {
       expect(def.types).not.toContain("Land");
       for (const c of (await import("@shandalar/cards")).cardColors(def)) expect(region.color).toContain(c);
       expect(item.price).toBe(shopPrice(def, knobs));
-      expect(item.price).toBeGreaterThanOrEqual(4);
+      expect(item.remaining).toBe(item.stock);
+      expect(item.stock).toBeGreaterThanOrEqual(1);
     }
-    expect(rollShopStock(deserializeWorld(serializeWorld(w)), town, pool.cards, knobs)).toEqual(stock);
-    w.player.stepsTaken += knobs.shopRefreshSteps; // next epoch
-    const later = rollShopStock(w, town, pool.cards, knobs);
-    expect(later.map((i) => i.cardId)).not.toEqual(stock.map((i) => i.cardId));
-    // Buying: gold down, collection up; refused when broke.
-    const gold = w.player.gold;
     const cheap = [...stock].sort((a, b) => a.price - b.price)[0]!;
-    const r = buyCard(w, cheap);
+    const gold = w.player.gold;
+    const r = buyCard(w, town, cheap, knobs);
     expect(r.ok).toBe(true);
     expect(w.player.gold).toBe(gold - cheap.price);
     expect(w.player.collection[cheap.cardId]).toBeGreaterThanOrEqual(1);
+    const after = rollShopStock(w, town, pool.cards, knobs).find((i) => i.cardId === cheap.cardId)!;
+    expect(after.remaining).toBe(cheap.stock - 1);
+    // Depletion persists through save/load (world.shops is in the save).
+    const back = deserializeWorld(serializeWorld(w));
+    expect(rollShopStock(back, town, pool.cards, knobs).find((i) => i.cardId === cheap.cardId)!.remaining).toBe(cheap.stock - 1);
+    // Sell out a row, then it refuses.
+    w.player.gold = 10_000;
+    for (let k = 0; k < cheap.stock - 1; k++) expect(buyCard(w, town, rollShopStock(w, town, pool.cards, knobs).find((i) => i.cardId === cheap.cardId)!, knobs).ok).toBe(true);
+    expect(buyCard(w, town, rollShopStock(w, town, pool.cards, knobs).find((i) => i.cardId === cheap.cardId)!, knobs).ok).toBe(false);
+    // New epoch: different stock, fresh counts.
+    w.player.stepsTaken += knobs.shopRefreshSteps;
+    syncShopState(w, town, knobs);
+    const later = rollShopStock(w, town, pool.cards, knobs);
+    expect(later.map((i) => i.cardId)).not.toEqual(stock.map((i) => i.cardId));
+    for (const i of later) expect(i.remaining).toBe(i.stock);
+    // Broke → refused.
     w.player.gold = 0;
-    expect(buyCard(w, cheap).ok).toBe(false);
+    expect(buyCard(w, town, later[0]!, knobs).ok).toBe(false);
+  });
+
+  it("sell: half price for spare copies only — never basics, never copies the active deck uses", async () => {
+    const { sellCard, sellPrice } = await import("./shop.js");
+    const { worldKnobs } = await import("./state.js");
+    const w = newWorld({ seed: 62, catalog, starterDeck: "A" });
+    const knobs = worldKnobs(w);
+    // The starter spares include copies of the deck's cheapest nonlands beyond deck counts.
+    const spareId = Object.keys(w.player.collection).find((id) => !["mountain"].includes(id) && (w.player.collection[id] ?? 0) > (w.player.activeDeck.find((e) => e.cardId === id)?.count ?? 0))!;
+    expect(spareId).toBeTruthy();
+    const gold = w.player.gold;
+    const r = sellCard(w, pool.cards, spareId, knobs);
+    expect(r.ok).toBe(true);
+    expect(w.player.gold).toBe(gold + sellPrice(pool.cards.get(spareId)!, knobs));
+    expect(sellCard(w, pool.cards, "mountain", knobs).ok).toBe(false);
+    // A card fully committed to the deck cannot be sold out from under it.
+    const deckOnly = w.player.activeDeck.find((e) => e.cardId !== "mountain" && (w.player.collection[e.cardId] ?? 0) === e.count)!;
+    expect(sellCard(w, pool.cards, deckOnly.cardId, knobs)).toMatchObject({ ok: false });
+  });
+
+  it("buy → add to deck when legal; otherwise bought to collection with a note", async () => {
+    const { rollShopStock, buyCard, syncShopState } = await import("./shop.js");
+    const { worldKnobs, deckSize } = await import("./state.js");
+    const w = newWorld({ seed: 63, catalog, starterDeck: "C" });
+    const knobs = worldKnobs(w);
+    const town = w.map.towns[0]!;
+    syncShopState(w, town, knobs);
+    w.player.gold = 1000;
+    const item = rollShopStock(w, town, pool.cards, knobs)[0]!;
+    const before = deckSize(w.player.activeDeck);
+    const r = buyCard(w, town, item, knobs, true);
+    expect(r.ok && r.addedToDeck).toBe(true);
+    expect(deckSize(w.player.activeDeck)).toBe(before + 1);
+    // Fifth copy: cap → to collection with a note.
+    w.player.activeDeck = w.player.activeDeck.map((e) => (e.cardId === item.cardId ? { ...e, count: 4 } : e));
+    w.player.collection[item.cardId] = 4;
+    const fresh = rollShopStock(w, town, pool.cards, knobs).find((i) => i.cardId === item.cardId);
+    if (fresh && fresh.remaining > 0) {
+      const r2 = buyCard(w, town, fresh, knobs, true);
+      expect(r2.ok && !r2.addedToDeck && !!r2.note).toBe(true);
+    }
+  });
+});
+
+describe("world-save-v2 (S14 Part 1)", () => {
+  it("v2 round-trips; a v1 save migrates with shops/visits/lastTownIndex/deckName defaulted and plays", async () => {
+    const w = newWorld({ seed: 71, catalog, starterDeck: "B" });
+    expect(serializeWorld(w)).toContain('"world-save-v2"');
+    expect(deserializeWorld(serializeWorld(w))).toEqual(w);
+    // Hand-build a v1 payload: strip the v2 fields and relabel.
+    const { shops: _s, visits: _v, lastTownIndex: _l, deckName: _d, ...v1world } = w;
+    const v1 = JSON.stringify({ format: "world-save-v1", world: v1world });
+    const migrated = deserializeWorld(v1);
+    expect(migrated.shops).toEqual({});
+    expect(migrated.visits).toEqual({});
+    expect(migrated.lastTownIndex).toBe(w.lastTownIndex);
+    expect(migrated.deckName).toBe("Deck");
+    // …and it plays: walk and re-save as v2.
+    walkTo(migrated, catalog, migrated.map.towns[1]!.at, { event: { encounterRatePerStep: { civilized: 0, approach: 0, wild: 0 } } });
+    expect(serializeWorld(migrated)).toContain('"world-save-v2"');
+    expect(() => deserializeWorld(JSON.stringify({ format: "world-save-v0", world: {} }))).toThrow(/Unsupported save format/);
+  });
+});
+
+describe("deck editing (S14 Part 2, headless)", () => {
+  it("spares = ownership − deck; add/remove copies; basics infinite; commit refuses illegal decks (ADR-065) and unowned copies", async () => {
+    const { spares, addCopy, removeCopy, commitDeck, deckStats } = await import("./deck-edit.js");
+    const { deckSize } = await import("./state.js");
+    const w = newWorld({ seed: 81, catalog, starterDeck: "A" });
+    const sp = spares(w.player.collection, w.player.activeDeck);
+    expect(Object.keys(sp).length).toBeGreaterThan(0);
+    expect(sp.mountain).toBeUndefined(); // basics have their own row
+    const spareId = Object.keys(sp)[0]!;
+    // Remove a nonbasic, add the spare: still 40, legal, committed.
+    const nonbasic = w.player.activeDeck.find((e) => e.cardId !== "mountain")!.cardId;
+    let draft = removeCopy(w.player.activeDeck, nonbasic);
+    expect(draft.ok).toBe(true);
+    let d2 = addCopy(w.player.collection, (draft as { deck: typeof w.player.activeDeck }).deck, spareId);
+    expect(d2.ok).toBe(true);
+    const committed = commitDeck(w, (d2 as { deck: typeof w.player.activeDeck }).deck, "Goblin Tide");
+    expect(committed.ok).toBe(true);
+    expect(deckSize(w.player.activeDeck)).toBe(40);
+    expect(w.deckName).toBe("Goblin Tide");
+    // Basics: always addable, no collection gate.
+    const more = addCopy(w.player.collection, w.player.activeDeck, "mountain");
+    expect(more.ok).toBe(true);
+    // Fifth copy of a nonbasic: refused; no spare: refused.
+    w.player.collection.lightning_bolt = 9;
+    let five = w.player.activeDeck.map((e) => ({ ...e }));
+    for (let k = 0; k < 5; k++) { const r = addCopy(w.player.collection, five, "lightning_bolt"); if (r.ok) five = r.deck; else expect(r.reason).toMatch(/cap/); }
+    expect(five.find((e) => e.cardId === "lightning_bolt")!.count).toBeLessThanOrEqual(4);
+    // Illegal (below floor) can be drafted but never committed.
+    let thin = w.player.activeDeck.map((e) => ({ ...e }));
+    for (let k = 0; k < 12; k++) { const r = removeCopy(thin, "mountain"); if (r.ok) thin = r.deck; }
+    expect(deckSize(thin)).toBeLessThan(30);
+    expect(commitDeck(w, thin).ok).toBe(false);
+    expect(deckSize(w.player.activeDeck)).toBe(40); // untouched
+    // Unowned copy: refused.
+    expect(commitDeck(w, [...w.player.activeDeck, { cardId: "pelakka_wurm", count: 1 }]).ok).toBe(false);
+    const stats = deckStats(pool.cards, w.player.activeDeck);
+    expect(stats.size).toBe(40);
+    expect(stats.lands).toBeGreaterThan(10);
+    expect(stats.curve.reduce((a, b) => a + b, 0)).toBe(40 - stats.lands);
+  });
+
+  it("lose an ante → the refilled basic is swappable for an owned spare, legality green (the brief's proof)", async () => {
+    const { spares, addCopy, removeCopy, commitDeck } = await import("./deck-edit.js");
+    const { deckSize } = await import("./state.js");
+    const w = newWorld({ seed: 82, catalog, starterDeck: "D" });
+    const enc = firstEncounter(w);
+    const out = parley(w, catalog, enc, "flee"); // forfeits a stake either way → refill with swamps
+    expect(["fled", "fleeFailed"]).toContain(out.type);
+    const lost = (out as { anteLost: string[] }).anteLost;
+    expect(lost.length).toBeGreaterThan(0);
+    const swampsNow = w.player.activeDeck.find((e) => e.cardId === "swamp")!.count;
+    expect(swampsNow).toBe(17 + lost.length);
+    const sp = spares(w.player.collection, w.player.activeDeck);
+    const spareId = Object.keys(sp)[0]!;
+    const d1 = removeCopy(w.player.activeDeck, "swamp");
+    const d2 = addCopy(w.player.collection, (d1 as { deck: typeof w.player.activeDeck }).deck, spareId);
+    expect(d2.ok).toBe(true);
+    expect(commitDeck(w, (d2 as { deck: typeof w.player.activeDeck }).deck).ok).toBe(true);
+    expect(deckSize(w.player.activeDeck)).toBe(40);
+    expect(deckLegal(w.player.activeDeck).ok).toBe(true);
+  });
+});
+
+describe("beast opponents (ADR-066 proof of concept)", () => {
+  it("the catalog carries the Pelakka Wurm as a beast; distraction costs tier price × beastBuyOffMultiplier; unbuyable beasts refuse", async () => {
+    const { buyOffPrice } = await import("./journey.js");
+    const { worldKnobs } = await import("./state.js");
+    const wurm = catalog.opponents.find((o) => o.id === "beast_wurm")!;
+    expect(wurm.kind).toBe("beast");
+    expect(wurm.deck).toBe("C"); // signature-card rule: green stompy with Pelakka Wurms
+    const w = newWorld({ seed: 91, catalog, starterDeck: "A" });
+    const knobs = worldKnobs(w);
+    expect(buyOffPrice(knobs, 3, wurm)).toBe(Math.round(knobs.buyOffBase * 3 * knobs.beastBuyOffMultiplier));
+    expect(buyOffPrice(knobs, 3)).toBe(knobs.buyOffBase * 3);
+    // Force an encounter with the wurm and try to buy it off while broke / while it is unbuyable.
+    const inst = w.opponents.find((o) => o.catalogId === "beast_wurm");
+    if (inst) {
+      const enc = { opponentId: inst.id, catalogId: inst.catalogId, tier: 3 as const, region: inst.region, at: w.player.position };
+      w.player.gold = 0;
+      expect(parley(w, catalog, enc, "buyoff")).toMatchObject({ type: "refused" });
+      const was = wurm.buyable;
+      (wurm as { buyable?: boolean }).buyable = false;
+      w.player.gold = 10_000;
+      expect(parley(w, catalog, enc, "buyoff")).toMatchObject({ type: "refused", reason: expect.stringMatching(/cannot be bought/) });
+      if (was === undefined) delete (wurm as { buyable?: boolean }).buyable;
+      else (wurm as { buyable?: boolean }).buyable = was;
+    }
   });
 });

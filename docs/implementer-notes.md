@@ -158,6 +158,15 @@ Things a fresh session might otherwise rediscover slowly:
 - **SVG maps are cheap at this size** (40×28 cells = 1,120 rects + borders): no canvas needed; labels need clamping near edges; `preserveAspectRatio="xMidYMid meet"` on a `width="100%"` svg scales cleanly in a flex column.
 - **Scripted duel drivers need an "ignore activations" rule**, or a Bonesplitter equips itself every window until the mana is gone — slow, not wrong.
 
+## S14 lessons (editor, save v2, beast PoC)
+
+- **Drafts live in the screen, commits live in the world.** The editor keeps a draft decklist in its screen state and only `commitDeck` (legal-only) touches `WorldState` — an illegal deck cannot be saved by construction, and Cancel is free.
+- **Versioned saves are cheap when the migration is "default the new fields"**: `SAVE_FORMATS_READABLE` + `migrateWorld(format, w)`; write the new fields on every path that should own them (town entry, purchase), never lazily on read.
+- **Per-town shop state = (epoch, sold)**: depletion without storing stock — the stock is still a pure function of (seed, town, epoch); `sold` resets when the epoch changes.
+- **A beast is data, not code**: catalog `kind/buyable/portraitChip` + one knob + one parley branch; the render pipeline needs one subject file, one render, one PIL chip crop, two MANIFEST rows.
+- **Dev handles pay for themselves** (`__mc`, now `__wc`): forcing a beast encounter for a visual check was three lines in the console.
+- **Planner full-file overwrites keep stomping ADR-058** — diff planner docs against HEAD first thing every session.
+
 ## Known interims / watch list
 
 See handoff Concerns for the authoritative list. Highlights: auto-pay greedy feasibility (correct while all producers are single-symbol — R-006); condition fields `controller`/`type`/`subtype` are validated but unexercised (first card to use them should add fixtures); value refs deliberately have no arithmetic (ADR-028 — resist until a card demands it); the `sba-unattach` ATTACHED cause is unreachable by legal play (test-forced only).

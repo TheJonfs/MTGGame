@@ -21,6 +21,7 @@ Every overworld tunable (manifest principle 5). Difficulty bundles, regions, dun
 | `startingGold` | `20` | gold | Gold at new game (enough for one tier-1 buy-off, not two). |
 | `shopRefreshSteps` | `50` | steps | A town's shop stock is rolled from (world seed, town, epoch) where epoch = floor(stepsTaken / this) — stock refreshes as the clock advances, with no per-shop state in the save (S13; depletion/sell are M6b). |
 | `shopBasePrice` | `4` | gold per (1 + mana value) | Shop price = round(shopPriceMultiplier × shopBasePrice × (1 + mana value)). A 1-drop is 8, a 3-drop 16, a 5-drop 24 at defaults. Basics are never sold (free and infinite). |
+| `beastBuyOffMultiplier` | `2` | × buy-off price | ADR-066: a beast is distracted, not negotiated with — its buy-off price is the tier price times this (when the catalog marks it buyable at all). |
 | `fleeOddsByTier` | `{"1":0.6,"2":0.5,"3":0.4}` | probability, by enemy tier | Parley flee contest: chance the escape succeeds (seeded). Success or failure, your ante is forfeit (manifest: fleeing forfeits yours); failure means the fight happens anyway. |
 
 ## Difficulty bundles

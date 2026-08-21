@@ -1,5 +1,20 @@
 {
   "entities": {
+    "beast-pelakka-wurm": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:79fe7d829a7d7806731607ac32a9936b2be84e9540827cfdbe547c665e7b502b",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:79fe7d829a7d7806731607ac32a9936b2be84e9540827cfdbe547c665e7b502b",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/beast-pelakka-wurm/canonical.png",
+          "rendered_at": "2026-08-21T15:39:52+00:00",
+          "thumb": "assets/thumbs/beast-pelakka-wurm/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "card-back": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:e2c612699292049237803fe590502ff9567d153df70c09025a785dca39d3d027",

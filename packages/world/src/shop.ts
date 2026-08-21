@@ -1,26 +1,28 @@
 import { cardColors, manaValue, parseManaCost, type CardDef } from "@shandalar/cards";
+import { addCopy, deckCount, isBasic } from "./deck-edit.js";
+import { deckLegal } from "./journey.js";
 import type { KnobValues } from "./knobs.js";
 import type { Town } from "./map.js";
 import { WorldRng } from "./rng.js";
 import type { WorldState } from "./state.js";
 
 /**
- * Town shops (S13 Part 3; the one headless piece S12 left): stock is a pure
- * function of (world seed, town index, epoch) — epoch = floor(steps /
- * shopRefreshSteps) — so the save needs no shop state and stock refreshes
- * with the clock. Slice rule: stock does not deplete (buy repeats cost gold
- * only); depletion and selling are M6b and will want a `shops` field in a
- * versioned save. Stock is drawn from the pool by the region's colour:
- * cards whose colours ⊆ {region colour} plus colourless artifacts; basics
- * never (free and infinite); tokens never.
+ * Town shops. S13: stock is a pure function of (world seed, town index, epoch),
+ * epoch = floor(steps / shopRefreshSteps) — refresh with the clock (ADR-064).
+ * S14 (Part 3, save v2): stock rows carry remaining counts; `world.shops[town]`
+ * remembers the epoch and what was sold; a new epoch restocks. Sell at
+ * floor(price/2): never basics, never cards the active deck still uses
+ * (remove them in the editor first). "Buy → add to deck" when legal.
  */
 
 export interface ShopItem {
   cardId: string;
   price: number;
+  /** Copies rolled for this epoch. */
+  stock: number;
+  /** Copies still available (stock − sold this epoch). */
+  remaining: number;
 }
-
-const BASICS = ["plains", "island", "swamp", "mountain", "forest"];
 
 export function shopEpoch(world: WorldState, knobs: KnobValues): number {
   return Math.floor(world.player.stepsTaken / Math.max(1, knobs.shopRefreshSteps));
@@ -31,6 +33,10 @@ export function shopPrice(def: CardDef, knobs: KnobValues): number {
   return Math.max(1, Math.round(knobs.shopPriceMultiplier * knobs.shopBasePrice * (1 + mv)));
 }
 
+export function sellPrice(def: CardDef, knobs: KnobValues): number {
+  return Math.floor(shopPrice(def, knobs) / 2);
+}
+
 /** Cards a region's shop may carry: mono/colourless within the region colour. */
 export function shopPoolFor(pool: Map<string, CardDef>, regionColor: string): CardDef[] {
   const out: CardDef[] = [];
@@ -38,29 +44,68 @@ export function shopPoolFor(pool: Map<string, CardDef>, regionColor: string): Ca
     if ((def as { isTokenDef?: boolean }).isTokenDef) continue;
     if (def.types.includes("Land")) continue; // basics free; nonbasic lands are future collectible content
     const colors = cardColors(def);
-    const within = colors.every((c) => regionColor.includes(c));
-    if (within) out.push(def);
+    if (colors.every((c) => regionColor.includes(c))) out.push(def);
   }
-  return out.sort((a, b) => a.id.localeCompare(b.id)); // deterministic order before the seeded shuffle
+  return out.sort((a, b) => a.id.localeCompare(b.id));
+}
+
+/** Ensure the town's shop state matches the current epoch (restock on change). Mutates world. */
+export function syncShopState(world: WorldState, town: Town, knobs: KnobValues): void {
+  const epoch = shopEpoch(world, knobs);
+  const st = world.shops[town.index];
+  if (!st || st.epoch !== epoch) world.shops[town.index] = { epoch, sold: {} };
 }
 
 export function rollShopStock(world: WorldState, town: Town, pool: Map<string, CardDef>, knobs: KnobValues): ShopItem[] {
   const region = world.map.regions[town.region]!;
   const candidates = shopPoolFor(pool, region.color === "C" ? "WUBRG" : region.color);
   const epoch = shopEpoch(world, knobs);
-  // Independent stream per (seed, town, epoch): never touches the journey RNG.
   const rng = new WorldRng(((world.seed * 1_000_003) ^ (town.index * 7919) ^ (epoch * 104_729)) >>> 0);
   const picked = rng.shuffle(candidates).slice(0, Math.min(knobs.shopStockSize, candidates.length));
-  return picked.map((def) => ({ cardId: def.id, price: shopPrice(def, knobs) }));
+  const sold = world.shops[town.index]?.epoch === epoch ? world.shops[town.index]!.sold : {};
+  return picked.map((def) => {
+    const stock = 1 + rng.int(3); // 1–3 copies per row this epoch
+    const remaining = Math.max(0, stock - (sold[def.id] ?? 0));
+    return { cardId: def.id, price: shopPrice(def, knobs), stock, remaining };
+  });
 }
 
-export type BuyOutcome = { ok: true; price: number } | { ok: false; reason: string };
+export type BuyOutcome = { ok: true; price: number; addedToDeck: boolean; note?: string } | { ok: false; reason: string };
 
-/** Buy one copy (slice: stock never depletes). Mutates world. */
-export function buyCard(world: WorldState, item: ShopItem): BuyOutcome {
-  if (BASICS.includes(item.cardId)) return { ok: false, reason: "basics are free — add them in the deck editor (M6b)" };
+/** Buy one copy (depletes the row; persists in world.shops). Optionally add straight to the deck when legal. */
+export function buyCard(world: WorldState, town: Town, item: ShopItem, knobs: KnobValues, toDeck = false): BuyOutcome {
+  if (isBasic(item.cardId)) return { ok: false, reason: "basics are free — add them in the deck editor" };
+  if (item.remaining <= 0) return { ok: false, reason: "sold out until the stock refreshes" };
   if (world.player.gold < item.price) return { ok: false, reason: `costs ${item.price} gold; you have ${world.player.gold}` };
+  syncShopState(world, town, knobs);
   world.player.gold -= item.price;
   world.player.collection[item.cardId] = (world.player.collection[item.cardId] ?? 0) + 1;
-  return { ok: true, price: item.price };
+  const st = world.shops[town.index]!;
+  st.sold[item.cardId] = (st.sold[item.cardId] ?? 0) + 1;
+  if (toDeck) {
+    const r = addCopy(world.player.collection, world.player.activeDeck, item.cardId);
+    if (r.ok && deckLegal(r.deck).ok) {
+      world.player.activeDeck = r.deck;
+      return { ok: true, price: item.price, addedToDeck: true };
+    }
+    return { ok: true, price: item.price, addedToDeck: false, note: r.ok ? "deck would be illegal — bought to collection" : `${r.reason} — bought to collection` };
+  }
+  return { ok: true, price: item.price, addedToDeck: false };
+}
+
+export type SellOutcome = { ok: true; gold: number } | { ok: false; reason: string };
+
+/** Sell one spare copy (not in the active deck; never basics). */
+export function sellCard(world: WorldState, pool: Map<string, CardDef>, cardId: string, knobs: KnobValues): SellOutcome {
+  if (isBasic(cardId)) return { ok: false, reason: "basics have no sale value" };
+  const owned = world.player.collection[cardId] ?? 0;
+  const inDeck = deckCount(world.player.activeDeck, cardId);
+  if (owned - inDeck <= 0) return { ok: false, reason: inDeck > 0 ? "all copies are in your deck — remove one in the editor first" : "you own none" };
+  const def = pool.get(cardId);
+  if (!def) return { ok: false, reason: "unknown card" };
+  const gold = sellPrice(def, knobs);
+  world.player.gold += gold;
+  world.player.collection[cardId] = owned - 1;
+  if (world.player.collection[cardId] === 0) delete world.player.collection[cardId];
+  return { ok: true, gold };
 }

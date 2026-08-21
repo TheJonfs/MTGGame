@@ -95,6 +95,11 @@ export const KNOBS = {
     unit: "gold per (1 + mana value)",
     description: "Shop price = round(shopPriceMultiplier × shopBasePrice × (1 + mana value)). A 1-drop is 8, a 3-drop 16, a 5-drop 24 at defaults. Basics are never sold (free and infinite).",
   }),
+  beastBuyOffMultiplier: knob<number>({
+    default: 2,
+    unit: "× buy-off price",
+    description: "ADR-066: a beast is distracted, not negotiated with — its buy-off price is the tier price times this (when the catalog marks it buyable at all).",
+  }),
   fleeOddsByTier: knob<Record<EnemyTier, number>>({
     default: { 1: 0.6, 2: 0.5, 3: 0.4 },
     unit: "probability, by enemy tier",

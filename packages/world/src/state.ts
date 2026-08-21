@@ -12,7 +12,18 @@ import { WorldRng, type WorldRngState } from "./rng.js";
  * ships are VERSIONED, never edited (brief "escalate, don't decide").
  */
 
-export const SAVE_FORMAT = "world-save-v1";
+/** S14 (brief Part 1): v2 adds `shops` (depletion + restock on epoch), `visits`,
+ * `lastTownIndex`, and the cosmetic `deckName`. v1 saves load with all four
+ * defaulted (migration below). Any further field is a v3 — escalate first. */
+export const SAVE_FORMAT = "world-save-v2";
+export const SAVE_FORMATS_READABLE = ["world-save-v1", "world-save-v2"] as const;
+
+/** Per-town shop state (S14): which epoch the stock was rolled for and how
+ * many of each card were sold in it; a new epoch restocks (sold resets). */
+export interface ShopState {
+  epoch: number;
+  sold: Record<string, number>;
+}
 
 export type Decklist = { cardId: string; count: number }[];
 /** The collection is the character sheet (manifest §1.4): cardId → copies owned. */
@@ -55,6 +66,14 @@ export interface WorldState {
   duels: DuelRecord[];
   /** Set when world life hits the floor at 0 — the game-over screen reads it. */
   gameOver: boolean;
+  /** S14 v2: per-town shop depletion, keyed by town index. */
+  shops: Record<number, ShopState>;
+  /** S14 v2: visits per town (first-visit text, future shop rules). */
+  visits: Record<number, number>;
+  /** S14 v2: the town the collection/editor "Back" returns to (−1 = none). */
+  lastTownIndex: number;
+  /** S14 v2: cosmetic name of the active deck (the editor edits it). */
+  deckName: string;
 }
 
 export interface NewWorldOptions {
@@ -138,6 +157,10 @@ export function newWorld(opts: NewWorldOptions): WorldState {
     rng: rng.state(),
     duels: [],
     gameOver: false,
+    shops: {},
+    visits: {},
+    lastTownIndex: gen.map.towns.findIndex((t) => t.at.x === gen.map.start.x && t.at.y === gen.map.start.y),
+    deckName: DECKS[opts.starterDeck].name,
   };
 }
 
@@ -148,8 +171,27 @@ export function serializeWorld(world: WorldState): string {
 }
 
 export function deserializeWorld(text: string): WorldState {
-  const parsed = JSON.parse(text) as { format?: string; world?: WorldState };
-  if (parsed.format !== SAVE_FORMAT) throw new Error(`Unsupported save format: ${parsed.format ?? "(none)"} (expected ${SAVE_FORMAT})`);
-  if (!parsed.world || typeof parsed.world.seed !== "number" || !parsed.world.map) throw new Error("Malformed world save");
-  return parsed.world;
+  const parsed = JSON.parse(text) as { format?: string; world?: Partial<WorldState> };
+  if (!parsed.format || !(SAVE_FORMATS_READABLE as readonly string[]).includes(parsed.format)) {
+    throw new Error(`Unsupported save format: ${parsed.format ?? "(none)"} (readable: ${SAVE_FORMATS_READABLE.join(", ")})`);
+  }
+  const w = parsed.world;
+  if (!w || typeof w.seed !== "number" || !w.map) throw new Error("Malformed world save");
+  return migrateWorld(parsed.format, w);
+}
+
+/** v1 → v2: the four new fields default empty/derived; nothing else moves. */
+export function migrateWorld(format: string, w: Partial<WorldState>): WorldState {
+  if (format === "world-save-v2") return w as WorldState;
+  // world-save-v1
+  const map = w.map!;
+  const pos = w.player!.position;
+  const lastTownIndex = map.towns.findIndex((t) => t.at.x === pos.x && t.at.y === pos.y);
+  return {
+    ...(w as WorldState),
+    shops: {},
+    visits: {},
+    lastTownIndex,
+    deckName: w.deckName ?? "Deck",
+  };
 }

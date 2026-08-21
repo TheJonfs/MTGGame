@@ -160,8 +160,9 @@ export interface PreparedDuel {
   enemy: { name: string; difficulty: OpponentTemplate["difficulty"]; deck: OpponentTemplate["deck"]; portrait: string; worldLife: number; tier: 1 | 2 | 3 };
 }
 
-export function buyOffPrice(knobs: KnobValues, tier: 1 | 2 | 3): number {
-  return knobs.buyOffBase * tier;
+export function buyOffPrice(knobs: KnobValues, tier: 1 | 2 | 3, tmpl?: Pick<OpponentTemplate, "kind">): number {
+  const base = knobs.buyOffBase * tier;
+  return tmpl?.kind === "beast" ? Math.round(base * knobs.beastBuyOffMultiplier) : base;
 }
 
 export function parley(world: WorldState, catalog: Catalog, enc: Encounter, choice: ParleyChoice, extra: Parameters<typeof worldKnobs>[1] = {}): ParleyOutcome {
@@ -170,8 +171,11 @@ export function parley(world: WorldState, catalog: Catalog, enc: Encounter, choi
   try {
     switch (choice) {
       case "buyoff": {
-        const price = buyOffPrice(knobs, enc.tier);
-        if (world.player.gold < price) return { type: "refused", reason: `buy-off costs ${price} gold; you have ${world.player.gold}` };
+        const inst0 = world.opponents.find((o) => o.id === enc.opponentId);
+        const tmpl0 = inst0 ? opponentTemplate(catalog, inst0) : undefined;
+        if (tmpl0 && tmpl0.buyable === false) return { type: "refused", reason: `${tmpl0.name} cannot be bought off` };
+        const price = buyOffPrice(knobs, enc.tier, tmpl0);
+        if (world.player.gold < price) return { type: "refused", reason: `${tmpl0?.kind === "beast" ? "distraction" : "buy-off"} costs ${price} gold; you have ${world.player.gold}` };
         world.player.gold -= price;
         return { type: "boughtOff", goldPaid: price };
       }

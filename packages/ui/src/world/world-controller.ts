@@ -2,9 +2,14 @@ import type { CardDef } from "@shandalar/cards";
 import type { MatchResult } from "@shandalar/engine";
 import { DECK_ARCHETYPES, type DeckKey } from "@shandalar/sim/decks";
 import {
+  addCopy,
   advance,
   applyDuelResult,
   buyCard,
+  commitDeck,
+  deckLegal,
+  idx,
+  removeCopy,
   deserializeWorld,
   encounterKnobs,
   findPath,
@@ -14,10 +19,13 @@ import {
   regionAt,
   rollShopStock,
   samePoint,
+  sellCard,
+  syncShopState,
   serializeWorld,
   townAt,
   worldKnobs,
   type Catalog,
+  type Decklist,
   type DifficultyName,
   type DuelRecord,
   type Encounter,
@@ -56,6 +64,14 @@ export type WorldScreen =
     }
   | { kind: "town"; town: Town; stock: ShopItem[]; notice: string | null }
   | { kind: "collection"; back: "map" | "town" }
+  | {
+      /** S14 Part 2: the deck editor — a DRAFT decklist; commit only when legal (ADR-065). */
+      kind: "editor";
+      back: "map" | "town";
+      draft: Decklist;
+      name: string;
+      notice: string | null;
+    }
   | { kind: "gameOver"; fatal: DuelRecord | null };
 
 export interface NewGameChoice {
@@ -77,12 +93,17 @@ export class WorldController {
   private listeners = new Set<() => void>();
   private walkToken = 0;
   private lastTown: Town | null = null;
+  /** S14 rider: the path left unwalked when an encounter interrupted (resume with one click). */
+  resumePath: Point[] | null = null;
 
   constructor(
     readonly pool: Map<string, CardDef>,
     readonly catalog: Catalog,
     private readonly storage: Pick<Storage, "getItem" | "setItem"> | null = typeof localStorage !== "undefined" ? localStorage : null,
-  ) {}
+  ) {
+    // Dev handle (like __mc) for console/driver use.
+    (globalThis as { __wc?: WorldController }).__wc = this;
+  }
 
   onChange(fn: () => void): () => void {
     this.listeners.add(fn);
@@ -185,6 +206,7 @@ export class WorldController {
       this.emit();
       for (const e of events) {
         if (e.type === "encounter") {
+          this.resumePath = path.slice(i + 1);
           const tmpl = opponentTemplate(this.catalog, this.world.opponents.find((o) => o.id === e.encounter.opponentId)!);
           this.screen = { kind: "encounter", encounter: e.encounter, tmpl, knobs: encounterKnobs(this.world, this.catalog, e.encounter, this.extraKnobs), notice: null };
           this.emit();
@@ -198,6 +220,87 @@ export class WorldController {
       if (this.stepMs > 0) await new Promise((r) => setTimeout(r, this.stepMs));
     }
     if (token === this.walkToken && this.screen.kind === "map") {
+      this.resumePath = null;
+      this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: null };
+      this.emit();
+    }
+  }
+
+  /** S14 rider: after a parley, re-preview what was left of the walk (one more click walks it). */
+  resumeWalk(): void {
+    if (!this.world || this.screen.kind !== "map" || !this.resumePath || this.resumePath.length === 0) return;
+    const path = this.resumePath.filter((p) => this.world!.map.passable[idx(this.world!.map, p)]);
+    const target = path[path.length - 1] ?? null;
+    this.screen = { ...this.screen, preview: path, previewTarget: target, notice: target ? `Resume: ${path.length} steps left — click the destination to continue.` : null };
+    this.resumePath = null;
+    this.emit();
+  }
+
+  // ---------- S14 Part 2: deck editor ----------
+
+  /** Editor entry: anywhere outside an encounter/duel (clock-free by principle). */
+  canEdit(): { ok: boolean; reason?: string } {
+    if (!this.world) return { ok: false, reason: "no world" };
+    switch (this.screen.kind) {
+      case "encounter": return { ok: false, reason: "not while parleying" };
+      case "duel": return { ok: false, reason: "not during a duel" };
+      case "duelResult": return { ok: false, reason: "finish the result first" };
+      case "gameOver": return { ok: false, reason: "the journey is over" };
+      default: return { ok: true };
+    }
+  }
+
+  openEditor(): void {
+    if (!this.world || !this.canEdit().ok) return;
+    const back = this.screen.kind === "town" || (this.screen.kind === "collection" && this.screen.back === "town") ? "town" : "map";
+    this.screen = { kind: "editor", back, draft: this.world.player.activeDeck.map((e) => ({ ...e })), name: this.world.deckName, notice: null };
+    this.emit();
+  }
+
+  editorAdd(cardId: string): void {
+    if (!this.world || this.screen.kind !== "editor") return;
+    const r = addCopy(this.world.player.collection, this.screen.draft, cardId);
+    this.screen = r.ok ? { ...this.screen, draft: r.deck, notice: null } : { ...this.screen, notice: `Can't add: ${r.reason}` };
+    this.emit();
+  }
+
+  editorRemove(cardId: string): void {
+    if (this.screen.kind !== "editor") return;
+    const r = removeCopy(this.screen.draft, cardId);
+    this.screen = r.ok ? { ...this.screen, draft: r.deck, notice: null } : { ...this.screen, notice: `Can't remove: ${r.reason}` };
+    this.emit();
+  }
+
+  editorRename(name: string): void {
+    if (this.screen.kind !== "editor") return;
+    this.screen = { ...this.screen, name };
+    this.emit();
+  }
+
+  /** Legality of the current draft (the Save button's reason). */
+  editorLegality(): { ok: boolean; reason?: string } {
+    if (this.screen.kind !== "editor") return { ok: false, reason: "no draft" };
+    return deckLegal(this.screen.draft);
+  }
+
+  /** Commit the draft (legal only — ADR-065); returns to where the editor was opened from. */
+  editorSave(): boolean {
+    if (!this.world || this.screen.kind !== "editor") return false;
+    const r = commitDeck(this.world, this.screen.draft, this.screen.name);
+    if (!r.ok) {
+      this.screen = { ...this.screen, notice: `Not saved: ${r.reason}` };
+      this.emit();
+      return false;
+    }
+    this.autosave();
+    this.editorClose();
+    return true;
+  }
+
+  editorClose(): void {
+    if (!this.world || this.screen.kind !== "editor") return;
+    if (this.screen.back === "town" && this.lastTown) this.enterTown(this.lastTown);
+    else {
       this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: null };
       this.emit();
     }
@@ -208,16 +311,38 @@ export class WorldController {
   enterTown(town: Town): void {
     if (!this.world) return;
     this.lastTown = town;
-    this.autosave(); // autosave on town entry (brief Part 4)
-    this.screen = { kind: "town", town, stock: rollShopStock(this.world, town, this.pool, this.knobs), notice: null };
+    // S14 v2: visits + lastTownIndex + shop epoch sync, then autosave (brief Part 4).
+    this.world.visits[town.index] = (this.world.visits[town.index] ?? 0) + 1;
+    this.world.lastTownIndex = town.index;
+    syncShopState(this.world, town, this.knobs);
+    this.autosave();
+    const first = this.world.visits[town.index] === 1;
+    this.screen = { kind: "town", town, stock: rollShopStock(this.world, town, this.pool, this.knobs), notice: first ? `First time in ${town.name}.` : null };
     this.emit();
   }
 
-  buy(item: ShopItem): void {
+  buy(item: ShopItem, toDeck = false): void {
     if (!this.world || this.screen.kind !== "town") return;
-    const r = buyCard(this.world, item);
+    const { town } = this.screen;
+    const r = buyCard(this.world, town, item, this.knobs, toDeck);
     if (r.ok) this.autosave(); // gold spent is permanent the moment it lands
-    this.screen = { ...this.screen, notice: r.ok ? `Bought ${this.pool.get(item.cardId)?.name ?? item.cardId} for ${r.price} gold.` : `Can't buy: ${r.reason}` };
+    const name = this.pool.get(item.cardId)?.name ?? item.cardId;
+    this.screen = {
+      ...this.screen,
+      stock: rollShopStock(this.world, town, this.pool, this.knobs), // depletion shows immediately
+      notice: r.ok
+        ? `Bought ${name} for ${r.price} gold${r.addedToDeck ? " — added to your deck" : r.note ? ` (${r.note})` : ""}.`
+        : `Can't buy: ${r.reason}`,
+    };
+    this.emit();
+  }
+
+  /** S14 Part 3: sell one spare copy at half price (never basics, never deck copies). */
+  sell(cardId: string): void {
+    if (!this.world || this.screen.kind !== "town") return;
+    const r = sellCard(this.world, this.pool, cardId, this.knobs);
+    if (r.ok) this.autosave();
+    this.screen = { ...this.screen, notice: r.ok ? `Sold ${this.pool.get(cardId)?.name ?? cardId} for ${r.gold} gold.` : `Can't sell: ${r.reason}` };
     this.emit();
   }
 
@@ -230,6 +355,7 @@ export class WorldController {
   openCollection(): void {
     if (this.screen.kind === "map") this.screen = { kind: "collection", back: "map" };
     else if (this.screen.kind === "town") this.screen = { kind: "collection", back: "town" };
+    else if (this.screen.kind === "editor") this.screen = { kind: "collection", back: this.screen.back };
     else return;
     this.emit();
   }

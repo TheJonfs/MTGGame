@@ -165,6 +165,22 @@
       "knobs": {
         "anteCount": 2
       }
+    },
+    {
+      "id": "beast_wurm",
+      "name": "the Pelakka Wurm",
+      "deck": "C",
+      "tier": 3,
+      "difficulty": "journeyman",
+      "portrait": "beast-pelakka-wurm",
+      "portraitChip": "beast-pelakka-wurm-chip",
+      "worldLife": 14,
+      "colors": "G",
+      "kind": "beast",
+      "buyable": true,
+      "knobs": {
+        "anteCount": 2
+      }
     }
   ]
 }

@@ -458,3 +458,25 @@ button.primary { background: var(--brass); color: var(--parchment); border: 1.5p
 .world-result { max-width: 640px; }
 .world-result .dialog-cards { margin: 6px 0 10px; }
 .world-collection .caption { font-size: 11px; }
+
+
+/* ---------- S14: deck editor + shop v2 ---------- */
+.world-editor .gallery-header { gap: 10px; }
+.world-editor .legal { color: var(--boost); font-weight: 700; }
+.world-editor .illegal { color: var(--danger); font-weight: 700; }
+.curve { display: inline-flex; align-items: flex-end; gap: 2px; height: 30px; }
+.curve-bar { display: inline-flex; flex-direction: column; align-items: center; width: 14px; }
+.curve-bar i { display: block; width: 10px; background: var(--brass); border: 1px solid var(--ink); border-radius: 2px 2px 0 0; }
+.curve-bar small { font-size: 8px; line-height: 1; margin-top: 1px; }
+.editor-panes { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.editor-pane { background: rgba(255,252,240,0.45); border: 1.5px solid var(--ink); border-radius: 6px; padding: 8px; min-height: 300px; }
+.editor-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.editor-card { position: relative; cursor: pointer; }
+.editor-card:hover .frame { outline: 2.5px solid var(--brass); }
+.editor-card .editor-count { position: absolute; right: -4px; top: -6px; background: var(--parchment); border: 1.5px solid var(--ink); border-radius: 10px; font-size: 11px; font-weight: 700; padding: 0 6px; font-family: var(--serif); }
+.basics-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.basics-row button, .sell-chip { font-size: 11px; padding: 3px 8px; }
+.shop-item.sold-out .card-slot { filter: saturate(0.3) opacity(0.55); }
+.shop-buttons { display: flex; gap: 4px; }
+.shop-stock { font-size: 10.5px; color: var(--ink-soft); }
+.sell-row { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; }

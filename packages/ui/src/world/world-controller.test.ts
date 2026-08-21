@@ -80,6 +80,98 @@ async function forceEncounter(c: WorldController): Promise<void> {
   throw new Error("could not force an encounter");
 }
 
+describe("S14 acceptance: editor, shop v2, resume path, v1 migration", () => {
+  it("editor: open → remove a nonbasic, add a spare → legal → save → the next duel's MatchSpec carries the edited deck; illegal drafts are unsaveable", async () => {
+    const c = freshController();
+    c.newGame({ starterDeck: "A", difficulty: "standard", seed: 201 });
+    expect(c.canEdit().ok).toBe(true);
+    c.openEditor();
+    expect(c.screen.kind).toBe("editor");
+    const scr = () => c.screen as { draft: { cardId: string; count: number }[]; name: string; notice: string | null };
+    const { spares } = await import("@shandalar/world");
+    const sp = spares(c.world!.player.collection, scr().draft);
+    const spareId = Object.keys(sp)[0]!;
+    const nonbasic = scr().draft.find((e) => e.cardId !== "mountain")!.cardId;
+    c.editorRemove(nonbasic);
+    c.editorAdd(spareId);
+    c.editorRename("Scripted Goblins");
+    expect(c.editorLegality().ok).toBe(true);
+    // Drive below the floor: save refused, deck untouched.
+    for (let k = 0; k < 12; k++) c.editorRemove("mountain");
+    expect(c.editorLegality().ok).toBe(false);
+    expect(c.editorSave()).toBe(false);
+    expect(c.screen.kind).toBe("editor");
+    expect(scr().notice).toMatch(/Not saved/);
+    // Basics are infinite: put them back, save.
+    for (let k = 0; k < 12; k++) c.editorAdd("mountain");
+    expect(c.editorSave()).toBe(true);
+    expect(c.screen.kind).toBe("map");
+    expect(c.world!.deckName).toBe("Scripted Goblins");
+    expect(c.world!.player.activeDeck.find((e) => e.cardId === spareId)).toBeTruthy();
+    // The edited deck is what the duel gets.
+    await forceEncounter(c);
+    expect(c.canEdit().ok).toBe(false); // not while parleying
+    c.parley("fight");
+    const m = c.match!;
+    expect(m.spec.players[0].decklist).toEqual(c.world!.player.activeDeck);
+    c.match!.concede();
+    let g = 0;
+    while (c.screen.kind === "duel" && g++ < 500) await tick();
+    expect(c.screen.kind).toBe("duelResult");
+  }, 60_000);
+
+  it("shop v2: depletion shows after buying, persists through save/load; sell adds gold; buy → add to deck when legal", async () => {
+    const c = freshController();
+    c.newGame({ starterDeck: "C", difficulty: "standard", seed: 202 });
+    const town = c.world!.map.towns[0]!;
+    c.enterTown(town);
+    expect(c.world!.visits[town.index]).toBe(1);
+    expect(c.world!.lastTownIndex).toBe(town.index);
+    const stock = () => (c.screen as { stock: import("@shandalar/world").ShopItem[] }).stock;
+    const item = [...stock()].filter((i) => i.remaining > 0).sort((a, b) => a.price - b.price)[0]!;
+    c.world!.player.gold = 500;
+    c.buy(item, true);
+    expect(stock().find((i) => i.cardId === item.cardId)!.remaining).toBe(item.stock - 1);
+    const saved = c.saveText();
+    const c2 = freshController();
+    c2.loadText(saved);
+    expect((c2.screen as { stock: import("@shandalar/world").ShopItem[] }).stock.find((i) => i.cardId === item.cardId)!.remaining).toBe(item.stock - 1);
+    // Sell a spare.
+    const { spares } = await import("@shandalar/world");
+    const sp = spares(c.world!.player.collection, c.world!.player.activeDeck);
+    const spareId = Object.keys(sp)[0]!;
+    const gold = c.world!.player.gold;
+    c.sell(spareId);
+    expect(c.world!.player.gold).toBeGreaterThan(gold);
+  });
+
+  it("resume path: after a parley, the unwalked remainder can be re-previewed and walked", async () => {
+    const c = freshController();
+    c.newGame({ starterDeck: "D", difficulty: "standard", seed: 203 });
+    c.world!.player.gold = 1000;
+    await forceEncounter(c);
+    expect(c.resumePath).not.toBeNull();
+    c.parley("buyoff");
+    expect(c.screen.kind).toBe("map");
+    c.resumeWalk();
+    // Remainder may be empty (one-cell walks); when present it is previewed.
+    const scr = c.screen as { preview: unknown[] | null };
+    expect(scr.preview === null || Array.isArray(scr.preview)).toBe(true);
+  });
+
+  it("a v1 save loads (migrated) and the world plays on", () => {
+    const c = freshController();
+    c.newGame({ starterDeck: "B", difficulty: "standard", seed: 204 });
+    const parsed = JSON.parse(c.saveText()) as { format: string; world: Record<string, unknown> };
+    const { shops: _a, visits: _b, lastTownIndex: _c, deckName: _d, ...v1 } = parsed.world;
+    const c2 = freshController();
+    c2.loadText(JSON.stringify({ format: "world-save-v1", world: v1 }));
+    expect(c2.world!.shops).toEqual({});
+    expect(c2.world!.deckName).toBe("Deck");
+    expect(["map", "town"]).toContain(c2.screen.kind);
+  });
+});
+
 describe("WorldController acceptance (S13 Part 5, scripted half)", () => {
   it("new game → map; preview then walk; town entry autosaves; continue-from-autosave restores the identical world", async () => {
     const c = freshController();
@@ -110,9 +202,9 @@ describe("WorldController acceptance (S13 Part 5, scripted half)", () => {
     const town = c.world!.map.towns[0]!;
     c.enterTown(town);
     expect(c.screen.kind).toBe("town");
-    const stock = (c.screen as { stock: { cardId: string; price: number }[] }).stock;
+    const stock = (c.screen as { stock: import("@shandalar/world").ShopItem[] }).stock;
     expect(stock.length).toBeGreaterThan(0);
-    const cheap = [...stock].sort((a, b) => a.price - b.price)[0]!;
+    const cheap = [...stock].filter((i) => i.remaining > 0).sort((a, b) => a.price - b.price)[0]!;
     const gold = c.world!.player.gold;
     c.buy(cheap);
     expect(c.world!.player.gold).toBe(gold - cheap.price);

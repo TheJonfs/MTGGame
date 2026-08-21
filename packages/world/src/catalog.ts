@@ -23,6 +23,8 @@ export interface RegionTemplate {
 }
 
 export type Difficulty = "apprentice" | "journeyman" | "master";
+/** ADR-066: mages parley; beasts are distracted (buyable flag + multiplier knob) or not bought at all. */
+export type OpponentKind = "mage" | "beast";
 
 export interface OpponentTemplate {
   id: string;
@@ -39,6 +41,12 @@ export interface OpponentTemplate {
   colors: string;
   /** Knob overrides at the `opponent` layer (e.g. a tier-3 carries anteCount 2). */
   knobs?: KnobSource;
+  /** ADR-066 (S14 PoC): default "mage". */
+  kind?: OpponentKind;
+  /** ADR-066: can this opponent be bought off / distracted? Default true. Beasts may say no. */
+  buyable?: boolean;
+  /** ADR-066: silhouette chip crop slug for the map marker (beasts); falls back to `portrait`. */
+  portraitChip?: string;
 }
 
 export interface Catalog {
@@ -72,6 +80,7 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
     if (![1, 2, 3].includes(op.tier)) errors.push(`opponent ${op.id}: bad tier ${op.tier}`);
     if (!["apprentice", "journeyman", "master"].includes(op.difficulty)) errors.push(`opponent ${op.id}: bad difficulty ${op.difficulty}`);
     if (!Number.isInteger(op.worldLife) || op.worldLife < 1) errors.push(`opponent ${op.id}: bad worldLife`);
+    if (op.kind && !["mage", "beast"].includes(op.kind)) errors.push(`opponent ${op.id}: bad kind ${op.kind}`);
     if (op.knobs) {
       try {
         assertKnobSource(op.knobs as Record<string, unknown>, `opponent ${op.id}`);
