@@ -140,7 +140,12 @@ function StripTile({ def }: { def: CardDef }) {
   return (
     <div className="tile" title={def.name} style={{ cursor: "default" }}>
       {def.source === "real" ? (
-        <img className="art" src={`/real-art/${def.id}.art.jpg`} alt="" />
+        <img
+          className="art"
+          src={`/real-art/${def.id}.tile.jpg`}
+          onError={(e) => { (e.target as HTMLImageElement).src = `/real-art/${def.id}.art.jpg`; }}
+          alt=""
+        />
       ) : def.art?.asset ? (
         <img className="art" src={def.art.asset} alt="" />
       ) : (

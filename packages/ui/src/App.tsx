@@ -73,7 +73,7 @@ function Viewer({ game }: { game: SavedGame }) {
   const [speed, setSpeed] = useState(2);
   const [hovered, setHovered] = useState<string | null>(null);
   const [pinned, setPinned] = useState<string | null>(null);
-  const [printed, setPrinted] = useState(false);
+  const [printed, setPrinted] = useState(true); // S10 playtest: default to the printed card
   const [reveal, setReveal] = useState(false);
   const [replayMs, setReplayMs] = useState(0);
   const [flagNote, setFlagNote] = useState<string | null>(null);

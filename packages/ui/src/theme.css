@@ -19,6 +19,7 @@
   --ink: #2b2520;
   --ink-soft: #4a4038;
   --brass: #b08a3e;
+  --gold: #e8c15a; /* playable-highlight gold (S10 playtest): offset from every frame color */
   --wood: #6b4a2b;
   --mana-w: #e9e2c8;
   --mana-u: #3f6e9e;
@@ -49,8 +50,9 @@ html, body, #root { margin: 0; height: 100%; }
 body {
   font-family: var(--sans);
   color: var(--ink);
-  background: var(--wood) url("/surface-wood.png");
-  background-size: 900px auto;
+  /* S10 playtest: cover + fixed — the wood texture isn't seamless, so tiling
+     showed its edge mid-view; one viewport-locked cover image has no seam. */
+  background: var(--wood) url("/surface-wood.png") center / cover no-repeat fixed;
 }
 
 .app { display: grid; grid-template-columns: minmax(0, 1fr) clamp(240px, 30%, 360px); grid-template-rows: 1fr auto; height: 100%; }
@@ -286,7 +288,10 @@ button.linkish { background: none; border: none; color: var(--brass); cursor: po
 .play-prompt .hold-toggle { font-size: 10.5px; display: flex; align-items: center; gap: 3px; }
 
 /* Interaction states — legality always from the enumerator via the controller */
-.tile.castable, .hand-card.castable .frame { outline: 2.5px solid var(--boost); cursor: pointer; }
+.tile.castable, .hand-card.castable .frame {
+  outline: 3px solid var(--gold); cursor: pointer;
+  box-shadow: 0 0 10px 3px rgba(232, 193, 90, 0.75);
+}
 .tile.target { outline: 3px solid var(--danger); cursor: crosshair; }
 .tile.staged { outline: 3px solid var(--brass); transform: translateY(-6px); }
 .tile.pending { outline: 3px dashed var(--brass); }

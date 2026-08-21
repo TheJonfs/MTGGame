@@ -59,7 +59,7 @@ function PromptBar({ c, phase }: { c: MatchController; phase: UiPhase }) {
 
   return (
     <div className="transport play-prompt">
-      <span className="prompt-text">{prompt}</span>
+      <span className="prompt-text">{c.combatNotice ?? prompt}</span>
       {phase.kind === "priority" && (
         <button className="primary" onClick={() => c.pass()}>Pass</button>
       )}
@@ -286,7 +286,7 @@ export function PlayMatch({
 }) {
   const [, force] = useState(0);
   const [inspected, setInspected] = useState<string | null>(null);
-  const [printed, setPrinted] = useState(false);
+  const [printed, setPrinted] = useState(true); // S10 playtest: default to the printed card
   const [zoneOpen, setZoneOpen] = useState<{ player: PlayerId; zone: "graveyard" | "exile" } | null>(null);
 
   useEffect(() => c.onChange(() => force((n) => n + 1)), [c]);

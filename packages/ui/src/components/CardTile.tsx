@@ -47,7 +47,15 @@ export function CardTile({
       title={def.name}
     >
       {def.source === "real" ? (
-        <img className="art" src={`/real-art/${obj.cardId}.art.jpg`} alt="" loading="lazy" />
+        // Tile-size derivative (art-tiles.py): prefiltered downscale kills the
+        // halftone moire the browser's own resize produces at this size.
+        <img
+          className="art"
+          src={`/real-art/${obj.cardId}.tile.jpg`}
+          onError={(e) => { (e.target as HTMLImageElement).src = `/real-art/${obj.cardId}.art.jpg`; }}
+          alt=""
+          loading="lazy"
+        />
       ) : def.art?.asset ? (
         <img className="art" src={def.art.asset} alt="" loading="lazy" />
       ) : (

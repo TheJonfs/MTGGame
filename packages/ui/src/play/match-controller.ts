@@ -113,6 +113,10 @@ export class MatchController {
 
   phase: UiPhase = { kind: "waiting" };
   result: MatchResult | null = null;
+  /** Transient combat narration (S10 playtest: with no legal blockers there is
+   * no pause, so an incoming attack could resolve invisibly — narrate it). */
+  combatNotice: string | null = null;
+  private noticeTimer: ReturnType<typeof setTimeout> | null = null;
 
   private human = new HumanAgent();
   private conceding = false;
@@ -120,6 +124,8 @@ export class MatchController {
   private listeners = new Set<() => void>();
   /** Queue of staged declarations being streamed after a combat Confirm. */
   private declQueue: Action[] | null = null;
+  /** Last own-turn anchor stop already shown ("turn:step") — anchors pause once. */
+  private anchorSeen: string | null = null;
 
   constructor(
     private readonly pool: Map<string, CardDef>,
@@ -170,6 +176,37 @@ export class MatchController {
       handSize: 7,
       maxTurns: DEFAULT_RULES.maxTurns,
     });
+
+    // Combat visibility (S10 playtest): re-render on step changes so the lane
+    // paints during auto-resolved combat, and narrate incoming attacks/damage
+    // that produce no human pause (ADR-014 auto-takes pass-only windows).
+    const bus = this.game.ctx.bus;
+    bus.on("STEP_BEGIN", () => this.emit());
+    bus.on("ATTACKERS_DECLARED", (e) => {
+      const state = this.game.state;
+      if (state.activePlayer === this.humanSeat) return; // your own attack is visible by construction
+      const names = e.attackers
+        .map((id) => state.objects[id])
+        .filter((o): o is NonNullable<typeof o> => !!o)
+        .map((o) => pool.get(o.cardId)?.name ?? o.cardId);
+      if (names.length > 0) this.showNotice(`Opponent attacks with ${names.join(", ")}`);
+    });
+    bus.on("DAMAGE", (e) => {
+      if (e.target.kind === "player" && e.target.player === this.humanSeat && e.combat) {
+        this.showNotice(`You take ${e.amount} combat damage (${pool.get(e.sourceCardId)?.name ?? e.sourceCardId})`);
+      }
+    });
+  }
+
+  private showNotice(text: string): void {
+    this.combatNotice = this.combatNotice && this.noticeTimer ? `${this.combatNotice} · ${text}` : text;
+    if (this.noticeTimer) clearTimeout(this.noticeTimer);
+    this.noticeTimer = setTimeout(() => {
+      this.combatNotice = null;
+      this.noticeTimer = null;
+      this.emit();
+    }, 4000);
+    this.emit();
   }
 
   // ---------- lifecycle ----------
@@ -289,6 +326,10 @@ export class MatchController {
 
   // ---------- priority (ADR-058 auto-pass) ----------
 
+  /** Steps that always pause on the human's own turn (S10 playtest: Chris
+   * wants main phases and end step as fixed anchors, not opt-in stops). */
+  private static OWN_TURN_STOPS: ReadonlySet<string> = new Set(["MAIN1", "MAIN2", "END"]);
+
   private enterPriority(view: GameView, request: ActionRequest): void {
     const castable = new Map<string, Action[]>();
     const lands = new Map<string, Action>();
@@ -298,8 +339,28 @@ export class MatchController {
       else if (a.type === "playLand") lands.set(a.objectId, a);
       else if (a.type === "activateAbility") activatable.set(a.objectId, [...(activatable.get(a.objectId) ?? []), a]);
     }
+    // R-029 dedups hand actions by cardId, so only one copy of a duplicate
+    // carries the action. Alias every copy in hand to the enumerated one:
+    // all Islands glow, clicking any of them plays the enumerated Island.
+    // (S10 playtest: "I'm not able to play some of the Islands.")
+    const byCardId = new Map(view.hand.map((c) => [c.objectId, c.cardId]));
+    for (const { objectId, cardId } of view.hand) {
+      if (!lands.has(objectId)) {
+        const twin = [...lands.keys()].find((id) => byCardId.get(id) === cardId);
+        if (twin) lands.set(objectId, lands.get(twin)!);
+      }
+      if (!castable.has(objectId)) {
+        const twin = [...castable.keys()].find((id) => byCardId.get(id) === cardId);
+        if (twin) castable.set(objectId, castable.get(twin)!);
+      }
+    }
     const meaningful = castable.size > 0 || lands.size > 0 || activatable.size > 0;
-    const stopHere = this.stops.has(view.step as Step) || this.holdArmed;
+    const anchorKey = `${view.turn}:${view.step}`;
+    const ownTurnAnchor =
+      view.activePlayer === request.player &&
+      MatchController.OWN_TURN_STOPS.has(view.step) &&
+      this.anchorSeen !== anchorKey;
+    const stopHere = this.stops.has(view.step as Step) || this.holdArmed || ownTurnAnchor;
     if (!meaningful && !stopHere) {
       const pass = request.actions.find((a) => a.type === "pass");
       if (pass) {
@@ -307,6 +368,7 @@ export class MatchController {
         return; // no phase change, no flicker
       }
     }
+    if (ownTurnAnchor) this.anchorSeen = anchorKey;
     this.holdArmed = false; // consumed by pausing
     this.phase = { kind: "priority", castable, lands, activatable, canPass: request.actions.some((a) => a.type === "pass") };
     this.emit();
