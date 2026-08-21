@@ -107,6 +107,9 @@ importers:
 
   packages/world:
     dependencies:
+      '@shandalar/agents':
+        specifier: workspace:*
+        version: link:../agents
       '@shandalar/cards':
         specifier: workspace:*
         version: link:../cards
@@ -119,10 +122,6 @@ importers:
       '@shandalar/sim':
         specifier: workspace:*
         version: link:../sim
-    devDependencies:
-      '@shandalar/agents':
-        specifier: workspace:*
-        version: link:../agents
 
 packages:
 

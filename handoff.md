@@ -24,6 +24,10 @@
 2. **Editor "Reset"** — discard draft changes back to the saved deck and name (tested).
 3. **Lairs panel rows are clickable** — on the map, a click previews the path to the lair (click the destination again to walk).
 
+## Director round 2b — background: `pnpm world-sim` (headless journey tour)
+
+`packages/world/src/world-sim-cli.ts` (CLI-only; the world runtime never imports agents): tours N seeded worlds — town→town→lair, fight every encounter with an AI-piloted starter, apply consequences — and reports what the knobs produce. **Baseline, 30 seeds, deck A, journeyman pilot, standard knobs:** steps/tour ≈ 100; encounters per 100 steps **civilized 3.5 · approach 8.5 · wild 17.3** (wild includes the lair's certain fight); duel win rate by enemy tier **76% / 55% / 34%**; 0 deaths in 30 tours but **mean world life at end 6.8 of 10** (≈3 losses per tour) and a slight ante bleed (won 130 / lost 148 — tier-3 ante-2 losses hurt); mean gold +97 (rewards outpace a non-spending tour). Read: the danger gradient is real and steep (a starter deck hits a wall at tier 3), one tour costs a third of your life at `lifeFloor 0` — the doom-spiral question is quantified for the knob round, and the tier-1 4–6 life idea can be measured here with a catalog tweak. Flags: `--seeds --deck --difficulty --player`.
+
 ## Deviations from the brief
 
 1. **`deckName` is a fourth v2 field** (the brief's Part 2 asks for it "in the save"; Part 1 listed three). Cosmetic; flagged.

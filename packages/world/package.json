@@ -17,7 +17,8 @@
     "@shandalar/core": "workspace:*",
     "@shandalar/cards": "workspace:*",
     "@shandalar/engine": "workspace:*",
-    "@shandalar/sim": "workspace:*"
+    "@shandalar/sim": "workspace:*",
+    "@shandalar/agents": "workspace:*"
   },
   "devDependencies": {
     "@shandalar/agents": "workspace:*"

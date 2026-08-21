@@ -167,6 +167,8 @@ Things a fresh session might otherwise rediscover slowly:
 - **Dev handles pay for themselves** (`__mc`, now `__wc`): forcing a beast encounter for a visual check was three lines in the console.
 - **Planner full-file overwrites keep stomping ADR-058** — diff planner docs against HEAD first thing every session.
 
+- **Simulate the tour before tuning the knobs**: `pnpm world-sim` answers "what do the defaults produce?" in a minute (encounters/100 steps by tier, W/L by tier, life trajectory) — run it before and after any knob or catalog change, the way the ladder guards agent changes.
+
 ## Known interims / watch list
 
 See handoff Concerns for the authoritative list. Highlights: auto-pay greedy feasibility (correct while all producers are single-symbol — R-006); condition fields `controller`/`type`/`subtype` are validated but unexercised (first card to use them should add fixtures); value refs deliberately have no arithmetic (ADR-028 — resist until a card demands it); the `sba-unattach` ATTACHED cause is unreachable by legal play (test-forced only).
