@@ -198,7 +198,17 @@ body {
 .status-block img.portrait { width: 56px; height: 56px; border-radius: 6px; border: 1.5px solid var(--ink); object-fit: cover; }
 .status-block .life { font-family: var(--serif); font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 3px; }
 .status-block .zones { display: flex; gap: 7px; font-size: 11px; align-items: center; flex-wrap: wrap; }
-.status-block .zones img { width: 15px; height: 15px; mix-blend-mode: multiply; vertical-align: -3px; }
+/* S11 round 4 (Chris): panel icons were thin ink lost on parchment — bigger,
+   stroke-dilated (zero-offset drop-shadows), on an ivory chip with an ink ring. */
+.status-block .zones img, .status-block .life img, .panel h3 img {
+  width: 22px; height: 22px; padding: 2.5px; box-sizing: border-box;
+  background: #fff8e6; border: 1.2px solid var(--ink); border-radius: 50%;
+  filter: drop-shadow(0 0 0.45px var(--ink)) drop-shadow(0 0 0.45px var(--ink)) contrast(1.25);
+  vertical-align: -6px; mix-blend-mode: normal;
+  box-shadow: 0 1px 1.5px rgba(0, 0, 0, 0.3);
+}
+.status-block .life img { width: 24px; height: 24px; }
+.panel h3 img { width: 20px; height: 20px; vertical-align: -5px; }
 .mana-pool { display: flex; gap: 3px; }
 .mana-pool img { width: 14px; height: 14px; mix-blend-mode: multiply; }
 
@@ -359,9 +369,9 @@ button.primary { background: var(--brass); color: var(--parchment); border: 1.5p
 .play-app .rail { gap: 12px; }
 .play-app .status-block .zones { font-size: 12.5px; gap: 9px; }
 .status-block .zones .hand-count { font-size: 17px; font-weight: 700; font-family: var(--serif); }
-.status-block .zones .hand-count img { width: 19px; height: 19px; vertical-align: -4px; }
+.status-block .zones .hand-count img { width: 24px; height: 24px; vertical-align: -6px; }
 .floating-inspector {
-  position: fixed; z-index: 15; width: 220px; background: var(--parchment) url("/panel-parchment.png"); background-size: 512px;
+  position: fixed; z-index: 15; width: 258px; background: var(--parchment) url("/panel-parchment.png"); background-size: 512px;
   border: 2px solid var(--ink); border-radius: 8px; box-shadow: 3px 5px 14px rgba(0,0,0,0.45); padding: 0 6px 6px;
 }
 .floating-inspector .drag-bar {
@@ -372,6 +382,8 @@ button.primary { background: var(--brass); color: var(--parchment); border: 1.5p
 .floating-inspector.collapsed { width: 150px; padding-bottom: 0; }
 .floating-inspector .panel { border: none; background: none; padding: 4px 0 0; }
 .floating-inspector .panel h3 { font-size: 11px; }
+/* Printed scans are 240px wide elsewhere; inside the floating panel they scale to fit. */
+.floating-inspector .printed-scan { width: 100%; max-width: 240px; display: block; margin: 0 auto; }
 .play-log .log-line { padding: 0.5px 0; border-bottom: 1px dotted rgba(74, 64, 56, 0.15); }
 .dialog-cards .frame { flex: none; }         /* no flex squish (aspect fix) */
 .dialog-cards .printed-scan { width: 130px; flex: none; }
