@@ -194,7 +194,7 @@ body {
 .mana-chip span { font-family: var(--serif); font-size: 1.02em; font-weight: 700; transform: translateY(-0.02em); }
 
 /* Rail blocks */
-.status-block img.portrait { width: 56px; height: 56px; border-radius: 6px; border: 1.5px solid var(--ink); object-fit: cover; }
+.status-block img.portrait { border-radius: 6px; border: 1.5px solid var(--ink); object-fit: cover; }
 .status-block .life { font-family: var(--serif); font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 3px; }
 /* S11 round 4 (Chris): panel icons were thin ink lost on parchment, then too
    heavy with a blur dilation. Now: an ivory chip (ink ring) holding a CSS-mask
@@ -207,7 +207,7 @@ body {
   box-shadow: 0 1px 1.5px rgba(0, 0, 0, 0.3); vertical-align: -7px;
 }
 .icon-chip .glyph {
-  display: block; width: 72%; height: 72%; background: var(--ink);
+  display: block; width: 80%; height: 80%; background: var(--ink); /* per-icon scale set inline */
   -webkit-mask-image: var(--icon), var(--icon), var(--icon), var(--icon), var(--icon);
   mask-image: var(--icon), var(--icon), var(--icon), var(--icon), var(--icon);
   -webkit-mask-size: contain; mask-size: contain;
@@ -224,15 +224,18 @@ body {
 }
 .panel h3 .icon-chip { vertical-align: -5px; }
 
-/* Status block layout (S11 round 4): portrait | main | zones column */
-.status-block { display: flex; gap: 10px; align-items: flex-start; }
-.status-block .status-main { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.status-block .who { font-family: var(--serif); font-weight: 700; font-size: 15px; }
-.status-block .life { font-size: 26px; gap: 6px; }
-.status-block .hand-line { display: flex; align-items: center; gap: 6px; font-size: 16px; font-family: var(--serif); font-weight: 700; }
-.status-block .hand-line.emph { font-size: 20px; }
-.status-block .status-zones { margin-left: auto; display: flex; flex-direction: column; gap: 4px; align-items: flex-start; padding-right: 2px; }
-.status-block .status-zones .zone { display: flex; align-items: center; gap: 7px; font-size: 16px; font-family: var(--serif); font-weight: 700; }
+/* Status block layout (S11 round 4c, Chris): the left ~28% is the portrait;
+   name / life / hand sit toward the centre; library / graveyard / exile keep
+   the right column with bigger chips and figures. */
+.status-block { display: flex; gap: 12px; align-items: center; }
+.status-block img.portrait { width: 27%; min-width: 60px; max-width: 96px; aspect-ratio: 1 / 1; height: auto; flex: none; }
+.status-block .status-main { display: flex; flex-direction: column; gap: 4px; min-width: 0; margin-left: 4px; flex: 1 1 auto; }
+.status-block .who { font-family: var(--serif); font-weight: 700; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.status-block .life { font-size: 30px; gap: 7px; line-height: 1.05; }
+.status-block .hand-line { display: flex; align-items: center; gap: 7px; font-size: 19px; font-family: var(--serif); font-weight: 700; }
+.status-block .hand-line.emph { font-size: 22px; }
+.status-block .status-zones { margin-left: auto; flex: none; display: flex; flex-direction: column; gap: 5px; align-items: flex-start; padding-right: 2px; }
+.status-block .status-zones .zone { display: flex; align-items: center; gap: 8px; font-size: 19px; font-family: var(--serif); font-weight: 700; }
 .status-block .status-zones .zone.clickable { cursor: pointer; }
 .status-block .status-zones .zone.clickable .count { text-decoration: underline dotted; }
 .status-block .status-zones .zone:hover.clickable .icon-chip { box-shadow: 0 0 0 2px var(--gold); }

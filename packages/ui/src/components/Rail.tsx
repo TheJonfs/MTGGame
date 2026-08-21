@@ -9,10 +9,10 @@ import { CardFrame } from "./CardFrame";
  * solid ink (no <img>, no blur): five copies of the mask offset ±0.5px union
  * into a crisp, evenly dilated stroke that stays centered. Weight knob:
  * `--glyph-dilate` in theme.css. */
-function IconChip({ src, alt, size = 24 }: { src: string; alt: string; size?: number }) {
+function IconChip({ src, alt, size = 24, scale = 0.8 }: { src: string; alt: string; size?: number; scale?: number }) {
   return (
     <span className="icon-chip" style={{ width: size, height: size }} role="img" aria-label={alt} title={alt}>
-      <i className="glyph" style={{ "--icon": `url(${src})` } as React.CSSProperties} />
+      <i className="glyph" style={{ "--icon": `url(${src})`, width: `${scale * 100}%`, height: `${scale * 100}%` } as React.CSSProperties} />
     </span>
   );
 }
@@ -60,11 +60,11 @@ export function StatusBlock({
             {ctx.state.activePlayer === player ? " · active" : ""}
           </div>
           <div className="life">
-            <IconChip src="/icons/stat-life.svg" alt="life" size={28} />
+            <IconChip src="/icons/stat-life.svg" alt="life" size={34} scale={0.86} />
             {p.life}
           </div>
           <div className={`hand-line${emphasizeHand ? " emph" : ""}`}>
-            <IconChip src="/icons/zone-hand.svg" alt="cards in hand" size={emphasizeHand ? 28 : 24} />
+            <IconChip src="/icons/zone-hand.svg" alt="cards in hand" size={emphasizeHand ? 32 : 26} scale={0.82} />
             {p.hand.length}
             {pool.length > 0 && (
               <span className="mana-pool">
@@ -86,7 +86,7 @@ export function StatusBlock({
                 onClick={clickable ? () => onZoneClick!(player, zone!) : undefined}
                 title={zoneLabel[icon]}
               >
-                <IconChip src={`/icons/${icon}.svg`} alt={zoneLabel[icon] ?? icon} size={26} />
+                <IconChip src={`/icons/${icon}.svg`} alt={zoneLabel[icon] ?? icon} size={30} scale={icon === "zone-exile" ? 0.66 : 0.8} />
                 <span className="count">{n}</span>
               </div>
             );
