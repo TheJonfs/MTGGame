@@ -124,6 +124,9 @@ export async function fuzzPairing(
   let completed = 0;
 
   for (let i = 0; i < games; i++) {
+    // Long fuzz loops are pure microtasks: without a macrotask yield the
+    // event loop starves and vitest's worker RPC times out (S9 concern 5).
+    if (i % 25 === 0) await new Promise((r) => setTimeout(r, 0));
     const seed = startSeed + i;
     try {
       const result = await runPairingMatch(cards, seed, a, b, agentPair);

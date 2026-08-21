@@ -64,6 +64,7 @@ export async function runLadder(
       let draws = 0;
       let turns = 0;
       for (let i = 0; i < gamesPerCell; i++) {
+        if (i % 25 === 0) await new Promise((r) => setTimeout(r, 0)); // event-loop air (see fuzz.ts)
         const r = await runPairingMatch(pool.cards, cellSeed + i, a, b, agents);
         if (r.winner === challengerSeat) wins += 1;
         else if (r.winner === null) draws += 1;
@@ -97,6 +98,7 @@ export async function runLadder(
       let draws = 0;
       let turns = 0;
       for (let i = 0; i < gamesPerCell; i++) {
+        if (i % 25 === 0) await new Promise((r) => setTimeout(r, 0)); // event-loop air (see fuzz.ts)
         const r = await runPairingMatch(pool.cards, cellSeed + i, d, d, agents);
         if (r.winner === challengerSeat) wins += 1;
         else if (r.winner === null) draws += 1;
