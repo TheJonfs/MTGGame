@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { MANA_SYMBOLS } from "@shandalar/cards";
 import type { CardDef, ResolvedTarget } from "@shandalar/cards";
 import { STEPS, getObject, type PlayerId, type Step } from "@shandalar/engine";
 import { Board } from "../components/Board";
@@ -16,6 +17,17 @@ import type { MatchController, UiPhase } from "./match-controller";
 
 const STOPS_KEY = "shandalar-stops";
 const DELAY_KEY = "shandalar-ai-delay";
+const OPP_SPELL_STOP_KEY = "shandalar-stop-opp-spells"; // S11 (note 2)
+const INSPECTOR_POS_KEY = "shandalar-inspector-pos"; // S11 (note 3)
+
+export function loadStopOnOpponentSpells(): boolean {
+  try {
+    const raw = localStorage.getItem(OPP_SPELL_STOP_KEY);
+    return raw === null ? true : raw === "1";
+  } catch {
+    return true;
+  }
+}
 
 export function loadStops(): Set<Step> {
   try {
@@ -42,6 +54,14 @@ function PromptBar({ c, phase, confirmLabel }: { c: MatchController; phase: UiPh
       case "confirmCast":
         // S10 playtest: say WHAT is being confirmed.
         return confirmLabel ? `${confirmLabel} — confirm?` : "Confirm?";
+      case "manualTap": {
+        // S11 (note 5): floating pool shown inline; auto-pay covers the rest.
+        const pool = c.game.state.players[c.humanSeat].manaPool;
+        const floating = MANA_SYMBOLS.flatMap((s) => Array.from({ length: pool[s] }, () => s)).join(" ");
+        return `Tap lands to float mana${floating ? ` (pool: ${floating})` : ""}, then cast — auto-pay covers the rest.`;
+      }
+      case "stackStop":
+        return "The opponent's spell is on the stack.";
       case "attackers":
         return "Declare attackers: click creatures to stage, then confirm.";
       case "blockers":
@@ -59,7 +79,7 @@ function PromptBar({ c, phase, confirmLabel }: { c: MatchController; phase: UiPh
 
   return (
     <div className="transport play-prompt">
-      <span className="prompt-text">{c.combatNotice ?? prompt}</span>
+      <span className="prompt-text">{c.combatNotice ?? (c.stopReason ? `${c.stopReason} ${prompt}` : prompt)}</span>
       {phase.kind === "priority" && (
         <>
           <button className="primary" onClick={() => c.pass()}>Pass</button>
@@ -71,9 +91,26 @@ function PromptBar({ c, phase, confirmLabel }: { c: MatchController; phase: UiPh
           </button>
         </>
       )}
+      {phase.kind === "stackStop" && (
+        <button className="primary" onClick={() => c.continueFromStop()}>Continue</button>
+      )}
+      {phase.kind === "manualTap" && (
+        <>
+          <button className="primary" onClick={() => c.castNow(hold)}>Cast</button>
+          <button onClick={() => c.cancel()}>Cancel</button>
+          <label className="hold-toggle" title="Retain priority to respond to your own spell (ADR-058)">
+            <input type="checkbox" checked={hold} onChange={(e) => setHold(e.target.checked)} /> hold priority
+          </label>
+        </>
+      )}
       {phase.kind === "confirmCast" && (
         <>
           <button className="primary" onClick={() => c.confirmCast(hold)}>Confirm</button>
+          {phase.offerManualTap && (
+            <button title="You have more mana than this costs — choose which lands pay (S11)" onClick={() => c.beginManualTap()}>
+              Tap manually…
+            </button>
+          )}
           <button onClick={() => c.cancel()}>Cancel</button>
           <label className="hold-toggle" title="Retain priority to respond to your own spell (ADR-058)">
             <input type="checkbox" checked={hold} onChange={(e) => setHold(e.target.checked)} /> hold priority
@@ -127,6 +164,18 @@ function StopsFlyout({ c }: { c: MatchController }) {
               <input type="checkbox" checked={c.stops.has(s)} onChange={() => toggle(s)} /> {stepLabel(s)}
             </label>
           ))}
+          <label style={{ marginTop: 4 }}>
+            <input
+              type="checkbox"
+              checked={c.stopOnOpponentSpells}
+              onChange={(e) => {
+                c.stopOnOpponentSpells = e.target.checked;
+                localStorage.setItem(OPP_SPELL_STOP_KEY, e.target.checked ? "1" : "0");
+                force((n) => n + 1);
+              }}
+            />{" "}
+            opponent casts a spell
+          </label>
           <div className="flyout-title" style={{ marginTop: 6 }}>AI pacing</div>
           <label>
             delay{" "}
@@ -377,7 +426,7 @@ function PlayLog({ c, pool }: { c: MatchController; pool: Map<string, CardDef> }
       if (text) lines.push(text);
     }
   }
-  const recent = lines.slice(-60);
+  const recent = lines.slice(-200); // S11: the log now owns the rail's spare height
   return (
     <div className="panel play-log">
       <h3>Play-by-play</h3>
@@ -391,6 +440,48 @@ function PlayLog({ c, pool }: { c: MatchController; pool: Map<string, CardDef> }
           <div key={i} className="log-line">{l}</div>
         ))}
       </div>
+    </div>
+  );
+}
+
+/** S11 (Chris's note 3): the Inspector pops out as a draggable floating panel
+ * so the rail's height goes to the stack and the play-by-play. Position is
+ * remembered; drag by the header. */
+function FloatingInspector(props: { ctx: MatchController["game"]["ctx"]; objectId: string | null; fallbackCardId: string | null; oracle: Record<string, OracleEntry>; printed: boolean; onTogglePrinted: () => void }) {
+  const [pos, setPos] = useState<{ x: number; y: number }>(() => {
+    try {
+      const raw = localStorage.getItem(INSPECTOR_POS_KEY);
+      if (raw) return JSON.parse(raw) as { x: number; y: number };
+    } catch { /* default below */ }
+    // Default: top-right of the board (rows fill left→right, so this corner
+    // stays clear longest); the rail is ≤360px wide.
+    return { x: Math.max(16, window.innerWidth - 360 - 250), y: 60 };
+  });
+  const [collapsed, setCollapsed] = useState(false);
+  const drag = useRef<{ dx: number; dy: number } | null>(null);
+  const onPointerDown = (e: React.PointerEvent) => {
+    if ((e.target as HTMLElement).closest("button")) return;
+    drag.current = { dx: e.clientX - pos.x, dy: e.clientY - pos.y };
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  };
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!drag.current) return;
+    const x = Math.max(0, Math.min(window.innerWidth - 120, e.clientX - drag.current.dx));
+    const y = Math.max(0, Math.min(window.innerHeight - 40, e.clientY - drag.current.dy));
+    setPos({ x, y });
+  };
+  const onPointerUp = () => {
+    if (!drag.current) return;
+    drag.current = null;
+    localStorage.setItem(INSPECTOR_POS_KEY, JSON.stringify(pos));
+  };
+  return (
+    <div className={`floating-inspector${collapsed ? " collapsed" : ""}`} style={{ left: pos.x, top: pos.y }}>
+      <div className="drag-bar" onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} title="Drag to move">
+        <span title="drag">⋮⋮</span>
+        <button className="linkish" onClick={() => setCollapsed(!collapsed)}>{collapsed ? "show" : "hide"}</button>
+      </div>
+      {!collapsed && <Inspector ctx={props.ctx} objectId={props.objectId} fallbackCardId={props.fallbackCardId} oracle={props.oracle} printed={props.printed} onTogglePrinted={props.onTogglePrinted} />}
     </div>
   );
 }
@@ -414,6 +505,9 @@ export function PlayMatch({
   const lastStackTop = useMemo(() => ({ id: null as string | null }), [c]);
 
   useEffect(() => c.onChange(() => force((n) => n + 1)), [c]);
+  useEffect(() => {
+    c.stopOnOpponentSpells = loadStopOnOpponentSpells();
+  }, [c]);
   useEffect(() => {
     if (c.phase.kind === "gameOver") onGameOver();
   });
@@ -447,6 +541,8 @@ export function PlayMatch({
           return "";
         case "targeting":
           return phase.highlightObjects.has(id) ? "target" : "dim";
+        case "manualTap":
+          return phase.tappable.has(id) ? "castable" : "";
         case "attackers":
           if (phase.staged.has(id)) return "staged";
           return phase.eligible.has(id) ? "castable" : "";
@@ -470,6 +566,7 @@ export function PlayMatch({
           ctx={ctx}
           oracle={oracle}
           revealOpponent={false}
+          hideOpponentHand
           onHover={setInspected}
           onClick={(id) => {
             const obj = ctx.state.objects[id];
@@ -487,18 +584,18 @@ export function PlayMatch({
           onClick={() => { if (phase.kind === "targeting" && phase.highlightPlayers.has(opp)) c.clickPlayer(opp); }}
           className={phase.kind === "targeting" && phase.highlightPlayers.has(opp) ? "player-target" : ""}
         >
-          <StatusBlock ctx={ctx} player={opp} youSeat={c.humanSeat} onZoneClick={(player, zone) => setZoneOpen({ player, zone })} />
+          <StatusBlock ctx={ctx} player={opp} youSeat={c.humanSeat} emphasizeHand onZoneClick={(player, zone) => setZoneOpen({ player, zone })} />
         </div>
         <StackPanel ctx={ctx} />
         <div
           onClick={() => { if (phase.kind === "targeting" && phase.highlightPlayers.has(c.humanSeat)) c.clickPlayer(c.humanSeat); }}
           className={phase.kind === "targeting" && phase.highlightPlayers.has(c.humanSeat) ? "player-target" : ""}
         >
-          <StatusBlock ctx={ctx} player={c.humanSeat} youSeat={c.humanSeat} onZoneClick={(player, zone) => setZoneOpen({ player, zone })} />
+          <StatusBlock ctx={ctx} player={c.humanSeat} youSeat={c.humanSeat} emphasizeHand onZoneClick={(player, zone) => setZoneOpen({ player, zone })} />
         </div>
-        <Inspector ctx={ctx} objectId={inspected} fallbackCardId={snapCard} oracle={oracle} printed={printed} onTogglePrinted={() => setPrinted(!printed)} />
         <PlayLog c={c} pool={pool} />
       </div>
+      <FloatingInspector ctx={ctx} objectId={inspected} fallbackCardId={snapCard} oracle={oracle} printed={printed} onTogglePrinted={() => setPrinted(!printed)} />
       {phase.kind === "dialog" && <DialogModal c={c} phase={phase} pool={pool} oracle={oracle} onHoverOption={setDialogHover} />}
       {phase.kind === "chooseX" && <XModal c={c} phase={phase} />}
       {zoneOpen && <ZoneModal c={c} pool={pool} oracle={oracle} zone={zoneOpen} printed={printed} onClose={() => setZoneOpen(null)} />}

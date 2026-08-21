@@ -110,6 +110,11 @@ export class Game {
     return this.ctx.state;
   }
 
+  /** S11 observation seam: awaited before a lone-pass priority window is
+   * auto-taken (ADR-014 unchanged: nothing is requested or logged). Play mode
+   * uses it to pause with an opponent's spell visible on the stack. */
+  onLonePass?: (player: PlayerId, view: GameView) => Promise<void>;
+
   /** EVENT log entries used to derive MatchResult facts (not consumed by replay). */
   private wireFactEvents(): void {
     const { bus, log } = this.ctx;
@@ -380,7 +385,11 @@ export class Game {
       if (state.result) return;
       const actions = legalActions(this.ctx, holder);
       // A lone "pass" is not a decision; auto-pass silently (deterministic,
-      // identical in replay, keeps the log readable).
+      // identical in replay, keeps the log readable). S11: an observer may
+      // still be shown the window (play-mode "stop on opponent's spell" —
+      // the human sees the Hymn before it resolves). Observation only: no
+      // request, no log entry, replay unaffected.
+      if (actions.length === 1 && this.onLonePass) await this.onLonePass(holder, buildView(this.ctx, holder));
       const chosen = actions.length === 1 ? actions[0]! : await this.request(holder, "priority", actions);
       if (chosen.type === "pass") {
         passes += 1;

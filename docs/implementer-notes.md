@@ -122,6 +122,16 @@ Things a fresh session might otherwise rediscover slowly:
 - **Deltas need a second seed batch**: the posture switch measured +2.0 on its target cell at seed 1 and −1.0 at seed 7001 (200/cell); at 500/cell paired it settled at ~+1. 200/cell is a screen, not a verdict — sign-check across seeds before believing any small delta.
 - **Scratch scripts belong outside the repo but must be `.mts`** (the scratchpad has no ESM package.json, so tsx treats `.ts` as CJS and top-level await dies). Absolute-path imports into the repo's `src/*.ts` resolve fine from there.
 
+## S11 lessons (M4c + playtest rounds)
+
+- **Held-out seeds are the only honest objective.** The weight search gained +1.7 on its own seeds and exactly 0 on held-out ones; the start vector had to be re-measured on the held-out seeds too before the "edge" could be called zero. Any future search: verify the *baseline* on the verification seeds as well as the candidate.
+- **A predictor that ignores its target is an exact tie, and softmax coin-flips exact ties at any temperature** (master Hymn'd itself). When an AI does something absurd with low temperature, suspect a score tie before a weight.
+- **"Couldn't block" reports: replay the log first.** The menace report was the engine being right (ADR-014 auto-took a pass-only step); the fix was narration, not rules. `replayToDecision` + a grep over ACTION purposes settles it in minutes.
+- **Lone-pass windows have NO request** — a UI that wants to pause there needs the engine's cooperation. `Game.onLonePass` is an observation hook (awaited, nothing requested/logged); don't be tempted to request single-option windows instead — that changes the log.
+- **`autoPay` is pool-first**, which is what makes manual tapping a pure UI feature over `tapForMana`: float what you care about, let auto-pay cover the shortfall.
+- **Browser-tool coordinates are in screenshot pixels, not viewport pixels** (screenshots come back scaled). Clicking with viewport coordinates lands off-target silently; read the screenshot size and click in that frame, or use refs.
+- **The attack-set memo keys by turn/set/life, not board** — sound in play, but a test that scores two different boards with one agent must use two agents.
+
 ## Known interims / watch list
 
 See handoff Concerns for the authoritative list. Highlights: auto-pay greedy feasibility (correct while all producers are single-symbol — R-006); condition fields `controller`/`type`/`subtype` are validated but unexercised (first card to use them should add fixtures); value refs deliberately have no arithmetic (ADR-028 — resist until a card demands it); the `sba-unattach` ATTACHED cause is unreachable by legal play (test-forced only).

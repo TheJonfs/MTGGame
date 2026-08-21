@@ -14,6 +14,7 @@ export function StatusBlock({
   player,
   youSeat = 0,
   onZoneClick,
+  emphasizeHand = false,
 }: {
   ctx: EngineCtx;
   player: PlayerId;
@@ -21,6 +22,9 @@ export function StatusBlock({
   youSeat?: PlayerId;
   /** Play mode: open a zone browser (graveyard/exile are public). */
   onZoneClick?: (player: PlayerId, zone: "graveyard" | "exile") => void;
+  /** S11 (note 4): the opponent's hand is no longer drawn on the board — the
+   * count here is its only display, so make it read at a glance. */
+  emphasizeHand?: boolean;
 }) {
   const p = ctx.state.players[player];
   const you = player === youSeat;
@@ -50,6 +54,7 @@ export function StatusBlock({
               return (
                 <span
                   key={icon}
+                  className={emphasizeHand && icon === "zone-hand" ? "hand-count" : undefined}
                   onClick={zone && onZoneClick ? () => onZoneClick(player, zone) : undefined}
                   style={zone && onZoneClick ? { cursor: "pointer", textDecoration: "underline dotted" } : undefined}
                 >

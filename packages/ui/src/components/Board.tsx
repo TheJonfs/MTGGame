@@ -14,6 +14,9 @@ interface BoardProps {
   bottomSeat?: PlayerId;
   /** Play mode: interaction class per object id ("castable", "target", "staged", "dim"…). */
   classFor?: (id: string) => string;
+  /** S11 (Chris's note 4): don't draw the opponent's face-down hand row — the
+   * count lives in the player panel; the freed row goes to the combat zone. */
+  hideOpponentHand?: boolean;
 }
 
 /** Permanents of one controller, split lands / other, attachments grouped beside hosts. */
@@ -71,10 +74,21 @@ function PermanentsRow({ ctx, player, onHover, onClick, selected, classFor, mirr
   );
 }
 
-/** Two aligned rows: attackers above their blockers, column per attacker (art-direction §2). */
-function CombatLane({ ctx, onHover, onClick, selected, classFor }: BoardProps) {
+/** S11 (note 4): a persistent red zone between the battlefields — creatures
+ * move INTO it for combat and back out, so the rows never cross over into the
+ * other player's permanents. Two aligned rows, column per attacker
+ * (art-direction §2); the attacking side's row is nearest the attacker. */
+function CombatLane({ ctx, onHover, onClick, selected, classFor, bottomSeat }: BoardProps) {
   const state = ctx.state;
-  if (state.combat.attackers.length === 0) return null;
+  const bottom = bottomSeat ?? 0;
+  const attackerOnTop = state.activePlayer !== bottom; // opponent attacks from the top
+  if (state.combat.attackers.length === 0) {
+    return (
+      <div className="combat-lane empty">
+        <div className="lane-title">Combat zone</div>
+      </div>
+    );
+  }
   // S10 playtest: combatants keep their attachments visible beside them —
   // a Curiosity must not vanish when its host attacks.
   const attachedTo = (hostId: string) =>
@@ -88,18 +102,22 @@ function CombatLane({ ctx, onHover, onClick, selected, classFor }: BoardProps) {
     </div>
   );
   return (
-    <div className="combat-lane">
-      <div className="lane-title">Combat — attackers above, blockers below, paired by column</div>
+    <div className="combat-lane active">
+      <div className="lane-title">
+        Combat — {attackerOnTop ? "attackers above, blockers below" : "attackers below, blockers above"}, paired by column
+      </div>
       <div className="lane-grid">
         {state.combat.attackers.map((attackerId) => {
           const attacker = state.objects[attackerId];
           const ordered = state.combat.blockOrder[attackerId];
           const staged = state.combat.blocks.filter((b) => b.attacker === attackerId).map((b) => b.blocker);
           const blockers = (ordered ?? staged).filter((b) => state.objects[b]);
+          const attackerSlot = <div className="attacker-slot">{attacker && withAttachments(attackerId)}</div>;
+          const blockerSlot = <div className="blocker-slot">{blockers.map((b) => withAttachments(b))}</div>;
           return (
             <div className="combat-col" key={attackerId}>
-              <div className="attacker-slot">{attacker && withAttachments(attackerId)}</div>
-              <div className="blocker-slot">{blockers.map((b) => withAttachments(b))}</div>
+              {attackerOnTop ? attackerSlot : blockerSlot}
+              {attackerOnTop ? blockerSlot : attackerSlot}
             </div>
           );
         })}
@@ -140,8 +158,12 @@ export function Board(props: BoardProps) {
   const top = (bottom === 0 ? 1 : 0) as PlayerId;
   return (
     <div className="board">
-      <div className="row-label">Opponent hand ({ctx.state.players[top].hand.length})</div>
-      <HandRow {...props} player={top} faceDown={!revealOpponent} />
+      {!props.hideOpponentHand && (
+        <>
+          <div className="row-label">Opponent hand ({ctx.state.players[top].hand.length})</div>
+          <HandRow {...props} player={top} faceDown={!revealOpponent} />
+        </>
+      )}
       <div className="row-label">Opponent battlefield</div>
       <PermanentsRow {...props} player={top} mirrored />
       <CombatLane {...props} />

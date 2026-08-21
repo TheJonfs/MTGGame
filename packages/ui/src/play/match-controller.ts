@@ -1,5 +1,5 @@
 import { ArrayLog, SeededRng } from "@shandalar/core";
-import type { CardDef, ResolvedTarget } from "@shandalar/cards";
+import { manaValue, parseManaCost, type CardDef, type ResolvedTarget } from "@shandalar/cards";
 import {
   DEFAULT_RULES,
   Game,
@@ -84,7 +84,27 @@ export type UiPhase =
       highlightPlayers: Set<PlayerId>;
       targetsNeeded: number;
     }
-  | { kind: "confirmCast"; sourceObjectId: string; action: Action }
+  | {
+      kind: "confirmCast";
+      sourceObjectId: string;
+      action: Action;
+      /** S11 (Chris's note 5): surplus mana exists — offer manual tapping. */
+      offerManualTap: boolean;
+    }
+  | {
+      /** S11 manual tapping: click lands (tapForMana) to float mana, then cast.
+       * Auto-pay covers only the remaining shortfall, pool first. */
+      kind: "manualTap";
+      sourceObjectId: string;
+      action: Action;
+      tappable: Set<string>;
+    }
+  | {
+      /** S11 (Chris's note 2): the opponent's spell is on the stack and you
+       * have no response — pause anyway so it doesn't fly by. */
+      kind: "stackStop";
+      view: GameView;
+    }
   | { kind: "attackers"; eligible: Set<string>; staged: Set<string> }
   | {
       kind: "blockers";
@@ -110,6 +130,16 @@ export class MatchController {
   stops = new Set<Step>();
   /** Hold-priority: armed for the next own window (set by the toggle / per-cast modifier). */
   holdArmed = false;
+  /** S11: pause whenever the opponent casts a spell, even with no response
+   * (default on; menu toggle, persisted by the UI). */
+  stopOnOpponentSpells = true;
+  /** Why the current pause happened, for the prompt ("Opponent cast X"). */
+  stopReason: string | null = null;
+  /** Opponent stack items already paused for (stack ids are unique per item). */
+  private seenStackItems = new Set<string>();
+  private stackStopResolve: (() => void) | null = null;
+  /** Manual tapping in progress: the cast we will submit once mana is floated. */
+  private manualTapPending: { sourceObjectId: string; action: Action } | null = null;
 
   phase: UiPhase = { kind: "waiting" };
   result: MatchResult | null = null;
@@ -184,6 +214,10 @@ export class MatchController {
       handSize: 7,
       maxTurns: DEFAULT_RULES.maxTurns,
     });
+
+    // S11: observe lone-pass windows so an opponent's spell can be shown
+    // before it resolves even when nobody can respond (ADR-014 auto-take).
+    this.game.onLonePass = (player, view) => this.onLonePass(player, view);
 
     // Dev handle for debugging live matches from the console.
     (globalThis as { __mc?: MatchController }).__mc = this;
@@ -279,6 +313,7 @@ export class MatchController {
     if (this.result || this.conceding) return;
     this.conceding = true;
     this.game.state.result = { winner: (this.humanSeat === 0 ? 1 : 0) as PlayerId, reason: "CONCEDE" };
+    this.stackStopResolve?.();
     const pending = this.human.current();
     if (pending) this.human.submit(pending.request.actions[0]!);
   }
@@ -329,6 +364,12 @@ export class MatchController {
     // Any non-priority request cancels fast-forward: the game needs YOU
     // (blocks, discard, triggers) — it never skips a decision.
     if (this.ff && request.purpose !== "priority") this.ff = null;
+    // S11 manual tapping: after each tapForMana the engine re-asks; stay in
+    // the tapping phase as long as the staged cast is still on offer.
+    if (this.manualTapPending) {
+      if (request.purpose === "priority" && this.resumeManualTap(request)) return;
+      this.manualTapPending = null;
+    }
     switch (request.purpose) {
       case "priority":
         this.enterPriority(view, request);
@@ -353,8 +394,111 @@ export class MatchController {
 
   private submit(action: Action): void {
     this.phase = { kind: "waiting" };
+    this.stopReason = null;
     this.human.submit(action);
     this.emit();
+  }
+
+  // ---------- S11: opponent-spell stop (request path + lone-pass path) ----------
+
+  /** First opponent-controlled spell on the stack not yet paused for. */
+  private pendingOpponentSpell(): { id: string; sourceCardId: string } | null {
+    if (!this.stopOnOpponentSpells) return null;
+    const item = this.game.state.stack.find(
+      (s) => s.kind === "spell" && s.controller !== this.humanSeat && !this.seenStackItems.has(s.id),
+    );
+    return item ? { id: item.id, sourceCardId: item.sourceCardId } : null;
+  }
+
+  private markStackSeen(): void {
+    for (const s of this.game.state.stack) this.seenStackItems.add(s.id);
+  }
+
+  /** Engine lone-pass observation (nothing requested, nothing logged): if the
+   * opponent's spell is on the stack and this is a fresh sight of it, hold the
+   * engine until the player clicks Continue. */
+  private async onLonePass(player: PlayerId, view: GameView): Promise<void> {
+    if (player !== this.humanSeat || this.conceding || this.ff) return;
+    const oppSpell = this.pendingOpponentSpell();
+    if (!oppSpell) return;
+    this.markStackSeen();
+    this.stopReason = `Opponent cast ${this.pool.get(oppSpell.sourceCardId)?.name ?? oppSpell.sourceCardId}.`;
+    this.phase = { kind: "stackStop", view };
+    this.emit();
+    await new Promise<void>((resolve) => {
+      this.stackStopResolve = resolve;
+    });
+    this.stackStopResolve = null;
+    this.stopReason = null;
+    this.phase = { kind: "waiting" };
+    this.emit();
+  }
+
+  /** Continue past a stack stop (the engine then auto-passes, as it would have). */
+  continueFromStop(): void {
+    this.stackStopResolve?.();
+  }
+
+  // ---------- S11: manual tapping ----------
+
+  /** Surplus-mana rule (Chris): offer manual tapping when the cast would NOT
+   * use everything available — untapped producers (the enumerated tapForMana
+   * actions) plus the floating pool exceed the cost. */
+  private offerManualTapFor(action: Action): boolean {
+    if (action.type !== "castSpell") return false;
+    const req = this.human.current()?.request;
+    if (!req) return false;
+    const producers = req.actions.filter((a) => a.type === "tapForMana").length;
+    if (producers === 0) return false;
+    const pool = this.game.state.players[this.humanSeat].manaPool;
+    const floating = Object.values(pool).reduce((n, v) => n + v, 0);
+    const obj = this.game.state.objects[action.objectId];
+    const def = obj ? this.pool.get(obj.cardId) : undefined;
+    if (!def) return false;
+    const cost = manaValue(parseManaCost(def.manaCost)) + (action.x ?? 0);
+    return producers + floating > cost;
+  }
+
+  private tappableNow(request: ActionRequest): Set<string> {
+    return new Set(
+      request.actions.filter((a) => a.type === "tapForMana").map((a) => (a as { objectId: string }).objectId),
+    );
+  }
+
+  beginManualTap(): void {
+    if (this.phase.kind !== "confirmCast") return;
+    const { sourceObjectId, action } = this.phase;
+    this.manualTapPending = { sourceObjectId, action };
+    this.phase = { kind: "manualTap", sourceObjectId, action, tappable: this.tappableNow(this.currentRequest()) };
+    this.emit();
+  }
+
+  /** A new priority request arrived mid-tapping: re-find the staged cast. */
+  private resumeManualTap(request: ActionRequest): boolean {
+    const pending = this.manualTapPending!;
+    const key = JSON.stringify(pending.action);
+    const offered = request.actions.find((a) => JSON.stringify(a) === key);
+    if (!offered) return false;
+    this.phase = { kind: "manualTap", sourceObjectId: pending.sourceObjectId, action: offered, tappable: this.tappableNow(request) };
+    this.emit();
+    return true;
+  }
+
+  private tapLand(objectId: string): void {
+    if (this.phase.kind !== "manualTap" || !this.phase.tappable.has(objectId)) return;
+    const tap = this.currentRequest().actions.find((a) => a.type === "tapForMana" && a.objectId === objectId);
+    if (!tap) return;
+    this.phase = { kind: "waiting" };
+    this.human.submit(tap); // the next request re-enters manual tapping
+    this.emit();
+  }
+
+  /** Cast the staged spell now; auto-pay covers whatever the pool lacks. */
+  castNow(hold = false): void {
+    if (this.phase.kind !== "manualTap") return;
+    this.manualTapPending = null;
+    this.holdArmed = hold;
+    this.submit(this.phase.action);
   }
 
   // ---------- priority (ADR-058 auto-pass) ----------
@@ -422,7 +566,10 @@ export class MatchController {
       view.activePlayer === request.player &&
       MatchController.OWN_TURN_STOPS.has(view.step) &&
       this.anchorSeen !== anchorKey;
-    const stopHere = this.stops.has(view.step as Step) || this.holdArmed || ownTurnAnchor;
+    // S11: an opponent spell on the stack we haven't paused for yet stops
+    // the flow (fast-forward deliberately skips this; targeting cancels FF).
+    const oppSpell = this.ff ? null : this.pendingOpponentSpell();
+    const stopHere = this.stops.has(view.step as Step) || this.holdArmed || ownTurnAnchor || oppSpell !== null;
     if (!meaningful && !stopHere) {
       const pass = request.actions.find((a) => a.type === "pass");
       if (pass) {
@@ -432,6 +579,8 @@ export class MatchController {
     }
     if (ownTurnAnchor) this.anchorSeen = anchorKey;
     this.holdArmed = false; // consumed by pausing
+    this.markStackSeen();
+    if (oppSpell) this.stopReason = `Opponent cast ${this.pool.get(oppSpell.sourceCardId)?.name ?? oppSpell.sourceCardId}.`;
     this.phase = { kind: "priority", castable, lands, activatable, canPass: request.actions.some((a) => a.type === "pass") };
     this.emit();
   }
@@ -496,6 +645,10 @@ export class MatchController {
       this.clickTarget({ kind: "object", id: objectId });
       return;
     }
+    if (this.phase.kind === "manualTap") {
+      this.tapLand(objectId);
+      return;
+    }
     if (this.phase.kind !== "priority") return;
     const variants = this.phase.activatable.get(objectId);
     if (variants && variants.length > 0) this.beginCast(objectId, variants);
@@ -527,7 +680,7 @@ export class MatchController {
     const first = variants[0] as { targets?: ResolvedTarget[] };
     const needed = first.targets?.length ?? 0;
     if (needed === 0 || variants.length === 1) {
-      this.phase = { kind: "confirmCast", sourceObjectId, action: variants[0]! };
+      this.phase = { kind: "confirmCast", sourceObjectId, action: variants[0]!, offerManualTap: this.offerManualTapFor(variants[0]!) };
       this.emit();
       return;
     }
@@ -568,7 +721,7 @@ export class MatchController {
     if (matches.length === 0) return; // illegal click: ignore (dimmed in UI)
     const chosen = [...this.phase.chosen, target];
     if (chosen.length >= this.phase.targetsNeeded || matches.length === 1) {
-      this.phase = { kind: "confirmCast", sourceObjectId: this.phase.sourceObjectId, action: matches[0]! };
+      this.phase = { kind: "confirmCast", sourceObjectId: this.phase.sourceObjectId, action: matches[0]!, offerManualTap: this.offerManualTapFor(matches[0]!) };
       this.emit();
       return;
     }
@@ -590,6 +743,8 @@ export class MatchController {
 
   cancel(): void {
     // Back out of any local staging to the pending request's base phase.
+    // (Manual tapping: floated mana stays in the pool until the step ends.)
+    this.manualTapPending = null;
     const p = this.human.current();
     if (!p) return;
     this.onHumanRequest(p.view, p.request);

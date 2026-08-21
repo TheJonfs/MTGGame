@@ -112,11 +112,15 @@ body {
 
 .host-group { display: flex; align-items: flex-start; gap: 2px; }
 
-/* Combat lane */
+/* Combat lane — S11 (note 4): a persistent red zone between the battlefields */
 .combat-lane {
-  border: 2px dashed rgba(237, 227, 204, 0.6); border-radius: 8px; padding: 6px 10px;
-  background: rgba(43, 37, 32, 0.25); min-height: 40px; margin: 10px 0;
+  border: 2px dashed rgba(181, 67, 47, 0.75); border-radius: 8px; padding: 6px 10px;
+  background: rgba(181, 67, 47, 0.16); min-height: 58px; margin: 6px 0;
+  transition: background 0.2s ease, min-height 0.2s ease;
 }
+.combat-lane.empty { display: flex; align-items: center; justify-content: center; }
+.combat-lane.empty .lane-title { opacity: 0.55; margin: 0; letter-spacing: 0.04em; }
+.combat-lane.active { background: rgba(181, 67, 47, 0.28); box-shadow: inset 0 0 18px rgba(181, 67, 47, 0.35); }
 .combat-lane .lane-grid { display: flex; gap: 14px; }
 .combat-col { display: flex; flex-direction: column; gap: 4px; align-items: center; }
 .combat-col .attacker-slot, .combat-col .blocker-slot { min-height: 86px; display: flex; gap: 3px; }
@@ -273,26 +277,27 @@ button.linkish { background: none; border: none; color: var(--brass); cursor: po
 .play-app > div:first-child { display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
 .play-app .board { flex: 1; }
 .play-ribbon {
-  display: flex; gap: 12px; align-items: center; padding: 5px 14px;
+  display: flex; gap: 14px; align-items: center; padding: 8px 16px;
   background: var(--parchment) url("/panel-parchment.png"); background-size: 512px;
-  border-bottom: 2px solid var(--ink); font-size: 12px;
+  border-bottom: 2px solid var(--ink); font-size: 14px; /* S11 (note 3): taller top rail */
 }
-.play-ribbon .turn { font-family: var(--serif); font-weight: 700; }
+.play-ribbon .turn { font-family: var(--serif); font-weight: 700; font-size: 16px; min-width: 190px; }
 .play-ribbon .who { color: var(--ink-soft); }
 .play-ribbon .who.you { color: var(--brass); font-weight: 700; }
 .play-ribbon .seed { font-size: 10px; color: var(--ink-soft); }
 /* S11 (Chris's rider): turn-order strip — one glyph per step, current lit,
    tint says whose turn it is (brass = yours, danger-red = opponent's). */
 .phase-strip { display: inline-flex; gap: 1px; align-items: center; }
+.phase-strip { gap: 3px; }
 .phase-chip {
-  width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center;
-  font-size: 11px; line-height: 1; color: var(--ink-soft); opacity: 0.45; border-radius: 3px;
-  border: 1px solid transparent; cursor: default;
+  width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;
+  font-size: 19px; line-height: 1; color: var(--ink-soft); opacity: 0.45; border-radius: 5px;
+  border: 1.2px solid transparent; cursor: default; /* S11 (note 3): grown from 18px */
 }
 .phase-chip.current { opacity: 1; font-weight: 700; }
 .phase-strip.you .phase-chip.current {
   color: var(--parchment); background: var(--brass); border-color: var(--ink);
-  box-shadow: 0 0 5px var(--gold);
+  box-shadow: 0 0 8px var(--gold);
 }
 .phase-strip.opp .phase-chip.current {
   color: var(--parchment); background: var(--danger); border-color: var(--ink);
@@ -345,9 +350,28 @@ button.primary { background: var(--brass); color: var(--parchment); border: 1.5p
 .play-setup button, .play-prompt button { font-family: var(--sans); background: var(--parchment); border: 1.5px solid var(--ink); border-radius: 5px; padding: 4px 10px; cursor: pointer; font-size: 12px; color: var(--ink); }
 .play-setup button.primary, .play-prompt button.primary { background: var(--brass); color: var(--parchment); }
 
-/* S10 playtest round 2 */
-.play-log { display: flex; flex-direction: column; min-height: 90px; }
-.play-log-lines { overflow-y: auto; max-height: 150px; font-size: 10px; line-height: 1.35; }
+/* S10 playtest round 2 — S11 (note 3): the log owns the rail's spare height,
+   bigger type for both stack and log now that the inspector floats. */
+.play-log { display: flex; flex-direction: column; min-height: 140px; flex: 1 1 auto; min-height: 0; }
+.play-log-lines { overflow-y: auto; flex: 1 1 auto; min-height: 120px; font-size: 12.5px; line-height: 1.4; }
+.play-app .stack-panel .item { font-size: 13px; padding: 4px 8px; }
+.play-app .stack-panel .item .targets { font-size: 11.5px; }
+.play-app .rail { gap: 12px; }
+.play-app .status-block .zones { font-size: 12.5px; gap: 9px; }
+.status-block .zones .hand-count { font-size: 17px; font-weight: 700; font-family: var(--serif); }
+.status-block .zones .hand-count img { width: 19px; height: 19px; vertical-align: -4px; }
+.floating-inspector {
+  position: fixed; z-index: 15; width: 220px; background: var(--parchment) url("/panel-parchment.png"); background-size: 512px;
+  border: 2px solid var(--ink); border-radius: 8px; box-shadow: 3px 5px 14px rgba(0,0,0,0.45); padding: 0 6px 6px;
+}
+.floating-inspector .drag-bar {
+  cursor: grab; user-select: none; display: flex; justify-content: space-between; align-items: center;
+  font-family: var(--serif); font-weight: 700; font-size: 12px; padding: 4px 4px 3px; touch-action: none;
+}
+.floating-inspector .drag-bar:active { cursor: grabbing; }
+.floating-inspector.collapsed { width: 150px; padding-bottom: 0; }
+.floating-inspector .panel { border: none; background: none; padding: 4px 0 0; }
+.floating-inspector .panel h3 { font-size: 11px; }
 .play-log .log-line { padding: 0.5px 0; border-bottom: 1px dotted rgba(74, 64, 56, 0.15); }
 .dialog-cards .frame { flex: none; }         /* no flex squish (aspect fix) */
 .dialog-cards .printed-scan { width: 130px; flex: none; }

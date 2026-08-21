@@ -14,8 +14,10 @@ const CARDS_DIR = join(dirname(fileURLToPath(import.meta.url)), "../../../../dat
  * acceptance floor; Chris's real match is the other half.
  */
 
-async function playScripted(seed: number, humanSeat: 0 | 1): Promise<MatchController> {
+async function playScripted(seed: number, humanSeat: 0 | 1): Promise<MatchController & { stackStops: number; manualTaps: number }> {
   const pool = loadCardPool(CARDS_DIR);
+  let stackStops = 0;
+  let manualTaps = 0;
   const c = new MatchController(pool.cards, {
     humanSeat,
     humanDeck: "A",
@@ -35,6 +37,7 @@ async function playScripted(seed: number, humanSeat: 0 | 1): Promise<MatchContro
       case "gameOver":
         break;
       case "priority": {
+        if (c.stopReason) stackStops += 1; // request-path opponent-spell pause
         if (phase.lands.size > 0) c.clickHand([...phase.lands.keys()][0]!);
         else if (phase.castable.size > 0) c.clickHand([...phase.castable.keys()][0]!);
         else if (phase.activatable.size > 0) c.clickBattlefield([...phase.activatable.keys()][0]!);
@@ -51,7 +54,23 @@ async function playScripted(seed: number, humanSeat: 0 | 1): Promise<MatchContro
         break;
       }
       case "confirmCast":
-        c.confirmCast();
+        // S11: take the manual-tap offer whenever it appears — tap one land, then cast.
+        if (phase.offerManualTap) c.beginManualTap();
+        else c.confirmCast();
+        break;
+      case "manualTap": {
+        const [land] = [...phase.tappable];
+        if (land && manualTaps === 0) {
+          manualTaps += 1;
+          c.clickBattlefield(land); // floats mana; the next request re-enters manualTap
+        } else {
+          c.castNow();
+        }
+        break;
+      }
+      case "stackStop":
+        stackStops += 1;
+        c.continueFromStop();
         break;
       case "attackers": {
         for (const id of phase.eligible) c.clickBattlefield(id);
@@ -76,7 +95,7 @@ async function playScripted(seed: number, humanSeat: 0 | 1): Promise<MatchContro
     }
   }
   await done;
-  return c;
+  return Object.assign(c, { stackStops, manualTaps });
 }
 
 describe("play-mode acceptance (headless; S10 DoD 1)", () => {
@@ -95,6 +114,12 @@ describe("play-mode acceptance (headless; S10 DoD 1)", () => {
       const types = new Set(humanActions.map((e) => (e as { action: { type: string } }).action.type));
       expect(types.has("playLand")).toBe(true);
       expect(types.has("castSpell") || types.has("activateAbility")).toBe(true);
+      // S11: manual tapping went through the real tapForMana path and the cast
+      // still resolved; the opponent-spell stop paused at least once (the AI
+      // deck D casts spells; lone-pass windows are observed via onLonePass).
+      expect(c.manualTaps).toBeGreaterThan(0);
+      expect(types.has("tapForMana")).toBe(true);
+      expect(c.stackStops).toBeGreaterThan(0);
 
       // The produced log is a first-class saved game: the viewer can replay it.
       const saved = JSON.parse(c.savedGame()) as {
