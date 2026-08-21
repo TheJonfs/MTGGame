@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@shandalar/agents": "workspace:*",
     "@shandalar/cards": "workspace:*",
     "@shandalar/core": "workspace:*",
     "@shandalar/engine": "workspace:*",

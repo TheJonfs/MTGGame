@@ -67,6 +67,9 @@ importers:
 
   packages/ui:
     dependencies:
+      '@shandalar/agents':
+        specifier: workspace:*
+        version: link:../agents
       '@shandalar/cards':
         specifier: workspace:*
         version: link:../cards

@@ -97,6 +97,7 @@ export default defineConfig({
       "@shandalar/core": join(repo, "packages/core/src/index.ts"),
       "@shandalar/cards": join(repo, "packages/cards/src/index.ts"),
       "@shandalar/engine": join(repo, "packages/engine/src/index.ts"),
+      "@shandalar/agents": join(repo, "packages/agents/src/index.ts"),
       // Browser-safe subpath only — the sim root exports pull in node:fs.
       "@shandalar/sim/decks": join(repo, "packages/sim/src/slice-decks.ts"),
     },
