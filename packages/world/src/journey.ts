@@ -3,7 +3,7 @@ import { DECKS } from "@shandalar/sim/decks";
 import type { Catalog, OpponentTemplate } from "./catalog.js";
 import type { OpponentInstance } from "./generate.js";
 import type { KnobValues } from "./knobs.js";
-import { findPath, idx, regionAt, townAt, type Point, type Town } from "./map.js";
+import { findPath, fixedPointAt, idx, regionAt, townAt, type Point, type Town } from "./map.js";
 import { WorldRng } from "./rng.js";
 import { deckSize, worldKnobs, type Decklist, type DuelRecord, type WorldState } from "./state.js";
 
@@ -68,9 +68,20 @@ export function advance(
         events.push({ type: "arrived", town });
         continue;
       }
+      // A lair with an undefeated resident: the encounter is certain (no roll).
+      const lair = fixedPointAt(world.map, cell);
+      if (lair?.opponentId) {
+        const resident = world.opponents.find((o) => o.id === lair.opponentId);
+        if (resident && !resident.defeated) {
+          const tmpl = opponentTemplate(catalog, resident);
+          events.push({ type: "encounter", encounter: { opponentId: resident.id, catalogId: resident.catalogId, tier: tmpl.tier, region: region.index, at: { ...cell } } });
+          break;
+        }
+        continue; // a cleared lair is just ground
+      }
       const rate = knobs.encounterRatePerStep[region.tier];
       if (rng.chance(rate)) {
-        const roster = world.opponents.filter((o) => o.region === region.index && !o.defeated);
+        const roster = world.opponents.filter((o) => o.region === region.index && !o.defeated && !o.fixedAt);
         if (roster.length === 0) continue; // region cleared
         const inst = rng.pick(roster);
         const tmpl = opponentTemplate(catalog, inst);

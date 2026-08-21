@@ -29,7 +29,18 @@ export interface Town {
 
 /** Fixed points the generator places with spacing constraints; strongholds
  * are the M6b+ kind — present in the shape, unused in the slice. */
-export type FixedPointKind = "town" | "stronghold";
+export type FixedPointKind = "town" | "stronghold" | "lair";
+
+/** A fixed point with a resident (S14 round 1 prototype: a lair hosting one
+ * opponent; strongholds/dungeons will reuse the shape). Walking onto it is a
+ * guaranteed encounter with the resident until they are defeated. */
+export interface FixedPoint {
+  kind: FixedPointKind;
+  at: Point;
+  region: number;
+  name?: string;
+  opponentId?: string;
+}
 
 export interface WorldMap {
   width: number;
@@ -40,7 +51,7 @@ export interface WorldMap {
   passable: boolean[];
   regions: RegionInstance[];
   towns: Town[];
-  strongholds: { kind: FixedPointKind; at: Point; region: number }[];
+  strongholds: FixedPoint[];
   start: Point;
 }
 
@@ -120,4 +131,8 @@ export function regionAt(m: WorldMap, p: Point): RegionInstance {
 
 export function townAt(m: WorldMap, p: Point): Town | null {
   return m.towns.find((t) => samePoint(t.at, p)) ?? null;
+}
+
+export function fixedPointAt(m: WorldMap, p: Point): FixedPoint | null {
+  return m.strongholds.find((f) => samePoint(f.at, p)) ?? null;
 }

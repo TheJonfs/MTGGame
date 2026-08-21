@@ -46,7 +46,7 @@ describe("world generator (invariant fuzz, ≥200 seeds)", () => {
       // Town spacing honored (or relaxed only when the map forced it — never adjacent).
       for (const a of w.map.towns) for (const b of w.map.towns) if (a !== b) expect(Math.abs(a.at.x - b.at.x) + Math.abs(a.at.y - b.at.y)).toBeGreaterThan(1);
       // Every region has a roster.
-      for (const r of w.map.regions) expect(w.opponents.filter((o) => o.region === r.index).length).toBe(DEFAULT_GENERATOR.rosterPerRegion);
+      for (const r of w.map.regions) expect(w.opponents.filter((o) => o.region === r.index && !o.fixedAt).length).toBe(DEFAULT_GENERATOR.rosterPerRegion);
       if (seed <= 20) {
         const again = generateWorld(seed, catalog);
         expect(JSON.stringify(again)).toBe(JSON.stringify(w));
@@ -409,6 +409,32 @@ describe("beast opponents (ADR-066 proof of concept)", () => {
       expect(parley(w, catalog, enc, "buyoff")).toMatchObject({ type: "refused", reason: expect.stringMatching(/cannot be bought/) });
       if (was === undefined) delete (wurm as { buyable?: boolean }).buyable;
       else (wurm as { buyable?: boolean }).buyable = was;
+    }
+  });
+});
+
+describe("lair fixed point (S14 round 1 prototype)", () => {
+  it("every world has one reachable lair with a resident beast; walking onto it is a certain encounter; cleared lairs are ground", () => {
+    for (const seed of [1, 2, 3, 4, 5]) {
+      const w = newWorld({ seed, catalog, starterDeck: "A" });
+      expect(w.map.strongholds).toHaveLength(1);
+      const lair = w.map.strongholds[0]!;
+      expect(lair.kind).toBe("lair");
+      const resident = w.opponents.find((o) => o.id === lair.opponentId)!;
+      expect(resident.catalogId).toBe("beast_wurm");
+      expect(resident.fixedAt).toEqual(lair.at);
+      expect(findPath(w.map, w.map.start, lair.at)).not.toBeNull();
+      // Walk there with random encounters off: the lair still triggers.
+      const ev = walkTo(w, catalog, lair.at, { event: { encounterRatePerStep: { civilized: 0, approach: 0, wild: 0 } } })!;
+      const enc = ev.find((e) => e.type === "encounter");
+      expect(enc && enc.type === "encounter" && enc.encounter.catalogId).toBe("beast_wurm");
+      // Defeat the resident: walking onto the lair is now just ground.
+      resident.defeated = true;
+      const w2 = w; w2.player.position = { ...w.map.start };
+      const ev2 = walkTo(w2, catalog, lair.at, { event: { encounterRatePerStep: { civilized: 0, approach: 0, wild: 0 } } })!;
+      expect(ev2.some((e) => e.type === "encounter")).toBe(false);
+      // Residents never roam.
+      expect(w.opponents.filter((o) => o.fixedAt && o.region === lair.region).length).toBe(1);
     }
   });
 });

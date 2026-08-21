@@ -300,7 +300,7 @@ function EditorScreen({ c, pool, oracle }: { c: WorldController; pool: Map<strin
   const [filter, setFilter] = useState<"all" | "W" | "U" | "B" | "R" | "G" | "Creature" | "Instant" | "Sorcery" | "Enchantment" | "Artifact">("all");
   const [sort, setSort] = useState<"name" | "cost" | "colour">("cost");
   const [search, setSearch] = useState("");
-  const [printed, setPrinted] = useState(false); // ADR-066: mini frames in the editor stay our frame; toggle available
+  const [printed, setPrinted] = useState(true); // S14 round 1 (Chris): printed by default in the editor too
   if (c.screen.kind !== "editor" || !c.world) return null;
   const { draft, name, notice } = c.screen;
   const w = c.world;
@@ -326,7 +326,7 @@ function EditorScreen({ c, pool, oracle }: { c: WorldController; pool: Map<strin
   const deckIds = draft.map((e) => e.cardId).filter(passes).sort(order);
   const cell = (id: string, n: number, onClick: () => void, label: string) => (
     <div key={id} className="editor-card" onClick={onClick} title={label}>
-      <CardFrame def={pool.get(id)!} oracle={oracle[id]} mini showPrinted={printed} />
+      <div className="editor-slot"><CardFrame def={pool.get(id)!} oracle={oracle[id]} showPrinted={printed} /></div>
       <div className="editor-count">×{n}</div>
     </div>
   );
@@ -463,6 +463,7 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
             previewTarget={screen.kind === "map" ? screen.previewTarget : null}
             encounterAt={screen.kind === "encounter" ? screen.encounter.at : null}
             encounterPortrait={screen.kind === "encounter" ? `/portraits/${screen.tmpl.portraitChip ?? screen.tmpl.portrait}.png` : null}
+            clearedFixed={new Set(w.map.strongholds.map((f, i) => (w.opponents.find((o) => o.id === f.opponentId)?.defeated ? i : -1)).filter((i) => i >= 0))}
             onClickCell={(p) => c.clickCell(p)}
           />
         </div>
@@ -489,6 +490,18 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
           <div style={{ fontSize: 12 }}>Duels: {w.duels.length} · won {w.duels.filter((d) => d.outcome === "win").length} · lost {w.duels.filter((d) => d.outcome === "loss").length}</div>
           <div style={{ fontSize: 12 }}>Opponents defeated: {w.opponents.filter((o) => o.defeated).length}/{w.opponents.length}</div>
           <div style={{ fontSize: 12 }}>Deck: {deckSize(w.player.activeDeck)} cards · basic {w.player.basicLand}</div>
+        </div>
+        <div className="panel">
+          <h3>Lairs</h3>
+          {w.map.strongholds.map((f, i) => {
+            const resident = w.opponents.find((o) => o.id === f.opponentId);
+            return (
+              <div key={i} style={{ fontSize: 12, display: "flex", justifyContent: "space-between" }}>
+                <span>{f.name ?? f.kind}</span><span style={{ color: resident?.defeated ? "var(--boost)" : "var(--danger)" }}>{resident?.defeated ? "cleared" : `${w.map.regions[f.region]?.name ?? ""} · waiting`}</span>
+              </div>
+            );
+          })}
+          {w.map.strongholds.length === 0 && <div style={{ fontSize: 11, color: "var(--ink-soft)" }}>none</div>}
         </div>
         <div className="panel">
           <h3>Regions</h3>

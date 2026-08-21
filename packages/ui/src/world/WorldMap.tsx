@@ -21,6 +21,7 @@ function washFor(tier: string, color: string): string {
 }
 
 const TOWN_GLYPH = "M -5 3 L -5 -2 L 0 -6 L 5 -2 L 5 3 Z M -2 3 L -2 0 L 2 0 L 2 3"; // house with a door
+const LAIR_GLYPH = "M -6 4 L -4 -3 L -1 -6 L 2 -5 L 5 -1 L 6 4 Z M -2 4 L -2 1 L 2 1 L 2 4"; // crag with a mouth
 
 export function WorldMapView({
   map,
@@ -30,6 +31,7 @@ export function WorldMapView({
   previewTarget,
   encounterAt,
   encounterPortrait,
+  clearedFixed,
   onClickCell,
 }: {
   map: WorldMapModel;
@@ -39,9 +41,12 @@ export function WorldMapView({
   previewTarget: Point | null;
   encounterAt?: Point | null;
   encounterPortrait?: string | null;
+  /** Indices into map.strongholds whose resident is defeated (greyed). */
+  clearedFixed?: Set<number>;
   onClickCell: (p: Point) => void;
 }) {
   const [hoverTown, setHoverTown] = useState<Town | null>(null);
+  const [hoverLair, setHoverLair] = useState<{ name: string; at: Point } | null>(null);
   const W = map.width * CELL;
   const H = map.height * CELL;
   const centre = (p: Point) => ({ cx: p.x * CELL + CELL / 2, cy: p.y * CELL + CELL / 2 });
@@ -131,6 +136,23 @@ export function WorldMapView({
           </g>
         );
       })}
+      {/* lairs (fixed points) */}
+      {map.strongholds.map((f, i) => {
+        const { cx, cy } = centre(f.at);
+        const cleared = clearedFixed?.has(i) ?? false;
+        return (
+          <g key={`f${i}`} transform={`translate(${cx} ${cy + 1})`} onMouseEnter={() => setHoverLair({ name: f.name ?? f.kind, at: f.at })} onMouseLeave={() => setHoverLair(null)} onClick={() => onClickCell(f.at)} style={{ cursor: "pointer" }} opacity={cleared ? 0.45 : 1}>
+            <circle r={CELL * 0.66} fill="var(--parchment)" stroke={cleared ? "var(--ink-soft)" : "var(--danger)"} strokeWidth="1.6" />
+            <path d={LAIR_GLYPH} fill="var(--ink)" stroke="var(--ink)" strokeWidth="0.8" strokeLinejoin="round" />
+          </g>
+        );
+      })}
+      {hoverLair && (
+        <g transform={`translate(${centre(hoverLair.at).cx} ${centre(hoverLair.at).cy - CELL})`} pointerEvents="none">
+          <rect x={-hoverLair.name.length * 3.6 - 6} y={-11} width={hoverLair.name.length * 7.2 + 12} height={16} rx="3" fill="var(--parchment)" stroke="var(--ink)" strokeWidth="1" />
+          <text y={1} textAnchor="middle" className="town-label">{hoverLair.name}</text>
+        </g>
+      )}
       {hoverTown && (
         <g transform={`translate(${centre(hoverTown.at).cx} ${centre(hoverTown.at).cy - CELL})`} pointerEvents="none">
           <rect x={-hoverTown.name.length * 3.6 - 6} y={-11} width={hoverTown.name.length * 7.2 + 12} height={16} rx="3" fill="var(--parchment)" stroke="var(--ink)" strokeWidth="1" />

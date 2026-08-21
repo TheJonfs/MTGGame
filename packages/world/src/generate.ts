@@ -1,5 +1,5 @@
 import type { Catalog, RegionTemplate } from "./catalog.js";
-import { findPath, idx, inBounds, manhattan, reachable, type FixedPointKind, type Point, type RegionInstance, type Town, type WorldMap } from "./map.js";
+import { findPath, idx, inBounds, manhattan, reachable, type FixedPoint, type Point, type RegionInstance, type Town, type WorldMap } from "./map.js";
 import { WorldRng } from "./rng.js";
 
 /**
@@ -42,6 +42,8 @@ export interface OpponentInstance {
   catalogId: string;
   region: number;
   defeated: boolean;
+  /** Resident of a fixed point (lair): never in the roaming roster; met only there. */
+  fixedAt?: Point;
 }
 
 export interface GeneratedWorld {
@@ -176,13 +178,27 @@ export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOpt
       carveTo(r.heart);
     }
   }
-  // Strongholds: fixed-point API present, unused in the slice (count 0).
-  const strongholdKind: FixedPointKind = "stronghold";
-  map.strongholds = placeFixedPoints(rng, [], 0, spacing, townPts).map((at) => ({ kind: strongholdKind, at, region: region[idx(map, at)]! }));
-
   // 4. Opponent rosters per region from the catalog by tier table.
   const opponents: OpponentInstance[] = [];
   let n = 0;
+  // S14 round 1 prototype: ONE lair — a fixed point in the wildest region with
+  // a resident (the catalog's first beast, else its highest-tier opponent),
+  // spaced from towns, carved reachable. Strongholds/dungeons reuse this shape.
+  const lairHost = catalog.opponents.find((o) => o.kind === "beast") ?? [...catalog.opponents].sort((a, b) => b.tier - a.tier)[0];
+  const wildest = [...regions].sort((a, b) => ["civilized", "approach", "wild"].indexOf(b.tier) - ["civilized", "approach", "wild"].indexOf(a.tier))[0];
+  const fixed: FixedPoint[] = [];
+  if (lairHost && wildest) {
+    const candidates = allCells.filter((p) => region[idx(map, p)] === wildest.index && passable[idx(map, p)] && !towns.some((t) => t.at.x === p.x && t.at.y === p.y));
+    const [at] = placeFixedPoints(rng, candidates, 1, opts.townSpacing, townPts);
+    if (at) {
+      passable[idx(map, at)] = true;
+      carveTo(at);
+      const inst: OpponentInstance = { id: `opp_lair_${n++}`, catalogId: lairHost.id, region: wildest.index, defeated: false, fixedAt: at };
+      opponents.push(inst);
+      fixed.push({ kind: "lair", at, region: wildest.index, name: `Lair of ${lairHost.name}`, opponentId: inst.id });
+    }
+  }
+  map.strongholds = fixed;
   for (const r of regions) {
     const table = TIER_TABLES[r.tier] ?? [1];
     for (let i = 0; i < opts.rosterPerRegion; i++) {

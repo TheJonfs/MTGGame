@@ -480,3 +480,8 @@ button.primary { background: var(--brass); color: var(--parchment); border: 1.5p
 .shop-buttons { display: flex; gap: 4px; }
 .shop-stock { font-size: 10.5px; color: var(--ink-soft); }
 .sell-row { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; }
+
+/* S14 round 1: editor cards — printed by default, small fixed slots so several fit per row */
+.editor-slot { width: 92px; height: 129px; display: flex; align-items: center; justify-content: center; }
+.editor-slot .frame { width: 92px; font-size: 5.3px; }
+.editor-slot .printed-scan { width: 92px; height: auto; }
