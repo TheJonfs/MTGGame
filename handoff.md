@@ -29,6 +29,12 @@
 3. **Stakes hover → inspector:** the Stakes panel's card names are hover targets; the ante objects are real state objects, so the inspector shows the card.
 4. **Director backlog for the next design round (M6b+), Chris's words banked verbatim:** larger regions; start the player in their starting deck's home region; towns more uniformly distributed; starting decks as 30-card mono-coloured decks; weaker starting enemies that *flee from you as you grow stronger* so low-level mobs needn't be fought late unless you want to. All are generator/catalog/encounter-table content — none touches the save format except possibly "home region" (a region→colour binding the catalog already carries).
 
+## Director round 3 (same day, closing)
+
+1. **Stray diagonal on the walk path:** the preview polyline started at the current position but still held the original path, so it drew back to the path's start while walking — the preview is now trimmed to the remaining cells as you advance.
+2. **Scarred, no change now (Chris):** lowest-tier enemies may want Shandalar-style **4–6 world life** so a bad first duel doesn't doom-spiral — rides on the broader difficulty tuners (catalog `worldLife` per opponent + difficulty bundles); candidate for the knob-tuning round after the deck editor.
+3. Chris is taking this handoff to the planner to brief **deck modification next** (the editor will be the lever for testing mechanical balance). Ready for it: the collection is `cardId → count` plus the active decklist; `deckLegal` (30-floor, 4-cap, basics exempt) is the rule; basics are free/infinite (the collection holds counts for bookkeeping only); `basicLand` per player is the slice's refill card and the editor supersedes the auto-refill; the S12 handoff's M6b notes (Concern 7 there) still apply.
+
 ## Deviations from the brief
 
 1. **Shop stock does not deplete** (slice). Depletion and selling need per-shop state — a `shops` field in a versioned save — so they're M6b (Concern 2). Epoch-based refresh is my proposal for "refresh rules open."

@@ -176,9 +176,12 @@ export class WorldController {
     const token = ++this.walkToken;
     this.screen = { ...this.screen, walking: true, notice: null };
     this.emit();
-    for (const cell of path) {
+    for (const [i, cell] of path.entries()) {
       if (token !== this.walkToken || !this.world) return;
       const events = advance(this.world, this.catalog, [cell], this.extraKnobs);
+      // Trim the preview to what's left (round 3: the polyline from the
+      // current position back to the path's start drew a stray diagonal).
+      if (this.screen.kind === "map") this.screen = { ...this.screen, preview: path.slice(i + 1) };
       this.emit();
       for (const e of events) {
         if (e.type === "encounter") {
