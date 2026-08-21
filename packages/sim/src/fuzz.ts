@@ -4,22 +4,14 @@ import { loadCardPool } from "@shandalar/cards/loader";
 import type { CardDef } from "@shandalar/cards";
 import { runMatch, type Agent, type MatchResult, type MatchSpec } from "@shandalar/engine";
 import { difficultyProfile, HeuristicAgent, RandomAgent, SanePolicyAgent, type Archetype, type Difficulty } from "@shandalar/agents";
-import { DECKS, PAIRINGS, type DeckKey } from "./slice-decks.js";
+import { DECKS, DECK_ARCHETYPES, PAIRINGS, type DeckKey } from "./slice-decks.js";
+export { DECK_ARCHETYPES } from "./slice-decks.js";
 
 /** Agent kinds the sim knows how to construct (ADR-045, ADR-049). S9 Part 3:
  * "heuristic" optionally takes a difficulty suffix — "heuristic:apprentice",
  * "heuristic:master"; bare "heuristic" is journeyman. */
 export type AgentKind = "random" | "sane" | "heuristic" | `heuristic:${Difficulty}`;
 export type AgentPair = [AgentKind, AgentKind];
-
-/** Archetype per slice deck (ADR-050 profile input; defaults chosen by the implementer, tune in M4b). */
-export const DECK_ARCHETYPES: Record<DeckKey, Archetype> = {
-  A: "aggro",
-  B: "control",
-  C: "midrange",
-  D: "midrange",
-  E: "midrange", // S9 Part 2: measured switch from "control" — tempo wants pressure (E mirrors +delta below)
-};
 
 export function makeAgent(
   kind: AgentKind,

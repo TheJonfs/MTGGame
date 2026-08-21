@@ -107,3 +107,13 @@ export const PAIRINGS: [DeckKey, DeckKey][] = [
   ["C", "E"],
   ["D", "E"],
 ];
+
+/** Archetype per slice deck (ADR-050 profile input; E measured midrange in S9).
+ * Lives here (browser-safe) so the play UI's agent factory can import it. */
+export const DECK_ARCHETYPES = {
+  A: "aggro",
+  B: "control",
+  C: "midrange",
+  D: "midrange",
+  E: "midrange",
+} as const;

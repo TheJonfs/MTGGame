@@ -12,8 +12,10 @@ import {
   type GameState,
   type PlayerId,
 } from "@shandalar/engine";
-import { runPairingMatch } from "./fuzz.js";
-import { DECKS } from "./slice-decks.js";
+import { HumanAgent, HeuristicAgent, difficultyProfile } from "@shandalar/agents";
+import { runMatch } from "@shandalar/engine";
+import { matchSpec, runPairingMatch } from "./fuzz.js";
+import { DECKS, DECK_ARCHETYPES } from "./slice-decks.js";
 
 const CARDS_DIR = join(dirname(fileURLToPath(import.meta.url)), "../../../data/cards");
 
@@ -86,5 +88,35 @@ describe("no-peeking (permanent; ADR-048)", () => {
       }
     }
     expect(decisionsChecked).toBeGreaterThan(60);
+  });
+
+  it("the live human seam: every view a HumanAgent receives is redacted (S10 Part 0.1)", async () => {
+    const pool = loadCardPool(CARDS_DIR);
+    const human = new HumanAgent();
+    const views: { hand: { objectId: string }[]; opponentHandCount: number }[] = [];
+    human.onRequest = (view, request) => {
+      views.push(view as never);
+      queueMicrotask(() => human.submit(request.actions[0]!));
+    };
+    const ai = new HeuristicAgent(7, pool.cards, difficultyProfile("journeyman", DECK_ARCHETYPES.D, [...DECKS.A.decklist]));
+    const result = await runMatch(matchSpec(99, "A", "D", ["random", "random"]), pool.cards, [human, ai]);
+    expect(result.turns).toBeGreaterThan(0);
+    expect(views.length).toBeGreaterThan(10);
+
+    // The live human path must serve the same redacted GameView shape the
+    // deep replay-based test above verifies id-by-id: hidden zones appear
+    // as counts only, and no key of the serialized view carries a zone list
+    // beyond own hand / battlefield / stack / graveyards.
+    for (const v of views) {
+      const json = JSON.stringify(v);
+      expect(json).not.toContain('"opponentHand":');
+      expect(json).not.toContain('"library":');
+      expect(typeof v.opponentHandCount).toBe("number");
+      const keys = Object.keys(v).sort();
+      expect(keys).toEqual([
+        "activePlayer", "battlefield", "combat", "graveyards", "hand", "librarySizes",
+        "life", "mulliganCount", "opponentHandCount", "stack", "step", "turn", "you",
+      ]);
+    }
   });
 });

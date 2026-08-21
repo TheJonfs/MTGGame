@@ -5,3 +5,4 @@ export * from "./evaluator.js";
 export * from "./view-sim.js";
 export * from "./combat-sim.js";
 export * from "./heuristic-agent.js";
+export * from "./human-agent.js";
