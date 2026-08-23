@@ -177,6 +177,17 @@ Things a fresh session might otherwise rediscover slowly:
 - **`import.meta.glob` is evaluated at dev-server start**: new card JSON needs a server restart before the browser sees it ("unknown card rampant_growth" mid-verification).
 - **Scripted drivers should take the non-default search option** (the S10 driver's "option 0" was `declineSearch`) — otherwise the dialog path is never exercised.
 
+## S16 lessons (roaming world, starters, save v3, one-drops)
+
+- **Registry claims need a grep, not a memory**: the S15 handoff said R-044/045 were added; `rules-registry.md` hadn't been touched since S12. Backfilled in S16 — principle 11 applies to the handoff's own claims: before writing "registry entries added", `grep R-0NN docs/registries/`.
+- **Equal-speed pursuit is Manhattan geometry**: a roamer at distance 1 can never step onto a player who keeps moving away or sideways (after your step the distance is 2, it closes to 1). Contact happens when you step *toward* it, stop (the world stops with you), or walk into one from the side/front. `roamerSpeed` > 1 is the dial for hunters; the felt-wrong list decides.
+- **`advance()` order matters for "stepped vs reached"**: player moves → lair check → stepped-onto check → roamers tick → reached check. Encounters carry `contact` so the UI/world-sim can tell the two apart; tests stage roamers by writing `inst.at` directly (the old `encounterRatePerStep: 1` trick is gone).
+- **Tests that want a quiet map**: mark roamers `gone` and set `roamerRespawnSteps` to 0 via the event layer (`QUIET` in the tests) — respawn is a clock and will refill an emptied region otherwise.
+- **v3 migration bug I wrote and caught**: spreading the *player's* rest into the world (`{...rest}` vs `{...worldRest}`) — the round-trip/migration test caught it immediately; keep those tests paranoid.
+- **The AI's "who" resolution must be per effect**: mill copied the S11 discard lesson (Hymn-at-own-head) — a flat value let the Adept mill itself half the time (book of shame 10). Any new `who: target` effect needs the same treatment in `view-sim`.
+- **`sim` must not import `world`** (world imports sim's decks) — `fuzz:starters` reads `starters.json` with `fs`.
+- **HMR re-mounts the world app**: editing any UI file mid-verification resets `__wc` to the start screen; `continueFromAutosave()` restores.
+
 ## Known interims / watch list
 
 See handoff Concerns for the authoritative list. Highlights: auto-pay greedy feasibility (correct while all producers are single-symbol — R-006); condition fields `controller`/`type`/`subtype` are validated but unexercised (first card to use them should add fixtures); value refs deliberately have no arithmetic (ADR-028 — resist until a card demands it); the `sba-unattach` ATTACHED cause is unreachable by legal play (test-forced only).
