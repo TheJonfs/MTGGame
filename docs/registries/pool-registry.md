@@ -124,6 +124,47 @@ Deck swaps (S15, ADR-068): C −1 Forest −1 Centaur Courser +2 Rampant Growth;
 
 Starters (S16, ADR-069/070): the five authored 30-card mono starters live in `data/world/starters.json` (Green +2 Elves −1 Forest −1 Bears; Blue +2 Adept −1 Island −1 Seer, per ADR-070); slice decks A–E are enemy/ladder infrastructure only.
 
+## Session 17 additions (Expansion 1 — the Bestiary's Arsenal, ADR-074/075/076)
+
+All real cards Scryfall re-verified before encoding; ⚠-row outcomes are in the S17 handoff (nine rows differed from the planner's draft — Scryfall values encoded). prizeOnly: none.
+
+| cardId | name | status | vocabulary | notes |
+|---|---|---|---|---|
+| werebear | Werebear | implemented | creature mana ability; conditional static (graveyardCount ≥ 7 → +3/+3) | A4 threshold |
+| little_bear | Little Bear | implemented | flash; ETB untapTarget(other creatureYouControl) + addCounters `if` Bear | first untapTarget resolver |
+| mother_bear | Mother Bear | implemented | graveyard-zone ability {3}{G}{G}, exileSelf, sorcery → two bear_2_2 | A5; cost {3}{G}{G} (planner draft said {1}{G}) |
+| moss_viper | Moss Viper | implemented | deathtouch | |
+| treetop_snarespinner | Treetop Snarespinner | implemented | reach, deathtouch; sorcery-speed {2}{G} counter on creatureYouControl | |
+| airship_crash | Airship Crash | implemented | destroy anyOf(artifact, enchantment, creature withKeyword flying); cycling {2} | A5 cycling; or-predicate |
+| baru_wurmspeaker | Baru, Wurmspeaker | implemented | static Wurms +2/+2 trample (subtype scope); {7}{G},{T} wurm_4_4 with reduceBy maxPower(Wurm) | A4 reduction; legendary (pool-legal, ADR-076) |
+| gaean_wurm | Gaean Wurm (custom #2) | implemented | static modifyPT count(Forest you control) | A4; art candidates S18 |
+| mist_raven | Mist Raven | implemented | flying; ETB bounce target creature | cost {2}{U}{U} (draft said {2}{U}) |
+| waterfront_bouncer | Waterfront Bouncer | implemented | {U},{T}, discard 1: bounce creature | cost {1}{U} (draft {U}); discard cost |
+| essence_scatter | Essence Scatter | implemented | counter target creatureSpell | spell-type predicate |
+| gravitational_shift | Gravitational Shift | implemented | statics withKeyword/withoutKeyword flying ±2/+0 | keyword-filtered scopes |
+| aether_channeler | Aether Channeler | implemented | ETB modal: bird token / bounce other nonlandPermanent / draw | A6 |
+| aven_fisher | Aven Fisher | implemented | flying; DIES optional draw | cost {3}{U} |
+| air_elemental | Air Elemental | implemented | 4/4 flying | ADR-074 |
+| master_decoy | Master Decoy | implemented | {W},{T}: tapTarget creature | |
+| scepter_of_dominance | Scepter of Dominance | implemented | {W},{T}: tapTarget permanent | cost {1}{W}{W} (draft {W}{W}) |
+| disenchant | Disenchant | implemented | destroy anyOf(artifact, enchantment) | |
+| youthful_valkyrie | Youthful Valkyrie | implemented | flying; observed ETB (other Angel you control) → counter on self | 1/3 (draft 1/1?) |
+| restoration_angel | Restoration Angel | implemented | flash, flying; optional ETB exileThenReturn(other non-Angel creatureYouControl) | A8; "you may … target" — not "up to one" |
+| inspiring_overseer | Inspiring Overseer | implemented | flying; ETB gain 1 + draw | |
+| skirk_prospector | Skirk Prospector | implemented | sac Goblin: add {R} (deliberate, one action) | |
+| hordeling_outburst | Hordeling Outburst | implemented | three goblin_1_1 | |
+| goblin_grenade | Goblin Grenade | implemented | additionalCost sac Goblin; 5 damage anyTarget | A7 |
+| goblin_matron | Goblin Matron | implemented | optional ETB searchLibrary subtype:Goblin → hand | subtype search |
+| indulgent_aristocrat | Indulgent Aristocrat | implemented | lifelink; {2}, sac a creature: +1/+1 counter on each Vampire (scope) | "a creature" incl. itself; Vampire Noble |
+| blood_artist | Blood Artist | implemented | observed DIES (source any, creature) → target player loses 1, you gain 1 | cost {1}{B} (draft {B}); look-back under Wrath |
+| bitterblossom | Bitterblossom | implemented | UPKEEP (yours): lose 1, faerie_rogue_1_1_flying | Kindred Enchantment — Faerie encoded as Enchantment + subtype |
+| dark_ritual | Dark Ritual | implemented | spell addMana {B}{B}{B} | book of shame 12 |
+| waste_not | Waste Not | implemented | DISCARD (opponent) ×3: creature → zombie_2_2; land → {B}{B}; noncreature nonland → draw | triggered mana |
+| tendrils_of_corruption | Tendrils of Corruption | implemented | damage count(Swamp you control) + gainLife same | A4 at resolution |
+| hypnotic_specter | Hypnotic Specter | implemented | flying; DEALS_DAMAGE_TO_PLAYER (self, opponent) → discard 1 random | ADR-074 |
+
+Tokens added: bear_2_2 (G), bird_1_1_flying (W), wurm_4_4 (G), zombie_2_2 (B), faerie_rogue_1_1_flying (B). Pool 72 → 104 cards (+5 tokens = 109 loader entries). Beast decklists (30 cards as listed; ADR-074 says 40 — planner reconciles in S18) live in `packages/sim/src/expansion-decks.ts` for fuzz/ladder until the S18 catalog adopts them.
+
 ## Ceiling anchors (not yet scheduled)
 Ceiling complete as of S5 (see mechanics-manifest §3). Further additions are card batches using existing vocabulary.
 
@@ -145,8 +186,15 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 
 | cardId | set | collector | artist | scryfallId |
 |---|---|---|---|---|
+| aether_channeler | dmu | 42 | Caio Monteiro | 60afeb75-2c1e-4634-8c83-88b1dddb77c2 |
+| air_elemental | lea | 46 | Richard Thomas | 69c3b2a3-0daa-4d42-832d-fcdfda6555ea |
+| airship_crash | fin | 171 | Enora Mercier | ec91c4e4-711f-464d-bc83-e6813f4fdcdb |
+| aven_fisher | ody | 63 | Christopher Moeller | 5b27130d-2296-4076-9829-15ab63081896 |
+| baru_wurmspeaker | dmc | 26 | Andrew Mar | 2cae4149-d8ef-4772-9db4-cb576bef61b5 |
+| bitterblossom | mor | 58 | Rebecca Guay | 8145fed6-6b51-420a-84cf-4ea5e0aa1883 |
 | black_lotus | lea | 232 | Christopher Rush | b0faa7f2-b547-42c4-a810-839da50dadfe |
 | blaze | por | 118 | Gerry Grace | f175c959-3b5d-46a3-9194-fad2359bbff9 |
+| blood_artist | avr | 86 | Johannes Voss | 2e1fb442-68ff-4249-8e44-87edf6fae211 |
 | blurred_mongoose | inv | 183 | Heather Hudson | 4b073e3f-6a6f-495a-ab16-39d906b660f1 |
 | boggart_brute | ori | 133 | Igor Kieryluk | 9d735ebf-61a4-4507-9399-6d32c8903ded |
 | bonesplitter | pal03 | 8 | Darrell Riche | ae31d513-7412-4467-b497-a7183ff29a42 |
@@ -159,33 +207,48 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | control_magic | lea | 52 | Dameon Willich | 7b52f459-c703-4a0b-9114-ff69eec61287 |
 | counterspell | lea | 54 | Mark Poole | 0df55e3f-14de-46ef-b6b1-616618724d9e |
 | curiosity | exo | 29 | Val Mayerik | fee17ef5-7e1a-42ae-b680-df81204df7dd |
+| dark_ritual | lea | 98 | Sandra Everingham | ebb6664d-23ca-456e-9916-afcd6f26aa7f |
 | darksteel_myr | som | 151 | Randis Albion | 0f5712cf-c6a9-4a2e-90db-8ca17c621724 |
 | deadly_recluse | m10 | 175 | Warren Mahy | 6ab810f1-21d6-4a98-b77a-e455370aa6cc |
 | demonic_tutor | lea | 104 | Douglas Shuler | 711d4d54-5520-4de8-9b93-79902ed8e562 |
+| disenchant | lea | 18 | Amy Weber | 2722d7e2-61c6-4934-9c21-875ee78fd06c |
 | divination | m10 | 49 | Howard Lyon | 3102cec9-1cdc-4946-a2dd-caf04eaa8b97 |
 | doom_blade | m10 | 93 | Chippy | 6e19acff-f3dd-417a-a9ab-ea3e36c1ba61 |
 | drana_kalastria_bloodchief | roe | 107 | Mike Bierek | aca8d295-e8e9-4213-bc9b-f1acf57fb520 |
 | duress | usg | 132 | Lawrence Snelly | ca367f49-0f4a-4b7f-8104-851893fbcd8a |
 | elvish_visionary | ala | 130 | D. Alexander Gregory | faccfa5f-4d89-4a86-92d7-36cb5a16c5c9 |
+| essence_scatter | m10 | 51 | Jon Foster | c231101e-6620-46fc-a0ad-a53291d12dc2 |
 | fencing_ace | rtr | 11 | David Rapoza | a42d3066-f4ec-4d28-83ab-e48141206c72 |
 | forest | leb | 300 | Christopher Rush | b5a922eb-49c7-45f0-92bc-671d7a8758f4 |
 | giant_growth | lea | 197 | Sandra Everingham | 367dbefe-3366-408e-9fcf-7dc00f8cc201 |
 | gladecover_scout | m12 | 178 | Allen Williams | 26710d5c-01d1-498b-9f54-521dfd195843 |
 | glorious_anthem | usg | 15 | Kev Walker | 61f867c5-0727-4408-b479-b81518daa0ec |
 | goblin_chieftain | m10 | 139 | Sam Wood | f5c8a4a4-1611-4188-9c59-8aefb016b5ad |
+| goblin_grenade | fem | 56a | Ron Spencer | 8837eaba-9602-4f63-9897-85583fcdcf51 |
+| goblin_matron | p02 | 100 | Daniel Gelon | f99dc21c-8600-49bf-b0a3-c981f7ec7ac3 |
 | goblin_piker | p02 | 102 | DiTerlizzi | 2786834d-dbda-40ce-82a4-e518cd554312 |
 | gravedigger | por | 95 | Scott M. Fischer | b979d70e-d514-420f-886c-f60e2bb1861f |
+| gravitational_shift | roe | 69 | Svetlin Velinov | bad32b9f-0aa4-4036-90e6-c087cffd52e7 |
 | gray_ogre | lea | 156 | Dan Frazier | 73ae5276-b607-4f23-a9d2-e8cc7b8e3693 |
 | grizzly_bears | lea | 199 | Jeff A. Menges | ce2d603a-3231-4a8c-bf39-1617586ea870 |
 | hill_giant | lea | 157 | Dan Frazier | 0ddb98e8-13fe-4786-83f7-b72c56db135a |
+| hordeling_outburst | ktk | 111 | Zoltan Boros | a5c1bf52-2737-423a-b340-07448afcaea6 |
 | hymn_to_tourach | fem | 38b | Liz Danforth | 8601f082-7e43-44ef-97d0-dead272b7eb4 |
+| hypnotic_specter | lea | 112 | Douglas Shuler | b43b900f-2d9b-442b-9699-058483604ec9 |
+| indulgent_aristocrat | soi | 118 | Anna Steinbauer | f24200d4-cd98-424c-bc2f-69f8b361d8fc |
+| inspiring_overseer | snc | 18 | Irina Nordsol | 35d9da1d-8678-4252-b0f8-9960795642f0 |
 | island | leb | 291 | Mark Poole | bff33e91-8e52-43f2-b8ae-603b456b08fc |
 | lightning_bolt | lea | 161 | Christopher Rush | d573ef03-4730-45aa-93dd-e45ac1dbaf4a |
+| little_bear | hob | 128 | Tomas Duchek | 8a50858a-33b5-4c45-9c31-5956ae5a33a6 |
 | llanowar_elves | lea | 210 | Anson Maddocks | d4f1cc9e-4f99-4c26-ac1b-8ef069fa8ceb |
 | loxodon_warhammer | mrd | 201 | Jeremy Jarvis | a1a6e375-5c47-4447-9453-adf0038693e3 |
 | man_o_war | vis | 37 | Jon J Muth | 4dbf9bf9-75cd-4b25-a3a1-43b7e029700b |
+| master_decoy | tmp | 29 | Phil Foglio | f3e11097-1ace-4ae8-a9e8-d00b9f709e54 |
 | mind_rot | 7ed | 147 | Adam Rex | 5681e85c-79d5-4300-bda6-4ae40bb7d5d4 |
 | mind_stone | wth | 153 | Adam Rex | 162e81d3-6cd4-4cb8-8ed8-cfbd8d34ca71 |
+| mist_raven | avr | 67 | John Avon | 0d98f0c4-021a-407a-8b0c-5500d804f959 |
+| moss_viper | thb | 179 | Mike Bierek | a4d35ec4-0e0d-4611-8ad9-39d2c8a2ad6e |
+| mother_bear | mh1 | 171 | Winona Nelson | efae4d84-8134-461a-a352-a5bdff7259a7 |
 | mountain | leb | 297 | Douglas Shuler | 7af9c715-8d72-4eae-b412-fc89138ff588 |
 | mystic_snake | apc | 112 | Daren Bader | f098a28c-5f9b-4a2c-b109-c342365eb948 |
 | nekrataal | vis | 66 | Adrian Smith | dba3e342-88b7-4692-a3f7-a3f56c0cf6b5 |
@@ -199,19 +262,28 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | raise_the_alarm | mrd | 16 | John Matson | 4be510c8-fc01-4374-ac04-7968d24480fe |
 | rampant_growth | mir | 235 | Pat Lewis | a9dd8043-4099-42bb-9d54-4efc8b38fe18 |
 | rancor | ulg | 110 | Kev Walker | 59e256c2-38df-4012-9308-ce17dd889e5f |
+| restoration_angel | avr | 32 | Johannes Voss | c2ad8639-e586-47f4-baca-2a1af5aa281b |
 | rumbling_baloth | m14 | 193 | Jesper Ejsing | d8610ff1-064b-4c75-a8df-d3b076370d1e |
 | savannah_lions | lea | 38 | Daniel Gelon | d05b92bd-797e-413f-a8b0-32e0937a1ee0 |
+| scepter_of_dominance | con | 17 | Howard Lyon | 888bc7ca-f9fa-4da4-b466-b9dc273d5319 |
 | serra_angel | lea | 39 | Douglas Shuler | f8ac5006-91bd-4803-93da-f87cf196dd2f |
 | shock | sth | 98 | Randy Gallegos | f9b2ff2a-6dfe-4635-8da2-22d525e82b94 |
 | siege_gang_commander | scg | 103 | Christopher Moeller | 92e78cec-aaf9-4fe8-887b-b7e356d63315 |
+| skirk_prospector | ons | 230 | Doug Chaffee | eb545dcd-3a7a-46a7-9c35-d28faebc6d17 |
 | suntail_hawk | jud | 28 | Heather Hudson | 5fbdae0b-b4aa-40ff-9017-b4349bd6b627 |
 | swamp | leb | 294 | Dan Frazier | d1309a80-a761-4b80-8cf1-1a8b83190511 |
 | swords_to_plowshares | lea | 40 | Jeff A. Menges | 386ea9eb-abc1-4862-aa2d-8fb808d79490 |
+| tendrils_of_corruption | tsp | 136 | Mike Dringenberg | 7f61db9e-ef88-4dc8-b90c-1f8b2d7e9bb9 |
 | terror | lea | 130 | Ron Spencer | 21004958-2c7e-4a55-bc80-411c4d780106 |
 | timberland_guide | avr | 197 | Zoltan Boros | ae80fefb-af78-4f98-8058-71b61e91842f |
+| treetop_snarespinner | fdn | 114 | Steve Ellis | 88e68fa3-159d-49a6-8ac6-afc9bd6f1718 |
 | typhoid_rats | isd | 120 | Kev Walker | 4490ce65-c73a-4809-abd1-ccc3175bd2a4 |
 | vampire_nighthawk | zen | 116 | Jason Chan | 44f19fe3-7a17-4c45-adfa-590f73dfebfa |
+| waste_not | m15 | 122 | Matt Stewart | 241d8f7d-3981-47c1-b7b8-748277fa452f |
+| waterfront_bouncer | mmq | 114 | Paolo Parente | 8dbdce9e-94fa-4ed5-9b97-d2026cffe7cb |
+| werebear | ody | 282 | Carl Critchlow | 964cf7e3-932d-432f-8ad4-9bd651aada96 |
 | wind_drake | por | 77 | Zina Saunders | 5486d2dc-9a5d-4f58-a5ec-d94de54b852f |
 | wrath_of_god | lea | 45 | Quinton Hoover | a2788d69-6a3a-42f0-8736-cc6b57755ecd |
+| youthful_valkyrie | khm | 382 | Anna Steinbauer | ffe93b27-f8ae-4abf-8ade-90f503f132c2 |
 | zombify | ody | 171 | Mark Romanoski | 513a2a6f-9ae6-42cb-b75f-6b45fc35f36e |
 

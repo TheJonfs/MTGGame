@@ -19,6 +19,8 @@ Only where the default would pick something we don't want, or where a card has m
 | Raging Goblin, Goblin Piker, Wind Drake, Suntail Hawk, Brute Force, Timberland Guide, Rumbling Baloth, Centaur Courser, Cloudkin Seer | default | originals are modern-era commons; no strong preference |
 | Phyrexian Rager | apc | oldest-highres resolves to PMEI (magazine promo); Apocalypse is the real original (ADR-044) |
 | Cathartic Adept | ala | S16: Shards of Alara, Carl Critchlow (brief); Llanowar Elves takes the default rule (expected early Anson Maddocks — verify at fetch) |
+| Restoration Angel | avr | S17: default resolved to the PAVR prerelease promo (Wesley Burt alternate art); Avacyn Restored #32, Johannes Voss, is the original (Phyrexian Rager precedent) |
+| Expansion 1 (S17), everything else | default | Air Elemental LEA Thomas, Hypnotic Specter LEA Shuler, Dark Ritual LEA Everingham, Disenchant LEA Weber, Goblin Grenade FEM 56a Spencer, Goblin Matron P02 Gelon, Youthful Valkyrie KHM #382 (Theme Booster original), Little Bear HOB (2026 set — its original); UB printings fine per ADR-076 (Airship Crash FIN) |
 | Everything else | default | |
 
 ## Rendering note

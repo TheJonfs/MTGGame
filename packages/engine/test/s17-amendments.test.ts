@@ -153,7 +153,7 @@ describe("A5 — zone-scoped abilities (cycling, graveyard)", () => {
     expect(tg.graveyardCardIds(0)).not.toContain("mother_bear");
     expect(tg.game.state.players[0].exile.map((id) => getObject(tg.game.state, id).cardId)).toContain("mother_bear");
     // Sorcery-only: on the opponent's turn the ability is not offered.
-    const instant: FixtureSpec = { ...spec, name: "mother-bear-instant", setup: { active: 1, players: [{ battlefield: spec.setup.players[0].battlefield, graveyard: ["mother_bear"], hand: ["forest"] }, { hand: ["island"] }] }, script: [] };
+    const instant: FixtureSpec = { ...spec, name: "mother-bear-instant", setup: { active: 1, players: [{ battlefield: ["forest", "forest", "forest", "forest", "forest"], graveyard: ["mother_bear"], hand: ["forest"] }, { hand: ["island"] }] }, script: [] };
     const tg2 = await runFixture(instant);
     expect(tg2.requests.some((r) => r.purpose === "priority" && r.player === 0 && r.actions.some((a) => a.type === "activateAbility"))).toBe(false);
     // Milled into the graveyard → activatable next priority.

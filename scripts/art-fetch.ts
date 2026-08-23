@@ -61,6 +61,7 @@ const OVERRIDES: Record<string, { set: string; collector?: string }> = {
   black_lotus: { set: "lea" }, // S15 (ADR-068): Christopher Rush — the point of the exercise
   demonic_tutor: { set: "lea" }, // S15: Douglas Shuler (planner suggestion; default rule agrees)
   cathartic_adept: { set: "ala" }, // S16 (brief): Shards of Alara, Carl Critchlow — its only original
+  restoration_angel: { set: "avr" }, // S17: oldest-highres resolves to the PAVR prerelease promo (Wesley Burt alt art); Avacyn Restored (Johannes Voss) is the original — the Rager precedent
 };
 
 async function search(q: string): Promise<Printing[]> {

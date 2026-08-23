@@ -113,9 +113,10 @@ describe("no-peeking (permanent; ADR-048)", () => {
       expect(json).not.toContain('"library":');
       expect(typeof v.opponentHandCount).toBe("number");
       const keys = Object.keys(v).sort();
+      // S17: graveyardObjects (public zone, with ids) and the viewer's own manaPool joined the view — both public.
       expect(keys).toEqual([
-        "activePlayer", "battlefield", "combat", "graveyards", "hand", "librarySizes",
-        "life", "mulliganCount", "opponentHandCount", "stack", "startingLife", "step", "turn", "you",
+        "activePlayer", "battlefield", "combat", "graveyardObjects", "graveyards", "hand", "librarySizes",
+        "life", "manaPool", "mulliganCount", "opponentHandCount", "stack", "startingLife", "step", "turn", "you",
       ]);
     }
   });

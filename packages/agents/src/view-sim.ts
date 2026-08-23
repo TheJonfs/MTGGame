@@ -82,6 +82,9 @@ export function predictAction(
     const d = card ? def(card.cardId) : undefined;
     next.hand = next.hand.filter((c) => c.objectId !== action.objectId);
     if (!d) return { view: next, adjustment: 0.2, unchanged: false };
+    // A7 (S17): an additional sacrifice cost spends our cheapest matching creature (the engine asks
+    // later; sacrificeChoice picks the lowest value) — Goblin Grenade is priced net of the Goblin.
+    if (d.additionalCost?.sacrifice) removeCheapestMatching(next, me, d.additionalCost.sacrifice.predicate, defs, constants);
 
     const isPermanent = d.types.some((t) => ["Creature", "Artifact", "Enchantment"].includes(t));
     const isAura = d.subtypes?.includes("Aura") ?? false;
@@ -134,14 +137,18 @@ export function predictAction(
       });
       return { view: next, adjustment, unchanged: false };
     }
-    // Instant/sorcery: apply its effects, card leaves hand.
-    for (const e of d.spellEffect ?? []) adjustment += applyEffect(next, e, targets, x, defs, constants);
+    // Instant/sorcery: apply its effects (A6: the chosen mode's), card leaves hand.
+    const effects = d.modes && action.mode !== undefined ? (d.modes[action.mode]?.effects ?? []) : (d.spellEffect ?? []);
+    for (const e of effects) adjustment += applyEffect(next, e, targets, x, defs, constants);
     return { view: next, adjustment, unchanged: false };
   }
 
-  // activateAbility
+  // activateAbility — from the battlefield, or (A5, S17) from hand / graveyard.
   const objEntry = view.battlefield.find((o) => o.id === action.objectId);
-  const d = objEntry ? def(objEntry.cardId) : undefined;
+  const handEntry = view.hand.find((c) => c.objectId === action.objectId);
+  const gyEntry = view.graveyardObjects[me].find((c) => c.objectId === action.objectId);
+  const cardId = objEntry?.cardId ?? handEntry?.cardId ?? gyEntry?.cardId;
+  const d = cardId ? def(cardId) : undefined;
   const ability = d?.abilities?.[action.abilityIndex];
   if (!d || !ability || ability.kind !== "activated") return { view, adjustment: 0.1, unchanged: true };
 
@@ -152,7 +159,12 @@ export function predictAction(
   }
   if (ability.cost.sacrifice?.predicate === "self") {
     removeObject(next, action.objectId);
+  } else if (ability.cost.sacrifice) {
+    // Aristocrat / Prospector: the cheapest matching creature goes (sacrificeChoice picks it).
+    removeCheapestMatching(next, me, ability.cost.sacrifice.predicate, defs, constants);
   }
+  if (ability.cost.discardSelf && handEntry) next.hand = next.hand.filter((c) => c.objectId !== action.objectId); // cycling spends the card
+  if (ability.cost.discard) next.hand.length = Math.max(0, next.hand.length - ability.cost.discard); // Bouncer: a card from hand
   if (ability.equip) {
     const host = targets[0];
     const equip = view.battlefield.find((o) => o.id === action.objectId);
@@ -170,6 +182,15 @@ export function predictAction(
   for (const e of ability.effects) adjustment += applyEffect(next, e, targets, x, defs, constants);
   const unchanged = adjustment === 0 && JSON.stringify(next) === before && !ability.cost.tap;
   return { view: next, adjustment, unchanged };
+}
+
+/** Remove our cheapest creature matching a sacrifice predicate ("creature" | "creature.subtype:X") from the view copy. */
+function removeCheapestMatching(view: GameView, me: number, predicate: string, defs: Map<string, CardDef>, constants: EvalConstants): void {
+  const sub = predicate.startsWith("creature.subtype:") ? predicate.slice("creature.subtype:".length) : null;
+  const cands = view.battlefield.filter((o) => o.controller === me && o.power !== null && (!sub || (defs.get(o.cardId)?.subtypes ?? []).includes(sub)));
+  if (cands.length === 0) return;
+  const cheapest = [...cands].sort((a, b) => objectValue(defs, a, constants) - objectValue(defs, b, constants))[0]!;
+  removeObject(view, cheapest.id);
 }
 
 /** Apply one effect to the view copy; returns the unpredictable-part adjustment. */
@@ -346,6 +367,18 @@ function applyEffect(
       return 0.15;
     case "searchLibrary":
       return 0.5;
+    case "addMana":
+      return 0; // Ritual/Prospector: the agent-level mana-burst policy decides (book of shame 12)
+    case "exileThenReturn": {
+      // A8: blinking our own creature re-buys its ETB and shakes off auras/damage; a flat modest credit,
+      // more if the target carries an ETB trigger or an opposing aura.
+      const o = objAt(e.target);
+      if (!o) return 0;
+      const d = defs.get(o.cardId);
+      const hasEtb = (d?.abilities ?? []).some((a) => a.kind === "triggered" && a.event === "ENTERS_BATTLEFIELD");
+      const hostile = view.battlefield.some((a) => a.attachedTo === o.id && a.controller !== o.controller);
+      return 0.3 + (hasEtb ? 0.8 : 0) + (hostile ? 1.0 : 0);
+    }
     case "mill": {
       // ADR-070: mill valuation v1 — a nuisance, not an archetype (the Adept
       // is a starter check). Resolve WHO is milled (book of shame 10: the

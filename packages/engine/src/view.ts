@@ -39,6 +39,10 @@ export interface GameView {
   }[];
   stack: { id: string; kind: string; cardId: string; controller: PlayerId }[];
   graveyards: [string[], string[]]; // cardIds, public zone
+  /** S17: graveyard objects with ids (public) — graveyard-zone abilities (Mother Bear) are actions on object ids. */
+  graveyardObjects: [{ objectId: string; cardId: string }[], { objectId: string; cardId: string }[]];
+  /** S17: the viewing seat's floating mana (public; the opponent's is visible on the board too but unneeded). */
+  manaPool: { W: number; U: number; B: number; R: number; G: number; C: number };
 }
 
 export function buildView(ctx: EngineCtx, player: PlayerId): GameView {
@@ -55,6 +59,11 @@ export function buildView(ctx: EngineCtx, player: PlayerId): GameView {
     opponentHandCount: s.players[opp].hand.length,
     librarySizes: [s.players[0].library.length, s.players[1].library.length],
     mulliganCount: s.players[player].mulligans,
+    graveyardObjects: [
+      s.players[0].graveyard.map((id) => ({ objectId: id, cardId: getObject(s, id).cardId })),
+      s.players[1].graveyard.map((id) => ({ objectId: id, cardId: getObject(s, id).cardId })),
+    ],
+    manaPool: { ...s.players[player].manaPool },
     combat: {
       attackers: [...s.combat.attackers],
       blocks: s.combat.blocks.map((b) => ({ blocker: b.blocker, attacker: b.attacker })),

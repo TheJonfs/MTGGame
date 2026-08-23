@@ -65,6 +65,10 @@ export class HeuristicAgent implements Agent {
         return request.actions.find((a) => a.type === "acceptOptional") ?? request.actions[0]!;
       case "searchLibrary":
         return this.searchChoice(view, request);
+      case "chooseMode":
+        return this.modeChoice(view, request);
+      case "discardCost":
+        return this.lowestValueCard(view, request, "discard");
       default:
         return request.actions[0]!;
     }
@@ -134,6 +138,13 @@ export class HeuristicAgent implements Agent {
     // Lotus for nothing is the classic blunder. (Lotus is prize-only; a human
     // holds it, the AI essentially never will.)
     if (action.type === "activateAbility" && action.color !== undefined) return -Infinity;
+    // S17 (book of shame 12): a mana BURST — Dark Ritual, Skirk Prospector's sacrifice — is a play
+    // only when the extra mana lets us cast something this step that we otherwise couldn't.
+    const burst = this.manaBurst(view, action);
+    if (burst !== null) return burst.enables ? evaluate(view, this.profile, this.defs) + 0.6 : -Infinity;
+    // S17 (book of shame 13): cycling a spell is a cantrip of last resort — only when the card has
+    // no legal use on this board (Airship Crash with nothing to crash); never while it could be cast.
+    if (this.isCycling(view, action)) return this.cardIsDead(view, action) ? evaluate(view, this.profile, this.defs) + 0.3 : -Infinity;
     const pred = predictAction(view, action, this.defs, this.C);
     if (pred.unchanged) {
       // Friction: an action that visibly does nothing scores strictly below
@@ -141,6 +152,101 @@ export class HeuristicAgent implements Agent {
       return evaluate(view, this.profile, this.defs) - 0.25;
     }
     return evaluate(pred.view, this.profile, this.defs) + pred.adjustment;
+  }
+
+  /** S17: is this action a mana burst (a spell whose only effect is addMana, or a sacrifice-cost
+   * mana ability)? If so, does the burst enable a cast from hand this step that we couldn't pay now?
+   * Mana model: untapped lands + untapped rested creature producers + the floating pool vs. nonland
+   * cards' mana values (colour-blind — v1). Returns null for non-burst actions. */
+  manaBurst(view: GameView, action: Action): { enables: boolean } | null {
+    const me = view.you;
+    let produced = 0;
+    let spendsCard: string | null = null;
+    if (action.type === "castSpell") {
+      const card = view.hand.find((c) => c.objectId === action.objectId);
+      const d = card ? this.def(card.cardId) : undefined;
+      if (!d || !d.spellEffect || d.spellEffect.length === 0 || !d.spellEffect.every((e) => e.type === "addMana")) return null;
+      for (const e of d.spellEffect) if (e.type === "addMana" && e.mana) produced += (e.mana.match(/\{/g) ?? []).length;
+      produced -= Math.max(1, manaValue(parseManaCost(d.manaCost))); // net of its own cost
+      spendsCard = card!.objectId;
+    } else if (action.type === "activateAbility") {
+      const o = view.battlefield.find((b) => b.id === action.objectId);
+      const d = o ? this.def(o.cardId) : undefined;
+      const ab = d?.abilities?.[action.abilityIndex];
+      if (!ab || ab.kind !== "activated" || !ab.cost.sacrifice || !ab.effects.every((e) => e.type === "addMana")) return null;
+      for (const e of ab.effects) if (e.type === "addMana" && e.mana) produced += (e.mana.match(/\{/g) ?? []).length;
+    } else return null;
+    const pool = Object.values(view.manaPool).reduce((a, b) => a + b, 0);
+    const producers = view.battlefield.filter((o) => {
+      if (o.controller !== me || o.tapped) return false;
+      const d = this.def(o.cardId);
+      if (!d) return false;
+      const isLand = d.types.includes("Land");
+      const hasMana = (d.abilities ?? []).some((a) => a.kind === "activated" && a.cost.tap && !a.cost.sacrifice && a.effects.every((e) => e.type === "addMana" && !e.choice));
+      return hasMana && (isLand || true);
+    }).length;
+    const available = pool + producers;
+    const enables = view.hand.some((c) => {
+      if (c.objectId === spendsCard) return false;
+      const d = this.def(c.cardId);
+      if (!d || d.types.includes("Land")) return false;
+      const mv = manaValue(parseManaCost(d.manaCost));
+      return mv > available && mv <= available + produced;
+    });
+    return { enables };
+  }
+
+  /** S17: a hand-zone self-discard ability (cycling). */
+  isCycling(view: GameView, action: Action): boolean {
+    if (action.type !== "activateAbility") return false;
+    const card = view.hand.find((c) => c.objectId === action.objectId);
+    const d = card ? this.def(card.cardId) : undefined;
+    const ab = d?.abilities?.[action.abilityIndex];
+    return !!ab && ab.kind === "activated" && ab.zone === "hand" && ab.cost.discardSelf === true;
+  }
+
+  /** S17: a spell in hand with no legal target on this board (so cycling it loses nothing). */
+  cardIsDead(view: GameView, action: Action): boolean {
+    if (action.type !== "activateAbility") return false;
+    const card = view.hand.find((c) => c.objectId === action.objectId);
+    const d = card ? this.def(card.cardId) : undefined;
+    if (!d) return true;
+    const specs = d.targets ?? [];
+    if (specs.length === 0) return false; // untargeted spells always have a use
+    // Approximate legality from the view: any battlefield object the spec's base/anyOf predicates could accept.
+    const accepts = (spec: { predicate: string; anyOf?: { predicate: string; withKeyword?: string }[]; withKeyword?: string }, o: GameView["battlefield"][number]): boolean => {
+      if (spec.anyOf) return spec.anyOf.some((alt) => accepts(alt, o));
+      const dd = this.def(o.cardId);
+      if (!dd) return false;
+      const kw = spec.withKeyword ? o.keywords.includes(spec.withKeyword) : true;
+      switch (spec.predicate) {
+        case "artifact": return dd.types.includes("Artifact");
+        case "enchantment": return dd.types.includes("Enchantment");
+        case "creature": case "nonblackCreature": case "nonartifactNonblackCreature": case "anyTarget": return o.power !== null && kw;
+        case "creatureYouControl": return o.power !== null && o.controller === view.you && kw;
+        case "creatureYouDontControl": return o.power !== null && o.controller !== view.you && kw;
+        case "permanent": case "nonlandPermanent": return kw;
+        default: return true;
+      }
+    };
+    return !specs.every((spec) => view.battlefield.some((o) => accepts(spec, o)));
+  }
+
+  /** S17 (A6): modal choice v1 — Aether Channeler's shape. Prefer bouncing an opposing nonland
+   * permanent worth ≥ 2.5 (their best), else draw, else the token; other modal cards fall back to
+   * the first offered mode. Exposed for the book of shame. */
+  modeChoice(view: GameView, request: ActionRequest): Action {
+    const modes = request.actions.filter((a) => a.type === "chooseMode") as Extract<Action, { type: "chooseMode" }>[];
+    if (modes.length <= 1) return modes[0] ?? request.actions[0]!;
+    const me = view.you;
+    const labelOf = (m: (typeof modes)[number]) => m.label.toLowerCase();
+    const bounce = modes.find((m) => labelOf(m).includes("return"));
+    const draw = modes.find((m) => labelOf(m).includes("draw"));
+    const token = modes.find((m) => labelOf(m).includes("token"));
+    const theirBest = Math.max(0, ...view.battlefield.filter((o) => o.controller !== me && !(this.def(o.cardId)?.types.includes("Land") ?? false)).map((o) => objectValue(this.defs, o, this.C)));
+    if (bounce && theirBest >= 2.5) return bounce;
+    if (draw) return draw;
+    return token ?? modes[0]!;
   }
 
   /** S15 Part 3.1 — ranked tutor policy v1 (exposed for the book of shame).

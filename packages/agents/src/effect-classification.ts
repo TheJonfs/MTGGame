@@ -35,6 +35,7 @@ export function isHelpful(e: Effect): boolean {
   return (
     e.type === "grantKeyword" ||
     e.type === "untapTarget" ||
+    e.type === "exileThenReturn" || // A8 blink: you point it at your own creature (Restoration Angel)
     (e.type === "addCounters" && e.kind === "+1/+1") ||
     (e.type === "modifyPT" && ptSign(e.power) + ptSign(e.toughness) > 0) ||
     e.type === "draw" // draw auras (Curiosity): the payload benefits the enchanted creature's side

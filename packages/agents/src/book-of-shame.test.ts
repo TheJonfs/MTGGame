@@ -61,6 +61,8 @@ function mkView(opts: { hand?: { objectId: string; cardId: string }[]; battlefie
     }),
     stack: [],
     graveyards: [[], []],
+    graveyardObjects: [[], []],
+    manaPool: { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 },
   };
 }
 
@@ -243,6 +245,48 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const view2 = mkView({ life: [4, 20], battlefield: [...view.battlefield.map((o) => ({ id: o.id, cardId: o.cardId, controller: o.controller })), { id: "bear", cardId: "grizzly_bears", controller: 0 as const }] });
     const plan2 = a.planBlocks(view2, ["c1", "c2", "p1"]);
     expect(plan2.map((b) => b.attacker).sort()).toEqual(["c1", "c2"]); // 7 − 3 − 3 = 1 < 4
+  });
+
+  it("book of shame 12 (S17): Dark Ritual into nothing is never cast; Ritual that enables a Specter this step is; Skirk Prospector's sacrifice follows the same rule", () => {
+    const a = agent("midrange");
+    // One Swamp, Ritual + Specter ({1}{B}{B}) in hand: Ritual enables the Specter → a play.
+    const enabling = mkView({ hand: [{ objectId: "rit", cardId: "dark_ritual" }, { objectId: "spec", cardId: "hypnotic_specter" }], battlefield: [{ id: "sw", cardId: "swamp", controller: 0 }] });
+    const castRitual = a.scorePriorityAction(enabling, { type: "castSpell", objectId: "rit", targets: [] });
+    const pass = a.scorePriorityAction(enabling, { type: "pass" });
+    expect(castRitual).toBeGreaterThan(pass);
+    // Ritual with nothing to cast after it: never.
+    const nothing = mkView({ hand: [{ objectId: "rit", cardId: "dark_ritual" }], battlefield: [{ id: "sw", cardId: "swamp", controller: 0 }] });
+    expect(a.scorePriorityAction(nothing, { type: "castSpell", objectId: "rit", targets: [] })).toBe(-Infinity);
+    // Ritual when the Specter is castable anyway (three Swamps): never — it would burn a card.
+    const affordable = mkView({ hand: [{ objectId: "rit", cardId: "dark_ritual" }, { objectId: "spec", cardId: "hypnotic_specter" }], battlefield: [{ id: "s1", cardId: "swamp", controller: 0 }, { id: "s2", cardId: "swamp", controller: 0 }, { id: "s3", cardId: "swamp", controller: 0 }] });
+    expect(a.scorePriorityAction(affordable, { type: "castSpell", objectId: "rit", targets: [] })).toBe(-Infinity);
+    // Prospector: sacrifice a Goblin for {R} only when it enables a cast (Mountain + Prospector + a Goblin; Piker {1}{R} in hand).
+    const pros = mkView({ hand: [{ objectId: "pk", cardId: "goblin_piker" }], battlefield: [{ id: "m", cardId: "mountain", controller: 0 }, { id: "pr", cardId: "skirk_prospector", controller: 0 }, { id: "rg", cardId: "raging_goblin", controller: 0 }] });
+    expect(a.scorePriorityAction(pros, { type: "activateAbility", objectId: "pr", abilityIndex: 0, targets: [] })).toBeGreaterThan(a.scorePriorityAction(pros, { type: "pass" }));
+    const prosIdle = mkView({ hand: [], battlefield: pros.battlefield.map((o) => ({ id: o.id, cardId: o.cardId, controller: o.controller })) });
+    expect(a.scorePriorityAction(prosIdle, { type: "activateAbility", objectId: "pr", abilityIndex: 0, targets: [] })).toBe(-Infinity);
+  });
+
+  it("book of shame 13 (S17): cycling Airship Crash while a flier/artifact/enchantment is on the board is never a play; with nothing to crash it is a cantrip above passing", () => {
+    const a = agent("midrange");
+    const live = mkView({ hand: [{ objectId: "ac", cardId: "airship_crash" }], battlefield: [{ id: "f1", cardId: "forest", controller: 0 }, { id: "f2", cardId: "forest", controller: 0 }, { id: "wd", cardId: "wind_drake", controller: 1 }] });
+    const cycleIdx = 1; // the loader appends the compiled cycling ability after the card's own abilities (Crash has none → index 0? it has none, so 0)
+    void cycleIdx;
+    const cycle = { type: "activateAbility" as const, objectId: "ac", abilityIndex: 0, targets: [] };
+    expect(a.scorePriorityAction(live, cycle)).toBe(-Infinity);
+    const dead = mkView({ hand: [{ objectId: "ac", cardId: "airship_crash" }], battlefield: [{ id: "f1", cardId: "forest", controller: 0 }, { id: "f2", cardId: "forest", controller: 0 }, { id: "gb", cardId: "grizzly_bears", controller: 1 }] });
+    expect(a.scorePriorityAction(dead, cycle)).toBeGreaterThan(a.scorePriorityAction(dead, { type: "pass" }));
+  });
+
+  it("book of shame 14 (S17): Aether Channeler bounces a Serra Angel, draws into an empty board, and never picks the bird over a bounce of a real threat", () => {
+    const a = agent("control");
+    const req = (modes: number[]) => ({ player: 0 as const, purpose: "chooseMode" as const, actions: modes.map((m) => ({ type: "chooseMode" as const, mode: m, label: ["Create a 1/1 white Bird creature token with flying", "Return another target nonland permanent to its owner's hand", "Draw a card"][m]! })) });
+    const serra = mkView({ battlefield: [{ id: "ch", cardId: "aether_channeler", controller: 0 }, { id: "sa", cardId: "serra_angel", controller: 1 }] });
+    expect((a.modeChoice(serra, req([0, 1, 2])) as { mode: number }).mode).toBe(1);
+    const empty = mkView({ battlefield: [{ id: "ch", cardId: "aether_channeler", controller: 0 }] });
+    expect((a.modeChoice(empty, req([0, 2])) as { mode: number }).mode).toBe(2);
+    const chaff = mkView({ battlefield: [{ id: "ch", cardId: "aether_channeler", controller: 0 }, { id: "rg", cardId: "raging_goblin", controller: 1 }] });
+    expect((a.modeChoice(chaff, req([0, 1, 2])) as { mode: number }).mode).toBe(2); // a 1/1 isn't worth the bounce
   });
 
   it("tapping an own creature with the Tactician for no benefit scores below passing", () => {
