@@ -85,10 +85,6 @@
           "count": 12
         },
         {
-          "cardId": "cathartic_adept",
-          "count": 2
-        },
-        {
           "cardId": "wind_drake",
           "count": 3
         },
@@ -101,20 +97,28 @@
           "count": 2
         },
         {
-          "cardId": "counterspell",
-          "count": 2
-        },
-        {
           "cardId": "boomerang",
           "count": 2
         },
         {
-          "cardId": "divination",
+          "cardId": "aether_channeler",
+          "count": 2
+        },
+        {
+          "cardId": "aven_fisher",
           "count": 1
         },
         {
-          "cardId": "curiosity",
+          "cardId": "essence_scatter",
           "count": 2
+        },
+        {
+          "cardId": "mist_raven",
+          "count": 1
+        },
+        {
+          "cardId": "air_elemental",
+          "count": 1
         }
       ],
       "easy": {
@@ -132,7 +136,7 @@
       "hard": {
         "remove": [
           {
-            "cardId": "counterspell",
+            "cardId": "essence_scatter",
             "count": 1
           }
         ],
