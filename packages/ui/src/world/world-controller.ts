@@ -1,15 +1,21 @@
 import type { CardDef } from "@shandalar/cards";
 import type { MatchResult } from "@shandalar/engine";
-import { DECK_ARCHETYPES, type DeckKey } from "@shandalar/sim/decks";
+import { DECK_ARCHETYPES } from "@shandalar/sim/decks";
 import {
+  activeDeck,
   addCopy,
   advance,
   applyDuelResult,
   buyCard,
   commitDeck,
+  createDeck,
   deckLegal,
+  deleteDeck,
+  duplicateDeck,
   idx,
   removeCopy,
+  switchDeck,
+  visibleRoamers,
   deserializeWorld,
   encounterKnobs,
   findPath,
@@ -35,6 +41,7 @@ import {
   type Point,
   type PreparedDuel,
   type ShopItem,
+  type StarterId,
   type Town,
   type WorldState,
 } from "@shandalar/world";
@@ -75,7 +82,8 @@ export type WorldScreen =
   | { kind: "gameOver"; fatal: DuelRecord | null };
 
 export interface NewGameChoice {
-  starterDeck: DeckKey;
+  /** S16: catalog starter id (white|blue|black|red|green). */
+  starter: StarterId;
   difficulty: DifficultyName;
   seed?: number;
   name?: string;
@@ -121,7 +129,7 @@ export class WorldController {
 
   newGame(choice: NewGameChoice): void {
     const seed = choice.seed ?? Math.floor(Math.random() * 1_000_000);
-    this.world = newWorld({ seed, catalog: this.catalog, starterDeck: choice.starterDeck, difficulty: choice.difficulty, playerName: choice.name ?? "You" });
+    this.world = newWorld({ seed, catalog: this.catalog, starter: choice.starter, difficulty: choice.difficulty, playerName: choice.name ?? "You" });
     this.lastTown = townAt(this.world.map, this.world.player.position);
     this.autosave();
     this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: `You set out from ${this.lastTown?.name ?? "the road"}.` };
@@ -253,7 +261,7 @@ export class WorldController {
   openEditor(): void {
     if (!this.world || !this.canEdit().ok) return;
     const back = this.screen.kind === "town" || (this.screen.kind === "collection" && this.screen.back === "town") ? "town" : "map";
-    this.screen = { kind: "editor", back, draft: this.world.player.activeDeck.map((e) => ({ ...e })), name: this.world.deckName, notice: null };
+    this.screen = { kind: "editor", back, draft: activeDeck(this.world).map((e) => ({ ...e })), name: this.world.activeDeckName, notice: null };
     this.emit();
   }
 
@@ -274,7 +282,7 @@ export class WorldController {
   /** Discard draft changes: back to the saved deck and name. */
   editorReset(): void {
     if (!this.world || this.screen.kind !== "editor") return;
-    this.screen = { ...this.screen, draft: this.world.player.activeDeck.map((e) => ({ ...e })), name: this.world.deckName, notice: "Draft reset to the saved deck." };
+    this.screen = { ...this.screen, draft: activeDeck(this.world).map((e) => ({ ...e })), name: this.world.activeDeckName, notice: "Draft reset to the saved deck." };
     this.emit();
   }
 
@@ -282,6 +290,52 @@ export class WorldController {
     if (this.screen.kind !== "editor") return;
     this.screen = { ...this.screen, name };
     this.emit();
+  }
+
+  // ---------- S16 (v3): the deck picker — new / duplicate / switch / delete ----------
+
+  /** Saved deck names (the active one first is the UI's job; order = insertion). */
+  deckNames(): string[] {
+    return this.world ? Object.keys(this.world.decks) : [];
+  }
+
+  private deckOp(r: { ok: true } | { ok: false; reason: string }, okNotice: string): boolean {
+    if (!this.world) return false;
+    if (this.screen.kind === "editor") this.screen = r.ok ? { ...this.screen, draft: activeDeck(this.world).map((e) => ({ ...e })), name: this.world.activeDeckName, notice: okNotice } : { ...this.screen, notice: r.reason };
+    else if ("notice" in this.screen) this.screen = { ...this.screen, notice: r.ok ? okNotice : r.reason };
+    if (r.ok) this.autosave();
+    this.emit();
+    return r.ok;
+  }
+
+  /** New blank deck (30 basics) — becomes the active deck so the editor opens on it. */
+  deckNew(name: string): boolean {
+    if (!this.world) return false;
+    const r = createDeck(this.world, name);
+    if (r.ok) switchDeck(this.world, name.trim());
+    return this.deckOp(r, `New deck "${name.trim()}" — 30 ${this.world.player.basicLand}s to start from.`);
+  }
+
+  deckDuplicate(name: string): boolean {
+    if (!this.world) return false;
+    const r = duplicateDeck(this.world, this.world.activeDeckName, name);
+    if (r.ok) switchDeck(this.world, name.trim());
+    return this.deckOp(r, `Duplicated as "${name.trim()}".`);
+  }
+
+  deckSwitch(name: string): boolean {
+    if (!this.world) return false;
+    return this.deckOp(switchDeck(this.world, name), `"${name}" is now your deck.`);
+  }
+
+  deckDelete(name: string): boolean {
+    if (!this.world) return false;
+    return this.deckOp(deleteDeck(this.world, name), `Deleted "${name}".`);
+  }
+
+  /** S16: roamers the player can see right now (map chips). */
+  visibleRoamers() {
+    return this.world ? visibleRoamers(this.world, this.catalog, this.knobs) : [];
   }
 
   /** Legality of the current draft (the Save button's reason). */

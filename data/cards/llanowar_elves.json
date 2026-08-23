@@ -1,0 +1,32 @@
+{
+  "id": "llanowar_elves",
+  "name": "Llanowar Elves",
+  "source": "real",
+  "manaCost": "{G}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Elf",
+    "Druid"
+  ],
+  "power": 1,
+  "toughness": 1,
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "tap": true
+      },
+      "effects": [
+        {
+          "type": "addMana",
+          "mana": "{G}"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

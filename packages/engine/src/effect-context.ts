@@ -228,6 +228,19 @@ function sharedOps(ctx: EngineCtx) {
       gainLife(ctx, player as PlayerId, amount);
     },
 
+    /** ADR-070 Amendment 3 (R-046): mill is a zone move, not a draw — an
+     * empty library mills what it can and never sets attemptedDrawFromEmpty. */
+    mill(player: number, count: number): void {
+      const p = ctx.state.players[player as PlayerId];
+      for (let i = 0; i < count; i++) {
+        const top = p.library[0];
+        if (top === undefined) return;
+        const cardId = getObject(ctx.state, top).cardId; // before the move: ids are reissued on zone change (CR 400.7)
+        moveObject(ctx, top, "graveyard");
+        ctx.bus.emit("MILLED", { player: player as PlayerId, objectId: top, cardId });
+      }
+    },
+
     loseLife(player: number, amount: number): void {
       loseLife(ctx, player as PlayerId, amount);
     },

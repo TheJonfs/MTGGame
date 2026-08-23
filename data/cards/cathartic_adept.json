@@ -1,0 +1,40 @@
+{
+  "id": "cathartic_adept",
+  "name": "Cathartic Adept",
+  "source": "real",
+  "manaCost": "{U}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Human",
+    "Wizard"
+  ],
+  "power": 1,
+  "toughness": 1,
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "tap": true
+      },
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "player",
+          "zone": "any"
+        }
+      ],
+      "effects": [
+        {
+          "type": "mill",
+          "count": 1,
+          "who": "target"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

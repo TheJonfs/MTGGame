@@ -49,20 +49,40 @@ export interface OpponentTemplate {
   portraitChip?: string;
 }
 
+/** S16 (ADR-069/070): authored starter decks per colour — the world's new-game
+ * choice. Slice decks A–E are enemy/ladder infrastructure only. */
+export type StarterId = "white" | "blue" | "black" | "red" | "green";
+export type StarterArchetype = "aggro" | "midrange" | "control";
+export type StarterDecklist = { cardId: string; count: number }[];
+export interface StarterTemplate {
+  id: StarterId;
+  color: Exclude<Color, "C">;
+  name: string;
+  archetype: StarterArchetype;
+  /** The deck's basic land (ante-refill card; spares pool). */
+  basicLand: string;
+  decklist: StarterDecklist;
+  /** Difficulty adjustments (manifest §2b; design round 1 §2): applied at new game. */
+  easy?: { add?: StarterDecklist; remove?: StarterDecklist };
+  hard?: { add?: StarterDecklist; remove?: StarterDecklist };
+}
+
 export interface Catalog {
   version: string;
   regions: RegionTemplate[];
   townNames: string[];
   opponents: OpponentTemplate[];
+  starters: StarterTemplate[];
 }
 
 /** Assemble + validate a catalog from already-parsed JSON objects (browser-safe). */
-export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents: unknown }): Catalog {
+export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents: unknown; starters: unknown }): Catalog {
   const r = parts.regions as { catalogVersion: string; regions: RegionTemplate[] };
   const t = parts.towns as { catalogVersion: string; names: string[] };
   const o = parts.opponents as { catalogVersion: string; opponents: OpponentTemplate[] };
+  const st = parts.starters as { catalogVersion: string; starters: StarterTemplate[] };
   const errors: string[] = [];
-  for (const [what, v] of [["regions", r.catalogVersion], ["towns", t.catalogVersion], ["opponents", o.catalogVersion]] as const) {
+  for (const [what, v] of [["regions", r.catalogVersion], ["towns", t.catalogVersion], ["opponents", o.catalogVersion], ["starters", st.catalogVersion]] as const) {
     if (v !== CATALOG_VERSION) errors.push(`${what}: catalogVersion ${v} != ${CATALOG_VERSION}`);
   }
   const tiers = new Set<string>(["civilized", "approach", "wild"]);
@@ -89,6 +109,27 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
       }
     }
   }
+  const starterIds = new Set<string>();
+  const size = (d: StarterDecklist | undefined) => (d ?? []).reduce((n, e) => n + e.count, 0);
+  for (const s of st.starters ?? []) {
+    if (!["white", "blue", "black", "red", "green"].includes(s.id)) errors.push(`starter ${s.id}: bad id`);
+    if (starterIds.has(s.id)) errors.push(`duplicate starter ${s.id}`);
+    starterIds.add(s.id);
+    if (!["W", "U", "B", "R", "G"].includes(s.color)) errors.push(`starter ${s.id}: bad color ${s.color}`);
+    if (!["aggro", "midrange", "control"].includes(s.archetype)) errors.push(`starter ${s.id}: bad archetype ${s.archetype}`);
+    if (!Array.isArray(s.decklist) || size(s.decklist) !== 30) errors.push(`starter ${s.id}: decklist must total 30 cards (got ${size(s.decklist)})`);
+    if (!s.basicLand || !s.decklist?.some((e) => e.cardId === s.basicLand)) errors.push(`starter ${s.id}: basicLand must appear in the decklist`);
+    for (const v of ["easy", "hard"] as const) {
+      const adj = s[v];
+      if (!adj) continue;
+      if (size(s.decklist) + size(adj.add) - size(adj.remove) < 30) errors.push(`starter ${s.id}: ${v} variant falls below the 30 floor`);
+      for (const e of adj.remove ?? []) {
+        const have = s.decklist.find((d) => d.cardId === e.cardId)?.count ?? 0;
+        if (have < e.count) errors.push(`starter ${s.id}: ${v} removes ${e.cardId} ×${e.count} but the deck has ${have}`);
+      }
+    }
+  }
+  for (const id of ["white", "blue", "black", "red", "green"]) if (!starterIds.has(id)) errors.push(`missing starter ${id} (every colour needs one — manifest §2b)`);
   if (errors.length) throw new Error(`Catalog validation failed:\n${errors.join("\n")}`);
-  return { version: CATALOG_VERSION, regions: r.regions, townNames: t.names, opponents: o.opponents };
+  return { version: CATALOG_VERSION, regions: r.regions, townNames: t.names, opponents: o.opponents, starters: st.starters };
 }

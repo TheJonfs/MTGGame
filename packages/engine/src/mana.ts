@@ -10,6 +10,7 @@ import {
   isChoiceManaAbility,
 } from "@shandalar/cards";
 import type { EngineCtx } from "./ctx.js";
+import { characteristics } from "./characteristics.js";
 import { getObject, type PlayerId } from "./state.js";
 
 /**
@@ -26,13 +27,18 @@ import { getObject, type PlayerId } from "./state.js";
  * exactly one symbol per activation (true for all current pool cards).
  */
 
-/** Symbols a permanent's mana abilities can produce right now (untapped only). */
+/** Symbols a permanent's mana abilities can produce right now (untapped only;
+ * a summoning-sick creature without haste can't pay {T} — CR 302.6 / 602.5g,
+ * ADR-070: Llanowar Elves). Lands never needed the gate. */
 export function producibleSymbols(ctx: EngineCtx, objectId: string): ManaSymbol[] {
   const obj = getObject(ctx.state, objectId);
   if (obj.zone !== "battlefield" || obj.tapped) return [];
+  const def = ctx.defs.def(obj.cardId);
+  const sickCreature = obj.summoningSick && def.types.includes("Creature") && !characteristics(ctx, objectId).keywords.has("haste");
   const out: ManaSymbol[] = [];
-  for (const ability of ctx.defs.def(obj.cardId).abilities ?? []) {
+  for (const ability of def.abilities ?? []) {
     if (!isManaAbility(ability) || ability.kind !== "activated") continue;
+    if (ability.cost.tap && sickCreature) continue;
     // ADR-068 Amendment 2: choice-bearing / sacrifice-cost mana abilities
     // (Lotus) are never auto-paid or bare-tapped — activated deliberately.
     if (isChoiceManaAbility(ability)) continue;
@@ -91,6 +97,9 @@ export function tapForMana(ctx: EngineCtx, objectId: string): void {
   if (!ability || ability.kind !== "activated") throw new Error(`${obj.cardId} has no mana ability`);
   if (ability.cost.tap) {
     if (obj.tapped) throw new Error(`${obj.cardId} is already tapped`);
+    if (obj.summoningSick && ctx.defs.def(obj.cardId).types.includes("Creature") && !characteristics(ctx, objectId).keywords.has("haste")) {
+      throw new Error(`${obj.cardId} is summoning sick (CR 302.6)`);
+    }
     obj.tapped = true;
     ctx.bus.emit("TAPPED", { objectId });
   }

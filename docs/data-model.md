@@ -53,6 +53,7 @@ Triggered `event` values: `ENTERS_BATTLEFIELD`, `DIES` (battlefield→graveyard,
 | `counter` | `target` ref (spell) | |
 | `draw` | `count`, `who` | `who` ∈ `you` / `opponent` / `eachPlayer` / target |
 | `discard` | `count`, `who`, `mode`: `ownerChooses` / `random` / `casterChooses`, `filter?` | ADR-029 |
+| `mill` | `count`, `who` (incl. `target` with a player target) | ADR-070 Amendment 3; top N library → owner's graveyard via `moveObject`; **not a draw** (no empty-draw loss) |
 | `gainLife` / `loseLife` | `amount` (literal, `"X"`, or value ref — ADR-028), `who` (incl. `controllerOfTarget`) | |
 | `modifyPT` | `power`, `toughness`, `scope` or `target`, `duration` | pump, anthems, Drana |
 | `grantKeyword` | `keyword`, `target`/`scope`, `duration` | Rancor, equipment, pump-with-rider |

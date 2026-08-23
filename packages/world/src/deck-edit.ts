@@ -1,6 +1,6 @@
 import { cardColors, manaValue, parseManaCost, type CardDef } from "@shandalar/cards";
 import { deckLegal } from "./journey.js";
-import { deckSize, type Collection, type Decklist, type WorldState } from "./state.js";
+import { activeDeck, deckSize, type Collection, type Decklist, type WorldState } from "./state.js";
 
 /**
  * Deck editing (S14 Part 2): the collection is cardId → count, the active
@@ -65,14 +65,86 @@ export function commitDeck(world: WorldState, draft: Decklist, name?: string): E
       return { ok: false, reason: `${e.cardId}: deck has ${e.count}, you own ${world.player.collection[e.cardId] ?? 0}` };
     }
   }
-  world.player.activeDeck = draft.map((e) => ({ ...e }));
+  world.decks[world.activeDeckName] = draft.map((e) => ({ ...e }));
   // Basics are free: the collection's basic counts track the deck's for bookkeeping.
   for (const b of BASIC_LANDS) {
     const inDeck = deckCount(draft, b);
     world.player.collection[b] = Math.max(world.player.collection[b] ?? 0, inDeck);
   }
-  if (name !== undefined) world.deckName = name;
-  return { ok: true, deck: world.player.activeDeck };
+  if (name !== undefined && name !== world.activeDeckName) {
+    const r = renameDeck(world, world.activeDeckName, name);
+    if (!r.ok) return r;
+  }
+  return { ok: true, deck: activeDeck(world) };
+}
+
+// ---------- S16 (v3): multiple decks ----------
+
+export type DeckOp = { ok: true } | { ok: false; reason: string };
+
+function validName(world: WorldState, name: string): string | null {
+  const n = name.trim();
+  if (!n) return "a deck needs a name";
+  if (n.length > 40) return "name too long (40)";
+  if (world.decks[n]) return `a deck named "${n}" already exists`;
+  return null;
+}
+
+/** A new deck: 30 of the player's basic land — legal by construction (ADR-065:
+ * no illegal deck is ever saved), a blank canvas for the editor. Not switched to. */
+export function createDeck(world: WorldState, name: string): DeckOp {
+  const bad = validName(world, name);
+  if (bad) return { ok: false, reason: bad };
+  world.decks[name.trim()] = [{ cardId: world.player.basicLand, count: 30 }];
+  return { ok: true };
+}
+
+export function duplicateDeck(world: WorldState, from: string, name: string): DeckOp {
+  const src = world.decks[from];
+  if (!src) return { ok: false, reason: `no deck "${from}"` };
+  const bad = validName(world, name);
+  if (bad) return { ok: false, reason: bad };
+  world.decks[name.trim()] = src.map((e) => ({ ...e }));
+  return { ok: true };
+}
+
+/** Delete a saved deck — never the active one (switch first), never the last. */
+export function deleteDeck(world: WorldState, name: string): DeckOp {
+  if (!world.decks[name]) return { ok: false, reason: `no deck "${name}"` };
+  if (name === world.activeDeckName) return { ok: false, reason: "that deck is active — switch to another first" };
+  if (Object.keys(world.decks).length <= 1) return { ok: false, reason: "you need at least one deck" };
+  delete world.decks[name];
+  return { ok: true };
+}
+
+export function renameDeck(world: WorldState, from: string, to: string): DeckOp {
+  const src = world.decks[from];
+  if (!src) return { ok: false, reason: `no deck "${from}"` };
+  const bad = validName(world, to);
+  if (bad) return { ok: false, reason: bad };
+  const next: Record<string, Decklist> = {};
+  for (const [k, v] of Object.entries(world.decks)) next[k === from ? to.trim() : k] = v; // keep order
+  world.decks = next;
+  if (world.activeDeckName === from) world.activeDeckName = to.trim();
+  return { ok: true };
+}
+
+/** Make a saved deck the one that duels. Every saved deck is legal by
+ * construction, but a deck can drift illegal when copies are lost (ante) —
+ * the spares rule counts the ACTIVE deck only, so a non-active deck may list
+ * copies you no longer own; switching re-checks ownership and legality. */
+export function switchDeck(world: WorldState, name: string): DeckOp {
+  const deck = world.decks[name];
+  if (!deck) return { ok: false, reason: `no deck "${name}"` };
+  const legal = deckLegal(deck);
+  if (!legal.ok) return { ok: false, reason: legal.reason ?? "illegal deck" };
+  for (const e of deck) {
+    if (!isBasic(e.cardId) && (world.player.collection[e.cardId] ?? 0) < e.count) {
+      return { ok: false, reason: `${e.cardId}: deck lists ${e.count}, you own ${world.player.collection[e.cardId] ?? 0} — edit it first` };
+    }
+  }
+  world.activeDeckName = name;
+  return { ok: true };
 }
 
 /** Reading aids: curve, colours, lands, types. */

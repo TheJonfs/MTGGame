@@ -38,6 +38,8 @@ export interface EffectContext {
   bounce(objectId: string): void;
   counterSpell(stackItemId: string): void;
   draw(player: number, count: number): void;
+  /** ADR-070 Amendment 3: mill — top `count` cards of the player's library to their graveyard (zone-change events fire per card; not a draw). */
+  mill(player: number, count: number): void;
   addContinuousEffect(effect: ResolvedContinuousEffect): void;
   addMana(player: number, mana: string): void;
   /**
@@ -117,6 +119,11 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
   draw: (e, ctx) => {
     if (e.type !== "draw") throw new Error("resolver mismatch");
     for (const p of ctx.players(e.who)) ctx.draw(p, e.count);
+  },
+
+  mill: (e, ctx) => {
+    if (e.type !== "mill") throw new Error("resolver mismatch");
+    for (const p of ctx.players(e.who)) ctx.mill(p, e.count);
   },
 
   modifyPT: (e, ctx) => {

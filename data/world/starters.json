@@ -1,0 +1,365 @@
+{
+  "catalogVersion": "v0",
+  "_comment": "ADR-069/070 starters (world-design-round-1 \u00a72, one-drops in). 30 cards, mono + nothing shared. easy = +1 removal +1 three-drop of the colour (32 cards); hard = the rare-adjacent card swapped for a basic (stays 30; S16 ruling). White has no three-mana creature in the pool \u2014 Glorious Anthem (mv 3) stands in; flagged in the handoff.",
+  "starters": [
+    {
+      "id": "white",
+      "color": "W",
+      "name": "Dawn Levy",
+      "archetype": "aggro",
+      "basicLand": "plains",
+      "decklist": [
+        {
+          "cardId": "plains",
+          "count": 13
+        },
+        {
+          "cardId": "suntail_hawk",
+          "count": 4
+        },
+        {
+          "cardId": "fencing_ace",
+          "count": 3
+        },
+        {
+          "cardId": "savannah_lions",
+          "count": 2
+        },
+        {
+          "cardId": "cunning_tactician",
+          "count": 2
+        },
+        {
+          "cardId": "raise_the_alarm",
+          "count": 2
+        },
+        {
+          "cardId": "pacifism",
+          "count": 2
+        },
+        {
+          "cardId": "swords_to_plowshares",
+          "count": 1
+        },
+        {
+          "cardId": "glorious_anthem",
+          "count": 1
+        }
+      ],
+      "easy": {
+        "add": [
+          {
+            "cardId": "pacifism",
+            "count": 1
+          },
+          {
+            "cardId": "glorious_anthem",
+            "count": 1
+          }
+        ]
+      },
+      "hard": {
+        "remove": [
+          {
+            "cardId": "swords_to_plowshares",
+            "count": 1
+          }
+        ],
+        "add": [
+          {
+            "cardId": "plains",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "blue",
+      "color": "U",
+      "name": "Tidal Grimoire",
+      "archetype": "control",
+      "basicLand": "island",
+      "decklist": [
+        {
+          "cardId": "island",
+          "count": 12
+        },
+        {
+          "cardId": "cathartic_adept",
+          "count": 2
+        },
+        {
+          "cardId": "wind_drake",
+          "count": 3
+        },
+        {
+          "cardId": "man_o_war",
+          "count": 3
+        },
+        {
+          "cardId": "cloudkin_seer",
+          "count": 2
+        },
+        {
+          "cardId": "counterspell",
+          "count": 2
+        },
+        {
+          "cardId": "boomerang",
+          "count": 2
+        },
+        {
+          "cardId": "divination",
+          "count": 2
+        },
+        {
+          "cardId": "curiosity",
+          "count": 2
+        }
+      ],
+      "easy": {
+        "add": [
+          {
+            "cardId": "boomerang",
+            "count": 1
+          },
+          {
+            "cardId": "man_o_war",
+            "count": 1
+          }
+        ]
+      },
+      "hard": {
+        "remove": [
+          {
+            "cardId": "counterspell",
+            "count": 1
+          }
+        ],
+        "add": [
+          {
+            "cardId": "island",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "black",
+      "color": "B",
+      "name": "Pallid Court",
+      "archetype": "midrange",
+      "basicLand": "swamp",
+      "decklist": [
+        {
+          "cardId": "swamp",
+          "count": 13
+        },
+        {
+          "cardId": "typhoid_rats",
+          "count": 3
+        },
+        {
+          "cardId": "child_of_night",
+          "count": 3
+        },
+        {
+          "cardId": "vampire_nighthawk",
+          "count": 2
+        },
+        {
+          "cardId": "phyrexian_rager",
+          "count": 2
+        },
+        {
+          "cardId": "duress",
+          "count": 2
+        },
+        {
+          "cardId": "mind_rot",
+          "count": 2
+        },
+        {
+          "cardId": "doom_blade",
+          "count": 1
+        },
+        {
+          "cardId": "terror",
+          "count": 1
+        },
+        {
+          "cardId": "gravedigger",
+          "count": 1
+        }
+      ],
+      "easy": {
+        "add": [
+          {
+            "cardId": "doom_blade",
+            "count": 1
+          },
+          {
+            "cardId": "phyrexian_rager",
+            "count": 1
+          }
+        ]
+      },
+      "hard": {
+        "remove": [
+          {
+            "cardId": "doom_blade",
+            "count": 1
+          }
+        ],
+        "add": [
+          {
+            "cardId": "swamp",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "red",
+      "color": "R",
+      "name": "Ember Warband",
+      "archetype": "aggro",
+      "basicLand": "mountain",
+      "decklist": [
+        {
+          "cardId": "mountain",
+          "count": 13
+        },
+        {
+          "cardId": "raging_goblin",
+          "count": 4
+        },
+        {
+          "cardId": "goblin_piker",
+          "count": 3
+        },
+        {
+          "cardId": "gray_ogre",
+          "count": 3
+        },
+        {
+          "cardId": "hill_giant",
+          "count": 2
+        },
+        {
+          "cardId": "boggart_brute",
+          "count": 2
+        },
+        {
+          "cardId": "shock",
+          "count": 2
+        },
+        {
+          "cardId": "lightning_bolt",
+          "count": 1
+        }
+      ],
+      "easy": {
+        "add": [
+          {
+            "cardId": "shock",
+            "count": 1
+          },
+          {
+            "cardId": "boggart_brute",
+            "count": 1
+          }
+        ]
+      },
+      "hard": {
+        "remove": [
+          {
+            "cardId": "lightning_bolt",
+            "count": 1
+          }
+        ],
+        "add": [
+          {
+            "cardId": "mountain",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "green",
+      "color": "G",
+      "name": "Verdant Trail",
+      "archetype": "midrange",
+      "basicLand": "forest",
+      "decklist": [
+        {
+          "cardId": "forest",
+          "count": 12
+        },
+        {
+          "cardId": "llanowar_elves",
+          "count": 2
+        },
+        {
+          "cardId": "grizzly_bears",
+          "count": 2
+        },
+        {
+          "cardId": "elvish_visionary",
+          "count": 3
+        },
+        {
+          "cardId": "centaur_courser",
+          "count": 3
+        },
+        {
+          "cardId": "timberland_guide",
+          "count": 2
+        },
+        {
+          "cardId": "rampant_growth",
+          "count": 2
+        },
+        {
+          "cardId": "giant_growth",
+          "count": 2
+        },
+        {
+          "cardId": "rumbling_baloth",
+          "count": 1
+        },
+        {
+          "cardId": "prey_upon",
+          "count": 1
+        }
+      ],
+      "easy": {
+        "add": [
+          {
+            "cardId": "prey_upon",
+            "count": 1
+          },
+          {
+            "cardId": "centaur_courser",
+            "count": 1
+          }
+        ]
+      },
+      "hard": {
+        "remove": [
+          {
+            "cardId": "prey_upon",
+            "count": 1
+          }
+        ],
+        "add": [
+          {
+            "cardId": "forest",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ]
+}

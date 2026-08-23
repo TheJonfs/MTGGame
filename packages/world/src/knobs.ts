@@ -30,10 +30,51 @@ const knob = <T>(spec: KnobSpec<T>): KnobSpec<T> => spec;
 /** The v0 registry (brief Part 1). Keys are stable identifiers — catalog
  * files reference them; renaming one is a save-format event. */
 export const KNOBS = {
-  encounterRatePerStep: knob<Record<RegionTier, number>>({
-    default: { civilized: 0.04, approach: 0.08, wild: 0.12 },
-    unit: "probability per step, by region tier",
-    description: "Chance that one step on the open map rolls an encounter. Regions (and difficulty) override the whole tier map.",
+  // ---- S16 (ADR-071): roaming visibility replaces encounter rolls. encounterRatePerStep retired. ----
+  mapScale: knob<number>({
+    default: 2,
+    unit: "× base grid (40×28)",
+    description: "World size multiplier (S16, Chris: scale is a variable). Distances scale linearly, counts (towns, roamers) by area; sight radius is absolute — the world grows, your eyes don't.",
+  }),
+  townSpacingMin: knob<number>({
+    default: 8,
+    unit: "cells (Manhattan)",
+    description: "Minimum distance between towns (and between a town and a lair). Relaxed deterministically if the map can't fit the count.",
+  }),
+  townsPer100Cells: knob<Record<RegionTier, number>>({
+    default: { civilized: 0.25, approach: 0.12, wild: 0 },
+    unit: "towns per 100 passable cells, by region tier",
+    description: "Town density per region (S16 uniform towns): count = max(floor for civilized/approach = 1, round(density × area/100)). Every non-wild region has ≥1 town, so every colour has a home town.",
+  }),
+  roamerDensityPer100Cells: knob<Record<RegionTier, number>>({
+    default: { civilized: 1.0, approach: 1.5, wild: 2.0 },
+    unit: "roamers per 100 passable cells, by region tier",
+    description: "Spawn density (ADR-071; replaces encounter rates). Region target = round(density × passable cells / 100), minimum 1. Lair residents don't count.",
+  }),
+  roamerRespawnSteps: knob<Record<RegionTier, number>>({
+    default: { civilized: 40, approach: 30, wild: 20 },
+    unit: "steps, by region tier",
+    description: "A region below its roamer target spawns one roamer every N steps (the clock, manifest §5), out of the player's sight. Any parley outcome removes a roamer (S16 ruling), so this is what keeps regions alive.",
+  }),
+  roamerSpeed: knob<Record<EnemyTier, number>>({
+    default: { 1: 1, 2: 1, 3: 1 },
+    unit: "cells per player step, by enemy tier",
+    description: "Roamer movement rate (fractional accumulates: 0.5 = every other step). The hook for speed effects (roads, boots, slowing terrain) — S16 ships 1 per the brief; tune from world-sim.",
+  }),
+  sightRadius: knob<number>({
+    default: 6,
+    unit: "cells (Manhattan)",
+    description: "How far the player sees roamers, and how far roamers notice the player (symmetric). Absolute — does not scale with mapScale.",
+  }),
+  roughSightPenalty: knob<number>({
+    default: 2,
+    unit: "cells per rough cell on the line of sight",
+    description: "Each rough (impassable) cell on the straight line between you and a roamer shortens YOUR effective sight by this much — the only surviving ambush (ADR-071). Roamers' own sight is unaffected.",
+  }),
+  renownFleeFactor: knob<Record<EnemyTier, number>>({
+    default: { 1: 4, 2: 8, 3: 16 },
+    unit: "× enemy tier vs renown, by enemy tier",
+    description: "Design round 1 §5: a roamer flees when tier × factor < player renown (Σ tier of defeated opponents). Fleeing roamers move away; contact is player-initiated. Evaluated every step.",
   }),
   anteCount: knob<number>({
     default: 1,
@@ -86,7 +127,7 @@ export const KNOBS = {
     description: "Gold at new game (enough for one tier-1 buy-off, not two).",
   }),
   shopRefreshSteps: knob<number>({
-    default: 50,
+    default: 100, // S16: clocks retune with mapScale 2 (was 50 on the 40×28 map)
     unit: "steps",
     description: "A town's shop stock is rolled from (world seed, town, epoch) where epoch = floor(stepsTaken / this) — stock refreshes as the clock advances, with no per-shop state in the save (S13; depletion/sell are M6b).",
   }),
@@ -160,7 +201,7 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
   standard: {},
   easy: {
     // UNTUNED placeholders
-    encounterRatePerStep: { civilized: 0.03, approach: 0.06, wild: 0.1 },
+    roamerDensityPer100Cells: { civilized: 0.7, approach: 1.1, wild: 1.5 },
     lossLifePenalty: 1,
     lifeFloor: 10, // only gained life is ever at risk
     shopPriceMultiplier: 0.8,
@@ -168,7 +209,7 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
   },
   hard: {
     // UNTUNED placeholders
-    encounterRatePerStep: { civilized: 0.06, approach: 0.11, wild: 0.16 },
+    roamerDensityPer100Cells: { civilized: 1.4, approach: 2.0, wild: 2.6 },
     anteCount: 2,
     lossLifePenalty: 1,
     lifeFloor: 0,

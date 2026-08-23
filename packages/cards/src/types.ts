@@ -89,6 +89,8 @@ export type Effect =
   | { type: "counter"; target: number }
   | { type: "draw"; count: number; who: Who }
   | { type: "discard"; count: number; who: Who; mode: DiscardMode; filter?: DiscardFilter }
+  /** ADR-070 Amendment 3: top N of the library to its owner's graveyard via moveObject; NOT a draw (no empty-draw loss). */
+  | { type: "mill"; count: number; who: Who }
   | { type: "gainLife"; amount: number | ValueRef; who: Who }
   | { type: "loseLife"; amount: number | ValueRef; who: Who }
   | {
@@ -129,6 +131,7 @@ export const EFFECT_TYPES: readonly EffectType[] = [
   "counter",
   "draw",
   "discard",
+  "mill",
   "gainLife",
   "loseLife",
   "modifyPT",

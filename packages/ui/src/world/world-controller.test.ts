@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
-import { deserializeWorld, idx } from "@shandalar/world";
+import { activeDeck, deserializeWorld, idx } from "@shandalar/world";
 import { loadCatalog } from "@shandalar/world/loader";
 import { WorldController } from "./world-controller.js";
 import type { MatchController } from "../play/match-controller.js";
@@ -61,15 +61,17 @@ function freshController(): WorldController {
   return c;
 }
 
-/** Walk until an encounter is forced (event layer rate 1); returns the encounter screen. */
+/** S16: force an encounter by standing a live roamer on the next cell (you step onto it). */
 async function forceEncounter(c: WorldController): Promise<void> {
-  c.extraKnobs = { event: { encounterRatePerStep: { civilized: 1, approach: 1, wild: 1 } } };
   const w = c.world!;
   // Any passable non-town neighbour of the start town.
   const s = w.player.position;
   const nbrs = [{ x: s.x + 1, y: s.y }, { x: s.x - 1, y: s.y }, { x: s.x, y: s.y + 1 }, { x: s.x, y: s.y - 1 }]
     .filter((p) => p.x >= 0 && p.y >= 0 && p.x < w.map.width && p.y < w.map.height && w.map.passable[idx(w.map, p)] && !w.map.towns.some((t) => t.at.x === p.x && t.at.y === p.y));
   for (const n of nbrs) {
+    const inst = w.opponents.find((o) => !o.gone && !o.fixedAt && o.at)!;
+    inst.at = { ...n };
+    inst.region = w.map.region[idx(w.map, n)]!;
     if (c.screen.kind === "town") c.leaveTown();
     c.clickCell(n); // preview
     c.clickCell(n); // walk
@@ -80,10 +82,16 @@ async function forceEncounter(c: WorldController): Promise<void> {
   throw new Error("could not force an encounter");
 }
 
+/** S16: no random contact — roamers gone, respawn off. */
+function quiet(c: WorldController): void {
+  for (const o of c.world!.opponents) if (!o.fixedAt) { o.gone = true; o.goneReason = "fled"; }
+  c.extraKnobs = { event: { roamerRespawnSteps: { civilized: 0, approach: 0, wild: 0 } } };
+}
+
 describe("S14 acceptance: editor, shop v2, resume path, v1 migration", () => {
   it("editor: open → remove a nonbasic, add a spare → legal → save → the next duel's MatchSpec carries the edited deck; illegal drafts are unsaveable", async () => {
     const c = freshController();
-    c.newGame({ starterDeck: "A", difficulty: "standard", seed: 201 });
+    c.newGame({ starter: "red", difficulty: "standard", seed: 201 });
     expect(c.canEdit().ok).toBe(true);
     c.openEditor();
     expect(c.screen.kind).toBe("editor");
@@ -98,28 +106,28 @@ describe("S14 acceptance: editor, shop v2, resume path, v1 migration", () => {
     expect(c.editorLegality().ok).toBe(true);
     // Reset discards the draft (round 2), then redo the edit.
     c.editorReset();
-    expect(scr().draft).toEqual(c.world!.player.activeDeck);
+    expect(scr().draft).toEqual(activeDeck(c.world!));
     c.editorRemove(nonbasic);
     c.editorAdd(spareId);
     c.editorRename("Scripted Goblins");
     // Drive below the floor: save refused, deck untouched.
-    for (let k = 0; k < 12; k++) c.editorRemove("mountain");
+    for (let k = 0; k < 5; k++) c.editorRemove("mountain");
     expect(c.editorLegality().ok).toBe(false);
     expect(c.editorSave()).toBe(false);
     expect(c.screen.kind).toBe("editor");
     expect(scr().notice).toMatch(/Not saved/);
     // Basics are infinite: put them back, save.
-    for (let k = 0; k < 12; k++) c.editorAdd("mountain");
+    for (let k = 0; k < 5; k++) c.editorAdd("mountain");
     expect(c.editorSave()).toBe(true);
     expect(c.screen.kind).toBe("map");
-    expect(c.world!.deckName).toBe("Scripted Goblins");
-    expect(c.world!.player.activeDeck.find((e) => e.cardId === spareId)).toBeTruthy();
+    expect(c.world!.activeDeckName).toBe("Scripted Goblins");
+    expect(activeDeck(c.world!).find((e) => e.cardId === spareId)).toBeTruthy();
     // The edited deck is what the duel gets.
     await forceEncounter(c);
     expect(c.canEdit().ok).toBe(false); // not while parleying
     c.parley("fight");
     const m = c.match!;
-    expect(m.spec.players[0].decklist).toEqual(c.world!.player.activeDeck);
+    expect(m.spec.players[0].decklist).toEqual(activeDeck(c.world!));
     c.match!.concede();
     let g = 0;
     while (c.screen.kind === "duel" && g++ < 500) await tick();
@@ -128,8 +136,8 @@ describe("S14 acceptance: editor, shop v2, resume path, v1 migration", () => {
 
   it("shop v2: depletion shows after buying, persists through save/load; sell adds gold; buy → add to deck when legal", async () => {
     const c = freshController();
-    c.newGame({ starterDeck: "C", difficulty: "standard", seed: 202 });
-    const town = c.world!.map.towns[0]!;
+    c.newGame({ starter: "green", difficulty: "standard", seed: 202 });
+    const town = c.world!.map.towns.find((t) => t.at.x === c.world!.map.start.x && t.at.y === c.world!.map.start.y)!;
     c.enterTown(town);
     expect(c.world!.visits[town.index]).toBe(1);
     expect(c.world!.lastTownIndex).toBe(town.index);
@@ -144,7 +152,7 @@ describe("S14 acceptance: editor, shop v2, resume path, v1 migration", () => {
     expect((c2.screen as { stock: import("@shandalar/world").ShopItem[] }).stock.find((i) => i.cardId === item.cardId)!.remaining).toBe(item.stock - 1);
     // Sell a spare.
     const { spares } = await import("@shandalar/world");
-    const sp = spares(c.world!.player.collection, c.world!.player.activeDeck);
+    const sp = spares(c.world!.player.collection, activeDeck(c.world!));
     const spareId = Object.keys(sp)[0]!;
     const gold = c.world!.player.gold;
     c.sell(spareId);
@@ -153,7 +161,7 @@ describe("S14 acceptance: editor, shop v2, resume path, v1 migration", () => {
 
   it("resume path: after a parley, the unwalked remainder can be re-previewed and walked", async () => {
     const c = freshController();
-    c.newGame({ starterDeck: "D", difficulty: "standard", seed: 203 });
+    c.newGame({ starter: "black", difficulty: "standard", seed: 203 });
     c.world!.player.gold = 1000;
     await forceEncounter(c);
     expect(c.resumePath).not.toBeNull();
@@ -165,29 +173,120 @@ describe("S14 acceptance: editor, shop v2, resume path, v1 migration", () => {
     expect(scr.preview === null || Array.isArray(scr.preview)).toBe(true);
   });
 
-  it("a v1 save loads (migrated) and the world plays on", () => {
+  it("a v2 save loads (migrated to v3: decks/provenance/roamer positions) and the world plays on; v1 too", () => {
     const c = freshController();
-    c.newGame({ starterDeck: "B", difficulty: "standard", seed: 204 });
+    c.newGame({ starter: "white", difficulty: "standard", seed: 204 });
     const parsed = JSON.parse(c.saveText()) as { format: string; world: Record<string, unknown> };
-    const { shops: _a, visits: _b, lastTownIndex: _c, deckName: _d, ...v1 } = parsed.world;
+    const w = parsed.world as { decks: Record<string, unknown>; activeDeckName: string; provenance: unknown; player: Record<string, unknown>; opponents: Record<string, unknown>[] } & Record<string, unknown>;
+    const { decks, activeDeckName, provenance: _p, player, opponents, ...rest } = w;
+    const { renown: _r, starterId: _s, ...p2 } = player;
+    const v2: Record<string, unknown> = { ...rest, player: { ...p2, activeDeck: decks[activeDeckName] }, deckName: activeDeckName, opponents: opponents.map(({ gone, goneReason: _g, at: _a, moveDebt: _m, ...o }) => ({ ...o, defeated: gone })) };
     const c2 = freshController();
-    c2.loadText(JSON.stringify({ format: "world-save-v1", world: v1 }));
-    expect(c2.world!.shops).toEqual({});
-    expect(c2.world!.deckName).toBe("Deck");
+    c2.loadText(JSON.stringify({ format: "world-save-v2", world: v2 }));
+    expect(c2.world!.activeDeckName).toBe(activeDeckName);
+    expect(c2.world!.provenance).toEqual([]);
+    expect(c2.world!.opponents.filter((o) => !o.fixedAt).every((o) => !!o.at)).toBe(true);
     expect(["map", "town"]).toContain(c2.screen.kind);
+    const { shops: _a, visits: _b, lastTownIndex: _c, deckName: _d, ...v1 } = v2;
+    const c3 = freshController();
+    c3.loadText(JSON.stringify({ format: "world-save-v1", world: v1 }));
+    expect(c3.world!.shops).toEqual({});
+    expect(c3.world!.activeDeckName).toBe("Deck");
+    expect(["map", "town"]).toContain(c3.screen.kind);
+  });
+
+  it("S16 deck picker: new (30 basics, switched to) / duplicate / switch / delete through the controller; the active deck duels", async () => {
+    const c = freshController();
+    c.newGame({ starter: "blue", difficulty: "standard", seed: 205 });
+    const starterName = c.world!.activeDeckName;
+    expect(c.deckNames()).toEqual([starterName]);
+    expect(c.deckNew("Blank")).toBe(true);
+    expect(c.world!.activeDeckName).toBe("Blank");
+    expect(activeDeck(c.world!)).toEqual([{ cardId: "island", count: 30 }]);
+    expect(c.deckNew("Blank")).toBe(false);
+    expect(c.deckSwitch(starterName)).toBe(true);
+    expect(c.deckDuplicate("Grimoire II")).toBe(true);
+    expect(c.world!.activeDeckName).toBe("Grimoire II");
+    expect(c.deckNames().sort()).toEqual(["Blank", "Grimoire II", starterName].sort());
+    expect(c.deckDelete("Grimoire II")).toBe(false); // active
+    expect(c.deckSwitch("Blank")).toBe(true);
+    expect(c.deckDelete("Grimoire II")).toBe(true);
+    // Editor opens on the active deck; the picker ops refresh its draft.
+    c.openEditor();
+    expect((c.screen as { name: string }).name).toBe("Blank");
+    c.deckSwitch(starterName);
+    expect((c.screen as { name: string; draft: unknown[] }).name).toBe(starterName);
+    c.editorClose();
+    // The active deck duels.
+    await forceEncounter(c);
+    c.parley("fight");
+    expect(c.match!.spec.players[0].decklist).toEqual(activeDeck(c.world!));
+    c.match!.concede();
+    let g = 0;
+    while (c.screen.kind === "duel" && g++ < 500) await tick();
+    expect(c.screen.kind).toBe("duelResult");
+  }, 60_000);
+
+  it("S16 roamers on the map: visible chips within sight; a roamer walks to you and the parley opens without a click; any parley outcome removes it", async () => {
+    const c = freshController();
+    c.newGame({ starter: "green", difficulty: "standard", seed: 206 });
+    const w = c.world!;
+    quiet(c);
+    // Stage one roamer 3 cells away in the open; walk one step away from it and let it come.
+    const s = w.player.position;
+    const inst = w.opponents.find((o) => !o.fixedAt)!;
+    inst.gone = false; delete inst.goneReason;
+    let placed = false;
+    for (const d of [{ x: 1, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }]) {
+      const cells = [1, 2, 3].map((k) => ({ x: s.x + d.x * k, y: s.y + d.y * k }));
+      if (cells.every((p) => p.x >= 0 && p.y >= 0 && p.x < w.map.width && p.y < w.map.height && w.map.passable[idx(w.map, p)] && !w.map.towns.some((t) => t.at.x === p.x && t.at.y === p.y))) {
+        inst.at = { ...cells[2]! }; inst.region = w.map.region[idx(w.map, cells[2]!)]!; inst.moveDebt = 0;
+        expect(c.visibleRoamers().map((r) => r.inst.id)).toContain(inst.id);
+        c.leaveTown();
+        c.clickCell(cells[0]!); c.clickCell(cells[0]!);
+        let guard = 0;
+        while (c.screen.kind === "map" && (c.screen as { walking: boolean }).walking && guard++ < 100) await tick();
+        placed = true;
+        break;
+      }
+    }
+    expect(placed).toBe(true);
+    // It closed to 1 (3 − your step toward it − its step): one more step (back to town cell is safe; step sideways instead) and it reaches you.
+    let guard = 0;
+    while ((c.screen.kind as string) !== "encounter" && guard++ < 4) {
+      const p = c.world!.player.position;
+      const back = { x: s.x, y: s.y };
+      // Step back onto the town cell: safe (no contact), but the roamer closes; step off again: contact.
+      c.clickCell(back); c.clickCell(back);
+      let g2 = 0;
+      while ((c.screen.kind === "map" && (c.screen as { walking: boolean }).walking) && g2++ < 100) await tick();
+      if ((c.screen.kind as string) === "town") c.leaveTown();
+      if ((c.screen.kind as string) === "encounter") break;
+      const off = { x: p.x, y: p.y };
+      c.clickCell(off); c.clickCell(off);
+      g2 = 0;
+      while ((c.screen.kind === "map" && (c.screen as { walking: boolean }).walking) && g2++ < 100) await tick();
+    }
+    expect(c.screen.kind).toBe("encounter");
+    expect((c.screen as { encounter: { opponentId: string } }).encounter.opponentId).toBe(inst.id);
+    c.world!.player.gold = 10_000;
+    c.parley("buyoff");
+    expect(c.screen.kind).toBe("map");
+    expect(inst.gone).toBe(true);
+    expect(c.visibleRoamers()).toHaveLength(0);
   });
 });
 
 describe("WorldController acceptance (S13 Part 5, scripted half)", () => {
   it("new game → map; preview then walk; town entry autosaves; continue-from-autosave restores the identical world", async () => {
     const c = freshController();
-    c.newGame({ starterDeck: "A", difficulty: "standard", seed: 101 });
+    c.newGame({ starter: "red", difficulty: "standard", seed: 101 });
     expect(c.screen.kind).toBe("map");
     expect(c.hasAutosave()).toBe(true);
     const w = c.world!;
-    // Walk to the second town with encounters off (event layer rate 0).
-    c.extraKnobs = { event: { encounterRatePerStep: { civilized: 0, approach: 0, wild: 0 } } };
-    const dest = w.map.towns[1]!.at;
+    // Walk to another town with roamers cleared (S16: no contact possible).
+    quiet(c);
+    const dest = w.map.towns.find((t) => !(t.at.x === w.map.start.x && t.at.y === w.map.start.y))!.at;
     c.clickCell(dest);
     expect(c.screen.kind === "map" && c.screen.preview && c.screen.preview.length > 0).toBe(true);
     c.clickCell(dest);
@@ -204,8 +303,8 @@ describe("WorldController acceptance (S13 Part 5, scripted half)", () => {
 
   it("shop: stock is rolled per town/epoch; buying moves gold into the collection; collection screen opens and closes", async () => {
     const c = freshController();
-    c.newGame({ starterDeck: "C", difficulty: "standard", seed: 102 });
-    const town = c.world!.map.towns[0]!;
+    c.newGame({ starter: "green", difficulty: "standard", seed: 102 });
+    const town = c.world!.map.towns.find((t) => t.at.x === c.world!.map.start.x && t.at.y === c.world!.map.start.y)!;
     c.enterTown(town);
     expect(c.screen.kind).toBe("town");
     const stock = (c.screen as { stock: import("@shandalar/world").ShopItem[] }).stock;
@@ -225,7 +324,7 @@ describe("WorldController acceptance (S13 Part 5, scripted half)", () => {
 
   it("parley: buy-off (or refusal by tier) and flee (stake forfeited, deck refilled) both return to the map with a notice", async () => {
     const c = freshController();
-    c.newGame({ starterDeck: "D", difficulty: "standard", seed: 103 });
+    c.newGame({ starter: "black", difficulty: "standard", seed: 103 });
     await forceEncounter(c);
     expect(c.screen.kind).toBe("encounter");
     const gold = c.world!.player.gold;
@@ -253,7 +352,7 @@ describe("WorldController acceptance (S13 Part 5, scripted half)", () => {
     let sawGameOver = false;
     for (let seed = 111; seed < 160 && !(sawResult && sawGameOver); seed++) {
       const c = freshController();
-      c.newGame({ starterDeck: "A", difficulty: "standard", seed });
+      c.newGame({ starter: "red", difficulty: "standard", seed });
       c.world!.player.worldLife = 1; // one loss = game over
       await forceEncounter(c);
       c.parley("fight");

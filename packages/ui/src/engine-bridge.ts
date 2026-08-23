@@ -161,5 +161,5 @@ export function loadWorldCatalog(): import("@shandalar/world").Catalog {
     return modules[key]!.default;
   };
   // Lazy require keeps the viewer bundle free of world code until /world is opened.
-  return catalogFromJson({ regions: byName("regions"), towns: byName("towns"), opponents: byName("opponents") });
+  return catalogFromJson({ regions: byName("regions"), towns: byName("towns"), opponents: byName("opponents"), starters: byName("starters") });
 }

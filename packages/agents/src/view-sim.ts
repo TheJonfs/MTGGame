@@ -342,6 +342,8 @@ function applyEffect(
       return 0.15;
     case "searchLibrary":
       return 0.5;
+    case "mill":
+      return 0.1; // ADR-070: mill valuation v1 — a nuisance, not an archetype (the Adept is a starter check)
     case "returnFromGraveyard":
       return 0.6;
     default:

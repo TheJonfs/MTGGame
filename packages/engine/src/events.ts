@@ -37,6 +37,8 @@ export interface GameEventMap extends Record<string, unknown> {
   LIFE_CHANGE: { player: PlayerId; delta: number; total: number };
   SPELL_CAST: { cardId: string; controller: PlayerId };
   CARD_DRAWN: { player: PlayerId };
+  /** ADR-070 Amendment 3: one per milled card (after its ZONE_CHANGE library→graveyard). */
+  MILLED: { player: PlayerId; objectId: string; cardId: string };
   STEP_BEGIN: { step: string; turn: number; activePlayer: PlayerId };
   ATTACKERS_DECLARED: { attackers: string[] };
   BLOCKERS_DECLARED: { blocks: { blocker: string; attacker: string }[] };

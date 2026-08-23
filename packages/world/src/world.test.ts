@@ -6,12 +6,13 @@ import { runMatch, type Agent } from "@shandalar/engine";
 import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
 import { DECKS, DECK_ARCHETYPES } from "@shandalar/sim/decks";
 import { loadCatalog } from "./loader.js";
-import { generateWorld, DEFAULT_GENERATOR } from "./generate.js";
-import { findPath, idx, reachable, regionAt } from "./map.js";
-import { deserializeWorld, newWorld, serializeWorld, deckSize, type WorldState } from "./state.js";
-import { advance, applyDuelResult, deckLegal, parley, walkTo, type Encounter } from "./journey.js";
+import { generateWorld, DEFAULT_GENERATOR, isTownCell, roamerTarget, type OpponentInstance } from "./generate.js";
+import { findPath, idx, manhattan, reachable, regionAt, samePoint, type Point } from "./map.js";
+import { activeDeck, deserializeWorld, newWorld, serializeWorld, deckSize, starterDecklist, starterTemplate, worldKnobs, type WorldState } from "./state.js";
+import { advance, applyDuelResult, deckLegal, effectiveSight, parley, visibleRoamers, walkTo, type Encounter } from "./journey.js";
 import { WorldRng } from "./rng.js";
-import { catalogFrom } from "./catalog.js";
+import { catalogFrom, type StarterId } from "./catalog.js";
+import { defaultKnobs } from "./knobs.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const catalog = loadCatalog(join(ROOT, "data/world"));
@@ -26,16 +27,56 @@ describe("catalog v0", () => {
     expect(catalog.regions.filter((r) => r.tier === "civilized").length).toBeGreaterThanOrEqual(2);
   });
   it("rejects unknown knobs and bad decks loudly", () => {
-    const bad = JSON.parse(JSON.stringify({ regions: { catalogVersion: "v0", regions: catalog.regions }, towns: { catalogVersion: "v0", names: catalog.townNames }, opponents: { catalogVersion: "v0", opponents: [{ ...catalog.opponents[0], knobs: { anteCounts: 2 } }] } }));
+    const bad = JSON.parse(JSON.stringify({ regions: { catalogVersion: "v0", regions: catalog.regions }, towns: { catalogVersion: "v0", names: catalog.townNames }, opponents: { catalogVersion: "v0", opponents: [{ ...catalog.opponents[0], knobs: { anteCounts: 2 } }] }, starters: { catalogVersion: "v0", starters: catalog.starters } }));
     expect(() => catalogFrom(bad)).toThrow(/Unknown knob "anteCounts"/);
+  });
+  it("S16 starters: five colours, 30 cards each, every card in the pool, variants legal; slice decks are not starters", () => {
+    expect(catalog.starters.map((s) => s.id).sort()).toEqual(["black", "blue", "green", "red", "white"]);
+    for (const st of catalog.starters) {
+      expect(deckSize(st.decklist)).toBe(30);
+      for (const e of st.decklist) expect(pool.cards.has(e.cardId), `${st.id}: ${e.cardId}`).toBe(true);
+      for (const d of ["easy", "standard", "hard"] as const) {
+        const deck = starterDecklist(st, d);
+        expect(deckLegal(deck).ok, `${st.id} ${d}`).toBe(true);
+        for (const e of deck) expect(pool.cards.has(e.cardId)).toBe(true);
+      }
+      expect(deckSize(starterDecklist(st, "easy"))).toBe(32);
+      expect(deckSize(starterDecklist(st, "hard"))).toBe(30);
+    }
+    // ADR-070: the one-drops are in.
+    expect(starterTemplate(catalog, "green").decklist.find((e) => e.cardId === "llanowar_elves")?.count).toBe(2);
+    expect(starterTemplate(catalog, "blue").decklist.find((e) => e.cardId === "cathartic_adept")?.count).toBe(2);
+    const bad = JSON.parse(JSON.stringify({ regions: { catalogVersion: "v0", regions: catalog.regions }, towns: { catalogVersion: "v0", names: catalog.townNames }, opponents: { catalogVersion: "v0", opponents: catalog.opponents }, starters: { catalogVersion: "v0", starters: catalog.starters.map((s) => (s.id === "red" ? { ...s, decklist: s.decklist.slice(1) } : s)) } }));
+    expect(() => catalogFrom(bad)).toThrow(/total 30 cards/);
   });
 });
 
 describe("world generator (invariant fuzz, ≥200 seeds)", () => {
-  it("every town reachable from the start, no orphan region, ≥2 towns, deterministic per seed", () => {
+  it("every town reachable from the start, no orphan region, ≥2 towns, deterministic per seed; S16: colour coverage, uniform towns, home start, roamer spawn legality", () => {
+    const knobs = defaultKnobs();
+    const colours = ["W", "U", "B", "R", "G"] as const;
     for (let seed = 1; seed <= 200; seed++) {
-      const w = generateWorld(seed, catalog);
+      const home = colours[seed % 5]!;
+      const w = generateWorld(seed, catalog, DEFAULT_GENERATOR, { knobs, homeColor: home });
+      expect(w.map.width).toBe(DEFAULT_GENERATOR.width * knobs.mapScale);
       expect(w.map.towns.length, `seed ${seed} towns`).toBeGreaterThanOrEqual(2);
+      // Colour coverage: every colour has a civilized-or-approach region; every non-wild region has ≥1 town.
+      for (const c of colours) expect(w.map.regions.some((r) => r.color === c && r.tier !== "wild"), `seed ${seed} colour ${c}`).toBe(true);
+      for (const r of w.map.regions) if (r.tier !== "wild") expect(w.map.towns.some((t) => t.region === r.index), `seed ${seed} region ${r.name} has a town`).toBe(true);
+      // Home-region start: the start is a town in the home colour's region.
+      const startTown = w.map.towns.find((t) => samePoint(t.at, w.map.start))!;
+      expect(startTown, `seed ${seed} starts in a town`).toBeTruthy();
+      expect(w.map.regions[startTown.region]!.color).toBe(home);
+      // Roamers: positioned, in-region, passable, never on a town/fixed cell; counts meet the density target.
+      for (const o of w.opponents) {
+        if (o.fixedAt) { expect(o.at).toBeUndefined(); continue; }
+        expect(o.at, `seed ${seed} ${o.id} has a position`).toBeTruthy();
+        expect(w.map.region[idx(w.map, o.at!)]).toBe(o.region);
+        expect(w.map.passable[idx(w.map, o.at!)]).toBe(true);
+        expect(isTownCell(w.map, o.at!)).toBe(false);
+        expect(o.gone).toBe(false);
+      }
+      for (const r of w.map.regions) expect(w.opponents.filter((o) => o.region === r.index && !o.fixedAt).length).toBe(roamerTarget(w.map, r, knobs));
       const reach = reachable(w.map, w.map.start);
       for (const t of w.map.towns) expect(reach.has(idx(w.map, t.at)), `seed ${seed} town ${t.name} reachable`).toBe(true);
       for (const r of w.map.regions) {
@@ -45,16 +86,14 @@ describe("world generator (invariant fuzz, ≥200 seeds)", () => {
       }
       // Town spacing honored (or relaxed only when the map forced it — never adjacent).
       for (const a of w.map.towns) for (const b of w.map.towns) if (a !== b) expect(Math.abs(a.at.x - b.at.x) + Math.abs(a.at.y - b.at.y)).toBeGreaterThan(1);
-      // Every region has a roster.
-      for (const r of w.map.regions) expect(w.opponents.filter((o) => o.region === r.index && !o.fixedAt).length).toBe(DEFAULT_GENERATOR.rosterPerRegion);
       if (seed <= 20) {
-        const again = generateWorld(seed, catalog);
+        const again = generateWorld(seed, catalog, DEFAULT_GENERATOR, { knobs, homeColor: home });
         expect(JSON.stringify(again)).toBe(JSON.stringify(w));
       }
     }
   });
   it("pathfinding: BFS path is walkable, shortest-ish, and null when unreachable", () => {
-    const w = generateWorld(7, catalog);
+    const w = generateWorld(7, catalog, DEFAULT_GENERATOR, { knobs: defaultKnobs(), homeColor: "G" });
     const [a, b] = w.map.towns;
     const path = findPath(w.map, a!.at, b!.at)!;
     expect(path).not.toBeNull();
@@ -64,20 +103,34 @@ describe("world generator (invariant fuzz, ≥200 seeds)", () => {
   });
 });
 
-describe("WorldState + world-save-v1", () => {
-  it("new world: start in a town, world life 10, gold 20, collection = starter deck + spares, deck legal", () => {
-    const w = newWorld({ seed: 11, catalog, starterDeck: "A" });
+describe("WorldState + world-save-v3", () => {
+  it("new world: start in the home colour's town, world life 10, gold 20, collection = starter deck + spares (provenance logged), deck legal, renown 0", () => {
+    const w = newWorld({ seed: 11, catalog, starter: "red" });
     expect(w.player.worldLife).toBe(10);
     expect(w.player.gold).toBe(20);
     expect(w.map.towns.some((t) => t.at.x === w.player.position.x && t.at.y === w.player.position.y)).toBe(true);
-    expect(deckSize(w.player.activeDeck)).toBe(deckSize(DECKS.A.decklist));
+    expect(regionAt(w.map, w.player.position).color).toBe("R");
+    expect(deckSize(activeDeck(w))).toBe(30);
+    expect(w.activeDeckName).toBe("Ember Warband");
+    expect(Object.keys(w.decks)).toEqual(["Ember Warband"]);
     const owned = Object.values(w.player.collection).reduce((n, v) => n + v, 0);
-    expect(owned).toBe(deckSize(DECKS.A.decklist) + 10);
+    expect(owned).toBe(30 + 10);
+    expect(w.provenance).toHaveLength(40);
+    expect(w.provenance.every((p) => p.source === "starter" && p.step === 0)).toBe(true);
     expect(w.player.basicLand).toBe("mountain");
-    expect(deckLegal(w.player.activeDeck).ok).toBe(true);
+    expect(w.player.renown).toBe(0);
+    expect(w.player.starterId).toBe("red");
+    expect(deckLegal(activeDeck(w)).ok).toBe(true);
+    // Every colour spawns at home; hard/easy variants apply.
+    for (const id of ["white", "blue", "black", "green"] as StarterId[]) {
+      const x = newWorld({ seed: 11, catalog, starter: id });
+      expect(regionAt(x.map, x.player.position).color).toBe(starterTemplate(catalog, id).color);
+    }
+    expect(deckSize(activeDeck(newWorld({ seed: 11, catalog, starter: "green", difficulty: "easy" })))).toBe(32);
+    expect(activeDeck(newWorld({ seed: 11, catalog, starter: "green", difficulty: "hard" })).some((e) => e.cardId === "prey_upon")).toBe(false);
   });
   it("serialize → deserialize round-trips byte-identically, and rejects other formats", () => {
-    const w = newWorld({ seed: 12, catalog, starterDeck: "E" });
+    const w = newWorld({ seed: 12, catalog, starter: "blue" });
     walkTo(w, catalog, w.map.towns[1]!.at);
     const text = serializeWorld(w);
     const back = deserializeWorld(text);
@@ -86,7 +139,7 @@ describe("WorldState + world-save-v1", () => {
     expect(() => deserializeWorld(JSON.stringify({ format: "world-save-v0", world: {} }))).toThrow(/Unsupported save format/);
   });
   it("the RNG stream resumes exactly after a save (same draws after load as without)", () => {
-    const a = newWorld({ seed: 13, catalog, starterDeck: "C" });
+    const a = newWorld({ seed: 13, catalog, starter: "green" });
     const b = deserializeWorld(serializeWorld(a));
     const ra = new WorldRng(a.rng), rb = new WorldRng(b.rng);
     for (let i = 0; i < 50; i++) expect(ra.int(1000)).toBe(rb.int(1000));
@@ -96,37 +149,55 @@ describe("WorldState + world-save-v1", () => {
 // ---------- the acceptance journey (brief Part 4, scripted half; S12 carving (b)) ----------
 
 function agentsFor(spec: WorldState, enemyDifficulty: "apprentice" | "journeyman" | "master", enemyDeck: keyof typeof DECKS, seed: number): [Agent, Agent] {
-  const me = new HeuristicAgent(seed * 2 + 1, pool.cards, difficultyProfile("journeyman", DECK_ARCHETYPES.A, [...DECKS[enemyDeck].decklist]));
-  const them = new HeuristicAgent(seed * 2 + 2, pool.cards, difficultyProfile(enemyDifficulty, DECK_ARCHETYPES[enemyDeck], spec.player.activeDeck.map((e) => ({ ...e }))));
+  const me = new HeuristicAgent(seed * 2 + 1, pool.cards, difficultyProfile("journeyman", starterTemplate(catalog, spec.player.starterId).archetype, [...DECKS[enemyDeck].decklist]));
+  const them = new HeuristicAgent(seed * 2 + 2, pool.cards, difficultyProfile(enemyDifficulty, DECK_ARCHETYPES[enemyDeck], activeDeck(spec).map((e) => ({ ...e }))));
   return [me, them];
 }
 
-/** Force an encounter on the very next step via the event layer. */
-const FORCE = { event: { encounterRatePerStep: { civilized: 1, approach: 1, wild: 1 } } } as const;
+/** S16: no random contact — roamers gone, respawn off (the event layer). */
+const QUIET = { event: { roamerRespawnSteps: { civilized: 0, approach: 0, wild: 0 } } } as const;
+function quiet(w: WorldState): void {
+  for (const o of w.opponents) if (!o.fixedAt) { o.gone = true; o.goneReason = "fled"; }
+}
 
-function firstEncounter(w: WorldState): Encounter {
-  // Step off the town cell (towns don't roll); the first non-town step rolls at rate 1.
+/** A passable non-town neighbour of the player (the first step off the town). */
+function stepCell(w: WorldState): Point {
   const start = w.player.position;
   const candidates = [
     { x: start.x + 1, y: start.y }, { x: start.x - 1, y: start.y }, { x: start.x, y: start.y + 1 }, { x: start.x, y: start.y - 1 },
-  ].filter((p) => p.x >= 0 && p.y >= 0 && p.x < w.map.width && p.y < w.map.height && w.map.passable[idx(w.map, p)] && !w.map.towns.some((t) => t.at.x === p.x && t.at.y === p.y));
-  for (const c of candidates) {
-    const events = advance(w, catalog, [c], FORCE);
-    const enc = events.find((e) => e.type === "encounter");
-    if (enc && enc.type === "encounter") return enc.encounter;
-  }
-  throw new Error("no encounter could be forced from the start town");
+  ].filter((p) => p.x >= 0 && p.y >= 0 && p.x < w.map.width && p.y < w.map.height && w.map.passable[idx(w.map, p)] && !isTownCell(w.map, p));
+  if (!candidates[0]) throw new Error("start town has no passable neighbour");
+  return candidates[0];
+}
+
+/** S16: force an encounter on the very next step by standing a roamer on it
+ * (you step onto it = player-initiated contact). Prefers a roamer of the
+ * start's region; any live roamer otherwise. */
+function firstEncounter(w: WorldState, pick?: (o: OpponentInstance) => boolean): Encounter {
+  const cell = stepCell(w);
+  const region = regionAt(w.map, cell).index;
+  const live = w.opponents.filter((o) => !o.gone && !o.fixedAt && o.at && (!pick || pick(o)));
+  const inst = live.find((o) => o.region === region) ?? live[0];
+  if (!inst) throw new Error("no live roamer to force");
+  inst.at = { ...cell };
+  inst.region = region;
+  const events = advance(w, catalog, [cell]);
+  const enc = events.find((e) => e.type === "encounter");
+  if (enc && enc.type === "encounter") return enc.encounter;
+  throw new Error("no encounter happened on the forced cell");
 }
 
 describe("acceptance journey (headless): walk → encounter → each parley branch → bookkeeping → save/load", () => {
   it("buy-off deducts buyOffBase × tier; refused when broke", () => {
-    const w = newWorld({ seed: 21, catalog, starterDeck: "A" });
+    const w = newWorld({ seed: 21, catalog, starter: "red" });
     const enc = firstEncounter(w);
     const gold = w.player.gold;
     const out = parley(w, catalog, enc, "buyoff");
     if (out.type === "boughtOff") {
       expect(out.goldPaid).toBe(15 * enc.tier);
       expect(w.player.gold).toBe(gold - 15 * enc.tier);
+      // S16: any parley outcome removes the roamer from the map.
+      expect(w.opponents.find((o) => o.id === enc.opponentId)).toMatchObject({ gone: true, goneReason: "boughtOff" });
     } else {
       expect(out.type).toBe("refused"); // a tier-2/3 enemy costs more than 20 gold
       expect(w.player.gold).toBe(gold);
@@ -134,27 +205,29 @@ describe("acceptance journey (headless): walk → encounter → each parley bran
   });
 
   it("flee forfeits ante (anteCount nonland cards leave collection+deck, basics refill the deck), then either escapes or fights", () => {
-    const w = newWorld({ seed: 22, catalog, starterDeck: "D" });
+    const w = newWorld({ seed: 22, catalog, starter: "black" });
     const enc = firstEncounter(w);
-    const before = deckSize(w.player.activeDeck);
+    const before = deckSize(activeDeck(w));
     const ownedBefore = Object.values(w.player.collection).reduce((n, v) => n + v, 0);
     const out = parley(w, catalog, enc, "flee");
     expect(["fled", "fleeFailed"]).toContain(out.type);
     const lost = out.type === "fled" || out.type === "fleeFailed" ? out.anteLost : [];
     expect(lost.length).toBeGreaterThanOrEqual(1);
     for (const id of lost) expect(pool.cards.get(id)!.types).not.toContain("Land");
-    expect(deckSize(w.player.activeDeck)).toBe(before); // refilled with basics
-    expect(deckLegal(w.player.activeDeck).ok).toBe(true);
+    expect(deckSize(activeDeck(w))).toBe(before); // refilled with basics
+    expect(deckLegal(activeDeck(w)).ok).toBe(true);
     // Net owned cards: −lost +lost basics (free) = unchanged count, different composition.
     expect(Object.values(w.player.collection).reduce((n, v) => n + v, 0)).toBe(ownedBefore);
-    expect(w.player.activeDeck.find((e) => e.cardId === "swamp")!.count).toBeGreaterThan(DECKS.D.decklist.find((e) => e.cardId === "swamp")!.count - 1);
+    expect(activeDeck(w).find((e) => e.cardId === "swamp")!.count).toBe(13 + lost.length);
+    // S16: fled → the roamer is gone; flee-failed → it fights and leaves after.
+    if (out.type === "fled") expect(w.opponents.find((o) => o.id === enc.opponentId)).toMatchObject({ gone: true, goneReason: "fled" });
   });
 
   it("fight: MatchSpec from world state (ante on, world life both sides via rules+modifier); result applies ante/gold/life; both outcomes observed across seeds", async () => {
     let sawWin = false;
     let sawLoss = false;
     for (let seed = 31; seed < 80 && !(sawWin && sawLoss); seed++) {
-      const w = newWorld({ seed, catalog, starterDeck: "A" });
+      const w = newWorld({ seed, catalog, starter: "red" });
       const enc = firstEncounter(w);
       const out = parley(w, catalog, enc, "fight");
       expect(out.type).toBe("fight");
@@ -178,14 +251,18 @@ describe("acceptance journey (headless): walk → encounter → each parley bran
         expect(ownedAfter).toBe(ownedBefore + rec.anteWon.length);
         expect(w.player.gold).toBe(goldBefore + { 1: 10, 2: 25, 3: 60 }[enc.tier]);
         expect(w.player.worldLife).toBe(lifeBefore);
-        expect(w.opponents.find((o) => o.id === enc.opponentId)!.defeated).toBe(true);
+        expect(w.opponents.find((o) => o.id === enc.opponentId)).toMatchObject({ gone: true, goneReason: "defeated" });
+        expect(w.player.renown).toBe(enc.tier);
+        expect(w.provenance.filter((p) => p.source === "ante")).toHaveLength(rec.anteWon.length);
       } else if (rec.outcome === "loss") {
         sawLoss = true;
         expect(rec.anteLost).toEqual(result.facts.ante[0]);
         expect(ownedAfter).toBe(ownedBefore); // −ante +basics
         expect(w.player.worldLife).toBe(lifeBefore - 1);
-        expect(deckLegal(w.player.activeDeck).ok).toBe(true);
+        expect(deckLegal(activeDeck(w)).ok).toBe(true);
         expect(w.player.gold).toBe(goldBefore);
+        expect(w.opponents.find((o) => o.id === enc.opponentId)).toMatchObject({ gone: true, goneReason: "lost" });
+        expect(w.player.renown).toBe(0);
       }
       // Save/load after a duel: identical, including the duel log.
       expect(deserializeWorld(serializeWorld(w))).toEqual(w);
@@ -195,7 +272,7 @@ describe("acceptance journey (headless): walk → encounter → each parley bran
   }, 120_000);
 
   it("game over at the floor: repeated losses drive world life to 0 and set gameOver", () => {
-    const w = newWorld({ seed: 41, catalog, starterDeck: "B" });
+    const w = newWorld({ seed: 41, catalog, starter: "white" });
     w.player.worldLife = 1;
     const enc = firstEncounter(w);
     const out = parley(w, catalog, enc, "fight");
@@ -206,12 +283,18 @@ describe("acceptance journey (headless): walk → encounter → each parley bran
     expect(w.gameOver).toBe(true);
   });
 
-  it("regions hand out tiered enemies: civilized rolls tier 1/2 only; the region at the start is civilized", () => {
-    const w = newWorld({ seed: 51, catalog, starterDeck: "C" });
+  it("regions hand out tiered enemies: civilized rolls tier 1/2 only; the home region rolls civilized even when its tier is approach (S16 interim, Q4)", () => {
+    const w = newWorld({ seed: 51, catalog, starter: "green" });
     expect(regionAt(w.map, w.player.position).tier).toBe("civilized");
     for (const o of w.opponents.filter((o) => w.map.regions[o.region]!.tier === "civilized")) {
       const t = catalog.opponents.find((c) => c.id === o.catalogId)!;
       expect([1, 2]).toContain(t.tier);
+    }
+    const red = newWorld({ seed: 51, catalog, starter: "red" });
+    const home = regionAt(red.map, red.player.position);
+    expect(home.color).toBe("R");
+    for (const o of red.opponents.filter((o) => o.region === home.index && !o.fixedAt)) {
+      expect([1, 2]).toContain(catalog.opponents.find((c) => c.id === o.catalogId)!.tier);
     }
   });
 });
@@ -220,7 +303,7 @@ describe("town shops (S13 Part 3 → S14 Part 3: depletion, restock, sell, buy-f
   it("stock is seeded by (seed, town, epoch); rows carry stock/remaining; buying depletes and persists across save/load; a new epoch restocks", async () => {
     const { rollShopStock, shopPrice, buyCard, syncShopState } = await import("./shop.js");
     const { worldKnobs } = await import("./state.js");
-    const w = newWorld({ seed: 61, catalog, starterDeck: "C" });
+    const w = newWorld({ seed: 61, catalog, starter: "green" });
     const knobs = worldKnobs(w);
     const town = w.map.towns[0]!;
     syncShopState(w, town, knobs);
@@ -264,10 +347,10 @@ describe("town shops (S13 Part 3 → S14 Part 3: depletion, restock, sell, buy-f
   it("sell: half price for spare copies only — never basics, never copies the active deck uses", async () => {
     const { sellCard, sellPrice } = await import("./shop.js");
     const { worldKnobs } = await import("./state.js");
-    const w = newWorld({ seed: 62, catalog, starterDeck: "A" });
+    const w = newWorld({ seed: 62, catalog, starter: "red" });
     const knobs = worldKnobs(w);
     // The starter spares include copies of the deck's cheapest nonlands beyond deck counts.
-    const spareId = Object.keys(w.player.collection).find((id) => !["mountain"].includes(id) && (w.player.collection[id] ?? 0) > (w.player.activeDeck.find((e) => e.cardId === id)?.count ?? 0))!;
+    const spareId = Object.keys(w.player.collection).find((id) => !["mountain"].includes(id) && (w.player.collection[id] ?? 0) > (activeDeck(w).find((e) => e.cardId === id)?.count ?? 0))!;
     expect(spareId).toBeTruthy();
     const gold = w.player.gold;
     const r = sellCard(w, pool.cards, spareId, knobs);
@@ -275,25 +358,26 @@ describe("town shops (S13 Part 3 → S14 Part 3: depletion, restock, sell, buy-f
     expect(w.player.gold).toBe(gold + sellPrice(pool.cards.get(spareId)!, knobs));
     expect(sellCard(w, pool.cards, "mountain", knobs).ok).toBe(false);
     // A card fully committed to the deck cannot be sold out from under it.
-    const deckOnly = w.player.activeDeck.find((e) => e.cardId !== "mountain" && (w.player.collection[e.cardId] ?? 0) === e.count)!;
+    const deckOnly = activeDeck(w).find((e) => e.cardId !== "mountain" && (w.player.collection[e.cardId] ?? 0) === e.count)!;
     expect(sellCard(w, pool.cards, deckOnly.cardId, knobs)).toMatchObject({ ok: false });
   });
 
   it("buy → add to deck when legal; otherwise bought to collection with a note", async () => {
     const { rollShopStock, buyCard, syncShopState } = await import("./shop.js");
     const { worldKnobs, deckSize } = await import("./state.js");
-    const w = newWorld({ seed: 63, catalog, starterDeck: "C" });
+    const w = newWorld({ seed: 63, catalog, starter: "green" });
     const knobs = worldKnobs(w);
-    const town = w.map.towns[0]!;
+    const town = w.map.towns.find((t) => samePoint(t.at, w.map.start))!;
     syncShopState(w, town, knobs);
     w.player.gold = 1000;
     const item = rollShopStock(w, town, pool.cards, knobs)[0]!;
-    const before = deckSize(w.player.activeDeck);
+    const before = deckSize(activeDeck(w));
     const r = buyCard(w, town, item, knobs, true);
     expect(r.ok && r.addedToDeck).toBe(true);
-    expect(deckSize(w.player.activeDeck)).toBe(before + 1);
+    expect(deckSize(activeDeck(w))).toBe(before + 1);
+    expect(w.provenance.filter((p) => p.source === "shop")).toHaveLength(1);
     // Fifth copy: cap → to collection with a note.
-    w.player.activeDeck = w.player.activeDeck.map((e) => (e.cardId === item.cardId ? { ...e, count: 4 } : e));
+    w.decks[w.activeDeckName] = activeDeck(w).map((e) => (e.cardId === item.cardId ? { ...e, count: 4 } : e));
     w.player.collection[item.cardId] = 4;
     const fresh = rollShopStock(w, town, pool.cards, knobs).find((i) => i.cardId === item.cardId);
     if (fresh && fresh.remaining > 0) {
@@ -303,22 +387,58 @@ describe("town shops (S13 Part 3 → S14 Part 3: depletion, restock, sell, buy-f
   });
 });
 
-describe("world-save-v2 (S14 Part 1)", () => {
-  it("v2 round-trips; a v1 save migrates with shops/visits/lastTownIndex/deckName defaulted and plays", async () => {
-    const w = newWorld({ seed: 71, catalog, starterDeck: "B" });
-    expect(serializeWorld(w)).toContain('"world-save-v2"');
+describe("world-save-v3 (S16 Part 2.5): the v1 → v2 → v3 migration chain", () => {
+  /** Hand-build the v2 shape from a v3 world: decks → player.activeDeck + deckName; gone → defeated; positions stripped; v3 fields dropped. */
+  function asV2(w: WorldState): Record<string, unknown> {
+    const { decks, activeDeckName, provenance, opponents, player, ...rest } = w;
+    const { renown: _r, starterId: _s, ...p2 } = player;
+    return {
+      ...rest,
+      player: { ...p2, activeDeck: decks[activeDeckName]!.map((e) => ({ ...e })) },
+      deckName: activeDeckName,
+      opponents: opponents.map((o) => { const { gone, goneReason: _g, at: _a, moveDebt: _m, ...o2 } = o; return { ...o2, defeated: gone }; }),
+      _drop: provenance.length,
+    };
+  }
+  it("v3 round-trips; a v2 save migrates with decks/activeDeckName/provenance/renown/starterId defaulted, roamers positioned, and plays", () => {
+    const w = newWorld({ seed: 71, catalog, starter: "white" });
+    expect(serializeWorld(w)).toContain('"world-save-v3"');
     expect(deserializeWorld(serializeWorld(w))).toEqual(w);
-    // Hand-build a v1 payload: strip the v2 fields and relabel.
-    const { shops: _s, visits: _v, lastTownIndex: _l, deckName: _d, ...v1world } = w;
-    const v1 = JSON.stringify({ format: "world-save-v1", world: v1world });
-    const migrated = deserializeWorld(v1);
+    const v2 = asV2(w);
+    const migrated = deserializeWorld(JSON.stringify({ format: "world-save-v2", world: v2 }));
+    expect(migrated.decks).toEqual({ [w.activeDeckName]: activeDeck(w) });
+    expect(migrated.activeDeckName).toBe(w.activeDeckName);
+    expect(migrated.provenance).toEqual([]);
+    expect(migrated.player.renown).toBe(0);
+    expect(migrated.player.starterId).toBe("white"); // from the basic land
+    expect((migrated as unknown as { deckName?: string }).deckName).toBeUndefined();
+    expect((migrated.player as unknown as { activeDeck?: unknown }).activeDeck).toBeUndefined();
+    for (const o of migrated.opponents) {
+      expect(o.gone).toBe(false);
+      if (o.fixedAt) expect(o.at).toBeUndefined();
+      else {
+        expect(o.at).toBeTruthy();
+        expect(migrated.map.region[idx(migrated.map, o.at!)]).toBe(o.region);
+        expect(isTownCell(migrated.map, o.at!)).toBe(false);
+      }
+    }
+    // Deterministic: migrating the same payload twice gives the same positions.
+    expect(deserializeWorld(JSON.stringify({ format: "world-save-v2", world: v2 }))).toEqual(migrated);
+    // …and it plays: walk and re-save as v3.
+    walkTo(migrated, catalog, migrated.map.towns[1]!.at);
+    expect(serializeWorld(migrated)).toContain('"world-save-v3"');
+  });
+  it("a v1 save migrates through v2 to v3 (shops/visits/lastTownIndex defaulted, deck named \"Deck\")", () => {
+    const w = newWorld({ seed: 72, catalog, starter: "black" });
+    const v2 = asV2(w);
+    const { shops: _s, visits: _v, lastTownIndex: _l, deckName: _d, ...v1world } = v2 as Record<string, unknown>;
+    const migrated = deserializeWorld(JSON.stringify({ format: "world-save-v1", world: v1world }));
     expect(migrated.shops).toEqual({});
     expect(migrated.visits).toEqual({});
     expect(migrated.lastTownIndex).toBe(w.lastTownIndex);
-    expect(migrated.deckName).toBe("Deck");
-    // …and it plays: walk and re-save as v2.
-    walkTo(migrated, catalog, migrated.map.towns[1]!.at, { event: { encounterRatePerStep: { civilized: 0, approach: 0, wild: 0 } } });
-    expect(serializeWorld(migrated)).toContain('"world-save-v2"');
+    expect(migrated.activeDeckName).toBe("Deck");
+    expect(activeDeck(migrated)).toEqual(activeDeck(w));
+    expect(migrated.player.starterId).toBe("black");
     expect(() => deserializeWorld(JSON.stringify({ format: "world-save-v0", world: {} }))).toThrow(/Unsupported save format/);
   });
 });
@@ -327,62 +447,103 @@ describe("deck editing (S14 Part 2, headless)", () => {
   it("spares = ownership − deck; add/remove copies; basics infinite; commit refuses illegal decks (ADR-065) and unowned copies", async () => {
     const { spares, addCopy, removeCopy, commitDeck, deckStats } = await import("./deck-edit.js");
     const { deckSize } = await import("./state.js");
-    const w = newWorld({ seed: 81, catalog, starterDeck: "A" });
-    const sp = spares(w.player.collection, w.player.activeDeck);
+    const w = newWorld({ seed: 81, catalog, starter: "red" });
+    const sp = spares(w.player.collection, activeDeck(w));
     expect(Object.keys(sp).length).toBeGreaterThan(0);
     expect(sp.mountain).toBeUndefined(); // basics have their own row
     const spareId = Object.keys(sp)[0]!;
-    // Remove a nonbasic, add the spare: still 40, legal, committed.
-    const nonbasic = w.player.activeDeck.find((e) => e.cardId !== "mountain")!.cardId;
-    let draft = removeCopy(w.player.activeDeck, nonbasic);
+    // Remove a nonbasic, add the spare: still 30, legal, committed (and renamed).
+    const nonbasic = activeDeck(w).find((e) => e.cardId !== "mountain")!.cardId;
+    let draft = removeCopy(activeDeck(w), nonbasic);
     expect(draft.ok).toBe(true);
-    let d2 = addCopy(w.player.collection, (draft as { deck: typeof w.player.activeDeck }).deck, spareId);
+    let d2 = addCopy(w.player.collection, (draft as { deck: ReturnType<typeof activeDeck> }).deck, spareId);
     expect(d2.ok).toBe(true);
-    const committed = commitDeck(w, (d2 as { deck: typeof w.player.activeDeck }).deck, "Goblin Tide");
+    const committed = commitDeck(w, (d2 as { deck: ReturnType<typeof activeDeck> }).deck, "Goblin Tide");
     expect(committed.ok).toBe(true);
-    expect(deckSize(w.player.activeDeck)).toBe(40);
-    expect(w.deckName).toBe("Goblin Tide");
+    expect(deckSize(activeDeck(w))).toBe(30);
+    expect(w.activeDeckName).toBe("Goblin Tide");
+    expect(Object.keys(w.decks)).toEqual(["Goblin Tide"]);
     // Basics: always addable, no collection gate.
-    const more = addCopy(w.player.collection, w.player.activeDeck, "mountain");
+    const more = addCopy(w.player.collection, activeDeck(w), "mountain");
     expect(more.ok).toBe(true);
     // Fifth copy of a nonbasic: refused; no spare: refused.
     w.player.collection.lightning_bolt = 9;
-    let five = w.player.activeDeck.map((e) => ({ ...e }));
+    let five = activeDeck(w).map((e) => ({ ...e }));
     for (let k = 0; k < 5; k++) { const r = addCopy(w.player.collection, five, "lightning_bolt"); if (r.ok) five = r.deck; else expect(r.reason).toMatch(/cap/); }
     expect(five.find((e) => e.cardId === "lightning_bolt")!.count).toBeLessThanOrEqual(4);
     // Illegal (below floor) can be drafted but never committed.
-    let thin = w.player.activeDeck.map((e) => ({ ...e }));
-    for (let k = 0; k < 12; k++) { const r = removeCopy(thin, "mountain"); if (r.ok) thin = r.deck; }
+    let thin = activeDeck(w).map((e) => ({ ...e }));
+    for (let k = 0; k < 5; k++) { const r = removeCopy(thin, "mountain"); if (r.ok) thin = r.deck; }
     expect(deckSize(thin)).toBeLessThan(30);
     expect(commitDeck(w, thin).ok).toBe(false);
-    expect(deckSize(w.player.activeDeck)).toBe(40); // untouched
+    expect(deckSize(activeDeck(w))).toBe(30); // untouched
     // Unowned copy: refused.
-    expect(commitDeck(w, [...w.player.activeDeck, { cardId: "pelakka_wurm", count: 1 }]).ok).toBe(false);
-    const stats = deckStats(pool.cards, w.player.activeDeck);
-    expect(stats.size).toBe(40);
+    expect(commitDeck(w, [...activeDeck(w), { cardId: "pelakka_wurm", count: 1 }]).ok).toBe(false);
+    const stats = deckStats(pool.cards, activeDeck(w));
+    expect(stats.size).toBe(30);
     expect(stats.lands).toBeGreaterThan(10);
-    expect(stats.curve.reduce((a, b) => a + b, 0)).toBe(40 - stats.lands);
+    expect(stats.curve.reduce((a, b) => a + b, 0)).toBe(30 - stats.lands);
   });
 
   it("lose an ante → the refilled basic is swappable for an owned spare, legality green (the brief's proof)", async () => {
     const { spares, addCopy, removeCopy, commitDeck } = await import("./deck-edit.js");
     const { deckSize } = await import("./state.js");
-    const w = newWorld({ seed: 82, catalog, starterDeck: "D" });
+    const w = newWorld({ seed: 82, catalog, starter: "black" });
     const enc = firstEncounter(w);
     const out = parley(w, catalog, enc, "flee"); // forfeits a stake either way → refill with swamps
     expect(["fled", "fleeFailed"]).toContain(out.type);
     const lost = (out as { anteLost: string[] }).anteLost;
     expect(lost.length).toBeGreaterThan(0);
-    const swampsNow = w.player.activeDeck.find((e) => e.cardId === "swamp")!.count;
-    expect(swampsNow).toBe(17 + lost.length);
-    const sp = spares(w.player.collection, w.player.activeDeck);
+    const swampsNow = activeDeck(w).find((e) => e.cardId === "swamp")!.count;
+    expect(swampsNow).toBe(13 + lost.length);
+    const sp = spares(w.player.collection, activeDeck(w));
     const spareId = Object.keys(sp)[0]!;
-    const d1 = removeCopy(w.player.activeDeck, "swamp");
-    const d2 = addCopy(w.player.collection, (d1 as { deck: typeof w.player.activeDeck }).deck, spareId);
+    const d1 = removeCopy(activeDeck(w), "swamp");
+    const d2 = addCopy(w.player.collection, (d1 as { deck: ReturnType<typeof activeDeck> }).deck, spareId);
     expect(d2.ok).toBe(true);
-    expect(commitDeck(w, (d2 as { deck: typeof w.player.activeDeck }).deck).ok).toBe(true);
-    expect(deckSize(w.player.activeDeck)).toBe(40);
-    expect(deckLegal(w.player.activeDeck).ok).toBe(true);
+    expect(commitDeck(w, (d2 as { deck: ReturnType<typeof activeDeck> }).deck).ok).toBe(true);
+    expect(deckSize(activeDeck(w))).toBe(30);
+    expect(deckLegal(activeDeck(w)).ok).toBe(true);
+  });
+
+  it("S16 (v3): multiple decks — new (30 basics) / duplicate / switch / rename / delete; spares subtract the ACTIVE deck only; the active deck duels", async () => {
+    const { createDeck, duplicateDeck, switchDeck, deleteDeck, renameDeck, spares, removeCopy, addCopy, commitDeck } = await import("./deck-edit.js");
+    const w = newWorld({ seed: 83, catalog, starter: "green" });
+    const starterName = w.activeDeckName;
+    expect(createDeck(w, "Blank")).toEqual({ ok: true });
+    expect(w.decks.Blank).toEqual([{ cardId: "forest", count: 30 }]);
+    expect(w.activeDeckName).toBe(starterName); // creating doesn't switch
+    expect(createDeck(w, "Blank")).toMatchObject({ ok: false });
+    expect(createDeck(w, "  ")).toMatchObject({ ok: false });
+    expect(duplicateDeck(w, starterName, "Trail II")).toEqual({ ok: true });
+    expect(w.decks["Trail II"]).toEqual(activeDeck(w));
+    expect(w.decks["Trail II"]).not.toBe(activeDeck(w)); // a copy
+    // Spares are computed against the active deck only: the duplicate doesn't eat copies.
+    const sp = spares(w.player.collection, activeDeck(w));
+    expect(Object.keys(sp).length).toBeGreaterThan(0);
+    // Switch → the duel spec reads the new active deck.
+    expect(switchDeck(w, "Blank")).toEqual({ ok: true });
+    expect(w.activeDeckName).toBe("Blank");
+    const enc = firstEncounter(w);
+    const out = parley(w, catalog, enc, "fight");
+    expect(out.type === "fight" && out.duel.spec.players[0].decklist).toEqual([{ cardId: "forest", count: 30 }]);
+    // Can't delete the active deck or the last one; rename moves the key and keeps the active pointer.
+    expect(deleteDeck(w, "Blank")).toMatchObject({ ok: false });
+    expect(renameDeck(w, "Blank", "Forest Wall")).toEqual({ ok: true });
+    expect(w.activeDeckName).toBe("Forest Wall");
+    expect(switchDeck(w, starterName)).toEqual({ ok: true });
+    expect(deleteDeck(w, "Forest Wall")).toEqual({ ok: true });
+    expect(deleteDeck(w, "Trail II")).toEqual({ ok: true });
+    expect(deleteDeck(w, starterName)).toMatchObject({ ok: false, reason: expect.stringMatching(/at least one|active/) });
+    // A non-active deck may drift to list copies you no longer own (spares count the active deck only): switching to it refuses until edited.
+    expect(duplicateDeck(w, starterName, "Twin")).toEqual({ ok: true });
+    const nonbasic = activeDeck(w).find((e) => e.cardId !== "forest")!.cardId;
+    w.player.collection[nonbasic] = 0; // lost every copy
+    let d = removeCopy(activeDeck(w), nonbasic); while (d.ok && d.deck.some((e) => e.cardId === nonbasic)) d = removeCopy(d.deck, nonbasic);
+    let fixed = (d as { deck: ReturnType<typeof activeDeck> }).deck; while (deckSize(fixed) < 30) fixed = (addCopy(w.player.collection, fixed, "forest") as { deck: ReturnType<typeof activeDeck> }).deck;
+    expect(commitDeck(w, fixed).ok).toBe(true);
+    expect(switchDeck(w, "Twin")).toMatchObject({ ok: false, reason: expect.stringMatching(/you own/) });
+    expect(deserializeWorld(serializeWorld(w))).toEqual(w);
   });
 });
 
@@ -393,14 +554,14 @@ describe("beast opponents (ADR-066 proof of concept)", () => {
     const wurm = catalog.opponents.find((o) => o.id === "beast_wurm")!;
     expect(wurm.kind).toBe("beast");
     expect(wurm.deck).toBe("C"); // signature-card rule: green stompy with Pelakka Wurms
-    const w = newWorld({ seed: 91, catalog, starterDeck: "A" });
+    const w = newWorld({ seed: 91, catalog, starter: "red" });
     const knobs = worldKnobs(w);
     expect(buyOffPrice(knobs, 3, wurm)).toBe(Math.round(knobs.buyOffBase * 3 * knobs.beastBuyOffMultiplier));
     expect(buyOffPrice(knobs, 3)).toBe(knobs.buyOffBase * 3);
     // Force an encounter with the wurm and try to buy it off while broke / while it is unbuyable.
     const inst = w.opponents.find((o) => o.catalogId === "beast_wurm");
     if (inst) {
-      const enc = { opponentId: inst.id, catalogId: inst.catalogId, tier: 3 as const, region: inst.region, at: w.player.position };
+      const enc = { opponentId: inst.id, catalogId: inst.catalogId, tier: 3 as const, region: inst.region, at: w.player.position, fleeing: false };
       w.player.gold = 0;
       expect(parley(w, catalog, enc, "buyoff")).toMatchObject({ type: "refused" });
       const was = wurm.buyable;
@@ -416,7 +577,8 @@ describe("beast opponents (ADR-066 proof of concept)", () => {
 describe("lair fixed point (S14 round 1 prototype)", () => {
   it("every world has one reachable lair with a resident beast; walking onto it is a certain encounter; cleared lairs are ground", () => {
     for (const seed of [1, 2, 3, 4, 5]) {
-      const w = newWorld({ seed, catalog, starterDeck: "A" });
+      const w = newWorld({ seed, catalog, starter: "red" });
+      quiet(w);
       expect(w.map.strongholds).toHaveLength(1);
       const lair = w.map.strongholds[0]!;
       expect(lair.kind).toBe("lair");
@@ -425,16 +587,217 @@ describe("lair fixed point (S14 round 1 prototype)", () => {
       expect(resident.fixedAt).toEqual(lair.at);
       expect(findPath(w.map, w.map.start, lair.at)).not.toBeNull();
       // Walk there with random encounters off: the lair still triggers.
-      const ev = walkTo(w, catalog, lair.at, { event: { encounterRatePerStep: { civilized: 0, approach: 0, wild: 0 } } })!;
+      const ev = walkTo(w, catalog, lair.at, QUIET)!;
       const enc = ev.find((e) => e.type === "encounter");
       expect(enc && enc.type === "encounter" && enc.encounter.catalogId).toBe("beast_wurm");
       // Defeat the resident: walking onto the lair is now just ground.
-      resident.defeated = true;
+      // A lair resident is NOT removed by buy-off/flee (lairs stay certain until defeated).
+      const encL = ev.find((e) => e.type === "encounter")!;
+      if (encL.type === "encounter") {
+        w.player.gold = 10_000;
+        const bo = parley(w, catalog, encL.encounter, "buyoff");
+        expect(bo.type).toBe("boughtOff");
+        expect(resident.gone).toBe(false);
+      }
+      resident.gone = true; resident.goneReason = "defeated";
       const w2 = w; w2.player.position = { ...w.map.start };
-      const ev2 = walkTo(w2, catalog, lair.at, { event: { encounterRatePerStep: { civilized: 0, approach: 0, wild: 0 } } })!;
+      const ev2 = walkTo(w2, catalog, lair.at, QUIET)!;
       expect(ev2.some((e) => e.type === "encounter")).toBe(false);
       // Residents never roam.
       expect(w.opponents.filter((o) => o.fixedAt && o.region === lair.region).length).toBe(1);
     }
   });
 });
+
+describe("S16 roamers (ADR-071): sight, pursuit, fleeing, contact, removal, respawn, determinism", () => {
+  /** Put the player on an open cell away from towns with a known roamer placed at distance d along +x (in-region). */
+  function stage(seed: number, d: number, opts: { tier?: 1 | 2 | 3; renown?: number } = {}): { w: WorldState; inst: OpponentInstance; knobs: ReturnType<typeof worldKnobs> } {
+    const w = newWorld({ seed, catalog, starter: "green" });
+    quiet(w);
+    const knobs = worldKnobs(w, QUIET);
+    // Find a row segment of d+4 passable, same-region, non-town cells.
+    for (let y = 1; y < w.map.height - 1; y++) {
+      for (let x = 1; x + d + 3 < w.map.width; x++) {
+        const cells = Array.from({ length: d + 4 }, (_, i) => ({ x: x + i, y }));
+        const r0 = w.map.region[idx(w.map, cells[0]!)];
+        if (cells.every((c) => w.map.passable[idx(w.map, c)] && w.map.region[idx(w.map, c)] === r0 && !isTownCell(w.map, c))) {
+          const pick = w.opponents.find((o) => !o.fixedAt && (opts.tier === undefined || catalog.opponents.find((c) => c.id === o.catalogId)!.tier === opts.tier))!;
+          pick.gone = false; delete pick.goneReason; pick.region = r0!; pick.at = { ...cells[d]! }; pick.moveDebt = 0;
+          w.player.position = { ...cells[0]! };
+          w.player.renown = opts.renown ?? 0;
+          return { w, inst: pick, knobs };
+        }
+      }
+    }
+    throw new Error("no staging row");
+  }
+
+  it("a roamer within sight moves toward you each step; standing still it reaches you → contact = encounter (roamer-initiated); out of sight it drifts", () => {
+    const { w, inst, knobs } = stage(101, 4);
+    const tmpl = catalog.opponents.find((c) => c.id === inst.catalogId)!;
+    expect(knobs.roamerSpeed[tmpl.tier]).toBe(1);
+    // "Stand still" = step back and forth between two cells; the roamer closes one cell per step.
+    const a = { ...w.player.position }, b = { x: a.x, y: a.y + 1 };
+    const bOk = w.map.passable[idx(w.map, b)] && !isTownCell(w.map, b);
+    let contact: Encounter | null = null;
+    let d0 = manhattan(inst.at!, w.player.position);
+    for (let i = 0; i < 12 && !contact; i++) {
+      const cell = bOk && i % 2 === 0 ? b : a;
+      const ev = advance(w, catalog, [cell], QUIET);
+      const enc = ev.find((e) => e.type === "encounter");
+      if (enc && enc.type === "encounter") contact = enc.encounter;
+      else {
+        const d1 = manhattan(inst.at!, w.player.position);
+        expect(d1).toBeLessThanOrEqual(d0 + 1); // never loses ground while in sight
+        d0 = d1;
+      }
+    }
+    expect(contact).toBeTruthy();
+    expect(contact!.opponentId).toBe(inst.id);
+    expect(contact!.fleeing).toBe(false);
+    // Out of sight: a far roamer drifts (stays or one random legal step), never out of its region, never onto a town.
+    const far = stage(102, 12);
+    const before = { ...far.inst.at! };
+    advance(far.w, catalog, [stepCellFrom(far.w, far.w.player.position)], QUIET);
+    expect(manhattan(before, far.inst.at!)).toBeLessThanOrEqual(1);
+    expect(far.w.map.region[idx(far.w.map, far.inst.at!)]).toBe(far.inst.region);
+    expect(isTownCell(far.w.map, far.inst.at!)).toBe(false);
+  });
+
+  it("sight radius is honoured: visible at ≤ sightRadius, invisible beyond; rough cells on the line shorten YOUR sight (the ambush) but not the roamer's pursuit", () => {
+    const { w, inst, knobs } = stage(103, knobs0().sightRadius);
+    expect(visibleRoamers(w, catalog, knobs).map((r) => r.inst.id)).toContain(inst.id);
+    inst.at = { x: inst.at!.x + 1, y: inst.at!.y };
+    expect(visibleRoamers(w, catalog, knobs).map((r) => r.inst.id)).not.toContain(inst.id);
+    // Rough terrain between: drop a rough cell on the line → effective sight shrinks by the penalty.
+    const { w: w2, inst: i2, knobs: k2 } = stage(104, 4);
+    const mid = { x: w2.player.position.x + 2, y: w2.player.position.y };
+    expect(effectiveSight(w2.map, k2, w2.player.position, i2.at!)).toBe(k2.sightRadius);
+    w2.map.passable[idx(w2.map, mid)] = false;
+    expect(effectiveSight(w2.map, k2, w2.player.position, i2.at!)).toBe(k2.sightRadius - k2.roughSightPenalty);
+    // At distance 4 with sight 6−2 = 4 it is still visible; push it to 5: invisible to you…
+    i2.at = { x: i2.at!.x + 1, y: i2.at!.y };
+    expect(visibleRoamers(w2, catalog, k2).map((r) => r.inst.id)).not.toContain(i2.id);
+    // …but it still pursues (its sight is plain radius 6): after your step it is closer.
+    const dBefore = manhattan(i2.at!, w2.player.position);
+    const cell = stepCellFrom(w2, w2.player.position, (p) => !samePoint(p, mid));
+    advance(w2, catalog, [cell], QUIET);
+    expect(manhattan(i2.at!, w2.player.position)).toBeLessThanOrEqual(dBefore);
+  });
+
+  it("renown: a roamer flees when tier × renownFleeFactor < renown — it moves away, never steps into you; stepping onto it is a player-initiated contact flagged fleeing", () => {
+    const { w, inst, knobs } = stage(105, 2, { tier: 1, renown: 10 });
+    expect(1 * knobs.renownFleeFactor[1]).toBeLessThan(10);
+    expect(visibleRoamers(w, catalog, knobs).find((r) => r.inst.id === inst.id)?.fleeing).toBe(true);
+    // Pursue: step toward it; it retreats along the row (or holds if cornered) and never reaches you on its own.
+    let caught: Encounter | null = null;
+    for (let i = 0; i < 12 && !caught; i++) {
+      const dx = Math.sign(inst.at!.x - w.player.position.x);
+      const next = { x: w.player.position.x + dx, y: w.player.position.y };
+      if (!w.map.passable[idx(w.map, next)] || isTownCell(w.map, next)) break;
+      const dBefore = manhattan(inst.at!, w.player.position);
+      const ev = advance(w, catalog, [next], QUIET);
+      const enc = ev.find((e) => e.type === "encounter");
+      if (enc && enc.type === "encounter") { caught = enc.encounter; break; }
+      expect(manhattan(inst.at!, w.player.position)).toBeGreaterThanOrEqual(Math.min(dBefore, 1)); // it did not close in
+    }
+    if (caught) {
+      expect(caught.fleeing).toBe(true);
+      expect(caught.opponentId).toBe(inst.id);
+    }
+    // Corner it: box the roamer in by making its far side rough → next pursuit step catches it.
+    const { w: w3, inst: i3 } = stage(106, 1, { tier: 1, renown: 10 });
+    for (const d of [{ x: 1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }]) {
+      const q = { x: i3.at!.x + d.x, y: i3.at!.y + d.y };
+      if (q.x >= 0 && q.y >= 0 && q.x < w3.map.width && q.y < w3.map.height) w3.map.passable[idx(w3.map, q)] = false;
+    }
+    const ev3 = advance(w3, catalog, [{ ...i3.at! }], QUIET);
+    const enc3 = ev3.find((e) => e.type === "encounter");
+    expect(enc3 && enc3.type === "encounter" && enc3.encounter.fleeing).toBe(true);
+    // Low renown: the same roamer is not fleeing.
+    const { w: w4, inst: i4, knobs: k4 } = stage(107, 2, { tier: 1, renown: 0 });
+    expect(visibleRoamers(w4, catalog, k4).find((r) => r.inst.id === i4.id)?.fleeing).toBe(false);
+  });
+
+  it("roamer speed is a knob: at 0.5 a pursuer moves every other step; at 0 it never moves", () => {
+    const slow = { event: { ...QUIET.event, roamerSpeed: { 1: 0.5, 2: 0.5, 3: 0.5 } } } as const;
+    const { w, inst } = stage(108, 6);
+    const a = { ...w.player.position }, b = { x: a.x, y: a.y + 1 };
+    const bOk = w.map.passable[idx(w.map, b)] && !isTownCell(w.map, b);
+    const d0 = manhattan(inst.at!, a);
+    const moved: number[] = [];
+    for (let i = 0; i < 4; i++) {
+      const p = { ...inst.at! };
+      advance(w, catalog, [bOk && i % 2 === 0 ? b : a], slow);
+      moved.push(manhattan(p, inst.at!));
+    }
+    expect(moved.reduce((x, y) => x + y, 0)).toBe(2); // two moves in four steps
+    void d0;
+    const frozen = { event: { ...QUIET.event, roamerSpeed: { 1: 0, 2: 0, 3: 0 } } } as const;
+    const { w: w2, inst: i2 } = stage(109, 3);
+    const p2 = { ...i2.at! };
+    advance(w2, catalog, [stepCellFrom(w2, w2.player.position)], frozen);
+    expect(i2.at).toEqual(p2);
+  });
+
+  it("respawn: a region below its density target gains one roamer every roamerRespawnSteps (out of sight, in-region, never a town); none when at target or when the knob is 0", () => {
+    const w = newWorld({ seed: 110, catalog, starter: "green" });
+    const knobs = worldKnobs(w);
+    const home = regionAt(w.map, w.player.position);
+    const target = roamerTarget(w.map, home, knobs);
+    expect(target).toBeGreaterThanOrEqual(1);
+    // Clear the home region's roamers, then walk until the respawn tick.
+    for (const o of w.opponents) if (o.region === home.index && !o.fixedAt) { o.gone = true; o.goneReason = "boughtOff"; }
+    const frozen = { event: { roamerSpeed: { 1: 0, 2: 0, 3: 0 } } } as const; // keep others still so walks don't contact
+    const start = { ...w.player.position };
+    const cell = stepCellFrom(w, start);
+    let spawnedIds: string[] = [];
+    for (let i = 0; i < knobs.roamerRespawnSteps[home.tier] && spawnedIds.length === 0; i++) {
+      const ev = advance(w, catalog, [i % 2 === 0 ? cell : start], frozen);
+      spawnedIds = ev.filter((e) => e.type === "spawned" && (e as { region: number }).region === home.index).map((e) => (e as { opponentId: string }).opponentId);
+    }
+    expect(spawnedIds.length).toBe(1);
+    const sp = w.opponents.find((o) => o.id === spawnedIds[0])!;
+    expect(sp.region).toBe(home.index);
+    expect(w.map.region[idx(w.map, sp.at!)]).toBe(home.index);
+    expect(isTownCell(w.map, sp.at!)).toBe(false);
+    expect(manhattan(sp.at!, w.player.position)).toBeGreaterThan(knobs.sightRadius); // out of sight
+    // At target already: no more spawns on the next tick.
+    for (const o of w.opponents) if (o.region === home.index && !o.fixedAt && o.gone) { o.gone = false; delete o.goneReason; }
+    const live = w.opponents.filter((o) => o.region === home.index && !o.fixedAt && !o.gone).length;
+    expect(live).toBeGreaterThanOrEqual(target);
+    let extra = 0;
+    for (let i = 0; i < knobs.roamerRespawnSteps[home.tier]; i++) {
+      const ev = advance(w, catalog, [i % 2 === 0 ? cell : start], frozen);
+      extra += ev.filter((e) => e.type === "spawned" && (e as { region: number }).region === home.index).length;
+    }
+    expect(extra).toBe(0);
+  });
+
+  it("determinism: sight/pursuit/respawn replay identically from a save (same walk after load = same world)", () => {
+    const a = newWorld({ seed: 111, catalog, starter: "blue" });
+    const dest = a.map.towns.find((t) => !samePoint(t.at, a.map.start))!.at;
+    const b = deserializeWorld(serializeWorld(a));
+    const ea = walkTo(a, catalog, dest)!;
+    const eb = walkTo(b, catalog, dest)!;
+    expect(JSON.stringify(ea)).toBe(JSON.stringify(eb));
+    expect(serializeWorld(a)).toBe(serializeWorld(b));
+    // Save mid-walk, resume both: still identical.
+    const c = deserializeWorld(serializeWorld(a));
+    const dest2 = a.map.towns.find((t) => !samePoint(t.at, a.player.position))!.at;
+    expect(JSON.stringify(walkTo(a, catalog, dest2))).toBe(JSON.stringify(walkTo(c, catalog, dest2)));
+    expect(serializeWorld(a)).toBe(serializeWorld(c));
+  });
+});
+
+function knobs0() {
+  return defaultKnobs();
+}
+
+function stepCellFrom(w: WorldState, from: Point, ok: (p: Point) => boolean = () => true): Point {
+  const c = [
+    { x: from.x + 1, y: from.y }, { x: from.x - 1, y: from.y }, { x: from.x, y: from.y + 1 }, { x: from.x, y: from.y - 1 },
+  ].filter((p) => p.x >= 0 && p.y >= 0 && p.x < w.map.width && p.y < w.map.height && w.map.passable[idx(w.map, p)] && !isTownCell(w.map, p) && ok(p));
+  if (!c[0]) throw new Error("no step cell");
+  return c[0];
+}

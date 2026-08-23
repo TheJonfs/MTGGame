@@ -87,6 +87,7 @@ export function eventLabel(
     }
     case "SPELL_CAST": return `${who(payload.controller)}: ${cardName(pool, payload.cardId as string)} cast`;
     case "CARD_DRAWN": return `${who(payload.player)} draws a card`;
+    case "MILLED": return `${who(payload.player)} mills ${cardName(pool, payload.cardId as string)}`; // graveyards are public — naming it is fine
     case "FIZZLE": return `${cardName(pool, payload.cardId as string)} fizzles (all targets illegal)`;
     case "TRIGGER_NO_TARGETS": return `${cardName(pool, payload.cardId as string)} trigger: no legal targets`;
     case "ATTACHED": return null; // too chatty for the log; inspector shows attachments

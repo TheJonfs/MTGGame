@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CardDef } from "@shandalar/cards";
 import { cardColors } from "@shandalar/cards";
-import { DECKS, type DeckKey } from "@shandalar/sim/decks";
-import { buyOffPrice, deckSize, deckStats, isBasic, sellPrice, spares, BASIC_LANDS, type DifficultyName, type ShopItem } from "@shandalar/world";
+import { activeDeck, buyOffPrice, deckSize, deckStats, isBasic, sellPrice, spares, BASIC_LANDS, type DifficultyName, type ShopItem, type StarterId } from "@shandalar/world";
 import { loadOracle, loadPool, loadWorldCatalog, type OracleEntry, type SavedGame } from "../engine-bridge";
 import { CardFrame } from "../components/CardFrame";
 import { PlayMatch, loadStops } from "../play/PlayMatch";
@@ -16,17 +15,12 @@ import { FloatingCardInspector } from "./FloatingCardInspector";
  * game over. Presentation only; every decision goes through WorldController.
  */
 
-const STARTERS: { deck: DeckKey; colour: string; label: string }[] = [
-  { deck: "A", colour: "R", label: "Red — Red Aggro" },
-  { deck: "B", colour: "WU", label: "White-Blue — WU Skies" },
-  { deck: "C", colour: "G", label: "Green — Mono Green" },
-  { deck: "D", colour: "B", label: "Black — Mono Black" },
-  { deck: "E", colour: "GU", label: "Green-Blue — Simic Tempo" },
-];
+const COLOUR_NAME: Record<string, string> = { W: "White", U: "Blue", B: "Black", R: "Red", G: "Green" };
 const TIER_BADGE = { 1: "I", 2: "II", 3: "III" } as const;
 
 function StartScreen({ c, onStart }: { c: WorldController; onStart: (choice: NewGameChoice) => void }) {
-  const [deck, setDeck] = useState<DeckKey>("A");
+  const starters = c.catalog.starters;
+  const [starter, setStarter] = useState<StarterId>(starters[0]?.id ?? "green");
   const [difficulty, setDifficulty] = useState<DifficultyName>("standard");
   const [seed, setSeed] = useState("");
   const [name, setName] = useState("You");
@@ -47,9 +41,9 @@ function StartScreen({ c, onStart }: { c: WorldController; onStart: (choice: New
         <div style={{ display: "flex", gap: 24, textAlign: "left", justifyContent: "center" }}>
           <div className="deck-picker">
             <div className="flyout-title">Your colour (starter deck)</div>
-            {STARTERS.map((s) => (
-              <label key={s.deck} className={deck === s.deck ? "picked" : ""}>
-                <input type="radio" checked={deck === s.deck} onChange={() => setDeck(s.deck)} /> {s.label}
+            {starters.map((s) => (
+              <label key={s.id} className={starter === s.id ? "picked" : ""}>
+                <input type="radio" checked={starter === s.id} onChange={() => setStarter(s.id)} /> {COLOUR_NAME[s.color] ?? s.color} — {s.name}
               </label>
             ))}
           </div>
@@ -68,7 +62,7 @@ function StartScreen({ c, onStart }: { c: WorldController; onStart: (choice: New
           </div>
         </div>
         <p>
-          <button className="primary" onClick={() => onStart({ starterDeck: deck, difficulty, name, ...(seed.trim() ? { seed: Number(seed) } : {}) })}>New game</button>{" "}
+          <button className="primary" onClick={() => onStart({ starter, difficulty, name, ...(seed.trim() ? { seed: Number(seed) } : {}) })}>New game</button>{" "}
           {c.hasAutosave() && <button onClick={() => c.continueFromAutosave()}>Continue</button>}{" "}
           <label className="linkish" style={{ cursor: "pointer" }}>
             load a save file
@@ -124,7 +118,7 @@ function ParleyPanel({ c }: { c: WorldController }) {
             <div className="parley-sub">
               <span className={`tier-badge t${tmpl.tier}`}>{TIER_BADGE[tmpl.tier]}</span>
               <span className="colour-id">{tmpl.colors.split("").map((ch) => <i key={ch} className={`colour-pip c-${ch}`} title={ch} />)}</span>
-              {DECKS[tmpl.deck].name} · {tmpl.difficulty} · world life {tmpl.worldLife}
+              {tmpl.difficulty} · world life {tmpl.worldLife}
             </div>
             <div className="parley-sub">Stakes: {stake} card{stake === 1 ? "" : "s"} each (ante). You have {gold} gold.</div>
           </div>
@@ -237,12 +231,12 @@ function TownScreen({ c, pool, oracle }: { c: WorldController; pool: Map<string,
         </div>
         <div className="flyout-title" style={{ marginTop: 8 }}>Sell spares (half price; basics and deck copies excluded)</div>
         <div className="sell-row">
-          {Object.entries(spares(w.player.collection, w.player.activeDeck)).map(([id, n]) => (
+          {Object.entries(spares(w.player.collection, activeDeck(w))).map(([id, n]) => (
             <button key={id} className="sell-chip" onClick={() => c.sell(id)} onMouseEnter={() => setInspect(id)} title={`sell one ${pool.get(id)?.name ?? id}`}>
               {pool.get(id)?.name ?? id} ×{n} · {sellPrice(pool.get(id)!, c.knobs)}g
             </button>
           ))}
-          {Object.keys(spares(w.player.collection, w.player.activeDeck)).length === 0 && <span style={{ fontSize: 11, color: "var(--ink-soft)" }}>no spares to sell</span>}
+          {Object.keys(spares(w.player.collection, activeDeck(w))).length === 0 && <span style={{ fontSize: 11, color: "var(--ink-soft)" }}>no spares to sell</span>}
         </div>
         {notice && <p style={{ fontSize: 12, color: "var(--brass)" }}>{notice}</p>}
         <p>
@@ -262,7 +256,7 @@ function CollectionScreen({ c, pool, oracle }: { c: WorldController; pool: Map<s
   const [filter, setFilter] = useState<"all" | "W" | "U" | "B" | "R" | "G" | "land">("all");
   const [printed, setPrinted] = useState(true); // S13 (Chris): printed by default
   const [inspect, setInspect] = useState<string | null>(null);
-  const inDeck = new Map(w.player.activeDeck.map((e) => [e.cardId, e.count]));
+  const inDeck = new Map(activeDeck(w).map((e) => [e.cardId, e.count]));
   const entries = Object.entries(w.player.collection)
     .filter(([id]) => pool.has(id))
     .filter(([id]) => {
@@ -276,7 +270,7 @@ function CollectionScreen({ c, pool, oracle }: { c: WorldController; pool: Map<s
     <div className="gallery world-collection">
       <div className="gallery-header">
         <b style={{ fontFamily: "var(--serif)" }}>Collection</b>
-        <span style={{ fontSize: 11 }}>{Object.values(w.player.collection).reduce((n, v) => n + v, 0)} cards · active deck {deckSize(w.player.activeDeck)} (read-only; the editor is M6b)</span>
+        <span style={{ fontSize: 11 }}>{Object.values(w.player.collection).reduce((n, v) => n + v, 0)} cards · active deck {deckSize(activeDeck(w))} (read-only; the editor is M6b)</span>
         {(["all", "W", "U", "B", "R", "G", "land"] as const).map((f) => (
           <button key={f} className={filter === f ? "primary" : ""} onClick={() => setFilter(f)}>{f}</button>
         ))}
@@ -471,7 +465,7 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
             previewTarget={screen.kind === "map" ? screen.previewTarget : null}
             encounterAt={screen.kind === "encounter" ? screen.encounter.at : null}
             encounterPortrait={screen.kind === "encounter" ? `/portraits/${screen.tmpl.portraitChip ?? screen.tmpl.portrait}.png` : null}
-            clearedFixed={new Set(w.map.strongholds.map((f, i) => (w.opponents.find((o) => o.id === f.opponentId)?.defeated ? i : -1)).filter((i) => i >= 0))}
+            clearedFixed={new Set(w.map.strongholds.map((f, i) => (w.opponents.find((o) => o.id === f.opponentId)?.gone ? i : -1)).filter((i) => i >= 0))}
             onClickCell={(p) => c.clickCell(p)}
           />
         </div>
@@ -496,8 +490,8 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
         <div className="panel">
           <h3>Journey</h3>
           <div style={{ fontSize: 12 }}>Duels: {w.duels.length} · won {w.duels.filter((d) => d.outcome === "win").length} · lost {w.duels.filter((d) => d.outcome === "loss").length}</div>
-          <div style={{ fontSize: 12 }}>Opponents defeated: {w.opponents.filter((o) => o.defeated).length}/{w.opponents.length}</div>
-          <div style={{ fontSize: 12 }}>Deck: {deckSize(w.player.activeDeck)} cards · basic {w.player.basicLand}</div>
+          <div style={{ fontSize: 12 }}>Opponents defeated: {w.opponents.filter((o) => o.goneReason === "defeated").length} · renown {w.player.renown} · roaming now {w.opponents.filter((o) => !o.gone && o.at).length}</div>
+          <div style={{ fontSize: 12 }}>Deck: {deckSize(activeDeck(w))} cards · basic {w.player.basicLand}</div>
         </div>
         <div className="panel">
           <h3>Lairs</h3>
@@ -505,7 +499,7 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
             const resident = w.opponents.find((o) => o.id === f.opponentId);
             return (
               <div key={i} style={{ fontSize: 12, display: "flex", justifyContent: "space-between", cursor: screen.kind === "map" ? "pointer" : "default" }} title="click to preview the path there" onClick={() => c.clickCell(f.at)}>
-                <span>{f.name ?? f.kind}</span><span style={{ color: resident?.defeated ? "var(--boost)" : "var(--danger)" }}>{resident?.defeated ? "cleared" : `${w.map.regions[f.region]?.name ?? ""} · waiting`}</span>
+                <span>{f.name ?? f.kind}</span><span style={{ color: resident?.gone ? "var(--boost)" : "var(--danger)" }}>{resident?.gone ? "cleared" : `${w.map.regions[f.region]?.name ?? ""} · waiting`}</span>
               </div>
             );
           })}

@@ -71,6 +71,8 @@ The rules engine is a **library with no main loop and no knowledge of the world*
 
 **2026-08-21 — ADR-068 Amendment 2 — mana-ability choices:** a mana ability may carry a bounded choice (Lotus: "add three mana of any one colour" = a five-option DecisionRequest). Still no stack; the choice is a logged action; the enumerator offers one action per colour when the ability is activated deliberately, and auto-pay never activates choice-bearing mana abilities implicitly.
 
+**2026-08-23 — ADR-070 Amendment 3 — mill:** new effect word `mill {count, target|who}`: top N of the library to its owner's graveyard via `moveObject` (per-card zone-change events fire; an empty library mills what it can; **milling is not drawing** — no empty-draw loss from mill). First card: **Cathartic Adept** ({U} Creature — Human Wizard 1/1, "{T}: Target player mills a card" — Scryfall-verified, ALA, Carl Critchlow; note: Human, not Merfolk).
+
 ---
 
 ## 4. Explicit exclusions (written down so we don't drift)

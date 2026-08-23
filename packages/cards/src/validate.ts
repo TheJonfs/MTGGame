@@ -225,6 +225,10 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     }
     if (e.filter !== undefined && e.filter !== "noncreatureNonland") err(`unknown discard filter "${e.filter}"`);
   },
+  mill: (e, err) => {
+    needCount(e, err);
+    needWho(e, err);
+  },
   gainLife: (e, err) => {
     needAmount(e, err);
     needWho(e, err);

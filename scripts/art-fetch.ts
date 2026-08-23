@@ -60,6 +60,7 @@ const OVERRIDES: Record<string, { set: string; collector?: string }> = {
   phyrexian_rager: { set: "apc" }, // ADR-044: oldest-highres resolved to PMEI (magazine promo)
   black_lotus: { set: "lea" }, // S15 (ADR-068): Christopher Rush — the point of the exercise
   demonic_tutor: { set: "lea" }, // S15: Douglas Shuler (planner suggestion; default rule agrees)
+  cathartic_adept: { set: "ala" }, // S16 (brief): Shards of Alara, Carl Critchlow — its only original
 };
 
 async function search(q: string): Promise<Printing[]> {

@@ -115,6 +115,15 @@ Deck B swap (S8): −1 Savannah Lions, −1 Fencing Ace, +2 Cunning Tactician.
 
 Deck swaps (S15, ADR-068): C −1 Forest −1 Centaur Courser +2 Rampant Growth; D −1 Zombify +1 Demonic Tutor; Lotus in no deck.
 
+## Session 16 additions (the one-drops, ADR-070)
+
+| cardId | name | status | vocabulary | prizeOnly | notes |
+|---|---|---|---|---|---|
+| llanowar_elves | Llanowar Elves | implemented | activated({T}) addMana({G}) on a creature | no | Scryfall re-verified ({G} Elf Druid 1/1, "{T}: Add {G}."); first creature mana producer — R-047 summoning-sickness gate; Green starter ×2 |
+| cathartic_adept | Cathartic Adept | implemented | activated({T}, target player) mill(1, target) | no | Scryfall re-verified ({U} Human Wizard 1/1, "{T}: Target player mills a card."); Amendment 3 / R-046; Blue starter ×2; AI mill value 0.1 (nuisance) |
+
+Starters (S16, ADR-069/070): the five authored 30-card mono starters live in `data/world/starters.json` (Green +2 Elves −1 Forest −1 Bears; Blue +2 Adept −1 Island −1 Seer, per ADR-070); slice decks A–E are enemy/ladder infrastructure only.
+
 ## Ceiling anchors (not yet scheduled)
 Ceiling complete as of S5 (see mechanics-manifest §3). Further additions are card batches using existing vocabulary.
 
@@ -143,6 +152,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | bonesplitter | pal03 | 8 | Darrell Riche | ae31d513-7412-4467-b497-a7183ff29a42 |
 | boomerang | leg | 48 | Brian Snõddy | b8286edd-644b-4135-8dca-af97f3920de3 |
 | brute_force | plc | 116 | Wayne Reynolds | 82d43220-1e4e-4b61-9844-51c8bb5dde35 |
+| cathartic_adept | ala | 34 | Carl Critchlow | 8e63626d-f55c-4155-9712-511f591c0614 |
 | centaur_courser | m10 | 172 | Vance Kovacs | 03354b67-7df2-4b4b-a996-a37550e58561 |
 | child_of_night | m10 | 88 | Ash Wood | e1f7a9a7-3679-4a18-a52a-e3a8ab16ad32 |
 | cloudkin_seer | m20 | 54 | Anastasia Ovchinnikova | e2111753-a930-403f-9d94-a86dfcb069da |
@@ -171,6 +181,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | hymn_to_tourach | fem | 38b | Liz Danforth | 8601f082-7e43-44ef-97d0-dead272b7eb4 |
 | island | leb | 291 | Mark Poole | bff33e91-8e52-43f2-b8ae-603b456b08fc |
 | lightning_bolt | lea | 161 | Christopher Rush | d573ef03-4730-45aa-93dd-e45ac1dbaf4a |
+| llanowar_elves | lea | 210 | Anson Maddocks | d4f1cc9e-4f99-4c26-ac1b-8ef069fa8ceb |
 | loxodon_warhammer | mrd | 201 | Jeremy Jarvis | a1a6e375-5c47-4447-9453-adf0038693e3 |
 | man_o_war | vis | 37 | Jon J Muth | 4dbf9bf9-75cd-4b25-a3a1-43b7e029700b |
 | mind_rot | 7ed | 147 | Adam Rex | 5681e85c-79d5-4300-bda6-4ae40bb7d5d4 |

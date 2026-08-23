@@ -10,21 +10,21 @@ describe("knobs registry (manifest principle 5; S12 Part 1)", () => {
     const a = resolveKnobs();
     const b = defaultKnobs();
     expect(a).toEqual(b);
-    a.encounterRatePerStep.wild = 0.99;
-    expect(KNOBS.encounterRatePerStep.default.wild).toBe(0.12);
-    expect(resolveKnobs().encounterRatePerStep.wild).toBe(0.12);
+    a.roamerDensityPer100Cells.wild = 0.99;
+    expect(KNOBS.roamerDensityPer100Cells.default.wild).toBe(2.0);
+    expect(resolveKnobs().roamerDensityPer100Cells.wild).toBe(2.0);
   });
 
   it("precedence: world < difficulty < region < dungeon < opponent < event, whole-value per key", () => {
     const v = resolveKnobs({
       difficulty: { anteCount: 2, shopPriceMultiplier: 1.3 },
-      region: { anteCount: 1, encounterRatePerStep: { civilized: 0.01, approach: 0.02, wild: 0.03 } },
+      region: { anteCount: 1, roamerDensityPer100Cells: { civilized: 0.01, approach: 0.02, wild: 0.03 } },
       opponent: { anteCount: 3 },
       event: { shopPriceMultiplier: 0.5 },
     });
     expect(v.anteCount).toBe(3); // opponent beats region beats difficulty
     expect(v.shopPriceMultiplier).toBe(0.5); // event beats difficulty
-    expect(v.encounterRatePerStep).toEqual({ civilized: 0.01, approach: 0.02, wild: 0.03 }); // whole-value replace
+    expect(v.roamerDensityPer100Cells).toEqual({ civilized: 0.01, approach: 0.02, wild: 0.03 }); // whole-value replace
     expect(v.lossLifePenalty).toBe(1); // untouched keys keep defaults
     // A lower layer cannot undo a higher one by being present with a different key set.
     expect(resolveKnobs({ dungeon: { anteCount: 2 }, opponent: {} }).anteCount).toBe(2);

@@ -4,7 +4,7 @@ import { deckLegal } from "./journey.js";
 import type { KnobValues } from "./knobs.js";
 import type { Town } from "./map.js";
 import { WorldRng } from "./rng.js";
-import type { WorldState } from "./state.js";
+import { activeDeck, type WorldState } from "./state.js";
 
 /**
  * Town shops. S13: stock is a pure function of (world seed, town index, epoch),
@@ -81,12 +81,13 @@ export function buyCard(world: WorldState, town: Town, item: ShopItem, knobs: Kn
   syncShopState(world, town, knobs);
   world.player.gold -= item.price;
   world.player.collection[item.cardId] = (world.player.collection[item.cardId] ?? 0) + 1;
+  world.provenance.push({ cardId: item.cardId, source: "shop", step: world.player.stepsTaken });
   const st = world.shops[town.index]!;
   st.sold[item.cardId] = (st.sold[item.cardId] ?? 0) + 1;
   if (toDeck) {
-    const r = addCopy(world.player.collection, world.player.activeDeck, item.cardId);
+    const r = addCopy(world.player.collection, activeDeck(world), item.cardId);
     if (r.ok && deckLegal(r.deck).ok) {
-      world.player.activeDeck = r.deck;
+      world.decks[world.activeDeckName] = r.deck;
       return { ok: true, price: item.price, addedToDeck: true };
     }
     return { ok: true, price: item.price, addedToDeck: false, note: r.ok ? "deck would be illegal — bought to collection" : `${r.reason} — bought to collection` };
@@ -100,7 +101,7 @@ export type SellOutcome = { ok: true; gold: number } | { ok: false; reason: stri
 export function sellCard(world: WorldState, pool: Map<string, CardDef>, cardId: string, knobs: KnobValues): SellOutcome {
   if (isBasic(cardId)) return { ok: false, reason: "basics have no sale value" };
   const owned = world.player.collection[cardId] ?? 0;
-  const inDeck = deckCount(world.player.activeDeck, cardId);
+  const inDeck = deckCount(activeDeck(world), cardId);
   if (owned - inDeck <= 0) return { ok: false, reason: inDeck > 0 ? "all copies are in your deck — remove one in the editor first" : "you own none" };
   const def = pool.get(cardId);
   if (!def) return { ok: false, reason: "unknown card" };

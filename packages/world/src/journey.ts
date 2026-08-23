@@ -1,17 +1,18 @@
 import type { MatchResult, MatchSpec, Modifier } from "@shandalar/engine";
 import { DECKS } from "@shandalar/sim/decks";
 import type { Catalog, OpponentTemplate } from "./catalog.js";
-import type { OpponentInstance } from "./generate.js";
+import { isTownCell, regionCells, roamerTarget, rollTemplate, type GoneReason, type OpponentInstance } from "./generate.js";
 import type { KnobValues } from "./knobs.js";
-import { findPath, fixedPointAt, idx, regionAt, townAt, type Point, type Town } from "./map.js";
+import { findPath, fixedPointAt, idx, inBounds, manhattan, regionAt, samePoint, townAt, type Point, type Town, type WorldMap } from "./map.js";
 import { WorldRng } from "./rng.js";
-import { deckSize, worldKnobs, type Decklist, type DuelRecord, type WorldState } from "./state.js";
+import { activeDeck, deckSize, worldKnobs, type Decklist, type DuelRecord, type ProvenanceSource, type WorldState } from "./state.js";
 
 /**
  * The headless loop (brief Part 3's logic, S12 Part 2 carving (b)): walk →
- * encounter roll per step → parley (fight / flee / buy off) → MatchSpec from
- * world state → the engine's runMatch (caller) → MatchResult back into the
- * collection, gold, and world life. No UI here; the play client and the
+ * roamers move per step (S16, ADR-071: pursue in sight / flee by renown /
+ * drift; contact = parley) → parley (fight / flee / buy off) → MatchSpec
+ * from world state → the engine's runMatch (caller) → MatchResult back into
+ * the collection, gold, and world life. No UI here; the play client and the
  * acceptance test both drive exactly this API.
  */
 
@@ -21,12 +22,156 @@ export interface Encounter {
   tier: 1 | 2 | 3;
   region: number;
   at: Point;
+  /** S16: the roamer was fleeing you (renown rule) — you caught it. */
+  fleeing: boolean;
 }
 
 export type StepEvent =
   | { type: "moved"; to: Point; steps: number }
   | { type: "arrived"; town: Town }
-  | { type: "encounter"; encounter: Encounter };
+  | { type: "encounter"; encounter: Encounter }
+  /** S16: a region below its density respawned a roamer (out of sight). */
+  | { type: "spawned"; opponentId: string; region: number };
+
+// ---------- S16 roamers: sight, flee, movement ----------
+
+/** Cells on the straight line between a and b (Bresenham, endpoints excluded). */
+export function lineCells(a: Point, b: Point): Point[] {
+  const out: Point[] = [];
+  let x0 = a.x, y0 = a.y;
+  const x1 = b.x, y1 = b.y;
+  const dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0);
+  const sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;
+  let err = dx + dy;
+  for (;;) {
+    if (x0 === x1 && y0 === y1) break;
+    const e2 = 2 * err;
+    if (e2 >= dy) { err += dy; x0 += sx; }
+    if (e2 <= dx) { err += dx; y0 += sy; }
+    if (x0 === x1 && y0 === y1) break;
+    out.push({ x: x0, y: y0 });
+  }
+  return out;
+}
+
+/** The player's effective sight toward a cell: radius minus the rough-terrain
+ * penalty per rough cell on the line of sight (ADR-071's only ambush). */
+export function effectiveSight(map: WorldMap, knobs: KnobValues, from: Point, to: Point): number {
+  const rough = lineCells(from, to).filter((c) => inBounds(map, c) && !map.passable[idx(map, c)]).length;
+  return knobs.sightRadius - rough * knobs.roughSightPenalty;
+}
+
+export function playerSees(world: WorldState, knobs: KnobValues, at: Point): boolean {
+  const d = manhattan(world.player.position, at);
+  return d <= effectiveSight(world.map, knobs, world.player.position, at);
+}
+
+export function isFleeing(tmpl: OpponentTemplate, knobs: KnobValues, renown: number): boolean {
+  return tmpl.tier * knobs.renownFleeFactor[tmpl.tier] < renown;
+}
+
+/** Roamers the player can currently see (map chips; the UI reads this). */
+export function visibleRoamers(world: WorldState, catalog: Catalog, knobs: KnobValues = worldKnobs(world)): { inst: OpponentInstance; tmpl: OpponentTemplate; fleeing: boolean }[] {
+  const out: { inst: OpponentInstance; tmpl: OpponentTemplate; fleeing: boolean }[] = [];
+  for (const o of world.opponents) {
+    if (o.gone || !o.at || o.fixedAt) continue;
+    if (!playerSees(world, knobs, o.at)) continue;
+    const tmpl = opponentTemplate(catalog, o);
+    out.push({ inst: o, tmpl, fleeing: isFleeing(tmpl, knobs, world.player.renown) });
+  }
+  return out;
+}
+
+const DIRS: Point[] = [
+  { x: 1, y: 0 },
+  { x: -1, y: 0 },
+  { x: 0, y: 1 },
+  { x: 0, y: -1 },
+];
+
+/** Legal destination cells for a roamer: in-region, passable, not a town/fixed point (region-bound — S16 ruling). */
+function roamerMoves(map: WorldMap, o: OpponentInstance): Point[] {
+  const out: Point[] = [];
+  for (const d of DIRS) {
+    const q = { x: o.at!.x + d.x, y: o.at!.y + d.y };
+    if (!inBounds(map, q)) continue;
+    const i = idx(map, q);
+    if (!map.passable[i] || map.region[i] !== o.region || isTownCell(map, q)) continue;
+    out.push(q);
+  }
+  return out;
+}
+
+/** One roamer's move for one tick: toward the player if in sight and not
+ * fleeing; away if fleeing and in sight; random drift (or stay) otherwise.
+ * Ties broken by the world RNG (seeded, logged by state). */
+function moveRoamer(world: WorldState, catalog: Catalog, knobs: KnobValues, rng: WorldRng, o: OpponentInstance): void {
+  const map = world.map;
+  const me = world.player.position;
+  const tmpl = opponentTemplate(catalog, o);
+  const moves = roamerMoves(map, o);
+  if (moves.length === 0) return;
+  const dist = manhattan(o.at!, me);
+  if (dist <= knobs.sightRadius) {
+    const fleeing = isFleeing(tmpl, knobs, world.player.renown);
+    const scored = moves.map((q) => ({ q, d: manhattan(q, me) }));
+    const best = fleeing ? Math.max(...scored.map((s) => s.d)) : Math.min(...scored.map((s) => s.d));
+    // A fleeing roamer that can't gain distance holds still rather than stepping into you.
+    if (fleeing && best <= dist) return;
+    const cands = scored.filter((s) => s.d === best).map((s) => s.q);
+    o.at = { ...rng.pick(cands) };
+    return;
+  }
+  // Drift: half the ticks stay put, else a random legal neighbour.
+  if (rng.chance(0.5)) return;
+  o.at = { ...rng.pick(moves) };
+}
+
+/** Advance every roamer by its speed (fractional debt) after a player step. */
+export function tickRoamers(world: WorldState, catalog: Catalog, knobs: KnobValues, rng: WorldRng): void {
+  for (const o of world.opponents) {
+    if (o.gone || !o.at || o.fixedAt) continue;
+    const tmpl = opponentTemplate(catalog, o);
+    o.moveDebt = (o.moveDebt ?? 0) + knobs.roamerSpeed[tmpl.tier];
+    let guard = 0;
+    while (o.moveDebt >= 1 && guard++ < 8) {
+      o.moveDebt -= 1;
+      moveRoamer(world, catalog, knobs, rng, o);
+    }
+  }
+}
+
+/** Respawn (S16): a region below its roamer target gains one roamer every
+ * roamerRespawnSteps[tier] steps, at a seeded in-region cell the player
+ * can't see. Returns the new instance ids. */
+export function respawnRoamers(world: WorldState, catalog: Catalog, knobs: KnobValues, rng: WorldRng): OpponentInstance[] {
+  const spawned: OpponentInstance[] = [];
+  const map = world.map;
+  for (const r of map.regions) {
+    const every = knobs.roamerRespawnSteps[r.tier];
+    if (every <= 0 || world.player.stepsTaken % every !== 0) continue;
+    const live = world.opponents.filter((o) => o.region === r.index && !o.gone && o.at && !o.fixedAt).length;
+    if (live >= roamerTarget(map, r, knobs)) continue;
+    const cells = regionCells(map, r.index).filter((p) => !isTownCell(map, p) && !playerSees(world, knobs, p) && !samePoint(p, world.player.position));
+    if (cells.length === 0) continue;
+    const tmpl = rollTemplate(rng, catalog, r.tier);
+    const id = `opp_r${world.opponents.length}_${world.player.stepsTaken}`;
+    const inst: OpponentInstance = { id, catalogId: tmpl.id, region: r.index, gone: false, at: { ...rng.pick(cells) }, moveDebt: 0 };
+    world.opponents.push(inst);
+    spawned.push(inst);
+  }
+  return spawned;
+}
+
+/** Remove a roamer from the map (any parley outcome — Chris's S16 ruling);
+ * lair residents leave only when defeated. */
+export function removeOpponent(world: WorldState, opponentId: string, reason: GoneReason): void {
+  const inst = world.opponents.find((o) => o.id === opponentId);
+  if (!inst) return;
+  if (inst.fixedAt && reason !== "defeated") return;
+  inst.gone = true;
+  inst.goneReason = reason;
+}
 
 const BASICS = ["plains", "island", "swamp", "mountain", "forest"];
 
@@ -43,9 +188,12 @@ export function encounterKnobs(world: WorldState, catalog: Catalog, enc: Encount
   return worldKnobs(world, { ...extra, ...(tmpl?.knobs ? { opponent: tmpl.knobs } : {}) });
 }
 
-/** Walk a path one cell at a time (each cell = one step = one clock tick);
- * roll an encounter per step by the region's rate; stop on the first
- * encounter (remaining path discarded) or on arrival. Mutates world. */
+/** Walk a path one cell at a time (each cell = one step = one clock tick).
+ * S16: per step — the player moves; a town is safe (roamers still move, but
+ * never onto it); a lair with a resident is a certain encounter; then every
+ * roamer moves (pursue / flee / drift) and respawns roll; contact (a roamer
+ * on the player's cell, whoever stepped) = encounter, which stops the walk
+ * (remaining path discarded). Mutates world. */
 export function advance(
   world: WorldState,
   catalog: Catalog,
@@ -55,38 +203,47 @@ export function advance(
   const events: StepEvent[] = [];
   const rng = new WorldRng(world.rng);
   const knobs = worldKnobs(world, extra);
+  const contactAt = (cell: Point): OpponentInstance | undefined =>
+    world.opponents.find((o) => !o.gone && o.at && !o.fixedAt && samePoint(o.at, cell));
+  const encounterOf = (inst: OpponentInstance, cell: Point): Encounter => {
+    const tmpl = opponentTemplate(catalog, inst);
+    return { opponentId: inst.id, catalogId: inst.catalogId, tier: tmpl.tier, region: regionAt(world.map, cell).index, at: { ...cell }, fleeing: !inst.fixedAt && isFleeing(tmpl, knobs, world.player.renown) };
+  };
   try {
     for (const cell of path) {
       if (!world.map.passable[idx(world.map, cell)]) throw new Error(`advance: cell ${cell.x},${cell.y} is impassable`);
       world.player.position = { ...cell };
       world.player.stepsTaken += 1;
       events.push({ type: "moved", to: { ...cell }, steps: world.player.stepsTaken });
-      const region = regionAt(world.map, cell);
       const town = townAt(world.map, cell);
       if (town) {
-        // Towns are safe nodes: no encounter roll on the town cell itself.
+        // Towns are safe nodes: no contact on the town cell itself (roamers never enter it).
         events.push({ type: "arrived", town });
+        tickRoamers(world, catalog, knobs, rng);
+        for (const sp of respawnRoamers(world, catalog, knobs, rng)) events.push({ type: "spawned", opponentId: sp.id, region: sp.region });
         continue;
       }
-      // A lair with an undefeated resident: the encounter is certain (no roll).
+      // A lair with an undefeated resident: the encounter is certain.
       const lair = fixedPointAt(world.map, cell);
       if (lair?.opponentId) {
         const resident = world.opponents.find((o) => o.id === lair.opponentId);
-        if (resident && !resident.defeated) {
-          const tmpl = opponentTemplate(catalog, resident);
-          events.push({ type: "encounter", encounter: { opponentId: resident.id, catalogId: resident.catalogId, tier: tmpl.tier, region: region.index, at: { ...cell } } });
+        if (resident && !resident.gone) {
+          events.push({ type: "encounter", encounter: encounterOf(resident, cell) });
           break;
         }
-        continue; // a cleared lair is just ground
       }
-      const rate = knobs.encounterRatePerStep[region.tier];
-      if (rng.chance(rate)) {
-        const roster = world.opponents.filter((o) => o.region === region.index && !o.defeated && !o.fixedAt);
-        if (roster.length === 0) continue; // region cleared
-        const inst = rng.pick(roster);
-        const tmpl = opponentTemplate(catalog, inst);
-        const encounter: Encounter = { opponentId: inst.id, catalogId: inst.catalogId, tier: tmpl.tier, region: region.index, at: { ...cell } };
-        events.push({ type: "encounter", encounter });
+      // You stepped onto a roamer (pursuit — the player-initiated contact).
+      const stepped = contactAt(cell);
+      if (stepped) {
+        events.push({ type: "encounter", encounter: encounterOf(stepped, cell) });
+        break;
+      }
+      // Roamers move; one reaching you is contact.
+      tickRoamers(world, catalog, knobs, rng);
+      for (const sp of respawnRoamers(world, catalog, knobs, rng)) events.push({ type: "spawned", opponentId: sp.id, region: sp.region });
+      const reached = contactAt(cell);
+      if (reached) {
+        events.push({ type: "encounter", encounter: encounterOf(reached, cell) });
         break;
       }
     }
@@ -105,15 +262,18 @@ export function walkTo(world: WorldState, catalog: Catalog, dest: Point, extra: 
 
 // ---------- collection / deck bookkeeping ----------
 
-export function addToCollection(world: WorldState, cardIds: string[]): void {
-  for (const id of cardIds) world.player.collection[id] = (world.player.collection[id] ?? 0) + 1;
+export function addToCollection(world: WorldState, cardIds: string[], source: ProvenanceSource = "reward"): void {
+  for (const id of cardIds) {
+    world.player.collection[id] = (world.player.collection[id] ?? 0) + 1;
+    world.provenance.push({ cardId: id, source, step: world.player.stepsTaken });
+  }
 }
 
 /** Remove ante'd-away cards from the collection AND the active deck, then
  * refill the deck with its basic land (Chris's slice ruling: the deck never
  * drops below the floor; the full game forks to the editor instead). */
 export function forfeitCards(world: WorldState, cardIds: string[]): void {
-  const deck = world.player.activeDeck;
+  const deck = activeDeck(world);
   let replaced = 0;
   for (const id of cardIds) {
     world.player.collection[id] = Math.max(0, (world.player.collection[id] ?? 0) - 1);
@@ -188,14 +348,18 @@ export function parley(world: WorldState, catalog: Catalog, enc: Encounter, choi
         const price = buyOffPrice(knobs, enc.tier, tmpl0);
         if (world.player.gold < price) return { type: "refused", reason: `${tmpl0?.kind === "beast" ? "distraction" : "buy-off"} costs ${price} gold; you have ${world.player.gold}` };
         world.player.gold -= price;
+        removeOpponent(world, enc.opponentId, "boughtOff"); // S16: any outcome removes the roamer
         return { type: "boughtOff", goldPaid: price };
       }
       case "flee": {
         // Ante is forfeit either way (manifest); success = escape, failure = fight.
-        const stake = pickAnteFromDeck(rng, world.player.activeDeck, knobs.anteCount);
+        const stake = pickAnteFromDeck(rng, activeDeck(world), knobs.anteCount);
         forfeitCards(world, stake);
         const escaped = rng.chance(knobs.fleeOddsByTier[enc.tier]);
-        if (escaped) return { type: "fled", anteLost: stake };
+        if (escaped) {
+          removeOpponent(world, enc.opponentId, "fled"); // S16: any outcome removes the roamer
+          return { type: "fled", anteLost: stake };
+        }
         // Forced fight after a failed flee: the duel still antes per rules
         // (you've already lost the flee stake — stakes compound, by design).
         return { type: "fleeFailed", anteLost: stake };
@@ -213,14 +377,14 @@ export function prepareDuel(world: WorldState, catalog: Catalog, enc: Encounter,
   const inst = world.opponents.find((o) => o.id === enc.opponentId);
   if (!inst) throw new Error(`no opponent instance ${enc.opponentId}`);
   const tmpl = opponentTemplate(catalog, inst);
-  const legal = deckLegal(world.player.activeDeck);
+  const legal = deckLegal(activeDeck(world));
   if (!legal.ok) throw new Error(`cannot duel: ${legal.reason}`);
   const seed = rng.int(1_000_000_000);
   const modifiers: Modifier[] = [{ type: "startingLife", player: 1, value: tmpl.worldLife }];
   const spec: MatchSpec = {
     seed,
     players: [
-      { name: world.player.name, decklist: world.player.activeDeck.map((e) => ({ ...e })), agent: "human" },
+      { name: world.player.name, decklist: activeDeck(world).map((e) => ({ ...e })), agent: "human" },
       { name: tmpl.name, decklist: DECKS[tmpl.deck].decklist.map((e) => ({ ...e })), agent: `heuristic:${tmpl.difficulty}` },
     ],
     rules: { startingLife: world.player.worldLife, handSize: 7, mulligan: "london", maxTurns: 100, ante: knobs.anteCount },
@@ -240,17 +404,20 @@ export function applyDuelResult(world: WorldState, catalog: Catalog, duel: Prepa
   if (result.winner === 0) {
     outcome = "win";
     anteWon = [...theirs];
-    addToCollection(world, anteWon);
+    addToCollection(world, anteWon, "ante");
     world.player.gold += knobs.goldRewardByTier[duel.encounter.tier];
-    if (inst) inst.defeated = true;
+    world.player.renown += duel.encounter.tier; // design round 1 §5: Σ tier of defeated opponents
+    if (inst) removeOpponent(world, inst.id, "defeated");
   } else if (result.winner === 1) {
     outcome = "loss";
     anteLost = [...mine];
     forfeitCards(world, anteLost);
     world.player.worldLife = Math.max(knobs.lifeFloor, world.player.worldLife - knobs.lossLifePenalty);
     if (world.player.worldLife <= 0) world.gameOver = true;
+    if (inst) removeOpponent(world, inst.id, "lost"); // S16: the roamer leaves either way (lair residents stay)
   } else {
     outcome = "draw"; // stakes return to both sides
+    if (inst) removeOpponent(world, inst.id, "draw");
   }
   const record: DuelRecord = {
     index: world.duels.length,

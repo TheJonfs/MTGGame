@@ -18,6 +18,7 @@ Only where the default would pick something we don't want, or where a card has m
 | Pyroclasm | default (ice) | planner has not seen the Ice Age art recently — implementer: flag if it reads poorly at art_crop |
 | Raging Goblin, Goblin Piker, Wind Drake, Suntail Hawk, Brute Force, Timberland Guide, Rumbling Baloth, Centaur Courser, Cloudkin Seer | default | originals are modern-era commons; no strong preference |
 | Phyrexian Rager | apc | oldest-highres resolves to PMEI (magazine promo); Apocalypse is the real original (ADR-044) |
+| Cathartic Adept | ala | S16: Shards of Alara, Carl Critchlow (brief); Llanowar Elves takes the default rule (expected early Anson Maddocks — verify at fetch) |
 | Everything else | default | |
 
 ## Rendering note
