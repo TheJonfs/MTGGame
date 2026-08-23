@@ -15,6 +15,7 @@
 
 :root {
   --parchment: #ede3cc;
+  --fog: #f6efde; /* S18: unexplored map cells — blank, unmapped paper, a shade paler than the parchment washes */
   --parchment-deep: #e3d5b5;
   --ink: #2b2520;
   --ink-soft: #4a4038;
@@ -433,7 +434,7 @@ button.primary { background: var(--brass); color: var(--parchment); border: 1.5p
 /* S16: minimap — the whole world, bottom-right of the viewport; click to preview a path. */
 .world-minimap {
   position: absolute; right: 10px; bottom: 10px; border: 1.5px solid var(--ink); border-radius: 4px;
-  background: var(--parchment); box-shadow: 1px 2px 8px rgba(0,0,0,0.4); opacity: 0.92; cursor: pointer;
+  background: var(--fog); box-shadow: 1px 2px 8px rgba(0,0,0,0.4); opacity: 0.92; cursor: pointer;
 }
 .world-map .roamer.fleeing { opacity: 0.85; }
 .world-map .region-label { font-family: var(--serif); font-size: 11px; font-weight: 700; fill: var(--ink); opacity: 0.8; letter-spacing: 0.04em; }
@@ -505,3 +506,20 @@ button.primary { background: var(--brass); color: var(--parchment); border: 1.5p
 /* S15: Lotus colour picker + search dialog */
 .color-pick { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; padding: 6px 12px; }
 .decline-search { border: 1.5px dashed var(--ink-soft); border-radius: 6px; padding: 10px 14px; display: flex; align-items: center; font-family: var(--serif); font-weight: 700; }
+
+/* S18: Cinquefoil title plate (world start screen) */
+.world-start { max-width: 720px; }
+.title-plate { display: flex; flex-direction: column; align-items: center; margin-bottom: 14px; }
+.title-rose { width: 120px; height: 120px; border-radius: 50%; overflow: hidden; border: 2px solid var(--ink); box-shadow: 0 2px 10px rgba(43,37,32,0.25); background: var(--parchment); }
+.title-rose img { width: 135%; max-width: none; height: auto; transform: translate(-12.8%, -23%); display: block; }
+.title-name { font-family: var(--serif); font-size: 44px; letter-spacing: 0.12em; margin: 8px 0 0; font-weight: 700; color: var(--ink); text-transform: uppercase; }
+.title-sub { font-family: var(--serif); font-style: italic; font-size: 13px; color: var(--ink-soft); letter-spacing: 0.08em; margin-top: 2px; }
+
+/* S18: in-page deck ops row (replaces prompt() dialogs) + unsaved-draft marker */
+.deck-op-row { display: flex; align-items: center; gap: 8px; padding: 6px 10px; font-size: 12px; background: var(--parchment); border-bottom: 1px solid var(--ink-soft); }
+.deck-op-row button { font-family: var(--sans); background: var(--parchment); border: 1.5px solid var(--ink); border-radius: 5px; padding: 3px 10px; cursor: pointer; font-size: 12px; color: var(--ink); }
+.deck-op-row button.primary { background: var(--brass); color: var(--parchment); }
+.deck-op-row button.danger { background: var(--danger); color: var(--parchment); border-color: var(--danger); }
+.deck-op-row button:disabled { opacity: 0.5; cursor: not-allowed; }
+.deck-op-row input[type="text"], .deck-op-row select { font-size: 12px; padding: 2px 6px; }
+.draft-dirty { font-size: 10px; color: var(--danger); border: 1px solid var(--danger); border-radius: 3px; padding: 0 4px; letter-spacing: 0.04em; }

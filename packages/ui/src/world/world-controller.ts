@@ -18,6 +18,7 @@ import {
   deserializeWorld,
   encounterKnobs,
   findPath,
+  isExplored,
   newWorld,
   opponentTemplate,
   parley,
@@ -186,26 +187,57 @@ export class WorldController {
     return this.world ? regionAt(this.world.map, this.world.player.position).name : "";
   }
 
+  /** S18 fog: a cell is walkable for PLANNING if it is known passable or not yet explored
+   *  (the plan may not use knowledge the player doesn't have — "invitation, not information").
+   *  The walk re-plans when a fogged cell turns out to be rough ground. */
+  private plannable(p: Point): boolean {
+    const w = this.world!;
+    if (w.explored && !isExplored(w.explored, w.map, p)) return true;
+    return w.map.passable[idx(w.map, p)]!;
+  }
+
+  /** Plan a path with the player's knowledge (fog-honest); null if none. */
+  planPath(to: Point): Point[] | null {
+    if (!this.world) return null;
+    return findPath(this.world.map, this.world.player.position, to, (q) => this.plannable(q));
+  }
+
   /** First click previews the BFS path; clicking the previewed cell walks it. */
   clickCell(p: Point): void {
     if (!this.world || this.screen.kind !== "map" || this.screen.walking) return;
     if (this.screen.previewTarget && samePoint(this.screen.previewTarget, p) && this.screen.preview) {
-      void this.walk(this.screen.preview);
+      void this.walk(this.screen.preview, p);
       return;
     }
-    const path = findPath(this.world.map, this.world.player.position, p);
+    const path = this.planPath(p);
     this.screen = { ...this.screen, preview: path, previewTarget: path ? p : null, notice: path ? null : "No path there." };
     this.emit();
   }
 
-  /** Walk a path one cell at a time (each cell one step); encounters interrupt. */
-  async walk(path: Point[]): Promise<void> {
+  /** Walk a path one cell at a time (each cell one step); encounters interrupt.
+   *  S18 fog: if the next cell was planned through fog and turns out impassable, re-plan
+   *  to the destination with what is now known; stop with a notice if no way remains. */
+  async walk(path: Point[], destination?: Point): Promise<void> {
     if (!this.world || this.screen.kind !== "map") return;
     const token = ++this.walkToken;
     this.screen = { ...this.screen, walking: true, notice: null };
     this.emit();
-    for (const [i, cell] of path.entries()) {
+    const dest = destination ?? path[path.length - 1];
+    for (let i = 0; i < path.length; i++) {
+      let cell = path[i]!;
       if (token !== this.walkToken || !this.world) return;
+      if (!this.world.map.passable[idx(this.world.map, cell)]) {
+        const replan = dest ? this.planPath(dest) : null;
+        if (!replan || replan.length === 0) {
+          this.resumePath = null;
+          this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: "Rough ground — no way through from here." };
+          this.emit();
+          return;
+        }
+        path = replan; i = 0; cell = path[0]!;
+        if (this.screen.kind === "map") this.screen = { ...this.screen, preview: path, previewTarget: dest ?? null, notice: "Rough ground ahead — going around." };
+        this.emit();
+      }
       const events = advance(this.world, this.catalog, [cell], this.extraKnobs);
       // Trim the preview to what's left (round 3: the polyline from the
       // current position back to the path's start drew a stray diagonal).
@@ -236,8 +268,8 @@ export class WorldController {
   /** S14 rider: after a parley, re-preview what was left of the walk (one more click walks it). */
   resumeWalk(): void {
     if (!this.world || this.screen.kind !== "map" || !this.resumePath || this.resumePath.length === 0) return;
-    const path = this.resumePath.filter((p) => this.world!.map.passable[idx(this.world!.map, p)]);
-    const target = path[path.length - 1] ?? null;
+    const target = this.resumePath[this.resumePath.length - 1] ?? null;
+    const path = target ? this.planPath(target) ?? [] : [];
     this.screen = { ...this.screen, preview: path, previewTarget: target, notice: target ? `Resume: ${path.length} steps left — click the destination to continue.` : null };
     this.resumePath = null;
     this.emit();

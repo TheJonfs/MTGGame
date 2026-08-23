@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { idx, type Point, type Town, type WorldMap as WorldMapModel } from "@shandalar/world";
+import { idx, isExplored, type Point, type Town, type WorldMap as WorldMapModel } from "@shandalar/world";
 
 /**
  * Ink-and-wash cartography (S13 Part 1, art-direction §0): flat wash per
@@ -12,6 +12,12 @@ import { idx, type Point, type Town, type WorldMap as WorldMapModel } from "@sha
  * whole world (click to preview a path there), visible roamers as portrait
  * chips (fleeing ones marked), and a faint sight diamond (Manhattan radius)
  * so the felt-wrong list can argue about sight with a picture.
+ *
+ * S18 (ADR-072 planner addition 1 + ADR-073): FOG. Unexplored cells are blank
+ * parchment — no wash, no hatching, no borders, no names; towns/lairs/castles
+ * spawn into view on first sight (they are drawn only when explored); roads
+ * render through explored cells plus a one-cell faded stub into fog
+ * ("invitation, not information"). The home region starts explored (data).
  */
 
 const CELL = 24;
@@ -60,6 +66,7 @@ export function WorldMapView({
   clearedFixed,
   roamers = [],
   sightRadius,
+  explored,
   onClickCell,
 }: {
   map: WorldMapModel;
@@ -75,6 +82,8 @@ export function WorldMapView({
   roamers?: RoamerChip[];
   /** S16: the player's sight radius (cells, Manhattan) — drawn as a faint diamond. */
   sightRadius?: number;
+  /** S18: packed explored bits (world.explored). Absent = everything explored (replays, older saves). */
+  explored?: number[] | null;
   onClickCell: (p: Point) => void;
 }) {
   const [hoverTown, setHoverTown] = useState<Town | null>(null);
@@ -86,6 +95,8 @@ export function WorldMapView({
   const H = map.height * CELL;
   const centre = (p: Point) => ({ cx: p.x * CELL + CELL / 2, cy: p.y * CELL + CELL / 2 });
   const inView = (p: Point) => p.x >= origin.x - 1 && p.y >= origin.y - 1 && p.x <= origin.x + vw && p.y <= origin.y + vh;
+  const seen = (p: Point) => !explored || isExplored(explored, map, p);
+  const seenXY = (x: number, y: number) => seen({ x, y });
 
   // Only the window's cells render (the map is 4× the S13 grid at mapScale 2).
   const cells: Point[] = [];
@@ -96,8 +107,9 @@ export function WorldMapView({
   const borders: string[] = [];
   for (const { x, y } of cells) {
     const r = map.region[y * map.width + x];
-    if (x + 1 < map.width && map.region[y * map.width + x + 1] !== r) borders.push(`M${(x + 1) * CELL} ${y * CELL} v${CELL}`);
-    if (y + 1 < map.height && map.region[(y + 1) * map.width + x] !== r) borders.push(`M${x * CELL} ${(y + 1) * CELL} h${CELL}`);
+    if (!seenXY(x, y)) continue;
+    if (x + 1 < map.width && seenXY(x + 1, y) && map.region[y * map.width + x + 1] !== r) borders.push(`M${(x + 1) * CELL} ${y * CELL} v${CELL}`);
+    if (y + 1 < map.height && seenXY(x, y + 1) && map.region[(y + 1) * map.width + x] !== r) borders.push(`M${x * CELL} ${(y + 1) * CELL} h${CELL}`);
   }
   const label = (text: string, at: Point, dy = -CELL) => (
     <g transform={`translate(${centre(at).cx} ${centre(at).cy + dy})`} pointerEvents="none">
@@ -117,7 +129,7 @@ export function WorldMapView({
     for (let y = 0; y < map.height; y++) {
       let start = -1;
       for (let x = 0; x <= map.width; x++) {
-        const here = x < map.width && map.region[y * map.width + x] === reg.index;
+        const here = x < map.width && map.region[y * map.width + x] === reg.index && seenXY(x, y);
         if (here && start === -1) start = x;
         if (!here && start !== -1) { runs.push({ x: start, y, w: x - start }); start = -1; }
       }
@@ -146,36 +158,44 @@ export function WorldMapView({
               y={y * CELL}
               width={CELL}
               height={CELL}
-              fill={washFor(reg.tier, reg.color)}
+              fill={seenXY(x, y) ? washFor(reg.tier, reg.color) : "var(--fog)"}
               onClick={() => onClickCell({ x, y })}
-              style={{ cursor: map.passable[i] ? "pointer" : "not-allowed" }}
+              style={{ cursor: !seenXY(x, y) || map.passable[i] ? "pointer" : "not-allowed" }}
             />
           );
         })}
         {/* rough terrain hatching */}
         {cells.map(({ x, y }) => {
           const i = y * map.width + x;
-          return map.passable[i] ? null : <rect key={`r${i}`} x={x * CELL} y={y * CELL} width={CELL} height={CELL} fill="url(#rough)" pointerEvents="none" />;
+          return map.passable[i] || !seenXY(x, y) ? null : <rect key={`r${i}`} x={x * CELL} y={y * CELL} width={CELL} height={CELL} fill="url(#rough)" pointerEvents="none" />;
         })}
         {/* S16 (ADR-072): roads — a dotted ink line through the centre of road cells */}
-        {map.road && (
-          <path
-            d={cells.filter(({ x, y }) => map.road[y * map.width + x]).map(({ x, y }) => {
-              const c = centre({ x, y });
-              const segs: string[] = [];
-              for (const [dx, dy] of [[1, 0], [0, 1]] as const) {
-                const nx = x + dx, ny = y + dy;
-                if (nx < map.width && ny < map.height && map.road[ny * map.width + nx]) segs.push(`M${c.cx} ${c.cy} L${c.cx + dx * CELL} ${c.cy + dy * CELL}`);
-              }
-              return segs.join(" ");
-            }).join(" ")}
-            stroke="var(--ink)" strokeWidth="2.2" strokeDasharray="1 4" strokeLinecap="round" fill="none" opacity="0.7" pointerEvents="none"
-          />
-        )}
+        {map.road && (() => {
+          // A road segment joins two adjacent road cells. Both explored → drawn; exactly one
+          // explored → a faded half-stub from the explored cell toward the fog (ADR-073); neither → nothing.
+          const full: string[] = [], stub: string[] = [];
+          for (const { x, y } of cells) {
+            if (!map.road[y * map.width + x]) continue;
+            const c = centre({ x, y });
+            for (const [dx, dy] of [[1, 0], [0, 1], [-1, 0], [0, -1]] as const) {
+              const nx = x + dx, ny = y + dy;
+              if (nx < 0 || ny < 0 || nx >= map.width || ny >= map.height || !map.road[ny * map.width + nx]) continue;
+              const a = seenXY(x, y), b = seenXY(nx, ny);
+              if (a && b) { if (dx > 0 || dy > 0) full.push(`M${c.cx} ${c.cy} L${c.cx + dx * CELL} ${c.cy + dy * CELL}`); }
+              else if (a && !b) stub.push(`M${c.cx} ${c.cy} L${c.cx + dx * CELL * 0.8} ${c.cy + dy * CELL * 0.8}`);
+            }
+          }
+          return (
+            <>
+              <path d={full.join(" ")} stroke="var(--ink)" strokeWidth="2.2" strokeDasharray="1 4" strokeLinecap="round" fill="none" opacity="0.7" pointerEvents="none" />
+              <path d={stub.join(" ")} stroke="var(--ink)" strokeWidth="2.2" strokeDasharray="1 4" strokeLinecap="round" fill="none" opacity="0.28" pointerEvents="none" className="road-stub" />
+            </>
+          );
+        })()}
         {/* region borders */}
         <path d={borders.join(" ")} stroke="var(--ink)" strokeWidth="1.6" fill="none" strokeLinecap="round" pointerEvents="none" opacity="0.85" />
         {/* region names at hearts (only when the heart is in view) */}
-        {map.regions.filter((reg) => inView(reg.heart)).map((reg) => {
+        {map.regions.filter((reg) => inView(reg.heart) && seen(reg.heart)).map((reg) => {
           const half = reg.name.length * 3.4;
           const x = Math.max(half + 4, Math.min(W - half - 4, centre(reg.heart).cx));
           const y = Math.max(14, Math.min(H - 6, centre(reg.heart).cy - CELL));
@@ -203,7 +223,7 @@ export function WorldMapView({
           <circle cx={centre(previewTarget).cx} cy={centre(previewTarget).cy} r={CELL * 0.45} fill="none" stroke="var(--brass)" strokeWidth="2.2" pointerEvents="none" />
         )}
         {/* towns */}
-        {map.towns.filter((t) => inView(t.at)).map((t) => {
+        {map.towns.filter((t) => inView(t.at) && seen(t.at)).map((t) => {
           const { cx, cy } = centre(t.at);
           return (
             <g key={t.index} transform={`translate(${cx} ${cy + 1})`} onMouseEnter={() => setHoverTown(t)} onMouseLeave={() => setHoverTown(null)} onClick={() => onClickCell(t.at)} style={{ cursor: "pointer" }}>
@@ -214,7 +234,7 @@ export function WorldMapView({
         })}
         {/* lairs (fixed points) */}
         {map.strongholds.map((f, i) => {
-          if (!inView(f.at)) return null;
+          if (!inView(f.at) || !seen(f.at)) return null;
           const { cx, cy } = centre(f.at);
           const cleared = clearedFixed?.has(i) ?? false;
           const castle = f.kind === "stronghold";
@@ -257,12 +277,12 @@ export function WorldMapView({
         const rect = (e.currentTarget as SVGSVGElement).getBoundingClientRect();
         const x = Math.floor(((e.clientX - rect.left) / rect.width) * map.width);
         const y = Math.floor(((e.clientY - rect.top) / rect.height) * map.height);
-        if (x >= 0 && y >= 0 && x < map.width && y < map.height && map.passable[idx(map, { x, y })]) onClickCell({ x, y });
+        if (x >= 0 && y >= 0 && x < map.width && y < map.height && (!seenXY(x, y) || map.passable[idx(map, { x, y })])) onClickCell({ x, y });
       }}>
         {miniRegions.map(({ reg, runs }) => runs.map((r, i) => <rect key={`${reg.index}-${i}`} x={r.x * MINI} y={r.y * MINI} width={r.w * MINI} height={MINI} fill={washFor(reg.tier, reg.color)} />))}
-        {map.road && map.road.map((r, i) => (r ? <rect key={`rd${i}`} x={(i % map.width) * MINI} y={Math.floor(i / map.width) * MINI} width={MINI} height={MINI} fill="rgba(43,37,32,0.45)" /> : null))}
-        {map.towns.map((t) => <rect key={t.index} x={t.at.x * MINI - MINI * 0.5} y={t.at.y * MINI - MINI * 0.5} width={MINI * 2} height={MINI * 2} fill="var(--ink)" />)}
-        {map.strongholds.map((f, i) => <rect key={`f${i}`} x={f.at.x * MINI - MINI * (f.kind === "stronghold" ? 1 : 0.5)} y={f.at.y * MINI - MINI * (f.kind === "stronghold" ? 1 : 0.5)} width={MINI * (f.kind === "stronghold" ? 3 : 2)} height={MINI * (f.kind === "stronghold" ? 3 : 2)} fill={f.kind === "stronghold" ? "var(--ink)" : "var(--danger)"} stroke={f.kind === "stronghold" ? "var(--brass)" : undefined} strokeWidth={0.8} />)}
+        {map.road && map.road.map((r, i) => (r && seenXY(i % map.width, Math.floor(i / map.width)) ? <rect key={`rd${i}`} x={(i % map.width) * MINI} y={Math.floor(i / map.width) * MINI} width={MINI} height={MINI} fill="rgba(43,37,32,0.45)" /> : null))}
+        {map.towns.filter((t) => seen(t.at)).map((t) => <rect key={t.index} x={t.at.x * MINI - MINI * 0.5} y={t.at.y * MINI - MINI * 0.5} width={MINI * 2} height={MINI * 2} fill="var(--ink)" />)}
+        {map.strongholds.map((f, i) => !seen(f.at) ? null : <rect key={`f${i}`} x={f.at.x * MINI - MINI * (f.kind === "stronghold" ? 1 : 0.5)} y={f.at.y * MINI - MINI * (f.kind === "stronghold" ? 1 : 0.5)} width={MINI * (f.kind === "stronghold" ? 3 : 2)} height={MINI * (f.kind === "stronghold" ? 3 : 2)} fill={f.kind === "stronghold" ? "var(--ink)" : "var(--danger)"} stroke={f.kind === "stronghold" ? "var(--brass)" : undefined} strokeWidth={0.8} />)}
         {roamers.map((r) => <circle key={r.id} cx={(r.at.x + 0.5) * MINI} cy={(r.at.y + 0.5) * MINI} r={MINI} fill={r.fleeing ? "var(--ink-soft)" : "var(--danger)"} />)}
         <rect x={origin.x * MINI} y={origin.y * MINI} width={vw * MINI} height={vh * MINI} fill="none" stroke="var(--brass)" strokeWidth="1.2" />
         <circle cx={(player.x + 0.5) * MINI} cy={(player.y + 0.5) * MINI} r={MINI * 1.4} fill="var(--brass)" stroke="var(--ink)" strokeWidth="0.6" />

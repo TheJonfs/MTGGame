@@ -11,7 +11,7 @@
       "decklist": [
         {
           "cardId": "plains",
-          "count": 13
+          "count": 12
         },
         {
           "cardId": "suntail_hawk",
@@ -39,7 +39,7 @@
         },
         {
           "cardId": "swords_to_plowshares",
-          "count": 1
+          "count": 2
         },
         {
           "cardId": "glorious_anthem",
@@ -94,7 +94,7 @@
         },
         {
           "cardId": "man_o_war",
-          "count": 3
+          "count": 4
         },
         {
           "cardId": "cloudkin_seer",
@@ -110,7 +110,7 @@
         },
         {
           "cardId": "divination",
-          "count": 2
+          "count": 1
         },
         {
           "cardId": "curiosity",
@@ -124,7 +124,7 @@
             "count": 1
           },
           {
-            "cardId": "man_o_war",
+            "cardId": "cloudkin_seer",
             "count": 1
           }
         ]

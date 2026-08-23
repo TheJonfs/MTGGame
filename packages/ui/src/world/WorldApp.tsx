@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CardDef } from "@shandalar/cards";
 import { cardColors } from "@shandalar/cards";
-import { activeDeck, buyOffPrice, deckSize, deckStats, isBasic, sellPrice, spares, BASIC_LANDS, type DifficultyName, type ShopItem, type StarterId } from "@shandalar/world";
+import { activeDeck, buyOffPrice, deckSize, deckStats, isBasic, isExplored, sellPrice, spares, BASIC_LANDS, type DifficultyName, type Point, type ShopItem, type StarterId } from "@shandalar/world";
 import { loadOracle, loadPool, loadWorldCatalog, type OracleEntry, type SavedGame } from "../engine-bridge";
 import { CardFrame } from "../components/CardFrame";
 import { PlayMatch, loadStops } from "../play/PlayMatch";
@@ -37,7 +37,12 @@ function StartScreen({ c, onStart }: { c: WorldController; onStart: (choice: New
   return (
     <div className="loader">
       <div className="box play-setup world-start">
-        <h2 style={{ fontFamily: "var(--serif)", marginTop: 0 }}>Shandalar — a new journey</h2>
+        {/* S18 rider (ADR-073): the Cinquefoil title — the S6 card back's five-petal compass rose is the device. */}
+        <div className="title-plate">
+          <div className="title-rose" aria-hidden="true"><img src="/card-back.png" alt="" /></div>
+          <h1 className="title-name">Cinquefoil</h1>
+          <div className="title-sub">five petals · three rings · one journey</div>
+        </div>
         <div style={{ display: "flex", gap: 24, textAlign: "left", justifyContent: "center" }}>
           <div className="deck-picker">
             <div className="flyout-title">Your colour (starter deck)</div>
@@ -301,9 +306,13 @@ function EditorScreen({ c, pool, oracle }: { c: WorldController; pool: Map<strin
   const [search, setSearch] = useState("");
   const [printed, setPrinted] = useState(true); // S14 round 1 (Chris): printed by default in the editor too
   const [inspect, setInspect] = useState<string | null>(null); // S14 round 2: hover → floating inspector
+  // S18 rider (deck-picker polish): in-page deck ops replace the browser prompt() dialogs.
+  const [op, setOp] = useState<null | { kind: "new" | "duplicate" | "delete" | "switch"; value: string }>(null);
   if (c.screen.kind !== "editor" || !c.world) return null;
   const { draft, name, notice } = c.screen;
   const w = c.world;
+  const savedDeck = activeDeck(w);
+  const dirty = name !== w.activeDeckName || draft.length !== savedDeck.length || draft.some((e) => savedDeck.find((x) => x.cardId === e.cardId)?.count !== e.count);
   const sp = spares(w.player.collection, draft);
   const legality = c.editorLegality();
   const stats = deckStats(pool, draft);
@@ -335,14 +344,15 @@ function EditorScreen({ c, pool, oracle }: { c: WorldController; pool: Map<strin
     <div className="gallery world-editor">
       <div className="gallery-header">
         <b style={{ fontFamily: "var(--serif)" }}>Deck editor</b>
-        {/* S16 (v3): the deck picker — switch / new / duplicate / delete. Switching discards an unsaved draft. */}
-        <select value={w.activeDeckName} title="your saved decks (switching discards an unsaved draft)" onChange={(e) => c.deckSwitch(e.target.value)}>
+        {/* S16 (v3): the deck picker — switch / new / duplicate / delete. S18: in-page ops, dirty-draft guard on switch. */}
+        <select value={w.activeDeckName} title={dirty ? "your saved decks (you have unsaved changes — switching asks first)" : "your saved decks"} onChange={(e) => { const n = e.target.value; if (n === w.activeDeckName) return; if (dirty) setOp({ kind: "switch", value: n }); else c.deckSwitch(n); }}>
           {c.deckNames().map((n) => <option key={n} value={n}>{n}{n === w.activeDeckName ? " (active)" : ""}</option>)}
         </select>
-        <button className="linkish" title="a new deck of 30 basics to build from" onClick={() => { const n = prompt("Name the new deck", `Deck ${c.deckNames().length + 1}`); if (n) c.deckNew(n); }}>new</button>
-        <button className="linkish" title="copy the active deck" onClick={() => { const n = prompt("Name the copy", `${w.activeDeckName} (copy)`); if (n) c.deckDuplicate(n); }}>duplicate</button>
-        <button className="linkish" title="delete a non-active deck" disabled={c.deckNames().length < 2} onClick={() => { const others = c.deckNames().filter((n) => n !== w.activeDeckName); const n = prompt(`Delete which deck? (${others.join(", ")})`, others[0]); if (n) c.deckDelete(n); }}>delete</button>
+        <button className="linkish" title="a new deck of 30 basics to build from" onClick={() => setOp({ kind: "new", value: `Deck ${c.deckNames().length + 1}` })}>new</button>
+        <button className="linkish" title="copy the active deck" onClick={() => setOp({ kind: "duplicate", value: `${w.activeDeckName} (copy)` })}>duplicate</button>
+        <button className="linkish" title="delete a non-active deck" disabled={c.deckNames().length < 2} onClick={() => setOp({ kind: "delete", value: c.deckNames().find((n) => n !== w.activeDeckName) ?? "" })}>delete</button>
         <input type="text" value={name} onChange={(e) => c.editorRename(e.target.value)} style={{ width: 140 }} title="deck name (saved with the deck)" />
+        {dirty && <span className="draft-dirty" title="unsaved changes to this deck">unsaved</span>}
         <span className={legality.ok ? "legal" : "illegal"} style={{ fontSize: 12 }}>
           {stats.size} cards · {stats.lands} lands · {legality.ok ? "legal" : legality.reason}
         </span>
@@ -368,6 +378,33 @@ function EditorScreen({ c, pool, oracle }: { c: WorldController; pool: Map<strin
         <button onClick={() => c.editorReset()} title="discard draft changes (back to the saved deck)">Reset</button>
         <button onClick={() => c.editorClose()}>Cancel</button>
       </div>
+      {op && (
+        <div className="deck-op-row">
+          {op.kind === "switch" ? (
+            <>
+              <span>Switch to <b>{op.value}</b>? Your unsaved changes to <b>{w.activeDeckName}</b> will be discarded.</span>
+              <button className="primary" onClick={() => { c.deckSwitch(op.value); setOp(null); }}>Switch</button>
+              <button onClick={() => setOp(null)}>Keep editing</button>
+            </>
+          ) : op.kind === "delete" ? (
+            <>
+              <span>Delete which deck?</span>
+              <select value={op.value} onChange={(e) => setOp({ ...op, value: e.target.value })}>
+                {c.deckNames().filter((n) => n !== w.activeDeckName).map((n) => <option key={n} value={n}>{n}</option>)}
+              </select>
+              <button className="danger" disabled={!op.value} onClick={() => { if (c.deckDelete(op.value)) setOp(null); }}>Delete</button>
+              <button onClick={() => setOp(null)}>Cancel</button>
+            </>
+          ) : (
+            <>
+              <span>{op.kind === "new" ? "Name the new deck (30 basics to build from):" : `Copy "${w.activeDeckName}" as:`}</span>
+              <input type="text" autoFocus value={op.value} onChange={(e) => setOp({ ...op, value: e.target.value })} onKeyDown={(e) => { if (e.key === "Enter" && op.value.trim()) { if ((op.kind === "new" ? c.deckNew(op.value) : c.deckDuplicate(op.value))) setOp(null); } if (e.key === "Escape") setOp(null); }} style={{ width: 180 }} />
+              <button className="primary" disabled={!op.value.trim() || c.deckNames().includes(op.value.trim())} title={c.deckNames().includes(op.value.trim()) ? "a deck with that name exists" : ""} onClick={() => { if ((op.kind === "new" ? c.deckNew(op.value) : c.deckDuplicate(op.value))) setOp(null); }}>{op.kind === "new" ? "Create" : "Duplicate"}</button>
+              <button onClick={() => setOp(null)}>Cancel</button>
+            </>
+          )}
+        </div>
+      )}
       <FloatingCardInspector def={inspect ? pool.get(inspect) ?? null : null} oracle={oracle} printed={printed} onTogglePrinted={() => setPrinted(!printed)} />
       {notice && <div style={{ color: "var(--danger)", fontSize: 12, padding: "0 6px 6px" }}>{notice}</div>}
       <div className="editor-panes">
@@ -459,6 +496,12 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
   // map / encounter / town share the map underneath
   const w = c.world;
   const screen = c.screen;
+  // S18 fog: the rail only names what the player has seen (a fixed point once its cell is explored;
+  // a region once any of its cells is).
+  const seenCell = (p: Point) => !w.explored || isExplored(w.explored, w.map, p);
+  const seenRegions = new Set<number>();
+  if (w.explored) { for (let i = 0; i < w.map.region.length; i++) if (isExplored(w.explored, w.map, { x: i % w.map.width, y: Math.floor(i / w.map.width) })) seenRegions.add(w.map.region[i]!); }
+  else w.map.regions.forEach((r) => seenRegions.add(r.index));
   return (
     <div className="app world-app">
       <div style={{ display: "flex", flexDirection: "column", minWidth: 0, overflow: "hidden" }}>
@@ -475,6 +518,7 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
             clearedFixed={new Set(w.map.strongholds.map((f, i) => (w.opponents.find((o) => o.id === f.opponentId)?.gone ? i : -1)).filter((i) => i >= 0))}
             roamers={c.visibleRoamers().map((r) => ({ id: r.inst.id, at: r.inst.at!, portrait: `/portraits/${r.tmpl.portraitChip ?? r.tmpl.portrait}.png`, name: r.tmpl.name, tier: r.tmpl.tier, fleeing: r.fleeing }))}
             sightRadius={c.knobs.sightRadius}
+            explored={w.explored}
             onClickCell={(p) => c.clickCell(p)}
           />
         </div>
@@ -498,7 +542,7 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
           {screen.kind === "map" && c.resumePath && c.resumePath.length > 0 && !screen.walking && (
             <button onClick={() => c.resumeWalk()}>Resume walk ({c.resumePath.length} steps)</button>
           )}
-          <span className="seed">{w.map.regions.length} regions · {w.map.towns.length} towns</span>
+          <span className="seed">{seenRegions.size}/{w.map.regions.length} regions seen · {w.map.towns.filter((t) => seenCell(t.at)).length}/{w.map.towns.length} towns found</span>
         </div>
       </div>
       <div className="rail world-rail">
@@ -511,6 +555,7 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
         <div className="panel">
           <h3>Lairs &amp; strongholds</h3>
           {w.map.strongholds.map((f, i) => {
+            if (!seenCell(f.at)) return null;
             const resident = w.opponents.find((o) => o.id === f.opponentId);
             const status = f.kind === "stronghold" ? "castle · sealed" : resident?.gone ? "cleared" : `${w.map.regions[f.region]?.name ?? ""} · waiting`;
             return (
@@ -519,11 +564,11 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
               </div>
             );
           })}
-          {w.map.strongholds.length === 0 && <div style={{ fontSize: 11, color: "var(--ink-soft)" }}>none</div>}
+          {w.map.strongholds.filter((f) => seenCell(f.at)).length === 0 && <div style={{ fontSize: 11, color: "var(--ink-soft)" }}>none found yet</div>}
         </div>
         <div className="panel">
           <h3>Regions</h3>
-          {[...w.map.regions].sort((a, b) => (a.spoke ?? 0) - (b.spoke ?? 0) || ["civilized", "approach", "wild"].indexOf(a.tier) - ["civilized", "approach", "wild"].indexOf(b.tier)).map((r) => (
+          {[...w.map.regions].filter((r) => seenRegions.has(r.index)).sort((a, b) => (a.spoke ?? 0) - (b.spoke ?? 0) || ["civilized", "approach", "wild"].indexOf(a.tier) - ["civilized", "approach", "wild"].indexOf(b.tier)).map((r) => (
             <div key={r.index} style={{ fontSize: 12, display: "flex", justifyContent: "space-between" }}>
               <span>{r.name}</span><span style={{ color: "var(--ink-soft)" }}>{r.tier}</span>
             </div>
