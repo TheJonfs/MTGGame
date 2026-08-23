@@ -2,7 +2,7 @@
 
 Planner-maintained. Oracle text below: rows marked ✔ were planner-search-verified this round; rows marked ⚠ are planner-recalled and **must be treated as unconfirmed until the implementer's Scryfall re-verification** (principle 9 — a mismatch is a blocker to flag, never silently fix).
 
-## Pool additions (with Air Elemental ✔ and Hypnotic Specter ✔ from ADR-074: 32 cards, pool 74→106... [count: 30 below + 2 prior])
+## Pool additions (with Air Elemental ✔ and Hypnotic Specter ✔ from ADR-074: 32 cards, pool 72→104 (+5 tokens = 109 loader entries; corrected per ADR-077 — the earlier "74→106" double-counted the ADR-074 anchors) [count: 30 below + 2 prior])
 
 | Card | Cost | Type | P/T | Text (abbrev.) | V | Vocabulary |
 |---|---|---|---|---|---|---|
