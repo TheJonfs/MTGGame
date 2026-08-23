@@ -7,13 +7,14 @@ import {
   type ResolvedContinuousEffect,
   type ResolvedTarget,
   type Scope,
+  type ValueRef,
   type Who,
 } from "@shandalar/cards";
 import type { Action } from "./actions.js";
 import type { EngineCtx } from "./ctx.js";
 import { isLegalTarget } from "./targeting.js";
-import { dealDamage, drawCard, gainLife, loseLife } from "./ops.js";
-import { createObject, moveObject } from "./zones.js";
+import { dealDamage, discardCard, drawCard, gainLife, loseLife } from "./ops.js";
+import { createObject, moveBatchToGraveyard, moveObject } from "./zones.js";
 import { getObject, nextTimestamp, opponentOf, type PlayerId, type StackItem } from "./state.js";
 import { characteristics, isCreature } from "./characteristics.js";
 
@@ -58,7 +59,7 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
       const t = item.targets[i];
       const spec = item.targetSpecs[i];
       if (!t || !spec) return null;
-      return isLegalTarget(ctx, spec, t, controller) ? t : null;
+      return isLegalTarget(ctx, spec, t, controller, item.sourceId ?? item.objectId) ? t : null;
     },
 
     players(who: Who): PlayerId[] {
@@ -84,14 +85,24 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
       }
     },
 
-    objectsInScope(scope: Scope): string[] {
+    objectsInScope(scope: Scope, params: { subtype?: string; cardType?: string; other?: boolean } = {}): string[] {
+      // ADR-020 params on resolved effects (S17: Aristocrat's "each Vampire you control").
+      const sourceId = item.sourceId ?? item.objectId;
+      const narrow = (ids: string[]) =>
+        ids.filter((id) => {
+          if (params.other && id === sourceId) return false;
+          const def = ctx.defs.def(getObject(ctx.state, id).cardId);
+          if (params.subtype && !(def.subtypes ?? []).includes(params.subtype)) return false;
+          if (params.cardType && !def.types.includes(params.cardType as never)) return false;
+          return true;
+        });
       switch (scope) {
         case "creaturesYouControl":
-          return ctx.state.battlefield.filter(
+          return narrow(ctx.state.battlefield.filter(
             (id) => getObject(ctx.state, id).controller === controller && isCreature(ctx, id),
-          );
+          ));
         case "allCreatures":
-          return ctx.state.battlefield.filter((id) => isCreature(ctx, id));
+          return narrow(ctx.state.battlefield.filter((id) => isCreature(ctx, id)));
         case "attached":
           throw new Error(`scope "attached" is only valid on static abilities`);
         case "self": {
@@ -110,9 +121,34 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
     amount(a: Amount): number {
       if (a === "X") return item.x;
       if (typeof a === "number") return a;
-      // ValueRef (ADR-028): last known information from the resolution snapshot.
-      const snap = lki[a.target];
-      return snap ? snap.power : 0;
+      if (a.ref === "targetPower") {
+        // ValueRef (ADR-028): last known information from the resolution snapshot.
+        const snap = lki[a.target];
+        return snap ? snap.power : 0;
+      }
+      // A4 counting refs: evaluated NOW, from the controller's point of view (608.2h: Tendrils' X at resolution).
+      return evaluateValueRef(ctx, a, controller, item.sourceId ?? item.objectId);
+    },
+
+    targetMatches(cond: { target: number; subtype?: string; cardType?: string }): boolean {
+      const t = item.targets[cond.target];
+      if (!t || t.kind !== "object") return false;
+      const obj = ctx.state.objects[t.id];
+      if (!obj || obj.zone !== "battlefield") return false;
+      const ch = characteristics(ctx, t.id);
+      if (cond.subtype && !ch.subtypes.includes(cond.subtype)) return false;
+      if (cond.cardType && !ch.types.includes(cond.cardType)) return false;
+      return true;
+    },
+
+    exileThenReturn(objectId: string): void {
+      // A8 blink: exile (not a death), then back under the effect controller's
+      // control as a NEW object — ETB triggers fire from the second move.
+      const obj = ctx.state.objects[objectId];
+      if (!obj || obj.zone !== "battlefield") return;
+      const exiled = moveObject(ctx, objectId, "exile");
+      if (!exiled || !ctx.state.objects[exiled]) return; // tokens cease to exist in exile
+      moveObject(ctx, exiled, "battlefield", { controller });
     },
 
     dealDamage(target: ResolvedTarget, amount: number): void {
@@ -177,12 +213,13 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
  * (CR 701.19) through the logged game RNG, so replay reproduces it. */
 function searchOp(ctx: EngineCtx, requester?: EffectRequester) {
   return {
-    async searchLibrary(playerNum: number, predicate: "basicLand" | "anyCard", to: "hand" | "battlefield", entersTapped: boolean): Promise<void> {
+    async searchLibrary(playerNum: number, predicate: "basicLand" | "anyCard" | `subtype:${string}`, to: "hand" | "battlefield", entersTapped: boolean): Promise<void> {
       const player = playerNum as PlayerId;
       const p = ctx.state.players[player];
       const matches = p.library.filter((id) => {
         const def = ctx.defs.def(getObject(ctx.state, id).cardId);
         if (predicate === "anyCard") return true;
+        if (predicate.startsWith("subtype:")) return (def.subtypes ?? []).includes(predicate.slice("subtype:".length)); // ADR-076: Goblin Matron
         return def.types.includes("Land") && (def.supertypes ?? []).includes("Basic");
       });
       const seen = new Set<string>();
@@ -252,6 +289,14 @@ function sharedOps(ctx: EngineCtx) {
       moveObject(ctx, objectId, "graveyard");
     },
 
+    destroyMany(objectIds: string[]): void {
+      const ids = objectIds.filter((id) => {
+        const obj = ctx.state.objects[id];
+        return !!obj && obj.zone === "battlefield" && !characteristics(ctx, id).keywords.has("indestructible");
+      });
+      moveBatchToGraveyard(ctx, ids);
+    },
+
     tap(objectId: string): void {
       const obj = ctx.state.objects[objectId];
       if (!obj || obj.zone !== "battlefield" || obj.tapped) return;
@@ -305,7 +350,7 @@ function discardOp(ctx: EngineCtx, caster: PlayerId, requester?: EffectRequester
 
         if (mode === "random") {
           const idx = ctx.rng.int(hand.length, "discard");
-          moveObject(ctx, hand[idx]!, "graveyard");
+          discardCard(ctx, hand[idx]!);
           continue;
         }
 
@@ -336,7 +381,7 @@ function discardOp(ctx: EngineCtx, caster: PlayerId, requester?: EffectRequester
           if (pick.type !== "discard") throw new Error("expected discard action");
           pickId = pick.objectId;
         }
-        moveObject(ctx, pickId, "graveyard");
+        discardCard(ctx, pickId);
       }
     },
   };
@@ -398,6 +443,12 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
     addContinuousEffect(): void {
       throw new Error("initialization effects cannot create continuous effects (no source to bound them)");
     },
+    targetMatches(): boolean {
+      return false; // no targets at initialization
+    },
+    exileThenReturn(): void {
+      throw new Error("initialization effects cannot blink");
+    },
     addMana(): void {
       throw new Error("initialization effects cannot add mana (pools empty before turn 1)");
     },
@@ -405,4 +456,32 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
     ...discardOp(ctx, player), // random mode works; choice modes throw without a requester
     ...searchOp(ctx), // throws if a match exists (no agent at initialization); no-match shuffles
   };
+}
+
+
+/** A4: counting value refs, evaluated live. `count`/`maxPower` scan battlefield permanents
+ * from `controller`'s point of view; `graveyardCount` counts cards. Used by resolved effects
+ * (Tendrils), statics (Gaean Wurm, Werebear's threshold) and cost reduction (Baru). */
+export function evaluateValueRef(ctx: EngineCtx, ref: Exclude<ValueRef, { ref: "targetPower" }>, controller: PlayerId, sourceId?: string): number {
+  if (ref.ref === "graveyardCount") {
+    const who = ref.who === "you" ? controller : opponentOf(controller);
+    return ctx.state.players[who].graveyard.length;
+  }
+  const pred = ref.predicate;
+  const ids = ctx.state.battlefield.filter((id) => {
+    const obj = getObject(ctx.state, id);
+    const want = pred.controller ?? "you";
+    if (want === "you" && obj.controller !== controller) return false;
+    if (want === "opponent" && obj.controller === controller) return false;
+    if (pred.other && sourceId && id === sourceId) return false;
+    const def = ctx.defs.def(obj.cardId);
+    if (pred.cardType && !def.types.includes(pred.cardType)) return false;
+    if (pred.subtype && !(def.subtypes ?? []).includes(pred.subtype)) return false;
+    if (pred.attacking && !ctx.state.combat.attackers.includes(id)) return false;
+    return true;
+  });
+  if (ref.ref === "count") return ids.length;
+  let best = 0;
+  for (const id of ids) best = Math.max(best, characteristics(ctx, id).power);
+  return best;
 }

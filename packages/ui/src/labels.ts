@@ -26,7 +26,7 @@ export function actionLabel(state: GameState, pool: Map<string, CardDef>, a: Act
   switch (a.type) {
     case "pass": return "Pass";
     case "playLand": return `Play ${name(a.objectId)}`;
-    case "castSpell": return `Cast ${name(a.objectId)}${a.x !== undefined ? ` (X=${a.x})` : ""}${targets(a.targets)}`;
+    case "castSpell": return `Cast ${name(a.objectId)}${a.x !== undefined ? ` (X=${a.x})` : ""}${a.mode !== undefined ? ` [mode ${a.mode + 1}]` : ""}${targets(a.targets)}`;
     case "activateAbility": return `Activate ${name(a.objectId)}${a.x !== undefined ? ` (X=${a.x})` : ""}${targets(a.targets)}`;
     case "tapForMana": return `Tap ${name(a.objectId)} for mana`;
     case "declareAttacker": return `Attack with ${name(a.objectId)}`;
@@ -46,6 +46,7 @@ export function actionLabel(state: GameState, pool: Map<string, CardDef>, a: Act
     case "discard": return `Discard ${name(a.objectId)}`;
     case "searchPick": return `Take ${name(a.objectId)} from your library`;
     case "declineSearch": return "Find nothing (shuffle)";
+    case "chooseMode": return `Mode: ${a.label}`;
   }
 }
 

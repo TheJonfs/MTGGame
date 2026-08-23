@@ -91,6 +91,8 @@ export interface StackItem {
   isEquip?: boolean;
   /** "You may" trigger (ADR-027): controller is asked yes/no on resolution. */
   isOptionalTrigger?: boolean;
+  /** A6: the chosen mode index of a modal spell/trigger (display; effects/targetSpecs already reflect it). */
+  mode?: number;
 }
 
 /** A continuous effect created by a resolved spell/ability. Statics are computed live, not stored. */

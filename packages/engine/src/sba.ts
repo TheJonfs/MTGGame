@@ -3,7 +3,7 @@ import { characteristics, isCreature } from "./characteristics.js";
 import { syncControl } from "./control.js";
 import type { EngineCtx } from "./ctx.js";
 import { getObject, type PlayerId } from "./state.js";
-import { moveObject } from "./zones.js";
+import { moveBatchToGraveyard, moveObject } from "./zones.js";
 
 /** The one decision SBAs can require: which legendary to keep (704.5j, ADR-007). */
 export type SbaRequester = (player: PlayerId, purpose: "legendRule", actions: Action[]) => Promise<Action>;
@@ -88,9 +88,7 @@ export async function runSBAs(ctx: EngineCtx, requester?: SbaRequester): Promise
       obj.counters["+1/+1"]! -= n;
       obj.counters["-1/-1"]! -= n;
     }
-    for (const id of new Set(toGraveyard)) {
-      if (state.objects[id]) moveObject(ctx, id, "graveyard");
-    }
+    moveBatchToGraveyard(ctx, [...new Set(toGraveyard)]); // one batch: simultaneous deaths see each other (ADR-076)
     if (toGraveyard.length > 0 || annihilations.length > 0) changed = true;
 
     // Legend rule (704.5j): per controller, same name, keep one. The keep is

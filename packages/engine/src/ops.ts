@@ -79,6 +79,18 @@ export function drawCard(ctx: EngineCtx, player: PlayerId): void {
   ctx.bus.emit("CARD_DRAWN", { player });
 }
 
+/** ADR-076: discard = hand → graveyard + a DISCARD event carrying the card's types (Waste Not). One entry point for
+ * effects (Hymn/Duress/Mind Rot/Specter), cleanup, activation costs (Bouncer) and cycling (A5). */
+export function discardCard(ctx: EngineCtx, objectId: string): void {
+  const obj = ctx.state.objects[objectId];
+  if (!obj || obj.zone !== "hand") return;
+  const player = obj.owner;
+  const cardId = obj.cardId;
+  const types = [...ctx.defs.def(cardId).types];
+  moveObject(ctx, objectId, "graveyard");
+  ctx.bus.emit("DISCARD", { player, objectId, cardId, types });
+}
+
 export function gainLife(ctx: EngineCtx, player: PlayerId, amount: number): void {
   const p = ctx.state.players[player];
   p.life += amount;

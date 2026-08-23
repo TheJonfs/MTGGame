@@ -183,8 +183,10 @@ function applyEffect(
 ): number {
   const me = view.you;
   const opp = me === 0 ? 1 : 0;
-  const amt = (a: number | "X" | { ref: string; target: number }): number =>
-    typeof a === "number" ? a : a === "X" ? x : 0;
+  // Value refs (ADR-028/A4): targetPower and counting refs aren't modelled — a count-ref amount
+  // predicts as a small fixed number (Tendrils ≈ "some") rather than zero.
+  const amt = (a: number | "X" | { ref: string }): number =>
+    typeof a === "number" ? a : a === "X" ? x : a.ref === "count" || a.ref === "graveyardCount" ? 3 : 0;
   const objAt = (i: number) => {
     const t = targets[i];
     return t?.kind === "object" ? view.battlefield.find((o) => o.id === t.id) : undefined;
@@ -301,6 +303,7 @@ function applyEffect(
       return 0;
     }
     case "addCounters": {
+      if (e.target === undefined) return 0.3 * e.count; // scope form (Aristocrat): modest team value
       const o = objAt(e.target);
       if (o && o.power !== null && o.toughness !== null) {
         const delta = e.kind === "+1/+1" ? e.count : -e.count;
@@ -332,8 +335,8 @@ function applyEffect(
       if (e.target === undefined) return e.duration === "UNTIL_END_OF_TURN" ? 0.2 : 0.3;
       const o = objAt(e.target);
       if (!o || o.power === null || o.toughness === null) return 0.1;
-      const pv = e.power === "X" ? x : e.power === "-X" ? -x : e.power;
-      const tv = e.toughness === "X" ? x : e.toughness === "-X" ? -x : e.toughness;
+      const pv = e.power === "X" ? x : e.power === "-X" ? -x : typeof e.power === "number" ? e.power : 1;
+      const tv = e.toughness === "X" ? x : e.toughness === "-X" ? -x : typeof e.toughness === "number" ? e.toughness : 1;
       o.power += pv;
       o.toughness += tv;
       if (o.toughness <= 0) removeObject(view, o.id);

@@ -5,6 +5,7 @@
  * Nothing here re-implements a single rule.
  */
 import { catalogFrom as catalogFromJson } from "@shandalar/world";
+import { asCardDef } from "@shandalar/cards";
 import { EventBus, IdGen, NullLog, SeededRng, type ActionLogEntry } from "@shandalar/core";
 import { cardColors, type CardDef } from "@shandalar/cards";
 import {
@@ -32,7 +33,7 @@ export function loadPool(): Map<string, CardDef> {
   >;
   const pool = new Map<string, CardDef>();
   for (const mod of Object.values(modules)) {
-    const def = mod.default;
+    const def = asCardDef(mod.default); // A5: compiles `cycling` like the node loader does
     pool.set(def.id, def);
   }
   return pool;

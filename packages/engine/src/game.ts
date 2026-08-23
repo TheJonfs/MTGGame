@@ -14,11 +14,11 @@ import {
 import type { EngineCtx } from "./ctx.js";
 import { expireEndOfTurnEffects } from "./characteristics.js";
 import { makeEffectContext } from "./effect-context.js";
-import { attackerChoices, blockerChoices, bottomChoices, discardChoices, legalActions } from "./enumerator.js";
+import { attackerChoices, blockerChoices, bottomChoices, discardChoices, effectiveAbilityCost, legalActions } from "./enumerator.js";
 import type { GameEventMap } from "./events.js";
 import { autoPay, emptyManaPools, tapForMana } from "./mana.js";
 import { applyModifiers, type Modifier } from "./modifiers.js";
-import { drawCard } from "./ops.js";
+import { discardCard, drawCard } from "./ops.js";
 import { runSBAs } from "./sba.js";
 import { sacrificeCandidates } from "./sacrifice.js";
 import {
@@ -52,7 +52,11 @@ export type RequestPurpose =
   | "bottomCards"
   | "discard"
   /** ADR-068 Amendment 1: pick a matching library card (request carries the candidates as `revealed`) or decline. */
-  | "searchLibrary";
+  | "searchLibrary"
+  /** ADR-075 A6: pick a mode for a modal trigger as it goes on the stack (spells pick at cast — one castSpell action per mode). */
+  | "chooseMode"
+  /** ADR-076: pick the card(s) to discard as an activation cost (Waterfront Bouncer). */
+  | "discardCost";
 
 /** ADR-048: identity + pending effects of the thing asking for targets, so
  * agents can classify (rule 8 / evaluation) without guessing the source. */
@@ -285,6 +289,7 @@ export class Game {
         break; // no priority (CR 502.4)
       }
       case "UPKEEP":
+        this.ctx.bus.emit("UPKEEP_BEGIN", { player: active }); // ADR-076: upkeep triggers (Bitterblossom)
         await this.priorityRound();
         break;
       case "DRAW": {
@@ -391,7 +396,7 @@ export class Game {
     while (state.players[active].hand.length > this.rules.handSize) {
       const chosen = await this.request(active, "discard", discardChoices(this.ctx, active));
       if (chosen.type !== "discard") throw new Error("expected discard");
-      moveObject(this.ctx, chosen.objectId, "graveyard");
+      discardCard(this.ctx, chosen.objectId);
     }
     for (const id of state.battlefield) getObject(state, id).damage = 0;
     expireEndOfTurnEffects(state);
@@ -466,14 +471,27 @@ export class Game {
       case "castSpell": {
         const obj = getObject(state, action.objectId);
         const def = this.ctx.defs.def(obj.cardId);
-        const specs = def.targets ?? [];
+        // A6: a modal spell's mode was chosen at cast (one action per mode); its targets/effects are the mode's.
+        const mode = def.modes ? def.modes[action.mode ?? -1] : undefined;
+        if (def.modes && !mode) throw new Error("modal spell cast without a legal mode");
+        const specs = mode ? (mode.targets ?? []) : (def.targets ?? []);
+        const effects = mode ? mode.effects : (def.spellEffect ?? []);
         action.targets.forEach((t, i) => {
           const spec = specs[i];
-          if (!spec || !isLegalTarget(this.ctx, spec, t, player)) {
+          if (!spec || !isLegalTarget(this.ctx, spec, t, player, action.objectId)) {
             throw new Error(`castSpell with illegal target ${JSON.stringify(t)}`);
           }
         });
         autoPay(this.ctx, player, parseManaCost(def.manaCost), action.x ?? 0);
+        // A7: additional cost — paid at 601.2h like an ability's sacrifice; a DIES trigger pends and orders normally.
+        if (def.additionalCost?.sacrifice) {
+          const candidates = sacrificeCandidates(this.ctx, player, action.objectId, def.additionalCost.sacrifice.predicate);
+          if (candidates.length === 0) throw new Error("additional cost: no legal sacrifice");
+          const options: Action[] = candidates.map((objectId) => ({ type: "sacrifice", objectId }));
+          const pick = options.length === 1 ? options[0]! : await this.request(player, "chooseSacrifice", options, undefined, { cardId: obj.cardId, effects });
+          if (pick.type !== "sacrifice") throw new Error("expected sacrifice");
+          moveObject(this.ctx, pick.objectId, "graveyard");
+        }
         const newId = moveObject(this.ctx, action.objectId, "stack");
         if (!newId) throw new Error("spell object vanished moving to stack");
         state.stack.push({
@@ -484,8 +502,9 @@ export class Game {
           controller: player,
           targetSpecs: specs,
           targets: action.targets,
-          effects: def.spellEffect ?? [],
+          effects,
           x: action.x ?? 0,
+          ...(action.mode !== undefined ? { mode: action.mode } : {}),
         });
         this.ctx.bus.emit("SPELL_CAST", { cardId: obj.cardId, controller: player });
         break;
@@ -499,12 +518,44 @@ export class Game {
         const def = this.ctx.defs.def(obj.cardId);
         const ability = def.abilities?.[action.abilityIndex];
         if (!ability || ability.kind !== "activated") throw new Error("no such activated ability");
+        const zone = ability.zone ?? "battlefield";
+        if (obj.zone !== zone) throw new Error(`ability of ${obj.cardId} is activatable from the ${zone}, not the ${obj.zone} (A5)`);
         if (ability.cost.tap) {
           if (obj.tapped) throw new Error("tap cost on tapped object");
           obj.tapped = true;
           this.ctx.bus.emit("TAPPED", { objectId: obj.id });
         }
-        if (ability.cost.mana) autoPay(this.ctx, player, parseManaCost(ability.cost.mana), action.x ?? 0);
+        // ADR-076: reduced costs (Baru) — the enumerator priced the same effective cost.
+        const manaCost = effectiveAbilityCost(this.ctx, player, ability, obj.id);
+        if (manaCost) autoPay(this.ctx, player, manaCost, action.x ?? 0);
+        // ADR-076: discard N as a cost (Waterfront Bouncer) — chooser's pick, one request per card, deduped by cardId.
+        for (let n = 0; n < (ability.cost.discard ?? 0); n++) {
+          const hand = state.players[player].hand.filter((id) => id !== obj.id);
+          const seen = new Set<string>();
+          const options: Action[] = [];
+          for (const id of hand) {
+            const cid = getObject(state, id).cardId;
+            if (seen.has(cid)) continue;
+            seen.add(cid);
+            options.push({ type: "discard", objectId: id });
+          }
+          if (options.length === 0) throw new Error("discard cost with an empty hand");
+          const pick = options.length === 1 ? options[0]! : await this.request(player, "discardCost", options, undefined, { cardId: obj.cardId, effects: ability.effects });
+          if (pick.type !== "discard") throw new Error("expected discard");
+          discardCard(this.ctx, pick.objectId);
+        }
+        // A5: self-costs of zone abilities — cycling discards the card, Mother Bear exiles herself.
+        // The ability's source becomes the card's new identity (its effects never reference it).
+        let sourceId = obj.id;
+        if (ability.cost.discardSelf) {
+          const before = obj.id;
+          discardCard(this.ctx, before);
+          sourceId = before;
+        }
+        if (ability.cost.exileSelf) {
+          const moved = moveObject(this.ctx, obj.id, "exile");
+          sourceId = moved ?? obj.id;
+        }
         // Sacrifice is paid before the ability is on the stack (CR 601.2h,
         // 602.2b); a resulting DIES trigger pends and is ordered normally.
         if (ability.cost.sacrifice) {
@@ -534,7 +585,7 @@ export class Game {
         state.stack.push({
           id: this.ctx.ids.next("stk"),
           kind: "ability",
-          sourceId: obj.id,
+          sourceId,
           sourceCardId: obj.cardId,
           controller: player,
           targetSpecs: ability.targets ?? [],
@@ -560,7 +611,7 @@ export class Game {
     // Re-check targets; if the item has targets and ALL are now illegal, it
     // fizzles — "countered by game rules" (CR 608.2b, R-004).
     if (item.targetSpecs.length > 0) {
-      const anyLegal = item.targets.some((t, i) => isLegalTarget(this.ctx, item.targetSpecs[i]!, t, item.controller));
+      const anyLegal = item.targets.some((t, i) => isLegalTarget(this.ctx, item.targetSpecs[i]!, t, item.controller, item.sourceId ?? item.objectId));
       if (!anyLegal) {
         this.ctx.log.append({ t: "EVENT", name: "FIZZLE", payload: { cardId: item.sourceCardId } });
         if (item.objectId) moveObject(this.ctx, item.objectId, "graveyard");

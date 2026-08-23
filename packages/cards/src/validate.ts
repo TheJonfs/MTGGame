@@ -6,6 +6,7 @@ import {
   SCOPES,
   TARGET_PREDICATES,
   TRIGGER_EVENTS,
+  type ActivatedAbilityDef,
   type CardDef,
   type CardType,
   type Effect,
@@ -16,6 +17,8 @@ const CARD_TYPES: readonly CardType[] = ["Land", "Creature", "Instant", "Sorcery
 const DURATIONS = ["WHILE_SOURCE_ON_BATTLEFIELD", "UNTIL_END_OF_TURN", "UNTIL_SOURCE_LEAVES"];
 const WHOS = ["you", "opponent", "eachPlayer", "target", "controllerOfTarget"];
 const ZONES = ["battlefield", "stack", "any", "graveyard"];
+const ABILITY_ZONES = ["battlefield", "hand", "graveyard"];
+const SEARCH_PREDICATE = /^(basicLand|anyCard|subtype:[A-Za-z]+)$/;
 
 export interface ValidationResult {
   errors: string[];
@@ -94,9 +97,33 @@ export function validateCard(raw: unknown): ValidationResult {
     if (!types.includes("Instant") && !types.includes("Sorcery")) {
       err(`spellEffect on a non-Instant/Sorcery`);
     }
+    if (raw.modes !== undefined) err(`a modal spell carries "modes", not "spellEffect" (A6)`);
     validateEffects(raw.spellEffect, declaredTargets.length, err, warnings, id);
+  } else if (raw.modes !== undefined) {
+    // A6: modal spell — each mode carries its own targets + effects.
+    if (!types.includes("Instant") && !types.includes("Sorcery")) err(`"modes" on a non-Instant/Sorcery`);
+    if (raw.targets !== undefined) err(`a modal spell declares targets per mode, not at card level (A6)`);
+    validateModes(raw.modes, err, warnings, id);
   } else if (types.includes("Instant") || types.includes("Sorcery")) {
     err(`Instant/Sorcery missing spellEffect`);
+  }
+  // A7: additional spell cost (Goblin Grenade).
+  if (raw.additionalCost !== undefined) {
+    if (!types.includes("Instant") && !types.includes("Sorcery")) err(`additionalCost is only for Instant/Sorcery (A7)`);
+    const ac = isRecord(raw.additionalCost) ? raw.additionalCost : {};
+    const pred = isRecord(ac.sacrifice) ? ac.sacrifice.predicate : undefined;
+    if (typeof pred !== "string" || !/^(creature(\.subtype:[A-Za-z]+)?)$/.test(pred)) err(`additionalCost.sacrifice.predicate must be "creature" or "creature.subtype:<Subtype>" (A7)`);
+  }
+  // A5: cycling {cost} — compiled into a hand-zone ability by the loader.
+  if (raw.cycling !== undefined) {
+    if (typeof raw.cycling !== "string") err(`"cycling" must be a mana cost string (A5)`);
+    else {
+      try {
+        parseManaCost(raw.cycling);
+      } catch (e) {
+        err((e as Error).message);
+      }
+    }
   }
 
   if (raw.abilities !== undefined) {
@@ -122,6 +149,45 @@ function validateTargetSpec(t: unknown, err: (m: string) => void): void {
     err(`unknown target predicate "${t.predicate}"`);
   }
   if (!ZONES.includes(t.zone as string)) err(`unknown target zone "${t.zone}"`);
+  // ADR-076 filters.
+  for (const k of ["withKeyword", "withoutKeyword"]) {
+    if (t[k] !== undefined && !(KEYWORDS as readonly string[]).includes(t[k] as string)) err(`target ${k}: unknown keyword "${t[k]}"`);
+  }
+  if (t.notSubtype !== undefined && typeof t.notSubtype !== "string") err(`target notSubtype must be a string`);
+  if (t.other !== undefined && typeof t.other !== "boolean") err(`target other must be boolean`);
+  if (t.anyOf !== undefined) {
+    if (!Array.isArray(t.anyOf) || t.anyOf.length < 2) err(`target anyOf must list at least two alternative specs`);
+    else for (const alt of t.anyOf) validateTargetSpec(alt, err);
+  }
+}
+
+/** A6: modes — each a {label, targets?, effects[]}. */
+function validateModes(modes: unknown, err: (m: string) => void, warnings: string[], cardId: string): void {
+  if (!Array.isArray(modes) || modes.length < 2) return err(`"modes" must list at least two modes (A6)`);
+  for (const m of modes) {
+    if (!isRecord(m)) { err(`mode is not an object`); continue; }
+    if (typeof m.label !== "string" || !m.label) err(`mode missing label`);
+    const targets = Array.isArray(m.targets) ? (m.targets as unknown[]) : [];
+    for (const t of targets) validateTargetSpec(t, err);
+    validateEffects(m.effects, targets.length, err, warnings, cardId);
+  }
+}
+
+const COUNT_PRED_KEYS = ["cardType", "subtype", "controller", "other", "attacking"];
+function validCountPredicate(p: unknown): boolean {
+  if (!isRecord(p)) return false;
+  for (const k of Object.keys(p)) if (!COUNT_PRED_KEYS.includes(k)) return false;
+  if (p.cardType !== undefined && !CARD_TYPES.includes(p.cardType as CardType)) return false;
+  if (p.controller !== undefined && !["you", "opponent", "any"].includes(p.controller as string)) return false;
+  return true;
+}
+/** ADR-028 + A4 value refs. */
+function isAnyValueRef(v: unknown): boolean {
+  if (!isRecord(v)) return false;
+  if (v.ref === "targetPower") return Number.isInteger(v.target);
+  if (v.ref === "count" || v.ref === "maxPower") return validCountPredicate(v.predicate);
+  if (v.ref === "graveyardCount") return v.who === "you" || v.who === "opponent";
+  return false;
 }
 
 function validateAbility(a: unknown, err: (m: string) => void, warnings: string[], cardId: string): void {
@@ -143,9 +209,19 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
           if (c.player !== undefined && !["opponentOfController", "controller", "any"].includes(c.player as string)) {
             err(`unknown condition player "${c.player}"`);
           }
+          for (const k of ["type", "notType", "subtype"]) {
+            if (c[k] !== undefined && (!Array.isArray(c[k]) || (c[k] as unknown[]).some((x) => typeof x !== "string"))) err(`condition ${k} must be a string array`);
+          }
         }
       }
-      validateEffects(a.effects, nTargets, err, warnings, cardId);
+      if (a.modes !== undefined) {
+        // A6: modal trigger — modes carry the effects; the ability's own effects must be empty.
+        if (Array.isArray(a.effects) && a.effects.length > 0) err(`a modal trigger carries effects in its modes, not in "effects" (A6)`);
+        if (nTargets > 0) err(`a modal trigger declares targets per mode (A6)`);
+        validateModes(a.modes, err, warnings, cardId);
+      } else {
+        validateEffects(a.effects, nTargets, err, warnings, cardId);
+      }
       break;
     }
     case "activated": {
@@ -164,7 +240,17 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
             err(`sacrifice predicate must be "self", "creature", or "creature.subtype:<Subtype>"`);
           }
         }
+        // ADR-076 / A5 cost words.
+        if (a.cost.discard !== undefined && (!Number.isInteger(a.cost.discard) || (a.cost.discard as number) < 1)) err(`cost.discard must be a positive integer`);
+        if (a.cost.discardSelf !== undefined && a.cost.discardSelf !== true) err(`cost.discardSelf must be true when present`);
+        if (a.cost.exileSelf !== undefined && a.cost.exileSelf !== true) err(`cost.exileSelf must be true when present`);
+        if (a.cost.reduceBy !== undefined && !isAnyValueRef(a.cost.reduceBy)) err(`cost.reduceBy must be a value ref (A4/ADR-076)`);
+        if (a.cost.reduceBy !== undefined && typeof a.cost.mana !== "string") err(`cost.reduceBy needs a mana cost to reduce`);
       }
+      if (a.zone !== undefined && !ABILITY_ZONES.includes(a.zone as string)) err(`unknown ability zone "${a.zone}" (A5)`);
+      if (a.zone === "hand" && !(isRecord(a.cost) && a.cost.discardSelf === true)) err(`a hand-zone ability must discard itself as a cost (A5: cycling shape)`);
+      if (a.zone === "graveyard" && !(isRecord(a.cost) && a.cost.exileSelf === true)) err(`a graveyard-zone ability must exile itself as a cost (A5: Mother Bear shape)`);
+      if (a.zone !== undefined && a.zone !== "battlefield" && isRecord(a.cost) && a.cost.tap === true) err(`a ${a.zone}-zone ability cannot have a {T} cost`);
       if (a.equip === true) {
         // Equip (CR 702.6): attach-only, exactly one own-creature target, no effects.
         if (Array.isArray(a.effects) && a.effects.length > 0) err(`equip ability must have no effects`);
@@ -185,11 +271,20 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
           if (isRecord(e) && !["modifyPT", "grantKeyword", "restrict", "gainControl"].includes(e.type as string)) {
             err(`static ability cannot carry effect "${e.type}" (only modifyPT/grantKeyword/restrict/gainControl)`);
           }
-          // Statics are interpreted live and have no X: literal deltas only.
+          // Statics are interpreted live and have no X: literal deltas or count refs (A4).
           if (isRecord(e) && e.type === "modifyPT" && (e.power === "X" || e.power === "-X" || e.toughness === "X" || e.toughness === "-X")) {
             err(`static modifyPT cannot reference X`);
           }
+          if (isRecord(e) && e.type === "modifyPT") {
+            for (const k of ["power", "toughness"]) {
+              if (isRecord(e[k]) && (e[k] as Record<string, unknown>).ref === "targetPower") err(`static modifyPT cannot reference a target (no targets on statics)`);
+            }
+          }
         }
+      }
+      if (a.condition !== undefined) {
+        const c = a.condition;
+        if (!isRecord(c) || !isAnyValueRef(c.value) || !Number.isInteger(c.atLeast)) err(`static condition must be {value: <ref>, atLeast: n} (A4)`);
       }
       break;
     }
@@ -261,7 +356,11 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
   addCounters: (e, err) => {
     if (e.kind !== "+1/+1" && e.kind !== "-1/-1") err(`addCounters kind must be +1/+1|-1/-1`);
     needCount(e, err);
+    needTargetOrScope(e, err); // ADR-076: scope form ("each Vampire you control")
+  },
+  exileThenReturn: (e, err) => {
     needTargetIndex(e, err);
+    if (e.under !== "yourControl") err(`exileThenReturn.under must be "yourControl" (A8)`);
   },
   tapTarget: needTargetIndex,
   untapTarget: needTargetIndex,
@@ -277,7 +376,7 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     if (e.scope !== "attached") err(`gainControl must be a static with scope "attached" (ADR-033)`);
   },
   searchLibrary: (e, err) => {
-    if (e.predicate !== "basicLand" && e.predicate !== "anyCard") err(`searchLibrary predicate must be basicLand|anyCard (ADR-068)`);
+    if (typeof e.predicate !== "string" || !SEARCH_PREDICATE.test(e.predicate)) err(`searchLibrary predicate must be basicLand|anyCard|subtype:<Subtype> (ADR-068/076)`);
     if (e.to !== "hand" && e.to !== "battlefield") err(`searchLibrary "to" must be hand|battlefield`);
     if (e.entersTapped !== undefined && e.to !== "battlefield") err(`searchLibrary entersTapped only applies to battlefield destination`);
   },
@@ -298,15 +397,9 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
   },
 };
 
-function isValueRef(v: unknown): boolean {
-  return (
-    typeof v === "object" && v !== null && (v as Record<string, unknown>).ref === "targetPower" &&
-    Number.isInteger((v as Record<string, unknown>).target)
-  );
-}
 function needAmount(e: Record<string, unknown>, err: (m: string) => void) {
-  if (e.amount !== "X" && !Number.isInteger(e.amount) && !isValueRef(e.amount)) {
-    err(`amount must be integer, "X", or {ref:"targetPower",target:i} (ADR-028)`);
+  if (e.amount !== "X" && !Number.isInteger(e.amount) && !isAnyValueRef(e.amount)) {
+    err(`amount must be integer, "X", or a value ref (ADR-028 / A4: targetPower, count, graveyardCount, maxPower)`);
   }
 }
 function needNumber(e: Record<string, unknown>, key: string, err: (m: string) => void) {
@@ -314,7 +407,7 @@ function needNumber(e: Record<string, unknown>, key: string, err: (m: string) =>
 }
 function needPT(e: Record<string, unknown>, key: string, err: (m: string) => void) {
   const v = e[key];
-  if (!Number.isInteger(v) && v !== "X" && v !== "-X") err(`"${key}" must be an integer, "X", or "-X"`);
+  if (!Number.isInteger(v) && v !== "X" && v !== "-X" && !isAnyValueRef(v)) err(`"${key}" must be an integer, "X", "-X", or a value ref (A4)`);
 }
 function needCount(e: Record<string, unknown>, err: (m: string) => void) {
   if (!Number.isInteger(e.count) || (e.count as number) < 1) err(`count must be a positive integer`);
@@ -360,6 +453,13 @@ function validateEffects(
     if (Number.isInteger(e.target) && ((e.target as number) < 0 || (e.target as number) >= nTargets)) {
       err(`effect target index ${e.target} out of bounds (targets: ${nTargets})`);
     }
+    // ADR-076: `if` clause — a condition on a target's current characteristics.
+    if (e.if !== undefined) {
+      const c = e.if;
+      if (!isRecord(c) || !Number.isInteger(c.target) || (c.target as number) < 0 || (c.target as number) >= nTargets) err(`effect "if" needs a valid target index`);
+      else if (c.subtype === undefined && c.cardType === undefined) err(`effect "if" needs subtype or cardType`);
+      else if (c.cardType !== undefined && !CARD_TYPES.includes(c.cardType as CardType)) err(`effect "if": unknown cardType ${c.cardType}`);
+    }
     if (!opts.isStatic && !IMPLEMENTED_EFFECT_TYPES.has(type)) {
       warnings.push(`${cardId}: uses effect "${type}" which has no resolver yet (will throw NotImplemented if resolved)`);
     }
@@ -367,8 +467,20 @@ function validateEffects(
 }
 
 /** Narrowing cast after validation; call only when validateCard returned no errors. */
+/** Normalise a validated raw card into a CardDef. A5: `cycling` compiles into a hand-zone
+ * ability {cost, discardSelf; draw 1} appended to `abilities` — the engine never sees the keyword. */
 export function asCardDef(raw: unknown): CardDef {
-  return raw as CardDef;
+  const def = raw as CardDef;
+  if (def.cycling) {
+    const cycling: ActivatedAbilityDef = {
+      kind: "activated",
+      zone: "hand",
+      cost: { mana: def.cycling, discardSelf: true },
+      effects: [{ type: "draw", count: 1, who: "you" }],
+    };
+    return { ...def, abilities: [...(def.abilities ?? []), cycling] };
+  }
+  return def;
 }
 
 export type { TargetSpec };

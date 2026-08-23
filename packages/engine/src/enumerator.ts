@@ -1,4 +1,5 @@
-import { isManaAbility, parseManaCost, type CardDef, isChoiceManaAbility, MANA_COLORS } from "@shandalar/cards";
+import { isManaAbility, parseManaCost, type ActivatedAbilityDef, type CardDef, type ManaCost, isChoiceManaAbility, MANA_COLORS } from "@shandalar/cards";
+import { evaluateValueRef } from "./effect-context.js";
 import type { Action } from "./actions.js";
 import { canBlock, eligibleAttackers, eligibleBlockers, menaceViolations } from "./combat.js";
 import { characteristics } from "./characteristics.js";
@@ -56,16 +57,50 @@ export function legalActions(ctx: EngineCtx, player: PlayerId): Action[] {
     if (!instantSpeed && !atSorcerySpeed) continue;
 
     const cost = parseManaCost(def.manaCost);
-    const combos = targetCombinations(ctx, def.targets ?? [], player);
-    if (combos.length === 0) continue;
-    if (cost.xCount === 0) {
-      if (!canPay(ctx, player, cost)) continue;
-      for (const targets of combos) actions.push({ type: "castSpell", objectId, targets });
-    } else {
-      // One action per affordable X (ADR-017). canPay is monotonic in x.
-      for (let x = 0; canPay(ctx, player, cost, x); x++) {
-        for (const targets of combos) actions.push({ type: "castSpell", objectId, targets, x });
+    // A7: an additional sacrifice cost needs a legal sacrifice (Goblin Grenade without a Goblin isn't castable).
+    if (def.additionalCost?.sacrifice && sacrificeCandidates(ctx, player, objectId, def.additionalCost.sacrifice.predicate).length === 0) continue;
+    // A6: a modal spell enumerates one action per legal mode × that mode's targets (601.2b: a mode
+    // whose targets can't be chosen is not offerable).
+    const modeSpecs: { mode?: number; targets: import("@shandalar/cards").TargetSpec[] }[] = def.modes
+      ? def.modes.map((m, i) => ({ mode: i, targets: m.targets ?? [] }))
+      : [{ targets: def.targets ?? [] }];
+    for (const ms of modeSpecs) {
+      const combos = targetCombinations(ctx, ms.targets, player, objectId);
+      if (combos.length === 0) continue;
+      const modeField = ms.mode !== undefined ? { mode: ms.mode } : {};
+      if (cost.xCount === 0) {
+        if (!canPay(ctx, player, cost)) continue;
+        for (const targets of combos) actions.push({ type: "castSpell", objectId, targets, ...modeField });
+      } else {
+        // One action per affordable X (ADR-017). canPay is monotonic in x.
+        for (let x = 0; canPay(ctx, player, cost, x); x++) {
+          for (const targets of combos) actions.push({ type: "castSpell", objectId, targets, x, ...modeField });
+        }
       }
+    }
+  }
+
+  // A5: zone-scoped activated abilities — hand (cycling) and graveyard (Mother Bear).
+  const zoneAbilities = (objectId: string, def: CardDef, zone: "hand" | "graveyard") => {
+    (def.abilities ?? []).forEach((ability, abilityIndex) => {
+      if (ability.kind !== "activated" || ability.zone !== zone) return;
+      const timing = ability.timing ?? "instant";
+      if (timing === "sorcery" && !atSorcerySpeed) return;
+      const combos = targetCombinations(ctx, ability.targets ?? [], player, objectId);
+      if ((ability.targets ?? []).length > 0 && combos.length === 0) return;
+      const cost = effectiveAbilityCost(ctx, player, ability, objectId);
+      if (cost && !canPay(ctx, player, cost)) return;
+      for (const targets of combos) actions.push({ type: "activateAbility", objectId, abilityIndex, targets });
+    });
+  };
+  for (const { objectId, def } of handByCard(ctx, player)) zoneAbilities(objectId, def, "hand");
+  {
+    const seen = new Set<string>();
+    for (const id of p.graveyard) {
+      const obj = getObject(state, id);
+      if (seen.has(obj.cardId)) continue;
+      seen.add(obj.cardId);
+      zoneAbilities(id, ctx.defs.def(obj.cardId), "graveyard");
     }
   }
 
@@ -90,17 +125,26 @@ export function legalActions(ctx: EngineCtx, player: PlayerId): Action[] {
         if (ability.cost.sacrifice && sacrificeCandidates(ctx, player, id, ability.cost.sacrifice.predicate).length === 0) return;
         const cost = ability.cost.mana ? parseManaCost(ability.cost.mana) : undefined;
         if (cost && !canPay(ctx, player, cost, 0, ability.cost.tap ? [id] : [])) return;
-        for (const color of MANA_COLORS) actions.push({ type: "activateAbility", objectId: id, abilityIndex, targets: [], color });
+        // A colour CHOICE (Lotus) is one action per colour; a fixed-production sacrifice-cost
+        // mana ability (Skirk Prospector, S17) is a single deliberate action.
+        if (ability.effects.some((e) => e.type === "addMana" && e.choice)) {
+          for (const color of MANA_COLORS) actions.push({ type: "activateAbility", objectId: id, abilityIndex, targets: [], color });
+        } else {
+          actions.push({ type: "activateAbility", objectId: id, abilityIndex, targets: [] });
+        }
         return;
       }
+      if (ability.zone && ability.zone !== "battlefield") return; // A5: not activatable from here
       if (isManaAbility(ability)) return;
       const timing = ability.equip ? "sorcery" : (ability.timing ?? "instant"); // equip is sorcery-speed by rule (702.6b)
       if (timing === "sorcery" && !atSorcerySpeed) return;
       if (ability.cost.tap && (obj.tapped || (obj.summoningSick && !characteristics(ctx, id).keywords.has("haste")))) return;
       if (ability.cost.sacrifice && sacrificeCandidates(ctx, player, id, ability.cost.sacrifice.predicate).length === 0) return;
-      const combos = targetCombinations(ctx, ability.targets ?? [], player);
+      // ADR-076: a discard cost needs that many cards in hand (Waterfront Bouncer).
+      if (ability.cost.discard && state.players[player].hand.length < ability.cost.discard) return;
+      const combos = targetCombinations(ctx, ability.targets ?? [], player, id);
       if ((ability.targets ?? []).length > 0 && combos.length === 0) return;
-      const cost = ability.cost.mana ? parseManaCost(ability.cost.mana) : undefined;
+      const cost = effectiveAbilityCost(ctx, player, ability, id);
       // A {T}-cost ability can't count its own source as a mana producer.
       const exclude = ability.cost.tap ? [id] : [];
       if (!cost || cost.xCount === 0) {
@@ -179,4 +223,15 @@ export function discardChoices(ctx: EngineCtx, player: PlayerId): Action[] {
 /** Bottoming choices after a mulligan keep (one per distinct card in hand, ADR-011). */
 export function bottomChoices(ctx: EngineCtx, player: PlayerId): Action[] {
   return handByCard(ctx, player).map(({ objectId }) => ({ type: "bottomCard", objectId }));
+}
+
+
+/** The mana cost an ability actually asks for now: `cost.mana` with ADR-076's `reduceBy` applied to the
+ * generic part, floored at the coloured pips (Baru: {7}{G} minus the greatest Wurm power, never below {G}). */
+export function effectiveAbilityCost(ctx: EngineCtx, player: PlayerId, ability: ActivatedAbilityDef, sourceId: string): ManaCost | undefined {
+  if (!ability.cost.mana) return undefined;
+  const cost = parseManaCost(ability.cost.mana);
+  if (!ability.cost.reduceBy || ability.cost.reduceBy.ref === "targetPower") return cost;
+  const x = evaluateValueRef(ctx, ability.cost.reduceBy, player, sourceId);
+  return { ...cost, generic: Math.max(0, cost.generic - x) };
 }

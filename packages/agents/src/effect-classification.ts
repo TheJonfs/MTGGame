@@ -8,8 +8,8 @@ import type { Action, GameView } from "@shandalar/engine";
  */
 
 /** Sign of a PTAmount: "X" counts +1, "-X" counts -1. */
-export function ptSign(v: number | "X" | "-X"): number {
-  return v === "X" ? 1 : v === "-X" ? -1 : v;
+export function ptSign(v: number | "X" | "-X" | { ref: string }): number {
+  return v === "X" ? 1 : v === "-X" ? -1 : typeof v === "number" ? v : 1; // count refs are positive (Gaean Wurm)
 }
 
 /** Effects you point at things you want hurt. */

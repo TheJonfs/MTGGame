@@ -1,4 +1,4 @@
-import type { Amount, DiscardFilter, DiscardMode, Duration, Effect, EffectType, Keyword, Scope, Who } from "./types.js";
+import type { Amount, DiscardFilter, DiscardMode, Duration, Effect, EffectCondition, EffectType, Keyword, PTAmount, Scope, Who } from "./types.js";
 
 /**
  * The seam between vocabulary and engine (engine-design §1 dependency rule):
@@ -29,8 +29,10 @@ export interface EffectContext {
   target(i: number): ResolvedTarget | null;
   /** Players selected by a `who` param. */
   players(who: Who): number[];
-  /** Object ids selected by a scope, evaluated now. */
-  objectsInScope(scope: Scope): string[];
+  /** Object ids selected by a scope, evaluated now (ADR-020 params: subtype/cardType/other). */
+  objectsInScope(scope: Scope, params?: { subtype?: string; cardType?: string; other?: boolean }): string[];
+  /** ADR-076: does the target at index i currently match these characteristics? (Little Bear's "if it's a Bear".) */
+  targetMatches(cond: EffectCondition): boolean;
   /** Numeric value of an amount ("X" resolves from the stack item). */
   amount(a: Amount): number;
 
@@ -49,12 +51,16 @@ export interface EffectContext {
    * asked) or decline; the library is ALWAYS shuffled after (CR 701.19),
    * through the logged game RNG. Async: it is a DecisionRequest.
    */
-  searchLibrary(player: number, predicate: "basicLand" | "anyCard", to: "hand" | "battlefield", entersTapped: boolean): Promise<void>;
+  searchLibrary(player: number, predicate: "basicLand" | "anyCard" | `subtype:${string}`, to: "hand" | "battlefield", entersTapped: boolean): Promise<void>;
+  /** ADR-075 A8: exile the object and return it to the battlefield under the effect controller's control as a new object (ETBs fire). */
+  exileThenReturn(objectId: string): void;
   createToken(player: number, tokenId: string, count: number): void;
   addCounters(objectId: string, kind: "+1/+1" | "-1/-1", count: number): void;
   gainLife(player: number, amount: number): void;
   /** Destruction by effect (CR 701.7); honors indestructible. Death itself is still the SBA's call. */
   destroy(objectId: string): void;
+  /** ADR-076: destroy several at once (Wrath) — a simultaneous batch for look-back purposes. */
+  destroyMany(objectIds: string[]): void;
   /** Tap by effect (CR 701.27a): no-op if already tapped or gone. */
   tap(objectId: string): void;
   /**
@@ -129,8 +135,8 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
   modifyPT: (e, ctx) => {
     if (e.type !== "modifyPT") throw new Error("resolver mismatch");
     // P/T deltas may reference X, positively or negated (Drana: -0/-X and +X/+0).
-    const pt = (v: number | "X" | "-X"): number =>
-      v === "X" ? ctx.amount("X") : v === "-X" ? -ctx.amount("X") : v;
+    const pt = (v: PTAmount): number =>
+      v === "X" ? ctx.amount("X") : v === "-X" ? -ctx.amount("X") : typeof v === "number" ? v : ctx.amount(v);
     for (const t of targeted(e, ctx)) {
       if (t.kind !== "object") continue;
       ctx.addContinuousEffect({
@@ -176,8 +182,21 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
 
   addCounters: (e, ctx) => {
     if (e.type !== "addCounters") throw new Error("resolver mismatch");
+    // ADR-076: target OR scope ("each Vampire you control" — Indulgent Aristocrat).
+    if (e.target !== undefined) {
+      const t = ctx.target(e.target);
+      if (t && t.kind === "object") ctx.addCounters(t.id, e.kind, e.count);
+      return;
+    }
+    if (e.scope !== undefined) {
+      for (const id of ctx.objectsInScope(e.scope, { ...(e.subtype ? { subtype: e.subtype } : {}), ...(e.cardType ? { cardType: e.cardType } : {}), ...(e.other ? { other: true } : {}) })) ctx.addCounters(id, e.kind, e.count);
+    }
+  },
+
+  exileThenReturn: (e, ctx) => {
+    if (e.type !== "exileThenReturn") throw new Error("resolver mismatch");
     const t = ctx.target(e.target);
-    if (t && t.kind === "object") ctx.addCounters(t.id, e.kind, e.count);
+    if (t && t.kind === "object") ctx.exileThenReturn(t.id);
   },
 
   gainLife: (e, ctx) => {
@@ -216,7 +235,7 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
 
   destroyAll: (e, ctx) => {
     if (e.type !== "destroyAll") throw new Error("resolver mismatch");
-    for (const id of ctx.objectsInScope(e.scope)) ctx.destroy(id);
+    ctx.destroyMany(ctx.objectsInScope(e.scope));
   },
 
   damageAll: (e, ctx) => {
@@ -254,5 +273,7 @@ export const IMPLEMENTED_EFFECT_TYPES: ReadonlySet<EffectType> = new Set(
 export async function resolveEffect(effect: Effect, ctx: EffectContext): Promise<void> {
   const resolver = implemented[effect.type];
   if (!resolver) throw new NotImplementedError(effect.type);
+  // ADR-076: a conditioned clause is skipped when its target no longer matches (evaluated at resolution).
+  if (effect.if && !ctx.targetMatches(effect.if)) return;
   await resolver(effect, ctx);
 }

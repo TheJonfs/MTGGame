@@ -12,7 +12,8 @@ import type { ResolvedTarget } from "@shandalar/cards";
 export type Action =
   | { type: "pass" }
   | { type: "playLand"; objectId: string }
-  | { type: "castSpell"; objectId: string; targets: ResolvedTarget[]; x?: number }
+  /** `mode` (A6): the chosen mode of a modal spell (modes are chosen at cast, targets after — one action per mode × targets). */
+  | { type: "castSpell"; objectId: string; targets: ResolvedTarget[]; x?: number; mode?: number }
   /** `color` (ADR-068 Amendment 2): the chosen colour for a choice-bearing mana ability (Lotus) — one action per colour. */
   | { type: "activateAbility"; objectId: string; abilityIndex: number; targets: ResolvedTarget[]; x?: number; color?: "W" | "U" | "B" | "R" | "G" }
   | { type: "tapForMana"; objectId: string }
@@ -23,6 +24,8 @@ export type Action =
   | { type: "orderTrigger"; index: number; cardId: string; objectId: string }
   | { type: "orderBlocker"; attacker: string; blocker: string }
   | { type: "chooseTriggerTargets"; targets: ResolvedTarget[] }
+  /** A6: the chosen mode of a modal trigger (label for readability). */
+  | { type: "chooseMode"; mode: number; label: string }
   | { type: "sacrifice"; objectId: string }
   | { type: "keepLegend"; objectId: string }
   | { type: "acceptOptional" }

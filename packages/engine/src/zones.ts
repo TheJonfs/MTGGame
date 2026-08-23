@@ -8,6 +8,8 @@ export interface MoveOptions {
   attachedTo?: string;
   /** Entering the battlefield tapped (reserved; "enters tapped" is allowed by manifest §4). */
   tapped?: boolean;
+  /** A8 (blink): enter the battlefield under this player's control instead of the mover's current controller. */
+  controller?: PlayerId;
 }
 
 function zoneArray(ctx: EngineCtx, zone: ZoneName, owner: PlayerId): string[] | null {
@@ -37,6 +39,27 @@ function zoneArray(ctx: EngineCtx, zone: ZoneName, owner: PlayerId): string[] | 
  * Returns the new object id (objects get a fresh identity on every move,
  * CR 400.7), or null if the object ceased to exist (token leaving battlefield).
  */
+/** ADR-076 (S17): move several battlefield objects to their graveyards as ONE batch (SBA deaths,
+ * Wrath): every object in the batch is an observer of every other's death — the look-back set on
+ * ctx lets Blood Artist see the creatures that die alongside it. Cleared afterwards. */
+export function moveBatchToGraveyard(ctx: EngineCtx, ids: string[]): void {
+  const batch = ids.filter((id) => ctx.state.objects[id]?.zone === "battlefield");
+  if (batch.length === 0) return;
+  const prev = ctx.lookback;
+  ctx.lookback = new Map(batch.map((id) => [id, { cardId: ctx.state.objects[id]!.cardId, controller: ctx.state.objects[id]!.controller }]));
+  try {
+    for (const id of batch) {
+      if (!ctx.state.objects[id]) continue;
+      const newId = moveObject(ctx, id, "graveyard");
+      const entry = ctx.lookback.get(id);
+      if (entry && newId) entry.currentId = newId;
+    }
+  } finally {
+    if (prev) ctx.lookback = prev;
+    else delete ctx.lookback;
+  }
+}
+
 export function moveObject(
   ctx: EngineCtx,
   objectId: string,
@@ -89,8 +112,8 @@ export function moveObject(
     owner: obj.owner,
     // Control reverts to owner in non-battlefield zones; battlefield control
     // belongs to whoever put it there (control statics re-apply via syncControl).
-    controller: entersBattlefield ? obj.controller : obj.owner,
-    baseController: entersBattlefield ? obj.controller : obj.owner,
+    controller: entersBattlefield ? (options.controller ?? obj.controller) : obj.owner,
+    baseController: entersBattlefield ? (options.controller ?? obj.controller) : obj.owner,
     zone: to,
     isToken: obj.isToken,
     tapped: entersBattlefield ? (options.tapped ?? false) : false,

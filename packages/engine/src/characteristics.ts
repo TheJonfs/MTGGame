@@ -1,6 +1,7 @@
-import type { Effect, Keyword, Scope } from "@shandalar/cards";
+import type { Effect, Keyword, Scope, ValueRef } from "@shandalar/cards";
 import type { EngineCtx } from "./ctx.js";
-import { getObject, type GameState } from "./state.js";
+import { evaluateValueRef } from "./effect-context.js";
+import { getObject, type GameState, type PlayerId } from "./state.js";
 
 export interface Characteristics {
   power: number;
@@ -17,6 +18,9 @@ export interface ScopeParams {
   subtype?: string;
   cardType?: string;
   other?: boolean;
+  /** ADR-076 keyword filters (evaluated on printed + non-filtered keywords — see baseKeywords). */
+  withKeyword?: Keyword;
+  withoutKeyword?: Keyword;
 }
 
 /** Objects selected by a static ability's scope, from the source's point of view. */
@@ -30,6 +34,8 @@ export function objectsInScope(ctx: EngineCtx, sourceId: string, scope: Scope, p
       const def = ctx.defs.def(getObject(state, id).cardId);
       if (params.subtype && !(def.subtypes ?? []).includes(params.subtype)) return false;
       if (params.cardType && !def.types.includes(params.cardType as never)) return false;
+      if (params.withKeyword && !baseKeywords(ctx, id).has(params.withKeyword)) return false;
+      if (params.withoutKeyword && baseKeywords(ctx, id).has(params.withoutKeyword)) return false;
       return true;
     });
   switch (scope) {
@@ -55,6 +61,39 @@ export function objectsInScope(ctx: EngineCtx, sourceId: string, scope: Scope, p
   }
 }
 
+/** Keywords an object has BEFORE keyword-filtered statics are considered: printed keywords,
+ * stored grants, and static grants whose scope has no keyword filter. Breaks the recursion a
+ * "creatures with flying get +2/+0" static would otherwise cause (ADR-076; known simplification:
+ * a keyword granted by a keyword-filtered static is invisible to other keyword filters). */
+export function baseKeywords(ctx: EngineCtx, objectId: string): Set<Keyword> {
+  const state = ctx.state;
+  const obj = getObject(state, objectId);
+  const out = new Set<Keyword>(ctx.defs.def(obj.cardId).keywords ?? []);
+  for (const ce of state.continuousEffects) if (ce.objectId === objectId && ce.kind === "grantKeyword" && ce.keyword) out.add(ce.keyword);
+  for (const srcId of state.battlefield) {
+    const src = getObject(state, srcId);
+    for (const ability of ctx.defs.def(src.cardId).abilities ?? []) {
+      if (ability.kind !== "static" || !staticActive(ctx, srcId, ability.condition)) continue;
+      for (const e of ability.effects) {
+        if (e.type !== "grantKeyword" || !("scope" in e) || !e.scope || e.withKeyword || e.withoutKeyword) continue;
+        const params: ScopeParams = { ...(e.subtype ? { subtype: e.subtype } : {}), ...(e.cardType ? { cardType: e.cardType } : {}), ...(e.other ? { other: true } : {}) };
+        if (objectsInScope(ctx, srcId, e.scope, params).includes(objectId)) out.add(e.keyword);
+      }
+    }
+  }
+  return out;
+}
+
+/** A4: a conditional static (Werebear's threshold) applies only while its value condition holds. */
+export function staticActive(ctx: EngineCtx, sourceId: string, condition?: { value: ValueRef; atLeast: number }): boolean {
+  if (!condition) return true;
+  const src = ctx.state.objects[sourceId];
+  if (!src) return false;
+  const v = condition.value;
+  const n = v.ref === "targetPower" ? 0 : evaluateValueRef(ctx, v, src.controller as PlayerId, sourceId);
+  return n >= condition.atLeast;
+}
+
 /**
  * characteristics() per ADR-003:
  * printed → copy(reserved) → control(reserved) → setPT(reserved) →
@@ -76,12 +115,15 @@ export function characteristics(ctx: EngineCtx, objectId: string): Characteristi
     subtypes: [...(def.subtypes ?? [])],
   };
 
-  const applyEffect = (e: Effect, phase: "pt" | "grants") => {
+  const applyEffect = (e: Effect, phase: "pt" | "grants", srcId: string) => {
     if (phase === "pt" && e.type === "modifyPT") {
-      // Statics carry literal deltas only ("X" P/T belongs to resolved
-      // abilities, which store numbers) — the validator enforces this.
-      result.power += typeof e.power === "number" ? e.power : 0;
-      result.toughness += typeof e.toughness === "number" ? e.toughness : 0;
+      // Statics carry literal deltas or A4 count refs, evaluated live from the
+      // source's point of view (Gaean Wurm: +1/+1 per Forest you control).
+      const src = getObject(state, srcId);
+      const val = (v: typeof e.power): number =>
+        typeof v === "number" ? v : typeof v === "object" && v.ref !== "targetPower" ? evaluateValueRef(ctx, v, src.controller, srcId) : 0;
+      result.power += val(e.power);
+      result.toughness += val(e.toughness);
     }
     if (phase === "grants" && e.type === "grantKeyword") result.keywords.add(e.keyword);
     if (phase === "grants" && e.type === "restrict") {
@@ -92,24 +134,27 @@ export function characteristics(ctx: EngineCtx, objectId: string): Characteristi
 
   // Static abilities of battlefield permanents whose scope covers this object.
   // Two passes preserve ADR-003 ordering: static P/T before grants/restrictions.
-  const staticHits: Effect[] = [];
+  const staticHits: { e: Effect; srcId: string }[] = [];
   for (const srcId of state.battlefield) {
     const src = getObject(state, srcId);
     for (const ability of ctx.defs.def(src.cardId).abilities ?? []) {
       if (ability.kind !== "static") continue;
+      if (!staticActive(ctx, srcId, ability.condition)) continue; // A4 conditional static
       for (const e of ability.effects) {
         const scope = "scope" in e ? e.scope : undefined;
         if (!scope) continue;
-        const params = {
+        const params: ScopeParams = {
           ...("subtype" in e && e.subtype ? { subtype: e.subtype } : {}),
           ...("cardType" in e && e.cardType ? { cardType: e.cardType } : {}),
           ...("other" in e && e.other ? { other: e.other } : {}),
+          ...("withKeyword" in e && e.withKeyword ? { withKeyword: e.withKeyword } : {}),
+          ...("withoutKeyword" in e && e.withoutKeyword ? { withoutKeyword: e.withoutKeyword } : {}),
         };
-        if (objectsInScope(ctx, srcId, scope, params).includes(objectId)) staticHits.push(e);
+        if (objectsInScope(ctx, srcId, scope, params).includes(objectId)) staticHits.push({ e, srcId });
       }
     }
   }
-  for (const e of staticHits) applyEffect(e, "pt");
+  for (const h of staticHits) applyEffect(h.e, "pt", h.srcId);
 
   // Stored effects from resolved spells/abilities, timestamp order.
   const stored = state.continuousEffects
@@ -129,7 +174,7 @@ export function characteristics(ctx: EngineCtx, objectId: string): Characteristi
   result.toughness += plus - minus;
 
   // Keyword grants and restrictions, statics then stored.
-  for (const e of staticHits) applyEffect(e, "grants");
+  for (const h of staticHits) applyEffect(h.e, "grants", h.srcId);
   for (const ce of stored) {
     if (ce.kind === "grantKeyword" && ce.keyword) result.keywords.add(ce.keyword);
     if (ce.kind === "restrict") {

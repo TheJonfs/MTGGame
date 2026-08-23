@@ -39,6 +39,11 @@ export interface GameEventMap extends Record<string, unknown> {
   CARD_DRAWN: { player: PlayerId };
   /** ADR-070 Amendment 3: one per milled card (after its ZONE_CHANGE library→graveyard). */
   MILLED: { player: PlayerId; objectId: string; cardId: string };
+  /** ADR-076 (S17): a card left a hand for the graveyard as a discard (effects, cleanup, costs, cycling).
+   * Carries the card's characteristics so Waste Not's triggers can read them. */
+  DISCARD: { player: PlayerId; objectId: string; cardId: string; types: string[] };
+  /** ADR-076 (S17): beginning of a player's upkeep (Bitterblossom). */
+  UPKEEP_BEGIN: { player: PlayerId };
   STEP_BEGIN: { step: string; turn: number; activePlayer: PlayerId };
   ATTACKERS_DECLARED: { attackers: string[] };
   BLOCKERS_DECLARED: { blocks: { blocker: string; attacker: string }[] };
