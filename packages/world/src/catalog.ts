@@ -1,4 +1,5 @@
 import { DECKS, DECK_ARCHETYPES, type DeckKey } from "@shandalar/sim/decks";
+import { EXPANSION_DECKS } from "@shandalar/sim/expansion-decks";
 import { assertKnobSource, type KnobSource, type RegionTier, type EnemyTier } from "./knobs.js";
 
 /**
@@ -27,8 +28,19 @@ export type Difficulty = "apprentice" | "journeyman" | "master";
 export type OpponentKind = "mage" | "beast";
 
 /** S16: an opponent's deck is a slice key (A–E) or a catalog starter ("starter:green") —
- * the measurement behind the tier-1 enemy-deck question lives on this. */
-export type OpponentDeckRef = DeckKey | `starter:${StarterId}`;
+ * the measurement behind the tier-1 enemy-deck question lives on this.
+ * S18: or a beast deck ("beast:warband") from packages/sim/src/expansion-decks.ts (ADR-074/077). */
+export type OpponentDeckRef = DeckKey | `starter:${StarterId}` | `beast:${string}`;
+
+/** S18 (ADR-066 reflavored parley): how this opponent's parley reads. All optional; defaults by kind. */
+export interface ParleyVoice {
+  /** Button label for the buy-off/distraction option ("Distract", "Tithe", "Bribe"). */
+  verb?: string;
+  /** One line under the name in the parley dialog (the opponent's voice or the field-guide note). */
+  line?: string;
+  /** Replaces the "cannot be bought" explanation when buyable is false. */
+  refusal?: string;
+}
 
 export interface OpponentTemplate {
   id: string;
@@ -51,6 +63,11 @@ export interface OpponentTemplate {
   buyable?: boolean;
   /** ADR-066: silhouette chip crop slug for the map marker (beasts); falls back to `portrait`. */
   portraitChip?: string;
+  /** S18 (ADR-072 region-bound roamers + the bestiary): the colour spoke this opponent roams. Beasts are
+   * spoke-bound (the Warband roams the red ring); absent = anywhere (mages). */
+  spoke?: Exclude<Color, "C">;
+  /** S18: parley voice (verb/line/refusal). */
+  parley?: ParleyVoice;
 }
 
 /** S16 (ADR-069/070): authored starter decks per colour — the world's new-game
@@ -93,6 +110,11 @@ export function enemyDeck(catalog: Catalog, ref: OpponentDeckRef): { decklist: S
     const k = ref as DeckKey;
     return { decklist: DECKS[k].decklist.map((e) => ({ ...e })), archetype: DECK_ARCHETYPES[k] };
   }
+  if (ref.startsWith("beast:")) {
+    const b = EXPANSION_DECKS[ref.slice("beast:".length)];
+    if (!b) throw new Error(`unknown beast deck ${ref}`);
+    return { decklist: b.decklist.map((e) => ({ ...e })), archetype: b.archetype };
+  }
   const id = ref.slice("starter:".length);
   const s = catalog.starters.find((x) => x.id === id);
   if (!s) throw new Error(`unknown opponent deck ${ref}`);
@@ -133,7 +155,12 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
   for (const op of o.opponents) {
     if (ids.has(op.id)) errors.push(`duplicate opponent id ${op.id}`);
     ids.add(op.id);
-    if (!(op.deck in DECKS) && !(typeof op.deck === "string" && op.deck.startsWith("starter:") && (st.starters ?? []).some((s) => `starter:${s.id}` === op.deck))) errors.push(`opponent ${op.id}: unknown deck ${op.deck}`);
+    const deckOk = op.deck in DECKS
+      || (typeof op.deck === "string" && op.deck.startsWith("starter:") && (st.starters ?? []).some((s) => `starter:${s.id}` === op.deck))
+      || (typeof op.deck === "string" && op.deck.startsWith("beast:") && op.deck.slice("beast:".length) in EXPANSION_DECKS);
+    if (!deckOk) errors.push(`opponent ${op.id}: unknown deck ${op.deck}`);
+    if (op.spoke && !["W", "U", "B", "R", "G"].includes(op.spoke)) errors.push(`opponent ${op.id}: bad spoke ${op.spoke}`);
+    if (op.kind === "beast" && !op.spoke) errors.push(`opponent ${op.id}: beasts need a spoke (S18 region binding)`);
     if (![1, 2, 3].includes(op.tier)) errors.push(`opponent ${op.id}: bad tier ${op.tier}`);
     if (!["apprentice", "journeyman", "master"].includes(op.difficulty)) errors.push(`opponent ${op.id}: bad difficulty ${op.difficulty}`);
     if (!Number.isInteger(op.worldLife) || op.worldLife < 1) errors.push(`opponent ${op.id}: bad worldLife`);

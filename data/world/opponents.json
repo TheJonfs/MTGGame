@@ -167,17 +167,229 @@
       }
     },
     {
-      "id": "beast_wurm",
-      "name": "the Pelakka Wurm",
-      "deck": "C",
-      "tier": 3,
-      "difficulty": "journeyman",
-      "portrait": "beast-pelakka-wurm",
-      "portraitChip": "beast-pelakka-wurm-chip",
-      "worldLife": 14,
+      "id": "beast_grizzly",
+      "name": "A Grizzly Bear",
+      "deck": "beast:grizzly",
+      "tier": 1,
+      "difficulty": "apprentice",
+      "portrait": "beast-grizzly-bear",
+      "portraitChip": "beast-grizzly-bear-chip",
+      "worldLife": 8,
       "colors": "G",
       "kind": "beast",
+      "spoke": "G",
       "buyable": true,
+      "parley": {
+        "verb": "Toss it your rations",
+        "line": "A great brown bear up on its hind legs. It wants the road, not you — and it can be fed off it."
+      }
+    },
+    {
+      "id": "beast_recluse",
+      "name": "The Deadly Recluse",
+      "deck": "beast:recluse",
+      "tier": 1,
+      "difficulty": "apprentice",
+      "portrait": "beast-deadly-recluse",
+      "portraitChip": "beast-deadly-recluse-chip",
+      "worldLife": 8,
+      "colors": "G",
+      "kind": "beast",
+      "spoke": "G",
+      "buyable": false,
+      "parley": {
+        "line": "A deadly recluse broad as a cartwheel, hanging in the path on a single thread.",
+        "refusal": "A spider does not bargain. It waits."
+      }
+    },
+    {
+      "id": "beast_manowar",
+      "name": "A Bloom of Man-o'-War",
+      "deck": "beast:manowar",
+      "tier": 1,
+      "difficulty": "apprentice",
+      "portrait": "beast-man-o-war",
+      "portraitChip": "beast-man-o-war-chip",
+      "worldLife": 8,
+      "colors": "U",
+      "kind": "beast",
+      "spoke": "U",
+      "buyable": false,
+      "parley": {
+        "line": "A bloom of man-o'-war drifts across the shallows, trailing stingers longer than a mast.",
+        "refusal": "The bloom has no ears for coin. It drifts where it drifts."
+      }
+    },
+    {
+      "id": "beast_tactician_1",
+      "name": "A Cunning Tactician",
+      "deck": "beast:tactician",
+      "tier": 1,
+      "difficulty": "apprentice",
+      "portrait": "beast-cunning-tactician",
+      "portraitChip": "beast-cunning-tactician-chip",
+      "worldLife": 8,
+      "colors": "W",
+      "kind": "mage",
+      "spoke": "W",
+      "buyable": true,
+      "parley": {
+        "verb": "Buy off",
+        "line": "A field captain with an eye for the ground. \"You'll pay the toll, traveler, or you'll pay in blood.\""
+      }
+    },
+    {
+      "id": "beast_tactician_2",
+      "name": "The Cunning Tactician",
+      "deck": "beast:tactician",
+      "tier": 2,
+      "difficulty": "journeyman",
+      "portrait": "beast-cunning-tactician",
+      "portraitChip": "beast-cunning-tactician-chip",
+      "worldLife": 10,
+      "colors": "W",
+      "kind": "mage",
+      "spoke": "W",
+      "buyable": true,
+      "parley": {
+        "verb": "Buy off",
+        "line": "The captain again, older and no kinder. \"I've beaten better than you on worse ground.\""
+      }
+    },
+    {
+      "id": "beast_warband",
+      "name": "The Boggart Warband",
+      "deck": "beast:warband",
+      "tier": 2,
+      "difficulty": "journeyman",
+      "portrait": "beast-boggart-warband",
+      "portraitChip": "beast-boggart-warband-chip",
+      "worldLife": 10,
+      "colors": "R",
+      "kind": "beast",
+      "spoke": "R",
+      "buyable": true,
+      "parley": {
+        "verb": "Bribe",
+        "line": "Boggarts, a dozen at least, pushing and crowing. They would sooner take your gold than your head. Probably."
+      }
+    },
+    {
+      "id": "beast_nighthawk",
+      "name": "A Vampire Nighthawk",
+      "deck": "beast:nighthawk",
+      "tier": 2,
+      "difficulty": "journeyman",
+      "portrait": "beast-vampire-nighthawk",
+      "portraitChip": "beast-vampire-nighthawk-chip",
+      "worldLife": 10,
+      "colors": "B",
+      "kind": "beast",
+      "spoke": "B",
+      "buyable": true,
+      "parley": {
+        "verb": "Offer tribute",
+        "line": "A vampire nighthawk, wings folded, watching your throat. It can be bought; it is never full."
+      }
+    },
+    {
+      "id": "beast_gale",
+      "name": "The Living Gale",
+      "deck": "beast:gale",
+      "tier": 2,
+      "difficulty": "journeyman",
+      "portrait": "beast-living-gale",
+      "portraitChip": "beast-living-gale-chip",
+      "worldLife": 10,
+      "colors": "U",
+      "kind": "beast",
+      "spoke": "U",
+      "buyable": false,
+      "parley": {
+        "line": "The air itself turns on you — a living gale with a face in it.",
+        "refusal": "You cannot pay the wind."
+      }
+    },
+    {
+      "id": "beast_siegegang",
+      "name": "The Siege-Gang",
+      "deck": "beast:siegegang",
+      "tier": 3,
+      "difficulty": "master",
+      "portrait": "beast-siege-gang",
+      "portraitChip": "beast-siege-gang-chip",
+      "worldLife": 12,
+      "colors": "R",
+      "kind": "beast",
+      "spoke": "R",
+      "buyable": true,
+      "parley": {
+        "verb": "Bribe",
+        "line": "The Siege-Gang, its commander barking orders. They count your coin before they count your soldiers."
+      },
+      "knobs": {
+        "anteCount": 2
+      }
+    },
+    {
+      "id": "beast_specter",
+      "name": "The Hypnotic Specter",
+      "deck": "beast:specter",
+      "tier": 3,
+      "difficulty": "master",
+      "portrait": "beast-hypnotic-specter",
+      "portraitChip": "beast-hypnotic-specter-chip",
+      "worldLife": 12,
+      "colors": "B",
+      "kind": "beast",
+      "spoke": "B",
+      "buyable": false,
+      "parley": {
+        "line": "The Hypnotic Specter — a wrongness with wings. Its eyes are already inside your head.",
+        "refusal": "It wants what you know, not what you carry."
+      },
+      "knobs": {
+        "anteCount": 2
+      }
+    },
+    {
+      "id": "beast_serra",
+      "name": "The Serra Angel",
+      "deck": "beast:serra",
+      "tier": 3,
+      "difficulty": "master",
+      "portrait": "beast-serra-angel",
+      "portraitChip": "beast-serra-angel-chip",
+      "worldLife": 12,
+      "colors": "W",
+      "kind": "beast",
+      "spoke": "W",
+      "buyable": true,
+      "parley": {
+        "verb": "Tithe",
+        "line": "The Serra Angel, sword lowered, gaze level. She will take a tithe for the road's poor — or the fight."
+      },
+      "knobs": {
+        "anteCount": 2
+      }
+    },
+    {
+      "id": "beast_wurm",
+      "name": "the Pelakka Wurm",
+      "deck": "beast:wurm",
+      "tier": 3,
+      "difficulty": "master",
+      "portrait": "beast-pelakka-wurm",
+      "portraitChip": "beast-pelakka-wurm-chip",
+      "worldLife": 12,
+      "colors": "G",
+      "kind": "beast",
+      "spoke": "G",
+      "buyable": true,
+      "parley": {
+        "verb": "Distract",
+        "line": "The Pelakka Wurm, slow and vast. Meat thrown aside may buy you the moment."
+      },
       "knobs": {
         "anteCount": 2
       }

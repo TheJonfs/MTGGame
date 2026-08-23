@@ -19,3 +19,21 @@ Beast opponents use the same ink-and-wash law — reference lineage: Gygax-era m
 Prompt skeleton: "Ink and wash bestiary plate: [creature], full body, [gesture], bold readable silhouette, confident pen hatching, washes of [colour] and parchment, no background, no text."
 
 Keep this file as the registry of all portrait and bestiary prompts.
+
+### S18 bestiary subjects (rendered; one plate each, 1:1, chip crop 82% centre)
+
+| Subject file (`docs/art/subjects/`) | Opponent | Colour wash |
+|---|---|---|
+| `beast-grizzly-bear.md` | A Grizzly Bear (G, 1) | moss green |
+| `beast-deadly-recluse.md` | The Deadly Recluse (G, 1) | moss green |
+| `beast-man-o-war.md` | A Bloom of Man-o'-War (U, 1) | sea blue |
+| `beast-cunning-tactician.md` | The Cunning Tactician (W, 1–2; mage-voiced, field-guide plate) | pale gold |
+| `beast-boggart-warband.md` | The Boggart Warband (R, 2) | ember red |
+| `beast-vampire-nighthawk.md` | A Vampire Nighthawk (B, 2) | bruise violet-black |
+| `beast-living-gale.md` | The Living Gale — Air Elemental (U, 2) | storm blue |
+| `beast-siege-gang.md` | The Siege-Gang (R, 3) | ember red |
+| `beast-hypnotic-specter.md` | The Hypnotic Specter (B, 3) | sickly green-black |
+| `beast-serra-angel.md` | The Serra Angel (W, 3) | pale gold |
+| `beast-pelakka-wurm.md` | the Pelakka Wurm (G, 3) — S14 PoC | moss green |
+
+Descriptors are locked in the subject files (the skill hashes them); MANIFEST carries kept/rejected per Chris's verdicts.

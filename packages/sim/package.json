@@ -11,6 +11,10 @@
     "./decks": {
       "types": "./src/slice-decks.ts",
       "default": "./src/slice-decks.ts"
+    },
+    "./expansion-decks": {
+      "types": "./src/expansion-decks.ts",
+      "default": "./src/expansion-decks.ts"
     }
   },
   "dependencies": {

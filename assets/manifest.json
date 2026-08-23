@@ -1,5 +1,110 @@
 {
   "entities": {
+    "beast-boggart-warband": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:25a0312f067168cf879cb88072615cc8b03064014ca954d49b63f9c41aa51585",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:25a0312f067168cf879cb88072615cc8b03064014ca954d49b63f9c41aa51585",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/beast-boggart-warband/canonical.png",
+          "rendered_at": "2026-08-23T16:55:42+00:00",
+          "thumb": "assets/thumbs/beast-boggart-warband/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "beast-cunning-tactician": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:39f36c4bc9bad608b463672f95ad7de506624d6ff3d1737de3a8ce4f906e0f2a",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:39f36c4bc9bad608b463672f95ad7de506624d6ff3d1737de3a8ce4f906e0f2a",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/beast-cunning-tactician/canonical.png",
+          "rendered_at": "2026-08-23T16:55:34+00:00",
+          "thumb": "assets/thumbs/beast-cunning-tactician/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "beast-deadly-recluse": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:0eeb2ba274a02508fc099a9eb9c1ae1b2810e2d49aaec112ce989ccd400e1465",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:0eeb2ba274a02508fc099a9eb9c1ae1b2810e2d49aaec112ce989ccd400e1465",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/beast-deadly-recluse/canonical.png",
+          "rendered_at": "2026-08-23T16:55:16+00:00",
+          "thumb": "assets/thumbs/beast-deadly-recluse/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "beast-grizzly-bear": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:e01238119ff593dea1d54fbc913bcade95c0b196eb166028a3a99d1d44ca385b",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:e01238119ff593dea1d54fbc913bcade95c0b196eb166028a3a99d1d44ca385b",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/beast-grizzly-bear/canonical.png",
+          "rendered_at": "2026-08-23T16:55:08+00:00",
+          "thumb": "assets/thumbs/beast-grizzly-bear/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "beast-hypnotic-specter": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:559d98751fa3830dc74fa203dcc2ddf6d0eec560550f333b2081e1843e425648",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:559d98751fa3830dc74fa203dcc2ddf6d0eec560550f333b2081e1843e425648",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/beast-hypnotic-specter/canonical.png",
+          "rendered_at": "2026-08-23T16:56:25+00:00",
+          "thumb": "assets/thumbs/beast-hypnotic-specter/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "beast-living-gale": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:2aca770802d81c6804be25ab80f884f68d6fccea0d4f1c9a4d46ebbc4f0c2917",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:2aca770802d81c6804be25ab80f884f68d6fccea0d4f1c9a4d46ebbc4f0c2917",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/beast-living-gale/canonical.png",
+          "rendered_at": "2026-08-23T16:56:07+00:00",
+          "thumb": "assets/thumbs/beast-living-gale/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "beast-man-o-war": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:68c81595530c7b80ecd9e370701ac30dd6702a4338c57841149e3ef1c4b7efc9",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:68c81595530c7b80ecd9e370701ac30dd6702a4338c57841149e3ef1c4b7efc9",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/beast-man-o-war/canonical.png",
+          "rendered_at": "2026-08-23T16:55:26+00:00",
+          "thumb": "assets/thumbs/beast-man-o-war/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "beast-pelakka-wurm": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:79fe7d829a7d7806731607ac32a9936b2be84e9540827cfdbe547c665e7b502b",
@@ -11,6 +116,51 @@
           "path": "assets/images/beast-pelakka-wurm/canonical.png",
           "rendered_at": "2026-08-21T15:39:52+00:00",
           "thumb": "assets/thumbs/beast-pelakka-wurm/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "beast-serra-angel": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:bd964f48edba2c4ff6e536ce18aa7dced65362cfa802eb63a0f54b2a6d720441",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:bd964f48edba2c4ff6e536ce18aa7dced65362cfa802eb63a0f54b2a6d720441",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/beast-serra-angel/canonical.png",
+          "rendered_at": "2026-08-23T16:56:34+00:00",
+          "thumb": "assets/thumbs/beast-serra-angel/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "beast-siege-gang": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:480d610b5148179f2648a5c0354118273f5ce0fabe14ba4f75479886a9a0e80d",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:480d610b5148179f2648a5c0354118273f5ce0fabe14ba4f75479886a9a0e80d",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/beast-siege-gang/canonical.png",
+          "rendered_at": "2026-08-23T16:56:16+00:00",
+          "thumb": "assets/thumbs/beast-siege-gang/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "beast-vampire-nighthawk": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:0c2f1ceb3e8d42df6e5bb09fa6c6f7179358f1904b2ca3018c7fdc7e661a03f3",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:0c2f1ceb3e8d42df6e5bb09fa6c6f7179358f1904b2ca3018c7fdc7e661a03f3",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/beast-vampire-nighthawk/canonical.png",
+          "rendered_at": "2026-08-23T16:55:57+00:00",
+          "thumb": "assets/thumbs/beast-vampire-nighthawk/canonical.png",
           "variant_prompt": null
         }
       }

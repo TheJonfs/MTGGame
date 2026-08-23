@@ -19,11 +19,16 @@ const catalog = loadCatalog(join(ROOT, "data/world"));
 const pool = loadCardPool(join(ROOT, "data/cards"));
 
 describe("catalog v1", () => {
-  it("loads and validates; 15 mages over 5 decks × 3 tiers + 1 beast (ADR-066 PoC); every deck key exists; ADR-072: 15 regions (colour × tier) + 5 strongholds", () => {
+  it("loads and validates; 15 mages over 5 decks × 3 tiers + the S18 bestiary (10 beasts + the Tactician at tiers 1 and 2); every deck ref resolves; ADR-072: 15 regions (colour × tier) + 5 strongholds", () => {
     expect(catalog.version).toBe("v1");
-    expect(catalog.opponents).toHaveLength(16);
-    expect(catalog.opponents.filter((o) => (o.kind ?? "mage") === "mage")).toHaveLength(15);
-    for (const o of catalog.opponents) expect(o.deck in DECKS).toBe(true);
+    expect(catalog.opponents).toHaveLength(27);
+    expect(catalog.opponents.filter((o) => (o.kind ?? "mage") === "mage" && !o.spoke)).toHaveLength(15);
+    expect(catalog.opponents.filter((o) => o.kind === "beast")).toHaveLength(10);
+    expect(catalog.opponents.filter((o) => o.spoke)).toHaveLength(12); // 10 beasts + the mage-voiced Tactician ×2
+    for (const o of catalog.opponents) expect(enemyDeck(catalog, o.deck).decklist.reduce((n, e) => n + e.count, 0)).toBeGreaterThanOrEqual(30);
+    for (const o of catalog.opponents.filter((x) => x.spoke)) expect(o.deck.startsWith("beast:")).toBe(true);
+    // Every colour spoke has at least one signature opponent; W has the Tactician at 1 and 2 (flag: no W tier-1/2 *beast*, no U tier-3 beast).
+    for (const c of ["W", "U", "B", "R", "G"]) expect(catalog.opponents.some((o) => o.spoke === c)).toBe(true);
     expect(catalog.regions).toHaveLength(15);
     for (const c of ["W", "U", "B", "R", "G"]) for (const t of ["civilized", "approach", "wild"]) expect(catalog.regions.filter((r) => r.color === c && r.tier === t)).toHaveLength(1);
     expect(catalog.strongholds.map((s) => s.color).sort()).toEqual(["B", "G", "R", "U", "W"]);
@@ -588,7 +593,7 @@ describe("beast opponents (ADR-066 proof of concept)", () => {
     const { worldKnobs } = await import("./state.js");
     const wurm = catalog.opponents.find((o) => o.id === "beast_wurm")!;
     expect(wurm.kind).toBe("beast");
-    expect(wurm.deck).toBe("C"); // signature-card rule: green stompy with Pelakka Wurms
+    expect(wurm.deck).toBe("beast:wurm"); // signature-card rule: the Pelakka Wurm deck (S18; was slice C in the S14 PoC)
     const w = newWorld({ seed: 91, catalog, starter: "red" });
     const knobs = worldKnobs(w);
     expect(buyOffPrice(knobs, 3, wurm)).toBe(Math.round(knobs.buyOffBase * 3 * knobs.beastBuyOffMultiplier));
@@ -615,11 +620,14 @@ describe("lair fixed point (S14 round 1 prototype)", () => {
       const w = newWorld({ seed, catalog, starter: "red" });
       quiet(w);
       const lairs = w.map.strongholds.filter((f) => f.kind === "lair");
-      expect(lairs).toHaveLength(5); // lairsPerRegion wild 1 → one per wild region (the wurm, round-robin over the one beast)
-      const lair = lairs[0]!;
+      expect(lairs).toHaveLength(5); // lairsPerRegion wild 1 → one per wild region
+      // S18: the resident is the spoke's top-tier signature opponent (green → the Pelakka Wurm).
+      const lair = lairs.find((f) => w.map.regions[f.region]!.color === "G")!;
       expect(lair.kind).toBe("lair");
       const resident = w.opponents.find((o) => o.id === lair.opponentId)!;
       expect(resident.catalogId).toBe("beast_wurm");
+      const TOP: Record<string, string> = { W: "beast_serra", U: "beast_gale", B: "beast_specter", R: "beast_siegegang", G: "beast_wurm" };
+      for (const f of lairs) expect(w.opponents.find((o) => o.id === f.opponentId)!.catalogId).toBe(TOP[w.map.regions[f.region]!.color]);
       expect(resident.fixedAt).toEqual(lair.at);
       expect(findPath(w.map, w.map.start, lair.at)).not.toBeNull();
       // Walk there with random encounters off: the lair still triggers.
@@ -647,6 +655,64 @@ describe("lair fixed point (S14 round 1 prototype)", () => {
       const ev3 = walkTo(w, catalog, sh.at, QUIET)!;
       expect(ev3.some((e) => e.type === "encounter")).toBe(false);
     }
+  });
+});
+
+describe("S18 spawn tables (ADR-066/074, Chris's ring blends): spoke-bound beasts, beastShare, tier blend by ring; respawn uses the same table", () => {
+  it("signature opponents roam only their spoke; civilized rings carry no tier-3 beasts and wild rings no tier-1; the beast share tracks the knob; a spoke without a rolled tier falls to the nearest", () => {
+    const byRing: Record<string, { beasts: number; total: number; tiers: Record<number, number> }> = { civilized: { beasts: 0, total: 0, tiers: {} }, approach: { beasts: 0, total: 0, tiers: {} }, wild: { beasts: 0, total: 0, tiers: {} } };
+    for (let seed = 1; seed <= 40; seed++) {
+      const w = newWorld({ seed, catalog, starter: ["white", "blue", "black", "red", "green"][seed % 5] as StarterId });
+      for (const o of w.opponents) {
+        if (o.fixedAt) continue;
+        const tmpl = catalog.opponents.find((t) => t.id === o.catalogId)!;
+        const reg = w.map.regions[o.region]!;
+        const ring = byRing[reg.tier]!;
+        ring.total += 1;
+        if (tmpl.spoke) {
+          expect(tmpl.spoke, `${tmpl.id} roams ${reg.name}`).toBe(reg.color);
+          ring.beasts += 1;
+          ring.tiers[tmpl.tier] = (ring.tiers[tmpl.tier] ?? 0) + 1;
+        }
+      }
+    }
+    const knobs = defaultKnobs();
+    for (const tier of ["civilized", "approach", "wild"] as const) {
+      const r = byRing[tier]!;
+      const share = r.beasts / r.total;
+      expect(share, `${tier} beast share ${share.toFixed(2)} vs knob ${knobs.beastShare[tier]}`).toBeGreaterThan(knobs.beastShare[tier] - 0.12);
+      expect(share).toBeLessThan(knobs.beastShare[tier] + 0.12);
+    }
+    expect(byRing.civilized!.tiers[3] ?? 0).toBe(0); // blend [85,15,0]
+    expect(byRing.wild!.tiers[1] ?? 0).toBe(0); // blend [0,50,50]
+    expect(byRing.civilized!.tiers[1]!).toBeGreaterThan(byRing.civilized!.tiers[2] ?? 0);
+    // Nearest-tier fallback: the blue wild ring rolls tier 3 half the time but blue has no tier-3 beast → the Living Gale (tier 2) stands in.
+    const wBlueWild = newWorld({ seed: 7, catalog, starter: "blue" });
+    const blueWild = wBlueWild.map.regions.find((r) => r.color === "U" && r.tier === "wild")!;
+    const ids = new Set(wBlueWild.opponents.filter((o) => o.region === blueWild.index && !o.fixedAt).map((o) => o.catalogId));
+    for (const id of ids) { const t = catalog.opponents.find((x) => x.id === id)!; if (t.spoke) expect(t.id).toBe("beast_gale"); }
+  });
+  it("respawn rolls from the same table: a red approach region below target respawns red-spoke signatures or mages, never another colour's beast", () => {
+    const w = newWorld({ seed: 11, catalog, starter: "red" });
+    const reg = w.map.regions.find((r) => r.color === "R" && r.tier === "approach")!;
+    for (const o of w.opponents) if (o.region === reg.index && !o.fixedAt) { o.gone = true; o.goneReason = "lost"; }
+    const knobsW = worldKnobs(w);
+    const cells = [...Array(w.map.width * w.map.height).keys()];
+    void cells;
+    w.player.position = { ...w.map.start };
+    // Step in place far from the region until respawns land there.
+    let spawnedThere = 0;
+    for (let i = 0; i < 400 && spawnedThere < 3; i++) {
+      const ev = advance(w, catalog, [w.player.position]);
+      for (const e of ev) if (e.type === "spawned" && e.region === reg.index) {
+        spawnedThere += 1;
+        const inst = w.opponents.find((o) => o.id === e.opponentId)!;
+        const t = catalog.opponents.find((x) => x.id === inst.catalogId)!;
+        if (t.spoke) expect(t.spoke).toBe("R");
+      }
+    }
+    expect(spawnedThere).toBeGreaterThan(0);
+    void knobsW;
   });
 });
 

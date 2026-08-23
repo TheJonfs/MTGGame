@@ -1,8 +1,8 @@
 /**
  * Expansion 1 beast decklists (docs/expansion-1-cards-and-decks.md, planner-authored) as sim
  * infrastructure: fuzz/ladder coverage of the S17 batch in random and heuristic lines before the
- * S18 bestiary catalog adopts them. 30 cards each as listed (ADR-074 says 40 — flagged in the S17
- * handoff; the planner reconciles in S18). Not read by the world package.
+ * S18 bestiary catalog adopts them. 30 cards each (ADR-077 amended ADR-074's 40 to 30).
+ * S18: the world catalog references these as `beast:<key>` opponent decks (catalog.ts enemyDeck).
  */
 export type ExpansionDecklist = { cardId: string; count: number }[];
 const d = (pairs: [string, number][]): ExpansionDecklist => pairs.map(([cardId, count]) => ({ cardId, count }));

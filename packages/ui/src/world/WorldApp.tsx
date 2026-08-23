@@ -110,6 +110,9 @@ function ParleyPanel({ c }: { c: WorldController }) {
   const odds = Math.round(knobs.fleeOddsByTier[encounter.tier] * 100);
   const stake = knobs.anteCount;
   const unbuyable = tmpl.buyable === false;
+  // S18: parley voice from the catalog (verb/line/refusal), defaults by kind (ADR-066).
+  const voice = tmpl.parley ?? {};
+  const verb = voice.verb ?? (beast ? "Distract" : "Buy off");
   const verdict = (v: "kept" | "rejected") => {
     void fetch("/__art-note", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ cardId: `portrait:${tmpl.portrait}`, note: `${v} (director round, in situ)` }) });
   };
@@ -128,6 +131,7 @@ function ParleyPanel({ c }: { c: WorldController }) {
             <div className="parley-sub">Stakes: {stake} card{stake === 1 ? "" : "s"} each (ante). You have {gold} gold.</div>
           </div>
         </div>
+        {voice.line && <p className="parley-voice">{voice.line}</p>}
         <div className="parley-options">
           <button className="primary" onClick={() => c.parley("fight")}>
             Fight
@@ -138,10 +142,10 @@ function ParleyPanel({ c }: { c: WorldController }) {
             <small>Forfeit your stake either way; if caught you fight and stake again.</small>
           </button>
           <button disabled={unbuyable || gold < price} title={unbuyable ? "This one cannot be bought" : gold < price ? `You have ${gold}; it costs ${price}` : ""} onClick={() => c.parley("buyoff")}>
-            {beast ? "Distract" : "Buy off"} ({price} gold)
+            {verb} ({price} gold)
             <small>
               {unbuyable
-                ? "Cannot be bought — it wants the fight."
+                ? voice.refusal ?? "Cannot be bought — it wants the fight."
                 : gold < price
                   ? `Unaffordable — ${price} gold needed.`
                   : beast

@@ -1,5 +1,5 @@
 /**
- * pnpm world-sim [--seeds N] [--starter white|blue|black|red|green] [--difficulty easy|standard|hard]
+ * pnpm world-sim [--seeds N] [--starter white|blue|black|red|green] [--difficulty easy|standard|hard] [--no-beasts]
  *               [--player journeyman|master|apprentice] [--policy fight-all|avoid] [--tour towns|all] [--legs N]
  *
  * S14 (background, for the knob-tuning round), rewritten S16 for roaming
@@ -50,6 +50,11 @@ const tier1Deck = arg("tier1-deck", "");
 const SLICE_TO_STARTER: Record<string, string> = { A: "starter:red", B: "starter:white", C: "starter:green", D: "starter:black", E: "starter:blue" };
 if (tier1Deck === "starter") for (const o of catalog.opponents) if (o.tier === 1 && o.deck in SLICE_TO_STARTER) o.deck = SLICE_TO_STARTER[o.deck] as typeof o.deck;
 const starter = starterTemplate(catalog, starterId);
+// S18: --no-beasts sets beastShare 0 everywhere (the mage-only roster — the S16-comparable baseline for starter gates).
+const noBeasts = process.argv.includes("--no-beasts");
+const extraKnobs = noBeasts ? { event: { beastShare: { civilized: 0, approach: 0, wild: 0 } } } : {};
+// S18: per-opponent (per deck) W/L — the brief's per-deck tier performance table.
+const byOpponent: Record<string, { w: number; l: number; d: number }> = {};
 
 const stepsByTier: Record<string, number> = { civilized: 0, approach: 0, wild: 0 };
 const encountersByTier: Record<string, number> = { civilized: 0, approach: 0, wild: 0 };
@@ -60,8 +65,8 @@ const lifeAtEnd: number[] = [];
 const renownAtEnd: number[] = [];
 
 for (let seed = 1; seed <= seeds; seed++) {
-  const w = newWorld({ seed, catalog, starter: starterId, difficulty });
-  const knobs = worldKnobs(w);
+  const w = newWorld({ seed, catalog, starter: starterId, difficulty, knobLayers: extraKnobs });
+  const knobs = worldKnobs(w, extraKnobs);
   const targets = [...w.map.towns.filter((t) => !(t.at.x === w.map.start.x && t.at.y === w.map.start.y)).map((t) => t.at), ...(tour === "all" ? w.map.strongholds.filter((f) => f.kind === "lair").map((f) => f.at) : [])];
   let dead = false;
   const seenIds = new Set<string>();
@@ -80,7 +85,7 @@ for (let seed = 1; seed <= seeds; seed++) {
       }
       if (!path) break;
       if (path.length === 0) break; // arrived
-      const ev = advance(w, catalog, path);
+      const ev = advance(w, catalog, path, extraKnobs);
       for (const e of ev) {
         if (e.type === "moved") stepsByTier[w.map.regions[w.map.region[e.to.y * w.map.width + e.to.x]!]!.tier]! += 1;
         if (e.type === "spawned") spawned += 1;
@@ -114,6 +119,8 @@ for (let seed = 1; seed <= seeds; seed++) {
       if (rec.outcome === "win") duels[t]!.w += 1;
       else if (rec.outcome === "loss") duels[t]!.l += 1;
       else duels[t]!.d += 1;
+      const bo = (byOpponent[enc.encounter.catalogId] ??= { w: 0, l: 0, d: 0 });
+      if (rec.outcome === "win") bo.w += 1; else if (rec.outcome === "loss") bo.l += 1; else bo.d += 1;
       anteWon += rec.anteWon.length;
       anteLost += rec.anteLost.length;
       if (w.gameOver) { dead = true; deaths += 1; }
@@ -129,7 +136,7 @@ for (let seed = 1; seed <= seeds; seed++) {
 
 const pct = (a: number, b: number) => (b === 0 ? "—" : `${((100 * a) / b).toFixed(0)}%`);
 const mean = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
-console.log(`world-sim: ${seeds} seeds, starter ${starterId} "${starter.name}" (${playerTier} pilot, ${policy}), difficulty ${difficulty}${tier1Life ? `, tier-1 life ${tier1Life}` : ""}${tier1Deck ? `, tier-1 decks ${tier1Deck}` : ""}, tour = ${tour === "all" ? "all towns + every lair" : "all towns"}, fight every contact`);
+console.log(`world-sim: ${seeds} seeds, starter ${starterId} "${starter.name}" (${playerTier} pilot, ${policy}), difficulty ${difficulty}${tier1Life ? `, tier-1 life ${tier1Life}` : ""}${tier1Deck ? `, tier-1 decks ${tier1Deck}` : ""}${noBeasts ? ", NO beasts (mage-only roster)" : ""}, tour = ${tour === "all" ? "all towns + every lair" : "all towns"}, fight every contact`);
 console.log(`  steps/tour: ${(totalSteps / seeds).toFixed(0)} · tours completed alive: ${toursCompleted}/${seeds} · deaths (world life 0): ${deaths}`);
 for (const tier of ["civilized", "approach", "wild"]) {
   const st = stepsByTier[tier]!, en = encountersByTier[tier]!;
@@ -141,3 +148,11 @@ for (const t of ["1", "2", "3"]) {
 }
 console.log(`  contacts: roamer reached you ${contactsByRoamer} · you stepped onto one ${contactsByPlayer} · lair fights ${lairFights} · distinct roamers sighted ${sightings} (fleeing ${fleeingSeen}; caught fleeing ${fleeingCaught}) · respawns ${spawned}`);
 console.log(`  ante won ${anteWon} / lost ${anteLost} · mean gold at end ${(goldEnd / seeds).toFixed(0)} · mean world life at end ${mean(lifeAtEnd).toFixed(1)} · mean renown at end ${mean(renownAtEnd).toFixed(1)}`);
+// S18: per-opponent table (player's win % vs each catalog entry), beasts and signatures marked.
+console.log(`  per opponent (player win % · W-L, n):`);
+const rows = Object.entries(byOpponent).map(([id, r]) => ({ id, r, tmpl: catalog.opponents.find((o) => o.id === id)! })).sort((a, b) => a.tmpl.tier - b.tmpl.tier || a.tmpl.id.localeCompare(b.tmpl.id));
+for (const { id, r, tmpl } of rows) {
+  const n = r.w + r.l + r.d;
+  console.log(`    T${tmpl.tier} ${tmpl.spoke ? `[${tmpl.spoke} ${tmpl.kind ?? "mage"}] ` : ""}${tmpl.name} (${id}, ${tmpl.deck}): ${pct(r.w, n)} · ${r.w}-${r.l}${r.d ? `-${r.d}` : ""}, n=${n}`);
+}
+

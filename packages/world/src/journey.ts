@@ -162,7 +162,7 @@ export function respawnRoamers(world: WorldState, catalog: Catalog, knobs: KnobV
     if (live >= roamerTarget(map, r, knobs)) continue;
     const cells = regionCells(map, r.index).filter((p) => !isTownCell(map, p) && !playerSees(world, knobs, p) && !samePoint(p, world.player.position));
     if (cells.length === 0) continue;
-    const tmpl = rollTemplate(rng, catalog, r.tier);
+    const tmpl = rollTemplate(rng, catalog, r, knobs);
     const id = `opp_r${world.opponents.length}_${world.player.stepsTaken}`;
     const inst: OpponentInstance = { id, catalogId: tmpl.id, region: r.index, gone: false, at: { ...rng.pick(cells) }, moveDebt: 0 };
     world.opponents.push(inst);

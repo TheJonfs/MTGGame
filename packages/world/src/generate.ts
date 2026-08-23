@@ -113,13 +113,46 @@ export function roamerTarget(map: WorldMap, region: RegionInstance, knobs: KnobV
   return Math.max(1, Math.round((knobs.roamerDensityPer100Cells[region.tier] * area) / 100));
 }
 
-/** Pick a catalog template for a region by its tier table (mages only — beasts are lair residents). */
-export function rollTemplate(rng: WorldRng, catalog: Catalog, tier: RegionInstance["tier"]): Catalog["opponents"][number] {
+/** Mage roll: a region's tier table (TIER_TABLES) over the mage roster (any colour roams anywhere). */
+export function rollMage(rng: WorldRng, catalog: Catalog, tier: RegionInstance["tier"]): Catalog["opponents"][number] {
   const table = TIER_TABLES[tier] ?? [1];
   const t = rng.pick(table);
-  const pool = catalog.opponents.filter((o) => o.tier === t && o.kind !== "beast");
-  const fallback = pool.length ? pool : catalog.opponents.filter((o) => o.kind !== "beast");
+  // Spoke-bound signature opponents (beasts, the Tactician) never roll here — they come from rollBeast.
+  const pool = catalog.opponents.filter((o) => o.tier === t && o.kind !== "beast" && !o.spoke);
+  const fallback = pool.length ? pool : catalog.opponents.filter((o) => o.kind !== "beast" && !o.spoke);
   return rng.pick(fallback.length ? fallback : catalog.opponents);
+}
+
+/** S18 signature roll: the region's spoke-bound opponents (beasts + mage-voiced signatures like the
+ * Tactician — anything with `spoke`) by the ring's tier blend (knob). Returns null when the spoke has
+ * none (the caller spawns a mage). A rolled tier the spoke lacks falls to the nearest tier. */
+export function rollBeast(rng: WorldRng, catalog: Catalog, region: { tier: RegionInstance["tier"]; color: string }, knobs: KnobValues): Catalog["opponents"][number] | null {
+  const spokeBeasts = catalog.opponents.filter((o) => o.spoke === region.color);
+  if (spokeBeasts.length === 0) return null;
+  const weights = knobs.beastTierBlend[region.tier] ?? [1, 1, 1];
+  const total = weights[0] + weights[1] + weights[2];
+  let roll = rng.float() * total;
+  let want: 1 | 2 | 3 = 1;
+  for (const t of [1, 2, 3] as const) { roll -= weights[t - 1]!; if (roll < 0) { want = t; break; } want = t; }
+  const exact = spokeBeasts.filter((o) => o.tier === want);
+  if (exact.length) return rng.pick(exact);
+  // Nearest tier; ties break DOWNWARD in civilized rings (a green civilized ring that rolls tier 2 gets a
+  // Bear, not the Wurm) and UPWARD elsewhere (a green wild ring that rolls tier 2 gets the Wurm).
+  const up = region.tier !== "civilized";
+  const dist = (o: { tier: number }) => Math.abs(o.tier - want) - ((up ? o.tier > want : o.tier < want) ? 0.5 : 0);
+  const nearest = spokeBeasts.reduce((best, o) => (dist(o) < dist(best) ? o : best), spokeBeasts[0]!);
+  return rng.pick(spokeBeasts.filter((o) => o.tier === nearest.tier));
+}
+
+/** S18 spawn table: beast (spoke-bound, tier blend by ring) with probability beastShare[tier], else a mage.
+ * One template per roamer (generation and respawn share this). */
+export function rollTemplate(rng: WorldRng, catalog: Catalog, region: { tier: RegionInstance["tier"]; color: string }, knobs: KnobValues): Catalog["opponents"][number] {
+  const share = knobs.beastShare[region.tier] ?? 0;
+  if (share > 0 && rng.chance(share)) {
+    const beast = rollBeast(rng, catalog, region, knobs);
+    if (beast) return beast;
+  }
+  return rollMage(rng, catalog, region.tier);
 }
 
 /** Give every position-less roamer a seeded in-region cell (new worlds and
@@ -328,7 +361,9 @@ export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOpt
     }
   }
 
-  // 5. Lairs per region by knob (S14 pattern): beasts round-robin, held out of the roaming roster.
+  // 5. Lairs per region by knob (S14 pattern). S18: the resident is the region's spoke's top-tier beast
+  // (the Serra Angel in the white wild ring, the Pelakka Wurm in the green …); a spoke without beasts
+  // round-robins the whole bestiary (pre-S18 behaviour), and no beasts at all falls back to the top mage.
   const opponents: OpponentInstance[] = [];
   let n = 0;
   const beasts = catalog.opponents.filter((o) => o.kind === "beast");
@@ -339,8 +374,11 @@ export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOpt
     if (want <= 0) continue;
     const candidates = regionCells(map, r.index).filter((p) => !isTownCell(map, p));
     const pts = placeFixedPoints(rng, candidates, want, townSpacing, [...towns.map((t) => t.at), ...map.strongholds.map((f) => f.at)]);
+    const spokeBeasts = beasts.filter((o) => o.spoke === r.color);
+    const topTier = Math.max(0, ...spokeBeasts.map((o) => o.tier));
+    const spokeHosts = spokeBeasts.filter((o) => o.tier === topTier);
     for (const at of pts) {
-      const host = lairHosts[lairN++ % lairHosts.length]!;
+      const host = spokeHosts.length ? rng.pick(spokeHosts) : lairHosts[lairN++ % lairHosts.length]!;
       passable[idx(map, at)] = true;
       carveTo(at);
       const inst: OpponentInstance = { id: `opp_lair_${n++}`, catalogId: host.id, region: r.index, gone: false, fixedAt: at, moveDebt: 0 };
@@ -356,7 +394,7 @@ export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOpt
   for (const r of regions) {
     const count = roamerTarget(map, r, knobs);
     for (let i = 0; i < count; i++) {
-      const tmpl = rollTemplate(rng, catalog, r.tier);
+      const tmpl = rollTemplate(rng, catalog, r, knobs);
       opponents.push({ id: `opp_${n++}`, catalogId: tmpl.id, region: r.index, gone: false, moveDebt: 0 });
     }
   }

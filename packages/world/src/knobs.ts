@@ -56,6 +56,17 @@ export const KNOBS = {
     unit: "steps, by region tier",
     description: "A region below its roamer target spawns one roamer every N steps (the clock, manifest §5), out of the player's sight. Any parley outcome removes a roamer (S16 ruling), so this is what keeps regions alive.",
   }),
+  // ---- S18 (ADR-066/074): the bestiary roams — spawn tables by ring ----
+  beastShare: knob<Record<RegionTier, number>>({
+    default: { civilized: 0.35, approach: 0.5, wild: 0.5 },
+    unit: "probability a spawned roamer is a spoke-bound signature opponent (beast), by region tier",
+    description: "S18 spawn tables: each roamer (generation and respawn) is a spoke-bound signature opponent of the region's colour (the bestiary, plus the mage-voiced Cunning Tactician) with this probability, else a mage of any colour. Arguing baseline (implementer-picked); world-sim reports it. Beast decks are built from a wider pool than the mages' and can be stronger than their tier suggests (Chris, S18 kickoff).",
+  }),
+  beastTierBlend: knob<Record<RegionTier, [number, number, number]>>({
+    default: { civilized: [85, 15, 0], approach: [33, 50, 17], wild: [0, 50, 50] },
+    unit: "relative weights for beast tiers 1/2/3, by region tier",
+    description: "S18 (Chris): civilized rings are mostly tier-1 beasts with the occasional tier 2; approach ≈ 33/50/17; wild 50/50 tiers 2 and 3. When the spoke has no beast of the rolled tier, the nearest tier available on that spoke is used; a spoke with no beasts spawns a mage.",
+  }),
   // ---- S16 (ADR-072): the radial world ----
   ringRadii: knob<Record<RegionTier, number>>({
     default: { civilized: 0.18, approach: 0.45, wild: 0.78 },
