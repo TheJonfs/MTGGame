@@ -64,6 +64,11 @@ R-044, R-045 (backfilled), **R-046** (mill, 701.13), **R-047** (summoning sickne
 
 Default tier: **228 passed / 2 tier-skipped (230)** — +9 engine fixtures (s16), +1 book of shame (10), +6 world (starters, v3 chain, roamers ×6 incl. roads, multiple decks), +2 controller (v2/v1 migration, deck picker, roamer map — the reached-contact test is deterministic at half speed), loader 72. **FUZZ_FULL: 228 passed, exit 0.** Typecheck clean (+ `packages/ui` clean). **Fuzz-before-fixtures:** `pnpm fuzz:starters` 1,200 random + 800 heuristic (40 pairings), zero errors; the standard random fuzz tiers in `pnpm test`. Ladder gates re-run after the block-plan fix (director round 1): PASS at 1,000/cell — tables in the round-1 entry. Browser-verified: start screen (five starters), viewport + minimap + sight diamond + roamer chip, pursuit → parley → duel → removal, editor picker.
 
+## Director verdicts (closing)
+
+- **Chris walked the radial world and played several matchups: "overall I'm liking the expansion — a good start."** Direction banked for the planner: the world will eventually be **blown out bigger still, with more towns**, and **town card inventories should vary by town as the roster grows** (scale and `townsPer100Cells` are knobs; per-town stock flavour is content + a shop rule — S18 quests/manalinks territory). No specific felt-wrong items filed this round beyond scale; the two interface notes (red zone, auto-tap order) and the AI block finding were fixed in-session.
+- Still pending from earlier sessions: S13 world-loop felt-wrong list, S14 editor usability list, portrait verdicts (five mages + the wurm).
+
 ## Suggested next
 
 1. **Chris's felt-wrong round on the radial roaming map** (scale, sight, roamer speed, road speed, densities, town count) — the knobs are all there; then S17 bestiary/anchors (more beasts make the five lairs distinct) and the fog renderer + POIs when the planner schedules them.
