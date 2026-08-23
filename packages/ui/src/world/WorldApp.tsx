@@ -179,7 +179,7 @@ function DuelResultScreen({ c, pool, oracle, onWatch }: { c: WorldController; po
           <>
             <div className="flyout-title">Your stake is lost</div>
             <div className="dialog-cards">{frames(record.anteLost)}</div>
-            <p style={{ fontSize: 11 }}>Your deck refilled with {record.anteLost.length} {c.world!.player.basicLand.replace(/_/g, " ")}{record.anteLost.length === 1 ? "" : "s"} (the editor is M6b).</p>
+            <p style={{ fontSize: 11 }}>Your deck refilled with {record.anteLost.length} {c.world!.player.basicLand.replace(/_/g, " ")}{record.anteLost.length === 1 ? "" : "s"} — swap a spare back in at the deck editor.</p>
           </>
         )}
         {record.outcome === "draw" && <p>No stakes change hands.</p>}
@@ -270,7 +270,7 @@ function CollectionScreen({ c, pool, oracle }: { c: WorldController; pool: Map<s
     <div className="gallery world-collection">
       <div className="gallery-header">
         <b style={{ fontFamily: "var(--serif)" }}>Collection</b>
-        <span style={{ fontSize: 11 }}>{Object.values(w.player.collection).reduce((n, v) => n + v, 0)} cards · active deck {deckSize(activeDeck(w))} (read-only; the editor is M6b)</span>
+        <span style={{ fontSize: 11 }}>{Object.values(w.player.collection).reduce((n, v) => n + v, 0)} cards · active deck {deckSize(activeDeck(w))} · {Object.keys(w.decks).length} saved deck{Object.keys(w.decks).length === 1 ? "" : "s"}</span>
         {(["all", "W", "U", "B", "R", "G", "land"] as const).map((f) => (
           <button key={f} className={filter === f ? "primary" : ""} onClick={() => setFilter(f)}>{f}</button>
         ))}
@@ -314,7 +314,7 @@ function EditorScreen({ c, pool, oracle }: { c: WorldController; pool: Map<strin
     if (search && !def.name.toLowerCase().includes(search.toLowerCase())) return false;
     if (filter === "all") return true;
     if (["W", "U", "B", "R", "G"].includes(filter)) return cardColors(def).includes(filter as "W");
-    return def.types.includes(filter);
+    return (def.types as string[]).includes(filter);
   };
   const order = (a: string, b: string) => {
     const da = pool.get(a)!, db = pool.get(b)!;
@@ -335,7 +335,14 @@ function EditorScreen({ c, pool, oracle }: { c: WorldController; pool: Map<strin
     <div className="gallery world-editor">
       <div className="gallery-header">
         <b style={{ fontFamily: "var(--serif)" }}>Deck editor</b>
-        <input type="text" value={name} onChange={(e) => c.editorRename(e.target.value)} style={{ width: 140 }} title="deck name" />
+        {/* S16 (v3): the deck picker — switch / new / duplicate / delete. Switching discards an unsaved draft. */}
+        <select value={w.activeDeckName} title="your saved decks (switching discards an unsaved draft)" onChange={(e) => c.deckSwitch(e.target.value)}>
+          {c.deckNames().map((n) => <option key={n} value={n}>{n}{n === w.activeDeckName ? " (active)" : ""}</option>)}
+        </select>
+        <button className="linkish" title="a new deck of 30 basics to build from" onClick={() => { const n = prompt("Name the new deck", `Deck ${c.deckNames().length + 1}`); if (n) c.deckNew(n); }}>new</button>
+        <button className="linkish" title="copy the active deck" onClick={() => { const n = prompt("Name the copy", `${w.activeDeckName} (copy)`); if (n) c.deckDuplicate(n); }}>duplicate</button>
+        <button className="linkish" title="delete a non-active deck" disabled={c.deckNames().length < 2} onClick={() => { const others = c.deckNames().filter((n) => n !== w.activeDeckName); const n = prompt(`Delete which deck? (${others.join(", ")})`, others[0]); if (n) c.deckDelete(n); }}>delete</button>
+        <input type="text" value={name} onChange={(e) => c.editorRename(e.target.value)} style={{ width: 140 }} title="deck name (saved with the deck)" />
         <span className={legality.ok ? "legal" : "illegal"} style={{ fontSize: 12 }}>
           {stats.size} cards · {stats.lands} lands · {legality.ok ? "legal" : legality.reason}
         </span>
@@ -466,6 +473,8 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
             encounterAt={screen.kind === "encounter" ? screen.encounter.at : null}
             encounterPortrait={screen.kind === "encounter" ? `/portraits/${screen.tmpl.portraitChip ?? screen.tmpl.portrait}.png` : null}
             clearedFixed={new Set(w.map.strongholds.map((f, i) => (w.opponents.find((o) => o.id === f.opponentId)?.gone ? i : -1)).filter((i) => i >= 0))}
+            roamers={c.visibleRoamers().map((r) => ({ id: r.inst.id, at: r.inst.at!, portrait: `/portraits/${r.tmpl.portraitChip ?? r.tmpl.portrait}.png`, name: r.tmpl.name, tier: r.tmpl.tier, fleeing: r.fleeing }))}
+            sightRadius={c.knobs.sightRadius}
             onClickCell={(p) => c.clickCell(p)}
           />
         </div>
@@ -474,7 +483,13 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
             {screen.kind === "map"
               ? screen.notice ?? (screen.walking ? `Walking… step ${w.player.stepsTaken}` : screen.preview ? `Path: ${screen.preview.length} steps — click the destination again to walk.` : "Click a destination to preview the path.")
               : screen.kind === "encounter"
-                ? `${screen.tmpl.name} blocks your way.`
+                ? screen.encounter.contact === "reached"
+                  ? `${screen.tmpl.name} catches up with you.`
+                  : screen.encounter.fleeing
+                    ? `You run down ${screen.tmpl.name} — they were fleeing.`
+                    : screen.encounter.contact === "lair"
+                      ? `${screen.tmpl.name} guards this place.`
+                      : `${screen.tmpl.name} blocks your way.`
                 : screen.kind === "town"
                   ? `In ${screen.town.name}.`
                   : ""}

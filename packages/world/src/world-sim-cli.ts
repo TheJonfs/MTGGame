@@ -19,7 +19,6 @@ import { dirname, join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
 import { runMatch, type Agent } from "@shandalar/engine";
 import { HeuristicAgent, difficultyProfile, type Difficulty } from "@shandalar/agents";
-import { DECK_ARCHETYPES } from "@shandalar/sim/decks";
 import { loadCatalog } from "./loader.js";
 import { newWorld, starterTemplate, worldKnobs } from "./state.js";
 import type { DifficultyName } from "./knobs.js";
@@ -44,6 +43,10 @@ const maxLegs = Number(arg("legs", "60"));
 // Measurement-only overrides (never written to the catalog): --tier1-life N sets every tier-1 enemy's world life.
 const tier1Life = Number(arg("tier1-life", "0"));
 if (tier1Life > 0) for (const o of catalog.opponents) if (o.tier === 1) o.worldLife = tier1Life;
+// --tier1-deck starter: tier-1 enemies play the catalog starter of their slice deck's colour (A→red, B→white, C→green, D→black, E→blue) — the enemy-deck-quality measurement.
+const tier1Deck = arg("tier1-deck", "");
+const SLICE_TO_STARTER: Record<string, string> = { A: "starter:red", B: "starter:white", C: "starter:green", D: "starter:black", E: "starter:blue" };
+if (tier1Deck === "starter") for (const o of catalog.opponents) if (o.tier === 1 && o.deck in SLICE_TO_STARTER) o.deck = SLICE_TO_STARTER[o.deck] as typeof o.deck;
 const starter = starterTemplate(catalog, starterId);
 
 const stepsByTier: Record<string, number> = { civilized: 0, approach: 0, wild: 0 };
@@ -94,16 +97,15 @@ for (let seed = 1; seed <= seeds; seed++) {
       }
       const region = w.map.regions[enc.encounter.region]!;
       encountersByTier[region.tier]! += 1;
-      const isLair = w.map.strongholds.some((f) => f.at.x === enc.encounter.at.x && f.at.y === enc.encounter.at.y);
-      if (isLair) lairFights += 1;
-      else if (ev[ev.length - 1] === enc && ev.length >= 2 && ev[ev.length - 2]!.type === "moved" && (ev as { type: string }[]).filter((x) => x.type === "moved").length === path.length) contactsByRoamer += 1; // reached at the end of the last step
+      if (enc.encounter.contact === "lair") lairFights += 1;
+      else if (enc.encounter.contact === "reached") contactsByRoamer += 1;
       else contactsByPlayer += 1;
       if (enc.encounter.fleeing) fleeingCaught += 1;
       const out = parley(w, catalog, enc.encounter, "fight");
       if (out.type !== "fight") break;
       const d = out.duel;
       const human: Agent = new HeuristicAgent(seed * 7 + 1, pool, difficultyProfile(playerTier, starter.archetype, d.spec.players[1].decklist));
-      const enemy: Agent = new HeuristicAgent(seed * 7 + 2, pool, difficultyProfile(d.enemy.difficulty, DECK_ARCHETYPES[d.enemy.deck], d.spec.players[0].decklist));
+      const enemy: Agent = new HeuristicAgent(seed * 7 + 2, pool, difficultyProfile(d.enemy.difficulty, d.enemy.archetype, d.spec.players[0].decklist));
       const result = await runMatch(d.spec, pool, [human, enemy]);
       const rec = applyDuelResult(w, catalog, d, result);
       const t = String(d.enemy.tier);
@@ -125,7 +127,7 @@ for (let seed = 1; seed <= seeds; seed++) {
 
 const pct = (a: number, b: number) => (b === 0 ? "—" : `${((100 * a) / b).toFixed(0)}%`);
 const mean = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
-console.log(`world-sim: ${seeds} seeds, starter ${starterId} "${starter.name}" (${playerTier} pilot, ${policy}), difficulty ${difficulty}${tier1Life ? `, tier-1 life ${tier1Life}` : ""}, tour = all towns + the lair, fight every contact`);
+console.log(`world-sim: ${seeds} seeds, starter ${starterId} "${starter.name}" (${playerTier} pilot, ${policy}), difficulty ${difficulty}${tier1Life ? `, tier-1 life ${tier1Life}` : ""}${tier1Deck ? `, tier-1 decks ${tier1Deck}` : ""}, tour = all towns + the lair, fight every contact`);
 console.log(`  steps/tour: ${(totalSteps / seeds).toFixed(0)} · tours completed alive: ${toursCompleted}/${seeds} · deaths (world life 0): ${deaths}`);
 for (const tier of ["civilized", "approach", "wild"]) {
   const st = stepsByTier[tier]!, en = encountersByTier[tier]!;

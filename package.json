@@ -19,7 +19,8 @@
     "viewer": "vite packages/ui",
     "gallery": "vite packages/ui --open /gallery",
     "knobs:doc": "tsx packages/world/src/knobs-doc-cli.ts",
-    "world-sim": "tsx packages/world/src/world-sim-cli.ts"
+    "world-sim": "tsx packages/world/src/world-sim-cli.ts",
+    "fuzz:starters": "tsx packages/sim/src/fuzz-starters-cli.ts"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

@@ -1,6 +1,5 @@
 import type { MatchResult, MatchSpec, Modifier } from "@shandalar/engine";
-import { DECKS } from "@shandalar/sim/decks";
-import type { Catalog, OpponentTemplate } from "./catalog.js";
+import { enemyDeck, type Catalog, type OpponentTemplate } from "./catalog.js";
 import { isTownCell, regionCells, roamerTarget, rollTemplate, type GoneReason, type OpponentInstance } from "./generate.js";
 import type { KnobValues } from "./knobs.js";
 import { findPath, fixedPointAt, idx, inBounds, manhattan, regionAt, samePoint, townAt, type Point, type Town, type WorldMap } from "./map.js";
@@ -24,6 +23,8 @@ export interface Encounter {
   at: Point;
   /** S16: the roamer was fleeing you (renown rule) — you caught it. */
   fleeing: boolean;
+  /** S16: how contact happened — you stepped onto it, it reached you, or a lair's certain encounter. */
+  contact: "stepped" | "reached" | "lair";
 }
 
 export type StepEvent =
@@ -205,9 +206,9 @@ export function advance(
   const knobs = worldKnobs(world, extra);
   const contactAt = (cell: Point): OpponentInstance | undefined =>
     world.opponents.find((o) => !o.gone && o.at && !o.fixedAt && samePoint(o.at, cell));
-  const encounterOf = (inst: OpponentInstance, cell: Point): Encounter => {
+  const encounterOf = (inst: OpponentInstance, cell: Point, contact: Encounter["contact"]): Encounter => {
     const tmpl = opponentTemplate(catalog, inst);
-    return { opponentId: inst.id, catalogId: inst.catalogId, tier: tmpl.tier, region: regionAt(world.map, cell).index, at: { ...cell }, fleeing: !inst.fixedAt && isFleeing(tmpl, knobs, world.player.renown) };
+    return { opponentId: inst.id, catalogId: inst.catalogId, tier: tmpl.tier, region: regionAt(world.map, cell).index, at: { ...cell }, fleeing: !inst.fixedAt && isFleeing(tmpl, knobs, world.player.renown), contact };
   };
   try {
     for (const cell of path) {
@@ -228,14 +229,14 @@ export function advance(
       if (lair?.opponentId) {
         const resident = world.opponents.find((o) => o.id === lair.opponentId);
         if (resident && !resident.gone) {
-          events.push({ type: "encounter", encounter: encounterOf(resident, cell) });
+          events.push({ type: "encounter", encounter: encounterOf(resident, cell, "lair") });
           break;
         }
       }
       // You stepped onto a roamer (pursuit — the player-initiated contact).
       const stepped = contactAt(cell);
       if (stepped) {
-        events.push({ type: "encounter", encounter: encounterOf(stepped, cell) });
+        events.push({ type: "encounter", encounter: encounterOf(stepped, cell, "stepped") });
         break;
       }
       // Roamers move; one reaching you is contact.
@@ -243,7 +244,7 @@ export function advance(
       for (const sp of respawnRoamers(world, catalog, knobs, rng)) events.push({ type: "spawned", opponentId: sp.id, region: sp.region });
       const reached = contactAt(cell);
       if (reached) {
-        events.push({ type: "encounter", encounter: encounterOf(reached, cell) });
+        events.push({ type: "encounter", encounter: encounterOf(reached, cell, "reached") });
         break;
       }
     }
@@ -297,7 +298,7 @@ export function forfeitCards(world: WorldState, cardIds: string[]): void {
 
 /** Deck legality for the slice: 30-card floor, 4-copy cap except basics. */
 export function deckLegal(deck: Decklist): { ok: boolean; reason?: string } {
-  if (deckSize(deck) < 30) return { ok: false, reason: `deck has ${deckSize(deck)} cards; the floor is 30 (the deck editor is M6b)` };
+  if (deckSize(deck) < 30) return { ok: false, reason: `deck has ${deckSize(deck)} cards; the floor is 30` };
   for (const e of deck) {
     if (!BASICS.includes(e.cardId) && e.count > 4) return { ok: false, reason: `${e.cardId} ×${e.count} exceeds the 4-copy cap` };
   }
@@ -328,7 +329,7 @@ export interface PreparedDuel {
   seed: number;
   spec: MatchSpec;
   /** The AI profile inputs for the caller's agent factory. */
-  enemy: { name: string; difficulty: OpponentTemplate["difficulty"]; deck: OpponentTemplate["deck"]; portrait: string; worldLife: number; tier: 1 | 2 | 3 };
+  enemy: { name: string; difficulty: OpponentTemplate["difficulty"]; deck: OpponentTemplate["deck"]; archetype: "aggro" | "midrange" | "control"; portrait: string; worldLife: number; tier: 1 | 2 | 3 };
 }
 
 export function buyOffPrice(knobs: KnobValues, tier: 1 | 2 | 3, tmpl?: Pick<OpponentTemplate, "kind">): number {
@@ -385,12 +386,12 @@ export function prepareDuel(world: WorldState, catalog: Catalog, enc: Encounter,
     seed,
     players: [
       { name: world.player.name, decklist: activeDeck(world).map((e) => ({ ...e })), agent: "human" },
-      { name: tmpl.name, decklist: DECKS[tmpl.deck].decklist.map((e) => ({ ...e })), agent: `heuristic:${tmpl.difficulty}` },
+      { name: tmpl.name, decklist: enemyDeck(catalog, tmpl.deck).decklist, agent: `heuristic:${tmpl.difficulty}` },
     ],
     rules: { startingLife: world.player.worldLife, handSize: 7, mulligan: "london", maxTurns: 100, ante: knobs.anteCount },
     modifiers,
   };
-  return { encounter: enc, seed, spec, enemy: { name: tmpl.name, difficulty: tmpl.difficulty, deck: tmpl.deck, portrait: tmpl.portrait, worldLife: tmpl.worldLife, tier: tmpl.tier } };
+  return { encounter: enc, seed, spec, enemy: { name: tmpl.name, difficulty: tmpl.difficulty, deck: tmpl.deck, archetype: enemyDeck(catalog, tmpl.deck).archetype, portrait: tmpl.portrait, worldLife: tmpl.worldLife, tier: tmpl.tier } };
 }
 
 /** Resolve a finished duel into the world: ante both ways, gold, world life. */

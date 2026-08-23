@@ -201,6 +201,22 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(await agent("midrange").scoreAttackSet(open, viewCreatures(open), 0, ["rats"])).toBeGreaterThan(0);
   });
 
+  it("book of shame 10 (S16): the Cathartic Adept mills the OPPONENT, never its own controller — self-mill scores below passing, opponent-mill above it", () => {
+    const a = agent("control");
+    const view = mkView({
+      battlefield: [
+        { id: "adept", cardId: "cathartic_adept", controller: 0 },
+        { id: "island", cardId: "island", controller: 0 },
+      ],
+    });
+    const millThem = a.scorePriorityAction(view, { type: "activateAbility", objectId: "adept", abilityIndex: 0, targets: [{ kind: "player", player: 1 }] });
+    const millMe = a.scorePriorityAction(view, { type: "activateAbility", objectId: "adept", abilityIndex: 0, targets: [{ kind: "player", player: 0 }] });
+    const pass = a.scorePriorityAction(view, { type: "pass" });
+    expect(millThem).toBeGreaterThan(millMe);
+    expect(millMe).toBeLessThan(pass);
+    expect(millThem).toBeGreaterThan(pass);
+  });
+
   it("tapping an own creature with the Tactician for no benefit scores below passing", () => {
     const a = agent();
     const view = mkView({

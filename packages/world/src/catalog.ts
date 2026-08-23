@@ -1,4 +1,4 @@
-import { DECKS, type DeckKey } from "@shandalar/sim/decks";
+import { DECKS, DECK_ARCHETYPES, type DeckKey } from "@shandalar/sim/decks";
 import { assertKnobSource, type KnobSource, type RegionTier, type EnemyTier } from "./knobs.js";
 
 /**
@@ -26,11 +26,15 @@ export type Difficulty = "apprentice" | "journeyman" | "master";
 /** ADR-066: mages parley; beasts are distracted (buyable flag + multiplier knob) or not bought at all. */
 export type OpponentKind = "mage" | "beast";
 
+/** S16: an opponent's deck is a slice key (A–E) or a catalog starter ("starter:green") —
+ * the measurement behind the tier-1 enemy-deck question lives on this. */
+export type OpponentDeckRef = DeckKey | `starter:${StarterId}`;
+
 export interface OpponentTemplate {
   id: string;
   name: string;
-  /** Slice opponents play the existing slice decks. */
-  deck: DeckKey;
+  /** Slice opponents play the existing slice decks; `starter:<id>` plays that catalog starter. */
+  deck: OpponentDeckRef;
   tier: EnemyTier;
   difficulty: Difficulty;
   /** Portrait subject slug (docs/art/subjects/<slug>.md → /portraits/<slug>.png). */
@@ -75,6 +79,18 @@ export interface Catalog {
   starters: StarterTemplate[];
 }
 
+/** Resolve an opponent's deck reference to a decklist + archetype (slice deck or catalog starter). */
+export function enemyDeck(catalog: Catalog, ref: OpponentDeckRef): { decklist: StarterDecklist; archetype: StarterArchetype } {
+  if (ref in DECKS) {
+    const k = ref as DeckKey;
+    return { decklist: DECKS[k].decklist.map((e) => ({ ...e })), archetype: DECK_ARCHETYPES[k] };
+  }
+  const id = ref.slice("starter:".length);
+  const s = catalog.starters.find((x) => x.id === id);
+  if (!s) throw new Error(`unknown opponent deck ${ref}`);
+  return { decklist: s.decklist.map((e) => ({ ...e })), archetype: s.archetype };
+}
+
 /** Assemble + validate a catalog from already-parsed JSON objects (browser-safe). */
 export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents: unknown; starters: unknown }): Catalog {
   const r = parts.regions as { catalogVersion: string; regions: RegionTemplate[] };
@@ -96,7 +112,7 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
   for (const op of o.opponents) {
     if (ids.has(op.id)) errors.push(`duplicate opponent id ${op.id}`);
     ids.add(op.id);
-    if (!(op.deck in DECKS)) errors.push(`opponent ${op.id}: unknown deck ${op.deck}`);
+    if (!(op.deck in DECKS) && !(typeof op.deck === "string" && op.deck.startsWith("starter:") && (st.starters ?? []).some((s) => `starter:${s.id}` === op.deck))) errors.push(`opponent ${op.id}: unknown deck ${op.deck}`);
     if (![1, 2, 3].includes(op.tier)) errors.push(`opponent ${op.id}: bad tier ${op.tier}`);
     if (!["apprentice", "journeyman", "master"].includes(op.difficulty)) errors.push(`opponent ${op.id}: bad difficulty ${op.difficulty}`);
     if (!Number.isInteger(op.worldLife) || op.worldLife < 1) errors.push(`opponent ${op.id}: bad worldLife`);

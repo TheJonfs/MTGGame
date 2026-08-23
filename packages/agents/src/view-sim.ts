@@ -26,6 +26,7 @@ function clone(view: GameView): GameView {
   return {
     ...view,
     life: [view.life[0], view.life[1]],
+    librarySizes: [view.librarySizes[0], view.librarySizes[1]], // S16: mill mutates it
     hand: view.hand.map((c) => ({ ...c })),
     combat: {
       attackers: [...view.combat.attackers],
@@ -342,8 +343,26 @@ function applyEffect(
       return 0.15;
     case "searchLibrary":
       return 0.5;
-    case "mill":
-      return 0.1; // ADR-070: mill valuation v1 — a nuisance, not an archetype (the Adept is a starter check)
+    case "mill": {
+      // ADR-070: mill valuation v1 — a nuisance, not an archetype (the Adept
+      // is a starter check). Resolve WHO is milled (book of shame 10: the
+      // Adept milled its own controller half the time when this was a flat
+      // 0.1): milling the opponent is worth a little, more as their library
+      // thins; milling yourself is a real cost in 30-card decks.
+      const ps =
+        e.who === "you" ? [me]
+        : e.who === "opponent" ? [opp]
+        : e.who === "eachPlayer" ? [me, opp]
+        : targets.flatMap((t) => (t.kind === "player" ? [t.player as 0 | 1] : []));
+      let v = 0;
+      for (const p of ps) {
+        const lib = Math.max(0, (view.librarySizes[p] ?? 0) - e.count);
+        view.librarySizes[p] = lib;
+        if (p === me) v -= 1.5 * e.count + (lib <= 5 ? 2 : 0);
+        else v += 0.25 * e.count + (lib <= 5 ? 0.6 * e.count : 0) + (lib === 0 ? 5 : 0);
+      }
+      return v;
+    }
     case "returnFromGraveyard":
       return 0.6;
     default:

@@ -4,14 +4,14 @@ import { dirname, join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
 import { runMatch, type Agent } from "@shandalar/engine";
 import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
-import { DECKS, DECK_ARCHETYPES } from "@shandalar/sim/decks";
+import { DECKS } from "@shandalar/sim/decks";
 import { loadCatalog } from "./loader.js";
 import { generateWorld, DEFAULT_GENERATOR, isTownCell, roamerTarget, type OpponentInstance } from "./generate.js";
 import { findPath, idx, manhattan, reachable, regionAt, samePoint, type Point } from "./map.js";
 import { activeDeck, deserializeWorld, newWorld, serializeWorld, deckSize, starterDecklist, starterTemplate, worldKnobs, type WorldState } from "./state.js";
 import { advance, applyDuelResult, deckLegal, effectiveSight, parley, visibleRoamers, walkTo, type Encounter } from "./journey.js";
 import { WorldRng } from "./rng.js";
-import { catalogFrom, type StarterId } from "./catalog.js";
+import { catalogFrom, enemyDeck, type OpponentDeckRef, type StarterId } from "./catalog.js";
 import { defaultKnobs } from "./knobs.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
@@ -148,9 +148,10 @@ describe("WorldState + world-save-v3", () => {
 
 // ---------- the acceptance journey (brief Part 4, scripted half; S12 carving (b)) ----------
 
-function agentsFor(spec: WorldState, enemyDifficulty: "apprentice" | "journeyman" | "master", enemyDeck: keyof typeof DECKS, seed: number): [Agent, Agent] {
-  const me = new HeuristicAgent(seed * 2 + 1, pool.cards, difficultyProfile("journeyman", starterTemplate(catalog, spec.player.starterId).archetype, [...DECKS[enemyDeck].decklist]));
-  const them = new HeuristicAgent(seed * 2 + 2, pool.cards, difficultyProfile(enemyDifficulty, DECK_ARCHETYPES[enemyDeck], activeDeck(spec).map((e) => ({ ...e }))));
+function agentsFor(spec: WorldState, enemyDifficulty: "apprentice" | "journeyman" | "master", enemyDeckRef: OpponentDeckRef, seed: number): [Agent, Agent] {
+  const enemy = enemyDeck(catalog, enemyDeckRef);
+  const me = new HeuristicAgent(seed * 2 + 1, pool.cards, difficultyProfile("journeyman", starterTemplate(catalog, spec.player.starterId).archetype, enemy.decklist));
+  const them = new HeuristicAgent(seed * 2 + 2, pool.cards, difficultyProfile(enemyDifficulty, enemy.archetype, activeDeck(spec).map((e) => ({ ...e }))));
   return [me, them];
 }
 
@@ -561,7 +562,7 @@ describe("beast opponents (ADR-066 proof of concept)", () => {
     // Force an encounter with the wurm and try to buy it off while broke / while it is unbuyable.
     const inst = w.opponents.find((o) => o.catalogId === "beast_wurm");
     if (inst) {
-      const enc = { opponentId: inst.id, catalogId: inst.catalogId, tier: 3 as const, region: inst.region, at: w.player.position, fleeing: false };
+      const enc = { opponentId: inst.id, catalogId: inst.catalogId, tier: 3 as const, region: inst.region, at: w.player.position, fleeing: false, contact: "stepped" as const };
       w.player.gold = 0;
       expect(parley(w, catalog, enc, "buyoff")).toMatchObject({ type: "refused" });
       const was = wurm.buyable;
@@ -655,6 +656,7 @@ describe("S16 roamers (ADR-071): sight, pursuit, fleeing, contact, removal, resp
     expect(contact).toBeTruthy();
     expect(contact!.opponentId).toBe(inst.id);
     expect(contact!.fleeing).toBe(false);
+    expect(contact!.contact).toBe("reached");
     // Out of sight: a far roamer drifts (stays or one random legal step), never out of its region, never onto a town.
     const far = stage(102, 12);
     const before = { ...far.inst.at! };

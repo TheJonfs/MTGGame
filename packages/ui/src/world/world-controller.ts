@@ -1,6 +1,5 @@
 import type { CardDef } from "@shandalar/cards";
 import type { MatchResult } from "@shandalar/engine";
-import { DECK_ARCHETYPES } from "@shandalar/sim/decks";
 import {
   activeDeck,
   addCopy,
@@ -468,7 +467,7 @@ export class WorldController {
       aiDelayMs: this.aiDelayMs,
       custom: {
         human: { name: this.world.player.name, decklist: duel.spec.players[0].decklist },
-        enemy: { name: tmpl.name, decklist: duel.spec.players[1].decklist, difficulty: tmpl.difficulty, archetype: DECK_ARCHETYPES[tmpl.deck], portrait: tmpl.portrait },
+        enemy: { name: tmpl.name, decklist: duel.spec.players[1].decklist, difficulty: tmpl.difficulty, archetype: duel.enemy.archetype, portrait: tmpl.portrait },
         rules: { startingLife: duel.spec.rules.startingLife, ante: duel.spec.rules.ante ?? 0 },
         modifiers: duel.spec.modifiers,
       },

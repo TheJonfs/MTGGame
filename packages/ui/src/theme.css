@@ -420,10 +420,18 @@ button.primary { background: var(--brass); color: var(--parchment); border: 1.5p
 .world-app { grid-template-rows: 1fr; }
 .world-app > div:first-child { display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
 .world-map-wrap { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 10px 14px; overflow: hidden; }
+.world-map-stage { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.world-map-stage .world-map { width: 100%; height: 100%; }
 .world-map {
   max-height: 100%; max-width: 100%; border: 2px solid var(--ink); border-radius: 6px;
   background: var(--parchment); box-shadow: 2px 4px 12px rgba(0,0,0,0.45);
 }
+/* S16: minimap — the whole world, bottom-right of the viewport; click to preview a path. */
+.world-minimap {
+  position: absolute; right: 10px; bottom: 10px; border: 1.5px solid var(--ink); border-radius: 4px;
+  background: var(--parchment); box-shadow: 1px 2px 8px rgba(0,0,0,0.4); opacity: 0.92; cursor: pointer;
+}
+.world-map .roamer.fleeing { opacity: 0.85; }
 .world-map .region-label { font-family: var(--serif); font-size: 11px; font-weight: 700; fill: var(--ink); opacity: 0.8; letter-spacing: 0.04em; }
 .world-map .town-label { font-family: var(--serif); font-size: 10px; font-weight: 700; fill: var(--ink); }
 .world-chrome .stat { font-family: var(--serif); font-weight: 700; font-size: 15px; display: inline-flex; align-items: center; gap: 4px; }
