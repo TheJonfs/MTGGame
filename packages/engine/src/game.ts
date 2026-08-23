@@ -562,7 +562,9 @@ export class Game {
           const candidates = sacrificeCandidates(this.ctx, player, obj.id, ability.cost.sacrifice.predicate);
           if (candidates.length === 0) throw new Error("no legal sacrifice");
           const options: Action[] = candidates.map((objectId) => ({ type: "sacrifice", objectId }));
-          const pick = options.length === 1 ? options[0]! : await this.request(player, "chooseSacrifice", options);
+          // S18 (S8 concern 5 resolved): the request carries the ability as its source so the chooser
+          // can see what the sacrifice buys (the Aristocrat's Vampire counters — don't sac the Vampire).
+          const pick = options.length === 1 ? options[0]! : await this.request(player, "chooseSacrifice", options, undefined, { cardId: obj.cardId, effects: ability.effects });
           if (pick.type !== "sacrifice") throw new Error("expected sacrifice");
           moveObject(this.ctx, pick.objectId, "graveyard");
         }

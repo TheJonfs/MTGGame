@@ -393,7 +393,8 @@ export class HeuristicAgent implements Agent {
 
   // ---------- Combat: simulated attacks, greedy blocks ----------
 
-  private async attackChoice(view: GameView, request: ActionRequest): Promise<Action> {
+  /** Exposed for the book-of-shame suite (16). */
+  async attackChoice(view: GameView, request: ActionRequest): Promise<Action> {
     const done = request.actions.find((a) => a.type === "doneDeclaringAttackers");
     const offered = request.actions.filter((a) => a.type === "declareAttacker") as { type: string; objectId: string }[];
     if (offered.length === 0) return done ?? request.actions[0]!;
@@ -417,6 +418,32 @@ export class HeuristicAgent implements Agent {
           improved = true;
         }
       }
+    }
+    // S18 director round (Chris's Nighthawk game, book of shame 16): greedy ADDITION from the empty set
+    // never finds the swarm — each lone X/1 into one untapped 1/1 blocker is a bad trade, so nothing is
+    // ever added, though three of them together push two through. Second search: start from EVERYTHING
+    // offered and greedily REMOVE; keep whichever search scores higher (alpha-strike sizing, ADR-062's
+    // "surgical" item done the cheap way — still one sim per candidate set).
+    let allSet = [...new Set([...staged, ...offered.map((a) => a.objectId)])];
+    let allScore = await this.scoreAttackSet(view, creatures, me, allSet);
+    improved = true;
+    while (improved && allSet.length > staged.size) {
+      improved = false;
+      for (const id of allSet) {
+        if (staged.has(id)) continue;
+        const trial = allSet.filter((x) => x !== id);
+        const s = await this.scoreAttackSet(view, creatures, me, trial);
+        if (s > allScore + 0.01) {
+          allScore = s;
+          allSet = trial;
+          improved = true;
+          break; // re-scan from the new set
+        }
+      }
+    }
+    if (allScore > bestScore + 0.01) {
+      bestScore = allScore;
+      bestSet = allSet;
     }
     const next = offered.find((a) => bestSet.includes(a.objectId) && !staged.has(a.objectId));
     return (next as Action | undefined) ?? done ?? request.actions[0]!;
@@ -664,12 +691,35 @@ export class HeuristicAgent implements Agent {
 
   // ---------- Choices ----------
 
-  private sacrificeChoice(view: GameView, request: ActionRequest): Action {
+  /** Sacrifice the cheapest thing — where "cheap" is board value PLUS what the body is worth beyond its
+   * stats (S18 director round, book of shame 15 — the Nighthawk AI fed a Blood Artist to the Aristocrat
+   * over a Typhoid Rats): an observed-DIES engine (Blood Artist) is worth keeping; a body that would
+   * RECEIVE the effect (the Aristocrat's Vampire counters) is worth keeping; a body whose own death pays
+   * us back (Aven Fisher's draw) is cheap to sacrifice. Request.source carries the paying ability. */
+  sacrificeChoice(view: GameView, request: ActionRequest): Action {
     const candidates = request.actions.filter((a) => a.type === "sacrifice") as { type: string; objectId: string }[];
     if (candidates.length === 0) return request.actions[0]!;
+    const boosted = new Set<string>();
+    for (const e of request.source?.effects ?? []) {
+      if (e.type === "addCounters" && "subtype" in e && typeof (e as { subtype?: string }).subtype === "string") boosted.add((e as { subtype: string }).subtype);
+    }
+    const cost = (objectId: string): number => {
+      let v = this.boardValue(view, objectId);
+      const o = view.battlefield.find((b) => b.id === objectId);
+      const def = o ? this.defs.get(o.cardId) : undefined;
+      if (!def) return v;
+      for (const ab of def.abilities ?? []) {
+        if (ab.kind !== "triggered" || ab.event !== "DIES") continue;
+        const src = (ab.condition as { source?: string } | undefined)?.source;
+        if (src === "any" || src === "other") v += 1.5; // an engine that watches others die
+        else if (!ab.optional || ab.effects.some((e) => e.type === "draw")) v -= 0.5; // its own death pays us back
+      }
+      if ((def.subtypes ?? []).some((st) => boosted.has(st))) v += 1.0; // it would receive the counter
+      return v;
+    };
     const ranked = [...candidates].sort((a, b) => {
-      const va = this.boardValue(view, a.objectId);
-      const vb = this.boardValue(view, b.objectId);
+      const va = cost(a.objectId);
+      const vb = cost(b.objectId);
       if (va !== vb) return va - vb;
       return a.objectId.localeCompare(b.objectId);
     });

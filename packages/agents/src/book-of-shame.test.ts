@@ -289,6 +289,37 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect((a.modeChoice(chaff, req([0, 1, 2])) as { mode: number }).mode).toBe(2); // a 1/1 isn't worth the bounce
   });
 
+  it("book of shame 15 (S18, Chris's Nighthawk game): the Aristocrat's sacrifice takes the Typhoid Rats, never the Blood Artist (an engine AND a Vampire that would get the counter)", () => {
+    const a = agent("midrange");
+    const src = { cardId: "indulgent_aristocrat", effects: [{ type: "addCounters" as const, kind: "+1/+1" as const, count: 1, scope: "creaturesYouControl" as const, subtype: "Vampire" }] };
+    const req = (ids: string[]) => ({ player: 0 as const, purpose: "chooseSacrifice" as const, actions: ids.map((objectId) => ({ type: "sacrifice" as const, objectId })), source: src as never });
+    const v = mkView({ battlefield: [{ id: "ar", cardId: "indulgent_aristocrat", controller: 0 }, { id: "ba", cardId: "blood_artist", controller: 0 }, { id: "rats", cardId: "typhoid_rats", controller: 0 }] });
+    expect((a.sacrificeChoice(v, req(["ar", "ba", "rats"])) as { objectId: string }).objectId).toBe("rats");
+    // Without the source (an unknown sacrifice), the Rats still beat the Artist: the engine bonus alone does it.
+    expect((a.sacrificeChoice(v, { ...req(["ba", "rats"]), source: undefined } as never) as { objectId: string }).objectId).toBe("rats");
+  });
+
+  it("book of shame 16 (S18, Chris's Nighthawk game): three X/1s facing one untapped 1/1 swing (two get through) — greedy addition found nothing, the swarm search does; one lone 2/1 into the 1/1 still stays home", async () => {
+    const a = agent("midrange");
+    const swarm = mkView({
+      life: [20, 20],
+      battlefield: [
+        { id: "c1", cardId: "child_of_night", controller: 0 }, // 2/1 lifelink
+        { id: "c2", cardId: "child_of_night", controller: 0 },
+        { id: "c3", cardId: "typhoid_rats", controller: 0 }, // 1/1 deathtouch
+        { id: "ad", cardId: "cathartic_adept", controller: 1 }, // their lone 1/1
+      ],
+    });
+    const req = (ids: string[]) => ({ player: 0 as const, purpose: "declareAttacker" as const, actions: [...ids.map((objectId) => ({ type: "declareAttacker" as const, objectId })), { type: "doneDeclaringAttackers" as const }] });
+    const pick = await a.attackChoice(swarm, req(["c1", "c2", "c3"]));
+    expect(pick.type).toBe("declareAttacker"); // something attacks
+    // Score check: the full swarm beats staying home; a lone Child does not.
+    expect(await a.scoreAttackSet(swarm, viewCreatures(swarm), 0, ["c1", "c2", "c3"])).toBeGreaterThan(0);
+    expect(await a.scoreAttackSet(swarm, viewCreatures(swarm), 0, ["c1"])).toBeLessThan(0.01);
+    const lone = mkView({ battlefield: [{ id: "c1", cardId: "child_of_night", controller: 0 }, { id: "ad", cardId: "cathartic_adept", controller: 1 }] });
+    expect((await a.attackChoice(lone, req(["c1"]))).type).toBe("doneDeclaringAttackers");
+  });
+
   it("tapping an own creature with the Tactician for no benefit scores below passing", () => {
     const a = agent();
     const view = mkView({
