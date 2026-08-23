@@ -117,6 +117,9 @@ body {
   border: 2px dashed rgba(181, 67, 47, 0.75); border-radius: 8px; padding: 6px 10px;
   background: rgba(181, 67, 47, 0.16); min-height: 58px; margin: 6px 0;
   transition: background 0.2s ease, min-height 0.2s ease;
+  /* S16 (Chris): the lane is a flex child of the board column — without this it SHRINKS to fit and its
+     combatants spill visually into the battlefield rows (the "attackers never move into the red zone" report). */
+  flex-shrink: 0;
 }
 .combat-lane.empty { display: flex; align-items: center; justify-content: center; }
 .combat-lane.empty .lane-title { opacity: 0.55; margin: 0; letter-spacing: 0.04em; }
@@ -124,6 +127,7 @@ body {
 .combat-lane .lane-grid { display: flex; gap: 14px; }
 .combat-col { display: flex; flex-direction: column; gap: 4px; align-items: center; }
 .combat-col .attacker-slot, .combat-col .blocker-slot { min-height: 86px; display: flex; gap: 3px; }
+.combat-col .attacker-slot:empty, .combat-col .blocker-slot:empty { min-height: 40px; }
 .lane-title { font-family: var(--serif); font-size: 11px; color: var(--parchment); margin-bottom: 3px; }
 
 /* Hand */

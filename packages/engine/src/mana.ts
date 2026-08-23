@@ -50,11 +50,17 @@ export function producibleSymbols(ctx: EngineCtx, objectId: string): ManaSymbol[
   return out;
 }
 
+/** Untapped producers in auto-pay order: lands and other non-creatures first
+ * (battlefield order within each group), creature producers LAST — auto-pay
+ * spends a Llanowar Elves only when nothing else can pay, so the body stays
+ * untapped to attack/block; manual tapping can still choose it (S16, Chris). */
 function untappedProducers(ctx: EngineCtx, player: PlayerId): { id: string; symbols: ManaSymbol[] }[] {
-  return ctx.state.battlefield
+  const all = ctx.state.battlefield
     .filter((id) => getObject(ctx.state, id).controller === player)
     .map((id) => ({ id, symbols: producibleSymbols(ctx, id) }))
     .filter((p) => p.symbols.length > 0);
+  const isCreature = (id: string) => ctx.defs.def(getObject(ctx.state, id).cardId).types.includes("Creature");
+  return [...all.filter((p) => !isCreature(p.id)), ...all.filter((p) => isCreature(p.id))];
 }
 
 export function totalCost(cost: ManaCost, x: number): { colored: Record<Color, number>; generic: number } {

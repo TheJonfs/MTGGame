@@ -17,12 +17,34 @@ interface BoardProps {
   /** S11 (Chris's note 4): don't draw the opponent's face-down hand row — the
    * count lives in the player panel; the freed row goes to the combat zone. */
   hideOpponentHand?: boolean;
+  /** S16 (Chris): locally STAGED declarations (clicked, not yet confirmed) move into the combat
+   * lane at once — the engine only learns them on Confirm. Attackers by id; blocks as pairs. */
+  stagedAttackers?: string[];
+  stagedBlocks?: { blocker: string; attacker: string }[];
+}
+
+/** Engine combat + local staging, merged (attackers in declaration order, staged after). */
+function combatView(props: BoardProps): { attackers: string[]; blockersOf: (attackerId: string) => string[] } {
+  const state = props.ctx.state;
+  const attackers = [...state.combat.attackers];
+  for (const id of props.stagedAttackers ?? []) if (!attackers.includes(id) && state.objects[id]) attackers.push(id);
+  const blockersOf = (attackerId: string) => {
+    const ordered = state.combat.blockOrder[attackerId];
+    const engine = state.combat.blocks.filter((b) => b.attacker === attackerId).map((b) => b.blocker);
+    const local = (props.stagedBlocks ?? []).filter((b) => b.attacker === attackerId).map((b) => b.blocker);
+    const all = ordered ? [...ordered] : engine;
+    for (const b of local) if (!all.includes(b)) all.push(b);
+    return all.filter((b) => state.objects[b]);
+  };
+  return { attackers, blockersOf };
 }
 
 /** Permanents of one controller, split lands / other, attachments grouped beside hosts. */
-function PermanentsRow({ ctx, player, onHover, onClick, selected, classFor, mirrored }: BoardProps & { player: PlayerId; mirrored?: boolean }) {
+function PermanentsRow(props: BoardProps & { player: PlayerId; mirrored?: boolean }) {
+  const { ctx, player, onHover, onClick, selected, classFor, mirrored } = props;
   const state = ctx.state;
-  const inCombat = new Set([...state.combat.attackers, ...state.combat.blocks.map((b) => b.blocker)]);
+  const cv = combatView(props);
+  const inCombat = new Set([...cv.attackers, ...cv.attackers.flatMap((a) => cv.blockersOf(a))]);
   const ids = state.battlefield.filter((id) => {
     const o = getObject(state, id);
     return o.controller === player && !inCombat.has(id);
@@ -78,11 +100,13 @@ function PermanentsRow({ ctx, player, onHover, onClick, selected, classFor, mirr
  * move INTO it for combat and back out, so the rows never cross over into the
  * other player's permanents. Two aligned rows, column per attacker
  * (art-direction §2); the attacking side's row is nearest the attacker. */
-function CombatLane({ ctx, onHover, onClick, selected, classFor, bottomSeat }: BoardProps) {
+function CombatLane(props: BoardProps) {
+  const { ctx, onHover, onClick, selected, classFor, bottomSeat } = props;
   const state = ctx.state;
   const bottom = bottomSeat ?? 0;
   const attackerOnTop = state.activePlayer !== bottom; // opponent attacks from the top
-  if (state.combat.attackers.length === 0) {
+  const cv = combatView(props);
+  if (cv.attackers.length === 0) {
     return (
       <div className="combat-lane empty">
         <div className="lane-title">Combat zone</div>
@@ -107,11 +131,9 @@ function CombatLane({ ctx, onHover, onClick, selected, classFor, bottomSeat }: B
         Combat — {attackerOnTop ? "attackers above, blockers below" : "attackers below, blockers above"}, paired by column
       </div>
       <div className="lane-grid">
-        {state.combat.attackers.map((attackerId) => {
+        {cv.attackers.map((attackerId) => {
           const attacker = state.objects[attackerId];
-          const ordered = state.combat.blockOrder[attackerId];
-          const staged = state.combat.blocks.filter((b) => b.attacker === attackerId).map((b) => b.blocker);
-          const blockers = (ordered ?? staged).filter((b) => state.objects[b]);
+          const blockers = cv.blockersOf(attackerId);
           const attackerSlot = <div className="attacker-slot">{attacker && withAttachments(attackerId)}</div>;
           const blockerSlot = <div className="blocker-slot">{blockers.map((b) => withAttachments(b))}</div>;
           return (

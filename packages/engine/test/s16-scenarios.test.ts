@@ -144,6 +144,23 @@ describe("creature mana producers (CR 302.6 / 602.5g; Llanowar Elves)", () => {
     expect(first.actions.some((a) => a.type === "tapForMana" && getObject(st, (a as { objectId: string }).objectId).cardId === "llanowar_elves")).toBe(true);
   });
 
+  it("auto-pay prefers lands over creature producers (S16, Chris): three Forests + a rested Elves casting Courser leaves the Elves untapped; it pays only when the lands can't", async () => {
+    const spec: FixtureSpec = {
+      name: "elves-last",
+      setup: { turn: 3, players: [{ battlefield: ["forest", "forest", "forest", "llanowar_elves"], hand: ["centaur_courser"] }, {}] },
+      script: [{ player: 0, do: "cast", card: "centaur_courser" }],
+      run: [{ priority: true }],
+    };
+    const tg = await runFixture(spec);
+    const st = tg.game.state;
+    expect(getObject(st, tg.findBattlefield("llanowar_elves")).tapped).toBe(false);
+    expect(st.battlefield.filter((id) => getObject(st, id).cardId === "forest").every((id) => getObject(st, id).tapped)).toBe(true);
+    // Two Forests + Elves: now the Elves must pay.
+    const spec2: FixtureSpec = { ...spec, name: "elves-needed", setup: { turn: 3, players: [{ battlefield: ["forest", "forest", "llanowar_elves"], hand: ["centaur_courser"] }, {}] } };
+    const tg2 = await runFixture(spec2);
+    expect(getObject(tg2.game.state, tg2.findBattlefield("llanowar_elves")).tapped).toBe(true);
+  });
+
   it("a summoning-sick Elves contributes nothing: no tapForMana offered, canPay excludes it (Courser not castable off two Forests + sick Elves)", async () => {
     const spec: FixtureSpec = {
       name: "elves-sick",

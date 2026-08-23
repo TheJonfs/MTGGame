@@ -673,6 +673,8 @@ export function PlayMatch({
           selected={inspected}
           bottomSeat={c.humanSeat}
           classFor={classFor}
+          stagedAttackers={phase.kind === "attackers" ? [...phase.staged] : []}
+          stagedBlocks={phase.kind === "blockers" ? phase.stagedPairs : []}
         />
         <PromptBar c={c} phase={phase} confirmLabel={confirmLabel} />
       </div>
