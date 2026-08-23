@@ -481,22 +481,63 @@ export class HeuristicAgent implements Agent {
     }
 
     if (lethalChumps) {
-      const unblockedDamage = attackerObjs
-        .filter((a) => !blocked.has(a.id))
-        .reduce((n, a) => n + a.power, 0);
-      if (unblockedDamage >= view.life[blockingPlayer]) {
-        for (const b of available.filter((c) => !blocks.some((x) => x.blocker === c.id))) {
-          const target = attackerObjs
-            .filter((a) => !blocked.has(a.id) && !a.keywords.includes("menace"))
-            .filter((a) => !(a.keywords.includes("flying") && !b.keywords.includes("flying") && !b.keywords.includes("reach")))
-            .sort((x, y) => y.power - x.power)[0];
-          if (!target) break;
-          blocks.push({ blocker: b.id, attacker: target.id });
-          blocked.add(target.id);
+      // S16 (Chris's playtest, book of shame 11): at 5 life facing 3/3, 3/3, 1/1 the
+      // value pass gave the only blocker to the 1/1 (a clean kill) and the old
+      // lethal pass found no FREE blocker left — dead on board. Survival first:
+      // when the planned blocks still let lethal through, re-plan from scratch —
+      // biggest unblocked attackers get blockers until the damage through drops
+      // below life (trample leaks power − toughness), THEN spend what is left
+      // on value. If nothing can save us, the chumps stand anyway.
+      const life = view.life[blockingPlayer];
+      const toughnessOn = (a: SimObject) => blocks.filter((x) => x.attacker === a.id).reduce((n, x) => n + (creatures.find((c) => c.id === x.blocker)?.toughness ?? 0), 0);
+      const damageThrough = () =>
+        attackerObjs.reduce((n, a) => n + (blocked.has(a.id) ? (a.keywords.includes("trample") ? Math.max(0, a.power - toughnessOn(a)) : 0) : a.power), 0);
+      if (damageThrough() >= life) {
+        blocks.length = 0;
+        blocked.clear();
+        const pool = [...available];
+        const take = (b: SimObject) => pool.splice(pool.indexOf(b), 1);
+        for (const a of [...attackerObjs].sort((x, y) => y.power - x.power)) {
+          if (damageThrough() < life) break;
+          const cands = pool.filter((b) => canBlock(b, a));
+          if (a.keywords.includes("menace")) {
+            if (cands.length < 2) continue;
+            const [b1, b2] = [...cands].sort((x, y) => this.blockGain(view, y, a) - this.blockGain(view, x, a));
+            blocks.push({ blocker: b1!.id, attacker: a.id }, { blocker: b2!.id, attacker: a.id });
+            blocked.add(a.id);
+            take(b1!);
+            take(b2!);
+            continue;
+          }
+          if (cands.length === 0) continue;
+          // Among the blockers that can take this attacker, the best exchange (kill/survive beats chump; cheapest chump otherwise).
+          const b = [...cands].sort((x, y) => this.blockGain(view, y, a) - this.blockGain(view, x, a) || objectValue(this.defs, view.battlefield.find((o) => o.id === x.id)!, this.C) - objectValue(this.defs, view.battlefield.find((o) => o.id === y.id)!, this.C))[0]!;
+          blocks.push({ blocker: b.id, attacker: a.id });
+          blocked.add(a.id);
+          take(b);
+        }
+        // Spare blockers: value blocks on what is still unblocked.
+        for (const b of [...pool]) {
+          let best: { attacker: string; gain: number } | null = null;
+          for (const a of attackerObjs) {
+            if (blocked.has(a.id) || a.keywords.includes("menace") || !canBlock(b, a)) continue;
+            const gain = this.blockGain(view, b, a);
+            if (best === null || gain > best.gain) best = { attacker: a.id, gain };
+          }
+          if (best && best.gain > 0) {
+            blocks.push({ blocker: b.id, attacker: best.attacker });
+            blocked.add(best.attacker);
+            take(b);
+          }
         }
       }
     }
     return blocks;
+  }
+
+  /** Test seam (book of shame): the block plan for the given attackers, as the blocker sees it. */
+  planBlocks(view: GameView, attackers: string[]): { blocker: string; attacker: string }[] {
+    return this.greedyBlocks(view, viewCreatures(view), attackers, view.you as PlayerId, true);
   }
 
   private blockChoice(view: GameView, request: ActionRequest): Action {

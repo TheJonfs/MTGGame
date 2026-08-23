@@ -217,6 +217,34 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(millThem).toBeGreaterThan(pass);
   });
 
+  it("book of shame 11 (S16, Chris's playtest): at 5 life facing 3/3 + 3/3 + 1/1 with one 2/2, block a 3/3 and live — not the 1/1 for value and die", () => {
+    const a = agent("midrange");
+    const view = mkView({
+      life: [5, 20],
+      battlefield: [
+        { id: "manowar", cardId: "man_o_war", controller: 0 },
+        { id: "c1", cardId: "centaur_courser", controller: 1 },
+        { id: "c2", cardId: "centaur_courser", controller: 1 },
+        { id: "p1", cardId: "llanowar_elves", controller: 1 }, // the 1/1 — a free kill for a 2/2
+      ],
+    });
+    const plan = a.planBlocks(view, ["c1", "c2", "p1"]);
+    expect(plan).toHaveLength(1);
+    expect(["c1", "c2"]).toContain(plan[0]!.attacker); // 7 − 3 = 4 < 5: live at 1; blocking the 1/1 leaves 6 — dead
+    // Life 6, same board: still a Courser (5 < 6 vs 6 — dead).
+    const view6 = mkView({ life: [6, 20], battlefield: view.battlefield.map((o) => ({ id: o.id, cardId: o.cardId, controller: o.controller })) });
+    const plan6 = a.planBlocks(view6, ["c1", "c2", "p1"]);
+    expect(plan6).toHaveLength(1);
+    expect(["c1", "c2"]).toContain(plan6[0]!.attacker);
+    // Not lethal (life 20): the value block (kill the Elves, survive) is the right call.
+    const view20 = mkView({ life: [20, 20], battlefield: view.battlefield.map((o) => ({ id: o.id, cardId: o.cardId, controller: o.controller })) });
+    expect(a.planBlocks(view20, ["c1", "c2", "p1"])[0]!.attacker).toBe("p1");
+    // Two blockers, still lethal after one: both go to the big attackers.
+    const view2 = mkView({ life: [4, 20], battlefield: [...view.battlefield.map((o) => ({ id: o.id, cardId: o.cardId, controller: o.controller })), { id: "bear", cardId: "grizzly_bears", controller: 0 as const }] });
+    const plan2 = a.planBlocks(view2, ["c1", "c2", "p1"]);
+    expect(plan2.map((b) => b.attacker).sort()).toEqual(["c1", "c2"]); // 7 − 3 − 3 = 1 < 4
+  });
+
   it("tapping an own creature with the Tactician for no benefit scores below passing", () => {
     const a = agent();
     const view = mkView({
