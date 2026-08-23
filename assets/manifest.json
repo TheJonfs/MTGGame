@@ -90,6 +90,66 @@
         }
       }
     },
+    "card-gaean-wurm-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:149c76e5202ab2db92d453fd98ea4dd2652410d1eefd323b9e1c4d5951ce33d1",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:149c76e5202ab2db92d453fd98ea4dd2652410d1eefd323b9e1c4d5951ce33d1",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-gaean-wurm-1/canonical.png",
+          "rendered_at": "2026-08-23T15:48:17+00:00",
+          "thumb": "assets/thumbs/card-gaean-wurm-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-gaean-wurm-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:30feeb8c2362e3b541730d7ad3ea487a47fcb1bb7e75eab2c60a261fdf1df4d3",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:30feeb8c2362e3b541730d7ad3ea487a47fcb1bb7e75eab2c60a261fdf1df4d3",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-gaean-wurm-2/canonical.png",
+          "rendered_at": "2026-08-23T15:48:28+00:00",
+          "thumb": "assets/thumbs/card-gaean-wurm-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-gaean-wurm-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:56d11f8873724240e42e5643880a8d6a8b92d47a3165bfb0854d3c5417f2bd74",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:56d11f8873724240e42e5643880a8d6a8b92d47a3165bfb0854d3c5417f2bd74",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-gaean-wurm-3/canonical.png",
+          "rendered_at": "2026-08-23T15:48:43+00:00",
+          "thumb": "assets/thumbs/card-gaean-wurm-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-gaean-wurm-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:86d3a2943070c4e9d77c0ed4205055ba2a8cc81b74942eb398b384e779d30e8d",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:86d3a2943070c4e9d77c0ed4205055ba2a8cc81b74942eb398b384e779d30e8d",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-gaean-wurm-4/canonical.png",
+          "rendered_at": "2026-08-23T15:48:56+00:00",
+          "thumb": "assets/thumbs/card-gaean-wurm-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "frame-corner": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:d28d11aa234143cd5304958fd58e075d159e516f215b1f50aa8b18d081dac1d8",

@@ -14,6 +14,10 @@ descriptor blocks under `docs/art/subjects/`, composed with `docs/prompts/style.
 | assets/images/card-cunning-tactician-2/canonical.png | docs/art/subjects/card-cunning-tactician-2.md | canonical (ink-and-gouache) | gemini-3.1-flash-image | 2026-08-20 | rejected (candidate round, ADR-052) |
 | assets/images/card-cunning-tactician-3/canonical.png | docs/art/subjects/card-cunning-tactician-3.md | canonical (watercolor storybook) | gemini-3.1-flash-image | 2026-08-20 | rejected (candidate round, ADR-052) |
 | assets/images/card-cunning-tactician-4/canonical.png | docs/art/subjects/card-cunning-tactician-4.md | canonical (chiaroscuro portrait) | gemini-3.1-flash-image | 2026-08-20 | rejected (candidate round, ADR-052) |
+| assets/images/card-gaean-wurm-1/canonical.png | docs/art/subjects/card-gaean-wurm-1.md | canonical (classical oil) | gemini-3.1-flash-image | 2026-08-24 | **kept — Chris's pick** (ADR-052, S17) |
+| assets/images/card-gaean-wurm-2/canonical.png | docs/art/subjects/card-gaean-wurm-2.md | canonical (ink-and-gouache action) | gemini-3.1-flash-image | 2026-08-24 | rejected (candidate round, ADR-052) |
+| assets/images/card-gaean-wurm-3/canonical.png | docs/art/subjects/card-gaean-wurm-3.md | canonical (watercolor storybook) | gemini-3.1-flash-image | 2026-08-24 | rejected (candidate round, ADR-052) |
+| assets/images/card-gaean-wurm-4/canonical.png | docs/art/subjects/card-gaean-wurm-4.md | canonical (woodcut print) | gemini-3.1-flash-image | 2026-08-24 | rejected (candidate round, ADR-052) |
 | assets/images/frame-corner/canonical.png | docs/art/subjects/frame-corner.md | canonical | gemini-3.1-flash-image | 2026-08-19 | kept |
 | assets/images/frame-texture-b/canonical.png | docs/art/subjects/frame-texture-b.md | canonical | gemini-3.1-flash-image | 2026-08-20 | kept |
 | assets/images/frame-texture-c/canonical.png | docs/art/subjects/frame-texture-c.md | canonical | gemini-3.1-flash-image | 2026-08-20 | kept (descriptor tightened once, then --force: conditioning kept reasserting boulders) |
@@ -71,6 +75,7 @@ descriptor blocks under `docs/art/subjects/`, composed with `docs/prompts/style.
 | assets/generated/tokens/{goblin_1_1,soldier_1_1}.png | assets/images/token-{goblin,soldier}/canonical.png | 5:4 center crop (35% upward bias) for the frame art window; copied to packages/ui/public/custom-art/, referenced by the token defs' art.asset (S7 feedback round) |
 | assets/generated/surfaces/frame-{w,u,b,r,g,gold,c,land}.jpg | assets/images/frame-texture-*/canonical.png | 512px JPEG q87 tiles; copied to packages/ui/public/frame-tex/, tiled at 280px as the frame body background (S7 feedback round 2) |
 | assets/generated/card-art/cunning_tactician.png | assets/images/card-cunning-tactician-1/canonical.png | 5:4 center crop (35% upward bias); copied to packages/ui/public/custom-art/, referenced by the card def's art.asset (ADR-052/053) |
+| assets/generated/card-art/gaean_wurm.png | assets/images/card-gaean-wurm-1/canonical.png | 5:4 center crop (35% upward bias); copied to packages/ui/public/custom-art/, referenced by the card def's art.asset (ADR-052/076, S17) |
 | assets/generated/icons/mana-*.svg, status-tapped.svg | assets/images/icon-mana-*/canonical.png, icon-status-tapped | retraced in round 4 with -t 1500 despeckle (-t 250 on mana-white to keep the sun's detached rays): the original traces carried dozens of paper-speck paths that inflated the tight bbox and off-centered the glyphs |
 | assets/generated/icons/chip-{w,u,b,r,g,c,t}.svg | assets/generated/icons/mana-*.svg, status-tapped.svg | bold chip variants: same traced paths with an added stroke of ~9% of glyph size (path space), fattening every line for legibility at 13–20px chip size (S7 feedback rounds 3–4) |
 

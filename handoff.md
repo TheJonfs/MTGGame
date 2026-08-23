@@ -47,6 +47,10 @@
 
 Decklist consequences (planner's): Mother Bear's ability is a five-mana play; Raven is a four-drop; Bouncer, Blood Artist, Scepter each cost one more than drafted — the beast curves shift.
 
+## Director round (post-close): Gaean Wurm art
+
+Chris asked for the ADR-052 candidate review in-session: four directions written into `docs/prompts/card-art.md` (implementer-authored; the S18 brief had assigned the entry to the planner — adjust freely), four subject files, four renders (`--no-style`). **Chris picked candidate 1, the classical oil** (rearing mossy wurm in golden canopy light). Cropped 5:4 (35% upward bias) to `assets/generated/card-art/gaean_wurm.png`, copied to `packages/ui/public/custom-art/`, `art.asset` wired on the card def, MANIFEST kept/rejected rows logged; verified in the gallery. The S18 brief's "Gaean Wurm's four art candidates" item is done.
+
 ## Deviations from the brief
 
 1. **"Up to" targeting (A8) not implemented** — no customer once Restoration Angel is encoded as printed (optional trigger + required target). Ruled at kickoff (Chris: "concur on the defaults"); the amendment text remains ratified for a future customer.
