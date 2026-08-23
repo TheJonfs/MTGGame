@@ -17,6 +17,7 @@
   "toughness": 2,
   "text": "",
   "art": {
+    "asset": "/custom-art/bear_2_2.png",
     "fallback": "rendered"
   }
 }

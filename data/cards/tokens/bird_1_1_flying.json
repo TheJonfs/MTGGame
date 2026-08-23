@@ -20,6 +20,7 @@
     "flying"
   ],
   "art": {
+    "asset": "/custom-art/bird_1_1_flying.png",
     "fallback": "rendered"
   }
 }

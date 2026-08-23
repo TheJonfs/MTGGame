@@ -795,6 +795,51 @@
         }
       }
     },
+    "token-bear": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:42becce59e49c9ae62aaf6309ea1ad19a0d3315081c3c15cb3fadfb9932727fa",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:42becce59e49c9ae62aaf6309ea1ad19a0d3315081c3c15cb3fadfb9932727fa",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/token-bear/canonical.png",
+          "rendered_at": "2026-08-23T15:57:16+00:00",
+          "thumb": "assets/thumbs/token-bear/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "token-bird": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:4a40522c0e608e4b5d459baef3e97ab35413661af8417df4c71e27d28818d74c",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:4a40522c0e608e4b5d459baef3e97ab35413661af8417df4c71e27d28818d74c",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/token-bird/canonical.png",
+          "rendered_at": "2026-08-23T15:57:25+00:00",
+          "thumb": "assets/thumbs/token-bird/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "token-faerie-rogue": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:85e663672ad78c3269fe10b40735908b79eef49d1cf3446adb15fb4284368732",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:85e663672ad78c3269fe10b40735908b79eef49d1cf3446adb15fb4284368732",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/token-faerie-rogue/canonical.png",
+          "rendered_at": "2026-08-23T15:57:53+00:00",
+          "thumb": "assets/thumbs/token-faerie-rogue/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "token-goblin": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:d27f67092180821e4ac8a4bd92cf0bc9822ec5b335b5d00d39a70072381677fb",
@@ -821,6 +866,36 @@
           "path": "assets/images/token-soldier/canonical.png",
           "rendered_at": "2026-08-20T16:02:15+00:00",
           "thumb": "assets/thumbs/token-soldier/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "token-wurm": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:6774276d36d06fb3e62a6cf777c83869bdf07b6388fbc9168edfa6f8e76ad7c4",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:6774276d36d06fb3e62a6cf777c83869bdf07b6388fbc9168edfa6f8e76ad7c4",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/token-wurm/canonical.png",
+          "rendered_at": "2026-08-23T15:57:34+00:00",
+          "thumb": "assets/thumbs/token-wurm/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "token-zombie": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:01fb6fc23962604d5f1aa8998d1b4144ed9f09bb3cd76b4011288c81bc02a147",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:01fb6fc23962604d5f1aa8998d1b4144ed9f09bb3cd76b4011288c81bc02a147",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/token-zombie/canonical.png",
+          "rendered_at": "2026-08-23T15:57:44+00:00",
+          "thumb": "assets/thumbs/token-zombie/canonical.png",
           "variant_prompt": null
         }
       }

@@ -21,6 +21,7 @@
     "flying"
   ],
   "art": {
+    "asset": "/custom-art/faerie_rogue_1_1_flying.png",
     "fallback": "rendered"
   }
 }

@@ -17,6 +17,7 @@
   "toughness": 4,
   "text": "",
   "art": {
+    "asset": "/custom-art/wurm_4_4.png",
     "fallback": "rendered"
   }
 }

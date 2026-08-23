@@ -64,6 +64,11 @@ descriptor blocks under `docs/art/subjects/`, composed with `docs/prompts/style.
 | assets/images/beast-pelakka-wurm/chip.png | docs/art/subjects/beast-pelakka-wurm.md | chip — silhouette crop (82% square, PIL) for the map marker | derived (PIL crop of canonical) | 2026-08-21 | candidate (S14; UI copy packages/ui/public/portraits/beast-pelakka-wurm-chip.png) |
 | assets/images/token-goblin/canonical.png | docs/art/subjects/token-goblin.md | canonical | gemini-3.1-flash-image | 2026-08-20 | kept |
 | assets/images/token-soldier/canonical.png | docs/art/subjects/token-soldier.md | canonical | gemini-3.1-flash-image | 2026-08-20 | kept |
+| assets/images/token-bear/canonical.png | docs/art/subjects/token-bear.md | canonical (1:1) | gemini-3.1-flash-image | 2026-08-24 | kept (S17 Expansion 1 tokens) |
+| assets/images/token-bird/canonical.png | docs/art/subjects/token-bird.md | canonical (1:1) | gemini-3.1-flash-image | 2026-08-24 | kept (S17 Expansion 1 tokens) |
+| assets/images/token-wurm/canonical.png | docs/art/subjects/token-wurm.md | canonical (1:1) | gemini-3.1-flash-image | 2026-08-24 | kept (S17 Expansion 1 tokens) |
+| assets/images/token-zombie/canonical.png | docs/art/subjects/token-zombie.md | canonical (1:1) | gemini-3.1-flash-image | 2026-08-24 | kept (S17 Expansion 1 tokens) |
+| assets/images/token-faerie-rogue/canonical.png | docs/art/subjects/token-faerie-rogue.md | canonical (1:1) | gemini-3.1-flash-image | 2026-08-24 | kept (S17 Expansion 1 tokens) |
 | assets/images/surface-wood/canonical.png | docs/art/subjects/surface-wood.md | canonical | gemini-3.1-flash-image | 2026-08-19 | kept |
 
 ## Derived assets (post-processed)
@@ -73,6 +78,7 @@ descriptor blocks under `docs/art/subjects/`, composed with `docs/prompts/style.
 | assets/generated/icons/*.svg (25) | assets/images/icon-*/canonical.png | sips→mkbitmap(-f4 -s1 -t0.48)→potrace(-s --tight, -t60 despeckle on exile/tapped/plus; -t1500 on transport-pause/end); normalized to 24px, ink #2B2520. S7: five transport glyphs (play/pause/step/jump/end), right-facing masters mirrored in the UI for the left-facing buttons (ADR-044) |
 | assets/generated/surfaces/surface-wood.png | assets/images/surface-wood/canonical.png | center-crop 88%x72% to the saturated band (house style's unpainted-paper edges removed) |
 | assets/generated/tokens/{goblin_1_1,soldier_1_1}.png | assets/images/token-{goblin,soldier}/canonical.png | 5:4 center crop (35% upward bias) for the frame art window; copied to packages/ui/public/custom-art/, referenced by the token defs' art.asset (S7 feedback round) |
+| assets/generated/tokens/{bear_2_2,bird_1_1_flying,wurm_4_4,zombie_2_2,faerie_rogue_1_1_flying}.png | assets/images/token-{bear,bird,wurm,zombie,faerie-rogue}/canonical.png | 5:4 center crop (35% upward bias); copied to packages/ui/public/custom-art/, referenced by the token defs' art.asset (S17 Expansion 1; house style like the S7 tokens) |
 | assets/generated/surfaces/frame-{w,u,b,r,g,gold,c,land}.jpg | assets/images/frame-texture-*/canonical.png | 512px JPEG q87 tiles; copied to packages/ui/public/frame-tex/, tiled at 280px as the frame body background (S7 feedback round 2) |
 | assets/generated/card-art/cunning_tactician.png | assets/images/card-cunning-tactician-1/canonical.png | 5:4 center crop (35% upward bias); copied to packages/ui/public/custom-art/, referenced by the card def's art.asset (ADR-052/053) |
 | assets/generated/card-art/gaean_wurm.png | assets/images/card-gaean-wurm-1/canonical.png | 5:4 center crop (35% upward bias); copied to packages/ui/public/custom-art/, referenced by the card def's art.asset (ADR-052/076, S17) |
