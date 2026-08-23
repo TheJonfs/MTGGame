@@ -45,6 +45,26 @@ Per signature opponent (player W-L summed over the five starters; mages for comp
 
 Cost-shift candidates (ADR-077): the Nighthawk deck carries two of the +1 cards (Blood Artist {1}{B}, Aristocrat unchanged) and is *still* brutal — the signature card itself (lifelink + deathtouch + flying ×4 against a journeyman-piloted starter) is the likelier cause than the shifts; the Gale (Aven Fisher {3}{U}, Channeler) sits slightly under tier, where the Fisher/Raven shifts *could* be biting; the Man-o'-War deck (Raven {2}{U}{U}, Bouncer {1}{U}) is fine at tier 1. The Warband's strength says the Prospector gating is not starving it.
 
+## Director round 1 (2026-08-23, Chris's twelve notes)
+
+- **Attachments across controllers (notes 1–2) — root cause was the Board's grouping**: `PermanentsRow` only grouped auras the row's *player* controlled, so an opponent's Pacifism on your creature, or your Curiosity on a creature Control Magic stole, had no host in its row and was never drawn. Now attachments are gathered by host over the whole battlefield and drawn beside the host as a **stack** (first on top, each later one steps down showing its name strip; hover spreads them). **Controller stripes** on every tile (brass = yours, slate = theirs) and **yours/theirs tags** on dialog options (the Man-o'-War target list).
+- **Nighthawk AI (note 3)**: two pins. **Book of shame 15** — the sacrifice choice now prices what a body is worth beyond its stats: an observed-DIES engine (Blood Artist) +1.5, a body that would *receive* the paying ability's counters (the Aristocrat's Vampires — the engine's ability sac-cost request now carries its `source`, closing S8 concern 5) +1.0 → the Rats go, never the Artist. **Book of shame 16** — the attack search adds a **greedy-remove pass from the full set**: greedy addition from empty never found the swarm (each lone X/1 into one untapped 1/1 is a bad trade), though three together push two through. Ladder mirrors 200/cell after: A 62.5/72, B 70/72, C 79/69.5, D 77.5/74.5, E 66.5/59.5 — within noise of S17, **gate PASS** (full 1,000/cell not re-run).
+- **OQ-1/2 closed, OQ-3/5/6/7/8 ruled** (open-questions.md): lair residents roam *and* host (lesser vs greater lairs banked for the planner); buyable split accepted, **Pelakka Wurm flipped to unbuyable** (refusal line); names stand; fog planning fine + **edge-of-the-map rules and look mode** (arrow keys pan, minimap click pans + previews, Home/⌖ re-centres, walking re-centres); **lair residents +2 life** (`lairResidentLifeBonus` knob; the Wurm at 14 in its lair). **All portraits/plates → kept** in MANIFEST.
+- **Blue starter audit (OQ-9 / note 11)** — mage-only world-sim, 30 seeds, tier 1/2/3 player win %:
+
+  | List | Changes vs current | T1 | T2 | T3 |
+  |---|---|---|---|---|
+  | current | — | 35 | 19 | 10 |
+  | A | −2 Curiosity −1 Divination +2 Aether Channeler +1 Aven Fisher | 43 | 27 | 10 |
+  | B | A −2 Counterspell +2 Essence Scatter | 41 | 28 | 9 |
+  | **C** | B −2 Cathartic Adept +1 Mist Raven +1 Air Elemental | **57** | **44** | 25 |
+  | **D** | −2 Curiosity −1 Divination −2 Counterspell −2 Adept +2 Channeler +2 Fisher +2 Raven +1 Bouncer | **56** | 42 | 25 |
+  | E | current −2 Adept +1 Raven +1 Air Elemental | 50 | 33 | 34 |
+  | F | C with Counterspell kept (no Scatter) | 48 | 42 | 27 |
+
+  **The Cathartic Adepts are the lever** (E: +15 at tier 1 on their own — the S16 mill-clock concern 6 was real); the creature-forward package (Channeler/Fisher/Raven/Air Elemental) adds the rest; Counterspell vs Essence Scatter is noise at 30 seeds. None reach 68; C/D are the best lists measured. Chris's pick → planner → `starters.json` (unchanged this round).
+- **Card tiering (note 12)**: `pnpm card-manifest` writes `docs/card-price-manifest.md` — 102 pool cards with colour/type/cost/mv/current price/flags and a blank "proposed tier" column for the planner audit (OQ-10).
+
 ## Deviations from the brief
 
 1. **`beastTierFallback` knob (default `mage`)** — my first fallback ("nearest tier on the spoke") put tier-2 decks in civilized rings for black/red (no tier-1 beast) and the Nighthawk hit 13% over 89 fights; the default now spawns a mage of the intended tier instead, which keeps Chris's ring blends honest but lowers beast presence where a spoke has gaps (civilized realised beast share ≈0.22 vs the 0.35 knob). Planner's call (OQ-4).
@@ -58,6 +78,7 @@ Cost-shift candidates (ADR-077): the Nighthawk deck carries two of the +1 cards 
 
 ## Concerns
 
+0. **(Round 1) The attack-search change is an AI behaviour change outside the brief's scope** — measured (mirrors within noise, two pins), but the full 1,000/cell gates and the world-sim tables were *not* re-run after it; the Nighthawk's 16% may shift (the fix makes *it* attack more too). Re-run the gates before reading any new world-sim table against the S18 baselines.
 1. **Vampire Nighthawk is the over-performer** (16% player win at tier 2; 13% under `nearest`). The planner's first deck adjustment target; the cost shifts are not the cause. **The Warband over-performs too** (23%) — the Prospector watch item is moot in the other direction.
 2. **Roster gaps make the spawn table lie or thin**: no B/R tier-1 beast, no U tier-3, no G tier-2, no W tier-1/2 *beast* (Tactician covers). With `mage` fallback the civilized B/R rings are mage-heavy; with `nearest` they host tier-2 decks. Filling the gaps (a Typhoid Rats / Goblin Piker-class tier-1 beast for B/R; a blue tier-3) is the real fix. Chris flagged W tier-1/2 and U tier-3 at kickoff; the table adds B/R tier-1 and G tier-2.
 3. **Blue starter still fails the gate** (35% mage-only; 48% on the full roster because tier-1 beasts are softer than tier-1 mages for it). S16 concern 2 stands: a control/tempo shell the journeyman pilot can't drive. Escalated (OQ-9).
@@ -74,7 +95,7 @@ No rules-registry entries (R-049 gained the CR citation); no pool changes. Knobs
 
 ## Test status
 
-Default tier: **265 passed / 2 tier-skipped (267)** — +2 world (spawn tables, respawn), +1 world (Part 6 beast acceptance), +3 controller (dialogs); catalog/beast/lair tests updated for the roster. **FUZZ_FULL: 267 passed, exit 0.** Typecheck clean (+ `packages/ui`). Browser-verified: title plate; fog (home region + sight trail, POIs spawn in, road stubs), fog-honest walk; deck ops; beast parley (Grizzly — plate, voice, "Toss it your rations"); Warband chip on the map; Grenade and Channeler dialogs in `/play`. world-sim: 3 × 5 starters × 30 seeds (nearest / mage / mage-only for W+U).
+Round 1: **267 passed / 2 tier-skipped (269)** (+ book of shame 15, 16); typecheck clean; browser-verified attachment stacks/stripes, look mode, edge rules, beast parley. Close of the main session — default tier: **265 passed / 2 tier-skipped (267)** — +2 world (spawn tables, respawn), +1 world (Part 6 beast acceptance), +3 controller (dialogs); catalog/beast/lair tests updated for the roster. **FUZZ_FULL: 267 passed, exit 0.** Typecheck clean (+ `packages/ui`). Browser-verified: title plate; fog (home region + sight trail, POIs spawn in, road stubs), fog-honest walk; deck ops; beast parley (Grizzly — plate, voice, "Toss it your rations"); Warband chip on the map; Grenade and Channeler dialogs in `/play`. world-sim: 3 × 5 starters × 30 seeds (nearest / mage / mage-only for W+U).
 
 ## Suggested next
 
@@ -85,6 +106,7 @@ Default tier: **265 passed / 2 tier-skipped (267)** — +2 world (spawn tables, 
 ## How to run
 
 ```
+pnpm card-manifest                                       # docs/card-price-manifest.md (shop-tiering sheet)
 pnpm test / FUZZ_FULL=1 pnpm test
 pnpm world-sim --seeds 30 --starter white --policy avoid [--no-beasts]   # per-opponent table at the end
 pnpm fuzz:expansion --games 30 [--agents heuristic]
