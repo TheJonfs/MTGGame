@@ -72,6 +72,11 @@ export const KNOBS = {
     unit: "mage | nearest",
     description: "S18: what a ring does when its spoke has no beast of the rolled tier (black/red have no tier-1 beast, blue no tier-3). `mage` keeps the ring's difficulty honest — a mage of the rolled tier spawns instead (civilized rings stay mostly tier 1); `nearest` puts the spoke's nearest-tier beast there (ties break down in civilized rings, up elsewhere) — more beasts, but a tier-2 deck in a tier-1 slot. The S18 handoff tables were measured under `nearest` first, then `mage`.",
   }),
+  lairResidentLifeBonus: knob<number>({
+    default: 2,
+    unit: "world life added to a lair resident's duel life",
+    description: "S18 director round (Chris, OQ-8): lair bosses fight harder than their roaming kin — the resident's world life is the template's + this (the Pelakka Wurm in its lair: 12 + 2 = 14, the S14 PoC value). A full opponent life-total tuning pass is scheduled later.",
+  }),
   // ---- S16 (ADR-072): the radial world ----
   ringRadii: knob<Record<RegionTier, number>>({
     default: { civilized: 0.18, approach: 0.45, wild: 0.78 },

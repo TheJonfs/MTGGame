@@ -1,0 +1,107 @@
+{
+  "matchSpec": {
+    "seed": 92759455,
+    "players": [
+      {
+        "name": "You",
+        "decklist": [
+          {
+            "cardId": "island",
+            "count": 13
+          },
+          {
+            "cardId": "cathartic_adept",
+            "count": 2
+          },
+          {
+            "cardId": "wind_drake",
+            "count": 3
+          },
+          {
+            "cardId": "man_o_war",
+            "count": 4
+          },
+          {
+            "cardId": "cloudkin_seer",
+            "count": 2
+          },
+          {
+            "cardId": "counterspell",
+            "count": 2
+          },
+          {
+            "cardId": "boomerang",
+            "count": 2
+          },
+          {
+            "cardId": "curiosity",
+            "count": 2
+          }
+        ],
+        "agent": "human"
+      },
+      {
+        "name": "A Vampire Nighthawk",
+        "decklist": [
+          {
+            "cardId": "swamp",
+            "count": 12
+          },
+          {
+            "cardId": "vampire_nighthawk",
+            "count": 4
+          },
+          {
+            "cardId": "child_of_night",
+            "count": 3
+          },
+          {
+            "cardId": "indulgent_aristocrat",
+            "count": 2
+          },
+          {
+            "cardId": "blood_artist",
+            "count": 2
+          },
+          {
+            "cardId": "typhoid_rats",
+            "count": 2
+          },
+          {
+            "cardId": "doom_blade",
+            "count": 2
+          },
+          {
+            "cardId": "mind_rot",
+            "count": 2
+          },
+          {
+            "cardId": "tendrils_of_corruption",
+            "count": 1
+          }
+        ],
+        "agent": "heuristic:journeyman"
+      }
+    ],
+    "rules": {
+      "startingLife": 10,
+      "handSize": 7,
+      "mulligan": "london",
+      "maxTurns": 100,
+      "ante": 1
+    },
+    "modifiers": [
+      {
+        "type": "startingLife",
+        "player": 1,
+        "value": 10
+      }
+    ]
+  },
+  "actionIndex": 0,
+  "turn": 0,
+  "step": "CLEANUP",
+  "note": "Very conservative play by the opponent",
+  "flaggedAt": "2026-08-23T17:58:41.628Z",
+  "viewerVersion": "s6-0.1"
+}

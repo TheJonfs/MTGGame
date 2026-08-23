@@ -538,3 +538,19 @@ button.primary { background: var(--brass); color: var(--parchment); border: 1.5p
 .dialog-mode.selected { border-color: var(--brass); }
 .mode-badge { flex: none; width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--ink); display: grid; place-items: center; font-family: var(--serif); font-weight: 700; font-size: 12px; }
 .mode-label { font-size: 12.5px; }
+
+/* S18 director round: attachment stacks + controller stripes */
+.attach-stack { display: flex; flex-direction: column; align-items: flex-start; }
+.attach-stack .attach-slot { position: relative; }
+.attach-stack .attach-slot + .attach-slot { margin-top: -34px; }   /* each later aura shows its name strip below the previous */
+.attach-stack:hover .attach-slot + .attach-slot { margin-top: 2px; } /* hover spreads the stack */
+.attach-stack .attach-slot { transition: margin-top 120ms ease; }
+.tile.ctl-you { box-shadow: inset 3px 0 0 var(--brass); }
+.tile.ctl-them { box-shadow: inset 3px 0 0 #5b6b7a; }
+.dialog-caption .ctl-tag, .dialog-option .ctl-tag { font-size: 9px; letter-spacing: 0.04em; text-transform: uppercase; padding: 0 3px; border-radius: 2px; margin-right: 3px; color: var(--parchment); }
+.ctl-tag.you { background: var(--brass); }
+.ctl-tag.them { background: #5b6b7a; }
+
+/* S18 (OQ-7): look mode */
+.world-map-stage .recentre { position: absolute; left: 12px; bottom: 12px; font-family: var(--sans); font-size: 11px; background: var(--parchment); color: var(--ink); border: 1.5px solid var(--ink); border-radius: 5px; padding: 3px 9px; cursor: pointer; box-shadow: 1px 2px 6px rgba(0,0,0,0.3); }
+.world-map-stage .map-hint { position: absolute; left: 12px; top: 10px; font-family: var(--serif); font-style: italic; font-size: 10.5px; color: var(--ink-soft); opacity: 0.75; pointer-events: none; }

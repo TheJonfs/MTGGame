@@ -464,6 +464,30 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
   useEffect(() => {
     controller.aiDelayMs = Number(localStorage.getItem("shandalar-ai-delay") ?? 400);
   }, [controller]);
+  // S18 director round (Chris, OQ-7): look around without walking — arrow keys pan the viewport
+  // (3 cells), minimap clicks pan there too, Home / the ⌖ button / walking re-centres on you.
+  const [pan, setPan] = useState<Point>({ x: 0, y: 0 });
+  const panRef = useRef(pan);
+  panRef.current = pan;
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (controller.screen.kind !== "map") return;
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT")) return;
+      const step = 3;
+      const d: Record<string, Point> = { ArrowLeft: { x: -step, y: 0 }, ArrowRight: { x: step, y: 0 }, ArrowUp: { x: 0, y: -step }, ArrowDown: { x: 0, y: step } };
+      if (d[e.key]) { e.preventDefault(); setPan((p) => ({ x: p.x + d[e.key]!.x, y: p.y + d[e.key]!.y })); }
+      else if (e.key === "Home") { e.preventDefault(); setPan({ x: 0, y: 0 }); }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [controller]);
+  const lastPos = useRef<string>("");
+  useEffect(() => {
+    const w = controller.world;
+    const key = w ? `${w.player.position.x},${w.player.position.y}` : "";
+    if (key !== lastPos.current) { lastPos.current = key; if (panRef.current.x || panRef.current.y) setPan({ x: 0, y: 0 }); }
+  });
 
   const c = controller;
   const download = () => {
@@ -523,6 +547,8 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
             roamers={c.visibleRoamers().map((r) => ({ id: r.inst.id, at: r.inst.at!, portrait: `/portraits/${r.tmpl.portraitChip ?? r.tmpl.portrait}.png`, name: r.tmpl.name, tier: r.tmpl.tier, fleeing: r.fleeing }))}
             sightRadius={c.knobs.sightRadius}
             explored={w.explored}
+            pan={pan}
+            onPan={(p) => setPan(p)}
             onClickCell={(p) => c.clickCell(p)}
           />
         </div>

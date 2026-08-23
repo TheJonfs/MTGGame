@@ -385,10 +385,10 @@
       "colors": "G",
       "kind": "beast",
       "spoke": "G",
-      "buyable": true,
+      "buyable": false,
       "parley": {
-        "verb": "Distract",
-        "line": "The Pelakka Wurm, slow and vast. Meat thrown aside may buy you the moment."
+        "line": "The Pelakka Wurm, slow and vast. Nothing you carry is worth its notice.",
+        "refusal": "It is not hungry for what you have. It is hungry."
       },
       "knobs": {
         "anteCount": 2

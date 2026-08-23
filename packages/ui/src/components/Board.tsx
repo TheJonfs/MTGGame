@@ -39,31 +39,48 @@ function combatView(props: BoardProps): { attackers: string[]; blockersOf: (atta
   return { attackers, blockersOf };
 }
 
+/** S18: attachments beside a host as a STACK — the first sits on top, each later one steps down so
+ * its name strip shows beneath the previous (z-order descending); hovering a stack lifts it apart.
+ * Mixed controllers are common here (their Pacifism + your Curiosity on one creature) — each small
+ * tile carries its controller stripe. */
+function AttachStack({ ids, tile }: { ids: string[]; tile: (id: string, small?: boolean) => JSX.Element }) {
+  return (
+    <div className={`attach-stack n${Math.min(ids.length, 4)}`}>
+      {ids.map((a, i) => (
+        <div className="attach-slot" key={a} style={{ zIndex: ids.length - i }}>
+          {tile(a, true)}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /** Permanents of one controller, split lands / other, attachments grouped beside hosts. */
 function PermanentsRow(props: BoardProps & { player: PlayerId; mirrored?: boolean }) {
   const { ctx, player, onHover, onClick, selected, classFor, mirrored } = props;
   const state = ctx.state;
   const cv = combatView(props);
   const inCombat = new Set([...cv.attackers, ...cv.attackers.flatMap((a) => cv.blockersOf(a))]);
-  const ids = state.battlefield.filter((id) => {
-    const o = getObject(state, id);
-    return o.controller === player && !inCombat.has(id);
-  });
+  // S18 director round (Chris's notes 1–2): attachments belong with their HOST, whoever controls
+  // them — an opponent's Pacifism on your creature, or your Curiosity on a creature Control Magic
+  // stole, renders beside the host in the host's row (they used to vanish: the old grouping only
+  // looked at auras the row's player controlled). Hosts are the row's player's unattached permanents.
   const attachments = new Map<string, string[]>();
-  const standalone: string[] = [];
-  for (const id of ids) {
+  for (const id of state.battlefield) {
     const o = getObject(state, id);
-    if (o.attachedTo && state.objects[o.attachedTo]) {
-      attachments.set(o.attachedTo, [...(attachments.get(o.attachedTo) ?? []), id]);
-    } else {
-      standalone.push(id);
-    }
+    if (o.attachedTo && state.objects[o.attachedTo]) attachments.set(o.attachedTo, [...(attachments.get(o.attachedTo) ?? []), id]);
   }
+  const standalone = state.battlefield.filter((id) => {
+    const o = getObject(state, id);
+    return o.controller === player && !inCombat.has(id) && !(o.attachedTo && state.objects[o.attachedTo]);
+  });
   const lands = standalone.filter((id) => ctx.defs.def(getObject(state, id).cardId).types.includes("Land"));
   const rest = standalone.filter((id) => !lands.includes(id));
+  const bottom = props.bottomSeat ?? 0;
+  const ctl = (id: string) => (getObject(state, id).controller === bottom ? "you" : "them");
 
   const tile = (id: string, small = false) => (
-    <CardTile key={id} ctx={ctx} obj={getObject(state, id)} small={small} onHover={onHover} onClick={onClick} selected={selected === id} extraClass={classFor?.(id)} />
+    <CardTile key={id} ctx={ctx} obj={getObject(state, id)} small={small} onHover={onHover} onClick={onClick} selected={selected === id} extraClass={classFor?.(id)} controller={ctl(id)} />
   );
 
   const creaturesRow = (
@@ -72,7 +89,7 @@ function PermanentsRow(props: BoardProps & { player: PlayerId; mirrored?: boolea
         attachments.has(id) ? (
           <div className="host-group" key={id}>
             {tile(id)}
-            {attachments.get(id)!.map((a) => tile(a, true))}
+            <AttachStack ids={attachments.get(id)!} tile={tile} />
           </div>
         ) : (
           tile(id)
@@ -117,12 +134,13 @@ function CombatLane(props: BoardProps) {
   // a Curiosity must not vanish when its host attacks.
   const attachedTo = (hostId: string) =>
     state.battlefield.filter((id) => getObject(state, id).attachedTo === hostId);
+  const ctl = (id: string) => (getObject(state, id).controller === bottom ? "you" : "them");
   const withAttachments = (id: string) => (
     <div className="host-group" key={id}>
-      <CardTile ctx={ctx} obj={getObject(state, id)} onHover={onHover} onClick={onClick} selected={selected === id} extraClass={classFor?.(id)} />
-      {attachedTo(id).map((a) => (
-        <CardTile key={a} ctx={ctx} obj={getObject(state, a)} small onHover={onHover} onClick={onClick} selected={selected === a} extraClass={classFor?.(a)} />
-      ))}
+      <CardTile ctx={ctx} obj={getObject(state, id)} onHover={onHover} onClick={onClick} selected={selected === id} extraClass={classFor?.(id)} controller={ctl(id)} />
+      {attachedTo(id).length > 0 && (
+        <AttachStack ids={attachedTo(id)} tile={(a) => <CardTile key={a} ctx={ctx} obj={getObject(state, a)} small onHover={onHover} onClick={onClick} selected={selected === a} extraClass={classFor?.(a)} controller={ctl(a)} />} />
+      )}
     </div>
   );
   return (

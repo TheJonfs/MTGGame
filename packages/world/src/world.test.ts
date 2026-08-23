@@ -639,8 +639,14 @@ describe("lair fixed point (S14 round 1 prototype)", () => {
       const encL = ev.find((e) => e.type === "encounter")!;
       if (encL.type === "encounter") {
         w.player.gold = 10_000;
+        // S18 (OQ-5): the Wurm is unbuyable now — a flee attempt that fails or a buy-off refusal both leave the resident in place.
         const bo = parley(w, catalog, encL.encounter, "buyoff");
-        expect(bo.type).toBe("boughtOff");
+        expect(bo.type).toBe("refused");
+        expect(resident.gone).toBe(false);
+        // S18 (OQ-8): the resident fights at template life + lairResidentLifeBonus (12 + 2 = 14).
+        const f = parley(w, catalog, encL.encounter, "fight");
+        expect(f.type).toBe("fight");
+        if (f.type === "fight") { expect(f.duel.enemy.worldLife).toBe(14); expect(f.duel.spec.modifiers).toEqual([{ type: "startingLife", player: 1, value: 14 }]); }
         expect(resident.gone).toBe(false);
       }
       resident.gone = true; resident.goneReason = "defeated";

@@ -353,6 +353,20 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption }: { c: MatchContro
     return null;
   };
   const asCards = isSearch || req.actions.every((a) => cardOf(a) !== null);
+  // S18 director round (Chris's note 2): colour-code whose permanent an option refers to — the
+  // Man-o'-War trigger's target list was a wall of same-named tiles with no owner.
+  const ctlTag = (a: (typeof req.actions)[number]): "you" | "them" | null => {
+    const ids: string[] = [];
+    if ("objectId" in a && typeof a.objectId === "string") ids.push(a.objectId);
+    if ("targets" in a && Array.isArray(a.targets)) for (const t of a.targets as { kind: string; id?: string }[]) if (t.kind === "object" && t.id) ids.push(t.id);
+    const bf = ids.map((id) => state.objects[id]).find((o) => o && o.zone === "battlefield");
+    if (!bf) {
+      const pt = ("targets" in a && Array.isArray(a.targets) ? (a.targets as { kind: string; player?: number }[]).find((t) => t.kind === "player") : null);
+      return pt ? (pt.player === c.humanSeat ? "you" : "them") : null;
+    }
+    return bf.controller === c.humanSeat ? "you" : "them";
+  };
+  const tagEl = (a: (typeof req.actions)[number]) => { const t = ctlTag(a); return t ? <span className={`ctl-tag ${t}`}>{t === "you" ? "yours" : "theirs"}</span> : null; };
   // S10 playtest: hovering an option highlights the board permanent(s) it
   // refers to — vital when two options share a card name.
   const boardIdsOf = (a: (typeof req.actions)[number]): string[] => {
@@ -434,9 +448,9 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption }: { c: MatchContro
                 {asCards && cid ? (
                   <CardFrame def={pool.get(cid)!} oracle={oracle[cid]} mini hand />
                 ) : (
-                  <span>{actionLabel(state, pool, a)}</span>
+                  <span>{tagEl(a)}{actionLabel(state, pool, a)}</span>
                 )}
-                {asCards && <div className="dialog-caption">{actionLabel(state, pool, a)}</div>}
+                {asCards && <div className="dialog-caption">{tagEl(a)}{actionLabel(state, pool, a)}</div>}
               </div>
             );
           })}

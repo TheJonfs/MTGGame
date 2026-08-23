@@ -47,11 +47,11 @@ export interface RoamerChip {
   fleeing: boolean;
 }
 
-/** The viewport origin (in cells) for a player position: centred, clamped. */
-export function viewportOrigin(map: { width: number; height: number }, player: Point): Point {
+/** The viewport origin (in cells) for a player position: centred, clamped. S18: plus a pan offset (look mode). */
+export function viewportOrigin(map: { width: number; height: number }, player: Point, pan: Point = { x: 0, y: 0 }): Point {
   const vw = Math.min(VIEW_W, map.width), vh = Math.min(VIEW_H, map.height);
-  const x = Math.max(0, Math.min(map.width - vw, player.x - Math.floor(vw / 2)));
-  const y = Math.max(0, Math.min(map.height - vh, player.y - Math.floor(vh / 2)));
+  const x = Math.max(0, Math.min(map.width - vw, player.x + pan.x - Math.floor(vw / 2)));
+  const y = Math.max(0, Math.min(map.height - vh, player.y + pan.y - Math.floor(vh / 2)));
   return { x, y };
 }
 
@@ -67,6 +67,8 @@ export function WorldMapView({
   roamers = [],
   sightRadius,
   explored,
+  pan = { x: 0, y: 0 },
+  onPan,
   onClickCell,
 }: {
   map: WorldMapModel;
@@ -84,13 +86,24 @@ export function WorldMapView({
   sightRadius?: number;
   /** S18: packed explored bits (world.explored). Absent = everything explored (replays, older saves). */
   explored?: number[] | null;
+  /** S18 (OQ-7): look-mode pan offset in cells (viewport centre = player + pan); onPan receives a new offset. */
+  pan?: Point;
+  onPan?: (p: Point) => void;
   onClickCell: (p: Point) => void;
 }) {
   const [hoverTown, setHoverTown] = useState<Town | null>(null);
   const [hoverLair, setHoverLair] = useState<{ name: string; at: Point } | null>(null);
   const [hoverRoamer, setHoverRoamer] = useState<RoamerChip | null>(null);
   const vw = Math.min(VIEW_W, map.width), vh = Math.min(VIEW_H, map.height);
-  const origin = viewportOrigin(map, player);
+  const origin = viewportOrigin(map, player, pan);
+  const panned = pan.x !== 0 || pan.y !== 0;
+  // S18 (OQ-7): the edges of the map — a heavy double ink rule wherever the viewport meets the world's edge.
+  const edges: { d: string; label: string; lx: number; ly: number; rot: number }[] = [];
+  const X0 = origin.x * CELL, Y0 = origin.y * CELL, X1 = (origin.x + vw) * CELL, Y1 = (origin.y + vh) * CELL;
+  if (origin.x === 0) edges.push({ d: `M${X0 + 2} ${Y0} V${Y1}`, label: "the edge of the map", lx: X0 + 14, ly: (Y0 + Y1) / 2, rot: -90 });
+  if (origin.y === 0) edges.push({ d: `M${X0} ${Y0 + 2} H${X1}`, label: "the edge of the map", lx: (X0 + X1) / 2, ly: Y0 + 16, rot: 0 });
+  if (origin.x + vw >= map.width) edges.push({ d: `M${X1 - 2} ${Y0} V${Y1}`, label: "the edge of the map", lx: X1 - 14, ly: (Y0 + Y1) / 2, rot: 90 });
+  if (origin.y + vh >= map.height) edges.push({ d: `M${X0} ${Y1 - 2} H${X1}`, label: "the edge of the map", lx: (X0 + X1) / 2, ly: Y1 - 8, rot: 0 });
   const W = map.width * CELL;
   const H = map.height * CELL;
   const centre = (p: Point) => ({ cx: p.x * CELL + CELL / 2, cy: p.y * CELL + CELL / 2 });
@@ -266,6 +279,14 @@ export function WorldMapView({
             <image href={encounterPortrait} x={-CELL * 0.75} y={-CELL * 0.75} width={CELL * 1.5} height={CELL * 1.5} clipPath="url(#chip)" />
           </g>
         )}
+        {/* S18 (OQ-7): map edges */}
+        {edges.map((e, i) => (
+          <g key={`edge${i}`} pointerEvents="none">
+            <path d={e.d} stroke="var(--ink)" strokeWidth="5" opacity="0.9" />
+            <path d={e.d} stroke="var(--parchment)" strokeWidth="1.2" strokeDasharray="6 6" />
+            <text x={e.lx} y={e.ly} transform={`rotate(${e.rot} ${e.lx} ${e.ly})`} textAnchor="middle" className="region-label" opacity="0.7">{e.label}</text>
+          </g>
+        ))}
         {/* player chip */}
         <g transform={`translate(${centre(player).cx} ${centre(player).cy})`} pointerEvents="none">
           <circle r={CELL * 0.8} fill="var(--parchment)" stroke="var(--brass)" strokeWidth="2.4" />
@@ -277,7 +298,10 @@ export function WorldMapView({
         const rect = (e.currentTarget as SVGSVGElement).getBoundingClientRect();
         const x = Math.floor(((e.clientX - rect.left) / rect.width) * map.width);
         const y = Math.floor(((e.clientY - rect.top) / rect.height) * map.height);
-        if (x >= 0 && y >= 0 && x < map.width && y < map.height && (!seenXY(x, y) || map.passable[idx(map, { x, y })])) onClickCell({ x, y });
+        if (x >= 0 && y >= 0 && x < map.width && y < map.height) {
+          onPan?.({ x: x - player.x, y: y - player.y });
+          if (!seenXY(x, y) || map.passable[idx(map, { x, y })]) onClickCell({ x, y });
+        }
       }}>
         {miniRegions.map(({ reg, runs }) => runs.map((r, i) => <rect key={`${reg.index}-${i}`} x={r.x * MINI} y={r.y * MINI} width={r.w * MINI} height={MINI} fill={washFor(reg.tier, reg.color)} />))}
         {map.road && map.road.map((r, i) => (r && seenXY(i % map.width, Math.floor(i / map.width)) ? <rect key={`rd${i}`} x={(i % map.width) * MINI} y={Math.floor(i / map.width) * MINI} width={MINI} height={MINI} fill="rgba(43,37,32,0.45)" /> : null))}
@@ -287,6 +311,10 @@ export function WorldMapView({
         <rect x={origin.x * MINI} y={origin.y * MINI} width={vw * MINI} height={vh * MINI} fill="none" stroke="var(--brass)" strokeWidth="1.2" />
         <circle cx={(player.x + 0.5) * MINI} cy={(player.y + 0.5) * MINI} r={MINI * 1.4} fill="var(--brass)" stroke="var(--ink)" strokeWidth="0.6" />
       </svg>
+      {panned && onPan && (
+        <button className="recentre" title="re-centre on you (Home)" onClick={() => onPan({ x: 0, y: 0 })}>⌖ back to you</button>
+      )}
+      <div className="map-hint">arrow keys look around · Home re-centres</div>
     </div>
   );
 }

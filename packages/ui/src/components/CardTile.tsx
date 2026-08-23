@@ -9,6 +9,7 @@ export function CardTile({
   onClick,
   selected,
   extraClass,
+  controller,
 }: {
   ctx: EngineCtx;
   obj: GameObject;
@@ -18,6 +19,9 @@ export function CardTile({
   onClick?: (id: string) => void;
   /** Play-mode interaction states (castable / target / staged / dimmed …). */
   extraClass?: string | undefined;
+  /** S18: whose permanent this is, relative to the seated player — a brass (yours) / slate (theirs)
+   * stripe so a stolen creature or an enemy aura on your creature reads at a glance. */
+  controller?: "you" | "them";
 }) {
   const def = ctx.defs.def(obj.cardId);
   const isCreature = def.types.includes("Creature");
@@ -31,6 +35,7 @@ export function CardTile({
     obj.tapped ? "tapped" : "",
     obj.summoningSick && isCreature ? "sick" : "",
     selected ? "selected" : "",
+    controller ? `ctl-${controller}` : "",
     extraClass ?? "",
   ]
     .filter(Boolean)

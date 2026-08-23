@@ -403,7 +403,9 @@ export function prepareDuel(world: WorldState, catalog: Catalog, enc: Encounter,
   const legal = deckLegal(activeDeck(world));
   if (!legal.ok) throw new Error(`cannot duel: ${legal.reason}`);
   const seed = rng.int(1_000_000_000);
-  const modifiers: Modifier[] = [{ type: "startingLife", player: 1, value: tmpl.worldLife }];
+  // S18 (OQ-8): a lair resident fights at its template life + the lair bonus knob.
+  const enemyLife = tmpl.worldLife + (enc.contact === "lair" ? knobs.lairResidentLifeBonus : 0);
+  const modifiers: Modifier[] = [{ type: "startingLife", player: 1, value: enemyLife }];
   const spec: MatchSpec = {
     seed,
     players: [
@@ -413,7 +415,7 @@ export function prepareDuel(world: WorldState, catalog: Catalog, enc: Encounter,
     rules: { startingLife: world.player.worldLife, handSize: 7, mulligan: "london", maxTurns: 100, ante: knobs.anteCount },
     modifiers,
   };
-  return { encounter: enc, seed, spec, enemy: { name: tmpl.name, difficulty: tmpl.difficulty, deck: tmpl.deck, archetype: enemyDeck(catalog, tmpl.deck).archetype, portrait: tmpl.portrait, worldLife: tmpl.worldLife, tier: tmpl.tier } };
+  return { encounter: enc, seed, spec, enemy: { name: tmpl.name, difficulty: tmpl.difficulty, deck: tmpl.deck, archetype: enemyDeck(catalog, tmpl.deck).archetype, portrait: tmpl.portrait, worldLife: enemyLife, tier: tmpl.tier } };
 }
 
 /** Resolve a finished duel into the world: ante both ways, gold, world life. */
