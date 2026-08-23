@@ -1,0 +1,47 @@
+{
+  "id": "restoration_angel",
+  "name": "Restoration Angel",
+  "source": "real",
+  "manaCost": "{3}{W}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Angel"
+  ],
+  "power": 3,
+  "toughness": 4,
+  "keywords": [
+    "flash",
+    "flying"
+  ],
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "condition": {
+        "self": true
+      },
+      "effects": [
+        {
+          "type": "exileThenReturn",
+          "target": 0,
+          "under": "yourControl"
+        }
+      ],
+      "optional": true,
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "creatureYouControl",
+          "zone": "battlefield",
+          "other": true,
+          "notSubtype": "Angel"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

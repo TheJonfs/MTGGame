@@ -1,0 +1,37 @@
+{
+  "id": "disenchant",
+  "name": "Disenchant",
+  "source": "real",
+  "manaCost": "{1}{W}",
+  "types": [
+    "Instant"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "permanent",
+      "zone": "battlefield",
+      "anyOf": [
+        {
+          "count": 1,
+          "predicate": "artifact",
+          "zone": "battlefield"
+        },
+        {
+          "count": 1,
+          "predicate": "enchantment",
+          "zone": "battlefield"
+        }
+      ]
+    }
+  ],
+  "spellEffect": [
+    {
+      "type": "destroy",
+      "target": 0
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "id": "bitterblossom",
+  "name": "Bitterblossom",
+  "source": "real",
+  "manaCost": "{1}{B}",
+  "types": [
+    "Enchantment"
+  ],
+  "subtypes": [
+    "Faerie"
+  ],
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "UPKEEP",
+      "condition": {
+        "controller": "you"
+      },
+      "effects": [
+        {
+          "type": "loseLife",
+          "amount": 1,
+          "who": "you"
+        },
+        {
+          "type": "createToken",
+          "tokenId": "faerie_rogue_1_1_flying",
+          "count": 1,
+          "who": "you"
+        }
+      ],
+      "optional": false
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

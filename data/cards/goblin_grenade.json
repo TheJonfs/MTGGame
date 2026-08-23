@@ -1,0 +1,31 @@
+{
+  "id": "goblin_grenade",
+  "name": "Goblin Grenade",
+  "source": "real",
+  "manaCost": "{R}",
+  "types": [
+    "Sorcery"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "anyTarget",
+      "zone": "any"
+    }
+  ],
+  "spellEffect": [
+    {
+      "type": "damage",
+      "amount": 5,
+      "target": 0
+    }
+  ],
+  "additionalCost": {
+    "sacrifice": {
+      "predicate": "creature.subtype:Goblin"
+    }
+  },
+  "art": {
+    "fallback": "rendered"
+  }
+}

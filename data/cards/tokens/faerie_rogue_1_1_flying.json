@@ -1,0 +1,26 @@
+{
+  "id": "faerie_rogue_1_1_flying",
+  "name": "Faerie Rogue Token",
+  "source": "custom",
+  "isTokenDef": true,
+  "manaCost": "",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Faerie",
+    "Rogue"
+  ],
+  "colors": [
+    "B"
+  ],
+  "power": 1,
+  "toughness": 1,
+  "text": "",
+  "keywords": [
+    "flying"
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

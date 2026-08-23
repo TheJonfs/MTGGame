@@ -1,0 +1,44 @@
+{
+  "id": "airship_crash",
+  "name": "Airship Crash",
+  "source": "real",
+  "manaCost": "{2}{G}",
+  "types": [
+    "Instant"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "permanent",
+      "zone": "battlefield",
+      "anyOf": [
+        {
+          "count": 1,
+          "predicate": "artifact",
+          "zone": "battlefield"
+        },
+        {
+          "count": 1,
+          "predicate": "enchantment",
+          "zone": "battlefield"
+        },
+        {
+          "count": 1,
+          "predicate": "creature",
+          "zone": "battlefield",
+          "withKeyword": "flying"
+        }
+      ]
+    }
+  ],
+  "spellEffect": [
+    {
+      "type": "destroy",
+      "target": 0
+    }
+  ],
+  "cycling": "{2}",
+  "art": {
+    "fallback": "rendered"
+  }
+}

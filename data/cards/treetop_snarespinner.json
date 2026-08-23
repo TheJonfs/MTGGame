@@ -1,0 +1,45 @@
+{
+  "id": "treetop_snarespinner",
+  "name": "Treetop Snarespinner",
+  "source": "real",
+  "manaCost": "{3}{G}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Spider"
+  ],
+  "power": 1,
+  "toughness": 4,
+  "keywords": [
+    "reach",
+    "deathtouch"
+  ],
+  "abilities": [
+    {
+      "kind": "activated",
+      "timing": "sorcery",
+      "cost": {
+        "mana": "{2}{G}"
+      },
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "creatureYouControl",
+          "zone": "battlefield"
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounters",
+          "kind": "+1/+1",
+          "count": 1,
+          "target": 0
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

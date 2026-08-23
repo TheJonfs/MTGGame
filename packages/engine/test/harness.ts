@@ -148,7 +148,7 @@ export function testPool(): Map<string, CardDef> {
 export type TargetDesc = { object: string } | { player: number } | { spell: string } | { graveyard: string };
 
 export type ScriptEntry =
-  | { player: PlayerId; do: "cast"; card: string; targets?: TargetDesc[]; x?: number }
+  | { player: PlayerId; do: "cast"; card: string; targets?: TargetDesc[]; x?: number; mode?: number }
   | { player: PlayerId; do: "playLand"; card: string }
   /** Declarative multi-step: staged one declareAttacker/declareBlocker at a time, consumed when complete. */
   | { player: PlayerId; do: "attack"; attackers: string[] }
@@ -163,7 +163,9 @@ export type ScriptEntry =
   | { player: PlayerId; do: "bottom"; card: string }
   | { player: PlayerId; do: "discard"; card: string }
   /** ADR-068: take this card from the search candidates, or decline (card omitted). */
-  | { player: PlayerId; do: "search"; card?: string };
+  | { player: PlayerId; do: "search"; card?: string }
+  /** A6 (S17): pick a mode for a modal trigger as it goes on the stack. */
+  | { player: PlayerId; do: "chooseMode"; mode: number };
 
 export interface BattlefieldEntry {
   card: string;
@@ -358,6 +360,7 @@ export class TestGame {
               a.type === "castSpell" &&
               cardIdOf(a.objectId) === entry.card &&
               a.x === entry.x &&
+              a.mode === entry.mode &&
               JSON.stringify(a.targets) === JSON.stringify(wanted),
           ),
         );
@@ -426,6 +429,8 @@ export class TestGame {
         return entry.card
           ? one(actions.find((a) => a.type === "searchPick" && cardIdOf(a.objectId) === entry.card))
           : one(actions.find((a) => a.type === "declineSearch"));
+      case "chooseMode":
+        return one(actions.find((a) => a.type === "chooseMode" && a.mode === entry.mode));
     }
   }
 }

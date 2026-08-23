@@ -4,14 +4,15 @@ import { dirname, join } from "node:path";
 import { loadCardPool } from "./loader.js";
 import { parseManaCost, manaValue } from "./mana.js";
 import { validateCard } from "./validate.js";
-import { isManaAbility } from "./types.js";
+import { EFFECT_TYPES, isManaAbility } from "./types.js";
+import { IMPLEMENTED_EFFECT_TYPES } from "./resolvers.js";
 
 const CARDS_DIR = join(dirname(fileURLToPath(import.meta.url)), "../../../data/cards");
 
 describe("card pool loading", () => {
   it("loads the full pool (S1–S5 additions + tokens) with no errors or warnings", () => {
     const pool = loadCardPool(CARDS_DIR);
-    expect(pool.cards.size).toBe(72); // 20 S1 + 11 S2 + 11 S3 + 16 S4 + 6 S5 + 2 tokens + 1 S8 (Cunning Tactician) + 3 S15 (Growth, Tutor, Lotus) + 2 S16 (Elves, Adept)
+    expect(pool.cards.size).toBe(109); // 20 S1 + 11 S2 + 11 S3 + 16 S4 + 6 S5 + 2 tokens + 1 S8 (Cunning Tactician) + 3 S15 (Growth, Tutor, Lotus) + 2 S16 (Elves, Adept) + 32 S17 (Expansion 1) + 5 tokens (Bear, Bird, Wurm, Zombie, Faerie Rogue)
     // Slice cards use only implemented vocabulary, so no warnings expected.
     expect(pool.warnings).toEqual([]);
   });
@@ -78,15 +79,17 @@ describe("validateCard rejections", () => {
     expect(errors.some((e) => e.includes("out of bounds"))).toBe(true);
   });
 
-  it("warns on valid-but-unimplemented vocabulary", () => {
+  it("every vocabulary word has a resolver as of S17 (untapTarget was the last — Little Bear); the no-resolver warning path stays for future words", () => {
+    const staticOnly = new Set(["grantKeyword", "gainControl"]); // interpreted live by characteristics(); no resolver by design
+    for (const t of EFFECT_TYPES) if (!staticOnly.has(t)) expect(IMPLEMENTED_EFFECT_TYPES.has(t), t).toBe(true);
     const { errors, warnings } = validateCard({
       ...base,
       types: ["Sorcery"],
       targets: [{ count: 1, predicate: "creature", zone: "battlefield" }],
-      spellEffect: [{ type: "untapTarget", target: 0 }], // tapTarget got its resolver in S8 (ADR-053)
+      spellEffect: [{ type: "untapTarget", target: 0 }],
     });
     expect(errors).toEqual([]);
-    expect(warnings.some((w) => w.includes("no resolver yet"))).toBe(true);
+    expect(warnings).toEqual([]);
   });
 });
 

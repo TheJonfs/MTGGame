@@ -1,0 +1,52 @@
+{
+  "id": "werebear",
+  "name": "Werebear",
+  "source": "real",
+  "manaCost": "{1}{G}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Human",
+    "Bear",
+    "Druid"
+  ],
+  "power": 1,
+  "toughness": 1,
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "tap": true
+      },
+      "effects": [
+        {
+          "type": "addMana",
+          "mana": "{G}"
+        }
+      ]
+    },
+    {
+      "kind": "static",
+      "condition": {
+        "value": {
+          "ref": "graveyardCount",
+          "who": "you"
+        },
+        "atLeast": 7
+      },
+      "effects": [
+        {
+          "type": "modifyPT",
+          "power": 3,
+          "toughness": 3,
+          "scope": "self",
+          "duration": "WHILE_SOURCE_ON_BATTLEFIELD"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "id": "moss_viper",
+  "name": "Moss Viper",
+  "source": "real",
+  "manaCost": "{G}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Snake"
+  ],
+  "power": 1,
+  "toughness": 1,
+  "keywords": [
+    "deathtouch"
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "id": "waste_not",
+  "name": "Waste Not",
+  "source": "real",
+  "manaCost": "{1}{B}",
+  "types": [
+    "Enchantment"
+  ],
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "DISCARD",
+      "condition": {
+        "player": "opponentOfController",
+        "type": [
+          "Creature"
+        ]
+      },
+      "effects": [
+        {
+          "type": "createToken",
+          "tokenId": "zombie_2_2",
+          "count": 1,
+          "who": "you"
+        }
+      ],
+      "optional": false
+    },
+    {
+      "kind": "triggered",
+      "event": "DISCARD",
+      "condition": {
+        "player": "opponentOfController",
+        "type": [
+          "Land"
+        ]
+      },
+      "effects": [
+        {
+          "type": "addMana",
+          "mana": "{B}{B}"
+        }
+      ],
+      "optional": false
+    },
+    {
+      "kind": "triggered",
+      "event": "DISCARD",
+      "condition": {
+        "player": "opponentOfController",
+        "notType": [
+          "Creature",
+          "Land"
+        ]
+      },
+      "effects": [
+        {
+          "type": "draw",
+          "count": 1,
+          "who": "you"
+        }
+      ],
+      "optional": false
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

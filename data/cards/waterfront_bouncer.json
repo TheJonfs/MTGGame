@@ -1,0 +1,41 @@
+{
+  "id": "waterfront_bouncer",
+  "name": "Waterfront Bouncer",
+  "source": "real",
+  "manaCost": "{1}{U}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Merfolk",
+    "Spellshaper"
+  ],
+  "power": 1,
+  "toughness": 1,
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "mana": "{U}",
+        "tap": true,
+        "discard": 1
+      },
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "creature",
+          "zone": "battlefield"
+        }
+      ],
+      "effects": [
+        {
+          "type": "bounce",
+          "target": 0
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

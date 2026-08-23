@@ -1,0 +1,69 @@
+{
+  "id": "aether_channeler",
+  "name": "Aether Channeler",
+  "source": "real",
+  "manaCost": "{2}{U}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Human",
+    "Wizard"
+  ],
+  "power": 2,
+  "toughness": 1,
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "condition": {
+        "self": true
+      },
+      "effects": [],
+      "optional": false,
+      "modes": [
+        {
+          "label": "Create a 1/1 white Bird creature token with flying",
+          "effects": [
+            {
+              "type": "createToken",
+              "tokenId": "bird_1_1_flying",
+              "count": 1,
+              "who": "you"
+            }
+          ]
+        },
+        {
+          "label": "Return another target nonland permanent to its owner's hand",
+          "targets": [
+            {
+              "count": 1,
+              "predicate": "nonlandPermanent",
+              "zone": "battlefield",
+              "other": true
+            }
+          ],
+          "effects": [
+            {
+              "type": "bounce",
+              "target": 0
+            }
+          ]
+        },
+        {
+          "label": "Draw a card",
+          "effects": [
+            {
+              "type": "draw",
+              "count": 1,
+              "who": "you"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

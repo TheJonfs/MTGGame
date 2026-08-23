@@ -1,0 +1,22 @@
+{
+  "id": "wurm_4_4",
+  "name": "Wurm Token",
+  "source": "custom",
+  "isTokenDef": true,
+  "manaCost": "",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Wurm"
+  ],
+  "colors": [
+    "G"
+  ],
+  "power": 4,
+  "toughness": 4,
+  "text": "",
+  "art": {
+    "fallback": "rendered"
+  }
+}

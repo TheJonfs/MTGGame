@@ -1,0 +1,38 @@
+{
+  "id": "aven_fisher",
+  "name": "Aven Fisher",
+  "source": "real",
+  "manaCost": "{3}{U}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Bird",
+    "Soldier"
+  ],
+  "power": 2,
+  "toughness": 2,
+  "keywords": [
+    "flying"
+  ],
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "DIES",
+      "condition": {
+        "self": true
+      },
+      "effects": [
+        {
+          "type": "draw",
+          "count": 1,
+          "who": "you"
+        }
+      ],
+      "optional": true
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

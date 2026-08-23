@@ -304,6 +304,13 @@ function sharedOps(ctx: EngineCtx) {
       ctx.bus.emit("TAPPED", { objectId });
     },
 
+    untap(objectId: string): void {
+      const obj = ctx.state.objects[objectId];
+      if (!obj || obj.zone !== "battlefield" || !obj.tapped) return;
+      obj.tapped = false;
+      ctx.bus.emit("UNTAPPED", { objectId });
+    },
+
     exile(objectId: string): void {
       const obj = ctx.state.objects[objectId];
       if (!obj || obj.zone !== "battlefield") return;

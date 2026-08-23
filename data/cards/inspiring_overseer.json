@@ -1,0 +1,43 @@
+{
+  "id": "inspiring_overseer",
+  "name": "Inspiring Overseer",
+  "source": "real",
+  "manaCost": "{2}{W}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Angel",
+    "Cleric"
+  ],
+  "power": 2,
+  "toughness": 1,
+  "keywords": [
+    "flying"
+  ],
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "condition": {
+        "self": true
+      },
+      "effects": [
+        {
+          "type": "gainLife",
+          "amount": 1,
+          "who": "you"
+        },
+        {
+          "type": "draw",
+          "count": 1,
+          "who": "you"
+        }
+      ],
+      "optional": false
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "id": "tendrils_of_corruption",
+  "name": "Tendrils of Corruption",
+  "source": "real",
+  "manaCost": "{3}{B}",
+  "types": [
+    "Instant"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "creature",
+      "zone": "battlefield"
+    }
+  ],
+  "spellEffect": [
+    {
+      "type": "damage",
+      "amount": {
+        "ref": "count",
+        "predicate": {
+          "subtype": "Swamp",
+          "controller": "you"
+        }
+      },
+      "target": 0
+    },
+    {
+      "type": "gainLife",
+      "amount": {
+        "ref": "count",
+        "predicate": {
+          "subtype": "Swamp",
+          "controller": "you"
+        }
+      },
+      "who": "you"
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

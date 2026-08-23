@@ -1,0 +1,20 @@
+{
+  "id": "hordeling_outburst",
+  "name": "Hordeling Outburst",
+  "source": "real",
+  "manaCost": "{1}{R}{R}",
+  "types": [
+    "Sorcery"
+  ],
+  "spellEffect": [
+    {
+      "type": "createToken",
+      "tokenId": "goblin_1_1",
+      "count": 3,
+      "who": "you"
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

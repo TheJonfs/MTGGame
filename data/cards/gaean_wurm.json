@@ -1,0 +1,47 @@
+{
+  "id": "gaean_wurm",
+  "name": "Gaean Wurm",
+  "source": "custom",
+  "manaCost": "{2}{G}{G}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Wurm"
+  ],
+  "power": 1,
+  "toughness": 1,
+  "keywords": [
+    "trample"
+  ],
+  "text": "Trample\nGaean Wurm gets +1/+1 for each Forest you control.",
+  "abilities": [
+    {
+      "kind": "static",
+      "effects": [
+        {
+          "type": "modifyPT",
+          "power": {
+            "ref": "count",
+            "predicate": {
+              "subtype": "Forest",
+              "controller": "you"
+            }
+          },
+          "toughness": {
+            "ref": "count",
+            "predicate": {
+              "subtype": "Forest",
+              "controller": "you"
+            }
+          },
+          "scope": "self",
+          "duration": "WHILE_SOURCE_ON_BATTLEFIELD"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

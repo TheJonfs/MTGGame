@@ -1,0 +1,49 @@
+{
+  "id": "blood_artist",
+  "name": "Blood Artist",
+  "source": "real",
+  "manaCost": "{1}{B}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Vampire"
+  ],
+  "power": 0,
+  "toughness": 1,
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "DIES",
+      "condition": {
+        "source": "any",
+        "type": [
+          "Creature"
+        ]
+      },
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "player",
+          "zone": "any"
+        }
+      ],
+      "effects": [
+        {
+          "type": "loseLife",
+          "amount": 1,
+          "who": "target"
+        },
+        {
+          "type": "gainLife",
+          "amount": 1,
+          "who": "you"
+        }
+      ],
+      "optional": false
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

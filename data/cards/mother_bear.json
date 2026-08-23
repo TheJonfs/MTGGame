@@ -1,0 +1,36 @@
+{
+  "id": "mother_bear",
+  "name": "Mother Bear",
+  "source": "real",
+  "manaCost": "{1}{G}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Bear"
+  ],
+  "power": 2,
+  "toughness": 2,
+  "abilities": [
+    {
+      "kind": "activated",
+      "zone": "graveyard",
+      "timing": "sorcery",
+      "cost": {
+        "mana": "{3}{G}{G}",
+        "exileSelf": true
+      },
+      "effects": [
+        {
+          "type": "createToken",
+          "tokenId": "bear_2_2",
+          "count": 2,
+          "who": "you"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

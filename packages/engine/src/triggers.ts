@@ -63,6 +63,8 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
       return { id, cardId: o.cardId, controller: o.controller };
     });
     for (const [id, lb] of ctx.lookback ?? []) if (!ctx.state.battlefield.includes(id) && id !== movedId) observers.push({ id, cardId: lb.cardId, controller: lb.controller });
+    // The moved object observes its own event too (source "any": Blood Artist's OWN death drains; "other"/"self" sort themselves out below).
+    if (!observers.some((o) => o.id === movedId)) observers.push({ id: movedId, cardId: ev.cardId, controller: movedController });
     for (const obs of observers) {
       (ctx.defs.def(obs.cardId).abilities ?? []).forEach((a, i) => {
         if (a.kind !== "triggered" || a.event !== observedEvent) return;
@@ -78,8 +80,8 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
         if (cond.type && !cond.type.some((t) => movedDef.types.includes(t as never))) return;
         if (cond.notType && cond.notType.some((t) => movedDef.types.includes(t as never))) return;
         if (cond.subtype && !cond.subtype.some((t) => (movedDef.subtypes ?? []).includes(t))) return;
-        // The observer's trigger source: its current identity (graveyard card if it already left).
-        const sourceId = ctx.state.objects[obs.id] ? obs.id : (ctx.lookback?.get(obs.id)?.currentId ?? obs.id);
+        // The observer's trigger source: its current identity (graveyard card if it already left; the moved object's new id).
+        const sourceId = ctx.state.objects[obs.id] ? obs.id : obs.id === movedId ? (ev.newId || ev.oldId) : (ctx.lookback?.get(obs.id)?.currentId ?? obs.id);
         pend(sourceId, obs.cardId, obs.controller, i);
       });
     }

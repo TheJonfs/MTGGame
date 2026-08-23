@@ -1,0 +1,18 @@
+{
+  "id": "dark_ritual",
+  "name": "Dark Ritual",
+  "source": "real",
+  "manaCost": "{B}",
+  "types": [
+    "Instant"
+  ],
+  "spellEffect": [
+    {
+      "type": "addMana",
+      "mana": "{B}{B}{B}"
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

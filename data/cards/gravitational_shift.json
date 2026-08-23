@@ -1,0 +1,35 @@
+{
+  "id": "gravitational_shift",
+  "name": "Gravitational Shift",
+  "source": "real",
+  "manaCost": "{3}{U}{U}",
+  "types": [
+    "Enchantment"
+  ],
+  "abilities": [
+    {
+      "kind": "static",
+      "effects": [
+        {
+          "type": "modifyPT",
+          "power": 2,
+          "toughness": 0,
+          "scope": "allCreatures",
+          "withKeyword": "flying",
+          "duration": "WHILE_SOURCE_ON_BATTLEFIELD"
+        },
+        {
+          "type": "modifyPT",
+          "power": -2,
+          "toughness": 0,
+          "scope": "allCreatures",
+          "withoutKeyword": "flying",
+          "duration": "WHILE_SOURCE_ON_BATTLEFIELD"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

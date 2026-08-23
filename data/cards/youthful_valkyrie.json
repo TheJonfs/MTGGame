@@ -1,0 +1,42 @@
+{
+  "id": "youthful_valkyrie",
+  "name": "Youthful Valkyrie",
+  "source": "real",
+  "manaCost": "{1}{W}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Angel"
+  ],
+  "power": 1,
+  "toughness": 3,
+  "keywords": [
+    "flying"
+  ],
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "condition": {
+        "source": "other",
+        "controller": "you",
+        "subtype": [
+          "Angel"
+        ]
+      },
+      "effects": [
+        {
+          "type": "addCounters",
+          "kind": "+1/+1",
+          "count": 1,
+          "scope": "self"
+        }
+      ],
+      "optional": false
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

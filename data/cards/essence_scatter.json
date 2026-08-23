@@ -1,0 +1,25 @@
+{
+  "id": "essence_scatter",
+  "name": "Essence Scatter",
+  "source": "real",
+  "manaCost": "{1}{U}",
+  "types": [
+    "Instant"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "creatureSpell",
+      "zone": "stack"
+    }
+  ],
+  "spellEffect": [
+    {
+      "type": "counter",
+      "target": 0
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

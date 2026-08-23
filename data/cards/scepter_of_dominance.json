@@ -1,0 +1,34 @@
+{
+  "id": "scepter_of_dominance",
+  "name": "Scepter of Dominance",
+  "source": "real",
+  "manaCost": "{1}{W}{W}",
+  "types": [
+    "Artifact"
+  ],
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "mana": "{W}",
+        "tap": true
+      },
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "permanent",
+          "zone": "battlefield"
+        }
+      ],
+      "effects": [
+        {
+          "type": "tapTarget",
+          "target": 0
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

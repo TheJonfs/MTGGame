@@ -1,0 +1,41 @@
+{
+  "id": "indulgent_aristocrat",
+  "name": "Indulgent Aristocrat",
+  "source": "real",
+  "manaCost": "{B}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Vampire",
+    "Noble"
+  ],
+  "power": 1,
+  "toughness": 1,
+  "keywords": [
+    "lifelink"
+  ],
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "mana": "{2}",
+        "sacrifice": {
+          "predicate": "creature"
+        }
+      },
+      "effects": [
+        {
+          "type": "addCounters",
+          "kind": "+1/+1",
+          "count": 1,
+          "scope": "creaturesYouControl",
+          "subtype": "Vampire"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

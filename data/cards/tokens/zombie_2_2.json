@@ -1,0 +1,22 @@
+{
+  "id": "zombie_2_2",
+  "name": "Zombie Token",
+  "source": "custom",
+  "isTokenDef": true,
+  "manaCost": "",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Zombie"
+  ],
+  "colors": [
+    "B"
+  ],
+  "power": 2,
+  "toughness": 2,
+  "text": "",
+  "art": {
+    "fallback": "rendered"
+  }
+}

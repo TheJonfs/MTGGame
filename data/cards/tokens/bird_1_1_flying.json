@@ -1,0 +1,25 @@
+{
+  "id": "bird_1_1_flying",
+  "name": "Bird Token",
+  "source": "custom",
+  "isTokenDef": true,
+  "manaCost": "",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Bird"
+  ],
+  "colors": [
+    "W"
+  ],
+  "power": 1,
+  "toughness": 1,
+  "text": "",
+  "keywords": [
+    "flying"
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

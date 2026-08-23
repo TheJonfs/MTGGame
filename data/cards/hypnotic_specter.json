@@ -1,0 +1,39 @@
+{
+  "id": "hypnotic_specter",
+  "name": "Hypnotic Specter",
+  "source": "real",
+  "manaCost": "{1}{B}{B}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Specter"
+  ],
+  "power": 2,
+  "toughness": 2,
+  "keywords": [
+    "flying"
+  ],
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "DEALS_DAMAGE_TO_PLAYER",
+      "condition": {
+        "source": "self",
+        "player": "opponentOfController"
+      },
+      "effects": [
+        {
+          "type": "discard",
+          "count": 1,
+          "who": "opponent",
+          "mode": "random"
+        }
+      ],
+      "optional": false
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

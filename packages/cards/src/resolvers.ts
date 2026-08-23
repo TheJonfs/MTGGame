@@ -63,6 +63,8 @@ export interface EffectContext {
   destroyMany(objectIds: string[]): void;
   /** Tap by effect (CR 701.27a): no-op if already tapped or gone. */
   tap(objectId: string): void;
+  /** Untap by effect (CR 701.21a): no-op if already untapped or gone. */
+  untap(objectId: string): void;
   /**
    * Two creatures fight (CR 701.12): each deals damage equal to its power to
    * the other, simultaneously, with the creatures as damage sources (so
@@ -261,6 +263,14 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
     // tapping removes a creature from combat).
     for (const t of targeted(e, ctx)) {
       if (t.kind === "object") ctx.tap(t.id);
+    }
+  },
+
+  untapTarget: (e, ctx) => {
+    if (e.type !== "untapTarget") throw new Error("resolver mismatch");
+    // First user: Little Bear (S17). Untap by effect (CR 701.21a): no-op if already untapped or gone.
+    for (const t of targeted(e, ctx)) {
+      if (t.kind === "object") ctx.untap(t.id);
     }
   },
 };

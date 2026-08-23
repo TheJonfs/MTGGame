@@ -1,0 +1,54 @@
+{
+  "id": "little_bear",
+  "name": "Little Bear",
+  "source": "real",
+  "manaCost": "{2}{G}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Bear"
+  ],
+  "power": 3,
+  "toughness": 2,
+  "keywords": [
+    "flash"
+  ],
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "condition": {
+        "self": true
+      },
+      "effects": [
+        {
+          "type": "untapTarget",
+          "target": 0
+        },
+        {
+          "type": "addCounters",
+          "kind": "+1/+1",
+          "count": 1,
+          "target": 0,
+          "if": {
+            "target": 0,
+            "subtype": "Bear"
+          }
+        }
+      ],
+      "optional": false,
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "creatureYouControl",
+          "zone": "battlefield",
+          "other": true
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}

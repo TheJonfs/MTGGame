@@ -1,0 +1,33 @@
+{
+  "id": "skirk_prospector",
+  "name": "Skirk Prospector",
+  "source": "real",
+  "manaCost": "{R}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Goblin"
+  ],
+  "power": 1,
+  "toughness": 1,
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "sacrifice": {
+          "predicate": "creature.subtype:Goblin"
+        }
+      },
+      "effects": [
+        {
+          "type": "addMana",
+          "mana": "{R}"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  }
+}
