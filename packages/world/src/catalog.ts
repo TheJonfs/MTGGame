@@ -8,7 +8,7 @@ import { assertKnobSource, type KnobSource, type RegionTier, type EnemyTier } fr
  * A world is `(catalogVersion, seed)`: any catalog change that would alter
  * generation bumps the version.
  */
-export const CATALOG_VERSION = "v0";
+export const CATALOG_VERSION = "v1"; // S16 (ADR-072): radial world content — 15 regions (colour × tier) + 5 strongholds
 
 export type Color = "W" | "U" | "B" | "R" | "G" | "C";
 
@@ -71,12 +71,20 @@ export interface StarterTemplate {
   hard?: { add?: StarterDecklist; remove?: StarterDecklist };
 }
 
+/** S16 (ADR-072): the colour castles — fixed points at the end of each spoke; residents are S19+ content. */
+export interface StrongholdTemplate {
+  id: string;
+  name: string;
+  color: Exclude<Color, "C">;
+}
+
 export interface Catalog {
   version: string;
   regions: RegionTemplate[];
   townNames: string[];
   opponents: OpponentTemplate[];
   starters: StarterTemplate[];
+  strongholds: StrongholdTemplate[];
 }
 
 /** Resolve an opponent's deck reference to a decklist + archetype (slice deck or catalog starter). */
@@ -93,7 +101,7 @@ export function enemyDeck(catalog: Catalog, ref: OpponentDeckRef): { decklist: S
 
 /** Assemble + validate a catalog from already-parsed JSON objects (browser-safe). */
 export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents: unknown; starters: unknown }): Catalog {
-  const r = parts.regions as { catalogVersion: string; regions: RegionTemplate[] };
+  const r = parts.regions as { catalogVersion: string; regions: RegionTemplate[]; strongholds?: StrongholdTemplate[] };
   const t = parts.towns as { catalogVersion: string; names: string[] };
   const o = parts.opponents as { catalogVersion: string; opponents: OpponentTemplate[] };
   const st = parts.starters as { catalogVersion: string; starters: StarterTemplate[] };
@@ -108,6 +116,19 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
     if (!Array.isArray(reg.townNames)) errors.push(`region ${reg.id}: townNames must be an array`);
   }
   if (!r.regions.some((x) => x.tier === "civilized")) errors.push("catalog needs at least one civilized region");
+  // ADR-072: the radial generator needs every colour × tier, and a stronghold per colour.
+  for (const c of ["W", "U", "B", "R", "G"] as const) {
+    for (const t of ["civilized", "approach", "wild"] as const) {
+      if (!r.regions.some((x) => x.color === c && x.tier === t)) errors.push(`catalog needs a ${t} region of colour ${c} (ADR-072)`);
+    }
+    if (!(r.strongholds ?? []).some((x) => x.color === c)) errors.push(`catalog needs a stronghold of colour ${c} (ADR-072)`);
+  }
+  const shIds = new Set<string>();
+  for (const sh of r.strongholds ?? []) {
+    if (!sh.id || !sh.name) errors.push(`stronghold missing id/name: ${JSON.stringify(sh)}`);
+    if (shIds.has(sh.id)) errors.push(`duplicate stronghold id ${sh.id}`);
+    shIds.add(sh.id);
+  }
   const ids = new Set<string>();
   for (const op of o.opponents) {
     if (ids.has(op.id)) errors.push(`duplicate opponent id ${op.id}`);
@@ -147,5 +168,5 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
   }
   for (const id of ["white", "blue", "black", "red", "green"]) if (!starterIds.has(id)) errors.push(`missing starter ${id} (every colour needs one — manifest §2b)`);
   if (errors.length) throw new Error(`Catalog validation failed:\n${errors.join("\n")}`);
-  return { version: CATALOG_VERSION, regions: r.regions, townNames: t.names, opponents: o.opponents, starters: st.starters };
+  return { version: CATALOG_VERSION, regions: r.regions, townNames: t.names, opponents: o.opponents, starters: st.starters, strongholds: r.strongholds ?? [] };
 }

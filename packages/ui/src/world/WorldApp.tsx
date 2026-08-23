@@ -509,12 +509,13 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
           <div style={{ fontSize: 12 }}>Deck: {deckSize(activeDeck(w))} cards · basic {w.player.basicLand}</div>
         </div>
         <div className="panel">
-          <h3>Lairs</h3>
+          <h3>Lairs &amp; strongholds</h3>
           {w.map.strongholds.map((f, i) => {
             const resident = w.opponents.find((o) => o.id === f.opponentId);
+            const status = f.kind === "stronghold" ? "castle · sealed" : resident?.gone ? "cleared" : `${w.map.regions[f.region]?.name ?? ""} · waiting`;
             return (
               <div key={i} style={{ fontSize: 12, display: "flex", justifyContent: "space-between", cursor: screen.kind === "map" ? "pointer" : "default" }} title="click to preview the path there" onClick={() => c.clickCell(f.at)}>
-                <span>{f.name ?? f.kind}</span><span style={{ color: resident?.gone ? "var(--boost)" : "var(--danger)" }}>{resident?.gone ? "cleared" : `${w.map.regions[f.region]?.name ?? ""} · waiting`}</span>
+                <span>{f.name ?? f.kind}</span><span style={{ color: f.kind === "stronghold" ? "var(--ink-soft)" : resident?.gone ? "var(--boost)" : "var(--danger)" }}>{status}</span>
               </div>
             );
           })}
@@ -522,7 +523,7 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
         </div>
         <div className="panel">
           <h3>Regions</h3>
-          {w.map.regions.map((r) => (
+          {[...w.map.regions].sort((a, b) => (a.spoke ?? 0) - (b.spoke ?? 0) || ["civilized", "approach", "wild"].indexOf(a.tier) - ["civilized", "approach", "wild"].indexOf(b.tier)).map((r) => (
             <div key={r.index} style={{ fontSize: 12, display: "flex", justifyContent: "space-between" }}>
               <span>{r.name}</span><span style={{ color: "var(--ink-soft)" }}>{r.tier}</span>
             </div>

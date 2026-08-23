@@ -42,7 +42,7 @@ export const KNOBS = {
     description: "Minimum distance between towns (and between a town and a lair). Relaxed deterministically if the map can't fit the count.",
   }),
   townsPer100Cells: knob<Record<RegionTier, number>>({
-    default: { civilized: 0.25, approach: 0.12, wild: 0 },
+    default: { civilized: 0.5, approach: 0.25, wild: 0 },
     unit: "towns per 100 passable cells, by region tier",
     description: "Town density per region (S16 uniform towns): count = max(floor for civilized/approach = 1, round(density × area/100)). Every non-wild region has ≥1 town, so every colour has a home town.",
   }),
@@ -55,6 +55,37 @@ export const KNOBS = {
     default: { civilized: 40, approach: 30, wild: 20 },
     unit: "steps, by region tier",
     description: "A region below its roamer target spawns one roamer every N steps (the clock, manifest §5), out of the player's sight. Any parley outcome removes a roamer (S16 ruling), so this is what keeps regions alive.",
+  }),
+  // ---- S16 (ADR-072): the radial world ----
+  ringRadii: knob<Record<RegionTier, number>>({
+    default: { civilized: 0.18, approach: 0.45, wild: 0.78 },
+    unit: "normalised radius (0 = centre, 1 = map edge), by ring",
+    description: "ADR-072: region hearts sit on five colour spokes at these elliptically-normalised radii (jittered per sector by ringJitter). Strongholds sit at strongholdRadius.",
+  }),
+  strongholdRadius: knob<number>({
+    default: 0.92,
+    unit: "normalised radius",
+    description: "ADR-072: each colour's castle is a fixed point this far out along its spoke (present, unused until S19–S21).",
+  }),
+  spokeJitterDeg: knob<number>({
+    default: 12,
+    unit: "degrees (±)",
+    description: "ADR-072: seed jitter on each spoke's angle (the whole pentagram also gets a random rotation and colour order) — maps differ per seed without losing the radial structure.",
+  }),
+  ringJitter: knob<number>({
+    default: 0.06,
+    unit: "normalised radius (±)",
+    description: "ADR-072: seed jitter on each heart's ring radius.",
+  }),
+  lairsPerRegion: knob<Record<RegionTier, number>>({
+    default: { civilized: 0, approach: 0, wild: 1 },
+    unit: "lairs per region, by tier",
+    description: "S14 lair pattern generalised (ADR-072 proposal §2): fixed points with a held-out beast resident (the catalog's beasts, round-robin). Certain encounter until defeated.",
+  }),
+  roamerStepsPerPlayerStep: knob<Record<"road" | "open", number>>({
+    default: { road: 0.5, open: 1 },
+    unit: "roamer steps per player step, by the PLAYER's terrain",
+    description: "ADR-072: roads are fast and safe-ish — while you stand on a road every roamer moves at this fraction (fractional-accumulating; composed with roamerSpeed by tier). Future terrains (marsh, deep forest >1) and boots-class effects are keys/modifiers here.",
   }),
   roamerSpeed: knob<Record<EnemyTier, number>>({
     default: { 1: 1, 2: 1, 3: 1 },

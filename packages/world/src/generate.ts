@@ -1,21 +1,24 @@
 import type { Catalog, Color, RegionTemplate } from "./catalog.js";
-import { defaultKnobs, type KnobValues } from "./knobs.js";
-import { findPath, idx, inBounds, manhattan, reachable, type FixedPoint, type Point, type RegionInstance, type Town, type WorldMap } from "./map.js";
+import { defaultKnobs, type KnobValues, type RegionTier } from "./knobs.js";
+import { exploredNone, findPath, idx, inBounds, manhattan, markExplored, reachable, samePoint, type FixedPoint, type Point, type RegionInstance, type Town, type WorldMap } from "./map.js";
 import { WorldRng } from "./rng.js";
 
 /**
- * Seeded world generator (manifest §6; brief Part 2). Authored catalog in,
- * `(catalogVersion, seed)` → the same world every time. Shape: Voronoi
- * regions (L1 distance → connected), rough terrain sprinkled then carved so
- * every town is reachable from the start, towns placed as fixed points with
- * spacing, and a fixed-point API that strongholds (M6b+) will use.
+ * Seeded world generator (manifest §6). Authored catalog in, `(catalogVersion,
+ * seed)` → the same world every time.
  *
- * S16 (ADR-071): the grid scales by the `mapScale` knob; towns are per
- * region by density (every non-wild region ≥1 — "uniform towns"); the start
- * is the home colour's town; opponents are ROAMERS with positions spawned
- * in-region by density (encounter rolls are gone); the home region's roster
- * uses the civilized tier table (S16 interim ruling, Q4 — until the radial
- * generator gives every colour a civilized region).
+ * S16 (ADR-072) — **the radial world**: five colour spokes (seed-rotated,
+ * colour order shuffled, each angle jittered) × three rings (civilized /
+ * approach / wild at `ringRadii`, jittered) from an elliptically-normalised
+ * centre give 15 region hearts (colour × tier) to the existing L1-Voronoi,
+ * so borders wobble organically while the radial structure holds. Each
+ * colour's **stronghold** is a fixed point at `strongholdRadius` on its spoke
+ * (present, unused until S19+). Towns per region by ring-tiered density
+ * (every non-wild region ≥1; civilized names are hub-outward — the first is
+ * the colour's home-start town). **Roads** are shortest passable paths over a
+ * minimum spanning tree of the towns plus the civilized hub cycle. Lairs per
+ * region by knob (the S14 pattern; beasts round-robin). Roamers are spawned
+ * in-region by density (ADR-071).
  */
 
 export interface GeneratorOptions {
@@ -24,27 +27,9 @@ export interface GeneratorOptions {
   height: number;
   /** Fraction of cells that start impassable (rough terrain); carving restores connectivity. */
   roughness: number;
-  civilizedRegions: number; // 2–3
-  approachRegions: number;
-  wildRegions: number;
-  /** Legacy (pre-S16) total-town count; used only when knobs are absent. */
-  towns: number;
-  townSpacing: number;
-  /** Legacy roster size per region; used only when knobs are absent (world-save-v1/v2 shape). */
-  rosterPerRegion: number;
 }
 
-export const DEFAULT_GENERATOR: GeneratorOptions = {
-  width: 40,
-  height: 28,
-  roughness: 0.1,
-  civilizedRegions: 3,
-  approachRegions: 2,
-  wildRegions: 1,
-  towns: 4,
-  townSpacing: 7,
-  rosterPerRegion: 4,
-};
+export const DEFAULT_GENERATOR: GeneratorOptions = { width: 40, height: 28, roughness: 0.1 };
 
 export type GoneReason = "defeated" | "boughtOff" | "fled" | "draw" | "lost";
 
@@ -66,6 +51,8 @@ export interface OpponentInstance {
 export interface GeneratedWorld {
   map: WorldMap;
   opponents: OpponentInstance[];
+  /** S16 (ADR-072): packed explored bits — the home region + the start's sight (fog reserved, not rendered). */
+  explored: number[];
 }
 
 /** Encounter tables by region tier: which enemy tiers show up, weighted. */
@@ -74,6 +61,9 @@ export const TIER_TABLES: Record<string, (1 | 2 | 3)[]> = {
   approach: [2, 2, 3, 1],
   wild: [3, 3, 2],
 };
+
+export const SPOKE_COLORS: Exclude<Color, "C">[] = ["W", "U", "B", "R", "G"];
+const TIERS: RegionTier[] = ["civilized", "approach", "wild"];
 
 /** Fixed-point placement with spacing (towns now; strongholds later). */
 export function placeFixedPoints(
@@ -93,13 +83,13 @@ export function placeFixedPoints(
 }
 
 export interface GenerateExtra {
-  /** Resolved knobs (mapScale, town/roamer densities…). Defaults when absent. */
+  /** Resolved knobs (mapScale, rings, densities…). Defaults when absent. */
   knobs?: KnobValues;
-  /** The starter's colour: the start town is in this colour's region (S16 home-region start). */
+  /** The starter's colour: the start town is this colour's first civilized town (ADR-072 home start). */
   homeColor?: Color;
 }
 
-/** Passable, non-town, non-fixed cells of a region (spawn / town candidates). */
+/** Passable (by default) cells of a region. */
 export function regionCells(map: WorldMap, region: number, passableOnly = true): Point[] {
   const out: Point[] = [];
   for (let y = 0; y < map.height; y++) {
@@ -123,7 +113,7 @@ export function roamerTarget(map: WorldMap, region: RegionInstance, knobs: KnobV
   return Math.max(1, Math.round((knobs.roamerDensityPer100Cells[region.tier] * area) / 100));
 }
 
-/** Pick a catalog template for a region by its tier table. */
+/** Pick a catalog template for a region by its tier table (mages only — beasts are lair residents). */
 export function rollTemplate(rng: WorldRng, catalog: Catalog, tier: RegionInstance["tier"]): Catalog["opponents"][number] {
   const table = TIER_TABLES[tier] ?? [1];
   const t = rng.pick(table);
@@ -149,6 +139,65 @@ export function spawnRoamers(map: WorldMap, opponents: OpponentInstance[], rng: 
   }
 }
 
+/** BFS distance field over passable cells (−1 = unreachable). */
+function distanceField(map: WorldMap, from: Point): Int32Array {
+  const d = new Int32Array(map.width * map.height).fill(-1);
+  const q: number[] = [idx(map, from)];
+  d[idx(map, from)] = 0;
+  let head = 0;
+  while (head < q.length) {
+    const i = q[head++]!;
+    const x = i % map.width, y = Math.floor(i / map.width);
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const nx = x + dx, ny = y + dy;
+      if (nx < 0 || ny < 0 || nx >= map.width || ny >= map.height) continue;
+      const j = ny * map.width + nx;
+      if (d[j] !== -1 || !map.passable[j]) continue;
+      d[j] = d[i]! + 1;
+      q.push(j);
+    }
+  }
+  return d;
+}
+
+/** Roads (ADR-072): shortest passable paths along a minimum spanning tree of
+ * all towns (by path length) plus the civilized hub cycle (home town → next
+ * spoke's home town). Flags cells on `map.road`. */
+export function buildRoads(map: WorldMap, homeTowns: Town[]): void {
+  const towns = map.towns;
+  if (towns.length < 2) return;
+  const fields = towns.map((t) => distanceField(map, t.at));
+  const dist = (a: number, b: number) => fields[a]![idx(map, towns[b]!.at)] ?? -1;
+  // Prim's MST.
+  const inTree = new Set<number>([0]);
+  const edges: [number, number][] = [];
+  while (inTree.size < towns.length) {
+    let best: [number, number, number] | null = null;
+    for (const a of inTree) {
+      for (let b = 0; b < towns.length; b++) {
+        if (inTree.has(b)) continue;
+        const d = dist(a, b);
+        if (d < 0) continue;
+        if (!best || d < best[2]) best = [a, b, d];
+      }
+    }
+    if (!best) break; // disconnected towns (carving should prevent this)
+    inTree.add(best[1]);
+    edges.push([best[0], best[1]]);
+  }
+  // Hub cycle: civilized home towns in spoke order.
+  for (let i = 0; i < homeTowns.length; i++) {
+    const a = towns.indexOf(homeTowns[i]!), b = towns.indexOf(homeTowns[(i + 1) % homeTowns.length]!);
+    if (a >= 0 && b >= 0 && a !== b) edges.push([a, b]);
+  }
+  for (const [a, b] of edges) {
+    const path = findPath(map, towns[a]!.at, towns[b]!.at);
+    if (!path) continue;
+    map.road[idx(map, towns[a]!.at)] = true;
+    for (const c of path) map.road[idx(map, c)] = true;
+  }
+}
+
 export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOptions = DEFAULT_GENERATOR, extra: GenerateExtra = {}): GeneratedWorld {
   const rng = new WorldRng(seed ^ 0x9e3779b9);
   const knobs = extra.knobs ?? defaultKnobs();
@@ -156,56 +205,33 @@ export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOpt
   const width = Math.round(opts.width * scale);
   const height = Math.round(opts.height * scale);
   const cells = width * height;
-
-  // 1. Region hearts: pick templates per tier (reuse if the catalog has fewer
-  //    than requested), then spread hearts with spacing.
-  const byTier = (t: RegionTemplate["tier"]) => catalog.regions.filter((r) => r.tier === t);
-  const pickTemplates = (t: RegionTemplate["tier"], n: number): RegionTemplate[] => {
-    const pool = byTier(t);
-    if (pool.length === 0) return [];
-    const shuffled = rng.shuffle(pool);
-    return Array.from({ length: n }, (_, i) => shuffled[i % shuffled.length]!);
+  const centre: Point = { x: Math.floor(width / 2), y: Math.floor(height / 2) };
+  const jitter = (amp: number) => (rng.float() * 2 - 1) * amp;
+  const clampPt = (p: Point): Point => ({ x: Math.max(1, Math.min(width - 2, Math.round(p.x))), y: Math.max(1, Math.min(height - 2, Math.round(p.y))) });
+  const polar = (thetaDeg: number, r: number): Point => {
+    const th = (thetaDeg * Math.PI) / 180;
+    return clampPt({ x: centre.x + Math.cos(th) * r * (width / 2 - 1), y: centre.y + Math.sin(th) * r * (height / 2 - 1) });
   };
-  const templates = [
-    ...pickTemplates("civilized", opts.civilizedRegions),
-    ...pickTemplates("approach", opts.approachRegions),
-    ...pickTemplates("wild", opts.wildRegions),
-  ];
-  // S16 colour-coverage invariant: every colour W/U/B/R/G must have a
-  // civilized-or-approach region. If the roll missed one, swap a duplicate
-  // template (or the last of its tier) for the missing colour's template.
-  for (const color of ["W", "U", "B", "R", "G"] as const) {
-    if (templates.some((t) => t.color === color && t.tier !== "wild")) continue;
-    const cand = catalog.regions.find((t) => t.color === color && t.tier !== "wild");
-    if (!cand) continue; // catalog can't provide it — the fuzz invariant reports it
-    const seen = new Set<string>();
-    let swapAt = -1;
-    templates.forEach((t, i) => {
-      if (t.tier === "wild") return;
-      if (seen.has(t.id) && swapAt === -1) swapAt = i;
-      seen.add(t.id);
+
+  // 1. Spokes (colour order shuffled, pentagram rotated, each angle jittered) × rings → 15 hearts + 5 stronghold points.
+  const colours = rng.shuffle(SPOKE_COLORS);
+  const theta0 = rng.float() * 360;
+  const spokeAngle: number[] = colours.map((_, i) => theta0 + i * 72 + jitter(knobs.spokeJitterDeg));
+  const pickTemplate = (color: Color, tier: RegionTier): RegionTemplate => {
+    const pool = catalog.regions.filter((r) => r.color === color && r.tier === tier);
+    if (pool.length === 0) throw new Error(`catalog has no ${tier} region of colour ${color} (ADR-072)`);
+    return rng.pick(pool);
+  };
+  const regions: RegionInstance[] = [];
+  const strongholdPts: { at: Point; color: Exclude<Color, "C">; spoke: number }[] = [];
+  colours.forEach((color, i) => {
+    TIERS.forEach((tier) => {
+      const tmpl = pickTemplate(color, tier);
+      const r = Math.max(0.02, knobs.ringRadii[tier] + jitter(knobs.ringJitter));
+      regions.push({ index: regions.length, templateId: tmpl.id, name: tmpl.name, tier, color, heart: polar(spokeAngle[i]! + jitter(4), r), spoke: i });
     });
-    if (swapAt === -1) swapAt = templates.findIndex((t) => t.tier === cand.tier);
-    if (swapAt !== -1) templates[swapAt] = cand;
-  }
-  const allCells: Point[] = [];
-  for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) allCells.push({ x, y });
-  const spacing = Math.floor(Math.min(width, height) / 3);
-  let hearts = placeFixedPoints(rng, allCells, templates.length, spacing);
-  // Spacing too strict for the template count? Relax deterministically.
-  let relax = spacing;
-  while (hearts.length < templates.length && relax > 1) {
-    relax -= 1;
-    hearts = placeFixedPoints(rng, allCells, templates.length, relax);
-  }
-  const regions: RegionInstance[] = templates.map((t, i) => ({
-    index: i,
-    templateId: t.id,
-    name: t.name,
-    tier: t.tier,
-    color: t.color,
-    heart: hearts[i]!,
-  }));
+    strongholdPts.push({ at: polar(spokeAngle[i]!, knobs.strongholdRadius), color, spoke: i });
+  });
 
   // 2. Voronoi (L1, jittered by a small per-heart weight so borders wobble).
   const weights = regions.map(() => rng.int(3));
@@ -225,16 +251,14 @@ export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOpt
     }
   }
 
-  // 3. Rough terrain, then towns per region (S16: density by tier, ≥1 in every
-  //    non-wild region), then carving.
+  // 3. Rough terrain, then towns per region (density by tier; ≥1 in every non-wild region).
   const passable = new Array<boolean>(cells).fill(true);
   for (let i = 0; i < cells; i++) if (rng.chance(opts.roughness)) passable[i] = false;
-  const map: WorldMap = { width, height, region, passable, regions, towns: [], strongholds: [], start: { x: 0, y: 0 } };
-  const townSpacing = extra.knobs ? knobs.townSpacingMin : opts.townSpacing;
+  const map: WorldMap = { width, height, region, passable, road: new Array<boolean>(cells).fill(false), regions, towns: [], strongholds: [], start: { ...centre }, centre };
+  const townSpacing = knobs.townSpacingMin;
   const townPts: { at: Point; region: RegionInstance }[] = [];
   for (const r of regions) {
-    if (r.tier === "wild" && knobs.townsPer100Cells.wild <= 0) continue;
-    const cand = regionCells(map, r.index);
+    const cand = regionCells(map, r.index).filter((p) => manhattan(p, centre) > 1);
     const area = cand.length;
     const want = r.tier === "wild" ? Math.round((knobs.townsPer100Cells.wild * area) / 100) : Math.max(1, Math.round((knobs.townsPer100Cells[r.tier] * area) / 100));
     if (want <= 0) continue;
@@ -244,42 +268,48 @@ export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOpt
       ts -= 1;
       pts = placeFixedPoints(rng, cand, want, ts, townPts.map((t) => t.at));
     }
+    // Hub-outward: name towns nearest the centre first (the first civilized name is the home-start town).
+    pts.sort((a, b) => manhattan(a, centre) - manhattan(b, centre));
     for (const at of pts) townPts.push({ at, region: r });
   }
-  if (townPts.length < 2) {
-    // Degenerate tiny maps (tests with custom generators): fall back to the legacy count on civilized cells.
-    const civilizedCells = allCells.filter((p) => regions[region[idx(map, p)]!]!.tier === "civilized" && passable[idx(map, p)]);
-    const anyCivilized = civilizedCells.length > 0 ? civilizedCells : allCells;
-    let ts = opts.townSpacing;
-    let pts = placeFixedPoints(rng, anyCivilized, Math.max(2, opts.towns), ts);
-    while (pts.length < 2 && ts > 1) {
-      ts -= 1;
-      pts = placeFixedPoints(rng, anyCivilized, Math.max(2, opts.towns), ts);
-    }
-    townPts.splice(0, townPts.length, ...pts.map((at) => ({ at, region: regions[region[idx(map, at)]!]! })));
-  }
   const usedNames = new Set<string>();
-  const nameFor = (r: RegionInstance): string => {
+  const nextName = (r: RegionInstance): string => {
     const tmpl = catalog.regions.find((t) => t.id === r.templateId);
     const pref = (tmpl?.townNames ?? []).filter((n) => !usedNames.has(n));
-    const pool = pref.length ? pref : catalog.townNames.filter((n) => !usedNames.has(n));
-    const name = pool.length ? rng.pick(pool) : `Town ${usedNames.size + 1}`;
+    const name = pref[0] ?? catalog.townNames.filter((n) => !usedNames.has(n))[0] ?? `Town ${usedNames.size + 1}`;
     usedNames.add(name);
     return name;
   };
   const towns: Town[] = townPts.map((t, i) => {
     passable[idx(map, t.at)] = true;
-    return { index: i, name: nameFor(t.region), region: t.region.index, at: t.at };
+    return { index: i, name: nextName(t.region), region: t.region.index, at: t.at };
   });
   map.towns = towns;
-  // S16 home-region start: the first town of the home colour's region (civilized preferred), else town 0.
-  const homeTowns = towns.filter((t) => regions[t.region]!.color === extra.homeColor);
-  const homeTown = homeTowns.find((t) => regions[t.region]!.tier === "civilized") ?? homeTowns[0] ?? towns[0]!;
-  map.start = homeTown.at;
-  const homeRegion = homeTown.region;
+  // Home towns: each colour's first (nearest-the-centre) civilized town; start = the home colour's.
+  const homeTowns: Town[] = colours.map((c) => towns.find((t) => regions[t.region]!.color === c && regions[t.region]!.tier === "civilized")!).filter(Boolean);
+  const homeTown = homeTowns.find((t) => regions[t.region]!.color === extra.homeColor) ?? homeTowns[0] ?? towns[0]!;
+  map.start = { ...homeTown.at };
 
-  // Carve: every town reachable from the start, every region has a reachable
-  // passable cell. Carving = clear the impassables along an ignore-terrain BFS path.
+  // 4. Strongholds (ADR-072): the nearest passable non-town cell to each spoke point; carved reachable.
+  const fixed: FixedPoint[] = [];
+  for (const sp of strongholdPts) {
+    const tmpl = catalog.strongholds.find((s) => s.color === sp.color);
+    let at = sp.at;
+    if (isTownCell(map, at) || !passable[idx(map, at)]) {
+      let best: Point | null = null;
+      for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+        const p = { x, y };
+        if (!passable[idx(map, p)] || isTownCell(map, p) || towns.some((t) => manhattan(t.at, p) < 2)) continue;
+        if (!best || manhattan(p, sp.at) < manhattan(best, sp.at)) best = p;
+      }
+      at = best ?? sp.at;
+      passable[idx(map, at)] = true;
+    }
+    fixed.push({ kind: "stronghold", at, region: region[idx(map, at)]!, name: tmpl?.name ?? `Stronghold of ${sp.color}` });
+  }
+  map.strongholds = fixed;
+
+  // Carve: every town/stronghold reachable from the start, every region has a reachable cell.
   const carveTo = (target: Point) => {
     if (findPath(map, map.start, target)) return;
     const p = findPath(map, map.start, target, (q) => inBounds(map, q));
@@ -287,46 +317,57 @@ export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOpt
     for (const c of p) passable[idx(map, c)] = true;
   };
   for (const t of towns) carveTo(t.at);
+  for (const f of fixed) carveTo(f.at);
   for (const r of regions) {
     const reach = reachable(map, map.start);
-    const hasReachable = allCells.some((p) => region[idx(map, p)] === r.index && reach.has(idx(map, p)));
+    let hasReachable = false;
+    for (let i = 0; i < cells && !hasReachable; i++) if (region[i] === r.index && reach.has(i)) hasReachable = true;
     if (!hasReachable) {
       passable[idx(map, r.heart)] = true;
       carveTo(r.heart);
     }
   }
-  // 4. Opponents. S14 round 1 prototype: ONE lair — a fixed point in the
-  // wildest region with a resident (the catalog's first beast, else its
-  // highest-tier opponent), spaced from towns, carved reachable.
+
+  // 5. Lairs per region by knob (S14 pattern): beasts round-robin, held out of the roaming roster.
   const opponents: OpponentInstance[] = [];
   let n = 0;
-  const lairHost = catalog.opponents.find((o) => o.kind === "beast") ?? [...catalog.opponents].sort((a, b) => b.tier - a.tier)[0];
-  const wildest = [...regions].sort((a, b) => ["civilized", "approach", "wild"].indexOf(b.tier) - ["civilized", "approach", "wild"].indexOf(a.tier))[0];
-  const fixed: FixedPoint[] = [];
-  if (lairHost && wildest) {
-    const candidates = regionCells(map, wildest.index).filter((p) => !towns.some((t) => t.at.x === p.x && t.at.y === p.y));
-    const [at] = placeFixedPoints(rng, candidates, 1, townSpacing, towns.map((t) => t.at));
-    if (at) {
+  const beasts = catalog.opponents.filter((o) => o.kind === "beast");
+  const lairHosts = beasts.length ? beasts : [[...catalog.opponents].sort((a, b) => b.tier - a.tier)[0]!];
+  let lairN = 0;
+  for (const r of regions) {
+    const want = knobs.lairsPerRegion[r.tier];
+    if (want <= 0) continue;
+    const candidates = regionCells(map, r.index).filter((p) => !isTownCell(map, p));
+    const pts = placeFixedPoints(rng, candidates, want, townSpacing, [...towns.map((t) => t.at), ...map.strongholds.map((f) => f.at)]);
+    for (const at of pts) {
+      const host = lairHosts[lairN++ % lairHosts.length]!;
       passable[idx(map, at)] = true;
       carveTo(at);
-      const inst: OpponentInstance = { id: `opp_lair_${n++}`, catalogId: lairHost.id, region: wildest.index, gone: false, fixedAt: at, moveDebt: 0 };
+      const inst: OpponentInstance = { id: `opp_lair_${n++}`, catalogId: host.id, region: r.index, gone: false, fixedAt: at, moveDebt: 0 };
       opponents.push(inst);
-      fixed.push({ kind: "lair", at, region: wildest.index, name: `Lair of ${lairHost.name}`, opponentId: inst.id });
+      map.strongholds.push({ kind: "lair", at, region: r.index, name: `Lair of ${host.name}`, opponentId: inst.id });
     }
   }
-  map.strongholds = fixed;
-  // S16 roamers: per-region count by density (knobs) — or the legacy roster
-  // size when no knobs were given — each with a seeded in-region position.
-  // The home region rolls from the civilized table (interim, Q4).
+
+  // 6. Roads (after carving: the paths exist).
+  buildRoads(map, homeTowns);
+
+  // 7. Roamers: per-region count by density, each with a seeded in-region position.
   for (const r of regions) {
-    const count = extra.knobs ? roamerTarget(map, r, knobs) : opts.rosterPerRegion;
-    const tableTier = r.index === homeRegion ? "civilized" : r.tier;
+    const count = roamerTarget(map, r, knobs);
     for (let i = 0; i < count; i++) {
-      const tmpl = rollTemplate(rng, catalog, tableTier);
+      const tmpl = rollTemplate(rng, catalog, r.tier);
       opponents.push({ id: `opp_${n++}`, catalogId: tmpl.id, region: r.index, gone: false, moveDebt: 0 });
     }
   }
   spawnRoamers(map, opponents, rng);
 
-  return { map, opponents };
+  // 8. Explored (ADR-072 reserved): the home region + the start's sight radius.
+  const explored = exploredNone(map);
+  const homeRegion = homeTown.region;
+  for (let i = 0; i < cells; i++) if (region[i] === homeRegion) markExplored(explored, map, { x: i % width, y: Math.floor(i / width) });
+  for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) if (manhattan({ x, y }, map.start) <= knobs.sightRadius) markExplored(explored, map, { x, y });
+  void samePoint;
+
+  return { map, opponents, explored };
 }

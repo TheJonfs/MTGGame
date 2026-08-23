@@ -1,6 +1,6 @@
 /**
  * pnpm world-sim [--seeds N] [--starter white|blue|black|red|green] [--difficulty easy|standard|hard]
- *               [--player journeyman|master|apprentice] [--policy fight-all|avoid] [--legs N]
+ *               [--player journeyman|master|apprentice] [--policy fight-all|avoid] [--tour towns|all] [--legs N]
  *
  * S14 (background, for the knob-tuning round), rewritten S16 for roaming
  * visibility (ADR-071): tour many seeded worlds with an AI-piloted starter —
@@ -40,6 +40,8 @@ const difficulty = arg("difficulty", "standard") as DifficultyName;
 const playerTier = arg("player", "journeyman") as Difficulty;
 const policy = arg("policy", "fight-all") as "fight-all" | "avoid";
 const maxLegs = Number(arg("legs", "60"));
+// --tour towns (default): every town; --tour all: towns + every lair (ADR-072: one per wild region — five wild rings, lethal by design).
+const tour = arg("tour", "towns") as "towns" | "all";
 // Measurement-only overrides (never written to the catalog): --tier1-life N sets every tier-1 enemy's world life.
 const tier1Life = Number(arg("tier1-life", "0"));
 if (tier1Life > 0) for (const o of catalog.opponents) if (o.tier === 1) o.worldLife = tier1Life;
@@ -60,7 +62,7 @@ const renownAtEnd: number[] = [];
 for (let seed = 1; seed <= seeds; seed++) {
   const w = newWorld({ seed, catalog, starter: starterId, difficulty });
   const knobs = worldKnobs(w);
-  const targets = [...w.map.towns.filter((t) => !(t.at.x === w.map.start.x && t.at.y === w.map.start.y)).map((t) => t.at), ...w.map.strongholds.map((f) => f.at)];
+  const targets = [...w.map.towns.filter((t) => !(t.at.x === w.map.start.x && t.at.y === w.map.start.y)).map((t) => t.at), ...(tour === "all" ? w.map.strongholds.filter((f) => f.kind === "lair").map((f) => f.at) : [])];
   let dead = false;
   const seenIds = new Set<string>();
   for (const dest of targets) {
@@ -127,7 +129,7 @@ for (let seed = 1; seed <= seeds; seed++) {
 
 const pct = (a: number, b: number) => (b === 0 ? "—" : `${((100 * a) / b).toFixed(0)}%`);
 const mean = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
-console.log(`world-sim: ${seeds} seeds, starter ${starterId} "${starter.name}" (${playerTier} pilot, ${policy}), difficulty ${difficulty}${tier1Life ? `, tier-1 life ${tier1Life}` : ""}${tier1Deck ? `, tier-1 decks ${tier1Deck}` : ""}, tour = all towns + the lair, fight every contact`);
+console.log(`world-sim: ${seeds} seeds, starter ${starterId} "${starter.name}" (${playerTier} pilot, ${policy}), difficulty ${difficulty}${tier1Life ? `, tier-1 life ${tier1Life}` : ""}${tier1Deck ? `, tier-1 decks ${tier1Deck}` : ""}, tour = ${tour === "all" ? "all towns + every lair" : "all towns"}, fight every contact`);
 console.log(`  steps/tour: ${(totalSteps / seeds).toFixed(0)} · tours completed alive: ${toursCompleted}/${seeds} · deaths (world life 0): ${deaths}`);
 for (const tier of ["civilized", "approach", "wild"]) {
   const st = stepsByTier[tier]!, en = encountersByTier[tier]!;

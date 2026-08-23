@@ -1,5 +1,5 @@
 {
-  "catalogVersion": "v0",
+  "catalogVersion": "v1",
   "_comment": "ADR-069/070 starters (world-design-round-1 \u00a72, one-drops in). 30 cards, mono + nothing shared. easy = +1 removal +1 three-drop of the colour (32 cards); hard = the rare-adjacent card swapped for a basic (stays 30; S16 ruling). White has no three-mana creature in the pool \u2014 Glorious Anthem (mv 3) stands in; flagged in the handoff.",
   "starters": [
     {

@@ -7,9 +7,9 @@ import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
 import { DECKS } from "@shandalar/sim/decks";
 import { loadCatalog } from "./loader.js";
 import { generateWorld, DEFAULT_GENERATOR, isTownCell, roamerTarget, type OpponentInstance } from "./generate.js";
-import { findPath, idx, manhattan, reachable, regionAt, samePoint, type Point } from "./map.js";
+import { findPath, idx, isExplored, manhattan, reachable, regionAt, samePoint, type Point } from "./map.js";
 import { activeDeck, deserializeWorld, newWorld, serializeWorld, deckSize, starterDecklist, starterTemplate, worldKnobs, type WorldState } from "./state.js";
-import { advance, applyDuelResult, deckLegal, effectiveSight, parley, visibleRoamers, walkTo, type Encounter } from "./journey.js";
+import { advance, applyDuelResult, deckLegal, effectiveSight, parley, playerSees, visibleRoamers, walkTo, type Encounter } from "./journey.js";
 import { WorldRng } from "./rng.js";
 import { catalogFrom, enemyDeck, type OpponentDeckRef, type StarterId } from "./catalog.js";
 import { defaultKnobs } from "./knobs.js";
@@ -18,17 +18,22 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const catalog = loadCatalog(join(ROOT, "data/world"));
 const pool = loadCardPool(join(ROOT, "data/cards"));
 
-describe("catalog v0", () => {
-  it("loads and validates; 15 mages over 5 decks × 3 tiers + 1 beast (ADR-066 PoC); every deck key exists", () => {
-    expect(catalog.version).toBe("v0");
+describe("catalog v1", () => {
+  it("loads and validates; 15 mages over 5 decks × 3 tiers + 1 beast (ADR-066 PoC); every deck key exists; ADR-072: 15 regions (colour × tier) + 5 strongholds", () => {
+    expect(catalog.version).toBe("v1");
     expect(catalog.opponents).toHaveLength(16);
     expect(catalog.opponents.filter((o) => (o.kind ?? "mage") === "mage")).toHaveLength(15);
     for (const o of catalog.opponents) expect(o.deck in DECKS).toBe(true);
-    expect(catalog.regions.filter((r) => r.tier === "civilized").length).toBeGreaterThanOrEqual(2);
+    expect(catalog.regions).toHaveLength(15);
+    for (const c of ["W", "U", "B", "R", "G"]) for (const t of ["civilized", "approach", "wild"]) expect(catalog.regions.filter((r) => r.color === c && r.tier === t)).toHaveLength(1);
+    expect(catalog.strongholds.map((s) => s.color).sort()).toEqual(["B", "G", "R", "U", "W"]);
+    expect(catalog.regions.find((r) => r.color === "W" && r.tier === "civilized")!.townNames[0]).toBe("Whitewell"); // home-start town is listed first
   });
   it("rejects unknown knobs and bad decks loudly", () => {
-    const bad = JSON.parse(JSON.stringify({ regions: { catalogVersion: "v0", regions: catalog.regions }, towns: { catalogVersion: "v0", names: catalog.townNames }, opponents: { catalogVersion: "v0", opponents: [{ ...catalog.opponents[0], knobs: { anteCounts: 2 } }] }, starters: { catalogVersion: "v0", starters: catalog.starters } }));
+    const bad = JSON.parse(JSON.stringify({ regions: { catalogVersion: "v1", regions: catalog.regions, strongholds: catalog.strongholds }, towns: { catalogVersion: "v1", names: catalog.townNames }, opponents: { catalogVersion: "v1", opponents: [{ ...catalog.opponents[0], knobs: { anteCounts: 2 } }] }, starters: { catalogVersion: "v1", starters: catalog.starters } }));
     expect(() => catalogFrom(bad)).toThrow(/Unknown knob "anteCounts"/);
+    const noB = JSON.parse(JSON.stringify({ regions: { catalogVersion: "v1", regions: catalog.regions.filter((r) => !(r.color === "B" && r.tier === "wild")), strongholds: catalog.strongholds }, towns: { catalogVersion: "v1", names: catalog.townNames }, opponents: { catalogVersion: "v1", opponents: catalog.opponents }, starters: { catalogVersion: "v1", starters: catalog.starters } }));
+    expect(() => catalogFrom(noB)).toThrow(/wild region of colour B/);
   });
   it("S16 starters: five colours, 30 cards each, every card in the pool, variants legal; slice decks are not starters", () => {
     expect(catalog.starters.map((s) => s.id).sort()).toEqual(["black", "blue", "green", "red", "white"]);
@@ -46,7 +51,7 @@ describe("catalog v0", () => {
     // ADR-070: the one-drops are in.
     expect(starterTemplate(catalog, "green").decklist.find((e) => e.cardId === "llanowar_elves")?.count).toBe(2);
     expect(starterTemplate(catalog, "blue").decklist.find((e) => e.cardId === "cathartic_adept")?.count).toBe(2);
-    const bad = JSON.parse(JSON.stringify({ regions: { catalogVersion: "v0", regions: catalog.regions }, towns: { catalogVersion: "v0", names: catalog.townNames }, opponents: { catalogVersion: "v0", opponents: catalog.opponents }, starters: { catalogVersion: "v0", starters: catalog.starters.map((s) => (s.id === "red" ? { ...s, decklist: s.decklist.slice(1) } : s)) } }));
+    const bad = JSON.parse(JSON.stringify({ regions: { catalogVersion: "v1", regions: catalog.regions, strongholds: catalog.strongholds }, towns: { catalogVersion: "v1", names: catalog.townNames }, opponents: { catalogVersion: "v1", opponents: catalog.opponents }, starters: { catalogVersion: "v1", starters: catalog.starters.map((s) => (s.id === "red" ? { ...s, decklist: s.decklist.slice(1) } : s)) } }));
     expect(() => catalogFrom(bad)).toThrow(/total 30 cards/);
   });
 });
@@ -77,6 +82,35 @@ describe("world generator (invariant fuzz, ≥200 seeds)", () => {
         expect(o.gone).toBe(false);
       }
       for (const r of w.map.regions) expect(w.opponents.filter((o) => o.region === r.index && !o.fixedAt).length).toBe(roamerTarget(w.map, r, knobs));
+      // ADR-072 radial invariants: 15 regions = colour × tier; five strongholds (kind "stronghold"), pairwise spaced, one per colour's
+      // wild ring; rings monotone along each spoke (civilized < approach < wild < stronghold in normalised radius); roads touch every
+      // town and every road cell is passable; every town/lair/stronghold reachable from every civilized town.
+      expect(w.map.regions).toHaveLength(15);
+      for (const c of colours) for (const t of ["civilized", "approach", "wild"]) expect(w.map.regions.filter((r) => r.color === c && r.tier === t), `seed ${seed} ${c} ${t}`).toHaveLength(1);
+      const sh = w.map.strongholds.filter((f) => f.kind === "stronghold");
+      expect(sh).toHaveLength(5);
+      for (const a of sh) for (const b of sh) if (a !== b) expect(manhattan(a.at, b.at)).toBeGreaterThan(knobs.townSpacingMin);
+      const cx = w.map.centre!, nr = (p: Point) => Math.hypot((p.x - cx.x) / (w.map.width / 2), (p.y - cx.y) / (w.map.height / 2));
+      for (let sp = 0; sp < 5; sp++) {
+        const byTier = (t: string) => w.map.regions.find((r) => r.spoke === sp && r.tier === t)!;
+        expect(nr(byTier("civilized").heart)).toBeLessThan(nr(byTier("approach").heart));
+        expect(nr(byTier("approach").heart)).toBeLessThan(nr(byTier("wild").heart));
+      }
+      for (const f of sh) expect(nr(f.at)).toBeGreaterThan(nr(w.map.regions.find((r) => r.tier === "wild" && r.color === w.map.regions[f.region]!.color)!.heart) - 0.15);
+      for (const t of w.map.towns) expect(w.map.road[idx(w.map, t.at)], `seed ${seed} town ${t.name} on a road`).toBe(true);
+      for (let i = 0; i < w.map.road.length; i++) if (w.map.road[i]) expect(w.map.passable[i]).toBe(true);
+      for (const t of w.map.towns) if (w.map.regions[t.region]!.tier === "civilized") {
+        const from = reachable(w.map, t.at);
+        for (const x of [...w.map.towns.map((q) => q.at), ...w.map.strongholds.map((f) => f.at)]) expect(from.has(idx(w.map, x)), `seed ${seed} from ${t.name}`).toBe(true);
+      }
+      // Roads connect: every town reaches every other over road cells only.
+      const roadReach = (from: Point) => { const seen = new Set<number>([idx(w.map, from)]); const st = [from]; while (st.length) { const p = st.pop()!; for (const d of [[1,0],[-1,0],[0,1],[0,-1]] as const) { const q = { x: p.x + d[0], y: p.y + d[1] }; if (q.x < 0 || q.y < 0 || q.x >= w.map.width || q.y >= w.map.height) continue; const j = idx(w.map, q); if (seen.has(j) || !w.map.road[j]) continue; seen.add(j); st.push(q); } } return seen; };
+      const rr = roadReach(w.map.towns[0]!.at);
+      for (const t of w.map.towns) expect(rr.has(idx(w.map, t.at)), `seed ${seed} road to ${t.name}`).toBe(true);
+      // Explored: the home region is fully explored; a far wild cell is not.
+      const homeReg = w.map.regions[startTown.region]!;
+      for (let i = 0; i < 50; i++) { const p = { x: i % w.map.width, y: Math.floor(i / w.map.width) }; if (w.map.region[idx(w.map, p)] === homeReg.index) expect(isExplored(w.explored, w.map, p)).toBe(true); }
+      expect(w.explored.some((word) => word !== (-1 >>> 0))).toBe(true);
       const reach = reachable(w.map, w.map.start);
       for (const t of w.map.towns) expect(reach.has(idx(w.map, t.at)), `seed ${seed} town ${t.name} reachable`).toBe(true);
       for (const r of w.map.regions) {
@@ -580,8 +614,9 @@ describe("lair fixed point (S14 round 1 prototype)", () => {
     for (const seed of [1, 2, 3, 4, 5]) {
       const w = newWorld({ seed, catalog, starter: "red" });
       quiet(w);
-      expect(w.map.strongholds).toHaveLength(1);
-      const lair = w.map.strongholds[0]!;
+      const lairs = w.map.strongholds.filter((f) => f.kind === "lair");
+      expect(lairs).toHaveLength(5); // lairsPerRegion wild 1 → one per wild region (the wurm, round-robin over the one beast)
+      const lair = lairs[0]!;
       expect(lair.kind).toBe("lair");
       const resident = w.opponents.find((o) => o.id === lair.opponentId)!;
       expect(resident.catalogId).toBe("beast_wurm");
@@ -606,6 +641,11 @@ describe("lair fixed point (S14 round 1 prototype)", () => {
       expect(ev2.some((e) => e.type === "encounter")).toBe(false);
       // Residents never roam.
       expect(w.opponents.filter((o) => o.fixedAt && o.region === lair.region).length).toBe(1);
+      // Strongholds are fixed points without residents: walking onto one is just ground for now (S19+).
+      const sh = w.map.strongholds.find((f) => f.kind === "stronghold")!;
+      w.player.position = { ...w.map.start };
+      const ev3 = walkTo(w, catalog, sh.at, QUIET)!;
+      expect(ev3.some((e) => e.type === "encounter")).toBe(false);
     }
   });
 });
@@ -742,6 +782,23 @@ describe("S16 roamers (ADR-071): sight, pursuit, fleeing, contact, removal, resp
     expect(i2.at).toEqual(p2);
   });
 
+  it("roads (ADR-072): while the player stands on a road, roamers move at roamerStepsPerPlayerStep.road (0.5 → every other step); off-road they move every step", () => {
+    const { w, inst } = stage(112, 6);
+    const a = { ...w.player.position }, b = { x: a.x, y: a.y + 1 };
+    const bOk = w.map.passable[idx(w.map, b)] && !isTownCell(w.map, b);
+    // Paint the two cells the player oscillates between as road.
+    w.map.road[idx(w.map, a)] = true;
+    if (bOk) w.map.road[idx(w.map, b)] = true;
+    let moved = 0;
+    for (let i = 0; i < 4; i++) { const p = { ...inst.at! }; advance(w, catalog, [bOk && i % 2 === 0 ? b : a], QUIET); moved += manhattan(p, inst.at!); }
+    expect(moved).toBe(2);
+    // Off the road: every step.
+    w.map.road[idx(w.map, a)] = false; if (bOk) w.map.road[idx(w.map, b)] = false; inst.moveDebt = 0;
+    let moved2 = 0;
+    for (let i = 0; i < 2; i++) { const p = { ...inst.at! }; const ev = advance(w, catalog, [bOk && i % 2 === 0 ? b : a], QUIET); if (ev.some((e) => e.type === "encounter")) break; moved2 += manhattan(p, inst.at!); }
+    expect(moved2).toBeGreaterThanOrEqual(1);
+  });
+
   it("respawn: a region below its density target gains one roamer every roamerRespawnSteps (out of sight, in-region, never a town); none when at target or when the knob is 0", () => {
     const w = newWorld({ seed: 110, catalog, starter: "green" });
     const knobs = worldKnobs(w);
@@ -763,7 +820,7 @@ describe("S16 roamers (ADR-071): sight, pursuit, fleeing, contact, removal, resp
     expect(sp.region).toBe(home.index);
     expect(w.map.region[idx(w.map, sp.at!)]).toBe(home.index);
     expect(isTownCell(w.map, sp.at!)).toBe(false);
-    expect(manhattan(sp.at!, w.player.position)).toBeGreaterThan(knobs.sightRadius); // out of sight
+    expect(playerSees(w, knobs, sp.at!)).toBe(false); // out of sight
     // At target already: no more spawns on the next tick.
     for (const o of w.opponents) if (o.region === home.index && !o.fixedAt && o.gone) { o.gone = false; delete o.goneReason; }
     const live = w.opponents.filter((o) => o.region === home.index && !o.fixedAt && !o.gone).length;

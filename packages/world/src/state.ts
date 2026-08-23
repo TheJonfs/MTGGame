@@ -1,7 +1,7 @@
 import type { Catalog, StarterId, StarterTemplate } from "./catalog.js";
 import { generateWorld, type GeneratedWorld, type GeneratorOptions, type OpponentInstance, DEFAULT_GENERATOR, spawnRoamers } from "./generate.js";
 import { resolveKnobs, DIFFICULTIES, type DifficultyName, type KnobSource, type KnobValues } from "./knobs.js";
-import type { Point, WorldMap } from "./map.js";
+import { exploredAll, type Point, type WorldMap } from "./map.js";
 import { WorldRng, type WorldRngState } from "./rng.js";
 
 /**
@@ -89,6 +89,8 @@ export interface WorldState {
   activeDeckName: string;
   /** S16 v3: append-only acquisition log. */
   provenance: ProvenanceEntry[];
+  /** S16 v3 (ADR-072, reserved): packed explored bits over map cells — the home region + everything ever within sight. Fog rendering is deferred. */
+  explored: number[];
 }
 
 export interface NewWorldOptions {
@@ -222,6 +224,7 @@ export function newWorld(opts: NewWorldOptions): WorldState {
     decks: { [starter.name]: deck },
     activeDeckName: starter.name,
     provenance,
+    explored: gen.explored,
   };
 }
 
@@ -283,9 +286,15 @@ export function migrateWorld(format: string, input: Partial<WorldState>): WorldS
       decks: { [name]: oldDeck },
       activeDeckName: name,
       provenance: [],
+      explored: exploredAll(w.map!),
     };
+    if (!out.map.road) out.map.road = new Array<boolean>(out.map.width * out.map.height).fill(false);
     spawnRoamers(out.map, out.opponents, new WorldRng((out.seed ^ 0x5bd1e995) >>> 0));
     return out;
   }
-  return w as WorldState;
+  // v3 fields that landed after the first v3 commit (same session, before any human save): default them.
+  const v3 = w as WorldState;
+  if (!v3.explored) v3.explored = exploredAll(v3.map);
+  if (!v3.map.road) v3.map.road = new Array<boolean>(v3.map.width * v3.map.height).fill(false);
+  return v3;
 }

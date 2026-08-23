@@ -1,63 +1,183 @@
 {
-  "catalogVersion": "v0",
+  "catalogVersion": "v1",
+  "_comment": "ADR-072 / docs/world-catalog-content.md (planner, mid-S16). Civilized townNames are hub-outward: the first is the colour's home-start town. Strongholds are the colour castles (fixed points; residents are the S19+ authoring round).",
   "regions": [
     {
-      "id": "verdant_marches",
-      "name": "Verdant Marches",
-      "tier": "civilized",
-      "color": "G",
-      "townNames": [
-        "Oakhollow",
-        "Greenford",
-        "Thistlebury"
-      ]
-    },
-    {
-      "id": "coast_of_lanterns",
-      "name": "Coast of Lanterns",
-      "tier": "civilized",
-      "color": "U",
-      "townNames": [
-        "Lanternmouth",
-        "Saltquay",
-        "Gullhaven"
-      ]
-    },
-    {
-      "id": "brasshollow_vale",
-      "name": "Brasshollow Vale",
+      "id": "dawnmarch",
+      "name": "The Dawnmarch",
       "tier": "civilized",
       "color": "W",
       "townNames": [
-        "Brasshollow",
         "Whitewell",
-        "Kestrel's Rest"
+        "Candlecross",
+        "Lark's Rest"
       ]
     },
     {
-      "id": "ashen_approach",
-      "name": "Ashen Approach",
+      "id": "alabaster_downs",
+      "name": "The Alabaster Downs",
       "tier": "approach",
-      "color": "R",
+      "color": "W",
       "townNames": [
-        "Cinderpost"
+        "Vigil",
+        "Shrinegate"
       ]
     },
     {
-      "id": "fenmire",
-      "name": "Fenmire",
+      "id": "reliquary_wastes",
+      "name": "The Reliquary Wastes",
+      "tier": "wild",
+      "color": "W",
+      "townNames": [
+        "Last Chapel"
+      ]
+    },
+    {
+      "id": "tidemeet",
+      "name": "The Tidemeet",
+      "tier": "civilized",
+      "color": "U",
+      "townNames": [
+        "Greyharbor",
+        "Inkmouth",
+        "Pelican Quay"
+      ]
+    },
+    {
+      "id": "mistfen",
+      "name": "The Mistfen",
+      "tier": "approach",
+      "color": "U",
+      "townNames": [
+        "Lanternshoal",
+        "Sounding"
+      ]
+    },
+    {
+      "id": "drowned_reach",
+      "name": "The Drowned Reach",
+      "tier": "wild",
+      "color": "U",
+      "townNames": [
+        "Wrack"
+      ]
+    },
+    {
+      "id": "duskmoor",
+      "name": "The Duskmoor",
+      "tier": "civilized",
+      "color": "B",
+      "townNames": [
+        "Lowmarket",
+        "Tallowton",
+        "Ravensbridge"
+      ]
+    },
+    {
+      "id": "gallows_fen",
+      "name": "The Gallows Fen",
       "tier": "approach",
       "color": "B",
       "townNames": [
-        "Mirewatch"
+        "Gibbetford",
+        "Mourner's Stile"
       ]
     },
     {
-      "id": "howling_wastes",
-      "name": "Howling Wastes",
+      "id": "barrowlands",
+      "name": "The Barrowlands",
       "tier": "wild",
-      "color": "C",
-      "townNames": []
+      "color": "B",
+      "townNames": [
+        "Cairn"
+      ]
+    },
+    {
+      "id": "emberford",
+      "name": "The Emberford",
+      "tier": "civilized",
+      "color": "R",
+      "townNames": [
+        "Forgeton",
+        "Bellows",
+        "Slagside"
+      ]
+    },
+    {
+      "id": "cinder_scarps",
+      "name": "The Cinder Scarps",
+      "tier": "approach",
+      "color": "R",
+      "townNames": [
+        "Ashfall",
+        "Kilnhead"
+      ]
+    },
+    {
+      "id": "shattered_caldera",
+      "name": "The Shattered Caldera",
+      "tier": "wild",
+      "color": "R",
+      "townNames": [
+        "Brand"
+      ]
+    },
+    {
+      "id": "greenholt",
+      "name": "The Greenholt",
+      "tier": "civilized",
+      "color": "G",
+      "townNames": [
+        "Elderbriar",
+        "Mosswick",
+        "Foxglove"
+      ]
+    },
+    {
+      "id": "bramblemarch",
+      "name": "The Bramblemarch",
+      "tier": "approach",
+      "color": "G",
+      "townNames": [
+        "Thornhallow",
+        "Wardenwood"
+      ]
+    },
+    {
+      "id": "deepwood",
+      "name": "The Deepwood",
+      "tier": "wild",
+      "color": "G",
+      "townNames": [
+        "Root"
+      ]
+    }
+  ],
+  "strongholds": [
+    {
+      "id": "argent_bastion",
+      "name": "The Argent Bastion",
+      "color": "W"
+    },
+    {
+      "id": "spiral_spire",
+      "name": "The Spiral Spire",
+      "color": "U"
+    },
+    {
+      "id": "charnel_court",
+      "name": "The Charnel Court",
+      "color": "B"
+    },
+    {
+      "id": "furnace_gate",
+      "name": "The Furnace Gate",
+      "color": "R"
+    },
+    {
+      "id": "verdant_throne",
+      "name": "The Verdant Throne",
+      "color": "G"
     }
   ]
 }

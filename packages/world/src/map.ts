@@ -18,6 +18,8 @@ export interface RegionInstance {
   color: string;
   /** Voronoi seed cell (the region's "heart"). */
   heart: Point;
+  /** S16 (ADR-072): which spoke (0–4, by colour order) this region belongs to. */
+  spoke?: number;
 }
 
 export interface Town {
@@ -49,10 +51,15 @@ export interface WorldMap {
   region: number[];
   /** Row-major: passable flag per cell. */
   passable: boolean[];
+  /** S16 (ADR-072): row-major road flag per cell — shortest passable paths between neighbour towns. */
+  road: boolean[];
   regions: RegionInstance[];
   towns: Town[];
+  /** Fixed points: lairs (with residents) and the five colour strongholds (ADR-072; unused until S19+). */
   strongholds: FixedPoint[];
   start: Point;
+  /** S16 (ADR-072): the map's centre and each region's spoke/ring (radial worlds); absent on pre-radial maps. */
+  centre?: Point;
 }
 
 export const idx = (m: { width: number }, p: Point) => p.y * m.width + p.x;
@@ -123,6 +130,24 @@ export function reachable(m: WorldMap, from: Point): Set<number> {
     }
   }
   return out;
+}
+
+// ---------- S16 (ADR-072): `explored` — packed bits over cells (fog of war reserved; not rendered yet) ----------
+
+export function exploredAll(m: { width: number; height: number }): number[] {
+  const n = Math.ceil((m.width * m.height) / 32);
+  return new Array<number>(n).fill(-1 >>> 0);
+}
+export function exploredNone(m: { width: number; height: number }): number[] {
+  return new Array<number>(Math.ceil((m.width * m.height) / 32)).fill(0);
+}
+export function isExplored(explored: number[], m: { width: number }, p: Point): boolean {
+  const i = idx(m, p);
+  return ((explored[i >> 5] ?? 0) >>> (i & 31)) & 1 ? true : false;
+}
+export function markExplored(explored: number[], m: { width: number }, p: Point): void {
+  const i = idx(m, p);
+  explored[i >> 5] = ((explored[i >> 5] ?? 0) | (1 << (i & 31))) >>> 0;
 }
 
 export function regionAt(m: WorldMap, p: Point): RegionInstance {

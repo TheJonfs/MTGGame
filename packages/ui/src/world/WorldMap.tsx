@@ -30,6 +30,7 @@ function washFor(tier: string, color: string): string {
 
 const TOWN_GLYPH = "M -5 3 L -5 -2 L 0 -6 L 5 -2 L 5 3 Z M -2 3 L -2 0 L 2 0 L 2 3"; // house with a door
 const LAIR_GLYPH = "M -6 4 L -4 -3 L -1 -6 L 2 -5 L 5 -1 L 6 4 Z M -2 4 L -2 1 L 2 1 L 2 4"; // crag with a mouth
+const CASTLE_GLYPH = "M -6 4 L -6 -3 L -4 -3 L -4 -1 L -2 -1 L -2 -3 L 0 -3 L 0 -1 L 2 -1 L 2 -3 L 4 -3 L 4 -1 L 6 -1 L 6 4 Z M -1.5 4 L -1.5 1 L 1.5 1 L 1.5 4"; // battlements with a gate
 
 export interface RoamerChip {
   id: string;
@@ -156,6 +157,21 @@ export function WorldMapView({
           const i = y * map.width + x;
           return map.passable[i] ? null : <rect key={`r${i}`} x={x * CELL} y={y * CELL} width={CELL} height={CELL} fill="url(#rough)" pointerEvents="none" />;
         })}
+        {/* S16 (ADR-072): roads — a dotted ink line through the centre of road cells */}
+        {map.road && (
+          <path
+            d={cells.filter(({ x, y }) => map.road[y * map.width + x]).map(({ x, y }) => {
+              const c = centre({ x, y });
+              const segs: string[] = [];
+              for (const [dx, dy] of [[1, 0], [0, 1]] as const) {
+                const nx = x + dx, ny = y + dy;
+                if (nx < map.width && ny < map.height && map.road[ny * map.width + nx]) segs.push(`M${c.cx} ${c.cy} L${c.cx + dx * CELL} ${c.cy + dy * CELL}`);
+              }
+              return segs.join(" ");
+            }).join(" ")}
+            stroke="var(--ink)" strokeWidth="2.2" strokeDasharray="1 4" strokeLinecap="round" fill="none" opacity="0.7" pointerEvents="none"
+          />
+        )}
         {/* region borders */}
         <path d={borders.join(" ")} stroke="var(--ink)" strokeWidth="1.6" fill="none" strokeLinecap="round" pointerEvents="none" opacity="0.85" />
         {/* region names at hearts (only when the heart is in view) */}
@@ -201,10 +217,11 @@ export function WorldMapView({
           if (!inView(f.at)) return null;
           const { cx, cy } = centre(f.at);
           const cleared = clearedFixed?.has(i) ?? false;
+          const castle = f.kind === "stronghold";
           return (
             <g key={`f${i}`} transform={`translate(${cx} ${cy + 1})`} onMouseEnter={() => setHoverLair({ name: f.name ?? f.kind, at: f.at })} onMouseLeave={() => setHoverLair(null)} onClick={() => onClickCell(f.at)} style={{ cursor: "pointer" }} opacity={cleared ? 0.45 : 1}>
-              <circle r={CELL * 0.66} fill="var(--parchment)" stroke={cleared ? "var(--ink-soft)" : "var(--danger)"} strokeWidth="1.6" />
-              <path d={LAIR_GLYPH} fill="var(--ink)" stroke="var(--ink)" strokeWidth="0.8" strokeLinejoin="round" transform="scale(1.3)" />
+              <circle r={CELL * (castle ? 0.8 : 0.66)} fill="var(--parchment)" stroke={castle ? "var(--ink)" : cleared ? "var(--ink-soft)" : "var(--danger)"} strokeWidth={castle ? 2.2 : 1.6} />
+              <path d={castle ? CASTLE_GLYPH : LAIR_GLYPH} fill="var(--ink)" stroke="var(--ink)" strokeWidth="0.8" strokeLinejoin="round" transform={castle ? "scale(1.5)" : "scale(1.3)"} />
             </g>
           );
         })}
@@ -243,8 +260,9 @@ export function WorldMapView({
         if (x >= 0 && y >= 0 && x < map.width && y < map.height && map.passable[idx(map, { x, y })]) onClickCell({ x, y });
       }}>
         {miniRegions.map(({ reg, runs }) => runs.map((r, i) => <rect key={`${reg.index}-${i}`} x={r.x * MINI} y={r.y * MINI} width={r.w * MINI} height={MINI} fill={washFor(reg.tier, reg.color)} />))}
+        {map.road && map.road.map((r, i) => (r ? <rect key={`rd${i}`} x={(i % map.width) * MINI} y={Math.floor(i / map.width) * MINI} width={MINI} height={MINI} fill="rgba(43,37,32,0.45)" /> : null))}
         {map.towns.map((t) => <rect key={t.index} x={t.at.x * MINI - MINI * 0.5} y={t.at.y * MINI - MINI * 0.5} width={MINI * 2} height={MINI * 2} fill="var(--ink)" />)}
-        {map.strongholds.map((f, i) => <rect key={`f${i}`} x={f.at.x * MINI - MINI * 0.5} y={f.at.y * MINI - MINI * 0.5} width={MINI * 2} height={MINI * 2} fill="var(--danger)" />)}
+        {map.strongholds.map((f, i) => <rect key={`f${i}`} x={f.at.x * MINI - MINI * (f.kind === "stronghold" ? 1 : 0.5)} y={f.at.y * MINI - MINI * (f.kind === "stronghold" ? 1 : 0.5)} width={MINI * (f.kind === "stronghold" ? 3 : 2)} height={MINI * (f.kind === "stronghold" ? 3 : 2)} fill={f.kind === "stronghold" ? "var(--ink)" : "var(--danger)"} stroke={f.kind === "stronghold" ? "var(--brass)" : undefined} strokeWidth={0.8} />)}
         {roamers.map((r) => <circle key={r.id} cx={(r.at.x + 0.5) * MINI} cy={(r.at.y + 0.5) * MINI} r={MINI} fill={r.fleeing ? "var(--ink-soft)" : "var(--danger)"} />)}
         <rect x={origin.x * MINI} y={origin.y * MINI} width={vw * MINI} height={vh * MINI} fill="none" stroke="var(--brass)" strokeWidth="1.2" />
         <circle cx={(player.x + 0.5) * MINI} cy={(player.y + 0.5) * MINI} r={MINI * 1.4} fill="var(--brass)" stroke="var(--ink)" strokeWidth="0.6" />

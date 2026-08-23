@@ -2,7 +2,7 @@ import type { MatchResult, MatchSpec, Modifier } from "@shandalar/engine";
 import { enemyDeck, type Catalog, type OpponentTemplate } from "./catalog.js";
 import { isTownCell, regionCells, roamerTarget, rollTemplate, type GoneReason, type OpponentInstance } from "./generate.js";
 import type { KnobValues } from "./knobs.js";
-import { findPath, fixedPointAt, idx, inBounds, manhattan, regionAt, samePoint, townAt, type Point, type Town, type WorldMap } from "./map.js";
+import { findPath, fixedPointAt, idx, inBounds, manhattan, markExplored, regionAt, samePoint, townAt, type Point, type Town, type WorldMap } from "./map.js";
 import { WorldRng } from "./rng.js";
 import { activeDeck, deckSize, worldKnobs, type Decklist, type DuelRecord, type ProvenanceSource, type WorldState } from "./state.js";
 
@@ -128,12 +128,19 @@ function moveRoamer(world: WorldState, catalog: Catalog, knobs: KnobValues, rng:
   o.at = { ...rng.pick(moves) };
 }
 
-/** Advance every roamer by its speed (fractional debt) after a player step. */
+/** The player's terrain for roamer-speed purposes (ADR-072: roads are fast). */
+export function playerTerrain(world: WorldState): "road" | "open" {
+  return world.map.road?.[idx(world.map, world.player.position)] ? "road" : "open";
+}
+
+/** Advance every roamer by its speed (fractional debt) after a player step:
+ * roamerSpeed[tier] × roamerStepsPerPlayerStep[the player's terrain]. */
 export function tickRoamers(world: WorldState, catalog: Catalog, knobs: KnobValues, rng: WorldRng): void {
+  const terrain = knobs.roamerStepsPerPlayerStep[playerTerrain(world)];
   for (const o of world.opponents) {
     if (o.gone || !o.at || o.fixedAt) continue;
     const tmpl = opponentTemplate(catalog, o);
-    o.moveDebt = (o.moveDebt ?? 0) + knobs.roamerSpeed[tmpl.tier];
+    o.moveDebt = (o.moveDebt ?? 0) + knobs.roamerSpeed[tmpl.tier] * terrain;
     let guard = 0;
     while (o.moveDebt >= 1 && guard++ < 8) {
       o.moveDebt -= 1;
@@ -162,6 +169,20 @@ export function respawnRoamers(world: WorldState, catalog: Catalog, knobs: KnobV
     spawned.push(inst);
   }
   return spawned;
+}
+
+/** ADR-072 (reserved fog): mark every cell within the player's sight as explored. */
+export function exploreAround(world: WorldState, knobs: KnobValues): void {
+  if (!world.explored) return;
+  const r = knobs.sightRadius;
+  const me = world.player.position;
+  for (let dy = -r; dy <= r; dy++) {
+    for (let dx = -r; dx <= r; dx++) {
+      if (Math.abs(dx) + Math.abs(dy) > r) continue;
+      const p = { x: me.x + dx, y: me.y + dy };
+      if (inBounds(world.map, p)) markExplored(world.explored, world.map, p);
+    }
+  }
 }
 
 /** Remove a roamer from the map (any parley outcome — Chris's S16 ruling);
@@ -216,6 +237,7 @@ export function advance(
       world.player.position = { ...cell };
       world.player.stepsTaken += 1;
       events.push({ type: "moved", to: { ...cell }, steps: world.player.stepsTaken });
+      exploreAround(world, knobs);
       const town = townAt(world.map, cell);
       if (town) {
         // Towns are safe nodes: no contact on the town cell itself (roamers never enter it).

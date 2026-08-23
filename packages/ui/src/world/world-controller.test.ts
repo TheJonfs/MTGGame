@@ -232,7 +232,8 @@ describe("S14 acceptance: editor, shop v2, resume path, v1 migration", () => {
     c.newGame({ starter: "green", difficulty: "standard", seed: 206 });
     const w = c.world!;
     quiet(c);
-    // Stage one roamer 3 cells away in the open; walk one step away from it and let it come.
+    // Half speed everywhere: from distance 3, two steps toward it → it gets its one move exactly when you are adjacent and steps onto you (a "reached" contact, no click on it).
+    c.extraKnobs = { event: { ...c.extraKnobs.event, roamerStepsPerPlayerStep: { road: 0.5, open: 0.5 } } };
     const s = w.player.position;
     const inst = w.opponents.find((o) => !o.fixedAt)!;
     inst.gone = false; delete inst.goneReason;
@@ -243,7 +244,7 @@ describe("S14 acceptance: editor, shop v2, resume path, v1 migration", () => {
         inst.at = { ...cells[2]! }; inst.region = w.map.region[idx(w.map, cells[2]!)]!; inst.moveDebt = 0;
         expect(c.visibleRoamers().map((r) => r.inst.id)).toContain(inst.id);
         c.leaveTown();
-        c.clickCell(cells[0]!); c.clickCell(cells[0]!);
+        c.clickCell(cells[1]!); c.clickCell(cells[1]!); // walk two cells toward it
         let guard = 0;
         while (c.screen.kind === "map" && (c.screen as { walking: boolean }).walking && guard++ < 100) await tick();
         placed = true;
@@ -251,24 +252,9 @@ describe("S14 acceptance: editor, shop v2, resume path, v1 migration", () => {
       }
     }
     expect(placed).toBe(true);
-    // It closed to 1 (3 − your step toward it − its step): one more step (back to town cell is safe; step sideways instead) and it reaches you.
-    let guard = 0;
-    while ((c.screen.kind as string) !== "encounter" && guard++ < 4) {
-      const p = c.world!.player.position;
-      const back = { x: s.x, y: s.y };
-      // Step back onto the town cell: safe (no contact), but the roamer closes; step off again: contact.
-      c.clickCell(back); c.clickCell(back);
-      let g2 = 0;
-      while ((c.screen.kind === "map" && (c.screen as { walking: boolean }).walking) && g2++ < 100) await tick();
-      if ((c.screen.kind as string) === "town") c.leaveTown();
-      if ((c.screen.kind as string) === "encounter") break;
-      const off = { x: p.x, y: p.y };
-      c.clickCell(off); c.clickCell(off);
-      g2 = 0;
-      while ((c.screen.kind === "map" && (c.screen as { walking: boolean }).walking) && g2++ < 100) await tick();
-    }
     expect(c.screen.kind).toBe("encounter");
-    expect((c.screen as { encounter: { opponentId: string } }).encounter.opponentId).toBe(inst.id);
+    expect((c.screen as { encounter: { opponentId: string; contact: string } }).encounter.opponentId).toBe(inst.id);
+    expect((c.screen as { encounter: { contact: string } }).encounter.contact).toBe("reached");
     c.world!.player.gold = 10_000;
     c.parley("buyoff");
     expect(c.screen.kind).toBe("map");
