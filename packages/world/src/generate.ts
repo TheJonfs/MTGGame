@@ -114,9 +114,9 @@ export function roamerTarget(map: WorldMap, region: RegionInstance, knobs: KnobV
 }
 
 /** Mage roll: a region's tier table (TIER_TABLES) over the mage roster (any colour roams anywhere). */
-export function rollMage(rng: WorldRng, catalog: Catalog, tier: RegionInstance["tier"]): Catalog["opponents"][number] {
+export function rollMage(rng: WorldRng, catalog: Catalog, tier: RegionInstance["tier"], forceTier?: 1 | 2 | 3): Catalog["opponents"][number] {
   const table = TIER_TABLES[tier] ?? [1];
-  const t = rng.pick(table);
+  const t = forceTier ?? rng.pick(table);
   // Spoke-bound signature opponents (beasts, the Tactician) never roll here — they come from rollBeast.
   const pool = catalog.opponents.filter((o) => o.tier === t && o.kind !== "beast" && !o.spoke);
   const fallback = pool.length ? pool : catalog.opponents.filter((o) => o.kind !== "beast" && !o.spoke);
@@ -136,6 +136,9 @@ export function rollBeast(rng: WorldRng, catalog: Catalog, region: { tier: Regio
   for (const t of [1, 2, 3] as const) { roll -= weights[t - 1]!; if (roll < 0) { want = t; break; } want = t; }
   const exact = spokeBeasts.filter((o) => o.tier === want);
   if (exact.length) return rng.pick(exact);
+  // The spoke lacks the rolled tier: by knob, spawn a mage of that tier instead (default — ring difficulty holds)
+  // or the spoke's nearest-tier beast.
+  if (knobs.beastTierFallback === "mage") return rollMage(rng, catalog, region.tier, want);
   // Nearest tier; ties break DOWNWARD in civilized rings (a green civilized ring that rolls tier 2 gets a
   // Bear, not the Wurm) and UPWARD elsewhere (a green wild ring that rolls tier 2 gets the Wurm).
   const up = region.tier !== "civilized";

@@ -67,6 +67,11 @@ export const KNOBS = {
     unit: "relative weights for beast tiers 1/2/3, by region tier",
     description: "S18 (Chris): civilized rings are mostly tier-1 beasts with the occasional tier 2; approach ≈ 33/50/17; wild 50/50 tiers 2 and 3. When the spoke has no beast of the rolled tier, the nearest tier available on that spoke is used; a spoke with no beasts spawns a mage.",
   }),
+  beastTierFallback: knob<"mage" | "nearest">({
+    default: "mage",
+    unit: "mage | nearest",
+    description: "S18: what a ring does when its spoke has no beast of the rolled tier (black/red have no tier-1 beast, blue no tier-3). `mage` keeps the ring's difficulty honest — a mage of the rolled tier spawns instead (civilized rings stay mostly tier 1); `nearest` puts the spoke's nearest-tier beast there (ties break down in civilized rings, up elsewhere) — more beasts, but a tier-2 deck in a tier-1 slot. The S18 handoff tables were measured under `nearest` first, then `mage`.",
+  }),
   // ---- S16 (ADR-072): the radial world ----
   ringRadii: knob<Record<RegionTier, number>>({
     default: { civilized: 0.18, approach: 0.45, wild: 0.78 },

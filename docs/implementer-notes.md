@@ -199,6 +199,19 @@ Things a fresh session might otherwise rediscover slowly:
 - **Mana bursts and cantrips are agent-level rules, not evaluator values**: Ritual/Prospector (cast only when the burst enables something) and cycling (only dead spells) score −∞ otherwise; the view-sim prices `addMana` at 0 on purpose.
 - **Promo printings**: "oldest highres English" picked a prerelease promo with alternate art for Restoration Angel — the Rager precedent applies; `art:fetch` caches resolutions in oracle.json, so an override needs the cache entry (and images) removed to re-resolve.
 
+## S18 lessons (the Bestiary: catalog, spawn tables, renders, fog, dialogs)
+
+- **A spoke-bound opponent is one field**: `spoke` on the catalog entry binds it to its colour's ring; kind stays independent (the Cunning Tactician is `kind: mage`, spoke W — mage parley, beast-style plate). The spawn table reads `spoke`, not `kind`.
+- **Nearest-tier fallback silently changes a ring's difficulty**: black/red have no tier-1 beast, so "nearest" put tier-2 decks (Nighthawk, Warband) in civilized rings as the tier-1 beast — the first world-sim tables showed the Nighthawk at 13% player win over 89 fights. `beastTierFallback` is a knob (`mage` default: roll a mage of the intended tier). Any "fall back to what's available" rule needs a tier-honesty check.
+- **Tie-breaks need a direction**: a green wild ring rolling tier 2 has a Bear (1) and the Wurm (3) equidistant — break down in civilized rings, up elsewhere, or the wild ring fills with bears.
+- **Fog is three things**: a renderer rule (blank `--fog` tone, no wash/hatch/border/name; POIs only when explored; road stubs one cell into fog), a planner rule (`planPath` treats unexplored cells as passable and the walk re-plans when the ground turns out rough — the path preview must not leak rough terrain), and a rail rule (lists name only what's been seen). The data (`explored`) had been there since S16.
+- **The W civilized wash is the parchment colour**: `--parchment` #ede3cc vs the W civilized wash #efe6c8 — fog as "blank parchment" was invisible next to white's home region. `--fog` (#f6efde) is a shade paler; art direction may want a different answer.
+- **The `beast:<key>` deck ref resolves to sim infrastructure** (`packages/sim/src/expansion-decks.ts`, exported as `@shandalar/sim/expansion-decks`); the catalog validates keys. world → sim direction only (S16 rule).
+- **`lastCast` on the MatchController** is what lets the A7 sacrifice dialog say what the sacrifice buys — the engine's request carries the source and its effects, not the chosen targets.
+- **/play always takes the explicit-spec (`custom`) path now** so beast decks and slice decks mix; the old `humanDeck/aiDeck` form is still accepted by the controller (tests use it).
+- **world-sim `--no-beasts`** is the S16-comparable baseline (beastShare 0 via the event layer on both `newWorld` and `advance`) — starter gates are judged on it; the full roster has its own table.
+- **Ten renders, ten first-try keeps in the house style** — the bestiary-plate skeleton in `docs/prompts/portraits.md` is reliable; `--aspect 1:1` is mandatory now that the skill's default is 16:9.
+
 ## Known interims / watch list
 
 See handoff Concerns for the authoritative list. Highlights: auto-pay greedy feasibility (correct while all producers are single-symbol — R-006); condition fields `controller`/`type`/`subtype` are validated but unexercised (first card to use them should add fixtures); value refs deliberately have no arithmetic (ADR-028 — resist until a card demands it); the `sba-unattach` ATTACHED cause is unreachable by legal play (test-forced only).

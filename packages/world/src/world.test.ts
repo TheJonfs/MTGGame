@@ -658,6 +658,59 @@ describe("lair fixed point (S14 round 1 prototype)", () => {
   });
 });
 
+describe("S18 Part 6 (scripted acceptance): a beast encounter end-to-end — roamer → parley (voice, distraction price, refusal) → duel on the beast deck with the tier AI profile → result applied → roamer removed", () => {
+  it("the Boggart Warband: contact → fight → beast:warband decklist + journeyman profile + world life 10 → outcome applied; the Living Gale refuses distraction with its own refusal line; the Serra Angel takes a tithe", async () => {
+    const { EXPANSION_DECKS } = await import("@shandalar/sim/expansion-decks");
+    const { buyOffPrice } = await import("./journey.js");
+    const w = newWorld({ seed: 5, catalog, starter: "red" });
+    // Put a Warband on the first step (the catalog entry exists even if this seed's red ring didn't roll one — instantiate it).
+    const warband = catalog.opponents.find((o) => o.id === "beast_warband")!;
+    expect(warband.kind).toBe("beast");
+    expect(warband.parley?.verb).toBe("Bribe");
+    const cell = (() => { const live = w.opponents.find((o) => !o.gone && !o.fixedAt && o.at)!; live.catalogId = "beast_warband"; return live; })();
+    const enc = firstEncounter(w, (o) => o.id === cell.id);
+    expect(enc.catalogId).toBe("beast_warband");
+    expect(enc.tier).toBe(2);
+    const knobs = worldKnobs(w);
+    expect(buyOffPrice(knobs, 2, warband)).toBe(Math.round(knobs.buyOffBase * 2 * knobs.beastBuyOffMultiplier));
+    const out = parley(w, catalog, enc, "fight");
+    expect(out.type).toBe("fight");
+    if (out.type !== "fight") return;
+    const { duel } = out;
+    expect(duel.enemy.name).toBe("The Boggart Warband");
+    expect(duel.enemy.difficulty).toBe("journeyman");
+    expect(duel.enemy.worldLife).toBe(10);
+    expect(duel.enemy.archetype).toBe("aggro");
+    expect(duel.spec.players[1].decklist).toEqual(EXPANSION_DECKS.warband!.decklist);
+    expect(duel.spec.modifiers).toEqual([{ type: "startingLife", player: 1, value: 10 }]);
+    const result = await runMatch(duel.spec, pool.cards, agentsFor(w, duel.enemy.difficulty, duel.enemy.deck, 5));
+    const rec = applyDuelResult(w, catalog, duel, result);
+    expect(["win", "loss", "draw"]).toContain(rec.outcome);
+    expect(w.opponents.find((o) => o.id === enc.opponentId)!.gone).toBe(true);
+    expect(w.duels).toHaveLength(1);
+    // Unbuyable beast: the Living Gale refuses with its catalog refusal; a tithe to the Serra Angel is a buy-off at the beast multiplier.
+    const gale = catalog.opponents.find((o) => o.id === "beast_gale")!;
+    expect(gale.buyable).toBe(false);
+    expect(gale.parley?.refusal).toMatch(/wind/);
+    const w2 = newWorld({ seed: 6, catalog, starter: "blue" });
+    const live2 = w2.opponents.find((o) => !o.gone && !o.fixedAt && o.at)!; live2.catalogId = "beast_gale";
+    const enc2 = firstEncounter(w2, (o) => o.id === live2.id);
+    w2.player.gold = 10_000;
+    expect(parley(w2, catalog, enc2, "buyoff")).toMatchObject({ type: "refused", reason: expect.stringMatching(/cannot be bought/) });
+    const serra = catalog.opponents.find((o) => o.id === "beast_serra")!;
+    expect(serra.buyable).toBe(true);
+    expect(serra.parley?.verb).toBe("Tithe");
+    const w3 = newWorld({ seed: 7, catalog, starter: "white" });
+    const live3 = w3.opponents.find((o) => !o.gone && !o.fixedAt && o.at)!; live3.catalogId = "beast_serra";
+    const enc3 = firstEncounter(w3, (o) => o.id === live3.id);
+    w3.player.gold = 10_000;
+    const tithe = parley(w3, catalog, enc3, "buyoff");
+    expect(tithe.type).toBe("boughtOff");
+    expect(w3.player.gold).toBe(10_000 - buyOffPrice(worldKnobs(w3), 3, serra));
+    expect(w3.opponents.find((o) => o.id === enc3.opponentId)!.gone).toBe(true); // any parley outcome removes the roamer (S16 ruling)
+  }, 60_000);
+});
+
 describe("S18 spawn tables (ADR-066/074, Chris's ring blends): spoke-bound beasts, beastShare, tier blend by ring; respawn uses the same table", () => {
   it("signature opponents roam only their spoke; civilized rings carry no tier-3 beasts and wild rings no tier-1; the beast share tracks the knob; a spoke without a rolled tier falls to the nearest", () => {
     const byRing: Record<string, { beasts: number; total: number; tiers: Record<number, number> }> = { civilized: { beasts: 0, total: 0, tiers: {} }, approach: { beasts: 0, total: 0, tiers: {} }, wild: { beasts: 0, total: 0, tiers: {} } };
@@ -680,14 +733,23 @@ describe("S18 spawn tables (ADR-066/074, Chris's ring blends): spoke-bound beast
     for (const tier of ["civilized", "approach", "wild"] as const) {
       const r = byRing[tier]!;
       const share = r.beasts / r.total;
-      expect(share, `${tier} beast share ${share.toFixed(2)} vs knob ${knobs.beastShare[tier]}`).toBeGreaterThan(knobs.beastShare[tier] - 0.12);
+      // Under the default `mage` fallback the realised share is the knob × the fraction of rolls the spoke can serve
+      // (black/red have no tier-1 beast, blue no tier-3, green no tier-2) — so: never above the knob by noise, never below half of it.
+      expect(share, `${tier} beast share ${share.toFixed(2)} vs knob ${knobs.beastShare[tier]}`).toBeGreaterThan(knobs.beastShare[tier] * 0.5);
       expect(share).toBeLessThan(knobs.beastShare[tier] + 0.12);
     }
     expect(byRing.civilized!.tiers[3] ?? 0).toBe(0); // blend [85,15,0]
     expect(byRing.wild!.tiers[1] ?? 0).toBe(0); // blend [0,50,50]
     expect(byRing.civilized!.tiers[1]!).toBeGreaterThan(byRing.civilized!.tiers[2] ?? 0);
-    // Nearest-tier fallback: the blue wild ring rolls tier 3 half the time but blue has no tier-3 beast → the Living Gale (tier 2) stands in.
-    const wBlueWild = newWorld({ seed: 7, catalog, starter: "blue" });
+    // Tier fallback (knob `beastTierFallback`): the blue wild ring rolls tier 3 half the time but blue has no tier-3 beast.
+    // Default `mage`: a tier-3 mage spawns instead (ring difficulty holds); `nearest`: the Living Gale (tier 2) stands in.
+    const wBlueWildMage = newWorld({ seed: 7, catalog, starter: "blue" });
+    const bw = wBlueWildMage.map.regions.find((r) => r.color === "U" && r.tier === "wild")!;
+    for (const o of wBlueWildMage.opponents.filter((o) => o.region === bw.index && !o.fixedAt)) {
+      const t = catalog.opponents.find((x) => x.id === o.catalogId)!;
+      if (!t.spoke) expect([2, 3]).toContain(t.tier); // mages in the wild ring: never tier 1 (blend [0,50,50] → forced tier 2/3, or the wild mage table 3,3,2)
+    }
+    const wBlueWild = newWorld({ seed: 7, catalog, starter: "blue", knobLayers: { event: { beastTierFallback: "nearest" } } });
     const blueWild = wBlueWild.map.regions.find((r) => r.color === "U" && r.tier === "wild")!;
     const ids = new Set(wBlueWild.opponents.filter((o) => o.region === blueWild.index && !o.fixedAt).map((o) => o.catalogId));
     for (const id of ids) { const t = catalog.opponents.find((x) => x.id === id)!; if (t.spoke) expect(t.id).toBe("beast_gale"); }
