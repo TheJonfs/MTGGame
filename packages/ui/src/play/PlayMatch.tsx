@@ -327,6 +327,22 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption }: { c: MatchContro
   // grid (chooser only; the request's candidates), with Decline apart.
   const isSearch = req.purpose === "searchLibrary";
   const sourceName = req.source ? cardName(pool, req.source.cardId) : null;
+  // S18 Part 5 (S17 concern 5 → ADR-077 rider): dedicated dialogs on the ADR-058 local-choice + single-Confirm
+  // pattern for the three S17 request purposes — modal choice (A6), discard-as-cost (ADR-076), and the A7
+  // additional-cost sacrifice (the staged spell + its targets shown so the player sees what the sacrifice buys).
+  const isMode = req.purpose === "chooseMode";
+  const isDiscardCost = req.purpose === "discardCost";
+  const lastCast = c.lastCast;
+  const castSource = lastCast && lastCast.type === "castSpell" && req.source && state.objects[lastCast.objectId]?.cardId === req.source.cardId ? lastCast : null;
+  const isAdditionalSac = req.purpose === "chooseSacrifice" && !!req.source && !!castSource;
+  const sourceDef = req.source ? pool.get(req.source.cardId) ?? null : null;
+  const dedicatedTitle = isMode
+    ? `Choose one — ${sourceName}`
+    : isDiscardCost
+      ? `Discard a card to pay — ${sourceName}`
+      : isAdditionalSac
+        ? `Additional cost — ${sourceName}`
+        : null;
   // Render actions as cards where the choice is over cards (ADR-058).
   const cardOf = (a: (typeof req.actions)[number]): string | null => {
     if ("objectId" in a && typeof a.objectId === "string") {
@@ -355,9 +371,24 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption }: { c: MatchContro
     <div className="gallery-modal">
       <div className="gallery-modal-box play-dialog">
         <h3 style={{ marginTop: 0, fontFamily: "var(--serif)" }}>
-          {titles[req.purpose] ?? req.purpose}
-          {sourceName ? <span style={{ fontWeight: 400 }}> — {sourceName}</span> : null}
+          {dedicatedTitle ?? titles[req.purpose] ?? req.purpose}
+          {!dedicatedTitle && sourceName ? <span style={{ fontWeight: 400 }}> — {sourceName}</span> : null}
         </h3>
+        {(isMode || isDiscardCost || isAdditionalSac) && sourceDef && (
+          <div className="dialog-source">
+            <CardFrame def={sourceDef} oracle={oracle[sourceDef.id]} mini />
+            <div className="dialog-source-text">
+              {isMode && <p>Its ability offers a choice of modes. Pick one; if the mode needs a target you choose it next.</p>}
+              {isDiscardCost && <p>Discarding is part of the activation cost — the card goes to your graveyard whether or not the ability resolves as hoped.</p>}
+              {isAdditionalSac && castSource && castSource.type === "castSpell" && (
+                <>
+                  <p>Casting this spell requires a sacrifice as an additional cost (paid now, after mana).</p>
+                  <p className="dialog-staged">Staged: {actionLabel(state, pool, castSource)}</p>
+                </>
+              )}
+            </div>
+          </div>
+        )}
         {req.revealed && !isSearch && (
           <div className="revealed-strip">
             <div className="flyout-title">Revealed:</div>
@@ -373,10 +404,18 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption }: { c: MatchContro
             {req.actions.length - 1} matching card{req.actions.length === 2 ? "" : "s"} — pick one, or find nothing. Your library is shuffled either way.
           </p>
         )}
-        <div className={asCards ? "dialog-cards" : "dialog-list"}>
+        <div className={isMode ? "dialog-modes" : asCards ? "dialog-cards" : "dialog-list"}>
           {req.actions.map((a, i) => {
             const cid = cardOf(a);
             const selected = phase.selected === i;
+            if (isMode && a.type === "chooseMode") {
+              return (
+                <div key={i} className={`dialog-option dialog-mode ${selected ? "selected" : ""}`} onClick={() => c.selectDialog(i)}>
+                  <span className="mode-badge">{a.mode + 1}</span>
+                  <span className="mode-label">{a.label}</span>
+                </div>
+              );
+            }
             if (isSearch && a.type === "declineSearch") {
               return (
                 <div key={i} className={`dialog-option decline-search ${selected ? "selected" : ""}`} onClick={() => c.selectDialog(i)}>

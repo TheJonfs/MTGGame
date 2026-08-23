@@ -174,6 +174,8 @@ export class MatchController {
   private combatSeen = new Set<string>();
   /** Why the current pause happened, for the prompt ("Opponent cast X"). */
   stopReason: string | null = null;
+  /** S18 (Part 5 dialogs): the last spell cast submitted by you — the A7 sacrifice dialog shows its staged targets. */
+  lastCast: Action | null = null;
   /** Opponent stack items already paused for (stack ids are unique per item). */
   private seenStackItems = new Set<string>();
   private stackStopResolve: (() => void) | null = null;
@@ -458,6 +460,7 @@ export class MatchController {
   private submit(action: Action): void {
     this.phase = { kind: "waiting" };
     this.stopReason = null;
+    if (action.type === "castSpell") this.lastCast = action;
     this.human.submit(action);
     this.emit();
   }

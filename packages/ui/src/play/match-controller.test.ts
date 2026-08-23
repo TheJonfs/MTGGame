@@ -344,3 +344,125 @@ describe("play-mode acceptance (headless; S10 DoD 1)", () => {
     expect(result.winner).toBe(1);
   }, 60_000);
 });
+
+/** S18 Part 5: the three S17 request purposes reach the play client as dialogs with the context the
+ * dedicated UI needs (source + actions; the A7 sacrifice also has `lastCast` = the staged cast). */
+async function driveTo(c: MatchController, stop: (phase: MatchController["phase"]) => boolean, preferCast: string[], guardMax = 6000): Promise<boolean> {
+  let guard = 0;
+  while (!c.result && guard++ < guardMax) {
+    await new Promise((r) => setTimeout(r, 0));
+    const phase = c.phase;
+    if (stop(phase)) return true;
+    switch (phase.kind) {
+      case "priority": {
+        const cardOf = (id: string) => c.game.state.objects[id]!.cardId;
+        const want = [...phase.castable.keys()].find((id) => preferCast.includes(cardOf(id))) ?? [...phase.activatable.keys()].find((id) => preferCast.includes(cardOf(id)));
+        if (phase.lands.size > 0) c.clickHand([...phase.lands.keys()][0]!);
+        else if (want && phase.castable.has(want)) c.clickHand(want);
+        else if (want) c.clickBattlefield(want);
+        else c.pass();
+        break;
+      }
+      case "chooseX": c.chooseX(phase.xs[phase.xs.length - 1]!); break;
+      case "targeting": {
+        // Prefer the opponent (player 1 from seat 0) for a Grenade; a creature of theirs for a bounce.
+        const theirs = [...phase.highlightObjects].find((id) => c.game.state.objects[id]!.controller === 1);
+        if (phase.highlightPlayers.has(1)) c.clickPlayer(1);
+        else if (theirs) c.clickBattlefield(theirs);
+        else if (phase.highlightObjects.size > 0) c.clickBattlefield([...phase.highlightObjects][0]!);
+        else c.clickPlayer([...phase.highlightPlayers][0]!);
+        break;
+      }
+      case "confirmCast": c.confirmCast(); break;
+      case "manualTap": c.castNow(); break;
+      case "stackStop": c.continueFromStop(); break;
+      case "attackers": c.confirmAttackers(); break;
+      case "blockers": c.confirmBlocks(); break;
+      case "dialog": c.selectDialog(0); c.confirmDialog(); break;
+      case "chooseColor": c.chooseColor("U"); break;
+      default: break;
+    }
+  }
+  return false;
+}
+
+function customMatch(pool: Map<string, import("@shandalar/cards").CardDef>, seed: number, decklist: { cardId: string; count: number }[]) {
+  return new MatchController(pool, {
+    humanSeat: 0, seed, aiDelayMs: 0,
+    custom: { human: { name: "You", decklist }, enemy: { name: "C", decklist: [...DECKS.C.decklist], difficulty: "apprentice", archetype: "midrange" }, rules: { startingLife: 20, ante: 0 }, modifiers: [] },
+  });
+}
+
+describe("S18 Part 5: dedicated dialogs for chooseMode / discardCost / A7 sacrifice (controller half)", () => {
+  it("Aether Channeler's ETB reaches the client as a chooseMode dialog (labels; the bounce mode only when another nonland permanent exists); confirming picks that mode", async () => {
+    const pool = loadCardPool(CARDS_DIR);
+    let seen = false;
+    for (let seed = 1; seed <= 12 && !seen; seed++) {
+      const c = customMatch(pool.cards, seed, [{ cardId: "island", count: 22 }, { cardId: "aether_channeler", count: 18 }]);
+      c.start();
+      const hit = await driveTo(c, (p) => p.kind === "dialog" && p.request.purpose === "chooseMode", ["aether_channeler"]);
+      if (!hit) { c.concede(); await new Promise((r) => setTimeout(r, 5)); continue; }
+      seen = true;
+      const phase = c.phase as Extract<MatchController["phase"], { kind: "dialog" }>;
+      expect(phase.request.source?.cardId).toBe("aether_channeler");
+      const labels = phase.request.actions.map((a) => (a.type === "chooseMode" ? a.label : ""));
+      expect(labels.some((l) => /Bird/.test(l))).toBe(true);
+      expect(labels.some((l) => /Draw a card/.test(l))).toBe(true);
+      // With only Islands + the Channeler itself out, "another nonland permanent" has no legal target → that mode is absent.
+      const others = c.game.state.battlefield.filter((id) => c.game.state.objects[id]!.controller === 0 && !c.game.state.objects[id]!.cardId.includes("island") && c.game.state.objects[id]!.cardId !== "aether_channeler");
+      if (others.length === 0) expect(labels.some((l) => /Return/.test(l))).toBe(false);
+      const draw = phase.request.actions.findIndex((a) => a.type === "chooseMode" && /Draw/.test(a.label));
+      const handBefore = c.game.state.players[0].hand.length;
+      c.selectDialog(draw); c.confirmDialog();
+      await driveTo(c, (p) => p.kind === "priority" && c.game.state.stack.length === 0, [], 2000);
+      expect(c.game.state.players[0].hand.length).toBeGreaterThanOrEqual(handBefore + 1); // the draw mode resolved (a turn draw may add one more)
+      c.concede(); await new Promise((r) => setTimeout(r, 5));
+    }
+    expect(seen).toBe(true);
+  }, 60_000);
+
+  it("Waterfront Bouncer's activation asks for the discard as a discardCost dialog over distinct hand cards (source = the Bouncer)", async () => {
+    const pool = loadCardPool(CARDS_DIR);
+    let seen = false;
+    for (let seed = 1; seed <= 12 && !seen; seed++) {
+      const c = customMatch(pool.cards, seed, [{ cardId: "island", count: 20 }, { cardId: "waterfront_bouncer", count: 12 }, { cardId: "wind_drake", count: 8 }]);
+      c.start();
+      const hit = await driveTo(c, (p) => p.kind === "dialog" && p.request.purpose === "discardCost", ["waterfront_bouncer"]);
+      if (!hit) { c.concede(); await new Promise((r) => setTimeout(r, 5)); continue; }
+      seen = true;
+      const phase = c.phase as Extract<MatchController["phase"], { kind: "dialog" }>;
+      expect(phase.request.source?.cardId).toBe("waterfront_bouncer");
+      expect(phase.request.actions.length).toBeGreaterThanOrEqual(2);
+      for (const a of phase.request.actions) expect(a.type).toBe("discard");
+      c.selectDialog(0); c.confirmDialog();
+      await driveTo(c, (p) => p.kind === "priority", [], 2000);
+      c.concede(); await new Promise((r) => setTimeout(r, 5));
+    }
+    expect(seen).toBe(true);
+  }, 60_000);
+
+  it("Goblin Grenade: targets are staged at cast, then the A7 sacrifice arrives as a chooseSacrifice dialog with the Grenade as source and lastCast = the staged cast (targets visible to the dialog)", async () => {
+    const pool = loadCardPool(CARDS_DIR);
+    let seen = false;
+    for (let seed = 1; seed <= 16 && !seen; seed++) {
+      const c = customMatch(pool.cards, seed, [{ cardId: "mountain", count: 18 }, { cardId: "raging_goblin", count: 12 }, { cardId: "goblin_grenade", count: 10 }]);
+      c.start();
+      const hit = await driveTo(c, (p) => p.kind === "dialog" && p.request.purpose === "chooseSacrifice" && !!p.request.source, ["raging_goblin", "goblin_grenade"]);
+      if (!hit) { c.concede(); await new Promise((r) => setTimeout(r, 5)); continue; }
+      seen = true;
+      const phase = c.phase as Extract<MatchController["phase"], { kind: "dialog" }>;
+      expect(phase.request.source?.cardId).toBe("goblin_grenade");
+      expect(c.lastCast?.type).toBe("castSpell");
+      if (c.lastCast?.type === "castSpell") {
+        expect(c.game.state.objects[c.lastCast.objectId]?.cardId).toBe("goblin_grenade");
+        expect(c.lastCast.targets).toHaveLength(1);
+      }
+      expect(phase.request.actions.length).toBeGreaterThanOrEqual(2); // a dialog only when there is a real choice of Goblins
+      for (const a of phase.request.actions) expect(a.type).toBe("sacrifice");
+      c.selectDialog(0); c.confirmDialog();
+      await driveTo(c, (p) => p.kind === "priority", [], 2000);
+      c.concede(); await new Promise((r) => setTimeout(r, 5));
+    }
+    expect(seen).toBe(true);
+  }, 90_000);
+});

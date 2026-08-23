@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import type { PlayerId } from "@shandalar/engine";
 import type { Difficulty } from "@shandalar/agents";
-import { DECKS, type DeckKey } from "@shandalar/sim/decks";
+import { DECKS, DECK_ARCHETYPES, type DeckKey } from "@shandalar/sim/decks";
+import { EXPANSION_DECKS } from "@shandalar/sim/expansion-decks";
 import { loadOracle, loadPool, type OracleEntry, type SavedGame } from "../engine-bridge";
 import { MatchController } from "./match-controller";
 import { PlayMatch, loadStops } from "./PlayMatch";
@@ -13,9 +14,22 @@ import { cardName } from "../labels";
  * same seed, and download of the saved game.
  */
 
+/** S18: /play offers the slice decks A–E and the beast decks (beast:<key>) so the S17 cards
+ * (Channeler, Bouncer, Grenade …) can be played by hand in the director round. */
+type PlayDeck = DeckKey | `beast:${string}`;
+const PLAY_DECKS: { key: PlayDeck; label: string }[] = [
+  ...(Object.keys(DECKS) as DeckKey[]).map((k) => ({ key: k as PlayDeck, label: `${k} · ${DECKS[k].name}` })),
+  ...Object.entries(EXPANSION_DECKS).map(([k, v]) => ({ key: `beast:${k}` as PlayDeck, label: `${v.name} (${v.color} ${v.tier})` })),
+];
+function playDeck(key: PlayDeck): { name: string; decklist: { cardId: string; count: number }[]; archetype: "aggro" | "midrange" | "control" } {
+  if (key.startsWith("beast:")) { const b = EXPANSION_DECKS[key.slice(6)]!; return { name: b.name, decklist: b.decklist.map((e) => ({ ...e })), archetype: b.archetype }; }
+  const k = key as DeckKey;
+  return { name: DECKS[k].name, decklist: DECKS[k].decklist.map((e) => ({ ...e })), archetype: DECK_ARCHETYPES[k] };
+}
+
 interface Setup {
-  humanDeck: DeckKey;
-  aiDeck: DeckKey;
+  humanDeck: PlayDeck;
+  aiDeck: PlayDeck;
   difficulty: Difficulty;
   humanSeat: PlayerId;
   seed: string; // empty = random
@@ -23,13 +37,13 @@ interface Setup {
 
 const DIFFICULTIES: Difficulty[] = ["apprentice", "journeyman", "master"];
 
-function DeckPicker({ label, value, onChange }: { label: string; value: DeckKey; onChange: (d: DeckKey) => void }) {
+function DeckPicker({ label, value, onChange }: { label: string; value: PlayDeck; onChange: (d: PlayDeck) => void }) {
   return (
     <div className="deck-picker">
       <div className="flyout-title">{label}</div>
-      {(Object.keys(DECKS) as DeckKey[]).map((k) => (
-        <label key={k} className={value === k ? "picked" : ""}>
-          <input type="radio" checked={value === k} onChange={() => onChange(k)} /> {k} · {DECKS[k].name}
+      {PLAY_DECKS.map(({ key, label: text }, i) => (
+        <label key={key} className={value === key ? "picked" : ""} style={i === 5 ? { marginTop: 6, borderTop: "1px solid var(--ink-soft)", paddingTop: 4 } : undefined}>
+          <input type="radio" checked={value === key} onChange={() => onChange(key)} /> {text}
         </label>
       ))}
     </div>
@@ -159,11 +173,11 @@ export function PlayApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =>
 
   const begin = (setup: Setup, seedOverride?: number) => {
     const seed = seedOverride ?? (setup.seed.trim() !== "" ? Number(setup.seed) : undefined);
+    const human = playDeck(setup.humanDeck), enemy = playDeck(setup.aiDeck);
     const c = new MatchController(pool, {
       humanSeat: setup.humanSeat,
-      humanDeck: setup.humanDeck,
-      aiDeck: setup.aiDeck,
-      difficulty: setup.difficulty,
+      // S18: always the explicit-spec path so beast decks and slice decks mix freely (rules as the old slice-deck form: 20 life, no ante).
+      custom: { human: { name: "You", decklist: human.decklist }, enemy: { name: enemy.name, decklist: enemy.decklist, difficulty: setup.difficulty, archetype: enemy.archetype }, rules: { startingLife: 20, ante: 0 }, modifiers: [] },
       ...(seed !== undefined && Number.isFinite(seed) ? { seed } : {}),
       aiDelayMs: Number(localStorage.getItem("shandalar-ai-delay") ?? 400),
     });
