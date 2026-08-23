@@ -73,6 +73,16 @@ The rules engine is a **library with no main loop and no knowledge of the world*
 
 **2026-08-23 — ADR-070 Amendment 3 — mill:** new effect word `mill {count, target|who}`: top N of the library to its owner's graveyard via `moveObject` (per-card zone-change events fire; an empty library mills what it can; **milling is not drawing** — no empty-draw loss from mill). First card: **Cathartic Adept** ({U} Creature — Human Wizard 1/1, "{T}: Target player mills a card" — Scryfall-verified, ALA, Carl Critchlow; note: Human, not Merfolk).
 
+**2026-08-24 — ADR-075 Amendment 4 — counting value refs:** Value references gain `{"ref":"count", "predicate":…}` over battlefield permanents (e.g. Swamps you control, other attacking Goblins) and `{"ref":"graveyardCount","who":"you"}`. The manifest's "graveyard counting — out" exclusion is **narrowed to ordering only**; counting is an array length and is in. Customers: Tendrils of Corruption, Gaean Wurm, Werebear (threshold as a conditional static keyed on graveyardCount ≥ 7), Baru's X.
+
+**2026-08-24 — ADR-075 Amendment 5 — zone-scoped activated abilities:** Abilities may declare `zone: battlefield (default) | hand | graveyard`. **Cycling** enters as a keyword compiling to a hand-zone ability `{cost, discard self; draw 1}`. Customers: Airship Crash (cycling {2}), Mother Bear (graveyard, exile-self cost, sorcery timing).
+
+**2026-08-24 — ADR-075 Amendment 6 — modal "choose one":** Spell/trigger effects may be `modes: [effects[]]` with a controller DecisionRequest at cast/resolution per CR 601.2b (modes chosen at cast for spells, at put-on-stack for triggers; targets chosen after mode). Customer: Aether Channeler.
+
+**2026-08-24 — ADR-075 Amendment 7 — additional spell costs:** The cast path's cost step gains optional `additional: {sacrifice: predicate}` (extends ability sac-cost machinery to spells; paid at 601.2h with triggers ordering normally). Customer: Goblin Grenade.
+
+**2026-08-24 — ADR-075 Amendment 8 — blink + optional targets:** New effect `exileThenReturn {target, under:"yourControl"}` (returns as a new object; ETBs fire) and targeting gains `count: {min:0, max:N}` ("up to"). Customer: Restoration Angel.
+
 ---
 
 ## 4. Explicit exclusions (written down so we don't drift)
