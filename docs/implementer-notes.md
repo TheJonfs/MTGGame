@@ -188,6 +188,17 @@ Things a fresh session might otherwise rediscover slowly:
 - **`sim` must not import `world`** (world imports sim's decks) — `fuzz:starters` reads `starters.json` with `fs`.
 - **HMR re-mounts the world app**: editing any UI file mid-verification resets `__wc` to the start screen; `continueFromAutosave()` restores.
 
+## S17 lessons (Expansion 1: five amendments + 32 cards)
+
+- **Verify before you ask**: running the Scryfall pass on all 31 real cards *before* the kickoff questions turned nine ⚠ rows into concrete rulings (five cost shifts, a P/T, "a creature" vs "another", Restoration Angel's "you may … target" vs "up to one") instead of mid-session surprises. Scryfall rate-limits bursts: pace ≥1s/request and send a User-Agent.
+- **Observed triggers need the mover as its own observer**: DIES with `source: any` (Blood Artist) must collect the dying Blood Artist's *own* death through the observer scan — the self path deliberately skips non-`self` sources, and the moved object is no longer on the battlefield when ZONE_CHANGE fires. Simultaneous batches (SBA, Wrath) go through `moveBatchToGraveyard` so `ctx.lookback` lets already-moved observers see the rest.
+- **One discard entry point**: `discardCard()` (effects, cleanup, costs, cycling) is what makes Waste Not's "whenever an opponent discards" true everywhere — a direct `moveObject(hand→graveyard)` anywhere else would silently miss it. Same lesson as MILLED: emit the event where the move happens.
+- **Keyword-filtered statics recurse unless you cut the loop**: "creatures with flying get +2/+0" evaluated inside characteristics() — `baseKeywords()` (printed + stored + *unfiltered* static grants) is the one-level cut; documented as a simplification in R-053.
+- **Zone abilities and the view**: the AI only sees graveyard *cardIds*; graveyard-zone actions (Mother Bear) are on object ids → `GameView.graveyardObjects`. Likewise `manaPool` for the mana-burst policy. Adding public fields to the view means updating the no-peeking key pin — that's the point of the pin.
+- **Unused vocabulary hides**: `untapTarget` had existed since S1 with no resolver; Little Bear found it. The loader test now asserts every non-static word has a resolver.
+- **Mana bursts and cantrips are agent-level rules, not evaluator values**: Ritual/Prospector (cast only when the burst enables something) and cycling (only dead spells) score −∞ otherwise; the view-sim prices `addMana` at 0 on purpose.
+- **Promo printings**: "oldest highres English" picked a prerelease promo with alternate art for Restoration Angel — the Rager precedent applies; `art:fetch` caches resolutions in oracle.json, so an override needs the cache entry (and images) removed to re-resolve.
+
 ## Known interims / watch list
 
 See handoff Concerns for the authoritative list. Highlights: auto-pay greedy feasibility (correct while all producers are single-symbol — R-006); condition fields `controller`/`type`/`subtype` are validated but unexercised (first card to use them should add fixtures); value refs deliberately have no arithmetic (ADR-028 — resist until a card demands it); the `sba-unattach` ATTACHED cause is unreachable by legal play (test-forced only).
