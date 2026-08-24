@@ -52,3 +52,7 @@ Each seat has a portrait (opponent portraits are overworld content later; for th
 ## 7. Open decisions for concepting
 
 Log placement (rail tab vs bottom row). Everything else in this section is decided (§0).
+
+## 8. Fog of war (ADR-078, S19)
+
+Unexplored ground is an **absence, not a texture**: canonically "paler paper" (`--fog`, a shade lighter than the parchment washes) — no wash, no hatching, no borders, no names; POIs appear on first sight; roads end in a one-cell faded stub ("invitation, not information", ADR-073). Whether the white civilized wash warms slightly (so parchment ≠ wash) stays open to Chris's eye in play.

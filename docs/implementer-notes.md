@@ -212,6 +212,16 @@ Things a fresh session might otherwise rediscover slowly:
 - **world-sim `--no-beasts`** is the S16-comparable baseline (beastShare 0 via the event layer on both `newWorld` and `advance`) — starter gates are judged on it; the full roster has its own table.
 - **Ten renders, ten first-try keeps in the house style** — the bestiary-plate skeleton in `docs/prompts/portraits.md` is reliable; `--aspect 1:1` is mandatory now that the skill's default is 16:9.
 
+## S19 lessons (shop tiers, bestiary round 2, quests)
+
+- **shopTier lives on the card def**, like `prizeOnly` before it (the pool registry documents the rule, not a duplicated column); the loader guard makes a missing tier a structural error. Exempt classes: tokens, basics, prizeOnly, `test_` ids.
+- **Sequencing discipline paid off** (ADR-078): gates at 1,000/cell FIRST, then a 12-opponent baseline, then content. The S19 baseline replaced the S18 tables in one session with zero ambiguity about which agent produced what.
+- **A quest is world data + three hooks**: offers are a pure function of (seed, town); the only journey touchpoints are a step tick (deadlines, sighting marks), an arrival hook (couriers), and a defeat hook (bounties). No engine work; manalinks were exactly the manifest's "zero engine work" claim (`permanentOnBattlefield` + five isTokenDef defs).
+- **Modifier-only permanents want isTokenDef**: never shop stock, never deck-legal, exempt from shopTier — and period-correct if bounced (a token ceases; the link returns next duel).
+- **The reserved-field trick worked twice** (`explored` in v3, now `sieges: []` in v4): reserving an empty field costs nothing and spares a migration.
+- **rng.pick in offer generation must come from a THROWAWAY WorldRng** seeded from (world.seed, town) — using the world's journey stream would make browsing a town's board advance the world's randomness (a UI read mutating state).
+- **`world-sim` numbers move under content adds even when "nothing relevant changed"**: adding tier-1 beasts to the spawn tables shifted every starter's tier-1 percentage (more soft opponents in the mix). Compare per-opponent rows, not headline tiers, across content sessions.
+
 ## Known interims / watch list
 
 See handoff Concerns for the authoritative list. Highlights: auto-pay greedy feasibility (correct while all producers are single-symbol — R-006); condition fields `controller`/`type`/`subtype` are validated but unexercised (first card to use them should add fixtures); value refs deliberately have no arithmetic (ADR-028 — resist until a card demands it); the `sba-unattach` ATTACHED cause is unreachable by legal play (test-forced only).

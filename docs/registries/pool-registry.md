@@ -165,6 +165,14 @@ All real cards Scryfall re-verified before encoding; ⚠-row outcomes are in the
 
 Tokens added: bear_2_2 (G), bird_1_1_flying (W), wurm_4_4 (G), zombie_2_2 (B), faerie_rogue_1_1_flying (B). Pool 72 → 104 cards (+5 tokens = 109 loader entries). Beast decklists (30 cards as listed; ADR-074 says 40 — planner reconciles in S18) live in `packages/sim/src/expansion-decks.ts` for fuzz/ladder until the S18 catalog adopts them.
 
+## Session 19 additions (bestiary round 2 + quests, ADR-078)
+
+| cardId | name | status | vocabulary | notes |
+|---|---|---|---|---|
+| faerie_formation | Faerie Formation | tested | flying, activated (createToken + draw) | {4}{U} 5/4; activation {3}{U} Scryfall-confirmed (the Gatherer bare-{3} was an artifact); U tier-3 signature; shopTier 3 |
+| faerie_1_1_u | Faerie Token (1/1 U, flying) | tested | token def | colors ["U"] per ADR-019; distinct from Bitterblossom's black Faerie Rogue |
+| manalink_w/u/b/r/g | Manalink: Plains/Island/Swamp/Mountain/Forest | tested | activated mana (tap) | S19 quests: modifier-only permanents (`permanentOnBattlefield`, manifest §5); isTokenDef — never shop stock, never deck-legal, not collection cards |
+
 ## Ceiling anchors (not yet scheduled)
 Ceiling complete as of S5 (see mechanics-manifest §3). Further additions are card batches using existing vocabulary.
 
