@@ -173,6 +173,21 @@ Tokens added: bear_2_2 (G), bird_1_1_flying (W), wurm_4_4 (G), zombie_2_2 (B), f
 | faerie_1_1_u | Faerie Token (1/1 U, flying) | tested | token def | colors ["U"] per ADR-019; distinct from Bitterblossom's black Faerie Rogue |
 | *(manalinks)* | — | — | `permanentOnBattlefield` of a plain basic | S19 round 2 (Chris): a manalink starts every duel with a REGULAR basic land of its colour in play — no bespoke defs (the five manalink_* artifacts were cut the same session they were born) |
 
+## Session 20 additions (dungeons and duals, ADR-079)
+
+| cardId | name | status | vocabulary | notes |
+|---|---|---|---|---|
+| tundra … bayou (×10) | ABU duals | tested | two plain tap abilities (the solver's customers) | shopTier R; OLGC printings (earlier of two); unsellable ("priceless") pending the R economy |
+| hallowed_fountain … sacred_foundry (×10) | Ravnica shocklands | tested | A9 entersChoice {pay 2 life, else tapped} | shopTier 2, priceOverride 45; RVR retro-frame printings (#397–415) |
+| secluded_steppe/lonely_sandbar/barren_moor/forgotten_cave/tranquil_thicket | cycling lands | tested | entersTapped + cycling {C} | shopTier 1, priceOverride 10 |
+| evolving_wilds | Evolving Wilds | tested | tap+sac self → searchLibrary basic to battlefield tapped | shopTier 1, priceOverride 12; BRC #184 old frame |
+| reya_dawnbringer | Reya Dawnbringer | tested | upkeep optional trigger + returnFromGraveyard(creature) | R; INV #33 |
+| arcanis_the_omnipotent | Arcanis the Omnipotent | tested | {T}: draw 3; {2}{U}{U}: bounce scope self | R; ONS #66 |
+| drakuseth_maw_of_flames | Drakuseth, Maw of Flames | tested | ATTACKS trigger + A8 range targets + targetSpec damage fan-out | R; CMM #535 |
+| titania_protector_of_argoth | Titania, Protector of Argoth | tested | ETB returnFromGraveyard(LAND — new predicate); observed land-DIES → token | R; MH2 #416 |
+| mox_pearl/sapphire/jet/ruby/emerald | the five Moxen | tested | {0} artifact, tap for one colour | prizeOnly (dungeon prizes); LEA Dan Frazier by the default rule; 4-cap applies once owned (Chris) |
+| elemental_5_3_g | Elemental Token (5/3 G) | tested | token def | Titania's token |
+
 ## Ceiling anchors (not yet scheduled)
 Ceiling complete as of S5 (see mechanics-manifest §3). Further additions are card batches using existing vocabulary.
 

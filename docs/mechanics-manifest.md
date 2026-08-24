@@ -83,6 +83,8 @@ The rules engine is a **library with no main loop and no knowledge of the world*
 
 **2026-08-24 — ADR-075 Amendment 8 — blink + optional targets:** New effect `exileThenReturn {target, under:"yourControl"}` (returns as a new object; ETBs fire) and targeting gains `count: {min:0, max:N}` ("up to"). Customer: Restoration Angel.
 
+**2026-08-24 — ADR-079 Amendment 9 — conditional enters-tapped (the shock clause):** Card-def field `entersChoice: {pay: {life: 2}, else: "tapped"}`: on resolution of the LAND PLAY the controller gets a DecisionRequest (pay / don't; a logged action); life is paid before the permanent's ETB state fixes, ETB triggers see the final state; payable only at life ≥ the cost (paying to exactly 0 is legal and lethal). Anything PUT onto the battlefield by other means enters tapped, no choice (initialization stays request-free). Customers: the ten Ravnica shocklands. *(Same session: A8's "up to" range counts + inter-target distinctness were finally implemented with their first customer, Drakuseth — a range-count spec must be the last of its list; the unconditional `entersTapped` land flag (cycling lands) rode as a small system.)*
+
 ---
 
 ## 4. Explicit exclusions (written down so we don't drift)
