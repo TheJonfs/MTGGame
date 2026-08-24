@@ -1,0 +1,42 @@
+{
+  "id": "faerie_formation",
+  "name": "Faerie Formation",
+  "source": "real",
+  "manaCost": "{4}{U}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Faerie"
+  ],
+  "power": 5,
+  "toughness": 4,
+  "keywords": [
+    "flying"
+  ],
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "mana": "{3}{U}"
+      },
+      "effects": [
+        {
+          "type": "createToken",
+          "tokenId": "faerie_1_1_u",
+          "count": 1,
+          "who": "you"
+        },
+        {
+          "type": "draw",
+          "count": 1,
+          "who": "you"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 3
+}

@@ -1,0 +1,22 @@
+{
+  "id": "faerie_1_1_u",
+  "name": "Faerie Token",
+  "source": "custom",
+  "isTokenDef": true,
+  "manaCost": "",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Faerie"
+  ],
+  "colors": [
+    "U"
+  ],
+  "power": 1,
+  "toughness": 1,
+  "text": "",
+  "keywords": [
+    "flying"
+  ]
+}
