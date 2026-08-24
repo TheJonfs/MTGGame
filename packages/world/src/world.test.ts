@@ -856,7 +856,7 @@ describe("S19 Part 3+5 (quests, scripted acceptance): offers, courier, card-cour
     const out = parley(w, catalog, enc, "fight");
     expect(out.type).toBe("fight");
     if (out.type !== "fight") return;
-    expect(out.duel.spec.modifiers).toContainEqual({ type: "permanentOnBattlefield", player: 0, cardId: "manalink_g" });
+    expect(out.duel.spec.modifiers).toContainEqual({ type: "permanentOnBattlefield", player: 0, cardId: "forest" }); // S19 round 2: a manalink is a real Forest in play
     expect(manalinkModifiers(w)).toHaveLength(1);
     // The def is engine-real: run the duel; no crash, and the log replays (runMatch asserts internally).
     const result = await runMatch(out.duel.spec, pool.cards, agentsFor(w, out.duel.enemy.difficulty, out.duel.enemy.deck, 44));

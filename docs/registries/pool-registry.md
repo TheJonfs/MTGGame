@@ -171,7 +171,7 @@ Tokens added: bear_2_2 (G), bird_1_1_flying (W), wurm_4_4 (G), zombie_2_2 (B), f
 |---|---|---|---|---|
 | faerie_formation | Faerie Formation | tested | flying, activated (createToken + draw) | {4}{U} 5/4; activation {3}{U} Scryfall-confirmed (the Gatherer bare-{3} was an artifact); U tier-3 signature; shopTier 3 |
 | faerie_1_1_u | Faerie Token (1/1 U, flying) | tested | token def | colors ["U"] per ADR-019; distinct from Bitterblossom's black Faerie Rogue |
-| manalink_w/u/b/r/g | Manalink: Plains/Island/Swamp/Mountain/Forest | tested | activated mana (tap) | S19 quests: modifier-only permanents (`permanentOnBattlefield`, manifest §5); isTokenDef — never shop stock, never deck-legal, not collection cards |
+| *(manalinks)* | — | — | `permanentOnBattlefield` of a plain basic | S19 round 2 (Chris): a manalink starts every duel with a REGULAR basic land of its colour in play — no bespoke defs (the five manalink_* artifacts were cut the same session they were born) |
 
 ## Ceiling anchors (not yet scheduled)
 Ceiling complete as of S5 (see mechanics-manifest §3). Further additions are card batches using existing vocabulary.

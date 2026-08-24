@@ -116,19 +116,21 @@ export function StackPanel({ ctx }: { ctx: EngineCtx }) {
       </div>
     );
   }
-  const defsPool = new Map(state.stack.map((s) => [s.sourceCardId, ctx.defs.def(s.sourceCardId)] as const));
+  // S19 round 2 (Chris): target lines used a stack-items-only def map, so an object TARGET's name fell
+  // back to its raw cardId key ("fencing_ace"). Resolve every name through the full def source.
+  const allDefs = { get: (id: string) => { try { return ctx.defs.def(id); } catch { return undefined; } } } as Map<string, import("@shandalar/cards").CardDef>;
   return (
     <div className="panel stack-panel">
       <h3><IconChip src="/icons/zone-stack.svg" alt="" size={22} />Stack (top resolves first)</h3>
       {[...state.stack].reverse().map((item) => (
         <div className="item" key={item.id}>
           <div>
-            {defsPool.get(item.sourceCardId)?.name ?? item.sourceCardId}
+            {allDefs.get(item.sourceCardId)?.name ?? item.sourceCardId}
             <span style={{ color: "var(--ink-soft)" }}> · {item.kind}{item.x ? ` (X=${item.x})` : ""}</span>
           </div>
           {item.targets.length > 0 && (
             <div className="targets">
-              → {item.targets.map((t) => targetLabel(state, defsPool as Map<string, import("@shandalar/cards").CardDef>, t)).join(", ")}
+              → {item.targets.map((t) => targetLabel(state, allDefs, t)).join(", ")}
             </div>
           )}
         </div>

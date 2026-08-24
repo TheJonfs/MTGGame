@@ -468,6 +468,9 @@ button.primary { background: var(--brass); color: var(--parchment); border: 1.5p
 .card-slot .printed-scan { width: 130px; height: auto; }
 .world-collection .printed-scan { width: 180px; }
 .world-collection .gallery-cell { width: 186px; }
+/* S19 round 2 (Chris): our frame kept the gallery's 240px inside 186px cells — it overlapped
+   neighbours and dwarfed the printed scans. Match the scan width in this grid. */
+.world-collection .gallery-grid .frame { width: 180px; font-size: 10px; }
 .world-result { max-width: 640px; }
 .world-result .dialog-cards { margin: 6px 0 10px; }
 .world-collection .caption { font-size: 11px; }

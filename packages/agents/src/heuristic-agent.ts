@@ -101,8 +101,15 @@ export class HeuristicAgent implements Agent {
 
   private lowestValueCard(view: GameView, request: ActionRequest, type: "bottomCard" | "discard"): Action {
     const cardOf = new Map(view.hand.map((c) => [c.objectId, c.cardId]));
+    // S19 round 2: a caster-chooses discard (Duress) picks from the OPPONENT's revealed hand — card
+    // identity comes from the request payload, and the ranking flips: take their BEST, not our worst.
+    for (const r of request.revealed ?? []) if (!cardOf.has(r.objectId)) cardOf.set(r.objectId, r.cardId);
     const candidates = request.actions.filter((a) => a.type === type) as { type: string; objectId: string }[];
     if (candidates.length === 0) return request.actions[0]!;
+    if (type === "discard" && candidates.some((c) => !view.hand.some((h) => h.objectId === c.objectId))) {
+      const best = [...candidates].sort((a, b) => this.mv(cardOf.get(b.objectId) ?? "") - this.mv(cardOf.get(a.objectId) ?? "") || a.objectId.localeCompare(b.objectId));
+      return best[0]! as Action;
+    }
     const lands = view.hand.filter((c) => this.def(c.cardId)?.types.includes("Land")).length;
     const ranked = [...candidates].sort((a, b) => {
       const ca = cardOf.get(a.objectId) ?? "";

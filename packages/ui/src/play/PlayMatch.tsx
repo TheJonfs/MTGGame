@@ -336,13 +336,21 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption }: { c: MatchContro
   const castSource = lastCast && lastCast.type === "castSpell" && req.source && state.objects[lastCast.objectId]?.cardId === req.source.cardId ? lastCast : null;
   const isAdditionalSac = req.purpose === "chooseSacrifice" && !!req.source && !!castSource;
   const sourceDef = req.source ? pool.get(req.source.cardId) ?? null : null;
+  // S19 round 2 (Duress): a caster-chooses discard reveals THEIR hand — title it that way, and when
+  // nothing matches the filter the single action is an acknowledgement, not a discard.
+  const isTheirHandReveal = req.purpose === "discard" && !!req.revealed;
+  const revealNothing = isTheirHandReveal && req.actions.every((a) => a.type === "declineOptional");
   const dedicatedTitle = isMode
     ? `Choose one — ${sourceName}`
     : isDiscardCost
       ? `Discard a card to pay — ${sourceName}`
       : isAdditionalSac
         ? `Additional cost — ${sourceName}`
-        : null;
+        : isTheirHandReveal
+          ? revealNothing
+            ? "Their hand is revealed — nothing to take"
+            : "Their hand is revealed — choose the card they discard"
+          : null;
   // Render actions as cards where the choice is over cards (ADR-058).
   const cardOf = (a: (typeof req.actions)[number]): string | null => {
     if ("objectId" in a && typeof a.objectId === "string") {
@@ -434,6 +442,13 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption }: { c: MatchContro
               return (
                 <div key={i} className={`dialog-option decline-search ${selected ? "selected" : ""}`} onClick={() => c.selectDialog(i)}>
                   <span>Find nothing</span>
+                </div>
+              );
+            }
+            if (revealNothing && a.type === "declineOptional") {
+              return (
+                <div key={i} className={`dialog-option ${selected ? "selected" : ""}`} onClick={() => c.selectDialog(i)}>
+                  <span>Continue (no noncreature, nonland card to take)</span>
                 </div>
               );
             }

@@ -34,6 +34,8 @@ export interface QuestReward {
   gold: number;
   /** A specific card into the collection (tier-appropriate; R on premium tier-3 rolls). */
   cardId?: string;
+  /** Display name for cardId, resolved at offer time (S19 round 2 — reward text must never show a raw key). */
+  cardName?: string;
   /** A manalink of this colour, tied to the granting town (tier 2+; capped per colour). */
   manalink?: "W" | "U" | "B" | "R" | "G";
 }
@@ -91,7 +93,11 @@ export interface Manalink {
   town: number;
 }
 
-export const MANALINK_CARD: Record<Manalink["color"], string> = { W: "manalink_w", U: "manalink_u", B: "manalink_b", R: "manalink_r", G: "manalink_g" };
+/** S19 round 2 (Chris): a manalink puts a REGULAR basic land onto your battlefield — a green manalink
+ * is an actual Forest in play from turn 0, not a bespoke artifact. (The five manalink_* artifact defs
+ * were cut the same round.) */
+export const MANALINK_CARD: Record<Manalink["color"], string> = { W: "plains", U: "island", B: "swamp", R: "mountain", G: "forest" };
+export const MANALINK_LAND_NAME: Record<Manalink["color"], string> = { W: "Plains", U: "Island", B: "Swamp", R: "Mountain", G: "Forest" };
 
 /** Authored template table (placeholder text — quest text authoring is planner content). */
 const COURIER_TEXTS = [
@@ -170,7 +176,7 @@ function rollReward(rng: WorldRng, world: WorldState, catalog: Catalog, tier: 1 
     const candidates = [...pool.values()]
       .filter((d) => !d.isTokenDef && !d.prizeOnly && (wantR ? d.shopTier === "R" : d.shopTier === tier))
       .sort((a, b) => a.id.localeCompare(b.id));
-    if (candidates.length) return { gold: Math.round(gold / 2), cardId: rng.pick(candidates).id };
+    if (candidates.length) { const c = rng.pick(candidates); return { gold: Math.round(gold / 2), cardId: c.id, cardName: c.name }; }
   }
   return { gold };
 }
@@ -231,13 +237,13 @@ function award(world: WorldState, q: ActiveQuest, knobs: KnobValues): string {
   if (q.reward.cardId) {
     world.player.collection[q.reward.cardId] = (world.player.collection[q.reward.cardId] ?? 0) + 1;
     world.provenance.push({ cardId: q.reward.cardId, source: "reward", step: world.player.stepsTaken });
-    notes.push(`the card ${q.reward.cardId}`);
+    notes.push(`the card ${q.reward.cardName ?? q.reward.cardId}`);
   }
   if (q.reward.manalink) {
     const have = world.manalinks.filter((m) => m.color === q.reward.manalink).length;
     if (have < knobs.manalinkCapPerColor) {
       world.manalinks.push({ color: q.reward.manalink, town: q.fromTown });
-      notes.push(`a Manalink (${q.reward.manalink}) — every duel now starts with it on your battlefield`);
+      notes.push(`a manalink — every duel now starts with a bonus ${MANALINK_LAND_NAME[q.reward.manalink]} on your battlefield`);
     } else {
       gold += knobs.questGoldByTier[q.tier] ?? 20; // cap reached: the link converts to gold
       notes.push(`gold in lieu (you already hold a ${q.reward.manalink} manalink)`);

@@ -353,7 +353,7 @@ function discardOp(ctx: EngineCtx, caster: PlayerId, requester?: EffectRequester
       const player = playerNum as PlayerId;
       for (let i = 0; i < count; i++) {
         const hand = ctx.state.players[player].hand;
-        if (hand.length === 0) return;
+        if (hand.length === 0 && mode !== "casterChooses") return;
 
         if (mode === "random") {
           const idx = ctx.rng.int(hand.length, "discard");
@@ -372,19 +372,29 @@ function discardOp(ctx: EngineCtx, caster: PlayerId, requester?: EffectRequester
           seen.add(cardId);
           candidates.push(id);
         }
-        if (candidates.length === 0) return; // no filter match: nothing is discarded
 
+        // S19 round 2 (Chris's Duress note): the CASTER's choice always reveals the hand and always
+        // asks — CR-wise Duress reveals regardless of matches ("target opponent reveals their hand"),
+        // and with 0 or 1 legal picks the old fast path skipped the request, so the caster never saw
+        // anything. 0 candidates → a single acknowledge action (declineOptional) beside the reveal.
+        if (mode === "casterChooses") {
+          if (!requester) throw new Error("discard choice modes need an agent (not available at initialization)");
+          const revealed = hand.map((id) => ({ objectId: id, cardId: getObject(ctx.state, id).cardId }));
+          const actions: Action[] =
+            candidates.length > 0 ? candidates.map((objectId) => ({ type: "discard", objectId })) : [{ type: "declineOptional" }];
+          const pick = await requester(chooser, "discard", actions, revealed);
+          if (pick.type === "discard") discardCard(ctx, pick.objectId);
+          else if (candidates.length > 0) throw new Error("expected discard action");
+          else return; // nothing to take; the reveal was the effect
+          continue;
+        }
+
+        if (candidates.length === 0) return;
         let pickId = candidates[0]!;
         if (candidates.length > 1) {
           if (!requester) throw new Error("discard choice modes need an agent (not available at initialization)");
-          // Hand reveal (ADR-029): the chooser sees the revealed cards for
-          // this decision only, via the request payload.
-          const revealed =
-            mode === "casterChooses"
-              ? hand.map((id) => ({ objectId: id, cardId: getObject(ctx.state, id).cardId }))
-              : undefined;
           const actions: Action[] = candidates.map((objectId) => ({ type: "discard", objectId }));
-          const pick = await requester(chooser, "discard", actions, revealed);
+          const pick = await requester(chooser, "discard", actions, undefined);
           if (pick.type !== "discard") throw new Error("expected discard action");
           pickId = pick.objectId;
         }

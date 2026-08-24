@@ -107,10 +107,23 @@ describe("S4 — discard (brief 5–7)", () => {
     );
   });
 
-  it("5b. Duress into creatures and lands: nothing discarded", async () => {
+  it("5b. Duress into creatures and lands: nothing discarded — but the hand IS revealed (S19 round 2, Chris's note: the old fast path skipped the request entirely and the caster saw nothing)", async () => {
     const tg = await runFixture(fixture("s4-05b-duress-whiff"));
     expect(tg.handCardIds(1)).toHaveLength(3);
     expect(tg.graveyardCardIds(1)).toHaveLength(0);
+    const req = tg.requests.find((r) => r.purpose === "discard");
+    expect(req?.player).toBe(0);
+    expect(req?.revealed?.map((r) => r.cardId).sort()).toEqual(["forest", "grizzly_bears", "island"]);
+    expect(req?.actions).toEqual([{ type: "declineOptional" }]); // acknowledge the reveal; nothing to take
+  });
+
+  it("5c. Duress with exactly ONE legal pick: still a revealed request (no silent auto-pick)", async () => {
+    const tg = await runFixture(fixture("s19-duress-single"));
+    expect(tg.graveyardCardIds(1)).toEqual(["boomerang"]);
+    const req = tg.requests.find((r) => r.purpose === "discard");
+    expect(req?.player).toBe(0);
+    expect(req?.revealed).toHaveLength(3);
+    expect(req?.actions).toHaveLength(1);
   });
 
   it("6. Mind Rot: the discarding player chooses two", async () => {
