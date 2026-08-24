@@ -374,6 +374,99 @@
       }
     },
     {
+      "id": "beast_rats",
+      "name": "A Plague of Rats",
+      "deck": "beast:rats",
+      "tier": 1,
+      "difficulty": "apprentice",
+      "portrait": "beast-plague-of-rats",
+      "portraitChip": "beast-plague-of-rats-chip",
+      "worldLife": 8,
+      "colors": "B",
+      "kind": "beast",
+      "spoke": "B",
+      "buyable": true,
+      "parley": {
+        "verb": "Feed them",
+        "line": "A plague of rats, a floor of grey bodies moving as one hunger. It can be fed. For now."
+      }
+    },
+    {
+      "id": "beast_ogre",
+      "name": "A Gray Ogre",
+      "deck": "beast:ogre",
+      "tier": 1,
+      "difficulty": "apprentice",
+      "portrait": "beast-gray-ogre",
+      "portraitChip": "beast-gray-ogre-chip",
+      "worldLife": 8,
+      "colors": "R",
+      "kind": "beast",
+      "spoke": "R",
+      "buyable": true,
+      "parley": {
+        "verb": "Pay the toll",
+        "line": "A gray ogre fills the road, counting your coin on thick fingers. The counting takes a while."
+      }
+    },
+    {
+      "id": "beast_lion",
+      "name": "A Savannah Lion",
+      "deck": "beast:lion",
+      "tier": 1,
+      "difficulty": "apprentice",
+      "portrait": "beast-savannah-lion",
+      "portraitChip": "beast-savannah-lion-chip",
+      "worldLife": 8,
+      "colors": "W",
+      "kind": "beast",
+      "spoke": "W",
+      "buyable": true,
+      "parley": {
+        "verb": "Offer fresh meat",
+        "line": "A savannah lion regards you without hurry. You are prey, or you are boring."
+      }
+    },
+    {
+      "id": "beast_baloth",
+      "name": "A Rumbling Baloth",
+      "deck": "beast:baloth",
+      "tier": 2,
+      "difficulty": "journeyman",
+      "portrait": "beast-rumbling-baloth",
+      "portraitChip": "beast-rumbling-baloth-chip",
+      "worldLife": 10,
+      "colors": "G",
+      "kind": "beast",
+      "spoke": "G",
+      "buyable": true,
+      "parley": {
+        "verb": "Toss it your rations",
+        "line": "The ground shakes before you see it — a rumbling baloth, and this is its ground."
+      }
+    },
+    {
+      "id": "beast_formation",
+      "name": "The Faerie Formation",
+      "deck": "beast:formation",
+      "tier": 3,
+      "difficulty": "master",
+      "portrait": "beast-faerie-formation",
+      "portraitChip": "beast-faerie-formation-chip",
+      "worldLife": 12,
+      "colors": "U",
+      "kind": "beast",
+      "spoke": "U",
+      "buyable": true,
+      "parley": {
+        "verb": "Offer something shiny",
+        "line": "A glittering throng wheels overhead, all wings and whispers. They were going to take something anyway; you may choose what."
+      },
+      "knobs": {
+        "anteCount": 2
+      }
+    },
+    {
       "id": "beast_wurm",
       "name": "the Pelakka Wurm",
       "deck": "beast:wurm",
