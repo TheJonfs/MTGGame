@@ -17,4 +17,7 @@
 | OQ-11 | S18 r1 | **AI conservatism with a swarm** (Nighthawk game): fixed by the greedy-remove attack search (book of shame 16) + sacrifice pricing (15); 1,000/cell gates PASS (S19 Part 0). Does it *feel* right in the next Nighthawk/Warband fight? | shipped | open (verdict) |
 | OQ-12 | S19 mid | **Is Nighthawk at 15% enough?** worldLife 10→8 lifted it 11→15% (Warband 32→36%). Chris ruled −2 a fair trade; if the next tables still read over-tier, the levers are another life step or deck surgery (fewer Nighthawks / Doom Blade → Terror). | worldLife 8 | open (watch next tables) |
 | OQ-13 | S19 r2 | **Dual lands** — Chris wants to playtest two-colour decks; expects duals soon ("easy to compose" — correct: an addMana choice à la Amendment 2, or twin tap abilities). Planner schedules the batch + which cycle (taplands? painlands?). | none in pool | open (planner) |
+| OQ-14 | S20 | **Dungeon renown**: interior minion wins grant none; a lair-dungeon boss grants its tier (3) on clearing; mox guardians grant none (the prize is the payout). Right ordering? | as listed | open |
+| OQ-15 | S20 | **Guardian base tuning**: kill rates at 0 steps — Reya 70 / Drana 78 / Drakuseth 71 / Arcanis 39 / Titania 46 (%). Drana runs hottest fresh; Arcanis/Titania reward speed most. Life knobs live in dungeons.json. | as encoded (16/14/15/16/15) | open (director round) |
+| OQ-16 | S20 | **The dungeon law applies to MINION duels too** (the "table rule" reading of §6) — alternative: guardian-only. Chris feels it in play. | every interior duel | open (verdict) |
 

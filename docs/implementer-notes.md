@@ -222,6 +222,18 @@ Things a fresh session might otherwise rediscover slowly:
 - **rng.pick in offer generation must come from a THROWAWAY WorldRng** seeded from (world.seed, town) — using the world's journey stream would make browsing a town's board advance the world's randomness (a UI read mutating state).
 - **`world-sim` numbers move under content adds even when "nothing relevant changed"**: adding tier-1 beasts to the spawn tables shifted every starter's tier-1 percentage (more soft opponents in the mix). Compare per-opponent rows, not headline tiers, across content sessions.
 
+## S20 lessons (the solver, A9/A8, dungeons)
+
+- **The Hall-violation gap was real and silent**: the per-color count + total check passes {W}{U} against Tundra+Swamp. Any future "flexible producer" (Springleaf Drum-class, filtering) goes through `solvePayment` — never add another counting shortcut.
+- **Duals as two plain abilities** was the whole trick: `producibleSymbols` already unioned abilities; `tapForMana(symbol)` picks the matching one; `isChoiceManaAbility` untouched (nothing new is "choice-bearing"). The Lotus rule narrowed itself.
+- **A range-count spec must be LAST** — that one validator rule made flat-target validation (walk-consume), effect addressing (`targetSpec` fan-out), and the enumerator's subset expansion all trivially correct. Resist a mid-list range until a card forces it.
+- **Modifiers apply after mulligans** (S13 ruling): don't panic when a law permanent is missing during the keep dialog — startingLife applies before, everything else after `setup()`.
+- **The dungeon is world-data + the existing map stack**: `DungeonRun` in the save, `dungeonAsWorldMap` fabricates a one-region WorldMap for WorldMapView, minions render as roamer chips, treasures as marks. No new rendering machinery at all.
+- **Interior bookkeeping must NOT go through applyDuelResult** — that function is overworld consequence law (renown, roamer removal, gold rewards, ante to collection). `applyInteriorDuel` is deliberately separate: ante → escrow, finalLife → interiorLife, loss → the world penalty only.
+- **Reload-resumes-mid-dungeon is a LOAD-path feature**, not a save-path one — the run was always in the save; the gap was `loadText` dropping you on the map. Durability bugs hide on the read side.
+- **Scryfall queries need a User-Agent** (urllib got 400s bare) and art-fetch bursts need exponential 429 backoff — a 25-override batch blew the old single-retry.
+- **WBRUG spoke canon**: rotation+reflection preserve adjacency; two seeded tests broke on geometry/template assumptions, not on the invariant — pin templates (`catalogId = "a1"`) and add region guards in geometry-sensitive tests rather than hunting seeds.
+
 ## Known interims / watch list
 
 See handoff Concerns for the authoritative list. Highlights: auto-pay greedy feasibility (correct while all producers are single-symbol — R-006); condition fields `controller`/`type`/`subtype` are validated but unexercised (first card to use them should add fixtures); value refs deliberately have no arithmetic (ADR-028 — resist until a card demands it); the `sba-unattach` ATTACHED cause is unreachable by legal play (test-forced only).
