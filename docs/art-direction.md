@@ -56,3 +56,10 @@ Log placement (rail tab vs bottom row). Everything else in this section is decid
 ## 8. Fog of war (ADR-078, S19)
 
 Unexplored ground is an **absence, not a texture**: canonically "paler paper" (`--fog`, a shade lighter than the parchment washes) — no wash, no hatching, no borders, no names; POIs appear on first sight; roads end in a one-cell faded stub ("invitation, not information", ADR-073). Whether the white civilized wash warms slightly (so parchment ≠ wash) stays open to Chris's eye in play.
+
+## §9 The two map registers (ratified, S20 playtest rounds; planner-issued per `docs/planner-doc-amendments-s20b.md`)
+
+> - **Overworld — the campaign map:** per-colour pictorial terrain glyphs over a faint walkability hatch (wheat/standing stones W; waves/reeds U; dead trees/barrows B; cinder cones/lava R; conifers/canopies/roots G), a **torn fog edge** at the explored boundary, and a compass rose. The map reads as a drawn campaign document, not a tile grid.
+> - **Dungeon interiors — the dark-stone register:** pale carved corridors on near-black chisel-hatched rock; torch pools at junctions; the guardian door with braziers; the entry stair; **fog rendered as darkness** (the interior inversion of the overworld's blank parchment); dark minimap. One `interior` prop on WorldMapView switches registers.
+> - **Guardian battle portraits** front the telegraph modal (the guardian's face leads the stakes). **External-render provenance:** renders produced outside the pipeline (e.g., Chris's Drana) may be adopted as canonical with provenance recorded in MANIFEST and the subject file; image-filter refusal isolation via descriptor rewriting is a sanctioned director-level debugging tool.
+> - Banked worldgen-shaped wants: a `river` map layer; multi-building town footprints (**riding S21** with sieges — towns should look worth defending in the session that threatens them).

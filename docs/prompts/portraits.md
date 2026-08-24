@@ -51,8 +51,8 @@ against the cached Scryfall crops before writing descriptors).
 
 | Subject file | Guardian | Colour wash | Status |
 |---|---|---|---|
-| `guardian-reya.md` | Reya Dawnbringer (mox_w) | pale dawn-gold | candidate |
-| `guardian-arcanis.md` | Arcanis the Omnipotent (mox_u) | storm blue | candidate |
+| `guardian-reya.md` | Reya Dawnbringer (mox_w) | pale dawn-gold | kept (S21 kickoff) |
+| `guardian-arcanis.md` | Arcanis the Omnipotent (mox_u) | storm blue | kept (S21 kickoff) |
 | `guardian-drana.md` | Drana, Kalastria Bloodchief (mox_b) | deep violet-black | kept (Chris's own render — the refusal trigger was the two-horns phrase; descriptor corrected to the filigree crown) |
-| `guardian-drakuseth.md` | Drakuseth, Maw of Flames (mox_r) | ember orange-red | candidate |
-| `guardian-titania.md` | Titania, Protector of Argoth (mox_g) | deep moss green | candidate |
+| `guardian-drakuseth.md` | Drakuseth, Maw of Flames (mox_r) | ember orange-red | kept (S21 kickoff) |
+| `guardian-titania.md` | Titania, Protector of Argoth (mox_g) | deep moss green | kept (S21 kickoff) |

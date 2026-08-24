@@ -1263,6 +1263,19 @@ describe("S16 roamers (ADR-071): sight, pursuit, fleeing, contact, removal, resp
     expect(visibleRoamers(w4, catalog, k4).find((r) => r.inst.id === i4.id)?.fleeing).toBe(false);
   });
 
+  it("S21 Part 1 (ADR-080): the Nighthawk is priced — its per-opponent gold override rides encounterKnobs (T2 pays 50 vs the base 25), parley carries the warning register", async () => {
+    const { encounterKnobs } = await import("./journey.js");
+    const w = newWorld({ seed: 110, catalog, starter: "black" });
+    const hawk = catalog.opponents.find((o) => o.id === "beast_nighthawk")!;
+    expect(hawk.tier).toBe(2);
+    const inst = w.opponents[0]!;
+    inst.catalogId = hawk.id; // stage a real instance (encounterKnobs resolves the template via world.opponents)
+    const enc = { opponentId: inst.id, catalogId: hawk.id, tier: hawk.tier, region: 0, at: { x: 0, y: 0 }, fleeing: false, contact: "stepped" } as unknown as Encounter;
+    expect(encounterKnobs(w, catalog, enc).goldRewardByTier[2]).toBe(50);
+    expect(worldKnobs(w).goldRewardByTier[2]).toBe(25); // the base is untouched — the price is the Nighthawk's alone
+    expect(hawk.parley?.line).toContain("walk in numbers");
+  });
+
   it("S20 playtest: renown is felt per colour — green fear flees green roamers while white tier 1s still line up; defeat credits each of the opponent's colours + the total", () => {
     const w = newWorld({ seed: 109, catalog, starter: "green" });
     const knobs = worldKnobs(w, QUIET);

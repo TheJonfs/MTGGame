@@ -1,10 +1,13 @@
-# Dungeon Design v2 — mini-worlds under the map (Chris + planner, post-S19; verdicts folded)
+# Dungeon Design v2.1 — mini-worlds under the map (Chris + planner, post-S19; verdicts folded; §1/§3/§5 amended post-S20 playtest per `docs/planner-doc-amendments-s20b.md`)
 
 *v2: all six v1 verdicts ratified (escrow, interior-life-discarded, steps-only empowerment, stationary minions, enabler tiering; Drakuseth = CMM #535). Adds: difficulty-parameterized empowerment, the lair-dungeon class, the five Mox dungeon laws, guardian decklists (draft, for verdict), prize structure (proposal). Feeds ADR-079 + the S20 brief.*
 
 ## 1. The shape (ratified)
 
 A dungeon is a **mini-world**: a small fogged grid (~12×9, knob) reusing the world stack — WorldMapView, movement, fog/sight, fixed points, viewport. **The exterior clock freezes at the threshold**; an **interior step counter** powers §3. Topology: branching, interconnecting carved paths; treasures on branches; **stationary minions at chokepoints** (contact = fight, no parley inside; routing around is the topology's tradeoff). Entry screen telegraphs the stakes (§4) before the choice, parley-telegraph style.
+
+**v2.1 amendment (planner-issued, supersedes the grid-size line above):**
+> A dungeon is a mini-world: a fogged grid at **24×18 default** (`dungeonGridWidth`/`dungeonGridHeight` knobs; was ~12×9 — doubled after the round-1 measurement showed a full-loot tour averaging 22 steps against a 60-step empowerment tier, a provably decorative meter). Content scales off one grid-derived factor `s = sqrt(area/108)`: Mox dungeons 4–8 treasure caches / 3–5 minions; lair-dungeons 2–4 caches / 2–3 minions.
 
 ## 2. Life inside (ratified)
 
@@ -24,6 +27,9 @@ The guardian grows with interior steps. **Discrete tiers, always visible** (name
 
 All entries are modifier-package additions applied at guardian-duel MatchSpec build. Per-dungeon overrides sit above difficulty in precedence (a stronghold's schedule can be its own beast).
 
+**v2.1 amendment (planner-issued, supersedes the tier table above):**
+> Baseline thresholds **30/60/90 interior steps** (was 60/120/180). Difficulty bundles: easy 60/90 (two tiers); normal 30/60/90; hard 30/60/90 at double life values. Tier *contents* (the modifier packages) are unchanged from the ratified table — the amendment is arrival timing. Measured context at 24×18: speedrun ≈ 27 steps, optimal full-loot ≈ 71 (eats tiers 1–2; sloppy routes brush tier 3). **Chris's re-dive verdicts whether 30/60/90 over-rotated; the knob is the lever.**
+
 ## 4. Exit, reset, escrow (ratified)
 
 Two exits: lose inside, or walk out — either **resets the dungeon** (minions repopulate, steps zero). **Escrow:** everything gained inside (treasures, boons, interior ante winnings) is held until the guardian falls — payout on victory; forfeit on walk-out; forfeit plus normal loss consequences on an interior defeat. The mountain keeps its gold. Softening lever if playtest says feel-bad: release interior ante through, keep boons/treasures escrowed.
@@ -32,6 +38,9 @@ Two exits: lose inside, or walk out — either **resets the dungeon** (minions r
 
 1. **The five Mox dungeons** — authored, unique, one per wild region, one-time (cleared = ground).
 2. **Lair-dungeons** — the tier-3 signatures' lairs (Serra Angel, Faerie Formation, Hypnotic Specter, Siege-Gang, Pelakka Wurm) become **small procedural dungeons** (a couple of twists, 1–2 minions, resident as boss with the existing `lairResidentLifeBonus` on top of any empowerment), rewarding **a couple of R-tier cards**. Resolves the banked lesser/greater-lairs thread (greater lairs *are* dungeons) and S18 concern 7 (the interior resident is a different register from the roaming one). No dungeon law in the slice; small empowerment schedules via the same knob.
+
+   **v2.1 amendment (planner-issued, supersedes the "couple of twists, 1–2 minions" sizing):**
+   > Lair-dungeons at the doubled grid run **2–4 caches and 2–3 minions** (was "a couple of twists, 1–2 minions") — scaled commensurately per the round-1 ruling; the lair/Mox gap is preserved by the scaling factor.
 3. **Strongholds** (S22) reuse everything at maximum scale with partisan laws.
 
 ## 6. The five laws (Chris-authored; register = symmetric-but-boss-favoring)
