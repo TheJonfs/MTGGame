@@ -510,7 +510,7 @@ export class Game {
         break;
       }
       case "tapForMana": {
-        tapForMana(this.ctx, action.objectId);
+        tapForMana(this.ctx, action.objectId, action.color);
         break;
       }
       case "activateAbility": {

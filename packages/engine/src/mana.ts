@@ -25,6 +25,15 @@ import { getObject, type PlayerId } from "./state.js";
  *
  * Known simplification (R-006): feasibility assumes each producer makes
  * exactly one symbol per activation (true for all current pool cards).
+ *
+ * S20 (ADR-004 second amendment — the payment solver): multi-color producers
+ * (duals: two plain tap abilities on one land) are handled by PIP-TO-PRODUCER
+ * ASSIGNMENT — colored pips are matched to producers by Kuhn's augmenting-path
+ * matching (instances ≤ ~7 pips × ~15 producers), generic fills from what's
+ * left. The old per-color counting admitted Hall violations the moment one
+ * producer counted in two buckets ({W}{U} against Tundra + Swamp "passed").
+ * Determinism: pips in WUBRG order, producers tried mono-first then
+ * battlefield order — same state, same assignment, replay-stable.
  */
 
 /** Symbols a permanent's mana abilities can produce right now (untapped only;
@@ -67,6 +76,90 @@ export function totalCost(cost: ManaCost, x: number): { colored: Record<Color, n
   return { colored: { ...cost.colored }, generic: cost.generic + cost.xCount * x };
 }
 
+/** S20 solver: a payment plan — which producers tap for which symbol, and what the pool covers. */
+export interface PaymentPlan {
+  /** Producer taps in execution order, each with its assigned symbol. */
+  taps: { id: string; symbol: ManaSymbol }[];
+}
+
+/**
+ * Pip-to-producer assignment (ADR-004 second amendment). Returns a deterministic
+ * plan or null when infeasible. Pool mana pays colored pips first (exact color),
+ * then generic; producers cover the rest via matching (colored) + any-symbol taps
+ * (generic, non-creature and mono-color preferred).
+ */
+export function solvePayment(
+  ctx: EngineCtx,
+  player: PlayerId,
+  cost: ManaCost,
+  x = 0,
+  excludeProducers: readonly string[] = [],
+): PaymentPlan | null {
+  const pool = ctx.state.players[player].manaPool;
+  const producers = untappedProducers(ctx, player).filter((p) => !excludeProducers.includes(p.id));
+  const { colored, generic } = totalCost(cost, x);
+
+  // Colored pips not covered by floating mana, expanded to instances in WUBRG order.
+  const pips: Color[] = [];
+  for (const c of COLORS) {
+    const need = Math.max(0, colored[c] - pool[c]);
+    for (let i = 0; i < need; i++) pips.push(c);
+  }
+
+  // Kuhn's matching: pip index → producer index. For each pip, producers are tried
+  // mono-color first (save the flexible ones), then battlefield order (creatures last
+  // via untappedProducers' ordering).
+  const order = (c: Color) =>
+    producers
+      .map((p, i) => ({ p, i }))
+      .filter(({ p }) => p.symbols.includes(c))
+      .sort((a, b) => new Set(a.p.symbols).size - new Set(b.p.symbols).size || a.i - b.i)
+      .map(({ i }) => i);
+  const matchOf: number[] = new Array(producers.length).fill(-1); // producer → pip
+  const tryAssign = (pip: number, seen: Set<number>): boolean => {
+    for (const pi of order(pips[pip]!)) {
+      if (seen.has(pi)) continue;
+      seen.add(pi);
+      if (matchOf[pi] === -1 || tryAssign(matchOf[pi]!, seen)) {
+        matchOf[pi] = pip;
+        return true;
+      }
+    }
+    return false;
+  };
+  for (let pip = 0; pip < pips.length; pip++) {
+    if (!tryAssign(pip, new Set())) return null;
+  }
+
+  // Generic: pool leftovers first, then untapped remaining producers — {C} producers,
+  // then fewest-symbols (keep duals free), then order.
+  const matchedProducers = new Set(matchOf.map((m, i) => (m !== -1 ? i : -1)).filter((i) => i >= 0));
+  const poolLeft = { ...pool };
+  for (const c of COLORS) poolLeft[c] -= Math.min(poolLeft[c], colored[c]);
+  const poolLeftTotal = MANA_SYMBOLS.reduce((n, s) => n + poolLeft[s], 0);
+  let genericFromProducers = Math.max(0, generic - poolLeftTotal);
+  const genericTaps: { i: number; symbol: ManaSymbol }[] = [];
+  const free = producers
+    .map((p, i) => ({ p, i }))
+    .filter(({ i }) => !matchedProducers.has(i))
+    .sort((a, b) => Number(b.p.symbols.includes("C")) - Number(a.p.symbols.includes("C")) || new Set(a.p.symbols).size - new Set(b.p.symbols).size || a.i - b.i);
+  for (const { p, i } of free) {
+    if (genericFromProducers <= 0) break;
+    genericTaps.push({ i, symbol: p.symbols.includes("C") ? "C" : p.symbols[0]! });
+    genericFromProducers -= 1;
+  }
+  if (genericFromProducers > 0) return null;
+
+  // Execution order: colored taps in pip order, then generic taps.
+  const taps: { id: string; symbol: ManaSymbol }[] = [];
+  const byPip: { pip: number; producer: number }[] = [];
+  matchOf.forEach((pip, producer) => { if (pip !== -1) byPip.push({ pip, producer }); });
+  byPip.sort((a, b) => a.pip - b.pip);
+  for (const { pip, producer } of byPip) taps.push({ id: producers[producer]!.id, symbol: pips[pip]! });
+  for (const t of genericTaps) taps.push({ id: producers[t.i]!.id, symbol: t.symbol });
+  return { taps };
+}
+
 /**
  * Can `player` pay `cost` using floating mana plus untapped producers?
  * `excludeProducers`: objects whose mana can't help — e.g. the ability's own
@@ -79,27 +172,18 @@ export function canPay(
   x = 0,
   excludeProducers: readonly string[] = [],
 ): boolean {
-  const pool = ctx.state.players[player].manaPool;
-  const producers = untappedProducers(ctx, player).filter((p) => !excludeProducers.includes(p.id));
-  const { colored, generic } = totalCost(cost, x);
-
-  const producerCount: Record<ManaSymbol, number> = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 };
-  for (const p of producers) for (const s of new Set(p.symbols)) producerCount[s] += 1;
-
-  // Colored requirements: {C} never helps (106.9).
-  for (const c of COLORS) {
-    if (pool[c] + producerCount[c] < colored[c]) return false;
-  }
-  const totalAvailable = MANA_SYMBOLS.reduce((n, s) => n + pool[s], 0) + producers.length;
-  const totalNeeded = COLORS.reduce((n, c) => n + colored[c], 0) + generic;
-  return totalAvailable >= totalNeeded;
+  return solvePayment(ctx, player, cost, x, excludeProducers) !== null;
 }
 
-/** Execute one mana ability of a permanent (non-stack action, CR 605). */
-export function tapForMana(ctx: EngineCtx, objectId: string): void {
+/** Execute one mana ability of a permanent (non-stack action, CR 605).
+ * S20: `symbol` picks WHICH plain mana ability on a multi-ability producer (duals carry two);
+ * omitted = the first (every pre-S20 log replays unchanged). */
+export function tapForMana(ctx: EngineCtx, objectId: string, symbol?: ManaSymbol): void {
   const obj = getObject(ctx.state, objectId);
   const abilities = (ctx.defs.def(obj.cardId).abilities ?? []).filter((a) => isManaAbility(a) && !isChoiceManaAbility(a));
-  const ability = abilities[0];
+  const ability = symbol === undefined
+    ? abilities[0]
+    : abilities.find((a) => a.kind === "activated" && a.effects.some((e) => e.type === "addMana" && !!e.mana && parseManaProduction(e.mana).some((m) => m.symbol === symbol))) ?? abilities[0];
   if (!ability || ability.kind !== "activated") throw new Error(`${obj.cardId} has no mana ability`);
   if (ability.cost.tap) {
     if (obj.tapped) throw new Error(`${obj.cardId} is already tapped`);
@@ -126,25 +210,10 @@ export function autoPay(ctx: EngineCtx, player: PlayerId, cost: ManaCost, x = 0)
   const pool = ctx.state.players[player].manaPool;
   const { colored, generic } = totalCost(cost, x);
 
-  // 1. Tap producers to cover colored shortfalls.
-  for (const c of COLORS) {
-    let shortfall = colored[c] - pool[c];
-    while (shortfall > 0) {
-      const producer = untappedProducers(ctx, player).find((p) => p.symbols.includes(c));
-      if (!producer) throw new Error(`autoPay: cannot produce ${c}`);
-      tapForMana(ctx, producer.id);
-      shortfall = colored[c] - pool[c];
-    }
-  }
-  // 2. Tap producers to cover the generic shortfall — colorless producers first.
-  const totalColored = COLORS.reduce((n, c) => n + colored[c], 0);
-  const poolTotal = () => MANA_SYMBOLS.reduce((n, s) => n + pool[s], 0);
-  while (poolTotal() < totalColored + generic) {
-    const producers = untappedProducers(ctx, player);
-    const producer = producers.find((p) => p.symbols.includes("C")) ?? producers[0];
-    if (!producer) throw new Error(`autoPay: not enough mana`);
-    tapForMana(ctx, producer.id);
-  }
+  // S20: the solver picks the taps (and each tap's symbol — a dual taps for its ASSIGNED color).
+  const plan = solvePayment(ctx, player, cost, x);
+  if (!plan) throw new Error("autoPay: infeasible (caller must check canPay)");
+  for (const t of plan.taps) tapForMana(ctx, t.id, t.symbol);
   // 3. Deduct colored.
   for (const c of COLORS) {
     if (pool[c] < colored[c]) throw new Error(`autoPay: pool underflow on ${c}`);

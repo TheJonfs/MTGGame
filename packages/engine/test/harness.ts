@@ -23,6 +23,27 @@ const CARDS_DIR = join(dirname(fileURLToPath(import.meta.url)), "../../../data/c
  */
 const TEST_CARDS: CardDef[] = [
   {
+    // S20 solver fixtures: bare two-pip costs to force colored assignment.
+    id: "test_wu_spell",
+    name: "Test WU Spell",
+    source: "custom",
+    text: "",
+    manaCost: "{W}{U}",
+    types: ["Sorcery"],
+    spellEffect: [{ type: "gainLife", amount: 1, who: "you" }],
+    art: { fallback: "rendered" },
+  },
+  {
+    id: "test_ub_spell",
+    name: "Test UB Spell",
+    source: "custom",
+    text: "",
+    manaCost: "{U}{B}",
+    types: ["Sorcery"],
+    spellEffect: [{ type: "gainLife", amount: 1, who: "you" }],
+    art: { fallback: "rendered" },
+  },
+  {
     id: "test_fs_soldier",
     name: "Test First-Strike Soldier",
     source: "custom",

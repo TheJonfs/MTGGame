@@ -16,7 +16,8 @@ export type Action =
   | { type: "castSpell"; objectId: string; targets: ResolvedTarget[]; x?: number; mode?: number }
   /** `color` (ADR-068 Amendment 2): the chosen colour for a choice-bearing mana ability (Lotus) — one action per colour. */
   | { type: "activateAbility"; objectId: string; abilityIndex: number; targets: ResolvedTarget[]; x?: number; color?: "W" | "U" | "B" | "R" | "G" }
-  | { type: "tapForMana"; objectId: string }
+  /** `color` (S20, ADR-004 second amendment): which symbol a multi-ability producer (dual) taps for; absent = its first ability (pre-S20 logs replay unchanged). */
+  | { type: "tapForMana"; objectId: string; color?: "W" | "U" | "B" | "R" | "G" | "C" }
   | { type: "declareAttacker"; objectId: string }
   | { type: "doneDeclaringAttackers" }
   | { type: "declareBlocker"; blocker: string; attacker: string }

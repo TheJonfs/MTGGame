@@ -22,7 +22,8 @@
     "world-sim": "tsx packages/world/src/world-sim-cli.ts",
     "fuzz:starters": "tsx packages/sim/src/fuzz-starters-cli.ts",
     "fuzz:expansion": "tsx packages/sim/src/fuzz-expansion-cli.ts",
-    "card-manifest": "tsx scripts/card-manifest.ts"
+    "card-manifest": "tsx scripts/card-manifest.ts",
+    "fuzz:duals": "tsx packages/sim/src/fuzz-duals-cli.ts"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

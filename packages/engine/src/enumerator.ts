@@ -108,7 +108,10 @@ export function legalActions(ctx: EngineCtx, player: PlayerId): Action[] {
   for (const id of state.battlefield) {
     const obj = getObject(state, id);
     if (obj.controller !== player) continue;
-    if (producibleSymbols(ctx, id).length > 0) actions.push({ type: "tapForMana", objectId: id });
+    // S20: a multi-color producer (dual) enumerates one deliberate tap per distinct symbol.
+    const syms = [...new Set(producibleSymbols(ctx, id))];
+    if (syms.length === 1) actions.push({ type: "tapForMana", objectId: id });
+    else for (const color of syms) actions.push({ type: "tapForMana", objectId: id, color });
   }
 
   // Non-mana activated abilities (no S1 card has one; the path exists for equip).
