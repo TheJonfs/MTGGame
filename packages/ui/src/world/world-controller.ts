@@ -46,7 +46,7 @@ import {
   type WorldState,
 } from "@shandalar/world";
 import { MatchController } from "../play/match-controller.js";
-import { abandonQuest, acceptQuest, cardMatches, creditRenown, questsOnArrival, spares, townOffers, type ActiveQuest, type QuestOffer } from "@shandalar/world";
+import { abandonQuest, acceptQuest, cardMatches, creditRenown, pendingRetrievalChoice, questsOnArrival, resolveRetrieval, retrievalOnDungeonClear, rumorState, rumorsOnArrival, tavernRumors, spares, townOffers, type ActiveQuest, type QuestOffer } from "@shandalar/world";
 import {
   applyInteriorDuel, clearDungeon, colorPrizeRoll, dungeonAdvance, dungeonAsWorldMap, dungeonDuelSpec, dungeonPath,
   generateDungeonRun, lairPrizeRoll, reachedTiers, resetDungeon, type DungeonRun, type MoxDungeonDef,
@@ -468,11 +468,14 @@ export class WorldController {
     syncShopState(this.world, town, this.knobs);
     // S19: courier deliveries complete on arrival (autosave below covers them — durability on complete).
     const done = questsOnArrival(this.world, town, this.knobs);
+    // S21: rumor chains hear/advance/reveal on arrival (a reveal marks the map — a consequence).
+    const rumorEv = rumorsOnArrival(this.world, this.catalog, town);
     this.autosave();
     const first = this.world.visits[town.index] === 1;
     // S19 round 2 (Chris): completion gets a POPUP, not just a notice line.
     if (done.length) this.questPopup = done.filter((e) => e.type === "questDone").map((e) => ({ title: "Quest complete", quest: e.quest.text, reward: e.rewardText }));
-    this.screen = { kind: "town", town, stock: rollShopStock(this.world, town, this.pool, this.knobs), notice: first ? `First time in ${town.name}.` : null };
+    const reveal = rumorEv.find((e) => e.type === "chainRevealed");
+    this.screen = { kind: "town", town, stock: rollShopStock(this.world, town, this.pool, this.knobs), notice: reveal ? reveal.text : first ? `First time in ${town.name}.` : null };
     this.emit();
   }
 
@@ -828,6 +831,9 @@ export class WorldController {
         name = mox.name;
       } else {
         prize = lairPrizeRoll(this.world, this.pool, run.dungeonId);
+        // S21 retrieval: the quest item was in this prize room, escrowed like everything else —
+        // it pays out with the escrow; the keep-or-deliver choice waits at the offer town.
+        for (const r of retrievalOnDungeonClear(this.world, run.dungeonId)) prize.cardIds.push(r.cardId);
         name = "the lair";
         const residentInst = this.world.opponents.find((o) => o.catalogId === run.residentCatalogId && o.fixedAt);
         if (residentInst) {
@@ -862,6 +868,35 @@ export class WorldController {
     const tiers = reachedTiers(run, this.knobs);
     const next = this.knobs.dungeonEmpowermentTiers.find((t) => run.steps < t.steps);
     return { steps: run.steps, reached: tiers.length, nextAt: next?.steps ?? null, life: run.interiorLife, escrowGold: run.escrow.gold, escrowCards: run.escrow.cardIds };
+  }
+
+  // ---------- S21 Parts 3–4: rumors + retrieval ----------
+
+  /** The tavern's rumor lines for the current town screen (logs them as heard). */
+  townRumors(): string[] {
+    if (!this.world || this.screen.kind !== "town") return [];
+    return tavernRumors(this.world, this.catalog, this.screen.town);
+  }
+
+  /** Recovered retrieval items whose buyer is in THIS town — the keep-or-deliver choice. */
+  retrievalChoices(): ActiveQuest[] {
+    if (!this.world || this.screen.kind !== "town") return [];
+    return pendingRetrievalChoice(this.world, this.screen.town.index);
+  }
+
+  chooseRetrieval(questId: string, choice: "keep" | "deliver"): void {
+    if (!this.world) return;
+    const r = resolveRetrieval(this.world, questId, choice);
+    this.autosave();
+    if ("notice" in this.screen) this.screen = { ...this.screen, notice: r.ok ? r.text : r.reason };
+    this.emit();
+  }
+
+  /** The heard-rumors journal (rail): count + the freshest few. */
+  rumorJournal(): { count: number; recent: string[] } {
+    if (!this.world) return { count: 0, recent: [] };
+    const rs = rumorState(this.world, this.catalog);
+    return { count: rs.heard.length, recent: rs.heard.slice(-3).reverse() };
   }
 
   // ---------- S21 sieges (manifest §5) ----------

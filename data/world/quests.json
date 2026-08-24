@@ -1,0 +1,62 @@
+{
+  "catalogVersion": "v1",
+  "comment": "S21 Parts 3-4: the quest & rumor text pack v1 (docs/quest-text-pack-v1.md), planner-authored — wired as data, never rewritten here. Placeholders: {town} {region} {target} {card} {reward} {steps} {want}.",
+  "offers": {
+    "courier": [
+      "A parcel for {town}, wrapped in oilcloth and questions. Don't open it. {reward} on delivery.",
+      "My sister in {town} needs this before the roads worsen. They always worsen.",
+      "This letter outlived two couriers already. Third time pays for all — {reward}.",
+      "Take the ledger to {town}. Walk quickly and read nothing."
+    ],
+    "cardCourier": [
+      "A collector in {town} wants {want} — wants it gone from here, more like. It travels the moment we shake on it.",
+      "The {want} in your keeping would settle an old debt in {town}. Old debts pay new gold.",
+      "There's a buyer in {town} for {want}. Ask no questions and carry none with it."
+    ],
+    "bounty": [
+      "{target} has been seen on the {region} roads. The purse stands at {reward}, and it stands lonely.",
+      "Whatever walks the {region} wearing that shape — the reeve wants it stopped. {reward}, no questions on the manner.",
+      "Third caravan this season. The {region} pays {reward} to whoever ends it."
+    ],
+    "retrieval": [
+      "It's in the lair in the {region} — past the resident, which is the whole trouble. Bring it back or keep it; we'll pay either way you choose wrong.",
+      "My grandmother's {card} went into that den with my grandmother. The {card}, at least, can come back.",
+      "The thing you want sits behind the thing you don't. {reward} if it reaches me."
+    ]
+  },
+  "rumors": {
+    "chainLinks": [
+      "Ask at {town} — the ferryman there saw where it went.",
+      "The shepherds in the {region} tell it differently. Go hear them tell it.",
+      "Old {town} charcoal-burners know that country. Buy a round and buy the truth."
+    ],
+    "guardians": {
+      "reya": "In the Last Chapel they bury no one twice. She won't allow it.",
+      "arcanis": "The hermit of the Reach reads three futures in a breath. Bring him a fourth.",
+      "drana": "The Barrowlands' mistress tithes in blood, and pays her debts in it too.",
+      "drakuseth": "Brand's folk saw wings over the caldera at dusk. Three farms burned in a single pass.",
+      "titania": "Fell a tree in the Deepwood, then count your breaths until the ground answers."
+    },
+    "lords": {
+      "unwinder": "The tide at the Spire runs backward, and what it takes comes back wrong.",
+      "usher": "The duchess of the old court receives all the dead, and returns none.",
+      "warden": "The walls of the Bastion are alive, and the tallest of them holds the keys.",
+      "stoker": "Every spell spoken near the Furnace Gate, something inside hears it. And grows hungrier.",
+      "sower": "Plant nothing within sight of the Throne. It will grow, and it will not be yours."
+    },
+    "moxPointer": "There's a door in the {region} that opens for no key. Something older than keys waits behind it.",
+    "moxPointerDeep": "Five doors, five sleepless things, five prizes that were old when the strongholds were quarried.",
+    "vaultTease": "Five seats of power, five treasures taken. And beneath them all, they say — a flower.",
+    "nighthawkLegend": "They found the last one drained white on the fen road, purse untouched. Walk wide of the Nighthawk — or walk in numbers, and count the payout worth it.",
+    "warp": [
+      "The old currents run crosswise in this country. Some call it opportunity. Widows call it otherwise.",
+      "Five powers ride the crossed currents, and the riding frays the plane. Ask why the birds fly widdershins near the spokes' ends."
+    ],
+    "texture": [
+      "The roads are the reeve's as far as the lanterns reach. Past that, they're whoever's walking them.",
+      "Whitewell's bell rings itself some mornings. Nobody mends it. Nobody dares.",
+      "The wild towns trade in things the civilized ones pretend not to want.",
+      "Steps are cheap, they say. They say it young."
+    ]
+  }
+}

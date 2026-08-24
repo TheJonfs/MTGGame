@@ -95,6 +95,23 @@ export interface StrongholdTemplate {
   color: Exclude<Color, "C">;
 }
 
+/** S21 Parts 3–4: the quest & rumor text pack (docs/quest-text-pack-v1.md) as catalog data.
+ * Planner-owned content — the implementer wires, never rewrites (edits escalate). */
+export interface QuestTextPack {
+  offers: { courier: string[]; cardCourier: string[]; bounty: string[]; retrieval: string[] };
+  rumors: {
+    chainLinks: string[];
+    guardians: Record<string, string>;
+    lords: Record<string, string>;
+    moxPointer: string;
+    moxPointerDeep: string;
+    vaultTease: string;
+    nighthawkLegend: string;
+    warp: string[];
+    texture: string[];
+  };
+}
+
 export interface Catalog {
   version: string;
   regions: RegionTemplate[];
@@ -104,6 +121,8 @@ export interface Catalog {
   strongholds: StrongholdTemplate[];
   /** S20 (ADR-079): the five Mox dungeons (dungeon-design §5–§8). */
   dungeons: import("./dungeon.js").MoxDungeonDef[];
+  /** S21: the quest & rumor text pack (absent in minimal test catalogs → built-in fallback). */
+  questText?: QuestTextPack;
 }
 
 /** Resolve an opponent's deck reference to a decklist + archetype (slice deck or catalog starter). */
@@ -124,7 +143,7 @@ export function enemyDeck(catalog: Catalog, ref: OpponentDeckRef): { decklist: S
 }
 
 /** Assemble + validate a catalog from already-parsed JSON objects (browser-safe). */
-export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents: unknown; starters: unknown; dungeons?: unknown }): Catalog {
+export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents: unknown; starters: unknown; dungeons?: unknown; quests?: unknown }): Catalog {
   const r = parts.regions as { catalogVersion: string; regions: RegionTemplate[]; strongholds?: StrongholdTemplate[] };
   const t = parts.towns as { catalogVersion: string; names: string[] };
   const o = parts.opponents as { catalogVersion: string; opponents: OpponentTemplate[] };
@@ -202,6 +221,21 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
     }
   }
   for (const id of ["white", "blue", "black", "red", "green"]) if (!starterIds.has(id)) errors.push(`missing starter ${id} (every colour needs one — manifest §2b)`);
+  // S21: the quest & rumor text pack (planner content, wired as data).
+  let questText: QuestTextPack | undefined;
+  if (parts.quests) {
+    const qp = parts.quests as { catalogVersion: string; offers: QuestTextPack["offers"]; rumors: QuestTextPack["rumors"] };
+    if (qp.catalogVersion !== CATALOG_VERSION) errors.push(`quests: catalogVersion ${qp.catalogVersion} != ${CATALOG_VERSION}`);
+    for (const k of ["courier", "cardCourier", "bounty", "retrieval"] as const) {
+      if (!Array.isArray(qp.offers?.[k]) || qp.offers[k].length === 0) errors.push(`quests: offers.${k} must be a nonempty array`);
+    }
+    if (!Array.isArray(qp.rumors?.chainLinks) || qp.rumors.chainLinks.length === 0) errors.push("quests: rumors.chainLinks must be nonempty");
+    for (const g of ["reya", "arcanis", "drana", "drakuseth", "titania"]) if (!qp.rumors?.guardians?.[g]) errors.push(`quests: rumors.guardians.${g} missing`);
+    for (const l of ["unwinder", "usher", "warden", "stoker", "sower"]) if (!qp.rumors?.lords?.[l]) errors.push(`quests: rumors.lords.${l} missing`);
+    for (const k of ["moxPointer", "moxPointerDeep", "vaultTease", "nighthawkLegend"] as const) if (!qp.rumors?.[k]) errors.push(`quests: rumors.${k} missing`);
+    if (!Array.isArray(qp.rumors?.warp) || !Array.isArray(qp.rumors?.texture)) errors.push("quests: rumors.warp/texture must be arrays");
+    questText = { offers: qp.offers, rumors: qp.rumors };
+  }
   if (errors.length) throw new Error(`Catalog validation failed:\n${errors.join("\n")}`);
-  return { version: CATALOG_VERSION, regions: r.regions, townNames: t.names, opponents: o.opponents, starters: st.starters, strongholds: r.strongholds ?? [], dungeons: du.mox };
+  return { version: CATALOG_VERSION, regions: r.regions, townNames: t.names, opponents: o.opponents, starters: st.starters, strongholds: r.strongholds ?? [], dungeons: du.mox, ...(questText ? { questText } : {}) };
 }

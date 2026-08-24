@@ -232,10 +232,10 @@ function QuestBoard({ c, pool, onInspect }: { c: WorldController; pool: Map<stri
           return (
             <div className="quest-offer" key={o.id}>
               <div className="quest-text">
-                <span className={`tier-badge t${o.tier}`}>{["", "I", "II", "III"][o.tier]}</span> <b>{{ courier: "Courier", cardCourier: "Card courier", bounty: "Bounty" }[o.kind]}</b> — {o.text}
+                <span className={`tier-badge t${o.tier}`}>{["", "I", "II", "III"][o.tier]}</span> <b>{{ courier: "Courier", cardCourier: "Card courier", bounty: "Bounty", retrieval: "Retrieval" }[o.kind]}</b> — {o.text}
               </div>
               <div className="quest-meta">
-                Reward: {rewardBits}{o.deadlineSteps > 0 ? ` · ${o.deadlineSteps} steps` : " · no deadline"}
+                Reward: {o.kind === "retrieval" ? `${o.retrievalItem?.cardName ?? "the item"} if you keep it — or ${o.reward.gold} gold delivered back here` : rewardBits}{o.deadlineSteps > 0 ? ` · ${o.deadlineSteps} steps` : " · no deadline"}
                 {o.kind === "cardCourier" && (
                   options.length > 0 ? (
                     <select value={pick} onChange={(e) => setPicks({ ...picks, [o.id]: e.target.value })} onMouseEnter={() => pick && onInspect(pick)}>
@@ -476,6 +476,30 @@ function TownScreen({ c, pool, oracle }: { c: WorldController; pool: Map<string,
           ))}
         </div>
         <QuestBoard c={c} pool={pool} onInspect={setInspect} />
+        {/* S21 Part 3: recovered retrieval items — the keep-or-deliver choice, trade stated plainly. */}
+        {c.retrievalChoices().map((q) => (
+          <div className="quest-offer" key={`ret_${q.id}`} style={{ marginTop: 8, borderColor: "var(--brass)" }}>
+            <div className="quest-text"><b>The buyer waits.</b> You carried <b>{q.retrievalItem?.cardName}</b> out of the dark. {q.text}</div>
+            <div className="quest-meta">
+              Keep the card, or take <b>{q.reward.gold} gold</b> for it —{" "}
+              <button onClick={() => c.chooseRetrieval(q.id, "keep")}>Keep it</button>{" "}
+              <button className="primary" onClick={() => c.chooseRetrieval(q.id, "deliver")}>Deliver ({q.reward.gold}g)</button>
+            </div>
+          </div>
+        ))}
+        {/* S21 Part 4: the tavern — rumors heard here are rumors logged. */}
+        {(() => {
+          const rumors = c.townRumors();
+          if (rumors.length === 0) return null;
+          return (
+            <>
+              <div className="flyout-title" style={{ marginTop: 8 }}>Heard in the tavern</div>
+              {rumors.map((r, i) => (
+                <p key={i} style={{ fontSize: 12, fontStyle: "italic", margin: "3px 0", color: "var(--ink-soft)" }}>“{r}”</p>
+              ))}
+            </>
+          );
+        })()}
         <div className="flyout-title" style={{ marginTop: 8 }}>Sell spares (half price; basics and deck copies excluded)</div>
         <div className="sell-row">
           {Object.entries(spares(w.player.collection, activeDeck(w))).map(([id, n]) => {
@@ -834,7 +858,8 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
           <h3>Quests</h3>
           {c.activeQuests().map(({ quest: q, stepsLeft, destName, targetName }) => (
             <div key={q.id} style={{ fontSize: 11.5, marginBottom: 4 }}>
-              <b>{{ courier: "Courier", cardCourier: "Card courier", bounty: "Bounty" }[q.kind]}</b>
+              <b>{{ courier: "Courier", cardCourier: "Card courier", bounty: "Bounty", retrieval: "Retrieval" }[q.kind]}</b>
+              {q.kind === "retrieval" && <> — {q.itemRecovered ? `${q.retrievalItem?.cardName} recovered; the buyer waits at the offer town` : "the item lies in a lair"}</>}
               {destName ? <> → {destName}</> : null}
               {targetName ? <> — {targetName}{q.bountySeenAt ? " (marked on your map)" : " (not yet sighted)"}</> : null}
               {stepsLeft !== null && <span style={{ color: stepsLeft < 40 ? "var(--danger)" : "var(--ink-soft)" }}> · {stepsLeft} steps left</span>}
@@ -845,6 +870,19 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
           {c.world && c.world.manalinks.length > 0 && (
             <div style={{ fontSize: 11.5, marginTop: 4 }}>Manalinks: {c.world.manalinks.map((m) => m.color).join(", ")} — every duel starts with them in play.</div>
           )}
+          {(() => {
+            // S21 Part 4: the heard-rumors journal (cheap rail version — count + the freshest).
+            const j = c.rumorJournal();
+            if (j.count === 0) return null;
+            return (
+              <div style={{ fontSize: 11, marginTop: 6, color: "var(--ink-soft)" }}>
+                <b>Rumors heard: {j.count}</b>
+                {j.recent.map((r, i) => (
+                  <div key={i} style={{ fontStyle: "italic", marginTop: 2 }}>“{r.length > 72 ? r.slice(0, 70) + "…" : r}”</div>
+                ))}
+              </div>
+            );
+          })()}
         </div>
         {c.siegeRail().filter((s) => seenCell(s.town.at)).length > 0 && (
           <div className="panel">

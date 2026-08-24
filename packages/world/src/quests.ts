@@ -21,13 +21,13 @@ import type { Catalog } from "./catalog.js";
 import { rollBeast, type OpponentInstance } from "./generate.js";
 import { regionCells, isTownCell } from "./generate.js";
 import type { KnobValues } from "./knobs.js";
-import { manhattan, type Point, type Town } from "./map.js";
+import { manhattan, markExplored, type Point, type Town } from "./map.js";
 import { WorldRng } from "./rng.js";
 import { RING_OF_TIER } from "./shop.js";
 import { activeDeck, type WorldState } from "./state.js";
 import { spares } from "./deck-edit.js";
 
-export type QuestKind = "courier" | "cardCourier" | "bounty";
+export type QuestKind = "courier" | "cardCourier" | "bounty" | "retrieval";
 export type QuestOutcome = "done" | "expired" | "abandoned";
 
 export interface QuestReward {
@@ -53,6 +53,11 @@ export interface QuestOffer {
   /** bounty: the catalog template to spawn and the region to spawn it in. */
   bountyCatalogId?: string;
   bountyRegion?: number;
+  /** retrieval (S21): the lair-dungeon holding the item (Chris-ruled: lair-dungeons only —
+   * Mox dungeons and future challenge sites are never quest targets; rumors point at those). */
+  retrievalDungeonId?: string;
+  /** retrieval: the item in the lair's prize room (escrowed like everything else — the quest is the dive). */
+  retrievalItem?: { cardId: string; cardName: string };
   /** Steps allowed once accepted (0 = no deadline). */
   deadlineSteps: number;
   reward: QuestReward;
@@ -69,6 +74,8 @@ export interface ActiveQuest extends QuestOffer {
   /** bounty: the spawned instance's id, and where it was last SEEN (fog rules — the mark trails sightings). */
   bountyOpponentId?: string;
   bountySeenAt?: Point;
+  /** retrieval: the item came out of the lair (the keep-or-deliver choice is live at the offer town). */
+  itemRecovered?: boolean;
 }
 
 export interface QuestRecord {
@@ -85,6 +92,29 @@ export interface QuestState {
   completed: QuestRecord[];
   /** Offer ids consumed for this game (accepted at least once). */
   taken: string[];
+  /** S21 Part 3–4: rumor chains + the heard-rumors journal. Defaulted lazily on read (a
+   * v7-shaped need dodged — flagged in the handoff; all access goes through rumorState()). */
+  rumors?: RumorState;
+}
+
+// ---------- S21 rumors (Part 3 chains + Part 4 lore) ----------
+
+/** A rumor-chain: a trail of town stops ending at a Mox dungeon reveal. Chains are DISCOVERY
+ * AIDS, not quests (Chris-ruled) — no acceptance, no reward beyond the reveal. */
+export interface RumorChain {
+  id: string;
+  /** The target's mox dungeon id (mox_w …); the reveal explores its site's cells. */
+  targetDungeonId: string;
+  /** Town indexes to visit in order. */
+  stops: number[];
+  /** −1 unheard · k = next visit stops[k] · stops.length = revealed. */
+  progress: number;
+}
+
+export interface RumorState {
+  chains: RumorChain[];
+  /** Every distinct rumor line heard (the journal; dedup by text). */
+  heard: string[];
 }
 
 export interface Manalink {
@@ -99,20 +129,29 @@ export interface Manalink {
 export const MANALINK_CARD: Record<Manalink["color"], string> = { W: "plains", U: "island", B: "swamp", R: "mountain", G: "forest" };
 export const MANALINK_LAND_NAME: Record<Manalink["color"], string> = { W: "Plains", U: "Island", B: "Swamp", R: "Mountain", G: "Forest" };
 
-/** Authored template table (placeholder text — quest text authoring is planner content). */
-const COURIER_TEXTS = [
-  "Carry the sealed letter to {town}. Ask no questions of it.",
-  "This parcel is late already. {town}, and quickly.",
-  "The reliquary box goes to {town}. It is heavier than it looks.",
-];
-const CARD_COURIER_TEXTS = [
-  "A collector in {town} pays well for {want}. It leaves your hands the moment you agree.",
-  "Deliver {want} to a buyer in {town}. Payment on arrival; the card travels now.",
-];
-const BOUNTY_TEXTS = [
-  "{target} has been troubling the roads of {region}. End it and return for the purse.",
-  "A bounty stands on {target}, last marked in {region}. Proof is its defeat.",
-];
+/** Pre-pack template table — the FALLBACK for minimal test catalogs without `questText`.
+ * The real content lives in data/world/quests.json (the S21 pack; planner-owned). */
+const FALLBACK_PACK: import("./catalog.js").QuestTextPack = {
+  offers: {
+    courier: ["Carry the sealed letter to {town}. Ask no questions of it.", "This parcel is late already. {town}, and quickly."],
+    cardCourier: ["A collector in {town} pays well for {want}. It leaves your hands the moment you agree."],
+    bounty: ["{target} has been troubling the roads of {region}. End it and return for the purse."],
+    retrieval: ["It's in the lair in the {region}. Bring the {card} back for {reward}, or keep it."],
+  },
+  rumors: {
+    chainLinks: ["Ask at {town}."],
+    guardians: {}, lords: {},
+    moxPointer: "There's a door in the {region} that opens for no key.",
+    moxPointerDeep: "Five doors, five sleepless things.",
+    vaultTease: "And beneath them all, they say — a flower.",
+    nighthawkLegend: "Walk wide of the Nighthawk.",
+    warp: [], texture: [],
+  },
+};
+
+export function questPack(catalog: Catalog): import("./catalog.js").QuestTextPack {
+  return catalog.questText ?? FALLBACK_PACK;
+}
 
 const COLORS = ["W", "U", "B", "R", "G"] as const;
 
@@ -122,12 +161,37 @@ export function townOffers(world: WorldState, catalog: Catalog, town: Town, knob
   const region = world.map.regions[town.region]!;
   const tier = RING_OF_TIER[region.tier] ?? 1;
   const n = Math.max(1, knobs.questsPerTown);
+  const pack = questPack(catalog);
   const offers: QuestOffer[] = [];
   for (let i = 0; i < n; i++) {
     const id = `q_${town.index}_${i}`;
     const roll = rng.float();
-    const kind: QuestKind = roll < 0.4 ? "courier" : roll < 0.65 ? "cardCourier" : "bounty";
+    const kind: QuestKind = roll < 0.35 ? "courier" : roll < 0.55 ? "cardCourier" : roll < 0.8 ? "bounty" : "retrieval";
     const reward = rollReward(rng, world, catalog, tier, region.color as QuestReward["manalink"] & string, knobs, pool);
+    if (kind === "retrieval") {
+      // S21 (Chris-ruled): targets are LAIR-DUNGEONS with a living resident; the item sits in
+      // the prize room, escrowed like everything else — the quest is the dive. Keep-or-deliver
+      // on return (the trade stated at the choice).
+      const lairs = world.map.strongholds.filter((f) => f.kind === "lair" && f.opponentId && !world.opponents.find((o) => o.id === f.opponentId)?.gone);
+      if (lairs.length === 0) continue; // every lair cleared: the dens hold nothing to fetch
+      const lair = rng.pick(lairs);
+      const rs = [...pool.values()].filter((d) => !d.isTokenDef && !d.prizeOnly && d.shopTier === "R").sort((a, b) => a.id.localeCompare(b.id));
+      if (rs.length === 0) continue;
+      const item = rng.pick(rs);
+      const gold = (knobs.questGoldByTier[tier] ?? 20) * 2; // the dive premium — deliver pays this
+      offers.push({
+        id, kind, tier, fromTown: town.index,
+        retrievalDungeonId: `lair_${lair.opponentId}`,
+        retrievalItem: { cardId: item.id, cardName: item.name },
+        deadlineSteps: 0, // the dive is the quest; the den keeps no calendar
+        reward: { gold },
+        text: rng.pick(pack.offers.retrieval)
+          .replace(/\{region\}/g, world.map.regions[lair.region]?.name ?? "the wilds")
+          .replace(/\{card\}/g, item.name)
+          .replace(/\{reward\}/g, `${gold} gold`),
+      });
+      continue;
+    }
     if (kind === "bounty") {
       // Target: a signature of the town's spoke at the quest's tier, spawned one ring out when one exists
       // (a civilized town's bounty roams the approach ring) — the road to it is the quest.
@@ -140,7 +204,7 @@ export function townOffers(world: WorldState, catalog: Catalog, town: Town, knob
         bountyCatalogId: beast.id, bountyRegion: targetRegion.index,
         deadlineSteps: 0, // bounties do not expire (the mark keeps roaming)
         reward,
-        text: rng.pick(BOUNTY_TEXTS).replace("{target}", beast.name).replace("{region}", targetRegion.name),
+        text: rng.pick(pack.offers.bounty).replace(/\{target\}/g, beast.name).replace(/\{region\}/g, targetRegion.name).replace(/\{reward\}/g, `${reward.gold} gold`),
       });
       continue;
     }
@@ -154,10 +218,10 @@ export function townOffers(world: WorldState, catalog: Catalog, town: Town, knob
       const want = { color: rng.pick(COLORS), minMv: 1 + rng.int(3) };
       offers.push({
         id, kind, tier, fromTown: town.index, toTown: dest.index, cardWanted: want, deadlineSteps, reward,
-        text: rng.pick(CARD_COURIER_TEXTS).replace("{town}", dest.name).replace("{want}", `a ${({ W: "white", U: "blue", B: "black", R: "red", G: "green" } as const)[want.color]} card (mana value ${want.minMv}+)`),
+        text: rng.pick(pack.offers.cardCourier).replace(/\{town\}/g, dest.name).replace(/\{want\}/g, `a ${({ W: "white", U: "blue", B: "black", R: "red", G: "green" } as const)[want.color]} card (mana value ${want.minMv}+)`).replace(/\{reward\}/g, `${reward.gold} gold`),
       });
     } else {
-      offers.push({ id, kind, tier, fromTown: town.index, toTown: dest.index, deadlineSteps, reward, text: rng.pick(COURIER_TEXTS).replace("{town}", dest.name) });
+      offers.push({ id, kind, tier, fromTown: town.index, toTown: dest.index, deadlineSteps, reward, text: rng.pick(pack.offers.courier).replace(/\{town\}/g, dest.name).replace(/\{reward\}/g, `${reward.gold} gold`) });
     }
   }
   return offers.filter((o) => !world.quests.taken.includes(o.id));
@@ -305,6 +369,165 @@ export function questsOnStep(world: WorldState, knobs: KnobValues, sees: (p: Poi
     }
   }
   return events;
+}
+
+// ---------- S21 Part 3: retrieval lifecycle ----------
+
+/** Call when a lair-dungeon CLEARS (the caller adds the returned card ids to the victory payout —
+ * the item was escrowed like everything else; clearDungeon's addToCollection pays it). */
+export function retrievalOnDungeonClear(world: WorldState, dungeonId: string): { quest: ActiveQuest; cardId: string; cardName: string }[] {
+  const out: { quest: ActiveQuest; cardId: string; cardName: string }[] = [];
+  for (const q of world.quests.active) {
+    if (q.kind === "retrieval" && q.retrievalDungeonId === dungeonId && !q.itemRecovered && q.retrievalItem) {
+      q.itemRecovered = true;
+      out.push({ quest: q, cardId: q.retrievalItem.cardId, cardName: q.retrievalItem.cardName });
+    }
+  }
+  return out;
+}
+
+/** Recovered retrievals whose offer town is HERE — the keep-or-deliver choice is live. */
+export function pendingRetrievalChoice(world: WorldState, townIndex: number): ActiveQuest[] {
+  return world.quests.active.filter((q) => q.kind === "retrieval" && q.itemRecovered && q.fromTown === townIndex);
+}
+
+/** The manifest's keep-or-deliver choice (the trade stated at the choice — UI's job).
+ * KEEP: the item stays (it already paid out through the escrow); no reward; quest done.
+ * DELIVER: the item leaves the collection (a copy must still be owned) and the reward pays. */
+export function resolveRetrieval(
+  world: WorldState,
+  questId: string,
+  choice: "keep" | "deliver",
+): { ok: true; text: string } | { ok: false; reason: string } {
+  const q = world.quests.active.find((x) => x.id === questId);
+  if (!q || q.kind !== "retrieval" || !q.itemRecovered || !q.retrievalItem) return { ok: false, reason: "no recovered item to hand over" };
+  if (choice === "deliver") {
+    const have = world.player.collection[q.retrievalItem.cardId] ?? 0;
+    if (have < 1) return { ok: false, reason: `you no longer hold ${q.retrievalItem.cardName} — keep is the only honest choice left` };
+    world.player.collection[q.retrievalItem.cardId] = have - 1;
+    if (world.player.collection[q.retrievalItem.cardId]! <= 0) delete world.player.collection[q.retrievalItem.cardId];
+    world.player.gold += q.reward.gold;
+    close(world, q, "done");
+    return { ok: true, text: `${q.retrievalItem.cardName} changes hands; ${q.reward.gold} gold is yours.` };
+  }
+  close(world, q, "done");
+  return { ok: true, text: `You keep ${q.retrievalItem.cardName}. The buyer keeps their gold, and their opinion.` };
+}
+
+// ---------- S21 Part 3–4: rumor chains + the lore turn ----------
+
+/** The rumor state, defaulted lazily; chains generate once, seeded from the world (deterministic
+ * whenever they materialize — pure in (seed, catalog, map)). */
+export function rumorState(world: WorldState, catalog: Catalog): RumorState {
+  const rs = (world.quests.rumors ??= { chains: [], heard: [] });
+  if (rs.chains.length === 0 && catalog.dungeons.length > 0) {
+    for (const mox of catalog.dungeons) {
+      const rng = new WorldRng(((world.seed * 3_266_489_917) ^ hash32(`chain:${mox.id}`)) >>> 0);
+      const towns = [...world.map.towns];
+      if (towns.length < 2) continue;
+      const a = rng.int(towns.length);
+      let b = rng.int(towns.length - 1);
+      if (b >= a) b += 1;
+      rs.chains.push({ id: `chain_${mox.id}`, targetDungeonId: mox.id, stops: [towns[a]!.index, towns[b]!.index], progress: -1 });
+    }
+  }
+  return rs;
+}
+
+function hash32(s: string): number {
+  let h = 2166136261 >>> 0;
+  for (const ch of s) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0;
+  return h;
+}
+
+const heardLog = (rs: RumorState, line: string): void => {
+  if (!rs.heard.includes(line)) rs.heard.push(line);
+};
+
+/** The dungeon site a chain points at (the mox site in the target's colour region). */
+function chainSite(world: WorldState, catalog: Catalog, chain: RumorChain): { at: Point; region: number } | null {
+  const mox = catalog.dungeons.find((d) => d.id === chain.targetDungeonId);
+  if (!mox) return null;
+  const site = world.map.strongholds.find((f) => f.kind === "dungeon" && world.map.regions[f.region]?.color === mox.color);
+  return site ? { at: site.at, region: site.region } : null;
+}
+
+export type RumorEvent = { type: "chainAdvanced" | "chainRevealed"; chainId: string; text: string };
+
+/** Entering a town is hearing its board: unheard chains START (the opener is on every board);
+ * a chain whose next stop is THIS town advances; the last stop REVEALS the site (its cells are
+ * explored — the door appears on the map). Mutates world; caller autosaves on a reveal. */
+export function rumorsOnArrival(world: WorldState, catalog: Catalog, town: Town): RumorEvent[] {
+  const rs = rumorState(world, catalog);
+  const pack = questPack(catalog);
+  const events: RumorEvent[] = [];
+  for (const chain of rs.chains) {
+    if (chain.progress >= chain.stops.length) continue;
+    if (chain.progress === -1) {
+      chain.progress = 0;
+      const site = chainSite(world, catalog, chain);
+      const opener = pack.rumors.moxPointer.replace(/\{region\}/g, site ? world.map.regions[site.region]!.name : "the far country");
+      heardLog(rs, opener);
+    }
+    if (chain.progress < chain.stops.length && chain.stops[chain.progress] === town.index) {
+      chain.progress += 1;
+      if (chain.progress >= chain.stops.length) {
+        const site = chainSite(world, catalog, chain);
+        if (site && world.explored) {
+          for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) {
+            const p = { x: site.at.x + dx, y: site.at.y + dy };
+            if (p.x >= 0 && p.y >= 0 && p.x < world.map.width && p.y < world.map.height) markExplored(world.explored, world.map, p);
+          }
+        }
+        heardLog(rs, pack.rumors.moxPointerDeep);
+        events.push({ type: "chainRevealed", chainId: chain.id, text: `${pack.rumors.moxPointerDeep} The trail ends: the door stands in ${site ? world.map.regions[site.region]!.name : "the far country"} — it is marked on your map.` });
+      } else {
+        const nextTown = world.map.towns[chain.stops[chain.progress]!];
+        const link = pack.rumors.chainLinks[chain.progress % pack.rumors.chainLinks.length]!
+          .replace(/\{town\}/g, nextTown?.name ?? "the next town")
+          .replace(/\{region\}/g, nextTown ? world.map.regions[nextTown.region]!.name : "the next country");
+        heardLog(rs, link);
+        events.push({ type: "chainAdvanced", chainId: chain.id, text: link });
+      }
+    }
+  }
+  return events;
+}
+
+/** The tavern's rumor board for this visit: live chain lines (the trail's current step) plus a
+ * seeded rotation of lore — guardians, the five lords' whispers, the Nighthawk's legend, the warp,
+ * world texture; the Vault tease only once all five Moxen are taken (Chris-ruled gate). Every line
+ * shown is logged as heard (the journal). Pure in (seed, town, visit count) apart from the log. */
+export function tavernRumors(world: WorldState, catalog: Catalog, town: Town): string[] {
+  const rs = rumorState(world, catalog);
+  const pack = questPack(catalog);
+  const lines: string[] = [];
+  for (const chain of rs.chains) {
+    if (chain.progress < 0 || chain.progress >= chain.stops.length) continue;
+    const nextTown = world.map.towns[chain.stops[chain.progress]!];
+    lines.push(
+      pack.rumors.chainLinks[chain.progress % pack.rumors.chainLinks.length]!
+        .replace(/\{town\}/g, nextTown?.name ?? "the next town")
+        .replace(/\{region\}/g, nextTown ? world.map.regions[nextTown.region]!.name : "the next country"),
+    );
+    if (lines.length >= 2) break; // the trail crowds the board only so far
+  }
+  const lore: string[] = [
+    ...Object.values(pack.rumors.guardians),
+    ...Object.values(pack.rumors.lords),
+    ...pack.rumors.warp,
+    ...pack.rumors.texture,
+    pack.rumors.nighthawkLegend,
+  ];
+  const fiveMoxen = catalog.dungeons.length === 5 && catalog.dungeons.every((d) => world.dungeons[d.id]?.cleared);
+  if (fiveMoxen) lore.push(pack.rumors.vaultTease);
+  const visits = world.visits[town.index] ?? 0;
+  const rng = new WorldRng(((world.seed * 1_540_483_477) ^ hash32(`tavern:${town.index}:${visits}`)) >>> 0);
+  const picks = Math.min(2, lore.length);
+  const start = lore.length ? rng.int(lore.length) : 0;
+  for (let i = 0; i < picks; i++) lines.push(lore[(start + i * 7) % lore.length]!);
+  for (const l of lines) heardLog(rs, l);
+  return lines;
 }
 
 /** Abandon: fails the quest (no further penalty; a carried card is already gone — the offer said so). */

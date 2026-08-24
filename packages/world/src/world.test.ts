@@ -941,6 +941,111 @@ describe("S21 Part 2 (sieges, scripted acceptance): timers, telegraph, the fall,
   }, 120_000);
 });
 
+describe("S21 Parts 3–4 (retrieval, rumor-chains, the lore turn): pack-as-data, the dive-and-choice, chains that reveal, the tavern", () => {
+  const q = () => import("./quests.js");
+
+  it("the pack loads as catalog data; offer text comes from it with every placeholder substituted", async () => {
+    expect(catalog.questText).toBeTruthy();
+    expect(catalog.questText!.rumors.guardians.reya).toContain("Last Chapel");
+    expect(catalog.questText!.rumors.lords.sower).toContain("Plant nothing");
+    const { townOffers } = await q();
+    const w = newWorld({ seed: 401, catalog, starter: "green" });
+    const knobs = worldKnobs(w);
+    const all = w.map.towns.flatMap((t) => townOffers(w, catalog, t, knobs, pool.cards));
+    expect(all.length).toBeGreaterThan(0);
+    for (const o of all) expect(o.text).not.toMatch(/\{(town|region|target|card|reward|want|steps)\}/);
+    // Determinism: same (seed, town) → same offers.
+    const again = w.map.towns.flatMap((t) => townOffers(w, catalog, t, knobs, pool.cards));
+    expect(JSON.stringify(again)).toBe(JSON.stringify(all));
+  });
+
+  it("retrieval: lair-dungeon target only; the item pays through the dive; keep-or-deliver at the offer town (deliver refuses when the card is gone)", async () => {
+    const { townOffers, acceptQuest, retrievalOnDungeonClear, pendingRetrievalChoice, resolveRetrieval } = await q();
+    // Scan seeds/towns for a retrieval offer (seeded — some world has one on the first pass).
+    let w: WorldState | null = null;
+    let offer: import("./quests.js").QuestOffer | null = null;
+    for (let seed = 401; seed < 420 && !offer; seed++) {
+      const cand = newWorld({ seed, catalog, starter: "green" });
+      const knobs = worldKnobs(cand);
+      for (const t of cand.map.towns) {
+        const o = townOffers(cand, catalog, t, knobs, pool.cards).find((x) => x.kind === "retrieval");
+        if (o) { w = cand; offer = o; break; }
+      }
+    }
+    expect(offer).toBeTruthy();
+    const world = w!;
+    const knobs = worldKnobs(world);
+    expect(offer!.retrievalDungeonId).toMatch(/^lair_/);
+    expect(offer!.deadlineSteps).toBe(0);
+    expect(pool.cards.get(offer!.retrievalItem!.cardId)?.shopTier).toBe("R"); // the lair's register
+    const acc = acceptQuest(world, catalog, offer!, knobs, pool.cards);
+    expect(acc.ok).toBe(true);
+    // The dive clears: the item joins the payout (the controller pushes it into the escrow's cardIds).
+    const recovered = retrievalOnDungeonClear(world, offer!.retrievalDungeonId!);
+    expect(recovered).toHaveLength(1);
+    expect(recovered[0]!.cardId).toBe(offer!.retrievalItem!.cardId);
+    world.player.collection[recovered[0]!.cardId] = (world.player.collection[recovered[0]!.cardId] ?? 0) + 1; // the escrow paid
+    expect(retrievalOnDungeonClear(world, offer!.retrievalDungeonId!)).toHaveLength(0); // once
+    // The choice is live only at the offer town.
+    expect(pendingRetrievalChoice(world, offer!.fromTown)).toHaveLength(1);
+    expect(pendingRetrievalChoice(world, offer!.fromTown + 1)).toHaveLength(0);
+    // DELIVER: the card leaves, the gold arrives.
+    const goldBefore = world.player.gold;
+    const owned = world.player.collection[recovered[0]!.cardId]!;
+    const r = resolveRetrieval(world, offer!.id, "deliver");
+    expect(r.ok).toBe(true);
+    expect(world.player.gold).toBe(goldBefore + offer!.reward.gold);
+    expect(world.player.collection[recovered[0]!.cardId] ?? 0).toBe(owned - 1);
+    expect(world.quests.completed.some((c2) => c2.id === offer!.id && c2.outcome === "done")).toBe(true);
+    // KEEP path + the sold-it-already refusal, on a second world.
+    const w2 = newWorld({ seed: world.seed, catalog, starter: "green" });
+    const knobs2 = worldKnobs(w2);
+    const o2 = w2.map.towns.flatMap((t) => townOffers(w2, catalog, t, knobs2, pool.cards)).find((x) => x.kind === "retrieval")!;
+    acceptQuest(w2, catalog, o2, knobs2, pool.cards);
+    retrievalOnDungeonClear(w2, o2.retrievalDungeonId!);
+    // Deliver without owning a copy refuses (the escrow payout was, say, anted away).
+    expect(resolveRetrieval(w2, o2.id, "deliver").ok).toBe(false);
+    const g2 = w2.player.gold;
+    const keep = resolveRetrieval(w2, o2.id, "keep");
+    expect(keep.ok).toBe(true);
+    expect(w2.player.gold).toBe(g2); // keep pays nothing — the card was the prize
+  });
+
+  it("rumor-chains: five seeded deterministic chains; arrival hears, stops advance, the last stop REVEALS the mox site (explored); the tavern rotates lore and logs the journal; the Vault tease gates on five Moxen", async () => {
+    const { rumorState, rumorsOnArrival, tavernRumors } = await q();
+    const w = newWorld({ seed: 402, catalog, starter: "green" });
+    const rs = rumorState(w, catalog);
+    expect(rs.chains).toHaveLength(5);
+    const w2 = newWorld({ seed: 402, catalog, starter: "green" });
+    expect(rumorState(w2, catalog).chains).toEqual(rs.chains); // deterministic
+    const chain = rs.chains[0]!;
+    // Arrive anywhere: the opener is heard (progress −1 → 0).
+    const elsewhere = w.map.towns.find((t) => t.index !== chain.stops[0] && t.index !== chain.stops[1])!;
+    rumorsOnArrival(w, catalog, elsewhere);
+    expect(rumorState(w, catalog).chains[0]!.progress).toBe(0);
+    expect(rs.heard.length).toBeGreaterThan(0);
+    // Walk the trail: stop 1 advances, stop 2 reveals.
+    const ev1 = rumorsOnArrival(w, catalog, w.map.towns[chain.stops[0]!]!);
+    expect(ev1.some((e) => e.type === "chainAdvanced" && e.chainId === chain.id)).toBe(true);
+    const site = w.map.strongholds.find((f) => f.kind === "dungeon" && w.map.regions[f.region]?.color === catalog.dungeons.find((d) => d.id === chain.targetDungeonId)!.color)!;
+    expect(isExplored(w.explored, w.map, site.at)).toBe(false); // still fogged before the reveal
+    const ev2 = rumorsOnArrival(w, catalog, w.map.towns[chain.stops[1]!]!);
+    expect(ev2.some((e) => e.type === "chainRevealed" && e.chainId === chain.id)).toBe(true);
+    expect(isExplored(w.explored, w.map, site.at)).toBe(true); // the door is on the map
+    // The tavern: lines flow, the journal grows, the tease waits for five Moxen.
+    const before = rs.heard.length;
+    const lines = tavernRumors(w, catalog, elsewhere);
+    expect(lines.length).toBeGreaterThan(0);
+    expect(rs.heard.length).toBeGreaterThanOrEqual(before);
+    const tease = catalog.questText!.rumors.vaultTease;
+    for (let v = 0; v < 30; v++) { w.visits[elsewhere.index] = v; expect(tavernRumors(w, catalog, elsewhere)).not.toContain(tease); }
+    for (const d of catalog.dungeons) w.dungeons[d.id] = { cleared: true, resets: 0 };
+    let seen = false;
+    for (let v = 0; v < 40 && !seen; v++) { w.visits[elsewhere.index] = v; seen = tavernRumors(w, catalog, elsewhere).includes(tease); }
+    expect(seen).toBe(true); // the flower is whispered once the five doors stand open
+  });
+});
+
 describe("S19 shop tiers (ADR-078): availability by ring, price by tier factor, R never stocks", () => {
   it("a civilized shop pool is tier-1 only; approach adds tier 2; wild adds tier 3; R (Demonic Tutor, Mystic Snake) and prizeOnly (Lotus) appear on no shelf; prices carry the factor", async () => {
     const { shopPoolFor, shopPrice } = await import("./shop.js");
