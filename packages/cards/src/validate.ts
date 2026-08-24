@@ -68,6 +68,17 @@ export function validateCard(raw: unknown): ValidationResult {
   // basics, and prizeOnly treasure. A vocabulary-level guard like the resolver assertion — a card
   // without a tier is a structural error, not a latent shop surprise.
   const isBasic = Array.isArray(raw.supertypes) && (raw.supertypes as string[]).includes("Basic");
+  // A9 (S20): entersChoice only on lands, with the shock shape.
+  if (raw.entersChoice !== undefined) {
+    const ec = raw.entersChoice as { pay?: { life?: unknown }; else?: unknown };
+    if (!types.includes("Land")) err(`"entersChoice" is a land clause (A9)`);
+    if (!ec || typeof ec !== "object" || !Number.isInteger(ec.pay?.life) || (ec.pay!.life as number) <= 0 || ec.else !== "tapped") {
+      err(`"entersChoice" must be { pay: { life: n>0 }, else: "tapped" } (A9)`);
+    }
+  }
+  if (raw.priceOverride !== undefined && (!Number.isInteger(raw.priceOverride) || (raw.priceOverride as number) <= 0)) {
+    err(`"priceOverride" must be a positive integer (gold)`);
+  }
   const isTestCard = typeof raw.id === "string" && raw.id.startsWith("test_"); // registry: test-only cards, not pool members
   if (raw.isTokenDef !== true && !isBasic && raw.prizeOnly !== true && !isTestCard) {
     if (raw.shopTier !== 1 && raw.shopTier !== 2 && raw.shopTier !== 3 && raw.shopTier !== "R") err(`missing "shopTier" (1|2|3|"R", ADR-078; tokens/basics/prizeOnly exempt)`);

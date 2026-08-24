@@ -18,7 +18,7 @@ import { attackerChoices, blockerChoices, bottomChoices, discardChoices, effecti
 import type { GameEventMap } from "./events.js";
 import { autoPay, emptyManaPools, tapForMana } from "./mana.js";
 import { applyModifiers, type Modifier } from "./modifiers.js";
-import { discardCard, drawCard } from "./ops.js";
+import { loseLife, discardCard, drawCard } from "./ops.js";
 import { runSBAs } from "./sba.js";
 import { sacrificeCandidates } from "./sacrifice.js";
 import {
@@ -56,7 +56,9 @@ export type RequestPurpose =
   /** ADR-075 A6: pick a mode for a modal trigger as it goes on the stack (spells pick at cast — one castSpell action per mode). */
   | "chooseMode"
   /** ADR-076: pick the card(s) to discard as an activation cost (Waterfront Bouncer). */
-  | "discardCost";
+  | "discardCost"
+  /** A9 (S20): the shock clause — pay life to enter untapped, or enter tapped. */
+  | "entersChoice";
 
 /** ADR-048: identity + pending effects of the thing asking for targets, so
  * agents can classify (rule 8 / evaluation) without guessing the source. */
@@ -464,7 +466,20 @@ export class Game {
     const { state } = this.ctx;
     switch (action.type) {
       case "playLand": {
-        moveObject(this.ctx, action.objectId, "battlefield");
+        // A9 (S20): the shock clause — a logged DecisionRequest on the land PLAY only (put-onto-battlefield
+        // paths enter tapped, choice-free). Life is paid before the permanent's ETB state is fixed, so
+        // ETB triggers see the final state; paying to exactly 0 is legal and lethal (SBA catches it).
+        const landDef = this.ctx.defs.def(getObject(state, action.objectId).cardId);
+        let entersTapped = false;
+        if (landDef.entersChoice) {
+          const payLife = landDef.entersChoice.pay.life;
+          if (state.players[player].life >= payLife) {
+            const pick = await this.request(player, "entersChoice", [{ type: "acceptOptional" }, { type: "declineOptional" }], undefined, { cardId: landDef.id, effects: [] });
+            if (pick.type === "acceptOptional") loseLife(this.ctx, player, payLife);
+            else entersTapped = true;
+          } else entersTapped = true;
+        }
+        moveObject(this.ctx, action.objectId, "battlefield", { tapped: entersTapped }); // explicit: the play path already asked
         state.players[player].landsPlayedThisTurn += 1;
         break;
       }

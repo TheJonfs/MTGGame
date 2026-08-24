@@ -259,7 +259,7 @@ export class TestGame {
           ...(e.token ? { isToken: true } : {}),
         });
         const obj = getObject(state, id);
-        obj.tapped = e.tapped ?? false;
+        obj.tapped = e.tapped ?? obj.tapped; // A9 (S20): createObject may have set tapped (entersChoice put path) — only an explicit fixture flag overrides
         obj.summoningSick = e.summoningSick ?? false; // fixtures default to attack-ready
       }
     }

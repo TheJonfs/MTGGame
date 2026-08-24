@@ -1,0 +1,50 @@
+{
+  "id": "steam_vents",
+  "name": "Steam Vents",
+  "source": "real",
+  "manaCost": "",
+  "types": [
+    "Land"
+  ],
+  "subtypes": [
+    "Island",
+    "Mountain"
+  ],
+  "entersChoice": {
+    "pay": {
+      "life": 2
+    },
+    "else": "tapped"
+  },
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "tap": true
+      },
+      "effects": [
+        {
+          "type": "addMana",
+          "mana": "{U}"
+        }
+      ]
+    },
+    {
+      "kind": "activated",
+      "cost": {
+        "tap": true
+      },
+      "effects": [
+        {
+          "type": "addMana",
+          "mana": "{R}"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2,
+  "priceOverride": 45
+}

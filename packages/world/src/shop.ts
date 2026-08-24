@@ -31,6 +31,9 @@ export function shopEpoch(world: WorldState, knobs: KnobValues): number {
 /** ADR-078 (S19): price carries the shop-tier factor. R cards never stock; when one is *sold* from the
  * collection the tier-3 factor prices it (interim, flagged in the S19 handoff — the R economy is planner-side). */
 export function shopPrice(def: CardDef, knobs: KnobValues): number {
+  // S20 (ADR-079): priceOverride replaces the mv formula (mv-0 lands break it); the global
+  // shopPriceMultiplier (difficulty/region) still applies.
+  if (def.priceOverride !== undefined) return Math.max(1, Math.round(knobs.shopPriceMultiplier * def.priceOverride));
   const mv = manaValue(parseManaCost(def.manaCost));
   const tier = def.shopTier === "R" ? 3 : def.shopTier ?? 1;
   const factor = knobs.shopTierMultiplier[tier as 1 | 2 | 3] ?? 1;

@@ -320,6 +320,23 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect((await a.attackChoice(lone, req(["c1"]))).type).toBe("doneDeclaringAttackers");
   });
 
+  it("book of shame 17 (S20): never pay 2 life at or below the floor — a shock at life ≤ 4 always enters tapped; at healthy life it pays exactly when the untapped source enables a cast this main phase", () => {
+    const a = agent("midrange");
+    const req = { player: 0 as const, purpose: "entersChoice" as const, actions: [{ type: "acceptOptional" as const }, { type: "declineOptional" as const }] };
+    const board = (life: number, hand: string[], lands = 1) => {
+      const v = mkView({ life: [life, 20], hand: hand.map((cardId, i) => ({ objectId: `h${i}`, cardId })), battlefield: Array.from({ length: lands }, (_, i) => ({ id: `l${i}`, cardId: "plains", controller: 0 as const })) });
+      return v;
+    };
+    // Life 2 (the engine's minimum ask): paying is paying to 0 — never.
+    expect(a.entersChoice(board(2, ["savannah_lions"]), req as never).type).toBe("declineOptional");
+    // Life 4 (the floor): still no.
+    expect(a.entersChoice(board(4, ["grizzly_bears"]), req as never).type).toBe("declineOptional");
+    // Life 10, a two-drop in hand, one untapped land: the shock closes the gap this main → pay.
+    expect(a.entersChoice(board(10, ["grizzly_bears"]), req as never).type).toBe("acceptOptional");
+    // Life 10 but nothing the extra mana enables → keep the life.
+    expect(a.entersChoice(board(10, ["serra_angel"]), req as never).type).toBe("declineOptional");
+  });
+
   it("tapping an own creature with the Tactician for no benefit scores below passing", () => {
     const a = agent();
     const view = mkView({

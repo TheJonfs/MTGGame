@@ -330,6 +330,11 @@ export interface CardDef {
   additionalCost?: { sacrifice: { predicate: string } };
   /** A5: cycling {cost} — compiled by the loader into a hand-zone ability {cost, discardSelf; draw 1}. */
   cycling?: string;
+  /** A9 (S20, ADR-079): conditional enters-tapped (the shock clause). On resolving the LAND PLAY the
+   * controller chooses: pay (life) → untapped, else tapped. Payable only at life ≥ pay.life (paying to
+   * exactly 0 is legal and lethal). Anything PUT onto the battlefield by other means enters tapped,
+   * choice-free (keeps initialization request-free; matches the printed ruling's spirit). */
+  entersChoice?: { pay: { life: number }; else: "tapped" };
   art?: { asset?: string; fallback: "rendered" };
   isTokenDef?: boolean;
   /** ADR-068: never shop stock — boss/lair treasure only (Black Lotus). Pool-registry column mirrored here so the world can filter. */
@@ -338,6 +343,9 @@ export interface CardDef {
    * approach 2, wild 3); price × shopTierMultiplier[tier]. "R" = never shop stock (ante/quest/treasure
    * circulation only — distinct from prizeOnly). Required on every non-token, non-basic, non-prizeOnly def. */
   shopTier?: 1 | 2 | 3 | "R";
+  /** S20 (ADR-079): absolute shop price in gold, replacing the mv formula — mv-0 lands break it
+   * (a shock would price at 6g). Generic registry column; rides with the land batch. */
+  priceOverride?: number;
 }
 
 /** An activated ability is a mana ability iff every effect is addMana and it has no targets (CR 605 simplification). */

@@ -1,0 +1,50 @@
+{
+  "id": "sacred_foundry",
+  "name": "Sacred Foundry",
+  "source": "real",
+  "manaCost": "",
+  "types": [
+    "Land"
+  ],
+  "subtypes": [
+    "Mountain",
+    "Plains"
+  ],
+  "entersChoice": {
+    "pay": {
+      "life": 2
+    },
+    "else": "tapped"
+  },
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "tap": true
+      },
+      "effects": [
+        {
+          "type": "addMana",
+          "mana": "{R}"
+        }
+      ]
+    },
+    {
+      "kind": "activated",
+      "cost": {
+        "tap": true
+      },
+      "effects": [
+        {
+          "type": "addMana",
+          "mana": "{W}"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2,
+  "priceOverride": 45
+}

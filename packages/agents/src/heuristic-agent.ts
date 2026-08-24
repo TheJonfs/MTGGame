@@ -69,6 +69,8 @@ export class HeuristicAgent implements Agent {
         return this.modeChoice(view, request);
       case "discardCost":
         return this.lowestValueCard(view, request, "discard");
+      case "entersChoice":
+        return this.entersChoice(view, request);
       default:
         return request.actions[0]!;
     }
@@ -703,6 +705,28 @@ export class HeuristicAgent implements Agent {
    * over a Typhoid Rats): an observed-DIES engine (Blood Artist) is worth keeping; a body that would
    * RECEIVE the effect (the Aristocrat's Vampire counters) is worth keeping; a body whose own death pays
    * us back (Aven Fisher's draw) is cheap to sacrifice. Request.source carries the paying ability. */
+  /** A9 (S20): the shock pay-2 heuristic — pay when the untapped land could matter THIS turn and life
+   * is above the floor; book of shame 17: never pay at life ≤ 2 (the engine only asks at life ≥ 2, so
+   * paying there is paying to 0). Floor baseline 4 per the dual doc. */
+  entersChoice(view: GameView, request: ActionRequest): Action {
+    const decline = request.actions.find((a) => a.type === "declineOptional") ?? request.actions[0]!;
+    const accept = request.actions.find((a) => a.type === "acceptOptional");
+    if (!accept) return decline;
+    const PAY_FLOOR = 4;
+    if (view.life[view.you] <= PAY_FLOOR) return decline;
+    // Could the extra untapped source matter this turn? Rough: some nonland in hand costs exactly one
+    // more than the producers already untapped (the new land closes the gap), and it is our main phase.
+    const untapped = view.battlefield.filter((o) => o.controller === view.you && !o.tapped && this.def(o.cardId)?.types.includes("Land")).length;
+    const enables = view.hand.some((c) => {
+      const d = this.def(c.cardId);
+      if (!d || d.types.includes("Land")) return false;
+      const mv = this.mv(c.cardId);
+      return mv > untapped && mv <= untapped + 1;
+    });
+    const ourMain = view.activePlayer === view.you && (view.step === "MAIN1" || view.step === "MAIN2");
+    return enables && ourMain ? accept : decline;
+  }
+
   sacrificeChoice(view: GameView, request: ActionRequest): Action {
     const candidates = request.actions.filter((a) => a.type === "sacrifice") as { type: string; objectId: string }[];
     if (candidates.length === 0) return request.actions[0]!;

@@ -126,6 +126,13 @@ export type UiPhase =
       tappable: Set<string>;
     }
   | {
+      /** S20: a dual was clicked during manual tapping — pick which color it taps for. */
+      kind: "chooseTapColor";
+      objectId: string;
+      options: Extract<Action, { type: "tapForMana" }>[];
+      back: Extract<UiPhase, { kind: "manualTap" }>;
+    }
+  | {
       /** S11 (Chris's note 2): the opponent's spell is on the stack and you
        * have no response — pause anyway so it doesn't fly by. */
       kind: "stackStop";
@@ -590,10 +597,31 @@ export class MatchController {
 
   private tapLand(objectId: string): void {
     if (this.phase.kind !== "manualTap" || !this.phase.tappable.has(objectId)) return;
-    const tap = this.currentRequest().actions.find((a) => a.type === "tapForMana" && a.objectId === objectId);
+    const taps = this.currentRequest().actions.filter((a) => a.type === "tapForMana" && a.objectId === objectId);
+    if (taps.length === 0) return;
+    // S20: a dual offers one tap per color — a small chooser interrupts (the manual-tap phase resumes after).
+    if (taps.length > 1) {
+      this.phase = { kind: "chooseTapColor", objectId, options: taps as Extract<Action, { type: "tapForMana" }>[], back: this.phase };
+      this.emit();
+      return;
+    }
+    this.phase = { kind: "waiting" };
+    this.human.submit(taps[0]!); // the next request re-enters manual tapping
+    this.emit();
+  }
+
+  /** S20: pick the dual's color (or cancel back to tapping). */
+  chooseTapColor(color: "W" | "U" | "B" | "R" | "G" | "C" | null): void {
+    if (this.phase.kind !== "chooseTapColor") return;
+    if (color === null) {
+      this.phase = this.phase.back;
+      this.emit();
+      return;
+    }
+    const tap = this.phase.options.find((a) => a.color === color);
     if (!tap) return;
     this.phase = { kind: "waiting" };
-    this.human.submit(tap); // the next request re-enters manual tapping
+    this.human.submit(tap);
     this.emit();
   }
 

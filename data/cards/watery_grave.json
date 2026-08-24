@@ -1,0 +1,50 @@
+{
+  "id": "watery_grave",
+  "name": "Watery Grave",
+  "source": "real",
+  "manaCost": "",
+  "types": [
+    "Land"
+  ],
+  "subtypes": [
+    "Island",
+    "Swamp"
+  ],
+  "entersChoice": {
+    "pay": {
+      "life": 2
+    },
+    "else": "tapped"
+  },
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "tap": true
+      },
+      "effects": [
+        {
+          "type": "addMana",
+          "mana": "{U}"
+        }
+      ]
+    },
+    {
+      "kind": "activated",
+      "cost": {
+        "tap": true
+      },
+      "effects": [
+        {
+          "type": "addMana",
+          "mana": "{B}"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2,
+  "priceOverride": 45
+}

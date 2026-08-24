@@ -339,6 +339,8 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption }: { c: MatchContro
   // S19 round 2 (Duress): a caster-chooses discard reveals THEIR hand — title it that way, and when
   // nothing matches the filter the single action is an acknowledgement, not a discard.
   const isTheirHandReveal = req.purpose === "discard" && !!req.revealed;
+  // S20 (A9): the shock clause — a two-button ceremony with the stakes stated.
+  const isEntersChoice = req.purpose === "entersChoice";
   const revealNothing = isTheirHandReveal && req.actions.every((a) => a.type === "declineOptional");
   const dedicatedTitle = isMode
     ? `Choose one — ${sourceName}`
@@ -350,7 +352,9 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption }: { c: MatchContro
           ? revealNothing
             ? "Their hand is revealed — nothing to take"
             : "Their hand is revealed — choose the card they discard"
-          : null;
+          : isEntersChoice
+            ? `${sourceName} — pay 2 life to enter untapped?`
+            : null;
   // Render actions as cards where the choice is over cards (ADR-058).
   const cardOf = (a: (typeof req.actions)[number]): string | null => {
     if ("objectId" in a && typeof a.objectId === "string") {
@@ -445,6 +449,15 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption }: { c: MatchContro
                 </div>
               );
             }
+            if (isEntersChoice) {
+              const you = c.humanSeat;
+              const life = state.players[you].life;
+              return (
+                <div key={i} className={`dialog-option ${selected ? "selected" : ""}`} onClick={() => c.selectDialog(i)}>
+                  <span>{a.type === "acceptOptional" ? `Pay 2 life (${life} → ${life - 2}) — enters untapped` : "Keep your life — enters tapped"}</span>
+                </div>
+              );
+            }
             if (revealNothing && a.type === "declineOptional") {
               return (
                 <div key={i} className={`dialog-option ${selected ? "selected" : ""}`} onClick={() => c.selectDialog(i)}>
@@ -481,6 +494,30 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption }: { c: MatchContro
 }
 
 /** S15 (ADR-068 Amendment 2): Lotus — five colour buttons. */
+/** S20: a dual clicked during manual tapping — which color? */
+function TapColorModal({ c, pool }: { c: MatchController; pool: Map<string, CardDef> }) {
+  if (c.phase.kind !== "chooseTapColor") return null;
+  const names: Record<string, string> = { W: "White", U: "Blue", B: "Black", R: "Red", G: "Green", C: "Colorless" };
+  const cardId = c.game.state.objects[c.phase.objectId]?.cardId;
+  return (
+    <div className="gallery-modal">
+      <div className="gallery-modal-box play-dialog">
+        <h3 style={{ marginTop: 0, fontFamily: "var(--serif)" }}>Tap {cardId ? cardName(pool, cardId) : "the land"} for which colour?</h3>
+        <div className="dialog-list" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {c.phase.options.map((t) => (
+            <button key={t.color} className="color-pick" onClick={() => c.chooseTapColor(t.color ?? null)}>
+              <i className={`colour-pip c-${t.color}`} /> {names[t.color ?? ""] ?? t.color}
+            </button>
+          ))}
+        </div>
+        <div style={{ marginTop: 8, textAlign: "right" }}>
+          <button onClick={() => c.chooseTapColor(null)}>Cancel</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ColorModal({ c }: { c: MatchController }) {
   const colors = ["W", "U", "B", "R", "G"] as const;
   const names: Record<string, string> = { W: "White", U: "Blue", B: "Black", R: "Red", G: "Green" };
@@ -782,6 +819,7 @@ export function PlayMatch({
       {phase.kind === "dialog" && <DialogModal c={c} phase={phase} pool={pool} oracle={oracle} onHoverOption={setDialogHover} />}
       {phase.kind === "chooseX" && <XModal c={c} phase={phase} />}
       {phase.kind === "chooseColor" && <ColorModal c={c} />}
+      {phase.kind === "chooseTapColor" && <TapColorModal c={c} pool={pool} />}
       {zoneOpen && <ZoneModal c={c} pool={pool} oracle={oracle} zone={zoneOpen} printed={printed} onClose={() => setZoneOpen(null)} />}
     </div>
   );

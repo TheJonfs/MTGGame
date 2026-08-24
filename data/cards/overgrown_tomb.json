@@ -1,0 +1,50 @@
+{
+  "id": "overgrown_tomb",
+  "name": "Overgrown Tomb",
+  "source": "real",
+  "manaCost": "",
+  "types": [
+    "Land"
+  ],
+  "subtypes": [
+    "Swamp",
+    "Forest"
+  ],
+  "entersChoice": {
+    "pay": {
+      "life": 2
+    },
+    "else": "tapped"
+  },
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "tap": true
+      },
+      "effects": [
+        {
+          "type": "addMana",
+          "mana": "{B}"
+        }
+      ]
+    },
+    {
+      "kind": "activated",
+      "cost": {
+        "tap": true
+      },
+      "effects": [
+        {
+          "type": "addMana",
+          "mana": "{G}"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2,
+  "priceOverride": 45
+}

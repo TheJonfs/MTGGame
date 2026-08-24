@@ -116,7 +116,9 @@ export function moveObject(
     baseController: entersBattlefield ? (options.controller ?? obj.controller) : obj.owner,
     zone: to,
     isToken: obj.isToken,
-    tapped: entersBattlefield ? (options.tapped ?? false) : false,
+    // A9 (S20): an entersChoice land PUT onto the battlefield (search, reanimation) enters tapped,
+    // choice-free — only the land PLAY asks (game.ts passes an explicit tapped there).
+    tapped: entersBattlefield ? (options.tapped ?? (card.entersChoice ? true : false)) : false,
     damage: 0,
     deathtouchDamage: false,
     summoningSick: entersBattlefield && card.types.includes("Creature"),
@@ -166,7 +168,8 @@ export function createObject(
     baseController: owner,
     zone,
     isToken: opts.isToken ?? false,
-    tapped: false,
+    tapped: zone === "battlefield" && !!card.entersChoice, // A9: modifier-placed shocks enter tapped, no choice
+
     damage: 0,
     deathtouchDamage: false,
     summoningSick: zone === "battlefield" && card.types.includes("Creature"),
