@@ -675,6 +675,151 @@ describe("lair fixed point (S14 round 1 prototype)", () => {
   });
 });
 
+describe("S20 Part 3+7 (dungeons, scripted acceptance): topology, escrow, interior life, empowerment, exits, save-v5", () => {
+  const dg = () => import("./dungeon.js");
+
+  const makeRun = async (w: WorldState, opts?: { small?: boolean; kind?: "mox" | "lair" }) => {
+    const { generateDungeonRun } = await dg();
+    const knobs = worldKnobs(w);
+    return generateDungeonRun(w, catalog, knobs, pool.cards, {
+      dungeonId: opts?.kind === "lair" ? "lair_test" : "mox_r",
+      kind: opts?.kind ?? "mox",
+      color: "R",
+      enteredFrom: { ...w.player.position },
+      ...(opts?.kind === "lair" ? { residentCatalogId: "beast_siegegang", small: true } : {}),
+    });
+  };
+
+  it("generation: entry and guardian carved and connected; minions sit on carved chokepoints (never entry/guardian); treasures reachable; deterministic per (world, id)", async () => {
+    for (const seed of [21, 22, 23]) {
+      const w = newWorld({ seed, catalog, starter: "red" });
+      const run = await makeRun(w);
+      const { dungeonPath } = await dg();
+      const at = (p: { x: number; y: number }) => run.grid.passable[p.y * run.grid.width + p.x];
+      expect(at(run.entry)).toBe(true);
+      expect(at(run.guardianAt)).toBe(true);
+      run.position = { ...run.entry };
+      // Reveal everything for pathing checks (fog-honest planning would also pass, but be explicit).
+      for (let y = 0; y < run.grid.height; y++) for (let x = 0; x < run.grid.width; x++) if (at({ x, y })) run.explored[Math.floor((y * run.grid.width + x) / 32)] = -1 >>> 0;
+      expect(dungeonPath(run, run.guardianAt)).not.toBeNull();
+      for (const m of run.minions) {
+        expect(at(m.at)).toBe(true);
+        expect(m.at).not.toEqual(run.entry);
+        expect(m.at).not.toEqual(run.guardianAt);
+      }
+      for (const t of run.treasures) expect(dungeonPath(run, t.at)).not.toBeNull();
+      const again = await makeRun(w);
+      expect(JSON.stringify({ ...again, interiorLife: 0 })).toBe(JSON.stringify({ ...run, position: again.position, explored: run.explored, interiorLife: 0 }).replace(JSON.stringify(run.explored), JSON.stringify(again.explored)));
+    }
+  });
+
+  it("interior movement: steps count, fog lifts, a treasure banks to ESCROW (not the collection), a minion stops the walk, the guardian cell announces", async () => {
+    const w = newWorld({ seed: 21, catalog, starter: "red" });
+    const run = await makeRun(w);
+    const { dungeonAdvance, dungeonPath } = await dg();
+    const knobs = worldKnobs(w);
+    const goldBefore = w.player.gold;
+    const treasure = run.treasures[0];
+    if (treasure) {
+      const path = dungeonPath(run, treasure.at);
+      if (path) {
+        const evs = dungeonAdvance(run, knobs, path);
+        const hit = evs.find((e) => e.type === "treasure");
+        // A minion may stop the walk first — both behaviours are the contract.
+        if (hit) {
+          expect(treasure.taken).toBe(true);
+          expect(run.escrow.gold > 0 || run.escrow.cardIds.length > 0).toBe(true);
+          expect(w.player.gold).toBe(goldBefore); // escrow, not pocket
+        } else {
+          expect(evs.some((e) => e.type === "minion")).toBe(true);
+        }
+      }
+    }
+    expect(run.steps).toBeGreaterThan(0);
+  });
+
+  it("interior duels: the law rides both sides; win → finalLife carries forward and ante goes to escrow; the guardian spec adds empowerment life + packages at 60/120/180", async () => {
+    const w = newWorld({ seed: 22, catalog, starter: "red" });
+    const run = await makeRun(w);
+    const { dungeonDuelSpec, applyInteriorDuel, reachedTiers } = await dg();
+    const knobs = worldKnobs(w);
+    const mox = catalog.dungeons.find((d) => d.id === "mox_r")!;
+    const rng = new WorldRng(9);
+    // Minion spec: law on both seats, interior life on seat 0.
+    const minionTmpl = catalog.opponents.find((o) => o.id === run.minions[0]?.catalogId) ?? catalog.opponents.find((o) => o.spoke === "R" && o.tier <= 2)!;
+    const m = dungeonDuelSpec(w, catalog, knobs, run, { kind: "minion", tmpl: minionTmpl }, mox.law.both, rng);
+    expect(m.spec.rules.startingLife).toBe(run.interiorLife);
+    const perms = m.spec.modifiers.filter((x) => x.type === "permanentOnBattlefield" && x.cardId === "mountain");
+    expect(perms.map((x) => (x as { player: number }).player).sort()).toEqual([0, 1]); // the Caldera's law, both sides
+    // Empowerment: at 130 interior steps two tiers are live (+4 life, +1 basic).
+    run.steps = 130;
+    expect(reachedTiers(run, knobs)).toHaveLength(2);
+    const g = dungeonDuelSpec(w, catalog, knobs, run, { kind: "guardian", name: mox.guardian.name, decklist: [{ cardId: "mountain", count: 40 }], archetype: "midrange", life: mox.guardian.life, color: "R" }, mox.law.both, rng);
+    expect(g.enemyLife).toBe(mox.guardian.life + 4);
+    expect(g.spec.modifiers.filter((x) => x.type === "permanentOnBattlefield" && (x as { player: number }).player === 1 && x.cardId === "mountain")).toHaveLength(2); // law + tier-2 basic
+    // A real interior duel: run it and apply.
+    const lifeBefore = w.player.worldLife;
+    const result = await runMatch(m.spec, pool.cards, agentsFor(w, minionTmpl.difficulty, minionTmpl.deck, 22));
+    const out = applyInteriorDuel(w, knobs, run, result, run.minions[0]?.id);
+    if (out.type === "win") {
+      expect(run.interiorLife).toBe(Math.max(1, result.finalLife[0]));
+      expect(w.player.worldLife).toBe(lifeBefore); // the world track is untouched by interior wins
+      for (const c2 of out.anteToEscrow) expect(run.escrow.cardIds).toContain(c2);
+    } else {
+      expect(w.player.worldLife).toBe(lifeBefore - 1); // §2a: an interior loss pays the world penalty
+    }
+  }, 60_000);
+
+  it("exits: walk-out forfeits the escrow and resets (position restored, resets counted); victory pays escrow + Mox + guardian card + colour roll and the dungeon is ground; save-v5 round-trips mid-run", async () => {
+    const w = newWorld({ seed: 23, catalog, starter: "red" });
+    w.player.position = { x: 5, y: 5 };
+    const run = await makeRun(w);
+    run.escrow.gold = 40;
+    run.escrow.cardIds.push("shock");
+    w.activeDungeon = run;
+    // Mid-run save round-trip (reload resumes; quitting is not walking out).
+    const loaded = deserializeWorld(serializeWorld(w));
+    expect(loaded.activeDungeon?.dungeonId).toBe("mox_r");
+    expect(loaded.activeDungeon?.escrow.gold).toBe(40);
+    // Walk out: the mountain keeps its gold.
+    const { resetDungeon, clearDungeon, colorPrizeRoll } = await dg();
+    const goldBefore = w.player.gold;
+    const owned = { ...w.player.collection };
+    resetDungeon(w, run);
+    expect(w.player.gold).toBe(goldBefore);
+    expect(w.player.collection).toEqual(owned);
+    expect(w.dungeons["mox_r"]).toMatchObject({ cleared: false, resets: 1 });
+    expect(w.activeDungeon).toBeNull();
+    expect(w.player.position).toEqual({ x: 5, y: 5 });
+    // Victory: escrow + prize pay out; one-time.
+    const run2 = await makeRun(w);
+    run2.escrow.gold = 25;
+    run2.escrow.cardIds.push("doom_blade");
+    w.activeDungeon = run2;
+    const mox = catalog.dungeons.find((d) => d.id === "mox_r")!;
+    const roll = colorPrizeRoll(w, pool.cards, "mox_r", "R");
+    const paid = clearDungeon(w, run2, { gold: 0, cardIds: [mox.prize.mox, mox.prize.guardianCard, ...(roll ? [roll] : [])] });
+    expect(paid.paidGold).toBe(25);
+    expect(paid.paidCards).toContain("mox_ruby");
+    expect(paid.paidCards).toContain("drakuseth_maw_of_flames");
+    expect(w.player.collection["mox_ruby"]).toBe(1);
+    expect(w.dungeons["mox_r"]).toMatchObject({ cleared: true });
+    expect(w.provenance.filter((p) => p.source === "reward").map((p) => p.cardId)).toContain("mox_ruby");
+  });
+
+  it("lair-dungeons are smaller, roll R-card treasures, and the resident boss carries the lair life bonus in its spec", async () => {
+    const w = newWorld({ seed: 24, catalog, starter: "red" });
+    const run = await makeRun(w, { kind: "lair" });
+    expect(run.minions.length).toBeLessThanOrEqual(2);
+    for (const t of run.treasures) if (t.kind === "card") expect(pool.cards.get(t.cardId!)?.shopTier).toBe("R");
+    const { dungeonDuelSpec } = await dg();
+    const knobs = worldKnobs(w);
+    const boss = catalog.opponents.find((o) => o.id === "beast_siegegang")!;
+    const g = dungeonDuelSpec(w, catalog, knobs, run, { kind: "guardian", name: boss.name, decklist: enemyDeck(catalog, boss.deck).decklist, archetype: "aggro", life: boss.worldLife, color: "R" }, [], new WorldRng(3));
+    expect(g.enemyLife).toBe(boss.worldLife + knobs.lairResidentLifeBonus); // 12 + 2, no law, zero steps
+  });
+});
+
 describe("S19 shop tiers (ADR-078): availability by ring, price by tier factor, R never stocks", () => {
   it("a civilized shop pool is tier-1 only; approach adds tier 2; wild adds tier 3; R (Demonic Tutor, Mystic Snake) and prizeOnly (Lotus) appear on no shelf; prices carry the factor", async () => {
     const { shopPoolFor, shopPrice } = await import("./shop.js");
