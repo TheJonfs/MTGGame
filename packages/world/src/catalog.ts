@@ -102,6 +102,8 @@ export interface Catalog {
   opponents: OpponentTemplate[];
   starters: StarterTemplate[];
   strongholds: StrongholdTemplate[];
+  /** S20 (ADR-079): the five Mox dungeons (dungeon-design §5–§8). */
+  dungeons: import("./dungeon.js").MoxDungeonDef[];
 }
 
 /** Resolve an opponent's deck reference to a decklist + archetype (slice deck or catalog starter). */
@@ -122,12 +124,18 @@ export function enemyDeck(catalog: Catalog, ref: OpponentDeckRef): { decklist: S
 }
 
 /** Assemble + validate a catalog from already-parsed JSON objects (browser-safe). */
-export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents: unknown; starters: unknown }): Catalog {
+export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents: unknown; starters: unknown; dungeons?: unknown }): Catalog {
   const r = parts.regions as { catalogVersion: string; regions: RegionTemplate[]; strongholds?: StrongholdTemplate[] };
   const t = parts.towns as { catalogVersion: string; names: string[] };
   const o = parts.opponents as { catalogVersion: string; opponents: OpponentTemplate[] };
   const st = parts.starters as { catalogVersion: string; starters: StarterTemplate[] };
+  const du = (parts.dungeons ?? { catalogVersion: CATALOG_VERSION, mox: [] }) as { catalogVersion: string; mox: import("./dungeon.js").MoxDungeonDef[] };
   const errors: string[] = [];
+  if (parts.dungeons) {
+    if (du.catalogVersion !== CATALOG_VERSION) errors.push(`dungeons: catalogVersion ${du.catalogVersion} != ${CATALOG_VERSION}`);
+    if (du.mox.length !== 5 || new Set(du.mox.map((m) => m.color)).size !== 5) errors.push("dungeons: need exactly five mox dungeons covering the five colours");
+    for (const m of du.mox) if (!m.id || !m.name || !m.guardian?.key || !m.law?.both?.length || !m.prize?.mox) errors.push(`dungeon ${m.id ?? "?"}: missing fields`);
+  }
   for (const [what, v] of [["regions", r.catalogVersion], ["towns", t.catalogVersion], ["opponents", o.catalogVersion], ["starters", st.catalogVersion]] as const) {
     if (v !== CATALOG_VERSION) errors.push(`${what}: catalogVersion ${v} != ${CATALOG_VERSION}`);
   }
@@ -195,5 +203,5 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
   }
   for (const id of ["white", "blue", "black", "red", "green"]) if (!starterIds.has(id)) errors.push(`missing starter ${id} (every colour needs one — manifest §2b)`);
   if (errors.length) throw new Error(`Catalog validation failed:\n${errors.join("\n")}`);
-  return { version: CATALOG_VERSION, regions: r.regions, townNames: t.names, opponents: o.opponents, starters: st.starters, strongholds: r.strongholds ?? [] };
+  return { version: CATALOG_VERSION, regions: r.regions, townNames: t.names, opponents: o.opponents, starters: st.starters, strongholds: r.strongholds ?? [], dungeons: du.mox };
 }

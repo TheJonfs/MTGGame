@@ -31,7 +31,7 @@ export interface Town {
 
 /** Fixed points the generator places with spacing constraints; strongholds
  * are the M6b+ kind — present in the shape, unused in the slice. */
-export type FixedPointKind = "town" | "stronghold" | "lair";
+export type FixedPointKind = "town" | "stronghold" | "lair" | "dungeon"; // S20: + Mox dungeon sites (dungeon-design §5)
 
 /** A fixed point with a resident (S14 round 1 prototype: a lair hosting one
  * opponent; strongholds/dungeons will reuse the shape). Walking onto it is a

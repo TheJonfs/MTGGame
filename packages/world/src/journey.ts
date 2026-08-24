@@ -35,7 +35,10 @@ export type StepEvent =
   /** S16: a region below its density respawned a roamer (out of sight). */
   | { type: "spawned"; opponentId: string; region: number }
   /** S19: a courier deadline expired mid-walk (the quest failed; no further penalty). */
-  | { type: "questExpired"; questId: string; text: string };
+  | { type: "questExpired"; questId: string; text: string }
+  /** S20 (dungeon-design §5): you stand at a dungeon threshold — the telegraph screen opens; entering
+   * is a choice (walking away costs nothing). Lairs are lair-dungeons now; mox sites are authored. */
+  | { type: "dungeonEntry"; dungeonId: string; kind: "mox" | "lair"; name: string; at: Point; residentCatalogId?: string };
 
 // ---------- S16 roamers: sight, flee, movement ----------
 
@@ -253,12 +256,21 @@ export function advance(
         for (const sp of respawnRoamers(world, catalog, knobs, rng)) events.push({ type: "spawned", opponentId: sp.id, region: sp.region });
         continue;
       }
-      // A lair with an undefeated resident: the encounter is certain.
-      const lair = fixedPointAt(world.map, cell);
-      if (lair?.opponentId) {
-        const resident = world.opponents.find((o) => o.id === lair.opponentId);
+      // S20 (dungeon-design §5): fixed points with interiors. A LAIR with an undefeated resident is a
+      // lair-dungeon threshold now (the S14 certain-encounter became the dungeon's front door); a MOX
+      // site is an authored dungeon until cleared. The walk stops; entering is the player's choice.
+      const fixed = fixedPointAt(world.map, cell);
+      if (fixed?.kind === "lair" && fixed.opponentId) {
+        const resident = world.opponents.find((o) => o.id === fixed.opponentId);
         if (resident && !resident.gone) {
-          events.push({ type: "encounter", encounter: encounterOf(resident, cell, "lair") });
+          events.push({ type: "dungeonEntry", dungeonId: `lair_${fixed.opponentId}`, kind: "lair", name: fixed.name ?? "A lair", at: { ...cell }, residentCatalogId: resident.catalogId });
+          break;
+        }
+      }
+      if (fixed?.kind === "dungeon") {
+        const dungeonId = `mox_${regionAt(world.map, cell).color}`.toLowerCase();
+        if (!world.dungeons[dungeonId]?.cleared) {
+          events.push({ type: "dungeonEntry", dungeonId, kind: "mox", name: fixed.name ?? "A dungeon", at: { ...cell } });
           break;
         }
       }

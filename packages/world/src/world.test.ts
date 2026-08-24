@@ -620,7 +620,7 @@ describe("beast opponents (ADR-066 proof of concept)", () => {
 });
 
 describe("lair fixed point (S14 round 1 prototype)", () => {
-  it("every world has one reachable lair with a resident beast; walking onto it is a certain encounter; cleared lairs are ground", () => {
+  it("every world has one reachable lair with a resident; walking onto it opens the LAIR-DUNGEON threshold (S20 — the S14 certain-encounter became the front door); cleared lairs are ground; mox sites telegraph too", () => {
     for (const seed of [1, 2, 3, 4, 5]) {
       const w = newWorld({ seed, catalog, starter: "red" });
       quiet(w);
@@ -635,32 +635,38 @@ describe("lair fixed point (S14 round 1 prototype)", () => {
       for (const f of lairs) expect(w.opponents.find((o) => o.id === f.opponentId)!.catalogId).toBe(TOP[w.map.regions[f.region]!.color]);
       expect(resident.fixedAt).toEqual(lair.at);
       expect(findPath(w.map, w.map.start, lair.at)).not.toBeNull();
-      // Walk there with random encounters off: the lair still triggers.
+      // Walk there with random encounters off: the threshold telegraphs (no fight yet — entering is a choice).
       const ev = walkTo(w, catalog, lair.at, QUIET)!;
-      const enc = ev.find((e) => e.type === "encounter");
-      expect(enc && enc.type === "encounter" && enc.encounter.catalogId).toBe("beast_wurm");
-      // Defeat the resident: walking onto the lair is now just ground.
-      // A lair resident is NOT removed by buy-off/flee (lairs stay certain until defeated).
-      const encL = ev.find((e) => e.type === "encounter")!;
-      if (encL.type === "encounter") {
-        w.player.gold = 10_000;
-        // S18 (OQ-5): the Wurm is unbuyable now — a flee attempt that fails or a buy-off refusal both leave the resident in place.
-        const bo = parley(w, catalog, encL.encounter, "buyoff");
-        expect(bo.type).toBe("refused");
-        expect(resident.gone).toBe(false);
-        // S18 (OQ-8): the resident fights at template life + lairResidentLifeBonus (12 + 2 = 14).
-        const f = parley(w, catalog, encL.encounter, "fight");
-        expect(f.type).toBe("fight");
-        if (f.type === "fight") { expect(f.duel.enemy.worldLife).toBe(14); expect(f.duel.spec.modifiers).toEqual([{ type: "startingLife", player: 1, value: 14 }]); }
-        expect(resident.gone).toBe(false);
+      const entry = ev.find((e) => e.type === "dungeonEntry");
+      expect(entry && entry.type === "dungeonEntry" && entry.kind).toBe("lair");
+      if (entry?.type === "dungeonEntry") {
+        expect(entry.residentCatalogId).toBe("beast_wurm");
+        expect(entry.dungeonId).toBe(`lair_${lair.opponentId}`);
       }
+      expect(ev.some((e) => e.type === "encounter")).toBe(false);
+      // Defeat the resident (the dungeon flow does this via clearDungeon): the lair is ground.
       resident.gone = true; resident.goneReason = "defeated";
       const w2 = w; w2.player.position = { ...w.map.start };
       const ev2 = walkTo(w2, catalog, lair.at, QUIET)!;
-      expect(ev2.some((e) => e.type === "encounter")).toBe(false);
+      expect(ev2.some((e) => e.type === "encounter" || e.type === "dungeonEntry")).toBe(false);
       // Residents never roam.
       expect(w.opponents.filter((o) => o.fixedAt && o.region === lair.region).length).toBe(1);
-      // Strongholds are fixed points without residents: walking onto one is just ground for now (S19+).
+      // S20: each wild region also carries its MOX SITE; walking onto it telegraphs kind "mox" until cleared.
+      const site = w.map.strongholds.find((f) => f.kind === "dungeon")!;
+      expect(site).toBeTruthy();
+      w.player.position = { ...w.map.start };
+      const evM = walkTo(w, catalog, site.at, QUIET);
+      if (evM) {
+        const em = evM.find((e) => e.type === "dungeonEntry");
+        if (em?.type === "dungeonEntry") {
+          expect(em.kind).toBe("mox");
+          w.dungeons[em.dungeonId] = { cleared: true, resets: 0 };
+          w.player.position = { ...w.map.start };
+          const evM2 = walkTo(w, catalog, site.at, QUIET)!;
+          expect(evM2.some((e) => e.type === "dungeonEntry")).toBe(false); // cleared = ground
+        }
+      }
+      // Strongholds are fixed points without residents: walking onto one is just ground for now (S22).
       const sh = w.map.strongholds.find((f) => f.kind === "stronghold")!;
       w.player.position = { ...w.map.start };
       const ev3 = walkTo(w, catalog, sh.at, QUIET)!;

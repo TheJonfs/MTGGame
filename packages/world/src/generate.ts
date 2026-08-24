@@ -396,6 +396,21 @@ export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOpt
     }
   }
 
+  // 5b. S20 (ADR-079): one MOX DUNGEON site per wild region — a sealed fixed point until entered;
+  // the dungeon interior generates on entry (dungeon.ts). Named from the catalog's dungeons file.
+  for (const r of regions) {
+    if (r.tier !== "wild") continue;
+    const dungeon = catalog.dungeons.find((d) => d.color === r.color);
+    if (!dungeon) continue;
+    const candidates = regionCells(map, r.index).filter((p) => !isTownCell(map, p));
+    const pts = placeFixedPoints(rng, candidates, 1, townSpacing, [...towns.map((t) => t.at), ...map.strongholds.map((f) => f.at)]);
+    for (const at of pts) {
+      passable[idx(map, at)] = true;
+      carveTo(at);
+      map.strongholds.push({ kind: "dungeon", at, region: r.index, name: dungeon.name });
+    }
+  }
+
   // 6. Roads (after carving: the paths exist).
   buildRoads(map, homeTowns);
 

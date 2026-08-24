@@ -1,0 +1,45 @@
+{
+  "catalogVersion": "v1",
+  "mox": [
+    {
+      "id": "mox_w",
+      "name": "The Pearl Reliquary",
+      "color": "W",
+      "guardian": { "key": "reya", "name": "Reya Dawnbringer", "life": 16, "portrait": "portrait-opponent-white-blue" },
+      "law": { "name": "The Reliquary's Light", "text": "Both players begin with a Plains in play.", "both": [{ "type": "permanentOnBattlefield", "cardId": "plains" }] },
+      "prize": { "mox": "mox_pearl", "guardianCard": "reya_dawnbringer" }
+    },
+    {
+      "id": "mox_u",
+      "name": "The Sapphire Deep",
+      "color": "U",
+      "guardian": { "key": "arcanis", "name": "Arcanis the Omnipotent", "life": 14, "portrait": "portrait-opponent-simic" },
+      "law": { "name": "The Deep's Bounty", "text": "Both players draw a bonus card.", "both": [{ "type": "extraCards", "count": 1 }] },
+      "prize": { "mox": "mox_sapphire", "guardianCard": "arcanis_the_omnipotent" }
+    },
+    {
+      "id": "mox_b",
+      "name": "The Jet Barrow",
+      "color": "B",
+      "guardian": { "key": "drana", "name": "Drana, Kalastria Bloodchief", "life": 15, "portrait": "portrait-opponent-black" },
+      "law": { "name": "The Barrow's Hunger", "text": "Both players begin with a 2/2 Zombie in play.", "both": [{ "type": "permanentOnBattlefield", "cardId": "zombie_2_2" }] },
+      "prize": { "mox": "mox_jet", "guardianCard": "drana_kalastria_bloodchief" }
+    },
+    {
+      "id": "mox_r",
+      "name": "The Ruby Caldera",
+      "color": "R",
+      "guardian": { "key": "drakuseth", "name": "Drakuseth, Maw of Flames", "life": 16, "portrait": "portrait-opponent-red" },
+      "law": { "name": "The Caldera's Heat", "text": "Both players begin with a Mountain in play.", "both": [{ "type": "permanentOnBattlefield", "cardId": "mountain" }] },
+      "prize": { "mox": "mox_ruby", "guardianCard": "drakuseth_maw_of_flames" }
+    },
+    {
+      "id": "mox_g",
+      "name": "The Emerald Root",
+      "color": "G",
+      "guardian": { "key": "titania", "name": "Titania, Protector of Argoth", "life": 15, "portrait": "portrait-opponent-green" },
+      "law": { "name": "The Root's Gift", "text": "Both players begin with a Llanowar Elves in play.", "both": [{ "type": "permanentOnBattlefield", "cardId": "llanowar_elves" }] },
+      "prize": { "mox": "mox_emerald", "guardianCard": "titania_protector_of_argoth" }
+    }
+  ]
+}

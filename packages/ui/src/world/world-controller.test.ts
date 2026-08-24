@@ -70,6 +70,7 @@ async function forceEncounter(c: WorldController): Promise<void> {
     .filter((p) => p.x >= 0 && p.y >= 0 && p.x < w.map.width && p.y < w.map.height && w.map.passable[idx(w.map, p)] && !w.map.towns.some((t) => t.at.x === p.x && t.at.y === p.y));
   for (const n of nbrs) {
     const inst = w.opponents.find((o) => !o.gone && !o.fixedAt && o.at)!;
+    inst.catalogId = "a1"; // S20: pin a buyable mage — the rolled template can be an unbuyable beast (WBRUG re-roll)
     inst.at = { ...n };
     inst.region = w.map.region[idx(w.map, n)]!;
     if (c.screen.kind === "town") c.leaveTown();
