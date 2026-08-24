@@ -229,7 +229,7 @@ describe("S14 acceptance: editor, shop v2, resume path, v1 migration", () => {
 
   it("S16 roamers on the map: visible chips within sight; a roamer walks to you and the parley opens without a click; any parley outcome removes it", async () => {
     const c = freshController();
-    c.newGame({ starter: "green", difficulty: "standard", seed: 206 });
+    c.newGame({ starter: "green", difficulty: "standard", seed: 206 }); // S20: the geometry checks below gained region/fixed-point guards (the WBRUG spoke fix moved boundaries)
     const w = c.world!;
     quiet(c);
     // Half speed everywhere: from distance 3, two steps toward it → it gets its one move exactly when you are adjacent and steps onto you (a "reached" contact, no click on it).
@@ -237,10 +237,13 @@ describe("S14 acceptance: editor, shop v2, resume path, v1 migration", () => {
     const s = w.player.position;
     const inst = w.opponents.find((o) => !o.fixedAt)!;
     inst.gone = false; delete inst.goneReason;
+    inst.catalogId = "a1"; // S20: pin a BUYABLE mage — the rolled template can be an unbuyable beast now (Gale/Recluse/…) and the buy-off leg would refuse
     let placed = false;
     for (const d of [{ x: 1, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }]) {
       const cells = [1, 2, 3].map((k) => ({ x: s.x + d.x * k, y: s.y + d.y * k }));
-      if (cells.every((p) => p.x >= 0 && p.y >= 0 && p.x < w.map.width && p.y < w.map.height && w.map.passable[idx(w.map, p)] && !w.map.towns.some((t) => t.at.x === p.x && t.at.y === p.y))) {
+      const sameRegion = (p: { x: number; y: number }) => w.map.region[idx(w.map, p)] === w.map.region[idx(w.map, s)];
+      const noFixed = (p: { x: number; y: number }) => !w.map.strongholds.some((f) => f.at.x === p.x && f.at.y === p.y);
+      if (cells.every((p) => p.x >= 0 && p.y >= 0 && p.x < w.map.width && p.y < w.map.height && w.map.passable[idx(w.map, p)] && sameRegion(p) && noFixed(p) && !w.map.towns.some((t) => t.at.x === p.x && t.at.y === p.y))) {
         inst.at = { ...cells[2]! }; inst.region = w.map.region[idx(w.map, cells[2]!)]!; inst.moveDebt = 0;
         expect(c.visibleRoamers().map((r) => r.inst.id)).toContain(inst.id);
         c.leaveTown();

@@ -8,4 +8,5 @@ export * from "./state.js";
 export * from "./journey.js";
 export * from "./shop.js";
 export * from "./quests.js";
+export * from "./dungeon.js";
 export * from "./deck-edit.js";

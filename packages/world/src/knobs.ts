@@ -72,6 +72,26 @@ export const KNOBS = {
     unit: "mage | nearest",
     description: "S18: what a ring does when its spoke has no beast of the rolled tier (black/red have no tier-1 beast, blue no tier-3). `mage` keeps the ring's difficulty honest — a mage of the rolled tier spawns instead (civilized rings stay mostly tier 1); `nearest` puts the spoke's nearest-tier beast there (ties break down in civilized rings, up elsewhere) — more beasts, but a tier-2 deck in a tier-1 slot. The S18 handoff tables were measured under `nearest` first, then `mage`.",
   }),
+  // ---- S20 (ADR-079 / dungeon-design v2): dungeons ----
+  dungeonGridWidth: knob<number>({
+    default: 12,
+    unit: "cells",
+    description: "Interior grid width (dungeon-design §1: ~12×9).",
+  }),
+  dungeonGridHeight: knob<number>({
+    default: 9,
+    unit: "cells",
+    description: "Interior grid height.",
+  }),
+  dungeonEmpowermentTiers: knob<{ steps: number; addLife: number; addBasic?: boolean; addToken?: boolean; addCard?: boolean }[]>({
+    default: [
+      { steps: 60, addLife: 2 },
+      { steps: 120, addLife: 2, addBasic: true },
+      { steps: 180, addLife: 2, addToken: true, addCard: true },
+    ],
+    unit: "cumulative tiers by interior steps",
+    description: "The guardian's empowerment clock (dungeon-design §3, Normal column; difficulty bundles override whole-value per principle 5 — easy shifts thresholds up, hard doubles life). Steps are the ONLY input; tiers are visible in the dungeon UI with the next threshold named.",
+  }),
   lairResidentLifeBonus: knob<number>({
     default: 2,
     unit: "world life added to a lair resident's duel life",
@@ -279,6 +299,10 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
   standard: {},
   easy: {
     // UNTUNED placeholders
+    dungeonEmpowermentTiers: [
+      { steps: 120, addLife: 2 },
+      { steps: 180, addLife: 2 },
+    ],
     roamerDensityPer100Cells: { civilized: 0.7, approach: 1.1, wild: 1.5 },
     lossLifePenalty: 1,
     lifeFloor: 10, // only gained life is ever at risk
@@ -287,6 +311,11 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
   },
   hard: {
     // UNTUNED placeholders
+    dungeonEmpowermentTiers: [
+      { steps: 60, addLife: 4 },
+      { steps: 120, addLife: 4, addBasic: true },
+      { steps: 180, addLife: 4, addToken: true, addCard: true },
+    ],
     roamerDensityPer100Cells: { civilized: 1.4, approach: 2.0, wild: 2.6 },
     anteCount: 2,
     lossLifePenalty: 1,

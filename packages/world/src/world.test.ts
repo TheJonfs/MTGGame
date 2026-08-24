@@ -432,7 +432,7 @@ describe("town shops (S13 Part 3 → S14 Part 3: depletion, restock, sell, buy-f
   });
 });
 
-describe("world-save-v4 (S16 Part 2.5 chain + S19): the v1 → v2 → v3 → v4 migration chain", () => {
+describe("world-save-v5 (S16 Part 2.5 chain + S19/S20): the v1 → … → v5 migration chain", () => {
   /** Hand-build the v2 shape from a v3 world: decks → player.activeDeck + deckName; gone → defeated; positions stripped; v3 fields dropped. */
   function asV2(w: WorldState): Record<string, unknown> {
     const { decks, activeDeckName, provenance, opponents, player, ...rest } = w;
@@ -447,7 +447,7 @@ describe("world-save-v4 (S16 Part 2.5 chain + S19): the v1 → v2 → v3 → v4 
   }
   it("v3 round-trips; a v2 save migrates with decks/activeDeckName/provenance/renown/starterId defaulted, roamers positioned, and plays", () => {
     const w = newWorld({ seed: 71, catalog, starter: "white" });
-    expect(serializeWorld(w)).toContain('"world-save-v4"');
+    expect(serializeWorld(w)).toContain('"world-save-v5"');
     expect(deserializeWorld(serializeWorld(w))).toEqual(w);
     const v2 = asV2(w);
     const migrated = deserializeWorld(JSON.stringify({ format: "world-save-v2", world: v2 }));
@@ -471,7 +471,7 @@ describe("world-save-v4 (S16 Part 2.5 chain + S19): the v1 → v2 → v3 → v4 
     expect(deserializeWorld(JSON.stringify({ format: "world-save-v2", world: v2 }))).toEqual(migrated);
     // …and it plays: walk and re-save as v3.
     walkTo(migrated, catalog, migrated.map.towns[1]!.at);
-    expect(serializeWorld(migrated)).toContain('"world-save-v4"');
+    expect(serializeWorld(migrated)).toContain('"world-save-v5"');
   });
   it("a v1 save migrates through v2 to v3 (shops/visits/lastTownIndex defaulted, deck named \"Deck\")", () => {
     const w = newWorld({ seed: 72, catalog, starter: "black" });

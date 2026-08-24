@@ -4,6 +4,7 @@ import { resolveKnobs, DIFFICULTIES, type DifficultyName, type KnobSource, type 
 import { exploredAll, type Point, type WorldMap } from "./map.js";
 import { WorldRng, type WorldRngState } from "./rng.js";
 import { emptyQuestState, type Manalink, type QuestState } from "./quests.js";
+import type { DungeonRun, DungeonStatus } from "./dungeon.js";
 
 /**
  * WorldState + save format (brief Part 2). One serializable object: seed,
@@ -17,8 +18,8 @@ import { emptyQuestState, type Manalink, type QuestState } from "./quests.js";
  * retired), `provenance` (append-only acquisition log), `player.renown`,
  * `player.starterId`. v1/v2 saves migrate with everything defaulted.
  */
-export const SAVE_FORMAT = "world-save-v4"; // S19: quests + manalinks + reserved sieges
-export const SAVE_FORMATS_READABLE = ["world-save-v1", "world-save-v2", "world-save-v3", "world-save-v4"] as const;
+export const SAVE_FORMAT = "world-save-v5"; // S20: dungeons (+ reserved strongholds)
+export const SAVE_FORMATS_READABLE = ["world-save-v1", "world-save-v2", "world-save-v3", "world-save-v4", "world-save-v5"] as const;
 
 /** Per-town shop state (S14): which epoch the stock was rolled for and how
  * many of each card were sold in it; a new epoch restocks (sold resets). */
@@ -100,6 +101,12 @@ export interface WorldState {
   manalinks: Manalink[];
   /** S19 v4 (reserved for S20 sieges — the field exists so v4 saves survive the siege session without a v5). */
   sieges: unknown[];
+  /** S20 v5: per-dungeon status (cleared / reset count), keyed by dungeon id. */
+  dungeons: Record<string, DungeonStatus>;
+  /** S20 v5: the dungeon in progress (reload resumes mid-dungeon; quitting is not walking out). */
+  activeDungeon: DungeonRun | null;
+  /** S20 v5 (reserved for S22 strongholds — same trick as sieges). */
+  strongholds: unknown[];
 }
 
 export interface NewWorldOptions {
@@ -237,6 +244,9 @@ export function newWorld(opts: NewWorldOptions): WorldState {
     quests: emptyQuestState(),
     manalinks: [],
     sieges: [],
+    dungeons: {},
+    activeDungeon: null,
+    strongholds: [],
   };
 }
 
@@ -312,5 +322,9 @@ export function migrateWorld(format: string, input: Partial<WorldState>): WorldS
   if (!v3.quests) v3.quests = emptyQuestState();
   if (!v3.manalinks) v3.manalinks = [];
   if (!v3.sieges) v3.sieges = [];
+  // v4 → v5 (S20): dungeons — empty defaults (no dungeon was in progress in a pre-v5 save).
+  if (!v3.dungeons) v3.dungeons = {};
+  if (v3.activeDungeon === undefined) v3.activeDungeon = null;
+  if (!v3.strongholds) v3.strongholds = [];
   return v3;
 }

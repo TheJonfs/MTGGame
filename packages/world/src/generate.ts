@@ -250,7 +250,13 @@ export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOpt
   };
 
   // 1. Spokes (colour order shuffled, pentagram rotated, each angle jittered) × rings → 15 hearts + 5 stronghold points.
-  const colours = rng.shuffle(SPOKE_COLORS);
+  // S20 (ADR-079, lore canon): the ring order is WBRUG — adjacency is invariant; seed-jittered
+  // ROTATION and REFLECTION keep worldgen variety without breaking which colours neighbour which.
+  const base: Exclude<Color, "C">[] = ["W", "B", "R", "U", "G"];
+  const rot = rng.int(5);
+  const flip = rng.float() < 0.5;
+  const rotated = [...base.slice(rot), ...base.slice(0, rot)];
+  const colours = flip ? [rotated[0]!, ...rotated.slice(1).reverse()] : rotated;
   const theta0 = rng.float() * 360;
   const spokeAngle: number[] = colours.map((_, i) => theta0 + i * 72 + jitter(knobs.spokeJitterDeg));
   const pickTemplate = (color: Color, tier: RegionTier): RegionTemplate => {
