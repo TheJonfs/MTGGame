@@ -355,7 +355,9 @@ describe("town shops (S13 Part 3 → S14 Part 3: depletion, restock, sell, buy-f
     const region = w.map.regions[town.region]!;
     for (const item of stock) {
       const def = pool.cards.get(item.cardId)!;
-      expect(def.types).not.toContain("Land");
+      // S20: nonbasic lands stock by tier now (shocks/enablers); basics still never do.
+      expect(["plains", "island", "swamp", "mountain", "forest"]).not.toContain(def.id);
+      if (def.types.includes("Land")) continue; // land identity = produced mana (either-color rule, ADR-079)
       for (const c of (await import("@shandalar/cards")).cardColors(def)) expect(region.color).toContain(c);
       expect(item.price).toBe(shopPrice(def, knobs));
       expect(item.remaining).toBe(item.stock);
@@ -681,6 +683,17 @@ describe("S19 shop tiers (ADR-078): availability by ring, price by tier factor, 
     }
     expect(civ.length).toBeLessThan(app.length);
     expect(app.length).toBeLessThan(wild.length);
+    // S20: nonbasic lands are stock now — enablers on T1 shelves, shocks on T2+; ABU duals (R) never; either-color rule.
+    expect(civ.some((d) => d.id === "secluded_steppe")).toBe(true);
+    expect(civ.some((d) => d.id === "hallowed_fountain")).toBe(false);
+    expect(app.some((d) => d.id === "hallowed_fountain")).toBe(true);
+    expect(wild.some((d) => d.id === "tundra")).toBe(false);
+    const wOnly = await import("./shop.js").then((m) => m.shopPoolFor(pool.cards, "W", 3));
+    expect(wOnly.some((d) => d.id === "hallowed_fountain")).toBe(true); // WU shock stocks in W (either color)
+    expect(wOnly.some((d) => d.id === "blood_crypt")).toBe(false); // BR shock does not
+    const { shopPrice: sp } = await import("./shop.js");
+    expect(sp(pool.cards.get("hallowed_fountain")!, knobs)).toBe(45); // priceOverride
+    expect(sp(pool.cards.get("secluded_steppe")!, knobs)).toBe(10);
     // Audit prices: Doom Blade T2 mv2 → 4×3×1.5 = 18; Serra Angel T3 mv5 → 4×6×2.5 = 60; Shock T1 mv1 → 8.
     expect(shopPrice(pool.cards.get("doom_blade")!, knobs)).toBe(18);
     expect(shopPrice(pool.cards.get("serra_angel")!, knobs)).toBe(60);

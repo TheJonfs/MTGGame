@@ -309,11 +309,15 @@ function TownScreen({ c, pool, oracle }: { c: WorldController; pool: Map<string,
         <QuestBoard c={c} pool={pool} onInspect={setInspect} />
         <div className="flyout-title" style={{ marginTop: 8 }}>Sell spares (half price; basics and deck copies excluded)</div>
         <div className="sell-row">
-          {Object.entries(spares(w.player.collection, activeDeck(w))).map(([id, n]) => (
-            <button key={id} className="sell-chip" onClick={() => c.sell(id)} onMouseEnter={() => setInspect(id)} title={`sell one ${pool.get(id)?.name ?? id}`}>
-              {pool.get(id)?.name ?? id} ×{n} · {sellPrice(pool.get(id)!, c.knobs)}g
-            </button>
-          ))}
+          {Object.entries(spares(w.player.collection, activeDeck(w))).map(([id, n]) => {
+            const def = pool.get(id);
+            const priceless = def?.shopTier === "R" && def.types.includes("Land"); // S20: duals are priceless
+            return (
+              <button key={id} className="sell-chip" disabled={priceless} onClick={() => c.sell(id)} onMouseEnter={() => setInspect(id)} title={priceless ? "priceless — no shop will make an offer" : `sell one ${def?.name ?? id}`}>
+                {def?.name ?? id} ×{n} · {priceless ? "priceless" : `${sellPrice(def!, c.knobs)}g`}
+              </button>
+            );
+          })}
           {Object.keys(spares(w.player.collection, activeDeck(w))).length === 0 && <span style={{ fontSize: 11, color: "var(--ink-soft)" }}>no spares to sell</span>}
         </div>
         {notice && <p style={{ fontSize: 12, color: "var(--brass)" }}>{notice}</p>}
@@ -374,7 +378,7 @@ function CollectionScreen({ c, pool, oracle }: { c: WorldController; pool: Map<s
 /** S14 Part 2: the deck editor — spares | deck, click to move copies, basics row,
  * live legality (Save disabled with the reason), reading aids, name. */
 function EditorScreen({ c, pool, oracle }: { c: WorldController; pool: Map<string, CardDef>; oracle: Record<string, OracleEntry> }) {
-  const [filter, setFilter] = useState<"all" | "W" | "U" | "B" | "R" | "G" | "Creature" | "Instant" | "Sorcery" | "Enchantment" | "Artifact">("all");
+  const [filter, setFilter] = useState<"all" | "W" | "U" | "B" | "R" | "G" | "Creature" | "Instant" | "Sorcery" | "Enchantment" | "Artifact" | "Land">("all");
   const [sort, setSort] = useState<"name" | "cost" | "colour">("cost");
   const [search, setSearch] = useState("");
   const [printed, setPrinted] = useState(true); // S14 round 1 (Chris): printed by default in the editor too
@@ -441,7 +445,7 @@ function EditorScreen({ c, pool, oracle }: { c: WorldController; pool: Map<strin
         <span style={{ flex: 1 }} />
         <input type="text" placeholder="search" value={search} onChange={(e) => setSearch(e.target.value)} style={{ width: 110 }} />
         <select value={filter} onChange={(e) => setFilter(e.target.value as typeof filter)}>
-          {["all", "W", "U", "B", "R", "G", "Creature", "Instant", "Sorcery", "Enchantment", "Artifact"].map((f) => <option key={f} value={f}>{f}</option>)}
+          {["all", "W", "U", "B", "R", "G", "Creature", "Instant", "Sorcery", "Enchantment", "Artifact", "Land"].map((f) => <option key={f} value={f}>{f}</option>)}
         </select>
         <select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)}>
           <option value="cost">by cost</option><option value="name">by name</option><option value="colour">by colour</option>

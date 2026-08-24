@@ -20,7 +20,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(ROOT, "data/art/real");
 const ORACLE = join(OUT, "oracle.json");
 const HEADERS = { "User-Agent": "ShandalarLike/0.1 (personal project)", Accept: "application/json" };
-const DELAY_MS = 150;
+const DELAY_MS = 220;
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 let lastCall = 0;
@@ -28,7 +28,13 @@ async function api(url: string): Promise<Record<string, unknown>> {
   const wait = lastCall + DELAY_MS - Date.now();
   if (wait > 0) await sleep(wait);
   lastCall = Date.now();
-  const resp = await fetch(url, { headers: HEADERS });
+  let resp = await fetch(url, { headers: HEADERS });
+  // S20: exponential backoff on 429 (the override batch made bursts bigger).
+  for (let backoff = 4000; resp.status === 429 && backoff <= 64_000; backoff *= 2) {
+    await sleep(backoff);
+    lastCall = Date.now();
+    resp = await fetch(url, { headers: HEADERS });
+  }
   if (!resp.ok) throw new Error(`Scryfall ${resp.status} for ${url}: ${(await resp.text()).slice(0, 200)}`);
   return (await resp.json()) as Record<string, unknown>;
 }
@@ -62,6 +68,31 @@ const OVERRIDES: Record<string, { set: string; collector?: string }> = {
   demonic_tutor: { set: "lea" }, // S15: Douglas Shuler (planner suggestion; default rule agrees)
   cathartic_adept: { set: "ala" }, // S16 (brief): Shards of Alara, Carl Critchlow — its only original
   restoration_angel: { set: "avr" }, // S17: oldest-highres resolves to the PAVR prerelease promo (Wesley Burt alt art); Avacyn Restored (Johannes Voss) is the original — the Rager precedent
+  tundra: { set: "olgc", collector: "2015" }, // S20 ADR-079: Legacy Championship, earlier of two
+  underground_sea: { set: "olgc", collector: "2016EU" }, // S20 ADR-079: Legacy Championship, earlier of two
+  badlands: { set: "olgc", collector: "2016NA" }, // S20 ADR-079: Legacy Championship, earlier of two
+  taiga: { set: "olgc", collector: "2017EU" }, // S20 ADR-079: Legacy Championship, earlier of two
+  savannah: { set: "olgc", collector: "2017NA" }, // S20 ADR-079: Legacy Championship, earlier of two
+  scrubland: { set: "olgc", collector: "2018" }, // S20 ADR-079: Legacy Championship, earlier of two
+  plateau: { set: "olgc", collector: "2018A" }, // S20 ADR-079: Legacy Championship, earlier of two
+  volcanic_island: { set: "olgc", collector: "2018NA" }, // S20 ADR-079: Legacy Championship, earlier of two
+  tropical_island: { set: "olgc", collector: "2019" }, // S20 ADR-079: Legacy Championship, earlier of two
+  bayou: { set: "olgc", collector: "2019A" }, // S20 ADR-079: Legacy Championship, earlier of two
+  hallowed_fountain: { set: "rvr", collector: "404" }, // S20 ADR-079: Ravnica Remastered retro frame
+  steam_vents: { set: "rvr", collector: "412" }, // S20 ADR-079: Ravnica Remastered retro frame
+  watery_grave: { set: "rvr", collector: "415" }, // S20 ADR-079: Ravnica Remastered retro frame
+  blood_crypt: { set: "rvr", collector: "397" }, // S20 ADR-079: Ravnica Remastered retro frame
+  stomping_ground: { set: "rvr", collector: "413" }, // S20 ADR-079: Ravnica Remastered retro frame
+  temple_garden: { set: "rvr", collector: "414" }, // S20 ADR-079: Ravnica Remastered retro frame
+  godless_shrine: { set: "rvr", collector: "401" }, // S20 ADR-079: Ravnica Remastered retro frame
+  breeding_pool: { set: "rvr", collector: "399" }, // S20 ADR-079: Ravnica Remastered retro frame
+  overgrown_tomb: { set: "rvr", collector: "407" }, // S20 ADR-079: Ravnica Remastered retro frame
+  sacred_foundry: { set: "rvr", collector: "409" }, // S20 ADR-079: Ravnica Remastered retro frame
+  reya_dawnbringer: { set: "inv", collector: "33" }, // S20 ADR-079
+  arcanis_the_omnipotent: { set: "ons", collector: "66" }, // S20 ADR-079
+  drakuseth_maw_of_flames: { set: "cmm", collector: "535" }, // S20 ADR-079 (Chris corrected from #515)
+  titania_protector_of_argoth: { set: "mh2", collector: "416" }, // S20 ADR-079
+  evolving_wilds: { set: "brc", collector: "184" }, // S20 ADR-079: old frame
 };
 
 async function search(q: string): Promise<Printing[]> {

@@ -51,10 +51,22 @@ export function shopPoolFor(pool: Map<string, CardDef>, regionColor: string, rin
   const out: CardDef[] = [];
   for (const def of pool.values()) {
     if ((def as { isTokenDef?: boolean }).isTokenDef) continue;
-    if (def.types.includes("Land")) continue; // basics free; nonbasic lands are future collectible content
+    if (isBasic(def.id)) continue; // basics free in the editor, never stock; NONBASIC lands stock by tier from S20 (shocks T2, enablers T1)
     if (def.prizeOnly) continue; // ADR-068: Lotus is treasure, never stock
     if (def.shopTier === "R") continue; // ADR-078: R circulates by ante/quest/treasure, never a shelf
     if ((def.shopTier ?? 1) > ring) continue;
+    // S20 (ADR-079): a two-color LAND stocks in EITHER color's region shops — its identity is what it
+    // taps for (defs carry no colors). Other cards keep the every-rule (mono-W stocks only in W;
+    // colorless artifacts everywhere).
+    if (def.types.includes("Land")) {
+      const produced = new Set<string>();
+      for (const ab of def.abilities ?? []) {
+        if (ab.kind !== "activated") continue;
+        for (const e of ab.effects) if (e.type === "addMana" && e.mana) for (const ch of e.mana.replace(/[^WUBRG]/g, "")) produced.add(ch);
+      }
+      if (produced.size === 0 || [...produced].some((c) => regionColor.includes(c))) out.push(def);
+      continue;
+    }
     const colors = cardColors(def);
     if (colors.every((c) => regionColor.includes(c))) out.push(def);
   }
@@ -116,6 +128,9 @@ export function sellCard(world: WorldState, pool: Map<string, CardDef>, cardId: 
   if (owned - inDeck <= 0) return { ok: false, reason: inDeck > 0 ? "all copies are in your deck — remove one in the editor first" : "you own none" };
   const def = pool.get(cardId);
   if (!def) return { ok: false, reason: "unknown card" };
+  // S20 (ADR-079): R-class LANDS (the ABU duals) are priceless — unsellable pending the R-economy
+  // design (the interim mv-based R price is nonsense at mv 0).
+  if (def.shopTier === "R" && def.types.includes("Land")) return { ok: false, reason: "priceless — no shop will make an offer" };
   const gold = sellPrice(def, knobs);
   world.player.gold += gold;
   world.player.collection[cardId] = owned - 1;
