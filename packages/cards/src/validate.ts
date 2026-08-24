@@ -64,6 +64,17 @@ export function validateCard(raw: unknown): ValidationResult {
   if (!Array.isArray(raw.types) || types.length === 0) err(`"types" must be a non-empty array`);
   for (const t of types) if (!CARD_TYPES.includes(t as CardType)) err(`unknown card type "${t}"`);
 
+  // ADR-078 (S19): every shoppable pool card carries its shop tier; the exempt classes are tokens,
+  // basics, and prizeOnly treasure. A vocabulary-level guard like the resolver assertion — a card
+  // without a tier is a structural error, not a latent shop surprise.
+  const isBasic = Array.isArray(raw.supertypes) && (raw.supertypes as string[]).includes("Basic");
+  const isTestCard = typeof raw.id === "string" && raw.id.startsWith("test_"); // registry: test-only cards, not pool members
+  if (raw.isTokenDef !== true && !isBasic && raw.prizeOnly !== true && !isTestCard) {
+    if (raw.shopTier !== 1 && raw.shopTier !== 2 && raw.shopTier !== 3 && raw.shopTier !== "R") err(`missing "shopTier" (1|2|3|"R", ADR-078; tokens/basics/prizeOnly exempt)`);
+  } else if (raw.shopTier !== undefined) {
+    err(`"shopTier" on a ${raw.isTokenDef ? "token" : isBasic ? "basic land" : "prizeOnly card"} — exempt classes carry none`);
+  }
+
   const isCreature = types.includes("Creature");
   if (isCreature) {
     if (!Number.isInteger(raw.power)) err(`creature missing integer "power"`);

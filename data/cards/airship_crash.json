@@ -40,5 +40,6 @@
   "cycling": "{2}",
   "art": {
     "fallback": "rendered"
-  }
+  },
+  "shopTier": 1
 }

@@ -13,5 +13,6 @@
   "toughness": 3,
   "art": {
     "fallback": "rendered"
-  }
+  },
+  "shopTier": 1
 }

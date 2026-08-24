@@ -334,6 +334,10 @@ export interface CardDef {
   isTokenDef?: boolean;
   /** ADR-068: never shop stock — boss/lair treasure only (Black Lotus). Pool-registry column mirrored here so the world can filter. */
   prizeOnly?: boolean;
+  /** ADR-078 (S19): shop availability tier — a town stocks cards with shopTier ≤ its ring (civilized 1,
+   * approach 2, wild 3); price × shopTierMultiplier[tier]. "R" = never shop stock (ante/quest/treasure
+   * circulation only — distinct from prizeOnly). Required on every non-token, non-basic, non-prizeOnly def. */
+  shopTier?: 1 | 2 | 3 | "R";
 }
 
 /** An activated ability is a mana ability iff every effect is addMana and it has no targets (CR 605 simplification). */

@@ -48,5 +48,6 @@
       ],
       "optional": false
     }
-  ]
+  ],
+  "shopTier": 3
 }

@@ -54,6 +54,7 @@ describe("S8 — Cunning Tactician (ADR-053; first custom card, first tapTarget 
     const base = {
       id: "t",
       name: "T",
+      shopTier: 1, // ADR-078
       manaCost: "{1}",
       types: ["Creature"],
       power: 1,

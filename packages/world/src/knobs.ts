@@ -188,6 +188,11 @@ export const KNOBS = {
     unit: "gold per (1 + mana value)",
     description: "Shop price = round(shopPriceMultiplier × shopBasePrice × (1 + mana value)). A 1-drop is 8, a 3-drop 16, a 5-drop 24 at defaults. Basics are never sold (free and infinite).",
   }),
+  shopTierMultiplier: knob<Record<1 | 2 | 3, number>>({
+    default: { 1: 1.0, 2: 1.5, 3: 2.5 },
+    unit: "price factor by shopTier",
+    description: "ADR-078 (S19): shop price = round(shopPriceMultiplier × shopBasePrice × (1 + mv) × shopTierMultiplier[shopTier]). Arguing baselines 1.0/1.5/2.5 pending the S19 gold-flow world-sim read. R cards never stock (a sale of an R card from the collection is priced at the tier-3 factor — interim, flagged S19).",
+  }),
   shopRowCopies: knob<number>({
     default: 3,
     unit: "copies (max per row)",

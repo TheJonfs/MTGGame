@@ -33,5 +33,6 @@
   ],
   "art": {
     "fallback": "rendered"
-  }
+  },
+  "shopTier": 1
 }

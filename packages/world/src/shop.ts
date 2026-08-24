@@ -28,22 +28,30 @@ export function shopEpoch(world: WorldState, knobs: KnobValues): number {
   return Math.floor(world.player.stepsTaken / Math.max(1, knobs.shopRefreshSteps));
 }
 
+/** ADR-078 (S19): price carries the shop-tier factor. R cards never stock; when one is *sold* from the
+ * collection the tier-3 factor prices it (interim, flagged in the S19 handoff — the R economy is planner-side). */
 export function shopPrice(def: CardDef, knobs: KnobValues): number {
   const mv = manaValue(parseManaCost(def.manaCost));
-  return Math.max(1, Math.round(knobs.shopPriceMultiplier * knobs.shopBasePrice * (1 + mv)));
+  const tier = def.shopTier === "R" ? 3 : def.shopTier ?? 1;
+  const factor = knobs.shopTierMultiplier[tier as 1 | 2 | 3] ?? 1;
+  return Math.max(1, Math.round(knobs.shopPriceMultiplier * knobs.shopBasePrice * (1 + mv) * factor));
 }
 
 export function sellPrice(def: CardDef, knobs: KnobValues): number {
   return Math.floor(shopPrice(def, knobs) / 2);
 }
 
-/** Cards a region's shop may carry: mono/colourless within the region colour. */
-export function shopPoolFor(pool: Map<string, CardDef>, regionColor: string): CardDef[] {
+/** Cards a region's shop may carry: mono/colourless within the region colour; ADR-078 — shopTier ≤ the
+ * region's ring (civilized 1, approach 2, wild 3), R never. */
+export const RING_OF_TIER: Record<string, 1 | 2 | 3> = { civilized: 1, approach: 2, wild: 3 };
+export function shopPoolFor(pool: Map<string, CardDef>, regionColor: string, ring: 1 | 2 | 3 = 3): CardDef[] {
   const out: CardDef[] = [];
   for (const def of pool.values()) {
     if ((def as { isTokenDef?: boolean }).isTokenDef) continue;
     if (def.types.includes("Land")) continue; // basics free; nonbasic lands are future collectible content
     if (def.prizeOnly) continue; // ADR-068: Lotus is treasure, never stock
+    if (def.shopTier === "R") continue; // ADR-078: R circulates by ante/quest/treasure, never a shelf
+    if ((def.shopTier ?? 1) > ring) continue;
     const colors = cardColors(def);
     if (colors.every((c) => regionColor.includes(c))) out.push(def);
   }
@@ -59,7 +67,7 @@ export function syncShopState(world: WorldState, town: Town, knobs: KnobValues):
 
 export function rollShopStock(world: WorldState, town: Town, pool: Map<string, CardDef>, knobs: KnobValues): ShopItem[] {
   const region = world.map.regions[town.region]!;
-  const candidates = shopPoolFor(pool, region.color === "C" ? "WUBRG" : region.color);
+  const candidates = shopPoolFor(pool, region.color === "C" ? "WUBRG" : region.color, RING_OF_TIER[region.tier] ?? 3);
   const epoch = shopEpoch(world, knobs);
   const rng = new WorldRng(((world.seed * 1_000_003) ^ (town.index * 7919) ^ (epoch * 104_729)) >>> 0);
   const picked = rng.shuffle(candidates).slice(0, Math.min(knobs.shopStockSize, candidates.length));

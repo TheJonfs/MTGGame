@@ -667,6 +667,44 @@ describe("lair fixed point (S14 round 1 prototype)", () => {
   });
 });
 
+describe("S19 shop tiers (ADR-078): availability by ring, price by tier factor, R never stocks", () => {
+  it("a civilized shop pool is tier-1 only; approach adds tier 2; wild adds tier 3; R (Demonic Tutor, Mystic Snake) and prizeOnly (Lotus) appear on no shelf; prices carry the factor", async () => {
+    const { shopPoolFor, shopPrice } = await import("./shop.js");
+    const knobs = defaultKnobs();
+    const civ = shopPoolFor(pool.cards, "WUBRG", 1), app = shopPoolFor(pool.cards, "WUBRG", 2), wild = shopPoolFor(pool.cards, "WUBRG", 3);
+    expect(civ.every((d) => d.shopTier === 1)).toBe(true);
+    expect(app.some((d) => d.shopTier === 2)).toBe(true);
+    expect(app.every((d) => d.shopTier !== 3 && d.shopTier !== "R")).toBe(true);
+    expect(wild.some((d) => d.shopTier === 3)).toBe(true);
+    for (const shelf of [civ, app, wild]) {
+      expect(shelf.some((d) => d.id === "demonic_tutor" || d.id === "mystic_snake" || d.id === "black_lotus")).toBe(false);
+    }
+    expect(civ.length).toBeLessThan(app.length);
+    expect(app.length).toBeLessThan(wild.length);
+    // Audit prices: Doom Blade T2 mv2 → 4×3×1.5 = 18; Serra Angel T3 mv5 → 4×6×2.5 = 60; Shock T1 mv1 → 8.
+    expect(shopPrice(pool.cards.get("doom_blade")!, knobs)).toBe(18);
+    expect(shopPrice(pool.cards.get("serra_angel")!, knobs)).toBe(60);
+    expect(shopPrice(pool.cards.get("shock")!, knobs)).toBe(8);
+    // Distribution pin (audit v2, both promotions, pre-Formation): 53/31/10/2.
+    const tally: Record<string, number> = {};
+    for (const d of pool.cards.values()) if (d.shopTier) tally[String(d.shopTier)] = (tally[String(d.shopTier)] ?? 0) + 1;
+    expect(tally).toEqual({ "1": 53, "2": 31, "3": 10, R: 2 });
+  });
+  it("a civilized town's rolled stock is all tier 1 and every price matches shopPrice", async () => {
+    const { rollShopStock, shopPrice } = await import("./shop.js");
+    const w = newWorld({ seed: 3, catalog, starter: "white" });
+    const town = w.map.towns.find((t) => w.map.regions[t.region]!.tier === "civilized")!;
+    const knobs = worldKnobs(w);
+    const stock = rollShopStock(w, town, pool.cards, knobs);
+    expect(stock.length).toBeGreaterThan(0);
+    for (const item of stock) {
+      const def = pool.cards.get(item.cardId)!;
+      expect(def.shopTier, item.cardId).toBe(1);
+      expect(item.price).toBe(shopPrice(def, knobs));
+    }
+  });
+});
+
 describe("S18 Part 6 (scripted acceptance): a beast encounter end-to-end — roamer → parley (voice, distraction price, refusal) → duel on the beast deck with the tier AI profile → result applied → roamer removed", () => {
   it("the Boggart Warband: contact → fight → beast:warband decklist + journeyman profile + world life 10 → outcome applied; the Living Gale refuses distraction with its own refusal line; the Serra Angel takes a tithe", async () => {
     const { EXPANSION_DECKS } = await import("@shandalar/sim/expansion-decks");

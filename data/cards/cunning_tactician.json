@@ -41,5 +41,6 @@
   "art": {
     "asset": "/custom-art/cunning_tactician.png",
     "fallback": "rendered"
-  }
+  },
+  "shopTier": 2
 }

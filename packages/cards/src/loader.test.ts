@@ -43,6 +43,7 @@ describe("validateCard rejections", () => {
     name: "Test",
     source: "custom",
     text: "",
+    shopTier: 1, // ADR-078: non-token/basic/prizeOnly defs need a tier
     manaCost: "{1}",
     types: ["Instant"],
     spellEffect: [{ type: "draw", count: 1, who: "you" }],

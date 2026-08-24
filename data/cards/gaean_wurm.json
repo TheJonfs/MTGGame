@@ -44,5 +44,6 @@
   "art": {
     "asset": "/custom-art/gaean_wurm.png",
     "fallback": "rendered"
-  }
+  },
+  "shopTier": 2
 }
