@@ -63,13 +63,12 @@ export function producibleSymbols(ctx: EngineCtx, objectId: string): ManaSymbol[
  * (battlefield order within each group), creature producers LAST — auto-pay
  * spends a Llanowar Elves only when nothing else can pay, so the body stays
  * untapped to attack/block; manual tapping can still choose it (S16, Chris). */
-function untappedProducers(ctx: EngineCtx, player: PlayerId): { id: string; symbols: ManaSymbol[] }[] {
+function untappedProducers(ctx: EngineCtx, player: PlayerId): { id: string; symbols: ManaSymbol[]; creature: boolean }[] {
   const all = ctx.state.battlefield
     .filter((id) => getObject(ctx.state, id).controller === player)
-    .map((id) => ({ id, symbols: producibleSymbols(ctx, id) }))
+    .map((id) => ({ id, symbols: producibleSymbols(ctx, id), creature: ctx.defs.def(getObject(ctx.state, id).cardId).types.includes("Creature") }))
     .filter((p) => p.symbols.length > 0);
-  const isCreature = (id: string) => ctx.defs.def(getObject(ctx.state, id).cardId).types.includes("Creature");
-  return [...all.filter((p) => !isCreature(p.id)), ...all.filter((p) => isCreature(p.id))];
+  return [...all.filter((p) => !p.creature), ...all.filter((p) => p.creature)];
 }
 
 export function totalCost(cost: ManaCost, x: number): { colored: Record<Color, number>; generic: number } {
@@ -107,13 +106,14 @@ export function solvePayment(
   }
 
   // Kuhn's matching: pip index → producer index. For each pip, producers are tried
-  // mono-color first (save the flexible ones), then battlefield order (creatures last
-  // via untappedProducers' ordering).
+  // NON-CREATURES first (S20 playtest, Chris: never tap a body when a land can pay —
+  // a dual land is spent before a Llanowar Elves), then mono-color first (save the
+  // flexible ones), then battlefield order.
   const order = (c: Color) =>
     producers
       .map((p, i) => ({ p, i }))
       .filter(({ p }) => p.symbols.includes(c))
-      .sort((a, b) => new Set(a.p.symbols).size - new Set(b.p.symbols).size || a.i - b.i)
+      .sort((a, b) => Number(a.p.creature) - Number(b.p.creature) || new Set(a.p.symbols).size - new Set(b.p.symbols).size || a.i - b.i)
       .map(({ i }) => i);
   const matchOf: number[] = new Array(producers.length).fill(-1); // producer → pip
   const tryAssign = (pip: number, seen: Set<number>): boolean => {
@@ -131,8 +131,9 @@ export function solvePayment(
     if (!tryAssign(pip, new Set())) return null;
   }
 
-  // Generic: pool leftovers first, then untapped remaining producers — {C} producers,
-  // then fewest-symbols (keep duals free), then order.
+  // Generic: pool leftovers first, then untapped remaining producers — {C} producers, then
+  // non-creatures (S20 playtest, Chris: keep-duals-free never outranks keep-bodies-untapped;
+  // manual tapping remains the override), then fewest-symbols (keep duals free), then order.
   const matchedProducers = new Set(matchOf.map((m, i) => (m !== -1 ? i : -1)).filter((i) => i >= 0));
   const poolLeft = { ...pool };
   for (const c of COLORS) poolLeft[c] -= Math.min(poolLeft[c], colored[c]);
@@ -142,7 +143,7 @@ export function solvePayment(
   const free = producers
     .map((p, i) => ({ p, i }))
     .filter(({ i }) => !matchedProducers.has(i))
-    .sort((a, b) => Number(b.p.symbols.includes("C")) - Number(a.p.symbols.includes("C")) || new Set(a.p.symbols).size - new Set(b.p.symbols).size || a.i - b.i);
+    .sort((a, b) => Number(b.p.symbols.includes("C")) - Number(a.p.symbols.includes("C")) || Number(a.p.creature) - Number(b.p.creature) || new Set(a.p.symbols).size - new Set(b.p.symbols).size || a.i - b.i);
   for (const { p, i } of free) {
     if (genericFromProducers <= 0) break;
     genericTaps.push({ i, symbol: p.symbols.includes("C") ? "C" : p.symbols[0]! });

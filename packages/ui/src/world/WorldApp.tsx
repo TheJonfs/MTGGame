@@ -284,11 +284,20 @@ function DungeonTelegraph({ c }: { c: WorldController }) {
   const resident = info.residentCatalogId ? c.catalog.opponents.find((o) => o.id === info.residentCatalogId) : undefined;
   const tiers = c.knobs.dungeonEmpowermentTiers;
   const status = c.world?.dungeons[info.dungeonId];
+  // S20 playtest r3 (Chris): the telegraph shows the face at the deep end — the guardian's
+  // portrait (dungeons.json) or the lair resident's.
+  const portrait = mox ? mox.guardian.portrait : resident ? (resident.portraitChip ?? resident.portrait) : null;
+  const holderName = mox ? mox.guardian.name : resident?.name;
   return (
     <div className="gallery-modal">
       <div className="gallery-modal-box play-dialog dungeon-telegraph">
-        <h2 style={{ marginTop: 0, fontFamily: "var(--serif)" }}>{info.name}</h2>
-        <p className="parley-sub">{info.kind === "mox" ? "An elder vault — one-time: cleared, it is ground forever." : `${resident?.name ?? "Something"} holds these halls.`}{status && status.resets > 0 ? ` · reset ${status.resets}×` : ""}</p>
+        <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
+          {portrait && <img className="parley-portrait" src={`/portraits/${portrait}.png`} alt="" style={{ width: 72, height: 72, flexShrink: 0 }} title={holderName} />}
+          <div>
+            <h2 style={{ margin: 0, fontFamily: "var(--serif)" }}>{info.name}</h2>
+            <p className="parley-sub" style={{ marginBottom: 0 }}>{info.kind === "mox" ? `${holderName} waits at the deep end. One-time: cleared, it is ground forever.` : `${resident?.name ?? "Something"} holds these halls.`}{status && status.resets > 0 ? ` · reset ${status.resets}×` : ""}</p>
+          </div>
+        </div>
         {mox && <p className="dungeon-law"><b>{mox.law.name}:</b> {mox.law.text}</p>}
         <ul className="dungeon-stakes">
           <li>The world's clock <b>freezes</b> at this threshold; your steps inside feed the {info.kind === "mox" ? "guardian" : "resident"} — it grows at {tiers.map((t) => t.steps).join(" / ")} interior steps (the meter shows the next threshold).</li>
@@ -313,8 +322,11 @@ function DungeonScreen({ c, pool }: { c: WorldController; pool: Map<string, Card
   const color = mox?.color ?? c.catalog.opponents.find((o) => o.id === run.residentCatalogId)?.spoke ?? "G";
   const map = dungeonAsWorldMap(run, color, name);
   const meter = c.dungeonMeter()!;
-  const marks = run.treasures.filter((t) => !t.taken).map((t) => ({ at: t.at, label: "cache" }));
-  const minions = run.minions.filter((m) => !m.defeated).map((m) => {
+  // Fog-honest (S20 playtest r2: the dark register exposed the leak — unexplored caches and
+  // minions were drawn into the darkness; stationary, so "cell explored" = "ever seen").
+  const seenAt = (p: Point) => isExplored(run.explored, { width: run.grid.width }, p);
+  const marks = run.treasures.filter((t) => !t.taken && seenAt(t.at)).map((t) => ({ at: t.at, label: "cache", kind: "chest" as const }));
+  const minions = run.minions.filter((m) => !m.defeated && seenAt(m.at)).map((m) => {
     const tmpl = c.catalog.opponents.find((o) => o.id === m.catalogId)!;
     return { id: m.id, at: m.at, portrait: `/portraits/${tmpl.portraitChip ?? tmpl.portrait}.png`, name: tmpl.name, tier: tmpl.tier, fleeing: false };
   });
@@ -333,6 +345,7 @@ function DungeonScreen({ c, pool }: { c: WorldController; pool: Map<string, Card
             explored={run.explored}
             marks={marks}
             edgeLabel=""
+            interior
             roamers={minions}
             sightRadius={c.knobs.sightRadius}
             onClickCell={(p) => c.dungeonClick(p)}
@@ -762,7 +775,7 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
         <div className="panel">
           <h3>Journey</h3>
           <div style={{ fontSize: 12 }}>Duels: {w.duels.length} · won {w.duels.filter((d) => d.outcome === "win").length} · lost {w.duels.filter((d) => d.outcome === "loss").length}</div>
-          <div style={{ fontSize: 12 }}>Opponents defeated: {w.opponents.filter((o) => o.goneReason === "defeated").length} · renown {w.player.renown} · roaming now {w.opponents.filter((o) => !o.gone && o.at).length}</div>
+          <div style={{ fontSize: 12 }}>Opponents defeated: {w.opponents.filter((o) => o.goneReason === "defeated").length} · renown {w.player.renown}{(["W", "U", "B", "R", "G"] as const).some((c) => w.player.renownByColor[c] > 0) ? ` (${(["W", "U", "B", "R", "G"] as const).filter((c) => w.player.renownByColor[c] > 0).map((c) => `${c}${w.player.renownByColor[c]}`).join(" ")})` : ""} · roaming now {w.opponents.filter((o) => !o.gone && o.at).length}</div>
           <div style={{ fontSize: 12 }}>Deck: {deckSize(activeDeck(w))} cards · basic {w.player.basicLand}</div>
         </div>
         <div className="panel">

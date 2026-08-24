@@ -9,7 +9,7 @@ import { loadCatalog } from "./loader.js";
 import { generateWorld, DEFAULT_GENERATOR, isTownCell, roamerTarget, type OpponentInstance } from "./generate.js";
 import { findPath, idx, isExplored, manhattan, reachable, regionAt, samePoint, type Point } from "./map.js";
 import { activeDeck, deserializeWorld, newWorld, serializeWorld, deckSize, starterDecklist, starterTemplate, worldKnobs, type WorldState } from "./state.js";
-import { advance, applyDuelResult, deckLegal, effectiveSight, parley, playerSees, visibleRoamers, walkTo, type Encounter } from "./journey.js";
+import { advance, applyDuelResult, creditRenown, deckLegal, effectiveSight, isFleeing, parley, playerSees, renownAgainst, visibleRoamers, walkTo, type Encounter } from "./journey.js";
 import { WorldRng } from "./rng.js";
 import { catalogFrom, enemyDeck, type OpponentDeckRef, type StarterId } from "./catalog.js";
 import { defaultKnobs } from "./knobs.js";
@@ -447,7 +447,7 @@ describe("world-save-v5 (S16 Part 2.5 chain + S19/S20): the v1 → … → v5 mi
   }
   it("v3 round-trips; a v2 save migrates with decks/activeDeckName/provenance/renown/starterId defaulted, roamers positioned, and plays", () => {
     const w = newWorld({ seed: 71, catalog, starter: "white" });
-    expect(serializeWorld(w)).toContain('"world-save-v5"');
+    expect(serializeWorld(w)).toContain('"world-save-v6"');
     expect(deserializeWorld(serializeWorld(w))).toEqual(w);
     const v2 = asV2(w);
     const migrated = deserializeWorld(JSON.stringify({ format: "world-save-v2", world: v2 }));
@@ -471,7 +471,7 @@ describe("world-save-v5 (S16 Part 2.5 chain + S19/S20): the v1 → … → v5 mi
     expect(deserializeWorld(JSON.stringify({ format: "world-save-v2", world: v2 }))).toEqual(migrated);
     // …and it plays: walk and re-save as v3.
     walkTo(migrated, catalog, migrated.map.towns[1]!.at);
-    expect(serializeWorld(migrated)).toContain('"world-save-v5"');
+    expect(serializeWorld(migrated)).toContain('"world-save-v6"');
   });
   it("a v1 save migrates through v2 to v3 (shops/visits/lastTownIndex defaulted, deck named \"Deck\")", () => {
     const w = newWorld({ seed: 72, catalog, starter: "black" });
@@ -719,6 +719,9 @@ describe("S20 Part 3+7 (dungeons, scripted acceptance): topology, escrow, interi
     const { dungeonAdvance, dungeonPath } = await dg();
     const knobs = worldKnobs(w);
     const goldBefore = w.player.gold;
+    // Reveal the interior so the plan is real (fog-honest planning may otherwise walk into
+    // uncarved ground and stop early — the client re-plans; not this test's subject).
+    for (let i = 0; i < run.explored.length; i++) run.explored[i] = -1 >>> 0;
     const treasure = run.treasures[0];
     if (treasure) {
       const path = dungeonPath(run, treasure.at);
@@ -751,8 +754,8 @@ describe("S20 Part 3+7 (dungeons, scripted acceptance): topology, escrow, interi
     expect(m.spec.rules.startingLife).toBe(run.interiorLife);
     const perms = m.spec.modifiers.filter((x) => x.type === "permanentOnBattlefield" && x.cardId === "mountain");
     expect(perms.map((x) => (x as { player: number }).player).sort()).toEqual([0, 1]); // the Caldera's law, both sides
-    // Empowerment: at 130 interior steps two tiers are live (+4 life, +1 basic).
-    run.steps = 130;
+    // Empowerment: at 70 interior steps two tiers are live (+4 life, +1 basic) — thresholds 30/60/90 (S20 playtest r2).
+    run.steps = 70;
     expect(reachedTiers(run, knobs)).toHaveLength(2);
     const g = dungeonDuelSpec(w, catalog, knobs, run, { kind: "guardian", name: mox.guardian.name, decklist: [{ cardId: "mountain", count: 40 }], archetype: "midrange", life: mox.guardian.life, color: "R" }, mox.law.both, rng);
     expect(g.enemyLife).toBe(mox.guardian.life + 4);
@@ -810,7 +813,7 @@ describe("S20 Part 3+7 (dungeons, scripted acceptance): topology, escrow, interi
   it("lair-dungeons are smaller, roll R-card treasures, and the resident boss carries the lair life bonus in its spec", async () => {
     const w = newWorld({ seed: 24, catalog, starter: "red" });
     const run = await makeRun(w, { kind: "lair" });
-    expect(run.minions.length).toBeLessThanOrEqual(2);
+    expect(run.minions.length).toBeLessThanOrEqual(3); // scale 2 (24×18): lairs carry 2–3 vs mox 3–5
     for (const t of run.treasures) if (t.kind === "card") expect(pool.cards.get(t.cardId!)?.shopTier).toBe("R");
     const { dungeonDuelSpec } = await dg();
     const knobs = worldKnobs(w);
@@ -1163,6 +1166,8 @@ describe("S16 roamers (ADR-071): sight, pursuit, fleeing, contact, removal, resp
           pick.gone = false; delete pick.goneReason; pick.region = r0!; pick.at = { ...cells[d]! }; pick.moveDebt = 0;
           w.player.position = { ...cells[0]! };
           w.player.renown = opts.renown ?? 0;
+          // Renown is per-colour now (S20 playtest); these tests mean "globally feared".
+          for (const c of ["W", "U", "B", "R", "G"] as const) w.player.renownByColor[c] = opts.renown ?? 0;
           return { w, inst: pick, knobs };
         }
       }
@@ -1256,6 +1261,30 @@ describe("S16 roamers (ADR-071): sight, pursuit, fleeing, contact, removal, resp
     // Low renown: the same roamer is not fleeing.
     const { w: w4, inst: i4, knobs: k4 } = stage(107, 2, { tier: 1, renown: 0 });
     expect(visibleRoamers(w4, catalog, k4).find((r) => r.inst.id === i4.id)?.fleeing).toBe(false);
+  });
+
+  it("S20 playtest: renown is felt per colour — green fear flees green roamers while white tier 1s still line up; defeat credits each of the opponent's colours + the total", () => {
+    const w = newWorld({ seed: 109, catalog, starter: "green" });
+    const knobs = worldKnobs(w, QUIET);
+    const green = catalog.opponents.find((o) => o.tier === 1 && o.colors.includes("G") && !o.colors.includes("W"))!;
+    const white = catalog.opponents.find((o) => o.tier === 1 && o.colors.includes("W") && !o.colors.includes("G"))!;
+    w.player.renownByColor.G = 10; // over tier 1's flee threshold (1 × 4)
+    w.player.renown = 10;
+    expect(isFleeing(green, knobs, renownAgainst(w.player, green))).toBe(true);
+    expect(isFleeing(white, knobs, renownAgainst(w.player, white))).toBe(false); // white hasn't heard of you
+    // Credit: a WU opponent's defeat lands on W and U (and the total), not on G.
+    creditRenown(w.player, "WU", 2);
+    expect(w.player.renown).toBe(12);
+    expect(w.player.renownByColor).toMatchObject({ W: 2, U: 2, G: 10, B: 0, R: 0 });
+    // Save shape: v6 round-trips; a v5-labelled save migrates with renownByColor zeroed.
+    const round = deserializeWorld(serializeWorld(w));
+    expect(round.player.renownByColor).toEqual(w.player.renownByColor);
+    const v5 = JSON.parse(serializeWorld(w)) as { format: string; world: WorldState };
+    v5.format = "world-save-v5";
+    delete (v5.world.player as Partial<WorldState["player"]>).renownByColor;
+    const migrated = deserializeWorld(JSON.stringify(v5));
+    expect(migrated.player.renownByColor).toEqual({ W: 0, U: 0, B: 0, R: 0, G: 0 });
+    expect(migrated.player.renown).toBe(12); // the total survives
   });
 
   it("roamer speed is a knob: at 0.5 a pursuer moves every other step; at 0 it never moves", () => {

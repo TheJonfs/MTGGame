@@ -46,7 +46,7 @@ import {
   type WorldState,
 } from "@shandalar/world";
 import { MatchController } from "../play/match-controller.js";
-import { abandonQuest, acceptQuest, cardMatches, questsOnArrival, spares, townOffers, type ActiveQuest, type QuestOffer } from "@shandalar/world";
+import { abandonQuest, acceptQuest, cardMatches, creditRenown, questsOnArrival, spares, townOffers, type ActiveQuest, type QuestOffer } from "@shandalar/world";
 import {
   applyInteriorDuel, clearDungeon, colorPrizeRoll, dungeonAdvance, dungeonAsWorldMap, dungeonDuelSpec, dungeonPath,
   generateDungeonRun, lairPrizeRoll, reachedTiers, resetDungeon, type DungeonRun, type MoxDungeonDef,
@@ -803,7 +803,7 @@ export class WorldController {
           residentInst.gone = true;
           residentInst.goneReason = "defeated";
           const tmpl = this.catalog.opponents.find((o) => o.id === residentInst.catalogId);
-          this.world.player.renown += tmpl?.tier ?? 3;
+          creditRenown(this.world.player, tmpl?.colors ?? "", tmpl?.tier ?? 3); // OQ-14: lair boss = its tier; per-colour (S20 playtest)
         }
       }
       const paid = clearDungeon(this.world, run, prize);

@@ -5,7 +5,7 @@ import { manalinkModifiers, questsOnDefeat, questsOnStep, type QuestEvent } from
 import type { KnobValues } from "./knobs.js";
 import { findPath, fixedPointAt, idx, inBounds, manhattan, markExplored, regionAt, samePoint, townAt, type Point, type Town, type WorldMap } from "./map.js";
 import { WorldRng } from "./rng.js";
-import { activeDeck, deckSize, worldKnobs, type Decklist, type DuelRecord, type ProvenanceSource, type WorldState } from "./state.js";
+import { activeDeck, deckSize, worldKnobs, RENOWN_COLORS, type Decklist, type DuelRecord, type ProvenanceSource, type WorldState } from "./state.js";
 
 /**
  * The headless loop (brief Part 3's logic, S12 Part 2 carving (b)): walk →
@@ -77,6 +77,21 @@ export function isFleeing(tmpl: OpponentTemplate, knobs: KnobValues, renown: num
   return tmpl.tier * knobs.renownFleeFactor[tmpl.tier] < renown;
 }
 
+/** S20 playtest (Chris): renown is FELT per colour — an opponent fears the highest of your
+ * renown among its own colours (its template `colors`), so beating up green enemies scares
+ * green enemies while white tier 1s still line up. A template with no WUBRG colour (none in
+ * the catalog today) falls back to total renown. */
+export function renownAgainst(player: WorldState["player"], tmpl: OpponentTemplate): number {
+  const colors = RENOWN_COLORS.filter((c) => tmpl.colors.includes(c));
+  return colors.length ? Math.max(...colors.map((c) => player.renownByColor[c])) : player.renown;
+}
+
+/** Credit a defeat's renown: the total (design round 1 §5) and each of the opponent's colours. */
+export function creditRenown(player: WorldState["player"], colors: string, tier: number): void {
+  player.renown += tier;
+  for (const c of RENOWN_COLORS) if (colors.includes(c)) player.renownByColor[c] += tier;
+}
+
 /** Roamers the player can currently see (map chips; the UI reads this). */
 export function visibleRoamers(world: WorldState, catalog: Catalog, knobs: KnobValues = worldKnobs(world)): { inst: OpponentInstance; tmpl: OpponentTemplate; fleeing: boolean }[] {
   const out: { inst: OpponentInstance; tmpl: OpponentTemplate; fleeing: boolean }[] = [];
@@ -84,7 +99,7 @@ export function visibleRoamers(world: WorldState, catalog: Catalog, knobs: KnobV
     if (o.gone || !o.at || o.fixedAt) continue;
     if (!playerSees(world, knobs, o.at)) continue;
     const tmpl = opponentTemplate(catalog, o);
-    out.push({ inst: o, tmpl, fleeing: isFleeing(tmpl, knobs, world.player.renown) });
+    out.push({ inst: o, tmpl, fleeing: isFleeing(tmpl, knobs, renownAgainst(world.player, tmpl)) });
   }
   return out;
 }
@@ -120,7 +135,7 @@ function moveRoamer(world: WorldState, catalog: Catalog, knobs: KnobValues, rng:
   if (moves.length === 0) return;
   const dist = manhattan(o.at!, me);
   if (dist <= knobs.sightRadius) {
-    const fleeing = isFleeing(tmpl, knobs, world.player.renown);
+    const fleeing = isFleeing(tmpl, knobs, renownAgainst(world.player, tmpl));
     const scored = moves.map((q) => ({ q, d: manhattan(q, me) }));
     const best = fleeing ? Math.max(...scored.map((s) => s.d)) : Math.min(...scored.map((s) => s.d));
     // A fleeing roamer that can't gain distance holds still rather than stepping into you.
@@ -235,7 +250,7 @@ export function advance(
     world.opponents.find((o) => !o.gone && o.at && !o.fixedAt && samePoint(o.at, cell));
   const encounterOf = (inst: OpponentInstance, cell: Point, contact: Encounter["contact"]): Encounter => {
     const tmpl = opponentTemplate(catalog, inst);
-    return { opponentId: inst.id, catalogId: inst.catalogId, tier: tmpl.tier, region: regionAt(world.map, cell).index, at: { ...cell }, fleeing: !inst.fixedAt && isFleeing(tmpl, knobs, world.player.renown), contact };
+    return { opponentId: inst.id, catalogId: inst.catalogId, tier: tmpl.tier, region: regionAt(world.map, cell).index, at: { ...cell }, fleeing: !inst.fixedAt && isFleeing(tmpl, knobs, renownAgainst(world.player, tmpl)), contact };
   };
   try {
     for (const cell of path) {
@@ -452,7 +467,7 @@ export function applyDuelResult(world: WorldState, catalog: Catalog, duel: Prepa
     anteWon = [...theirs];
     addToCollection(world, anteWon, "ante");
     world.player.gold += knobs.goldRewardByTier[duel.encounter.tier];
-    world.player.renown += duel.encounter.tier; // design round 1 §5: Σ tier of defeated opponents
+    creditRenown(world.player, catalog.opponents.find((o) => o.id === duel.encounter.catalogId)?.colors ?? "", duel.encounter.tier); // §5 total + S20 playtest per-colour
     if (inst) removeOpponent(world, inst.id, "defeated");
     // S19: bounty completion — the mark's defeat pays out (recorded on the DuelRecord for the UI).
     questEvents = questsOnDefeat(world, duel.encounter.opponentId, knobs);

@@ -42,3 +42,17 @@ Keep this file as the registry of all portrait and bestiary prompts.
 | `beast-faerie-formation.md` | The Faerie Formation (U, 3) — S19 | storm blue |
 
 Descriptors are locked in the subject files (the skill hashes them); MANIFEST carries kept/rejected per Chris's verdicts.
+
+### S20 playtest r2: Mox guardian battle portraits
+
+Mage-portrait law (Drakuseth: bestiary three-quarter bust); signature-card rule applies —
+recognisably the printed legend, consistent with, not copied from, its card art (grounded
+against the cached Scryfall crops before writing descriptors).
+
+| Subject file | Guardian | Colour wash | Status |
+|---|---|---|---|
+| `guardian-reya.md` | Reya Dawnbringer (mox_w) | pale dawn-gold | candidate |
+| `guardian-arcanis.md` | Arcanis the Omnipotent (mox_u) | storm blue | candidate |
+| `guardian-drana.md` | Drana, Kalastria Bloodchief (mox_b) | deep violet-black | kept (Chris's own render — the refusal trigger was the two-horns phrase; descriptor corrected to the filigree crown) |
+| `guardian-drakuseth.md` | Drakuseth, Maw of Flames (mox_r) | ember orange-red | candidate |
+| `guardian-titania.md` | Titania, Protector of Argoth (mox_g) | deep moss green | candidate |

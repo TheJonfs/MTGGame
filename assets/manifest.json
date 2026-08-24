@@ -375,6 +375,36 @@
         }
       }
     },
+    "concept-map-dungeon": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:7025802528e5d06f3527fc62728f41157e3d652dbcc06adaeddbfe8bbc513ce4",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:7025802528e5d06f3527fc62728f41157e3d652dbcc06adaeddbfe8bbc513ce4",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/concept-map-dungeon/canonical.png",
+          "rendered_at": "2026-08-24T19:28:42+00:00",
+          "thumb": "assets/thumbs/concept-map-dungeon/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "concept-map-overworld": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:98681075f9acf50077f04e36328824118c913fb200c43b3113f9cf1c478eb71c",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:98681075f9acf50077f04e36328824118c913fb200c43b3113f9cf1c478eb71c",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/concept-map-overworld/canonical.png",
+          "rendered_at": "2026-08-24T19:49:53+00:00",
+          "thumb": "assets/thumbs/concept-map-overworld/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "frame-corner": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:d28d11aa234143cd5304958fd58e075d159e516f215b1f50aa8b18d081dac1d8",
@@ -506,6 +536,81 @@
           "path": "assets/images/frame-texture-w/canonical.png",
           "rendered_at": "2026-08-20T16:19:50+00:00",
           "thumb": "assets/thumbs/frame-texture-w/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "guardian-arcanis": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:52aeb460b98aa640953eb2e4f926ee9699391fa7bb8f0ce9b1c20e87eb4eeea0",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:52aeb460b98aa640953eb2e4f926ee9699391fa7bb8f0ce9b1c20e87eb4eeea0",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/guardian-arcanis/canonical.png",
+          "rendered_at": "2026-08-24T19:52:11+00:00",
+          "thumb": "assets/thumbs/guardian-arcanis/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "guardian-drakuseth": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:14e04c93080cb85f23e3ec229f4830952a363164c31a27e609a06e3ac19cdb16",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:14e04c93080cb85f23e3ec229f4830952a363164c31a27e609a06e3ac19cdb16",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/guardian-drakuseth/canonical.png",
+          "rendered_at": "2026-08-24T19:52:29+00:00",
+          "thumb": "assets/thumbs/guardian-drakuseth/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "guardian-drana": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:c761f276865c4e5cf6804fde24e363cf3ab9750ebeb1a2311524f2e26a67e04c",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:c761f276865c4e5cf6804fde24e363cf3ab9750ebeb1a2311524f2e26a67e04c",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/guardian-drana/canonical.png",
+          "rendered_at": "2026-08-24T20:20:47+00:00",
+          "thumb": "assets/thumbs/guardian-drana/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "guardian-reya": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:3b6d94d37e1e4c4d0c9a41bc701bd02d8f6f793f723552ee59f0263d0036d8bb",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:3b6d94d37e1e4c4d0c9a41bc701bd02d8f6f793f723552ee59f0263d0036d8bb",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/guardian-reya/canonical.png",
+          "rendered_at": "2026-08-24T19:52:01+00:00",
+          "thumb": "assets/thumbs/guardian-reya/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "guardian-titania": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:af79a998f8e7f44380b4c70bed3624795c96a8dce81725e58f314ab3216eeeed",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:af79a998f8e7f44380b4c70bed3624795c96a8dce81725e58f314ab3216eeeed",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/guardian-titania/canonical.png",
+          "rendered_at": "2026-08-24T19:52:39+00:00",
+          "thumb": "assets/thumbs/guardian-titania/canonical.png",
           "variant_prompt": null
         }
       }
@@ -1046,6 +1151,21 @@
           "path": "assets/images/token-bird/canonical.png",
           "rendered_at": "2026-08-23T15:57:25+00:00",
           "thumb": "assets/thumbs/token-bird/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "token-elemental": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:685c4b48351aea1c870bc83e41eb91017166915720ac2f5d6100364191a17f1e",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:685c4b48351aea1c870bc83e41eb91017166915720ac2f5d6100364191a17f1e",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/token-elemental/canonical.png",
+          "rendered_at": "2026-08-24T19:26:19+00:00",
+          "thumb": "assets/thumbs/token-elemental/canonical.png",
           "variant_prompt": null
         }
       }

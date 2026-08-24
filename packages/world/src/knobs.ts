@@ -74,23 +74,23 @@ export const KNOBS = {
   }),
   // ---- S20 (ADR-079 / dungeon-design v2): dungeons ----
   dungeonGridWidth: knob<number>({
-    default: 12,
+    default: 24,
     unit: "cells",
-    description: "Interior grid width (dungeon-design §1: ~12×9).",
+    description: "Interior grid width. S20 playtest (Chris): the design doc's ~12×9 measured too small — full-loot tours averaged 22 steps, so the 60-step empowerment tier never fired; doubled to 24×18 with branch/minion/treasure counts scaling with grid area (the generator's scale factor).",
   }),
   dungeonGridHeight: knob<number>({
-    default: 9,
+    default: 18,
     unit: "cells",
-    description: "Interior grid height.",
+    description: "Interior grid height (see dungeonGridWidth for the S20 playtest doubling).",
   }),
   dungeonEmpowermentTiers: knob<{ steps: number; addLife: number; addBasic?: boolean; addToken?: boolean; addCard?: boolean }[]>({
     default: [
-      { steps: 60, addLife: 2 },
-      { steps: 120, addLife: 2, addBasic: true },
-      { steps: 180, addLife: 2, addToken: true, addCard: true },
+      { steps: 30, addLife: 2 },
+      { steps: 60, addLife: 2, addBasic: true },
+      { steps: 90, addLife: 2, addToken: true, addCard: true },
     ],
     unit: "cumulative tiers by interior steps",
-    description: "The guardian's empowerment clock (dungeon-design §3, Normal column; difficulty bundles override whole-value per principle 5 — easy shifts thresholds up, hard doubles life). Steps are the ONLY input; tiers are visible in the dungeon UI with the next threshold named.",
+    description: "The guardian's empowerment clock (dungeon-design §3, Normal column; difficulty bundles override whole-value per principle 5 — easy shifts thresholds up, hard doubles life). Steps are the ONLY input; tiers are visible in the dungeon UI with the next threshold named. S20 playtest r2 (Chris): 60/120/180 → 30/60/90 — even at the doubled 24×18 grid an optimal full-loot tour (~71 steps) barely crossed the old tier 1; pending future shifts.",
   }),
   lairResidentLifeBonus: knob<number>({
     default: 2,
@@ -146,7 +146,7 @@ export const KNOBS = {
   renownFleeFactor: knob<Record<EnemyTier, number>>({
     default: { 1: 4, 2: 8, 3: 16 },
     unit: "× enemy tier vs renown, by enemy tier",
-    description: "Design round 1 §5: a roamer flees when tier × factor < player renown (Σ tier of defeated opponents). Fleeing roamers move away; contact is player-initiated. Evaluated every step.",
+    description: "Design round 1 §5, amended S20 playtest (Chris): a roamer flees when tier × factor < the player's renown IN THE ROAMER'S COLOURS (max over its template `colors`; renown credits per colour of each defeated opponent) — beating up green enemies scares green enemies; white tier 1s still line up. Fleeing roamers move away; contact is player-initiated. Evaluated every step.",
   }),
   anteCount: knob<number>({
     default: 1,
@@ -300,8 +300,8 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
   easy: {
     // UNTUNED placeholders
     dungeonEmpowermentTiers: [
-      { steps: 120, addLife: 2 },
-      { steps: 180, addLife: 2 },
+      { steps: 60, addLife: 2 },
+      { steps: 90, addLife: 2 },
     ],
     roamerDensityPer100Cells: { civilized: 0.7, approach: 1.1, wild: 1.5 },
     lossLifePenalty: 1,
@@ -312,9 +312,9 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
   hard: {
     // UNTUNED placeholders
     dungeonEmpowermentTiers: [
-      { steps: 60, addLife: 4 },
-      { steps: 120, addLife: 4, addBasic: true },
-      { steps: 180, addLife: 4, addToken: true, addCard: true },
+      { steps: 30, addLife: 4 },
+      { steps: 60, addLife: 4, addBasic: true },
+      { steps: 90, addLife: 4, addToken: true, addCard: true },
     ],
     roamerDensityPer100Cells: { civilized: 1.4, approach: 2.0, wild: 2.6 },
     anteCount: 2,

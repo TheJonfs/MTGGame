@@ -95,6 +95,31 @@ describe("S20 — the payment solver (ADR-004 second amendment)", () => {
     void spec2;
   });
 
+  it("creatures-last outranks keep-duals-free (S20 playtest, Chris): {1}{G} with Forest+Tropical Island+Llanowar Elves taps the lands and leaves the Elves standing", async () => {
+    const spec: FixtureSpec = {
+      name: "creature-producer-last",
+      setup: { players: [{ battlefield: ["forest", "tropical_island", "llanowar_elves"], hand: ["werebear"] }, {}] },
+      script: [{ player: 0, do: "cast", card: "werebear" }],
+      run: [{ priority: true }],
+    };
+    const tg = await runFixture(spec);
+    const st = tg.game.state;
+    const byCard = (cardId: string) => st.battlefield.map((id) => st.objects[id]!).find((o) => o.cardId === cardId)!;
+    expect(byCard("forest").tapped).toBe(true); // mono covers the {G} pip
+    expect(byCard("tropical_island").tapped).toBe(true); // the dual pays generic BEFORE any body taps
+    expect(byCard("llanowar_elves").tapped).toBe(false); // the Elves stay untapped to block
+    // And with NO mono land: {G} off dual+Elves still spends the dual, not the body.
+    const tg2 = await runFixture({
+      name: "creature-last-colored-pip",
+      setup: { players: [{ battlefield: ["tropical_island", "llanowar_elves"] }, {}] },
+      run: [{ priority: true }],
+    });
+    const ctx = tg2.game.ctx;
+    const plan = solvePayment(ctx, 0, parseManaCost("{G}"));
+    expect(plan!.taps).toHaveLength(1);
+    expect(ctx.state.objects[plan!.taps[0]!.id]!.cardId).toBe("tropical_island");
+  });
+
   it("replay: a full game on dual-heavy decks replays byte-identically (the solver is state-pure)", async () => {
     const { runMatch } = await import("../src/index.js");
     // A tiny seeded uniform agent (the engine package must not import @shandalar/agents).

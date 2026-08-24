@@ -147,6 +147,10 @@ export function generateDungeonRun(
   },
 ): DungeonRun {
   const { w, h } = { w: knobs.dungeonGridWidth, h: knobs.dungeonGridHeight };
+  // Content scales with grid area (S20 playtest: 12×9 → 24×18): s = 1 at the design doc's
+  // 12×9 baseline, 2 at the doubled default — branch/minion/cross-link counts and branch
+  // lengths all ride it, so the knobs stay the only size dial.
+  const s = Math.max(1, Math.round(Math.sqrt((w * h) / (12 * 9))));
   const rng = rngFor(world, opts.dungeonId);
   const passable = new Array<boolean>(w * h).fill(false);
   const at = (p: Point) => p.y * w + p.x;
@@ -171,23 +175,23 @@ export function generateDungeonRun(
   }
 
   // Branches: sprout from mid-trunk cells, run away vertically/backward, end in treasure.
-  const branchCount = opts.small ? 2 : 2 + rng.int(3); // 2..4
+  const branchCount = opts.small ? 2 * s : 2 * s + rng.int(2 * s + 1); // s=1: 2 / 2..4 · s=2: 4 / 4..8
   const branchTips: Point[] = [];
   for (let b = 0; b < branchCount; b++) {
     const from = trunk[1 + rng.int(Math.max(1, trunk.length - 3))]!;
     let p = { ...from };
     const dir = rng.float() < 0.5 ? -1 : 1;
-    const len = 2 + rng.int(opts.small ? 2 : 3); // 2..3 (small) / 2..4
+    const len = 2 * s + rng.int(opts.small ? 2 * s : 3 * s); // s=1: 2..3 / 2..4 · s=2: 4..7 / 4..9
     for (let i = 0; i < len; i++) {
       const q = rng.float() < 0.7 ? { x: p.x, y: p.y + dir } : { x: p.x - 1, y: p.y };
       if (q.x < 0 || q.y < 0 || q.y >= h) break;
       p = q; carve(p);
     }
-    if (!(p.x === from.x && p.y === from.y)) branchTips.push({ ...p });
+    if (!(p.x === from.x && p.y === from.y) && !branchTips.some((t) => t.x === p.x && t.y === p.y)) branchTips.push({ ...p });
   }
 
-  // One cross-link (interconnection): join two trunk cells a few columns apart via an L.
-  if (trunk.length > 8) {
+  // Cross-links (interconnection): join two trunk cells a few columns apart via an L; s per scale.
+  for (let link = 0; link < s && trunk.length > 8; link++) {
     const a = trunk[2 + rng.int(Math.floor(trunk.length / 3))]!;
     const b = trunk[Math.floor(trunk.length / 2) + rng.int(Math.floor(trunk.length / 3))]!;
     const viaY = Math.max(0, Math.min(h - 1, (a.y + b.y) / 2 + (rng.float() < 0.5 ? -2 : 2)) | 0);
@@ -197,7 +201,7 @@ export function generateDungeonRun(
   }
 
   // Minions at chokepoints: trunk cells past the first quarter, spaced out; never entry/guardian.
-  const minionCount = opts.small ? 1 + rng.int(2) : 2 + rng.int(2); // lair 1–2 / mox 2–3
+  const minionCount = opts.small ? s + rng.int(2) : s + 1 + rng.int(s + 1); // s=1: lair 1–2 / mox 2–3 · s=2: lair 2–3 / mox 3–5
   const spokeMinions = catalog.opponents.filter(
     (o) => o.spoke === opts.color && o.tier <= 2 && o.id !== opts.residentCatalogId,
   );

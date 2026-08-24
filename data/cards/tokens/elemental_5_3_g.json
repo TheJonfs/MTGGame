@@ -15,5 +15,8 @@
   ],
   "power": 5,
   "toughness": 3,
-  "text": ""
+  "text": "",
+  "art": {
+    "asset": "/custom-art/elemental_5_3_g.png"
+  }
 }

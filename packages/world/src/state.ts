@@ -18,8 +18,8 @@ import type { DungeonRun, DungeonStatus } from "./dungeon.js";
  * retired), `provenance` (append-only acquisition log), `player.renown`,
  * `player.starterId`. v1/v2 saves migrate with everything defaulted.
  */
-export const SAVE_FORMAT = "world-save-v5"; // S20: dungeons (+ reserved strongholds)
-export const SAVE_FORMATS_READABLE = ["world-save-v1", "world-save-v2", "world-save-v3", "world-save-v4", "world-save-v5"] as const;
+export const SAVE_FORMAT = "world-save-v6"; // S20 playtest: renown by colour
+export const SAVE_FORMATS_READABLE = ["world-save-v1", "world-save-v2", "world-save-v3", "world-save-v4", "world-save-v5", "world-save-v6"] as const;
 
 /** Per-town shop state (S14): which epoch the stock was rolled for and how
  * many of each card were sold in it; a new epoch restocks (sold resets). */
@@ -35,6 +35,11 @@ export type Collection = Record<string, number>;
 /** S16 v3: where a copy came from (append-only; never pruned on loss/sell —
  * it is history, and "new since last visit" reads it by step). */
 export type ProvenanceSource = "starter" | "ante" | "shop" | "reward";
+
+/** S20 playtest v6: the five colours renown is tracked by. */
+export type RenownColor = "W" | "U" | "B" | "R" | "G";
+export const RENOWN_COLORS: readonly RenownColor[] = ["W", "U", "B", "R", "G"];
+export const zeroRenownByColor = (): Record<RenownColor, number> => ({ W: 0, U: 0, B: 0, R: 0, G: 0 });
 export interface ProvenanceEntry {
   cardId: string;
   source: ProvenanceSource;
@@ -67,6 +72,10 @@ export interface PlayerState {
   stepsTaken: number;
   /** S16 v3 (design round 1 §5): Σ tier of defeated opponents; losses subtract nothing. */
   renown: number;
+  /** S20 playtest v6 (Chris): renown is FELT per colour — beating up green enemies scares
+   * green enemies; white tier 1s still line up. Credited per colour of the defeated
+   * opponent's `colors`; the flee rule reads the roamer's own colours (journey.renownAgainst). */
+  renownByColor: Record<RenownColor, number>;
   /** S16 v3: which catalog starter this world began with (home colour; pilot archetype). */
   starterId: StarterId;
 }
@@ -228,6 +237,7 @@ export function newWorld(opts: NewWorldOptions): WorldState {
       basicLand: basic,
       stepsTaken: 0,
       renown: 0,
+      renownByColor: zeroRenownByColor(),
       starterId: starter.id,
     },
     opponents: gen.opponents,
@@ -312,7 +322,9 @@ export function migrateWorld(format: string, input: Partial<WorldState>): WorldS
     };
     if (!out.map.road) out.map.road = new Array<boolean>(out.map.width * out.map.height).fill(false);
     spawnRoamers(out.map, out.opponents, new WorldRng((out.seed ^ 0x5bd1e995) >>> 0));
-    return out;
+    // S20 playtest fix: fall through to the v3+ defaulting below (the early return here
+    // left v1/v2 saves without quests/manalinks/dungeons — a crash on the first step tick).
+    w = out;
   }
   // v3 fields that landed after the first v3 commit (same session, before any human save): default them.
   const v3 = w as WorldState;
@@ -326,5 +338,7 @@ export function migrateWorld(format: string, input: Partial<WorldState>): WorldS
   if (!v3.dungeons) v3.dungeons = {};
   if (v3.activeDungeon === undefined) v3.activeDungeon = null;
   if (!v3.strongholds) v3.strongholds = [];
+  // v5 → v6 (S20 playtest): renown by colour — zeros (a pre-v6 total can't be split honestly).
+  if (!v3.player.renownByColor) v3.player.renownByColor = zeroRenownByColor();
   return v3;
 }

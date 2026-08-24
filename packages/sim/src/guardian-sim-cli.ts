@@ -32,11 +32,12 @@ const dungeons = JSON.parse((await import("node:fs")).readFileSync(join(ROOT, "d
 
 const BASIC: Record<string, string> = { W: "plains", U: "island", B: "swamp", R: "mountain", G: "forest" };
 const TOKEN: Record<string, string> = { W: "bird_1_1_flying", U: "faerie_1_1_u", B: "faerie_rogue_1_1_flying", R: "goblin_1_1", G: "bear_2_2" };
+// Mirrors dungeonEmpowermentTiers (cumulative): 30/60/90 since S20 playtest r2 (was 60/120/180).
 const TIERS = [
   { steps: 0, life: 0, mods: [] as Modifier[] },
-  { steps: 60, life: 2, mods: [] as Modifier[] },
-  { steps: 120, life: 4, mods: [{ basic: true }] as never[] },
-  { steps: 180, life: 6, mods: [{ basic: true }, { token: true }, { card: true }] as never[] },
+  { steps: 30, life: 2, mods: [] as Modifier[] },
+  { steps: 60, life: 4, mods: [{ basic: true }] as never[] },
+  { steps: 90, life: 6, mods: [{ basic: true }, { token: true }, { card: true }] as never[] },
 ];
 
 const reference: { name: string; archetype: "aggro" | "midrange" | "control"; decklist: { cardId: string; count: number }[] }[] = [

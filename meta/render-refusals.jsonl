@@ -1,0 +1,3 @@
+{"at": "2026-08-24T19:25:46+00:00", "entity": "token-elemental", "variant": "canonical", "reason": "model_refusal", "detail": "no image in response (finishReason=PROHIBITED_CONTENT) "}
+{"at": "2026-08-24T19:52:20+00:00", "entity": "guardian-drana", "variant": "canonical", "reason": "model_refusal", "detail": "no image in response (finishReason=PROHIBITED_CONTENT) "}
+{"at": "2026-08-24T19:53:06+00:00", "entity": "guardian-drana", "variant": "canonical", "reason": "model_refusal", "detail": "no image in response (finishReason=PROHIBITED_CONTENT) "}
