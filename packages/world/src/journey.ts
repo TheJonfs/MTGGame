@@ -2,6 +2,7 @@ import type { MatchResult, MatchSpec, Modifier } from "@shandalar/engine";
 import { enemyDeck, type Catalog, type OpponentTemplate } from "./catalog.js";
 import { isTownCell, regionCells, roamerTarget, rollTemplate, type GoneReason, type OpponentInstance } from "./generate.js";
 import { manalinkModifiers, questsOnDefeat, questsOnStep, type QuestEvent } from "./quests.js";
+import { siegesOnStep } from "./siege.js";
 import type { KnobValues } from "./knobs.js";
 import { findPath, fixedPointAt, idx, inBounds, manhattan, markExplored, regionAt, samePoint, townAt, type Point, type Town, type WorldMap } from "./map.js";
 import { WorldRng } from "./rng.js";
@@ -38,7 +39,11 @@ export type StepEvent =
   | { type: "questExpired"; questId: string; text: string }
   /** S20 (dungeon-design §5): you stand at a dungeon threshold — the telegraph screen opens; entering
    * is a choice (walking away costs nothing). Lairs are lair-dungeons now; mox sites are authored. */
-  | { type: "dungeonEntry"; dungeonId: string; kind: "mox" | "lair"; name: string; at: Point; residentCatalogId?: string };
+  | { type: "dungeonEntry"; dungeonId: string; kind: "mox" | "lair"; name: string; at: Point; residentCatalogId?: string }
+  /** S21 (manifest §5): a siege threat landed mid-walk (the town telegraphs until the deadline). */
+  | { type: "siegeThreatened"; townIndex: number; townName: string; deadlineStep: number }
+  /** S21: an unrelieved town fell — shopping/quests/its manalinks suspend until liberated. */
+  | { type: "siegeFell"; townIndex: number; townName: string };
 
 // ---------- S16 roamers: sight, flee, movement ----------
 
@@ -263,6 +268,8 @@ export function advance(
       for (const qe of questsOnStep(world, knobs, (p) => playerSees(world, knobs, p))) {
         if (qe.type === "questExpired") events.push({ type: "questExpired", questId: qe.quest.id, text: qe.quest.text });
       }
+      // S21: the siege clock (consumer #3) — threats land, deadlines fall (manifest §5).
+      for (const se of siegesOnStep(world, catalog, knobs)) events.push(se);
       const town = townAt(world.map, cell);
       if (town) {
         // Towns are safe nodes: no contact on the town cell itself (roamers never enter it).

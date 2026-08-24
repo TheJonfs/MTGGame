@@ -315,9 +315,17 @@ export function abandonQuest(world: WorldState, questId: string): boolean {
   return true;
 }
 
-/** The duel modifiers the player's manalinks add (prepareDuel merges these). */
+/** The duel modifiers the player's manalinks add (prepareDuel merges these — the ONE manalink
+ * source; dungeon and siege specs call it too). S21 (manifest §5): a link whose granting town
+ * is OCCUPIED is suspended — the status check is inlined structurally rather than importing
+ * siege.ts (which imports this module); the predicate's home is siege.isTownOccupied. */
 export function manalinkModifiers(world: WorldState): { type: "permanentOnBattlefield"; player: 0; cardId: string }[] {
-  return world.manalinks.map((m) => ({ type: "permanentOnBattlefield" as const, player: 0 as const, cardId: MANALINK_CARD[m.color] }));
+  const occupied = new Set(
+    (world.sieges as { townIndex: number; status?: string }[]).filter((s) => s.status === "occupied").map((s) => s.townIndex),
+  );
+  return world.manalinks
+    .filter((m) => !occupied.has(m.town))
+    .map((m) => ({ type: "permanentOnBattlefield" as const, player: 0 as const, cardId: MANALINK_CARD[m.color] }));
 }
 
 /** Fresh quest state (new worlds; the v3→v4 migration). */

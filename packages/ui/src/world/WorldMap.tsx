@@ -74,6 +74,14 @@ const TERRAIN_GLYPHS: Record<string, string[]> = {
 };
 
 const TOWN_GLYPH = "M -5 3 L -5 -2 L 0 -6 L 5 -2 L 5 3 Z M -2 3 L -2 0 L 2 0 L 2 3"; // house with a door
+/** S21 (ADR-080 rider): the town FOOTPRINT — a multi-building vignette (two houses, a
+ * crenellated tower, a ground line) for the campaign-map register; a place worth defending,
+ * shipped in the session that threatens it. */
+const TOWN_FOOTPRINT =
+  "M -8 5 L -8 0 L -5 -3 L -2 0 L -2 5 Z M -6 5 L -6 2 L -4 2 L -4 5 " + // left house + door
+  "M -1 5 L -1 -5 L 0 -5 L 0 -7 L 1 -7 L 1 -5 L 2 -5 L 2 5 Z " + // the tower
+  "M 3 5 L 3 1 L 5.5 -2 L 8 1 L 8 5 Z M -9 5 L 9 5"; // right house + ground line
+const SIEGE_FLAG = "M 0 0 L 0 -7 L 6 -5 L 0 -3"; // the besieger's banner
 const LAIR_GLYPH = "M -6 4 L -4 -3 L -1 -6 L 2 -5 L 5 -1 L 6 4 Z M -2 4 L -2 1 L 2 1 L 2 4"; // crag with a mouth
 const CASTLE_GLYPH = "M -6 4 L -6 -3 L -4 -3 L -4 -1 L -2 -1 L -2 -3 L 0 -3 L 0 -1 L 2 -1 L 2 -3 L 4 -3 L 4 -1 L 6 -1 L 6 4 Z M -1.5 4 L -1.5 1 L 1.5 1 L 1.5 4"; // battlements with a gate
 const DOOR_GLYPH = "M -5 5 L -5 -1 A 5 6 0 0 1 5 -1 L 5 5 Z M -3 5 L -3 -0.5 A 3 3.6 0 0 1 3 -0.5 L 3 5"; // arched stone door (guardian chamber)
@@ -123,6 +131,7 @@ export function WorldMapView({
   marks = [],
   edgeLabel = "the edge of the map",
   interior = false,
+  townStates = {},
   onClickCell,
 }: {
   map: WorldMapModel;
@@ -150,6 +159,9 @@ export function WorldMapView({
   edgeLabel?: string;
   /** S20 playtest r2: dark-stone dungeon-interior register (concept-map-dungeon). */
   interior?: boolean;
+  /** S21 sieges: per-town threat state — threatened towns ring danger-dashed with a banner;
+   * occupied towns go dark under a solid danger ring. */
+  townStates?: Record<number, "threatened" | "occupied">;
   onClickCell: (p: Point) => void;
 }) {
   const [hoverTown, setHoverTown] = useState<Town | null>(null);
@@ -374,13 +386,21 @@ export function WorldMapView({
         {previewTarget && (
           <circle cx={centre(previewTarget).cx} cy={centre(previewTarget).cy} r={CELL * 0.45} fill="none" stroke="var(--brass)" strokeWidth="2.2" pointerEvents="none" />
         )}
-        {/* towns */}
+        {/* towns — S21: footprint vignettes (ADR-080 rider) with siege states */}
         {map.towns.filter((t) => inView(t.at) && seen(t.at)).map((t) => {
           const { cx, cy } = centre(t.at);
+          const st = townStates[t.index];
           return (
             <g key={t.index} transform={`translate(${cx} ${cy + 1})`} onMouseEnter={() => setHoverTown(t)} onMouseLeave={() => setHoverTown(null)} onClick={() => onClickCell(t.at)} style={{ cursor: "pointer" }}>
-              <circle r={CELL * 0.62} fill="var(--parchment)" stroke="var(--ink)" strokeWidth="1.4" />
-              <path d={TOWN_GLYPH} fill="var(--ink)" stroke="var(--ink)" strokeWidth="0.8" strokeLinejoin="round" transform="scale(1.3)" />
+              <circle
+                r={CELL * 0.68}
+                fill={st === "occupied" ? "#3b2b28" : "var(--parchment)"}
+                stroke={st ? "var(--danger)" : "var(--ink)"}
+                strokeWidth={st === "occupied" ? 2.4 : st === "threatened" ? 2 : 1.4}
+                strokeDasharray={st === "threatened" ? "4 3" : undefined}
+              />
+              <path d={TOWN_FOOTPRINT} fill={st === "occupied" ? "var(--parchment)" : "var(--ink)"} stroke={st === "occupied" ? "var(--parchment)" : "var(--ink)"} strokeWidth="0.7" strokeLinejoin="round" transform="scale(1.15)" />
+              {st && <path d={SIEGE_FLAG} fill="var(--danger)" stroke="var(--ink)" strokeWidth="0.7" transform={`translate(0 ${-CELL * 0.72})`} />}
             </g>
           );
         })}
@@ -482,7 +502,7 @@ export function WorldMapView({
           ? cells.length > 0 && Array.from({ length: map.height }, (_, y) => Array.from({ length: map.width }, (_, x) => (seenXY(x, y) ? <rect key={`m${y * map.width + x}`} x={x * MINI} y={y * MINI} width={MINI} height={MINI} fill={map.passable[y * map.width + x] ? INTERIOR.floor : INTERIOR.rock} /> : null)))
           : miniRegions.map(({ reg, runs }) => runs.map((r, i) => <rect key={`${reg.index}-${i}`} x={r.x * MINI} y={r.y * MINI} width={r.w * MINI} height={MINI} fill={washFor(reg.tier, reg.color)} />))}
         {map.road && map.road.map((r, i) => (r && seenXY(i % map.width, Math.floor(i / map.width)) ? <rect key={`rd${i}`} x={(i % map.width) * MINI} y={Math.floor(i / map.width) * MINI} width={MINI} height={MINI} fill="rgba(43,37,32,0.45)" /> : null))}
-        {map.towns.filter((t) => seen(t.at)).map((t) => <rect key={t.index} x={t.at.x * MINI - MINI * 0.5} y={t.at.y * MINI - MINI * 0.5} width={MINI * 2} height={MINI * 2} fill="var(--ink)" />)}
+        {map.towns.filter((t) => seen(t.at)).map((t) => <rect key={t.index} x={t.at.x * MINI - MINI * 0.5} y={t.at.y * MINI - MINI * 0.5} width={MINI * 2} height={MINI * 2} fill={townStates[t.index] ? "var(--danger)" : "var(--ink)"} />)}
         {map.strongholds.map((f, i) => !seen(f.at) ? null : <rect key={`f${i}`} x={f.at.x * MINI - MINI * (f.kind === "stronghold" ? 1 : 0.5)} y={f.at.y * MINI - MINI * (f.kind === "stronghold" ? 1 : 0.5)} width={MINI * (f.kind === "stronghold" ? 3 : 2)} height={MINI * (f.kind === "stronghold" ? 3 : 2)} fill={f.kind === "stronghold" ? "var(--ink)" : "var(--danger)"} stroke={f.kind === "stronghold" ? "var(--brass)" : undefined} strokeWidth={0.8} />)}
         {roamers.map((r) => <circle key={r.id} cx={(r.at.x + 0.5) * MINI} cy={(r.at.y + 0.5) * MINI} r={MINI} fill={r.fleeing ? "var(--ink-soft)" : "var(--danger)"} />)}
         <rect x={origin.x * MINI} y={origin.y * MINI} width={vw * MINI} height={vh * MINI} fill="none" stroke="var(--brass)" strokeWidth="1.2" />

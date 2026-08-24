@@ -5,6 +5,7 @@ import { exploredAll, type Point, type WorldMap } from "./map.js";
 import { WorldRng, type WorldRngState } from "./rng.js";
 import { emptyQuestState, type Manalink, type QuestState } from "./quests.js";
 import type { DungeonRun, DungeonStatus } from "./dungeon.js";
+import type { SiegeEntry } from "./siege.js";
 
 /**
  * WorldState + save format (brief Part 2). One serializable object: seed,
@@ -108,8 +109,9 @@ export interface WorldState {
   quests: QuestState;
   /** S19 v4 (ADR-069): owned manalinks — every duel starts with each on your battlefield. */
   manalinks: Manalink[];
-  /** S19 v4 (reserved for S20 sieges — the field exists so v4 saves survive the siege session without a v5). */
-  sieges: unknown[];
+  /** S19 v4 reserved → S21 live: per-town siege state (lazily populated; the reserved-field
+   * trick cashed — no save bump). An engagement in progress rides in its entry (reload resumes). */
+  sieges: SiegeEntry[];
   /** S20 v5: per-dungeon status (cleared / reset count), keyed by dungeon id. */
   dungeons: Record<string, DungeonStatus>;
   /** S20 v5: the dungeon in progress (reload resumes mid-dungeon; quitting is not walking out). */

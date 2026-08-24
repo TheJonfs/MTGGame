@@ -92,6 +92,22 @@ export const KNOBS = {
     unit: "cumulative tiers by interior steps",
     description: "The guardian's empowerment clock (dungeon-design §3, Normal column; difficulty bundles override whole-value per principle 5 — easy shifts thresholds up, hard doubles life). Steps are the ONLY input; tiers are visible in the dungeon UI with the next threshold named. S20 playtest r2 (Chris): 60/120/180 → 30/60/90 — even at the doubled 24×18 grid an optimal full-loot tour (~71 steps) barely crossed the old tier 1; pending future shifts.",
   }),
+  // ---- S21 (overworld manifest §5): sieges ----
+  siegeIntervalSteps: knob<Record<RegionTier, number>>({
+    default: { civilized: 600, approach: 450, wild: 300 },
+    unit: "steps between threats, by the town's ring (0 = never)",
+    description: "S21 sieges (manifest §5): each town's seeded siege timer — a threat lands every ~interval steps (jittered ±25% per town/epoch). Deeper rings besiege harder. The world-sim siege table argues these baselines.",
+  }),
+  siegeWarningSteps: knob<number>({
+    default: 60,
+    unit: "steps",
+    description: "S21: the relief window — a threatened town telegraphs for this many steps (§5's visible-schedules law: rail, map chip, and in town) before it falls to the party.",
+  }),
+  siegePartySize: knob<Record<RegionTier, number>>({
+    default: { civilized: 1, approach: 2, wild: 3 },
+    unit: "party members, by the town's ring",
+    description: "S21: the besieging party's size — defense and liberation are consecutive duels with life carried between them (dungeon-style, Chris-ruled). The leader fights last.",
+  }),
   lairResidentLifeBonus: knob<number>({
     default: 2,
     unit: "world life added to a lair resident's duel life",
@@ -304,6 +320,8 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
       { steps: 90, addLife: 2 },
     ],
     roamerDensityPer100Cells: { civilized: 0.7, approach: 1.1, wild: 1.5 },
+    siegeIntervalSteps: { civilized: 900, approach: 675, wild: 450 },
+    siegeWarningSteps: 90,
     lossLifePenalty: 1,
     lifeFloor: 10, // only gained life is ever at risk
     shopPriceMultiplier: 0.8,
@@ -317,6 +335,8 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
       { steps: 90, addLife: 4, addToken: true, addCard: true },
     ],
     roamerDensityPer100Cells: { civilized: 1.4, approach: 2.0, wild: 2.6 },
+    siegeIntervalSteps: { civilized: 450, approach: 340, wild: 225 },
+    siegeWarningSteps: 40,
     anteCount: 2,
     lossLifePenalty: 1,
     lifeFloor: 0,

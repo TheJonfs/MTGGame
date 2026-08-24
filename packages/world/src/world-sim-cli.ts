@@ -31,6 +31,16 @@ function arg(name: string, fallback: string): string {
   return i !== -1 ? process.argv[i + 1]! : fallback;
 }
 
+/** Yield the list once; with `repeat`, keep cycling it until `stop()` (S21 --min-steps). */
+function* repeatUntil<T>(items: T[], stop: () => boolean, repeat = false): Generator<T> {
+  do {
+    for (const it of items) {
+      if (stop()) return;
+      yield it;
+    }
+  } while (repeat && !stop() && items.length > 0);
+}
+
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const pool = loadCardPool(join(ROOT, "data/cards")).cards;
 const catalog = loadCatalog(join(ROOT, "data/world"));
@@ -38,6 +48,7 @@ const seeds = Number(arg("seeds", "30"));
 const starterId = arg("starter", "green") as StarterId;
 const difficulty = arg("difficulty", "standard") as DifficultyName;
 const playerTier = arg("player", "journeyman") as Difficulty;
+const minSteps = Number(arg("min-steps", "0")); // S21: repeat the tour circuit to this horizon (siege pressure)
 const policy = arg("policy", "fight-all") as "fight-all" | "avoid";
 const maxLegs = Number(arg("legs", "60"));
 // --tour towns (default): every town; --tour all: towns + every lair (ADR-072: one per wild region — five wild rings, lethal by design).
@@ -63,6 +74,14 @@ let anteWon = 0, anteLost = 0, goldEnd = 0, deaths = 0, toursCompleted = 0, tota
 let contactsByRoamer = 0, contactsByPlayer = 0, fleeingSeen = 0, fleeingCaught = 0, sightings = 0, spawned = 0;
 const lifeAtEnd: number[] = [];
 const renownAtEnd: number[] = [];
+// S21 sieges: pressure instrument — threats/falls by the town's ring, occupation exposure
+// (the tour policy never liberates, so "time under occupation" here = exposure a passive
+// player eats; liberation timing needs a fighting policy — reported as occupied-at-end).
+const siegeThreats: Record<string, number> = { civilized: 0, approach: 0, wild: 0 };
+const siegeFalls: Record<string, number> = { civilized: 0, approach: 0, wild: 0 };
+let occupiedTownSteps = 0; // Σ over steps of (towns occupied at that step)
+const occupiedAtEnd: number[] = [];
+const firstFallStep: number[] = [];
 
 for (let seed = 1; seed <= seeds; seed++) {
   const w = newWorld({ seed, catalog, starter: starterId, difficulty, knobLayers: extraKnobs });
@@ -70,7 +89,10 @@ for (let seed = 1; seed <= seeds; seed++) {
   const targets = [...w.map.towns.filter((t) => !(t.at.x === w.map.start.x && t.at.y === w.map.start.y)).map((t) => t.at), ...(tour === "all" ? w.map.strongholds.filter((f) => f.kind === "lair").map((f) => f.at) : [])];
   let dead = false;
   const seenIds = new Set<string>();
-  for (const dest of targets) {
+  // S21: --min-steps N repeats the tour circuit until N steps (siege timers live on horizons
+  // longer than one town tour — a single pass measured ~183 steps against a 225-step shortest
+  // threat, so the default tour never sees a siege; the pressure table needs the longer walk).
+  for (const dest of repeatUntil(targets, () => dead || (minSteps > 0 ? w.player.stepsTaken >= minSteps : false), minSteps > 0)) {
     if (dead) break;
     for (let leg = 0; leg < maxLegs && !dead; leg++) {
       // Plan: shortest path, or (avoid) a path that keeps ≥2 cells from visible non-fleeing roamers.
@@ -87,8 +109,16 @@ for (let seed = 1; seed <= seeds; seed++) {
       if (path.length === 0) break; // arrived
       const ev = advance(w, catalog, path, extraKnobs);
       for (const e of ev) {
-        if (e.type === "moved") stepsByTier[w.map.regions[w.map.region[e.to.y * w.map.width + e.to.x]!]!.tier]! += 1;
+        if (e.type === "moved") {
+          stepsByTier[w.map.regions[w.map.region[e.to.y * w.map.width + e.to.x]!]!.tier]! += 1;
+          occupiedTownSteps += (w.sieges as { status?: string }[]).filter((s) => s.status === "occupied").length;
+        }
         if (e.type === "spawned") spawned += 1;
+        if (e.type === "siegeThreatened") siegeThreats[w.map.regions[w.map.towns[e.townIndex]!.region]!.tier]! += 1;
+        if (e.type === "siegeFell") {
+          siegeFalls[w.map.regions[w.map.towns[e.townIndex]!.region]!.tier]! += 1;
+          firstFallStep.push(w.player.stepsTaken);
+        }
       }
       for (const r of visibleRoamers(w, catalog, knobs)) {
         if (!seenIds.has(r.inst.id)) {
@@ -127,6 +157,7 @@ for (let seed = 1; seed <= seeds; seed++) {
     }
   }
   if (!dead) toursCompleted += 1;
+  occupiedAtEnd.push((w.sieges as { status?: string }[]).filter((s) => s.status === "occupied").length);
   lifeAtEnd.push(w.player.worldLife);
   renownAtEnd.push(w.player.renown);
   goldEnd += w.player.gold;
@@ -148,6 +179,8 @@ for (const t of ["1", "2", "3"]) {
 }
 console.log(`  contacts: roamer reached you ${contactsByRoamer} · you stepped onto one ${contactsByPlayer} · lair fights ${lairFights} · distinct roamers sighted ${sightings} (fleeing ${fleeingSeen}; caught fleeing ${fleeingCaught}) · respawns ${spawned}`);
 console.log(`  ante won ${anteWon} / lost ${anteLost} · mean gold at end ${(goldEnd / seeds).toFixed(0)} · mean world life at end ${mean(lifeAtEnd).toFixed(1)} · mean renown at end ${mean(renownAtEnd).toFixed(1)}`);
+// S21: siege pressure (the tour never relieves or liberates — this is the passive player's exposure).
+console.log(`  sieges: threats c/a/w ${siegeThreats.civilized}/${siegeThreats.approach}/${siegeThreats.wild} · falls c/a/w ${siegeFalls.civilized}/${siegeFalls.approach}/${siegeFalls.wild} · mean towns occupied at tour end ${mean(occupiedAtEnd).toFixed(1)} · occupied-town exposure ${(occupiedTownSteps / Math.max(1, totalSteps)).toFixed(2)} town·steps/step${firstFallStep.length ? ` · first fall at mean step ${mean(firstFallStep).toFixed(0)}` : ""}`);
 // S18: per-opponent table (player's win % vs each catalog entry), beasts and signatures marked.
 console.log(`  per opponent (player win % · W-L, n):`);
 const rows = Object.entries(byOpponent).map(([id, r]) => ({ id, r, tmpl: catalog.opponents.find((o) => o.id === id)! })).sort((a, b) => a.tmpl.tier - b.tmpl.tier || a.tmpl.id.localeCompare(b.tmpl.id));

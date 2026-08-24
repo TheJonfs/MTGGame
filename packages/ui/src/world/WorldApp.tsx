@@ -276,6 +276,45 @@ function QuestDonePopup({ c }: { c: WorldController }) {
   );
 }
 
+/** S21: the siege engagement telegraph — the party, the life-carry law, the stakes (resume-aware). */
+function SiegeTelegraph({ c }: { c: WorldController }) {
+  if (c.screen.kind !== "siegeTelegraph" || !c.world) return null;
+  const info = c.siegeInfo(c.screen.townIndex);
+  if (!info) return null;
+  const notice = c.screen.notice;
+  const verb = info.kind === "liberation" ? "Liberate" : "Drive them off";
+  return (
+    <div className="gallery-modal">
+      <div className="gallery-modal-box play-dialog dungeon-telegraph">
+        <h2 style={{ marginTop: 0, fontFamily: "var(--serif)" }}>{info.kind === "liberation" ? `${info.town.name}, occupied` : `${info.town.name}, under siege`}</h2>
+        <p className="parley-sub">
+          {info.kind === "liberation"
+            ? "The town is theirs. Its market, quest board, and granted gifts are dark until it is freed."
+            : `The band strikes in ${info.stepsLeft ?? "?"} steps. Break them now, or the town falls.`}
+        </p>
+        <div style={{ display: "flex", gap: 10, margin: "10px 0", alignItems: "center" }}>
+          {info.party.map((m, i) => (
+            <div key={i} style={{ textAlign: "center", opacity: m.fallen ? 0.35 : 1 }}>
+              <img className="parley-portrait" src={`/portraits/${m.tmpl.portraitChip ?? m.tmpl.portrait}.png`} alt="" style={{ width: 56, height: 56 }} title={m.tmpl.name} />
+              <div style={{ fontSize: 10.5 }}>{m.fallen ? "fallen" : `${m.tmpl.name.length > 16 ? m.tmpl.name.slice(0, 15) + "…" : m.tmpl.name} · ${["", "I", "II", "III"][m.tmpl.tier]}`}</div>
+            </div>
+          ))}
+        </div>
+        <ul className="dungeon-stakes">
+          <li><b>Consecutive fights, one life track</b> — your life carries battle to battle (starting at your world life, {c.world.player.worldLife}) and is discarded when it ends. The last of them holds the {info.kind === "liberation" ? "town's heart" : "line"}.</li>
+          <li>Each fight antes as usual; <b>a single loss ends the attempt</b> — ordinary loss costs apply and their band regroups to full strength.</li>
+          <li>Winnings pay <b>immediately</b> (ante, gold, renown) — a town is not a mountain.</li>
+        </ul>
+        {notice && <p style={{ fontSize: 12, color: "var(--ink-soft)" }}>{notice}</p>}
+        <p style={{ textAlign: "right", marginBottom: 0 }}>
+          <button onClick={() => c.declineSiege()}>Not yet</button>{" "}
+          <button className="primary" onClick={() => c.enterSiege()}>{info.resume ? `${verb} (resume)` : verb}</button>
+        </p>
+      </div>
+    </div>
+  );
+}
+
 /** S20: the dungeon threshold — the stakes stated before the choice (dungeon-design §4). */
 function DungeonTelegraph({ c }: { c: WorldController }) {
   if (c.screen.kind !== "dungeonTelegraph") return null;
@@ -407,6 +446,17 @@ function TownScreen({ c, pool, oracle }: { c: WorldController; pool: Map<string,
       <div className="gallery-modal-box play-dialog world-town">
         <h2 style={{ fontFamily: "var(--serif)", marginTop: 0 }}>{town.name}</h2>
         <p style={{ fontSize: 12, marginTop: 0 }}>{region.name} · a safe town — <i>clock-free: deliberation costs nothing here</i> · you have <b>{w.player.gold}</b> gold</p>
+        {(() => {
+          // S21: a threatened town wears its warning inside the walls (visible-schedules law).
+          const s = c.siegeInfo(town.index);
+          if (!s || s.kind !== "defense") return null;
+          return (
+            <p className="dungeon-law" style={{ borderColor: "var(--danger)" }}>
+              <b>Under siege:</b> a band of {s.party.length} strikes in <b>{s.stepsLeft}</b> steps. Fall, and the market, board, and this town's gifts go dark.{" "}
+              <button className="primary" style={{ marginLeft: 8 }} onClick={() => c.defendTown()}>Drive them off</button>
+            </p>
+          );
+        })()}
         <div className="flyout-title">
           Shop (buy only; stock refreshes every {c.knobs.shopRefreshSteps} steps)
           <button className="linkish" onClick={() => setPrinted(!printed)}>{printed ? "our frame" : "printed card"}</button>
@@ -695,7 +745,7 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
   };
 
   if (c.screen.kind === "start" || !c.world) return <StartScreen c={c} onStart={(choice) => c.newGame(choice)} />;
-  if (c.screen.kind === "duel" || c.screen.kind === "dungeonDuel") {
+  if (c.screen.kind === "duel" || c.screen.kind === "dungeonDuel" || c.screen.kind === "siegeDuel") {
     const m = c.screen.match;
     if (lastDuel.current?.match !== m) {
       m.stops = loadStops();
@@ -710,6 +760,7 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
   if (c.screen.kind === "collection") return <CollectionScreen c={c} pool={pool} oracle={oracle} />;
   if (c.screen.kind === "editor") return <EditorScreen c={c} pool={pool} oracle={oracle} />;
   if (c.screen.kind === "dungeonTelegraph") return <DungeonTelegraph c={c} />;
+  if (c.screen.kind === "siegeTelegraph") return <SiegeTelegraph c={c} />;
   if (c.screen.kind === "dungeon") return <DungeonScreen c={c} pool={pool} />;
   if (c.screen.kind === "dungeonVictory") return <DungeonVictory c={c} pool={pool} />;
   if (c.screen.kind === "gameOver") {
@@ -745,6 +796,7 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
             pan={pan}
             onPan={(p) => setPan(p)}
             marks={c.questMarks()}
+            townStates={c.siegeStates()}
             onClickCell={(p) => c.clickCell(p)}
           />
         </div>
@@ -794,6 +846,19 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
             <div style={{ fontSize: 11.5, marginTop: 4 }}>Manalinks: {c.world.manalinks.map((m) => m.color).join(", ")} — every duel starts with them in play.</div>
           )}
         </div>
+        {c.siegeRail().filter((s) => seenCell(s.town.at)).length > 0 && (
+          <div className="panel">
+            <h3>Sieges</h3>
+            {c.siegeRail().filter((s) => seenCell(s.town.at)).map((s) => (
+              <div key={s.town.index} style={{ fontSize: 12, display: "flex", justifyContent: "space-between", cursor: screen.kind === "map" ? "pointer" : "default" }} title="click to preview the path there" onClick={() => c.clickCell(s.town.at)}>
+                <span>{s.town.name}</span>
+                <span style={{ color: "var(--danger)", fontWeight: s.status === "occupied" ? 700 : 400 }}>
+                  {s.status === "occupied" ? "OCCUPIED" : `falls in ${s.stepsLeft}`}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
         <div className="panel">
           <h3>Lairs &amp; strongholds</h3>
           {w.map.strongholds.map((f, i) => {

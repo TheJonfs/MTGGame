@@ -51,6 +51,10 @@ import {
   applyInteriorDuel, clearDungeon, colorPrizeRoll, dungeonAdvance, dungeonAsWorldMap, dungeonDuelSpec, dungeonPath,
   generateDungeonRun, lairPrizeRoll, reachedTiers, resetDungeon, type DungeonRun, type MoxDungeonDef,
 } from "@shandalar/world";
+import {
+  applySiegeDuel, beginSiegeEngagement, isTownOccupied, isTownThreatened, siegeDuelSpec, siegeFor, siegeWarnings,
+  type SiegeEntry,
+} from "@shandalar/world";
 import { GUARDIAN_DECKS } from "@shandalar/sim/guardian-decks";
 import { WorldRng as DungeonRng } from "@shandalar/world";
 
@@ -77,6 +81,9 @@ export type WorldScreen =
   | { kind: "dungeonDuel"; enemyName: string; match: MatchController; against: { minionId?: string; guardian?: boolean } }
   /** S20: the guardian fell — the escrow + prize payout ceremony. */
   | { kind: "dungeonVictory"; name: string; paidGold: number; paidCards: string[] }
+  /** S21 sieges: the engagement telegraph — the party, the life-carry law, the stakes (resume-aware). */
+  | { kind: "siegeTelegraph"; townIndex: number; notice: string | null }
+  | { kind: "siegeDuel"; enemyName: string; match: MatchController; townIndex: number }
   | {
       kind: "duelResult";
       duel: PreparedDuel;
@@ -171,6 +178,12 @@ export class WorldController {
       this.screen = { kind: "dungeon", notice: "You are where you stood — the halls remember, and so does the escrow.", walking: false };
     } else {
       const town = townAt(this.world.map, this.world.player.position);
+      // S21: standing in an occupied town on load (incl. mid-engagement — the telegraph resumes it).
+      if (town && isTownOccupied(this.world, town.index)) {
+        this.screen = { kind: "siegeTelegraph", townIndex: town.index, notice: "Loaded — the town is still theirs." };
+        this.emit();
+        return;
+      }
       this.screen = town
         ? { kind: "town", town, stock: rollShopStock(this.world, town, this.pool, this.knobs), notice: "Loaded." }
         : { kind: "map", preview: null, previewTarget: null, walking: false, notice: "Loaded." };
@@ -272,6 +285,17 @@ export class WorldController {
           this.emit();
           return;
         }
+        // S21 sieges: threats and falls surface as notices; a fall is a consequence (autosave).
+        if (e.type === "siegeThreatened") {
+          if (this.screen.kind === "map") this.screen = { ...this.screen, notice: `${e.townName} is under threat — it falls in ${e.deadlineStep - this.world.player.stepsTaken} steps unless relieved.` };
+          this.autosave();
+          this.emit();
+        }
+        if (e.type === "siegeFell") {
+          if (this.screen.kind === "map") this.screen = { ...this.screen, notice: `${e.townName} has fallen. Its market, board, and gifts are dark until it is freed.` };
+          this.autosave();
+          this.emit();
+        }
         if (e.type === "encounter") {
           this.resumePath = path.slice(i + 1);
           const tmpl = opponentTemplate(this.catalog, this.world.opponents.find((o) => o.id === e.encounter.opponentId)!);
@@ -280,6 +304,13 @@ export class WorldController {
           return;
         }
         if (e.type === "arrived") {
+          // S21: an occupied town's gate is the fight — the telegraph replaces the town screen.
+          if (isTownOccupied(this.world, e.town.index)) {
+            this.resumePath = path.slice(i + 1);
+            this.screen = { kind: "siegeTelegraph", townIndex: e.town.index, notice: null };
+            this.emit();
+            return;
+          }
           this.enterTown(e.town);
           return;
         }
@@ -833,10 +864,138 @@ export class WorldController {
     return { steps: run.steps, reached: tiers.length, nextAt: next?.steps ?? null, life: run.interiorLife, escrowGold: run.escrow.gold, escrowCards: run.escrow.cardIds };
   }
 
+  // ---------- S21 sieges (manifest §5) ----------
+
+  /** Map/rail surface: every non-quiet town's status. */
+  siegeStates(): Record<number, "threatened" | "occupied"> {
+    if (!this.world) return {};
+    const out: Record<number, "threatened" | "occupied"> = {};
+    for (const s of siegeWarnings(this.world)) out[s.townIndex] = s.status;
+    return out;
+  }
+
+  siegeRail(): { town: Town; status: "threatened" | "occupied"; stepsLeft?: number }[] {
+    if (!this.world) return [];
+    const w = this.world;
+    return siegeWarnings(w)
+      .map((s) => ({ town: w.map.towns[s.townIndex]!, status: s.status, ...(s.stepsLeft !== undefined ? { stepsLeft: s.stepsLeft } : {}) }))
+      .sort((a, b) => (a.stepsLeft ?? 1e9) - (b.stepsLeft ?? 1e9));
+  }
+
+  /** Telegraph payload: the town, the party (remaining vs total), the engagement kind. */
+  siegeInfo(townIndex: number): {
+    town: Town; entry: SiegeEntry; kind: "defense" | "liberation";
+    party: { tmpl: OpponentTemplate; fallen: boolean }[]; resume: boolean; stepsLeft?: number;
+  } | null {
+    if (!this.world) return null;
+    const town = this.world.map.towns[townIndex];
+    const entry = siegeFor(this.world, townIndex);
+    if (!town || !entry || entry.status === "quiet" || !entry.party) return null;
+    const kind = entry.status === "occupied" ? "liberation" : "defense";
+    const remaining = entry.engagement ? [...entry.engagement.remaining] : [...entry.party];
+    // Mark the already-fallen prefix (engagement in progress): party order is fight order.
+    const fallenCount = entry.party.length - remaining.length;
+    const party = entry.party.map((id, i) => ({ tmpl: this.catalog.opponents.find((o) => o.id === id)!, fallen: i < fallenCount }));
+    return {
+      town, entry, kind, party, resume: !!entry.engagement,
+      ...(entry.status === "threatened" && entry.deadlineStep !== undefined ? { stepsLeft: Math.max(0, entry.deadlineStep - this.world.player.stepsTaken) } : {}),
+    };
+  }
+
+  /** From a THREATENED town's screen: sally out to break the siege before it lands. */
+  defendTown(): void {
+    if (!this.world || this.screen.kind !== "town") return;
+    const town = this.screen.town;
+    if (!isTownThreatened(this.world, town.index)) return;
+    this.screen = { kind: "siegeTelegraph", townIndex: town.index, notice: null };
+    this.emit();
+  }
+
+  /** Commit from the telegraph: the engagement begins (or resumes) and the first fight starts. */
+  enterSiege(): void {
+    if (!this.world || this.screen.kind !== "siegeTelegraph") return;
+    const entry = siegeFor(this.world, this.screen.townIndex);
+    if (!entry || entry.status === "quiet") return;
+    beginSiegeEngagement(this.world, entry);
+    this.autosave(); // commitment is a consequence (the engagement rides the save)
+    this.startSiegeDuel(this.screen.townIndex);
+  }
+
+  declineSiege(): void {
+    if (!this.world || this.screen.kind !== "siegeTelegraph") return;
+    const townIndex = this.screen.townIndex;
+    const town = this.world.map.towns[townIndex]!;
+    // Threatened = declined from inside the (still friendly) town; occupied = from its gate.
+    if (isTownThreatened(this.world, townIndex)) this.enterTown(town);
+    else {
+      this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: `${town.name} stays theirs — for now.` };
+      this.emit();
+    }
+  }
+
+  private startSiegeDuel(townIndex: number): void {
+    if (!this.world) return;
+    const entry = siegeFor(this.world, townIndex)!;
+    const rng = new DungeonRng(this.world.rng);
+    const { spec, tmpl } = siegeDuelSpec(this.world, this.catalog, this.knobs, entry, rng);
+    this.world.rng = rng.state();
+    this.autosave();
+    const match = new MatchController(this.pool, {
+      humanSeat: 0,
+      seed: spec.seed,
+      aiDelayMs: this.aiDelayMs,
+      custom: {
+        human: { name: this.world.player.name, decklist: spec.players[0].decklist },
+        enemy: {
+          name: tmpl.name, decklist: spec.players[1].decklist,
+          difficulty: (spec.players[1].agent.split(":")[1] ?? "journeyman") as "apprentice" | "journeyman" | "master",
+          archetype: enemyDeckOf(this.catalog, tmpl.deck).archetype,
+          portrait: tmpl.portraitChip ?? tmpl.portrait,
+        },
+        rules: { startingLife: spec.rules.startingLife, ante: spec.rules.ante ?? 0 },
+        modifiers: spec.modifiers,
+      },
+    });
+    this.screen = { kind: "siegeDuel", enemyName: tmpl.name, match, townIndex };
+    this.emit();
+    void match.start().then((result) => this.finishSiegeDuel(townIndex, result));
+  }
+
+  private finishSiegeDuel(townIndex: number, result: MatchResult): void {
+    if (!this.world) return;
+    const entry = siegeFor(this.world, townIndex)!;
+    const town = this.world.map.towns[townIndex]!;
+    const out = applySiegeDuel(this.world, this.catalog, this.knobs, entry, town, result);
+    this.autosave(); // every fight is a consequence
+    if (out.type === "fightWon") {
+      this.screen = {
+        kind: "siegeTelegraph", townIndex,
+        notice: `${out.remaining} ${out.remaining === 1 ? "foe" : "foes"} left. Your life stands at ${out.lifeNow}; their stake${out.anteWon.length ? ` (${out.anteWon.map((id) => this.pool.get(id)?.name ?? id).join(", ")})` : ""} and ${out.goldWon} gold are yours.`,
+      };
+      this.emit();
+      return;
+    }
+    if (out.type === "engagementWon") {
+      const won = out.kind === "liberation" ? `${town.name} is free. Its market, board, and gifts return.` : `The siege of ${town.name} is broken before it landed.`;
+      this.enterTown(town);
+      if (this.screen.kind === "town") this.screen = { ...this.screen, notice: won };
+      this.emit();
+      return;
+    }
+    if (this.world.gameOver) {
+      this.screen = { kind: "gameOver", fatal: null };
+    } else {
+      const holds = out.kind === "liberation" ? `${town.name} stays theirs` : `${town.name}'s defenders regroup — the deadline stands`;
+      this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: `Driven off at a cost: your stake and a world life. ${holds}; their band is back at full strength.` };
+    }
+    this.emit();
+  }
+
   /** The current match (if any) — the duel screen mounts PlayMatch on it. */
   get match(): MatchController | null {
     if (this.screen.kind === "duel") return this.screen.match;
     if (this.screen.kind === "dungeonDuel") return this.screen.match;
+    if (this.screen.kind === "siegeDuel") return this.screen.match;
     return null;
   }
 }

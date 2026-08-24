@@ -23,6 +23,7 @@ import type { Modifier, MatchResult, MatchSpec } from "@shandalar/engine";
 import type { Catalog, OpponentTemplate } from "./catalog.js";
 import { enemyDeck } from "./catalog.js";
 import { addToCollection, forfeitCards, opponentTemplate, pickAnteFromDeck } from "./journey.js";
+import { manalinkModifiers } from "./quests.js";
 import type { KnobValues } from "./knobs.js";
 import { exploredNone, idx, isExplored, markExplored, type Point, type WorldMap } from "./map.js";
 import { WorldRng } from "./rng.js";
@@ -431,8 +432,9 @@ export function dungeonDuelSpec(
       ...lawMods(0),
       ...lawMods(1),
       ...emp.modifiers,
-      // Manalinks still apply inside (they are the player's persistent buffs).
-      ...world.manalinks.map((m) => ({ type: "permanentOnBattlefield" as const, player: 0 as const, cardId: ({ W: "plains", U: "island", B: "swamp", R: "mountain", G: "forest" } as const)[m.color] })),
+      // Manalinks still apply inside (they are the player's persistent buffs) — through the one
+      // source, so an occupied granting town's link is dark here too (S21 suspension).
+      ...manalinkModifiers(world),
     ],
   };
   return { spec, enemyName: base.name, enemyLife, empowerment };
