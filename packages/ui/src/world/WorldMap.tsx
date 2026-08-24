@@ -69,6 +69,7 @@ export function WorldMapView({
   explored,
   pan = { x: 0, y: 0 },
   onPan,
+  marks = [],
   onClickCell,
 }: {
   map: WorldMapModel;
@@ -89,6 +90,8 @@ export function WorldMapView({
   /** S18 (OQ-7): look-mode pan offset in cells (viewport centre = player + pan); onPan receives a new offset. */
   pan?: Point;
   onPan?: (p: Point) => void;
+  /** S19: bounty marks — the target's LAST SEEN cell (fog-honest; the mark trails sightings). */
+  marks?: { at: Point; label: string }[];
   onClickCell: (p: Point) => void;
 }) {
   const [hoverTown, setHoverTown] = useState<Town | null>(null);
@@ -279,6 +282,13 @@ export function WorldMapView({
             <image href={encounterPortrait} x={-CELL * 0.75} y={-CELL * 0.75} width={CELL * 1.5} height={CELL * 1.5} clipPath="url(#chip)" />
           </g>
         )}
+        {/* S19: bounty marks — a brass ⚑ at the last-seen cell */}
+        {marks.filter((m) => inView(m.at)).map((m, i) => (
+          <g key={`mk${i}`} transform={`translate(${centre(m.at).cx} ${centre(m.at).cy})`} pointerEvents="none" opacity="0.9">
+            <path d="M 0 8 L 0 -9 L 8 -6 L 0 -3" fill="var(--brass)" stroke="var(--ink)" strokeWidth="1" />
+            <text y={16} textAnchor="middle" className="town-label" style={{ fontSize: 8.5 }}>{m.label}</text>
+          </g>
+        ))}
         {/* S18 (OQ-7): map edges */}
         {edges.map((e, i) => (
           <g key={`edge${i}`} pointerEvents="none">

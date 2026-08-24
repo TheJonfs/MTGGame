@@ -46,6 +46,7 @@ import {
   type WorldState,
 } from "@shandalar/world";
 import { MatchController } from "../play/match-controller.js";
+import { abandonQuest, acceptQuest, cardMatches, questsOnArrival, spares, townOffers, type ActiveQuest, type QuestOffer } from "@shandalar/world";
 
 /**
  * WorldController (S13): the overworld's interaction brain — React-free, like
@@ -244,6 +245,10 @@ export class WorldController {
       if (this.screen.kind === "map") this.screen = { ...this.screen, preview: path.slice(i + 1) };
       this.emit();
       for (const e of events) {
+        if (e.type === "questExpired") {
+          this.autosave(); // durability: expiry is a consequence
+          if (this.screen.kind === "map") this.screen = { ...this.screen, notice: `A quest expired: ${e.text}` };
+        }
         if (e.type === "encounter") {
           this.resumePath = path.slice(i + 1);
           const tmpl = opponentTemplate(this.catalog, this.world.opponents.find((o) => o.id === e.encounter.opponentId)!);
@@ -407,10 +412,57 @@ export class WorldController {
     this.world.visits[town.index] = (this.world.visits[town.index] ?? 0) + 1;
     this.world.lastTownIndex = town.index;
     syncShopState(this.world, town, this.knobs);
+    // S19: courier deliveries complete on arrival (autosave below covers them — durability on complete).
+    const done = questsOnArrival(this.world, town, this.knobs);
     this.autosave();
     const first = this.world.visits[town.index] === 1;
-    this.screen = { kind: "town", town, stock: rollShopStock(this.world, town, this.pool, this.knobs), notice: first ? `First time in ${town.name}.` : null };
+    const questNote = done.map((e) => (e.type === "questDone" ? `Quest complete — ${e.rewardText}.` : "")).filter(Boolean).join(" ");
+    this.screen = { kind: "town", town, stock: rollShopStock(this.world, town, this.pool, this.knobs), notice: questNote || (first ? `First time in ${town.name}.` : null) };
     this.emit();
+  }
+
+  // ---------- S19 quests ----------
+
+  /** Offers on the current town's board (already excludes taken ones). */
+  townQuestOffers(): QuestOffer[] {
+    if (!this.world || this.screen.kind !== "town") return [];
+    return townOffers(this.world, this.catalog, this.screen.town, this.knobs, this.pool);
+  }
+
+  /** Spares that satisfy a card-courier's want (the picker's options). */
+  questCardOptions(offer: QuestOffer): string[] {
+    if (!this.world || !offer.cardWanted) return [];
+    const sp = spares(this.world.player.collection, activeDeck(this.world));
+    return Object.keys(sp).filter((id) => (sp[id] ?? 0) > 0 && !!this.pool.get(id) && cardMatches(this.pool.get(id)!, offer.cardWanted!)).sort();
+  }
+
+  acceptQuest(offer: QuestOffer, cardId?: string): void {
+    if (!this.world || this.screen.kind !== "town") return;
+    const r = acceptQuest(this.world, this.catalog, offer, this.knobs, this.pool, cardId);
+    if (r.ok) this.autosave(); // durability: accepted quests (and a departed card) survive a reload
+    this.screen = { ...this.screen, notice: r.ok ? `Taken: ${offer.text}${r.quest.deadlineStep !== undefined ? ` (${offer.deadlineSteps} steps)` : ""}` : `Can't take that: ${r.reason}` };
+    this.emit();
+  }
+
+  abandonQuest(questId: string): void {
+    if (!this.world) return;
+    if (abandonQuest(this.world, questId)) {
+      this.autosave();
+      this.notice("Quest abandoned.");
+    }
+    this.emit();
+  }
+
+  /** Active quests with presentation helpers (the rail panel reads this). */
+  activeQuests(): { quest: ActiveQuest; stepsLeft: number | null; destName: string | null; targetName: string | null }[] {
+    if (!this.world) return [];
+    const w = this.world;
+    return w.quests.active.map((q) => ({
+      quest: q,
+      stepsLeft: q.deadlineStep !== undefined ? Math.max(0, q.deadlineStep - w.player.stepsTaken) : null,
+      destName: q.toTown !== undefined ? w.map.towns.find((t) => t.index === q.toTown)?.name ?? null : null,
+      targetName: q.bountyCatalogId ? this.catalog.opponents.find((o) => o.id === q.bountyCatalogId)?.name ?? null : null,
+    }));
   }
 
   buy(item: ShopItem, toDeck = false): void {
