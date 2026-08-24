@@ -19,6 +19,15 @@
 - **Plates ×5 + the faerie token: kept** (MANIFEST updated).
 - **Quest UX from Chris's test-drive:** (1) *"no indication of where to go"* — quests now **mark the way**: a courier's destination town gets a ⚑ "{town} · delivery" (shown even through fog — the quest-giver told you the way), a bounty marks its named region's heart "· last marked" until first sighting, then the trailing last-seen mark. (2) *Completion popup* — arrivals now raise a "Quest complete" modal with the flavour line and the reward ("Take it"), instead of a notice line; bounty payouts keep their duel-result line. Both browser-verified.
 
+## Director round 2 (Chris's six notes)
+
+1. **Duress showed nothing** — confirmed and fixed at the engine: the caster-chooses discard only issued its request (the reveal vehicle) with ≥2 legal picks; 0 or 1 matches silently skipped it. Now **the reveal is unconditional** (CR-honest: "target opponent reveals their hand" happens regardless): 0 matches → the full hand + a "Continue (nothing to take)" acknowledgement; 1 match → the hand + the single pick, still shown. Fixtures 5b strengthened + 5c added. **Bonus fix found in the same code**: the AI's caster-chooses pick ranked by its OWN hand map (the opponent's cards resolved to nothing → effectively arbitrary, trending worst); it now reads `request.revealed` and takes their **highest**-mv match. Old replays unaffected (all fixtures green — no checked-in log contained a skipped-request Duress).
+2. **Raw card keys** — two distinct sinks: quest reward text now carries the card **name** (resolved at offer time, so world-side award code needs no pool); the **stack panel's target lines** resolved names only for cards that were themselves on the stack — a targeted Fencing Ace fell back to its key. Both fixed.
+3. **Card courier: worked nicely** — verdict recorded; the spares-only rule (deviation 3) stands unchallenged.
+4. **Collection our-frame scaling** — our frame kept the gallery's 240px width inside the collection's 186px cells (overlap + dwarfing the scans); scoped to 180px in that grid.
+5. **Manalinks are real basics now** — a green manalink puts an actual **Forest** onto your battlefield (`permanentOnBattlefield` of the plain basic); the five bespoke `manalink_*` artifact defs were cut the same session they were born (loader pin back to 111). Reward text: "a bonus Forest on your battlefield".
+6. **Economy first impressions good**; Chris wants to playtest splashing a second colour once **dual lands** land — planner note: he expects them soon and cheap to compose (they are: `addMana` choice or two basic abilities — Amendment 2 machinery covers the choice form).
+
 ## Deviations from the brief
 
 1. **The pool-registry `shopTier` column is a section, not a per-row column** — the canonical value lives on the card defs (loader-validated), the audit doc curates, `pnpm card-manifest` renders the human sheet. A 100-row hand-edit would rot; the guard can't.

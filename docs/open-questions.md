@@ -16,4 +16,5 @@
 | OQ-10 | S18 r1 | **Card tiering for shops** — which cards are shop-legal where and at what price; `docs/card-price-manifest.md` (`pnpm card-manifest`) is the working sheet Chris takes to the planner. | flat 4×(1+mv), everything but Lotus in shops | open (planner authoring) |
 | OQ-11 | S18 r1 | **AI conservatism with a swarm** (Nighthawk game): fixed by the greedy-remove attack search (book of shame 16) + sacrifice pricing (15); 1,000/cell gates PASS (S19 Part 0). Does it *feel* right in the next Nighthawk/Warband fight? | shipped | open (verdict) |
 | OQ-12 | S19 mid | **Is Nighthawk at 15% enough?** worldLife 10→8 lifted it 11→15% (Warband 32→36%). Chris ruled −2 a fair trade; if the next tables still read over-tier, the levers are another life step or deck surgery (fewer Nighthawks / Doom Blade → Terror). | worldLife 8 | open (watch next tables) |
+| OQ-13 | S19 r2 | **Dual lands** — Chris wants to playtest two-colour decks; expects duals soon ("easy to compose" — correct: an addMana choice à la Amendment 2, or twin tap abilities). Planner schedules the batch + which cycle (taplands? painlands?). | none in pool | open (planner) |
 
