@@ -1,6 +1,7 @@
 import type { MatchResult, MatchSpec, Modifier } from "@shandalar/engine";
 import { enemyDeck, type Catalog, type OpponentTemplate } from "./catalog.js";
 import { isTownCell, regionCells, roamerTarget, rollTemplate, type GoneReason, type OpponentInstance } from "./generate.js";
+import { manalinkModifiers, questsOnDefeat, questsOnStep, type QuestEvent } from "./quests.js";
 import type { KnobValues } from "./knobs.js";
 import { findPath, fixedPointAt, idx, inBounds, manhattan, markExplored, regionAt, samePoint, townAt, type Point, type Town, type WorldMap } from "./map.js";
 import { WorldRng } from "./rng.js";
@@ -32,7 +33,9 @@ export type StepEvent =
   | { type: "arrived"; town: Town }
   | { type: "encounter"; encounter: Encounter }
   /** S16: a region below its density respawned a roamer (out of sight). */
-  | { type: "spawned"; opponentId: string; region: number };
+  | { type: "spawned"; opponentId: string; region: number }
+  /** S19: a courier deadline expired mid-walk (the quest failed; no further penalty). */
+  | { type: "questExpired"; questId: string; text: string };
 
 // ---------- S16 roamers: sight, flee, movement ----------
 
@@ -238,6 +241,10 @@ export function advance(
       world.player.stepsTaken += 1;
       events.push({ type: "moved", to: { ...cell }, steps: world.player.stepsTaken });
       exploreAround(world, knobs);
+      // S19: the quest clock — deadlines tick, bounty marks update where seen (fog rules).
+      for (const qe of questsOnStep(world, knobs, (p) => playerSees(world, knobs, p))) {
+        if (qe.type === "questExpired") events.push({ type: "questExpired", questId: qe.quest.id, text: qe.quest.text });
+      }
       const town = townAt(world.map, cell);
       if (town) {
         // Towns are safe nodes: no contact on the town cell itself (roamers never enter it).
@@ -405,7 +412,8 @@ export function prepareDuel(world: WorldState, catalog: Catalog, enc: Encounter,
   const seed = rng.int(1_000_000_000);
   // S18 (OQ-8): a lair resident fights at its template life + the lair bonus knob.
   const enemyLife = tmpl.worldLife + (enc.contact === "lair" ? knobs.lairResidentLifeBonus : 0);
-  const modifiers: Modifier[] = [{ type: "startingLife", player: 1, value: enemyLife }];
+  // S19 (ADR-069): every duel starts with your manalinks on the battlefield (manifest §5 — zero engine work).
+  const modifiers: Modifier[] = [{ type: "startingLife", player: 1, value: enemyLife }, ...manalinkModifiers(world)];
   const spec: MatchSpec = {
     seed,
     players: [
@@ -426,6 +434,7 @@ export function applyDuelResult(world: WorldState, catalog: Catalog, duel: Prepa
   let outcome: DuelRecord["outcome"];
   let anteWon: string[] = [];
   let anteLost: string[] = [];
+  let questEvents: QuestEvent[] = [];
   if (result.winner === 0) {
     outcome = "win";
     anteWon = [...theirs];
@@ -433,6 +442,8 @@ export function applyDuelResult(world: WorldState, catalog: Catalog, duel: Prepa
     world.player.gold += knobs.goldRewardByTier[duel.encounter.tier];
     world.player.renown += duel.encounter.tier; // design round 1 §5: Σ tier of defeated opponents
     if (inst) removeOpponent(world, inst.id, "defeated");
+    // S19: bounty completion — the mark's defeat pays out (recorded on the DuelRecord for the UI).
+    questEvents = questsOnDefeat(world, duel.encounter.opponentId, knobs);
   } else if (result.winner === 1) {
     outcome = "loss";
     anteLost = [...mine];
@@ -460,5 +471,6 @@ export function applyDuelResult(world: WorldState, catalog: Catalog, duel: Prepa
     },
   };
   world.duels.push(record);
+  if (questEvents.length) record.questRewards = questEvents.filter((e) => e.type === "questDone").map((e) => (e.type === "questDone" ? e.rewardText : ""));
   return record;
 }

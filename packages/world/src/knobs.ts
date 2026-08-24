@@ -198,6 +198,27 @@ export const KNOBS = {
     unit: "copies (max per row)",
     description: "Each shop row rolls 1..N copies per epoch (S14 dev-3 follow-up, registry-first). Depletion persists within the epoch; restock on the next.",
   }),
+  // ---- S19 (overworld manifest §5): quests ----
+  questsPerTown: knob<number>({
+    default: 2,
+    unit: "offers per town per game",
+    description: "S19 quests: every town offers this many quests per game (seeded, static; accepting consumes the offer). The manifest floor is 1.",
+  }),
+  questGoldByTier: knob<Record<1 | 2 | 3, number>>({
+    default: { 1: 20, 2: 50, 3: 100 },
+    unit: "gold by quest tier (the offering town's ring)",
+    description: "S19 quests: the all-gold reward; card/manalink rewards pay half this in gold beside the item. Arguing baseline — sits above the win-gold table (10/25/60) because a quest is a journey, not one fight.",
+  }),
+  questDeadlineSteps: knob<Record<1 | 2 | 3, number>>({
+    default: { 1: 220, 2: 300, 3: 400 },
+    unit: "steps from acceptance, by tier (0 = no deadline)",
+    description: "S19 quests: courier deadlines — the second clock consumer (after roamer respawn). A tour of all towns is ~210 steps (world-sim), so tier 1 is comfortable, not idle. Expiry fails the quest with no further penalty. Bounties never expire.",
+  }),
+  manalinkCapPerColor: knob<number>({
+    default: 1,
+    unit: "manalinks per colour",
+    description: "ADR-069: manalinks are reward-class only, capped per colour; an over-cap reward converts to its gold value. Tied to the granting town (suspension when towns can fall — S20).",
+  }),
   beastBuyOffMultiplier: knob<number>({
     default: 2,
     unit: "× buy-off price",

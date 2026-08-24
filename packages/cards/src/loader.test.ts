@@ -12,7 +12,7 @@ const CARDS_DIR = join(dirname(fileURLToPath(import.meta.url)), "../../../data/c
 describe("card pool loading", () => {
   it("loads the full pool (S1–S5 additions + tokens) with no errors or warnings", () => {
     const pool = loadCardPool(CARDS_DIR);
-    expect(pool.cards.size).toBe(111); // 20 S1 + 11 S2 + 11 S3 + 16 S4 + 6 S5 + 2 tokens + 1 S8 (Cunning Tactician) + 3 S15 (Growth, Tutor, Lotus) + 2 S16 (Elves, Adept) + 32 S17 (Expansion 1) + 5 tokens (Bear, Bird, Wurm, Zombie, Faerie Rogue) + 2 S19 (Faerie Formation + blue Faerie token, ADR-078)
+    expect(pool.cards.size).toBe(116); // 20 S1 + 11 S2 + 11 S3 + 16 S4 + 6 S5 + 2 tokens + 1 S8 (Cunning Tactician) + 3 S15 (Growth, Tutor, Lotus) + 2 S16 (Elves, Adept) + 32 S17 (Expansion 1) + 5 tokens (Bear, Bird, Wurm, Zombie, Faerie Rogue) + 7 S19 (Faerie Formation + blue Faerie token, ADR-078; five Manalink defs — modifier-only permanents, overworld manifest §5)
     // Slice cards use only implemented vocabulary, so no warnings expected.
     expect(pool.warnings).toEqual([]);
   });

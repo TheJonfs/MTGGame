@@ -3,6 +3,7 @@ import { generateWorld, type GeneratedWorld, type GeneratorOptions, type Opponen
 import { resolveKnobs, DIFFICULTIES, type DifficultyName, type KnobSource, type KnobValues } from "./knobs.js";
 import { exploredAll, type Point, type WorldMap } from "./map.js";
 import { WorldRng, type WorldRngState } from "./rng.js";
+import { emptyQuestState, type Manalink, type QuestState } from "./quests.js";
 
 /**
  * WorldState + save format (brief Part 2). One serializable object: seed,
@@ -16,8 +17,8 @@ import { WorldRng, type WorldRngState } from "./rng.js";
  * retired), `provenance` (append-only acquisition log), `player.renown`,
  * `player.starterId`. v1/v2 saves migrate with everything defaulted.
  */
-export const SAVE_FORMAT = "world-save-v3";
-export const SAVE_FORMATS_READABLE = ["world-save-v1", "world-save-v2", "world-save-v3"] as const;
+export const SAVE_FORMAT = "world-save-v4"; // S19: quests + manalinks + reserved sieges
+export const SAVE_FORMATS_READABLE = ["world-save-v1", "world-save-v2", "world-save-v3", "world-save-v4"] as const;
 
 /** Per-town shop state (S14): which epoch the stock was rolled for and how
  * many of each card were sold in it; a new epoch restocks (sold resets). */
@@ -49,6 +50,8 @@ export interface DuelRecord {
   anteLost: string[];
   /** The duel's full saved game (shandalar-log-v1 payload) — every duel log is viewable. */
   saved: unknown;
+  /** S19: reward text for bounties this duel completed (the result screen reads it). */
+  questRewards?: string[];
 }
 
 export interface PlayerState {
@@ -91,6 +94,12 @@ export interface WorldState {
   provenance: ProvenanceEntry[];
   /** S16 v3 (ADR-072, reserved): packed explored bits over map cells — the home region + everything ever within sight. Fog rendering is deferred. */
   explored: number[];
+  /** S19 v4: quest state (active / completed log / consumed offers). */
+  quests: QuestState;
+  /** S19 v4 (ADR-069): owned manalinks — every duel starts with each on your battlefield. */
+  manalinks: Manalink[];
+  /** S19 v4 (reserved for S20 sieges — the field exists so v4 saves survive the siege session without a v5). */
+  sieges: unknown[];
 }
 
 export interface NewWorldOptions {
@@ -225,6 +234,9 @@ export function newWorld(opts: NewWorldOptions): WorldState {
     activeDeckName: starter.name,
     provenance,
     explored: gen.explored,
+    quests: emptyQuestState(),
+    manalinks: [],
+    sieges: [],
   };
 }
 
@@ -296,5 +308,9 @@ export function migrateWorld(format: string, input: Partial<WorldState>): WorldS
   const v3 = w as WorldState;
   if (!v3.explored) v3.explored = exploredAll(v3.map);
   if (!v3.map.road) v3.map.road = new Array<boolean>(v3.map.width * v3.map.height).fill(false);
+  // v3 → v4 (S19): quests, manalinks, reserved sieges — all empty defaults; nothing to convert.
+  if (!v3.quests) v3.quests = emptyQuestState();
+  if (!v3.manalinks) v3.manalinks = [];
+  if (!v3.sieges) v3.sieges = [];
   return v3;
 }

@@ -1,0 +1,26 @@
+{
+  "id": "manalink_g",
+  "name": "Manalink: Forest",
+  "source": "custom",
+  "isTokenDef": true,
+  "manaCost": "",
+  "types": [
+    "Artifact"
+  ],
+  "colors": [],
+  "text": "{T}: Add {G}. (A manalink is a town's gift: it begins every duel on your battlefield. Overworld manifest \u00a75 / ADR-069 \u2014 reward-class only, tied to the granting town.)",
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "tap": true
+      },
+      "effects": [
+        {
+          "type": "addMana",
+          "mana": "{G}"
+        }
+      ]
+    }
+  ]
+}

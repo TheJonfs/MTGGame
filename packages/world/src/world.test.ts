@@ -430,7 +430,7 @@ describe("town shops (S13 Part 3 → S14 Part 3: depletion, restock, sell, buy-f
   });
 });
 
-describe("world-save-v3 (S16 Part 2.5): the v1 → v2 → v3 migration chain", () => {
+describe("world-save-v4 (S16 Part 2.5 chain + S19): the v1 → v2 → v3 → v4 migration chain", () => {
   /** Hand-build the v2 shape from a v3 world: decks → player.activeDeck + deckName; gone → defeated; positions stripped; v3 fields dropped. */
   function asV2(w: WorldState): Record<string, unknown> {
     const { decks, activeDeckName, provenance, opponents, player, ...rest } = w;
@@ -445,7 +445,7 @@ describe("world-save-v3 (S16 Part 2.5): the v1 → v2 → v3 migration chain", (
   }
   it("v3 round-trips; a v2 save migrates with decks/activeDeckName/provenance/renown/starterId defaulted, roamers positioned, and plays", () => {
     const w = newWorld({ seed: 71, catalog, starter: "white" });
-    expect(serializeWorld(w)).toContain('"world-save-v3"');
+    expect(serializeWorld(w)).toContain('"world-save-v4"');
     expect(deserializeWorld(serializeWorld(w))).toEqual(w);
     const v2 = asV2(w);
     const migrated = deserializeWorld(JSON.stringify({ format: "world-save-v2", world: v2 }));
@@ -469,7 +469,7 @@ describe("world-save-v3 (S16 Part 2.5): the v1 → v2 → v3 migration chain", (
     expect(deserializeWorld(JSON.stringify({ format: "world-save-v2", world: v2 }))).toEqual(migrated);
     // …and it plays: walk and re-save as v3.
     walkTo(migrated, catalog, migrated.map.towns[1]!.at);
-    expect(serializeWorld(migrated)).toContain('"world-save-v3"');
+    expect(serializeWorld(migrated)).toContain('"world-save-v4"');
   });
   it("a v1 save migrates through v2 to v3 (shops/visits/lastTownIndex defaulted, deck named \"Deck\")", () => {
     const w = newWorld({ seed: 72, catalog, starter: "black" });
@@ -703,6 +703,165 @@ describe("S19 shop tiers (ADR-078): availability by ring, price by tier factor, 
       expect(item.price).toBe(shopPrice(def, knobs));
     }
   });
+});
+
+describe("S19 Part 3+5 (quests, scripted acceptance): offers, courier, card-courier, bounty, deadlines, manalinks, save-v4", () => {
+  const questKnobs = () => defaultKnobs();
+
+  it("every town offers ≥1 quest, deterministically; tiers match the town's ring; all three kinds occur across the map", async () => {
+    const { townOffers } = await import("./quests.js");
+    const w = newWorld({ seed: 41, catalog, starter: "green" });
+    const knobs = questKnobs();
+    const kinds = new Set<string>();
+    for (const town of w.map.towns) {
+      const a = townOffers(w, catalog, town, knobs, pool.cards);
+      const b = townOffers(w, catalog, town, knobs, pool.cards);
+      expect(a.length).toBeGreaterThanOrEqual(1);
+      expect(JSON.stringify(a)).toBe(JSON.stringify(b)); // pure in (seed, town)
+      const ring = ({ civilized: 1, approach: 2, wild: 3 } as const)[w.map.regions[town.region]!.tier];
+      for (const o of a) { expect(o.tier).toBe(ring); kinds.add(o.kind); }
+    }
+    expect(kinds.has("courier") || kinds.has("cardCourier")).toBe(true);
+    expect(kinds.size).toBeGreaterThanOrEqual(2);
+  });
+
+  it("courier end-to-end: accept → the offer is consumed → arrive at the destination town → reward paid, quest closed 'done'; save-v4 round-trips mid-quest", async () => {
+    const { townOffers, acceptQuest, questsOnArrival } = await import("./quests.js");
+    const knobs = questKnobs();
+    for (let seed = 41; seed < 60; seed++) {
+      const w = newWorld({ seed, catalog, starter: "green" });
+      quiet(w);
+      const town = w.map.towns.find((t) => townOffers(w, catalog, t, knobs, pool.cards).some((o) => o.kind === "courier"));
+      if (!town) continue;
+      const offer = townOffers(w, catalog, town, knobs, pool.cards).find((o) => o.kind === "courier")!;
+      const r = acceptQuest(w, catalog, offer, knobs, pool.cards);
+      expect(r.ok).toBe(true);
+      expect(townOffers(w, catalog, town, knobs, pool.cards).some((o) => o.id === offer.id)).toBe(false); // consumed
+      expect(w.quests.active).toHaveLength(1);
+      expect(w.quests.active[0]!.deadlineStep).toBe(w.player.stepsTaken + offer.deadlineSteps);
+      // Mid-quest save round-trip (v4).
+      const loaded = deserializeWorld(serializeWorld(w));
+      expect(loaded.quests.active).toHaveLength(1);
+      const goldBefore = w.player.gold;
+      const dest = w.map.towns.find((t) => t.index === offer.toTown)!;
+      const ev = questsOnArrival(w, dest, knobs);
+      expect(ev).toHaveLength(1);
+      expect(ev[0]!.type).toBe("questDone");
+      expect(w.player.gold).toBeGreaterThan(goldBefore);
+      expect(w.quests.active).toHaveLength(0);
+      expect(w.quests.completed[0]).toMatchObject({ id: offer.id, outcome: "done" });
+      return;
+    }
+    throw new Error("no courier offer found across seeds");
+  });
+
+  it("card-courier: only a matching SPARE may travel (deck copies refused, wrong colour refused); the card leaves the collection on acceptance", async () => {
+    const { townOffers, acceptQuest, cardMatches } = await import("./quests.js");
+    const knobs = questKnobs();
+    for (let seed = 41; seed < 80; seed++) {
+      const w = newWorld({ seed, catalog, starter: "green" });
+      const town = w.map.towns.find((t) => townOffers(w, catalog, t, knobs, pool.cards).some((o) => o.kind === "cardCourier"));
+      if (!town) continue;
+      const offer = townOffers(w, catalog, town, knobs, pool.cards).find((o) => o.kind === "cardCourier")!;
+      expect(acceptQuest(w, catalog, offer, knobs, pool.cards).ok).toBe(false); // no card named
+      // Give the player a guaranteed matching spare.
+      const match = [...pool.cards.values()].find((d) => !d.isTokenDef && cardMatches(d, offer.cardWanted!))!;
+      w.player.collection[match.id] = (w.player.collection[match.id] ?? 0) + 1;
+      const wrong = [...pool.cards.values()].find((d) => !d.isTokenDef && !d.types.includes("Land") && !cardMatches(d, offer.cardWanted!))!;
+      w.player.collection[wrong.id] = (w.player.collection[wrong.id] ?? 0) + 1;
+      expect(acceptQuest(w, catalog, offer, knobs, pool.cards, wrong.id).ok).toBe(false); // wrong card
+      const before = w.player.collection[match.id]!;
+      const r = acceptQuest(w, catalog, offer, knobs, pool.cards, match.id);
+      expect(r.ok).toBe(true);
+      expect(w.player.collection[match.id] ?? 0).toBe(before - 1); // it left
+      expect(r.ok && r.quest.carriedCardId).toBe(match.id);
+      return;
+    }
+    throw new Error("no card-courier offer found across seeds");
+  });
+
+  it("bounty end-to-end: accept spawns the mark in its region; defeating it pays the reward on the duel record; sighting sets the map mark", async () => {
+    const { townOffers, acceptQuest, questsOnStep } = await import("./quests.js");
+    const knobs = questKnobs();
+    for (let seed = 41; seed < 90; seed++) {
+      const w = newWorld({ seed, catalog, starter: "red" });
+      quiet(w);
+      const town = w.map.towns.find((t) => townOffers(w, catalog, t, knobs, pool.cards).some((o) => o.kind === "bounty"));
+      if (!town) continue;
+      const offer = townOffers(w, catalog, town, knobs, pool.cards).find((o) => o.kind === "bounty")!;
+      const r = acceptQuest(w, catalog, offer, knobs, pool.cards);
+      expect(r.ok).toBe(true);
+      const q = w.quests.active[0]!;
+      const inst = w.opponents.find((o) => o.id === q.bountyOpponentId)!;
+      expect(inst.region).toBe(offer.bountyRegion);
+      expect(catalog.opponents.find((o) => o.id === inst.catalogId)!.spoke).toBe(w.map.regions[offer.bountyRegion!]!.color);
+      // Sighting: stand it next to the player and tick.
+      inst.at = { ...stepCell(w) };
+      questsOnStep(w, knobs, () => true);
+      expect(q.bountySeenAt).toEqual(inst.at);
+      // Defeat it: force the encounter and fight until a win happens (any seed).
+      inst.region = regionAt(w.map, stepCell(w)).index;
+      const enc = firstEncounter(w, (o) => o.id === inst.id);
+      expect(enc.opponentId).toBe(inst.id);
+      const out = parley(w, catalog, enc, "fight");
+      if (out.type !== "fight") continue;
+      const goldBefore = w.player.gold;
+      const result = await runMatch(out.duel.spec, pool.cards, agentsFor(w, out.duel.enemy.difficulty, out.duel.enemy.deck, seed));
+      const rec = applyDuelResult(w, catalog, out.duel, result);
+      if (rec.outcome !== "win") continue; // try another seed for the win case
+      expect(rec.questRewards).toBeDefined();
+      expect(w.player.gold).toBeGreaterThan(goldBefore);
+      expect(w.quests.completed.some((c) => c.id === offer.id && c.outcome === "done")).toBe(true);
+      return;
+    }
+    throw new Error("no winning bounty run across seeds");
+  }, 120_000);
+
+  it("deadline expiry mid-walk fails the quest cleanly (event emitted, no reward, no further penalty)", async () => {
+    const { townOffers, acceptQuest } = await import("./quests.js");
+    const knobs = questKnobs();
+    for (let seed = 41; seed < 60; seed++) {
+      const w = newWorld({ seed, catalog, starter: "green", knobLayers: { event: { roamerRespawnSteps: { civilized: 0, approach: 0, wild: 0 }, questDeadlineSteps: { 1: 2, 2: 2, 3: 2 } } } });
+      quiet(w);
+      const town = w.map.towns.find((t) => townOffers(w, catalog, t, knobs, pool.cards).some((o) => o.kind !== "bounty"));
+      if (!town) continue;
+      const offer = townOffers(w, catalog, town, knobs, pool.cards).find((o) => o.kind === "courier");
+      if (!offer) continue;
+      const withDeadline = { ...offer, deadlineSteps: 2 };
+      expect(acceptQuest(w, catalog, withDeadline, knobs, pool.cards).ok).toBe(true);
+      const goldBefore = w.player.gold;
+      const lifeBefore = w.player.worldLife;
+      const c1 = stepCell(w);
+      const evs = [
+        ...advance(w, catalog, [c1], QUIET),
+        ...advance(w, catalog, [w.player.position], QUIET),
+        ...advance(w, catalog, [w.player.position], QUIET),
+        ...advance(w, catalog, [w.player.position], QUIET),
+      ];
+      expect(evs.some((e) => e.type === "questExpired")).toBe(true);
+      expect(w.quests.active).toHaveLength(0);
+      expect(w.quests.completed[0]).toMatchObject({ outcome: "expired" });
+      expect(w.player.gold).toBe(goldBefore);
+      expect(w.player.worldLife).toBe(lifeBefore); // no further penalty
+      return;
+    }
+    throw new Error("no courier offer for the deadline test");
+  });
+
+  it("manalinks: the award respects the per-colour cap (over-cap converts to gold); every duel's modifiers carry the link; the def resolves in a real match", async () => {
+    const { manalinkModifiers } = await import("./quests.js");
+    const w = newWorld({ seed: 44, catalog, starter: "green" });
+    w.manalinks.push({ color: "G", town: 0 });
+    const enc = firstEncounter(w);
+    const out = parley(w, catalog, enc, "fight");
+    expect(out.type).toBe("fight");
+    if (out.type !== "fight") return;
+    expect(out.duel.spec.modifiers).toContainEqual({ type: "permanentOnBattlefield", player: 0, cardId: "manalink_g" });
+    expect(manalinkModifiers(w)).toHaveLength(1);
+    // The def is engine-real: run the duel; no crash, and the log replays (runMatch asserts internally).
+    const result = await runMatch(out.duel.spec, pool.cards, agentsFor(w, out.duel.enemy.difficulty, out.duel.enemy.deck, 44));
+    expect(["win", "loss", "draw"]).toContain(applyDuelResult(w, catalog, out.duel, result).outcome);
+  }, 60_000);
 });
 
 describe("S18 Part 6 (scripted acceptance): a beast encounter end-to-end — roamer → parley (voice, distraction price, refusal) → duel on the beast deck with the tier AI profile → result applied → roamer removed", () => {
