@@ -1,0 +1,27 @@
+{
+  "id": "mox_pearl",
+  "name": "Mox Pearl",
+  "source": "real",
+  "manaCost": "{0}",
+  "types": [
+    "Artifact"
+  ],
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "tap": true
+      },
+      "effects": [
+        {
+          "type": "addMana",
+          "mana": "{W}"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "prizeOnly": true
+}

@@ -62,6 +62,7 @@ export const TARGET_PREDICATES = [
   "player",
   "opponentPlayer",
   "cardInYourGraveyard",
+  "landCardInYourGraveyard",
   "creatureCardInYourGraveyard",
   // ADR-076 (S17)
   "artifact",
@@ -73,7 +74,9 @@ export type TargetPredicate = (typeof TARGET_PREDICATES)[number];
 
 /** ADR-076 (S17): predicate-layer filters composed onto a base predicate. */
 export interface TargetSpec {
-  count: number;
+  /** A8 (S20): a fixed count, or an "up to" range ({min:0,max:2} — Drakuseth). A range spec must be
+   * the LAST spec (validator-enforced); its chosen targets are always mutually distinct. */
+  count: number | { min: number; max: number };
   predicate: TargetPredicate;
   zone: "battlefield" | "stack" | "any" | "graveyard";
   /** Or-predicate: legal if ANY of these alternative specs accepts the target (Airship Crash, Disenchant). */
@@ -85,6 +88,9 @@ export interface TargetSpec {
   notSubtype?: string;
   /** "another target …": the ability's own source is never legal. */
   other?: boolean;
+  /** A8: targets of this spec must differ from every target chosen by EARLIER specs (the Drakuseth
+   * ruling's no-stacking — "each of up to two OTHER targets"). */
+  distinctFromPrior?: boolean;
 }
 
 /** ADR-075 A4: a battlefield-permanent predicate for counting / max-power refs. */
@@ -122,12 +128,12 @@ export interface EffectCondition {
  * ADR-076 (S17): every effect may carry `if` — a condition on a target's current characteristics. */
 export type Effect = EffectBase & { if?: EffectCondition };
 export type EffectBase =
-  | { type: "damage"; amount: Amount; target: number }
+  | { type: "damage"; amount: Amount; target?: number; targetSpec?: number }
   | { type: "damageAll"; amount: Amount; scope: Scope }
   | { type: "destroy"; target: number }
   | { type: "destroyAll"; scope: Scope }
   | { type: "exile"; target: number }
-  | { type: "bounce"; target: number }
+  | { type: "bounce"; target?: number; scope?: Scope }
   | { type: "counter"; target: number }
   | { type: "draw"; count: number; who: Who }
   | { type: "discard"; count: number; who: Who; mode: DiscardMode; filter?: DiscardFilter }
@@ -335,6 +341,8 @@ export interface CardDef {
    * exactly 0 is legal and lethal). Anything PUT onto the battlefield by other means enters tapped,
    * choice-free (keeps initialization request-free; matches the printed ruling's spirit). */
   entersChoice?: { pay: { life: number }; else: "tapped" };
+  /** S20: unconditional "this land enters tapped" (the cycling-land cycle). Play and put paths both tap. */
+  entersTapped?: boolean;
   art?: { asset?: string; fallback: "rendered" };
   isTokenDef?: boolean;
   /** ADR-068: never shop stock — boss/lair treasure only (Black Lotus). Pool-registry column mirrored here so the world can filter. */

@@ -1,0 +1,27 @@
+{
+  "id": "mox_sapphire",
+  "name": "Mox Sapphire",
+  "source": "real",
+  "manaCost": "{0}",
+  "types": [
+    "Artifact"
+  ],
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "tap": true
+      },
+      "effects": [
+        {
+          "type": "addMana",
+          "mana": "{U}"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "prizeOnly": true
+}

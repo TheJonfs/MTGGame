@@ -470,7 +470,7 @@ export class Game {
         // paths enter tapped, choice-free). Life is paid before the permanent's ETB state is fixed, so
         // ETB triggers see the final state; paying to exactly 0 is legal and lethal (SBA catches it).
         const landDef = this.ctx.defs.def(getObject(state, action.objectId).cardId);
-        let entersTapped = false;
+        let entersTapped = !!landDef.entersTapped; // S20: unconditional taplands (the cycling cycle) — no request
         if (landDef.entersChoice) {
           const payLife = landDef.entersChoice.pay.life;
           if (state.players[player].life >= payLife) {
@@ -491,12 +491,9 @@ export class Game {
         if (def.modes && !mode) throw new Error("modal spell cast without a legal mode");
         const specs = mode ? (mode.targets ?? []) : (def.targets ?? []);
         const effects = mode ? mode.effects : (def.spellEffect ?? []);
-        action.targets.forEach((t, i) => {
-          const spec = specs[i];
-          if (!spec || !isLegalTarget(this.ctx, spec, t, player, action.objectId)) {
-            throw new Error(`castSpell with illegal target ${JSON.stringify(t)}`);
-          }
-        });
+        // A8 (S20): fixed specs consume their count in order; a trailing range spec takes the rest
+        // (length within [min,max]; distinctness enforced when the spec asks).
+        validateTargetsAgainstSpecs(this.ctx, specs, action.targets, player, action.objectId);
         autoPay(this.ctx, player, parseManaCost(def.manaCost), action.x ?? 0);
         // A7: additional cost — paid at 601.2h like an ability's sacrifice; a DIES trigger pends and orders normally.
         if (def.additionalCost?.sacrifice) {
@@ -688,3 +685,35 @@ export class Game {
     }
   }
 }
+
+/** A8 (S20): validate a flat target list against specs where the last spec may be a range. */
+export function validateTargetsAgainstSpecs(
+  ctx: EngineCtx,
+  specs: readonly import("@shandalar/cards").TargetSpec[],
+  targets: readonly import("@shandalar/cards").ResolvedTarget[],
+  player: PlayerId,
+  sourceId?: string,
+): void {
+  let at = 0;
+  const key = (t: unknown) => JSON.stringify(t);
+  for (const spec of specs) {
+    const width = typeof spec.count === "number" ? spec.count : targets.length - at;
+    if (typeof spec.count !== "number") {
+      if (width < spec.count.min || width > spec.count.max) throw new Error(`range spec expects ${spec.count.min}..${spec.count.max} targets, got ${width}`);
+      const seen = new Set<string>();
+      for (let i = at; i < at + width; i++) {
+        const k = key(targets[i]);
+        if (seen.has(k)) throw new Error("range spec targets must be distinct");
+        seen.add(k);
+        if (spec.distinctFromPrior && targets.slice(0, at).some((t) => key(t) === k)) throw new Error("target repeats an earlier pick (distinctFromPrior)");
+      }
+    }
+    for (let i = at; i < at + width; i++) {
+      const t = targets[i];
+      if (!t || !isLegalTarget(ctx, spec, t, player, sourceId)) throw new Error(`illegal target ${JSON.stringify(t)}`);
+    }
+    at += width;
+  }
+  if (at !== targets.length) throw new Error(`expected ${at} targets, got ${targets.length}`);
+}
+

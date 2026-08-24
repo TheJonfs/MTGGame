@@ -87,6 +87,21 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
     }
   });
 
+  // A8/S20 (Drakuseth — the vocabulary's ATTACKS event gets its first collector): each declared
+  // attacker's own self-condition ATTACKS abilities pend, in declaration order.
+  ctx.bus.on("ATTACKERS_DECLARED", (ev) => {
+    for (const attackerId of ev.attackers) {
+      const obj = ctx.state.objects[attackerId];
+      if (!obj) continue;
+      (ctx.defs.def(obj.cardId).abilities ?? []).forEach((a, i) => {
+        if (a.kind !== "triggered" || a.event !== "ATTACKS") return;
+        const src = a.condition?.source ?? "self";
+        if (src !== "self") return; // observed attack triggers arrive with their first customer
+        pend(attackerId, obj.cardId, obj.controller, i);
+      });
+    }
+  });
+
   // ADR-076: upkeep triggers ("at the beginning of your upkeep" — Bitterblossom). Controller
   // condition is relative to whose upkeep it is: default "you" = the permanent's controller.
   ctx.bus.on("UPKEEP_BEGIN", (ev) => {

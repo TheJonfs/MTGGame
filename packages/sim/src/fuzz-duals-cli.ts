@@ -53,7 +53,21 @@ for (const deck of [WU, BR]) {
 }
 
 type Side = { name: string; archetype: "aggro" | "midrange" | "control"; decklist: { cardId: string; count: number }[] };
+const useGuardians = process.argv.includes("--guardians");
 const pairings: [Side, Side][] = [[WU, BR], [BR, WU], [WU, WU], [BR, BR]];
+if (useGuardians) {
+  // S20 Part 2: the five guardian decks (fuzz coverage of Reya/Arcanis/Drakuseth/Titania + the
+  // enabler lands BEFORE fixtures) vs slice C/D and each pairing's mirror.
+  const { GUARDIAN_DECKS } = await import("./guardian-decks.js");
+  const { DECKS } = await import("./slice-decks.js");
+  pairings.length = 0;
+  for (const [k, g] of Object.entries(GUARDIAN_DECKS)) {
+    const side: Side = { name: `guardian:${k}`, archetype: g.archetype, decklist: g.decklist };
+    pairings.push([side, { name: "slice:C", archetype: "midrange", decklist: [...DECKS.C.decklist] }]);
+    pairings.push([side, { name: "slice:D", archetype: "midrange", decklist: [...DECKS.D.decklist] }]);
+    pairings.push([side, side]);
+  }
+}
 const agentFor = (seed: number, me: Side, them: Side): Agent =>
   agentKind === "random" ? new RandomAgent(seed) : new HeuristicAgent(seed, pool, difficultyProfile("journeyman", me.archetype, [...them.decklist]));
 

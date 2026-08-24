@@ -1,0 +1,59 @@
+{
+  "id": "drakuseth_maw_of_flames",
+  "name": "Drakuseth, Maw of Flames",
+  "source": "real",
+  "manaCost": "{4}{R}{R}{R}",
+  "types": [
+    "Creature"
+  ],
+  "supertypes": [
+    "Legendary"
+  ],
+  "subtypes": [
+    "Dragon"
+  ],
+  "power": 7,
+  "toughness": 7,
+  "keywords": [
+    "flying"
+  ],
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ATTACKS",
+      "optional": false,
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "anyTarget",
+          "zone": "any"
+        },
+        {
+          "count": {
+            "min": 0,
+            "max": 2
+          },
+          "predicate": "anyTarget",
+          "zone": "any",
+          "distinctFromPrior": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "damage",
+          "amount": 4,
+          "target": 0
+        },
+        {
+          "type": "damage",
+          "amount": 3,
+          "targetSpec": 1
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": "R"
+}

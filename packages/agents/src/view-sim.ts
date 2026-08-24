@@ -215,6 +215,16 @@ function applyEffect(
 
   switch (e.type) {
     case "damage": {
+      if (e.target === undefined) {
+        // A8 range fan-out (Drakuseth): value every chosen target from the remainder of the list.
+        let v = 0;
+        for (let i = 1; i < targets.length; i++) {
+          const rt = targets[i];
+          if (rt?.kind === "player") { view.life[rt.player as 0 | 1] -= amt(e.amount); if (rt.player === me) v += -0.8 * amt(e.amount); }
+          else { const ro = objAt(i); if (ro && ro.toughness !== null) { ro.damage += amt(e.amount); if (ro.damage >= ro.toughness) removeObject(view, ro.id); } }
+        }
+        return v;
+      }
       const t = targets[e.target];
       if (t?.kind === "player") {
         view.life[t.player as 0 | 1] -= amt(e.amount);
@@ -223,7 +233,7 @@ function applyEffect(
         // shame: burn at own face loses to every other use).
         return t.player === me ? -0.8 * amt(e.amount) : 0;
       }
-      const o = objAt(e.target);
+      const o = objAt(e.target!);
       if (o && o.toughness !== null) {
         o.damage += amt(e.amount);
         if (o.damage >= o.toughness) removeObject(view, o.id);
@@ -254,6 +264,7 @@ function applyEffect(
       return 0;
     }
     case "bounce": {
+      if (e.target === undefined) return 0; // scope-form bounce (Arcanis self-return): neutral in view-sim
       const o = objAt(e.target);
       if (!o) return 0;
       removeObject(view, o.id);

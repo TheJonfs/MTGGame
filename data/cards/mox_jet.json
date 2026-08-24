@@ -1,0 +1,27 @@
+{
+  "id": "mox_jet",
+  "name": "Mox Jet",
+  "source": "real",
+  "manaCost": "{0}",
+  "types": [
+    "Artifact"
+  ],
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "tap": true
+      },
+      "effects": [
+        {
+          "type": "addMana",
+          "mana": "{B}"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "prizeOnly": true
+}

@@ -1,0 +1,30 @@
+{
+  "id": "tranquil_thicket",
+  "name": "Tranquil Thicket",
+  "source": "real",
+  "manaCost": "",
+  "types": [
+    "Land"
+  ],
+  "entersTapped": true,
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "tap": true
+      },
+      "effects": [
+        {
+          "type": "addMana",
+          "mana": "{G}"
+        }
+      ]
+    }
+  ],
+  "cycling": "{G}",
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 1,
+  "priceOverride": 10
+}

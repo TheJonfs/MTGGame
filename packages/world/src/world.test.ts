@@ -688,7 +688,7 @@ describe("S19 shop tiers (ADR-078): availability by ring, price by tier factor, 
     // Distribution pin (audit v2 + Formation + the S20 land-and-legend batch as it lands: ten ABU duals at R so far).
     const tally: Record<string, number> = {};
     for (const d of pool.cards.values()) if (d.shopTier) tally[String(d.shopTier)] = (tally[String(d.shopTier)] ?? 0) + 1;
-    expect(tally).toEqual({ "1": 53, "2": 41, "3": 11, R: 12 });
+    expect(tally).toEqual({ "1": 59, "2": 41, "3": 11, R: 16 }); // +6 enabler lands T1, +4 legendaries R (S20 batch)
   });
   it("a civilized town's rolled stock is all tier 1 and every price matches shopPrice", async () => {
     const { rollShopStock, shopPrice } = await import("./shop.js");

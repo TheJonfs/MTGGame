@@ -1,0 +1,48 @@
+{
+  "id": "reya_dawnbringer",
+  "name": "Reya Dawnbringer",
+  "source": "real",
+  "manaCost": "{6}{W}{W}{W}",
+  "types": [
+    "Creature"
+  ],
+  "supertypes": [
+    "Legendary"
+  ],
+  "subtypes": [
+    "Angel"
+  ],
+  "power": 4,
+  "toughness": 6,
+  "keywords": [
+    "flying"
+  ],
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "UPKEEP",
+      "condition": {
+        "controller": "you"
+      },
+      "optional": true,
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "creatureCardInYourGraveyard",
+          "zone": "graveyard"
+        }
+      ],
+      "effects": [
+        {
+          "type": "returnFromGraveyard",
+          "target": 0,
+          "to": "battlefield"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": "R"
+}

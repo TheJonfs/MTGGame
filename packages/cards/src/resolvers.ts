@@ -27,6 +27,8 @@ export interface ResolvedContinuousEffect {
 export interface EffectContext {
   /** Re-checked target by index; null if the target is now illegal (skip it, CR 608.2b). */
   target(i: number): ResolvedTarget | null;
+  /** A8 (S20): every STILL-LEGAL target chosen for spec index `i` (range specs; per-target fizzle). */
+  targetsOfSpec(i: number): ResolvedTarget[];
   /** Players selected by a `who` param. */
   players(who: Who): number[];
   /** Object ids selected by a scope, evaluated now (ADR-020 params: subtype/cardType/other). */
@@ -93,12 +95,14 @@ export class NotImplementedError extends Error {
 
 export type EffectResolver = (effect: Effect, ctx: EffectContext) => void | Promise<void>;
 
-function targeted(effect: Effect & { target?: number; scope?: Scope }, ctx: EffectContext): ResolvedTarget[] {
-  // Effects address objects either by declared-target index or by scope.
+function targeted(effect: Effect & { target?: number; scope?: Scope; targetSpec?: number }, ctx: EffectContext): ResolvedTarget[] {
+  // Effects address objects by declared-target index, by scope, or (A8) by SPEC index — every
+  // still-legal target the range spec chose (fizzle independence per target).
   if (effect.target !== undefined) {
     const t = ctx.target(effect.target);
     return t ? [t] : [];
   }
+  if (effect.targetSpec !== undefined) return ctx.targetsOfSpec(effect.targetSpec);
   if (effect.scope !== undefined) {
     return ctx.objectsInScope(effect.scope).map((id) => ({ kind: "object" as const, id }));
   }
@@ -108,14 +112,12 @@ function targeted(effect: Effect & { target?: number; scope?: Scope }, ctx: Effe
 const implemented: Partial<Record<EffectType, EffectResolver>> = {
   damage: (e, ctx) => {
     if (e.type !== "damage") throw new Error("resolver mismatch");
-    const t = ctx.target(e.target);
-    if (t) ctx.dealDamage(t, ctx.amount(e.amount));
+    for (const t of targeted(e, ctx)) ctx.dealDamage(t, ctx.amount(e.amount)); // A8: targetSpec fans out
   },
 
   bounce: (e, ctx) => {
     if (e.type !== "bounce") throw new Error("resolver mismatch");
-    const t = ctx.target(e.target);
-    if (t && t.kind === "object") ctx.bounce(t.id);
+    for (const t of targeted(e, ctx)) if (t.kind === "object") ctx.bounce(t.id); // S20: Arcanis self-bounce via scope
   },
 
   counter: (e, ctx) => {

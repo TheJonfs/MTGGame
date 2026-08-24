@@ -1,0 +1,33 @@
+{
+  "id": "evolving_wilds",
+  "name": "Evolving Wilds",
+  "source": "real",
+  "manaCost": "",
+  "types": [
+    "Land"
+  ],
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "tap": true,
+        "sacrifice": {
+          "predicate": "self"
+        }
+      },
+      "effects": [
+        {
+          "type": "searchLibrary",
+          "predicate": "basicLand",
+          "to": "battlefield",
+          "entersTapped": true
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 1,
+  "priceOverride": 12
+}

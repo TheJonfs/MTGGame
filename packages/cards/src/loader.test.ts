@@ -12,7 +12,7 @@ const CARDS_DIR = join(dirname(fileURLToPath(import.meta.url)), "../../../data/c
 describe("card pool loading", () => {
   it("loads the full pool (S1–S5 additions + tokens) with no errors or warnings", () => {
     const pool = loadCardPool(CARDS_DIR);
-    expect(pool.cards.size).toBe(131); // 20 S1 + 11 S2 + 11 S3 + 16 S4 + 6 S5 + 2 tokens + 1 S8 (Cunning Tactician) + 3 S15 (Growth, Tutor, Lotus) + 2 S16 (Elves, Adept) + 32 S17 (Expansion 1) + 5 tokens (Bear, Bird, Wurm, Zombie, Faerie Rogue) + 2 S19 (Faerie Formation + blue Faerie token, ADR-078; manalinks are plain basics via permanentOnBattlefield — round 2 cut the bespoke defs) + 20 S20 duals (ABU at R, OLGC printings; RVR retro shocklands at T2/45g with entersChoice — A9)
+    expect(pool.cards.size).toBe(147); // 20 S1 + 11 S2 + 11 S3 + 16 S4 + 6 S5 + 2 tokens + 1 S8 (Cunning Tactician) + 3 S15 (Growth, Tutor, Lotus) + 2 S16 (Elves, Adept) + 32 S17 (Expansion 1) + 5 tokens (Bear, Bird, Wurm, Zombie, Faerie Rogue) + 2 S19 (Faerie Formation + blue Faerie token, ADR-078; manalinks are plain basics via permanentOnBattlefield — round 2 cut the bespoke defs) + 36 S20 (20 duals — ABU at R/OLGC, RVR retro shocks at T2/45g with entersChoice; 6 enabler lands; Reya/Arcanis/Drakuseth/Titania at R; 5 Moxen prizeOnly; elemental token)
     // Slice cards use only implemented vocabulary, so no warnings expected.
     expect(pool.warnings).toEqual([]);
   });

@@ -1,0 +1,19 @@
+{
+  "id": "elemental_5_3_g",
+  "name": "Elemental Token",
+  "source": "custom",
+  "isTokenDef": true,
+  "manaCost": "",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Elemental"
+  ],
+  "colors": [
+    "G"
+  ],
+  "power": 5,
+  "toughness": 3,
+  "text": ""
+}

@@ -1,0 +1,27 @@
+{
+  "id": "mox_emerald",
+  "name": "Mox Emerald",
+  "source": "real",
+  "manaCost": "{0}",
+  "types": [
+    "Artifact"
+  ],
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "tap": true
+      },
+      "effects": [
+        {
+          "type": "addMana",
+          "mana": "{G}"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "prizeOnly": true
+}

@@ -1,0 +1,30 @@
+{
+  "id": "lonely_sandbar",
+  "name": "Lonely Sandbar",
+  "source": "real",
+  "manaCost": "",
+  "types": [
+    "Land"
+  ],
+  "entersTapped": true,
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "tap": true
+      },
+      "effects": [
+        {
+          "type": "addMana",
+          "mana": "{U}"
+        }
+      ]
+    }
+  ],
+  "cycling": "{U}",
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 1,
+  "priceOverride": 10
+}

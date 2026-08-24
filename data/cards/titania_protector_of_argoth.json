@@ -1,0 +1,65 @@
+{
+  "id": "titania_protector_of_argoth",
+  "name": "Titania, Protector of Argoth",
+  "source": "real",
+  "manaCost": "{3}{G}{G}",
+  "types": [
+    "Creature"
+  ],
+  "supertypes": [
+    "Legendary"
+  ],
+  "subtypes": [
+    "Elemental"
+  ],
+  "power": 5,
+  "toughness": 3,
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "condition": {
+        "self": true
+      },
+      "optional": false,
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "landCardInYourGraveyard",
+          "zone": "graveyard"
+        }
+      ],
+      "effects": [
+        {
+          "type": "returnFromGraveyard",
+          "target": 0,
+          "to": "battlefield"
+        }
+      ]
+    },
+    {
+      "kind": "triggered",
+      "event": "DIES",
+      "condition": {
+        "source": "any",
+        "type": [
+          "Land"
+        ],
+        "controller": "you"
+      },
+      "optional": false,
+      "effects": [
+        {
+          "type": "createToken",
+          "tokenId": "elemental_5_3_g",
+          "count": 1,
+          "who": "you"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": "R"
+}

@@ -1,4 +1,4 @@
-import {
+import { type TargetSpec,
   parseManaProduction,
   type Amount,
   type DiscardFilter,
@@ -36,6 +36,31 @@ interface TargetLki {
 }
 
 /** Engine implementation of the cards package's EffectContext seam. */
+/** A8 (S20): fixed specs consume `count` flat slots in order; a range spec (validator: last) consumes the rest. */
+function specOfFlatIndex(specs: readonly TargetSpec[], flat: number): TargetSpec | undefined {
+  let at = 0;
+  for (const spec of specs) {
+    if (typeof spec.count === "number") {
+      if (flat < at + spec.count) return spec;
+      at += spec.count;
+    } else {
+      return spec; // range: everything from here on
+    }
+  }
+  return undefined;
+}
+
+function flatRangeOfSpec(specs: readonly TargetSpec[], si: number, totalTargets: number): { start: number; end: number; spec?: TargetSpec } {
+  let at = 0;
+  for (let i = 0; i < specs.length; i++) {
+    const spec = specs[i]!;
+    const width = typeof spec.count === "number" ? spec.count : totalTargets - at;
+    if (i === si) return { start: at, end: at + width, spec };
+    at += width;
+  }
+  return { start: 0, end: 0 };
+}
+
 export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: EffectRequester): EffectContext {
   const controller = item.controller;
 
@@ -57,9 +82,22 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
   return {
     target(i: number): ResolvedTarget | null {
       const t = item.targets[i];
-      const spec = item.targetSpecs[i];
+      const spec = specOfFlatIndex(item.targetSpecs, i);
       if (!t || !spec) return null;
       return isLegalTarget(ctx, spec, t, controller, item.sourceId ?? item.objectId) ? t : null;
+    },
+
+    // A8 (S20): the still-legal targets a RANGE spec chose (per-target fizzle — one dying before
+    // resolution never blanks its siblings).
+    targetsOfSpec(si: number): ResolvedTarget[] {
+      const { start, end, spec } = flatRangeOfSpec(item.targetSpecs, si, item.targets.length);
+      if (!spec) return [];
+      const out: ResolvedTarget[] = [];
+      for (let i = start; i < end; i++) {
+        const t = item.targets[i];
+        if (t && isLegalTarget(ctx, spec, t, controller, item.sourceId ?? item.objectId)) out.push(t);
+      }
+      return out;
     },
 
     players(who: Who): PlayerId[] {
@@ -425,6 +463,9 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
         case "controllerOfTarget":
           throw new Error("initialization effects cannot reference targets");
       }
+    },
+    targetsOfSpec(): ResolvedTarget[] {
+      return []; // initialization effects have no targets (ADR-012)
     },
     objectsInScope(scope: Scope): string[] {
       switch (scope) {

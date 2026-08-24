@@ -84,6 +84,11 @@ function basePredicate(ctx: EngineCtx, spec0: TargetSpec, target: ResolvedTarget
       if (!isLegalTarget(ctx, { ...spec, predicate: "cardInYourGraveyard" }, target, by)) return false;
       return target.kind === "object" && ctx.defs.def(state.objects[target.id]!.cardId).types.includes("Creature");
     }
+    // S20 (ADR-079): Titania's ETB — the land predicate on graveyard returns.
+    case "landCardInYourGraveyard": {
+      if (!isLegalTarget(ctx, { ...spec, predicate: "cardInYourGraveyard" }, target, by)) return false;
+      return target.kind === "object" && ctx.defs.def(state.objects[target.id]!.cardId).types.includes("Land");
+    }
     // ADR-076 (S17)
     case "artifact": {
       if (!isLegalTarget(ctx, { ...spec, predicate: "permanent" }, target, by)) return false;
@@ -118,7 +123,7 @@ export function targetCandidates(ctx: EngineCtx, spec: TargetSpec, by: PlayerId,
     const t: ResolvedTarget = { kind: "player", player };
     if (isLegalTarget(ctx, spec, t, by, sourceId)) out.push(t);
   }
-  const graveyardy = (sp: TargetSpec): boolean => sp.predicate === "cardInYourGraveyard" || sp.predicate === "creatureCardInYourGraveyard" || (sp.anyOf ?? []).some(graveyardy);
+  const graveyardy = (sp: TargetSpec): boolean => sp.predicate === "cardInYourGraveyard" || sp.predicate === "creatureCardInYourGraveyard" || sp.predicate === "landCardInYourGraveyard" || (sp.anyOf ?? []).some(graveyardy);
   if (graveyardy(spec)) {
     for (const id of state.players[by].graveyard) {
       const t: ResolvedTarget = { kind: "object", id };
@@ -134,12 +139,35 @@ export function targetCandidates(ctx: EngineCtx, spec: TargetSpec, by: PlayerId,
  */
 export function targetCombinations(ctx: EngineCtx, specs: TargetSpec[], by: PlayerId, sourceId?: string): ResolvedTarget[][] {
   if (specs.length === 0) return [[]];
+  const key = (t: ResolvedTarget) => JSON.stringify(t);
   let combos: ResolvedTarget[][] = [[]];
   for (const spec of specs) {
-    if (spec.count !== 1) throw new Error("multi-target specs not yet supported (no pool card needs them)");
-    const cands = targetCandidates(ctx, spec, by, sourceId);
     const next: ResolvedTarget[][] = [];
-    for (const combo of combos) for (const c of cands) next.push([...combo, c]);
+    if (typeof spec.count === "number") {
+      if (spec.count !== 1) throw new Error("fixed multi-target specs not yet supported (no pool card needs them)");
+      const cands = targetCandidates(ctx, spec, by, sourceId);
+      for (const combo of combos) {
+        for (const c of cands) {
+          if (spec.distinctFromPrior && combo.some((t) => key(t) === key(c))) continue;
+          next.push([...combo, c]);
+        }
+      }
+    } else {
+      // A8 range spec ("up to N"): subsets of size min..max in candidate order — inherently distinct
+      // within the group; distinctFromPrior also excludes earlier picks (the no-stacking ruling).
+      const { min, max } = spec.count;
+      for (const combo of combos) {
+        const cands = targetCandidates(ctx, spec, by, sourceId).filter(
+          (c) => !spec.distinctFromPrior || !combo.some((t) => key(t) === key(c)),
+        );
+        const subsets: ResolvedTarget[][] = [[]];
+        for (const c of cands) {
+          const grown = subsets.filter((sub) => sub.length < max).map((sub) => [...sub, c]);
+          subsets.push(...grown);
+        }
+        for (const sub of subsets) if (sub.length >= min && sub.length <= max) next.push([...combo, ...sub]);
+      }
+    }
     combos = next;
   }
   return combos;

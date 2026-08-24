@@ -76,6 +76,24 @@ export function validateCard(raw: unknown): ValidationResult {
       err(`"entersChoice" must be { pay: { life: n>0 }, else: "tapped" } (A9)`);
     }
   }
+  // A8 (S20): range counts — {min≥0, max≥min≥…}; a range spec must be the LAST spec of its list.
+  const checkSpecs = (specs: unknown, where: string) => {
+    if (!Array.isArray(specs)) return;
+    specs.forEach((sp, i) => {
+      const c = (sp as { count?: unknown }).count;
+      if (typeof c === "object" && c !== null) {
+        const r = c as { min?: unknown; max?: unknown };
+        if (!Number.isInteger(r.min) || !Number.isInteger(r.max) || (r.min as number) < 0 || (r.max as number) < Math.max(1, r.min as number)) {
+          err(`${where}: range count must be {min≥0, max≥max(1,min)} (A8)`);
+        }
+        if (i !== specs.length - 1) err(`${where}: a range-count spec must be the last spec (A8)`);
+      }
+    });
+  };
+  checkSpecs(raw.targets, "targets");
+  for (const ab of Array.isArray(raw.abilities) ? raw.abilities : []) checkSpecs((ab as { targets?: unknown }).targets, "ability targets");
+  for (const m of Array.isArray(raw.modes) ? raw.modes : []) checkSpecs((m as { targets?: unknown }).targets, "mode targets");
+  if (raw.entersTapped !== undefined && (raw.entersTapped !== true || !types.includes("Land"))) err(`"entersTapped" is a land-only true flag (S20)`);
   if (raw.priceOverride !== undefined && (!Number.isInteger(raw.priceOverride) || (raw.priceOverride as number) <= 0)) {
     err(`"priceOverride" must be a positive integer (gold)`);
   }
@@ -166,7 +184,9 @@ export function validateCard(raw: unknown): ValidationResult {
 
 function validateTargetSpec(t: unknown, err: (m: string) => void): void {
   if (!isRecord(t)) return err(`target spec is not an object`);
-  if (!Number.isInteger(t.count) || (t.count as number) < 1) err(`target spec count must be >= 1`);
+  const cnt = t.count as unknown;
+  const rangeOk = isRecord(cnt) && Number.isInteger((cnt as { min?: unknown }).min) && Number.isInteger((cnt as { max?: unknown }).max);
+  if (!rangeOk && (!Number.isInteger(cnt) || (cnt as number) < 1)) err(`target spec count must be >= 1 or an A8 range {min,max}`);
   if (!(TARGET_PREDICATES as readonly string[]).includes(t.predicate as string)) {
     err(`unknown target predicate "${t.predicate}"`);
   }
@@ -319,7 +339,8 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
 const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m: string) => void) => void> = {
   damage: (e, err) => {
     needAmount(e, err);
-    needTargetIndex(e, err);
+    // A8 (S20): damage addresses a target index OR a range-spec index (targetSpec fans out).
+    if (!Number.isInteger(e.target) && !Number.isInteger(e.targetSpec)) err(`"damage" needs "target" or "targetSpec"`);
   },
   damageAll: (e, err) => {
     needAmount(e, err);
@@ -328,7 +349,7 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
   destroy: needTargetIndex,
   destroyAll: needScope,
   exile: needTargetIndex,
-  bounce: needTargetIndex,
+  bounce: needTargetOrScope, // S20: Arcanis returns itself via scope "self"
   counter: needTargetIndex,
   draw: (e, err) => {
     needCount(e, err);

@@ -1,0 +1,48 @@
+{
+  "id": "arcanis_the_omnipotent",
+  "name": "Arcanis the Omnipotent",
+  "source": "real",
+  "manaCost": "{3}{U}{U}{U}",
+  "types": [
+    "Creature"
+  ],
+  "supertypes": [
+    "Legendary"
+  ],
+  "subtypes": [
+    "Wizard"
+  ],
+  "power": 3,
+  "toughness": 4,
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "tap": true
+      },
+      "effects": [
+        {
+          "type": "draw",
+          "count": 3,
+          "who": "you"
+        }
+      ]
+    },
+    {
+      "kind": "activated",
+      "cost": {
+        "mana": "{2}{U}{U}"
+      },
+      "effects": [
+        {
+          "type": "bounce",
+          "scope": "self"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": "R"
+}

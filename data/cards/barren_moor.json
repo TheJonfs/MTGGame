@@ -1,0 +1,30 @@
+{
+  "id": "barren_moor",
+  "name": "Barren Moor",
+  "source": "real",
+  "manaCost": "",
+  "types": [
+    "Land"
+  ],
+  "entersTapped": true,
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "tap": true
+      },
+      "effects": [
+        {
+          "type": "addMana",
+          "mana": "{B}"
+        }
+      ]
+    }
+  ],
+  "cycling": "{B}",
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 1,
+  "priceOverride": 10
+}
