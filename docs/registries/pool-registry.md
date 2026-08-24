@@ -218,6 +218,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | duress | usg | 132 | Lawrence Snelly | ca367f49-0f4a-4b7f-8104-851893fbcd8a |
 | elvish_visionary | ala | 130 | D. Alexander Gregory | faccfa5f-4d89-4a86-92d7-36cb5a16c5c9 |
 | essence_scatter | m10 | 51 | Jon Foster | c231101e-6620-46fc-a0ad-a53291d12dc2 |
+| faerie_formation | eld | 316 | Ryan Yee | 15709316-7382-46b9-9b70-53a5147e7051 |
 | fencing_ace | rtr | 11 | David Rapoza | a42d3066-f4ec-4d28-83ab-e48141206c72 |
 | forest | leb | 300 | Christopher Rush | b5a922eb-49c7-45f0-92bc-671d7a8758f4 |
 | giant_growth | lea | 197 | Sandra Everingham | 367dbefe-3366-408e-9fcf-7dc00f8cc201 |
