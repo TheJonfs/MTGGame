@@ -52,8 +52,9 @@ for (const deck of [WU, BR]) {
   if (n !== 30) throw new Error(`${deck.name}: ${n} cards`);
 }
 
-const pairings: [typeof WU, typeof WU][] = [[WU, BR], [BR, WU], [WU, WU], [BR, BR]];
-const agentFor = (seed: number, me: typeof WU, them: typeof WU): Agent =>
+type Side = { name: string; archetype: "aggro" | "midrange" | "control"; decklist: { cardId: string; count: number }[] };
+const pairings: [Side, Side][] = [[WU, BR], [BR, WU], [WU, WU], [BR, BR]];
+const agentFor = (seed: number, me: Side, them: Side): Agent =>
   agentKind === "random" ? new RandomAgent(seed) : new HeuristicAgent(seed, pool, difficultyProfile("journeyman", me.archetype, [...them.decklist]));
 
 let totalErrors = 0, totalGames = 0;
