@@ -416,9 +416,40 @@ export class WorldController {
     const done = questsOnArrival(this.world, town, this.knobs);
     this.autosave();
     const first = this.world.visits[town.index] === 1;
-    const questNote = done.map((e) => (e.type === "questDone" ? `Quest complete — ${e.rewardText}.` : "")).filter(Boolean).join(" ");
-    this.screen = { kind: "town", town, stock: rollShopStock(this.world, town, this.pool, this.knobs), notice: questNote || (first ? `First time in ${town.name}.` : null) };
+    // S19 round 2 (Chris): completion gets a POPUP, not just a notice line.
+    if (done.length) this.questPopup = done.filter((e) => e.type === "questDone").map((e) => ({ title: "Quest complete", quest: e.quest.text, reward: e.rewardText }));
+    this.screen = { kind: "town", town, stock: rollShopStock(this.world, town, this.pool, this.knobs), notice: first ? `First time in ${town.name}.` : null };
     this.emit();
+  }
+
+  /** S19 round 2: pending completion announcements (modal over whatever screen is up). */
+  questPopup: { title: string; quest: string; reward: string }[] | null = null;
+  dismissQuestPopup(): void {
+    this.questPopup = null;
+    this.emit();
+  }
+
+  /** S19 round 2 (Chris): quests mark WHERE TO GO — a courier's destination town (the quest-giver told
+   * you the way, so the mark shows even through fog), a bounty's named region until first sighting,
+   * then the trailing last-seen mark. */
+  questMarks(): { at: Point; label: string }[] {
+    if (!this.world) return [];
+    const w = this.world;
+    const marks: { at: Point; label: string }[] = [];
+    for (const q of w.quests.active) {
+      if ((q.kind === "courier" || q.kind === "cardCourier") && q.toTown !== undefined) {
+        const t = w.map.towns.find((x) => x.index === q.toTown);
+        if (t) marks.push({ at: t.at, label: `${t.name} · delivery` });
+      }
+      if (q.kind === "bounty") {
+        if (q.bountySeenAt) marks.push({ at: q.bountySeenAt, label: `${this.catalog.opponents.find((o) => o.id === q.bountyCatalogId)?.name ?? "bounty"} · last seen` });
+        else if (q.bountyRegion !== undefined) {
+          const r = w.map.regions[q.bountyRegion];
+          if (r) marks.push({ at: r.heart, label: `${r.name} · last marked` });
+        }
+      }
+    }
+    return marks;
   }
 
   // ---------- S19 quests ----------

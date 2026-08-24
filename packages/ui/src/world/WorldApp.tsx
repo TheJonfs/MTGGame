@@ -255,6 +255,27 @@ function QuestBoard({ c, pool, onInspect }: { c: WorldController; pool: Map<stri
   );
 }
 
+/** S19 round 2 (Chris): the completion announcement — a small ceremony, not a notice line. */
+function QuestDonePopup({ c }: { c: WorldController }) {
+  const items = c.questPopup!;
+  return (
+    <div className="gallery-modal" style={{ zIndex: 40 }}>
+      <div className="gallery-modal-box play-dialog quest-done">
+        <h3 style={{ marginTop: 0, fontFamily: "var(--serif)" }}>{items.length > 1 ? "Quests complete" : items[0]!.title}</h3>
+        {items.map((it, i) => (
+          <div key={i} className="quest-done-item">
+            <p className="quest-done-text">{it.quest}</p>
+            <p className="quest-done-reward">Reward: <b>{it.reward}</b></p>
+          </div>
+        ))}
+        <p style={{ textAlign: "right", marginBottom: 0 }}>
+          <button className="primary" onClick={() => c.dismissQuestPopup()}>Take it</button>
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function TownScreen({ c, pool, oracle }: { c: WorldController; pool: Map<string, CardDef>; oracle: Record<string, OracleEntry> }) {
   const [printed, setPrinted] = useState(true); // S13 (Chris): printed by default
   const [inspect, setInspect] = useState<string | null>(null);
@@ -597,7 +618,7 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
             explored={w.explored}
             pan={pan}
             onPan={(p) => setPan(p)}
-            marks={c.activeQuests().filter((x) => x.quest.bountySeenAt).map((x) => ({ at: x.quest.bountySeenAt!, label: `${x.targetName ?? "bounty"} (last seen)` }))}
+            marks={c.questMarks()}
             onClickCell={(p) => c.clickCell(p)}
           />
         </div>
@@ -682,6 +703,7 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
       </div>
       {screen.kind === "encounter" && <ParleyPanel c={c} />}
       {screen.kind === "town" && <TownScreen c={c} pool={pool} oracle={oracle} />}
+      {c.questPopup && <QuestDonePopup c={c} />}
     </div>
   );
 }

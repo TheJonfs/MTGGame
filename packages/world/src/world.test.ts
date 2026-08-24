@@ -885,10 +885,10 @@ describe("S18 Part 6 (scripted acceptance): a beast encounter end-to-end — roa
     const { duel } = out;
     expect(duel.enemy.name).toBe("The Boggart Warband");
     expect(duel.enemy.difficulty).toBe("journeyman");
-    expect(duel.enemy.worldLife).toBe(10);
+    expect(duel.enemy.worldLife).toBe(8); // S19 mid-session ruling (Chris): Nighthawk and Warband walk down two — the first per-opponent life tuning
     expect(duel.enemy.archetype).toBe("aggro");
     expect(duel.spec.players[1].decklist).toEqual(EXPANSION_DECKS.warband!.decklist);
-    expect(duel.spec.modifiers).toEqual([{ type: "startingLife", player: 1, value: 10 }]);
+    expect(duel.spec.modifiers).toEqual([{ type: "startingLife", player: 1, value: 8 }]);
     const result = await runMatch(duel.spec, pool.cards, agentsFor(w, duel.enemy.difficulty, duel.enemy.deck, 5));
     const rec = applyDuelResult(w, catalog, duel, result);
     expect(["win", "loss", "draw"]).toContain(rec.outcome);
