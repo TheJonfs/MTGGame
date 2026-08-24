@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CardDef } from "@shandalar/cards";
 import { cardColors } from "@shandalar/cards";
-import { activeDeck, buyOffPrice, deckSize, deckStats, isBasic, isExplored, sellPrice, spares, BASIC_LANDS, type DifficultyName, type Point, type ShopItem, type StarterId } from "@shandalar/world";
+import { activeDeck, buyOffPrice, deckSize, deckStats, dungeonAsWorldMap, isBasic, isExplored, sellPrice, spares, BASIC_LANDS, type DifficultyName, type Point, type ShopItem, type StarterId } from "@shandalar/world";
 import { loadOracle, loadPool, loadWorldCatalog, type OracleEntry, type SavedGame } from "../engine-bridge";
 import { CardFrame } from "../components/CardFrame";
 import { PlayMatch, loadStops } from "../play/PlayMatch";
@@ -271,6 +271,112 @@ function QuestDonePopup({ c }: { c: WorldController }) {
         <p style={{ textAlign: "right", marginBottom: 0 }}>
           <button className="primary" onClick={() => c.dismissQuestPopup()}>Take it</button>
         </p>
+      </div>
+    </div>
+  );
+}
+
+/** S20: the dungeon threshold — the stakes stated before the choice (dungeon-design §4). */
+function DungeonTelegraph({ c }: { c: WorldController }) {
+  if (c.screen.kind !== "dungeonTelegraph") return null;
+  const { info } = c.screen;
+  const mox = info.kind === "mox" ? c.moxDef(info.dungeonId) : undefined;
+  const resident = info.residentCatalogId ? c.catalog.opponents.find((o) => o.id === info.residentCatalogId) : undefined;
+  const tiers = c.knobs.dungeonEmpowermentTiers;
+  const status = c.world?.dungeons[info.dungeonId];
+  return (
+    <div className="gallery-modal">
+      <div className="gallery-modal-box play-dialog dungeon-telegraph">
+        <h2 style={{ marginTop: 0, fontFamily: "var(--serif)" }}>{info.name}</h2>
+        <p className="parley-sub">{info.kind === "mox" ? "An elder vault — one-time: cleared, it is ground forever." : `${resident?.name ?? "Something"} holds these halls.`}{status && status.resets > 0 ? ` · reset ${status.resets}×` : ""}</p>
+        {mox && <p className="dungeon-law"><b>{mox.law.name}:</b> {mox.law.text}</p>}
+        <ul className="dungeon-stakes">
+          <li>The world's clock <b>freezes</b> at this threshold; your steps inside feed the {info.kind === "mox" ? "guardian" : "resident"} — it grows at {tiers.map((t) => t.steps).join(" / ")} interior steps (the meter shows the next threshold).</li>
+          <li><b>Your life inside carries from fight to fight</b> (it starts at your world life, {c.world?.player.worldLife}); it is discarded when you leave, but an interior LOSS still costs a world life and your stake.</li>
+          <li><b>Everything found inside is held in escrow</b> until the {info.kind === "mox" ? "guardian" : "resident"} falls — walk out or fall, and the mountain keeps it. Minions bar the way (no parley inside).</li>
+        </ul>
+        <p style={{ textAlign: "right", marginBottom: 0 }}>
+          <button onClick={() => c.declineDungeon()}>Not yet</button>{" "}
+          <button className="primary" onClick={() => c.enterDungeon()}>{c.world?.activeDungeon?.dungeonId === info.dungeonId ? "Descend again (your run resumes)" : "Enter"}</button>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/** S20: inside — the mini-world on the same map stack, with the meter and escrow in the rail. */
+function DungeonScreen({ c, pool }: { c: WorldController; pool: Map<string, CardDef> }) {
+  if (c.screen.kind !== "dungeon" || !c.world) return null;
+  const run = c.dungeonRun!;
+  const mox = c.moxDef(run.dungeonId);
+  const name = mox?.name ?? c.catalog.opponents.find((o) => o.id === run.residentCatalogId)?.name ?? "The dark";
+  const color = mox?.color ?? c.catalog.opponents.find((o) => o.id === run.residentCatalogId)?.spoke ?? "G";
+  const map = dungeonAsWorldMap(run, color, name);
+  const meter = c.dungeonMeter()!;
+  const marks = run.treasures.filter((t) => !t.taken).map((t) => ({ at: t.at, label: "cache" }));
+  const minions = run.minions.filter((m) => !m.defeated).map((m) => {
+    const tmpl = c.catalog.opponents.find((o) => o.id === m.catalogId)!;
+    return { id: m.id, at: m.at, portrait: `/portraits/${tmpl.portraitChip ?? tmpl.portrait}.png`, name: tmpl.name, tier: tmpl.tier, fleeing: false };
+  });
+  const notice = c.screen.notice;
+  return (
+    <div className="app world-app">
+      <div style={{ display: "flex", flexDirection: "column", minWidth: 0, overflow: "hidden" }}>
+        <div className="chrome" style={{ display: "flex", gap: 16, alignItems: "center" }}><b style={{ fontFamily: "var(--serif)" }}>{name}</b><span className="stat">♥ interior life {meter.life}</span><span className="stat">⟳ {meter.steps} steps inside</span></div>
+        <div className="world-map-wrap">
+          <WorldMapView
+            map={map}
+            player={run.position}
+            portrait="/portrait-you.png"
+            preview={null}
+            previewTarget={null}
+            explored={run.explored}
+            marks={marks}
+            edgeLabel=""
+            roamers={minions}
+            sightRadius={c.knobs.sightRadius}
+            onClickCell={(p) => c.dungeonClick(p)}
+          />
+        </div>
+        <div className="transport play-prompt">
+          <span className="prompt-text">{notice ?? "Click a cell to move. The guardian waits at the deep end."}</span>
+          <span style={{ flex: 1 }} />
+          <button onClick={() => c.walkOutOfDungeon()} title="forfeit the escrow; the halls reset">Walk out</button>
+        </div>
+      </div>
+      <div className="rail world-rail">
+        <div className="panel">
+          <h3>The {run.kind === "mox" ? "guardian" : "resident"} grows</h3>
+          <div style={{ fontSize: 12 }}>Interior steps: <b>{meter.steps}</b> · tiers reached: <b>{meter.reached}</b>{meter.nextAt !== null ? <> · next at <b>{meter.nextAt}</b></> : <> · fully grown</>}</div>
+          <div className="empower-meter">{c.knobs.dungeonEmpowermentTiers.map((t, i) => (
+            <span key={i} className={`empower-tier${meter.steps >= t.steps ? " hit" : ""}`} title={`${t.steps} steps: +${t.addLife} life${t.addBasic ? ", +1 land in play" : ""}${t.addToken ? ", +1 creature in play" : ""}${t.addCard ? ", +1 card" : ""}`}>{t.steps}</span>
+          ))}</div>
+          {mox && <p style={{ fontSize: 11.5, color: "var(--ink-soft)" }}><b>{mox.law.name}:</b> {mox.law.text}</p>}
+        </div>
+        <div className="panel">
+          <h3>Escrow (the mountain holds it)</h3>
+          <div style={{ fontSize: 12 }}>{meter.escrowGold} gold{meter.escrowCards.length > 0 ? <> · {meter.escrowCards.map((id) => pool.get(id)?.name ?? id).join(", ")}</> : null}</div>
+          <div style={{ fontSize: 10.5, color: "var(--ink-soft)" }}>Paid out when the {run.kind === "mox" ? "guardian" : "resident"} falls; forfeit if you walk or fall.</div>
+        </div>
+        <div className="panel">
+          <h3>Interior life</h3>
+          <div style={{ fontSize: 12 }}>Fights start at <b>{meter.life}</b> (carried fight to fight; discarded at the door). A loss still costs a world life.</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** S20: the payout ceremony. */
+function DungeonVictory({ c, pool }: { c: WorldController; pool: Map<string, CardDef> }) {
+  if (c.screen.kind !== "dungeonVictory") return null;
+  const { name, paidGold, paidCards } = c.screen;
+  return (
+    <div className="loader">
+      <div className="box play-setup">
+        <h2 style={{ fontFamily: "var(--serif)", marginTop: 0 }}>The guardian falls — {name} is yours to leave</h2>
+        <p>The mountain pays its debts: <b>{paidGold} gold</b>{paidCards.length > 0 ? <> and {paidCards.map((id) => pool.get(id)?.name ?? id).join(", ")}</> : null}.</p>
+        <p><button className="primary" onClick={() => c.continueAfterDungeonVictory()}>Back to the light</button></p>
       </div>
     </div>
   );
@@ -576,7 +682,7 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
   };
 
   if (c.screen.kind === "start" || !c.world) return <StartScreen c={c} onStart={(choice) => c.newGame(choice)} />;
-  if (c.screen.kind === "duel") {
+  if (c.screen.kind === "duel" || c.screen.kind === "dungeonDuel") {
     const m = c.screen.match;
     if (lastDuel.current?.match !== m) {
       m.stops = loadStops();
@@ -590,6 +696,9 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
   }
   if (c.screen.kind === "collection") return <CollectionScreen c={c} pool={pool} oracle={oracle} />;
   if (c.screen.kind === "editor") return <EditorScreen c={c} pool={pool} oracle={oracle} />;
+  if (c.screen.kind === "dungeonTelegraph") return <DungeonTelegraph c={c} />;
+  if (c.screen.kind === "dungeon") return <DungeonScreen c={c} pool={pool} />;
+  if (c.screen.kind === "dungeonVictory") return <DungeonVictory c={c} pool={pool} />;
   if (c.screen.kind === "gameOver") {
     const fatal = c.screen.fatal;
     return <GameOverScreen c={c} onWatch={fatal ? () => onWatchReplay(fatal.saved as SavedGame) : null} onNew={() => { c.screen = { kind: "start" }; force((n) => n + 1); }} />;

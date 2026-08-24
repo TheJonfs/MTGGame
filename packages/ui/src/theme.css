@@ -572,3 +572,12 @@ button.primary { background: var(--brass); color: var(--parchment); border: 1.5p
 .quest-done-item { border-left: 3px solid var(--brass); padding: 2px 10px; margin: 8px 0; text-align: left; }
 .quest-done-text { font-family: var(--serif); font-style: italic; font-size: 12.5px; margin: 0 0 4px; color: var(--ink-soft); }
 .quest-done-reward { font-size: 13px; margin: 0; }
+
+/* S20: dungeons */
+.dungeon-telegraph { max-width: 560px; text-align: left; }
+.dungeon-law { font-family: var(--serif); font-style: italic; font-size: 13px; border-left: 3px solid var(--brass); padding-left: 10px; }
+.dungeon-stakes { font-size: 12.5px; line-height: 1.45; padding-left: 18px; }
+.dungeon-stakes li { margin-bottom: 6px; }
+.empower-meter { display: flex; gap: 6px; margin: 6px 0 2px; }
+.empower-tier { font-size: 11px; border: 1.5px solid var(--ink-soft); border-radius: 4px; padding: 1px 8px; color: var(--ink-soft); }
+.empower-tier.hit { border-color: var(--danger); color: var(--danger); font-weight: 700; }

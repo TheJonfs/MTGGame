@@ -15,6 +15,10 @@
     "./expansion-decks": {
       "types": "./src/expansion-decks.ts",
       "default": "./src/expansion-decks.ts"
+    },
+    "./guardian-decks": {
+      "types": "./src/guardian-decks.ts",
+      "default": "./src/guardian-decks.ts"
     }
   },
   "dependencies": {

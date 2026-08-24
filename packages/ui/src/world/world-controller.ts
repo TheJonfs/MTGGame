@@ -47,6 +47,12 @@ import {
 } from "@shandalar/world";
 import { MatchController } from "../play/match-controller.js";
 import { abandonQuest, acceptQuest, cardMatches, questsOnArrival, spares, townOffers, type ActiveQuest, type QuestOffer } from "@shandalar/world";
+import {
+  applyInteriorDuel, clearDungeon, colorPrizeRoll, dungeonAdvance, dungeonAsWorldMap, dungeonDuelSpec, dungeonPath,
+  generateDungeonRun, lairPrizeRoll, reachedTiers, resetDungeon, type DungeonRun, type MoxDungeonDef,
+} from "@shandalar/world";
+import { GUARDIAN_DECKS } from "@shandalar/sim/guardian-decks";
+import { WorldRng as DungeonRng } from "@shandalar/world";
 
 /**
  * WorldController (S13): the overworld's interaction brain — React-free, like
@@ -63,6 +69,14 @@ export type WorldScreen =
   | { kind: "map"; preview: Point[] | null; previewTarget: Point | null; walking: boolean; notice: string | null }
   | { kind: "encounter"; encounter: Encounter; tmpl: OpponentTemplate; knobs: KnobValues; notice: string | null }
   | { kind: "duel"; duel: PreparedDuel; match: MatchController }
+  /** S20: the dungeon threshold — stakes stated before the choice (dungeon-design §4). */
+  | { kind: "dungeonTelegraph"; info: { dungeonId: string; kind: "mox" | "lair"; name: string; at: Point; residentCatalogId?: string }; notice: string | null }
+  /** S20: inside a dungeon (world.activeDungeon is the run). */
+  | { kind: "dungeon"; notice: string | null; walking: boolean }
+  /** S20: an interior duel (minion or guardian) — mounts PlayMatch like a world duel. */
+  | { kind: "dungeonDuel"; enemyName: string; match: MatchController; against: { minionId?: string; guardian?: boolean } }
+  /** S20: the guardian fell — the escrow + prize payout ceremony. */
+  | { kind: "dungeonVictory"; name: string; paidGold: number; paidCards: string[] }
   | {
       kind: "duelResult";
       duel: PreparedDuel;
@@ -152,6 +166,9 @@ export class WorldController {
     this.world = deserializeWorld(text);
     if (this.world.gameOver) {
       this.screen = { kind: "gameOver", fatal: this.world.duels[this.world.duels.length - 1] ?? null };
+    } else if (this.world.activeDungeon) {
+      // S20 durability: reloading RESUMES mid-dungeon — quitting is not walking out (the escrow holds).
+      this.screen = { kind: "dungeon", notice: "You are where you stood — the halls remember, and so does the escrow.", walking: false };
     } else {
       const town = townAt(this.world.map, this.world.player.position);
       this.screen = town
@@ -248,6 +265,12 @@ export class WorldController {
         if (e.type === "questExpired") {
           this.autosave(); // durability: expiry is a consequence
           if (this.screen.kind === "map") this.screen = { ...this.screen, notice: `A quest expired: ${e.text}` };
+        }
+        if (e.type === "dungeonEntry") {
+          this.resumePath = path.slice(i + 1);
+          this.screen = { kind: "dungeonTelegraph", info: { dungeonId: e.dungeonId, kind: e.kind, name: e.name, at: e.at, ...(e.residentCatalogId ? { residentCatalogId: e.residentCatalogId } : {}) }, notice: null };
+          this.emit();
+          return;
         }
         if (e.type === "encounter") {
           this.resumePath = path.slice(i + 1);
@@ -610,8 +633,217 @@ export class WorldController {
     this.emit();
   }
 
+  // ---------- S20: dungeons ----------
+
+  /** The active run (only while inside). */
+  get dungeonRun(): DungeonRun | null {
+    return this.world?.activeDungeon ?? null;
+  }
+
+  moxDef(dungeonId: string): MoxDungeonDef | undefined {
+    return this.catalog.dungeons.find((d) => d.id === dungeonId);
+  }
+
+  /** Enter from the telegraph: resume the saved run if it matches, else generate. Autosave at entry. */
+  enterDungeon(): void {
+    if (!this.world || this.screen.kind !== "dungeonTelegraph") return;
+    const { info } = this.screen;
+    let run = this.world.activeDungeon;
+    if (!run || run.dungeonId !== info.dungeonId) {
+      const color = (this.moxDef(info.dungeonId)?.color ?? this.catalog.opponents.find((o) => o.id === info.residentCatalogId)?.spoke ?? "G") as "W" | "U" | "B" | "R" | "G";
+      run = generateDungeonRun(this.world, this.catalog, this.knobs, this.pool, {
+        dungeonId: info.dungeonId,
+        kind: info.kind,
+        color,
+        enteredFrom: { ...this.world.player.position },
+        ...(info.residentCatalogId ? { residentCatalogId: info.residentCatalogId, small: true } : {}),
+      });
+      this.world.activeDungeon = run;
+    }
+    this.autosave(); // durability: entry is a consequence; reloading resumes mid-dungeon
+    this.screen = { kind: "dungeon", notice: `You descend into ${info.name}.`, walking: false };
+    this.emit();
+  }
+
+  declineDungeon(): void {
+    if (this.screen.kind !== "dungeonTelegraph") return;
+    this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: null };
+    this.emit();
+  }
+
+  /** Interior click-to-walk (fog-honest planning; instant, the interior is small). */
+  dungeonClick(p: Point): void {
+    if (!this.world || this.screen.kind !== "dungeon" || this.screen.walking) return;
+    const run = this.world.activeDungeon;
+    if (!run) return;
+    const path = dungeonPath(run, p);
+    if (!path || path.length === 0) return;
+    void this.dungeonWalk(path);
+  }
+
+  private async dungeonWalk(path: Point[]): Promise<void> {
+    if (!this.world || this.screen.kind !== "dungeon") return;
+    const run = this.world.activeDungeon!;
+    this.screen = { ...this.screen, walking: true };
+    this.emit();
+    for (const cell of path) {
+      if (!this.world || this.screen.kind !== "dungeon") return;
+      if (!run.grid.passable[cell.y * run.grid.width + cell.x]) break; // fogged plan met a wall — stop
+      const events = dungeonAdvance(run, this.knobs, [cell]);
+      this.emit();
+      for (const e of events) {
+        if (e.type === "treasure") {
+          this.autosave(); // escrow is a consequence
+          const what = e.treasure.kind === "gold" ? `${e.treasure.gold} gold` : e.treasure.cardName ?? e.treasure.cardId;
+          this.screen = { kind: "dungeon", notice: `Escrowed: ${what}. The mountain holds it until the guardian falls.`, walking: true };
+          this.emit();
+        }
+        if (e.type === "minion") {
+          this.startInteriorDuel({ minionId: e.minion.id });
+          return;
+        }
+        if (e.type === "guardian") {
+          this.startInteriorDuel({ guardian: true });
+          return;
+        }
+      }
+      if (this.stepMs > 0) await new Promise((r) => setTimeout(r, this.stepMs));
+    }
+    if (this.screen.kind === "dungeon") {
+      this.screen = { ...this.screen, walking: false };
+      this.emit();
+    }
+  }
+
+  /** Walk out (any time; the design's exit is a choice): forfeit the escrow, reset, back to the map. */
+  walkOutOfDungeon(): void {
+    if (!this.world) return;
+    const run = this.world.activeDungeon;
+    if (!run) return;
+    resetDungeon(this.world, run);
+    this.autosave();
+    this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: "You walk out. The mountain keeps what you found; the halls will be watched again." };
+    this.emit();
+  }
+
+  private startInteriorDuel(against: { minionId?: string; guardian?: boolean }): void {
+    if (!this.world) return;
+    const run = this.world.activeDungeon!;
+    const rng = new DungeonRng(this.world.rng);
+    const mox = this.moxDef(run.dungeonId);
+    const law = mox?.law.both ?? [];
+    let enemy: Parameters<typeof dungeonDuelSpec>[4];
+    let portrait: string | undefined;
+    if (against.guardian) {
+      if (run.kind === "mox" && mox) {
+        const g = GUARDIAN_DECKS[mox.guardian.key]!;
+        enemy = { kind: "guardian", name: mox.guardian.name, decklist: g.decklist, archetype: g.archetype, life: mox.guardian.life, color: mox.color };
+        portrait = mox.guardian.portrait;
+      } else {
+        const tmpl = this.catalog.opponents.find((o) => o.id === run.residentCatalogId)!;
+        const deck = enemyDeckOf(this.catalog, tmpl.deck);
+        enemy = { kind: "guardian", name: tmpl.name, decklist: deck.decklist, archetype: deck.archetype, life: tmpl.worldLife, color: (tmpl.spoke ?? "G") as "W" | "U" | "B" | "R" | "G" };
+        portrait = tmpl.portrait;
+      }
+    } else {
+      const minion = run.minions.find((m) => m.id === against.minionId)!;
+      const tmpl = this.catalog.opponents.find((o) => o.id === minion.catalogId)!;
+      enemy = { kind: "minion", tmpl };
+      portrait = tmpl.portraitChip ?? tmpl.portrait;
+    }
+    const { spec, enemyName } = dungeonDuelSpec(this.world, this.catalog, this.knobs, run, enemy, law, rng);
+    this.world.rng = rng.state();
+    this.autosave();
+    const match = new MatchController(this.pool, {
+      humanSeat: 0,
+      seed: spec.seed,
+      aiDelayMs: this.aiDelayMs,
+      custom: {
+        human: { name: this.world.player.name, decklist: spec.players[0].decklist },
+        enemy: { name: enemyName, decklist: spec.players[1].decklist, difficulty: (spec.players[1].agent.split(":")[1] ?? "journeyman") as "apprentice" | "journeyman" | "master", archetype: enemy.kind === "minion" ? "midrange" : enemy.archetype, ...(portrait ? { portrait } : {}) },
+        rules: { startingLife: spec.rules.startingLife, ante: spec.rules.ante ?? 0 },
+        modifiers: spec.modifiers,
+      },
+    });
+    this.screen = { kind: "dungeonDuel", enemyName, match, against };
+    this.emit();
+    void match.start().then((result) => this.finishInteriorDuel(against, result));
+  }
+
+  private finishInteriorDuel(against: { minionId?: string; guardian?: boolean }, result: MatchResult): void {
+    if (!this.world) return;
+    const run = this.world.activeDungeon!;
+    const out = applyInteriorDuel(this.world, this.knobs, run, result, against.minionId);
+    if (out.type === "loss") {
+      // §4: forfeit + reset + the normal loss consequences (already applied) + ejection.
+      resetDungeon(this.world, run);
+      this.autosave();
+      if (this.world.gameOver) {
+        this.screen = { kind: "gameOver", fatal: null };
+      } else {
+        this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: `Thrown from the dark at a cost: your stake${out.anteLost.length ? ` (${out.anteLost.map((id) => this.pool.get(id)?.name ?? id).join(", ")})` : ""} and a world life. The escrow is forfeit; the halls reset.` };
+      }
+      this.emit();
+      return;
+    }
+    if (against.guardian) {
+      // Victory: payout = escrow + the prize.
+      let prize: { gold: number; cardIds: string[] };
+      let name: string;
+      if (run.kind === "mox") {
+        const mox = this.moxDef(run.dungeonId)!;
+        const roll = colorPrizeRoll(this.world, this.pool, run.dungeonId, mox.color);
+        prize = { gold: 0, cardIds: [mox.prize.mox, mox.prize.guardianCard, ...(roll ? [roll] : [])] };
+        name = mox.name;
+      } else {
+        prize = lairPrizeRoll(this.world, this.pool, run.dungeonId);
+        name = "the lair";
+        const residentInst = this.world.opponents.find((o) => o.catalogId === run.residentCatalogId && o.fixedAt);
+        if (residentInst) {
+          residentInst.gone = true;
+          residentInst.goneReason = "defeated";
+          const tmpl = this.catalog.opponents.find((o) => o.id === residentInst.catalogId);
+          this.world.player.renown += tmpl?.tier ?? 3;
+        }
+      }
+      const paid = clearDungeon(this.world, run, prize);
+      this.autosave();
+      this.screen = { kind: "dungeonVictory", name, paidGold: paid.paidGold, paidCards: paid.paidCards };
+      this.emit();
+      return;
+    }
+    // Minion win: life carries, ante escrowed; back to the halls.
+    this.autosave();
+    this.screen = { kind: "dungeon", notice: `The way is clear. Interior life: ${run.interiorLife}. Their stake went to escrow.`, walking: false };
+    this.emit();
+  }
+
+  continueAfterDungeonVictory(): void {
+    if (this.screen.kind !== "dungeonVictory") return;
+    this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: "The mountain pays its debts." };
+    this.emit();
+  }
+
+  /** The empowerment meter (rail): tiers reached + the next threshold. */
+  dungeonMeter(): { steps: number; reached: number; nextAt: number | null; life: number; escrowGold: number; escrowCards: string[] } | null {
+    const run = this.dungeonRun;
+    if (!run) return null;
+    const tiers = reachedTiers(run, this.knobs);
+    const next = this.knobs.dungeonEmpowermentTiers.find((t) => run.steps < t.steps);
+    return { steps: run.steps, reached: tiers.length, nextAt: next?.steps ?? null, life: run.interiorLife, escrowGold: run.escrow.gold, escrowCards: run.escrow.cardIds };
+  }
+
   /** The current match (if any) — the duel screen mounts PlayMatch on it. */
   get match(): MatchController | null {
-    return this.screen.kind === "duel" ? this.screen.match : null;
+    if (this.screen.kind === "duel") return this.screen.match;
+    if (this.screen.kind === "dungeonDuel") return this.screen.match;
+    return null;
   }
 }
+
+/** Local alias (avoids a name clash with the class's import list). */
+function enemyDeckOf(catalog: import("@shandalar/world").Catalog, ref: import("@shandalar/world").OpponentDeckRef) {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  return enemyDeckImpl(catalog, ref);
+}
+import { enemyDeck as enemyDeckImpl } from "@shandalar/world";

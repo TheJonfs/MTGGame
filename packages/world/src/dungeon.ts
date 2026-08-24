@@ -504,6 +504,15 @@ export function colorPrizeRoll(world: WorldState, pool: Map<string, CardDef>, du
   return candidates.length ? rng.pick(candidates).id : null;
 }
 
+/** Lair-dungeon prize (§5): a couple of R-tier cards + a purse, seeded per dungeon. */
+export function lairPrizeRoll(world: WorldState, pool: Map<string, CardDef>, dungeonId: string): { gold: number; cardIds: string[] } {
+  const rng = rngFor(world, `${dungeonId}:prize`);
+  const rs = [...pool.values()].filter((d) => !d.isTokenDef && !d.prizeOnly && d.shopTier === "R").sort((a, b) => a.id.localeCompare(b.id));
+  const cardIds: string[] = [];
+  for (let i = 0; i < 2 && rs.length; i++) cardIds.push(rng.pick(rs).id);
+  return { gold: 30, cardIds };
+}
+
 /** The ante the player stakes inside (same rules as outside — the deck's top nonlands at shuffle
  * are engine-side; this helper only reports the count for the telegraph). */
 export function interiorAnteCount(knobs: KnobValues): number {

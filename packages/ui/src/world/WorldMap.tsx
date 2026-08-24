@@ -70,6 +70,7 @@ export function WorldMapView({
   pan = { x: 0, y: 0 },
   onPan,
   marks = [],
+  edgeLabel = "the edge of the map",
   onClickCell,
 }: {
   map: WorldMapModel;
@@ -92,6 +93,8 @@ export function WorldMapView({
   onPan?: (p: Point) => void;
   /** S19: bounty marks — the target's LAST SEEN cell (fog-honest; the mark trails sightings). */
   marks?: { at: Point; label: string }[];
+  /** S20: override the map-edge label ("" hides it — dungeon interiors where every edge is close). */
+  edgeLabel?: string;
   onClickCell: (p: Point) => void;
 }) {
   const [hoverTown, setHoverTown] = useState<Town | null>(null);
@@ -103,10 +106,10 @@ export function WorldMapView({
   // S18 (OQ-7): the edges of the map — a heavy double ink rule wherever the viewport meets the world's edge.
   const edges: { d: string; label: string; lx: number; ly: number; rot: number }[] = [];
   const X0 = origin.x * CELL, Y0 = origin.y * CELL, X1 = (origin.x + vw) * CELL, Y1 = (origin.y + vh) * CELL;
-  if (origin.x === 0) edges.push({ d: `M${X0 + 2} ${Y0} V${Y1}`, label: "the edge of the map", lx: X0 + 14, ly: (Y0 + Y1) / 2, rot: -90 });
-  if (origin.y === 0) edges.push({ d: `M${X0} ${Y0 + 2} H${X1}`, label: "the edge of the map", lx: (X0 + X1) / 2, ly: Y0 + 16, rot: 0 });
-  if (origin.x + vw >= map.width) edges.push({ d: `M${X1 - 2} ${Y0} V${Y1}`, label: "the edge of the map", lx: X1 - 14, ly: (Y0 + Y1) / 2, rot: 90 });
-  if (origin.y + vh >= map.height) edges.push({ d: `M${X0} ${Y1 - 2} H${X1}`, label: "the edge of the map", lx: (X0 + X1) / 2, ly: Y1 - 8, rot: 0 });
+  if (origin.x === 0) edges.push({ d: `M${X0 + 2} ${Y0} V${Y1}`, label: edgeLabel, lx: X0 + 14, ly: (Y0 + Y1) / 2, rot: -90 });
+  if (origin.y === 0) edges.push({ d: `M${X0} ${Y0 + 2} H${X1}`, label: edgeLabel, lx: (X0 + X1) / 2, ly: Y0 + 16, rot: 0 });
+  if (origin.x + vw >= map.width) edges.push({ d: `M${X1 - 2} ${Y0} V${Y1}`, label: edgeLabel, lx: X1 - 14, ly: (Y0 + Y1) / 2, rot: 90 });
+  if (origin.y + vh >= map.height) edges.push({ d: `M${X0} ${Y1 - 2} H${X1}`, label: edgeLabel, lx: (X0 + X1) / 2, ly: Y1 - 8, rot: 0 });
   const W = map.width * CELL;
   const H = map.height * CELL;
   const centre = (p: Point) => ({ cx: p.x * CELL + CELL / 2, cy: p.y * CELL + CELL / 2 });
@@ -294,7 +297,7 @@ export function WorldMapView({
           <g key={`edge${i}`} pointerEvents="none">
             <path d={e.d} stroke="var(--ink)" strokeWidth="5" opacity="0.9" />
             <path d={e.d} stroke="var(--parchment)" strokeWidth="1.2" strokeDasharray="6 6" />
-            <text x={e.lx} y={e.ly} transform={`rotate(${e.rot} ${e.lx} ${e.ly})`} textAnchor="middle" className="region-label" opacity="0.7">{e.label}</text>
+            {e.label && <text x={e.lx} y={e.ly} transform={`rotate(${e.rot} ${e.lx} ${e.ly})`} textAnchor="middle" className="region-label" opacity="0.7">{e.label}</text>}
           </g>
         ))}
         {/* player chip */}
