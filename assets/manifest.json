@@ -45,6 +45,36 @@
         }
       }
     },
+    "beast-faerie-formation": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:0481f01996c6534f82442a4436bcdd8d56ed66797540fa99970740d48c955856",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:0481f01996c6534f82442a4436bcdd8d56ed66797540fa99970740d48c955856",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/beast-faerie-formation/canonical.png",
+          "rendered_at": "2026-08-24T00:10:13+00:00",
+          "thumb": "assets/thumbs/beast-faerie-formation/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "beast-gray-ogre": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:fbcf2836d64b2e3c13d2d4538f227eac0136b25adc82fa6e6ca14c427659a835",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:fbcf2836d64b2e3c13d2d4538f227eac0136b25adc82fa6e6ca14c427659a835",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/beast-gray-ogre/canonical.png",
+          "rendered_at": "2026-08-24T00:09:48+00:00",
+          "thumb": "assets/thumbs/beast-gray-ogre/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "beast-grizzly-bear": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:e01238119ff593dea1d54fbc913bcade95c0b196eb166028a3a99d1d44ca385b",
@@ -116,6 +146,51 @@
           "path": "assets/images/beast-pelakka-wurm/canonical.png",
           "rendered_at": "2026-08-21T15:39:52+00:00",
           "thumb": "assets/thumbs/beast-pelakka-wurm/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "beast-plague-of-rats": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:359fa38f5df736467c2249ededa9ebe42c344371cd8c3a40b1f177dfd4b844a6",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:359fa38f5df736467c2249ededa9ebe42c344371cd8c3a40b1f177dfd4b844a6",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/beast-plague-of-rats/canonical.png",
+          "rendered_at": "2026-08-24T00:09:39+00:00",
+          "thumb": "assets/thumbs/beast-plague-of-rats/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "beast-rumbling-baloth": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:7aeacb22fbf2a23dd0d1d9a28785856d5f7931b4a93dc9191df41c1a1aa636c4",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:7aeacb22fbf2a23dd0d1d9a28785856d5f7931b4a93dc9191df41c1a1aa636c4",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/beast-rumbling-baloth/canonical.png",
+          "rendered_at": "2026-08-24T00:10:04+00:00",
+          "thumb": "assets/thumbs/beast-rumbling-baloth/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "beast-savannah-lion": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:15d39eccd191e1f37f7334008c441cb516c8eed9845f3b7ad4b9b94e8e5c7bad",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:15d39eccd191e1f37f7334008c441cb516c8eed9845f3b7ad4b9b94e8e5c7bad",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/beast-savannah-lion/canonical.png",
+          "rendered_at": "2026-08-24T00:09:56+00:00",
+          "thumb": "assets/thumbs/beast-savannah-lion/canonical.png",
           "variant_prompt": null
         }
       }
@@ -971,6 +1046,21 @@
           "path": "assets/images/token-bird/canonical.png",
           "rendered_at": "2026-08-23T15:57:25+00:00",
           "thumb": "assets/thumbs/token-bird/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "token-faerie": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:84ced79e86399a77450ba567fc9663f76643d3a0569196cc622ad5ac5233ac6c",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:84ced79e86399a77450ba567fc9663f76643d3a0569196cc622ad5ac5233ac6c",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/token-faerie/canonical.png",
+          "rendered_at": "2026-08-24T00:10:23+00:00",
+          "thumb": "assets/thumbs/token-faerie/canonical.png",
           "variant_prompt": null
         }
       }

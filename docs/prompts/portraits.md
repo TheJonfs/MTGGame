@@ -35,5 +35,10 @@ Keep this file as the registry of all portrait and bestiary prompts.
 | `beast-hypnotic-specter.md` | The Hypnotic Specter (B, 3) | sickly green-black |
 | `beast-serra-angel.md` | The Serra Angel (W, 3) | pale gold |
 | `beast-pelakka-wurm.md` | the Pelakka Wurm (G, 3) — S14 PoC | moss green |
+| `beast-plague-of-rats.md` | A Plague of Rats (B, 1) — S19 | bruise violet-black |
+| `beast-gray-ogre.md` | A Gray Ogre (R, 1) — S19 | ember red |
+| `beast-savannah-lion.md` | A Savannah Lion (W, 1) — S19 | pale gold |
+| `beast-rumbling-baloth.md` | A Rumbling Baloth (G, 2) — S19 | moss green |
+| `beast-faerie-formation.md` | The Faerie Formation (U, 3) — S19 | storm blue |
 
 Descriptors are locked in the subject files (the skill hashes them); MANIFEST carries kept/rejected per Chris's verdicts.

@@ -18,5 +18,9 @@
   "text": "",
   "keywords": [
     "flying"
-  ]
+  ],
+  "art": {
+    "asset": "/custom-art/faerie_1_1_u.png",
+    "fallback": "rendered"
+  }
 }
