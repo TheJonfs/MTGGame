@@ -240,6 +240,66 @@
         }
       }
     },
+    "card-aetherbolt-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:4381e7f4eb99d11641b73ff4070692042d610d0ca0d212520796edc533505a2e",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:4381e7f4eb99d11641b73ff4070692042d610d0ca0d212520796edc533505a2e",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-aetherbolt-1/canonical.png",
+          "rendered_at": "2026-08-25T18:00:23+00:00",
+          "thumb": "assets/thumbs/card-aetherbolt-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-aetherbolt-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:d356119f2f8954568b2a99aa061fa0c91f1fe8de812cb805a9fbefb0236a1e25",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:d356119f2f8954568b2a99aa061fa0c91f1fe8de812cb805a9fbefb0236a1e25",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-aetherbolt-2/canonical.png",
+          "rendered_at": "2026-08-25T18:00:35+00:00",
+          "thumb": "assets/thumbs/card-aetherbolt-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-aetherbolt-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:2015bfe1dfe941bd0ab0bfc2ac138eec5d234e9fe805f93cfc90d6061131ccbf",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:2015bfe1dfe941bd0ab0bfc2ac138eec5d234e9fe805f93cfc90d6061131ccbf",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-aetherbolt-3/canonical.png",
+          "rendered_at": "2026-08-25T18:00:46+00:00",
+          "thumb": "assets/thumbs/card-aetherbolt-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-aetherbolt-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:73ed75856e6dce31ee4ec08cf6320f3dd628ac5d95126d788506d45bacde4d52",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:73ed75856e6dce31ee4ec08cf6320f3dd628ac5d95126d788506d45bacde4d52",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-aetherbolt-4/canonical.png",
+          "rendered_at": "2026-08-25T18:00:58+00:00",
+          "thumb": "assets/thumbs/card-aetherbolt-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "card-back": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:e2c612699292049237803fe590502ff9567d153df70c09025a785dca39d3d027",
@@ -371,6 +431,366 @@
           "path": "assets/images/card-gaean-wurm-4/canonical.png",
           "rendered_at": "2026-08-23T15:48:56+00:00",
           "thumb": "assets/thumbs/card-gaean-wurm-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-tainted-phoenix-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:0d5d8ff70117f87b889c616135e3aec94cdc8354d8f32218101e6fce375b9f02",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:0d5d8ff70117f87b889c616135e3aec94cdc8354d8f32218101e6fce375b9f02",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-tainted-phoenix-1/canonical.png",
+          "rendered_at": "2026-08-25T18:01:10+00:00",
+          "thumb": "assets/thumbs/card-tainted-phoenix-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-tainted-phoenix-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:dc9a08820b5256a32c3e27cd9cf8c5ba3f497d6bcb11ab70971d902392007cdd",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:dc9a08820b5256a32c3e27cd9cf8c5ba3f497d6bcb11ab70971d902392007cdd",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-tainted-phoenix-2/canonical.png",
+          "rendered_at": "2026-08-25T18:01:21+00:00",
+          "thumb": "assets/thumbs/card-tainted-phoenix-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-tainted-phoenix-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:d6f548b6afa94a8674b84d2fcf56fa871fb9be2102c0b5325290a4c74e3c7c5c",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:d6f548b6afa94a8674b84d2fcf56fa871fb9be2102c0b5325290a4c74e3c7c5c",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-tainted-phoenix-3/canonical.png",
+          "rendered_at": "2026-08-25T18:02:46+00:00",
+          "thumb": "assets/thumbs/card-tainted-phoenix-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-tainted-phoenix-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:70a6450c9961b7f44ad78b25ceced5b2f6baa3836dd0c18e6cb64d3538a4988e",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:70a6450c9961b7f44ad78b25ceced5b2f6baa3836dd0c18e6cb64d3538a4988e",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-tainted-phoenix-4/canonical.png",
+          "rendered_at": "2026-08-25T18:01:48+00:00",
+          "thumb": "assets/thumbs/card-tainted-phoenix-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-the-sower-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:48cf3ca29cbf12a6bc11657b83d47ba36fa305a935ff14f730929be4a8dfb232",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:48cf3ca29cbf12a6bc11657b83d47ba36fa305a935ff14f730929be4a8dfb232",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-the-sower-1/canonical.png",
+          "rendered_at": "2026-08-25T17:59:23+00:00",
+          "thumb": "assets/thumbs/card-the-sower-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-the-sower-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:897761b69e16bc0feee4834dabc9ecff35db213c11bd72d62feb152da90f4b52",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:897761b69e16bc0feee4834dabc9ecff35db213c11bd72d62feb152da90f4b52",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-the-sower-2/canonical.png",
+          "rendered_at": "2026-08-25T17:59:33+00:00",
+          "thumb": "assets/thumbs/card-the-sower-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-the-sower-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:2d0c36e68bfd913b0f73e39c094faff219d8cd3192ade18d0dbe067f724323a4",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:2d0c36e68bfd913b0f73e39c094faff219d8cd3192ade18d0dbe067f724323a4",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-the-sower-3/canonical.png",
+          "rendered_at": "2026-08-25T17:59:44+00:00",
+          "thumb": "assets/thumbs/card-the-sower-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-the-sower-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:e495e48d70570a76e87f6c2a05945ae53da51406b5fc28fb2ec90f6c96f6f964",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:e495e48d70570a76e87f6c2a05945ae53da51406b5fc28fb2ec90f6c96f6f964",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-the-sower-4/canonical.png",
+          "rendered_at": "2026-08-25T17:59:55+00:00",
+          "thumb": "assets/thumbs/card-the-sower-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-the-stoker-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:6ba9be2e6a1de9f12eed645ce36aa4fea0c2d3fe51fe2c9583cda84afa2dbf94",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:6ba9be2e6a1de9f12eed645ce36aa4fea0c2d3fe51fe2c9583cda84afa2dbf94",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-the-stoker-1/canonical.png",
+          "rendered_at": "2026-08-25T17:58:38+00:00",
+          "thumb": "assets/thumbs/card-the-stoker-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-the-stoker-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:21923f99e8f185ca888b2c5071a62e3c5b4614371735a02c5374f85fa1eb9663",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:21923f99e8f185ca888b2c5071a62e3c5b4614371735a02c5374f85fa1eb9663",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-the-stoker-2/canonical.png",
+          "rendered_at": "2026-08-25T17:58:50+00:00",
+          "thumb": "assets/thumbs/card-the-stoker-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-the-stoker-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:591ca00ec545f32af14c04bda1d2eb81c98f41777fe196ac0d564f6ebb699bf1",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:591ca00ec545f32af14c04bda1d2eb81c98f41777fe196ac0d564f6ebb699bf1",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-the-stoker-3/canonical.png",
+          "rendered_at": "2026-08-25T17:58:59+00:00",
+          "thumb": "assets/thumbs/card-the-stoker-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-the-stoker-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:985f730f6d1382cc3ce798b7f44992d86876a3177c8c5f909383c893662b3921",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:985f730f6d1382cc3ce798b7f44992d86876a3177c8c5f909383c893662b3921",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-the-stoker-4/canonical.png",
+          "rendered_at": "2026-08-25T17:59:11+00:00",
+          "thumb": "assets/thumbs/card-the-stoker-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-the-unwinder-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:c95bae56fc2a73c431ab05a3d03c4dff87704ad0861b174bc889892df8c36dbe",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:c95bae56fc2a73c431ab05a3d03c4dff87704ad0861b174bc889892df8c36dbe",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-the-unwinder-1/canonical.png",
+          "rendered_at": "2026-08-25T17:56:15+00:00",
+          "thumb": "assets/thumbs/card-the-unwinder-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-the-unwinder-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:ced745b24b1f81ba5aa4789c1177561ce83218b91178e1cc1e441ff987d1234f",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:ced745b24b1f81ba5aa4789c1177561ce83218b91178e1cc1e441ff987d1234f",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-the-unwinder-2/canonical.png",
+          "rendered_at": "2026-08-25T17:56:32+00:00",
+          "thumb": "assets/thumbs/card-the-unwinder-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-the-unwinder-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:f292a06b2bbb3d7709ba637b3b15f233c2061f0a8a6b2499648313c5875dd037",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:f292a06b2bbb3d7709ba637b3b15f233c2061f0a8a6b2499648313c5875dd037",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-the-unwinder-3/canonical.png",
+          "rendered_at": "2026-08-25T17:56:43+00:00",
+          "thumb": "assets/thumbs/card-the-unwinder-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-the-unwinder-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:fb74ea61bba2e6286a151e478c0dbdf853d6f9805c8c5eccb8161405dcbf819a",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:fb74ea61bba2e6286a151e478c0dbdf853d6f9805c8c5eccb8161405dcbf819a",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-the-unwinder-4/canonical.png",
+          "rendered_at": "2026-08-25T17:56:54+00:00",
+          "thumb": "assets/thumbs/card-the-unwinder-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-the-usher-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:31065003cc1fdf9f4d86d42194240077be7bc22acb2cd195afa21a46467dc86a",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:31065003cc1fdf9f4d86d42194240077be7bc22acb2cd195afa21a46467dc86a",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-the-usher-1/canonical.png",
+          "rendered_at": "2026-08-25T17:57:07+00:00",
+          "thumb": "assets/thumbs/card-the-usher-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-the-usher-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:aadd46cf2c5ced910d4277d26d4c20b508898a5070879e20da37a3819e869ed0",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:aadd46cf2c5ced910d4277d26d4c20b508898a5070879e20da37a3819e869ed0",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-the-usher-2/canonical.png",
+          "rendered_at": "2026-08-25T17:57:19+00:00",
+          "thumb": "assets/thumbs/card-the-usher-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-the-usher-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:ac6dc3feaf17fbeb8a105823a4ee9117cb62567b1256ecb9efd317ba053ef641",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:ac6dc3feaf17fbeb8a105823a4ee9117cb62567b1256ecb9efd317ba053ef641",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-the-usher-3/canonical.png",
+          "rendered_at": "2026-08-25T17:57:29+00:00",
+          "thumb": "assets/thumbs/card-the-usher-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-the-usher-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:4ead2a6a936c5f330623a50a2051d68758ab556b8ffb4c4061e7ff128c2d345f",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:4ead2a6a936c5f330623a50a2051d68758ab556b8ffb4c4061e7ff128c2d345f",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-the-usher-4/canonical.png",
+          "rendered_at": "2026-08-25T17:57:41+00:00",
+          "thumb": "assets/thumbs/card-the-usher-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-the-warden-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:4fee2968782361cfe139e83205f44b99830d17781effebdf16a9b2595210fa87",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:4fee2968782361cfe139e83205f44b99830d17781effebdf16a9b2595210fa87",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-the-warden-1/canonical.png",
+          "rendered_at": "2026-08-25T17:57:53+00:00",
+          "thumb": "assets/thumbs/card-the-warden-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-the-warden-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:da64dff6a1387a1ab47e47447e3e53e2fe0e0b4a856e242fb6c9207db009a42f",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:da64dff6a1387a1ab47e47447e3e53e2fe0e0b4a856e242fb6c9207db009a42f",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-the-warden-2/canonical.png",
+          "rendered_at": "2026-08-25T17:58:06+00:00",
+          "thumb": "assets/thumbs/card-the-warden-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-the-warden-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:1d8600dfd08c9f4d79fb2c5bc78368bf083fc6755906b2f41dce9ef8b2666570",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:1d8600dfd08c9f4d79fb2c5bc78368bf083fc6755906b2f41dce9ef8b2666570",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-the-warden-3/canonical.png",
+          "rendered_at": "2026-08-25T17:58:17+00:00",
+          "thumb": "assets/thumbs/card-the-warden-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-the-warden-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:04bdbfb72f48d8dd3ae92419e0cb39f66fc6c6c7b91fd544f61894cb6e152572",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:04bdbfb72f48d8dd3ae92419e0cb39f66fc6c6c7b91fd544f61894cb6e152572",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-the-warden-4/canonical.png",
+          "rendered_at": "2026-08-25T17:58:28+00:00",
+          "thumb": "assets/thumbs/card-the-warden-4/canonical.png",
           "variant_prompt": null
         }
       }
