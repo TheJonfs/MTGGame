@@ -263,13 +263,23 @@ export function WorldMapView({
   const vw = Math.min(VIEW_W, map.width), vh = Math.min(VIEW_H, map.height);
   const origin = viewportOrigin(map, player, pan);
   const panned = pan.x !== 0 || pan.y !== 0;
-  // S18 (OQ-7): the edges of the map — a heavy double ink rule wherever the viewport meets the world's edge.
-  const edges: { d: string; label: string; lx: number; ly: number; rot: number }[] = [];
+  // S18 (OQ-7): the edges of the map; Round 3 (overworld) draws them as the cartographer's
+  // DOUBLE-RULE frame with corner ornaments — `side` tells the renderer which way is inward.
+  const edges: { d: string; di: string; label: string; lx: number; ly: number; rot: number }[] = [];
   const X0 = origin.x * CELL, Y0 = origin.y * CELL, X1 = (origin.x + vw) * CELL, Y1 = (origin.y + vh) * CELL;
-  if (origin.x === 0) edges.push({ d: `M${X0 + 2} ${Y0} V${Y1}`, label: edgeLabel, lx: X0 + 14, ly: (Y0 + Y1) / 2, rot: -90 });
-  if (origin.y === 0) edges.push({ d: `M${X0} ${Y0 + 2} H${X1}`, label: edgeLabel, lx: (X0 + X1) / 2, ly: Y0 + 16, rot: 0 });
-  if (origin.x + vw >= map.width) edges.push({ d: `M${X1 - 2} ${Y0} V${Y1}`, label: edgeLabel, lx: X1 - 14, ly: (Y0 + Y1) / 2, rot: 90 });
-  if (origin.y + vh >= map.height) edges.push({ d: `M${X0} ${Y1 - 2} H${X1}`, label: edgeLabel, lx: (X0 + X1) / 2, ly: Y1 - 8, rot: 0 });
+  const INSET = 7;
+  if (origin.x === 0) edges.push({ d: `M${X0 + 2} ${Y0} V${Y1}`, di: `M${X0 + 2 + INSET} ${Y0} V${Y1}`, label: edgeLabel, lx: X0 + 16, ly: (Y0 + Y1) / 2, rot: -90 });
+  if (origin.y === 0) edges.push({ d: `M${X0} ${Y0 + 2} H${X1}`, di: `M${X0} ${Y0 + 2 + INSET} H${X1}`, label: edgeLabel, lx: (X0 + X1) / 2, ly: Y0 + 18, rot: 0 });
+  if (origin.x + vw >= map.width) edges.push({ d: `M${X1 - 2} ${Y0} V${Y1}`, di: `M${X1 - 2 - INSET} ${Y0} V${Y1}`, label: edgeLabel, lx: X1 - 16, ly: (Y0 + Y1) / 2, rot: 90 });
+  if (origin.y + vh >= map.height) edges.push({ d: `M${X0} ${Y1 - 2} H${X1}`, di: `M${X0} ${Y1 - 2 - INSET} H${X1}`, label: edgeLabel, lx: (X0 + X1) / 2, ly: Y1 - 10, rot: 0 });
+  // World corners in view get an ornament (the frame's compass-point diamonds).
+  const corners: Pt[] = [];
+  if (!interior) {
+    for (const [cx2, cy2] of [[0, 0], [map.width, 0], [0, map.height], [map.width, map.height]] as const) {
+      const px = cx2 * CELL, py = cy2 * CELL;
+      if (px >= X0 - 1 && px <= X1 + 1 && py >= Y0 - 1 && py <= Y1 + 1) corners.push([px === 0 ? px + 2 : px - 2, py === 0 ? py + 2 : py - 2]);
+    }
+  }
   const W = map.width * CELL;
   const H = map.height * CELL;
   const centre = (p: Point) => ({ cx: p.x * CELL + CELL / 2, cy: p.y * CELL + CELL / 2 });
@@ -539,15 +549,21 @@ export function WorldMapView({
             {borderPaths.map((d, i) => <path key={`bgb${i}`} d={d} stroke="var(--ink)" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.85" />)}
           </g>
         )}
-        {/* region names at hearts (only when the heart is in view) */}
+        {/* region names at hearts — Round 3: CARTOUCHES (a notched paper plaque under the name;
+            hidden in interiors, whose heart is off-grid anyway) */}
         {map.regions.filter((reg) => inView(reg.heart) && seen(reg.heart)).map((reg) => {
           const half = reg.name.length * 3.4;
-          const x = Math.max(half + 4, Math.min(W - half - 4, centre(reg.heart).cx));
-          const y = Math.max(14, Math.min(H - 6, centre(reg.heart).cy - CELL));
+          const x = Math.max(half + 14, Math.min(W - half - 14, centre(reg.heart).cx));
+          const y = Math.max(20, Math.min(H - 12, centre(reg.heart).cy - CELL));
+          const plaque = `M ${-half - 12} 0 L ${-half - 5} -9.5 L ${half + 5} -9.5 L ${half + 12} 0 L ${half + 5} 9.5 L ${-half - 5} 9.5 Z`;
           return (
-            <text key={reg.index} x={x} y={y} className="region-label" textAnchor="middle" pointerEvents="none">
-              {reg.name}
-            </text>
+            <g key={reg.index} transform={`translate(${x} ${y - 4})`} pointerEvents="none">
+              <path d={plaque} transform="translate(1.2 1.6)" fill="rgba(43,37,32,0.18)" />
+              <path d={plaque} fill={interior ? "var(--parchment)" : "url(#paper-pat)"} stroke="var(--ink)" strokeWidth="1.2" strokeLinejoin="round" />
+              <circle cx={-half - 7} cy={0} r={1.2} fill="var(--ink)" opacity="0.7" />
+              <circle cx={half + 7} cy={0} r={1.2} fill="var(--ink)" opacity="0.7" />
+              <text y={3.5} className="region-label" textAnchor="middle">{reg.name}</text>
+            </g>
           );
         })}
         {/* sight diamond */}
@@ -654,12 +670,26 @@ export function WorldMapView({
             <path d="M -8 6 L -8 2 L -4 2 L -4 -2 L 0 -2 L 0 -6 L 4 -6 L 4 -8 L 8 -8" fill="none" stroke={INTERIOR.text} strokeWidth="1.6" strokeLinecap="square" />
           </g>
         )}
-        {/* S18 (OQ-7): map edges */}
-        {edges.map((e, i) => (
+        {/* S18 (OQ-7) map edges — Round 3 (overworld): the double-rule frame; interiors keep
+            the heavy carved rule. */}
+        {edges.map((e, i) => interior ? (
           <g key={`edge${i}`} pointerEvents="none">
             <path d={e.d} stroke="var(--ink)" strokeWidth="5" opacity="0.9" />
             <path d={e.d} stroke="var(--parchment)" strokeWidth="1.2" strokeDasharray="6 6" />
-            {e.label && <text x={e.lx} y={e.ly} transform={`rotate(${e.rot} ${e.lx} ${e.ly})`} textAnchor="middle" className="region-label" opacity="0.7">{e.label}</text>}
+          </g>
+        ) : (
+          <g key={`edge${i}`} pointerEvents="none">
+            <path d={e.d} stroke="var(--ink)" strokeWidth="2.6" opacity="0.9" />
+            <path d={e.di} stroke="var(--ink)" strokeWidth="1" opacity="0.75" />
+            {e.label && <text x={e.lx} y={e.ly} transform={`rotate(${e.rot} ${e.lx} ${e.ly})`} textAnchor="middle" className="region-label" opacity="0.6">{e.label}</text>}
+          </g>
+        ))}
+        {/* Round 3: corner ornaments where the world's corners meet the frame */}
+        {corners.map(([px, py], i) => (
+          <g key={`cor${i}`} transform={`translate(${px} ${py})`} pointerEvents="none">
+            <rect x={-7} y={-7} width={14} height={14} transform="rotate(45)" fill={`url(#paper-pat)`} stroke="var(--ink)" strokeWidth="1.6" />
+            <rect x={-3.4} y={-3.4} width={6.8} height={6.8} transform="rotate(45)" fill="none" stroke="var(--ink)" strokeWidth="0.9" opacity="0.8" />
+            <circle r={1.4} fill="var(--ink)" />
           </g>
         ))}
         {/* player chip */}
