@@ -437,6 +437,13 @@ export function WorldMapView({
             <stop offset="45%" stopColor="rgba(232,178,90,0.22)" />
             <stop offset="100%" stopColor="rgba(232,178,90,0)" />
           </radialGradient>
+          {/* Round 4.5: the settlement clearing — a soft light halo that lifts the wash under a
+              town so the hamlet reads against busy terrain. */}
+          <radialGradient id="clearing">
+            <stop offset="0%" stopColor="rgba(250,246,232,0.85)" />
+            <stop offset="55%" stopColor="rgba(250,246,232,0.5)" />
+            <stop offset="100%" stopColor="rgba(250,246,232,0)" />
+          </radialGradient>
           <clipPath id="chip"><circle r={CELL * 0.75} /></clipPath>
           <clipPath id="chip-sm"><circle r={CELL * 0.6} /></clipPath>
           {/* Round 2 (overworld): the paper ground and the five pigment washes — world-anchored
@@ -605,10 +612,11 @@ export function WorldMapView({
         {map.towns.filter((t) => inView(t.at) && seen(t.at)).map((t) => {
           const { cx, cy } = centre(t.at);
           const st = townStates[t.index];
-          const sz = CELL * 2.5;
+          const sz = CELL * 3;
           return (
             <g key={t.index} onMouseEnter={() => setHoverTown(t)} onMouseLeave={() => setHoverTown(null)} onClick={() => onClickCell(t.at)} style={{ cursor: "pointer" }}>
-              {st && <circle cx={cx} cy={cy} r={CELL * 0.95} fill="none" stroke="var(--danger)" strokeWidth={st === "occupied" ? 2.6 : 2} strokeDasharray={st === "threatened" ? "5 4" : undefined} opacity="0.9" />}
+              <circle cx={cx} cy={cy - CELL * 0.2} r={CELL * 1.5} fill="url(#clearing)" pointerEvents="none" />
+              {st && <circle cx={cx} cy={cy} r={CELL * 1.05} fill="none" stroke="var(--danger)" strokeWidth={st === "occupied" ? 2.6 : 2} strokeDasharray={st === "threatened" ? "5 4" : undefined} opacity="0.9" />}
               <image href={spriteHref("sprite-town")} x={cx - sz / 2} y={cy - sz * 0.62} width={sz} height={sz} style={{ mixBlendMode: "multiply" }} opacity={st === "occupied" ? 0.45 : 1} pointerEvents="none" />
               {st && <path d={SIEGE_FLAG} fill="var(--danger)" stroke="var(--ink)" strokeWidth="0.7" transform={`translate(${cx} ${cy - CELL * 1.1})`} />}
               <circle cx={cx} cy={cy} r={CELL * 1.05} fill="transparent" />
