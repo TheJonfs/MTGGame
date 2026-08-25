@@ -1410,6 +1410,96 @@
         }
       }
     },
+    "map-paper": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:6231ff5ddbb2857ead258b202189ee21e20ef2a418ea6928ca186f945b0a6a66",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:6231ff5ddbb2857ead258b202189ee21e20ef2a418ea6928ca186f945b0a6a66",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/map-paper/canonical.png",
+          "rendered_at": "2026-08-25T19:45:38+00:00",
+          "thumb": "assets/thumbs/map-paper/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "map-wash-b": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:c4239a7b277c86c1c2c10cc29d282468ee4efd5325922c1e83d2793be26cb356",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:c4239a7b277c86c1c2c10cc29d282468ee4efd5325922c1e83d2793be26cb356",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/map-wash-b/canonical.png",
+          "rendered_at": "2026-08-25T19:43:24+00:00",
+          "thumb": "assets/thumbs/map-wash-b/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "map-wash-g": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:607280a5d32f94803b6db7b0f6842974070e10eafcf57ca71e99207b830f589f",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:607280a5d32f94803b6db7b0f6842974070e10eafcf57ca71e99207b830f589f",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/map-wash-g/canonical.png",
+          "rendered_at": "2026-08-25T19:43:42+00:00",
+          "thumb": "assets/thumbs/map-wash-g/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "map-wash-r": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:e4bdfa760d4b8c25289fea5c69f4c965dce081451735600b3ffab206e91db4ca",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:e4bdfa760d4b8c25289fea5c69f4c965dce081451735600b3ffab206e91db4ca",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/map-wash-r/canonical.png",
+          "rendered_at": "2026-08-25T19:43:33+00:00",
+          "thumb": "assets/thumbs/map-wash-r/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "map-wash-u": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:b7ecc78b9fce6495d3ffee91d57cf7f2884cc7452f8bfd2f5928d262f8c61e60",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:b7ecc78b9fce6495d3ffee91d57cf7f2884cc7452f8bfd2f5928d262f8c61e60",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/map-wash-u/canonical.png",
+          "rendered_at": "2026-08-25T19:43:14+00:00",
+          "thumb": "assets/thumbs/map-wash-u/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "map-wash-w": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:3d9ad56c0c9fe07ec185980a13d7c31e148570d8fd62a88501fb957b547cdea3",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:3d9ad56c0c9fe07ec185980a13d7c31e148570d8fd62a88501fb957b547cdea3",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/map-wash-w/canonical.png",
+          "rendered_at": "2026-08-25T19:43:05+00:00",
+          "thumb": "assets/thumbs/map-wash-w/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "menu-duel": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:a562ea367d555765cccbd86c60d030c3091c4828ff503b1e161de177cd48efc0",

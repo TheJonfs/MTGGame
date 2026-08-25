@@ -415,7 +415,34 @@ export function WorldMapView({
           </radialGradient>
           <clipPath id="chip"><circle r={CELL * 0.75} /></clipPath>
           <clipPath id="chip-sm"><circle r={CELL * 0.6} /></clipPath>
+          {/* Round 2 (overworld): the paper ground and the five pigment washes — world-anchored
+              patterns (userSpaceOnUse) so the texture holds still while the viewport pans;
+              1024px mirror-tiles served from /map-tex (seamless by construction). */}
+          {!interior && (
+            <>
+              <pattern id="paper-pat" width={256} height={256} patternUnits="userSpaceOnUse">
+                <image href="/map-tex/map-paper.jpg" width={256} height={256} preserveAspectRatio="none" />
+              </pattern>
+              {(["W", "U", "B", "R", "G"] as const).map((c2) => (
+                <pattern key={c2} id={`wash-pat-${c2}`} width={256} height={256} patternUnits="userSpaceOnUse">
+                  <image href={`/map-tex/map-wash-${c2.toLowerCase()}.jpg`} width={256} height={256} preserveAspectRatio="none" />
+                </pattern>
+              ))}
+              {(["W", "U", "B", "R", "G"] as const).map((c2) => (
+                <mask key={`m${c2}`} id={`wash-mask-${c2}`} maskUnits="userSpaceOnUse" x={X0} y={Y0} width={X1 - X0} height={Y1 - Y0}>
+                  <rect x={X0} y={Y0} width={X1 - X0} height={Y1 - Y0} fill="black" />
+                  {cells.map(({ x, y }) => {
+                    const i = y * map.width + x;
+                    if (!seenXY(x, y) || map.regions[map.region[i]!]?.color !== c2) return null;
+                    return <rect key={i} x={x * CELL} y={y * CELL} width={CELL + 0.6} height={CELL + 0.6} fill="white" />;
+                  })}
+                </mask>
+              ))}
+            </>
+          )}
         </defs>
+        {/* Round 2: unexplored ground IS the paper — the full-bleed sheet under everything. */}
+        {!interior && <rect x={X0} y={Y0} width={X1 - X0} height={Y1 - Y0} fill="url(#paper-pat)" pointerEvents="none" />}
         {/* interior: a dark backdrop under the cells — subpixel seams between cell rects
             otherwise bleed the parchment page through as a pale grid on the near-black rock */}
         {interior && <rect x={0} y={0} width={W} height={H} fill={INTERIOR.dark} />}
@@ -423,9 +450,11 @@ export function WorldMapView({
         {cells.map(({ x, y }) => {
           const i = y * map.width + x;
           const reg = map.regions[map.region[i]!]!;
+          // Round 2 (overworld): fog cells paint NOTHING — untouched paper is the unexplored
+          // world (the concept's fog language); "transparent" keeps them clickable (OQ-7 planning).
           const fill = interior
             ? (!seenXY(x, y) ? INTERIOR.dark : map.passable[i] ? INTERIOR.floor : INTERIOR.rock)
-            : (seenXY(x, y) ? washFor(reg.tier, reg.color) : "var(--fog)");
+            : (seenXY(x, y) ? washFor(reg.tier, reg.color) : "transparent");
           return (
             <rect
               key={i}
@@ -439,6 +468,11 @@ export function WorldMapView({
             />
           );
         })}
+        {/* Round 2: the pigment pass — each colour's wash texture multiplied over its flat tier
+            hues through a seen-cells mask (the mask staircase hides under the Round-1 gutters). */}
+        {!interior && (["W", "U", "B", "R", "G"] as const).map((c2) => (
+          <rect key={`wash${c2}`} x={X0} y={Y0} width={X1 - X0} height={Y1 - Y0} fill={`url(#wash-pat-${c2})`} mask={`url(#wash-mask-${c2})`} style={{ mixBlendMode: "multiply" }} opacity={0.5} pointerEvents="none" />
+        ))}
         {/* rough terrain — interior: chisel-marks on rock, flagstones on floor; overworld
             (Round 1): blob-scattered pictorial glyphs, no per-cell stamps, no hatch. */}
         {interior && cells.map(({ x, y }) => {
@@ -469,7 +503,7 @@ export function WorldMapView({
             cell staircase; the broken ink rule trembles along it) */}
         {!interior && fogPaths.length > 0 && (
           <g pointerEvents="none">
-            {fogPaths.map((d, i) => <path key={`fga${i}`} d={d} stroke="var(--fog)" strokeWidth={CELL * 0.8} fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.95" />)}
+            {fogPaths.map((d, i) => <path key={`fga${i}`} d={d} stroke="url(#paper-pat)" strokeWidth={CELL * 0.8} fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.95" />)}
             {fogPaths.map((d, i) => <path key={`fgb${i}`} d={d} stroke="var(--ink)" strokeWidth="0.9" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="3 4 1 3" opacity="0.28" />)}
           </g>
         )}
@@ -501,7 +535,7 @@ export function WorldMapView({
             concept plate's unpainted margins; the gutter swallows the wash staircase beneath. */}
         {!interior && (
           <g pointerEvents="none">
-            {borderPaths.map((d, i) => <path key={`bga${i}`} d={d} stroke="var(--parchment)" strokeWidth={CELL * 0.75} fill="none" strokeLinecap="round" strokeLinejoin="round" />)}
+            {borderPaths.map((d, i) => <path key={`bga${i}`} d={d} stroke="url(#paper-pat)" strokeWidth={CELL * 0.75} fill="none" strokeLinecap="round" strokeLinejoin="round" />)}
             {borderPaths.map((d, i) => <path key={`bgb${i}`} d={d} stroke="var(--ink)" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.85" />)}
           </g>
         )}
