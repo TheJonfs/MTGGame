@@ -1410,6 +1410,66 @@
         }
       }
     },
+    "menu-duel": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:a562ea367d555765cccbd86c60d030c3091c4828ff503b1e161de177cd48efc0",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:a562ea367d555765cccbd86c60d030c3091c4828ff503b1e161de177cd48efc0",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/menu-duel/canonical.png",
+          "rendered_at": "2026-08-25T18:45:24+00:00",
+          "thumb": "assets/thumbs/menu-duel/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "menu-gallery": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:f1f705ae245ecb8f78bd60e20dd01b69907deb121203550d5d33635a16a84ce5",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:f1f705ae245ecb8f78bd60e20dd01b69907deb121203550d5d33635a16a84ce5",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/menu-gallery/canonical.png",
+          "rendered_at": "2026-08-25T18:45:36+00:00",
+          "thumb": "assets/thumbs/menu-gallery/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "menu-journey": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:9eb8b48cf81f97a105a5077942577cc96c9e8cace5803cb39f13aa231d1eb2d9",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:9eb8b48cf81f97a105a5077942577cc96c9e8cace5803cb39f13aa231d1eb2d9",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/menu-journey/canonical.png",
+          "rendered_at": "2026-08-25T18:45:14+00:00",
+          "thumb": "assets/thumbs/menu-journey/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "menu-viewer": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:d711edb6d93145d9ce42c85cbe9f119fdcc6ff434aaed1553e15fc9869054abb",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:d711edb6d93145d9ce42c85cbe9f119fdcc6ff434aaed1553e15fc9869054abb",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/menu-viewer/canonical.png",
+          "rendered_at": "2026-08-25T18:45:48+00:00",
+          "thumb": "assets/thumbs/menu-viewer/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "panel-parchment": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:b75bfe3f284598361a4437ba7bf0b2b04189251185cf20046109bff24a41ba23",

@@ -75,7 +75,7 @@ function StartScreen({ c, onStart }: { c: WorldController; onStart: (choice: New
           </label>
         </p>
         <p style={{ fontSize: 11 }}>
-          <a className="linkish" href="/play">single match</a> · <a className="linkish" href="/">viewer</a> · <a className="linkish" href="/gallery">gallery</a>
+          <a className="linkish" href="/">⟵ main menu</a> · <a className="linkish" href="/play">single match</a> · <a className="linkish" href="/viewer">viewer</a> · <a className="linkish" href="/gallery">gallery</a>
         </p>
         {error && <p style={{ color: "var(--danger)" }}>{error}</p>}
       </div>
@@ -435,18 +435,25 @@ function DungeonVictory({ c, pool }: { c: WorldController; pool: Map<string, Car
   );
 }
 
+/** S21 playtest r2 item 5 (Chris): the town is a SQUARE with second-layer pages — the single
+ * scroll was carrying buying, selling, quests, and rumors all at once. */
 function TownScreen({ c, pool, oracle }: { c: WorldController; pool: Map<string, CardDef>; oracle: Record<string, OracleEntry> }) {
   const [printed, setPrinted] = useState(true); // S13 (Chris): printed by default
   const [inspect, setInspect] = useState<string | null>(null);
+  const [tab, setTab] = useState<"square" | "market" | "sell" | "board" | "tavern">("square");
   if (c.screen.kind !== "town") return null;
   const { town, stock, notice } = c.screen;
   const w = c.world!;
   const region = w.map.regions[town.region]!;
+  const sp = spares(w.player.collection, activeDeck(w));
+  const offers = c.townQuestOffers();
+  const choices = c.retrievalChoices();
+  const back = tab !== "square" && <button className="linkish" onClick={() => setTab("square")}>⟵ back to the square</button>;
   return (
     <div className="gallery-modal">
       <div className="gallery-modal-box play-dialog world-town">
-        <h2 style={{ fontFamily: "var(--serif)", marginTop: 0 }}>{town.name}</h2>
-        <p style={{ fontSize: 12, marginTop: 0 }}>{region.name} · a safe town — <i>clock-free: deliberation costs nothing here</i> · you have <b>{w.player.gold}</b> gold</p>
+        <h2 style={{ fontFamily: "var(--serif)", marginTop: 0 }}>{town.name}{tab !== "square" && <span style={{ fontSize: 14, color: "var(--ink-soft)" }}> · {{ market: "the market", sell: "the buyer's stall", board: "the quest board", tavern: "the tavern" }[tab]}</span>}</h2>
+        <p style={{ fontSize: 12, marginTop: 0 }}>{region.name} · a safe town — <i>clock-free: deliberation costs nothing here</i> · you have <b>{w.player.gold}</b> gold {back}</p>
         {(() => {
           // S21: a threatened town wears its warning inside the walls (visible-schedules law).
           const s = c.siegeInfo(town.index);
@@ -458,69 +465,100 @@ function TownScreen({ c, pool, oracle }: { c: WorldController; pool: Map<string,
             </p>
           );
         })()}
-        <div className="flyout-title">
-          Shop (buy only; stock refreshes every {c.knobs.shopRefreshSteps} steps)
-          <button className="linkish" onClick={() => setPrinted(!printed)}>{printed ? "our frame" : "printed card"}</button>
-        </div>
-        <div className="shop-grid">
-          {stock.map((item: ShopItem) => (
-            <div key={item.cardId} className={`shop-item${item.remaining === 0 ? " sold-out" : ""}`} onMouseEnter={() => setInspect(item.cardId)}>
-              <div className="card-slot"><CardFrame def={pool.get(item.cardId)!} oracle={oracle[item.cardId]} showPrinted={printed} /></div>
-              <div className="shop-buttons">
-                <button className={w.player.gold >= item.price && item.remaining > 0 ? "primary" : ""} disabled={w.player.gold < item.price || item.remaining === 0} onClick={() => c.buy(item)} title="buy to collection">
-                  {item.remaining === 0 ? "sold out" : `${item.price} gold`}
-                </button>
-                <button disabled={w.player.gold < item.price || item.remaining === 0} onClick={() => c.buy(item, true)} title="buy and add to your deck if legal">+deck</button>
-              </div>
-              <div className="shop-stock">{item.remaining}/{item.stock} left</div>
-            </div>
-          ))}
-        </div>
-        <QuestBoard c={c} pool={pool} onInspect={setInspect} />
-        {/* S21 Part 3: recovered retrieval items — the keep-or-deliver choice, trade stated plainly. */}
-        {c.retrievalChoices().map((q) => (
-          <div className="quest-offer" key={`ret_${q.id}`} style={{ marginTop: 8, borderColor: "var(--brass)" }}>
-            <div className="quest-text"><b>The buyer waits.</b> You carried <b>{q.retrievalItem?.cardName}</b> out of the dark. {q.text}</div>
-            <div className="quest-meta">
-              Keep the card, or take <b>{q.reward.gold} gold</b> for it —{" "}
-              <button onClick={() => c.chooseRetrieval(q.id, "keep")}>Keep it</button>{" "}
-              <button className="primary" onClick={() => c.chooseRetrieval(q.id, "deliver")}>Deliver ({q.reward.gold}g)</button>
-            </div>
-          </div>
-        ))}
-        {/* S21 Part 4: the tavern — rumors heard here are rumors logged. */}
-        {(() => {
-          const rumors = c.townRumors();
-          if (rumors.length === 0) return null;
-          return (
-            <>
-              <div className="flyout-title" style={{ marginTop: 8 }}>Heard in the tavern</div>
-              {rumors.map((r, i) => (
-                <p key={i} style={{ fontSize: 12, fontStyle: "italic", margin: "3px 0", color: "var(--ink-soft)" }}>“{r}”</p>
-              ))}
-            </>
-          );
-        })()}
-        <div className="flyout-title" style={{ marginTop: 8 }}>Sell spares (half price; basics and deck copies excluded)</div>
-        <div className="sell-row">
-          {Object.entries(spares(w.player.collection, activeDeck(w))).map(([id, n]) => {
-            const def = pool.get(id);
-            const priceless = def?.shopTier === "R" && def.types.includes("Land"); // S20: duals are priceless
-            return (
-              <button key={id} className="sell-chip" disabled={priceless} onClick={() => c.sell(id)} onMouseEnter={() => setInspect(id)} title={priceless ? "priceless — no shop will make an offer" : `sell one ${def?.name ?? id}`}>
-                {def?.name ?? id} ×{n} · {priceless ? "priceless" : `${sellPrice(def!, c.knobs)}g`}
-              </button>
-            );
-          })}
-          {Object.keys(spares(w.player.collection, activeDeck(w))).length === 0 && <span style={{ fontSize: 11, color: "var(--ink-soft)" }}>no spares to sell</span>}
-        </div>
         {notice && <p style={{ fontSize: 12, color: "var(--brass)" }}>{notice}</p>}
-        <p>
-          <button onClick={() => c.openEditor()}>Edit deck</button>{" "}
-          <button onClick={() => c.openCollection()}>Collection</button>{" "}
-          <button onClick={() => c.save()}>Save</button>{" "}
-          <button className="primary" onClick={() => c.leaveTown()}>Leave town</button>
-        </p>
+        {tab === "square" && (
+          <>
+            {/* Recovered retrieval items surface on the square — the buyer finds YOU. */}
+            {choices.map((q) => (
+              <div className="quest-offer" key={`ret_${q.id}`} style={{ marginTop: 8, borderColor: "var(--brass)" }}>
+                <div className="quest-text"><b>The buyer waits.</b> You carried <b>{q.retrievalItem?.cardName}</b> out of the dark. {q.text}</div>
+                <div className="quest-meta">
+                  Keep the card, or take <b>{q.reward.gold} gold</b> for it —{" "}
+                  <button onClick={() => c.chooseRetrieval(q.id, "keep")}>Keep it</button>{" "}
+                  <button className="primary" onClick={() => c.chooseRetrieval(q.id, "deliver")}>Deliver ({q.reward.gold}g)</button>
+                </div>
+              </div>
+            ))}
+            <div className="town-nav">
+              <button onClick={() => setTab("market")}>
+                <b>The market</b><span>{stock.filter((s) => s.remaining > 0).length} cards on the shelf · refreshes every {c.knobs.shopRefreshSteps} steps</span>
+              </button>
+              <button onClick={() => setTab("sell")}>
+                <b>The buyer's stall</b><span>{Object.keys(sp).length ? `${Object.keys(sp).length} spare${Object.keys(sp).length === 1 ? "" : "s"} to sell (half price)` : "no spares to sell"}</span>
+              </button>
+              <button onClick={() => setTab("board")}>
+                <b>The quest board</b><span>{offers.length ? `${offers.length} notice${offers.length === 1 ? "" : "s"} posted` : "nothing posted (all taken)"}</span>
+              </button>
+              <button onClick={() => setTab("tavern")}>
+                <b>The tavern</b><span>rumors, legends, and the roads' news</span>
+              </button>
+            </div>
+            <p style={{ marginBottom: 0 }}>
+              <button onClick={() => c.openEditor()}>Edit deck</button>{" "}
+              <button onClick={() => c.openCollection()}>Collection</button>{" "}
+              <button onClick={() => c.save()}>Save</button>{" "}
+              <button className="primary" onClick={() => c.leaveTown()}>Leave town</button>
+            </p>
+          </>
+        )}
+        {tab === "market" && (
+          <>
+            <div className="flyout-title">
+              Buy only; stock refreshes every {c.knobs.shopRefreshSteps} steps
+              <button className="linkish" onClick={() => setPrinted(!printed)}>{printed ? "our frame" : "printed card"}</button>
+            </div>
+            <div className="shop-grid">
+              {stock.map((item: ShopItem) => (
+                <div key={item.cardId} className={`shop-item${item.remaining === 0 ? " sold-out" : ""}`} onMouseEnter={() => setInspect(item.cardId)}>
+                  <div className="card-slot"><CardFrame def={pool.get(item.cardId)!} oracle={oracle[item.cardId]} showPrinted={printed} /></div>
+                  <div className="shop-buttons">
+                    <button className={w.player.gold >= item.price && item.remaining > 0 ? "primary" : ""} disabled={w.player.gold < item.price || item.remaining === 0} onClick={() => c.buy(item)} title="buy to collection">
+                      {item.remaining === 0 ? "sold out" : `${item.price} gold`}
+                    </button>
+                    <button disabled={w.player.gold < item.price || item.remaining === 0} onClick={() => c.buy(item, true)} title="buy and add to your deck if legal">+deck</button>
+                  </div>
+                  <div className="shop-stock">{item.remaining}/{item.stock} left</div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+        {tab === "sell" && (
+          <>
+            <div className="flyout-title">
+              Half price; basics and deck copies excluded
+              <button className="linkish" onClick={() => setPrinted(!printed)}>{printed ? "our frame" : "printed card"}</button>
+            </div>
+            <div className="shop-grid">
+              {Object.entries(sp).map(([id, n]) => {
+                const def = pool.get(id);
+                if (!def) return null;
+                const priceless = def.shopTier === "R" && def.types.includes("Land"); // S20: duals are priceless
+                return (
+                  <div key={id} className="shop-item" onMouseEnter={() => setInspect(id)}>
+                    <div className="card-slot"><CardFrame def={def} oracle={oracle[id]} showPrinted={printed} /></div>
+                    <div className="shop-buttons">
+                      <button className={priceless ? "" : "primary"} disabled={priceless} onClick={() => c.sell(id)} title={priceless ? "priceless — no shop will make an offer" : `sell one ${def.name}`}>
+                        {priceless ? "priceless" : `sell · ${sellPrice(def, c.knobs)}g`}
+                      </button>
+                    </div>
+                    <div className="shop-stock">×{n} spare{n === 1 ? "" : "s"}</div>
+                  </div>
+                );
+              })}
+              {Object.keys(sp).length === 0 && <span style={{ fontSize: 11, color: "var(--ink-soft)" }}>no spares to sell</span>}
+            </div>
+          </>
+        )}
+        {tab === "board" && <QuestBoard c={c} pool={pool} onInspect={setInspect} />}
+        {tab === "tavern" && (
+          <>
+            <div className="flyout-title">Heard in the tavern</div>
+            {c.townRumors().map((r, i) => (
+              <p key={i} style={{ fontSize: 12.5, fontStyle: "italic", margin: "5px 0", color: "var(--ink-soft)" }}>“{r}”</p>
+            ))}
+          </>
+        )}
       </div>
       <FloatingCardInspector def={inspect ? pool.get(inspect) ?? null : null} oracle={oracle} printed={printed} onTogglePrinted={() => setPrinted(!printed)} />
     </div>

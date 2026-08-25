@@ -56,7 +56,7 @@ function Loader({ onLoad }: { onLoad: (g: SavedGame) => void }) {
           </button>
         </p>
         <p>
-          <a className="linkish" href="/world"><b>Walk the world</b></a> · <a className="linkish" href="/play">play a match</a> · <a className="linkish" href="/gallery">card gallery</a>
+          <a className="linkish" href="/">⟵ main menu</a> · <a className="linkish" href="/world"><b>Walk the world</b></a> · <a className="linkish" href="/play">play a match</a> · <a className="linkish" href="/gallery">card gallery</a>
         </p>
         {error && <p style={{ color: "var(--danger)" }}>{error}</p>}
       </div>
@@ -176,6 +176,28 @@ function Viewer({ game }: { game: SavedGame }) {
   );
 }
 
+/** S21 playtest r2 item 6 (Chris): the Cinquefoil menu is the app's TOP LEVEL — the root
+ * path greets with the title plate and four vignette doors; the replay viewer moved to /viewer. */
+function MainMenu() {
+  return (
+    <div className="loader">
+      <div className="box play-setup world-start" style={{ maxWidth: 560 }}>
+        <div className="title-plate">
+          <div className="title-rose" aria-hidden="true"><img src="/card-back.png" alt="" /></div>
+          <h1 className="title-name">Cinquefoil</h1>
+          <div className="title-sub">five petals · three rings · one journey</div>
+        </div>
+        <div className="main-menu">
+          <a href="/world"><img src="/menu-journey.png" alt="" /><b>The journey</b><span>walk the world — new game or continue</span></a>
+          <a href="/play"><img src="/menu-duel.png" alt="" /><b>A single match</b><span>one duel, any decks, no world attached</span></a>
+          <a href="/gallery"><img src="/menu-gallery.png" alt="" /><b>The card gallery</b><span>every card in the pool, both frames</span></a>
+          <a href="/viewer"><img src="/menu-viewer.png" alt="" /><b>The replay viewer</b><span>watch any saved game, decision by decision</span></a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const [game, setGame] = useState<SavedGame | null>(null);
   const [replayFromPlay, setReplayFromPlay] = useState<SavedGame | null>(null);
@@ -190,5 +212,8 @@ export default function App() {
     if (replayFromPlay) return <Viewer game={replayFromPlay} />;
     return <PlayApp onWatchReplay={setReplayFromPlay} />;
   }
-  return game ? <Viewer game={game} /> : <Loader onLoad={setGame} />;
+  if (window.location.pathname === "/viewer") {
+    return game ? <Viewer game={game} /> : <Loader onLoad={setGame} />;
+  }
+  return <MainMenu />;
 }
