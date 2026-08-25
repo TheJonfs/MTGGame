@@ -85,10 +85,14 @@ export interface DungeonMinion {
 
 export interface DungeonTreasure {
   at: Point;
-  kind: "gold" | "card";
+  /** S21 r2: gold/card ESCROW; life pays interior life IMMEDIATELY; boon rides your side of
+   * every remaining interior duel this run (both die at exit, like the life track). */
+  kind: "gold" | "card" | "life" | "boon";
   gold?: number;
   cardId?: string;
   cardName?: string;
+  /** kind life: interior life gained on pickup. */
+  life?: number;
   taken: boolean;
 }
 
@@ -115,6 +119,9 @@ export interface DungeonRun {
   treasures: DungeonTreasure[];
   /** Lair-dungeons: the resident's catalog id (the boss); mox dungeons use the content file. */
   residentCatalogId?: string;
+  /** S21 r2: boon permanents picked up this run (cardIds) — on your battlefield in every
+   * remaining interior duel; discarded with the run (optional: pre-S21r2 runs lack it). */
+  boons?: string[];
 }
 
 export interface DungeonStatus {
@@ -216,22 +223,38 @@ export function generateDungeonRun(
     minions.push({ id: `dmin_${m}`, catalogId: tmpl.id, at: { ...p }, defeated: false });
   }
 
-  // Treasures on branch tips: gold caches and colour cards (lair-dungeons roll R — their reward class).
+  // Treasures on branch tips (S21 r2, Chris: caches leaned too hard on R cards — the prize room
+  // is the R channel). Four kinds by knob weights: gold/card escrow; life pays the dive NOW;
+  // a boon fights beside you for the rest of the run.
+  const BOON_BASIC: Record<string, string> = { W: "plains", U: "island", B: "swamp", R: "mountain", G: "forest" };
+  const BOON_TOKEN: Record<string, string> = { W: "bird_1_1_flying", U: "faerie_1_1_u", B: "faerie_rogue_1_1_flying", R: "goblin_1_1", G: "bear_2_2" };
+  const weights = knobs.dungeonTreasureWeights[opts.kind === "lair" ? "lair" : "mox"];
+  const wTotal = weights.gold + weights.card + weights.life + weights.boon;
   const treasures: DungeonTreasure[] = branchTips.map((tip) => {
-    if (rng.float() < 0.5) {
-      return { at: tip, kind: "gold", gold: 15 + rng.int(4) * 5 + (opts.small ? 10 : 0), taken: false };
+    const roll = rng.float() * wTotal;
+    if (roll < weights.gold) {
+      return { at: tip, kind: "gold" as const, gold: 15 + rng.int(4) * 5 + (opts.small ? 10 : 0), taken: false };
     }
-    const wantR = opts.kind === "lair"; // dungeon-design §5: lair-dungeons reward R-tier cards
-    const candidates = [...pool.values()]
-      .filter((d) => !d.isTokenDef && !d.prizeOnly && (wantR ? d.shopTier === "R" : d.shopTier === 2 || d.shopTier === 3))
-      .filter((d) => {
-        if (d.types.includes("Land")) return true; // duals are colourless by cost; any dungeon may hold one
-        const colors = d.manaCost?.replace(/[^WUBRG]/g, "") ?? "";
-        return colors === "" || colors.includes(opts.color);
-      })
-      .sort((a, b) => a.id.localeCompare(b.id));
-    const c = candidates.length ? rng.pick(candidates) : undefined;
-    return c ? { at: tip, kind: "card" as const, cardId: c.id, cardName: c.name, taken: false } : { at: tip, kind: "gold" as const, gold: 25, taken: false };
+    if (roll < weights.gold + weights.card) {
+      const wantR = opts.kind === "lair"; // dungeon-design §5: lair-dungeons reward R-tier cards
+      const candidates = [...pool.values()]
+        .filter((d) => !d.isTokenDef && !d.prizeOnly && (wantR ? d.shopTier === "R" : d.shopTier === 2 || d.shopTier === 3))
+        .filter((d) => {
+          if (d.types.includes("Land")) return true; // duals are colourless by cost; any dungeon may hold one
+          const colors = d.manaCost?.replace(/[^WUBRG]/g, "") ?? "";
+          return colors === "" || colors.includes(opts.color);
+        })
+        .sort((a, b) => a.id.localeCompare(b.id));
+      const c = candidates.length ? rng.pick(candidates) : undefined;
+      if (c) return { at: tip, kind: "card" as const, cardId: c.id, cardName: c.name, taken: false };
+      return { at: tip, kind: "gold" as const, gold: 25, taken: false };
+    }
+    if (roll < weights.gold + weights.card + weights.life) {
+      return { at: tip, kind: "life" as const, life: 2 + rng.int(2), taken: false }; // +2–3, immediate
+    }
+    const boonId = rng.float() < 0.6 ? BOON_BASIC[opts.color]! : BOON_TOKEN[opts.color]!;
+    const def = pool.get(boonId);
+    return { at: tip, kind: "boon" as const, cardId: boonId, cardName: def?.name ?? boonId, taken: false };
   });
 
   const explored = exploredNone({ width: w, height: h });
@@ -336,7 +359,11 @@ export function dungeonAdvance(run: DungeonRun, knobs: KnobValues, path: Point[]
     if (treasure) {
       treasure.taken = true;
       if (treasure.kind === "gold") run.escrow.gold += treasure.gold ?? 0;
-      else if (treasure.cardId) run.escrow.cardIds.push(treasure.cardId);
+      else if (treasure.kind === "card" && treasure.cardId) run.escrow.cardIds.push(treasure.cardId);
+      // S21 r2: life and boons help the DIVE, not the payout — immediate, never escrowed,
+      // discarded with the run (exactly like the interior life track).
+      else if (treasure.kind === "life") run.interiorLife += treasure.life ?? 2;
+      else if (treasure.kind === "boon" && treasure.cardId) (run.boons ??= []).push(treasure.cardId);
       events.push({ type: "treasure", treasure });
     }
     const minion = run.minions.find((m) => !m.defeated && m.at.x === cell.x && m.at.y === cell.y);
@@ -435,6 +462,8 @@ export function dungeonDuelSpec(
       // Manalinks still apply inside (they are the player's persistent buffs) — through the one
       // source, so an occupied granting town's link is dark here too (S21 suspension).
       ...manalinkModifiers(world),
+      // S21 r2: boon caches fight beside you for the rest of the run.
+      ...(run.boons ?? []).map((cardId) => ({ type: "permanentOnBattlefield" as const, player: 0 as const, cardId })),
     ],
   };
   return { spec, enemyName: base.name, enemyLife, empowerment };

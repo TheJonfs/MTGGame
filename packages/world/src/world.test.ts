@@ -810,6 +810,45 @@ describe("S20 Part 3+7 (dungeons, scripted acceptance): topology, escrow, interi
     expect(w.provenance.filter((p) => p.source === "reward").map((p) => p.cardId)).toContain("mox_ruby");
   });
 
+  it("S21 r2 treasure economy: caches split gold/card/life/boon by knob weights; a life cache pays interior life NOW; a boon rides your side of every remaining interior duel", async () => {
+    const { generateDungeonRun, dungeonAdvance, dungeonDuelSpec } = await dg();
+    const kinds = new Set<string>();
+    let lifeRun: ReturnType<typeof generateDungeonRun> | null = null;
+    let boonRun: ReturnType<typeof generateDungeonRun> | null = null;
+    let w0: WorldState | null = null;
+    for (let seed = 31; seed < 46; seed++) {
+      const w = newWorld({ seed, catalog, starter: "red" });
+      const knobs = worldKnobs(w);
+      for (const kind of ["mox", "lair"] as const) {
+        const run = generateDungeonRun(w, catalog, knobs, pool.cards, {
+          dungeonId: `t_${kind}_${seed}`, kind, color: "R", enteredFrom: { x: 0, y: 0 }, ...(kind === "lair" ? { residentCatalogId: "beast_siegegang", small: true } : {}),
+        });
+        for (const t of run.treasures) kinds.add(t.kind);
+        if (!lifeRun && run.treasures.some((t) => t.kind === "life")) { lifeRun = run; w0 = w; }
+        if (!boonRun && run.treasures.some((t) => t.kind === "boon")) { boonRun = run; w0 = w0 ?? w; }
+      }
+    }
+    expect([...kinds].sort()).toEqual(["boon", "card", "gold", "life"]); // all four kinds occur across seeds
+    // Life: immediate, never escrowed.
+    const knobs = worldKnobs(w0!);
+    const lt = lifeRun!.treasures.find((t) => t.kind === "life")!;
+    for (let i = 0; i < lifeRun!.explored.length; i++) lifeRun!.explored[i] = -1 >>> 0;
+    lifeRun!.position = { x: lt.at.x, y: Math.max(0, lt.at.y - 1) };
+    const before = lifeRun!.interiorLife;
+    dungeonAdvance(lifeRun!, knobs, [lt.at]);
+    if (lt.taken) {
+      expect(lifeRun!.interiorLife).toBe(before + (lt.life ?? 0));
+      expect(lifeRun!.escrow.cardIds).toHaveLength(0);
+    }
+    // Boon: on the PLAYER's seat of the next interior duel.
+    const bt = boonRun!.treasures.find((t) => t.kind === "boon")!;
+    bt.taken = true;
+    (boonRun!.boons ??= []).push(bt.cardId!);
+    const tmpl = catalog.opponents.find((o) => o.spoke === "R" && o.tier <= 2)!;
+    const spec = dungeonDuelSpec(w0!, catalog, knobs, boonRun!, { kind: "minion", tmpl }, [], new WorldRng(5));
+    expect(spec.spec.modifiers.some((m) => m.type === "permanentOnBattlefield" && (m as { player: number }).player === 0 && m.cardId === bt.cardId)).toBe(true);
+  });
+
   it("lair-dungeons are smaller, roll R-card treasures, and the resident boss carries the lair life bonus in its spec", async () => {
     const w = newWorld({ seed: 24, catalog, starter: "red" });
     const run = await makeRun(w, { kind: "lair" });
@@ -976,6 +1015,11 @@ describe("S21 Parts 3–4 (retrieval, rumor-chains, the lore turn): pack-as-data
     const world = w!;
     const knobs = worldKnobs(world);
     expect(offer!.retrievalDungeonId).toMatch(/^lair_/);
+    // The id the offer carries must be EXACTLY what journey's dungeonEntry emits for that lair
+    // (S21 r2, Chris's report: a clear that doesn't credit the quest would smell like this seam).
+    const lairFixed = world.map.strongholds.find((f) => f.kind === "lair" && `lair_${f.opponentId}` === offer!.retrievalDungeonId);
+    expect(lairFixed).toBeTruthy();
+    expect(world.opponents.find((o) => o.id === lairFixed!.opponentId)?.gone).toBeFalsy(); // living resident
     expect(offer!.deadlineSteps).toBe(0);
     expect(pool.cards.get(offer!.retrievalItem!.cardId)?.shopTier).toBe("R"); // the lair's register
     const acc = acceptQuest(world, catalog, offer!, knobs, pool.cards);

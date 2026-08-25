@@ -108,6 +108,11 @@ export const KNOBS = {
     unit: "party members, by the town's ring",
     description: "S21: the besieging party's size — defense and liberation are consecutive duels with life carried between them (dungeon-style, Chris-ruled). The leader fights last.",
   }),
+  dungeonTreasureWeights: knob<Record<"mox" | "lair", { gold: number; card: number; life: number; boon: number }>>({
+    default: { mox: { gold: 30, card: 25, life: 20, boon: 25 }, lair: { gold: 30, card: 20, life: 25, boon: 25 } },
+    unit: "relative weights per cache, by dungeon class",
+    description: "S21 playtest r2 (Chris: lair caches leaned too hard on R cards — multiple duals per dive; the prize room is the R channel). Cache kinds: gold (escrowed), card (escrowed; mox = T2/T3 of colour, lair = R), life (+2–3 interior life, IMMEDIATE — a cache that helps the dive), boon (a permanent on YOUR side of every remaining interior duel this run — the dungeon colour's basic land or its token creature; discarded at exit like interior life). Chris tunes from play.",
+  }),
   lairResidentLifeBonus: knob<number>({
     default: 2,
     unit: "world life added to a lair resident's duel life",

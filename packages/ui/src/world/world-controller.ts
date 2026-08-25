@@ -80,7 +80,7 @@ export type WorldScreen =
   /** S20: an interior duel (minion or guardian) — mounts PlayMatch like a world duel. */
   | { kind: "dungeonDuel"; enemyName: string; match: MatchController; against: { minionId?: string; guardian?: boolean } }
   /** S20: the guardian fell — the escrow + prize payout ceremony. */
-  | { kind: "dungeonVictory"; name: string; paidGold: number; paidCards: string[] }
+  | { kind: "dungeonVictory"; name: string; paidGold: number; paidCards: string[]; notes?: string[] }
   /** S21 sieges: the engagement telegraph — the party, the life-carry law, the stakes (resume-aware). */
   | { kind: "siegeTelegraph"; townIndex: number; notice: string | null }
   | { kind: "siegeDuel"; enemyName: string; match: MatchController; townIndex: number }
@@ -505,6 +505,17 @@ export class WorldController {
           if (r) marks.push({ at: r.heart, label: `${r.name} · last marked` });
         }
       }
+      // S21 r2 (Chris: "no indicator of where that is"): retrieval quests mark their target —
+      // the lair before the item is out, the buyer's town after.
+      if (q.kind === "retrieval") {
+        if (!q.itemRecovered && q.retrievalDungeonId) {
+          const lair = w.map.strongholds.find((f) => f.kind === "lair" && `lair_${f.opponentId}` === q.retrievalDungeonId);
+          if (lair) marks.push({ at: lair.at, label: `${q.retrievalItem?.cardName ?? "the item"} · in this lair` });
+        } else if (q.itemRecovered) {
+          const t = w.map.towns.find((x) => x.index === q.fromTown);
+          if (t) marks.push({ at: t.at, label: `${t.name} · the buyer waits` });
+        }
+      }
     }
     return marks;
   }
@@ -727,9 +738,14 @@ export class WorldController {
       this.emit();
       for (const e of events) {
         if (e.type === "treasure") {
-          this.autosave(); // escrow is a consequence
-          const what = e.treasure.kind === "gold" ? `${e.treasure.gold} gold` : e.treasure.cardName ?? e.treasure.cardId;
-          this.screen = { kind: "dungeon", notice: `Escrowed: ${what}. The mountain holds it until the guardian falls.`, walking: true };
+          this.autosave(); // every cache is a consequence
+          const t = e.treasure;
+          const notice =
+            t.kind === "gold" ? `Escrowed: ${t.gold} gold. The mountain holds it until the guardian falls.`
+            : t.kind === "card" ? `Escrowed: ${t.cardName ?? t.cardId}. The mountain holds it until the guardian falls.`
+            : t.kind === "life" ? `A healing cache: +${t.life} interior life (now ${run.interiorLife}). Spent here or lost here — it never leaves the dark.`
+            : `A boon: ${t.cardName ?? t.cardId} fights beside you for the rest of this run.`;
+          this.screen = { kind: "dungeon", notice, walking: true };
           this.emit();
         }
         if (e.type === "minion") {
@@ -824,6 +840,7 @@ export class WorldController {
       // Victory: payout = escrow + the prize.
       let prize: { gold: number; cardIds: string[] };
       let name: string;
+      const victoryNotes: string[] = [];
       if (run.kind === "mox") {
         const mox = this.moxDef(run.dungeonId)!;
         const roll = colorPrizeRoll(this.world, this.pool, run.dungeonId, mox.color);
@@ -833,7 +850,11 @@ export class WorldController {
         prize = lairPrizeRoll(this.world, this.pool, run.dungeonId);
         // S21 retrieval: the quest item was in this prize room, escrowed like everything else —
         // it pays out with the escrow; the keep-or-deliver choice waits at the offer town.
-        for (const r of retrievalOnDungeonClear(this.world, run.dungeonId)) prize.cardIds.push(r.cardId);
+        for (const r of retrievalOnDungeonClear(this.world, run.dungeonId)) {
+          prize.cardIds.push(r.cardId);
+          const t = this.world.map.towns.find((x) => x.index === r.quest.fromTown);
+          victoryNotes.push(`${r.cardName} — the retrieval quest's item. Return to ${t?.name ?? "the offer town"} (marked on your map) to keep it or sell it back.`);
+        }
         name = "the lair";
         const residentInst = this.world.opponents.find((o) => o.catalogId === run.residentCatalogId && o.fixedAt);
         if (residentInst) {
@@ -845,7 +866,7 @@ export class WorldController {
       }
       const paid = clearDungeon(this.world, run, prize);
       this.autosave();
-      this.screen = { kind: "dungeonVictory", name, paidGold: paid.paidGold, paidCards: paid.paidCards };
+      this.screen = { kind: "dungeonVictory", name, paidGold: paid.paidGold, paidCards: paid.paidCards, ...(victoryNotes.length ? { notes: victoryNotes } : {}) };
       this.emit();
       return;
     }

@@ -422,12 +422,13 @@ function DungeonScreen({ c, pool }: { c: WorldController; pool: Map<string, Card
 /** S20: the payout ceremony. */
 function DungeonVictory({ c, pool }: { c: WorldController; pool: Map<string, CardDef> }) {
   if (c.screen.kind !== "dungeonVictory") return null;
-  const { name, paidGold, paidCards } = c.screen;
+  const { name, paidGold, paidCards, notes } = c.screen;
   return (
     <div className="loader">
       <div className="box play-setup">
         <h2 style={{ fontFamily: "var(--serif)", marginTop: 0 }}>The guardian falls — {name} is yours to leave</h2>
         <p>The mountain pays its debts: <b>{paidGold} gold</b>{paidCards.length > 0 ? <> and {paidCards.map((id) => pool.get(id)?.name ?? id).join(", ")}</> : null}.</p>
+        {notes?.map((n, i) => <p key={i} style={{ fontSize: 12.5, color: "var(--ink-soft)" }}>◆ {n}</p>)}
         <p><button className="primary" onClick={() => c.continueAfterDungeonVictory()}>Back to the light</button></p>
       </div>
     </div>
@@ -813,7 +814,11 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
             previewTarget={screen.kind === "map" ? screen.previewTarget : null}
             encounterAt={screen.kind === "encounter" ? screen.encounter.at : null}
             encounterPortrait={screen.kind === "encounter" ? `/portraits/${screen.tmpl.portraitChip ?? screen.tmpl.portrait}.png` : null}
-            clearedFixed={new Set(w.map.strongholds.map((f, i) => (w.opponents.find((o) => o.id === f.opponentId)?.gone ? i : -1)).filter((i) => i >= 0))}
+            clearedFixed={new Set(w.map.strongholds.map((f, i) => {
+              // S21 r2 fix (Chris): mox sites have no resident — their cleared state lives in world.dungeons.
+              if (f.kind === "dungeon") return w.dungeons[`mox_${w.map.regions[f.region]?.color}`.toLowerCase()]?.cleared ? i : -1;
+              return w.opponents.find((o) => o.id === f.opponentId)?.gone ? i : -1;
+            }).filter((i) => i >= 0))}
             roamers={c.visibleRoamers().map((r) => ({ id: r.inst.id, at: r.inst.at!, portrait: `/portraits/${r.tmpl.portraitChip ?? r.tmpl.portrait}.png`, name: r.tmpl.name, tier: r.tmpl.tier, fleeing: r.fleeing }))}
             sightRadius={c.knobs.sightRadius}
             explored={w.explored}
@@ -859,7 +864,9 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
           {c.activeQuests().map(({ quest: q, stepsLeft, destName, targetName }) => (
             <div key={q.id} style={{ fontSize: 11.5, marginBottom: 4 }}>
               <b>{{ courier: "Courier", cardCourier: "Card courier", bounty: "Bounty", retrieval: "Retrieval" }[q.kind]}</b>
-              {q.kind === "retrieval" && <> — {q.itemRecovered ? `${q.retrievalItem?.cardName} recovered; the buyer waits at the offer town` : "the item lies in a lair"}</>}
+              {q.kind === "retrieval" && <> — {q.itemRecovered
+                ? `${q.retrievalItem?.cardName} recovered — the buyer waits in ${w.map.towns.find((t) => t.index === q.fromTown)?.name ?? "the offer town"} (marked)`
+                : `${q.retrievalItem?.cardName} lies in ${(() => { const l = w.map.strongholds.find((f) => f.kind === "lair" && `lair_${f.opponentId}` === q.retrievalDungeonId); return l ? `${l.name ?? "a lair"} (${w.map.regions[l.region]?.name}; marked)` : "a lair"; })()}`}</>}
               {destName ? <> → {destName}</> : null}
               {targetName ? <> — {targetName}{q.bountySeenAt ? " (marked on your map)" : " (not yet sighted)"}</> : null}
               {stepsLeft !== null && <span style={{ color: stepsLeft < 40 ? "var(--danger)" : "var(--ink-soft)" }}> · {stepsLeft} steps left</span>}
@@ -902,10 +909,13 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
           {w.map.strongholds.map((f, i) => {
             if (!seenCell(f.at)) return null;
             const resident = w.opponents.find((o) => o.id === f.opponentId);
-            const status = f.kind === "stronghold" ? "castle · sealed" : resident?.gone ? "cleared" : `${w.map.regions[f.region]?.name ?? ""} · waiting`;
+            // S21 r2 fix (Chris: the Emerald Root read "waiting" after its clear): a mox site's
+            // cleared state lives in world.dungeons, not on a resident it never had.
+            const moxCleared = f.kind === "dungeon" && w.dungeons[`mox_${w.map.regions[f.region]?.color}`.toLowerCase()]?.cleared;
+            const status = f.kind === "stronghold" ? "castle · sealed" : moxCleared || resident?.gone ? "cleared" : `${w.map.regions[f.region]?.name ?? ""} · waiting`;
             return (
               <div key={i} style={{ fontSize: 12, display: "flex", justifyContent: "space-between", cursor: screen.kind === "map" ? "pointer" : "default" }} title="click to preview the path there" onClick={() => c.clickCell(f.at)}>
-                <span>{f.name ?? f.kind}</span><span style={{ color: f.kind === "stronghold" ? "var(--ink-soft)" : resident?.gone ? "var(--boost)" : "var(--danger)" }}>{status}</span>
+                <span>{f.name ?? f.kind}</span><span style={{ color: f.kind === "stronghold" ? "var(--ink-soft)" : moxCleared || resident?.gone ? "var(--boost)" : "var(--danger)" }}>{status}</span>
               </div>
             );
           })}
