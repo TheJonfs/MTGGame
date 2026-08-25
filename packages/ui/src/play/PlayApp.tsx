@@ -91,7 +91,7 @@ function SetupScreen({ onStart }: { onStart: (s: Setup) => void }) {
         </div>
         <p>
           <button className="primary" onClick={() => onStart(setup)}>Start match</button>{" "}
-          <a className="linkish" href="/">⟵ main menu</a> <a className="linkish" href="/viewer">viewer</a> <a className="linkish" href="/gallery">gallery</a>
+          <a className="linkish" href="/">⟵ main menu</a>
         </p>
       </div>
     </div>

@@ -75,7 +75,7 @@ function StartScreen({ c, onStart }: { c: WorldController; onStart: (choice: New
           </label>
         </p>
         <p style={{ fontSize: 11 }}>
-          <a className="linkish" href="/">⟵ main menu</a> · <a className="linkish" href="/play">single match</a> · <a className="linkish" href="/viewer">viewer</a> · <a className="linkish" href="/gallery">gallery</a>
+          <a className="linkish" href="/">⟵ main menu</a>
         </p>
         {error && <p style={{ color: "var(--danger)" }}>{error}</p>}
       </div>
@@ -481,15 +481,19 @@ function TownScreen({ c, pool, oracle }: { c: WorldController; pool: Map<string,
             ))}
             <div className="town-nav">
               <button onClick={() => setTab("market")}>
+                <img src="/town-market.png" alt="" />
                 <b>The market</b><span>{stock.filter((s) => s.remaining > 0).length} cards on the shelf · refreshes every {c.knobs.shopRefreshSteps} steps</span>
               </button>
               <button onClick={() => setTab("sell")}>
+                <img src="/town-sell.png" alt="" />
                 <b>The buyer's stall</b><span>{Object.keys(sp).length ? `${Object.keys(sp).length} spare${Object.keys(sp).length === 1 ? "" : "s"} to sell (half price)` : "no spares to sell"}</span>
               </button>
               <button onClick={() => setTab("board")}>
+                <img src="/town-board.png" alt="" />
                 <b>The quest board</b><span>{offers.length ? `${offers.length} notice${offers.length === 1 ? "" : "s"} posted` : "nothing posted (all taken)"}</span>
               </button>
               <button onClick={() => setTab("tavern")}>
+                <img src="/town-tavern.png" alt="" />
                 <b>The tavern</b><span>rumors, legends, and the roads' news</span>
               </button>
             </div>

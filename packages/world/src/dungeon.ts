@@ -119,8 +119,9 @@ export interface DungeonRun {
   treasures: DungeonTreasure[];
   /** Lair-dungeons: the resident's catalog id (the boss); mox dungeons use the content file. */
   residentCatalogId?: string;
-  /** S21 r2: boon permanents picked up this run (cardIds) — on your battlefield in every
-   * remaining interior duel; discarded with the run (optional: pre-S21r2 runs lack it). */
+  /** S21 r2–r3: boon permanents held (cardIds) — spent on the NEXT interior battle, all at
+   * once (Chris: the Shandalar hold-or-spend tension; a boon picked up is a boon committed to
+   * whatever fight comes next). Cleared when that battle resolves; die with the run at exit. */
   boons?: string[];
 }
 
@@ -236,9 +237,12 @@ export function generateDungeonRun(
       return { at: tip, kind: "gold" as const, gold: 15 + rng.int(4) * 5 + (opts.small ? 10 : 0), taken: false };
     }
     if (roll < weights.gold + weights.card) {
-      const wantR = opts.kind === "lair"; // dungeon-design §5: lair-dungeons reward R-tier cards
+      // S21 r3 (Chris): mox caches roll T3 or R at even odds; mundane lairs T2 or T3 at even
+      // odds — the boss's prize room (lairPrizeRoll's 2×R / the mox ceremony) stays the R channel.
+      const premium = rng.float() < 0.5;
+      const wantTier: (2 | 3 | "R")[] = opts.kind === "lair" ? (premium ? [3] : [2]) : premium ? ["R"] : [3];
       const candidates = [...pool.values()]
-        .filter((d) => !d.isTokenDef && !d.prizeOnly && (wantR ? d.shopTier === "R" : d.shopTier === 2 || d.shopTier === 3))
+        .filter((d) => !d.isTokenDef && !d.prizeOnly && wantTier.includes(d.shopTier as 2 | 3 | "R"))
         .filter((d) => {
           if (d.types.includes("Land")) return true; // duals are colourless by cost; any dungeon may hold one
           const colors = d.manaCost?.replace(/[^WUBRG]/g, "") ?? "";
@@ -462,7 +466,8 @@ export function dungeonDuelSpec(
       // Manalinks still apply inside (they are the player's persistent buffs) — through the one
       // source, so an occupied granting town's link is dark here too (S21 suspension).
       ...manalinkModifiers(world),
-      // S21 r2: boon caches fight beside you for the rest of the run.
+      // S21 r3: held boons fight beside you in this battle — and are spent by it
+      // (applyInteriorDuel clears them; the hold-or-spend tension is the design).
       ...(run.boons ?? []).map((cardId) => ({ type: "permanentOnBattlefield" as const, player: 0 as const, cardId })),
     ],
   };
@@ -484,6 +489,8 @@ export function applyInteriorDuel(
   result: MatchResult,
   minionId?: string,
 ): InteriorDuelOutcome {
+  // S21 r3: held boons were spent on this battle, whichever way it went (hold-or-spend).
+  delete run.boons;
   if (result.winner === 0) {
     run.interiorLife = Math.max(1, result.finalLife[0]);
     const won = [...result.facts.ante[1]];

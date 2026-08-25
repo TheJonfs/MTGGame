@@ -559,11 +559,14 @@ button.primary { background: var(--brass); color: var(--parchment); border: 1.5p
 .world-map-stage .map-hint { position: absolute; left: 12px; top: 10px; font-family: var(--serif); font-style: italic; font-size: 10.5px; color: var(--ink-soft); opacity: 0.75; pointer-events: none; }
 /* S20 playtest r3 (concept-map-overworld v2): the compass rose, top-right over the map. */
 .world-map-stage .map-compass { position: absolute; right: 12px; top: 10px; pointer-events: none; filter: drop-shadow(1px 1px 3px rgba(0,0,0,0.25)); }
-/* S21 playtest r2 item 5: the town square's second-layer navigation. */
-.town-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
-.town-nav button { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; padding: 12px 14px; font-family: var(--serif); font-size: 15px; background: var(--parchment); border: 1.5px solid var(--ink); border-radius: 6px; cursor: pointer; text-align: left; box-shadow: 1px 2px 5px rgba(0,0,0,0.12); }
-.town-nav button:hover { background: #f4ecd9; box-shadow: 1px 3px 8px rgba(0,0,0,0.2); }
-.town-nav button span { font-family: var(--sans); font-size: 11px; color: var(--ink-soft); font-weight: 400; }
+/* S21 playtest r2–r3 item 5: the town square's second-layer navigation — art tiles like the
+ * Cinquefoil menu (r3). */
+.town-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 14px 0; }
+.town-nav button { display: flex; flex-direction: column; align-items: stretch; gap: 0; padding: 0; font-family: var(--serif); font-size: 15px; background: var(--parchment); border: 2px solid var(--ink); border-radius: 8px; overflow: hidden; cursor: pointer; text-align: left; box-shadow: 2px 3px 10px rgba(0,0,0,0.2); transition: transform 0.08s ease, box-shadow 0.08s ease; }
+.town-nav button:hover { transform: translateY(-2px); box-shadow: 3px 6px 14px rgba(0,0,0,0.3); }
+.town-nav button img { width: 100%; aspect-ratio: 5 / 2; object-fit: cover; display: block; border-bottom: 1.5px solid var(--ink); }
+.town-nav button b { padding: 7px 12px 1px; }
+.town-nav button span { font-family: var(--sans); font-size: 11px; color: var(--ink-soft); font-weight: 400; padding: 0 12px 9px; }
 /* S21 playtest r2 item 6: the Cinquefoil top-level menu. */
 .main-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
 .main-menu a { display: block; border: 2px solid var(--ink); border-radius: 8px; overflow: hidden; background: var(--parchment); text-decoration: none; color: var(--ink); box-shadow: 2px 3px 10px rgba(0,0,0,0.25); transition: transform 0.08s ease, box-shadow 0.08s ease; }

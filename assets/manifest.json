@@ -1739,6 +1739,66 @@
           "variant_prompt": null
         }
       }
+    },
+    "town-board": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:ea3b797441606c465420c3681b3973b8cf629f0a0c76df31fa8308e21de70428",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:ea3b797441606c465420c3681b3973b8cf629f0a0c76df31fa8308e21de70428",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/town-board/canonical.png",
+          "rendered_at": "2026-08-25T19:03:54+00:00",
+          "thumb": "assets/thumbs/town-board/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "town-market": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:3cb5e3d8461630befc318a24ade550eecc7f438cf37f5e3da77a6cb954c02d93",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:3cb5e3d8461630befc318a24ade550eecc7f438cf37f5e3da77a6cb954c02d93",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/town-market/canonical.png",
+          "rendered_at": "2026-08-25T19:03:35+00:00",
+          "thumb": "assets/thumbs/town-market/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "town-sell": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:1e2e36bf1dc73dcf5dbccd8063147c5d4c17ef8740da467d5acc7239d5d76d12",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:1e2e36bf1dc73dcf5dbccd8063147c5d4c17ef8740da467d5acc7239d5d76d12",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/town-sell/canonical.png",
+          "rendered_at": "2026-08-25T19:03:44+00:00",
+          "thumb": "assets/thumbs/town-sell/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "town-tavern": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:498c61e42e38daae524d14807e7569d3481eca23b5f3c34beef854bef1bcd489",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:498c61e42e38daae524d14807e7569d3481eca23b5f3c34beef854bef1bcd489",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/town-tavern/canonical.png",
+          "rendered_at": "2026-08-25T19:04:06+00:00",
+          "thumb": "assets/thumbs/town-tavern/canonical.png",
+          "variant_prompt": null
+        }
+      }
     }
   }
 }

@@ -56,7 +56,7 @@ function Loader({ onLoad }: { onLoad: (g: SavedGame) => void }) {
           </button>
         </p>
         <p>
-          <a className="linkish" href="/">⟵ main menu</a> · <a className="linkish" href="/world"><b>Walk the world</b></a> · <a className="linkish" href="/play">play a match</a> · <a className="linkish" href="/gallery">card gallery</a>
+          <a className="linkish" href="/">⟵ main menu</a>
         </p>
         {error && <p style={{ color: "var(--danger)" }}>{error}</p>}
       </div>

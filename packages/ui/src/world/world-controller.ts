@@ -744,7 +744,7 @@ export class WorldController {
             t.kind === "gold" ? `Escrowed: ${t.gold} gold. The mountain holds it until the guardian falls.`
             : t.kind === "card" ? `Escrowed: ${t.cardName ?? t.cardId}. The mountain holds it until the guardian falls.`
             : t.kind === "life" ? `A healing cache: +${t.life} interior life (now ${run.interiorLife}). Spent here or lost here — it never leaves the dark.`
-            : `A boon: ${t.cardName ?? t.cardId} fights beside you for the rest of this run.`;
+            : `A boon: ${t.cardName ?? t.cardId} will fight beside you in your NEXT battle here — spent when it's fought, held until then.`;
           this.screen = { kind: "dungeon", notice, walking: true };
           this.emit();
         }

@@ -847,13 +847,27 @@ describe("S20 Part 3+7 (dungeons, scripted acceptance): topology, escrow, interi
     const tmpl = catalog.opponents.find((o) => o.spoke === "R" && o.tier <= 2)!;
     const spec = dungeonDuelSpec(w0!, catalog, knobs, boonRun!, { kind: "minion", tmpl }, [], new WorldRng(5));
     expect(spec.spec.modifiers.some((m) => m.type === "permanentOnBattlefield" && (m as { player: number }).player === 0 && m.cardId === bt.cardId)).toBe(true);
+    // S21 r3 (Chris): a boon is spent on the NEXT battle — applying that duel clears the hold.
+    const { applyInteriorDuel } = await dg();
+    applyInteriorDuel(w0!, knobs, boonRun!, { winner: 0, finalLife: [7, 0], facts: { ante: [[], []] } } as never, boonRun!.minions[0]?.id);
+    expect(boonRun!.boons).toBeUndefined();
+    // S21 r3 card classes: mox card caches are T3 or R; lair card caches are T2 or T3 (never R).
+    for (let seed = 61; seed < 76; seed++) {
+      const w = newWorld({ seed, catalog, starter: "red" });
+      const kn = worldKnobs(w);
+      const mox = generateDungeonRun(w, catalog, kn, pool.cards, { dungeonId: `c_mox_${seed}`, kind: "mox", color: "R", enteredFrom: { x: 0, y: 0 } });
+      const lair = generateDungeonRun(w, catalog, kn, pool.cards, { dungeonId: `c_lair_${seed}`, kind: "lair", color: "R", enteredFrom: { x: 0, y: 0 }, residentCatalogId: "beast_siegegang", small: true });
+      for (const t of mox.treasures) if (t.kind === "card") expect(["R", 3]).toContain(pool.cards.get(t.cardId!)?.shopTier);
+      for (const t of lair.treasures) if (t.kind === "card") expect([2, 3]).toContain(pool.cards.get(t.cardId!)?.shopTier);
+    }
   });
 
   it("lair-dungeons are smaller, roll R-card treasures, and the resident boss carries the lair life bonus in its spec", async () => {
     const w = newWorld({ seed: 24, catalog, starter: "red" });
     const run = await makeRun(w, { kind: "lair" });
     expect(run.minions.length).toBeLessThanOrEqual(3); // scale 2 (24×18): lairs carry 2–3 vs mox 3–5
-    for (const t of run.treasures) if (t.kind === "card") expect(pool.cards.get(t.cardId!)?.shopTier).toBe("R");
+    // S21 r3 (Chris): mundane lairs' card caches roll T2/T3 — the boss's 2×R prize room is the R channel.
+    for (const t of run.treasures) if (t.kind === "card") expect([2, 3]).toContain(pool.cards.get(t.cardId!)?.shopTier);
     const { dungeonDuelSpec } = await dg();
     const knobs = worldKnobs(w);
     const boss = catalog.opponents.find((o) => o.id === "beast_siegegang")!;
