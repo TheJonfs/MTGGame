@@ -1680,6 +1680,291 @@
         }
       }
     },
+    "sprite-b-barrow": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:1fd5d2a1bb9ef4e891483b649b6addcbbaa9a27f0eacac13a91467d02cda8244",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:1fd5d2a1bb9ef4e891483b649b6addcbbaa9a27f0eacac13a91467d02cda8244",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-b-barrow/canonical.png",
+          "rendered_at": "2026-08-25T20:06:22+00:00",
+          "thumb": "assets/thumbs/sprite-b-barrow/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "sprite-b-deadtree": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:d2c7fe0fe3ca878183028946bcaabf30f3f3fb50e48cf341c12d08364277fede",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:d2c7fe0fe3ca878183028946bcaabf30f3f3fb50e48cf341c12d08364277fede",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-b-deadtree/canonical.png",
+          "rendered_at": "2026-08-25T20:06:13+00:00",
+          "thumb": "assets/thumbs/sprite-b-deadtree/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "sprite-b-snags": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:6634a123e3663a678aaf82dbd094c60dab9bc7384762236e65455df1a1ab703a",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:6634a123e3663a678aaf82dbd094c60dab9bc7384762236e65455df1a1ab703a",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-b-snags/canonical.png",
+          "rendered_at": "2026-08-25T20:06:33+00:00",
+          "thumb": "assets/thumbs/sprite-b-snags/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "sprite-castle": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:a9297860bec0dac5f251802a025e6f459ab7b1dd5ab011b07c3526d62b245e5f",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:a9297860bec0dac5f251802a025e6f459ab7b1dd5ab011b07c3526d62b245e5f",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-castle/canonical.png",
+          "rendered_at": "2026-08-25T20:08:14+00:00",
+          "thumb": "assets/thumbs/sprite-castle/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "sprite-dungeon-door": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:a8db4cac9520c9f7863c82ad4d63adb54e8d158d960f132b7c8b4f2a21d2d447",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:a8db4cac9520c9f7863c82ad4d63adb54e8d158d960f132b7c8b4f2a21d2d447",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-dungeon-door/canonical.png",
+          "rendered_at": "2026-08-25T20:08:04+00:00",
+          "thumb": "assets/thumbs/sprite-dungeon-door/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "sprite-g-copse": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:24a3d446e59af50e5c3a8df16052ef4b202cbbb7043e62452ca6c7b1be148451",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:24a3d446e59af50e5c3a8df16052ef4b202cbbb7043e62452ca6c7b1be148451",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-g-copse/canonical.png",
+          "rendered_at": "2026-08-25T20:07:24+00:00",
+          "thumb": "assets/thumbs/sprite-g-copse/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "sprite-g-pine": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:3771d636842d8af373a937e37e585f56e856fcca2656e29737c73eaf30c4eac0",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:3771d636842d8af373a937e37e585f56e856fcca2656e29737c73eaf30c4eac0",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-g-pine/canonical.png",
+          "rendered_at": "2026-08-25T20:07:15+00:00",
+          "thumb": "assets/thumbs/sprite-g-pine/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "sprite-g-roots": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:fd3226870d2b097bf088c46cd3755b09b3d33d37a2c3d4e56c46da065807b80b",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:fd3226870d2b097bf088c46cd3755b09b3d33d37a2c3d4e56c46da065807b80b",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-g-roots/canonical.png",
+          "rendered_at": "2026-08-25T20:07:33+00:00",
+          "thumb": "assets/thumbs/sprite-g-roots/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "sprite-lair": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:254cc37c2bd03ea7ae2e748c334d325a4f55a0a6bdf3aa3dbae8261fc9393ddb",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:254cc37c2bd03ea7ae2e748c334d325a4f55a0a6bdf3aa3dbae8261fc9393ddb",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-lair/canonical.png",
+          "rendered_at": "2026-08-25T20:07:55+00:00",
+          "thumb": "assets/thumbs/sprite-lair/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "sprite-r-cone": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:9cdc42a61be82ddb9d1fcafc88abbb18fbaf4a53f84e50bcabf5fcd165488fc1",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:9cdc42a61be82ddb9d1fcafc88abbb18fbaf4a53f84e50bcabf5fcd165488fc1",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-r-cone/canonical.png",
+          "rendered_at": "2026-08-25T20:06:46+00:00",
+          "thumb": "assets/thumbs/sprite-r-cone/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "sprite-r-crag": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:6ceae3eda5a05e7bf4c18a6ff93fcc2972b427fab0514975b536c682cdce314b",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:6ceae3eda5a05e7bf4c18a6ff93fcc2972b427fab0514975b536c682cdce314b",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-r-crag/canonical.png",
+          "rendered_at": "2026-08-25T20:06:55+00:00",
+          "thumb": "assets/thumbs/sprite-r-crag/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "sprite-r-scree": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:79b9afd795e2979c8d432a91e5e69045887883c0b743d185372beb8d962ddaff",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:79b9afd795e2979c8d432a91e5e69045887883c0b743d185372beb8d962ddaff",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-r-scree/canonical.png",
+          "rendered_at": "2026-08-25T20:07:05+00:00",
+          "thumb": "assets/thumbs/sprite-r-scree/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "sprite-town": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:825a3b409b574939e12d8e83678f18aacc6b2af454400c4d9e22aafb8f840ba9",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:825a3b409b574939e12d8e83678f18aacc6b2af454400c4d9e22aafb8f840ba9",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-town/canonical.png",
+          "rendered_at": "2026-08-25T20:07:43+00:00",
+          "thumb": "assets/thumbs/sprite-town/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "sprite-u-islet": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:20f9dd92be7cf74da3036d77be6906a3c606949e5fabf09edf6576ce821dddaf",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:20f9dd92be7cf74da3036d77be6906a3c606949e5fabf09edf6576ce821dddaf",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-u-islet/canonical.png",
+          "rendered_at": "2026-08-25T20:05:50+00:00",
+          "thumb": "assets/thumbs/sprite-u-islet/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "sprite-u-reeds": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:9a169f53f75d7d515047e2729c29b9648f02084ed46930c555cc227a74bbf75e",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:9a169f53f75d7d515047e2729c29b9648f02084ed46930c555cc227a74bbf75e",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-u-reeds/canonical.png",
+          "rendered_at": "2026-08-25T20:05:41+00:00",
+          "thumb": "assets/thumbs/sprite-u-reeds/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "sprite-u-searocks": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:f59cf9cad7a4d85a1dc6a57f4a7ec9a24d0149a37493e325614fc9c5fc709dba",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:f59cf9cad7a4d85a1dc6a57f4a7ec9a24d0149a37493e325614fc9c5fc709dba",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-u-searocks/canonical.png",
+          "rendered_at": "2026-08-25T20:06:04+00:00",
+          "thumb": "assets/thumbs/sprite-u-searocks/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "sprite-w-hedgerow": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:94294b1b7d59b2f61ae67024a11cda2ed8f2cfdb9828aeb6a15bf02aa0334653",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:94294b1b7d59b2f61ae67024a11cda2ed8f2cfdb9828aeb6a15bf02aa0334653",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-w-hedgerow/canonical.png",
+          "rendered_at": "2026-08-25T20:05:27+00:00",
+          "thumb": "assets/thumbs/sprite-w-hedgerow/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "sprite-w-stone": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:ed7c9fd3856f3438bafa0c356083c4c4f007140de3980162ec0a284b1970df6a",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:ed7c9fd3856f3438bafa0c356083c4c4f007140de3980162ec0a284b1970df6a",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-w-stone/canonical.png",
+          "rendered_at": "2026-08-25T20:05:18+00:00",
+          "thumb": "assets/thumbs/sprite-w-stone/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "sprite-w-wheat": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:f004595e566f27105e42c09fdf813669f50f1d882f48ab6b4d2abdc8ea8f2b19",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:f004595e566f27105e42c09fdf813669f50f1d882f48ab6b4d2abdc8ea8f2b19",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-w-wheat/canonical.png",
+          "rendered_at": "2026-08-25T20:05:04+00:00",
+          "thumb": "assets/thumbs/sprite-w-wheat/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "surface-wood": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:febdb4d8b3c4b115c57cd76c1871105c14a723841527e107267c122e55789bdc",

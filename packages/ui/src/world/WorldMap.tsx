@@ -73,6 +73,20 @@ const TERRAIN_GLYPHS: Record<string, string[]> = {
   C: ["M -8 7 L -3 -3 L 0 1 L 4 -5 L 8 7 Z"],
 };
 
+/** S21 map-art Round 4 (Chris: pictorial): rendered ink sprites replace the hand-coded SVG
+ * glyphs. Ink-on-white images composite by MULTIPLY blend (the S6 icon precedent) — the white
+ * vanishes over the washes, so no alpha channel is needed and the ink sits on the pigment like
+ * a real drawn mark. Terrain scatters through the same Round-1 blob machinery. */
+const TERRAIN_SPRITES: Record<string, string[]> = {
+  W: ["sprite-w-wheat", "sprite-w-stone", "sprite-w-hedgerow"],
+  U: ["sprite-u-reeds", "sprite-u-islet", "sprite-u-searocks"],
+  B: ["sprite-b-deadtree", "sprite-b-barrow", "sprite-b-snags"],
+  R: ["sprite-r-cone", "sprite-r-crag", "sprite-r-scree"],
+  G: ["sprite-g-pine", "sprite-g-copse", "sprite-g-roots"],
+  C: ["sprite-r-crag"],
+};
+const spriteHref = (slug: string) => `/map-sprites/${slug}.png`;
+
 const TOWN_GLYPH = "M -5 3 L -5 -2 L 0 -6 L 5 -2 L 5 3 Z M -2 3 L -2 0 L 2 0 L 2 3"; // house with a door
 /** S21 (ADR-080 rider): the town FOOTPRINT — a multi-building vignette (two houses, a
  * crenellated tower, a ground line) for the campaign-map register; a place worth defending,
@@ -343,7 +357,7 @@ export function WorldMapView({
       nBlobs++;
       const color = map.regions[reg!]?.color ?? "C";
       const spots: { x: number; y: number; s: number; g: number }[] = [];
-      const n = Math.max(1, Math.round(cellsIn.length * 0.65));
+      const n = Math.max(1, Math.round(cellsIn.length * 0.45)); // Round 4: fewer, larger, pictorial
       for (let k = 0; k < n; k++) {
         const [bx, by] = cellsIn[Math.floor(hash2(x * 13 + k, y * 7 + k * 3) * cellsIn.length)]!;
         if (!seenXY(bx, by)) continue; // fog-honest: only seen ground grows features
@@ -491,18 +505,21 @@ export function WorldMapView({
           return <rect key={`r${i}`} x={x * CELL} y={y * CELL} width={CELL} height={CELL} fill={map.passable[i] ? "url(#flagstone)" : "url(#chisel)"} pointerEvents="none" />;
         })}
         {!interior && roughBlobs.map((blob, bi) => {
-          const set = TERRAIN_GLYPHS[blob.color] ?? TERRAIN_GLYPHS.C!;
+          const set = TERRAIN_SPRITES[blob.color] ?? TERRAIN_SPRITES.C!;
           return blob.spots
-            .filter((s) => s.x >= X0 - CELL && s.x <= X1 + CELL && s.y >= Y0 - CELL && s.y <= Y1 + CELL)
-            .map((s, si) => (
-              <path
-                key={`b${bi}_${si}`}
-                d={set[s.g % set.length]!}
-                transform={`translate(${s.x.toFixed(1)} ${s.y.toFixed(1)}) scale(${s.s.toFixed(2)})`}
-                fill="none" stroke="rgba(43,37,32,0.8)" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round"
-                pointerEvents="none"
-              />
-            ));
+            .filter((s) => s.x >= X0 - CELL * 2 && s.x <= X1 + CELL * 2 && s.y >= Y0 - CELL * 2 && s.y <= Y1 + CELL * 2)
+            .map((s, si) => {
+              const sz = CELL * 1.7 * s.s; // pictorial: ~1.5–2 cells, feet planted at the spot
+              return (
+                <image
+                  key={`b${bi}_${si}`}
+                  href={spriteHref(set[s.g % set.length]!)}
+                  x={s.x - sz / 2} y={s.y - sz * 0.85} width={sz} height={sz}
+                  style={{ mixBlendMode: "multiply" }}
+                  pointerEvents="none"
+                />
+              );
+            });
         })}
         {/* interior: torchlight pools at junctions, then the carved wall edge */}
         {interior && torches.map((t, i) => (
@@ -583,21 +600,18 @@ export function WorldMapView({
         {previewTarget && (
           <circle cx={centre(previewTarget).cx} cy={centre(previewTarget).cy} r={CELL * 0.45} fill="none" stroke="var(--brass)" strokeWidth="2.2" pointerEvents="none" />
         )}
-        {/* towns — S21: footprint vignettes (ADR-080 rider) with siege states */}
+        {/* towns — Round 4: the pictorial hamlet sprite (multiply-inked onto the wash);
+            siege dressing (danger ring, banner, occupied dimming) stays SVG on top */}
         {map.towns.filter((t) => inView(t.at) && seen(t.at)).map((t) => {
           const { cx, cy } = centre(t.at);
           const st = townStates[t.index];
+          const sz = CELL * 2.5;
           return (
-            <g key={t.index} transform={`translate(${cx} ${cy + 1})`} onMouseEnter={() => setHoverTown(t)} onMouseLeave={() => setHoverTown(null)} onClick={() => onClickCell(t.at)} style={{ cursor: "pointer" }}>
-              <circle
-                r={CELL * 0.68}
-                fill={st === "occupied" ? "#3b2b28" : "var(--parchment)"}
-                stroke={st ? "var(--danger)" : "var(--ink)"}
-                strokeWidth={st === "occupied" ? 2.4 : st === "threatened" ? 2 : 1.4}
-                strokeDasharray={st === "threatened" ? "4 3" : undefined}
-              />
-              <path d={TOWN_FOOTPRINT} fill={st === "occupied" ? "var(--parchment)" : "var(--ink)"} stroke={st === "occupied" ? "var(--parchment)" : "var(--ink)"} strokeWidth="0.7" strokeLinejoin="round" transform="scale(1.15)" />
-              {st && <path d={SIEGE_FLAG} fill="var(--danger)" stroke="var(--ink)" strokeWidth="0.7" transform={`translate(0 ${-CELL * 0.72})`} />}
+            <g key={t.index} onMouseEnter={() => setHoverTown(t)} onMouseLeave={() => setHoverTown(null)} onClick={() => onClickCell(t.at)} style={{ cursor: "pointer" }}>
+              {st && <circle cx={cx} cy={cy} r={CELL * 0.95} fill="none" stroke="var(--danger)" strokeWidth={st === "occupied" ? 2.6 : 2} strokeDasharray={st === "threatened" ? "5 4" : undefined} opacity="0.9" />}
+              <image href={spriteHref("sprite-town")} x={cx - sz / 2} y={cy - sz * 0.62} width={sz} height={sz} style={{ mixBlendMode: "multiply" }} opacity={st === "occupied" ? 0.45 : 1} pointerEvents="none" />
+              {st && <path d={SIEGE_FLAG} fill="var(--danger)" stroke="var(--ink)" strokeWidth="0.7" transform={`translate(${cx} ${cy - CELL * 1.1})`} />}
+              <circle cx={cx} cy={cy} r={CELL * 1.05} fill="transparent" />
             </g>
           );
         })}
@@ -618,10 +632,15 @@ export function WorldMapView({
               </g>
             );
           }
+          // Round 4: pictorial POI sprites — castle keep, lair crag, dungeon door; an ACTIVE
+          // lair/dungeon flies a small danger banner (the old red ring's job); cleared = faded.
+          const slug = castle ? "sprite-castle" : f.kind === "dungeon" ? "sprite-dungeon-door" : "sprite-lair";
+          const sz = CELL * (castle ? 3 : 2.4);
           return (
-            <g key={`f${i}`} transform={`translate(${cx} ${cy + 1})`} onMouseEnter={() => setHoverLair({ name: f.name ?? f.kind, at: f.at })} onMouseLeave={() => setHoverLair(null)} onClick={() => onClickCell(f.at)} style={{ cursor: "pointer" }} opacity={cleared ? 0.45 : 1}>
-              <circle r={CELL * (castle ? 0.8 : 0.66)} fill="var(--parchment)" stroke={castle ? "var(--ink)" : cleared ? "var(--ink-soft)" : "var(--danger)"} strokeWidth={castle ? 2.2 : 1.6} />
-              <path d={castle ? CASTLE_GLYPH : LAIR_GLYPH} fill="var(--ink)" stroke="var(--ink)" strokeWidth="0.8" strokeLinejoin="round" transform={castle ? "scale(1.5)" : "scale(1.3)"} />
+            <g key={`f${i}`} onMouseEnter={() => setHoverLair({ name: f.name ?? f.kind, at: f.at })} onMouseLeave={() => setHoverLair(null)} onClick={() => onClickCell(f.at)} style={{ cursor: "pointer" }}>
+              <image href={spriteHref(slug)} x={cx - sz / 2} y={cy - sz * 0.62} width={sz} height={sz} style={{ mixBlendMode: "multiply" }} opacity={cleared ? 0.4 : 1} pointerEvents="none" />
+              {!castle && !cleared && <path d={SIEGE_FLAG} fill="var(--danger)" stroke="var(--ink)" strokeWidth="0.7" transform={`translate(${cx + CELL * 0.55} ${cy - CELL * 0.9})`} />}
+              <circle cx={cx} cy={cy} r={CELL * (castle ? 1.2 : 1)} fill="transparent" />
             </g>
           );
         })}
