@@ -97,6 +97,99 @@ const INTERIOR = {
   text: "#d9d2c0",
 };
 
+// ---------- S21 map-art Round 1: de-gridding geometry (no assets — pure code) ----------
+// The grid shows through four artifacts: staircase boundaries, hard per-cell colour steps,
+// stamped one-per-cell features, and uniform texture. Round 1 kills the first three:
+// cell-edge segments are CHAINED into polylines, corner-cut (Chaikin) and hand-wobbled
+// (seeded from the point coords — deterministic), then drawn over a parchment GUTTER stroke
+// wide enough to swallow the staircase beneath (the concept plate's unpainted margins).
+// Rough terrain draws per contiguous BLOB (scattered, varied glyphs) instead of per cell.
+
+type Pt = [number, number];
+
+/** Chain shared-endpoint segments into open/closed polylines. */
+function chainSegments(segs: [number, number, number, number][]): { pts: Pt[]; closed: boolean }[] {
+  const key = (x: number, y: number) => `${x},${y}`;
+  const adj = new Map<string, number[]>();
+  segs.forEach(([x1, y1, x2, y2], i) => {
+    for (const k of [key(x1, y1), key(x2, y2)]) {
+      const l = adj.get(k) ?? [];
+      l.push(i);
+      adj.set(k, l);
+    }
+  });
+  const used = new Array(segs.length).fill(false);
+  const chains: { pts: Pt[]; closed: boolean }[] = [];
+  const other = (i: number, x: number, y: number): Pt => {
+    const [x1, y1, x2, y2] = segs[i]!;
+    return x1 === x && y1 === y ? [x2, y2] : [x1, y1];
+  };
+  for (let start = 0; start < segs.length; start++) {
+    if (used[start]) continue;
+    used[start] = true;
+    const [sx1, sy1, sx2, sy2] = segs[start]!;
+    const pts: Pt[] = [[sx1, sy1], [sx2, sy2]];
+    // Extend forward from the tail, then backward from the head.
+    for (const dir of [1, -1] as const) {
+      for (;;) {
+        const [hx, hy] = dir === 1 ? pts[pts.length - 1]! : pts[0]!;
+        const next = (adj.get(key(hx, hy)) ?? []).find((i) => !used[i]);
+        if (next === undefined) break;
+        used[next] = true;
+        const p = other(next, hx, hy);
+        if (dir === 1) pts.push(p);
+        else pts.unshift(p);
+      }
+    }
+    const closed = pts.length > 2 && pts[0]![0] === pts[pts.length - 1]![0] && pts[0]![1] === pts[pts.length - 1]![1];
+    if (closed) pts.pop();
+    chains.push({ pts, closed });
+  }
+  return chains;
+}
+
+/** Chaikin corner-cutting (open chains keep their endpoints). */
+function chaikin(pts: Pt[], closed: boolean, iters = 2): Pt[] {
+  let out = pts;
+  for (let it = 0; it < iters; it++) {
+    const next: Pt[] = [];
+    const n = out.length;
+    if (n < 3) return out;
+    if (!closed) next.push(out[0]!);
+    for (let i = 0; i < (closed ? n : n - 1); i++) {
+      const [ax, ay] = out[i]!;
+      const [bx, by] = out[(i + 1) % n]!;
+      next.push([ax * 0.75 + bx * 0.25, ay * 0.75 + by * 0.25]);
+      next.push([ax * 0.25 + bx * 0.75, ay * 0.25 + by * 0.75]);
+    }
+    if (!closed) next.push(out[n - 1]!);
+    out = next;
+  }
+  return out;
+}
+
+const hash2 = (x: number, y: number): number => {
+  let h = (Math.imul(Math.round(x * 8) | 0, 374761393) ^ Math.imul(Math.round(y * 8) | 0, 668265263)) >>> 0;
+  h = Math.imul(h ^ (h >>> 13), 1274126177) >>> 0;
+  return ((h >>> 8) & 0xffff) / 0xffff; // [0,1)
+};
+
+/** A small deterministic hand-tremble (endpoints of open chains stay pinned). */
+function wobble(pts: Pt[], closed: boolean, amp: number): Pt[] {
+  return pts.map(([x, y], i) => {
+    if (!closed && (i === 0 || i === pts.length - 1)) return [x, y] as Pt;
+    return [x + (hash2(x, y) - 0.5) * 2 * amp, y + (hash2(y + 71, x + 31) - 0.5) * 2 * amp] as Pt;
+  });
+}
+
+const pathOf = (pts: Pt[], closed: boolean): string =>
+  pts.map(([x, y], i) => `${i === 0 ? "M" : "L"}${x.toFixed(1)} ${y.toFixed(1)}`).join(" ") + (closed ? " Z" : "");
+
+/** Segments → smoothed, wobbled SVG paths. */
+function organicPaths(segs: [number, number, number, number][], amp = 1.8): string[] {
+  return chainSegments(segs).map((c) => pathOf(wobble(chaikin(c.pts, c.closed), c.closed, amp), c.closed));
+}
+
 export interface RoamerChip {
   id: string;
   at: Point;
@@ -189,23 +282,70 @@ export function WorldMapView({
   for (let y = Math.max(0, origin.y - 1); y < Math.min(map.height, origin.y + vh + 1); y++) {
     for (let x = Math.max(0, origin.x - 1); x < Math.min(map.width, origin.x + vw + 1); x++) cells.push({ x, y });
   }
-  // Region borders: an ink segment wherever a cell's right/bottom neighbour is in another region.
-  const borders: string[] = [];
+  // Region borders (Round 1): cell-edge segments, chained + smoothed into organic ink lines
+  // over parchment gutters (see organicPaths above).
+  const borderSegs: [number, number, number, number][] = [];
   for (const { x, y } of cells) {
     const r = map.region[y * map.width + x];
     if (!seenXY(x, y)) continue;
-    if (x + 1 < map.width && seenXY(x + 1, y) && map.region[y * map.width + x + 1] !== r) borders.push(`M${(x + 1) * CELL} ${y * CELL} v${CELL}`);
-    if (y + 1 < map.height && seenXY(x, y + 1) && map.region[(y + 1) * map.width + x] !== r) borders.push(`M${x * CELL} ${(y + 1) * CELL} h${CELL}`);
+    if (x + 1 < map.width && seenXY(x + 1, y) && map.region[y * map.width + x + 1] !== r) borderSegs.push([(x + 1) * CELL, y * CELL, (x + 1) * CELL, (y + 1) * CELL]);
+    if (y + 1 < map.height && seenXY(x, y + 1) && map.region[(y + 1) * map.width + x] !== r) borderSegs.push([x * CELL, (y + 1) * CELL, (x + 1) * CELL, (y + 1) * CELL]);
   }
-  // Overworld: the torn fog edge (concept v2) — a soft boundary wherever seen ground meets fog.
-  const fogEdges: string[] = [];
+  const borderPaths = interior ? [] : organicPaths(borderSegs);
+  // Overworld: the torn fog edge (concept v2) — smoothed the same way; the fat fog stroke
+  // swallows the staircase beneath.
+  const fogSegs: [number, number, number, number][] = [];
   if (!interior && explored) {
     for (const { x, y } of cells) {
       if (!seenXY(x, y)) continue;
-      if (x + 1 < map.width && !seenXY(x + 1, y)) fogEdges.push(`M${(x + 1) * CELL} ${y * CELL} v${CELL}`);
-      if (x - 1 >= 0 && !seenXY(x - 1, y)) fogEdges.push(`M${x * CELL} ${y * CELL} v${CELL}`);
-      if (y + 1 < map.height && !seenXY(x, y + 1)) fogEdges.push(`M${x * CELL} ${(y + 1) * CELL} h${CELL}`);
-      if (y - 1 >= 0 && !seenXY(x, y - 1)) fogEdges.push(`M${x * CELL} ${y * CELL} h${CELL}`);
+      if (x + 1 < map.width && !seenXY(x + 1, y)) fogSegs.push([(x + 1) * CELL, y * CELL, (x + 1) * CELL, (y + 1) * CELL]);
+      if (x - 1 >= 0 && !seenXY(x - 1, y)) fogSegs.push([x * CELL, y * CELL, x * CELL, (y + 1) * CELL]);
+      if (y + 1 < map.height && !seenXY(x, y + 1)) fogSegs.push([x * CELL, (y + 1) * CELL, (x + 1) * CELL, (y + 1) * CELL]);
+      if (y - 1 >= 0 && !seenXY(x, y - 1)) fogSegs.push([x * CELL, y * CELL, (x + 1) * CELL, y * CELL]);
+    }
+  }
+  const fogPaths = organicPaths(fogSegs, 2.4);
+  // Rough terrain (Round 1): contiguous rough cells of one region become a BLOB — glyphs
+  // scatter across it with seeded jitter and varied scale, denser than one-per-cell never was.
+  const roughBlobs: { color: string; spots: { x: number; y: number; s: number; g: number }[] }[] = [];
+  if (!interior) {
+    const blobOf = new Int32Array(map.width * map.height).fill(-1);
+    let nBlobs = 0;
+    for (let y = 0; y < map.height; y++) for (let x = 0; x < map.width; x++) {
+      const i = y * map.width + x;
+      if (map.passable[i] || blobOf[i] !== -1) continue;
+      const reg = map.region[i];
+      const cellsIn: Pt[] = [];
+      const q: Pt[] = [[x, y]];
+      blobOf[i] = nBlobs;
+      while (q.length) {
+        const [cx, cy] = q.pop()!;
+        cellsIn.push([cx, cy]);
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+          const nx = cx + dx, ny = cy + dy;
+          if (nx < 0 || ny < 0 || nx >= map.width || ny >= map.height) continue;
+          const ni = ny * map.width + nx;
+          if (map.passable[ni] || blobOf[ni] !== -1 || map.region[ni] !== reg) continue;
+          blobOf[ni] = nBlobs;
+          q.push([nx, ny]);
+        }
+      }
+      nBlobs++;
+      const color = map.regions[reg!]?.color ?? "C";
+      const spots: { x: number; y: number; s: number; g: number }[] = [];
+      const n = Math.max(1, Math.round(cellsIn.length * 0.65));
+      for (let k = 0; k < n; k++) {
+        const [bx, by] = cellsIn[Math.floor(hash2(x * 13 + k, y * 7 + k * 3) * cellsIn.length)]!;
+        if (!seenXY(bx, by)) continue; // fog-honest: only seen ground grows features
+        spots.push({
+          x: (bx + 0.5) * CELL + (hash2(bx + k, by) - 0.5) * CELL * 0.8,
+          y: (by + 0.5) * CELL + (hash2(by, bx + k) - 0.5) * CELL * 0.8,
+          s: 0.8 + hash2(bx * 3 + k, by * 5) * 0.5,
+          g: Math.floor(hash2(bx + k * 11, by + k * 17) * 8),
+        });
+      }
+      spots.sort((a, b) => a.y - b.y); // painter's order for overlaps
+      if (spots.length) roughBlobs.push({ color, spots });
     }
   }
   // Interior: carved wall edges (a pale chisel line wherever seen floor meets rock or the map's
@@ -291,53 +431,52 @@ export function WorldMapView({
               key={i}
               x={x * CELL}
               y={y * CELL}
-              width={CELL}
-              height={CELL}
+              width={CELL + 0.6}
+              height={CELL + 0.6}
               fill={fill}
               onClick={() => onClickCell({ x, y })}
               style={{ cursor: !seenXY(x, y) || map.passable[i] ? "pointer" : "not-allowed" }}
             />
           );
         })}
-        {/* rough terrain (interior: chisel-marks on rock, flagstones on floor; overworld: each
-            colour's pictorial glyphs over a faint hatch — concept-map-overworld v2) */}
-        {cells.map(({ x, y }) => {
+        {/* rough terrain — interior: chisel-marks on rock, flagstones on floor; overworld
+            (Round 1): blob-scattered pictorial glyphs, no per-cell stamps, no hatch. */}
+        {interior && cells.map(({ x, y }) => {
           const i = y * map.width + x;
-          if (interior) {
-            if (!seenXY(x, y)) return null;
-            return <rect key={`r${i}`} x={x * CELL} y={y * CELL} width={CELL} height={CELL} fill={map.passable[i] ? "url(#flagstone)" : "url(#chisel)"} pointerEvents="none" />;
-          }
-          if (map.passable[i] || !seenXY(x, y)) return null;
-          const reg = map.regions[map.region[i]!]!;
-          const set = TERRAIN_GLYPHS[reg.color] ?? TERRAIN_GLYPHS.C!;
-          const h = (x * 31 + y * 17 + (map.region[i] ?? 0) * 7) >>> 0;
-          const glyph = set[h % set.length]!;
-          const jx = ((h >> 3) % 5) - 2, jy = ((h >> 5) % 5) - 2;
-          const { cx, cy } = centre({ x, y });
-          return (
-            <g key={`r${i}`} pointerEvents="none">
-              <rect x={x * CELL} y={y * CELL} width={CELL} height={CELL} fill="url(#rough-faint)" />
-              <path d={glyph} transform={`translate(${cx + jx * 0.8} ${cy + jy * 0.8}) scale(0.92)`} fill="none" stroke="rgba(43,37,32,0.8)" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" />
-            </g>
-          );
+          if (!seenXY(x, y)) return null;
+          return <rect key={`r${i}`} x={x * CELL} y={y * CELL} width={CELL} height={CELL} fill={map.passable[i] ? "url(#flagstone)" : "url(#chisel)"} pointerEvents="none" />;
+        })}
+        {!interior && roughBlobs.map((blob, bi) => {
+          const set = TERRAIN_GLYPHS[blob.color] ?? TERRAIN_GLYPHS.C!;
+          return blob.spots
+            .filter((s) => s.x >= X0 - CELL && s.x <= X1 + CELL && s.y >= Y0 - CELL && s.y <= Y1 + CELL)
+            .map((s, si) => (
+              <path
+                key={`b${bi}_${si}`}
+                d={set[s.g % set.length]!}
+                transform={`translate(${s.x.toFixed(1)} ${s.y.toFixed(1)}) scale(${s.s.toFixed(2)})`}
+                fill="none" stroke="rgba(43,37,32,0.8)" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round"
+                pointerEvents="none"
+              />
+            ));
         })}
         {/* interior: torchlight pools at junctions, then the carved wall edge */}
         {interior && torches.map((t, i) => (
           <circle key={`t${i}`} cx={centre(t).cx} cy={centre(t).cy} r={CELL * 1.9} fill="url(#torch)" pointerEvents="none" />
         ))}
         {interior && <path d={wallEdges.join(" ")} stroke={INTERIOR.edge} strokeWidth="1.6" fill="none" strokeLinecap="square" pointerEvents="none" opacity="0.85" />}
-        {/* the torn fog edge: fog bleeds a few px over the seen side, with a faint broken ink rule */}
-        {!interior && fogEdges.length > 0 && (
+        {/* the torn fog edge (Round 1: an organic contour — the fat fog stroke swallows the
+            cell staircase; the broken ink rule trembles along it) */}
+        {!interior && fogPaths.length > 0 && (
           <g pointerEvents="none">
-            <path d={fogEdges.join(" ")} stroke="var(--fog)" strokeWidth="6" fill="none" strokeLinecap="round" opacity="0.9" />
-            <path d={fogEdges.join(" ")} stroke="var(--ink)" strokeWidth="0.9" fill="none" strokeLinecap="round" strokeDasharray="3 4 1 3" opacity="0.28" />
+            {fogPaths.map((d, i) => <path key={`fga${i}`} d={d} stroke="var(--fog)" strokeWidth={CELL * 0.8} fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.95" />)}
+            {fogPaths.map((d, i) => <path key={`fgb${i}`} d={d} stroke="var(--ink)" strokeWidth="0.9" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="3 4 1 3" opacity="0.28" />)}
           </g>
         )}
-        {/* S16 (ADR-072): roads — a dotted ink line through the centre of road cells */}
+        {/* S16 (ADR-072): roads — a dotted ink line through road-cell centres; Round 1 chains
+            and smooths them so junctions curve instead of cornering. */}
         {map.road && (() => {
-          // A road segment joins two adjacent road cells. Both explored → drawn; exactly one
-          // explored → a faded half-stub from the explored cell toward the fog (ADR-073); neither → nothing.
-          const full: string[] = [], stub: string[] = [];
+          const fullSegs: [number, number, number, number][] = [], stub: string[] = [];
           for (const { x, y } of cells) {
             if (!map.road[y * map.width + x]) continue;
             const c = centre({ x, y });
@@ -345,19 +484,27 @@ export function WorldMapView({
               const nx = x + dx, ny = y + dy;
               if (nx < 0 || ny < 0 || nx >= map.width || ny >= map.height || !map.road[ny * map.width + nx]) continue;
               const a = seenXY(x, y), b = seenXY(nx, ny);
-              if (a && b) { if (dx > 0 || dy > 0) full.push(`M${c.cx} ${c.cy} L${c.cx + dx * CELL} ${c.cy + dy * CELL}`); }
+              if (a && b) { if (dx > 0 || dy > 0) fullSegs.push([c.cx, c.cy, c.cx + dx * CELL, c.cy + dy * CELL]); }
               else if (a && !b) stub.push(`M${c.cx} ${c.cy} L${c.cx + dx * CELL * 0.8} ${c.cy + dy * CELL * 0.8}`);
             }
           }
           return (
             <>
-              <path d={full.join(" ")} stroke="var(--ink)" strokeWidth="2.2" strokeDasharray="1 4" strokeLinecap="round" fill="none" opacity="0.7" pointerEvents="none" />
+              {organicPaths(fullSegs, 1.2).map((d, i) => (
+                <path key={`rd${i}`} d={d} stroke="var(--ink)" strokeWidth="2.2" strokeDasharray="1 4" strokeLinecap="round" strokeLinejoin="round" fill="none" opacity="0.7" pointerEvents="none" />
+              ))}
               <path d={stub.join(" ")} stroke="var(--ink)" strokeWidth="2.2" strokeDasharray="1 4" strokeLinecap="round" fill="none" opacity="0.28" pointerEvents="none" className="road-stub" />
             </>
           );
         })()}
-        {/* region borders (meaningless inside — one region) */}
-        {!interior && <path d={borders.join(" ")} stroke="var(--ink)" strokeWidth="1.6" fill="none" strokeLinecap="round" pointerEvents="none" opacity="0.85" />}
+        {/* region borders (Round 1): the parchment gutter under a trembling ink line — the
+            concept plate's unpainted margins; the gutter swallows the wash staircase beneath. */}
+        {!interior && (
+          <g pointerEvents="none">
+            {borderPaths.map((d, i) => <path key={`bga${i}`} d={d} stroke="var(--parchment)" strokeWidth={CELL * 0.75} fill="none" strokeLinecap="round" strokeLinejoin="round" />)}
+            {borderPaths.map((d, i) => <path key={`bgb${i}`} d={d} stroke="var(--ink)" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.85" />)}
+          </g>
+        )}
         {/* region names at hearts (only when the heart is in view) */}
         {map.regions.filter((reg) => inView(reg.heart) && seen(reg.heart)).map((reg) => {
           const half = reg.name.length * 3.4;

@@ -66,6 +66,28 @@ through (\`~~...~~\`) when resolved. Newest note last within each card.
           }
         });
       });
+      // S21 map-art round: pixel-true snapshots from the page (SVG → canvas → PNG dataURL)
+      // land in docs/art/snapshots/ — the before/after ledger for art rounds.
+      server.middlewares.use("/__snapshot", (req, res, next) => {
+        if (req.method !== "POST") return next();
+        let body = "";
+        req.on("data", (c) => (body += c));
+        req.on("end", () => {
+          try {
+            const { name, dataUrl } = JSON.parse(body) as { name: string; dataUrl: string };
+            if (!/^[a-z0-9-]+$/.test(name)) throw new Error("name must be kebab-case");
+            const b64 = dataUrl.replace(/^data:image\/png;base64,/, "");
+            const dir = join(repo, "docs/art/snapshots");
+            mkdirSync(dir, { recursive: true });
+            writeFileSync(join(dir, `${name}.png`), Buffer.from(b64, "base64"));
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify({ ok: true, file: `docs/art/snapshots/${name}.png` }));
+          } catch (e) {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ ok: false, error: String(e) }));
+          }
+        });
+      });
       server.middlewares.use("/__flag", (req, res, next) => {
         if (req.method !== "POST") return next();
         let body = "";
