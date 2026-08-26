@@ -116,8 +116,9 @@ export interface WorldState {
   dungeons: Record<string, DungeonStatus>;
   /** S20 v5: the dungeon in progress (reload resumes mid-dungeon; quitting is not walking out). */
   activeDungeon: DungeonRun | null;
-  /** S20 v5 (reserved for S22 strongholds — same trick as sieges). */
-  strongholds: unknown[];
+  /** S20 v5 reserved → S22b live: per-stronghold state (seal + spoke-hunt points; lazily
+   * populated — the reserved-field trick's third cashing, no save bump). */
+  strongholds: import("./stronghold.js").StrongholdState[];
 }
 
 export interface NewWorldOptions {

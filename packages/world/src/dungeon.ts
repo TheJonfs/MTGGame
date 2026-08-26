@@ -28,6 +28,7 @@ import type { KnobValues } from "./knobs.js";
 import { exploredNone, idx, isExplored, markExplored, type Point, type WorldMap } from "./map.js";
 import { WorldRng } from "./rng.js";
 import { activeDeck, deckSize, type WorldState } from "./state.js";
+import { creditSpokeKill } from "./stronghold.js";
 
 // ---------- Content shapes (data/world/dungeons.json) ----------
 
@@ -104,7 +105,7 @@ export interface DungeonEscrow {
 /** A dungeon in progress — the whole interior lives in the save (reload resumes mid-dungeon). */
 export interface DungeonRun {
   dungeonId: string;
-  kind: "mox" | "lair";
+  kind: "mox" | "lair" | "stronghold";
   /** The overworld fixed point we entered from (returned to on any exit). */
   enteredFrom: Point;
   grid: { width: number; height: number; passable: boolean[] };
@@ -147,7 +148,7 @@ export function generateDungeonRun(
   pool: Map<string, CardDef>,
   opts: {
     dungeonId: string;
-    kind: "mox" | "lair";
+    kind: "mox" | "lair" | "stronghold";
     color: "W" | "U" | "B" | "R" | "G";
     enteredFrom: Point;
     residentCatalogId?: string;
@@ -155,7 +156,10 @@ export function generateDungeonRun(
     small?: boolean;
   },
 ): DungeonRun {
-  const { w, h } = { w: knobs.dungeonGridWidth, h: knobs.dungeonGridHeight };
+  // S22b: strongholds are the system at maximum scale — their own grid knobs (30×22 proposed).
+  const { w, h } = opts.kind === "stronghold"
+    ? { w: knobs.strongholdGridWidth, h: knobs.strongholdGridHeight }
+    : { w: knobs.dungeonGridWidth, h: knobs.dungeonGridHeight };
   // Content scales with grid area (S20 playtest: 12×9 → 24×18): s = 1 at the design doc's
   // 12×9 baseline, 2 at the doubled default — branch/minion/cross-link counts and branch
   // lengths all ride it, so the knobs stay the only size dial.
@@ -184,7 +188,7 @@ export function generateDungeonRun(
   }
 
   // Branches: sprout from mid-trunk cells, run away vertically/backward, end in treasure.
-  const branchCount = opts.small ? 2 * s : 2 * s + rng.int(2 * s + 1); // s=1: 2 / 2..4 · s=2: 4 / 4..8
+  const branchCount = opts.kind === "stronghold" ? 3 * s + rng.int(s + 1) : opts.small ? 2 * s : 2 * s + rng.int(2 * s + 1); // s=1: 2 / 2..4 · s=2: 4 / 4..8 · stronghold s=2: 6..8
   const branchTips: Point[] = [];
   for (let b = 0; b < branchCount; b++) {
     const from = trunk[1 + rng.int(Math.max(1, trunk.length - 3))]!;
@@ -210,7 +214,7 @@ export function generateDungeonRun(
   }
 
   // Minions at chokepoints: trunk cells past the first quarter, spaced out; never entry/guardian.
-  const minionCount = opts.small ? s + rng.int(2) : s + 1 + rng.int(s + 1); // s=1: lair 1–2 / mox 2–3 · s=2: lair 2–3 / mox 3–5
+  const minionCount = opts.kind === "stronghold" ? 2 * s + rng.int(s + 1) : opts.small ? s + rng.int(2) : s + 1 + rng.int(s + 1); // s=1: lair 1–2 / mox 2–3 · s=2: lair 2–3 / mox 3–5 · stronghold s=2: 4–6 (spoke-themed floors)
   const spokeMinions = catalog.opponents.filter(
     (o) => o.spoke === opts.color && o.tier <= 2 && o.id !== opts.residentCatalogId,
   );
@@ -431,6 +435,9 @@ export function dungeonDuelSpec(
     | { kind: "guardian"; name: string; decklist: { cardId: string; count: number }[]; archetype: "aggro" | "midrange" | "control"; life: number; color: "W" | "U" | "B" | "R" | "G" },
   law: LawModifier[],
   rng: WorldRng,
+  /** S22b: PARTISAN additions — the stronghold law (defender-side, re-injected every battle) and,
+   * for the lord duel, his entrance. Mox dungeons pass nothing; their laws stay symmetric. */
+  extraModifiers: Modifier[] = [],
 ): { spec: MatchSpec; enemyName: string; enemyLife: number; empowerment: EmpowermentTier[] } {
   const lawMods = (player: 0 | 1): Modifier[] =>
     law.map((l) =>
@@ -462,6 +469,7 @@ export function dungeonDuelSpec(
       { type: "startingLife", player: 1, value: enemyLife },
       ...lawMods(0),
       ...lawMods(1),
+      ...extraModifiers,
       ...emp.modifiers,
       // Manalinks still apply inside (they are the player's persistent buffs) — through the one
       // source, so an occupied granting town's link is dark here too (S21 suspension).
@@ -488,6 +496,9 @@ export function applyInteriorDuel(
   run: DungeonRun,
   result: MatchResult,
   minionId?: string,
+  /** S22b: with the catalog, a defeated spoke-bound minion credits its lord's hunt (the pace war —
+   * interior kills count too). Callers without it (older tests) simply feed no one. */
+  catalog?: Catalog,
 ): InteriorDuelOutcome {
   // S21 r3: held boons were spent on this battle, whichever way it went (hold-or-spend).
   delete run.boons;
@@ -497,7 +508,13 @@ export function applyInteriorDuel(
     run.escrow.cardIds.push(...won); // §4: interior ante winnings are escrowed
     if (minionId) {
       const m = run.minions.find((x) => x.id === minionId);
-      if (m) m.defeated = true;
+      if (m) {
+        m.defeated = true;
+        if (catalog) {
+          const tmpl = catalog.opponents.find((o) => o.id === m.catalogId);
+          creditSpokeKill(world, tmpl?.spoke, tmpl?.tier ?? 0);
+        }
+      }
     }
     return { type: "win", anteToEscrow: won, lifeNow: run.interiorLife };
   }

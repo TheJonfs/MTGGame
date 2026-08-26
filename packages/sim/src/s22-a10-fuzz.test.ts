@@ -5,6 +5,7 @@ import { loadCardPool } from "@shandalar/cards/loader";
 import { validateCard, asCardDef, type CardDef } from "@shandalar/cards";
 import { replayGame, runMatch, type MatchResult, type MatchSpec } from "@shandalar/engine";
 import { RandomAgent } from "@shandalar/agents";
+import { LORD_DECKS as LORDS } from "./lord-decks.js";
 
 const CARDS_DIR = join(dirname(fileURLToPath(import.meta.url)), "../../../data/cards");
 
@@ -153,22 +154,11 @@ async function run(cards: Map<string, CardDef>, seed: number): Promise<MatchResu
   return runMatch(spec(seed), cards, [new RandomAgent(seed * 2 + 1), new RandomAgent(seed * 2 + 2)]);
 }
 
-/** The boss-doc v1 lord decklists (stronghold-bosses.md §decklists) — used HERE as the batch's
- * fuzz decks (every S22 card under random play with real fixing); their official wiring as
- * stronghold decks is S22b Part 5. */
-const D = (rows: [string, number][]) => rows.map(([cardId, count]) => ({ cardId, count }));
-export const LORD_DECKS: Record<string, { cardId: string; count: number }[]> = {
-  unwinder: D([["island",5],["mountain",1],["forest",1],["volcanic_island",2],["tropical_island",2],["taiga",1],["steam_vents",2],["breeding_pool",2],["stomping_ground",1],
-    ["the_unwinder",3],["aetherbolt",2],["aether_mutation",2],["temporal_spring",2],["man_o_war",3],["mist_raven",2],["waterfront_bouncer",2],["boomerang",2],["aether_channeler",2],["lightning_bolt",2],["shock",1]]),
-  usher: D([["swamp",6],["plains",1],["mountain",1],["scrubland",2],["badlands",2],["plateau",1],["godless_shrine",2],["blood_crypt",1],["sacred_foundry",1],
-    ["the_usher",3],["phyrexian_purge",2],["graceful_restoration",2],["blood_artist",2],["indulgent_aristocrat",2],["vampire_nighthawk",2],["child_of_night",2],["doom_blade",1],["zombify",1],["restoration_angel",1],["swords_to_plowshares",2],["hymn_to_tourach",1],["wrath_of_god",1],["vindicate",1]]),
-  warden: D([["plains",6],["forest",1],["swamp",1],["savannah",2],["scrubland",2],["temple_garden",2],["godless_shrine",1],["bayou",1],["overgrown_tomb",1],
-    ["the_warden",3],["glare_of_subdual",2],["frondland_felidar",2],["master_decoy",2],["scepter_of_dominance",2],["cunning_tactician",2],["serra_angel",2],["pacifism",2],["swords_to_plowshares",2],["glorious_anthem",2],["wrath_of_god",1],["vindicate",1]]),
-  stoker: D([["mountain",5],["swamp",1],["island",1],["badlands",2],["volcanic_island",2],["blood_crypt",2],["steam_vents",2],["watery_grave",1],["forgotten_cave",1],
-    ["the_stoker",3],["tainted_phoenix",2],["experimental_overload",2],["lightning_bolt",3],["shock",2],["pyroclasm",1],["blaze",2],["hymn_to_tourach",2],["doom_blade",2],["essence_scatter",2],["counterspell",1],["dark_ritual",1]]),
-  sower: D([["forest",5],["plains",1],["island",1],["tropical_island",2],["savannah",2],["temple_garden",2],["breeding_pool",2],["tundra",1],["hallowed_fountain",1],
-    ["the_sower",3],["frondland_felidar",2],["temporal_spring",2],["llanowar_elves",3],["rampant_growth",2],["elvish_visionary",2],["gaean_wurm",2],["pelakka_wurm",1],["serra_angel",1],["faerie_formation",1],["essence_scatter",2],["swords_to_plowshares",2]]),
-};
+/** The boss-doc v1 lord decklists — the batch's fuzz decks here; canonical home is
+ * packages/sim/src/lord-decks.ts (S22b's stronghold content references them by key). */
+const LORD_DECKS: Record<string, { cardId: string; count: number }[]> = Object.fromEntries(
+  Object.entries(LORDS).map(([k, v]) => [k, v.decklist]),
+);
 
 describe("S22 batch fuzz — the lord decks under random play (fuzz-before-fixtures for Part 2)", () => {
   const games = process.env.FUZZ_FULL ? 60 : 12; // per pairing; five pairings cover all five decks

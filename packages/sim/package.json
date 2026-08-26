@@ -19,6 +19,10 @@
     "./guardian-decks": {
       "types": "./src/guardian-decks.ts",
       "default": "./src/guardian-decks.ts"
+    },
+    "./lord-decks": {
+      "types": "./src/lord-decks.ts",
+      "default": "./src/lord-decks.ts"
     }
   },
   "dependencies": {

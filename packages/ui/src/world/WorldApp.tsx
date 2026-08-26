@@ -320,13 +320,15 @@ function DungeonTelegraph({ c }: { c: WorldController }) {
   if (c.screen.kind !== "dungeonTelegraph") return null;
   const { info } = c.screen;
   const mox = info.kind === "mox" ? c.moxDef(info.dungeonId) : undefined;
+  const sh = info.kind === "stronghold" ? c.strongholdDef(info.dungeonId) : undefined;
   const resident = info.residentCatalogId ? c.catalog.opponents.find((o) => o.id === info.residentCatalogId) : undefined;
   const tiers = c.knobs.dungeonEmpowermentTiers;
   const status = c.world?.dungeons[info.dungeonId];
   // S20 playtest r3 (Chris): the telegraph shows the face at the deep end — the guardian's
-  // portrait (dungeons.json) or the lair resident's.
-  const portrait = mox ? mox.guardian.portrait : resident ? (resident.portraitChip ?? resident.portrait) : null;
-  const holderName = mox ? mox.guardian.name : resident?.name;
+  // portrait (dungeons.json), the lord's (S22b), or the lair resident's.
+  const portrait = sh ? sh.lord.portrait : mox ? mox.guardian.portrait : resident ? (resident.portraitChip ?? resident.portrait) : null;
+  const holderName = sh ? sh.lord.name : mox ? mox.guardian.name : resident?.name;
+  const lordRow = sh ? c.lordStatusRows().find((r) => r.strongholdId === sh.id) : undefined;
   return (
     <div className="gallery-modal">
       <div className="gallery-modal-box play-dialog dungeon-telegraph">
@@ -334,14 +336,16 @@ function DungeonTelegraph({ c }: { c: WorldController }) {
           {portrait && <img className="parley-portrait" src={`/portraits/${portrait}.png`} alt="" style={{ width: 72, height: 72, flexShrink: 0 }} title={holderName} />}
           <div>
             <h2 style={{ margin: 0, fontFamily: "var(--serif)" }}>{info.name}</h2>
-            <p className="parley-sub" style={{ marginBottom: 0 }}>{info.kind === "mox" ? `${holderName} waits at the deep end. One-time: cleared, it is ground forever.` : `${resident?.name ?? "Something"} holds these halls.`}{status && status.resets > 0 ? ` · reset ${status.resets}×` : ""}</p>
+            <p className="parley-sub" style={{ marginBottom: 0 }}>{sh ? `${holderName} holds this seat. One-time: broken, it is broken forever.` : info.kind === "mox" ? `${holderName} waits at the deep end. One-time: cleared, it is ground forever.` : `${resident?.name ?? "Something"} holds these halls.`}{status && status.resets > 0 ? ` · reset ${status.resets}×` : ""}</p>
           </div>
         </div>
         {mox && <p className="dungeon-law"><b>{mox.law.name}:</b> {mox.law.text}</p>}
+        {sh && <p className="dungeon-law"><b>{sh.law.name}:</b> {sh.law.text} <i>(the law stands in every fight inside — tear it down and it returns for the next; it is a permanent, and permanents can be answered)</i></p>}
+        {lordRow && <p style={{ fontSize: 12.5 }}><b>{lordRow.lordName}</b> fights at <b>{lordRow.life}</b> life today ({lordRow.base} base{lordRow.growth > 0 ? ` +${lordRow.growth} grown with the years` : ""}{lordRow.reduction > 0 ? ` −${lordRow.reduction} bled by your hunting` : ""}; never below {c.knobs.lordLifeFloor}) — plus whatever your steps inside feed him. His signature always looms: it starts in his hand.</p>}
         <ul className="dungeon-stakes">
-          <li>The world's clock <b>freezes</b> at this threshold; your steps inside feed the {info.kind === "mox" ? "guardian" : "resident"} — it grows at {tiers.map((t) => t.steps).join(" / ")} interior steps (the meter shows the next threshold).</li>
+          <li>The world's clock <b>freezes</b> at this threshold; your steps inside feed the {info.kind === "stronghold" ? "lord" : info.kind === "mox" ? "guardian" : "resident"} — it grows at {tiers.map((t) => t.steps).join(" / ")} interior steps (the meter shows the next threshold).</li>
           <li><b>Your life inside carries from fight to fight</b> (it starts at your world life, {c.world?.player.worldLife}); it is discarded when you leave, but an interior LOSS still costs a world life and your stake.</li>
-          <li><b>Everything found inside is held in escrow</b> until the {info.kind === "mox" ? "guardian" : "resident"} falls — walk out or fall, and the mountain keeps it. Minions bar the way (no parley inside).</li>
+          <li><b>Everything found inside is held in escrow</b> until the {info.kind === "stronghold" ? "lord" : info.kind === "mox" ? "guardian" : "resident"} falls — walk out or fall, and the mountain keeps it. Minions bar the way (no parley inside).</li>
         </ul>
         <p style={{ textAlign: "right", marginBottom: 0 }}>
           <button onClick={() => c.declineDungeon()}>Not yet</button>{" "}
@@ -357,8 +361,9 @@ function DungeonScreen({ c, pool }: { c: WorldController; pool: Map<string, Card
   if (c.screen.kind !== "dungeon" || !c.world) return null;
   const run = c.dungeonRun!;
   const mox = c.moxDef(run.dungeonId);
-  const name = mox?.name ?? c.catalog.opponents.find((o) => o.id === run.residentCatalogId)?.name ?? "The dark";
-  const color = mox?.color ?? c.catalog.opponents.find((o) => o.id === run.residentCatalogId)?.spoke ?? "G";
+  const sh = run.kind === "stronghold" ? c.strongholdDef(run.dungeonId) : undefined;
+  const name = sh?.name ?? mox?.name ?? c.catalog.opponents.find((o) => o.id === run.residentCatalogId)?.name ?? "The dark";
+  const color = sh?.color ?? mox?.color ?? c.catalog.opponents.find((o) => o.id === run.residentCatalogId)?.spoke ?? "G";
   const map = dungeonAsWorldMap(run, color, name);
   const meter = c.dungeonMeter()!;
   // Fog-honest (S20 playtest r2: the dark register exposed the leak — unexplored caches and
@@ -398,17 +403,18 @@ function DungeonScreen({ c, pool }: { c: WorldController; pool: Map<string, Card
       </div>
       <div className="rail world-rail">
         <div className="panel">
-          <h3>The {run.kind === "mox" ? "guardian" : "resident"} grows</h3>
+          <h3>The {run.kind === "stronghold" ? "lord" : run.kind === "mox" ? "guardian" : "resident"} grows</h3>
           <div style={{ fontSize: 12 }}>Interior steps: <b>{meter.steps}</b> · tiers reached: <b>{meter.reached}</b>{meter.nextAt !== null ? <> · next at <b>{meter.nextAt}</b></> : <> · fully grown</>}</div>
           <div className="empower-meter">{c.knobs.dungeonEmpowermentTiers.map((t, i) => (
             <span key={i} className={`empower-tier${meter.steps >= t.steps ? " hit" : ""}`} title={`${t.steps} steps: +${t.addLife} life${t.addBasic ? ", +1 land in play" : ""}${t.addToken ? ", +1 creature in play" : ""}${t.addCard ? ", +1 card" : ""}`}>{t.steps}</span>
           ))}</div>
           {mox && <p style={{ fontSize: 11.5, color: "var(--ink-soft)" }}><b>{mox.law.name}:</b> {mox.law.text}</p>}
+          {sh && <p style={{ fontSize: 11.5, color: "var(--ink-soft)" }}><b>{sh.law.name}:</b> {sh.law.text} <i>(in every fight inside; the dungeon teaches the law before the lord enforces it)</i></p>}
         </div>
         <div className="panel">
           <h3>Escrow (the mountain holds it)</h3>
           <div style={{ fontSize: 12 }}>{meter.escrowGold} gold{meter.escrowCards.length > 0 ? <> · {meter.escrowCards.map((id) => pool.get(id)?.name ?? id).join(", ")}</> : null}</div>
-          <div style={{ fontSize: 10.5, color: "var(--ink-soft)" }}>Paid out when the {run.kind === "mox" ? "guardian" : "resident"} falls; forfeit if you walk or fall.</div>
+          <div style={{ fontSize: 10.5, color: "var(--ink-soft)" }}>Paid out when the {run.kind === "stronghold" ? "lord" : run.kind === "mox" ? "guardian" : "resident"} falls; forfeit if you walk or fall.</div>
         </div>
         <div className="panel">
           <h3>Interior life</h3>
@@ -430,6 +436,41 @@ function DungeonVictory({ c, pool }: { c: WorldController; pool: Map<string, Car
         <p>The mountain pays its debts: <b>{paidGold} gold</b>{paidCards.length > 0 ? <> and {paidCards.map((id) => pool.get(id)?.name ?? id).join(", ")}</> : null}.</p>
         {notes?.map((n, i) => <p key={i} style={{ fontSize: 12.5, color: "var(--ink-soft)" }}>◆ {n}</p>)}
         <p><button className="primary" onClick={() => c.continueAfterDungeonVictory()}>Back to the light</button></p>
+      </div>
+    </div>
+  );
+}
+
+/** S22b: a LORD fell — the sole-drop + escrow are paid; the player takes any strongholdPrizePicks
+ * from the colour prize list (the R + T3 shelf touching the colour, his typed duals included;
+ * prizeOnly blocked), then the seal ceremony. */
+function StrongholdVictory({ c, pool, oracle }: { c: WorldController; pool: Map<string, CardDef>; oracle: Record<string, OracleEntry> }) {
+  if (c.screen.kind !== "strongholdVictory") return null;
+  const s = c.screen;
+  return (
+    <div className="gallery-modal">
+      <div className="gallery-modal-box play-dialog" style={{ maxWidth: 980 }}>
+        <h2 style={{ fontFamily: "var(--serif)", marginTop: 0 }}>{s.lordName} falls — {s.name} is broken</h2>
+        <p>
+          His card is yours — <b>{pool.get(s.lordCardId)?.name ?? s.lordCardId}</b> (his defeat is the only place it exists) — with the mountain's debts:{" "}
+          <b>{s.paidGold} gold</b>{s.paidCards.filter((id) => id !== s.lordCardId).length > 0 ? <> and {s.paidCards.filter((id) => id !== s.lordCardId).map((id) => pool.get(id)?.name ?? id).join(", ")}</> : null}. And the <b>seal</b>.
+        </p>
+        <p style={{ fontSize: 13 }}>Take <b>any {s.pickCount}</b> from his hoard ({s.picks.length}/{s.pickCount} chosen — taking fewer is your right):</p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, maxHeight: 380, overflowY: "auto" }}>
+          {s.prizeList.map((id) => {
+            const def = pool.get(id);
+            if (!def) return null;
+            const picked = s.picks.includes(id);
+            return (
+              <div key={id} className="card-slot" style={{ width: 150, cursor: "pointer", outline: picked ? "3px solid var(--brass)" : "none", borderRadius: 6 }} onClick={() => c.toggleStrongholdPick(id)} title={picked ? "click to put back" : "click to take"}>
+                <CardFrame def={def} oracle={oracle[id]} showPrinted />
+              </div>
+            );
+          })}
+        </div>
+        <p style={{ textAlign: "right", marginBottom: 0 }}>
+          <button className="primary" onClick={() => c.confirmStrongholdPicks()}>{s.picks.length > 0 ? `Take ${s.picks.length} and the seal` : "Take only the seal"}</button>
+        </p>
       </div>
     </div>
   );
@@ -830,6 +871,7 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
   if (c.screen.kind === "siegeTelegraph") return <SiegeTelegraph c={c} />;
   if (c.screen.kind === "dungeon") return <DungeonScreen c={c} pool={pool} />;
   if (c.screen.kind === "dungeonVictory") return <DungeonVictory c={c} pool={pool} />;
+  if (c.screen.kind === "strongholdVictory") return <StrongholdVictory c={c} pool={pool} oracle={oracle} />;
   if (c.screen.kind === "gameOver") {
     const fatal = c.screen.fatal;
     return <GameOverScreen c={c} onWatch={fatal ? () => onWatchReplay(fatal.saved as SavedGame) : null} onNew={() => { c.screen = { kind: "start" }; force((n) => n + 1); }} />;
@@ -946,6 +988,23 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
             ))}
           </div>
         )}
+        {c.lordStatusRows().length > 0 && (
+          <div className="panel">
+            <h3>The five lords</h3>
+            {c.lordStatusRows().map((r) => (
+              <div key={r.color} style={{ fontSize: 12, marginTop: 2 }} title={r.voice}>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <span>{r.lordName}</span>
+                  <span style={{ color: r.sealed ? "var(--boost)" : "var(--danger)", fontWeight: 600 }}>{r.sealed ? "fallen" : `${r.life} life`}</span>
+                </div>
+                {!r.sealed && (r.growth > 0 || r.reduction > 0) && (
+                  <div style={{ fontSize: 10.5, color: "var(--ink-soft)" }}>{r.base} base{r.growth > 0 ? ` +${r.growth} years` : ""}{r.reduction > 0 ? ` −${r.reduction} hunted` : ""}</div>
+                )}
+              </div>
+            ))}
+            <div style={{ fontSize: 10.5, color: "var(--ink-soft)", marginTop: 4 }}>Seals: {c.lordStatusRows().filter((r) => r.sealed).length}/5 · hunting a spoke bleeds its lord; the years fatten all five.</div>
+          </div>
+        )}
         <div className="panel">
           <h3>Lairs &amp; strongholds</h3>
           {w.map.strongholds.map((f, i) => {
@@ -954,7 +1013,9 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
             // S21 r2 fix (Chris: the Emerald Root read "waiting" after its clear): a mox site's
             // cleared state lives in world.dungeons, not on a resident it never had.
             const moxCleared = f.kind === "dungeon" && w.dungeons[`mox_${w.map.regions[f.region]?.color}`.toLowerCase()]?.cleared;
-            const status = f.kind === "stronghold" ? "castle · sealed" : moxCleared || resident?.gone ? "cleared" : `${w.map.regions[f.region]?.name ?? ""} · waiting`;
+            // S22b: the seats are OPEN now — a stronghold reads by its lord's fate, not "sealed shut".
+            const shRow = f.kind === "stronghold" ? c.lordStatusRows().find((r) => r.color === w.map.regions[f.region]?.color) : undefined;
+            const status = f.kind === "stronghold" ? (shRow?.sealed ? "broken · seal held" : `${shRow?.lordName ?? "a lord"} · ${shRow?.life ?? "?"} life`) : moxCleared || resident?.gone ? "cleared" : `${w.map.regions[f.region]?.name ?? ""} · waiting`;
             return (
               <div key={i} style={{ fontSize: 12, display: "flex", justifyContent: "space-between", cursor: screen.kind === "map" ? "pointer" : "default" }} title="click to preview the path there" onClick={() => c.clickCell(f.at)}>
                 <span>{f.name ?? f.kind}</span><span style={{ color: f.kind === "stronghold" ? "var(--ink-soft)" : moxCleared || resident?.gone ? "var(--boost)" : "var(--danger)" }}>{status}</span>

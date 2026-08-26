@@ -2,7 +2,7 @@ import { isManaAbility, parseManaCost, type ActivatedAbilityDef, type CardDef, t
 import { evaluateValueRef } from "./effect-context.js";
 import type { Action } from "./actions.js";
 import { canBlock, eligibleAttackers, eligibleBlockers, menaceViolations } from "./combat.js";
-import { characteristics } from "./characteristics.js";
+import { characteristics, maxLandDrops } from "./characteristics.js";
 import { sacrificeCandidates, returnToHandCandidates, tapCreatureCandidates } from "./sacrifice.js";
 import { abilitiesOf } from "./granted.js";
 import type { EngineCtx } from "./ctx.js";
@@ -49,9 +49,11 @@ export function legalActions(ctx: EngineCtx, player: PlayerId): Action[] {
   const atSorcerySpeed = sorcerySpeed(ctx, player);
 
   for (const { objectId, def } of handByCard(ctx, player)) {
+    if (def.uncastable) continue; // S22b: a law bounced to hand is stuck there (the Boomerang quirk)
     const isLand = def.types.includes("Land");
     if (isLand) {
-      if (atSorcerySpeed && p.landsPlayedThisTurn < 1) actions.push({ type: "playLand", objectId });
+      // S22b (the Risen Tide): the drop count reads the extraLandDrops statics, not a bare 1.
+      if (atSorcerySpeed && p.landsPlayedThisTurn < maxLandDrops(ctx, player)) actions.push({ type: "playLand", objectId });
       continue;
     }
     const instantSpeed = def.types.includes("Instant") || (def.keywords ?? []).includes("flash");

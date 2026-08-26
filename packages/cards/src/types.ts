@@ -202,7 +202,14 @@ export type EffectBase =
    * Stoker's cycling — enumeration-time grant on A5's machinery, no ADR-003 layer contact);
    * `zone: "battlefield"` grants to permanents the scope selects (Frondland Felidar: withKeyword
    * vigilance + creaturesYouControl; per the printed ruling he grants to himself too). */
-  | { type: "grantAbility"; zone: "hand" | "battlefield"; ability: ActivatedAbilityDef; scope?: Scope; withKeyword?: Keyword; cardType?: CardType };
+  | { type: "grantAbility"; zone: "hand" | "battlefield"; ability: ActivatedAbilityDef; scope?: Scope; withKeyword?: Keyword; cardType?: CardType }
+  /** A10 law-word (S22b): STATIC-ONLY — the controller may play `count` additional lands each turn.
+   * A rules counter the land-play legality check reads (the Risen Tide). */
+  | { type: "extraLandDrops"; count: number }
+  /** A10 law-word (S22b): STATIC-ONLY — matching permanents entering under a `who`-selected player's
+   * control (relative to the static's controller) enter tapped, whatever put them there (the
+   * sanctioned enters-tapped special case, extended; the Intake). */
+  | { type: "imposeEntersTapped"; who: "you" | "opponent" | "eachPlayer"; cardType?: CardType };
 // Reserved, not implemented (data-model §3): copy, setPT, preventDamage, changeType.
 
 export type EffectType = EffectBase["type"];
@@ -234,6 +241,8 @@ export const EFFECT_TYPES: readonly EffectType[] = [
   "addMana",
   "exileThenReturn",
   "grantAbility",
+  "extraLandDrops",
+  "imposeEntersTapped",
 ];
 
 export type TriggerEvent =
@@ -415,6 +424,10 @@ export interface CardDef {
    * the parallel of real cards' Scryfall `normal`. Filename under the printed-art asset root; the
    * ADR-066 our-frame fallback on printed-default surfaces is retired for cards that carry this. */
   printedAsset?: string;
+  /** S22b (the stronghold laws): this card can never be cast — the enumerator offers no castSpell/
+   * playLand for it. The blessed Boomerang quirk rides on it: a zero-cost law bounced to hand is
+   * stuck there for the battle (laws are real objects, not tokens — they must SURVIVE the bounce). */
+  uncastable?: true;
   isTokenDef?: boolean;
   /** ADR-068: never shop stock — boss/lair treasure only (Black Lotus). Pool-registry column mirrored here so the world can filter. */
   prizeOnly?: boolean;

@@ -1,130 +1,217 @@
 {
-  "catalogVersion": "v1",
-  "mox": [
-    {
-      "id": "mox_w",
-      "name": "The Pearl Reliquary",
-      "color": "W",
-      "guardian": {
-        "key": "reya",
-        "name": "Reya Dawnbringer",
-        "life": 16,
-        "portrait": "guardian-reya"
-      },
-      "law": {
-        "name": "The Reliquary's Light",
-        "text": "Both players begin with a Plains in play.",
-        "both": [
-          {
-            "type": "permanentOnBattlefield",
-            "cardId": "plains"
-          }
-        ]
-      },
-      "prize": {
-        "mox": "mox_pearl",
-        "guardianCard": "reya_dawnbringer"
-      }
-    },
-    {
-      "id": "mox_u",
-      "name": "The Sapphire Deep",
-      "color": "U",
-      "guardian": {
-        "key": "arcanis",
-        "name": "Arcanis the Omnipotent",
-        "life": 14,
-        "portrait": "guardian-arcanis"
-      },
-      "law": {
-        "name": "The Deep's Bounty",
-        "text": "Both players draw a bonus card.",
-        "both": [
-          {
-            "type": "extraCards",
-            "count": 1
-          }
-        ]
-      },
-      "prize": {
-        "mox": "mox_sapphire",
-        "guardianCard": "arcanis_the_omnipotent"
-      }
-    },
-    {
-      "id": "mox_b",
-      "name": "The Jet Barrow",
-      "color": "B",
-      "guardian": {
-        "key": "drana",
-        "name": "Drana, Kalastria Bloodchief",
-        "life": 15,
-        "portrait": "guardian-drana"
-      },
-      "law": {
-        "name": "The Barrow's Hunger",
-        "text": "Both players begin with a 2/2 Zombie in play.",
-        "both": [
-          {
-            "type": "permanentOnBattlefield",
-            "cardId": "zombie_2_2"
-          }
-        ]
-      },
-      "prize": {
-        "mox": "mox_jet",
-        "guardianCard": "drana_kalastria_bloodchief"
-      }
-    },
-    {
-      "id": "mox_r",
-      "name": "The Ruby Caldera",
-      "color": "R",
-      "guardian": {
-        "key": "drakuseth",
-        "name": "Drakuseth, Maw of Flames",
-        "life": 16,
-        "portrait": "guardian-drakuseth"
-      },
-      "law": {
-        "name": "The Caldera's Heat",
-        "text": "Both players begin with a Mountain in play.",
-        "both": [
-          {
-            "type": "permanentOnBattlefield",
-            "cardId": "mountain"
-          }
-        ]
-      },
-      "prize": {
-        "mox": "mox_ruby",
-        "guardianCard": "drakuseth_maw_of_flames"
-      }
-    },
-    {
-      "id": "mox_g",
-      "name": "The Emerald Root",
-      "color": "G",
-      "guardian": {
-        "key": "titania",
-        "name": "Titania, Protector of Argoth",
-        "life": 15,
-        "portrait": "guardian-titania"
-      },
-      "law": {
-        "name": "The Root's Gift",
-        "text": "Both players begin with a Llanowar Elves in play.",
-        "both": [
-          {
-            "type": "permanentOnBattlefield",
-            "cardId": "llanowar_elves"
-          }
-        ]
-      },
-      "prize": {
-        "mox": "mox_emerald",
-        "guardianCard": "titania_protector_of_argoth"
-      }
-    }
-  ]
+ "catalogVersion": "v1",
+ "mox": [
+  {
+   "id": "mox_w",
+   "name": "The Pearl Reliquary",
+   "color": "W",
+   "guardian": {
+    "key": "reya",
+    "name": "Reya Dawnbringer",
+    "life": 16,
+    "portrait": "guardian-reya"
+   },
+   "law": {
+    "name": "The Reliquary's Light",
+    "text": "Both players begin with a Plains in play.",
+    "both": [
+     {
+      "type": "permanentOnBattlefield",
+      "cardId": "plains"
+     }
+    ]
+   },
+   "prize": {
+    "mox": "mox_pearl",
+    "guardianCard": "reya_dawnbringer"
+   }
+  },
+  {
+   "id": "mox_u",
+   "name": "The Sapphire Deep",
+   "color": "U",
+   "guardian": {
+    "key": "arcanis",
+    "name": "Arcanis the Omnipotent",
+    "life": 14,
+    "portrait": "guardian-arcanis"
+   },
+   "law": {
+    "name": "The Deep's Bounty",
+    "text": "Both players draw a bonus card.",
+    "both": [
+     {
+      "type": "extraCards",
+      "count": 1
+     }
+    ]
+   },
+   "prize": {
+    "mox": "mox_sapphire",
+    "guardianCard": "arcanis_the_omnipotent"
+   }
+  },
+  {
+   "id": "mox_b",
+   "name": "The Jet Barrow",
+   "color": "B",
+   "guardian": {
+    "key": "drana",
+    "name": "Drana, Kalastria Bloodchief",
+    "life": 15,
+    "portrait": "guardian-drana"
+   },
+   "law": {
+    "name": "The Barrow's Hunger",
+    "text": "Both players begin with a 2/2 Zombie in play.",
+    "both": [
+     {
+      "type": "permanentOnBattlefield",
+      "cardId": "zombie_2_2"
+     }
+    ]
+   },
+   "prize": {
+    "mox": "mox_jet",
+    "guardianCard": "drana_kalastria_bloodchief"
+   }
+  },
+  {
+   "id": "mox_r",
+   "name": "The Ruby Caldera",
+   "color": "R",
+   "guardian": {
+    "key": "drakuseth",
+    "name": "Drakuseth, Maw of Flames",
+    "life": 16,
+    "portrait": "guardian-drakuseth"
+   },
+   "law": {
+    "name": "The Caldera's Heat",
+    "text": "Both players begin with a Mountain in play.",
+    "both": [
+     {
+      "type": "permanentOnBattlefield",
+      "cardId": "mountain"
+     }
+    ]
+   },
+   "prize": {
+    "mox": "mox_ruby",
+    "guardianCard": "drakuseth_maw_of_flames"
+   }
+  },
+  {
+   "id": "mox_g",
+   "name": "The Emerald Root",
+   "color": "G",
+   "guardian": {
+    "key": "titania",
+    "name": "Titania, Protector of Argoth",
+    "life": 15,
+    "portrait": "guardian-titania"
+   },
+   "law": {
+    "name": "The Root's Gift",
+    "text": "Both players begin with a Llanowar Elves in play.",
+    "both": [
+     {
+      "type": "permanentOnBattlefield",
+      "cardId": "llanowar_elves"
+     }
+    ]
+   },
+   "prize": {
+    "mox": "mox_emerald",
+    "guardianCard": "titania_protector_of_argoth"
+   }
+  }
+ ],
+ "strongholds": [
+  {
+   "id": "argent_bastion",
+   "name": "The Argent Bastion",
+   "color": "W",
+   "lord": {
+    "key": "warden",
+    "name": "The Warden",
+    "cardId": "the_warden",
+    "baseLife": 30,
+    "portrait": "lord-warden"
+   },
+   "law": {
+    "cardId": "law_intake",
+    "name": "The Intake",
+    "text": "Creatures the intruder controls enter the battlefield tapped."
+   }
+  },
+  {
+   "id": "spiral_spire",
+   "name": "The Spiral Spire",
+   "color": "U",
+   "lord": {
+    "key": "unwinder",
+    "name": "The Unwinder",
+    "cardId": "the_unwinder",
+    "baseLife": 30,
+    "portrait": "lord-unwinder"
+   },
+   "law": {
+    "cardId": "law_risen_tide",
+    "name": "The Risen Tide",
+    "text": "The Unwinder's controller may play an additional land on each of their turns."
+   }
+  },
+  {
+   "id": "charnel_court",
+   "name": "The Charnel Court",
+   "color": "B",
+   "lord": {
+    "key": "usher",
+    "name": "The Usher",
+    "cardId": "the_usher",
+    "baseLife": 30,
+    "portrait": "lord-usher"
+   },
+   "law": {
+    "cardId": "law_tithe",
+    "name": "The Tithe",
+    "text": "Whenever a creature dies, the intruder loses 1 life."
+   }
+  },
+  {
+   "id": "furnace_gate",
+   "name": "The Furnace Gate",
+   "color": "R",
+   "lord": {
+    "key": "stoker",
+    "name": "The Stoker",
+    "cardId": "the_stoker",
+    "baseLife": 30,
+    "portrait": "lord-stoker"
+   },
+   "law": {
+    "cardId": "law_toll",
+    "name": "The Toll",
+    "text": "Whenever the intruder casts a spell, the Gate deals 1 damage to them."
+   }
+  },
+  {
+   "id": "verdant_throne",
+   "name": "The Verdant Throne",
+   "color": "G",
+   "lord": {
+    "key": "sower",
+    "name": "The Sower",
+    "cardId": "the_sower",
+    "baseLife": 30,
+    "portrait": "lord-sower"
+   },
+   "law": {
+    "cardId": "law_season",
+    "name": "The Season",
+    "text": "At the beginning of the Sower's upkeep, put a +1/+1 counter on each creature he controls."
+   }
+  }
+ ]
 }

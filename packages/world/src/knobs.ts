@@ -113,6 +113,47 @@ export const KNOBS = {
     unit: "relative weights per cache, by dungeon class",
     description: "S21 playtest r2–r3 (Chris): cache kinds — gold (escrowed), card (escrowed; mox rolls T3 or R at even odds, mundane lairs T2 or T3 at even odds — the boss's prize room stays the R channel), life (+2–3 interior life, IMMEDIATE), boon (a permanent on YOUR side of the NEXT interior battle only — the Shandalar hold-or-spend tension; the dungeon colour's basic land or its 1/1-class token creature). Chris tunes from play.",
   }),
+  // ---- S22b (the strongholds — stronghold-bosses.md systems, brief Part 4–5) ----
+  strongholdGridWidth: knob<number>({
+    default: 30,
+    unit: "cells",
+    description: "S22b: the stronghold interior grid width — the dungeon system at maximum scale (the brief proposes 30×22; escalate if it reads wrong in play).",
+  }),
+  strongholdGridHeight: knob<number>({
+    default: 22,
+    unit: "cells",
+    description: "S22b: the stronghold interior grid height (see strongholdGridWidth).",
+  }),
+  lordGrowthSteps: knob<number>({
+    default: 250,
+    unit: "world steps per growth increment",
+    description: "S22b (the pace war): all five lords strengthen on the GLOBAL world step count — +lordGrowthLife every this-many steps, capped at lordGrowthCap. Chris's calibration target: a dawdling player faces lords at 40–50 life (base 30 + cap 20 at ~1000 steps).",
+  }),
+  lordGrowthLife: knob<number>({
+    default: 5,
+    unit: "life per growth increment",
+    description: "S22b: life each lordGrowthSteps increment adds to every lord (see lordGrowthSteps).",
+  }),
+  lordGrowthCap: knob<number>({
+    default: 20,
+    unit: "life",
+    description: "S22b: the growth term's ceiling — lords top out at base + cap before hunting reductions.",
+  }),
+  lordLifeFloor: knob<number>({
+    default: 15,
+    unit: "life",
+    description: "S22b (Chris-ratified): spoke-hunt reductions never drop a lord below this — the fight is never trivial. Reduction = floor(spokeMinionPoints / spokePointsPerLife), points uncapped.",
+  }),
+  spokePointsPerLife: knob<number>({
+    default: 3,
+    unit: "spoke minion points per −1 lord life",
+    description: "S22b: a defeated spoke-bound opponent credits its TIER in points to its colour's lord (inside and outside the stronghold); every N points shave one life. The asymmetry is the design: grinding one spoke softens ONE lord while the clock fattens all five.",
+  }),
+  strongholdPrizePicks: knob<number>({
+    default: 5,
+    unit: "cards",
+    description: "S22b treasures: picks from the colour prize list (the colour's R and T3 shelf including gold cards and the lord's duals; prizeOnly blocked) when a lord falls — beside the guaranteed sole-drop of his own card and the seal.",
+  }),
   lairResidentLifeBonus: knob<number>({
     default: 2,
     unit: "world life added to a lair resident's duel life",

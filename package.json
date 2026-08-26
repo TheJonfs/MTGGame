@@ -24,7 +24,8 @@
     "fuzz:expansion": "tsx packages/sim/src/fuzz-expansion-cli.ts",
     "card-manifest": "tsx scripts/card-manifest.ts",
     "fuzz:duals": "tsx packages/sim/src/fuzz-duals-cli.ts",
-    "guardian-sim": "tsx packages/sim/src/guardian-sim-cli.ts"
+    "guardian-sim": "tsx packages/sim/src/guardian-sim-cli.ts",
+    "lord-sim": "tsx packages/sim/src/lord-sim-cli.ts"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

@@ -46,7 +46,7 @@ import {
   type WorldState,
 } from "@shandalar/world";
 import { MatchController } from "../play/match-controller.js";
-import { abandonQuest, acceptQuest, cardMatches, creditRenown, pendingRetrievalChoice, questsOnArrival, resolveRetrieval, retrievalOnDungeonClear, rumorState, rumorsOnArrival, tavernRumors, spares, townOffers, type ActiveQuest, type QuestOffer } from "@shandalar/world";
+import { abandonQuest, acceptQuest, addToCollection, cardMatches, creditRenown, pendingRetrievalChoice, questsOnArrival, resolveRetrieval, retrievalOnDungeonClear, rumorState, rumorsOnArrival, tavernRumors, spares, townOffers, type ActiveQuest, type QuestOffer } from "@shandalar/world";
 import {
   applyInteriorDuel, clearDungeon, colorPrizeRoll, dungeonAdvance, dungeonAsWorldMap, dungeonDuelSpec, dungeonPath,
   generateDungeonRun, lairPrizeRoll, reachedTiers, resetDungeon, type DungeonRun, type MoxDungeonDef,
@@ -56,6 +56,12 @@ import {
   type SiegeEntry,
 } from "@shandalar/world";
 import { GUARDIAN_DECKS } from "@shandalar/sim/guardian-decks";
+import { LORD_DECKS } from "@shandalar/sim/lord-decks";
+import {
+  entranceModifier, lawModifier, lordStartingLife, lordStatus, sealsHeld, strongholdPrizeList, strongholdState,
+  type LordStatusRow, type StrongholdContentDef,
+} from "@shandalar/world";
+import type { Modifier } from "@shandalar/engine";
 import { WorldRng as DungeonRng } from "@shandalar/world";
 
 /**
@@ -73,14 +79,17 @@ export type WorldScreen =
   | { kind: "map"; preview: Point[] | null; previewTarget: Point | null; walking: boolean; notice: string | null }
   | { kind: "encounter"; encounter: Encounter; tmpl: OpponentTemplate; knobs: KnobValues; notice: string | null }
   | { kind: "duel"; duel: PreparedDuel; match: MatchController }
-  /** S20: the dungeon threshold — stakes stated before the choice (dungeon-design §4). */
-  | { kind: "dungeonTelegraph"; info: { dungeonId: string; kind: "mox" | "lair"; name: string; at: Point; residentCatalogId?: string }; notice: string | null }
+  /** S20: the dungeon threshold — stakes stated before the choice (dungeon-design §4). S22b: strongholds too. */
+  | { kind: "dungeonTelegraph"; info: { dungeonId: string; kind: "mox" | "lair" | "stronghold"; name: string; at: Point; residentCatalogId?: string }; notice: string | null }
   /** S20: inside a dungeon (world.activeDungeon is the run). */
   | { kind: "dungeon"; notice: string | null; walking: boolean }
   /** S20: an interior duel (minion or guardian) — mounts PlayMatch like a world duel. */
   | { kind: "dungeonDuel"; enemyName: string; match: MatchController; against: { minionId?: string; guardian?: boolean } }
   /** S20: the guardian fell — the escrow + prize payout ceremony. */
   | { kind: "dungeonVictory"; name: string; paidGold: number; paidCards: string[]; notes?: string[] }
+  /** S22b: a LORD fell — the sole-drop + escrow paid; the player picks strongholdPrizePicks cards
+   * from the colour prize list, then the seal ceremony. */
+  | { kind: "strongholdVictory"; strongholdId: string; name: string; lordName: string; lordCardId: string; paidGold: number; paidCards: string[]; prizeList: string[]; picks: string[]; pickCount: number; sealCount: number }
   /** S21 sieges: the engagement telegraph — the party, the life-carry law, the stakes (resume-aware). */
   | { kind: "siegeTelegraph"; townIndex: number; notice: string | null }
   | { kind: "siegeDuel"; enemyName: string; match: MatchController; townIndex: number }
@@ -689,13 +698,24 @@ export class WorldController {
     return this.catalog.dungeons.find((d) => d.id === dungeonId);
   }
 
+  /** S22b: the stronghold content entry for a dungeonId (argent_bastion, spiral_spire, …). */
+  strongholdDef(dungeonId: string): StrongholdContentDef | undefined {
+    return (this.catalog.strongholdContent ?? []).find((s) => s.id === dungeonId);
+  }
+
+  /** S22b (§5 visible schedules): each lord's current strength for the rail telegraph. */
+  lordStatusRows(): LordStatusRow[] {
+    if (!this.world) return [];
+    return lordStatus(this.world, this.catalog, this.knobs);
+  }
+
   /** Enter from the telegraph: resume the saved run if it matches, else generate. Autosave at entry. */
   enterDungeon(): void {
     if (!this.world || this.screen.kind !== "dungeonTelegraph") return;
     const { info } = this.screen;
     let run = this.world.activeDungeon;
     if (!run || run.dungeonId !== info.dungeonId) {
-      const color = (this.moxDef(info.dungeonId)?.color ?? this.catalog.opponents.find((o) => o.id === info.residentCatalogId)?.spoke ?? "G") as "W" | "U" | "B" | "R" | "G";
+      const color = (this.strongholdDef(info.dungeonId)?.color ?? this.moxDef(info.dungeonId)?.color ?? this.catalog.opponents.find((o) => o.id === info.residentCatalogId)?.spoke ?? "G") as "W" | "U" | "B" | "R" | "G";
       run = generateDungeonRun(this.world, this.catalog, this.knobs, this.pool, {
         dungeonId: info.dungeonId,
         kind: info.kind,
@@ -781,11 +801,20 @@ export class WorldController {
     const run = this.world.activeDungeon!;
     const rng = new DungeonRng(this.world.rng);
     const mox = this.moxDef(run.dungeonId);
+    const sh = run.kind === "stronghold" ? this.strongholdDef(run.dungeonId) : undefined;
     const law = mox?.law.both ?? [];
+    // S22b: the PARTISAN law rides every interior duel on the defender's side (per-battle
+    // re-injection — a felled law returns next fight for free); the lord adds his entrance.
+    const extraModifiers: Modifier[] = sh ? [lawModifier(sh)] : [];
     let enemy: Parameters<typeof dungeonDuelSpec>[4];
     let portrait: string | undefined;
     if (against.guardian) {
-      if (run.kind === "mox" && mox) {
+      if (sh) {
+        const g = LORD_DECKS[sh.lord.key]!;
+        enemy = { kind: "guardian", name: sh.lord.name, decklist: g.decklist, archetype: g.archetype, life: lordStartingLife(this.world, this.knobs, sh), color: sh.color };
+        portrait = sh.lord.portrait;
+        extraModifiers.push(entranceModifier(sh)); // the signature always looms (Chris-ratified)
+      } else if (run.kind === "mox" && mox) {
         const g = GUARDIAN_DECKS[mox.guardian.key]!;
         enemy = { kind: "guardian", name: mox.guardian.name, decklist: g.decklist, archetype: g.archetype, life: mox.guardian.life, color: mox.color };
         portrait = mox.guardian.portrait;
@@ -801,7 +830,7 @@ export class WorldController {
       enemy = { kind: "minion", tmpl };
       portrait = tmpl.portraitChip ?? tmpl.portrait;
     }
-    const { spec, enemyName } = dungeonDuelSpec(this.world, this.catalog, this.knobs, run, enemy, law, rng);
+    const { spec, enemyName } = dungeonDuelSpec(this.world, this.catalog, this.knobs, run, enemy, law, rng, extraModifiers);
     this.world.rng = rng.state();
     this.autosave();
     const match = new MatchController(this.pool, {
@@ -823,7 +852,7 @@ export class WorldController {
   private finishInteriorDuel(against: { minionId?: string; guardian?: boolean }, result: MatchResult): void {
     if (!this.world) return;
     const run = this.world.activeDungeon!;
-    const out = applyInteriorDuel(this.world, this.knobs, run, result, against.minionId);
+    const out = applyInteriorDuel(this.world, this.knobs, run, result, against.minionId, this.catalog);
     if (out.type === "loss") {
       // §4: forfeit + reset + the normal loss consequences (already applied) + ejection.
       resetDungeon(this.world, run);
@@ -837,6 +866,30 @@ export class WorldController {
       return;
     }
     if (against.guardian) {
+      // S22b: a LORD fell — sole-drop + escrow now; the five picks come as a choice screen;
+      // the seal is the story flag toward the gauntlet unlock (counted, nothing more).
+      if (run.kind === "stronghold") {
+        const sh = this.strongholdDef(run.dungeonId)!;
+        const paid = clearDungeon(this.world, run, { gold: 0, cardIds: [sh.lord.cardId] });
+        strongholdState(this.world, sh.color).seal = true;
+        creditRenown(this.world.player, sh.color, 3); // a lord's fall echoes like a tier-3 kill (flagged for ratification)
+        this.autosave();
+        this.screen = {
+          kind: "strongholdVictory",
+          strongholdId: sh.id,
+          name: sh.name,
+          lordName: sh.lord.name,
+          lordCardId: sh.lord.cardId,
+          paidGold: paid.paidGold,
+          paidCards: paid.paidCards,
+          prizeList: strongholdPrizeList(this.pool, sh.color).map((d) => d.id),
+          picks: [],
+          pickCount: this.knobs.strongholdPrizePicks,
+          sealCount: sealsHeld(this.world),
+        };
+        this.emit();
+        return;
+      }
       // Victory: payout = escrow + the prize.
       let prize: { gold: number; cardIds: string[] };
       let name: string;
@@ -879,6 +932,30 @@ export class WorldController {
   continueAfterDungeonVictory(): void {
     if (this.screen.kind !== "dungeonVictory") return;
     this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: "The mountain pays its debts." };
+    this.emit();
+  }
+
+  /** S22b: toggle one prize-list card in/out of the picks (capped at pickCount; list members only). */
+  toggleStrongholdPick(cardId: string): void {
+    if (this.screen.kind !== "strongholdVictory") return;
+    const s = this.screen;
+    if (!s.prizeList.includes(cardId)) return; // only the hoard is on offer
+    const picks = s.picks.includes(cardId) ? s.picks.filter((c) => c !== cardId) : s.picks.length < s.pickCount ? [...s.picks, cardId] : s.picks;
+    this.screen = { ...s, picks };
+    this.emit();
+  }
+
+  /** S22b: bank the picks (fewer than pickCount is allowed — walking away from value is a choice),
+   * then the seal ceremony note. Autosaved: the picks are a consequence. */
+  confirmStrongholdPicks(): void {
+    if (!this.world || this.screen.kind !== "strongholdVictory") return;
+    const s = this.screen;
+    addToCollection(this.world, s.picks, "reward");
+    this.autosave();
+    const gauntlet = s.sealCount >= 5
+      ? " Five seals. Something at the heart of the plane has noticed."
+      : ` Seals held: ${s.sealCount} of 5.`;
+    this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: `${s.name} is broken; its seal is yours.${gauntlet}` };
     this.emit();
   }
 

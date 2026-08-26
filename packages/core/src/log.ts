@@ -5,7 +5,7 @@
  * Core does not know the engine's Action type, so the entry type is generic.
  */
 
-export type RngPurpose = "shuffle" | "discard" | "coin" | "pick";
+export type RngPurpose = "shuffle" | "discard" | "coin" | "pick" | "entrance"; // S22b: the lord's entrance swap
 
 export type RngLogValue =
   | { kind: "int"; value: number }

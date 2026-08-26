@@ -3,6 +3,7 @@ import { enemyDeck, type Catalog, type OpponentTemplate } from "./catalog.js";
 import { isTownCell, regionCells, roamerTarget, rollTemplate, type GoneReason, type OpponentInstance } from "./generate.js";
 import { manalinkModifiers, questsOnDefeat, questsOnStep, type QuestEvent } from "./quests.js";
 import { siegesOnStep } from "./siege.js";
+import { creditSpokeKill } from "./stronghold.js";
 import type { KnobValues } from "./knobs.js";
 import { findPath, fixedPointAt, idx, inBounds, manhattan, markExplored, regionAt, samePoint, townAt, type Point, type Town, type WorldMap } from "./map.js";
 import { WorldRng } from "./rng.js";
@@ -39,7 +40,7 @@ export type StepEvent =
   | { type: "questExpired"; questId: string; text: string }
   /** S20 (dungeon-design §5): you stand at a dungeon threshold — the telegraph screen opens; entering
    * is a choice (walking away costs nothing). Lairs are lair-dungeons now; mox sites are authored. */
-  | { type: "dungeonEntry"; dungeonId: string; kind: "mox" | "lair"; name: string; at: Point; residentCatalogId?: string }
+  | { type: "dungeonEntry"; dungeonId: string; kind: "mox" | "lair" | "stronghold"; name: string; at: Point; residentCatalogId?: string }
   /** S21 (manifest §5): a siege threat landed mid-walk (the town telegraphs until the deadline). */
   | { type: "siegeThreatened"; townIndex: number; townName: string; deadlineStep: number }
   /** S21: an unrelieved town fell — shopping/quests/its manalinks suspend until liberated. */
@@ -296,6 +297,16 @@ export function advance(
           break;
         }
       }
+      // S22b: the five lords' seats open — a stronghold fixed point is a dungeon threshold at
+      // maximum scale (matched to its content by the spoke's colour; cleared = ground, sealed).
+      if (fixed?.kind === "stronghold") {
+        const color = regionAt(world.map, cell).color;
+        const content = (catalog.strongholdContent ?? []).find((c) => c.color === color);
+        if (content && !world.dungeons[content.id]?.cleared) {
+          events.push({ type: "dungeonEntry", dungeonId: content.id, kind: "stronghold", name: content.name, at: { ...cell } });
+          break;
+        }
+      }
       // You stepped onto a roamer (pursuit — the player-initiated contact).
       const stepped = contactAt(cell);
       if (stepped) {
@@ -474,7 +485,9 @@ export function applyDuelResult(world: WorldState, catalog: Catalog, duel: Prepa
     anteWon = [...theirs];
     addToCollection(world, anteWon, "ante");
     world.player.gold += knobs.goldRewardByTier[duel.encounter.tier];
-    creditRenown(world.player, catalog.opponents.find((o) => o.id === duel.encounter.catalogId)?.colors ?? "", duel.encounter.tier); // §5 total + S20 playtest per-colour
+    const beatenTmpl = catalog.opponents.find((o) => o.id === duel.encounter.catalogId);
+    creditRenown(world.player, beatenTmpl?.colors ?? "", duel.encounter.tier); // §5 total + S20 playtest per-colour
+    creditSpokeKill(world, beatenTmpl?.spoke, duel.encounter.tier); // S22b: the pace war — a spoke kill bleeds its lord
     if (inst) removeOpponent(world, inst.id, "defeated");
     // S19: bounty completion — the mark's defeat pays out (recorded on the DuelRecord for the UI).
     questEvents = questsOnDefeat(world, duel.encounter.opponentId, knobs);

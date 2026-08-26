@@ -121,6 +121,9 @@ export interface Catalog {
   strongholds: StrongholdTemplate[];
   /** S20 (ADR-079): the five Mox dungeons (dungeon-design §5–§8). */
   dungeons: import("./dungeon.js").MoxDungeonDef[];
+  /** S22b: the five lords' seats (stronghold-bosses.md; ids match regions.json's fixed points).
+   * Absent in minimal test catalogs → []. */
+  strongholdContent?: import("./stronghold.js").StrongholdContentDef[];
   /** S21: the quest & rumor text pack (absent in minimal test catalogs → built-in fallback). */
   questText?: QuestTextPack;
 }
@@ -148,12 +151,21 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
   const t = parts.towns as { catalogVersion: string; names: string[] };
   const o = parts.opponents as { catalogVersion: string; opponents: OpponentTemplate[] };
   const st = parts.starters as { catalogVersion: string; starters: StarterTemplate[] };
-  const du = (parts.dungeons ?? { catalogVersion: CATALOG_VERSION, mox: [] }) as { catalogVersion: string; mox: import("./dungeon.js").MoxDungeonDef[] };
+  const du = (parts.dungeons ?? { catalogVersion: CATALOG_VERSION, mox: [] }) as { catalogVersion: string; mox: import("./dungeon.js").MoxDungeonDef[]; strongholds?: import("./stronghold.js").StrongholdContentDef[] };
   const errors: string[] = [];
   if (parts.dungeons) {
     if (du.catalogVersion !== CATALOG_VERSION) errors.push(`dungeons: catalogVersion ${du.catalogVersion} != ${CATALOG_VERSION}`);
     if (du.mox.length !== 5 || new Set(du.mox.map((m) => m.color)).size !== 5) errors.push("dungeons: need exactly five mox dungeons covering the five colours");
     for (const m of du.mox) if (!m.id || !m.name || !m.guardian?.key || !m.law?.both?.length || !m.prize?.mox) errors.push(`dungeon ${m.id ?? "?"}: missing fields`);
+    // S22b: stronghold content — names in the validator (the S21 pack lesson): five entries, five
+    // colours, ids matching the regions file's fixed points, every field the seat needs.
+    if (du.strongholds) {
+      if (du.strongholds.length !== 5 || new Set(du.strongholds.map((s) => s.color)).size !== 5) errors.push("dungeons: strongholds must be five entries covering the five colours");
+      for (const s of du.strongholds) {
+        if (!s.id || !s.name || !s.lord?.key || !s.lord?.cardId || !s.lord?.baseLife || !s.law?.cardId) errors.push(`stronghold ${s.id ?? "?"}: missing fields`);
+        if (!(r.strongholds ?? []).some((x) => x.id === s.id)) errors.push(`stronghold ${s.id}: no matching fixed point in regions.json`);
+      }
+    }
   }
   for (const [what, v] of [["regions", r.catalogVersion], ["towns", t.catalogVersion], ["opponents", o.catalogVersion], ["starters", st.catalogVersion]] as const) {
     if (v !== CATALOG_VERSION) errors.push(`${what}: catalogVersion ${v} != ${CATALOG_VERSION}`);
@@ -237,5 +249,5 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
     questText = { offers: qp.offers, rumors: qp.rumors };
   }
   if (errors.length) throw new Error(`Catalog validation failed:\n${errors.join("\n")}`);
-  return { version: CATALOG_VERSION, regions: r.regions, townNames: t.names, opponents: o.opponents, starters: st.starters, strongholds: r.strongholds ?? [], dungeons: du.mox, ...(questText ? { questText } : {}) };
+  return { version: CATALOG_VERSION, regions: r.regions, townNames: t.names, opponents: o.opponents, starters: st.starters, strongholds: r.strongholds ?? [], dungeons: du.mox, ...(du.strongholds ? { strongholdContent: du.strongholds } : {}), ...(questText ? { questText } : {}) };
 }

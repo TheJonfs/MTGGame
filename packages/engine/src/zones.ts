@@ -1,4 +1,5 @@
 import type { EngineCtx } from "./ctx.js";
+import { imposedEntersTapped } from "./characteristics.js";
 import { getObject, type GameObject, type PlayerId, type ZoneName } from "./state.js";
 
 export interface MoveOptions {
@@ -118,7 +119,10 @@ export function moveObject(
     isToken: obj.isToken,
     // A9 (S20): an entersChoice land PUT onto the battlefield (search, reanimation) enters tapped,
     // choice-free — only the land PLAY asks (game.ts passes an explicit tapped there).
-    tapped: entersBattlefield ? (options.tapped ?? (card.entersChoice || card.entersTapped ? true : false)) : false,
+    // S22b (the Intake): an imposing static overrides EVERY entry path — the law outranks the choice.
+    tapped: entersBattlefield
+      ? imposedEntersTapped(ctx, card, options.controller ?? obj.controller) || (options.tapped ?? (card.entersChoice || card.entersTapped ? true : false))
+      : false,
     damage: 0,
     deathtouchDamage: false,
     summoningSick: entersBattlefield && card.types.includes("Creature"),
@@ -168,7 +172,8 @@ export function createObject(
     baseController: owner,
     zone,
     isToken: opts.isToken ?? false,
-    tapped: zone === "battlefield" && (!!card.entersChoice || !!card.entersTapped), // A9/S20: shocks + taplands placed here enter tapped
+    // A9/S20: shocks + taplands placed here enter tapped. S22b: the Intake imposes on tokens too.
+    tapped: zone === "battlefield" && (!!card.entersChoice || !!card.entersTapped || imposedEntersTapped(ctx, card, owner)),
 
     damage: 0,
     deathtouchDamage: false,

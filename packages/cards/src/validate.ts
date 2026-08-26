@@ -140,6 +140,10 @@ export function validateCard(raw: unknown): ValidationResult {
   if (raw.printedAsset !== undefined && (typeof raw.printedAsset !== "string" || raw.source !== "custom")) {
     err(`"printedAsset" must be a string on a custom card (ADR-082)`);
   }
+  // S22b: uncastable — the stronghold laws (custom, true-only).
+  if (raw.uncastable !== undefined && (raw.uncastable !== true || raw.source !== "custom")) {
+    err(`"uncastable" is a true-only flag on custom cards (S22b — the stronghold laws)`);
+  }
 
   const declaredTargets = Array.isArray(raw.targets) ? (raw.targets as unknown[]) : [];
   if (raw.targets !== undefined) {
@@ -376,8 +380,8 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
       validateEffects(a.effects, nTargets, err, warnings, cardId, { isStatic: true });
       if (Array.isArray(a.effects)) {
         for (const e of a.effects) {
-          if (isRecord(e) && !["modifyPT", "grantKeyword", "restrict", "gainControl", "grantAbility"].includes(e.type as string)) {
-            err(`static ability cannot carry effect "${e.type}" (only modifyPT/grantKeyword/restrict/gainControl/grantAbility)`);
+          if (isRecord(e) && !["modifyPT", "grantKeyword", "restrict", "gainControl", "grantAbility", "extraLandDrops", "imposeEntersTapped"].includes(e.type as string)) {
+            err(`static ability cannot carry effect "${e.type}" (only modifyPT/grantKeyword/restrict/gainControl/grantAbility/extraLandDrops/imposeEntersTapped)`);
           }
           // A10 word 8 (S22): the granted ability is itself validated as an activated ability of
           // the target zone (a hand grant must be cycling-shaped; a battlefield grant needs a scope).
@@ -531,6 +535,15 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     // A10 word 8 (S22): static-only — the deep shape (zone/scope/ability) is validated in the
     // static branch; validateEffects rejects it outside statics.
   },
+  extraLandDrops: (e, err) => {
+    // S22b law-word: static-only (rejected outside statics below).
+    if (!Number.isInteger(e.count) || (e.count as number) < 1) err(`extraLandDrops.count must be a positive integer (A10/S22b)`);
+  },
+  imposeEntersTapped: (e, err) => {
+    // S22b law-word: static-only.
+    if (e.who !== "you" && e.who !== "opponent" && e.who !== "eachPlayer") err(`imposeEntersTapped.who must be you|opponent|eachPlayer (A10/S22b)`);
+    if (e.cardType !== undefined && !CARD_TYPES.includes(e.cardType as CardType)) err(`imposeEntersTapped: unknown cardType "${e.cardType}"`);
+  },
   addMana: (e, err) => {
     if (e.choice) {
       const ch = e.choice as { count?: unknown; anyOneColor?: unknown };
@@ -600,8 +613,8 @@ function validateEffects(
       err(`unknown effect type "${e.type}"`);
       continue;
     }
-    if (type === "grantAbility" && !opts.isStatic) {
-      err(`grantAbility is static-only (A10 word 8 — enumeration-time grants, never resolved)`);
+    if ((type === "grantAbility" || type === "extraLandDrops" || type === "imposeEntersTapped") && !opts.isStatic) {
+      err(`${type} is static-only (A10 — interpreted live, never resolved)`);
       continue;
     }
     EFFECT_SHAPE[type](e, err);

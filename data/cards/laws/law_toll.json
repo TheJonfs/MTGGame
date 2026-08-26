@@ -1,0 +1,32 @@
+{
+ "id": "law_toll",
+ "name": "The Toll",
+ "source": "custom",
+ "manaCost": "",
+ "types": [
+  "Artifact",
+  "Enchantment"
+ ],
+ "text": "Whenever the intruder casts a spell, the Gate deals 1 damage to them.",
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "SPELL_CAST",
+   "condition": {
+    "controller": "opponent"
+   },
+   "effects": [
+    {
+     "type": "damage",
+     "amount": 1,
+     "to": "eventPlayer"
+    }
+   ]
+  }
+ ],
+ "uncastable": true,
+ "prizeOnly": true,
+ "art": {
+  "fallback": "rendered"
+ }
+}

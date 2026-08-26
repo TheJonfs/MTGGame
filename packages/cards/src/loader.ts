@@ -24,9 +24,10 @@ export function loadCardPool(dir: string): CardPool {
   const files: string[] = [];
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     if (entry.isFile() && entry.name.endsWith(".json")) files.push(join(dir, entry.name));
-    if (entry.isDirectory() && entry.name === "tokens") {
-      for (const t of readdirSync(join(dir, "tokens"))) {
-        if (t.endsWith(".json")) files.push(join(dir, "tokens", t));
+    // tokens/ since S4; laws/ since S22b (the stronghold laws — uncastable battlefield furniture).
+    if (entry.isDirectory() && (entry.name === "tokens" || entry.name === "laws")) {
+      for (const t of readdirSync(join(dir, entry.name))) {
+        if (t.endsWith(".json")) files.push(join(dir, entry.name, t));
       }
     }
   }

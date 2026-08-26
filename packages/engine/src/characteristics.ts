@@ -187,6 +187,41 @@ export function characteristics(ctx: EngineCtx, objectId: string): Characteristi
   return result;
 }
 
+/** S22b law-word (the Risen Tide): lands a player may play per turn — 1 plus every active
+ * extraLandDrops static they control. The enumerator's land-play legality reads this. */
+export function maxLandDrops(ctx: EngineCtx, player: PlayerId): number {
+  let extra = 0;
+  for (const srcId of ctx.state.battlefield) {
+    const src = getObject(ctx.state, srcId);
+    if (src.controller !== player) continue;
+    for (const ability of ctx.defs.def(src.cardId).abilities ?? []) {
+      if (ability.kind !== "static" || !staticActive(ctx, srcId, ability.condition)) continue;
+      for (const e of ability.effects) if (e.type === "extraLandDrops") extra += e.count;
+    }
+  }
+  return 1 + extra;
+}
+
+/** S22b law-word (the Intake): does an active static impose enters-tapped on a matching permanent
+ * entering under `enteringController`? Consulted by the one zone-move primitive — every entry path
+ * (play, put, search, reanimate, token) pays the law. `who` is relative to the static's controller. */
+export function imposedEntersTapped(ctx: EngineCtx, def: { types: readonly string[] }, enteringController: PlayerId): boolean {
+  for (const srcId of ctx.state.battlefield) {
+    const src = getObject(ctx.state, srcId);
+    for (const ability of ctx.defs.def(src.cardId).abilities ?? []) {
+      if (ability.kind !== "static" || !staticActive(ctx, srcId, ability.condition)) continue;
+      for (const e of ability.effects) {
+        if (e.type !== "imposeEntersTapped") continue;
+        if (e.cardType && !def.types.includes(e.cardType)) continue;
+        if (e.who === "you" && enteringController !== src.controller) continue;
+        if (e.who === "opponent" && enteringController === src.controller) continue;
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 export function isCreature(ctx: EngineCtx, objectId: string): boolean {
   const obj = ctx.state.objects[objectId];
   if (!obj) return false;

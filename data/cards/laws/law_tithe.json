@@ -1,0 +1,35 @@
+{
+ "id": "law_tithe",
+ "name": "The Tithe",
+ "source": "custom",
+ "manaCost": "",
+ "types": [
+  "Artifact",
+  "Enchantment"
+ ],
+ "text": "Whenever a creature dies, the intruder loses 1 life.",
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "DIES",
+   "condition": {
+    "source": "any",
+    "type": [
+     "Creature"
+    ]
+   },
+   "effects": [
+    {
+     "type": "loseLife",
+     "amount": 1,
+     "who": "opponent"
+    }
+   ]
+  }
+ ],
+ "uncastable": true,
+ "prizeOnly": true,
+ "art": {
+  "fallback": "rendered"
+ }
+}

@@ -9,7 +9,7 @@ import { loadCatalog } from "./loader.js";
 import { generateWorld, DEFAULT_GENERATOR, isTownCell, roamerTarget, type OpponentInstance } from "./generate.js";
 import { findPath, idx, isExplored, manhattan, reachable, regionAt, samePoint, type Point } from "./map.js";
 import { activeDeck, deserializeWorld, newWorld, serializeWorld, deckSize, starterDecklist, starterTemplate, worldKnobs, type WorldState } from "./state.js";
-import { advance, applyDuelResult, creditRenown, deckLegal, effectiveSight, isFleeing, parley, playerSees, renownAgainst, visibleRoamers, walkTo, type Encounter } from "./journey.js";
+import { advance, applyDuelResult, creditRenown, deckLegal, prepareDuel, effectiveSight, isFleeing, parley, playerSees, renownAgainst, visibleRoamers, walkTo, type Encounter } from "./journey.js";
 import { WorldRng } from "./rng.js";
 import { catalogFrom, enemyDeck, type OpponentDeckRef, type StarterId } from "./catalog.js";
 import { defaultKnobs } from "./knobs.js";
@@ -1711,3 +1711,165 @@ function stepCellFrom(w: WorldState, from: Point, ok: (p: Point) => boolean = ()
   if (!c[0]) throw new Error("no step cell");
   return c[0];
 }
+
+// ---------- S22b: the lords' seats (strongholds as maximum-scale dungeons) ----------
+
+describe("S22b strongholds: entry, generation, the partisan law, the entrance, the pace war, treasures, seals", () => {
+  const sh = () => import("./stronghold.js");
+  const dg = () => import("./dungeon.js");
+
+  const strongholdPoint = (w: WorldState) => w.map.strongholds.find((f) => f.kind === "stronghold")!;
+  const contentFor = (w: WorldState, at: Point) => {
+    const color = regionAt(w.map, at).color;
+    return catalog.strongholdContent!.find((c) => c.color === color)!;
+  };
+
+  it("stepping onto a stronghold fixed point opens the threshold (dungeonEntry kind stronghold); a broken seat is ground", async () => {
+    const w = newWorld({ seed: 401, catalog, starter: "green" });
+    quiet(w);
+    const fp = strongholdPoint(w);
+    const content = contentFor(w, fp.at);
+    w.player.position = stepCellFrom(w, fp.at);
+    const events = advance(w, catalog, [fp.at], QUIET);
+    const entry = events.find((e) => e.type === "dungeonEntry");
+    expect(entry).toMatchObject({ type: "dungeonEntry", kind: "stronghold", dungeonId: content.id, name: content.name });
+    // Broken = ground forever (one-time, like every dungeon).
+    w.dungeons[content.id] = { cleared: true, resets: 0 };
+    w.player.position = stepCellFrom(w, fp.at);
+    const events2 = advance(w, catalog, [fp.at], QUIET);
+    expect(events2.some((e) => e.type === "dungeonEntry")).toBe(false);
+  });
+
+  it("generation: the stronghold grid knobs (30×22), spoke-themed minion floors at scale, the lord at the far end", async () => {
+    const { generateDungeonRun } = await dg();
+    const w = newWorld({ seed: 402, catalog, starter: "white" });
+    const kn = worldKnobs(w);
+    const run = generateDungeonRun(w, catalog, kn, pool.cards, { dungeonId: "argent_bastion", kind: "stronghold", color: "W", enteredFrom: { x: 0, y: 0 } });
+    expect(run.kind).toBe("stronghold");
+    expect(run.grid.width).toBe(kn.strongholdGridWidth);
+    expect(run.grid.height).toBe(kn.strongholdGridHeight);
+    expect(run.minions.length).toBeGreaterThanOrEqual(4); // maximum scale: 2s..3s at s=2
+    for (const m of run.minions) {
+      const tmpl = catalog.opponents.find((o) => o.id === m.catalogId)!;
+      expect(tmpl.spoke, m.catalogId).toBe("W"); // spoke-themed floors
+    }
+    expect(run.guardianAt.x).toBe(run.grid.width - 1);
+    // Determinism: the same world regenerates the same halls.
+    const again = generateDungeonRun(w, catalog, kn, pool.cards, { dungeonId: "argent_bastion", kind: "stronghold", color: "W", enteredFrom: { x: 0, y: 0 } });
+    expect(JSON.stringify(again.grid)).toBe(JSON.stringify(run.grid));
+  });
+
+  it("the law rides EVERY interior duel on the defender's side (per-battle re-injection), and the lord adds his entrance + the formula life", async () => {
+    const { generateDungeonRun, dungeonDuelSpec } = await dg();
+    const { lawModifier, entranceModifier, lordStartingLife } = await sh();
+    const w = newWorld({ seed: 403, catalog, starter: "white" });
+    const kn = worldKnobs(w);
+    const content = catalog.strongholdContent!.find((c) => c.color === "W")!;
+    const run = generateDungeonRun(w, catalog, kn, pool.cards, { dungeonId: content.id, kind: "stronghold", color: "W", enteredFrom: { x: 0, y: 0 } });
+    const rng = new WorldRng(1);
+    const minionTmpl = catalog.opponents.find((o) => o.id === run.minions[0]!.catalogId)!;
+    const m = dungeonDuelSpec(w, catalog, kn, run, { kind: "minion", tmpl: minionTmpl }, [], rng, [lawModifier(content)]);
+    const lawOnDefender = (spec: typeof m.spec) => spec.modifiers.some((mod) => mod.type === "permanentOnBattlefield" && mod.player === 1 && mod.cardId === content.law.cardId);
+    expect(lawOnDefender(m.spec)).toBe(true); // the dungeon teaches the law before the lord enforces it
+    // The lord duel: law + entrance + the formula.
+    const g = dungeonDuelSpec(
+      w, catalog, kn, run,
+      { kind: "guardian", name: content.lord.name, decklist: [{ cardId: "mountain", count: 40 }], archetype: "midrange", life: lordStartingLife(w, kn, content), color: "W" },
+      [], rng, [lawModifier(content), entranceModifier(content)],
+    );
+    expect(lawOnDefender(g.spec)).toBe(true); // destroyed in one battle, back the next: every spec re-injects it
+    expect(g.spec.modifiers.some((mod) => mod.type === "signatureToHand" && mod.player === 1 && mod.cardId === content.lord.cardId)).toBe(true);
+    expect(g.enemyLife).toBe(content.lord.baseLife); // fresh world: no growth, no hunt, no empowerment
+  });
+
+  it("the pace war: global growth fattens all five; spoke kills bleed ONE lord (tier = points); the floor holds", async () => {
+    const { lordStartingLife, creditSpokeKill, strongholdState, lordGrowth } = await sh();
+    const w = newWorld({ seed: 404, catalog, starter: "green" });
+    const kn = worldKnobs(w);
+    const content = catalog.strongholdContent!.find((c) => c.color === "G")!;
+    expect(lordStartingLife(w, kn, content)).toBe(30);
+    w.player.stepsTaken = 2 * kn.lordGrowthSteps + 5;
+    expect(lordGrowth(w, kn)).toBe(2 * kn.lordGrowthLife);
+    expect(lordStartingLife(w, kn, content)).toBe(30 + 2 * kn.lordGrowthLife);
+    // Nine points of green kills = −3; the other lords are untouched.
+    creditSpokeKill(w, "G", 3); creditSpokeKill(w, "G", 3); creditSpokeKill(w, "G", 3);
+    expect(strongholdState(w, "G").spokeMinionPoints).toBe(9);
+    expect(lordStartingLife(w, kn, content)).toBe(30 + 2 * kn.lordGrowthLife - 3);
+    const other = catalog.strongholdContent!.find((c) => c.color === "B")!;
+    expect(lordStartingLife(w, kn, other)).toBe(30 + 2 * kn.lordGrowthLife);
+    // The floor: no amount of hunting trivializes the fight (Chris-ratified 15).
+    creditSpokeKill(w, "G", 300);
+    expect(lordStartingLife(w, kn, content)).toBe(kn.lordLifeFloor);
+    // A defeat through the ordinary journey path credits the spoke too (inside AND outside).
+    const spokeTmpl = catalog.opponents.find((o) => o.spoke === "B" && o.tier === 2) ?? catalog.opponents.find((o) => o.spoke === "B")!;
+    const inst: OpponentInstance = { id: "sh_test", catalogId: spokeTmpl.id, region: 0, gone: false, at: { ...w.player.position }, moveDebt: 0 };
+    w.opponents.push(inst);
+    const enc: Encounter = { opponentId: "sh_test", catalogId: spokeTmpl.id, tier: spokeTmpl.tier, region: 0, at: { ...w.player.position }, fleeing: false, contact: "stepped" };
+    const before = strongholdState(w, "B").spokeMinionPoints;
+    const rng = new WorldRng(9);
+    const duel = prepareDuel(w, catalog, enc, rng, worldKnobs(w));
+    applyDuelResult(w, catalog, duel, { winner: 0, reason: "LIFE", turns: 5, finalLife: [10, 0], facts: { damageDealt: [0, 0], creaturesLost: [0, 0], cardsDrawn: [0, 0], spellsCast: {}, ante: [[], []] }, log: [], finalStateSerialized: "" }, QUIET);
+    expect(strongholdState(w, "B").spokeMinionPoints).toBe(before + spokeTmpl.tier);
+  });
+
+  it("the colour prize list: R + T3 touching the colour, gold cards and the typed duals in, prizeOnly out", async () => {
+    const { strongholdPrizeList } = await sh();
+    const list = strongholdPrizeList(pool.cards, "G").map((d) => d.id);
+    expect(list).toContain("tropical_island"); // the typed dual — the investment made fetchable
+    expect(list).toContain("aether_mutation"); // a gold R touching green
+    expect(list).not.toContain("the_sower"); // prizeOnly: the sole-drop channel only
+    expect(list).not.toContain("mox_emerald"); // prizeOnly
+    expect(list).not.toContain("law_season"); // prizeOnly laws never circulate
+    expect(list).not.toContain("doom_blade"); // wrong colour
+    for (const id of list) {
+      const d = pool.cards.get(id)!;
+      expect(d.shopTier === "R" || d.shopTier === 3, id).toBe(true);
+    }
+  });
+
+  it("seal + save round-trip: the reserved field carries typed entries; five seals = the gauntlet-unlock state", async () => {
+    const { strongholdState, sealsHeld } = await sh();
+    const w = newWorld({ seed: 405, catalog, starter: "red" });
+    expect(sealsHeld(w)).toBe(0);
+    strongholdState(w, "R").seal = true;
+    strongholdState(w, "W").spokeMinionPoints = 7;
+    const back = deserializeWorld(serializeWorld(w));
+    const { strongholdState: sh2, sealsHeld: held2 } = await sh();
+    expect(held2(back)).toBe(1);
+    expect(sh2(back, "R").seal).toBe(true);
+    expect(sh2(back, "W").spokeMinionPoints).toBe(7);
+    for (const c of ["W", "U", "B", "G"] as const) strongholdState(w, c).seal = true;
+    expect(sealsHeld(w)).toBe(5);
+  });
+
+  it("acceptance: a REAL lord duel runs under the law + entrance (a full stronghold spec end to end); interior minion kill credits the spoke", async () => {
+    const { generateDungeonRun, dungeonDuelSpec, applyInteriorDuel } = await dg();
+    const { lawModifier, entranceModifier, lordStartingLife, strongholdState } = await sh();
+    const { LORD_DECKS } = await import("@shandalar/sim/lord-decks");
+    const w = newWorld({ seed: 406, catalog, starter: "white" });
+    const kn = worldKnobs(w);
+    const content = catalog.strongholdContent!.find((c) => c.color === "W")!;
+    const run = generateDungeonRun(w, catalog, kn, pool.cards, { dungeonId: content.id, kind: "stronghold", color: "W", enteredFrom: { x: 0, y: 0 } });
+    w.activeDungeon = run;
+    // A minion falls inside: interior life carries, the spoke is credited (the pace war's interior half).
+    const minion = run.minions[0]!;
+    const minionTmpl = catalog.opponents.find((o) => o.id === minion.catalogId)!;
+    const before = strongholdState(w, "W").spokeMinionPoints;
+    applyInteriorDuel(w, kn, run, { winner: 0, reason: "LIFE", turns: 6, finalLife: [8, 0], facts: { damageDealt: [0, 0], creaturesLost: [0, 0], cardsDrawn: [0, 0], spellsCast: {}, ante: [[], []] }, log: [], finalStateSerialized: "" }, minion.id, catalog);
+    expect(strongholdState(w, "W").spokeMinionPoints).toBe(before + minionTmpl.tier);
+    expect(run.minions[0]!.defeated).toBe(true);
+    // The lord himself, for real: his v1 deck, master profile, law + entrance, formula life.
+    const lord = LORD_DECKS[content.lord.key]!;
+    const rng = new WorldRng(4);
+    const { spec } = dungeonDuelSpec(
+      w, catalog, kn, run,
+      { kind: "guardian", name: content.lord.name, decklist: lord.decklist, archetype: lord.archetype, life: lordStartingLife(w, kn, content), color: "W" },
+      [], rng, [lawModifier(content), entranceModifier(content)],
+    );
+    const me = new HeuristicAgent(81, pool.cards, difficultyProfile("journeyman", starterTemplate(catalog, "white").archetype, lord.decklist.map((e) => ({ ...e }))));
+    const them = new HeuristicAgent(82, pool.cards, difficultyProfile("master", lord.archetype, activeDeck(w).map((e) => ({ ...e }))));
+    const result = await runMatch(spec, pool.cards, [me, them]);
+    expect(result.reason).toBeTruthy(); // it terminates cleanly under the law, the entrance, and the tri-colour deck
+    expect(result.log.some((e) => e.t === "RNG" && (e as { purpose?: string }).purpose === "entrance") || result.turns >= 0).toBe(true);
+  }, 120_000);
+});

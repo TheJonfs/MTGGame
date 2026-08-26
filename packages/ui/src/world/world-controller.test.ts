@@ -380,3 +380,58 @@ describe("WorldController acceptance (S13 Part 5, scripted half)", () => {
     expect(sawGameOver).toBe(true);
   }, 180_000);
 });
+
+describe("S22b acceptance: the stronghold flow through the controller (entry → interior → victory → picks → seal)", () => {
+  it("full path: telegraph at the gate, the run at stronghold scale, the victory ceremony pays the sole-drop, the picker banks picks (and only list members), the seal counts", async () => {
+    const c = new WorldController(pool, catalog, memStorage() as never);
+    c.stepMs = 0;
+    c.aiDelayMs = 0;
+    c.newGame({ starter: "white", difficulty: "standard", seed: 501 });
+    const w = c.world!;
+    for (const o of w.opponents) if (!o.fixedAt) { o.gone = true; o.goneReason = "fled"; }
+    // Walk onto the Bastion's gate.
+    const fp = w.map.strongholds.find((f) => f.kind === "stronghold" && f.name === "The Argent Bastion")!;
+    const near = [
+      { x: fp.at.x + 1, y: fp.at.y }, { x: fp.at.x - 1, y: fp.at.y }, { x: fp.at.x, y: fp.at.y + 1 }, { x: fp.at.x, y: fp.at.y - 1 },
+    ].find((p) => w.map.passable[idx(w.map, p)])!;
+    w.player.position = near;
+    c.clickCell(fp.at);
+    await tick();
+    c.clickCell(fp.at);
+    for (let i = 0; i < 50 && c.screen.kind !== "dungeonTelegraph"; i++) await tick();
+    expect(c.screen.kind).toBe("dungeonTelegraph");
+    if (c.screen.kind !== "dungeonTelegraph") return;
+    expect(c.screen.info).toMatchObject({ dungeonId: "argent_bastion", kind: "stronghold" });
+    c.enterDungeon();
+    expect(c.screen.kind).toBe("dungeon");
+    const run = c.dungeonRun!;
+    expect(run.kind).toBe("stronghold");
+    expect(run.grid.width).toBe(c.knobs.strongholdGridWidth);
+    // The lord falls (the duel itself is engine/sim territory — the ceremony is the controller's).
+    const fakeWin = { winner: 0 as const, reason: "LIFE" as const, turns: 9, finalLife: [6, 0] as [number, number], facts: { damageDealt: [0, 0] as [number, number], creaturesLost: [0, 0] as [number, number], cardsDrawn: [0, 0] as [number, number], spellsCast: {}, ante: [[], []] as [string[], string[]] }, log: [], finalStateSerialized: "" };
+    (c as never as { finishInteriorDuel(a: { guardian: boolean }, r: typeof fakeWin): void }).finishInteriorDuel({ guardian: true }, fakeWin);
+    // tsc cannot see finishInteriorDuel's screen mutation — read through an unnarrowed accessor.
+    const screen = () => (c as WorldController).screen;
+    const victory = screen();
+    expect(victory.kind).toBe("strongholdVictory");
+    if (victory.kind !== "strongholdVictory") return;
+    expect(w.player.collection["the_warden"]).toBe(1); // the sole-drop: his defeat is the ONLY channel (ADR-081)
+    expect(w.dungeons["argent_bastion"]?.cleared).toBe(true);
+    expect(c.lordStatusRows().find((r) => r.color === "W")?.sealed).toBe(true);
+    // Picks: two legal, one bogus (rejected), then confirm banks them.
+    const [a, b] = victory.prizeList;
+    c.toggleStrongholdPick(a!);
+    c.toggleStrongholdPick(b!);
+    c.toggleStrongholdPick("black_lotus"); // not in the hoard — must be ignored
+    const mid = screen();
+    expect(mid.kind === "strongholdVictory" && mid.picks).toEqual([a, b]);
+    c.confirmStrongholdPicks();
+    expect(w.player.collection[a!]).toBe(1);
+    expect(w.player.collection[b!]).toBe(1);
+    expect(w.player.collection["black_lotus"]).toBeUndefined();
+    expect(screen().kind).toBe("map");
+    // Durability: the seal and points survive the save round-trip.
+    const back = deserializeWorld(JSON.stringify(JSON.parse(c.saveText())));
+    expect((back.strongholds as { color: string; seal: boolean }[]).find((e) => e.color === "W")?.seal).toBe(true);
+  }, 60_000);
+});

@@ -211,6 +211,7 @@ Tokens added: bear_2_2 (G), bird_1_1_flying (W), wurm_4_4 (G), zombie_2_2 (B), f
 | saproling_1_1_g | Saproling Token (1/1 G) | tested | token def | Aether Mutation's tokens |
 | sphinx_4_4_wu | Sphinx Token (4/4 WU, flying vigilance) | tested | token def | the Sower's activation |
 | weird_x_x_ur | Weird Token (X/X UR) | tested | token def (printed 0/0; basePT locks X at creation) | Experimental Overload |
+| law_risen_tide / law_tithe / law_intake / law_toll / law_season | the five stronghold laws | tested | uncastable prizeOnly Artifact Enchantments (extraLandDrops; observed DIES; imposeEntersTapped; SPELL_CAST + eventPlayer damage; scoped UPKEEP counters) | S22b (R-077): battlefield furniture, injected per-battle on the lord's side; never shop/roll/deck-legal; data/cards/laws/ |
 
 ## Ceiling anchors (not yet scheduled)
 Ceiling complete as of S5 (see mechanics-manifest §3). Further additions are card batches using existing vocabulary.

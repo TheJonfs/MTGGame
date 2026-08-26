@@ -1,0 +1,33 @@
+{
+ "id": "law_season",
+ "name": "The Season",
+ "source": "custom",
+ "manaCost": "",
+ "types": [
+  "Artifact",
+  "Enchantment"
+ ],
+ "text": "At the beginning of the Sower's upkeep, put a +1/+1 counter on each creature he controls.",
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "UPKEEP",
+   "condition": {
+    "controller": "you"
+   },
+   "effects": [
+    {
+     "type": "addCounters",
+     "kind": "+1/+1",
+     "count": 1,
+     "scope": "creaturesYouControl"
+    }
+   ]
+  }
+ ],
+ "uncastable": true,
+ "prizeOnly": true,
+ "art": {
+  "fallback": "rendered"
+ }
+}
