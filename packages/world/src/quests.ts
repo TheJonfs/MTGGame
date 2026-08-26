@@ -173,7 +173,6 @@ export function townOffers(world: WorldState, catalog: Catalog, town: Town, knob
     const id = `q_${town.index}_${questEpoch(world, knobs)}_${i}`;
     const roll = rng.float();
     const kind: QuestKind = roll < 0.35 ? "courier" : roll < 0.55 ? "cardCourier" : roll < 0.8 ? "bounty" : "retrieval";
-    const reward = rollReward(rng, world, catalog, tier, region.color as QuestReward["manalink"] & string, knobs, pool);
     if (kind === "retrieval") {
       // S21 (Chris-ruled): targets are LAIR-DUNGEONS with a living resident; the item sits in
       // the prize room, escrowed like everything else — the quest is the dive. Keep-or-deliver
@@ -205,16 +204,21 @@ export function townOffers(world: WorldState, catalog: Catalog, town: Town, knob
       const targetRegion = world.map.regions.find((r) => r.color === region.color && r.tier === targetTier) ?? region;
       const beast = rollBeast(rng, catalog, targetRegion, knobs);
       if (!beast) continue; // a spoke without signatures offers no bounty (cannot happen with the full grid)
+      // S22 playtest r3 (Chris: 20 gold for a Hypnotic Specter): the purse prices the MARK, not
+      // the posting town — reward tier = the target's own tier (a civilized board posts hunts
+      // one ring out, so its purses read at the approach ring's rates).
+      const bountyReward = rollReward(rng, world, catalog, beast.tier, region.color as QuestReward["manalink"] & string, knobs, pool);
       offers.push({
-        id, kind, tier, fromTown: town.index,
+        id, kind, tier: beast.tier, fromTown: town.index,
         bountyCatalogId: beast.id, bountyRegion: targetRegion.index,
         deadlineSteps: 0, // bounties do not expire (the mark keeps roaming)
-        reward,
-        text: rng.pick(pack.offers.bounty).replace(/\{target\}/g, beast.name).replace(/\{region\}/g, targetRegion.name).replace(/\{reward\}/g, `${reward.gold} gold`),
+        reward: bountyReward,
+        text: rng.pick(pack.offers.bounty).replace(/\{target\}/g, beast.name).replace(/\{region\}/g, targetRegion.name).replace(/\{reward\}/g, `${bountyReward.gold} gold`),
       });
       continue;
     }
     // courier / cardCourier: destination = another town, biased far (the danger is the road).
+    const reward = rollReward(rng, world, catalog, tier, region.color as QuestReward["manalink"] & string, knobs, pool);
     const others = world.map.towns.filter((t) => t.index !== town.index);
     if (others.length === 0) continue;
     const byDist = [...others].sort((a, b) => manhattan(town.at, b.at) - manhattan(town.at, a.at));

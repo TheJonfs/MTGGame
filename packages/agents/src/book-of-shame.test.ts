@@ -31,7 +31,15 @@ interface Obj {
   attachedTo?: string | null;
 }
 
-function mkView(opts: { hand?: { objectId: string; cardId: string }[]; battlefield?: Obj[]; life?: [number, number] }): GameView {
+function mkView(opts: {
+  hand?: { objectId: string; cardId: string }[];
+  battlefield?: Obj[];
+  life?: [number, number];
+  /** S22 playtest r3 additions: the new gates read these. */
+  stack?: { id: string; kind: string; cardId: string; controller: 0 | 1 }[];
+  opponentHandCount?: number;
+  combat?: { attackers: string[]; blocks: { blocker: string; attacker: string }[] };
+}): GameView {
   return {
     you: 0,
     turn: 5,
@@ -40,10 +48,10 @@ function mkView(opts: { hand?: { objectId: string; cardId: string }[]; battlefie
     life: opts.life ?? [20, 20],
     startingLife: 20,
     hand: opts.hand ?? [],
-    opponentHandCount: 3,
+    opponentHandCount: opts.opponentHandCount ?? 3,
     librarySizes: [20, 20],
     mulliganCount: 0,
-    combat: { attackers: [], blocks: [] },
+    combat: opts.combat ?? { attackers: [], blocks: [] },
     battlefield: (opts.battlefield ?? []).map((o) => {
       const def = pool.get(o.cardId)!;
       const isCreature = def.types.includes("Creature");
@@ -59,7 +67,7 @@ function mkView(opts: { hand?: { objectId: string; cardId: string }[]; battlefie
         keywords: [...(def.keywords ?? [])],
       };
     }),
-    stack: [],
+    stack: opts.stack ?? [],
     graveyards: [[], []],
     graveyardObjects: [[], []],
     manaPool: { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 },
@@ -350,5 +358,105 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const tapOwn = a.scorePriorityAction(view, { type: "activateAbility", objectId: "tact", abilityIndex: 0, targets: [{ kind: "object", id: "bear" }] });
     const pass = a.scorePriorityAction(view, { type: "pass" });
     expect(tapOwn).toBeLessThan(pass);
+  });
+
+  // ---------- S22 playtest r3 (Chris's hard seed-42 run: the misplay cluster) ----------
+
+  it("book of shame 18 (r3): countering your OWN spell falls off the misaim cliff; countering theirs does not", () => {
+    const a = agent("control");
+    const view = mkView({
+      hand: [{ objectId: "h_cs", cardId: "counterspell" }],
+      stack: [
+        { id: "stk_mine", kind: "spell", cardId: "swords_to_plowshares", controller: 0 },
+        { id: "stk_theirs", kind: "spell", cardId: "serra_angel", controller: 1 },
+      ],
+    });
+    const counterTheirs = a.scorePriorityAction(view, { type: "castSpell", objectId: "h_cs", targets: [{ kind: "stackItem", id: "stk_theirs" }] });
+    const counterMine = a.scorePriorityAction(view, { type: "castSpell", objectId: "h_cs", targets: [{ kind: "stackItem", id: "stk_mine" }] });
+    const pass = a.scorePriorityAction(view, { type: "pass" });
+    expect(counterTheirs).toBeGreaterThan(counterMine);
+    expect(counterMine).toBeLessThan(pass - 50); // the cliff: unreachable at any temperature
+  });
+
+  it("book of shame 19 (r3): removal at your own creature falls off the misaim cliff (Swords, Boomerang-own-Island, Mind-Rot-self)", () => {
+    const a = agent();
+    const view = mkView({
+      hand: [
+        { objectId: "h_swords", cardId: "swords_to_plowshares" },
+        { objectId: "h_boom", cardId: "boomerang" },
+        { objectId: "h_rot", cardId: "mind_rot" },
+      ],
+      battlefield: [
+        { id: "mine", cardId: "grizzly_bears", controller: 0 },
+        { id: "my_island", cardId: "island", controller: 0 },
+        { id: "theirs", cardId: "serra_angel", controller: 1 },
+        { id: "their_island", cardId: "island", controller: 1 },
+      ],
+    });
+    const pass = a.scorePriorityAction(view, { type: "pass" });
+    const cast = (objectId: string, target: { kind: "object"; id: string } | { kind: "player"; player: 0 | 1 }) =>
+      a.scorePriorityAction(view, { type: "castSpell", objectId, targets: [target] });
+    // Swords: own creature is a cliff, theirs is a fine play.
+    expect(cast("h_swords", { kind: "object", id: "mine" })).toBeLessThan(pass - 50);
+    expect(cast("h_swords", { kind: "object", id: "theirs" })).toBeGreaterThan(pass);
+    // Boomerang: our own Island (the seed-42 tempo suicide) is a cliff.
+    expect(cast("h_boom", { kind: "object", id: "my_island" })).toBeLessThan(pass - 50);
+    expect(cast("h_boom", { kind: "object", id: "my_island" })).toBeLessThan(cast("h_boom", { kind: "object", id: "their_island" }));
+    // Mind Rot at our own head is a cliff; at theirs it is a play.
+    expect(cast("h_rot", { kind: "player", player: 0 })).toBeLessThan(pass - 50);
+    expect(cast("h_rot", { kind: "player", player: 1 })).toBeGreaterThan(cast("h_rot", { kind: "player", player: 0 }));
+  });
+
+  it("book of shame 20 (r3): a helpful aura on the OPPONENT's creature falls off the misaim cliff (the Rancor gift)", () => {
+    const a = agent();
+    const view = mkView({
+      hand: [{ objectId: "h_rancor", cardId: "rancor" }],
+      battlefield: [
+        { id: "mine", cardId: "grizzly_bears", controller: 0 },
+        { id: "theirs", cardId: "serra_angel", controller: 1 },
+      ],
+    });
+    const onMine = a.scorePriorityAction(view, { type: "castSpell", objectId: "h_rancor", targets: [{ kind: "object", id: "mine" }] });
+    const onTheirs = a.scorePriorityAction(view, { type: "castSpell", objectId: "h_rancor", targets: [{ kind: "object", id: "theirs" }] });
+    const pass = a.scorePriorityAction(view, { type: "pass" });
+    expect(onMine).toBeGreaterThan(onTheirs);
+    expect(onTheirs).toBeLessThan(pass - 50);
+  });
+
+  it("book of shame 21 (r3): all-discard spells at an empty hand are gated at -Infinity (Duress/Mind Rot into nothing)", () => {
+    const a = agent();
+    const empty = mkView({
+      hand: [
+        { objectId: "h_duress", cardId: "duress" },
+        { objectId: "h_rot", cardId: "mind_rot" },
+      ],
+      opponentHandCount: 0,
+    });
+    expect(a.scorePriorityAction(empty, { type: "castSpell", objectId: "h_duress", targets: [{ kind: "player", player: 1 }] })).toBe(-Infinity);
+    expect(a.scorePriorityAction(empty, { type: "castSpell", objectId: "h_rot", targets: [{ kind: "player", player: 1 }] })).toBe(-Infinity);
+    // With a card to take, the gate lifts.
+    const full = mkView({ hand: [{ objectId: "h_duress", cardId: "duress" }], opponentHandCount: 2 });
+    expect(a.scorePriorityAction(full, { type: "castSpell", objectId: "h_duress", targets: [{ kind: "player", player: 1 }] })).toBeGreaterThan(-Infinity);
+  });
+
+  it("book of shame 22 (r3): Giant Growth outside combat with an empty stack is gated at -Infinity; in combat it is a real trick", () => {
+    const a = agent();
+    const base = {
+      hand: [{ objectId: "h_gg", cardId: "giant_growth" }],
+      battlefield: [
+        { id: "mine", cardId: "grizzly_bears", controller: 0 as const },
+        { id: "theirs", cardId: "serra_angel", controller: 1 as const },
+      ],
+    };
+    const idle = mkView(base); // main phase, empty stack — the "maximize mana usage" waste
+    expect(a.scorePriorityAction(idle, { type: "castSpell", objectId: "h_gg", targets: [{ kind: "object", id: "mine" }] })).toBe(-Infinity);
+    // Combat live, our bear attacking: pumping it beats passing (the material credit stands in).
+    const combat = mkView({ ...base, combat: { attackers: ["mine"], blocks: [{ blocker: "theirs", attacker: "mine" }] } });
+    const pumpAttacker = a.scorePriorityAction(combat, { type: "castSpell", objectId: "h_gg", targets: [{ kind: "object", id: "mine" }] });
+    const pass = a.scorePriorityAction(combat, { type: "pass" });
+    expect(pumpAttacker).toBeGreaterThan(pass);
+    // An opponent spell on the stack lifts the gate too (the save is a legitimate window).
+    const threatened = mkView({ ...base, stack: [{ id: "stk_bolt", kind: "spell", cardId: "lightning_bolt", controller: 1 }] });
+    expect(a.scorePriorityAction(threatened, { type: "castSpell", objectId: "h_gg", targets: [{ kind: "object", id: "mine" }] })).toBeGreaterThan(-Infinity);
   });
 });

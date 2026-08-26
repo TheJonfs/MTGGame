@@ -1,7 +1,7 @@
 import { NullLog, SeededRng } from "@shandalar/core";
-import { parseManaCost, manaValue, type CardDef } from "@shandalar/cards";
+import { parseManaCost, manaValue, type CardDef, type Effect, type ResolvedTarget } from "@shandalar/cards";
 import type { Action, ActionRequest, Agent, GameView, PlayerId } from "@shandalar/engine";
-import { preferSide, targetSide, classifyEffects } from "./effect-classification.js";
+import { preferSide, targetSide, classifyEffects, effectsForAction, ptSign } from "./effect-classification.js";
 import { DEFAULT_CONSTANTS, deterrence, evaluate, objectValue, type AiProfile, type EvalConstants } from "./evaluator.js";
 import { predictAction } from "./view-sim.js";
 import { viewAbilityAt } from "./granted-view.js";
@@ -174,13 +174,103 @@ export class HeuristicAgent implements Agent {
     // a bounce-cost activation only with a land in hand to replay, or with lands beyond next
     // turn's planned cast; never one that drops development below the curve.
     if (this.bounceCostBlocked(view, action)) return -Infinity;
+    // S22 playtest r3 (Chris's seed-42 run — the misplay cluster: Swords at its own creature,
+    // Boomerang at its own Island, Mind Rot at its own head, Rancor on Chris's creature):
+    // spending a card on provably nothing is never a play, at any temperature (the X=0 family).
+    if (this.discardWasteGated(view, action)) return -Infinity; // Duress/Mind Rot into an empty hand
+    if (this.pumpWasteGated(view, action)) return -Infinity; // Giant Growth outside combat, empty stack
+    // The misaim rule: a FINITE cliff (not -Infinity) so book-of-shame orderings among
+    // bad aims survive — at any softmax temperature exp(-MISAIM/t) is 0, so a misaimed
+    // variant is never picked while any legitimate action (pass included) exists.
+    const misaim = this.misaimPenalty(view, action);
     const pred = predictAction(view, action, this.defs, this.C);
     if (pred.unchanged) {
       // Friction: an action that visibly does nothing scores strictly below
       // passing (kills same-host re-equip churn and no-benefit activations).
-      return evaluate(view, this.profile, this.defs) - 0.25;
+      return evaluate(view, this.profile, this.defs) - 0.25 - misaim;
     }
-    return evaluate(pred.view, this.profile, this.defs) + pred.adjustment;
+    return evaluate(pred.view, this.profile, this.defs) + pred.adjustment - misaim;
+  }
+
+  /** S22 playtest r3: the effects an action's targets receive — mode-aware for A6 modal casts,
+   * virtual-list-aware for activations (granted abilities resolve through viewAbilityAt). */
+  private actionEffects(view: GameView, action: Action): Effect[] | null {
+    if (action.type === "castSpell") {
+      const card = view.hand.find((c) => c.objectId === action.objectId);
+      const d = card ? this.def(card.cardId) : undefined;
+      if (!d) return null;
+      if (d.modes && action.mode !== undefined) return d.modes[action.mode]?.effects ?? [];
+      return effectsForAction(d, action);
+    }
+    if (action.type === "activateAbility") {
+      const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+      if (ab && ab.kind === "activated" && ab.effects.length > 0) return ab.effects;
+      const o = view.battlefield.find((b) => b.id === action.objectId);
+      const d = o ? this.def(o.cardId) : undefined;
+      return d ? effectsForAction(d, action) : null; // equip: the equipment's statics
+    }
+    return null;
+  }
+
+  /** S22 playtest r3 — the misaim rule (rule 8 hardened from preference to cliff): harmful
+   * effects never point at our own side, helpful effects never at the opponent's. Exposed for
+   * the book of shame. Known simplification (R-080): forbids the exotic saves too (Boomerang
+   * rescuing our own creature from removal, self-target Aether Mutation) — lines this
+   * evaluator could not price anyway. */
+  misaimPenalty(view: GameView, action: Action): number {
+    const MISAIM = 100; // mana units — a cliff softmax cannot climb at any temperature
+    const targets = (action as { targets?: ResolvedTarget[] }).targets ?? [];
+    if (targets.length === 0) return 0;
+    const effects = this.actionEffects(view, action);
+    if (!effects) return 0;
+    const cls = classifyEffects(effects);
+    if (cls === "neutral") return 0;
+    const me = view.you;
+    for (const t of targets) {
+      const side = targetSide(view, t);
+      if (side === null) continue;
+      if (cls === "harmful" && side === me) return MISAIM;
+      if (cls === "helpful" && side !== me) return MISAIM;
+    }
+    return 0;
+  }
+
+  /** S22 playtest r3 (Chris: Duress at an empty hand, Mind Rot at a hand of nothing): a spell
+   * whose only effects are discards aimed at players with no cards changes nothing — gated
+   * like X=0. Exposed for the book of shame. */
+  discardWasteGated(view: GameView, action: Action): boolean {
+    if (action.type !== "castSpell") return false;
+    const effects = this.actionEffects(view, action);
+    if (!effects || effects.length === 0 || !effects.every((e) => e.type === "discard")) return false;
+    const me = view.you;
+    const targets = (action as { targets?: ResolvedTarget[] }).targets ?? [];
+    const affected = effects.flatMap((e) =>
+      e.who === "you" ? [me]
+      : e.who === "opponent" ? [1 - me]
+      : e.who === "eachPlayer" ? [me, 1 - me]
+      : targets.flatMap((t) => (t.kind === "player" ? [t.player] : [])),
+    );
+    if (affected.length === 0) return false;
+    return affected.every((p) => (p === me ? view.hand.length : view.opponentHandCount) === 0);
+  }
+
+  /** S22 playtest r3 (Chris: Giant Growth cast after combat "to maximize mana usage"): a spell
+   * whose only effects are until-end-of-turn buffs is a combat trick — with no combat live and
+   * no opponent spell on the stack it evaporates at cleanup for nothing. Exposed for the book
+   * of shame. */
+  pumpWasteGated(view: GameView, action: Action): boolean {
+    if (action.type !== "castSpell") return false;
+    const effects = this.actionEffects(view, action);
+    if (!effects || effects.length === 0) return false;
+    const allEotBuffs = effects.every(
+      (e) =>
+        (e.type === "modifyPT" && e.duration === "UNTIL_END_OF_TURN" && ptSign(e.power) + ptSign(e.toughness) > 0) ||
+        (e.type === "grantKeyword" && e.duration === "UNTIL_END_OF_TURN"),
+    );
+    if (!allEotBuffs) return false;
+    const combatLive = view.combat.attackers.length > 0;
+    const oppOnStack = view.stack.some((s) => s.controller !== view.you);
+    return !combatLive && !oppOnStack;
   }
 
   /** S17: is this action a mana burst (a spell whose only effect is addMana, or a sacrifice-cost

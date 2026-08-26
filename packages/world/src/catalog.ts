@@ -241,6 +241,11 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
     for (const k of ["courier", "cardCourier", "bounty", "retrieval"] as const) {
       if (!Array.isArray(qp.offers?.[k]) || qp.offers[k].length === 0) errors.push(`quests: offers.${k} must be a nonempty array`);
     }
+    // S22 playtest r3 (Chris: a courier offer with no destination in its text — "third time pays
+    // for all", but for WHERE?): every courier-class template must name its {town}.
+    for (const k of ["courier", "cardCourier"] as const) {
+      for (const t of qp.offers?.[k] ?? []) if (!t.includes("{town}")) errors.push(`quests: offers.${k} template lacks {town}: "${t}"`);
+    }
     if (!Array.isArray(qp.rumors?.chainLinks) || qp.rumors.chainLinks.length === 0) errors.push("quests: rumors.chainLinks must be nonempty");
     for (const g of ["reya", "arcanis", "drana", "drakuseth", "titania"]) if (!qp.rumors?.guardians?.[g]) errors.push(`quests: rumors.guardians.${g} missing`);
     for (const l of ["unwinder", "usher", "warden", "stoker", "sower"]) if (!qp.rumors?.lords?.[l]) errors.push(`quests: rumors.lords.${l} missing`);

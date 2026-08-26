@@ -5,7 +5,7 @@
     "courier": [
       "A parcel for {town}, wrapped in oilcloth and questions. Don't open it. {reward} on delivery.",
       "My sister in {town} needs this before the roads worsen. They always worsen.",
-      "This letter outlived two couriers already. Third time pays for all — {reward}.",
+      "This letter outlived two couriers already. Third time pays for all — {reward}, when it reaches {town}.",
       "Take the ledger to {town}. Walk quickly and read nothing."
     ],
     "cardCourier": [

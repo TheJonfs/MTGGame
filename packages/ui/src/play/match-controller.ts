@@ -23,6 +23,7 @@ import {
   HeuristicAgent,
   HumanAgent,
   difficultyProfile,
+  viewAbilityAt,
   type Difficulty,
 } from "@shandalar/agents";
 import { DECKS, DECK_ARCHETYPES, type DeckKey } from "@shandalar/sim/decks";
@@ -554,21 +555,30 @@ export class MatchController {
 
   // ---------- S11: manual tapping ----------
 
-  /** Surplus-mana rule (Chris): offer manual tapping when the cast would NOT
+  /** Surplus-mana rule (Chris): offer manual tapping when the play would NOT
    * use everything available — untapped producers (the enumerated tapForMana
-   * actions) plus the floating pool exceed the cost. */
+   * actions) plus the floating pool exceed the cost. S22 r3 (Chris, item 8 —
+   * Siege-Gang Commander): activations offer it too; the ability's mana cost
+   * resolves through the virtual list, so granted abilities price correctly. */
   private offerManualTapFor(action: Action): boolean {
-    if (action.type !== "castSpell") return false;
-    const req = this.human.current()?.request;
-    if (!req) return false;
-    const producers = req.actions.filter((a) => a.type === "tapForMana").length;
+    if (action.type !== "castSpell" && action.type !== "activateAbility") return false;
+    const cur = this.human.current();
+    if (!cur) return false;
+    const producers = cur.request.actions.filter((a) => a.type === "tapForMana").length;
     if (producers === 0) return false;
     const pool = this.game.state.players[this.humanSeat].manaPool;
     const floating = Object.values(pool).reduce((n, v) => n + v, 0);
-    const obj = this.game.state.objects[action.objectId];
-    const def = obj ? this.pool.get(obj.cardId) : undefined;
-    if (!def) return false;
-    const cost = manaValue(parseManaCost(def.manaCost)) + (action.x ?? 0);
+    let cost: number;
+    if (action.type === "castSpell") {
+      const obj = this.game.state.objects[action.objectId];
+      const def = obj ? this.pool.get(obj.cardId) : undefined;
+      if (!def) return false;
+      cost = manaValue(parseManaCost(def.manaCost)) + (action.x ?? 0);
+    } else {
+      const ab = viewAbilityAt(cur.view, this.pool, action.objectId, action.abilityIndex);
+      if (!ab || ab.kind !== "activated" || !ab.cost.mana) return false;
+      cost = manaValue(parseManaCost(ab.cost.mana)) + (action.x ?? 0);
+    }
     return producers + floating > cost;
   }
 

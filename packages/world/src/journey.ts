@@ -1,9 +1,9 @@
 import type { MatchResult, MatchSpec, Modifier } from "@shandalar/engine";
 import { enemyDeck, type Catalog, type OpponentTemplate } from "./catalog.js";
-import { isTownCell, regionCells, roamerTarget, rollTemplate, type GoneReason, type OpponentInstance } from "./generate.js";
+import { isTownCell, regionCells, roamerTarget, rollMage, rollTemplate, type GoneReason, type OpponentInstance } from "./generate.js";
 import { manalinkModifiers, questsOnDefeat, questsOnStep, type QuestEvent } from "./quests.js";
 import { siegesOnStep } from "./siege.js";
-import { creditSpokeKill } from "./stronghold.js";
+import { creditSpokeKill, lordSealed } from "./stronghold.js";
 import type { KnobValues } from "./knobs.js";
 import { findPath, fixedPointAt, idx, inBounds, manhattan, markExplored, regionAt, samePoint, townAt, type Point, type Town, type WorldMap } from "./map.js";
 import { WorldRng } from "./rng.js";
@@ -189,7 +189,9 @@ export function respawnRoamers(world: WorldState, catalog: Catalog, knobs: KnobV
     if (live >= roamerTarget(map, r, knobs)) continue;
     const cells = regionCells(map, r.index).filter((p) => !isTownCell(map, p) && !playerSees(world, knobs, p) && !samePoint(p, world.player.position));
     if (cells.length === 0) continue;
-    const tmpl = rollTemplate(rng, catalog, r, knobs);
+    // S22 playtest r3 (Chris, item 12): a sealed lord's spoke-bound minions stop forming —
+    // respawn in his colour's regions rolls generic mages instead (existing roamers remain).
+    const tmpl = lordSealed(world, r.color) ? rollMage(rng, catalog, r.tier) : rollTemplate(rng, catalog, r, knobs);
     const id = `opp_r${world.opponents.length}_${world.player.stepsTaken}`;
     const inst: OpponentInstance = { id, catalogId: tmpl.id, region: r.index, gone: false, at: { ...rng.pick(cells) }, moveDebt: 0 };
     world.opponents.push(inst);

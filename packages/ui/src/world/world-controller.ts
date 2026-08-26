@@ -1118,6 +1118,16 @@ export class WorldController {
     }
     if (out.type === "engagementWon") {
       const won = out.kind === "liberation" ? `${town.name} is free. Its market, board, and gifts return.` : `The siege of ${town.name} is broken before it landed.`;
+      // S22 r3 (Chris, item 10): the ceremony names the WHOLE purse — every fight's gold and
+      // stake across the engagement, through the news modal (titles starting "A town" render
+      // the reward line as plain text there).
+      const spoils = [`${out.totalGold} gold`];
+      if (out.totalAnte.length) spoils.push(`their stakes — ${out.totalAnte.map((id) => this.pool.get(id)?.name ?? id).join(", ")}`);
+      (this.questPopup ??= []).push({
+        title: out.kind === "liberation" ? "A town liberated" : "A town relieved",
+        quest: won,
+        reward: `The spoils of the engagement: ${spoils.join("; ")}.`,
+      });
       this.enterTown(town);
       if (this.screen.kind === "town") this.screen = { ...this.screen, notice: won };
       this.emit();

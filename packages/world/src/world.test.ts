@@ -884,6 +884,7 @@ describe("S21 Part 2 (sieges, scripted acceptance): timers, telegraph, the fall,
       siegeIntervalSteps: { civilized: 5, approach: 5, wild: 5 },
       siegeWarningSteps: 3,
       siegePartySize: { civilized: 2, approach: 2, wild: 2 },
+      siegeGraceSteps: 0, // S22 r3: the opening grace is off for the fast-clock scripts (tested on its own below)
     },
   } as const;
 
@@ -992,6 +993,48 @@ describe("S21 Part 2 (sieges, scripted acceptance): timers, telegraph, the fall,
     expect(siegeFor(w, town.index)!.status === "quiet" || guard === 8).toBe(true);
     void sawCarry; // observed across seeds; not asserted (a 1-fight sweep is legal)
   }, 120_000);
+
+  it("S22 r3 (item 7): the opening grace — every town's FIRST threat schedules from siegeGraceSteps, not step 0; later epochs roll from the resolution step", async () => {
+    const { siegeEntry, scheduleNextThreat } = await sg();
+    const w = newWorld({ seed: 305, catalog, starter: "green" });
+    quiet(w);
+    const GRACED = { event: { ...FAST.event, siegeGraceSteps: 40 } } as const;
+    const knobs = worldKnobs(w, GRACED);
+    for (const town of w.map.towns) {
+      const e = siegeEntry(w, knobs, town);
+      expect(e.nextThreatStep).toBeGreaterThanOrEqual(40 + Math.floor(5 * 0.75)); // grace + the jittered interval's floor
+      expect(e.nextThreatStep).toBe(scheduleNextThreat(w, knobs, town, 0, knobs.siegeGraceSteps)); // deterministic
+    }
+  });
+
+  it("S22 r3 (item 12): a sealed lord's spoke goes quiet — no NEW threats land on his colour's towns (a standing occupation remains); respawn in his regions rolls mages, never his spoke's signatures", async () => {
+    const { siegeFor } = await sg();
+    const { strongholdState } = await import("./stronghold.js");
+    const { respawnRoamers, removeOpponent, opponentTemplate } = await import("./journey.js");
+    const w = newWorld({ seed: 306, catalog, starter: "green" });
+    quiet(w);
+    const knobs = worldKnobs(w, FAST);
+    const color = w.map.regions[w.map.towns[0]!.region]!.color as "W" | "U" | "B" | "R" | "G";
+    strongholdState(w, color).seal = true; // the lord falls before his first siege
+    await tickTo(w, 30);
+    for (const town of w.map.towns) {
+      if ((w.map.regions[town.region]!.color) !== color) continue;
+      expect(siegeFor(w, town.index)?.status ?? "quiet").toBe("quiet"); // his sieges never land
+    }
+    // Respawn: empty a region of the sealed colour, tick its clock, and every spawn is a mage.
+    const region = w.map.regions.find((r) => r.color === color)!;
+    for (const o of w.opponents) if (o.region === region.index && !o.fixedAt) removeOpponent(w, o.id, "fled");
+    const rng = new WorldRng(9);
+    const respawnKnobs = { ...knobs, roamerRespawnSteps: { civilized: 1, approach: 1, wild: 1 } };
+    for (let i = 0; i < 12; i++) {
+      w.player.stepsTaken += 1;
+      for (const inst of respawnRoamers(w, catalog, respawnKnobs, rng)) {
+        if (inst.region !== region.index) continue;
+        const tmpl = opponentTemplate(catalog, inst);
+        expect(tmpl.spoke).toBeUndefined(); // a mage — never the sealed lord's signature
+      }
+    }
+  });
 });
 
 describe("S21 Parts 3–4 (retrieval, rumor-chains, the lore turn): pack-as-data, the dive-and-choice, chains that reveal, the tavern", () => {
@@ -1169,7 +1212,16 @@ describe("S19 Part 3+5 (quests, scripted acceptance): offers, courier, card-cour
       expect(a.length).toBeGreaterThanOrEqual(1);
       expect(JSON.stringify(a)).toBe(JSON.stringify(b)); // pure in (seed, town)
       const ring = ({ civilized: 1, approach: 2, wild: 3 } as const)[w.map.regions[town.region]!.tier];
-      for (const o of a) { expect(o.tier).toBe(ring); kinds.add(o.kind); }
+      for (const o of a) {
+        // S22 r3 (Chris, item 6): a BOUNTY's tier is the TARGET's own tier (the purse prices
+        // the mark, not the posting town); everything else keeps the town's ring.
+        if (o.kind === "bounty") {
+          const target = catalog.opponents.find((t) => t.id === o.bountyCatalogId)!;
+          expect(o.tier).toBe(target.tier);
+          expect(o.reward.gold).toBeGreaterThanOrEqual(Math.round((knobs.questGoldByTier[target.tier] ?? 20) / 2));
+        } else expect(o.tier).toBe(ring);
+        kinds.add(o.kind);
+      }
     }
     expect(kinds.has("courier") || kinds.has("cardCourier")).toBe(true);
     expect(kinds.size).toBeGreaterThanOrEqual(2);

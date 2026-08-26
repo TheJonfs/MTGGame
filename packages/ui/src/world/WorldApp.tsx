@@ -300,7 +300,8 @@ function SiegeTelegraph({ c }: { c: WorldController }) {
         <ul className="dungeon-stakes">
           <li><b>Consecutive fights, one life track</b> — your life carries battle to battle (starting at your world life, {c.world.player.worldLife}) and is discarded when it ends. The last of them holds the {info.kind === "liberation" ? "town's heart" : "line"}.</li>
           <li>Each fight antes as usual; <b>a single loss ends the attempt</b> — ordinary loss costs apply and their band regroups to full strength.</li>
-          <li>Winnings pay <b>immediately</b> (ante, gold, renown) — a town is not a mountain.</li>
+          {/* S22 r3 (Chris, item 10): the purse is stated up front. */}
+          <li>Winnings pay <b>immediately</b> (ante, gold, renown) — the band's heads are worth <b>{info.party.filter((m) => !m.fallen).reduce((n, m) => n + c.knobs.goldRewardByTier[m.tmpl.tier], 0)} gold</b> together, plus each fight's stake. A town is not a mountain.</li>
         </ul>
         {notice && <p style={{ fontSize: 12, color: "var(--ink-soft)" }}>{notice}</p>}
         <p style={{ textAlign: "right", marginBottom: 0 }}>
@@ -1007,11 +1008,13 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
             </RailPanel>
           );
         })()}
-        {c.siegeRail().filter((s) => seenCell(s.town.at)).length > 0 && (
-          <RailPanel title="Sieges" badge={c.siegeRail().filter((s) => seenCell(s.town.at)).length}>
-            {c.siegeRail().filter((s) => seenCell(s.town.at)).map((s) => (
+        {/* S22 r3 (Chris, item 7): NO seen-gate — a siege anywhere in the world is news; an
+            unvisited town names its region so the player can find it through the fog. */}
+        {c.siegeRail().length > 0 && (
+          <RailPanel title="Sieges" badge={c.siegeRail().length}>
+            {c.siegeRail().map((s) => (
               <div key={s.town.index} style={{ fontSize: 12, display: "flex", justifyContent: "space-between", cursor: screen.kind === "map" ? "pointer" : "default" }} title="click to preview the path there" onClick={() => c.clickCell(s.town.at)}>
-                <span>{s.town.name}</span>
+                <span>{s.town.name}{!seenCell(s.town.at) && <i style={{ color: "var(--ink-soft)" }}> · {w.map.regions[s.town.region]?.name}</i>}</span>
                 <span style={{ color: "var(--danger)", fontWeight: s.status === "occupied" ? 700 : 400 }}>
                   {s.status === "occupied" ? "OCCUPIED" : `falls in ${s.stepsLeft}`}
                 </span>

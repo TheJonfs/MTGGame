@@ -30,7 +30,7 @@ import { activeDeck, type WorldState } from "./state.js";
 // the S17 "one discard entry point" lesson applied to world consequences). The ESM cycle is
 // deliberate and safe: every cross-call happens at call time, never at module init.
 import { creditRenown, deckLegal, forfeitCards, addToCollection } from "./journey.js";
-import { creditSpokeKill } from "./stronghold.js";
+import { creditSpokeKill, lordSealed } from "./stronghold.js";
 
 // ---------- State (lives in the reserved `sieges` array — no save bump) ----------
 
@@ -41,6 +41,11 @@ export interface SiegeEngagement {
   /** The engagement life track — seeded from world life at commitment, carried fight to
    * fight (gain and loss), discarded at the end. */
   life: number;
+  /** S22 playtest r3 (Chris, item 10): the running spoils — gold and ante cards won across the
+   * engagement's fights, so the victory ceremony can name the whole purse. Optional (older
+   * saves lack them); defaulted at accumulation. */
+  goldWon?: number;
+  anteWon?: string[];
 }
 
 export interface SiegeEntry {
@@ -103,7 +108,9 @@ export function siegeEntry(world: WorldState, knobs: KnobValues, town: Town): Si
   const sieges = world.sieges as SiegeEntry[];
   let e = sieges.find((s) => s.townIndex === town.index);
   if (!e) {
-    e = { townIndex: town.index, epoch: 0, status: "quiet", nextThreatStep: scheduleNextThreat(world, knobs, town, 0, 0) };
+    // S22 playtest r3: the opening grace — the first threat schedules from siegeGraceSteps,
+    // not step 0 (Last Chapel fell before Chris had heard its name).
+    e = { townIndex: town.index, epoch: 0, status: "quiet", nextThreatStep: scheduleNextThreat(world, knobs, town, 0, knobs.siegeGraceSteps) };
     sieges.push(e);
   }
   return e;
@@ -116,6 +123,10 @@ export function siegesOnStep(world: WorldState, catalog: Catalog, knobs: KnobVal
   const steps = world.player.stepsTaken;
   for (const town of world.map.towns) {
     const e = siegeEntry(world, knobs, town);
+    // S22 playtest r3 (Chris, item 12): a sealed lord's spoke lands no NEW sieges — his
+    // besieging parties are his minions. A threat already telegraphing still resolves,
+    // and an occupation stands until liberated (existing consequences remain to be cleared).
+    if (e.status === "quiet" && lordSealed(world, townColor(world, town))) continue;
     if (e.status === "quiet" && e.nextThreatStep >= 0 && steps >= e.nextThreatStep) {
       e.status = "threatened";
       e.deadlineStep = steps + knobs.siegeWarningSteps;
@@ -196,7 +207,8 @@ export function siegeDuelSpec(
 
 export type SiegeDuelOutcome =
   | { type: "fightWon"; remaining: number; lifeNow: number; anteWon: string[]; goldWon: number }
-  | { type: "engagementWon"; kind: SiegeEngagement["kind"]; anteWon: string[]; goldWon: number }
+  /** totalGold/totalAnte: the WHOLE engagement's spoils (r3 item 10 — the ceremony names the purse). */
+  | { type: "engagementWon"; kind: SiegeEngagement["kind"]; anteWon: string[]; goldWon: number; totalGold: number; totalAnte: string[] }
   | { type: "loss"; kind: SiegeEngagement["kind"]; anteLost: string[] };
 
 /** Apply one engagement duel. WIN: life carries, ante and gold pay NOW (no escrow), renown
@@ -223,12 +235,16 @@ export function applySiegeDuel(
     addToCollection(world, anteWon, "ante");
     const goldWon = knobs.goldRewardByTier[tmpl.tier];
     world.player.gold += goldWon;
+    eng.goldWon = (eng.goldWon ?? 0) + goldWon; // r3 item 10: the running purse
+    eng.anteWon = [...(eng.anteWon ?? []), ...anteWon];
     creditRenown(world.player, tmpl.colors, tmpl.tier);
     creditSpokeKill(world, tmpl.colors, tmpl.tier); // S22 r1: siege defenders' kills bleed their lords too (outside = everywhere renown pays)
     if (eng.remaining.length > 0) return { type: "fightWon", remaining: eng.remaining.length, lifeNow: eng.life, anteWon, goldWon };
     const kind = eng.kind;
+    const totalGold = eng.goldWon;
+    const totalAnte = [...eng.anteWon];
     resolveSiege(world, knobs, entry, town);
-    return { type: "engagementWon", kind, anteWon, goldWon };
+    return { type: "engagementWon", kind, anteWon, goldWon, totalGold, totalAnte };
   }
   const anteLost = [...result.facts.ante[0]];
   forfeitCards(world, anteLost);

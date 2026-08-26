@@ -440,7 +440,7 @@ button.primary { background: var(--brass); color: var(--parchment); border: 1.5p
 .world-map .region-label { font-family: var(--serif); font-size: 11px; font-weight: 700; fill: var(--ink); opacity: 0.8; letter-spacing: 0.04em; }
 .world-map .town-label { font-family: var(--serif); font-size: 10px; font-weight: 700; fill: var(--ink); }
 .world-chrome .stat { font-family: var(--serif); font-weight: 700; font-size: 15px; display: inline-flex; align-items: center; gap: 4px; }
-.world-chrome .stat img { width: 18px; height: 18px; }
+.world-chrome .stat img { width: 36px; height: 36px; } /* S22 r3 (Chris): doubled with .stat-ink */
 .world-rail .panel h3 { font-size: 13px; }
 .parley { max-width: 560px; }
 .parley-head { display: flex; gap: 14px; align-items: center; margin-bottom: 10px; }
@@ -616,8 +616,9 @@ button.linkish:hover:not(:disabled) { transform: none; box-shadow: none; text-de
 button.chrome-tab { font-family: var(--serif); font-variant: small-caps; letter-spacing: 0.5px; font-size: 12.5px; background: var(--parchment); border: 1.5px solid var(--ink); border-bottom-width: 2.5px; border-radius: 6px 6px 3px 3px; padding: 2px 12px; }
 button.chrome-tab:hover:not(:disabled) { background: #f4ecd8; }
 
-/* The pictorial topline trackers (ink icons over the ribbon, multiply like the map sprites). */
-.stat-ink { width: 18px; height: 18px; vertical-align: -4px; mix-blend-mode: multiply; }
+/* The pictorial topline trackers (ink icons over the ribbon, multiply like the map sprites).
+   S22 r3 (Chris): doubled — 18px read as specks beside their numerals. */
+.stat-ink { width: 36px; height: 36px; vertical-align: -12px; mix-blend-mode: multiply; }
 
 /* Collapsible rail panels: the chevron header reads as a control. */
 .panel h3 { transition: color 0.08s ease; }

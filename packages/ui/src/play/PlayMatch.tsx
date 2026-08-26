@@ -5,7 +5,7 @@ import { STEPS, getObject, type PlayerId, type Step } from "@shandalar/engine";
 import { Board } from "../components/Board";
 import { Inspector, StackPanel, StatusBlock } from "../components/Rail";
 import { CardFrame } from "../components/CardFrame";
-import { actionLabel, cardName, eventLabel, stepLabel } from "../labels";
+import { actionLabel, cardName, eventLabel, stepLabel, targetLabel } from "../labels";
 import type { OracleEntry } from "../engine-bridge";
 import type { MatchController, UiPhase } from "./match-controller";
 
@@ -609,11 +609,15 @@ function PlayLog({ c, pool }: { c: MatchController; pool: Map<string, CardDef> }
     const cardId = c.idNames.get(objectId);
     return cardId ? cardName(pool, cardId) : "a card";
   };
-  const label = (a: { type: string; objectId?: string; x?: number; blocker?: string; attacker?: string; cardId?: string }, mine: boolean): string => {
+  // S22 r3 (Chris, item 4: "which player was targeted by Mind Rot?"): cast/activate lines
+  // name their targets — "Cast Mind Rot → You" reads the aim off the log.
+  const targetsOf = (a: { targets?: ResolvedTarget[] }): string =>
+    a.targets?.length ? ` → ${a.targets.map((t) => targetLabel(state, pool, t, you, c.idNames)).join(", ")}` : "";
+  const label = (a: { type: string; objectId?: string; x?: number; blocker?: string; attacker?: string; cardId?: string; targets?: ResolvedTarget[] }, mine: boolean): string => {
     switch (a.type) {
       case "playLand": return `Play ${nameOf(a.objectId!)}`;
-      case "castSpell": return `Cast ${nameOf(a.objectId!)}${a.x !== undefined ? ` (X=${a.x})` : ""}`;
-      case "activateAbility": return `Activate ${nameOf(a.objectId!)}`;
+      case "castSpell": return `Cast ${nameOf(a.objectId!)}${a.x !== undefined ? ` (X=${a.x})` : ""}${targetsOf(a)}`;
+      case "activateAbility": return `Activate ${nameOf(a.objectId!)}${targetsOf(a)}`;
       case "declareAttacker": return `Attack with ${nameOf(a.objectId!)}`;
       case "declareBlocker": return `Block ${nameOf(a.attacker!)} with ${nameOf(a.blocker!)}`;
       case "sacrifice": return `Sacrifice ${nameOf(a.objectId!)}`;

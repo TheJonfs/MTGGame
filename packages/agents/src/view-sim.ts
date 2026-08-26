@@ -131,6 +131,10 @@ export function predictAction(
         // Harmful aura pointed at our own creature: the view can't show the
         // downside, so charge it directly.
         else if (cls === "harmful" && hostObj.controller === me) adjustment -= steals ? 0.2 : 0.7 * hv;
+        // S22 playtest r3 (Chris's seed-42 run: a Rancor cast on HIS creature): a
+        // helpful aura on an opponent's creature buffs THEIR board and spends our
+        // card doing it — the statics don't apply in the copy, so charge it here.
+        else if (cls === "helpful" && hostObj.controller !== me) adjustment -= 1.2;
       }
       next.battlefield.push({
         id: `pred_${predSeq++}`, cardId: d.id, controller: me, tapped: false, damage: 0,
@@ -306,7 +310,11 @@ function applyEffect(
       if (!item) return 0;
       view.stack = view.stack.filter((s) => s.id !== item.id);
       const d = defs.get(item.cardId);
-      return d ? Math.max(1, manaValue(parseManaCost(d.manaCost))) : 1;
+      const worth = d ? Math.max(1, manaValue(parseManaCost(d.manaCost))) : 1;
+      // S22 playtest r3 (Chris's seed-42 run: an opponent countered its OWN Swords):
+      // the credit is SIGNED — countering the opponent's spell wins its mana;
+      // countering our own pays that mana to no one and loses the spell besides.
+      return item.controller === me ? -worth : worth;
     }
     case "draw": {
       for (const p of e.who === "you" ? [me] : e.who === "opponent" ? [opp] : [me, opp]) {
@@ -407,6 +415,15 @@ function applyEffect(
       if (!o || o.power === null || o.toughness === null) return 0.1;
       const pv = e.power === "X" ? x : e.power === "-X" ? -x : typeof e.power === "number" ? e.power : 1;
       const tv = e.toughness === "X" ? x : e.toughness === "-X" ? -x : typeof e.toughness === "number" ? e.toughness : 1;
+      // S22 playtest r3 (Chris's seed-42 run: Giant Growth "to maximize mana usage"):
+      // an UNTIL_END_OF_TURN pump on our own creature OUTSIDE combat is not material —
+      // it evaporates at cleanup. Don't apply it to the copy (the evaluator would read
+      // it as a permanent +N/+N) and charge the wasted card instead. In combat (the
+      // target attacks or blocks) the material credit stands in for the exchange won.
+      if (e.duration === "UNTIL_END_OF_TURN" && pv + tv > 0 && o.controller === me) {
+        const inCombat = view.combat.attackers.includes(o.id) || view.combat.blocks.some((b) => b.blocker === o.id);
+        if (!inCombat) return -0.3;
+      }
       o.power += pv;
       o.toughness += tv;
       if (o.toughness <= 0) removeObject(view, o.id);

@@ -100,6 +100,13 @@ export function sealsHeld(world: WorldState): number {
   return (world.strongholds as StrongholdState[]).filter((e) => e.seal).length;
 }
 
+/** S22 playtest r3 (Chris, item 12): a fallen lord's spoke goes quiet — his minions stop
+ * spawning on the map and his sieges stop landing. Existing roamers, lairs, and occupied
+ * towns REMAIN to be cleared; only generation stops (removing a threat ends its minions). */
+export function lordSealed(world: WorldState, color: string | undefined): boolean {
+  return !!color && (world.strongholds as StrongholdState[]).some((e) => e.color === color && e.seal);
+}
+
 /** §5 visible schedules: each lord's current strength for the UI telegraph, with the rumor voice
  * ("grows fat on the years" / "has been bled by your hunting"). */
 export interface LordStatusRow {

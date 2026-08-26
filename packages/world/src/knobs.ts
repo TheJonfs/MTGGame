@@ -103,6 +103,11 @@ export const KNOBS = {
     unit: "steps",
     description: "S21: the relief window — a threatened town telegraphs for this many steps (§5's visible-schedules law: rail, map chip, and in town) before it falls to the party.",
   }),
+  siegeGraceSteps: knob<number>({
+    default: 300,
+    unit: "steps",
+    description: "S22 playtest r3 (Chris: an unheard-of wild town fell to a siege before the game had properly opened): the world's opening grace — every town's FIRST threat schedules from this step instead of step 0 (later threats roll from each resolution as before). Arguing baseline; easy/hard override it.",
+  }),
   siegePartySize: knob<Record<RegionTier, number>>({
     default: { civilized: 1, approach: 2, wild: 3 },
     unit: "party members, by the town's ring",
@@ -392,6 +397,7 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
     roamerDensityPer100Cells: { civilized: 0.7, approach: 1.1, wild: 1.5 },
     siegeIntervalSteps: { civilized: 900, approach: 675, wild: 450 },
     siegeWarningSteps: 90,
+    siegeGraceSteps: 500,
     lossLifePenalty: 1,
     lifeFloor: 10, // only gained life is ever at risk
     shopPriceMultiplier: 0.8,
@@ -407,6 +413,7 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
     roamerDensityPer100Cells: { civilized: 1.4, approach: 2.0, wild: 2.6 },
     siegeIntervalSteps: { civilized: 450, approach: 340, wild: 225 },
     siegeWarningSteps: 40,
+    siegeGraceSteps: 200,
     anteCount: 2,
     lossLifePenalty: 1,
     lifeFloor: 0,

@@ -1,4 +1,4 @@
-# Handoff — after Session 22 (2026-08-25; S22a + S22b in one sitting, Chris's call at the checkpoint)
+# Handoff — after Session 22 (2026-08-25; S22a + S22b in one sitting, Chris's call at the checkpoint; playtest round 3 landed 2026-08-26)
 
 ## State of the world
 
@@ -37,6 +37,8 @@
 7. **Laws and the three new tokens have no art** — laws render placeholder frames on the battlefield; a small render round (5 law plates + saproling/sphinx/weird) is wanted. Lord battle portraits currently reuse the card-art crops (fine at 72px; proper plates optional).
 8. **Interior ante applies in lord fights** (stakes rail shows it) — intended? It compounds with the `anteCount` question already in Chris's pile.
 9. **The colour prize lists run ~10 cards each** right now (the R shelf is young). Fine mechanically; the "deep tune" promise grows as the R economy does.
+10. **(r3) Apprentice can no longer blunder its aim at any temperature** — the misaim cliff and waste gates apply at every difficulty, so the weak-opponent dial now lives entirely in archetype/temperature/holdTricks/evaluator noise over LEGITIMATE lines. Gates PASS with zero regression, but if hard-mode tier-1 fights start reading too sharp in play, the felt-wrong answer is a wider temperature or a weaker evaluator, never re-admitting self-harm.
+11. **(r3) Manual tap for activations has no dedicated pin** — the flow rides the existing scripted acceptance (equip activations now offer it) and the UI suite is green, but a state-crafted controller test asserting `offerManualTap` on a Siege-Gang-shaped activation would pin it properly.
 
 ## Playtest round 1 (Chris's storm — same session)
 
@@ -64,19 +66,42 @@ Six items, all landed:
 11. **Quest boards repost on the clock**: `questRefreshSteps` (200) epochs the offers (epoch-suffixed ids keep old consumptions harmless); the manalink roll is knobbed and nudged (`manalinkRewardChance` 0.25 → 0.30 — Chris: the hard-mode comeback lever reads thin; more levers are a planner question).
 12. **Siege news is a POPUP**: threats and falls interrupt through the generalized news modal ("A town has fallen…") instead of a notice line a walk scrolls past — four towns can never fall unnoticed again.
 
+## Playtest round 3 (Chris's hard seed-42 run, continued — twelve items, all landed)
+
+1. **Topline icons doubled** (18px → 36px, both CSS registers) — browser-verified in the ribbon.
+2–5, 11. **The misplay cluster, fixed at three layers** (R-080; book of shame 18–22):
+   - **view-sim honesty**: the `counter` credit is now SIGNED by the countered spell's controller (countering your own Swords had scored as a GAIN — a straight bug, dormant five sessions because nothing enumerated it); an UNTIL_END_OF_TURN self-pump outside combat predicts no material and charges the wasted card (the copy had read Giant Growth as permanent +3/+3 — that was the "maximize mana usage"); a helpful aura on an enemy creature charges −1.2 (Rancor-as-gift had cost nothing).
+   - **The misaim rule**: rule 8's side preference hardened from preference to a finite 100-unit score cliff on every targeted priority action — harmful never at own things, helpful never at theirs (`mill who:target` joined isHarmful in passing). Finite, not −∞, so book-of-shame orderings survive; unreachable at ANY softmax temperature — apprentice's 1.2 had been coin-flipping 0.2–2.5-unit gaps, which is where every one of these blunders lived.
+   - **Waste gates** (−∞, the X=0 family): all-discard spells when every affected hand is empty (Duress/Mind Rot into nothing — the "mystery card" threat argument is priced at zero by construction now); all-EOT-buff spells with no combat live and no opponent spell on the stack.
+   - Ladder 1,000/cell after: **gates PASS, zero regression** (cells 99.8–100%).
+6. **Bounty purses price the MARK** — offer tier + reward roll use the target's tier, not the posting town's ring (the Hypnotic Specter posted in Lowmarket now pays tier-2 rates: 50g base, not 20). Planner note: arguing baseline, deviation 1 below.
+7. **Sieges start later and are never invisible**: new `siegeGraceSteps` knob (300; easy 500, hard 200) — every town's FIRST threat schedules from the grace step; the Sieges rail panel dropped its seen-cell gate (an unvisited town shows with its region name italicized beside it — browser-verified with a forced threat on unseen Forgeton); the r2 news popup was already ungated, confirmed. Chris's "or perhaps instead sieges only on visited towns" alternative NOT taken (deviation 2).
+8. **Manual tapping for activated abilities** (Siege-Gang): `offerManualTapFor` accepts activations, pricing the ability's mana cost through the virtual list (granted abilities included; agents' `granted-view` now exported for the UI).
+9. **The destination-less courier text fixed** ("Third time pays for all — {reward}, when it reaches {town}.") — and the catalog validator now REJECTS any courier/cardCourier template lacking `{town}` (the S21 names-in-the-validator lesson).
+10. **Siege spoils are named**: engagements accumulate `{goldWon, anteWon}` (optional fields on the in-save engagement — no migration), the victory ceremony popup lists the whole purse ("A town liberated / relieved"), and the telegraph states the prospective purse up front (the band's heads summed in gold).
+4b. **The play-by-play names targets**: cast/activate log lines carry `→ You / → Grizzly Bears` through the id ledger ("Cast Mind Rot → You" reads the aim off the log).
+12. **The world quiets with its lords** (R-081): a sealed lord's colour lands no NEW siege threats (in-flight telegraphs still resolve; occupations stand until liberated) and his regions' respawns roll generic mages instead of spoke signatures — existing roamers and lairs remain to be cleared, per Chris's ruling.
+
+### Round 3 deviations
+
+1. **Bounty pricing**: target-tier gold via the standard reward roll (so tier-2 marks can also roll manalinks/cards at tier-2 rates from a civilized board). If the planner wants a hunt premium above the roll, it's one multiplier.
+2. **Item 7's alternative not taken**: news-everywhere + rail-everywhere + the grace knob, rather than restricting sieges to visited towns — the "living world" reading. Grace values (300/500/200) are arguing baselines.
+3. **The misaim cliff forbids the exotic saves too** (Boomerang rescuing your own creature from removal, self-target Aether Mutation for tokens) — lines the 1-ply evaluator could never price anyway; documented in R-080. If a future deck WANTS the self-Mutation line, the gate needs a carve-in.
+4. **Giant Growth's gate allows any combat-live or opponent-spell-on-stack window** — it can still pump an unblocked attacker mid-combat (correct) and still can't save-in-response to its OWN controller's stack items (rare, accepted).
+
 ## Registry entries added/changed
 
-R-063..R-074 (S22a: the nine words, activations, ADR-038 + the control fix, small pieces); R-075..R-079 (S22b: law-words, uncastable laws, entrance, stronghold world system). Pool-registry: S22 section (19 rows) + the laws row + five guardian rows re-annotated prizeOnly + printings section regenerated by art:fetch (9 new resolutions; Abrade BRC #111 override). Knobs: `strongholdGridWidth/Height`, `lordGrowthSteps/Life/Cap`, `lordLifeFloor`, `spokePointsPerLife`, `strongholdPrizePicks` (docs/knobs.md regenerated). decisions.md: ADR-081/082 appended (kickoff note in place); mechanics-manifest: A10 amendment copied. MANIFEST: 9 printed-asset rows (external provenance), 7 card-art rows cashed, 20 verdict rows kept. New: `docs/lord-sim-s22.md`; `packages/sim/src/lord-decks.ts` (+`/lord-decks` export); `pnpm lord-sim`; `data/cards/laws/`; core RngPurpose +"entrance"; GameView +`pendingEndStepSacrifices` (no-peeking pin updated).
+R-063..R-074 (S22a: the nine words, activations, ADR-038 + the control fix, small pieces); R-075..R-079 (S22b: law-words, uncastable laws, entrance, stronghold world system); **R-080..R-081 (r3: the misaim rule + waste gates; the world-quiets/grace/bounty-pricing/spoils package)**. Pool-registry: S22 section (19 rows) + the laws row + five guardian rows re-annotated prizeOnly + printings section regenerated by art:fetch (9 new resolutions; Abrade BRC #111 override). Knobs: `strongholdGridWidth/Height`, `lordGrowthSteps/Life/Cap`, `lordLifeFloor`, `spokePointsPerLife`, `strongholdPrizePicks`, **`siegeGraceSteps` (r3)** (docs/knobs.md regenerated). decisions.md: ADR-081/082 appended (kickoff note in place); mechanics-manifest: A10 amendment copied. MANIFEST: 9 printed-asset rows (external provenance), 7 card-art rows cashed, 20 verdict rows kept. New: `docs/lord-sim-s22.md`; `packages/sim/src/lord-decks.ts` (+`/lord-decks` export); `pnpm lord-sim`; `data/cards/laws/`; core RngPurpose +"entrance"; GameView +`pendingEndStepSacrifices` (no-peeking pin updated). r3: `@shandalar/agents` exports `granted-view`; data/world/quests.json courier template reworded (asserted edit).
 
 ## Test status
 
-**FUZZ_FULL 364/364** (S21's 312 → +52: pause/parse-gate, A10 synthetic fuzz + replay, lord-deck fuzz + replay, 29 S22a fixtures, 9 S22b fixtures, 7 stronghold world tests, the controller acceptance; some re-pins). Ladder 1,000/cell mirror gates PASS (pins zero-regression; Blood-Artist-identity preserved by construction). Typecheck + Babel parse gate clean. Browser-verified: gallery 166+laws/printed toggle (7 customs + 9 scans, zero broken), the corrected Warden, the Bastion end to end (telegraph → interior → the Intake on the battlefield at turn 1 → the victory picker). lord-sim tables filed at 10 games/cell.
+**FUZZ_FULL 372/372 after r3** (the r2 baseline 364 → +8: book of shame 18–22 pinning the whole misplay cluster, the two r3 world tests — the opening grace, the sealed-lord quieting incl. mage-only respawn — and the bounty-tier assertion folded into the quest offer test). **Ladder 1,000/cell after the agent changes: gates PASS, zero regression** (pairing cells 99.8–100%, all mirrors majority). Typecheck + Babel parse gate clean. Browser-verified (r3): the doubled topline icons in the ribbon; the ungated Sieges rail naming a never-seen town with its region (forced threat on Forgeton). Earlier S22 verification stands: gallery 166+laws/printed toggle, the corrected Warden, the Bastion end to end. lord-sim tables filed at 10 games/cell.
 
 ## Suggested next
 
 1. **Chris (Part 7 human half)**: storm a stronghold end to end — tear a law down (Abrade is in the shops at 12g), hunt a spoke first to feel the reduction, take the five picks; verdict the empowerment-at-stronghold-scale feel (concern 2), the picker, the telegraphs; plus the S21 leftovers (empowerment re-dive, Nighthawk + Blood Artist chattiness, a tavern whisper heard live).
 2. **Director round on the tables**: the ?-cost ruling (tables say keep 3), the Toll/Season watch-flags — and the Tithe's new evidence; the Usher's launder deck question; lord-deck iteration (Chris warned these get the most back-and-forth).
-3. **Planner ratifications**: lord renown (deviation 1), the auto-order simplification (R-067), Overload's encoding (R-074), the JPG amendment to ADR-082, the audio/Vercel home for assets/temp, stronghold empowerment schedule if Chris's storm confirms concern 2.
+3. **Planner ratifications**: lord renown (deviation 1), the auto-order simplification (R-067), Overload's encoding (R-074), the JPG amendment to ADR-082, the audio/Vercel home for assets/temp, stronghold empowerment schedule if Chris's storm confirms concern 2 — plus the r3 pile: bounty pricing (r3 deviation 1), the siege grace baselines (300/500/200), the misaim cliff's forbidden exotic saves (R-080), and the news-everywhere reading of item 7 (r3 deviation 2).
 4. **S23 per ADR-081/082**: wilds polish (wild towns ≥2/world, rivers, footprint variety, the interior smoothing pass) + audio scaffolding; the render round for law plates + tokens could ride any session.
 
 ## How to run
