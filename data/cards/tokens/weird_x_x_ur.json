@@ -18,6 +18,7 @@
  "toughness": 0,
  "text": "",
  "art": {
+  "asset": "/custom-art/weird_x_x_ur.png",
   "fallback": "rendered"
  }
 }

@@ -49,7 +49,7 @@ import { MatchController } from "../play/match-controller.js";
 import { abandonQuest, acceptQuest, addToCollection, cardMatches, creditRenown, pendingRetrievalChoice, questsOnArrival, resolveRetrieval, retrievalOnDungeonClear, rumorState, rumorsOnArrival, tavernRumors, spares, townOffers, type ActiveQuest, type QuestOffer } from "@shandalar/world";
 import {
   applyInteriorDuel, clearDungeon, colorPrizeRoll, dungeonAdvance, dungeonAsWorldMap, dungeonDuelSpec, dungeonPath,
-  generateDungeonRun, lairPrizeRoll, reachedTiers, resetDungeon, type DungeonRun, type MoxDungeonDef,
+  empowermentTiersFor, generateDungeonRun, lairPrizeRoll, reachedTiers, resetDungeon, type DungeonRun, type MoxDungeonDef,
 } from "@shandalar/world";
 import {
   applySiegeDuel, beginSiegeEngagement, isTownOccupied, isTownThreatened, siegeDuelSpec, siegeFor, siegeWarnings,
@@ -477,14 +477,13 @@ export class WorldController {
     syncShopState(this.world, town, this.knobs);
     // S19: courier deliveries complete on arrival (autosave below covers them — durability on complete).
     const done = questsOnArrival(this.world, town, this.knobs);
-    // S21: rumor chains hear/advance/reveal on arrival (a reveal marks the map — a consequence).
-    const rumorEv = rumorsOnArrival(this.world, this.catalog, town);
+    // S22 r1 (Chris): rumors are HEARD AT THE TAVERN now, not by walking in — chains start/advance/
+    // reveal when the tavern tab opens (townRumors), where the lines are actually read.
     this.autosave();
     const first = this.world.visits[town.index] === 1;
     // S19 round 2 (Chris): completion gets a POPUP, not just a notice line.
     if (done.length) this.questPopup = done.filter((e) => e.type === "questDone").map((e) => ({ title: "Quest complete", quest: e.quest.text, reward: e.rewardText }));
-    const reveal = rumorEv.find((e) => e.type === "chainRevealed");
-    this.screen = { kind: "town", town, stock: rollShopStock(this.world, town, this.pool, this.knobs), notice: reveal ? reveal.text : first ? `First time in ${town.name}.` : null };
+    this.screen = { kind: "town", town, stock: rollShopStock(this.world, town, this.pool, this.knobs), notice: first ? `First time in ${town.name}.` : null };
     this.emit();
   }
 
@@ -964,16 +963,23 @@ export class WorldController {
     const run = this.dungeonRun;
     if (!run) return null;
     const tiers = reachedTiers(run, this.knobs);
-    const next = this.knobs.dungeonEmpowermentTiers.find((t) => run.steps < t.steps);
+    const next = empowermentTiersFor(run, this.knobs).find((t) => run.steps < t.steps);
     return { steps: run.steps, reached: tiers.length, nextAt: next?.steps ?? null, life: run.interiorLife, escrowGold: run.escrow.gold, escrowCards: run.escrow.cardIds };
   }
 
   // ---------- S21 Parts 3–4: rumors + retrieval ----------
 
-  /** The tavern's rumor lines for the current town screen (logs them as heard). */
+  /** The tavern's rumor lines for the current town screen (logs them as heard). S22 r1: the
+   * CHAINS live here too now — opening the tavern starts/advances/reveals them (idempotent per
+   * town: an advanced chain points elsewhere), and a reveal's trail-end line leads the board.
+   * A reveal marks the map — a consequence, so it autosaves. */
   townRumors(): string[] {
     if (!this.world || this.screen.kind !== "town") return [];
-    return tavernRumors(this.world, this.catalog, this.screen.town);
+    const events = rumorsOnArrival(this.world, this.catalog, this.screen.town);
+    if (events.length > 0) this.autosave();
+    const lines = tavernRumors(this.world, this.catalog, this.screen.town);
+    const reveals = events.filter((e) => e.type === "chainRevealed").map((e) => e.text);
+    return [...reveals, ...lines];
   }
 
   /** Recovered retrieval items whose buyer is in THIS town — the keep-or-deliver choice. */
@@ -991,10 +997,10 @@ export class WorldController {
   }
 
   /** The heard-rumors journal (rail): count + the freshest few. */
-  rumorJournal(): { count: number; recent: string[] } {
-    if (!this.world) return { count: 0, recent: [] };
+  rumorJournal(): { count: number; recent: string[]; all: string[] } {
+    if (!this.world) return { count: 0, recent: [], all: [] };
     const rs = rumorState(this.world, this.catalog);
-    return { count: rs.heard.length, recent: rs.heard.slice(-3).reverse() };
+    return { count: rs.heard.length, recent: rs.heard.slice(-3).reverse(), all: [...rs.heard].reverse() }; // newest first (S22 r1: the rail scrolls the whole journal)
   }
 
   // ---------- S21 sieges (manifest §5) ----------

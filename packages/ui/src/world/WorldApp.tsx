@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { CardDef } from "@shandalar/cards";
 import { cardColors } from "@shandalar/cards";
 import { activeDeck, buyOffPrice, deckSize, deckStats, dungeonAsWorldMap, isBasic, isExplored, sellPrice, spares, BASIC_LANDS, type DifficultyName, type Point, type ShopItem, type StarterId } from "@shandalar/world";
@@ -322,7 +322,7 @@ function DungeonTelegraph({ c }: { c: WorldController }) {
   const mox = info.kind === "mox" ? c.moxDef(info.dungeonId) : undefined;
   const sh = info.kind === "stronghold" ? c.strongholdDef(info.dungeonId) : undefined;
   const resident = info.residentCatalogId ? c.catalog.opponents.find((o) => o.id === info.residentCatalogId) : undefined;
-  const tiers = c.knobs.dungeonEmpowermentTiers;
+  const tiers = info.kind === "stronghold" ? c.knobs.strongholdEmpowermentTiers : c.knobs.dungeonEmpowermentTiers; // S22 r1: the lord's own clock
   const status = c.world?.dungeons[info.dungeonId];
   // S20 playtest r3 (Chris): the telegraph shows the face at the deep end — the guardian's
   // portrait (dungeons.json), the lord's (S22b), or the lair resident's.
@@ -405,7 +405,7 @@ function DungeonScreen({ c, pool }: { c: WorldController; pool: Map<string, Card
         <div className="panel">
           <h3>The {run.kind === "stronghold" ? "lord" : run.kind === "mox" ? "guardian" : "resident"} grows</h3>
           <div style={{ fontSize: 12 }}>Interior steps: <b>{meter.steps}</b> · tiers reached: <b>{meter.reached}</b>{meter.nextAt !== null ? <> · next at <b>{meter.nextAt}</b></> : <> · fully grown</>}</div>
-          <div className="empower-meter">{c.knobs.dungeonEmpowermentTiers.map((t, i) => (
+          <div className="empower-meter">{(run.kind === "stronghold" ? c.knobs.strongholdEmpowermentTiers : c.knobs.dungeonEmpowermentTiers).map((t, i) => (
             <span key={i} className={`empower-tier${meter.steps >= t.steps ? " hit" : ""}`} title={`${t.steps} steps: +${t.addLife} life${t.addBasic ? ", +1 land in play" : ""}${t.addToken ? ", +1 creature in play" : ""}${t.addCard ? ", +1 card" : ""}`}>{t.steps}</span>
           ))}</div>
           {mox && <p style={{ fontSize: 11.5, color: "var(--ink-soft)" }}><b>{mox.law.name}:</b> {mox.law.text}</p>}
@@ -441,6 +441,22 @@ function DungeonVictory({ c, pool }: { c: WorldController; pool: Map<string, Car
   );
 }
 
+/** S22 r1 (Chris): the map rail carries a lot now — every panel folds. Open state is per-mount
+ * (position-keyed React state; a screen switch resets it, which is fine for a dev-era rail). */
+function RailPanel({ title, badge, defaultOpen = true, children }: { title: string; badge?: string | number; defaultOpen?: boolean; children: ReactNode }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="panel">
+      <h3 style={{ cursor: "pointer", userSelect: "none" }} onClick={() => setOpen(!open)} title={open ? "collapse" : "expand"}>
+        <span style={{ display: "inline-block", width: 12, fontSize: 10 }}>{open ? "▾" : "▸"}</span>
+        {title}
+        {badge !== undefined && <span style={{ fontWeight: 400, fontSize: 11, color: "var(--ink-soft)" }}> · {badge}</span>}
+      </h3>
+      {open && children}
+    </div>
+  );
+}
+
 /** S22b: a LORD fell — the sole-drop + escrow are paid; the player takes any strongholdPrizePicks
  * from the colour prize list (the R + T3 shelf touching the colour, his typed duals included;
  * prizeOnly blocked), then the seal ceremony. */
@@ -456,14 +472,28 @@ function StrongholdVictory({ c, pool, oracle }: { c: WorldController; pool: Map<
           <b>{s.paidGold} gold</b>{s.paidCards.filter((id) => id !== s.lordCardId).length > 0 ? <> and {s.paidCards.filter((id) => id !== s.lordCardId).map((id) => pool.get(id)?.name ?? id).join(", ")}</> : null}. And the <b>seal</b>.
         </p>
         <p style={{ fontSize: 13 }}>Take <b>any {s.pickCount}</b> from his hoard ({s.picks.length}/{s.pickCount} chosen — taking fewer is your right):</p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, maxHeight: 380, overflowY: "auto" }}>
-          {s.prizeList.map((id) => {
-            const def = pool.get(id);
-            if (!def) return null;
-            const picked = s.picks.includes(id);
+        {/* S22 r1 (Chris): the WHOLE colour wardrobe, shelved by tier — R first, then 3/2/1. */}
+        <div style={{ maxHeight: 380, overflowY: "auto" }}>
+          {(["R", 3, 2, 1] as const).map((tier) => {
+            const shelf = s.prizeList.filter((id) => pool.get(id)?.shopTier === tier);
+            if (shelf.length === 0) return null;
             return (
-              <div key={id} className="card-slot" style={{ width: 150, cursor: "pointer", outline: picked ? "3px solid var(--brass)" : "none", borderRadius: 6 }} onClick={() => c.toggleStrongholdPick(id)} title={picked ? "click to put back" : "click to take"}>
-                <CardFrame def={def} oracle={oracle[id]} showPrinted />
+              <div key={String(tier)}>
+                <div style={{ fontSize: 11.5, color: "var(--ink-soft)", margin: "6px 0 4px", fontVariant: "small-caps", letterSpacing: 0.5 }}>
+                  {tier === "R" ? "the R drawer — never on a shelf" : `tier ${tier}`}
+                </div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                  {shelf.map((id) => {
+                    const def = pool.get(id);
+                    if (!def) return null;
+                    const picked = s.picks.includes(id);
+                    return (
+                      <div key={id} className="card-slot" style={{ width: 150, cursor: "pointer", outline: picked ? "3px solid var(--brass)" : "none", borderRadius: 6 }} onClick={() => c.toggleStrongholdPick(id)} title={picked ? "click to put back" : "click to take"}>
+                        <CardFrame def={def} oracle={oracle[id]} showPrinted />
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             );
           })}
@@ -901,6 +931,11 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
             clearedFixed={new Set(w.map.strongholds.map((f, i) => {
               // S21 r2 fix (Chris): mox sites have no resident — their cleared state lives in world.dungeons.
               if (f.kind === "dungeon") return w.dungeons[`mox_${w.map.regions[f.region]?.color}`.toLowerCase()]?.cleared ? i : -1;
+              // S22 r1 (Chris): a broken seat draws as RUBBLE — cleared strongholds read from world.dungeons by content id.
+              if (f.kind === "stronghold") {
+                const content = (c.catalog.strongholdContent ?? []).find((s) => s.color === w.map.regions[f.region]?.color);
+                return content && w.dungeons[content.id]?.cleared ? i : -1;
+              }
               return w.opponents.find((o) => o.id === f.opponentId)?.gone ? i : -1;
             }).filter((i) => i >= 0))}
             roamers={c.visibleRoamers().map((r) => ({ id: r.inst.id, at: r.inst.at!, portrait: `/portraits/${r.tmpl.portraitChip ?? r.tmpl.portrait}.png`, name: r.tmpl.name, tier: r.tmpl.tier, fleeing: r.fleeing }))}
@@ -937,14 +972,12 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
         </div>
       </div>
       <div className="rail world-rail">
-        <div className="panel">
-          <h3>Journey</h3>
+        <RailPanel title="Journey">
           <div style={{ fontSize: 12 }}>Duels: {w.duels.length} · won {w.duels.filter((d) => d.outcome === "win").length} · lost {w.duels.filter((d) => d.outcome === "loss").length}</div>
           <div style={{ fontSize: 12 }}>Opponents defeated: {w.opponents.filter((o) => o.goneReason === "defeated").length} · renown {w.player.renown}{(["W", "U", "B", "R", "G"] as const).some((c) => w.player.renownByColor[c] > 0) ? ` (${(["W", "U", "B", "R", "G"] as const).filter((c) => w.player.renownByColor[c] > 0).map((c) => `${c}${w.player.renownByColor[c]}`).join(" ")})` : ""} · roaming now {w.opponents.filter((o) => !o.gone && o.at).length}</div>
           <div style={{ fontSize: 12 }}>Deck: {deckSize(activeDeck(w))} cards · basic {w.player.basicLand}</div>
-        </div>
-        <div className="panel">
-          <h3>Quests</h3>
+        </RailPanel>
+        <RailPanel title="Quests" badge={c.activeQuests().length || undefined}>
           {c.activeQuests().map(({ quest: q, stepsLeft, destName, targetName }) => (
             <div key={q.id} style={{ fontSize: 11.5, marginBottom: 4 }}>
               <b>{{ courier: "Courier", cardCourier: "Card courier", bounty: "Bounty", retrieval: "Retrieval" }[q.kind]}</b>
@@ -961,23 +994,24 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
           {c.world && c.world.manalinks.length > 0 && (
             <div style={{ fontSize: 11.5, marginTop: 4 }}>Manalinks: {c.world.manalinks.map((m) => m.color).join(", ")} — every duel starts with them in play.</div>
           )}
-          {(() => {
-            // S21 Part 4: the heard-rumors journal (cheap rail version — count + the freshest).
-            const j = c.rumorJournal();
-            if (j.count === 0) return null;
-            return (
-              <div style={{ fontSize: 11, marginTop: 6, color: "var(--ink-soft)" }}>
-                <b>Rumors heard: {j.count}</b>
-                {j.recent.map((r, i) => (
-                  <div key={i} style={{ fontStyle: "italic", marginTop: 2 }}>“{r.length > 72 ? r.slice(0, 70) + "…" : r}”</div>
+        </RailPanel>
+        {(() => {
+          // S21 Part 4 → S22 r1: the heard-rumors journal is its own FOLDING panel now — the
+          // whole journal, newest first, scrollable (it grows for the life of a run).
+          const j = c.rumorJournal();
+          if (j.count === 0) return null;
+          return (
+            <RailPanel title="Rumors" badge={j.count} defaultOpen={false}>
+              <div style={{ fontSize: 11, color: "var(--ink-soft)", maxHeight: 180, overflowY: "auto" }}>
+                {j.all.map((r, i) => (
+                  <div key={i} style={{ fontStyle: "italic", marginTop: 3 }}>“{r}”</div>
                 ))}
               </div>
-            );
-          })()}
-        </div>
+            </RailPanel>
+          );
+        })()}
         {c.siegeRail().filter((s) => seenCell(s.town.at)).length > 0 && (
-          <div className="panel">
-            <h3>Sieges</h3>
+          <RailPanel title="Sieges" badge={c.siegeRail().filter((s) => seenCell(s.town.at)).length}>
             {c.siegeRail().filter((s) => seenCell(s.town.at)).map((s) => (
               <div key={s.town.index} style={{ fontSize: 12, display: "flex", justifyContent: "space-between", cursor: screen.kind === "map" ? "pointer" : "default" }} title="click to preview the path there" onClick={() => c.clickCell(s.town.at)}>
                 <span>{s.town.name}</span>
@@ -986,11 +1020,10 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
                 </span>
               </div>
             ))}
-          </div>
+          </RailPanel>
         )}
         {c.lordStatusRows().length > 0 && (
-          <div className="panel">
-            <h3>The five lords</h3>
+          <RailPanel title="The five lords" badge={`${c.lordStatusRows().filter((r) => r.sealed).length}/5 seals`}>
             {c.lordStatusRows().map((r) => (
               <div key={r.color} style={{ fontSize: 12, marginTop: 2 }} title={r.voice}>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -1002,11 +1035,10 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
                 )}
               </div>
             ))}
-            <div style={{ fontSize: 10.5, color: "var(--ink-soft)", marginTop: 4 }}>Seals: {c.lordStatusRows().filter((r) => r.sealed).length}/5 · hunting a spoke bleeds its lord; the years fatten all five.</div>
-          </div>
+            <div style={{ fontSize: 10.5, color: "var(--ink-soft)", marginTop: 4 }}>Hunting a spoke bleeds its lord; the years fatten all five.</div>
+          </RailPanel>
         )}
-        <div className="panel">
-          <h3>Lairs &amp; strongholds</h3>
+        <RailPanel title="Lairs & strongholds">
           {w.map.strongholds.map((f, i) => {
             if (!seenCell(f.at)) return null;
             const resident = w.opponents.find((o) => o.id === f.opponentId);
@@ -1023,17 +1055,15 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
             );
           })}
           {w.map.strongholds.filter((f) => seenCell(f.at)).length === 0 && <div style={{ fontSize: 11, color: "var(--ink-soft)" }}>none found yet</div>}
-        </div>
-        <div className="panel">
-          <h3>Regions</h3>
+        </RailPanel>
+        <RailPanel title="Regions" badge={`${seenRegions.size}/${w.map.regions.length}`} defaultOpen={false}>
           {[...w.map.regions].filter((r) => seenRegions.has(r.index)).sort((a, b) => (a.spoke ?? 0) - (b.spoke ?? 0) || ["civilized", "approach", "wild"].indexOf(a.tier) - ["civilized", "approach", "wild"].indexOf(b.tier)).map((r) => (
             <div key={r.index} style={{ fontSize: 12, display: "flex", justifyContent: "space-between" }}>
               <span>{r.name}</span><span style={{ color: "var(--ink-soft)" }}>{r.tier}</span>
             </div>
           ))}
-        </div>
-        <div className="panel">
-          <h3>Recent duels</h3>
+        </RailPanel>
+        <RailPanel title="Recent duels" badge={w.duels.length || undefined} defaultOpen={false}>
           {w.duels.slice(-6).reverse().map((d) => (
             <div key={d.index} style={{ fontSize: 11.5 }}>
               #{d.index + 1} {catalog.opponents.find((o) => o.id === d.catalogId)?.name ?? d.catalogId} — <b>{d.outcome}</b>{" "}
@@ -1041,7 +1071,7 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
             </div>
           ))}
           {w.duels.length === 0 && <div style={{ fontSize: 11, color: "var(--ink-soft)" }}>none yet</div>}
-        </div>
+        </RailPanel>
       </div>
       {screen.kind === "encounter" && <ParleyPanel c={c} />}
       {screen.kind === "town" && <TownScreen c={c} pool={pool} oracle={oracle} />}

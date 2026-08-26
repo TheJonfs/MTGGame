@@ -22,6 +22,7 @@
  "uncastable": true,
  "prizeOnly": true,
  "art": {
+  "asset": "/custom-art/law_risen_tide.png",
   "fallback": "rendered"
  }
 }

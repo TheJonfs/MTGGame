@@ -30,6 +30,7 @@
  "uncastable": true,
  "prizeOnly": true,
  "art": {
+  "asset": "/custom-art/law_tithe.png",
   "fallback": "rendered"
  }
 }

@@ -487,7 +487,7 @@ export function applyDuelResult(world: WorldState, catalog: Catalog, duel: Prepa
     world.player.gold += knobs.goldRewardByTier[duel.encounter.tier];
     const beatenTmpl = catalog.opponents.find((o) => o.id === duel.encounter.catalogId);
     creditRenown(world.player, beatenTmpl?.colors ?? "", duel.encounter.tier); // §5 total + S20 playtest per-colour
-    creditSpokeKill(world, beatenTmpl?.spoke, duel.encounter.tier); // S22b: the pace war — a spoke kill bleeds its lord
+    creditSpokeKill(world, beatenTmpl?.colors, duel.encounter.tier); // S22 r1: the pace war mirrors renown — every colour worn bleeds its lord
     if (inst) removeOpponent(world, inst.id, "defeated");
     // S19: bounty completion — the mark's defeat pays out (recorded on the DuelRecord for the UI).
     questEvents = questsOnDefeat(world, duel.encounter.opponentId, knobs);

@@ -57,11 +57,14 @@ export function strongholdState(world: WorldState, color: LordColor): Stronghold
   return e;
 }
 
-/** Credit a defeated spoke-bound opponent to its colour's lord (tier N = N points). Opponents
- * without a spoke (the wandering mages) feed no one — the lords only fear their own losses. */
-export function creditSpokeKill(world: WorldState, spoke: string | undefined, tier: number): void {
-  if (!spoke || !["W", "U", "B", "R", "G"].includes(spoke)) return;
-  strongholdState(world, spoke as LordColor).spokeMinionPoints += tier;
+/** Credit a defeat to the lords of every colour the opponent WORE (tier N = N points per colour) —
+ * the renown attribution, mirrored (S22 playtest r1, Chris: 14 green renown had bled the Sower
+ * only 2 — spoke-only crediting skipped the humanoid opponents; the hunt now counts exactly the
+ * defeats the renown ledger counts, so "renownByColor[G] ÷ 3" reads straight off the rail). */
+export function creditSpokeKill(world: WorldState, colors: string | undefined, tier: number): void {
+  for (const c of ["W", "U", "B", "R", "G"] as const) {
+    if (colors?.includes(c)) strongholdState(world, c).spokeMinionPoints += tier;
+  }
 }
 
 /** The global growth term: +lordGrowthLife per lordGrowthSteps world steps, capped. */
@@ -75,18 +78,21 @@ export function lordStartingLife(world: WorldState, knobs: KnobValues, content: 
   return Math.max(knobs.lordLifeFloor, content.lord.baseLife + lordGrowth(world, knobs) - reduction);
 }
 
-/** The colour prize list (§treasures): the colour's R and T3 shelf — mono and gold cards whose
- * cost touches the colour, plus the colour's TYPED duals (Tropical Island is a Forest — the
- * lord makes the investment fetchable). prizeOnly is blocked (Moxen, boss cards, laws). */
+/** The colour prize list (§treasures; S22 playtest r1 — Chris: ALL the colour's cards, not just
+ * the R/T3 shelf, sorted by tier R → 3 → 2 → 1): mono and gold cards whose cost touches the
+ * colour, plus the colour's TYPED duals (Tropical Island is a Forest — the lord makes the
+ * investment fetchable). prizeOnly is blocked (Moxen, boss cards, laws). The player will usually
+ * take from the top shelves; offering the whole wardrobe is the point. */
 const BASIC_TYPE: Record<LordColor, string> = { W: "Plains", U: "Island", B: "Swamp", R: "Mountain", G: "Forest" };
+const TIER_RANK: Record<string, number> = { R: 0, "3": 1, "2": 2, "1": 3 };
 export function strongholdPrizeList(pool: Map<string, CardDef>, color: LordColor): CardDef[] {
   return [...pool.values()]
-    .filter((d) => !d.isTokenDef && !d.prizeOnly && (d.shopTier === "R" || d.shopTier === 3))
+    .filter((d) => !d.isTokenDef && !d.prizeOnly && d.shopTier !== undefined)
     .filter((d) => {
       if (d.types.includes("Land")) return (d.subtypes ?? []).includes(BASIC_TYPE[color]);
       return cardColors(d).includes(color);
     })
-    .sort((a, b) => a.id.localeCompare(b.id));
+    .sort((a, b) => (TIER_RANK[String(a.shopTier)]! - TIER_RANK[String(b.shopTier)]!) || a.id.localeCompare(b.id));
 }
 
 /** Seals held (the gauntlet-unlock state — the count is the whole mechanic this session). */

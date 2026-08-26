@@ -27,6 +27,7 @@
  "uncastable": true,
  "prizeOnly": true,
  "art": {
+  "asset": "/custom-art/law_toll.png",
   "fallback": "rendered"
  }
 }

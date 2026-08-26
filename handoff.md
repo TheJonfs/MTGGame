@@ -29,7 +29,7 @@
 ## Concerns
 
 1. **The Tithe is the sleeper** (lord-sim): the watch-flags went to the Toll and the Season, but the USHER posts the cycle's hottest floor — 87% kill at life 15, tier 0 (every reference deck is creatures; each death is −1 law −2 drain). The Court may need its own watch-flag; the Toll's turn-1 bite also looks real at low life (77% at the floor). Tables + readings in `docs/lord-sim-s22.md`.
-2. **Stronghold empowerment reuses the DUNGEON tiers (30/60/90)** — at 30×22 a thorough tour blows far past 90, so a looting player fights an essentially fully-grown lord every time. The speed-vs-thoroughness dial may be pinned at one end at this scale; a stronghold-specific schedule (or higher thresholds) is one knob away. Chris's storm is the feel-check.
+2. ~~ADDRESSED in playtest r1 (strongholdEmpowermentTiers 50/75/100)~~ — original text kept for the record: **Stronghold empowerment reuses the DUNGEON tiers (30/60/90)** — at 30×22 a thorough tour blows far past 90, so a looting player fights an essentially fully-grown lord every time. The speed-vs-thoroughness dial may be pinned at one end at this scale; a stronghold-specific schedule (or higher thresholds) is one knob away. Chris's storm is the feel-check.
 3. **The launder went unfound in 630 games** — the pin is in and fixture-verified, but the CARDS give her almost no chances (one Restoration Angel; reanimation needs a stocked graveyard at her ETB). Deck iteration question for the round (a second Resto? Zombify count?).
 4. **The Stoker's deck-out path is unobservable at reference conditions** (0 DECKED in 630; life-10 races end first). If the round wants the number, a high-life no-damage probe is the sanctioned-on-demand extension (ADR-081's time-to-liberation precedent).
 5. **The empowerment TIERS hand-mirror is now a THREE-place sync** (knob ↔ guardian-sim ↔ lord-sim). The S20 flag said fold it onto the knob when it bites a third time; the third copy now exists. Next session that touches the schedule should fold it.
@@ -37,6 +37,17 @@
 7. **Laws and the three new tokens have no art** — laws render placeholder frames on the battlefield; a small render round (5 law plates + saproling/sphinx/weird) is wanted. Lord battle portraits currently reuse the card-art crops (fine at 72px; proper plates optional).
 8. **Interior ante applies in lord fights** (stakes rail shows it) — intended? It compounds with the `anteCount` question already in Chris's pile.
 9. **The colour prize lists run ~10 cards each** right now (the R shelf is young). Fine mechanically; the "deep tune" promise grows as the R economy does.
+
+## Playtest round 1 (Chris's storm — same session)
+
+Six items, all landed:
+
+1. **The hunt now counts everyone renown counts.** creditSpokeKill credits every colour the defeated opponent WORE (the renownByColor attribution, mirrored) — Chris's 14 green renown had bled the Sower only 2 because spoke-only crediting skipped the humanoid opponents. The rail's renown figure now reads straight onto the reduction (÷3). Siege-engagement kills credit too (outside = everywhere renown pays). **Planner note:** a gold opponent bleeds BOTH its lords at full tier — deliberate (renown does the same); ratify or halve.
+2. **Stronghold empowerment gets its own clock** (`strongholdEmpowermentTiers`, 50/75/100 per Chris) — and the seat itself was rebuilt: 36×26 grid (s=3), a SECOND route mirrored through the opposite half, 3×3 chambers at junctions, doubled cross-links. The Verdant Throne at Chris's seed went from a 76-cell tunnel to a 224-cell web (before/after ASCII probes in the session record). Minions 6–7 across both routes.
+3. **The prize picker offers the whole colour wardrobe**, shelved R → 3 → 2 → 1 with shelf headers ("the R drawer — never on a shelf"). List-membership still guards the toggle.
+4. **The art batch (9 renders, zero refusals):** plates for the Saproling/Sphinx/Weird tokens, art for all five law cards, and the RUIN sprite — a fallen stronghold now draws as rubble on the campaign map (full-ink swap, not a ghosted keep; the S21 sprite pipeline rebuilt for post-processing). All wired live, MANIFEST rows as candidates for verdicts.
+5. **Difficulty signal recorded:** Chris speed-ran to the Sower with the unmodified green starter and was beaten soundly — player skill cannot overcome showing up weak. Working as designed; noted for the tables' context.
+6. **The rail folds** — every panel collapsible with count badges (Rumors/Regions/Recent-duels default closed); the rumor journal is its own scrollable panel (whole journal, newest first). **Rumors are heard at the TAVERN now**, not by walking in — chains start/advance/reveal when the tavern tab opens (browser-verified: 0 heard on arrival, 10 after the tavern).
 
 ## Registry entries added/changed
 

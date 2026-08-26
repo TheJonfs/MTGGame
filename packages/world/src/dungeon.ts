@@ -171,24 +171,53 @@ export function generateDungeonRun(
   const entry: Point = { x: 0, y: Math.floor(h / 2) };
   const guardianAt: Point = { x: w - 1, y: rng.int(h) };
 
-  // Main trunk: step right with vertical wiggle toward the guardian row.
-  const trunk: Point[] = [];
-  let cur = { ...entry };
-  carve(cur); trunk.push({ ...cur });
-  while (cur.x < guardianAt.x || cur.y !== guardianAt.y) {
-    const dy = Math.sign(guardianAt.y - cur.y);
-    const canRight = cur.x < guardianAt.x;
-    const wiggle = rng.float();
-    if (canRight && (wiggle < 0.55 || dy === 0)) cur = { x: cur.x + 1, y: cur.y };
-    else if (dy !== 0 && wiggle < 0.9) cur = { x: cur.x, y: cur.y + dy };
-    else if (canRight) cur = { x: cur.x + 1, y: cur.y };
-    else cur = { x: cur.x, y: cur.y + (dy || (rng.float() < 0.5 ? 1 : -1)) };
-    cur.y = Math.max(0, Math.min(h - 1, cur.y));
-    carve(cur); trunk.push({ ...cur });
+  // A wiggling walk toward `to`, carving as it goes (the S20 trunk, extracted for reuse).
+  const walk = (from: Point, to: Point): Point[] => {
+    const cells: Point[] = [];
+    let cur = { ...from };
+    carve(cur); cells.push({ ...cur });
+    while (cur.x !== to.x || cur.y !== to.y) {
+      const dy = Math.sign(to.y - cur.y);
+      const toward = Math.sign(to.x - cur.x);
+      const wiggle = rng.float();
+      if (toward !== 0 && (wiggle < 0.55 || dy === 0)) cur = { x: cur.x + toward, y: cur.y };
+      else if (dy !== 0 && wiggle < 0.9) cur = { x: cur.x, y: cur.y + dy };
+      else if (toward !== 0) cur = { x: cur.x + toward, y: cur.y };
+      else cur = { x: cur.x, y: cur.y + (dy || (rng.float() < 0.5 ? 1 : -1)) };
+      cur.y = Math.max(0, Math.min(h - 1, cur.y));
+      cur.x = Math.max(0, Math.min(w - 1, cur.x));
+      carve(cur); cells.push({ ...cur });
+    }
+    return cells;
+  };
+
+  // Main trunk: entry → guardian.
+  const trunk: Point[] = walk(entry, guardianAt);
+
+  // S22 playtest r1 (Chris, seed 146764: "too small and too linear"): a stronghold is a SEAT, not
+  // a mine tunnel — it gets a SECOND route through the opposite half of the grid (entry → a far
+  // waypoint mirrored across the mid-line → the lord's approach), and CHAMBERS (3×3 rooms) at
+  // junctions along both routes. Both routes join the trunk list, so minions guard each and
+  // cross-links stitch them into a web.
+  if (opts.kind === "stronghold") {
+    const mirrorY = Math.max(1, Math.min(h - 2, h - 1 - guardianAt.y));
+    const waypoint: Point = { x: Math.floor(w * 0.55), y: mirrorY };
+    const routeB = [...walk(entry, waypoint), ...walk(waypoint, { x: guardianAt.x - 1, y: guardianAt.y })];
+    trunk.push(...routeB);
+    const chambers = 2 * s;
+    for (let c = 0; c < chambers; c++) {
+      const centre = trunk[Math.floor(((c + 1) * trunk.length) / (chambers + 2))]!;
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          const q = { x: centre.x + dx, y: centre.y + dy };
+          if (q.x >= 0 && q.y >= 0 && q.x < w && q.y < h) carve(q);
+        }
+      }
+    }
   }
 
   // Branches: sprout from mid-trunk cells, run away vertically/backward, end in treasure.
-  const branchCount = opts.kind === "stronghold" ? 3 * s + rng.int(s + 1) : opts.small ? 2 * s : 2 * s + rng.int(2 * s + 1); // s=1: 2 / 2..4 · s=2: 4 / 4..8 · stronghold s=2: 6..8
+  const branchCount = opts.kind === "stronghold" ? 2 * s + rng.int(s) : opts.small ? 2 * s : 2 * s + rng.int(2 * s + 1); // s=1: 2 / 2..4 · s=2: 4 / 4..8 · stronghold s=3: 6..8
   const branchTips: Point[] = [];
   for (let b = 0; b < branchCount; b++) {
     const from = trunk[1 + rng.int(Math.max(1, trunk.length - 3))]!;
@@ -203,8 +232,10 @@ export function generateDungeonRun(
     if (!(p.x === from.x && p.y === from.y) && !branchTips.some((t) => t.x === p.x && t.y === p.y)) branchTips.push({ ...p });
   }
 
-  // Cross-links (interconnection): join two trunk cells a few columns apart via an L; s per scale.
-  for (let link = 0; link < s && trunk.length > 8; link++) {
+  // Cross-links (interconnection): join two trunk cells a few columns apart via an L; s per scale
+  // (strongholds 2s — the two routes want stitching, S22 r1).
+  const linkCount = opts.kind === "stronghold" ? 2 * s : s;
+  for (let link = 0; link < linkCount && trunk.length > 8; link++) {
     const a = trunk[2 + rng.int(Math.floor(trunk.length / 3))]!;
     const b = trunk[Math.floor(trunk.length / 2) + rng.int(Math.floor(trunk.length / 3))]!;
     const viaY = Math.max(0, Math.min(h - 1, (a.y + b.y) / 2 + (rng.float() < 0.5 ? -2 : 2)) | 0);
@@ -214,7 +245,7 @@ export function generateDungeonRun(
   }
 
   // Minions at chokepoints: trunk cells past the first quarter, spaced out; never entry/guardian.
-  const minionCount = opts.kind === "stronghold" ? 2 * s + rng.int(s + 1) : opts.small ? s + rng.int(2) : s + 1 + rng.int(s + 1); // s=1: lair 1–2 / mox 2–3 · s=2: lair 2–3 / mox 3–5 · stronghold s=2: 4–6 (spoke-themed floors)
+  const minionCount = opts.kind === "stronghold" ? 2 * s + rng.int(2) : opts.small ? s + rng.int(2) : s + 1 + rng.int(s + 1); // s=1: lair 1–2 / mox 2–3 · s=2: lair 2–3 / mox 3–5 · stronghold s=3: 6–7 across both routes (spoke-themed floors)
   const spokeMinions = catalog.opponents.filter(
     (o) => o.spoke === opts.color && o.tier <= 2 && o.id !== opts.residentCatalogId,
   );
@@ -324,9 +355,14 @@ export interface EmpowermentTier {
   addCard?: boolean;
 }
 
+/** The empowerment schedule a run reads: strongholds have their own (S22 r1 — 50/75/100). */
+export function empowermentTiersFor(run: Pick<DungeonRun, "kind">, knobs: KnobValues): EmpowermentTier[] {
+  return run.kind === "stronghold" ? knobs.strongholdEmpowermentTiers : knobs.dungeonEmpowermentTiers;
+}
+
 /** All tiers the interior step count has reached (cumulative — the guardian keeps what it grew). */
 export function reachedTiers(run: DungeonRun, knobs: KnobValues): EmpowermentTier[] {
-  return knobs.dungeonEmpowermentTiers.filter((t) => run.steps >= t.steps);
+  return empowermentTiersFor(run, knobs).filter((t) => run.steps >= t.steps);
 }
 
 /** The empowerment package as modifiers on the guardian's seat (basic land colour = the dungeon's). */
@@ -512,7 +548,7 @@ export function applyInteriorDuel(
         m.defeated = true;
         if (catalog) {
           const tmpl = catalog.opponents.find((o) => o.id === m.catalogId);
-          creditSpokeKill(world, tmpl?.spoke, tmpl?.tier ?? 0);
+          creditSpokeKill(world, tmpl?.colors, tmpl?.tier ?? 0); // S22 r1: colours, mirroring renown
         }
       }
     }

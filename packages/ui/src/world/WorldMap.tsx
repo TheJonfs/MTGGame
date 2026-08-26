@@ -642,11 +642,13 @@ export function WorldMapView({
           }
           // Round 4: pictorial POI sprites — castle keep, lair crag, dungeon door; an ACTIVE
           // lair/dungeon flies a small danger banner (the old red ring's job); cleared = faded.
-          const slug = castle ? "sprite-castle" : f.kind === "dungeon" ? "sprite-dungeon-door" : "sprite-lair";
+          // S22 r1 (Chris): a fallen stronghold BECOMES the ruin sprite — rubble at full ink,
+          // not a ghosted keep (the broken silhouette is the statement).
+          const slug = castle ? (cleared ? "sprite-ruin" : "sprite-castle") : f.kind === "dungeon" ? "sprite-dungeon-door" : "sprite-lair";
           const sz = CELL * (castle ? 3 : 2.4);
           return (
             <g key={`f${i}`} onMouseEnter={() => setHoverLair({ name: f.name ?? f.kind, at: f.at })} onMouseLeave={() => setHoverLair(null)} onClick={() => onClickCell(f.at)} style={{ cursor: "pointer" }}>
-              <image href={spriteHref(slug)} x={cx - sz / 2} y={cy - sz * 0.62} width={sz} height={sz} style={{ mixBlendMode: "multiply" }} opacity={cleared ? 0.4 : 1} pointerEvents="none" />
+              <image href={spriteHref(slug)} x={cx - sz / 2} y={cy - sz * 0.62} width={sz} height={sz} style={{ mixBlendMode: "multiply" }} opacity={cleared && !castle ? 0.4 : 1} pointerEvents="none" />
               {!castle && !cleared && <path d={SIEGE_FLAG} fill="var(--danger)" stroke="var(--ink)" strokeWidth="0.7" transform={`translate(${cx + CELL * 0.55} ${cy - CELL * 0.9})`} />}
               <circle cx={cx} cy={cy} r={CELL * (castle ? 1.2 : 1)} fill="transparent" />
             </g>

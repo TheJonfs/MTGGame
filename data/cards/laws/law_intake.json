@@ -23,6 +23,7 @@
  "uncastable": true,
  "prizeOnly": true,
  "art": {
+  "asset": "/custom-art/law_intake.png",
   "fallback": "rendered"
  }
 }

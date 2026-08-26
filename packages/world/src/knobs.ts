@@ -115,14 +115,23 @@ export const KNOBS = {
   }),
   // ---- S22b (the strongholds — stronghold-bosses.md systems, brief Part 4–5) ----
   strongholdGridWidth: knob<number>({
-    default: 30,
+    default: 36,
     unit: "cells",
-    description: "S22b: the stronghold interior grid width — the dungeon system at maximum scale (the brief proposes 30×22; escalate if it reads wrong in play).",
+    description: "S22b: the stronghold interior grid width — the dungeon system at maximum scale. S22 playtest r1 (Chris, the Verdant Throne at seed 146764): the brief's 30×22 read too small and too linear — 36×26 (scale s=3) with the two-route + chambers topology.",
   }),
   strongholdGridHeight: knob<number>({
-    default: 22,
+    default: 26,
     unit: "cells",
     description: "S22b: the stronghold interior grid height (see strongholdGridWidth).",
+  }),
+  strongholdEmpowermentTiers: knob<{ steps: number; addLife: number; addBasic?: boolean; addToken?: boolean; addCard?: boolean }[]>({
+    default: [
+      { steps: 50, addLife: 2 },
+      { steps: 75, addLife: 2, addBasic: true },
+      { steps: 100, addLife: 2, addToken: true, addCard: true },
+    ],
+    unit: "cumulative tiers by interior steps",
+    description: "S22 playtest r1 (Chris): the LORD's empowerment clock — the dungeon 30/60/90 hit too hard at stronghold scale (a thorough tour fought a fully-grown lord every time); 50/75/100 gives the speed-vs-thoroughness dial real travel. Same package shapes as dungeonEmpowermentTiers; strongholds read THIS table.",
   }),
   lordGrowthSteps: knob<number>({
     default: 250,

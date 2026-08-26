@@ -30,6 +30,7 @@ import { activeDeck, type WorldState } from "./state.js";
 // the S17 "one discard entry point" lesson applied to world consequences). The ESM cycle is
 // deliberate and safe: every cross-call happens at call time, never at module init.
 import { creditRenown, deckLegal, forfeitCards, addToCollection } from "./journey.js";
+import { creditSpokeKill } from "./stronghold.js";
 
 // ---------- State (lives in the reserved `sieges` array — no save bump) ----------
 
@@ -223,6 +224,7 @@ export function applySiegeDuel(
     const goldWon = knobs.goldRewardByTier[tmpl.tier];
     world.player.gold += goldWon;
     creditRenown(world.player, tmpl.colors, tmpl.tier);
+    creditSpokeKill(world, tmpl.colors, tmpl.tier); // S22 r1: siege defenders' kills bleed their lords too (outside = everywhere renown pays)
     if (eng.remaining.length > 0) return { type: "fightWon", remaining: eng.remaining.length, lifeNow: eng.life, anteWon, goldWon };
     const kind = eng.kind;
     resolveSiege(world, knobs, entry, town);

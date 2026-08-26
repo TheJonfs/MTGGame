@@ -1410,6 +1410,81 @@
         }
       }
     },
+    "law-intake": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:8e98442f6f7bb06f520990a26a30df44fe7bf3ff3f4607fa1efa16c5fe8d1f5b",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:8e98442f6f7bb06f520990a26a30df44fe7bf3ff3f4607fa1efa16c5fe8d1f5b",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/law-intake/canonical.png",
+          "rendered_at": "2026-08-26T11:37:44+00:00",
+          "thumb": "assets/thumbs/law-intake/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "law-risen-tide": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:c6c5bfcf00a77b805f93635d2aafa0549f173269057958574487d642d496ffcc",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:c6c5bfcf00a77b805f93635d2aafa0549f173269057958574487d642d496ffcc",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/law-risen-tide/canonical.png",
+          "rendered_at": "2026-08-26T11:37:20+00:00",
+          "thumb": "assets/thumbs/law-risen-tide/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "law-season": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:ae68d5084c132a8a5aef9273fd2230fc0201963fdb943883f7702e3ed7a7a0ca",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:ae68d5084c132a8a5aef9273fd2230fc0201963fdb943883f7702e3ed7a7a0ca",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/law-season/canonical.png",
+          "rendered_at": "2026-08-26T11:38:07+00:00",
+          "thumb": "assets/thumbs/law-season/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "law-tithe": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:cafdfef8a4aa06a6c098e07b6a7c893902974789091fab6d53322a4816ddea45",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:cafdfef8a4aa06a6c098e07b6a7c893902974789091fab6d53322a4816ddea45",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/law-tithe/canonical.png",
+          "rendered_at": "2026-08-26T11:37:32+00:00",
+          "thumb": "assets/thumbs/law-tithe/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "law-toll": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:e408c0bd06f3e995743ab05129359530ef1a6b080ab8a84f90682ee9c3ce487d",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:e408c0bd06f3e995743ab05129359530ef1a6b080ab8a84f90682ee9c3ce487d",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/law-toll/canonical.png",
+          "rendered_at": "2026-08-26T11:37:56+00:00",
+          "thumb": "assets/thumbs/law-toll/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "map-paper": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:6231ff5ddbb2857ead258b202189ee21e20ef2a418ea6928ca186f945b0a6a66",
@@ -1860,6 +1935,21 @@
         }
       }
     },
+    "sprite-ruin": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:2f7566f16522179461953f7b2f63795f122a27ea8ba4939b2befcb31cfd99ca1",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:2f7566f16522179461953f7b2f63795f122a27ea8ba4939b2befcb31cfd99ca1",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-ruin/canonical.png",
+          "rendered_at": "2026-08-26T11:38:18+00:00",
+          "thumb": "assets/thumbs/sprite-ruin/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "sprite-town": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:825a3b409b574939e12d8e83678f18aacc6b2af454400c4d9e22aafb8f840ba9",
@@ -2070,6 +2160,21 @@
         }
       }
     },
+    "token-saproling": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:6148f28f4a92f3f017a99d3832b8cceaced90596219d32d088d4b8de87ed3359",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:6148f28f4a92f3f017a99d3832b8cceaced90596219d32d088d4b8de87ed3359",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/token-saproling/canonical.png",
+          "rendered_at": "2026-08-26T11:36:46+00:00",
+          "thumb": "assets/thumbs/token-saproling/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "token-soldier": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:68bcf8d9832d2071ad3d1924ce75f4fe1d1e07445ca144baed7b2b747ce6c948",
@@ -2081,6 +2186,36 @@
           "path": "assets/images/token-soldier/canonical.png",
           "rendered_at": "2026-08-20T16:02:15+00:00",
           "thumb": "assets/thumbs/token-soldier/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "token-sphinx": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:752fb6527c52401e57af703e539cc182c82a6c0f20c4ca345df9dfa5d016be14",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:752fb6527c52401e57af703e539cc182c82a6c0f20c4ca345df9dfa5d016be14",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/token-sphinx/canonical.png",
+          "rendered_at": "2026-08-26T11:36:58+00:00",
+          "thumb": "assets/thumbs/token-sphinx/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "token-weird": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:faff052fab2279e0f4e172cbcfcccd6a3062996ca31ecca9e4553a31904153d8",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:faff052fab2279e0f4e172cbcfcccd6a3062996ca31ecca9e4553a31904153d8",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/token-weird/canonical.png",
+          "rendered_at": "2026-08-26T11:37:08+00:00",
+          "thumb": "assets/thumbs/token-weird/canonical.png",
           "variant_prompt": null
         }
       }

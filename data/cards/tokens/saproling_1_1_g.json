@@ -17,6 +17,7 @@
  "toughness": 1,
  "text": "",
  "art": {
+  "asset": "/custom-art/saproling_1_1_g.png",
   "fallback": "rendered"
  }
 }

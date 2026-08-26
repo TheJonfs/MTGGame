@@ -36,11 +36,12 @@ const dungeons = JSON.parse(fs.readFileSync(join(ROOT, "data/world/dungeons.json
 
 const BASIC: Record<string, string> = { W: "plains", U: "island", B: "swamp", R: "mountain", G: "forest" };
 const TOKEN: Record<string, string> = { W: "bird_1_1_flying", U: "faerie_1_1_u", B: "faerie_rogue_1_1_flying", R: "goblin_1_1", G: "bear_2_2" };
-// Mirrors dungeonEmpowermentTiers (30/60/90; the S20 two-place-sync flag applies here too).
+// Mirrors strongholdEmpowermentTiers (50/75/100 — S22 playtest r1; the S20 two-place-sync flag
+// is now a three-place flag: fold onto the knob when a session touches the schedule again).
 const TIERS = [
   { steps: 0, life: 0, basic: 0, token: 0, card: 0 },
-  { steps: 60, life: 4, basic: 1, token: 0, card: 0 },
-  { steps: 90, life: 6, basic: 1, token: 1, card: 1 },
+  { steps: 75, life: 4, basic: 1, token: 0, card: 0 },
+  { steps: 100, life: 6, basic: 1, token: 1, card: 1 },
 ];
 // The pace war's three postures: bled to the floor / untouched / fattened by the years (base+cap).
 const LIVES = [

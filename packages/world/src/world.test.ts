@@ -1812,19 +1812,21 @@ describe("S22b strongholds: entry, generation, the partisan law, the entrance, t
     expect(strongholdState(w, "B").spokeMinionPoints).toBe(before + spokeTmpl.tier);
   });
 
-  it("the colour prize list: R + T3 touching the colour, gold cards and the typed duals in, prizeOnly out", async () => {
+  it("the colour prize list: the WHOLE colour wardrobe shelved R → 3 → 2 → 1 (S22 r1), typed duals in, prizeOnly out", async () => {
     const { strongholdPrizeList } = await sh();
-    const list = strongholdPrizeList(pool.cards, "G").map((d) => d.id);
-    expect(list).toContain("tropical_island"); // the typed dual — the investment made fetchable
-    expect(list).toContain("aether_mutation"); // a gold R touching green
-    expect(list).not.toContain("the_sower"); // prizeOnly: the sole-drop channel only
-    expect(list).not.toContain("mox_emerald"); // prizeOnly
-    expect(list).not.toContain("law_season"); // prizeOnly laws never circulate
-    expect(list).not.toContain("doom_blade"); // wrong colour
-    for (const id of list) {
-      const d = pool.cards.get(id)!;
-      expect(d.shopTier === "R" || d.shopTier === 3, id).toBe(true);
-    }
+    const list = strongholdPrizeList(pool.cards, "G");
+    const ids = list.map((d) => d.id);
+    expect(ids).toContain("tropical_island"); // the typed dual — the investment made fetchable
+    expect(ids).toContain("aether_mutation"); // a gold R touching green
+    expect(ids).toContain("grizzly_bears"); // S22 r1: tier 1 is on offer too (the player's right to a bear)
+    expect(ids).not.toContain("the_sower"); // prizeOnly: the sole-drop channel only
+    expect(ids).not.toContain("mox_emerald"); // prizeOnly
+    expect(ids).not.toContain("law_season"); // prizeOnly laws never circulate
+    expect(ids).not.toContain("doom_blade"); // wrong colour
+    // Shelved: tier rank is monotone down the list (R first, then 3, 2, 1).
+    const rank: Record<string, number> = { R: 0, "3": 1, "2": 2, "1": 3 };
+    const ranks = list.map((d) => rank[String(d.shopTier)]!);
+    expect([...ranks].sort((a, b) => a - b)).toEqual(ranks);
   });
 
   it("seal + save round-trip: the reserved field carries typed entries; five seals = the gauntlet-unlock state", async () => {
