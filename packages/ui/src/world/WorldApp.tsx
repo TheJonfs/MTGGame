@@ -88,14 +88,15 @@ function Chrome({ c, onDownload }: { c: WorldController; onDownload: () => void 
   return (
     <div className="play-ribbon world-chrome">
       <span className="turn">{w.player.name} · {c.regionName()}</span>
-      <span className="stat" title="world life"><img src="/icons/stat-life.svg" alt="" /> {w.player.worldLife}</span>
-      <span className="stat" title="gold">◉ {w.player.gold}</span>
-      <span className="stat" title="steps (the clock)">⟳ {w.player.stepsTaken} steps</span>
+      {/* S22 r2 (Chris): pictorial trackers — the ink-icon register replaces the plain SVGs. */}
+      <span className="stat" title="world life"><img className="stat-ink" src="/icons/stat-life.png" alt="" /> {w.player.worldLife}</span>
+      <span className="stat" title="gold"><img className="stat-ink" src="/icons/stat-gold.png" alt="" /> {w.player.gold}</span>
+      <span className="stat" title="steps (the clock)"><img className="stat-ink" src="/icons/stat-steps.png" alt="" /> {w.player.stepsTaken} steps</span>
       <span style={{ flex: 1 }} />
-      <button className="linkish" title={c.canEdit().ok ? "edit your deck (clock-free)" : c.canEdit().reason} disabled={!c.canEdit().ok} onClick={() => c.openEditor()}>deck</button>
-      <button className="linkish" onClick={() => c.openCollection()}>collection</button>
-      <button className="linkish" onClick={() => c.save()}>save</button>
-      <button className="linkish" onClick={onDownload}>download</button>
+      <button className="chrome-tab" title={c.canEdit().ok ? "edit your deck (clock-free)" : c.canEdit().reason} disabled={!c.canEdit().ok} onClick={() => c.openEditor()}>Deck</button>
+      <button className="chrome-tab" onClick={() => c.openCollection()}>Collection</button>
+      <button className="chrome-tab" onClick={() => c.save()}>Save</button>
+      <button className="chrome-tab" onClick={onDownload}>Download</button>
       <span className="seed">seed {w.seed} · {w.difficulty}</span>
     </div>
   );
@@ -113,9 +114,6 @@ function ParleyPanel({ c }: { c: WorldController }) {
   // S18: parley voice from the catalog (verb/line/refusal), defaults by kind (ADR-066).
   const voice = tmpl.parley ?? {};
   const verb = voice.verb ?? (beast ? "Distract" : "Buy off");
-  const verdict = (v: "kept" | "rejected") => {
-    void fetch("/__art-note", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ cardId: `portrait:${tmpl.portrait}`, note: `${v} (director round, in situ)` }) });
-  };
   return (
     <div className="gallery-modal">
       <div className="gallery-modal-box play-dialog parley">
@@ -155,11 +153,8 @@ function ParleyPanel({ c }: { c: WorldController }) {
           </button>
         </div>
         {notice && <p style={{ color: "var(--danger)", fontSize: 12 }}>{notice}</p>}
-        {import.meta.env.DEV && (
-          <p style={{ fontSize: 10.5, color: "var(--ink-soft)" }}>
-            portrait verdict (dev → docs/art/art-notes.md): <button className="linkish" onClick={() => verdict("kept")}>keep</button> · <button className="linkish" onClick={() => verdict("rejected")}>reject</button>
-          </p>
-        )}
+        {/* S22 r2: the in-situ portrait verdict affordance retired — Chris blanket-approved all pending
+            portraits; a future candidate round re-adds it with its candidates. */}
         <p style={{ fontSize: 10.5, color: "var(--ink-soft)" }}>
           Fleeing picks your stake from your deck's nonland cards at random; a duel's stake is the top nonland card{stake === 1 ? "" : "s"} of each shuffled library.
         </p>
@@ -261,15 +256,17 @@ function QuestDonePopup({ c }: { c: WorldController }) {
   return (
     <div className="gallery-modal" style={{ zIndex: 40 }}>
       <div className="gallery-modal-box play-dialog quest-done">
-        <h3 style={{ marginTop: 0, fontFamily: "var(--serif)" }}>{items.length > 1 ? "Quests complete" : items[0]!.title}</h3>
+        {/* S22 r2: the popup is general news now (quests done, sieges landing/falling) — per-item titles. */}
+        <h3 style={{ marginTop: 0, fontFamily: "var(--serif)" }}>{items.length > 1 ? "News of the road" : items[0]!.title}</h3>
         {items.map((it, i) => (
           <div key={i} className="quest-done-item">
+            {items.length > 1 && <p style={{ fontFamily: "var(--serif)", fontWeight: 700, margin: "4px 0 0" }}>{it.title}</p>}
             <p className="quest-done-text">{it.quest}</p>
-            <p className="quest-done-reward">Reward: <b>{it.reward}</b></p>
+            <p className="quest-done-reward">{it.title.startsWith("A town") ? it.reward : <>Reward: <b>{it.reward}</b></>}</p>
           </div>
         ))}
         <p style={{ textAlign: "right", marginBottom: 0 }}>
-          <button className="primary" onClick={() => c.dismissQuestPopup()}>Take it</button>
+          <button className="primary" onClick={() => c.dismissQuestPopup()}>{items.some((it) => it.title.startsWith("A town")) ? "Understood" : "Take it"}</button>
         </p>
       </div>
     </div>

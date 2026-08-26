@@ -1096,10 +1096,12 @@ describe("S21 Parts 3–4 (retrieval, rumor-chains, the lore turn): pack-as-data
     expect(lines.length).toBeGreaterThan(0);
     expect(rs.heard.length).toBeGreaterThanOrEqual(before);
     const tease = catalog.questText!.rumors.vaultTease;
-    for (let v = 0; v < 30; v++) { w.visits[elsewhere.index] = v; expect(tavernRumors(w, catalog, elsewhere)).not.toContain(tease); }
+    // S22 r2: the pour rotates on the RUMOR EPOCH (steps), not visits — walk the clock to rotate.
+    const era = worldKnobs(w).rumorRefreshSteps;
+    for (let v = 0; v < 30; v++) { w.player.stepsTaken = v * era; expect(tavernRumors(w, catalog, elsewhere)).not.toContain(tease); }
     for (const d of catalog.dungeons) w.dungeons[d.id] = { cleared: true, resets: 0 };
     let seen = false;
-    for (let v = 0; v < 40 && !seen; v++) { w.visits[elsewhere.index] = v; seen = tavernRumors(w, catalog, elsewhere).includes(tease); }
+    for (let v = 0; v < 60 && !seen; v++) { w.player.stepsTaken = v * era; seen = tavernRumors(w, catalog, elsewhere).includes(tease); }
     expect(seen).toBe(true); // the flower is whispered once the five doors stand open
   });
 });

@@ -308,7 +308,7 @@ function Ribbon({ c }: { c: MatchController }) {
   );
 }
 
-function DialogModal({ c, phase, pool, oracle, onHoverOption }: { c: MatchController; phase: Extract<UiPhase, { kind: "dialog" }>; pool: Map<string, CardDef>; oracle: Record<string, OracleEntry>; onHoverOption: (ids: string[] | null) => void }) {
+function DialogModal({ c, phase, pool, oracle, onHoverOption, printed }: { c: MatchController; phase: Extract<UiPhase, { kind: "dialog" }>; pool: Map<string, CardDef>; oracle: Record<string, OracleEntry>; onHoverOption: (ids: string[] | null) => void; printed: boolean }) {
   const req = phase.request;
   const state = c.game.state;
   const titles: Record<string, string> = {
@@ -402,7 +402,7 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption }: { c: MatchContro
         </h3>
         {(isMode || isDiscardCost || isAdditionalSac) && sourceDef && (
           <div className="dialog-source">
-            <CardFrame def={sourceDef} oracle={oracle[sourceDef.id]} mini />
+            <CardFrame def={sourceDef} oracle={oracle[sourceDef.id]} mini showPrinted={printed} />
             <div className="dialog-source-text">
               {isMode && <p>Its ability offers a choice of modes. Pick one; if the mode needs a target you choose it next.</p>}
               {isDiscardCost && <p>Discarding is part of the activation cost — the card goes to your graveyard whether or not the ability resolves as hoped.</p>}
@@ -420,7 +420,7 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption }: { c: MatchContro
             <div className="flyout-title">Revealed:</div>
             <div className="dialog-cards">
               {req.revealed.map((r) => (
-                <CardFrame key={r.objectId} def={pool.get(r.cardId)!} oracle={oracle[r.cardId]} mini />
+                <CardFrame key={r.objectId} def={pool.get(r.cardId)!} oracle={oracle[r.cardId]} mini showPrinted={printed} />
               ))}
             </div>
           </div>
@@ -474,7 +474,7 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption }: { c: MatchContro
                 onMouseLeave={() => onHoverOption(null)}
               >
                 {asCards && cid ? (
-                  <CardFrame def={pool.get(cid)!} oracle={oracle[cid]} mini hand />
+                  <CardFrame def={pool.get(cid)!} oracle={oracle[cid]} mini showPrinted={printed} />
                 ) : (
                   <span>{tagEl(a)}{actionLabel(state, pool, a)}</span>
                 )}
@@ -573,8 +573,22 @@ function ZoneModal({ c, pool, oracle, zone, printed, onClose }: { c: MatchContro
           {ids.length === 0 && <span style={{ fontSize: 11, color: "var(--ink-soft)" }}>empty</span>}
           {ids.map((id) => {
             const obj = getObject(state, id);
+            // S22 r2 (Chris — Mother Bear): a graveyard card with a live activation glows and
+            // clicks (the same beginCast path as the battlefield); close the modal so the
+            // targeting/confirm dialog is visible.
+            const activatable = c.phase.kind === "priority" && zone.zone === "graveyard" && zone.player === c.humanSeat && c.phase.activatable.has(id);
             // S10 playtest: zone browsers follow the inspector's printed toggle.
-            return <CardFrame key={id} def={pool.get(obj.cardId)!} oracle={oracle[obj.cardId]} mini showPrinted={printed} />;
+            return (
+              <div
+                key={id}
+                className={`card-slot ${activatable ? "castable" : ""}`}
+                style={activatable ? { cursor: "pointer", outline: "2px solid var(--brass)", borderRadius: 6 } : undefined}
+                title={activatable ? "this card has an ability usable from the graveyard — click to activate" : undefined}
+                onClick={activatable ? () => { c.clickGraveyardCard(id); onClose(); } : undefined}
+              >
+                <CardFrame def={pool.get(obj.cardId)!} oracle={oracle[obj.cardId]} mini showPrinted={printed} />
+              </div>
+            );
           })}
         </div>
       </div>
@@ -610,7 +624,7 @@ function PlayLog({ c, pool }: { c: MatchController; pool: Map<string, CardDef> }
       case "declineSearch": return mine ? "Search: found nothing" : "Searches their library and shuffles";
       // Bottoming is hidden information — never name the opponent's card.
       case "bottomCard": return mine ? `Bottom ${nameOf(a.objectId!)}` : "Bottom a card";
-      default: return actionLabel(state, pool, a as never);
+      default: return actionLabel(state, pool, a as never, c.idNames); // S22 r2: dead ids resolve through the ledger
     }
   };
   const lines: string[] = [];
@@ -686,6 +700,29 @@ function FloatingInspector(props: { ctx: MatchController["game"]["ctx"]; objectI
   );
 }
 
+
+/** S22 r2 (Chris — the Shandalar callback): the world's play/draw coin flip, staged as a small
+ * ceremony before the first decision. Pure presentation: the flip itself was rolled by the
+ * world's seeded RNG and rides the spec (replay-exact); this just shows the verdict. */
+function CoinFlip({ onPlay, done }: { onPlay: boolean; done: () => void }) {
+  const [settled, setSettled] = useState(false);
+  useEffect(() => {
+    const t1 = setTimeout(() => setSettled(true), 1100);
+    const t2 = setTimeout(done, 2400);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [done]);
+  return (
+    <div className="gallery-modal coin-flip-overlay" onClick={done}>
+      <div style={{ textAlign: "center" }}>
+        <div className={`coin ${settled ? "settled" : "spinning"}`}>{settled ? (onPlay ? "☀" : "☾") : ""}</div>
+        <div className="coin-verdict" style={{ opacity: settled ? 1 : 0 }}>
+          {onPlay ? "The flip is yours — you are on the play." : "The flip goes against you — you are on the draw (and draw first)."}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function PlayMatch({
   c,
   pool,
@@ -702,6 +739,7 @@ export function PlayMatch({
   const [printed, setPrinted] = useState(true); // S10 playtest: default to the printed card
   const [zoneOpen, setZoneOpen] = useState<{ player: PlayerId; zone: "graveyard" | "exile" } | null>(null);
   const [dialogHover, setDialogHover] = useState<string[] | null>(null);
+  const [coinShown, setCoinShown] = useState(false); // S22 r2: the flip ceremony, once per match
   const lastStackTop = useMemo(() => ({ id: null as string | null }), [c]);
 
   useEffect(() => c.onChange(() => force((n) => n + 1)), [c]);
@@ -816,11 +854,15 @@ export function PlayMatch({
         <PlayLog c={c} pool={pool} />
       </div>
       <FloatingInspector ctx={ctx} objectId={inspected} fallbackCardId={snapCard} oracle={oracle} printed={printed} onTogglePrinted={() => setPrinted(!printed)} />
-      {phase.kind === "dialog" && <DialogModal c={c} phase={phase} pool={pool} oracle={oracle} onHoverOption={setDialogHover} />}
+      {phase.kind === "dialog" && <DialogModal c={c} phase={phase} pool={pool} oracle={oracle} onHoverOption={setDialogHover} printed={printed} />}
       {phase.kind === "chooseX" && <XModal c={c} phase={phase} />}
       {phase.kind === "chooseColor" && <ColorModal c={c} />}
       {phase.kind === "chooseTapColor" && <TapColorModal c={c} pool={pool} />}
       {zoneOpen && <ZoneModal c={c} pool={pool} oracle={oracle} zone={zoneOpen} printed={printed} onClose={() => setZoneOpen(null)} />}
+      {/* S22 r2: the play/draw flip ceremony — only for duels whose spec carries the world's roll. */}
+      {!coinShown && c.spec.rules.startingPlayer !== undefined && (
+        <CoinFlip onPlay={c.spec.rules.startingPlayer === c.humanSeat} done={() => setCoinShown(true)} />
+      )}
     </div>
   );
 }

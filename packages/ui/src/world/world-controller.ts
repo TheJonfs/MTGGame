@@ -295,13 +295,15 @@ export class WorldController {
           return;
         }
         // S21 sieges: threats and falls surface as notices; a fall is a consequence (autosave).
+        // S22 r2 (Chris: "four towns had fallen and I never noticed"): siege news is a POPUP now,
+        // not a notice line a walk scrolls past — the quest-completion modal generalized.
         if (e.type === "siegeThreatened") {
-          if (this.screen.kind === "map") this.screen = { ...this.screen, notice: `${e.townName} is under threat — it falls in ${e.deadlineStep - this.world.player.stepsTaken} steps unless relieved.` };
+          (this.questPopup ??= []).push({ title: "A town is under threat", quest: `${e.townName} is besieged — it falls in ${e.deadlineStep - this.world.player.stepsTaken} steps unless relieved.`, reward: "Reach it in time to drive the party off; fall, and its market, board, and gifts go dark." });
           this.autosave();
           this.emit();
         }
         if (e.type === "siegeFell") {
-          if (this.screen.kind === "map") this.screen = { ...this.screen, notice: `${e.townName} has fallen. Its market, board, and gifts are dark until it is freed.` };
+          (this.questPopup ??= []).push({ title: "A town has fallen", quest: `${e.townName} has fallen to its besiegers.`, reward: "Its market, board, and gifts are dark until you liberate it." });
           this.autosave();
           this.emit();
         }
@@ -659,7 +661,7 @@ export class WorldController {
       custom: {
         human: { name: this.world.player.name, decklist: duel.spec.players[0].decklist },
         enemy: { name: tmpl.name, decklist: duel.spec.players[1].decklist, difficulty: tmpl.difficulty, archetype: duel.enemy.archetype, portrait: tmpl.portrait },
-        rules: { startingLife: duel.spec.rules.startingLife, ante: duel.spec.rules.ante ?? 0 },
+        rules: { startingLife: duel.spec.rules.startingLife, ante: duel.spec.rules.ante ?? 0, ...(duel.spec.rules.startingPlayer !== undefined ? { startingPlayer: duel.spec.rules.startingPlayer } : {}) }, // S22 r2: the coin flip rides through
         modifiers: duel.spec.modifiers,
       },
     });
@@ -839,7 +841,7 @@ export class WorldController {
       custom: {
         human: { name: this.world.player.name, decklist: spec.players[0].decklist },
         enemy: { name: enemyName, decklist: spec.players[1].decklist, difficulty: (spec.players[1].agent.split(":")[1] ?? "journeyman") as "apprentice" | "journeyman" | "master", archetype: enemy.kind === "minion" ? "midrange" : enemy.archetype, ...(portrait ? { portrait } : {}) },
-        rules: { startingLife: spec.rules.startingLife, ante: spec.rules.ante ?? 0 },
+        rules: { startingLife: spec.rules.startingLife, ante: spec.rules.ante ?? 0, ...(spec.rules.startingPlayer !== undefined ? { startingPlayer: spec.rules.startingPlayer } : {}) }, // S22 r2: the coin flip rides through
         modifiers: spec.modifiers,
       },
     });
@@ -1091,7 +1093,7 @@ export class WorldController {
           archetype: enemyDeckOf(this.catalog, tmpl.deck).archetype,
           portrait: tmpl.portraitChip ?? tmpl.portrait,
         },
-        rules: { startingLife: spec.rules.startingLife, ante: spec.rules.ante ?? 0 },
+        rules: { startingLife: spec.rules.startingLife, ante: spec.rules.ante ?? 0, ...(spec.rules.startingPlayer !== undefined ? { startingPlayer: spec.rules.startingPlayer } : {}) }, // S22 r2: the coin flip rides through
         modifiers: spec.modifiers,
       },
     });

@@ -690,7 +690,8 @@ export function WorldMapView({
             ) : (
               <path d="M 0 8 L 0 -9 L 8 -6 L 0 -3" fill="var(--brass)" stroke="var(--ink)" strokeWidth="1" />
             )}
-            <text y={16} textAnchor="middle" className="town-label" style={{ fontSize: 8.5, ...(interior ? { fill: INTERIOR.text } : {}) }}>{m.label}</text>
+            {/* S22 r2 (Chris, item 9): the white outline lifts the tag off the dark town/POI ink. */}
+            <text y={16} textAnchor="middle" className={`town-label ${interior ? "" : "map-tag-outline"}`} style={{ fontSize: 8.5, ...(interior ? { fill: INTERIOR.text } : {}) }}>{m.label}</text>
           </g>
         ))}
         {/* interior: the descending stair at the entrance */}

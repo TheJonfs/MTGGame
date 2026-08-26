@@ -58,7 +58,7 @@ export interface CustomMatch {
     archetype: "aggro" | "midrange" | "control";
     portrait?: string;
   };
-  rules: { startingLife: number; ante: number };
+  rules: { startingLife: number; ante: number; startingPlayer?: 0 | 1 };
   modifiers: Modifier[];
 }
 
@@ -234,10 +234,11 @@ export class MatchController {
       : { name: DECKS[opts.aiDeck!].name, decklist: [...DECKS[opts.aiDeck!].decklist], agent: `heuristic:${aiDifficulty}` };
     const startingLife = custom ? custom.rules.startingLife : 20;
     const ante = custom ? custom.rules.ante : DEFAULT_RULES.ante;
+    const startingPlayer = custom?.rules.startingPlayer; // S22 r2: the world's coin flip rides the spec
     this.spec = {
       seed: this.seed,
       players: opts.humanSeat === 0 ? [humanPlayer, aiPlayer] : [aiPlayer, humanPlayer],
-      rules: { startingLife, handSize: 7, mulligan: "london", maxTurns: 100, ante },
+      rules: { startingLife, handSize: 7, mulligan: "london", maxTurns: 100, ante, ...(startingPlayer !== undefined ? { startingPlayer } : {}) },
       modifiers: custom ? custom.modifiers.map((m) => ({ ...m })) : [],
     };
     for (const p of this.spec.players) validateDecklist(pool, p.decklist);
@@ -273,6 +274,7 @@ export class MatchController {
       handSize: 7,
       maxTurns: DEFAULT_RULES.maxTurns,
       ante,
+      ...(startingPlayer !== undefined ? { startingPlayer } : {}), // S22 r2: the coin flip
     });
 
     // S11: observe lone-pass windows so an opponent's spell can be shown
@@ -692,6 +694,16 @@ export class MatchController {
         if (twin) castable.set(objectId, castable.get(twin)!);
       }
     }
+    // S22 r2 (Chris: "nothing happens when I click Mother Bear in the graveyard"): graveyard-zone
+    // activations (A5) enumerate on ONE representative per cardId — alias every copy, like hand
+    // duplicates above, so any copy in the zone browser glows and clicks.
+    const yardByCardId = new Map(view.graveyardObjects[request.player].map((g) => [g.objectId, g.cardId]));
+    for (const { objectId, cardId } of view.graveyardObjects[request.player]) {
+      if (!activatable.has(objectId)) {
+        const twin = [...activatable.keys()].find((id) => yardByCardId.get(id) === cardId);
+        if (twin) activatable.set(objectId, activatable.get(twin)!);
+      }
+    }
     const meaningful = MatchController.isMeaningful(castable, lands, activatable);
     const anchorKey = `${view.turn}:${view.step}`;
     const ownTurnAnchor =
@@ -793,6 +805,18 @@ export class MatchController {
 
   clickPlayer(player: PlayerId): void {
     if (this.phase.kind === "targeting") this.clickTarget({ kind: "player", player });
+  }
+
+  /** S22 r2: the zone browser's card click — graveyard-zone activations (Mother Bear) begin here;
+   * a targeting phase passes the click through as an object target. */
+  clickGraveyardCard(objectId: string): void {
+    if (this.phase.kind === "targeting") {
+      this.clickTarget({ kind: "object", id: objectId });
+      return;
+    }
+    if (this.phase.kind !== "priority") return;
+    const variants = this.phase.activatable.get(objectId);
+    if (variants && variants.length > 0) this.beginCast(objectId, variants);
   }
 
   // ---------- casting: X → targets → confirm ----------

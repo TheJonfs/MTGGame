@@ -24,7 +24,7 @@ import type { KnobValues } from "./knobs.js";
 import { manhattan, markExplored, type Point, type Town } from "./map.js";
 import { WorldRng } from "./rng.js";
 import { RING_OF_TIER } from "./shop.js";
-import { activeDeck, type WorldState } from "./state.js";
+import { activeDeck, worldKnobs, type WorldState } from "./state.js";
 import { spares } from "./deck-edit.js";
 
 export type QuestKind = "courier" | "cardCourier" | "bounty" | "retrieval";
@@ -155,16 +155,22 @@ export function questPack(catalog: Catalog): import("./catalog.js").QuestTextPac
 
 const COLORS = ["W", "U", "B", "R", "G"] as const;
 
-/** Deterministic per-town offers for this game. Pure in (world.seed, town); excludes taken offers. */
+/** Deterministic per-town offers. Pure in (world.seed, town, quest epoch); excludes taken offers.
+ * S22 r2 (Chris): the board REPOSTS on the clock — epoch = floor(steps / questRefreshSteps); epoch
+ * ids keep old consumptions harmless (a fresh epoch is a fresh board, the shop-restock pattern). */
+export function questEpoch(world: WorldState, knobs: KnobValues): number {
+  return knobs.questRefreshSteps > 0 ? Math.floor(world.player.stepsTaken / knobs.questRefreshSteps) : 0;
+}
 export function townOffers(world: WorldState, catalog: Catalog, town: Town, knobs: KnobValues, pool: Map<string, CardDef>): QuestOffer[] {
-  const rng = new WorldRng(((world.seed * 2_654_435_761) ^ ((town.index + 1) * 40_503)) >>> 0);
+  const epoch = questEpoch(world, knobs);
+  const rng = new WorldRng(((world.seed * 2_654_435_761) ^ ((town.index + 1) * 40_503) ^ (epoch * 97_911)) >>> 0);
   const region = world.map.regions[town.region]!;
   const tier = RING_OF_TIER[region.tier] ?? 1;
   const n = Math.max(1, knobs.questsPerTown);
   const pack = questPack(catalog);
   const offers: QuestOffer[] = [];
   for (let i = 0; i < n; i++) {
-    const id = `q_${town.index}_${i}`;
+    const id = `q_${town.index}_${questEpoch(world, knobs)}_${i}`;
     const roll = rng.float();
     const kind: QuestKind = roll < 0.35 ? "courier" : roll < 0.55 ? "cardCourier" : roll < 0.8 ? "bounty" : "retrieval";
     const reward = rollReward(rng, world, catalog, tier, region.color as QuestReward["manalink"] & string, knobs, pool);
@@ -234,7 +240,7 @@ function rollReward(rng: WorldRng, world: WorldState, catalog: Catalog, tier: 1 
   void catalog;
   const gold = knobs.questGoldByTier[tier] ?? 20;
   const roll = rng.float();
-  if (tier >= 2 && roll < 0.25 && townColor && COLORS.includes(townColor)) return { gold: Math.round(gold / 2), manalink: townColor };
+  if (tier >= 2 && roll < knobs.manalinkRewardChance && townColor && COLORS.includes(townColor)) return { gold: Math.round(gold / 2), manalink: townColor }; // S22 r2: knobbed (was 0.25)
   if (roll < 0.65) {
     const wantR = tier === 3 && rng.float() < 0.35;
     const candidates = [...pool.values()]
@@ -508,6 +514,11 @@ export function rumorsOnArrival(world: WorldState, catalog: Catalog, town: Town)
  * seeded rotation of lore — guardians, the five lords' whispers, the Nighthawk's legend, the warp,
  * world texture; the Vault tease only once all five Moxen are taken (Chris-ruled gate). Every line
  * shown is logged as heard (the journal). Pure in (seed, town, visit count) apart from the log. */
+/** The rumor cadence without a knobs param (tavernRumors predates the knob thread; the default
+ * layer is correct here — per-opponent overrides never touch it). */
+function worldKnobsRumorSteps(world: WorldState): number {
+  return worldKnobs(world).rumorRefreshSteps;
+}
 export function tavernRumors(world: WorldState, catalog: Catalog, town: Town): string[] {
   const rs = rumorState(world, catalog);
   const pack = questPack(catalog);
@@ -531,9 +542,11 @@ export function tavernRumors(world: WorldState, catalog: Catalog, town: Town): s
   ];
   const fiveMoxen = catalog.dungeons.length === 5 && catalog.dungeons.every((d) => world.dungeons[d.id]?.cleared);
   if (fiveMoxen) lore.push(pack.rumors.vaultTease);
-  const visits = world.visits[town.index] ?? 0;
-  const rng = new WorldRng(((world.seed * 1_540_483_477) ^ hash32(`tavern:${town.index}:${visits}`)) >>> 0);
-  const picks = Math.min(2, lore.length);
+  // S22 r2 (Chris): fewer lines per sitting, rotating on the shop cadence — keyed by the rumor
+  // epoch, not the visit count (re-entering within an epoch pours the same, no farming).
+  const epoch = Math.floor(world.player.stepsTaken / Math.max(1, worldKnobsRumorSteps(world)));
+  const rng = new WorldRng(((world.seed * 1_540_483_477) ^ hash32(`tavern:${town.index}:${epoch}`)) >>> 0);
+  const picks = Math.min(1, lore.length);
   const start = lore.length ? rng.int(lore.length) : 0;
   for (let i = 0; i < picks; i++) lines.push(lore[(start + i * 7) % lore.length]!);
   for (const l of lines) heardLog(rs, l);

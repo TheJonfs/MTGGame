@@ -598,3 +598,39 @@ button.primary { background: var(--brass); color: var(--parchment); border: 1.5p
 .empower-meter { display: flex; gap: 6px; margin: 6px 0 2px; }
 .empower-tier { font-size: 11px; border: 1.5px solid var(--ink-soft); border-radius: 4px; padding: 1px 8px; color: var(--ink-soft); }
 .empower-tier.hit { border-color: var(--danger); color: var(--danger); font-weight: 700; }
+
+/* ---- S22 playtest r2 (Chris, item 2): the aesthetic pass ---- */
+
+/* Base buttons: no UA-grey anywhere — parchment, ink border, the house hand. */
+button { font-family: var(--sans); background: var(--parchment); border: 1.5px solid var(--ink); border-radius: 5px; padding: 4px 10px; cursor: pointer; font-size: 12px; color: var(--ink); box-shadow: 1px 1.5px 0 rgba(43,37,32,0.25); transition: transform 0.06s ease, box-shadow 0.06s ease; }
+button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 1.5px 2.5px 4px rgba(43,37,32,0.3); }
+button:active:not(:disabled) { transform: translateY(0); box-shadow: 0.5px 1px 0 rgba(43,37,32,0.25); }
+button:disabled { opacity: 0.45; cursor: default; }
+
+/* Linkish: an inline affordance with a brass fleuron, not a bare underline. */
+button.linkish { background: none; border: none; box-shadow: none; color: var(--brass); cursor: pointer; text-decoration: none; font-size: 11px; font-variant: small-caps; letter-spacing: 0.4px; padding: 0 2px; }
+button.linkish::before { content: "❧ "; opacity: 0.7; }
+button.linkish:hover:not(:disabled) { transform: none; box-shadow: none; text-decoration: underline; text-underline-offset: 2px; }
+
+/* The chrome's menu tabs (deck / collection / save / download). */
+button.chrome-tab { font-family: var(--serif); font-variant: small-caps; letter-spacing: 0.5px; font-size: 12.5px; background: var(--parchment); border: 1.5px solid var(--ink); border-bottom-width: 2.5px; border-radius: 6px 6px 3px 3px; padding: 2px 12px; }
+button.chrome-tab:hover:not(:disabled) { background: #f4ecd8; }
+
+/* The pictorial topline trackers (ink icons over the ribbon, multiply like the map sprites). */
+.stat-ink { width: 18px; height: 18px; vertical-align: -4px; mix-blend-mode: multiply; }
+
+/* Collapsible rail panels: the chevron header reads as a control. */
+.panel h3 { transition: color 0.08s ease; }
+.panel h3:hover { color: var(--brass); }
+
+/* S22 r2: the play/draw coin flip (the Shandalar callback). */
+.coin-flip-overlay { background: rgba(20, 16, 12, 0.55); cursor: pointer; }
+.coin { width: 84px; height: 84px; margin: 0 auto 14px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #f5d98b, var(--brass) 60%, #6d5416); border: 3px solid var(--ink); display: flex; align-items: center; justify-content: center; font-size: 40px; color: var(--ink); box-shadow: 0 6px 24px rgba(0,0,0,0.5); }
+.coin.spinning { animation: coin-spin 0.22s linear infinite; }
+.coin.settled { animation: coin-land 0.35s ease-out; }
+@keyframes coin-spin { 0% { transform: rotateY(0deg); } 100% { transform: rotateY(360deg); } }
+@keyframes coin-land { 0% { transform: scale(1.35) rotateY(90deg); } 100% { transform: scale(1) rotateY(0deg); } }
+.coin-verdict { font-family: var(--serif); font-size: 17px; color: var(--parchment); text-shadow: 0 2px 6px rgba(0,0,0,0.7); transition: opacity 0.3s ease; max-width: 380px; }
+
+/* S22 r2 (item 9): quest/delivery tags on town names read against the dark town sprite. */
+.map-tag-outline { paint-order: stroke; stroke: #fdf8ec; stroke-width: 2.6px; }

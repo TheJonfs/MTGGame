@@ -18,7 +18,7 @@ export interface PlayerSpec {
 export interface MatchSpec {
   seed: number;
   players: [PlayerSpec, PlayerSpec];
-  rules: { startingLife: number; handSize: number; mulligan: "london"; maxTurns: number; ante?: number };
+  rules: { startingLife: number; handSize: number; mulligan: "london"; maxTurns: number; ante?: number; startingPlayer?: PlayerId };
   modifiers: Modifier[];
 }
 
@@ -116,6 +116,7 @@ export async function runMatch(spec: MatchSpec, cards: Map<string, CardDef>, age
     handSize: spec.rules.handSize ?? DEFAULT_RULES.handSize,
     maxTurns: spec.rules.maxTurns ?? DEFAULT_RULES.maxTurns,
     ante: spec.rules.ante ?? DEFAULT_RULES.ante,
+    ...(spec.rules.startingPlayer !== undefined ? { startingPlayer: spec.rules.startingPlayer } : {}), // S22 r2: the coin flip
   });
   await game.run(spec.modifiers);
 

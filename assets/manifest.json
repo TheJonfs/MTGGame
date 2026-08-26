@@ -1065,6 +1065,36 @@
         }
       }
     },
+    "icon-gold": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:b5d29496238923bab44d02f01e810d749a2f941361df035ba690918100c7759e",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:b5d29496238923bab44d02f01e810d749a2f941361df035ba690918100c7759e",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/icon-gold/canonical.png",
+          "rendered_at": "2026-08-26T15:17:01+00:00",
+          "thumb": "assets/thumbs/icon-gold/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "icon-life": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:015b23006280e2cb9b1a267f165bbfbcd1197c273fddb53d6ec8f5ef07f73970",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:015b23006280e2cb9b1a267f165bbfbcd1197c273fddb53d6ec8f5ef07f73970",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/icon-life/canonical.png",
+          "rendered_at": "2026-08-26T15:16:48+00:00",
+          "thumb": "assets/thumbs/icon-life/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "icon-mana-black": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:0af419ba34562ef3e4792242fa623a6b90b4901e970bbb3c6ba2119946987ed1",
@@ -1226,6 +1256,21 @@
           "path": "assets/images/icon-status-tapped/canonical.png",
           "rendered_at": "2026-08-19T19:28:12+00:00",
           "thumb": "assets/thumbs/icon-status-tapped/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "icon-steps": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:e3a019aa598f02b550000b1cd567a3922b74b2f5dcf8898c8c63580e69183152",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:e3a019aa598f02b550000b1cd567a3922b74b2f5dcf8898c8c63580e69183152",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/icon-steps/canonical.png",
+          "rendered_at": "2026-08-26T15:17:13+00:00",
+          "thumb": "assets/thumbs/icon-steps/canonical.png",
           "variant_prompt": null
         }
       }

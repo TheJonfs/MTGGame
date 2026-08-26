@@ -32,9 +32,9 @@ const knob = <T>(spec: KnobSpec<T>): KnobSpec<T> => spec;
 export const KNOBS = {
   // ---- S16 (ADR-071): roaming visibility replaces encounter rolls. encounterRatePerStep retired. ----
   mapScale: knob<number>({
-    default: 2,
+    default: 2.5,
     unit: "× base grid (40×28)",
-    description: "World size multiplier (S16, Chris: scale is a variable). Distances scale linearly, counts (towns, roamers) by area; sight radius is absolute — the world grows, your eyes don't.",
+    description: "World size multiplier (S16, Chris: scale is a variable). Distances scale linearly, counts (towns, roamers) by area; sight radius is absolute — the world grows, your eyes don't. S22 playtest r2 (Chris, seed 42: Duskmoor crossed in a handful of steps): 2 → 2.5 (80×56 → 100×70, +56% area).",
   }),
   townSpacingMin: knob<number>({
     default: 8,
@@ -42,9 +42,9 @@ export const KNOBS = {
     description: "Minimum distance between towns (and between a town and a lair). Relaxed deterministically if the map can't fit the count.",
   }),
   townsPer100Cells: knob<Record<RegionTier, number>>({
-    default: { civilized: 0.5, approach: 0.25, wild: 0 },
+    default: { civilized: 0.6, approach: 0.35, wild: 0.12 },
     unit: "towns per 100 passable cells, by region tier",
-    description: "Town density per region (S16 uniform towns): count = max(floor for civilized/approach = 1, round(density × area/100)). Every non-wild region has ≥1 town, so every colour has a home town.",
+    description: "Town density per region (S16 uniform towns): count = max(floor for civilized/approach = 1, round(density × area/100)). Every non-wild region has ≥1 town, so every colour has a home town. S22 playtest r2 (Chris): more towns along the way in ALL rings — and the wild rings settle (ADR-082's wild towns pulled forward on Chris's instruction; each wild region carries a planner-seeded town name, and the dormant siegeIntervalSteps.wild knob finally cashes).",
   }),
   roamerDensityPer100Cells: knob<Record<RegionTier, number>>({
     default: { civilized: 1.0, approach: 1.5, wild: 2.0 },
@@ -292,8 +292,23 @@ export const KNOBS = {
   // ---- S19 (overworld manifest §5): quests ----
   questsPerTown: knob<number>({
     default: 2,
-    unit: "offers per town per game",
-    description: "S19 quests: every town offers this many quests per game (seeded, static; accepting consumes the offer). The manifest floor is 1.",
+    unit: "offers per town per epoch",
+    description: "S19 quests: every town offers this many quests per QUEST EPOCH (seeded; accepting consumes the offer for that epoch). S22 playtest r2 (Chris): boards refresh on the clock — see questRefreshSteps. The manifest floor is 1.",
+  }),
+  questRefreshSteps: knob<number>({
+    default: 200,
+    unit: "steps",
+    description: "S22 playtest r2 (Chris): town quest boards repost on the clock — offer epoch = floor(stepsTaken / this), the shop-restock pattern (ADR-064). Consumed offers stay consumed within their epoch; a new epoch is a fresh board.",
+  }),
+  rumorRefreshSteps: knob<number>({
+    default: 100,
+    unit: "steps",
+    description: "S22 playtest r2 (Chris): the tavern pours FEWER lines per sitting (one lore line beside the live trail) but rotates them on the shop cadence — lore epoch = floor(stepsTaken / this). Re-entering within an epoch repeats the same pour (no farming).",
+  }),
+  manalinkRewardChance: knob<number>({
+    default: 0.3,
+    unit: "probability per tier-2+ quest offer",
+    description: "S19's 25% manalink roll, promoted to a knob and nudged up (S22 playtest r2, Chris: manalinks read too rare on hard — the comeback lever is thin). Cap per colour still applies at award.",
   }),
   questGoldByTier: knob<Record<1 | 2 | 3, number>>({
     default: { 1: 20, 2: 50, 3: 100 },

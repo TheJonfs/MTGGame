@@ -455,6 +455,9 @@ export function prepareDuel(world: WorldState, catalog: Catalog, enc: Encounter,
   const legal = deckLegal(activeDeck(world));
   if (!legal.ok) throw new Error(`cannot duel: ${legal.reason}`);
   const seed = rng.int(1_000_000_000);
+  // S22 r2 (Chris — the Shandalar coin flip): the world rolls play/draw from its seeded stream;
+  // the spec carries it, so the replay is exact and the UI can stage the flip.
+  const startingPlayer = rng.chance(0.5) ? (0 as const) : (1 as const);
   // S18 (OQ-8): a lair resident fights at its template life + the lair bonus knob.
   const enemyLife = tmpl.worldLife + (enc.contact === "lair" ? knobs.lairResidentLifeBonus : 0);
   // S19 (ADR-069): every duel starts with your manalinks on the battlefield (manifest §5 — zero engine work).
@@ -465,7 +468,7 @@ export function prepareDuel(world: WorldState, catalog: Catalog, enc: Encounter,
       { name: world.player.name, decklist: activeDeck(world).map((e) => ({ ...e })), agent: "human" },
       { name: tmpl.name, decklist: enemyDeck(catalog, tmpl.deck).decklist, agent: `heuristic:${tmpl.difficulty}` },
     ],
-    rules: { startingLife: world.player.worldLife, handSize: 7, mulligan: "london", maxTurns: 100, ante: knobs.anteCount },
+    rules: { startingLife: world.player.worldLife, handSize: 7, mulligan: "london", maxTurns: 100, ante: knobs.anteCount, startingPlayer },
     modifiers,
   };
   return { encounter: enc, seed, spec, enemy: { name: tmpl.name, difficulty: tmpl.difficulty, deck: tmpl.deck, archetype: enemyDeck(catalog, tmpl.deck).archetype, portrait: tmpl.portrait, worldLife: enemyLife, tier: tmpl.tier } };

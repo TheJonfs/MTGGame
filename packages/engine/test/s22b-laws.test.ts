@@ -154,3 +154,25 @@ describe("the lord's entrance — signatureToHand (Chris-ratified)", () => {
     expect(hand).toHaveLength(7); // nothing was swapped out
   });
 });
+
+describe("S22 r2 — startingPlayer (the coin flip's engine half)", () => {
+  const DECKA: string[] = [...Array(20).fill("forest"), ...Array(20).fill("grizzly_bears")];
+  const DECKB: string[] = [...Array(20).fill("mountain"), ...Array(20).fill("shock")];
+
+  async function firstTurns(startingPlayer: 0 | 1): Promise<{ active: number; hands: [number, number] }> {
+    const log = new ArrayLog<never>();
+    const source: ActionSource = (req) => Promise.resolve(req.actions[0]!);
+    const game = new Game(testPool(), [DECKA, DECKB], new SeededRng(5, log as never), log as never, source, { startingLife: 20, handSize: 7, maxTurns: 1, ante: 0, startingPlayer });
+    await game.run([]);
+    return { active: game.state.activePlayer, hands: [game.state.players[0].hand.length, game.state.players[1].hand.length] };
+  }
+
+  it("seat 1 on the play: takes turn 1 and skips its first draw (CR 103.8a); seat 0 unchanged by default", async () => {
+    const flipped = await firstTurns(1);
+    expect(flipped.active).toBe(1); // turn 1 belonged to seat 1
+    expect(flipped.hands[1]).toBe(7); // the starting player skipped the draw
+    const normal = await firstTurns(0);
+    expect(normal.active).toBe(0);
+    expect(normal.hands[0]).toBe(7);
+  });
+});

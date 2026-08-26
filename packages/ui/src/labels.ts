@@ -7,22 +7,27 @@ export function cardName(pool: Map<string, CardDef>, cardId: string): string {
   return pool.get(cardId)?.name ?? cardId;
 }
 
-export function objectName(state: GameState, pool: Map<string, CardDef>, objectId: string): string {
+/** S22 r2 (Chris: a Gravedigger trigger narrated "obj_157"): ids die on every zone move
+ * (CR 400.7), so historical ids need the caller's id→cardId ledger (MatchController.idNames)
+ * to stay nameable. The bare-id fallback remains only for callers without one. */
+export function objectName(state: GameState, pool: Map<string, CardDef>, objectId: string, idNames?: Map<string, string>): string {
   const obj = state.objects[objectId];
-  return obj ? cardName(pool, obj.cardId) : objectId;
+  if (obj) return cardName(pool, obj.cardId);
+  const cardId = idNames?.get(objectId);
+  return cardId ? cardName(pool, cardId) : "a departed card";
 }
 
-export function targetLabel(state: GameState, pool: Map<string, CardDef>, t: ResolvedTarget, you = 0): string {
+export function targetLabel(state: GameState, pool: Map<string, CardDef>, t: ResolvedTarget, you = 0, idNames?: Map<string, string>): string {
   if (t.kind === "player") return t.player === you ? "You" : "Opponent";
-  if (t.kind === "object") return objectName(state, pool, t.id);
+  if (t.kind === "object") return objectName(state, pool, t.id, idNames);
   const item = state.stack.find((s) => s.id === t.id);
   return item ? `${cardName(pool, item.sourceCardId)} (on stack)` : "a spell";
 }
 
-export function actionLabel(state: GameState, pool: Map<string, CardDef>, a: Action): string {
-  const name = (id: string) => objectName(state, pool, id);
+export function actionLabel(state: GameState, pool: Map<string, CardDef>, a: Action, idNames?: Map<string, string>): string {
+  const name = (id: string) => objectName(state, pool, id, idNames);
   const targets = (ts: ResolvedTarget[]) =>
-    ts.length ? ` → ${ts.map((t) => targetLabel(state, pool, t)).join(", ")}` : "";
+    ts.length ? ` → ${ts.map((t) => targetLabel(state, pool, t, 0, idNames)).join(", ")}` : "";
   switch (a.type) {
     case "pass": return "Pass";
     case "playLand": return `Play ${name(a.objectId)}`;

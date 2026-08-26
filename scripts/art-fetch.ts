@@ -63,7 +63,7 @@ const OVERRIDES: Record<string, { set: string; collector?: string }> = {
   island: { set: "leb" },
   swamp: { set: "leb" },
   forest: { set: "leb" },
-  mind_rot: { set: "7ed" },
+  mind_rot: { set: "por", collector: "101" }, // S22 r2 (Chris): 7ED scan is white-bordered; Portal = the black-bordered Luke original
   phyrexian_rager: { set: "apc" }, // ADR-044: oldest-highres resolved to PMEI (magazine promo)
   black_lotus: { set: "lea" }, // S15 (ADR-068): Christopher Rush — the point of the exercise
   demonic_tutor: { set: "lea" }, // S15: Douglas Shuler (planner suggestion; default rule agrees)

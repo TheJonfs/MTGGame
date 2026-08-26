@@ -100,6 +100,10 @@ export interface GameRules {
    * `ante` NONLAND cards move to the ante zone. 0 = off (the engine's default;
    * the overworld passes its knob). */
   ante: number;
+  /** S22 r2 (Chris — the Shandalar coin flip): who takes turn 1 (and skips its draw, CR 103.8a).
+   * Default 0 — every existing spec, replay, and sim is unchanged. The WORLD rolls it from its
+   * seeded RNG; the engine just obeys the spec (determinism as ever). */
+  startingPlayer?: PlayerId;
 }
 
 export const DEFAULT_RULES: GameRules = { startingLife: 20, handSize: 7, maxTurns: 100, ante: 0 };
@@ -273,7 +277,7 @@ export class Game {
         this.state.result = { winner: null, reason: "MAX_TURNS" };
         break;
       }
-      this.state.activePlayer = ((this.state.turn - 1) % 2) as PlayerId;
+      this.state.activePlayer = ((this.state.turn - 1 + (this.rules.startingPlayer ?? 0)) % 2) as PlayerId;
       for (const p of this.state.players) p.landsPlayedThisTurn = 0;
       for (const step of STEPS) {
         await this.runStep(step);
@@ -309,7 +313,7 @@ export class Game {
         break;
       case "DRAW": {
         // First turn of the game: the starting player skips the draw (CR 103.8a).
-        if (!(state.turn === 1 && active === 0)) drawCard(this.ctx, active);
+        if (!(state.turn === 1 && active === (this.rules.startingPlayer ?? 0))) drawCard(this.ctx, active);
         await this.priorityRound();
         break;
       }

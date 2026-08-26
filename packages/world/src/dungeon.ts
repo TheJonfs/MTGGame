@@ -500,7 +500,7 @@ export function dungeonDuelSpec(
       { name: world.player.name, decklist: activeDeck(world).map((e) => ({ ...e })), agent: "human" },
       { name: base.name, decklist: base.decklist, agent: base.agent },
     ],
-    rules: { startingLife: run.interiorLife, handSize: 7, mulligan: "london", maxTurns: 100, ante: knobs.anteCount },
+    rules: { startingLife: run.interiorLife, handSize: 7, mulligan: "london", maxTurns: 100, ante: knobs.anteCount, startingPlayer: rng.chance(0.5) ? 0 : 1 }, // S22 r2: the coin flip inside too
     modifiers: [
       { type: "startingLife", player: 1, value: enemyLife },
       ...lawMods(0),
