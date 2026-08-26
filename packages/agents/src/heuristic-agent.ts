@@ -4,6 +4,7 @@ import type { Action, ActionRequest, Agent, GameView, PlayerId } from "@shandala
 import { preferSide, targetSide, classifyEffects } from "./effect-classification.js";
 import { DEFAULT_CONSTANTS, deterrence, evaluate, objectValue, type AiProfile, type EvalConstants } from "./evaluator.js";
 import { predictAction } from "./view-sim.js";
+import { viewAbilityAt } from "./granted-view.js";
 import { simulateCombat, viewCreatures, type SimObject } from "./combat-sim.js";
 
 /**
@@ -34,6 +35,9 @@ export class HeuristicAgent implements Agent {
    * by turn + set + life is sound; cleared each new turn. */
   private simMemo = new Map<string, number>();
   private simMemoTurn = -1;
+  /** S22 (A10 word 4, the pin-17 family): picks already made in the CURRENT any-number cast loop.
+   * Reset by any non-loop request (the SanePolicy per-instance-memory precedent). */
+  private variablePicks = 0;
 
   constructor(
     seed: number,
@@ -44,6 +48,7 @@ export class HeuristicAgent implements Agent {
   }
 
   async chooseAction(view: GameView, request: ActionRequest): Promise<Action> {
+    if (request.purpose !== "chooseVariableTarget") this.variablePicks = 0; // the loop ended (or never started)
     switch (request.purpose) {
       case "mulligan":
         return this.mulliganChoice(view, request);
@@ -71,6 +76,15 @@ export class HeuristicAgent implements Agent {
         return this.lowestValueCard(view, request, "discard");
       case "entersChoice":
         return this.entersChoice(view, request);
+      // S22 (A10) — the new cost/fork/loop requests:
+      case "chooseBounceCost":
+        return this.bounceCostChoice(view, request);
+      case "chooseTapCost":
+        return this.tapCostChoice(view, request);
+      case "chooseVariableTarget":
+        return this.variableTargetChoice(view, request);
+      case "unlessPay":
+        return this.unlessPayChoice(view, request);
       default:
         return request.actions[0]!;
     }
@@ -153,7 +167,13 @@ export class HeuristicAgent implements Agent {
     if (burst !== null) return burst.enables ? evaluate(view, this.profile, this.defs) + 0.6 : -Infinity;
     // S17 (book of shame 13): cycling a spell is a cantrip of last resort — only when the card has
     // no legal use on this board (Airship Crash with nothing to crash); never while it could be cast.
+    // S22: the Stoker's GRANTED cycling rides this unchanged (viewAbilityAt resolves it), and lands
+    // join cardIsDead's vocabulary (flooded draws are fuel — the blessed wrinkle).
     if (this.isCycling(view, action)) return this.cardIsDead(view, action) ? evaluate(view, this.profile, this.defs) + 0.3 : -Infinity;
+    // S22 (A10 word 2 — the Unwinder's activation-discipline pin, per the boss doc's sketch):
+    // a bounce-cost activation only with a land in hand to replay, or with lands beyond next
+    // turn's planned cast; never one that drops development below the curve.
+    if (this.bounceCostBlocked(view, action)) return -Infinity;
     const pred = predictAction(view, action, this.defs, this.C);
     if (pred.unchanged) {
       // Friction: an action that visibly does nothing scores strictly below
@@ -205,21 +225,41 @@ export class HeuristicAgent implements Agent {
     return { enables };
   }
 
-  /** S17: a hand-zone self-discard ability (cycling). */
+  /** S17: a hand-zone self-discard ability (cycling). S22: resolved through the virtual list so the
+   * Stoker's granted cycling is recognized too (pin 13 rides unchanged). */
   isCycling(view: GameView, action: Action): boolean {
     if (action.type !== "activateAbility") return false;
-    const card = view.hand.find((c) => c.objectId === action.objectId);
-    const d = card ? this.def(card.cardId) : undefined;
-    const ab = d?.abilities?.[action.abilityIndex];
+    if (!view.hand.some((c) => c.objectId === action.objectId)) return false;
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
     return !!ab && ab.kind === "activated" && ab.zone === "hand" && ab.cost.discardSelf === true;
   }
 
-  /** S17: a spell in hand with no legal target on this board (so cycling it loses nothing). */
+  /** S22 (A10 word 2): the Unwinder-discipline gate — true blocks the activation. */
+  private bounceCostBlocked(view: GameView, action: Action): boolean {
+    if (action.type !== "activateAbility") return false;
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+    if (!ab || ab.kind !== "activated" || !ab.cost.returnToHand) return false;
+    const me = view.you;
+    const landsInPlay = view.battlefield.filter((o) => o.controller === me && (this.def(o.cardId)?.types ?? []).includes("Land")).length;
+    const landInHand = view.hand.some((c) => this.def(c.cardId)?.types.includes("Land"));
+    const maxNeed = Math.max(0, ...view.hand.filter((c) => !this.def(c.cardId)?.types.includes("Land")).map((c) => this.mv(c.cardId)));
+    // Allowed with a land to replay, or when even after the bounce we can still pay next turn's plan.
+    return !(landInHand || landsInPlay - 1 >= maxNeed);
+  }
+
+  /** S17: a spell in hand with no legal target on this board (so cycling it loses nothing).
+   * S22: a LAND is dead to hand when we are flooded (≥6 in play with another land in hand) —
+   * the Stoker's grant turns flooded draws into fuel. */
   cardIsDead(view: GameView, action: Action): boolean {
     if (action.type !== "activateAbility") return false;
     const card = view.hand.find((c) => c.objectId === action.objectId);
     const d = card ? this.def(card.cardId) : undefined;
     if (!d) return true;
+    if (d.types.includes("Land")) {
+      const inPlay = view.battlefield.filter((o) => o.controller === view.you && (this.def(o.cardId)?.types ?? []).includes("Land")).length;
+      const spareLands = view.hand.filter((c) => this.def(c.cardId)?.types.includes("Land")).length;
+      return inPlay >= 6 && spareLands >= 2;
+    }
     const specs = d.targets ?? [];
     if (specs.length === 0) return false; // untargeted spells always have a use
     // Approximate legality from the view: any battlefield object the spec's base/anyOf predicates could accept.
@@ -727,6 +767,64 @@ export class HeuristicAgent implements Agent {
     return enables && ourMain ? accept : decline;
   }
 
+  /** S22 (A10 word 2): pay the bounce cost with a SPENT land — a tapped one first (its mana is
+   * already used this turn), ties by cardId for determinism. */
+  private bounceCostChoice(view: GameView, request: ActionRequest): Action {
+    const candidates = request.actions.filter((a) => a.type === "returnToHand") as { type: "returnToHand"; objectId: string }[];
+    if (candidates.length === 0) return request.actions[0]!;
+    const ranked = [...candidates].sort((a, b) => {
+      const oa = view.battlefield.find((o) => o.id === a.objectId);
+      const ob = view.battlefield.find((o) => o.id === b.objectId);
+      const ta = oa?.tapped ? 0 : 1;
+      const tb = ob?.tapped ? 0 : 1;
+      if (ta !== tb) return ta - tb; // tapped first
+      return (oa?.cardId ?? "").localeCompare(ob?.cardId ?? "");
+    });
+    return ranked[0]!;
+  }
+
+  /** S22 (A10 word 6): pay the tap cost with the least valuable untapped creature (Glare's fuel
+   * preference — the boss doc wants vigilant attackers eventually; board value is the v1 proxy). */
+  private tapCostChoice(view: GameView, request: ActionRequest): Action {
+    const candidates = request.actions.filter((a) => a.type === "tapCreature") as { type: "tapCreature"; objectId: string }[];
+    if (candidates.length === 0) return request.actions[0]!;
+    const ranked = [...candidates].sort((a, b) => this.boardValue(view, a.objectId) - this.boardValue(view, b.objectId));
+    return ranked[0]!;
+  }
+
+  /** S22 (A10 word 4) — Purge discipline, the pin-17 family: take opponent creatures best-first,
+   * never our own, and never a pick whose cumulative life cost drops us below the floor (4 — the
+   * shock-clause floor; book of shame 17's "never pay at ≤ 2" is strictly inside it). */
+  private variableTargetChoice(view: GameView, request: ActionRequest): Action {
+    const done = request.actions.find((a) => a.type === "doneChoosingTargets") ?? request.actions[0]!;
+    const picks = request.actions.filter((a) => a.type === "chooseVariableTarget") as Extract<Action, { type: "chooseVariableTarget" }>[];
+    const PAY_FLOOR = 4;
+    const srcDef = request.source ? this.def(request.source.cardId) : undefined;
+    const lifePer = srcDef?.additionalCost?.perTarget ? (srcDef.additionalCost.life ?? 0) : 0;
+    const projected = view.life[view.you] - lifePer * (this.variablePicks + 1);
+    if (lifePer > 0 && projected < PAY_FLOOR) return done;
+    const enemies = picks
+      .map((a) => ({ a, o: a.target.kind === "object" ? view.battlefield.find((b) => a.target.kind === "object" && b.id === a.target.id) : undefined }))
+      .filter((x) => x.o && x.o.controller !== view.you)
+      .sort((x, y) => this.boardValue(view, y.o!.id) - this.boardValue(view, x.o!.id));
+    const best = enemies[0];
+    // A pick must be WORTH its life: board value at least half the life paid (v1; the S22b lord-sim measures).
+    if (!best || (lifePer > 0 && this.boardValue(view, best.o!.id) < lifePer / 2)) return done;
+    this.variablePicks += 1;
+    return best.a;
+  }
+
+  /** S22 (A10 word 7) — the Stoker's fork from the paying side: pay the toll while healthy (denying
+   * the draw), stop paying near the floor (the same floor family as the shock clause). */
+  private unlessPayChoice(view: GameView, request: ActionRequest): Action {
+    const accept = request.actions.find((a) => a.type === "acceptOptional");
+    const decline = request.actions.find((a) => a.type === "declineOptional") ?? request.actions[0]!;
+    if (!accept) return decline;
+    const PAY_FLOOR = 4;
+    const cost = 2; // v1: the only customer's cost; generalize when a second punisher arrives
+    return view.life[view.you] - cost >= PAY_FLOOR ? accept : decline;
+  }
+
   sacrificeChoice(view: GameView, request: ActionRequest): Action {
     const candidates = request.actions.filter((a) => a.type === "sacrifice") as { type: string; objectId: string }[];
     if (candidates.length === 0) return request.actions[0]!;
@@ -742,8 +840,14 @@ export class HeuristicAgent implements Agent {
       for (const ab of def.abilities ?? []) {
         if (ab.kind !== "triggered" || ab.event !== "DIES") continue;
         const src = (ab.condition as { source?: string } | undefined)?.source;
-        if (src === "any" || src === "other") v += 1.5; // an engine that watches others die
-        else if (!ab.optional || ab.effects.some((e) => e.type === "draw")) v -= 0.5; // its own death pays us back
+        if (src === "any" || src === "other") {
+          // S22 (pin 15 nudged for the Usher's doubled drain): an observed-DIES engine's keep-value
+          // scales with its per-death swing (Blood Artist 1+1 → +1.5 exactly as before; the Usher
+          // 2+2 → +3.0 — doubled rate, doubled keep-value). Ladder-neutral by construction.
+          let swing = 0;
+          for (const e of ab.effects) if ((e.type === "loseLife" || e.type === "gainLife" || e.type === "damage") && typeof e.amount === "number") swing += e.amount;
+          v += 1.5 * Math.max(1, swing / 2);
+        } else if (!ab.optional || ab.effects.some((e) => e.type === "draw")) v -= 0.5; // its own death pays us back
       }
       if ((def.subtypes ?? []).some((st) => boosted.has(st))) v += 1.0; // it would receive the counter
       return v;

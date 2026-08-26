@@ -77,10 +77,15 @@ export function validateCard(raw: unknown): ValidationResult {
     }
   }
   // A8 (S20): range counts — {min≥0, max≥min≥…}; a range spec must be the LAST spec of its list.
+  // A10 word 4 (S22): count "any" (the request-loop) is a SPELL-level SOLE spec — Purge's shape.
   const checkSpecs = (specs: unknown, where: string) => {
     if (!Array.isArray(specs)) return;
     specs.forEach((sp, i) => {
       const c = (sp as { count?: unknown }).count;
+      if (c === "any") {
+        if (where !== "targets" || specs.length !== 1) err(`${where}: an "any"-count spec must be a spell's sole target spec (A10)`);
+        return;
+      }
       if (typeof c === "object" && c !== null) {
         const r = c as { min?: unknown; max?: unknown };
         if (!Number.isInteger(r.min) || !Number.isInteger(r.max) || (r.min as number) < 0 || (r.max as number) < Math.max(1, r.min as number)) {
@@ -93,6 +98,10 @@ export function validateCard(raw: unknown): ValidationResult {
   checkSpecs(raw.targets, "targets");
   for (const ab of Array.isArray(raw.abilities) ? raw.abilities : []) checkSpecs((ab as { targets?: unknown }).targets, "ability targets");
   for (const m of Array.isArray(raw.modes) ? raw.modes : []) checkSpecs((m as { targets?: unknown }).targets, "mode targets");
+  // A10 (S22): the self-exile rider (Overload).
+  if (raw.selfExileOnResolve !== undefined && (raw.selfExileOnResolve !== true || (!types.includes("Instant") && !types.includes("Sorcery")))) {
+    err(`"selfExileOnResolve" is a true-only Instant/Sorcery rider (A10)`);
+  }
   if (raw.entersTapped !== undefined && (raw.entersTapped !== true || !types.includes("Land"))) err(`"entersTapped" is a land-only true flag (S20)`);
   if (raw.priceOverride !== undefined && (!Number.isInteger(raw.priceOverride) || (raw.priceOverride as number) <= 0)) {
     err(`"priceOverride" must be a positive integer (gold)`);
@@ -127,6 +136,10 @@ export function validateCard(raw: unknown): ValidationResult {
   }
   // ADR-068: prizeOnly (Black Lotus) — boolean when present; the pool registry column mirrors it.
   if (raw.prizeOnly !== undefined && typeof raw.prizeOnly !== "boolean") err(`"prizeOnly" must be boolean (ADR-068)`);
+  // ADR-082 (S22): printedAsset — custom cards only (real cards' printed view is the Scryfall normal).
+  if (raw.printedAsset !== undefined && (typeof raw.printedAsset !== "string" || raw.source !== "custom")) {
+    err(`"printedAsset" must be a string on a custom card (ADR-082)`);
+  }
 
   const declaredTargets = Array.isArray(raw.targets) ? (raw.targets as unknown[]) : [];
   if (raw.targets !== undefined) {
@@ -147,12 +160,17 @@ export function validateCard(raw: unknown): ValidationResult {
   } else if (types.includes("Instant") || types.includes("Sorcery")) {
     err(`Instant/Sorcery missing spellEffect`);
   }
-  // A7: additional spell cost (Goblin Grenade).
+  // A7: additional spell cost (Goblin Grenade). A10 (S22): the life form (Purge) joins it.
   if (raw.additionalCost !== undefined) {
     if (!types.includes("Instant") && !types.includes("Sorcery")) err(`additionalCost is only for Instant/Sorcery (A7)`);
     const ac = isRecord(raw.additionalCost) ? raw.additionalCost : {};
-    const pred = isRecord(ac.sacrifice) ? ac.sacrifice.predicate : undefined;
-    if (typeof pred !== "string" || !/^(creature(\.subtype:[A-Za-z]+)?)$/.test(pred)) err(`additionalCost.sacrifice.predicate must be "creature" or "creature.subtype:<Subtype>" (A7)`);
+    if (ac.sacrifice === undefined && ac.life === undefined) err(`additionalCost needs "sacrifice" and/or "life" (A7/A10)`);
+    if (ac.sacrifice !== undefined) {
+      const pred = isRecord(ac.sacrifice) ? ac.sacrifice.predicate : undefined;
+      if (typeof pred !== "string" || !/^(creature(\.subtype:[A-Za-z]+)?)$/.test(pred)) err(`additionalCost.sacrifice.predicate must be "creature" or "creature.subtype:<Subtype>" (A7)`);
+    }
+    if (ac.life !== undefined && (!Number.isInteger(ac.life) || (ac.life as number) <= 0)) err(`additionalCost.life must be a positive integer (A10)`);
+    if (ac.perTarget !== undefined && (ac.perTarget !== true || ac.life === undefined)) err(`additionalCost.perTarget must be true and requires "life" (A10)`);
   }
   // A5: cycling {cost} — compiled into a hand-zone ability by the loader.
   if (raw.cycling !== undefined) {
@@ -186,7 +204,10 @@ function validateTargetSpec(t: unknown, err: (m: string) => void): void {
   if (!isRecord(t)) return err(`target spec is not an object`);
   const cnt = t.count as unknown;
   const rangeOk = isRecord(cnt) && Number.isInteger((cnt as { min?: unknown }).min) && Number.isInteger((cnt as { max?: unknown }).max);
-  if (!rangeOk && (!Number.isInteger(cnt) || (cnt as number) < 1)) err(`target spec count must be >= 1 or an A8 range {min,max}`);
+  if (cnt !== "any" && !rangeOk && (!Number.isInteger(cnt) || (cnt as number) < 1)) err(`target spec count must be >= 1, an A8 range {min,max}, or "any" (A10)`);
+  // A10/ADR-038: whose graveyard; A10: the power ceiling (Graceful Restoration).
+  if (t.who !== undefined && t.who !== "you" && t.who !== "any") err(`target who must be "you" | "any" (ADR-038 amendment)`);
+  if (t.powerAtMost !== undefined && (!Number.isInteger(t.powerAtMost) || (t.powerAtMost as number) < 0)) err(`target powerAtMost must be a non-negative integer (A10)`);
   if (!(TARGET_PREDICATES as readonly string[]).includes(t.predicate as string)) {
     err(`unknown target predicate "${t.predicate}"`);
   }
@@ -228,7 +249,14 @@ function isAnyValueRef(v: unknown): boolean {
   if (!isRecord(v)) return false;
   if (v.ref === "targetPower") return Number.isInteger(v.target);
   if (v.ref === "count" || v.ref === "maxPower") return validCountPredicate(v.predicate);
-  if (v.ref === "graveyardCount") return v.who === "you" || v.who === "opponent";
+  if (v.ref === "graveyardCount") {
+    if (v.who !== "you" && v.who !== "opponent") return false;
+    // A10 (S22): typed counts (Overload's instants-and-sorceries).
+    if (v.types !== undefined && (!Array.isArray(v.types) || v.types.length === 0 || (v.types as unknown[]).some((t) => !CARD_TYPES.includes(t as CardType)))) return false;
+    return true;
+  }
+  // A10 (S22): the target's LKI mana value (Aether Mutation).
+  if (v.ref === "targetManaValue") return Number.isInteger(v.target);
   return false;
 }
 
@@ -264,6 +292,31 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
       } else {
         validateEffects(a.effects, nTargets, err, warnings, cardId);
       }
+      // A10 word 9 (S22): zone-scoped triggers — first zone graveyard, first event UPKEEP (the
+      // collection only exists there; widening means a new collector, not a validator relax).
+      if (a.zone !== undefined) {
+        if (a.zone !== "battlefield" && a.zone !== "graveyard") err(`trigger zone must be battlefield|graveyard (A10)`);
+        if (a.zone === "graveyard" && a.event !== "UPKEEP") err(`graveyard-zone triggers support only UPKEEP today (A10 — Tainted Phoenix's shape)`);
+      }
+      // A10 word 9 rider: optionalCost — a "you may pay" whose yes pays; requires optional.
+      if (a.optionalCost !== undefined) {
+        if (a.optional !== true) err(`optionalCost requires optional: true (ADR-027 + A10)`);
+        const oc = isRecord(a.optionalCost) ? a.optionalCost : {};
+        if (typeof oc.mana !== "string") err(`optionalCost.mana must be a mana cost string (A10)`);
+        else {
+          try {
+            parseManaCost(oc.mana);
+          } catch (e) {
+            err((e as Error).message);
+          }
+        }
+      }
+      // A10 word 7: the punisher package.
+      if (a.unlessPay !== undefined) {
+        const up = isRecord(a.unlessPay) ? a.unlessPay : {};
+        if (!Number.isInteger(up.life) || (up.life as number) <= 0) err(`unlessPay.life must be a positive integer (A10)`);
+        if (a.optional === true) err(`unlessPay and optional don't combine (the fork IS the choice, A10)`);
+      }
       break;
     }
     case "activated": {
@@ -288,6 +341,19 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
         if (a.cost.exileSelf !== undefined && a.cost.exileSelf !== true) err(`cost.exileSelf must be true when present`);
         if (a.cost.reduceBy !== undefined && !isAnyValueRef(a.cost.reduceBy)) err(`cost.reduceBy must be a value ref (A4/ADR-076)`);
         if (a.cost.reduceBy !== undefined && typeof a.cost.mana !== "string") err(`cost.reduceBy needs a mana cost to reduce`);
+        // A10 word 2 (S22): the bounce cost (the Unwinder).
+        if (a.cost.returnToHand !== undefined) {
+          const pred = isRecord(a.cost.returnToHand) ? a.cost.returnToHand.predicate : undefined;
+          if (typeof pred !== "string" || !/^(self|land|permanent|creature(\.subtype:[A-Za-z]+)?)$/.test(pred)) {
+            err(`returnToHand predicate must be "self", "land", "permanent", "creature", or "creature.subtype:<Subtype>" (A10)`);
+          }
+        }
+        // A10 word 6 (S22): the tap cost (Glare).
+        if (a.cost.tapCreature !== undefined) {
+          const tc = isRecord(a.cost.tapCreature) ? a.cost.tapCreature : {};
+          if (typeof tc.predicate !== "string" || !/^creature(\.subtype:[A-Za-z]+)?$/.test(tc.predicate as string)) err(`tapCreature.predicate must be "creature" or "creature.subtype:<Subtype>" (A10)`);
+          if (!Number.isInteger(tc.count) || (tc.count as number) < 1) err(`tapCreature.count must be a positive integer (A10)`);
+        }
       }
       if (a.zone !== undefined && !ABILITY_ZONES.includes(a.zone as string)) err(`unknown ability zone "${a.zone}" (A5)`);
       if (a.zone === "hand" && !(isRecord(a.cost) && a.cost.discardSelf === true)) err(`a hand-zone ability must discard itself as a cost (A5: cycling shape)`);
@@ -310,8 +376,23 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
       validateEffects(a.effects, nTargets, err, warnings, cardId, { isStatic: true });
       if (Array.isArray(a.effects)) {
         for (const e of a.effects) {
-          if (isRecord(e) && !["modifyPT", "grantKeyword", "restrict", "gainControl"].includes(e.type as string)) {
-            err(`static ability cannot carry effect "${e.type}" (only modifyPT/grantKeyword/restrict/gainControl)`);
+          if (isRecord(e) && !["modifyPT", "grantKeyword", "restrict", "gainControl", "grantAbility"].includes(e.type as string)) {
+            err(`static ability cannot carry effect "${e.type}" (only modifyPT/grantKeyword/restrict/gainControl/grantAbility)`);
+          }
+          // A10 word 8 (S22): the granted ability is itself validated as an activated ability of
+          // the target zone (a hand grant must be cycling-shaped; a battlefield grant needs a scope).
+          if (isRecord(e) && e.type === "grantAbility") {
+            if (e.zone === "hand") {
+              if (e.scope !== undefined) err(`grantAbility zone "hand" grants to the controller's whole hand — no scope (A10)`);
+            } else if (e.zone === "battlefield") {
+              if (!(SCOPES as readonly string[]).includes(e.scope as string)) err(`grantAbility zone "battlefield" needs a known scope (A10)`);
+            } else {
+              err(`grantAbility zone must be "hand" | "battlefield" (A10)`);
+            }
+            if (e.withKeyword !== undefined && !(KEYWORDS as readonly string[]).includes(e.withKeyword as string)) err(`grantAbility withKeyword: unknown keyword "${e.withKeyword}"`);
+            if (e.cardType !== undefined && !CARD_TYPES.includes(e.cardType as CardType)) err(`grantAbility cardType: unknown type "${e.cardType}"`);
+            if (!isRecord(e.ability) || e.ability.kind !== "activated") err(`grantAbility.ability must be an activated ability (A10)`);
+            else validateAbility({ ...e.ability, zone: e.zone }, err, warnings, cardId);
           }
           // Statics are interpreted live and have no X: literal deltas or count refs (A4).
           if (isRecord(e) && e.type === "modifyPT" && (e.power === "X" || e.power === "-X" || e.toughness === "X" || e.toughness === "-X")) {
@@ -340,16 +421,25 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
   damage: (e, err) => {
     needAmount(e, err);
     // A8 (S20): damage addresses a target index OR a range-spec index (targetSpec fans out).
-    if (!Number.isInteger(e.target) && !Number.isInteger(e.targetSpec)) err(`"damage" needs "target" or "targetSpec"`);
+    // A10 (S22): OR the triggering event's player (the Warden's law).
+    if (e.to !== undefined && e.to !== "eventPlayer") err(`damage "to" must be "eventPlayer" (A10)`);
+    if (e.from !== undefined && e.from !== "eventObject") err(`damage "from" must be "eventObject" (A10)`);
+    if (!Number.isInteger(e.target) && !Number.isInteger(e.targetSpec) && e.to !== "eventPlayer") err(`"damage" needs "target", "targetSpec", or to:"eventPlayer"`);
   },
   damageAll: (e, err) => {
     needAmount(e, err);
     needScope(e, err);
   },
-  destroy: needTargetIndex,
+  destroy: (e, err) => {
+    // A10 (S22): destroy addresses a target index OR a spec index (Purge's fan-out).
+    if (!Number.isInteger(e.target) && !Number.isInteger(e.targetSpec)) err(`"destroy" needs "target" or "targetSpec"`);
+  },
   destroyAll: needScope,
   exile: needTargetIndex,
-  bounce: needTargetOrScope, // S20: Arcanis returns itself via scope "self"
+  bounce: (e, err) => {
+    needTargetOrScope(e, err); // S20: Arcanis returns itself via scope "self"
+    if (e.to !== undefined && e.to !== "hand" && e.to !== "libraryTop") err(`bounce "to" must be hand|libraryTop (A10 — Temporal Spring)`);
+  },
   counter: needTargetIndex,
   draw: (e, err) => {
     needCount(e, err);
@@ -393,7 +483,9 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
   },
   createToken: (e, err) => {
     if (typeof e.tokenId !== "string") err(`createToken missing tokenId`);
-    needCount(e, err);
+    // A10 (S22): count may be a value ref (Aether Mutation); pt locks base P/T (Overload's Weird).
+    if (!isAnyValueRef(e.count)) needCount(e, err);
+    if (e.pt !== undefined && !isAnyValueRef(e.pt)) err(`createToken "pt" must be a value ref (A10)`);
     needWho(e, err);
   },
   addCounters: (e, err) => {
@@ -405,11 +497,23 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     needTargetIndex(e, err);
     if (e.under !== "yourControl") err(`exileThenReturn.under must be "yourControl" (A8)`);
   },
-  tapTarget: needTargetIndex,
+  tapTarget: (e, err) => {
+    // A10 (S22): tapTarget addresses a target index OR a spec index (the Warden's up-to-two).
+    if (!Number.isInteger(e.target) && !Number.isInteger(e.targetSpec)) err(`"tapTarget" needs "target" or "targetSpec"`);
+  },
   untapTarget: needTargetIndex,
   returnFromGraveyard: (e, err) => {
-    needTargetOrScope(e, err);
+    // A10 (S22): the targetSpec form fans out over a range spec's picks (Graceful Restoration mode 2).
+    if (!Number.isInteger(e.targetSpec)) needTargetOrScope(e, err);
     if (e.to !== "battlefield" && e.to !== "hand") err(`returnFromGraveyard "to" must be battlefield|hand`);
+    // A10 (S22): the temporary package (the Usher) and the counter rider (Graceful Restoration).
+    if (e.temporary !== undefined && (e.temporary !== true || e.to !== "battlefield")) err(`returnFromGraveyard "temporary" is a true-only battlefield rider (A10)`);
+    if (e.withCounters !== undefined) {
+      const wc = e.withCounters as { kind?: unknown; count?: unknown };
+      if (e.to !== "battlefield" || !isRecord(wc) || wc.kind !== "+1/+1" || !Number.isInteger(wc.count) || (wc.count as number) < 1) {
+        err(`returnFromGraveyard "withCounters" must be {kind:"+1/+1", count≥1} on a battlefield return (A10)`);
+      }
+    }
   },
   fight: (e, err) => {
     if (!Array.isArray(e.targets) || e.targets.length !== 2) err(`fight requires targets: [i, j]`);
@@ -422,6 +526,10 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     if (typeof e.predicate !== "string" || !SEARCH_PREDICATE.test(e.predicate)) err(`searchLibrary predicate must be basicLand|anyCard|subtype:<Subtype> (ADR-068/076)`);
     if (e.to !== "hand" && e.to !== "battlefield") err(`searchLibrary "to" must be hand|battlefield`);
     if (e.entersTapped !== undefined && e.to !== "battlefield") err(`searchLibrary entersTapped only applies to battlefield destination`);
+  },
+  grantAbility: () => {
+    // A10 word 8 (S22): static-only — the deep shape (zone/scope/ability) is validated in the
+    // static branch; validateEffects rejects it outside statics.
   },
   addMana: (e, err) => {
     if (e.choice) {
@@ -490,6 +598,10 @@ function validateEffects(
     const type = e.type as Effect["type"];
     if (!EFFECT_TYPES.includes(type)) {
       err(`unknown effect type "${e.type}"`);
+      continue;
+    }
+    if (type === "grantAbility" && !opts.isStatic) {
+      err(`grantAbility is static-only (A10 word 8 — enumeration-time grants, never resolved)`);
       continue;
     }
     EFFECT_SHAPE[type](e, err);

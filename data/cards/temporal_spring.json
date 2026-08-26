@@ -1,0 +1,27 @@
+{
+ "id": "temporal_spring",
+ "name": "Temporal Spring",
+ "source": "real",
+ "manaCost": "{1}{G}{U}",
+ "types": [
+  "Sorcery"
+ ],
+ "targets": [
+  {
+   "count": 1,
+   "predicate": "permanent",
+   "zone": "battlefield"
+  }
+ ],
+ "spellEffect": [
+  {
+   "type": "bounce",
+   "target": 0,
+   "to": "libraryTop"
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": "R"
+}

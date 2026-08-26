@@ -14,13 +14,20 @@ import { nextTimestamp, type PendingTrigger, type PlayerId, type StackItem } fro
  * controller, read from the ZONE_CHANGE payload (ADR-016).
  */
 export function wireTriggerCollection(ctx: EngineCtx): void {
-  const pend = (sourceId: string, sourceCardId: string, controller: PlayerId, abilityIndex: number) => {
+  const pend = (
+    sourceId: string,
+    sourceCardId: string,
+    controller: PlayerId,
+    abilityIndex: number,
+    eventContext?: { objectId?: string; cardId?: string; player?: PlayerId },
+  ) => {
     ctx.state.pendingTriggers.push({
       sourceId,
       sourceCardId,
       controller,
       abilityIndex,
       timestamp: nextTimestamp(ctx.state),
+      ...(eventContext ? { eventContext } : {}),
     });
   };
 
@@ -53,11 +60,19 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
     // Valkyrie's "another Angel enters", Blood Artist's "this or another creature
     // dies"). Observers = battlefield permanents + the look-back set (objects that
     // left in the same batch — Blood Artist dying with the rest still sees them).
-    const observedEvent = ev.to === "battlefield" && ev.newId ? "ENTERS_BATTLEFIELD" : ev.from === "battlefield" && ev.to === "graveyard" ? "DIES" : null;
+    // A10 word 1 (S22): battlefield→hand joins the observed shapes as RETURNED_TO_HAND
+    // (any controller, any cause — the Unwinder's ping; his own bounce fires it via the
+    // moved-object-observes-itself path, the Blood Artist precedent).
+    const observedEvent =
+      ev.to === "battlefield" && ev.newId ? "ENTERS_BATTLEFIELD"
+      : ev.from === "battlefield" && ev.to === "graveyard" ? "DIES"
+      : ev.from === "battlefield" && ev.to === "hand" ? "RETURNED_TO_HAND"
+      : null;
     if (!observedEvent) return;
     const movedId = observedEvent === "ENTERS_BATTLEFIELD" ? ev.newId! : ev.oldId;
     const movedDef = ctx.defs.def(ev.cardId);
     const movedController = observedEvent === "ENTERS_BATTLEFIELD" ? ev.controller : ev.controllerBefore;
+    const eventContext = { objectId: ev.newId || ev.oldId, cardId: ev.cardId, player: movedController };
     const observers: { id: string; cardId: string; controller: PlayerId }[] = ctx.state.battlefield.map((id) => {
       const o = ctx.state.objects[id]!;
       return { id, cardId: o.cardId, controller: o.controller };
@@ -82,7 +97,71 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
         if (cond.subtype && !cond.subtype.some((t) => (movedDef.subtypes ?? []).includes(t))) return;
         // The observer's trigger source: its current identity (graveyard card if it already left; the moved object's new id).
         const sourceId = ctx.state.objects[obs.id] ? obs.id : obs.id === movedId ? (ev.newId || ev.oldId) : (ctx.lookback?.get(obs.id)?.currentId ?? obs.id);
-        pend(sourceId, obs.cardId, obs.controller, i);
+        pend(sourceId, obs.cardId, obs.controller, i, eventContext);
+      });
+    }
+  });
+
+  // A10 word 5 (S22): UNTAPPED — observed across the battlefield (untap step and effect untaps both
+  // emit). The Warden's law: condition type reads the untapped object's card; the event context
+  // carries the object and its controller so "it deals 1 damage to its controller" can address them.
+  ctx.bus.on("UNTAPPED", (ev) => {
+    const untapped = ctx.state.objects[ev.objectId];
+    if (!untapped || untapped.zone !== "battlefield") return;
+    const untappedDef = ctx.defs.def(untapped.cardId);
+    const eventContext = { objectId: ev.objectId, cardId: untapped.cardId, player: untapped.controller };
+    for (const permId of [...ctx.state.battlefield]) {
+      const perm = ctx.state.objects[permId];
+      if (!perm) continue;
+      (ctx.defs.def(perm.cardId).abilities ?? []).forEach((a, i) => {
+        if (a.kind !== "triggered" || a.event !== "UNTAPPED") return;
+        const cond = a.condition ?? {};
+        const source = cond.source ?? "self";
+        if (source === "self" && ev.objectId !== permId) return;
+        if (source === "other" && ev.objectId === permId) return;
+        const ctrl = cond.controller ?? "any";
+        if (ctrl === "you" && untapped.controller !== perm.controller) return;
+        if (ctrl === "opponent" && untapped.controller === perm.controller) return;
+        if (cond.type && !cond.type.some((t) => untappedDef.types.includes(t as never))) return;
+        if (cond.subtype && !cond.subtype.some((t) => (untappedDef.subtypes ?? []).includes(t))) return;
+        pend(permId, perm.cardId, perm.controller, i, eventContext);
+      });
+    }
+  });
+
+  // A10 activation (S22): SPELL_CAST — reserved since S1, first collector (the Stoker). Condition
+  // `controller` is the caster relative to the observer's controller; the event context carries the
+  // caster (unlessPay's payer) and the cast card.
+  ctx.bus.on("SPELL_CAST", (ev) => {
+    for (const permId of [...ctx.state.battlefield]) {
+      const perm = ctx.state.objects[permId];
+      if (!perm) continue;
+      (ctx.defs.def(perm.cardId).abilities ?? []).forEach((a, i) => {
+        if (a.kind !== "triggered" || a.event !== "SPELL_CAST") return;
+        const ctrl = a.condition?.controller ?? "any";
+        if (ctrl === "you" && ev.controller !== perm.controller) return;
+        if (ctrl === "opponent" && ev.controller === perm.controller) return;
+        const castDef = ctx.defs.def(ev.cardId);
+        const cond = a.condition ?? {};
+        if (cond.type && !cond.type.some((t) => castDef.types.includes(t as never))) return;
+        if (cond.notType && cond.notType.some((t) => castDef.types.includes(t as never))) return;
+        pend(permId, perm.cardId, perm.controller, i, { cardId: ev.cardId, player: ev.controller });
+      });
+    }
+  });
+
+  // A10 activation (S22): LAND_PLAYED — the special action's own announcement (the Sower). The
+  // same observer shape as SPELL_CAST; effect-placed lands never fire it.
+  ctx.bus.on("LAND_PLAYED", (ev) => {
+    for (const permId of [...ctx.state.battlefield]) {
+      const perm = ctx.state.objects[permId];
+      if (!perm) continue;
+      (ctx.defs.def(perm.cardId).abilities ?? []).forEach((a, i) => {
+        if (a.kind !== "triggered" || a.event !== "LAND_PLAYED") return;
+        const ctrl = a.condition?.controller ?? "any";
+        if (ctrl === "you" && ev.controller !== perm.controller) return;
+        if (ctrl === "opponent" && ev.controller === perm.controller) return;
+        pend(permId, perm.cardId, perm.controller, i, { objectId: ev.objectId, player: ev.controller });
       });
     }
   });
@@ -110,11 +189,29 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
       if (!perm) continue;
       (ctx.defs.def(perm.cardId).abilities ?? []).forEach((a, i) => {
         if (a.kind !== "triggered" || a.event !== "UPKEEP") return;
+        if ((a.zone ?? "battlefield") !== "battlefield") return; // A10 word 9: zone-scoped triggers collect from their zone
         const ctrl = a.condition?.controller ?? "you";
         if (ctrl === "you" && ev.player !== perm.controller) return;
         if (ctrl === "opponent" && ev.player === perm.controller) return;
         pend(permId, perm.cardId, perm.controller, i);
       });
+    }
+    // A10 word 9 (S22): graveyard-zone upkeep triggers (Tainted Phoenix — the Squee class, bought
+    // on purpose). A graveyard card's controller is its owner; the intervening "is in your
+    // graveyard" holds at collection by construction, and the self-scoped return no-ops if the
+    // card raced away before resolution (the returnFromGraveyard guard).
+    for (const player of [0, 1] as PlayerId[]) {
+      for (const id of [...ctx.state.players[player].graveyard]) {
+        const obj = ctx.state.objects[id];
+        if (!obj) continue;
+        (ctx.defs.def(obj.cardId).abilities ?? []).forEach((a, i) => {
+          if (a.kind !== "triggered" || a.event !== "UPKEEP" || a.zone !== "graveyard") return;
+          const ctrl = a.condition?.controller ?? "you";
+          if (ctrl === "you" && ev.player !== player) return;
+          if (ctrl === "opponent" && ev.player === player) return;
+          pend(id, obj.cardId, player, i);
+        });
+      }
     }
   });
 
@@ -204,7 +301,13 @@ export async function placePendingTriggers(ctx: EngineCtx, request: ActionReques
       .sort((a, b) => a.timestamp - b.timestamp);
     while (remaining.length > 0) {
       let pickIndex = 0;
-      if (remaining.length > 1) {
+      // A10 QoL (S22, the Warden's untap step): identical triggers — same card, same ability,
+      // differing only in event context — auto-order in timestamp order. Their relative order is
+      // outcome-equivalent (each resolution is bound to its own event object), so the request is
+      // ADR-014's "no real decision" case at trigger scale. CR 603.3b's controller choice is
+      // preserved whenever two DIFFERENT abilities pend.
+      const identical = remaining.every((t) => t.sourceCardId === remaining[0]!.sourceCardId && t.abilityIndex === remaining[0]!.abilityIndex);
+      if (remaining.length > 1 && !identical) {
         const actions: Action[] = remaining.map((t, index) => ({
           type: "orderTrigger",
           index,
@@ -293,5 +396,9 @@ async function buildTriggerItem(
     x: 0,
     ...(ability.optional === true ? { isOptionalTrigger: true } : {}),
     ...(mode !== undefined ? { mode } : {}),
+    // A10 (S22): event identity, the punisher fork, and the pay-on-yes rider ride the item.
+    ...(trigger.eventContext ? { eventContext: trigger.eventContext } : {}),
+    ...(ability.unlessPay ? { unlessPay: ability.unlessPay } : {}),
+    ...(ability.optionalCost ? { optionalCost: ability.optionalCost } : {}),
   };
 }

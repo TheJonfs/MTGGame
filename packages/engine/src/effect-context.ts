@@ -1,5 +1,7 @@
 import { type TargetSpec,
   parseManaProduction,
+  parseManaCost,
+  manaValue,
   type Amount,
   type DiscardFilter,
   type DiscardMode,
@@ -29,10 +31,13 @@ export type EffectRequester = (
   revealed?: { objectId: string; cardId: string }[],
 ) => Promise<Action>;
 
-/** Last known information per target (CR 608.2h, ADR-028): captured at resolution start. */
+/** Last known information per target (CR 608.2h, ADR-028): captured at resolution start.
+ * A10 (S22): mana value joins the snapshot (Aether Mutation counts the creature it just bounced;
+ * X in a battlefield permanent's cost is 0 per CR 202.3b — tokens with no cost read 0). */
 interface TargetLki {
   power: number;
   controller: PlayerId;
+  manaValue: number;
 }
 
 /** Engine implementation of the cards package's EffectContext seam. */
@@ -70,7 +75,7 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
     if (t.kind !== "object") return null;
     const obj = ctx.state.objects[t.id];
     if (!obj || obj.zone !== "battlefield") return null;
-    return { power: characteristics(ctx, t.id).power, controller: obj.controller };
+    return { power: characteristics(ctx, t.id).power, controller: obj.controller, manaValue: manaValue(parseManaCost(ctx.defs.def(obj.cardId).manaCost)) };
   });
 
   const sourceForDamage = () => {
@@ -164,8 +169,18 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
         const snap = lki[a.target];
         return snap ? snap.power : 0;
       }
+      if (a.ref === "targetManaValue") {
+        // A10 (S22): LKI mana value — the bounced creature still feeds the Saproling count.
+        const snap = lki[a.target];
+        return snap ? snap.manaValue : 0;
+      }
       // A4 counting refs: evaluated NOW, from the controller's point of view (608.2h: Tendrils' X at resolution).
       return evaluateValueRef(ctx, a, controller, item.sourceId ?? item.objectId);
+    },
+
+    eventPlayer(): number | null {
+      // A10 (S22): the triggering event's player (the Warden's untapped-creature controller).
+      return item.eventContext?.player ?? null;
     },
 
     targetMatches(cond: { target: number; subtype?: string; cardType?: string }): boolean {
@@ -189,15 +204,24 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
       moveObject(ctx, exiled, "battlefield", { controller });
     },
 
-    dealDamage(target: ResolvedTarget, amount: number): void {
+    dealDamage(target: ResolvedTarget, amount: number, from?: "eventObject"): void {
       if (target.kind === "stackItem") throw new Error("cannot damage a stack item");
+      // A10 (S22): the Warden's law — the EVENT's object is the damage source, so its own
+      // lifelink/deathtouch apply (lifelink walks free: its controller nets zero).
+      if (from === "eventObject" && item.eventContext?.objectId) {
+        const ec = item.eventContext;
+        dealDamage(ctx, { id: ec.objectId!, cardId: ec.cardId ?? item.sourceCardId, controller: (ec.player ?? controller) as PlayerId }, target, amount, false);
+        return;
+      }
       dealDamage(ctx, sourceForDamage(), target, amount, false);
     },
 
-    bounce(objectId: string): void {
+    bounce(objectId: string, to: "hand" | "libraryTop" = "hand"): void {
       const obj = ctx.state.objects[objectId];
       if (!obj || obj.zone !== "battlefield") return;
-      moveObject(ctx, objectId, "hand");
+      // A10 (S22): libraryTop — Temporal Spring. Not a hand return: RETURNED_TO_HAND never fires.
+      if (to === "libraryTop") moveObject(ctx, objectId, "library", { position: "top" });
+      else moveObject(ctx, objectId, "hand");
     },
 
     counterSpell(stackItemId: string): void {
@@ -237,7 +261,7 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
       for (const sym of parseManaProduction(mana)) pool[sym.symbol] += 1;
     },
 
-    ...sharedOps(ctx),
+    ...sharedOps(ctx, controller),
     ...discardOp(ctx, controller, requester),
     ...searchOp(ctx, requester),
   };
@@ -284,12 +308,16 @@ function searchOp(ctx: EngineCtx, requester?: EffectRequester) {
   };
 }
 
-/** Ops with no dependency on a stack item, shared with the init context. */
-function sharedOps(ctx: EngineCtx) {
+/** Ops with no dependency on a stack item, shared with the init context. `asController` = the
+ * effect's controller — battlefield returns enter under THEIR control (CR 611.2-family: the player
+ * instructed to put it there controls it). Own-graveyard customers never noticed (owner == effect
+ * controller); the ADR-038 who:"any" amendment makes it load-bearing (the Usher claims the guest). */
+function sharedOps(ctx: EngineCtx, asController: PlayerId) {
   return {
-    createToken(player: number, tokenId: string, count: number): void {
+    createToken(player: number, tokenId: string, count: number, pt?: { power: number; toughness: number }): void {
       for (let i = 0; i < count; i++) {
-        createObject(ctx, tokenId, player as PlayerId, "battlefield", { isToken: true });
+        // A10 (S22): pt locks the token's base P/T at creation (Overload's X/X Weird).
+        createObject(ctx, tokenId, player as PlayerId, "battlefield", { isToken: true, ...(pt ? { basePT: pt } : {}) });
       }
     },
 
@@ -355,10 +383,33 @@ function sharedOps(ctx: EngineCtx) {
       moveObject(ctx, objectId, "exile"); // not a death: no DIES trigger fires (700.4)
     },
 
-    returnFromGraveyard(objectId: string, to: "battlefield" | "hand"): void {
+    returnFromGraveyard(objectId: string, to: "battlefield" | "hand", opts?: { temporary?: boolean; withCounters?: { kind: "+1/+1"; count: number } }): void {
       const obj = ctx.state.objects[objectId];
       if (!obj || obj.zone !== "graveyard") return; // raced away: nothing to return
-      moveObject(ctx, objectId, to); // to battlefield fires ETB triggers normally
+      // Battlefield returns enter under the effect controller's control (the Usher's guest is
+      // HERS); hand returns go to the owner's hand as ever (zone arrays are owner-keyed).
+      const newId = moveObject(ctx, objectId, to, to === "battlefield" ? { controller: asController } : {}); // to battlefield fires ETB triggers normally
+      if (!newId || to !== "battlefield" || !ctx.state.objects[newId]) return;
+      // A10 (S22): Graceful Restoration's rider — it enters with counters.
+      if (opts?.withCounters) {
+        const back = ctx.state.objects[newId]!;
+        back.counters[opts.withCounters.kind] = (back.counters[opts.withCounters.kind] ?? 0) + opts.withCounters.count;
+      }
+      // A10 word 3 (S22): the temporary package — haste (riding THIS object; a blinked guest is a
+      // new object and sheds it — the launder) and the end-step sacrifice. During/after the END
+      // step the toll falls due next turn (the delayed trigger's "next end step").
+      if (opts?.temporary) {
+        ctx.state.continuousEffects.push({
+          kind: "grantKeyword",
+          objectId: newId,
+          keyword: "haste",
+          duration: "UNTIL_SOURCE_LEAVES",
+          sourceStackItemId: "temporary-reanimate",
+          timestamp: nextTimestamp(ctx.state),
+        });
+        const atOrPastEnd = ctx.state.step === "END" || ctx.state.step === "CLEANUP";
+        ctx.state.endStepSacrifices.push({ objectId: newId, dueTurn: atOrPastEnd ? ctx.state.turn + 1 : ctx.state.turn });
+      }
     },
 
     fight(idA: string, idB: string): void {
@@ -483,14 +534,18 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
       if (typeof a === "number") return a;
       return 0; // no X, no LKI at initialization
     },
+    eventPlayer(): number | null {
+      return null; // initialization has no triggering event
+    },
     dealDamage(target: ResolvedTarget, amount: number): void {
       if (target.kind === "stackItem") throw new Error("cannot damage a stack item");
       dealDamage(ctx, { id: "init", cardId: "init", controller: player }, target, amount, false);
     },
-    bounce(objectId: string): void {
+    bounce(objectId: string, to: "hand" | "libraryTop" = "hand"): void {
       const obj = ctx.state.objects[objectId];
       if (!obj || obj.zone !== "battlefield") return;
-      moveObject(ctx, objectId, "hand");
+      if (to === "libraryTop") moveObject(ctx, objectId, "library", { position: "top" });
+      else moveObject(ctx, objectId, "hand");
     },
     counterSpell(): void {
       throw new Error("initialization effects cannot counter");
@@ -510,7 +565,7 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
     addMana(): void {
       throw new Error("initialization effects cannot add mana (pools empty before turn 1)");
     },
-    ...sharedOps(ctx),
+    ...sharedOps(ctx, player),
     ...discardOp(ctx, player), // random mode works; choice modes throw without a requester
     ...searchOp(ctx), // throws if a match exists (no agent at initialization); no-match shuffles
   };
@@ -520,10 +575,16 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
 /** A4: counting value refs, evaluated live. `count`/`maxPower` scan battlefield permanents
  * from `controller`'s point of view; `graveyardCount` counts cards. Used by resolved effects
  * (Tendrils), statics (Gaean Wurm, Werebear's threshold) and cost reduction (Baru). */
-export function evaluateValueRef(ctx: EngineCtx, ref: Exclude<ValueRef, { ref: "targetPower" }>, controller: PlayerId, sourceId?: string): number {
+export function evaluateValueRef(ctx: EngineCtx, ref: Exclude<ValueRef, { ref: "targetPower" } | { ref: "targetManaValue" }>, controller: PlayerId, sourceId?: string): number {
   if (ref.ref === "graveyardCount") {
     const who = ref.who === "you" ? controller : opponentOf(controller);
-    return ctx.state.players[who].graveyard.length;
+    const yard = ctx.state.players[who].graveyard;
+    // A10 (S22): typed counts (Overload's instants-and-sorceries).
+    if (!ref.types) return yard.length;
+    return yard.filter((id) => {
+      const def = ctx.defs.def(getObject(ctx.state, id).cardId);
+      return ref.types!.some((t) => def.types.includes(t));
+    }).length;
   }
   const pred = ref.predicate;
   const ids = ctx.state.battlefield.filter((id) => {

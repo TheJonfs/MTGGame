@@ -1,0 +1,23 @@
+{
+ "id": "weird_x_x_ur",
+ "name": "Weird Token",
+ "source": "custom",
+ "isTokenDef": true,
+ "manaCost": "",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Weird"
+ ],
+ "colors": [
+  "U",
+  "R"
+ ],
+ "power": 0,
+ "toughness": 0,
+ "text": "",
+ "art": {
+  "fallback": "rendered"
+ }
+}

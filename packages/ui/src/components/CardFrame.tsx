@@ -106,6 +106,12 @@ export function CardFrame({
   /** ADR-043 hand variant: name/art/cost/P&T only — no type line, no oracle text. */
   hand?: boolean;
 }) {
+  // ADR-082 (S22, amending ADR-066): a custom card with a printedAsset shows it on printed-default
+  // surfaces — the parallel of the real cards' Scryfall scan; the our-frame fallback is retired
+  // for cards that carry one. Committed asset, served statically (custom-art precedent).
+  if (showPrinted && def.printedAsset) {
+    return <img className="printed-scan" src={`/printed-art/${def.printedAsset}`} alt={def.name} />;
+  }
   if (showPrinted && oracle) {
     return <img className="printed-scan" src={`/real-art/${def.id}.full.jpg`} alt={def.name} />;
   }

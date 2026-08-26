@@ -1,46 +1,47 @@
 {
-  "id": "cunning_tactician",
-  "name": "Cunning Tactician",
-  "source": "custom",
-  "manaCost": "{2}{W}{W}",
-  "types": [
-    "Creature"
-  ],
-  "subtypes": [
-    "Human",
-    "Soldier"
-  ],
-  "power": 2,
-  "toughness": 2,
-  "keywords": [
-    "vigilance"
-  ],
-  "text": "Vigilance\n{W}, {T}: Tap target creature.",
-  "abilities": [
+ "id": "cunning_tactician",
+ "name": "Cunning Tactician",
+ "source": "custom",
+ "manaCost": "{2}{W}{W}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Human",
+  "Soldier"
+ ],
+ "power": 2,
+ "toughness": 2,
+ "keywords": [
+  "vigilance"
+ ],
+ "text": "Vigilance\n{W}, {T}: Tap target creature.",
+ "abilities": [
+  {
+   "kind": "activated",
+   "cost": {
+    "mana": "{W}",
+    "tap": true
+   },
+   "targets": [
     {
-      "kind": "activated",
-      "cost": {
-        "mana": "{W}",
-        "tap": true
-      },
-      "targets": [
-        {
-          "count": 1,
-          "predicate": "creature",
-          "zone": "battlefield"
-        }
-      ],
-      "effects": [
-        {
-          "type": "tapTarget",
-          "target": 0
-        }
-      ]
+     "count": 1,
+     "predicate": "creature",
+     "zone": "battlefield"
     }
-  ],
-  "art": {
-    "asset": "/custom-art/cunning_tactician.png",
-    "fallback": "rendered"
-  },
-  "shopTier": 2
+   ],
+   "effects": [
+    {
+     "type": "tapTarget",
+     "target": 0
+    }
+   ]
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/cunning_tactician.png",
+  "fallback": "rendered"
+ },
+ "shopTier": 2,
+ "printedAsset": "cunning_tactician.jpg"
 }

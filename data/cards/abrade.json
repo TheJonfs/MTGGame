@@ -1,0 +1,49 @@
+{
+ "id": "abrade",
+ "name": "Abrade",
+ "source": "real",
+ "manaCost": "{1}{R}",
+ "types": [
+  "Instant"
+ ],
+ "modes": [
+  {
+   "label": "Abrade deals 3 damage to target creature",
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "creature",
+     "zone": "battlefield"
+    }
+   ],
+   "effects": [
+    {
+     "type": "damage",
+     "amount": 3,
+     "target": 0
+    }
+   ]
+  },
+  {
+   "label": "Destroy target artifact",
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "artifact",
+     "zone": "battlefield"
+    }
+   ],
+   "effects": [
+    {
+     "type": "destroy",
+     "target": 0
+    }
+   ]
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": 1,
+ "priceOverride": 12
+}

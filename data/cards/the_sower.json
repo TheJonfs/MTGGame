@@ -1,0 +1,56 @@
+{
+ "id": "the_sower",
+ "name": "The Sower",
+ "source": "custom",
+ "manaCost": "{1}{G}{G}{W}{U}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Dryad",
+  "Shaman"
+ ],
+ "supertypes": [
+  "Legendary"
+ ],
+ "power": 4,
+ "toughness": 4,
+ "text": "Whenever an opponent plays a land, search your library for a Forest card, put it onto the battlefield tapped, then shuffle.\n{3}{W}{U}: Create a 4/4 white and blue Sphinx creature token with flying and vigilance.",
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "LAND_PLAYED",
+   "condition": {
+    "controller": "opponent"
+   },
+   "effects": [
+    {
+     "type": "searchLibrary",
+     "predicate": "subtype:Forest",
+     "to": "battlefield",
+     "entersTapped": true
+    }
+   ]
+  },
+  {
+   "kind": "activated",
+   "cost": {
+    "mana": "{3}{W}{U}"
+   },
+   "effects": [
+    {
+     "type": "createToken",
+     "tokenId": "sphinx_4_4_wu",
+     "count": 1,
+     "who": "you"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/the_sower.png",
+  "fallback": "rendered"
+ },
+ "printedAsset": "the_sower.jpg",
+ "prizeOnly": true
+}

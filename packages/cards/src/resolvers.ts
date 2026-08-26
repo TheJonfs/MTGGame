@@ -37,9 +37,15 @@ export interface EffectContext {
   targetMatches(cond: EffectCondition): boolean;
   /** Numeric value of an amount ("X" resolves from the stack item). */
   amount(a: Amount): number;
+  /** A10 (S22): the triggering event's player (the untapped creature's controller, the caster), or
+   * null when the item carries no event context. */
+  eventPlayer(): number | null;
 
-  dealDamage(target: ResolvedTarget, amount: number): void;
-  bounce(objectId: string): void;
+  /** A10 (S22): `from: "eventObject"` makes the event's object the damage source (the Warden's law —
+   * the untapped creature's own lifelink/deathtouch apply). */
+  dealDamage(target: ResolvedTarget, amount: number, from?: "eventObject"): void;
+  /** A10 (S22): `to: "libraryTop"` — Temporal Spring (default hand). */
+  bounce(objectId: string, to?: "hand" | "libraryTop"): void;
   counterSpell(stackItemId: string): void;
   draw(player: number, count: number): void;
   /** ADR-070 Amendment 3: mill — top `count` cards of the player's library to their graveyard (zone-change events fire per card; not a draw). */
@@ -56,7 +62,8 @@ export interface EffectContext {
   searchLibrary(player: number, predicate: "basicLand" | "anyCard" | `subtype:${string}`, to: "hand" | "battlefield", entersTapped: boolean): Promise<void>;
   /** ADR-075 A8: exile the object and return it to the battlefield under the effect controller's control as a new object (ETBs fire). */
   exileThenReturn(objectId: string): void;
-  createToken(player: number, tokenId: string, count: number): void;
+  /** A10 (S22): `pt` sets the tokens' base P/T, locked at creation (Overload's Weird). */
+  createToken(player: number, tokenId: string, count: number, pt?: { power: number; toughness: number }): void;
   addCounters(objectId: string, kind: "+1/+1" | "-1/-1", count: number): void;
   gainLife(player: number, amount: number): void;
   /** Destruction by effect (CR 701.7); honors indestructible. Death itself is still the SBA's call. */
@@ -75,8 +82,10 @@ export interface EffectContext {
   fight(idA: string, idB: string): void;
   /** Exile (CR 700.4: not a death — no DIES trigger). */
   exile(objectId: string): void;
-  /** Move a card from a graveyard to the battlefield or its owner's hand (Zombify, Gravedigger, Rancor's self-return). */
-  returnFromGraveyard(objectId: string, to: "battlefield" | "hand"): void;
+  /** Move a card from a graveyard to the battlefield or its owner's hand (Zombify, Gravedigger, Rancor's self-return).
+   * A10 (S22): `temporary` — the package rule (haste; sacrificed at the beginning of the next end
+   * step); `withCounters` — it enters with counters (Graceful Restoration). */
+  returnFromGraveyard(objectId: string, to: "battlefield" | "hand", opts?: { temporary?: boolean; withCounters?: { kind: "+1/+1"; count: number } }): void;
   loseLife(player: number, amount: number): void;
   /**
    * Discard N from a player's hand per ADR-029. Chooser interaction makes
@@ -112,12 +121,18 @@ function targeted(effect: Effect & { target?: number; scope?: Scope; targetSpec?
 const implemented: Partial<Record<EffectType, EffectResolver>> = {
   damage: (e, ctx) => {
     if (e.type !== "damage") throw new Error("resolver mismatch");
-    for (const t of targeted(e, ctx)) ctx.dealDamage(t, ctx.amount(e.amount)); // A8: targetSpec fans out
+    // A10: the Warden's law addresses the event — the untapped creature damages its own controller.
+    if (e.to === "eventPlayer") {
+      const p = ctx.eventPlayer();
+      if (p !== null) ctx.dealDamage({ kind: "player", player: p }, ctx.amount(e.amount), e.from);
+      return;
+    }
+    for (const t of targeted(e, ctx)) ctx.dealDamage(t, ctx.amount(e.amount), e.from); // A8: targetSpec fans out
   },
 
   bounce: (e, ctx) => {
     if (e.type !== "bounce") throw new Error("resolver mismatch");
-    for (const t of targeted(e, ctx)) if (t.kind === "object") ctx.bounce(t.id); // S20: Arcanis self-bounce via scope
+    for (const t of targeted(e, ctx)) if (t.kind === "object") ctx.bounce(t.id, e.to); // S20: Arcanis self-bounce via scope
   },
 
   counter: (e, ctx) => {
@@ -181,7 +196,10 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
 
   createToken: (e, ctx) => {
     if (e.type !== "createToken") throw new Error("resolver mismatch");
-    for (const p of ctx.players(e.who)) ctx.createToken(p, e.tokenId, e.count);
+    // A10: count-as-ref (Aether Mutation's X) and pt locked at resolution (Overload's Weird).
+    const count = ctx.amount(e.count);
+    const pt = e.pt ? { power: ctx.amount(e.pt), toughness: ctx.amount(e.pt) } : undefined;
+    for (const p of ctx.players(e.who)) ctx.createToken(p, e.tokenId, count, pt);
   },
 
   addCounters: (e, ctx) => {
@@ -215,8 +233,8 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
 
   destroy: (e, ctx) => {
     if (e.type !== "destroy") throw new Error("resolver mismatch");
-    const t = ctx.target(e.target);
-    if (t && t.kind === "object") ctx.destroy(t.id);
+    // A10: targetSpec fans out (Purge destroys every still-legal pick; per-target fizzle).
+    for (const t of targeted(e, ctx)) if (t.kind === "object") ctx.destroy(t.id);
   },
 
   exile: (e, ctx) => {
@@ -233,7 +251,7 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
   returnFromGraveyard: (e, ctx) => {
     if (e.type !== "returnFromGraveyard") throw new Error("resolver mismatch");
     for (const t of targeted(e, ctx)) {
-      if (t.kind === "object") ctx.returnFromGraveyard(t.id, e.to);
+      if (t.kind === "object") ctx.returnFromGraveyard(t.id, e.to, { ...(e.temporary ? { temporary: true } : {}), ...(e.withCounters ? { withCounters: e.withCounters } : {}) });
     }
   },
 

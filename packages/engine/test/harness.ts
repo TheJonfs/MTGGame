@@ -186,7 +186,19 @@ export type ScriptEntry =
   /** ADR-068: take this card from the search candidates, or decline (card omitted). */
   | { player: PlayerId; do: "search"; card?: string }
   /** A6 (S17): pick a mode for a modal trigger as it goes on the stack. */
-  | { player: PlayerId; do: "chooseMode"; mode: number };
+  | { player: PlayerId; do: "chooseMode"; mode: number }
+  /** A10 (S22): pick the permanent bounced to pay a returnToHand cost (the Unwinder). */
+  | { player: PlayerId; do: "bounceCost"; card: string }
+  /** A10 (S22): pick the untapped creature tapped to pay a tapCreature cost (Glare). */
+  | { player: PlayerId; do: "tapCost"; card: string }
+  /** A10 (S22): one pick of the any-number cast loop (Purge)… */
+  | { player: PlayerId; do: "pickTarget"; target: TargetDesc }
+  /** …and its explicit close. */
+  | { player: PlayerId; do: "doneTargets" }
+  /** S22 (the S3 first-legal-moment lesson, harness form): an explicit pass barrier — the next
+   * entry cannot bind before this player passes once. Use when a later cast must wait for
+   * something on the stack to resolve. */
+  | { player: PlayerId; do: "pass" };
 
 export interface BattlefieldEntry {
   card: string;
@@ -452,6 +464,18 @@ export class TestGame {
           : one(actions.find((a) => a.type === "declineSearch"));
       case "chooseMode":
         return one(actions.find((a) => a.type === "chooseMode" && a.mode === entry.mode));
+      case "bounceCost":
+        return one(actions.find((a) => a.type === "returnToHand" && cardIdOf(a.objectId) === entry.card));
+      case "tapCost":
+        return one(actions.find((a) => a.type === "tapCreature" && cardIdOf(a.objectId) === entry.card));
+      case "pickTarget": {
+        const wanted = this.resolveTargetDesc(entry.target);
+        return one(actions.find((a) => a.type === "chooseVariableTarget" && JSON.stringify(a.target) === JSON.stringify(wanted)));
+      }
+      case "doneTargets":
+        return one(actions.find((a) => a.type === "doneChoosingTargets"));
+      case "pass":
+        return one(actions.find((a) => a.type === "pass"));
     }
   }
 }

@@ -55,5 +55,5 @@
   "art": {
     "fallback": "rendered"
   },
-  "shopTier": "R"
+  "prizeOnly": true
 }

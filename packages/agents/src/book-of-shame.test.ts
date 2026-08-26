@@ -63,6 +63,7 @@ function mkView(opts: { hand?: { objectId: string; cardId: string }[]; battlefie
     graveyards: [[], []],
     graveyardObjects: [[], []],
     manaPool: { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 },
+    pendingEndStepSacrifices: [],
   };
 }
 

@@ -1,0 +1,35 @@
+{
+ "id": "aether_mutation",
+ "name": "Aether Mutation",
+ "source": "real",
+ "manaCost": "{3}{G}{U}",
+ "types": [
+  "Sorcery"
+ ],
+ "targets": [
+  {
+   "count": 1,
+   "predicate": "creature",
+   "zone": "battlefield"
+  }
+ ],
+ "spellEffect": [
+  {
+   "type": "bounce",
+   "target": 0
+  },
+  {
+   "type": "createToken",
+   "tokenId": "saproling_1_1_g",
+   "count": {
+    "ref": "targetManaValue",
+    "target": 0
+   },
+   "who": "you"
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": "R"
+}

@@ -1,0 +1,27 @@
+{
+ "id": "sphinx_4_4_wu",
+ "name": "Sphinx Token",
+ "source": "custom",
+ "isTokenDef": true,
+ "manaCost": "",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Sphinx"
+ ],
+ "colors": [
+  "W",
+  "U"
+ ],
+ "power": 4,
+ "toughness": 4,
+ "text": "",
+ "keywords": [
+  "flying",
+  "vigilance"
+ ],
+ "art": {
+  "fallback": "rendered"
+ }
+}

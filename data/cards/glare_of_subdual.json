@@ -1,0 +1,49 @@
+{
+ "id": "glare_of_subdual",
+ "name": "Glare of Subdual",
+ "source": "real",
+ "manaCost": "{2}{G}{W}",
+ "types": [
+  "Enchantment"
+ ],
+ "abilities": [
+  {
+   "kind": "activated",
+   "cost": {
+    "tapCreature": {
+     "predicate": "creature",
+     "count": 1
+    }
+   },
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "permanent",
+     "zone": "battlefield",
+     "anyOf": [
+      {
+       "count": 1,
+       "predicate": "artifact",
+       "zone": "battlefield"
+      },
+      {
+       "count": 1,
+       "predicate": "creature",
+       "zone": "battlefield"
+      }
+     ]
+    }
+   ],
+   "effects": [
+    {
+     "type": "tapTarget",
+     "target": 0
+    }
+   ]
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": "R"
+}

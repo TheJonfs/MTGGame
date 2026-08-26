@@ -1,0 +1,44 @@
+{
+ "id": "tainted_phoenix",
+ "name": "Tainted Phoenix",
+ "source": "custom",
+ "manaCost": "{1}{B}{R}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Zombie",
+  "Phoenix"
+ ],
+ "power": 2,
+ "toughness": 2,
+ "keywords": [
+  "flying",
+  "haste"
+ ],
+ "text": "Flying, haste\nAt the beginning of your upkeep, if Tainted Phoenix is in your graveyard, you may pay {B}. If you do, return it to your hand.",
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "UPKEEP",
+   "zone": "graveyard",
+   "optional": true,
+   "optionalCost": {
+    "mana": "{B}"
+   },
+   "effects": [
+    {
+     "type": "returnFromGraveyard",
+     "scope": "self",
+     "to": "hand"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/tainted_phoenix.png",
+  "fallback": "rendered"
+ },
+ "printedAsset": "tainted_phoenix.jpg",
+ "shopTier": "R"
+}

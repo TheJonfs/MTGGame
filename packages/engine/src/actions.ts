@@ -38,7 +38,15 @@ export type Action =
   /** ADR-068 Amendment 1: take this library card (one action per distinct cardId among the matches)… */
   | { type: "searchPick"; objectId: string }
   /** …or find nothing (always offered first — the safe default; ADR-014 auto-takes it when nothing matches). */
-  | { type: "declineSearch" };
+  | { type: "declineSearch" }
+  /** A10 word 2 (S22): the permanent bounced to pay a returnToHand activation cost (the Unwinder). */
+  | { type: "returnToHand"; objectId: string }
+  /** A10 word 6 (S22): the untapped creature tapped to pay a tapCreature activation cost (Glare). */
+  | { type: "tapCreature"; objectId: string }
+  /** A10 word 4 (S22): one pick of the any-number cast loop (Phyrexian Purge)… */
+  | { type: "chooseVariableTarget"; target: ResolvedTarget }
+  /** …or stop picking (always offered first — the safe default). */
+  | { type: "doneChoosingTargets" };
 
 export function sameAction(a: Action, b: Action): boolean {
   return JSON.stringify(a) === JSON.stringify(b);

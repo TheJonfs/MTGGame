@@ -1136,7 +1136,7 @@ describe("S19 shop tiers (ADR-078): availability by ring, price by tier factor, 
     // Distribution pin (audit v2 + Formation + the S20 land-and-legend batch as it lands: ten ABU duals at R so far).
     const tally: Record<string, number> = {};
     for (const d of pool.cards.values()) if (d.shopTier) tally[String(d.shopTier)] = (tally[String(d.shopTier)] ?? 0) + 1;
-    expect(tally).toEqual({ "1": 59, "2": 41, "3": 11, R: 16 }); // +6 enabler lands T1, +4 legendaries R (S20 batch)
+    expect(tally).toEqual({ "1": 60, "2": 41, "3": 10, R: 22 }); // ADR-081 unification: the five guardian legendaries left the tiers for prizeOnly (Drana was T3, the S20 four were R). S22 batch: +10 R (eight real gold→R adds + Aetherbolt + Tainted Phoenix; the five lords are prizeOnly), +1 T1 (Abrade)
   });
   it("a civilized town's rolled stock is all tier 1 and every price matches shopPrice", async () => {
     const { rollShopStock, shopPrice } = await import("./shop.js");
@@ -1294,6 +1294,37 @@ describe("S19 Part 3+5 (quests, scripted acceptance): offers, courier, card-cour
       return;
     }
     throw new Error("no courier offer for the deadline test");
+  });
+
+  it("ADR-081 deadline pause: an occupied giver/destination town freezes the clock; liberation resumes it with the budget intact", async () => {
+    const { townOffers, acceptQuest } = await import("./quests.js");
+    const knobs = questKnobs();
+    for (let seed = 41; seed < 60; seed++) {
+      const w = newWorld({ seed, catalog, starter: "green", knobLayers: { event: { roamerRespawnSteps: { civilized: 0, approach: 0, wild: 0 }, questDeadlineSteps: { 1: 2, 2: 2, 3: 2 } } } });
+      quiet(w);
+      const town = w.map.towns.find((t) => townOffers(w, catalog, t, knobs, pool.cards).some((o) => o.kind === "courier"));
+      if (!town) continue;
+      const offer = townOffers(w, catalog, town, knobs, pool.cards).find((o) => o.kind === "courier")!;
+      const withDeadline = { ...offer, deadlineSteps: 2 };
+      expect(acceptQuest(w, catalog, withDeadline, knobs, pool.cards).ok).toBe(true);
+      const q = w.quests.active[0]!;
+      const deadline0 = q.deadlineStep!;
+      // Stage the destination occupied (tests write siege state directly, like roamers).
+      w.sieges.push({ townIndex: q.toTown!, epoch: 0, status: "occupied", nextThreatStep: -1, occupiedAtStep: w.player.stepsTaken });
+      // Walk well past the original budget: the clock is frozen, the contract survives.
+      const evs = [];
+      for (let i = 0; i < 5; i++) evs.push(...advance(w, catalog, [w.player.position], QUIET));
+      expect(evs.some((e) => e.type === "questExpired")).toBe(false);
+      expect(w.quests.active).toHaveLength(1);
+      expect(q.deadlineStep!).toBe(deadline0 + 5); // each occupied step pushed the deadline one step
+      // Liberation: the remaining budget resumes, and only then can it expire.
+      w.sieges[0]!.status = "quiet";
+      const evs2 = [];
+      for (let i = 0; i < 3; i++) evs2.push(...advance(w, catalog, [w.player.position], QUIET));
+      expect(evs2.some((e) => e.type === "questExpired")).toBe(true);
+      return;
+    }
+    throw new Error("no courier offer for the pause test");
   });
 
   it("manalinks: the award respects the per-colour cap (over-cap converts to gold); every duel's modifiers carry the link; the def resolves in a real match", async () => {

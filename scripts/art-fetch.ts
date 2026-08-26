@@ -56,6 +56,7 @@ interface Printing {
 /** printings.md overrides. Everything else takes the default rule. */
 const OVERRIDES: Record<string, { set: string; collector?: string }> = {
   hymn_to_tourach: { set: "fem", collector: "38b" },
+  abrade: { set: "brc", collector: "111" }, // S22 brief: Brothers War Commander printing per Chris (BRC Evolving Wilds precedent)
   // S8 feedback round: Beta over Unlimited — black borders like the new frame.
   mountain: { set: "leb" },
   plains: { set: "leb" },

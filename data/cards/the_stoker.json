@@ -1,0 +1,67 @@
+{
+ "id": "the_stoker",
+ "name": "The Stoker",
+ "source": "custom",
+ "manaCost": "{1}{R}{R}{B}{U}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Efreet"
+ ],
+ "supertypes": [
+  "Legendary"
+ ],
+ "power": 5,
+ "toughness": 5,
+ "text": "Whenever an opponent casts a spell, they may pay 2 life. If they don't, you draw a card.\nCards in your hand have \"Cycling {1}{R}.\"",
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "SPELL_CAST",
+   "condition": {
+    "controller": "opponent"
+   },
+   "unlessPay": {
+    "life": 2
+   },
+   "effects": [
+    {
+     "type": "draw",
+     "count": 1,
+     "who": "you"
+    }
+   ]
+  },
+  {
+   "kind": "static",
+   "effects": [
+    {
+     "type": "grantAbility",
+     "zone": "hand",
+     "ability": {
+      "kind": "activated",
+      "zone": "hand",
+      "cost": {
+       "mana": "{1}{R}",
+       "discardSelf": true
+      },
+      "effects": [
+       {
+        "type": "draw",
+        "count": 1,
+        "who": "you"
+       }
+      ]
+     }
+    }
+   ]
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/the_stoker.png",
+  "fallback": "rendered"
+ },
+ "printedAsset": "the_stoker.jpg",
+ "prizeOnly": true
+}

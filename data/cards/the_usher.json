@@ -1,0 +1,76 @@
+{
+ "id": "the_usher",
+ "name": "The Usher",
+ "source": "custom",
+ "manaCost": "{1}{B}{B}{W}{R}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Vampire",
+  "Noble"
+ ],
+ "supertypes": [
+  "Legendary"
+ ],
+ "power": 5,
+ "toughness": 5,
+ "text": "When The Usher enters, return target creature card from a graveyard to the battlefield. It gains haste. Sacrifice it at the beginning of the next end step.\nWhenever a creature dies, target opponent loses 2 life and you gain 2 life.",
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "ENTERS_BATTLEFIELD",
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "creatureCardInYourGraveyard",
+     "zone": "graveyard",
+     "who": "any"
+    }
+   ],
+   "effects": [
+    {
+     "type": "returnFromGraveyard",
+     "target": 0,
+     "to": "battlefield",
+     "temporary": true
+    }
+   ]
+  },
+  {
+   "kind": "triggered",
+   "event": "DIES",
+   "condition": {
+    "source": "any",
+    "type": [
+     "Creature"
+    ]
+   },
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "opponentPlayer",
+     "zone": "any"
+    }
+   ],
+   "effects": [
+    {
+     "type": "loseLife",
+     "amount": 2,
+     "who": "target"
+    },
+    {
+     "type": "gainLife",
+     "amount": 2,
+     "who": "you"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/the_usher.png",
+  "fallback": "rendered"
+ },
+ "printedAsset": "the_usher.jpg",
+ "prizeOnly": true
+}

@@ -43,6 +43,9 @@ export interface GameView {
   graveyardObjects: [{ objectId: string; cardId: string }[], { objectId: string; cardId: string }[]];
   /** S17: the viewing seat's floating mana (public; the opponent's is visible on the board too but unneeded). */
   manaPool: { W: number; U: number; B: number; R: number; G: number; C: number };
+  /** S22 (A10 word 3): battlefield objects awaiting their end-step sacrifice — PUBLIC (both players
+   * watched the temporary reanimation). The blink classification prices the launder off this. */
+  pendingEndStepSacrifices: string[];
 }
 
 export function buildView(ctx: EngineCtx, player: PlayerId): GameView {
@@ -94,5 +97,6 @@ export function buildView(ctx: EngineCtx, player: PlayerId): GameView {
       s.players[0].graveyard.map((id) => getObject(s, id).cardId),
       s.players[1].graveyard.map((id) => getObject(s, id).cardId),
     ],
+    pendingEndStepSacrifices: s.endStepSacrifices.map((e) => e.objectId).filter((id) => s.objects[id]?.zone === "battlefield"),
   };
 }

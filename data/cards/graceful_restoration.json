@@ -1,0 +1,57 @@
+{
+ "id": "graceful_restoration",
+ "name": "Graceful Restoration",
+ "source": "real",
+ "manaCost": "{3}{W}{B}",
+ "types": [
+  "Sorcery"
+ ],
+ "modes": [
+  {
+   "label": "Return a creature card to the battlefield with an additional +1/+1 counter",
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "creatureCardInYourGraveyard",
+     "zone": "graveyard"
+    }
+   ],
+   "effects": [
+    {
+     "type": "returnFromGraveyard",
+     "target": 0,
+     "to": "battlefield",
+     "withCounters": {
+      "kind": "+1/+1",
+      "count": 1
+     }
+    }
+   ]
+  },
+  {
+   "label": "Return up to two creature cards with power 2 or less to the battlefield",
+   "targets": [
+    {
+     "count": {
+      "min": 0,
+      "max": 2
+     },
+     "predicate": "creatureCardInYourGraveyard",
+     "zone": "graveyard",
+     "powerAtMost": 2
+    }
+   ],
+   "effects": [
+    {
+     "type": "returnFromGraveyard",
+     "targetSpec": 0,
+     "to": "battlefield"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": "R"
+}

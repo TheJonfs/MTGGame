@@ -114,9 +114,10 @@ describe("no-peeking (permanent; ADR-048)", () => {
       expect(typeof v.opponentHandCount).toBe("number");
       const keys = Object.keys(v).sort();
       // S17: graveyardObjects (public zone, with ids) and the viewer's own manaPool joined the view — both public.
+      // S22: pendingEndStepSacrifices (A10 word 3) — public; both players watched the temporary reanimation.
       expect(keys).toEqual([
         "activePlayer", "battlefield", "combat", "graveyardObjects", "graveyards", "hand", "librarySizes",
-        "life", "manaPool", "mulliganCount", "opponentHandCount", "stack", "startingLife", "step", "turn", "you",
+        "life", "manaPool", "mulliganCount", "opponentHandCount", "pendingEndStepSacrifices", "stack", "startingLife", "step", "turn", "you",
       ]);
     }
   });

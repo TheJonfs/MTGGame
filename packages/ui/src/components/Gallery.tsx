@@ -305,7 +305,7 @@ export function Gallery() {
             className="gallery-cell"
             onClick={() => { setInspected(def.id); setStripSubject(def.id); }}
           >
-            <CardFrame def={def} oracle={oracle[def.id]} showPrinted={printedAll && def.source === "real"} />
+            <CardFrame def={def} oracle={oracle[def.id]} showPrinted={printedAll && (def.source === "real" || !!def.printedAsset)} />
             <div className="caption">
               <div style={{ fontWeight: 600 }}>{def.name}</div>
               <div>{caption(def, oracle[def.id])}</div>

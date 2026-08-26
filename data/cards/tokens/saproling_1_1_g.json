@@ -1,0 +1,22 @@
+{
+ "id": "saproling_1_1_g",
+ "name": "Saproling Token",
+ "source": "custom",
+ "isTokenDef": true,
+ "manaCost": "",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Saproling"
+ ],
+ "colors": [
+  "G"
+ ],
+ "power": 1,
+ "toughness": 1,
+ "text": "",
+ "art": {
+  "fallback": "rendered"
+ }
+}

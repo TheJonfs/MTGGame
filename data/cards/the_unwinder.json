@@ -1,0 +1,64 @@
+{
+ "id": "the_unwinder",
+ "name": "The Unwinder",
+ "source": "custom",
+ "manaCost": "{1}{U}{U}{R}{G}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Merfolk",
+  "Wizard"
+ ],
+ "supertypes": [
+  "Legendary"
+ ],
+ "power": 3,
+ "toughness": 4,
+ "text": "Whenever a permanent is returned to its owner's hand, The Unwinder deals 1 damage to any target.\n{U}{R}{G}, Return a land you control to your hand: Draw a card.",
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "RETURNED_TO_HAND",
+   "condition": {
+    "source": "any"
+   },
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "anyTarget",
+     "zone": "any"
+    }
+   ],
+   "effects": [
+    {
+     "type": "damage",
+     "amount": 1,
+     "target": 0
+    }
+   ]
+  },
+  {
+   "kind": "activated",
+   "cost": {
+    "mana": "{U}{R}{G}",
+    "returnToHand": {
+     "predicate": "land"
+    }
+   },
+   "effects": [
+    {
+     "type": "draw",
+     "count": 1,
+     "who": "you"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/the_unwinder.png",
+  "fallback": "rendered"
+ },
+ "printedAsset": "the_unwinder.jpg",
+ "prizeOnly": true
+}

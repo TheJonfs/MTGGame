@@ -1,0 +1,69 @@
+{
+ "id": "the_warden",
+ "name": "The Warden",
+ "source": "custom",
+ "manaCost": "{1}{W}{W}{G}{B}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Treefolk",
+  "Soldier"
+ ],
+ "supertypes": [
+  "Legendary"
+ ],
+ "power": 4,
+ "toughness": 4,
+ "keywords": [
+  "vigilance",
+  "reach"
+ ],
+ "text": "Vigilance, reach\nWhenever The Warden attacks, tap up to two target creatures.\nWhenever a creature untaps, it deals 1 damage to its controller.",
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "ATTACKS",
+   "targets": [
+    {
+     "count": {
+      "min": 0,
+      "max": 2
+     },
+     "predicate": "creature",
+     "zone": "battlefield"
+    }
+   ],
+   "effects": [
+    {
+     "type": "tapTarget",
+     "targetSpec": 0
+    }
+   ]
+  },
+  {
+   "kind": "triggered",
+   "event": "UNTAPPED",
+   "condition": {
+    "source": "any",
+    "type": [
+     "Creature"
+    ]
+   },
+   "effects": [
+    {
+     "type": "damage",
+     "amount": 1,
+     "to": "eventPlayer",
+     "from": "eventObject"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/the_warden.png",
+  "fallback": "rendered"
+ },
+ "printedAsset": "the_warden.jpg",
+ "prizeOnly": true
+}

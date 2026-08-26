@@ -31,13 +31,22 @@ export function isLegalTarget(ctx: EngineCtx, spec: TargetSpec, target: Resolved
     if (spec.withoutKeyword && ch.keywords.has(spec.withoutKeyword)) return false;
     if (spec.notSubtype && ch.subtypes.includes(spec.notSubtype)) return false;
   }
+  // A10 (S22): power ceiling (Graceful Restoration's "power 2 or less") — live characteristics on
+  // the battlefield, printed power for cards in other zones (CR 611.3c has nothing to modify there).
+  if (spec.powerAtMost !== undefined && target.kind === "object") {
+    const obj = ctx.state.objects[target.id];
+    if (!obj) return false;
+    const power = obj.zone === "battlefield" ? characteristics(ctx, target.id).power : (ctx.defs.def(obj.cardId).power ?? 0);
+    if (power > spec.powerAtMost) return false;
+  }
   return true;
 }
 
 function basePredicate(ctx: EngineCtx, spec0: TargetSpec, target: ResolvedTarget, by: PlayerId): boolean {
   const state = ctx.state;
   // Recursive base checks below compose predicates only — filters are applied once, by the caller.
-  const spec: TargetSpec = { count: spec0.count, predicate: spec0.predicate, zone: spec0.zone };
+  // `who` rides along (A10/ADR-038: whose graveyard a graveyard predicate scans).
+  const spec: TargetSpec = { count: spec0.count, predicate: spec0.predicate, zone: spec0.zone, ...(spec0.who ? { who: spec0.who } : {}) };
   switch (spec.predicate) {
     case "creature": {
       if (target.kind !== "object") return false;
@@ -78,7 +87,9 @@ function basePredicate(ctx: EngineCtx, spec0: TargetSpec, target: ResolvedTarget
     case "cardInYourGraveyard": {
       if (target.kind !== "object") return false;
       const obj = state.objects[target.id];
-      return !!obj && obj.zone === "graveyard" && obj.owner === by;
+      // A10/ADR-038 amendment: who "any" opens every graveyard (the Usher — the Court claims all
+      // the dead); the default "you" keeps every prior card's own-graveyard reading.
+      return !!obj && obj.zone === "graveyard" && ((spec.who ?? "you") === "any" || obj.owner === by);
     }
     case "creatureCardInYourGraveyard": {
       if (!isLegalTarget(ctx, { ...spec, predicate: "cardInYourGraveyard" }, target, by)) return false;
@@ -104,6 +115,12 @@ function basePredicate(ctx: EngineCtx, spec0: TargetSpec, target: ResolvedTarget
     }
     case "creatureSpell":
       return target.kind === "stackItem" && state.stack.some((s) => s.id === target.id && s.kind === "spell" && ctx.defs.def(s.sourceCardId).types.includes("Creature"));
+    // A10 (S22): Experimental Overload's regrowth.
+    case "instantOrSorceryCardInYourGraveyard": {
+      if (!isLegalTarget(ctx, { ...spec, predicate: "cardInYourGraveyard" }, target, by)) return false;
+      const d = ctx.defs.def(state.objects[(target as { id: string }).id]!.cardId);
+      return target.kind === "object" && (d.types.includes("Instant") || d.types.includes("Sorcery"));
+    }
   }
 }
 
@@ -123,11 +140,16 @@ export function targetCandidates(ctx: EngineCtx, spec: TargetSpec, by: PlayerId,
     const t: ResolvedTarget = { kind: "player", player };
     if (isLegalTarget(ctx, spec, t, by, sourceId)) out.push(t);
   }
-  const graveyardy = (sp: TargetSpec): boolean => sp.predicate === "cardInYourGraveyard" || sp.predicate === "creatureCardInYourGraveyard" || sp.predicate === "landCardInYourGraveyard" || (sp.anyOf ?? []).some(graveyardy);
+  const graveyardy = (sp: TargetSpec): boolean => sp.predicate === "cardInYourGraveyard" || sp.predicate === "creatureCardInYourGraveyard" || sp.predicate === "landCardInYourGraveyard" || sp.predicate === "instantOrSorceryCardInYourGraveyard" || (sp.anyOf ?? []).some(graveyardy);
+  const anyYard = (sp: TargetSpec): boolean => sp.who === "any" || (sp.anyOf ?? []).some(anyYard);
   if (graveyardy(spec)) {
-    for (const id of state.players[by].graveyard) {
-      const t: ResolvedTarget = { kind: "object", id };
-      if (isLegalTarget(ctx, spec, t, by, sourceId)) out.push(t);
+    // A10/ADR-038: who "any" scans BOTH graveyards (own first — deterministic order); default scans yours.
+    const yards = anyYard(spec) ? [state.players[by].graveyard, state.players[by === 0 ? 1 : 0].graveyard] : [state.players[by].graveyard];
+    for (const yard of yards) {
+      for (const id of yard) {
+        const t: ResolvedTarget = { kind: "object", id };
+        if (isLegalTarget(ctx, spec, t, by, sourceId)) out.push(t);
+      }
     }
   }
   return out;
@@ -143,6 +165,11 @@ export function targetCombinations(ctx: EngineCtx, specs: TargetSpec[], by: Play
   let combos: ResolvedTarget[][] = [[]];
   for (const spec of specs) {
     const next: ResolvedTarget[][] = [];
+    if (spec.count === "any") {
+      // A10 word 4: any-number targets are chosen in the cast's request-loop, never enumerated
+      // (the validator confines "any" to a spell's sole spec; the enumerator short-circuits it).
+      throw new Error(`targetCombinations reached an "any"-count spec — the request-loop owns it (A10)`);
+    }
     if (typeof spec.count === "number") {
       if (spec.count !== 1) throw new Error("fixed multi-target specs not yet supported (no pool card needs them)");
       const cands = targetCandidates(ctx, spec, by, sourceId);

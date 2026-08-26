@@ -1,0 +1,26 @@
+{
+ "id": "vindicate",
+ "name": "Vindicate",
+ "source": "real",
+ "manaCost": "{1}{W}{B}",
+ "types": [
+  "Sorcery"
+ ],
+ "targets": [
+  {
+   "count": 1,
+   "predicate": "permanent",
+   "zone": "battlefield"
+  }
+ ],
+ "spellEffect": [
+  {
+   "type": "destroy",
+   "target": 0
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": "R"
+}

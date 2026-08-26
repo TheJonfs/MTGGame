@@ -275,3 +275,38 @@ Planner-maintained. Implementer proposes via handoff Concerns; planner records.
 *Standing recommendation for Chris's ruling — the Nighthawk at 17%:* two levers pulled (worldLife 8; the core-dilution mod) for +6 total; still two tiers hot; further surgery dismantles identity to chase a band. **Recommend: accept and price it** — the Nighthawk becomes the world's deliberate famous killer: parley voice drips warning, and its per-opponent reward knobs (gold, ante) bump to pay what it actually risks. Converts the outlier into content; every Shandalar-like needs the enemy players trade stories about.
 
 *Pending Chris (the verdict pile):* the Nighthawk ruling above; the empowerment re-dive verdict; art candidates (Elemental token plate; Reya/Arcanis/Drakuseth/Titania portraits — Drana already kept); the pre-v6 renown seeding alternative (one-liner if wanted).
+
+---
+
+**ADR-081 — S21 ratifications and directions.**
+
+*Ratified as shipped:*
+- **Siege rewards follow the standard defeat law** — ante, gold, and renown pay immediately; no escrow. The implementer's phrase enters the record: *"a town is not a mountain."* The doctrine is now explicit: **escrow is dungeon law** (anti-scum for resettable spaces); **the open world pays as it goes**. Loss = ordinary costs; the party regroups.
+- **Defense engagements carry life like liberation** (the brief's planner extension) — Chris exercised both sides; ratified.
+- **Boons are next-battle-only consumables**; treasure economy v2 (cache weights, four cache kinds, class retune) ratified as ruled live.
+- **The quest & rumor text pack's canonical home is `data/world/quests.json`**; the prose pack is an authoring artifact — future text ships as planner pack deliveries that the implementer wires, and each superseded pack version is marked. (v1 marked alongside this ADR.)
+- Nighthawk pricing shipped (T2 gold 50); `anteCount` awaits Chris's taste. The S20 reconstruction stands; the 147-vs-140 count resolved as counting basis (140 acquirable + basics + Lotus + the Elemental token def).
+- **Gate hardening blessed** (concern 7): a build/lint check joins the default gate so a Babel-breaking-but-tsc-clean edit can't reach the browser-verify step unannounced.
+- The time-to-liberation sim extension is sanctioned **on demand** — build it the first time a tuning round wants the number, not before.
+
+*Directed for S22 Part 0 — the prizeOnly unification (closes concern 1's five channels at once):* all **guardian and lord cards are `prizeOnly`** — excluded from quest R-rolls, retrieval-item predicates, lair cache rolls, `lairPrizeRoll`, and `colorPrizeRoll`; each is obtainable solely as the guaranteed drop from its own bearer's defeat (per Chris's sole-mechanism ruling in the lords round). Retrieval MacGuffin predicates exclude `prizeOnly` generally.
+
+*Ruled (planner recommendation, pending Chris's nod):* **quest deadlines pause while the giver's or destination's town is occupied**, resuming on liberation — the world's disruption never fails a contract, and "liberate the town to complete the delivery" is a quest chain the systems write themselves. (The fail-with-sympathy alternative is rejected as story-poorer.) *[Chris confirmed the pause rule at the S22a kickoff, 2026-08-25 — recorded by the implementer.]*
+
+*Banked to S23 — "wilds polish" is now a real session:* **wild towns** (the generator's 0–1-per-region roll never places any — a planner-authored rumor references them, so either the line goes or the towns arrive; the towns arrive: propose a ≥2-per-world guarantee, cashing the dormant `siegeIntervalSteps.wild` knob and the danger gradient's deepest rung), **rivers** (the `river` map layer), **town-footprint variety**, the dungeon interior's smoothing pass, and **audio scaffolding** (per Chris's incoming note).
+
+*Chris's open verdict pile (carried):* the 19 map sprites + the Elemental token plate; `anteCount` for the Nighthawk; the empowerment re-dive verdict; the priced-Nighthawk fight with the **Blood Artist chattiness feel-check (outstanding since S19)**; a rumor-chain and a tavern-whisper witnessed in play; manalink-loss-under-occupation feel.
+
+*Noted for the S22 brief (to be cut after Chris's art/audio note):* the session likely **splits — S22a** (A10's nine words + riders, the ADR-038 amendment, the SPELL_CAST and land-play activations, the full card batch: seven customs + eight real adds + Abrade + three token defs, fixtures and fuzz) and **S22b** (the stronghold dungeons at maximum scale, the five laws as Artifact Enchantments, the entrance rule, the life formula, the decks, the sims, and Chris meets a lord). The card art is already picked and cropped — S21's Part 5 removed the art load entirely.
+
+---
+
+**ADR-082 — Wild towns; custom-printed card art; the audio program.**
+
+*Wild towns (Chris-ratified):* the generator guarantees wild-ring towns (proposed ≥2 per world; 0–1 per wild region per the ADR-072 roll, now with a world-level floor). Cashes the dormant `siegeIntervalSteps.wild` knob, the danger gradient's deepest rung, and the standing texture rumor. Rides S23's wilds-polish session with rivers and footprint variety.
+
+*Custom-printed card art (Chris-directed; S22a):* the nine custom cards (Cunning Tactician, Gaean Wurm, the five lords, Aetherbolt, Tainted Phoenix) gain **printed-view images** — Chris-produced PNGs via an external card creator, delivered as a folder at the S22a kickoff. **ADR-066 is amended:** custom cards no longer fall back to our frame on printed-default surfaces; they show their `printedAsset` (a new CardDef field for `source: custom`), the parallel of real cards' Scryfall `normal`. Assets commit (they are ours); MANIFEST rows carry the external-provenance form blessed in the Drana precedent. The one-global-toggle rule is unchanged — custom cards simply now have something on both sides of it.
+
+*The audio program (scheduled S23+):* Chris holds the complete Shandalar soundscape (FLAC). Two workstreams when it lands: (1) **scaffolding** (implementer) — an audio manager with per-context music (menu / overworld / town / dungeon / duel) and event stingers, a **prominent audio toggle on the front page**, preference persisted; note the browser reality that sound begins only after first user interaction regardless of default. (2) **The mapping** (Chris + planner authoring) — a track-to-context mapping document in the text-pack pattern: planner-format delivery, implementer wires, iterated in director rounds. Neither rides before S23.
+
+*Carried, still pending Chris's nod:* the ADR-081 deadline-pause-under-occupation rule.

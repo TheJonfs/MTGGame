@@ -1,0 +1,55 @@
+{
+ "id": "frondland_felidar",
+ "name": "Frondland Felidar",
+ "source": "real",
+ "manaCost": "{2}{G}{W}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Cat",
+  "Beast"
+ ],
+ "power": 3,
+ "toughness": 5,
+ "keywords": [
+  "vigilance"
+ ],
+ "abilities": [
+  {
+   "kind": "static",
+   "effects": [
+    {
+     "type": "grantAbility",
+     "zone": "battlefield",
+     "scope": "creaturesYouControl",
+     "withKeyword": "vigilance",
+     "ability": {
+      "kind": "activated",
+      "cost": {
+       "mana": "{1}",
+       "tap": true
+      },
+      "targets": [
+       {
+        "count": 1,
+        "predicate": "creature",
+        "zone": "battlefield"
+       }
+      ],
+      "effects": [
+       {
+        "type": "tapTarget",
+        "target": 0
+       }
+      ]
+     }
+    }
+   ]
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": "R"
+}

@@ -12,7 +12,7 @@ const CARDS_DIR = join(dirname(fileURLToPath(import.meta.url)), "../../../data/c
 describe("card pool loading", () => {
   it("loads the full pool (S1–S5 additions + tokens) with no errors or warnings", () => {
     const pool = loadCardPool(CARDS_DIR);
-    expect(pool.cards.size).toBe(147); // 20 S1 + 11 S2 + 11 S3 + 16 S4 + 6 S5 + 2 tokens + 1 S8 (Cunning Tactician) + 3 S15 (Growth, Tutor, Lotus) + 2 S16 (Elves, Adept) + 32 S17 (Expansion 1) + 5 tokens (Bear, Bird, Wurm, Zombie, Faerie Rogue) + 2 S19 (Faerie Formation + blue Faerie token, ADR-078; manalinks are plain basics via permanentOnBattlefield — round 2 cut the bespoke defs) + 36 S20 (20 duals — ABU at R/OLGC, RVR retro shocks at T2/45g with entersChoice; 6 enabler lands; Reya/Arcanis/Drakuseth/Titania at R; 5 Moxen prizeOnly; elemental token)
+    expect(pool.cards.size).toBe(166); // 20 S1 + 11 S2 + 11 S3 + 16 S4 + 6 S5 + 2 tokens + 1 S8 (Cunning Tactician) + 3 S15 (Growth, Tutor, Lotus) + 2 S16 (Elves, Adept) + 32 S17 (Expansion 1) + 5 tokens (Bear, Bird, Wurm, Zombie, Faerie Rogue) + 2 S19 (Faerie Formation + blue Faerie token, ADR-078; manalinks are plain basics via permanentOnBattlefield — round 2 cut the bespoke defs) + 36 S20 (20 duals — ABU at R/OLGC, RVR retro shocks at T2/45g with entersChoice; 6 enabler lands; Reya/Arcanis/Drakuseth/Titania — prizeOnly since ADR-081, as is Drana; 5 Moxen prizeOnly; elemental token) + 19 S22 (A10 batch: five lords prizeOnly + Aetherbolt + Tainted Phoenix at R; eight real gold→R adds; Abrade T1/12g; saproling/sphinx/weird tokens)
     // Slice cards use only implemented vocabulary, so no warnings expected.
     expect(pool.warnings).toEqual([]);
   });
@@ -81,7 +81,7 @@ describe("validateCard rejections", () => {
   });
 
   it("every vocabulary word has a resolver as of S17 (untapTarget was the last — Little Bear); the no-resolver warning path stays for future words", () => {
-    const staticOnly = new Set(["grantKeyword", "gainControl"]); // interpreted live by characteristics(); no resolver by design
+    const staticOnly = new Set(["grantKeyword", "gainControl", "grantAbility"]); // interpreted live by characteristics()/abilitiesOf(); no resolver by design (A10 word 8: enumeration-time)
     for (const t of EFFECT_TYPES) if (!staticOnly.has(t)) expect(IMPLEMENTED_EFFECT_TYPES.has(t), t).toBe(true);
     const { errors, warnings } = validateCard({
       ...base,

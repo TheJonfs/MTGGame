@@ -9,11 +9,12 @@
     "@shandalar/core": "workspace:*",
     "@shandalar/engine": "workspace:*",
     "@shandalar/sim": "workspace:*",
+    "@shandalar/world": "workspace:*",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "@shandalar/world": "workspace:*"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@babel/parser": "^7.29.8",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.0",

@@ -90,7 +90,7 @@ export function staticActive(ctx: EngineCtx, sourceId: string, condition?: { val
   const src = ctx.state.objects[sourceId];
   if (!src) return false;
   const v = condition.value;
-  const n = v.ref === "targetPower" ? 0 : evaluateValueRef(ctx, v, src.controller as PlayerId, sourceId);
+  const n = v.ref === "targetPower" || v.ref === "targetManaValue" ? 0 : evaluateValueRef(ctx, v, src.controller as PlayerId, sourceId);
   return n >= condition.atLeast;
 }
 
@@ -106,8 +106,9 @@ export function characteristics(ctx: EngineCtx, objectId: string): Characteristi
   const def = ctx.defs.def(obj.cardId);
 
   const result: Characteristics = {
-    power: def.power ?? 0,
-    toughness: def.toughness ?? 0,
+    // A10 (S22): a creation-locked base P/T (Overload's Weird) overrides the printed values.
+    power: obj.basePT?.power ?? def.power ?? 0,
+    toughness: obj.basePT?.toughness ?? def.toughness ?? 0,
     keywords: new Set(def.keywords ?? []),
     cantAttack: false,
     cantBlock: false,
@@ -121,7 +122,7 @@ export function characteristics(ctx: EngineCtx, objectId: string): Characteristi
       // source's point of view (Gaean Wurm: +1/+1 per Forest you control).
       const src = getObject(state, srcId);
       const val = (v: typeof e.power): number =>
-        typeof v === "number" ? v : typeof v === "object" && v.ref !== "targetPower" ? evaluateValueRef(ctx, v, src.controller, srcId) : 0;
+        typeof v === "number" ? v : typeof v === "object" && v.ref !== "targetPower" && v.ref !== "targetManaValue" ? evaluateValueRef(ctx, v, src.controller, srcId) : 0;
       result.power += val(e.power);
       result.toughness += val(e.toughness);
     }

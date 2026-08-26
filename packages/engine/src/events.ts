@@ -49,4 +49,7 @@ export interface GameEventMap extends Record<string, unknown> {
   BLOCKERS_DECLARED: { blocks: { blocker: string; attacker: string }[] };
   TAPPED: { objectId: string };
   UNTAPPED: { objectId: string };
+  /** A10 (S22): the play-land special action announced itself. Distinct from
+   * LAND_ENTERS_UNDER_YOUR_CONTROL — effect-placed lands do not fire it (the Sower's counterplay). */
+  LAND_PLAYED: { objectId: string; controller: PlayerId };
 }

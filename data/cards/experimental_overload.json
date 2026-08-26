@@ -1,0 +1,45 @@
+{
+ "id": "experimental_overload",
+ "name": "Experimental Overload",
+ "source": "real",
+ "manaCost": "{2}{U}{R}",
+ "types": [
+  "Sorcery"
+ ],
+ "selfExileOnResolve": true,
+ "targets": [
+  {
+   "count": {
+    "min": 0,
+    "max": 1
+   },
+   "predicate": "instantOrSorceryCardInYourGraveyard",
+   "zone": "graveyard"
+  }
+ ],
+ "spellEffect": [
+  {
+   "type": "createToken",
+   "tokenId": "weird_x_x_ur",
+   "count": 1,
+   "who": "you",
+   "pt": {
+    "ref": "graveyardCount",
+    "who": "you",
+    "types": [
+     "Instant",
+     "Sorcery"
+    ]
+   }
+  },
+  {
+   "type": "returnFromGraveyard",
+   "targetSpec": 0,
+   "to": "hand"
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": "R"
+}

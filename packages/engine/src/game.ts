@@ -16,11 +16,12 @@ import { expireEndOfTurnEffects } from "./characteristics.js";
 import { makeEffectContext } from "./effect-context.js";
 import { attackerChoices, blockerChoices, bottomChoices, discardChoices, effectiveAbilityCost, legalActions } from "./enumerator.js";
 import type { GameEventMap } from "./events.js";
-import { autoPay, emptyManaPools, tapForMana } from "./mana.js";
+import { autoPay, canPay, emptyManaPools, tapForMana } from "./mana.js";
 import { applyModifiers, type Modifier } from "./modifiers.js";
 import { loseLife, discardCard, drawCard } from "./ops.js";
 import { runSBAs } from "./sba.js";
-import { sacrificeCandidates } from "./sacrifice.js";
+import { sacrificeCandidates, returnToHandCandidates, tapCreatureCandidates } from "./sacrifice.js";
+import { abilitiesOf } from "./granted.js";
 import {
   emptyCombat,
   getObject,
@@ -33,7 +34,7 @@ import {
   type StackItem,
   type Step,
 } from "./state.js";
-import { isLegalTarget } from "./targeting.js";
+import { isLegalTarget, targetCandidates } from "./targeting.js";
 import { placePendingTriggers, wireTriggerCollection } from "./triggers.js";
 import { buildView, type GameView } from "./view.js";
 import { createObject, moveObject } from "./zones.js";
@@ -58,7 +59,15 @@ export type RequestPurpose =
   /** ADR-076: pick the card(s) to discard as an activation cost (Waterfront Bouncer). */
   | "discardCost"
   /** A9 (S20): the shock clause — pay life to enter untapped, or enter tapped. */
-  | "entersChoice";
+  | "entersChoice"
+  /** A10 word 2 (S22): pick the permanent to bounce as an activation cost (the Unwinder). */
+  | "chooseBounceCost"
+  /** A10 word 6 (S22): pick the untapped creature to tap as an activation cost (Glare). */
+  | "chooseTapCost"
+  /** A10 word 4 (S22): the any-number cast loop — add a target or done (Phyrexian Purge). */
+  | "chooseVariableTarget"
+  /** A10 word 7 (S22): the punisher fork — pay the stated cost or suffer the effect (the Stoker). */
+  | "unlessPay";
 
 /** ADR-048: identity + pending effects of the thing asking for targets, so
  * agents can classify (rule 8 / evaluation) without guessing the source. */
@@ -284,8 +293,12 @@ export class Game {
         for (const id of state.battlefield) {
           const obj = getObject(state, id);
           if (obj.controller === active) {
+            const wasTapped = obj.tapped;
             obj.tapped = false;
             obj.summoningSick = false;
+            // A10 word 5 (S22): the untap announces itself; triggers collected here wait for the
+            // upkeep's priority (CR 502.4/503.1a — no priority during untap).
+            if (wasTapped) bus.emit("UNTAPPED", { objectId: id });
           }
         }
         break; // no priority (CR 502.4)
@@ -357,9 +370,20 @@ export class Game {
         state.combat = emptyCombat();
         break;
       }
-      case "END":
+      case "END": {
+        // A10 word 3 (S22): the temporary guests pay their exit toll at the beginning of the end
+        // step — a sacrifice (no destroy, no indestructible), whose DIES triggers pend and are
+        // placed in this step's priority round (the Usher's drain collects its own toll).
+        const due = state.endStepSacrifices.filter((s) => s.dueTurn <= state.turn);
+        if (due.length > 0) {
+          state.endStepSacrifices = state.endStepSacrifices.filter((s) => s.dueTurn > state.turn);
+          for (const s of due) {
+            if (state.objects[s.objectId]?.zone === "battlefield") moveObject(this.ctx, s.objectId, "graveyard");
+          }
+        }
         await this.priorityRound();
         break;
+      }
       case "CLEANUP": {
         await this.cleanup();
         break;
@@ -479,8 +503,10 @@ export class Game {
             else entersTapped = true;
           } else entersTapped = true;
         }
-        moveObject(this.ctx, action.objectId, "battlefield", { tapped: entersTapped }); // explicit: the play path already asked
+        const playedId = moveObject(this.ctx, action.objectId, "battlefield", { tapped: entersTapped }); // explicit: the play path already asked
         state.players[player].landsPlayedThisTurn += 1;
+        // A10 (S22): the special action announces itself (the Sower's trigger; effect-placed lands don't).
+        if (playedId) this.ctx.bus.emit("LAND_PLAYED", { objectId: playedId, controller: player });
         break;
       }
       case "castSpell": {
@@ -491,10 +517,38 @@ export class Game {
         if (def.modes && !mode) throw new Error("modal spell cast without a legal mode");
         const specs = mode ? (mode.targets ?? []) : (def.targets ?? []);
         const effects = mode ? mode.effects : (def.spellEffect ?? []);
-        // A8 (S20): fixed specs consume their count in order; a trailing range spec takes the rest
-        // (length within [min,max]; distinctness enforced when the spec asks).
-        validateTargetsAgainstSpecs(this.ctx, specs, action.targets, player, action.objectId);
+        // A10 word 4 (S22): any-number targeting — the cast enters a logged choose-target/done loop
+        // (the chooseMode/ADR-013 precedents fused) instead of enumerated combinations. Picks are
+        // distinct; another pick is offered only while its per-target life is payable (CR 118.4 —
+        // down to exactly 0 is legal and lethal, the A9 shock precedent). Done is always first.
+        let targets = action.targets;
+        const variable = specs.length === 1 && specs[0]!.count === "any";
+        if (variable) {
+          targets = [];
+          const lifePer = def.additionalCost?.perTarget ? (def.additionalCost.life ?? 0) : 0;
+          const key = (t: unknown) => JSON.stringify(t);
+          for (;;) {
+            const chosen = new Set(targets.map(key));
+            const affordable = lifePer === 0 || state.players[player].life >= lifePer * (targets.length + 1);
+            const cands = affordable ? targetCandidates(this.ctx, specs[0]!, player, action.objectId).filter((t) => !chosen.has(key(t))) : [];
+            const options: Action[] = [{ type: "doneChoosingTargets" }, ...cands.map((target) => ({ type: "chooseVariableTarget" as const, target }))];
+            const pick = options.length === 1 ? options[0]! : await this.request(player, "chooseVariableTarget", options, undefined, { cardId: obj.cardId, effects });
+            if (pick.type === "doneChoosingTargets") break;
+            if (pick.type !== "chooseVariableTarget") throw new Error("expected chooseVariableTarget/done");
+            targets = [...targets, pick.target];
+          }
+        } else {
+          // A8 (S20): fixed specs consume their count in order; a trailing range spec takes the rest
+          // (length within [min,max]; distinctness enforced when the spec asks).
+          validateTargetsAgainstSpecs(this.ctx, specs, targets, player, action.objectId);
+        }
         autoPay(this.ctx, player, parseManaCost(def.manaCost), action.x ?? 0);
+        // A10 word 4 companion: the life cost computes at 601.2h from the final count, is paid at
+        // cast, and is never refunded on counter/fizzle (the printed Purge ruling agrees).
+        if (def.additionalCost?.life) {
+          const lifeCost = def.additionalCost.life * (def.additionalCost.perTarget ? targets.length : 1);
+          if (lifeCost > 0) loseLife(this.ctx, player, lifeCost);
+        }
         // A7: additional cost — paid at 601.2h like an ability's sacrifice; a DIES trigger pends and orders normally.
         if (def.additionalCost?.sacrifice) {
           const candidates = sacrificeCandidates(this.ctx, player, action.objectId, def.additionalCost.sacrifice.predicate);
@@ -513,7 +567,7 @@ export class Game {
           sourceCardId: obj.cardId,
           controller: player,
           targetSpecs: specs,
-          targets: action.targets,
+          targets,
           effects,
           x: action.x ?? 0,
           ...(action.mode !== undefined ? { mode: action.mode } : {}),
@@ -527,8 +581,11 @@ export class Game {
       }
       case "activateAbility": {
         const obj = getObject(state, action.objectId);
-        const def = this.ctx.defs.def(obj.cardId);
-        const ability = def.abilities?.[action.abilityIndex];
+        // A10 word 8 (S22): the index addresses the VIRTUAL ability list — printed abilities followed
+        // by granted ones (the Stoker's cycling, the Felidar's tapper). Stable within one priority
+        // window, which is the only span between enumeration and this call.
+        const entry = abilitiesOf(this.ctx, action.objectId)[action.abilityIndex];
+        const ability = entry?.ability;
         if (!ability || ability.kind !== "activated") throw new Error("no such activated ability");
         const zone = ability.zone ?? "battlefield";
         if (obj.zone !== zone) throw new Error(`ability of ${obj.cardId} is activatable from the ${zone}, not the ${obj.zone} (A5)`);
@@ -567,6 +624,30 @@ export class Game {
         if (ability.cost.exileSelf) {
           const moved = moveObject(this.ctx, obj.id, "exile");
           sourceId = moved ?? obj.id;
+        }
+        // A10 word 2 (S22): bounce-own-permanent-as-cost (the Unwinder) — chosen like a sacrifice,
+        // moved before the ability stacks. The resulting RETURNED_TO_HAND trigger pends and orders
+        // normally (the interlock: his own cost feeds his own ping).
+        if (ability.cost.returnToHand) {
+          const candidates = returnToHandCandidates(this.ctx, player, obj.id, ability.cost.returnToHand.predicate);
+          if (candidates.length === 0) throw new Error("no legal permanent to return for the cost");
+          const options: Action[] = candidates.map((objectId) => ({ type: "returnToHand", objectId }));
+          const pick = options.length === 1 ? options[0]! : await this.request(player, "chooseBounceCost", options, undefined, { cardId: obj.cardId, effects: ability.effects });
+          if (pick.type !== "returnToHand") throw new Error("expected returnToHand");
+          const moved = moveObject(this.ctx, pick.objectId, "hand");
+          if (pick.objectId === sourceId) sourceId = moved ?? sourceId; // a self-bounce updates the ability's source identity (the discardSelf pattern)
+        }
+        // A10 word 6 (S22): tap-untapped-creatures-as-cost (Glare) — one pick per required creature;
+        // candidates re-evaluate between picks (each tap removes its creature from the pool).
+        for (let n = 0; n < (ability.cost.tapCreature?.count ?? 0); n++) {
+          const candidates = tapCreatureCandidates(this.ctx, player, ability.cost.tapCreature!.predicate);
+          if (candidates.length === 0) throw new Error("no untapped creature to tap for the cost");
+          const options: Action[] = candidates.map((objectId) => ({ type: "tapCreature", objectId }));
+          const pick = options.length === 1 ? options[0]! : await this.request(player, "chooseTapCost", options, undefined, { cardId: obj.cardId, effects: ability.effects });
+          if (pick.type !== "tapCreature") throw new Error("expected tapCreature");
+          const tapped = getObject(state, pick.objectId);
+          tapped.tapped = true;
+          this.ctx.bus.emit("TAPPED", { objectId: pick.objectId });
         }
         // Sacrifice is paid before the ability is on the stack (CR 601.2h,
         // 602.2b); a resulting DIES trigger pends and is ordered normally.
@@ -623,8 +704,9 @@ export class Game {
     if (!item) throw new Error("resolveTop on empty stack");
 
     // Re-check targets; if the item has targets and ALL are now illegal, it
-    // fizzles — "countered by game rules" (CR 608.2b, R-004).
-    if (item.targetSpecs.length > 0) {
+    // fizzles — "countered by game rules" (CR 608.2b, R-004). A zero-target cast
+    // (A10's any-number loop closed immediately) is not a fizzle — it resolves doing nothing.
+    if (item.targetSpecs.length > 0 && item.targets.length > 0) {
       const anyLegal = item.targets.some((t, i) => isLegalTarget(this.ctx, item.targetSpecs[i]!, t, item.controller, item.sourceId ?? item.objectId));
       if (!anyLegal) {
         this.ctx.log.append({ t: "EVENT", name: "FIZZLE", payload: { cardId: item.sourceCardId } });
@@ -651,14 +733,37 @@ export class Game {
     // request carries the trigger's identity (ADR-048 source pattern; S10
     // playtest: the UI must show WHAT is asking).
     if (item.isOptionalTrigger) {
-      const chosen = await this.request(
-        item.controller,
-        "optionalTrigger",
-        [{ type: "acceptOptional" }, { type: "declineOptional" }],
-        undefined,
-        { cardId: item.sourceCardId, effects: item.effects },
-      );
+      // A10 word 9 rider (S22): an optionalCost gates the accept option on payability and pays on
+      // yes (Tainted Phoenix's {B}); unpayable → the lone decline is auto-taken (ADR-014).
+      const canAccept = !item.optionalCost || canPay(this.ctx, item.controller, parseManaCost(item.optionalCost.mana));
+      const options: Action[] = canAccept ? [{ type: "acceptOptional" }, { type: "declineOptional" }] : [{ type: "declineOptional" }];
+      const chosen =
+        options.length === 1
+          ? options[0]!
+          : await this.request(item.controller, "optionalTrigger", options, undefined, { cardId: item.sourceCardId, effects: item.effects });
       if (chosen.type === "declineOptional") return;
+      if (item.optionalCost) autoPay(this.ctx, item.controller, parseManaCost(item.optionalCost.mana), 0);
+    }
+
+    // A10 word 7 (S22) — the punisher fork: the event's player (the Stoker's caster; else the
+    // controller's opponent) pays or the stated effects happen. Pay is offered only at life
+    // STRICTLY above the cost (the ruled auto-resolve at life ≤ cost; ADR-014 takes the lone
+    // decline silently). Single request, logged; paying ends the resolution.
+    if (item.unlessPay) {
+      const payer = item.eventContext?.player ?? opponentOf(item.controller);
+      const cost = item.unlessPay.life;
+      const options: Action[] =
+        this.state.players[payer].life > cost
+          ? [{ type: "acceptOptional" }, { type: "declineOptional" }]
+          : [{ type: "declineOptional" }];
+      const chosen =
+        options.length === 1
+          ? options[0]!
+          : await this.request(payer, "unlessPay", options, undefined, { cardId: item.sourceCardId, effects: item.effects });
+      if (chosen.type === "acceptOptional") {
+        loseLife(this.ctx, payer, cost);
+        return;
+      }
     }
 
     const ectx = makeEffectContext(this.ctx, item, (player, purpose, actions, revealed) =>
@@ -680,7 +785,9 @@ export class Game {
           moveObject(this.ctx, item.objectId, "battlefield");
         }
       } else {
-        moveObject(this.ctx, item.objectId, "graveyard");
+        // A10 (S22): Overload's rider — the resolving spell exiles itself; countered/fizzled
+        // copies still reach the graveyard (CR 608.2b — the fizzle path above keeps that).
+        moveObject(this.ctx, item.objectId, def.selfExileOnResolve ? "exile" : "graveyard");
       }
     }
   }
@@ -699,7 +806,8 @@ export function validateTargetsAgainstSpecs(
   for (const spec of specs) {
     const width = typeof spec.count === "number" ? spec.count : targets.length - at;
     if (typeof spec.count !== "number") {
-      if (width < spec.count.min || width > spec.count.max) throw new Error(`range spec expects ${spec.count.min}..${spec.count.max} targets, got ${width}`);
+      // A10: an "any"-count spec has no bounds — the cast loop chose the list; distinctness still holds.
+      if (spec.count !== "any" && (width < spec.count.min || width > spec.count.max)) throw new Error(`range spec expects ${spec.count.min}..${spec.count.max} targets, got ${width}`);
       const seen = new Set<string>();
       for (let i = at; i < at + width; i++) {
         const k = key(targets[i]);

@@ -1,0 +1,30 @@
+{
+ "id": "phyrexian_purge",
+ "name": "Phyrexian Purge",
+ "source": "real",
+ "manaCost": "{2}{B}{R}",
+ "types": [
+  "Sorcery"
+ ],
+ "targets": [
+  {
+   "count": "any",
+   "predicate": "creature",
+   "zone": "battlefield"
+  }
+ ],
+ "additionalCost": {
+  "life": 3,
+  "perTarget": true
+ },
+ "spellEffect": [
+  {
+   "type": "destroy",
+   "targetSpec": 0
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": "R"
+}

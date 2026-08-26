@@ -1,0 +1,39 @@
+{
+ "id": "aetherbolt",
+ "name": "Aetherbolt",
+ "source": "custom",
+ "manaCost": "{1}{U}{U}{R}",
+ "types": [
+  "Instant"
+ ],
+ "text": "Return target permanent to its owner's hand. Aetherbolt deals 3 damage to any target.",
+ "targets": [
+  {
+   "count": 1,
+   "predicate": "permanent",
+   "zone": "battlefield"
+  },
+  {
+   "count": 1,
+   "predicate": "anyTarget",
+   "zone": "any"
+  }
+ ],
+ "spellEffect": [
+  {
+   "type": "bounce",
+   "target": 0
+  },
+  {
+   "type": "damage",
+   "amount": 3,
+   "target": 1
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/aetherbolt.png",
+  "fallback": "rendered"
+ },
+ "printedAsset": "aetherbolt.jpg",
+ "shopTier": "R"
+}

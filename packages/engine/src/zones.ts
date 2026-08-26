@@ -156,7 +156,7 @@ export function createObject(
   cardId: string,
   owner: PlayerId,
   zone: ZoneName,
-  opts: { isToken?: boolean; attachedTo?: string } = {},
+  opts: { isToken?: boolean; attachedTo?: string; basePT?: { power: number; toughness: number } } = {},
 ): string {
   const card = ctx.defs.def(cardId); // throws on unknown card
   const id = ctx.ids.next("obj");
@@ -175,6 +175,7 @@ export function createObject(
     summoningSick: zone === "battlefield" && card.types.includes("Creature"),
     attachedTo: opts.attachedTo ?? null,
     counters: {},
+    ...(opts.basePT ? { basePT: opts.basePT } : {}), // A10 (S22): P/T locked at creation (the Weird)
   };
   ctx.state.objects[id] = obj;
   const arr = zoneArray(ctx, zone, owner);

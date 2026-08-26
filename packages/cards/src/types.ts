@@ -69,16 +69,25 @@ export const TARGET_PREDICATES = [
   "enchantment",
   "nonlandPermanent",
   "creatureSpell",
+  // A10 (S22): Experimental Overload's regrowth predicate.
+  "instantOrSorceryCardInYourGraveyard",
 ] as const;
 export type TargetPredicate = (typeof TARGET_PREDICATES)[number];
 
 /** ADR-076 (S17): predicate-layer filters composed onto a base predicate. */
 export interface TargetSpec {
   /** A8 (S20): a fixed count, or an "up to" range ({min:0,max:2} — Drakuseth). A range spec must be
-   * the LAST spec (validator-enforced); its chosen targets are always mutually distinct. */
-  count: number | { min: number; max: number };
+   * the LAST spec (validator-enforced); its chosen targets are always mutually distinct.
+   * A10 word 4 (S22): "any" = any-number targeting — the cast enters a logged choose-target/done
+   * DecisionRequest loop instead of enumerating combinations (Phyrexian Purge). Must be the SOLE spec. */
+  count: number | { min: number; max: number } | "any";
   predicate: TargetPredicate;
   zone: "battlefield" | "stack" | "any" | "graveyard";
+  /** A10 / ADR-038 amendment: whose graveyard a graveyard predicate scans (default "you").
+   * The Usher is the sole "any" customer; every prior card keeps the default. */
+  who?: "you" | "any";
+  /** A10 (S22): power ceiling on the candidate (Graceful Restoration's "power 2 or less"). */
+  powerAtMost?: number;
   /** Or-predicate: legal if ANY of these alternative specs accepts the target (Airship Crash, Disenchant). */
   anyOf?: TargetSpec[];
   /** Keyword filters ("creature with flying" / "without flying"). */
@@ -109,8 +118,12 @@ export interface CountPredicate {
 export type ValueRef =
   | { ref: "targetPower"; target: number }
   | { ref: "count"; predicate: CountPredicate }
-  | { ref: "graveyardCount"; who: "you" | "opponent" }
-  | { ref: "maxPower"; predicate: CountPredicate };
+  /** A10 (S22): `types` narrows the count to cards with any of these types (Overload's instant/sorcery). */
+  | { ref: "graveyardCount"; who: "you" | "opponent"; types?: CardType[] }
+  | { ref: "maxPower"; predicate: CountPredicate }
+  /** A10 (S22): the target's mana value, from the resolution LKI snapshot (Aether Mutation — the
+   * bounced creature is gone by token time; X for battlefield permanents is 0 per CR 202.3b). */
+  | { ref: "targetManaValue"; target: number };
 export type Amount = number | "X" | ValueRef;
 /** P/T deltas may reference the stack item's X, positively or negated (Drana); statics may carry
  * count refs, evaluated live (A4: Gaean Wurm's "+1/+1 for each Forest you control"). */
@@ -128,12 +141,18 @@ export interface EffectCondition {
  * ADR-076 (S17): every effect may carry `if` — a condition on a target's current characteristics. */
 export type Effect = EffectBase & { if?: EffectCondition };
 export type EffectBase =
-  | { type: "damage"; amount: Amount; target?: number; targetSpec?: number }
+  /** A10 (S22): `to: "eventPlayer"` / `from: "eventObject"` address the triggering event's object and
+   * its controller (the Warden's law: the untapped creature ITSELF deals 1 to ITS controller — the
+   * source matters: lifelink on the untapped creature nets its controller zero). */
+  | { type: "damage"; amount: Amount; target?: number; targetSpec?: number; to?: "eventPlayer"; from?: "eventObject" }
   | { type: "damageAll"; amount: Amount; scope: Scope }
-  | { type: "destroy"; target: number }
+  /** A10 (S22): `targetSpec` fans out over a spec's still-legal chosen targets (Purge's any-number). */
+  | { type: "destroy"; target?: number; targetSpec?: number }
   | { type: "destroyAll"; scope: Scope }
   | { type: "exile"; target: number }
-  | { type: "bounce"; target?: number; scope?: Scope }
+  /** A10 (S22): `to: "libraryTop"` — Temporal Spring. Deliberately NOT a hand return: it never
+   * fires RETURNED_TO_HAND (the Spring unwinds too far for the tide to taste — ratified). */
+  | { type: "bounce"; target?: number; scope?: Scope; to?: "hand" | "libraryTop" }
   | { type: "counter"; target: number }
   | { type: "draw"; count: number; who: Who }
   | { type: "discard"; count: number; who: Who; mode: DiscardMode; filter?: DiscardFilter }
@@ -157,11 +176,18 @@ export type EffectBase =
     }
   | { type: "grantKeyword"; keyword: Keyword; target?: number; scope?: Scope; subtype?: string; cardType?: string; other?: boolean; withKeyword?: Keyword; withoutKeyword?: Keyword; duration: Duration }
   | { type: "restrict"; what: "attack" | "block" | "both"; target?: number; scope?: Scope; subtype?: string; cardType?: string; other?: boolean; duration: Duration }
-  | { type: "createToken"; tokenId: string; count: number; who: Who }
+  /** A10 (S22): `count` may be a value ref (Aether Mutation's X Saprolings); `pt` sets the token's
+   * base P/T, locked at resolution (Overload's X/X Weird — the printed ruling: it does not fluctuate). */
+  | { type: "createToken"; tokenId: string; count: number | ValueRef; who: Who; pt?: ValueRef }
   | { type: "addCounters"; kind: "+1/+1" | "-1/-1"; count: number; target?: number; scope?: Scope; subtype?: string; cardType?: string; other?: boolean }
-  | { type: "tapTarget"; target: number }
+  /** A10 (S22): `targetSpec` fans out (the Warden's "tap up to two target creatures"). */
+  | { type: "tapTarget"; target?: number; targetSpec?: number }
   | { type: "untapTarget"; target: number }
-  | { type: "returnFromGraveyard"; target?: number; scope?: Scope; to: "battlefield" | "hand" }
+  /** A10 word 3 (S22): `temporary: true` — the reanimated object gains haste and is sacrificed at the
+   * beginning of the next end step (a self-contained package rule, not a delayed-trigger subsystem;
+   * the Usher's entrance). A blinked guest is a NEW object and sheds both riders (the launder).
+   * `withCounters` (S22): it enters with counters (Graceful Restoration's +1/+1 rider). */
+  | { type: "returnFromGraveyard"; target?: number; targetSpec?: number; scope?: Scope; to: "battlefield" | "hand"; temporary?: true; withCounters?: { kind: "+1/+1"; count: number } }
   | { type: "fight"; targets: [number, number] }
   | { type: "gainControl"; scope: Scope } // static-only (ADR-033); targeted/EOT variant reserved
   /** ADR-068 Amendment 1: find-may-fail search; chooser sees matching library cards in the request payload; always shuffles after (CR 701.19).
@@ -170,7 +196,13 @@ export type EffectBase =
   /** ADR-075 A8: blink — exile the target and return it to the battlefield under your control as a new object (ETBs fire). */
   | { type: "exileThenReturn"; target: number; under: "yourControl" }
   /** ADR-068 Amendment 2: `mana` (fixed production) OR `choice` (Lotus: N mana of any one colour — a five-option choice at activation, no stack). */
-  | { type: "addMana"; mana?: string; choice?: { count: number; anyOneColor: true } };
+  | { type: "addMana"; mana?: string; choice?: { count: number; anyOneColor: true } }
+  /** A10 word 8 (S22): STATIC-ONLY — a battlefield permanent confers an activated ability on cards in
+   * a zone and scope. `zone: "hand"` grants to every card in the static's controller's hand (the
+   * Stoker's cycling — enumeration-time grant on A5's machinery, no ADR-003 layer contact);
+   * `zone: "battlefield"` grants to permanents the scope selects (Frondland Felidar: withKeyword
+   * vigilance + creaturesYouControl; per the printed ruling he grants to himself too). */
+  | { type: "grantAbility"; zone: "hand" | "battlefield"; ability: ActivatedAbilityDef; scope?: Scope; withKeyword?: Keyword; cardType?: CardType };
 // Reserved, not implemented (data-model §3): copy, setPT, preventDamage, changeType.
 
 export type EffectType = EffectBase["type"];
@@ -201,6 +233,7 @@ export const EFFECT_TYPES: readonly EffectType[] = [
   "searchLibrary",
   "addMana",
   "exileThenReturn",
+  "grantAbility",
 ];
 
 export type TriggerEvent =
@@ -216,7 +249,15 @@ export type TriggerEvent =
   | "LAND_ENTERS_UNDER_YOUR_CONTROL"
   | "SPELL_CAST"
   /** ADR-076 (S17): a player discarded a card (Waste Not). Condition `player` = who discarded; type/notType = the card's types. */
-  | "DISCARD";
+  | "DISCARD"
+  /** A10 word 1 (S22): a permanent was returned from the battlefield to a hand. Observed form (any
+   * controller, any cause); rides the ZONE_CHANGE payload; lookback covers self-observation. */
+  | "RETURNED_TO_HAND"
+  /** A10 word 5 (S22): a permanent untapped (untap step or effect). Observed form (the Warden's law). */
+  | "UNTAPPED"
+  /** A10 activation (S22): the play-land special action announced itself — distinct from
+   * enters-the-battlefield; effect-placed lands do not fire it (the Sower). */
+  | "LAND_PLAYED";
 
 export const TRIGGER_EVENTS: readonly TriggerEvent[] = [
   "ENTERS_BATTLEFIELD",
@@ -231,6 +272,9 @@ export const TRIGGER_EVENTS: readonly TriggerEvent[] = [
   "LAND_ENTERS_UNDER_YOUR_CONTROL",
   "SPELL_CAST",
   "DISCARD",
+  "RETURNED_TO_HAND",
+  "UNTAPPED",
+  "LAND_PLAYED",
 ];
 
 /**
@@ -265,6 +309,17 @@ export interface TriggeredAbilityDef {
   optional?: boolean;
   /** A6: modal trigger — the controller picks a mode when it is put on the stack (CR 603.3c); `effects` must be empty. */
   modes?: ModeDef[];
+  /** A10 word 9 (S22): where the card must be for this trigger to collect (default battlefield).
+   * First non-battlefield zone: graveyard (Tainted Phoenix's upkeep return — the Squee class). */
+  zone?: "battlefield" | "graveyard";
+  /** A10 word 9 rider (S22): an ADR-027 optional trigger whose "yes" PAYS — the accept option is
+   * offered only when the cost is payable; auto-pays on accept (Tainted Phoenix's {B}). Requires `optional`. */
+  optionalCost?: { mana: string };
+  /** A10 word 7 (S22) — the punisher package: on resolution the stated player (the event's player,
+   * else the controller's opponent) chooses to pay or let `effects` happen. Pay = lose that much life;
+   * offered only at life STRICTLY above the cost (the ruled auto-resolve at life ≤ cost — ADR-014
+   * takes the lone "don't pay" silently). The Stoker; Browbeat's class rides in. */
+  unlessPay?: { life: number };
 }
 
 /**
@@ -283,6 +338,13 @@ export interface ActivatedCost {
   exileSelf?: boolean;
   /** ADR-076: the generic part of `mana` is reduced by this value, floored at the coloured pips (Baru). */
   reduceBy?: ValueRef;
+  /** A10 word 2 (S22): return a matching permanent you control to your hand as a cost — structurally
+   * parallel to sacrifice costs (choose from set, move, then stack). Predicates: "self" | "creature" |
+   * "land" | "permanent" | "creature.subtype:<Subtype>". The Unwinder's engine. */
+  returnToHand?: { predicate: string };
+  /** A10 word 6 (S22): tap `count` untapped creatures you control as a cost (convoke-lite; summoning
+   * sickness does NOT block it — CR 602.5.1 governs only the source's own {T}). Glare of Subdual. */
+  tapCreature?: { predicate: string; count: number };
 }
 
 export interface ActivatedAbilityDef {
@@ -332,8 +394,13 @@ export interface CardDef {
   targets?: TargetSpec[];
   /** A6: modal spell — one castSpell action per (mode, targets); `spellEffect`/`targets` must be absent. */
   modes?: ModeDef[];
-  /** A7: additional cost paid at cast (CR 601.2h) — Goblin Grenade's sacrifice. */
-  additionalCost?: { sacrifice: { predicate: string } };
+  /** A7: additional cost paid at cast (CR 601.2h) — Goblin Grenade's sacrifice. A10 word 4 companion
+   * (S22): `life` + `perTarget` — N life per chosen target, computed at 601.2h from the final count,
+   * paid at cast, never refunded on counter/fizzle (Phyrexian Purge; the printed ruling agrees). */
+  additionalCost?: { sacrifice?: { predicate: string }; life?: number; perTarget?: true };
+  /** A10 small piece (S22): the spell exiles itself on resolution instead of going to the graveyard
+   * (Experimental Overload). Countered/fizzled copies still go to the graveyard (CR 608.2b). */
+  selfExileOnResolve?: true;
   /** A5: cycling {cost} — compiled by the loader into a hand-zone ability {cost, discardSelf; draw 1}. */
   cycling?: string;
   /** A9 (S20, ADR-079): conditional enters-tapped (the shock clause). On resolving the LAND PLAY the
@@ -344,6 +411,10 @@ export interface CardDef {
   /** S20: unconditional "this land enters tapped" (the cycling-land cycle). Play and put paths both tap. */
   entersTapped?: boolean;
   art?: { asset?: string; fallback: "rendered" };
+  /** ADR-082 (S22): custom cards' printed-view image (Chris-produced via an external card creator) —
+   * the parallel of real cards' Scryfall `normal`. Filename under the printed-art asset root; the
+   * ADR-066 our-frame fallback on printed-default surfaces is retired for cards that carry this. */
+  printedAsset?: string;
   isTokenDef?: boolean;
   /** ADR-068: never shop stock — boss/lair treasure only (Black Lotus). Pool-registry column mirrored here so the world can filter. */
   prizeOnly?: boolean;

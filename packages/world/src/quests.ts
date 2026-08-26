@@ -353,11 +353,21 @@ export function questsOnDefeat(world: WorldState, opponentId: string, knobs: Kno
   return events;
 }
 
+/** ADR-081: deadlines freeze while the giver's or destination's town is occupied. Reads the
+ * serialized siege state directly rather than siege.ts's helper — siege.ts already imports this
+ * module, and the one deliberate ESM cycle (journey↔siege) should stay the only one. */
+const underOccupation = (world: WorldState, townIndex: number | undefined): boolean =>
+  townIndex !== undefined && world.sieges.some((s) => s.townIndex === townIndex && s.status === "occupied");
+
 /** Deadline tick + bounty sighting marks: call once per map step (advance()). */
 export function questsOnStep(world: WorldState, knobs: KnobValues, sees: (p: Point) => boolean): QuestEvent[] {
   void knobs;
   const events: QuestEvent[] = [];
   for (const q of [...world.quests.active]) {
+    if (q.deadlineStep !== undefined && (underOccupation(world, q.fromTown) || underOccupation(world, q.toTown))) {
+      // The contract waits out the occupation: this step doesn't count against the deadline.
+      q.deadlineStep += 1;
+    }
     if (q.deadlineStep !== undefined && world.player.stepsTaken > q.deadlineStep) {
       close(world, q, "expired");
       events.push({ type: "questExpired", quest: q });

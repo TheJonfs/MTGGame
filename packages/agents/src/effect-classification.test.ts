@@ -30,6 +30,7 @@ function viewWith(battlefield: { id: string; controller: 0 | 1 }[]): GameView {
     graveyards: [[], []],
     graveyardObjects: [[], []],
     manaPool: { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 },
+    pendingEndStepSacrifices: [],
   };
 }
 

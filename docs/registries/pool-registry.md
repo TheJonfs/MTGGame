@@ -94,7 +94,7 @@ Status: `planned` / `implemented` / `tested` / `cut`.
 | zombify | Zombify | tested | returnFromGraveyard(to battlefield) | fixtures 7–7c |
 | gravedigger | Gravedigger | tested | triggered(ETB, optional) returnFromGraveyard(to hand) | fixtures 8–8c |
 | rancor | Rancor | tested | aura, static modifyPT + grantKeyword(trample)(attached), triggered(DIES, self) return to owner's hand | scope `self` first user (R-041); fixtures 9–9c |
-| drana_kalastria_bloodchief | Drana, Kalastria Bloodchief | tested | flying, legendary, activated(X) modifyPT ×2 | legend rule (R-025); "-X" P/T deltas; fixtures 5–6c |
+| drana_kalastria_bloodchief | Drana, Kalastria Bloodchief | tested | flying, legendary, activated(X) modifyPT ×2 | legend rule (R-025); "-X" P/T deltas; fixtures 5–6c; prizeOnly since ADR-081 (was shopTier 3 — pooled before guardianhood) |
 | mystic_snake | Mystic Snake | tested | flash, triggered(ETB) counter(target spell) | fixtures 10–11 |
 
 ## Session 8 additions
@@ -181,12 +181,36 @@ Tokens added: bear_2_2 (G), bird_1_1_flying (W), wurm_4_4 (G), zombie_2_2 (B), f
 | hallowed_fountain … sacred_foundry (×10) | Ravnica shocklands | tested | A9 entersChoice {pay 2 life, else tapped} | shopTier 2, priceOverride 45; RVR retro-frame printings (#397–415) |
 | secluded_steppe/lonely_sandbar/barren_moor/forgotten_cave/tranquil_thicket | cycling lands | tested | entersTapped + cycling {C} | shopTier 1, priceOverride 10 |
 | evolving_wilds | Evolving Wilds | tested | tap+sac self → searchLibrary basic to battlefield tapped | shopTier 1, priceOverride 12; BRC #184 old frame |
-| reya_dawnbringer | Reya Dawnbringer | tested | upkeep optional trigger + returnFromGraveyard(creature) | R; INV #33 |
-| arcanis_the_omnipotent | Arcanis the Omnipotent | tested | {T}: draw 3; {2}{U}{U}: bounce scope self | R; ONS #66 |
-| drakuseth_maw_of_flames | Drakuseth, Maw of Flames | tested | ATTACKS trigger + A8 range targets + targetSpec damage fan-out | R; CMM #535 |
-| titania_protector_of_argoth | Titania, Protector of Argoth | tested | ETB returnFromGraveyard(LAND — new predicate); observed land-DIES → token | R; MH2 #416 |
+| reya_dawnbringer | Reya Dawnbringer | tested | upkeep optional trigger + returnFromGraveyard(creature) | prizeOnly (ADR-081 unification — sole channel: her own defeat-drop); INV #33 |
+| arcanis_the_omnipotent | Arcanis the Omnipotent | tested | {T}: draw 3; {2}{U}{U}: bounce scope self | prizeOnly (ADR-081); ONS #66 |
+| drakuseth_maw_of_flames | Drakuseth, Maw of Flames | tested | ATTACKS trigger + A8 range targets + targetSpec damage fan-out | prizeOnly (ADR-081); CMM #535 |
+| titania_protector_of_argoth | Titania, Protector of Argoth | tested | ETB returnFromGraveyard(LAND — new predicate); observed land-DIES → token | prizeOnly (ADR-081); MH2 #416 |
 | mox_pearl/sapphire/jet/ruby/emerald | the five Moxen | tested | {0} artifact, tap for one colour | prizeOnly (dungeon prizes); LEA Dan Frazier by the default rule; 4-cap applies once owned (Chris) |
 | elemental_5_3_g | Elemental Token (5/3 G) | tested | token def | Titania's token |
+
+## Session 22 additions (the Lords' Expansion — A10, ADR-081/082)
+
+| cardId | name | status | vocabulary | notes |
+|---|---|---|---|---|
+| the_unwinder | The Unwinder | tested | RETURNED_TO_HAND observed trigger (w1); returnToHand cost (w2) | custom Legendary {1}{U}{U}{R}{G} 3/4; prizeOnly (Spiral Spire sole-drop); printedAsset |
+| the_usher | The Usher | tested | temporary reanimate (w3) + who:any graveyard target; observed DIES drain | custom Legendary {1}{B}{B}{W}{R} 5/5; prizeOnly (Charnel Court); printedAsset |
+| the_warden | The Warden | tested | UNTAPPED law + event addressing (w5); ATTACKS + A8 range tap | custom Legendary {1}{W}{W}{G}{B} 4/4 vigilance reach; prizeOnly (Argent Bastion); printedAsset |
+| the_stoker | The Stoker | tested | unlessPay fork (w7); grantAbility hand cycling (w8); SPELL_CAST activation | custom Legendary {1}{R}{R}{B}{U} 5/5; prizeOnly (Furnace Gate); printedAsset |
+| the_sower | The Sower | tested | LAND_PLAYED activation; subtype:Forest search; sphinx token maker | custom Legendary {1}{G}{G}{W}{U} 4/4; prizeOnly (Verdant Throne); ?-cost {3}{W}{U} pending S22b sims; printedAsset |
+| aetherbolt | Aetherbolt | tested | two independent targets, per-target fizzle (zero new words) | custom {1}{U}{U}{R} Instant; shopTier R; printedAsset |
+| tainted_phoenix | Tainted Phoenix | tested | graveyard-zone UPKEEP trigger + optionalCost (w9) | custom {1}{B}{R} Zombie Phoenix 2/2 flying haste (type line per ruling); shopTier R; printedAsset |
+| aether_mutation | Aether Mutation | tested | targetManaValue count-ref tokens | APC #91; gold→R; tokens fizzle with the target (matches ruling) |
+| graceful_restoration | Graceful Restoration | tested | withCounters rider; powerAtMost + A8 range mode; returnFromGraveyard targetSpec fan-out | MH2 #201; gold→R |
+| phyrexian_purge | Phyrexian Purge | tested | any-number request-loop (w4) + additionalCost life perTarget | MIR #273 (sole printing, Reserved List); gold→R; no refund on counter (fixture) |
+| experimental_overload | Experimental Overload | tested | typed graveyardCount pt-ref token (basePT lock); instantOrSorcery graveyard predicate; selfExileOnResolve | M21 #218; gold→R; may-return encoded as up-to-one target at cast (R-074 simplification) |
+| glare_of_subdual | Glare of Subdual | tested | tapCreature cost (w6); artifact-or-creature anyOf target | RAV #207; gold→R |
+| vindicate | Vindicate | tested | destroy anyPermanent (existing predicate) — the pool's first land destruction | APC #126; gold→R |
+| temporal_spring | Temporal Spring | tested | bounce to:libraryTop | APC #125; gold→R; deliberately never fires RETURNED_TO_HAND (ratified) |
+| frondland_felidar | Frondland Felidar | tested | grantAbility battlefield scope withKeyword(vigilance) (w8 sibling) | IKO #186; gold→R; grants to himself per ruling (fixture) |
+| abrade | Abrade | tested | A6 modal (zero new words) | shopTier 1, priceOverride 12; BRC #111 printing override (red's law-breaker, accessible-answers doctrine) |
+| saproling_1_1_g | Saproling Token (1/1 G) | tested | token def | Aether Mutation's tokens |
+| sphinx_4_4_wu | Sphinx Token (4/4 WU, flying vigilance) | tested | token def | the Sower's activation |
+| weird_x_x_ur | Weird Token (X/X UR) | tested | token def (printed 0/0; basePT locks X at creation) | Experimental Overload |
 
 ## Ceiling anchors (not yet scheduled)
 Ceiling complete as of S5 (see mechanics-manifest §3). Further additions are card batches using existing vocabulary.
@@ -209,7 +233,9 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 
 | cardId | set | collector | artist | scryfallId |
 |---|---|---|---|---|
+| abrade | brc | 111 | Jonas De Ro | cccbc616-5592-4051-a066-a325209f349e |
 | aether_channeler | dmu | 42 | Caio Monteiro | 60afeb75-2c1e-4634-8c83-88b1dddb77c2 |
+| aether_mutation | apc | 91 | Ron Spencer | a9507116-ede8-40a1-8fa3-705e6f6f64c0 |
 | air_elemental | lea | 46 | Richard Thomas | 69c3b2a3-0daa-4d42-832d-fcdfda6555ea |
 | airship_crash | fin | 171 | Enora Mercier | ec91c4e4-711f-464d-bc83-e6813f4fdcdb |
 | arcanis_the_omnipotent | ons | 66 | Justin Sweet | 90865f52-c062-4505-a204-b4d7d4b3fc4c |
@@ -249,18 +275,22 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | elvish_visionary | ala | 130 | D. Alexander Gregory | faccfa5f-4d89-4a86-92d7-36cb5a16c5c9 |
 | essence_scatter | m10 | 51 | Jon Foster | c231101e-6620-46fc-a0ad-a53291d12dc2 |
 | evolving_wilds | brc | 184 | Steven Belledin | 1334e6ac-1edb-4945-935c-0e0ccdde134d |
+| experimental_overload | m21 | 218 | Lie Setiawan | 6f1bace4-a327-4eb6-a6ef-8394e76c06b7 |
 | faerie_formation | eld | 316 | Ryan Yee | 15709316-7382-46b9-9b70-53a5147e7051 |
 | fencing_ace | rtr | 11 | David Rapoza | a42d3066-f4ec-4d28-83ab-e48141206c72 |
 | forest | leb | 300 | Christopher Rush | b5a922eb-49c7-45f0-92bc-671d7a8758f4 |
 | forgotten_cave | ons | 317 | Tony Szczudlo | c5202668-a32c-4473-b272-e86264992576 |
+| frondland_felidar | iko | 186 | Steve Prescott | ab220695-e1a9-45ec-a1b1-5a82c9c90a03 |
 | giant_growth | lea | 197 | Sandra Everingham | 367dbefe-3366-408e-9fcf-7dc00f8cc201 |
 | gladecover_scout | m12 | 178 | Allen Williams | 26710d5c-01d1-498b-9f54-521dfd195843 |
+| glare_of_subdual | rav | 207 | Zoltan Boros & Gabor Szikszai | ed6166c1-3c2e-47af-873e-d3b39f42bd27 |
 | glorious_anthem | usg | 15 | Kev Walker | 61f867c5-0727-4408-b479-b81518daa0ec |
 | goblin_chieftain | m10 | 139 | Sam Wood | f5c8a4a4-1611-4188-9c59-8aefb016b5ad |
 | goblin_grenade | fem | 56a | Ron Spencer | 8837eaba-9602-4f63-9897-85583fcdcf51 |
 | goblin_matron | p02 | 100 | Daniel Gelon | f99dc21c-8600-49bf-b0a3-c981f7ec7ac3 |
 | goblin_piker | p02 | 102 | DiTerlizzi | 2786834d-dbda-40ce-82a4-e518cd554312 |
 | godless_shrine | rvr | 401 | Rob Alexander | f34831d4-1624-4c95-a08b-baa1e0978742 |
+| graceful_restoration | mh2 | 201 | Robbie Trevino | f03d7c3c-02f2-4c42-bcfa-0b83de30f607 |
 | gravedigger | por | 95 | Scott M. Fischer | b979d70e-d514-420f-886c-f60e2bb1861f |
 | gravitational_shift | roe | 69 | Svetlin Velinov | bad32b9f-0aa4-4036-90e6-c087cffd52e7 |
 | gray_ogre | lea | 156 | Dan Frazier | 73ae5276-b607-4f23-a9d2-e8cc7b8e3693 |
@@ -296,6 +326,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | overgrown_tomb | rvr | 407 | Rob Alexander | 15c1114f-5f7c-4ecf-8aac-e48853df008b |
 | pacifism | mir | 32 | Robert Bliss | c891df1b-bae6-4d6d-85ee-42901c149f98 |
 | pelakka_wurm | roe | 204 | Daniel Ljunggren | 8e732593-0bdc-4dd4-9b07-9aa1a780e6e8 |
+| phyrexian_purge | mir | 273 | Robert Bliss | 312bbc1b-4c2a-44c1-8e62-c0f94fd2ba8e |
 | phyrexian_rager | apc | 49 | Mark Tedin | 3addf34c-ea54-42a3-bccd-b73453d964d2 |
 | plains | leb | 288 | Jesper Myrfors | b7331b03-be66-419c-94bc-ed494c042ea3 |
 | plateau | olgc | 2018A | Mark Poole | 0829af6e-7dd9-4bce-bf14-1c5d509556cb |
@@ -325,6 +356,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | swords_to_plowshares | lea | 40 | Jeff A. Menges | 386ea9eb-abc1-4862-aa2d-8fb808d79490 |
 | taiga | olgc | 2017EU | Mark Poole | 453e1bf8-e570-4b9b-8f41-5f4f31ae3b0e |
 | temple_garden | rvr | 414 | Rob Alexander | 25f1e1bc-b32e-473b-9c6f-4fbe6f657bbf |
+| temporal_spring | apc | 125 | John Matson | b584dfd1-a56c-406e-8504-47ea136dc102 |
 | tendrils_of_corruption | tsp | 136 | Mike Dringenberg | 7f61db9e-ef88-4dc8-b90c-1f8b2d7e9bb9 |
 | terror | lea | 130 | Ron Spencer | 21004958-2c7e-4a55-bc80-411c4d780106 |
 | timberland_guide | avr | 197 | Zoltan Boros | ae80fefb-af78-4f98-8058-71b61e91842f |
@@ -336,6 +368,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | typhoid_rats | isd | 120 | Kev Walker | 4490ce65-c73a-4809-abd1-ccc3175bd2a4 |
 | underground_sea | olgc | 2016EU | Filip Burburan | 962719f7-ff8e-480b-985e-bd53a111793b |
 | vampire_nighthawk | zen | 116 | Jason Chan | 44f19fe3-7a17-4c45-adfa-590f73dfebfa |
+| vindicate | apc | 126 | Brian Snõddy | 2a1bfefd-dae8-49e9-9d56-cc852e3dc93b |
 | volcanic_island | olgc | 2018NA | Mark Poole | 154ce456-38d2-4195-93b7-302e11c006e2 |
 | waste_not | m15 | 122 | Matt Stewart | 241d8f7d-3981-47c1-b7b8-748277fa452f |
 | waterfront_bouncer | mmq | 114 | Paolo Parente | 8dbdce9e-94fa-4ed5-9b97-d2026cffe7cb |

@@ -3,7 +3,8 @@ import { evaluateValueRef } from "./effect-context.js";
 import type { Action } from "./actions.js";
 import { canBlock, eligibleAttackers, eligibleBlockers, menaceViolations } from "./combat.js";
 import { characteristics } from "./characteristics.js";
-import { sacrificeCandidates } from "./sacrifice.js";
+import { sacrificeCandidates, returnToHandCandidates, tapCreatureCandidates } from "./sacrifice.js";
+import { abilitiesOf } from "./granted.js";
 import type { EngineCtx } from "./ctx.js";
 import { canPay, producibleSymbols } from "./mana.js";
 import { getObject, type PlayerId } from "./state.js";
@@ -61,6 +62,12 @@ export function legalActions(ctx: EngineCtx, player: PlayerId): Action[] {
     if (def.additionalCost?.sacrifice && sacrificeCandidates(ctx, player, objectId, def.additionalCost.sacrifice.predicate).length === 0) continue;
     // A6: a modal spell enumerates one action per legal mode × that mode's targets (601.2b: a mode
     // whose targets can't be chosen is not offerable).
+    // A10 word 4 (S22): an any-number spell enumerates ONE action — targets are chosen in the
+    // cast's logged request-loop, never as combinations (Phyrexian Purge; zero targets is legal).
+    if ((def.targets ?? []).some((t) => t.count === "any")) {
+      if (canPay(ctx, player, cost)) actions.push({ type: "castSpell", objectId, targets: [] });
+      continue;
+    }
     const modeSpecs: { mode?: number; targets: import("@shandalar/cards").TargetSpec[] }[] = def.modes
       ? def.modes.map((m, i) => ({ mode: i, targets: m.targets ?? [] }))
       : [{ targets: def.targets ?? [] }];
@@ -81,8 +88,11 @@ export function legalActions(ctx: EngineCtx, player: PlayerId): Action[] {
   }
 
   // A5: zone-scoped activated abilities — hand (cycling) and graveyard (Mother Bear).
+  // A10 word 8 (S22): the index runs over the VIRTUAL list (printed + granted — the Stoker's
+  // cycling reaches every hand card, lands included, through abilitiesOf).
   const zoneAbilities = (objectId: string, def: CardDef, zone: "hand" | "graveyard") => {
-    (def.abilities ?? []).forEach((ability, abilityIndex) => {
+    void def;
+    abilitiesOf(ctx, objectId).forEach(({ ability }, abilityIndex) => {
       if (ability.kind !== "activated" || ability.zone !== zone) return;
       const timing = ability.timing ?? "instant";
       if (timing === "sorcery" && !atSorcerySpeed) return;
@@ -115,11 +125,12 @@ export function legalActions(ctx: EngineCtx, player: PlayerId): Action[] {
   }
 
   // Non-mana activated abilities (no S1 card has one; the path exists for equip).
+  // A10 word 8 (S22): the virtual list again — the Felidar's granted tapper enumerates here.
   for (const id of state.battlefield) {
     const obj = getObject(state, id);
     if (obj.controller !== player) continue;
     const def = ctx.defs.def(obj.cardId);
-    (def.abilities ?? []).forEach((ability, abilityIndex) => {
+    abilitiesOf(ctx, id).forEach(({ ability }, abilityIndex) => {
       if (ability.kind !== "activated") return;
       // ADR-068 Amendment 2: a choice-bearing mana ability is offered as one
       // deliberate action per colour (Lotus → five), never by auto-pay.
@@ -145,6 +156,9 @@ export function legalActions(ctx: EngineCtx, player: PlayerId): Action[] {
       if (ability.cost.sacrifice && sacrificeCandidates(ctx, player, id, ability.cost.sacrifice.predicate).length === 0) return;
       // ADR-076: a discard cost needs that many cards in hand (Waterfront Bouncer).
       if (ability.cost.discard && state.players[player].hand.length < ability.cost.discard) return;
+      // A10 (S22): the bounce cost needs a legal permanent; the tap cost needs enough untapped creatures.
+      if (ability.cost.returnToHand && returnToHandCandidates(ctx, player, id, ability.cost.returnToHand.predicate).length === 0) return;
+      if (ability.cost.tapCreature && tapCreatureCandidates(ctx, player, ability.cost.tapCreature.predicate).length < ability.cost.tapCreature.count) return;
       const combos = targetCombinations(ctx, ability.targets ?? [], player, id);
       if ((ability.targets ?? []).length > 0 && combos.length === 0) return;
       const cost = effectiveAbilityCost(ctx, player, ability, id);
@@ -234,7 +248,7 @@ export function bottomChoices(ctx: EngineCtx, player: PlayerId): Action[] {
 export function effectiveAbilityCost(ctx: EngineCtx, player: PlayerId, ability: ActivatedAbilityDef, sourceId: string): ManaCost | undefined {
   if (!ability.cost.mana) return undefined;
   const cost = parseManaCost(ability.cost.mana);
-  if (!ability.cost.reduceBy || ability.cost.reduceBy.ref === "targetPower") return cost;
+  if (!ability.cost.reduceBy || ability.cost.reduceBy.ref === "targetPower" || ability.cost.reduceBy.ref === "targetManaValue") return cost;
   const x = evaluateValueRef(ctx, ability.cost.reduceBy, player, sourceId);
   return { ...cost, generic: Math.max(0, cost.generic - x) };
 }

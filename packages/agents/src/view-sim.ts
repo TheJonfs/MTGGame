@@ -1,6 +1,7 @@
 import { parseManaCost, manaValue, type CardDef, type Effect, type ResolvedTarget } from "@shandalar/cards";
 import type { Action, GameView } from "@shandalar/engine";
 import { classifyEffects, effectsForAction } from "./effect-classification.js";
+import { viewAbilityAt } from "./granted-view.js";
 import { DEFAULT_CONSTANTS, objectValue, type EvalConstants } from "./evaluator.js";
 
 /**
@@ -149,7 +150,9 @@ export function predictAction(
   const gyEntry = view.graveyardObjects[me].find((c) => c.objectId === action.objectId);
   const cardId = objEntry?.cardId ?? handEntry?.cardId ?? gyEntry?.cardId;
   const d = cardId ? def(cardId) : undefined;
-  const ability = d?.abilities?.[action.abilityIndex];
+  // A10 word 8 (S22): the index runs over the VIRTUAL list — granted abilities (the Stoker's
+  // cycling, the Felidar's tapper) resolve through the view-side mirror of abilitiesOf.
+  const ability = viewAbilityAt(view, defs, action.objectId, action.abilityIndex);
   if (!d || !ability || ability.kind !== "activated") return { view, adjustment: 0.1, unchanged: true };
 
   if (ability.cost.tap) {
@@ -165,6 +168,14 @@ export function predictAction(
   }
   if (ability.cost.discardSelf && handEntry) next.hand = next.hand.filter((c) => c.objectId !== action.objectId); // cycling spends the card
   if (ability.cost.discard) next.hand.length = Math.max(0, next.hand.length - ability.cost.discard); // Bouncer: a card from hand
+  if (ability.cost.returnToHand) {
+    // A10 word 2 (S22): the bounce cost — a land (the Unwinder) leaves play for the hand: real but
+    // recoverable tempo. The activation-discipline pin decides WHEN; this prices the WHAT.
+    adjustment -= 0.2;
+    const mine = next.battlefield.filter((o) => o.controller === me && (defs.get(o.cardId)?.types ?? []).includes("Land"));
+    const bounced = mine.find((o) => o.tapped) ?? mine[0]; // the chooser prefers a spent land
+    if (bounced) removeObject(next, bounced.id);
+  }
   if (ability.equip) {
     const host = targets[0];
     const equip = view.battlefield.find((o) => o.id === action.objectId);
@@ -248,6 +259,16 @@ function applyEffect(
       return 0;
     }
     case "destroy": {
+      // A10 (S22): the targetSpec (any-number) form removes every chosen target — the loop's picks
+      // all sit in `targets` (Purge; pin work may refine the valuation later).
+      if (e.target === undefined) {
+        for (const t of targets) {
+          if (t.kind !== "object") continue;
+          const o = view.battlefield.find((b) => b.id === t.id);
+          if (o && !o.keywords.includes("indestructible")) removeObject(view, o.id);
+        }
+        return 0;
+      }
       const o = objAt(e.target);
       if (o && !o.keywords.includes("indestructible")) removeObject(view, o.id);
       return 0;
@@ -325,7 +346,10 @@ function applyEffect(
     }
     case "createToken": {
       const td = defs.get(e.tokenId);
-      for (let i = 0; i < e.count; i++) {
+      // A10 (S22): count may be a value ref (Aether Mutation) — predict one token as the floor
+      // until a pin prices the ref (Part 3 territory).
+      const tokenCount = typeof e.count === "number" ? e.count : 1;
+      for (let i = 0; i < tokenCount; i++) {
         view.battlefield.push({
           id: `pred_${predSeq++}`, cardId: e.tokenId, controller: me, tapped: false, damage: 0,
           attachedTo: null, power: td?.power ?? 1, toughness: td?.toughness ?? 1,
@@ -346,14 +370,28 @@ function applyEffect(
       return 0;
     }
     case "tapTarget": {
-      const o = objAt(e.target);
-      if (!o) return 0;
-      const wasUntapped = !o.tapped;
-      o.tapped = true;
-      // Tempo value when it taps down an opponent's untapped creature; a
-      // small cost when it wastes our own (book of shame: no-benefit taps).
-      if (!wasUntapped) return 0;
-      return o.controller !== me ? 0.3 : -0.15;
+      // A10 (S22): the targetSpec form taps every chosen target (the Warden's up-to-two) — sum the
+      // same per-target valuation.
+      const ids = e.target !== undefined ? [e.target] : [];
+      let total = 0;
+      const evalTap = (o: { tapped: boolean; controller: number } | undefined): number => {
+        if (!o) return 0;
+        const wasUntapped = !o.tapped;
+        o.tapped = true;
+        // Tempo value when it taps down an opponent's untapped creature; a
+        // small cost when it wastes our own (book of shame: no-benefit taps).
+        if (!wasUntapped) return 0;
+        return o.controller !== me ? 0.3 : -0.15;
+      };
+      if (e.target === undefined) {
+        for (const t of targets) {
+          if (t.kind !== "object") continue;
+          total += evalTap(view.battlefield.find((b) => b.id === t.id));
+        }
+        return total;
+      }
+      for (const i of ids) total += evalTap(objAt(i));
+      return total;
     }
     case "untapTarget": {
       const o = objAt(e.target);
@@ -383,12 +421,15 @@ function applyEffect(
     case "exileThenReturn": {
       // A8: blinking our own creature re-buys its ETB and shakes off auras/damage; a flat modest credit,
       // more if the target carries an ETB trigger or an opposing aura.
+      // S22 (A10 word 3, the launder pin): a pending-sacrifice target is about to be LOST — blinking
+      // it makes the reanimation permanent, worth the whole body (the Usher's signature line).
       const o = objAt(e.target);
       if (!o) return 0;
       const d = defs.get(o.cardId);
       const hasEtb = (d?.abilities ?? []).some((a) => a.kind === "triggered" && a.event === "ENTERS_BATTLEFIELD");
       const hostile = view.battlefield.some((a) => a.attachedTo === o.id && a.controller !== o.controller);
-      return 0.3 + (hasEtb ? 0.8 : 0) + (hostile ? 1.0 : 0);
+      const laundered = view.pendingEndStepSacrifices.includes(o.id) ? ((o.power ?? 0) + (o.toughness ?? 0)) / 2 + 1 : 0;
+      return 0.3 + (hasEtb ? 0.8 : 0) + (hostile ? 1.0 : 0) + laundered;
     }
     case "mill": {
       // ADR-070: mill valuation v1 — a nuisance, not an archetype (the Adept

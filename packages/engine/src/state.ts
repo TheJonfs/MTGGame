@@ -46,6 +46,9 @@ export interface GameObject {
   summoningSick: boolean;
   attachedTo: string | null;
   counters: Record<string, number>;
+  /** A10 (S22): base P/T locked at creation, overriding the def's printed values (Overload's X/X
+   * Weird — the printed ruling: set once, never fluctuates). Tokens only today. */
+  basePT?: { power: number; toughness: number };
 }
 
 /** Pool slots per producible symbol; {C} is colorless, spendable only on generic costs (S3). */
@@ -93,6 +96,13 @@ export interface StackItem {
   isOptionalTrigger?: boolean;
   /** A6: the chosen mode index of a modal spell/trigger (display; effects/targetSpecs already reflect it). */
   mode?: number;
+  /** A10 (S22): the triggering event's identity, for effects that address it (the Warden's law) and
+   * for unlessPay's payer (the Stoker's caster). Captured at collection time — LKI by construction. */
+  eventContext?: { objectId?: string; cardId?: string; player?: PlayerId };
+  /** A10 word 7 (S22): the punisher fork — resolution asks the event's player pay-or-suffer. */
+  unlessPay?: { life: number };
+  /** A10 word 9 rider (S22): an optional trigger whose "yes" pays this mana at resolution. */
+  optionalCost?: { mana: string };
 }
 
 /** A continuous effect created by a resolved spell/ability. Statics are computed live, not stored. */
@@ -114,6 +124,8 @@ export interface PendingTrigger {
   controller: PlayerId;
   abilityIndex: number;
   timestamp: number;
+  /** A10 (S22): the triggering event's identity, carried onto the StackItem. */
+  eventContext?: { objectId?: string; cardId?: string; player?: PlayerId };
 }
 
 export interface CombatState {
@@ -150,6 +162,10 @@ export interface GameState {
   combat: CombatState;
   timestamp: number; // monotonic, for continuous-effect ordering
   result: GameResult | null;
+  /** A10 word 3 (S22): temporary reanimations awaiting their end-step sacrifice. `dueTurn` = the
+   * first turn whose END step collects it (created at/after END → the next turn's). The id is the
+   * battlefield object; if it left (died, bounced, blinked — the launder) the entry is inert. */
+  endStepSacrifices: { objectId: string; dueTurn: number }[];
 }
 
 export function initialPlayerState(life: number): PlayerState {
@@ -184,6 +200,7 @@ export function initialGameState(startingLife: number): GameState {
     combat: emptyCombat(),
     timestamp: 0,
     result: null,
+    endStepSacrifices: [],
   };
 }
 

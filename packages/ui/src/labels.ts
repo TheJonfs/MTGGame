@@ -47,6 +47,10 @@ export function actionLabel(state: GameState, pool: Map<string, CardDef>, a: Act
     case "searchPick": return `Take ${name(a.objectId)} from your library`;
     case "declineSearch": return "Find nothing (shuffle)";
     case "chooseMode": return `Mode: ${a.label}`;
+    case "returnToHand": return `Return ${name(a.objectId)} to hand (cost)`;
+    case "tapCreature": return `Tap ${name(a.objectId)} (cost)`;
+    case "chooseVariableTarget": return `Add target: ${targetLabel(state, pool, a.target)}`;
+    case "doneChoosingTargets": return "Done choosing targets";
   }
 }
 
