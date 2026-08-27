@@ -100,8 +100,13 @@ function PromptBar({ c, phase, confirmLabel }: { c: MatchController; phase: UiPh
     }
   })();
 
+  // S22 r4 (Chris, item 2): the bottom rail wears whose TURN it is — a strong register shift
+  // (brass wash + chip when yours, cool ink when theirs) so a reflexive Pass click on the
+  // opponent's turn announces itself before it happens.
+  const yourTurn = c.game.state.activePlayer === c.humanSeat;
   return (
-    <div className="transport play-prompt">
+    <div className={`transport play-prompt ${yourTurn ? "your-turn" : "opp-turn"}`}>
+      <span className={`turn-chip ${yourTurn ? "yours" : ""}`}>{yourTurn ? "Your turn" : "Their turn"}</span>
       <span className="prompt-text">{c.combatNotice ?? (c.stopReason ? `${c.stopReason} ${prompt}` : prompt)}</span>
       {phase.kind === "priority" && (
         <>
@@ -775,8 +780,23 @@ export function PlayMatch({
   const confirmLabel =
     phase.kind === "confirmCast" ? actionLabel(ctx.state, pool, phase.action) : null;
 
+  // S22 r4 (Chris, item 8): while a spell sits on the stack, everything it targets wears a
+  // bright ring on the board — bigger and hotter than the pick-a-target outline, because the
+  // dialog dim is often up when it matters.
+  const stackTargets = useMemo(() => {
+    const objs = new Set<string>();
+    const players = new Set<PlayerId>();
+    for (const item of ctx.state.stack) {
+      for (const t of item.targets ?? []) {
+        if (t.kind === "object") objs.add(t.id);
+        else if (t.kind === "player") players.add(t.player as PlayerId);
+      }
+    }
+    return { objs, players };
+  }, [ctx.state.stack, phase]);
+
   const classFor = useMemo(() => {
-    return (id: string): string => {
+    const base = (id: string): string => {
       if (dialogHover?.includes(id)) return "target";
       switch (phase.kind) {
         case "priority":
@@ -800,7 +820,14 @@ export function PlayMatch({
           return "";
       }
     };
-  }, [phase, dialogHover]);
+    return (id: string): string => {
+      const cls = base(id);
+      if (!stackTargets.objs.has(id) || cls === "target") return cls;
+      // The ring outranks the dim (a spell's victim should never fade) and rides along with
+      // anything else (a castable card can be under the gun at the same time).
+      return cls && cls !== "dim" ? `${cls} spell-target` : "spell-target";
+    };
+  }, [phase, dialogHover, stackTargets]);
 
   return (
     <div className="app play-app">
@@ -828,7 +855,7 @@ export function PlayMatch({
       <div className="rail">
         <div
           onClick={() => { if (phase.kind === "targeting" && phase.highlightPlayers.has(opp)) c.clickPlayer(opp); }}
-          className={phase.kind === "targeting" && phase.highlightPlayers.has(opp) ? "player-target" : ""}
+          className={phase.kind === "targeting" && phase.highlightPlayers.has(opp) ? "player-target" : stackTargets.players.has(opp) ? "player-spell-target" : ""}
         >
           <StatusBlock ctx={ctx} player={opp} youSeat={c.humanSeat} emphasizeHand name={c.names[opp]} portraitSrc={c.portraits[opp]} onZoneClick={(player, zone) => setZoneOpen({ player, zone })} />
         </div>
@@ -851,7 +878,7 @@ export function PlayMatch({
         )}
         <div
           onClick={() => { if (phase.kind === "targeting" && phase.highlightPlayers.has(c.humanSeat)) c.clickPlayer(c.humanSeat); }}
-          className={phase.kind === "targeting" && phase.highlightPlayers.has(c.humanSeat) ? "player-target" : ""}
+          className={phase.kind === "targeting" && phase.highlightPlayers.has(c.humanSeat) ? "player-target" : stackTargets.players.has(c.humanSeat) ? "player-spell-target" : ""}
         >
           <StatusBlock ctx={ctx} player={c.humanSeat} youSeat={c.humanSeat} emphasizeHand name={c.names[c.humanSeat]} portraitSrc={c.portraits[c.humanSeat]} onZoneClick={(player, zone) => setZoneOpen({ player, zone })} />
         </div>

@@ -33,6 +33,8 @@ describe("searchLibrary (R-044, Amendment 1)", () => {
     expect(req.actions[0]!.type).toBe("declineSearch"); // safe default first
     const shuffles = tg.log.entries.filter((e) => e.t === "RNG" && (e as { purpose: string }).purpose === "shuffle");
     expect(shuffles.length).toBeGreaterThanOrEqual(1);
+    // S22 r4 (CR 701.19.4): the basic-restricted find is revealed (event logged).
+    expect(tg.log.entries.some((e) => e.t === "EVENT" && e.name === "SEARCH_REVEAL" && (e as { payload: { cardId: string } }).payload.cardId === "island")).toBe(true);
   });
 
   it("Demonic Tutor: any card to hand; decline still shuffles; a no-match library auto-declines silently and still shuffles", async () => {
@@ -45,6 +47,8 @@ describe("searchLibrary (R-044, Amendment 1)", () => {
     const tg = await runFixture(tutor);
     expect(tg.game.state.players[0].hand.map((id) => getObject(tg.game.state, id).cardId)).toContain("serra_angel");
     expect(tg.game.state.players[0].library).toHaveLength(2);
+    // S22 r4 (CR 701.19.4): an UNRESTRICTED search stays hidden — no reveal event, ever.
+    expect(tg.log.entries.some((e) => e.t === "EVENT" && e.name === "SEARCH_REVEAL")).toBe(false);
     // Decline
     const decline: FixtureSpec = { ...tutor, name: "tutor-decline", script: [{ player: 0, do: "cast", card: "demonic_tutor" }, { player: 0, do: "search" }] };
     const tg2 = await runFixture(decline);

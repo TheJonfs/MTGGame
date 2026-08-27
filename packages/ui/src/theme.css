@@ -69,6 +69,24 @@ body {
   background: var(--parchment) url("/panel-parchment.png"); background-size: 512px;
   border-top: 3px solid var(--ink);
 }
+/* S22 r4 (Chris, item 2): the bottom rail wears whose turn it is — a warm brass wash on yours,
+   a cool desaturated ink wash on theirs, plus the chip — so a reflexive Pass announces itself. */
+.play-prompt { transition: background-color 0.3s ease, box-shadow 0.3s ease; }
+.play-prompt.your-turn {
+  background-color: #edd489; background-blend-mode: multiply;
+  border-top-color: var(--brass);
+  box-shadow: inset 0 5px 14px -6px rgba(160, 120, 30, 0.9);
+}
+.play-prompt.opp-turn {
+  background-color: #aeb3ba; background-blend-mode: multiply;
+  box-shadow: inset 0 5px 14px -6px rgba(43, 37, 32, 0.7);
+}
+.turn-chip {
+  font-family: var(--serif); font-variant: small-caps; letter-spacing: 0.6px; font-size: 12.5px;
+  border: 1.5px solid var(--ink); border-radius: 10px; padding: 1px 10px; white-space: nowrap;
+  background: rgba(255, 252, 240, 0.6); color: var(--ink-soft);
+}
+.turn-chip.yours { background: var(--brass); color: var(--parchment); border-color: var(--ink); font-weight: 700; }
 
 .panel {
   background: rgba(255, 252, 240, 0.55); border: 1.5px solid var(--ink); border-radius: 6px;
@@ -363,6 +381,22 @@ button.linkish { background: none; border: none; color: var(--brass); cursor: po
 .tile.pending { outline: 3px dashed var(--brass); }
 .tile.dim, .hand-card.dim .frame { filter: saturate(0.3) opacity(0.55); }
 .player-target .panel { outline: 3px solid var(--danger); cursor: crosshair; border-radius: 6px; }
+/* S22 r4 (Chris, item 8): what a stack spell is AIMED AT — bigger and hotter than the
+   pick-a-target outline, glowing through the dialog dim. */
+.tile.spell-target {
+  outline: 4px solid #ff5a3c;
+  box-shadow: 0 0 0 2px rgba(255, 240, 200, 0.9), 0 0 18px 6px rgba(255, 90, 60, 0.75);
+  position: relative; z-index: 3;
+  animation: spell-target-pulse 1.1s ease-in-out infinite;
+}
+@keyframes spell-target-pulse {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(255, 240, 200, 0.9), 0 0 18px 6px rgba(255, 90, 60, 0.75); }
+  50% { box-shadow: 0 0 0 2px rgba(255, 240, 200, 0.9), 0 0 26px 10px rgba(255, 90, 60, 0.95); }
+}
+.player-spell-target .panel {
+  outline: 4px solid #ff5a3c; border-radius: 6px;
+  box-shadow: 0 0 18px 6px rgba(255, 90, 60, 0.7);
+}
 
 /* Stops flyout */
 .stops-flyout { position: relative; }

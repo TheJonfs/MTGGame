@@ -226,9 +226,12 @@ export function townOffers(world: WorldState, catalog: Catalog, town: Town, knob
     const deadlineSteps = knobs.questDeadlineSteps[tier] ?? 0;
     if (kind === "cardCourier") {
       const want = { color: rng.pick(COLORS), minMv: 1 + rng.int(3) };
+      // S22 r4 (Chris, item 3): the collector's contract pays for the card it takes — the gold
+      // portion carries the card-courier premium (the card/manalink riders ride unchanged).
+      const paid = { ...reward, gold: Math.round(reward.gold * knobs.cardCourierGoldFactor) };
       offers.push({
-        id, kind, tier, fromTown: town.index, toTown: dest.index, cardWanted: want, deadlineSteps, reward,
-        text: rng.pick(pack.offers.cardCourier).replace(/\{town\}/g, dest.name).replace(/\{want\}/g, `a ${({ W: "white", U: "blue", B: "black", R: "red", G: "green" } as const)[want.color]} card (mana value ${want.minMv}+)`).replace(/\{reward\}/g, `${reward.gold} gold`),
+        id, kind, tier, fromTown: town.index, toTown: dest.index, cardWanted: want, deadlineSteps, reward: paid,
+        text: rng.pick(pack.offers.cardCourier).replace(/\{town\}/g, dest.name).replace(/\{want\}/g, `a ${({ W: "white", U: "blue", B: "black", R: "red", G: "green" } as const)[want.color]} card (mana value ${want.minMv}+)`).replace(/\{reward\}/g, `${paid.gold} gold`),
       });
     } else {
       offers.push({ id, kind, tier, fromTown: town.index, toTown: dest.index, deadlineSteps, reward, text: rng.pick(pack.offers.courier).replace(/\{town\}/g, dest.name).replace(/\{reward\}/g, `${reward.gold} gold`) });
@@ -350,11 +353,18 @@ export function questsOnArrival(world: WorldState, town: Town, knobs: KnobValues
   return events;
 }
 
-/** Bounty completion: call from duel application with the defeated instance's id. */
-export function questsOnDefeat(world: WorldState, opponentId: string, knobs: KnobValues): QuestEvent[] {
+/** Bounty completion: call from duel application with the defeated instance's id and template.
+ * S22 r4 (Chris, item 7 — two Boggart Warbands dead in the target region, the bounty standing):
+ * the player cannot tell the mark from its twins, so ANY defeat of the bounty's template pays —
+ * the exact spawned instance OR any roamer of the same catalog id. The caller retires the spawned
+ * mark when a twin paid (the head's been taken; the mark disperses). */
+export function questsOnDefeat(world: WorldState, opponentId: string, knobs: KnobValues, catalogId?: string): QuestEvent[] {
   const events: QuestEvent[] = [];
   for (const q of [...world.quests.active]) {
-    if (q.kind === "bounty" && q.bountyOpponentId === opponentId) {
+    if (q.kind !== "bounty") continue;
+    const isMark = q.bountyOpponentId === opponentId;
+    const isTwin = catalogId !== undefined && q.bountyCatalogId === catalogId;
+    if (isMark || isTwin) {
       const rewardText = award(world, q, knobs);
       close(world, q, "done");
       events.push({ type: "questDone", quest: q, rewardText });
@@ -523,7 +533,7 @@ export function rumorsOnArrival(world: WorldState, catalog: Catalog, town: Town)
 function worldKnobsRumorSteps(world: WorldState): number {
   return worldKnobs(world).rumorRefreshSteps;
 }
-export function tavernRumors(world: WorldState, catalog: Catalog, town: Town): string[] {
+export function tavernRumors(world: WorldState, catalog: Catalog, town: Town, pool?: Map<string, CardDef>): string[] {
   const rs = rumorState(world, catalog);
   const pack = questPack(catalog);
   const lines: string[] = [];
@@ -553,6 +563,27 @@ export function tavernRumors(world: WorldState, catalog: Catalog, town: Town): s
   const picks = Math.min(1, lore.length);
   const start = lore.length ? rng.int(lore.length) : 0;
   for (let i = 0; i < picks; i++) lines.push(lore[(start + i * 7) % lore.length]!);
+  // S22 r4 (Chris, item 1): the mill knows where lasting gifts are posted — when another town's
+  // CURRENT board holds a live manalink-paying contract (colour under the player's cap, town not
+  // occupied), one pointer joins the pour, rotating on the same epoch as the lore.
+  if (pool) {
+    const knobs = worldKnobs(world);
+    const capped = new Set(COLORS.filter((c) => world.manalinks.filter((m) => m.color === c).length >= knobs.manalinkCapPerColor));
+    const occupied = new Set((world.sieges as { townIndex: number; status?: string }[]).filter((s) => s.status === "occupied").map((s) => s.townIndex));
+    const posts = world.map.towns.filter(
+      (t) =>
+        t.index !== town.index &&
+        !occupied.has(t.index) &&
+        townOffers(world, catalog, t, knobs, pool).some((o) => o.reward.manalink && !capped.has(o.reward.manalink)),
+    );
+    if (posts.length > 0) {
+      const pick = posts[rng.int(posts.length)]!;
+      lines.push(
+        (pack.rumors.manalinkPointer ?? "They say the board at {town} posts work that pays in a lasting gift — the kind that never leaves you.")
+          .replace(/\{town\}/g, pick.name),
+      );
+    }
+  }
   for (const l of lines) heardLog(rs, l);
   return lines;
 }

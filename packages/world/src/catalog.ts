@@ -109,6 +109,10 @@ export interface QuestTextPack {
     nighthawkLegend: string;
     warp: string[];
     texture: string[];
+    /** S22 r4 (Chris, item 1): the tavern points at a town whose CURRENT board posts a
+     * manalink-paying contract ({town} substituted). Optional — a fallback line covers packs
+     * that predate it. */
+    manalinkPointer?: string;
   };
 }
 

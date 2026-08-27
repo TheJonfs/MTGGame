@@ -1319,6 +1319,77 @@ describe("S19 Part 3+5 (quests, scripted acceptance): offers, courier, card-cour
     throw new Error("no winning bounty run across seeds");
   }, 120_000);
 
+  it("S22 r4 (item 7): a TWIN of the bounty's template pays the bounty too, and the spawned mark disperses", async () => {
+    const { townOffers, acceptQuest } = await import("./quests.js");
+    const knobs = questKnobs();
+    for (let seed = 41; seed < 90; seed++) {
+      const w = newWorld({ seed, catalog, starter: "red" });
+      quiet(w);
+      const town = w.map.towns.find((t) => townOffers(w, catalog, t, knobs, pool.cards).some((o) => o.kind === "bounty"));
+      if (!town) continue;
+      const offer = townOffers(w, catalog, town, knobs, pool.cards).find((o) => o.kind === "bounty")!;
+      expect(acceptQuest(w, catalog, offer, knobs, pool.cards).ok).toBe(true);
+      const q = w.quests.active[0]!;
+      const mark = w.opponents.find((o) => o.id === q.bountyOpponentId)!;
+      // A twin: same catalog template, different instance, placed at the player's feet.
+      const twin = { id: "opp_twin_r4", catalogId: mark.catalogId, region: regionAt(w.map, stepCell(w)).index, gone: false, at: { ...stepCell(w) }, moveDebt: 0 };
+      w.opponents.push(twin);
+      const enc = firstEncounter(w, (o) => o.id === twin.id);
+      expect(enc.opponentId).toBe(twin.id);
+      const out = parley(w, catalog, enc, "fight");
+      if (out.type !== "fight") continue;
+      const result = await runMatch(out.duel.spec, pool.cards, agentsFor(w, out.duel.enemy.difficulty, out.duel.enemy.deck, seed));
+      const rec = applyDuelResult(w, catalog, out.duel, result);
+      if (rec.outcome !== "win") continue; // try another seed for the win case
+      expect(w.quests.completed.some((c) => c.id === offer.id && c.outcome === "done")).toBe(true); // the twin's head paid
+      expect(w.opponents.find((o) => o.id === mark.id)!.gone).toBe(true); // the mark disperses
+      return;
+    }
+    throw new Error("no winning twin-bounty run across seeds");
+  }, 120_000);
+
+  it("S22 r4 (item 3): the card-courier's gold carries the premium (pays at least the tier's full gold)", async () => {
+    const { townOffers } = await import("./quests.js");
+    const knobs = questKnobs();
+    let seen = 0;
+    for (let seed = 41; seed < 70 && seen < 5; seed++) {
+      const w = newWorld({ seed, catalog, starter: "green" });
+      for (const t of w.map.towns) {
+        for (const o of townOffers(w, catalog, t, knobs, pool.cards)) {
+          if (o.kind !== "cardCourier") continue;
+          seen += 1;
+          // Base roll gold is at least questGoldByTier/2 (card/manalink riders halve it); ×2 premium
+          // restores the full tier gold as the floor.
+          expect(o.reward.gold).toBeGreaterThanOrEqual(knobs.questGoldByTier[o.tier] ?? 20);
+        }
+      }
+    }
+    expect(seen).toBeGreaterThan(0);
+  });
+
+  it("S22 r4 (item 1): the tavern points at a town whose CURRENT board posts a manalink contract; capped colours mute the pointer", async () => {
+    const { townOffers, tavernRumors } = await import("./quests.js");
+    for (let seed = 41; seed < 90; seed++) {
+      const w = newWorld({ seed, catalog, starter: "green" });
+      quiet(w);
+      const knobs = worldKnobs(w);
+      const posts = w.map.towns.filter((t) => townOffers(w, catalog, t, knobs, pool.cards).some((o) => o.reward.manalink));
+      if (posts.length === 0) continue;
+      const here = w.map.towns.find((t) => !posts.some((p) => p.index === t.index)) ?? w.map.towns[0]!;
+      const tpl = catalog.questText!.rumors.manalinkPointer!;
+      const isPointer = (l: string) => w.map.towns.some((p) => l === tpl.replace(/\{town\}/g, p.name));
+      const lines = tavernRumors(w, catalog, here, pool.cards);
+      const pointer = lines.find(isPointer);
+      expect(pointer).toBeTruthy(); // one pour names a posting town
+      expect(posts.some((p) => pointer!.includes(p.name))).toBe(true); // and it IS a posting town
+      // Cap every colour: the pointer goes quiet (nothing left to win).
+      for (const c of ["W", "U", "B", "R", "G"] as const) for (let i = 0; i < knobs.manalinkCapPerColor; i++) w.manalinks.push({ color: c, town: 0 });
+      expect(tavernRumors(w, catalog, here, pool.cards).find(isPointer)).toBeUndefined();
+      return;
+    }
+    throw new Error("no seed produced a manalink post");
+  });
+
   it("deadline expiry mid-walk fails the quest cleanly (event emitted, no reward, no further penalty)", async () => {
     const { townOffers, acceptQuest } = await import("./quests.js");
     const knobs = questKnobs();

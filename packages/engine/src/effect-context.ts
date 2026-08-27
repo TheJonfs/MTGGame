@@ -300,7 +300,11 @@ function searchOp(ctx: EngineCtx, requester?: EffectRequester) {
         pick = await requester(player, "searchLibrary", actions, revealed);
       }
       if (pick.type === "searchPick") {
+        const foundCardId = getObject(ctx.state, pick.objectId).cardId; // before the move — ids die on zone moves
         moveObject(ctx, pick.objectId, to, to === "battlefield" ? { tapped: entersTapped } : {});
+        // S22 r4 (CR 701.19.4): a restricted search reveals its find (Goblin Matron's Goblin,
+        // Rampant Growth's basic); anyCard (Demonic Tutor) stays hidden.
+        if (predicate !== "anyCard") ctx.bus.emit("SEARCH_REVEAL", { player, cardId: foundCardId });
       }
       // Shuffle always follows a search (CR 701.19) — logged RNG, replay-covered.
       p.library = ctx.rng.shuffle(p.library, "shuffle");

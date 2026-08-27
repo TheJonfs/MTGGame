@@ -52,4 +52,8 @@ export interface GameEventMap extends Record<string, unknown> {
   /** A10 (S22): the play-land special action announced itself. Distinct from
    * LAND_ENTERS_UNDER_YOUR_CONTROL — effect-placed lands do not fire it (the Sower's counterplay). */
   LAND_PLAYED: { objectId: string; controller: PlayerId };
+  /** S22 r4 (CR 701.19.4): a characteristics-RESTRICTED search (basicLand, subtype:X) reveals
+   * what it found; an unrestricted search (Demonic Tutor's anyCard) stays hidden and never fires
+   * this. EVENT-stream only (narration); no trigger consumes it. */
+  SEARCH_REVEAL: { player: PlayerId; cardId: string };
 }

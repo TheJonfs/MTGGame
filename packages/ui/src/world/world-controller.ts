@@ -979,7 +979,7 @@ export class WorldController {
     if (!this.world || this.screen.kind !== "town") return [];
     const events = rumorsOnArrival(this.world, this.catalog, this.screen.town);
     if (events.length > 0) this.autosave();
-    const lines = tavernRumors(this.world, this.catalog, this.screen.town);
+    const lines = tavernRumors(this.world, this.catalog, this.screen.town, this.pool); // r4: the pool powers the manalink pointer
     const reveals = events.filter((e) => e.type === "chainRevealed").map((e) => e.text);
     return [...reveals, ...lines];
   }

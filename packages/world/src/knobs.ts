@@ -320,6 +320,11 @@ export const KNOBS = {
     unit: "gold by quest tier (the offering town's ring)",
     description: "S19 quests: the all-gold reward; card/manalink rewards pay half this in gold beside the item. Arguing baseline — sits above the win-gold table (10/25/60) because a quest is a journey, not one fight.",
   }),
+  cardCourierGoldFactor: knob<number>({
+    default: 2,
+    unit: "× the reward roll's gold",
+    description: "S22 playtest r4 (Chris: 10 gold + a tier-1 card for surrendering a card from the collection reads thin): the card-courier's gold multiplies by this — the quest PAYS for the card it takes. Card/manalink riders on the roll are untouched.",
+  }),
   questDeadlineSteps: knob<Record<1 | 2 | 3, number>>({
     default: { 1: 220, 2: 300, 3: 400 },
     unit: "steps from acceptance, by tier (0 = no deadline)",

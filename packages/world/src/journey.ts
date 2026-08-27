@@ -495,7 +495,14 @@ export function applyDuelResult(world: WorldState, catalog: Catalog, duel: Prepa
     creditSpokeKill(world, beatenTmpl?.colors, duel.encounter.tier); // S22 r1: the pace war mirrors renown — every colour worn bleeds its lord
     if (inst) removeOpponent(world, inst.id, "defeated");
     // S19: bounty completion — the mark's defeat pays out (recorded on the DuelRecord for the UI).
-    questEvents = questsOnDefeat(world, duel.encounter.opponentId, knobs);
+    // S22 r4 (item 7): a TWIN of the mark pays too (same catalog template — the player can't tell
+    // them apart); the spawned mark then disperses.
+    questEvents = questsOnDefeat(world, duel.encounter.opponentId, knobs, duel.encounter.catalogId);
+    for (const qe of questEvents) {
+      if (qe.type === "questDone" && qe.quest.kind === "bounty" && qe.quest.bountyOpponentId && qe.quest.bountyOpponentId !== duel.encounter.opponentId) {
+        removeOpponent(world, qe.quest.bountyOpponentId, "fled");
+      }
+    }
   } else if (result.winner === 1) {
     outcome = "loss";
     anteLost = [...mine];

@@ -49,6 +49,9 @@ describe("ADR-076 — costs and predicates", () => {
     expect(tg.handCardIds(0)).toEqual(["goblin_piker"]);
     const req = tg.requests.find((r) => r.purpose === "searchLibrary")!;
     expect(req.revealed?.map((r) => r.cardId).sort()).toEqual(["goblin_piker", "raging_goblin"]); // Goblins only
+    // S22 r4 (CR 701.19.4): a subtype-restricted search REVEALS its find — the event is logged.
+    const reveal = tg.log.entries.find((e) => e.t === "EVENT" && e.name === "SEARCH_REVEAL");
+    expect(reveal && (reveal as { payload: { cardId: string; player: number } }).payload).toEqual({ player: 0, cardId: "goblin_piker" });
     const none: FixtureSpec = { ...spec, name: "matron-none", setup: { players: [{ battlefield: ["mountain", "mountain", "mountain"], hand: ["goblin_matron"], library: ["forest", "island"] }, {}] }, script: [{ player: 0, do: "cast", card: "goblin_matron" }, { player: 0, do: "optional", accept: true }] };
     const tg2 = await runFixture(none);
     expect(tg2.requests.some((r) => r.purpose === "searchLibrary")).toBe(false);
