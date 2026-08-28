@@ -19,7 +19,7 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
     sourceCardId: string,
     controller: PlayerId,
     abilityIndex: number,
-    eventContext?: { objectId?: string; cardId?: string; player?: PlayerId },
+    eventContext?: { objectId?: string; cardId?: string; player?: PlayerId; amount?: number },
   ) => {
     ctx.state.pendingTriggers.push({
       sourceId,
@@ -167,7 +167,9 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
   });
 
   // A8/S20 (Drakuseth — the vocabulary's ATTACKS event gets its first collector): each declared
-  // attacker's own self-condition ATTACKS abilities pend, in declaration order.
+  // attacker's own self-condition ATTACKS abilities pend, in declaration order. S23: the event
+  // context carries the attacker and its controller — the Gallows Djinn's "it deals 1 damage to
+  // you" addresses them (to: eventPlayer / from: eventObject, the Warden pattern).
   ctx.bus.on("ATTACKERS_DECLARED", (ev) => {
     for (const attackerId of ev.attackers) {
       const obj = ctx.state.objects[attackerId];
@@ -176,7 +178,7 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
         if (a.kind !== "triggered" || a.event !== "ATTACKS") return;
         const src = a.condition?.source ?? "self";
         if (src !== "self") return; // observed attack triggers arrive with their first customer
-        pend(attackerId, obj.cardId, obj.controller, i);
+        pend(attackerId, obj.cardId, obj.controller, i, { objectId: attackerId, cardId: obj.cardId, player: obj.controller });
       });
     }
   });
@@ -259,6 +261,44 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
         const playerCond = cond.player ?? "any";
         if (playerCond === "opponentOfController" && damagedPlayer === perm.controller) return;
         if (playerCond === "controller" && damagedPlayer !== perm.controller) return;
+        // S23 (ADR-084): the event context carries the damaged player AND the amount — the
+        // eventDamage ref (the Traumatizer's "twice that many") reads it at resolution.
+        pend(permId, perm.cardId, perm.controller, i, { player: damagedPlayer, amount: ev.amount });
+      });
+    }
+  });
+
+  // S23 (the fun batch — first collectors on skeleton events, the R-061 ATTACKS precedent):
+  // BLOCKS — each declared blocker's own self-condition abilities pend, in declaration order
+  // (the Gallows Djinn's aggression tax charges blocking too).
+  ctx.bus.on("BLOCKERS_DECLARED", (ev) => {
+    for (const { blocker } of ev.blocks) {
+      const obj = ctx.state.objects[blocker];
+      if (!obj) continue;
+      (ctx.defs.def(obj.cardId).abilities ?? []).forEach((a, i) => {
+        if (a.kind !== "triggered" || a.event !== "BLOCKS") return;
+        const src = a.condition?.source ?? "self";
+        if (src !== "self") return; // observed block triggers arrive with their first customer
+        pend(blocker, obj.cardId, obj.controller, i, { objectId: blocker, cardId: obj.cardId, player: obj.controller });
+      });
+    }
+  });
+
+  // S23: END_STEP — "at the beginning of the end step" collects at STEP_BEGIN(END), before the
+  // step's first priority (CR 503.1a's shape at the other end of the turn). Family templating:
+  // EVERY end step by default (the Thundersnake dies on the opponent's turn too); condition
+  // `controller: "you"` narrows to the permanent controller's own end step for future customers.
+  // A permanent arriving DURING the end step missed the beginning and waits for the next one.
+  ctx.bus.on("STEP_BEGIN", (ev) => {
+    if (ev.step !== "END") return;
+    for (const permId of [...ctx.state.battlefield]) {
+      const perm = ctx.state.objects[permId];
+      if (!perm) continue;
+      (ctx.defs.def(perm.cardId).abilities ?? []).forEach((a, i) => {
+        if (a.kind !== "triggered" || a.event !== "END_STEP") return;
+        const ctrl = a.condition?.controller ?? "any";
+        if (ctrl === "you" && ev.activePlayer !== perm.controller) return;
+        if (ctrl === "opponent" && ev.activePlayer === perm.controller) return;
         pend(permId, perm.cardId, perm.controller, i);
       });
     }

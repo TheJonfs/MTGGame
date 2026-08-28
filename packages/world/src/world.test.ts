@@ -134,6 +134,46 @@ describe("world generator (invariant fuzz, ≥200 seeds)", () => {
       }
     }
   });
+  it("S23 (wilds polish): rivers — ribbons exist, water blocks except at bridges and fords, deterministic per seed; reachability holds (the invariant fuzz above runs WITH rivers)", () => {
+    for (const seed of [7, 42, 101]) {
+      const w = generateWorld(seed, catalog, DEFAULT_GENERATOR, { knobs: defaultKnobs(), homeColor: "G" });
+      const m = w.map;
+      expect(m.river).toBeTruthy();
+      expect(m.river!.filter(Boolean).length).toBeGreaterThan(0);
+      let fords = 0, bridges = 0;
+      for (let i = 0; i < m.river!.length; i++) {
+        if (!m.river![i]) continue;
+        if (m.road[i]) { bridges += 1; expect(m.passable[i]).toBe(true); }
+        else if (m.ford![i]) { fords += 1; expect(m.passable[i]).toBe(true); }
+        else expect(m.passable[i]).toBe(false); // the water law
+      }
+      expect(fords + bridges).toBeGreaterThan(0); // every world has at least one crossing
+      const again = generateWorld(seed, catalog, DEFAULT_GENERATOR, { knobs: defaultKnobs(), homeColor: "G" });
+      expect(JSON.stringify(again.map.river)).toBe(JSON.stringify(m.river));
+      expect(JSON.stringify(again.map.ford)).toBe(JSON.stringify(m.ford));
+    }
+  });
+
+  it("S23: a river-bridged road is WALKED — every wet cell on every town path is a bridge or a ford, and at least one real crossing happens across the seed set", () => {
+    let wetCrossings = 0;
+    for (const seed of [7, 42, 101]) {
+      const w = generateWorld(seed, catalog, DEFAULT_GENERATOR, { knobs: defaultKnobs(), homeColor: "G" });
+      const m = w.map;
+      for (const t of m.towns) {
+        const path = findPath(m, m.start, t.at);
+        expect(path, `${seed}: ${t.name}`).not.toBeNull();
+        for (const c of path!) {
+          const i = idx(m, c);
+          if (m.river![i]) {
+            wetCrossings += 1;
+            expect(m.road[i] || m.ford![i], `${seed}: wet cell ${c.x},${c.y} on the way to ${t.name}`).toBe(true);
+          }
+        }
+      }
+    }
+    expect(wetCrossings).toBeGreaterThan(0); // the rivers are actually in somebody's way
+  });
+
   it("pathfinding: BFS path is walkable, shortest-ish, and null when unreachable", () => {
     const w = generateWorld(7, catalog, DEFAULT_GENERATOR, { knobs: defaultKnobs(), homeColor: "G" });
     const [a, b] = w.map.towns;
@@ -1181,7 +1221,7 @@ describe("S19 shop tiers (ADR-078): availability by ring, price by tier factor, 
     // Distribution pin (audit v2 + Formation + the S20 land-and-legend batch as it lands: ten ABU duals at R so far).
     const tally: Record<string, number> = {};
     for (const d of pool.cards.values()) if (d.shopTier) tally[String(d.shopTier)] = (tally[String(d.shopTier)] ?? 0) + 1;
-    expect(tally).toEqual({ "1": 60, "2": 41, "3": 10, R: 22 }); // ADR-081 unification: the five guardian legendaries left the tiers for prizeOnly (Drana was T3, the S20 four were R). S22 batch: +10 R (eight real gold→R adds + Aetherbolt + Tainted Phoenix; the five lords are prizeOnly), +1 T1 (Abrade)
+    expect(tally).toEqual({ "1": 60, "2": 44, "3": 10, R: 22 }); // ADR-081 unification: the five guardian legendaries left the tiers for prizeOnly (Drana was T3, the S20 four were R). S22 batch: +10 R (eight real gold→R adds + Aetherbolt + Tainted Phoenix; the five lords are prizeOnly), +1 T1 (Abrade). S23 fun batch: +3 T2 (Thundersnake, Gallows Djinn, Traumatizer)
   });
   it("a civilized town's rolled stock is all tier 1 and every price matches shopPrice", async () => {
     const { rollShopStock, shopPrice } = await import("./shop.js");

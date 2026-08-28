@@ -372,22 +372,26 @@ export function WorldMapView({
       if (spots.length) roughBlobs.push({ color, spots });
     }
   }
-  // Interior: carved wall edges (a pale chisel line wherever seen floor meets rock or the map's
-  // edge) and torchlight junctions (seen floor cells with 3+ floor neighbours).
-  const wallEdges: string[] = [];
+  // Interior: carved wall edges and torchlight junctions (seen floor cells with 3+ floor
+  // neighbours). S23 (the smoothing pass — the S21 program's last unspent item): the wall
+  // edge is CHAINED and corner-cut like the overworld's borders, so carved corridors read as
+  // hand-cut stone lines instead of grid staircases; a dark gutter under the chisel line
+  // gives the rock face depth.
+  const wallSegs: [number, number, number, number][] = [];
   const torches: Point[] = [];
   if (interior) {
     const floorAt = (x: number, y: number) => x >= 0 && y >= 0 && x < map.width && y < map.height && !!map.passable[y * map.width + x];
     for (const { x, y } of cells) {
       if (!floorAt(x, y) || !seenXY(x, y)) continue;
-      if (!floorAt(x - 1, y)) wallEdges.push(`M${x * CELL} ${y * CELL} v${CELL}`);
-      if (!floorAt(x + 1, y)) wallEdges.push(`M${(x + 1) * CELL} ${y * CELL} v${CELL}`);
-      if (!floorAt(x, y - 1)) wallEdges.push(`M${x * CELL} ${y * CELL} h${CELL}`);
-      if (!floorAt(x, y + 1)) wallEdges.push(`M${x * CELL} ${(y + 1) * CELL} h${CELL}`);
+      if (!floorAt(x - 1, y)) wallSegs.push([x * CELL, y * CELL, x * CELL, (y + 1) * CELL]);
+      if (!floorAt(x + 1, y)) wallSegs.push([(x + 1) * CELL, y * CELL, (x + 1) * CELL, (y + 1) * CELL]);
+      if (!floorAt(x, y - 1)) wallSegs.push([x * CELL, y * CELL, (x + 1) * CELL, y * CELL]);
+      if (!floorAt(x, y + 1)) wallSegs.push([x * CELL, (y + 1) * CELL, (x + 1) * CELL, (y + 1) * CELL]);
       const n = [floorAt(x - 1, y), floorAt(x + 1, y), floorAt(x, y - 1), floorAt(x, y + 1)].filter(Boolean).length;
       if (n >= 3) torches.push({ x, y });
     }
   }
+  const wallPaths = interior ? organicPaths(wallSegs, 0.9) : [];
   const label = (text: string, at: Point, dy = -CELL) => (
     <g transform={`translate(${centre(at).cx} ${centre(at).cy + dy})`} pointerEvents="none">
       <rect x={-text.length * 3.6 - 6} y={-11} width={text.length * 7.2 + 12} height={16} rx="3" fill="var(--parchment)" stroke="var(--ink)" strokeWidth="1" />
@@ -532,7 +536,8 @@ export function WorldMapView({
         {interior && torches.map((t, i) => (
           <circle key={`t${i}`} cx={centre(t).cx} cy={centre(t).cy} r={CELL * 1.9} fill="url(#torch)" pointerEvents="none" />
         ))}
-        {interior && <path d={wallEdges.join(" ")} stroke={INTERIOR.edge} strokeWidth="1.6" fill="none" strokeLinecap="square" pointerEvents="none" opacity="0.85" />}
+        {interior && wallPaths.map((d, i) => <path key={`wga${i}`} d={d} stroke="rgba(0,0,0,0.6)" strokeWidth="4.5" fill="none" strokeLinecap="round" strokeLinejoin="round" pointerEvents="none" />)}
+        {interior && wallPaths.map((d, i) => <path key={`wgb${i}`} d={d} stroke={INTERIOR.edge} strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round" pointerEvents="none" opacity="0.9" />)}
         {/* the torn fog edge (Round 1: an organic contour — the fat fog stroke swallows the
             cell staircase; the broken ink rule trembles along it) */}
         {!interior && fogPaths.length > 0 && (
@@ -541,6 +546,61 @@ export function WorldMapView({
             {fogPaths.map((d, i) => <path key={`fgb${i}`} d={d} stroke="var(--ink)" strokeWidth="0.9" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="3 4 1 3" opacity="0.28" />)}
           </g>
         )}
+        {/* S23 wilds polish: RIVERS — a broad water wash under a flowing ink line (the S21
+            program's flowing-water want), chained and smoothed like the roads so the water
+            meanders instead of cornering. Bridges rail where roads cross; stepping-stones at
+            fords. Drawn under the roads so a bridge's dotted line runs OVER the water. */}
+        {!interior && map.river && (() => {
+          const segs: [number, number, number, number][] = [];
+          const crossings: React.ReactNode[] = [];
+          for (const { x, y } of cells) {
+            const i = y * map.width + x;
+            if (!map.river[i] || !seenXY(x, y)) continue;
+            const c = centre({ x, y });
+            for (const [dx, dy] of [[1, 0], [0, 1]] as const) {
+              const nx = x + dx, ny = y + dy;
+              if (nx >= map.width || ny >= map.height) continue;
+              if (!map.river[ny * map.width + nx] || !seenXY(nx, ny)) continue;
+              segs.push([c.cx, c.cy, c.cx + dx * CELL, c.cy + dy * CELL]);
+            }
+            const vert = (y + 1 < map.height && map.river[i + map.width]) || (y > 0 && map.river[i - map.width]);
+            if (map.road[i]) {
+              // A bridge: two rails across the water, set along the road's crossing direction.
+              const r = CELL * 0.26, s = CELL * 0.42;
+              crossings.push(
+                vert ? (
+                  <g key={`br${i}`} pointerEvents="none">
+                    <line x1={c.cx - s} y1={c.cy - r} x2={c.cx + s} y2={c.cy - r} stroke="var(--ink)" strokeWidth="1.6" strokeLinecap="round" opacity="0.85" />
+                    <line x1={c.cx - s} y1={c.cy + r} x2={c.cx + s} y2={c.cy + r} stroke="var(--ink)" strokeWidth="1.6" strokeLinecap="round" opacity="0.85" />
+                  </g>
+                ) : (
+                  <g key={`br${i}`} pointerEvents="none">
+                    <line x1={c.cx - r} y1={c.cy - s} x2={c.cx - r} y2={c.cy + s} stroke="var(--ink)" strokeWidth="1.6" strokeLinecap="round" opacity="0.85" />
+                    <line x1={c.cx + r} y1={c.cy - s} x2={c.cx + r} y2={c.cy + s} stroke="var(--ink)" strokeWidth="1.6" strokeLinecap="round" opacity="0.85" />
+                  </g>
+                ),
+              );
+            } else if (map.ford?.[i]) {
+              // A ford: three stepping stones set across the flow.
+              const offs = [-0.24, 0, 0.24];
+              crossings.push(
+                <g key={`fd${i}`} pointerEvents="none">
+                  {offs.map((o, k) => (
+                    <circle key={k} cx={c.cx + (vert ? o * CELL : (k - 1) * 0.06 * CELL)} cy={c.cy + (vert ? (k - 1) * 0.06 * CELL : o * CELL)} r={1.5} fill="var(--parchment)" stroke="var(--ink)" strokeWidth="0.9" opacity="0.95" />
+                  ))}
+                </g>,
+              );
+            }
+          }
+          const paths = organicPaths(segs, 1.6);
+          return (
+            <g pointerEvents="none">
+              {paths.map((d, i) => <path key={`rva${i}`} d={d} stroke="#7fa3b0" strokeWidth={CELL * 0.5} fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.5" />)}
+              {paths.map((d, i) => <path key={`rvb${i}`} d={d} stroke="#4a7286" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.75" />)}
+              {crossings}
+            </g>
+          );
+        })()}
         {/* S16 (ADR-072): roads — a dotted ink line through road-cell centres; Round 1 chains
             and smooths them so junctions curve instead of cornering. */}
         {map.road && (() => {
@@ -612,12 +672,17 @@ export function WorldMapView({
         {map.towns.filter((t) => inView(t.at) && seen(t.at)).map((t) => {
           const { cx, cy } = centre(t.at);
           const st = townStates[t.index];
-          const sz = CELL * 3;
+          // S23 wilds polish (footprint variety): civilized towns SPRAWL (walled market sprite,
+          // larger), wild towns HUDDLE (palisade sprite, smaller); the approach ring keeps the
+          // S21 hamlet. Ring read from the town's region.
+          const ring = map.regions[t.region]?.tier ?? "approach";
+          const slug = ring === "civilized" ? "sprite-town-city" : ring === "wild" ? "sprite-town-huddle" : "sprite-town";
+          const sz = CELL * (ring === "civilized" ? 3.7 : ring === "wild" ? 2.4 : 3);
           return (
             <g key={t.index} onMouseEnter={() => setHoverTown(t)} onMouseLeave={() => setHoverTown(null)} onClick={() => onClickCell(t.at)} style={{ cursor: "pointer" }}>
               <circle cx={cx} cy={cy - CELL * 0.2} r={CELL * 1.5} fill="url(#clearing)" pointerEvents="none" />
               {st && <circle cx={cx} cy={cy} r={CELL * 1.05} fill="none" stroke="var(--danger)" strokeWidth={st === "occupied" ? 2.6 : 2} strokeDasharray={st === "threatened" ? "5 4" : undefined} opacity="0.9" />}
-              <image href={spriteHref("sprite-town")} x={cx - sz / 2} y={cy - sz * 0.62} width={sz} height={sz} style={{ mixBlendMode: "multiply" }} opacity={st === "occupied" ? 0.45 : 1} pointerEvents="none" />
+              <image href={spriteHref(slug)} x={cx - sz / 2} y={cy - sz * 0.62} width={sz} height={sz} style={{ mixBlendMode: "multiply" }} opacity={st === "occupied" ? 0.45 : 1} pointerEvents="none" />
               {st && <path d={SIEGE_FLAG} fill="var(--danger)" stroke="var(--ink)" strokeWidth="0.7" transform={`translate(${cx} ${cy - CELL * 1.1})`} />}
               <circle cx={cx} cy={cy} r={CELL * 1.05} fill="transparent" />
             </g>
@@ -742,6 +807,7 @@ export function WorldMapView({
         {interior
           ? cells.length > 0 && Array.from({ length: map.height }, (_, y) => Array.from({ length: map.width }, (_, x) => (seenXY(x, y) ? <rect key={`m${y * map.width + x}`} x={x * MINI} y={y * MINI} width={MINI} height={MINI} fill={map.passable[y * map.width + x] ? INTERIOR.floor : INTERIOR.rock} /> : null)))
           : miniRegions.map(({ reg, runs }) => runs.map((r, i) => <rect key={`${reg.index}-${i}`} x={r.x * MINI} y={r.y * MINI} width={r.w * MINI} height={MINI} fill={washFor(reg.tier, reg.color)} />))}
+        {map.river && map.river.map((r, i) => (r && seenXY(i % map.width, Math.floor(i / map.width)) ? <rect key={`rv${i}`} x={(i % map.width) * MINI} y={Math.floor(i / map.width) * MINI} width={MINI} height={MINI} fill="rgba(74,114,134,0.55)" /> : null))}
         {map.road && map.road.map((r, i) => (r && seenXY(i % map.width, Math.floor(i / map.width)) ? <rect key={`rd${i}`} x={(i % map.width) * MINI} y={Math.floor(i / map.width) * MINI} width={MINI} height={MINI} fill="rgba(43,37,32,0.45)" /> : null))}
         {map.towns.filter((t) => seen(t.at)).map((t) => <rect key={t.index} x={t.at.x * MINI - MINI * 0.5} y={t.at.y * MINI - MINI * 0.5} width={MINI * 2} height={MINI * 2} fill={townStates[t.index] ? "var(--danger)" : "var(--ink)"} />)}
         {map.strongholds.map((f, i) => !seen(f.at) ? null : <rect key={`f${i}`} x={f.at.x * MINI - MINI * (f.kind === "stronghold" ? 1 : 0.5)} y={f.at.y * MINI - MINI * (f.kind === "stronghold" ? 1 : 0.5)} width={MINI * (f.kind === "stronghold" ? 3 : 2)} height={MINI * (f.kind === "stronghold" ? 3 : 2)} fill={f.kind === "stronghold" ? "var(--ink)" : "var(--danger)"} stroke={f.kind === "stronghold" ? "var(--brass)" : undefined} strokeWidth={0.8} />)}

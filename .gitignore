@@ -10,3 +10,4 @@ results/
 # S22a: Chris's delivery staging area (audio handling TBD — ADR-082 schedules audio S23+;
 # the Vercel-deploy question decides whether/where the FLACs live in-repo)
 assets/temp/
+assets/audio/

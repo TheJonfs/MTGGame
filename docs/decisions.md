@@ -310,3 +310,46 @@ Planner-maintained. Implementer proposes via handoff Concerns; planner records.
 *The audio program (scheduled S23+):* Chris holds the complete Shandalar soundscape (FLAC). Two workstreams when it lands: (1) **scaffolding** (implementer) — an audio manager with per-context music (menu / overworld / town / dungeon / duel) and event stingers, a **prominent audio toggle on the front page**, preference persisted; note the browser reality that sound begins only after first user interaction regardless of default. (2) **The mapping** (Chris + planner authoring) — a track-to-context mapping document in the text-pack pattern: planner-format delivery, implementer wires, iterated in director rounds. Neither rides before S23.
 
 *Carried, still pending Chris's nod:* the ADR-081 deadline-pause-under-occupation rule.
+
+---
+
+**ADR-083 — S22 and playtest rounds 1–4: the ratification pile.**
+
+*Ratified as shipped:*
+- **A lord's fall credits renown 3 in his colour** (the lair-boss precedent, correctly applied). **Gold opponents bleed both their lords at full tier** (r1) — deliberate, mirroring renown's own attribution.
+- **Identical pending triggers auto-order without a request** (same card + ability; R-067) — ADR-014's spirit at trigger scale, outcome-equivalent; also the sanctioned shape of the Blood Artist chattiness fix.
+- **The entrance's all-lands edge returns a random land** (R-078) — the spec's gap, closed sensibly.
+- **Stronghold floors and the r1 seat rebuild** (36×26, twin mirrored routes, 3×3 chambers, 6–7 minions, `strongholdEmpowermentTiers` 50/75/100), pending only the storm's feel verdict. Lord archetype assignments (Unwinder/Stoker control; Usher/Warden/Sower midrange) stand.
+- **Interior ante applies in lord fights** — ante-everywhere is manifest law; the `anteCount` taste question stays in Chris's pile.
+- **The r3 package**: bounty purses price the mark's tier via the standard roll (a hunt premium above it stays available as one multiplier, unadded); siege grace 300/500/200 as arguing baselines; **news-everywhere + rail-everywhere** over visited-towns-only (the living-world reading); **the misaim cliff's forbidden exotic saves accepted** (self-Boomerang rescues, self-Aether-Mutation) with the carve-in path documented in R-080 for any future deck that wants the line.
+- **The r4 package**: bounty twins pay anywhere (the head is the head; region-locking remains one predicate if ever wanted); `cardCourierGoldFactor` 2× as arguing baseline; turn-register colours as tuned. **The manalink pointer line is reworded** (planner text, replacing the placeholder): *"There's work in {town} that pays in something better than coin. That kind of work doesn't wait."*
+- **ADR-082 amended: `printedAsset` ships JPGs** (Chris-approved live).
+- Wild towns arrived early (r2, Chris's instruction) — the five planner-named wild towns placed at mapScale 2.5; ADR-082's S23 item is partially cashed; **S23's wilds-polish scope shrinks to rivers, footprint variety, and the interior smoothing pass**.
+
+*Known-deviations entry (the ADR-003 ledger grows):* **Experimental Overload's "may return" is encoded as an A8 up-to-one target chosen at cast** (R-074); CR-accurately it is resolution-time selection with no target. Observable delta: the pick is public earlier and can fizzle. Accepted as a documented approximation; revisit only if a card class demands resolution-time zone selection (the Amendment-1 request pattern is the shape it would take).
+
+*Recommendations recorded (Chris's word overrules):*
+- **Lightning Bolt and Goblin Grenade stay shopTier 2.** The felt absence is the deliberate upgrade arc (Shock→Bolt, Terror→Doom Blade, Scatter→Counterspell): civilized shelves sell the honest version, approach shelves sell the upgrade. Named here so the arc is flattened knowingly if Chris's feel says re-tier.
+- **The Tithe joins the Toll and the Season on the watch-flag list** — 87% at floor/tier-0 is the cycle's hottest floor, but the reference set is all creature decks and the Tithe is a creature tax; "the fight that teaches you to bring spells" may be correct for one lord of five. The storm and the tables' director round rule it; levers are scoping (nontoken / intruder-nontoken), never the lord.
+- **Audio lives outside the public repo**: a gitignored `assets/audio/` mount the scaffolding reads if present and stays silent without — keeps a Vercel deploy lean, and keeps Chris's personal collection personal rather than redistributed. `assets/temp/`'s ignore stands and generalizes.
+
+*Banked design threads:*
+- **Travel powerups** (r4, Chris's flag): faster stride and/or falling-cost teleportation as unlockable progression — the player-power fantasy and the cascading-siege management tool in one; design questions are the unlock path (item, renown perk, or stronghold spoil), pricing, and whether stride and teleport are one track or two. Joins the hard-mode comeback-levers question (r2 item 11) as one design conversation — **scheduled beside the final-gauntlet round**, since both are endgame-pacing tools.
+- The empowerment TIERS three-place sync folds onto the knob at the next schedule-touching session (the third copy exists; the S20 trigger has fired).
+- The Stoker deck-out probe and the time-to-liberation number remain sanctioned on demand.
+
+*Carried to Chris (the standing pile):* the storm (with the empowerment-at-stronghold-scale verdict); the tables' director round — the ? = 3 formal nod (tables say keep), the Toll/Season/Tithe flags, the Usher's launder deck question (a second Restoration Angel? Zombify count?), lord-deck iteration generally; `anteCount`; the S21 leftovers (Nighthawk + Blood Artist chattiness, a tavern whisper heard live).
+
+*[Implementer note, S23 Part 0: ADR-083 was collected mid-kickoff (Chris's drop-in) and applied here in numeric order; the manalink-pointer rewording is applied to quests.json the same session.]*
+
+---
+
+**ADR-084 — The fun batch; the five-powers direction; the audio plan; small confirmations.**
+
+*The fun batch (Chris-designed, planner-audited; `docs/fun-batch-s23.md` is the spec):* **Thundersnake** ({R}{R} 4/1 Elemental Snake — the Ball Lightning family rescaled to the 10-life world; the design record preserves the 8/1→4/1 halving argument), **Gallows Djinn** ({2}{B}{B} 5/5 Djinn — the Juzam homage with the upkeep tax redesigned as an aggression tax; named per the original-names rule, typed Djinn to preserve the Stoker's efreet uniqueness), **Traumatizer** ({2}{U}{U} 2/4 Nightmare flier — mill's first player identity). Bills: two tiny pieces (a surfaced self-`sacrifice` effect word; value-ref member six `{ref: eventDamage, times: N}` with **ADR-028's no-arithmetic doctrine explicitly reaffirmed** — a bounded literal multiplier is a param, not a calculator). All three tier 2; ADR-052/053 ceremony; printed JPGs follow Chris's pipeline at leisure. Rides S23. *Future breadcrumb recorded: Unearth as a later real add (bill essentially paid).* *[Implementer corrections at kickoff, Chris-ruled: Thundersnake prices by the FORMULA (18g at tier 2 — the spec's 12g was Bolt's mv-1 price riding along); the END_STEP and BLOCKS trigger collectors are first-customer skeleton wirings (the R-061 ATTACKS precedent), outside the two-piece bill.]*
+
+*The travel powers — direction set, design deferred:* the cycle is **five powers, one per color** (the fives' symmetry — and Shandalar's own precedent: its five colored active world magics). Two seats are claimed (the Stride; the Crossing); three await original designs. Acquisition **probably stronghold-clear, possibly Moxen-style special lairs** — Chris noodling; the design round follows S23. Nothing ships before it.
+
+*The audio plan (formalized from Chris's three steps):* (1) **S23 scaffolding, cue-first** — game code speaks named cues, never file paths; a cue→file mapping and a gitignored local `assets/audio/` mount; the prominent front-page toggle, persisted; silent-if-unmounted is the deploy's natural state. (2) **The mapping** — Chris + planner authoring against the Shandalar library, locally (a later round, text-pack pattern). (3) **The deploy library** — a repo-safe file set repointed under the same cues, down the road. The cue indirection built in step 1 is what makes step 3 a data change. *[Kickoff addendum, Chris: an in-game mute joins the front-page toggle in S23.]*
+
+*Confirmations:* **Lightning Bolt and Goblin Grenade stay tier 2** (Chris — the wild-ring red town adds a third shelf that can stock them; the upgrade arc stands). **Storm verdicts parallelize**: S23 kicks off on the slate below while Chris runs a standard/easy sprint for the stronghold feel-checks; lord-deck iteration and the watch-flag rulings follow in that round, not this session.

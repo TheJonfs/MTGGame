@@ -82,6 +82,9 @@ export interface EffectContext {
   fight(idA: string, idB: string): void;
   /** Exile (CR 700.4: not a death — no DIES trigger). */
   exile(objectId: string): void;
+  /** S23 (ADR-084): sacrifice the resolving ability's own SOURCE (the Thundersnake) — a sacrifice,
+   * not a destruction (no indestructible shield); DIES fires; no-op if the source left already. */
+  sacrificeSource(): void;
   /** Move a card from a graveyard to the battlefield or its owner's hand (Zombify, Gravedigger, Rancor's self-return).
    * A10 (S22): `temporary` — the package rule (haste; sacrificed at the beginning of the next end
    * step); `withCounters` — it enters with counters (Graceful Restoration). */
@@ -148,7 +151,14 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
 
   mill: (e, ctx) => {
     if (e.type !== "mill") throw new Error("resolver mismatch");
-    for (const p of ctx.players(e.who)) ctx.mill(p, e.count);
+    // S23: count may be a value ref (the Traumatizer's eventDamage ×2).
+    for (const p of ctx.players(e.who)) ctx.mill(p, ctx.amount(e.count));
+  },
+
+  sacrifice: (e, ctx) => {
+    if (e.type !== "sacrifice") throw new Error("resolver mismatch");
+    // S23 (ADR-084): self-only v1 — the Thundersnake's exit. No-op if the source raced away.
+    ctx.sacrificeSource();
   },
 
   modifyPT: (e, ctx) => {

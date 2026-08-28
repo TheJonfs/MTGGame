@@ -174,6 +174,12 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
         const snap = lki[a.target];
         return snap ? snap.manaValue : 0;
       }
+      if (a.ref === "eventDamage") {
+        // S23 (ADR-084, member six): the triggering event's damage amount × the bounded literal
+        // multiplier (the Traumatizer's "twice that many"). Zero when the item carries no event
+        // damage — the ref is validator-confined to damage-event triggers, so that's belt-and-braces.
+        return (item.eventContext?.amount ?? 0) * (a.times ?? 1);
+      }
       // A4 counting refs: evaluated NOW, from the controller's point of view (608.2h: Tendrils' X at resolution).
       return evaluateValueRef(ctx, a, controller, item.sourceId ?? item.objectId);
     },
@@ -181,6 +187,16 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
     eventPlayer(): number | null {
       // A10 (S22): the triggering event's player (the Warden's untapped-creature controller).
       return item.eventContext?.player ?? null;
+    },
+
+    sacrificeSource(): void {
+      // S23 (ADR-084): the resolving ability's own source pays with itself (the Thundersnake's
+      // exit) — a SACRIFICE through the one zone-move primitive (DIES fires; indestructible is
+      // no shield: sacrifice is not destruction). No-op if it already left the battlefield
+      // (bounced or died in response — the trigger's source id is stale then).
+      const src = item.sourceId ? ctx.state.objects[item.sourceId] : undefined;
+      if (!src || src.zone !== "battlefield") return;
+      moveObject(ctx, item.sourceId!, "graveyard");
     },
 
     targetMatches(cond: { target: number; subtype?: string; cardType?: string }): boolean {
@@ -541,6 +557,9 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
     eventPlayer(): number | null {
       return null; // initialization has no triggering event
     },
+    sacrificeSource(): void {
+      throw new Error("initialization effects have no source to sacrifice");
+    },
     dealDamage(target: ResolvedTarget, amount: number): void {
       if (target.kind === "stackItem") throw new Error("cannot damage a stack item");
       dealDamage(ctx, { id: "init", cardId: "init", controller: player }, target, amount, false);
@@ -579,7 +598,7 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
 /** A4: counting value refs, evaluated live. `count`/`maxPower` scan battlefield permanents
  * from `controller`'s point of view; `graveyardCount` counts cards. Used by resolved effects
  * (Tendrils), statics (Gaean Wurm, Werebear's threshold) and cost reduction (Baru). */
-export function evaluateValueRef(ctx: EngineCtx, ref: Exclude<ValueRef, { ref: "targetPower" } | { ref: "targetManaValue" }>, controller: PlayerId, sourceId?: string): number {
+export function evaluateValueRef(ctx: EngineCtx, ref: Exclude<ValueRef, { ref: "targetPower" } | { ref: "targetManaValue" } | { ref: "eventDamage" }>, controller: PlayerId, sourceId?: string): number {
   if (ref.ref === "graveyardCount") {
     const who = ref.who === "you" ? controller : opponentOf(controller);
     const yard = ctx.state.players[who].graveyard;

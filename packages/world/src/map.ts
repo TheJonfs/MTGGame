@@ -53,6 +53,11 @@ export interface WorldMap {
   passable: boolean[];
   /** S16 (ADR-072): row-major road flag per cell — shortest passable paths between neighbour towns. */
   road: boolean[];
+  /** S23 (wilds polish): row-major river flag — the ribbon INCLUDING its crossings. A river cell is
+   * impassable unless a road bridges it (river && road) or a ford crosses it. Absent on pre-S23 maps. */
+  river?: boolean[];
+  /** S23: row-major natural-ford flag (passable river crossings that are not road bridges). */
+  ford?: boolean[];
   regions: RegionInstance[];
   towns: Town[];
   /** Fixed points: lairs (with residents) and the five colour strongholds (ADR-072; unused until S19+). */

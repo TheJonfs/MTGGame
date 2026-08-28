@@ -179,6 +179,7 @@ export class HeuristicAgent implements Agent {
     // spending a card on provably nothing is never a play, at any temperature (the X=0 family).
     if (this.discardWasteGated(view, action)) return -Infinity; // Duress/Mind Rot into an empty hand
     if (this.pumpWasteGated(view, action)) return -Infinity; // Giant Growth outside combat, empty stack
+    if (this.fleetingWasteGated(view, action)) return -Infinity; // S23: the Thundersnake outside its window
     // The misaim rule: a FINITE cliff (not -Infinity) so book-of-shame orderings among
     // bad aims survive — at any softmax temperature exp(-MISAIM/t) is 0, so a misaimed
     // variant is never picked while any legitimate action (pass included) exists.
@@ -535,7 +536,11 @@ export class HeuristicAgent implements Agent {
   /** Exposed for the book-of-shame suite (16). */
   async attackChoice(view: GameView, request: ActionRequest): Promise<Action> {
     const done = request.actions.find((a) => a.type === "doneDeclaringAttackers");
-    const offered = request.actions.filter((a) => a.type === "declareAttacker") as { type: string; objectId: string }[];
+    // S23 (the Gallows Djinn's pin — the pin-17 family): never declare an attacker whose own
+    // attack tax is lethal to us (the Djinn at life 1 kills its keeper before damage is dealt).
+    const offered = (request.actions.filter((a) => a.type === "declareAttacker") as { type: string; objectId: string }[]).filter(
+      (a) => this.selfTax(view, a.objectId, "ATTACKS") < view.life[view.you],
+    );
     if (offered.length === 0) return done ?? request.actions[0]!;
 
     const staged = new Set(view.combat.attackers);
@@ -640,6 +645,9 @@ export class HeuristicAgent implements Agent {
       if (!o || o.keywords.includes("vigilance")) continue;
       score -= deterrence(this.defs, o, oppCreatures, this.C);
     }
+    // S23 (the Gallows Djinn): each attacker's own attack tax is priced at the archetype's
+    // own-life rate — the 5/5's swing is honest, not free.
+    for (const id of attackers) score -= this.selfTax(view, id, "ATTACKS") * this.C.weights[this.profile.archetype].ownLife;
     if (view.life[opp] - outcome.playerDamage[opp] <= 0) score += 1000;
     this.simMemo.set(memoKey, score);
     return score;
@@ -667,7 +675,9 @@ export class HeuristicAgent implements Agent {
     // S9 Part 1.1: blocking a lifelinker also denies its controller the
     // lifegain — prevented damage counts again at the lifegain rate.
     const lifelinkDenied = attacker.keywords.includes("lifelink") ? prevented * 0.25 : 0;
-    return (kills ? valueOf(attacker.id) : 0) - (dies ? valueOf(blocker.id) : 0) + prevented * w + lifelinkDenied;
+    // S23 (the Gallows Djinn): blocking's own tax is part of the exchange.
+    const blockTax = this.selfTax(view, blocker.id, "BLOCKS") * this.C.weights[this.profile.archetype].ownLife;
+    return (kills ? valueOf(attacker.id) : 0) - (dies ? valueOf(blocker.id) : 0) + prevented * w + lifelinkDenied - blockTax;
   }
 
   /** Gain of double-blocking a menace attacker: kills if combined power is
@@ -704,7 +714,13 @@ export class HeuristicAgent implements Agent {
     lethalChumps: boolean,
   ): { blocker: string; attacker: string }[] {
     const available = creatures.filter(
-      (c) => c.controller === blockingPlayer && !c.tapped && !attackers.includes(c.id),
+      (c) =>
+        c.controller === blockingPlayer &&
+        !c.tapped &&
+        !attackers.includes(c.id) &&
+        // S23 (the Gallows Djinn's pin): never block with a creature whose own block tax is
+        // lethal to its controller — the wall that kills you is no wall.
+        this.selfTax(view, c.id, "BLOCKS") < view.life[blockingPlayer],
     );
     const attackerObjs = attackers
       .map((id) => creatures.find((c) => c.id === id))
@@ -913,6 +929,40 @@ export class HeuristicAgent implements Agent {
     const PAY_FLOOR = 4;
     const cost = 2; // v1: the only customer's cost; generalize when a second punisher arrives
     return view.life[view.you] - cost >= PAY_FLOOR ? accept : decline;
+  }
+
+  /** S23 (fun batch — the Thundersnake discipline, the r3 gate family; Chris-ruled at kickoff):
+   * a hasty creature that sacrifices itself at end of step is a burn spell with legs — castable
+   * only on its controller's own MAIN1 (so the haste cashes into an attack), and never into an
+   * untapped defender big enough to eat it whole (toughness ≥ its power blanks the swing).
+   * Exposed for the book of shame. */
+  fleetingWasteGated(view: GameView, action: Action): boolean {
+    if (action.type !== "castSpell") return false;
+    const card = view.hand.find((c) => c.objectId === action.objectId);
+    const d = card ? this.def(card.cardId) : undefined;
+    if (!d || !d.types.includes("Creature") || !(d.keywords ?? []).includes("haste")) return false;
+    const fleeting = (d.abilities ?? []).some(
+      (a) => a.kind === "triggered" && a.event === "END_STEP" && a.effects.some((e) => e.type === "sacrifice"),
+    );
+    if (!fleeting) return false;
+    if (!(view.activePlayer === view.you && view.step === "MAIN1")) return true;
+    const wall = view.battlefield.some(
+      (o) => o.controller !== view.you && !o.tapped && o.power !== null && (o.toughness ?? 0) >= (d.power ?? 0),
+    );
+    return wall;
+  }
+
+  /** S23 (fun batch — the Gallows Djinn's tax): the summed self-damage a creature's own ATTACKS or
+   * BLOCKS triggers charge its controller (damage addressed to eventPlayer). */
+  private selfTax(view: GameView, objectId: string, event: "ATTACKS" | "BLOCKS"): number {
+    const o = view.battlefield.find((b) => b.id === objectId);
+    const d = o ? this.def(o.cardId) : undefined;
+    let tax = 0;
+    for (const a of d?.abilities ?? []) {
+      if (a.kind !== "triggered" || a.event !== event) continue;
+      for (const e of a.effects) if (e.type === "damage" && e.to === "eventPlayer" && typeof e.amount === "number") tax += e.amount;
+    }
+    return tax;
   }
 
   sacrificeChoice(view: GameView, request: ActionRequest): Action {

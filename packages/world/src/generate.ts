@@ -414,6 +414,88 @@ export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOpt
   // 6. Roads (after carving: the paths exist).
   buildRoads(map, homeTowns);
 
+  // 6b. S23 (ADR-082/084 wilds polish): RIVERS — seeded meandering ribbons, impassable except
+  // where a road BRIDGES them (river ∧ road) or a natural FORD crosses. Generated AFTER roads so
+  // the road network's crossings become bridges; reachability broken by a river is restored by
+  // promoting the blocking cell to a ford — the ribbon itself is never broken (the invariant
+  // extended, not fought).
+  const river = new Array<boolean>(cells).fill(false);
+  const ford = new Array<boolean>(cells).fill(false);
+  const riverCount = knobs.riversPerWorld.min + rng.int(Math.max(1, knobs.riversPerWorld.max - knobs.riversPerWorld.min + 1));
+  for (let ri = 0; ri < riverCount; ri++) {
+    // Source on one edge, flowing to the far side with lateral meander; every step is orthogonal,
+    // so the ribbon is 4-connected and leaks no diagonal crossings.
+    const side = rng.int(4); // 0 top · 1 bottom · 2 left · 3 right
+    let p: Point =
+      side === 0 ? { x: 2 + rng.int(width - 4), y: 0 }
+      : side === 1 ? { x: 2 + rng.int(width - 4), y: height - 1 }
+      : side === 2 ? { x: 0, y: 2 + rng.int(height - 4) }
+      : { x: width - 1, y: 2 + rng.int(height - 4) };
+    const main: Point = side === 0 ? { x: 0, y: 1 } : side === 1 ? { x: 0, y: -1 } : side === 2 ? { x: 1, y: 0 } : { x: -1, y: 0 };
+    const lat: Point = main.x === 0 ? { x: 1, y: 0 } : { x: 0, y: 1 };
+    let drift = rng.chance(0.5) ? 1 : -1;
+    let lateralRun = 0;
+    const ribbon: number[] = [];
+    for (let steps = 0; steps < (width + height) * 2; steps++) {
+      if (!inBounds(map, p)) break;
+      const i = idx(map, p);
+      // Rivers never drown a settlement or a doorway — those cells break the water (a stone quay).
+      if (!isTownCell(map, p) && !map.strongholds.some((f) => samePoint(f.at, p)) && !samePoint(p, map.start)) {
+        river[i] = true;
+        ribbon.push(i);
+      }
+      // Forward-biased meander with the lateral run CAPPED at 2 — long flats read as lakes,
+      // not rivers (browser-caught at seed 42's first render).
+      const roll = rng.float();
+      if (lateralRun >= 2 || roll < 0.6) {
+        p = { x: p.x + main.x, y: p.y + main.y };
+        lateralRun = 0;
+      } else {
+        if (roll > 0.9) drift = -drift; // the bend swaps sides occasionally, with momentum
+        p = { x: p.x + lat.x * drift, y: p.y + lat.y * drift };
+        lateralRun += 1;
+      }
+    }
+    // Natural fords: seeded crossings on non-bridge water. A ford clears its cell (the crossing
+    // exists even where the bank was rough — caught by the water-law test at seed 7).
+    const fordable = ribbon.filter((i) => !map.road[i]);
+    const nFords = knobs.riverFordsPerRiver.min + rng.int(Math.max(1, knobs.riverFordsPerRiver.max - knobs.riverFordsPerRiver.min + 1));
+    for (let f = 0; f < nFords && fordable.length > 0; f++) {
+      const i = fordable[rng.int(fordable.length)]!;
+      ford[i] = true;
+      passable[i] = true;
+    }
+  }
+  // The water law: river blocks unless bridged (road) or forded.
+  for (let i = 0; i < cells; i++) if (river[i] && !map.road[i] && !ford[i]) passable[i] = false;
+  map.river = river;
+  map.ford = ford;
+  // The invariant, extended: anything a river cut off gets a ford at the crossing (plan through
+  // water, promote the wet cells on the path); pure-rough blockages still use the old carve.
+  const fordTo = (target: Point) => {
+    if (findPath(map, map.start, target)) return;
+    const wet = findPath(map, map.start, target, (q) => passable[idx(map, q)]! || river[idx(map, q)]!);
+    if (!wet) {
+      carveTo(target);
+      return;
+    }
+    for (const c of wet) {
+      const i = idx(map, c);
+      if (river[i] && !passable[i]) {
+        ford[i] = true;
+        passable[i] = true;
+      }
+    }
+  };
+  for (const t of towns) fordTo(t.at);
+  for (const f of map.strongholds) fordTo(f.at);
+  for (const r of regions) {
+    const reach = reachable(map, map.start);
+    let hasReachable = false;
+    for (let i = 0; i < cells && !hasReachable; i++) if (region[i] === r.index && reach.has(i)) hasReachable = true;
+    if (!hasReachable) fordTo(r.heart);
+  }
+
   // 7. Roamers: per-region count by density, each with a seeded in-region position.
   for (const r of regions) {
     const count = roamerTarget(map, r, knobs);

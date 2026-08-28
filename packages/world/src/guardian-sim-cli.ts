@@ -12,8 +12,10 @@ import { dirname, join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
 import { runMatch, type Agent, type MatchSpec, type Modifier } from "@shandalar/engine";
 import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
-import { GUARDIAN_DECKS } from "./guardian-decks.js";
-import { DECKS } from "./slice-decks.js";
+import { GUARDIAN_DECKS } from "@shandalar/sim/guardian-decks";
+import { DECKS } from "@shandalar/sim/decks";
+import { empowermentModifiers, type EmpowermentTier } from "./dungeon.js";
+import { defaultKnobs } from "./knobs.js";
 
 function arg(name: string, fallback: string): string {
   const i = process.argv.indexOf(`--${name}`);
@@ -30,14 +32,12 @@ const dungeons = JSON.parse((await import("node:fs")).readFileSync(join(ROOT, "d
   mox: { id: string; color: "W" | "U" | "B" | "R" | "G"; guardian: { key: string; name: string; life: number }; law: { both: { type: string; cardId?: string; count?: number }[] } }[];
 };
 
-const BASIC: Record<string, string> = { W: "plains", U: "island", B: "swamp", R: "mountain", G: "forest" };
-const TOKEN: Record<string, string> = { W: "bird_1_1_flying", U: "faerie_1_1_u", B: "faerie_rogue_1_1_flying", R: "goblin_1_1", G: "bear_2_2" };
-// Mirrors dungeonEmpowermentTiers (cumulative): 30/60/90 since S20 playtest r2 (was 60/120/180).
-const TIERS = [
-  { steps: 0, life: 0, mods: [] as Modifier[] },
-  { steps: 30, life: 2, mods: [] as Modifier[] },
-  { steps: 60, life: 4, mods: [{ basic: true }] as never[] },
-  { steps: 90, life: 6, mods: [{ basic: true }, { token: true }, { card: true }] as never[] },
+// S23 Part 0 (the S20 three-place-sync flag cashes): the schedule reads the KNOB, the packages
+// come from dungeon.ts's one builder — a knob edit now moves this table for free.
+const SCHEDULE = defaultKnobs().dungeonEmpowermentTiers;
+const TIERS: { steps: number; reached: EmpowermentTier[] }[] = [
+  { steps: 0, reached: [] },
+  ...SCHEDULE.map((t, i) => ({ steps: t.steps, reached: SCHEDULE.slice(0, i + 1) })),
 ];
 
 const reference: { name: string; archetype: "aggro" | "midrange" | "control"; decklist: { cardId: string; count: number }[] }[] = [
@@ -52,12 +52,7 @@ for (const mox of dungeons.mox) {
   const line: string[] = [];
   for (const tier of TIERS) {
     let guardianWins = 0, total = 0;
-    const empMods: Modifier[] = [];
-    for (const m of tier.mods as { basic?: boolean; token?: boolean; card?: boolean }[]) {
-      if (m.basic) empMods.push({ type: "permanentOnBattlefield", player: 1, cardId: BASIC[mox.color]! });
-      if (m.token) empMods.push({ type: "permanentOnBattlefield", player: 1, cardId: TOKEN[mox.color]! });
-      if (m.card) empMods.push({ type: "extraCards", player: 1, count: 1 });
-    }
+    const { lifeBonus, modifiers: empMods } = empowermentModifiers(tier.reached, mox.color);
     const lawMods = (player: 0 | 1): Modifier[] =>
       mox.law.both.map((l) =>
         l.type === "extraCards"
@@ -75,7 +70,7 @@ for (const mox of dungeons.mox) {
             { name: mox.guardian.name, decklist: [...g.decklist], agent: "heuristic" },
           ],
           rules: { startingLife: 10, handSize: 7, mulligan: "london", maxTurns: 100 },
-          modifiers: [{ type: "startingLife", player: 1, value: mox.guardian.life + tier.life }, ...lawMods(0), ...lawMods(1), ...empMods],
+          modifiers: [{ type: "startingLife", player: 1, value: mox.guardian.life + lifeBonus }, ...lawMods(0), ...lawMods(1), ...empMods],
         };
         const a0: Agent = new HeuristicAgent(seed * 2 + 1, pool, difficultyProfile("journeyman", ref.archetype, [...g.decklist]));
         const a1: Agent = new HeuristicAgent(seed * 2 + 2, pool, difficultyProfile("master", g.archetype, [...ref.decklist]));

@@ -39,12 +39,14 @@ function mkView(opts: {
   stack?: { id: string; kind: string; cardId: string; controller: 0 | 1 }[];
   opponentHandCount?: number;
   combat?: { attackers: string[]; blocks: { blocker: string; attacker: string }[] };
+  step?: string;
+  activePlayer?: 0 | 1;
 }): GameView {
   return {
     you: 0,
     turn: 5,
-    step: "MAIN1",
-    activePlayer: 0,
+    step: opts.step ?? "MAIN1",
+    activePlayer: opts.activePlayer ?? 0,
     life: opts.life ?? [20, 20],
     startingLife: 20,
     hand: opts.hand ?? [],
@@ -437,6 +439,33 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     // With a card to take, the gate lifts.
     const full = mkView({ hand: [{ objectId: "h_duress", cardId: "duress" }], opponentHandCount: 2 });
     expect(a.scorePriorityAction(full, { type: "castSpell", objectId: "h_duress", targets: [{ kind: "player", player: 1 }] })).toBeGreaterThan(-Infinity);
+  });
+
+  it("book of shame 23 (S23): the Thundersnake casts only on its own MAIN1 with no wall standing — MAIN2, the opponent's turn, and a 5-toughness untapped defender all gate at -Infinity", () => {
+    const a = agent("aggro");
+    const base = { hand: [{ objectId: "h_snake", cardId: "thundersnake" }], battlefield: [{ id: "m1", cardId: "mountain", controller: 0 as const }, { id: "m2", cardId: "mountain", controller: 0 as const }] };
+    const cast = (view: GameView) => a.scorePriorityAction(view, { type: "castSpell", objectId: "h_snake", targets: [] });
+    expect(Number.isFinite(cast(mkView(base)))).toBe(true); // own MAIN1, clear road: a real play
+    expect(cast(mkView({ ...base, step: "MAIN2" }))).toBe(-Infinity); // the haste evaporates at END
+    expect(cast(mkView({ ...base, activePlayer: 1 }))).toBe(-Infinity); // not our turn
+    // A 5/5 untapped defender eats the whole 4/1 for nothing (toughness ≥ power blanks the trample).
+    const walled = mkView({ ...base, battlefield: [...base.battlefield, { id: "wall", cardId: "gallows_djinn", controller: 1 as const }] });
+    expect(cast(walled)).toBe(-Infinity);
+    // The same wall TAPPED cannot block: the window is open.
+    const tappedWall = mkView({ ...base, battlefield: [...base.battlefield, { id: "wall", cardId: "gallows_djinn", controller: 1 as const, tapped: true }] });
+    expect(Number.isFinite(cast(tappedWall))).toBe(true);
+  });
+
+  it("book of shame 24 (S23): the Gallows Djinn never attacks or blocks at life 1 (the tax is lethal); at healthy life both are priced, not banned", async () => {
+    const a = agent("midrange");
+    const req = { player: 0 as const, purpose: "declareAttacker" as const, actions: [{ type: "doneDeclaringAttackers" as const }, { type: "declareAttacker" as const, objectId: "djinn" }] };
+    const board = (life: number) => mkView({ life: [life, 20], battlefield: [{ id: "djinn", cardId: "gallows_djinn", controller: 0 }] });
+    expect((await a.attackChoice(board(1), req as never)).type).toBe("doneDeclaringAttackers"); // never
+    expect((await a.attackChoice(board(20), req as never)).type).toBe("declareAttacker"); // free 5 damage, priced tax
+    // Blocks: at life 1 the Djinn stands aside even against lethal-looking swarms; at 20 it eats a bear.
+    const blockBoard = (life: number) => mkView({ life: [life, 20], battlefield: [{ id: "djinn", cardId: "gallows_djinn", controller: 0 }, { id: "bear", cardId: "grizzly_bears", controller: 1 }], combat: { attackers: ["bear"], blocks: [] } });
+    expect(a.planBlocks(blockBoard(1), ["bear"])).toEqual([]);
+    expect(a.planBlocks(blockBoard(20), ["bear"])).toEqual([{ blocker: "djinn", attacker: "bear" }]);
   });
 
   it("book of shame 22 (r3): Giant Growth outside combat with an empty stack is gated at -Infinity; in combat it is a real trick", () => {

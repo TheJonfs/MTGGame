@@ -46,6 +46,16 @@ export const KNOBS = {
     unit: "towns per 100 passable cells, by region tier",
     description: "Town density per region (S16 uniform towns): count = max(floor for civilized/approach = 1, round(density × area/100)). Every non-wild region has ≥1 town, so every colour has a home town. S22 playtest r2 (Chris): more towns along the way in ALL rings — and the wild rings settle (ADR-082's wild towns pulled forward on Chris's instruction; each wild region carries a planner-seeded town name, and the dormant siegeIntervalSteps.wild knob finally cashes).",
   }),
+  riversPerWorld: knob<{ min: number; max: number }>({
+    default: { min: 2, max: 4 },
+    unit: "rivers (seeded roll in [min, max])",
+    description: "S23 wilds polish (ADR-082/084): meandering river ribbons per world — impassable water except where a road BRIDGES it or a natural FORD crosses. Reachability broken by a river is restored by promoting the blocking cell to a ford (the connectivity invariant extended; the ribbon is never broken).",
+  }),
+  riverFordsPerRiver: knob<{ min: number; max: number }>({
+    default: { min: 1, max: 2 },
+    unit: "natural fords per river (seeded roll in [min, max])",
+    description: "S23 wilds polish: seeded natural crossings per river, beside whatever bridges the road network builds and whatever fords the reachability repair adds.",
+  }),
   roamerDensityPer100Cells: knob<Record<RegionTier, number>>({
     default: { civilized: 1.0, approach: 1.5, wild: 2.0 },
     unit: "roamers per 100 passable cells, by region tier",

@@ -213,6 +213,14 @@ Tokens added: bear_2_2 (G), bird_1_1_flying (W), wurm_4_4 (G), zombie_2_2 (B), f
 | weird_x_x_ur | Weird Token (X/X UR) | tested | token def (printed 0/0; basePT locks X at creation) | Experimental Overload |
 | law_risen_tide / law_tithe / law_intake / law_toll / law_season | the five stronghold laws | tested | uncastable prizeOnly Artifact Enchantments (extraLandDrops; observed DIES; imposeEntersTapped; SPELL_CAST + eventPlayer damage; scoped UPKEEP counters) | S22b (R-077): battlefield furniture, injected per-battle on the lord's side; never shop/roll/deck-legal; data/cards/laws/ |
 
+### S23 — the fun batch (ADR-084; fun-batch-s23.md is the spec)
+
+| cardId | name | status | vocabulary | notes |
+|---|---|---|---|---|
+| thundersnake | Thundersnake | tested | END_STEP trigger (first collector, R-084) + self-`sacrifice` effect word (new) | custom {R}{R} Elemental Snake 4/1 trample haste; shopTier 2 (formula 18g — the spec's 12 was ruled a slip); the Ball Lightning family at 10-life scale; Unearth breadcrumbed as its second act |
+| gallows_djinn | Gallows Djinn | tested | ATTACKS + BLOCKS triggers (BLOCKS first collector, R-084) with eventPlayer/eventObject damage addressing (zero new words) | custom {2}{B}{B} Djinn 5/5; shopTier 2 (30g); the Juzam homage — the upkeep tax redesigned as an aggression tax; Djinn typed to keep the Stoker's efreet unique |
+| traumatizer | Traumatizer | tested | eventDamage value ref ×times (new, ref-family member six); mill count widened to refs | custom {2}{U}{U} Nightmare 2/4 flying; shopTier 2 (30g); mill's first player identity (~4 per connection vs 30–40-card decks) |
+
 ## Ceiling anchors (not yet scheduled)
 Ceiling complete as of S5 (see mechanics-manifest §3). Further additions are card batches using existing vocabulary.
 

@@ -185,6 +185,21 @@ descriptor blocks under `docs/art/subjects/`, composed with `docs/prompts/style.
 | assets/images/icon-gold/canonical.png | docs/art/subjects/icon-gold.md | canonical (1:1) — pictorial ink UI tracker | gemini-3.1-flash-image | 2026-08-26 | kept — S22 playtest r2 (Chris item 2: pictorial topline trackers; blanket-approval round) |
 | assets/images/icon-steps/canonical.png | docs/art/subjects/icon-steps.md | canonical (1:1) — pictorial ink UI tracker | gemini-3.1-flash-image | 2026-08-26 | kept — S22 playtest r2 (Chris item 2: pictorial topline trackers; blanket-approval round) |
 
+| assets/images/card-thundersnake-1/canonical.png | docs/art/subjects/card-thundersnake-1.md | canonical (1:1, no-style per ADR-052) — card-art candidate 1/4 | gemini-3.1-flash-image | 2026-08-27 | candidate — S23 fun batch (Chris verdicts in the round; chosen art crops 5:4 to assets/generated/card-art) |
+| assets/images/card-thundersnake-2/canonical.png | docs/art/subjects/card-thundersnake-2.md | canonical (1:1, no-style per ADR-052) — card-art candidate 2/4 | gemini-3.1-flash-image | 2026-08-27 | candidate — S23 fun batch (Chris verdicts in the round; chosen art crops 5:4 to assets/generated/card-art) |
+| assets/images/card-thundersnake-3/canonical.png | docs/art/subjects/card-thundersnake-3.md | canonical (1:1, no-style per ADR-052) — card-art candidate 3/4 | gemini-3.1-flash-image | 2026-08-27 | candidate — S23 fun batch (Chris verdicts in the round; chosen art crops 5:4 to assets/generated/card-art) |
+| assets/images/card-thundersnake-4/canonical.png | docs/art/subjects/card-thundersnake-4.md | canonical (1:1, no-style per ADR-052) — card-art candidate 4/4 | gemini-3.1-flash-image | 2026-08-27 | candidate — S23 fun batch (Chris verdicts in the round; chosen art crops 5:4 to assets/generated/card-art) |
+| assets/images/card-gallows-djinn-1/canonical.png | docs/art/subjects/card-gallows-djinn-1.md | canonical (1:1, no-style per ADR-052) — card-art candidate 1/4 | gemini-3.1-flash-image | 2026-08-27 | candidate — S23 fun batch (Chris verdicts in the round; chosen art crops 5:4 to assets/generated/card-art) |
+| assets/images/card-gallows-djinn-2/canonical.png | docs/art/subjects/card-gallows-djinn-2.md | canonical (1:1, no-style per ADR-052) — card-art candidate 2/4 | gemini-3.1-flash-image | 2026-08-27 | candidate — S23 fun batch (Chris verdicts in the round; chosen art crops 5:4 to assets/generated/card-art) |
+| assets/images/card-gallows-djinn-3/canonical.png | docs/art/subjects/card-gallows-djinn-3.md | canonical (1:1, no-style per ADR-052) — card-art candidate 3/4 | gemini-3.1-flash-image | 2026-08-27 | candidate — S23 fun batch (Chris verdicts in the round; chosen art crops 5:4 to assets/generated/card-art) |
+| assets/images/card-gallows-djinn-4/canonical.png | docs/art/subjects/card-gallows-djinn-4.md | canonical (1:1, no-style per ADR-052) — card-art candidate 4/4 | gemini-3.1-flash-image | 2026-08-27 | candidate — S23 fun batch (Chris verdicts in the round; chosen art crops 5:4 to assets/generated/card-art) |
+| assets/images/card-traumatizer-1/canonical.png | docs/art/subjects/card-traumatizer-1.md | canonical (1:1, no-style per ADR-052) — card-art candidate 1/4 | gemini-3.1-flash-image | 2026-08-27 | candidate — S23 fun batch (Chris verdicts in the round; chosen art crops 5:4 to assets/generated/card-art) |
+| assets/images/card-traumatizer-2/canonical.png | docs/art/subjects/card-traumatizer-2.md | canonical (1:1, no-style per ADR-052) — card-art candidate 2/4 | gemini-3.1-flash-image | 2026-08-27 | candidate — S23 fun batch (Chris verdicts in the round; chosen art crops 5:4 to assets/generated/card-art) |
+| assets/images/card-traumatizer-3/canonical.png | docs/art/subjects/card-traumatizer-3.md | canonical (1:1, no-style per ADR-052) — card-art candidate 3/4 | gemini-3.1-flash-image | 2026-08-27 | candidate — S23 fun batch (Chris verdicts in the round; chosen art crops 5:4 to assets/generated/card-art) |
+| assets/images/card-traumatizer-4/canonical.png | docs/art/subjects/card-traumatizer-4.md | canonical (1:1, no-style per ADR-052) — card-art candidate 4/4 | gemini-3.1-flash-image | 2026-08-27 | candidate — S23 fun batch (Chris verdicts in the round; chosen art crops 5:4 to assets/generated/card-art) |
+| assets/images/sprite-town-city/canonical.png | docs/art/subjects/sprite-town-city.md | canonical (1:1) — pictorial ink map sprite | gemini-3.1-flash-image | 2026-08-27 | kept — S23 wilds polish, civilized footprint (sprawl); processed (levels-to-white + ink-bbox crop + bottom-anchored 256px) → assets/generated/map-sprites + packages/ui/public/map-sprites |
+| assets/images/sprite-town-huddle/canonical.png | docs/art/subjects/sprite-town-huddle.md | canonical (1:1) — pictorial ink map sprite | gemini-3.1-flash-image | 2026-08-27 | kept — S23 wilds polish, wild footprint (huddle); processed (levels-to-white + ink-bbox crop + bottom-anchored 256px) → assets/generated/map-sprites + packages/ui/public/map-sprites |
+
 ## Derived assets (post-processed)
 
 | file | source | processing |
@@ -221,6 +236,7 @@ descriptor blocks under `docs/art/subjects/`, composed with `docs/prompts/style.
 | assets/generated/icons/chip-{w,u,b,r,g,c,t}.svg | assets/generated/icons/mana-*.svg, status-tapped.svg | bold chip variants: same traced paths with an added stroke of ~9% of glyph size (path space), fattening every line for legibility at 13–20px chip size (S7 feedback rounds 3–4) |
 
 ## Conventions (S6, pending planner ratification)
+
 
 The gemini-image skill owns `assets/images/` (canonical renders) and `assets/manifest.json`
 (machine ledger: prompt hashes, conditioning, dates). This file is the human ledger; derived,

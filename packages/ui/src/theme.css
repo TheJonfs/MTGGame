@@ -646,6 +646,14 @@ button.linkish { background: none; border: none; box-shadow: none; color: var(--
 button.linkish::before { content: "❧ "; opacity: 0.7; }
 button.linkish:hover:not(:disabled) { transform: none; box-shadow: none; text-decoration: underline; text-underline-offset: 2px; }
 
+/* S23 audio: the front page's prominent toggle (ADR-082/084). */
+.audio-toggle button {
+  font-family: var(--serif); font-variant: small-caps; letter-spacing: 0.8px; font-size: 15px;
+  padding: 5px 22px; border: 2px solid var(--ink); border-radius: 8px; cursor: pointer;
+}
+.audio-toggle button.sound-on { background: var(--brass); color: var(--parchment); }
+.audio-toggle button.sound-off { background: var(--parchment); color: var(--ink-soft); }
+
 /* The chrome's menu tabs (deck / collection / save / download). */
 button.chrome-tab { font-family: var(--serif); font-variant: small-caps; letter-spacing: 0.5px; font-size: 12.5px; background: var(--parchment); border: 1.5px solid var(--ink); border-bottom-width: 2.5px; border-radius: 6px 6px 3px 3px; padding: 2px 12px; }
 button.chrome-tab:hover:not(:disabled) { background: #f4ecd8; }

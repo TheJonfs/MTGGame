@@ -250,7 +250,7 @@ export function bottomChoices(ctx: EngineCtx, player: PlayerId): Action[] {
 export function effectiveAbilityCost(ctx: EngineCtx, player: PlayerId, ability: ActivatedAbilityDef, sourceId: string): ManaCost | undefined {
   if (!ability.cost.mana) return undefined;
   const cost = parseManaCost(ability.cost.mana);
-  if (!ability.cost.reduceBy || ability.cost.reduceBy.ref === "targetPower" || ability.cost.reduceBy.ref === "targetManaValue") return cost;
+  if (!ability.cost.reduceBy || ability.cost.reduceBy.ref === "targetPower" || ability.cost.reduceBy.ref === "targetManaValue" || ability.cost.reduceBy.ref === "eventDamage") return cost;
   const x = evaluateValueRef(ctx, ability.cost.reduceBy, player, sourceId);
   return { ...cost, generic: Math.max(0, cost.generic - x) };
 }

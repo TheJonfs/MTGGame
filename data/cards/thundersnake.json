@@ -1,0 +1,37 @@
+{
+  "id": "thundersnake",
+  "name": "Thundersnake",
+  "source": "custom",
+  "manaCost": "{R}{R}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Elemental",
+    "Snake"
+  ],
+  "power": 4,
+  "toughness": 1,
+  "keywords": [
+    "trample",
+    "haste"
+  ],
+  "text": "Trample, haste\nAt the beginning of the end step, sacrifice Thundersnake.",
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "END_STEP",
+      "effects": [
+        {
+          "type": "sacrifice",
+          "scope": "self"
+        }
+      ],
+      "optional": false
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2
+}

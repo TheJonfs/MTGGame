@@ -1,0 +1,42 @@
+{
+  "id": "traumatizer",
+  "name": "Traumatizer",
+  "source": "custom",
+  "manaCost": "{2}{U}{U}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Nightmare"
+  ],
+  "power": 2,
+  "toughness": 4,
+  "keywords": [
+    "flying"
+  ],
+  "text": "Flying\nWhenever Traumatizer deals combat damage to a player, that player mills twice that many cards.",
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "DEALS_COMBAT_DAMAGE_TO_PLAYER",
+      "condition": {
+        "source": "self"
+      },
+      "effects": [
+        {
+          "type": "mill",
+          "count": {
+            "ref": "eventDamage",
+            "times": 2
+          },
+          "who": "opponent"
+        }
+      ],
+      "optional": false
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2
+}

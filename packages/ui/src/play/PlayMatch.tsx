@@ -8,6 +8,7 @@ import { CardFrame } from "../components/CardFrame";
 import { actionLabel, cardName, eventLabel, stepLabel, targetLabel } from "../labels";
 import type { OracleEntry } from "../engine-bridge";
 import type { MatchController, UiPhase } from "./match-controller";
+import { audio } from "../audio/audio";
 
 /**
  * The play screen (S10, ADR-058): Board + rail + prompt bar wired to the
@@ -714,6 +715,10 @@ function FloatingInspector(props: { ctx: MatchController["game"]["ctx"]; objectI
  * ceremony before the first decision. Pure presentation: the flip itself was rolled by the
  * world's seeded RNG and rides the spec (replay-exact); this just shows the verdict. */
 function CoinFlip({ onPlay, done }: { onPlay: boolean; done: () => void }) {
+  // S23 audio: the flip's stinger (cue-first; silent when unmapped).
+  useEffect(() => {
+    audio.sting("sting.coin-flip");
+  }, []);
   const [settled, setSettled] = useState(false);
   useEffect(() => {
     const t1 = setTimeout(() => setSettled(true), 1100);

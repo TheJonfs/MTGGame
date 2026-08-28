@@ -261,6 +261,8 @@ function isAnyValueRef(v: unknown): boolean {
   }
   // A10 (S22): the target's LKI mana value (Aether Mutation).
   if (v.ref === "targetManaValue") return Number.isInteger(v.target);
+  // S23 (ADR-084, member six): the event's damage × a bounded literal multiplier (the Traumatizer).
+  if (v.ref === "eventDamage") return v.times === undefined || (Number.isInteger(v.times) && (v.times as number) >= 1);
   return false;
 }
 
@@ -294,7 +296,9 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
         if (nTargets > 0) err(`a modal trigger declares targets per mode (A6)`);
         validateModes(a.modes, err, warnings, cardId);
       } else {
-        validateEffects(a.effects, nTargets, err, warnings, cardId);
+        // S23: eventDamage refs live only on damage-event triggers (the collectors carry the payload).
+        const damageTrigger = a.event === "DEALS_DAMAGE_TO_PLAYER" || a.event === "DEALS_COMBAT_DAMAGE_TO_PLAYER";
+        validateEffects(a.effects, nTargets, err, warnings, cardId, { damageTrigger });
       }
       // A10 word 9 (S22): zone-scoped triggers — first zone graveyard, first event UPKEEP (the
       // collection only exists there; widening means a new collector, not a validator relax).
@@ -458,8 +462,12 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     if (e.filter !== undefined && e.filter !== "noncreatureNonland") err(`unknown discard filter "${e.filter}"`);
   },
   mill: (e, err) => {
-    needCount(e, err);
+    // S23: count widened to value refs (the Traumatizer's eventDamage ×2).
+    if (!isAnyValueRef(e.count)) needCount(e, err);
     needWho(e, err);
+  },
+  sacrifice: (e, err) => {
+    if (e.scope !== "self") err(`sacrifice scope must be "self" (S23 v1 — widen via a session brief, not ad hoc)`);
   },
   gainLife: (e, err) => {
     needAmount(e, err);
@@ -600,7 +608,7 @@ function validateEffects(
   err: (m: string) => void,
   warnings: string[],
   cardId: string,
-  opts: { isStatic?: boolean } = {},
+  opts: { isStatic?: boolean; damageTrigger?: boolean } = {},
 ): void {
   if (!Array.isArray(effects) || effects.length === 0) return err(`effects must be a non-empty array`);
   for (const e of effects) {
@@ -616,6 +624,10 @@ function validateEffects(
     if ((type === "grantAbility" || type === "extraLandDrops" || type === "imposeEntersTapped") && !opts.isStatic) {
       err(`${type} is static-only (A10 — interpreted live, never resolved)`);
       continue;
+    }
+    // S23 (ADR-084): the eventDamage ref reads a damage event's payload — meaningless anywhere else.
+    if (!opts.damageTrigger && JSON.stringify(e).includes('"ref":"eventDamage"')) {
+      err(`eventDamage refs live only on DEALS_[COMBAT_]DAMAGE_TO_PLAYER triggers (S23)`);
     }
     EFFECT_SHAPE[type](e, err);
     if (Number.isInteger(e.target) && ((e.target as number) < 0 || (e.target as number) >= nTargets)) {

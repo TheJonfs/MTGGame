@@ -6,6 +6,7 @@ import { loadOracle, loadPool, loadWorldCatalog, type OracleEntry, type SavedGam
 import { CardFrame } from "../components/CardFrame";
 import { PlayMatch, loadStops } from "../play/PlayMatch";
 import { WorldController, type NewGameChoice } from "./world-controller";
+import { audio, type MusicCue } from "../audio/audio";
 import { WorldMapView } from "./WorldMap";
 import { FloatingCardInspector } from "./FloatingCardInspector";
 
@@ -25,6 +26,13 @@ function StartScreen({ c, onStart }: { c: WorldController; onStart: (choice: New
   const [seed, setSeed] = useState("");
   const [name, setName] = useState("You");
   const [error, setError] = useState<string | null>(null);
+  // S23 audio (ADR-084): the prominent front-page toggle — persisted; sound begins at the
+  // first interaction per browser reality regardless of this default.
+  const [sound, setSound] = useState(audio.isEnabled());
+  const toggleSound = () => {
+    audio.setEnabled(!sound);
+    setSound(!sound);
+  };
   const upload = (file: File) => {
     file.text().then((t) => {
       try {
@@ -74,6 +82,12 @@ function StartScreen({ c, onStart }: { c: WorldController; onStart: (choice: New
             <input type="file" accept=".json" style={{ display: "none" }} onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])} />
           </label>
         </p>
+        {/* S23 audio: prominent, front-page, persisted (ADR-082/084). */}
+        <p className="audio-toggle">
+          <button className={sound ? "sound-on" : "sound-off"} onClick={toggleSound} title="Sound preference is remembered. Music begins after your first click (the browser's rule, not ours).">
+            {sound ? "♪ Sound on" : "♪ Sound off"}
+          </button>
+        </p>
         <p style={{ fontSize: 11 }}>
           <a className="linkish" href="/">⟵ main menu</a>
         </p>
@@ -97,8 +111,22 @@ function Chrome({ c, onDownload }: { c: WorldController; onDownload: () => void 
       <button className="chrome-tab" onClick={() => c.openCollection()}>Collection</button>
       <button className="chrome-tab" onClick={() => c.save()}>Save</button>
       <button className="chrome-tab" onClick={onDownload}>Download</button>
+      <AudioTab />
       <span className="seed">seed {w.seed} · {w.difficulty}</span>
     </div>
+  );
+}
+
+/** S23 audio (Chris at kickoff): the in-game mute beside the chrome tabs — same persisted
+ * preference as the front page's toggle. */
+function AudioTab() {
+  const [, force] = useState(0);
+  useEffect(() => audio.subscribe(() => force((n) => n + 1)), []);
+  const on = audio.isEnabled();
+  return (
+    <button className="chrome-tab" title={on ? "Mute" : "Sound on"} onClick={() => audio.setEnabled(!on)} aria-label="toggle sound">
+      {on ? "♪" : "♪×"}
+    </button>
   );
 }
 
@@ -865,6 +893,31 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
     const w = controller.world;
     const key = w ? `${w.player.position.x},${w.player.position.y}` : "";
     if (key !== lastPos.current) { lastPos.current = key; if (panRef.current.x || panRef.current.y) setPan({ x: 0, y: 0 }); }
+  });
+  // S23 audio scaffolding (ADR-084): the SCREEN drives the music context (cue-first — the
+  // manager no-ops on a repeated cue and stays silent when a cue is unmapped/unmounted).
+  const lastPopup = useRef<unknown>(null);
+  const lastResult = useRef<unknown>(null);
+  useEffect(() => {
+    const scr = controller.screen;
+    let cue: MusicCue = "music.overworld";
+    if (scr.kind === "start") cue = "music.menu";
+    else if (scr.kind === "town") cue = "music.town";
+    else if (scr.kind === "duel" || scr.kind === "siegeDuel" || scr.kind === "dungeonDuel") cue = "music.duel";
+    else if (scr.kind === "dungeonTelegraph") cue = scr.info.kind === "stronghold" ? "music.stronghold" : "music.dungeon";
+    else if (scr.kind === "strongholdVictory") cue = "music.stronghold";
+    else if (scr.kind === "dungeon" || scr.kind === "dungeonVictory") cue = controller.dungeonRun?.kind === "stronghold" ? "music.stronghold" : "music.dungeon";
+    audio.music(cue);
+    // Stingers: the news modal (siege news vs quest completion) and the duel result.
+    if (controller.questPopup && controller.questPopup !== lastPopup.current) {
+      lastPopup.current = controller.questPopup;
+      audio.sting(controller.questPopup.some((p) => p.title.startsWith("A town")) ? "sting.siege-news" : "sting.quest-complete");
+    }
+    if (scr.kind === "duelResult" && scr.record !== lastResult.current) {
+      lastResult.current = scr.record;
+      if (scr.record.outcome === "win") audio.sting("sting.duel-win");
+      else if (scr.record.outcome === "loss") audio.sting("sting.duel-loss");
+    }
   });
 
   const c = controller;

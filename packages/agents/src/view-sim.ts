@@ -460,11 +460,12 @@ function applyEffect(
         : e.who === "eachPlayer" ? [me, opp]
         : targets.flatMap((t) => (t.kind === "player" ? [t.player as 0 | 1] : []));
       let v = 0;
+      const n = amt(e.count); // S23: count may be a ref (the Traumatizer's eventDamage — 0 in prediction)
       for (const p of ps) {
-        const lib = Math.max(0, (view.librarySizes[p] ?? 0) - e.count);
+        const lib = Math.max(0, (view.librarySizes[p] ?? 0) - n);
         view.librarySizes[p] = lib;
-        if (p === me) v -= 1.5 * e.count + (lib <= 5 ? 2 : 0);
-        else v += 0.25 * e.count + (lib <= 5 ? 0.6 * e.count : 0) + (lib === 0 ? 5 : 0);
+        if (p === me) v -= 1.5 * n + (lib <= 5 ? 2 : 0);
+        else v += 0.25 * n + (lib <= 5 ? 0.6 * n : 0) + (lib === 0 ? 5 : 0);
       }
       return v;
     }

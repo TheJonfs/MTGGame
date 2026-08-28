@@ -19,6 +19,16 @@ function shandalarDev(): Plugin {
         res.setHeader("Content-Type", file.endsWith(".json") ? "application/json" : "image/jpeg");
         createReadStream(file).pipe(res);
       });
+      // S23 audio scaffolding (ADR-083/084): serve the gitignored local audio mount. Absent files
+      // 404 → the audio manager stays silent (the deploy's natural state).
+      server.middlewares.use("/audio", (req, res, next) => {
+        const rel = normalize(decodeURIComponent((req.url ?? "/").split("?")[0]!)).replace(/^([/\\])+/, "");
+        const file = join(repo, "assets/audio", rel);
+        if (!file.startsWith(join(repo, "assets/audio")) || !existsSync(file)) return next();
+        const type = file.endsWith(".flac") ? "audio/flac" : file.endsWith(".ogg") ? "audio/ogg" : file.endsWith(".wav") ? "audio/wav" : "audio/mpeg";
+        res.setHeader("Content-Type", type);
+        createReadStream(file).pipe(res);
+      });
       // Gallery (ADR-046): the pool registry is the gallery's source of truth.
       server.middlewares.use("/__registry", (_req, res) => {
         res.setHeader("Content-Type", "text/plain; charset=utf-8");

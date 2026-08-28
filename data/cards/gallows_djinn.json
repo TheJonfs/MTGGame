@@ -1,0 +1,47 @@
+{
+  "id": "gallows_djinn",
+  "name": "Gallows Djinn",
+  "source": "custom",
+  "manaCost": "{2}{B}{B}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Djinn"
+  ],
+  "power": 5,
+  "toughness": 5,
+  "text": "Whenever Gallows Djinn attacks or blocks, it deals 1 damage to you.",
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ATTACKS",
+      "effects": [
+        {
+          "type": "damage",
+          "amount": 1,
+          "to": "eventPlayer",
+          "from": "eventObject"
+        }
+      ],
+      "optional": false
+    },
+    {
+      "kind": "triggered",
+      "event": "BLOCKS",
+      "effects": [
+        {
+          "type": "damage",
+          "amount": 1,
+          "to": "eventPlayer",
+          "from": "eventObject"
+        }
+      ],
+      "optional": false
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2
+}

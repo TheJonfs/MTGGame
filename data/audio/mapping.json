@@ -1,0 +1,4 @@
+{
+  "_comment": "S23 audio scaffolding (ADR-083/084): cue -> file name under the gitignored assets/audio/ mount (dev-served at /audio). Unmapped or unmounted cues are SILENT by design - this empty mapping is the deploy's natural state. Step 2 (Chris + planner) authors the real mapping against the Shandalar library; keys prefixed with _ are ignored.",
+  "_cues": "music.menu music.overworld music.town music.dungeon music.stronghold music.duel sting.quest-complete sting.siege-news sting.duel-win sting.duel-loss sting.coin-flip"
+}

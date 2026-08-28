@@ -98,7 +98,7 @@ export interface StackItem {
   mode?: number;
   /** A10 (S22): the triggering event's identity, for effects that address it (the Warden's law) and
    * for unlessPay's payer (the Stoker's caster). Captured at collection time — LKI by construction. */
-  eventContext?: { objectId?: string; cardId?: string; player?: PlayerId };
+  eventContext?: { objectId?: string; cardId?: string; player?: PlayerId; amount?: number };
   /** A10 word 7 (S22): the punisher fork — resolution asks the event's player pay-or-suffer. */
   unlessPay?: { life: number };
   /** A10 word 9 rider (S22): an optional trigger whose "yes" pays this mana at resolution. */
@@ -125,7 +125,7 @@ export interface PendingTrigger {
   abilityIndex: number;
   timestamp: number;
   /** A10 (S22): the triggering event's identity, carried onto the StackItem. */
-  eventContext?: { objectId?: string; cardId?: string; player?: PlayerId };
+  eventContext?: { objectId?: string; cardId?: string; player?: PlayerId; amount?: number };
 }
 
 export interface CombatState {

@@ -123,7 +123,12 @@ export type ValueRef =
   | { ref: "maxPower"; predicate: CountPredicate }
   /** A10 (S22): the target's mana value, from the resolution LKI snapshot (Aether Mutation — the
    * bounced creature is gone by token time; X for battlefield permanents is 0 per CR 202.3b). */
-  | { ref: "targetManaValue"; target: number };
+  | { ref: "targetManaValue"; target: number }
+  /** S23 (ADR-084, family member six): the triggering EVENT's damage amount, times a bounded
+   * literal multiplier (the Traumatizer's "mills twice that many"). ADR-028's no-arithmetic
+   * doctrine is reaffirmed around it — a fixed `times` param is not a calculator; general
+   * arithmetic remains excluded. Triggered-ability effects only (validator-confined). */
+  | { ref: "eventDamage"; times?: number };
 export type Amount = number | "X" | ValueRef;
 /** P/T deltas may reference the stack item's X, positively or negated (Drana); statics may carry
  * count refs, evaluated live (A4: Gaean Wurm's "+1/+1 for each Forest you control"). */
@@ -156,8 +161,9 @@ export type EffectBase =
   | { type: "counter"; target: number }
   | { type: "draw"; count: number; who: Who }
   | { type: "discard"; count: number; who: Who; mode: DiscardMode; filter?: DiscardFilter }
-  /** ADR-070 Amendment 3: top N of the library to its owner's graveyard via moveObject; NOT a draw (no empty-draw loss). */
-  | { type: "mill"; count: number; who: Who }
+  /** ADR-070 Amendment 3: top N of the library to its owner's graveyard via moveObject; NOT a draw (no empty-draw loss).
+   * S23: count may be a value ref (the Traumatizer's eventDamage). */
+  | { type: "mill"; count: number | ValueRef; who: Who }
   | { type: "gainLife"; amount: number | ValueRef; who: Who }
   | { type: "loseLife"; amount: number | ValueRef; who: Who }
   | {
@@ -183,6 +189,11 @@ export type EffectBase =
   /** A10 (S22): `targetSpec` fans out (the Warden's "tap up to two target creatures"). */
   | { type: "tapTarget"; target?: number; targetSpec?: number }
   | { type: "untapTarget"; target: number }
+  /** S23 (ADR-084): sacrifice the ability's own SOURCE — A10 word 3's internal delayed-sac path
+   * surfaced as an effect word (the Thundersnake's end-step exit). Self-only v1 (validator-confined);
+   * a no-op if the source already left the battlefield. A sacrifice: no destroy, no indestructible
+   * shield, the DIES trigger fires. */
+  | { type: "sacrifice"; scope: "self" }
   /** A10 word 3 (S22): `temporary: true` — the reanimated object gains haste and is sacrificed at the
    * beginning of the next end step (a self-contained package rule, not a delayed-trigger subsystem;
    * the Usher's entrance). A blinked guest is a NEW object and sheds both riders (the launder).
@@ -234,6 +245,7 @@ export const EFFECT_TYPES: readonly EffectType[] = [
   "addCounters",
   "tapTarget",
   "untapTarget",
+  "sacrifice",
   "returnFromGraveyard",
   "fight",
   "gainControl",

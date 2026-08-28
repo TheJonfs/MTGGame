@@ -15,8 +15,10 @@ import { dirname, join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
 import { runMatch, type ActionRequest, type Agent, type GameView, type MatchSpec, type Modifier, type Action } from "@shandalar/engine";
 import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
-import { LORD_DECKS } from "./lord-decks.js";
-import { DECKS } from "./slice-decks.js";
+import { LORD_DECKS } from "@shandalar/sim/lord-decks";
+import { DECKS } from "@shandalar/sim/decks";
+import { empowermentModifiers, type EmpowermentTier } from "./dungeon.js";
+import { defaultKnobs } from "./knobs.js";
 
 function arg(name: string, fallback: string): string {
   const i = process.argv.indexOf(`--${name}`);
@@ -34,14 +36,14 @@ const dungeons = JSON.parse(fs.readFileSync(join(ROOT, "data/world/dungeons.json
   strongholds: { id: string; color: "W" | "U" | "B" | "R" | "G"; lord: { key: string; name: string; cardId: string; baseLife: number }; law: { cardId: string; name: string } }[];
 };
 
-const BASIC: Record<string, string> = { W: "plains", U: "island", B: "swamp", R: "mountain", G: "forest" };
-const TOKEN: Record<string, string> = { W: "bird_1_1_flying", U: "faerie_1_1_u", B: "faerie_rogue_1_1_flying", R: "goblin_1_1", G: "bear_2_2" };
-// Mirrors strongholdEmpowermentTiers (50/75/100 — S22 playtest r1; the S20 two-place-sync flag
-// is now a three-place flag: fold onto the knob when a session touches the schedule again).
-const TIERS = [
-  { steps: 0, life: 0, basic: 0, token: 0, card: 0 },
-  { steps: 75, life: 4, basic: 1, token: 0, card: 0 },
-  { steps: 100, life: 6, basic: 1, token: 1, card: 1 },
+// S23 Part 0 (the S20 three-place-sync flag cashes): the schedule reads the KNOB and the packages
+// come from dungeon.ts's one builder. Sample points preserved from the S22b tables: untouched /
+// mid-tour (through the second threshold) / full-tour (everything).
+const SCHEDULE = defaultKnobs().strongholdEmpowermentTiers;
+const TIERS: { steps: number; reached: EmpowermentTier[] }[] = [
+  { steps: 0, reached: [] },
+  { steps: SCHEDULE[1]?.steps ?? 0, reached: SCHEDULE.slice(0, 2) },
+  { steps: SCHEDULE[2]?.steps ?? 0, reached: SCHEDULE.slice(0, 3) },
 ];
 // The pace war's three postures: bled to the floor / untouched / fattened by the years (base+cap).
 const LIVES = [
@@ -85,10 +87,7 @@ for (const sh of dungeons.strongholds) {
     const line: string[] = [];
     for (const tier of TIERS) {
       let lordWins = 0, total = 0;
-      const empMods: Modifier[] = [];
-      for (let i = 0; i < tier.basic; i++) empMods.push({ type: "permanentOnBattlefield", player: 1, cardId: BASIC[sh.color]! });
-      for (let i = 0; i < tier.token; i++) empMods.push({ type: "permanentOnBattlefield", player: 1, cardId: TOKEN[sh.color]! });
-      for (let i = 0; i < tier.card; i++) empMods.push({ type: "extraCards", player: 1, count: 1 });
+      const { lifeBonus, modifiers: empMods } = empowermentModifiers(tier.reached, sh.color);
       for (const ref of reference) {
         for (let i = 0; i < games; i++) {
           if (i % 10 === 0) await new Promise((r) => setTimeout(r, 0));
@@ -101,7 +100,7 @@ for (const sh of dungeons.strongholds) {
             ],
             rules: { startingLife: 10, handSize: 7, mulligan: "london", maxTurns: 100 },
             modifiers: [
-              { type: "startingLife", player: 1, value: lv.life + tier.life },
+              { type: "startingLife", player: 1, value: lv.life + lifeBonus },
               { type: "permanentOnBattlefield", player: 1, cardId: sh.law.cardId }, // the partisan law
               { type: "signatureToHand", player: 1, cardId: sh.lord.cardId }, // the entrance
               ...empMods,
