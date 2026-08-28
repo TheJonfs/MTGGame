@@ -816,7 +816,7 @@ export class WorldController {
   private dungeonAmbience(newCells: number): void {
     if (newCells < 5) return;
     const now = Date.now();
-    if (now - this.lastAmbientAt < 12_000) return;
+    if (now - this.lastAmbientAt < 8_000) return; // r7: 12s → 8s, Chris's tuning
     this.lastAmbientAt = now;
     let n: number;
     if (this.lastAmbientIdx === 0) n = 1 + Math.floor(Math.random() * 5); // first breath: any of the five

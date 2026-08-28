@@ -1,5 +1,7 @@
 # Audio cues — the mapping round's worksheet (S23; ADR-083/084 step 2)
 
+> **SUPERSEDED (S24 close):** the mapping round happened — v3 landed and the S24 rounds grew the SFX layer well past this sheet. The current inventory is **`docs/audio-cues-s24.md`**; this file stays as the round's record.
+
 Implementer-filed for Chris + the planner. **The left table is what's wired and waiting for
 music**; the right section is the implementer's candidate list for NEW hooks — mark wants, add
 your own, and the wiring lands next session. Everything here is cue-first: game code names cues,

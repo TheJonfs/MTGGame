@@ -52,7 +52,7 @@
 
 ## Playtest round 6 (S24 — the deep breathes: the Damb set)
 
-The five dungeon-ambience pieces (Damb1–5) play on the original's own logic, translated to our fog: **a step that OPENS A SIGHTLINE** — the reveal-burst detector diffs the interior explored bitmap per step, and ≥5 newly uncovered cells means a corner rounded or a chamber entered. A 12s cooldown keeps it occasional (explored backtracks stay silent by construction); the draw is random-without-immediate-repeat from the five (UI-side randomness — sounds are not game state); it rides the SFX channel at 0.4 so a breath never cuts a Findcard. Works in every interior kind (mox, lair, stronghold) — and v3's interior SILENCE is what makes it land: these are the only sound down there. Browser-verified: the first step into the Verdant Throne's entry chamber drew Damb3. **Schema note for the planner**: this is v3's "pool want emerging" — served as five flat cues + a code-side picker; pools stay unresurrected unless a second pool customer arrives.
+The five dungeon-ambience pieces (Damb1–5) play on the original's own logic, translated to our fog: **a step that OPENS A SIGHTLINE** — the reveal-burst detector diffs the interior explored bitmap per step, and ≥5 newly uncovered cells means a corner rounded or a chamber entered. An 8s cooldown keeps it occasional (r7: Chris tuned 12→8) (explored backtracks stay silent by construction); the draw is random-without-immediate-repeat from the five (UI-side randomness — sounds are not game state); it rides the SFX channel at 0.4 so a breath never cuts a Findcard. Works in every interior kind (mox, lair, stronghold) — and v3's interior SILENCE is what makes it land: these are the only sound down there. Browser-verified: the first step into the Verdant Throne's entry chamber drew Damb3. **Schema note for the planner**: this is v3's "pool want emerging" — served as five flat cues + a code-side picker; pools stay unresurrected unless a second pool customer arrives.
 
 ## Deviations from the brief
 
@@ -69,6 +69,10 @@ The five dungeon-ambience pieces (Damb1–5) play on the original's own logic, t
 3. **`music.duel` stays registered but v3 silences it** — entering a duel therefore STOPS town music by crossfading to silence (correct per v3's focus doctrine). If a future mapping wants duel music back, one line. The same is true of interiors.
 4. **The mapping references OGG town tracks** — Chrome/Firefox fine, Safari silent (container unsupported). Local-only concern; the deploy library (step 3) should be transcoded.
 5. **The r2 town-music cadence and the tavern pour share no cue** — the tavern tab currently plays its region track like the rest of the town; if the tavern ever wants its own voice, the resolution has room (`music.town.<C><R>.tavern` is NOT built — flag only).
+
+## Playtest round 7 (close-out)
+
+Damb cooldown 12s → 8s (Chris's tuning; otherwise performing well). **`docs/audio-cues-s24.md`** written — the landed audio inventory (three channels, every binding, the unmapped shelf, the add-a-cue contract), superseding the S23 worksheet (pointer added there). implementer-notes gain the S24 lessons; everything pushed.
 
 ## Registry entries added/changed
 

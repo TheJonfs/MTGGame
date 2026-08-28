@@ -316,6 +316,19 @@ Things a fresh session might otherwise rediscover slowly:
 - **The audio worksheet pattern**: when a system ships scaffolding-first, file the planner-facing worksheet (wired seams + candidate seams, each sized) in docs/ the moment the wiring is fresh — docs/audio-cues-s23.md took minutes to write with the seams in hand and is the whole step-2 interface.
 - **Git hygiene**: the repo has never been gc'd (276MB loose, zero packs at S23 close) — pushes pack everything on the fly and can blow a 2-minute timeout. Push with a long window or `git gc` first.
 
+## S24 lessons (recovery, the audio landing, and six SFX rounds)
+
+- **Diff-detection beats reward-plumbing**: the manalink splash detects grants by comparing `world.manalinks.length` around the award seams — every current AND future grant path splashes with zero changes to award()'s return shape. When a UI ceremony needs to know "did X just happen inside that call," diff the state, don't thread a flag.
+- **One-voice stingers are a design tool, not just dedup**: making the sting channel single-voice didn't just fix the Dueltune+Winduel stack — it made "the Manalink sting fades Winduel" the automatic consequence of showing the splash. Channel semantics do ceremony work.
+- **A refused `play()` must not squat on its cue**: the "music sometimes fails to fire" bug was a rejected Audio element left as `current`, no-opping every later request for that context. Any async-resource cache needs the failure path to evict.
+- **The reveal-burst detector is the fog system paying rent again**: the original Shandalar's "new segment revealed" trigger translated to a popcount diff on the explored bitmap (≥5 new cells = a sightline). When porting a mechanic keyed to the source game's engine internals, look for OUR system that produces the same *player-visible moment*.
+- **Burst throttles (150ms, per-cue map) are the answer to simultaneity everywhere**: opening-hand draws, untap steps, combat damage, wrath deaths, Mind Rot discards — one shared helper.
+- **Event-cause markers for sounds**: distinguishing Sacrifice from Destroy needed a `SACRIFICED` event emitted just before the zone move at each sac site — the ZONE_CHANGE payload carries no cause on purpose, and the marker-set-then-consume pattern (pendingSacIds) keeps it that way.
+- **The world clock is reusable as a transaction**: innRest() is advance()'s tick loop minus movement — deadlines, sieges, respawns, growth all priced into a rest with news queued for waking. Any future "time passes here" feature (research? travel powers?) should copy this shape, not re-derive the consumer list.
+- **maxWorldLife is computed, never stored** — suspension falls out of filtering active links at read time; the only mutation is the clamp at fall/load. Same shape as S5's statics lesson, world-scale.
+- **mapping.json value polymorphism** (string | {file, volume}) let volume tuning land without touching any call site, and the /sound board (live sliders, persists nothing) beat the fill-a-deck-with-basics test Chris first proposed — build the tuner, not the test fixture.
+- **Filename fidelity**: the package's own typo (`Sacrfice.wav`) is preserved in the mapping — renaming mounted assets invites drift between Chris's library and ours.
+
 ## Known interims / watch list
 
 See handoff Concerns for the authoritative list. Highlights: auto-pay greedy feasibility (correct while all producers are single-symbol — R-006); condition fields `controller`/`type`/`subtype` are validated but unexercised (first card to use them should add fixtures); value refs deliberately have no arithmetic (ADR-028 — resist until a card demands it); the `sba-unattach` ATTACHED cause is unreachable by legal play (test-forced only).
