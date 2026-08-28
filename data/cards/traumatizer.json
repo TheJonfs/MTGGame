@@ -39,5 +39,6 @@
     "asset": "/custom-art/traumatizer.png",
     "fallback": "rendered"
   },
-  "shopTier": 2
+  "shopTier": 2,
+  "printedAsset": "traumatizer.jpg"
 }
