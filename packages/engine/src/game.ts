@@ -150,6 +150,7 @@ export class Game {
     bus.on("ANTE_SET", (e) => log.append({ t: "EVENT", name: "ANTE_SET", payload: e }));
     bus.on("MILLED", (e) => log.append({ t: "EVENT", name: "MILLED", payload: e })); // ADR-070: narration/facts; replay ignores EVENTs
     bus.on("SEARCH_REVEAL", (e) => log.append({ t: "EVENT", name: "SEARCH_REVEAL", payload: e })); // S22 r4: CR 701.19.4 narration
+    bus.on("SHUFFLED", (e) => log.append({ t: "EVENT", name: "SHUFFLED", payload: e })); // S24 r3: the shuffle sound
     bus.on("ZONE_CHANGE", (e) => {
       if (e.from === "battlefield" && e.to === "graveyard") {
         log.append({ t: "EVENT", name: "DIES", payload: { cardId: e.cardId, owner: e.owner } });
@@ -246,6 +247,7 @@ export class Game {
           p.mulligans = mulls;
           while (p.hand.length > 0) moveObject(this.ctx, p.hand[0]!, "library");
           p.library = this.ctx.rng.shuffle(p.library, "shuffle");
+          this.ctx.bus.emit("SHUFFLED", { player }); // S24 r3: the shuffle sound's event
           for (let i = 0; i < this.rules.handSize; i++) drawCard(this.ctx, player);
         } else {
           for (let i = 0; i < mulls; i++) {

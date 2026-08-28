@@ -39,12 +39,18 @@ describe("S23 audio scaffolding (cue-first; ADR-083/084)", () => {
     expect(a.entries().map((e) => e.cue).sort()).toEqual(["sfx.cast.B", "sfx.cast.R", "sting.news"]);
   });
 
-  it("S24 r2: castSfxCue keys by WUBRG-sorted colour identity, then artifact, then colorless", async () => {
-    const { castSfxCue } = await import("./audio.js");
-    expect(castSfxCue(["B"], ["Creature"])).toBe("sfx.cast.B");
-    expect(castSfxCue(["U", "W"], ["Creature"])).toBe("sfx.cast.WU"); // sorted, guild-pair-mappable
-    expect(castSfxCue([], ["Artifact"])).toBe("sfx.cast.artifact");
-    expect(castSfxCue([], ["Land"])).toBe("sfx.cast.colorless");
+  it("S24 r3 sequencing: cast rings the TYPE (creature-first priority); entering play rings the WUBRG-sorted COLOUR", async () => {
+    const { castTypeSfxCue, enterSfxCue } = await import("./audio.js");
+    expect(castTypeSfxCue(["Creature"])).toBe("sfx.cast.creature");
+    expect(castTypeSfxCue(["Artifact", "Creature"])).toBe("sfx.cast.creature"); // an artifact creature is a Summon
+    expect(castTypeSfxCue(["Artifact", "Enchantment"])).toBe("sfx.cast.artifact"); // the laws' shape
+    expect(castTypeSfxCue(["Instant"])).toBe("sfx.cast.instant");
+    expect(castTypeSfxCue(["Sorcery"])).toBe("sfx.cast.sorcery");
+    expect(castTypeSfxCue(["Land"])).toBeNull(); // a land play is not a cast
+    expect(enterSfxCue(["B"], ["Creature"])).toBe("sfx.enter.B");
+    expect(enterSfxCue(["U", "W"], ["Creature"])).toBe("sfx.enter.WU"); // sorted, guild-pair-mappable
+    expect(enterSfxCue([], ["Artifact"])).toBe("sfx.enter.artifact");
+    expect(enterSfxCue([], ["Land"])).toBe("sfx.enter.colorless");
   });
 
   it("the toggle flips and never throws headless (no window, no Audio, no localStorage)", () => {

@@ -324,6 +324,7 @@ function searchOp(ctx: EngineCtx, requester?: EffectRequester) {
       }
       // Shuffle always follows a search (CR 701.19) — logged RNG, replay-covered.
       p.library = ctx.rng.shuffle(p.library, "shuffle");
+      ctx.bus.emit("SHUFFLED", { player }); // S24 r3: the shuffle sound's event
     },
   };
 }

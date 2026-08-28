@@ -1,6 +1,6 @@
 import { ArrayLog, SeededRng } from "@shandalar/core";
 import { cardColors, manaValue, parseManaCost, type CardDef, type ResolvedTarget } from "@shandalar/cards";
-import { audio, castSfxCue } from "../audio/audio.js";
+import { audio, castTypeSfxCue, enterSfxCue } from "../audio/audio.js";
 import {
   DEFAULT_RULES,
   Game,
@@ -197,6 +197,22 @@ export class MatchController {
   readonly idNames = new Map<string, string>();
   /** Last spell to hit the stack (S10 playtest: the inspector snaps to it). */
   snapCardId: string | null = null;
+  /** S24 r3 SFX bookkeeping: the untap/draw burst throttles and the end-turn rollover detector. */
+  private lastUntapSfxAt = 0;
+  private lastDrawSfxAt = 0;
+  private lastSfxTurn = 0;
+
+  /** The colours a permanent "enters as": a land's identity is what it taps for (a Swamp is B);
+   * everything else is its colour identity. */
+  private enterColorsOf(d: CardDef): string[] {
+    if (!d.types.includes("Land")) return cardColors(d);
+    const produced = new Set<string>();
+    for (const ab of d.abilities ?? []) {
+      if (ab.kind !== "activated") continue;
+      for (const ef of ab.effects) if (ef.type === "addMana" && ef.mana) for (const ch of ef.mana.replace(/[^WUBRG]/g, "")) produced.add(ch);
+    }
+    return [...produced];
+  }
   /** Transient combat narration (S10 playtest: with no legal blockers there is
    * no pause, so an incoming attack could resolve invisibly — narrate it). */
   combatNotice: string | null = null;
@@ -296,29 +312,54 @@ export class MatchController {
     bus.on("ZONE_CHANGE", (e) => {
       this.idNames.set(e.oldId, e.cardId);
       this.idNames.set(e.newId, e.cardId);
+      // S24 r3: ENTERING PLAY rings the permanent's colour — resolved creatures, played and
+      // effect-fetched lands, tokens, reanimations: everything through the one zone-move event.
+      if (e.to === "battlefield") {
+        const d = pool.get(e.cardId);
+        if (d) audio.sfx(enterSfxCue(this.enterColorsOf(d), d.types));
+      }
     });
-    bus.on("STEP_BEGIN", () => this.emit());
+    bus.on("STEP_BEGIN", () => {
+      // S24 r3: End Turn — the turn number rolling over IS the previous turn ending.
+      const turn = this.game.state.turn;
+      if (turn > this.lastSfxTurn) {
+        if (this.lastSfxTurn > 0) audio.sfx("sfx.end-turn"); // silent at the game's first turn
+        this.lastSfxTurn = turn;
+      }
+      this.emit();
+    });
+    bus.on("CARD_DRAWN", () => {
+      // Opening hands and mulligans draw in a burst of seven — one sound covers a burst
+      // (the untap throttle's pattern); the turn's single draw rings normally.
+      const now = Date.now();
+      if (now - this.lastDrawSfxAt > 150) {
+        this.lastDrawSfxAt = now;
+        audio.sfx("sfx.draw");
+      }
+    });
+    bus.on("SHUFFLED", () => audio.sfx("sfx.shuffle"));
+    bus.on("TAPPED", () => audio.sfx("sfx.tap"));
+    bus.on("UNTAPPED", () => {
+      // The untap STEP untaps everything in one burst — one sound covers it (150ms throttle);
+      // isolated effect untaps still ring individually.
+      const now = Date.now();
+      if (now - this.lastUntapSfxAt > 150) {
+        this.lastUntapSfxAt = now;
+        audio.sfx("sfx.untap");
+      }
+    });
     bus.on("SPELL_CAST", (e) => {
       this.snapCardId = e.cardId; // inspector snap — event-driven, so it fires
       this.emit(); //              even when the spell resolves render-free
-      // S24 r2 (the SFX package): the cast rings in its colour (both seats — hearing the
-      // opponent's plays is feedback). Unmapped identities (guild pairs today) stay silent.
+      // S24 r3 (Chris's sequencing): the CAST rings the card's TYPE — Summon for a creature,
+      // then its colour rings separately when it ENTERS play (the ZONE_CHANGE hook below).
       const d = pool.get(e.cardId);
-      if (d) audio.sfx(castSfxCue(cardColors(d), d.types));
-    });
-    bus.on("LAND_PLAYED", (e) => {
-      // A basic rings its colour too (the land's identity is what it taps for — a Swamp is B).
-      const obj = this.game.state.objects[e.objectId];
-      const d = obj ? pool.get(obj.cardId) : undefined;
-      if (!d) return;
-      const produced = new Set<string>();
-      for (const ab of d.abilities ?? []) {
-        if (ab.kind !== "activated") continue;
-        for (const ef of ab.effects) if (ef.type === "addMana" && ef.mana) for (const ch of ef.mana.replace(/[^WUBRG]/g, "")) produced.add(ch);
-      }
-      audio.sfx(castSfxCue([...produced], d.types));
+      const cue = d && castTypeSfxCue(d.types);
+      if (cue) audio.sfx(cue);
     });
     bus.on("ATTACKERS_DECLARED", (e) => {
+      // S24 r3: ONE Attack sound at the commit (either seat), not one per attacker.
+      if (e.attackers.length > 0) audio.sfx("sfx.attack");
       const state = this.game.state;
       if (state.activePlayer === this.humanSeat) return; // your own attack is visible by construction
       // S11 playtest: name each attacker's keywords — an un-pausable combat

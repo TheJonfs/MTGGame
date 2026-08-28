@@ -36,20 +36,32 @@ export type MusicCue =
 export type StingCue =
   | "sting.news" | "sting.reward" | "sting.manalink" | "sting.parley" | "sting.treasure"
   | "sting.duel-win" | "sting.duel-loss" | "sting.coin-flip";
-/** S24 r2 (the SFX package): per-action duel sounds — a THIRD channel, fire-and-forget and
- * freely overlapping (rapid plays must not cut each other or the sting voice). The cast family
- * keys by the card's colour identity: sfx.cast.W … sfx.cast.G, guild pairs as sorted WUBRG
- * strings (sfx.cast.WU, sfx.cast.BR — the package has all ten), sfx.cast.artifact,
- * sfx.cast.colorless. Unmapped combinations are silence, as ever. */
+/** S24 r2–r3 (the SFX package): per-action duel sounds — a THIRD channel, fire-and-forget and
+ * freely overlapping (rapid plays must not cut each other or the sting voice).
+ *
+ * The r3 sequencing (Chris): CASTING rings the card's TYPE (Summon for creatures, Artifact,
+ * Enchant, Instant, Sorcery); ENTERING PLAY rings the permanent's COLOUR (a resolved creature,
+ * a played or fetched land — anything through the one zone-move event). So a Grizzly Bears is
+ * Summon at cast, then Green as it lands. Colour keys are sorted WUBRG strings (sfx.enter.WU —
+ * the package has all ten guild pairs), plus artifact/colorless. Unmapped = silence, as ever. */
 export type SfxCue = `sfx.${string}`;
 export type Cue = MusicCue | StingCue | SfxCue;
 
 const WUBRG = ["W", "U", "B", "R", "G"] as const;
-/** The cast-sound resolution: colour identity → cue key (colours sorted in WUBRG order). */
-export function castSfxCue(colors: string[], types: string[]): SfxCue {
+/** Cast rings the TYPE (priority: creature > artifact > enchantment > instant > sorcery). */
+export function castTypeSfxCue(types: string[]): SfxCue | null {
+  if (types.includes("Creature")) return "sfx.cast.creature";
+  if (types.includes("Artifact")) return "sfx.cast.artifact";
+  if (types.includes("Enchantment")) return "sfx.cast.enchantment";
+  if (types.includes("Instant")) return "sfx.cast.instant";
+  if (types.includes("Sorcery")) return "sfx.cast.sorcery";
+  return null;
+}
+/** Entering play rings the COLOUR identity (sorted WUBRG; artifact/colorless fallbacks). */
+export function enterSfxCue(colors: string[], types: string[]): SfxCue {
   const c = WUBRG.filter((x) => colors.includes(x)).join("");
-  if (c) return `sfx.cast.${c}`;
-  return types.includes("Artifact") ? "sfx.cast.artifact" : "sfx.cast.colorless";
+  if (c) return `sfx.enter.${c}`;
+  return types.includes("Artifact") ? "sfx.enter.artifact" : "sfx.enter.colorless";
 }
 
 export const RING_NUM = { civilized: 1, approach: 2, wild: 3 } as const;

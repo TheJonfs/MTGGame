@@ -30,25 +30,69 @@
   "sting.duel-loss": "Loseduel.flac",
   "sting.treasure": "Findcard.flac",
   "sting.coin-flip": "sfx/Toss.wav",
-  "_sfx": "S24 r2: the SFX channel \u2014 sfx.cast.<colour identity> rings on every cast/land play (both seats). Value form {file, volume}: volume is a 0..1 multiplier the /sound board tunes; guild pairs (sfx.cast.WU \u2026), artifact, colorless are mappable the day they're wanted.",
-  "sfx.cast.W": {
+  "_sfx": "S24 r2-r3: the SFX channel. Sequencing (Chris): CAST rings the TYPE (sfx.cast.creature=Summon etc.); ENTERING PLAY rings the COLOUR (sfx.enter.W..G at Chris's 0.2; guild pairs sfx.enter.WU.., artifact, colorless mappable by data). Actions: draw/shuffle (mulligan+search only)/tap/untap (one per untap-step burst)/attack (one per commit)/end-turn. Volumes are 0..1 multipliers tuned at /sound; non-colour values are implementer first guesses.",
+  "sfx.enter.W": {
     "file": "sfx/White.wav",
-    "volume": 0.5
+    "volume": 0.2
   },
-  "sfx.cast.U": {
+  "sfx.enter.U": {
     "file": "sfx/Blue.wav",
-    "volume": 0.5
+    "volume": 0.2
   },
-  "sfx.cast.B": {
+  "sfx.enter.B": {
     "file": "sfx/Black.wav",
-    "volume": 0.5
+    "volume": 0.2
   },
-  "sfx.cast.R": {
+  "sfx.enter.R": {
     "file": "sfx/Red.wav",
+    "volume": 0.2
+  },
+  "sfx.enter.G": {
+    "file": "sfx/Green.wav",
+    "volume": 0.2
+  },
+  "sfx.cast.creature": {
+    "file": "sfx/Summon.wav",
+    "volume": 0.35
+  },
+  "sfx.cast.artifact": {
+    "file": "sfx/Artifact.wav",
+    "volume": 0.35
+  },
+  "sfx.cast.enchantment": {
+    "file": "sfx/Enchant.wav",
+    "volume": 0.35
+  },
+  "sfx.cast.instant": {
+    "file": "sfx/Instant.wav",
+    "volume": 0.35
+  },
+  "sfx.cast.sorcery": {
+    "file": "sfx/Sorcery.wav",
+    "volume": 0.35
+  },
+  "sfx.draw": {
+    "file": "sfx/Draw.wav",
+    "volume": 0.3
+  },
+  "sfx.shuffle": {
+    "file": "sfx/Shuffle.wav",
+    "volume": 0.4
+  },
+  "sfx.tap": {
+    "file": "sfx/Tap.wav",
+    "volume": 0.25
+  },
+  "sfx.untap": {
+    "file": "sfx/Untap.wav",
+    "volume": 0.25
+  },
+  "sfx.attack": {
+    "file": "sfx/Attack2.wav",
     "volume": 0.5
   },
-  "sfx.cast.G": {
-    "file": "sfx/Green.wav",
-    "volume": 0.5
+  "sfx.end-turn": {
+    "file": "sfx/EndTurn.wav",
+    "volume": 0.3
   }
 }

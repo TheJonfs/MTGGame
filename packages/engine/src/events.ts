@@ -56,4 +56,8 @@ export interface GameEventMap extends Record<string, unknown> {
    * what it found; an unrestricted search (Demonic Tutor's anyCard) stays hidden and never fires
    * this. EVENT-stream only (narration); no trigger consumes it. */
   SEARCH_REVEAL: { player: PlayerId; cardId: string };
+  /** S24 r3 (the SFX wave): a MID-GAME shuffle — mulligans and post-search shuffles emit; the
+   * setup shuffle and start-of-game modifiers deliberately do NOT (pre-game noise). EVENT-stream
+   * only (the shuffle sound); no trigger consumes it. */
+  SHUFFLED: { player: PlayerId };
 }
