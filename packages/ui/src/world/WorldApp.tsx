@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { CardDef } from "@shandalar/cards";
 import { cardColors } from "@shandalar/cards";
-import { activeDeck, buyOffPrice, deckSize, deckStats, dungeonAsWorldMap, isBasic, isExplored, sellPrice, spares, BASIC_LANDS, type DifficultyName, type Point, type ShopItem, type StarterId } from "@shandalar/world";
+import { activeDeck, buyOffPrice, deckSize, deckStats, dungeonAsWorldMap, isBasic, isExplored, maxWorldLife, sellPrice, spares, BASIC_LANDS, type DifficultyName, type Point, type ShopItem, type StarterId } from "@shandalar/world";
 import { loadOracle, loadPool, loadWorldCatalog, type OracleEntry, type SavedGame } from "../engine-bridge";
 import { CardFrame } from "../components/CardFrame";
 import { PlayMatch, loadStops } from "../play/PlayMatch";
 import { WorldController, type NewGameChoice } from "./world-controller";
-import { audio, type MusicCue } from "../audio/audio";
+import { audio, townMusicCue, strongholdSplashCue, type MusicCue } from "../audio/audio";
 import { WorldMapView } from "./WorldMap";
 import { FloatingCardInspector } from "./FloatingCardInspector";
 
@@ -103,7 +103,8 @@ function Chrome({ c, onDownload }: { c: WorldController; onDownload: () => void 
     <div className="play-ribbon world-chrome">
       <span className="turn">{w.player.name} · {c.regionName()}</span>
       {/* S22 r2 (Chris): pictorial trackers — the ink-icon register replaces the plain SVGs. */}
-      <span className="stat" title="world life"><img className="stat-ink" src="/icons/stat-life.png" alt="" /> {w.player.worldLife}</span>
+      {/* S24 (ADR-086): life reads current / maximum — the maximum moves now (life manalinks, suspension). */}
+      <span className="stat" title={`world life (maximum ${maxWorldLife(w)} = base + active life manalinks)`}><img className="stat-ink" src="/icons/stat-life.png" alt="" /> {w.player.worldLife}<span style={{ fontSize: 11, color: "var(--ink-soft)" }}>/{maxWorldLife(w)}</span></span>
       <span className="stat" title="gold"><img className="stat-ink" src="/icons/stat-gold.png" alt="" /> {w.player.gold}</span>
       <span className="stat" title="steps (the clock)"><img className="stat-ink" src="/icons/stat-steps.png" alt="" /> {w.player.stepsTaken} steps</span>
       <span style={{ flex: 1 }} />
@@ -206,6 +207,12 @@ function DuelResultScreen({ c, pool, oracle, onWatch }: { c: WorldController; po
             <div className="flyout-title">You claim their stake</div>
             <div className="dialog-cards">{frames(record.anteWon)}</div>
           </>
+        )}
+        {record.outcome === "loss" && (
+          /* S24 (Part 2, Chris-directed): the defeat itemizes its whole bill — the toll first. */
+          <p className="dungeon-law" style={{ borderColor: "var(--danger)" }}>
+            <b>The road exacts its toll:</b> {before.life - after.life > 0 ? <>−{before.life - after.life} world life ({after.life} remains{after.life === 0 ? " — none" : ""})</> : "your life holds"}{record.anteLost.length > 0 ? <> · your stake of {record.anteLost.length} card{record.anteLost.length === 1 ? "" : "s"} is taken</> : " · no stake was lost"}.
+          </p>
         )}
         {record.outcome === "loss" && record.anteLost.length > 0 && (
           <>
@@ -358,6 +365,13 @@ function DungeonTelegraph({ c }: { c: WorldController }) {
   return (
     <div className="gallery-modal">
       <div className="gallery-modal-box play-dialog dungeon-telegraph">
+        {/* S24 (mapping v3's companion): the SPLASH — a seat announces itself with its gate plate
+            while its castle theme plays through this telegraph (interiors stay silent). */}
+        {sh && (
+          <div style={{ margin: "-14px -14px 12px", overflow: "hidden", borderBottom: "2px solid var(--ink)" }}>
+            <img src={`/gate-plates/${sh.id}.jpg`} alt="" style={{ width: "100%", display: "block", maxHeight: 240, objectFit: "cover" }} />
+          </div>
+        )}
         <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
           {portrait && <img className="parley-portrait" src={`/portraits/${portrait}.png`} alt="" style={{ width: 72, height: 72, flexShrink: 0 }} title={holderName} />}
           <div>
@@ -537,11 +551,14 @@ function StrongholdVictory({ c, pool, oracle }: { c: WorldController; pool: Map<
 function TownScreen({ c, pool, oracle }: { c: WorldController; pool: Map<string, CardDef>; oracle: Record<string, OracleEntry> }) {
   const [printed, setPrinted] = useState(true); // S13 (Chris): printed by default
   const [inspect, setInspect] = useState<string | null>(null);
-  const [tab, setTab] = useState<"square" | "market" | "sell" | "board" | "tavern">("square");
+  const [tab, setTab] = useState<"square" | "market" | "sell" | "board" | "tavern" | "inn">("square");
   if (c.screen.kind !== "town") return null;
   const { town, stock, notice } = c.screen;
   const w = c.world!;
   const region = w.map.regions[town.region]!;
+  const maxLife = maxWorldLife(w);
+  const lifeMissing = maxLife - w.player.worldLife;
+  const innPrice = c.knobs.innStepsPerLife;
   const sp = spares(w.player.collection, activeDeck(w));
   const offers = c.townQuestOffers();
   const choices = c.retrievalChoices();
@@ -549,7 +566,7 @@ function TownScreen({ c, pool, oracle }: { c: WorldController; pool: Map<string,
   return (
     <div className="gallery-modal">
       <div className="gallery-modal-box play-dialog world-town">
-        <h2 style={{ fontFamily: "var(--serif)", marginTop: 0 }}>{town.name}{tab !== "square" && <span style={{ fontSize: 14, color: "var(--ink-soft)" }}> · {{ market: "the market", sell: "the buyer's stall", board: "the quest board", tavern: "the tavern" }[tab]}</span>}</h2>
+        <h2 style={{ fontFamily: "var(--serif)", marginTop: 0 }}>{town.name}{tab !== "square" && <span style={{ fontSize: 14, color: "var(--ink-soft)" }}> · {{ market: "the market", sell: "the buyer's stall", board: "the quest board", tavern: "the tavern", inn: "the inn" }[tab]}</span>}</h2>
         <p style={{ fontSize: 12, marginTop: 0 }}>{region.name} · a safe town — <i>clock-free: deliberation costs nothing here</i> · you have <b>{w.player.gold}</b> gold {back}</p>
         {(() => {
           // S21: a threatened town wears its warning inside the walls (visible-schedules law).
@@ -592,6 +609,11 @@ function TownScreen({ c, pool, oracle }: { c: WorldController; pool: Map<string,
               <button onClick={() => setTab("tavern")}>
                 <img src="/town-tavern.png" alt="" />
                 <b>The tavern</b><span>rumors, legends, and the roads' news</span>
+              </button>
+              {/* S24 (ADR-086): the inn — the recovery half of the life economy. */}
+              <button onClick={() => setTab("inn")}>
+                <img src="/town-inn.png" alt="" />
+                <b>The inn</b><span>{lifeMissing > 0 ? `rest: ${innPrice} steps per life (${lifeMissing} missing)` : "you want for nothing — rest is free to skip"}</span>
               </button>
             </div>
             <p style={{ marginBottom: 0 }}>
@@ -658,6 +680,28 @@ function TownScreen({ c, pool, oracle }: { c: WorldController; pool: Map<string,
             {c.townRumors().map((r, i) => (
               <p key={i} style={{ fontSize: 12.5, fontStyle: "italic", margin: "5px 0", color: "var(--ink-soft)" }}>“{r}”</p>
             ))}
+          </>
+        )}
+        {tab === "inn" && (
+          <>
+            <div className="flyout-title">The inn — rest trades steps for life ({innPrice} steps per point)</div>
+            <p style={{ fontSize: 12.5 }}>
+              You stand at <b>{w.player.worldLife} / {maxLife}</b> world life.{" "}
+              {lifeMissing > 0
+                ? <>The world does not wait while you sleep — <i>sieges advance, lords grow, contracts run</i>. Any news lands when you wake.</>
+                : <>Nothing ails you; the innkeeper nods you toward the door.</>}
+            </p>
+            {lifeMissing > 0 && (
+              <p>
+                {([["Rest a little", Math.min(2, lifeMissing)], ["Rest well", Math.min(5, lifeMissing)], ["Recover fully", lifeMissing]] as const)
+                  .filter(([, pts], i, arr) => pts > 0 && arr.findIndex(([, p]) => p === pts) === i)
+                  .map(([label, pts]) => (
+                    <button key={label} className={label === "Recover fully" ? "primary" : undefined} style={{ marginRight: 8 }} onClick={() => c.innRest(pts)}>
+                      {label} (+{pts} life · {pts * innPrice} steps)
+                    </button>
+                  ))}
+              </p>
+            )}
           </>
         )}
       </div>
@@ -894,24 +938,47 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
     const key = w ? `${w.player.position.x},${w.player.position.y}` : "";
     if (key !== lastPos.current) { lastPos.current = key; if (panRef.current.x || panRef.current.y) setPan({ x: 0, y: 0 }); }
   });
-  // S23 audio scaffolding (ADR-084): the SCREEN drives the music context (cue-first — the
-  // manager no-ops on a repeated cue and stays silent when a cue is unmapped/unmounted).
+  // S23 audio scaffolding (ADR-084), REWIRED by the S24 mapping-v3 landing: the SCREEN drives
+  // the music context (cue-first — repeated cues no-op; unmapped cues are silence, and v3's
+  // silences are deliberate: overworld, in-duel, interiors, menu-TBD).
   const lastPopup = useRef<unknown>(null);
   const lastResult = useRef<unknown>(null);
+  const lastParley = useRef<string | null>(null);
+  const lastTreasure = useRef(0);
   useEffect(() => {
     const scr = controller.screen;
+    const w2 = controller.world;
     let cue: MusicCue = "music.overworld";
     if (scr.kind === "start") cue = "music.menu";
-    else if (scr.kind === "town") cue = "music.town";
-    else if (scr.kind === "duel" || scr.kind === "siegeDuel" || scr.kind === "dungeonDuel") cue = "music.duel";
-    else if (scr.kind === "dungeonTelegraph") cue = scr.info.kind === "stronghold" ? "music.stronghold" : "music.dungeon";
+    else if (scr.kind === "town" && w2) {
+      // v3: the region is the musical identity unit — town → colour+ring → track.
+      const reg = w2.map.regions[scr.town.region]!;
+      cue = townMusicCue(reg.color, reg.tier);
+    } else if (scr.kind === "duel" || scr.kind === "siegeDuel" || scr.kind === "dungeonDuel") cue = "music.duel";
+    else if (scr.kind === "dungeonTelegraph") cue = scr.info.kind === "stronghold" ? strongholdSplashCue(scr.info.dungeonId) : "music.dungeon";
     else if (scr.kind === "strongholdVictory") cue = "music.stronghold";
     else if (scr.kind === "dungeon" || scr.kind === "dungeonVictory") cue = controller.dungeonRun?.kind === "stronghold" ? "music.stronghold" : "music.dungeon";
     audio.music(cue);
-    // Stingers: the news modal (siege news vs quest completion) and the duel result.
+    // Stingers per v3: ONE crier for all news (Newsflash), quest payoffs split by kind
+    // (Manalink / Reward), the pre-battle stakes menu (Dueltune), caches (Findcard), and the
+    // duel result pair (Winduel / Loseduel).
     if (controller.questPopup && controller.questPopup !== lastPopup.current) {
       lastPopup.current = controller.questPopup;
-      audio.sting(controller.questPopup.some((p) => p.title.startsWith("A town")) ? "sting.siege-news" : "sting.quest-complete");
+      const quests = controller.questPopup.filter((p) => p.title === "Quest complete");
+      if (quests.some((p) => /a (life )?manalink —/.test(p.reward))) audio.sting("sting.manalink");
+      else if (quests.length > 0) audio.sting("sting.reward");
+      else audio.sting("sting.news");
+    }
+    if (scr.kind === "encounter") {
+      const key = scr.encounter.opponentId + ":" + controller.world!.player.stepsTaken;
+      if (lastParley.current !== key) {
+        lastParley.current = key;
+        audio.sting("sting.parley");
+      }
+    }
+    if (controller.treasureSeq !== lastTreasure.current) {
+      lastTreasure.current = controller.treasureSeq;
+      if (controller.treasureSeq > 0) audio.sting("sting.treasure");
     }
     if (scr.kind === "duelResult" && scr.record !== lastResult.current) {
       lastResult.current = scr.record;

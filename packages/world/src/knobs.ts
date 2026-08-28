@@ -321,9 +321,24 @@ export const KNOBS = {
     description: "S22 playtest r2 (Chris): the tavern pours FEWER lines per sitting (one lore line beside the live trail) but rotates them on the shop cadence — lore epoch = floor(stepsTaken / this). Re-entering within an epoch repeats the same pour (no farming).",
   }),
   manalinkRewardChance: knob<number>({
-    default: 0.3,
+    default: 0.4,
     unit: "probability per tier-2+ quest offer",
-    description: "S19's 25% manalink roll, promoted to a knob and nudged up (S22 playtest r2, Chris: manalinks read too rare on hard — the comeback lever is thin). Cap per colour still applies at award.",
+    description: "S19's 25% manalink roll, promoted to a knob and nudged up twice (S22 r2: 0.25→0.30, the thin-comeback-lever read; S24/ADR-086: 0.30→0.40 so the class SHOWS UP now that it carries the recovery half). Caps still apply at award (per-colour for basics; lifeManalinkCap for life).",
+  }),
+  lifeManalinkWeight: knob<number>({
+    default: 0.5,
+    unit: "probability a manalink reward rolls the LIFE kind",
+    description: "S24 (ADR-086): the manalink class's kind split — life (+1 maximum world life, town-tied, suspension law shared) vs basic (the land in play). Arguing baseline; world-sim's life-economy table tunes it.",
+  }),
+  lifeManalinkCap: knob<number>({
+    default: 3,
+    unit: "life manalinks (total)",
+    description: "S24 (ADR-086): most life manalinks a journey can hold (ADR-086's 2–3 band, top end as baseline). Over-cap awards convert to gold like their basic siblings. Suspended links still count against the cap (the link exists; the town just holds it hostage).",
+  }),
+  innStepsPerLife: knob<number>({
+    default: 8,
+    unit: "steps per world life restored",
+    description: "S24 (ADR-086): the inn's per-point price — rest trades steps for life (5/8/12 by difficulty, the perverse-incentive argument settled per-point over flat). The rest is a TRANSACTION bulk-advancing the world clock: sieges, deadlines, lord growth, respawns all tick; news queues for waking.",
   }),
   questGoldByTier: knob<Record<1 | 2 | 3, number>>({
     default: { 1: 20, 2: 50, 3: 100 },
@@ -413,6 +428,7 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
     siegeIntervalSteps: { civilized: 900, approach: 675, wild: 450 },
     siegeWarningSteps: 90,
     siegeGraceSteps: 500,
+    innStepsPerLife: 5,
     lossLifePenalty: 1,
     lifeFloor: 10, // only gained life is ever at risk
     shopPriceMultiplier: 0.8,
@@ -429,6 +445,7 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
     siegeIntervalSteps: { civilized: 450, approach: 340, wild: 225 },
     siegeWarningSteps: 40,
     siegeGraceSteps: 200,
+    innStepsPerLife: 12,
     anteCount: 2,
     lossLifePenalty: 1,
     lifeFloor: 0,

@@ -15,10 +15,36 @@
 const mappingModules = import.meta.glob("../../../../data/audio/mapping.json", { eager: true }) as Record<string, { default: Record<string, string> }>;
 const mapping: Record<string, string> = Object.values(mappingModules)[0]?.default ?? {};
 
-/** The initial taxonomy (brief Part 3) — extend as wiring reveals wants; escalate if it balloons. */
-export type MusicCue = "music.menu" | "music.overworld" | "music.town" | "music.dungeon" | "music.stronghold" | "music.duel";
-export type StingCue = "sting.quest-complete" | "sting.siege-news" | "sting.duel-win" | "sting.duel-loss" | "sting.coin-flip";
+/** The taxonomy — S23's initial set, revised by the S24 mapping v3 landing:
+ * - `music.town` RESOLVES BY REGION (colour + ring → `music.town.W1` … `music.town.G3`) — the
+ *   region is the musical identity unit (Chris); the bare key stays as a fallback lookup.
+ * - `splash.stronghold.<id>` — the five castle themes, played at the seat's threshold splash.
+ * - Stingers per v3: one crier for all news (`sting.news`), `sting.reward` / `sting.manalink`
+ *   for quest payoffs, `sting.parley` at the stakes menu, `sting.treasure` at a cache.
+ * - Deliberate silences are MAPPING facts, not code: menu (TBD, hook kept), overworld, in-duel,
+ *   interiors — the cues stay registered and unmapped. */
+export type RegionColor = "W" | "U" | "B" | "R" | "G";
+export type TownMusicCue = `music.town.${RegionColor}${1 | 2 | 3}`;
+export type StrongholdSplashCue = `splash.stronghold.${"argent_bastion" | "spiral_spire" | "charnel_court" | "furnace_gate" | "verdant_throne"}`;
+export type MusicCue =
+  | "music.menu" | "music.overworld" | "music.town" | "music.dungeon" | "music.stronghold" | "music.duel"
+  | TownMusicCue
+  | StrongholdSplashCue;
+export type StingCue =
+  | "sting.news" | "sting.reward" | "sting.manalink" | "sting.parley" | "sting.treasure"
+  | "sting.duel-win" | "sting.duel-loss" | "sting.coin-flip";
 export type Cue = MusicCue | StingCue;
+
+export const RING_NUM = { civilized: 1, approach: 2, wild: 3 } as const;
+/** The v3 town resolution: town → its region's colour+ring → track. */
+export function townMusicCue(color: string, tier: keyof typeof RING_NUM): MusicCue {
+  const c = (["W", "U", "B", "R", "G"] as const).includes(color as RegionColor) ? (color as RegionColor) : "W";
+  return `music.town.${c}${RING_NUM[tier]}`;
+}
+/** The v3 stronghold resolution: seat id → its castle theme. */
+export function strongholdSplashCue(id: string): MusicCue {
+  return `splash.stronghold.${id}` as StrongholdSplashCue;
+}
 
 const STORE_KEY = "cinquefoil-audio-enabled";
 const FADE_MS = 900;
@@ -77,7 +103,10 @@ export class AudioManager {
    * KEYS in mapping.json are documentation — they are never valid Cue names, so lookups by
    * typed cue can't reach them. */
   private srcFor(cue: Cue): string | null {
-    const file = this.files[cue];
+    let file = this.files[cue];
+    // v3: a region-resolved town cue falls back to the bare `music.town` key (a mapping that
+    // wants ONE town track everywhere writes one line).
+    if ((typeof file !== "string" || file.length === 0) && cue.startsWith("music.town.")) file = this.files["music.town"];
     return typeof file === "string" && file.length > 0 ? `/audio/${file}` : null;
   }
 

@@ -20,10 +20,10 @@ import { loadCardPool } from "@shandalar/cards/loader";
 import { runMatch, type Agent } from "@shandalar/engine";
 import { HeuristicAgent, difficultyProfile, type Difficulty } from "@shandalar/agents";
 import { loadCatalog } from "./loader.js";
-import { newWorld, starterTemplate, worldKnobs } from "./state.js";
+import { maxWorldLife, newWorld, starterTemplate, worldKnobs } from "./state.js";
 import type { DifficultyName } from "./knobs.js";
 import type { StarterId } from "./catalog.js";
-import { advance, applyDuelResult, parley, visibleRoamers } from "./journey.js";
+import { advance, applyDuelResult, innRest, parley, visibleRoamers } from "./journey.js";
 import { findPath, idx, manhattan, type Point } from "./map.js";
 
 function arg(name: string, fallback: string): string {
@@ -82,6 +82,11 @@ const siegeFalls: Record<string, number> = { civilized: 0, approach: 0, wild: 0 
 let occupiedTownSteps = 0; // Σ over steps of (towns occupied at that step)
 const occupiedAtEnd: number[] = [];
 const firstFallStep: number[] = [];
+// S24 (ADR-086): the life economy — losses vs recoveries per tour (the recovery knobs' tables).
+// Rest policy: at every town arrival, rest to FULL when below half maximum (the modest default).
+let lifeLostToLosses = 0, innRests = 0, innStepsSpent = 0, innLifeBought = 0;
+const maxLifeAtEnd: number[] = [];
+let lifeLinksHeld = 0;
 
 for (let seed = 1; seed <= seeds; seed++) {
   const w = newWorld({ seed, catalog, starter: starterId, difficulty, knobLayers: extraKnobs });
@@ -129,7 +134,19 @@ for (let seed = 1; seed <= seeds; seed++) {
       }
       const enc = ev.find((e) => e.type === "encounter");
       if (!enc || enc.type !== "encounter") {
-        if (ev.some((e) => e.type === "arrived")) break;
+        if (ev.some((e) => e.type === "arrived")) {
+          // S24 rest policy: below half maximum → rest to full (the inn's clocks tick inside).
+          const mx = maxWorldLife(w, extraKnobs);
+          if (w.player.worldLife < Math.ceil(mx / 2)) {
+            const rest = innRest(w, catalog, mx - w.player.worldLife, extraKnobs);
+            innRests += 1; innStepsSpent += rest.stepsSpent; innLifeBought += rest.healed;
+            for (const e of rest.events) {
+              if (e.type === "siegeThreatened") siegeThreats[w.map.regions[w.map.towns[e.townIndex]!.region]!.tier]! += 1;
+              if (e.type === "siegeFell") { siegeFalls[w.map.regions[w.map.towns[e.townIndex]!.region]!.tier]! += 1; firstFallStep.push(w.player.stepsTaken); }
+            }
+          }
+          break;
+        }
         continue; // avoid-policy partial leg: keep walking
       }
       const region = w.map.regions[enc.encounter.region]!;
@@ -147,7 +164,7 @@ for (let seed = 1; seed <= seeds; seed++) {
       const rec = applyDuelResult(w, catalog, d, result);
       const t = String(d.enemy.tier);
       if (rec.outcome === "win") duels[t]!.w += 1;
-      else if (rec.outcome === "loss") duels[t]!.l += 1;
+      else if (rec.outcome === "loss") { duels[t]!.l += 1; lifeLostToLosses += knobs.lossLifePenalty; }
       else duels[t]!.d += 1;
       const bo = (byOpponent[enc.encounter.catalogId] ??= { w: 0, l: 0, d: 0 });
       if (rec.outcome === "win") bo.w += 1; else if (rec.outcome === "loss") bo.l += 1; else bo.d += 1;
@@ -159,6 +176,8 @@ for (let seed = 1; seed <= seeds; seed++) {
   if (!dead) toursCompleted += 1;
   occupiedAtEnd.push((w.sieges as { status?: string }[]).filter((s) => s.status === "occupied").length);
   lifeAtEnd.push(w.player.worldLife);
+  maxLifeAtEnd.push(maxWorldLife(w, extraKnobs));
+  lifeLinksHeld += w.manalinks.filter((m) => m.kind === "life").length;
   renownAtEnd.push(w.player.renown);
   goldEnd += w.player.gold;
   totalSteps += w.player.stepsTaken;
@@ -179,6 +198,9 @@ for (const t of ["1", "2", "3"]) {
 }
 console.log(`  contacts: roamer reached you ${contactsByRoamer} · you stepped onto one ${contactsByPlayer} · lair fights ${lairFights} · distinct roamers sighted ${sightings} (fleeing ${fleeingSeen}; caught fleeing ${fleeingCaught}) · respawns ${spawned}`);
 console.log(`  ante won ${anteWon} / lost ${anteLost} · mean gold at end ${(goldEnd / seeds).toFixed(0)} · mean world life at end ${mean(lifeAtEnd).toFixed(1)} · mean renown at end ${mean(renownAtEnd).toFixed(1)}`);
+// S24 (ADR-086): the life economy — the recovery knobs' tuning table. Life links stay ~0 until
+// the sim accepts quests (bounty rewards flow through defeats only); the column exists for the day it does.
+console.log(`  life economy: lost to losses −${lifeLostToLosses} · inn: ${innRests} rests, ${innStepsSpent} steps for +${innLifeBought} life (policy: rest to full below half max) · mean max life at end ${mean(maxLifeAtEnd).toFixed(1)} · life links held ${(lifeLinksHeld / seeds).toFixed(1)}/seed`);
 // S21: siege pressure (the tour never relieves or liberates — this is the passive player's exposure).
 console.log(`  sieges: threats c/a/w ${siegeThreats.civilized}/${siegeThreats.approach}/${siegeThreats.wild} · falls c/a/w ${siegeFalls.civilized}/${siegeFalls.approach}/${siegeFalls.wild} · mean towns occupied at tour end ${mean(occupiedAtEnd).toFixed(1)} · occupied-town exposure ${(occupiedTownSteps / Math.max(1, totalSteps)).toFixed(2)} town·steps/step${firstFallStep.length ? ` · first fall at mean step ${mean(firstFallStep).toFixed(0)}` : ""}`);
 // S18: per-opponent table (player's win % vs each catalog entry), beasts and signatures marked.

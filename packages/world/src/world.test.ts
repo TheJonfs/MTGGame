@@ -1412,8 +1412,9 @@ describe("S19 Part 3+5 (quests, scripted acceptance): offers, courier, card-cour
       const pointer = lines.find(isPointer);
       expect(pointer).toBeTruthy(); // one pour names a posting town
       expect(posts.some((p) => pointer!.includes(p.name))).toBe(true); // and it IS a posting town
-      // Cap every colour: the pointer goes quiet (nothing left to win).
-      for (const c of ["W", "U", "B", "R", "G"] as const) for (let i = 0; i < knobs.manalinkCapPerColor; i++) w.manalinks.push({ color: c, town: 0 });
+      // Cap every colour AND the life kind (S24): the pointer goes quiet (nothing left to win).
+      for (const c of ["W", "U", "B", "R", "G"] as const) for (let i = 0; i < knobs.manalinkCapPerColor; i++) w.manalinks.push({ color: c, town: 0, kind: "basic" });
+      for (let i = 0; i < knobs.lifeManalinkCap; i++) w.manalinks.push({ color: "W", town: 0, kind: "life" });
       expect(tavernRumors(w, catalog, here, pool.cards).find(isPointer)).toBeUndefined();
       return;
     }
@@ -1496,6 +1497,75 @@ describe("S19 Part 3+5 (quests, scripted acceptance): offers, courier, card-cour
     const result = await runMatch(out.duel.spec, pool.cards, agentsFor(w, out.duel.enemy.difficulty, out.duel.enemy.deck, 44));
     expect(["win", "loss", "draw"]).toContain(applyDuelResult(w, catalog, out.duel, result).outcome);
   }, 60_000);
+
+  it("S24 (ADR-086) life manalinks: +1 maximum each, lifeManalinkCap converts overflow to gold, life links never enter duels, kind survives save/load, and the offer roll produces both kinds", async () => {
+    const { manalinkModifiers } = await import("./quests.js");
+    const { maxWorldLife } = await import("./state.js");
+    const w = newWorld({ seed: 44, catalog, starter: "green" });
+    const knobs = worldKnobs(w);
+    const base = knobs.startingWorldLife;
+    expect(maxWorldLife(w)).toBe(base);
+    w.manalinks.push({ color: "G", town: 0, kind: "life" }, { color: "W", town: 1, kind: "life" }, { color: "G", town: 2, kind: "basic" });
+    expect(maxWorldLife(w)).toBe(base + 2); // life links only
+    expect(manalinkModifiers(w)).toHaveLength(1); // the basic link only — life links never enter duels
+    // Save round-trip preserves kinds (and pre-S24 saves default absent kind to basic on read).
+    const loaded = deserializeWorld(serializeWorld(w));
+    expect(loaded.manalinks.map((m) => m.kind)).toEqual(["life", "life", "basic"]);
+    expect(maxWorldLife(loaded)).toBe(base + 2);
+    // The kind split exists in the wild: across seeds, offers roll BOTH kinds.
+    const { townOffers } = await import("./quests.js");
+    const kinds = new Set<string>();
+    for (let seed = 41; seed < 90 && kinds.size < 2; seed++) {
+      const w2 = newWorld({ seed, catalog, starter: "green" });
+      for (const t of w2.map.towns) for (const o of townOffers(w2, catalog, t, worldKnobs(w2), pool.cards)) if (o.reward.manalink) kinds.add(o.reward.manalinkKind ?? "basic");
+    }
+    expect(kinds).toEqual(new Set(["basic", "life"]));
+  });
+
+  it("S24 (ADR-086) suspension drops the MAXIMUM: a life-link town falling clamps current life; liberation restores the ceiling (current stays)", async () => {
+    const { maxWorldLife, clampWorldLife } = await import("./state.js");
+    const { siegeEntry, resolveSiege } = await import("./siege.js");
+    const w = newWorld({ seed: 46, catalog, starter: "green" });
+    quiet(w);
+    const knobs = worldKnobs(w);
+    const town = w.map.towns[0]!;
+    w.manalinks.push({ color: "G", town: town.index, kind: "life" });
+    w.player.worldLife = maxWorldLife(w); // rested to the raised ceiling (11)
+    expect(w.player.worldLife).toBe(knobs.startingWorldLife + 1);
+    const entry = siegeEntry(w, knobs, town);
+    entry.status = "occupied"; // the fall (the tick path calls clampWorldLife — exercised below via the helper)
+    clampWorldLife(w);
+    expect(maxWorldLife(w)).toBe(knobs.startingWorldLife);
+    expect(w.player.worldLife).toBe(knobs.startingWorldLife); // clamped — capacity is anchored to places
+    resolveSiege(w, knobs, entry, town);
+    expect(maxWorldLife(w)).toBe(knobs.startingWorldLife + 1); // the ceiling returns…
+    expect(w.player.worldLife).toBe(knobs.startingWorldLife); // …the lost point does not (the inn sells it back)
+  });
+
+  it("S24 (ADR-086) the inn: rest heals to the maximum at innStepsPerLife per point, bulk-advances the clock (a mid-rest siege threat lands in the QUEUED events), and a full sleeper pays nothing", async () => {
+    const { innRest } = await import("./journey.js");
+    const { maxWorldLife } = await import("./state.js");
+    const w = newWorld({ seed: 47, catalog, starter: "green" });
+    quiet(w);
+    const knobs = worldKnobs(w);
+    w.player.worldLife = 6;
+    const steps0 = w.player.stepsTaken;
+    // A siege threat scheduled to land mid-rest: entry for town 0 with the next threat 10 steps out.
+    const { siegeEntry } = await import("./siege.js");
+    const entry = siegeEntry(w, knobs, w.map.towns[0]!);
+    entry.nextThreatStep = steps0 + 10;
+    const out = innRest(w, catalog, 4, { event: { roamerRespawnSteps: { civilized: 0, approach: 0, wild: 0 } } });
+    expect(out.healed).toBe(4);
+    expect(out.stepsSpent).toBe(4 * knobs.innStepsPerLife);
+    expect(w.player.worldLife).toBe(10);
+    expect(w.player.stepsTaken).toBe(steps0 + out.stepsSpent);
+    expect(out.events.some((e) => e.type === "siegeThreatened")).toBe(true); // the world moved while we slept
+    // Overshoot clamps to the maximum; a full sleeper pays nothing.
+    const out2 = innRest(w, catalog, 99);
+    expect(out2.healed).toBe(maxWorldLife(w) - 10);
+    const out3 = innRest(w, catalog, 5);
+    expect(out3).toEqual({ healed: 0, stepsSpent: 0, events: [] });
+  });
 });
 
 describe("S18 Part 6 (scripted acceptance): a beast encounter end-to-end — roamer → parley (voice, distraction price, refusal) → duel on the beast deck with the tier AI profile → result applied → roamer removed", () => {

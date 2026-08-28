@@ -46,7 +46,7 @@ import {
   type WorldState,
 } from "@shandalar/world";
 import { MatchController } from "../play/match-controller.js";
-import { abandonQuest, acceptQuest, addToCollection, cardMatches, creditRenown, pendingRetrievalChoice, questsOnArrival, resolveRetrieval, retrievalOnDungeonClear, rumorState, rumorsOnArrival, tavernRumors, spares, townOffers, type ActiveQuest, type QuestOffer } from "@shandalar/world";
+import { abandonQuest, acceptQuest, addToCollection, cardMatches, creditRenown, innRest, pendingRetrievalChoice, questsOnArrival, resolveRetrieval, retrievalOnDungeonClear, rumorState, rumorsOnArrival, tavernRumors, spares, townOffers, type ActiveQuest, type QuestOffer } from "@shandalar/world";
 import {
   applyInteriorDuel, clearDungeon, colorPrizeRoll, dungeonAdvance, dungeonAsWorldMap, dungeonDuelSpec, dungeonPath,
   empowermentTiersFor, generateDungeonRun, lairPrizeRoll, reachedTiers, resetDungeon, type DungeonRun, type MoxDungeonDef,
@@ -493,6 +493,8 @@ export class WorldController {
 
   /** S19 round 2: pending completion announcements (modal over whatever screen is up). */
   questPopup: { title: string; quest: string; reward: string }[] | null = null;
+  /** S24 audio (v3): bumped on every dungeon cache found — the UI's Findcard sting watches it. */
+  treasureSeq = 0;
   dismissQuestPopup(): void {
     this.questPopup = null;
     this.emit();
@@ -604,6 +606,30 @@ export class WorldController {
   leaveTown(): void {
     if (this.screen.kind !== "town") return;
     this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: null };
+    this.emit();
+  }
+
+  /** S24 (ADR-086) — the inn: rest trades steps for life; the clock bulk-advances and any news
+   * that landed while sleeping queues for waking (through the news modal, never mid-dialog). */
+  innRest(points: number): void {
+    if (!this.world || this.screen.kind !== "town") return;
+    const town = this.screen.town;
+    const out = innRest(this.world, this.catalog, points, this.extraKnobs);
+    this.autosave(); // a rest is a consequence (steps spent, clocks run)
+    for (const e of out.events) {
+      if (e.type === "siegeThreatened")
+        (this.questPopup ??= []).push({ title: "A town is under threat", quest: `While you slept: ${e.townName} is besieged — it falls in ${e.deadlineStep - this.world.player.stepsTaken} steps unless relieved.`, reward: "Reach it in time to drive the party off; fall, and its market, board, and gifts go dark." });
+      if (e.type === "siegeFell")
+        (this.questPopup ??= []).push({ title: "A town has fallen", quest: `While you slept: ${e.townName} fell to its besiegers.`, reward: "Its market, board, and gifts are dark until you liberate it." });
+      if (e.type === "questExpired")
+        (this.questPopup ??= []).push({ title: "A quest expired", quest: `While you slept, a contract ran out: ${e.text}`, reward: "No further penalty — the road simply outlasted it." });
+    }
+    // The clock may have crossed epochs while we slept: the shelf restocks live.
+    this.screen = {
+      kind: "town", town,
+      stock: rollShopStock(this.world, town, this.pool, this.knobs),
+      notice: out.healed > 0 ? `You rest ${out.stepsSpent} steps and wake restored (+${out.healed} life).` : "You are already at your full strength.",
+    };
     this.emit();
   }
 
@@ -762,6 +788,7 @@ export class WorldController {
       for (const e of events) {
         if (e.type === "treasure") {
           this.autosave(); // every cache is a consequence
+          this.treasureSeq += 1; // S24 audio (v3): the Findcard sting watches this
           const t = e.treasure;
           const notice =
             t.kind === "gold" ? `Escrowed: ${t.gold} gold. The mountain holds it until the guardian falls.`

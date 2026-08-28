@@ -1320,6 +1320,81 @@
         }
       }
     },
+    "gate-argent-bastion": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:e198b73aef2335f07991baa525b63bbeb29a83849b4269c069b3b6f564ccb677",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:e198b73aef2335f07991baa525b63bbeb29a83849b4269c069b3b6f564ccb677",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/gate-argent-bastion/canonical.png",
+          "rendered_at": "2026-08-28T17:20:41+00:00",
+          "thumb": "assets/thumbs/gate-argent-bastion/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "gate-charnel-court": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:8e538a627cca3040fae1a2f6ab75ebc1e7ef8c89a395d51efe2b9b1af30b0442",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:8e538a627cca3040fae1a2f6ab75ebc1e7ef8c89a395d51efe2b9b1af30b0442",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/gate-charnel-court/canonical.png",
+          "rendered_at": "2026-08-28T17:21:03+00:00",
+          "thumb": "assets/thumbs/gate-charnel-court/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "gate-furnace-gate": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:f1f55325a7c9d0fd6e6696aea392a4a5d6c0d620c43a8231c5b737baefb86e51",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:f1f55325a7c9d0fd6e6696aea392a4a5d6c0d620c43a8231c5b737baefb86e51",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/gate-furnace-gate/canonical.png",
+          "rendered_at": "2026-08-28T17:21:14+00:00",
+          "thumb": "assets/thumbs/gate-furnace-gate/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "gate-spiral-spire": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:55a55a7a0d24d5d54bc5b77a1f4bb54ea45b34ff9c84ed85312609b8a323dec9",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:55a55a7a0d24d5d54bc5b77a1f4bb54ea45b34ff9c84ed85312609b8a323dec9",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/gate-spiral-spire/canonical.png",
+          "rendered_at": "2026-08-28T17:20:52+00:00",
+          "thumb": "assets/thumbs/gate-spiral-spire/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "gate-verdant-throne": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:6316dedd82f80c3a6f9f02bc3867033961b8e0836c867af4b7489d63eef367b0",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:6316dedd82f80c3a6f9f02bc3867033961b8e0836c867af4b7489d63eef367b0",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/gate-verdant-throne/canonical.png",
+          "rendered_at": "2026-08-28T17:21:24+00:00",
+          "thumb": "assets/thumbs/gate-verdant-throne/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "guardian-arcanis": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:52aeb460b98aa640953eb2e4f926ee9699391fa7bb8f0ce9b1c20e87eb4eeea0",
@@ -2921,6 +2996,21 @@
           "path": "assets/images/town-board/canonical.png",
           "rendered_at": "2026-08-25T19:03:54+00:00",
           "thumb": "assets/thumbs/town-board/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "town-inn": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:8bd03a84136d3709a87e59ba7951f210dc132bfe75171291b239f8db762e676b",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:8bd03a84136d3709a87e59ba7951f210dc132bfe75171291b239f8db762e676b",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/town-inn/canonical.png",
+          "rendered_at": "2026-08-28T17:20:23+00:00",
+          "thumb": "assets/thumbs/town-inn/canonical.png",
           "variant_prompt": null
         }
       }

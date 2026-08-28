@@ -7,7 +7,7 @@ import { creditSpokeKill, lordSealed } from "./stronghold.js";
 import type { KnobValues } from "./knobs.js";
 import { findPath, fixedPointAt, idx, inBounds, manhattan, markExplored, regionAt, samePoint, townAt, type Point, type Town, type WorldMap } from "./map.js";
 import { WorldRng } from "./rng.js";
-import { activeDeck, deckSize, worldKnobs, RENOWN_COLORS, type Decklist, type DuelRecord, type ProvenanceSource, type WorldState } from "./state.js";
+import { activeDeck, clampWorldLife, deckSize, maxWorldLife, worldKnobs, RENOWN_COLORS, type Decklist, type DuelRecord, type ProvenanceSource, type WorldState } from "./state.js";
 
 /**
  * The headless loop (brief Part 3's logic, S12 Part 2 carving (b)): walk →
@@ -328,6 +328,44 @@ export function advance(
     world.rng = rng.state();
   }
   return events;
+}
+
+/** S24 (ADR-086) — the inn: rest trades steps for life at innStepsPerLife per point, capped at
+ * current maximum (maxWorldLife). The rest is a TRANSACTION bulk-advancing the world clock: quest
+ * deadlines, sieges, respawns, and lord growth (stepsTaken-derived) all tick per step exactly as a
+ * walked step would; events queue for the caller to show ON WAKING (no popups mid-dialog). Roamers
+ * wander (tickRoamers) but cannot make contact — the sleeper is behind the town's walls, and
+ * roamers never enter towns. Bounty sightings don't advance (nobody is watching: sees = never).
+ * A life-link town falling MID-REST drops the maximum; the heal then clamps to the new ceiling
+ * (steps stay spent — the innkeeper kept the bed either way; flagged in the handoff).
+ * Caller autosaves — a rest is a consequence. */
+export function innRest(
+  world: WorldState,
+  catalog: Catalog,
+  points: number,
+  extra: Parameters<typeof worldKnobs>[1] = {},
+): { healed: number; stepsSpent: number; events: StepEvent[] } {
+  const knobs = worldKnobs(world, extra);
+  const asked = Math.max(0, Math.min(points, maxWorldLife(world, extra) - world.player.worldLife));
+  const stepsSpent = asked * knobs.innStepsPerLife;
+  const events: StepEvent[] = [];
+  const rng = new WorldRng(world.rng);
+  try {
+    for (let i = 0; i < stepsSpent; i++) {
+      world.player.stepsTaken += 1;
+      for (const qe of questsOnStep(world, knobs, () => false)) {
+        if (qe.type === "questExpired") events.push({ type: "questExpired", questId: qe.quest.id, text: qe.quest.text });
+      }
+      for (const se of siegesOnStep(world, catalog, knobs)) events.push(se);
+      tickRoamers(world, catalog, knobs, rng);
+      for (const sp of respawnRoamers(world, catalog, knobs, rng)) events.push({ type: "spawned", opponentId: sp.id, region: sp.region });
+    }
+  } finally {
+    world.rng = rng.state();
+  }
+  world.player.worldLife += asked;
+  clampWorldLife(world); // the mid-rest-fall edge: the ceiling may have dropped while we slept
+  return { healed: asked, stepsSpent, events };
 }
 
 /** Click-to-walk: shortest passable path then advance. Returns null if unreachable. */

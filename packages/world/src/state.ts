@@ -197,6 +197,24 @@ export function worldKnobs(world: WorldState, extra: Partial<Record<"region" | "
   return resolveKnobs({ difficulty: DIFFICULTIES[world.difficulty], ...extra });
 }
 
+/** S24 (ADR-086): maximum world life = the base + one per ACTIVE life manalink. Town-tied means
+ * suspension law: a link whose town is occupied stops counting — capacity is anchored to places,
+ * and sieges gain a new terror (Chris-confirmed at the S24 kickoff). Reads siege state
+ * structurally (the quests.ts precedent — no siege.ts import). */
+export function maxWorldLife(world: WorldState, extra: Parameters<typeof worldKnobs>[1] = {}): number {
+  const occupied = new Set(
+    (world.sieges as { townIndex: number; status?: string }[]).filter((s) => s.status === "occupied").map((s) => s.townIndex),
+  );
+  const links = world.manalinks.filter((m) => m.kind === "life" && !occupied.has(m.town)).length;
+  return worldKnobs(world, extra).startingWorldLife + links;
+}
+
+/** Clamp current life to the maximum — called when the maximum can DROP (a life-link town falls)
+ * and defensively on load. Never touches gameOver (a clamp can't reach 0: max ≥ the base). */
+export function clampWorldLife(world: WorldState): void {
+  world.player.worldLife = Math.min(world.player.worldLife, maxWorldLife(world));
+}
+
 export function newWorld(opts: NewWorldOptions): WorldState {
   const difficulty = opts.difficulty ?? "standard";
   const knobs = resolveKnobs({ difficulty: DIFFICULTIES[difficulty], ...(opts.knobLayers ?? {}) });

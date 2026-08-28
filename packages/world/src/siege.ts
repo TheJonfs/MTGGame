@@ -24,7 +24,7 @@ import { manalinkModifiers } from "./quests.js";
 import type { KnobValues } from "./knobs.js";
 import type { Town } from "./map.js";
 import { WorldRng } from "./rng.js";
-import { activeDeck, type WorldState } from "./state.js";
+import { activeDeck, clampWorldLife, type WorldState } from "./state.js";
 // NOTE: journey.ts imports this module (advance() ticks sieges) and this module imports
 // journey.ts (the engagement consequences reuse the one ante/collection/renown entry point —
 // the S17 "one discard entry point" lesson applied to world consequences). The ESM cycle is
@@ -137,6 +137,7 @@ export function siegesOnStep(world: WorldState, catalog: Catalog, knobs: KnobVal
       e.occupiedAtStep = steps;
       delete e.engagement; // a mid-defense save that dawdled past the deadline: the defense is moot
       events.push({ type: "siegeFell", townIndex: town.index, townName: town.name });
+      clampWorldLife(world); // S24 (ADR-086): a life-manalink town falling drops the MAXIMUM — current clamps
     }
   }
   return events;

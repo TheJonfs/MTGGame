@@ -38,6 +38,8 @@ export interface QuestReward {
   cardName?: string;
   /** A manalink of this colour, tied to the granting town (tier 2+; capped per colour). */
   manalink?: "W" | "U" | "B" | "R" | "G";
+  /** S24 (ADR-086): which kind the manalink reward is (absent on pre-S24 offers = basic). */
+  manalinkKind?: "basic" | "life";
 }
 
 export interface QuestOffer {
@@ -121,6 +123,10 @@ export interface Manalink {
   color: "W" | "U" | "B" | "R" | "G";
   /** Granting town (suspension-on-town-fall arrives with S20 sieges). */
   town: number;
+  /** S24 (ADR-086): the class's second kind — "life" raises maximum world life by 1 (permanent,
+   * town-tied, suspension law shared: an occupied town's link stops counting and current life
+   * clamps). Absent = "basic" (every pre-S24 save). */
+  kind?: "basic" | "life";
 }
 
 /** S19 round 2 (Chris): a manalink puts a REGULAR basic land onto your battlefield — a green manalink
@@ -247,7 +253,11 @@ function rollReward(rng: WorldRng, world: WorldState, catalog: Catalog, tier: 1 
   void catalog;
   const gold = knobs.questGoldByTier[tier] ?? 20;
   const roll = rng.float();
-  if (tier >= 2 && roll < knobs.manalinkRewardChance && townColor && COLORS.includes(townColor)) return { gold: Math.round(gold / 2), manalink: townColor }; // S22 r2: knobbed (was 0.25)
+  if (tier >= 2 && roll < knobs.manalinkRewardChance && townColor && COLORS.includes(townColor)) {
+    // S24 (ADR-086): the kind split — life (+1 maximum world life) vs basic (the land in play).
+    const kind = rng.float() < knobs.lifeManalinkWeight ? ("life" as const) : ("basic" as const);
+    return { gold: Math.round(gold / 2), manalink: townColor, manalinkKind: kind };
+  }
   if (roll < 0.65) {
     const wantR = tier === 3 && rng.float() < 0.35;
     const candidates = [...pool.values()]
@@ -317,13 +327,26 @@ function award(world: WorldState, q: ActiveQuest, knobs: KnobValues): string {
     notes.push(`the card ${q.reward.cardName ?? q.reward.cardId}`);
   }
   if (q.reward.manalink) {
-    const have = world.manalinks.filter((m) => m.color === q.reward.manalink).length;
-    if (have < knobs.manalinkCapPerColor) {
-      world.manalinks.push({ color: q.reward.manalink, town: q.fromTown });
-      notes.push(`a manalink — every duel now starts with a bonus ${MANALINK_LAND_NAME[q.reward.manalink]} on your battlefield`);
+    if ((q.reward.manalinkKind ?? "basic") === "life") {
+      // S24 (ADR-086): the life kind — +1 maximum world life, town-tied. Cap counts EVERY life
+      // link owned (a suspended link exists; the town just holds it hostage).
+      const haveLife = world.manalinks.filter((m) => m.kind === "life").length;
+      if (haveLife < knobs.lifeManalinkCap) {
+        world.manalinks.push({ color: q.reward.manalink, town: q.fromTown, kind: "life" });
+        notes.push("a life manalink — your maximum world life rises by 1 while this town stands free");
+      } else {
+        gold += knobs.questGoldByTier[q.tier] ?? 20;
+        notes.push("gold in lieu (you carry all the life manalinks one heart can hold)");
+      }
     } else {
-      gold += knobs.questGoldByTier[q.tier] ?? 20; // cap reached: the link converts to gold
-      notes.push(`gold in lieu (you already hold a ${q.reward.manalink} manalink)`);
+      const have = world.manalinks.filter((m) => (m.kind ?? "basic") === "basic" && m.color === q.reward.manalink).length;
+      if (have < knobs.manalinkCapPerColor) {
+        world.manalinks.push({ color: q.reward.manalink, town: q.fromTown, kind: "basic" });
+        notes.push(`a manalink — every duel now starts with a bonus ${MANALINK_LAND_NAME[q.reward.manalink]} on your battlefield`);
+      } else {
+        gold += knobs.questGoldByTier[q.tier] ?? 20; // cap reached: the link converts to gold
+        notes.push(`gold in lieu (you already hold a ${q.reward.manalink} manalink)`);
+      }
     }
   }
   world.player.gold += gold;
@@ -568,13 +591,16 @@ export function tavernRumors(world: WorldState, catalog: Catalog, town: Town, po
   // occupied), one pointer joins the pour, rotating on the same epoch as the lore.
   if (pool) {
     const knobs = worldKnobs(world);
-    const capped = new Set(COLORS.filter((c) => world.manalinks.filter((m) => m.color === c).length >= knobs.manalinkCapPerColor));
+    const capped = new Set(COLORS.filter((c) => world.manalinks.filter((m) => (m.kind ?? "basic") === "basic" && m.color === c).length >= knobs.manalinkCapPerColor));
+    const lifeCapped = world.manalinks.filter((m) => m.kind === "life").length >= knobs.lifeManalinkCap; // S24: the life kind has its own cap
     const occupied = new Set((world.sieges as { townIndex: number; status?: string }[]).filter((s) => s.status === "occupied").map((s) => s.townIndex));
     const posts = world.map.towns.filter(
       (t) =>
         t.index !== town.index &&
         !occupied.has(t.index) &&
-        townOffers(world, catalog, t, knobs, pool).some((o) => o.reward.manalink && !capped.has(o.reward.manalink)),
+        townOffers(world, catalog, t, knobs, pool).some(
+          (o) => o.reward.manalink && ((o.reward.manalinkKind ?? "basic") === "life" ? !lifeCapped : !capped.has(o.reward.manalink)),
+        ),
     );
     if (posts.length > 0) {
       const pick = posts[rng.int(posts.length)]!;
@@ -605,7 +631,7 @@ export function manalinkModifiers(world: WorldState): { type: "permanentOnBattle
     (world.sieges as { townIndex: number; status?: string }[]).filter((s) => s.status === "occupied").map((s) => s.townIndex),
   );
   return world.manalinks
-    .filter((m) => !occupied.has(m.town))
+    .filter((m) => (m.kind ?? "basic") === "basic" && !occupied.has(m.town)) // S24: life links live in maxWorldLife, not in duels
     .map((m) => ({ type: "permanentOnBattlefield" as const, player: 0 as const, cardId: MANALINK_CARD[m.color] }));
 }
 
