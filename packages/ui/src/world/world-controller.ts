@@ -46,6 +46,18 @@ import {
   type WorldState,
 } from "@shandalar/world";
 import { MatchController } from "../play/match-controller.js";
+import { audio } from "../audio/audio.js";
+
+/** S24 r6: set-bit count over an explored bitmap (the reveal-burst detector's meter). */
+function popcount(words: number[]): number {
+  let n = 0;
+  for (let w of words) {
+    w = w - ((w >> 1) & 0x55555555);
+    w = (w & 0x33333333) + ((w >> 2) & 0x33333333);
+    n += (((w + (w >> 4)) & 0x0f0f0f0f) * 0x01010101) >> 24;
+  }
+  return n;
+}
 import { abandonQuest, acceptQuest, addToCollection, cardMatches, creditRenown, innRest, pendingRetrievalChoice, questsOnArrival, resolveRetrieval, retrievalOnDungeonClear, rumorState, rumorsOnArrival, tavernRumors, spares, townOffers, type ActiveQuest, type QuestOffer } from "@shandalar/world";
 import {
   applyInteriorDuel, clearDungeon, colorPrizeRoll, dungeonAdvance, dungeonAsWorldMap, dungeonDuelSpec, dungeonPath,
@@ -793,6 +805,29 @@ export class WorldController {
     this.emit();
   }
 
+  /** S24 r6 (Chris — the Damb set): the deep breathes when a step OPENS A SIGHTLINE. The
+   * original played on new-segment reveals; our translation is a reveal BURST — a step that
+   * uncovers ≥5 fog cells just rounded a corner or entered a chamber. A cooldown keeps it
+   * occasional (consecutive reveals don't chatter; explored backtracks stay silent), the draw
+   * is random-without-immediate-repeat from the five, and it rides the SFX channel so a breath
+   * never cuts a Findcard. UI-side randomness — sounds are not game state. */
+  private lastAmbientAt = 0;
+  private lastAmbientIdx = 0;
+  private dungeonAmbience(newCells: number): void {
+    if (newCells < 5) return;
+    const now = Date.now();
+    if (now - this.lastAmbientAt < 12_000) return;
+    this.lastAmbientAt = now;
+    let n: number;
+    if (this.lastAmbientIdx === 0) n = 1 + Math.floor(Math.random() * 5); // first breath: any of the five
+    else {
+      n = 1 + Math.floor(Math.random() * 4); // draw from the four others
+      if (n >= this.lastAmbientIdx) n += 1;
+    }
+    this.lastAmbientIdx = n;
+    audio.sfx(`sfx.ambient.dungeon.${n}`);
+  }
+
   /** Interior click-to-walk (fog-honest planning; instant, the interior is small). */
   dungeonClick(p: Point): void {
     if (!this.world || this.screen.kind !== "dungeon" || this.screen.walking) return;
@@ -811,7 +846,9 @@ export class WorldController {
     for (const cell of path) {
       if (!this.world || this.screen.kind !== "dungeon") return;
       if (!run.grid.passable[cell.y * run.grid.width + cell.x]) break; // fogged plan met a wall — stop
+      const exploredBefore = popcount(run.explored); // S24 r6: the reveal-burst detector
       const events = dungeonAdvance(run, this.knobs, [cell]);
+      this.dungeonAmbience(popcount(run.explored) - exploredBefore);
       this.emit();
       for (const e of events) {
         if (e.type === "treasure") {

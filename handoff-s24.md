@@ -50,6 +50,10 @@
 3. **Early exit ends the music** — leaving the win/loss result screen fades whatever result sting still rings (the parley-fade pattern generalized to a screen-transition watcher).
 4. Browser-verified: the splash ceremony with Manalink.flac fetching, the queue advancing life→basic with kind-correct prose; FUZZ_FULL 398/398 with SACRIFICED replay-clean.
 
+## Playtest round 6 (S24 — the deep breathes: the Damb set)
+
+The five dungeon-ambience pieces (Damb1–5) play on the original's own logic, translated to our fog: **a step that OPENS A SIGHTLINE** — the reveal-burst detector diffs the interior explored bitmap per step, and ≥5 newly uncovered cells means a corner rounded or a chamber entered. A 12s cooldown keeps it occasional (explored backtracks stay silent by construction); the draw is random-without-immediate-repeat from the five (UI-side randomness — sounds are not game state); it rides the SFX channel at 0.4 so a breath never cuts a Findcard. Works in every interior kind (mox, lair, stronghold) — and v3's interior SILENCE is what makes it land: these are the only sound down there. Browser-verified: the first step into the Verdant Throne's entry chamber drew Damb3. **Schema note for the planner**: this is v3's "pool want emerging" — served as five flat cues + a code-side picker; pools stay unresurrected unless a second pool customer arrives.
+
 ## Deviations from the brief
 
 1. **The mid-rest-fall edge ruled simply**: a life-link town falling while you sleep drops the ceiling and the heal clamps to it — the steps stay spent (the innkeeper kept the bed). Escalated-by-doing; one refund line if the feel says robbed.

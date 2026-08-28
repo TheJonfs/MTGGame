@@ -154,5 +154,26 @@
   "sfx.sacrifice": {
     "file": "sfx/Sacrfice.wav",
     "volume": 0.3
-  }
+  },
+  "sfx.ambient.dungeon.1": {
+    "file": "Damb1.flac",
+    "volume": 0.4
+  },
+  "sfx.ambient.dungeon.2": {
+    "file": "Damb2.flac",
+    "volume": 0.4
+  },
+  "sfx.ambient.dungeon.3": {
+    "file": "Damb3.flac",
+    "volume": 0.4
+  },
+  "sfx.ambient.dungeon.4": {
+    "file": "Damb4.flac",
+    "volume": 0.4
+  },
+  "sfx.ambient.dungeon.5": {
+    "file": "Damb5.flac",
+    "volume": 0.4
+  },
+  "_ambient": "S24 r6: the Damb set \u2014 the deep breathes on a REVEAL BURST (a step uncovering >=5 fog cells inside any interior), 12s cooldown, random-without-repeat from the five. Flat cues + a code-side picker (v3's pool want emerged; flagged, not resurrected)."
 }
