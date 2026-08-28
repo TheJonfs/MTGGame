@@ -24,6 +24,29 @@ describe("S23 audio scaffolding (cue-first; ADR-083/084)", () => {
     expect(a.resolve("music.town")).toBeNull();
   });
 
+  it("S24 r2: {file, volume} entries carry a clamped per-cue volume; bare strings are ×1; sfx() no-ops headless", () => {
+    const a = new AudioManager({
+      "sfx.cast.B": { file: "sfx/Black.wav", volume: 0.5 },
+      "sfx.cast.R": { file: "sfx/Red.wav", volume: 7 }, // clamps to 1
+      "sting.news": "Newsflash.flac",
+    });
+    expect(a.resolve("sfx.cast.B")).toBe("/audio/sfx/Black.wav");
+    expect(a.resolveVolume("sfx.cast.B")).toBe(0.5);
+    expect(a.resolveVolume("sfx.cast.R")).toBe(1);
+    expect(a.resolveVolume("sting.news")).toBe(1);
+    expect(a.resolve("sfx.cast.W")).toBeNull(); // unmapped identity: silence
+    a.sfx("sfx.cast.B"); // headless: never throws
+    expect(a.entries().map((e) => e.cue).sort()).toEqual(["sfx.cast.B", "sfx.cast.R", "sting.news"]);
+  });
+
+  it("S24 r2: castSfxCue keys by WUBRG-sorted colour identity, then artifact, then colorless", async () => {
+    const { castSfxCue } = await import("./audio.js");
+    expect(castSfxCue(["B"], ["Creature"])).toBe("sfx.cast.B");
+    expect(castSfxCue(["U", "W"], ["Creature"])).toBe("sfx.cast.WU"); // sorted, guild-pair-mappable
+    expect(castSfxCue([], ["Artifact"])).toBe("sfx.cast.artifact");
+    expect(castSfxCue([], ["Land"])).toBe("sfx.cast.colorless");
+  });
+
   it("the toggle flips and never throws headless (no window, no Audio, no localStorage)", () => {
     const a = new AudioManager({});
     expect(a.isEnabled()).toBe(true); // default on

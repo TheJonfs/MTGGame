@@ -23,6 +23,14 @@
 7. **Boss cards are priceless and untradeable**: prizeOnly refuses the buyer's stall ("there is exactly one, and it is yours") and `cardMatches` refuses them for card-courier contracts — one predicate covers the offer list, acceptance validation, and the UI's spare picker.
 8. **Waking occupied is RATIFIED** (concern 1 resolved): sleeping through your own town's fall stands as designed pressure.
 
+## Playtest round 2 (S24 — the SFX package lands its first pieces)
+
+1. **The coin toss found its piece**: `sting.coin-flip` → `sfx/Toss.wav` — the pending hook (PlayMatch's ceremony, wired since S23) simply received its file.
+2. **The SFX channel** (the third audio channel): fire-and-forget and freely OVERLAPPING — rapid card plays layer naturally and never touch the one-voice sting or the music. Cues key by colour identity: `sfx.cast.W…G` wired now; guild pairs (`sfx.cast.WU` — the package has all ten), `sfx.cast.artifact`, and `colorless` resolve by the same rule and are mappable by DATA alone the day they're wanted.
+3. **The in-game hook**: SPELL_CAST and LAND_PLAYED (both seats — hearing the opponent's plays is feedback) ring the card's colour; a basic rings what it taps for (a Swamp is B). Browser-verified: playing a Mountain fetched Red.wav.
+4. **Per-cue volume in the mapping**: a value may be `{"file": "...", "volume": 0.5}` — a 0..1 multiplier on the channel baseline, clamped, backward-compatible with bare strings. The five colours ship at 0.5.
+5. **The `/sound` board** (dev surface; better than a five-basics test deck): every mapped cue playable in place, with LIVE volume sliders on the SFX family — drag, click, read the number off, and the keeper values go into mapping.json (the board persists nothing; the mapping stays the one source of truth). The whole 73-file SFX set is mounted at `assets/audio/sfx/`, so future hooks (Draw, Tap, Shuffle, Attack…) are one mapping line + one seam each — the worksheet's in-duel micro-stinger workstream now has its delivery mechanism.
+
 ## Deviations from the brief
 
 1. **The mid-rest-fall edge ruled simply**: a life-link town falling while you sleep drops the ceiling and the heal clamps to it — the steps stay spent (the innkeeper kept the bed). Escalated-by-doing; one refund line if the feel says robbed.

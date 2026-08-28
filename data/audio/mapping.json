@@ -28,5 +28,27 @@
   "sting.reward": "Reward.flac",
   "sting.duel-win": "Winduel.flac",
   "sting.duel-loss": "Loseduel.flac",
-  "sting.treasure": "Findcard.flac"
+  "sting.treasure": "Findcard.flac",
+  "sting.coin-flip": "sfx/Toss.wav",
+  "_sfx": "S24 r2: the SFX channel \u2014 sfx.cast.<colour identity> rings on every cast/land play (both seats). Value form {file, volume}: volume is a 0..1 multiplier the /sound board tunes; guild pairs (sfx.cast.WU \u2026), artifact, colorless are mappable the day they're wanted.",
+  "sfx.cast.W": {
+    "file": "sfx/White.wav",
+    "volume": 0.5
+  },
+  "sfx.cast.U": {
+    "file": "sfx/Blue.wav",
+    "volume": 0.5
+  },
+  "sfx.cast.B": {
+    "file": "sfx/Black.wav",
+    "volume": 0.5
+  },
+  "sfx.cast.R": {
+    "file": "sfx/Red.wav",
+    "volume": 0.5
+  },
+  "sfx.cast.G": {
+    "file": "sfx/Green.wav",
+    "volume": 0.5
+  }
 }

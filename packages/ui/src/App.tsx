@@ -8,6 +8,7 @@ import { LogPanel, buildLogLines } from "./components/LogPanel";
 import { Gallery } from "./components/Gallery";
 import { PlayApp } from "./play/PlayApp";
 import { WorldApp } from "./world/WorldApp";
+import { SoundBoard } from "./audio/SoundBoard";
 
 const VIEWER_VERSION = "s6-0.1";
 /** Log placement is an open art-direction decision (§7): rail tab by default,
@@ -215,5 +216,6 @@ export default function App() {
   if (window.location.pathname === "/viewer") {
     return game ? <Viewer game={game} /> : <Loader onLoad={setGame} />;
   }
+  if (window.location.pathname === "/sound") return <SoundBoard />; // S24 r2: the SFX tuning board (dev surface)
   return <MainMenu />;
 }

@@ -1,5 +1,6 @@
 import { ArrayLog, SeededRng } from "@shandalar/core";
-import { manaValue, parseManaCost, type CardDef, type ResolvedTarget } from "@shandalar/cards";
+import { cardColors, manaValue, parseManaCost, type CardDef, type ResolvedTarget } from "@shandalar/cards";
+import { audio, castSfxCue } from "../audio/audio.js";
 import {
   DEFAULT_RULES,
   Game,
@@ -300,6 +301,22 @@ export class MatchController {
     bus.on("SPELL_CAST", (e) => {
       this.snapCardId = e.cardId; // inspector snap — event-driven, so it fires
       this.emit(); //              even when the spell resolves render-free
+      // S24 r2 (the SFX package): the cast rings in its colour (both seats — hearing the
+      // opponent's plays is feedback). Unmapped identities (guild pairs today) stay silent.
+      const d = pool.get(e.cardId);
+      if (d) audio.sfx(castSfxCue(cardColors(d), d.types));
+    });
+    bus.on("LAND_PLAYED", (e) => {
+      // A basic rings its colour too (the land's identity is what it taps for — a Swamp is B).
+      const obj = this.game.state.objects[e.objectId];
+      const d = obj ? pool.get(obj.cardId) : undefined;
+      if (!d) return;
+      const produced = new Set<string>();
+      for (const ab of d.abilities ?? []) {
+        if (ab.kind !== "activated") continue;
+        for (const ef of ab.effects) if (ef.type === "addMana" && ef.mana) for (const ch of ef.mana.replace(/[^WUBRG]/g, "")) produced.add(ch);
+      }
+      audio.sfx(castSfxCue([...produced], d.types));
     });
     bus.on("ATTACKERS_DECLARED", (e) => {
       const state = this.game.state;

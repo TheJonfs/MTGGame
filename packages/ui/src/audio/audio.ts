@@ -12,8 +12,11 @@
  */
 // The committed cue→file mapping (data/audio/mapping.json), loaded the engine-bridge way
 // (import.meta.glob — vite-native, vitest-safe, no resolveJsonModule dance).
-const mappingModules = import.meta.glob("../../../../data/audio/mapping.json", { eager: true }) as Record<string, { default: Record<string, string> }>;
-const mapping: Record<string, string> = Object.values(mappingModules)[0]?.default ?? {};
+const mappingModules = import.meta.glob("../../../../data/audio/mapping.json", { eager: true }) as Record<string, { default: Record<string, MappingEntry> }>;
+const mapping: Record<string, MappingEntry> = Object.values(mappingModules)[0]?.default ?? {};
+
+/** S24 r2: a mapping value — a bare file name, or {file, volume} (volume 0..1 on the channel baseline). */
+export type MappingEntry = string | { file: string; volume?: number };
 
 /** The taxonomy — S23's initial set, revised by the S24 mapping v3 landing:
  * - `music.town` RESOLVES BY REGION (colour + ring → `music.town.W1` … `music.town.G3`) — the
@@ -33,7 +36,21 @@ export type MusicCue =
 export type StingCue =
   | "sting.news" | "sting.reward" | "sting.manalink" | "sting.parley" | "sting.treasure"
   | "sting.duel-win" | "sting.duel-loss" | "sting.coin-flip";
-export type Cue = MusicCue | StingCue;
+/** S24 r2 (the SFX package): per-action duel sounds — a THIRD channel, fire-and-forget and
+ * freely overlapping (rapid plays must not cut each other or the sting voice). The cast family
+ * keys by the card's colour identity: sfx.cast.W … sfx.cast.G, guild pairs as sorted WUBRG
+ * strings (sfx.cast.WU, sfx.cast.BR — the package has all ten), sfx.cast.artifact,
+ * sfx.cast.colorless. Unmapped combinations are silence, as ever. */
+export type SfxCue = `sfx.${string}`;
+export type Cue = MusicCue | StingCue | SfxCue;
+
+const WUBRG = ["W", "U", "B", "R", "G"] as const;
+/** The cast-sound resolution: colour identity → cue key (colours sorted in WUBRG order). */
+export function castSfxCue(colors: string[], types: string[]): SfxCue {
+  const c = WUBRG.filter((x) => colors.includes(x)).join("");
+  if (c) return `sfx.cast.${c}`;
+  return types.includes("Artifact") ? "sfx.cast.artifact" : "sfx.cast.colorless";
+}
 
 export const RING_NUM = { civilized: 1, approach: 2, wild: 3 } as const;
 /** The v3 town resolution: town → its region's colour+ring → track. */
@@ -56,7 +73,7 @@ export class AudioManager {
   private unlocked = false;
   private listeners = new Set<() => void>();
 
-  constructor(private readonly files: Record<string, string> = mapping as Record<string, string>) {
+  constructor(private readonly files: Record<string, MappingEntry> = mapping) {
     let stored: string | null = null;
     try {
       stored = typeof localStorage !== "undefined" ? localStorage.getItem(STORE_KEY) : null;
@@ -99,15 +116,20 @@ export class AudioManager {
     return () => this.listeners.delete(l);
   }
 
-  /** Resolve a cue to a servable URL; null = unmapped (the silent no-op). Underscore-prefixed
-   * KEYS in mapping.json are documentation — they are never valid Cue names, so lookups by
-   * typed cue can't reach them. */
-  private srcFor(cue: Cue): string | null {
-    let file = this.files[cue];
+  /** Resolve a cue to {src, volume}; null = unmapped (the silent no-op). S24 r2: a mapping
+   * value may be a bare file name OR `{ "file": "...", "volume": 0.5 }` — volume is a 0..1
+   * multiplier on the channel's baseline (Chris's SFX-level tuning knob). Underscore-prefixed
+   * KEYS in mapping.json are documentation — they are never valid Cue names. */
+  private srcFor(cue: Cue): { src: string; volume: number } | null {
+    let entry = this.files[cue];
     // v3: a region-resolved town cue falls back to the bare `music.town` key (a mapping that
     // wants ONE town track everywhere writes one line).
-    if ((typeof file !== "string" || file.length === 0) && cue.startsWith("music.town.")) file = this.files["music.town"];
-    return typeof file === "string" && file.length > 0 ? `/audio/${file}` : null;
+    if (entry === undefined && cue.startsWith("music.town.")) entry = this.files["music.town"];
+    const file = typeof entry === "string" ? entry : entry && typeof entry === "object" ? (entry as { file?: string }).file : undefined;
+    if (typeof file !== "string" || file.length === 0) return null;
+    const vRaw = entry && typeof entry === "object" ? (entry as { volume?: number }).volume : undefined;
+    const volume = typeof vRaw === "number" ? Math.max(0, Math.min(1, vRaw)) : 1;
+    return { src: `/audio/${file}`, volume };
   }
 
   /** Per-context music with crossfade. Re-asking for the playing cue is a no-op. */
@@ -115,15 +137,15 @@ export class AudioManager {
     this.pendingMusic = cue;
     if (!this.enabled || typeof Audio === "undefined" || !this.unlocked) return;
     if (this.current?.cue === cue) return;
-    const src = this.srcFor(cue);
+    const resolved = this.srcFor(cue);
     const old = this.current;
     if (old) this.fadeOut(old.el);
     this.current = null;
-    if (!src) return; // unmapped/unmounted: silence, by design
-    const el = new Audio(src);
+    if (!resolved) return; // unmapped/unmounted: silence, by design
+    const el = new Audio(resolved.src);
     el.loop = true;
     el.volume = 0;
-    el.play().then(() => this.fadeIn(el)).catch(() => {
+    el.play().then(() => this.fadeIn(el, 0.8 * resolved.volume)).catch(() => {
       // S24 r1 (the failed-to-fire report): a refused/404'd element must not SQUAT on its cue —
       // clear it so the next request for this context retries instead of no-opping forever.
       if (this.current?.el === el) this.current = null;
@@ -138,11 +160,11 @@ export class AudioManager {
    * next moment's sting instead of layering under it. */
   sting(cue: StingCue): void {
     if (!this.enabled || typeof Audio === "undefined" || !this.unlocked) return;
-    const src = this.srcFor(cue);
-    if (!src) return;
+    const resolved = this.srcFor(cue);
+    if (!resolved) return;
     this.fadeSting();
-    const el = new Audio(src);
-    el.volume = 0.9;
+    const el = new Audio(resolved.src);
+    el.volume = 0.9 * resolved.volume;
     el.onended = () => {
       if (this.currentSting?.el === el) this.currentSting = null;
     };
@@ -150,6 +172,31 @@ export class AudioManager {
       /* silent */
     });
     this.currentSting = { cue, el };
+  }
+
+  /** S24 r2: the SFX channel — fire-and-forget and freely OVERLAPPING (rapid card plays layer
+   * naturally; they never touch the sting voice or the music). Volume = the mapping's per-cue
+   * multiplier on a full baseline — Chris's tuning knob lives in the data. */
+  sfx(cue: SfxCue, volumeOverride?: number): void {
+    if (!this.enabled || typeof Audio === "undefined" || !this.unlocked) return;
+    const resolved = this.srcFor(cue);
+    if (!resolved) return;
+    const el = new Audio(resolved.src);
+    el.volume = Math.max(0, Math.min(1, volumeOverride ?? resolved.volume));
+    el.play().catch(() => {
+      /* silent */
+    });
+  }
+
+  /** Dev seam (the /sound board): every mapped cue with its file and volume. */
+  entries(): { cue: string; file: string; volume: number }[] {
+    return Object.entries(this.files)
+      .filter(([k]) => !k.startsWith("_"))
+      .map(([cue, e]) => ({
+        cue,
+        file: typeof e === "string" ? e : e.file,
+        volume: typeof e === "string" ? 1 : Math.max(0, Math.min(1, e.volume ?? 1)),
+      }));
   }
 
   /** Fade the ringing sting (optionally only when it IS the named cue) — S24 r1: the parley's
@@ -161,11 +208,11 @@ export class AudioManager {
     this.currentSting = null;
   }
 
-  private fadeIn(el: HTMLAudioElement): void {
+  private fadeIn(el: HTMLAudioElement, target = 0.8): void {
     const t0 = Date.now();
     const tick = () => {
       const k = Math.min(1, (Date.now() - t0) / FADE_MS);
-      el.volume = 0.8 * k;
+      el.volume = target * k;
       if (k < 1) setTimeout(tick, 60);
     };
     tick();
@@ -185,7 +232,12 @@ export class AudioManager {
 
   /** Test seam: what the manager would play for a cue right now (null = silence). */
   resolve(cue: Cue): string | null {
-    return this.srcFor(cue);
+    return this.srcFor(cue)?.src ?? null;
+  }
+
+  /** Test seam: the cue's effective per-cue volume multiplier (1 for bare-string entries). */
+  resolveVolume(cue: Cue): number | null {
+    return this.srcFor(cue)?.volume ?? null;
   }
 
   /** Test seam: the currently pending music cue (set even while locked/disabled/unmapped). */
