@@ -124,21 +124,41 @@ export class AudioManager {
     el.loop = true;
     el.volume = 0;
     el.play().then(() => this.fadeIn(el)).catch(() => {
-      /* 404 or autoplay refusal: stay silent */
+      // S24 r1 (the failed-to-fire report): a refused/404'd element must not SQUAT on its cue —
+      // clear it so the next request for this context retries instead of no-opping forever.
+      if (this.current?.el === el) this.current = null;
     });
     this.current = { cue, el };
   }
 
-  /** Fire-and-forget stinger over the music. */
+  private currentSting: { cue: StingCue; el: HTMLAudioElement } | null = null;
+
+  /** Stinger over the music — ONE sting voice (S24 r1, Chris: Dueltune and Winduel stacked):
+   * a new sting fades whatever sting still rings; long pieces (Dueltune) get cut off by the
+   * next moment's sting instead of layering under it. */
   sting(cue: StingCue): void {
     if (!this.enabled || typeof Audio === "undefined" || !this.unlocked) return;
     const src = this.srcFor(cue);
     if (!src) return;
+    this.fadeSting();
     const el = new Audio(src);
     el.volume = 0.9;
+    el.onended = () => {
+      if (this.currentSting?.el === el) this.currentSting = null;
+    };
     el.play().catch(() => {
       /* silent */
     });
+    this.currentSting = { cue, el };
+  }
+
+  /** Fade the ringing sting (optionally only when it IS the named cue) — S24 r1: the parley's
+   * Dueltune fades the moment the player makes a stakes choice. */
+  fadeSting(cue?: StingCue): void {
+    if (!this.currentSting) return;
+    if (cue && this.currentSting.cue !== cue) return;
+    this.fadeOut(this.currentSting.el, 300);
+    this.currentSting = null;
   }
 
   private fadeIn(el: HTMLAudioElement): void {
@@ -151,11 +171,11 @@ export class AudioManager {
     tick();
   }
 
-  private fadeOut(el: HTMLAudioElement): void {
+  private fadeOut(el: HTMLAudioElement, ms: number = FADE_MS): void {
     const v0 = el.volume;
     const t0 = Date.now();
     const tick = () => {
-      const k = Math.min(1, (Date.now() - t0) / FADE_MS);
+      const k = Math.min(1, (Date.now() - t0) / ms);
       el.volume = v0 * (1 - k);
       if (k < 1) setTimeout(tick, 60);
       else el.pause();

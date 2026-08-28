@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { CardDef } from "@shandalar/cards";
 import { cardColors } from "@shandalar/cards";
-import { activeDeck, buyOffPrice, deckSize, deckStats, dungeonAsWorldMap, isBasic, isExplored, maxWorldLife, sellPrice, spares, BASIC_LANDS, type DifficultyName, type Point, type ShopItem, type StarterId } from "@shandalar/world";
+import { activeDeck, buyOffPrice, deckSize, deckStats, dungeonAsWorldMap, isBasic, isExplored, lordPronouns, maxWorldLife, sellPrice, spares, BASIC_LANDS, type DifficultyName, type Point, type ShopItem, type StarterId } from "@shandalar/world";
 import { loadOracle, loadPool, loadWorldCatalog, type OracleEntry, type SavedGame } from "../engine-bridge";
 import { CardFrame } from "../components/CardFrame";
 import { PlayMatch, loadStops } from "../play/PlayMatch";
@@ -381,7 +381,9 @@ function DungeonTelegraph({ c }: { c: WorldController }) {
         </div>
         {mox && <p className="dungeon-law"><b>{mox.law.name}:</b> {mox.law.text}</p>}
         {sh && <p className="dungeon-law"><b>{sh.law.name}:</b> {sh.law.text} <i>(the law stands in every fight inside — tear it down and it returns for the next; it is a permanent, and permanents can be answered)</i></p>}
-        {lordRow && <p style={{ fontSize: 12.5 }}><b>{lordRow.lordName}</b> fights at <b>{lordRow.life}</b> life today ({lordRow.base} base{lordRow.growth > 0 ? ` +${lordRow.growth} grown with the years` : ""}{lordRow.reduction > 0 ? ` −${lordRow.reduction} bled by your hunting` : ""}; never below {c.knobs.lordLifeFloor}) — plus whatever your steps inside feed him. His signature always looms: it starts in his hand.</p>}
+        {lordRow && sh && (() => { const p = lordPronouns(sh.lord); /* S24 r1 (Chris): the Usher and the Sower are she */ return (
+          <p style={{ fontSize: 12.5 }}><b>{lordRow.lordName}</b> fights at <b>{lordRow.life}</b> life today ({lordRow.base} base{lordRow.growth > 0 ? ` +${lordRow.growth} grown with the years` : ""}{lordRow.reduction > 0 ? ` −${lordRow.reduction} bled by your hunting` : ""}; never below {c.knobs.lordLifeFloor}) — plus whatever your steps inside feed {p.obj}. {p.Pos} signature always looms: it starts in {p.pos} hand.</p>
+        ); })()}
         <ul className="dungeon-stakes">
           <li>The world's clock <b>freezes</b> at this threshold; your steps inside feed the {info.kind === "stronghold" ? "lord" : info.kind === "mox" ? "guardian" : "resident"} — it grows at {tiers.map((t) => t.steps).join(" / ")} interior steps (the meter shows the next threshold).</li>
           <li><b>Your life inside carries from fight to fight</b> (it starts at your world life, {c.world?.player.worldLife}); it is discarded when you leave, but an interior LOSS still costs a world life and your stake.</li>
@@ -503,15 +505,18 @@ function RailPanel({ title, badge, defaultOpen = true, children }: { title: stri
 function StrongholdVictory({ c, pool, oracle }: { c: WorldController; pool: Map<string, CardDef>; oracle: Record<string, OracleEntry> }) {
   if (c.screen.kind !== "strongholdVictory") return null;
   const s = c.screen;
+  // S24 r1 (Chris): the Usher and the Sower are she — the ceremony speaks each lord rightly.
+  const lordDef = c.strongholdDef(s.strongholdId);
+  const p = lordDef ? lordPronouns(lordDef.lord) : { sub: "he", obj: "him", pos: "his", Pos: "His" };
   return (
     <div className="gallery-modal">
       <div className="gallery-modal-box play-dialog" style={{ maxWidth: 980 }}>
         <h2 style={{ fontFamily: "var(--serif)", marginTop: 0 }}>{s.lordName} falls — {s.name} is broken</h2>
         <p>
-          His card is yours — <b>{pool.get(s.lordCardId)?.name ?? s.lordCardId}</b> (his defeat is the only place it exists) — with the mountain's debts:{" "}
+          {p.Pos} card is yours — <b>{pool.get(s.lordCardId)?.name ?? s.lordCardId}</b> ({p.pos} defeat is the only place it exists) — with the mountain's debts:{" "}
           <b>{s.paidGold} gold</b>{s.paidCards.filter((id) => id !== s.lordCardId).length > 0 ? <> and {s.paidCards.filter((id) => id !== s.lordCardId).map((id) => pool.get(id)?.name ?? id).join(", ")}</> : null}. And the <b>seal</b>.
         </p>
-        <p style={{ fontSize: 13 }}>Take <b>any {s.pickCount}</b> from his hoard ({s.picks.length}/{s.pickCount} chosen — taking fewer is your right):</p>
+        <p style={{ fontSize: 13 }}>Take <b>any {s.pickCount}</b> from {p.pos} hoard ({s.picks.length}/{s.pickCount} chosen — taking fewer is your right):</p>
         {/* S22 r1 (Chris): the WHOLE colour wardrobe, shelved by tier — R first, then 3/2/1. */}
         <div style={{ maxHeight: 380, overflowY: "auto" }}>
           {(["R", 3, 2, 1] as const).map((tier) => {
@@ -615,13 +620,14 @@ function TownScreen({ c, pool, oracle }: { c: WorldController; pool: Map<string,
                 <img src="/town-inn.png" alt="" />
                 <b>The inn</b><span>{lifeMissing > 0 ? `rest: ${innPrice} steps per life (${lifeMissing} missing)` : "you want for nothing — rest is free to skip"}</span>
               </button>
+              {/* S24 r1 (Chris, note 6): the sixth slot — the square's utility corner. */}
+              <div className="town-utility">
+                <button onClick={() => c.openEditor()}>Edit deck</button>
+                <button onClick={() => c.openCollection()}>Collection</button>
+                <button onClick={() => c.save()}>Save</button>
+                <button className="primary" onClick={() => c.leaveTown()}>Leave town</button>
+              </div>
             </div>
-            <p style={{ marginBottom: 0 }}>
-              <button onClick={() => c.openEditor()}>Edit deck</button>{" "}
-              <button onClick={() => c.openCollection()}>Collection</button>{" "}
-              <button onClick={() => c.save()}>Save</button>{" "}
-              <button className="primary" onClick={() => c.leaveTown()}>Leave town</button>
-            </p>
           </>
         )}
         {tab === "market" && (
@@ -954,6 +960,12 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
       // v3: the region is the musical identity unit — town → colour+ring → track.
       const reg = w2.map.regions[scr.town.region]!;
       cue = townMusicCue(reg.color, reg.tier);
+    } else if ((scr.kind === "editor" || scr.kind === "collection") && scr.back === "town" && w2 && w2.map.towns[w2.lastTownIndex]) {
+      // S24 r1 (Chris, note 5): the deck and collection screens opened FROM a town keep that
+      // town's song — you never left the building.
+      const t = w2.map.towns[w2.lastTownIndex]!;
+      const reg = w2.map.regions[t.region]!;
+      cue = townMusicCue(reg.color, reg.tier);
     } else if (scr.kind === "duel" || scr.kind === "siegeDuel" || scr.kind === "dungeonDuel") cue = "music.duel";
     else if (scr.kind === "dungeonTelegraph") cue = scr.info.kind === "stronghold" ? strongholdSplashCue(scr.info.dungeonId) : "music.dungeon";
     else if (scr.kind === "strongholdVictory") cue = "music.stronghold";
@@ -975,6 +987,11 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
         lastParley.current = key;
         audio.sting("sting.parley");
       }
+    } else if (lastParley.current !== null) {
+      // S24 r1 (Chris): the stakes menu closed — a choice was made — so Dueltune fades NOW
+      // rather than ringing into the duel (and stacking under Winduel on a fast auto-win).
+      lastParley.current = null;
+      audio.fadeSting("sting.parley");
     }
     if (controller.treasureSeq !== lastTreasure.current) {
       lastTreasure.current = controller.treasureSeq;

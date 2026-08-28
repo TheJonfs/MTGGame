@@ -310,6 +310,8 @@ export function acceptQuest(
 }
 
 export function cardMatches(def: CardDef, want: { color: string; minMv: number }): boolean {
+  // S24 r1 (Chris): boss cards are unique — no collector's contract may carry one away.
+  if (def.prizeOnly) return false;
   const cost = def.manaCost ?? "";
   const colors = def.colors && def.colors.length ? def.colors : [...new Set(cost.replace(/[^WUBRG]/g, ""))];
   const mv = (cost.match(/\{(\d+)\}/g) ?? []).reduce((n, m) => n + Number(m.slice(1, -1)), 0) + (cost.match(/\{[WUBRGC]\}/g) ?? []).length;

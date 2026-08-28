@@ -595,7 +595,18 @@ button.primary { background: var(--brass); color: var(--parchment); border: 1.5p
 .world-map-stage .map-compass { position: absolute; right: 12px; top: 10px; pointer-events: none; filter: drop-shadow(1px 1px 3px rgba(0,0,0,0.25)); }
 /* S21 playtest r2–r3 item 5: the town square's second-layer navigation — art tiles like the
  * Cinquefoil menu (r3). */
-.town-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 14px 0; }
+/* S24 r1 (Chris, note 6): two rows of three — five doors + the utility cell. */
+.town-nav { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 14px 0; }
+.town-utility {
+  display: flex; flex-direction: column; gap: 8px; justify-content: center;
+  padding: 12px; background: rgba(255, 252, 240, 0.5);
+  border: 2px solid var(--ink); border-radius: 8px; box-shadow: 2px 3px 10px rgba(0,0,0,0.2);
+}
+/* Un-inherit the door-tile styling (.town-nav button reaches these as descendants). */
+.town-nav .town-utility button { display: block; width: 100%; padding: 5px 10px; box-shadow: none; font-size: 13.5px; }
+.town-nav .town-utility button:hover { transform: none; box-shadow: none; background: #f4ecd8; }
+.town-nav .town-utility button.primary { background: var(--brass); color: var(--parchment); font-weight: 700; }
+.town-nav .town-utility button.primary:hover { background: var(--brass); }
 .town-nav button { display: flex; flex-direction: column; align-items: stretch; gap: 0; padding: 0; font-family: var(--serif); font-size: 15px; background: var(--parchment); border: 2px solid var(--ink); border-radius: 8px; overflow: hidden; cursor: pointer; text-align: left; box-shadow: 2px 3px 10px rgba(0,0,0,0.2); transition: transform 0.08s ease, box-shadow 0.08s ease; }
 .town-nav button:hover { transform: translateY(-2px); box-shadow: 3px 6px 14px rgba(0,0,0,0.3); }
 .town-nav button img { width: 100%; aspect-ratio: 5 / 2; object-fit: cover; display: block; border-bottom: 1.5px solid var(--ink); }

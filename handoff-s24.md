@@ -12,6 +12,17 @@
 - **Part 3 (audio v3)**: schema — `music.town.<C><R>` resolution (bare `music.town` kept as global fallback), `splash.stronghold.<id>`, the v3 stinger set (sting.news/reward/manalink/parley/treasure joining win/loss/coin-flip; the S23 quest-complete/siege-news pair retired); mapping.json per v3's tables verbatim (27 bindings, every file asserted present in the mount); the WorldApp effect rewired (region-resolved town cues, splash cues on stronghold telegraphs, popup classification by kind, parley + treasure stings via a controller `treasureSeq` seam); the five gate plates rendered in seat-tempered painterly registers (ghost-queue Charnel Court, eyes-behind-the-roots Verdant Throne…) and wired as full-width telegraph banners.
 - **Part 4**: 3 world acceptance tests (life links + cap + duel-exclusion + save round-trip + both kinds rolling in the wild; suspension drops the maximum / clamps current / liberation restores the ceiling; the inn heals-to-max, spends, ticks the clock with a mid-rest threat landing in the queued events, and a full sleeper pays nothing); browser walkthrough (the 4/10 topline, the inn's three live prices, the 48-step rest with the wake notice, LocMus2 at the Greenholt, Gcastle + the gate plate at the Verdant Throne); zero console errors.
 
+## Playtest round 1 (S24 — Chris's first hearing; eight notes, all landed)
+
+1. **The sting channel**: stingers are ONE VOICE now — a new sting fades whatever still rings (the Dueltune+Winduel stack on a fast auto-win cannot recur), and the parley's Dueltune fades the moment a stakes choice is made (the encounter screen closing triggers it). Also fixed underneath: a music element whose play() was refused no longer SQUATS on its cue — the next request retries instead of no-opping forever (the likely "cue failed to fire" report).
+2. **The lords speak rightly**: `lord.gender` in dungeons.json (the Usher and the Sower are she; Chris-ruled), `lordPronouns()` in stronghold.ts, and the telegraph + victory ceremony thread it ("…feed her. Her signature always looms: it starts in her hand" — browser-verified at the Verdant Throne).
+3. **Implementer hygiene**: the looping Gcastle was my preview server left running post-verification — server stopped, habit noted.
+4. **Charnel Court plate: kept** (Chris's verdict recorded in MANIFEST); the other four stay candidates.
+5. **Town music carries into the deck editor and collection when opened FROM the town** — the cue holds (single fetch, no restart; verified), so you never left the building. Opened from the map they stay silent as before.
+6. **The town square is 2×3 now**: five doors + the sixth utility cell (Edit deck / Collection / Save / brass Leave town). One CSS ambush en route: `.town-nav button` reached the utility buttons as descendants and repainted the primary parchment-on-parchment — scoped rules restore them.
+7. **Boss cards are priceless and untradeable**: prizeOnly refuses the buyer's stall ("there is exactly one, and it is yours") and `cardMatches` refuses them for card-courier contracts — one predicate covers the offer list, acceptance validation, and the UI's spare picker.
+8. **Waking occupied is RATIFIED** (concern 1 resolved): sleeping through your own town's fall stands as designed pressure.
+
 ## Deviations from the brief
 
 1. **The mid-rest-fall edge ruled simply**: a life-link town falling while you sleep drops the ceiling and the heal clamps to it — the steps stay spent (the innkeeper kept the bed). Escalated-by-doing; one refund line if the feel says robbed.
@@ -22,7 +33,7 @@
 
 ## Concerns
 
-1. **The inn under siege**: resting in a town whose OWN siege deadline passes mid-rest is legal today (you sleep through the fall and wake in an occupied town — the arrival gate only checks on entry). Feel question for Chris; blocking rest-under-threat, or waking early at the fall, are both small.
+1. ~~RESOLVED in playtest r1 (Chris: waking occupied is good pressure — ratified)~~ — original text kept for the record: **The inn under siege**: resting in a town whose OWN siege deadline passes mid-rest is legal (you sleep through the fall and wake occupied).
 2. **The sim's life-economy table runs the fight-everything policy** — its −71/+64 numbers are a ceiling on churn, not a portrait of real play. A "flee-when-losing" pilot policy would make the inn table honest; sanctioned-on-demand.
 3. **`music.duel` stays registered but v3 silences it** — entering a duel therefore STOPS town music by crossfading to silence (correct per v3's focus doctrine). If a future mapping wants duel music back, one line. The same is true of interiors.
 4. **The mapping references OGG town tracks** — Chrome/Firefox fine, Safari silent (container unsupported). Local-only concern; the deploy library (step 3) should be transcoded.

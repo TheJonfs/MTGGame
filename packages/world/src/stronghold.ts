@@ -33,8 +33,14 @@ export interface StrongholdContentDef {
   id: string;
   name: string;
   color: LordColor;
-  lord: { key: string; name: string; cardId: string; baseLife: number; portrait: string };
+  /** gender (S24 r1, Chris): the Usher and the Sower are "she"; absent defaults to "he". */
+  lord: { key: string; name: string; cardId: string; baseLife: number; portrait: string; gender?: "he" | "she" };
   law: { cardId: string; name: string; text: string };
+}
+
+/** S24 r1: the lord's pronoun set for player-facing prose (subject/object/possessive). */
+export function lordPronouns(lord: StrongholdContentDef["lord"]): { sub: string; obj: string; pos: string; Pos: string } {
+  return lord.gender === "she" ? { sub: "she", obj: "her", pos: "her", Pos: "Her" } : { sub: "he", obj: "him", pos: "his", Pos: "His" };
 }
 
 /** Per-stronghold world state — lives in the v5-reserved `world.strongholds` array (the

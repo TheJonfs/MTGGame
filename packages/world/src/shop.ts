@@ -131,6 +131,9 @@ export function sellCard(world: WorldState, pool: Map<string, CardDef>, cardId: 
   // S20 (ADR-079): R-class LANDS (the ABU duals) are priceless — unsellable pending the R-economy
   // design (the interim mv-based R price is nonsense at mv 0).
   if (def.shopTier === "R" && def.types.includes("Land")) return { ok: false, reason: "priceless — no shop will make an offer" };
+  // S24 r1 (Chris): boss cards are UNIQUE — a lord's or guardian's defeat is the only place each
+  // exists. prizeOnly is priceless, full stop.
+  if (def.prizeOnly) return { ok: false, reason: "priceless — there is exactly one, and it is yours" };
   const gold = sellPrice(def, knobs);
   world.player.gold += gold;
   world.player.collection[cardId] = owned - 1;
