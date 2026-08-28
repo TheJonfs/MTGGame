@@ -151,6 +151,7 @@ export class Game {
     bus.on("MILLED", (e) => log.append({ t: "EVENT", name: "MILLED", payload: e })); // ADR-070: narration/facts; replay ignores EVENTs
     bus.on("SEARCH_REVEAL", (e) => log.append({ t: "EVENT", name: "SEARCH_REVEAL", payload: e })); // S22 r4: CR 701.19.4 narration
     bus.on("SHUFFLED", (e) => log.append({ t: "EVENT", name: "SHUFFLED", payload: e })); // S24 r3: the shuffle sound
+    bus.on("SACRIFICED", (e) => log.append({ t: "EVENT", name: "SACRIFICED", payload: e })); // S24 r5: the sac-cause marker
     bus.on("ZONE_CHANGE", (e) => {
       if (e.from === "battlefield" && e.to === "graveyard") {
         log.append({ t: "EVENT", name: "DIES", payload: { cardId: e.cardId, owner: e.owner } });
@@ -385,7 +386,10 @@ export class Game {
         if (due.length > 0) {
           state.endStepSacrifices = state.endStepSacrifices.filter((s) => s.dueTurn > state.turn);
           for (const s of due) {
-            if (state.objects[s.objectId]?.zone === "battlefield") moveObject(this.ctx, s.objectId, "graveyard");
+            if (state.objects[s.objectId]?.zone === "battlefield") {
+              this.ctx.bus.emit("SACRIFICED", { objectId: s.objectId, cardId: state.objects[s.objectId]!.cardId }); // S24 r5: the cause marker
+              moveObject(this.ctx, s.objectId, "graveyard");
+            }
           }
         }
         await this.priorityRound();
@@ -563,6 +567,7 @@ export class Game {
           const options: Action[] = candidates.map((objectId) => ({ type: "sacrifice", objectId }));
           const pick = options.length === 1 ? options[0]! : await this.request(player, "chooseSacrifice", options, undefined, { cardId: obj.cardId, effects });
           if (pick.type !== "sacrifice") throw new Error("expected sacrifice");
+          this.ctx.bus.emit("SACRIFICED", { objectId: pick.objectId, cardId: this.ctx.state.objects[pick.objectId]!.cardId }); // S24 r5: the cause marker
           moveObject(this.ctx, pick.objectId, "graveyard");
         }
         const newId = moveObject(this.ctx, action.objectId, "stack");
@@ -666,6 +671,7 @@ export class Game {
           // can see what the sacrifice buys (the Aristocrat's Vampire counters — don't sac the Vampire).
           const pick = options.length === 1 ? options[0]! : await this.request(player, "chooseSacrifice", options, undefined, { cardId: obj.cardId, effects: ability.effects });
           if (pick.type !== "sacrifice") throw new Error("expected sacrifice");
+          this.ctx.bus.emit("SACRIFICED", { objectId: pick.objectId, cardId: this.ctx.state.objects[pick.objectId]!.cardId }); // S24 r5: the cause marker
           moveObject(this.ctx, pick.objectId, "graveyard");
         }
         // ADR-068 Amendment 2: a choice-bearing mana ability (Lotus) resolves

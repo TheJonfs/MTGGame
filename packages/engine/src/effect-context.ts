@@ -196,6 +196,7 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
       // (bounced or died in response — the trigger's source id is stale then).
       const src = item.sourceId ? ctx.state.objects[item.sourceId] : undefined;
       if (!src || src.zone !== "battlefield") return;
+      ctx.bus.emit("SACRIFICED", { objectId: item.sourceId!, cardId: src.cardId }); // S24 r5: the cause marker
       moveObject(ctx, item.sourceId!, "graveyard");
     },
 

@@ -308,6 +308,34 @@ function QuestDonePopup({ c }: { c: WorldController }) {
   );
 }
 
+/** S24 r5 (Chris): a granted manalink's OWN ceremony — the splash that gives the Manalink
+ * sting room to ring (it was drowning under Winduel inside the news modal). Renders above
+ * everything; dismissing reveals whatever news waits beneath. */
+function ManalinkSplash({ c }: { c: WorldController }) {
+  const items = c.manalinkSplash;
+  if (!items || items.length === 0) return null;
+  const m = items[0]!;
+  const LAND: Record<string, string> = { W: "Plains", U: "Island", B: "Swamp", R: "Mountain", G: "Forest" };
+  return (
+    <div className="gallery-modal" style={{ zIndex: 60 }}>
+      <div className="gallery-modal-box play-dialog" style={{ maxWidth: 560, padding: 0, overflow: "hidden" }}>
+        <img src="/manalink.jpg" alt="" style={{ width: "100%", display: "block", borderBottom: "2px solid var(--ink)" }} />
+        <div style={{ padding: "12px 16px 14px" }}>
+          <h2 style={{ fontFamily: "var(--serif)", margin: "0 0 6px" }}>A manalink is granted</h2>
+          <p style={{ fontSize: 13.5, margin: "0 0 10px" }}>
+            {m.kind === "life"
+              ? <>The bond with <b>{m.townName}</b> steadies your very heart — <b>your maximum world life rises by 1</b> while the town stands free.</>
+              : <>The bond with <b>{m.townName}</b> reaches every battlefield — <b>a {LAND[m.color]} stands with you from the first turn</b> of every duel, while the town stands free.</>}
+          </p>
+          <p style={{ textAlign: "right", margin: 0 }}>
+            <button className="primary" onClick={() => c.dismissManalinkSplash()}>Take it up</button>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /** S21: the siege engagement telegraph — the party, the life-carry law, the stakes (resume-aware). */
 function SiegeTelegraph({ c }: { c: WorldController }) {
   if (c.screen.kind !== "siegeTelegraph" || !c.world) return null;
@@ -951,6 +979,8 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
   const lastResult = useRef<unknown>(null);
   const lastParley = useRef<string | null>(null);
   const lastTreasure = useRef(0);
+  const lastManalinkSplash = useRef<unknown>(null);
+  const lastScreenKind = useRef<string>("");
   useEffect(() => {
     const scr = controller.screen;
     const w2 = controller.world;
@@ -976,11 +1006,18 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
     // duel result pair (Winduel / Loseduel).
     if (controller.questPopup && controller.questPopup !== lastPopup.current) {
       lastPopup.current = controller.questPopup;
-      const quests = controller.questPopup.filter((p) => p.title === "Quest complete");
-      if (quests.some((p) => /a (life )?manalink —/.test(p.reward))) audio.sting("sting.manalink");
-      else if (quests.length > 0) audio.sting("sting.reward");
-      else audio.sting("sting.news");
+      // r5: the manalink STING moved to its own splash — popups ring reward or news only.
+      audio.sting(controller.questPopup.some((p) => p.title === "Quest complete") ? "sting.reward" : "sting.news");
     }
+    // r5: each manalink splash rings the Manalink sting as it shows (one-voice: it fades
+    // whatever rang before it — Winduel included, which was the whole point).
+    const splashHead = controller.manalinkSplash?.[0] ?? null;
+    if (splashHead && splashHead !== lastManalinkSplash.current) audio.sting("sting.manalink");
+    lastManalinkSplash.current = splashHead;
+    // r5 (Chris): clicking early out of the win/loss screen ends its music early — leaving
+    // duelResult fades whatever result sting still rings (the parley-fade pattern).
+    if (lastScreenKind.current === "duelResult" && scr.kind !== "duelResult") audio.fadeSting();
+    lastScreenKind.current = scr.kind;
     if (scr.kind === "encounter") {
       const key = scr.encounter.opponentId + ":" + controller.world!.player.stepsTaken;
       if (lastParley.current !== key) {
@@ -1213,6 +1250,7 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
       {screen.kind === "encounter" && <ParleyPanel c={c} />}
       {screen.kind === "town" && <TownScreen c={c} pool={pool} oracle={oracle} />}
       {c.questPopup && <QuestDonePopup c={c} />}
+      <ManalinkSplash c={c} /> {/* S24 r5: above everything (z 60) — the sting's own stage */}
     </div>
   );
 }

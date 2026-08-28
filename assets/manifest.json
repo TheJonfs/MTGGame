@@ -1965,6 +1965,21 @@
         }
       }
     },
+    "manalink-splash": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:c27b394260ec6c9583fa322012e24b5d34217d0f758eb7cceeddf7a48aac2115",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:c27b394260ec6c9583fa322012e24b5d34217d0f758eb7cceeddf7a48aac2115",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/manalink-splash/canonical.png",
+          "rendered_at": "2026-08-28T19:10:38+00:00",
+          "thumb": "assets/thumbs/manalink-splash/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "map-paper": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:6231ff5ddbb2857ead258b202189ee21e20ef2a418ea6928ca186f945b0a6a66",

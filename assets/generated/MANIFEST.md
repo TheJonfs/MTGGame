@@ -236,6 +236,8 @@ descriptor blocks under `docs/art/subjects/`, composed with `docs/prompts/style.
 | assets/images/gate-furnace-gate/canonical.png | docs/art/subjects/gate-furnace_gate.md | canonical (16:9) — stronghold gate plate, the splash panel (mapping v3's companion) | gemini-3.1-flash-image | 2026-08-28 | candidate — S24 splash (director-round verdicts pending); UI copy packages/ui/public/gate-plates/furnace_gate.jpg |
 | assets/images/gate-verdant-throne/canonical.png | docs/art/subjects/gate-verdant_throne.md | canonical (16:9) — stronghold gate plate, the splash panel (mapping v3's companion) | gemini-3.1-flash-image | 2026-08-28 | candidate — S24 splash (director-round verdicts pending); UI copy packages/ui/public/gate-plates/verdant_throne.jpg |
 
+| assets/images/manalink-splash/canonical.png | docs/art/subjects/manalink-splash.md | canonical (16:9) — the manalink grant splash plate | gemini-3.1-flash-image | 2026-08-28 | kept — S24 r5 (Chris invited the piece); UI copy packages/ui/public/manalink.jpg; faint in-world map glyphs noted as prop text |
+
 ## Derived assets (post-processed)
 
 | file | source | processing |

@@ -138,5 +138,21 @@
   "sfx.damage": {
     "file": "sfx/Damage.wav",
     "volume": 0.3
+  },
+  "sfx.block": {
+    "file": "sfx/Block2.wav",
+    "volume": 0.3
+  },
+  "sfx.destroy": {
+    "file": "sfx/Destroy.wav",
+    "volume": 0.3
+  },
+  "sfx.discard": {
+    "file": "sfx/Discard.wav",
+    "volume": 0.3
+  },
+  "sfx.sacrifice": {
+    "file": "sfx/Sacrfice.wav",
+    "volume": 0.3
   }
 }

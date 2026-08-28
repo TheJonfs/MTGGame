@@ -60,4 +60,8 @@ export interface GameEventMap extends Record<string, unknown> {
    * setup shuffle and start-of-game modifiers deliberately do NOT (pre-game noise). EVENT-stream
    * only (the shuffle sound); no trigger consumes it. */
   SHUFFLED: { player: PlayerId };
+  /** S24 r5 (SFX): the sacrifice CAUSE marker — emitted just before the sacrifice's zone move
+   * at every sac site (costs, the effect word, end-step dues), so the UI can ring Sacrifice
+   * instead of Destroy for that object. EVENT-stream only; DIES triggers stay ZONE_CHANGE-fed. */
+  SACRIFICED: { objectId: string; cardId: string };
 }

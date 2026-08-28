@@ -43,6 +43,13 @@
 2. **The ten guild pairs are live** — pure mapping, zero code (the enterSfxCue resolver already emits sorted pair keys): `sfx.enter.WU…RG` → the package's pair files at 0.3. A Tropical Island entering play rings GreenBlue.wav (board-verified fetch); every dual land and two-colour permanent resolves the same way.
 3. **Damage rings** (`sfx.damage` → Damage.wav at 0.3): one ring per simultaneous batch (combat's several DAMAGE events land in one instant — the burst-throttle pattern), covering combat and spell damage alike.
 
+## Playtest round 5 (S24 — Block/Destroy/Discard/Sacrifice, and the manalink's own stage)
+
+1. **Four more SFX at 0.3**: `sfx.block` (ONE ring at the block commit), `sfx.discard` (batch-throttled — a Mind Rot's two cards ring once), and the death pair — a new `SACRIFICED` engine event marks the cause just before the zone move at every sac site (both cost sites, the effect word, end-step dues), so the UI rings **Sacrifice** for marked deaths and **Destroy** for the rest (SBA deaths, destroy effects, the legend rule), each batch-throttled for wraths. The per-cue throttles refactored into one helper. (The package's own filename typo — `Sacrfice.wav` — is preserved faithfully.)
+2. **The manalink splash** (Chris's design): any manalink earned — basic, life, or future boon — gets its OWN ceremony screen: the new talisman plate (first-try render; Chris invited the piece) over kind-specific prose, queued and rendered above everything. **Grant detection is a diff on `world.manalinks`** around the award seams (arrival + duel application), so every current and future grant path splashes with zero reward-plumbing. The Manalink sting fires per splash shown — and one-voice means it FADES Winduel, which was the whole point. Popups now ring reward/news only.
+3. **Early exit ends the music** — leaving the win/loss result screen fades whatever result sting still rings (the parley-fade pattern generalized to a screen-transition watcher).
+4. Browser-verified: the splash ceremony with Manalink.flac fetching, the queue advancing life→basic with kind-correct prose; FUZZ_FULL 398/398 with SACRIFICED replay-clean.
+
 ## Deviations from the brief
 
 1. **The mid-rest-fall edge ruled simply**: a life-link town falling while you sleep drops the ceiling and the heal clamps to it — the steps stay spent (the innkeeper kept the bed). Escalated-by-doing; one refund line if the feel says robbed.

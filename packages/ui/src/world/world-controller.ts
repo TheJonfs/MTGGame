@@ -480,7 +480,9 @@ export class WorldController {
     this.world.lastTownIndex = town.index;
     syncShopState(this.world, town, this.knobs);
     // S19: courier deliveries complete on arrival (autosave below covers them — durability on complete).
+    const linksBefore = this.world.manalinks.length; // S24 r5: the splash's diff baseline
     const done = questsOnArrival(this.world, town, this.knobs);
+    this.queueNewManalinks(linksBefore);
     // S22 r1 (Chris): rumors are HEARD AT THE TAVERN now, not by walking in — chains start/advance/
     // reveal when the tavern tab opens (townRumors), where the lines are actually read.
     this.autosave();
@@ -495,6 +497,30 @@ export class WorldController {
   questPopup: { title: string; quest: string; reward: string }[] | null = null;
   /** S24 audio (v3): bumped on every dungeon cache found — the UI's Findcard sting watches it. */
   treasureSeq = 0;
+  /** S24 r5 (Chris): a granted manalink gets its OWN splash — the Manalink sting was drowning
+   * under Winduel inside the news modal. Queued; the splash renders above everything and the
+   * sting fires on mount (one-voice: it fades whatever rings). */
+  manalinkSplash: { kind: "basic" | "life"; color: "W" | "U" | "B" | "R" | "G"; townName: string }[] | null = null;
+
+  dismissManalinkSplash(): void {
+    if (!this.manalinkSplash) return;
+    this.manalinkSplash = this.manalinkSplash.slice(1);
+    if (this.manalinkSplash.length === 0) this.manalinkSplash = null;
+    this.emit();
+  }
+
+  /** Diff-based grant detection: works for EVERY award path (arrival couriers, bounty defeats,
+   * future boons) with zero reward-plumbing — anything award() pushed past `before` splashes. */
+  private queueNewManalinks(before: number): void {
+    if (!this.world) return;
+    for (const m of this.world.manalinks.slice(before)) {
+      (this.manalinkSplash ??= []).push({
+        kind: m.kind === "life" ? "life" : "basic",
+        color: m.color,
+        townName: this.world.map.towns[m.town]?.name ?? "a town",
+      });
+    }
+  }
   dismissQuestPopup(): void {
     this.questPopup = null;
     this.emit();
@@ -701,7 +727,9 @@ export class WorldController {
   private finishDuel(duel: PreparedDuel, result: MatchResult): void {
     if (!this.world) return;
     const before = { life: this.world.player.worldLife, gold: this.world.player.gold };
+    const linksBefore = this.world.manalinks.length; // S24 r5: bounty rewards can grant links
     const record = applyDuelResult(this.world, this.catalog, duel, result, this.extraKnobs);
+    this.queueNewManalinks(linksBefore);
     const after = { life: this.world.player.worldLife, gold: this.world.player.gold };
     this.autosave(); // consequences are permanent the moment they land
     this.screen = { kind: "duelResult", duel, record, before, after };

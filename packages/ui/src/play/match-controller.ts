@@ -197,11 +197,20 @@ export class MatchController {
   readonly idNames = new Map<string, string>();
   /** Last spell to hit the stack (S10 playtest: the inspector snaps to it). */
   snapCardId: string | null = null;
-  /** S24 r3 SFX bookkeeping: the untap/draw burst throttles and the end-turn rollover detector. */
-  private lastUntapSfxAt = 0;
-  private lastDrawSfxAt = 0;
-  private lastDamageSfxAt = 0;
+  /** S24 r3–r5 SFX bookkeeping: per-cue burst throttles (one ring per simultaneous batch —
+   * untap steps, opening draws, combat damage, wrath deaths), the end-turn rollover detector,
+   * and the sacrifice cause markers (SACRIFICED fires just before the zone move). */
+  private lastSfxAt = new Map<string, number>();
   private lastSfxTurn = 0;
+  private pendingSacIds = new Set<string>();
+
+  private throttledSfx(cue: `sfx.${string}`): void {
+    const now = Date.now();
+    if (now - (this.lastSfxAt.get(cue) ?? 0) > 150) {
+      this.lastSfxAt.set(cue, now);
+      audio.sfx(cue);
+    }
+  }
 
   /** The colours a permanent "enters as": a land's identity is what it taps for (a Swamp is B);
    * everything else is its colour identity. */
@@ -310,6 +319,7 @@ export class MatchController {
     // Objects get fresh ids on every zone move (CR 400.7); track every id's
     // cardId from live ZONE_CHANGE events so the play log can name historical
     // actions. (Display-side masking keeps hidden info hidden.)
+    bus.on("SACRIFICED", (e) => this.pendingSacIds.add(e.objectId)); // S24 r5: the cause marker rings Sacrifice, not Destroy
     bus.on("ZONE_CHANGE", (e) => {
       this.idNames.set(e.oldId, e.cardId);
       this.idNames.set(e.newId, e.cardId);
@@ -319,6 +329,16 @@ export class MatchController {
         const d = pool.get(e.cardId);
         if (d) audio.sfx(enterSfxCue(this.enterColorsOf(d), d.types));
       }
+      // S24 r5: a death rings — Sacrifice when the cause marker named this object, Destroy
+      // otherwise (SBA deaths, destroy effects, the legend rule). Batch-throttled (wraths).
+      if (e.from === "battlefield" && e.to === "graveyard") {
+        if (this.pendingSacIds.delete(e.oldId)) this.throttledSfx("sfx.sacrifice");
+        else this.throttledSfx("sfx.destroy");
+      }
+    });
+    bus.on("DISCARD", () => this.throttledSfx("sfx.discard")); // S24 r5 (a Mind Rot's two rings once)
+    bus.on("BLOCKERS_DECLARED", (e) => {
+      if (e.blocks.length > 0) audio.sfx("sfx.block"); // S24 r5: ONE ring at the block commit
     });
     bus.on("STEP_BEGIN", () => {
       // S24 r3: End Turn — the turn number rolling over IS the previous turn ending.
@@ -329,26 +349,11 @@ export class MatchController {
       }
       this.emit();
     });
-    bus.on("CARD_DRAWN", () => {
-      // Opening hands and mulligans draw in a burst of seven — one sound covers a burst
-      // (the untap throttle's pattern); the turn's single draw rings normally.
-      const now = Date.now();
-      if (now - this.lastDrawSfxAt > 150) {
-        this.lastDrawSfxAt = now;
-        audio.sfx("sfx.draw");
-      }
-    });
+    // Bursts ring once (opening hands, the untap step); singles ring normally.
+    bus.on("CARD_DRAWN", () => this.throttledSfx("sfx.draw"));
     bus.on("SHUFFLED", () => audio.sfx("sfx.shuffle"));
     bus.on("TAPPED", () => audio.sfx("sfx.tap"));
-    bus.on("UNTAPPED", () => {
-      // The untap STEP untaps everything in one burst — one sound covers it (150ms throttle);
-      // isolated effect untaps still ring individually.
-      const now = Date.now();
-      if (now - this.lastUntapSfxAt > 150) {
-        this.lastUntapSfxAt = now;
-        audio.sfx("sfx.untap");
-      }
-    });
+    bus.on("UNTAPPED", () => this.throttledSfx("sfx.untap"));
     bus.on("SPELL_CAST", (e) => {
       this.snapCardId = e.cardId; // inspector snap — event-driven, so it fires
       this.emit(); //              even when the spell resolves render-free
@@ -378,13 +383,7 @@ export class MatchController {
       if (names.length > 0) this.showNotice(`Opponent attacks with ${names.join(", ")}`);
     });
     bus.on("DAMAGE", (e) => {
-      // S24 r4 (the SFX wave, second pass): damage rings — one ring per simultaneous batch
-      // (combat's several DAMAGE events land in the same instant; the untap throttle's pattern).
-      const now = Date.now();
-      if (now - this.lastDamageSfxAt > 150) {
-        this.lastDamageSfxAt = now;
-        audio.sfx("sfx.damage");
-      }
+      this.throttledSfx("sfx.damage"); // one ring per simultaneous batch (r4)
       if (e.target.kind === "player" && e.target.player === this.humanSeat && e.combat) {
         this.showNotice(`You take ${e.amount} combat damage (${pool.get(e.sourceCardId)?.name ?? e.sourceCardId})`);
       }
