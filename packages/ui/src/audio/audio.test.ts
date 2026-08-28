@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { AudioManager } from "./audio";
+import { AudioManager } from "./audio.js";
 
 /**
  * S23 audio scaffolding — the cue contract (brief Part 3):

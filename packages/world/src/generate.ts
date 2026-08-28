@@ -330,7 +330,22 @@ export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOpt
   // Home towns: each colour's first (nearest-the-centre) civilized town; start = the home colour's.
   const homeTowns: Town[] = colours.map((c) => towns.find((t) => regions[t.region]!.color === c && regions[t.region]!.tier === "civilized")!).filter(Boolean);
   const homeTown = homeTowns.find((t) => regions[t.region]!.color === extra.homeColor) ?? homeTowns[0] ?? towns[0]!;
+  // S23 playtest r1 (Chris): start a couple of steps OUTSIDE the home town's gate — starting ON
+  // it meant stepping off and back just to enter. Deterministic: the first passable non-town
+  // cell at Manhattan distance 2 in a fixed scan order (fall back to distance 1, then the town).
   map.start = { ...homeTown.at };
+  outer: for (const [d, sameRegion] of [[2, true], [1, true], [2, false], [1, false]] as const) {
+    for (let dy = -d; dy <= d; dy++) {
+      const dx = d - Math.abs(dy);
+      for (const sx of dx === 0 ? [0] : [-dx, dx]) {
+        const p = { x: homeTown.at.x + sx, y: homeTown.at.y + dy };
+        if (!inBounds(map, p) || !passable[idx(map, p)] || isTownCell(map, p)) continue;
+        if (sameRegion && region[idx(map, p)] !== homeTown.region) continue;
+        map.start = p;
+        break outer;
+      }
+    }
+  }
 
   // 4. Strongholds (ADR-072): the nearest passable non-town cell to each spoke point; carved reachable.
   const fixed: FixedPoint[] = [];
@@ -456,45 +471,17 @@ export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOpt
         lateralRun += 1;
       }
     }
-    // Natural fords: seeded crossings on non-bridge water. A ford clears its cell (the crossing
-    // exists even where the bank was rough — caught by the water-law test at seed 7).
-    const fordable = ribbon.filter((i) => !map.road[i]);
+    // Natural fords: seeded crossing MARKS on non-bridge, non-rough water — pure flavor since
+    // the S23 playtest ruling (below), kept because stepping-stones sell the water.
+    const fordable = ribbon.filter((i) => !map.road[i] && passable[i]);
     const nFords = knobs.riverFordsPerRiver.min + rng.int(Math.max(1, knobs.riverFordsPerRiver.max - knobs.riverFordsPerRiver.min + 1));
-    for (let f = 0; f < nFords && fordable.length > 0; f++) {
-      const i = fordable[rng.int(fordable.length)]!;
-      ford[i] = true;
-      passable[i] = true;
-    }
+    for (let f = 0; f < nFords && fordable.length > 0; f++) ford[fordable[rng.int(fordable.length)]!] = true;
   }
-  // The water law: river blocks unless bridged (road) or forded.
-  for (let i = 0; i < cells; i++) if (river[i] && !map.road[i] && !ford[i]) passable[i] = false;
+  // S23 playtest r1 (Chris: ran the map's whole length hunting a crossing — one bridge, unread
+  // fords): rivers are FLAVOR now — they never touch passable[]. Bridges (river ∧ road) and
+  // ford marks stay as rendering; the reachability-repair machinery is gone with the barrier.
   map.river = river;
   map.ford = ford;
-  // The invariant, extended: anything a river cut off gets a ford at the crossing (plan through
-  // water, promote the wet cells on the path); pure-rough blockages still use the old carve.
-  const fordTo = (target: Point) => {
-    if (findPath(map, map.start, target)) return;
-    const wet = findPath(map, map.start, target, (q) => passable[idx(map, q)]! || river[idx(map, q)]!);
-    if (!wet) {
-      carveTo(target);
-      return;
-    }
-    for (const c of wet) {
-      const i = idx(map, c);
-      if (river[i] && !passable[i]) {
-        ford[i] = true;
-        passable[i] = true;
-      }
-    }
-  };
-  for (const t of towns) fordTo(t.at);
-  for (const f of map.strongholds) fordTo(f.at);
-  for (const r of regions) {
-    const reach = reachable(map, map.start);
-    let hasReachable = false;
-    for (let i = 0; i < cells && !hasReachable; i++) if (region[i] === r.index && reach.has(i)) hasReachable = true;
-    if (!hasReachable) fordTo(r.heart);
-  }
 
   // 7. Roamers: per-region count by density, each with a seeded in-region position.
   for (const r of regions) {

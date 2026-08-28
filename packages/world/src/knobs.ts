@@ -49,12 +49,12 @@ export const KNOBS = {
   riversPerWorld: knob<{ min: number; max: number }>({
     default: { min: 2, max: 4 },
     unit: "rivers (seeded roll in [min, max])",
-    description: "S23 wilds polish (ADR-082/084): meandering river ribbons per world — impassable water except where a road BRIDGES it or a natural FORD crosses. Reachability broken by a river is restored by promoting the blocking cell to a ford (the connectivity invariant extended; the ribbon is never broken).",
+    description: "S23 wilds polish (ADR-082/084): meandering river ribbons per world. S23 playtest r1 (Chris: hunted a crossing across the map's whole length — one bridge, unreadable fords): rivers are FLAVOR — pure rendering, never touching passability; bridges draw where roads cross and ford marks dot the water.",
   }),
   riverFordsPerRiver: knob<{ min: number; max: number }>({
     default: { min: 1, max: 2 },
-    unit: "natural fords per river (seeded roll in [min, max])",
-    description: "S23 wilds polish: seeded natural crossings per river, beside whatever bridges the road network builds and whatever fords the reachability repair adds.",
+    unit: "ford marks per river (seeded roll in [min, max])",
+    description: "S23 wilds polish: seeded stepping-stone crossing marks per river — decorative since the flavor ruling (S23 playtest r1).",
   }),
   roamerDensityPer100Cells: knob<Record<RegionTier, number>>({
     default: { civilized: 1.0, approach: 1.5, wild: 2.0 },

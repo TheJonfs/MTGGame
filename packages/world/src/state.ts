@@ -249,7 +249,13 @@ export function newWorld(opts: NewWorldOptions): WorldState {
     gameOver: false,
     shops: {},
     visits: {},
-    lastTownIndex: gen.map.towns.findIndex((t) => t.at.x === start.x && t.at.y === start.y),
+    // S23 playtest r1: the start stands a couple of steps OUTSIDE the home town's gate now —
+    // "last town" is the nearest one (the home town), not the cell we stand on.
+    lastTownIndex: gen.map.towns.reduce((best, t, i) => {
+      const d = Math.abs(t.at.x - start.x) + Math.abs(t.at.y - start.y);
+      const bd = best < 0 ? Infinity : Math.abs(gen.map.towns[best]!.at.x - start.x) + Math.abs(gen.map.towns[best]!.at.y - start.y);
+      return d < bd ? i : best;
+    }, -1),
     decks: { [starter.name]: deck },
     activeDeckName: starter.name,
     provenance,
@@ -296,7 +302,12 @@ export function migrateWorld(format: string, input: Partial<WorldState>): WorldS
   if (format === "world-save-v1") {
     const map = w.map!;
     const pos = w.player!.position;
-    const lastTownIndex = map.towns.findIndex((t) => t.at.x === pos.x && t.at.y === pos.y);
+    // S23 r1: nearest town (exact-match returned -1 the moment starts moved off the gate).
+    const lastTownIndex = map.towns.reduce((best, t, i) => {
+      const d = Math.abs(t.at.x - pos.x) + Math.abs(t.at.y - pos.y);
+      const bd = best < 0 ? Infinity : Math.abs(map.towns[best]!.at.x - pos.x) + Math.abs(map.towns[best]!.at.y - pos.y);
+      return d < bd ? i : best;
+    }, -1);
     w = { ...w, shops: {}, visits: {}, lastTownIndex, deckName: w.deckName ?? "Deck" };
     format = "world-save-v2";
   }

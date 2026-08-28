@@ -138,7 +138,8 @@ describe("S14 acceptance: editor, shop v2, resume path, v1 migration", () => {
   it("shop v2: depletion shows after buying, persists through save/load; sell adds gold; buy → add to deck when legal", async () => {
     const c = freshController();
     c.newGame({ starter: "green", difficulty: "standard", seed: 202 });
-    const town = c.world!.map.towns.find((t) => t.at.x === c.world!.map.start.x && t.at.y === c.world!.map.start.y)!;
+    const town = c.world!.map.towns[c.world!.lastTownIndex]!; // S23 r1: the start stands outside the gate; the home town is the nearest
+    c.world!.player.position = { ...town.at }; // a real arrival stands on the town — the reload leg resumes there
     c.enterTown(town);
     expect(c.world!.visits[town.index]).toBe(1);
     expect(c.world!.lastTownIndex).toBe(town.index);
@@ -294,7 +295,7 @@ describe("WorldController acceptance (S13 Part 5, scripted half)", () => {
   it("shop: stock is rolled per town/epoch; buying moves gold into the collection; collection screen opens and closes", async () => {
     const c = freshController();
     c.newGame({ starter: "green", difficulty: "standard", seed: 102 });
-    const town = c.world!.map.towns.find((t) => t.at.x === c.world!.map.start.x && t.at.y === c.world!.map.start.y)!;
+    const town = c.world!.map.towns[c.world!.lastTownIndex]!; // S23 r1: the start stands outside the gate; the home town is the nearest
     c.enterTown(town);
     expect(c.screen.kind).toBe("town");
     const stock = (c.screen as { stock: import("@shandalar/world").ShopItem[] }).stock;

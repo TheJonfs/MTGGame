@@ -77,13 +77,16 @@ const TERRAIN_GLYPHS: Record<string, string[]> = {
  * glyphs. Ink-on-white images composite by MULTIPLY blend (the S6 icon precedent) — the white
  * vanishes over the washes, so no alpha channel is needed and the ink sits on the pigment like
  * a real drawn mark. Terrain scatters through the same Round-1 blob machinery. */
+// S23 playtest r1 (Chris: the terrain repeats): each family carries a SECOND composition —
+// six per colour, sampled by the same coord-hash pick, interleaved so neighbouring spots
+// rarely repeat a silhouette.
 const TERRAIN_SPRITES: Record<string, string[]> = {
-  W: ["sprite-w-wheat", "sprite-w-stone", "sprite-w-hedgerow"],
-  U: ["sprite-u-reeds", "sprite-u-islet", "sprite-u-searocks"],
-  B: ["sprite-b-deadtree", "sprite-b-barrow", "sprite-b-snags"],
-  R: ["sprite-r-cone", "sprite-r-crag", "sprite-r-scree"],
-  G: ["sprite-g-pine", "sprite-g-copse", "sprite-g-roots"],
-  C: ["sprite-r-crag"],
+  W: ["sprite-w-wheat", "sprite-w-stone-2", "sprite-w-hedgerow", "sprite-w-wheat-2", "sprite-w-stone", "sprite-w-hedgerow-2"],
+  U: ["sprite-u-reeds", "sprite-u-islet-2", "sprite-u-searocks", "sprite-u-reeds-2", "sprite-u-islet", "sprite-u-searocks-2"],
+  B: ["sprite-b-deadtree", "sprite-b-barrow-2", "sprite-b-snags", "sprite-b-deadtree-2", "sprite-b-barrow", "sprite-b-snags-2"],
+  R: ["sprite-r-cone", "sprite-r-crag-2", "sprite-r-scree", "sprite-r-cone-2", "sprite-r-crag", "sprite-r-scree-2"],
+  G: ["sprite-g-pine", "sprite-g-copse-2", "sprite-g-roots", "sprite-g-pine-2", "sprite-g-copse", "sprite-g-roots-2"],
+  C: ["sprite-r-crag", "sprite-r-crag-2"],
 };
 const spriteHref = (slug: string) => `/map-sprites/${slug}.png`;
 

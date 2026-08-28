@@ -76,10 +76,13 @@ describe("world generator (invariant fuzz, ≥200 seeds)", () => {
       // Colour coverage: every colour has a civilized-or-approach region; every non-wild region has ≥1 town.
       for (const c of colours) expect(w.map.regions.some((r) => r.color === c && r.tier !== "wild"), `seed ${seed} colour ${c}`).toBe(true);
       for (const r of w.map.regions) if (r.tier !== "wild") expect(w.map.towns.some((t) => t.region === r.index), `seed ${seed} region ${r.name} has a town`).toBe(true);
-      // Home-region start: the start is a town in the home colour's region.
-      const startTown = w.map.towns.find((t) => samePoint(t.at, w.map.start))!;
-      expect(startTown, `seed ${seed} starts in a town`).toBeTruthy();
-      expect(w.map.regions[startTown.region]!.color).toBe(home);
+      // Home-region start — S23 playtest r1: a couple of steps OUTSIDE the home town's gate
+      // (never ON a town), in the home colour's region, with the home town within 2 steps.
+      expect(isTownCell(w.map, w.map.start), `seed ${seed} start is not on a town`).toBe(false);
+      expect(w.map.passable[idx(w.map, w.map.start)]).toBe(true);
+      const nearTown = w.map.towns.find((t) => manhattan(t.at, w.map.start) <= 2)!;
+      expect(nearTown, `seed ${seed} a town within 2 steps of the start`).toBeTruthy();
+      expect(w.map.regions[nearTown.region]!.color).toBe(home);
       // Roamers: positioned, in-region, passable, never on a town/fixed cell; counts meet the density target.
       for (const o of w.opponents) {
         if (o.fixedAt) { expect(o.at).toBeUndefined(); continue; }
@@ -116,7 +119,7 @@ describe("world generator (invariant fuzz, ≥200 seeds)", () => {
       const rr = roadReach(w.map.towns[0]!.at);
       for (const t of w.map.towns) expect(rr.has(idx(w.map, t.at)), `seed ${seed} road to ${t.name}`).toBe(true);
       // Explored: the home region is fully explored; a far wild cell is not.
-      const homeReg = w.map.regions[startTown.region]!;
+      const homeReg = w.map.regions[nearTown.region]!;
       for (let i = 0; i < 50; i++) { const p = { x: i % w.map.width, y: Math.floor(i / w.map.width) }; if (w.map.region[idx(w.map, p)] === homeReg.index) expect(isExplored(w.explored, w.map, p)).toBe(true); }
       expect(w.explored.some((word) => word !== (-1 >>> 0))).toBe(true);
       const reach = reachable(w.map, w.map.start);
@@ -134,44 +137,28 @@ describe("world generator (invariant fuzz, ≥200 seeds)", () => {
       }
     }
   });
-  it("S23 (wilds polish): rivers — ribbons exist, water blocks except at bridges and fords, deterministic per seed; reachability holds (the invariant fuzz above runs WITH rivers)", () => {
+  it("S23 rivers (playtest r1 ruling: FLAVOR, not barrier) — ribbons exist and never touch passability; ford marks sit only on passable non-road water; deterministic per seed", () => {
     for (const seed of [7, 42, 101]) {
       const w = generateWorld(seed, catalog, DEFAULT_GENERATOR, { knobs: defaultKnobs(), homeColor: "G" });
       const m = w.map;
       expect(m.river).toBeTruthy();
       expect(m.river!.filter(Boolean).length).toBeGreaterThan(0);
-      let fords = 0, bridges = 0;
+      // The flavor law: a wet cell is exactly as passable as the terrain under it — walking
+      // straight across open-ground water is legal (Chris ran the map's length once; never again).
+      let openWater = 0;
       for (let i = 0; i < m.river!.length; i++) {
-        if (!m.river![i]) continue;
-        if (m.road[i]) { bridges += 1; expect(m.passable[i]).toBe(true); }
-        else if (m.ford![i]) { fords += 1; expect(m.passable[i]).toBe(true); }
-        else expect(m.passable[i]).toBe(false); // the water law
+        if (m.ford![i]) {
+          expect(m.river![i]).toBe(true);
+          expect(m.passable[i]).toBe(true);
+          expect(m.road[i]).toBe(false);
+        }
+        if (m.river![i] && m.passable[i] && !m.road[i] && !m.ford![i]) openWater += 1;
       }
-      expect(fords + bridges).toBeGreaterThan(0); // every world has at least one crossing
+      expect(openWater).toBeGreaterThan(0); // plain walkable water exists — the barrier is gone
       const again = generateWorld(seed, catalog, DEFAULT_GENERATOR, { knobs: defaultKnobs(), homeColor: "G" });
       expect(JSON.stringify(again.map.river)).toBe(JSON.stringify(m.river));
       expect(JSON.stringify(again.map.ford)).toBe(JSON.stringify(m.ford));
     }
-  });
-
-  it("S23: a river-bridged road is WALKED — every wet cell on every town path is a bridge or a ford, and at least one real crossing happens across the seed set", () => {
-    let wetCrossings = 0;
-    for (const seed of [7, 42, 101]) {
-      const w = generateWorld(seed, catalog, DEFAULT_GENERATOR, { knobs: defaultKnobs(), homeColor: "G" });
-      const m = w.map;
-      for (const t of m.towns) {
-        const path = findPath(m, m.start, t.at);
-        expect(path, `${seed}: ${t.name}`).not.toBeNull();
-        for (const c of path!) {
-          const i = idx(m, c);
-          if (m.river![i]) {
-            wetCrossings += 1;
-            expect(m.road[i] || m.ford![i], `${seed}: wet cell ${c.x},${c.y} on the way to ${t.name}`).toBe(true);
-          }
-        }
-      }
-    }
-    expect(wetCrossings).toBeGreaterThan(0); // the rivers are actually in somebody's way
   });
 
   it("pathfinding: BFS path is walkable, shortest-ish, and null when unreachable", () => {
@@ -186,11 +173,14 @@ describe("world generator (invariant fuzz, ≥200 seeds)", () => {
 });
 
 describe("WorldState + world-save-v3", () => {
-  it("new world: start in the home colour's town, world life 10, gold 20, collection = starter deck + spares (provenance logged), deck legal, renown 0", () => {
+  it("new world: start a couple of steps outside the home colour's town (S23 r1), world life 10, gold 20, collection = starter deck + spares (provenance logged), deck legal, renown 0", () => {
     const w = newWorld({ seed: 11, catalog, starter: "red" });
     expect(w.player.worldLife).toBe(10);
     expect(w.player.gold).toBe(20);
-    expect(w.map.towns.some((t) => t.at.x === w.player.position.x && t.at.y === w.player.position.y)).toBe(true);
+    expect(w.map.towns.some((t) => t.at.x === w.player.position.x && t.at.y === w.player.position.y)).toBe(false); // outside the gate
+    expect(w.map.towns.some((t) => manhattan(t.at, w.player.position) <= 2)).toBe(true); // but the town is right there
+    expect(w.lastTownIndex).toBeGreaterThanOrEqual(0); // "You set out from <the home town>"
+    expect(manhattan(w.map.towns[w.lastTownIndex]!.at, w.player.position)).toBeLessThanOrEqual(2);
     expect(regionAt(w.map, w.player.position).color).toBe("R");
     expect(deckSize(activeDeck(w))).toBe(30);
     expect(w.activeDeckName).toBe("Ember Warband");
@@ -452,7 +442,7 @@ describe("town shops (S13 Part 3 → S14 Part 3: depletion, restock, sell, buy-f
     const { worldKnobs, deckSize } = await import("./state.js");
     const w = newWorld({ seed: 63, catalog, starter: "green" });
     const knobs = worldKnobs(w);
-    const town = w.map.towns.find((t) => samePoint(t.at, w.map.start))!;
+    const town = w.map.towns.reduce((a, b) => (manhattan(a.at, w.map.start) <= manhattan(b.at, w.map.start) ? a : b)); // S23 r1: the start stands outside the gate
     syncShopState(w, town, knobs);
     w.player.gold = 1000;
     const item = rollShopStock(w, town, pool.cards, knobs)[0]!;
@@ -1610,7 +1600,9 @@ describe("S18 spawn tables (ADR-066/074, Chris's ring blends): spoke-bound beast
     const knobsW = worldKnobs(w);
     const cells = [...Array(w.map.width * w.map.height).keys()];
     void cells;
-    w.player.position = { ...w.map.start };
+    // Stand ON the home town (roamers never enter towns — S23 r1 moved the start to open
+    // ground, where pursuit contact was short-circuiting advance before the respawn tick).
+    w.player.position = { ...w.map.towns[w.lastTownIndex]!.at };
     // Step in place far from the region until respawns land there.
     let spawnedThere = 0;
     for (let i = 0; i < 400 && spawnedThere < 3; i++) {

@@ -161,7 +161,9 @@ export class WorldController {
   newGame(choice: NewGameChoice): void {
     const seed = choice.seed ?? Math.floor(Math.random() * 1_000_000);
     this.world = newWorld({ seed, catalog: this.catalog, starter: choice.starter, difficulty: choice.difficulty, playerName: choice.name ?? "You" });
-    this.lastTown = townAt(this.world.map, this.world.player.position);
+    // S23 r1: the start stands OUTSIDE the home town's gate now — "set out from" reads the
+    // world's nearest-town index, not the cell underfoot.
+    this.lastTown = townAt(this.world.map, this.world.player.position) ?? this.world.map.towns[this.world.lastTownIndex] ?? null;
     this.autosave();
     this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: `You set out from ${this.lastTown?.name ?? "the road"}.` };
     this.emit();

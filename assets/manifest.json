@@ -2175,6 +2175,21 @@
         }
       }
     },
+    "sprite-b-barrow-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:f9af101357e3c9e9166b47ee791461a16e206b4cb9a48b4d97ceb6b29ef0d42a",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:f9af101357e3c9e9166b47ee791461a16e206b4cb9a48b4d97ceb6b29ef0d42a",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-b-barrow-2/canonical.png",
+          "rendered_at": "2026-08-28T04:22:14+00:00",
+          "thumb": "assets/thumbs/sprite-b-barrow-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "sprite-b-deadtree": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:d2c7fe0fe3ca878183028946bcaabf30f3f3fb50e48cf341c12d08364277fede",
@@ -2190,6 +2205,21 @@
         }
       }
     },
+    "sprite-b-deadtree-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:a8f0fdd5712b926ca210130c2ce9b7a107c87131f0b9974a0defd183bc6aca43",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:a8f0fdd5712b926ca210130c2ce9b7a107c87131f0b9974a0defd183bc6aca43",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-b-deadtree-2/canonical.png",
+          "rendered_at": "2026-08-28T04:22:23+00:00",
+          "thumb": "assets/thumbs/sprite-b-deadtree-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "sprite-b-snags": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:6634a123e3663a678aaf82dbd094c60dab9bc7384762236e65455df1a1ab703a",
@@ -2201,6 +2231,21 @@
           "path": "assets/images/sprite-b-snags/canonical.png",
           "rendered_at": "2026-08-25T20:06:33+00:00",
           "thumb": "assets/thumbs/sprite-b-snags/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "sprite-b-snags-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:13de5b5ff47a02765e38330b247c7a133a876f5a81abe7f5bbcdd8adb686ffcc",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:13de5b5ff47a02765e38330b247c7a133a876f5a81abe7f5bbcdd8adb686ffcc",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-b-snags-2/canonical.png",
+          "rendered_at": "2026-08-28T04:22:33+00:00",
+          "thumb": "assets/thumbs/sprite-b-snags-2/canonical.png",
           "variant_prompt": null
         }
       }
@@ -2250,6 +2295,21 @@
         }
       }
     },
+    "sprite-g-copse-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:ddfbee1374b851894db6e00abb20a856f8ec0d8f53cf91d4e5f22415aceb56fb",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:ddfbee1374b851894db6e00abb20a856f8ec0d8f53cf91d4e5f22415aceb56fb",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-g-copse-2/canonical.png",
+          "rendered_at": "2026-08-28T04:23:19+00:00",
+          "thumb": "assets/thumbs/sprite-g-copse-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "sprite-g-pine": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:3771d636842d8af373a937e37e585f56e856fcca2656e29737c73eaf30c4eac0",
@@ -2265,6 +2325,21 @@
         }
       }
     },
+    "sprite-g-pine-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:1422ffd77d252dc6fc3505b70b437cd510de574fb716478d1a3b4cfe9e0a5457",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:1422ffd77d252dc6fc3505b70b437cd510de574fb716478d1a3b4cfe9e0a5457",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-g-pine-2/canonical.png",
+          "rendered_at": "2026-08-28T04:23:10+00:00",
+          "thumb": "assets/thumbs/sprite-g-pine-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "sprite-g-roots": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:fd3226870d2b097bf088c46cd3755b09b3d33d37a2c3d4e56c46da065807b80b",
@@ -2276,6 +2351,21 @@
           "path": "assets/images/sprite-g-roots/canonical.png",
           "rendered_at": "2026-08-25T20:07:33+00:00",
           "thumb": "assets/thumbs/sprite-g-roots/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "sprite-g-roots-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:a8c0059823f8c94dcb05926ffc988080369013f31b84cc7331ae4daab9cba90f",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:a8c0059823f8c94dcb05926ffc988080369013f31b84cc7331ae4daab9cba90f",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-g-roots-2/canonical.png",
+          "rendered_at": "2026-08-28T04:23:27+00:00",
+          "thumb": "assets/thumbs/sprite-g-roots-2/canonical.png",
           "variant_prompt": null
         }
       }
@@ -2310,6 +2400,21 @@
         }
       }
     },
+    "sprite-r-cone-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:2f1f5bcf567cd8ba146a00f63b3ef6c82aae15422cc5cc7c865e8c32080da314",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:2f1f5bcf567cd8ba146a00f63b3ef6c82aae15422cc5cc7c865e8c32080da314",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-r-cone-2/canonical.png",
+          "rendered_at": "2026-08-28T04:22:41+00:00",
+          "thumb": "assets/thumbs/sprite-r-cone-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "sprite-r-crag": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:6ceae3eda5a05e7bf4c18a6ff93fcc2972b427fab0514975b536c682cdce314b",
@@ -2325,6 +2430,21 @@
         }
       }
     },
+    "sprite-r-crag-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:59d02a60ff06c85d50280c4f48016c919561dcfebdd461ad189af1c3fe739bd9",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:59d02a60ff06c85d50280c4f48016c919561dcfebdd461ad189af1c3fe739bd9",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-r-crag-2/canonical.png",
+          "rendered_at": "2026-08-28T04:22:50+00:00",
+          "thumb": "assets/thumbs/sprite-r-crag-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "sprite-r-scree": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:79b9afd795e2979c8d432a91e5e69045887883c0b743d185372beb8d962ddaff",
@@ -2336,6 +2456,21 @@
           "path": "assets/images/sprite-r-scree/canonical.png",
           "rendered_at": "2026-08-25T20:07:05+00:00",
           "thumb": "assets/thumbs/sprite-r-scree/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "sprite-r-scree-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:0e5c891e2e71ae1dc5fbe546d56e3fda13c2028bce86dcb3f8dff74b888c6ecf",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:0e5c891e2e71ae1dc5fbe546d56e3fda13c2028bce86dcb3f8dff74b888c6ecf",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-r-scree-2/canonical.png",
+          "rendered_at": "2026-08-28T04:23:01+00:00",
+          "thumb": "assets/thumbs/sprite-r-scree-2/canonical.png",
           "variant_prompt": null
         }
       }
@@ -2415,6 +2550,21 @@
         }
       }
     },
+    "sprite-u-islet-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:05bc08d0bfdbcd6961643c2fc22f4d2f08e71621cff89ff07a8ff4a34aa6f31c",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:05bc08d0bfdbcd6961643c2fc22f4d2f08e71621cff89ff07a8ff4a34aa6f31c",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-u-islet-2/canonical.png",
+          "rendered_at": "2026-08-28T04:21:50+00:00",
+          "thumb": "assets/thumbs/sprite-u-islet-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "sprite-u-reeds": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:9a169f53f75d7d515047e2729c29b9648f02084ed46930c555cc227a74bbf75e",
@@ -2426,6 +2576,21 @@
           "path": "assets/images/sprite-u-reeds/canonical.png",
           "rendered_at": "2026-08-25T20:05:41+00:00",
           "thumb": "assets/thumbs/sprite-u-reeds/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "sprite-u-reeds-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:a75cc58538b4e0671f25b351d8b6ccc602341ca3d7b7767193c1430b0ea9d3cf",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:a75cc58538b4e0671f25b351d8b6ccc602341ca3d7b7767193c1430b0ea9d3cf",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-u-reeds-2/canonical.png",
+          "rendered_at": "2026-08-28T04:21:58+00:00",
+          "thumb": "assets/thumbs/sprite-u-reeds-2/canonical.png",
           "variant_prompt": null
         }
       }
@@ -2445,6 +2610,21 @@
         }
       }
     },
+    "sprite-u-searocks-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:6fd9f1200c7ebf20e0401ad033caa17b8eb57be7bd65756c140b4c9d04f666b0",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:6fd9f1200c7ebf20e0401ad033caa17b8eb57be7bd65756c140b4c9d04f666b0",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-u-searocks-2/canonical.png",
+          "rendered_at": "2026-08-28T04:22:06+00:00",
+          "thumb": "assets/thumbs/sprite-u-searocks-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "sprite-w-hedgerow": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:94294b1b7d59b2f61ae67024a11cda2ed8f2cfdb9828aeb6a15bf02aa0334653",
@@ -2456,6 +2636,21 @@
           "path": "assets/images/sprite-w-hedgerow/canonical.png",
           "rendered_at": "2026-08-25T20:05:27+00:00",
           "thumb": "assets/thumbs/sprite-w-hedgerow/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "sprite-w-hedgerow-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:c4a4702bf9054b01fc01a09bdd67cea2e2e0da819ac7d21cdf6f31d595fa072d",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:c4a4702bf9054b01fc01a09bdd67cea2e2e0da819ac7d21cdf6f31d595fa072d",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-w-hedgerow-2/canonical.png",
+          "rendered_at": "2026-08-28T04:21:41+00:00",
+          "thumb": "assets/thumbs/sprite-w-hedgerow-2/canonical.png",
           "variant_prompt": null
         }
       }
@@ -2475,6 +2670,21 @@
         }
       }
     },
+    "sprite-w-stone-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:d5759a2a91db282109696c7065f86b9dea61ff1ddc376bea50f97346e618c15f",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:d5759a2a91db282109696c7065f86b9dea61ff1ddc376bea50f97346e618c15f",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-w-stone-2/canonical.png",
+          "rendered_at": "2026-08-28T04:21:32+00:00",
+          "thumb": "assets/thumbs/sprite-w-stone-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "sprite-w-wheat": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:f004595e566f27105e42c09fdf813669f50f1d882f48ab6b4d2abdc8ea8f2b19",
@@ -2486,6 +2696,21 @@
           "path": "assets/images/sprite-w-wheat/canonical.png",
           "rendered_at": "2026-08-25T20:05:04+00:00",
           "thumb": "assets/thumbs/sprite-w-wheat/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "sprite-w-wheat-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:f028c52f9f5c262a79a4483b996f1ac773a431737377e7066917d6670cff047a",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:f028c52f9f5c262a79a4483b996f1ac773a431737377e7066917d6670cff047a",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-w-wheat-2/canonical.png",
+          "rendered_at": "2026-08-28T04:21:23+00:00",
+          "thumb": "assets/thumbs/sprite-w-wheat-2/canonical.png",
           "variant_prompt": null
         }
       }
