@@ -31,6 +31,7 @@
     }
   ],
   "art": {
+    "asset": "/custom-art/thundersnake.png",
     "fallback": "rendered"
   },
   "shopTier": 2

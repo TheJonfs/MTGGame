@@ -108,3 +108,28 @@ S23 fun batch (ADR-084). Entry authored by the implementer from fun-batch-s23.md
 3. **Watercolor storybook** — "Muted watercolor: a thin winged shadow perched on a library windowsill at night, and where its gaze falls the shelves stand blank — titles gone from spines, portraits empty — one thin ribbon of silvery memory drifting to it across the room, soft grey-blue wash, quiet wrong-silence mood."
 4. **Chiaroscuro portrait** — "Dramatic chiaroscuro three-quarter portrait: a sleek nightmare's head and folded wings against a dark ground, single cold light source, its eyes pale and pupilless, faint translucent images of faces and rooms swirling in the smoke of its breath, near-monochrome indigo with silver glints."
 
+---
+
+## S23 ROUND 2 — the fresh roll (Chris: round 1's twelve rejected whole; "four completely different art styles from what we've generally used"). New style set for all three cards: stained glass · illuminated manuscript · art nouveau poster · dark surrealist oil.
+
+## thundersnake — round 2
+
+1. **Stained glass** — "A stained glass window panel in deep jewel tones: a serpent rendered as a single jagged lightning bolt zigzagging from a storm cloud to a burning field, fangs bared at the bolt's tip, heavy black lead lines dividing panes of white-gold, storm blue and ember orange, light glowing through the glass."
+2. **Illuminated manuscript** — "A medieval illuminated manuscript miniature in tempera and gold leaf: a great serpent of lightning descending from a stylized spiral storm cloud onto a tilted flat-perspective field, tiny peasants fleeing, burnished gold-leaf sky, flat medieval perspective, rich lapis and vermilion pigments, fine brushwork."
+3. **Art nouveau poster** — "An art nouveau poster illustration: a lightning serpent sweeping through one enormous sinuous whiplash curve, its body drawn in flowing ornamental line, stylized spark rosettes and cloud whorls filling the negative space, flat decorative color in cream, storm grey and electric gold, elegant curvilinear composition."
+4. **Dark surrealist oil** — "A dark surrealist oil painting, monumental and dreamlike: an immense serpent of white light crawling across a blasted umber plain under a low copper sky, its glow the only light source, haze and ash softening every edge, tiny charred trees for scale, textured impasto, ominous grandeur."
+
+## gallows_djinn — round 2 (the seed holds: the BARGAIN, not the gallows; the vast djinn and the small mortal who bought its service)
+
+1. **Stained glass** — "A stained glass window panel in deep jewel tones: an immense horned djinn filling the arch of the panel, hunched beneath its curve, one huge open palm lowered toward a tiny robed figure, a single drop of ruby-red glass falling between them, heavy black lead lines, panes of bronze green, umber and deep violet, light glowing through the glass."
+2. **Illuminated manuscript** — "A medieval illuminated manuscript miniature in tempera and gold leaf: a giant horned djinn seated cross-legged like a king while a small robed scribe signs a contract scroll with a quill dipped in his own blood, flat medieval perspective, burnished gold-leaf ground, rich pigments, the djinn's patient smile finely drawn."
+3. **Art nouveau poster** — "An art nouveau poster illustration: a colossal djinn rising out of decorative smoke that curls in ornamental whorls around the frame of the image, its horned head bowed to regard a small elegant mortal hand extended upward holding a signed paper, flat decorative color in bronze, ivory black and one deep red accent, sinuous flowing line."
+4. **Dark surrealist oil** — "A dark surrealist oil painting, monumental and dreamlike: a mountainous hunched figure with curved horns half-dissolved in ochre haze, one vast open palm extended down through the fog toward a minuscule human silhouette, a single point of red the only saturated color, textured impasto, oppressive scale and silence."
+
+## traumatizer — round 2 (the seed holds: memory made visible and being TAKEN; the nightmare lean and quiet, not monstrous-loud)
+
+1. **Stained glass** — "A stained glass window panel in deep night-blue jewel tones: a lean winged nightmare crouched above a sleeping figure, a ribbon of white and silver glass flowing from the sleeper's brow into the creature's mouth, small pictorial panes inside the ribbon showing faces and doors, heavy black lead lines, moonlight glowing through the glass."
+2. **Illuminated manuscript** — "A medieval illuminated manuscript miniature in tempera and gold leaf: a dark winged nightmare perched on the footboard of a dreaming monk's bed, drawing a stream of tiny painted scrolls and faces from his head, flat medieval perspective, gold-leaf stars on a deep blue ground, rich pigments, fine brushwork."
+3. **Art nouveau poster** — "An art nouveau poster illustration: a sleeping woman with long hair flowing in decorative curvilinear waves across the composition, a slender winged shadow above her drawing a thin ornamental ribbon of tiny faces and keys from her brow, flat decorative color in midnight blue, silver and pale rose, elegant sinuous line."
+4. **Dark surrealist oil** — "A dark surrealist oil painting, monumental and dreamlike: a vast winged silhouette hanging motionless over an endless grey dream-plain scattered with empty picture frames, translucent faces dissolving into the fog around it, one cold shaft of moonlight, textured impasto, quiet dread."
+

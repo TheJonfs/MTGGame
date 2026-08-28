@@ -41,6 +41,7 @@
     }
   ],
   "art": {
+    "asset": "/custom-art/gallows_djinn.png",
     "fallback": "rendered"
   },
   "shopTier": 2

@@ -36,6 +36,7 @@
     }
   ],
   "art": {
+    "asset": "/custom-art/traumatizer.png",
     "fallback": "rendered"
   },
   "shopTier": 2
