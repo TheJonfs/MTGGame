@@ -37,6 +37,12 @@
 2. **The obvious actions**: `sfx.draw` (throttled — an opening hand's seven-draw burst rings once), `sfx.shuffle` (a new `SHUFFLED` engine event — mulligans and post-search shuffles emit; the setup shuffle deliberately does not, pre-game noise), `sfx.tap` (every TAPPED — mana payments ring, as Shandalar's did), `sfx.untap` (one ring per untap-step burst, 150ms throttle; isolated effect untaps ring individually), `sfx.attack` (ONE ring at the commit, either seat), `sfx.end-turn` (the turn-number rollover, silent at the game's first turn).
 3. Volumes: colours 0.2 (ruled); the rest are implementer first guesses (types 0.35, attack 0.5, shuffle 0.4, draw/end-turn 0.3, tap/untap 0.25) — all on the /sound board for the next pass. Note for the feedback round: the attack commit both rings Attack AND taps each attacker (Tap × n) — if that stacks muddy, suppressing tap-during-commit is a small change.
 
+## Playtest round 4 (S24 — SFX second pass)
+
+1. **The louds potted to 0.3** (Chris's verdict): the five type-cast sounds, attack, and shuffle all sit at 0.3 now (colours stay 0.2; tap/untap 0.25; draw/end-turn 0.3).
+2. **The ten guild pairs are live** — pure mapping, zero code (the enterSfxCue resolver already emits sorted pair keys): `sfx.enter.WU…RG` → the package's pair files at 0.3. A Tropical Island entering play rings GreenBlue.wav (board-verified fetch); every dual land and two-colour permanent resolves the same way.
+3. **Damage rings** (`sfx.damage` → Damage.wav at 0.3): one ring per simultaneous batch (combat's several DAMAGE events land in one instant — the burst-throttle pattern), covering combat and spell damage alike.
+
 ## Deviations from the brief
 
 1. **The mid-rest-fall edge ruled simply**: a life-link town falling while you sleep drops the ceiling and the heal clamps to it — the steps stay spent (the innkeeper kept the bed). Escalated-by-doing; one refund line if the feel says robbed.

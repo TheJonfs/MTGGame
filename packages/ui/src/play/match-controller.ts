@@ -200,6 +200,7 @@ export class MatchController {
   /** S24 r3 SFX bookkeeping: the untap/draw burst throttles and the end-turn rollover detector. */
   private lastUntapSfxAt = 0;
   private lastDrawSfxAt = 0;
+  private lastDamageSfxAt = 0;
   private lastSfxTurn = 0;
 
   /** The colours a permanent "enters as": a land's identity is what it taps for (a Swamp is B);
@@ -377,6 +378,13 @@ export class MatchController {
       if (names.length > 0) this.showNotice(`Opponent attacks with ${names.join(", ")}`);
     });
     bus.on("DAMAGE", (e) => {
+      // S24 r4 (the SFX wave, second pass): damage rings — one ring per simultaneous batch
+      // (combat's several DAMAGE events land in the same instant; the untap throttle's pattern).
+      const now = Date.now();
+      if (now - this.lastDamageSfxAt > 150) {
+        this.lastDamageSfxAt = now;
+        audio.sfx("sfx.damage");
+      }
       if (e.target.kind === "player" && e.target.player === this.humanSeat && e.combat) {
         this.showNotice(`You take ${e.amount} combat damage (${pool.get(e.sourceCardId)?.name ?? e.sourceCardId})`);
       }

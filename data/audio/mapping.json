@@ -53,23 +53,23 @@
   },
   "sfx.cast.creature": {
     "file": "sfx/Summon.wav",
-    "volume": 0.35
+    "volume": 0.3
   },
   "sfx.cast.artifact": {
     "file": "sfx/Artifact.wav",
-    "volume": 0.35
+    "volume": 0.3
   },
   "sfx.cast.enchantment": {
     "file": "sfx/Enchant.wav",
-    "volume": 0.35
+    "volume": 0.3
   },
   "sfx.cast.instant": {
     "file": "sfx/Instant.wav",
-    "volume": 0.35
+    "volume": 0.3
   },
   "sfx.cast.sorcery": {
     "file": "sfx/Sorcery.wav",
-    "volume": 0.35
+    "volume": 0.3
   },
   "sfx.draw": {
     "file": "sfx/Draw.wav",
@@ -77,7 +77,7 @@
   },
   "sfx.shuffle": {
     "file": "sfx/Shuffle.wav",
-    "volume": 0.4
+    "volume": 0.3
   },
   "sfx.tap": {
     "file": "sfx/Tap.wav",
@@ -89,10 +89,54 @@
   },
   "sfx.attack": {
     "file": "sfx/Attack2.wav",
-    "volume": 0.5
+    "volume": 0.3
   },
   "sfx.end-turn": {
     "file": "sfx/EndTurn.wav",
+    "volume": 0.3
+  },
+  "sfx.enter.WU": {
+    "file": "sfx/WhiteBlue.wav",
+    "volume": 0.3
+  },
+  "sfx.enter.WB": {
+    "file": "sfx/BlackWhite.wav",
+    "volume": 0.3
+  },
+  "sfx.enter.WR": {
+    "file": "sfx/Whitered.wav",
+    "volume": 0.3
+  },
+  "sfx.enter.WG": {
+    "file": "sfx/WhiteGreen.wav",
+    "volume": 0.3
+  },
+  "sfx.enter.UB": {
+    "file": "sfx/BlueBlack.wav",
+    "volume": 0.3
+  },
+  "sfx.enter.UR": {
+    "file": "sfx/RedBlue.wav",
+    "volume": 0.3
+  },
+  "sfx.enter.UG": {
+    "file": "sfx/GreenBlue.wav",
+    "volume": 0.3
+  },
+  "sfx.enter.BR": {
+    "file": "sfx/BlackRed.wav",
+    "volume": 0.3
+  },
+  "sfx.enter.BG": {
+    "file": "sfx/GreenBlack.wav",
+    "volume": 0.3
+  },
+  "sfx.enter.RG": {
+    "file": "sfx/GreenRed.wav",
+    "volume": 0.3
+  },
+  "sfx.damage": {
+    "file": "sfx/Damage.wav",
     "volume": 0.3
   }
 }
