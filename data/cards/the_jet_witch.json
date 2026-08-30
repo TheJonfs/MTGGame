@@ -32,6 +32,7 @@
     }
   ],
   "art": {
+    "asset": "/custom-art/the_jet_witch.png",
     "fallback": "rendered"
   },
   "prizeOnly": true

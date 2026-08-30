@@ -49,6 +49,7 @@
     }
   ],
   "art": {
+    "asset": "/custom-art/the_sapphire_sage.png",
     "fallback": "rendered"
   },
   "prizeOnly": true
