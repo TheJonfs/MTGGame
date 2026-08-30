@@ -57,6 +57,8 @@ Strongholds get partisan laws later; Mox dungeons get balanced laws that still t
 
 ## 7. Guardians: identity ruling (proposal) + verified slate
 
+***[AMENDED post-S24 (the great swap, Chris-ruled — see `five-powers-design.md` §6): the five real legends below move to guard the POWER-DUNGEONS, their decks and drop rules traveling with them; the Moxen pass to a new custom gem-titled court (the Pearl Cleric pattern), designs pending. The table below stands as the original record; existing saves grandfather.]***
+
 **(P) Guardians are mono-color; the warp belongs to the stronghold lords.** The elder powers keep the old ways — orthodox single-flow magic at full strength; the five lords ride the warped currents on duals. Story-mechanical contrast, plus clean sequencing: duals ship S20 player-facing (solver fuzz-covered), first AI dual users arrive with the tri-color stronghold decks in S22.
 
 | Mox | Guardian | Region | Printing | Engine bill |

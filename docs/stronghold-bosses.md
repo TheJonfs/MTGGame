@@ -95,7 +95,7 @@ Everything else exists: any-target trigger choice (ADR-048), observed conditions
 *Flavor text pending. Visual seed (Chris): **an efreet dealing in magic, heat, and energy** — the furnace-spirit at the Gate, his bargain made law. The "may" is the opponent's alone — the draw is mandatory (Chris-ruled): the furnace does not decline fuel.*
 
 **Design notes (recorded):**
-- *Calibrated to the stronghold systems:* at healthy life the toll is a tax; at post-gauntlet interior life (arriving burned from the minion floors) it's nearly unpayable and every spell feeds him. Same card, two games — the dungeon attrition designed sessions earlier is what loads this trigger.
+- *Calibrated to the stronghold systems:* at healthy life the toll is a tax; at post-gauntlet interior life (arriving burned from the minion floors) it's nearly unpayable and every spell feeds him. Same card, two games — the dungeon attrition designed sessions earlier is what loads the trigger.
 - *Inevitability through selection, not damage:* the cycling grant means he never bricks — every fed card and every drawn card converts toward the answer. Fuel in (their spells), fuel burned (cycling), ash raked back (the recursion suite, pending).
 - *The deck-out puzzle path (deliberate, kept by dropping "may"):* overfeed the furnace — cast cheap, never pay, race his 40 against your life. `DECKED` has been a loss reason since S1; a boss defeated by overfeeding rewards puzzle-readers. **Watch item:** his own engine accelerates the race (trigger-draws + cycling-draws); S22 sims confirm the balance; levers are library size and pin discipline.
 - *The counterspell story (confirmed, zero work):* his trigger resolves above the cast spell — a drawn Essence Scatter can counter the very spell that paid for it.
@@ -116,13 +116,13 @@ Everything else exists: any-target trigger choice (ADR-048), observed conditions
 - Whenever an opponent plays a land, search your library for a Forest card, put it onto the battlefield tapped, then shuffle.
 - {3}{W}{U}: Create a 4/4 white and blue Sphinx creature token with flying and vigilance. *(Cost carries a standing playtest note: S22 sims test whether ? wants to sit at 2.)*
 
-*Flavor text pending. Visual seed (Chris): **a dryad that evokes the sphinx-making** — the dreamer and the dreamed. The inversion lord: the only law that doesn't punish — it matches. Everything grows in the Throne's demesne; he is simply better at growing.*
+*Flavor text pending. Visual seed (Chris): **a dryad that evokes the sphinx-making** — the dreamer and the dreamed. The inversion lord: the only law that doesn't punish — it matches. Everything grows in the Throne's demesne; she is simply better at growing.*
 
 **Design notes (recorded):**
 - *The pattern closes:* return · die · untap · cast · **play a land** — the five lords tax the five fundamental actions of the game. Grown, not planned; complete anyway.
-- *The secret engine:* "a Forest card" fetches the **typed duals** — Tropical Island, Temple Garden, Breeding Pool are Forests — so the trigger fixes his three colors while ramping, purely via the subtype system. Player-side (sole-drop): the lord makes the ABU/shock investment literally fetchable.
-- *"Plays," not "enters" (recommended and load-bearing):* the special action only — an enters-wording would feed him off the opponent's own Wilds cracks and Rampant Growths; plays-wording creates the fight's counterplay: **starve him** by holding land drops, trading your development against his ramp. The fetches arriving tapped keeps the tempo honest.
-- *Costing (? = 3):* the decisive asymmetry is player-side — the AI **cannot slow-roll** ("always play a land" is a SanePolicy rule inherited up the ladder), so a player-piloted Grafter is fed every turn by construction; {2} would be a degenerate sole-drop. {3}{W}{U} matches Warrant // Warden's printed sorcery rate exactly (RNA #230, ✔ verified — he casts Warden at will); S22 sims may argue it down.
+- *The secret engine:* "a Forest card" fetches the **typed duals** — Tropical Island, Temple Garden, Breeding Pool are Forests — so the trigger fixes her three colors while ramping, purely via the subtype system. Player-side (sole-drop): the lord makes the ABU/shock investment literally fetchable.
+- *"Plays," not "enters" (recommended and load-bearing):* the special action only — an enters-wording would feed her off the opponent's own Wilds cracks and Rampant Growths; plays-wording creates the fight's counterplay: **starve her** by holding land drops, trading your development against her ramp. The fetches arriving tapped keeps the tempo honest.
+- *Costing (? = 3):* the decisive asymmetry is player-side — the AI **cannot slow-roll** ("always play a land" is a SanePolicy rule inherited up the ladder), so a player-piloted Grafter is fed every turn by construction; {2} would be a degenerate sole-drop. {3}{W}{U} matches Warrant // Warden's printed sorcery rate exactly (RNA #230, ✔ verified — she casts Warden at will); S22 sims may argue it down.
 - *AI read:* both halves are the easiest in the cycle — the trigger is automatic; the activation is a mana-sink the master profile already exploits (Drana/Formation lineage).
 
 **Vocabulary bill: nearly free** — the fifth lord grows from existing soil (green composts; it does not invent). Search-Forest = Amendment 1 + subtype search (Matron machinery); tapped destination and shuffle-always exist; `sphinx_4_4_wu` token def. Sole sliver: a **land-play event emission** (the special action announcing itself; condition machinery does the rest).
@@ -148,7 +148,7 @@ Each round owes: the card (spine grammar), the stronghold's partisan law, the es
 | The Charnel Court | *the Tithe* | Whenever a creature dies, the intruder loses 1 life | As proposed ✓ |
 | The Argent Bastion | *the Intake* | Creatures the intruder controls enter the battlefield tapped | As proposed ✓ — every arrival pays the Warden's law on its first untap |
 | The Furnace Gate | *the Toll* | Whenever the intruder casts a spell, the Gate deals 1 damage to them | Shipped with a **watch-flag** (may hit too hard from turn 1; playtest rules) |
-| The Verdant Throne | *the Season* | At the beginning of the Sower's upkeep, put a +1/+1 counter on each creature he controls | Shipped with a **watch-flag** (compounding; requires his board, but watch it) |
+| The Verdant Throne | *the Season* | At the beginning of the Sower's upkeep, put a +1/+1 counter on each creature she controls | Shipped with a **watch-flag** (compounding; requires her board, but watch it) |
 
 Vocabulary: Tithe/Toll/Season are existing machinery (observed DIES, SPELL_CAST + damage, scoped addCounters); the Risen Tide needs an **additional-land-drops effect** (a small rules counter the land-play legality check reads — new sliver); the Intake needs **enters-tapped imposed on creatures by static** (extension of the sanctioned enters-tapped special case).
 
@@ -201,4 +201,4 @@ Black Lotus is locked behind a **sixth dungeon that opens only when all five Mox
 **The Sower (Verdant Throne):**
 17 lands — 5 Forest, 1 Plains, 1 Island, 2 Tropical Island, 2 Savannah, 2 Temple Garden, 2 Breeding Pool, 1 Tundra, 1 Hallowed Fountain
 23 spells — 3 The Sower, 2 Frondland Felidar, 2 Temporal Spring, 3 Llanowar Elves, 2 Rampant Growth, 2 Elvish Visionary, 2 Gaean Wurm, 1 Pelakka Wurm, 1 Serra Angel, 1 Faerie Formation, 2 Essence Scatter, 2 Swords to Plowshares
-*Thirteen Forest-typed fetch targets; Spring re-taxes their drops into his trigger; Serra joins the Felidar's vigilance-tapper corps; the Formation's faerie swarm compounds under the Season — every token gets its counter each upkeep. (Gravitational Shift cut by Chris: its −2/−0 to nonfliers hit the Sower himself and his dorks — a planner-seed error, fixed.)*
+*Thirteen Forest-typed fetch targets; Spring re-taxes their drops into her trigger; Serra joins the Felidar's vigilance-tapper corps; the Formation's faerie swarm compounds under the Season — every token gets its counter each upkeep. (Gravitational Shift cut by Chris: its −2/−0 to nonfliers hit the Sower himself and his dorks — a planner-seed error, fixed.)*
