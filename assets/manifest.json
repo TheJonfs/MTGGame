@@ -1622,14 +1622,14 @@
     },
     "court-jet-witch": {
       "canonical": "canonical",
-      "descriptor_hash": "sha256:27bf0ac967c39d087425bf8aa91f6e0cfd94598c5f74aa951ea2291356a78106",
+      "descriptor_hash": "sha256:e407dd07e5e632de60706e4a8ead140d1934b1389fbc84821400777459862dfe",
       "renders": {
         "canonical": {
           "conditioned_on": null,
-          "descriptor_hash": "sha256:27bf0ac967c39d087425bf8aa91f6e0cfd94598c5f74aa951ea2291356a78106",
+          "descriptor_hash": "sha256:e407dd07e5e632de60706e4a8ead140d1934b1389fbc84821400777459862dfe",
           "model": "gemini-3.1-flash-image",
           "path": "assets/images/court-jet-witch/canonical.png",
-          "rendered_at": "2026-08-30T22:05:06+00:00",
+          "rendered_at": "2026-08-30T23:13:31+00:00",
           "thumb": "assets/thumbs/court-jet-witch/canonical.png",
           "variant_prompt": null
         }
@@ -1667,14 +1667,14 @@
     },
     "court-sapphire-sage": {
       "canonical": "canonical",
-      "descriptor_hash": "sha256:e05193d2ed8d349018688932bfd21d664aa8c3d511b2796c0e0c16a79b5266e0",
+      "descriptor_hash": "sha256:9a4a0b67c45987e4ce3c8ec661917ee8013678a094c6c7a05ff9e94accbc99aa",
       "renders": {
         "canonical": {
           "conditioned_on": null,
-          "descriptor_hash": "sha256:e05193d2ed8d349018688932bfd21d664aa8c3d511b2796c0e0c16a79b5266e0",
+          "descriptor_hash": "sha256:9a4a0b67c45987e4ce3c8ec661917ee8013678a094c6c7a05ff9e94accbc99aa",
           "model": "gemini-3.1-flash-image",
           "path": "assets/images/court-sapphire-sage/canonical.png",
-          "rendered_at": "2026-08-30T22:04:48+00:00",
+          "rendered_at": "2026-08-30T23:13:20+00:00",
           "thumb": "assets/thumbs/court-sapphire-sage/canonical.png",
           "variant_prompt": null
         }
