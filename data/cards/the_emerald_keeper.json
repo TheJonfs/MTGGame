@@ -38,5 +38,6 @@
     "asset": "/custom-art/the_emerald_keeper.png",
     "fallback": "rendered"
   },
-  "prizeOnly": true
+  "prizeOnly": true,
+  "printedAsset": "the_emerald_keeper.jpg"
 }

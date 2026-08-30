@@ -58,5 +58,6 @@
     "asset": "/custom-art/the_pearl_cleric.png",
     "fallback": "rendered"
   },
-  "prizeOnly": true
+  "prizeOnly": true,
+  "printedAsset": "the_pearl_cleric.jpg"
 }
