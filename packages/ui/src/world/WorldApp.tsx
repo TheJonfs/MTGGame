@@ -498,13 +498,14 @@ function DungeonTelegraph({ c }: { c: WorldController }) {
   const { info } = c.screen;
   const mox = info.kind === "mox" ? c.moxDef(info.dungeonId) : undefined;
   const sh = info.kind === "stronghold" ? c.strongholdDef(info.dungeonId) : undefined;
+  const pd = info.kind === "power" ? c.powerDef(info.dungeonId) : undefined; // S25: the power-dungeons
   const resident = info.residentCatalogId ? c.catalog.opponents.find((o) => o.id === info.residentCatalogId) : undefined;
   const tiers = info.kind === "stronghold" ? c.knobs.strongholdEmpowermentTiers : c.knobs.dungeonEmpowermentTiers; // S22 r1: the lord's own clock
   const status = c.world?.dungeons[info.dungeonId];
   // S20 playtest r3 (Chris): the telegraph shows the face at the deep end — the guardian's
   // portrait (dungeons.json), the lord's (S22b), or the lair resident's.
-  const portrait = sh ? sh.lord.portrait : mox ? mox.guardian.portrait : resident ? (resident.portraitChip ?? resident.portrait) : null;
-  const holderName = sh ? sh.lord.name : mox ? mox.guardian.name : resident?.name;
+  const portrait = sh ? sh.lord.portrait : mox ? mox.guardian.portrait : pd ? pd.guardian.portrait : resident ? (resident.portraitChip ?? resident.portrait) : null;
+  const holderName = sh ? sh.lord.name : mox ? mox.guardian.name : pd ? pd.guardian.name : resident?.name;
   const lordRow = sh ? c.lordStatusRows().find((r) => r.strongholdId === sh.id) : undefined;
   return (
     <div className="gallery-modal">
@@ -520,18 +521,19 @@ function DungeonTelegraph({ c }: { c: WorldController }) {
           {portrait && <img className="parley-portrait" src={`/portraits/${portrait}.png`} alt="" style={{ width: 72, height: 72, flexShrink: 0 }} title={holderName} />}
           <div>
             <h2 style={{ margin: 0, fontFamily: "var(--serif)" }}>{info.name}</h2>
-            <p className="parley-sub" style={{ marginBottom: 0 }}>{sh ? `${holderName} holds this seat. One-time: broken, it is broken forever.` : info.kind === "mox" ? `${holderName} waits at the deep end. One-time: cleared, it is ground forever.` : `${resident?.name ?? "Something"} holds these halls.`}{status && status.resets > 0 ? ` · reset ${status.resets}×` : ""}</p>
+            <p className="parley-sub" style={{ marginBottom: 0 }}>{sh ? `${holderName} holds this seat. One-time: broken, it is broken forever.` : info.kind === "mox" || info.kind === "power" ? `${holderName} waits at the deep end. One-time: cleared, it is ground forever.` : `${resident?.name ?? "Something"} holds these halls.`}{status && status.resets > 0 ? ` · reset ${status.resets}×` : ""}</p>
           </div>
         </div>
         {mox && <p className="dungeon-law"><b>{mox.law.name}:</b> {mox.law.text}</p>}
+        {pd && <p className="dungeon-law" style={{ fontStyle: "italic" }}>{pd.teaches} <b>No law binds these halls.</b></p>}
         {sh && <p className="dungeon-law"><b>{sh.law.name}:</b> {sh.law.text} <i>(the law stands in every fight inside — tear it down and it returns for the next; it is a permanent, and permanents can be answered)</i></p>}
         {lordRow && sh && (() => { const p = lordPronouns(sh.lord); /* S24 r1 (Chris): the Usher and the Sower are she */ return (
           <p style={{ fontSize: 12.5 }}><b>{lordRow.lordName}</b> fights at <b>{lordRow.life}</b> life today ({lordRow.base} base{lordRow.growth > 0 ? ` +${lordRow.growth} grown with the years` : ""}{lordRow.reduction > 0 ? ` −${lordRow.reduction} bled by your hunting` : ""}; never below {c.knobs.lordLifeFloor}) — plus whatever your steps inside feed {p.obj}. {p.Pos} signature always looms: it starts in {p.pos} hand.</p>
         ); })()}
         <ul className="dungeon-stakes">
-          <li>The world's clock <b>freezes</b> at this threshold; your steps inside feed the {info.kind === "stronghold" ? "lord" : info.kind === "mox" ? "guardian" : "resident"} — it grows at {tiers.map((t) => t.steps).join(" / ")} interior steps (the meter shows the next threshold).</li>
+          <li>The world's clock <b>freezes</b> at this threshold; your steps inside feed the {info.kind === "stronghold" ? "lord" : info.kind === "mox" || info.kind === "power" ? "guardian" : "resident"} — it grows at {tiers.map((t) => t.steps).join(" / ")} interior steps (the meter shows the next threshold).</li>
           <li><b>Your life inside carries from fight to fight</b> (it starts at your world life, {c.world?.player.worldLife}); it is discarded when you leave, but an interior LOSS still costs a world life and your stake.</li>
-          <li><b>Everything found inside is held in escrow</b> until the {info.kind === "stronghold" ? "lord" : info.kind === "mox" ? "guardian" : "resident"} falls — walk out or fall, and the mountain keeps it. Minions bar the way (no parley inside).</li>
+          <li><b>Everything found inside is held in escrow</b> until the {info.kind === "stronghold" ? "lord" : info.kind === "mox" || info.kind === "power" ? "guardian" : "resident"} falls — walk out or fall, and the mountain keeps it. Minions bar the way (no parley inside).</li>
         </ul>
         <p style={{ textAlign: "right", marginBottom: 0 }}>
           <button onClick={() => c.declineDungeon()}>Not yet</button>{" "}
@@ -589,7 +591,7 @@ function DungeonScreen({ c, pool }: { c: WorldController; pool: Map<string, Card
       </div>
       <div className="rail world-rail">
         <div className="panel">
-          <h3>The {run.kind === "stronghold" ? "lord" : run.kind === "mox" ? "guardian" : "resident"} grows</h3>
+          <h3>The {run.kind === "stronghold" ? "lord" : run.kind === "mox" || run.kind === "power" ? "guardian" : "resident"} grows</h3>
           <div style={{ fontSize: 12 }}>Interior steps: <b>{meter.steps}</b> · tiers reached: <b>{meter.reached}</b>{meter.nextAt !== null ? <> · next at <b>{meter.nextAt}</b></> : <> · fully grown</>}</div>
           <div className="empower-meter">{(run.kind === "stronghold" ? c.knobs.strongholdEmpowermentTiers : c.knobs.dungeonEmpowermentTiers).map((t, i) => (
             <span key={i} className={`empower-tier${meter.steps >= t.steps ? " hit" : ""}`} title={`${t.steps} steps: +${t.addLife} life${t.addBasic ? ", +1 land in play" : ""}${t.addToken ? ", +1 creature in play" : ""}${t.addCard ? ", +1 card" : ""}`}>{t.steps}</span>
@@ -600,7 +602,7 @@ function DungeonScreen({ c, pool }: { c: WorldController; pool: Map<string, Card
         <div className="panel">
           <h3>Escrow (the mountain holds it)</h3>
           <div style={{ fontSize: 12 }}>{meter.escrowGold} gold{meter.escrowCards.length > 0 ? <> · {meter.escrowCards.map((id) => pool.get(id)?.name ?? id).join(", ")}</> : null}</div>
-          <div style={{ fontSize: 10.5, color: "var(--ink-soft)" }}>Paid out when the {run.kind === "stronghold" ? "lord" : run.kind === "mox" ? "guardian" : "resident"} falls; forfeit if you walk or fall.</div>
+          <div style={{ fontSize: 10.5, color: "var(--ink-soft)" }}>Paid out when the {run.kind === "stronghold" ? "lord" : run.kind === "mox" || run.kind === "power" ? "guardian" : "resident"} falls; forfeit if you walk or fall.</div>
         </div>
         <div className="panel">
           <h3>Interior life</h3>
@@ -1335,7 +1337,7 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
             const resident = w.opponents.find((o) => o.id === f.opponentId);
             // S21 r2 fix (Chris: the Emerald Root read "waiting" after its clear): a mox site's
             // cleared state lives in world.dungeons, not on a resident it never had.
-            const moxCleared = f.kind === "dungeon" && w.dungeons[`mox_${w.map.regions[f.region]?.color}`.toLowerCase()]?.cleared;
+            const moxCleared = f.kind === "dungeon" && w.dungeons[`${w.map.regions[f.region]?.tier === "approach" ? "power" : "mox"}_${w.map.regions[f.region]?.color}`.toLowerCase()]?.cleared; // S25: approach ring = power-dungeon
             // S22b: the seats are OPEN now — a stronghold reads by its lord's fate, not "sealed shut".
             const shRow = f.kind === "stronghold" ? c.lordStatusRows().find((r) => r.color === w.map.regions[f.region]?.color) : undefined;
             const status = f.kind === "stronghold" ? (shRow?.sealed ? "broken · seal held" : `${shRow?.lordName ?? "a lord"} · ${shRow?.life ?? "?"} life`) : moxCleared || resident?.gone ? "cleared" : `${w.map.regions[f.region]?.name ?? ""} · waiting`;

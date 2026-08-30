@@ -61,7 +61,7 @@ function popcount(words: number[]): number {
 import { abandonQuest, acceptQuest, addToCollection, cardMatches, creditRenown, innRest, pendingRetrievalChoice, questsOnArrival, resolveRetrieval, retrievalOnDungeonClear, rumorState, rumorsOnArrival, tavernRumors, spares, townOffers, type ActiveQuest, type QuestOffer } from "@shandalar/world";
 import {
   applyInteriorDuel, clearDungeon, colorPrizeRoll, dungeonAdvance, dungeonAsWorldMap, dungeonDuelSpec, dungeonPath,
-  empowermentTiersFor, generateDungeonRun, lairPrizeRoll, reachedTiers, resetDungeon, type DungeonRun, type MoxDungeonDef,
+  empowermentTiersFor, generateDungeonRun, lairPrizeRoll, reachedTiers, resetDungeon, type DungeonRun, type MoxDungeonDef, type PowerDungeonDef,
 } from "@shandalar/world";
 import {
   applySiegeDuel, beginSiegeEngagement, isTownOccupied, isTownThreatened, siegeDuelSpec, siegeFor, siegeWarnings,
@@ -98,7 +98,7 @@ export type WorldScreen =
   | { kind: "encounter"; encounter: Encounter; tmpl: OpponentTemplate; knobs: KnobValues; notice: string | null }
   | { kind: "duel"; duel: PreparedDuel; match: MatchController }
   /** S20: the dungeon threshold — stakes stated before the choice (dungeon-design §4). S22b: strongholds too. */
-  | { kind: "dungeonTelegraph"; info: { dungeonId: string; kind: "mox" | "lair" | "stronghold"; name: string; at: Point; residentCatalogId?: string }; notice: string | null }
+  | { kind: "dungeonTelegraph"; info: { dungeonId: string; kind: "mox" | "lair" | "stronghold" | "power"; name: string; at: Point; residentCatalogId?: string }; notice: string | null }
   /** S20: inside a dungeon (world.activeDungeon is the run). */
   | { kind: "dungeon"; notice: string | null; walking: boolean }
   /** S20: an interior duel (minion or guardian) — mounts PlayMatch like a world duel. */
@@ -986,6 +986,11 @@ export class WorldController {
     return this.catalog.dungeons.find((d) => d.id === dungeonId);
   }
 
+  /** S25: the power-dungeon content entry (power_w …). */
+  powerDef(dungeonId: string): PowerDungeonDef | undefined {
+    return (this.catalog.powerDungeons ?? []).find((d) => d.id === dungeonId);
+  }
+
   /** S22b: the stronghold content entry for a dungeonId (argent_bastion, spiral_spire, …). */
   strongholdDef(dungeonId: string): StrongholdContentDef | undefined {
     return (this.catalog.strongholdContent ?? []).find((s) => s.id === dungeonId);
@@ -1003,7 +1008,7 @@ export class WorldController {
     const { info } = this.screen;
     let run = this.world.activeDungeon;
     if (!run || run.dungeonId !== info.dungeonId) {
-      const color = (this.strongholdDef(info.dungeonId)?.color ?? this.moxDef(info.dungeonId)?.color ?? this.catalog.opponents.find((o) => o.id === info.residentCatalogId)?.spoke ?? "G") as "W" | "U" | "B" | "R" | "G";
+      const color = (this.strongholdDef(info.dungeonId)?.color ?? this.moxDef(info.dungeonId)?.color ?? this.powerDef(info.dungeonId)?.color ?? this.catalog.opponents.find((o) => o.id === info.residentCatalogId)?.spoke ?? "G") as "W" | "U" | "B" | "R" | "G";
       run = generateDungeonRun(this.world, this.catalog, this.knobs, this.pool, {
         dungeonId: info.dungeonId,
         kind: info.kind,
@@ -1129,9 +1134,16 @@ export class WorldController {
         portrait = sh.lord.portrait;
         extraModifiers.push(entranceModifier(sh)); // the signature always looms (Chris-ratified)
       } else if (run.kind === "mox" && mox) {
-        const g = GUARDIAN_DECKS[mox.guardian.key]!;
+        // S25 (the great swap): the Moxen pass to the gem-titled court.
+        const g = COURT_DECKS[mox.guardian.key]!;
         enemy = { kind: "guardian", name: mox.guardian.name, decklist: g.decklist, archetype: g.archetype, life: mox.guardian.life, color: mox.color };
         portrait = mox.guardian.portrait;
+      } else if (run.kind === "power") {
+        // S25: the real legends guard the power-dungeons — their S20 decks traveled whole.
+        const pd = this.powerDef(run.dungeonId)!;
+        const g = GUARDIAN_DECKS[pd.guardian.key]!;
+        enemy = { kind: "guardian", name: pd.guardian.name, decklist: g.decklist, archetype: g.archetype, life: pd.guardian.life, color: pd.color };
+        portrait = pd.guardian.portrait;
       } else {
         const tmpl = this.catalog.opponents.find((o) => o.id === run.residentCatalogId)!;
         const deck = enemyDeckOf(this.catalog, tmpl.deck);
@@ -1213,6 +1225,15 @@ export class WorldController {
         const roll = colorPrizeRoll(this.world, this.pool, run.dungeonId, mox.color);
         prize = { gold: 0, cardIds: [mox.prize.mox, mox.prize.guardianCard, ...(roll ? [roll] : [])] };
         name = mox.name;
+      } else if (run.kind === "power") {
+        // S25 (ADR-088): the power pays out WITH the treasure — escrow law satisfied by living
+        // in the victory branch only (walk-out and defeat never reach here).
+        const pd = this.powerDef(run.dungeonId)!;
+        const roll = colorPrizeRoll(this.world, this.pool, run.dungeonId, pd.color);
+        prize = { gold: 0, cardIds: [pd.prize.guardianCard, ...(roll ? [roll] : [])] };
+        name = pd.name;
+        unlockPower(this.world, pd.color);
+        victoryNotes.push(`You have learned ${powerRates(this.world, pd.color).name} — it waits on the Powers panel${pd.color === "B" || pd.color === "R" ? " and at every parley" : ""}.`);
       } else {
         prize = lairPrizeRoll(this.world, this.pool, run.dungeonId);
         // S21 retrieval: the quest item was in this prize room, escrowed like everything else —

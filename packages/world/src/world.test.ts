@@ -666,8 +666,14 @@ describe("lair fixed point (S14 round 1 prototype)", () => {
       expect(resident.fixedAt).toEqual(lair.at);
       expect(findPath(w.map, w.map.start, lair.at)).not.toBeNull();
       // Walk there with random encounters off: the threshold telegraphs (no fight yet — entering is a choice).
-      const ev = walkTo(w, catalog, lair.at, QUIET)!;
-      const entry = ev.find((e) => e.type === "dungeonEntry");
+      // S25: a power-dungeon threshold in the approach ring can interrupt the route (thresholds
+      // break walks by design) — decline and keep walking until the lair's own entry.
+      let ev = walkTo(w, catalog, lair.at, QUIET)!;
+      let entry = ev.find((e) => e.type === "dungeonEntry");
+      for (let leg = 0; leg < 6 && entry && entry.type === "dungeonEntry" && entry.kind !== "lair"; leg++) {
+        ev = walkTo(w, catalog, lair.at, QUIET)!;
+        entry = ev.find((e) => e.type === "dungeonEntry");
+      }
       expect(entry && entry.type === "dungeonEntry" && entry.kind).toBe("lair");
       if (entry?.type === "dungeonEntry") {
         expect(entry.residentCatalogId).toBe("beast_wurm");
@@ -677,24 +683,42 @@ describe("lair fixed point (S14 round 1 prototype)", () => {
       // Defeat the resident (the dungeon flow does this via clearDungeon): the lair is ground.
       resident.gone = true; resident.goneReason = "defeated";
       const w2 = w; w2.player.position = { ...w.map.start };
-      const ev2 = walkTo(w2, catalog, lair.at, QUIET)!;
-      expect(ev2.some((e) => e.type === "encounter" || e.type === "dungeonEntry")).toBe(false);
+      // S25: the approach ring's power-dungeon threshold may still interrupt legs — only the
+      // LAIR must be silent now (cleared = ground).
+      const seen2: string[] = [];
+      for (let leg = 0; leg < 6 && !samePoint(w2.player.position, lair.at); leg++) {
+        const evLeg = walkTo(w2, catalog, lair.at, QUIET);
+        if (!evLeg) break;
+        for (const e of evLeg) if (e.type === "encounter" || (e.type === "dungeonEntry" && e.kind === "lair")) seen2.push(e.type);
+      }
+      expect(seen2).toEqual([]);
       // Residents never roam.
       expect(w.opponents.filter((o) => o.fixedAt && o.region === lair.region).length).toBe(1);
-      // S20: each wild region also carries its MOX SITE; walking onto it telegraphs kind "mox" until cleared.
-      const site = w.map.strongholds.find((f) => f.kind === "dungeon")!;
+      // S20: each wild region also carries its MOX SITE; walking onto it telegraphs kind "mox" until
+      // cleared. S25: pick a WILD-ring site explicitly (approach-ring "dungeon" points are
+      // power-dungeons now) and walk in legs past any power threshold en route.
+      const site = w.map.strongholds.find((f) => f.kind === "dungeon" && w.map.regions[f.region]?.tier === "wild")!;
       expect(site).toBeTruthy();
       w.player.position = { ...w.map.start };
-      const evM = walkTo(w, catalog, site.at, QUIET);
-      if (evM) {
-        const em = evM.find((e) => e.type === "dungeonEntry");
-        if (em?.type === "dungeonEntry") {
-          expect(em.kind).toBe("mox");
-          w.dungeons[em.dungeonId] = { cleared: true, resets: 0 };
-          w.player.position = { ...w.map.start };
-          const evM2 = walkTo(w, catalog, site.at, QUIET)!;
-          expect(evM2.some((e) => e.type === "dungeonEntry")).toBe(false); // cleared = ground
+      let em: { kind: string; dungeonId: string } | undefined;
+      for (let leg = 0; leg < 6 && !em; leg++) {
+        const evM = walkTo(w, catalog, site.at, QUIET);
+        if (!evM) break;
+        const found = evM.find((e) => e.type === "dungeonEntry" && e.kind !== "power");
+        if (found?.type === "dungeonEntry") em = { kind: found.kind, dungeonId: found.dungeonId };
+        if (samePoint(w.player.position, site.at)) break;
+      }
+      if (em) {
+        expect(em.kind).toBe("mox");
+        w.dungeons[em.dungeonId] = { cleared: true, resets: 0 };
+        w.player.position = { ...w.map.start };
+        const moxEntries: string[] = [];
+        for (let leg = 0; leg < 6 && !samePoint(w.player.position, site.at); leg++) {
+          const evM2 = walkTo(w, catalog, site.at, QUIET);
+          if (!evM2) break;
+          for (const e of evM2) if (e.type === "dungeonEntry" && e.kind === "mox") moxEntries.push(e.dungeonId);
         }
+        expect(moxEntries).toEqual([]); // cleared = ground
       }
       // Strongholds are fixed points without residents: walking onto one is just ground for now (S22).
       const sh = w.map.strongholds.find((f) => f.kind === "stronghold")!;
@@ -834,7 +858,7 @@ describe("S20 Part 3+7 (dungeons, scripted acceptance): topology, escrow, interi
     const paid = clearDungeon(w, run2, { gold: 0, cardIds: [mox.prize.mox, mox.prize.guardianCard, ...(roll ? [roll] : [])] });
     expect(paid.paidGold).toBe(25);
     expect(paid.paidCards).toContain("mox_ruby");
-    expect(paid.paidCards).toContain("drakuseth_maw_of_flames");
+    expect(paid.paidCards).toContain("the_ruby_tyrant"); // S25 great swap: the court guards the Moxen
     expect(w.player.collection["mox_ruby"]).toBe(1);
     expect(w.dungeons["mox_r"]).toMatchObject({ cleared: true });
     expect(w.provenance.filter((p) => p.source === "reward").map((p) => p.cardId)).toContain("mox_ruby");

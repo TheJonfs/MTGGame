@@ -40,7 +40,7 @@ export type StepEvent =
   | { type: "questExpired"; questId: string; text: string }
   /** S20 (dungeon-design §5): you stand at a dungeon threshold — the telegraph screen opens; entering
    * is a choice (walking away costs nothing). Lairs are lair-dungeons now; mox sites are authored. */
-  | { type: "dungeonEntry"; dungeonId: string; kind: "mox" | "lair" | "stronghold"; name: string; at: Point; residentCatalogId?: string }
+  | { type: "dungeonEntry"; dungeonId: string; kind: "mox" | "lair" | "stronghold" | "power"; name: string; at: Point; residentCatalogId?: string }
   /** S21 (manifest §5): a siege threat landed mid-walk (the town telegraphs until the deadline). */
   | { type: "siegeThreatened"; townIndex: number; townName: string; deadlineStep: number }
   /** S21: an unrelieved town fell — shopping/quests/its manalinks suspend until liberated. */
@@ -307,9 +307,13 @@ export function advance(
         }
       }
       if (fixed?.kind === "dungeon") {
-        const dungeonId = `mox_${regionAt(world.map, cell).color}`.toLowerCase();
+        // S25: the region TIER disambiguates the two authored classes sharing the fixed-point
+        // kind — mox sites live in wild rings, power-dungeons in approach rings (ADR-088).
+        const r = regionAt(world.map, cell);
+        const isPower = r.tier === "approach";
+        const dungeonId = `${isPower ? "power" : "mox"}_${r.color}`.toLowerCase();
         if (!world.dungeons[dungeonId]?.cleared) {
-          events.push({ type: "dungeonEntry", dungeonId, kind: "mox", name: fixed.name ?? "A dungeon", at: { ...cell } });
+          events.push({ type: "dungeonEntry", dungeonId, kind: isPower ? "power" : "mox", name: fixed.name ?? "A dungeon", at: { ...cell } });
           break;
         }
       }

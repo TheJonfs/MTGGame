@@ -250,3 +250,35 @@ describe("S25 Part 3 — the powers, wired (transactions on the world)", () => {
     expect(activateStride(w, pool, []).ok).toBe(false);
   });
 });
+
+describe("S25 Part 4 — the swap and the sites (worldgen)", () => {
+  it("a fresh world carries five power-dungeons (one per approach ring) beside the five mox sites; the threshold telegraphs kind 'power'", () => {
+    const w = mkWorld();
+    const sites = w.map.strongholds.filter((f) => f.kind === "dungeon");
+    const approach = sites.filter((f) => w.map.regions[f.region]?.tier === "approach");
+    const wild = sites.filter((f) => w.map.regions[f.region]?.tier === "wild");
+    expect(approach).toHaveLength(5);
+    expect(wild).toHaveLength(5);
+    expect(new Set(approach.map((f) => w.map.regions[f.region]!.color)).size).toBe(5);
+    const site = approach[0]!;
+    quiet(w);
+    w.player.position = { x: site.at.x, y: site.at.y - 1 };
+    if (!w.map.passable[idx(w.map, w.player.position)]) w.map.passable[idx(w.map, w.player.position)] = true;
+    const events = advance(w, catalog, [site.at], QUIET);
+    const entry = events.find((e) => e.type === "dungeonEntry");
+    if (!entry || entry.type !== "dungeonEntry") throw new Error("no threshold");
+    expect(entry.kind).toBe("power");
+    expect(entry.dungeonId).toBe(`power_${w.map.regions[site.region]!.color}`.toLowerCase());
+  });
+
+  it("the content file carries the swap: the court at the Moxen, the legends at the power sites, teaching lines present", () => {
+    const courtCards = new Set(["the_pearl_cleric", "the_sapphire_sage", "the_jet_witch", "the_ruby_tyrant", "the_emerald_keeper"]);
+    for (const m of catalog.dungeons) expect(courtCards.has(m.prize.guardianCard), m.id).toBe(true);
+    const legendCards = new Set(["reya_dawnbringer", "arcanis_the_omnipotent", "drana_kalastria_bloodchief", "drakuseth_maw_of_flames", "titania_protector_of_argoth"]);
+    expect(catalog.powerDungeons).toHaveLength(5);
+    for (const d of catalog.powerDungeons!) {
+      expect(legendCards.has(d.prize.guardianCard), d.id).toBe(true);
+      expect(d.teaches.length).toBeGreaterThan(10);
+    }
+  });
+});

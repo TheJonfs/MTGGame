@@ -426,6 +426,24 @@ export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOpt
     }
   }
 
+  // 5c. S25 (ADR-088): one POWER-DUNGEON per colour's APPROACH region — mid-game arrival is the
+  // design's origin (run-saving powers must exist when runs need saving). Same fixed-point kind
+  // as a mox site; the REGION TIER disambiguates at the threshold (journey.advance). Existing
+  // saves keep their maps and therefore never grow these sites (Chris's grandfather ruling:
+  // the powers program is fresh-world-only).
+  for (const r of regions) {
+    if (r.tier !== "approach") continue;
+    const dungeon = (catalog.powerDungeons ?? []).find((d) => d.color === r.color);
+    if (!dungeon) continue;
+    const candidates = regionCells(map, r.index).filter((p) => !isTownCell(map, p));
+    const pts = placeFixedPoints(rng, candidates, 1, townSpacing, [...towns.map((t) => t.at), ...map.strongholds.map((f) => f.at)]);
+    for (const at of pts) {
+      passable[idx(map, at)] = true;
+      carveTo(at);
+      map.strongholds.push({ kind: "dungeon", at, region: r.index, name: dungeon.name });
+    }
+  }
+
   // 6. Roads (after carving: the paths exist).
   buildRoads(map, homeTowns);
 

@@ -53,9 +53,27 @@ export interface LawModifier {
   count?: number;
 }
 
+/** S25 (ADR-088, the great swap): a POWER-DUNGEON — an authored site in a colour's APPROACH
+ * region at Moxen-class difficulty, LAWLESS like lair-dungeons (no law field at all), ending in
+ * one of the five real legends (their S20 decks and sole-mechanism drops traveling with them).
+ * The prize room grants the colour's power under escrow law, beside the guardian's card and the
+ * standard colour-prize roll. */
+export interface PowerDungeonDef {
+  id: string;
+  name: string;
+  color: "W" | "U" | "B" | "R" | "G";
+  /** A key into the sim GUARDIAN_DECKS (the legends' decks moved here whole). */
+  guardian: { key: string; name: string; life: number; portrait: string };
+  /** The entry screen's one-line teaching rumor. */
+  teaches: string;
+  prize: { guardianCard: string };
+}
+
 export interface DungeonsFile {
   catalogVersion: string;
   mox: MoxDungeonDef[];
+  /** S25: the five power-dungeons (approach rings). */
+  powerDungeons?: PowerDungeonDef[];
 }
 
 export function validateDungeons(file: DungeonsFile, pool?: Map<string, CardDef>): string[] {
@@ -71,6 +89,17 @@ export function validateDungeons(file: DungeonsFile, pool?: Map<string, CardDef>
     }
     if (pool && !pool.has(m.prize.mox)) errors.push(`${m.id}: unknown mox ${m.prize.mox}`);
     if (pool && !pool.has(m.prize.guardianCard)) errors.push(`${m.id}: unknown guardian card ${m.prize.guardianCard}`);
+  }
+  // S25: the power-dungeons (five, one per colour, cards resolvable) — validated with names in
+  // them, the S21 questText lesson.
+  if (file.powerDungeons !== undefined) {
+    if (file.powerDungeons.length !== 5 || new Set(file.powerDungeons.map((d) => d.color)).size !== 5) {
+      errors.push("powerDungeons must be five entries covering the five colours");
+    }
+    for (const d of file.powerDungeons) {
+      if (!d.teaches) errors.push(`${d.id}: a power-dungeon states what it teaches`);
+      if (pool && !pool.has(d.prize.guardianCard)) errors.push(`${d.id}: unknown guardian card ${d.prize.guardianCard}`);
+    }
   }
   return errors;
 }
@@ -105,7 +134,7 @@ export interface DungeonEscrow {
 /** A dungeon in progress — the whole interior lives in the save (reload resumes mid-dungeon). */
 export interface DungeonRun {
   dungeonId: string;
-  kind: "mox" | "lair" | "stronghold";
+  kind: "mox" | "lair" | "stronghold" | "power";
   /** The overworld fixed point we entered from (returned to on any exit). */
   enteredFrom: Point;
   grid: { width: number; height: number; passable: boolean[] };
@@ -148,7 +177,7 @@ export function generateDungeonRun(
   pool: Map<string, CardDef>,
   opts: {
     dungeonId: string;
-    kind: "mox" | "lair" | "stronghold";
+    kind: "mox" | "lair" | "stronghold" | "power";
     color: "W" | "U" | "B" | "R" | "G";
     enteredFrom: Point;
     residentCatalogId?: string;
