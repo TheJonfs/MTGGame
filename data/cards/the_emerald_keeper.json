@@ -26,13 +26,16 @@
         {
           "type": "addCounters",
           "kind": "+1/+1",
-          "count": { "ref": "xPaid" },
+          "count": {
+            "ref": "xPaid"
+          },
           "scope": "creaturesYouControl"
         }
       ]
     }
   ],
   "art": {
+    "asset": "/custom-art/the_emerald_keeper.png",
     "fallback": "rendered"
   },
   "prizeOnly": true

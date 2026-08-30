@@ -47,6 +47,7 @@
     }
   ],
   "art": {
+    "asset": "/custom-art/the_ruby_tyrant.png",
     "fallback": "rendered"
   },
   "prizeOnly": true

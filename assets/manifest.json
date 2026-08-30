@@ -675,6 +675,66 @@
         }
       }
     },
+    "card-jet-witch-r2-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:7e1a17b4e7d6af3fcdf322a10184d474514e5ce2cf0b22c0510e3947872f3d3c",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:7e1a17b4e7d6af3fcdf322a10184d474514e5ce2cf0b22c0510e3947872f3d3c",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-jet-witch-r2-1/canonical.png",
+          "rendered_at": "2026-08-30T22:50:05+00:00",
+          "thumb": "assets/thumbs/card-jet-witch-r2-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-jet-witch-r2-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:67cb990f6e1da20c29ce0489092a04bb1df915ff89dd5641192a49ccb13185c2",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:67cb990f6e1da20c29ce0489092a04bb1df915ff89dd5641192a49ccb13185c2",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-jet-witch-r2-2/canonical.png",
+          "rendered_at": "2026-08-30T22:50:15+00:00",
+          "thumb": "assets/thumbs/card-jet-witch-r2-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-jet-witch-r2-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:c41a76e60425c71344c12f4e29db93423b1cb80069857c3950091cf307a687e4",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:c41a76e60425c71344c12f4e29db93423b1cb80069857c3950091cf307a687e4",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-jet-witch-r2-3/canonical.png",
+          "rendered_at": "2026-08-30T22:50:24+00:00",
+          "thumb": "assets/thumbs/card-jet-witch-r2-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-jet-witch-r2-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:5af76c11194dcbc9b603336619011eea6eca3df2116571c2ae0eae213155d690",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:5af76c11194dcbc9b603336619011eea6eca3df2116571c2ae0eae213155d690",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-jet-witch-r2-4/canonical.png",
+          "rendered_at": "2026-08-30T22:50:33+00:00",
+          "thumb": "assets/thumbs/card-jet-witch-r2-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "card-pearl-cleric-1": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:60cae29a30cbc40ae150d32eb459092eec7696570681fe4e44788331ff4e1d87",
@@ -851,6 +911,66 @@
           "path": "assets/images/card-sapphire-sage-4/canonical.png",
           "rendered_at": "2026-08-30T22:06:43+00:00",
           "thumb": "assets/thumbs/card-sapphire-sage-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-sapphire-sage-r2-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:efcf21368f4b4fb90e298e467db3728feac4fc66f3e2ac557930fd0ab95ce083",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:efcf21368f4b4fb90e298e467db3728feac4fc66f3e2ac557930fd0ab95ce083",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-sapphire-sage-r2-1/canonical.png",
+          "rendered_at": "2026-08-30T22:49:27+00:00",
+          "thumb": "assets/thumbs/card-sapphire-sage-r2-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-sapphire-sage-r2-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:06e0b9b6c85fecd65f669f4d6972a131cd3520dbe0abaef263f2b90a83954a3b",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:06e0b9b6c85fecd65f669f4d6972a131cd3520dbe0abaef263f2b90a83954a3b",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-sapphire-sage-r2-2/canonical.png",
+          "rendered_at": "2026-08-30T22:49:36+00:00",
+          "thumb": "assets/thumbs/card-sapphire-sage-r2-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-sapphire-sage-r2-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:d3bb641f4c8ab420c304866cc526a381b089310ddf469c4d3dc9d4fe88659070",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:d3bb641f4c8ab420c304866cc526a381b089310ddf469c4d3dc9d4fe88659070",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-sapphire-sage-r2-3/canonical.png",
+          "rendered_at": "2026-08-30T22:49:46+00:00",
+          "thumb": "assets/thumbs/card-sapphire-sage-r2-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-sapphire-sage-r2-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:9ef2c63795edcc6ab6e6eadaaf965b8c101a54e5665a81b3ecd81ed2e18edaf9",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:9ef2c63795edcc6ab6e6eadaaf965b8c101a54e5665a81b3ecd81ed2e18edaf9",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-sapphire-sage-r2-4/canonical.png",
+          "rendered_at": "2026-08-30T22:49:56+00:00",
+          "thumb": "assets/thumbs/card-sapphire-sage-r2-4/canonical.png",
           "variant_prompt": null
         }
       }
