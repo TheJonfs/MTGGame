@@ -375,6 +375,66 @@
         }
       }
     },
+    "card-emerald-keeper-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:a9abab3a24415c56b4325ce291e0f2d2a09438332a147a82752f167bca56916e",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:a9abab3a24415c56b4325ce291e0f2d2a09438332a147a82752f167bca56916e",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-emerald-keeper-1/canonical.png",
+          "rendered_at": "2026-08-30T22:08:11+00:00",
+          "thumb": "assets/thumbs/card-emerald-keeper-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-emerald-keeper-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:7a2a6297d811f26c9d8472fb4a29ee72de7cff57047735466da7f88d157007c9",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:7a2a6297d811f26c9d8472fb4a29ee72de7cff57047735466da7f88d157007c9",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-emerald-keeper-2/canonical.png",
+          "rendered_at": "2026-08-30T22:08:20+00:00",
+          "thumb": "assets/thumbs/card-emerald-keeper-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-emerald-keeper-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:cbd81e5c0acf9a993faf9d6e93a89fd957fc25f19ce0b96f91ffe66b4113f66d",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:cbd81e5c0acf9a993faf9d6e93a89fd957fc25f19ce0b96f91ffe66b4113f66d",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-emerald-keeper-3/canonical.png",
+          "rendered_at": "2026-08-30T22:08:29+00:00",
+          "thumb": "assets/thumbs/card-emerald-keeper-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-emerald-keeper-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:62699242a19e0d97f8e6a2b8cb5d8f8cca2dff841b75a369677ad778bca7c5a5",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:62699242a19e0d97f8e6a2b8cb5d8f8cca2dff841b75a369677ad778bca7c5a5",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-emerald-keeper-4/canonical.png",
+          "rendered_at": "2026-08-30T22:08:58+00:00",
+          "thumb": "assets/thumbs/card-emerald-keeper-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "card-gaean-wurm-1": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:149c76e5202ab2db92d453fd98ea4dd2652410d1eefd323b9e1c4d5951ce33d1",
@@ -551,6 +611,246 @@
           "path": "assets/images/card-gallows-djinn-r2-4/canonical.png",
           "rendered_at": "2026-08-28T03:15:12+00:00",
           "thumb": "assets/thumbs/card-gallows-djinn-r2-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-jet-witch-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:a540750451c8c149e597e857dd2a5c1b8cdb9c8956ac356ffb2fca4d69fd65f3",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:a540750451c8c149e597e857dd2a5c1b8cdb9c8956ac356ffb2fca4d69fd65f3",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-jet-witch-1/canonical.png",
+          "rendered_at": "2026-08-30T22:06:52+00:00",
+          "thumb": "assets/thumbs/card-jet-witch-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-jet-witch-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:b873c403bde1f3540fe0b84de86ec1305feb7f2a8c0ce4ce3494652f388b462c",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:b873c403bde1f3540fe0b84de86ec1305feb7f2a8c0ce4ce3494652f388b462c",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-jet-witch-2/canonical.png",
+          "rendered_at": "2026-08-30T22:07:02+00:00",
+          "thumb": "assets/thumbs/card-jet-witch-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-jet-witch-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:c594b91b151b17ef67fee9221a191f2e5b2493e1af84802e4993e5814bafa541",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:c594b91b151b17ef67fee9221a191f2e5b2493e1af84802e4993e5814bafa541",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-jet-witch-3/canonical.png",
+          "rendered_at": "2026-08-30T22:07:12+00:00",
+          "thumb": "assets/thumbs/card-jet-witch-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-jet-witch-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:93be5445878144b7410c3b1976b4271e50b8fa0e49a2e349be480e52ad7ddfd3",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:93be5445878144b7410c3b1976b4271e50b8fa0e49a2e349be480e52ad7ddfd3",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-jet-witch-4/canonical.png",
+          "rendered_at": "2026-08-30T22:07:22+00:00",
+          "thumb": "assets/thumbs/card-jet-witch-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-pearl-cleric-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:60cae29a30cbc40ae150d32eb459092eec7696570681fe4e44788331ff4e1d87",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:60cae29a30cbc40ae150d32eb459092eec7696570681fe4e44788331ff4e1d87",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-pearl-cleric-1/canonical.png",
+          "rendered_at": "2026-08-30T22:05:38+00:00",
+          "thumb": "assets/thumbs/card-pearl-cleric-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-pearl-cleric-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:8721f9a0914fa537a8ab9c4844913b36ac40076f0c70b922d658bbe36783f482",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:8721f9a0914fa537a8ab9c4844913b36ac40076f0c70b922d658bbe36783f482",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-pearl-cleric-2/canonical.png",
+          "rendered_at": "2026-08-30T22:05:48+00:00",
+          "thumb": "assets/thumbs/card-pearl-cleric-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-pearl-cleric-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:d4a00308e5a003b327d0bfbb0eefa74a98b410f1d1d7724607c75c1ac320ee48",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:d4a00308e5a003b327d0bfbb0eefa74a98b410f1d1d7724607c75c1ac320ee48",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-pearl-cleric-3/canonical.png",
+          "rendered_at": "2026-08-30T22:05:56+00:00",
+          "thumb": "assets/thumbs/card-pearl-cleric-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-pearl-cleric-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:752212db15cdb29bf6280b0257625b8d737a60e2e345e929481d92de6fcd2cde",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:752212db15cdb29bf6280b0257625b8d737a60e2e345e929481d92de6fcd2cde",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-pearl-cleric-4/canonical.png",
+          "rendered_at": "2026-08-30T22:06:05+00:00",
+          "thumb": "assets/thumbs/card-pearl-cleric-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-ruby-tyrant-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:6d585dc8346abee30248f6749065ebbd339c89b8dab7e6a2321f8f959a81446b",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:6d585dc8346abee30248f6749065ebbd339c89b8dab7e6a2321f8f959a81446b",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-ruby-tyrant-1/canonical.png",
+          "rendered_at": "2026-08-30T22:07:32+00:00",
+          "thumb": "assets/thumbs/card-ruby-tyrant-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-ruby-tyrant-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:5e28b8128d1cc3fdfbcb9ec330e4c08b0deefffd96e1fbd1d145a7a500a4acc4",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:5e28b8128d1cc3fdfbcb9ec330e4c08b0deefffd96e1fbd1d145a7a500a4acc4",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-ruby-tyrant-2/canonical.png",
+          "rendered_at": "2026-08-30T22:07:42+00:00",
+          "thumb": "assets/thumbs/card-ruby-tyrant-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-ruby-tyrant-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:34449c59c1e98126979bc3b58cfca505192facf508753d0c33271c4666e3856e",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:34449c59c1e98126979bc3b58cfca505192facf508753d0c33271c4666e3856e",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-ruby-tyrant-3/canonical.png",
+          "rendered_at": "2026-08-30T22:07:52+00:00",
+          "thumb": "assets/thumbs/card-ruby-tyrant-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-ruby-tyrant-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:e697e706591d21a33b486b805e6af4f59f05f2d6b9bd90954e085d7df41ebefe",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:e697e706591d21a33b486b805e6af4f59f05f2d6b9bd90954e085d7df41ebefe",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-ruby-tyrant-4/canonical.png",
+          "rendered_at": "2026-08-30T22:08:02+00:00",
+          "thumb": "assets/thumbs/card-ruby-tyrant-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-sapphire-sage-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:369b4e28c601cce1e854f6c11ac73a14e148d240720084093dcc6311e72f4960",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:369b4e28c601cce1e854f6c11ac73a14e148d240720084093dcc6311e72f4960",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-sapphire-sage-1/canonical.png",
+          "rendered_at": "2026-08-30T22:06:14+00:00",
+          "thumb": "assets/thumbs/card-sapphire-sage-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-sapphire-sage-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:7811ead190f2351c488a93f2e8f2e6595a2bdcc6dae3e8b5af3bedca59350b4b",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:7811ead190f2351c488a93f2e8f2e6595a2bdcc6dae3e8b5af3bedca59350b4b",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-sapphire-sage-2/canonical.png",
+          "rendered_at": "2026-08-30T22:06:23+00:00",
+          "thumb": "assets/thumbs/card-sapphire-sage-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-sapphire-sage-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:904822d3b86f786f5b2d94adac90b0d48188ede175587e7d7ac57269e34c60dd",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:904822d3b86f786f5b2d94adac90b0d48188ede175587e7d7ac57269e34c60dd",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-sapphire-sage-3/canonical.png",
+          "rendered_at": "2026-08-30T22:06:32+00:00",
+          "thumb": "assets/thumbs/card-sapphire-sage-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-sapphire-sage-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:c6c6c4d3bba39f0de60e0be0125df09b796df5a6c0031b280fcb17947dc098ff",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:c6c6c4d3bba39f0de60e0be0125df09b796df5a6c0031b280fcb17947dc098ff",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-sapphire-sage-4/canonical.png",
+          "rendered_at": "2026-08-30T22:06:43+00:00",
+          "thumb": "assets/thumbs/card-sapphire-sage-4/canonical.png",
           "variant_prompt": null
         }
       }
@@ -1181,6 +1481,81 @@
           "path": "assets/images/concept-map-overworld/canonical.png",
           "rendered_at": "2026-08-24T19:49:53+00:00",
           "thumb": "assets/thumbs/concept-map-overworld/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "court-emerald-keeper": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:ee738b63155967e3eef0e5e7d85545dbffd082f009ee28ef98f54a2c0286d345",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:ee738b63155967e3eef0e5e7d85545dbffd082f009ee28ef98f54a2c0286d345",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/court-emerald-keeper/canonical.png",
+          "rendered_at": "2026-08-30T22:05:22+00:00",
+          "thumb": "assets/thumbs/court-emerald-keeper/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "court-jet-witch": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:27bf0ac967c39d087425bf8aa91f6e0cfd94598c5f74aa951ea2291356a78106",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:27bf0ac967c39d087425bf8aa91f6e0cfd94598c5f74aa951ea2291356a78106",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/court-jet-witch/canonical.png",
+          "rendered_at": "2026-08-30T22:05:06+00:00",
+          "thumb": "assets/thumbs/court-jet-witch/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "court-pearl-cleric": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:c9667c0149b3730eb818743d8d108163952775fe04d637444d821053761f8961",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:c9667c0149b3730eb818743d8d108163952775fe04d637444d821053761f8961",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/court-pearl-cleric/canonical.png",
+          "rendered_at": "2026-08-30T22:04:17+00:00",
+          "thumb": "assets/thumbs/court-pearl-cleric/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "court-ruby-tyrant": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:4106da870f2ef20e17b19e00bb41162720e89f2072ad4a4ad6fc4dde6ade0a0b",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:4106da870f2ef20e17b19e00bb41162720e89f2072ad4a4ad6fc4dde6ade0a0b",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/court-ruby-tyrant/canonical.png",
+          "rendered_at": "2026-08-30T22:05:14+00:00",
+          "thumb": "assets/thumbs/court-ruby-tyrant/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "court-sapphire-sage": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:e05193d2ed8d349018688932bfd21d664aa8c3d511b2796c0e0c16a79b5266e0",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:e05193d2ed8d349018688932bfd21d664aa8c3d511b2796c0e0c16a79b5266e0",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/court-sapphire-sage/canonical.png",
+          "rendered_at": "2026-08-30T22:04:48+00:00",
+          "thumb": "assets/thumbs/court-sapphire-sage/canonical.png",
           "variant_prompt": null
         }
       }

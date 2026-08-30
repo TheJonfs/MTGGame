@@ -133,3 +133,48 @@ S23 fun batch (ADR-084). Entry authored by the implementer from fun-batch-s23.md
 3. **Art nouveau poster** — "An art nouveau poster illustration: a sleeping woman with long hair flowing in decorative curvilinear waves across the composition, a slender winged shadow above her drawing a thin ornamental ribbon of tiny faces and keys from her brow, flat decorative color in midnight blue, silver and pale rose, elegant sinuous line."
 4. **Dark surrealist oil** — "A dark surrealist oil painting, monumental and dreamlike: a vast winged silhouette hanging motionless over an endless grey dream-plain scattered with empty picture frames, translucent faces dissolving into the fog around it, one cold shaft of moonlight, textured impasto, quiet dread."
 
+
+## the_pearl_cleric — "The Pearl Cleric" (W legendary (Human Cleric, Mox Pearl) — she pays in your own future: exiled tops are cards never seen; cards for life, the Witch's mirror twin)
+
+S25 Mox court (ADR-088). Entries implementer-authored from mox-court.md's register (the Gaean Wurm precedent); the fourth slot takes an S23 round-2 style.
+
+1. **Classical oil** — "Oil painting in the warm classical fantasy style of 1990s trading-card art: a serene human cleric woman in pearl-clasped white vestments standing in a ruined reliquary, feeding a slow stream of ivory tablets from an open coffer into a font of light, each tablet dissolving as it touches, her face calm and quietly costly, warm dawn light."
+2. **Ink-and-gouache action** — "High-contrast ink drawing with gouache highlights: a cleric woman mid-stride shielding a kneeling knight with one outflung arm, a fan of ivory tablets scattering from her other hand and burning up like moths, strong diagonal composition, limited palette of white, pearl-grey and one gold accent."
+3. **Watercolor storybook** — "Muted watercolor: a small chapel of shelves where a cleric woman takes one book at a time from her own shelf and lays it on a fire that gives off light but no smoke, a healed pilgrim sleeping nearby, soft grey-gold light, quiet devotional mood."
+4. **Illuminated manuscript** — "Illuminated manuscript miniature in gold leaf and tempera: a haloed cleric within an ornate initial letter, offering up a fanned hand of blank white cards toward a great pearl set in the border ornament, surrounding marginalia of vines and small angels, flat medieval perspective, jewel colors on vellum."
+
+## the_sapphire_sage — "The Sapphire Sage" (U legendary (Faerie Wizard, Mox Sapphire) — the symmetric tide: one thing from each shore; Sage-bounces-Sage, the escape that is an engine)
+
+S25 Mox court (ADR-088).
+
+1. **Classical oil** — "Oil painting in the warm classical fantasy style of 1990s trading-card art: a small silver-haired faerie wizard with iridescent dragonfly wings hovering above a drowned causeway, both arms spread as two waterspouts rise on either side of him, each lifting something away — a knight's pavilion on one side, his own empty chair on the other, cool blue-greens with pearl light."
+2. **Ink-and-gouache action** — "High-contrast ink drawing with gouache highlights: a faerie wizard mid-vanish, his outline unraveling into spiraling water from the feet up, one hand still finishing a gesture that hurls a wave over a distant tower, strong spiral composition, limited palette of deep blue, sea-green and bone-white."
+3. **Watercolor storybook** — "Muted watercolor: a tide-flooded library where a small winged sage sits atop a floating lectern, politely lifting a toy boat out of the water with one hand while the tide carries a rival's hat out the window, soft grey-blue light, quiet mischievous mood."
+4. **Art nouveau poster** — "Art nouveau poster in the style of Mucha: a faerie wizard with dragonfly wings framed in a circular sapphire-blue motif, long curving lines of tidewater winding through the border and returning to their source, flat decorative color, elegant whiplash curves, no text."
+
+## the_jet_witch — "The Jet Witch" (B legendary (Human Shaman, Mox Jet) — greed without the mana: pay 2 life, draw; she reads fortunes in her own blood)
+
+S25 Mox court (ADR-088).
+
+1. **Classical oil** — "Oil painting in the warm classical fantasy style of 1990s trading-card art: a gaunt shaman woman strung with jet beads seated at a barrow's mouth by tallow light, one thumb pricked over a shallow black bowl, reading the spreading red threads in the water like a page, her expression avid and unafraid, deep umber and violet-black."
+2. **Ink-and-gouache action** — "High-contrast ink drawing with gouache highlights: a jet-adorned witch flinging droplets of her own blood into the air where they hang and become small red sigils she reads mid-gesture, wind in her ragged mantle, strong vertical composition, limited palette of black, bone-white and arterial red."
+3. **Watercolor storybook** — "Muted watercolor: a witch in a moonlit barrowfield laying out cards that are thin slates of jet, each one she touches taking a bead of red from her fingertip before it turns, crows waiting politely in a row, soft grey-violet light, quiet bargaining mood."
+4. **Dark surrealist oil** — "Dark surrealist oil painting: a woman whose long shadow is an open book, its lines written in thin red veins that run back up into her sleeve, jet beads orbiting her head like a small night sky, barren dreamlike moor, muted palette with one deep red, uncanny stillness."
+
+## the_ruby_tyrant — "The Ruby Tyrant" (R legendary (Dragon, Mox Ruby) — the recoil gun: 2 to any target and 1 to himself; rubies breed dragons, arrogance pays the toll)
+
+S25 Mox court (ADR-088).
+
+1. **Classical oil** — "Oil painting in the warm classical fantasy style of 1990s trading-card art: a young dragon with gem-faceted ruby scales rearing atop a shattered caldera hoard, breathing a lance of fire down at an unseen foe while cracked scales along its own chest glow and shed embers, molten light from below, imperious fury."
+2. **Ink-and-gouache action** — "High-contrast ink drawing with gouache highlights: a ruby-scaled dragon whipping its head around mid-blast, the fire's recoil tearing small glowing chips off its own shoulders, strong S-curve composition, limited palette of ember orange, soot black and one cold white accent."
+3. **Watercolor storybook** — "Muted watercolor: a caldera nest of cut rubies where a proud young dragon sits very straight, one wingtip singed and smoking, pretending not to notice, small scorch marks all around its throne, warm rose-and-ash light, wry vainglorious mood."
+4. **Chiaroscuro portrait** — "Dramatic chiaroscuro three-quarter portrait: a ruby dragon's head and chest against a dark ground, lit only by fire building in its own throat and glowing through the seams of its scales, faceted plates catching the light like cut stones, near-monochrome ember tones, eyes proud and paying for it."
+
+## the_emerald_keeper — "The Emerald Keeper" (G legendary (Hydra, Mox Emerald) — {X}{X}: the garden grows together; every head another season, every creature its counter)
+
+S25 Mox court (ADR-088).
+
+1. **Classical oil** — "Oil painting in the warm classical fantasy style of 1990s trading-card art: a mossy five-headed hydra standing in a deepwood clearing like a gardener among beds, each head gently touching a different forest creature — a bear, a wolf, a stag — and each creature visibly larger and greener where touched, golden canopy light, tended abundance."
+2. **Ink-and-gouache action** — "High-contrast ink drawing with gouache highlights: a hydra surging up out of tilled earth with saplings and creatures rising in the wave of soil around it, all growing as they rise, strong upward composition, limited palette of forest green, umber and bone-white."
+3. **Watercolor storybook** — "Muted watercolor: a walled forest garden where a young hydra waters a row of very small creatures with a wooden can held in one mouth, every watered creature a size larger than the last, tools leaning on the wall, soft dappled light, quiet nurturing mood."
+4. **Woodcut print** — "Bold two-colour woodcut / linocut print: a five-headed hydra as a living trellis, its necks the frame rows of a garden bed where stylised beasts grow like fruit at different sizes, heavy black carved line, flat emerald green and cream paper, strong repeating rhythm."
