@@ -263,22 +263,36 @@ export function advance(
   try {
     for (const cell of path) {
       if (!world.map.passable[idx(world.map, cell)]) throw new Error(`advance: cell ${cell.x},${cell.y} is impassable`);
+      // S25 (ADR-088) — the Stride: 2 cells per clock step while the countdown runs. The FIRST
+      // cell of each pair is free (position, sight, and player-initiated contact only — the world
+      // does not move); the SECOND pays the full step (clocks, roamers, the countdown). Parity
+      // persists across calls via strideCarry, so click-by-click walking is exact.
+      const strideActive = world.powers.strideStepsLeft > 0;
+      const freeCell = strideActive && !world.powers.strideCarry;
+      world.powers.strideCarry = freeCell;
       world.player.position = { ...cell };
-      world.player.stepsTaken += 1;
+      if (!freeCell) {
+        world.player.stepsTaken += 1;
+        if (strideActive) world.powers.strideStepsLeft -= 1;
+      }
       events.push({ type: "moved", to: { ...cell }, steps: world.player.stepsTaken });
       exploreAround(world, knobs);
-      // S19: the quest clock — deadlines tick, bounty marks update where seen (fog rules).
-      for (const qe of questsOnStep(world, knobs, (p) => playerSees(world, knobs, p))) {
-        if (qe.type === "questExpired") events.push({ type: "questExpired", questId: qe.quest.id, text: qe.quest.text });
+      if (!freeCell) {
+        // S19: the quest clock — deadlines tick, bounty marks update where seen (fog rules).
+        for (const qe of questsOnStep(world, knobs, (p) => playerSees(world, knobs, p))) {
+          if (qe.type === "questExpired") events.push({ type: "questExpired", questId: qe.quest.id, text: qe.quest.text });
+        }
+        // S21: the siege clock (consumer #3) — threats land, deadlines fall (manifest §5).
+        for (const se of siegesOnStep(world, catalog, knobs)) events.push(se);
       }
-      // S21: the siege clock (consumer #3) — threats land, deadlines fall (manifest §5).
-      for (const se of siegesOnStep(world, catalog, knobs)) events.push(se);
       const town = townAt(world.map, cell);
       if (town) {
         // Towns are safe nodes: no contact on the town cell itself (roamers never enter it).
         events.push({ type: "arrived", town });
-        tickRoamers(world, catalog, knobs, rng);
-        for (const sp of respawnRoamers(world, catalog, knobs, rng)) events.push({ type: "spawned", opponentId: sp.id, region: sp.region });
+        if (!freeCell) {
+          tickRoamers(world, catalog, knobs, rng);
+          for (const sp of respawnRoamers(world, catalog, knobs, rng)) events.push({ type: "spawned", opponentId: sp.id, region: sp.region });
+        }
         continue;
       }
       // S20 (dungeon-design §5): fixed points with interiors. A LAIR with an undefeated resident is a
@@ -315,13 +329,16 @@ export function advance(
         events.push({ type: "encounter", encounter: encounterOf(stepped, cell, "stepped") });
         break;
       }
-      // Roamers move; one reaching you is contact.
-      tickRoamers(world, catalog, knobs, rng);
-      for (const sp of respawnRoamers(world, catalog, knobs, rng)) events.push({ type: "spawned", opponentId: sp.id, region: sp.region });
-      const reached = contactAt(cell);
-      if (reached) {
-        events.push({ type: "encounter", encounter: encounterOf(reached, cell, "reached") });
-        break;
+      // Roamers move; one reaching you is contact. On a Stride's free cell the world stands
+      // still — nothing moves, so nothing can reach you (outrunning pursuit is the point).
+      if (!freeCell) {
+        tickRoamers(world, catalog, knobs, rng);
+        for (const sp of respawnRoamers(world, catalog, knobs, rng)) events.push({ type: "spawned", opponentId: sp.id, region: sp.region });
+        const reached = contactAt(cell);
+        if (reached) {
+          events.push({ type: "encounter", encounter: encounterOf(reached, cell, "reached") });
+          break;
+        }
       }
     }
   } finally {
@@ -451,7 +468,7 @@ export function buyOffPrice(knobs: KnobValues, tier: 1 | 2 | 3, tmpl?: Pick<Oppo
   return tmpl?.kind === "beast" ? Math.round(base * knobs.beastBuyOffMultiplier) : base;
 }
 
-export function parley(world: WorldState, catalog: Catalog, enc: Encounter, choice: ParleyChoice, extra: Parameters<typeof worldKnobs>[1] = {}): ParleyOutcome {
+export function parley(world: WorldState, catalog: Catalog, enc: Encounter, choice: ParleyChoice, extra: Parameters<typeof worldKnobs>[1] = {}, opts: { enemyLifeDelta?: number } = {}): ParleyOutcome {
   const knobs = encounterKnobs(world, catalog, enc, extra);
   const rng = new WorldRng(world.rng);
   try {
@@ -480,15 +497,18 @@ export function parley(world: WorldState, catalog: Catalog, enc: Encounter, choi
         return { type: "fleeFailed", anteLost: stake };
       }
       case "fight":
-        return { type: "fight", duel: prepareDuel(world, catalog, enc, rng, knobs) };
+        return { type: "fight", duel: prepareDuel(world, catalog, enc, rng, knobs, opts) };
     }
   } finally {
     world.rng = rng.state();
   }
 }
 
-/** Build the MatchSpec from world state (ADR-002 consumed from the world side). */
-export function prepareDuel(world: WorldState, catalog: Catalog, enc: Encounter, rng: WorldRng, knobs: KnobValues): PreparedDuel {
+/** Build the MatchSpec from world state (ADR-002 consumed from the world side).
+ * S25 (ADR-088): `enemyLifeDelta` is the Barrage's one-shot hook — a negative delta on the
+ * enemy's starting life, floored at 1 (red always leaves a fight standing). The dungeon-law
+ * mechanism (a startingLife modifier on the spec), not a new idea. */
+export function prepareDuel(world: WorldState, catalog: Catalog, enc: Encounter, rng: WorldRng, knobs: KnobValues, opts: { enemyLifeDelta?: number } = {}): PreparedDuel {
   const inst = world.opponents.find((o) => o.id === enc.opponentId);
   if (!inst) throw new Error(`no opponent instance ${enc.opponentId}`);
   const tmpl = opponentTemplate(catalog, inst);
@@ -499,7 +519,8 @@ export function prepareDuel(world: WorldState, catalog: Catalog, enc: Encounter,
   // the spec carries it, so the replay is exact and the UI can stage the flip.
   const startingPlayer = rng.chance(0.5) ? (0 as const) : (1 as const);
   // S18 (OQ-8): a lair resident fights at its template life + the lair bonus knob.
-  const enemyLife = tmpl.worldLife + (enc.contact === "lair" ? knobs.lairResidentLifeBonus : 0);
+  // S25: the Barrage's delta lands here, floored at 1.
+  const enemyLife = Math.max(1, tmpl.worldLife + (enc.contact === "lair" ? knobs.lairResidentLifeBonus : 0) + (opts.enemyLifeDelta ?? 0));
   // S19 (ADR-069): every duel starts with your manalinks on the battlefield (manifest §5 — zero engine work).
   const modifiers: Modifier[] = [{ type: "startingLife", player: 1, value: enemyLife }, ...manalinkModifiers(world)];
   const spec: MatchSpec = {

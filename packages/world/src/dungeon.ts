@@ -474,6 +474,10 @@ export function dungeonDuelSpec(
   /** S22b: PARTISAN additions — the stronghold law (defender-side, re-injected every battle) and,
    * for the lord duel, his entrance. Mox dungeons pass nothing; their laws stay symmetric. */
   extraModifiers: Modifier[] = [],
+  /** S25 (ADR-088): the Barrage's one-shot delta on the enemy's starting life, floored at 1 —
+   * "legal against everything" includes the interiors (softening a 45-life Stoker is its
+   * endgame identity). The dungeon-law hook, as the design named it. */
+  opts: { enemyLifeDelta?: number } = {},
 ): { spec: MatchSpec; enemyName: string; enemyLife: number; empowerment: EmpowermentTier[] } {
   const lawMods = (player: 0 | 1): Modifier[] =>
     law.map((l) =>
@@ -493,7 +497,7 @@ export function dungeonDuelSpec(
           life: enemy.tmpl.worldLife,
         }
       : { name: enemy.name, decklist: enemy.decklist.map((e) => ({ ...e })), agent: "heuristic:master", archetype: enemy.archetype, life: enemy.life };
-  const enemyLife = base.life + (enemy.kind === "guardian" && run.residentCatalogId ? knobs.lairResidentLifeBonus : 0) + emp.lifeBonus;
+  const enemyLife = Math.max(1, base.life + (enemy.kind === "guardian" && run.residentCatalogId ? knobs.lairResidentLifeBonus : 0) + emp.lifeBonus + (opts.enemyLifeDelta ?? 0));
   const spec: MatchSpec = {
     seed: rng.int(1_000_000_000),
     players: [

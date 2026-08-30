@@ -43,8 +43,13 @@ export type PowerColor = "W" | "U" | "B" | "R" | "G";
 export interface PowersState {
   /** Unlock flags in acquisition order — powers are knowledge, not items. */
   unlocked: PowerColor[];
-  /** The Stride's running countdown in steps (0 = inactive) — the only duration-bearing power. */
+  /** The Stride's running countdown in steps (0 = inactive) — the only duration-bearing power.
+   * Ticks on WALKED steps only (a movement gift; sleeping through it would feel robbed —
+   * escalated-by-doing in the S25 handoff). */
   strideStepsLeft: number;
+  /** Stride cell parity across advance() calls: true = the next cell is the PAID half of a
+   * 2-cells-per-step pair (the free half was already taken). Absent = false. */
+  strideCarry?: boolean;
 }
 export const emptyPowersState = (): PowersState => ({ unlocked: [], strideStepsLeft: 0 });
 

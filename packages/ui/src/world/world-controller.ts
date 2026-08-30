@@ -68,7 +68,13 @@ import {
   type SiegeEntry,
 } from "@shandalar/world";
 import { GUARDIAN_DECKS } from "@shandalar/sim/guardian-decks";
+import { COURT_DECKS } from "@shandalar/sim/court-decks";
 import { LORD_DECKS } from "@shandalar/sim/lord-decks";
+import {
+  activateStride, applyBalm, applyCrossing, barrageFight, crossingDestinations, fuelCandidates, fuelDepth,
+  maxWorldLife, powerRates, powerRefusal, quietusRefusal, quietusStrike, suggestFuel, unlockPower, POWER_COLORS,
+  type FuelCandidate, type PowerColor, type PowerRates,
+} from "@shandalar/world";
 import {
   entranceModifier, lawModifier, lordStartingLife, lordStatus, sealsHeld, strongholdPrizeList, strongholdState,
   type LordStatusRow, type StrongholdContentDef,
@@ -146,6 +152,24 @@ export class WorldController {
   private lastTown: Town | null = null;
   /** S14 rider: the path left unwalked when an encounter interrupted (resume with one click). */
   resumePath: Point[] | null = null;
+  /** S25 (ADR-088): the fuel picker overlay — the rail (Stride/Balm/Crossing) and the parley
+   * menu (Quietus/Barrage) both open it. Chosen fuel is a multiset of cardIds; a pick that
+   * includes a sole-mechanism card arms a second confirm (permanent-loss warning). */
+  fuelPicker: {
+    action:
+      | { kind: "stride" }
+      | { kind: "balm"; lives: number }
+      | { kind: "crossing"; townIndex: number }
+      | { kind: "quietus" }
+      | { kind: "barrage"; damage: number };
+    color: PowerColor;
+    cost: number;
+    title: string;
+    candidates: FuelCandidate[];
+    chosen: string[];
+    notice: string | null;
+    armed: boolean;
+  } | null = null;
 
   constructor(
     readonly pool: Map<string, CardDef>,
@@ -715,6 +739,201 @@ export class WorldController {
         return;
     }
     this.emit();
+  }
+
+  // ---------- S25: the five powers (ADR-088) ----------
+
+  /** The Powers rail rows: every power with form, seal state, live cost, and the greyed reason. */
+  powersRail(): (PowerRates & { reason: string | null; running?: number })[] {
+    if (!this.world) return [];
+    return POWER_COLORS.map((color) => {
+      const r = powerRates(this.world!, color);
+      const cost = r.stride?.cost ?? r.crossing?.cost ?? (r.balm ? r.balm.costPerLife : 0) ?? 0;
+      const reason = r.unlocked ? powerRefusal(this.world!, this.pool, color, cost) : `${r.name} is not yet learned — its dungeon teaches it`;
+      return { ...r, reason, ...(color === "G" && this.world!.powers.strideStepsLeft > 0 ? { running: this.world!.powers.strideStepsLeft } : {}) };
+    });
+  }
+
+  /** The Crossing's live destination list (towns under warning or occupation, named). */
+  crossingList(): { townIndex: number; name: string; status: "threatened" | "occupied"; stepsLeft?: number }[] {
+    if (!this.world) return [];
+    return crossingDestinations(this.world).map((d) => ({ ...d, name: this.world!.map.towns[d.townIndex]?.name ?? `town ${d.townIndex}` }));
+  }
+
+  /** The parley menu's Quietus line (greyed-with-reason when illegal; absent until learned —
+   * the menu "grows by up to two"). */
+  quietusOption(): { cost: number; reason: string | null } | null {
+    if (!this.world || this.screen.kind !== "encounter") return null;
+    if (!powerRates(this.world, "B").unlocked) return null;
+    const enc = this.screen.encounter;
+    const cost = powerRates(this.world, "B").quietus!.costs[enc.tier];
+    return { cost, reason: quietusRefusal(this.world, this.catalog, this.pool, enc) };
+  }
+
+  /** The parley menu's Barrage line (absent until learned). */
+  barrageOption(): { costPerDamage: number; cap: number; depth: number; reason: string | null } | null {
+    if (!this.world || this.screen.kind !== "encounter") return null;
+    const r = powerRates(this.world, "R");
+    if (!r.unlocked) return null;
+    const depth = fuelDepth(fuelCandidates(this.world, this.pool, "R"));
+    const reason = depth < r.barrage!.costPerDamage ? "no red spares to burn" : null;
+    return { costPerDamage: r.barrage!.costPerDamage, cap: r.barrage!.cap, depth, reason };
+  }
+
+  /** Open the fuel picker for a power action (the rail and the parley menu both come here). */
+  openPower(action: NonNullable<WorldController["fuelPicker"]>["action"]): void {
+    if (!this.world) return;
+    const color: PowerColor = action.kind === "stride" ? "G" : action.kind === "balm" ? "W" : action.kind === "crossing" ? "U" : action.kind === "quietus" ? "B" : "R";
+    const r = powerRates(this.world, color);
+    if (!r.unlocked) return;
+    const cost = this.powerCost(action);
+    const candidates = fuelCandidates(this.world, this.pool, color);
+    const suggestion = suggestFuel(candidates, cost);
+    this.fuelPicker = {
+      action, color, cost,
+      title: r.name,
+      candidates,
+      chosen: suggestion ?? [],
+      notice: suggestion ? null : fuelDepth(candidates) >= cost ? "only sole-mechanism spares can cover this — choose them deliberately" : `${cost} ${color} spares needed; you hold ${fuelDepth(candidates)}`,
+      armed: false,
+    };
+    this.emit();
+  }
+
+  private powerCost(action: NonNullable<WorldController["fuelPicker"]>["action"]): number {
+    const w = this.world!;
+    switch (action.kind) {
+      case "stride": return powerRates(w, "G").stride!.cost;
+      case "balm": return action.lives * powerRates(w, "W").balm!.costPerLife;
+      case "crossing": return powerRates(w, "U").crossing!.cost;
+      case "quietus": return this.screen.kind === "encounter" ? powerRates(w, "B").quietus!.costs[this.screen.encounter.tier] : 0;
+      case "barrage": return action.damage * powerRates(w, "R").barrage!.costPerDamage;
+    }
+  }
+
+  /** Balm lives / Barrage damage stepper — recosts and re-suggests. */
+  pickerSetAmount(n: number): void {
+    if (!this.world || !this.fuelPicker) return;
+    const a = this.fuelPicker.action;
+    if (a.kind === "balm") {
+      const room = Math.max(1, (this.maxLife() ?? 1) - this.world.player.worldLife);
+      a.lives = Math.max(1, Math.min(room, n));
+    } else if (a.kind === "barrage") {
+      a.damage = Math.max(1, Math.min(powerRates(this.world, "R").barrage!.cap, n));
+    } else return;
+    this.fuelPicker.cost = this.powerCost(a);
+    this.fuelPicker.chosen = suggestFuel(this.fuelPicker.candidates, this.fuelPicker.cost) ?? [];
+    this.fuelPicker.armed = false;
+    this.fuelPicker.notice = null;
+    this.emit();
+  }
+
+  pickerAdd(cardId: string): void {
+    const p = this.fuelPicker;
+    if (!p) return;
+    const cand = p.candidates.find((c) => c.cardId === cardId);
+    const used = p.chosen.filter((id) => id === cardId).length;
+    if (!cand || used >= cand.available || p.chosen.length >= p.cost) return;
+    p.chosen.push(cardId);
+    p.armed = false;
+    p.notice = null;
+    this.emit();
+  }
+
+  pickerRemove(cardId: string): void {
+    const p = this.fuelPicker;
+    if (!p) return;
+    const i = p.chosen.indexOf(cardId);
+    if (i >= 0) p.chosen.splice(i, 1);
+    p.armed = false;
+    p.notice = null;
+    this.emit();
+  }
+
+  pickerSuggest(): void {
+    const p = this.fuelPicker;
+    if (!p) return;
+    p.chosen = suggestFuel(p.candidates, p.cost) ?? [];
+    p.armed = false;
+    this.emit();
+  }
+
+  pickerCancel(): void {
+    this.fuelPicker = null;
+    this.emit();
+  }
+
+  /** Confirm the burn. A pick containing a sole-mechanism card arms a second confirm first —
+   * "there is exactly one, and it was yours" (the permanent-loss warning, design §1). */
+  pickerConfirm(): void {
+    const p = this.fuelPicker;
+    if (!this.world || !p) return;
+    if (p.chosen.length !== p.cost) {
+      p.notice = `${p.cost} cards needed — ${p.chosen.length} chosen`;
+      this.emit();
+      return;
+    }
+    const soles = p.chosen.filter((id) => p.candidates.find((c) => c.cardId === id)?.soleMechanism);
+    if (soles.length > 0 && !p.armed) {
+      p.armed = true;
+      p.notice = `${soles.map((id) => this.pool.get(id)?.name ?? id).join(", ")}: there is exactly one, and it was yours. Burn it forever? Confirm again.`;
+      this.emit();
+      return;
+    }
+    const a = p.action;
+    this.fuelPicker = null;
+    switch (a.kind) {
+      case "stride": {
+        const r = activateStride(this.world, this.pool, p.chosen);
+        this.notice(r.ok ? `The Stride carries you — ${r.durationSteps} steps at double pace.` : r.reason);
+        break;
+      }
+      case "balm": {
+        const r = applyBalm(this.world, this.pool, a.lives, p.chosen);
+        this.notice(r.ok ? `The Balm restores ${r.healed} — ${this.world.player.worldLife}/${this.maxLife()}.` : r.reason);
+        break;
+      }
+      case "crossing": {
+        const r = applyCrossing(this.world, this.pool, a.townIndex, p.chosen);
+        if (!r.ok) { this.notice(r.reason); break; }
+        this.autosave();
+        const town = this.world.map.towns[a.townIndex]!;
+        this.resumePath = null;
+        if (isTownOccupied(this.world, a.townIndex)) {
+          this.screen = { kind: "siegeTelegraph", townIndex: a.townIndex, notice: "The Crossing sets you at the gate — the town is theirs, for now." };
+          this.emit();
+        } else {
+          this.enterTown(town);
+        }
+        return;
+      }
+      case "quietus": {
+        if (this.screen.kind !== "encounter") return;
+        const enc = this.screen.encounter;
+        const r = quietusStrike(this.world, this.catalog, this.pool, enc, p.chosen);
+        if (!r.ok) { this.screen = { ...this.screen, notice: r.reason }; this.emit(); return; }
+        this.autosave();
+        // Dueltune rings at the menu; the screen change fades it — then the quiet.
+        const loot = r.anteWon.map((id) => this.pool.get(id)?.name ?? id).join(", ");
+        this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: `The Quietus takes them without a blow. Their stake is yours${loot ? ` (${loot})` : ""} — no gold, and only fear spreads.` };
+        this.emit();
+        return;
+      }
+      case "barrage": {
+        if (this.screen.kind !== "encounter") return;
+        const enc = this.screen.encounter;
+        const r = barrageFight(this.world, this.catalog, this.pool, enc, a.damage, p.chosen, this.extraKnobs);
+        if (!r.ok) { this.screen = { ...this.screen, notice: r.reason }; this.emit(); return; }
+        if (r.outcome.type === "fight") this.startDuel(r.outcome.duel, null);
+        return;
+      }
+    }
+    this.autosave();
+    this.emit();
+  }
+
+  private maxLife(): number {
+    return this.world ? maxWorldLife(this.world) : 0;
   }
 
   private startDuel(duel: PreparedDuel, _notice: string | null): void {

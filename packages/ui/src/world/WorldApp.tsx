@@ -131,6 +131,100 @@ function AudioTab() {
   );
 }
 
+/** S25 (ADR-088): the Powers rail — five rows, form + seal state + live costs, actions for the
+ * world-side three (the Quietus and Barrage act at the parley menu and say so). */
+function PowersRailPanel({ c }: { c: WorldController }) {
+  const rows = c.powersRail();
+  if (rows.length === 0) return null;
+  const learned = rows.filter((r) => r.unlocked).length;
+  const crossings = c.crossingList();
+  return (
+    <RailPanel title="Powers" badge={learned ? `${learned}/5` : undefined} defaultOpen={learned > 0}>
+      {rows.map((r) => (
+        <div key={r.color} style={{ fontSize: 12, marginTop: 4 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+            <span><i className={`colour-pip c-${r.color}`} title={r.color} /> <b>{r.name.replace(/^the /, "The ")}</b></span>
+            <span style={{ color: r.advanced ? "var(--boost)" : "var(--ink-soft)", fontSize: 10.5 }}>{r.unlocked ? (r.advanced ? "advanced · seal held" : "initial") : "unlearned"}</span>
+          </div>
+          {!r.unlocked && <div style={{ fontSize: 10.5, color: "var(--ink-soft)" }}>somewhere, this is taught</div>}
+          {r.unlocked && r.color === "G" && (
+            r.running
+              ? <div style={{ fontSize: 11, color: "var(--boost)" }}>running — {r.running} steps of double pace left</div>
+              : <button className="linkish" disabled={!!r.reason} title={r.reason ?? ""} style={{ fontSize: 11 }} onClick={() => c.openPower({ kind: "stride" })}>
+                  activate: {r.stride!.cost} G spares → {r.stride!.durationSteps} steps at ×{r.stride!.cells}
+                </button>
+          )}
+          {r.unlocked && r.color === "W" && (
+            <button className="linkish" disabled={!!r.reason} title={r.reason ?? ""} style={{ fontSize: 11 }} onClick={() => c.openPower({ kind: "balm", lives: 1 })}>
+              heal: {r.balm!.costPerLife} W spares per life
+            </button>
+          )}
+          {r.unlocked && r.color === "U" && (
+            crossings.length === 0
+              ? <div style={{ fontSize: 10.5, color: "var(--ink-soft)" }}>no town calls — the Crossing answers only danger</div>
+              : crossings.map((d) => (
+                  <div key={d.townIndex}>
+                    <button className="linkish" disabled={!!r.reason} title={r.reason ?? ""} style={{ fontSize: 11 }} onClick={() => c.openPower({ kind: "crossing", townIndex: d.townIndex })}>
+                      cross to {d.name} ({r.crossing!.cost} U) — {d.status === "occupied" ? "OCCUPIED" : `falls in ${d.stepsLeft}`}
+                    </button>
+                  </div>
+                ))
+          )}
+          {r.unlocked && r.color === "B" && <div style={{ fontSize: 10.5, color: "var(--ink-soft)" }}>{r.quietus!.costs[1]}/{r.quietus!.costs[2]}/{r.quietus!.costs[3]} B by tier — acts at the parley menu</div>}
+          {r.unlocked && r.color === "R" && <div style={{ fontSize: 10.5, color: "var(--ink-soft)" }}>{r.barrage!.costPerDamage} R per damage, cap {r.barrage!.cap} — acts at the parley menu</div>}
+        </div>
+      ))}
+    </RailPanel>
+  );
+}
+
+/** S25: the fuel picker — auto-suggested cheapest spares, deliberate override, the
+ * sole-mechanism double-confirm ("there is exactly one, and it was yours"). */
+function FuelPickerModal({ c }: { c: WorldController }) {
+  const p = c.fuelPicker;
+  if (!p) return null;
+  const chosenCount = (id: string) => p.chosen.filter((x) => x === id).length;
+  const amount = p.action.kind === "balm" ? p.action.lives : p.action.kind === "barrage" ? p.action.damage : null;
+  return (
+    <div className="gallery-modal" style={{ zIndex: 55 }}>
+      <div className="gallery-modal-box play-dialog" style={{ maxWidth: 460 }}>
+        <h3 style={{ margin: "0 0 4px", fontFamily: "var(--serif)" }}>{p.title.replace(/^the /, "The ")} — choose the fuel</h3>
+        {amount !== null && (
+          <div style={{ fontSize: 12, marginBottom: 4 }}>
+            {p.action.kind === "balm" ? "Life to restore" : "Damage dealt"}:{" "}
+            <button className="linkish" onClick={() => c.pickerSetAmount(amount - 1)}>−</button> <b>{amount}</b>{" "}
+            <button className="linkish" onClick={() => c.pickerSetAmount(amount + 1)}>+</button>
+          </div>
+        )}
+        <div style={{ fontSize: 12, marginBottom: 6 }}>
+          Burn <b>{p.cost}</b> {p.color} spare{p.cost === 1 ? "" : "s"} — chosen {p.chosen.length}/{p.cost}.{" "}
+          <button className="linkish" onClick={() => c.pickerSuggest()}>suggest cheapest</button>
+        </div>
+        <div style={{ maxHeight: 240, overflowY: "auto", border: "1px solid var(--line, #ccc)", padding: 4 }}>
+          {p.candidates.map((cand) => (
+            <div key={cand.cardId} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 12, padding: "2px 0", ...(cand.soleMechanism ? { color: "var(--danger)" } : {}) }}>
+              <span title={cand.soleMechanism ? "sole-mechanism: there is exactly one" : `~${cand.price}g at a shop`}>
+                {cand.name}{cand.soleMechanism ? " ⚠" : ""} <i style={{ color: "var(--ink-soft)" }}>×{cand.available}</i>
+              </span>
+              <span>
+                <button className="linkish" disabled={chosenCount(cand.cardId) === 0} onClick={() => c.pickerRemove(cand.cardId)}>−</button>
+                <b style={{ margin: "0 5px" }}>{chosenCount(cand.cardId)}</b>
+                <button className="linkish" disabled={chosenCount(cand.cardId) >= cand.available || p.chosen.length >= p.cost} onClick={() => c.pickerAdd(cand.cardId)}>+</button>
+              </span>
+            </div>
+          ))}
+          {p.candidates.length === 0 && <div style={{ fontSize: 11, color: "var(--ink-soft)" }}>no {p.color} spares at all</div>}
+        </div>
+        {p.notice && <p style={{ color: p.armed ? "var(--danger)" : "var(--ink-soft)", fontSize: 12, fontWeight: p.armed ? 700 : 400 }}>{p.notice}</p>}
+        <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+          <button className="primary" disabled={p.chosen.length !== p.cost} onClick={() => c.pickerConfirm()}>{p.armed ? "Burn it forever" : "Confirm the burn"}</button>
+          <button onClick={() => c.pickerCancel()}>Cancel</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ParleyPanel({ c }: { c: WorldController }) {
   if (c.screen.kind !== "encounter") return null;
   const { encounter, tmpl, knobs, notice } = c.screen;
@@ -180,6 +274,28 @@ function ParleyPanel({ c }: { c: WorldController }) {
                     : "They take the gold and let you pass."}
             </small>
           </button>
+          {/* S25 (ADR-088): the menu grows by up to two — costs live, greyed with reason. */}
+          {(() => {
+            const q = c.quietusOption();
+            if (!q) return null;
+            return (
+              <button disabled={!!q.reason} title={q.reason ?? ""} onClick={() => c.openPower({ kind: "quietus" })}>
+                The Quietus ({q.cost} B spares)
+                <small>{q.reason ?? "They die without a blow. Their stake only — no gold, and fear spreads where respect would have."}</small>
+              </button>
+            );
+          })()}
+          {(() => {
+            const b = c.barrageOption();
+            if (!b) return null;
+            const start = Math.max(1, Math.min(b.cap, Math.floor(b.depth / b.costPerDamage)));
+            return (
+              <button disabled={!!b.reason} title={b.reason ?? ""} onClick={() => c.openPower({ kind: "barrage", damage: start })}>
+                The Barrage ({b.costPerDamage} R per damage, cap {b.cap})
+                <small>{b.reason ?? "Open the duel with damage already dealt — they floor at 1 and still fight."}</small>
+              </button>
+            );
+          })()}
         </div>
         {notice && <p style={{ color: "var(--danger)", fontSize: 12 }}>{notice}</p>}
         {/* S22 r2: the in-situ portrait verdict affordance retired — Chris blanket-approved all pending
@@ -1196,6 +1312,7 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
             ))}
           </RailPanel>
         )}
+        <PowersRailPanel c={c} />
         {c.lordStatusRows().length > 0 && (
           <RailPanel title="The five lords" badge={`${c.lordStatusRows().filter((r) => r.sealed).length}/5 seals`}>
             {c.lordStatusRows().map((r) => (
@@ -1249,6 +1366,7 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
       </div>
       {screen.kind === "encounter" && <ParleyPanel c={c} />}
       {screen.kind === "town" && <TownScreen c={c} pool={pool} oracle={oracle} />}
+      {c.fuelPicker && <FuelPickerModal c={c} />} {/* S25: above the parley (z 55) */}
       {c.questPopup && <QuestDonePopup c={c} />}
       <ManalinkSplash c={c} /> {/* S24 r5: above everything (z 60) — the sting's own stage */}
     </div>
