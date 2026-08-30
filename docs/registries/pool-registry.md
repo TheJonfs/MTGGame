@@ -389,6 +389,18 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | zombify | ody | 171 | Mark Romanoski | 513a2a6f-9ae6-42cb-b75f-6b45fc35f36e |
 
 
+## Session 25 additions — the Mox court (ADR-088; mox-court.md, Chris-designed)
+
+Pool 174 → **179**. The great swap: the five real legends moved to the power-dungeons (defs untouched, decks travel via GUARDIAN_DECKS); the court guards the Moxen (COURT_DECKS, planner-drafted v1, guardian-sim tabled S25). All five custom, prizeOnly (sole-mechanism: each drops only from its bearer's defeat); printedAsset JPGs follow Chris's pipeline on receipt.
+
+| id | name | status | vocabulary | notes |
+|---|---|---|---|---|
+| the_pearl_cleric | The Pearl Cleric | tested | exileTop activation cost (w4, parameterized); grantKeyword-until-EOT resolved effect (w5, indestructible) | custom Legendary {1}{W}{W} Human Cleric 3/3; prizeOnly (Mox Pearl seat); the Witch's mirror twin — cards for life |
+| the_sapphire_sage | The Sapphire Sage | tested | permanentYou[Dont]Control predicates (quarter-word B) — per-player two-target ETB bounce | custom Legendary {1}{U}{U}{U}{U} Faerie Wizard 2/2 flash flying; prizeOnly (Mox Sapphire seat); the Sage-loop (self-bounce) fixtured; CR 603.3d all-or-nothing pinned |
+| the_jet_witch | The Jet Witch | tested | life as activation cost (w3) | custom Legendary {B}{B}{B} Human Shaman 2/2; prizeOnly (Mox Jet seat); pay-to-exactly-0 legal (CR 118.4), pin 25 holds the floor at life ≤ 2 |
+| the_ruby_tyrant | The Ruby Tyrant | tested | damage to:"you" (quarter-word A — the recoil) | custom Legendary {2}{R}{R}{R} Dragon 4/4 flying haste; prizeOnly (Mox Ruby seat); never-lethal-recoil pin (the Djinn's sibling) |
+| the_emerald_keeper | The Emerald Keeper | tested | double-X cost (w1); {ref: xPaid} ETB counters (w2, family member seven) | custom Legendary {X}{X}{G}{G} Hydra 2/2 trample; prizeOnly (Mox Emerald seat); death-in-response pump fixtured (LKI, CR 603.3) |
+
 ## Shop tiers (ADR-078, S19)
 
 The `shopTier` column (`1 | 2 | 3 | R`) is repo-canonical **on the card defs themselves** (`data/cards/*.json`, validated by the loader: every non-token, non-basic, non-prizeOnly card must carry one) rather than duplicated per row above; `docs/card-tier-audit-v2.md` is the curation source (planner-maintained), and `pnpm card-manifest` regenerates the human-readable price sheet. Distribution at adoption: **T1 ×53 · T2 ×31 · T3 ×10 · R ×2** (Demonic Tutor, Mystic Snake) + Lotus `prizeOnly` + 5 basics; Faerie Formation joins at T3 this session (→ T3 ×11). Availability: a town stocks `shopTier ≤ ring` (civilized 1 / approach 2 / wild 3); price × `shopTierMultiplier` (1.0/1.5/2.5 knobs); **R never stocks** — ante/quest/treasure circulation only.

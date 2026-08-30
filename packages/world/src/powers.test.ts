@@ -177,6 +177,20 @@ describe("S25 Part 3 — the powers, wired (transactions on the world)", () => {
     expect(r2.ok).toBe(false);
   });
 
+  it("the Crossing lands at an OCCUPIED gate too (Part 6's scripted arm), clock still untouched", () => {
+    const w = mkWorld();
+    unlockPower(w, "U");
+    w.player.collection["counterspell"] = 6;
+    const town = w.map.towns[2]!;
+    (w.sieges as { townIndex: number; epoch: number; status: string; nextThreatStep: number; occupiedAtStep?: number }[]).push({ townIndex: town.index, epoch: 0, status: "occupied", nextThreatStep: -1, occupiedAtStep: 0 });
+    const stepsBefore = w.player.stepsTaken;
+    const cost = powerRates(w, "U").crossing!.cost;
+    const r = applyCrossing(w, pool, town.index, suggestFuel(fuelCandidates(w, pool, "U"), cost)!);
+    expect(r.ok).toBe(true);
+    expect(w.player.position).toEqual(town.at);
+    expect(w.player.stepsTaken).toBe(stepsBefore);
+  });
+
   it("the Balm heals per point, caps at the maximum, and prices at costPerLife", () => {
     const w = mkWorld();
     unlockPower(w, "W");

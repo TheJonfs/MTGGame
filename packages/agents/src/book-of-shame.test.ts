@@ -41,6 +41,8 @@ function mkView(opts: {
   combat?: { attackers: string[]; blocks: { blocker: string; attacker: string }[] };
   step?: string;
   activePlayer?: 0 | 1;
+  /** S25: the Cleric's library-floor pin reads it. */
+  librarySizes?: [number, number];
 }): GameView {
   return {
     you: 0,
@@ -51,7 +53,7 @@ function mkView(opts: {
     startingLife: 20,
     hand: opts.hand ?? [],
     opponentHandCount: opts.opponentHandCount ?? 3,
-    librarySizes: [20, 20],
+    librarySizes: opts.librarySizes ?? [20, 20],
     mulliganCount: 0,
     combat: opts.combat ?? { attackers: [], blocks: [] },
     battlefield: (opts.battlefield ?? []).map((o) => {
@@ -487,5 +489,21 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     // An opponent spell on the stack lifts the gate too (the save is a legitimate window).
     const threatened = mkView({ ...base, stack: [{ id: "stk_bolt", kind: "spell", cardId: "lightning_bolt", controller: 1 }] });
     expect(a.scorePriorityAction(threatened, { type: "castSpell", objectId: "h_gg", targets: [{ kind: "object", id: "mine" }] })).toBeGreaterThan(-Infinity);
+  });
+
+  it("book of shame 25 (S25, the court's floors — the pin-17 family): the Witch stops at life 2, the Tyrant never pulls a lethal recoil, the Cleric never walks the library under 3", () => {
+    const a = agent();
+    // The Witch: pay 2 life, draw — legal to exactly 0 (CR 118.4), gated at life ≤ 2.
+    const witch = (life: number) => mkView({ life: [life, 20], battlefield: [{ id: "witch", cardId: "the_jet_witch", controller: 0 }] });
+    expect(a.scorePriorityAction(witch(2), { type: "activateAbility", objectId: "witch", abilityIndex: 0, targets: [] })).toBe(-Infinity);
+    expect(a.scorePriorityAction(witch(12), { type: "activateAbility", objectId: "witch", abilityIndex: 0, targets: [] })).toBeGreaterThan(-Infinity);
+    // The Tyrant: the recoil (1 to you) never meets-or-beats current life (the Djinn's sibling).
+    const tyrant = (life: number) => mkView({ life: [life, 20], battlefield: [{ id: "tyrant", cardId: "the_ruby_tyrant", controller: 0 }, { id: "bear", cardId: "grizzly_bears", controller: 1 }] });
+    expect(a.scorePriorityAction(tyrant(1), { type: "activateAbility", objectId: "tyrant", abilityIndex: 0, targets: [{ kind: "object", id: "bear" }] })).toBe(-Infinity);
+    expect(a.scorePriorityAction(tyrant(10), { type: "activateAbility", objectId: "tyrant", abilityIndex: 0, targets: [{ kind: "object", id: "bear" }] })).toBeGreaterThan(-Infinity);
+    // The Cleric: an exile-top cost that leaves the library under 3 is the DECKED walk.
+    const cleric = (lib: number) => mkView({ librarySizes: [lib, 20], battlefield: [{ id: "cleric", cardId: "the_pearl_cleric", controller: 0 }] });
+    expect(a.scorePriorityAction(cleric(3), { type: "activateAbility", objectId: "cleric", abilityIndex: 0, targets: [] })).toBe(-Infinity);
+    expect(a.scorePriorityAction(cleric(12), { type: "activateAbility", objectId: "cleric", abilityIndex: 0, targets: [] })).toBeGreaterThan(-Infinity);
   });
 });
