@@ -13,6 +13,7 @@ import { loadCardPool } from "@shandalar/cards/loader";
 import { runMatch, type Agent, type MatchSpec, type Modifier } from "@shandalar/engine";
 import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
 import { GUARDIAN_DECKS } from "@shandalar/sim/guardian-decks";
+import { COURT_DECKS } from "@shandalar/sim/court-decks";
 import { DECKS } from "@shandalar/sim/decks";
 import { empowermentModifiers, type EmpowermentTier } from "./dungeon.js";
 import { defaultKnobs } from "./knobs.js";
@@ -30,7 +31,15 @@ const starters = JSON.parse((await import("node:fs")).readFileSync(join(ROOT, "d
 };
 const dungeons = JSON.parse((await import("node:fs")).readFileSync(join(ROOT, "data/world/dungeons.json"), "utf8")) as {
   mox: { id: string; color: "W" | "U" | "B" | "R" | "G"; guardian: { key: string; name: string; life: number }; law: { both: { type: string; cardId?: string; count?: number }[] } }[];
+  powerDungeons?: { id: string; color: "W" | "U" | "B" | "R" | "G"; guardian: { key: string; name: string; life: number } }[];
 };
+// S25 (the great swap): the Moxen hold the court (COURT_DECKS); the legends moved to the
+// power-dungeons (GUARDIAN_DECKS, lawless) — one run tables BOTH slates.
+const deckFor = (key: string) => COURT_DECKS[key] ?? GUARDIAN_DECKS[key];
+const SITES = [
+  ...dungeons.mox.map((m) => ({ ...m, lawless: false })),
+  ...(dungeons.powerDungeons ?? []).map((d) => ({ ...d, law: { both: [] as { type: string; cardId?: string; count?: number }[] }, lawless: true })),
+];
 
 // S23 Part 0 (the S20 three-place-sync flag cashes): the schedule reads the KNOB, the packages
 // come from dungeon.ts's one builder — a knob edit now moves this table for free.
@@ -47,8 +56,8 @@ const reference: { name: string; archetype: "aggro" | "midrange" | "control"; de
 ];
 
 console.log(`guardian-sim: ${games} games × ${reference.length} references × 4 tiers per guardian (law both sides; reference at world life 10, journeyman)`);
-for (const mox of dungeons.mox) {
-  const g = GUARDIAN_DECKS[mox.guardian.key]!;
+for (const mox of SITES) {
+  const g = deckFor(mox.guardian.key)!;
   const line: string[] = [];
   for (const tier of TIERS) {
     let guardianWins = 0, total = 0;
@@ -85,5 +94,5 @@ for (const mox of dungeons.mox) {
     }
     line.push(`@${tier.steps}: ${((100 * guardianWins) / Math.max(1, total)).toFixed(0)}%`);
   }
-  console.log(`  ${mox.guardian.name} (${mox.id}, life ${mox.guardian.life}, law ${mox.law.both.map((l) => l.cardId ?? `${l.type}`).join("+")}): kill rate ${line.join(" · ")}`);
+  console.log(`  ${mox.guardian.name} (${mox.id}, life ${mox.guardian.life}, ${mox.lawless ? "LAWLESS" : `law ${mox.law.both.map((l) => l.cardId ?? `${l.type}`).join("+")}`}): kill rate ${line.join(" · ")}`);
 }

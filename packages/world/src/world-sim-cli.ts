@@ -24,6 +24,7 @@ import { maxWorldLife, newWorld, starterTemplate, worldKnobs } from "./state.js"
 import type { DifficultyName } from "./knobs.js";
 import type { StarterId } from "./catalog.js";
 import { advance, applyDuelResult, innRest, parley, visibleRoamers } from "./journey.js";
+import { activateStride, applyBalm, barrageFight, fuelCandidates, fuelDepth, powerRates, quietusRefusal, quietusStrike, suggestFuel, unlockPower, POWER_COLORS } from "./powers.js";
 import { findPath, idx, manhattan, type Point } from "./map.js";
 
 function arg(name: string, fallback: string): string {
@@ -63,6 +64,12 @@ if (tier1Deck === "starter") for (const o of catalog.opponents) if (o.tier === 1
 const starter = starterTemplate(catalog, starterId);
 // S18: --no-beasts sets beastShare 0 everywhere (the mage-only roster — the S16-comparable baseline for starter gates).
 const noBeasts = process.argv.includes("--no-beasts");
+// S25 (ADR-088): --powers grants all five at world start and turns on the pilot's power rules
+// (v1, documented in the report): Stride whenever idle and G depth ≥ cost+4; Quietus on tier-3
+// contacts when affordable; else Barrage half-their-life on tier 3 when affordable; Balm to
+// half-max when life ≤ ⌈max/3⌉. The Crossing stays unused (the tour never liberates — its
+// column exists for the fighting policy that will). Usage + spare-pool depth by colour report.
+const powersOn = process.argv.includes("--powers");
 const extraKnobs = noBeasts ? { event: { beastShare: { civilized: 0, approach: 0, wild: 0 } } } : {};
 // S18: per-opponent (per deck) W/L — the brief's per-deck tier performance table.
 const byOpponent: Record<string, { w: number; l: number; d: number }> = {};
@@ -87,10 +94,21 @@ const firstFallStep: number[] = [];
 let lifeLostToLosses = 0, innRests = 0, innStepsSpent = 0, innLifeBought = 0;
 const maxLifeAtEnd: number[] = [];
 let lifeLinksHeld = 0;
+// S25 (ADR-088): power usage + fuel economy instruments.
+const powerUses: Record<string, number> = { stride: 0, balm: 0, crossing: 0, quietus: 0, barrage: 0 };
+const fuelBurned: Record<string, number> = { W: 0, U: 0, B: 0, R: 0, G: 0 };
+const quietusByTier: Record<string, number> = { 1: 0, 2: 0, 3: 0 };
+const barrageSizes: number[] = [];
+let balmLifeBought = 0;
+const spareDepthSamples: Record<string, number[]> = { W: [], U: [], B: [], R: [], G: [] };
+const spareDepthAtEnd: Record<string, number[]> = { W: [], U: [], B: [], R: [], G: [] };
 
 for (let seed = 1; seed <= seeds; seed++) {
   const w = newWorld({ seed, catalog, starter: starterId, difficulty, knobLayers: extraKnobs });
   const knobs = worldKnobs(w, extraKnobs);
+  if (powersOn) for (const c of POWER_COLORS) unlockPower(w, c);
+  const depthOf = (c: "W" | "U" | "B" | "R" | "G") => fuelDepth(fuelCandidates(w, pool, c));
+  const burn = (c: "W" | "U" | "B" | "R" | "G", n: number) => { fuelBurned[c]! += n; };
   const targets = [...w.map.towns.filter((t) => !(t.at.x === w.map.start.x && t.at.y === w.map.start.y)).map((t) => t.at), ...(tour === "all" ? w.map.strongholds.filter((f) => f.kind === "lair").map((f) => f.at) : [])];
   let dead = false;
   const seenIds = new Set<string>();
@@ -100,6 +118,13 @@ for (let seed = 1; seed <= seeds; seed++) {
   for (const dest of repeatUntil(targets, () => dead || (minSteps > 0 ? w.player.stepsTaken >= minSteps : false), minSteps > 0)) {
     if (dead) break;
     for (let leg = 0; leg < maxLegs && !dead; leg++) {
+      if (powersOn && w.powers.strideStepsLeft === 0) {
+        const cost = powerRates(w, "G").stride!.cost;
+        if (depthOf("G") >= cost + 4) {
+          const fuel = suggestFuel(fuelCandidates(w, pool, "G"), cost);
+          if (fuel && activateStride(w, pool, fuel).ok) { powerUses.stride! += 1; burn("G", cost); }
+        }
+      }
       // Plan: shortest path, or (avoid) a path that keeps ≥2 cells from visible non-fleeing roamers.
       let path: Point[] | null;
       if (policy === "avoid") {
@@ -145,6 +170,7 @@ for (let seed = 1; seed <= seeds; seed++) {
               if (e.type === "siegeFell") { siegeFalls[w.map.regions[w.map.towns[e.townIndex]!.region]!.tier]! += 1; firstFallStep.push(w.player.stepsTaken); }
             }
           }
+          for (const c of POWER_COLORS) spareDepthSamples[c]!.push(depthOf(c));
           break;
         }
         continue; // avoid-policy partial leg: keep walking
@@ -155,7 +181,31 @@ for (let seed = 1; seed <= seeds; seed++) {
       else if (enc.encounter.contact === "reached") contactsByRoamer += 1;
       else contactsByPlayer += 1;
       if (enc.encounter.fleeing) fleeingCaught += 1;
-      const out = parley(w, catalog, enc.encounter, "fight");
+      let out: ReturnType<typeof parley>;
+      if (powersOn && enc.encounter.tier === 3 && !quietusRefusal(w, catalog, pool, enc.encounter)) {
+        // Pilot rule: a signature fight whose prize roll does NOT justify it — skip it outright.
+        const cost = powerRates(w, "B").quietus!.costs[enc.encounter.tier];
+        const fuel = suggestFuel(fuelCandidates(w, pool, "B"), cost)!;
+        const q = quietusStrike(w, catalog, pool, enc.encounter, fuel);
+        if (q.ok) {
+          powerUses.quietus! += 1; quietusByTier[String(enc.encounter.tier)]! += 1; burn("B", cost);
+          anteWon += q.anteWon.length;
+          continue;
+        }
+      }
+      if (powersOn && enc.encounter.tier === 3) {
+        const r = powerRates(w, "R").barrage!;
+        const tmplLife = catalog.opponents.find((o) => o.id === enc.encounter.catalogId)?.worldLife ?? 10;
+        const want = Math.min(r.cap, Math.ceil(tmplLife / 2), Math.floor(depthOf("R") / r.costPerDamage));
+        if (want >= 3) {
+          const fuel = suggestFuel(fuelCandidates(w, pool, "R"), want * r.costPerDamage);
+          const b = fuel ? barrageFight(w, catalog, pool, enc.encounter, want, fuel) : null;
+          if (b?.ok) {
+            powerUses.barrage! += 1; barrageSizes.push(want); burn("R", want * r.costPerDamage);
+            out = b.outcome;
+          } else out = parley(w, catalog, enc.encounter, "fight");
+        } else out = parley(w, catalog, enc.encounter, "fight");
+      } else out = parley(w, catalog, enc.encounter, "fight");
       if (out.type !== "fight") break;
       const d = out.duel;
       const human: Agent = new HeuristicAgent(seed * 7 + 1, pool, difficultyProfile(playerTier, starter.archetype, d.spec.players[1].decklist));
@@ -171,6 +221,17 @@ for (let seed = 1; seed <= seeds; seed++) {
       anteWon += rec.anteWon.length;
       anteLost += rec.anteLost.length;
       if (w.gameOver) { dead = true; deaths += 1; }
+      if (powersOn && !dead) {
+        const mx = maxWorldLife(w, extraKnobs);
+        if (w.player.worldLife <= Math.ceil(mx / 3)) {
+          const per = powerRates(w, "W").balm!.costPerLife;
+          const want = Math.min(Math.ceil(mx / 2) - w.player.worldLife, Math.floor(depthOf("W") / per));
+          if (want >= 1) {
+            const fuel = suggestFuel(fuelCandidates(w, pool, "W"), want * per);
+            if (fuel && applyBalm(w, pool, want, fuel).ok) { powerUses.balm! += 1; balmLifeBought += want; burn("W", want * per); }
+          }
+        }
+      }
     }
   }
   if (!dead) toursCompleted += 1;
@@ -178,6 +239,7 @@ for (let seed = 1; seed <= seeds; seed++) {
   lifeAtEnd.push(w.player.worldLife);
   maxLifeAtEnd.push(maxWorldLife(w, extraKnobs));
   lifeLinksHeld += w.manalinks.filter((m) => m.kind === "life").length;
+  for (const c of POWER_COLORS) spareDepthAtEnd[c]!.push(depthOf(c));
   renownAtEnd.push(w.player.renown);
   goldEnd += w.player.gold;
   totalSteps += w.player.stepsTaken;
@@ -201,6 +263,12 @@ console.log(`  ante won ${anteWon} / lost ${anteLost} · mean gold at end ${(gol
 // S24 (ADR-086): the life economy — the recovery knobs' tuning table. Life links stay ~0 until
 // the sim accepts quests (bounty rewards flow through defeats only); the column exists for the day it does.
 console.log(`  life economy: lost to losses −${lifeLostToLosses} · inn: ${innRests} rests, ${innStepsSpent} steps for +${innLifeBought} life (policy: rest to full below half max) · mean max life at end ${mean(maxLifeAtEnd).toFixed(1)} · life links held ${(lifeLinksHeld / seeds).toFixed(1)}/seed`);
+// S25 (ADR-088): power usage + the three-demand fuel economy (card-courier, shop liquidity, power fuel).
+if (powersOn) {
+  console.log(`  powers (all five granted; pilot rules v1): stride ${(powerUses.stride! / seeds).toFixed(1)}/tour · balm ${(powerUses.balm! / seeds).toFixed(1)}/tour (+${balmLifeBought} life total) · quietus ${(powerUses.quietus! / seeds).toFixed(1)}/tour (tier mix ${quietusByTier[1]}/${quietusByTier[2]}/${quietusByTier[3]}) · barrage ${(powerUses.barrage! / seeds).toFixed(1)}/tour (mean size ${barrageSizes.length ? mean(barrageSizes).toFixed(1) : "—"}, max ${barrageSizes.length ? Math.max(...barrageSizes) : "—"}) · crossing 0 (the tour never liberates — needs the fighting policy)`);
+  console.log(`  fuel burned/tour by colour: ${POWER_COLORS.map((c) => `${c} ${(fuelBurned[c]! / seeds).toFixed(1)}`).join(" · ")}`);
+}
+console.log(`  spare-pool depth by colour (mean at town arrivals → at tour end): ${POWER_COLORS.map((c) => `${c} ${mean(spareDepthSamples[c]!).toFixed(1)}→${mean(spareDepthAtEnd[c]!).toFixed(1)}`).join(" · ")}`);
 // S21: siege pressure (the tour never relieves or liberates — this is the passive player's exposure).
 console.log(`  sieges: threats c/a/w ${siegeThreats.civilized}/${siegeThreats.approach}/${siegeThreats.wild} · falls c/a/w ${siegeFalls.civilized}/${siegeFalls.approach}/${siegeFalls.wild} · mean towns occupied at tour end ${mean(occupiedAtEnd).toFixed(1)} · occupied-town exposure ${(occupiedTownSteps / Math.max(1, totalSteps)).toFixed(2)} town·steps/step${firstFallStep.length ? ` · first fall at mean step ${mean(firstFallStep).toFixed(0)}` : ""}`);
 // S18: per-opponent table (player's win % vs each catalog entry), beasts and signatures marked.
