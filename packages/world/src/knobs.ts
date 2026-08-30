@@ -340,6 +340,72 @@ export const KNOBS = {
     unit: "steps per world life restored",
     description: "S24 (ADR-086): the inn's per-point price — rest trades steps for life (5/8/12 by difficulty, the perverse-incentive argument settled per-point over flat). The rest is a TRANSACTION bulk-advancing the world clock: sieges, deadlines, lord growth, respawns all tick; news queues for waking.",
   }),
+  // ---- S25 (ADR-088): the five powers — all rates from five-powers-design.md §2, knob-forward. ----
+  strideCells: knob<number>({
+    default: 2,
+    unit: "cells per step while the Stride runs",
+    description: "S25 (ADR-088): the Stride's speed — double movement while active. G power; initial form.",
+  }),
+  strideDuration: knob<number>({
+    default: 40,
+    unit: "steps",
+    description: "S25 (ADR-088): the Stride's duration in steps, initial form. The exchange frame: 4 green cards ≈ 40g buys 40 clock-steps — ~1g per step.",
+  }),
+  strideDurationAdvanced: knob<number>({
+    default: 80,
+    unit: "steps",
+    description: "S25 (ADR-088): the Stride's duration once the Verdant Throne falls (G/R advance as duration/cap raises).",
+  }),
+  strideCost: knob<number>({
+    default: 4,
+    unit: "green spare cards",
+    description: "S25 (ADR-088): the Stride's activation price in colour-matched spares.",
+  }),
+  crossingCost: knob<number>({
+    default: 5,
+    unit: "blue spare cards",
+    description: "S25 (ADR-088): the Crossing's price — instant travel to any town under siege warning or occupation, ZERO clock cost, arrival at the gate. Anywhere-instantly is premium by design.",
+  }),
+  crossingCostAdvanced: knob<number>({
+    default: 3,
+    unit: "blue spare cards",
+    description: "S25 (ADR-088): the Crossing's price once the Spiral Spire falls (W/U/B advance as cost reductions).",
+  }),
+  balmCostPerLife: knob<number>({
+    default: 3,
+    unit: "white spare cards per world life",
+    description: "S25 (ADR-088): the Balm's per-point price — field healing capped at maximum world life. ~4x the inn's rate: anywhere-instantly priced as premium.",
+  }),
+  balmCostPerLifeAdvanced: knob<number>({
+    default: 2,
+    unit: "white spare cards per world life",
+    description: "S25 (ADR-088): the Balm's per-point price once the Argent Bastion falls.",
+  }),
+  quietusCosts: knob<Record<1 | 2 | 3, number>>({
+    default: { 1: 3, 2: 6, 3: 10 },
+    unit: "black spare cards by roamer tier",
+    description: "S25 (ADR-088): the Quietus — destroy a LONE roamer of the three regular tiers outright at the parley menu. Never lairs' residents, guardians, lords, or siege parties (named beings don't die to a gesture; armies aren't lone). Loot: the ante roll the fight would have paid — no gold, renown as fear only.",
+  }),
+  quietusCostsAdvanced: knob<Record<1 | 2 | 3, number>>({
+    default: { 1: 2, 2: 4, 3: 8 },
+    unit: "black spare cards by roamer tier",
+    description: "S25 (ADR-088): the Quietus's prices once the Charnel Court falls.",
+  }),
+  barrageCostPerDamage: knob<number>({
+    default: 1,
+    unit: "red spare cards per damage",
+    description: "S25 (ADR-088): the Barrage — the coming duel opens with damage already dealt (a one-shot startingLife delta on the MatchSpec; the dungeon-law hook). Legal against EVERYTHING; the enemy floors at 1 — red always leaves a fight standing.",
+  }),
+  barrageCap: knob<number>({
+    default: 10,
+    unit: "damage",
+    description: "S25 (ADR-088): the Barrage's cap, initial form. Full cap ≈ 100g to carve a quarter from a lord.",
+  }),
+  barrageCapAdvanced: knob<number>({
+    default: 15,
+    unit: "damage",
+    description: "S25 (ADR-088): the Barrage's cap once the Furnace Gate falls.",
+  }),
   questGoldByTier: knob<Record<1 | 2 | 3, number>>({
     default: { 1: 20, 2: 50, 3: 100 },
     unit: "gold by quest tier (the offering town's ring)",

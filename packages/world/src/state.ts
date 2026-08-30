@@ -19,8 +19,8 @@ import type { SiegeEntry } from "./siege.js";
  * retired), `provenance` (append-only acquisition log), `player.renown`,
  * `player.starterId`. v1/v2 saves migrate with everything defaulted.
  */
-export const SAVE_FORMAT = "world-save-v6"; // S20 playtest: renown by colour
-export const SAVE_FORMATS_READABLE = ["world-save-v1", "world-save-v2", "world-save-v3", "world-save-v4", "world-save-v5", "world-save-v6"] as const;
+export const SAVE_FORMAT = "world-save-v7"; // S25 (ADR-088): powers + the reserved gauntlet field
+export const SAVE_FORMATS_READABLE = ["world-save-v1", "world-save-v2", "world-save-v3", "world-save-v4", "world-save-v5", "world-save-v6", "world-save-v7"] as const;
 
 /** Per-town shop state (S14): which epoch the stock was rolled for and how
  * many of each card were sold in it; a new epoch restocks (sold resets). */
@@ -36,6 +36,17 @@ export type Collection = Record<string, number>;
 /** S16 v3: where a copy came from (append-only; never pruned on loss/sell —
  * it is history, and "new since last visit" reads it by step). */
 export type ProvenanceSource = "starter" | "ante" | "shop" | "reward";
+
+/** S25 v7 (ADR-088): the powers save-shape lives HERE (save shapes are state.ts's home; powers.ts
+ * carries the behavior and imports these — the one-cycle rule holds, journey↔siege stays alone). */
+export type PowerColor = "W" | "U" | "B" | "R" | "G";
+export interface PowersState {
+  /** Unlock flags in acquisition order — powers are knowledge, not items. */
+  unlocked: PowerColor[];
+  /** The Stride's running countdown in steps (0 = inactive) — the only duration-bearing power. */
+  strideStepsLeft: number;
+}
+export const emptyPowersState = (): PowersState => ({ unlocked: [], strideStepsLeft: 0 });
 
 /** S20 playtest v6: the five colours renown is tracked by. */
 export type RenownColor = "W" | "U" | "B" | "R" | "G";
@@ -119,6 +130,15 @@ export interface WorldState {
   /** S20 v5 reserved → S22b live: per-stronghold state (seal + spoke-hunt points; lazily
    * populated — the reserved-field trick's third cashing, no save bump). */
   strongholds: import("./stronghold.js").StrongholdState[];
+  /** S25 v7 (ADR-088): the five powers — unlock flags (knowledge, not items) + the Stride's
+   * running countdown. Forms are COMPUTED from stronghold seals, never stored. */
+  powers: PowersState;
+  /** S25 v7 RESERVED (the sieges/strongholds trick, fourth planting): gauntlet-adjacent state
+   * for the undesigned ending — all-optional so today's writes are `{}`. Proposed occupants
+   * (ESCALATED to the planner, not decided): `opened` (the sixth dungeon's gate), `attempts`
+   * (entries into the final gauntlet), `chronicle` (ADR-086's meta-progression direction —
+   * run-history breadcrumbs a post-gauntlet layer could read). Nothing writes these in S25. */
+  gauntlet: { opened?: boolean; attempts?: number; chronicle?: unknown[] };
 }
 
 export interface NewWorldOptions {
@@ -284,6 +304,8 @@ export function newWorld(opts: NewWorldOptions): WorldState {
     dungeons: {},
     activeDungeon: null,
     strongholds: [],
+    powers: emptyPowersState(),
+    gauntlet: {},
   };
 }
 
@@ -372,5 +394,11 @@ export function migrateWorld(format: string, input: Partial<WorldState>): WorldS
   if (!v3.strongholds) v3.strongholds = [];
   // v5 → v6 (S20 playtest): renown by colour — zeros (a pre-v6 total can't be split honestly).
   if (!v3.player.renownByColor) v3.player.renownByColor = zeroRenownByColor();
+  // v6 → v7 (S25, ADR-088): powers (no power was unlocked in a pre-v7 save — existing worlds
+  // grandfather WITHOUT power-dungeons per Chris's ruling, so the flags stay empty and honest)
+  // + the reserved gauntlet object. Power FORMS need no migration: advanced is computed from
+  // seals, so an already-fallen lord upgrades retroactively by construction.
+  if (!v3.powers) v3.powers = emptyPowersState();
+  if (!v3.gauntlet) v3.gauntlet = {};
   return v3;
 }
