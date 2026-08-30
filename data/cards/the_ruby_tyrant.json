@@ -1,0 +1,53 @@
+{
+  "id": "the_ruby_tyrant",
+  "name": "The Ruby Tyrant",
+  "source": "custom",
+  "manaCost": "{2}{R}{R}{R}",
+  "types": [
+    "Creature"
+  ],
+  "supertypes": [
+    "Legendary"
+  ],
+  "subtypes": [
+    "Dragon"
+  ],
+  "power": 4,
+  "toughness": 4,
+  "keywords": [
+    "flying",
+    "haste"
+  ],
+  "text": "Flying, haste\n{2}{R}: The Ruby Tyrant deals 2 damage to any target and 1 damage to you.",
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "mana": "{2}{R}"
+      },
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "anyTarget",
+          "zone": "any"
+        }
+      ],
+      "effects": [
+        {
+          "type": "damage",
+          "amount": 2,
+          "target": 0
+        },
+        {
+          "type": "damage",
+          "amount": 1,
+          "to": "you"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "prizeOnly": true
+}

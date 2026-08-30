@@ -130,6 +130,11 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
       if (p !== null) ctx.dealDamage({ kind: "player", player: p }, ctx.amount(e.amount), e.from);
       return;
     }
+    // S25: the controller's own recoil (the Ruby Tyrant) — the resolving source deals it.
+    if (e.to === "you") {
+      ctx.dealDamage({ kind: "player", player: ctx.players("you")[0]! }, ctx.amount(e.amount));
+      return;
+    }
     for (const t of targeted(e, ctx)) ctx.dealDamage(t, ctx.amount(e.amount), e.from); // A8: targetSpec fans out
   },
 
@@ -178,6 +183,23 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
     }
   },
 
+  grantKeyword: (e, ctx) => {
+    // S25 word 5 (ADR-088): keyword-until-EOT as a RESOLVED effect (the Pearl Cleric's
+    // indestructible) — grantKeyword had been static-only; the resolved form rides the
+    // modifyPT/restrict continuous-effect machinery unchanged. characteristics() already
+    // merges stored grantKeyword effects (the temporary-reanimation haste rider proved it).
+    if (e.type !== "grantKeyword") throw new Error("resolver mismatch");
+    for (const t of targeted(e, ctx)) {
+      if (t.kind !== "object") continue;
+      ctx.addContinuousEffect({
+        kind: "grantKeyword",
+        objectId: t.id,
+        keyword: e.keyword,
+        duration: e.duration,
+      });
+    }
+  },
+
   restrict: (e, ctx) => {
     if (e.type !== "restrict") throw new Error("resolver mismatch");
     for (const t of targeted(e, ctx)) {
@@ -214,14 +236,17 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
 
   addCounters: (e, ctx) => {
     if (e.type !== "addCounters") throw new Error("resolver mismatch");
+    // S25: count may be a value ref (the Keeper's xPaid); zero counters is a clean no-op.
+    const count = typeof e.count === "number" ? e.count : ctx.amount(e.count);
+    if (count <= 0) return;
     // ADR-076: target OR scope ("each Vampire you control" — Indulgent Aristocrat).
     if (e.target !== undefined) {
       const t = ctx.target(e.target);
-      if (t && t.kind === "object") ctx.addCounters(t.id, e.kind, e.count);
+      if (t && t.kind === "object") ctx.addCounters(t.id, e.kind, count);
       return;
     }
     if (e.scope !== undefined) {
-      for (const id of ctx.objectsInScope(e.scope, { ...(e.subtype ? { subtype: e.subtype } : {}), ...(e.cardType ? { cardType: e.cardType } : {}), ...(e.other ? { other: true } : {}) })) ctx.addCounters(id, e.kind, e.count);
+      for (const id of ctx.objectsInScope(e.scope, { ...(e.subtype ? { subtype: e.subtype } : {}), ...(e.cardType ? { cardType: e.cardType } : {}), ...(e.other ? { other: true } : {}) })) ctx.addCounters(id, e.kind, count);
     }
   },
 

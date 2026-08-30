@@ -1,0 +1,61 @@
+{
+  "id": "the_pearl_cleric",
+  "name": "The Pearl Cleric",
+  "source": "custom",
+  "manaCost": "{1}{W}{W}",
+  "types": [
+    "Creature"
+  ],
+  "supertypes": [
+    "Legendary"
+  ],
+  "subtypes": [
+    "Human",
+    "Cleric"
+  ],
+  "power": 3,
+  "toughness": 3,
+  "text": "{W}, Exile the top card of your library: You gain 1 life.\n{W}{W}, Exile the top two cards of your library: Target creature gains indestructible until end of turn.",
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "mana": "{W}",
+        "exileTop": 1
+      },
+      "effects": [
+        {
+          "type": "gainLife",
+          "amount": 1,
+          "who": "you"
+        }
+      ]
+    },
+    {
+      "kind": "activated",
+      "cost": {
+        "mana": "{W}{W}",
+        "exileTop": 2
+      },
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "creature",
+          "zone": "battlefield"
+        }
+      ],
+      "effects": [
+        {
+          "type": "grantKeyword",
+          "keyword": "indestructible",
+          "target": 0,
+          "duration": "UNTIL_END_OF_TURN"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "prizeOnly": true
+}

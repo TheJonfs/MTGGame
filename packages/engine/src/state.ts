@@ -49,6 +49,9 @@ export interface GameObject {
   /** A10 (S22): base P/T locked at creation, overriding the def's printed values (Overload's X/X
    * Weird — the printed ruling: set once, never fluctuates). Tokens only today. */
   basePT?: { power: number; toughness: number };
+  /** S25 (ADR-088): the X announced at this permanent's own cast, stamped at battlefield entry —
+   * its ETB trigger reads it (via eventContext LKI; the Emerald Keeper). Battlefield-only state. */
+  xPaid?: number;
 }
 
 /** Pool slots per producible symbol; {C} is colorless, spendable only on generic costs (S3). */

@@ -75,6 +75,15 @@ function basePredicate(ctx: EngineCtx, spec0: TargetSpec, target: ResolvedTarget
       const obj = state.objects[target.id];
       return !!obj && obj.zone === "battlefield" && canBeTargeted(ctx, target.id, by);
     }
+    // S25 (the Sapphire Sage): controller-scoped permanents (the creatureYouControl pattern).
+    case "permanentYouControl": {
+      if (!isLegalTarget(ctx, { ...spec, predicate: "permanent" }, target, by)) return false;
+      return target.kind === "object" && state.objects[target.id]!.controller === by;
+    }
+    case "permanentYouDontControl": {
+      if (!isLegalTarget(ctx, { ...spec, predicate: "permanent" }, target, by)) return false;
+      return target.kind === "object" && state.objects[target.id]!.controller !== by;
+    }
     case "anyTarget":
       if (target.kind === "player") return true;
       return isLegalTarget(ctx, { ...spec, predicate: "creature" }, target, by);

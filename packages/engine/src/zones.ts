@@ -11,6 +11,9 @@ export interface MoveOptions {
   tapped?: boolean;
   /** A8 (blink): enter the battlefield under this player's control instead of the mover's current controller. */
   controller?: PlayerId;
+  /** S25 (ADR-088): stamp the announced X onto the entering permanent (spell resolution passes
+   * the stack item's x when the card's cost carries {X} symbols — the Emerald Keeper). */
+  xPaid?: number;
 }
 
 function zoneArray(ctx: EngineCtx, zone: ZoneName, owner: PlayerId): string[] | null {
@@ -128,6 +131,8 @@ export function moveObject(
     summoningSick: entersBattlefield && card.types.includes("Creature"),
     attachedTo: entersBattlefield ? (options.attachedTo ?? null) : null,
     counters: {},
+    // S25: the announced X rides the permanent (battlefield entry only; stripped by any later move).
+    ...(entersBattlefield && options.xPaid !== undefined ? { xPaid: options.xPaid } : {}),
   };
   state.objects[newId] = newObj;
 

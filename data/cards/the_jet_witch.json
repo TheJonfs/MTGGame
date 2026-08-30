@@ -1,0 +1,38 @@
+{
+  "id": "the_jet_witch",
+  "name": "The Jet Witch",
+  "source": "custom",
+  "manaCost": "{B}{B}{B}",
+  "types": [
+    "Creature"
+  ],
+  "supertypes": [
+    "Legendary"
+  ],
+  "subtypes": [
+    "Human",
+    "Shaman"
+  ],
+  "power": 2,
+  "toughness": 2,
+  "text": "Pay 2 life: Draw a card.",
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "life": 2
+      },
+      "effects": [
+        {
+          "type": "draw",
+          "count": 1,
+          "who": "you"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "prizeOnly": true
+}

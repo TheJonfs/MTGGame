@@ -90,7 +90,7 @@ export function staticActive(ctx: EngineCtx, sourceId: string, condition?: { val
   const src = ctx.state.objects[sourceId];
   if (!src) return false;
   const v = condition.value;
-  const n = v.ref === "targetPower" || v.ref === "targetManaValue" || v.ref === "eventDamage" ? 0 : evaluateValueRef(ctx, v, src.controller as PlayerId, sourceId);
+  const n = v.ref === "targetPower" || v.ref === "targetManaValue" || v.ref === "eventDamage" || v.ref === "xPaid" ? 0 : evaluateValueRef(ctx, v, src.controller as PlayerId, sourceId);
   return n >= condition.atLeast;
 }
 
@@ -122,7 +122,7 @@ export function characteristics(ctx: EngineCtx, objectId: string): Characteristi
       // source's point of view (Gaean Wurm: +1/+1 per Forest you control).
       const src = getObject(state, srcId);
       const val = (v: typeof e.power): number =>
-        typeof v === "number" ? v : typeof v === "object" && v.ref !== "targetPower" && v.ref !== "targetManaValue" && v.ref !== "eventDamage" ? evaluateValueRef(ctx, v, src.controller, srcId) : 0;
+        typeof v === "number" ? v : typeof v === "object" && v.ref !== "targetPower" && v.ref !== "targetManaValue" && v.ref !== "eventDamage" && v.ref !== "xPaid" ? evaluateValueRef(ctx, v, src.controller, srcId) : 0;
       result.power += val(e.power);
       result.toughness += val(e.toughness);
     }

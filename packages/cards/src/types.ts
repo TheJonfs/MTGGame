@@ -71,6 +71,10 @@ export const TARGET_PREDICATES = [
   "creatureSpell",
   // A10 (S22): Experimental Overload's regrowth predicate.
   "instantOrSorceryCardInYourGraveyard",
+  // S25 (the Sapphire Sage): controller-scoped permanent predicates — the creatureYouControl
+  // pattern widened to permanents ("for each player, choose target permanent that player controls").
+  "permanentYouControl",
+  "permanentYouDontControl",
 ] as const;
 export type TargetPredicate = (typeof TARGET_PREDICATES)[number];
 
@@ -128,7 +132,12 @@ export type ValueRef =
    * literal multiplier (the Traumatizer's "mills twice that many"). ADR-028's no-arithmetic
    * doctrine is reaffirmed around it — a fixed `times` param is not a calculator; general
    * arithmetic remains excluded. Triggered-ability effects only (validator-confined). */
-  | { ref: "eventDamage"; times?: number };
+  | { ref: "eventDamage"; times?: number }
+  /** S25 (ADR-088, family member seven): the X announced for the source permanent's own cast,
+   * persisted onto the object at battlefield entry and carried into its ETB trigger's event
+   * context (LKI by construction — the Emerald Keeper's pump survives the Keeper's death in
+   * response, CR 603.3). ETB-trigger effects on X-cost permanents only (validator-confined). */
+  | { ref: "xPaid" };
 export type Amount = number | "X" | ValueRef;
 /** P/T deltas may reference the stack item's X, positively or negated (Drana); statics may carry
  * count refs, evaluated live (A4: Gaean Wurm's "+1/+1 for each Forest you control"). */
@@ -149,7 +158,9 @@ export type EffectBase =
   /** A10 (S22): `to: "eventPlayer"` / `from: "eventObject"` address the triggering event's object and
    * its controller (the Warden's law: the untapped creature ITSELF deals 1 to ITS controller — the
    * source matters: lifelink on the untapped creature nets its controller zero). */
-  | { type: "damage"; amount: Amount; target?: number; targetSpec?: number; to?: "eventPlayer"; from?: "eventObject" }
+  /** S25: `to: "you"` — the effect's controller takes the damage from the resolving source (the
+   * Ruby Tyrant's recoil; the Djinn's event addressing can't reach activated abilities). */
+  | { type: "damage"; amount: Amount; target?: number; targetSpec?: number; to?: "eventPlayer" | "you"; from?: "eventObject" }
   | { type: "damageAll"; amount: Amount; scope: Scope }
   /** A10 (S22): `targetSpec` fans out over a spec's still-legal chosen targets (Purge's any-number). */
   | { type: "destroy"; target?: number; targetSpec?: number }
@@ -185,7 +196,7 @@ export type EffectBase =
   /** A10 (S22): `count` may be a value ref (Aether Mutation's X Saprolings); `pt` sets the token's
    * base P/T, locked at resolution (Overload's X/X Weird — the printed ruling: it does not fluctuate). */
   | { type: "createToken"; tokenId: string; count: number | ValueRef; who: Who; pt?: ValueRef }
-  | { type: "addCounters"; kind: "+1/+1" | "-1/-1"; count: number; target?: number; scope?: Scope; subtype?: string; cardType?: string; other?: boolean }
+  | { type: "addCounters"; kind: "+1/+1" | "-1/-1"; count: number | ValueRef; target?: number; scope?: Scope; subtype?: string; cardType?: string; other?: boolean }
   /** A10 (S22): `targetSpec` fans out (the Warden's "tap up to two target creatures"). */
   | { type: "tapTarget"; target?: number; targetSpec?: number }
   | { type: "untapTarget"; target: number }
@@ -366,6 +377,13 @@ export interface ActivatedCost {
   /** A10 word 6 (S22): tap `count` untapped creatures you control as a cost (convoke-lite; summoning
    * sickness does NOT block it — CR 602.5.1 governs only the source's own {T}). Glare of Subdual. */
   tapCreature?: { predicate: string; count: number };
+  /** S25 word 3 (ADR-088): pay N life as an activation cost (the Jet Witch — the A9/Purge pay-life
+   * primitive priced into tap-abilities). CR 118.4: activatable only while life ≥ N; paying to
+   * exactly 0 is legal (and the SBA speaks next). */
+  life?: number;
+  /** S25 word 4 (ADR-088): exile the top `count` cards of your library as an activation cost
+   * (the Pearl Cleric — parameterized count). Activatable only while the library is that deep. */
+  exileTop?: number;
 }
 
 export interface ActivatedAbilityDef {

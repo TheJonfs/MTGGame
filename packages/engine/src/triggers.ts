@@ -39,9 +39,13 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
       return src === "self";
     };
     const collect = (eventName: string, sourceId: string, controller: PlayerId) => {
+      // S25 (ADR-088): an entering permanent's announced X rides its own ETB triggers as event
+      // context — LKI by construction, so the Keeper killed in response still pumps the team
+      // (the trigger is on the stack; only countering the trigger itself stops it, CR 603.3).
+      const xPaid = eventName === "ENTERS_BATTLEFIELD" ? ctx.state.objects[sourceId]?.xPaid : undefined;
       abilities.forEach((a, i) => {
         if (a.kind !== "triggered" || a.event !== eventName || !isSelf(a)) return;
-        pend(sourceId, ev.cardId, controller, i);
+        pend(sourceId, ev.cardId, controller, i, xPaid !== undefined ? { objectId: sourceId, amount: xPaid } : undefined);
       });
     };
     if (ev.to === "battlefield" && ev.newId) collect("ENTERS_BATTLEFIELD", ev.newId, ev.controller);

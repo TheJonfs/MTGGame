@@ -1,0 +1,55 @@
+{
+  "id": "the_sapphire_sage",
+  "name": "The Sapphire Sage",
+  "source": "custom",
+  "manaCost": "{1}{U}{U}{U}{U}",
+  "types": [
+    "Creature"
+  ],
+  "supertypes": [
+    "Legendary"
+  ],
+  "subtypes": [
+    "Faerie",
+    "Wizard"
+  ],
+  "power": 2,
+  "toughness": 2,
+  "keywords": [
+    "flash",
+    "flying"
+  ],
+  "text": "Flash, flying\nWhen The Sapphire Sage enters, for each player, choose target permanent that player controls. Return each of those permanents to their owner's hands.",
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "permanentYouControl",
+          "zone": "battlefield"
+        },
+        {
+          "count": 1,
+          "predicate": "permanentYouDontControl",
+          "zone": "battlefield"
+        }
+      ],
+      "effects": [
+        {
+          "type": "bounce",
+          "target": 0
+        },
+        {
+          "type": "bounce",
+          "target": 1
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "prizeOnly": true
+}

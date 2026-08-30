@@ -158,6 +158,12 @@ export function legalActions(ctx: EngineCtx, player: PlayerId): Action[] {
       if (ability.cost.sacrifice && sacrificeCandidates(ctx, player, id, ability.cost.sacrifice.predicate).length === 0) return;
       // ADR-076: a discard cost needs that many cards in hand (Waterfront Bouncer).
       if (ability.cost.discard && state.players[player].hand.length < ability.cost.discard) return;
+      // S25 word 3 (the Jet Witch): a life cost is payable only while life ≥ cost — CR 118.4;
+      // paying to exactly 0 is legal (the knife that cuts the wielder; the AI pin holds the floor).
+      if (ability.cost.life && state.players[player].life < ability.cost.life) return;
+      // S25 word 4 (the Pearl Cleric): an exile-top cost needs a library that deep — a one-card
+      // library affords mode one and not mode two.
+      if (ability.cost.exileTop && state.players[player].library.length < ability.cost.exileTop) return;
       // A10 (S22): the bounce cost needs a legal permanent; the tap cost needs enough untapped creatures.
       if (ability.cost.returnToHand && returnToHandCandidates(ctx, player, id, ability.cost.returnToHand.predicate).length === 0) return;
       if (ability.cost.tapCreature && tapCreatureCandidates(ctx, player, ability.cost.tapCreature.predicate).length < ability.cost.tapCreature.count) return;
@@ -250,7 +256,7 @@ export function bottomChoices(ctx: EngineCtx, player: PlayerId): Action[] {
 export function effectiveAbilityCost(ctx: EngineCtx, player: PlayerId, ability: ActivatedAbilityDef, sourceId: string): ManaCost | undefined {
   if (!ability.cost.mana) return undefined;
   const cost = parseManaCost(ability.cost.mana);
-  if (!ability.cost.reduceBy || ability.cost.reduceBy.ref === "targetPower" || ability.cost.reduceBy.ref === "targetManaValue" || ability.cost.reduceBy.ref === "eventDamage") return cost;
+  if (!ability.cost.reduceBy || ability.cost.reduceBy.ref === "targetPower" || ability.cost.reduceBy.ref === "targetManaValue" || ability.cost.reduceBy.ref === "eventDamage" || ability.cost.reduceBy.ref === "xPaid") return cost;
   const x = evaluateValueRef(ctx, ability.cost.reduceBy, player, sourceId);
   return { ...cost, generic: Math.max(0, cost.generic - x) };
 }

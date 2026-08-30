@@ -174,6 +174,10 @@ export class HeuristicAgent implements Agent {
     // a bounce-cost activation only with a land in hand to replay, or with lands beyond next
     // turn's planned cast; never one that drops development below the curve.
     if (this.bounceCostBlocked(view, action)) return -Infinity;
+    // S25 (the Mox court's floors — the pin-17 family): self-charging activation costs stop at
+    // the cliff. The Witch never reads fortunes at life ≤ 2; the Tyrant never pulls a lethal
+    // recoil (the Djinn's sibling); the Cleric never walks the library below her floor (DECKED).
+    if (this.costFloorBlocked(view, action)) return -Infinity;
     // S22 playtest r3 (Chris's seed-42 run — the misplay cluster: Swords at its own creature,
     // Boomerang at its own Island, Mind Rot at its own head, Rancor on Chris's creature):
     // spending a card on provably nothing is never a play, at any temperature (the X=0 family).
@@ -336,6 +340,26 @@ export class HeuristicAgent implements Agent {
     const maxNeed = Math.max(0, ...view.hand.filter((c) => !this.def(c.cardId)?.types.includes("Land")).map((c) => this.mv(c.cardId)));
     // Allowed with a land to replay, or when even after the bounce we can still pay next turn's plan.
     return !(landInHand || landsInPlay - 1 >= maxNeed);
+  }
+
+  /** S25 (the court's pins, pin-17 family): floors on self-charging activation costs.
+   * Life cost: blocked at life ≤ 2 (the Witch's floor — at 3 the knife still has a handle).
+   * Recoil (damage to:"you" in the effects): blocked when it meets-or-beats current life
+   * (the Tyrant — the Gallows Djinn's never-lethal sibling).
+   * Exile-top cost: blocked when it would leave the library under 3 (the Cleric's DECKED
+   * walk; the floor is a first guess for guardian-sim to argue). */
+  private costFloorBlocked(view: GameView, action: Action): boolean {
+    if (action.type !== "activateAbility") return false;
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+    if (!ab || ab.kind !== "activated") return false;
+    const me = view.you;
+    if (ab.cost.life && view.life[me] - ab.cost.life <= 0) return true;
+    if (ab.cost.life && view.life[me] <= 2) return true;
+    if (ab.cost.exileTop && view.librarySizes[me] - ab.cost.exileTop < 3) return true;
+    let recoil = 0;
+    for (const e of ab.effects) if (e.type === "damage" && e.to === "you" && typeof e.amount === "number") recoil += e.amount;
+    if (recoil > 0 && recoil >= view.life[me]) return true;
+    return false;
   }
 
   /** S17: a spell in hand with no legal target on this board (so cycling it loses nothing).

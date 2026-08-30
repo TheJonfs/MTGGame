@@ -9,7 +9,7 @@ export type ManaSymbol = (typeof MANA_SYMBOLS)[number];
 
 export interface ManaCost {
   generic: number;
-  xCount: number; // number of {X} symbols (Blaze has 1; no pool card has 2)
+  xCount: number; // number of {X} symbols (Blaze has 1; the Emerald Keeper's {X}{X} has 2 — announce charges xCount·X, S25 word 1)
   colored: Record<Color, number>;
 }
 

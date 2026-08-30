@@ -1,0 +1,39 @@
+{
+  "id": "the_emerald_keeper",
+  "name": "The Emerald Keeper",
+  "source": "custom",
+  "manaCost": "{X}{X}{G}{G}",
+  "types": [
+    "Creature"
+  ],
+  "supertypes": [
+    "Legendary"
+  ],
+  "subtypes": [
+    "Hydra"
+  ],
+  "power": 2,
+  "toughness": 2,
+  "keywords": [
+    "trample"
+  ],
+  "text": "Trample\nWhen The Emerald Keeper enters, put X +1/+1 counters on each creature you control.",
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "effects": [
+        {
+          "type": "addCounters",
+          "kind": "+1/+1",
+          "count": { "ref": "xPaid" },
+          "scope": "creaturesYouControl"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "prizeOnly": true
+}

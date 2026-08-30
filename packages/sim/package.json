@@ -23,6 +23,10 @@
     "./lord-decks": {
       "types": "./src/lord-decks.ts",
       "default": "./src/lord-decks.ts"
+    },
+    "./court-decks": {
+      "types": "./src/court-decks.ts",
+      "default": "./src/court-decks.ts"
     }
   },
   "dependencies": {

@@ -609,6 +609,19 @@ export class Game {
         // ADR-076: reduced costs (Baru) — the enumerator priced the same effective cost.
         const manaCost = effectiveAbilityCost(this.ctx, player, ability, obj.id);
         if (manaCost) autoPay(this.ctx, player, manaCost, action.x ?? 0);
+        // S25 word 3 (the Jet Witch): life as an activation cost — CR 118.4 legality lives in the
+        // enumerator (life ≥ cost; paying to exactly 0 is legal and the SBA speaks next).
+        if (ability.cost.life) {
+          if (state.players[player].life < ability.cost.life) throw new Error("life cost exceeds current life (CR 118.4)");
+          loseLife(this.ctx, player, ability.cost.life);
+        }
+        // S25 word 4 (the Pearl Cleric): exile the top N of your library as a cost — top-down
+        // through the one zone-move primitive; the enumerator gated on library depth.
+        for (let n = 0; n < (ability.cost.exileTop ?? 0); n++) {
+          const top = state.players[player].library[0];
+          if (!top) throw new Error("exileTop cost with an empty library");
+          moveObject(this.ctx, top, "exile");
+        }
         // ADR-076: discard N as a cost (Waterfront Bouncer) — chooser's pick, one request per card, deduped by cardId.
         for (let n = 0; n < (ability.cost.discard ?? 0); n++) {
           const hand = state.players[player].hand.filter((id) => id !== obj.id);
@@ -790,12 +803,15 @@ export class Game {
         def.types.includes("Creature") || def.types.includes("Enchantment") || def.types.includes("Artifact");
       if (isPermanent) {
         const isAura = def.subtypes?.includes("Aura") ?? false;
+        // S25 (ADR-088): a permanent whose cost announces {X} carries the paid X onto the
+        // battlefield — its ETB trigger reads it through eventContext LKI (the Emerald Keeper).
+        const xStamp = parseManaCost(def.manaCost).xCount > 0 ? { xPaid: item.x } : {};
         if (isAura) {
           const host = item.targets[0];
           if (host?.kind !== "object") throw new Error("aura resolving without object target");
-          moveObject(this.ctx, item.objectId, "battlefield", { attachedTo: host.id });
+          moveObject(this.ctx, item.objectId, "battlefield", { attachedTo: host.id, ...xStamp });
         } else {
-          moveObject(this.ctx, item.objectId, "battlefield");
+          moveObject(this.ctx, item.objectId, "battlefield", xStamp);
         }
       } else {
         // A10 (S22): Overload's rider — the resolving spell exiles itself; countered/fizzled

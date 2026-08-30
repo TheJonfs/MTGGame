@@ -180,6 +180,13 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
         // damage — the ref is validator-confined to damage-event triggers, so that's belt-and-braces.
         return (item.eventContext?.amount ?? 0) * (a.times ?? 1);
       }
+      if (a.ref === "xPaid") {
+        // S25 (ADR-088, member seven): the announced X, captured into the ETB trigger's event
+        // context at collection (LKI — the Keeper's death in response does not blank the pump).
+        // Fallback to the live object for belt-and-braces; zero when neither speaks.
+        const live = item.sourceId ? ctx.state.objects[item.sourceId]?.xPaid : undefined;
+        return item.eventContext?.amount ?? live ?? 0;
+      }
       // A4 counting refs: evaluated NOW, from the controller's point of view (608.2h: Tendrils' X at resolution).
       return evaluateValueRef(ctx, a, controller, item.sourceId ?? item.objectId);
     },
@@ -600,7 +607,7 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
 /** A4: counting value refs, evaluated live. `count`/`maxPower` scan battlefield permanents
  * from `controller`'s point of view; `graveyardCount` counts cards. Used by resolved effects
  * (Tendrils), statics (Gaean Wurm, Werebear's threshold) and cost reduction (Baru). */
-export function evaluateValueRef(ctx: EngineCtx, ref: Exclude<ValueRef, { ref: "targetPower" } | { ref: "targetManaValue" } | { ref: "eventDamage" }>, controller: PlayerId, sourceId?: string): number {
+export function evaluateValueRef(ctx: EngineCtx, ref: Exclude<ValueRef, { ref: "targetPower" } | { ref: "targetManaValue" } | { ref: "eventDamage" } | { ref: "xPaid" }>, controller: PlayerId, sourceId?: string): number {
   if (ref.ref === "graveyardCount") {
     const who = ref.who === "you" ? controller : opponentOf(controller);
     const yard = ctx.state.players[who].graveyard;

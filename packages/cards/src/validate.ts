@@ -191,7 +191,9 @@ export function validateCard(raw: unknown): ValidationResult {
   if (raw.abilities !== undefined) {
     if (!Array.isArray(raw.abilities)) err(`"abilities" must be an array`);
     else {
-      for (const a of raw.abilities) validateAbility(a, err, warnings, id);
+      // S25: the card's own X-symbol count gates xPaid refs (validateAbility threads it to effects).
+      const xCount = typeof raw.manaCost === "string" ? (raw.manaCost.match(/\{X\}/g)?.length ?? 0) : 0;
+      for (const a of raw.abilities) validateAbility(a, err, warnings, id, xCount);
     }
   }
 
@@ -263,10 +265,12 @@ function isAnyValueRef(v: unknown): boolean {
   if (v.ref === "targetManaValue") return Number.isInteger(v.target);
   // S23 (ADR-084, member six): the event's damage × a bounded literal multiplier (the Traumatizer).
   if (v.ref === "eventDamage") return v.times === undefined || (Number.isInteger(v.times) && (v.times as number) >= 1);
+  // S25 (ADR-088, member seven): the announced X persisted on the permanent (the Emerald Keeper).
+  if (v.ref === "xPaid") return true;
   return false;
 }
 
-function validateAbility(a: unknown, err: (m: string) => void, warnings: string[], cardId: string): void {
+function validateAbility(a: unknown, err: (m: string) => void, warnings: string[], cardId: string, xCount = 0): void {
   if (!isRecord(a)) return err(`ability is not an object`);
   const targets = Array.isArray(a.targets) ? (a.targets as unknown[]) : [];
   for (const t of targets) validateTargetSpec(t, err);
@@ -298,7 +302,9 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
       } else {
         // S23: eventDamage refs live only on damage-event triggers (the collectors carry the payload).
         const damageTrigger = a.event === "DEALS_DAMAGE_TO_PLAYER" || a.event === "DEALS_COMBAT_DAMAGE_TO_PLAYER";
-        validateEffects(a.effects, nTargets, err, warnings, cardId, { damageTrigger });
+        // S25: xPaid refs live only on the ETB trigger of a permanent whose own cost announces an X.
+        const xTrigger = a.event === "ENTERS_BATTLEFIELD" && xCount >= 1;
+        validateEffects(a.effects, nTargets, err, warnings, cardId, { damageTrigger, xTrigger });
       }
       // A10 word 9 (S22): zone-scoped triggers — first zone graveyard, first event UPKEEP (the
       // collection only exists there; widening means a new collector, not a validator relax).
@@ -345,6 +351,9 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
         }
         // ADR-076 / A5 cost words.
         if (a.cost.discard !== undefined && (!Number.isInteger(a.cost.discard) || (a.cost.discard as number) < 1)) err(`cost.discard must be a positive integer`);
+        // S25 words 3–4 (ADR-088): pay-life and exile-top activation costs (the Witch, the Cleric).
+        if (a.cost.life !== undefined && (!Number.isInteger(a.cost.life) || (a.cost.life as number) < 1)) err(`cost.life must be a positive integer (S25)`);
+        if (a.cost.exileTop !== undefined && (!Number.isInteger(a.cost.exileTop) || (a.cost.exileTop as number) < 1)) err(`cost.exileTop must be a positive integer (S25)`);
         if (a.cost.discardSelf !== undefined && a.cost.discardSelf !== true) err(`cost.discardSelf must be true when present`);
         if (a.cost.exileSelf !== undefined && a.cost.exileSelf !== true) err(`cost.exileSelf must be true when present`);
         if (a.cost.reduceBy !== undefined && !isAnyValueRef(a.cost.reduceBy)) err(`cost.reduceBy must be a value ref (A4/ADR-076)`);
@@ -430,9 +439,10 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     needAmount(e, err);
     // A8 (S20): damage addresses a target index OR a range-spec index (targetSpec fans out).
     // A10 (S22): OR the triggering event's player (the Warden's law).
-    if (e.to !== undefined && e.to !== "eventPlayer") err(`damage "to" must be "eventPlayer" (A10)`);
+    // S25: to:"you" — the controller's own recoil (the Ruby Tyrant); no event context needed.
+    if (e.to !== undefined && e.to !== "eventPlayer" && e.to !== "you") err(`damage "to" must be "eventPlayer" or "you" (A10/S25)`);
     if (e.from !== undefined && e.from !== "eventObject") err(`damage "from" must be "eventObject" (A10)`);
-    if (!Number.isInteger(e.target) && !Number.isInteger(e.targetSpec) && e.to !== "eventPlayer") err(`"damage" needs "target", "targetSpec", or to:"eventPlayer"`);
+    if (!Number.isInteger(e.target) && !Number.isInteger(e.targetSpec) && e.to === undefined) err(`"damage" needs "target", "targetSpec", or a "to" address`);
   },
   damageAll: (e, err) => {
     needAmount(e, err);
@@ -502,7 +512,8 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
   },
   addCounters: (e, err) => {
     if (e.kind !== "+1/+1" && e.kind !== "-1/-1") err(`addCounters kind must be +1/+1|-1/-1`);
-    needCount(e, err);
+    // S25: count may be a value ref (the Emerald Keeper's xPaid).
+    if (!isAnyValueRef(e.count)) needCount(e, err);
     needTargetOrScope(e, err); // ADR-076: scope form ("each Vampire you control")
   },
   exileThenReturn: (e, err) => {
@@ -608,7 +619,7 @@ function validateEffects(
   err: (m: string) => void,
   warnings: string[],
   cardId: string,
-  opts: { isStatic?: boolean; damageTrigger?: boolean } = {},
+  opts: { isStatic?: boolean; damageTrigger?: boolean; xTrigger?: boolean } = {},
 ): void {
   if (!Array.isArray(effects) || effects.length === 0) return err(`effects must be a non-empty array`);
   for (const e of effects) {
@@ -628,6 +639,11 @@ function validateEffects(
     // S23 (ADR-084): the eventDamage ref reads a damage event's payload — meaningless anywhere else.
     if (!opts.damageTrigger && JSON.stringify(e).includes('"ref":"eventDamage"')) {
       err(`eventDamage refs live only on DEALS_[COMBAT_]DAMAGE_TO_PLAYER triggers (S23)`);
+    }
+    // S25 (ADR-088): the xPaid ref reads the announced X off the entering permanent — meaningless
+    // anywhere but that permanent's own ETB trigger.
+    if (!opts.xTrigger && JSON.stringify(e).includes('"ref":"xPaid"')) {
+      err(`xPaid refs live only on the ENTERS_BATTLEFIELD trigger of a permanent with {X} in its cost (S25)`);
     }
     EFFECT_SHAPE[type](e, err);
     if (Number.isInteger(e.target) && ((e.target as number) < 0 || (e.target as number) >= nTargets)) {

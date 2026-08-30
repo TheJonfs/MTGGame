@@ -172,6 +172,12 @@ export function predictAction(
   }
   if (ability.cost.discardSelf && handEntry) next.hand = next.hand.filter((c) => c.objectId !== action.objectId); // cycling spends the card
   if (ability.cost.discard) next.hand.length = Math.max(0, next.hand.length - ability.cost.discard); // Bouncer: a card from hand
+  // S25 (the Witch): a life cost lands in the predicted view — the evaluator's life weight prices
+  // the blood; the pin-17 floor (costFloorBlocked) holds the cliff. Worth slightly more than raw
+  // life at low totals falls out naturally (the evaluator's race terms read the new total).
+  if (ability.cost.life) next.life[me] -= ability.cost.life;
+  // S25 (the Cleric): an exile-top cost thins the predicted library — DECKED-adjacent races read it.
+  if (ability.cost.exileTop) next.librarySizes[me] = Math.max(0, next.librarySizes[me] - ability.cost.exileTop);
   if (ability.cost.returnToHand) {
     // A10 word 2 (S22): the bounce cost — a land (the Unwinder) leaves play for the hand: real but
     // recoverable tempo. The activation-discipline pin decides WHEN; this prices the WHAT.
@@ -222,7 +228,7 @@ function applyEffect(
   // Value refs (ADR-028/A4): targetPower and counting refs aren't modelled — a count-ref amount
   // predicts as a small fixed number (Tendrils ≈ "some") rather than zero.
   const amt = (a: number | "X" | { ref: string }): number =>
-    typeof a === "number" ? a : a === "X" ? x : a.ref === "count" || a.ref === "graveyardCount" ? 3 : 0;
+    typeof a === "number" ? a : a === "X" ? x : a.ref === "xPaid" ? x : a.ref === "count" || a.ref === "graveyardCount" ? 3 : 0;
   const objAt = (i: number) => {
     const t = targets[i];
     return t?.kind === "object" ? view.battlefield.find((o) => o.id === t.id) : undefined;
@@ -230,6 +236,12 @@ function applyEffect(
 
   switch (e.type) {
     case "damage": {
+      // S25 (the Tyrant's recoil): a to:"you" rider charges our own life — a real cost, priced
+      // below the misuse penalty (it is the ability's fixed tax, not an aimable waste).
+      if (e.to === "you") {
+        view.life[me] -= amt(e.amount);
+        return -0.4 * amt(e.amount);
+      }
       if (e.target === undefined) {
         // A8 range fan-out (Drakuseth): value every chosen target from the remainder of the list.
         let v = 0;
@@ -367,10 +379,34 @@ function applyEffect(
       return 0;
     }
     case "addCounters": {
-      if (e.target === undefined) return 0.3 * e.count; // scope form (Aristocrat): modest team value
+      // S25: count may be a ref — xPaid predicts as the action's announced X (the Keeper's
+      // X-choice scores itself); other refs keep the small-fixed-number convention.
+      const count = typeof e.count === "number" ? e.count : e.count.ref === "xPaid" ? x : amt(e.count);
+      if (e.target === undefined) {
+        // S25 (the Keeper): the creaturesYouControl scope applies its delta to each matching
+        // own-side creature in the predicted view — the evaluator's material scoring then yields
+        // board-count × X naturally (the flat 0.3·count credit undervalued wide boards;
+        // Aristocrat included). Other scopes keep the old flat convention.
+        if (e.scope !== "creaturesYouControl") return 0.3 * count;
+        const delta = e.kind === "+1/+1" ? count : -count;
+        let applied = 0;
+        for (const o of [...view.battlefield]) {
+          if (o.controller !== me || o.power === null || o.toughness === null) continue;
+          const d = defs.get(o.cardId);
+          if (!d?.types.includes("Creature")) continue;
+          if ("subtype" in e && e.subtype && !(d.subtypes ?? []).includes(e.subtype)) continue;
+          o.power += delta;
+          o.toughness += delta;
+          applied++;
+          if (o.toughness <= 0) removeObject(view, o.id);
+        }
+        // The caster itself may not be on the predicted battlefield yet (cast valuation): keep a
+        // modest floor credit so an empty-board Keeper still prices its own future counters.
+        return applied === 0 ? 0.3 * count : 0;
+      }
       const o = objAt(e.target);
       if (o && o.power !== null && o.toughness !== null) {
-        const delta = e.kind === "+1/+1" ? e.count : -e.count;
+        const delta = e.kind === "+1/+1" ? count : -count;
         o.power += delta;
         o.toughness += delta;
         if (o.toughness <= 0) removeObject(view, o.id);
