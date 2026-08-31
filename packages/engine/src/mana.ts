@@ -176,6 +176,33 @@ export function canPay(
   return solvePayment(ctx, player, cost, x, excludeProducers) !== null;
 }
 
+/** S25 r3 (Chris: cancel mid-cast left the land tapped): the manual-tap TAKEBACK — reverse a
+ * tapForMana while its produced mana still floats. NOT a game event: no UNTAPPED emission (the
+ * Warden's law must not collect a takeback) and no trigger contact; it is the UI un-doing a
+ * non-stack convenience action, logged and replay-clean like any action. Legality: a tapped
+ * mana producer of yours, not a declared attacker, whose chosen ability's whole production is
+ * still in your pool. */
+export function untapForMana(ctx: EngineCtx, objectId: string, symbol?: ManaSymbol): void {
+  const obj = getObject(ctx.state, objectId);
+  if (!obj.tapped) throw new Error(`${obj.cardId} is not tapped`);
+  if (ctx.state.combat.attackers.includes(objectId)) throw new Error("a declared attacker cannot take back a tap");
+  const abilities = (ctx.defs.def(obj.cardId).abilities ?? []).filter((a) => isManaAbility(a) && !isChoiceManaAbility(a));
+  const ability = symbol === undefined
+    ? abilities[0]
+    : abilities.find((a) => a.kind === "activated" && a.effects.some((e) => e.type === "addMana" && !!e.mana && parseManaProduction(e.mana).some((m) => m.symbol === symbol))) ?? abilities[0];
+  if (!ability || ability.kind !== "activated" || !ability.cost.tap) throw new Error(`${obj.cardId} has no tap-cost mana ability to take back`);
+  const pool = ctx.state.players[obj.controller].manaPool;
+  const produced: ManaSymbol[] = [];
+  for (const e of ability.effects) if (e.type === "addMana" && e.mana) for (const sym of parseManaProduction(e.mana)) produced.push(sym.symbol);
+  const need: Partial<Record<ManaSymbol, number>> = {};
+  for (const sym of produced) need[sym] = (need[sym] ?? 0) + 1;
+  for (const [sym, n] of Object.entries(need)) {
+    if (pool[sym as ManaSymbol] < (n as number)) throw new Error(`the ${sym} this tap floated is already spent`);
+  }
+  for (const [sym, n] of Object.entries(need)) pool[sym as ManaSymbol] -= n as number;
+  obj.tapped = false;
+}
+
 /** Execute one mana ability of a permanent (non-stack action, CR 605).
  * S20: `symbol` picks WHICH plain mana ability on a multi-ability producer (duals carry two);
  * omitted = the first (every pre-S20 log replays unchanged). */

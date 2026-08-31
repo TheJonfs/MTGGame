@@ -15,6 +15,9 @@ export class RandomAgent implements Agent {
   }
 
   chooseAction(_view: GameView, request: ActionRequest): Promise<Action> {
-    return Promise.resolve(this.rng.pick(request.actions, "pick"));
+    // S25 r3: the manual-tap takeback is a human convenience — random play skips it (tap/untap
+    // churn would stretch games for nothing).
+    const actions = request.actions.filter((a) => a.type !== "untapForMana");
+    return Promise.resolve(this.rng.pick(actions.length ? actions : request.actions, "pick"));
   }
 }

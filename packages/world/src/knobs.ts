@@ -104,9 +104,14 @@ export const KNOBS = {
   }),
   // ---- S21 (overworld manifest §5): sieges ----
   siegeIntervalSteps: knob<Record<RegionTier, number>>({
-    default: { civilized: 600, approach: 450, wild: 300 },
+    default: { civilized: 750, approach: 560, wild: 375 },
     unit: "steps between threats, by the town's ring (0 = never)",
-    description: "S21 sieges (manifest §5): each town's seeded siege timer — a threat lands every ~interval steps (jittered ±25% per town/epoch). Deeper rings besiege harder. The world-sim siege table argues these baselines.",
+    description: "S21 sieges (manifest §5): each town's seeded siege timer — a threat lands every ~interval steps (jittered ±25% per town/epoch; a town's FIRST threat takes a wide U(0.25,1.75) phase so a ring's openers spread — S25 r3). S25 r3 (Chris: post-grace they came fast): +25% across the rings (600/450/300 → 750/560/375), with siegeMaxActive as the harder brake. The world-sim siege table argues these baselines.",
+  }),
+  siegeMaxActive: knob<number>({
+    default: 2,
+    unit: "simultaneous telegraphing threats (≤ 0 = uncapped)",
+    description: "S25 r3 (Chris): at most this many sieges IN PROGRESS (threatened, clock running) at once — easy/standard/hard = 1/2/3. A due threat under a full sky defers and re-knocks every 40 steps; a town falling (or being relieved) frees the slot. Occupations don't count — they are consequences, not sieges.",
   }),
   siegeWarningSteps: knob<number>({
     default: 60,
@@ -491,7 +496,8 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
       { steps: 90, addLife: 2 },
     ],
     roamerDensityPer100Cells: { civilized: 0.7, approach: 1.1, wild: 1.5 },
-    siegeIntervalSteps: { civilized: 900, approach: 675, wild: 450 },
+    siegeIntervalSteps: { civilized: 1125, approach: 845, wild: 560 }, // S25 r3: +25% with the standard shift (ratio held)
+    siegeMaxActive: 1, // S25 r3 (Chris): easy = one siege at a time
     siegeWarningSteps: 90,
     siegeGraceSteps: 500,
     innStepsPerLife: 5,
@@ -508,7 +514,8 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
       { steps: 90, addLife: 4, addToken: true, addCard: true },
     ],
     roamerDensityPer100Cells: { civilized: 1.4, approach: 2.0, wild: 2.6 },
-    siegeIntervalSteps: { civilized: 450, approach: 340, wild: 225 },
+    siegeIntervalSteps: { civilized: 560, approach: 420, wild: 280 }, // S25 r3: +25% (ratio held)
+    siegeMaxActive: 3, // S25 r3 (Chris): hard = three skies can burn
     siegeWarningSteps: 40,
     siegeGraceSteps: 200,
     innStepsPerLife: 12,

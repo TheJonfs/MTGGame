@@ -84,7 +84,18 @@ export function scheduleNextThreat(world: WorldState, knobs: KnobValues, town: T
   const interval = knobs.siegeIntervalSteps[townRing(world, town)];
   if (!interval || interval <= 0) return -1;
   const rng = rngFor(world, town.index, epoch, "schedule");
-  return baseStep + Math.max(1, Math.round(interval * (0.75 + rng.float() * 0.5)));
+  // S25 r3 (Chris: after the grace they came FAST): the FIRST threat of a town's history (epoch 0,
+  // scheduling from the grace) takes a wide phase — U(0.25, 1.75)×interval — so a ring's worth of
+  // first threats spreads across a whole interval instead of bunching into the ±25% band.
+  // Subsequent threats keep the tight cadence (the town has a rhythm once it has a history).
+  const first = epoch === 0 && baseStep === knobs.siegeGraceSteps;
+  const factor = first ? 0.25 + rng.float() * 1.5 : 0.75 + rng.float() * 0.5;
+  return baseStep + Math.max(1, Math.round(interval * factor));
+}
+
+/** S25 r3: sieges IN PROGRESS = telegraphing threats. Occupations are consequences, not sieges. */
+export function activeSiegeCount(world: WorldState): number {
+  return (world.sieges as SiegeEntry[]).filter((s) => s.status === "threatened").length;
 }
 
 /** The besieging party: ring-sized, drawn from the spoke's mage-class templates (tier ≤ 2),
@@ -128,6 +139,13 @@ export function siegesOnStep(world: WorldState, catalog: Catalog, knobs: KnobVal
     // and an occupation stands until liberated (existing consequences remain to be cleared).
     if (e.status === "quiet" && lordSealed(world, townColor(world, town))) continue;
     if (e.status === "quiet" && e.nextThreatStep >= 0 && steps >= e.nextThreatStep) {
+      // S25 r3 (Chris): the concurrency cap — at most siegeMaxActive threats telegraph at once
+      // (easy/standard/hard = 1/2/3). A due threat under a full sky DEFERS deterministically and
+      // knocks again in 40 steps; a fall or a relief is what frees the slot.
+      if (knobs.siegeMaxActive > 0 && activeSiegeCount(world) >= knobs.siegeMaxActive) {
+        e.nextThreatStep = steps + 40;
+        continue;
+      }
       e.status = "threatened";
       e.deadlineStep = steps + knobs.siegeWarningSteps;
       e.party = rollSiegeParty(world, catalog, knobs, town, e.epoch);

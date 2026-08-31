@@ -235,3 +235,30 @@ describe("S25 quarter-word B — controller-scoped permanents (the Sapphire Sage
     expect(tg.game.state.battlefield.filter((id) => getObject(tg.game.state, id).cardId === "island")).toHaveLength(5);
   });
 });
+
+describe("S25 r3 — the manual-tap takeback (untapForMana)", () => {
+  it("a stranded tap can be taken back while its mana floats; spent mana refuses; the window offers it beside real actions", async () => {
+    const spec: FixtureSpec = {
+      name: "tap-takeback",
+      setup: { players: [{ battlefield: ["forest", "forest"], hand: ["giant_growth", "grizzly_bears"] }, { battlefield: ["grizzly_bears"] }] },
+    };
+    const tg = await runFixture(spec);
+    const ctx = tg.game.ctx;
+    const forest = tg.game.state.battlefield.find((id) => getObject(tg.game.state, id).cardId === "forest")!;
+    const { tapForMana, untapForMana } = await import("../src/mana.js");
+    tapForMana(ctx, forest);
+    expect(getObject(tg.game.state, forest).tapped).toBe(true);
+    expect(tg.game.state.players[0].manaPool.G).toBe(1);
+    // The takeback is enumerated (a castable Growth keeps the window a real request).
+    const offered = legalActions(ctx, 0).filter((a) => a.type === "untapForMana");
+    expect(offered).toHaveLength(1);
+    untapForMana(ctx, forest);
+    expect(getObject(tg.game.state, forest).tapped).toBe(false);
+    expect(tg.game.state.players[0].manaPool.G).toBe(0);
+    // Spent mana refuses: tap, drain the pool, no takeback.
+    tapForMana(ctx, forest);
+    tg.game.state.players[0].manaPool.G = 0;
+    expect(() => untapForMana(ctx, forest)).toThrow(/already spent/);
+    expect(legalActions(ctx, 0).filter((a) => a.type === "untapForMana")).toHaveLength(0);
+  });
+});

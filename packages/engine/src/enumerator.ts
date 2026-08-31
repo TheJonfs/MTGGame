@@ -1,4 +1,4 @@
-import { isManaAbility, parseManaCost, type ActivatedAbilityDef, type CardDef, type ManaCost, isChoiceManaAbility, MANA_COLORS } from "@shandalar/cards";
+import { isManaAbility, parseManaCost, parseManaProduction, type ActivatedAbilityDef, type CardDef, type ManaCost, isChoiceManaAbility, MANA_COLORS } from "@shandalar/cards";
 import { evaluateValueRef } from "./effect-context.js";
 import type { Action } from "./actions.js";
 import { canBlock, eligibleAttackers, eligibleBlockers, menaceViolations } from "./combat.js";
@@ -124,6 +124,39 @@ export function legalActions(ctx: EngineCtx, player: PlayerId): Action[] {
     const syms = [...new Set(producibleSymbols(ctx, id))];
     if (syms.length === 1) actions.push({ type: "tapForMana", objectId: id });
     else for (const color of syms) actions.push({ type: "tapForMana", objectId: id, color });
+  }
+
+  // S25 r3 (Chris: cancel mid-cast stranded the tap): the manual-tap TAKEBACK — a tapped mana
+  // producer of yours whose chosen ability's whole production still floats may untap, returning
+  // that mana. Declared attackers never (their tap is combat, not mana). Agents filter these
+  // out (a takeback is a human convenience; the AI's auto-pay never needs one).
+  // REPLAY GUARD: takebacks only join windows that were ALREADY requests (pass + something) —
+  // adding them to a lone-pass window would turn ADR-014's silent auto-take into a logged
+  // request and desync every pre-S25 saved replay that crossed one. The lost corner (an
+  // undo-only window) had nothing to spend the untapped land on anyway.
+  if (actions.length > 1) for (const id of state.battlefield) {
+    const obj = getObject(state, id);
+    if (obj.controller !== player || !obj.tapped) continue;
+    if (state.combat.attackers.includes(id)) continue;
+    const pool = state.players[player].manaPool;
+    const offered = new Set<string>();
+    for (const ability of ctx.defs.def(obj.cardId).abilities ?? []) {
+      if (!isManaAbility(ability) || isChoiceManaAbility(ability) || ability.kind !== "activated" || !ability.cost.tap) continue;
+      const produced: Record<string, number> = {};
+      let firstSym: string | null = null;
+      for (const e of ability.effects) {
+        if (e.type !== "addMana" || !e.mana) continue;
+        for (const sym of parseManaProduction(e.mana)) {
+          produced[sym.symbol] = (produced[sym.symbol] ?? 0) + 1;
+          firstSym ??= sym.symbol;
+        }
+      }
+      if (firstSym === null) continue;
+      if (Object.entries(produced).some(([sym, n]) => pool[sym as keyof typeof pool] < n)) continue; // spent — no takeback
+      if (offered.has(firstSym)) continue;
+      offered.add(firstSym);
+      actions.push({ type: "untapForMana", objectId: id, ...(offered.size > 1 || (ctx.defs.def(obj.cardId).abilities ?? []).filter((a) => isManaAbility(a) && !isChoiceManaAbility(a)).length > 1 ? { color: firstSym as "W" | "U" | "B" | "R" | "G" | "C" } : {}) });
+    }
   }
 
   // Non-mana activated abilities (no S1 card has one; the path exists for equip).

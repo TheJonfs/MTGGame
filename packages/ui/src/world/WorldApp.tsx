@@ -1295,23 +1295,6 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
             </div>
           ))}
           {c.activeQuests().length === 0 && <div style={{ fontSize: 11, color: "var(--ink-soft)" }}>none — town boards post them</div>}
-          {c.world && c.world.manalinks.length > 0 && (() => {
-            // S25 r2 note 2: the colour-only line masked the KINDS — three "B"s could be one
-            // Swamp-in-play and two +1-max-life links. Say what each one does, and whether its
-            // town currently holds it hostage (suspension law).
-            const occupied = new Set((w.sieges as { townIndex: number; status?: string }[]).filter((s) => s.status === "occupied").map((s) => s.townIndex));
-            const LAND: Record<string, string> = { W: "Plains", U: "Island", B: "Swamp", R: "Mountain", G: "Forest" };
-            return (
-              <div style={{ fontSize: 11.5, marginTop: 4 }}>
-                <b>Manalinks:</b>{" "}
-                {c.world!.manalinks.map((m, i) => {
-                  const dark = occupied.has(m.town);
-                  const label = (m.kind ?? "basic") === "life" ? `${m.color} +1 max life` : `${m.color} ${LAND[m.color]} in play`;
-                  return <span key={i}><span style={dark ? { textDecoration: "line-through", color: "var(--danger)" } : {}} title={`granted by ${w.map.towns[m.town]?.name ?? "a town"}${dark ? " — OCCUPIED: suspended until liberated" : ""}`}>{label}</span>{i < c.world!.manalinks.length - 1 ? " · " : ""}</span>;
-                })}
-              </div>
-            );
-          })()}
         </RailPanel>
         {(() => {
           // S21 Part 4 → S22 r1: the heard-rumors journal is its own FOLDING panel now — the
@@ -1342,6 +1325,34 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
             ))}
           </RailPanel>
         )}
+        {/* S25 r3 note 1 (Chris): manalinks get their own panel — each link names its kind, its
+            granting town (the stake a siege there threatens), and its suspension state. */}
+        {w.manalinks.length > 0 && (() => {
+          const occupied = new Set((w.sieges as { townIndex: number; status?: string }[]).filter((s) => s.status === "occupied").map((s) => s.townIndex));
+          const threatened = new Set((w.sieges as { townIndex: number; status?: string }[]).filter((s) => s.status === "threatened").map((s) => s.townIndex));
+          const LAND: Record<string, string> = { W: "Plains", U: "Island", B: "Swamp", R: "Mountain", G: "Forest" };
+          const darkCount = w.manalinks.filter((m) => occupied.has(m.town)).length;
+          return (
+            <RailPanel title="Manalinks" badge={darkCount ? `${w.manalinks.length - darkCount}/${w.manalinks.length}` : w.manalinks.length}>
+              {w.manalinks.map((m, i) => {
+                const town = w.map.towns[m.town];
+                const dark = occupied.has(m.town);
+                const hot = threatened.has(m.town);
+                return (
+                  <div key={i} style={{ fontSize: 12, display: "flex", justifyContent: "space-between", cursor: screen.kind === "map" && town ? "pointer" : "default" }} title="click to preview the path to its town" onClick={() => town && c.clickCell(town.at)}>
+                    <span style={dark ? { textDecoration: "line-through", color: "var(--danger)" } : {}}>
+                      <i className={`colour-pip c-${m.color}`} title={m.color} /> {(m.kind ?? "basic") === "life" ? "+1 max life" : `${LAND[m.color]} in play`}
+                    </span>
+                    <span style={{ color: dark || hot ? "var(--danger)" : "var(--ink-soft)", fontWeight: dark ? 700 : 400 }}>
+                      {town?.name ?? "a town"}{dark ? " · OCCUPIED" : hot ? " · besieged!" : ""}
+                    </span>
+                  </div>
+                );
+              })}
+              <div style={{ fontSize: 10.5, color: "var(--ink-soft)", marginTop: 4 }}>Town-tied: an occupied town's link goes dark until liberated. Basics start every duel in play; life links raise your maximum.</div>
+            </RailPanel>
+          );
+        })()}
         <PowersRailPanel c={c} />
         {c.lordStatusRows().length > 0 && (
           <RailPanel title="The five lords" badge={`${c.lordStatusRows().filter((r) => r.sealed).length}/5 seals`}>

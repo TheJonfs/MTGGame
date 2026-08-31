@@ -476,7 +476,7 @@ export class HeuristicAgent implements Agent {
   }
 
   private priorityChoice(view: GameView, request: ActionRequest): Action {
-    const candidates = request.actions.filter((a) => a.type !== "tapForMana");
+    const candidates = request.actions.filter((a) => a.type !== "tapForMana" && a.type !== "untapForMana"); // S25 r3: takebacks are human conveniences
     if (candidates.length === 1) return candidates[0]!;
     const scores = candidates.map((a) => this.scorePriorityAction(view, a));
     return candidates[this.softmaxPick(scores)]!;

@@ -18,6 +18,8 @@ export type Action =
   | { type: "activateAbility"; objectId: string; abilityIndex: number; targets: ResolvedTarget[]; x?: number; color?: "W" | "U" | "B" | "R" | "G" }
   /** `color` (S20, ADR-004 second amendment): which symbol a multi-ability producer (dual) taps for; absent = its first ability (pre-S20 logs replay unchanged). */
   | { type: "tapForMana"; objectId: string; color?: "W" | "U" | "B" | "R" | "G" | "C" }
+  /** S25 r3: the manual-tap TAKEBACK — reverse a tapForMana while its mana still floats (UI convenience; agents never take it). */
+  | { type: "untapForMana"; objectId: string; color?: "W" | "U" | "B" | "R" | "G" | "C" }
   | { type: "declareAttacker"; objectId: string }
   | { type: "doneDeclaringAttackers" }
   | { type: "declareBlocker"; blocker: string; attacker: string }

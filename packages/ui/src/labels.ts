@@ -34,6 +34,7 @@ export function actionLabel(state: GameState, pool: Map<string, CardDef>, a: Act
     case "castSpell": return `Cast ${name(a.objectId)}${a.x !== undefined ? ` (X=${a.x})` : ""}${a.mode !== undefined ? ` [mode ${a.mode + 1}]` : ""}${targets(a.targets)}`;
     case "activateAbility": return `Activate ${name(a.objectId)}${a.x !== undefined ? ` (X=${a.x})` : ""}${targets(a.targets)}`;
     case "tapForMana": return `Tap ${name(a.objectId)} for mana`;
+    case "untapForMana": return `Take back the tap of ${name(a.objectId)}`;
     case "declareAttacker": return `Attack with ${name(a.objectId)}`;
     case "doneDeclaringAttackers": return "Done declaring attackers";
     case "declareBlocker": return `Block ${name(a.attacker)} with ${name(a.blocker)}`;

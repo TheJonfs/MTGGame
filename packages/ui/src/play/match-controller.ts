@@ -673,7 +673,13 @@ export class MatchController {
   }
 
   private tapLand(objectId: string): void {
-    if (this.phase.kind !== "manualTap" || !this.phase.tappable.has(objectId)) return;
+    if (this.phase.kind !== "manualTap") return;
+    // S25 r3: clicking an already-tapped producer whose float is intact TAKES THE TAP BACK
+    // (untapForMana) — the next request re-enters manual tapping like any tap does.
+    if (!this.phase.tappable.has(objectId)) {
+      this.tryUntap(objectId);
+      return;
+    }
     const taps = this.currentRequest().actions.filter((a) => a.type === "tapForMana" && a.objectId === objectId);
     if (taps.length === 0) return;
     // S20: a dual offers one tap per color — a small chooser interrupts (the manual-tap phase resumes after).
@@ -875,7 +881,24 @@ export class MatchController {
     }
     if (this.phase.kind !== "priority") return;
     const variants = this.phase.activatable.get(objectId);
-    if (variants && variants.length > 0) this.beginCast(objectId, variants);
+    if (variants && variants.length > 0) {
+      this.beginCast(objectId, variants);
+      return;
+    }
+    // S25 r3 (Chris: cancel mid-cast stranded the tap): clicking the tapped land takes the tap
+    // back whenever the engine offers it (its floated mana still unspent).
+    this.tryUntap(objectId);
+  }
+
+  /** S25 r3: submit the takeback for this object if the current request offers one. */
+  private tryUntap(objectId: string): void {
+    const cur = this.human.current();
+    if (!cur) return;
+    const untaps = cur.request.actions.filter((a) => a.type === "untapForMana" && a.objectId === objectId);
+    if (untaps.length === 0) return;
+    this.phase = { kind: "waiting" };
+    this.human.submit(untaps[0]!); // duals: the engine returns exactly what that tap floated per symbol; first offer is the click's pick
+    this.emit();
   }
 
   clickPlayer(player: PlayerId): void {

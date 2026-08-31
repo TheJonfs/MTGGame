@@ -16,7 +16,7 @@ import { expireEndOfTurnEffects } from "./characteristics.js";
 import { makeEffectContext } from "./effect-context.js";
 import { attackerChoices, blockerChoices, bottomChoices, discardChoices, effectiveAbilityCost, legalActions } from "./enumerator.js";
 import type { GameEventMap } from "./events.js";
-import { autoPay, canPay, emptyManaPools, tapForMana } from "./mana.js";
+import { autoPay, canPay, emptyManaPools, tapForMana, untapForMana } from "./mana.js";
 import { applyModifiers, type Modifier } from "./modifiers.js";
 import { loseLife, discardCard, drawCard } from "./ops.js";
 import { runSBAs } from "./sba.js";
@@ -589,6 +589,11 @@ export class Game {
       }
       case "tapForMana": {
         tapForMana(this.ctx, action.objectId, action.color);
+        break;
+      }
+      case "untapForMana": {
+        // S25 r3: the takeback — logged and replay-clean; no events fire (see mana.ts).
+        untapForMana(this.ctx, action.objectId, action.color);
         break;
       }
       case "activateAbility": {

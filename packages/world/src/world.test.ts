@@ -939,6 +939,7 @@ describe("S21 Part 2 (sieges, scripted acceptance): timers, telegraph, the fall,
       siegeWarningSteps: 3,
       siegePartySize: { civilized: 2, approach: 2, wild: 2 },
       siegeGraceSteps: 0, // S22 r3: the opening grace is off for the fast-clock scripts (tested on its own below)
+      siegeMaxActive: 0, // S25 r3: the concurrency cap is off here too — these scripts test PER-TOWN timers (the cap has its own test)
     },
   } as const;
 
@@ -962,8 +963,9 @@ describe("S21 Part 2 (sieges, scripted acceptance): timers, telegraph, the fall,
     // The schedule is deterministic and jittered within ±25% of the interval.
     const t0 = scheduleNextThreat(w, knobs, town, 0, 0);
     expect(t0).toBe(scheduleNextThreat(w, knobs, town, 0, 0));
-    expect(t0).toBeGreaterThanOrEqual(Math.floor(5 * 0.75));
-    expect(t0).toBeLessThanOrEqual(Math.ceil(5 * 1.25) + 1);
+    // S25 r3: a town's FIRST threat takes the wide U(0.25, 1.75) phase (the spread ruling).
+    expect(t0).toBeGreaterThanOrEqual(Math.max(1, Math.floor(5 * 0.25)));
+    expect(t0).toBeLessThanOrEqual(Math.ceil(5 * 1.75) + 1);
     expect(rollSiegeParty(w, catalog, knobs, town, 0)).toEqual(rollSiegeParty(w, catalog, knobs, town, 0));
     const events = await tickTo(w, 30);
     const threat = events.find((e) => e.type === "siegeThreatened" && e.townIndex === town.index);
@@ -1056,7 +1058,7 @@ describe("S21 Part 2 (sieges, scripted acceptance): timers, telegraph, the fall,
     const knobs = worldKnobs(w, GRACED);
     for (const town of w.map.towns) {
       const e = siegeEntry(w, knobs, town);
-      expect(e.nextThreatStep).toBeGreaterThanOrEqual(40 + Math.floor(5 * 0.75)); // grace + the jittered interval's floor
+      expect(e.nextThreatStep).toBeGreaterThanOrEqual(40 + 1); // grace + the wide first-phase floor (S25 r3: U(0.25,1.75))
       expect(e.nextThreatStep).toBe(scheduleNextThreat(w, knobs, town, 0, knobs.siegeGraceSteps)); // deterministic
     }
   });
@@ -2147,5 +2149,51 @@ describe("S25 playtest r2 — interior and siege fights reach Recent Battles (Ch
     // …and without the option, older callers record nothing (unchanged behavior).
     applyInteriorDuel(w, knobs, run, result as never, undefined, catalog);
     expect(w.duels).toHaveLength(before + 1);
+  });
+});
+
+describe("S25 playtest r3 — the siege clock reshaped (spread + concurrency cap)", () => {
+  it("first threats PHASE-SPREAD across a wide band; later epochs keep the tight cadence", async () => {
+    const { scheduleNextThreat } = await import("./siege.js");
+    const w = newWorld({ seed: 44, catalog, starter: "green" });
+    const knobs = worldKnobs(w);
+    const grace = knobs.siegeGraceSteps;
+    let sawOutsideTightBand = 0;
+    for (const t of w.map.towns) {
+      const interval = knobs.siegeIntervalSteps[w.map.regions[t.region]!.tier];
+      if (!interval) continue;
+      const first = scheduleNextThreat(w, knobs, t, 0, grace);
+      const offset = first - grace;
+      expect(offset).toBeGreaterThanOrEqual(Math.round(interval * 0.25));
+      expect(offset).toBeLessThanOrEqual(Math.round(interval * 1.75));
+      if (offset < interval * 0.75 || offset > interval * 1.25) sawOutsideTightBand += 1;
+      // Epoch 1 (a town with a history): the tight ±25% cadence.
+      const later = scheduleNextThreat(w, knobs, t, 1, 1000);
+      expect(later - 1000).toBeGreaterThanOrEqual(Math.round(interval * 0.75));
+      expect(later - 1000).toBeLessThanOrEqual(Math.round(interval * 1.25));
+    }
+    expect(sawOutsideTightBand).toBeGreaterThan(0); // the spread actually spreads (seeded, deterministic)
+  });
+
+  it("the concurrency cap: a due threat under a full sky defers (+40 re-knock); a fall frees the slot", async () => {
+    const { siegesOnStep, siegeEntry } = await import("./siege.js");
+    const w = newWorld({ seed: 45, catalog, starter: "green" });
+    const knobs = worldKnobs(w); // standard: siegeMaxActive 2
+    expect(knobs.siegeMaxActive).toBe(2);
+    const towns = w.map.towns.slice(0, 3);
+    for (const t of towns) siegeEntry(w, knobs, t).nextThreatStep = 1;
+    w.player.stepsTaken = 5;
+    siegesOnStep(w, catalog, knobs);
+    const statuses = towns.map((t) => siegeEntry(w, knobs, t).status);
+    expect(statuses.filter((x) => x === "threatened")).toHaveLength(2);
+    const deferred = towns.find((t) => siegeEntry(w, knobs, t).status === "quiet")!;
+    expect(siegeEntry(w, knobs, deferred).nextThreatStep).toBe(45); // steps + 40
+    // One falls → the slot frees → the deferred threat lands at its re-knock.
+    const fallen = towns.find((t) => siegeEntry(w, knobs, t).status === "threatened")!;
+    siegeEntry(w, knobs, fallen).deadlineStep = 5;
+    w.player.stepsTaken = 46;
+    siegesOnStep(w, catalog, knobs);
+    expect(siegeEntry(w, knobs, fallen).status).toBe("occupied");
+    expect(siegeEntry(w, knobs, deferred).status).toBe("threatened");
   });
 });
