@@ -1436,10 +1436,12 @@ describe("S19 Part 3+5 (quests, scripted acceptance): offers, courier, card-cour
       const pointer = lines.find(isPointer);
       expect(pointer).toBeTruthy(); // one pour names a posting town
       expect(posts.some((p) => pointer!.includes(p.name))).toBe(true); // and it IS a posting town
-      // Cap every colour AND the life kind (S24): the pointer goes quiet (nothing left to win).
+      // S25 r2 (Chris): life manalinks are UNCAPPED by default (lifeManalinkCap ≤ 0) — so capping
+      // every BASIC colour no longer mutes the pointer: a life link is always still winnable.
       for (const c of ["W", "U", "B", "R", "G"] as const) for (let i = 0; i < knobs.manalinkCapPerColor; i++) w.manalinks.push({ color: c, town: 0, kind: "basic" });
-      for (let i = 0; i < knobs.lifeManalinkCap; i++) w.manalinks.push({ color: "W", town: 0, kind: "life" });
-      expect(tavernRumors(w, catalog, here, pool.cards).find(isPointer)).toBeUndefined();
+      for (let i = 0; i < 7; i++) w.manalinks.push({ color: "W", town: 0, kind: "life" }); // seven held — no ceiling
+      expect(knobs.lifeManalinkCap).toBeLessThanOrEqual(0); // the uncap ruling, pinned
+      expect(tavernRumors(w, catalog, here, pool.cards).find(isPointer)).toBeTruthy();
       return;
     }
     throw new Error("no seed produced a manalink post");
@@ -2125,4 +2127,25 @@ describe("S22b strongholds: entry, generation, the partisan law, the entrance, t
     expect(result.reason).toBeTruthy(); // it terminates cleanly under the law, the entrance, and the tri-colour deck
     expect(result.log.some((e) => e.t === "RNG" && (e as { purpose?: string }).purpose === "entrance") || result.turns >= 0).toBe(true);
   }, 120_000);
+});
+
+describe("S25 playtest r2 — interior and siege fights reach Recent Battles (Chris: the Usher fight vanished)", () => {
+  it("applyInteriorDuel with the record option pushes a DuelRecord (enemy name carried; saved game attached)", async () => {
+    const { generateDungeonRun, applyInteriorDuel } = await import("./dungeon.js");
+    const w = newWorld({ seed: 31, catalog, starter: "black" });
+    const knobs = worldKnobs(w);
+    const run = generateDungeonRun(w, catalog, knobs, pool.cards, { dungeonId: "charnel_court", kind: "stronghold", color: "B", enteredFrom: { x: 1, y: 1 } });
+    const spec = { seed: 9, players: [{ name: "You", decklist: [], agent: "human" }, { name: "The Usher", decklist: [], agent: "heuristic:master" }], rules: { startingLife: 10, handSize: 7, mulligan: "london" as const, maxTurns: 100 }, modifiers: [] };
+    const result = { winner: 1 as const, reason: "LIFE" as const, turns: 9, finalLife: [0, 12] as [number, number], facts: { ante: [["swamp"], []] as [string[], string[]] }, log: [] };
+    const before = w.duels.length;
+    applyInteriorDuel(w, knobs, run, result as never, undefined, catalog, { seed: 9, spec: spec as never, enemyName: "The Usher" });
+    expect(w.duels).toHaveLength(before + 1);
+    const rec = w.duels[w.duels.length - 1]!;
+    expect(rec.enemyName).toBe("The Usher");
+    expect(rec.outcome).toBe("loss");
+    expect((rec.saved as { format: string }).format).toBe("shandalar-log-v1");
+    // …and without the option, older callers record nothing (unchanged behavior).
+    applyInteriorDuel(w, knobs, run, result as never, undefined, catalog);
+    expect(w.duels).toHaveLength(before + 1);
+  });
 });

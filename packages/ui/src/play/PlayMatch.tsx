@@ -237,6 +237,7 @@ function StopsFlyout({ c }: { c: MatchController }) {
               onChange={(e) => {
                 c.aiDelayMs = Number(e.target.value);
                 localStorage.setItem(DELAY_KEY, e.target.value);
+                force((n) => n + 1); // S25 r2 note 1: without this the controlled select snapped back
               }}
             >
               {[0, 200, 400, 800].map((ms) => <option key={ms} value={ms}>{ms}ms</option>)}

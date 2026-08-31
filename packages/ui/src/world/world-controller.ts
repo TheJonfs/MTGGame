@@ -1,5 +1,5 @@
 import type { CardDef } from "@shandalar/cards";
-import type { MatchResult } from "@shandalar/engine";
+import type { MatchResult, MatchSpec } from "@shandalar/engine";
 import {
   activeDeck,
   addCopy,
@@ -145,8 +145,16 @@ export class WorldController {
   stepMs = 140;
   /** Test hook: extra knob layers (e.g. force encounters). Never set by the UI. */
   extraKnobs: Partial<Record<"region" | "dungeon" | "opponent" | "event", KnobSource>> = {};
-  /** Play-client pacing for duels. */
+  /** Play-client pacing for duels (the fallback; the live read prefers stored). */
   aiDelayMs = 400;
+
+  /** S25 r2 note 1: the in-duel flyout writes the delay to storage — read it FRESH per duel, so a
+   * change made mid-session reaches the next fight (the old mount-time copy went stale). Tests
+   * (storage: null) keep the field as their hook. */
+  private aiDelay(): number {
+    const raw = this.storage?.getItem("shandalar-ai-delay");
+    return raw !== null && raw !== undefined ? Number(raw) : this.aiDelayMs;
+  }
   private listeners = new Set<() => void>();
   private walkToken = 0;
   private lastTown: Town | null = null;
@@ -629,15 +637,22 @@ export class WorldController {
   }
 
   /** Active quests with presentation helpers (the rail panel reads this). */
-  activeQuests(): { quest: ActiveQuest; stepsLeft: number | null; destName: string | null; targetName: string | null }[] {
+  activeQuests(): { quest: ActiveQuest; stepsLeft: number | null; destName: string | null; targetName: string | null; targetRegion: string | null }[] {
     if (!this.world) return [];
     const w = this.world;
-    return w.quests.active.map((q) => ({
-      quest: q,
-      stepsLeft: q.deadlineStep !== undefined ? Math.max(0, q.deadlineStep - w.player.stepsTaken) : null,
-      destName: q.toTown !== undefined ? w.map.towns.find((t) => t.index === q.toTown)?.name ?? null : null,
-      targetName: q.bountyCatalogId ? this.catalog.opponents.find((o) => o.id === q.bountyCatalogId)?.name ?? null : null,
-    }));
+    return w.quests.active.map((q) => {
+      // S25 r2 note 4 (Chris: sparse details): a bounty names its mark's REGION — from the live
+      // roamer when it still walks, else from where it was last sighted.
+      const inst = q.bountyOpponentId ? w.opponents.find((o) => o.id === q.bountyOpponentId) : undefined;
+      const regionIdx = inst?.region ?? (q.bountySeenAt ? regionAt(w.map, q.bountySeenAt).index : undefined);
+      return {
+        quest: q,
+        stepsLeft: q.deadlineStep !== undefined ? Math.max(0, q.deadlineStep - w.player.stepsTaken) : null,
+        destName: q.toTown !== undefined ? w.map.towns.find((t) => t.index === q.toTown)?.name ?? null : null,
+        targetName: q.bountyCatalogId ? this.catalog.opponents.find((o) => o.id === q.bountyCatalogId)?.name ?? null : null,
+        targetRegion: regionIdx !== undefined ? w.map.regions[regionIdx]?.name ?? null : null,
+      };
+    });
   }
 
   buy(item: ShopItem, toDeck = false): void {
@@ -942,7 +957,7 @@ export class WorldController {
     const match = new MatchController(this.pool, {
       humanSeat: 0,
       seed: duel.seed,
-      aiDelayMs: this.aiDelayMs,
+      aiDelayMs: this.aiDelay(),
       custom: {
         human: { name: this.world.player.name, decklist: duel.spec.players[0].decklist },
         enemy: { name: tmpl.name, decklist: duel.spec.players[1].decklist, difficulty: tmpl.difficulty, archetype: duel.enemy.archetype, portrait: tmpl.portrait },
@@ -1162,7 +1177,7 @@ export class WorldController {
     const match = new MatchController(this.pool, {
       humanSeat: 0,
       seed: spec.seed,
-      aiDelayMs: this.aiDelayMs,
+      aiDelayMs: this.aiDelay(),
       custom: {
         human: { name: this.world.player.name, decklist: spec.players[0].decklist },
         enemy: { name: enemyName, decklist: spec.players[1].decklist, difficulty: (spec.players[1].agent.split(":")[1] ?? "journeyman") as "apprentice" | "journeyman" | "master", archetype: enemy.kind === "minion" ? "midrange" : enemy.archetype, ...(portrait ? { portrait } : {}) },
@@ -1172,13 +1187,16 @@ export class WorldController {
     });
     this.screen = { kind: "dungeonDuel", enemyName, match, against };
     this.emit();
-    void match.start().then((result) => this.finishInteriorDuel(against, result));
+    // S25 playtest r2 (Chris: the Usher fight never reached Recent Battles): interior fights
+    // record like overworld ones — the spec rides to the finisher for the saved-game payload.
+    const rec = { seed: spec.seed, spec, enemyName, ...(enemy.kind === "minion" ? { catalogId: enemy.tmpl.id } : {}) };
+    void match.start().then((result) => this.finishInteriorDuel(against, result, rec));
   }
 
-  private finishInteriorDuel(against: { minionId?: string; guardian?: boolean }, result: MatchResult): void {
+  private finishInteriorDuel(against: { minionId?: string; guardian?: boolean }, result: MatchResult, rec?: { seed: number; spec: MatchSpec; enemyName: string; catalogId?: string }): void {
     if (!this.world) return;
     const run = this.world.activeDungeon!;
-    const out = applyInteriorDuel(this.world, this.knobs, run, result, against.minionId, this.catalog);
+    const out = applyInteriorDuel(this.world, this.knobs, run, result, against.minionId, this.catalog, rec);
     if (out.type === "loss") {
       // §4: forfeit + reset + the normal loss consequences (already applied) + ejection.
       resetDungeon(this.world, run);
@@ -1418,7 +1436,7 @@ export class WorldController {
     const match = new MatchController(this.pool, {
       humanSeat: 0,
       seed: spec.seed,
-      aiDelayMs: this.aiDelayMs,
+      aiDelayMs: this.aiDelay(),
       custom: {
         human: { name: this.world.player.name, decklist: spec.players[0].decklist },
         enemy: {
@@ -1433,14 +1451,14 @@ export class WorldController {
     });
     this.screen = { kind: "siegeDuel", enemyName: tmpl.name, match, townIndex };
     this.emit();
-    void match.start().then((result) => this.finishSiegeDuel(townIndex, result));
+    void match.start().then((result) => this.finishSiegeDuel(townIndex, result, { seed: spec.seed, spec }));
   }
 
-  private finishSiegeDuel(townIndex: number, result: MatchResult): void {
+  private finishSiegeDuel(townIndex: number, result: MatchResult, rec?: { seed: number; spec: MatchSpec }): void {
     if (!this.world) return;
     const entry = siegeFor(this.world, townIndex)!;
     const town = this.world.map.towns[townIndex]!;
-    const out = applySiegeDuel(this.world, this.catalog, this.knobs, entry, town, result);
+    const out = applySiegeDuel(this.world, this.catalog, this.knobs, entry, town, result, rec);
     this.autosave(); // every fight is a consequence
     if (out.type === "fightWon") {
       this.screen = {

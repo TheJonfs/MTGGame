@@ -68,6 +68,9 @@ export interface DuelRecord {
   seed: number;
   opponentId: string;
   catalogId: string;
+  /** S25 playtest r2: interior/siege fights record too — guardians and lords aren't catalog
+   * opponents, so the display name rides the record (the rail prefers catalog, then this). */
+  enemyName?: string;
   outcome: "win" | "loss" | "draw";
   anteWon: string[];
   anteLost: string[];

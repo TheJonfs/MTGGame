@@ -29,7 +29,7 @@ import { activeDeck, clampWorldLife, type WorldState } from "./state.js";
 // journey.ts (the engagement consequences reuse the one ante/collection/renown entry point —
 // the S17 "one discard entry point" lesson applied to world consequences). The ESM cycle is
 // deliberate and safe: every cross-call happens at call time, never at module init.
-import { creditRenown, deckLegal, forfeitCards, addToCollection } from "./journey.js";
+import { creditRenown, deckLegal, forfeitCards, addToCollection, recordDuel } from "./journey.js";
 import { creditSpokeKill, lordSealed } from "./stronghold.js";
 
 // ---------- State (lives in the reserved `sieges` array — no save bump) ----------
@@ -225,9 +225,21 @@ export function applySiegeDuel(
   entry: SiegeEntry,
   town: Town,
   result: MatchResult,
+  /** S25 playtest r2: siege fights reach Recent Battles too (same gap as interiors). */
+  record?: { seed: number; spec: MatchSpec },
 ): SiegeDuelOutcome {
   const eng = entry.engagement;
   if (!eng) throw new Error("no engagement in progress");
+  if (record && eng.remaining[0]) {
+    const catalogId = eng.remaining[0];
+    recordDuel(world, record.seed, record.spec, result, {
+      opponentId: catalogId,
+      catalogId,
+      outcome: result.winner === 0 ? "win" : result.winner === 1 ? "loss" : "draw",
+      anteWon: result.winner === 0 ? [...result.facts.ante[1]] : [],
+      anteLost: result.winner === 1 ? [...result.facts.ante[0]] : [],
+    });
+  }
   if (result.winner === 0) {
     const tmpl = catalog.opponents.find((o) => o.id === eng.remaining[0])!;
     eng.remaining.shift();

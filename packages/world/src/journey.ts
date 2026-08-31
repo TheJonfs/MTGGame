@@ -508,6 +508,36 @@ export function parley(world: WorldState, catalog: Catalog, enc: Encounter, choi
   }
 }
 
+/** S25 playtest r2 (Chris: the Usher fight never reached Recent Battles) — ONE entry point for
+ * recording any fought duel: overworld encounters, interior floors and guardians, siege parties.
+ * Every record carries the full saved game (the replay button's food). */
+export function recordDuel(
+  world: WorldState,
+  seed: number,
+  spec: MatchSpec,
+  result: MatchResult,
+  opts: { opponentId: string; catalogId: string; outcome: DuelRecord["outcome"]; anteWon: string[]; anteLost: string[]; enemyName?: string },
+): DuelRecord {
+  const record: DuelRecord = {
+    index: world.duels.length,
+    seed,
+    opponentId: opts.opponentId,
+    catalogId: opts.catalogId,
+    ...(opts.enemyName ? { enemyName: opts.enemyName } : {}),
+    outcome: opts.outcome,
+    anteWon: opts.anteWon,
+    anteLost: opts.anteLost,
+    saved: {
+      format: "shandalar-log-v1",
+      spec,
+      result: { winner: result.winner, reason: result.reason, turns: result.turns, finalLife: result.finalLife },
+      log: result.log,
+    },
+  };
+  world.duels.push(record);
+  return record;
+}
+
 /** Build the MatchSpec from world state (ADR-002 consumed from the world side).
  * S25 (ADR-088): `enemyLifeDelta` is the Barrage's one-shot hook — a negative delta on the
  * enemy's starting life, floored at 1 (red always leaves a fight standing). The dungeon-law
@@ -577,22 +607,13 @@ export function applyDuelResult(world: WorldState, catalog: Catalog, duel: Prepa
     outcome = "draw"; // stakes return to both sides
     if (inst) removeOpponent(world, inst.id, "draw");
   }
-  const record: DuelRecord = {
-    index: world.duels.length,
-    seed: duel.seed,
+  const record = recordDuel(world, duel.seed, duel.spec, result, {
     opponentId: duel.encounter.opponentId,
     catalogId: duel.encounter.catalogId,
     outcome,
     anteWon,
     anteLost,
-    saved: {
-      format: "shandalar-log-v1",
-      spec: duel.spec,
-      result: { winner: result.winner, reason: result.reason, turns: result.turns, finalLife: result.finalLife },
-      log: result.log,
-    },
-  };
-  world.duels.push(record);
+  });
   if (questEvents.length) record.questRewards = questEvents.filter((e) => e.type === "questDone").map((e) => (e.type === "questDone" ? e.rewardText : ""));
   return record;
 }

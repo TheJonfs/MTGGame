@@ -22,7 +22,7 @@ import type { CardDef } from "@shandalar/cards";
 import type { Modifier, MatchResult, MatchSpec } from "@shandalar/engine";
 import type { Catalog, OpponentTemplate } from "./catalog.js";
 import { enemyDeck } from "./catalog.js";
-import { addToCollection, forfeitCards, opponentTemplate, pickAnteFromDeck } from "./journey.js";
+import { addToCollection, forfeitCards, opponentTemplate, pickAnteFromDeck, recordDuel } from "./journey.js";
 import { manalinkModifiers } from "./quests.js";
 import type { KnobValues } from "./knobs.js";
 import { exploredNone, idx, isExplored, markExplored, type Point, type WorldMap } from "./map.js";
@@ -568,9 +568,23 @@ export function applyInteriorDuel(
   /** S22b: with the catalog, a defeated spoke-bound minion credits its lord's hunt (the pace war —
    * interior kills count too). Callers without it (older tests) simply feed no one. */
   catalog?: Catalog,
+  /** S25 playtest r2: interior fights reach Recent Battles too — callers passing the spec get
+   * the record (with the saved game for replay); older callers record nothing, as before. */
+  record?: { seed: number; spec: MatchSpec; enemyName: string; catalogId?: string },
 ): InteriorDuelOutcome {
   // S21 r3: held boons were spent on this battle, whichever way it went (hold-or-spend).
   delete run.boons;
+  if (record) {
+    recordDuel(world, record.seed, record.spec, result, {
+      opponentId: record.catalogId ?? record.enemyName,
+      catalogId: record.catalogId ?? record.enemyName,
+      enemyName: record.enemyName,
+      outcome: result.winner === 0 ? "win" : result.winner === 1 ? "loss" : "draw",
+      // Interior stakes flow through escrow/forfeit below — the record lists what was staked.
+      anteWon: result.winner === 0 ? [...result.facts.ante[1]] : [],
+      anteLost: result.winner === 1 ? [...result.facts.ante[0]] : [],
+    });
+  }
   if (result.winner === 0) {
     run.interiorLife = Math.max(1, result.finalLife[0]);
     const won = [...result.facts.ante[1]];

@@ -331,9 +331,9 @@ export const KNOBS = {
     description: "S24 (ADR-086): the manalink class's kind split — life (+1 maximum world life, town-tied, suspension law shared) vs basic (the land in play). Arguing baseline; world-sim's life-economy table tunes it.",
   }),
   lifeManalinkCap: knob<number>({
-    default: 3,
-    unit: "life manalinks (total)",
-    description: "S24 (ADR-086): most life manalinks a journey can hold (ADR-086's 2–3 band, top end as baseline). Over-cap awards convert to gold like their basic siblings. Suspended links still count against the cap (the link exists; the town just holds it hostage).",
+    default: 0,
+    unit: "life manalinks (total); ≤ 0 = uncapped",
+    description: "S24 (ADR-086) gave the life kind a 2–3 cap; S25 playtest r2 (Chris) UNCAPPED it — life manalinks are the recovery economy's ceiling-raiser and hoarding them is the design working. ≤ 0 (the default) means no cap; a positive value restores one. Basic links keep manalinkCapPerColor (the in-duel board is the constraint there — under discussion).",
   }),
   innStepsPerLife: knob<number>({
     default: 8,

@@ -333,7 +333,8 @@ function award(world: WorldState, q: ActiveQuest, knobs: KnobValues): string {
       // S24 (ADR-086): the life kind — +1 maximum world life, town-tied. Cap counts EVERY life
       // link owned (a suspended link exists; the town just holds it hostage).
       const haveLife = world.manalinks.filter((m) => m.kind === "life").length;
-      if (haveLife < knobs.lifeManalinkCap) {
+      // S25 r2 (Chris): life is UNCAPPED by default — cap ≤ 0 means no ceiling; a positive value restores one.
+      if (knobs.lifeManalinkCap <= 0 || haveLife < knobs.lifeManalinkCap) {
         world.manalinks.push({ color: q.reward.manalink, town: q.fromTown, kind: "life" });
         notes.push("a life manalink — your maximum world life rises by 1 while this town stands free");
       } else {
@@ -594,7 +595,7 @@ export function tavernRumors(world: WorldState, catalog: Catalog, town: Town, po
   if (pool) {
     const knobs = worldKnobs(world);
     const capped = new Set(COLORS.filter((c) => world.manalinks.filter((m) => (m.kind ?? "basic") === "basic" && m.color === c).length >= knobs.manalinkCapPerColor));
-    const lifeCapped = world.manalinks.filter((m) => m.kind === "life").length >= knobs.lifeManalinkCap; // S24: the life kind has its own cap
+    const lifeCapped = knobs.lifeManalinkCap > 0 && world.manalinks.filter((m) => m.kind === "life").length >= knobs.lifeManalinkCap; // S24 cap, S25 r2: ≤ 0 = uncapped (the default)
     const occupied = new Set((world.sieges as { townIndex: number; status?: string }[]).filter((s) => s.status === "occupied").map((s) => s.townIndex));
     const posts = world.map.towns.filter(
       (t) =>

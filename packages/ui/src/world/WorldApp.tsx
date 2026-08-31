@@ -1268,22 +1268,50 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
           <div style={{ fontSize: 12 }}>Deck: {deckSize(activeDeck(w))} cards · basic {w.player.basicLand}</div>
         </RailPanel>
         <RailPanel title="Quests" badge={c.activeQuests().length || undefined}>
-          {c.activeQuests().map(({ quest: q, stepsLeft, destName, targetName }) => (
+          {c.activeQuests().map(({ quest: q, stepsLeft, destName, targetName, targetRegion }) => (
             <div key={q.id} style={{ fontSize: 11.5, marginBottom: 4 }}>
               <b>{{ courier: "Courier", cardCourier: "Card courier", bounty: "Bounty", retrieval: "Retrieval" }[q.kind]}</b>
               {q.kind === "retrieval" && <> — {q.itemRecovered
                 ? `${q.retrievalItem?.cardName} recovered — the buyer waits in ${w.map.towns.find((t) => t.index === q.fromTown)?.name ?? "the offer town"} (marked)`
                 : `${q.retrievalItem?.cardName} lies in ${(() => { const l = w.map.strongholds.find((f) => f.kind === "lair" && `lair_${f.opponentId}` === q.retrievalDungeonId); return l ? `${l.name ?? "a lair"} (${w.map.regions[l.region]?.name}; marked)` : "a lair"; })()}`}</>}
               {destName ? <> → {destName}</> : null}
-              {targetName ? <> — {targetName}{q.bountySeenAt ? " (marked on your map)" : " (not yet sighted)"}</> : null}
+              {/* S25 r2 note 4: the bounty names its mark's region — and the row is a map pointer
+                  (click previews the path: the sighting mark when seen, else the region's heart). */}
+              {targetName ? (
+                <span style={{ cursor: screen.kind === "map" ? "pointer" : "default" }} title="click to preview the path there" onClick={() => {
+                  // Fog honesty (S18): an unsighted mark's LIVE cell never leaks — the region's
+                  // heart is the pointer until a sighting is recorded.
+                  const inst = q.bountyOpponentId ? w.opponents.find((o) => o.id === q.bountyOpponentId) : undefined;
+                  const dest = q.bountySeenAt ?? (inst ? w.map.regions[inst.region]?.heart : undefined);
+                  if (dest) c.clickCell(dest);
+                }}>
+                  {" "}— {targetName}
+                  {targetRegion ? <i style={{ color: "var(--ink-soft)" }}> · {targetRegion}</i> : null}
+                  {q.bountySeenAt ? " (marked on your map)" : " (not yet sighted)"}
+                </span>
+              ) : null}
               {stepsLeft !== null && <span style={{ color: stepsLeft < 40 ? "var(--danger)" : "var(--ink-soft)" }}> · {stepsLeft} steps left</span>}
               <button className="linkish" style={{ marginLeft: 4 }} title="abandon (fails the quest; a sent card is already gone)" onClick={() => c.abandonQuest(q.id)}>abandon</button>
             </div>
           ))}
           {c.activeQuests().length === 0 && <div style={{ fontSize: 11, color: "var(--ink-soft)" }}>none — town boards post them</div>}
-          {c.world && c.world.manalinks.length > 0 && (
-            <div style={{ fontSize: 11.5, marginTop: 4 }}>Manalinks: {c.world.manalinks.map((m) => m.color).join(", ")} — every duel starts with them in play.</div>
-          )}
+          {c.world && c.world.manalinks.length > 0 && (() => {
+            // S25 r2 note 2: the colour-only line masked the KINDS — three "B"s could be one
+            // Swamp-in-play and two +1-max-life links. Say what each one does, and whether its
+            // town currently holds it hostage (suspension law).
+            const occupied = new Set((w.sieges as { townIndex: number; status?: string }[]).filter((s) => s.status === "occupied").map((s) => s.townIndex));
+            const LAND: Record<string, string> = { W: "Plains", U: "Island", B: "Swamp", R: "Mountain", G: "Forest" };
+            return (
+              <div style={{ fontSize: 11.5, marginTop: 4 }}>
+                <b>Manalinks:</b>{" "}
+                {c.world!.manalinks.map((m, i) => {
+                  const dark = occupied.has(m.town);
+                  const label = (m.kind ?? "basic") === "life" ? `${m.color} +1 max life` : `${m.color} ${LAND[m.color]} in play`;
+                  return <span key={i}><span style={dark ? { textDecoration: "line-through", color: "var(--danger)" } : {}} title={`granted by ${w.map.towns[m.town]?.name ?? "a town"}${dark ? " — OCCUPIED: suspended until liberated" : ""}`}>{label}</span>{i < c.world!.manalinks.length - 1 ? " · " : ""}</span>;
+                })}
+              </div>
+            );
+          })()}
         </RailPanel>
         {(() => {
           // S21 Part 4 → S22 r1: the heard-rumors journal is its own FOLDING panel now — the
@@ -1359,7 +1387,7 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
         <RailPanel title="Recent duels" badge={w.duels.length || undefined} defaultOpen={false}>
           {w.duels.slice(-6).reverse().map((d) => (
             <div key={d.index} style={{ fontSize: 11.5 }}>
-              #{d.index + 1} {catalog.opponents.find((o) => o.id === d.catalogId)?.name ?? d.catalogId} — <b>{d.outcome}</b>{" "}
+              #{d.index + 1} {catalog.opponents.find((o) => o.id === d.catalogId)?.name ?? d.enemyName ?? d.catalogId} — <b>{d.outcome}</b>{" "}
               <button className="linkish" onClick={() => watch(d.saved)}>replay</button>
             </div>
           ))}

@@ -176,3 +176,30 @@ describe("S22 r2 — startingPlayer (the coin flip's engine half)", () => {
     expect(normal.hands[0]).toBe(7);
   });
 });
+
+describe("the Tithe — observed DIES on the law (S25 playtest r2: Chris's Charnel Court report)", () => {
+  // Investigated live: every entry path verified draining correctly (setup, the modifier path,
+  // direct kills, combat batches BOTH sides, token deaths). No defect found; pinned here so a
+  // regression announces itself. The report stays on watch (the fight wasn't recorded — see the
+  // interior-duel record fix, same round).
+  it("a combat trade under the Tithe drains the intruder for BOTH deaths (its controller's creature included)", async () => {
+    const spec: FixtureSpec = {
+      name: "tithe-combat-pin",
+      setup: {
+        active: 0, step: "MAIN1",
+        players: [
+          { life: 20, battlefield: [{ card: "grizzly_bears", summoningSick: false }] },
+          { life: 20, battlefield: ["law_tithe", "grizzly_bears"] },
+        ],
+      },
+      script: [
+        { player: 0, do: "attack", attackers: ["grizzly_bears"] },
+        { player: 1, do: "block", blocks: [{ blocker: "grizzly_bears", attacker: "grizzly_bears" }] },
+      ],
+      run: [{ steps: ["COMBAT_BEGIN", "DECLARE_ATTACKERS", "DECLARE_BLOCKERS", "COMBAT_DAMAGE", "COMBAT_END"] }],
+    };
+    const tg = await runFixture(spec);
+    expect(tg.game.state.players[0].life).toBe(18); // one per death, intruder only
+    expect(tg.game.state.players[1].life).toBe(20);
+  });
+});
