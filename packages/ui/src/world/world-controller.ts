@@ -141,11 +141,11 @@ export type WorldScreen =
       after: { life: number; gold: number };
     }
   | { kind: "town"; town: Town; stock: ShopItem[]; notice: string | null }
-  | { kind: "collection"; back: "map" | "town" }
+  | { kind: "collection"; back: "map" | "town" | "corolla" | "corollaTown" }
   | {
       /** S14 Part 2: the deck editor — a DRAFT decklist; commit only when legal (ADR-065). */
       kind: "editor";
-      back: "map" | "town";
+      back: "map" | "town" | "corolla" | "corollaTown"; // S26 r2: the flower and its town return to themselves
       draft: Decklist;
       name: string;
       notice: string | null;
@@ -445,7 +445,12 @@ export class WorldController {
 
   openEditor(): void {
     if (!this.world || !this.canEdit().ok) return;
-    const back = this.screen.kind === "town" || (this.screen.kind === "collection" && this.screen.back === "town") ? "town" : "map";
+    const back: "map" | "town" | "corolla" | "corollaTown" =
+      this.screen.kind === "collection" ? this.screen.back
+      : this.screen.kind === "town" ? "town"
+      : this.screen.kind === "corolla" ? "corolla"
+      : this.screen.kind === "corollaTown" ? "corollaTown"
+      : "map";
     this.screen = { kind: "editor", back, draft: activeDeck(this.world).map((e) => ({ ...e })), name: this.world.activeDeckName, notice: null };
     this.emit();
   }
@@ -545,11 +550,16 @@ export class WorldController {
 
   editorClose(): void {
     if (!this.world || this.screen.kind !== "editor") return;
-    if (this.screen.back === "town" && this.lastTown) this.enterTown(this.lastTown);
-    else {
-      this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: null };
-      this.emit();
-    }
+    this.returnFrom(this.screen.back);
+  }
+
+  /** S26 r2: where a browsing screen goes back to — the town, the flower, the flower's town, or the map. */
+  private returnFrom(back: "map" | "town" | "corolla" | "corollaTown"): void {
+    if (back === "town" && this.lastTown) return this.enterTown(this.lastTown);
+    if (back === "corollaTown" && this.world && insideCorolla(this.world)) return this.enterHeartTown();
+    if (back === "corolla" && this.world && insideCorolla(this.world)) { this.screen = { kind: "corolla", notice: null, walking: false }; this.emit(); return; }
+    this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: null };
+    this.emit();
   }
 
   // ---------- town ----------
@@ -751,6 +761,8 @@ export class WorldController {
   openCollection(): void {
     if (this.screen.kind === "map") this.screen = { kind: "collection", back: "map" };
     else if (this.screen.kind === "town") this.screen = { kind: "collection", back: "town" };
+    else if (this.screen.kind === "corolla") this.screen = { kind: "collection", back: "corolla" };
+    else if (this.screen.kind === "corollaTown") this.screen = { kind: "collection", back: "corollaTown" };
     else if (this.screen.kind === "editor") this.screen = { kind: "collection", back: this.screen.back };
     else return;
     this.emit();
@@ -758,11 +770,7 @@ export class WorldController {
 
   closeCollection(): void {
     if (this.screen.kind !== "collection" || !this.world) return;
-    if (this.screen.back === "town" && this.lastTown) this.enterTown(this.lastTown);
-    else {
-      this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: null };
-      this.emit();
-    }
+    this.returnFrom(this.screen.back);
   }
 
   // ---------- parley + duel ----------
@@ -1385,6 +1393,11 @@ export class WorldController {
 
   // ---------- S26 (ADR-091): the Corolla + the Vault ----------
 
+  /** S26 r2 (Chris notes 3–4): the Corolla's fights ring the usual result stings — the UI watches
+   * this sequence (win/loss) the way it watches treasureSeq. */
+  resultSting: { seq: number; outcome: "win" | "loss" } = { seq: 0, outcome: "win" };
+  private ringResult(outcome: "win" | "loss"): void { this.resultSting = { seq: this.resultSting.seq + 1, outcome }; }
+
   get corollaDef(): CorollaDef | null {
     return this.catalog.corolla ?? null;
   }
@@ -1547,6 +1560,7 @@ export class WorldController {
     const petal = def.petals.find((p) => p.color === color)!;
     const out = applyPetalDuel(this.world, this.knobs, this.pool, petal, result, rec);
     this.autosave();
+    this.ringResult(out.type === "win" ? "win" : "loss");
     if (out.type === "loss") {
       if (this.world.gameOver) { this.screen = { kind: "gameOver", fatal: this.world.duels[this.world.duels.length - 1] ?? null }; this.emit(); return; }
       this.screen = { kind: "corolla", notice: `${petal.boss.name} holds the tip. A world life and your stake${out.anteLost.length ? ` (${out.anteLost.map((id) => this.pool.get(id)?.name ?? id).join(", ")})` : ""} are gone; you stand where you fell.`, walking: false };
@@ -1603,7 +1617,7 @@ export class WorldController {
       aiDelayMs: this.aiDelay(),
       custom: {
         human: { name: this.world.player.name, decklist: spec.players[0].decklist },
-        enemy: { name: "Your reflection", decklist: spec.players[1].decklist, difficulty: "master", archetype, portrait: "portrait-you" },
+        enemy: { name: "Your reflection", decklist: spec.players[1].decklist, difficulty: "master", archetype, portrait: "reflection" }, // S26 r2 (Chris note 2): the mirrored player portrait under /portraits/
         rules: { startingLife: spec.rules.startingLife, ante: 0, ...(spec.rules.startingPlayer !== undefined ? { startingPlayer: spec.rules.startingPlayer } : {}) },
         modifiers: spec.modifiers,
       },
@@ -1622,6 +1636,7 @@ export class WorldController {
     if (!this.world) return;
     const out = applyMirrorDuel(this.world, this.knobs, result, rec);
     this.autosave();
+    this.ringResult(out.type === "win" ? "win" : "loss");
     if (out.type === "loss") {
       if (this.world.gameOver) { this.screen = { kind: "gameOver", fatal: this.world.duels[this.world.duels.length - 1] ?? null }; this.emit(); return; }
       this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: "Your reflection knew your deck better. A world life is gone; the Vault waits." };

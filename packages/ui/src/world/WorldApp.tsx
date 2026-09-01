@@ -11,6 +11,9 @@ import { COROLLA_DECKS } from "@shandalar/sim/corolla-decks";
 import { WorldMapView } from "./WorldMap";
 import { FloatingCardInspector } from "./FloatingCardInspector";
 
+/** Screens that return early from the world layout (no rail, no popups, no manalink splash). */
+const EARLY_SCREENS = new Set<string>(["start", "duel", "dungeonDuel", "siegeDuel", "corollaDuel", "duelResult", "collection", "editor", "dungeonTelegraph", "siegeTelegraph", "dungeon", "dungeonVictory", "strongholdVictory", "corollaTelegraph", "vaultTelegraph", "corolla", "petalTelegraph", "petalVictory", "mirrorVictory", "corollaTown", "gameOver"]);
+
 /**
  * /world (S13): the overworld shell — start → map → encounter/parley → duel
  * (the play client) → consequences → town/shop/collection → save/load →
@@ -136,22 +139,25 @@ function DevTab({ c }: { c: WorldController }) {
   );
 }
 
-function Chrome({ c, onDownload }: { c: WorldController; onDownload: () => void }) {
+function Chrome({ c, onDownload, corolla }: { c: WorldController; onDownload: () => void; corolla?: { fallen: number } }) {
   const w = c.world!;
   return (
     <div className="play-ribbon world-chrome">
-      <span className="turn">{w.player.name} · {c.regionName()}</span>
+      {/* S26 r2 (Chris note 6): inside the flower the ribbon keeps the regular menu; steps and Dev are suppressed (neither matters there). */}
+      <span className="turn">{w.player.name} · {corolla ? (c.corollaDef?.name ?? "The Corolla") : c.regionName()}</span>
       {/* S22 r2 (Chris): pictorial trackers — the ink-icon register replaces the plain SVGs. */}
       {/* S24 (ADR-086): life reads current / maximum — the maximum moves now (life manalinks, suspension). */}
       <span className="stat" title={`world life (maximum ${maxWorldLife(w)} = base + active life manalinks)`}><img className="stat-ink" src="/icons/stat-life.png" alt="" /> {w.player.worldLife}<span style={{ fontSize: 11, color: "var(--ink-soft)" }}>/{maxWorldLife(w)}</span></span>
       <span className="stat" title="gold"><img className="stat-ink" src="/icons/stat-gold.png" alt="" /> {w.player.gold}</span>
-      <span className="stat" title="steps (the clock)"><img className="stat-ink" src="/icons/stat-steps.png" alt="" /> {w.player.stepsTaken} steps</span>
+      {corolla
+        ? <><span className="stat" title="petals fallen" style={{ whiteSpace: "nowrap" }}>✿ {corolla.fallen}/5 petals</span><span className="stat" title="no clock runs in the flower — nothing outside moves" style={{ whiteSpace: "nowrap" }}>⟳ clock still</span></>
+        : <span className="stat" title="steps (the clock)"><img className="stat-ink" src="/icons/stat-steps.png" alt="" /> {w.player.stepsTaken} steps</span>}
       <span style={{ flex: 1 }} />
       <button className="chrome-tab" title={c.canEdit().ok ? "edit your deck (clock-free)" : c.canEdit().reason} disabled={!c.canEdit().ok} onClick={() => c.openEditor()}>Deck</button>
       <button className="chrome-tab" onClick={() => c.openCollection()}>Collection</button>
       <button className="chrome-tab" onClick={() => c.save()}>Save</button>
       <button className="chrome-tab" onClick={onDownload}>Download</button>
-      <DevTab c={c} />
+      {!corolla && <DevTab c={c} />}
       <AudioTab />
       <span className="seed">seed {w.seed} · {w.difficulty}</span>
     </div>
@@ -756,7 +762,7 @@ function CorollaScreen({ c }: { c: WorldController }) {
   return (
     <div className="app world-app">
       <div style={{ display: "flex", flexDirection: "column", minWidth: 0, overflow: "hidden" }}>
-        <div className="chrome" style={{ display: "flex", gap: 16, alignItems: "center" }}><b style={{ fontFamily: "var(--serif)" }}>{c.corollaDef?.name ?? "The Corolla"}</b><span className="stat">♥ {c.world.player.worldLife} / {maxWorldLife(c.world)}</span><span className="stat">✿ {heart} of five petals fallen</span><span className="stat" title="no clock runs in the flower">⟳ the world stands still</span></div>
+        <Chrome c={c} corolla={{ fallen: heart }} onDownload={() => { const blob = new Blob([c.saveText()], { type: "application/json" }); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `world-${c.world!.seed}.json`; a.click(); }} />
         <div className="world-map-wrap">
           <WorldMapView
             map={map}
@@ -810,6 +816,12 @@ function PetalTelegraph({ c }: { c: WorldController }) {
   return (
     <div className="gallery-modal">
       <div className="gallery-modal-box play-dialog dungeon-telegraph">
+        {/* S26 r2 (Chris note 5): the law's seat announces the tip — its gate plate while its castle theme plays. */}
+        {content && (
+          <div style={{ margin: "-14px -14px 12px", overflow: "hidden", borderBottom: "2px solid var(--ink)" }}>
+            <img src={`/gate-plates/${content.id}.jpg`} alt="" style={{ width: "100%", display: "block", maxHeight: 200, objectFit: "cover" }} />
+          </div>
+        )}
         <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
           <img className="parley-portrait" src={`/portraits/${pd.boss.portrait}.png`} alt="" style={{ width: 72, height: 72, flexShrink: 0 }} title={pd.boss.name} onError={(e) => { (e.target as HTMLImageElement).style.visibility = "hidden"; }} />
           <div>
@@ -833,14 +845,18 @@ function PetalTelegraph({ c }: { c: WorldController }) {
 }
 
 /** S26: a petal fell. */
-function PetalVictory({ c, pool }: { c: WorldController; pool: Map<string, CardDef> }) {
+function PetalVictory({ c, pool, oracle }: { c: WorldController; pool: Map<string, CardDef>; oracle: Record<string, OracleEntry> }) {
   if (c.screen.kind !== "petalVictory") return null;
   const s = c.screen;
+  const frames = (ids: string[]) => ids.map((id, i) => <div className="card-slot" key={`${id}${i}`}><CardFrame def={pool.get(id)!} oracle={oracle[id]} showPrinted /></div>);
   return (
     <div className="loader">
-      <div className="box play-setup">
-        <h2 style={{ fontFamily: "var(--serif)", marginTop: 0 }}>{s.bossName} falls — the petal with them</h2>
-        <p>Yours, as you go: <b>{s.paidCards.map((id) => pool.get(id)?.name ?? id).join(", ")}</b> and <b>{s.paidGold} gold</b>{s.anteWon.length ? <>, with their stake ({s.anteWon.map((id) => pool.get(id)?.name ?? id).join(", ")})</> : null}.</p>
+      <div className="box play-setup world-result">
+        <h2 style={{ fontFamily: "var(--serif)", marginTop: 0 }}>Victory — {s.bossName} falls, and the petal with them</h2>
+        {/* S26 r2 (Chris note 4): the prizes shown as cards, the way the world's result screen shows a stake. */}
+        <div className="flyout-title">Yours, as you go — and {s.paidGold} gold</div>
+        <div className="dialog-cards">{frames(s.paidCards)}</div>
+        {s.anteWon.length > 0 && <><div className="flyout-title">You claim their stake</div><div className="dialog-cards">{frames(s.anteWon)}</div></>}
         {s.anteWithheld.length > 0 && <p style={{ fontSize: 12.5, color: "var(--ink-soft)" }}>◆ Their staked {s.anteWithheld.map((id) => pool.get(id)?.name ?? id).join(", ")} stays with them — there is exactly one, and it drops by defeat, not by ante.</p>}
         <p style={{ fontSize: 12.5, color: "var(--ink-soft)" }}>{s.fallen >= 5 ? "Five petals have fallen. The door at the heart is open." : `${s.fallen} of five petals fallen.`}</p>
         <p><button className="primary" onClick={() => c.continueAfterPetalVictory()}>Back among the petals</button></p>
@@ -850,12 +866,15 @@ function PetalVictory({ c, pool }: { c: WorldController; pool: Map<string, CardD
 }
 
 /** S26: the Lotus. */
-function MirrorVictory({ c }: { c: WorldController }) {
+function MirrorVictory({ c, pool, oracle }: { c: WorldController; pool: Map<string, CardDef>; oracle: Record<string, OracleEntry> }) {
   if (c.screen.kind !== "mirrorVictory") return null;
+  const lotus = pool.get("black_lotus");
   return (
     <div className="loader">
-      <div className="box play-setup">
-        <h2 style={{ fontFamily: "var(--serif)", marginTop: 0 }}>The reflection breaks</h2>
+      <div className="box play-setup world-result">
+        <h2 style={{ fontFamily: "var(--serif)", marginTop: 0 }}>Victory — the reflection breaks</h2>
+        {/* S26 r2 (Chris note 3): the Lotus itself, shown. */}
+        {lotus && <div className="dialog-cards"><div className="card-slot"><CardFrame def={lotus} oracle={oracle["black_lotus"]} showPrinted /></div></div>}
         <p>The Vault held what you came for: <b>the Black Lotus</b>. There is exactly one, and now it is yours. The Vault is empty ground.</p>
         <p><button className="primary" onClick={() => c.continueAfterMirrorVictory()}>Take it</button></p>
       </div>
@@ -1423,6 +1442,7 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
   const lastTreasure = useRef(0);
   const lastManalinkSplash = useRef<unknown>(null);
   const lastScreenKind = useRef<string>("");
+  const lastResultSting = useRef(0);
   useEffect(() => {
     const scr = controller.screen;
     const w2 = controller.world;
@@ -1444,7 +1464,9 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
     else if (scr.kind === "vaultTelegraph") cue = "splash.vault";
     else if (scr.kind === "corollaTown") cue = "music.corolla.town";
     else if ((scr.kind === "editor" || scr.kind === "collection") && w2 && w2.gauntlet.corolla) cue = "music.corolla.town";
-    else if (scr.kind === "corolla" || scr.kind === "petalTelegraph" || scr.kind === "petalVictory" || scr.kind === "mirrorVictory") cue = "music.corolla";
+    // S26 r2 (Chris note 5): a petal's tip announces itself with its LAW's seat — the stronghold theme.
+    else if (scr.kind === "petalTelegraph") { const sh = controller.catalog.strongholdContent?.find((x) => x.color === scr.color); cue = sh ? strongholdSplashCue(sh.id) : "music.corolla"; }
+    else if (scr.kind === "corolla" || scr.kind === "petalVictory" || scr.kind === "mirrorVictory") cue = "music.corolla";
     else if (scr.kind === "dungeonTelegraph") cue = scr.info.kind === "stronghold" ? strongholdSplashCue(scr.info.dungeonId) : "music.dungeon";
     else if (scr.kind === "strongholdVictory") cue = "music.stronghold";
     else if (scr.kind === "dungeon" || scr.kind === "dungeonVictory") cue = controller.dungeonRun?.kind === "stronghold" ? "music.stronghold" : "music.dungeon";
@@ -1457,15 +1479,27 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
       // r5: the manalink STING moved to its own splash — popups ring reward or news only.
       audio.sting(controller.questPopup.some((p) => p.title === "Quest complete") ? "sting.reward" : "sting.news");
     }
-    // r5: each manalink splash rings the Manalink sting as it shows (one-voice: it fades
-    // whatever rang before it — Winduel included, which was the whole point).
-    const splashHead = controller.manalinkSplash?.[0] ?? null;
-    if (splashHead && splashHead !== lastManalinkSplash.current) audio.sting("sting.manalink");
-    lastManalinkSplash.current = splashHead;
     // r5 (Chris): clicking early out of the win/loss screen ends its music early — leaving
     // duelResult fades whatever result sting still rings (the parley-fade pattern).
     if (lastScreenKind.current === "duelResult" && scr.kind !== "duelResult") audio.fadeSting();
     lastScreenKind.current = scr.kind;
+    // r5: each manalink splash rings the Manalink sting as it shows (one-voice: it fades
+    // whatever rang before it — Winduel included, which was the whole point).
+    // S26 r2 (Chris note 1: silent splash after a victory): the splash only RENDERS on the map
+    // layout, but the sting rang the moment it was queued — under the result screen — and the
+    // duelResult fade above then killed it before the splash ever showed. Ring when the splash
+    // is on stage, not when it is queued.
+    const splashHead = controller.manalinkSplash?.[0] ?? null;
+    const splashOnStage = !EARLY_SCREENS.has(scr.kind);
+    if (splashHead && splashOnStage && splashHead !== lastManalinkSplash.current) {
+      audio.sting("sting.manalink");
+      lastManalinkSplash.current = splashHead;
+    } else if (!splashHead) lastManalinkSplash.current = null;
+    // S26 r2 (Chris notes 3–4): the Corolla's fights ring the result pair like the world's.
+    if (controller.resultSting.seq !== lastResultSting.current) {
+      lastResultSting.current = controller.resultSting.seq;
+      if (controller.resultSting.seq > 0) audio.sting(controller.resultSting.outcome === "win" ? "sting.duel-win" : "sting.duel-loss");
+    }
     if (scr.kind === "encounter") {
       const key = scr.encounter.opponentId + ":" + controller.world!.player.stepsTaken;
       if (lastParley.current !== key) {
@@ -1525,8 +1559,8 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
   if (c.screen.kind === "vaultTelegraph") return <VaultTelegraph c={c} />;
   if (c.screen.kind === "corolla") return <CorollaScreen c={c} />;
   if (c.screen.kind === "petalTelegraph") return <PetalTelegraph c={c} />;
-  if (c.screen.kind === "petalVictory") return <PetalVictory c={c} pool={pool} />;
-  if (c.screen.kind === "mirrorVictory") return <MirrorVictory c={c} />;
+  if (c.screen.kind === "petalVictory") return <PetalVictory c={c} pool={pool} oracle={oracle} />;
+  if (c.screen.kind === "mirrorVictory") return <MirrorVictory c={c} pool={pool} oracle={oracle} />;
   if (c.screen.kind === "corollaTown") return <CorollaTownScreen c={c} pool={pool} oracle={oracle} />;
   if (c.screen.kind === "strongholdVictory") return <StrongholdVictory c={c} pool={pool} oracle={oracle} />;
   if (c.screen.kind === "gameOver") {

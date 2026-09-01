@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { fileURLToPath } from "node:url";
+import { existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
 import { deserializeWorld, strongholdState, MOX_IDS, PETAL_ORDER, corollaPath, insideCorolla, petalsFallen } from "@shandalar/world";
@@ -154,6 +155,33 @@ describe("S26 — the Corolla and the Vault through the controller", () => {
     c.knock();
     const s2 = (c as WorldController).screen;
     expect(s2.kind === "vaultTelegraph" && s2.open && s2.moxen).toBe(5);
+  });
+
+  it("S26 r2: the deck editor and the collection opened inside the flower return to the flower (and the heart's town to itself); the reflection's portrait file exists; the result stings sequence on petal and mirror outcomes", () => {
+    const c = new WorldController(pool, catalog, memStorage());
+    c.stepMs = 0;
+    c.newGame({ seed: 26, starter: "green", difficulty: "standard" });
+    const w = c.world!;
+    c.devCompleteAll();
+    const door = w.map.strongholds.find((f) => f.kind === "corolla")!;
+    w.player.position = { ...door.at };
+    c.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: null };
+    const screen = () => (c as WorldController).screen;
+    c.knock(); c.enterCorolla();
+    expect(screen().kind).toBe("corolla");
+    c.openEditor(); expect(screen().kind).toBe("editor");
+    c.openCollection(); expect(screen().kind).toBe("collection");
+    c.closeCollection(); expect(screen().kind).toBe("corolla");
+    c.openEditor(); c.editorClose(); expect(screen().kind).toBe("corolla");
+    c.enterHeartTown(); expect(screen().kind).toBe("corollaTown");
+    c.openCollection(); c.closeCollection(); expect(screen().kind).toBe("corollaTown");
+    c.openEditor(); c.editorClose(); expect(screen().kind).toBe("corollaTown");
+    // Result stings: a mirror loss then a win advance the sequence with the outcome.
+    const finish = (r: ReturnType<typeof fakeResult>) => (c as never as { finishMirrorDuel(r: unknown, rec: unknown): void }).finishMirrorDuel(r, { seed: 1, spec: { seed: 1, players: [{ name: "you", decklist: [], agent: "human" }, { name: "Your reflection", decklist: [], agent: "heuristic:master" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100, ante: 0 }, modifiers: [] } });
+    expect(c.resultSting.seq).toBe(0);
+    finish(fakeResult(1)); expect(c.resultSting).toEqual({ seq: 1, outcome: "loss" });
+    finish(fakeResult(0)); expect(c.resultSting).toEqual({ seq: 2, outcome: "win" });
+    expect(existsSync(join(ROOT, "packages/ui/public/portraits/reflection.png"))).toBe(true);
   });
 
   it("the Vault: four Moxen lock it; five open the Mirror (your deck + the Lotus, ante off); a loss keeps the door; a win pays the Lotus once and the Vault is ground", async () => {
