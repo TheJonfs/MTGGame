@@ -72,7 +72,7 @@ import { COURT_DECKS } from "@shandalar/sim/court-decks";
 import { LORD_DECKS } from "@shandalar/sim/lord-decks";
 import {
   activateStride, applyBalm, applyCrossing, barrageFight, crossingDestinations, fuelCandidates, fuelDepth,
-  maxWorldLife, powerRates, powerRefusal, quietusRefusal, quietusStrike, suggestFuel, unlockPower, POWER_COLORS,
+  maxWorldLife, payBarrage, powerRates, powerRefusal, quietusRefusal, quietusStrike, suggestFuel, unlockPower, POWER_COLORS,
   type FuelCandidate, type PowerColor, type PowerRates,
 } from "@shandalar/world";
 import {
@@ -795,6 +795,18 @@ export class WorldController {
     return { costPerDamage: r.barrage!.costPerDamage, cap: r.barrage!.cap, depth, reason };
   }
 
+  /** S25 r4: the interior Barrage line (dungeon rail; absent until learned). */
+  dungeonBarrageOption(): { costPerDamage: number; cap: number; depth: number; armed: number; reason: string | null } | null {
+    if (!this.world || this.screen.kind !== "dungeon" || !this.world.activeDungeon) return null;
+    const r = powerRates(this.world, "R");
+    if (!r.unlocked) return null;
+    const armed = this.world.activeDungeon.armedBarrage ?? 0;
+    const depth = fuelDepth(fuelCandidates(this.world, this.pool, "R"));
+    const room = r.barrage!.cap - armed;
+    const reason = room <= 0 ? `armed to the cap (${r.barrage!.cap})` : depth < r.barrage!.costPerDamage ? "no red spares to burn" : null;
+    return { costPerDamage: r.barrage!.costPerDamage, cap: r.barrage!.cap, depth, armed, reason };
+  }
+
   /** Open the fuel picker for a power action (the rail and the parley menu both come here). */
   openPower(action: NonNullable<WorldController["fuelPicker"]>["action"]): void {
     if (!this.world) return;
@@ -935,6 +947,20 @@ export class WorldController {
         return;
       }
       case "barrage": {
+        // S25 r4: the interior form — arm the NEXT fight in this dungeon (the boons' hold-or-spend
+        // shape: fuel burns now, the damage opens whichever battle comes; dies with the run).
+        if (this.screen.kind === "dungeon" && this.world.activeDungeon) {
+          const run = this.world.activeDungeon;
+          const cap = powerRates(this.world, "R").barrage!.cap;
+          if ((run.armedBarrage ?? 0) + a.damage > cap) { this.screen = { ...this.screen, notice: `the Barrage caps at ${cap} (already armed: ${run.armedBarrage ?? 0})` }; this.emit(); return; }
+          const paid = payBarrage(this.world, this.pool, a.damage, p.chosen);
+          if (!paid.ok) { this.screen = { ...this.screen, notice: paid.reason }; this.emit(); return; }
+          run.armedBarrage = (run.armedBarrage ?? 0) + a.damage;
+          this.autosave();
+          this.screen = { ...this.screen, notice: `The Barrage is armed — the next fight here opens with ${run.armedBarrage} damage already dealt.` };
+          this.emit();
+          return;
+        }
         if (this.screen.kind !== "encounter") return;
         const enc = this.screen.encounter;
         const r = barrageFight(this.world, this.catalog, this.pool, enc, a.damage, p.chosen, this.extraKnobs);
@@ -1171,7 +1197,8 @@ export class WorldController {
       enemy = { kind: "minion", tmpl };
       portrait = tmpl.portraitChip ?? tmpl.portrait;
     }
-    const { spec, enemyName } = dungeonDuelSpec(this.world, this.catalog, this.knobs, run, enemy, law, rng, extraModifiers);
+    // S25 r4 (Chris: the Barrage never reached the interiors): the armed damage opens this fight.
+    const { spec, enemyName } = dungeonDuelSpec(this.world, this.catalog, this.knobs, run, enemy, law, rng, extraModifiers, run.armedBarrage ? { enemyLifeDelta: -run.armedBarrage } : {});
     this.world.rng = rng.state();
     this.autosave();
     const match = new MatchController(this.pool, {

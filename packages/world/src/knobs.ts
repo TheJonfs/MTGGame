@@ -154,14 +154,14 @@ export const KNOBS = {
     description: "S22 playtest r1 (Chris): the LORD's empowerment clock — the dungeon 30/60/90 hit too hard at stronghold scale (a thorough tour fought a fully-grown lord every time); 50/75/100 gives the speed-vs-thoroughness dial real travel. Same package shapes as dungeonEmpowermentTiers; strongholds read THIS table.",
   }),
   lordGrowthSteps: knob<number>({
-    default: 250,
+    default: 100,
     unit: "world steps per growth increment",
-    description: "S22b (the pace war): all five lords strengthen on the GLOBAL world step count — +lordGrowthLife every this-many steps, capped at lordGrowthCap. Chris's calibration target: a dawdling player faces lords at 40–50 life (base 30 + cap 20 at ~1000 steps).",
+    description: "S22b (the pace war): all five lords strengthen on the GLOBAL world step count — +lordGrowthLife every this-many steps, capped at lordGrowthCap. S25 r4 (Chris: still too fast at 2/100): rates re-set to 0.5/1/2 life per 100 steps by easy/standard/hard (was a flat 2/100) — standard = +1 per 100; easy stretches to +1 per 200; hard doubles the increment. A dawdler at ~1000 steps now meets standard lords at base+10, not the cap.",
   }),
   lordGrowthLife: knob<number>({
-    default: 5,
+    default: 1,
     unit: "life per growth increment",
-    description: "S22b: life each lordGrowthSteps increment adds to every lord (see lordGrowthSteps).",
+    description: "S22b: life each lordGrowthSteps increment adds to every lord (see lordGrowthSteps; S25 r4 rates).",
   }),
   lordGrowthCap: knob<number>({
     default: 20,
@@ -498,6 +498,7 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
     roamerDensityPer100Cells: { civilized: 0.7, approach: 1.1, wild: 1.5 },
     siegeIntervalSteps: { civilized: 1125, approach: 845, wild: 560 }, // S25 r3: +25% with the standard shift (ratio held)
     siegeMaxActive: 1, // S25 r3 (Chris): easy = one siege at a time
+    lordGrowthSteps: 200, // S25 r4: 0.5 life per 100 steps
     siegeWarningSteps: 90,
     siegeGraceSteps: 500,
     innStepsPerLife: 5,
@@ -516,6 +517,7 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
     roamerDensityPer100Cells: { civilized: 1.4, approach: 2.0, wild: 2.6 },
     siegeIntervalSteps: { civilized: 560, approach: 420, wild: 280 }, // S25 r3: +25% (ratio held)
     siegeMaxActive: 3, // S25 r3 (Chris): hard = three skies can burn
+    lordGrowthLife: 2, // S25 r4: 2 life per 100 steps
     siegeWarningSteps: 40,
     siegeGraceSteps: 200,
     innStepsPerLife: 12,

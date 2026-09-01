@@ -114,7 +114,7 @@ export function lordSealed(world: WorldState, color: string | undefined): boolea
 }
 
 /** §5 visible schedules: each lord's current strength for the UI telegraph, with the rumor voice
- * ("grows fat on the years" / "has been bled by your hunting"). */
+ * ("has grown while you walked" / "has been bled by your hunting"). */
 export interface LordStatusRow {
   color: LordColor;
   strongholdId: string;
@@ -138,7 +138,7 @@ export function lordStatus(world: WorldState, catalog: Catalog, knobs: KnobValue
       : reduction > growth
         ? `${c.lord.name} has been bled by your hunting.`
         : growth > 0
-          ? `${c.lord.name} grows fat on the years.`
+          ? `${c.lord.name} has grown while you walked.` /* S25 r4: the growth clock is YOUR road, not a calendar */
           : `${c.lord.name} waits, untested.`;
     return { color: c.color, strongholdId: c.id, strongholdName: c.name, lordName: c.lord.name, life, base: c.lord.baseLife, growth, reduction, sealed: st.seal, voice };
   });

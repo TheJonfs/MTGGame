@@ -153,6 +153,10 @@ export interface DungeonRun {
    * once (Chris: the Shandalar hold-or-spend tension; a boon picked up is a boon committed to
    * whatever fight comes next). Cleared when that battle resolves; die with the run at exit. */
   boons?: string[];
+  /** S25 r4 (Chris: the Barrage never showed in a dungeon): armed interior Barrage damage — the
+   * fuel is burned at arming; the NEXT interior battle opens with this carved off the enemy
+   * (boons' hold-or-spend shape exactly). Spent by that battle; dies with the run at exit. */
+  armedBarrage?: number;
 }
 
 export interface DungeonStatus {
@@ -574,6 +578,8 @@ export function applyInteriorDuel(
 ): InteriorDuelOutcome {
   // S21 r3: held boons were spent on this battle, whichever way it went (hold-or-spend).
   delete run.boons;
+  // S25 r4: the armed Barrage too — it opened this battle (dungeonDuelSpec read it), and is spent.
+  delete run.armedBarrage;
   if (record) {
     recordDuel(world, record.seed, record.spec, result, {
       opponentId: record.catalogId ?? record.enemyName,

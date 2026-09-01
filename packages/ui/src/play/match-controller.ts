@@ -128,6 +128,14 @@ export type UiPhase =
       tappable: Set<string>;
     }
   | {
+      /** S25 r4 (Chris: clicking Airship Crash with cycling did nothing): a hand card offering
+       * BOTH a cast and a hand-zone activation (cycling) — the player picks which. */
+      kind: "castOrActivate";
+      objectId: string;
+      casts: Action[];
+      activations: Action[];
+    }
+  | {
       /** S20: a dual was clicked during manual tapping — pick which color it taps for. */
       kind: "chooseTapColor";
       objectId: string;
@@ -693,6 +701,17 @@ export class MatchController {
     this.emit();
   }
 
+  /** S25 r4: the cast-or-cycle fork (null = cancel back to priority). */
+  chooseCastOrActivate(which: "cast" | "activate" | null): void {
+    if (this.phase.kind !== "castOrActivate") return;
+    const { objectId, casts, activations } = this.phase;
+    if (which === null) {
+      this.cancel(); // back to the pending request's base phase
+      return;
+    }
+    this.beginCast(objectId, which === "cast" ? casts : activations);
+  }
+
   /** S20: pick the dual's color (or cancel back to tapping). */
   chooseTapColor(color: "W" | "U" | "B" | "R" | "G" | "C" | null): void {
     if (this.phase.kind !== "chooseTapColor") return;
@@ -773,6 +792,12 @@ export class MatchController {
       if (!castable.has(objectId)) {
         const twin = [...castable.keys()].find((id) => byCardId.get(id) === cardId);
         if (twin) castable.set(objectId, castable.get(twin)!);
+      }
+      // S25 r4: hand-zone ACTIVATIONS (cycling) alias across duplicates too — every copy glows
+      // and clicks (the same S10/S22 aliasing, third verse).
+      if (!activatable.has(objectId)) {
+        const twin = [...activatable.keys()].find((id) => byCardId.get(id) === cardId);
+        if (twin && view.hand.some((h) => h.objectId === twin)) activatable.set(objectId, activatable.get(twin)!);
       }
     }
     // S22 r2 (Chris: "nothing happens when I click Mother Bear in the graveyard"): graveyard-zone
@@ -859,7 +884,20 @@ export class MatchController {
       return;
     }
     const variants = this.phase.castable.get(objectId);
-    if (variants && variants.length > 0) this.beginCast(objectId, variants);
+    // S25 r4 (Chris): a hand card can also carry a hand-zone ACTIVATION (cycling). Both → the
+    // player picks; activation only (no legal cast) → straight to it. Before this, the card
+    // glowed (activatable made the window meaningful) but the click went nowhere.
+    const activations = this.phase.activatable.get(objectId);
+    if (variants && variants.length > 0 && activations && activations.length > 0) {
+      this.phase = { kind: "castOrActivate", objectId, casts: variants, activations };
+      this.emit();
+      return;
+    }
+    if (variants && variants.length > 0) {
+      this.beginCast(objectId, variants);
+      return;
+    }
+    if (activations && activations.length > 0) this.beginCast(objectId, activations);
   }
 
   clickBattlefield(objectId: string): void {

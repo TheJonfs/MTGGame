@@ -373,7 +373,7 @@ function QuestBoard({ c, pool, onInspect }: { c: WorldController; pool: Map<stri
           const rewardBits = [
             `${o.reward.gold} gold`,
             o.reward.cardId ? `+ ${pool.get(o.reward.cardId)?.name ?? o.reward.cardId}` : "",
-            o.reward.manalink ? `+ a Manalink (${o.reward.manalink})` : "",
+            o.reward.manalink ? ((o.reward.manalinkKind ?? "basic") === "life" ? `+ a Life Manalink (+1 max life, town-tied)` : `+ a Manalink (a ${{ W: "Plains", U: "Island", B: "Swamp", R: "Mountain", G: "Forest" }[o.reward.manalink]} in play, town-tied)`) : "", // S25 r4 note 3: the kind is named up front
           ].filter(Boolean).join(" ");
           return (
             <div className="quest-offer" key={o.id}>
@@ -528,7 +528,7 @@ function DungeonTelegraph({ c }: { c: WorldController }) {
         {pd && <p className="dungeon-law" style={{ fontStyle: "italic" }}>{pd.teaches} <b>No law binds these halls.</b></p>}
         {sh && <p className="dungeon-law"><b>{sh.law.name}:</b> {sh.law.text} <i>(the law stands in every fight inside — tear it down and it returns for the next; it is a permanent, and permanents can be answered)</i></p>}
         {lordRow && sh && (() => { const p = lordPronouns(sh.lord); /* S24 r1 (Chris): the Usher and the Sower are she */ return (
-          <p style={{ fontSize: 12.5 }}><b>{lordRow.lordName}</b> fights at <b>{lordRow.life}</b> life today ({lordRow.base} base{lordRow.growth > 0 ? ` +${lordRow.growth} grown with the years` : ""}{lordRow.reduction > 0 ? ` −${lordRow.reduction} bled by your hunting` : ""}; never below {c.knobs.lordLifeFloor}) — plus whatever your steps inside feed {p.obj}. {p.Pos} signature always looms: it starts in {p.pos} hand.</p>
+          <p style={{ fontSize: 12.5 }}><b>{lordRow.lordName}</b> fights at <b>{lordRow.life}</b> life today ({lordRow.base} base{lordRow.growth > 0 ? ` +${lordRow.growth} grown while you walked` : ""}{lordRow.reduction > 0 ? ` −${lordRow.reduction} bled by your hunting` : ""}; never below {c.knobs.lordLifeFloor}) — plus whatever your steps inside feed {p.obj}. {p.Pos} signature always looms: it starts in {p.pos} hand.</p>
         ); })()}
         <ul className="dungeon-stakes">
           <li>The world's clock <b>freezes</b> at this threshold; your steps inside feed the {info.kind === "stronghold" ? "lord" : info.kind === "mox" || info.kind === "power" ? "guardian" : "resident"} — it grows at {tiers.map((t) => t.steps).join(" / ")} interior steps (the meter shows the next threshold).</li>
@@ -608,7 +608,32 @@ function DungeonScreen({ c, pool }: { c: WorldController; pool: Map<string, Card
           <h3>Interior life</h3>
           <div style={{ fontSize: 12 }}>Fights start at <b>{meter.life}</b> (carried fight to fight; discarded at the door). A loss still costs a world life.</div>
         </div>
+        {/* S25 r4 notes 6+9 (Chris): what's HELD for the next fight — boons (tokens and lands
+            included) and the armed Barrage — plus the arming control (the interior surface the
+            parley menu can't reach). */}
+        {(() => {
+          const boons = run.boons ?? [];
+          const b = c.dungeonBarrageOption();
+          if (boons.length === 0 && !b && !(run.armedBarrage ?? 0)) return null;
+          return (
+            <div className="panel">
+              <h3>Held for the next fight</h3>
+              {boons.map((id, i) => (
+                <div key={i} style={{ fontSize: 12 }}>◆ {pool.get(id)?.name ?? id} <i style={{ color: "var(--ink-soft)" }}>— fights beside you, spent when it's fought</i></div>
+              ))}
+              {(run.armedBarrage ?? 0) > 0 && <div style={{ fontSize: 12, color: "var(--danger)" }}>◆ The Barrage — opens with <b>{run.armedBarrage}</b> damage already dealt</div>}
+              {boons.length === 0 && !(run.armedBarrage ?? 0) && <div style={{ fontSize: 11, color: "var(--ink-soft)" }}>nothing held — caches on the branches carry boons</div>}
+              {b && (
+                <button className="linkish" disabled={!!b.reason} title={b.reason ?? ""} style={{ fontSize: 11, marginTop: 4 }} onClick={() => c.openPower({ kind: "barrage", damage: Math.max(1, Math.min(b.cap - b.armed, Math.floor(b.depth / b.costPerDamage))) })}>
+                  arm the Barrage: {b.costPerDamage} R spare per damage (cap {b.cap}{b.armed ? `, armed ${b.armed}` : ""})
+                </button>
+              )}
+              <div style={{ fontSize: 10.5, color: "var(--ink-soft)", marginTop: 3 }}>Everything held dies with the run — walk out or fall, and it is spent for nothing.</div>
+            </div>
+          );
+        })()}
       </div>
+      {c.fuelPicker && <FuelPickerModal c={c} />} {/* S25 r4: the interior Barrage arms through the picker */}
     </div>
   );
 }
@@ -1264,13 +1289,16 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
       <div className="rail world-rail">
         <RailPanel title="Journey">
           <div style={{ fontSize: 12 }}>Duels: {w.duels.length} · won {w.duels.filter((d) => d.outcome === "win").length} · lost {w.duels.filter((d) => d.outcome === "loss").length}</div>
-          <div style={{ fontSize: 12 }}>Opponents defeated: {w.opponents.filter((o) => o.goneReason === "defeated").length} · renown {w.player.renown}{(["W", "U", "B", "R", "G"] as const).some((c) => w.player.renownByColor[c] > 0) ? ` (${(["W", "U", "B", "R", "G"] as const).filter((c) => w.player.renownByColor[c] > 0).map((c) => `${c}${w.player.renownByColor[c]}`).join(" ")})` : ""} · roaming now {w.opponents.filter((o) => !o.gone && o.at).length}</div>
+          <div style={{ fontSize: 12 }}>Opponents defeated: {w.opponents.filter((o) => o.goneReason === "defeated").length} · roaming now {w.opponents.filter((o) => !o.gone && o.at).length}</div>
           <div style={{ fontSize: 12 }}>Deck: {deckSize(activeDeck(w))} cards · basic {w.player.basicLand}</div>
         </RailPanel>
         <RailPanel title="Quests" badge={c.activeQuests().length || undefined}>
           {c.activeQuests().map(({ quest: q, stepsLeft, destName, targetName, targetRegion }) => (
             <div key={q.id} style={{ fontSize: 11.5, marginBottom: 4 }}>
               <b>{{ courier: "Courier", cardCourier: "Card courier", bounty: "Bounty", retrieval: "Retrieval" }[q.kind]}</b>
+              {/* S25 r4 note 2 (Chris: some quests don't say what we're pursuing): the courier's
+                  cargo is named, and every row ends with its REWARD (the pursuit itself). */}
+              {q.kind === "cardCourier" && q.carriedCardId ? <> — carrying {c.pool.get(q.carriedCardId)?.name ?? q.carriedCardId}</> : null}
               {q.kind === "retrieval" && <> — {q.itemRecovered
                 ? `${q.retrievalItem?.cardName} recovered — the buyer waits in ${w.map.towns.find((t) => t.index === q.fromTown)?.name ?? "the offer town"} (marked)`
                 : `${q.retrievalItem?.cardName} lies in ${(() => { const l = w.map.strongholds.find((f) => f.kind === "lair" && `lair_${f.opponentId}` === q.retrievalDungeonId); return l ? `${l.name ?? "a lair"} (${w.map.regions[l.region]?.name}; marked)` : "a lair"; })()}`}</>}
@@ -1291,6 +1319,7 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
                 </span>
               ) : null}
               {stepsLeft !== null && <span style={{ color: stepsLeft < 40 ? "var(--danger)" : "var(--ink-soft)" }}> · {stepsLeft} steps left</span>}
+              <span style={{ color: "var(--ink-soft)" }}> · pays {q.reward.gold}g{q.reward.cardName ? ` + ${q.reward.cardName}` : ""}{q.reward.manalink ? ((q.reward.manalinkKind ?? "basic") === "life" ? " + a life manalink" : ` + a ${q.reward.manalink} manalink`) : ""}</span>
               <button className="linkish" style={{ marginLeft: 4 }} title="abandon (fails the quest; a sent card is already gone)" onClick={() => c.abandonQuest(q.id)}>abandon</button>
             </div>
           ))}
@@ -1363,11 +1392,26 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
                   <span style={{ color: r.sealed ? "var(--boost)" : "var(--danger)", fontWeight: 600 }}>{r.sealed ? "fallen" : `${r.life} life`}</span>
                 </div>
                 {!r.sealed && (r.growth > 0 || r.reduction > 0) && (
-                  <div style={{ fontSize: 10.5, color: "var(--ink-soft)" }}>{r.base} base{r.growth > 0 ? ` +${r.growth} years` : ""}{r.reduction > 0 ? ` −${r.reduction} hunted` : ""}</div>
+                  <div style={{ fontSize: 10.5, color: "var(--ink-soft)" }}>{r.base} base{r.growth > 0 ? ` +${r.growth} grown` : ""}{r.reduction > 0 ? ` −${r.reduction} hunted` : ""}</div>
                 )}
               </div>
             ))}
-            <div style={{ fontSize: 10.5, color: "var(--ink-soft)", marginTop: 4 }}>Hunting a spoke bleeds its lord; the years fatten all five.</div>
+            <div style={{ fontSize: 10.5, color: "var(--ink-soft)", marginTop: 4 }}>Hunting a spoke bleeds its lord; every step of your road feeds all five.</div>
+            {/* S25 r4 note 4 (Chris): renown lives HERE now — fear is a face the lords' world reads,
+                not a footnote in the Journey line. Per-colour bars (each kill of that colour is a
+                notch; roamers of a colour flee when your renown there outgrows their tier). */}
+            <div style={{ marginTop: 8, borderTop: "1px solid var(--line, #c9b993)" }} />
+            <div style={{ fontSize: 11.5, marginTop: 6 }}><b>Your renown</b> · {w.player.renown} in all</div>
+            {(["W", "U", "B", "R", "G"] as const).map((col) => (
+              <div key={col} style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 2 }}>
+                <i className={`colour-pip c-${col}`} title={col} />
+                <div style={{ flex: 1, height: 7, background: "var(--fog, #f6efde)", border: "1px solid var(--line, #c9b993)", borderRadius: 3 }}>
+                  <div style={{ width: `${Math.min(100, w.player.renownByColor[col] * 8)}%`, height: "100%", background: "var(--ink-soft)", borderRadius: 2 }} />
+                </div>
+                <span style={{ fontSize: 11, width: 18, textAlign: "right" }}>{w.player.renownByColor[col]}</span>
+              </div>
+            ))}
+            <div style={{ fontSize: 10.5, color: "var(--ink-soft)", marginTop: 3 }}>Fear spreads by colour — beat a colour's creatures and its lesser kin start to flee you.</div>
           </RailPanel>
         )}
         <RailPanel title="Lairs & strongholds">

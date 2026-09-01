@@ -500,6 +500,32 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption, printed }: { c: Ma
   );
 }
 
+/** S25 r4 (Chris: Airship Crash's cycling went nowhere on click): a hand card offering both a
+ * cast and a hand-zone activation — pick which. */
+function CastOrActivateModal({ c, pool }: { c: MatchController; pool: Map<string, CardDef> }) {
+  if (c.phase.kind !== "castOrActivate") return null;
+  const cardId = c.game.state.objects[c.phase.objectId]?.cardId;
+  const name = cardId ? cardName(pool, cardId) : "the card";
+  const act = c.phase.activations[0];
+  const ability = act && act.type === "activateAbility" ? viewAbilityAt(c.human.current()!.view, pool, act.objectId, act.abilityIndex) : undefined;
+  const isCycle = !!ability && ability.kind === "activated" && ability.cost.discardSelf === true;
+  const actLabel = isCycle ? `Cycle${ability && ability.kind === "activated" && ability.cost.mana ? ` (${ability.cost.mana})` : ""} — discard it, draw a card` : "Use its ability from hand";
+  return (
+    <div className="gallery-modal">
+      <div className="gallery-modal-box play-dialog">
+        <h3 style={{ marginTop: 0, fontFamily: "var(--serif)" }}>{name}</h3>
+        <div className="dialog-list" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <button className="primary" onClick={() => c.chooseCastOrActivate("cast")}>Cast {name}</button>
+          <button onClick={() => c.chooseCastOrActivate("activate")}>{actLabel}</button>
+        </div>
+        <div style={{ marginTop: 8, textAlign: "right" }}>
+          <button onClick={() => c.chooseCastOrActivate(null)}>Cancel</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /** S15 (ADR-068 Amendment 2): Lotus — five colour buttons. */
 /** S20: a dual clicked during manual tapping — which color? */
 function TapColorModal({ c, pool }: { c: MatchController; pool: Map<string, CardDef> }) {
@@ -895,6 +921,7 @@ export function PlayMatch({
       {phase.kind === "chooseX" && <XModal c={c} phase={phase} />}
       {phase.kind === "chooseColor" && <ColorModal c={c} />}
       {phase.kind === "chooseTapColor" && <TapColorModal c={c} pool={pool} />}
+      {phase.kind === "castOrActivate" && <CastOrActivateModal c={c} pool={pool} />}
       {zoneOpen && <ZoneModal c={c} pool={pool} oracle={oracle} zone={zoneOpen} printed={printed} onClose={() => setZoneOpen(null)} />}
       {/* S22 r2: the play/draw flip ceremony — only for duels whose spec carries the world's roll. */}
       {!coinShown && c.spec.rules.startingPlayer !== undefined && (

@@ -296,3 +296,49 @@ describe("S25 Part 4 — the swap and the sites (worldgen)", () => {
     }
   });
 });
+
+describe("S25 playtest r4 — the interior Barrage and the manalink fallback", () => {
+  it("arming the Barrage inside a dungeon opens the next fight with the damage; the battle spends it (the boons shape)", async () => {
+    const { generateDungeonRun, dungeonDuelSpec, applyInteriorDuel } = await import("./dungeon.js");
+    const { defaultKnobs } = await import("./knobs.js");
+    const w = mkWorld();
+    unlockPower(w, "R");
+    w.player.collection["lightning_bolt"] = 20;
+    const knobs = { ...defaultKnobs() };
+    const run = generateDungeonRun(w, catalog, knobs, pool, { dungeonId: "power_g", kind: "power", color: "G", enteredFrom: { x: 1, y: 1 } });
+    const dmg = 5;
+    const paid = (await import("./powers.js")).payBarrage(w, pool, dmg, suggestFuel(fuelCandidates(w, pool, "R"), dmg)!);
+    expect(paid.ok).toBe(true);
+    run.armedBarrage = dmg;
+    const tmpl = catalog.opponents.find((o) => o.tier === 1)!;
+    const rng = new (await import("./rng.js")).WorldRng(1);
+    const { spec, enemyLife } = dungeonDuelSpec(w, catalog, knobs, run, { kind: "minion", tmpl }, [], rng, [], { enemyLifeDelta: -(run.armedBarrage ?? 0) });
+    expect(enemyLife).toBe(Math.max(1, tmpl.worldLife - dmg));
+    const lifeMod = spec.modifiers.find((m) => m.type === "startingLife" && m.player === 1) as { value: number };
+    expect(lifeMod.value).toBe(Math.max(1, tmpl.worldLife - dmg));
+    // The battle spends the arm, win or lose.
+    const result = { winner: 0 as const, reason: "LIFE" as const, turns: 4, finalLife: [9, 0] as [number, number], facts: { ante: [[], []] as [string[], string[]] }, log: [] };
+    applyInteriorDuel(w, knobs, run, result as never, run.minions[0]?.id, catalog);
+    expect(run.armedBarrage).toBeUndefined();
+  });
+
+  it("an over-cap BASIC manalink falls back to a LIFE manalink, not gold (r4 note 7)", async () => {
+    const { questsOnArrival, acceptQuest, townOffers } = await import("./quests.js");
+    const w = mkWorld();
+    // Hold the colour's basic already; force-run an award via a courier quest carrying a manalink reward.
+    void questsOnArrival; void acceptQuest; void townOffers;
+    const { worldKnobs: wk } = await import("./state.js");
+    const knobs = wk(w);
+    w.manalinks.push({ color: "G", town: 0, kind: "basic" });
+    // Reach award() through the public seam: fabricate an active courier quest at its destination.
+    w.quests.active.push({ id: "q_test", kind: "courier", tier: 2, fromTown: 0, toTown: 1, deadlineSteps: 0, acceptedStep: 0, text: "t", reward: { gold: 10, manalink: "G", manalinkKind: "basic" } } as never);
+    const town = w.map.towns.find((t) => t.index === 1)!;
+    const events = questsOnArrival(w, town, knobs);
+    expect(events.some((e) => e.type === "questDone")).toBe(true);
+    const life = w.manalinks.filter((m) => m.kind === "life");
+    expect(life).toHaveLength(1); // the fallback landed as a life link
+    expect(life[0]!.color).toBe("G");
+    const done = events.find((e) => e.type === "questDone");
+    expect(done && done.type === "questDone" ? done.rewardText : "").toMatch(/life manalink in lieu/);
+  });
+});

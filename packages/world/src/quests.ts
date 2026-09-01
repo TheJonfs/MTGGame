@@ -347,8 +347,10 @@ function award(world: WorldState, q: ActiveQuest, knobs: KnobValues): string {
         world.manalinks.push({ color: q.reward.manalink, town: q.fromTown, kind: "basic" });
         notes.push(`a manalink — every duel now starts with a bonus ${MANALINK_LAND_NAME[q.reward.manalink]} on your battlefield`);
       } else {
-        gold += knobs.questGoldByTier[q.tier] ?? 20; // cap reached: the link converts to gold
-        notes.push(`gold in lieu (you already hold a ${q.reward.manalink} manalink)`);
+        // S25 r4 (Chris): an over-cap BASIC falls back to a LIFE manalink, not gold — the reward
+        // stays a manalink (life is uncapped since r2). Only an over-cap life link still coins out.
+        world.manalinks.push({ color: q.reward.manalink, town: q.fromTown, kind: "life" });
+        notes.push(`a life manalink in lieu (you already hold a ${q.reward.manalink} land-link) — your maximum world life rises by 1 while this town stands free`);
       }
     }
   }

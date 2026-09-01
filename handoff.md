@@ -34,6 +34,10 @@ The director round ran in-session and every sheet is settled: **card art ×5 kep
 3. **The manual-tap takeback** (Chris cancelled mid-cast and the land stayed tapped): new engine action `untapForMana` — the exact inverse of tapForMana, legal while the chosen ability's whole production still floats, never for declared attackers, NO events fired (a takeback is not a game event: the Warden's law must not collect it). Logged and replay-clean; **replay guard**: it only joins windows that were already requests, so a pre-S25 lone-pass window stays silently auto-taken and every old saved replay stays byte-exact. Agents never take it (heuristic/random filter; sane prefers pass by construction). UI: click the tapped land — mid-manual-tap or after a cancel — and the tap comes back. Engine-fixtured.
 4. **Chris's observation, recorded not tweaked**: the stronghold lords sit in the right challenging-to-brutal zone (his GWB-manalink aggro deck was helpless into the Sower for want of removal and enchantment answers — arguably the deck's lesson, not the lord's). WATCH: lord life growth rates (world-clock and interior) if the feel drifts brutal-ward; the storm round owns deck iteration.
 
+## Playtest round 4 (post-delivery)
+
+See **`handoff-s25-addendum.md`** — nine notes from Chris's continued walk (cycling unreachable from hand FIXED with a cast-or-cycle chooser; quest rows name cargo + reward; manalink offers name their kind; renown bars into the lords panel; 'years' retired; the held-for-next-fight dungeon panel; over-cap basics fall back to LIFE links; lord growth re-set to 0.5/1/2 per 100 steps; the Barrage armable in dungeons — concern 5 closed).
+
 ## Deviations from the brief
 
 1. **Two quarter-words minted beyond the catalogue** (the honest count): `damage to:"you"` — the court doc's "Gallows Djinn self-damage" is event-addressed and cannot reach an activated ability; `permanentYouControl`/`permanentYouDontControl` — the "controller predicates" existed for creatures only. Both tiny, both validator-confined, both fixtured.
