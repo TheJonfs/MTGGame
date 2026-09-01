@@ -37,5 +37,6 @@
   "asset": "/custom-art/faldor_the_muster.png",
   "fallback": "rendered"
  },
- "prizeOnly": true
+ "prizeOnly": true,
+ "printedAsset": "faldor_the_muster.jpg"
 }

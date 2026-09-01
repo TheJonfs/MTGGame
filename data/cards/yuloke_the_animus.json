@@ -64,5 +64,6 @@
   "asset": "/custom-art/yuloke_the_animus.png",
   "fallback": "rendered"
  },
- "prizeOnly": true
+ "prizeOnly": true,
+ "printedAsset": "yuloke_the_animus.jpg"
 }
