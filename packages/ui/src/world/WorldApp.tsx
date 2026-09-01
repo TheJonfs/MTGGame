@@ -816,12 +816,8 @@ function PetalTelegraph({ c }: { c: WorldController }) {
   return (
     <div className="gallery-modal">
       <div className="gallery-modal-box play-dialog dungeon-telegraph">
-        {/* S26 r2 (Chris note 5): the law's seat announces the tip — its gate plate while its castle theme plays. */}
-        {content && (
-          <div style={{ margin: "-14px -14px 12px", overflow: "hidden", borderBottom: "2px solid var(--ink)" }}>
-            <img src={`/gate-plates/${content.id}.jpg`} alt="" style={{ width: "100%", display: "block", maxHeight: 200, objectFit: "cover" }} />
-          </div>
-        )}
+        {/* S26 r2–r3 (Chris): the law's seat announces the tip by its castle THEME only — no plate
+            (the petals may earn their own plates someday; the seats' stay at the seats). */}
         <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
           <img className="parley-portrait" src={`/portraits/${pd.boss.portrait}.png`} alt="" style={{ width: 72, height: 72, flexShrink: 0 }} title={pd.boss.name} onError={(e) => { (e.target as HTMLImageElement).style.visibility = "hidden"; }} />
           <div>
@@ -1481,7 +1477,9 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
     }
     // r5 (Chris): clicking early out of the win/loss screen ends its music early — leaving
     // duelResult fades whatever result sting still rings (the parley-fade pattern).
-    if (lastScreenKind.current === "duelResult" && scr.kind !== "duelResult") audio.fadeSting();
+    // S26 r3 (Chris): the Corolla's victory screens fade their Winduel early the same way.
+    const RESULT_SCREENS = ["duelResult", "petalVictory", "mirrorVictory"];
+    if (RESULT_SCREENS.includes(lastScreenKind.current) && lastScreenKind.current !== scr.kind) audio.fadeSting();
     lastScreenKind.current = scr.kind;
     // r5: each manalink splash rings the Manalink sting as it shows (one-voice: it fades
     // whatever rang before it — Winduel included, which was the whole point).
