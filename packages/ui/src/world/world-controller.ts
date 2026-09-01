@@ -1347,6 +1347,42 @@ export class WorldController {
     this.emit();
   }
 
+  // ---------- S26 r1 (Chris): the DEV menu — autocomplete the fifteen in-world dungeons ----------
+
+  /** The fifteen authored sites with their cleared state, for the dev menu's rows. */
+  devDungeonRows(): { id: string; kind: "mox" | "power" | "stronghold"; name: string; cleared: boolean }[] {
+    if (!this.world) return [];
+    const w = this.world;
+    return [
+      ...this.catalog.dungeons.map((m) => ({ id: m.id, kind: "mox" as const, name: m.name, cleared: !!w.dungeons[m.id]?.cleared })),
+      ...(this.catalog.powerDungeons ?? []).map((d) => ({ id: d.id, kind: "power" as const, name: d.name, cleared: !!w.dungeons[d.id]?.cleared })),
+      ...(this.catalog.strongholdContent ?? []).map((c) => ({ id: c.id, kind: "stronghold" as const, name: c.name, cleared: !!w.dungeons[c.id]?.cleared })),
+    ];
+  }
+  /** Complete one site as if its guardian had fallen: cleared = ground, and the prize that unlocks
+   * things — the Mox + guardian card, the power + guardian card, the lord's card + the SEAL. No
+   * escrow, no colour roll, no renown (a dev shortcut, not a ceremony). Autosaved. */
+  devCompleteDungeon(id: string): boolean {
+    if (!this.world) return false;
+    const w = this.world;
+    const mark = () => { (w.dungeons[id] ??= { cleared: false, resets: 0 }).cleared = true; };
+    const mox = this.moxDef(id);
+    if (mox) { mark(); addToCollection(w, [mox.prize.mox, mox.prize.guardianCard], "reward"); this.autosave(); return true; }
+    const pd = this.powerDef(id);
+    if (pd) { mark(); addToCollection(w, [pd.prize.guardianCard], "reward"); unlockPower(w, pd.color); this.autosave(); return true; }
+    const sh = this.strongholdDef(id);
+    if (sh) { mark(); addToCollection(w, [sh.lord.cardId], "reward"); strongholdState(w, sh.color).seal = true; this.autosave(); return true; }
+    return false;
+  }
+  /** Complete every site of a kind (or all fifteen). Returns how many newly fell. */
+  devCompleteAll(kind?: "mox" | "power" | "stronghold"): number {
+    let n = 0;
+    for (const row of this.devDungeonRows()) if ((!kind || row.kind === kind) && !row.cleared && this.devCompleteDungeon(row.id)) n += 1;
+    if (this.screen.kind === "map") this.screen = { ...this.screen, notice: n ? `Dev: ${n} site${n === 1 ? "" : "s"} completed — ${sealsHeld(this.world!)}/5 seals held; the doors at the centre read the new counts.` : "Dev: nothing left to complete." };
+    this.emit();
+    return n;
+  }
+
   // ---------- S26 (ADR-091): the Corolla + the Vault ----------
 
   get corollaDef(): CorollaDef | null {

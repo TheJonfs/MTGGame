@@ -128,6 +128,34 @@ describe("S26 — the Corolla and the Vault through the controller", () => {
     expect(c.petalRows().find((r) => r.color === "B")?.fallen).toBe(true);
   }, 60_000);
 
+  it("dev menu (S26 r1): completing the fifteen sites grants the Moxen, the powers, the lord cards and the seals — both centre doors read open; idempotent", () => {
+    const c = new WorldController(pool, catalog, memStorage());
+    c.newGame({ seed: 26, starter: "green", difficulty: "standard" });
+    const w = c.world!;
+    expect(c.devDungeonRows()).toHaveLength(15);
+    expect(c.devCompleteAll("mox")).toBe(5);
+    expect(MOX_IDS.every((id) => w.player.collection[id] === 1)).toBe(true);
+    expect(w.player.collection["the_pearl_cleric"]).toBe(1);
+    expect(c.devCompleteAll()).toBe(10);
+    expect(c.devCompleteAll()).toBe(0);
+    expect(c.devDungeonRows().every((r) => r.cleared)).toBe(true);
+    expect(w.player.collection["the_warden"]).toBe(1);
+    expect(w.player.collection["reya_dawnbringer"]).toBe(1);
+    expect(w.powers.unlocked).toHaveLength(5);
+    const door = w.map.strongholds.find((f) => f.kind === "corolla")!;
+    w.player.position = { ...door.at };
+    c.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: null };
+    c.knock();
+    const s1 = (c as WorldController).screen;
+    expect(s1.kind === "corollaTelegraph" && s1.open && s1.seals).toBe(5);
+    c.declineCorolla();
+    const vault = w.map.strongholds.find((f) => f.kind === "vault")!;
+    w.player.position = { ...vault.at };
+    c.knock();
+    const s2 = (c as WorldController).screen;
+    expect(s2.kind === "vaultTelegraph" && s2.open && s2.moxen).toBe(5);
+  });
+
   it("the Vault: four Moxen lock it; five open the Mirror (your deck + the Lotus, ante off); a loss keeps the door; a win pays the Lotus once and the Vault is ground", async () => {
     const c = new WorldController(pool, catalog, memStorage());
     c.stepMs = 0;

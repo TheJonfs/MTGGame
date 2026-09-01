@@ -98,6 +98,44 @@ function StartScreen({ c, onStart }: { c: WorldController; onStart: (choice: New
   );
 }
 
+/** S26 r1 (Chris): the dev menu — autocomplete the fifteen in-world dungeons (the five Moxen,
+ * the five Powers, the five Strongholds) so the centre doors can be tested without the crawl.
+ * A dev-era affordance: it grants the unlocking prizes only (no escrow, no rolls, no renown). */
+function DevTab({ c }: { c: WorldController }) {
+  const [open, setOpen] = useState(false);
+  const rows = c.devDungeonRows();
+  const label = { mox: "Mox", power: "Power", stronghold: "Stronghold" } as const;
+  return (
+    <>
+      <button className="chrome-tab" title="dev: complete dungeons to test the centre doors" onClick={() => setOpen(true)}>Dev</button>
+      {open && (
+        <div className="gallery-modal" onClick={() => setOpen(false)}>
+          <div className="gallery-modal-box play-dialog" style={{ maxWidth: 560 }} onClick={(e) => e.stopPropagation()}>
+            <h3 style={{ marginTop: 0, fontFamily: "var(--serif)" }}>Dev — complete the fifteen</h3>
+            <p style={{ fontSize: 12, color: "var(--ink-soft)", marginTop: 0 }}>Each completion is the site's fall without the crawl: cleared = ground, and only the prize that unlocks things (the Mox and guardian card; the power and guardian card; the lord's card and the seal). Autosaved.</p>
+            <p style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+              <button className="primary" onClick={() => c.devCompleteAll()}>Complete all 15</button>
+              <button onClick={() => c.devCompleteAll("mox")}>The five Moxen</button>
+              <button onClick={() => c.devCompleteAll("power")}>The five Powers</button>
+              <button onClick={() => c.devCompleteAll("stronghold")}>The five Strongholds</button>
+            </p>
+            <div style={{ maxHeight: 300, overflowY: "auto", fontSize: 12 }}>
+              {rows.map((r) => (
+                <div key={r.id} style={{ display: "flex", gap: 8, alignItems: "center", padding: "2px 0", opacity: r.cleared ? 0.55 : 1 }}>
+                  <span style={{ width: 78, color: "var(--ink-soft)" }}>{label[r.kind]}</span>
+                  <span style={{ flex: 1 }}>{r.name}</span>
+                  {r.cleared ? <i style={{ color: "var(--ink-soft)" }}>cleared</i> : <button className="linkish" style={{ fontSize: 11 }} onClick={() => c.devCompleteDungeon(r.id)}>complete</button>}
+                </div>
+              ))}
+            </div>
+            <p style={{ textAlign: "right", marginBottom: 0 }}><button onClick={() => setOpen(false)}>Close</button></p>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 function Chrome({ c, onDownload }: { c: WorldController; onDownload: () => void }) {
   const w = c.world!;
   return (
@@ -113,6 +151,7 @@ function Chrome({ c, onDownload }: { c: WorldController; onDownload: () => void 
       <button className="chrome-tab" onClick={() => c.openCollection()}>Collection</button>
       <button className="chrome-tab" onClick={() => c.save()}>Save</button>
       <button className="chrome-tab" onClick={onDownload}>Download</button>
+      <DevTab c={c} />
       <AudioTab />
       <span className="seed">seed {w.seed} · {w.difficulty}</span>
     </div>
