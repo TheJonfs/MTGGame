@@ -110,8 +110,11 @@ export interface StackItem {
 
 /** A continuous effect created by a resolved spell/ability. Statics are computed live, not stored. */
 export interface StoredContinuousEffect {
-  kind: "modifyPT" | "grantKeyword" | "restrict";
+  kind: "modifyPT" | "grantKeyword" | "restrict" | "gainControl";
   objectId: string;
+  /** S26 (gainControl — Lumen's threaten): the seat that controls the object while this stands.
+   * Read by syncControl beside the aura statics; expires with the turn like any EOT effect. */
+  controller?: PlayerId;
   power?: number;
   toughness?: number;
   keyword?: Keyword;

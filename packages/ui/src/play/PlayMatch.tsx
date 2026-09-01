@@ -9,6 +9,7 @@ import { actionLabel, cardName, eventLabel, stepLabel, targetLabel } from "../la
 import type { OracleEntry } from "../engine-bridge";
 import type { MatchController, UiPhase } from "./match-controller";
 import { audio } from "../audio/audio";
+import { viewAbilityAt } from "@shandalar/agents"; // S26: the S25 r4 chooser referenced it unimported — a runtime ReferenceError the typecheck never saw (tsx is outside tsc's project; the parse gate parses, it does not bind)
 
 /**
  * The play screen (S10, ADR-058): Board + rail + prompt bar wired to the
@@ -507,7 +508,7 @@ function CastOrActivateModal({ c, pool }: { c: MatchController; pool: Map<string
   const cardId = c.game.state.objects[c.phase.objectId]?.cardId;
   const name = cardId ? cardName(pool, cardId) : "the card";
   const act = c.phase.activations[0];
-  const ability = act && act.type === "activateAbility" ? viewAbilityAt(c.human.current()!.view, pool, act.objectId, act.abilityIndex) : undefined;
+  const ability = act && act.type === "activateAbility" ? viewAbilityAt(c.currentView()!, pool, act.objectId, act.abilityIndex) : undefined;
   const isCycle = !!ability && ability.kind === "activated" && ability.cost.discardSelf === true;
   const actLabel = isCycle ? `Cycle${ability && ability.kind === "activated" && ability.cost.mana ? ` (${ability.cost.mana})` : ""} — discard it, draw a card` : "Use its ability from hand";
   return (
@@ -515,7 +516,7 @@ function CastOrActivateModal({ c, pool }: { c: MatchController; pool: Map<string
       <div className="gallery-modal-box play-dialog">
         <h3 style={{ marginTop: 0, fontFamily: "var(--serif)" }}>{name}</h3>
         <div className="dialog-list" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          <button className="primary" onClick={() => c.chooseCastOrActivate("cast")}>Cast {name}</button>
+          <button className="primary" onClick={() => c.chooseCastOrActivate("cast")}>{c.phase.casts[0]?.type === "playLand" ? `Play ${name}` : `Cast ${name}`}</button>
           <button onClick={() => c.chooseCastOrActivate("activate")}>{actLabel}</button>
         </div>
         <div style={{ marginTop: 8, textAlign: "right" }}>

@@ -3,6 +3,7 @@ import { type TargetSpec,
   parseManaCost,
   manaValue,
   type Amount,
+  type CounterKind,
   type DiscardFilter,
   type DiscardMode,
   type EffectContext,
@@ -144,6 +145,10 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
           return narrow(ctx.state.battlefield.filter(
             (id) => getObject(ctx.state, id).controller === controller && isCreature(ctx, id),
           ));
+        case "creaturesYouDontControl":
+          return narrow(ctx.state.battlefield.filter(
+            (id) => getObject(ctx.state, id).controller !== controller && isCreature(ctx, id),
+          ));
         case "allCreatures":
           return narrow(ctx.state.battlefield.filter((id) => isCreature(ctx, id)));
         case "attached":
@@ -274,6 +279,7 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
         ...(effect.toughness !== undefined && { toughness: effect.toughness }),
         ...(effect.keyword !== undefined && { keyword: effect.keyword }),
         ...(effect.what !== undefined && { what: effect.what }),
+        ...(effect.controller !== undefined && { controller: effect.controller as PlayerId }),
         duration: effect.duration,
         sourceStackItemId: item.id,
         timestamp: nextTimestamp(ctx.state),
@@ -350,7 +356,8 @@ function sharedOps(ctx: EngineCtx, asController: PlayerId) {
       }
     },
 
-    addCounters(objectId: string, kind: "+1/+1" | "-1/-1", count: number): void {
+    addCounters(objectId: string, kind: CounterKind, count: number): void {
+      // S26: named kinds (Clio's depth) share the record with the P/T pair — inert to characteristics().
       const obj = ctx.state.objects[objectId];
       if (!obj || obj.zone !== "battlefield") return;
       obj.counters[kind] = (obj.counters[kind] ?? 0) + count;
@@ -553,6 +560,10 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
           return ctx.state.battlefield.filter(
             (id) => getObject(ctx.state, id).controller === player && isCreature(ctx, id),
           );
+        case "creaturesYouDontControl":
+          return ctx.state.battlefield.filter(
+            (id) => getObject(ctx.state, id).controller !== player && isCreature(ctx, id),
+          );
         case "allCreatures":
           return ctx.state.battlefield.filter((id) => isCreature(ctx, id));
         default:
@@ -608,6 +619,13 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
  * from `controller`'s point of view; `graveyardCount` counts cards. Used by resolved effects
  * (Tendrils), statics (Gaean Wurm, Werebear's threshold) and cost reduction (Baru). */
 export function evaluateValueRef(ctx: EngineCtx, ref: Exclude<ValueRef, { ref: "targetPower" } | { ref: "targetManaValue" } | { ref: "eventDamage" } | { ref: "xPaid" }>, controller: PlayerId, sourceId?: string): number {
+  if (ref.ref === "countersOnSelf") {
+    // S26 (member eight — Clio): the source's own counters of a kind, live, times the bounded literal.
+    // Zero when the source is gone (a graveyard card holds no counters — CR 122.2 by construction).
+    const src = sourceId ? ctx.state.objects[sourceId] : undefined;
+    if (!src || src.zone !== "battlefield") return 0;
+    return (src.counters[ref.kind] ?? 0) * (ref.times ?? 1);
+  }
   if (ref.ref === "graveyardCount") {
     const who = ref.who === "you" ? controller : opponentOf(controller);
     const yard = ctx.state.players[who].graveyard;

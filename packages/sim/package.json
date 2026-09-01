@@ -24,6 +24,10 @@
       "types": "./src/lord-decks.ts",
       "default": "./src/lord-decks.ts"
     },
+    "./corolla-decks": {
+      "types": "./src/corolla-decks.ts",
+      "default": "./src/corolla-decks.ts"
+    },
     "./court-decks": {
       "types": "./src/court-decks.ts",
       "default": "./src/court-decks.ts"

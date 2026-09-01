@@ -237,6 +237,10 @@ export class MatchController {
   private noticeTimer: ReturnType<typeof setTimeout> | null = null;
 
   private human = new HumanAgent();
+  /** S26: the human seat's current view for the UI's chooser labels (the S25 modal reached into the private agent). */
+  currentView(): GameView | null {
+    return this.human.current()?.view ?? null;
+  }
   private conceding = false;
   private runPromise: Promise<MatchResult> | null = null;
   private listeners = new Set<() => void>();
@@ -709,6 +713,11 @@ export class MatchController {
       this.cancel(); // back to the pending request's base phase
       return;
     }
+    // S26: a land's "cast" is the play-land special action — a single submit, no cast flow.
+    if (which === "cast" && casts.length === 1 && casts[0]!.type === "playLand") {
+      this.submit(casts[0]!);
+      return;
+    }
     this.beginCast(objectId, which === "cast" ? casts : activations);
   }
 
@@ -879,7 +888,15 @@ export class MatchController {
   clickHand(objectId: string): void {
     if (this.phase.kind !== "priority") return;
     const land = this.phase.lands.get(objectId);
+    const activations = this.phase.activatable.get(objectId);
     if (land) {
+      // S26 (the S25 r4 watch item, verified live): a cycling LAND with the drop still open and
+      // the mana up used to play on click with no way to cycle it — the chooser covers lands too.
+      if (activations && activations.length > 0) {
+        this.phase = { kind: "castOrActivate", objectId, casts: [land], activations };
+        this.emit();
+        return;
+      }
       this.submit(land); // lands are single actions; played on click (documented)
       return;
     }
@@ -887,7 +904,6 @@ export class MatchController {
     // S25 r4 (Chris): a hand card can also carry a hand-zone ACTIVATION (cycling). Both → the
     // player picks; activation only (no legal cast) → straight to it. Before this, the card
     // glowed (activatable made the window meaningful) but the click went nowhere.
-    const activations = this.phase.activatable.get(objectId);
     if (variants && variants.length > 0 && activations && activations.length > 0) {
       this.phase = { kind: "castOrActivate", objectId, casts: variants, activations };
       this.emit();

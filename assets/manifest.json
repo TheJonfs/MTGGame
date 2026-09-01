@@ -435,6 +435,66 @@
         }
       }
     },
+    "card-faldor-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:6caeb741e813bf7b1def290c2589f2e87153ae01881e9a07e3ae397c18c7251b",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:6caeb741e813bf7b1def290c2589f2e87153ae01881e9a07e3ae397c18c7251b",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-faldor-1/canonical.png",
+          "rendered_at": "2026-09-01T20:35:13+00:00",
+          "thumb": "assets/thumbs/card-faldor-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-faldor-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:489fe87f154d20b264b4aa613c3b88bf43e7c414742bb6bd235fa109d7b73f5c",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:489fe87f154d20b264b4aa613c3b88bf43e7c414742bb6bd235fa109d7b73f5c",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-faldor-2/canonical.png",
+          "rendered_at": "2026-09-01T20:35:22+00:00",
+          "thumb": "assets/thumbs/card-faldor-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-faldor-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:da07ad29ca79429d349538374c943246592f6b1c0121544b31e9db0041a86ec4",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:da07ad29ca79429d349538374c943246592f6b1c0121544b31e9db0041a86ec4",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-faldor-3/canonical.png",
+          "rendered_at": "2026-09-01T20:35:31+00:00",
+          "thumb": "assets/thumbs/card-faldor-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-faldor-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:c424a8b6271c1f9dc50cfb16d2214782676469a918397a056957bcf4f04031c3",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:c424a8b6271c1f9dc50cfb16d2214782676469a918397a056957bcf4f04031c3",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-faldor-4/canonical.png",
+          "rendered_at": "2026-09-01T20:35:39+00:00",
+          "thumb": "assets/thumbs/card-faldor-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "card-gaean-wurm-1": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:149c76e5202ab2db92d453fd98ea4dd2652410d1eefd323b9e1c4d5951ce33d1",
@@ -1575,6 +1635,66 @@
         }
       }
     },
+    "card-yuloke-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:d0c796a3411ef597d2e6c9127d1543082e2aff2aba76d56d1ca41797d73263e7",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:d0c796a3411ef597d2e6c9127d1543082e2aff2aba76d56d1ca41797d73263e7",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-yuloke-1/canonical.png",
+          "rendered_at": "2026-09-01T20:34:37+00:00",
+          "thumb": "assets/thumbs/card-yuloke-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-yuloke-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:11b93c179fe1fa91b0eeb3b98fb49f3ad78e4ac9a4607b5de85358ac4f7297c7",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:11b93c179fe1fa91b0eeb3b98fb49f3ad78e4ac9a4607b5de85358ac4f7297c7",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-yuloke-2/canonical.png",
+          "rendered_at": "2026-09-01T20:34:46+00:00",
+          "thumb": "assets/thumbs/card-yuloke-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-yuloke-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:58045ad1951eb96e9974e2004d94f9584fd7d861a1ea417365f7938299e145d6",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:58045ad1951eb96e9974e2004d94f9584fd7d861a1ea417365f7938299e145d6",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-yuloke-3/canonical.png",
+          "rendered_at": "2026-09-01T20:34:56+00:00",
+          "thumb": "assets/thumbs/card-yuloke-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-yuloke-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:f5421a0b8ea905983041e51f684d56b2d883390f22c6218615b6382634a53140",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:f5421a0b8ea905983041e51f684d56b2d883390f22c6218615b6382634a53140",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-yuloke-4/canonical.png",
+          "rendered_at": "2026-09-01T20:35:05+00:00",
+          "thumb": "assets/thumbs/card-yuloke-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "concept-map-dungeon": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:7025802528e5d06f3527fc62728f41157e3d652dbcc06adaeddbfe8bbc513ce4",
@@ -1601,6 +1721,81 @@
           "path": "assets/images/concept-map-overworld/canonical.png",
           "rendered_at": "2026-08-24T19:49:53+00:00",
           "thumb": "assets/thumbs/concept-map-overworld/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "corolla-clio": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:548302a5621e43fb385ffc0e506c12e59b5dce8e9d51a0fc297db2d910c87d0a",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:548302a5621e43fb385ffc0e506c12e59b5dce8e9d51a0fc297db2d910c87d0a",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/corolla-clio/canonical.png",
+          "rendered_at": "2026-09-01T20:33:19+00:00",
+          "thumb": "assets/thumbs/corolla-clio/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "corolla-faldor": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:e622e3800a273d7eb3cf854cef27eaf9984b7f511f05b07d8709ac0608efb5f1",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:e622e3800a273d7eb3cf854cef27eaf9984b7f511f05b07d8709ac0608efb5f1",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/corolla-faldor/canonical.png",
+          "rendered_at": "2026-09-01T20:33:41+00:00",
+          "thumb": "assets/thumbs/corolla-faldor/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "corolla-lumen": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:0bbf618951ac6030eedec17f56b8a911cbb31fd72fcf95861f4c5b4b4ffaa159",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:0bbf618951ac6030eedec17f56b8a911cbb31fd72fcf95861f4c5b4b4ffaa159",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/corolla-lumen/canonical.png",
+          "rendered_at": "2026-09-01T20:33:13+00:00",
+          "thumb": "assets/thumbs/corolla-lumen/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "corolla-seraphina": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:a3aef84e937ecafca5b5b5f934f974b27865dd47ca9acb7b8fa8d797faa0c842",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:a3aef84e937ecafca5b5b5f934f974b27865dd47ca9acb7b8fa8d797faa0c842",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/corolla-seraphina/canonical.png",
+          "rendered_at": "2026-09-01T20:33:26+00:00",
+          "thumb": "assets/thumbs/corolla-seraphina/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "corolla-yuloke": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:e90e1b9992f3c7dd205c4c39034f9fdd1e361c7a67a64b15162174b085cfb42b",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:e90e1b9992f3c7dd205c4c39034f9fdd1e361c7a67a64b15162174b085cfb42b",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/corolla-yuloke/canonical.png",
+          "rendered_at": "2026-09-01T20:33:34+00:00",
+          "thumb": "assets/thumbs/corolla-yuloke/canonical.png",
           "variant_prompt": null
         }
       }
@@ -1845,6 +2040,21 @@
         }
       }
     },
+    "gate-corolla": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:958d92265fc974fa594091d12511916c8b85de303b9d9a0c9eda18f2564270bf",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:958d92265fc974fa594091d12511916c8b85de303b9d9a0c9eda18f2564270bf",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/gate-corolla/canonical.png",
+          "rendered_at": "2026-09-01T20:34:19+00:00",
+          "thumb": "assets/thumbs/gate-corolla/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "gate-furnace-gate": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:f1f55325a7c9d0fd6e6696aea392a4a5d6c0d620c43a8231c5b737baefb86e51",
@@ -1871,6 +2081,21 @@
           "path": "assets/images/gate-spiral-spire/canonical.png",
           "rendered_at": "2026-08-28T17:20:52+00:00",
           "thumb": "assets/thumbs/gate-spiral-spire/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "gate-vault": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:97be94fa9b15964c8d85c729d17813640b83a5083024091d1ffbe5633c767d18",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:97be94fa9b15964c8d85c729d17813640b83a5083024091d1ffbe5633c767d18",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/gate-vault/canonical.png",
+          "rendered_at": "2026-09-01T20:34:28+00:00",
+          "thumb": "assets/thumbs/gate-vault/canonical.png",
           "variant_prompt": null
         }
       }
@@ -2850,6 +3075,21 @@
         }
       }
     },
+    "sprite-corolla-door": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:6d5663130b2709b2dc46e7fe894162f1b48cbf9500b7c2d5b0f87a0f389ec766",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:6d5663130b2709b2dc46e7fe894162f1b48cbf9500b7c2d5b0f87a0f389ec766",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-corolla-door/canonical.png",
+          "rendered_at": "2026-09-01T20:33:55+00:00",
+          "thumb": "assets/thumbs/sprite-corolla-door/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "sprite-dungeon-door": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:a8db4cac9520c9f7863c82ad4d63adb54e8d158d960f132b7c8b4f2a21d2d447",
@@ -2955,6 +3195,21 @@
         }
       }
     },
+    "sprite-heart-town": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:f5a9c59c4224cb069951a581348ea30acf7d80a426dc341b42e9dd2feaf3642e",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:f5a9c59c4224cb069951a581348ea30acf7d80a426dc341b42e9dd2feaf3642e",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-heart-town/canonical.png",
+          "rendered_at": "2026-09-01T20:34:11+00:00",
+          "thumb": "assets/thumbs/sprite-heart-town/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "sprite-lair": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:254cc37c2bd03ea7ae2e748c334d325a4f55a0a6bdf3aa3dbae8261fc9393ddb",
@@ -2966,6 +3221,21 @@
           "path": "assets/images/sprite-lair/canonical.png",
           "rendered_at": "2026-08-25T20:07:55+00:00",
           "thumb": "assets/thumbs/sprite-lair/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "sprite-petal": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:5170f3d9718bb3f6a154b98cb659c89f144318a20f642c24915dc137a9b288cc",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:5170f3d9718bb3f6a154b98cb659c89f144318a20f642c24915dc137a9b288cc",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-petal/canonical.png",
+          "rendered_at": "2026-09-01T20:33:48+00:00",
+          "thumb": "assets/thumbs/sprite-petal/canonical.png",
           "variant_prompt": null
         }
       }
@@ -3206,6 +3476,21 @@
           "path": "assets/images/sprite-u-searocks-2/canonical.png",
           "rendered_at": "2026-08-28T04:22:06+00:00",
           "thumb": "assets/thumbs/sprite-u-searocks-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "sprite-vault": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:cf3cfc919b4a136f7947fff000262394a304c61b588d41342f6fa66895369cbc",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:cf3cfc919b4a136f7947fff000262394a304c61b588d41342f6fa66895369cbc",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/sprite-vault/canonical.png",
+          "rendered_at": "2026-09-01T20:34:03+00:00",
+          "thumb": "assets/thumbs/sprite-vault/canonical.png",
           "variant_prompt": null
         }
       }

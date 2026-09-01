@@ -34,6 +34,8 @@ export type Duration = "WHILE_SOURCE_ON_BATTLEFIELD" | "UNTIL_END_OF_TURN" | "UN
  */
 export const SCOPES = [
   "creaturesYouControl",
+  // S26 (Clio's tax): the mirror scope — creatures the source's controller does NOT control.
+  "creaturesYouDontControl",
   "allCreatures",
   "attached",
   "self",
@@ -75,6 +77,9 @@ export const TARGET_PREDICATES = [
   // pattern widened to permanents ("for each player, choose target permanent that player controls").
   "permanentYouControl",
   "permanentYouDontControl",
+  // S26 (Seraphina, the Initiative): the status-predicate door — a creature that is tapped.
+  // Re-checked at resolution like every predicate: an untap in response fizzles the kill (CR 608.2b).
+  "tappedCreature",
 ] as const;
 export type TargetPredicate = (typeof TARGET_PREDICATES)[number];
 
@@ -133,11 +138,19 @@ export type ValueRef =
    * doctrine is reaffirmed around it — a fixed `times` param is not a calculator; general
    * arithmetic remains excluded. Triggered-ability effects only (validator-confined). */
   | { ref: "eventDamage"; times?: number }
+  /** S26 (family member eight — Clio, Lady of the Depths): the number of `kind` counters on the
+   * ability's own source, live, times a bounded literal (−1 for a tax: "−1/−0 for each depth
+   * counter"). Statics evaluate it live; resolved effects read it at resolution. */
+  | { ref: "countersOnSelf"; kind: CounterKind; times?: number }
   /** S25 (ADR-088, family member seven): the X announced for the source permanent's own cast,
    * persisted onto the object at battlefield entry and carried into its ETB trigger's event
    * context (LKI by construction — the Emerald Keeper's pump survives the Keeper's death in
    * response, CR 603.3). ETB-trigger effects on X-cost permanents only (validator-confined). */
   | { ref: "xPaid" };
+/** Counter kinds. +1/+1 and −1/−1 are the P/T pair characteristics() reads (S1 slots); S26 opens the
+ * accumulator class — a NAMED kind (lowercase word) is inert state the card's own refs and costs
+ * read (Clio's depth counters). Named kinds never touch P/T. */
+export type CounterKind = "+1/+1" | "-1/-1" | (string & {});
 export type Amount = number | "X" | ValueRef;
 /** P/T deltas may reference the stack item's X, positively or negated (Drana); statics may carry
  * count refs, evaluated live (A4: Gaean Wurm's "+1/+1 for each Forest you control"). */
@@ -196,7 +209,7 @@ export type EffectBase =
   /** A10 (S22): `count` may be a value ref (Aether Mutation's X Saprolings); `pt` sets the token's
    * base P/T, locked at resolution (Overload's X/X Weird — the printed ruling: it does not fluctuate). */
   | { type: "createToken"; tokenId: string; count: number | ValueRef; who: Who; pt?: ValueRef }
-  | { type: "addCounters"; kind: "+1/+1" | "-1/-1"; count: number | ValueRef; target?: number; scope?: Scope; subtype?: string; cardType?: string; other?: boolean }
+  | { type: "addCounters"; kind: CounterKind; count: number | ValueRef; target?: number; scope?: Scope; subtype?: string; cardType?: string; other?: boolean }
   /** A10 (S22): `targetSpec` fans out (the Warden's "tap up to two target creatures"). */
   | { type: "tapTarget"; target?: number; targetSpec?: number }
   | { type: "untapTarget"; target: number }
@@ -211,7 +224,11 @@ export type EffectBase =
    * `withCounters` (S22): it enters with counters (Graceful Restoration's +1/+1 rider). */
   | { type: "returnFromGraveyard"; target?: number; targetSpec?: number; scope?: Scope; to: "battlefield" | "hand"; temporary?: true; withCounters?: { kind: "+1/+1"; count: number } }
   | { type: "fight"; targets: [number, number] }
-  | { type: "gainControl"; scope: Scope } // static-only (ADR-033); targeted/EOT variant reserved
+  /** ADR-033: the static form (scope "attached" — Control Magic). S26 (Lumen, the Hearth Fire): the
+   * RESOLVED form — `target` + `duration: "UNTIL_END_OF_TURN"` — the threaten class: a stored control
+   * effect the control layer reads beside the statics; expires at cleanup (the creature stays tapped
+   * if it attacked); survives the source leaving (CR 611.2c — the duration is the turn's, not hers). */
+  | { type: "gainControl"; scope?: Scope; target?: number; duration?: Duration }
   /** ADR-068 Amendment 1: find-may-fail search; chooser sees matching library cards in the request payload; always shuffles after (CR 701.19).
    * ADR-076: predicate may be `subtype:<Subtype>` (Goblin Matron). */
   | { type: "searchLibrary"; predicate: "basicLand" | "anyCard" | `subtype:${string}`; to: "hand" | "battlefield"; entersTapped?: boolean }
@@ -289,7 +306,11 @@ export type TriggerEvent =
   | "UNTAPPED"
   /** A10 activation (S22): the play-land special action announced itself — distinct from
    * enters-the-battlefield; effect-placed lands do not fire it (the Sower). */
-  | "LAND_PLAYED";
+  | "LAND_PLAYED"
+  /** S26 (the Corolla batch): a player drew a card — DISCARD's sibling, the first collector counts
+   * as skeleton (Faldor, the Muster). Condition `controller` = who drew, relative to the observer's
+   * controller (default "you"). Opening hands are not draws (CR 103.4) — the collector is gated. */
+  | "DRAW";
 
 export const TRIGGER_EVENTS: readonly TriggerEvent[] = [
   "ENTERS_BATTLEFIELD",
@@ -307,6 +328,7 @@ export const TRIGGER_EVENTS: readonly TriggerEvent[] = [
   "RETURNED_TO_HAND",
   "UNTAPPED",
   "LAND_PLAYED",
+  "DRAW",
 ];
 
 /**
@@ -384,6 +406,10 @@ export interface ActivatedCost {
   /** S25 word 4 (ADR-088): exile the top `count` cards of your library as an activation cost
    * (the Pearl Cleric — parameterized count). Activatable only while the library is that deep. */
   exileTop?: number;
+  /** S26 (Clio): remove `count` counters of `kind` from the ability's own source as a cost
+   * (CR 601.2h — paid at activation, never refunded). Activatable only while the source holds
+   * that many; the enumerator gates it (the burst is legal at three, not two). */
+  removeCounters?: { kind: CounterKind; count: number };
 }
 
 export interface ActivatedAbilityDef {

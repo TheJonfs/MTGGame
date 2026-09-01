@@ -25,7 +25,10 @@
     "card-manifest": "tsx scripts/card-manifest.ts",
     "fuzz:duals": "tsx packages/sim/src/fuzz-duals-cli.ts",
     "guardian-sim": "tsx packages/world/src/guardian-sim-cli.ts",
-    "lord-sim": "tsx packages/world/src/lord-sim-cli.ts"
+    "lord-sim": "tsx packages/world/src/lord-sim-cli.ts",
+    "petal-sim": "tsx packages/world/src/petal-sim-cli.ts",
+    "mirror-sim": "tsx packages/world/src/mirror-sim-cli.ts",
+    "typecheck:ui": "tsc -p tsconfig.tsx-check.json"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

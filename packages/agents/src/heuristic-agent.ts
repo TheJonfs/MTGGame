@@ -160,11 +160,14 @@ export class HeuristicAgent implements Agent {
     // proactively — the view-sim can't price floating mana, and popping the
     // Lotus for nothing is the classic blunder. (Lotus is prize-only; a human
     // holds it, the AI essentially never will.)
-    if (action.type === "activateAbility" && action.color !== undefined) return -Infinity;
-    // S17 (book of shame 12): a mana BURST — Dark Ritual, Skirk Prospector's sacrifice — is a play
-    // only when the extra mana lets us cast something this step that we otherwise couldn't.
+    // S26 (the Mirror's honesty — mirror-sim showed the reflection WEAKER with the Lotus than
+    // without: a dead card in 41): a choice-bearing mana ability is a BURST like Dark Ritual —
+    // popped only when its three mana of the chosen colour enable a cast this step that we
+    // couldn't otherwise pay, and only in the colour that cast wants. Every other colour, and
+    // every idle window, stays at -Infinity (the S15 blunder guard holds).
     const burst = this.manaBurst(view, action);
     if (burst !== null) return burst.enables ? evaluate(view, this.profile, this.defs) + 0.6 : -Infinity;
+    if (action.type === "activateAbility" && action.color !== undefined) return -Infinity;
     // S17 (book of shame 13): cycling a spell is a cantrip of last resort — only when the card has
     // no legal use on this board (Airship Crash with nothing to crash); never while it could be cast.
     // S22: the Stoker's GRANTED cycling rides this unchanged (viewAbilityAt resolves it), and lands
@@ -184,6 +187,8 @@ export class HeuristicAgent implements Agent {
     if (this.discardWasteGated(view, action)) return -Infinity; // Duress/Mind Rot into an empty hand
     if (this.pumpWasteGated(view, action)) return -Infinity; // Giant Growth outside combat, empty stack
     if (this.fleetingWasteGated(view, action)) return -Infinity; // S23: the Thundersnake outside its window
+    if (this.threatenGated(view, action)) return -Infinity; // S26: Lumen's steal only where the swing cashes
+    if (this.accumulatorSpendGated(view, action)) return -Infinity; // S26: Clio holds the tax while the board threatens
     // The misaim rule: a FINITE cliff (not -Infinity) so book-of-shame orderings among
     // bad aims survive — at any softmax temperature exp(-MISAIM/t) is 0, so a misaimed
     // variant is never picked while any legitimate action (pass included) exists.
@@ -286,6 +291,7 @@ export class HeuristicAgent implements Agent {
     const me = view.you;
     let produced = 0;
     let spendsCard: string | null = null;
+    let burstColor: string | null = null;
     if (action.type === "castSpell") {
       const card = view.hand.find((c) => c.objectId === action.objectId);
       const d = card ? this.def(card.cardId) : undefined;
@@ -299,6 +305,8 @@ export class HeuristicAgent implements Agent {
       const ab = d?.abilities?.[action.abilityIndex];
       if (!ab || ab.kind !== "activated" || !ab.cost.sacrifice || !ab.effects.every((e) => e.type === "addMana")) return null;
       for (const e of ab.effects) if (e.type === "addMana" && e.mana) produced += (e.mana.match(/\{/g) ?? []).length;
+      // S26: the Lotus — N of one chosen colour; the enabling card must WANT that colour (or none).
+      for (const e of ab.effects) if (e.type === "addMana" && e.choice) { produced += e.choice.count; burstColor = action.color ?? null; }
     } else return null;
     const pool = Object.values(view.manaPool).reduce((a, b) => a + b, 0);
     const producers = view.battlefield.filter((o) => {
@@ -315,7 +323,14 @@ export class HeuristicAgent implements Agent {
       const d = this.def(c.cardId);
       if (!d || d.types.includes("Land")) return false;
       const mv = manaValue(parseManaCost(d.manaCost));
-      return mv > available && mv <= available + produced;
+      if (!(mv > available && mv <= available + produced)) return false;
+      // S26: a coloured burst must match a pip of the card it enables (a Lotus popped for red
+      // enables nothing blue); colourless costs take any colour.
+      if (burstColor) {
+        const pips = d.manaCost.replace(/[^WUBRG]/g, "");
+        if (pips.length > 0 && !pips.includes(burstColor)) return false;
+      }
+      return true;
     });
     return { enables };
   }
@@ -953,6 +968,33 @@ export class HeuristicAgent implements Agent {
     const PAY_FLOOR = 4;
     const cost = 2; // v1: the only customer's cost; generalize when a second punisher arrives
     return view.life[view.you] - cost >= PAY_FLOOR ? accept : decline;
+  }
+
+  /** S26 (Lumen, the Hearth Fire — the sequencing pin, the Thundersnake's gate family): a resolved
+   * gainControl (the threaten class) is worth its swing and nothing else — activate only on our
+   * own MAIN1 (the attack search cashes the hasted steal; MAIN2 hands the creature back untouched),
+   * and only at an OPPONENT's creature (the misaim cliff already forbids our own). Exposed for the
+   * book of shame. */
+  threatenGated(view: GameView, action: Action): boolean {
+    if (action.type !== "activateAbility") return false;
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+    if (!ab || ab.kind !== "activated") return false;
+    if (!ab.effects.some((e) => e.type === "gainControl" && e.target !== undefined)) return false;
+    return !(view.activePlayer === view.you && view.step === "MAIN1");
+  }
+
+  /** S26 (Clio, Lady of the Depths — the hold-vs-spend pin, the boss doc's sketch): the burst
+   * (a remove-counters cost) spends the tax the static levies. Spend when the hand runs low
+   * (≤ 2 cards) or the opponent's board is thin (≤ 1 creature); HOLD when the hand is stocked AND
+   * the board threatens (≥ 2 opposing creatures — every depth counter is −1 power on each). The
+   * enumerator already withholds the action under three counters. Exposed for the book of shame. */
+  accumulatorSpendGated(view: GameView, action: Action): boolean {
+    if (action.type !== "activateAbility") return false;
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+    if (!ab || ab.kind !== "activated" || !ab.cost.removeCounters) return false;
+    const me = view.you;
+    const oppCreatures = view.battlefield.filter((o) => o.controller !== me && o.power !== null).length;
+    return view.hand.length >= 3 && oppCreatures >= 2;
   }
 
   /** S23 (fun batch — the Thundersnake discipline, the r3 gate family; Chris-ruled at kickoff):

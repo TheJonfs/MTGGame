@@ -1,0 +1,29 @@
+{
+ "id": "seraphina_the_initiative",
+ "name": "Seraphina, the Initiative",
+ "source": "custom",
+ "manaCost": "{2}{B}{G}",
+ "types": ["Creature"],
+ "supertypes": ["Legendary"],
+ "subtypes": ["Human", "Assassin"],
+ "power": 2,
+ "toughness": 3,
+ "text": "{T}: Destroy target tapped creature.\nWhenever a creature an opponent controls dies, put a +1/+1 counter on Seraphina, the Initiative.",
+ "abilities": [
+  {
+   "kind": "activated",
+   "cost": { "tap": true },
+   "targets": [{ "count": 1, "predicate": "tappedCreature", "zone": "battlefield" }],
+   "effects": [{ "type": "destroy", "target": 0 }]
+  },
+  {
+   "kind": "triggered",
+   "event": "DIES",
+   "condition": { "source": "any", "controller": "opponent", "type": ["Creature"] },
+   "effects": [{ "type": "addCounters", "kind": "+1/+1", "count": 1, "scope": "self" }]
+  }
+ ],
+ "art": { "asset": "/custom-art/seraphina_the_initiative.png", "fallback": "rendered" },
+ "printedAsset": "seraphina_the_initiative.jpg",
+ "prizeOnly": true
+}

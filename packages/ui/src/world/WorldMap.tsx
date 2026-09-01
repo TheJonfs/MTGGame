@@ -241,6 +241,7 @@ export function WorldMapView({
   marks = [],
   edgeLabel = "the edge of the map",
   interior = false,
+  register,
   townStates = {},
   onClickCell,
 }: {
@@ -269,6 +270,10 @@ export function WorldMapView({
   edgeLabel?: string;
   /** S20 playtest r2: dark-stone dungeon-interior register (concept-map-dungeon). */
   interior?: boolean;
+  /** S26 (ADR-091): the Corolla's register — the campaign grammar at flower scale: petal washes in
+   * the five colours on unpainted paper (the void region paints nothing and grows no terrain),
+   * petal outlines as region borders, the tips as petal sprites. */
+  register?: "corolla";
   /** S21 sieges: per-town threat state — threatened towns ring danger-dashed with a banner;
    * occupied towns go dark under a solid danger ring. */
   townStates?: Record<number, "threatened" | "occupied">;
@@ -278,6 +283,8 @@ export function WorldMapView({
   const [hoverLair, setHoverLair] = useState<{ name: string; at: Point } | null>(null);
   const [hoverRoamer, setHoverRoamer] = useState<RoamerChip | null>(null);
   const vw = Math.min(VIEW_W, map.width), vh = Math.min(VIEW_H, map.height);
+  const corolla = register === "corolla";
+  const isVoid = (regIndex: number) => corolla && (map.regions[regIndex] as { tier?: string } | undefined)?.tier === "void";
   const origin = viewportOrigin(map, player, pan);
   const panned = pan.x !== 0 || pan.y !== 0;
   // S18 (OQ-7): the edges of the map; Round 3 (overworld) draws them as the cartographer's
@@ -335,7 +342,7 @@ export function WorldMapView({
   // Rough terrain (Round 1): contiguous rough cells of one region become a BLOB — glyphs
   // scatter across it with seeded jitter and varied scale, denser than one-per-cell never was.
   const roughBlobs: { color: string; spots: { x: number; y: number; s: number; g: number }[] }[] = [];
-  if (!interior) {
+  if (!interior && !corolla) {
     const blobOf = new Int32Array(map.width * map.height).fill(-1);
     let nBlobs = 0;
     for (let y = 0; y < map.height; y++) for (let x = 0; x < map.width; x++) {
@@ -492,6 +499,7 @@ export function WorldMapView({
           // world (the concept's fog language); "transparent" keeps them clickable (OQ-7 planning).
           const fill = interior
             ? (!seenXY(x, y) ? INTERIOR.dark : map.passable[i] ? INTERIOR.floor : INTERIOR.rock)
+            : isVoid(map.region[i]!) ? "url(#paper-pat)"
             : (seenXY(x, y) ? washFor(reg.tier, reg.color) : "transparent");
           return (
             <rect
@@ -638,7 +646,7 @@ export function WorldMapView({
         )}
         {/* region names at hearts — Round 3: CARTOUCHES (a notched paper plaque under the name;
             hidden in interiors, whose heart is off-grid anyway) */}
-        {map.regions.filter((reg) => inView(reg.heart) && seen(reg.heart)).map((reg) => {
+        {map.regions.filter((reg) => reg.name && inView(reg.heart) && seen(reg.heart)).map((reg) => {
           const half = reg.name.length * 3.4;
           const x = Math.max(half + 14, Math.min(W - half - 14, centre(reg.heart).cx));
           const y = Math.max(20, Math.min(H - 12, centre(reg.heart).cy - CELL));
@@ -679,8 +687,8 @@ export function WorldMapView({
           // larger), wild towns HUDDLE (palisade sprite, smaller); the approach ring keeps the
           // S21 hamlet. Ring read from the town's region.
           const ring = map.regions[t.region]?.tier ?? "approach";
-          const slug = ring === "civilized" ? "sprite-town-city" : ring === "wild" ? "sprite-town-huddle" : "sprite-town";
-          const sz = CELL * (ring === "civilized" ? 3.7 : ring === "wild" ? 2.4 : 3);
+          const slug = corolla ? "sprite-heart-town" : ring === "civilized" ? "sprite-town-city" : ring === "wild" ? "sprite-town-huddle" : "sprite-town";
+          const sz = CELL * (corolla ? 3.4 : ring === "civilized" ? 3.7 : ring === "wild" ? 2.4 : 3);
           return (
             <g key={t.index} onMouseEnter={() => setHoverTown(t)} onMouseLeave={() => setHoverTown(null)} onClick={() => onClickCell(t.at)} style={{ cursor: "pointer" }}>
               <circle cx={cx} cy={cy - CELL * 0.2} r={CELL * 1.5} fill="url(#clearing)" pointerEvents="none" />
@@ -712,8 +720,10 @@ export function WorldMapView({
           // lair/dungeon flies a small danger banner (the old red ring's job); cleared = faded.
           // S22 r1 (Chris): a fallen stronghold BECOMES the ruin sprite — rubble at full ink,
           // not a ghosted keep (the broken silhouette is the statement).
-          const slug = castle ? (cleared ? "sprite-ruin" : "sprite-castle") : f.kind === "dungeon" ? "sprite-dungeon-door" : "sprite-lair";
-          const sz = CELL * (castle ? 3 : 2.4);
+          // S26: the two centre doors on the outer map (the Corolla's, the Vault's) and the petal
+          // tips inside the flower — a fallen petal fades like a cleared lair.
+          const slug = castle ? (cleared ? "sprite-ruin" : "sprite-castle") : f.kind === "dungeon" ? "sprite-dungeon-door" : f.kind === "corolla" ? "sprite-corolla-door" : f.kind === "vault" ? "sprite-vault" : f.kind === "petal" ? "sprite-petal" : "sprite-lair";
+          const sz = CELL * (castle ? 3 : f.kind === "corolla" ? 3.2 : f.kind === "petal" ? 2.6 : 2.4);
           return (
             <g key={`f${i}`} onMouseEnter={() => setHoverLair({ name: f.name ?? f.kind, at: f.at })} onMouseLeave={() => setHoverLair(null)} onClick={() => onClickCell(f.at)} style={{ cursor: "pointer" }}>
               <image href={spriteHref(slug)} x={cx - sz / 2} y={cy - sz * 0.62} width={sz} height={sz} style={{ mixBlendMode: "multiply" }} opacity={cleared && !castle ? 0.4 : 1} pointerEvents="none" />

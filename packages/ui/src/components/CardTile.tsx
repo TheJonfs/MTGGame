@@ -72,6 +72,12 @@ export function CardTile({
         {obj.summoningSick && isCreature && <img src="/icons/status-sick.svg" alt="summoning sick" />}
         {plus > 0 && <img src="/icons/counter-plus.svg" alt={`+1/+1 x${plus}`} />}
         {minus > 0 && <img src="/icons/counter-minus.svg" alt={`-1/-1 x${minus}`} />}
+        {Object.entries(obj.counters)
+          .filter(([k, n]) => k !== "+1/+1" && k !== "-1/-1" && n > 0)
+          .map(([k, n]) => (
+            // S26: named counters (Clio's depth) — a text pip; the kind is the word on the card.
+            <span key={k} className="counter-pip" title={`${k} counter x${n}`}>{k} {n}</span>
+          ))}
       </div>
       <div className="name">{def.name}</div>
       {chars && (

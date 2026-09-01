@@ -194,6 +194,46 @@ describe("play-mode acceptance (headless; S10 DoD 1)", () => {
     while (!c.result && guard++ < 2000) await new Promise((r) => setTimeout(r, 0));
   }, 60_000);
 
+  it("S26 (the S25 r4 watch item, verified live): a cycling LAND with the drop open and mana up offers the play-or-cycle chooser; 'activate' cycles it, 'cast' plays it", async () => {
+    const pool = loadCardPool(CARDS_DIR);
+    const c = new MatchController(pool.cards, {
+      humanSeat: 0,
+      seed: 5,
+      aiDelayMs: 0,
+      custom: {
+        human: { name: "You", decklist: [{ cardId: "forgotten_cave", count: 40 }] },
+        enemy: { name: "D", decklist: [...DECKS.D.decklist], difficulty: "journeyman", archetype: "midrange" },
+        rules: { startingLife: 20, ante: 0, startingPlayer: 0 },
+        modifiers: [{ type: "permanentOnBattlefield", player: 0, cardId: "mountain" }], // the {R} for cycling
+      },
+    });
+    c.start();
+    let guard = 0;
+    const untilPriority = async () => { guard = 0; while (c.phase.kind !== "priority" && guard++ < 5000) { await new Promise((r) => setTimeout(r, 0)); if (c.phase.kind === "dialog") { c.selectDialog(0); c.confirmDialog(); } } };
+    await untilPriority();
+    // Skip to MAIN1 (upkeep/draw windows are meaningful because the Cave can cycle there — where only cycling is legal, the click goes straight to it).
+    while (c.phase.kind === "priority" && c.game.state.step !== "MAIN1" && guard++ < 50) { c.pass(); await untilPriority(); }
+    expect(c.game.state.step).toBe("MAIN1");
+    const cave = [...(c.phase as { lands: Map<string, unknown> }).lands.keys()][0]!;
+    expect((c.phase as { activatable: Map<string, unknown> }).activatable.has(cave)).toBe(true);
+    c.clickHand(cave);
+    expect(c.phase.kind).toBe("castOrActivate");
+    c.chooseCastOrActivate("activate");
+    if (c.phase.kind === "confirmCast") c.confirmCast();
+    if ((c.phase as { kind: string }).kind === "manualTap") (c as unknown as { castNow(): void }).castNow();
+    await untilPriority();
+    expect(c.game.state.players[0].graveyard.some((id) => c.game.state.objects[id]!.cardId === "forgotten_cave")).toBe(true); // cycled
+    expect(c.game.state.battlefield.filter((id) => c.game.state.objects[id]!.cardId === "forgotten_cave")).toHaveLength(0);
+    // The next Cave: the drop is still open but the Mountain is tapped — only the play is legal → straight to the battlefield.
+    const cave2 = [...(c.phase as { lands: Map<string, unknown> }).lands.keys()][0]!;
+    c.clickHand(cave2);
+    await untilPriority();
+    expect(c.game.state.battlefield.filter((id) => c.game.state.objects[id]!.cardId === "forgotten_cave")).toHaveLength(1);
+    c.concede();
+    guard = 0;
+    while (!c.result && guard++ < 2000) await new Promise((r) => setTimeout(r, 0));
+  }, 60_000);
+
   it("ADR-059 meaningfulness: X=0-only casts do not make a window meaningful", () => {
     const cast = (x?: number) => ({ type: "castSpell", objectId: "h1", ...(x !== undefined ? { x } : {}) }) as never;
     const none = new Map();

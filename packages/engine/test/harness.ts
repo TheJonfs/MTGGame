@@ -207,6 +207,8 @@ export interface BattlefieldEntry {
   summoningSick?: boolean;
   /** Create as a token (ceases to exist on leaving the battlefield). */
   token?: boolean;
+  /** S26: preset counters (Clio's depth; +1/+1) — a standing board may already hold them. */
+  counters?: Record<string, number>;
 }
 
 export interface FixturePlayerSetup {
@@ -273,6 +275,7 @@ export class TestGame {
         const obj = getObject(state, id);
         obj.tapped = e.tapped ?? obj.tapped; // A9 (S20): createObject may have set tapped (entersChoice put path) — only an explicit fixture flag overrides
         obj.summoningSick = e.summoningSick ?? false; // fixtures default to attack-ready
+        if (e.counters) obj.counters = { ...e.counters };
       }
     }
     // Setup-time ETB events are scenery, not triggers: fixtures describe a

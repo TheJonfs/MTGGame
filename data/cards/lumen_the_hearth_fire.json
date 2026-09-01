@@ -1,0 +1,29 @@
+{
+ "id": "lumen_the_hearth_fire",
+ "name": "Lumen, the Hearth Fire",
+ "source": "custom",
+ "manaCost": "{2}{R}{W}",
+ "types": ["Creature"],
+ "supertypes": ["Legendary"],
+ "subtypes": ["Human", "Advisor"],
+ "power": 3,
+ "toughness": 4,
+ "keywords": ["haste", "lifelink"],
+ "text": "Haste, lifelink\n{T}: Gain control of target creature until end of turn. Untap it. It gains haste and lifelink until end of turn.",
+ "abilities": [
+  {
+   "kind": "activated",
+   "cost": { "tap": true },
+   "targets": [{ "count": 1, "predicate": "creature", "zone": "battlefield" }],
+   "effects": [
+    { "type": "gainControl", "target": 0, "duration": "UNTIL_END_OF_TURN" },
+    { "type": "untapTarget", "target": 0 },
+    { "type": "grantKeyword", "keyword": "haste", "target": 0, "duration": "UNTIL_END_OF_TURN" },
+    { "type": "grantKeyword", "keyword": "lifelink", "target": 0, "duration": "UNTIL_END_OF_TURN" }
+   ]
+  }
+ ],
+ "art": { "asset": "/custom-art/lumen_the_hearth_fire.png", "fallback": "rendered" },
+ "printedAsset": "lumen_the_hearth_fire.jpg",
+ "prizeOnly": true
+}

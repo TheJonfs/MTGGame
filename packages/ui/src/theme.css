@@ -128,6 +128,8 @@ body {
 .tile.selected { outline: 2.5px solid var(--brass); }
 .tile .badges { position: absolute; left: 2px; top: 2px; display: flex; gap: 2px; }
 .tile .badges img { width: 13px; height: 13px; mix-blend-mode: multiply; background: var(--parchment); border-radius: 3px; }
+/* S26: named counters (Clio's depth) — a text pip beside the icon badges. */
+.tile .badges .counter-pip { font-size: 9px; line-height: 13px; padding: 0 3px; background: var(--parchment); color: var(--ink); border-radius: 3px; border: 1px solid rgba(0,0,0,0.25); white-space: nowrap; }
 
 .host-group { display: flex; align-items: flex-start; gap: 2px; }
 

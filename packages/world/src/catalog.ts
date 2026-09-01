@@ -1,6 +1,7 @@
 import { DECKS, DECK_ARCHETYPES, type DeckKey } from "@shandalar/sim/decks";
 import { EXPANSION_DECKS } from "@shandalar/sim/expansion-decks";
 import { assertKnobSource, type KnobSource, type RegionTier, type EnemyTier } from "./knobs.js";
+import { validateCorollaDef } from "./corolla.js";
 
 /**
  * Authored catalog v0 (overworld manifest §2 "authored inventory, procedural
@@ -130,6 +131,8 @@ export interface Catalog {
   /** S22b: the five lords' seats (stronghold-bosses.md; ids match regions.json's fixed points).
    * Absent in minimal test catalogs → []. */
   strongholdContent?: import("./stronghold.js").StrongholdContentDef[];
+  /** S26 (ADR-091): the Corolla — the flower's names and its five petal bosses (absent in minimal test catalogs). */
+  corolla?: import("./corolla.js").CorollaDef;
   /** S21: the quest & rumor text pack (absent in minimal test catalogs → built-in fallback). */
   questText?: QuestTextPack;
 }
@@ -157,7 +160,7 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
   const t = parts.towns as { catalogVersion: string; names: string[] };
   const o = parts.opponents as { catalogVersion: string; opponents: OpponentTemplate[] };
   const st = parts.starters as { catalogVersion: string; starters: StarterTemplate[] };
-  const du = (parts.dungeons ?? { catalogVersion: CATALOG_VERSION, mox: [] }) as { catalogVersion: string; mox: import("./dungeon.js").MoxDungeonDef[]; strongholds?: import("./stronghold.js").StrongholdContentDef[]; powerDungeons?: import("./dungeon.js").PowerDungeonDef[] };
+  const du = (parts.dungeons ?? { catalogVersion: CATALOG_VERSION, mox: [] }) as { catalogVersion: string; mox: import("./dungeon.js").MoxDungeonDef[]; strongholds?: import("./stronghold.js").StrongholdContentDef[]; powerDungeons?: import("./dungeon.js").PowerDungeonDef[]; corolla?: import("./corolla.js").CorollaDef };
   const errors: string[] = [];
   if (parts.dungeons) {
     if (du.catalogVersion !== CATALOG_VERSION) errors.push(`dungeons: catalogVersion ${du.catalogVersion} != ${CATALOG_VERSION}`);
@@ -172,6 +175,8 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
         if (!(r.strongholds ?? []).some((x) => x.id === s.id)) errors.push(`stronghold ${s.id}: no matching fixed point in regions.json`);
       }
     }
+    // S26: the Corolla's content — five petals, five colours, every field the tip needs.
+    errors.push(...validateCorollaDef(du.corolla));
     // S25: the power-dungeons — five, five colours, every field the site needs.
     if (du.powerDungeons) {
       if (du.powerDungeons.length !== 5 || new Set(du.powerDungeons.map((d) => d.color)).size !== 5) errors.push("dungeons: powerDungeons must be five entries covering the five colours");
@@ -265,5 +270,5 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
     questText = { offers: qp.offers, rumors: qp.rumors };
   }
   if (errors.length) throw new Error(`Catalog validation failed:\n${errors.join("\n")}`);
-  return { version: CATALOG_VERSION, regions: r.regions, townNames: t.names, opponents: o.opponents, starters: st.starters, strongholds: r.strongholds ?? [], dungeons: du.mox, ...(du.powerDungeons ? { powerDungeons: du.powerDungeons } : {}), ...(du.strongholds ? { strongholdContent: du.strongholds } : {}), ...(questText ? { questText } : {}) };
+  return { version: CATALOG_VERSION, regions: r.regions, townNames: t.names, opponents: o.opponents, starters: st.starters, strongholds: r.strongholds ?? [], dungeons: du.mox, ...(du.powerDungeons ? { powerDungeons: du.powerDungeons } : {}), ...(du.strongholds ? { strongholdContent: du.strongholds } : {}), ...(du.corolla ? { corolla: du.corolla } : {}), ...(questText ? { questText } : {}) };
 }

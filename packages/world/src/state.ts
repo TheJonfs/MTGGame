@@ -1,7 +1,7 @@
 import type { Catalog, StarterId, StarterTemplate } from "./catalog.js";
 import { generateWorld, type GeneratedWorld, type GeneratorOptions, type OpponentInstance, DEFAULT_GENERATOR, spawnRoamers } from "./generate.js";
 import { resolveKnobs, DIFFICULTIES, type DifficultyName, type KnobSource, type KnobValues } from "./knobs.js";
-import { exploredAll, type Point, type WorldMap } from "./map.js";
+import { carveReachable, exploredAll, placeCentreDoors, type Point, type WorldMap } from "./map.js";
 import { WorldRng, type WorldRngState } from "./rng.js";
 import { emptyQuestState, type Manalink, type QuestState } from "./quests.js";
 import type { DungeonRun, DungeonStatus } from "./dungeon.js";
@@ -146,7 +146,23 @@ export interface WorldState {
    * (ESCALATED to the planner, not decided): `opened` (the sixth dungeon's gate), `attempts`
    * (entries into the final gauntlet), `chronicle` (ADR-086's meta-progression direction —
    * run-history breadcrumbs a post-gauntlet layer could read). Nothing writes these in S25. */
-  gauntlet: { opened?: boolean; attempts?: number; chronicle?: unknown[] };
+  gauntlet: {
+    opened?: boolean;
+    attempts?: number;
+    chronicle?: unknown[];
+    /** S26 (ADR-091, Chris: additive optional fields, no bump): fallen petals by the LAW's colour. */
+    petals?: Partial<Record<"W" | "U" | "B" | "R" | "G", true>>;
+    /** S26: the Vault after the Mirror — plain ground. */
+    vault?: "cleared";
+    /** S26: inside the flower (reload resumes there; the outer position never moved). */
+    corolla?: { position: Point; steps: number } | null;
+  };
+}
+
+/** S26: the five Moxen by id (dungeons.json prize.mox) — the Vault's lock counts them in the collection. */
+export const MOX_IDS = ["mox_pearl", "mox_sapphire", "mox_jet", "mox_ruby", "mox_emerald"] as const;
+export function moxenHeld(world: WorldState): number {
+  return MOX_IDS.filter((id) => (world.player.collection[id] ?? 0) > 0).length;
 }
 
 export interface NewWorldOptions {
@@ -408,5 +424,9 @@ export function migrateWorld(format: string, input: Partial<WorldState>): WorldS
   // seals, so an already-fallen lord upgrades retroactively by construction.
   if (!v3.powers) v3.powers = emptyPowersState();
   if (!v3.gauntlet) v3.gauntlet = {};
+  // S26 (ADR-091): the centre doors — a pre-S26 radial map grows the Corolla's and the Vault's
+  // doors on load (idempotent; carved reachable from the start). Non-radial (pre-S16) maps have
+  // no centre and stay doorless — those worlds predate the lords entirely.
+  for (const door of placeCentreDoors(v3.map)) carveReachable(v3.map, v3.map.start, door.at);
   return v3;
 }

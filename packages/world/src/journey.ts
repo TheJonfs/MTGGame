@@ -3,11 +3,11 @@ import { enemyDeck, type Catalog, type OpponentTemplate } from "./catalog.js";
 import { isTownCell, regionCells, roamerTarget, rollMage, rollTemplate, type GoneReason, type OpponentInstance } from "./generate.js";
 import { manalinkModifiers, questsOnDefeat, questsOnStep, type QuestEvent } from "./quests.js";
 import { siegesOnStep } from "./siege.js";
-import { creditSpokeKill, lordSealed } from "./stronghold.js";
+import { creditSpokeKill, lordSealed, sealsHeld } from "./stronghold.js";
 import type { KnobValues } from "./knobs.js";
 import { findPath, fixedPointAt, idx, inBounds, manhattan, markExplored, regionAt, samePoint, townAt, type Point, type Town, type WorldMap } from "./map.js";
 import { WorldRng } from "./rng.js";
-import { activeDeck, clampWorldLife, deckSize, maxWorldLife, worldKnobs, RENOWN_COLORS, type Decklist, type DuelRecord, type ProvenanceSource, type WorldState } from "./state.js";
+import { activeDeck, clampWorldLife, deckSize, maxWorldLife, moxenHeld, worldKnobs, MOX_IDS, RENOWN_COLORS, type Decklist, type DuelRecord, type ProvenanceSource, type WorldState } from "./state.js";
 
 /**
  * The headless loop (brief Part 3's logic, S12 Part 2 carving (b)): walk →
@@ -44,7 +44,12 @@ export type StepEvent =
   /** S21 (manifest §5): a siege threat landed mid-walk (the town telegraphs until the deadline). */
   | { type: "siegeThreatened"; townIndex: number; townName: string; deadlineStep: number }
   /** S21: an unrelieved town fell — shopping/quests/its manalinks suspend until liberated. */
-  | { type: "siegeFell"; townIndex: number; townName: string };
+  | { type: "siegeFell"; townIndex: number; townName: string }
+  /** S26 (ADR-091): you stand at the Corolla's door — five seals part the petals; the walk stops
+   * either way (the locked door still tells you how many you hold). */
+  | { type: "corollaDoor"; at: Point; seals: number; open: boolean }
+  /** S26: you stand at the Vault's door — five Moxen open the Mirror; cleared = plain ground (no stop). */
+  | { type: "vaultDoor"; at: Point; moxen: number; open: boolean };
 
 // ---------- S16 roamers: sight, flee, movement ----------
 
@@ -316,6 +321,18 @@ export function advance(
           events.push({ type: "dungeonEntry", dungeonId, kind: isPower ? "power" : "mox", name: fixed.name ?? "A dungeon", at: { ...cell } });
           break;
         }
+      }
+      // S26 (ADR-091): the two centre doors. The Corolla's door always stops the walk (locked, it
+      // states the count); the Vault's stops until the Mirror is won, then it is ground.
+      if (fixed?.kind === "corolla") {
+        const seals = sealsHeld(world);
+        events.push({ type: "corollaDoor", at: { ...cell }, seals, open: seals >= 5 });
+        break;
+      }
+      if (fixed?.kind === "vault" && world.gauntlet.vault !== "cleared") {
+        const moxen = moxenHeld(world);
+        events.push({ type: "vaultDoor", at: { ...cell }, moxen, open: moxen >= MOX_IDS.length });
+        break;
       }
       // S22b: the five lords' seats open — a stronghold fixed point is a dungeon threshold at
       // maximum scale (matched to its content by the spoke's colour; cleared = ground, sealed).

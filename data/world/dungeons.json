@@ -295,5 +295,82 @@
     "guardianCard": "titania_protector_of_argoth"
    }
   }
- ]
+ ],
+ "corolla": {
+  "name": "The Corolla",
+  "town": {
+   "name": "The Heart"
+  },
+  "vault": {
+   "name": "The Vault"
+  },
+  "bossLife": 30,
+  "petals": [
+   {
+    "color": "W",
+    "boss": {
+     "key": "seraphina",
+     "name": "Seraphina, the Initiative",
+     "portrait": "corolla-seraphina"
+    },
+    "signature": "seraphina_the_initiative",
+    "duals": [
+     "bayou",
+     "overgrown_tomb"
+    ]
+   },
+   {
+    "color": "B",
+    "boss": {
+     "key": "lumen",
+     "name": "Lumen, the Hearth Fire",
+     "portrait": "corolla-lumen"
+    },
+    "signature": "lumen_the_hearth_fire",
+    "duals": [
+     "plateau",
+     "sacred_foundry"
+    ]
+   },
+   {
+    "color": "R",
+    "boss": {
+     "key": "clio",
+     "name": "Clio, Lady of the Depths",
+     "portrait": "corolla-clio"
+    },
+    "signature": "clio_lady_of_the_depths",
+    "duals": [
+     "underground_sea",
+     "watery_grave"
+    ]
+   },
+   {
+    "color": "U",
+    "boss": {
+     "key": "yuloke",
+     "name": "Yuloke, the Animus",
+     "portrait": "corolla-yuloke"
+    },
+    "signature": "yuloke_the_animus",
+    "duals": [
+     "taiga",
+     "stomping_ground"
+    ]
+   },
+   {
+    "color": "G",
+    "boss": {
+     "key": "faldor",
+     "name": "Faldor, the Muster",
+     "portrait": "corolla-faldor"
+    },
+    "signature": "faldor_the_muster",
+    "duals": [
+     "tundra",
+     "hallowed_fountain"
+    ]
+   }
+  ]
+ }
 }

@@ -1,6 +1,6 @@
 import type { Catalog, Color, RegionTemplate } from "./catalog.js";
 import { defaultKnobs, type KnobValues, type RegionTier } from "./knobs.js";
-import { exploredNone, findPath, idx, inBounds, manhattan, markExplored, reachable, samePoint, type FixedPoint, type Point, type RegionInstance, type Town, type WorldMap } from "./map.js";
+import { exploredNone, findPath, idx, inBounds, manhattan, markExplored, placeCentreDoors, reachable, samePoint, type FixedPoint, type Point, type RegionInstance, type Town, type WorldMap } from "./map.js";
 import { WorldRng } from "./rng.js";
 
 /**
@@ -443,6 +443,11 @@ export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOpt
       map.strongholds.push({ kind: "dungeon", at, region: r.index, name: dungeon.name });
     }
   }
+
+  // 5d. S26 (ADR-091): the two CENTRE DOORS — the Corolla's and the Vault's — at the spokes'
+  // convergence, carved reachable like every fixed point. Pre-S26 saves grow theirs on load
+  // (state.ts migration calls the same placement).
+  for (const door of placeCentreDoors(map)) carveTo(door.at);
 
   // 6. Roads (after carving: the paths exist).
   buildRoads(map, homeTowns);

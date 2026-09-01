@@ -1,3 +1,4 @@
+import type { ReactElement } from "react";
 import { getObject, type EngineCtx, type PlayerId } from "@shandalar/engine";
 import { CardTile } from "./CardTile";
 import { CardFrame } from "./CardFrame";
@@ -43,7 +44,7 @@ function combatView(props: BoardProps): { attackers: string[]; blockersOf: (atta
  * its name strip shows beneath the previous (z-order descending); hovering a stack lifts it apart.
  * Mixed controllers are common here (their Pacifism + your Curiosity on one creature) — each small
  * tile carries its controller stripe. */
-function AttachStack({ ids, tile }: { ids: string[]; tile: (id: string, small?: boolean) => JSX.Element }) {
+function AttachStack({ ids, tile }: { ids: string[]; tile: (id: string, small?: boolean) => ReactElement }) {
   return (
     <div className={`attach-stack n${Math.min(ids.length, 4)}`}>
       {ids.map((a, i) => (

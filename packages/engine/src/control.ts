@@ -34,6 +34,16 @@ export function syncControl(ctx: EngineCtx): boolean {
       }
     }
 
+    // S26 (Lumen — the threaten class): stored gainControl effects (resolved, until end of turn)
+    // apply AFTER the aura statics, in their own timestamp order. Known simplification (R-087):
+    // CR 613.7 orders statics and resolved effects by one shared timestamp; here a resolved steal
+    // always outranks an aura, so a Control Magic cast on an already-threatened creature waits
+    // for cleanup to bite. The reverse (threaten a Control-Magic'd creature) is exact.
+    const stolen = state.continuousEffects
+      .filter((ce) => ce.kind === "gainControl" && ce.objectId === id && ce.controller !== undefined)
+      .sort((a, b) => a.timestamp - b.timestamp);
+    for (const ce of stolen) effective = ce.controller!;
+
     if (effective !== obj.controller) {
       obj.controller = effective;
       if (isCreature(ctx, id)) obj.summoningSick = true; // 302.6, both steal and reversion

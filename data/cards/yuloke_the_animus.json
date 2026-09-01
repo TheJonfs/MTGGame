@@ -1,0 +1,68 @@
+{
+ "id": "yuloke_the_animus",
+ "name": "Yuloke, the Animus",
+ "source": "custom",
+ "manaCost": "{2}{R}{G}",
+ "types": [
+  "Creature"
+ ],
+ "supertypes": [
+  "Legendary"
+ ],
+ "subtypes": [
+  "Human",
+  "Druid"
+ ],
+ "power": 3,
+ "toughness": 3,
+ "keywords": [
+  "trample",
+  "haste"
+ ],
+ "text": "Trample, haste\nWhenever a land enters under your control, Yuloke, the Animus gets +2/+0 until end of turn.\nWhenever Yuloke, the Animus attacks, you may return target land card from your graveyard to your hand.",
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "LAND_ENTERS_UNDER_YOUR_CONTROL",
+   "condition": {
+    "controller": "you"
+   },
+   "effects": [
+    {
+     "type": "modifyPT",
+     "power": 2,
+     "toughness": 0,
+     "scope": "self",
+     "duration": "UNTIL_END_OF_TURN"
+    }
+   ]
+  },
+  {
+   "kind": "triggered",
+   "event": "ATTACKS",
+   "condition": {
+    "source": "self"
+   },
+   "optional": true,
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "landCardInYourGraveyard",
+     "zone": "graveyard"
+    }
+   ],
+   "effects": [
+    {
+     "type": "returnFromGraveyard",
+     "target": 0,
+     "to": "hand"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/yuloke_the_animus.png",
+  "fallback": "rendered"
+ },
+ "prizeOnly": true
+}

@@ -31,7 +31,7 @@ export interface Town {
 
 /** Fixed points the generator places with spacing constraints; strongholds
  * are the M6b+ kind — present in the shape, unused in the slice. */
-export type FixedPointKind = "town" | "stronghold" | "lair" | "dungeon"; // S20: + Mox dungeon sites (dungeon-design §5)
+export type FixedPointKind = "town" | "stronghold" | "lair" | "dungeon" | "corolla" | "vault" | "petal"; // S20: + Mox dungeon sites (dungeon-design §5). S26: the two centre doors (the Corolla, the Vault) and, inside the flower, the petal tips.
 
 /** A fixed point with a resident (S14 round 1 prototype: a lair hosting one
  * opponent; strongholds/dungeons will reuse the shape). Walking onto it is a
@@ -165,4 +165,47 @@ export function townAt(m: WorldMap, p: Point): Town | null {
 
 export function fixedPointAt(m: WorldMap, p: Point): FixedPoint | null {
   return m.strongholds.find((f) => samePoint(f.at, p)) ?? null;
+}
+
+/** S26 (ADR-091): the two doors at the map's CENTRE — the Corolla's (the petals part on five
+ * seals) and the Vault's (the Mirror, on five Moxen). The radial generator keeps the convergence
+ * clear of towns; the doors take the two passable-or-carved non-town cells nearest the centre, the
+ * Vault at least two cells from the Corolla. Idempotent (no-op when a Corolla door exists) so the
+ * save migration can call it on pre-S26 maps — those worlds grow their doors on load. Returns the
+ * doors placed (the caller carves them reachable). */
+export function placeCentreDoors(m: WorldMap): FixedPoint[] {
+  if (!m.centre || m.strongholds.some((f) => f.kind === "corolla")) return [];
+  const taken = (p: Point) => m.towns.some((t) => samePoint(t.at, p)) || m.strongholds.some((f) => samePoint(f.at, p));
+  const cands: Point[] = [];
+  for (let d = 0; d <= 4 && cands.length < 12; d++) {
+    for (let dy = -d; dy <= d; dy++) {
+      const dx = d - Math.abs(dy);
+      for (const sx of dx === 0 ? [0] : [-dx, dx]) {
+        const p = { x: m.centre.x + sx, y: m.centre.y + dy };
+        if (inBounds(m, p) && !taken(p)) cands.push(p);
+      }
+    }
+  }
+  const door = cands[0];
+  if (!door) return [];
+  const vaultAt = cands.find((p) => manhattan(p, door) >= 2) ?? cands[1];
+  const placed: FixedPoint[] = [];
+  const region = (p: Point) => m.region[idx(m, p)]!;
+  m.passable[idx(m, door)] = true;
+  placed.push({ kind: "corolla", at: door, region: region(door), name: "The Corolla" });
+  if (vaultAt) {
+    m.passable[idx(m, vaultAt)] = true;
+    placed.push({ kind: "vault", at: vaultAt, region: region(vaultAt), name: "The Vault" });
+  }
+  m.strongholds.push(...placed);
+  return placed;
+}
+
+/** Carve a passable path from `from` to `to` through rough terrain when none exists (the
+ * generator's carveTo, exported for the S26 door migration). */
+export function carveReachable(m: WorldMap, from: Point, to: Point): void {
+  if (findPath(m, from, to)) return;
+  const p = findPath(m, from, to, (q) => inBounds(m, q) && !m.river?.[idx(m, q)]);
+  if (!p) return;
+  for (const c of p) m.passable[idx(m, c)] = true;
 }

@@ -50,6 +50,13 @@ export function objectsInScope(ctx: EngineCtx, sourceId: string, scope: Scope, p
           return o.controller === source.controller && ctx.defs.def(o.cardId).types.includes("Creature");
         }),
       );
+    case "creaturesYouDontControl":
+      return narrow(
+        state.battlefield.filter((id) => {
+          const o = getObject(state, id);
+          return o.controller !== source.controller && ctx.defs.def(o.cardId).types.includes("Creature");
+        }),
+      );
     case "allCreatures":
       return narrow(
         state.battlefield.filter((id) => ctx.defs.def(getObject(state, id).cardId).types.includes("Creature")),

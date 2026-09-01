@@ -196,3 +196,22 @@ Whole-round reroll; the style is the ruled direction, so all four are dark surre
 2. **The taut red threads** — "Dark surrealist oil painting: a jet-adorned witch dealing black stone cards onto a table that stands alone on an endless twilight moor, each dealt card tethered to her wrist by a single taut red thread, the threads humming tight as the cards turn face-up, low dreamlike horizon, muted palette with arterial red accents."
 3. **The well of herself** — "Dark surrealist oil painting: a gaunt witch drawing a bucket up from a stone well on a barren plain, the well's water showing her own sleeping face, the bucket rising filled with written pages instead of water, a thin red line running from her pricked thumb down into the depths, jet beads floating weightless around her, quiet dread and hunger."
 4. **The candle of blood** — "Dark surrealist oil painting: a witch reading at a table lit by a single candle whose flame is a drop of blood rising instead of falling, the light casting her shadow as thin as a thread across a floor that is slowly becoming pages, jet beads on her neck glinting like eyes, near-monochrome umber and black with one red, intimate and wrong."
+
+## yuloke_the_animus — "Yuloke, the Animus" (RG legendary (Human Druid, the Risen Tide petal) — the wild's own restlessness in a man: every land that rises feeds him, and he takes the ground back from the grave)
+
+S26 Corolla batch (ADR-091; name Chris-ruled at the kickoff). Entry authored by the implementer from the gauntlet doc's card entry.
+
+1. **Classical oil** — "Oil painting in the warm classical fantasy style of 1990s trading-card art: a wiry rust-bearded human druid in bark and moss sprinting barefoot across a hillside as the ground itself surges up behind his heels into new green earth, a root-and-antler circlet on his brow, clay stripes on his face, storm light breaking gold through rain."
+2. **Ink-and-gouache action** — "High-contrast ink drawing with gouache highlights: a druid mid-leap over a chasm with a torn-up sod of living earth clutched in one fist and green fire trailing from the other, strong diagonal composition, limited palette of moss green, ember red and bone-white."
+3. **Watercolor storybook** — "Muted watercolor: a druid kneeling in a flooded field pulling a drowned meadow back up out of the water by its grass like a blanket, red-bearded, roots dripping, soft rain light, quiet stubborn mood."
+4. **Woodcut print** — "Bold two-colour woodcut / linocut print: a running druid whose legs become roots and whose hair becomes flame, stylised hills rising in waves behind him, heavy black carved line on cream with a single flat moss-green."
+
+## faldor_the_muster — "Faldor, the Muster" (WU legendary (Human Soldier, the Season petal) — every card drawn is a soldier called up; a plain earnest captain with the roll always in his hand)
+
+S26 Corolla batch (ADR-091; name Chris-ruled at the kickoff). Entry authored by the implementer from the gauntlet doc's card entry.
+
+1. **Classical oil** — "Oil painting in the warm classical fantasy style of 1990s trading-card art: a broad-shouldered greying human captain in a white tabard with blue piping standing on a parade ground at dawn reading names from a long unrolled muster list, and with each name a fresh soldier stepping into rank beside him out of morning mist, banners, warm rimlight."
+2. **Ink-and-gouache action** — "High-contrast ink drawing with gouache highlights: a captain sounding a brass signal horn as a wedge of soldiers forms up behind him in a strong diagonal, muster list flying from his other hand, limited palette of white, steel blue and a gold accent."
+3. **Watercolor storybook** — "Muted watercolor: a captain at a candlelit desk in a barracks tent writing names into a ledger, and behind him through the tent flap a line of new recruits stretching into the blue dusk as long as the list, soft edges, quiet patient mood."
+4. **Chiaroscuro portrait** — "Dramatic chiaroscuro three-quarter portrait: a greying captain against a dark ground holding a muster roll up to a single hard light, mail collar and white tabard catching it, a brass horn at his shoulder, steady counting gaze, near-monochrome with cool blue tones."
+

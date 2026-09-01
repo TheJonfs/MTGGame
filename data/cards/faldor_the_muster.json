@@ -1,0 +1,41 @@
+{
+ "id": "faldor_the_muster",
+ "name": "Faldor, the Muster",
+ "source": "custom",
+ "manaCost": "{2}{W}{U}",
+ "types": [
+  "Creature"
+ ],
+ "supertypes": [
+  "Legendary"
+ ],
+ "subtypes": [
+  "Human",
+  "Soldier"
+ ],
+ "power": 2,
+ "toughness": 2,
+ "text": "Whenever you draw a card, create a 1/1 white Soldier creature token.",
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "DRAW",
+   "condition": {
+    "controller": "you"
+   },
+   "effects": [
+    {
+     "type": "createToken",
+     "tokenId": "soldier_1_1",
+     "count": 1,
+     "who": "you"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/faldor_the_muster.png",
+  "fallback": "rendered"
+ },
+ "prizeOnly": true
+}

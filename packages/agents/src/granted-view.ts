@@ -61,6 +61,8 @@ function battlefieldScopeIncludes(
   switch (e.scope) {
     case "creaturesYouControl":
       return target.controller === src.controller && tdef.types.includes("Creature");
+    case "creaturesYouDontControl":
+      return target.controller !== src.controller && tdef.types.includes("Creature");
     case "allCreatures":
       return tdef.types.includes("Creature");
     case "self":

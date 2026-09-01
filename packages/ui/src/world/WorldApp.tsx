@@ -7,6 +7,7 @@ import { CardFrame } from "../components/CardFrame";
 import { PlayMatch, loadStops } from "../play/PlayMatch";
 import { WorldController, type NewGameChoice } from "./world-controller";
 import { audio, townMusicCue, strongholdSplashCue, type MusicCue } from "../audio/audio";
+import { COROLLA_DECKS } from "@shandalar/sim/corolla-decks";
 import { WorldMapView } from "./WorldMap";
 import { FloatingCardInspector } from "./FloatingCardInspector";
 
@@ -638,6 +639,265 @@ function DungeonScreen({ c, pool }: { c: WorldController; pool: Map<string, Card
   );
 }
 
+/** S26 (ADR-091): the Corolla's door — the game's largest telegraph. Five seals part the petals. */
+function CorollaTelegraph({ c }: { c: WorldController }) {
+  if (c.screen.kind !== "corollaTelegraph" || !c.world) return null;
+  const { seals, open, notice } = c.screen;
+  const def = c.corollaDef;
+  const fallen = c.petalRows().filter((r) => r.fallen).length;
+  const inside = c.world.gauntlet.corolla;
+  return (
+    <div className="gallery-modal">
+      <div className="gallery-modal-box play-dialog dungeon-telegraph">
+        <div style={{ margin: "-14px -14px 12px", overflow: "hidden", borderBottom: "2px solid var(--ink)" }}>
+          <img src="/gate-plates/corolla.jpg" alt="" style={{ width: "100%", display: "block", maxHeight: 260, objectFit: "cover" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+        </div>
+        <h2 style={{ margin: 0, fontFamily: "var(--serif)" }}>{def?.name ?? "The Corolla"}</h2>
+        <p className="parley-sub">{open ? "The petals part." : `The petals are closed. Five seals open them; you hold ${seals}.`}</p>
+        {open && (
+          <ul className="dungeon-stakes">
+            <li><b>The flower is a world, not a mountain.</b> Five petals around a town at the heart; each tip holds one of the five laws — <i>returned</i> — and a court that was never a lord's. What you win, you keep as you go; what falls stays fallen; you may walk out and come back.</li>
+            <li><b>Time stops here.</b> No siege advances, no contract runs, no lord grows while you are among the petals. The inn at the heart asks nothing.</li>
+            <li><b>Each tip is a fight at your world life</b>, ante as the world's; a loss costs a world life and your stake, and leaves you standing where you fell.</li>
+            <li>At the heart: an inn, the only shelf that ever stocks the R drawer, and <b>a door that opens when five petals fall</b>{fallen ? ` — ${fallen} have` : ""}.</li>
+          </ul>
+        )}
+        {!open && <p style={{ fontSize: 12.5 }}>Each lord's fall breaks a seal. The five seats stand on the five spokes; the Corolla waits at their convergence.</p>}
+        {notice && <p style={{ fontSize: 12, color: "var(--ink-soft)" }}>{notice}</p>}
+        <p style={{ textAlign: "right", marginBottom: 0 }}>
+          <button onClick={() => c.declineCorolla()}>{open ? "Not yet" : "Turn away"}</button>{" "}
+          {open && <button className="primary" onClick={() => c.enterCorolla()}>{inside ? "Return to the petals" : "Enter the flower"}</button>}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/** S26: the Vault's door — "the Vault shows you what you brought." */
+function VaultTelegraph({ c }: { c: WorldController }) {
+  if (c.screen.kind !== "vaultTelegraph" || !c.world) return null;
+  const { moxen, open, notice } = c.screen;
+  const w = c.world;
+  return (
+    <div className="gallery-modal">
+      <div className="gallery-modal-box play-dialog dungeon-telegraph">
+        <div style={{ margin: "-14px -14px 12px", overflow: "hidden", borderBottom: "2px solid var(--ink)" }}>
+          <img src="/gate-plates/vault.jpg" alt="" style={{ width: "100%", display: "block", maxHeight: 240, objectFit: "cover" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+        </div>
+        <h2 style={{ margin: 0, fontFamily: "var(--serif)" }}>{c.corollaDef?.vault.name ?? "The Vault"}</h2>
+        <p className="parley-sub">{open ? "The five Moxen turn in their settings. The door opens on a mirror." : `Locked. Five Moxen open it; you hold ${moxen}.`}</p>
+        {open && (
+          <ul className="dungeon-stakes">
+            <li><b>The Vault shows you what you brought.</b> Inside is your own deck — <i>{w.activeDeckName}</i>, every card of it — played against you by the best pilot the plane has, and it fights with the prize: <b>the Black Lotus</b> is in its forty-one.</li>
+            <li><b>No stakes either way.</b> A reflection has nothing to lose, and neither do you: ante is off. A loss costs a world life; the door stays.</li>
+            <li>The reflection fights at your <b>full</b> life ({maxWorldLife(w)}); you fight at yours ({w.player.worldLife}). Win, and the Lotus is yours — there is exactly one — and the Vault is empty ground forever.</li>
+          </ul>
+        )}
+        {!open && <p style={{ fontSize: 12.5 }}>The Moxen wait in the wild rings, with the court that guards them.</p>}
+        {notice && <p style={{ fontSize: 12, color: "var(--ink-soft)" }}>{notice}</p>}
+        <p style={{ textAlign: "right", marginBottom: 0 }}>
+          <button onClick={() => c.declineVault()}>{open ? "Not yet" : "Turn away"}</button>{" "}
+          {open && <button className="primary" onClick={() => c.enterVault()}>Face the reflection</button>}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/** S26: inside the flower — the petal-world on the shared map stack, in its own register. */
+function CorollaScreen({ c }: { c: WorldController }) {
+  if (c.screen.kind !== "corolla" || !c.world) return null;
+  const map = c.corollaMap();
+  const inside = c.world.gauntlet.corolla;
+  if (!map || !inside) return null;
+  const rows = c.petalRows();
+  const fallenIdx = new Set(map.strongholds.map((f, i) => (f.opponentId === "fallen" ? i : -1)).filter((i) => i >= 0));
+  const heart = c.world.gauntlet.petals ? rows.filter((r) => r.fallen).length : 0;
+  const notice = c.screen.notice;
+  return (
+    <div className="app world-app">
+      <div style={{ display: "flex", flexDirection: "column", minWidth: 0, overflow: "hidden" }}>
+        <div className="chrome" style={{ display: "flex", gap: 16, alignItems: "center" }}><b style={{ fontFamily: "var(--serif)" }}>{c.corollaDef?.name ?? "The Corolla"}</b><span className="stat">♥ {c.world.player.worldLife} / {maxWorldLife(c.world)}</span><span className="stat">✿ {heart} of five petals fallen</span><span className="stat" title="no clock runs in the flower">⟳ the world stands still</span></div>
+        <div className="world-map-wrap">
+          <WorldMapView
+            map={map}
+            player={inside.position}
+            portrait="/portrait-you.png"
+            preview={null}
+            previewTarget={null}
+            explored={null}
+            edgeLabel=""
+            register="corolla"
+            clearedFixed={fallenIdx}
+            onClickCell={(p) => c.corollaClick(p)}
+          />
+        </div>
+        <div className="transport play-prompt">
+          <span className="prompt-text">{notice ?? "Click a petal's tip to meet its court; the town waits at the heart."}</span>
+          <span style={{ flex: 1 }} />
+          <button onClick={() => c.leaveCorolla()} title="the flower keeps what fell">Leave the flower</button>
+        </div>
+      </div>
+      <div className="rail world-rail">
+        <div className="panel">
+          <h3>The five petals</h3>
+          {rows.map((r) => (
+            <div key={r.color} style={{ fontSize: 12, margin: "3px 0", opacity: r.fallen ? 0.55 : 1 }}>
+              <span className={`mana-chip chip-${r.color}`} style={{ marginRight: 4 }}>{r.color}</span>
+              <b>{r.lawName}</b> — {r.bossName}{" "}
+              {r.fallen ? <i style={{ color: "var(--ink-soft)" }}>· fallen</i> : <button className="linkish" style={{ fontSize: 11 }} onClick={() => c.corollaClick(r.tip)} title={`${r.distance} steps from the heart`}>go to the tip</button>}
+            </div>
+          ))}
+          <div style={{ fontSize: 10.5, color: "var(--ink-soft)", marginTop: 4 }}>Each petal wears its law's colour; its court wields the two beside it. Fallen petals stay fallen.</div>
+        </div>
+        <div className="panel">
+          <h3>The heart</h3>
+          <div style={{ fontSize: 12 }}>{c.corollaDef?.town.name ?? "The Heart"}: an inn that asks nothing, the R drawer's only shelf, and a door — <b>{heart} of five</b> petals fallen{heart >= 5 ? ". It is open." : "; it opens at five."}</div>
+          <button className="linkish" style={{ fontSize: 11, marginTop: 4 }} onClick={() => c.corollaClick(c.corollaGeometry().town)}>walk to the heart</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** S26: a petal's tip — the court, the returned law, the stakes. */
+function PetalTelegraph({ c }: { c: WorldController }) {
+  if (c.screen.kind !== "petalTelegraph" || !c.world) return null;
+  const color = c.screen.color;
+  const row = c.petalRows().find((r) => r.color === color)!;
+  const pd = c.corollaDef!.petals.find((p) => p.color === color)!;
+  const content = c.catalog.strongholdContent?.find((s) => s.color === color);
+  const deck = COROLLA_DECKS[pd.boss.key];
+  return (
+    <div className="gallery-modal">
+      <div className="gallery-modal-box play-dialog dungeon-telegraph">
+        <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
+          <img className="parley-portrait" src={`/portraits/${pd.boss.portrait}.png`} alt="" style={{ width: 72, height: 72, flexShrink: 0 }} title={pd.boss.name} onError={(e) => { (e.target as HTMLImageElement).style.visibility = "hidden"; }} />
+          <div>
+            <h2 style={{ margin: 0, fontFamily: "var(--serif)" }}>{row.lawName} — the {["W", "U", "B", "R", "G"].includes(color) ? { W: "white", U: "blue", B: "black", R: "red", G: "green" }[color] : ""} petal</h2>
+            <p className="parley-sub" style={{ marginBottom: 0 }}>{pd.boss.name} holds the tip, in the pair no lord could touch ({deck?.pair ?? ""}). Fixed and certain: the fight is here whenever you are.</p>
+          </div>
+        </div>
+        {content && <p className="dungeon-law"><b>{content.law.name}:</b> {content.law.text} <i>(the law returned — it stands on the court's side, as it stood at the seat; it is a permanent, and permanents can be answered)</i></p>}
+        <ul className="dungeon-stakes">
+          <li><b>{pd.boss.name}</b> fights at <b>{c.knobs.petalBossLife || c.corollaDef?.bossLife || 30}</b> life; you at your world life ({c.world.player.worldLife}). Ante as the world's ({c.knobs.anteCount}).</li>
+          <li>Win: <b>{c.pool.get(pd.signature)?.name ?? pd.signature}</b> (there is exactly one, and this is the only place it drops), one <b>{c.pool.get(pd.duals[0])?.name}</b> and one <b>{c.pool.get(pd.duals[1])?.name}</b>, <b>{c.knobs.petalGoldPrize} gold</b>, and the stake. The petal falls and stays fallen.</li>
+          <li>Lose: a world life and your stake; you stand where you fell. No clock runs; nothing else changes.</li>
+        </ul>
+        <p style={{ textAlign: "right", marginBottom: 0 }}>
+          <button onClick={() => c.declinePetal()}>Step back</button>{" "}
+          <button className="primary" onClick={() => c.fightPetal()}>Fight</button>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/** S26: a petal fell. */
+function PetalVictory({ c, pool }: { c: WorldController; pool: Map<string, CardDef> }) {
+  if (c.screen.kind !== "petalVictory") return null;
+  const s = c.screen;
+  return (
+    <div className="loader">
+      <div className="box play-setup">
+        <h2 style={{ fontFamily: "var(--serif)", marginTop: 0 }}>{s.bossName} falls — the petal with them</h2>
+        <p>Yours, as you go: <b>{s.paidCards.map((id) => pool.get(id)?.name ?? id).join(", ")}</b> and <b>{s.paidGold} gold</b>{s.anteWon.length ? <>, with their stake ({s.anteWon.map((id) => pool.get(id)?.name ?? id).join(", ")})</> : null}.</p>
+        {s.anteWithheld.length > 0 && <p style={{ fontSize: 12.5, color: "var(--ink-soft)" }}>◆ Their staked {s.anteWithheld.map((id) => pool.get(id)?.name ?? id).join(", ")} stays with them — there is exactly one, and it drops by defeat, not by ante.</p>}
+        <p style={{ fontSize: 12.5, color: "var(--ink-soft)" }}>{s.fallen >= 5 ? "Five petals have fallen. The door at the heart is open." : `${s.fallen} of five petals fallen.`}</p>
+        <p><button className="primary" onClick={() => c.continueAfterPetalVictory()}>Back among the petals</button></p>
+      </div>
+    </div>
+  );
+}
+
+/** S26: the Lotus. */
+function MirrorVictory({ c }: { c: WorldController }) {
+  if (c.screen.kind !== "mirrorVictory") return null;
+  return (
+    <div className="loader">
+      <div className="box play-setup">
+        <h2 style={{ fontFamily: "var(--serif)", marginTop: 0 }}>The reflection breaks</h2>
+        <p>The Vault held what you came for: <b>the Black Lotus</b>. There is exactly one, and now it is yours. The Vault is empty ground.</p>
+        <p><button className="primary" onClick={() => c.continueAfterMirrorVictory()}>Take it</button></p>
+      </div>
+    </div>
+  );
+}
+
+/** S26: the town at the heart — inn, the R-drawer shelf, the Heart's door (locked; its state readable). */
+function CorollaTownScreen({ c, pool, oracle }: { c: WorldController; pool: Map<string, CardDef>; oracle: Record<string, OracleEntry> }) {
+  const [printed, setPrinted] = useState(true);
+  const [inspect, setInspect] = useState<string | null>(null);
+  const [tab, setTab] = useState<"square" | "shelf" | "inn">("square");
+  if (c.screen.kind !== "corollaTown" || !c.world) return null;
+  const { stock, notice } = c.screen;
+  const w = c.world;
+  const maxLife = maxWorldLife(w);
+  const fallen = c.petalRows().filter((r) => r.fallen).length;
+  const back = tab !== "square" && <button className="linkish" onClick={() => setTab("square")}>⟵ back to the square</button>;
+  return (
+    <div className="gallery-modal">
+      <div className="gallery-modal-box play-dialog world-town">
+        <h2 style={{ fontFamily: "var(--serif)", marginTop: 0 }}>{c.corollaDef?.town.name ?? "The Heart"}{tab !== "square" && <span style={{ fontSize: 14, color: "var(--ink-soft)" }}> · {{ shelf: "the R drawer", inn: "the inn" }[tab]}</span>}</h2>
+        <p style={{ fontSize: 12, marginTop: 0 }}>the town at the flower's heart — <i>no clock runs here; nothing runs anywhere while you stand among the petals</i> · you have <b>{w.player.gold}</b> gold {back}</p>
+        {notice && <p style={{ fontSize: 12, color: "var(--brass)" }}>{notice}</p>}
+        {tab === "square" && (
+          <>
+            <p className="dungeon-law" style={{ borderColor: fallen >= 5 ? "var(--brass)" : undefined }}>
+              <b>The Heart's door:</b> five petals, <b>{fallen} fallen</b>. {fallen >= 5 ? "It is open — and what waits behind it has not yet been written. (The fight is not in this build.)" : "It opens when the fifth falls."}
+            </p>
+            <div className="town-nav">
+              <button onClick={() => setTab("shelf")}>
+                <img src="/town-market.png" alt="" />
+                <b>The R drawer</b><span>{stock.filter((s) => s.remaining > 0).length} cards — the only shelf that ever stocks them · ×{c.knobs.corollaShopMultiplier} price</span>
+              </button>
+              <button onClick={() => setTab("inn")}>
+                <img src="/town-inn.png" alt="" />
+                <b>The inn</b><span>{w.player.worldLife < maxLife ? `rest: free — time does not pass here (${maxLife - w.player.worldLife} missing)` : "you want for nothing"}</span>
+              </button>
+              <div className="town-utility">
+                <button onClick={() => c.openEditor()}>Edit deck</button>
+                <button onClick={() => c.openCollection()}>Collection</button>
+                <button onClick={() => c.save()}>Save</button>
+                <button className="primary" onClick={() => c.leaveHeartTown()}>Back to the petals</button>
+              </div>
+            </div>
+          </>
+        )}
+        {tab === "shelf" && (
+          <>
+            <div className="flyout-title">
+              One copy each; what you buy stays bought, what's left stays on the shelf
+              <button className="linkish" onClick={() => setPrinted(!printed)}>{printed ? "our frame" : "printed card"}</button>
+            </div>
+            <div className="shop-grid">
+              {stock.map((item: ShopItem) => (
+                <div key={item.cardId} className={`shop-item${item.remaining === 0 ? " sold-out" : ""}`} onMouseEnter={() => setInspect(item.cardId)}>
+                  <div className="card-slot"><CardFrame def={pool.get(item.cardId)!} oracle={oracle[item.cardId]} showPrinted={printed} /></div>
+                  <div className="shop-buttons">
+                    <button className={w.player.gold >= item.price && item.remaining > 0 ? "primary" : ""} disabled={w.player.gold < item.price || item.remaining === 0} onClick={() => c.corollaBuy(item)} title="buy to collection">
+                      {item.remaining === 0 ? "sold" : `${item.price} gold`}
+                    </button>
+                    <button disabled={w.player.gold < item.price || item.remaining === 0} onClick={() => c.corollaBuy(item, true)} title="buy and add to your deck if legal">+deck</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+        {tab === "inn" && (
+          <>
+            <div className="flyout-title">The inn — rest is free; time does not pass in the flower</div>
+            <p style={{ fontSize: 12.5 }}>You stand at <b>{w.player.worldLife} / {maxLife}</b> world life. {w.player.worldLife < maxLife ? "Nothing in the world will have moved when you wake." : "Nothing ails you; the innkeeper nods you toward the door."}</p>
+            {w.player.worldLife < maxLife && <p><button className="primary" onClick={() => c.corollaRest()}>Rest (+{maxLife - w.player.worldLife} life)</button></p>}
+          </>
+        )}
+      </div>
+      <FloatingCardInspector def={inspect ? pool.get(inspect) ?? null : null} oracle={oracle} printed={printed} onTogglePrinted={() => setPrinted(!printed)} />
+    </div>
+  );
+}
+
 /** S20: the payout ceremony. */
 function DungeonVictory({ c, pool }: { c: WorldController; pool: Map<string, CardDef> }) {
   if (c.screen.kind !== "dungeonVictory") return null;
@@ -656,7 +916,7 @@ function DungeonVictory({ c, pool }: { c: WorldController; pool: Map<string, Car
 
 /** S22 r1 (Chris): the map rail carries a lot now — every panel folds. Open state is per-mount
  * (position-keyed React state; a screen switch resets it, which is fine for a dev-era rail). */
-function RailPanel({ title, badge, defaultOpen = true, children }: { title: string; badge?: string | number; defaultOpen?: boolean; children: ReactNode }) {
+function RailPanel({ title, badge, defaultOpen = true, children }: { title: string; badge?: string | number | undefined; defaultOpen?: boolean; children: ReactNode }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
     <div className="panel">
@@ -1139,7 +1399,13 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
       const t = w2.map.towns[w2.lastTownIndex]!;
       const reg = w2.map.regions[t.region]!;
       cue = townMusicCue(reg.color, reg.tier);
-    } else if (scr.kind === "duel" || scr.kind === "siegeDuel" || scr.kind === "dungeonDuel") cue = "music.duel";
+    } else if (scr.kind === "duel" || scr.kind === "siegeDuel" || scr.kind === "dungeonDuel" || scr.kind === "corollaDuel") cue = "music.duel";
+    // S26: the Corolla's cue rows — registered, silent until mapped (the town's is Chris's LocMus0).
+    else if (scr.kind === "corollaTelegraph") cue = "splash.corolla";
+    else if (scr.kind === "vaultTelegraph") cue = "splash.vault";
+    else if (scr.kind === "corollaTown") cue = "music.corolla.town";
+    else if ((scr.kind === "editor" || scr.kind === "collection") && w2 && w2.gauntlet.corolla) cue = "music.corolla.town";
+    else if (scr.kind === "corolla" || scr.kind === "petalTelegraph" || scr.kind === "petalVictory" || scr.kind === "mirrorVictory") cue = "music.corolla";
     else if (scr.kind === "dungeonTelegraph") cue = scr.info.kind === "stronghold" ? strongholdSplashCue(scr.info.dungeonId) : "music.dungeon";
     else if (scr.kind === "strongholdVictory") cue = "music.stronghold";
     else if (scr.kind === "dungeon" || scr.kind === "dungeonVictory") cue = controller.dungeonRun?.kind === "stronghold" ? "music.stronghold" : "music.dungeon";
@@ -1198,7 +1464,7 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
   };
 
   if (c.screen.kind === "start" || !c.world) return <StartScreen c={c} onStart={(choice) => c.newGame(choice)} />;
-  if (c.screen.kind === "duel" || c.screen.kind === "dungeonDuel" || c.screen.kind === "siegeDuel") {
+  if (c.screen.kind === "duel" || c.screen.kind === "dungeonDuel" || c.screen.kind === "siegeDuel" || c.screen.kind === "corollaDuel") {
     const m = c.screen.match;
     if (lastDuel.current?.match !== m) {
       m.stops = loadStops();
@@ -1216,6 +1482,13 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
   if (c.screen.kind === "siegeTelegraph") return <SiegeTelegraph c={c} />;
   if (c.screen.kind === "dungeon") return <DungeonScreen c={c} pool={pool} />;
   if (c.screen.kind === "dungeonVictory") return <DungeonVictory c={c} pool={pool} />;
+  if (c.screen.kind === "corollaTelegraph") return <CorollaTelegraph c={c} />;
+  if (c.screen.kind === "vaultTelegraph") return <VaultTelegraph c={c} />;
+  if (c.screen.kind === "corolla") return <CorollaScreen c={c} />;
+  if (c.screen.kind === "petalTelegraph") return <PetalTelegraph c={c} />;
+  if (c.screen.kind === "petalVictory") return <PetalVictory c={c} pool={pool} />;
+  if (c.screen.kind === "mirrorVictory") return <MirrorVictory c={c} />;
+  if (c.screen.kind === "corollaTown") return <CorollaTownScreen c={c} pool={pool} oracle={oracle} />;
   if (c.screen.kind === "strongholdVictory") return <StrongholdVictory c={c} pool={pool} oracle={oracle} />;
   if (c.screen.kind === "gameOver") {
     const fatal = c.screen.fatal;
@@ -1283,6 +1556,8 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
           {screen.kind === "map" && c.resumePath && c.resumePath.length > 0 && !screen.walking && (
             <button onClick={() => c.resumeWalk()}>Resume walk ({c.resumePath.length} steps)</button>
           )}
+          {/* S26: standing on a centre door — knock to reopen its telegraph (arriving opens it once). */}
+          {c.doorHere() && <button className="linkish" style={{ marginRight: 10 }} onClick={() => c.knock()}>{c.doorHere() === "corolla" ? "✿ the Corolla's door — knock" : "◆ the Vault's door — knock"}</button>}
           <span className="seed">{seenRegions.size}/{w.map.regions.length} regions seen · {w.map.towns.filter((t) => seenCell(t.at)).length}/{w.map.towns.length} towns found</span>
         </div>
       </div>

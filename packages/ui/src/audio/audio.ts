@@ -29,10 +29,14 @@ export type MappingEntry = string | { file: string; volume?: number };
 export type RegionColor = "W" | "U" | "B" | "R" | "G";
 export type TownMusicCue = `music.town.${RegionColor}${1 | 2 | 3}`;
 export type StrongholdSplashCue = `splash.stronghold.${"argent_bastion" | "spiral_spire" | "charnel_court" | "furnace_gate" | "verdant_throne"}`;
+/** S26 (ADR-091): the Corolla's cue rows — the flower, its town (Chris: LocMus0), and the two
+ * door splashes (the petals part; the Vault). Registered; silent until mapped, as ever. */
+export type CorollaCue = "music.corolla" | "music.corolla.town" | "splash.corolla" | "splash.vault";
 export type MusicCue =
   | "music.menu" | "music.overworld" | "music.town" | "music.dungeon" | "music.stronghold" | "music.duel"
   | TownMusicCue
-  | StrongholdSplashCue;
+  | StrongholdSplashCue
+  | CorollaCue;
 export type StingCue =
   | "sting.news" | "sting.reward" | "sting.manalink" | "sting.parley" | "sting.treasure"
   | "sting.duel-win" | "sting.duel-loss" | "sting.coin-flip";

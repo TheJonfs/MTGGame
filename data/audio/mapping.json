@@ -1,6 +1,6 @@
 {
-  "_doc": "Audio mapping v3 (docs/audio-mapping-v3.md, Chris-authored) \u2014 cue \u2192 file under the gitignored assets/audio/ mount. Silent-if-unmapped is the law: every absent key below is a CHOSEN silence (menu TBD, overworld doctrine, in-duel focus, interiors pending ambience). Underscore keys are documentation.",
-  "_town_resolution": "music.town.<Colour><Ring> \u2014 resolved from the town's region (colour + civilized=1/approach=2/wild=3); bare music.town would act as a global fallback (unused in v3).",
+  "_doc": "Audio mapping v3 (docs/audio-mapping-v3.md, Chris-authored) — cue → file under the gitignored assets/audio/ mount. Silent-if-unmapped is the law: every absent key below is a CHOSEN silence (menu TBD, overworld doctrine, in-duel focus, interiors pending ambience). Underscore keys are documentation.",
+  "_town_resolution": "music.town.<Colour><Ring> — resolved from the town's region (colour + civilized=1/approach=2/wild=3); bare music.town would act as a global fallback (unused in v3).",
   "music.town.W1": "LocMus1.ogg",
   "music.town.W2": "LocMus6.ogg",
   "music.town.W3": "LocMus14.ogg",
@@ -16,7 +16,9 @@
   "music.town.G1": "LocMus2.ogg",
   "music.town.G2": "LocMus13.ogg",
   "music.town.G3": "LocMus18.ogg",
-  "_reserved": "LocMus5 / LocMus9 / LocMus12 \u2014 future special towns (v3).",
+  "_reserved": "LocMus5 / LocMus9 / LocMus12 — future special towns (v3).",
+  "_corolla": "S26 (ADR-091): the Corolla's rows — music.corolla (the petal-world) and splash.corolla / splash.vault are registered and deliberately silent pending the ambience slice; the town at the heart plays LocMus0 (Chris, S26 kickoff).",
+  "music.corolla.town": "LocMus0.ogg",
   "splash.stronghold.spiral_spire": "Ucastle.flac",
   "splash.stronghold.charnel_court": "Bcastle.flac",
   "splash.stronghold.argent_bastion": "Wcastle.flac",
@@ -175,5 +177,5 @@
     "file": "Damb5.flac",
     "volume": 0.4
   },
-  "_ambient": "S24 r6: the Damb set \u2014 the deep breathes on a REVEAL BURST (a step uncovering >=5 fog cells inside any interior), 12s cooldown, random-without-repeat from the five. Flat cues + a code-side picker (v3's pool want emerged; flagged, not resurrected)."
+  "_ambient": "S24 r6: the Damb set — the deep breathes on a REVEAL BURST (a step uncovering >=5 fog cells inside any interior), 12s cooldown, random-without-repeat from the five. Flat cues + a code-side picker (v3's pool want emerged; flagged, not resurrected)."
 }

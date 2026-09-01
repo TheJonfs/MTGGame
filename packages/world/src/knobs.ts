@@ -102,6 +102,32 @@ export const KNOBS = {
     unit: "cumulative tiers by interior steps",
     description: "The guardian's empowerment clock (dungeon-design §3, Normal column; difficulty bundles override whole-value per principle 5 — easy shifts thresholds up, hard doubles life). Steps are the ONLY input; tiers are visible in the dungeon UI with the next threshold named. S20 playtest r2 (Chris): 60/120/180 → 30/60/90 — even at the doubled 24×18 grid an optimal full-loot tour (~71 steps) barely crossed the old tier 1; pending future shifts.",
   }),
+  // ---- S26 (ADR-091): the Corolla and the Vault ----
+  petalBossLife: knob<number>({
+    default: 30,
+    unit: "life",
+    description: "S26: a petal boss's starting life (Chris: 30 to start, tuned after petal-sim and play). 0 = the content file's value.",
+  }),
+  petalGoldPrize: knob<number>({
+    default: 100,
+    unit: "gold",
+    description: "S26: the purse a fallen petal pays beside the signature (sole-mechanism) and one copy of each of the pair's two duals (Chris's prize ruling).",
+  }),
+  corollaShopMultiplier: knob<number>({
+    default: 4,
+    unit: "× shop price",
+    description: "S26: the R-drawer shelf at the flower's heart — the only place R is ever stocked — prices every R card at this multiple of its shop price (Chris: four times is a reasonable start).",
+  }),
+  corollaGridSize: knob<number>({
+    default: 41,
+    unit: "cells (odd)",
+    description: "S26: the petal-world's square grid (the logo as geography; five lobes around the heart). Odd, so the town sits on a cell.",
+  }),
+  corollaEmpowermentTiers: knob<{ steps: number; addLife: number; addBasic?: boolean; addToken?: boolean; addCard?: boolean }[]>({
+    default: [],
+    unit: "cumulative tiers by steps walked in the flower",
+    description: "S26 (ADR-091): an empowerment clock on Corolla steps, SHIPPED OFF (empty) — time stops in the flower unless play wants tension there. Same tier shape as dungeonEmpowermentTiers; reads steps walked inside since entry.",
+  }),
   // ---- S21 (overworld manifest §5): sieges ----
   siegeIntervalSteps: knob<Record<RegionTier, number>>({
     default: { civilized: 750, approach: 560, wild: 375 },

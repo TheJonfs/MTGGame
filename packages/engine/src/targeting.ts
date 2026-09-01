@@ -53,6 +53,12 @@ function basePredicate(ctx: EngineCtx, spec0: TargetSpec, target: ResolvedTarget
       const obj = state.objects[target.id];
       return !!obj && obj.zone === "battlefield" && isCreature(ctx, target.id) && canBeTargeted(ctx, target.id, by);
     }
+    case "tappedCreature": {
+      // S26 (Seraphina, the Initiative): the status-predicate door. Tapped is read live — at
+      // enumeration AND at resolution (CR 608.2b: an untap in response fizzles the kill).
+      if (!isLegalTarget(ctx, { ...spec, predicate: "creature" }, target, by)) return false;
+      return target.kind === "object" && state.objects[target.id]!.tapped;
+    }
     case "nonblackCreature": {
       if (!isLegalTarget(ctx, { ...spec, predicate: "creature" }, target, by)) return false;
       // ADR-019: color predicates read the explicit/derived colors field.

@@ -1,0 +1,37 @@
+{
+ "id": "clio_lady_of_the_depths",
+ "name": "Clio, Lady of the Depths",
+ "source": "custom",
+ "manaCost": "{1}{U}{B}",
+ "types": ["Creature"],
+ "supertypes": ["Legendary"],
+ "subtypes": ["Human", "Advisor"],
+ "power": 2,
+ "toughness": 4,
+ "text": "At the beginning of your end step, put a depth counter on Clio.\nCreatures your opponents control get -1/-0 for each depth counter on Clio.\n{U}{B}, Remove three depth counters from Clio: Draw two cards, then each opponent discards a card.",
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "END_STEP",
+   "condition": { "controller": "you" },
+   "effects": [{ "type": "addCounters", "kind": "depth", "count": 1, "scope": "self" }]
+  },
+  {
+   "kind": "static",
+   "effects": [
+    { "type": "modifyPT", "power": { "ref": "countersOnSelf", "kind": "depth", "times": -1 }, "toughness": 0, "scope": "creaturesYouDontControl", "duration": "WHILE_SOURCE_ON_BATTLEFIELD" }
+   ]
+  },
+  {
+   "kind": "activated",
+   "cost": { "mana": "{U}{B}", "removeCounters": { "kind": "depth", "count": 3 } },
+   "effects": [
+    { "type": "draw", "count": 2, "who": "you" },
+    { "type": "discard", "count": 1, "who": "opponent", "mode": "ownerChooses" }
+   ]
+  }
+ ],
+ "art": { "asset": "/custom-art/clio_lady_of_the_depths.png", "fallback": "rendered" },
+ "printedAsset": "clio_lady_of_the_depths.jpg",
+ "prizeOnly": true
+}

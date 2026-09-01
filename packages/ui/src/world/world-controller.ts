@@ -81,6 +81,12 @@ import {
 } from "@shandalar/world";
 import type { Modifier } from "@shandalar/engine";
 import { WorldRng as DungeonRng } from "@shandalar/world";
+import {
+  applyMirrorDuel, applyPetalDuel, corollaAdvance, corollaAsWorldMap, corollaDoor, corollaInnRest, corollaPath, corollaTown, enterCorolla,
+  fixedPointAt, generateCorolla, insideCorolla, leaveCorolla, mirrorDuelSpec, petalAt, petalDistance, petalDuelSpec, petalLawName, petalsFallen,
+  rollCorollaStock, vaultDoor, PETAL_ORDER, type CorollaDef, type CorollaGeometry, type PetalColor, type WorldMap,
+} from "@shandalar/world";
+import { COROLLA_DECKS } from "@shandalar/sim/corolla-decks";
 
 /**
  * WorldController (S13): the overworld's interaction brain — React-free, like
@@ -111,6 +117,22 @@ export type WorldScreen =
   /** S21 sieges: the engagement telegraph — the party, the life-carry law, the stakes (resume-aware). */
   | { kind: "siegeTelegraph"; townIndex: number; notice: string | null }
   | { kind: "siegeDuel"; enemyName: string; match: MatchController; townIndex: number }
+  /** S26 (ADR-091): the Corolla's door — five seals part the petals (locked, it states the count). */
+  | { kind: "corollaTelegraph"; at: Point; seals: number; open: boolean; notice: string | null }
+  /** S26: the Vault's door — five Moxen open the Mirror ("the Vault shows you what you brought"). */
+  | { kind: "vaultTelegraph"; at: Point; moxen: number; open: boolean; notice: string | null }
+  /** S26: inside the flower (world.gauntlet.corolla is where you stand). */
+  | { kind: "corolla"; notice: string | null; walking: boolean }
+  /** S26: at a petal's tip — the boss, the returned law, the stakes. */
+  | { kind: "petalTelegraph"; color: PetalColor }
+  /** S26: a petal fight or the Mirror — mounts PlayMatch like a world duel. */
+  | { kind: "corollaDuel"; enemyName: string; match: MatchController; against: { petal?: PetalColor; mirror?: boolean } }
+  /** S26: a petal fell — the payout (signature, duals, purse, ante). */
+  | { kind: "petalVictory"; color: PetalColor; bossName: string; paidGold: number; paidCards: string[]; anteWon: string[]; anteWithheld: string[]; fallen: number }
+  /** S26: the town at the heart — the inn, the R-drawer shelf, the Heart's door. */
+  | { kind: "corollaTown"; stock: ShopItem[]; notice: string | null }
+  /** S26: the Lotus paid out. */
+  | { kind: "mirrorVictory" }
   | {
       kind: "duelResult";
       duel: PreparedDuel;
@@ -228,6 +250,9 @@ export class WorldController {
     this.world = deserializeWorld(text);
     if (this.world.gameOver) {
       this.screen = { kind: "gameOver", fatal: this.world.duels[this.world.duels.length - 1] ?? null };
+    } else if (insideCorolla(this.world) && this.catalog.corolla) {
+      // S26: reloading inside the flower resumes where you stood (world-kind: nothing to forfeit).
+      this.screen = { kind: "corolla", notice: "You are where you stood, among the petals.", walking: false };
     } else if (this.world.activeDungeon) {
       // S20 durability: reloading RESUMES mid-dungeon — quitting is not walking out (the escrow holds).
       this.screen = { kind: "dungeon", notice: "You are where you stood — the halls remember, and so does the escrow.", walking: false };
@@ -337,6 +362,19 @@ export class WorldController {
         if (e.type === "dungeonEntry") {
           this.resumePath = path.slice(i + 1);
           this.screen = { kind: "dungeonTelegraph", info: { dungeonId: e.dungeonId, kind: e.kind, name: e.name, at: e.at, ...(e.residentCatalogId ? { residentCatalogId: e.residentCatalogId } : {}) }, notice: null };
+          this.emit();
+          return;
+        }
+        // S26 (ADR-091): the centre doors stop the walk; the telegraph states the lock either way.
+        if (e.type === "corollaDoor") {
+          this.resumePath = path.slice(i + 1);
+          this.screen = { kind: "corollaTelegraph", at: e.at, seals: e.seals, open: e.open, notice: null };
+          this.emit();
+          return;
+        }
+        if (e.type === "vaultDoor") {
+          this.resumePath = path.slice(i + 1);
+          this.screen = { kind: "vaultTelegraph", at: e.at, moxen: e.moxen, open: e.open, notice: null };
           this.emit();
           return;
         }
@@ -1306,6 +1344,260 @@ export class WorldController {
     // Minion win: life carries, ante escrowed; back to the halls.
     this.autosave();
     this.screen = { kind: "dungeon", notice: `The way is clear. Interior life: ${run.interiorLife}. Their stake went to escrow.`, walking: false };
+    this.emit();
+  }
+
+  // ---------- S26 (ADR-091): the Corolla + the Vault ----------
+
+  get corollaDef(): CorollaDef | null {
+    return this.catalog.corolla ?? null;
+  }
+  private corollaGeom: CorollaGeometry | null = null;
+  /** The flower's shape (pure from the knob; memoized). */
+  corollaGeometry(): CorollaGeometry {
+    if (!this.corollaGeom || this.corollaGeom.size !== Math.max(21, this.knobs.corollaGridSize | 1)) this.corollaGeom = generateCorolla(this.knobs.corollaGridSize);
+    return this.corollaGeom;
+  }
+  petalLawNames(): Partial<Record<PetalColor, string>> {
+    const out: Partial<Record<PetalColor, string>> = {};
+    for (const c of PETAL_ORDER) { const n = petalLawName(this.catalog, c); if (n) out[c] = n; }
+    return out;
+  }
+  /** The flower as a map for the renderer's corolla register (fallen tips marked cleared). */
+  corollaMap(): WorldMap | null {
+    if (!this.world || !this.corollaDef) return null;
+    return corollaAsWorldMap(this.corollaGeometry(), this.corollaDef, this.petalLawNames(), new Set(petalsFallen(this.world)));
+  }
+  /** The rail: one row per petal — its law, its boss, fallen or standing, how far the tip is. */
+  petalRows(): { color: PetalColor; lawName: string; bossName: string; fallen: boolean; distance: number; tip: Point }[] {
+    const def = this.corollaDef;
+    if (!this.world || !def) return [];
+    const fallen = new Set(petalsFallen(this.world));
+    const g = this.corollaGeometry();
+    return PETAL_ORDER.map((color) => {
+      const pd = def.petals.find((p) => p.color === color)!;
+      return { color, lawName: petalLawName(this.catalog, color) ?? color, bossName: pd.boss.name, fallen: fallen.has(color), distance: petalDistance(g, color), tip: g.petals.find((p) => p.color === color)!.tip };
+    });
+  }
+  /** Standing on one of the centre doors (the map's transport offers a knock). */
+  doorHere(): "corolla" | "vault" | null {
+    if (!this.world || this.screen.kind !== "map") return null;
+    const f = fixedPointAt(this.world.map, this.world.player.position);
+    if (f?.kind === "corolla") return "corolla";
+    if (f?.kind === "vault" && this.world.gauntlet.vault !== "cleared") return "vault";
+    return null;
+  }
+  knock(): void {
+    if (!this.world) return;
+    const d = this.doorHere();
+    if (d === "corolla") {
+      const s = corollaDoor(this.world);
+      this.screen = { kind: "corollaTelegraph", at: { ...this.world.player.position }, seals: s.seals, open: s.open, notice: null };
+    } else if (d === "vault") {
+      const v = vaultDoor(this.world);
+      this.screen = { kind: "vaultTelegraph", at: { ...this.world.player.position }, moxen: v.moxen, open: v.open, notice: null };
+    } else return;
+    this.emit();
+  }
+
+  /** The petals part: enter (or resume — reload lands you where you stood). Autosaved: a consequence. */
+  enterCorolla(): void {
+    if (!this.world || this.screen.kind !== "corollaTelegraph" || !this.screen.open || !this.corollaDef) return;
+    if (!insideCorolla(this.world)) enterCorolla(this.world, this.corollaGeometry());
+    this.autosave();
+    const fallen = petalsFallen(this.world).length;
+    this.screen = { kind: "corolla", notice: fallen ? `The petals part again. ${fallen} of five have fallen; the flower remembers.` : "The petals part. Five tips, five laws returned; the town waits at the heart.", walking: false };
+    this.emit();
+  }
+  declineCorolla(): void {
+    if (this.screen.kind !== "corollaTelegraph") return;
+    this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: null };
+    this.emit();
+  }
+  /** Walk back out (any time): the flower keeps its wounds; you stand at the door you never left. */
+  leaveCorolla(): void {
+    if (!this.world || !insideCorolla(this.world)) return;
+    leaveCorolla(this.world);
+    this.autosave();
+    this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: "You step back through the petals. The flower keeps what fell; the rest still stands." };
+    this.emit();
+  }
+
+  corollaClick(p: Point): void {
+    if (!this.world || this.screen.kind !== "corolla" || this.screen.walking) return;
+    const inside = insideCorolla(this.world);
+    const map = this.corollaMap();
+    if (!inside || !map) return;
+    const path = corollaPath(map, inside.position, p);
+    if (!path || path.length === 0) {
+      // Standing on the town or a tip already: open it.
+      const g = this.corollaGeometry();
+      if (samePoint(inside.position, g.town)) return this.enterHeartTown();
+      const petal = petalAt(g, inside.position);
+      if (petal && !petalsFallen(this.world).includes(petal.color)) { this.screen = { kind: "petalTelegraph", color: petal.color }; this.emit(); }
+      return;
+    }
+    void this.corollaWalk(path);
+  }
+  private async corollaWalk(path: Point[]): Promise<void> {
+    if (!this.world || this.screen.kind !== "corolla") return;
+    const g = this.corollaGeometry();
+    this.screen = { ...this.screen, walking: true };
+    this.emit();
+    for (const cell of path) {
+      if (!this.world || this.screen.kind !== "corolla") return;
+      const events = corollaAdvance(this.world, g, [cell]);
+      this.emit();
+      for (const e of events) {
+        if (e.type === "petal") {
+          this.autosave();
+          this.screen = { kind: "petalTelegraph", color: e.color };
+          this.emit();
+          return;
+        }
+        if (e.type === "heart") {
+          this.autosave();
+          this.enterHeartTown();
+          return;
+        }
+      }
+      if (this.stepMs > 0) await new Promise((r) => setTimeout(r, this.stepMs));
+    }
+    if (this.screen.kind === "corolla") {
+      this.autosave(); // position is a consequence (reload resumes here)
+      this.screen = { ...this.screen, walking: false };
+      this.emit();
+    }
+  }
+
+  /** The petal's telegraph: the boss, the returned law, the stakes — fight or step back. */
+  fightPetal(): void {
+    if (this.screen.kind !== "petalTelegraph") return;
+    this.startPetalDuel(this.screen.color);
+  }
+  declinePetal(): void {
+    if (this.screen.kind !== "petalTelegraph") return;
+    this.screen = { kind: "corolla", notice: "You step back from the tip. It will be here.", walking: false };
+    this.emit();
+  }
+  private startPetalDuel(color: PetalColor): void {
+    const def = this.corollaDef;
+    if (!this.world || !def) return;
+    const petal = def.petals.find((p) => p.color === color)!;
+    const boss = COROLLA_DECKS[petal.boss.key]!;
+    const rng = new DungeonRng(this.world.rng);
+    const { spec, enemyName } = petalDuelSpec(this.world, this.catalog, this.knobs, def, petal, { name: boss.name, decklist: boss.decklist, archetype: boss.archetype }, rng);
+    this.world.rng = rng.state();
+    this.autosave();
+    const match = new MatchController(this.pool, {
+      humanSeat: 0,
+      seed: spec.seed,
+      aiDelayMs: this.aiDelay(),
+      custom: {
+        human: { name: this.world.player.name, decklist: spec.players[0].decklist },
+        enemy: { name: enemyName, decklist: spec.players[1].decklist, difficulty: "master", archetype: boss.archetype, portrait: petal.boss.portrait },
+        rules: { startingLife: spec.rules.startingLife, ante: spec.rules.ante ?? 0, ...(spec.rules.startingPlayer !== undefined ? { startingPlayer: spec.rules.startingPlayer } : {}) },
+        modifiers: spec.modifiers,
+      },
+    });
+    this.screen = { kind: "corollaDuel", enemyName, match, against: { petal: color } };
+    this.emit();
+    const rec = { seed: spec.seed, spec, enemyName };
+    void match.start().then((result) => this.finishPetalDuel(color, result, rec));
+  }
+  private finishPetalDuel(color: PetalColor, result: MatchResult, rec: { seed: number; spec: MatchSpec; enemyName: string }): void {
+    const def = this.corollaDef;
+    if (!this.world || !def) return;
+    const petal = def.petals.find((p) => p.color === color)!;
+    const out = applyPetalDuel(this.world, this.knobs, this.pool, petal, result, rec);
+    this.autosave();
+    if (out.type === "loss") {
+      if (this.world.gameOver) { this.screen = { kind: "gameOver", fatal: this.world.duels[this.world.duels.length - 1] ?? null }; this.emit(); return; }
+      this.screen = { kind: "corolla", notice: `${petal.boss.name} holds the tip. A world life and your stake${out.anteLost.length ? ` (${out.anteLost.map((id) => this.pool.get(id)?.name ?? id).join(", ")})` : ""} are gone; you stand where you fell.`, walking: false };
+      this.emit();
+      return;
+    }
+    this.screen = { kind: "petalVictory", color, bossName: petal.boss.name, paidGold: out.paidGold, paidCards: out.paidCards, anteWon: out.anteWon, anteWithheld: out.anteWithheld, fallen: petalsFallen(this.world).length };
+    this.emit();
+  }
+  continueAfterPetalVictory(): void {
+    if (this.screen.kind !== "petalVictory") return;
+    const n = this.screen.fallen;
+    this.screen = { kind: "corolla", notice: n >= 5 ? "Five petals have fallen. The Heart's door stands at the town." : `${n} of five petals fallen.`, walking: false };
+    this.emit();
+  }
+
+  /** The town at the heart: the inn, the R-drawer shelf, the Heart's door. */
+  enterHeartTown(): void {
+    if (!this.world) return;
+    this.screen = { kind: "corollaTown", stock: rollCorollaStock(this.world, this.pool, this.knobs), notice: null };
+    this.emit();
+  }
+  leaveHeartTown(): void {
+    if (this.screen.kind !== "corollaTown") return;
+    this.screen = { kind: "corolla", notice: null, walking: false };
+    this.emit();
+  }
+  corollaBuy(item: ShopItem, toDeck = false): void {
+    if (!this.world || this.screen.kind !== "corollaTown" || !this.corollaDef) return;
+    const town = corollaTown(this.corollaDef, this.corollaGeometry());
+    const out = buyCard(this.world, town, item, this.knobs, toDeck);
+    this.autosave();
+    this.screen = { kind: "corollaTown", stock: rollCorollaStock(this.world, this.pool, this.knobs), notice: out.ok ? `Bought ${this.pool.get(item.cardId)?.name ?? item.cardId} for ${out.price} gold${out.addedToDeck ? " — added to your deck" : out.note ? ` (${out.note})` : ""}.` : out.reason };
+    this.emit();
+  }
+  corollaRest(): void {
+    if (!this.world || this.screen.kind !== "corollaTown") return;
+    const healed = corollaInnRest(this.world);
+    this.autosave();
+    this.screen = { ...this.screen, notice: healed > 0 ? `You rest. Time does not pass in the flower: +${healed} life, and nothing in the world moved.` : "Nothing ails you." };
+    this.emit();
+  }
+
+  /** The Vault's telegraph → the Mirror. */
+  enterVault(): void {
+    if (!this.world || this.screen.kind !== "vaultTelegraph" || !this.screen.open) return;
+    const rng = new DungeonRng(this.world.rng);
+    const { spec, archetype } = mirrorDuelSpec(this.world, this.knobs, this.pool, rng);
+    this.world.rng = rng.state();
+    this.autosave();
+    const match = new MatchController(this.pool, {
+      humanSeat: 0,
+      seed: spec.seed,
+      aiDelayMs: this.aiDelay(),
+      custom: {
+        human: { name: this.world.player.name, decklist: spec.players[0].decklist },
+        enemy: { name: "Your reflection", decklist: spec.players[1].decklist, difficulty: "master", archetype, portrait: "portrait-you" },
+        rules: { startingLife: spec.rules.startingLife, ante: 0, ...(spec.rules.startingPlayer !== undefined ? { startingPlayer: spec.rules.startingPlayer } : {}) },
+        modifiers: spec.modifiers,
+      },
+    });
+    this.screen = { kind: "corollaDuel", enemyName: "Your reflection", match, against: { mirror: true } };
+    this.emit();
+    const rec = { seed: spec.seed, spec };
+    void match.start().then((result) => this.finishMirrorDuel(result, rec));
+  }
+  declineVault(): void {
+    if (this.screen.kind !== "vaultTelegraph") return;
+    this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: null };
+    this.emit();
+  }
+  private finishMirrorDuel(result: MatchResult, rec: { seed: number; spec: MatchSpec }): void {
+    if (!this.world) return;
+    const out = applyMirrorDuel(this.world, this.knobs, result, rec);
+    this.autosave();
+    if (out.type === "loss") {
+      if (this.world.gameOver) { this.screen = { kind: "gameOver", fatal: this.world.duels[this.world.duels.length - 1] ?? null }; this.emit(); return; }
+      this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: "Your reflection knew your deck better. A world life is gone; the Vault waits." };
+      this.emit();
+      return;
+    }
+    this.screen = { kind: "mirrorVictory" };
+    this.emit();
+  }
+  continueAfterMirrorVictory(): void {
+    if (this.screen.kind !== "mirrorVictory") return;
+    this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: "The Black Lotus is yours. There is exactly one, and now it is yours. The Vault is empty ground." };
     this.emit();
   }
 

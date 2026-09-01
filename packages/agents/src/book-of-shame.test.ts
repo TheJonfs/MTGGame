@@ -491,6 +491,42 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.scorePriorityAction(threatened, { type: "castSpell", objectId: "h_gg", targets: [{ kind: "object", id: "mine" }] })).toBeGreaterThan(-Infinity);
   });
 
+  it("book of shame 27 (S26, the Mirror's honesty): the Lotus pops only when its three mana enable a cast this step, and only in a colour that cast wants — idle windows and wrong colours stay gated", () => {
+    const a = agent();
+    // Two Islands untapped, Air Elemental ({3}{U}{U}) in hand: the Lotus for blue enables it; for red it does not; with nothing to enable it stays shut.
+    const view = (hand: { objectId: string; cardId: string }[]) =>
+      mkView({ hand, battlefield: [{ id: "lotus", cardId: "black_lotus", controller: 0 }, { id: "i1", cardId: "island", controller: 0 }, { id: "i2", cardId: "island", controller: 0 }] });
+    const pop = (color: "W" | "U" | "B" | "R" | "G") => ({ type: "activateAbility" as const, objectId: "lotus", abilityIndex: 0, targets: [], color });
+    const elemental = view([{ objectId: "h1", cardId: "air_elemental" }]);
+    expect(a.scorePriorityAction(elemental, pop("U"))).toBeGreaterThan(-Infinity);
+    expect(a.scorePriorityAction(elemental, pop("R"))).toBe(-Infinity);
+    expect(a.scorePriorityAction(view([{ objectId: "h1", cardId: "counterspell" }]), pop("U"))).toBe(-Infinity); // already castable off two Islands
+    expect(a.scorePriorityAction(view([]), pop("U"))).toBe(-Infinity); // nothing to enable
+  });
+
+  it("book of shame 26 (S26, the Corolla's pins): Lumen steals only on her own MAIN1 (the swing must cash); Clio holds the burst while the hand is stocked and the board threatens, spends when either runs thin", () => {
+    const a = agent();
+    const lumen = (step: string, activePlayer: 0 | 1 = 0) =>
+      mkView({ step, activePlayer, battlefield: [{ id: "lumen", cardId: "lumen_the_hearth_fire", controller: 0 }, { id: "bear", cardId: "grizzly_bears", controller: 1 }] });
+    const steal = { type: "activateAbility" as const, objectId: "lumen", abilityIndex: 0, targets: [{ kind: "object" as const, id: "bear" }] };
+    expect(a.scorePriorityAction(lumen("MAIN1"), steal)).toBeGreaterThan(-Infinity);
+    expect(a.scorePriorityAction(lumen("MAIN2"), steal)).toBe(-Infinity);
+    expect(a.scorePriorityAction(lumen("MAIN1", 1), steal)).toBe(-Infinity); // the opponent's turn: nothing to cash
+    // Clio: the enumerator withholds the burst under three counters; the pin decides the rest.
+    const clio = (hand: number, oppCreatures: number) =>
+      mkView({
+        hand: Array.from({ length: hand }, (_, i) => ({ objectId: `h${i}`, cardId: "island" })),
+        battlefield: [
+          { id: "clio", cardId: "clio_lady_of_the_depths", controller: 0 }, { id: "i", cardId: "island", controller: 0 }, { id: "s", cardId: "swamp", controller: 0 },
+          ...Array.from({ length: oppCreatures }, (_, i) => ({ id: `b${i}`, cardId: "grizzly_bears", controller: 1 as const })),
+        ],
+      });
+    const burst = { type: "activateAbility" as const, objectId: "clio", abilityIndex: 2, targets: [] };
+    expect(a.scorePriorityAction(clio(3, 2), burst)).toBe(-Infinity); // hold: stocked hand, threatening board
+    expect(a.scorePriorityAction(clio(1, 2), burst)).toBeGreaterThan(-Infinity); // the hand ran low
+    expect(a.scorePriorityAction(clio(4, 1), burst)).toBeGreaterThan(-Infinity); // the board is thin
+  });
+
   it("book of shame 25 (S25, the court's floors — the pin-17 family): the Witch stops at life 2, the Tyrant never pulls a lethal recoil, the Cleric never walks the library under 3", () => {
     const a = agent();
     // The Witch: pay 2 life, draw — legal to exactly 0 (CR 118.4), gated at life ≤ 2.

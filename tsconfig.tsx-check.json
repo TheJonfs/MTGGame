@@ -1,0 +1,6 @@
+{
+  "_doc": "S26: tsc's project (tsconfig.json) includes only *.ts — every React screen was outside the typecheck, and the S25 cast-or-cycle chooser shipped with an unimported identifier (a runtime ReferenceError the live browser found). This config checks packages/ui with Vite's resolution: `pnpm typecheck:ui`.",
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": { "jsx": "react-jsx", "noEmit": true, "module": "ESNext", "moduleResolution": "bundler", "allowImportingTsExtensions": true },
+  "include": ["packages/ui/src/**/*.ts", "packages/ui/src/**/*.tsx"]
+}

@@ -670,7 +670,9 @@ describe("lair fixed point (S14 round 1 prototype)", () => {
       // break walks by design) — decline and keep walking until the lair's own entry.
       let ev = walkTo(w, catalog, lair.at, QUIET)!;
       let entry = ev.find((e) => e.type === "dungeonEntry");
-      for (let leg = 0; leg < 6 && entry && entry.type === "dungeonEntry" && entry.kind !== "lair"; leg++) {
+      // S26: the centre DOORS (the Corolla's, the Vault's) stop walks through the hub too — leg past
+      // every non-lair stop until the lair's own entry.
+      for (let leg = 0; leg < 8 && !(entry && entry.type === "dungeonEntry" && entry.kind === "lair"); leg++) {
         ev = walkTo(w, catalog, lair.at, QUIET)!;
         entry = ev.find((e) => e.type === "dungeonEntry");
       }

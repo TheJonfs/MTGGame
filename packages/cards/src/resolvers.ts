@@ -1,4 +1,4 @@
-import type { Amount, DiscardFilter, DiscardMode, Duration, Effect, EffectCondition, EffectType, Keyword, PTAmount, Scope, Who } from "./types.js";
+import type { Amount, CounterKind, DiscardFilter, DiscardMode, Duration, Effect, EffectCondition, EffectType, Keyword, PTAmount, Scope, Who } from "./types.js";
 
 /**
  * The seam between vocabulary and engine (engine-design §1 dependency rule):
@@ -13,8 +13,10 @@ export type ResolvedTarget =
 
 /** A continuous effect created by a resolved spell/ability (pump, EOT restrict). */
 export interface ResolvedContinuousEffect {
-  kind: "modifyPT" | "grantKeyword" | "restrict";
+  kind: "modifyPT" | "grantKeyword" | "restrict" | "gainControl";
   objectId: string;
+  /** S26 (gainControl): the seat that gains control — the effect's controller. */
+  controller?: number;
   power?: number;
   toughness?: number;
   keyword?: Keyword;
@@ -64,7 +66,7 @@ export interface EffectContext {
   exileThenReturn(objectId: string): void;
   /** A10 (S22): `pt` sets the tokens' base P/T, locked at creation (Overload's Weird). */
   createToken(player: number, tokenId: string, count: number, pt?: { power: number; toughness: number }): void;
-  addCounters(objectId: string, kind: "+1/+1" | "-1/-1", count: number): void;
+  addCounters(objectId: string, kind: CounterKind, count: number): void;
   gainLife(player: number, amount: number): void;
   /** Destruction by effect (CR 701.7); honors indestructible. Death itself is still the SBA's call. */
   destroy(objectId: string): void;
@@ -254,6 +256,17 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
     if (e.type !== "exileThenReturn") throw new Error("resolver mismatch");
     const t = ctx.target(e.target);
     if (t && t.kind === "object") ctx.exileThenReturn(t.id);
+  },
+
+  gainControl: (e, ctx) => {
+    // S26 (Lumen, the Hearth Fire): the RESOLVED form — a stored control effect for the turn
+    // (the static form never resolves; the validator keeps the two apart). The control layer
+    // reads it beside the aura statics at the next SBA pass; cleanup expires it.
+    if (e.type !== "gainControl") throw new Error("resolver mismatch");
+    if (e.target === undefined) return; // static form — interpreted live, never here
+    const t = ctx.target(e.target);
+    if (!t || t.kind !== "object") return;
+    ctx.addContinuousEffect({ kind: "gainControl", objectId: t.id, controller: ctx.players("you")[0]!, duration: e.duration ?? "UNTIL_END_OF_TURN" });
   },
 
   gainLife: (e, ctx) => {

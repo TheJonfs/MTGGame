@@ -221,6 +221,44 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
     }
   });
 
+  // S26 (Faldor, the Muster — the first DRAW collector; DISCARD's sibling, skeleton by the
+  // R-061/S23 precedent): every draw by any path (draw step, Divination, cycling) is a draw.
+  // Opening hands and mulligan re-draws are NOT draws (CR 103.4) — the pre-game gate is the
+  // turn counter (turn 0 until the first untap). Condition `controller` = who drew, relative
+  // to the observer's controller; default "you".
+  ctx.bus.on("CARD_DRAWN", (ev) => {
+    if (ctx.state.turn < 1) return;
+    for (const permId of [...ctx.state.battlefield]) {
+      const perm = ctx.state.objects[permId];
+      if (!perm) continue;
+      (ctx.defs.def(perm.cardId).abilities ?? []).forEach((a, i) => {
+        if (a.kind !== "triggered" || a.event !== "DRAW") return;
+        const ctrl = a.condition?.controller ?? "you";
+        if (ctrl === "you" && ev.player !== perm.controller) return;
+        if (ctrl === "opponent" && ev.player === perm.controller) return;
+        pend(permId, perm.cardId, perm.controller, i, { player: ev.player });
+      });
+    }
+  });
+
+  // S26 (Yuloke, the Animus — the first LAND_ENTERS_UNDER_YOUR_CONTROL collector; the event has
+  // fired since S2): landfall by EVERY entry path (play, Wilds' search, reanimation). Observer
+  // shape; condition `controller` = the land's controller relative to the observer's (default
+  // "you"). The context carries the land and its controller.
+  ctx.bus.on("LAND_ENTERS_UNDER_YOUR_CONTROL", (ev) => {
+    for (const permId of [...ctx.state.battlefield]) {
+      const perm = ctx.state.objects[permId];
+      if (!perm) continue;
+      (ctx.defs.def(perm.cardId).abilities ?? []).forEach((a, i) => {
+        if (a.kind !== "triggered" || a.event !== "LAND_ENTERS_UNDER_YOUR_CONTROL") return;
+        const ctrl = a.condition?.controller ?? "you";
+        if (ctrl === "you" && ev.controller !== perm.controller) return;
+        if (ctrl === "opponent" && ev.controller === perm.controller) return;
+        pend(permId, perm.cardId, perm.controller, i, { objectId: ev.objectId, player: ev.controller });
+      });
+    }
+  });
+
   // ADR-076: discard triggers (Waste Not): `player` = who discarded, relative to the
   // observer's controller; type/notType read the discarded card's types.
   ctx.bus.on("DISCARD", (ev) => {

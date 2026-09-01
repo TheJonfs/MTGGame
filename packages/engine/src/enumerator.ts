@@ -197,6 +197,9 @@ export function legalActions(ctx: EngineCtx, player: PlayerId): Action[] {
       // S25 word 4 (the Pearl Cleric): an exile-top cost needs a library that deep — a one-card
       // library affords mode one and not mode two.
       if (ability.cost.exileTop && state.players[player].library.length < ability.cost.exileTop) return;
+      // S26 (Clio): a remove-counters cost needs that many counters of the kind on the source —
+      // the burst is legal at three depth counters and not at two.
+      if (ability.cost.removeCounters && (obj.counters[ability.cost.removeCounters.kind] ?? 0) < ability.cost.removeCounters.count) return;
       // A10 (S22): the bounce cost needs a legal permanent; the tap cost needs enough untapped creatures.
       if (ability.cost.returnToHand && returnToHandCandidates(ctx, player, id, ability.cost.returnToHand.predicate).length === 0) return;
       if (ability.cost.tapCreature && tapCreatureCandidates(ctx, player, ability.cost.tapCreature.predicate).length < ability.cost.tapCreature.count) return;

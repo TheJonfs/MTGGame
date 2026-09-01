@@ -382,6 +382,9 @@ function applyEffect(
       // S25: count may be a ref — xPaid predicts as the action's announced X (the Keeper's
       // X-choice scores itself); other refs keep the small-fixed-number convention.
       const count = typeof e.count === "number" ? e.count : e.count.ref === "xPaid" ? x : amt(e.count);
+      // S26: a NAMED kind (Clio's depth) is inert material — the static that reads it lands in the
+      // real view next window; a small flat credit keeps the accumulation from scoring as nothing.
+      if (e.kind !== "+1/+1" && e.kind !== "-1/-1") return 0.25 * count;
       if (e.target === undefined) {
         // S25 (the Keeper): the creaturesYouControl scope applies its delta to each matching
         // own-side creature in the predicted view — the evaluator's material scoring then yields
@@ -467,6 +470,16 @@ function applyEffect(
     }
     case "grantKeyword":
       return 0.15;
+    case "gainControl": {
+      // S26 (Lumen — the threaten class, resolved form): the target fights for us THIS turn and
+      // reverts at cleanup, so the copy must not read it as permanent material. Credit the swing
+      // (its power, hasted) plus the blocker it stops being; the sequencing pin keeps this to
+      // our own MAIN1, where the attack search cashes it. The static (aura) form never reaches here.
+      if (e.target === undefined) return 0;
+      const o = objAt(e.target);
+      if (!o || o.power === null || o.controller === me) return 0;
+      return 0.6 + 0.45 * o.power + (o.tapped ? 0 : 0.3);
+    }
     case "searchLibrary":
       return 0.5;
     case "addMana":

@@ -250,6 +250,10 @@ function validCountPredicate(p: unknown): boolean {
   if (p.controller !== undefined && !["you", "opponent", "any"].includes(p.controller as string)) return false;
   return true;
 }
+/** S26: +1/+1, −1/−1, or a NAMED kind — one lowercase word (the accumulator class; Clio's "depth"). */
+function validCounterKind(k: unknown): boolean {
+  return k === "+1/+1" || k === "-1/-1" || (typeof k === "string" && /^[a-z]+$/.test(k));
+}
 /** ADR-028 + A4 value refs. */
 function isAnyValueRef(v: unknown): boolean {
   if (!isRecord(v)) return false;
@@ -267,6 +271,8 @@ function isAnyValueRef(v: unknown): boolean {
   if (v.ref === "eventDamage") return v.times === undefined || (Number.isInteger(v.times) && (v.times as number) >= 1);
   // S25 (ADR-088, member seven): the announced X persisted on the permanent (the Emerald Keeper).
   if (v.ref === "xPaid") return true;
+  // S26 (member eight): counters of a kind on the source, times a bounded nonzero literal (Clio).
+  if (v.ref === "countersOnSelf") return validCounterKind(v.kind) && (v.times === undefined || (Number.isInteger(v.times) && v.times !== 0));
   return false;
 }
 
@@ -354,6 +360,12 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
         // S25 words 3–4 (ADR-088): pay-life and exile-top activation costs (the Witch, the Cleric).
         if (a.cost.life !== undefined && (!Number.isInteger(a.cost.life) || (a.cost.life as number) < 1)) err(`cost.life must be a positive integer (S25)`);
         if (a.cost.exileTop !== undefined && (!Number.isInteger(a.cost.exileTop) || (a.cost.exileTop as number) < 1)) err(`cost.exileTop must be a positive integer (S25)`);
+        // S26 (Clio): remove-counters-as-cost — a known kind and a positive count.
+        if (a.cost.removeCounters !== undefined) {
+          const rc = isRecord(a.cost.removeCounters) ? a.cost.removeCounters : {};
+          if (!validCounterKind(rc.kind)) err(`cost.removeCounters.kind must be +1/+1, -1/-1, or a lowercase named kind (S26)`);
+          if (!Number.isInteger(rc.count) || (rc.count as number) < 1) err(`cost.removeCounters.count must be a positive integer (S26)`);
+        }
         if (a.cost.discardSelf !== undefined && a.cost.discardSelf !== true) err(`cost.discardSelf must be true when present`);
         if (a.cost.exileSelf !== undefined && a.cost.exileSelf !== true) err(`cost.exileSelf must be true when present`);
         if (a.cost.reduceBy !== undefined && !isAnyValueRef(a.cost.reduceBy)) err(`cost.reduceBy must be a value ref (A4/ADR-076)`);
@@ -393,6 +405,7 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
       validateEffects(a.effects, nTargets, err, warnings, cardId, { isStatic: true });
       if (Array.isArray(a.effects)) {
         for (const e of a.effects) {
+          if (isRecord(e) && e.type === "gainControl" && e.scope === undefined) err(`a static gainControl needs scope "attached" (ADR-033); the targeted form is a resolved effect (S26)`);
           if (isRecord(e) && !["modifyPT", "grantKeyword", "restrict", "gainControl", "grantAbility", "extraLandDrops", "imposeEntersTapped"].includes(e.type as string)) {
             err(`static ability cannot carry effect "${e.type}" (only modifyPT/grantKeyword/restrict/gainControl/grantAbility/extraLandDrops/imposeEntersTapped)`);
           }
@@ -511,7 +524,8 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     needWho(e, err);
   },
   addCounters: (e, err) => {
-    if (e.kind !== "+1/+1" && e.kind !== "-1/-1") err(`addCounters kind must be +1/+1|-1/-1`);
+    // S26: named kinds join the P/T pair (the accumulator class — Clio's depth counters).
+    if (!validCounterKind(e.kind)) err(`addCounters kind must be +1/+1, -1/-1, or a lowercase named kind`);
     // S25: count may be a value ref (the Emerald Keeper's xPaid).
     if (!isAnyValueRef(e.count)) needCount(e, err);
     needTargetOrScope(e, err); // ADR-076: scope form ("each Vampire you control")
@@ -542,8 +556,15 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     if (!Array.isArray(e.targets) || e.targets.length !== 2) err(`fight requires targets: [i, j]`);
   },
   gainControl: (e, err) => {
-    // ADR-033: static-only, scope attached. Targeted/EOT variants are reserved.
-    if (e.scope !== "attached") err(`gainControl must be a static with scope "attached" (ADR-033)`);
+    // ADR-033: the static form is scope "attached". S26 (Lumen): the resolved form is a target index
+    // with duration UNTIL_END_OF_TURN — the threaten class; no other duration is admitted.
+    if (e.scope !== undefined) {
+      if (e.scope !== "attached") err(`gainControl static form must use scope "attached" (ADR-033)`);
+      if (e.target !== undefined || e.duration !== undefined) err(`gainControl static form takes no target/duration (ADR-033)`);
+      return;
+    }
+    needTargetIndex(e, err);
+    if (e.duration !== "UNTIL_END_OF_TURN") err(`gainControl resolved form must be UNTIL_END_OF_TURN (S26 — the threaten class)`);
   },
   searchLibrary: (e, err) => {
     if (typeof e.predicate !== "string" || !SEARCH_PREDICATE.test(e.predicate)) err(`searchLibrary predicate must be basicLand|anyCard|subtype:<Subtype> (ADR-068/076)`);
@@ -632,6 +653,8 @@ function validateEffects(
       err(`unknown effect type "${e.type}"`);
       continue;
     }
+    // S26: the static gainControl (scope attached) is interpreted live, never resolved (ADR-033).
+    if (type === "gainControl" && !opts.isStatic && e.scope !== undefined) err(`gainControl with a scope is static-only (ADR-033); use target + duration for the resolved form (S26)`);
     if ((type === "grantAbility" || type === "extraLandDrops" || type === "imposeEntersTapped") && !opts.isStatic) {
       err(`${type} is static-only (A10 — interpreted live, never resolved)`);
       continue;

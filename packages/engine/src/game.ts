@@ -627,6 +627,14 @@ export class Game {
           if (!top) throw new Error("exileTop cost with an empty library");
           moveObject(this.ctx, top, "exile");
         }
+        // S26 (Clio): remove counters from the source as a cost — CR 601.2h, paid here, never refunded
+        // (a countered burst keeps the depth spent). The enumerator gated on the count.
+        if (ability.cost.removeCounters) {
+          const { kind, count } = ability.cost.removeCounters;
+          if ((obj.counters[kind] ?? 0) < count) throw new Error(`removeCounters cost: fewer than ${count} ${kind} counters`);
+          obj.counters[kind] = obj.counters[kind]! - count;
+          if (obj.counters[kind] === 0) delete obj.counters[kind];
+        }
         // ADR-076: discard N as a cost (Waterfront Bouncer) — chooser's pick, one request per card, deduped by cardId.
         for (let n = 0; n < (ability.cost.discard ?? 0); n++) {
           const hand = state.players[player].hand.filter((id) => id !== obj.id);
