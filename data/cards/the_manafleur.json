@@ -38,5 +38,6 @@
   "asset": "/custom-art/the_manafleur.png",
   "fallback": "rendered"
  },
- "prizeOnly": true
+ "prizeOnly": true,
+ "printedAsset": "the_manafleur.jpg"
 }
