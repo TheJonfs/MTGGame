@@ -491,6 +491,26 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.scorePriorityAction(threatened, { type: "castSpell", objectId: "h_gg", targets: [{ kind: "object", id: "mine" }] })).toBeGreaterThan(-Infinity);
   });
 
+  it("book of shame 28 (S26 r3, the tapper discipline): Scepter of Dominance holds on our own turn with nothing to swing; fires in MAIN1 with an attacker; fires on the opponent's upkeep and beginning of combat, never after their attackers are declared", () => {
+    const a = agent();
+    const view = (opts: { step: string; activePlayer: 0 | 1; swing?: boolean }) =>
+      mkView({
+        step: opts.step, activePlayer: opts.activePlayer,
+        battlefield: [
+          { id: "scep", cardId: "scepter_of_dominance", controller: 0 }, { id: "p1", cardId: "plains", controller: 0 }, { id: "p2", cardId: "plains", controller: 0 },
+          ...(opts.swing ? [{ id: "bear", cardId: "grizzly_bears", controller: 0 as const }] : []),
+          { id: "ob", cardId: "grizzly_bears", controller: 1 },
+        ],
+      });
+    const tap = { type: "activateAbility" as const, objectId: "scep", abilityIndex: 0, targets: [{ kind: "object" as const, id: "ob" }] };
+    expect(a.scorePriorityAction(view({ step: "UPKEEP", activePlayer: 0 }), tap)).toBe(-Infinity); // our upkeep: hold
+    expect(a.scorePriorityAction(view({ step: "MAIN1", activePlayer: 0 }), tap)).toBe(-Infinity); // nothing to swing with
+    expect(a.scorePriorityAction(view({ step: "MAIN1", activePlayer: 0, swing: true }), tap)).toBeGreaterThan(-Infinity); // a blocker tapped down cashes
+    expect(a.scorePriorityAction(view({ step: "UPKEEP", activePlayer: 1 }), tap)).toBeGreaterThan(-Infinity); // their turn, before attackers
+    expect(a.scorePriorityAction(view({ step: "COMBAT_BEGIN", activePlayer: 1 }), tap)).toBeGreaterThan(-Infinity);
+    expect(a.scorePriorityAction(view({ step: "DECLARE_BLOCKERS", activePlayer: 1 }), tap)).toBe(-Infinity); // too late to matter
+  });
+
   it("book of shame 27 (S26, the Mirror's honesty): the Lotus pops only when its three mana enable a cast this step, and only in a colour that cast wants — idle windows and wrong colours stay gated", () => {
     const a = agent();
     // Two Islands untapped, Air Elemental ({3}{U}{U}) in hand: the Lotus for blue enables it; for red it does not; with nothing to enable it stays shut.

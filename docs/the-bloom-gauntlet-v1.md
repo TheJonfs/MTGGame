@@ -111,3 +111,57 @@ V1 ends on the standing register — *"the petals close. For now."* The ultimate
 - **The Intake petal — Seraphina (BG):** 16 lands — 6 Swamp, 6 Forest, 2 Bayou, 2 Overgrown Tomb. 24 spells — 3 Seraphina, 2 Doom Blade, 2 Duress, 2 Prey Upon, 2 Deadly Recluse, 2 Moss Viper, 2 Llanowar Elves, 2 Vampire Nighthawk, 2 Gravedigger, 2 Werebear, 2 Rumbling Baloth, 1 Pelakka Wurm. *(Deathtouch walls and the headsman; the petal that makes law-removal mandatory.)*
 - **The Risen Tide petal — the Druid (RG):** 22 lands — 4 Forgotten Cave, 4 Tranquil Thicket, 4 Evolving Wilds, 3 Mountain, 3 Forest, 2 Taiga, 2 Stomping Ground. 18 spells — 3 the Druid, 3 Llanowar Elves, 2 Rampant Growth, 2 Lightning Bolt, 2 Gaean Wurm, 2 Rumbling Baloth, 2 Giant Growth, 2 Thundersnake. *(Chris's skeleton, land-rich; the cycle-recover-drop-landfall engine; Wilds is two landfalls.)*
 - **The Season petal — the Soldier (WU):** 16 lands — 6 Plains, 6 Island, 2 Tundra, 2 Hallowed Fountain. 24 spells — 3 the Soldier, 2 Divination, 2 Cloudkin Seer, 2 Inspiring Overseer, 2 Aether Channeler, 2 Restoration Angel, 2 Raise the Alarm, 2 Glorious Anthem, 2 Counterspell, 2 Swords to Plowshares, 2 Pacifism, 1 Serra Angel. *(Every draw musters; every upkeep the Season ages the muster upward.)*
+
+---
+
+# v1.3 — The Heart's card (agreed in shape; name and type pending) and its deck
+
+## The Bloom's card
+**[Name held] — {W}{U}{B}{R}{G} Legendary Creature — [type pending], 7/7**
+- At the beginning of your end step, exile all laws, then create a copy of the next law. *(Reminder: the laws are the five stronghold laws; the next law is the one after the last created, in the encounter's sequence — the WBRUG ring by default, beginning with white.)*
+
+*Chris's wording (over the planner's upkeep/sacrifice strawman), for three reasons recorded: end step means the flower blooms the turn it's cast and each petal stands one full round; "exile all laws" handles Control Magic and reanimation corners (a stolen Bloom grows petals for its new controller) and closes graveyard recursion on laws; "the next law" is a **game-level sequence pointer**, so copies, reanimations, and thefts continue the sequence rather than restarting it. **The cost is the grammar's terminus** — one of each, nothing generic: the completed flower. Kept to one ability by discipline; the fight's difficulty lives in the petals, not the body (which dies to every removal spell in the game and returns via three copies + the entrance). Optional texture if petal-sim asks: "whenever a law enters under your control, you gain 3 life."*
+
+**Bill (~1.5 riders):** a manifest-from-def effect word (a law copy onto the battlefield); the sequence pointer in game state; exile-by-predicate on the Wrath-class scope machinery. **Ascension hooks by data alone:** `lawSequence` (default the ring; scrambled arrays), `random`, and `accumulate` (the trigger skips its exile — the reserved all-five climax is accumulate + a fast sequence). The sixth law, the Root, resolves as an ascension mechanic (a from-turn-one persistence permanent), not a base one.
+
+**The sole-drop consequence:** laws are controller-relative — a player casting the Bloom grows petals against the world. Whoever tears out the heart becomes the heart for the next pass; the postponement model and the ascension ladder saying one sentence from opposite ends.
+
+## The Heart's deck (v1; forty; every current the plane has)
+**20 lands — all duals, no basics:** Tundra, Underground Sea, Badlands, Taiga, Savannah, Scrubland, Volcanic Island, Bayou, Plateau, Tropical Island; Hallowed Fountain, Watery Grave, Blood Crypt, Stomping Ground, Temple Garden, Godless Shrine, Steam Vents, Overgrown Tomb, Sacred Foundry, Breeding Pool.
+**20 spells:** 3 the Bloom; **the five ministers ×1** — Lumen, Clio, Seraphina, Yuloke, Faldor (the court reassembled at the heart; legal without duplicate drops under the prizeOnly-never-stakes ruling); **the ten flowing-pair golds ×1** — Aether Mutation, Aetherbolt, Graceful Restoration, Phyrexian Purge, Experimental Overload, Glare of Subdual, Vindicate, Temporal Spring, Frondland Felidar, Mystic Snake (every gold card in the game — every heresy the lords ever spoke); 2 flex — Wrath of God, Control Magic (strawmen).
+*The Arzakon texture arrived at from theme: twenty lands with no draw floods; five-colour greed stumbles; singletons are inconsistent — a magnificent mess that sometimes jams. heart-sim (the guardian-sim pattern, laws rotating) tunes life, flex slots, and whether the body wants texture.*
+
+## Rulings logged this round (ADR-093 material)
+prizeOnly cards are never stakes for either side (engine `setAside`); the petals wear the logo's own five hues; `corollaGridSize` 33.
+
+---
+
+# v1.4 — The Manafleur (named; closed) and the chronicle's first phase
+
+## The Manafleur
+**The Manafleur — {W}{U}{B}{R}{G} Legendary Creature — Avatar, 7/7** (Chris-named, Chris-typed)
+- At the beginning of your end step, exile all laws, then create a copy of the next law.
+
+*The plain register's third form: the lords do, the court charges, the flower is. The name appears once — here — after twenty-six sessions of deliberate namelessness for what it rides on. Entrance rule in force; three copies; **zero ante** (regroup and retry; the Heart persists). Life a difficulty knob: **`heartLife` 30/35/40** easy/standard/hard, no growth, no reduction (a clockless flower; the five petals are required, so not a variable).*
+
+## The Manafleur's deck (v2; sixty; 35 spells / 25 lands — every authored card in the game)
+**25 lands:** the ten ABU duals, the ten shocks, one of each basic.
+**35 spells:** 3 The Manafleur · the five ministers ×1 (Lumen, Clio, Seraphina, Yuloke, Faldor) · the five court ×1 (the Pearl Cleric, the Sapphire Sage, the Jet Witch, the Ruby Tyrant, the Emerald Keeper) · the five mono customs ×1 (Cunning Tactician, Thundersnake, Gaean Wurm, Traumatizer, Gallows Djinn) · the five Moxen ×1 · the ten flowing-pair golds ×1 (Aether Mutation, Aetherbolt, Graceful Restoration, Phyrexian Purge, Experimental Overload, Glare of Subdual, Vindicate, Temporal Spring, Frondland Felidar, Mystic Snake) · 2 flex (Wrath of God, Control Magic — strawmen).
+*The design document as a decklist: every custom, every gold, every Mox, every dual, wielded by the thing that grew them. Half the deck is mana — greedy and explosive (Mox + dual = a turn-three flower; a turn-six flood). All prizeOnly cards legal without duplicate drops under the never-stakes ruling. heart-sim tunes life, flex, and whether the body wants texture.*
+
+## The chronicle, phase one (Chris-designed; framing installable before content)
+**On defeating the Manafleur, a permanent carryover keyed to the run's starting colour**, persisting across all future runs: the colour's **power pre-unlocked** (fuel still earned), its **teaching guardian's card** in the starting collection (their site pre-cleared — it does not exist that run), and its **lord's complement minister** (the petal boss for that colour). Five victories from five colours = five powers + ten legends at the start of the sixth run. Purpose: the petal cards live beyond the Corolla; a persistent reward; a modest grind reduction (the five lords still stand every run).
+
+| Start | Power | Guardian | Minister |
+|---|---|---|---|
+| W | the Balm | Reya | Seraphina (BG) |
+| U | the Crossing | Arcanis | Yuloke (RG) |
+| B | the Quietus | Drana | Lumen (WR) |
+| R | the Barrage | Drakuseth | Clio (UB) |
+| G | the Stride | Titania | Faldor (WU) |
+
+**Rules (planner):** **carried cards never duplicate** — a petal whose minister is already held withholds the drop (gold in lieu); guardians are covered by site pre-clearing. **Speed-up extras start modest and knob-forward** — planner proposes starting gold only (+50 per Manafleur victory, knob); manalinks/cards argued from play, not pre-granted, since the early economy is the run's teacher.
+
+**Implementation (world-side only; the engine is untouched):** a **profile store outside the world save** (per-player legacy with its own versioning; read at new-game, written at Manafleur victory); carryover = starting-collection injection + power flags + site pre-clearing; the per-run `gauntlet.chronicle` copies into the profile's chronicle at victory (where the truth-per-run payload lives); the menu's new-game screen shows what you carry; a dev-menu legacy toggle for testing. The victory ceremony offers "begin the next run" beside "stay" (postponement — the world remains playable).
+
+**Phase two (banked with appetite):** after five victories, the escalation — the five lords flip to **the five non-Cinquefoil triples (WUB, WUR, WRG, UBG, BRG)**, the petals to the flowing pairs as their complements, the Manafleur strengthened: the plane *inverts*, the still currents ruling. Ten new legends; a second world of content; possibly the chronicle's truth — what a flower does when it has been cut five times. After the single run is finishable and the first continuations are built.

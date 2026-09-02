@@ -940,6 +940,7 @@ describe("S21 Part 2 (sieges, scripted acceptance): timers, telegraph, the fall,
       siegeIntervalSteps: { civilized: 5, approach: 5, wild: 5 },
       siegeWarningSteps: 3,
       siegePartySize: { civilized: 2, approach: 2, wild: 2 },
+      siegePartySizeWeights: { civilized: [0, 1], approach: [0, 1], wild: [0, 1] }, // S26 r3: the size is rolled now — these scripts want exactly two
       siegeGraceSteps: 0, // S22 r3: the opening grace is off for the fast-clock scripts (tested on its own below)
       siegeMaxActive: 0, // S25 r3: the concurrency cap is off here too — these scripts test PER-TOWN timers (the cap has its own test)
     },

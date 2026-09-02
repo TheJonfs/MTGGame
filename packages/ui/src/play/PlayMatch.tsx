@@ -73,7 +73,10 @@ function PromptBar({ c, phase, confirmLabel }: { c: MatchController; phase: UiPh
       case "chooseColor":
         return "Choose a colour of mana.";
       case "targeting":
-        return `Choose a target (${phase.chosen.length + 1}/${phase.targetsNeeded}).`;
+        // S26 r3: "up to N" reads as optional picks; the Done button (below) commits early.
+        return phase.canFinish
+          ? (phase.chosen.length === 0 ? `Choose up to ${phase.targetsNeeded} target${phase.targetsNeeded === 1 ? "" : "s"} — or none.` : `${phase.chosen.length} chosen — choose another (up to ${phase.targetsNeeded}), or finish.`)
+          : `Choose a target (${phase.chosen.length + 1}/${phase.targetsNeeded}).`;
       case "confirmCast":
         // S10 playtest: say WHAT is being confirmed.
         return confirmLabel ? `${confirmLabel} — confirm?` : "Confirm?";
@@ -146,6 +149,9 @@ function PromptBar({ c, phase, confirmLabel }: { c: MatchController; phase: UiPh
             <input type="checkbox" checked={hold} onChange={(e) => setHold(e.target.checked)} /> hold priority
           </label>
         </>
+      )}
+      {phase.kind === "targeting" && phase.canFinish && (
+        <button className="primary" onClick={() => c.finishTargeting()}>{phase.chosen.length === 0 ? "No targets" : `Done (${phase.chosen.length})`}</button>
       )}
       {(phase.kind === "targeting" || phase.kind === "chooseX" || phase.kind === "chooseColor") && (
         <button onClick={() => c.cancel()}>Cancel</button>

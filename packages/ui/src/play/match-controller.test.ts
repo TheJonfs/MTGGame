@@ -234,6 +234,64 @@ describe("play-mode acceptance (headless; S10 DoD 1)", () => {
     while (!c.result && guard++ < 2000) await new Promise((r) => setTimeout(r, 0));
   }, 60_000);
 
+  it("S26 r3 (Chris): a trigger's up-to-two targets (the Warden) are picked on the board successively — none, one, or two — with Done and Cancel, never a combination list", async () => {
+    const pool = loadCardPool(CARDS_DIR);
+    const c = new MatchController(pool.cards, {
+      humanSeat: 0,
+      seed: 7,
+      aiDelayMs: 0,
+      custom: {
+        human: { name: "You", decklist: [{ cardId: "the_warden", count: 40 }] },
+        enemy: { name: "D", decklist: [...DECKS.D.decklist], difficulty: "journeyman", archetype: "midrange" },
+        rules: { startingLife: 20, ante: 0, startingPlayer: 0 },
+        modifiers: [
+          { type: "permanentOnBattlefield" as const, player: 0 as const, cardId: "the_warden" },
+          { type: "permanentOnBattlefield" as const, player: 1 as const, cardId: "grizzly_bears" },
+          { type: "permanentOnBattlefield" as const, player: 1 as const, cardId: "centaur_courser" },
+        ],
+      },
+    });
+    c.start();
+    let guard = 0;
+    const until = async (kind: string) => { guard = 0; while (c.phase.kind !== kind && guard++ < 5000) { await new Promise((r) => setTimeout(r, 0)); if (c.phase.kind === "dialog" && kind !== "dialog") { c.selectDialog(0); c.confirmDialog(); } else if (c.phase.kind === "priority" && kind !== "priority") c.pass(); else if (c.phase.kind === "attackers" && kind !== "attackers") c.confirmAttackers(); else if (c.phase.kind === "blockers" && kind !== "blockers") c.confirmBlocks(); } };
+    // The Warden's "tap up to two target creatures" triggers on ATTACK: reach our declare-attackers
+    // step with him eligible (turn 3 — he is summoning sick on turn 1), declare him, confirm.
+    for (let t = 0; t < 4; t++) {
+      await until("attackers");
+      if (c.phase.kind === "attackers" && [...c.phase.eligible].some((id) => c.game.state.objects[id]!.cardId === "the_warden")) break;
+      if (c.phase.kind === "attackers") c.confirmAttackers();
+    }
+    expect(c.phase.kind).toBe("attackers");
+    const warden = [...(c.phase as { eligible: Set<string> }).eligible].find((id) => c.game.state.objects[id]!.cardId === "the_warden")!;
+    c.clickBattlefield(warden);
+    c.confirmAttackers();
+    // The attack trigger's chooseTarget request arrives as a BOARD targeting phase, not a dialog.
+    await until("targeting");
+    expect(c.phase.kind).toBe("targeting");
+    if (c.phase.kind !== "targeting") return;
+    expect(c.phase.fromRequest).toBe(true);
+    expect(c.phase.targetsNeeded).toBe(2);
+    expect(c.phase.canFinish).toBe(true); // "no targets" is a legal commit
+    expect(c.phase.highlightObjects.size).toBeGreaterThanOrEqual(2);
+    // Cancel restarts the pick; then choose one, finish with one, confirm.
+    c.cancel();
+    await until("targeting");
+    const [first] = [...(c.phase as { highlightObjects: Set<string> }).highlightObjects].filter((id) => c.game.state.objects[id]!.cardId === "grizzly_bears");
+    c.clickBattlefield(first!);
+    expect(c.phase.kind).toBe("targeting");
+    expect((c.phase as { canFinish: boolean }).canFinish).toBe(true);
+    c.finishTargeting();
+    expect(c.phase.kind).toBe("confirmCast");
+    c.confirmCast();
+    await until("priority");
+    expect(c.game.state.objects[first!]!.tapped).toBe(true);
+    const courser = c.game.state.battlefield.find((id) => c.game.state.objects[id]!.cardId === "centaur_courser")!;
+    expect(c.game.state.objects[courser]!.tapped).toBe(false); // only the one we chose
+    c.concede();
+    guard = 0;
+    while (!c.result && guard++ < 2000) await new Promise((r) => setTimeout(r, 0));
+  }, 60_000);
+
   it("ADR-059 meaningfulness: X=0-only casts do not make a window meaningful", () => {
     const cast = (x?: number) => ({ type: "castSpell", objectId: "h1", ...(x !== undefined ? { x } : {}) }) as never;
     const none = new Map();

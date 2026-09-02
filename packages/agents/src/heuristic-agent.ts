@@ -188,6 +188,7 @@ export class HeuristicAgent implements Agent {
     if (this.pumpWasteGated(view, action)) return -Infinity; // Giant Growth outside combat, empty stack
     if (this.fleetingWasteGated(view, action)) return -Infinity; // S23: the Thundersnake outside its window
     if (this.threatenGated(view, action)) return -Infinity; // S26: Lumen's steal only where the swing cashes
+    if (this.tapperGated(view, action)) return -Infinity; // S26 r3: hold the tapper for the opponent's turn
     if (this.accumulatorSpendGated(view, action)) return -Infinity; // S26: Clio holds the tax while the board threatens
     // The misaim rule: a FINITE cliff (not -Infinity) so book-of-shame orderings among
     // bad aims survive — at any softmax temperature exp(-MISAIM/t) is 0, so a misaimed
@@ -968,6 +969,24 @@ export class HeuristicAgent implements Agent {
     const PAY_FLOOR = 4;
     const cost = 2; // v1: the only customer's cost; generalize when a second punisher arrives
     return view.life[view.you] - cost >= PAY_FLOOR ? accept : decline;
+  }
+
+  /** S26 r3 (Chris: the AI fired Scepter of Dominance the moment it untapped — the tapper discipline):
+   * a {T}-cost ability whose whole payload is tapTarget is a DEFENSIVE tool first. On the opponent's
+   * turn it may fire only before attackers are declared (their upkeep, draw, first main, beginning of
+   * combat — tapping a declared attacker removes nothing from combat). On our own turn it may fire
+   * only in MAIN1 or the beginning of combat AND only when we have an untapped creature to swing
+   * with (a blocker tapped down cashes as an attack); otherwise hold it. Exposed for the book. */
+  tapperGated(view: GameView, action: Action): boolean {
+    if (action.type !== "activateAbility") return false;
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+    if (!ab || ab.kind !== "activated" || !ab.cost.tap) return false;
+    if (ab.effects.length === 0 || !ab.effects.every((e) => e.type === "tapTarget")) return false;
+    const me = view.you;
+    if (view.activePlayer !== me) return !["UPKEEP", "DRAW", "MAIN1", "COMBAT_BEGIN"].includes(view.step);
+    if (!(view.step === "MAIN1" || view.step === "COMBAT_BEGIN")) return true;
+    const swing = view.battlefield.some((o) => o.controller === me && !o.tapped && o.power !== null && o.id !== action.objectId);
+    return !swing;
   }
 
   /** S26 (Lumen, the Hearth Fire — the sequencing pin, the Thundersnake's gate family): a resolved

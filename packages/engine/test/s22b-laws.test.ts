@@ -79,8 +79,8 @@ describe("the Intake — imposeEntersTapped (A10 law-word)", () => {
   });
 });
 
-describe("the blessed Boomerang quirk — a bounced law is stuck in hand", () => {
-  it("the tide-mage unwrites what others tear down: the bounced law sits in the owner's hand, uncastable", async () => {
+describe("a law leaving the battlefield ceases to exist (S26 r3, Chris — the Boomerang quirk retired)", () => {
+  it("a bounced law goes nowhere: not in hand, not anywhere — the fight is lawless until the next one re-injects it", async () => {
     const spec: FixtureSpec = {
       name: "law-bounced",
       setup: { active: 1, players: [
@@ -92,9 +92,10 @@ describe("the blessed Boomerang quirk — a bounced law is stuck in hand", () =>
     };
     const tg = await runFixture(spec);
     expect(onBf(tg, "law_toll")).toHaveLength(0);
-    expect(tg.handCardIds(0)).toContain("law_toll"); // a real object — it SURVIVED the bounce (not a token)
+    expect(tg.handCardIds(0)).not.toContain("law_toll"); // it ceased (a token by the S26 r3 rule)
+    expect(Object.values(tg.game.state.objects).some((o) => o.cardId === "law_toll" && o.zone !== "battlefield" && tg.game.state.players[0].hand.includes(o.id))).toBe(false);
     const actions = legalActions(tg.game.ctx, 0);
-    expect(actions.some((a) => a.type === "castSpell" || a.type === "playLand")).toBe(false); // and it can never be recast
+    expect(actions.some((a) => a.type === "castSpell" || a.type === "playLand")).toBe(false);
   });
 
   it("Abrade tears a law down the honest way (destroy target artifact)", async () => {
@@ -109,7 +110,7 @@ describe("the blessed Boomerang quirk — a bounced law is stuck in hand", () =>
     };
     const tg = await runFixture(spec);
     expect(onBf(tg, "law_season")).toHaveLength(0);
-    expect(tg.graveyardCardIds(0)).toContain("law_season");
+    expect(tg.graveyardCardIds(0)).not.toContain("law_season"); // S26 r3: a destroyed law ceases — no graveyard
   });
 });
 

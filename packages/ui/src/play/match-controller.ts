@@ -110,7 +110,13 @@ export type UiPhase =
       /** Legal next targets, from the surviving variants. */
       highlightObjects: Set<string>;
       highlightPlayers: Set<PlayerId>;
+      /** The MOST targets any variant takes ("up to N" ranges stop early — see canFinish). */
       targetsNeeded: number;
+      /** S26 r3 (Chris): a variant with exactly the chosen targets exists — "Done" commits it
+       * (zero chosen = "no targets"). Range specs pick successively instead of listing combinations. */
+      canFinish: boolean;
+      /** S26 r3: the phase answers a trigger's chooseTarget REQUEST (not a cast) — Cancel restarts it. */
+      fromRequest?: true;
     }
   | {
       kind: "confirmCast";
@@ -532,10 +538,39 @@ export class MatchController {
       case "declareBlocker":
         this.enterBlockers(request);
         return;
+      case "chooseTarget": {
+        // S26 r3 (Chris: the Warden's up-to-two listed every combination): a trigger's targets are
+        // picked on the BOARD, successively, when every candidate is a battlefield object or a
+        // player — the cast path's targeting phase, driven by the request's actions. Graveyard
+        // and stack candidates keep the dialog (nothing on the board to click).
+        const boardOnly = request.actions.every((a) => {
+          const ts = (a as { targets?: ResolvedTarget[] }).targets;
+          return Array.isArray(ts) && ts.every((t) => t.kind === "player" || (t.kind === "object" && this.game.state.objects[t.id]?.zone === "battlefield"));
+        });
+        if (boardOnly) { this.enterTargeting("", request.actions, true); return; }
+        this.phase = { kind: "dialog", request, view, selected: null };
+        this.emit();
+        return;
+      }
       default:
         this.phase = { kind: "dialog", request, view, selected: null };
         this.emit();
     }
+  }
+
+  /** S26 r3: the variant whose targets are exactly `chosen` (order-sensitive, as enumerated). */
+  private exactVariant(variants: Action[], chosen: ResolvedTarget[]): Action | undefined {
+    const key = JSON.stringify(chosen);
+    return variants.find((v) => JSON.stringify((v as { targets?: ResolvedTarget[] }).targets ?? []) === key);
+  }
+
+  /** S26 r3: commit the targets chosen so far (a range spec's "done" / "no targets"). */
+  finishTargeting(): void {
+    if (this.phase.kind !== "targeting" || !this.phase.canFinish) return;
+    const action = this.exactVariant(this.phase.variants, this.phase.chosen);
+    if (!action) return;
+    this.phase = { kind: "confirmCast", sourceObjectId: this.phase.sourceObjectId, action, offerManualTap: this.phase.fromRequest ? false : this.offerManualTapFor(action) };
+    this.emit();
   }
 
   private currentRequest(): ActionRequest {
@@ -1002,11 +1037,12 @@ export class MatchController {
     this.enterTargeting(this.phase.sourceObjectId, remaining);
   }
 
-  private enterTargeting(sourceObjectId: string, variants: Action[]): void {
-    const first = variants[0] as { targets?: ResolvedTarget[] };
-    const needed = first.targets?.length ?? 0;
+  private enterTargeting(sourceObjectId: string, variants: Action[], fromRequest = false): void {
+    // S26 r3: "up to N" variants differ in length — the phase runs to the LONGEST and lets the
+    // player stop wherever a variant matches what's chosen (canFinish).
+    const needed = Math.max(0, ...variants.map((v) => ((v as { targets?: ResolvedTarget[] }).targets ?? []).length));
     if (needed === 0 || variants.length === 1) {
-      this.phase = { kind: "confirmCast", sourceObjectId, action: variants[0]!, offerManualTap: this.offerManualTapFor(variants[0]!) };
+      this.phase = { kind: "confirmCast", sourceObjectId, action: variants[0]!, offerManualTap: fromRequest ? false : this.offerManualTapFor(variants[0]!) };
       this.emit();
       return;
     }
@@ -1017,6 +1053,8 @@ export class MatchController {
       chosen: [],
       ...this.nextTargetHighlights(variants, 0),
       targetsNeeded: needed,
+      canFinish: !!this.exactVariant(variants, []),
+      ...(fromRequest ? { fromRequest: true as const } : {}),
     };
     this.emit();
   }
@@ -1046,8 +1084,9 @@ export class MatchController {
     });
     if (matches.length === 0) return; // illegal click: ignore (dimmed in UI)
     const chosen = [...this.phase.chosen, target];
+    const fromRequest = this.phase.fromRequest === true;
     if (chosen.length >= this.phase.targetsNeeded || matches.length === 1) {
-      this.phase = { kind: "confirmCast", sourceObjectId: this.phase.sourceObjectId, action: matches[0]!, offerManualTap: this.offerManualTapFor(matches[0]!) };
+      this.phase = { kind: "confirmCast", sourceObjectId: this.phase.sourceObjectId, action: matches[0]!, offerManualTap: fromRequest ? false : this.offerManualTapFor(matches[0]!) };
       this.emit();
       return;
     }
@@ -1056,6 +1095,7 @@ export class MatchController {
       variants: matches,
       chosen,
       ...this.nextTargetHighlights(matches, chosen.length),
+      canFinish: !!this.exactVariant(matches, chosen),
     };
     this.emit();
   }

@@ -130,9 +130,9 @@ export const KNOBS = {
   }),
   // ---- S21 (overworld manifest §5): sieges ----
   siegeIntervalSteps: knob<Record<RegionTier, number>>({
-    default: { civilized: 750, approach: 560, wild: 375 },
+    default: { civilized: 1000, approach: 750, wild: 500 },
     unit: "steps between threats, by the town's ring (0 = never)",
-    description: "S21 sieges (manifest §5): each town's seeded siege timer — a threat lands every ~interval steps (jittered ±25% per town/epoch; a town's FIRST threat takes a wide U(0.25,1.75) phase so a ring's openers spread — S25 r3). S25 r3 (Chris: post-grace they came fast): +25% across the rings (600/450/300 → 750/560/375), with siegeMaxActive as the harder brake. The world-sim siege table argues these baselines.",
+    description: "S21 sieges (manifest §5): each town's seeded siege timer — a threat lands every ~interval steps (jittered ±25% per town/epoch; a town's FIRST threat takes a wide U(0.25,1.75) phase so a ring's openers spread — S25 r3). S25 r3 (Chris: post-grace they came fast): +25% across the rings (600/450/300 → 750/560/375), with siegeMaxActive as the harder brake. S26 r3 (Chris: still too frequent in succession once they start): +33% again (750/560/375 → 1000/750/500; difficulty ratios held). The world-sim siege table argues these baselines.",
   }),
   siegeMaxActive: knob<number>({
     default: 2,
@@ -152,7 +152,17 @@ export const KNOBS = {
   siegePartySize: knob<Record<RegionTier, number>>({
     default: { civilized: 1, approach: 2, wild: 3 },
     unit: "party members, by the town's ring",
-    description: "S21: the besieging party's size — defense and liberation are consecutive duels with life carried between them (dungeon-style, Chris-ruled). The leader fights last.",
+    description: "S21: the besieging party's MAXIMUM size by ring — defense and liberation are consecutive duels with life carried between them (dungeon-style, Chris-ruled). The leader fights last. S26 r3: the actual size is rolled from siegePartySizeWeights, capped here.",
+  }),
+  siegePartySizeWeights: knob<Record<RegionTier, number[]>>({
+    default: { civilized: [1], approach: [0.45, 0.55], wild: [0.3, 0.4, 0.3] },
+    unit: "relative weights for party sizes 1, 2, 3… by the town's ring",
+    description: "S26 r3 (Chris: most sieges were parties of three — more ones and twos): the party size is rolled from these weights (seeded per town/epoch), truncated to siegePartySize's cap. Difficulty bundles lean lighter (easy) or heavier (hard); siegePartyEpochLean shifts weight toward larger parties as a town's siege history grows.",
+  }),
+  siegePartyEpochLean: knob<number>({
+    default: 0.1,
+    unit: "weight moved from the smallest size to the largest per epoch",
+    description: "S26 r3: with each threat a town has survived (its epoch), this much weight moves from size 1 toward the ring's largest party — the clock hardens the sieges. Capped so size 1 never falls below 0.",
   }),
   dungeonTreasureWeights: knob<Record<"mox" | "lair", { gold: number; card: number; life: number; boon: number }>>({
     default: { mox: { gold: 30, card: 15, life: 20, boon: 25 }, lair: { gold: 30, card: 10, life: 25, boon: 25 } },
@@ -239,6 +249,11 @@ export const KNOBS = {
     default: { civilized: 0, approach: 0, wild: 1 },
     unit: "lairs per region, by tier",
     description: "S14 lair pattern generalised (ADR-072 proposal §2): fixed points with a held-out beast resident (the catalog's beasts, round-robin). Certain encounter until defeated.",
+  }),
+  roamerRestEveryNthStep: knob<number>({
+    default: 4,
+    unit: "every Nth roamer step is a stand-still (0 = never)",
+    description: "S26 r3 (Chris: fleeing bounties were uncatchable and pursuers relentless at equal speed): every Nth movement a roamer would make, it stands still instead — a mild, tunable slowness (4 = a quarter slower). Counted per roamer across its movements; composes with roamerSpeed and the terrain factor.",
   }),
   roamerStepsPerPlayerStep: knob<Record<"road" | "open", number>>({
     default: { road: 0.5, open: 1 },
@@ -522,8 +537,9 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
       { steps: 90, addLife: 2 },
     ],
     roamerDensityPer100Cells: { civilized: 0.7, approach: 1.1, wild: 1.5 },
-    siegeIntervalSteps: { civilized: 1125, approach: 845, wild: 560 }, // S25 r3: +25% with the standard shift (ratio held)
+    siegeIntervalSteps: { civilized: 1500, approach: 1125, wild: 750 }, // S26 r3: +33% with the standard shift (ratio held)
     siegeMaxActive: 1, // S25 r3 (Chris): easy = one siege at a time
+    siegePartySizeWeights: { civilized: [1], approach: [0.6, 0.4], wild: [0.45, 0.4, 0.15] }, // S26 r3: lighter parties
     lordGrowthSteps: 200, // S25 r4: 0.5 life per 100 steps
     siegeWarningSteps: 90,
     siegeGraceSteps: 500,
@@ -541,8 +557,9 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
       { steps: 90, addLife: 4, addToken: true, addCard: true },
     ],
     roamerDensityPer100Cells: { civilized: 1.4, approach: 2.0, wild: 2.6 },
-    siegeIntervalSteps: { civilized: 560, approach: 420, wild: 280 }, // S25 r3: +25% (ratio held)
+    siegeIntervalSteps: { civilized: 750, approach: 560, wild: 375 }, // S26 r3: +33% (ratio held)
     siegeMaxActive: 3, // S25 r3 (Chris): hard = three skies can burn
+    siegePartySizeWeights: { civilized: [0.6, 0.4], approach: [0.25, 0.5, 0.25], wild: [0.15, 0.35, 0.5] }, // S26 r3: heavier parties (the cap still rules)
     lordGrowthLife: 2, // S25 r4: 2 life per 100 steps
     siegeWarningSteps: 40,
     siegeGraceSteps: 200,

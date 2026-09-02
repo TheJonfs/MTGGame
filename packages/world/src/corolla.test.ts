@@ -291,3 +291,45 @@ describe("S26 Part 2 — the Corolla: geometry, the doors, the petals (ADR-091)"
     expect(serializeWorld(back)).toBe(text);
   });
 });
+
+describe("S26 r3 — the world notes (sieges, spawns, roamer pace)", () => {
+  it("siege parties vary: wild-ring rolls across epochs produce ones, twos and threes; the epoch lean pushes toward threes; the ring cap holds", async () => {
+    const { rollPartySize } = await import("./siege.js");
+    const knobs = defaultKnobs();
+    const counts = { 1: 0, 2: 0, 3: 0 } as Record<number, number>;
+    for (let i = 0; i < 300; i++) counts[rollPartySize(new WorldRng(i), knobs, "wild", 3, 0)]! += 1;
+    expect(counts[1]).toBeGreaterThan(40);
+    expect(counts[2]).toBeGreaterThan(60);
+    expect(counts[3]).toBeGreaterThan(40);
+    let late = 0;
+    for (let i = 0; i < 300; i++) if (rollPartySize(new WorldRng(i), knobs, "wild", 3, 6) === 3) late += 1;
+    expect(late).toBeGreaterThan(counts[3]!); // six epochs in, threes are more common
+    for (let i = 0; i < 50; i++) expect(rollPartySize(new WorldRng(i), knobs, "civilized", 1, 9)).toBe(1); // the cap
+    for (let i = 0; i < 50; i++) expect(rollPartySize(new WorldRng(i), knobs, "approach", 2, 0)).toBeLessThanOrEqual(2);
+  });
+
+  it("a sealed colour spawns nothing: respawn skips its regions entirely (S22's mage fallback retired)", async () => {
+    const { respawnRoamers } = await import("./journey.js");
+    const w = newWorld({ seed: 26, catalog, starter: "green" });
+    const knobs = { ...defaultKnobs(), roamerRespawnSteps: { civilized: 1, approach: 1, wild: 1 } };
+    for (const o of w.opponents) if (!o.fixedAt) o.gone = true; // empty the world so every region wants a roamer
+    strongholdState(w, "B").seal = true;
+    w.player.stepsTaken = 1;
+    const spawned = respawnRoamers(w, catalog, knobs, new WorldRng(1));
+    expect(spawned.length).toBeGreaterThan(0);
+    for (const s of spawned) expect(w.map.regions[s.region]!.color).not.toBe("B");
+  });
+
+  it("roamers rest every Nth movement: the counter runs per movement and the rule skips the Nth (N=4 → a quarter of movements; N=0 → never)", async () => {
+    const { roamerRests, tickRoamers } = await import("./journey.js");
+    expect(Array.from({ length: 40 }, (_, k) => roamerRests(k + 1, 4)).filter(Boolean)).toHaveLength(10);
+    expect(Array.from({ length: 40 }, (_, k) => roamerRests(k + 1, 0)).filter(Boolean)).toHaveLength(0);
+    expect(roamerRests(4, 4)).toBe(true);
+    expect(roamerRests(5, 4)).toBe(false);
+    const w = newWorld({ seed: 26, catalog, starter: "green" });
+    const roamer = w.opponents.find((o) => !o.fixedAt && o.at)!;
+    const knobs = { ...defaultKnobs(), roamerSpeed: { 1: 1, 2: 1, 3: 1 } as never, roamerStepsPerPlayerStep: { road: 1, open: 1 } };
+    for (let i = 0; i < 12; i++) tickRoamers(w, catalog, knobs, new WorldRng(100 + i));
+    expect(roamer.moves).toBe(12); // one movement per tick at speed 1, rests included in the count
+  });
+});

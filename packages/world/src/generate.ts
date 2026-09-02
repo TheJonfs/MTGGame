@@ -46,6 +46,8 @@ export interface OpponentInstance {
   at?: Point;
   /** S16: fractional movement accumulator (roamerSpeed < 1 moves every other step, etc.). */
   moveDebt: number;
+  /** S26 r3: movements made (the every-Nth-step rest counter; optional — older saves start at 0). */
+  moves?: number;
 }
 
 export interface GeneratedWorld {

@@ -309,3 +309,31 @@ describe("Faldor, the Muster — the DRAW collector (skeleton's first customer)"
     expect(onBf(tg, "soldier_1_1")).toHaveLength(0);
   });
 });
+
+describe("S26 r3 — tokens and laws cease on leaving (Chris notes 1–2)", () => {
+  it("Restoration Angel blinking a token removes it: exiled tokens cease (CR 111.7) and nothing returns", async () => {
+    const spec: FixtureSpec = {
+      name: "blink-token",
+      setup: { players: [
+        { battlefield: ["plains", "plains", "plains", "plains", { card: "soldier_1_1", token: true }], hand: ["restoration_angel"] },
+        {},
+      ] },
+      script: [{ player: 0, do: "cast", card: "restoration_angel" }], // the token is the lone candidate: auto-targeted (ADR-014)
+      run: [{ priority: true }],
+    };
+    const tg = await runFixture(spec);
+    expect(onBf(tg, "restoration_angel")).toHaveLength(1);
+    expect(onBf(tg, "soldier_1_1")).toHaveLength(0);
+    expect(Object.values(tg.game.state.objects).filter((o) => o.cardId === "soldier_1_1" && o.zone === "battlefield")).toHaveLength(0);
+  });
+
+  it("a law is a token by construction: destroyed it leaves no graveyard card, bounced it leaves no hand card, blinked it is gone; a real card placed as a law (the Deepwood's Elves) stays real", async () => {
+    const tg = new TestGame({
+      name: "law-is-token",
+      setup: { players: [{ battlefield: ["law_tithe", "llanowar_elves"] }, {}] },
+    });
+    const law = getObject(tg.game.state, tg.findBattlefield("law_tithe"));
+    expect(law.isToken).toBe(true);
+    expect(getObject(tg.game.state, tg.findBattlefield("llanowar_elves")).isToken).toBe(false);
+  });
+});

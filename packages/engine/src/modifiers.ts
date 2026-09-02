@@ -27,9 +27,16 @@ export function applyModifiers(ctx: EngineCtx, modifiers: Modifier[]): void {
       case "extraCards":
         for (let i = 0; i < m.count; i++) drawCard(ctx, m.player);
         break;
-      case "permanentOnBattlefield":
-        createObject(ctx, m.cardId, m.player, "battlefield");
+      case "permanentOnBattlefield": {
+        // S26 r3 (Chris notes 1–2): a token DEF (the empowerment's 2/2, a boon Soldier, the
+        // Barrowlands' Zombie) and a LAW (uncastable) enter as TOKENS — they cease to exist on
+        // leaving the battlefield (CR 111.7): a blink removes them, a bounce or a kill ends them
+        // (the S22b "stuck in hand" quirk is retired; the law returns next fight by re-injection).
+        // Real cards placed this way (a manalink's Plains, the Deepwood's Elves) stay real.
+        const def = ctx.defs.def(m.cardId);
+        createObject(ctx, m.cardId, m.player, "battlefield", { isToken: !!(def.isTokenDef || def.uncastable) });
         break;
+      }
       case "effectAtStart": {
         const ectx = makeInitEffectContext(ctx, m.player);
         for (const e of m.effects) resolveEffect(e, ectx);

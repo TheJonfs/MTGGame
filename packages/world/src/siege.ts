@@ -1,3 +1,4 @@
+import type { RegionTier } from "./knobs.js";
 /**
  * S21 Part 2 — sieges (overworld manifest §5; the session's milestone).
  *
@@ -98,12 +99,33 @@ export function activeSiegeCount(world: WorldState): number {
   return (world.sieges as SiegeEntry[]).filter((s) => s.status === "threatened").length;
 }
 
+/** S26 r3 (Chris: more ones and twos): the party SIZE — weights by ring (siegePartySizeWeights),
+ * truncated to the ring's cap, with siegePartyEpochLean moved from the smallest size toward the
+ * largest per epoch survived. Seeded from the party rng, so a town's roll is stable per epoch. */
+export function rollPartySize(rng: WorldRng, knobs: KnobValues, ring: RegionTier, cap: number, epoch: number): number {
+  const base = (knobs.siegePartySizeWeights[ring] ?? [1]).slice(0, cap);
+  if (base.length === 0) return cap;
+  const w = base.map((x) => Math.max(0, x));
+  if (w.length > 1) {
+    const lean = Math.min(w[0]!, knobs.siegePartyEpochLean * epoch);
+    w[0]! -= lean;
+    w[w.length - 1]! += lean;
+  }
+  const total = w.reduce((a, b) => a + b, 0);
+  if (total <= 0) return cap;
+  let r = rng.float() * total;
+  for (let i = 0; i < w.length; i++) { r -= w[i]!; if (r < 0) return i + 1; }
+  return w.length;
+}
+
 /** The besieging party: ring-sized, drawn from the spoke's mage-class templates (tier ≤ 2),
  * ordered weakest→strongest so the leader holds the town's heart (fights last). */
 export function rollSiegeParty(world: WorldState, catalog: Catalog, knobs: KnobValues, town: Town, epoch: number): string[] {
-  const size = Math.max(1, knobs.siegePartySize[townRing(world, town)]);
-  const color = townColor(world, town);
+  const ring = townRing(world, town);
+  const cap = Math.max(1, knobs.siegePartySize[ring]);
   const rng = rngFor(world, town.index, epoch, "party");
+  const size = rollPartySize(rng, knobs, ring, cap, epoch);
+  const color = townColor(world, town);
   const spoke = catalog.opponents.filter((o) => o.kind !== "beast" && o.spoke === color && o.tier <= 2);
   const anywhere = catalog.opponents.filter((o) => o.kind !== "beast" && !o.spoke && o.tier <= 2);
   const pool = spoke.length ? spoke : anywhere;

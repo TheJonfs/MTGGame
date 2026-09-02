@@ -176,7 +176,9 @@ export function createObject(
     controller: owner,
     baseController: owner,
     zone,
-    isToken: opts.isToken ?? false,
+    // S26 r3 (Chris notes 1–2): a token DEF or a LAW (uncastable) is a token by construction,
+    // whatever path created it — modifiers, harness setups, the empowerment packages.
+    isToken: opts.isToken ?? !!(card.isTokenDef || card.uncastable),
     // A9/S20: shocks + taplands placed here enter tapped. S22b: the Intake imposes on tokens too.
     tapped: zone === "battlefield" && (!!card.entersChoice || !!card.entersTapped || imposedEntersTapped(ctx, card, owner)),
 

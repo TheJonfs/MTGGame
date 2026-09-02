@@ -165,6 +165,11 @@ export function playerTerrain(world: WorldState): "road" | "open" {
   return world.map.road?.[idx(world.map, world.player.position)] ? "road" : "open";
 }
 
+/** S26 r3: the rest rule — the Nth, 2Nth, 3Nth… movement of a roamer is a stand-still (0 = never). */
+export function roamerRests(moves: number, everyNth: number): boolean {
+  return everyNth > 0 && moves % everyNth === 0;
+}
+
 /** Advance every roamer by its speed (fractional debt) after a player step:
  * roamerSpeed[tier] × roamerStepsPerPlayerStep[the player's terrain]. */
 export function tickRoamers(world: WorldState, catalog: Catalog, knobs: KnobValues, rng: WorldRng): void {
@@ -176,6 +181,11 @@ export function tickRoamers(world: WorldState, catalog: Catalog, knobs: KnobValu
     let guard = 0;
     while (o.moveDebt >= 1 && guard++ < 8) {
       o.moveDebt -= 1;
+      // S26 r3 (Chris note 8): every Nth movement is a stand-still — a fleeing bounty can be
+      // run down and a pursuer falls behind, mildly. Counted per roamer; the field is optional
+      // so older saves resume at zero.
+      o.moves = (o.moves ?? 0) + 1;
+      if (roamerRests(o.moves, knobs.roamerRestEveryNthStep)) continue;
       moveRoamer(world, catalog, knobs, rng, o);
     }
   }
@@ -194,9 +204,11 @@ export function respawnRoamers(world: WorldState, catalog: Catalog, knobs: KnobV
     if (live >= roamerTarget(map, r, knobs)) continue;
     const cells = regionCells(map, r.index).filter((p) => !isTownCell(map, p) && !playerSees(world, knobs, p) && !samePoint(p, world.player.position));
     if (cells.length === 0) continue;
-    // S22 playtest r3 (Chris, item 12): a sealed lord's spoke-bound minions stop forming —
-    // respawn in his colour's regions rolls generic mages instead (existing roamers remain).
-    const tmpl = lordSealed(world, r.color) ? rollMage(rng, catalog, r.tier) : rollTemplate(rng, catalog, r, knobs);
+    // S22 playtest r3 (Chris, item 12) → S26 r3 (Chris, note 7): once a colour's lord is sealed,
+    // its regions spawn NOTHING — not beasts, not mages (a Nighthawk after the Usher fell read as a
+    // broken promise). Existing roamers remain until met; sieges of the colour already stop.
+    if (lordSealed(world, r.color)) continue;
+    const tmpl = rollTemplate(rng, catalog, r, knobs);
     const id = `opp_r${world.opponents.length}_${world.player.stepsTaken}`;
     const inst: OpponentInstance = { id, catalogId: tmpl.id, region: r.index, gone: false, at: { ...rng.pick(cells) }, moveDebt: 0 };
     world.opponents.push(inst);
