@@ -314,6 +314,14 @@ describe("S27 — the Heart through the controller: the door at five, the fight,
     expect(pv.ministerWithheld).toBe(true);
     expect(pv.paidGold).toBe(c2.knobs.petalGoldPrize * 2);
     expect(w2.player.collection["clio_lady_of_the_depths"]).toBe(1);
+    // S27 r1 (Chris): felling the petals as VICTORIES pays every unfallen petal's prizes (Clio's already fell above).
+    const goldBefore = w2.player.gold;
+    expect(c2.devFellPetals()).toBe(4);
+    expect(petalsFallen(w2)).toHaveLength(5);
+    for (const id of ["lumen_the_hearth_fire", "seraphina_the_initiative", "yuloke_the_animus", "faldor_the_muster"]) expect(w2.player.collection[id]).toBe(1);
+    expect(w2.player.gold).toBe(goldBefore + 4 * c2.knobs.petalGoldPrize);
+    expect(c2.heartOpen()).toBe(true);
+    expect(c2.devFellPetals()).toBe(0);
     // Dev toggles: grant and clear.
     c2.devGrantCutting("W");
     expect(c2.legacy().victories).toBe(2);

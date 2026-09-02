@@ -142,7 +142,7 @@ function DevTab({ c }: { c: WorldController }) {
             <p style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 0 }}>
               {(["W", "U", "B", "R", "G"] as const).map((k) => <button key={k} className="linkish" style={{ fontSize: 11 }} onClick={() => c.devGrantCutting(k)}>+ cutting {k}</button>)}
               <button className="linkish" style={{ fontSize: 11 }} onClick={() => c.devClearLegacy()}>clear legacy</button>
-              <button className="linkish" style={{ fontSize: 11 }} onClick={() => c.devFellPetals()} title="the Corolla's five petals fall (the Heart's door opens)">fell the five petals</button>
+              <button className="linkish" style={{ fontSize: 11 }} onClick={() => c.devFellPetals()} title="the Corolla's five petals fall as VICTORIES (ministers, duals, purses paid; the Heart's door opens)">fell the five petals (as victories)</button>
             </p>
             <p style={{ textAlign: "right", marginBottom: 0 }}><button onClick={() => setOpen(false)}>Close</button></p>
           </div>
@@ -807,6 +807,8 @@ function CorollaScreen({ c }: { c: WorldController }) {
             </div>
           ))}
           <div style={{ fontSize: 10.5, color: "var(--ink-soft)", marginTop: 4 }}>Each petal wears its law's colour; its court wields the two beside it. Fallen petals stay fallen.</div>
+          {/* S27 r1 (Chris): the dev shortcut lives here too — the ribbon's Dev tab is suppressed in the flower. */}
+          {rows.some((r) => !r.fallen) && <button className="linkish" style={{ fontSize: 10.5, marginTop: 2 }} onClick={() => c.devFellPetals()} title="dev: every standing petal falls as a victory (ministers, duals, purses paid)">dev: fell the five as victories</button>}
         </div>
         <div className="panel">
           <h3>The heart</h3>
@@ -997,6 +999,7 @@ function CorollaTownScreen({ c, pool, oracle }: { c: WorldController; pool: Map<
         {notice && <p style={{ fontSize: 12, color: "var(--brass)" }}>{notice}</p>}
         {tab === "square" && (
           <>
+            {fallen < 5 && <p style={{ fontSize: 10.5, margin: "0 0 4px" }}><button className="linkish" style={{ fontSize: 10.5 }} onClick={() => c.devFellPetals()} title="dev: every standing petal falls as a victory">dev: fell the five as victories</button></p>}
             <p className="dungeon-law" style={{ borderColor: fallen >= 5 ? "var(--brass)" : undefined }}>
               <b>The Heart's door:</b>{" "}
               {c.heartOpen()

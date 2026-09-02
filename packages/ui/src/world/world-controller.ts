@@ -279,12 +279,26 @@ export class WorldController {
   }
   devClearLegacy(): void { this.writeLegacy(emptyLegacy()); this.emit(); }
   /** Dev (S27): fell the five petals so the Heart's door can be tested without the five fights. */
-  devFellPetals(): void {
-    if (!this.world) return;
-    this.world.gauntlet.petals = { W: true, B: true, R: true, U: true, G: true };
+  /** S27 r1 (Chris): AUTO-VICTORY over the five petal bosses — each unfallen petal falls as if won
+   * (the signature — withheld if held — both duals, the purse; no stake), so the Heart can be
+   * speed-run with a starter deck. Reachable from the flower's rail and the heart's town too. */
+  devFellPetals(): number {
+    const def = this.corollaDef;
+    if (!this.world || !def) return 0;
+    const fallen = new Set(petalsFallen(this.world));
+    let n = 0;
+    for (const petal of def.petals) {
+      if (fallen.has(petal.color)) continue;
+      const fake: MatchResult = { winner: 0, reason: "LIFE", turns: 0, finalLife: [this.world.player.worldLife, 0], facts: { damageDealt: [0, 0], creaturesLost: [0, 0], cardsDrawn: [0, 0], spellsCast: {}, ante: [[], []] }, log: [], finalStateSerialized: "" };
+      applyPetalDuel(this.world, this.knobs, this.pool, petal, fake);
+      n += 1;
+    }
     this.autosave();
-    if (this.screen.kind === "corollaTown") this.screen = { ...this.screen, notice: "Dev: the five petals have fallen." };
+    const notice = n ? `Dev: ${n} petal${n === 1 ? "" : "s"} fell as victories — the ministers, their duals and the purses are yours.` : "Dev: every petal had already fallen.";
+    if (this.screen.kind === "corollaTown") this.screen = { kind: "corollaTown", stock: rollCorollaStock(this.world, this.pool, this.knobs), notice };
+    else if (this.screen.kind === "corolla") this.screen = { kind: "corolla", notice, walking: false };
     this.emit();
+    return n;
   }
 
   hasAutosave(): boolean {

@@ -35,6 +35,11 @@
 7. **`newRoadLine()` reads a power's name through `powerRates` on a stub world** when no world exists yet (the start screen) — a small hack; a static name table would be cleaner.
 8. **The Manafleur's flavor text** lives only on the printed face (defs carry no flavor field) — the pack's line is in `quests.json` (`heart.flavor`) for a future frame that wants it.
 
+## Playtest round 1 (S27 — Chris's first notes)
+
+1. **Art verdicts**: candidate 1 for both the portrait and the card — the provisional wiring is now the wiring (MANIFEST flipped: 1 KEPT, 2–4 rejected, on both rows). The printed face follows on Chris's pipeline.
+2. **Auto-victory over the five petal bosses** (Chris: speed-run to the final fight with a starter deck): `devFellPetals` now fells every standing petal AS A WIN — the signature (withheld if held), both duals, the purse; no stake — and is reachable inside the flower (the petals rail panel and the heart's town carry the link, since the ribbon's Dev tab is suppressed there) as well as from the Dev tab. Controller-tested (four petals paid after one real fall; idempotent). The stated purpose: if the Heart reads easily winnable even from a fresh starter because of the jam, the Manafleur gets tuned on the planner's next pass.
+
 ## Registry entries added/changed
 
 R-089 (the Manafleur's words), R-090 (the Heart, the chronicle's first phase, the profile). Pool-registry: Session 27 section (184→185). Knobs: `heartLife`, `legacyGoldPerCutting`; `corollaGridSize` 33; knobs.md regenerated. Save: v7 unchanged; `gauntlet` +`completed`, `chronicle` typed (ChronicleEntry). Engine: `GameState.lawSequence` + `DEFAULT_LAW_ORDER`; Modifier +`lawSequence`; RngPurpose +`lawSequence`; SCOPES +`laws`; Effect `exile` +scope, +`createLaw`; CardDef +`law`. Catalog: `CorollaDef.heart`, `QuestTextPack.corolla/heart` (+validation). UI: screens `heartTelegraph`/`heartVictory`; `corollaDuel.against.heart`; the Chronicle page; the legacy key; dev toggles. Audio: `splash.heart`, `music.heart.victory`. Sim: `@shandalar/sim/heart-deck`; `pnpm heart-sim`. MANIFEST +8. card-art.md +1 entry.
