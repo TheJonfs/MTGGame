@@ -30,7 +30,11 @@ const TIER_WASH: Record<string, Record<string, string>> = {
   wild: { W: "#bcae8a", U: "#8c9aa3", B: "#8e8190", R: "#a98472", G: "#86956f", C: "#9f9478" },
 };
 
-function washFor(tier: string, color: string): string {
+/** S27 (ADR-092/093): the Corolla's petals wear the LOGO's own five hues (sampled from the card
+ * back's cinquefoil, lifted a step so ink still reads over them) — brighter than the wilds. */
+const COROLLA_WASH: Record<string, string> = { W: "#f1e8cf", U: "#6b86a0", B: "#5a4a52", R: "#b85e4c", G: "#8a9a63" };
+function washFor(tier: string, color: string, register?: "corolla"): string {
+  if (register === "corolla" && tier === "wild" && COROLLA_WASH[color]) return COROLLA_WASH[color]!;
   return TIER_WASH[tier]?.[color] ?? TIER_WASH[tier]?.C ?? "#e2d9c4";
 }
 
@@ -500,7 +504,7 @@ export function WorldMapView({
           const fill = interior
             ? (!seenXY(x, y) ? INTERIOR.dark : map.passable[i] ? INTERIOR.floor : INTERIOR.rock)
             : isVoid(map.region[i]!) ? "url(#paper-pat)"
-            : (seenXY(x, y) ? washFor(reg.tier, reg.color) : "transparent");
+            : (seenXY(x, y) ? washFor(reg.tier, reg.color, register) : "transparent");
           return (
             <rect
               key={i}
@@ -819,7 +823,7 @@ export function WorldMapView({
         {interior && <rect x={0} y={0} width={map.width * MINI} height={map.height * MINI} fill={INTERIOR.dark} />}
         {interior
           ? cells.length > 0 && Array.from({ length: map.height }, (_, y) => Array.from({ length: map.width }, (_, x) => (seenXY(x, y) ? <rect key={`m${y * map.width + x}`} x={x * MINI} y={y * MINI} width={MINI} height={MINI} fill={map.passable[y * map.width + x] ? INTERIOR.floor : INTERIOR.rock} /> : null)))
-          : miniRegions.map(({ reg, runs }) => runs.map((r, i) => <rect key={`${reg.index}-${i}`} x={r.x * MINI} y={r.y * MINI} width={r.w * MINI} height={MINI} fill={washFor(reg.tier, reg.color)} />))}
+          : miniRegions.map(({ reg, runs }) => runs.map((r, i) => <rect key={`${reg.index}-${i}`} x={r.x * MINI} y={r.y * MINI} width={r.w * MINI} height={MINI} fill={washFor(reg.tier, reg.color, register)} />))}
         {map.river && map.river.map((r, i) => (r && seenXY(i % map.width, Math.floor(i / map.width)) ? <rect key={`rv${i}`} x={(i % map.width) * MINI} y={Math.floor(i / map.width) * MINI} width={MINI} height={MINI} fill="rgba(74,114,134,0.55)" /> : null))}
         {map.road && map.road.map((r, i) => (r && seenXY(i % map.width, Math.floor(i / map.width)) ? <rect key={`rd${i}`} x={(i % map.width) * MINI} y={Math.floor(i / map.width) * MINI} width={MINI} height={MINI} fill="rgba(43,37,32,0.45)" /> : null))}
         {map.towns.filter((t) => seen(t.at)).map((t) => <rect key={t.index} x={t.at.x * MINI - MINI * 0.5} y={t.at.y * MINI - MINI * 0.5} width={MINI * 2} height={MINI * 2} fill={townStates[t.index] ? "var(--danger)" : "var(--ink)"} />)}

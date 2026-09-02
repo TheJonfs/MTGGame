@@ -30,5 +30,6 @@
  "art": {
   "asset": "/custom-art/law_season.png",
   "fallback": "rendered"
- }
+ },
+ "law": true
 }

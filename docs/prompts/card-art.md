@@ -215,3 +215,12 @@ S26 Corolla batch (ADR-091; name Chris-ruled at the kickoff). Entry authored by 
 3. **Watercolor storybook** — "Muted watercolor: a captain at a candlelit desk in a barracks tent writing names into a ledger, and behind him through the tent flap a line of new recruits stretching into the blue dusk as long as the list, soft edges, quiet patient mood."
 4. **Chiaroscuro portrait** — "Dramatic chiaroscuro three-quarter portrait: a greying captain against a dark ground holding a muster roll up to a single hard light, mail collar and white tabard catching it, a brass horn at his shoulder, steady counting gaze, near-monochrome with cool blue tones."
 
+## the_manafleur — "The Manafleur" (WUBRG legendary (Avatar, the Heart) — the flower itself: five petals, five laws, the thing that grew them; the plain register's third form — the lords do, the court charges, the flower IS)
+
+S27 (ADR-093; the-bloom-gauntlet-v1.md v1.4). Entry authored by the implementer from the gauntlet doc; the fourth candidate in a register new to the project (the fun batch's precedent).
+
+1. **Classical oil** — "Oil painting in the warm classical fantasy style of 1990s trading-card art: a colossal five-petalled flower-avatar rising from a meadow at the meeting of five roads, its body a towering figure of woven green stem and root, its head a cinquefoil bloom whose five petals are white, black, red, blue and green, petals slowly unfolding, mist and pollen in shafts of dawn light, serene and vast."
+2. **Ink-and-gouache action** — "High-contrast ink drawing with gouache highlights: a towering flower-avatar mid-bloom, one enormous petal tearing itself free and dissolving into drifting motes while a new petal of a different colour unfurls in its place, strong spiral composition, limited palette of bone-white, black ink and five small pure colour accents."
+3. **Watercolor storybook** — "Muted watercolor: a vast five-petalled flower seen from below by a tiny traveler standing at its roots, the petals white, black, red, blue and green catching soft light, five faint roads converging on its stem, quiet reverent mood, soft edges, the bloom filling the sky."
+4. **Stained glass (new register)** — "A stained-glass window design: a five-petalled flower-avatar as a tall standing figure, each petal a leaded pane of one pure colour — white, black, red, blue, green — the stem and roots in green glass, light pouring through, bold black leading lines and jewel-toned translucent panes, formal symmetry, devotional stillness."
+

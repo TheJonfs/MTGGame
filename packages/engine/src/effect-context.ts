@@ -149,6 +149,8 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
           return narrow(ctx.state.battlefield.filter(
             (id) => getObject(ctx.state, id).controller !== controller && isCreature(ctx, id),
           ));
+        case "laws":
+          return ctx.state.battlefield.filter((id) => ctx.defs.def(getObject(ctx.state, id).cardId).law === true);
         case "allCreatures":
           return narrow(ctx.state.battlefield.filter((id) => isCreature(ctx, id)));
         case "attached":
@@ -221,6 +223,23 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
       if (cond.subtype && !ch.subtypes.includes(cond.subtype)) return false;
       if (cond.cardType && !ch.types.includes(cond.cardType)) return false;
       return true;
+    },
+
+    createLaw(): void {
+      // S27 (the Manafleur): the NEXT law of the game-level sequence, as a token (S26 r3: laws are
+      // tokens by construction) under the effect's controller; the pointer advances. Random mode
+      // draws from the logged game RNG, so replays reproduce the petal.
+      const seq = ctx.state.lawSequence;
+      if (seq.order.length === 0) return;
+      let index: number;
+      if (seq.mode === "random") index = ctx.rng.int(seq.order.length, "lawSequence");
+      else index = seq.next % seq.order.length;
+      const cardId = seq.order[index]!;
+      seq.next = (index + 1) % seq.order.length;
+      createObject(ctx, cardId, controller, "battlefield", { isToken: true });
+    },
+    lawMode(): "sequence" | "random" | "accumulate" {
+      return ctx.state.lawSequence.mode;
     },
 
     exileThenReturn(objectId: string): void {
@@ -564,6 +583,8 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
           return ctx.state.battlefield.filter(
             (id) => getObject(ctx.state, id).controller !== player && isCreature(ctx, id),
           );
+        case "laws":
+          return ctx.state.battlefield.filter((id) => ctx.defs.def(getObject(ctx.state, id).cardId).law === true);
         case "allCreatures":
           return ctx.state.battlefield.filter((id) => isCreature(ctx, id));
         default:
@@ -579,6 +600,12 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
     },
     sacrificeSource(): void {
       throw new Error("initialization effects have no source to sacrifice");
+    },
+    createLaw(): void {
+      throw new Error("initialization effects cannot create laws");
+    },
+    lawMode(): "sequence" | "random" | "accumulate" {
+      return ctx.state.lawSequence.mode;
     },
     dealDamage(target: ResolvedTarget, amount: number): void {
       if (target.kind === "stackItem") throw new Error("cannot damage a stack item");

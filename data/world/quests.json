@@ -1,63 +1,105 @@
 {
-  "catalogVersion": "v1",
-  "comment": "S21 Parts 3-4: the quest & rumor text pack v1 (docs/quest-text-pack-v1.md), planner-authored — wired as data, never rewritten here. Placeholders: {town} {region} {target} {card} {reward} {steps} {want}.",
-  "offers": {
-    "courier": [
-      "A parcel for {town}, wrapped in oilcloth and questions. Don't open it. {reward} on delivery.",
-      "My sister in {town} needs this before the roads worsen. They always worsen.",
-      "This letter outlived two couriers already. Third time pays for all — {reward}, when it reaches {town}.",
-      "Take the ledger to {town}. Walk quickly and read nothing."
-    ],
-    "cardCourier": [
-      "A collector in {town} wants {want} — wants it gone from here, more like. It travels the moment we shake on it.",
-      "The {want} in your keeping would settle an old debt in {town}. Old debts pay new gold.",
-      "There's a buyer in {town} for {want}. Ask no questions and carry none with it."
-    ],
-    "bounty": [
-      "{target} has been seen on the {region} roads. The purse stands at {reward}, and it stands lonely.",
-      "Whatever walks the {region} wearing that shape — the reeve wants it stopped. {reward}, no questions on the manner.",
-      "Third caravan this season. The {region} pays {reward} to whoever ends it."
-    ],
-    "retrieval": [
-      "It's in the lair in the {region} — past the resident, which is the whole trouble. Bring it back or keep it; we'll pay either way you choose wrong.",
-      "My grandmother's {card} went into that den with my grandmother. The {card}, at least, can come back.",
-      "The thing you want sits behind the thing you don't. {reward} if it reaches me."
-    ]
+ "catalogVersion": "v1",
+ "comment": "S21 Parts 3-4: the quest & rumor text pack v1 (docs/quest-text-pack-v1.md), planner-authored — wired as data, never rewritten here. Placeholders: {town} {region} {target} {card} {reward} {steps} {want}.",
+ "offers": {
+  "courier": [
+   "A parcel for {town}, wrapped in oilcloth and questions. Don't open it. {reward} on delivery.",
+   "My sister in {town} needs this before the roads worsen. They always worsen.",
+   "This letter outlived two couriers already. Third time pays for all — {reward}, when it reaches {town}.",
+   "Take the ledger to {town}. Walk quickly and read nothing."
+  ],
+  "cardCourier": [
+   "A collector in {town} wants {want} — wants it gone from here, more like. It travels the moment we shake on it.",
+   "The {want} in your keeping would settle an old debt in {town}. Old debts pay new gold.",
+   "There's a buyer in {town} for {want}. Ask no questions and carry none with it."
+  ],
+  "bounty": [
+   "{target} has been seen on the {region} roads. The purse stands at {reward}, and it stands lonely.",
+   "Whatever walks the {region} wearing that shape — the reeve wants it stopped. {reward}, no questions on the manner.",
+   "Third caravan this season. The {region} pays {reward} to whoever ends it."
+  ],
+  "retrieval": [
+   "It's in the lair in the {region} — past the resident, which is the whole trouble. Bring it back or keep it; we'll pay either way you choose wrong.",
+   "My grandmother's {card} went into that den with my grandmother. The {card}, at least, can come back.",
+   "The thing you want sits behind the thing you don't. {reward} if it reaches me."
+  ]
+ },
+ "rumors": {
+  "chainLinks": [
+   "Ask at {town} — the ferryman there saw where it went.",
+   "The shepherds in the {region} tell it differently. Go hear them tell it.",
+   "Old {town} charcoal-burners know that country. Buy a round and buy the truth."
+  ],
+  "guardians": {
+   "reya": "In the Last Chapel they bury no one twice. She won't allow it.",
+   "arcanis": "The hermit of the Reach reads three futures in a breath. Bring him a fourth.",
+   "drana": "The Barrowlands' mistress tithes in blood, and pays her debts in it too.",
+   "drakuseth": "Brand's folk saw wings over the caldera at dusk. Three farms burned in a single pass.",
+   "titania": "Fell a tree in the Deepwood, then count your breaths until the ground answers."
   },
-  "rumors": {
-    "chainLinks": [
-      "Ask at {town} — the ferryman there saw where it went.",
-      "The shepherds in the {region} tell it differently. Go hear them tell it.",
-      "Old {town} charcoal-burners know that country. Buy a round and buy the truth."
-    ],
-    "guardians": {
-      "reya": "In the Last Chapel they bury no one twice. She won't allow it.",
-      "arcanis": "The hermit of the Reach reads three futures in a breath. Bring him a fourth.",
-      "drana": "The Barrowlands' mistress tithes in blood, and pays her debts in it too.",
-      "drakuseth": "Brand's folk saw wings over the caldera at dusk. Three farms burned in a single pass.",
-      "titania": "Fell a tree in the Deepwood, then count your breaths until the ground answers."
-    },
-    "lords": {
-      "unwinder": "The tide at the Spire runs backward, and what it takes comes back wrong.",
-      "usher": "The duchess of the old court receives all the dead, and returns none.",
-      "warden": "The walls of the Bastion are alive, and the tallest of them holds the keys.",
-      "stoker": "Every spell spoken near the Furnace Gate, something inside hears it. And grows hungrier.",
-      "sower": "Plant nothing within sight of the Throne. It will grow, and it will not be yours."
-    },
-    "moxPointer": "There's a door in the {region} that opens for no key. Something older than keys waits behind it.",
-    "moxPointerDeep": "Five doors, five sleepless things, five prizes that were old when the strongholds were quarried.",
-    "vaultTease": "Five seats of power, five treasures taken. And beneath them all, they say — a flower.",
-    "nighthawkLegend": "They found the last one drained white on the fen road, purse untouched. Walk wide of the Nighthawk — or walk in numbers, and count the payout worth it.",
-    "warp": [
-      "The old currents run crosswise in this country. Some call it opportunity. Widows call it otherwise.",
-      "Five powers ride the crossed currents, and the riding frays the plane. Ask why the birds fly widdershins near the spokes' ends."
-    ],
-    "texture": [
-      "The roads are the reeve's as far as the lanterns reach. Past that, they're whoever's walking them.",
-      "Whitewell's bell rings itself some mornings. Nobody mends it. Nobody dares.",
-      "The wild towns trade in things the civilized ones pretend not to want.",
-      "Steps are cheap, they say. They say it young."
-    ],
-    "manalinkPointer": "There's work in {town} that pays in something better than coin. That kind of work doesn't wait."
-  }
+  "lords": {
+   "unwinder": "The tide at the Spire runs backward, and what it takes comes back wrong.",
+   "usher": "The duchess of the old court receives all the dead, and returns none.",
+   "warden": "The walls of the Bastion are alive, and the tallest of them holds the keys.",
+   "stoker": "Every spell spoken near the Furnace Gate, something inside hears it. And grows hungrier.",
+   "sower": "Plant nothing within sight of the Throne. It will grow, and it will not be yours."
+  },
+  "moxPointer": "There's a door in the {region} that opens for no key. Something older than keys waits behind it.",
+  "moxPointerDeep": "Five doors, five sleepless things, five prizes that were old when the strongholds were quarried.",
+  "vaultTease": "Five seats of power, five treasures taken. And beneath them all, they say — a flower.",
+  "nighthawkLegend": "They found the last one drained white on the fen road, purse untouched. Walk wide of the Nighthawk — or walk in numbers, and count the payout worth it.",
+  "warp": [
+   "The old currents run crosswise in this country. Some call it opportunity. Widows call it otherwise.",
+   "Five powers ride the crossed currents, and the riding frays the plane. Ask why the birds fly widdershins near the spokes' ends."
+  ],
+  "texture": [
+   "The roads are the reeve's as far as the lanterns reach. Past that, they're whoever's walking them.",
+   "Whitewell's bell rings itself some mornings. Nobody mends it. Nobody dares.",
+   "The wild towns trade in things the civilized ones pretend not to want.",
+   "Steps are cheap, they say. They say it young."
+  ],
+  "manalinkPointer": "There's work in {town} that pays in something better than coin. That kind of work doesn't wait."
+ },
+ "corolla": {
+  "doorOpen": "Five seats stand empty, and the world has gone quiet spoke by spoke. What the lords rode has no riders now. The petals part.",
+  "doorLocked": "The petals are closed. {n} seats still hold their sovereigns.",
+  "vaultOpen": "Five gems, five sleepless things put to sleep. The Vault opens on what you carry — and shows it back to you.",
+  "vaultLocked": "Locked. It counts gems, and you are short.",
+  "petals": {
+   "B": "The Court is dust. The Tithe still collects — here it wears the hearth's colours, and the collector smiles.",
+   "R": "The Gate is cold and the Toll is not. Something in the deep keeps the count, and it counts in depths.",
+   "W": "The Bastion's walls are down; the Intake stands. What arrives here arrives bound — and she moves first.",
+   "U": "The Spire is silent and the tide still rises. What is spent here grows back, and grows back wilder.",
+   "G": "The Throne is empty and the Season keeps its turning. Everything here musters. Everything here grows."
+  },
+  "townStrip": "The heart. The world stands still here, and so may you.",
+  "inn": "Rest costs nothing here. Nothing is what time is worth, this deep.",
+  "shelf": "The flower's own wares. Nowhere else stocks these; nowhere else could.",
+  "heartLocked": "Five petals. {n} have fallen. The heart does not open for the impatient.",
+  "petalFalls": "A petal falls. Its minister comes with you, and the two currents it kept.",
+  "mirrorYields": "The reflection yields what it carried. There is exactly one, and now it is yours.",
+  "petalLost": "The petal holds. You are left where you fell; the flower does not press its advantage."
+ },
+ "heart": {
+  "doorOpen": "The petals are gone. What they grew from is waiting.",
+  "telegraph": "Here the currents meet. Five laws fell to you, and the thing that grew them has not fallen — it will grow them again as fast as you can cut them, one each night, in the order the plane runs. It has a name. You will read it on the card, and nowhere else. The heart does not offer terms.",
+  "stakes": "Nothing is wagered here. The flower has nothing to lose that it cannot regrow, and you have already given the road everything it asked.",
+  "flavor": "Five petals. Five laws. Five who thought the laws were theirs. Beneath them all, the flower — which never noticed it was being ruled.",
+  "victory": "The flower folds. The laws fall silent in the same breath, and the currents slow and feel for their old beds. This is not an ending. A petal closes; the world remembers who closed it. For now.",
+  "victoryCard": "Its card is yours. There is exactly one.",
+  "loss": "The flower stands. You are left at the heart, where nothing presses you. Rest, and return; it will be here.",
+  "offer": "Stay in the quiet world, or begin again on a new road — carrying what you carried out.",
+  "chronicle": {
+   "W": "Cut from the white road: the flower folded, and for a season the pale country's wounds did not close on their own. Whatever the flower was doing, it was doing that too.",
+   "U": "Cut from the blue road: the tide at the Spire ran forward for the first time anyone remembers. Then it thought better of it.",
+   "B": "Cut from the black road: the barrows were quiet, and then they were not quiet in a new way. The dead have opinions about flowers.",
+   "R": "Cut from the red road: the Caldera cooled a hand's breadth. Ash fell upward for a day.",
+   "G": "Cut from the green road: the Deepwood grew a ring of new trunks overnight, every one of them leaning toward the heart."
+  },
+  "fifthCutting": "Five cuttings. The flower folds slower each time, and each time it folds, something under it turns over — like a sleeper deciding which side to face. The currents no longer run where they ran. Whatever comes next will not be Cinquefoil as you knew it.",
+  "newRoad": "You have cut the flower from the {colour} road. You begin with what you carried out: {power}, {guardian}, and {minister}.",
+  "newRoadAll": "You have cut the flower from every road. You begin with everything you carried out — and the plane has noticed.",
+  "withheld": "Its minister is already yours. The petal yields coin instead, and the two currents it kept.",
+  "chronicleHeader": "The Chronicle of Cuttings — the Manafleur, and what followed each folding."
+ }
 }

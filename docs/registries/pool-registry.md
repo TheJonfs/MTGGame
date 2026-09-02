@@ -413,6 +413,14 @@ Pool 179 → **184**. The five still-pair signatures — all custom, gold, prize
 | yuloke_the_animus | Yuloke, the Animus | tested | LAND_ENTERS_UNDER_YOUR_CONTROL's first collector (skeleton); optional targeted ATTACKS regrowth (Titania's land predicate to hand) | custom Legendary {2}{R}{G} Human Druid 3/3 trample haste; RG; the Risen Tide petal (U); the cycle-recover-drop loop, Wilds as two landfalls, the turn-two 5/3 under the Risen Tide fixtured; name Chris-ruled at the S26 kickoff |
 | faldor_the_muster | Faldor, the Muster | tested | DRAW trigger event's first collector (skeleton; gated to turn ≥ 1 — CR 103.4) | custom Legendary {2}{W}{U} Human Soldier 2/2; WU; the Season petal (G); draw step = one, Divination = two, cycling = one, pre-game = none fixtured; name Chris-ruled at the S26 kickoff |
 
+## Session 27 additions — the Heart (ADR-093; the-bloom-gauntlet-v1.md v1.4, Chris-designed)
+
+Pool 184 → **185**. The last card. Custom, five-colour, prizeOnly (sole-mechanism: drops once from the Manafleur's own fall; never staked). Art through the ADR-052 ceremony (four candidates; the fourth in a register new to the project — stained glass) and four portrait candidates (Chris asked for four of each); candidate 1 of each wired provisionally; printed face on receipt.
+
+| id | name | status | vocabulary | notes |
+|---|---|---|---|---|
+| the_manafleur | The Manafleur | tested | exile-by-scope (`laws`); `createLaw` (manifest-from-def on the game-level law sequence — family: the sequence pointer, `random` / `accumulate` modes as data hooks); `law: true` on the five laws | custom Legendary {W}{U}{B}{R}{G} Avatar 7/7; the Heart; "At the beginning of your end step, exile all laws, then create a copy of the next law." — blooms the turn cast, one petal per round, the ring W→B→R→U→G→W, thefts/copies/reanimations continue the sequence (fixtured ×8); the Manafleur's sixty in `@shandalar/sim/heart-deck` |
+
 ## Shop tiers (ADR-078, S19)
 
 The `shopTier` column (`1 | 2 | 3 | R`) is repo-canonical **on the card defs themselves** (`data/cards/*.json`, validated by the loader: every non-token, non-basic, non-prizeOnly card must carry one) rather than duplicated per row above; `docs/card-tier-audit-v2.md` is the curation source (planner-maintained), and `pnpm card-manifest` regenerates the human-readable price sheet. Distribution at adoption: **T1 ×53 · T2 ×31 · T3 ×10 · R ×2** (Demonic Tutor, Mystic Snake) + Lotus `prizeOnly` + 5 basics; Faerie Formation joins at T3 this session (→ T3 ×11). Availability: a town stocks `shopTier ≤ ring` (civilized 1 / approach 2 / wild 3); price × `shopTierMultiplier` (1.0/1.5/2.5 knobs); **R never stocks** — ante/quest/treasure circulation only.

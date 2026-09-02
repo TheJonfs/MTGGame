@@ -77,6 +77,19 @@ describe("ante (R-043, S12 Part 0)", () => {
     }
   });
 
+  it("S27 (ADR-092/093): prizeOnly cards are NEVER stakes — a library of Moxen and Mountains antes nothing; a mixed library skips the Mox for the next nonland", async () => {
+    const jewels = [{ cardId: "mox_ruby", count: 20 }, { cardId: "mountain", count: 20 }];
+    const r = await runMatch(spec(3, 1, jewels, jewels), pool.cards, [firstAction, firstAction]);
+    expect(r.facts.ante[0]).toHaveLength(0);
+    expect(r.facts.ante[1]).toHaveLength(0);
+    const mixed = [{ cardId: "mox_ruby", count: 10 }, { cardId: "raging_goblin", count: 10 }, { cardId: "mountain", count: 20 }];
+    const r2 = await runMatch(spec(3, 2, mixed, mixed), pool.cards, [firstAction, firstAction]);
+    for (const p of [0, 1] as const) {
+      expect(r2.facts.ante[p]).toHaveLength(2);
+      for (const id of r2.facts.ante[p]) expect(pool.cards.get(id)!.prizeOnly).toBeFalsy();
+    }
+  });
+
   it("n=2: two each; the 24-card library loses 2 to ante and 7 to the hand before the first draw", async () => {
     const r = await runMatch(spec(2, 2), pool.cards, [firstAction, firstAction]);
     expect(r.facts.ante[0]).toHaveLength(2);

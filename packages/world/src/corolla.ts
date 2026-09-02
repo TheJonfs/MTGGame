@@ -54,6 +54,12 @@ export interface CorollaDef {
   petals: CorollaPetalDef[];
   /** Petal-boss starting life (Chris: 30 to start; petal-sim and play tune it) — the knob overrides when set. */
   bossLife?: number;
+  /** S27 (ADR-093): the Heart — the Manafleur behind the town's door (absent = no fight, S26's state). */
+  heart?: HeartDef;
+}
+export interface HeartDef {
+  name: string;
+  boss: { name: string; portrait: string; cardId: string };
 }
 
 export function validateCorollaDef(def: CorollaDef | undefined): string[] {
@@ -65,6 +71,7 @@ export function validateCorollaDef(def: CorollaDef | undefined): string[] {
     if (!p.boss?.key || !p.boss?.name || !p.boss?.portrait) errors.push(`corolla petal ${p.color}: boss key/name/portrait required`);
     if (!p.signature || !Array.isArray(p.duals) || p.duals.length !== 2) errors.push(`corolla petal ${p.color}: signature + two duals required`);
   }
+  if (def.heart && (!def.heart.name || !def.heart.boss?.name || !def.heart.boss?.portrait || !def.heart.boss?.cardId)) errors.push("corolla.heart: name + boss name/portrait/cardId required");
   return errors;
 }
 
@@ -91,8 +98,12 @@ export function generateCorolla(size = 41): CorollaGeometry {
   const s = Math.max(21, size | 1); // odd, so the centre is a cell
   const c = (s - 1) / 2;
   const R = c;
+  // S27 (ADR-092: "narrow the lobes until paper shows between them — the logo has gaps"): the
+  // lobes are slimmer and sit further out; a two-cell STEM along each spoke joins lobe to heart
+  // (the logo's petals meet at the centre), so every tip stays reachable.
   const heartR = R * 0.16;
-  const lobeD = R * 0.575, lobeA = R * 0.4, lobeB = R * 0.21;
+  const lobeD = R * 0.6, lobeA = R * 0.38, lobeB = R * 0.17;
+  const stemHalf = 1.0;
   const passable = new Array<boolean>(s * s).fill(false);
   const region = new Array<number>(s * s).fill(COROLLA_VOID);
   const spokes = PETAL_ORDER.map((color, i) => {
@@ -117,7 +128,10 @@ export function generateCorolla(size = 41): CorollaGeometry {
       const sp = spokes[best]!;
       const along = dx * sp.ux + dy * sp.uy - lobeD;
       const across = -dx * sp.uy + dy * sp.ux;
-      if ((along * along) / (lobeA * lobeA) + (across * across) / (lobeB * lobeB) <= 1) {
+      const inLobe = (along * along) / (lobeA * lobeA) + (across * across) / (lobeB * lobeB) <= 1;
+      const dist = dx * sp.ux + dy * sp.uy;
+      const inStem = Math.abs(across) <= stemHalf && dist > 0 && dist < lobeD;
+      if (inLobe || inStem) {
         passable[i] = true;
         region[i] = best;
       }
@@ -180,7 +194,10 @@ export interface CorollaInside {
 export interface GauntletState {
   opened?: boolean;
   attempts?: number;
-  chronicle?: unknown[];
+  /** S27: the per-run chronicle — one entry per Manafleur victory (copied into the profile). */
+  chronicle?: ChronicleEntry[];
+  /** S27: the run is finishable — the Manafleur fell at least once (postponement; the world stays playable). */
+  completed?: true;
   petals?: Partial<Record<PetalColor, true>>;
   vault?: "cleared";
   corolla?: CorollaInside | null;
@@ -327,7 +344,7 @@ export function petalDuelSpec(
 }
 
 export type PetalOutcome =
-  | { type: "win"; paidGold: number; paidCards: string[]; anteWon: string[]; anteWithheld: string[] }
+  | { type: "win"; paidGold: number; paidCards: string[]; anteWon: string[]; anteWithheld: string[]; ministerWithheld: boolean }
   | { type: "loss"; anteLost: string[] };
 
 /** Pay-as-you-go: a WIN pays the signature (sole-mechanism), one copy of each of the pair's duals,
@@ -358,11 +375,15 @@ export function applyPetalDuel(
     const staked = [...result.facts.ante[1]];
     const anteWon = staked.filter((id) => !pool.get(id)?.prizeOnly);
     const anteWithheld = staked.filter((id) => pool.get(id)?.prizeOnly);
-    const paidCards = [petal.signature, ...petal.duals];
+    // S27 (ADR-093, the never-duplicate rule): a minister already held (carried in from the
+    // chronicle) is withheld — the petal yields coin instead, and the two currents it kept.
+    const ministerWithheld = (world.player.collection[petal.signature] ?? 0) > 0;
+    const paidCards = ministerWithheld ? [...petal.duals] : [petal.signature, ...petal.duals];
     addToCollection(world, paidCards, "reward");
     if (anteWon.length) addToCollection(world, anteWon, "ante");
-    world.player.gold += knobs.petalGoldPrize;
-    return { type: "win", paidGold: knobs.petalGoldPrize, paidCards, anteWon, anteWithheld };
+    const paidGold = knobs.petalGoldPrize * (ministerWithheld ? 2 : 1);
+    world.player.gold += paidGold;
+    return { type: "win", paidGold, paidCards, anteWon, anteWithheld, ministerWithheld };
   }
   // Draws count as losses at a fixed point (the lair pattern's rule, the dungeon's too).
   const anteLost = [...result.facts.ante[0]];
@@ -496,4 +517,157 @@ export function petalAt(geom: CorollaGeometry, p: Point): { color: PetalColor; i
 export function petalDistance(geom: CorollaGeometry, color: PetalColor): number {
   const p = geom.petals.find((x) => x.color === color)!;
   return manhattan(p.tip, geom.town);
+}
+
+// ---------- S27 (ADR-093): the Heart — the Manafleur ----------
+
+/** The run's starting colour (the chronicle's key), from the starter id. */
+export function startingColor(world: WorldState, catalog: Catalog): PetalColor {
+  const st = catalog.starters.find((x) => x.id === world.player.starterId);
+  return ((st?.color as PetalColor | undefined) ?? "G");
+}
+
+export interface ChronicleEntry {
+  /** Running count across the profile ("The first cutting" …). */
+  n: number;
+  color: PetalColor;
+  text: string;
+  seed: number;
+  difficulty: string;
+  steps: number;
+  /** ISO date of the folding (the profile's ledger; not game state). */
+  when: string;
+}
+
+/** The Heart's spec: the Manafleur's deck under the master profile at heartLife (flat), the entrance
+ * (the Manafleur in hand turn one), ZERO ante, the default law sequence (the WBRUG ring). The player
+ * fights at world life; manalinks apply. World-kind: nothing is escrowed. */
+export function heartDuelSpec(world: WorldState, catalog: Catalog, knobs: KnobValues, def: CorollaDef, enemy: PetalEnemy, rng: WorldRng): { spec: MatchSpec; enemyName: string; enemyLife: number } {
+  const legal = deckLegal(activeDeck(world));
+  if (!legal.ok) throw new Error(`cannot face the Heart: ${legal.reason}`);
+  const heart = def.heart;
+  if (!heart) throw new Error("the Heart is not in this catalog");
+  const enemyLife = Math.max(1, knobs.heartLife);
+  const spec: MatchSpec = {
+    seed: rng.int(1_000_000_000),
+    players: [
+      { name: world.player.name, decklist: activeDeck(world).map((e) => ({ ...e })), agent: "human" },
+      { name: enemy.name, decklist: enemy.decklist.map((e) => ({ ...e })), agent: "heuristic:master" },
+    ],
+    rules: { startingLife: world.player.worldLife, handSize: 7, mulligan: "london", maxTurns: 100, ante: 0, startingPlayer: rng.chance(0.5) ? 0 : 1 },
+    modifiers: [
+      { type: "startingLife", player: 1, value: enemyLife },
+      { type: "signatureToHand", player: 1, cardId: heart.boss.cardId },
+      { type: "lawSequence" },
+      ...manalinkModifiers(world),
+    ],
+  };
+  return { spec, enemyName: enemy.name, enemyLife };
+}
+
+export type HeartOutcome =
+  | { type: "win"; paidCards: string[]; entry: ChronicleEntry; first: boolean }
+  | { type: "loss" };
+
+/** The Manafleur's fall: the card drops (sole-mechanism — once; a held copy is not duplicated), the
+ * run is marked complete, and the chronicle entry for the run's starting road is written into the
+ * per-run ledger (the caller copies it into the profile). A loss costs a world life; you stay at
+ * the heart (world-kind; regroup and retry). */
+export function applyHeartDuel(
+  world: WorldState,
+  catalog: Catalog,
+  knobs: KnobValues,
+  result: MatchResult,
+  opts: { cuttingsSoFar: number; text: (color: PetalColor) => string },
+  record?: { seed: number; spec: MatchSpec; enemyName: string },
+): HeartOutcome {
+  if (record) {
+    recordDuel(world, record.seed, record.spec, result, {
+      opponentId: "the_heart",
+      catalogId: "the_heart",
+      enemyName: record.enemyName,
+      outcome: result.winner === 0 ? "win" : result.winner === 1 ? "loss" : "draw",
+      anteWon: [],
+      anteLost: [],
+    });
+  }
+  if (result.winner === 0) {
+    const g = gauntletState(world);
+    const first = g.completed !== true;
+    g.completed = true;
+    const cardId = catalog.corolla?.heart?.boss.cardId ?? "the_manafleur";
+    const paidCards = (world.player.collection[cardId] ?? 0) > 0 ? [] : [cardId];
+    if (paidCards.length) addToCollection(world, paidCards, "reward");
+    const color = startingColor(world, catalog);
+    const entry: ChronicleEntry = { n: opts.cuttingsSoFar + 1, color, text: opts.text(color), seed: world.seed, difficulty: world.difficulty, steps: world.player.stepsTaken, when: new Date().toISOString() };
+    (g.chronicle ??= []).push(entry);
+    return { type: "win", paidCards, entry, first };
+  }
+  world.player.worldLife = Math.max(knobs.lifeFloor, world.player.worldLife - knobs.lossLifePenalty);
+  if (world.player.worldLife <= 0) world.gameOver = true;
+  return { type: "loss" };
+}
+
+// ---------- S27: the profile store — the chronicle's first phase (framing + carryover) ----------
+
+/** The per-player LEGACY, outside the world save (the UI keeps it under its own key; read at
+ * new-game, written at Manafleur victory). Versioned from day one. */
+export interface Legacy {
+  version: 1;
+  /** Manafleur victories per starting colour. */
+  cuttings: Partial<Record<PetalColor, number>>;
+  /** Every entry ever written, in order (the Chronicle of Cuttings). */
+  chronicle: ChronicleEntry[];
+  victories: number;
+}
+export const LEGACY_VERSION = 1 as const;
+export function emptyLegacy(): Legacy {
+  return { version: LEGACY_VERSION, cuttings: {}, chronicle: [], victories: 0 };
+}
+/** Migration hygiene: accept any object, return a well-formed legacy (unknown shapes → empty). */
+export function migrateLegacy(raw: unknown): Legacy {
+  if (!raw || typeof raw !== "object") return emptyLegacy();
+  const r = raw as Partial<Legacy>;
+  if (r.version !== 1) return emptyLegacy();
+  return { version: 1, cuttings: { ...(r.cuttings ?? {}) }, chronicle: [...(r.chronicle ?? [])], victories: r.victories ?? 0 };
+}
+/** Record a Manafleur victory: the colour's cutting count, the entry, the total. Returns a new legacy. */
+export function recordCutting(legacy: Legacy, entry: ChronicleEntry): Legacy {
+  return {
+    version: 1,
+    cuttings: { ...legacy.cuttings, [entry.color]: (legacy.cuttings[entry.color] ?? 0) + 1 },
+    chronicle: [...legacy.chronicle, entry],
+    victories: legacy.victories + 1,
+  };
+}
+/** The colours cut at least once. */
+export function cutColors(legacy: Legacy): PetalColor[] {
+  return PETAL_ORDER.filter((c) => (legacy.cuttings[c] ?? 0) > 0);
+}
+
+/** What a cut colour carries into a new road (the doc's table): the colour's power, its teaching
+ * guardian's card (site pre-cleared), its lord's complement minister (the petal of that colour). */
+export function legacyCarry(catalog: Catalog, color: PetalColor): { power: PetalColor; guardianCard?: string; powerSiteId?: string; minister?: string } {
+  const pd = (catalog.powerDungeons ?? []).find((d) => d.color === color);
+  const petal = catalog.corolla?.petals.find((p) => p.color === color);
+  return { power: color, ...(pd ? { guardianCard: pd.prize.guardianCard, powerSiteId: pd.id } : {}), ...(petal ? { minister: petal.signature } : {}) };
+}
+
+/** Apply the profile's carryover to a NEW world (world-side only, the engine untouched): for every
+ * cut colour — the power pre-unlocked (fuel still earned), the guardian's card in the collection
+ * with its site pre-cleared (the power-dungeon does not exist that run), the minister in the
+ * collection; plus legacyGoldPerCutting per victory. Idempotent per card (never duplicates). */
+export function applyLegacy(world: WorldState, catalog: Catalog, legacy: Legacy, knobs: KnobValues): { colors: PetalColor[]; cards: string[]; gold: number } {
+  const colors = cutColors(legacy);
+  const cards: string[] = [];
+  for (const color of colors) {
+    const carry = legacyCarry(catalog, color);
+    if (!world.powers.unlocked.includes(color)) world.powers.unlocked.push(color);
+    if (carry.guardianCard && !(world.player.collection[carry.guardianCard] ?? 0)) { addToCollection(world, [carry.guardianCard], "reward"); cards.push(carry.guardianCard); }
+    if (carry.powerSiteId) (world.dungeons[carry.powerSiteId] ??= { cleared: false, resets: 0 }).cleared = true;
+    if (carry.minister && !(world.player.collection[carry.minister] ?? 0)) { addToCollection(world, [carry.minister], "reward"); cards.push(carry.minister); }
+  }
+  const gold = knobs.legacyGoldPerCutting * legacy.victories;
+  world.player.gold += gold;
+  return { colors, cards, gold };
 }

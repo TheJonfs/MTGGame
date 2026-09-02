@@ -25,5 +25,6 @@
  "art": {
   "asset": "/custom-art/law_intake.png",
   "fallback": "rendered"
- }
+ },
+ "law": true
 }

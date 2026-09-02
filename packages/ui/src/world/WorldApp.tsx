@@ -12,7 +12,7 @@ import { WorldMapView } from "./WorldMap";
 import { FloatingCardInspector } from "./FloatingCardInspector";
 
 /** Screens that return early from the world layout (no rail, no popups, no manalink splash). */
-const EARLY_SCREENS = new Set<string>(["start", "duel", "dungeonDuel", "siegeDuel", "corollaDuel", "duelResult", "collection", "editor", "dungeonTelegraph", "siegeTelegraph", "dungeon", "dungeonVictory", "strongholdVictory", "corollaTelegraph", "vaultTelegraph", "corolla", "petalTelegraph", "petalVictory", "mirrorVictory", "corollaTown", "gameOver"]);
+const EARLY_SCREENS = new Set<string>(["start", "duel", "dungeonDuel", "siegeDuel", "corollaDuel", "duelResult", "collection", "editor", "dungeonTelegraph", "siegeTelegraph", "dungeon", "dungeonVictory", "strongholdVictory", "corollaTelegraph", "vaultTelegraph", "corolla", "petalTelegraph", "petalVictory", "mirrorVictory", "corollaTown", "heartTelegraph", "heartVictory", "gameOver"]);
 
 /**
  * /world (S13): the overworld shell — start → map → encounter/parley → duel
@@ -30,6 +30,8 @@ function StartScreen({ c, onStart }: { c: WorldController; onStart: (choice: New
   const [seed, setSeed] = useState("");
   const [name, setName] = useState("You");
   const [error, setError] = useState<string | null>(null);
+  const [chronicle, setChronicle] = useState(false); // S27: the Chronicle of Cuttings page
+  const carried = c.newRoadLine();
   // S23 audio (ADR-084): the prominent front-page toggle — persisted; sound begins at the
   // first interaction per browser reality regardless of this default.
   const [sound, setSound] = useState(audio.isEnabled());
@@ -78,9 +80,12 @@ function StartScreen({ c, onStart }: { c: WorldController; onStart: (choice: New
             <input type="text" placeholder="random" value={seed} onChange={(e) => setSeed(e.target.value)} style={{ width: 90 }} />
           </div>
         </div>
+        {/* S27 (ADR-093): what the profile carries into the new road — the pack's line. */}
+        {carried && <p className="dungeon-law" style={{ borderColor: "var(--brass)", fontSize: 12.5, textAlign: "left" }}>{carried}</p>}
         <p>
           <button className="primary" onClick={() => onStart({ starter, difficulty, name, ...(seed.trim() ? { seed: Number(seed) } : {}) })}>New game</button>{" "}
           {c.hasAutosave() && <button onClick={() => c.continueFromAutosave()}>Continue</button>}{" "}
+          <button className="linkish" onClick={() => setChronicle(true)} title="the profile's ledger — one entry per folding">Chronicle{c.chronicle().length ? ` (${c.chronicle().length})` : ""}</button>{" "}
           <label className="linkish" style={{ cursor: "pointer" }}>
             load a save file
             <input type="file" accept=".json" style={{ display: "none" }} onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])} />
@@ -96,6 +101,7 @@ function StartScreen({ c, onStart }: { c: WorldController; onStart: (choice: New
           <a className="linkish" href="/">⟵ main menu</a>
         </p>
         {error && <p style={{ color: "var(--danger)" }}>{error}</p>}
+        {chronicle && <ChroniclePage c={c} onClose={() => setChronicle(false)} />}
       </div>
     </div>
   );
@@ -131,6 +137,13 @@ function DevTab({ c }: { c: WorldController }) {
                 </div>
               ))}
             </div>
+            {/* S27: the legacy toggle — grant a cutting per colour (writes the profile) or clear it. */}
+            <p style={{ fontSize: 11.5, color: "var(--ink-soft)", marginBottom: 4, marginTop: 10 }}>Legacy (the profile, outside the save): cuttings {(["W", "U", "B", "R", "G"] as const).map((k) => `${k}${c.legacy().cuttings[k] ?? 0}`).join(" ")} · victories {c.legacy().victories}</p>
+            <p style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 0 }}>
+              {(["W", "U", "B", "R", "G"] as const).map((k) => <button key={k} className="linkish" style={{ fontSize: 11 }} onClick={() => c.devGrantCutting(k)}>+ cutting {k}</button>)}
+              <button className="linkish" style={{ fontSize: 11 }} onClick={() => c.devClearLegacy()}>clear legacy</button>
+              <button className="linkish" style={{ fontSize: 11 }} onClick={() => c.devFellPetals()} title="the Corolla's five petals fall (the Heart's door opens)">fell the five petals</button>
+            </p>
             <p style={{ textAlign: "right", marginBottom: 0 }}><button onClick={() => setOpen(false)}>Close</button></p>
           </div>
         </div>
@@ -698,7 +711,7 @@ function CorollaTelegraph({ c }: { c: WorldController }) {
           <img src="/gate-plates/corolla.jpg" alt="" style={{ width: "100%", display: "block", maxHeight: 260, objectFit: "cover" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
         </div>
         <h2 style={{ margin: 0, fontFamily: "var(--serif)" }}>{def?.name ?? "The Corolla"}</h2>
-        <p className="parley-sub">{open ? "The petals part." : `The petals are closed. Five seals open them; you hold ${seals}.`}</p>
+        <p className="parley-sub">{open ? (c.catalog.questText?.corolla?.doorOpen ?? "The petals part.") : (c.catalog.questText?.corolla?.doorLocked ?? "The petals are closed. {n} seats still hold their sovereigns.").replace("{n}", String(5 - seals))}</p>
         {open && (
           <ul className="dungeon-stakes">
             <li><b>The flower is a world, not a mountain.</b> Five petals around a town at the heart; each tip holds one of the five laws — <i>returned</i> — and a court that was never a lord's. What you win, you keep as you go; what falls stays fallen; you may walk out and come back.</li>
@@ -730,7 +743,7 @@ function VaultTelegraph({ c }: { c: WorldController }) {
           <img src="/gate-plates/vault.jpg" alt="" style={{ width: "100%", display: "block", maxHeight: 240, objectFit: "cover" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
         </div>
         <h2 style={{ margin: 0, fontFamily: "var(--serif)" }}>{c.corollaDef?.vault.name ?? "The Vault"}</h2>
-        <p className="parley-sub">{open ? "The five Moxen turn in their settings. The door opens on a mirror." : `Locked. Five Moxen open it; you hold ${moxen}.`}</p>
+        <p className="parley-sub">{open ? (c.catalog.questText?.corolla?.vaultOpen ?? "The five Moxen turn in their settings. The door opens on a mirror.") : `${c.catalog.questText?.corolla?.vaultLocked ?? "Locked. It counts gems, and you are short."} (${moxen} of five)`}</p>
         {open && (
           <ul className="dungeon-stakes">
             <li><b>The Vault shows you what you brought.</b> Inside is your own deck — <i>{w.activeDeckName}</i>, every card of it — played against you by the best pilot the plane has, and it fights with the prize: <b>the Black Lotus</b> is in its forty-one.</li>
@@ -822,7 +835,7 @@ function PetalTelegraph({ c }: { c: WorldController }) {
           <img className="parley-portrait" src={`/portraits/${pd.boss.portrait}.png`} alt="" style={{ width: 72, height: 72, flexShrink: 0 }} title={pd.boss.name} onError={(e) => { (e.target as HTMLImageElement).style.visibility = "hidden"; }} />
           <div>
             <h2 style={{ margin: 0, fontFamily: "var(--serif)" }}>{row.lawName} — the {["W", "U", "B", "R", "G"].includes(color) ? { W: "white", U: "blue", B: "black", R: "red", G: "green" }[color] : ""} petal</h2>
-            <p className="parley-sub" style={{ marginBottom: 0 }}>{pd.boss.name} holds the tip, in the pair no lord could touch ({deck?.pair ?? ""}). Fixed and certain: the fight is here whenever you are.</p>
+            <p className="parley-sub" style={{ marginBottom: 0 }}>{c.catalog.questText?.corolla?.petals[color] ?? `${pd.boss.name} holds the tip.`} <span style={{ color: "var(--ink-soft)" }}>({pd.boss.name}, {deck?.pair ?? ""} — fixed and certain: the fight is here whenever you are.)</span></p>
           </div>
         </div>
         {content && <p className="dungeon-law"><b>{content.law.name}:</b> {content.law.text} <i>(the law returned — it stands on the court's side, as it stood at the seat; it is a permanent, and permanents can be answered)</i></p>}
@@ -849,6 +862,8 @@ function PetalVictory({ c, pool, oracle }: { c: WorldController; pool: Map<strin
     <div className="loader">
       <div className="box play-setup world-result">
         <h2 style={{ fontFamily: "var(--serif)", marginTop: 0 }}>Victory — {s.bossName} falls, and the petal with them</h2>
+        <p style={{ fontSize: 13 }}>{c.catalog.questText?.corolla?.petalFalls ?? "A petal falls. Its minister comes with you, and the two currents it kept."}</p>
+        {s.ministerWithheld && <p style={{ fontSize: 12.5, color: "var(--ink-soft)" }}>◆ {c.catalog.questText?.heart?.withheld ?? "Its minister is already yours. The petal yields coin instead, and the two currents it kept."}</p>}
         {/* S26 r2 (Chris note 4): the prizes shown as cards, the way the world's result screen shows a stake. */}
         <div className="flyout-title">Yours, as you go — and {s.paidGold} gold</div>
         <div className="dialog-cards">{frames(s.paidCards)}</div>
@@ -871,8 +886,93 @@ function MirrorVictory({ c, pool, oracle }: { c: WorldController; pool: Map<stri
         <h2 style={{ fontFamily: "var(--serif)", marginTop: 0 }}>Victory — the reflection breaks</h2>
         {/* S26 r2 (Chris note 3): the Lotus itself, shown. */}
         {lotus && <div className="dialog-cards"><div className="card-slot"><CardFrame def={lotus} oracle={oracle["black_lotus"]} showPrinted /></div></div>}
-        <p>The Vault held what you came for: <b>the Black Lotus</b>. There is exactly one, and now it is yours. The Vault is empty ground.</p>
+        <p>{c.catalog.questText?.corolla?.mirrorYields ?? "The reflection yields what it carried. There is exactly one, and now it is yours."} The Vault is empty ground.</p>
         <p><button className="primary" onClick={() => c.continueAfterMirrorVictory()}>Take it</button></p>
+      </div>
+    </div>
+  );
+}
+
+/** S27 (ADR-093): the Heart's telegraph — the pack's voice; no terms. */
+function HeartTelegraph({ c }: { c: WorldController }) {
+  if (c.screen.kind !== "heartTelegraph" || !c.world) return null;
+  const pack = c.catalog.questText?.heart;
+  const heart = c.corollaDef?.heart;
+  return (
+    <div className="gallery-modal">
+      <div className="gallery-modal-box play-dialog dungeon-telegraph">
+        <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
+          {heart && <img className="parley-portrait" src={`/portraits/${heart.boss.portrait}.png`} alt="" style={{ width: 84, height: 84, flexShrink: 0 }} onError={(e) => { (e.target as HTMLImageElement).style.visibility = "hidden"; }} />}
+          <div>
+            <h2 style={{ margin: 0, fontFamily: "var(--serif)" }}>{heart?.name ?? "The Heart"}</h2>
+            <p className="parley-sub" style={{ marginBottom: 0 }}>{pack?.doorOpen ?? "The petals are gone. What they grew from is waiting."}</p>
+          </div>
+        </div>
+        <p style={{ fontSize: 13 }}>{pack?.telegraph ?? "Here the currents meet."}</p>
+        <ul className="dungeon-stakes">
+          <li><b>{pack?.stakes ?? "Nothing is wagered here."}</b></li>
+          <li>It fights at <b>{c.knobs.heartLife}</b> life; you at your world life ({c.world.player.worldLife}). Its card is in its hand from the first turn, and it grows a law each of its end steps — one petal at a time, in the order the plane runs, the last one gone as the next one comes.</li>
+          <li>Lose, and a world life is gone; you are left at the heart. Rest, and return.</li>
+        </ul>
+        <p style={{ textAlign: "right", marginBottom: 0 }}>
+          <button onClick={() => c.declineHeart()}>Not yet</button>{" "}
+          <button className="primary" onClick={() => c.fightHeart()}>Enter</button>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/** S27: the Manafleur fell — the postponement, the card, the chronicle's entry, the offer. */
+function HeartVictory({ c, pool, oracle }: { c: WorldController; pool: Map<string, CardDef>; oracle: Record<string, OracleEntry> }) {
+  if (c.screen.kind !== "heartVictory") return null;
+  const s = c.screen;
+  const pack = c.catalog.questText?.heart;
+  const ordinal = ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth"][s.entry.n - 1] ?? `${s.entry.n}th`;
+  const card = pool.get("the_manafleur");
+  return (
+    <div className="loader">
+      <div className="box play-setup world-result" style={{ maxWidth: 760 }}>
+        <h2 style={{ fontFamily: "var(--serif)", marginTop: 0 }}>The flower folds</h2>
+        <p style={{ fontSize: 13.5 }}>{pack?.victory ?? "The flower folds. For now."}</p>
+        {s.paidCards.length > 0 && card && (
+          <>
+            <div className="flyout-title">{pack?.victoryCard ?? "Its card is yours. There is exactly one."}</div>
+            <div className="dialog-cards"><div className="card-slot"><CardFrame def={card} oracle={oracle["the_manafleur"]} showPrinted /></div></div>
+          </>
+        )}
+        <div className="dungeon-law" style={{ borderColor: "var(--brass)" }}>
+          <b>The {ordinal} cutting.</b> {s.entry.text}
+          {s.fifth && <p style={{ marginBottom: 0, marginTop: 6, fontStyle: "italic" }}>{pack?.fifthCutting}</p>}
+        </div>
+        <p style={{ fontSize: 12.5, color: "var(--ink-soft)" }}>{pack?.offer ?? "Stay in the quiet world, or begin again on a new road — carrying what you carried out."}</p>
+        <p>
+          <button onClick={() => c.stayAfterHeart()}>Stay in the quiet world</button>{" "}
+          <button className="primary" onClick={() => c.newRoadAfterHeart()}>Begin a new road</button>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/** S27: the Chronicle of Cuttings — the profile's ledger, on the start screen. */
+function ChroniclePage({ c, onClose }: { c: WorldController; onClose: () => void }) {
+  const entries = c.chronicle();
+  const pack = c.catalog.questText?.heart;
+  const names: Record<string, string> = { W: "white", U: "blue", B: "black", R: "red", G: "green" };
+  const ordinal = (n: number) => ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth"][n - 1] ?? `${n}th`;
+  return (
+    <div className="gallery-modal" onClick={onClose}>
+      <div className="gallery-modal-box play-dialog" style={{ maxWidth: 640 }} onClick={(e) => e.stopPropagation()}>
+        <h3 style={{ marginTop: 0, fontFamily: "var(--serif)" }}>{pack?.chronicleHeader ?? "The Chronicle of Cuttings"}</h3>
+        {entries.length === 0 && <p style={{ fontSize: 12.5, color: "var(--ink-soft)" }}>No cutting yet. The flower stands.</p>}
+        {entries.map((e) => (
+          <div key={`${e.n}-${e.when}`} className="dungeon-law" style={{ marginBottom: 8 }}>
+            <b>The {ordinal(e.n)} cutting</b> <span style={{ color: "var(--ink-soft)", fontSize: 11.5 }}>· the {names[e.color] ?? e.color} road · seed {e.seed} · {e.difficulty} · {e.steps} steps</span>
+            <div style={{ marginTop: 4 }}>{e.text}</div>
+          </div>
+        ))}
+        <p style={{ textAlign: "right", marginBottom: 0 }}><button onClick={onClose}>Close</button></p>
       </div>
     </div>
   );
@@ -893,12 +993,15 @@ function CorollaTownScreen({ c, pool, oracle }: { c: WorldController; pool: Map<
     <div className="gallery-modal">
       <div className="gallery-modal-box play-dialog world-town">
         <h2 style={{ fontFamily: "var(--serif)", marginTop: 0 }}>{c.corollaDef?.town.name ?? "The Heart"}{tab !== "square" && <span style={{ fontSize: 14, color: "var(--ink-soft)" }}> · {{ shelf: "the R drawer", inn: "the inn" }[tab]}</span>}</h2>
-        <p style={{ fontSize: 12, marginTop: 0 }}>the town at the flower's heart — <i>no clock runs here; nothing runs anywhere while you stand among the petals</i> · you have <b>{w.player.gold}</b> gold {back}</p>
+        <p style={{ fontSize: 12, marginTop: 0 }}><i>{c.catalog.questText?.corolla?.townStrip ?? "The heart. The world stands still here, and so may you."}</i> · you have <b>{w.player.gold}</b> gold {back}</p>
         {notice && <p style={{ fontSize: 12, color: "var(--brass)" }}>{notice}</p>}
         {tab === "square" && (
           <>
             <p className="dungeon-law" style={{ borderColor: fallen >= 5 ? "var(--brass)" : undefined }}>
-              <b>The Heart's door:</b> five petals, <b>{fallen} fallen</b>. {fallen >= 5 ? "It is open — and what waits behind it has not yet been written. (The fight is not in this build.)" : "It opens when the fifth falls."}
+              <b>The Heart's door:</b>{" "}
+              {c.heartOpen()
+                ? <>{c.catalog.questText?.heart?.doorOpen ?? "The petals are gone. What they grew from is waiting."}{w.gauntlet.completed ? " The flower folded here once; it stands again." : ""} <button className="primary" style={{ marginLeft: 8 }} onClick={() => c.openHeart()}>Enter</button></>
+                : (c.catalog.questText?.corolla?.heartLocked ?? "Five petals. {n} have fallen. The heart does not open for the impatient.").replace("{n}", String(fallen))}
             </p>
             <div className="town-nav">
               <button onClick={() => setTab("shelf")}>
@@ -921,7 +1024,7 @@ function CorollaTownScreen({ c, pool, oracle }: { c: WorldController; pool: Map<
         {tab === "shelf" && (
           <>
             <div className="flyout-title">
-              One copy each; what you buy stays bought, what's left stays on the shelf
+              {c.catalog.questText?.corolla?.shelf ?? "The flower's own wares."} One copy each; what you buy stays bought, what's left stays on the shelf
               <button className="linkish" onClick={() => setPrinted(!printed)}>{printed ? "our frame" : "printed card"}</button>
             </div>
             <div className="shop-grid">
@@ -941,7 +1044,7 @@ function CorollaTownScreen({ c, pool, oracle }: { c: WorldController; pool: Map<
         )}
         {tab === "inn" && (
           <>
-            <div className="flyout-title">The inn — rest is free; time does not pass in the flower</div>
+            <div className="flyout-title">{c.catalog.questText?.corolla?.inn ?? "Rest costs nothing here. Nothing is what time is worth, this deep."}</div>
             <p style={{ fontSize: 12.5 }}>You stand at <b>{w.player.worldLife} / {maxLife}</b> world life. {w.player.worldLife < maxLife ? "Nothing in the world will have moved when you wake." : "Nothing ails you; the innkeeper nods you toward the door."}</p>
             {w.player.worldLife < maxLife && <p><button className="primary" onClick={() => c.corollaRest()}>Rest (+{maxLife - w.player.worldLife} life)</button></p>}
           </>
@@ -1463,6 +1566,9 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
     // S26 r2 (Chris note 5): a petal's tip announces itself with its LAW's seat — the stronghold theme.
     else if (scr.kind === "petalTelegraph") { const sh = controller.catalog.strongholdContent?.find((x) => x.color === scr.color); cue = sh ? strongholdSplashCue(sh.id) : "music.corolla"; }
     else if (scr.kind === "corolla" || scr.kind === "petalVictory" || scr.kind === "mirrorVictory") cue = "music.corolla";
+    // S27: the Heart's rows — registered, silent by default (Chris may map).
+    else if (scr.kind === "heartTelegraph") cue = "splash.heart";
+    else if (scr.kind === "heartVictory") cue = "music.heart.victory";
     else if (scr.kind === "dungeonTelegraph") cue = scr.info.kind === "stronghold" ? strongholdSplashCue(scr.info.dungeonId) : "music.dungeon";
     else if (scr.kind === "strongholdVictory") cue = "music.stronghold";
     else if (scr.kind === "dungeon" || scr.kind === "dungeonVictory") cue = controller.dungeonRun?.kind === "stronghold" ? "music.stronghold" : "music.dungeon";
@@ -1559,6 +1665,8 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
   if (c.screen.kind === "petalTelegraph") return <PetalTelegraph c={c} />;
   if (c.screen.kind === "petalVictory") return <PetalVictory c={c} pool={pool} oracle={oracle} />;
   if (c.screen.kind === "mirrorVictory") return <MirrorVictory c={c} pool={pool} oracle={oracle} />;
+  if (c.screen.kind === "heartTelegraph") return <HeartTelegraph c={c} />;
+  if (c.screen.kind === "heartVictory") return <HeartVictory c={c} pool={pool} oracle={oracle} />;
   if (c.screen.kind === "corollaTown") return <CorollaTownScreen c={c} pool={pool} oracle={oracle} />;
   if (c.screen.kind === "strongholdVictory") return <StrongholdVictory c={c} pool={pool} oracle={oracle} />;
   if (c.screen.kind === "gameOver") {

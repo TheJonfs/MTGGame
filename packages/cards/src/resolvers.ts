@@ -98,6 +98,11 @@ export interface EffectContext {
    * random draws from the game RNG (logged).
    */
   discard(player: number, count: number, mode: DiscardMode, filter?: DiscardFilter): Promise<void>;
+  /** S27 (the Manafleur): manifest the next law of the game-level sequence as a token under the
+   * effect's controller and advance the pointer (random mode draws from the logged game RNG). */
+  createLaw(): void;
+  /** S27: the law-sequence mode (`accumulate` skips the Manafleur's exile). */
+  lawMode(): "sequence" | "random" | "accumulate";
 }
 
 export class NotImplementedError extends Error {
@@ -287,8 +292,14 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
 
   exile: (e, ctx) => {
     if (e.type !== "exile") throw new Error("resolver mismatch");
-    const t = ctx.target(e.target);
-    if (t && t.kind === "object") ctx.exile(t.id);
+    // S27: the scope form (the Manafleur's "exile all laws"); accumulate mode keeps the petals.
+    if (e.scope === "laws" && ctx.lawMode() === "accumulate") return;
+    for (const t of targeted(e, ctx)) if (t.kind === "object") ctx.exile(t.id);
+  },
+
+  createLaw: (e, ctx) => {
+    if (e.type !== "createLaw") throw new Error("resolver mismatch");
+    ctx.createLaw();
   },
 
   discard: async (e, ctx) => {

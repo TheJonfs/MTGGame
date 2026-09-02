@@ -115,6 +115,22 @@ export interface QuestTextPack {
      * that predate it. */
     manalinkPointer?: string;
   };
+  /** S26/S27 (quest-text-pack-v3): the Corolla's voice — every S26 placeholder replaced by data. Optional. */
+  corolla?: CorollaTextPack;
+  /** S27 (quest-text-pack-v4): the Heart's voice and the Chronicle of Cuttings. Optional. */
+  heart?: HeartTextPack;
+}
+export interface CorollaTextPack {
+  doorOpen: string; doorLocked: string; vaultOpen: string; vaultLocked: string;
+  petals: Record<string, string>;
+  townStrip: string; inn: string; shelf: string; heartLocked: string;
+  petalFalls: string; mirrorYields: string; petalLost: string;
+}
+export interface HeartTextPack {
+  doorOpen: string; telegraph: string; stakes: string; flavor: string;
+  victory: string; victoryCard: string; loss: string; offer: string;
+  chronicle: Record<string, string>; fifthCutting: string;
+  newRoad: string; newRoadAll: string; withheld: string; chronicleHeader: string;
 }
 
 export interface Catalog {
@@ -252,7 +268,7 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
   // S21: the quest & rumor text pack (planner content, wired as data).
   let questText: QuestTextPack | undefined;
   if (parts.quests) {
-    const qp = parts.quests as { catalogVersion: string; offers: QuestTextPack["offers"]; rumors: QuestTextPack["rumors"] };
+    const qp = parts.quests as { catalogVersion: string; offers: QuestTextPack["offers"]; rumors: QuestTextPack["rumors"]; corolla?: CorollaTextPack; heart?: HeartTextPack };
     if (qp.catalogVersion !== CATALOG_VERSION) errors.push(`quests: catalogVersion ${qp.catalogVersion} != ${CATALOG_VERSION}`);
     for (const k of ["courier", "cardCourier", "bounty", "retrieval"] as const) {
       if (!Array.isArray(qp.offers?.[k]) || qp.offers[k].length === 0) errors.push(`quests: offers.${k} must be a nonempty array`);
@@ -267,7 +283,12 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
     for (const l of ["unwinder", "usher", "warden", "stoker", "sower"]) if (!qp.rumors?.lords?.[l]) errors.push(`quests: rumors.lords.${l} missing`);
     for (const k of ["moxPointer", "moxPointerDeep", "vaultTease", "nighthawkLegend"] as const) if (!qp.rumors?.[k]) errors.push(`quests: rumors.${k} missing`);
     if (!Array.isArray(qp.rumors?.warp) || !Array.isArray(qp.rumors?.texture)) errors.push("quests: rumors.warp/texture must be arrays");
-    questText = { offers: qp.offers, rumors: qp.rumors };
+    // S27: the Corolla's and the Heart's packs — every line the screens read, named in the validator.
+    if (qp.corolla) for (const k of ["doorOpen", "doorLocked", "vaultOpen", "vaultLocked", "townStrip", "inn", "shelf", "heartLocked", "petalFalls", "mirrorYields", "petalLost"] as const) if (!qp.corolla[k]) errors.push(`quests: corolla.${k} missing`);
+    if (qp.corolla) for (const c of ["W", "U", "B", "R", "G"]) if (!qp.corolla.petals?.[c]) errors.push(`quests: corolla.petals.${c} missing`);
+    if (qp.heart) for (const k of ["doorOpen", "telegraph", "stakes", "victory", "victoryCard", "loss", "offer", "fifthCutting", "newRoad", "newRoadAll", "withheld", "chronicleHeader"] as const) if (!qp.heart[k]) errors.push(`quests: heart.${k} missing`);
+    if (qp.heart) for (const c of ["W", "U", "B", "R", "G"]) if (!qp.heart.chronicle?.[c]) errors.push(`quests: heart.chronicle.${c} missing`);
+    questText = { offers: qp.offers, rumors: qp.rumors, ...(qp.corolla ? { corolla: qp.corolla } : {}), ...(qp.heart ? { heart: qp.heart } : {}) };
   }
   if (errors.length) throw new Error(`Catalog validation failed:\n${errors.join("\n")}`);
   return { version: CATALOG_VERSION, regions: r.regions, townNames: t.names, opponents: o.opponents, starters: st.starters, strongholds: r.strongholds ?? [], dungeons: du.mox, ...(du.powerDungeons ? { powerDungeons: du.powerDungeons } : {}), ...(du.strongholds ? { strongholdContent: du.strongholds } : {}), ...(du.corolla ? { corolla: du.corolla } : {}), ...(questText ? { questText } : {}) };

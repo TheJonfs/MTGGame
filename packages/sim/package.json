@@ -31,6 +31,10 @@
     "./court-decks": {
       "types": "./src/court-decks.ts",
       "default": "./src/court-decks.ts"
+    },
+    "./heart-deck": {
+      "types": "./src/heart-deck.ts",
+      "default": "./src/heart-deck.ts"
     }
   },
   "dependencies": {

@@ -156,6 +156,8 @@ export interface WorldState {
     vault?: "cleared";
     /** S26: inside the flower (reload resumes there; the outer position never moved). */
     corolla?: { position: Point; steps: number } | null;
+    /** S27 (ADR-093): the Manafleur fell at least once — the run is finishable (postponement). */
+    completed?: true;
   };
 }
 

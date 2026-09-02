@@ -87,6 +87,8 @@ import {
   rollCorollaStock, vaultDoor, PETAL_ORDER, type CorollaDef, type CorollaGeometry, type PetalColor, type WorldMap,
 } from "@shandalar/world";
 import { COROLLA_DECKS } from "@shandalar/sim/corolla-decks";
+import { HEART_DECK } from "@shandalar/sim/heart-deck";
+import { applyHeartDuel, applyLegacy, cutColors, emptyLegacy, heartDoor, heartDuelSpec, legacyCarry, migrateLegacy, recordCutting, startingColor, type ChronicleEntry, type Legacy } from "@shandalar/world";
 
 /**
  * WorldController (S13): the overworld's interaction brain — React-free, like
@@ -126,13 +128,17 @@ export type WorldScreen =
   /** S26: at a petal's tip — the boss, the returned law, the stakes. */
   | { kind: "petalTelegraph"; color: PetalColor }
   /** S26: a petal fight or the Mirror — mounts PlayMatch like a world duel. */
-  | { kind: "corollaDuel"; enemyName: string; match: MatchController; against: { petal?: PetalColor; mirror?: boolean } }
+  | { kind: "corollaDuel"; enemyName: string; match: MatchController; against: { petal?: PetalColor; mirror?: boolean; heart?: boolean } }
   /** S26: a petal fell — the payout (signature, duals, purse, ante). */
-  | { kind: "petalVictory"; color: PetalColor; bossName: string; paidGold: number; paidCards: string[]; anteWon: string[]; anteWithheld: string[]; fallen: number }
+  | { kind: "petalVictory"; color: PetalColor; bossName: string; paidGold: number; paidCards: string[]; anteWon: string[]; anteWithheld: string[]; fallen: number; ministerWithheld: boolean }
   /** S26: the town at the heart — the inn, the R-drawer shelf, the Heart's door. */
   | { kind: "corollaTown"; stock: ShopItem[]; notice: string | null }
   /** S26: the Lotus paid out. */
   | { kind: "mirrorVictory" }
+  /** S27 (ADR-093): the Heart's telegraph — the Manafleur behind the town's door. */
+  | { kind: "heartTelegraph" }
+  /** S27: the Manafleur fell — the ceremony, the card, the chronicle's entry, the offer. */
+  | { kind: "heartVictory"; entry: ChronicleEntry; paidCards: string[]; first: boolean; fifth: boolean }
   | {
       kind: "duelResult";
       duel: PreparedDuel;
@@ -227,11 +233,57 @@ export class WorldController {
   newGame(choice: NewGameChoice): void {
     const seed = choice.seed ?? Math.floor(Math.random() * 1_000_000);
     this.world = newWorld({ seed, catalog: this.catalog, starter: choice.starter, difficulty: choice.difficulty, playerName: choice.name ?? "You" });
+    // S27 (ADR-093): the chronicle's carryover — what the profile carries into every new road.
+    const legacy = this.legacy();
+    const carried = legacy.victories > 0 ? applyLegacy(this.world, this.catalog, legacy, this.knobs) : null;
     // S23 r1: the start stands OUTSIDE the home town's gate now — "set out from" reads the
     // world's nearest-town index, not the cell underfoot.
     this.lastTown = townAt(this.world.map, this.world.player.position) ?? this.world.map.towns[this.world.lastTownIndex] ?? null;
     this.autosave();
-    this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: `You set out from ${this.lastTown?.name ?? "the road"}.` };
+    this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: `You set out from ${this.lastTown?.name ?? "the road"}.${carried && carried.colors.length ? ` ${this.newRoadLine()}` : ""}` };
+    this.emit();
+  }
+
+  // ---------- S27: the profile store (the chronicle's first phase) ----------
+  static readonly LEGACY_KEY = "shandalar-legacy";
+  /** The profile's legacy, read fresh from storage (migration hygiene: any bad shape reads empty). */
+  legacy(): Legacy {
+    const raw = this.storage?.getItem(WorldController.LEGACY_KEY);
+    if (!raw) return emptyLegacy();
+    try { return migrateLegacy(JSON.parse(raw)); } catch { return emptyLegacy(); }
+  }
+  private writeLegacy(l: Legacy): void { this.storage?.setItem(WorldController.LEGACY_KEY, JSON.stringify(l)); }
+  /** The new-road line for the start screen and the first notice (the pack's two variants). */
+  newRoadLine(): string | null {
+    const l = this.legacy();
+    const colors = cutColors(l);
+    if (colors.length === 0) return null;
+    const pack = this.catalog.questText?.heart;
+    if (colors.length >= 5) return pack?.newRoadAll ?? "You have cut the flower from every road. You begin with everything you carried out.";
+    const names: Record<string, string> = { W: "white", U: "blue", B: "black", R: "red", G: "green" };
+    return colors.map((c) => {
+      const carry = legacyCarry(this.catalog, c);
+      const power = powerRates(this.world ?? ({ powers: { unlocked: [c], strideStepsLeft: 0 }, strongholds: [] } as never), c).name;
+      const guardian = carry.guardianCard ? (this.pool.get(carry.guardianCard)?.name ?? carry.guardianCard) : "its guardian";
+      const minister = carry.minister ? (this.pool.get(carry.minister)?.name ?? carry.minister) : "its minister";
+      return (pack?.newRoad ?? "You have cut the flower from the {colour} road. You begin with what you carried out: {power}, {guardian}, and {minister}.")
+        .replace("{colour}", names[c] ?? c).replace("{power}", power).replace("{guardian}", guardian).replace("{minister}", minister);
+    }).join(" ");
+  }
+  /** Dev (S27): grant or clear cuttings for testing the carryover and the Chronicle page. */
+  devGrantCutting(color: PetalColor): void {
+    const text = this.catalog.questText?.heart?.chronicle[color] ?? `Cut from the ${color} road.`;
+    const l = this.legacy();
+    this.writeLegacy(recordCutting(l, { n: l.victories + 1, color, text, seed: 0, difficulty: "dev", steps: 0, when: new Date().toISOString() }));
+    this.emit();
+  }
+  devClearLegacy(): void { this.writeLegacy(emptyLegacy()); this.emit(); }
+  /** Dev (S27): fell the five petals so the Heart's door can be tested without the five fights. */
+  devFellPetals(): void {
+    if (!this.world) return;
+    this.world.gauntlet.petals = { W: true, B: true, R: true, U: true, G: true };
+    this.autosave();
+    if (this.screen.kind === "corollaTown") this.screen = { ...this.screen, notice: "Dev: the five petals have fallen." };
     this.emit();
   }
 
@@ -1563,11 +1615,11 @@ export class WorldController {
     this.ringResult(out.type === "win" ? "win" : "loss");
     if (out.type === "loss") {
       if (this.world.gameOver) { this.screen = { kind: "gameOver", fatal: this.world.duels[this.world.duels.length - 1] ?? null }; this.emit(); return; }
-      this.screen = { kind: "corolla", notice: `${petal.boss.name} holds the tip. A world life and your stake${out.anteLost.length ? ` (${out.anteLost.map((id) => this.pool.get(id)?.name ?? id).join(", ")})` : ""} are gone; you stand where you fell.`, walking: false };
+      this.screen = { kind: "corolla", notice: `${this.catalog.questText?.corolla?.petalLost ?? "The petal holds. You are left where you fell."} A world life and your stake${out.anteLost.length ? ` (${out.anteLost.map((id) => this.pool.get(id)?.name ?? id).join(", ")})` : ""} are gone.`, walking: false };
       this.emit();
       return;
     }
-    this.screen = { kind: "petalVictory", color, bossName: petal.boss.name, paidGold: out.paidGold, paidCards: out.paidCards, anteWon: out.anteWon, anteWithheld: out.anteWithheld, fallen: petalsFallen(this.world).length };
+    this.screen = { kind: "petalVictory", color, bossName: petal.boss.name, paidGold: out.paidGold, paidCards: out.paidCards, anteWon: out.anteWon, anteWithheld: out.anteWithheld, fallen: petalsFallen(this.world).length, ministerWithheld: out.ministerWithheld };
     this.emit();
   }
   continueAfterPetalVictory(): void {
@@ -1603,6 +1655,78 @@ export class WorldController {
     this.screen = { ...this.screen, notice: healed > 0 ? `You rest. Time does not pass in the flower: +${healed} life, and nothing in the world moved.` : "Nothing ails you." };
     this.emit();
   }
+
+  /** S27: the Heart — the Manafleur behind the town's door (open at five petals). */
+  heartOpen(): boolean {
+    return !!this.world && !!this.corollaDef?.heart && heartDoor(this.world).open;
+  }
+  openHeart(): void {
+    if (!this.heartOpen() || this.screen.kind !== "corollaTown") return;
+    this.screen = { kind: "heartTelegraph" };
+    this.emit();
+  }
+  declineHeart(): void {
+    if (this.screen.kind !== "heartTelegraph") return;
+    this.enterHeartTown();
+  }
+  fightHeart(): void {
+    if (!this.world || this.screen.kind !== "heartTelegraph" || !this.corollaDef?.heart) return;
+    const rng = new DungeonRng(this.world.rng);
+    const { spec, enemyName } = heartDuelSpec(this.world, this.catalog, this.knobs, this.corollaDef, { name: HEART_DECK.name, decklist: HEART_DECK.decklist, archetype: HEART_DECK.archetype }, rng);
+    this.world.rng = rng.state();
+    this.autosave();
+    const match = new MatchController(this.pool, {
+      humanSeat: 0,
+      seed: spec.seed,
+      aiDelayMs: this.aiDelay(),
+      custom: {
+        human: { name: this.world.player.name, decklist: spec.players[0].decklist },
+        enemy: { name: enemyName, decklist: spec.players[1].decklist, difficulty: "master", archetype: HEART_DECK.archetype, portrait: this.corollaDef.heart.boss.portrait },
+        rules: { startingLife: spec.rules.startingLife, ante: 0, ...(spec.rules.startingPlayer !== undefined ? { startingPlayer: spec.rules.startingPlayer } : {}) },
+        modifiers: spec.modifiers,
+      },
+    });
+    this.screen = { kind: "corollaDuel", enemyName, match, against: { heart: true } };
+    this.emit();
+    const rec = { seed: spec.seed, spec, enemyName };
+    void match.start().then((result) => this.finishHeartDuel(result, rec));
+  }
+  private finishHeartDuel(result: MatchResult, rec: { seed: number; spec: MatchSpec; enemyName: string }): void {
+    if (!this.world) return;
+    const legacy = this.legacy();
+    const pack = this.catalog.questText?.heart;
+    const out = applyHeartDuel(this.world, this.catalog, this.knobs, result, { cuttingsSoFar: legacy.victories, text: (c) => pack?.chronicle[c] ?? `Cut from the ${c} road.` }, rec);
+    this.ringResult(out.type === "win" ? "win" : "loss");
+    if (out.type === "loss") {
+      this.autosave();
+      if (this.world.gameOver) { this.screen = { kind: "gameOver", fatal: this.world.duels[this.world.duels.length - 1] ?? null }; this.emit(); return; }
+      this.screen = { kind: "corollaTown", stock: rollCorollaStock(this.world, this.pool, this.knobs), notice: pack?.loss ?? "The flower stands. Rest, and return; it will be here." };
+      this.emit();
+      return;
+    }
+    // The ledger: the run's entry copies into the profile the moment it is written (durability).
+    const next = recordCutting(legacy, out.entry);
+    this.writeLegacy(next);
+    this.autosave();
+    this.screen = { kind: "heartVictory", entry: out.entry, paidCards: out.paidCards, first: out.first, fifth: cutColors(next).length >= 5 && next.victories >= 5 };
+    this.emit();
+  }
+  /** The offer: stay in the quiet world (the heart's town), or a new road (the start screen). */
+  stayAfterHeart(): void {
+    if (!this.world || this.screen.kind !== "heartVictory") return;
+    this.screen = { kind: "corollaTown", stock: rollCorollaStock(this.world, this.pool, this.knobs), notice: this.catalog.questText?.heart?.victory ?? "The flower folds. For now." };
+    this.emit();
+  }
+  newRoadAfterHeart(): void {
+    if (this.screen.kind !== "heartVictory") return;
+    this.autosave();
+    this.screen = { kind: "start" };
+    this.emit();
+  }
+  /** The chronicle's ledger for the page (profile entries; the current run's own are already there). */
+  chronicle(): ChronicleEntry[] { return this.legacy().chronicle; }
+  /** The run's starting colour (for the rail and the new-road line). */
+  startColor(): PetalColor | null { return this.world ? startingColor(this.world, this.catalog) : null; }
 
   /** The Vault's telegraph → the Mirror. */
   enterVault(): void {

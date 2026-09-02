@@ -371,6 +371,14 @@
      "hallowed_fountain"
     ]
    }
-  ]
+  ],
+  "heart": {
+   "name": "The Heart",
+   "boss": {
+    "name": "The Manafleur",
+    "portrait": "heart-manafleur",
+    "cardId": "the_manafleur"
+   }
+  }
  }
 }

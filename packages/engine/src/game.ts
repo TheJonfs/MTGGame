@@ -217,7 +217,12 @@ export class Game {
     const picked: string[] = [];
     for (const id of [...p.library]) {
       if (picked.length >= n) break;
-      if (this.ctx.defs.def(getObject(this.state, id).cardId).types.includes("Land")) continue;
+      const def = this.ctx.defs.def(getObject(this.state, id).cardId);
+      if (def.types.includes("Land")) continue;
+      // S27 (ADR-092/093, Chris): prizeOnly cards are NEVER stakes, for either side — the crown
+      // jewels are neither kindling nor stakes. Closes the lords'/court's second-copy exposure
+      // through escrow and protects the player's trophies symmetrically.
+      if (def.prizeOnly) continue;
       picked.push(id);
     }
     const objectIds: string[] = [];

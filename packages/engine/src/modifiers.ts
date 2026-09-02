@@ -16,7 +16,10 @@ export type Modifier =
    * comes to hand, shuffle. Logged via the game RNG — deterministic, replay-clean. Already in
    * hand → nothing happens (the danger already looms); no library copy → nothing happens
    * (a Hymn'd or drawn-out signature is NOT restored — the discard counterplay). */
-  | { type: "signatureToHand"; player: PlayerId; cardId: string };
+  | { type: "signatureToHand"; player: PlayerId; cardId: string }
+  /** S27 (ADR-093): the law sequence the Manafleur walks — an ascension hook by data. Omitted
+   * fields keep the defaults (the WBRUG ring; `sequence`). */
+  | { type: "lawSequence"; order?: string[]; mode?: "sequence" | "random" | "accumulate" };
 
 export function applyModifiers(ctx: EngineCtx, modifiers: Modifier[]): void {
   for (const m of modifiers) {
@@ -42,6 +45,11 @@ export function applyModifiers(ctx: EngineCtx, modifiers: Modifier[]): void {
         for (const e of m.effects) resolveEffect(e, ectx);
         break;
       }
+      case "lawSequence":
+        if (m.order && m.order.length > 0) ctx.state.lawSequence.order = [...m.order];
+        if (m.mode) ctx.state.lawSequence.mode = m.mode;
+        ctx.state.lawSequence.next = 0;
+        break;
       case "signatureToHand": {
         const p = ctx.state.players[m.player];
         if (p.hand.some((id) => getObject(ctx.state, id).cardId === m.cardId)) break; // already looming

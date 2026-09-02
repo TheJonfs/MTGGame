@@ -1,0 +1,42 @@
+{
+ "id": "the_manafleur",
+ "name": "The Manafleur",
+ "source": "custom",
+ "manaCost": "{W}{U}{B}{R}{G}",
+ "types": [
+  "Creature"
+ ],
+ "supertypes": [
+  "Legendary"
+ ],
+ "subtypes": [
+  "Avatar"
+ ],
+ "power": 7,
+ "toughness": 7,
+ "text": "At the beginning of your end step, exile all laws, then create a copy of the next law. (The laws are the five stronghold laws; the next law is the one after the last created, in the encounter's sequence \u2014 the WBRUG ring by default, beginning with white.)",
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "END_STEP",
+   "condition": {
+    "controller": "you"
+   },
+   "effects": [
+    {
+     "type": "exile",
+     "scope": "laws"
+    },
+    {
+     "type": "createLaw",
+     "sequence": "next"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/the_manafleur.png",
+  "fallback": "rendered"
+ },
+ "prizeOnly": true
+}

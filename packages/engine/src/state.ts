@@ -172,7 +172,21 @@ export interface GameState {
    * first turn whose END step collects it (created at/after END → the next turn's). The id is the
    * battlefield object; if it left (died, bounced, blinked — the launder) the entry is inert. */
   endStepSacrifices: { objectId: string; dueTurn: number }[];
+  /** S27 (ADR-093): the game-level LAW SEQUENCE the Manafleur reads — the order of law card ids,
+   * the pointer to the next one, and the mode (`sequence` walks the ring; `random` draws from the
+   * logged RNG; `accumulate` walks the ring without the exile). Set by the `lawSequence` modifier;
+   * the default is the WBRUG ring beginning with white. Lives in state, not on the creature, so
+   * copies, reanimations and thefts continue the sequence. */
+  lawSequence: LawSequence;
 }
+
+export interface LawSequence {
+  order: string[];
+  next: number;
+  mode: "sequence" | "random" | "accumulate";
+}
+/** The WBRUG ring of laws, beginning with white (the Intake). */
+export const DEFAULT_LAW_ORDER = ["law_intake", "law_tithe", "law_toll", "law_risen_tide", "law_season"];
 
 export function initialPlayerState(life: number): PlayerState {
   return {
@@ -207,6 +221,7 @@ export function initialGameState(startingLife: number): GameState {
     timestamp: 0,
     result: null,
     endStepSacrifices: [],
+    lawSequence: { order: [...DEFAULT_LAW_ORDER], next: 0, mode: "sequence" },
   };
 }
 

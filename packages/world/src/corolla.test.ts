@@ -333,3 +333,100 @@ describe("S26 r3 — the world notes (sieges, spawns, roamer pace)", () => {
     expect(roamer.moves).toBe(12); // one movement per tick at speed 1, rests included in the count
   });
 });
+
+describe("S27 — the Heart, the chronicle, the legacy (ADR-093)", () => {
+  const heartText = (c: string) => catalog.questText!.heart!.chronicle[c]!;
+  it("the Heart's spec: the Manafleur's sixty under the master profile at heartLife (flat by difficulty), the entrance in hand, ZERO ante, the default law sequence; the door opens at five petals only", async () => {
+    const { HEART_DECK } = await import("@shandalar/sim/heart-deck");
+    const { heartDuelSpec } = await import("./corolla.js");
+    const w = newWorld({ seed: 27, catalog, starter: "green" });
+    const knobs = defaultKnobs();
+    expect(catalog.corolla!.heart!.boss.cardId).toBe("the_manafleur");
+    expect(HEART_DECK.decklist.reduce((n, e) => n + e.count, 0)).toBe(60);
+    for (const e of HEART_DECK.decklist) expect(pool.has(e.cardId), e.cardId).toBe(true);
+    const { spec, enemyLife } = heartDuelSpec(w, catalog, knobs, catalog.corolla!, { name: HEART_DECK.name, decklist: HEART_DECK.decklist, archetype: HEART_DECK.archetype }, new WorldRng(3));
+    expect(enemyLife).toBe(35);
+    expect(spec.rules.ante).toBe(0);
+    expect(spec.players[1].agent).toBe("heuristic:master");
+    expect(spec.modifiers).toContainEqual({ type: "signatureToHand", player: 1, cardId: "the_manafleur" });
+    expect(spec.modifiers).toContainEqual({ type: "lawSequence" });
+    expect(spec.modifiers).toContainEqual({ type: "startingLife", player: 1, value: 35 });
+    expect(defaultKnobs().heartLife).toBe(35);
+    w.gauntlet.petals = { W: true, B: true, R: true, U: true };
+    expect(heartDoor(w).open).toBe(false);
+    w.gauntlet.petals = { W: true, B: true, R: true, U: true, G: true };
+    expect(heartDoor(w).open).toBe(true);
+  });
+
+  it("victory writes the chronicle (the run's starting road, the running count) and drops the card once; a loss costs a life and the run stays; the never-stakes rule holds the Heart deck legal", async () => {
+    const { applyHeartDuel, startingColor } = await import("./corolla.js");
+    const w = newWorld({ seed: 27, catalog, starter: "red" });
+    const knobs = defaultKnobs();
+    expect(startingColor(w, catalog)).toBe("R");
+    const life = w.player.worldLife;
+    expect(applyHeartDuel(w, catalog, knobs, fakeResult(1), { cuttingsSoFar: 0, text: heartText }).type).toBe("loss");
+    expect(w.player.worldLife).toBe(life - knobs.lossLifePenalty);
+    expect(w.gauntlet.completed).toBeUndefined();
+    const out = applyHeartDuel(w, catalog, knobs, fakeResult(0), { cuttingsSoFar: 2, text: heartText });
+    expect(out.type).toBe("win");
+    if (out.type !== "win") return;
+    expect(out.paidCards).toEqual(["the_manafleur"]);
+    expect(out.entry.n).toBe(3);
+    expect(out.entry.color).toBe("R");
+    expect(out.entry.text).toContain("Cut from the red road");
+    expect(w.gauntlet.completed).toBe(true);
+    expect(w.gauntlet.chronicle).toHaveLength(1);
+    expect(w.player.collection["the_manafleur"]).toBe(1);
+    // A second folding in the same run: the card is not duplicated; the ledger grows.
+    const again = applyHeartDuel(w, catalog, knobs, fakeResult(0), { cuttingsSoFar: 3, text: heartText });
+    expect(again.type === "win" && again.paidCards).toEqual([]);
+    expect(w.player.collection["the_manafleur"]).toBe(1);
+    expect(w.gauntlet.chronicle).toHaveLength(2);
+  });
+
+  it("the legacy: recording a cutting; carryover at a new road (power, guardian card + site pre-cleared, minister, gold); never duplicates; a held minister's petal pays gold in lieu; migration hygiene", async () => {
+    const { applyLegacy, applyPetalDuel, cutColors, emptyLegacy, legacyCarry, migrateLegacy, recordCutting } = await import("./corolla.js");
+    const knobs = defaultKnobs();
+    let legacy = emptyLegacy();
+    legacy = recordCutting(legacy, { n: 1, color: "R", text: heartText("R"), seed: 1, difficulty: "standard", steps: 100, when: "2026-09-02" });
+    legacy = recordCutting(legacy, { n: 2, color: "R", text: heartText("R"), seed: 2, difficulty: "standard", steps: 100, when: "2026-09-02" });
+    expect(legacy.victories).toBe(2);
+    expect(cutColors(legacy)).toEqual(["R"]);
+    expect(legacyCarry(catalog, "R")).toEqual({ power: "R", guardianCard: "drakuseth_maw_of_flames", powerSiteId: "power_r", minister: "clio_lady_of_the_depths" });
+    const w = newWorld({ seed: 27, catalog, starter: "green" });
+    const gold = w.player.gold;
+    const applied = applyLegacy(w, catalog, legacy, knobs);
+    expect(applied.colors).toEqual(["R"]);
+    expect(applied.cards.sort()).toEqual(["clio_lady_of_the_depths", "drakuseth_maw_of_flames"]);
+    expect(applied.gold).toBe(knobs.legacyGoldPerCutting * 2);
+    expect(w.player.gold).toBe(gold + knobs.legacyGoldPerCutting * 2);
+    expect(w.powers.unlocked).toEqual(["R"]);
+    expect(w.dungeons["power_r"]?.cleared).toBe(true);
+    expect(w.player.collection["clio_lady_of_the_depths"]).toBe(1);
+    // Idempotent: applying again never duplicates the cards.
+    applyLegacy(w, catalog, legacy, knobs);
+    expect(w.player.collection["clio_lady_of_the_depths"]).toBe(1);
+    expect(w.player.collection["drakuseth_maw_of_flames"]).toBe(1);
+    // The Toll petal (R, Clio) with Clio held: the drop is withheld, the purse doubles, the duals still come.
+    w.gauntlet.petals = {};
+    const petal = catalog.corolla!.petals.find((p) => p.color === "R")!;
+    const out = applyPetalDuel(w, knobs, pool, petal, fakeResult(0));
+    expect(out.type === "win" && out.ministerWithheld).toBe(true);
+    expect(out.type === "win" && out.paidCards).toEqual(["underground_sea", "watery_grave"]);
+    expect(out.type === "win" && out.paidGold).toBe(knobs.petalGoldPrize * 2);
+    expect(w.player.collection["clio_lady_of_the_depths"]).toBe(1);
+    // Migration hygiene: garbage and wrong versions read as empty; a good shape round-trips.
+    expect(migrateLegacy(null)).toEqual(emptyLegacy());
+    expect(migrateLegacy({ version: 2, cuttings: { W: 9 } })).toEqual(emptyLegacy());
+    expect(migrateLegacy(JSON.parse(JSON.stringify(legacy)))).toEqual(legacy);
+  });
+
+  it("the text packs: the Corolla's and the Heart's lines load from quests.json with every key the screens read", () => {
+    const t = catalog.questText!;
+    expect(t.corolla?.doorOpen).toContain("The petals part");
+    expect(Object.keys(t.corolla!.petals).sort()).toEqual(["B", "G", "R", "U", "W"]);
+    expect(t.heart?.telegraph).toContain("It has a name");
+    expect(Object.keys(t.heart!.chronicle).sort()).toEqual(["B", "G", "R", "U", "W"]);
+    expect(t.heart?.newRoad).toContain("{colour}");
+  });
+});

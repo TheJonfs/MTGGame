@@ -230,3 +230,94 @@ describe("S26 — the Corolla and the Vault through the controller", () => {
     expect(back.gauntlet.vault).toBe("cleared");
   }, 60_000);
 });
+
+describe("S27 — the Heart through the controller: the door at five, the fight, the ledger, the profile, the new road", () => {
+  it("five petals open the Heart and four do not; the fight carries the Manafleur's spec; victory writes the run's entry and the profile, drops the card once, and offers stay / new road; a new road carries the right things + gold; a held minister's petal pays gold", () => {
+    const storage = memStorage();
+    const c = new WorldController(pool, catalog, storage);
+    c.stepMs = 0;
+    c.newGame({ seed: 27, starter: "red", difficulty: "standard" });
+    const w = c.world!;
+    c.devCompleteAll();
+    const door = w.map.strongholds.find((f) => f.kind === "corolla")!;
+    w.player.position = { ...door.at };
+    c.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: null };
+    const screen = () => (c as WorldController).screen;
+    c.knock(); c.enterCorolla();
+    w.gauntlet.petals = { W: true, B: true, R: true, U: true };
+    c.enterHeartTown();
+    expect(c.heartOpen()).toBe(false);
+    c.openHeart();
+    expect(screen().kind).toBe("corollaTown"); // four: the door stays shut
+    w.gauntlet.petals = { W: true, B: true, R: true, U: true, G: true };
+    expect(c.heartOpen()).toBe(true);
+    c.openHeart();
+    expect(screen().kind).toBe("heartTelegraph");
+    c.declineHeart();
+    expect(screen().kind).toBe("corollaTown");
+    c.openHeart();
+    c.fightHeart();
+    const duel = screen();
+    expect(duel.kind).toBe("corollaDuel");
+    if (duel.kind !== "corollaDuel") return;
+    expect(duel.against.heart).toBe(true);
+    expect(duel.enemyName).toBe("The Manafleur");
+    const rec = { seed: 1, spec: { seed: 1, players: [{ name: "you", decklist: [], agent: "human" }, { name: "The Manafleur", decklist: [], agent: "heuristic:master" }], rules: { startingLife: 20, handSize: 7, mulligan: "london" as const, maxTurns: 100, ante: 0 }, modifiers: [] }, enemyName: "The Manafleur" };
+    const finish = (r: ReturnType<typeof fakeResult>) => (c as never as { finishHeartDuel(r: unknown, rec: unknown): void }).finishHeartDuel(r, rec);
+    // A loss: a life, back at the heart's town with the pack's line, the profile untouched.
+    const life = w.player.worldLife;
+    finish(fakeResult(1));
+    expect(screen().kind).toBe("corollaTown");
+    expect(w.player.worldLife).toBe(life - c.knobs.lossLifePenalty);
+    expect(c.legacy().victories).toBe(0);
+    // The win: the ceremony, the card, the entry (the red road), the profile written.
+    c.openHeart(); c.fightHeart();
+    finish(fakeResult(0));
+    const v = screen();
+    expect(v.kind).toBe("heartVictory");
+    if (v.kind !== "heartVictory") return;
+    expect(v.paidCards).toEqual(["the_manafleur"]);
+    expect(v.entry.n).toBe(1);
+    expect(v.entry.color).toBe("R");
+    expect(v.first).toBe(true);
+    expect(w.gauntlet.completed).toBe(true);
+    expect(w.player.collection["the_manafleur"]).toBe(1);
+    expect(c.legacy().victories).toBe(1);
+    expect(c.legacy().cuttings.R).toBe(1);
+    expect(c.chronicle()).toHaveLength(1);
+    expect(deserializeWorld(c.saveText()).gauntlet.chronicle).toHaveLength(1);
+    // Stay: the quiet world remains playable; the door reads folded.
+    c.stayAfterHeart();
+    expect(screen().kind).toBe("corollaTown");
+    expect(c.heartOpen()).toBe(true);
+    // A new road on the same profile: the red carryover — the Barrage, Drakuseth's card with his site pre-cleared, Clio — and gold.
+    const c2 = new WorldController(pool, catalog, storage);
+    c2.stepMs = 0;
+    expect(c2.newRoadLine()).toContain("red road");
+    c2.newGame({ seed: 28, starter: "green", difficulty: "standard" });
+    const w2 = c2.world!;
+    expect(w2.powers.unlocked).toEqual(["R"]);
+    expect(w2.player.collection["drakuseth_maw_of_flames"]).toBe(1);
+    expect(w2.player.collection["clio_lady_of_the_depths"]).toBe(1);
+    expect(w2.dungeons["power_r"]?.cleared).toBe(true);
+    expect(w2.player.gold).toBe(20 + c2.knobs.legacyGoldPerCutting);
+    // The Toll petal (Clio) on this road: withheld, gold in lieu.
+    c2.devCompleteAll();
+    const door2 = w2.map.strongholds.find((f) => f.kind === "corolla")!;
+    w2.player.position = { ...door2.at };
+    c2.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: null };
+    c2.knock(); c2.enterCorolla();
+    (c2 as never as { finishPetalDuel(color: string, r: unknown, rec: unknown): void }).finishPetalDuel("R", fakeResult(0), { seed: 1, spec: rec.spec, enemyName: "Clio, Lady of the Depths" });
+    const pv = (c2 as WorldController).screen;
+    expect(pv.kind).toBe("petalVictory");
+    if (pv.kind !== "petalVictory") return;
+    expect(pv.ministerWithheld).toBe(true);
+    expect(pv.paidGold).toBe(c2.knobs.petalGoldPrize * 2);
+    expect(w2.player.collection["clio_lady_of_the_depths"]).toBe(1);
+    // Dev toggles: grant and clear.
+    c2.devGrantCutting("W");
+    expect(c2.legacy().victories).toBe(2);
+    c2.devClearLegacy();
+    expect(c2.legacy().victories).toBe(0);
+  });
+});

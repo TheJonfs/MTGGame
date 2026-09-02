@@ -143,7 +143,9 @@ export function validateCard(raw: unknown): ValidationResult {
   // S22b: uncastable — the stronghold laws (custom, true-only).
   if (raw.uncastable !== undefined && (raw.uncastable !== true || raw.source !== "custom")) {
     err(`"uncastable" is a true-only flag on custom cards (S22b — the stronghold laws)`);
-  }
+  }  // S27: a LAW is uncastable by definition (the Manafleur's cycle and the `laws` scope read the flag).
+  if (raw.law !== undefined && (raw.law !== true || raw.uncastable !== true)) err(`law must be true and requires uncastable: true (S27)`);
+
 
   const declaredTargets = Array.isArray(raw.targets) ? (raw.targets as unknown[]) : [];
   if (raw.targets !== undefined) {
@@ -310,7 +312,8 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
         const damageTrigger = a.event === "DEALS_DAMAGE_TO_PLAYER" || a.event === "DEALS_COMBAT_DAMAGE_TO_PLAYER";
         // S25: xPaid refs live only on the ETB trigger of a permanent whose own cost announces an X.
         const xTrigger = a.event === "ENTERS_BATTLEFIELD" && xCount >= 1;
-        validateEffects(a.effects, nTargets, err, warnings, cardId, { damageTrigger, xTrigger });
+        const lawTrigger = a.event === "END_STEP";
+        validateEffects(a.effects, nTargets, err, warnings, cardId, { damageTrigger, xTrigger, lawTrigger });
       }
       // A10 word 9 (S22): zone-scoped triggers — first zone graveyard, first event UPKEEP (the
       // collection only exists there; widening means a new collector, not a validator relax).
@@ -466,7 +469,7 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     if (!Number.isInteger(e.target) && !Number.isInteger(e.targetSpec)) err(`"destroy" needs "target" or "targetSpec"`);
   },
   destroyAll: needScope,
-  exile: needTargetIndex,
+  exile: needTargetOrScope, // S27: target OR scope (the Manafleur's "exile all laws")
   bounce: (e, err) => {
     needTargetOrScope(e, err); // S20: Arcanis returns itself via scope "self"
     if (e.to !== undefined && e.to !== "hand" && e.to !== "libraryTop") err(`bounce "to" must be hand|libraryTop (A10 — Temporal Spring)`);
@@ -566,6 +569,9 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     needTargetIndex(e, err);
     if (e.duration !== "UNTIL_END_OF_TURN") err(`gainControl resolved form must be UNTIL_END_OF_TURN (S26 — the threaten class)`);
   },
+  createLaw: (e, err) => {
+    if (e.sequence !== "next") err(`createLaw sequence must be "next" (S27)`);
+  },
   searchLibrary: (e, err) => {
     if (typeof e.predicate !== "string" || !SEARCH_PREDICATE.test(e.predicate)) err(`searchLibrary predicate must be basicLand|anyCard|subtype:<Subtype> (ADR-068/076)`);
     if (e.to !== "hand" && e.to !== "battlefield") err(`searchLibrary "to" must be hand|battlefield`);
@@ -640,7 +646,7 @@ function validateEffects(
   err: (m: string) => void,
   warnings: string[],
   cardId: string,
-  opts: { isStatic?: boolean; damageTrigger?: boolean; xTrigger?: boolean } = {},
+  opts: { isStatic?: boolean; damageTrigger?: boolean; xTrigger?: boolean; lawTrigger?: boolean } = {},
 ): void {
   if (!Array.isArray(effects) || effects.length === 0) return err(`effects must be a non-empty array`);
   for (const e of effects) {
@@ -655,6 +661,8 @@ function validateEffects(
     }
     // S26: the static gainControl (scope attached) is interpreted live, never resolved (ADR-033).
     if (type === "gainControl" && !opts.isStatic && e.scope !== undefined) err(`gainControl with a scope is static-only (ADR-033); use target + duration for the resolved form (S26)`);
+    // S27: createLaw belongs to the Manafleur's own END_STEP trigger and nowhere else.
+    if (type === "createLaw" && !(opts.lawTrigger && cardId === "the_manafleur")) err(`createLaw is confined to the Manafleur's end-step trigger (S27)`);
     if ((type === "grantAbility" || type === "extraLandDrops" || type === "imposeEntersTapped") && !opts.isStatic) {
       err(`${type} is static-only (A10 — interpreted live, never resolved)`);
       continue;

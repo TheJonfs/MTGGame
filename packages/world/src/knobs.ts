@@ -102,6 +102,17 @@ export const KNOBS = {
     unit: "cumulative tiers by interior steps",
     description: "The guardian's empowerment clock (dungeon-design §3, Normal column; difficulty bundles override whole-value per principle 5 — easy shifts thresholds up, hard doubles life). Steps are the ONLY input; tiers are visible in the dungeon UI with the next threshold named. S20 playtest r2 (Chris): 60/120/180 → 30/60/90 — even at the doubled 24×18 grid an optimal full-loot tour (~71 steps) barely crossed the old tier 1; pending future shifts.",
   }),
+  // ---- S27 (ADR-093): the Heart and the chronicle ----
+  heartLife: knob<number>({
+    default: 35,
+    unit: "life",
+    description: "S27: the Manafleur's starting life — flat, no growth, no reduction (a clockless flower; the five petals are required, so not a variable). 30/35/40 by easy/standard/hard (ADR-093).",
+  }),
+  legacyGoldPerCutting: knob<number>({
+    default: 50,
+    unit: "gold per Manafleur victory carried",
+    description: "S27 (the chronicle's first phase): starting gold added at new-game per cutting in the profile (planner: modest, knob-forward; nothing else pre-granted beyond the colour's power, guardian card and minister).",
+  }),
   // ---- S26 (ADR-091): the Corolla and the Vault ----
   petalBossLife: knob<number>({
     default: 30,
@@ -119,7 +130,7 @@ export const KNOBS = {
     description: "S26: the R-drawer shelf at the flower's heart — the only place R is ever stocked — prices every R card at this multiple of its shop price (Chris: four times is a reasonable start).",
   }),
   corollaGridSize: knob<number>({
-    default: 41,
+    default: 33, // S27 (ADR-093, Chris): 41 → 33
     unit: "cells (odd)",
     description: "S26: the petal-world's square grid (the logo as geography; five lobes around the heart). Odd, so the town sits on a cell.",
   }),
@@ -539,6 +550,7 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
     roamerDensityPer100Cells: { civilized: 0.7, approach: 1.1, wild: 1.5 },
     siegeIntervalSteps: { civilized: 1500, approach: 1125, wild: 750 }, // S26 r3: +33% with the standard shift (ratio held)
     siegeMaxActive: 1, // S25 r3 (Chris): easy = one siege at a time
+    heartLife: 30, // S27 (ADR-093)
     siegePartySizeWeights: { civilized: [1], approach: [0.6, 0.4], wild: [0.45, 0.4, 0.15] }, // S26 r3: lighter parties
     lordGrowthSteps: 200, // S25 r4: 0.5 life per 100 steps
     siegeWarningSteps: 90,
@@ -559,6 +571,7 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
     roamerDensityPer100Cells: { civilized: 1.4, approach: 2.0, wild: 2.6 },
     siegeIntervalSteps: { civilized: 750, approach: 560, wild: 375 }, // S26 r3: +33% (ratio held)
     siegeMaxActive: 3, // S25 r3 (Chris): hard = three skies can burn
+    heartLife: 40, // S27 (ADR-093)
     siegePartySizeWeights: { civilized: [0.6, 0.4], approach: [0.25, 0.5, 0.25], wild: [0.15, 0.35, 0.5] }, // S26 r3: heavier parties (the cap still rules)
     lordGrowthLife: 2, // S25 r4: 2 life per 100 steps
     siegeWarningSteps: 40,

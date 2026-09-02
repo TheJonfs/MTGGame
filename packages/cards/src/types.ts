@@ -36,6 +36,8 @@ export const SCOPES = [
   "creaturesYouControl",
   // S26 (Clio's tax): the mirror scope — creatures the source's controller does NOT control.
   "creaturesYouDontControl",
+  // S27 (the Manafleur): every LAW on the battlefield, both sides (defs flagged `law: true`).
+  "laws",
   "allCreatures",
   "attached",
   "self",
@@ -178,7 +180,9 @@ export type EffectBase =
   /** A10 (S22): `targetSpec` fans out over a spec's still-legal chosen targets (Purge's any-number). */
   | { type: "destroy"; target?: number; targetSpec?: number }
   | { type: "destroyAll"; scope: Scope }
-  | { type: "exile"; target: number }
+  /** S27 (the Manafleur): `scope` — exile-by-predicate on the Wrath-class scope machinery ("exile all laws").
+   * A `laws` scope is a no-op under the `accumulate` law-sequence mode (the reserved all-five climax). */
+  | { type: "exile"; target?: number; scope?: Scope }
   /** A10 (S22): `to: "libraryTop"` — Temporal Spring. Deliberately NOT a hand return: it never
    * fires RETURNED_TO_HAND (the Spring unwinds too far for the tide to taste — ratified). */
   | { type: "bounce"; target?: number; scope?: Scope; to?: "hand" | "libraryTop" }
@@ -248,7 +252,12 @@ export type EffectBase =
   /** A10 law-word (S22b): STATIC-ONLY — matching permanents entering under a `who`-selected player's
    * control (relative to the static's controller) enter tapped, whatever put them there (the
    * sanctioned enters-tapped special case, extended; the Intake). */
-  | { type: "imposeEntersTapped"; who: "you" | "opponent" | "eachPlayer"; cardType?: CardType };
+  | { type: "imposeEntersTapped"; who: "you" | "opponent" | "eachPlayer"; cardType?: CardType }
+  /** S27 (ADR-093 — the Manafleur's rider): manifest a copy of the NEXT law in the game-level law
+   * sequence as a token under the effect's controller, and advance the pointer. The sequence lives in
+   * game state (`lawSequence`: order + pointer + mode), set by a match modifier; the default is the
+   * WBRUG ring beginning with white. Validator-confined to the Manafleur's own end-step trigger. */
+  | { type: "createLaw"; sequence: "next" };
 // Reserved, not implemented (data-model §3): copy, setPT, preventDamage, changeType.
 
 export type EffectType = EffectBase["type"];
@@ -283,6 +292,7 @@ export const EFFECT_TYPES: readonly EffectType[] = [
   "grantAbility",
   "extraLandDrops",
   "imposeEntersTapped",
+  "createLaw",
 ];
 
 export type TriggerEvent =
@@ -484,6 +494,9 @@ export interface CardDef {
    * playLand for it. The blessed Boomerang quirk rides on it: a zero-cost law bounced to hand is
    * stuck there for the battle (laws are real objects, not tokens — they must SURVIVE the bounce). */
   uncastable?: true;
+  /** S27: a stronghold LAW — the five uncastable artifact-enchantments the Manafleur cycles through.
+   * Tokens by construction (S26 r3); the `laws` scope and the law sequence read this flag. */
+  law?: true;
   isTokenDef?: boolean;
   /** ADR-068: never shop stock — boss/lair treasure only (Black Lotus). Pool-registry column mirrored here so the world can filter. */
   prizeOnly?: boolean;

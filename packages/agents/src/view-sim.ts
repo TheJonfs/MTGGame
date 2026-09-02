@@ -296,6 +296,8 @@ function applyEffect(
       return 0;
     }
     case "exile": {
+      // S27: the scope form (the Manafleur's laws) is not modelled beyond a flat credit.
+      if (e.target === undefined) return 0.2;
       const o = objAt(e.target);
       if (o) removeObject(view, o.id);
       return 0;

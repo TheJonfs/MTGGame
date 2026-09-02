@@ -795,6 +795,66 @@
         }
       }
     },
+    "card-manafleur-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:39f99259feab9ee73dd0a0c04900aa133e7803ac66ac51da961d479936aff957",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:39f99259feab9ee73dd0a0c04900aa133e7803ac66ac51da961d479936aff957",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-manafleur-1/canonical.png",
+          "rendered_at": "2026-09-02T22:18:23+00:00",
+          "thumb": "assets/thumbs/card-manafleur-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-manafleur-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:c9f935c93dc08981c38bbe164d1279cdd3ffb4080154de5bc68b8aa35c664029",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:c9f935c93dc08981c38bbe164d1279cdd3ffb4080154de5bc68b8aa35c664029",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-manafleur-2/canonical.png",
+          "rendered_at": "2026-09-02T22:18:33+00:00",
+          "thumb": "assets/thumbs/card-manafleur-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-manafleur-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:5cecf67b2fe1950f0b1a8ef8227f2b8008a8ec969acdfd2dbc429a28020dbe13",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:5cecf67b2fe1950f0b1a8ef8227f2b8008a8ec969acdfd2dbc429a28020dbe13",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-manafleur-3/canonical.png",
+          "rendered_at": "2026-09-02T22:18:43+00:00",
+          "thumb": "assets/thumbs/card-manafleur-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-manafleur-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:ffe488fd2abd87572045b91ce86c63ab1f07dca9de99cda3cb974701f57d5b0f",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:ffe488fd2abd87572045b91ce86c63ab1f07dca9de99cda3cb974701f57d5b0f",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-manafleur-4/canonical.png",
+          "rendered_at": "2026-09-02T22:18:53+00:00",
+          "thumb": "assets/thumbs/card-manafleur-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "card-pearl-cleric-1": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:60cae29a30cbc40ae150d32eb459092eec7696570681fe4e44788331ff4e1d87",
@@ -2186,6 +2246,66 @@
           "path": "assets/images/guardian-titania/canonical.png",
           "rendered_at": "2026-08-24T19:52:39+00:00",
           "thumb": "assets/thumbs/guardian-titania/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "heart-manafleur-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:40a91a8bb752b9e02f39c5600f1f14ca462130ef7fe73c62e96801326c36b3a1",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:40a91a8bb752b9e02f39c5600f1f14ca462130ef7fe73c62e96801326c36b3a1",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/heart-manafleur-1/canonical.png",
+          "rendered_at": "2026-09-02T22:17:45+00:00",
+          "thumb": "assets/thumbs/heart-manafleur-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "heart-manafleur-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:89652b3f03f77e6d7d1c707d93f0e34a8f983bac5da4d12226db99e8f8aa4f38",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:89652b3f03f77e6d7d1c707d93f0e34a8f983bac5da4d12226db99e8f8aa4f38",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/heart-manafleur-2/canonical.png",
+          "rendered_at": "2026-09-02T22:17:53+00:00",
+          "thumb": "assets/thumbs/heart-manafleur-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "heart-manafleur-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:ffa37f0a7c7ad5734859734960127c788161588718f2df23263ebbaf93e07167",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:ffa37f0a7c7ad5734859734960127c788161588718f2df23263ebbaf93e07167",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/heart-manafleur-3/canonical.png",
+          "rendered_at": "2026-09-02T22:18:02+00:00",
+          "thumb": "assets/thumbs/heart-manafleur-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "heart-manafleur-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:674e67121bca3fb1758f71aa90b5575baaa4484636a929bc92a938eea604dc72",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:674e67121bca3fb1758f71aa90b5575baaa4484636a929bc92a938eea604dc72",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/heart-manafleur-4/canonical.png",
+          "rendered_at": "2026-09-02T22:18:12+00:00",
+          "thumb": "assets/thumbs/heart-manafleur-4/canonical.png",
           "variant_prompt": null
         }
       }
