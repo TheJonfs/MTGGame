@@ -1,0 +1,8 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "bash ../../scripts/build-web.sh",
+  "outputDirectory": "dist",
+  "framework": null,
+  "rewrites": [{ "source": "/((?!assets/|real-art/|audio/|__).*)", "destination": "/index.html" }]
+}
