@@ -11,3 +11,6 @@ results/
 # the Vercel-deploy question decides whether/where the FLACs live in-repo)
 assets/temp/
 assets/audio/
+
+# S27 (the Vercel deploy): the build copies the fetched Scryfall art here for the static /real-art/* route
+packages/ui/public/real-art/

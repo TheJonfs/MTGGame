@@ -364,3 +364,11 @@ See handoff Concerns for the authoritative list. Highlights: auto-pay greedy fea
 - **The profile is the UI's business.** The world package owns `Legacy`, `applyLegacy`, `recordCutting`, `migrateLegacy`; the controller owns the storage key (`shandalar-legacy`), reads it at new-game and writes it at victory. Tests inject `memStorage()` exactly as for the save.
 - **Text packs over placeholders**: the Corolla's and the Heart's lines live in `quests.json` (`corolla`, `heart` sections; validated key-by-key in `catalogFrom`), the screens read them with fallbacks — the planner's next pack edits data, not JSX.
 - **Baseline hygiene**: run the FUZZ_FULL baseline BEFORE editing any file it imports — staging the engine edits as a script and applying after the run kept the baseline honest (two spurious failures were a mid-run knob doc and a test written after the run started).
+
+## Deploying the viewer (S27 — Vercel)
+
+- `pnpm build:web` (scripts/build-web.sh): Scryfall art fetch (idempotent) → copy `data/art/real` into `packages/ui/public/real-art` (gitignored) → `vite build packages/ui` → `packages/ui/dist`. The tile derivatives are skipped (Pillow is not on the build image; the UI falls back from `.tile.jpg` to `.art.jpg`).
+- `vercel.json`: install `pnpm install --frozen-lockfile`, build `pnpm build:web`, output `packages/ui/dist`, SPA rewrites for the pathname routes (`/world`, `/play`, `/gallery`, `/viewer`, `/sound`) excluding `/assets/`, `/real-art/`, `/audio/`, and the `/__*` dev endpoints (they 404 cleanly; the gallery's registry fetch catches).
+- **The deploy is silent**: `assets/audio` is gitignored (Chris's local library) and never copied — silent-if-unmapped is the law. A fresh build refetches ~370 Scryfall images at 150 ms spacing (about a minute); Vercel does not cache `data/art/real` between builds.
+- Toolchain: `engines.node >=22` (Vercel picks 22.x), `packageManager pnpm@11.0.9` (if Vercel's install fails on the pnpm version, set the project env `ENABLE_EXPERIMENTAL_COREPACK=1`). devDependencies (tsx, vite) install by default on Vercel.
+- Weight: `public/` carries ~100 MB of PNG art (custom-art 55 MB, portraits 39 MB) — fine for Vercel, but a JPEG pass would cut it fivefold if cold loads feel slow.

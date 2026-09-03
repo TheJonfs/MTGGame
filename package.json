@@ -29,12 +29,14 @@
     "petal-sim": "tsx packages/world/src/petal-sim-cli.ts",
     "mirror-sim": "tsx packages/world/src/mirror-sim-cli.ts",
     "typecheck:ui": "tsc -p tsconfig.tsx-check.json",
-    "heart-sim": "tsx packages/world/src/heart-sim-cli.ts"
+    "heart-sim": "tsx packages/world/src/heart-sim-cli.ts",
+    "build:web": "bash scripts/build-web.sh"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
     "tsx": "^4.19.0",
     "typescript": "^5.7.0",
     "vitest": "^3.0.0"
-  }
+  },
+  "packageManager": "pnpm@11.0.9"
 }
