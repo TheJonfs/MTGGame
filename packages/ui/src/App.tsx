@@ -222,7 +222,10 @@ export default function App() {
     return (
       <>
         {replayFromPlay && <Viewer game={replayFromPlay} onBack={() => setReplayFromPlay(null)} />}
-        <div hidden={!!replayFromPlay} style={{ display: replayFromPlay ? "none" : undefined }}>
+        {/* display:contents — the wrapper generates NO box, so the journey's `.app` (height: 100%)
+            still resolves against #root; a plain div here broke the height chain and the grid grew
+            with the play-by-play log, sliding the duel's bottom rail off the screen (Chris, r4). */}
+        <div style={{ display: replayFromPlay ? "none" : "contents" }}>
           <WorldApp onWatchReplay={setReplayFromPlay} paused={!!replayFromPlay} />
         </div>
       </>
