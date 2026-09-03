@@ -1,16 +1,17 @@
 node_modules/
 dist/
-data/art/real/
 results/
 .DS_Store
 
 # Secrets
 .env
 
-# S22a: Chris's delivery staging area (audio handling TBD — ADR-082 schedules audio S23+;
-# the Vercel-deploy question decides whether/where the FLACs live in-repo)
+# S22a: Chris's delivery staging area
 assets/temp/
-assets/audio/
+# S27 r3 (the Vercel deploy, Chris's ruling): the audio mount (assets/audio) and the Scryfall art
+# (data/art/real) are IN the repo now — the deploy serves what dev has been using, no build-time
+# fetch, no rate-limit risk. The build copies both into the UI's public tree (ignored below).
 
 # S27 (the Vercel deploy): the build copies the fetched Scryfall art here for the static /real-art/* route
 packages/ui/public/real-art/
+packages/ui/public/audio/

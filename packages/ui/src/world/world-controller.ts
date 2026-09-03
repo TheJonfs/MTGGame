@@ -47,6 +47,7 @@ import {
 } from "@shandalar/world";
 import { MatchController } from "../play/match-controller.js";
 import { audio } from "../audio/audio.js";
+import { encounteredCards, markSeen } from "../seen.js";
 
 /** S24 r6: set-bit count over an explored bitmap (the reveal-burst detector's meter). */
 function popcount(words: number[]): number {
@@ -1110,7 +1111,13 @@ export class WorldController {
     void match.start().then((result) => this.finishDuel(duel, result));
   }
 
+  /** S27 r3: the gallery's progressive reveal — remember every card this duel put in front of the player. */
+  private noteSeen(result: MatchResult): void {
+    markSeen(encounteredCards(result), this.storage);
+  }
+
   private finishDuel(duel: PreparedDuel, result: MatchResult): void {
+    this.noteSeen(result);
     if (!this.world) return;
     const before = { life: this.world.player.worldLife, gold: this.world.player.gold };
     const linksBefore = this.world.manalinks.length; // S24 r5: bounty rewards can grant links
@@ -1335,6 +1342,7 @@ export class WorldController {
   }
 
   private finishInteriorDuel(against: { minionId?: string; guardian?: boolean }, result: MatchResult, rec?: { seed: number; spec: MatchSpec; enemyName: string; catalogId?: string }): void {
+    this.noteSeen(result);
     if (!this.world) return;
     const run = this.world.activeDungeon!;
     const out = applyInteriorDuel(this.world, this.knobs, run, result, against.minionId, this.catalog, rec);
@@ -1623,6 +1631,7 @@ export class WorldController {
     void match.start().then((result) => this.finishPetalDuel(color, result, rec));
   }
   private finishPetalDuel(color: PetalColor, result: MatchResult, rec: { seed: number; spec: MatchSpec; enemyName: string }): void {
+    this.noteSeen(result);
     const def = this.corollaDef;
     if (!this.world || !def) return;
     const petal = def.petals.find((p) => p.color === color)!;
@@ -1708,6 +1717,7 @@ export class WorldController {
     void match.start().then((result) => this.finishHeartDuel(result, rec));
   }
   private finishHeartDuel(result: MatchResult, rec: { seed: number; spec: MatchSpec; enemyName: string }): void {
+    this.noteSeen(result);
     if (!this.world) return;
     const legacy = this.legacy();
     const pack = this.catalog.questText?.heart;
@@ -1773,6 +1783,7 @@ export class WorldController {
     this.emit();
   }
   private finishMirrorDuel(result: MatchResult, rec: { seed: number; spec: MatchSpec }): void {
+    this.noteSeen(result);
     if (!this.world) return;
     const out = applyMirrorDuel(this.world, this.knobs, result, rec);
     this.autosave();
@@ -1965,6 +1976,7 @@ export class WorldController {
   }
 
   private finishSiegeDuel(townIndex: number, result: MatchResult, rec?: { seed: number; spec: MatchSpec }): void {
+    this.noteSeen(result);
     if (!this.world) return;
     const entry = siegeFor(this.world, townIndex)!;
     const town = this.world.map.towns[townIndex]!;

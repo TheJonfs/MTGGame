@@ -3,6 +3,7 @@ import { cardColors, type CardDef } from "@shandalar/cards";
 import { DECKS, type DeckKey } from "@shandalar/sim/decks";
 import { loadOracle, loadPool, type OracleEntry } from "../engine-bridge";
 import { CardFrame } from "./CardFrame";
+import { readSeen } from "../seen";
 
 /**
  * Card gallery (ADR-046, S7 brief Part 2): every pool card in our frame,
@@ -236,10 +237,24 @@ export function Gallery() {
       .catch(() => setRegistry(new Map()));
   }, []);
 
+  // S27 r3 (Chris): the gallery opens PROGRESSIVELY — prizeOnly cards stay hidden until encountered
+  // in a duel or held in the collection (the seen store + the autosave's collection); ?all=1 shows
+  // everything (a dev bypass, not a menu item).
+  const revealAll = new URLSearchParams(window.location.search).get("all") === "1";
+  const seen = useMemo(() => {
+    const s = readSeen();
+    try {
+      const save = localStorage.getItem("shandalar-world-save");
+      if (save) for (const id of Object.keys((JSON.parse(save) as { world?: { player?: { collection?: Record<string, number> } } }).world?.player?.collection ?? {})) s.add(id);
+    } catch { /* no save, or an unreadable one */ }
+    return s;
+  }, []);
+  const hiddenCount = useMemo(() => (revealAll ? 0 : [...pool.values()].filter((d) => d.prizeOnly && !seen.has(d.id)).length), [pool, seen, revealAll]);
   const cards = useMemo(() => {
     if (!registry) return [];
     const list = [...pool.values()]
       .filter((d) => (registry.get(d.id)?.status ?? "") !== "cut")
+      .filter((d) => revealAll || !d.prizeOnly || seen.has(d.id))
       .map((d) => ({
         def: d,
         batch: registry.get(d.id)?.batch ?? (d.isTokenDef ? "tokens" : "unregistered"),
@@ -292,7 +307,7 @@ export function Gallery() {
           <input type="checkbox" checked={printedAll} onChange={(e) => setPrintedAll(e.target.checked)} />
           printed scans
         </label>
-        <span style={{ fontSize: 11, color: "var(--ink-soft)" }}>{shown.length}/{cards.length}</span>
+        <span style={{ fontSize: 11, color: "var(--ink-soft)" }}>{shown.length}/{cards.length}{hiddenCount > 0 ? ` · ${hiddenCount} not yet encountered` : ""}</span>
       </div>
 
       {stripDef && <SizeStrip def={stripDef} oracle={oracle[stripDef.id]} />}
