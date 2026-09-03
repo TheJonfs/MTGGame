@@ -143,7 +143,7 @@
    "law": {
     "cardId": "law_intake",
     "name": "The Intake",
-    "text": "Creatures the intruder controls enter the battlefield tapped."
+    "text": "Creatures your opponents control enter the battlefield tapped."
    }
   },
   {
@@ -161,7 +161,7 @@
    "law": {
     "cardId": "law_risen_tide",
     "name": "The Risen Tide",
-    "text": "The Unwinder's controller may play an additional land on each of their turns."
+    "text": "You may play an additional land on each of your turns."
    }
   },
   {
@@ -179,7 +179,7 @@
    "law": {
     "cardId": "law_tithe",
     "name": "The Tithe",
-    "text": "Whenever a creature dies, the intruder loses 1 life."
+    "text": "Whenever a creature dies, each opponent loses 1 life."
    }
   },
   {
@@ -197,7 +197,7 @@
    "law": {
     "cardId": "law_toll",
     "name": "The Toll",
-    "text": "Whenever the intruder casts a spell, the Gate deals 1 damage to them."
+    "text": "Whenever an opponent casts a spell, The Toll deals 1 damage to that player."
    }
   },
   {
@@ -215,7 +215,7 @@
    "law": {
     "cardId": "law_season",
     "name": "The Season",
-    "text": "At the beginning of the Sower's upkeep, put a +1/+1 counter on each creature he controls."
+    "text": "At the beginning of your upkeep, put a +1/+1 counter on each creature you control."
    }
   }
  ],

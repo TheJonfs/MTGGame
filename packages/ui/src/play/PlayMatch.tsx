@@ -492,7 +492,16 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption, printed }: { c: Ma
                 ) : (
                   <span>{tagEl(a)}{actionLabel(state, pool, a)}</span>
                 )}
-                {asCards && <div className="dialog-caption">{tagEl(a)}{actionLabel(state, pool, a)}</div>}
+                {asCards && <div className="dialog-caption">{tagEl(a)}{actionLabel(state, pool, a)}{(() => {
+                  // Deploy playtest r1 (Chris: the bottom/discard dialogs collapse duplicates — say how
+                  // many): one option stands for every copy in hand (ADR-011 enumerates per distinct
+                  // card); the caption carries the count.
+                  if (!cid || !("objectId" in a) || typeof a.objectId !== "string") return null;
+                  const owner = state.objects[a.objectId]?.controller;
+                  if (owner === undefined) return null;
+                  const n = state.players[owner].hand.filter((id) => state.objects[id]?.cardId === cid).length;
+                  return n > 1 ? <b style={{ color: "var(--brass)" }}> ×{n}</b> : null;
+                })()}</div>}
               </div>
             );
           })}

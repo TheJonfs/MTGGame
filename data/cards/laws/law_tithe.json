@@ -1,40 +1,40 @@
 {
- "id": "law_tithe",
- "name": "The Tithe",
- "source": "custom",
- "manaCost": "",
- "types": [
-  "Artifact",
-  "Enchantment"
- ],
- "text": "Whenever a creature dies, the intruder loses 1 life.",
- "abilities": [
-  {
-   "kind": "triggered",
-   "event": "DIES",
-   "condition": {
-    "source": "any",
-    "type": [
-     "Creature"
-    ]
-   },
-   "effects": [
+  "id": "law_tithe",
+  "name": "The Tithe",
+  "source": "custom",
+  "manaCost": "",
+  "types": [
+    "Artifact",
+    "Enchantment"
+  ],
+  "text": "Whenever a creature dies, each opponent loses 1 life.",
+  "abilities": [
     {
-     "type": "loseLife",
-     "amount": 1,
-     "who": "opponent"
+      "kind": "triggered",
+      "event": "DIES",
+      "condition": {
+        "source": "any",
+        "type": [
+          "Creature"
+        ]
+      },
+      "effects": [
+        {
+          "type": "loseLife",
+          "amount": 1,
+          "who": "opponent"
+        }
+      ]
     }
-   ]
-  }
- ],
- "uncastable": true,
- "prizeOnly": true,
- "art": {
-  "asset": "/custom-art/law_tithe.png",
-  "fallback": "rendered"
- },
- "law": true,
- "subtypes": [
-  "Law"
- ]
+  ],
+  "uncastable": true,
+  "prizeOnly": true,
+  "art": {
+    "asset": "/custom-art/law_tithe.png",
+    "fallback": "rendered"
+  },
+  "law": true,
+  "subtypes": [
+    "Law"
+  ]
 }

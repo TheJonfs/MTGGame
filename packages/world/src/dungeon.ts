@@ -297,7 +297,7 @@ export function generateDungeonRun(
   // a boon fights beside you for the rest of the run.
   const BOON_BASIC: Record<string, string> = { W: "plains", U: "island", B: "swamp", R: "mountain", G: "forest" };
   const BOON_TOKEN: Record<string, string> = { W: "bird_1_1_flying", U: "faerie_1_1_u", B: "faerie_rogue_1_1_flying", R: "goblin_1_1", G: "bear_2_2" };
-  const weights = knobs.dungeonTreasureWeights[opts.kind === "lair" ? "lair" : "mox"];
+  const weights = knobs.dungeonTreasureWeights[opts.kind === "lair" ? "lair" : opts.kind === "stronghold" ? "stronghold" : "mox"]; // r4: strongholds lean away from gold
   const wTotal = weights.gold + weights.card + weights.life + weights.boon;
   const treasures: DungeonTreasure[] = branchTips.map((tip) => {
     const roll = rng.float() * wTotal;

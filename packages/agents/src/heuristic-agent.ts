@@ -1006,6 +1006,9 @@ export class HeuristicAgent implements Agent {
     if (!ab || ab.kind !== "activated" || !(ab.cost.tap || ab.cost.tapCreature)) return false;
     if (ab.effects.length === 0 || !ab.effects.every((e) => e.type === "tapTarget")) return false;
     const me = view.you;
+    // Deploy playtest r1 (Chris: the Scepter pointed at lands): the tapper wants a CREATURE — with
+    // no untapped enemy creature on the board there is nothing worth the mana; hold (book 33).
+    if (!view.battlefield.some((o) => o.controller !== me && !o.tapped && o.power !== null)) return true;
     if (view.activePlayer !== me) return !["UPKEEP", "DRAW", "MAIN1", "COMBAT_BEGIN"].includes(view.step);
     // S27 r2 (Chris: Glare of Subdual tapped its own board down instead of attacking for lethal): a
     // tap-a-creature COST spends an attacker — on our own turn the Glare never fires.

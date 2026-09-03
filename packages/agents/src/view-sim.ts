@@ -90,6 +90,17 @@ export function predictAction(
     const isPermanent = d.types.some((t) => ["Creature", "Artifact", "Enchantment"].includes(t));
     const isAura = d.subtypes?.includes("Aura") ?? false;
     if (isPermanent && !isAura) {
+      // Deploy playtest r1 (Chris: a Phyrexian Rager cast at 1 life killed its caster): a mandatory
+      // ETB that costs US life (loseLife you / damage to you) is paid in the prediction, so the
+      // evaluator's lethal floor (-1000 at life ≤ 0) prices the suicide (book 34).
+      for (const a of d.abilities ?? []) {
+        if (a.kind !== "triggered" || a.event !== "ENTERS_BATTLEFIELD" || a.optional) continue;
+        if (a.condition && "source" in a.condition && a.condition.source !== "self") continue;
+        for (const e of a.effects) {
+          if (e.type === "loseLife" && e.who === "you" && typeof e.amount === "number") next.life[me] -= e.amount;
+          if (e.type === "damage" && e.to === "you" && typeof e.amount === "number") next.life[me] -= e.amount;
+        }
+      }
       next.battlefield.push({
         id: `pred_${predSeq++}`, cardId: d.id, controller: me, tapped: false, damage: 0,
         attachedTo: null,
@@ -435,14 +446,17 @@ function applyEffect(
       // same per-target valuation.
       const ids = e.target !== undefined ? [e.target] : [];
       let total = 0;
-      const evalTap = (o: { tapped: boolean; controller: number } | undefined): number => {
+      const evalTap = (o: { tapped: boolean; controller: number; power: number | null } | undefined): number => {
         if (!o) return 0;
         const wasUntapped = !o.tapped;
         o.tapped = true;
         // Tempo value when it taps down an opponent's untapped creature; a
         // small cost when it wastes our own (book of shame: no-benefit taps).
         if (!wasUntapped) return 0;
-        return o.controller !== me ? 0.3 : -0.15;
+        if (o.controller === me) return -0.15;
+        // Deploy playtest r1 (Chris: the Scepter pointed at lands): a creature is the prize — the
+        // bigger, the better; a land or other permanent is nearly worthless to tap (book 33).
+        return o.power === null ? 0.05 : 0.3 + 0.05 * Math.max(0, o.power);
       };
       if (e.target === undefined) {
         for (const t of targets) {

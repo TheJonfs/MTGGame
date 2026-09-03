@@ -223,8 +223,14 @@ export interface RoamerChip {
 /** The viewport origin (in cells) for a player position: centred, clamped. S18: plus a pan offset (look mode). */
 export function viewportOrigin(map: { width: number; height: number }, player: Point, pan: Point = { x: 0, y: 0 }): Point {
   const vw = Math.min(VIEW_W, map.width), vh = Math.min(VIEW_H, map.height);
-  const x = Math.max(0, Math.min(map.width - vw, player.x + pan.x - Math.floor(vw / 2)));
-  const y = Math.max(0, Math.min(map.height - vh, player.y + pan.y - Math.floor(vh / 2)));
+  // Deploy playtest r1 (Chris, item 8: a lair in the map's corner sat behind the minimap): LOOK
+  // mode may push the window past the map's edge by a third of the view — the corner cells come
+  // to the middle of the screen; beyond the frame is "parts unknown". Standing still (no pan)
+  // keeps the old clamp.
+  const panned = pan.x !== 0 || pan.y !== 0;
+  const mx = panned ? Math.ceil(vw / 3) : 0, my = panned ? Math.ceil(vh / 3) : 0;
+  const x = Math.max(-mx, Math.min(map.width - vw + mx, player.x + pan.x - Math.floor(vw / 2)));
+  const y = Math.max(-my, Math.min(map.height - vh + my, player.y + pan.y - Math.floor(vh / 2)));
   return { x, y };
 }
 
@@ -296,10 +302,15 @@ export function WorldMapView({
   const edges: { d: string; di: string; label: string; lx: number; ly: number; rot: number }[] = [];
   const X0 = origin.x * CELL, Y0 = origin.y * CELL, X1 = (origin.x + vw) * CELL, Y1 = (origin.y + vh) * CELL;
   const INSET = 7;
-  if (origin.x === 0) edges.push({ d: `M${X0 + 2} ${Y0} V${Y1}`, di: `M${X0 + 2 + INSET} ${Y0} V${Y1}`, label: edgeLabel, lx: X0 + 16, ly: (Y0 + Y1) / 2, rot: -90 });
-  if (origin.y === 0) edges.push({ d: `M${X0} ${Y0 + 2} H${X1}`, di: `M${X0} ${Y0 + 2 + INSET} H${X1}`, label: edgeLabel, lx: (X0 + X1) / 2, ly: Y0 + 18, rot: 0 });
-  if (origin.x + vw >= map.width) edges.push({ d: `M${X1 - 2} ${Y0} V${Y1}`, di: `M${X1 - 2 - INSET} ${Y0} V${Y1}`, label: edgeLabel, lx: X1 - 16, ly: (Y0 + Y1) / 2, rot: 90 });
-  if (origin.y + vh >= map.height) edges.push({ d: `M${X0} ${Y1 - 2} H${X1}`, di: `M${X0} ${Y1 - 2 - INSET} H${X1}`, label: edgeLabel, lx: (X0 + X1) / 2, ly: Y1 - 10, rot: 0 });
+  // The frame sits on the MAP's bounds (not the window's) — with overscroll (r4) the window can
+  // reach past them, and the strip beyond reads as parts unknown.
+  const MW = map.width * CELL, MH = map.height * CELL;
+  const EX0 = Math.max(X0, 0), EY0 = Math.max(Y0, 0), EX1 = Math.min(X1, MW), EY1 = Math.min(Y1, MH);
+  if (origin.x <= 0) edges.push({ d: `M${2} ${EY0} V${EY1}`, di: `M${2 + INSET} ${EY0} V${EY1}`, label: edgeLabel, lx: 16, ly: (EY0 + EY1) / 2, rot: -90 });
+  if (origin.y <= 0) edges.push({ d: `M${EX0} ${2} H${EX1}`, di: `M${EX0} ${2 + INSET} H${EX1}`, label: edgeLabel, lx: (EX0 + EX1) / 2, ly: 18, rot: 0 });
+  if (origin.x + vw >= map.width) edges.push({ d: `M${MW - 2} ${EY0} V${EY1}`, di: `M${MW - 2 - INSET} ${EY0} V${EY1}`, label: edgeLabel, lx: MW - 16, ly: (EY0 + EY1) / 2, rot: 90 });
+  if (origin.y + vh >= map.height) edges.push({ d: `M${EX0} ${MH - 2} H${EX1}`, di: `M${EX0} ${MH - 2 - INSET} H${EX1}`, label: edgeLabel, lx: (EX0 + EX1) / 2, ly: MH - 10, rot: 0 });
+  const beyond = X0 < 0 || Y0 < 0 || X1 > MW || Y1 > MH;
   // World corners in view get an ornament (the frame's compass-point diamonds).
   const corners: Pt[] = [];
   if (!interior) {
@@ -494,7 +505,14 @@ export function WorldMapView({
         {!interior && <rect x={X0} y={Y0} width={X1 - X0} height={Y1 - Y0} fill="url(#paper-pat)" pointerEvents="none" />}
         {/* interior: a dark backdrop under the cells — subpixel seams between cell rects
             otherwise bleed the parchment page through as a pale grid on the near-black rock */}
-        {interior && <rect x={0} y={0} width={W} height={H} fill={INTERIOR.dark} />}
+        {interior && <rect x={Math.min(X0, 0)} y={Math.min(Y0, 0)} width={Math.max(X1, W) - Math.min(X0, 0)} height={Math.max(Y1, H) - Math.min(Y0, 0)} fill={INTERIOR.dark} />}
+        {/* r4 overscroll: the ground beyond the map's frame — a faint hatch over the paper (or the
+            rock) so it reads as parts unknown, not as more world. */}
+        {beyond && (
+          <g pointerEvents="none">
+            <path d={`M${X0} ${Y0} H${X1} V${Y1} H${X0} Z M0 0 H${W} V${H} H0 Z`} fillRule="evenodd" fill={interior ? "url(#chisel)" : "url(#rough-faint)"} opacity={interior ? 0.5 : 0.8} />
+          </g>
+        )}
         {/* washes (interior: pale carved floor / near-black rock / darkness for fog) */}
         {cells.map(({ x, y }) => {
           const i = y * map.width + x;

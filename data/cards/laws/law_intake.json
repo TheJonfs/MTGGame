@@ -1,33 +1,33 @@
 {
- "id": "law_intake",
- "name": "The Intake",
- "source": "custom",
- "manaCost": "",
- "types": [
-  "Artifact",
-  "Enchantment"
- ],
- "text": "Creatures the intruder controls enter the battlefield tapped.",
- "abilities": [
-  {
-   "kind": "static",
-   "effects": [
+  "id": "law_intake",
+  "name": "The Intake",
+  "source": "custom",
+  "manaCost": "",
+  "types": [
+    "Artifact",
+    "Enchantment"
+  ],
+  "text": "Creatures your opponents control enter the battlefield tapped.",
+  "abilities": [
     {
-     "type": "imposeEntersTapped",
-     "who": "opponent",
-     "cardType": "Creature"
+      "kind": "static",
+      "effects": [
+        {
+          "type": "imposeEntersTapped",
+          "who": "opponent",
+          "cardType": "Creature"
+        }
+      ]
     }
-   ]
-  }
- ],
- "uncastable": true,
- "prizeOnly": true,
- "art": {
-  "asset": "/custom-art/law_intake.png",
-  "fallback": "rendered"
- },
- "law": true,
- "subtypes": [
-  "Law"
- ]
+  ],
+  "uncastable": true,
+  "prizeOnly": true,
+  "art": {
+    "asset": "/custom-art/law_intake.png",
+    "fallback": "rendered"
+  },
+  "law": true,
+  "subtypes": [
+    "Law"
+  ]
 }

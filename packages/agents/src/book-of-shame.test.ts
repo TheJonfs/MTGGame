@@ -538,6 +538,37 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.scorePriorityAction(view(1, "UPKEEP"), tap)).toBeGreaterThan(-Infinity);
   });
 
+  it("book of shame 33 (deploy playtest r1, the Scepter pointed at lands): the tapper holds when the opponent has no untapped creature, and prefers the creature to a land when it fires", () => {
+    const a = agent();
+    const view = (oppCreatureTapped: boolean) =>
+      mkView({
+        step: "UPKEEP", activePlayer: 1,
+        battlefield: [
+          { id: "scep", cardId: "scepter_of_dominance", controller: 0 }, { id: "p1", cardId: "plains", controller: 0 }, { id: "p2", cardId: "plains", controller: 0 },
+          { id: "ob", cardId: "grizzly_bears", controller: 1, tapped: oppCreatureTapped }, { id: "of", cardId: "forest", controller: 1 },
+        ],
+      });
+    const tap = (id: string) => ({ type: "activateAbility" as const, objectId: "scep", abilityIndex: 0, targets: [{ kind: "object" as const, id }] });
+    expect(a.scorePriorityAction(view(true), tap("of"))).toBe(-Infinity); // their only creature is already tapped: nothing worth the mana
+    const creature = a.scorePriorityAction(view(false), tap("ob"));
+    const land = a.scorePriorityAction(view(false), tap("of"));
+    expect(creature).toBeGreaterThan(-Infinity);
+    expect(creature).toBeGreaterThan(land); // the creature is the prize
+  });
+
+  it("book of shame 34 (deploy playtest r1, the Rager at 1 life): a mandatory ETB that costs us life is paid in the prediction — the suicide cast prices as a loss; at 5 life it is a fine card", () => {
+    const a = agent();
+    const view = (life: number) =>
+      mkView({
+        life: [life, 20], step: "MAIN1", activePlayer: 0,
+        hand: [{ objectId: "h1", cardId: "phyrexian_rager" }],
+        battlefield: [{ id: "s1", cardId: "swamp", controller: 0 }, { id: "s2", cardId: "swamp", controller: 0 }, { id: "s3", cardId: "swamp", controller: 0 }],
+      });
+    const cast = { type: "castSpell" as const, objectId: "h1", targets: [] };
+    expect(a.scorePriorityAction(view(1), cast)).toBeLessThan(-100);
+    expect(a.scorePriorityAction(view(5), cast)).toBeGreaterThan(-100);
+  });
+
   it("book of shame 28 (S26 r3, the tapper discipline): Scepter of Dominance holds on our own turn with nothing to swing; fires in MAIN1 with an attacker; fires on the opponent's upkeep and beginning of combat, never after their attackers are declared", () => {
     const a = agent();
     const view = (opts: { step: string; activePlayer: 0 | 1; swing?: boolean }) =>

@@ -175,10 +175,10 @@ export const KNOBS = {
     unit: "weight moved from the smallest size to the largest per epoch",
     description: "S26 r3: with each threat a town has survived (its epoch), this much weight moves from size 1 toward the ring's largest party — the clock hardens the sieges. Capped so size 1 never falls below 0.",
   }),
-  dungeonTreasureWeights: knob<Record<"mox" | "lair", { gold: number; card: number; life: number; boon: number }>>({
-    default: { mox: { gold: 30, card: 15, life: 20, boon: 25 }, lair: { gold: 30, card: 10, life: 25, boon: 25 } },
+  dungeonTreasureWeights: knob<Record<"mox" | "lair" | "stronghold", { gold: number; card: number; life: number; boon: number }>>({
+    default: { mox: { gold: 30, card: 15, life: 20, boon: 25 }, lair: { gold: 30, card: 10, life: 25, boon: 25 }, stronghold: { gold: 12, card: 20, life: 30, boon: 38 } },
     unit: "relative weights per cache, by dungeon class",
-    description: "S21 playtest r2–r3 (Chris): cache kinds — gold (escrowed), card (escrowed; mox rolls T3 or R at even odds, mundane lairs T2 or T3 at even odds — the boss's prize room stays the R channel), life (+2–3 interior life, IMMEDIATE), boon (a permanent on YOUR side of the NEXT interior battle only — the Shandalar hold-or-spend tension; the dungeon colour's basic land or its 1/1-class token creature). Chris tunes from play.",
+    description: "S21 playtest r2–r3 (Chris): cache kinds — gold (escrowed), card (escrowed; mox rolls T3 or R at even odds, mundane lairs T2 or T3 at even odds — the boss's prize room stays the R channel), life (+2–3 interior life, IMMEDIATE), boon (a permanent on YOUR side of the NEXT interior battle only — the Shandalar hold-or-spend tension; the dungeon colour's basic land or its 1/1-class token creature). Deploy playtest r1 (Chris: by the strongholds, gold is plentiful): strongholds have their own class, leaning to life and boons (12/20/30/38; cards roll as mox caches do). Chris tunes from play.",
   }),
   // ---- S22b (the strongholds — stronghold-bosses.md systems, brief Part 4–5) ----
   strongholdGridWidth: knob<number>({

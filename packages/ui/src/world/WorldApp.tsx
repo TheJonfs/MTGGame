@@ -1526,6 +1526,9 @@ export function WorldApp({ onWatchReplay, paused = false }: { onWatchReplay: (ga
   // S18 director round (Chris, OQ-7): look around without walking — arrow keys pan the viewport
   // (3 cells), minimap clicks pan there too, Home / the ⌖ button / walking re-centres on you.
   const [pan, setPan] = useState<Point>({ x: 0, y: 0 });
+  // Deploy playtest r1 (Chris, item 3): the Quests panel can hide the deadline-free rows so the
+  // clocked ones scan at a glance.
+  const [clockedOnly, setClockedOnly] = useState(false);
   const panRef = useRef(pan);
   panRef.current = pan;
   useEffect(() => {
@@ -1763,8 +1766,22 @@ export function WorldApp({ onWatchReplay, paused = false }: { onWatchReplay: (ga
           <div style={{ fontSize: 12 }}>Deck: {deckSize(activeDeck(w))} cards · basic {w.player.basicLand}</div>
         </RailPanel>
         <RailPanel title="Quests" badge={c.activeQuests().length || undefined}>
-          {c.activeQuests().map(({ quest: q, stepsLeft, destName, targetName, targetRegion }) => (
+          {c.activeQuests().length > 1 && c.activeQuests().some((x) => x.stepsLeft === null) && (
+            <label style={{ fontSize: 10.5, color: "var(--ink-soft)", display: "block", marginBottom: 4, cursor: "pointer" }} title="hide the quests that have no deadline">
+              <input type="checkbox" checked={clockedOnly} onChange={(e) => setClockedOnly(e.target.checked)} /> clocked only
+            </label>
+          )}
+          {c.activeQuests().filter((x) => !clockedOnly || x.stepsLeft !== null).map(({ quest: q, stepsLeft, destName, targetName, targetRegion }) => (
             <div key={q.id} style={{ fontSize: 11.5, marginBottom: 4 }}>
+              {/* Deploy playtest r1 (Chris, item 3): the reward's KIND as small icons up front — gold,
+                  a card, a manalink (its colour's pip; the life kind wears the life mark). */}
+              <span className="quest-reward-icons" title={`pays ${q.reward.gold}g${q.reward.cardName ? ` + ${q.reward.cardName}` : ""}${q.reward.manalink ? " + a manalink" : ""}`} style={{ display: "inline-flex", gap: 2, verticalAlign: -2, marginRight: 4 }}>
+                {q.reward.gold > 0 && <img src="/icons/stat-gold.png" alt="gold" style={{ width: 13, height: 13, mixBlendMode: "multiply" }} />}
+                {q.reward.cardName && <img src="/icons/zone-library.svg" alt="a card" style={{ width: 13, height: 13, mixBlendMode: "multiply" }} />}
+                {q.reward.manalink && ((q.reward.manalinkKind ?? "basic") === "life"
+                  ? <img src="/icons/stat-life.svg" alt="a life manalink" style={{ width: 13, height: 13, mixBlendMode: "multiply" }} />
+                  : <img src={`/icons/mana-${({ W: "white", U: "blue", B: "black", R: "red", G: "green" } as Record<string, string>)[q.reward.manalink] ?? "colorless"}.svg`} alt="a manalink" style={{ width: 13, height: 13 }} />)}
+              </span>
               <b>{{ courier: "Courier", cardCourier: "Card courier", bounty: "Bounty", retrieval: "Retrieval" }[q.kind]}</b>
               {/* S25 r4 note 2 (Chris: some quests don't say what we're pursuing): the courier's
                   cargo is named, and every row ends with its REWARD (the pursuit itself). */}
@@ -1794,6 +1811,7 @@ export function WorldApp({ onWatchReplay, paused = false }: { onWatchReplay: (ga
             </div>
           ))}
           {c.activeQuests().length === 0 && <div style={{ fontSize: 11, color: "var(--ink-soft)" }}>none — town boards post them</div>}
+          {clockedOnly && c.activeQuests().length > 0 && c.activeQuests().every((x) => x.stepsLeft === null) && <div style={{ fontSize: 11, color: "var(--ink-soft)" }}>none on a clock</div>}
         </RailPanel>
         {(() => {
           // S21 Part 4 → S22 r1: the heard-rumors journal is its own FOLDING panel now — the
@@ -1896,7 +1914,7 @@ export function WorldApp({ onWatchReplay, paused = false }: { onWatchReplay: (ga
             const status = f.kind === "stronghold" ? (shRow?.sealed ? "broken · seal held" : `${shRow?.lordName ?? "a lord"} · ${shRow?.life ?? "?"} life`) : moxCleared || resident?.gone ? "cleared" : `${w.map.regions[f.region]?.name ?? ""} · waiting`;
             return (
               <div key={i} style={{ fontSize: 12, display: "flex", justifyContent: "space-between", cursor: screen.kind === "map" ? "pointer" : "default" }} title="click to preview the path there" onClick={() => c.clickCell(f.at)}>
-                <span>{f.name ?? f.kind}</span><span style={{ color: f.kind === "stronghold" ? "var(--ink-soft)" : moxCleared || resident?.gone ? "var(--boost)" : "var(--danger)" }}>{status}</span>
+                <span>{f.name ?? f.kind}</span><span style={{ color: f.kind === "stronghold" ? (shRow?.sealed ? "var(--boost)" : "var(--ink-soft)") : moxCleared || resident?.gone ? "var(--boost)" : "var(--danger)" }}>{status}</span>
               </div>
             );
           })}
