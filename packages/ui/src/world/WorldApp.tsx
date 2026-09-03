@@ -10,6 +10,7 @@ import { audio, townMusicCue, strongholdSplashCue, type MusicCue } from "../audi
 import { COROLLA_DECKS } from "@shandalar/sim/corolla-decks";
 import { WorldMapView } from "./WorldMap";
 import { FloatingCardInspector } from "./FloatingCardInspector";
+import { devMenuEnabled } from "../dev";
 
 /** Screens that return early from the world layout (no rail, no popups, no manalink splash). */
 const EARLY_SCREENS = new Set<string>(["start", "duel", "dungeonDuel", "siegeDuel", "corollaDuel", "duelResult", "collection", "editor", "dungeonTelegraph", "siegeTelegraph", "dungeon", "dungeonVictory", "strongholdVictory", "corollaTelegraph", "vaultTelegraph", "corolla", "petalTelegraph", "petalVictory", "mirrorVictory", "corollaTown", "heartTelegraph", "heartVictory", "gameOver"]);
@@ -180,7 +181,7 @@ function Chrome({ c, onDownload, corolla }: { c: WorldController; onDownload: ()
       <button className="chrome-tab" onClick={() => c.openCollection()}>Collection</button>
       <button className="chrome-tab" onClick={() => c.save()}>Save</button>
       <button className="chrome-tab" onClick={onDownload}>Download</button>
-      {!corolla && <DevTab c={c} />}
+      {!corolla && devMenuEnabled() && <DevTab c={c} />}
       <AudioTab />
       <span className="seed">seed {w.seed} · {w.difficulty}</span>
     </div>
@@ -818,7 +819,7 @@ function CorollaScreen({ c }: { c: WorldController }) {
           ))}
           <div style={{ fontSize: 10.5, color: "var(--ink-soft)", marginTop: 4 }}>Each petal wears its law's colour; its court wields the two beside it. Fallen petals stay fallen.</div>
           {/* S27 r1 (Chris): the dev shortcut lives here too — the ribbon's Dev tab is suppressed in the flower. */}
-          {rows.some((r) => !r.fallen) && <button className="linkish" style={{ fontSize: 10.5, marginTop: 2 }} onClick={() => c.devFellPetals()} title="dev: every standing petal falls as a victory (ministers, duals, purses paid)">dev: fell the five as victories</button>}
+          {devMenuEnabled() && rows.some((r) => !r.fallen) && <button className="linkish" style={{ fontSize: 10.5, marginTop: 2 }} onClick={() => c.devFellPetals()} title="dev: every standing petal falls as a victory (ministers, duals, purses paid)">dev: fell the five as victories</button>}
         </div>
         <div className="panel">
           <h3>The heart</h3>
@@ -1009,7 +1010,7 @@ function CorollaTownScreen({ c, pool, oracle }: { c: WorldController; pool: Map<
         {notice && <p style={{ fontSize: 12, color: "var(--brass)" }}>{notice}</p>}
         {tab === "square" && (
           <>
-            {fallen < 5 && <p style={{ fontSize: 10.5, margin: "0 0 4px" }}><button className="linkish" style={{ fontSize: 10.5 }} onClick={() => c.devFellPetals()} title="dev: every standing petal falls as a victory">dev: fell the five as victories</button></p>}
+            {devMenuEnabled() && fallen < 5 && <p style={{ fontSize: 10.5, margin: "0 0 4px" }}><button className="linkish" style={{ fontSize: 10.5 }} onClick={() => c.devFellPetals()} title="dev: every standing petal falls as a victory">dev: fell the five as victories</button></p>}
             <p className="dungeon-law" style={{ borderColor: fallen >= 5 ? "var(--brass)" : undefined }}>
               <b>The Heart's door:</b>{" "}
               {c.heartOpen()
