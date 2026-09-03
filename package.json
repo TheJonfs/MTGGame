@@ -30,6 +30,7 @@
     "mirror-sim": "tsx packages/world/src/mirror-sim-cli.ts",
     "typecheck:ui": "tsc -p tsconfig.tsx-check.json",
     "heart-sim": "tsx packages/world/src/heart-sim-cli.ts",
+    "blocks-audit": "tsx packages/sim/src/blocks-audit-cli.ts",
     "build:web": "bash scripts/build-web.sh"
   },
   "devDependencies": {

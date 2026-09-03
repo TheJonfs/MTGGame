@@ -65,7 +65,7 @@ function Loader({ onLoad }: { onLoad: (g: SavedGame) => void }) {
   );
 }
 
-function Viewer({ game }: { game: SavedGame }) {
+function Viewer({ game, onBack }: { game: SavedGame; onBack?: () => void }) {
   const pool = useMemo(loadPool, []);
   const session = useMemo(() => new ReplaySession(game, pool), [game, pool]);
   const [oracle, setOracle] = useState<Record<string, OracleEntry>>({});
@@ -130,6 +130,16 @@ function Viewer({ game }: { game: SavedGame }) {
     setTimeout(() => setFlagNote(null), 4000);
   };
 
+  // Deploy playtest r1 (Chris): a duel's log could only be watched, never kept — the file is the
+  // evidence a bug report needs (and the fixtures inbox's raw material).
+  const download = () => {
+    const blob = new Blob([JSON.stringify(game)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `duel-${game.spec.seed}-${game.result.turns}t.json`;
+    a.click();
+  };
+
   const logPanel = <LogPanel lines={logLines} current={index} onSeek={setIndex} />;
   return (
     <div className="app">
@@ -172,6 +182,8 @@ function Viewer({ game }: { game: SavedGame }) {
         setSpeed={setSpeed}
         onFlag={flag}
         replayMs={replayMs}
+        {...(onBack ? { onBack } : {})}
+        onDownload={download}
       />
     </div>
   );
@@ -204,13 +216,21 @@ export default function App() {
   const [replayFromPlay, setReplayFromPlay] = useState<SavedGame | null>(null);
   if (window.location.pathname === "/gallery") return <Gallery />;
   if (window.location.pathname === "/world") {
-    // S13: the overworld; duel replays hand off to the viewer like /play does.
-    if (replayFromPlay) return <Viewer game={replayFromPlay} />;
-    return <WorldApp onWatchReplay={setReplayFromPlay} />;
+    // S13: the overworld; duel replays hand off to the viewer like /play does. Deploy playtest r1:
+    // the journey stays MOUNTED (hidden) under the replay so ⟵ Back returns to the very screen
+    // that launched it — the duel's result panel, the town, the rail — nothing reloaded.
+    return (
+      <>
+        {replayFromPlay && <Viewer game={replayFromPlay} onBack={() => setReplayFromPlay(null)} />}
+        <div hidden={!!replayFromPlay} style={{ display: replayFromPlay ? "none" : undefined }}>
+          <WorldApp onWatchReplay={setReplayFromPlay} paused={!!replayFromPlay} />
+        </div>
+      </>
+    );
   }
   if (window.location.pathname === "/play") {
-    // "Watch replay" hands the finished game straight to the viewer.
-    if (replayFromPlay) return <Viewer game={replayFromPlay} />;
+    // "Watch replay" hands the finished game straight to the viewer (⟵ Back returns to the result).
+    if (replayFromPlay) return <Viewer game={replayFromPlay} onBack={() => setReplayFromPlay(null)} />;
     return <PlayApp onWatchReplay={setReplayFromPlay} />;
   }
   if (window.location.pathname === "/viewer") {

@@ -377,6 +377,11 @@ export const KNOBS = {
     unit: "steps",
     description: "S22 playtest r2 (Chris): the tavern pours FEWER lines per sitting (one lore line beside the live trail) but rotates them on the shop cadence — lore epoch = floor(stepsTaken / this). Re-entering within an epoch repeats the same pour (no farming).",
   }),
+  rumorsPerTown: knob<Record<RegionTier, number>>({
+    default: { civilized: 1, approach: 2, wild: 3 },
+    unit: "rumor lines per tavern visit, by the town's ring",
+    description: "Deploy playtest r1 (Chris: fewer rumors per town so each one lands): the tavern's pour is budgeted by ring — 1/2/3 lines in civilized/approach/wild. Slots fill ACTIONABLE first: one live trail step (rotating among the live chains on the rumor epoch; a trail to an opened door is moot), then the manalink pointer, then a lore line, then further trail steps and lore. A chain REVEAL (the trail's end) is an event and rides above the budget.",
+  }),
   manalinkRewardChance: knob<number>({
     default: 0.4,
     unit: "probability per tier-2+ quest offer",

@@ -564,16 +564,27 @@ function worldKnobsRumorSteps(world: WorldState): number {
 export function tavernRumors(world: WorldState, catalog: Catalog, town: Town, pool?: Map<string, CardDef>): string[] {
   const rs = rumorState(world, catalog);
   const pack = questPack(catalog);
-  const lines: string[] = [];
-  for (const chain of rs.chains) {
-    if (chain.progress < 0 || chain.progress >= chain.stops.length) continue;
+  // Deploy playtest r1 (Chris): the pour is BUDGETED by the town's ring (rumorsPerTown: 1/2/3) so
+  // each line lands. Candidates are gathered in priority tiers and the budget fills ACTIONABLE
+  // first: one live trail step (rotating among the live chains on the rumor epoch), the manalink
+  // pointer, then a lore line, then further trail steps and lore. Reveals (events) ride above the
+  // budget — the controller prepends them.
+  const budget = Math.max(0, worldKnobs(world).rumorsPerTown[world.map.regions[town.region]!.tier] ?? 1);
+  const epoch = Math.floor(world.player.stepsTaken / Math.max(1, worldKnobsRumorSteps(world)));
+  const rng = new WorldRng(((world.seed * 1_540_483_477) ^ hash32(`tavern:${town.index}:${epoch}`)) >>> 0);
+  const trail: string[] = [];
+  // A trail is live while it has stops left AND its door is still shut — a chain pointing at a
+  // Mox already taken is moot (and would crowd a one-line civilized board forever).
+  const live = rs.chains.filter((chain) => chain.progress >= 0 && chain.progress < chain.stops.length && !world.dungeons[chain.targetDungeonId]?.cleared);
+  const trailStart = live.length ? rng.int(live.length) : 0;
+  for (let i = 0; i < live.length; i++) {
+    const chain = live[(trailStart + i) % live.length]!;
     const nextTown = world.map.towns[chain.stops[chain.progress]!];
-    lines.push(
+    trail.push(
       pack.rumors.chainLinks[chain.progress % pack.rumors.chainLinks.length]!
         .replace(/\{town\}/g, nextTown?.name ?? "the next town")
         .replace(/\{region\}/g, nextTown ? world.map.regions[nextTown.region]!.name : "the next country"),
     );
-    if (lines.length >= 2) break; // the trail crowds the board only so far
   }
   const lore: string[] = [
     ...Object.values(pack.rumors.guardians),
@@ -584,16 +595,15 @@ export function tavernRumors(world: WorldState, catalog: Catalog, town: Town, po
   ];
   const fiveMoxen = catalog.dungeons.length === 5 && catalog.dungeons.every((d) => world.dungeons[d.id]?.cleared);
   if (fiveMoxen) lore.push(pack.rumors.vaultTease);
-  // S22 r2 (Chris): fewer lines per sitting, rotating on the shop cadence — keyed by the rumor
-  // epoch, not the visit count (re-entering within an epoch pours the same, no farming).
-  const epoch = Math.floor(world.player.stepsTaken / Math.max(1, worldKnobsRumorSteps(world)));
-  const rng = new WorldRng(((world.seed * 1_540_483_477) ^ hash32(`tavern:${town.index}:${epoch}`)) >>> 0);
-  const picks = Math.min(1, lore.length);
-  const start = lore.length ? rng.int(lore.length) : 0;
-  for (let i = 0; i < picks; i++) lines.push(lore[(start + i * 7) % lore.length]!);
+  // S22 r2 (Chris): the lore rotates on the shop cadence — keyed by the rumor epoch, not the visit
+  // count (re-entering within an epoch pours the same, no farming). Lore lines are drawn in a
+  // stride-7 walk from a seeded start so a wider budget reads as distinct voices.
+  const loreStart = lore.length ? rng.int(lore.length) : 0;
+  const loreLines = lore.map((_, i) => lore[(loreStart + i * 7) % lore.length]!);
   // S22 r4 (Chris, item 1): the mill knows where lasting gifts are posted — when another town's
   // CURRENT board holds a live manalink-paying contract (colour under the player's cap, town not
   // occupied), one pointer joins the pour, rotating on the same epoch as the lore.
+  let pointer: string | null = null;
   if (pool) {
     const knobs = worldKnobs(world);
     const capped = new Set(COLORS.filter((c) => world.manalinks.filter((m) => (m.kind ?? "basic") === "basic" && m.color === c).length >= knobs.manalinkCapPerColor));
@@ -609,11 +619,16 @@ export function tavernRumors(world: WorldState, catalog: Catalog, town: Town, po
     );
     if (posts.length > 0) {
       const pick = posts[rng.int(posts.length)]!;
-      lines.push(
-        (pack.rumors.manalinkPointer ?? "They say the board at {town} posts work that pays in a lasting gift — the kind that never leaves you.")
-          .replace(/\{town\}/g, pick.name),
-      );
+      pointer = (pack.rumors.manalinkPointer ?? "They say the board at {town} posts work that pays in a lasting gift — the kind that never leaves you.")
+        .replace(/\{town\}/g, pick.name);
     }
+  }
+  // Fill the budget in priority order, distinct lines only.
+  const ordered: (string | undefined)[] = [trail[0], pointer ?? undefined, loreLines[0], ...trail.slice(1), ...loreLines.slice(1)];
+  const lines: string[] = [];
+  for (const l of ordered) {
+    if (lines.length >= budget) break;
+    if (l && !lines.includes(l)) lines.push(l);
   }
   for (const l of lines) heardLog(rs, l);
   return lines;

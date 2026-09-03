@@ -249,6 +249,28 @@ describe("S3 — menace (brief 9)", () => {
     ]);
   });
 
+  it("9d. deploy playtest r1: a menace attacker BESIDE a plain attacker vs one blocker — the plain attacker stays blockable", async () => {
+    const tg = new TestGame({
+      name: "menace-beside",
+      setup: {
+        turn: 4,
+        active: 0,
+        step: "DECLARE_ATTACKERS",
+        players: [{ battlefield: ["boggart_brute", "grizzly_bears"] }, { battlefield: ["centaur_courser"] }],
+      },
+      script: [{ player: 0, do: "attack", attackers: ["boggart_brute", "grizzly_bears"] }],
+    });
+    await tg.game.runStep("DECLARE_ATTACKERS");
+    const courser = tg.findBattlefield("centaur_courser");
+    const bears = tg.findBattlefield("grizzly_bears");
+    const brute = tg.findBattlefield("boggart_brute");
+    const choices = blockerChoices(tg.game.ctx);
+    expect(choices).toContainEqual({ type: "doneDeclaringBlockers" });
+    expect(choices).toContainEqual({ type: "declareBlocker", blocker: courser, attacker: bears });
+    expect(choices).not.toContainEqual({ type: "declareBlocker", blocker: courser, attacker: brute });
+    // Two menace attackers and one plain one: still only the plain block.
+  });
+
   it("9c. two blockers is a legal menace block and combat plays out", async () => {
     const tg = await runFixture(fixture("s3-09-menace-two-blockers"));
     // 3 power, lethal 2 to the first bear, 1 to the second; two 2s back kill the brute.

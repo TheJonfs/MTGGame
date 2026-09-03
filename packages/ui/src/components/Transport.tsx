@@ -12,6 +12,8 @@ export function Transport({
   setSpeed,
   onFlag,
   replayMs,
+  onBack,
+  onDownload,
 }: {
   session: ReplaySession;
   index: number;
@@ -22,6 +24,10 @@ export function Transport({
   setSpeed: (s: number) => void;
   onFlag: () => void;
   replayMs: number;
+  /** Deploy playtest r1: leave the replay and return to the game that launched it (absent on /viewer). */
+  onBack?: () => void;
+  /** Deploy playtest r1: save the log as a file (a bug report's evidence; the fixtures inbox's raw material). */
+  onDownload?: () => void;
 }) {
   const total = session.total;
   const info = session.decisions[Math.min(index, total - 1)];
@@ -86,6 +92,12 @@ export function Transport({
       <button className="flag-btn" onClick={onFlag} title="Flag this moment for the fixtures inbox">
         <img src="/icons/ui-flag.svg" width={13} style={{ mixBlendMode: "multiply", verticalAlign: -2 }} alt="" /> Flag
       </button>
+      {onDownload && (
+        <button onClick={onDownload} title="Download this game's log as a file (send it with a bug report)">Download log</button>
+      )}
+      {onBack && (
+        <button onClick={onBack} title="Leave the replay and return to the game">⟵ Back</button>
+      )}
     </div>
   );
 }

@@ -1509,7 +1509,7 @@ function GameOverScreen({ c, onWatch, onNew }: { c: WorldController; onWatch: ((
   );
 }
 
-export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) => void }) {
+export function WorldApp({ onWatchReplay, paused = false }: { onWatchReplay: (game: SavedGame) => void; /** Deploy playtest r1: mounted but hidden under a replay — the screen-driven music holds still. */ paused?: boolean }) {
   const pool = useMemo(loadPool, []);
   const catalog = useMemo(loadWorldCatalog, []);
   const [oracle, setOracle] = useState<Record<string, OracleEntry>>({});
@@ -1558,6 +1558,7 @@ export function WorldApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =
   const lastScreenKind = useRef<string>("");
   const lastResultSting = useRef(0);
   useEffect(() => {
+    if (paused) return; // hidden under the replay viewer: no cue changes, no stings
     const scr = controller.screen;
     const w2 = controller.world;
     let cue: MusicCue = "music.overworld";

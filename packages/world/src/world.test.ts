@@ -1208,6 +1208,35 @@ describe("S21 Parts 3–4 (retrieval, rumor-chains, the lore turn): pack-as-data
   });
 });
 
+describe("deploy playtest r1: the tavern's pour is budgeted by ring (rumorsPerTown 1/2/3)", () => {
+  it("a civilized tavern pours one line, approach two, wild three; the trail step leads; lines are distinct; a reveal is not counted (the controller prepends it)", async () => {
+    const { rumorState, rumorsOnArrival, tavernRumors } = await import("./quests.js");
+    const w = newWorld({ seed: 402, catalog, starter: "green" });
+    const rs = rumorState(w, catalog); // seed the chains
+    const stops = new Set(rs.chains.flatMap((c) => c.stops));
+    const byTier = (tier: string) => w.map.towns.find((t) => w.map.regions[t.region]!.tier === tier && !stops.has(t.index))!;
+    rumorsOnArrival(w, catalog, byTier("civilized")); // the openers are heard: every trail goes live (the controller does this before the pour)
+    expect(worldKnobs(w).rumorsPerTown).toEqual({ civilized: 1, approach: 2, wild: 3 });
+    const pack = catalog.questText!.rumors;
+    const isTrail = (l: string) => pack.chainLinks.some((c) => l.startsWith(c.slice(0, Math.max(1, c.indexOf("{")))));
+    for (const [tier, n] of [["civilized", 1], ["approach", 2], ["wild", 3]] as const) {
+      const town = byTier(tier);
+      for (let e = 0; e < 5; e++) {
+        w.player.stepsTaken = e * worldKnobs(w).rumorRefreshSteps;
+        const lines = tavernRumors(w, catalog, town);
+        expect(lines, `${tier} epoch ${e}`).toHaveLength(n);
+        expect(new Set(lines).size).toBe(n);
+        expect(isTrail(lines[0]!), `${tier}: the trail step leads — got ${JSON.stringify(lines)}`).toBe(true);
+        if (n >= 2) expect(isTrail(lines[1]!), `${tier}: a lore line second`).toBe(false);
+      }
+    }
+    // The civilized single line ROTATES among the five live chains across epochs (not chain 0 forever).
+    const seen = new Set<string>();
+    for (let e = 0; e < 12; e++) { w.player.stepsTaken = e * worldKnobs(w).rumorRefreshSteps; seen.add(tavernRumors(w, catalog, byTier("civilized"))[0]!); }
+    expect(seen.size).toBeGreaterThan(1);
+  });
+});
+
 describe("S19 shop tiers (ADR-078): availability by ring, price by tier factor, R never stocks", () => {
   it("a civilized shop pool is tier-1 only; approach adds tier 2; wild adds tier 3; R (Demonic Tutor, Mystic Snake) and prizeOnly (Lotus) appear on no shelf; prices carry the factor", async () => {
     const { shopPoolFor, shopPrice } = await import("./shop.js");
