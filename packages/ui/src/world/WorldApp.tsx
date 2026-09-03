@@ -96,7 +96,8 @@ function StartScreen({ c, onStart }: { c: WorldController; onStart: (choice: New
         <p>
           <button className="primary" onClick={() => onStart({ starter, difficulty, name, ...(seed.trim() ? { seed: Number(seed) } : {}) })}>New game</button>{" "}
           {c.hasAutosave() && <button onClick={() => c.continueFromAutosave()}>Continue</button>}{" "}
-          <button className="linkish" onClick={() => setChronicle(true)} title="the profile's ledger — one entry per folding">Chronicle{c.chronicle().length ? ` (${c.chronicle().length})` : ""}</button>{" "}
+          {/* S27 r4 (Chris): the Chronicle appears only after a first cutting — before that its very header gives the ending away. */}
+          {c.chronicle().length > 0 && <><button className="linkish" onClick={() => setChronicle(true)} title="the profile's ledger — one entry per folding">Chronicle ({c.chronicle().length})</button>{" "}</>}
           <label className="linkish" style={{ cursor: "pointer" }}>
             load a save file
             <input type="file" accept=".json" style={{ display: "none" }} onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])} />
