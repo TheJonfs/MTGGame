@@ -491,6 +491,53 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.scorePriorityAction(threatened, { type: "castSpell", objectId: "h_gg", targets: [{ kind: "object", id: "mine" }] })).toBeGreaterThan(-Infinity);
   });
 
+  it("book of shame 29 (S27 r2, the Manafleur that never swung): a 7/7 at 35 life attacks into three 2/2s; the same 7/7 at 6 life holds (the counter-swing is the whole deterrence)", async () => {
+    const a = agent("midrange");
+    const board = (life: number) => mkView({
+      life: [life, 20], step: "DECLARE_ATTACKERS", activePlayer: 0,
+      battlefield: [{ id: "mf", cardId: "the_manafleur", controller: 0 }, { id: "b1", cardId: "grizzly_bears", controller: 1 }, { id: "b2", cardId: "grizzly_bears", controller: 1 }, { id: "b3", cardId: "grizzly_bears", controller: 1 }],
+    });
+    const creaturesOf = (v: GameView) => v.battlefield.filter((o) => o.power !== null).map((o) => ({ id: o.id, controller: o.controller, power: o.power!, toughness: o.toughness!, keywords: o.keywords, damage: 0 }));
+    const high = board(35);
+    const low = board(6);
+    expect(await a.scoreAttackSet(high, creaturesOf(high) as never, 0, ["mf"])).toBeGreaterThan(0);
+    expect(await a.scoreAttackSet(low, creaturesOf(low) as never, 0, ["mf"])).toBeLessThan(await a.scoreAttackSet(high, creaturesOf(high) as never, 0, ["mf"]));
+  });
+
+  it("book of shame 30 (S27 r2): a second copy of a legend we control is never cast (insurance in hand beats the legend rule); the first copy still casts", () => {
+    const a = agent();
+    const hand = [{ objectId: "h1", cardId: "the_manafleur" }];
+    const withOne = mkView({ hand, battlefield: [{ id: "mf", cardId: "the_manafleur", controller: 0 }, ...(["plains", "island", "swamp", "mountain", "forest"] as const).map((c, i) => ({ id: `l${i}`, cardId: c, controller: 0 as const }))] });
+    const withNone = mkView({ hand, battlefield: (["plains", "island", "swamp", "mountain", "forest"] as const).map((c, i) => ({ id: `l${i}`, cardId: c, controller: 0 as const })) });
+    const cast = { type: "castSpell" as const, objectId: "h1", targets: [] };
+    expect(a.scorePriorityAction(withOne, cast)).toBe(-Infinity);
+    expect(a.scorePriorityAction(withNone, cast)).toBeGreaterThan(-Infinity);
+  });
+
+  it("book of shame 31 (S27 r2, the Witch's discipline): life-for-cards only with a thin hand, only with life to spare over the opposing board, never as a faucet", () => {
+    const a = agent();
+    const witch = (opts: { life: number; hand: number; oppPower: number }) => mkView({
+      life: [opts.life, 20],
+      hand: Array.from({ length: opts.hand }, (_, i) => ({ objectId: `h${i}`, cardId: "swamp" })),
+      battlefield: [{ id: "witch", cardId: "the_jet_witch", controller: 0 }, ...Array.from({ length: opts.oppPower / 2 }, (_, i) => ({ id: `ob${i}`, cardId: "grizzly_bears", controller: 1 as const }))],
+    });
+    const draw = { type: "activateAbility" as const, objectId: "witch", abilityIndex: 0, targets: [] };
+    expect(a.scorePriorityAction(witch({ life: 18, hand: 1, oppPower: 4 }), draw)).toBeGreaterThan(-Infinity); // thin hand, life to spare
+    expect(a.scorePriorityAction(witch({ life: 18, hand: 4, oppPower: 4 }), draw)).toBe(-Infinity); // hand is stocked
+    expect(a.scorePriorityAction(witch({ life: 8, hand: 1, oppPower: 6 }), draw)).toBe(-Infinity); // 6 after paying < 6 power + 3
+  });
+
+  it("book of shame 32 (S27 r2, Glare of Subdual): a tap-a-creature cost never fires on our own turn (it spends an attacker); it fires on the opponent's upkeep", () => {
+    const a = agent();
+    const view = (activePlayer: 0 | 1, step: string) => mkView({
+      activePlayer, step,
+      battlefield: [{ id: "glare", cardId: "glare_of_subdual", controller: 0 }, { id: "bear", cardId: "grizzly_bears", controller: 0 }, { id: "ob", cardId: "grizzly_bears", controller: 1 }],
+    });
+    const tap = { type: "activateAbility" as const, objectId: "glare", abilityIndex: 0, targets: [{ kind: "object" as const, id: "ob" }] };
+    expect(a.scorePriorityAction(view(0, "MAIN1"), tap)).toBe(-Infinity);
+    expect(a.scorePriorityAction(view(1, "UPKEEP"), tap)).toBeGreaterThan(-Infinity);
+  });
+
   it("book of shame 28 (S26 r3, the tapper discipline): Scepter of Dominance holds on our own turn with nothing to swing; fires in MAIN1 with an attacker; fires on the opponent's upkeep and beginning of combat, never after their attackers are declared", () => {
     const a = agent();
     const view = (opts: { step: string; activePlayer: 0 | 1; swing?: boolean }) =>

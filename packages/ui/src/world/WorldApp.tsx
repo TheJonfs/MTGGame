@@ -31,6 +31,7 @@ function StartScreen({ c, onStart }: { c: WorldController; onStart: (choice: New
   const [name, setName] = useState("You");
   const [error, setError] = useState<string | null>(null);
   const [chronicle, setChronicle] = useState(false); // S27: the Chronicle of Cuttings page
+  const [confirmReset, setConfirmReset] = useState(false); // S27 r2: start from scratch (the profile wiped)
   const carried = c.newRoadLine();
   // S23 audio (ADR-084): the prominent front-page toggle — persisted; sound begins at the
   // first interaction per browser reality regardless of this default.
@@ -81,7 +82,16 @@ function StartScreen({ c, onStart }: { c: WorldController; onStart: (choice: New
           </div>
         </div>
         {/* S27 (ADR-093): what the profile carries into the new road — the pack's line. */}
-        {carried && <p className="dungeon-law" style={{ borderColor: "var(--brass)", fontSize: 12.5, textAlign: "left" }}>{carried}</p>}
+        {carried && (
+          <p className="dungeon-law" style={{ borderColor: "var(--brass)", fontSize: 12.5, textAlign: "left" }}>
+            {carried}
+            <span style={{ display: "block", marginTop: 6, fontSize: 11.5 }}>
+              A new game carries this. {!confirmReset
+                ? <button className="linkish" onClick={() => setConfirmReset(true)}>Start from scratch instead…</button>
+                : <>Wipe the chronicle and every carried thing? <button className="danger" onClick={() => { c.resetChronicle(); setConfirmReset(false); }}>Yes, from scratch</button> <button onClick={() => setConfirmReset(false)}>Keep it</button></>}
+            </span>
+          </p>
+        )}
         <p>
           <button className="primary" onClick={() => onStart({ starter, difficulty, name, ...(seed.trim() ? { seed: Number(seed) } : {}) })}>New game</button>{" "}
           {c.hasAutosave() && <button onClick={() => c.continueFromAutosave()}>Continue</button>}{" "}

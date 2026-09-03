@@ -30,5 +30,8 @@
   "asset": "/custom-art/law_toll.png",
   "fallback": "rendered"
  },
- "law": true
+ "law": true,
+ "subtypes": [
+  "Law"
+ ]
 }

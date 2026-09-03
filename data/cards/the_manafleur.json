@@ -14,7 +14,7 @@
  ],
  "power": 7,
  "toughness": 7,
- "text": "At the beginning of your end step, exile all laws, then create a copy of the next law. (The laws are the five stronghold laws; the next law is the one after the last created, in the encounter's sequence \u2014 the WBRUG ring by default, beginning with white.)",
+ "text": "At the beginning of your end step, exile all laws, then create the next law. (The laws are the five stronghold laws; the next law is the one after the last created, in the encounter's sequence \u2014 the WBRUG ring by default, beginning with white.)",
  "abilities": [
   {
    "kind": "triggered",

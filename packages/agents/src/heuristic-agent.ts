@@ -189,6 +189,8 @@ export class HeuristicAgent implements Agent {
     if (this.fleetingWasteGated(view, action)) return -Infinity; // S23: the Thundersnake outside its window
     if (this.threatenGated(view, action)) return -Infinity; // S26: Lumen's steal only where the swing cashes
     if (this.tapperGated(view, action)) return -Infinity; // S26 r3: hold the tapper for the opponent's turn
+    if (this.legendDuplicateGated(view, action)) return -Infinity; // S27 r2: never cast a second copy of a legend we control
+    if (this.lifeForCardsGated(view, action)) return -Infinity; // S27 r2: the Witch's discipline
     if (this.accumulatorSpendGated(view, action)) return -Infinity; // S26: Clio holds the tax while the board threatens
     // The misaim rule: a FINITE cliff (not -Infinity) so book-of-shame orderings among
     // bad aims survive — at any softmax temperature exp(-MISAIM/t) is 0, so a misaimed
@@ -495,7 +497,16 @@ export class HeuristicAgent implements Agent {
     const candidates = request.actions.filter((a) => a.type !== "tapForMana" && a.type !== "untapForMana"); // S25 r3: takebacks are human conveniences
     if (candidates.length === 1) return candidates[0]!;
     const scores = candidates.map((a) => this.scorePriorityAction(view, a));
-    return candidates[this.softmaxPick(scores)]!;
+    const pick = candidates[this.softmaxPick(scores)]!;
+    // S27 r2: the Witch's per-turn budget — count each life-for-cards activation taken.
+    if (pick.type === "activateAbility") {
+      const ab = viewAbilityAt(view, this.defs, pick.objectId, pick.abilityIndex);
+      if (ab && ab.kind === "activated" && ab.cost.life && ab.effects.some((e) => e.type === "draw")) {
+        if (this.lifeDrawsThisTurn.turn !== view.turn) this.lifeDrawsThisTurn = { turn: view.turn, n: 0 };
+        this.lifeDrawsThisTurn.n += 1;
+      }
+    }
+    return pick;
   }
 
   /** ADR-060.2 posture switch (exposed for tests): hold tricks only when not
@@ -680,10 +691,22 @@ export class HeuristicAgent implements Agent {
     // pays the deterrence it was providing (evaluate credits the same term
     // to untapped holders; that asymmetry prices the Rats over-attack).
     const oppCreatures = view.battlefield.filter((o) => o.controller !== me && o.power !== null);
+    // S27 r2 (Chris: the Manafleur never swung its 7/7 into a board of 2/2s): deterrence is only worth
+    // what the counter-swing could take — scale the deduction by the race risk (the opponent's
+    // untapped power against our life above a margin). At 35 life facing six power the 7/7 attacks;
+    // at 6 life it holds. Vigilance still pays nothing. Exposed through the book (29).
+    const untappedOpp = oppCreatures.filter((o) => !o.tapped);
+    const oppPower = untappedOpp.reduce((n, o) => n + (o.power ?? 0), 0);
+    const maxOppPower = untappedOpp.reduce((m, o) => Math.max(m, o.power ?? 0), 0);
+    const oppDeathtouch = untappedOpp.some((o) => o.keywords.includes("deathtouch"));
+    const raceRisk = Math.min(1, oppPower / Math.max(1, view.life[me] - 5));
     for (const id of attackers) {
       const o = view.battlefield.find((b) => b.id === id);
       if (!o || o.keywords.includes("vigilance")) continue;
-      score -= deterrence(this.defs, o, oppCreatures, this.C);
+      // Only a SAFE attacker (no single block can kill it) trades its deterrence for race risk; a
+      // fragile trader (the deathtouch 1/1 of book-of-shame's deterrence pin) keeps the full deduction.
+      const safe = (o.toughness ?? 0) > maxOppPower && !oppDeathtouch;
+      score -= deterrence(this.defs, o, oppCreatures, this.C) * (safe ? raceRisk : 1);
     }
     // S23 (the Gallows Djinn): each attacker's own attack tax is priced at the archetype's
     // own-life rate — the 5/5's swing is honest, not free.
@@ -980,13 +1003,46 @@ export class HeuristicAgent implements Agent {
   tapperGated(view: GameView, action: Action): boolean {
     if (action.type !== "activateAbility") return false;
     const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
-    if (!ab || ab.kind !== "activated" || !ab.cost.tap) return false;
+    if (!ab || ab.kind !== "activated" || !(ab.cost.tap || ab.cost.tapCreature)) return false;
     if (ab.effects.length === 0 || !ab.effects.every((e) => e.type === "tapTarget")) return false;
     const me = view.you;
     if (view.activePlayer !== me) return !["UPKEEP", "DRAW", "MAIN1", "COMBAT_BEGIN"].includes(view.step);
+    // S27 r2 (Chris: Glare of Subdual tapped its own board down instead of attacking for lethal): a
+    // tap-a-creature COST spends an attacker — on our own turn the Glare never fires.
+    if (ab.cost.tapCreature) return true;
     if (!(view.step === "MAIN1" || view.step === "COMBAT_BEGIN")) return true;
     const swing = view.battlefield.some((o) => o.controller === me && !o.tapped && o.power !== null && o.id !== action.objectId);
     return !swing;
+  }
+
+  /** S27 r2 (Chris: the AI threw away drawn Manafleurs to the legend rule): a legendary permanent
+   * we already control is never cast again — the copy is worth more in hand as insurance against
+   * removal. Exposed for the book. */
+  legendDuplicateGated(view: GameView, action: Action): boolean {
+    if (action.type !== "castSpell") return false;
+    const card = view.hand.find((c) => c.objectId === action.objectId);
+    const d = card ? this.def(card.cardId) : undefined;
+    if (!d || !(d.supertypes ?? []).includes("Legendary")) return false;
+    return view.battlefield.some((o) => o.controller === view.you && o.cardId === d.id);
+  }
+
+  /** S27 r2 (Chris: the Jet Witch dumped as much life as it could into cards): life-for-cards is a
+   * budgeted purchase, not a faucet. Pay only while the hand is thin (≤ 2 cards), only while the
+   * life AFTER paying clears the opponent's untapped power on the board by a margin (3), and at most
+   * twice per turn (per-instance memory keyed by turn, the S7 pattern). The pin-17 floor still holds
+   * underneath. Exposed for the book. */
+  private lifeDrawsThisTurn: { turn: number; n: number } = { turn: -1, n: 0 };
+  lifeForCardsGated(view: GameView, action: Action): boolean {
+    if (action.type !== "activateAbility") return false;
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+    if (!ab || ab.kind !== "activated" || !ab.cost.life) return false;
+    if (!ab.effects.some((e) => e.type === "draw")) return false;
+    const me = view.you;
+    if (view.hand.length > 2) return true;
+    const oppPower = view.battlefield.filter((o) => o.controller !== me && !o.tapped && o.power !== null).reduce((n, o) => n + (o.power ?? 0), 0);
+    if (view.life[me] - ab.cost.life < oppPower + 3) return true;
+    if (this.lifeDrawsThisTurn.turn === view.turn && this.lifeDrawsThisTurn.n >= 2) return true;
+    return false;
   }
 
   /** S26 (Lumen, the Hearth Fire — the sequencing pin, the Thundersnake's gate family): a resolved

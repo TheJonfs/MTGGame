@@ -31,5 +31,8 @@
   "asset": "/custom-art/law_season.png",
   "fallback": "rendered"
  },
- "law": true
+ "law": true,
+ "subtypes": [
+  "Law"
+ ]
 }

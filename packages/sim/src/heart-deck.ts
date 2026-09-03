@@ -21,7 +21,9 @@ export const HEART_DECK: { name: string; archetype: "aggro" | "midrange" | "cont
     ...one(["the_pearl_cleric", "the_sapphire_sage", "the_jet_witch", "the_ruby_tyrant", "the_emerald_keeper"]),
     ...one(["cunning_tactician", "thundersnake", "gaean_wurm", "traumatizer", "gallows_djinn"]),
     ...one(["mox_pearl", "mox_sapphire", "mox_jet", "mox_ruby", "mox_emerald"]),
-    ...one(["aether_mutation", "aetherbolt", "graceful_restoration", "phyrexian_purge", "experimental_overload", "glare_of_subdual", "vindicate", "temporal_spring", "frondland_felidar", "mystic_snake"]),
+    // S27 r2 (Chris): Experimental Overload OUT (cast into an empty graveyard — the count is nothing in a
+    // 60 with three instants and sorceries), Faerie Formation IN (a flex slot; the "every gold" conceit bends).
+    ...one(["aether_mutation", "aetherbolt", "graceful_restoration", "phyrexian_purge", "faerie_formation", "glare_of_subdual", "vindicate", "temporal_spring", "frondland_felidar", "mystic_snake"]),
     ...one(["wrath_of_god", "control_magic"]),
   ],
 };

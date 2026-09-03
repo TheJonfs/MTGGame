@@ -278,6 +278,8 @@ export class WorldController {
     this.emit();
   }
   devClearLegacy(): void { this.writeLegacy(emptyLegacy()); this.emit(); }
+  /** S27 r2 (Chris): the menu's "start from scratch" — the profile wiped, a fresh chronicle. Not a dev tool. */
+  resetChronicle(): void { this.writeLegacy(emptyLegacy()); this.emit(); }
   /** Dev (S27): fell the five petals so the Heart's door can be tested without the five fights. */
   /** S27 r1 (Chris): AUTO-VICTORY over the five petal bosses — each unfallen petal falls as if won
    * (the signature — withheld if held — both duals, the purse; no stake), so the Heart can be

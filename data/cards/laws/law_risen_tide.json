@@ -25,5 +25,8 @@
   "asset": "/custom-art/law_risen_tide.png",
   "fallback": "rendered"
  },
- "law": true
+ "law": true,
+ "subtypes": [
+  "Law"
+ ]
 }

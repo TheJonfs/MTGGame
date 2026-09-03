@@ -227,8 +227,16 @@ function applyEffect(
   const opp = me === 0 ? 1 : 0;
   // Value refs (ADR-028/A4): targetPower and counting refs aren't modelled — a count-ref amount
   // predicts as a small fixed number (Tendrils ≈ "some") rather than zero.
-  const amt = (a: number | "X" | { ref: string }): number =>
-    typeof a === "number" ? a : a === "X" ? x : a.ref === "xPaid" ? x : a.ref === "count" || a.ref === "graveyardCount" ? 3 : 0;
+  // S27 r2 (Chris: Experimental Overload cast into an empty graveyard): a graveyardCount ref reads the
+  // VIEW's public graveyard (typed when the ref names types) instead of the old "some" (3).
+  const gyCount = (ref: { who?: string; types?: string[] }): number => {
+    const p = ref.who === "opponent" ? opp : me;
+    const yard = view.graveyards[p] ?? [];
+    if (!ref.types) return yard.length;
+    return yard.filter((id) => { const d = defs.get(id); return !!d && ref.types!.some((t) => d.types.includes(t as never)); }).length;
+  };
+  const amt = (a: number | "X" | { ref: string; who?: string; types?: string[] }): number =>
+    typeof a === "number" ? a : a === "X" ? x : a.ref === "xPaid" ? x : a.ref === "graveyardCount" ? gyCount(a) : a.ref === "count" ? 3 : 0;
   const objAt = (i: number) => {
     const t = targets[i];
     return t?.kind === "object" ? view.battlefield.find((o) => o.id === t.id) : undefined;
@@ -371,10 +379,14 @@ function applyEffect(
       // A10 (S22): count may be a value ref (Aether Mutation) — predict one token as the floor
       // until a pin prices the ref (Part 3 territory).
       const tokenCount = typeof e.count === "number" ? e.count : 1;
+      // S27 r2: a locked P/T (Overload's Weird) reads its ref — a 0/0 is no token at all (it dies to
+      // the SBA), so the cast prices only its other clauses.
+      const pt = e.pt !== undefined ? amt(e.pt as { ref: string; who?: string; types?: string[] }) : null;
+      if (pt !== null && pt <= 0) return 0;
       for (let i = 0; i < tokenCount; i++) {
         view.battlefield.push({
           id: `pred_${predSeq++}`, cardId: e.tokenId, controller: me, tapped: false, damage: 0,
-          attachedTo: null, power: td?.power ?? 1, toughness: td?.toughness ?? 1,
+          attachedTo: null, power: pt ?? td?.power ?? 1, toughness: pt ?? td?.toughness ?? 1,
           keywords: [...(td?.keywords ?? [])],
         });
       }
