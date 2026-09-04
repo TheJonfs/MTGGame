@@ -1,0 +1,42 @@
+{
+  "id": "orcish_lumberjack",
+  "name": "Orcish Lumberjack",
+  "source": "real",
+  "scryfallId": "21ef13e3-658c-43a3-a290-4c5dde8e8b55",
+  "manaCost": "{R}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Orc"
+  ],
+  "power": 1,
+  "toughness": 1,
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "tap": true,
+        "sacrifice": {
+          "predicate": "land.subtype:Forest"
+        }
+      },
+      "effects": [
+        {
+          "type": "addMana",
+          "choice": {
+            "count": 3,
+            "anyCombinationOf": [
+              "R",
+              "G"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 1
+}

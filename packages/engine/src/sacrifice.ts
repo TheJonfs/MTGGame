@@ -14,6 +14,9 @@ export function matchesSacrificePredicate(
   predicate: string,
 ): boolean {
   if (predicate === "self") return objectId === sourceId;
+  // S28 (ADR-098, Orcish Lumberjack): "sacrifice a Forest" — a typed land by subtype.
+  const landSub = predicate.match(/^land\.subtype:(.+)$/);
+  if (landSub) { const d = ctx.defs.def(getObject(ctx.state, objectId).cardId); return d.types.includes("Land") && (d.subtypes ?? []).includes(landSub[1]!); }
   const obj = ctx.state.objects[objectId];
   if (!obj || obj.zone !== "battlefield") return false;
   if (!predicate.startsWith("creature")) return false;

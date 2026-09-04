@@ -329,6 +329,7 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption, printed }: { c: Ma
     mulligan: "Keep this hand?",
     bottomCards: "Choose a card to put on the bottom",
     discard: "Choose a card to discard",
+    putOnTop: "Put a card on top of your library — the first you choose ends on top",
     chooseSacrifice: "Choose a permanent to sacrifice",
     legendRule: "Legend rule: choose which to keep",
     orderTriggers: "Choose which trigger goes on the stack next",
@@ -570,16 +571,26 @@ function TapColorModal({ c, pool }: { c: MatchController; pool: Map<string, Card
 function ColorModal({ c }: { c: MatchController }) {
   const colors = ["W", "U", "B", "R", "G"] as const;
   const names: Record<string, string> = { W: "White", U: "Blue", B: "Black", R: "Red", G: "Green" };
+  const phase = c.phase.kind === "chooseColor" ? c.phase : null;
+  // S28 (ADR-098, Orcish Lumberjack): a COMBINATION choice lists its multisets (RRR · RRG · RGG · GGG).
+  const combos = (phase?.variants ?? []).map((v) => (v as { colors?: readonly string[] }).colors).filter((x): x is string[] => Array.isArray(x));
+  const count = (phase?.variants ?? []).map((v) => (v as { color?: string; colors?: string[] }).colors?.length ?? 0)[0] ?? 0;
   return (
     <div className="gallery-modal">
       <div className="gallery-modal-box play-dialog">
-        <h3 style={{ marginTop: 0, fontFamily: "var(--serif)" }}>Add three mana of which colour?</h3>
+        <h3 style={{ marginTop: 0, fontFamily: "var(--serif)" }}>{combos.length > 0 ? `Add ${count} mana in which combination?` : "Add mana of which colour?"}</h3>
         <div className="dialog-list" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          {colors.map((col) => (
-            <button key={col} className="color-pick" onClick={() => c.chooseColor(col)}>
-              <i className={`colour-pip c-${col}`} /> {names[col]}
-            </button>
-          ))}
+          {combos.length > 0
+            ? combos.map((cs) => (
+                <button key={cs.join("")} className="color-pick" onClick={() => c.chooseColors(cs as ("W" | "U" | "B" | "R" | "G")[])}>
+                  {cs.map((col, i) => <i key={i} className={`colour-pip c-${col}`} />)} {cs.join("")}
+                </button>
+              ))
+            : colors.map((col) => (
+                <button key={col} className="color-pick" onClick={() => c.chooseColor(col)}>
+                  <i className={`colour-pip c-${col}`} /> {names[col]}
+                </button>
+              ))}
         </div>
         <div style={{ marginTop: 8, textAlign: "right" }}>
           <button onClick={() => c.cancel()}>Cancel</button>

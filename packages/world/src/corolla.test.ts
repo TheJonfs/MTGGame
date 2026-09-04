@@ -398,8 +398,9 @@ describe("S27 — the Heart, the chronicle, the legacy (ADR-093)", () => {
     const applied = applyLegacy(w, catalog, legacy, knobs);
     expect(applied.colors).toEqual(["R"]);
     expect(applied.cards.sort()).toEqual(["clio_lady_of_the_depths", "drakuseth_maw_of_flames"]);
-    expect(applied.gold).toBe(knobs.legacyGoldPerCutting * 2);
-    expect(w.player.gold).toBe(gold + knobs.legacyGoldPerCutting * 2);
+    // ADR-095 (S28): the legacy is five FLAGS — two red cuttings pay ONE flag's purse.
+    expect(applied.gold).toBe(knobs.legacyGoldPerCutting);
+    expect(w.player.gold).toBe(gold + knobs.legacyGoldPerCutting);
     expect(w.powers.unlocked).toEqual(["R"]);
     expect(w.dungeons["power_r"]?.cleared).toBe(true);
     expect(w.player.collection["clio_lady_of_the_depths"]).toBe(1);
@@ -419,6 +420,53 @@ describe("S27 — the Heart, the chronicle, the legacy (ADR-093)", () => {
     expect(migrateLegacy(null)).toEqual(emptyLegacy());
     expect(migrateLegacy({ version: 2, cuttings: { W: 9 } })).toEqual(emptyLegacy());
     expect(migrateLegacy(JSON.parse(JSON.stringify(legacy)))).toEqual(legacy);
+  });
+
+  it("ADR-095 (S28): the legacy is five flags — a repeated colour compounds nothing; the union pays per flag; the fifth line fires once, on the fifth FLAG; a duplicate-colour chronicle migrates to the set-derived carry", async () => {
+    const { applyLegacy, cutColors, emptyLegacy, migrateLegacy, recordCutting, setsFifthFlag } = await import("./corolla.js");
+    const knobs = defaultKnobs();
+    const entry = (n: number, color: "W" | "U" | "B" | "R" | "G") => ({ n, color, text: heartText(color), seed: n, difficulty: "standard" as const, steps: 100, when: "2026-09-04" });
+    // 1. Two cuttings from black → exactly one cutting's carry (power, guardian card, minister, +50 not +100); the chronicle shows two entries.
+    const twoBlack = recordCutting(recordCutting(emptyLegacy(), entry(1, "B")), entry(2, "B"));
+    const oneBlack = recordCutting(emptyLegacy(), entry(1, "B"));
+    const w2 = newWorld({ seed: 28, catalog, starter: "green" });
+    const w1 = newWorld({ seed: 28, catalog, starter: "green" });
+    const a2 = applyLegacy(w2, catalog, twoBlack, knobs);
+    const a1 = applyLegacy(w1, catalog, oneBlack, knobs);
+    expect(a2).toEqual(a1);
+    expect(a2.gold).toBe(knobs.legacyGoldPerCutting);
+    expect(w2.player.gold).toBe(w1.player.gold);
+    expect(w2.powers.unlocked).toEqual(["B"]);
+    expect(twoBlack.chronicle).toHaveLength(2);
+    expect(twoBlack.chronicle.map((e) => e.n)).toEqual([1, 2]); // the honest ordinal, a record not a reward
+    // 2. Black then red → the union; +100.
+    const blackRed = recordCutting(oneBlack, entry(2, "R"));
+    const w3 = newWorld({ seed: 28, catalog, starter: "green" });
+    const a3 = applyLegacy(w3, catalog, blackRed, knobs);
+    expect(a3.colors).toEqual(["B", "R"]);
+    expect(a3.gold).toBe(knobs.legacyGoldPerCutting * 2);
+    expect(a3.cards.length).toBe(4); // two guardians, two ministers
+    // 3. Five distinct colours across six cuttings (one repeat): the fifth-flag line fires once, on the cutting that set the fifth flag.
+    let l = emptyLegacy();
+    const fired: number[] = [];
+    let n = 0;
+    for (const c of ["W", "U", "U", "B", "R", "G"] as const) {
+      n += 1;
+      const next = recordCutting(l, entry(n, c));
+      if (setsFifthFlag(l, next)) fired.push(n);
+      l = next;
+    }
+    expect(fired).toEqual([6]); // the sixth entry set the fifth flag (the repeat was the third)
+    expect(cutColors(l)).toHaveLength(5);
+    const l7 = recordCutting(l, entry(7, "W"));
+    expect(setsFifthFlag(l, l7)).toBe(false); // a seventh cutting sets nothing
+    // 4. Migration of a duplicate-colour chronicle yields the set-derived carry — and is idempotent (no re-pay).
+    const raw = JSON.parse(JSON.stringify(twoBlack));
+    const migrated = migrateLegacy(raw);
+    expect(cutColors(migrated)).toEqual(["B"]);
+    expect(migrateLegacy(JSON.parse(JSON.stringify(migrated)))).toEqual(migrated);
+    const w4 = newWorld({ seed: 28, catalog, starter: "green" });
+    expect(applyLegacy(w4, catalog, migrated, knobs).gold).toBe(knobs.legacyGoldPerCutting);
   });
 
   it("the text packs: the Corolla's and the Heart's lines load from quests.json with every key the screens read", () => {

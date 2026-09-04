@@ -10,6 +10,9 @@ import { DECKS } from "./slice-decks.js";
 
 const CARDS_DIR = join(dirname(fileURLToPath(import.meta.url)), "../../../data/cards");
 const RULES = { startingLife: 20, handSize: 7, mulligan: "london" as const, maxTurns: 100 };
+/** ADR-096 (S28): the Heart's roots — the five basics on the Manafleur's side before turn one (the
+ * world's heartRootModifiers, inlined: sim does not depend on world). */
+const ROOTS = ["plains", "island", "swamp", "mountain", "forest"].map((cardId) => ({ type: "permanentOnBattlefield" as const, player: 1 as const, cardId }));
 
 /**
  * S27 fuzz-before-fixtures (the S3 protocol): the Manafleur's words — exile-by-scope (`laws`),
@@ -30,7 +33,7 @@ describe("S27 heart fuzz — the Manafleur under random play (fuzz-before-fixtur
       for (const mode of MODES) {
         for (let seed = 1; seed <= games / 3 + 1; seed++) {
           const result = await runMatch(
-            { seed: seed * 7 + (mode === "random" ? 1000 : mode === "accumulate" ? 2000 : 0), players: [{ name, decklist: deck, agent: "random" }, { name: "The Manafleur", decklist: HEART_DECK.decklist, agent: "random" }], rules: RULES, modifiers: [{ type: "signatureToHand", player: 1, cardId: "the_manafleur" }, { type: "lawSequence", mode }] },
+            { seed: seed * 7 + (mode === "random" ? 1000 : mode === "accumulate" ? 2000 : 0), players: [{ name, decklist: deck, agent: "random" }, { name: "The Manafleur", decklist: HEART_DECK.decklist, agent: "random" }], rules: RULES, modifiers: [{ type: "signatureToHand", player: 1, cardId: "the_manafleur" }, ...ROOTS, { type: "lawSequence", mode }] },
             cards,
             [new RandomAgent(seed * 2 + 1), new RandomAgent(seed * 2 + 2)],
           );
@@ -43,7 +46,7 @@ describe("S27 heart fuzz — the Manafleur under random play (fuzz-before-fixtur
   it("heart replay determinism — the law sequence (random mode included) replays byte-identical", async () => {
     const cards = loadCardPool(CARDS_DIR).cards;
     for (const [mode, seed] of [["sequence", 5], ["random", 9], ["accumulate", 13]] as const) {
-      const modifiers = [{ type: "signatureToHand" as const, player: 1 as const, cardId: "the_manafleur" }, { type: "lawSequence" as const, mode }];
+      const modifiers = [{ type: "signatureToHand" as const, player: 1 as const, cardId: "the_manafleur" }, ...ROOTS, { type: "lawSequence" as const, mode }];
       const live = await runMatch(
         { seed, players: [{ name: "lumen", decklist: COROLLA_DECKS.lumen!.decklist, agent: "random" }, { name: "heart", decklist: HEART_DECK.decklist, agent: "random" }], rules: RULES, modifiers },
         cards,

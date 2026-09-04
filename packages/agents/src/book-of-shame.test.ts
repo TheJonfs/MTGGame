@@ -538,6 +538,56 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.scorePriorityAction(view(1, "UPKEEP"), tap)).toBeGreaterThan(-Infinity);
   });
 
+  it("book of shame 35 (S28, Spirit Link — the neutralizer fork): on our best evasive creature by default; on THEIR biggest when it out-powers ours", () => {
+    const a = agent();
+    const view = (ours: { id: string; cardId: string }[], theirs: { id: string; cardId: string }[]) =>
+      mkView({ hand: [{ objectId: "h_sl", cardId: "spirit_link" }], battlefield: [{ id: "p1", cardId: "plains", controller: 0 }, ...ours.map((o) => ({ ...o, controller: 0 as const })), ...theirs.map((o) => ({ ...o, controller: 1 as const }))] });
+    const cast = (id: string) => ({ type: "castSpell" as const, objectId: "h_sl", targets: [{ kind: "object" as const, id }] });
+    // Our 2/2 flyer vs their 2/2: ours.
+    const even = view([{ id: "hawk", cardId: "wind_drake" }], [{ id: "bear", cardId: "grizzly_bears" }]);
+    expect(a.scorePriorityAction(even, cast("hawk"))).toBeGreaterThan(a.scorePriorityAction(even, cast("bear")));
+    // Their 4/4 vs our 2/2: theirs — the damage it deals heals us.
+    const outgunned = view([{ id: "bear", cardId: "grizzly_bears" }], [{ id: "baloth", cardId: "rumbling_baloth" }]);
+    expect(a.scorePriorityAction(outgunned, cast("baloth"))).toBeGreaterThan(a.scorePriorityAction(outgunned, cast("bear")));
+    expect(a.scorePriorityAction(outgunned, cast("baloth"))).toBeGreaterThan(-Infinity); // neutral to rule 8: no misaim cliff
+  });
+
+  it("book of shame 36 (S28, Brainstorm's window): a draw-only instant waits for the opponent's end step or a spell to answer — never our own main phase", () => {
+    const a = agent();
+    const view = (step: string, activePlayer: 0 | 1, stack: { id: string; kind: string; cardId: string; controller: 0 | 1 }[] = []) =>
+      mkView({ step, activePlayer, stack, hand: [{ objectId: "h_bs", cardId: "brainstorm" }], battlefield: [{ id: "i1", cardId: "island", controller: 0 }] });
+    const cast = { type: "castSpell" as const, objectId: "h_bs", targets: [] };
+    expect(a.scorePriorityAction(view("MAIN1", 0), cast)).toBe(-Infinity);
+    expect(a.scorePriorityAction(view("MAIN2", 0), cast)).toBe(-Infinity);
+    expect(a.scorePriorityAction(view("DECLARE_ATTACKERS", 1), cast)).toBe(-Infinity);
+    expect(a.scorePriorityAction(view("END_STEP", 1), cast)).toBeGreaterThan(-Infinity);
+    expect(a.scorePriorityAction(view("MAIN1", 1, [{ id: "s1", kind: "spell", cardId: "grizzly_bears", controller: 1 }]), cast)).toBeGreaterThan(-Infinity); // in response
+  });
+
+  it("S28 (ADR-096, the Heart's roots + the sixty): the master casts a turn-one Manafleur off five roots and nothing else; Disenchant never points at its own law (the misaim cliff); Prey Upon with the flower prices as removal", () => {
+    const a = agent("midrange");
+    // Five roots, the flower in hand, no other land: the cast is offered and clears the pass by a body's worth.
+    const roots = ["plains", "island", "swamp", "mountain", "forest"].map((cardId, i) => ({ id: `r${i}`, cardId, controller: 0 as const }));
+    const bloom = mkView({ step: "MAIN1", activePlayer: 0, hand: [{ objectId: "h_mf", cardId: "the_manafleur" }], battlefield: roots });
+    const cast = { type: "castSpell" as const, objectId: "h_mf", targets: [] };
+    const castScore = a.scorePriorityAction(bloom, cast);
+    expect(castScore).toBeGreaterThan(-Infinity);
+    expect(castScore).toBeGreaterThan(a.scorePriorityAction(bloom, { type: "pass" }) + 2);
+    // The flower FIRST: beside another five-drop in hand (heart-sim seed 510 bloomed a turn late behind Faerie Formation), the law engine outprices the body-only cast.
+    const crowded = mkView({ step: "MAIN1", activePlayer: 0, hand: [{ objectId: "h_mf", cardId: "the_manafleur" }, { objectId: "h_ff", cardId: "faerie_formation" }, { objectId: "h_pc", cardId: "the_pearl_cleric" }], battlefield: roots });
+    const flower = a.scorePriorityAction(crowded, cast);
+    expect(flower).toBeGreaterThan(a.scorePriorityAction(crowded, { type: "castSpell", objectId: "h_ff", targets: [] }));
+    expect(flower).toBeGreaterThan(a.scorePriorityAction(crowded, { type: "castSpell", objectId: "h_pc", targets: [] }));
+    // Disenchant: its own law is on the wrong side of rule 8 (harmful → own side = the cliff); their Pacifism is fair game.
+    const dis = mkView({ step: "MAIN1", activePlayer: 0, hand: [{ objectId: "h_dis", cardId: "disenchant" }], battlefield: [...roots, { id: "law", cardId: "law_intake", controller: 0 }, { id: "pac", cardId: "pacifism", controller: 1 }, { id: "bear", cardId: "grizzly_bears", controller: 0 }] });
+    const aim = (id: string) => a.scorePriorityAction(dis, { type: "castSpell", objectId: "h_dis", targets: [{ kind: "object", id }] });
+    expect(aim("pac") - aim("law")).toBeGreaterThan(50);
+    // Prey Upon: the 7/7 flower fights their 4/4 — removal, the flower survives; against a 7/7 deathtouch-free 8-toughness wall it is not.
+    const prey = (theirs: string) => mkView({ step: "MAIN1", activePlayer: 0, hand: [{ objectId: "h_pu", cardId: "prey_upon" }], battlefield: [...roots, { id: "mf", cardId: "the_manafleur", controller: 0 }, { id: "t", cardId: theirs, controller: 1 }] });
+    const fight = (v: GameView) => a.scorePriorityAction(v, { type: "castSpell", objectId: "h_pu", targets: [{ kind: "object", id: "mf" }, { kind: "object", id: "t" }] });
+    expect(fight(prey("rumbling_baloth"))).toBeGreaterThan(a.scorePriorityAction(prey("rumbling_baloth"), { type: "pass" }));
+  });
+
   it("book of shame 33 (deploy playtest r1, the Scepter pointed at lands): the tapper holds when the opponent has no untapped creature, and prefers the creature to a land when it fires", () => {
     const a = agent();
     const view = (oppCreatureTapped: boolean) =>

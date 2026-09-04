@@ -1,3 +1,4 @@
+import { manaValue, parseManaCost } from "@shandalar/cards";
 import { cardColors, type ResolvedTarget, type TargetSpec } from "@shandalar/cards";
 import { characteristics, isCreature } from "./characteristics.js";
 import type { EngineCtx } from "./ctx.js";
@@ -38,6 +39,12 @@ export function isLegalTarget(ctx: EngineCtx, spec: TargetSpec, target: Resolved
     if (!obj) return false;
     const power = obj.zone === "battlefield" ? characteristics(ctx, target.id).power : (ctx.defs.def(obj.cardId).power ?? 0);
     if (power > spec.powerAtMost) return false;
+  }
+  // S28 (ADR-098, Unearth): mana-value ceiling — the printed cost (CR 202.3; tokens and costless cards 0).
+  if (spec.manaValueAtMost !== undefined && target.kind === "object") {
+    const obj = ctx.state.objects[target.id];
+    if (!obj) return false;
+    if (manaValue(parseManaCost(ctx.defs.def(obj.cardId).manaCost ?? "")) > spec.manaValueAtMost) return false;
   }
   return true;
 }

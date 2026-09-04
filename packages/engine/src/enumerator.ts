@@ -176,7 +176,19 @@ export function legalActions(ctx: EngineCtx, player: PlayerId): Action[] {
         if (cost && !canPay(ctx, player, cost, 0, ability.cost.tap ? [id] : [])) return;
         // A colour CHOICE (Lotus) is one action per colour; a fixed-production sacrifice-cost
         // mana ability (Skirk Prospector, S17) is a single deliberate action.
-        if (ability.effects.some((e) => e.type === "addMana" && e.choice)) {
+        const choice = (ability.effects.find((e) => e.type === "addMana" && e.choice) as { choice?: { count: number; anyOneColor?: true; anyCombinationOf?: ("W" | "U" | "B" | "R" | "G")[] } } | undefined)?.choice;
+        if (choice?.anyCombinationOf) {
+          // S28 (ADR-098, Orcish Lumberjack): every multiset of `count` symbols over the colour set,
+          // in a fixed order (deterministic; four variants for three of {R}/{G}).
+          const cols = choice.anyCombinationOf;
+          const combos: ("W" | "U" | "B" | "R" | "G")[][] = [];
+          const walk = (start: number, acc: ("W" | "U" | "B" | "R" | "G")[]) => {
+            if (acc.length === choice.count) { combos.push([...acc]); return; }
+            for (let i = start; i < cols.length; i++) walk(i, [...acc, cols[i]!]);
+          };
+          walk(0, []);
+          for (const colors of combos) actions.push({ type: "activateAbility", objectId: id, abilityIndex, targets: [], colors });
+        } else if (choice) {
           for (const color of MANA_COLORS) actions.push({ type: "activateAbility", objectId: id, abilityIndex, targets: [], color });
         } else {
           actions.push({ type: "activateAbility", objectId: id, abilityIndex, targets: [] });

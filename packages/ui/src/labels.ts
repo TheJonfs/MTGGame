@@ -50,6 +50,7 @@ export function actionLabel(state: GameState, pool: Map<string, CardDef>, a: Act
     case "keepHand": return "Keep hand";
     case "bottomCard": return `Bottom ${name(a.objectId)}`;
     case "discard": return `Discard ${name(a.objectId)}`;
+    case "putOnTop": return `Put ${name(a.objectId)} on top`;
     case "searchPick": return `Take ${name(a.objectId)} from your library`;
     case "declineSearch": return "Find nothing (shuffle)";
     case "chooseMode": return `Mode: ${a.label}`;

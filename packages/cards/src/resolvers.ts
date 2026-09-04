@@ -98,6 +98,9 @@ export interface EffectContext {
    * random draws from the game RNG (logged).
    */
   discard(player: number, count: number, mode: DiscardMode, filter?: DiscardFilter): Promise<void>;
+  /** S28 (ADR-098, Brainstorm): the player puts `count` cards from hand on top of the library, a
+   * logged pick per card; the FIRST pick ends on top. Fewer cards than count: what is there goes. */
+  putOnTop(player: number, count: number): Promise<void>;
   /** S27 (the Manafleur): manifest the next law of the game-level sequence as a token under the
    * effect's controller and advance the pointer (random mode draws from the logged game RNG). */
   createLaw(): void;
@@ -300,6 +303,11 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
   createLaw: (e, ctx) => {
     if (e.type !== "createLaw") throw new Error("resolver mismatch");
     ctx.createLaw();
+  },
+
+  putOnTop: async (e, ctx) => {
+    if (e.type !== "putOnTop") throw new Error("resolver mismatch");
+    for (const p of ctx.players("you")) await ctx.putOnTop(p, e.count);
   },
 
   discard: async (e, ctx) => {

@@ -278,6 +278,23 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
     }
   });
 
+  // S28 (ADR-098, Spirit Link): DEALS_DAMAGE — damage to ANY recipient, the source conditions of
+  // the player collector below, the amount (and the damaged player, when one) in the context.
+  ctx.bus.on("DAMAGE", (ev) => {
+    for (const permId of [...ctx.state.battlefield]) {
+      const perm = ctx.state.objects[permId];
+      if (!perm) continue;
+      (ctx.defs.def(perm.cardId).abilities ?? []).forEach((a, i) => {
+        if (a.kind !== "triggered" || a.event !== "DEALS_DAMAGE") return;
+        const source = a.condition?.source ?? "self";
+        if (source === "self" && ev.sourceId !== permId) return;
+        if (source === "attached" && (!perm.attachedTo || ev.sourceId !== perm.attachedTo)) return;
+        if (source === "other" && ev.sourceId === permId) return;
+        pend(permId, perm.cardId, perm.controller, i, { ...(ev.target.kind === "player" ? { player: ev.target.player } : {}), amount: ev.amount });
+      });
+    }
+  });
+
   // Damage-to-player events: scanned across all battlefield permanents with
   // condition evaluation (ADR-021; Curiosity is the first listener).
   ctx.bus.on("DAMAGE", (ev) => {

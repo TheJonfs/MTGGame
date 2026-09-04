@@ -926,6 +926,8 @@ function HeartTelegraph({ c }: { c: WorldController }) {
         <ul className="dungeon-stakes">
           <li><b>{pack?.stakes ?? "Nothing is wagered here."}</b></li>
           <li>It fights at <b>{c.knobs.heartLife}</b> life; you at your world life ({c.world.player.worldLife}). Its card is in its hand from the first turn, and it grows a law each of its end steps — one petal at a time, in the order the plane runs, the last one gone as the next one comes.</li>
+          {/* ADR-096 (S28): the roots — said here, where the manalinks are said for the player. */}
+          <li><b>Its roots are already in the ground:</b> a Plains, an Island, a Swamp, a Mountain and a Forest stand on its side before the first turn — the flower opens on turn one.</li>
           <li>Lose, and a world life is gone; you are left at the heart. Rest, and return.</li>
         </ul>
         <p style={{ textAlign: "right", marginBottom: 0 }}>

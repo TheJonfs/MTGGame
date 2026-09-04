@@ -1,0 +1,43 @@
+{
+  "id": "spirit_link",
+  "name": "Spirit Link",
+  "source": "real",
+  "scryfallId": "5e2d35f8-3cf6-4843-9030-0e9a885d836c",
+  "manaCost": "{W}",
+  "types": [
+    "Enchantment"
+  ],
+  "subtypes": [
+    "Aura"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "creature",
+      "zone": "battlefield"
+    }
+  ],
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "DEALS_DAMAGE",
+      "condition": {
+        "source": "attached"
+      },
+      "effects": [
+        {
+          "type": "gainLife",
+          "amount": {
+            "ref": "eventDamage"
+          },
+          "who": "you"
+        }
+      ],
+      "optional": false
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 1
+}

@@ -174,7 +174,9 @@ export type ScriptEntry =
   /** Declarative multi-step: staged one declareAttacker/declareBlocker at a time, consumed when complete. */
   | { player: PlayerId; do: "attack"; attackers: string[] }
   | { player: PlayerId; do: "block"; blocks: { blocker: string; attacker: string }[] }
-  | { player: PlayerId; do: "activate"; card: string; abilityIndex: number; targets?: TargetDesc[]; x?: number; color?: "W" | "U" | "B" | "R" | "G" }
+  | { player: PlayerId; do: "activate"; card: string; abilityIndex: number; targets?: TargetDesc[]; x?: number; color?: "W" | "U" | "B" | "R" | "G"; colors?: ("W" | "U" | "B" | "R" | "G")[] }
+  /** S28 (Brainstorm): one pick of the put-on-top loop (the first pick ends on top). */
+  | { player: PlayerId; do: "putOnTop"; card: string }
   | { player: PlayerId; do: "chooseTriggerTargets"; targets: TargetDesc[] }
   | { player: PlayerId; do: "orderTrigger"; card: string }
   | { player: PlayerId; do: "sacrificeChoice"; card: string }
@@ -437,6 +439,7 @@ export class TestGame {
               a.abilityIndex === entry.abilityIndex &&
               a.x === entry.x &&
               a.color === entry.color &&
+              JSON.stringify(a.colors) === JSON.stringify(entry.colors) &&
               JSON.stringify(a.targets) === JSON.stringify(wanted),
           ),
         );
@@ -461,6 +464,8 @@ export class TestGame {
         return one(actions.find((a) => a.type === "bottomCard" && cardIdOf(a.objectId) === entry.card));
       case "discard":
         return one(actions.find((a) => a.type === "discard" && cardIdOf(a.objectId) === entry.card));
+      case "putOnTop":
+        return one(actions.find((a) => a.type === "putOnTop" && cardIdOf(a.objectId) === entry.card));
       case "search":
         return entry.card
           ? one(actions.find((a) => a.type === "searchPick" && cardIdOf(a.objectId) === entry.card))

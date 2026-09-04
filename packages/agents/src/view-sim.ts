@@ -101,6 +101,10 @@ export function predictAction(
           if (e.type === "damage" && e.to === "you" && typeof e.amount === "number") next.life[me] -= e.amount;
         }
       }
+      // S28 (ADR-096, the turn-one flower): a permanent that GROWS LAWS (a `createLaw` trigger — the
+      // Manafleur's engine) is worth a petal a turn on top of its body; without this the master
+      // priced Faerie Formation a hair above the flower and bloomed a turn late (heart-sim, seed 510).
+      if ((d.abilities ?? []).some((a) => a.kind === "triggered" && a.effects.some((e) => e.type === "createLaw"))) adjustment += 2.5;
       next.battlefield.push({
         id: `pred_${predSeq++}`, cardId: d.id, controller: me, tapped: false, damage: 0,
         attachedTo: null,
@@ -135,7 +139,18 @@ export function predictAction(
       // ADR-056: the aura's standing value is ~0 in the evaluator now, so no
       // standing-value patch is needed — self-steal ordering follows from
       // accounting (book of shame verifies).
-      if (hostObj) {
+      // S28 (ADR-098, Spirit Link): a LIFELINK AURA (a DEALS_DAMAGE trigger that gains life) is
+      // neutral to rule 8 — priced by the host's power: on our own evasive creature it is a clock's
+      // worth of life; on THEIR biggest creature it neutralizes the damage (Chris's neutralizer
+      // line) when their biggest out-powers ours. Book 35 pins the fork.
+      const lifelinkAura = (d.abilities ?? []).some((a) => a.kind === "triggered" && a.event === "DEALS_DAMAGE" && a.effects.some((e) => e.type === "gainLife"));
+      if (hostObj && lifelinkAura) {
+        const power = hostObj.power ?? 0;
+        const myBest = Math.max(0, ...view.battlefield.filter((o) => o.controller === me && o.power !== null).map((o) => o.power ?? 0));
+        const theirBest = Math.max(0, ...view.battlefield.filter((o) => o.controller !== me && o.power !== null).map((o) => o.power ?? 0));
+        if (hostObj.controller === me) adjustment += 0.25 * power + (hostObj.keywords.includes("flying") ? 0.3 : 0);
+        else adjustment += theirBest > myBest && power === theirBest ? 0.35 * power + 0.3 : 0.05 * power;
+      } else if (hostObj) {
         const hv = objectValue(defs, hostObj);
         if (cls === "harmful" && hostObj.controller !== me) adjustment += steals ? 1.6 * hv : 0.7 * hv;
         else if (cls === "helpful" && hostObj.controller === me) adjustment += 1.0;
@@ -349,6 +364,12 @@ function applyEffect(
       // countering our own pays that mana to no one and loses the spell besides.
       return item.controller === me ? -worth : worth;
     }
+    case "putOnTop": {
+      // S28 (Brainstorm): the put-back — the predicted hand shrinks by the count (the draws above
+      // are blank cards; net Brainstorm = +1 card and a tidier top, which the evaluator can't see).
+      for (let i = 0; i < e.count && view.hand.length > 0; i++) view.hand.pop();
+      return 0.1;
+    }
     case "draw": {
       for (const p of e.who === "you" ? [me] : e.who === "opponent" ? [opp] : [me, opp]) {
         if (p === me) for (let i = 0; i < e.count; i++) view.hand.push({ objectId: `pred_${predSeq++}`, cardId: "" });
@@ -524,6 +545,19 @@ function applyEffect(
       const hostile = view.battlefield.some((a) => a.attachedTo === o.id && a.controller !== o.controller);
       const laundered = view.pendingEndStepSacrifices.includes(o.id) ? ((o.power ?? 0) + (o.toughness ?? 0)) / 2 + 1 : 0;
       return 0.3 + (hasEtb ? 0.8 : 0) + (hostile ? 1.0 : 0) + laundered;
+    }
+    case "fight": {
+      // S28 (ADR-096, Prey Upon in the sixty): a fight is removal when OUR fighter kills theirs and
+      // survives; a trade when both die; a blunder when only ours dies. Priced through the live
+      // numbers so the 7/7 flower fights a ≤7-toughness creature for its full value (book 35).
+      const a = objAt(e.targets[0]), b = objAt(e.targets[1]);
+      if (!a || !b || a.power === null || a.toughness === null || b.power === null || b.toughness === null) return 0;
+      const aDies = b.power >= a.toughness - a.damage || b.keywords.includes("deathtouch");
+      const bDies = a.power >= b.toughness - b.damage || a.keywords.includes("deathtouch");
+      let v = 0;
+      if (bDies) { v += objectValue(defs, b, constants); removeObject(view, b.id); } else b.damage += a.power;
+      if (aDies) { v -= objectValue(defs, a, constants); removeObject(view, a.id); } else a.damage += b.power;
+      return v - (bDies ? 0 : 0.5);
     }
     case "mill": {
       // ADR-070: mill valuation v1 — a nuisance, not an archetype (the Adept

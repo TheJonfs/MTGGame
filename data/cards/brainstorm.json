@@ -1,0 +1,25 @@
+{
+  "id": "brainstorm",
+  "name": "Brainstorm",
+  "source": "real",
+  "scryfallId": "8d42d7aa-7f53-4cfc-842a-086aab2448d1",
+  "manaCost": "{U}",
+  "types": [
+    "Instant"
+  ],
+  "spellEffect": [
+    {
+      "type": "draw",
+      "count": 3,
+      "who": "you"
+    },
+    {
+      "type": "putOnTop",
+      "count": 2
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2
+}

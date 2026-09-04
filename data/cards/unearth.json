@@ -1,0 +1,30 @@
+{
+  "id": "unearth",
+  "name": "Unearth",
+  "source": "real",
+  "scryfallId": "b6cb2549-e485-44d6-9d65-7605c568909e",
+  "manaCost": "{B}",
+  "types": [
+    "Sorcery"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "creatureCardInYourGraveyard",
+      "zone": "graveyard",
+      "manaValueAtMost": 3
+    }
+  ],
+  "spellEffect": [
+    {
+      "type": "returnFromGraveyard",
+      "target": 0,
+      "to": "battlefield"
+    }
+  ],
+  "cycling": "{2}",
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2
+}

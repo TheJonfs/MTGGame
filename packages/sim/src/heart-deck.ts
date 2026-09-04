@@ -1,6 +1,6 @@
 /**
  * S27 (the-bloom-gauntlet-v1.md v1.4; ADR-093): THE MANAFLEUR'S DECK — sixty, every authored card
- * in the game in one pile: the ten ABU duals, the ten shocks, one of each basic; the Manafleur ×3,
+ * in the game in one pile: the ten ABU duals, the ten shocks (the five basics are the ROOTS, ADR-096); the Manafleur ×3,
  * the five ministers, the five court, the five mono customs, the five Moxen, the ten flowing-pair
  * golds, two flex (Wrath of God, Control Magic — strawmen). Half mana, greedy and explosive; the
  * Arzakon texture. All prizeOnly cards legal under the never-stakes ruling. heart-sim tunes.
@@ -16,7 +16,10 @@ export const HEART_DECK: { name: string; archetype: "aggro" | "midrange" | "cont
     { cardId: "the_manafleur", count: 3 },
     ...one(["tundra", "underground_sea", "badlands", "taiga", "savannah", "scrubland", "volcanic_island", "bayou", "plateau", "tropical_island"]),
     ...one(["hallowed_fountain", "watery_grave", "blood_crypt", "stomping_ground", "temple_garden", "godless_shrine", "steam_vents", "overgrown_tomb", "sacred_foundry", "breeding_pool"]),
-    ...one(["plains", "island", "swamp", "mountain", "forest"]),
+    // ADR-096 (S28): the five basics LEFT the sixty — they are the ROOTS, on the battlefield before
+    // turn one (heartRootModifiers) — and five defensive one-per-colour slots took their place
+    // (Chris's five: the flower buys time for the petals; it does not race).
+    ...one(["disenchant", "counterspell", "doom_blade", "lightning_bolt", "prey_upon"]),
     ...one(["lumen_the_hearth_fire", "clio_lady_of_the_depths", "seraphina_the_initiative", "yuloke_the_animus", "faldor_the_muster"]),
     ...one(["the_pearl_cleric", "the_sapphire_sage", "the_jet_witch", "the_ruby_tyrant", "the_emerald_keeper"]),
     ...one(["cunning_tactician", "thundersnake", "gaean_wurm", "traumatizer", "gallows_djinn"]),

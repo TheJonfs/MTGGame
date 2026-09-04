@@ -539,9 +539,17 @@ export interface ChronicleEntry {
   when: string;
 }
 
+/** ADR-096 (S28): the Heart's ROOTS — one basic of each type on the Manafleur's side, untapped,
+ * before turn one (the manalink path: one-sided `permanentOnBattlefield`; logged, replay-clean). */
+export const HEART_ROOTS = ["plains", "island", "swamp", "mountain", "forest"] as const;
+export function heartRootModifiers(player: 0 | 1 = 1): { type: "permanentOnBattlefield"; player: 0 | 1; cardId: string }[] {
+  return HEART_ROOTS.map((cardId) => ({ type: "permanentOnBattlefield" as const, player, cardId }));
+}
+
 /** The Heart's spec: the Manafleur's deck under the master profile at heartLife (flat), the entrance
- * (the Manafleur in hand turn one), ZERO ante, the default law sequence (the WBRUG ring). The player
- * fights at world life; manalinks apply. World-kind: nothing is escrowed. */
+ * (the Manafleur in hand turn one) AND the roots (ADR-096: the five basics in play — WUBRG on the
+ * table, a turn-one flower), ZERO ante, the default law sequence (the WBRUG ring). The player fights
+ * at world life; manalinks apply. World-kind: nothing is escrowed. */
 export function heartDuelSpec(world: WorldState, catalog: Catalog, knobs: KnobValues, def: CorollaDef, enemy: PetalEnemy, rng: WorldRng): { spec: MatchSpec; enemyName: string; enemyLife: number } {
   const legal = deckLegal(activeDeck(world));
   if (!legal.ok) throw new Error(`cannot face the Heart: ${legal.reason}`);
@@ -558,6 +566,7 @@ export function heartDuelSpec(world: WorldState, catalog: Catalog, knobs: KnobVa
     modifiers: [
       { type: "startingLife", player: 1, value: enemyLife },
       { type: "signatureToHand", player: 1, cardId: heart.boss.cardId },
+      ...heartRootModifiers(1),
       { type: "lawSequence" },
       ...manalinkModifiers(world),
     ],
@@ -640,9 +649,14 @@ export function recordCutting(legacy: Legacy, entry: ChronicleEntry): Legacy {
     victories: legacy.victories + 1,
   };
 }
-/** The colours cut at least once. */
+/** The colours cut at least once — the five FLAGS (ADR-095). */
 export function cutColors(legacy: Legacy): PetalColor[] {
   return PETAL_ORDER.filter((c) => (legacy.cuttings[c] ?? 0) > 0);
+}
+/** ADR-095: did THIS cutting set the fifth flag? (The fifth-cutting line fires once, on the cutting
+ * that completed the set — not on a sixth entry, and never on a repeated colour.) */
+export function setsFifthFlag(before: Legacy, after: Legacy): boolean {
+  return cutColors(before).length === 4 && cutColors(after).length === 5;
 }
 
 /** What a cut colour carries into a new road (the doc's table): the colour's power, its teaching
@@ -656,7 +670,9 @@ export function legacyCarry(catalog: Catalog, color: PetalColor): { power: Petal
 /** Apply the profile's carryover to a NEW world (world-side only, the engine untouched): for every
  * cut colour — the power pre-unlocked (fuel still earned), the guardian's card in the collection
  * with its site pre-cleared (the power-dungeon does not exist that run), the minister in the
- * collection; plus legacyGoldPerCutting per victory. Idempotent per card (never duplicates). */
+ * collection; plus legacyGoldPerCutting per SET FLAG (ADR-095, S28: the legacy is five flags — a
+ * repeated colour sets nothing further; the chronicle keeps every entry, it is a record, not the
+ * reward source). Idempotent per card (never duplicates). */
 export function applyLegacy(world: WorldState, catalog: Catalog, legacy: Legacy, knobs: KnobValues): { colors: PetalColor[]; cards: string[]; gold: number } {
   const colors = cutColors(legacy);
   const cards: string[] = [];
@@ -667,7 +683,7 @@ export function applyLegacy(world: WorldState, catalog: Catalog, legacy: Legacy,
     if (carry.powerSiteId) (world.dungeons[carry.powerSiteId] ??= { cleared: false, resets: 0 }).cleared = true;
     if (carry.minister && !(world.player.collection[carry.minister] ?? 0)) { addToCollection(world, [carry.minister], "reward"); cards.push(carry.minister); }
   }
-  const gold = knobs.legacyGoldPerCutting * legacy.victories;
+  const gold = knobs.legacyGoldPerCutting * colors.length;
   world.player.gold += gold;
   return { colors, cards, gold };
 }

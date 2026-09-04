@@ -253,6 +253,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | barren_moor | ons | 312 | Heather Hudson | 45be3811-a223-4c45-9b24-0317f2d53c60 |
 | baru_wurmspeaker | dmc | 26 | Andrew Mar | 2cae4149-d8ef-4772-9db4-cb576bef61b5 |
 | bayou | olgc | 2019A | Raoul Vitale | 771ab45c-1a14-4ea1-b35a-1cb00a0fc5ff |
+| birds_of_paradise | lea | 186 | Mark Poole | 55fe6449-1f23-43dc-adee-d144cd505b5c |
 | bitterblossom | mor | 58 | Rebecca Guay | 8145fed6-6b51-420a-84cf-4ea5e0aa1883 |
 | black_lotus | lea | 232 | Christopher Rush | b0faa7f2-b547-42c4-a810-839da50dadfe |
 | blaze | por | 118 | Gerry Grace | f175c959-3b5d-46a3-9194-fad2359bbff9 |
@@ -262,6 +263,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | boggart_brute | ori | 133 | Igor Kieryluk | 9d735ebf-61a4-4507-9399-6d32c8903ded |
 | bonesplitter | pal03 | 8 | Darrell Riche | ae31d513-7412-4467-b497-a7183ff29a42 |
 | boomerang | leg | 48 | Brian Snõddy | b8286edd-644b-4135-8dca-af97f3920de3 |
+| brainstorm | ice | 61 | Christopher Rush | 8d42d7aa-7f53-4cfc-842a-086aab2448d1 |
 | breeding_pool | rvr | 399 | Rob Alexander | f920e32c-8a4b-4152-be3a-02810f3e5f13 |
 | brute_force | plc | 116 | Wayne Reynolds | 82d43220-1e4e-4b61-9844-51c8bb5dde35 |
 | cathartic_adept | ala | 34 | Carl Critchlow | 8e63626d-f55c-4155-9712-511f591c0614 |
@@ -332,6 +334,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | mox_sapphire | lea | 265 | Dan Frazier | 82da0972-b17b-4600-9efd-e9430a0db04b |
 | mystic_snake | apc | 112 | Daren Bader | f098a28c-5f9b-4a2c-b109-c342365eb948 |
 | nekrataal | vis | 66 | Adrian Smith | dba3e342-88b7-4692-a3f7-a3f56c0cf6b5 |
+| orcish_lumberjack | ice | 210 | Dan Frazier | 21ef13e3-658c-43a3-a290-4c5dde8e8b55 |
 | overgrown_tomb | rvr | 407 | Rob Alexander | 15c1114f-5f7c-4ecf-8aac-e48853df008b |
 | pacifism | mir | 32 | Robert Bliss | c891df1b-bae6-4d6d-85ee-42901c149f98 |
 | pelakka_wurm | roe | 204 | Daniel Ljunggren | 8e732593-0bdc-4dd4-9b07-9aa1a780e6e8 |
@@ -358,6 +361,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | shock | sth | 98 | Randy Gallegos | f9b2ff2a-6dfe-4635-8da2-22d525e82b94 |
 | siege_gang_commander | scg | 103 | Christopher Moeller | 92e78cec-aaf9-4fe8-887b-b7e356d63315 |
 | skirk_prospector | ons | 230 | Doug Chaffee | eb545dcd-3a7a-46a7-9c35-d28faebc6d17 |
+| spirit_link | leg | 37 | Kaja Foglio | 5e2d35f8-3cf6-4843-9030-0e9a885d836c |
 | steam_vents | rvr | 412 | Rob Alexander | 5575e0ad-a2f5-4e56-bf45-100001d2bdca |
 | stomping_ground | rvr | 413 | Rob Alexander | cc3390a5-cb7c-40d1-85a7-80a56ba88d53 |
 | suntail_hawk | jud | 28 | Heather Hudson | 5fbdae0b-b4aa-40ff-9017-b4349bd6b627 |
@@ -376,6 +380,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | tundra | olgc | 2015 | Raoul Vitale | 8ef5d61d-2648-4cbc-8083-3f3c6b362825 |
 | typhoid_rats | isd | 120 | Kev Walker | 4490ce65-c73a-4809-abd1-ccc3175bd2a4 |
 | underground_sea | olgc | 2016EU | Filip Burburan | 962719f7-ff8e-480b-985e-bd53a111793b |
+| unearth | ulg | 72 | Don Hazeltine | b6cb2549-e485-44d6-9d65-7605c568909e |
 | vampire_nighthawk | zen | 116 | Jason Chan | 44f19fe3-7a17-4c45-adfa-590f73dfebfa |
 | vindicate | apc | 126 | Brian Snõddy | 2a1bfefd-dae8-49e9-9d56-cc852e3dc93b |
 | volcanic_island | olgc | 2018NA | Mark Poole | 154ce456-38d2-4195-93b7-302e11c006e2 |
@@ -420,6 +425,18 @@ Pool 184 → **185**. The last card. Custom, five-colour, prizeOnly (sole-mechan
 | id | name | status | vocabulary | notes |
 |---|---|---|---|---|
 | the_manafleur | The Manafleur | tested | exile-by-scope (`laws`); `createLaw` (manifest-from-def on the game-level law sequence — family: the sequence pointer, `random` / `accumulate` modes as data hooks); `law: true` on the five laws | custom Legendary {W}{U}{B}{R}{G} Avatar 7/7; the Heart; "At the beginning of your end step, exile all laws, then create a copy of the next law." — blooms the turn cast, one petal per round, the ring W→B→R→U→G→W, thefts/copies/reanimations continue the sequence (fixtured ×8); the Manafleur's sixty in `@shandalar/sim/heart-deck` |
+
+## Session 28 additions — five one-drops (ADR-098; Chris's cycle, planner-verified on Scryfall 2026-09-04, implementer re-verified)
+
+| id | Card | Status | Vocabulary | Notes |
+|---|---|---|---|---|
+| unearth | Unearth | tested | targets(creatureCardInYourGraveyard, `manaValueAtMost` 3); returnFromGraveyard → battlefield; cycling {2} | ULG first printing; tier 2 / 12g. The MV ceiling is R-091's fifth word. AI: the graveyard target is worth its card (MV + body + ETB); cycling rides the "dead card" rule. |
+| brainstorm | Brainstorm | tested | draw 3; `putOnTop` 2 (R-091 word 2) | ICE first printing; tier 2 / 12g. AI: cast at the opponent's end step or in response (book 36); puts back the two lowest-valued cards, lands first at ≥ 4 lands between play and hand. |
+| orcish_lumberjack | Orcish Lumberjack | tested | activated {T}, sacrifice `land.subtype:Forest` (R-091 word 3): addMana choice `anyCombinationOf [R, G]` ×3 (R-091 word 4) | ICE first printing; tier 1 / 8g. Four logged variants (RRR/RRG/RGG/GGG). AI: a burst only when its multiset enables a cast; the LAST Forest is never fed while a green card waits with no other green source. A manalink Forest may be sacrificed (Chris-ratified; it returns next duel like any manalink). |
+| spirit_link | Spirit Link | tested | aura (enchant creature — any); triggered(`DEALS_DAMAGE`, source attached) gainLife {ref: eventDamage} (R-091 word 1) | LEG first printing; tier 1 / 8g. The gain is the AURA controller's, as a trigger (not lifelink) — fixtures: player damage, creature damage, the lethal ordering. AI (book 35): our best evasive creature by default; THEIR biggest when it out-powers ours (Chris's neutralizer line). |
+| birds_of_paradise | Birds of Paradise | tested | flying; five fixed {T}: addMana abilities (the dual path — 0 words) | LEA first printing; tier 2 / 12g. Encoded like a dual so auto-pay fixes colours for both seats; the oracle text renders from Scryfall. |
+
+*The Heart (ADR-096, S28):* the sixty loses its five basics (now the ROOTS on the battlefield before turn one) and gains Disenchant, Counterspell, Doom Blade, Lightning Bolt, Prey Upon — see enemies.md.
 
 ## Shop tiers (ADR-078, S19)
 

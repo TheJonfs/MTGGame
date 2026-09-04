@@ -15,7 +15,10 @@ export type Action =
   /** `mode` (A6): the chosen mode of a modal spell (modes are chosen at cast, targets after — one action per mode × targets). */
   | { type: "castSpell"; objectId: string; targets: ResolvedTarget[]; x?: number; mode?: number }
   /** `color` (ADR-068 Amendment 2): the chosen colour for a choice-bearing mana ability (Lotus) — one action per colour. */
-  | { type: "activateAbility"; objectId: string; abilityIndex: number; targets: ResolvedTarget[]; x?: number; color?: "W" | "U" | "B" | "R" | "G" }
+  /** `colors` (S28, ADR-098): the chosen multiset of a combination mana choice (Orcish Lumberjack's three of {R}/{G}). */
+  | { type: "activateAbility"; objectId: string; abilityIndex: number; targets: ResolvedTarget[]; x?: number; color?: "W" | "U" | "B" | "R" | "G"; colors?: ("W" | "U" | "B" | "R" | "G")[] }
+  /** S28 (Brainstorm): put this card from hand on top of the library (the first pick ends on top). */
+  | { type: "putOnTop"; objectId: string }
   /** `color` (S20, ADR-004 second amendment): which symbol a multi-ability producer (dual) taps for; absent = its first ability (pre-S20 logs replay unchanged). */
   | { type: "tapForMana"; objectId: string; color?: "W" | "U" | "B" | "R" | "G" | "C" }
   /** S25 r3: the manual-tap TAKEBACK — reverse a tapForMana while its mana still floats (UI convenience; agents never take it). */

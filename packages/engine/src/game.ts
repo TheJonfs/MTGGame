@@ -58,6 +58,8 @@ export type RequestPurpose =
   | "chooseMode"
   /** ADR-076: pick the card(s) to discard as an activation cost (Waterfront Bouncer). */
   | "discardCost"
+  /** S28 (Brainstorm): pick a card from hand to put on top of the library (the first pick ends on top). */
+  | "putOnTop"
   /** A9 (S20): the shock clause — pay life to enter untapped, or enter tapped. */
   | "entersChoice"
   /** A10 word 2 (S22): pick the permanent to bounce as an activation cost (the Unwinder). */
@@ -712,7 +714,11 @@ export class Game {
           const pool = state.players[player].manaPool;
           for (const e of ability.effects) {
             if (e.type !== "addMana") continue;
-            if (e.choice) {
+            if (e.choice && "anyCombinationOf" in e.choice) {
+              // S28: the logged multiset IS the choice (Orcish Lumberjack).
+              if (!action.colors || action.colors.length !== e.choice.count || action.colors.some((c) => !(e.choice as { anyCombinationOf: string[] }).anyCombinationOf.includes(c))) throw new Error("combination mana ability needs its colours");
+              for (const c of action.colors) pool[c] += 1;
+            } else if (e.choice) {
               if (!action.color) throw new Error("choice mana ability needs a colour");
               pool[action.color] += e.choice.count;
             } else if (e.mana) {

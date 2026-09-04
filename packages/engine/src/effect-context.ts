@@ -27,7 +27,7 @@ import { characteristics, isCreature } from "./characteristics.js";
  */
 export type EffectRequester = (
   player: PlayerId,
-  purpose: "discard" | "searchLibrary",
+  purpose: "discard" | "searchLibrary" | "putOnTop",
   actions: Action[],
   revealed?: { objectId: string; cardId: string }[],
 ) => Promise<Action>;
@@ -493,6 +493,34 @@ function discardOp(ctx: EngineCtx, caster: PlayerId, requester?: EffectRequester
   };
 
   return {
+    // S28 (ADR-098, Brainstorm): N picks from hand (one representative per cardId — identical cards
+    // are one decision), then the picks go to the library top in REVERSE pick order so the first
+    // pick ends on top. A short hand puts back what it has.
+    async putOnTop(playerNum: number, count: number): Promise<void> {
+      const player = playerNum as PlayerId;
+      const picks: string[] = [];
+      for (let i = 0; i < count; i++) {
+        const hand = ctx.state.players[player].hand.filter((id) => !picks.includes(id));
+        if (hand.length === 0) break;
+        const seen = new Set<string>();
+        const candidates: string[] = [];
+        for (const id of hand) {
+          const cardId = getObject(ctx.state, id).cardId;
+          if (seen.has(cardId)) continue;
+          seen.add(cardId);
+          candidates.push(id);
+        }
+        let pick = candidates[0]!;
+        if (candidates.length > 1) {
+          if (!requester) throw new Error("putOnTop needs an agent (not available at initialization)");
+          const a = await requester(player, "putOnTop", candidates.map((objectId) => ({ type: "putOnTop", objectId })));
+          if (a.type !== "putOnTop") throw new Error("expected putOnTop");
+          pick = a.objectId;
+        }
+        picks.push(pick);
+      }
+      for (const id of [...picks].reverse()) moveObject(ctx, id, "library", { position: "top" });
+    },
     async discard(playerNum: number, count: number, mode: DiscardMode, filter?: DiscardFilter): Promise<void> {
       const player = playerNum as PlayerId;
       for (let i = 0; i < count; i++) {

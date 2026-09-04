@@ -1009,7 +1009,7 @@ export class MatchController {
   // ---------- casting: X → targets → confirm ----------
 
   private beginCast(sourceObjectId: string, variants: Action[]): void {
-    if (variants.some((v) => (v as { color?: string }).color !== undefined)) {
+    if (variants.some((v) => (v as { color?: string; colors?: string[] }).color !== undefined || (v as { colors?: string[] }).colors !== undefined)) {
       this.phase = { kind: "chooseColor", sourceObjectId, variants };
       this.emit();
       return;
@@ -1026,6 +1026,15 @@ export class MatchController {
   chooseColor(color: "W" | "U" | "B" | "R" | "G"): void {
     if (this.phase.kind !== "chooseColor") return;
     const v = this.phase.variants.find((a) => (a as { color?: string }).color === color);
+    if (!v) return;
+    this.phase = { kind: "confirmCast", sourceObjectId: this.phase.sourceObjectId, action: v, offerManualTap: false };
+    this.emit();
+  }
+  /** S28 (Orcish Lumberjack): a combination choice — the picked multiset is one of the offered variants. */
+  chooseColors(colors: ("W" | "U" | "B" | "R" | "G")[]): void {
+    if (this.phase.kind !== "chooseColor") return;
+    const key = colors.join("");
+    const v = this.phase.variants.find((a) => ((a as { colors?: string[] }).colors ?? []).join("") === key);
     if (!v) return;
     this.phase = { kind: "confirmCast", sourceObjectId: this.phase.sourceObjectId, action: v, offerManualTap: false };
     this.emit();

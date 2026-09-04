@@ -74,6 +74,10 @@ export class HeuristicAgent implements Agent {
         return this.modeChoice(view, request);
       case "discardCost":
         return this.lowestValueCard(view, request, "discard");
+      case "putOnTop":
+        // S28 (Brainstorm): put back the two lowest-valued cards — lands first once the mana is
+        // comfortable (≥ 4 lands between play and hand). Not Legacy-grade Brainstorm; that's fine.
+        return this.putOnTopChoice(view, request);
       case "entersChoice":
         return this.entersChoice(view, request);
       // S22 (A10) — the new cost/fork/loop requests:
@@ -115,7 +119,18 @@ export class HeuristicAgent implements Agent {
     return keepIt ? keep : mull;
   }
 
-  private lowestValueCard(view: GameView, request: ActionRequest, type: "bottomCard" | "discard"): Action {
+  private putOnTopChoice(view: GameView, request: ActionRequest): Action {
+    const me = view.you;
+    const landsInPlay = view.battlefield.filter((o) => o.controller === me && this.def(o.cardId)?.types.includes("Land")).length;
+    const landsInHand = view.hand.filter((c) => this.def(c.cardId)?.types.includes("Land")).length;
+    if (landsInPlay + landsInHand >= 4) {
+      const land = request.actions.find((a) => a.type === "putOnTop" && this.def(view.hand.find((c) => c.objectId === a.objectId)?.cardId ?? "")?.types.includes("Land"));
+      if (land) return land;
+    }
+    return this.lowestValueCard(view, request, "putOnTop");
+  }
+
+  private lowestValueCard(view: GameView, request: ActionRequest, type: "bottomCard" | "discard" | "putOnTop"): Action {
     const cardOf = new Map(view.hand.map((c) => [c.objectId, c.cardId]));
     // S19 round 2: a caster-chooses discard (Duress) picks from the OPPONENT's revealed hand — card
     // identity comes from the request payload, and the ranking flips: take their BEST, not our worst.
@@ -190,6 +205,7 @@ export class HeuristicAgent implements Agent {
     if (this.threatenGated(view, action)) return -Infinity; // S26: Lumen's steal only where the swing cashes
     if (this.tapperGated(view, action)) return -Infinity; // S26 r3: hold the tapper for the opponent's turn
     if (this.legendDuplicateGated(view, action)) return -Infinity; // S27 r2: never cast a second copy of a legend we control
+    if (this.cantripTimingGated(view, action)) return -Infinity; // S28: Brainstorm at the opponent's end step or in response
     if (this.lifeForCardsGated(view, action)) return -Infinity; // S27 r2: the Witch's discipline
     if (this.accumulatorSpendGated(view, action)) return -Infinity; // S26: Clio holds the tax while the board threatens
     // The misaim rule: a FINITE cliff (not -Infinity) so book-of-shame orderings among
@@ -295,6 +311,7 @@ export class HeuristicAgent implements Agent {
     let produced = 0;
     let spendsCard: string | null = null;
     let burstColor: string | null = null;
+    let burstColors: string[] | null = null;
     if (action.type === "castSpell") {
       const card = view.hand.find((c) => c.objectId === action.objectId);
       const d = card ? this.def(card.cardId) : undefined;
@@ -310,6 +327,18 @@ export class HeuristicAgent implements Agent {
       for (const e of ab.effects) if (e.type === "addMana" && e.mana) produced += (e.mana.match(/\{/g) ?? []).length;
       // S26: the Lotus — N of one chosen colour; the enabling card must WANT that colour (or none).
       for (const e of ab.effects) if (e.type === "addMana" && e.choice) { produced += e.choice.count; burstColor = action.color ?? null; }
+      // S28 (ADR-098, Orcish Lumberjack): a COMBINATION burst — its multiset must cover the enabled
+      // card's pips in those colours; and the LAST Forest is never fed to it while a green card waits
+      // in hand with no other green source (the Forest is worth more standing).
+      if (action.colors) {
+        burstColors = [...action.colors];
+        if (ab.cost.sacrifice?.predicate === "land.subtype:Forest") {
+          const forests = view.battlefield.filter((b) => b.controller === me && (this.def(b.cardId)?.subtypes ?? []).includes("Forest"));
+          const otherGreen = view.battlefield.some((b) => b.controller === me && !(this.def(b.cardId)?.subtypes ?? []).includes("Forest") && (this.def(b.cardId)?.abilities ?? []).some((a) => a.kind === "activated" && a.effects.some((e) => e.type === "addMana" && e.mana?.includes("G"))));
+          const greenInHand = view.hand.some((c) => (this.def(c.cardId)?.manaCost ?? "").includes("G"));
+          if (forests.length === 1 && greenInHand && !otherGreen) return { enables: false };
+        }
+      }
     } else return null;
     const pool = Object.values(view.manaPool).reduce((a, b) => a + b, 0);
     const producers = view.battlefield.filter((o) => {
@@ -332,6 +361,18 @@ export class HeuristicAgent implements Agent {
       if (burstColor) {
         const pips = d.manaCost.replace(/[^WUBRG]/g, "");
         if (pips.length > 0 && !pips.includes(burstColor)) return false;
+      }
+      if (burstColors) {
+        // The multiset must supply every pip of ITS colours that the card asks for (RG for {R}{G};
+        // a green card wants at least one G in the mix); other colours come from the lands.
+        const pips = d.manaCost.replace(/[^WUBRG]/g, "").split("");
+        for (const c of new Set(burstColors)) {
+          const need = pips.filter((p) => p === c).length;
+          const have = burstColors.filter((p) => p === c).length;
+          if (need > 0 && have < Math.min(need, burstColors.length)) return false;
+        }
+        const wanted = pips.filter((p) => burstColors.includes(p));
+        if (pips.length > 0 && wanted.length === 0 && pips.some((p) => ["R", "G"].includes(p) === false) && pips.every((p) => !burstColors.includes(p))) return false;
       }
       return true;
     });
@@ -1018,6 +1059,19 @@ export class HeuristicAgent implements Agent {
     return !swing;
   }
 
+  /** S28 (ADR-098, Brainstorm): an INSTANT whose whole payload is draw / put-back changes no board —
+   * it is cast at the opponent's end step (the hand is then known for our turn) or in response to a
+   * spell on the stack; never main-phase on our own turn, never in their combat. Exposed for the book. */
+  cantripTimingGated(view: GameView, action: Action): boolean {
+    if (action.type !== "castSpell") return false;
+    const card = view.hand.find((c) => c.objectId === action.objectId);
+    const d = card ? this.def(card.cardId) : undefined;
+    if (!d || !d.types.includes("Instant") || !d.spellEffect || d.spellEffect.length === 0) return false;
+    if (!d.spellEffect.every((e) => e.type === "draw" || e.type === "putOnTop")) return false;
+    if (view.stack.length > 0) return false; // in response: fine
+    return !(view.activePlayer !== view.you && view.step === "END_STEP");
+  }
+
   /** S27 r2 (Chris: the AI threw away drawn Manafleurs to the legend rule): a legendary permanent
    * we already control is never cast again — the copy is worth more in hand as insurance against
    * removal. Exposed for the book. */
@@ -1164,6 +1218,12 @@ export class HeuristicAgent implements Agent {
       let s = 0;
       for (const t of ts) {
         if (t.kind === "object" && t.id) s += this.boardValue(view, t.id);
+        // S28 (Unearth): a GRAVEYARD target is worth its card — the best MV≤3 body comes back.
+        if (t.kind === "object" && t.id && !view.battlefield.some((o) => o.id === t.id)) {
+          const g = view.graveyardObjects[view.you].find((o) => o.objectId === t.id);
+          const d = g ? this.def(g.cardId) : undefined;
+          if (d) s += Math.max(0.5, manaValue(parseManaCost(d.manaCost))) + 0.2 * ((d.power ?? 0) + (d.toughness ?? 0)) + (d.abilities?.some((a) => a.kind === "triggered" && a.event === "ENTERS_BATTLEFIELD") ? 0.8 : 0);
+        }
         if (t.kind === "player") s += 2; // face is worth a couple of mana units
         const side = targetSide(view, t as never);
         if (side === null) continue;

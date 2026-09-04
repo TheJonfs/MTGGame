@@ -216,6 +216,7 @@ function validateTargetSpec(t: unknown, err: (m: string) => void): void {
   // A10/ADR-038: whose graveyard; A10: the power ceiling (Graceful Restoration).
   if (t.who !== undefined && t.who !== "you" && t.who !== "any") err(`target who must be "you" | "any" (ADR-038 amendment)`);
   if (t.powerAtMost !== undefined && (!Number.isInteger(t.powerAtMost) || (t.powerAtMost as number) < 0)) err(`target powerAtMost must be a non-negative integer (A10)`);
+  if (t.manaValueAtMost !== undefined && (!Number.isInteger(t.manaValueAtMost) || (t.manaValueAtMost as number) < 0)) err(`target manaValueAtMost must be a non-negative integer (S28)`);
   if (!(TARGET_PREDICATES as readonly string[]).includes(t.predicate as string)) {
     err(`unknown target predicate "${t.predicate}"`);
   }
@@ -309,7 +310,7 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
         validateModes(a.modes, err, warnings, cardId);
       } else {
         // S23: eventDamage refs live only on damage-event triggers (the collectors carry the payload).
-        const damageTrigger = a.event === "DEALS_DAMAGE_TO_PLAYER" || a.event === "DEALS_COMBAT_DAMAGE_TO_PLAYER";
+        const damageTrigger = a.event === "DEALS_DAMAGE_TO_PLAYER" || a.event === "DEALS_COMBAT_DAMAGE_TO_PLAYER" || a.event === "DEALS_DAMAGE";
         // S25: xPaid refs live only on the ETB trigger of a permanent whose own cost announces an X.
         const xTrigger = a.event === "ENTERS_BATTLEFIELD" && xCount >= 1;
         const lawTrigger = a.event === "END_STEP";
@@ -354,8 +355,9 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
         }
         if (a.cost.sacrifice !== undefined) {
           const pred = isRecord(a.cost.sacrifice) ? a.cost.sacrifice.predicate : undefined;
-          if (typeof pred !== "string" || !/^(self|creature(\.subtype:[A-Za-z]+)?)$/.test(pred)) {
-            err(`sacrifice predicate must be "self", "creature", or "creature.subtype:<Subtype>"`);
+          // S28 (ADR-098, Orcish Lumberjack): "land.subtype:<Subtype>" — sacrifice a typed land.
+          if (typeof pred !== "string" || !/^(self|creature(\.subtype:[A-Za-z]+)?|land\.subtype:[A-Za-z]+)$/.test(pred)) {
+            err(`sacrifice predicate must be "self", "creature", "creature.subtype:<Subtype>", or "land.subtype:<Subtype>"`);
           }
         }
         // ADR-076 / A5 cost words.
@@ -479,6 +481,9 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     needCount(e, err);
     needWho(e, err);
   },
+  putOnTop: (e, err) => {
+    needCount(e, err); // S28: Brainstorm's put-back
+  },
   discard: (e, err) => {
     needCount(e, err);
     needWho(e, err);
@@ -592,10 +597,18 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
   },
   addMana: (e, err) => {
     if (e.choice) {
-      const ch = e.choice as { count?: unknown; anyOneColor?: unknown };
+      const ch = e.choice as { count?: unknown; anyOneColor?: unknown; anyCombinationOf?: unknown };
       if (e.mana !== undefined) return err(`addMana: give mana OR choice, not both`);
       if (!Number.isInteger(ch.count) || (ch.count as number) < 1) return err(`addMana choice.count must be a positive integer`);
-      if (ch.anyOneColor !== true) return err(`addMana choice.anyOneColor must be true (the only choice shape, ADR-068)`);
+      // S28 (ADR-098, Orcish Lumberjack): "any combination of {R} and/or {G}" — a colour SET; the
+      // enumerator offers every multiset of `count` symbols over it as logged variants.
+      if (Array.isArray(ch.anyCombinationOf)) {
+        const cols = ch.anyCombinationOf as unknown[];
+        if (cols.length < 2 || cols.length > 5 || cols.some((c) => !["W", "U", "B", "R", "G"].includes(c as string)) || new Set(cols).size !== cols.length) return err(`addMana choice.anyCombinationOf must list 2–5 distinct colours (S28)`);
+        if (ch.anyOneColor !== undefined) return err(`addMana choice: anyOneColor OR anyCombinationOf, not both`);
+        return;
+      }
+      if (ch.anyOneColor !== true) return err(`addMana choice.anyOneColor must be true, or anyCombinationOf a colour set (ADR-068 / S28)`);
       return;
     }
     if (typeof e.mana !== "string") return err(`addMana missing mana`);

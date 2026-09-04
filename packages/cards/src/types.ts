@@ -99,6 +99,9 @@ export interface TargetSpec {
   who?: "you" | "any";
   /** A10 (S22): power ceiling on the candidate (Graceful Restoration's "power 2 or less"). */
   powerAtMost?: number;
+  /** S28 (ADR-098): mana-value ceiling on the candidate (Unearth's "mana value 3 or less"); printed
+   * cost — a token or a costless card reads 0 (CR 202.3). */
+  manaValueAtMost?: number;
   /** Or-predicate: legal if ANY of these alternative specs accepts the target (Airship Crash, Disenchant). */
   anyOf?: TargetSpec[];
   /** Keyword filters ("creature with flying" / "without flying"). */
@@ -188,6 +191,10 @@ export type EffectBase =
   | { type: "bounce"; target?: number; scope?: Scope; to?: "hand" | "libraryTop" }
   | { type: "counter"; target: number }
   | { type: "draw"; count: number; who: Who }
+  /** S28 (ADR-098, Brainstorm): the controller puts N cards from hand on top of the library in any
+   * order — a logged pick per card (ADR-013's incremental shape); the FIRST pick ends on top. With
+   * fewer than N cards in hand, what is there goes back. */
+  | { type: "putOnTop"; count: number }
   | { type: "discard"; count: number; who: Who; mode: DiscardMode; filter?: DiscardFilter }
   /** ADR-070 Amendment 3: top N of the library to its owner's graveyard via moveObject; NOT a draw (no empty-draw loss).
    * S23: count may be a value ref (the Traumatizer's eventDamage). */
@@ -239,7 +246,7 @@ export type EffectBase =
   /** ADR-075 A8: blink — exile the target and return it to the battlefield under your control as a new object (ETBs fire). */
   | { type: "exileThenReturn"; target: number; under: "yourControl" }
   /** ADR-068 Amendment 2: `mana` (fixed production) OR `choice` (Lotus: N mana of any one colour — a five-option choice at activation, no stack). */
-  | { type: "addMana"; mana?: string; choice?: { count: number; anyOneColor: true } }
+  | { type: "addMana"; mana?: string; choice?: { count: number; anyOneColor: true } | { count: number; anyCombinationOf: ("W" | "U" | "B" | "R" | "G")[] } }
   /** A10 word 8 (S22): STATIC-ONLY — a battlefield permanent confers an activated ability on cards in
    * a zone and scope. `zone: "hand"` grants to every card in the static's controller's hand (the
    * Stoker's cycling — enumeration-time grant on A5's machinery, no ADR-003 layer contact);
@@ -293,6 +300,7 @@ export const EFFECT_TYPES: readonly EffectType[] = [
   "extraLandDrops",
   "imposeEntersTapped",
   "createLaw",
+  "putOnTop",
 ];
 
 export type TriggerEvent =
@@ -303,6 +311,9 @@ export type TriggerEvent =
   | "BLOCKS"
   | "DEALS_DAMAGE_TO_PLAYER"
   | "DEALS_COMBAT_DAMAGE_TO_PLAYER"
+  /** S28 (ADR-098, Spirit Link): damage to ANY recipient — creature or player — with the amount in
+   * the event context (the S23 collector shape); `player` is set only when a player was damaged. */
+  | "DEALS_DAMAGE"
   | "UPKEEP"
   | "END_STEP"
   | "LAND_ENTERS_UNDER_YOUR_CONTROL"
@@ -330,6 +341,7 @@ export const TRIGGER_EVENTS: readonly TriggerEvent[] = [
   "BLOCKS",
   "DEALS_DAMAGE_TO_PLAYER",
   "DEALS_COMBAT_DAMAGE_TO_PLAYER",
+  "DEALS_DAMAGE",
   "UPKEEP",
   "END_STEP",
   "LAND_ENTERS_UNDER_YOUR_CONTROL",
