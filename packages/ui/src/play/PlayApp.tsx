@@ -3,6 +3,10 @@ import type { PlayerId } from "@shandalar/engine";
 import type { Difficulty } from "@shandalar/agents";
 import { DECKS, DECK_ARCHETYPES, type DeckKey } from "@shandalar/sim/decks";
 import { EXPANSION_DECKS } from "@shandalar/sim/expansion-decks";
+import { HEART_DECK } from "@shandalar/sim/heart-deck";
+import { ROAD_DECKS } from "@shandalar/sim/road-decks";
+import { heartRootModifiers } from "@shandalar/world";
+import { devMenuEnabled } from "../dev";
 import { loadOracle, loadPool, type OracleEntry, type SavedGame } from "../engine-bridge";
 import { MatchController } from "./match-controller";
 import { PlayMatch, loadStops } from "./PlayMatch";
@@ -33,7 +37,12 @@ interface Setup {
   difficulty: Difficulty;
   humanSeat: PlayerId;
   seed: string; // empty = random
+  /** S28 (Chris, dev-only): pilot a road deck against the rooted Manafleur — both entrances in place
+   * (the road's basics + world life; the Heart's five roots + the card in hand), zero ante, the law
+   * sequence, master profile, at this heartLife. Absent = a plain match. */
+  heart?: { road: string; life: number };
 }
+const HEART_LIVES = [35, 40, 45];
 
 const DIFFICULTIES: Difficulty[] = ["apprentice", "journeyman", "master"];
 
@@ -72,6 +81,28 @@ function SetupScreen({ onStart }: { onStart: (s: Setup) => void }) {
                 <input type="radio" checked={setup.difficulty === d} onChange={() => setSetup({ ...setup, difficulty: d })} /> {d}
               </label>
             ))}
+            {devMenuEnabled() && (
+              <>
+                <div className="flyout-title" style={{ marginTop: 8 }}>Dev · the Heart</div>
+                <label className={!setup.heart ? "picked" : ""}>
+                  <input type="radio" checked={!setup.heart} onChange={() => { const { heart: _off, ...rest } = setup; void _off; setSetup(rest); }} /> off (the decks above)
+                </label>
+                {Object.entries(ROAD_DECKS).map(([key, r]) => (
+                  <label key={key} className={setup.heart?.road === key ? "picked" : ""} title={`${r.name}: ${r.decklist.reduce((n, e) => n + e.count, 0)} cards, ${r.life} life, ${r.entrance.length} basics in play — vs the Manafleur's sixty with its five roots and the card in hand, zero ante`}>
+                    <input type="radio" checked={setup.heart?.road === key} onChange={() => setSetup({ ...setup, heart: { road: key, life: setup.heart?.life ?? 35 } })} /> pilot {r.name} vs the Manafleur
+                  </label>
+                ))}
+                {setup.heart && (
+                  <div style={{ display: "flex", gap: 6, marginTop: 4, fontSize: 11.5 }}>
+                    heartLife{HEART_LIVES.map((l) => (
+                      <label key={l} className={setup.heart?.life === l ? "picked" : ""} style={{ padding: "0 4px" }}>
+                        <input type="radio" checked={setup.heart?.life === l} onChange={() => setSetup({ ...setup, heart: { road: setup.heart!.road, life: l } })} /> {l}
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
             <div className="flyout-title" style={{ marginTop: 8 }}>You play</div>
             {([0, 1] as PlayerId[]).map((s) => (
               <label key={s} className={setup.humanSeat === s ? "picked" : ""}>
@@ -174,10 +205,28 @@ export function PlayApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =>
   const begin = (setup: Setup, seedOverride?: number) => {
     const seed = seedOverride ?? (setup.seed.trim() !== "" ? Number(setup.seed) : undefined);
     const human = playDeck(setup.humanDeck), enemy = playDeck(setup.aiDeck);
+    const road = setup.heart ? ROAD_DECKS[setup.heart.road] : undefined;
+    const me = setup.humanSeat, them = (1 - setup.humanSeat) as PlayerId;
+    // S28 (Chris, dev-only): the Heart as a single battle — the road deck's basics and world life on
+    // our side, the roots + the entrance + the law sequence on the Manafleur's, master, zero ante.
+    const heartCustom = road && setup.heart
+      ? {
+          human: { name: `You · ${road.name}`, decklist: road.decklist.map((e) => ({ ...e })) },
+          enemy: { name: HEART_DECK.name, decklist: HEART_DECK.decklist.map((e) => ({ ...e })), difficulty: "master" as Difficulty, archetype: HEART_DECK.archetype, portrait: "heart-manafleur" },
+          rules: { startingLife: road.life, ante: 0 },
+          modifiers: [
+            { type: "startingLife" as const, player: them, value: setup.heart.life },
+            { type: "signatureToHand" as const, player: them, cardId: HEART_DECK.signature },
+            ...heartRootModifiers(them),
+            ...road.entrance.map((cardId) => ({ type: "permanentOnBattlefield" as const, player: me, cardId })),
+            { type: "lawSequence" as const },
+          ],
+        }
+      : null;
     const c = new MatchController(pool, {
       humanSeat: setup.humanSeat,
       // S18: always the explicit-spec path so beast decks and slice decks mix freely (rules as the old slice-deck form: 20 life, no ante).
-      custom: { human: { name: "You", decklist: human.decklist }, enemy: { name: enemy.name, decklist: enemy.decklist, difficulty: setup.difficulty, archetype: enemy.archetype }, rules: { startingLife: 20, ante: 0 }, modifiers: [] },
+      custom: heartCustom ?? { human: { name: "You", decklist: human.decklist }, enemy: { name: enemy.name, decklist: enemy.decklist, difficulty: setup.difficulty, archetype: enemy.archetype }, rules: { startingLife: 20, ante: 0 }, modifiers: [] },
       ...(seed !== undefined && Number.isFinite(seed) ? { seed } : {}),
       aiDelayMs: Number(localStorage.getItem("shandalar-ai-delay") ?? 400),
     });

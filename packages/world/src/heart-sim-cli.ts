@@ -18,6 +18,7 @@ import { runMatch, type Agent, type MatchSpec } from "@shandalar/engine";
 import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
 import { HEART_DECK } from "@shandalar/sim/heart-deck";
 import { DECKS } from "@shandalar/sim/decks";
+import { ROAD_DECKS } from "@shandalar/sim/road-decks";
 import { loadCatalog } from "./loader.js";
 import { heartRootModifiers } from "./corolla.js";
 
@@ -37,16 +38,8 @@ const catalog = loadCatalog(join(ROOT, "data/world"));
 
 type Deck = { cardId: string; count: number }[];
 type Ref = { name: string; archetype: "aggro" | "midrange" | "control"; decklist: Deck; profile: "journeyman" | "master"; life: number; entrance: string[] };
-const d = (pairs: [string, number][]): Deck => pairs.map(([cardId, count]) => ({ cardId, count }));
-/** S28 Part 2c: Chris's final-fight deck from the black road (reconstructed; every card validated against the pool). */
-export const CHRIS_ROAD_B: Deck = d([
-  ["badlands", 2], ["plateau", 2], ["scrubland", 1],
-  ["mox_jet", 1], ["mox_ruby", 1], ["mox_pearl", 1], ["mox_emerald", 1], ["mox_sapphire", 1], ["black_lotus", 1],
-  ["lightning_bolt", 2], ["abrade", 1], ["blaze", 2], ["vindicate", 2],
-  ["thundersnake", 1], ["the_ruby_tyrant", 1], ["restoration_angel", 1], ["serra_angel", 2],
-  ["the_jet_witch", 1], ["vampire_nighthawk", 2], ["the_usher", 1], ["the_stoker", 1],
-  ["lumen_the_hearth_fire", 1], ["clio_lady_of_the_depths", 1],
-]);
+/** S28 Part 2c: Chris's final-fight deck from the black road (sim/road-decks; every card validated against the pool). */
+const CHRIS_ROAD_B: Deck = ROAD_DECKS.chrisRoadB!.decklist;
 for (const e of CHRIS_ROAD_B) if (!pool.has(e.cardId)) throw new Error(`chris-road-B: ${e.cardId} is not in the pool`);
 if (CHRIS_ROAD_B.reduce((n, e) => n + e.count, 0) !== 30) throw new Error("chris-road-B: not 30 cards");
 
@@ -55,7 +48,7 @@ const stock: Ref[] = [
   { name: "slice:C", archetype: "midrange", decklist: [...DECKS.C.decklist], profile: "journeyman", life: refLife, entrance: [] },
   { name: "slice:D", archetype: "midrange", decklist: [...DECKS.D.decklist], profile: "journeyman", life: refLife, entrance: [] },
 ];
-const road: Ref = { name: "chris-road-B", archetype: "midrange", decklist: CHRIS_ROAD_B, profile: "master", life: 17, entrance: ["plains", "island", "swamp", "mountain"] };
+const road: Ref = { name: ROAD_DECKS.chrisRoadB!.name, archetype: ROAD_DECKS.chrisRoadB!.archetype, decklist: CHRIS_ROAD_B, profile: "master", life: ROAD_DECKS.chrisRoadB!.life, entrance: [...ROAD_DECKS.chrisRoadB!.entrance] };
 const references: Ref[] = refFilter === "stock" ? stock : refFilter === "road" ? [road] : [...stock, road];
 
 /** The sixty at 18 lands: the two Ravnica duals whose colour pair the nonland cards demand least leave. */

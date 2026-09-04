@@ -35,6 +35,10 @@
     "./heart-deck": {
       "types": "./src/heart-deck.ts",
       "default": "./src/heart-deck.ts"
+    },
+    "./road-decks": {
+      "types": "./src/road-decks.ts",
+      "default": "./src/road-decks.ts"
     }
   },
   "dependencies": {
