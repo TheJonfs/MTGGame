@@ -146,7 +146,7 @@ export function CardFrame({
           textShadow: light ? "0 1px 2px rgba(20,16,12,0.75)" : "0 1px 1px rgba(255,250,235,0.6)",
         }}
       >
-        <span>{def.name}</span>
+        <span title={def.name}>{def.name}</span>
         <ManaCostRow cost={def.manaCost} />
       </div>
       <div className="art-window">

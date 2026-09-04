@@ -177,6 +177,10 @@ body {
   font-family: var(--card-face); font-size: 1.05em; letter-spacing: 0.01em; flex: none;
 }
 .frame.mini .name-strip { margin-bottom: 4px; }
+/* Deploy playtest r1 (Chris, art round item 2): a long name never wraps a hand card taller than its
+   neighbours — one line, ellipsis; the full name is a hover away (title) and on the inspector. */
+.frame.mini .name-strip > span:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; flex: 1 1 auto; }
+.frame.mini .name-strip > :not(:first-child) { flex: none; }
 .frame .art-window {
   border: 1.2px solid var(--ink); aspect-ratio: 5 / 4; width: 100%; overflow: hidden;
   background: var(--parchment-deep); display: flex; align-items: center; justify-content: center; flex: none;
