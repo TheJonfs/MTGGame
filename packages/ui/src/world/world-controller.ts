@@ -639,7 +639,7 @@ export class WorldController {
     // S14 v2: visits + lastTownIndex + shop epoch sync, then autosave (brief Part 4).
     this.world.visits[town.index] = (this.world.visits[town.index] ?? 0) + 1;
     this.world.lastTownIndex = town.index;
-    syncShopState(this.world, town, this.knobs);
+    syncShopState(this.world, town, this.knobs, this.pool); // r3: the pool lets the sync remember the outgoing shelf
     // S19: courier deliveries complete on arrival (autosave below covers them — durability on complete).
     const linksBefore = this.world.manalinks.length; // S24 r5: the splash's diff baseline
     const done = questsOnArrival(this.world, town, this.knobs);

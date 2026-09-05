@@ -27,6 +27,10 @@ export const SAVE_FORMATS_READABLE = ["world-save-v1", "world-save-v2", "world-s
 export interface ShopState {
   epoch: number;
   sold: Record<string, number>;
+  /** Deploy playtest r3 (Chris): the lineup the player LAST SAW here (the outgoing epoch's card ids) —
+   * the next restock draws cards not in it, so a card repeats in a town at most every other refresh.
+   * Absent on older saves (no migration: the first refresh after loading simply has nothing to exclude). */
+  prev?: string[];
 }
 
 export type Decklist = { cardId: string; count: number }[];

@@ -373,6 +373,48 @@ describe("acceptance journey (headless): walk → encounter → each parley bran
 });
 
 describe("town shops (S13 Part 3 → S14 Part 3: depletion, restock, sell, buy-for-deck)", () => {
+  it("deploy playtest r3 (Chris): a shelf holds at most shopMaxArtifacts artifacts, and a restock draws cards NOT in the lineup the player last saw (a card repeats in a town at most every other refresh)", async () => {
+    const { rollShopStock, syncShopState, shopPoolFor, RING_OF_TIER } = await import("./shop.js");
+    const { worldKnobs } = await import("./state.js");
+    const isArt = (id: string) => pool.cards.get(id)!.types.includes("Artifact");
+    for (const seed of [61, 62, 63, 64, 65]) {
+      const w = newWorld({ seed, catalog, starter: "green" });
+      const knobs = worldKnobs(w);
+      expect(knobs.shopMaxArtifacts).toBe(1);
+      for (const town of w.map.towns.slice(0, 6)) {
+        syncShopState(w, town, knobs, pool.cards);
+        const first = rollShopStock(w, town, pool.cards, knobs);
+        expect(first.length).toBe(knobs.shopStockSize);
+        expect(first.filter((i) => pool.cards.get(i.cardId)!.types.includes("Artifact")).length).toBeLessThanOrEqual(1);
+        // Walk the clock one refresh: the new shelf shares nothing with the one just seen.
+        w.player.stepsTaken += knobs.shopRefreshSteps;
+        syncShopState(w, town, knobs, pool.cards);
+        const second = rollShopStock(w, town, pool.cards, knobs);
+        expect(second.length).toBe(knobs.shopStockSize);
+        const seen = new Set(first.map((i) => i.cardId));
+        // The shelf's size comes first; a small one-colour pool may run short of FRESH cards under the
+        // artifact cap — the overlap is then exactly the shortfall, never more.
+        const region = w.map.regions[town.region]!;
+        const all = shopPoolFor(pool.cards, region.color === "C" ? "WUBRG" : region.color, RING_OF_TIER[region.tier] ?? 3);
+        const fresh = all.filter((d) => !seen.has(d.id));
+        const freshUnderCap = fresh.filter((d) => !isArt(d.id)).length + Math.min(1, fresh.filter((d) => isArt(d.id)).length);
+        const overlap = second.filter((i) => seen.has(i.cardId)).length;
+        expect(overlap).toBe(Math.max(0, knobs.shopStockSize - freshUnderCap));
+        if (all.filter((d) => !isArt(d.id)).length >= knobs.shopStockSize - 1) expect(second.filter((i) => isArt(i.cardId)).length).toBeLessThanOrEqual(1);
+        // A third refresh may bring back the FIRST shelf's cards (only the last-seen lineup is excluded); the second's only as a shortfall.
+        w.player.stepsTaken += knobs.shopRefreshSteps;
+        syncShopState(w, town, knobs, pool.cards);
+        const third = rollShopStock(w, town, pool.cards, knobs);
+        const seen2 = new Set(second.map((i) => i.cardId));
+        const fresh2 = all.filter((d) => !seen2.has(d.id));
+        const fresh2UnderCap = fresh2.filter((d) => !isArt(d.id)).length + Math.min(1, fresh2.filter((d) => isArt(d.id)).length);
+        expect(third.filter((i) => seen2.has(i.cardId)).length).toBe(Math.max(0, knobs.shopStockSize - fresh2UnderCap));
+        // Re-reading the shelf within the epoch is stable (the roll is pure in its inputs).
+        expect(rollShopStock(w, town, pool.cards, knobs).map((i) => i.cardId)).toEqual(third.map((i) => i.cardId));
+      }
+    }
+  });
+
   it("stock is seeded by (seed, town, epoch); rows carry stock/remaining; buying depletes and persists across save/load; a new epoch restocks", async () => {
     const { rollShopStock, shopPrice, buyCard, syncShopState } = await import("./shop.js");
     const { worldKnobs } = await import("./state.js");

@@ -1084,6 +1084,13 @@ export class MatchController {
     return { highlightObjects: objects, highlightPlayers: players };
   }
 
+  /** Deploy playtest r3 (Chris: Unearth with two eligible creatures offered nowhere to click): a
+   * GRAVEYARD target is picked in the zone browser — the same targeting path as a battlefield click. */
+  clickZoneTarget(objectId: string): void {
+    if (this.phase.kind !== "targeting") return;
+    this.clickTarget({ kind: "object", id: objectId });
+  }
+
   private clickTarget(target: ResolvedTarget): void {
     if (this.phase.kind !== "targeting") return;
     const pos = this.phase.chosen.length;

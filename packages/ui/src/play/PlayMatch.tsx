@@ -76,7 +76,7 @@ function PromptBar({ c, phase, confirmLabel }: { c: MatchController; phase: UiPh
         // S26 r3: "up to N" reads as optional picks; the Done button (below) commits early.
         return phase.canFinish
           ? (phase.chosen.length === 0 ? `Choose up to ${phase.targetsNeeded} target${phase.targetsNeeded === 1 ? "" : "s"} — or none.` : `${phase.chosen.length} chosen — choose another (up to ${phase.targetsNeeded}), or finish.`)
-          : `Choose a target (${phase.chosen.length + 1}/${phase.targetsNeeded}).`;
+          : `Choose a target (${phase.chosen.length + 1}/${phase.targetsNeeded}).${[...phase.highlightObjects].some((id) => c.game.state.objects[id]?.zone === "graveyard") ? " The legal targets are in a graveyard — pick one in the browser." : ""}`;
       case "confirmCast":
         // S10 playtest: say WHAT is being confirmed.
         return confirmLabel ? `${confirmLabel} — confirm?` : "Confirm?";
@@ -637,14 +637,18 @@ function ZoneModal({ c, pool, oracle, zone, printed, onClose }: { c: MatchContro
             // clicks (the same beginCast path as the battlefield); close the modal so the
             // targeting/confirm dialog is visible.
             const activatable = c.phase.kind === "priority" && zone.zone === "graveyard" && zone.player === c.humanSeat && c.phase.activatable.has(id);
+            // Deploy playtest r3 (Chris — Unearth with two eligible creatures): a graveyard card that is
+            // a legal TARGET of the spell being cast glows and clicks here (the battlefield's targeting
+            // path); the browser closes once the targets are complete.
+            const targetable = c.phase.kind === "targeting" && c.phase.highlightObjects.has(id);
             // S10 playtest: zone browsers follow the inspector's printed toggle.
             return (
               <div
                 key={id}
-                className={`card-slot ${activatable ? "castable" : ""}`}
-                style={activatable ? { cursor: "pointer", outline: "2px solid var(--brass)", borderRadius: 6 } : undefined}
-                title={activatable ? "this card has an ability usable from the graveyard — click to activate" : undefined}
-                onClick={activatable ? () => { c.clickGraveyardCard(id); onClose(); } : undefined}
+                className={`card-slot ${activatable ? "castable" : ""} ${targetable ? "target" : ""}`}
+                style={activatable || targetable ? { cursor: "pointer", outline: `2px solid ${targetable ? "var(--danger)" : "var(--brass)"}`, borderRadius: 6 } : undefined}
+                title={activatable ? "this card has an ability usable from the graveyard — click to activate" : targetable ? "a legal target — click to choose it" : undefined}
+                onClick={activatable ? () => { c.clickGraveyardCard(id); onClose(); } : targetable ? () => { c.clickZoneTarget(id); if (c.phase.kind !== "targeting") onClose(); } : undefined}
               >
                 <CardFrame def={pool.get(obj.cardId)!} oracle={oracle[obj.cardId]} mini showPrinted={printed} />
               </div>
@@ -811,6 +815,16 @@ export function PlayMatch({
   const lastStackTop = useMemo(() => ({ id: null as string | null }), [c]);
 
   useEffect(() => c.onChange(() => force((n) => n + 1)), [c]);
+  // Deploy playtest r3 (Chris): when a cast's legal targets lie in a GRAVEYARD (Unearth, Zombify with a
+  // choice), open that graveyard's browser so there is somewhere to click.
+  useEffect(() => {
+    if (c.phase.kind !== "targeting") return;
+    const st = c.game.state;
+    const ids = [...c.phase.highlightObjects];
+    if (ids.length === 0 || !ids.every((id) => st.objects[id]?.zone === "graveyard")) return;
+    const owner = ([0, 1] as PlayerId[]).find((p) => st.players[p].graveyard.includes(ids[0]!));
+    if (owner !== undefined) setZoneOpen((z) => z ?? { player: owner, zone: "graveyard" });
+  }, [c, c.phase]);
   useEffect(() => {
     c.stopOnOpponentSpells = loadStopOnOpponentSpells();
     c.pauseBlockersWithUntapped = loadPauseBlockersWithUntapped();

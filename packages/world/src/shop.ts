@@ -74,19 +74,48 @@ export function shopPoolFor(pool: Map<string, CardDef>, regionColor: string, rin
 }
 
 /** Ensure the town's shop state matches the current epoch (restock on change). Mutates world. */
-export function syncShopState(world: WorldState, town: Town, knobs: KnobValues): void {
+export function syncShopState(world: WorldState, town: Town, knobs: KnobValues, pool?: Map<string, CardDef>): void {
   const epoch = shopEpoch(world, knobs);
   const st = world.shops[town.index];
-  if (!st || st.epoch !== epoch) world.shops[town.index] = { epoch, sold: {} };
+  if (!st || st.epoch !== epoch) {
+    // Deploy playtest r3 (Chris): remember the OUTGOING lineup (the one the player last saw here) so
+    // the fresh roll excludes it — needs the pool to re-derive the old shelf; callers without a pool
+    // (a bare state sync) keep the previous memory.
+    const prev = st && pool ? rollShopStock(world, town, pool, knobs).map((i) => i.cardId) : st?.prev;
+    world.shops[town.index] = { epoch, sold: {}, ...(prev && prev.length ? { prev } : {}) };
+  }
 }
 
 export function rollShopStock(world: WorldState, town: Town, pool: Map<string, CardDef>, knobs: KnobValues): ShopItem[] {
   const region = world.map.regions[town.region]!;
-  const candidates = shopPoolFor(pool, region.color === "C" ? "WUBRG" : region.color, RING_OF_TIER[region.tier] ?? 3);
-  const epoch = shopEpoch(world, knobs);
+  const all = shopPoolFor(pool, region.color === "C" ? "WUBRG" : region.color, RING_OF_TIER[region.tier] ?? 3);
+  const st = world.shops[town.index];
+  // The roll is a pure function of (seed, town, epoch) plus the remembered previous lineup: while the
+  // state's epoch is the current one, its `prev` is the shelf before this one (excluded); a stale
+  // state (an earlier epoch) is the shelf being rolled for the record — its own `prev` applies.
+  const epoch = st && st.epoch !== shopEpoch(world, knobs) ? st.epoch : shopEpoch(world, knobs);
+  const exclude = new Set(st?.prev ?? []);
   const rng = new WorldRng(((world.seed * 1_000_003) ^ (town.index * 7919) ^ (epoch * 104_729)) >>> 0);
-  const picked = rng.shuffle(candidates).slice(0, Math.min(knobs.shopStockSize, candidates.length));
-  const sold = world.shops[town.index]?.epoch === epoch ? world.shops[town.index]!.sold : {};
+  // Deploy playtest r3 (Chris): the shelf fills in priority order — its SIZE first, then "nothing
+  // from the lineup last seen", then "at most shopMaxArtifacts artifacts": fresh cards under the
+  // cap, then last-seen cards under the cap, then artifacts beyond the cap (a small civilized pool
+  // of one colour can run short of fresh non-artifacts).
+  const fresh = rng.shuffle(all.filter((d) => !exclude.has(d.id)));
+  const stale = rng.shuffle(all.filter((d) => exclude.has(d.id)));
+  const picked: CardDef[] = [];
+  let artifacts = 0;
+  const take = (list: CardDef[], beyondCap: boolean) => {
+    for (const d of list) {
+      if (picked.length >= knobs.shopStockSize) return;
+      if (picked.includes(d)) continue;
+      const isArtifact = d.types.includes("Artifact");
+      if (isArtifact && !beyondCap && knobs.shopMaxArtifacts > 0 && artifacts >= knobs.shopMaxArtifacts) continue;
+      if (isArtifact) artifacts += 1;
+      picked.push(d);
+    }
+  };
+  take(fresh, false); take(stale, false); take(fresh, true); take(stale, true);
+  const sold = st?.epoch === epoch ? st.sold : {};
   return picked.map((def) => {
     const stock = 1 + rng.int(Math.max(1, knobs.shopRowCopies)); // 1..shopRowCopies copies per row this epoch
     const remaining = Math.max(0, stock - (sold[def.id] ?? 0));

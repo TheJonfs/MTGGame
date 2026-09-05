@@ -319,7 +319,12 @@ export const KNOBS = {
   shopStockSize: knob<number>({
     default: 8,
     unit: "cards",
-    description: "Distinct cards a town shop offers from its seeded stock roll.",
+    description: "Distinct cards a town shop offers from its seeded stock roll. Deploy playtest r3 (Chris): the restock draws cards NOT in the lineup the player last saw there (ShopState.prev), so a card repeats in a town at most every other refresh.",
+  }),
+  shopMaxArtifacts: knob<number>({
+    default: 1,
+    unit: "artifact rows per shelf (≤ 0 = uncapped)",
+    description: "Deploy playtest r3 (Chris): at most this many ARTIFACT cards on a town's shelf at once — the colourless drawer was crowding the colour's cards out (artifacts stock everywhere). A future artifact-focused town would lift it through its own layer.",
   }),
   shopPriceMultiplier: knob<number>({
     default: 1.0,

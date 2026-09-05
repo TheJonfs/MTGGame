@@ -62,7 +62,8 @@ Every overworld tunable (manifest principle 5). Difficulty bundles, regions, dun
 | `buyOffBase` | `15` | gold (× enemy tier) | Parley buy-off price for a tier-1 enemy; multiplied by the enemy's tier. Card-offer buy-offs are M6b. |
 | `lossLifePenalty` | `1` | world life | World life lost on a duel loss (manifest §2a). Applied after the duel, floored by lifeFloor. |
 | `lifeFloor` | `0` | world life | Lowest world life penalties can reach. 0 = reaching 0 is game over; startingWorldLife = only gained life is ever at risk (the difficulty dial, manifest §2a). |
-| `shopStockSize` | `8` | cards | Distinct cards a town shop offers from its seeded stock roll. |
+| `shopStockSize` | `8` | cards | Distinct cards a town shop offers from its seeded stock roll. Deploy playtest r3 (Chris): the restock draws cards NOT in the lineup the player last saw there (ShopState.prev), so a card repeats in a town at most every other refresh. |
+| `shopMaxArtifacts` | `1` | artifact rows per shelf (≤ 0 = uncapped) | Deploy playtest r3 (Chris): at most this many ARTIFACT cards on a town's shelf at once — the colourless drawer was crowding the colour's cards out (artifacts stock everywhere). A future artifact-focused town would lift it through its own layer. |
 | `shopPriceMultiplier` | `1` | × base price | Scales every shop price (difficulty and region both override it). |
 | `startingWorldLife` | `10` | world life | World life at new game; duels start at current world life (engine startingLife is overridden every match). |
 | `starterSpares` | `10` | cards | Basics-and-commons added to the collection beside the starter deck at new game (the slice's only spare pool until the editor). |
