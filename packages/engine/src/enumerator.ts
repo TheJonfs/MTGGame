@@ -1,4 +1,4 @@
-import { isManaAbility, parseManaCost, parseManaProduction, type ActivatedAbilityDef, type CardDef, type ManaCost, isChoiceManaAbility, MANA_COLORS } from "@shandalar/cards";
+import { isManaAbility, parseManaCost, parseManaProduction, type ActivatedAbilityDef, type CardDef, type ManaCost, type TargetSpec, isChoiceManaAbility, MANA_COLORS } from "@shandalar/cards";
 import { evaluateValueRef } from "./effect-context.js";
 import type { Action } from "./actions.js";
 import { canBlock, eligibleAttackers, eligibleBlockers, menaceViolations } from "./combat.js";
@@ -215,17 +215,25 @@ export function legalActions(ctx: EngineCtx, player: PlayerId): Action[] {
       // A10 (S22): the bounce cost needs a legal permanent; the tap cost needs enough untapped creatures.
       if (ability.cost.returnToHand && returnToHandCandidates(ctx, player, id, ability.cost.returnToHand.predicate).length === 0) return;
       if (ability.cost.tapCreature && tapCreatureCandidates(ctx, player, ability.cost.tapCreature.predicate).length < ability.cost.tapCreature.count) return;
-      const combos = targetCombinations(ctx, ability.targets ?? [], player, id);
-      if ((ability.targets ?? []).length > 0 && combos.length === 0) return;
       const cost = effectiveAbilityCost(ctx, player, ability, id);
       // A {T}-cost ability can't count its own source as a mana producer.
       const exclude = ability.cost.tap ? [id] : [];
-      if (!cost || cost.xCount === 0) {
-        if (cost && !canPay(ctx, player, cost, 0, exclude)) return;
-        for (const targets of combos) actions.push({ type: "activateAbility", objectId: id, abilityIndex, targets });
-      } else {
-        for (let x = 0; canPay(ctx, player, cost, x, exclude); x++) {
-          for (const targets of combos) actions.push({ type: "activateAbility", objectId: id, abilityIndex, targets, x });
+      // S29 (R-092, Arc Mage): a modal ability enumerates one activation per mode × that mode's
+      // targets (the A6 spell shape); a mode with no legal targets is simply not offered.
+      const modeSpecs: { mode?: number; targets: TargetSpec[] }[] = ability.modes
+        ? ability.modes.map((m, i) => ({ mode: i, targets: m.targets ?? [] }))
+        : [{ targets: ability.targets ?? [] }];
+      for (const ms of modeSpecs) {
+        const combos = targetCombinations(ctx, ms.targets, player, id);
+        if (ms.targets.length > 0 && combos.length === 0) continue;
+        const modeField = ms.mode !== undefined ? { mode: ms.mode } : {};
+        if (!cost || cost.xCount === 0) {
+          if (cost && !canPay(ctx, player, cost, 0, exclude)) continue;
+          for (const targets of combos) actions.push({ type: "activateAbility", objectId: id, abilityIndex, targets, ...modeField });
+        } else {
+          for (let x = 0; canPay(ctx, player, cost, x, exclude); x++) {
+            for (const targets of combos) actions.push({ type: "activateAbility", objectId: id, abilityIndex, targets, x, ...modeField });
+          }
         }
       }
     });
@@ -304,7 +312,7 @@ export function bottomChoices(ctx: EngineCtx, player: PlayerId): Action[] {
 export function effectiveAbilityCost(ctx: EngineCtx, player: PlayerId, ability: ActivatedAbilityDef, sourceId: string): ManaCost | undefined {
   if (!ability.cost.mana) return undefined;
   const cost = parseManaCost(ability.cost.mana);
-  if (!ability.cost.reduceBy || ability.cost.reduceBy.ref === "targetPower" || ability.cost.reduceBy.ref === "targetManaValue" || ability.cost.reduceBy.ref === "eventDamage" || ability.cost.reduceBy.ref === "xPaid") return cost;
+  if (!ability.cost.reduceBy || ability.cost.reduceBy.ref === "targetPower" || ability.cost.reduceBy.ref === "targetManaValue" || ability.cost.reduceBy.ref === "eventDamage" || ability.cost.reduceBy.ref === "xPaid" || ability.cost.reduceBy.ref === "sacrificedPower") return cost;
   const x = evaluateValueRef(ctx, ability.cost.reduceBy, player, sourceId);
   return { ...cost, generic: Math.max(0, cost.generic - x) };
 }

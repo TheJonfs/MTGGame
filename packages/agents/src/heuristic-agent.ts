@@ -206,6 +206,7 @@ export class HeuristicAgent implements Agent {
     if (this.tapperGated(view, action)) return -Infinity; // S26 r3: hold the tapper for the opponent's turn
     if (this.legendDuplicateGated(view, action)) return -Infinity; // S27 r2: never cast a second copy of a legend we control
     if (this.cantripTimingGated(view, action)) return -Infinity; // S28: Brainstorm at the opponent's end step or in response
+    if (this.altarGated(view, action)) return -Infinity; // S29: the Altar feeds a creature for lethal mill, or one already dying
     if (this.lifeForCardsGated(view, action)) return -Infinity; // S27 r2: the Witch's discipline
     if (this.accumulatorSpendGated(view, action)) return -Infinity; // S26: Clio holds the tax while the board threatens
     // The misaim rule: a FINITE cliff (not -Infinity) so book-of-shame orderings among
@@ -1059,6 +1060,43 @@ export class HeuristicAgent implements Agent {
     return !swing;
   }
 
+  /** S29 (Part 4, the Altar of Dementia): a sacrifice-outlet ability whose payload reads the sacrificed
+   * creature's power fires only (a) for LETHAL mill — our strongest creature's power reaches the
+   * opponent's library — or (b) to cash a creature that is about to die anyway: blocked or blocking
+   * into lethal damage in the current combat, or targeted by an opposing spell on the stack; and
+   * never our last untapped blocker while behind on board. Exposed for the book (37). */
+  altarGated(view: GameView, action: Action): boolean {
+    if (action.type !== "activateAbility") return false;
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+    if (!ab || ab.kind !== "activated" || !ab.cost.sacrifice || ab.cost.sacrifice.predicate === "self") return false;
+    if (!JSON.stringify(ab.effects).includes('"sacrificedPower"')) return false;
+    const me = view.you, opp = (1 - me) as 0 | 1;
+    const mine = view.battlefield.filter((o) => o.controller === me && o.power !== null);
+    if (mine.length === 0) return true;
+    const best = Math.max(...mine.map((o) => o.power ?? 0));
+    if (best >= (view.librarySizes[opp] ?? 99) && best > 0) return false; // lethal by library
+    const theirs = view.battlefield.filter((o) => o.controller !== me && o.power !== null);
+    const dying = mine.some((o) => this.creatureIsDoomed(view, o.id));
+    if (!dying) return true;
+    const untappedBlockers = mine.filter((o) => !o.tapped).length;
+    if (untappedBlockers <= 1 && mine.length < theirs.length) return true; // never the last blocker while behind
+    return false;
+  }
+  /** A creature of ours that is about to die: in combat against lethal power, or the target of an
+   * opposing harmful spell on the stack. */
+  private creatureIsDoomed(view: GameView, id: string): boolean {
+    const o = view.battlefield.find((b) => b.id === id);
+    if (!o || o.toughness === null) return false;
+    const powerOf = (x: string) => view.battlefield.find((b) => b.id === x)?.power ?? 0;
+    const combat = view.combat;
+    if (combat) {
+      const asAttacker = combat.attackers.includes(id) ? combat.blocks.filter((b) => b.attacker === id).reduce((n, b) => n + powerOf(b.blocker), 0) : 0;
+      const asBlocker = combat.blocks.filter((b) => b.blocker === id).reduce((n, b) => n + powerOf(b.attacker), 0);
+      if (Math.max(asAttacker, asBlocker) + o.damage >= o.toughness) return true;
+    }
+    return view.stack.some((it) => it.controller !== view.you && (((it as { targets?: { kind: string; id?: string }[] }).targets) ?? []).some((t) => t.kind === "object" && t.id === id));
+  }
+
   /** S28 (ADR-098, Brainstorm): an INSTANT whose whole payload is draw / put-back changes no board —
    * it is cast at the opponent's end step (the hand is then known for our turn) or in response to a
    * spell on the stack; never main-phase on our own turn, never in their combat. Exposed for the book. */
@@ -1164,6 +1202,17 @@ export class HeuristicAgent implements Agent {
   }
 
   sacrificeChoice(view: GameView, request: ActionRequest): Action {
+    // S29 (the Altar): the outlet that mills by POWER wants the biggest body when that closes the
+    // library, and otherwise the creature already doomed (book 37).
+    if (request.source && JSON.stringify(request.source.effects).includes('"sacrificedPower"')) {
+      const me = view.you, opp = (1 - me) as 0 | 1;
+      const cands = request.actions.filter((a) => a.type === "sacrifice") as { type: "sacrifice"; objectId: string }[];
+      const pow = (id: string) => view.battlefield.find((o) => o.id === id)?.power ?? 0;
+      const biggest = [...cands].sort((a, b) => pow(b.objectId) - pow(a.objectId))[0];
+      if (biggest && pow(biggest.objectId) >= (view.librarySizes[opp] ?? 99)) return biggest;
+      const doomed = cands.find((a) => this.creatureIsDoomed(view, a.objectId));
+      if (doomed) return doomed;
+    }
     const candidates = request.actions.filter((a) => a.type === "sacrifice") as { type: string; objectId: string }[];
     if (candidates.length === 0) return request.actions[0]!;
     const boosted = new Set<string>();

@@ -56,3 +56,26 @@ against the cached Scryfall crops before writing descriptors).
 | `guardian-drana.md` | Drana, Kalastria Bloodchief (mox_b) | deep violet-black | kept (Chris's own render — the refusal trigger was the two-horns phrase; descriptor corrected to the filigree crown) |
 | `guardian-drakuseth.md` | Drakuseth, Maw of Flames (mox_r) | ember orange-red | kept (S21 kickoff) |
 | `guardian-titania.md` | Titania, Protector of Argoth (mox_g) | deep moss green | kept (S21 kickoff) |
+
+### S29 mage portraits (the cleansheet round — fifteen faces, two candidates each; Chris's verdicts pending)
+
+The five shared deck portraits (`portrait-opponent-*`) gave three mages one face each and stopped matching the flowing pairs. Fifteen subjects from the decks' identities and epithets, TWO candidates each (`docs/art/subjects/portrait-mage-<key>-{1,2}.md`); candidate 1 wired provisionally (`packages/ui/public/portraits/portrait-mage-<key>.png`, 512px; `opponents.json` `portrait`). Washes = the mage's colour identity + parchment.
+
+| Subject (`portrait-mage-<key>-{1,2}`) | Mage | Pair · tier | Epithet | Wash |
+|---|---|---|---|---|
+| oriel | Sister Oriel | W · 1 | the Almoner | white-cream |
+| tessaly | Tessaly Reed | U · 1 | the Tidewright | sea blue |
+| edric | Pale Edric | B · 1 | the Sexton | black-purple |
+| brann | Brann the Scorched | R · 1 | the Sparkwright | ember red |
+| hask | Old Hask | G · 1 | the Wardener | moss green |
+| vael | Mistress Vael | WB · 2 | the Tithe-Reeve | white-cream + black-purple |
+| kessa | Kessa Emberhand | UR · 2 | the Stormcaller | sea blue + ember red |
+| maelin | Adept Maelin | BR · 2 | the Pyre-Warden | ember red + black-purple |
+| brennor | Brennor of the Glade | WG · 2 | the Sanctuary | moss green + white-cream |
+| pell | Pell of the Shallows | UG · 2 | the Tidesower | sea blue + moss green |
+| corvane | Lord Corvane | WB · 3 | the Sepulchre | white-cream + black-purple |
+| varro | Varro Flamebrand | UR · 3 | the Ashwright | ember red + sea blue |
+| sorrel | High Warden Sorrel | BR · 3 | the Inquisitor | black-purple + ember red |
+| ysolde | Thornmother Ysolde | WG · 3 | the Thornmother | moss green + white-cream |
+| quill | Magister Quill | UG · 3 | the Drowned Grove | sea blue + moss green |
+

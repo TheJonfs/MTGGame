@@ -1,0 +1,51 @@
+{
+  "id": "blanchwood_armor",
+  "name": "Blanchwood Armor",
+  "source": "real",
+  "scryfallId": "9b5f3776-74f4-4626-833b-e1b0921d3cbc",
+  "manaCost": "{2}{G}",
+  "types": [
+    "Enchantment"
+  ],
+  "subtypes": [
+    "Aura"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "creature",
+      "zone": "battlefield"
+    }
+  ],
+  "abilities": [
+    {
+      "kind": "static",
+      "effects": [
+        {
+          "type": "modifyPT",
+          "power": {
+            "ref": "count",
+            "predicate": {
+              "subtype": "Forest",
+              "controller": "you"
+            }
+          },
+          "toughness": {
+            "ref": "count",
+            "predicate": {
+              "subtype": "Forest",
+              "controller": "you"
+            }
+          },
+          "scope": "attached",
+          "duration": "WHILE_SOURCE_ON_BATTLEFIELD"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 1,
+  "priceOverride": 12
+}

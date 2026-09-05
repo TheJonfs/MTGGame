@@ -1,0 +1,41 @@
+{
+  "id": "soul_warden",
+  "name": "Soul Warden",
+  "source": "real",
+  "scryfallId": "d5ee24ee-4d28-4634-bd43-90eff15c16dd",
+  "manaCost": "{W}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Human",
+    "Cleric"
+  ],
+  "power": 1,
+  "toughness": 1,
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "condition": {
+        "source": "other",
+        "controller": "any",
+        "type": [
+          "Creature"
+        ]
+      },
+      "effects": [
+        {
+          "type": "gainLife",
+          "amount": 1,
+          "who": "you"
+        }
+      ],
+      "optional": false
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 1
+}

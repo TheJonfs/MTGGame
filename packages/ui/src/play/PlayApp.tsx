@@ -4,6 +4,7 @@ import type { Difficulty } from "@shandalar/agents";
 import { DECKS, DECK_ARCHETYPES, type DeckKey } from "@shandalar/sim/decks";
 import { EXPANSION_DECKS } from "@shandalar/sim/expansion-decks";
 import { HEART_DECK } from "@shandalar/sim/heart-deck";
+import { MAGE_DECKS } from "@shandalar/sim/mage-decks";
 import { ROAD_DECKS } from "@shandalar/sim/road-decks";
 import { heartRootModifiers } from "@shandalar/world";
 import { devMenuEnabled } from "../dev";
@@ -20,12 +21,15 @@ import { cardName } from "../labels";
 
 /** S18: /play offers the slice decks A–E and the beast decks (beast:<key>) so the S17 cards
  * (Channeler, Bouncer, Grenade …) can be played by hand in the director round. */
-type PlayDeck = DeckKey | `beast:${string}`;
+type PlayDeck = DeckKey | `beast:${string}` | `mage:${string}`;
+// S29 (ADR-099; Chris): the slice decks A–E retired from the player-facing picker — the fifteen mages
+// and the beasts are the world's decks; A–E stay as sim/test infrastructure.
 const PLAY_DECKS: { key: PlayDeck; label: string }[] = [
-  ...(Object.keys(DECKS) as DeckKey[]).map((k) => ({ key: k as PlayDeck, label: `${k} · ${DECKS[k].name}` })),
+  ...Object.entries(MAGE_DECKS).map(([k, v]) => ({ key: `mage:${k}` as PlayDeck, label: `${v.name} (${v.colors} ${v.tier}) — ${v.epithet}` })),
   ...Object.entries(EXPANSION_DECKS).map(([k, v]) => ({ key: `beast:${k}` as PlayDeck, label: `${v.name} (${v.color} ${v.tier})` })),
 ];
 function playDeck(key: PlayDeck): { name: string; decklist: { cardId: string; count: number }[]; archetype: "aggro" | "midrange" | "control" } {
+  if (key.startsWith("mage:")) { const m = MAGE_DECKS[key.slice(5)]!; return { name: m.name, decklist: m.decklist.map((e) => ({ ...e })), archetype: m.archetype }; }
   if (key.startsWith("beast:")) { const b = EXPANSION_DECKS[key.slice(6)]!; return { name: b.name, decklist: b.decklist.map((e) => ({ ...e })), archetype: b.archetype }; }
   const k = key as DeckKey;
   return { name: DECKS[k].name, decklist: DECKS[k].decklist.map((e) => ({ ...e })), archetype: DECK_ARCHETYPES[k] };
@@ -51,7 +55,7 @@ function DeckPicker({ label, value, onChange }: { label: string; value: PlayDeck
     <div className="deck-picker">
       <div className="flyout-title">{label}</div>
       {PLAY_DECKS.map(({ key, label: text }, i) => (
-        <label key={key} className={value === key ? "picked" : ""} style={i === 5 ? { marginTop: 6, borderTop: "1px solid var(--ink-soft)", paddingTop: 4 } : undefined}>
+        <label key={key} className={value === key ? "picked" : ""} style={i === 15 ? { marginTop: 6, borderTop: "1px solid var(--ink-soft)", paddingTop: 4 } : undefined}>
           <input type="radio" checked={value === key} onChange={() => onChange(key)} /> {text}
         </label>
       ))}
@@ -61,8 +65,8 @@ function DeckPicker({ label, value, onChange }: { label: string; value: PlayDeck
 
 function SetupScreen({ onStart }: { onStart: (s: Setup) => void }) {
   const [setup, setSetup] = useState<Setup>({
-    humanDeck: "A",
-    aiDeck: "D",
+    humanDeck: "mage:brann" as PlayDeck,
+    aiDeck: "mage:edric" as PlayDeck,
     difficulty: "journeyman",
     humanSeat: 0,
     seed: "",

@@ -138,6 +138,10 @@ export type ValueRef =
   /** A10 (S22): the target's mana value, from the resolution LKI snapshot (Aether Mutation — the
    * bounced creature is gone by token time; X for battlefield permanents is 0 per CR 202.3b). */
   | { ref: "targetManaValue"; target: number }
+  /** S29 (R-092, Altar of Dementia): the power of the creature sacrificed to pay THIS ability's cost —
+   * last-known information captured as the cost is paid (CR 608.2h). Activated abilities with a
+   * sacrifice cost only (validator-confined). */
+  | { ref: "sacrificedPower" }
   /** S23 (ADR-084, family member six): the triggering EVENT's damage amount, times a bounded
    * literal multiplier (the Traumatizer's "mills twice that many"). ADR-028's no-arithmetic
    * doctrine is reaffirmed around it — a fixed `times` param is not a calculator; general
@@ -442,6 +446,10 @@ export interface ActivatedAbilityDef {
   effects: Effect[];
   /** Equip ability (CR 702.6): sorcery-timing attach of this permanent to the target. Effects must be empty. */
   equip?: boolean;
+  /** S29 (R-092, Arc Mage): a MODAL activated ability — one activation per mode × that mode's targets
+   * (the A6 spell shape on an ability); `effects` must be empty. "2 damage divided among one or two
+   * targets" is the two modes {2→A} and {1→A, 1→B}. */
+  modes?: ModeDef[];
   /** A5: where the card must be for this ability to be activatable (default battlefield). */
   zone?: "battlefield" | "hand" | "graveyard";
 }

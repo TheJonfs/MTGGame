@@ -187,6 +187,10 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
         // damage — the ref is validator-confined to damage-event triggers, so that's belt-and-braces.
         return (item.eventContext?.amount ?? 0) * (a.times ?? 1);
       }
+      if (a.ref === "sacrificedPower") {
+        // S29 (R-092, Altar of Dementia): the cost's sacrificed creature's power, captured at payment.
+        return item.eventContext?.amount ?? 0;
+      }
       if (a.ref === "xPaid") {
         // S25 (ADR-088, member seven): the announced X, captured into the ETB trigger's event
         // context at collection (LKI — the Keeper's death in response does not blank the pump).
@@ -673,7 +677,7 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
 /** A4: counting value refs, evaluated live. `count`/`maxPower` scan battlefield permanents
  * from `controller`'s point of view; `graveyardCount` counts cards. Used by resolved effects
  * (Tendrils), statics (Gaean Wurm, Werebear's threshold) and cost reduction (Baru). */
-export function evaluateValueRef(ctx: EngineCtx, ref: Exclude<ValueRef, { ref: "targetPower" } | { ref: "targetManaValue" } | { ref: "eventDamage" } | { ref: "xPaid" }>, controller: PlayerId, sourceId?: string): number {
+export function evaluateValueRef(ctx: EngineCtx, ref: Exclude<ValueRef, { ref: "targetPower" } | { ref: "targetManaValue" } | { ref: "eventDamage" } | { ref: "xPaid" } | { ref: "sacrificedPower" }>, controller: PlayerId, sourceId?: string): number {
   if (ref.ref === "countersOnSelf") {
     // S26 (member eight — Clio): the source's own counters of a kind, live, times the bounded literal.
     // Zero when the source is gone (a graveyard card holds no counters — CR 122.2 by construction).

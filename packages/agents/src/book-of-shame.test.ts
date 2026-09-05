@@ -538,6 +538,54 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.scorePriorityAction(view(1, "UPKEEP"), tap)).toBeGreaterThan(-Infinity);
   });
 
+  it("book of shame 37 (S29, the Altar of Dementia): lethal mill takes the biggest body; otherwise the outlet holds unless a creature is doomed; Quill's Pelakka Wurm closes a seven-card library", () => {
+    const a = agent();
+    const view = (lib: number, extra: { id: string; cardId: string; controller: 0 | 1 }[] = [], stack: { id: string; kind: string; cardId: string; controller: 0 | 1; targets?: unknown[] }[] = []) =>
+      mkView({ librarySizes: [30, lib], stack: stack as never, battlefield: [{ id: "altar", cardId: "altar_of_dementia", controller: 0 }, { id: "wurm", cardId: "pelakka_wurm", controller: 0 }, { id: "bear", cardId: "grizzly_bears", controller: 0 }, ...extra] });
+    const mill = { type: "activateAbility" as const, objectId: "altar", abilityIndex: 0, targets: [{ kind: "player" as const, player: 1 as const }] };
+    expect(a.scorePriorityAction(view(20), mill)).toBe(-Infinity); // nothing lethal, nothing dying: hold
+    expect(a.scorePriorityAction(view(7), mill)).toBeGreaterThan(a.scorePriorityAction(view(7), { type: "pass" })); // the Wurm's seven empties seven
+    // The chooser feeds the biggest body when it is lethal.
+    const req = { player: 0 as const, purpose: "chooseSacrifice" as const, actions: [{ type: "sacrifice" as const, objectId: "bear" }, { type: "sacrifice" as const, objectId: "wurm" }], source: { cardId: "altar_of_dementia", effects: [{ type: "mill" as const, count: { ref: "sacrificedPower" as const }, who: "target" as const }] } };
+    expect(a.sacrificeChoice(view(7), req as never)).toEqual({ type: "sacrifice", objectId: "wurm" });
+    // A creature targeted by their Terror is cashed instead of lost.
+    const doomed = view(20, [], [{ id: "s1", kind: "spell", cardId: "terror", controller: 1, targets: [{ kind: "object", id: "bear" }] }]);
+    expect(a.scorePriorityAction(doomed, mill)).toBeGreaterThan(-Infinity);
+    expect(a.sacrificeChoice(doomed, req as never)).toEqual({ type: "sacrifice", objectId: "bear" });
+  });
+
+  it("book of shame 38 (S29, Vael's Wrath): a board wipe with our Blood Artist out counts the drain — it outscores the same Wrath without the Artist", () => {
+    const a = agent("control");
+    const theirs = ["b1", "b2", "b3"].map((id) => ({ id, cardId: "grizzly_bears", controller: 1 as const }));
+    const view = (artist: boolean) => mkView({ hand: [{ objectId: "h_w", cardId: "wrath_of_god" }], battlefield: [{ id: "p1", cardId: "plains", controller: 0 }, { id: "p2", cardId: "plains", controller: 0 }, { id: "p3", cardId: "plains", controller: 0 }, { id: "p4", cardId: "plains", controller: 0 }, ...(artist ? [{ id: "art", cardId: "blood_artist", controller: 0 as const }] : []), ...theirs] });
+    const wrath = { type: "castSpell" as const, objectId: "h_w", targets: [] };
+    expect(a.scorePriorityAction(view(true), wrath)).toBeGreaterThan(a.scorePriorityAction(view(false), wrath));
+  });
+
+  it("book of shame 39 (S29, the Wardener): the Armor goes on the hexproof Scout, not the Birds; book 40 (the Sparkwright): the Pyromancer comes down before the cheap spells it feeds", () => {
+    const a = agent();
+    const armor = mkView({ hand: [{ objectId: "h_a", cardId: "blanchwood_armor" }], battlefield: [{ id: "f1", cardId: "forest", controller: 0 }, { id: "f2", cardId: "forest", controller: 0 }, { id: "f3", cardId: "forest", controller: 0 }, { id: "scout", cardId: "gladecover_scout", controller: 0 }, { id: "birds", cardId: "birds_of_paradise", controller: 0 }] });
+    const on = (id: string) => a.scorePriorityAction(armor, { type: "castSpell", objectId: "h_a", targets: [{ kind: "object", id }] });
+    expect(on("scout")).toBeGreaterThan(on("birds"));
+    const spark = mkView({ hand: [{ objectId: "h_p", cardId: "young_pyromancer" }, { objectId: "h_b", cardId: "lightning_bolt" }, { objectId: "h_s", cardId: "shock" }], battlefield: [{ id: "m1", cardId: "mountain", controller: 0 }, { id: "m2", cardId: "mountain", controller: 0 }, { id: "ob", cardId: "grizzly_bears", controller: 1 }] });
+    const pyro = a.scorePriorityAction(spark, { type: "castSpell", objectId: "h_p", targets: [] });
+    const boltFace = a.scorePriorityAction(spark, { type: "castSpell", objectId: "h_b", targets: [{ kind: "player", player: 1 }] });
+    expect(pyro).toBeGreaterThan(boltFace);
+  });
+
+  it("S29 (the Sparkwright's Arc Mage): two damage kills a 2-toughness creature over face; one-and-one splits over two X/1s; with no creatures, the face", () => {
+    const a = agent();
+    const view = (theirs: { id: string; cardId: string }[]) =>
+      mkView({ step: "MAIN1", activePlayer: 0, hand: [{ objectId: "h_l", cardId: "forest" }], battlefield: [{ id: "arc", cardId: "arc_mage", controller: 0 }, { id: "m1", cardId: "mountain", controller: 0 }, { id: "m2", cardId: "mountain", controller: 0 }, { id: "m3", cardId: "mountain", controller: 0 }, ...theirs.map((t) => ({ ...t, controller: 1 as const }))] });
+    const act = (mode: 0 | 1, targets: { kind: "object"; id: string }[] | { kind: "player"; player: 1 }[]) => ({ type: "activateAbility" as const, objectId: "arc", abilityIndex: 0, targets: targets as never, mode });
+    const bears = view([{ id: "bear", cardId: "grizzly_bears" }]);
+    expect(a.scorePriorityAction(bears, act(0, [{ kind: "object", id: "bear" }]))).toBeGreaterThan(a.scorePriorityAction(bears, act(0, [{ kind: "player", player: 1 }])));
+    const two = view([{ id: "r1", cardId: "typhoid_rats" }, { id: "g1", cardId: "raging_goblin" }]);
+    expect(a.scorePriorityAction(two, act(1, [{ kind: "object", id: "r1" }, { kind: "object", id: "g1" }]))).toBeGreaterThan(a.scorePriorityAction(two, act(0, [{ kind: "object", id: "r1" }])));
+    const empty = view([]);
+    expect(a.scorePriorityAction(empty, act(0, [{ kind: "player", player: 1 }]))).toBeGreaterThan(-Infinity);
+  });
+
   it("book of shame 35 (S28, Spirit Link — the neutralizer fork): on our best evasive creature by default; on THEIR biggest when it out-powers ours", () => {
     const a = agent();
     const view = (ours: { id: string; cardId: string }[], theirs: { id: string; cardId: string }[]) =>

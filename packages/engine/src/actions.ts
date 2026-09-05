@@ -16,7 +16,7 @@ export type Action =
   | { type: "castSpell"; objectId: string; targets: ResolvedTarget[]; x?: number; mode?: number }
   /** `color` (ADR-068 Amendment 2): the chosen colour for a choice-bearing mana ability (Lotus) — one action per colour. */
   /** `colors` (S28, ADR-098): the chosen multiset of a combination mana choice (Orcish Lumberjack's three of {R}/{G}). */
-  | { type: "activateAbility"; objectId: string; abilityIndex: number; targets: ResolvedTarget[]; x?: number; color?: "W" | "U" | "B" | "R" | "G"; colors?: ("W" | "U" | "B" | "R" | "G")[] }
+  | { type: "activateAbility"; objectId: string; abilityIndex: number; targets: ResolvedTarget[]; x?: number; color?: "W" | "U" | "B" | "R" | "G"; colors?: ("W" | "U" | "B" | "R" | "G")[]; mode?: number }
   /** S28 (Brainstorm): put this card from hand on top of the library (the first pick ends on top). */
   | { type: "putOnTop"; objectId: string }
   /** `color` (S20, ADR-004 second amendment): which symbol a multi-ability producer (dual) taps for; absent = its first ability (pre-S20 logs replay unchanged). */

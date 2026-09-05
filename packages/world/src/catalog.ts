@@ -1,5 +1,6 @@
 import { DECKS, DECK_ARCHETYPES, type DeckKey } from "@shandalar/sim/decks";
 import { EXPANSION_DECKS } from "@shandalar/sim/expansion-decks";
+import { MAGE_DECKS } from "@shandalar/sim/mage-decks";
 import { assertKnobSource, type KnobSource, type RegionTier, type EnemyTier } from "./knobs.js";
 import { validateCorollaDef } from "./corolla.js";
 
@@ -54,6 +55,8 @@ export interface OpponentTemplate {
   portrait: string;
   /** Enemy world life = their duel starting life (manifest §2a: per-opponent data). */
   worldLife: number;
+  /** S29 (Chris): the mage's epithet ("the Almoner"), shown beside the name on the encounter line. */
+  epithet?: string;
   /** Colour identity string for UI washes, e.g. "R", "WU". */
   colors: string;
   /** Knob overrides at the `opponent` layer (e.g. a tier-3 carries anteCount 2). */
@@ -164,6 +167,12 @@ export function enemyDeck(catalog: Catalog, ref: OpponentDeckRef): { decklist: S
     if (!b) throw new Error(`unknown beast deck ${ref}`);
     return { decklist: b.decklist.map((e) => ({ ...e })), archetype: b.archetype };
   }
+  // S29 (ADR-099): the mage cleansheet — one deck per named mage.
+  if (ref.startsWith("mage:")) {
+    const m = MAGE_DECKS[ref.slice("mage:".length)];
+    if (!m) throw new Error(`unknown mage deck ${ref}`);
+    return { decklist: m.decklist.map((e) => ({ ...e })), archetype: m.archetype };
+  }
   const id = ref.slice("starter:".length);
   const s = catalog.starters.find((x) => x.id === id);
   if (!s) throw new Error(`unknown opponent deck ${ref}`);
@@ -228,7 +237,8 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
     ids.add(op.id);
     const deckOk = op.deck in DECKS
       || (typeof op.deck === "string" && op.deck.startsWith("starter:") && (st.starters ?? []).some((s) => `starter:${s.id}` === op.deck))
-      || (typeof op.deck === "string" && op.deck.startsWith("beast:") && op.deck.slice("beast:".length) in EXPANSION_DECKS);
+      || (typeof op.deck === "string" && op.deck.startsWith("beast:") && op.deck.slice("beast:".length) in EXPANSION_DECKS)
+      || (typeof op.deck === "string" && op.deck.startsWith("mage:") && op.deck.slice("mage:".length) in MAGE_DECKS);
     if (!deckOk) errors.push(`opponent ${op.id}: unknown deck ${op.deck}`);
     if (op.spoke && !["W", "U", "B", "R", "G"].includes(op.spoke)) errors.push(`opponent ${op.id}: bad spoke ${op.spoke}`);
     if (op.kind === "beast" && !op.spoke) errors.push(`opponent ${op.id}: beasts need a spoke (S18 region binding)`);
@@ -236,6 +246,7 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
     if (!["apprentice", "journeyman", "master"].includes(op.difficulty)) errors.push(`opponent ${op.id}: bad difficulty ${op.difficulty}`);
     if (!Number.isInteger(op.worldLife) || op.worldLife < 1) errors.push(`opponent ${op.id}: bad worldLife`);
     if (op.kind && !["mage", "beast"].includes(op.kind)) errors.push(`opponent ${op.id}: bad kind ${op.kind}`);
+    if (op.epithet !== undefined && (typeof op.epithet !== "string" || !op.epithet.trim())) errors.push(`opponent ${op.id}: epithet must be a non-empty string (S29)`);
     if (op.knobs) {
       try {
         assertKnobSource(op.knobs as Record<string, unknown>, `opponent ${op.id}`);

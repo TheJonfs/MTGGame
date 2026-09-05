@@ -1,0 +1,43 @@
+{
+  "id": "young_pyromancer",
+  "name": "Young Pyromancer",
+  "source": "real",
+  "scryfallId": "e349c204-3a93-4bf7-b79a-5f5f261ea2d3",
+  "manaCost": "{1}{R}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Human",
+    "Shaman"
+  ],
+  "power": 2,
+  "toughness": 1,
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "SPELL_CAST",
+      "condition": {
+        "controller": "you",
+        "type": [
+          "Instant",
+          "Sorcery"
+        ]
+      },
+      "effects": [
+        {
+          "type": "createToken",
+          "tokenId": "elemental_1_1_r",
+          "count": 1,
+          "who": "you"
+        }
+      ],
+      "optional": false
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2,
+  "priceOverride": 12
+}

@@ -247,6 +247,8 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | aether_mutation | apc | 91 | Ron Spencer | a9507116-ede8-40a1-8fa3-705e6f6f64c0 |
 | air_elemental | lea | 46 | Richard Thomas | 69c3b2a3-0daa-4d42-832d-fcdfda6555ea |
 | airship_crash | fin | 171 | Enora Mercier | ec91c4e4-711f-464d-bc83-e6813f4fdcdb |
+| altar_of_dementia | tmp | 276 | Brom | 4f2da99f-3c53-4980-97d6-2158c765aac0 |
+| arc_mage | nem | 77 | Terese Nielsen | 62982dab-4c27-45b3-9740-38fec3df7226 |
 | arcanis_the_omnipotent | ons | 66 | Justin Sweet | 90865f52-c062-4505-a204-b4d7d4b3fc4c |
 | aven_fisher | ody | 63 | Christopher Moeller | 5b27130d-2296-4076-9829-15ab63081896 |
 | badlands | olgc | 2016NA | Filip Burburan | 644aba21-1fa7-4483-b9bf-56c5fe4d8975 |
@@ -256,6 +258,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | birds_of_paradise | lea | 186 | Mark Poole | 55fe6449-1f23-43dc-adee-d144cd505b5c |
 | bitterblossom | mor | 58 | Rebecca Guay | 8145fed6-6b51-420a-84cf-4ea5e0aa1883 |
 | black_lotus | lea | 232 | Christopher Rush | b0faa7f2-b547-42c4-a810-839da50dadfe |
+| blanchwood_armor | usg | 237 | Paolo Parente | 9b5f3776-74f4-4626-833b-e1b0921d3cbc |
 | blaze | por | 118 | Gerry Grace | f175c959-3b5d-46a3-9194-fad2359bbff9 |
 | blood_artist | avr | 86 | Johannes Voss | 2e1fb442-68ff-4249-8e44-87edf6fae211 |
 | blood_crypt | rvr | 397 | Rob Alexander | 0a4abd89-28d2-4458-81d7-4f3b43fd0184 |
@@ -307,6 +310,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | gray_ogre | lea | 156 | Dan Frazier | 73ae5276-b607-4f23-a9d2-e8cc7b8e3693 |
 | grizzly_bears | lea | 199 | Jeff A. Menges | ce2d603a-3231-4a8c-bf39-1617586ea870 |
 | hallowed_fountain | rvr | 404 | Rob Alexander | 438fb324-2c51-4763-a32a-6e315e9f769c |
+| hedron_crab | zen | 47 | Jesper Ejsing | f0fa1946-4f97-4c52-b5f2-b80571230616 |
 | hill_giant | lea | 157 | Dan Frazier | 0ddb98e8-13fe-4786-83f7-b72c56db135a |
 | hordeling_outburst | ktk | 111 | Zoltan Boros | a5c1bf52-2737-423a-b340-07448afcaea6 |
 | hymn_to_tourach | fem | 38b | Liz Danforth | 8601f082-7e43-44ef-97d0-dead272b7eb4 |
@@ -361,6 +365,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | shock | sth | 98 | Randy Gallegos | f9b2ff2a-6dfe-4635-8da2-22d525e82b94 |
 | siege_gang_commander | scg | 103 | Christopher Moeller | 92e78cec-aaf9-4fe8-887b-b7e356d63315 |
 | skirk_prospector | ons | 230 | Doug Chaffee | eb545dcd-3a7a-46a7-9c35-d28faebc6d17 |
+| soul_warden | exo | 21 | Randy Gallegos | d5ee24ee-4d28-4634-bd43-90eff15c16dd |
 | spirit_link | leg | 37 | Kaja Foglio | 5e2d35f8-3cf6-4843-9030-0e9a885d836c |
 | steam_vents | rvr | 412 | Rob Alexander | 5575e0ad-a2f5-4e56-bf45-100001d2bdca |
 | stomping_ground | rvr | 413 | Rob Alexander | cc3390a5-cb7c-40d1-85a7-80a56ba88d53 |
@@ -390,6 +395,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | werebear | ody | 282 | Carl Critchlow | 964cf7e3-932d-432f-8ad4-9bd651aada96 |
 | wind_drake | por | 77 | Zina Saunders | 5486d2dc-9a5d-4f58-a5ec-d94de54b852f |
 | wrath_of_god | lea | 45 | Quinton Hoover | a2788d69-6a3a-42f0-8736-cc6b57755ecd |
+| young_pyromancer | m14 | 163 | Cynthia Sheppard | e349c204-3a93-4bf7-b79a-5f5f261ea2d3 |
 | youthful_valkyrie | khm | 382 | Anna Steinbauer | ffe93b27-f8ae-4abf-8ade-90f503f132c2 |
 | zombify | ody | 171 | Mark Romanoski | 513a2a6f-9ae6-42cb-b75f-6b45fc35f36e |
 
@@ -437,6 +443,20 @@ Pool 184 → **185**. The last card. Custom, five-colour, prizeOnly (sole-mechan
 | birds_of_paradise | Birds of Paradise | tested | flying; five fixed {T}: addMana abilities (the dual path — 0 words) | LEA first printing; tier 2 / 12g. Encoded like a dual so auto-pay fixes colours for both seats; the oracle text renders from Scryfall. |
 
 *The Heart (ADR-096, S28):* the sixty loses its five basics (now the ROOTS on the battlefield before turn one) and gains Disenchant, Counterspell, Doom Blade, Lightning Bolt, Prey Upon — see enemies.md.
+
+## Session 29 additions — six cards for the mage archetypes (ADR-101; planner-verified, implementer re-verified on Scryfall 2026-09-05)
+
+| id | Card | Status | Vocabulary | Notes |
+|---|---|---|---|---|
+| soul_warden | Soul Warden | tested | triggered(ENTERS_BATTLEFIELD, source other, controller any, type Creature) gainLife 1 | EXO first printing; tier 1 / 8g. Fires on the opponent's creatures and on tokens (fixture). Sister Oriel ×4, Vael ×3, Brennor ×2. |
+| hedron_crab | Hedron Crab | tested | triggered(LAND_ENTERS_UNDER_YOUR_CONTROL) targets player: mill 3 | ZEN first printing; tier 1 / 8g. Evolving Wilds triggers twice; Rampant Growth's basic triggers (fixture). Tessaly ×4, Pell ×4, Varro ×3, Quill ×3. |
+| young_pyromancer | Young Pyromancer | tested | triggered(SPELL_CAST, controller you, type Instant/Sorcery) createToken elemental_1_1_r | M14 first printing; tier 2 / 12g (priceOverride). A countered spell still makes the token (fixture). AI: the engine comes down before the cheap spells it feeds (book 40). Brann ×3, Kessa ×3, Varro ×2, Sorrel ×3. |
+| arc_mage | Arc Mage | tested | activated {2}{R}, {T}, discard 1: MODES {2→A} / {1→A, 1→B} (R-092 word 1) | NEM first printing; tier 2 / 16g (priceOverride). Never zero targets; the card is discarded as the cost (fixture). AI: kill over face, split over two X/1s (pinned). Brann ×2, Kessa ×2, Varro ×2, Sorrel ×2. |
+| altar_of_dementia | Altar of Dementia | tested | activated sacrifice creature: target player mills {ref: sacrificedPower} (R-092 word 2) | TMP first printing; tier 2 / 16g (priceOverride). X = power at the moment of sacrifice (fixture: a resolved Giant Growth counts, one on the stack does not). ADR-102's loop fixtured. AI (book 37): lethal mill takes the biggest body; otherwise only a doomed creature; never the last blocker while behind. Tessaly ×2, Pell ×1, Quill ×2. |
+| blanchwood_armor | Blanchwood Armor | tested | aura; static modifyPT +count(Forest, you)/+count (scope attached) | USG first printing; tier 1 / 12g (priceOverride). Temple Garden counts (fixture). AI (book 39): the hexproof host first, worth the Forests. Hask ×3, Brennor ×2, Ysolde ×2. |
+| elemental_1_1_r | Elemental Token | token | — | 1/1 red Elemental; the Pyromancer's token. No plate yet (renders the placeholder icon) — an art-round item. |
+
+*The mage cleansheet (ADR-099):* fifteen decks in `packages/sim/src/mage-decks.ts`, one per named mage (`mage:<key>`); the slice decks A–E retired from the catalog (Chris, S29 kickoff) and kept as sim/test infrastructure. Reya Dawnbringer (prizeOnly) left Lord Corvane's list for a third Serra Angel. The Cunning Tactician is a beast (ADR-100). Orcish Lumberjack stays shop-only until phase two (ADR-101).
 
 ## Shop tiers (ADR-078, S19)
 

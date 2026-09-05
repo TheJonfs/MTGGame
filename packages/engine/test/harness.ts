@@ -174,7 +174,7 @@ export type ScriptEntry =
   /** Declarative multi-step: staged one declareAttacker/declareBlocker at a time, consumed when complete. */
   | { player: PlayerId; do: "attack"; attackers: string[] }
   | { player: PlayerId; do: "block"; blocks: { blocker: string; attacker: string }[] }
-  | { player: PlayerId; do: "activate"; card: string; abilityIndex: number; targets?: TargetDesc[]; x?: number; color?: "W" | "U" | "B" | "R" | "G"; colors?: ("W" | "U" | "B" | "R" | "G")[] }
+  | { player: PlayerId; do: "activate"; card: string; abilityIndex: number; targets?: TargetDesc[]; x?: number; color?: "W" | "U" | "B" | "R" | "G"; colors?: ("W" | "U" | "B" | "R" | "G")[]; mode?: number }
   /** S28 (Brainstorm): one pick of the put-on-top loop (the first pick ends on top). */
   | { player: PlayerId; do: "putOnTop"; card: string }
   | { player: PlayerId; do: "chooseTriggerTargets"; targets: TargetDesc[] }
@@ -440,6 +440,7 @@ export class TestGame {
               a.x === entry.x &&
               a.color === entry.color &&
               JSON.stringify(a.colors) === JSON.stringify(entry.colors) &&
+              a.mode === entry.mode &&
               JSON.stringify(a.targets) === JSON.stringify(wanted),
           ),
         );

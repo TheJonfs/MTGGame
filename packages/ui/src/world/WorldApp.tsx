@@ -314,7 +314,7 @@ function ParleyPanel({ c }: { c: WorldController }) {
         <div className="parley-head">
           <img className="parley-portrait" src={`/portraits/${tmpl.portrait}.png`} alt="" />
           <div>
-            <h3 style={{ margin: 0, fontFamily: "var(--serif)" }}>{tmpl.name}</h3>
+            <h3 style={{ margin: 0, fontFamily: "var(--serif)" }}>{tmpl.name}{tmpl.epithet ? <span style={{ fontWeight: 400, color: "var(--ink-soft)" }}>, {tmpl.epithet}</span> : null}</h3>
             <div className="parley-sub">
               <span className={`tier-badge t${tmpl.tier}`}>{TIER_BADGE[tmpl.tier]}</span>
               <span className="colour-id">{tmpl.colors.split("").map((ch) => <i key={ch} className={`colour-pip c-${ch}`} title={ch} />)}</span>

@@ -12,7 +12,7 @@
 | Stronghold lord (the five seats, wild ring) | `baseLife` + growth − the spoke hunt's reduction: growth = min(`lordGrowthCap` 20 (easy 20 / hard 20), floor(steps / `lordGrowthSteps` 100 (easy 200 / hard 100)) × `lordGrowthLife` 1 (easy 1 / hard 2)); reduction = floor(spokeMinionPoints / `spokePointsPerLife` 3 (easy 3 / hard 3)); never below `lordLifeFloor` 15 (easy 15 / hard 15); + the stronghold's empowerment tiers (`strongholdEmpowermentTiers` = [{"steps":50,"addLife":2},{"steps":75,"addLife":2,"addBasic":true},{"steps":100,"addLife":2,"addToken":true,"addCard":true}]) | LORD_DECKS by key | master |
 | Petal court (the Corolla's five tips) | `petalBossLife` 30 (easy 30 / hard 30) (0 = the catalog's `bossLife` 30); the Corolla's empowerment clock is shipped off (`corollaEmpowermentTiers` = []) | COROLLA_DECKS by key | master |
 | The Mirror (the Vault) | the player's own world life | a copy of the player's active deck + a Black Lotus | master |
-| The Heart (the Manafleur) | `heartLife` 35 (easy 30 / hard 40) | HEART_DECK (sixty) | master |
+| The Heart (the Manafleur) | `heartLife` 40 (easy 35 / hard 45) | HEART_DECK (sixty) | master |
 
 Player-side constants for the same reads: `startingWorldLife` 10 (easy 10 / hard 10), `anteCount` 1 (easy 1 / hard 2) (the stake per duel), `lossLifePenalty` 1 (easy 1 / hard 1).
 
@@ -27,40 +27,36 @@ Mages roam anywhere; beasts are spoke-bound (their colour's ring). Tier 1 rolls 
 | The Deadly Recluse | beast | 1 | G | 8 | apprentice | beast:recluse (midrange) | 30 / 13 / 1.88 / G | not buyable |
 | A Gray Ogre | beast | 1 | R | 8 | apprentice | beast:ogre (aggro) | 30 / 12 / 1.94 / R |  |
 | A Bloom of Man-o'-War | beast | 1 | U | 8 | apprentice | beast:manowar (control) | 30 / 12 / 2.78 / U | not buyable |
+| A Cunning Tactician | beast | 1 | W | 8 | apprentice | beast:tactician (aggro) | 30 / 12 / 2.44 / W |  |
 | A Savannah Lion | beast | 1 | W | 8 | apprentice | beast:lion (aggro) | 30 / 12 / 1.50 / W |  |
 | A Vampire Nighthawk | beast | 2 | B | 8 | journeyman | beast:nighthawk (midrange) | 30 / 12 / 2.11 / B | knobs {"goldRewardByTier":{"1":10,"2":50,"3":60}} |
 | A Rumbling Baloth | beast | 2 | G | 10 | journeyman | beast:baloth (midrange) | 30 / 12 / 2.22 / G |  |
 | The Boggart Warband | beast | 2 | R | 8 | journeyman | beast:warband (aggro) | 30 / 12 / 2.06 / R |  |
 | The Living Gale | beast | 2 | U | 10 | journeyman | beast:gale (control) | 30 / 12 / 3.44 / U | not buyable |
+| The Cunning Tactician | beast | 2 | W | 10 | journeyman | beast:tactician (aggro) | 30 / 12 / 2.44 / W |  |
 | The Hypnotic Specter | beast | 3 | B | 12 | master | beast:specter (midrange) | 30 / 12 / 2.28 / B | not buyable; knobs {"anteCount":2} |
 | the Pelakka Wurm | beast | 3 | G | 12 | master | beast:wurm (midrange) | 30 / 12 / 3.33 / G | not buyable; knobs {"anteCount":2} |
 | The Siege-Gang | beast | 3 | R | 12 | master | beast:siegegang (aggro) | 30 / 12 / 2.78 / R | knobs {"anteCount":2} |
 | The Faerie Formation | beast | 3 | U | 12 | master | beast:formation (control) | 30 / 13 / 3.82 / U | knobs {"anteCount":2} |
 | The Serra Angel | beast | 3 | W | 12 | master | beast:serra (control) | 30 / 12 / 2.94 / W | knobs {"anteCount":2} |
-| Brann the Scorched | mage | 1 | — | 8 | apprentice | A (aggro) | 40 / 17 / 1.91 / R |  |
-| Old Hask | mage | 1 | — | 8 | apprentice | C (midrange) | 40 / 16 / 2.29 / G |  |
-| Pale Edric | mage | 1 | — | 8 | apprentice | D (midrange) | 40 / 17 / 2.87 / B |  |
-| Sister Oriel | mage | 1 | — | 8 | apprentice | B (control) | 40 / 17 / 2.78 / UW |  |
-| Tessaly Reed | mage | 1 | — | 8 | apprentice | E (midrange) | 40 / 17 / 2.43 / GU |  |
-| A Cunning Tactician | mage | 1 | W | 8 | apprentice | beast:tactician (aggro) | 30 / 12 / 2.44 / W |  |
-| Adept Maelin | mage | 2 | — | 10 | journeyman | B (control) | 40 / 17 / 2.78 / UW |  |
-| Brennor of the Glade | mage | 2 | — | 10 | journeyman | C (midrange) | 40 / 16 / 2.29 / G |  |
-| Kessa Emberhand | mage | 2 | — | 10 | journeyman | A (aggro) | 40 / 17 / 1.91 / R |  |
-| Mistress Vael | mage | 2 | — | 10 | journeyman | D (midrange) | 40 / 17 / 2.87 / B |  |
-| Pell of the Shallows | mage | 2 | — | 10 | journeyman | E (midrange) | 40 / 17 / 2.43 / GU |  |
-| The Cunning Tactician | mage | 2 | W | 10 | journeyman | beast:tactician (aggro) | 30 / 12 / 2.44 / W |  |
-| High Warden Sorrel | mage | 3 | — | 12 | master | B (control) | 40 / 17 / 2.78 / UW | knobs {"anteCount":2} |
-| Lord Corvane | mage | 3 | — | 12 | master | D (midrange) | 40 / 17 / 2.87 / B | knobs {"anteCount":2} |
-| Magister Quill | mage | 3 | — | 12 | master | E (midrange) | 40 / 17 / 2.43 / GU | knobs {"anteCount":2} |
-| Thornmother Ysolde | mage | 3 | — | 12 | master | C (midrange) | 40 / 16 / 2.29 / G | knobs {"anteCount":2} |
-| Varro Flamebrand | mage | 3 | — | 12 | master | A (aggro) | 40 / 17 / 1.91 / R | knobs {"anteCount":2} |
+| Brann the Scorched | mage | 1 | — | 8 | apprentice | mage:brann (aggro) | 40 / 17 / 1.70 / R | the Sparkwright |
+| Old Hask | mage | 1 | — | 8 | apprentice | mage:hask (aggro) | 40 / 16 / 1.54 / G | the Wardener |
+| Pale Edric | mage | 1 | — | 8 | apprentice | mage:edric (midrange) | 40 / 17 / 2.35 / B | the Sexton |
+| Sister Oriel | mage | 1 | — | 8 | apprentice | mage:oriel (midrange) | 40 / 17 / 1.78 / W | the Almoner |
+| Tessaly Reed | mage | 1 | — | 8 | apprentice | mage:tessaly (control) | 40 / 17 / 1.96 / U | the Tidewright |
+| Adept Maelin | mage | 2 | — | 10 | journeyman | mage:maelin (aggro) | 40 / 17 / 1.96 / BR | the Pyre-Warden |
+| Brennor of the Glade | mage | 2 | — | 10 | journeyman | mage:brennor (midrange) | 40 / 17 / 1.61 / GW | the Sanctuary |
+| Kessa Emberhand | mage | 2 | — | 10 | journeyman | mage:kessa (control) | 40 / 17 / 2.04 / RU | the Stormcaller |
+| Mistress Vael | mage | 2 | — | 10 | journeyman | mage:vael (midrange) | 40 / 17 / 1.74 / BW | the Tithe-Reeve |
+| Pell of the Shallows | mage | 2 | — | 10 | journeyman | mage:pell (control) | 40 / 17 / 1.74 / GU | the Tidesower |
+| High Warden Sorrel | mage | 3 | — | 12 | master | mage:sorrel (midrange) | 40 / 17 / 1.87 / BR | the Inquisitor; knobs {"anteCount":2} |
+| Lord Corvane | mage | 3 | — | 12 | master | mage:corvane (midrange) | 40 / 17 / 2.61 / BW | the Sepulchre; knobs {"anteCount":2} |
+| Magister Quill | mage | 3 | — | 12 | master | mage:quill (control) | 40 / 17 / 2.35 / GU | the Drowned Grove; knobs {"anteCount":2} |
+| Thornmother Ysolde | mage | 3 | — | 12 | master | mage:ysolde (aggro) | 40 / 17 / 1.78 / GW | the Thornmother; knobs {"anteCount":2} |
+| Varro Flamebrand | mage | 3 | — | 12 | master | mage:varro (control) | 40 / 17 / 1.96 / RU | the Ashwright; knobs {"anteCount":2} |
 
 ### The roaming decklists (one entry per deck; who plays it)
 
-- **Red Aggro (slice deck A, aggro)** — played by Brann the Scorched, Kessa Emberhand, Varro Flamebrand — 40 cards, 17 lands, avg MV 1.91
-  17 Mountain · 2 Blaze · 2 Bonesplitter · 3 Lightning Bolt · 4 Raging Goblin · 2 Shock · 2 Goblin Piker · 1 Pyroclasm · 3 Boggart Brute · 2 Goblin Chieftain · 2 Siege-Gang Commander
-- **WU Skies (slice deck B, control)** — played by Sister Oriel, Adept Maelin, High Warden Sorrel — 40 cards, 17 lands, avg MV 2.78
-  9 Island · 8 Plains · 2 Curiosity · 2 Swords to Plowshares · 2 Counterspell · 1 Fencing Ace · 1 Mind Stone · 1 Pacifism · 1 Raise the Alarm · 2 Cloudkin Seer · 1 Glorious Anthem · 1 Loxodon Warhammer · 2 Man-o'-War · 2 Control Magic · 2 Cunning Tactician · 1 Wrath of God · 2 Serra Angel
 - **A Rumbling Baloth (beast:baloth, tier 2, midrange)** — played by A Rumbling Baloth — 30 cards, 12 lands, avg MV 2.22
   12 Forest · 2 Giant Growth · 3 Llanowar Elves · 2 Prey Upon · 2 Elvish Visionary · 2 Grizzly Bears · 3 Centaur Courser · 4 Rumbling Baloth
 - **The Faerie Formation (beast:formation, tier 3, control)** — played by The Faerie Formation — 30 cards, 13 lands, avg MV 3.82
@@ -93,12 +89,36 @@ Mages roam anywhere; beasts are spoke-bound (their colour's ring). Tier 1 rolls 
   12 Mountain · 2 Goblin Grenade · 3 Raging Goblin · 2 Skirk Prospector · 3 Goblin Piker · 4 Boggart Brute · 2 Goblin Chieftain · 2 Hordeling Outburst
 - **The Pelakka Wurm (beast:wurm, tier 3, midrange)** — played by the Pelakka Wurm — 30 cards, 12 lands, avg MV 3.33
   12 Forest · 3 Llanowar Elves · 2 Prey Upon · 3 Rampant Growth · 2 Baru, Wurmspeaker · 3 Gaean Wurm · 2 Rumbling Baloth · 3 Pelakka Wurm
-- **Mono Green (slice deck C, midrange)** — played by Old Hask, Brennor of the Glade, Thornmother Ysolde — 40 cards, 16 lands, avg MV 2.29
-  16 Forest · 1 Giant Growth · 2 Gladecover Scout · 3 Prey Upon · 2 Rancor · 1 Blurred Mongoose · 2 Deadly Recluse · 3 Elvish Visionary · 2 Rampant Growth · 3 Timberland Guide · 1 Centaur Courser · 2 Rumbling Baloth · 2 Pelakka Wurm
-- **Mono Black (slice deck D, midrange)** — played by Pale Edric, Mistress Vael, Lord Corvane — 40 cards, 17 lands, avg MV 2.87
-  17 Swamp · 1 Duress · 2 Typhoid Rats · 2 Child of Night · 1 Demonic Tutor · 2 Doom Blade · 1 Hymn to Tourach · 1 Terror · 2 Phyrexian Rager · 3 Vampire Nighthawk · 2 Gravedigger · 3 Nekrataal · 1 Zombify · 2 Drana, Kalastria Bloodchief
-- **Simic Tempo (slice deck E, midrange)** — played by Tessaly Reed, Pell of the Shallows, Magister Quill — 40 cards, 17 lands, avg MV 2.43
-  9 Forest · 8 Island · 2 Curiosity · 2 Boomerang · 2 Counterspell · 2 Deadly Recluse · 3 Elvish Visionary · 3 Grizzly Bears · 2 Cloudkin Seer · 2 Man-o'-War · 2 Wind Drake · 3 Mystic Snake
+- **Brann the Scorched, the Sparkwright (mage:brann, R tier 1, aggro)** — played by Brann the Scorched — 40 cards, 17 lands, avg MV 1.70
+  2 Forgotten Cave · 15 Mountain · 2 Blaze · 1 Bonesplitter · 2 Brute Force · 3 Lightning Bolt · 3 Shock · 2 Abrade · 2 Goblin Piker · 1 Thundersnake · 3 Young Pyromancer · 2 Arc Mage · 2 Hordeling Outburst
+- **Brennor of the Glade, the Sanctuary (mage:brennor, WG tier 2, midrange)** — played by Brennor of the Glade — 40 cards, 17 lands, avg MV 1.61
+  9 Forest · 6 Plains · 2 Temple Garden · 2 Birds of Paradise · 2 Giant Growth · 3 Gladecover Scout · 2 Rancor · 2 Soul Warden · 2 Spirit Link · 1 Swords to Plowshares · 2 Blurred Mongoose · 1 Pacifism · 2 Youthful Valkyrie · 2 Blanchwood Armor · 1 Glorious Anthem · 1 Restoration Angel
+- **Lord Corvane, the Sepulchre (mage:corvane, WB tier 3, midrange)** — played by Lord Corvane — 40 cards, 17 lands, avg MV 2.61
+  2 Godless Shrine · 7 Plains · 1 Scrubland · 7 Swamp · 1 Dark Ritual · 2 Indulgent Aristocrat · 2 Swords to Plowshares · 2 Unearth · 2 Blood Artist · 1 Pacifism · 1 Terror · 2 Youthful Valkyrie · 2 Inspiring Overseer · 2 Gravedigger · 1 Restoration Angel · 2 Zombify · 3 Serra Angel
+- **Pale Edric, the Sexton (mage:edric, B tier 1, midrange)** — played by Pale Edric — 40 cards, 17 lands, avg MV 2.35
+  2 Barren Moor · 15 Swamp · 1 Dark Ritual · 2 Indulgent Aristocrat · 2 Typhoid Rats · 3 Unearth · 2 Blood Artist · 2 Child of Night · 2 Terror · 2 Phyrexian Rager · 2 Gallows Djinn · 3 Gravedigger · 2 Zombify
+- **Old Hask, the Wardener (mage:hask, G tier 1, aggro)** — played by Old Hask — 40 cards, 16 lands, avg MV 1.54
+  16 Forest · 2 Birds of Paradise · 3 Giant Growth · 4 Gladecover Scout · 2 Prey Upon · 3 Rancor · 3 Blurred Mongoose · 2 Elvish Visionary · 2 Timberland Guide · 3 Blanchwood Armor
+- **Kessa Emberhand, the Stormcaller (mage:kessa, UR tier 2, control)** — played by Kessa Emberhand — 40 cards, 17 lands, avg MV 2.04
+  7 Island · 8 Mountain · 2 Steam Vents · 1 Blaze · 2 Brainstorm · 3 Lightning Bolt · 2 Shock · 2 Boomerang · 1 Counterspell · 2 Essence Scatter · 3 Young Pyromancer · 1 Aether Channeler · 2 Arc Mage · 1 Hordeling Outburst · 2 Man-o'-War · 1 Air Elemental
+- **Adept Maelin, the Pyre-Warden (mage:maelin, BR tier 2, aggro)** — played by Adept Maelin — 40 cards, 17 lands, avg MV 1.96
+  2 Blood Crypt · 7 Mountain · 8 Swamp · 1 Dark Ritual · 2 Goblin Grenade · 2 Indulgent Aristocrat · 1 Lightning Bolt · 2 Raging Goblin · 2 Skirk Prospector · 2 Unearth · 2 Blood Artist · 2 Goblin Piker · 1 Terror · 2 Hordeling Outburst · 1 Gallows Djinn · 2 Gravedigger · 1 Siege-Gang Commander
+- **Sister Oriel, the Almoner (mage:oriel, W tier 1, midrange)** — played by Sister Oriel — 40 cards, 17 lands, avg MV 1.78
+  15 Plains · 2 Secluded Steppe · 4 Soul Warden · 2 Spirit Link · 3 Suntail Hawk · 1 Swords to Plowshares · 2 Master Decoy · 2 Pacifism · 2 Raise the Alarm · 3 Youthful Valkyrie · 1 Glorious Anthem · 2 Inspiring Overseer · 1 Restoration Angel
+- **Pell of the Shallows, the Tidesower (mage:pell, UG tier 2, control)** — played by Pell of the Shallows — 40 cards, 17 lands, avg MV 1.74
+  2 Breeding Pool · 2 Evolving Wilds · 6 Forest · 7 Island · 2 Birds of Paradise · 2 Brainstorm · 2 Cathartic Adept · 4 Hedron Crab · 1 Altar of Dementia · 2 Blurred Mongoose · 1 Counterspell · 2 Essence Scatter · 3 Rampant Growth · 2 Timberland Guide · 2 Traumatizer
+- **Magister Quill, the Drowned Grove (mage:quill, UG tier 3, control)** — played by Magister Quill — 40 cards, 17 lands, avg MV 2.35
+  2 Breeding Pool · 1 Evolving Wilds · 7 Forest · 6 Island · 1 Tropical Island · 1 Brainstorm · 2 Cathartic Adept · 3 Hedron Crab · 2 Llanowar Elves · 2 Altar of Dementia · 1 Counterspell · 2 Essence Scatter · 3 Rampant Growth · 1 Man-o'-War · 1 Baru, Wurmspeaker · 2 Gaean Wurm · 2 Traumatizer · 1 Pelakka Wurm
+- **High Warden Sorrel, the Inquisitor (mage:sorrel, BR tier 3, midrange)** — played by High Warden Sorrel — 40 cards, 17 lands, avg MV 1.87
+  1 Badlands · 2 Blood Crypt · 7 Mountain · 7 Swamp · 1 Blaze · 1 Dark Ritual · 2 Duress · 3 Lightning Bolt · 2 Shock · 1 Unearth · 1 Hymn to Tourach · 2 Terror · 3 Young Pyromancer · 2 Arc Mage · 2 Hypnotic Specter · 2 Mind Rot · 1 Vampire Nighthawk
+- **Tessaly Reed, the Tidewright (mage:tessaly, U tier 1, control)** — played by Tessaly Reed — 40 cards, 17 lands, avg MV 1.96
+  2 Evolving Wilds · 15 Island · 2 Brainstorm · 4 Cathartic Adept · 4 Hedron Crab · 2 Altar of Dementia · 2 Boomerang · 1 Counterspell · 2 Essence Scatter · 1 Divination · 2 Wind Drake · 3 Traumatizer
+- **Mistress Vael, the Tithe-Reeve (mage:vael, WB tier 2, midrange)** — played by Mistress Vael — 40 cards, 17 lands, avg MV 1.74
+  2 Godless Shrine · 8 Plains · 7 Swamp · 2 Indulgent Aristocrat · 3 Soul Warden · 2 Spirit Link · 2 Suntail Hawk · 1 Swords to Plowshares · 2 Unearth · 2 Blood Artist · 2 Child of Night · 1 Pacifism · 2 Youthful Valkyrie · 2 Vampire Nighthawk · 1 Gravedigger · 1 Wrath of God
+- **Varro Flamebrand, the Ashwright (mage:varro, UR tier 3, control)** — played by Varro Flamebrand — 40 cards, 17 lands, avg MV 1.96
+  7 Island · 7 Mountain · 2 Steam Vents · 1 Volcanic Island · 1 Blaze · 2 Brainstorm · 3 Hedron Crab · 3 Lightning Bolt · 2 Shock · 2 Boomerang · 1 Counterspell · 1 Essence Scatter · 2 Young Pyromancer · 2 Arc Mage · 1 Divination · 2 Traumatizer · 1 Faerie Formation
+- **Thornmother Ysolde, the Thornmother (mage:ysolde, WG tier 3, aggro)** — played by Thornmother Ysolde — 40 cards, 17 lands, avg MV 1.78
+  8 Forest · 6 Plains · 1 Savannah · 2 Temple Garden · 2 Birds of Paradise · 1 Giant Growth · 2 Gladecover Scout · 2 Rancor · 2 Savannah Lions · 2 Suntail Hawk · 1 Swords to Plowshares · 2 Blurred Mongoose · 2 Fencing Ace · 2 Raise the Alarm · 2 Blanchwood Armor · 2 Glorious Anthem · 1 Serra Angel
 
 ## The Mox court (five Mox dungeons)
 
@@ -283,7 +303,7 @@ Each tip fights under the RETURNED partisan law of the lord whose complement the
 
 ## The Heart (The Manafleur)
 
-- Starting life: heartLife 35 (easy 30 / hard 40)
+- Starting life: heartLife 40 (easy 35 / hard 45)
 - Ante: none (prizeOnly cards are never staked)
 - Deck (midrange): 60 cards, 20 lands, avg MV 3.17, colours BGRUW
   1 Badlands · 1 Bayou · 1 Blood Crypt · 1 Breeding Pool · 1 Godless Shrine · 1 Hallowed Fountain · 1 Overgrown Tomb · 1 Plateau · 1 Sacred Foundry · 1 Savannah · 1 Scrubland · 1 Steam Vents · 1 Stomping Ground · 1 Taiga · 1 Temple Garden · 1 Tropical Island · 1 Tundra · 1 Underground Sea · 1 Volcanic Island · 1 Watery Grave · 1 Mox Emerald · 1 Mox Jet · 1 Mox Pearl · 1 Mox Ruby · 1 Mox Sapphire · 1 Lightning Bolt · 1 Prey Upon · 1 Counterspell · 1 Disenchant · 1 Doom Blade · 1 The Emerald Keeper · 1 Thundersnake · 1 Clio, Lady of the Depths · 1 Temporal Spring · 1 The Jet Witch · 1 The Pearl Cleric · 1 Vindicate · 1 Aetherbolt · 1 Control Magic · 1 Cunning Tactician · 1 Faldor, the Muster · 1 Frondland Felidar · 1 Gaean Wurm · 1 Gallows Djinn · 1 Glare of Subdual · 1 Lumen, the Hearth Fire · 1 Mystic Snake · 1 Phyrexian Purge · 1 Seraphina, the Initiative · 1 Traumatizer · 1 Wrath of God · 1 Yuloke, the Animus · 1 Aether Mutation · 1 Faerie Formation · 1 Graceful Restoration · 3 The Manafleur · 1 The Ruby Tyrant · 1 The Sapphire Sage

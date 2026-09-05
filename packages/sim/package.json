@@ -39,6 +39,10 @@
     "./road-decks": {
       "types": "./src/road-decks.ts",
       "default": "./src/road-decks.ts"
+    },
+    "./mage-decks": {
+      "types": "./src/mage-decks.ts",
+      "default": "./src/mage-decks.ts"
     }
   },
   "dependencies": {

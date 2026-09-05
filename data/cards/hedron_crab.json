@@ -1,0 +1,40 @@
+{
+  "id": "hedron_crab",
+  "name": "Hedron Crab",
+  "source": "real",
+  "scryfallId": "f0fa1946-4f97-4c52-b5f2-b80571230616",
+  "manaCost": "{U}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Crab"
+  ],
+  "power": 0,
+  "toughness": 2,
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "LAND_ENTERS_UNDER_YOUR_CONTROL",
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "player",
+          "zone": "any"
+        }
+      ],
+      "effects": [
+        {
+          "type": "mill",
+          "count": 3,
+          "who": "target"
+        }
+      ],
+      "optional": false
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 1
+}

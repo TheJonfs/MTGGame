@@ -104,7 +104,7 @@ export const KNOBS = {
   }),
   // ---- S27 (ADR-093): the Heart and the chronicle ----
   heartLife: knob<number>({
-    default: 35,
+    default: 40,
     unit: "life",
     description: "S27: the Manafleur's starting life — flat, no growth, no reduction (a clockless flower; the five petals are required, so not a variable). 30/35/40 by easy/standard/hard (ADR-093).",
   }),
@@ -560,7 +560,7 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
     roamerDensityPer100Cells: { civilized: 0.7, approach: 1.1, wild: 1.5 },
     siegeIntervalSteps: { civilized: 1500, approach: 1125, wild: 750 }, // S26 r3: +33% with the standard shift (ratio held)
     siegeMaxActive: 1, // S25 r3 (Chris): easy = one siege at a time
-    heartLife: 30, // S27 (ADR-093)
+    heartLife: 35, // S29 Part 0 (Chris: 40 standard, from the S28 sim + his 5–1 at 40)
     siegePartySizeWeights: { civilized: [1], approach: [0.6, 0.4], wild: [0.45, 0.4, 0.15] }, // S26 r3: lighter parties
     lordGrowthSteps: 200, // S25 r4: 0.5 life per 100 steps
     siegeWarningSteps: 90,
@@ -581,7 +581,7 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
     roamerDensityPer100Cells: { civilized: 1.4, approach: 2.0, wild: 2.6 },
     siegeIntervalSteps: { civilized: 750, approach: 560, wild: 375 }, // S26 r3: +33% (ratio held)
     siegeMaxActive: 3, // S25 r3 (Chris): hard = three skies can burn
-    heartLife: 40, // S27 (ADR-093)
+    heartLife: 45, // S27 (ADR-093)
     siegePartySizeWeights: { civilized: [0.6, 0.4], approach: [0.25, 0.5, 0.25], wild: [0.15, 0.35, 0.5] }, // S26 r3: heavier parties (the cap still rules)
     lordGrowthLife: 2, // S25 r4: 2 life per 100 steps
     siegeWarningSteps: 40,

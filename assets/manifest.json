@@ -2985,6 +2985,126 @@
         }
       }
     },
+    "portrait-mage-brann-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:c2a6a17690e661341519209de901b32f35f8050d2d9f99f6893f2df09d62520f",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:c2a6a17690e661341519209de901b32f35f8050d2d9f99f6893f2df09d62520f",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-brann-1/canonical.png",
+          "rendered_at": "2026-09-05T19:41:55+00:00",
+          "thumb": "assets/thumbs/portrait-mage-brann-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-brann-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:f14d2ef41942e080b6570033dd0625097c73944019890ab5a809c553ae2153a9",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:f14d2ef41942e080b6570033dd0625097c73944019890ab5a809c553ae2153a9",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-brann-2/canonical.png",
+          "rendered_at": "2026-09-05T19:42:04+00:00",
+          "thumb": "assets/thumbs/portrait-mage-brann-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-brennor-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:a4769fe7f10ce490bf00648f83887ec0d1d3d503ea2ee35ee6c66cc6baf1f864",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:a4769fe7f10ce490bf00648f83887ec0d1d3d503ea2ee35ee6c66cc6baf1f864",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-brennor-1/canonical.png",
+          "rendered_at": "2026-09-05T19:43:17+00:00",
+          "thumb": "assets/thumbs/portrait-mage-brennor-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-brennor-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:b49fb9f35a31b363de24f05c4e8f2b6a43ed41680d827186e4ee8517702f6a81",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:b49fb9f35a31b363de24f05c4e8f2b6a43ed41680d827186e4ee8517702f6a81",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-brennor-2/canonical.png",
+          "rendered_at": "2026-09-05T19:43:25+00:00",
+          "thumb": "assets/thumbs/portrait-mage-brennor-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-corvane-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:140539d77e9004778a3ce4433905a78564f96d98dfe7b3ecdb618b3c0ccf710e",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:140539d77e9004778a3ce4433905a78564f96d98dfe7b3ecdb618b3c0ccf710e",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-corvane-1/canonical.png",
+          "rendered_at": "2026-09-05T19:43:49+00:00",
+          "thumb": "assets/thumbs/portrait-mage-corvane-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-corvane-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:e2ddf407ca4a9f4a9513eb2886d9e1e9e6a6aa36d3f3a44446e41f30cbad4e5c",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:e2ddf407ca4a9f4a9513eb2886d9e1e9e6a6aa36d3f3a44446e41f30cbad4e5c",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-corvane-2/canonical.png",
+          "rendered_at": "2026-09-05T19:43:58+00:00",
+          "thumb": "assets/thumbs/portrait-mage-corvane-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-edric-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:2a66c6dee6f7e0c7424283c8c89545ccf686add990ed1b7d0ddcc7c17b0ee8a0",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:2a66c6dee6f7e0c7424283c8c89545ccf686add990ed1b7d0ddcc7c17b0ee8a0",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-edric-1/canonical.png",
+          "rendered_at": "2026-09-05T19:41:39+00:00",
+          "thumb": "assets/thumbs/portrait-mage-edric-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-edric-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:f251adb8c36b357fd5a51c6756c84c166827e3138e840446ba7126f32f244d20",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:f251adb8c36b357fd5a51c6756c84c166827e3138e840446ba7126f32f244d20",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-edric-2/canonical.png",
+          "rendered_at": "2026-09-05T19:41:47+00:00",
+          "thumb": "assets/thumbs/portrait-mage-edric-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "portrait-mage-female": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:38a35b3ad1227de328d697424e64f8f2af4b8adf8fe820804b09a34a42d43531",
@@ -2996,6 +3116,336 @@
           "path": "assets/images/portrait-mage-female/canonical.png",
           "rendered_at": "2026-08-19T19:04:33+00:00",
           "thumb": "assets/thumbs/portrait-mage-female/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-hask-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:caff3c98adad90976ecea87945d41128417dc6c76066a8e2420c2a140d76e3f9",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:caff3c98adad90976ecea87945d41128417dc6c76066a8e2420c2a140d76e3f9",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-hask-1/canonical.png",
+          "rendered_at": "2026-09-05T19:42:13+00:00",
+          "thumb": "assets/thumbs/portrait-mage-hask-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-hask-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:06ec2f6c474ca7fced9c2ad1df84b75ad2eb7e4ac497cf398eb21e82d7db3faf",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:06ec2f6c474ca7fced9c2ad1df84b75ad2eb7e4ac497cf398eb21e82d7db3faf",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-hask-2/canonical.png",
+          "rendered_at": "2026-09-05T19:42:22+00:00",
+          "thumb": "assets/thumbs/portrait-mage-hask-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-kessa-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:6ee7db94072abe22d89145376a82360a63bb9fea8e4dee7596dbe3f361cf9904",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:6ee7db94072abe22d89145376a82360a63bb9fea8e4dee7596dbe3f361cf9904",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-kessa-1/canonical.png",
+          "rendered_at": "2026-09-05T19:42:46+00:00",
+          "thumb": "assets/thumbs/portrait-mage-kessa-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-kessa-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:45efe0a47d21ac7822c9017530e27a1a860f034d63fdaeeb34c7dd99739dceb2",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:45efe0a47d21ac7822c9017530e27a1a860f034d63fdaeeb34c7dd99739dceb2",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-kessa-2/canonical.png",
+          "rendered_at": "2026-09-05T19:42:54+00:00",
+          "thumb": "assets/thumbs/portrait-mage-kessa-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-maelin-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:ffe038125a7b9fd23d1b5a38fd1c6980800ffaf3ee25ab17e1ef9aa2ff2830c0",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:ffe038125a7b9fd23d1b5a38fd1c6980800ffaf3ee25ab17e1ef9aa2ff2830c0",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-maelin-1/canonical.png",
+          "rendered_at": "2026-09-05T19:43:02+00:00",
+          "thumb": "assets/thumbs/portrait-mage-maelin-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-maelin-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:275c25d60a2517cce8ca2d55b28046cf76d8c52117059597303b4145a8458d70",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:275c25d60a2517cce8ca2d55b28046cf76d8c52117059597303b4145a8458d70",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-maelin-2/canonical.png",
+          "rendered_at": "2026-09-05T19:43:10+00:00",
+          "thumb": "assets/thumbs/portrait-mage-maelin-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-oriel-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:5a185aa09f0e5e49111e9695f0ec47d5f293cb1f4472ad52d5f6c08105f30e8c",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:5a185aa09f0e5e49111e9695f0ec47d5f293cb1f4472ad52d5f6c08105f30e8c",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-oriel-1/canonical.png",
+          "rendered_at": "2026-09-05T19:41:07+00:00",
+          "thumb": "assets/thumbs/portrait-mage-oriel-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-oriel-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:20c0c24f79e4e36a384161ac971c44a65553ec426ab59e71aeeef544c6b04999",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:20c0c24f79e4e36a384161ac971c44a65553ec426ab59e71aeeef544c6b04999",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-oriel-2/canonical.png",
+          "rendered_at": "2026-09-05T19:41:16+00:00",
+          "thumb": "assets/thumbs/portrait-mage-oriel-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-pell-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:70a42586b86f702079c7f2e07bcb674fdfcd8cf01d92eacded02a5c9979efea0",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:70a42586b86f702079c7f2e07bcb674fdfcd8cf01d92eacded02a5c9979efea0",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-pell-1/canonical.png",
+          "rendered_at": "2026-09-05T19:43:33+00:00",
+          "thumb": "assets/thumbs/portrait-mage-pell-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-pell-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:809119a958f88c9af8c67a2af7a737c7c2456dd48fa60b8efe4f932abd5a4a20",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:809119a958f88c9af8c67a2af7a737c7c2456dd48fa60b8efe4f932abd5a4a20",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-pell-2/canonical.png",
+          "rendered_at": "2026-09-05T19:43:42+00:00",
+          "thumb": "assets/thumbs/portrait-mage-pell-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-quill-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:de40a2f9456cdcc27d7bda132c1538a1458b202eb38e99e4d7b0553c0a214a22",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:de40a2f9456cdcc27d7bda132c1538a1458b202eb38e99e4d7b0553c0a214a22",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-quill-1/canonical.png",
+          "rendered_at": "2026-09-05T19:44:58+00:00",
+          "thumb": "assets/thumbs/portrait-mage-quill-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-quill-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:c207010649edbda9019d39b4687baec88131315725bc0e1a7952c6d05d94cdd8",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:c207010649edbda9019d39b4687baec88131315725bc0e1a7952c6d05d94cdd8",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-quill-2/canonical.png",
+          "rendered_at": "2026-09-05T19:45:05+00:00",
+          "thumb": "assets/thumbs/portrait-mage-quill-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-sorrel-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:d63cd023d6c872ee601336942ddf6500bd9033963de13d712a8a1201c5cfb6fb",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:d63cd023d6c872ee601336942ddf6500bd9033963de13d712a8a1201c5cfb6fb",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-sorrel-1/canonical.png",
+          "rendered_at": "2026-09-05T19:44:24+00:00",
+          "thumb": "assets/thumbs/portrait-mage-sorrel-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-sorrel-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:aa212f1fa988c9172b69d7ff1c59e93813f07a0d6e017289228d54487fb8b239",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:aa212f1fa988c9172b69d7ff1c59e93813f07a0d6e017289228d54487fb8b239",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-sorrel-2/canonical.png",
+          "rendered_at": "2026-09-05T19:44:32+00:00",
+          "thumb": "assets/thumbs/portrait-mage-sorrel-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-tessaly-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:5d168837033189e5a072157475599bd83e27438109f6eb5d4123150395f196f6",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:5d168837033189e5a072157475599bd83e27438109f6eb5d4123150395f196f6",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-tessaly-1/canonical.png",
+          "rendered_at": "2026-09-05T19:41:23+00:00",
+          "thumb": "assets/thumbs/portrait-mage-tessaly-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-tessaly-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:e85236c1757d0bac6c52f1f9a0a55b656f0ddfb223aeef9f8f99f20a42dfcc57",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:e85236c1757d0bac6c52f1f9a0a55b656f0ddfb223aeef9f8f99f20a42dfcc57",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-tessaly-2/canonical.png",
+          "rendered_at": "2026-09-05T19:41:31+00:00",
+          "thumb": "assets/thumbs/portrait-mage-tessaly-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-vael-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:fd41f7c6a6bd01c36a2e8286fbd99ec90b9e5f174ff2ea4b6cbacc12522245df",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:fd41f7c6a6bd01c36a2e8286fbd99ec90b9e5f174ff2ea4b6cbacc12522245df",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-vael-1/canonical.png",
+          "rendered_at": "2026-09-05T19:42:30+00:00",
+          "thumb": "assets/thumbs/portrait-mage-vael-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-vael-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:17f6ec94278fc9a27cb980d98867ef49c36ace572aa57c8a33989a5ff3d01c8a",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:17f6ec94278fc9a27cb980d98867ef49c36ace572aa57c8a33989a5ff3d01c8a",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-vael-2/canonical.png",
+          "rendered_at": "2026-09-05T19:42:38+00:00",
+          "thumb": "assets/thumbs/portrait-mage-vael-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-varro-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:397f57d758f3f0c24170118e9226c423b0060161df7dcad991f1f2decd47a9f5",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:397f57d758f3f0c24170118e9226c423b0060161df7dcad991f1f2decd47a9f5",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-varro-1/canonical.png",
+          "rendered_at": "2026-09-05T19:44:08+00:00",
+          "thumb": "assets/thumbs/portrait-mage-varro-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-varro-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:ec321ca2e5697e485b4dbc1b71a4baf28b6fc825859aaa8db16025166191e4c4",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:ec321ca2e5697e485b4dbc1b71a4baf28b6fc825859aaa8db16025166191e4c4",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-varro-2/canonical.png",
+          "rendered_at": "2026-09-05T19:44:15+00:00",
+          "thumb": "assets/thumbs/portrait-mage-varro-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-ysolde-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:e56cfee327d9bf797ae546fd5c35dc8b1fc0e66636cd67f873557cb5c1c046b4",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:e56cfee327d9bf797ae546fd5c35dc8b1fc0e66636cd67f873557cb5c1c046b4",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-ysolde-1/canonical.png",
+          "rendered_at": "2026-09-05T19:44:40+00:00",
+          "thumb": "assets/thumbs/portrait-mage-ysolde-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "portrait-mage-ysolde-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:7f2bb7e136616d70ac28390d4463454e2699778d88895ce36bf7c5b1cadaf577",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:7f2bb7e136616d70ac28390d4463454e2699778d88895ce36bf7c5b1cadaf577",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/portrait-mage-ysolde-2/canonical.png",
+          "rendered_at": "2026-09-05T19:44:48+00:00",
+          "thumb": "assets/thumbs/portrait-mage-ysolde-2/canonical.png",
           "variant_prompt": null
         }
       }

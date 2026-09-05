@@ -90,6 +90,12 @@ export function predictAction(
     const isPermanent = d.types.some((t) => ["Creature", "Artifact", "Enchantment"].includes(t));
     const isAura = d.subtypes?.includes("Aura") ?? false;
     if (isPermanent && !isAura) {
+      // S29 (Part 4, the Sparkwright): a creature that TRIGGERS ON OUR SPELLS (Young Pyromancer) is
+      // the engine — with fuel in hand it comes down before the cheap spells it feeds (book 40).
+      if ((d.abilities ?? []).some((a) => a.kind === "triggered" && a.event === "SPELL_CAST" && a.condition?.controller === "you")) {
+        const fuel = next.hand.filter((c) => { const cd = defs.get(c.cardId); return !!cd && (cd.types.includes("Instant") || cd.types.includes("Sorcery")); }).length;
+        adjustment += Math.min(1.2, 0.4 * fuel);
+      }
       // Deploy playtest r1 (Chris: a Phyrexian Rager cast at 1 life killed its caster): a mandatory
       // ETB that costs US life (loseLife you / damage to you) is paid in the prediction, so the
       // evaluator's lethal floor (-1000 at life ≤ 0) prices the suicide (book 34).
@@ -153,7 +159,14 @@ export function predictAction(
       } else if (hostObj) {
         const hv = objectValue(defs, hostObj);
         if (cls === "harmful" && hostObj.controller !== me) adjustment += steals ? 1.6 * hv : 0.7 * hv;
-        else if (cls === "helpful" && hostObj.controller === me) adjustment += 1.0;
+        else if (cls === "helpful" && hostObj.controller === me) {
+          adjustment += 1.0;
+          // S29 (Part 4, the Wardener / Ysolde): an aura on a HEXPROOF or shroud body is safer than on
+          // one that can be answered; Blanchwood Armor is worth the Forests it counts. Book 39.
+          if (hostObj.keywords.includes("hexproof") || hostObj.keywords.includes("shroud")) adjustment += 0.6;
+          const forestArmor = effects.some((e) => e.type === "modifyPT" && typeof e.power === "object" && e.power !== null && "ref" in e.power && e.power.ref === "count" && e.power.predicate.subtype === "Forest");
+          if (forestArmor) adjustment += 0.2 * view.battlefield.filter((o) => o.controller === me && (defs.get(o.cardId)?.subtypes ?? []).includes("Forest")).length;
+        }
         // Harmful aura pointed at our own creature: the view can't show the
         // downside, so charge it directly.
         else if (cls === "harmful" && hostObj.controller === me) adjustment -= steals ? 0.2 : 0.7 * hv;
@@ -190,8 +203,23 @@ export function predictAction(
     if (self) self.tapped = true;
     adjustment -= 0.15; // tapping out a creature is a real (small) cost
   }
+  // S29 (R-092, the Altar): an outlet whose payload reads the sacrificed creature's POWER — predict
+  // the chooser's pick (the biggest body when that closes the library, else the cheapest) and price
+  // the mill by its power; the ref itself reads 0 in the view.
+  let sacrificedPower: number | null = null;
+  const readsPower = JSON.stringify(ability.modes ? ability.modes.flatMap((m) => m.effects) : ability.effects).includes('"sacrificedPower"');
   if (ability.cost.sacrifice?.predicate === "self") {
     removeObject(next, action.objectId);
+  } else if (ability.cost.sacrifice && readsPower) {
+    const cands = next.battlefield.filter((o) => o.controller === me && o.power !== null);
+    if (cands.length > 0) {
+      const opp = (1 - me) as 0 | 1;
+      const biggest = [...cands].sort((a, b) => (b.power ?? 0) - (a.power ?? 0))[0]!;
+      const pick = (biggest.power ?? 0) >= (next.librarySizes[opp] ?? 99) ? biggest : [...cands].sort((a, b) => objectValue(defs, a, constants) - objectValue(defs, b, constants))[0]!;
+      sacrificedPower = pick.power ?? 0;
+      adjustment -= 0.5 * objectValue(defs, pick, constants); // the body is spent (the mill below pays it back when it closes)
+      removeObject(next, pick.id);
+    }
   } else if (ability.cost.sacrifice) {
     // Aristocrat / Prospector: the cheapest matching creature goes (sacrificeChoice picks it).
     removeCheapestMatching(next, me, ability.cost.sacrifice.predicate, defs, constants);
@@ -226,7 +254,10 @@ export function predictAction(
     return { view: next, adjustment, unchanged: false };
   }
   const before = JSON.stringify(next);
-  for (const e of ability.effects) adjustment += applyEffect(next, e, targets, x, defs, constants);
+  // S29 (R-092, Arc Mage): a modal activation applies its chosen mode's effects.
+  const abilityEffects = (ability.modes && action.mode !== undefined ? (ability.modes[action.mode]?.effects ?? []) : ability.effects)
+    .map((e) => (sacrificedPower !== null && e.type === "mill" && typeof e.count === "object" && "ref" in e.count && e.count.ref === "sacrificedPower" ? { ...e, count: sacrificedPower } : e));
+  for (const e of abilityEffects) adjustment += applyEffect(next, e, targets, x, defs, constants);
   const unchanged = adjustment === 0 && JSON.stringify(next) === before && !ability.cost.tap;
   return { view: next, adjustment, unchanged };
 }
@@ -324,9 +355,21 @@ function applyEffect(
       return 0;
     }
     case "destroyAll": {
-      for (const o of [...view.battlefield]) {
-        if (o.power !== null && !o.keywords.includes("indestructible")) removeObject(view, o.id);
+      // S29 (Part 4, Vael's Wrath): a creature we control that drains on ANY creature's death (Blood
+      // Artist, the Usher) is counted — every body the Wrath kills is a ping, ours included (the
+      // observer sees the batch it dies in). Book 38.
+      const dying = view.battlefield.filter((o) => o.power !== null && !o.keywords.includes("indestructible"));
+      let drain = 0;
+      for (const o of dying) {
+        if (o.controller !== me) continue;
+        for (const a of defs.get(o.cardId)?.abilities ?? []) {
+          if (a.kind !== "triggered" || a.event !== "DIES" || (a.condition?.source ?? "self") === "self") continue;
+          const lose = a.effects.find((x) => x.type === "loseLife" && (x.who === "target" || x.who === "opponent"));
+          if (lose && lose.type === "loseLife" && typeof lose.amount === "number") drain += lose.amount * dying.length;
+        }
       }
+      for (const o of dying) removeObject(view, o.id);
+      if (drain > 0) { view.life[opp] -= drain; view.life[me] += drain; }
       return 0;
     }
     case "exile": {
@@ -573,10 +616,17 @@ function applyEffect(
       let v = 0;
       const n = amt(e.count); // S23: count may be a ref (the Traumatizer's eventDamage — 0 in prediction)
       for (const p of ps) {
-        const lib = Math.max(0, (view.librarySizes[p] ?? 0) - n);
+        const before = Math.max(0, view.librarySizes[p] ?? 0);
+        const lib = Math.max(0, before - n);
         view.librarySizes[p] = lib;
         if (p === me) v -= 1.5 * n + (lib <= 5 ? 2 : 0);
-        else v += 0.25 * n + (lib <= 5 ? 0.6 * n : 0) + (lib === 0 ? 5 : 0);
+        else {
+          // S29 (Part 4, the mill decks — the Crab, the Adept, the Traumatizer, the Altar): mill is
+          // DAMAGE AGAINST THE LIBRARY. Each card is worth more as the library shortens (the square
+          // of the fraction milled), and emptying it is a win the way lethal damage is (book 37).
+          const frac = Math.min(1, n / Math.max(1, before));
+          v += 0.3 * n + 4 * frac * frac + (lib === 0 && n > 0 ? 12 : 0);
+        }
       }
       return v;
     }

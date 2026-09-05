@@ -4,167 +4,182 @@
   {
    "id": "a1",
    "name": "Brann the Scorched",
-   "deck": "A",
+   "deck": "mage:brann",
    "tier": 1,
    "difficulty": "apprentice",
-   "portrait": "portrait-opponent-red",
+   "portrait": "portrait-mage-brann",
    "worldLife": 8,
-   "colors": "R"
+   "colors": "R",
+   "epithet": "the Sparkwright"
   },
   {
    "id": "a2",
    "name": "Kessa Emberhand",
-   "deck": "A",
+   "deck": "mage:kessa",
    "tier": 2,
    "difficulty": "journeyman",
-   "portrait": "portrait-opponent-red",
+   "portrait": "portrait-mage-kessa",
    "worldLife": 10,
-   "colors": "R"
+   "colors": "UR",
+   "epithet": "the Stormcaller"
   },
   {
    "id": "a3",
    "name": "Varro Flamebrand",
-   "deck": "A",
+   "deck": "mage:varro",
    "tier": 3,
    "difficulty": "master",
-   "portrait": "portrait-opponent-red",
+   "portrait": "portrait-mage-varro",
    "worldLife": 12,
-   "colors": "R",
+   "colors": "UR",
    "knobs": {
     "anteCount": 2
-   }
+   },
+   "epithet": "the Ashwright"
   },
   {
    "id": "b1",
    "name": "Sister Oriel",
-   "deck": "B",
+   "deck": "mage:oriel",
    "tier": 1,
    "difficulty": "apprentice",
-   "portrait": "portrait-opponent-white-blue",
+   "portrait": "portrait-mage-oriel",
    "worldLife": 8,
-   "colors": "WU"
+   "colors": "W",
+   "epithet": "the Almoner"
   },
   {
    "id": "b2",
    "name": "Adept Maelin",
-   "deck": "B",
+   "deck": "mage:maelin",
    "tier": 2,
    "difficulty": "journeyman",
-   "portrait": "portrait-opponent-white-blue",
+   "portrait": "portrait-mage-maelin",
    "worldLife": 10,
-   "colors": "WU"
+   "colors": "BR",
+   "epithet": "the Pyre-Warden"
   },
   {
    "id": "b3",
    "name": "High Warden Sorrel",
-   "deck": "B",
+   "deck": "mage:sorrel",
    "tier": 3,
    "difficulty": "master",
-   "portrait": "portrait-opponent-white-blue",
+   "portrait": "portrait-mage-sorrel",
    "worldLife": 12,
-   "colors": "WU",
+   "colors": "BR",
    "knobs": {
     "anteCount": 2
-   }
+   },
+   "epithet": "the Inquisitor"
   },
   {
    "id": "c1",
    "name": "Old Hask",
-   "deck": "C",
+   "deck": "mage:hask",
    "tier": 1,
    "difficulty": "apprentice",
-   "portrait": "portrait-opponent-green",
+   "portrait": "portrait-mage-hask",
    "worldLife": 8,
-   "colors": "G"
+   "colors": "G",
+   "epithet": "the Wardener"
   },
   {
    "id": "c2",
    "name": "Brennor of the Glade",
-   "deck": "C",
+   "deck": "mage:brennor",
    "tier": 2,
    "difficulty": "journeyman",
-   "portrait": "portrait-opponent-green",
+   "portrait": "portrait-mage-brennor",
    "worldLife": 10,
-   "colors": "G"
+   "colors": "WG",
+   "epithet": "the Sanctuary"
   },
   {
    "id": "c3",
    "name": "Thornmother Ysolde",
-   "deck": "C",
+   "deck": "mage:ysolde",
    "tier": 3,
    "difficulty": "master",
-   "portrait": "portrait-opponent-green",
+   "portrait": "portrait-mage-ysolde",
    "worldLife": 12,
-   "colors": "G",
+   "colors": "WG",
    "knobs": {
     "anteCount": 2
-   }
+   },
+   "epithet": "the Thornmother"
   },
   {
    "id": "d1",
    "name": "Pale Edric",
-   "deck": "D",
+   "deck": "mage:edric",
    "tier": 1,
    "difficulty": "apprentice",
-   "portrait": "portrait-opponent-black",
+   "portrait": "portrait-mage-edric",
    "worldLife": 8,
-   "colors": "B"
+   "colors": "B",
+   "epithet": "the Sexton"
   },
   {
    "id": "d2",
    "name": "Mistress Vael",
-   "deck": "D",
+   "deck": "mage:vael",
    "tier": 2,
    "difficulty": "journeyman",
-   "portrait": "portrait-opponent-black",
+   "portrait": "portrait-mage-vael",
    "worldLife": 10,
-   "colors": "B"
+   "colors": "WB",
+   "epithet": "the Tithe-Reeve"
   },
   {
    "id": "d3",
    "name": "Lord Corvane",
-   "deck": "D",
+   "deck": "mage:corvane",
    "tier": 3,
    "difficulty": "master",
-   "portrait": "portrait-opponent-black",
+   "portrait": "portrait-mage-corvane",
    "worldLife": 12,
-   "colors": "B",
+   "colors": "WB",
    "knobs": {
     "anteCount": 2
-   }
+   },
+   "epithet": "the Sepulchre"
   },
   {
    "id": "e1",
    "name": "Tessaly Reed",
-   "deck": "E",
+   "deck": "mage:tessaly",
    "tier": 1,
    "difficulty": "apprentice",
-   "portrait": "portrait-opponent-simic",
+   "portrait": "portrait-mage-tessaly",
    "worldLife": 8,
-   "colors": "GU"
+   "colors": "U",
+   "epithet": "the Tidewright"
   },
   {
    "id": "e2",
    "name": "Pell of the Shallows",
-   "deck": "E",
+   "deck": "mage:pell",
    "tier": 2,
    "difficulty": "journeyman",
-   "portrait": "portrait-opponent-simic",
+   "portrait": "portrait-mage-pell",
    "worldLife": 10,
-   "colors": "GU"
+   "colors": "UG",
+   "epithet": "the Tidesower"
   },
   {
    "id": "e3",
    "name": "Magister Quill",
-   "deck": "E",
+   "deck": "mage:quill",
    "tier": 3,
    "difficulty": "master",
-   "portrait": "portrait-opponent-simic",
+   "portrait": "portrait-mage-quill",
    "worldLife": 12,
-   "colors": "GU",
+   "colors": "UG",
    "knobs": {
     "anteCount": 2
-   }
+   },
+   "epithet": "the Drowned Grove"
   },
   {
    "id": "beast_grizzly",
@@ -181,7 +196,7 @@
    "buyable": true,
    "parley": {
     "verb": "Toss it your rations",
-    "line": "A great brown bear up on its hind legs. It wants the road, not you \u2014 and it can be fed off it."
+    "line": "A great brown bear up on its hind legs. It wants the road, not you — and it can be fed off it."
    }
   },
   {
@@ -230,7 +245,7 @@
    "portraitChip": "beast-cunning-tactician-chip",
    "worldLife": 8,
    "colors": "W",
-   "kind": "mage",
+   "kind": "beast",
    "spoke": "W",
    "buyable": true,
    "parley": {
@@ -248,7 +263,7 @@
    "portraitChip": "beast-cunning-tactician-chip",
    "worldLife": 10,
    "colors": "W",
-   "kind": "mage",
+   "kind": "beast",
    "spoke": "W",
    "buyable": true,
    "parley": {
@@ -289,7 +304,7 @@
    "buyable": true,
    "parley": {
     "verb": "Offer tribute",
-    "line": "A vampire nighthawk, wings folded, watching your throat. The fen roads know it by the ones it leaves \u2014 walk wide, or walk in numbers. The purse on this one runs deep, and mostly unclaimed."
+    "line": "A vampire nighthawk, wings folded, watching your throat. The fen roads know it by the ones it leaves — walk wide, or walk in numbers. The purse on this one runs deep, and mostly unclaimed."
    },
    "knobs": {
     "goldRewardByTier": {
@@ -313,7 +328,7 @@
    "spoke": "U",
    "buyable": false,
    "parley": {
-    "line": "The air itself turns on you \u2014 a living gale with a face in it.",
+    "line": "The air itself turns on you — a living gale with a face in it.",
     "refusal": "You cannot pay the wind."
    }
   },
@@ -352,7 +367,7 @@
    "spoke": "B",
    "buyable": false,
    "parley": {
-    "line": "The Hypnotic Specter \u2014 a wrongness with wings. Its eyes are already inside your head.",
+    "line": "The Hypnotic Specter — a wrongness with wings. Its eyes are already inside your head.",
     "refusal": "It wants what you know, not what you carry."
    },
    "knobs": {
@@ -374,7 +389,7 @@
    "buyable": true,
    "parley": {
     "verb": "Tithe",
-    "line": "The Serra Angel, sword lowered, gaze level. She will take a tithe for the road's poor \u2014 or the fight."
+    "line": "The Serra Angel, sword lowered, gaze level. She will take a tithe for the road's poor — or the fight."
    },
    "knobs": {
     "anteCount": 2
@@ -449,7 +464,7 @@
    "buyable": true,
    "parley": {
     "verb": "Toss it your rations",
-    "line": "The ground shakes before you see it \u2014 a rumbling baloth, and this is its ground."
+    "line": "The ground shakes before you see it — a rumbling baloth, and this is its ground."
    }
   },
   {

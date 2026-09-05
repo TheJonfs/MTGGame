@@ -1,0 +1,79 @@
+{
+  "id": "arc_mage",
+  "name": "Arc Mage",
+  "source": "real",
+  "scryfallId": "62982dab-4c27-45b3-9740-38fec3df7226",
+  "manaCost": "{2}{R}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Human",
+    "Spellshaper"
+  ],
+  "power": 2,
+  "toughness": 2,
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "mana": "{2}{R}",
+        "tap": true,
+        "discard": 1
+      },
+      "effects": [],
+      "modes": [
+        {
+          "label": "2 damage to one target",
+          "targets": [
+            {
+              "count": 1,
+              "predicate": "anyTarget",
+              "zone": "any"
+            }
+          ],
+          "effects": [
+            {
+              "type": "damage",
+              "amount": 2,
+              "target": 0
+            }
+          ]
+        },
+        {
+          "label": "1 damage to each of two targets",
+          "targets": [
+            {
+              "count": 1,
+              "predicate": "anyTarget",
+              "zone": "any"
+            },
+            {
+              "count": 1,
+              "predicate": "anyTarget",
+              "zone": "any",
+              "distinctFromPrior": true
+            }
+          ],
+          "effects": [
+            {
+              "type": "damage",
+              "amount": 1,
+              "target": 0
+            },
+            {
+              "type": "damage",
+              "amount": 1,
+              "target": 1
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2,
+  "priceOverride": 16
+}

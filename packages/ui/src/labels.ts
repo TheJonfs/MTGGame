@@ -32,7 +32,11 @@ export function actionLabel(state: GameState, pool: Map<string, CardDef>, a: Act
     case "pass": return "Pass";
     case "playLand": return `Play ${name(a.objectId)}`;
     case "castSpell": return `Cast ${name(a.objectId)}${a.x !== undefined ? ` (X=${a.x})` : ""}${a.mode !== undefined ? ` [mode ${a.mode + 1}]` : ""}${targets(a.targets)}`;
-    case "activateAbility": return `Activate ${name(a.objectId)}${a.x !== undefined ? ` (X=${a.x})` : ""}${targets(a.targets)}`;
+    case "activateAbility": {
+      // S29 (Arc Mage): a modal activation names its mode.
+      const modeLabel = a.mode !== undefined ? (() => { const o = state.objects[a.objectId]; const ab = o ? pool.get(o.cardId)?.abilities?.[a.abilityIndex] : undefined; return ab && ab.kind === "activated" ? ab.modes?.[a.mode]?.label : undefined; })() : undefined;
+      return `Activate ${name(a.objectId)}${modeLabel ? ` — ${modeLabel}` : ""}${a.x !== undefined ? ` (X=${a.x})` : ""}${targets(a.targets)}`;
+    }
     case "tapForMana": return `Tap ${name(a.objectId)} for mana`;
     case "untapForMana": return `Take back the tap of ${name(a.objectId)}`;
     case "declareAttacker": return `Attack with ${name(a.objectId)}`;

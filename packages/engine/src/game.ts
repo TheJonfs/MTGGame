@@ -12,7 +12,7 @@ import {
   stageBlock,
 } from "./combat.js";
 import type { EngineCtx } from "./ctx.js";
-import { expireEndOfTurnEffects } from "./characteristics.js";
+import { characteristics, expireEndOfTurnEffects } from "./characteristics.js";
 import { makeEffectContext } from "./effect-context.js";
 import { attackerChoices, blockerChoices, bottomChoices, discardChoices, effectiveAbilityCost, legalActions } from "./enumerator.js";
 import type { GameEventMap } from "./events.js";
@@ -696,6 +696,7 @@ export class Game {
         }
         // Sacrifice is paid before the ability is on the stack (CR 601.2h,
         // 602.2b); a resulting DIES trigger pends and is ordered normally.
+        let sacrificed: { objectId: string; cardId: string; amount: number } | undefined;
         if (ability.cost.sacrifice) {
           const candidates = sacrificeCandidates(this.ctx, player, obj.id, ability.cost.sacrifice.predicate);
           if (candidates.length === 0) throw new Error("no legal sacrifice");
@@ -704,6 +705,9 @@ export class Game {
           // can see what the sacrifice buys (the Aristocrat's Vampire counters — don't sac the Vampire).
           const pick = options.length === 1 ? options[0]! : await this.request(player, "chooseSacrifice", options, undefined, { cardId: obj.cardId, effects: ability.effects });
           if (pick.type !== "sacrifice") throw new Error("expected sacrifice");
+          // S29 (R-092, Altar of Dementia): the sacrificed creature's POWER, last-known as the cost is
+          // paid (CR 608.2h) — a Giant Growth in response counts; the ability reads it as sacrificedPower.
+          sacrificed = { objectId: pick.objectId, cardId: this.ctx.state.objects[pick.objectId]!.cardId, amount: characteristics(this.ctx, pick.objectId).power ?? 0 };
           this.ctx.bus.emit("SACRIFICED", { objectId: pick.objectId, cardId: this.ctx.state.objects[pick.objectId]!.cardId }); // S24 r5: the cause marker
           moveObject(this.ctx, pick.objectId, "graveyard");
         }
@@ -727,17 +731,22 @@ export class Game {
           }
           break;
         }
+        // S29 (R-092, Arc Mage): a modal ability stacks its chosen mode's targets and effects.
+        const abilityMode = ability.modes ? ability.modes[action.mode ?? -1] : undefined;
+        if (ability.modes && !abilityMode) throw new Error("modal ability activated without a legal mode");
         state.stack.push({
           id: this.ctx.ids.next("stk"),
           kind: "ability",
           sourceId,
           sourceCardId: obj.cardId,
           controller: player,
-          targetSpecs: ability.targets ?? [],
+          targetSpecs: abilityMode?.targets ?? ability.targets ?? [],
           targets: action.targets,
-          effects: ability.effects,
+          effects: abilityMode?.effects ?? ability.effects,
           x: action.x ?? 0,
           ...(ability.equip ? { isEquip: true } : {}),
+          ...(abilityMode ? { mode: action.mode } : {}),
+          ...(sacrificed ? { eventContext: sacrificed } : {}),
         });
         break;
       }

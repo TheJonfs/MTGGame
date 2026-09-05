@@ -1,0 +1,22 @@
+{
+  "id": "elemental_1_1_r",
+  "name": "Elemental Token",
+  "source": "custom",
+  "isTokenDef": true,
+  "manaCost": "",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Elemental"
+  ],
+  "colors": [
+    "R"
+  ],
+  "power": 1,
+  "toughness": 1,
+  "text": "",
+  "art": {
+    "fallback": "rendered"
+  }
+}

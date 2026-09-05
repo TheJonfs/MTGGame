@@ -1,142 +1,159 @@
-# Handoff — after Session 28 (2026-09-04)
+# Handoff — after Session 29 (2026-09-05)
 
 ## State of the world
 
-**Cinquefoil v1 is live on Vercel and the deploy playtest is running** (rounds 4–5 of Chris's notes landed the same day the brief did; those sections are in git at `bfc598c`). Session 28 (the brief: the Heart's roots, the legacy's flags, five one-drops) is **done**: the Manafleur begins the Heart duel with one basic of each type on its side (ADR-096 — the five basics left the sixty for Disenchant / Counterspell / Doom Blade / Lightning Bolt / Prey Upon), the legacy is five flags (ADR-095 — a repeated colour compounds nothing; carryover is the union; the fifth-cutting line fires on the fifth FLAG), the withheld minister's double purse is ratified (ADR-097), and **Unearth, Brainstorm, Orcish Lumberjack, Spirit Link, Birds of Paradise** are in the pool (ADR-098; 173 → 178; every text re-verified on Scryfall, first printings fetched). Engine words: R-091 (a DEALS_DAMAGE collector for any recipient, `putOnTop`, `land.subtype:<X>` sacrifice, `anyCombinationOf` mana, `manaValueAtMost`). heart-sim is rebuilt around Chris's real end-game deck (`chris-road-B`) and the full matrix is below with a `heartLife` recommendation. Pool 178 cards (190 defs with tokens and test cards); `docs/reference/` regenerated (cards.md 178; enemies.md carries the Heart's sixty with roots). The handoff is the RUNNING FILE again (Chris, S28 kickoff: the numbered handoffs were a desync).
+**Cinquefoil v1 is live on Vercel; the deploy playtest continues (rounds 4–6 in git).** Session 29 — **the mage cleansheet** — is done: the fifteen mages play fifteen distinct decks (ADR-099; `@shandalar/sim/mage-decks`, `mage:<key>` catalog refs; the slice decks A–E retired from the catalog and kept as sim/test infrastructure), the Cunning Tactician is a beast (ADR-100), six cards entered the pool (ADR-101; 178 → 184, plus the Elemental token), the Altar loop is fixtured as a designed line (ADR-102), `heartLife` is 40 (Part 0), the Chronicle's fifth line counts colours. Engine words in R-092 (modal activated abilities; the sacrificed creature's power as X). Each mage has an epithet on the parley line and **a new portrait** (fifteen faces, two candidates each, candidate 1 wired provisionally — the contact sheet is with Chris). The Part 5 sweep ran in full (6,500 games) — the tables and the read are in Concerns 1. Pool 184 cards (197 defs with tokens and test cards); `docs/reference/` regenerated (cards.md 184 + a tokens table; enemies.md carries the fifteen lists and the epithets).
 
 ## Done this session
 
-- **Part 0**: `docs/decision-updates/s28.md` — ADR-095/096/097/098 as the brief gave them, plus the director smalls and the operations note (running handoff).
-- **Part 1 (legacy = five flags)**: `applyLegacy` pays `legacyGoldPerCutting × cutColors.length` (was × victories); `setsFifthFlag(before, after)` decides the fifth-cutting line (the controller reads it — was "≥ 5 colours and ≥ 5 victories"); `recordCutting`/`migrateLegacy` unchanged in shape (the chronicle keeps every entry with its honest ordinal; `victories` remains the entry count). Tests: the brief's four (two black = one black exactly, chronicle of two; black + red = union +100; five colours across six cuttings with one repeat → the line fires once, on the sixth entry, and never on a seventh; a duplicate-colour profile migrates to the set-derived carry, idempotent), plus the S27 legacy test re-baselined.
-- **Part 2a (roots)**: `HEART_ROOTS` + `heartRootModifiers(player)` (five one-sided `permanentOnBattlefield` basics — the manalink path, untapped, logged, replay-clean) in `heartDuelSpec` beside the entrance; the Heart's telegraph says it ("Its roots are already in the ground…"). The rooted heart fuzz ran FIRST (60 games × 5 references × 3 law modes = 900 games, zero exceptions, replays byte-identical), then the fixtures: a turn-one flower with roots and no other land; the Intake at its first end step.
-- **Part 2b (the sixty)**: five basics out, Chris's five in (`heart-deck.ts`); enemies.md regenerated. **AI guard**: Disenchant on its own law is already the misaim cliff (harmful → own side, −100) — pinned; Chris's wider ruling ("never target an artifact or enchantment I control with removal") is exactly rule 8's cliff, so nothing new was built; an opposing Control Magic or a law the player stole stays fair game. **Prey Upon**: view-sim now prices `fight` (it was the default 0) — the flower fights a 4/4 for its full value; pinned. **The turn-one flower bug the brief predicted was real**: the master priced Faerie Formation (16.7) a hair above the Manafleur (15.9) with five roots up and bloomed a turn late in ~15% of games; a permanent that grows laws (a `createLaw` trigger — data-driven, not a card carve-out) now carries +2.5 in the cast prediction; pinned (the flower outscores Formation and the Cleric beside it).
-- **Part 2c (heart-sim)**: rewritten — `--lives 35,40,45 --lands 20,18 --refs all|stock|road --games 30`; `chris-road-B` reconstructed (30 cards, every id validated against the pool, no substitutions; master profile; life 17; Plains/Island/Swamp/Mountain in play); the 18-land variant drops the two Ravnica duals whose colour pair the nonland cards demand least; per cell: kill rate, first-own-turn bloom rate, mean turns, the standing petal at the player's death (from the canonical final state — the EVENT log carries no zone changes), the flower's removals (DIES events; exile/bounce invisible — a floor) and by what (the player's last spell before it). The table is in Concerns 1.
-- **Part 3 (five one-drops)**: defs encoded from the Scryfall text verbatim (re-verified by curl against api.scryfall.com; the fetch tool is 403'd there); tiers/prices per the brief (Unearth 2/12, Brainstorm 2/12, Lumberjack 1/8, Spirit Link 1/8, Birds 2/12); art and oracle fetched (ULG/ICE/ICE/LEG/LEA first printings, MANIFEST section regenerated). Engine (R-091): `manaValueAtMost` beside `powerAtMost`; the `DEALS_DAMAGE` collector (any recipient, S23 shape, amount + damaged player in the context; `eventDamage` confined to the three damage events); `putOnTop {count}` (a logged pick per card, request purpose `putOnTop`, the FIRST pick ends on top, a short hand puts back what it has); `land.subtype:<X>` in the sacrifice grammar; `addMana.choice.anyCombinationOf` (every multiset of `count` symbols as a logged variant with `colors` on the action; the resolution adds the multiset). **Birds rides the dual path** (five fixed tap abilities) so auto-pay's pip matching fixes colours for both seats — zero words. UI: the put-on-top dialog (title says the first pick ends on top; the ×N count badge applies), the combination chooser (RRR · RRG · RGG · GGG on the existing colour modal), the harness's `putOnTop` and `colors` script steps. AI (each pinned; the FUZZ_FULL ladder gate held): Unearth's graveyard target is worth its card (MV + body + ETB); Brainstorm at the opponent's end step or in response only (book 36), put-back = the two lowest-valued, lands first at ≥ 4 lands between play and hand; Lumberjack's burst only when its multiset enables a cast, never the last Forest with a green card waiting and no other green source; Spirit Link on our best evasive creature, on THEIR biggest when it out-powers ours (book 35 — Chris's neutralizer line); Birds needs no policy (auto-pay). Fixtures (7): the rooted turn-one flower; Unearth's MV ceiling + cycling offered; Brainstorm's order + the short hand; the Lumberjack's four variants and the Forest fed; Spirit Link on an opposing creature (player damage, creature damage, and the LETHAL ORDERING — the aura's controller at 2 dies before the gain resolves: a trigger, not lifelink); Prey Upon with the flower; Birds paying a white spell.
-- **Part 4**: nothing built (black's removal stays with Chris); the `heartLife` read is below.
-- **Post-brief (Chris, same day): the Heart as a dev-only single battle.** `/play` (dev server, or `?dev=1` on the deploy) shows "Dev · the Heart": pilot `chris-road-B` against the rooted Manafleur with BOTH entrances in place — your four basics in play and 17 life, its five roots + the card in hand + the law sequence, master profile, zero ante — at a chosen heartLife (35/40/45). The road deck moved to `@shandalar/sim/road-decks` (`ROAD_DECKS.chrisRoadB`, with its life and entrance) so heart-sim and the UI read one source; adding a second road deck is one entry there. Browser-verified: both battlefields seeded after the mulligans, 17 vs 35, the Manafleur's portrait on the rail. Chris's human-piloted rate is the read the sim cannot give (the AI pilots road-B worse than he does — the honest direction of error).
-- **Registries**: rules R-091; pool-registry Session 28 section (+5 rows) and the regenerated printings section; knobs unchanged (no new knob); `docs/reference` regenerated and sync-tested.
-
-## Playtest round 6 (deploy playtest r3 — Chris's notes during the S29 planning, 2026-09-05)
-
-1. **Unearth with two eligible creatures offered nowhere to click** — a graveyard-zone TARGET had no click path: the zone browser routed clicks only for graveyard ACTIVATIONS (Mother Bear, S22 r2); with a single eligible card the cast collapsed to one variant and skipped targeting, which is why it looked fine. Now: when a cast's legal targets all lie in a graveyard, that graveyard's browser opens on its own; legal targets glow red and click through the same targeting path as a battlefield click (`clickZoneTarget`); the prompt says where to look; the browser closes once the targets are complete. Zombify with a choice rides the same fix. Typechecked; not walked live (reaching two creature kinds in a yard with Unearth in hand is a few turns of play) — **Chris, a re-try please.**
-2. **Identical rumors in the same town** — investigated, not reproduced as a defect: across five worlds × every town × twelve epochs (960 pours) no pour contained the same line twice (the pour de-duplicates; lore 17 distinct lines, chain links 3 distinct templates). What DOES repeat is the whole pour on RE-ENTRY within one rumor epoch (100 steps) — the S22 r2 anti-farming rule ("re-entering within an epoch repeats the same pour"). If that is what Chris saw, it is the design working; if he saw two identical lines on ONE board, the seed/town/step would let me find it. Chris's call whether re-entry should rotate the lore line instead (a per-visit salt is one line).
-3. **R-tier cards as quest rewards — confirmed**: every R card except prizeOnly ones is eligible (`rollReward`: `shopTier === "R"`, nothing else filtered), but only through a TIER-3 quest's card roll upgrading (35%) — after the manalink roll (40% at tier 2+) and the card roll (65%): ~14% of a tier-3 offer is an R card. Within that channel the pick is uniform across the R drawer. If the rate should be higher, `0.35` is a literal in `rollReward` (a knob is one line).
-4. **The market's circulation** — the shelf was ALREADY 8 (`shopStockSize` 8 since S19; the square says "8 cards on the shelf") — Chris counted seven, so one row may have been sold out or the shelf capped by a small pool; nothing changed there. New: **`shopMaxArtifacts` 1** (the colourless drawer stocks everywhere and was crowding one-colour shelves) and **no-repeat restock** — the outgoing shelf's ids are remembered on the town's shop state (`ShopState.prev`, save-carried, no migration) and the fresh roll excludes them, so a card repeats in a town at most every other refresh (≥ 200 steps). Priority when a small civilized pool runs short: the shelf's SIZE first, then no-repeat, then the artifact cap (the test computes the exact allowed overlap from the pool). Verified by test across five worlds × six towns × three refreshes.
+- **Part 0**: `heartLife` 35 → 40 (easy 35 / hard 45); the Chronicle line leads "A cutting from every colour." (the phase-two tease that followed it stands — see Deviations 5); `docs/decision-updates/s29.md` with ADR-099–102 and the kickoff rulings.
+- **Part 1 (R-092)**: `modes` on activated abilities (Arc Mage — one activation per mode × its targets; the stack item carries the mode's targets/effects; the UI's up-to-N targeting presents them: one click + Done = 2 to one, two clicks = the split); `{ref: "sacrificedPower"}` (the Altar — LKI at payment, validator-confined to sacrifice-cost abilities). Young Pyromancer, Soul Warden, Hedron Crab and Blanchwood Armor rode existing collectors (zero words, as billed); the Elemental token def.
+- **Part 2**: the six defs from Scryfall verbatim (re-verified by curl; two wordings newer than the doc: the Crab's "a land you control enters", the Altar's "mills cards equal to…"), first printings fetched (EXO/ZEN/M14/NEM/TMP/USG), tiers and prices per the brief (priceOverride where the formula differs).
+- **Part 3**: the fifteen lists encoded exactly (every id validated; **one substitution, Chris-ruled**: Reya Dawnbringer out of Lord Corvane's list for a third Serra Angel — she is prizeOnly); `opponents.json` rewired (deck refs, colours per pair, epithets, the Tactician `kind: beast`); `enemyDeck` resolves `mage:`; the single-battle picker lists the mages and the beasts (A–E gone from the player's view); Reya's "tier 1 / 40" was a REFERENCE bug (a prizeOnly card rendered its missing tier as 1) — fixed; Siege-Gang and Serra Angel are tier 3 as stated.
+- **Part 4 (AI; each pinned; the FUZZ_FULL ladder gate held, the vs-random ladder PASS)**: mill as damage against the library (quadratic in the fraction milled; emptying it is a win) — generic to every mill effect, so the Crab, the Adept and the Traumatizer share it; the Altar's gate (lethal mill takes the biggest body; otherwise only a doomed creature — blocked/blocking into lethal or targeted on the stack; never the last blocker while behind) and its prediction (the chooser's pick priced by power); Arc Mage's split (kill over face, two X/1s over one — falls out of the damage pricing; pinned); the Pyromancer as the engine (comes down before the cheap spells it feeds); Wrath with a drain observer (Blood Artist / the Usher) counts the drain (Vael); auras on hexproof/shroud hosts and Blanchwood's Forest count (Hask, Ysolde). Books 37–40.
+- **Part 5**: `pnpm mage-sweep` — the three round-robins, 100 games per pairing both seats, the tier's profile and life; the table below.
+- **Part 6**: eight fixtures — the Altar loop (four iterations by script; the "may" stops it; the end-step sacrifice drains once more, no tangle), the Pyromancer (a countered Bolt still makes the token; no token for a creature), Arc Mage (both modes; never zero targets; the discard), the Altar's X (a resolved Growth counts; one on the stack does not), the Crab (Wilds twice; Rampant Growth), Soul Warden (their creatures; tokens), Blanchwood (Temple Garden), the Chronicle string. Fuzz first: 720 games at the full tier across the fifteen, replays byte-exact.
+- **Portrait round (Chris, kickoff ruling 3)**: fifteen subject files × two candidates, thirty renders through the skill, a contact sheet delivered, candidate 1 installed (`/portraits/portrait-mage-<key>.png`, 512px) and wired; MANIFEST rows and the portraits prompt registry updated.
 
 ## Deviations from the brief
 
-1. **Handoff filename**: the running `handoff.md`, per CLAUDE.md and Chris's kickoff ruling — not `handoff-s28.md`.
-2. **Spirit Link was not zero words** — the engine had only "deals damage to a player" collectors; a new any-recipient `DEALS_DAMAGE` event was added (Chris approved at kickoff; "will come in handy").
-3. **Birds of Paradise is encoded as five fixed tap abilities** (the dual path), not the Lotus `anyOneColor` choice: the choice shape is deliberate-activation-only (never auto-paid), which would have made Birds a manual fixer for the human and near-useless for the AI. The def's abilities list five lines; the rendered text is Scryfall's. Flagged in the pool-registry row.
-4. **The Lumberjack's combinations are four logged variants**, no picker (Chris approved at kickoff).
-5. **The removal guard** is rule 8's existing misaim cliff, verified by pin rather than a new gate (Chris's wider formulation is what the cliff already does).
-6. **The roots are said on the Heart's telegraph**, not the duel rail (Chris's choice).
-7. **Ladder deltas**: the AI changes (fight pricing, the law-engine bonus, the cantrip window, the Lumberjack burst, Spirit Link's aura pricing, Unearth's target value) carry the FUZZ_FULL ladder gate (held: every mirror cell > 40%, overall majority, zero surprises) and the 100/cell vs-random ladder (unchanged at 100% in every cell) rather than a before/after per-cell table — the ladder CLI reports no finer grain, and none of the five cards sits in a ladder deck yet.
+1. **Reya → a third Serra Angel** in Lord Corvane's list (Chris, kickoff): ADR-099 admits no prizeOnly card and Reya is the Dawnfast's sole-channel prize. The brief's Reya AI item is therefore moot.
+2. **A–E retired from the catalog only** (Chris, kickoff): the fuzz pairings, the ladder gate and the replay tests keep them; heart-sim's stock references keep slice C and D.
+3. **Portraits were NOT retained** (Chris, kickoff): a portrait round replaced the five shared faces; names retained.
+4. **The Pyromancer's end-of-turn cheap-spell timing and Ysolde's Anthem-vs-Armor hand read were not built**: the engine-first bonus and the hexproof/Forest aura pricing cover the parts the sim can see; a "hold burn for EOT with the Pyromancer out" line trades information for nothing the evaluator prices — deferred with a note. Arc Mage's "discard lands first" rides the existing lowest-value discard chooser (lands ARE the lowest); "never the Pyromancer" holds by value.
+5. **The Chronicle string**: the brief said the line "becomes" *A cutting from every colour.*; I replaced the counting sentence ("Five cuttings.") and kept the phase-two tease that followed it. If the whole line was meant, it is a one-string edit.
+6. **The tokens doc lives in cards.md** (a "Tokens" table at the end) rather than a separate tokens.md.
+7. **Ladder deltas** are the gate + the vs-random ladder (both held) — the per-cell before/after table the CLI cannot give.
 
 ## Concerns
 
-1. **The heart-sim matrix (30 games per cell; the Manafleur master with roots + entrance; stock references journeyman at 16; chris-road-B master at 17 with four basics):**
+1. **The sweep (100 games per pairing, both seats; mages at the tier's profile and life — 8/10/12; starters at 10 life piloted at journeyman; beasts at their catalog life/profile):**
 
-| lands | heartLife | reference | kill % | T1 flower % | mean turns | died at (Intake/Tithe/Toll/Season/Barrage/none) | flower removed (games; by) |
-|---|---|---|---|---|---|---|---|
-| 20 | 35 | starter:white | 100% | 97% | 10.8 | 8/5/10/2/3/2 | 0 |
-| 20 | 35 | starter:blue | 97% | 97% | 9.8 | 2/7/12/3/5/0 | 0 |
-| 20 | 35 | starter:black | 100% | 97% | 13.5 | 2/8/6/6/8/0 | 13; Vampire Nighthawk ×6, Mind Rot ×2, Child of Night ×2 |
-| 20 | 35 | starter:red | 100% | 97% | 8.0 | 1/9/13/1/6/0 | 1; Gray Ogre ×1 |
-| 20 | 35 | starter:green | 100% | 97% | 7.3 | 2/8/19/0/1/0 | 0 |
-| 20 | 35 | slice:C | 100% | 100% | 7.8 | 0/11/15/1/3/0 | 6; Prey Upon ×5, Elvish Visionary ×1 |
-| 20 | 35 | slice:D | 100% | 100% | 9.6 | 0/10/13/1/6/0 | 6; Vampire Nighthawk ×3, Gravedigger ×1, Duress ×1 |
-| 20 | 35 | chris-road-B | 67% | 77% | 12.2 | 2/7/4/2/3/2 | 15; Vindicate ×12, Blaze ×2, Serra Angel ×1 |
-| 20 | 40 | starter:white | 100% | 97% | 12.2 | 11/3/5/5/6/0 | 0 |
-| 20 | 40 | starter:blue | 100% | 100% | 9.8 | 1/7/9/9/4/0 | 0 |
-| 20 | 40 | starter:black | 97% | 100% | 11.9 | 4/6/12/4/3/0 | 7; Duress ×2, Typhoid Rats ×2, Mind Rot ×1 |
-| 20 | 40 | starter:red | 100% | 100% | 8.4 | 1/6/11/3/9/0 | 0 |
-| 20 | 40 | starter:green | 100% | 100% | 8.0 | 1/6/15/2/6/0 | 0 |
-| 20 | 40 | slice:C | 100% | 100% | 8.0 | 1/14/12/1/2/0 | 7; Prey Upon ×4, Rancor ×1, Deadly Recluse ×1 |
-| 20 | 40 | slice:D | 100% | 100% | 10.2 | 2/10/15/2/1/0 | 8; Vampire Nighthawk ×4, Typhoid Rats ×2, Phyrexian Rager ×1 |
-| 20 | 40 | chris-road-B | 80% | 87% | 11.1 | 2/11/7/1/3/0 | 11; Vindicate ×8, Blaze ×3 |
-| 20 | 45 | starter:white | 100% | 100% | 12.2 | 14/3/9/1/1/2 | 0 |
-| 20 | 45 | starter:blue | 100% | 100% | 9.1 | 0/6/12/8/4/0 | 0 |
-| 20 | 45 | starter:black | 97% | 100% | 13.8 | 3/6/12/4/4/0 | 12; Typhoid Rats ×4, Duress ×3, Vampire Nighthawk ×2 |
-| 20 | 45 | starter:red | 100% | 100% | 8.2 | 0/6/15/1/8/0 | 0 |
-| 20 | 45 | starter:green | 100% | 100% | 7.8 | 0/7/19/2/2/0 | 0 |
-| 20 | 45 | slice:C | 100% | 97% | 7.9 | 1/12/14/0/3/0 | 6; Prey Upon ×3, Rancor ×2, Blurred Mongoose ×1 |
-| 20 | 45 | slice:D | 97% | 97% | 10.2 | 3/11/11/1/3/0 | 8; Vampire Nighthawk ×3, Nekrataal ×2, Demonic Tutor ×1 |
-| 20 | 45 | chris-road-B | 80% | 90% | 9.8 | 2/10/10/0/1/1 | 13; Vindicate ×8, Vampire Nighthawk ×2, The Ruby Tyrant ×1 |
-| 18 | 35 | starter:white | 97% | 100% | 11.6 | 6/6/6/6/4/1 | 0 |
-| 18 | 35 | starter:blue | 100% | 100% | 10.0 | 3/4/13/5/5/0 | 0 |
-| 18 | 35 | starter:black | 100% | 100% | 13.0 | 3/8/7/4/8/0 | 10; Vampire Nighthawk ×4, Mind Rot ×2, Child of Night ×2 |
-| 18 | 35 | starter:red | 100% | 100% | 8.0 | 0/8/15/2/5/0 | 0 |
-| 18 | 35 | starter:green | 100% | 100% | 7.9 | 0/9/13/1/7/0 | 0 |
-| 18 | 35 | slice:C | 100% | 100% | 7.9 | 0/10/13/1/6/0 | 4; Prey Upon ×2, Blurred Mongoose ×1, Giant Growth ×1 |
-| 18 | 35 | slice:D | 97% | 100% | 10.8 | 1/8/13/3/4/0 | 6; Drana, Kalastria Bloodchief ×2, Nekrataal ×1, Vampire Nighthawk ×1 |
-| 18 | 35 | chris-road-B | 90% | 90% | 10.3 | 6/8/8/1/4/0 | 14; Vindicate ×8, Blaze ×4, Vampire Nighthawk ×1 |
-| 18 | 40 | starter:white | 93% | 97% | 13.9 | 14/1/5/2/3/3 | 0 |
-| 18 | 40 | starter:blue | 100% | 97% | 11.1 | 4/6/8/2/9/1 | 0 |
-| 18 | 40 | starter:black | 100% | 97% | 13.5 | 9/10/5/3/3/0 | 9; Duress ×4, Vampire Nighthawk ×2, Mind Rot ×1 |
-| 18 | 40 | starter:red | 100% | 97% | 8.6 | 3/6/15/1/5/0 | 0 |
-| 18 | 40 | starter:green | 100% | 97% | 8.0 | 2/7/18/0/3/0 | 2; Giant Growth ×2 |
-| 18 | 40 | slice:C | 100% | 100% | 8.0 | 1/13/11/1/4/0 | 3; Prey Upon ×3 |
-| 18 | 40 | slice:D | 100% | 100% | 9.8 | 1/12/9/6/2/0 | 5; Vampire Nighthawk ×1, Gravedigger ×1, Hymn to Tourach ×1 |
-| 18 | 40 | chris-road-B | 87% | 77% | 10.5 | 2/7/12/1/0/4 | 10; Vindicate ×7, Blaze ×2, Lumen, the Hearth Fire ×1 |
-| 18 | 45 | starter:white | 100% | 93% | 13.2 | 13/5/6/4/1/1 | 0 |
-| 18 | 45 | starter:blue | 100% | 100% | 9.3 | 2/9/12/3/4/0 | 0 |
-| 18 | 45 | starter:black | 100% | 100% | 13.3 | 8/8/6/3/5/0 | 5; Mind Rot ×3, Vampire Nighthawk ×2 |
-| 18 | 45 | starter:red | 100% | 100% | 7.9 | 0/8/15/1/6/0 | 0 |
-| 18 | 45 | starter:green | 100% | 97% | 8.3 | 0/4/15/2/8/1 | 0 |
-| 18 | 45 | slice:C | 100% | 100% | 8.0 | 1/14/12/0/3/0 | 10; Prey Upon ×6, Giant Growth ×2, Deadly Recluse ×1 |
-| 18 | 45 | slice:D | 100% | 100% | 10.1 | 3/7/12/3/5/0 | 8; Vampire Nighthawk ×2, Typhoid Rats ×2, Child of Night ×1 |
-| 18 | 45 | chris-road-B | 83% | 80% | 11.1 | 4/7/7/2/3/2 | 13; Vindicate ×8, Blaze ×2, Vampire Nighthawk ×2 |
+## 1. Tier by tier
 
-**Aggregates** (stock = the seven references pooled; road = chris-road-B):
+| part | A | B | A wins | B wins | draws | mean turns |
+|---|---|---|---|---|---|---|
+| T1 | Sister Oriel (oriel) | Tessaly Reed (tessaly) | 74% | 26% (92% by library) | 0 | 12.7 |
+| T1 | Sister Oriel (oriel) | Pale Edric (edric) | 78% | 22% | 0 | 13.9 |
+| T1 | Sister Oriel (oriel) | Brann the Scorched (brann) | 74% | 26% | 0 | 12.5 |
+| T1 | Sister Oriel (oriel) | Old Hask (hask) | 69% | 31% | 0 | 11.0 |
+| T1 | Tessaly Reed (tessaly) | Pale Edric (edric) | 31% (48% by library) | 69% | 0 | 13.3 |
+| T1 | Tessaly Reed (tessaly) | Brann the Scorched (brann) | 19% (53% by library) | 81% | 0 | 12.2 |
+| T1 | Tessaly Reed (tessaly) | Old Hask (hask) | 21% (43% by library) | 79% | 0 | 10.6 |
+| T1 | Pale Edric (edric) | Brann the Scorched (brann) | 46% | 54% | 0 | 12.2 |
+| T1 | Pale Edric (edric) | Old Hask (hask) | 47% | 53% | 0 | 12.2 |
+| T1 | Brann the Scorched (brann) | Old Hask (hask) | 50% | 50% | 0 | 8.9 |
+| T2 | Mistress Vael (vael) | Kessa Emberhand (kessa) | 65% | 35% | 0 | 19.6 |
+| T2 | Mistress Vael (vael) | Adept Maelin (maelin) | 67% | 33% | 0 | 16.3 |
+| T2 | Mistress Vael (vael) | Brennor of the Glade (brennor) | 65% | 35% | 0 | 19.0 |
+| T2 | Mistress Vael (vael) | Pell of the Shallows (pell) | 89% | 11% (82% by library) | 0 | 15.6 |
+| T2 | Kessa Emberhand (kessa) | Adept Maelin (maelin) | 41% | 59% | 0 | 14.4 |
+| T2 | Kessa Emberhand (kessa) | Brennor of the Glade (brennor) | 39% | 61% | 0 | 13.1 |
+| T2 | Kessa Emberhand (kessa) | Pell of the Shallows (pell) | 71% | 29% (34% by library) | 0 | 15.1 |
+| T2 | Adept Maelin (maelin) | Brennor of the Glade (brennor) | 55% | 45% | 0 | 12.6 |
+| T2 | Adept Maelin (maelin) | Pell of the Shallows (pell) | 82% | 18% (61% by library) | 0 | 14.1 |
+| T2 | Brennor of the Glade (brennor) | Pell of the Shallows (pell) | 78% | 22% (73% by library) | 0 | 13.8 |
+| T3 | Lord Corvane (corvane) | Varro Flamebrand (varro) | 77% | 23% (26% by library) | 0 | 18.3 |
+| T3 | Lord Corvane (corvane) | High Warden Sorrel (sorrel) | 71% | 29% | 0 | 18.3 |
+| T3 | Lord Corvane (corvane) | Thornmother Ysolde (ysolde) | 41% | 59% | 0 | 13.0 |
+| T3 | Lord Corvane (corvane) | Magister Quill (quill) | 74% | 26% (19% by library) | 0 | 15.8 |
+| T3 | Varro Flamebrand (varro) | High Warden Sorrel (sorrel) | 51% (6% by library) | 49% | 0 | 18.3 |
+| T3 | Varro Flamebrand (varro) | Thornmother Ysolde (ysolde) | 30% (7% by library) | 70% | 0 | 13.8 |
+| T3 | Varro Flamebrand (varro) | Magister Quill (quill) | 56% (13% by library) | 44% (32% by library) | 0 | 16.4 |
+| T3 | High Warden Sorrel (sorrel) | Thornmother Ysolde (ysolde) | 34% | 66% | 0 | 12.6 |
+| T3 | High Warden Sorrel (sorrel) | Magister Quill (quill) | 72% | 28% (14% by library) | 0 | 15.1 |
+| T3 | Thornmother Ysolde (ysolde) | Magister Quill (quill) | 84% | 16% (13% by library) | 0 | 11.6 |
 
-| lands | heartLife | vs | kill % | T1 flower % | mean turns | died at (Intake/Tithe/Toll/Season/Barrage/none) | flower removed |
-|---|---|---|---|---|---|---|---|
-| 20 | 35 | stock | 100% | 98% | 9.6 | 15/58/88/14/32/2 | 26/210 |
-| 20 | 35 | road | 67% | 77% | 12.2 | 2/7/4/2/3/2 | 15/30 |
-| 20 | 40 | stock | 100% | 100% | 9.8 | 21/52/79/26/31/0 | 22/210 |
-| 20 | 40 | road | 80% | 87% | 11.1 | 2/11/7/1/3/0 | 11/30 |
-| 20 | 45 | stock | 99% | 99% | 9.9 | 21/51/92/17/25/2 | 26/210 |
-| 20 | 45 | road | 80% | 90% | 9.8 | 2/10/10/0/1/1 | 13/30 |
-| 18 | 35 | stock | 99% | 100% | 9.9 | 13/53/80/22/39/1 | 20/210 |
-| 18 | 35 | road | 90% | 90% | 10.3 | 6/8/8/1/4/0 | 14/30 |
-| 18 | 40 | stock | 99% | 98% | 10.4 | 34/55/71/15/29/4 | 19/210 |
-| 18 | 40 | road | 87% | 77% | 10.5 | 2/7/12/1/0/4 | 10/30 |
-| 18 | 45 | stock | 100% | 99% | 10.0 | 27/55/78/16/32/2 | 23/210 |
-| 18 | 45 | road | 83% | 80% | 11.1 | 4/7/7/2/3/2 | 13/30 |
+## 2. Teachers vs starters (tier-1 mages at 8 / apprentice; starters at 10 / journeyman)
 
-   **Reads.** (a) Against the stock references the rooted flower wins ~100% and blooms on its first own turn 98–100% of the time (the brief's ≥ 95% holds where the roots stand). (b) Against `chris-road-B` at **20 lands** the kill rate is **67% / 80% / 80%** at heartLife 35 / 40 / 45 — a clear majority, not all; **the fight lives in the petals**: deaths spread Tithe → Toll with Intake rare (2 of 30) and Season/Barrage reached in a handful — no wall at the Intake. (c) **The bloom rate against road-B (77–90%) is bounded by ROOT REMOVAL, not hesitation**: every late-bloom game examined (7 of 30 at 35/20) had four roots — the road deck Vindicated a basic on its own first turn (four basics + a Mox make turn-one Vindicate routine), breaking WUBRG until a dual arrived; two of those games never bloomed. That is the road deck playing well; the master's own hesitation (Formation over the flower) was real and is fixed. (d) The flower is removed in a third to a half of road games, almost always by **Vindicate** (8–12 of 30), then Blaze — the sixty's Counterspell is the only answer to Vindicate and it is one card in sixty. (e) 18 lands is stronger against road-B (83–90%) — the flood is real — but Chris asked for the 20-land symmetry; keep 20.
-   **Chris's human-piloted read (the dev battle, 2026-09-04): 3–1 on the play, 2–0 on the draw against the Manafleur at 40** — "tough but beatable", with the caveat that several wins rode on Lumen and Clio, both earned just before the fight (the road's last two petals). The knob is still 35 in the registry: **`heartLife` 40 is the one number awaiting the ruling** (a one-line knob edit + `pnpm knobs:doc` + `pnpm reference`).
-   **`heartLife` recommendation: 40 (easy 35 / hard 45).** At 35 the road deck wins one game in three (a coin's edge); 40 and 45 read the same at this sample (±8% at n = 30) and 40 is the lighter number. Not changed — the planner takes it to Chris. **Swap candidates**: the sim does not say the five screw or flood in a way the swaps would fix; what it says is that Vindicate is the fight, and the sixty's second answer to it would be a second Counterspell or Mystic Snake-class card — a planner question, not a swap on win rate.
-2. **The Chronicle's fifth-cutting line says "Five cuttings."** Under ADR-095 it fires on the fifth FLAG, which with a repeated colour is the sixth (or later) cutting — the word "cuttings" is then off by the repeats. No other string implies compounding (`newRoad`, `newRoadAll`, `withheld`, the dev panel's "victories N" are all fine). The planner's pen.
-3. **The EVENT log is a viewer's stream** — no ZONE_CHANGE, so the sim's "flower removed" reads DIES only (exile and bounce invisible). If a future sim needs exits by any path, log a lean ZONE_CHANGE event for the battlefield or read the final state.
-4. **The put-on-top and combination dialogs are typechecked and engine-tested but not walked in a browser** — no deck the UI can currently reach holds Brainstorm or the Lumberjack (they are shop finds). A shop with them stocked, or the S29 mage cleansheet placing them, will be the first live look.
-5. **Birds' five-ability encoding** renders five "{T}: Add {X}" lines nowhere (the frame shows Scryfall's text) but any future tooling that lists abilities will see five. If the planner prefers one honest choice ability, the auto-pay would need an any-colour producer (a Kuhn edge per colour) — ~half a day.
-6. **The Unearth cycling nuance** ("cycle only with ≥ 3 spare mana") is not built: cycling rides the S17 "dead card" rule (only when Unearth has no legal cast), which already never cycles with a target in the yard. The mana-spare half is a refinement if it misplays.
-7. **Root removal as counterplay**: Vindicate on a root is now the road deck's best turn-one play against the Heart. If that reads as the Heart being too easy to colour-screw, the design lever is the entrance (roots as indestructible? a sixth root?) — not built, not recommended without Chris's read of the fight.
+| part | A | B | A wins | B wins | draws | mean turns |
+|---|---|---|---|---|---|---|
+| T1×starter | Sister Oriel (oriel) | starter:white | 44% | 56% | 0 | 14.9 |
+| T1×starter | Sister Oriel (oriel) | starter:blue | 77% (9% by library) | 23% | 0 | 20.2 |
+| T1×starter | Sister Oriel (oriel) | starter:black | 57% (5% by library) | 43% | 0 | 19.4 |
+| T1×starter | Sister Oriel (oriel) | starter:red | 59% | 41% | 0 | 12.8 |
+| T1×starter | Sister Oriel (oriel) | starter:green | 70% | 30% | 0 | 12.8 |
+| T1×starter | Tessaly Reed (tessaly) | starter:white | 10% (80% by library) | 90% | 0 | 10.1 |
+| T1×starter | Tessaly Reed (tessaly) | starter:blue | 56% (100% by library) | 44% | 0 | 13.4 |
+| T1×starter | Tessaly Reed (tessaly) | starter:black | 23% (87% by library) | 77% | 0 | 12.5 |
+| T1×starter | Tessaly Reed (tessaly) | starter:red | 30% (83% by library) | 70% | 0 | 11.1 |
+| T1×starter | Tessaly Reed (tessaly) | starter:green | 35% (91% by library) | 65% | 0 | 11.3 |
+| T1×starter | Pale Edric (edric) | starter:white | 4% | 96% | 0 | 10.7 |
+| T1×starter | Pale Edric (edric) | starter:blue | 25% | 75% | 0 | 14.8 |
+| T1×starter | Pale Edric (edric) | starter:black | 22% (14% by library) | 78% | 0 | 18.0 |
+| T1×starter | Pale Edric (edric) | starter:red | 27% | 73% | 0 | 12.2 |
+| T1×starter | Pale Edric (edric) | starter:green | 32% | 68% | 0 | 14.1 |
+| T1×starter | Brann the Scorched (brann) | starter:white | 20% | 80% | 0 | 12.0 |
+| T1×starter | Brann the Scorched (brann) | starter:blue | 65% | 35% | 0 | 12.9 |
+| T1×starter | Brann the Scorched (brann) | starter:black | 36% | 64% | 0 | 13.8 |
+| T1×starter | Brann the Scorched (brann) | starter:red | 33% | 67% | 0 | 10.5 |
+| T1×starter | Brann the Scorched (brann) | starter:green | 30% | 70% | 0 | 12.5 |
+| T1×starter | Old Hask (hask) | starter:white | 24% | 76% | 0 | 9.9 |
+| T1×starter | Old Hask (hask) | starter:blue | 75% | 25% | 0 | 10.9 |
+| T1×starter | Old Hask (hask) | starter:black | 22% | 78% | 0 | 13.3 |
+| T1×starter | Old Hask (hask) | starter:red | 38% | 62% | 0 | 10.1 |
+| T1×starter | Old Hask (hask) | starter:green | 40% | 60% | 0 | 11.0 |
+
+## 3. Children vs parents (parent mage at tier-1 settings; parent beast at its own)
+
+| part | A | B | A wins | B wins | draws | mean turns |
+|---|---|---|---|---|---|---|
+| T2×parent | Mistress Vael (vael) | Sister Oriel (oriel) | 53% | 47% | 0 | 22.6 |
+| T2×parent | Mistress Vael (vael) | Pale Edric (edric) | 78% (1% by library) | 22% | 0 | 16.7 |
+| T2×parent | Kessa Emberhand (kessa) | Brann the Scorched (brann) | 43% | 57% | 0 | 12.4 |
+| T2×parent | Kessa Emberhand (kessa) | A Bloom of Man-o'-War (beast:manowar) | 75% | 25% | 0 | 16.3 |
+| T2×parent | Adept Maelin (maelin) | Pale Edric (edric) | 57% | 43% | 0 | 13.9 |
+| T2×parent | Adept Maelin (maelin) | The Boggart Warband (beast:warband) | 32% | 68% | 0 | 9.4 |
+| T2×parent | Brennor of the Glade (brennor) | Old Hask (hask) | 54% | 46% | 0 | 11.1 |
+| T2×parent | Brennor of the Glade (brennor) | Sister Oriel (oriel) | 36% | 64% | 0 | 14.6 |
+| T2×parent | Pell of the Shallows (pell) | Tessaly Reed (tessaly) | 55% (42% by library) | 45% (82% by library) | 0 | 14.1 |
+| T2×parent | Pell of the Shallows (pell) | Old Hask (hask) | 18% (28% by library) | 82% | 0 | 11.7 |
+| T3×parent | Lord Corvane (corvane) | Pale Edric (edric) | 86% | 14% | 0 | 14.5 |
+| T3×parent | Lord Corvane (corvane) | The Serra Angel (beast:serra) | 14% (7% by library) | 86% | 0 | 19.9 |
+| T3×parent | Varro Flamebrand (varro) | Tessaly Reed (tessaly) | 77% (10% by library) | 23% (87% by library) | 0 | 14.5 |
+| T3×parent | Varro Flamebrand (varro) | Brann the Scorched (brann) | 63% | 36% | 1 | 13.4 |
+| T3×parent | High Warden Sorrel (sorrel) | Brann the Scorched (brann) | 58% | 42% | 0 | 13.3 |
+| T3×parent | High Warden Sorrel (sorrel) | The Hypnotic Specter (beast:specter) | 53% (4% by library) | 47% | 0 | 16.4 |
+| T3×parent | Thornmother Ysolde (ysolde) | Old Hask (hask) | 61% | 39% | 0 | 9.7 |
+| T3×parent | Thornmother Ysolde (ysolde) | A Savannah Lion (beast:lion) | 54% | 46% | 0 | 12.1 |
+| T3×parent | Magister Quill (quill) | Tessaly Reed (tessaly) | 60% (28% by library) | 40% (85% by library) | 0 | 14.6 |
+| T3×parent | Magister Quill (quill) | The Pelakka Wurm (beast:wurm) | 18% (78% by library) | 82% | 0 | 13.0 |
+
+
+   **Reads for the planner.**
+   - **Dominants and folds within a tier (over 80/20 or under 20/80):** T1 Tessaly–Brann 19/81; T2 Vael–Pell 89/11 and Maelin–Pell 82/18; T3 Ysolde–Quill 84/16. Broader: **Sister Oriel dominates tier 1** (69–78% against all four); **Mistress Vael dominates tier 2** (65–89%); **Thornmother Ysolde is the strongest tier-3** (59–84%) and **Lord Corvane** the second (71–77% except against Ysolde). **The three mill decks fold**: Tessaly (19–31%), Pell (11–29%), Quill (16–44%) — and when they win, they win by library (Tessaly 43–92% of her wins), so the plan executes but too slowly: at 8/10/12 life the opponent's damage closes first.
+   - **Teachers vs starters — the table mostly DISAGREES with the intent**, with a caveat: a tier-1 mage fights at 8 life on apprentice against a starter at 10 on journeyman, which is the world's actual asymmetry but tilts every row toward the starter. Within that: Oriel beats the red starter (59%) but not the white one (44%) — half her brief; Tessaly punishes only the blue starter (56%, all by library) and folds to white (10%); **Pale Edric loses to everything** (4–32%), including the removal-heavy white and black starters he was built to punish — recursion needs turns an 8-life apprentice does not get; Brann punishes blue (65%) as intended and loses the rest; Hask punishes blue (75%) but loses to the white and black removal decks he was built against (24% / 22%). **The white starter (Dawn Levy) beats every tier-1 mage** — the Pride's curve at 10 life is the wall.
+   - **Children vs parents**: every tier-2/3 child beats at least one parent. The crosses that lose to a parent: Kessa < Brann (43%), Maelin < the Warband (32%), Brennor < Oriel (36%), Pell < Hask (18%), **Corvane < the Serra Angel (14%)** and **Quill < the Pelakka Wurm (18%)** — the beast parents at tier-3 settings out-muscle the crosses that borrowed their bodies. Varro, Sorrel and Ysolde beat both parents.
+   - **Surprises**: Pell plays like neither parent (a mill deck with ramp that neither mills fast enough nor ramps into anything); Kessa's tempo half reads as a worse Brann; Ysolde's width plan carries her tier without the Armor plan needing to. **The AI's mill execution is the seam**: the library clock is priced now, but a 40-card deck milling 3 a trigger needs ~10 triggers while an aggro opponent needs ~6 attacks — the decks may want more Crabs/Adepts or fewer air cards, or the mill decks are the ones that should carry the tier-3 titles. No decklist changed; the planner amends.
+   - **Not measured**: cards never cast and per-card cast counts (the sweep reports wins/turns/library; `facts.spellsCast` per deck is a small addition if the planner wants it before the amendments).
+2. **The Elemental token has no plate** — it renders the placeholder icon; an art-round item (the Goblin/Bird/Faerie/Bear/Soldier tokens have plates).
+3. **Corvane's eight angels are seven** (the Reya swap) — Chris's call; if the reanimator identity wants its ninth-drop back, an un-prizeOnly Reya is the planner's conversation.
+4. **The portrait round awaits verdicts**: candidate 1 is wired for all fifteen; the MANIFEST rows say so; flipping to candidate 2 is a file copy + a MANIFEST edit. The subject descriptors are mine from the deck identities — the planner may want a pass on the faces once the names/epithets are final.
+5. **The Lumberjack** remains shop-only (ADR-101) — the picker shows every deck a player can face, and none holds him.
+6. **The parley header** shows "Name, the Epithet" (Chris's ruling 4); the duel rail keeps the name alone (the epithet would crowd the status block) — say if it should ride there too.
 
 ## Registry entries added/changed
 
-R-091 (S28's words + the roots). Pool-registry: Session 28 section (173 → 178: unearth, brainstorm, orcish_lumberjack, spirit_link, birds_of_paradise) + the Heart's sixty note + the printings section (art:fetch). ADRs 095–098 in `docs/decision-updates/s28.md`. Knobs: `shopMaxArtifacts` (r6); `shopStockSize`'s description names the no-repeat rule; knobs.md regenerated. Save: `ShopState.prev` (optional; no version bump). `docs/reference/` regenerated (sync-tested). CLI: `pnpm heart-sim` (new flags). Engine: `TriggerEvent` +`DEALS_DAMAGE`; Effect +`putOnTop`; `addMana.choice` +`anyCombinationOf`; Action `activateAbility` +`colors`, +`putOnTop`; RequestPurpose +`putOnTop`; TargetSpec +`manaValueAtMost`; sacrifice grammar +`land.subtype:<X>`; `heartRootModifiers`, `setsFifthFlag` (world). Book of shame 35–36 + the roots pin.
+R-092. Pool-registry: Session 29 section (+6 cards + the Elemental token; the cleansheet note); printings regenerated. ADRs 099–102 + kickoff rulings in `docs/decision-updates/s29.md`. Knobs: `heartLife` 40 (35/45); knobs.md regenerated. Catalog: `OpponentTemplate.epithet`; `mage:<key>` deck refs; the Tactician `kind: beast`; fifteen portrait slugs. Sim: `@shandalar/sim/mage-decks`. Engine: `ActivatedAbilityDef.modes`; `ValueRef` +`sacrificedPower`; `activateAbility` +`mode`; the stack item's `eventContext` carries the sacrificed creature. CLI: `pnpm mage-sweep`. Art: thirty portrait candidates in MANIFEST; `docs/prompts/portraits.md` S29 table. Book of shame 37–40. `docs/reference/` regenerated (cards.md + Tokens; enemies.md).
 
 ## Test status
 
-Playtest round 6: default tier **515 passed / 2 skipped** (+1 shelf test). Session 28 close: default tier **514 passed / 2 skipped** (48 files; +7 engine fixtures in `s28-one-drops.test.ts`, +3 agent pins, +1 world legacy test; baselines: the loader's def count 185 → 190, the shop-tier counts 60/44 → 62/47, the S27 legacy gold ×2 → ×1). `pnpm typecheck` (project + UI) clean. **Fuzz-before-fixtures honoured**: the rooted heart fuzz at the full tier (900 games, three law modes, replays byte-exact) before any S28 fixture. **The FUZZ_FULL ladder gate held** (every mirror cell > 40%, overall mirror majority, zero surprises); the 100/cell vs-random ladder unchanged at 100%. heart-sim: 1,440 games (the table above). No skipped or flaky additions.
+Default tier **529 passed / 2 skipped** (50 files; +8 S29 fixtures, +2 mage fuzz tests, +5 book pins; baselines: the loader's def count 190 → 197, the shop-tier counts 62/47 → 65/50, the catalog's beasts 15 → 17, the heart's life 35 → 40). `pnpm typecheck` clean. **Fuzz-before-fixtures honoured**: 720 games at the full tier across the fifteen decks (both seats, a beast and a mage reference each), replays byte-exact, before any S29 fixture. **The FUZZ_FULL ladder gate held** (every mirror cell > 40%, overall majority, zero surprises) and the 100/cell vs-random ladder PASSES. Sweep: 6,500 games (Concerns 1). Browser: the single-battle picker lists the fifteen mages with epithets and starts a Brann–Edric match clean (zero console errors); the parley header with an epithet and the new portraits are typechecked but not walked to a live mage encounter.
 
 ## Suggested next
 
-1. **Chris**: `heartLife` — the sim and Chris's own 5–1 at 40 agree; rule it and it is a one-line knob edit; the fifth-cutting line's wording; whether Vindicate-on-a-root is the texture wanted (concern 7); a live look at Brainstorm's put-back and the Lumberjack's chooser once a shop stocks them.
-2. **Planner (S29, the mage cleansheet)**: place the five one-drops; the sixty's second answer to Vindicate (concern 1d); the Chronicle string.
-3. **Implementer smalls**: a lean ZONE_CHANGE in the EVENT log if sims keep wanting exits; the Unearth mana-spare refinement if it misplays.
+1. **Chris**: the portrait verdicts (the sheet); a live mage encounter for the epithet line and a face; whether the Chronicle's tease should have gone with the counting sentence.
+2. **Planner**: the amendments the sweep argues — the mill decks' clocks (more triggers or the tier-3 titles), Pale Edric's tier-1 viability, the white starter as a wall (or is that the intended lesson?), Pell's identity, the beast-parent gaps (Corvane vs Serra, Quill vs the Wurm); per-card cast counts if wanted first.
+3. **Implementer smalls**: the Elemental token plate; `facts.spellsCast` in the sweep; the epithet on the duel rail if wanted.
 
 ## How to run
 
 ```
 pnpm test / FUZZ_FULL=1 pnpm test
 pnpm typecheck
-pnpm heart-sim --games 30 --lives 35,40,45 --lands 20,18 --refs all   # the S28 matrix (~3 min); --refs road for chris-road-B alone
-pnpm ladder --games 100 / FUZZ_FULL=1 pnpm exec vitest run packages/sim/src/ladder-smoke.test.ts   # the gate
+pnpm mage-sweep --games 100 [--part 1|2|3]   # the S29 round-robins (~3 min at 100/pairing)
+FUZZ_FULL=1 pnpm exec vitest run packages/sim/src/ladder-smoke.test.ts / pnpm ladder --games 100
 pnpm reference / pnpm knobs:doc / pnpm art:fetch
-pnpm viewer → /world → Dev: complete all 15 + fell the five petals → the Corolla → the heart's town → Enter (the telegraph names the roots)
-pnpm viewer → /play → Dev · the Heart → pilot chris-road-B vs the Manafleur (heartLife 35/40/45)   # Chris's human-piloted read
+pnpm viewer → /play → any mage vs any mage (the picker)
+python3 .claude/skills/gemini-image/render.py --entity-file docs/art/subjects/portrait-mage-<key>-<n>.md --aspect 1:1   # re-render a candidate
 ```

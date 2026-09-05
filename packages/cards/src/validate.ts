@@ -274,6 +274,8 @@ function isAnyValueRef(v: unknown): boolean {
   if (v.ref === "eventDamage") return v.times === undefined || (Number.isInteger(v.times) && (v.times as number) >= 1);
   // S25 (ADR-088, member seven): the announced X persisted on the permanent (the Emerald Keeper).
   if (v.ref === "xPaid") return true;
+  // S29 (R-092): the power of the creature sacrificed to pay the ability's cost (Altar of Dementia).
+  if (v.ref === "sacrificedPower") return true;
   // S26 (member eight): counters of a kind on the source, times a bounded nonzero literal (Clio).
   if (v.ref === "countersOnSelf") return validCounterKind(v.kind) && (v.times === undefined || (Number.isInteger(v.times) && v.times !== 0));
   return false;
@@ -393,14 +395,21 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
       if (a.zone === "hand" && !(isRecord(a.cost) && a.cost.discardSelf === true)) err(`a hand-zone ability must discard itself as a cost (A5: cycling shape)`);
       if (a.zone === "graveyard" && !(isRecord(a.cost) && a.cost.exileSelf === true)) err(`a graveyard-zone ability must exile itself as a cost (A5: Mother Bear shape)`);
       if (a.zone !== undefined && a.zone !== "battlefield" && isRecord(a.cost) && a.cost.tap === true) err(`a ${a.zone}-zone ability cannot have a {T} cost`);
+      const sacrificeCost = isRecord(a.cost) && a.cost.sacrifice !== undefined;
       if (a.equip === true) {
         // Equip (CR 702.6): attach-only, exactly one own-creature target, no effects.
         if (Array.isArray(a.effects) && a.effects.length > 0) err(`equip ability must have no effects`);
         if (nTargets !== 1 || !isRecord(targets[0]) || (targets[0] as Record<string, unknown>).predicate !== "creatureYouControl") {
           err(`equip ability must target exactly one creatureYouControl`);
         }
+      } else if (a.modes !== undefined) {
+        // S29 (R-092, Arc Mage): a modal ACTIVATED ability — the modes carry targets and effects; the
+        // ability's own effects and targets must be empty (the A6 trigger shape).
+        if (Array.isArray(a.effects) && a.effects.length > 0) err(`a modal activated ability carries effects in its modes, not in "effects" (S29)`);
+        if (nTargets > 0) err(`a modal activated ability declares targets per mode (S29)`);
+        validateModes(a.modes, err, warnings, cardId);
       } else {
-        validateEffects(a.effects, nTargets, err, warnings, cardId);
+        validateEffects(a.effects, nTargets, err, warnings, cardId, { sacrificeCost });
       }
       break;
     }
@@ -659,7 +668,7 @@ function validateEffects(
   err: (m: string) => void,
   warnings: string[],
   cardId: string,
-  opts: { isStatic?: boolean; damageTrigger?: boolean; xTrigger?: boolean; lawTrigger?: boolean } = {},
+  opts: { isStatic?: boolean; damageTrigger?: boolean; xTrigger?: boolean; lawTrigger?: boolean; sacrificeCost?: boolean } = {},
 ): void {
   if (!Array.isArray(effects) || effects.length === 0) return err(`effects must be a non-empty array`);
   for (const e of effects) {
@@ -680,6 +689,8 @@ function validateEffects(
       err(`${type} is static-only (A10 — interpreted live, never resolved)`);
       continue;
     }
+    // S29 (R-092): sacrificedPower reads the cost's sacrificed creature — only an activated ability with a sacrifice cost pays one.
+    if (!opts.sacrificeCost && JSON.stringify(e).includes('"ref":"sacrificedPower"')) err(`sacrificedPower is confined to activated abilities with a sacrifice cost (S29)`);
     // S23 (ADR-084): the eventDamage ref reads a damage event's payload — meaningless anywhere else.
     if (!opts.damageTrigger && JSON.stringify(e).includes('"ref":"eventDamage"')) {
       err(`eventDamage refs live only on DEALS_[COMBAT_]DAMAGE_TO_PLAYER triggers (S23)`);

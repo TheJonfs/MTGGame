@@ -345,13 +345,13 @@ describe("S27 — the Heart, the chronicle, the legacy (ADR-093)", () => {
     expect(HEART_DECK.decklist.reduce((n, e) => n + e.count, 0)).toBe(60);
     for (const e of HEART_DECK.decklist) expect(pool.has(e.cardId), e.cardId).toBe(true);
     const { spec, enemyLife } = heartDuelSpec(w, catalog, knobs, catalog.corolla!, { name: HEART_DECK.name, decklist: HEART_DECK.decklist, archetype: HEART_DECK.archetype }, new WorldRng(3));
-    expect(enemyLife).toBe(35);
+    expect(enemyLife).toBe(40); // S29 Part 0: heartLife 40 (easy 35 / hard 45)
     expect(spec.rules.ante).toBe(0);
     expect(spec.players[1].agent).toBe("heuristic:master");
     expect(spec.modifiers).toContainEqual({ type: "signatureToHand", player: 1, cardId: "the_manafleur" });
     expect(spec.modifiers).toContainEqual({ type: "lawSequence" });
-    expect(spec.modifiers).toContainEqual({ type: "startingLife", player: 1, value: 35 });
-    expect(defaultKnobs().heartLife).toBe(35);
+    expect(spec.modifiers).toContainEqual({ type: "startingLife", player: 1, value: 40 });
+    expect(defaultKnobs().heartLife).toBe(40); // S29 Part 0
     w.gauntlet.petals = { W: true, B: true, R: true, U: true };
     expect(heartDoor(w).open).toBe(false);
     w.gauntlet.petals = { W: true, B: true, R: true, U: true, G: true };

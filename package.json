@@ -23,6 +23,7 @@
     "fuzz:starters": "tsx packages/sim/src/fuzz-starters-cli.ts",
     "fuzz:expansion": "tsx packages/sim/src/fuzz-expansion-cli.ts",
     "reference": "tsx packages/world/src/reference-docs-cli.ts",
+    "mage-sweep": "tsx packages/world/src/mage-sweep-cli.ts",
     "fuzz:duals": "tsx packages/sim/src/fuzz-duals-cli.ts",
     "guardian-sim": "tsx packages/world/src/guardian-sim-cli.ts",
     "lord-sim": "tsx packages/world/src/lord-sim-cli.ts",

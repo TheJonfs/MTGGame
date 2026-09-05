@@ -1,0 +1,41 @@
+{
+  "id": "altar_of_dementia",
+  "name": "Altar of Dementia",
+  "source": "real",
+  "scryfallId": "4f2da99f-3c53-4980-97d6-2158c765aac0",
+  "manaCost": "{2}",
+  "types": [
+    "Artifact"
+  ],
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "sacrifice": {
+          "predicate": "creature"
+        }
+      },
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "player",
+          "zone": "any"
+        }
+      ],
+      "effects": [
+        {
+          "type": "mill",
+          "count": {
+            "ref": "sacrificedPower"
+          },
+          "who": "target"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2,
+  "priceOverride": 16
+}
