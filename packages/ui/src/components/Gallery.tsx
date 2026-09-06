@@ -4,6 +4,7 @@ import { DECKS, type DeckKey } from "@shandalar/sim/decks";
 import { loadOracle, loadPool, type OracleEntry } from "../engine-bridge";
 import { CardFrame } from "./CardFrame";
 import { readSeen } from "../seen";
+import { devMenuEnabled } from "../dev";
 
 /**
  * Card gallery (ADR-046, S7 brief Part 2): every pool card in our frame,
@@ -240,7 +241,9 @@ export function Gallery() {
   // S27 r3 (Chris): the gallery opens PROGRESSIVELY — prizeOnly cards stay hidden until encountered
   // in a duel or held in the collection (the seen store + the autosave's collection); ?all=1 shows
   // everything (a dev bypass, not a menu item).
-  const revealAll = new URLSearchParams(window.location.search).get("all") === "1";
+  // Deploy playtest r4 (Chris): the DEV server always sees every card; the gate is production-only
+  // (?all=1 stays as the deploy's bypass).
+  const revealAll = devMenuEnabled() || new URLSearchParams(window.location.search).get("all") === "1";
   const seen = useMemo(() => {
     const s = readSeen();
     try {

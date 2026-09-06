@@ -205,7 +205,7 @@ export function evaluate(view: GameView, profile: AiProfile, defs: Map<string, C
   // ADR-060.1: untapped own creatures that threaten a profitable block are
   // worth keeping home. The attack sim debits the same term per attacker, so
   // "hold the deathtoucher" and "swing anyway" finally price differently.
-  const oppCreatures = theirs.filter((o) => o.power !== null);
+  const oppCreatures = theirs.filter((o) => o.power !== null && !o.keywords.includes("defender")); // S30: a Wall threatens no attack
   let deter = 0;
   if (oppCreatures.length > 0) {
     for (const o of mine) if (!o.tapped) deter += deterrence(defs, o, oppCreatures, C);

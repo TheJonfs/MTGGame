@@ -328,31 +328,35 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
  * (CR 701.19) through the logged game RNG, so replay reproduces it. */
 function searchOp(ctx: EngineCtx, requester?: EffectRequester) {
   return {
-    async searchLibrary(playerNum: number, predicate: "basicLand" | "anyCard" | `subtype:${string}`, to: "hand" | "battlefield", entersTapped: boolean): Promise<void> {
+    async searchLibrary(playerNum: number, predicate: "basicLand" | "anyCard" | "creatureCard" | `subtype:${string}`, to: "hand" | "battlefield" | "graveyard", entersTapped: boolean, count = 1): Promise<void> {
       const player = playerNum as PlayerId;
       const p = ctx.state.players[player];
-      const matches = p.library.filter((id) => {
-        const def = ctx.defs.def(getObject(ctx.state, id).cardId);
-        if (predicate === "anyCard") return true;
-        if (predicate.startsWith("subtype:")) return (def.subtypes ?? []).includes(predicate.slice("subtype:".length)); // ADR-076: Goblin Matron
-        return def.types.includes("Land") && (def.supertypes ?? []).includes("Basic");
-      });
-      const seen = new Set<string>();
-      const candidates: string[] = [];
-      for (const id of matches) {
-        const cardId = getObject(ctx.state, id).cardId;
-        if (seen.has(cardId)) continue;
-        seen.add(cardId);
-        candidates.push(id);
-      }
-      const actions: Action[] = [{ type: "declineSearch" }, ...candidates.map((objectId) => ({ type: "searchPick" as const, objectId }))];
-      let pick: Action = actions[0]!;
-      if (candidates.length > 0) {
-        if (!requester) throw new Error("searchLibrary needs an agent (not available at initialization)");
-        const revealed = candidates.map((objectId) => ({ objectId, cardId: getObject(ctx.state, objectId).cardId }));
-        pick = await requester(player, "searchLibrary", actions, revealed);
-      }
-      if (pick.type === "searchPick") {
+      // S30 (R-093, Buried Alive): "up to N" — one logged pick per card (the picked card leaves the
+      // library before the next pick's candidates are drawn), decline ends the search early.
+      for (let n = 0; n < count; n++) {
+        const matches = p.library.filter((id) => {
+          const def = ctx.defs.def(getObject(ctx.state, id).cardId);
+          if (predicate === "anyCard") return true;
+          if (predicate === "creatureCard") return def.types.includes("Creature");
+          if (predicate.startsWith("subtype:")) return (def.subtypes ?? []).includes(predicate.slice("subtype:".length)); // ADR-076: Goblin Matron
+          return def.types.includes("Land") && (def.supertypes ?? []).includes("Basic");
+        });
+        const seen = new Set<string>();
+        const candidates: string[] = [];
+        for (const id of matches) {
+          const cardId = getObject(ctx.state, id).cardId;
+          if (seen.has(cardId)) continue;
+          seen.add(cardId);
+          candidates.push(id);
+        }
+        const actions: Action[] = [{ type: "declineSearch" }, ...candidates.map((objectId) => ({ type: "searchPick" as const, objectId }))];
+        let pick: Action = actions[0]!;
+        if (candidates.length > 0) {
+          if (!requester) throw new Error("searchLibrary needs an agent (not available at initialization)");
+          const revealed = candidates.map((objectId) => ({ objectId, cardId: getObject(ctx.state, objectId).cardId }));
+          pick = await requester(player, "searchLibrary", actions, revealed);
+        }
+        if (pick.type !== "searchPick") break; // nothing to find, or the player stops
         const foundCardId = getObject(ctx.state, pick.objectId).cardId; // before the move — ids die on zone moves
         moveObject(ctx, pick.objectId, to, to === "battlefield" ? { tapped: entersTapped } : {});
         // S22 r4 (CR 701.19.4): a restricted search reveals its find (Goblin Matron's Goblin,
@@ -442,12 +446,13 @@ function sharedOps(ctx: EngineCtx, asController: PlayerId) {
       moveObject(ctx, objectId, "exile"); // not a death: no DIES trigger fires (700.4)
     },
 
-    returnFromGraveyard(objectId: string, to: "battlefield" | "hand", opts?: { temporary?: boolean; withCounters?: { kind: "+1/+1"; count: number } }): void {
+    returnFromGraveyard(objectId: string, to: "battlefield" | "hand", opts?: { temporary?: boolean; withCounters?: { kind: "+1/+1"; count: number }; tapped?: boolean }): void {
       const obj = ctx.state.objects[objectId];
       if (!obj || obj.zone !== "graveyard") return; // raced away: nothing to return
       // Battlefield returns enter under the effect controller's control (the Usher's guest is
       // HERS); hand returns go to the owner's hand as ever (zone arrays are owner-keyed).
-      const newId = moveObject(ctx, objectId, to, to === "battlefield" ? { controller: asController } : {}); // to battlefield fires ETB triggers normally
+      // S30 (the Skeleton): `tapped` — it returns tapped.
+      const newId = moveObject(ctx, objectId, to, to === "battlefield" ? { controller: asController, ...(opts?.tapped ? { tapped: true } : {}) } : {}); // to battlefield fires ETB triggers normally
       if (!newId || to !== "battlefield" || !ctx.state.objects[newId]) return;
       // A10 (S22): Graceful Restoration's rider — it enters with counters.
       if (opts?.withCounters) {

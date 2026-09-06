@@ -240,6 +240,15 @@ export function predictAction(
     const bounced = mine.find((o) => o.tapped) ?? mine[0]; // the chooser prefers a spent land
     if (bounced) removeObject(next, bounced.id);
   }
+  // S30 (Reassembling Skeleton): a graveyard-zone ability that returns ITSELF to the battlefield —
+  // the body comes back (tapped): price it as the creature it is.
+  if (gyEntry && ability.zone === "graveyard" && ability.effects.some((e) => e.type === "returnFromGraveyard" && e.scope === "self" && e.to === "battlefield")) {
+    const tapped = ability.effects.some((e) => e.type === "returnFromGraveyard" && e.tapped === true);
+    const back = { id: `pred_${predSeq++}`, cardId: gyEntry.cardId, controller: me, tapped, damage: 0, attachedTo: null, power: d.power ?? 0, toughness: d.toughness ?? 0, keywords: [...(d.keywords ?? [])] };
+    next.battlefield.push(back);
+    next.graveyardObjects[me] = next.graveyardObjects[me].filter((c) => c.objectId !== action.objectId);
+    return { view: next, adjustment: adjustment + 0.2, unchanged: false };
+  }
   if (ability.equip) {
     const host = targets[0];
     const equip = view.battlefield.find((o) => o.id === action.objectId);

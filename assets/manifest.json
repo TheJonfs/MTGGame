@@ -4215,6 +4215,21 @@
         }
       }
     },
+    "token-elemental-red": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:01c59d19d90478913b118f5f044209d3bfae5aaec10912725186bf2291dfde85",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:01c59d19d90478913b118f5f044209d3bfae5aaec10912725186bf2291dfde85",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/token-elemental-red/canonical.png",
+          "rendered_at": "2026-09-06T11:23:32+00:00",
+          "thumb": "assets/thumbs/token-elemental-red/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "token-faerie": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:84ced79e86399a77450ba567fc9663f76643d3a0569196cc622ad5ac5233ac6c",

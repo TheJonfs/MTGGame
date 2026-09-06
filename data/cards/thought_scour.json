@@ -1,0 +1,33 @@
+{
+  "id": "thought_scour",
+  "name": "Thought Scour",
+  "source": "real",
+  "scryfallId": "88bf1ebb-9d85-4b9b-a614-c7f965c0893d",
+  "manaCost": "{U}",
+  "types": [
+    "Instant"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "player",
+      "zone": "any"
+    }
+  ],
+  "spellEffect": [
+    {
+      "type": "mill",
+      "count": 2,
+      "who": "target"
+    },
+    {
+      "type": "draw",
+      "count": 1,
+      "who": "you"
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 1
+}

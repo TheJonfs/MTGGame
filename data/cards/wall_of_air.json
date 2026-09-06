@@ -1,0 +1,24 @@
+{
+  "id": "wall_of_air",
+  "name": "Wall of Air",
+  "source": "real",
+  "scryfallId": "da56fdf3-6a8f-4833-a5c3-197650cc4889",
+  "manaCost": "{1}{U}{U}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Wall"
+  ],
+  "power": 1,
+  "toughness": 5,
+  "keywords": [
+    "defender",
+    "flying"
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 1,
+  "priceOverride": 12
+}

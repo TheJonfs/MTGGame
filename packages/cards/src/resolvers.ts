@@ -61,7 +61,7 @@ export interface EffectContext {
    * asked) or decline; the library is ALWAYS shuffled after (CR 701.19),
    * through the logged game RNG. Async: it is a DecisionRequest.
    */
-  searchLibrary(player: number, predicate: "basicLand" | "anyCard" | `subtype:${string}`, to: "hand" | "battlefield", entersTapped: boolean): Promise<void>;
+  searchLibrary(player: number, predicate: "basicLand" | "anyCard" | "creatureCard" | `subtype:${string}`, to: "hand" | "battlefield" | "graveyard", entersTapped: boolean, count?: number): Promise<void>;
   /** ADR-075 A8: exile the object and return it to the battlefield under the effect controller's control as a new object (ETBs fire). */
   exileThenReturn(objectId: string): void;
   /** A10 (S22): `pt` sets the tokens' base P/T, locked at creation (Overload's Weird). */
@@ -90,7 +90,7 @@ export interface EffectContext {
   /** Move a card from a graveyard to the battlefield or its owner's hand (Zombify, Gravedigger, Rancor's self-return).
    * A10 (S22): `temporary` — the package rule (haste; sacrificed at the beginning of the next end
    * step); `withCounters` — it enters with counters (Graceful Restoration). */
-  returnFromGraveyard(objectId: string, to: "battlefield" | "hand", opts?: { temporary?: boolean; withCounters?: { kind: "+1/+1"; count: number } }): void;
+  returnFromGraveyard(objectId: string, to: "battlefield" | "hand", opts?: { temporary?: boolean; withCounters?: { kind: "+1/+1"; count: number }; tapped?: boolean }): void;
   loseLife(player: number, amount: number): void;
   /**
    * Discard N from a player's hand per ADR-029. Chooser interaction makes
@@ -233,7 +233,7 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
 
   searchLibrary: async (e, ctx) => {
     if (e.type !== "searchLibrary") throw new Error("resolver mismatch");
-    for (const p of ctx.players("you")) await ctx.searchLibrary(p, e.predicate, e.to, e.entersTapped === true);
+    for (const p of ctx.players("you")) await ctx.searchLibrary(p, e.predicate, e.to, e.entersTapped === true, e.count ?? 1);
   },
 
   createToken: (e, ctx) => {
@@ -318,7 +318,7 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
   returnFromGraveyard: (e, ctx) => {
     if (e.type !== "returnFromGraveyard") throw new Error("resolver mismatch");
     for (const t of targeted(e, ctx)) {
-      if (t.kind === "object") ctx.returnFromGraveyard(t.id, e.to, { ...(e.temporary ? { temporary: true } : {}), ...(e.withCounters ? { withCounters: e.withCounters } : {}) });
+      if (t.kind === "object") ctx.returnFromGraveyard(t.id, e.to, { ...(e.temporary ? { temporary: true } : {}), ...(e.withCounters ? { withCounters: e.withCounters } : {}), ...(e.tapped ? { tapped: true } : {}) });
     }
   },
 

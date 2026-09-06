@@ -393,7 +393,10 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
       }
       if (a.zone !== undefined && !ABILITY_ZONES.includes(a.zone as string)) err(`unknown ability zone "${a.zone}" (A5)`);
       if (a.zone === "hand" && !(isRecord(a.cost) && a.cost.discardSelf === true)) err(`a hand-zone ability must discard itself as a cost (A5: cycling shape)`);
-      if (a.zone === "graveyard" && !(isRecord(a.cost) && a.cost.exileSelf === true)) err(`a graveyard-zone ability must exile itself as a cost (A5: Mother Bear shape)`);
+      // A5: a graveyard-zone ability exiles itself as a cost (Mother Bear) — or, S30 (R-093, Reassembling
+      // Skeleton), RETURNS ITSELF to the battlefield as its whole effect (the card stays in the yard until it resolves).
+      const returnsSelf = Array.isArray(a.effects) && a.effects.length === 1 && isRecord(a.effects[0]) && a.effects[0].type === "returnFromGraveyard" && a.effects[0].scope === "self" && a.effects[0].to === "battlefield";
+      if (a.zone === "graveyard" && !(isRecord(a.cost) && a.cost.exileSelf === true) && !returnsSelf) err(`a graveyard-zone ability must exile itself as a cost (A5: Mother Bear shape) or return itself to the battlefield (S30: the Skeleton shape)`);
       if (a.zone !== undefined && a.zone !== "battlefield" && isRecord(a.cost) && a.cost.tap === true) err(`a ${a.zone}-zone ability cannot have a {T} cost`);
       const sacrificeCost = isRecord(a.cost) && a.cost.sacrifice !== undefined;
       if (a.equip === true) {
@@ -587,9 +590,10 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     if (e.sequence !== "next") err(`createLaw sequence must be "next" (S27)`);
   },
   searchLibrary: (e, err) => {
-    if (typeof e.predicate !== "string" || !SEARCH_PREDICATE.test(e.predicate)) err(`searchLibrary predicate must be basicLand|anyCard|subtype:<Subtype> (ADR-068/076)`);
-    if (e.to !== "hand" && e.to !== "battlefield") err(`searchLibrary "to" must be hand|battlefield`);
+    if (typeof e.predicate !== "string" || !(SEARCH_PREDICATE.test(e.predicate) || e.predicate === "creatureCard")) err(`searchLibrary predicate must be basicLand|anyCard|creatureCard|subtype:<Subtype> (ADR-068/076; S30)`);
+    if (e.to !== "hand" && e.to !== "battlefield" && e.to !== "graveyard") err(`searchLibrary "to" must be hand|battlefield|graveyard (S30)`);
     if (e.entersTapped !== undefined && e.to !== "battlefield") err(`searchLibrary entersTapped only applies to battlefield destination`);
+    if (e.count !== undefined && (!Number.isInteger(e.count) || (e.count as number) < 1)) err(`searchLibrary count must be a positive integer (S30: "up to N")`);
   },
   grantAbility: () => {
     // A10 word 8 (S22): static-only — the deep shape (zone/scope/ability) is validated in the

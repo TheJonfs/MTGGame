@@ -269,6 +269,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | brainstorm | ice | 61 | Christopher Rush | 8d42d7aa-7f53-4cfc-842a-086aab2448d1 |
 | breeding_pool | rvr | 399 | Rob Alexander | f920e32c-8a4b-4152-be3a-02810f3e5f13 |
 | brute_force | plc | 116 | Wayne Reynolds | 82d43220-1e4e-4b61-9844-51c8bb5dde35 |
+| buried_alive | wth | 63 | Brian Horton | 56b92eb5-72b0-46b4-8b16-8a7a7ac80f56 |
 | cathartic_adept | ala | 34 | Carl Critchlow | 8e63626d-f55c-4155-9712-511f591c0614 |
 | centaur_courser | m10 | 172 | Vance Kovacs | 03354b67-7df2-4b4b-a996-a37550e58561 |
 | child_of_night | m10 | 88 | Ash Wood | e1f7a9a7-3679-4a18-a52a-e3a8ab16ad32 |
@@ -352,6 +353,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | raise_the_alarm | mrd | 16 | John Matson | 4be510c8-fc01-4374-ac04-7968d24480fe |
 | rampant_growth | mir | 235 | Pat Lewis | a9dd8043-4099-42bb-9d54-4efc8b38fe18 |
 | rancor | ulg | 110 | Kev Walker | 59e256c2-38df-4012-9308-ce17dd889e5f |
+| reassembling_skeleton | arc | 22 | Austin Hsu | 655f983e-3b23-48ee-89d5-d01d469d5a6f |
 | restoration_angel | avr | 32 | Johannes Voss | c2ad8639-e586-47f4-baca-2a1af5aa281b |
 | reya_dawnbringer | inv | 33 | Matthew D. Wilson | e1e0e72b-e65e-4578-b610-9f529daa32d7 |
 | rumbling_baloth | m14 | 193 | Jesper Ejsing | d8610ff1-064b-4c75-a8df-d3b076370d1e |
@@ -377,6 +379,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | temporal_spring | apc | 125 | John Matson | b584dfd1-a56c-406e-8504-47ea136dc102 |
 | tendrils_of_corruption | tsp | 136 | Mike Dringenberg | 7f61db9e-ef88-4dc8-b90c-1f8b2d7e9bb9 |
 | terror | lea | 130 | Ron Spencer | 21004958-2c7e-4a55-bc80-411c4d780106 |
+| thought_scour | dka | 52 | David Rapoza | 88bf1ebb-9d85-4b9b-a614-c7f965c0893d |
 | timberland_guide | avr | 197 | Zoltan Boros | ae80fefb-af78-4f98-8058-71b61e91842f |
 | titania_protector_of_argoth | mh2 | 416 | Magali Villeneuve | bab161d9-45d7-48b7-af47-21e3dbae4d85 |
 | tranquil_thicket | ons | 326 | Heather Hudson | afcb7cef-8aeb-4c84-88e9-6df17768e292 |
@@ -389,11 +392,14 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | vampire_nighthawk | zen | 116 | Jason Chan | 44f19fe3-7a17-4c45-adfa-590f73dfebfa |
 | vindicate | apc | 126 | Brian Snõddy | 2a1bfefd-dae8-49e9-9d56-cc852e3dc93b |
 | volcanic_island | olgc | 2018NA | Mark Poole | 154ce456-38d2-4195-93b7-302e11c006e2 |
+| wall_of_air | lea | 89 | Richard Thomas | da56fdf3-6a8f-4833-a5c3-197650cc4889 |
+| wall_of_blossoms | sth | 125 | Heather Hudson | 7eb4a1a3-efcf-4c9a-ad1f-0a3f8f2b456f |
 | waste_not | m15 | 122 | Matt Stewart | 241d8f7d-3981-47c1-b7b8-748277fa452f |
 | waterfront_bouncer | mmq | 114 | Paolo Parente | 8dbdce9e-94fa-4ed5-9b97-d2026cffe7cb |
 | watery_grave | rvr | 415 | Rob Alexander | ef7f4762-4283-4368-948b-e60a29e78a0c |
 | werebear | ody | 282 | Carl Critchlow | 964cf7e3-932d-432f-8ad4-9bd651aada96 |
 | wind_drake | por | 77 | Zina Saunders | 5486d2dc-9a5d-4f58-a5ec-d94de54b852f |
+| wood_elves | por | 195 | Rebecca Guay | b7f1fb90-5c85-46a5-802d-248cc0250921 |
 | wrath_of_god | lea | 45 | Quinton Hoover | a2788d69-6a3a-42f0-8736-cc6b57755ecd |
 | young_pyromancer | m14 | 163 | Cynthia Sheppard | e349c204-3a93-4bf7-b79a-5f5f261ea2d3 |
 | youthful_valkyrie | khm | 382 | Anna Steinbauer | ffe93b27-f8ae-4abf-8ade-90f503f132c2 |
@@ -457,6 +463,19 @@ Pool 184 → **185**. The last card. Custom, five-colour, prizeOnly (sole-mechan
 | elemental_1_1_r | Elemental Token | token | — | 1/1 red Elemental; the Pyromancer's token. No plate yet (renders the placeholder icon) — an art-round item. |
 
 *The mage cleansheet (ADR-099):* fifteen decks in `packages/sim/src/mage-decks.ts`, one per named mage (`mage:<key>`); the slice decks A–E retired from the catalog (Chris, S29 kickoff) and kept as sim/test infrastructure. Reya Dawnbringer (prizeOnly) left Lord Corvane's list for a third Serra Angel. The Cunning Tactician is a beast (ADR-100). Orcish Lumberjack stays shop-only until phase two (ADR-101).
+
+## Session 30 additions — six cards for the floor (ADR-104; planner-verified, implementer re-verified on Scryfall 2026-09-06)
+
+| id | Card | Status | Vocabulary | Notes |
+|---|---|---|---|---|
+| wall_of_blossoms | Wall of Blossoms | tested | defender; triggered(self ETB) draw 1 | STH first printing; tier 1 / 12g (priceOverride). Never an eligible attacker (fixture). Hask ×2, Pell ×2, Quill ×2. |
+| wood_elves | Wood Elves | tested | triggered(self ETB) searchLibrary subtype:Forest → battlefield (untapped) | POR first printing (the earliest Scryfall carries at high resolution). A Breeding Pool / Temple Garden / Tropical Island / Savannah qualifies; the fetched land triggers a Crab (fixture). AI (book 44): the dual when a colour wants it, else a Forest. Pell ×2, Quill ×2. |
+| wall_of_air | Wall of Air | tested | defender, flying | LEA first printing; tier 1 / 12g (priceOverride). Blocks a flier; never attacks (fixture). Tessaly ×2. |
+| buried_alive | Buried Alive | tested | searchLibrary creatureCard → graveyard, count 3 (R-093 word 1) | WTH first printing; tier 2 / 16g (priceOverride). "Up to three" — two in the library take two (fixture). AI (book 42): only with a reanimator in hand. Corvane ×2. |
+| reassembling_skeleton | Reassembling Skeleton | tested | activated (graveyard zone) {1}{B}: returnFromGraveyard self → battlefield tapped (R-093 word 2) | M12 def / the art fetched from the oldest printing (ARC, 2010). tier 1 / 8g (priceOverride). Returns tapped, from the graveyard only; a legal Unearth target (fixture). AI (book 43): their turn or when behind, never over a spell the mana wants. Edric ×2. |
+| thought_scour | Thought Scour | tested | targets player: mill 2; draw 1 | **DKA first printing (2012) — the brief said Innistrad**; tier 1 / 8g. Self or opponent (fixture); AI (book 41) targets the opponent. Tessaly ×2. |
+
+*ADR-105:* nine lists amended in `packages/sim/src/mage-decks.ts` (Tessaly, Edric, Brann, Hask, Pell, Kessa, Maelin, Corvane, Quill); Oriel, Vael, Brennor, Varro, Sorrel, Ysolde unchanged. The Pyromancer's Elemental token has its plate (`token-elemental-red`).
 
 ## Shop tiers (ADR-078, S19)
 

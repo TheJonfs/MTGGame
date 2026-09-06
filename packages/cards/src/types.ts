@@ -237,7 +237,7 @@ export type EffectBase =
    * beginning of the next end step (a self-contained package rule, not a delayed-trigger subsystem;
    * the Usher's entrance). A blinked guest is a NEW object and sheds both riders (the launder).
    * `withCounters` (S22): it enters with counters (Graceful Restoration's +1/+1 rider). */
-  | { type: "returnFromGraveyard"; target?: number; targetSpec?: number; scope?: Scope; to: "battlefield" | "hand"; temporary?: true; withCounters?: { kind: "+1/+1"; count: number } }
+  | { type: "returnFromGraveyard"; target?: number; targetSpec?: number; scope?: Scope; to: "battlefield" | "hand"; temporary?: true; withCounters?: { kind: "+1/+1"; count: number }; /** S30 (Reassembling Skeleton): enters tapped. */ tapped?: true }
   | { type: "fight"; targets: [number, number] }
   /** ADR-033: the static form (scope "attached" — Control Magic). S26 (Lumen, the Hearth Fire): the
    * RESOLVED form — `target` + `duration: "UNTIL_END_OF_TURN"` — the threaten class: a stored control
@@ -246,7 +246,9 @@ export type EffectBase =
   | { type: "gainControl"; scope?: Scope; target?: number; duration?: Duration }
   /** ADR-068 Amendment 1: find-may-fail search; chooser sees matching library cards in the request payload; always shuffles after (CR 701.19).
    * ADR-076: predicate may be `subtype:<Subtype>` (Goblin Matron). */
-  | { type: "searchLibrary"; predicate: "basicLand" | "anyCard" | `subtype:${string}`; to: "hand" | "battlefield"; entersTapped?: boolean }
+  /** S30 (R-093, Buried Alive): `to: "graveyard"` and `count` ("up to N" — one logged pick per card, decline
+   * ends it); `creatureCard` beside the land/any/subtype predicates. */
+  | { type: "searchLibrary"; predicate: "basicLand" | "anyCard" | "creatureCard" | `subtype:${string}`; to: "hand" | "battlefield" | "graveyard"; entersTapped?: boolean; count?: number }
   /** ADR-075 A8: blink — exile the target and return it to the battlefield under your control as a new object (ETBs fire). */
   | { type: "exileThenReturn"; target: number; under: "yourControl" }
   /** ADR-068 Amendment 2: `mana` (fixed production) OR `choice` (Lotus: N mana of any one colour — a five-option choice at activation, no stack). */

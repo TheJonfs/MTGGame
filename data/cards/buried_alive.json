@@ -1,0 +1,23 @@
+{
+  "id": "buried_alive",
+  "name": "Buried Alive",
+  "source": "real",
+  "scryfallId": "56b92eb5-72b0-46b4-8b16-8a7a7ac80f56",
+  "manaCost": "{2}{B}",
+  "types": [
+    "Sorcery"
+  ],
+  "spellEffect": [
+    {
+      "type": "searchLibrary",
+      "predicate": "creatureCard",
+      "to": "graveyard",
+      "count": 3
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2,
+  "priceOverride": 16
+}

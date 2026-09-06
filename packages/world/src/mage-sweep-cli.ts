@@ -1,5 +1,5 @@
 /**
- * pnpm mage-sweep [--games N] [--seed S] [--part 1|2|3|all]
+ * pnpm mage-sweep [--games N] [--seed S] [--part 1|2|3|4|all] [--baseline <json>|none]
  *
  * S29 Part 5: the mage cleansheet's three round-robins under the heuristic ladder (both seats; the
  * tier's profile; the tier's life for both sides unless noted).
@@ -9,7 +9,10 @@
  *   3. children vs parents — each tier-2/3 mage against its two parent lines (the parent mage at
  *      tier-1 settings; the parent beast at its own catalog settings).
  * Per pairing: win rate, mean turns, and the share of wins by library (DECKED) — the mill decks' axis.
+ * S30: a delta column against a baseline sweep; per-deck CAST COUNTS (facts.spellsCast) with the
+ * never-cast list; part 4 — the five starters against each other (journeyman at 10).
  */
+import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
@@ -27,6 +30,10 @@ function arg(name: string, fallback: string): string {
 const games = Number(arg("games", "100"));
 const seed0 = Number(arg("seed", "1"));
 const part = arg("part", "all");
+// S30 Part 5: a baseline sweep (pairing key → A's win %) for a delta column; the S29 run ships as
+// sweep-baselines/s29.json (`--baseline none` to drop the column).
+const baselineArg = arg("baseline", join(dirname(fileURLToPath(import.meta.url)), "sweep-baselines/s29.json"));
+const baseline: Record<string, number> = baselineArg === "none" ? {} : (JSON.parse(readFileSync(baselineArg, "utf8")) as Record<string, number>);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const pool = loadCardPool(join(ROOT, "data/cards")).cards;
 const catalog = loadCatalog(join(ROOT, "data/world"));
@@ -50,6 +57,15 @@ const starter = (id: string): Side => {
   return { name: `starter:${id}`, decklist: s.decklist, archetype: s.archetype, profile: "journeyman", life: knobs.startingWorldLife };
 };
 
+/** Cast counts per deck (by the side's name) across every game it played, and games played. */
+const casts = new Map<string, { games: number; byCard: Record<string, number>; decklist: { cardId: string; count: number }[] }>();
+function noteCasts(side: Side, seat: 0 | 1, spellsCast: Record<string, [number, number]>): void {
+  const row = casts.get(side.name) ?? { games: 0, byCard: {}, decklist: side.decklist };
+  row.games += 1;
+  for (const [cardId, by] of Object.entries(spellsCast)) row.byCard[cardId] = (row.byCard[cardId] ?? 0) + (by[seat] ?? 0);
+  casts.set(side.name, row);
+}
+
 async function pairing(a: Side, b: Side, label: string): Promise<void> {
   let aWins = 0, bWins = 0, draws = 0, turns = 0, aDecked = 0, bDecked = 0, total = 0;
   for (let i = 0; i < games; i++) {
@@ -71,6 +87,8 @@ async function pairing(a: Side, b: Side, label: string): Promise<void> {
       const r = await runMatch(spec, pool, agents);
       total += 1; turns += r.turns;
       const aSeat = seat === 0 ? 0 : 1;
+      noteCasts(a, aSeat as 0 | 1, r.facts.spellsCast);
+      noteCasts(b, (1 - aSeat) as 0 | 1, r.facts.spellsCast);
       if (r.winner === null) draws += 1;
       else if (r.winner === aSeat) { aWins += 1; if (r.reason === "DECKED") aDecked += 1; }
       else { bWins += 1; if (r.reason === "DECKED") bDecked += 1; }
@@ -80,10 +98,14 @@ async function pairing(a: Side, b: Side, label: string): Promise<void> {
   }
   const pct = (n: number) => `${((100 * n) / Math.max(1, total)).toFixed(0)}%`;
   const byLib = (w: number, d: number) => (w > 0 && d > 0 ? ` (${((100 * d) / w).toFixed(0)}% by library)` : "");
-  console.log(`| ${label} | ${a.name} | ${b.name} | ${pct(aWins)}${byLib(aWins, aDecked)} | ${pct(bWins)}${byLib(bWins, bDecked)} | ${draws} | ${(turns / Math.max(1, total)).toFixed(1)} |`);
+  const key = `${label}|${a.name}|${b.name}`;
+  const base = baseline[key];
+  const aPct = Math.round((100 * aWins) / Math.max(1, total));
+  const delta = base === undefined ? "—" : `${aPct - base >= 0 ? "+" : ""}${aPct - base}`;
+  console.log(`| ${label} | ${a.name} | ${b.name} | ${pct(aWins)}${byLib(aWins, aDecked)} | ${pct(bWins)}${byLib(bWins, bDecked)} | ${draws} | ${(turns / Math.max(1, total)).toFixed(1)} | ${delta} |`);
 }
 
-const header = () => console.log(`\n| part | A | B | A wins | B wins | draws | mean turns |\n|---|---|---|---|---|---|---|`);
+const header = () => console.log(`\n| part | A | B | A wins | B wins | draws | mean turns | Δ A wins vs S29 |\n|---|---|---|---|---|---|---|---|`);
 const byTier: Record<1 | 2 | 3, string[]> = { 1: [], 2: [], 3: [] };
 for (const [k, m] of Object.entries(MAGE_DECKS)) byTier[m.tier].push(k);
 
@@ -101,6 +123,12 @@ if (part === "all" || part === "2") {
   header();
   for (const k of byTier[1]) for (const s of catalog.starters) await pairing(mage(k), starter(s.id), `T1×starter`);
 }
+if (part === "all" || part === "4") {
+  console.log(`\n## 4. The starters against each other (journeyman at ${knobs.startingWorldLife}; a read on the five roads)`);
+  header();
+  const ss = catalog.starters.map((x) => x.id);
+  for (let i = 0; i < ss.length; i++) for (let j = i + 1; j < ss.length; j++) await pairing(starter(ss[i]!), starter(ss[j]!), `starters`);
+}
 if (part === "all" || part === "3") {
   console.log(`\n## 3. Children vs parents (parent mage at tier-1 settings; parent beast at its own)`);
   header();
@@ -113,5 +141,18 @@ if (part === "all" || part === "3") {
       const parent = p.startsWith("mage:") ? mage(p.slice(5), 1) : beast(p.slice(6));
       await pairing(mage(child), parent, `T${MAGE_DECKS[child]!.tier}×parent`);
     }
+  }
+}
+
+// ---- S30 Part 5: per-deck cast counts (the mages only) ----
+const mageNames = new Set(Object.entries(MAGE_DECKS).map(([k, m]) => `${m.name} (${k})`));
+const mageRows = [...casts.entries()].filter(([name]) => mageNames.has(name));
+if (mageRows.length > 0) {
+  console.log(`\n## Cast counts per mage (every game the deck played in this run; casts per game in brackets; NEVER CAST listed)\n`);
+  for (const [name, row] of mageRows) {
+    const nonland = row.decklist.filter((e) => !(pool.get(e.cardId)?.types ?? []).includes("Land"));
+    const cells = nonland.map((e) => { const n = row.byCard[e.cardId] ?? 0; return `${pool.get(e.cardId)?.name ?? e.cardId} ×${e.count}: ${n} (${(n / Math.max(1, row.games)).toFixed(2)})`; });
+    const never = nonland.filter((e) => !(row.byCard[e.cardId] ?? 0)).map((e) => pool.get(e.cardId)?.name ?? e.cardId);
+    console.log(`- **${name}** — ${row.games} games — ${cells.join(" · ")}${never.length ? ` — **never cast: ${never.join(", ")}**` : ""}`);
   }
 }

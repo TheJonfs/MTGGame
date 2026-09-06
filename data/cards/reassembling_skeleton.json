@@ -1,0 +1,38 @@
+{
+  "id": "reassembling_skeleton",
+  "name": "Reassembling Skeleton",
+  "source": "real",
+  "scryfallId": "75c219bc-a140-4ecd-953a-eef2cc552d58",
+  "manaCost": "{1}{B}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Skeleton",
+    "Warrior"
+  ],
+  "power": 1,
+  "toughness": 1,
+  "abilities": [
+    {
+      "kind": "activated",
+      "zone": "graveyard",
+      "cost": {
+        "mana": "{1}{B}"
+      },
+      "effects": [
+        {
+          "type": "returnFromGraveyard",
+          "scope": "self",
+          "to": "battlefield",
+          "tapped": true
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 1,
+  "priceOverride": 8
+}

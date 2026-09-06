@@ -1,0 +1,38 @@
+{
+  "id": "wood_elves",
+  "name": "Wood Elves",
+  "source": "real",
+  "scryfallId": "b7f1fb90-5c85-46a5-802d-248cc0250921",
+  "manaCost": "{2}{G}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Elf",
+    "Scout"
+  ],
+  "power": 1,
+  "toughness": 1,
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "condition": {
+        "self": true
+      },
+      "effects": [
+        {
+          "type": "searchLibrary",
+          "predicate": "subtype:Forest",
+          "to": "battlefield"
+        }
+      ],
+      "optional": false
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 1,
+  "priceOverride": 12
+}

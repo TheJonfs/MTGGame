@@ -207,6 +207,8 @@ export class HeuristicAgent implements Agent {
     if (this.legendDuplicateGated(view, action)) return -Infinity; // S27 r2: never cast a second copy of a legend we control
     if (this.cantripTimingGated(view, action)) return -Infinity; // S28: Brainstorm at the opponent's end step or in response
     if (this.altarGated(view, action)) return -Infinity; // S29: the Altar feeds a creature for lethal mill, or one already dying
+    if (this.buriedGated(view, action)) return -Infinity; // S30: Buried Alive only with a reanimator in hand
+    if (this.skeletonGated(view, action)) return -Infinity; // S30: the Skeleton returns with mana to spare, or as a blocker when behind
     if (this.lifeForCardsGated(view, action)) return -Infinity; // S27 r2: the Witch's discipline
     if (this.accumulatorSpendGated(view, action)) return -Infinity; // S26: Clio holds the tax while the board threatens
     // The misaim rule: a FINITE cliff (not -Infinity) so book-of-shame orderings among
@@ -507,7 +509,18 @@ export class HeuristicAgent implements Agent {
     };
     const lands = picks.filter((a) => this.def(cardOf.get(a.objectId) ?? "")?.types.includes("Land"));
     const nonlands = picks.filter((a) => !lands.includes(a));
-    const bestLand = [...lands].sort((a, b) => (need[basicColor(cardOf.get(b.objectId) ?? "") ?? ""] ?? -99) - (need[basicColor(cardOf.get(a.objectId) ?? "") ?? ""] ?? -99))[0];
+    // S30 (Wood Elves — Pell, Quill): a land is scored by the BEST need over every colour it produces,
+    // so a Breeding Pool covers the blue pip a Forest cannot; a dual wins ties (book 44).
+    const landColors = (cardId: string): string[] => {
+      const d = this.def(cardId);
+      if (!d?.types.includes("Land")) return [];
+      const out = new Set<string>();
+      for (const a of d.abilities ?? []) for (const e of ("effects" in a ? a.effects : [])) if (e.type === "addMana" && e.mana) for (const c of ["W", "U", "B", "R", "G"]) if (e.mana.includes(`{${c}}`)) out.add(c);
+      return [...out];
+    };
+    const landScore = (cardId: string): number => { const cs = landColors(cardId); return cs.length === 0 ? -99 : Math.max(...cs.map((c) => need[c] ?? 0)) + 0.1 * (cs.length - 1); };
+    void basicColor;
+    const bestLand = [...lands].sort((a, b) => landScore(cardOf.get(b.objectId) ?? "") - landScore(cardOf.get(a.objectId) ?? ""))[0];
     if (nonlands.length === 0) return bestLand ?? decline;
     if (handLands < 2 && bestLand) return bestLand;
     const castableSoon = (a: Extract<Action, { type: "searchPick" }>) => this.mv(cardOf.get(a.objectId) ?? "") <= myLands.length + 1;
@@ -737,7 +750,7 @@ export class HeuristicAgent implements Agent {
     // what the counter-swing could take — scale the deduction by the race risk (the opponent's
     // untapped power against our life above a margin). At 35 life facing six power the 7/7 attacks;
     // at 6 life it holds. Vigilance still pays nothing. Exposed through the book (29).
-    const untappedOpp = oppCreatures.filter((o) => !o.tapped);
+    const untappedOpp = oppCreatures.filter((o) => !o.tapped && !o.keywords.includes("defender")); // S30: a Wall is no race
     const oppPower = untappedOpp.reduce((n, o) => n + (o.power ?? 0), 0);
     const maxOppPower = untappedOpp.reduce((m, o) => Math.max(m, o.power ?? 0), 0);
     const oppDeathtouch = untappedOpp.some((o) => o.keywords.includes("deathtouch"));
@@ -1060,6 +1073,41 @@ export class HeuristicAgent implements Agent {
     return !swing;
   }
 
+  /** S30 (Part 3, Buried Alive — Corvane): a spell that searches creatures INTO the graveyard is a
+   * reanimator's set-up — it fires only while the hand holds a card that returns a creature from the
+   * graveyard to the battlefield (Zombify, Unearth, the Usher's ETB); the yard is no place to keep
+   * angels otherwise. Exposed for the book (42). */
+  buriedGated(view: GameView, action: Action): boolean {
+    if (action.type !== "castSpell") return false;
+    const card = view.hand.find((c) => c.objectId === action.objectId);
+    const d = card ? this.def(card.cardId) : undefined;
+    if (!d || !(d.spellEffect ?? []).some((e) => e.type === "searchLibrary" && e.to === "graveyard")) return false;
+    const reanimates = (x: CardDef | undefined): boolean =>
+      !!x && ([...(x.spellEffect ?? []), ...(x.abilities ?? []).flatMap((a) => ("effects" in a ? a.effects : []))] as Effect[]).some((e) => e.type === "returnFromGraveyard" && e.to === "battlefield" && e.scope !== "self");
+    return !view.hand.some((c) => c.objectId !== action.objectId && reanimates(this.def(c.cardId)));
+  }
+
+  /** S30 (Part 3, Reassembling Skeleton): the graveyard return is a MANA question — on our own turn it
+   * waits while a spell in hand could use the mana (the body is worth less than the play it would
+   * cost), unless we are behind on creatures and need the blocker; on the opponent's turn it is a fine
+   * end-of-turn buy. Exposed for the book (43). */
+  skeletonGated(view: GameView, action: Action): boolean {
+    if (action.type !== "activateAbility") return false;
+    const me = view.you;
+    const gy = view.graveyardObjects[me].find((c) => c.objectId === action.objectId);
+    if (!gy) return false;
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+    if (!ab || ab.kind !== "activated" || ab.zone !== "graveyard" || !ab.effects.some((e) => e.type === "returnFromGraveyard" && e.scope === "self" && e.to === "battlefield")) return false;
+    if (view.activePlayer !== me) return false;
+    const mine = view.battlefield.filter((o) => o.controller === me && o.power !== null).length;
+    const theirs = view.battlefield.filter((o) => o.controller !== me && o.power !== null && !o.keywords.includes("defender")).length;
+    if (mine < theirs) return false; // behind: the blocker comes back
+    const available = view.battlefield.filter((o) => o.controller === me && !o.tapped && (this.def(o.cardId)?.abilities ?? []).some((a) => a.kind === "activated" && a.cost.tap && a.effects.every((e) => e.type === "addMana" && !e.choice))).length + Object.values(view.manaPool).reduce((a, b) => a + b, 0);
+    const abilityCost = ab.cost.mana ? manaValue(parseManaCost(ab.cost.mana)) : 0;
+    const wantsMana = view.hand.some((c) => { const d = this.def(c.cardId); if (!d || d.types.includes("Land")) return false; const mv = manaValue(parseManaCost(d.manaCost)); return mv <= available && mv > available - abilityCost; });
+    return wantsMana;
+  }
+
   /** S29 (Part 4, the Altar of Dementia): a sacrifice-outlet ability whose payload reads the sacrificed
    * creature's power fires only (a) for LETHAL mill — our strongest creature's power reaches the
    * opponent's library — or (b) to cash a creature that is about to die anyway: blocked or blocking
@@ -1134,7 +1182,7 @@ export class HeuristicAgent implements Agent {
     if (!ab.effects.some((e) => e.type === "draw")) return false;
     const me = view.you;
     if (view.hand.length > 2) return true;
-    const oppPower = view.battlefield.filter((o) => o.controller !== me && !o.tapped && o.power !== null).reduce((n, o) => n + (o.power ?? 0), 0);
+    const oppPower = view.battlefield.filter((o) => o.controller !== me && !o.tapped && o.power !== null && !o.keywords.includes("defender")).reduce((n, o) => n + (o.power ?? 0), 0);
     if (view.life[me] - ab.cost.life < oppPower + 3) return true;
     if (this.lifeDrawsThisTurn.turn === view.turn && this.lifeDrawsThisTurn.n >= 2) return true;
     return false;

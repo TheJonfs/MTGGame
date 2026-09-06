@@ -538,6 +538,39 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.scorePriorityAction(view(1, "UPKEEP"), tap)).toBeGreaterThan(-Infinity);
   });
 
+  it("book of shame 41–44 (S30, the floor): Thought Scour mills the opponent, not us; Buried Alive waits for a reanimator in hand; the Skeleton returns on their turn, or when behind, never over a spell the mana wants; Pyroclasm holds with our Pyromancer and Elementals out and fires into their X/2s; Wood Elves takes the Breeding Pool when a blue pip waits", () => {
+    const a = agent();
+    // 41 Thought Scour: the opponent's library, never our own.
+    const scour = mkView({ step: "END_STEP", activePlayer: 1, hand: [{ objectId: "h_ts", cardId: "thought_scour" }], battlefield: [{ id: "i1", cardId: "island", controller: 0 }] });
+    expect(a.scorePriorityAction(scour, { type: "castSpell", objectId: "h_ts", targets: [{ kind: "player", player: 1 }] })).toBeGreaterThan(a.scorePriorityAction(scour, { type: "castSpell", objectId: "h_ts", targets: [{ kind: "player", player: 0 }] }));
+    // 42 Buried Alive: only with Zombify (or Unearth) in hand.
+    const buried = (extra: { objectId: string; cardId: string }[]) => mkView({ step: "MAIN1", activePlayer: 0, hand: [{ objectId: "h_ba", cardId: "buried_alive" }, ...extra], battlefield: [{ id: "s1", cardId: "swamp", controller: 0 }, { id: "s2", cardId: "swamp", controller: 0 }, { id: "s3", cardId: "swamp", controller: 0 }] });
+    const cast = { type: "castSpell" as const, objectId: "h_ba", targets: [] };
+    expect(a.scorePriorityAction(buried([]), cast)).toBe(-Infinity);
+    expect(a.scorePriorityAction(buried([{ objectId: "h_z", cardId: "zombify" }]), cast)).toBeGreaterThan(-Infinity);
+    expect(a.scorePriorityAction(buried([{ objectId: "h_u", cardId: "unearth" }]), cast)).toBeGreaterThan(-Infinity);
+    // 43 the Skeleton: on our MAIN1 with a castable Bears wanting the mana and an even board, hold; behind, return; on their turn, return.
+    const sk = (opts: { activePlayer: 0 | 1; step: string; theirs: number; hand?: { objectId: string; cardId: string }[] }) =>
+      mkView({ step: opts.step, activePlayer: opts.activePlayer, hand: opts.hand ?? [], battlefield: [{ id: "s1", cardId: "swamp", controller: 0 }, { id: "s2", cardId: "swamp", controller: 0 }, ...Array.from({ length: opts.theirs }, (_, i) => ({ id: `t${i}`, cardId: "grizzly_bears", controller: 1 as const }))] });
+    const ret = { type: "activateAbility" as const, objectId: "g_sk", abilityIndex: 0, targets: [] };
+    const withYard = (v: GameView): GameView => ({ ...v, graveyardObjects: [[{ objectId: "g_sk", cardId: "reassembling_skeleton" }], []] , graveyards: [["reassembling_skeleton"], []] });
+    expect(a.scorePriorityAction(withYard(sk({ activePlayer: 0, step: "MAIN1", theirs: 0, hand: [{ objectId: "h_c", cardId: "child_of_night" }] })), ret)).toBe(-Infinity); // the Child wants the two mana
+    expect(a.scorePriorityAction(withYard(sk({ activePlayer: 0, step: "MAIN1", theirs: 2, hand: [{ objectId: "h_c", cardId: "child_of_night" }] })), ret)).toBeGreaterThan(-Infinity); // behind: the blocker
+    expect(a.scorePriorityAction(withYard(sk({ activePlayer: 1, step: "END_STEP", theirs: 0, hand: [{ objectId: "h_c", cardId: "child_of_night" }] })), ret)).toBeGreaterThan(-Infinity); // their end step
+    // Pyroclasm: with our Pyromancer + two Elementals out against one Bears, the sweep is a loss; against three X/2s with nothing of ours, a gain.
+    const pyro = (mine: { id: string; cardId: string }[], theirs: { id: string; cardId: string }[]) =>
+      mkView({ step: "MAIN1", activePlayer: 0, hand: [{ objectId: "h_p", cardId: "pyroclasm" }], battlefield: [{ id: "m1", cardId: "mountain", controller: 0 }, { id: "m2", cardId: "mountain", controller: 0 }, ...mine.map((o) => ({ ...o, controller: 0 as const })), ...theirs.map((o) => ({ ...o, controller: 1 as const }))] });
+    const clasm = { type: "castSpell" as const, objectId: "h_p", targets: [] };
+    const ours = pyro([{ id: "yp", cardId: "young_pyromancer" }, { id: "e1", cardId: "elemental_1_1_r" }, { id: "e2", cardId: "elemental_1_1_r" }], [{ id: "b", cardId: "grizzly_bears" }]);
+    expect(a.scorePriorityAction(ours, clasm)).toBeLessThan(a.scorePriorityAction(ours, { type: "pass" }));
+    const theirs = pyro([], [{ id: "b1", cardId: "grizzly_bears" }, { id: "b2", cardId: "grizzly_bears" }, { id: "r1", cardId: "typhoid_rats" }]);
+    expect(a.scorePriorityAction(theirs, clasm)).toBeGreaterThan(a.scorePriorityAction(theirs, { type: "pass" }));
+    // 44 Wood Elves: the Pool over the Forest with a blue pip in hand.
+    const req = { player: 0 as const, purpose: "searchLibrary" as const, actions: [{ type: "declineSearch" as const }, { type: "searchPick" as const, objectId: "l_f" }, { type: "searchPick" as const, objectId: "l_bp" }], revealed: [{ objectId: "l_f", cardId: "forest" }, { objectId: "l_bp", cardId: "breeding_pool" }] };
+    const elves = mkView({ hand: [{ objectId: "h_cs", cardId: "counterspell" }], battlefield: [{ id: "f1", cardId: "forest", controller: 0 }, { id: "f2", cardId: "forest", controller: 0 }] });
+    expect(a.searchChoice(elves, req as never)).toEqual({ type: "searchPick", objectId: "l_bp" });
+  });
+
   it("book of shame 37 (S29, the Altar of Dementia): lethal mill takes the biggest body; otherwise the outlet holds unless a creature is doomed; Quill's Pelakka Wurm closes a seven-card library", () => {
     const a = agent();
     const view = (lib: number, extra: { id: string; cardId: string; controller: 0 | 1 }[] = [], stack: { id: string; kind: string; cardId: string; controller: 0 | 1; targets?: unknown[] }[] = []) =>
