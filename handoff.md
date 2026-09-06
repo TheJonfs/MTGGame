@@ -128,7 +128,7 @@
    - **Not measured**: cards never cast and per-card cast counts (the sweep reports wins/turns/library; `facts.spellsCast` per deck is a small addition if the planner wants it before the amendments).
 2. **The Elemental token has no plate** — it renders the placeholder icon; an art-round item (the Goblin/Bird/Faerie/Bear/Soldier tokens have plates).
 3. **Corvane's eight angels are seven** (the Reya swap) — Chris's call; if the reanimator identity wants its ninth-drop back, an un-prizeOnly Reya is the planner's conversation.
-4. **The portrait round awaits verdicts**: candidate 1 is wired for all fifteen; the MANIFEST rows say so; flipping to candidate 2 is a file copy + a MANIFEST edit. The subject descriptors are mine from the deck identities — the planner may want a pass on the faces once the names/epithets are final.
+4. **The portrait round is judged** (Chris, 2026-09-06): Oriel 1, Tessaly 2, Edric 1, Brann 2, Hask 1, Vael 2, Kessa 1, Maelin 2, Brennor 1, Pell 1, Corvane 1, Varro 1, Sorrel 2, Ysolde 2, Quill 2 — the kept faces installed, MANIFEST flipped (15 kept, 15 rejected). The subject descriptors were mine from the deck identities; if names or epithets change in the amendments, the faces may want a second look.
 5. **The Lumberjack** remains shop-only (ADR-101) — the picker shows every deck a player can face, and none holds him.
 6. **The parley header** shows "Name, the Epithet" (Chris's ruling 4); the duel rail keeps the name alone (the epithet would crowd the status block) — say if it should ride there too.
 
@@ -142,7 +142,7 @@ Default tier **529 passed / 2 skipped** (50 files; +8 S29 fixtures, +2 mage fuzz
 
 ## Suggested next
 
-1. **Chris**: the portrait verdicts (the sheet); a live mage encounter for the epithet line and a face; whether the Chronicle's tease should have gone with the counting sentence.
+1. **Chris**: a live mage encounter for the epithet line and a kept face; whether the Chronicle's tease should have gone with the counting sentence.
 2. **Planner**: the amendments the sweep argues — the mill decks' clocks (more triggers or the tier-3 titles), Pale Edric's tier-1 viability, the white starter as a wall (or is that the intended lesson?), Pell's identity, the beast-parent gaps (Corvane vs Serra, Quill vs the Wurm); per-card cast counts if wanted first.
 3. **Implementer smalls**: the Elemental token plate; `facts.spellsCast` in the sweep; the epithet on the duel rail if wanted.
 

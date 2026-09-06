@@ -59,7 +59,7 @@ against the cached Scryfall crops before writing descriptors).
 
 ### S29 mage portraits (the cleansheet round — fifteen faces, two candidates each; Chris's verdicts pending)
 
-The five shared deck portraits (`portrait-opponent-*`) gave three mages one face each and stopped matching the flowing pairs. Fifteen subjects from the decks' identities and epithets, TWO candidates each (`docs/art/subjects/portrait-mage-<key>-{1,2}.md`); candidate 1 wired provisionally (`packages/ui/public/portraits/portrait-mage-<key>.png`, 512px; `opponents.json` `portrait`). Washes = the mage's colour identity + parchment.
+The five shared deck portraits (`portrait-opponent-*`) gave three mages one face each and stopped matching the flowing pairs. Fifteen subjects from the decks' identities and epithets, TWO candidates each (`docs/art/subjects/portrait-mage-<key>-{1,2}.md`); **Chris's verdicts (2026-09-06)**: Oriel 1, Tessaly 2, Edric 1, Brann 2, Hask 1, Vael 2, Kessa 1, Maelin 2, Brennor 1, Pell 1, Corvane 1, Varro 1, Sorrel 2, Ysolde 2, Quill 2 — the kept candidate installed (`packages/ui/public/portraits/portrait-mage-<key>.png`, 512px; `opponents.json` `portrait`). Washes = the mage's colour identity + parchment.
 
 | Subject (`portrait-mage-<key>-{1,2}`) | Mage | Pair · tier | Epithet | Wash |
 |---|---|---|---|---|
