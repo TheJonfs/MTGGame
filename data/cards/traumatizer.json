@@ -14,13 +14,18 @@
   "keywords": [
     "flying"
   ],
-  "text": "Flying\nWhenever Traumatizer deals combat damage to a player, that player mills twice that many cards.",
+  "text": "Flying\\nWhenever a creature you control deals damage to a player, that player mills twice that many cards.",
   "abilities": [
     {
       "kind": "triggered",
-      "event": "DEALS_COMBAT_DAMAGE_TO_PLAYER",
+      "event": "DEALS_DAMAGE_TO_PLAYER",
       "condition": {
-        "source": "self"
+        "source": "any",
+        "controller": "you",
+        "type": [
+          "Creature"
+        ],
+        "player": "any"
       },
       "effects": [
         {
@@ -29,7 +34,7 @@
             "ref": "eventDamage",
             "times": 2
           },
-          "who": "opponent"
+          "who": "eventPlayer"
         }
       ],
       "optional": false

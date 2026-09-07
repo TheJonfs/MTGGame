@@ -142,6 +142,7 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
       if (!perm) continue;
       (ctx.defs.def(perm.cardId).abilities ?? []).forEach((a, i) => {
         if (a.kind !== "triggered" || a.event !== "SPELL_CAST") return;
+        if ((a.zone ?? "battlefield") !== "battlefield") return; // S31: a stack-zone cast trigger is the spell's own, below
         const ctrl = a.condition?.controller ?? "any";
         if (ctrl === "you" && ev.controller !== perm.controller) return;
         if (ctrl === "opponent" && ev.controller === perm.controller) return;
@@ -150,6 +151,16 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
         if (cond.type && !cond.type.some((t) => castDef.types.includes(t as never))) return;
         if (cond.notType && cond.notType.some((t) => castDef.types.includes(t as never))) return;
         pend(permId, perm.cardId, perm.controller, i, { cardId: ev.cardId, player: ev.controller });
+      });
+    }
+    // S31 (R-094, Artisan of Kozilek): "when you cast this spell" — the CAST CARD's own stack-zone
+    // SPELL_CAST trigger pends with the stack object as its source, so it goes on the stack above
+    // the spell and resolves first; countering the spell does not touch it (CR 603.2, 603.3).
+    const castId = ev.objectId;
+    if (castId) {
+      (ctx.defs.def(ev.cardId).abilities ?? []).forEach((a, i) => {
+        if (a.kind !== "triggered" || a.event !== "SPELL_CAST" || a.zone !== "stack") return;
+        pend(castId, ev.cardId, ev.controller, i, { objectId: castId, cardId: ev.cardId, player: ev.controller });
       });
     }
   });
@@ -278,6 +289,22 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
     }
   });
 
+  // S31 (R-094, the Traumatizer — ADR-107): the CONTROLLER-WIDE creature trigger. `controller`
+  // (you/opponent/any, relative to the observer) and `type` (the damage source's card types) narrow
+  // WHICH source's damage counts — "whenever a creature you control deals damage to a player" is
+  // `{source: "any", controller: "you", type: ["Creature"]}`, the shape every future "creatures
+  // you control have X" observer reuses. Both damage collectors read it; defaults change nothing.
+  const damageSourceMatches = (cond: { controller?: "you" | "opponent" | "any"; type?: string[] } | undefined, observer: PlayerId, ev: { sourceCardId: string; sourceController: PlayerId }): boolean => {
+    const ctrl = cond?.controller ?? "any";
+    if (ctrl === "you" && ev.sourceController !== observer) return false;
+    if (ctrl === "opponent" && ev.sourceController === observer) return false;
+    if (cond?.type) {
+      const types = ctx.defs.def(ev.sourceCardId)?.types ?? [];
+      if (!cond.type.some((t) => types.includes(t as never))) return false;
+    }
+    return true;
+  };
+
   // S28 (ADR-098, Spirit Link): DEALS_DAMAGE — damage to ANY recipient, the source conditions of
   // the player collector below, the amount (and the damaged player, when one) in the context.
   ctx.bus.on("DAMAGE", (ev) => {
@@ -290,6 +317,7 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
         if (source === "self" && ev.sourceId !== permId) return;
         if (source === "attached" && (!perm.attachedTo || ev.sourceId !== perm.attachedTo)) return;
         if (source === "other" && ev.sourceId === permId) return;
+        if (!damageSourceMatches(a.condition, perm.controller, ev)) return;
         pend(permId, perm.cardId, perm.controller, i, { ...(ev.target.kind === "player" ? { player: ev.target.player } : {}), amount: ev.amount });
       });
     }
@@ -316,6 +344,7 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
         if (source === "self" && ev.sourceId !== permId) return;
         if (source === "attached" && (!perm.attachedTo || ev.sourceId !== perm.attachedTo)) return;
         if (source === "other" && ev.sourceId === permId) return;
+        if (!damageSourceMatches(cond, perm.controller, ev)) return;
         // player: which damaged player counts, relative to the ability's controller.
         const playerCond = cond.player ?? "any";
         if (playerCond === "opponentOfController" && damagedPlayer === perm.controller) return;

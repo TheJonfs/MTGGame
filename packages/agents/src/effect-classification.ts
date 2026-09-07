@@ -26,6 +26,7 @@ export function isHarmful(e: Effect): boolean {
     (e.type === "loseLife" && e.who === "target") ||
     (e.type === "discard" && e.who === "target") ||
     (e.type === "mill" && e.who === "target") ||
+    (e.type === "sacrifice" && "who" in e && e.who === "target") || // S31: the edict
     (e.type === "addCounters" && e.kind === "-1/-1") ||
     (e.type === "modifyPT" && ptSign(e.power) + ptSign(e.toughness) < 0)
   );

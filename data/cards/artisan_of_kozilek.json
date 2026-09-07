@@ -1,0 +1,60 @@
+{
+  "id": "artisan_of_kozilek",
+  "name": "Artisan of Kozilek",
+  "source": "real",
+  "scryfallId": "3ac80eb8-321d-476a-87e7-d25bdac6a91c",
+  "manaCost": "{9}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Eldrazi"
+  ],
+  "power": 10,
+  "toughness": 9,
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "SPELL_CAST",
+      "zone": "stack",
+      "condition": {
+        "source": "self"
+      },
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "creatureCardInYourGraveyard",
+          "zone": "graveyard"
+        }
+      ],
+      "effects": [
+        {
+          "type": "returnFromGraveyard",
+          "target": 0,
+          "to": "battlefield"
+        }
+      ],
+      "optional": true
+    },
+    {
+      "kind": "triggered",
+      "event": "ATTACKS",
+      "condition": {
+        "source": "self"
+      },
+      "effects": [
+        {
+          "type": "sacrifice",
+          "who": "opponent",
+          "count": 2,
+          "predicate": "permanent"
+        }
+      ],
+      "optional": false
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": "R"
+}

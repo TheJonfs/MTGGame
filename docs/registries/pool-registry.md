@@ -219,7 +219,7 @@ Tokens added: bear_2_2 (G), bird_1_1_flying (W), wurm_4_4 (G), zombie_2_2 (B), f
 |---|---|---|---|---|
 | thundersnake | Thundersnake | tested | END_STEP trigger (first collector, R-084) + self-`sacrifice` effect word (new) | custom {R}{R} Elemental Snake 4/1 trample haste; shopTier 2 (formula 18g — the spec's 12 was ruled a slip); the Ball Lightning family at 10-life scale; Unearth breadcrumbed as its second act |
 | gallows_djinn | Gallows Djinn | tested | ATTACKS + BLOCKS triggers (BLOCKS first collector, R-084) with eventPlayer/eventObject damage addressing (zero new words) | custom {2}{B}{B} Djinn 5/5; shopTier 2 (30g); the Juzam homage — the upkeep tax redesigned as an aggression tax; Djinn typed to keep the Stoker's efreet unique |
-| traumatizer | Traumatizer | tested | eventDamage value ref ×times (new, ref-family member six); mill count widened to refs | custom {2}{U}{U} Nightmare 2/4 flying; shopTier 2 (30g); mill's first player identity (~4 per connection vs 30–40-card decks) |
+| traumatizer | Traumatizer | tested | **S31 retext (ADR-107; R-094 words 1–2)**: triggered(DEALS_DAMAGE_TO_PLAYER, source any + controller you + type Creature, player any) mill {ref: eventDamage ×2} who: eventPlayer | custom {2}{U}{U} Nightmare 2/4 flying; shopTier 2 (30g). S23: its own combat damage only (eventDamage ref ×times, ref-family member six). **S31: the archetype anchor — every creature its controller has drives the mill; copies stack additively; deals damage, not combat damage (Arc Mage, a pinger); damage to a creature does not count** (six fixtures in s31-anchors; the three S23 fixtures still hold). AI: book 45. Printed render v3 (Chris, 2026-09-07). Tessaly ×3, Pell ×3, Varro ×2, Quill ×1. |
 
 ## Ceiling anchors (not yet scheduled)
 Ceiling complete as of S5 (see mechanics-manifest §3). Further additions are card batches using existing vocabulary.
@@ -250,6 +250,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | altar_of_dementia | tmp | 276 | Brom | 4f2da99f-3c53-4980-97d6-2158c765aac0 |
 | arc_mage | nem | 77 | Terese Nielsen | 62982dab-4c27-45b3-9740-38fec3df7226 |
 | arcanis_the_omnipotent | ons | 66 | Justin Sweet | 90865f52-c062-4505-a204-b4d7d4b3fc4c |
+| artisan_of_kozilek | roe | 2 | Jason Felix | 3ac80eb8-321d-476a-87e7-d25bdac6a91c |
 | aven_fisher | ody | 63 | Christopher Moeller | 5b27130d-2296-4076-9829-15ab63081896 |
 | badlands | olgc | 2016NA | Filip Burburan | 644aba21-1fa7-4483-b9bf-56c5fe4d8975 |
 | barren_moor | ons | 312 | Heather Hudson | 45be3811-a223-4c45-9b24-0317f2d53c60 |
@@ -309,6 +310,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | gravedigger | por | 95 | Scott M. Fischer | b979d70e-d514-420f-886c-f60e2bb1861f |
 | gravitational_shift | roe | 69 | Svetlin Velinov | bad32b9f-0aa4-4036-90e6-c087cffd52e7 |
 | gray_ogre | lea | 156 | Dan Frazier | 73ae5276-b607-4f23-a9d2-e8cc7b8e3693 |
+| grazing_gladehart | zen | 163 | Ryan Pancoast | 078b5290-a613-496f-bd23-8fd109549f31 |
 | grizzly_bears | lea | 199 | Jeff A. Menges | ce2d603a-3231-4a8c-bf39-1617586ea870 |
 | hallowed_fountain | rvr | 404 | Rob Alexander | 438fb324-2c51-4763-a32a-6e315e9f769c |
 | hedron_crab | zen | 47 | Jesper Ejsing | f0fa1946-4f97-4c52-b5f2-b80571230616 |
@@ -471,11 +473,20 @@ Pool 184 → **185**. The last card. Custom, five-colour, prizeOnly (sole-mechan
 | wall_of_blossoms | Wall of Blossoms | tested | defender; triggered(self ETB) draw 1 | STH first printing; tier 1 / 12g (priceOverride). Never an eligible attacker (fixture). Hask ×2, Pell ×2, Quill ×2. |
 | wood_elves | Wood Elves | tested | triggered(self ETB) searchLibrary subtype:Forest → battlefield (untapped) | POR first printing (the earliest Scryfall carries at high resolution). A Breeding Pool / Temple Garden / Tropical Island / Savannah qualifies; the fetched land triggers a Crab (fixture). AI (book 44): the dual when a colour wants it, else a Forest. Pell ×2, Quill ×2. |
 | wall_of_air | Wall of Air | tested | defender, flying | LEA first printing; tier 1 / 12g (priceOverride). Blocks a flier; never attacks (fixture). Tessaly ×2. |
-| buried_alive | Buried Alive | tested | searchLibrary creatureCard → graveyard, count 3 (R-093 word 1) | WTH first printing; tier 2 / 16g (priceOverride). "Up to three" — two in the library take two (fixture). AI (book 42): only with a reanimator in hand. Corvane ×2. |
+| buried_alive | Buried Alive | tested | searchLibrary creatureCard → graveyard, count 3 (R-093 word 1) | WTH first printing; tier 2 / 16g (priceOverride). "Up to three" — two in the library take two (fixture). AI (book 42): only with a reanimator in hand; **S31 (book 47): the picks are the best reanimation targets (the Artisan, then Serras), not the Tutor's castable-soon card**. Corvane ×3 (S31). |
 | reassembling_skeleton | Reassembling Skeleton | tested | activated (graveyard zone) {1}{B}: returnFromGraveyard self → battlefield tapped (R-093 word 2) | M12 def / the art fetched from the oldest printing (ARC, 2010). tier 1 / 8g (priceOverride). Returns tapped, from the graveyard only; a legal Unearth target (fixture). AI (book 43): their turn or when behind, never over a spell the mana wants. Edric ×2. |
 | thought_scour | Thought Scour | tested | targets player: mill 2; draw 1 | **DKA first printing (2012) — the brief said Innistrad**; tier 1 / 8g. Self or opponent (fixture); AI (book 41) targets the opponent. Tessaly ×2. |
 
 *ADR-105:* nine lists amended in `packages/sim/src/mage-decks.ts` (Tessaly, Edric, Brann, Hask, Pell, Kessa, Maelin, Corvane, Quill); Oriel, Vael, Brennor, Varro, Sorrel, Ysolde unchanged. The Pyromancer's Elemental token has its plate (`token-elemental-red`).
+
+## Session 31 additions — the Traumatizer's anchor, the Artisan, the Gladehart (ADR-107/108; planner-verified, implementer re-verified on Scryfall 2026-09-07)
+
+| id | Card | Status | Vocabulary | Notes |
+|---|---|---|---|---|
+| artisan_of_kozilek | Artisan of Kozilek | tested | triggered(SPELL_CAST, zone stack, source self — "when you cast") targets creatureCardInYourGraveyard: returnFromGraveyard → battlefield, optional (R-094 word 4); triggered(ATTACKS, source self) sacrifice who: opponent, count 2, predicate permanent (R-094 word 3 — annihilator 2) | ROE first printing (2010); **tier R, the R-table formula** (4 × (1 + 9) × 2.5 = 100g — no override; the duals and Demonic Tutor price the same way; R never stocks); not prizeOnly — the first reanimation target that shows up. The cast trigger resolves under a Counterspell (fixture); annihilator resolves before blockers, the defender picks one at a time, the two leave together; a deathtouch blocker kills it (fixtures). AI (book 46): attacks unless a deathtouch blocker waits; as the defender, tokens first and lands last; the cast-trigger target by the Zombify valuation. Corvane ×1. |
+| grazing_gladehart | Grazing Gladehart | tested | triggered(LAND_ENTERS_UNDER_YOUR_CONTROL) gainLife 2 you, optional | ZEN first printing (2009); tier 1 / 12g (priceOverride). Landfall — a Wood Elves' fetched Forest triggers it (fixture). Pell ×2. |
+
+*ADR-106/107/108 lists:* Tessaly (3 Traumatizer, 1 Wall of Air, 1 Counterspell, 16 Island), Pell (the pump-mill deck: 3 Traumatizer, 2 Gladehart, 2 Baloth, 2 Rancor, 2 Giant Growth; no counters), Corvane (+Terror, +1 Buried Alive, +Artisan; −Overseer, −2 Dark Ritual), Quill (−1 Wall of Blossoms, +1 Traumatizer); Varro unchanged. The five starters amended per ADR-106 (`data/world/starters.json`; `docs/reference/starters.md`).
 
 ## Shop tiers (ADR-078, S19)
 

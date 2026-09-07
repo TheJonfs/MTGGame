@@ -182,6 +182,50 @@ export function deterrence(
   return constants.deterrence.weight * best;
 }
 
+/** S29's mill pricing (book 37), factored out in S31 so the attack planner and the ability predictor
+ * price the Traumatizer's trigger with the same curve: mill is damage against the library — each card
+ * worth more as the library shortens (the square of the fraction milled), emptying it a win the way
+ * lethal damage is. `before` is the library size the mill hits. */
+export function millValue(n: number, before: number): number {
+  if (n <= 0) return 0;
+  const b = Math.max(0, before);
+  const lib = Math.max(0, b - n);
+  const frac = Math.min(1, n / Math.max(1, b));
+  return 0.3 * n + 4 * frac * frac + (lib === 0 && b > 0 ? 12 : 0);
+}
+
+/** S31 (R-094, the Traumatizer — ADR-107): how many cards a point of damage to a player by one of
+ * `player`'s CREATURES mills, summed over `player`'s controller-wide mill observers (each Traumatizer
+ * is "twice"; two stack additively). Read off the vocabulary — a DEALS_DAMAGE_TO_PLAYER trigger with
+ * controller:"you" + type Creature and a mill of {ref: eventDamage, times} — so a future "creatures you
+ * control" observer prices the same way. */
+export function millPerDamage(view: GameView, defs: Map<string, CardDef>, player: number): number {
+  let per = 0;
+  for (const o of view.battlefield) {
+    if (o.controller !== player) continue;
+    for (const a of defs.get(o.cardId)?.abilities ?? []) {
+      if (a.kind !== "triggered" || a.event !== "DEALS_DAMAGE_TO_PLAYER") continue;
+      const c = a.condition ?? {};
+      if (c.controller !== "you" || !(c.type ?? []).includes("Creature") || (c.source ?? "self") === "self") continue;
+      for (const e of a.effects) {
+        if (e.type !== "mill" || typeof e.count !== "object" || e.count.ref !== "eventDamage") continue;
+        if (e.who !== "eventPlayer" && e.who !== "opponent") continue;
+        per += e.count.times ?? 1;
+      }
+    }
+  }
+  return per;
+}
+
+/** S28's Unearth valuation, factored out in S31 (book 47/48): what a creature CARD is worth brought back
+ * to the battlefield — its mana value, its size, an ETB. Used by the graveyard-search chooser (Buried
+ * Alive), the reanimation target predictor (Zombify/Unearth), the trigger-target chooser and the cast
+ * trigger's credit (the Artisan), so the Artisan outranks the Serra outranks the Aristocrat everywhere. */
+export function reanimationWorth(d: CardDef | undefined): number {
+  if (!d || !d.types.includes("Creature")) return 0;
+  return Math.max(0.5, manaValue(parseManaCost(d.manaCost))) + 0.2 * ((d.power ?? 0) + (d.toughness ?? 0)) + (d.abilities?.some((a) => a.kind === "triggered" && a.event === "ENTERS_BATTLEFIELD") ? 0.8 : 0);
+}
+
 export function evaluate(view: GameView, profile: AiProfile, defs: Map<string, CardDef>): number {
   const C = profile.constants ?? DEFAULT_CONSTANTS;
   const w = C.weights[profile.archetype];
@@ -211,11 +255,25 @@ export function evaluate(view: GameView, profile: AiProfile, defs: Map<string, C
     for (const o of mine) if (!o.tapped) deter += deterrence(defs, o, oppCreatures, C);
   }
 
+  // S31 (R-094, the Traumatizer): a controller-wide mill engine is worth the mill its side's
+  // attackers threaten — per point of power on the board, at the per-card base rate — so the
+  // Traumatizer is cast ahead of a second Crab when the board has attackers, and a counter is
+  // spent to keep it. Symmetric: theirs debits the same.
+  let engine = 0;
+  for (const side of [me, opp] as const) {
+    const per = millPerDamage(view, defs, side);
+    if (per === 0) continue;
+    let power = 0;
+    for (const o of side === me ? mine : theirs) if (o.power !== null && !o.keywords.includes("defender")) power += o.power;
+    engine += (side === me ? 1 : -1) * per * power * 0.3;
+  }
+
   return (
     w.material * (ownMaterial - oppMaterial) +
     w.ownLife * view.life[me] +
     w.oppLife * (view.startingLife - view.life[opp]) +
     w.hand * (view.hand.length - view.opponentHandCount) +
-    deter
+    deter +
+    engine
   );
 }

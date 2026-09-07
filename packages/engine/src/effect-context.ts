@@ -6,6 +6,7 @@ import { type TargetSpec,
   type CounterKind,
   type DiscardFilter,
   type DiscardMode,
+  type Effect,
   type EffectContext,
   type ResolvedContinuousEffect,
   type ResolvedTarget,
@@ -27,9 +28,10 @@ import { characteristics, isCreature } from "./characteristics.js";
  */
 export type EffectRequester = (
   player: PlayerId,
-  purpose: "discard" | "searchLibrary" | "putOnTop",
+  purpose: "discard" | "searchLibrary" | "putOnTop" | "chooseSacrifice",
   actions: Action[],
   revealed?: { objectId: string; cardId: string }[],
+  source?: { cardId: string; effects: Effect[] },
 ) => Promise<Action>;
 
 /** Last known information per target (CR 608.2h, ADR-028): captured at resolution start.
@@ -120,6 +122,11 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
         case "target": {
           const t = item.targets[0];
           return t?.kind === "player" ? [t.player as PlayerId] : [];
+        }
+        case "eventPlayer": {
+          // S31 (R-094): the triggering event's player — the damaged player of a damage trigger.
+          const p = item.eventContext?.player;
+          return p === undefined || p === null ? [] : [p as PlayerId];
         }
         case "controllerOfTarget": {
           // LKI controller of the first object target (ADR-028; Swords).
@@ -314,9 +321,33 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
       for (const sym of parseManaProduction(mana)) pool[sym.symbol] += 1;
     },
 
+    async sacrificeChoose(playerNum: number, count: number, predicate: "permanent" | "creature"): Promise<void> {
+      // S31 (R-094 word 1 — annihilator / the edict shape): the stated player picks one permanent at a
+      // time from what they still control (a lone candidate is forced, ADR-014; the request carries
+      // the resolving ability as its source so the chooser sees WHAT is asking), then the picks leave
+      // TOGETHER through the batch primitive — simultaneous per CR 701.17, DIES triggers pend, and
+      // "sacrifices two permanents" with one permanent takes the one.
+      const player = playerNum as PlayerId;
+      const chosen: string[] = [];
+      for (let n = 0; n < count; n++) {
+        const cands = ctx.state.battlefield.filter((id) => !chosen.includes(id) && getObject(ctx.state, id).controller === player && (predicate === "permanent" || isCreature(ctx, id)));
+        if (cands.length === 0) break;
+        const actions: Action[] = cands.map((objectId) => ({ type: "sacrifice" as const, objectId }));
+        let pick: Action = actions[0]!;
+        if (actions.length > 1) {
+          if (!requester) throw new Error("sacrifice (edict) needs an agent (not available at initialization)");
+          pick = await requester(player, "chooseSacrifice", actions, undefined, { cardId: item.sourceCardId, effects: item.effects });
+        }
+        if (pick.type !== "sacrifice") throw new Error("expected sacrifice");
+        chosen.push(pick.objectId);
+      }
+      for (const id of chosen) ctx.bus.emit("SACRIFICED", { objectId: id, cardId: getObject(ctx.state, id).cardId }); // S24 r5: the cause marker
+      moveBatchToGraveyard(ctx, chosen);
+    },
+
     ...sharedOps(ctx, controller),
     ...discardOp(ctx, controller, requester),
-    ...searchOp(ctx, requester),
+    ...searchOp(ctx, requester, { cardId: item.sourceCardId, effects: item.effects }),
   };
 }
 
@@ -326,7 +357,7 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
  * `revealed`; decline is always actions[0] (ADR-014 auto-takes it when
  * nothing matches). The library is shuffled afterwards no matter what
  * (CR 701.19) through the logged game RNG, so replay reproduces it. */
-function searchOp(ctx: EngineCtx, requester?: EffectRequester) {
+function searchOp(ctx: EngineCtx, requester?: EffectRequester, source?: { cardId: string; effects: Effect[] }) {
   return {
     async searchLibrary(playerNum: number, predicate: "basicLand" | "anyCard" | "creatureCard" | `subtype:${string}`, to: "hand" | "battlefield" | "graveyard", entersTapped: boolean, count = 1): Promise<void> {
       const player = playerNum as PlayerId;
@@ -354,7 +385,9 @@ function searchOp(ctx: EngineCtx, requester?: EffectRequester) {
         if (candidates.length > 0) {
           if (!requester) throw new Error("searchLibrary needs an agent (not available at initialization)");
           const revealed = candidates.map((objectId) => ({ objectId, cardId: getObject(ctx.state, objectId).cardId }));
-          pick = await requester(player, "searchLibrary", actions, revealed);
+          // S31: the request carries the resolving effect as its source — a search TO THE GRAVEYARD
+          // (Buried Alive) wants the best reanimation target, not the Tutor's castable-soon pick.
+          pick = await requester(player, "searchLibrary", actions, revealed, source);
         }
         if (pick.type !== "searchPick") break; // nothing to find, or the player stops
         const foundCardId = getObject(ctx.state, pick.objectId).cardId; // before the move — ids die on zone moves
@@ -604,6 +637,7 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
           return [0, 1];
         case "target":
         case "controllerOfTarget":
+        case "eventPlayer":
           throw new Error("initialization effects cannot reference targets");
       }
     },
@@ -671,6 +705,9 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
     },
     addMana(): void {
       throw new Error("initialization effects cannot add mana (pools empty before turn 1)");
+    },
+    async sacrificeChoose(): Promise<void> {
+      throw new Error("initialization effects cannot ask a player to sacrifice");
     },
     ...sharedOps(ctx, player),
     ...discardOp(ctx, player), // random mode works; choice modes throw without a requester

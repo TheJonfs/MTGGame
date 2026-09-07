@@ -2266,5 +2266,33 @@
     "art_crop": "https://cards.scryfall.io/art_crop/front/b/7/b7f1fb90-5c85-46a5-802d-248cc0250921.jpg?1783946800",
     "normal": "https://cards.scryfall.io/normal/front/b/7/b7f1fb90-5c85-46a5-802d-248cc0250921.jpg?1783946800",
     "via": "default oldest-highres"
+  },
+  "artisan_of_kozilek": {
+    "scryfallId": "3ac80eb8-321d-476a-87e7-d25bdac6a91c",
+    "set": "roe",
+    "set_name": "Rise of the Eldrazi",
+    "collector_number": "2",
+    "artist": "Jason Felix",
+    "name": "Artisan of Kozilek",
+    "mana_cost": "{9}",
+    "type_line": "Creature — Eldrazi",
+    "oracle_text": "When you cast this spell, you may return target creature card from your graveyard to the battlefield.\nAnnihilator 2 (Whenever this creature attacks, defending player sacrifices two permanents of their choice.)",
+    "art_crop": "https://cards.scryfall.io/art_crop/front/3/a/3ac80eb8-321d-476a-87e7-d25bdac6a91c.jpg?1783942013",
+    "normal": "https://cards.scryfall.io/normal/front/3/a/3ac80eb8-321d-476a-87e7-d25bdac6a91c.jpg?1783942013",
+    "via": "default oldest-highres"
+  },
+  "grazing_gladehart": {
+    "scryfallId": "078b5290-a613-496f-bd23-8fd109549f31",
+    "set": "zen",
+    "set_name": "Zendikar",
+    "collector_number": "163",
+    "artist": "Ryan Pancoast",
+    "name": "Grazing Gladehart",
+    "mana_cost": "{2}{G}",
+    "type_line": "Creature — Antelope",
+    "oracle_text": "Landfall — Whenever a land you control enters, you may gain 2 life.",
+    "art_crop": "https://cards.scryfall.io/art_crop/front/0/7/078b5290-a613-496f-bd23-8fd109549f31.jpg?1783942136",
+    "normal": "https://cards.scryfall.io/normal/front/0/7/078b5290-a613-496f-bd23-8fd109549f31.jpg?1783942136",
+    "via": "default oldest-highres"
   }
 }

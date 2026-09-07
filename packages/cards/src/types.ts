@@ -47,7 +47,10 @@ export const SCOPES = [
 ] as const;
 export type Scope = (typeof SCOPES)[number];
 
-export type Who = "you" | "opponent" | "eachPlayer" | "target" | "controllerOfTarget";
+/** S31 (R-094, the Traumatizer's "that player mills"): `eventPlayer` addresses the triggering event's
+ * player (the damaged player of a damage trigger) — validator-confined to damage triggers, the
+ * eventDamage ref's confinement. */
+export type Who = "you" | "opponent" | "eachPlayer" | "target" | "controllerOfTarget" | "eventPlayer";
 /** ADR-029 discard modes. */
 export type DiscardMode = "ownerChooses" | "random" | "casterChooses";
 export const DISCARD_FILTERS = ["noncreatureNonland"] as const;
@@ -233,6 +236,11 @@ export type EffectBase =
    * a no-op if the source already left the battlefield. A sacrifice: no destroy, no indestructible
    * shield, the DIES trigger fires. */
   | { type: "sacrifice"; scope: "self" }
+  /** S31 (R-094 word 1 — the EDICT shape): the stated player(s) sacrifice `count` permanents of their
+   * choice matching `predicate` ("permanent" | "creature"), simultaneously (CR 701.17). Annihilator N
+   * is an ATTACKS trigger carrying it at who:"opponent" (the defending player of a two-player game);
+   * Diabolic Edict would be the same word at who:"target", count 1, creature. */
+  | { type: "sacrifice"; who: Who; count: number; predicate: "permanent" | "creature" }
   /** A10 word 3 (S22): `temporary: true` — the reanimated object gains haste and is sacrificed at the
    * beginning of the next end step (a self-contained package rule, not a delayed-trigger subsystem;
    * the Usher's entrance). A blinked guest is a NEW object and sheds both riders (the launder).
@@ -392,8 +400,10 @@ export interface TriggeredAbilityDef {
   /** A6: modal trigger — the controller picks a mode when it is put on the stack (CR 603.3c); `effects` must be empty. */
   modes?: ModeDef[];
   /** A10 word 9 (S22): where the card must be for this trigger to collect (default battlefield).
-   * First non-battlefield zone: graveyard (Tainted Phoenix's upkeep return — the Squee class). */
-  zone?: "battlefield" | "graveyard";
+   * First non-battlefield zone: graveyard (Tainted Phoenix's upkeep return — the Squee class).
+   * S31 (R-094): `stack` — "when you cast this spell" (Artisan of Kozilek): collected from the cast
+   * spell's own SPELL_CAST event, so it resolves ABOVE the spell and survives its countering (CR 603.2). */
+  zone?: "battlefield" | "graveyard" | "stack";
   /** A10 word 9 rider (S22): an ADR-027 optional trigger whose "yes" PAYS — the accept option is
    * offered only when the cost is payable; auto-pays on accept (Tainted Phoenix's {B}). Requires `optional`. */
   optionalCost?: { mana: string };

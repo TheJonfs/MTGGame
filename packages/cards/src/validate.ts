@@ -15,7 +15,7 @@ import {
 
 const CARD_TYPES: readonly CardType[] = ["Land", "Creature", "Instant", "Sorcery", "Enchantment", "Artifact"];
 const DURATIONS = ["WHILE_SOURCE_ON_BATTLEFIELD", "UNTIL_END_OF_TURN", "UNTIL_SOURCE_LEAVES"];
-const WHOS = ["you", "opponent", "eachPlayer", "target", "controllerOfTarget"];
+const WHOS = ["you", "opponent", "eachPlayer", "target", "controllerOfTarget", "eventPlayer"];
 const ZONES = ["battlefield", "stack", "any", "graveyard"];
 const ABILITY_ZONES = ["battlefield", "hand", "graveyard"];
 const SEARCH_PREDICATE = /^(basicLand|anyCard|subtype:[A-Za-z]+)$/;
@@ -321,8 +321,10 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
       // A10 word 9 (S22): zone-scoped triggers — first zone graveyard, first event UPKEEP (the
       // collection only exists there; widening means a new collector, not a validator relax).
       if (a.zone !== undefined) {
-        if (a.zone !== "battlefield" && a.zone !== "graveyard") err(`trigger zone must be battlefield|graveyard (A10)`);
+        if (a.zone !== "battlefield" && a.zone !== "graveyard" && a.zone !== "stack") err(`trigger zone must be battlefield|graveyard|stack (A10/S31)`);
         if (a.zone === "graveyard" && a.event !== "UPKEEP") err(`graveyard-zone triggers support only UPKEEP today (A10 — Tainted Phoenix's shape)`);
+        // S31 (R-094): a stack-zone trigger is "when you cast this spell" — SPELL_CAST, source self.
+        if (a.zone === "stack" && (a.event !== "SPELL_CAST" || (isRecord(a.condition) && a.condition.source !== undefined && a.condition.source !== "self"))) err(`stack-zone triggers are SPELL_CAST with source self — "when you cast this spell" (S31)`);
       }
       // A10 word 9 rider: optionalCost — a "you may pay" whose yes pays; requires optional.
       if (a.optionalCost !== undefined) {
@@ -510,7 +512,15 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     needWho(e, err);
   },
   sacrifice: (e, err) => {
-    if (e.scope !== "self") err(`sacrifice scope must be "self" (S23 v1 — widen via a session brief, not ad hoc)`);
+    // S31 (R-094 word 1): the edict form — who/count/predicate — beside the S23 self form.
+    if (e.scope !== undefined) {
+      if (e.scope !== "self") err(`sacrifice scope must be "self" (S23 v1 — widen via a session brief, not ad hoc)`);
+      if (e.who !== undefined || e.count !== undefined || e.predicate !== undefined) err(`sacrifice: the self form carries no who/count/predicate`);
+      return;
+    }
+    needWho(e, err);
+    needCount(e, err);
+    if (e.predicate !== "permanent" && e.predicate !== "creature") err(`sacrifice predicate must be "permanent" or "creature" (S31 — the edict word)`);
   },
   gainLife: (e, err) => {
     needAmount(e, err);
@@ -699,6 +709,8 @@ function validateEffects(
     if (!opts.damageTrigger && JSON.stringify(e).includes('"ref":"eventDamage"')) {
       err(`eventDamage refs live only on DEALS_[COMBAT_]DAMAGE_TO_PLAYER triggers (S23)`);
     }
+    // S31 (R-094): who:"eventPlayer" reads the same payload — the damaged player ("that player mills").
+    if (!opts.damageTrigger && e.who === "eventPlayer") err(`who:"eventPlayer" lives only on damage triggers (S31)`);
     // S25 (ADR-088): the xPaid ref reads the announced X off the entering permanent — meaningless
     // anywhere but that permanent's own ETB trigger.
     if (!opts.xTrigger && JSON.stringify(e).includes('"ref":"xPaid"')) {

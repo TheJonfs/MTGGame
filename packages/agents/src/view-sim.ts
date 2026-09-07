@@ -2,7 +2,7 @@ import { parseManaCost, manaValue, type CardDef, type Effect, type ResolvedTarge
 import type { Action, GameView } from "@shandalar/engine";
 import { classifyEffects, effectsForAction } from "./effect-classification.js";
 import { viewAbilityAt } from "./granted-view.js";
-import { DEFAULT_CONSTANTS, objectValue, type EvalConstants } from "./evaluator.js";
+import { DEFAULT_CONSTANTS, millPerDamage, millValue, objectValue, reanimationWorth, type EvalConstants } from "./evaluator.js";
 
 /**
  * View-level action prediction (S8 brief Part 2): apply an action's visible
@@ -106,6 +106,13 @@ export function predictAction(
           if (e.type === "loseLife" && e.who === "you" && typeof e.amount === "number") next.life[me] -= e.amount;
           if (e.type === "damage" && e.to === "you" && typeof e.amount === "number") next.life[me] -= e.amount;
         }
+      }
+      // S31 (R-094, Artisan of Kozilek): a "when you cast" trigger that returns a creature card from
+      // our graveyard is worth the best creature there (the Unearth valuation) — the cast IS a Zombify.
+      if ((d.abilities ?? []).some((a) => a.kind === "triggered" && a.event === "SPELL_CAST" && a.zone === "stack" && a.effects.some((e) => e.type === "returnFromGraveyard" && e.to === "battlefield"))) {
+        let best = 0;
+        for (const id of view.graveyards[me] ?? []) best = Math.max(best, reanimationWorth(defs.get(id)));
+        adjustment += best;
       }
       // S28 (ADR-096, the turn-one flower): a permanent that GROWS LAWS (a `createLaw` trigger — the
       // Manafleur's engine) is worth a petal a turn on top of its body; without this the master
@@ -266,7 +273,7 @@ export function predictAction(
   // S29 (R-092, Arc Mage): a modal activation applies its chosen mode's effects.
   const abilityEffects = (ability.modes && action.mode !== undefined ? (ability.modes[action.mode]?.effects ?? []) : ability.effects)
     .map((e) => (sacrificedPower !== null && e.type === "mill" && typeof e.count === "object" && "ref" in e.count && e.count.ref === "sacrificedPower" ? { ...e, count: sacrificedPower } : e));
-  for (const e of abilityEffects) adjustment += applyEffect(next, e, targets, x, defs, constants);
+  for (const e of abilityEffects) adjustment += applyEffect(next, e, targets, x, defs, constants, { creatureSource: !!objEntry && objEntry.power !== null && objEntry.controller === me });
   const unchanged = adjustment === 0 && JSON.stringify(next) === before && !ability.cost.tap;
   return { view: next, adjustment, unchanged };
 }
@@ -288,9 +295,21 @@ function applyEffect(
   x: number,
   defs: Map<string, CardDef>,
   constants: EvalConstants,
+  /** S31: the effect's source is a creature we control (an Arc Mage ping) — the Traumatizer's trigger rides it. */
+  opts: { creatureSource?: boolean } = {},
 ): number {
   const me = view.you;
   const opp = me === 0 ? 1 : 0;
+  // S31 (R-094): damage to the opponent by OUR creature also mills under our Traumatizers.
+  const traumaMill = (amount: number): number => {
+    if (!opts.creatureSource || amount <= 0) return 0;
+    const per = millPerDamage(view, defs, me);
+    if (per === 0) return 0;
+    const n = per * amount;
+    const before = Math.max(0, view.librarySizes[opp] ?? 0);
+    view.librarySizes[opp] = Math.max(0, before - n);
+    return millValue(n, before);
+  };
   // Value refs (ADR-028/A4): targetPower and counting refs aren't modelled — a count-ref amount
   // predicts as a small fixed number (Tendrils ≈ "some") rather than zero.
   // S27 r2 (Chris: Experimental Overload cast into an empty graveyard): a graveyardCount ref reads the
@@ -332,7 +351,7 @@ function applyEffect(
         // Nothing in this pool profits from hurting yourself: self-face
         // damage carries a strategic penalty beyond the life term (book of
         // shame: burn at own face loses to every other use).
-        return t.player === me ? -0.8 * amt(e.amount) : 0;
+        return t.player === me ? -0.8 * amt(e.amount) : traumaMill(amt(e.amount));
       }
       const o = objAt(e.target!);
       if (o && o.toughness !== null) {
@@ -619,7 +638,7 @@ function applyEffect(
       // thins; milling yourself is a real cost in 30-card decks.
       const ps =
         e.who === "you" ? [me]
-        : e.who === "opponent" ? [opp]
+        : e.who === "opponent" || e.who === "eventPlayer" ? [opp] // S31: the damaged player — ours hit theirs
         : e.who === "eachPlayer" ? [me, opp]
         : targets.flatMap((t) => (t.kind === "player" ? [t.player as 0 | 1] : []));
       let v = 0;
@@ -631,16 +650,55 @@ function applyEffect(
         if (p === me) v -= 1.5 * n + (lib <= 5 ? 2 : 0);
         else {
           // S29 (Part 4, the mill decks — the Crab, the Adept, the Traumatizer, the Altar): mill is
-          // DAMAGE AGAINST THE LIBRARY. Each card is worth more as the library shortens (the square
-          // of the fraction milled), and emptying it is a win the way lethal damage is (book 37).
-          const frac = Math.min(1, n / Math.max(1, before));
-          v += 0.3 * n + 4 * frac * frac + (lib === 0 && n > 0 ? 12 : 0);
+          // DAMAGE AGAINST THE LIBRARY (book 37; the curve lives in evaluator.millValue since S31).
+          v += millValue(n, before);
         }
       }
       return v;
     }
-    case "returnFromGraveyard":
+    case "sacrifice": {
+      if ("scope" in e) return 0.2; // S23: the self form (the Thundersnake) keeps its old default
+      // S31 (R-094 word 1 — the edict / annihilator): each stated player loses their `count` LEAST
+      // valued permanents of the predicate (the chooser's own rule); theirs credits, ours debits,
+      // plus a tempo half-point per permanent they lose.
+      const ps =
+        e.who === "you" ? [me]
+        : e.who === "opponent" || e.who === "eventPlayer" ? [opp]
+        : e.who === "eachPlayer" ? [me, opp]
+        : targets.flatMap((t) => (t.kind === "player" ? [t.player as 0 | 1] : []));
+      let v = 0;
+      for (const p of ps) {
+        const cands = view.battlefield
+          .filter((o) => o.controller === p && (e.predicate === "permanent" || o.power !== null))
+          .sort((a, b) => objectValue(defs, a, constants) - objectValue(defs, b, constants))
+          .slice(0, e.count);
+        for (const o of cands) {
+          v += (p === me ? -1 : 1) * objectValue(defs, o, constants) + (p === me ? 0 : 0.5);
+          removeObject(view, o.id);
+        }
+      }
+      return v;
+    }
+    case "returnFromGraveyard": {
+      // S31 (book 48 — the S11 tie lesson, again): a TARGETED return is worth its target — the
+      // Artisan over the Serra over the Aristocrat — where a flat 0.6 had every Zombify aim tie and
+      // softmax coin-flip it. To the battlefield: the full reanimation worth (the body lands on the
+      // predicted board too); to hand: a card, priced at a third. Untargeted (self) forms keep 0.6.
+      const t = e.target !== undefined ? targets[e.target] : undefined;
+      if (t?.kind === "object") {
+        const g = view.graveyardObjects[me].find((o) => o.objectId === t.id) ?? view.graveyardObjects[opp].find((o) => o.objectId === t.id);
+        const d = g ? defs.get(g.cardId) : undefined;
+        if (d) {
+          const worth = reanimationWorth(d);
+          if (e.to === "battlefield") {
+            view.battlefield.push({ id: `pred_${predSeq++}`, cardId: d.id, controller: me, tapped: e.tapped === true, damage: 0, attachedTo: null, power: d.types.includes("Creature") ? (d.power ?? 0) : null, toughness: d.types.includes("Creature") ? (d.toughness ?? 0) : null, keywords: [...(d.keywords ?? [])] });
+            return worth;
+          }
+          return Math.max(0.3, worth / 3);
+        }
+      }
       return 0.6;
+    }
     default:
       return 0.2; // unknown vocabulary: casting is mildly better than nothing
   }

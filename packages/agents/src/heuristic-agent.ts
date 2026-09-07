@@ -2,7 +2,7 @@ import { NullLog, SeededRng } from "@shandalar/core";
 import { parseManaCost, manaValue, type CardDef, type Effect, type ResolvedTarget } from "@shandalar/cards";
 import type { Action, ActionRequest, Agent, GameView, PlayerId } from "@shandalar/engine";
 import { preferSide, targetSide, classifyEffects, effectsForAction, ptSign } from "./effect-classification.js";
-import { DEFAULT_CONSTANTS, deterrence, evaluate, objectValue, type AiProfile, type EvalConstants } from "./evaluator.js";
+import { DEFAULT_CONSTANTS, deterrence, evaluate, millPerDamage, millValue, objectValue, reanimationWorth, type AiProfile, type EvalConstants } from "./evaluator.js";
 import { predictAction } from "./view-sim.js";
 import { viewAbilityAt } from "./granted-view.js";
 import { simulateCombat, viewCreatures, type SimObject } from "./combat-sim.js";
@@ -509,6 +509,15 @@ export class HeuristicAgent implements Agent {
     };
     const lands = picks.filter((a) => this.def(cardOf.get(a.objectId) ?? "")?.types.includes("Land"));
     const nonlands = picks.filter((a) => !lands.includes(a));
+    // S31 (book 47 — Buried Alive under the Artisan): a search that puts its find in the GRAVEYARD is
+    // stocking a reanimator — take the best body to bring back (the Zombify/Unearth valuation: mana
+    // value, size, an ETB), never the Tutor's castable-soon pick. The Artisan before the Serra before
+    // the Gravedigger; S30's cast counts had the chooser burying Gravediggers.
+    const toGraveyard = (request.source?.effects ?? []).some((e) => e.type === "searchLibrary" && e.to === "graveyard");
+    if (toGraveyard && nonlands.length > 0) {
+      const worth = (cardId: string): number => reanimationWorth(this.def(cardId));
+      return [...nonlands].sort((a, b) => worth(cardOf.get(b.objectId) ?? "") - worth(cardOf.get(a.objectId) ?? "") || (cardOf.get(a.objectId) ?? "").localeCompare(cardOf.get(b.objectId) ?? ""))[0]!;
+    }
     // S30 (Wood Elves — Pell, Quill): a land is scored by the BEST need over every colour it produces,
     // so a Breeding Pool covers the blue pip a Forest cannot; a dual wins ties (book 44).
     const landColors = (cardId: string): string[] => {
@@ -738,6 +747,19 @@ export class HeuristicAgent implements Agent {
       score += c.controller === me ? -ownLossWeight * valueOf(id) : valueOf(id);
     }
     score += outcome.playerDamage[opp] * dmgWeight;
+    // S31 (R-094, the Traumatizer — ADR-107): every point of combat damage our creatures deal the
+    // opponent also mills under our controller-wide mill observers — priced on the S29 curve against
+    // their library (book 45); an attack that EMPTIES it is the win next draw.
+    const per = millPerDamage(view, this.defs, me);
+    if (per > 0 && outcome.playerDamage[opp] > 0) {
+      const n = per * outcome.playerDamage[opp];
+      const lib = view.librarySizes[opp] ?? 0;
+      score += millValue(n, lib) + (lib > 0 && n >= lib ? 200 : 0);
+    }
+    // S31 (R-094 word 1, Artisan of Kozilek — book 46): an attacker whose attack trigger makes the
+    // defender sacrifice is worth what their cheapest permanents cost them, plus a tempo half-point
+    // each — the annihilator swings every turn it is safe to.
+    for (const id of attackers) score += this.edictGainOnAttack(view, id, opp);
     // S9 Part 1.1: our lifelink attackers' gains show up as negative own
     // damage in the sim — credit them. (Opponent lifelink blockers already
     // debit through negative playerDamage[opp].)
@@ -1238,6 +1260,26 @@ export class HeuristicAgent implements Agent {
 
   /** S23 (fun batch — the Gallows Djinn's tax): the summed self-damage a creature's own ATTACKS or
    * BLOCKS triggers charge its controller (damage addressed to eventPlayer). */
+  /** S31: the value an attacker's edict-on-attack (annihilator) takes from `opp` — their `count`
+   * least-valued permanents of the predicate (the chooser's rule), plus a half-point of tempo each. */
+  private edictGainOnAttack(view: GameView, objectId: string, opp: PlayerId): number {
+    const o = view.battlefield.find((b) => b.id === objectId);
+    const d = o ? this.def(o.cardId) : undefined;
+    let gain = 0;
+    for (const a of d?.abilities ?? []) {
+      if (a.kind !== "triggered" || a.event !== "ATTACKS") continue;
+      for (const e of a.effects) {
+        if (e.type !== "sacrifice" || !("who" in e) || e.who !== "opponent") continue;
+        const cands = view.battlefield
+          .filter((b) => b.controller === opp && (e.predicate === "permanent" || b.power !== null))
+          .sort((x, y) => objectValue(this.defs, x, this.C) - objectValue(this.defs, y, this.C))
+          .slice(0, e.count);
+        for (const b of cands) gain += objectValue(this.defs, b, this.C) + 0.5;
+      }
+    }
+    return gain;
+  }
+
   private selfTax(view: GameView, objectId: string, event: "ATTACKS" | "BLOCKS"): number {
     const o = view.battlefield.find((b) => b.id === objectId);
     const d = o ? this.def(o.cardId) : undefined;
@@ -1263,6 +1305,9 @@ export class HeuristicAgent implements Agent {
     }
     const candidates = request.actions.filter((a) => a.type === "sacrifice") as { type: string; objectId: string }[];
     if (candidates.length === 0) return request.actions[0]!;
+    // S31 (R-094 word 1 — the edict, book 46): when an opponent's annihilator (or an Edict) makes US
+    // choose, tokens go first and lands go LAST (the brief's rule); the rest by board value.
+    const edict = (request.source?.effects ?? []).some((e) => e.type === "sacrifice" && "who" in e);
     const boosted = new Set<string>();
     for (const e of request.source?.effects ?? []) {
       if (e.type === "addCounters" && "subtype" in e && typeof (e as { subtype?: string }).subtype === "string") boosted.add((e as { subtype: string }).subtype);
@@ -1272,6 +1317,10 @@ export class HeuristicAgent implements Agent {
       const o = view.battlefield.find((b) => b.id === objectId);
       const def = o ? this.defs.get(o.cardId) : undefined;
       if (!def) return v;
+      if (edict) {
+        if (def.isTokenDef) v -= 2;
+        if (def.types.includes("Land")) v += 10;
+      }
       for (const ab of def.abilities ?? []) {
         if (ab.kind !== "triggered" || ab.event !== "DIES") continue;
         const src = (ab.condition as { source?: string } | undefined)?.source;
@@ -1318,8 +1367,7 @@ export class HeuristicAgent implements Agent {
         // S28 (Unearth): a GRAVEYARD target is worth its card — the best MV≤3 body comes back.
         if (t.kind === "object" && t.id && !view.battlefield.some((o) => o.id === t.id)) {
           const g = view.graveyardObjects[view.you].find((o) => o.objectId === t.id);
-          const d = g ? this.def(g.cardId) : undefined;
-          if (d) s += Math.max(0.5, manaValue(parseManaCost(d.manaCost))) + 0.2 * ((d.power ?? 0) + (d.toughness ?? 0)) + (d.abilities?.some((a) => a.kind === "triggered" && a.event === "ENTERS_BATTLEFIELD") ? 0.8 : 0);
+          s += reanimationWorth(g ? this.def(g.cardId) : undefined); // S31: the one valuation (evaluator.reanimationWorth)
         }
         if (t.kind === "player") s += 2; // face is worth a couple of mana units
         const side = targetSide(view, t as never);

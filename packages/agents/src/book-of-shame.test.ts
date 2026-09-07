@@ -571,6 +571,61 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.searchChoice(elves, req as never)).toEqual({ type: "searchPick", objectId: "l_bp" });
   });
 
+  it("book of shame 45 (S31, the Traumatizer — ADR-107): with a Traumatizer out the Adept attacks into an empty board and is worth more than without one; the Traumatizer is cast before a second Crab when the board has attackers; a Terror at the Traumatizer is countered rather than passed", async () => {
+    const a = agent("control");
+    const lands = (n: number) => Array.from({ length: n }, (_, i) => ({ id: `i${i}`, cardId: "island", controller: 0 as const }));
+    const theirLands = (n: number) => Array.from({ length: n }, (_, i) => ({ id: `t${i}`, cardId: "forest", controller: 1 as const }));
+    // The attack: 1/1 Adept into their empty board, library 20 — under the Traumatizer the swing mills two.
+    const board = (trauma: boolean) => mkView({ librarySizes: [20, 20], battlefield: [...lands(4), ...theirLands(3), { id: "adept", cardId: "cathartic_adept", controller: 0 }, ...(trauma ? [{ id: "tr", cardId: "traumatizer", controller: 0 as const }] : [])] });
+    const withT = await a.scoreAttackSet(board(true), viewCreatures(board(true)), 0, ["adept"]);
+    const without = await agent("control").scoreAttackSet(board(false), viewCreatures(board(false)), 0, ["adept"]);
+    expect(withT).toBeGreaterThan(without);
+    expect(withT).toBeGreaterThan(0);
+    // An attack that EMPTIES their library outscores one that does not (the win next draw).
+    const thin = mkView({ librarySizes: [20, 2], battlefield: [...lands(4), ...theirLands(3), { id: "adept", cardId: "cathartic_adept", controller: 0 }, { id: "tr", cardId: "traumatizer", controller: 0 }] });
+    expect(await agent("control").scoreAttackSet(thin, viewCreatures(thin), 0, ["adept"])).toBeGreaterThan(withT);
+    // The cast: Traumatizer over a second Crab with two Adepts on the board and four Islands.
+    const hand = mkView({ hand: [{ objectId: "h_tr", cardId: "traumatizer" }, { objectId: "h_crab", cardId: "hedron_crab" }], battlefield: [...lands(4), { id: "c1", cardId: "hedron_crab", controller: 0 }, { id: "a1", cardId: "cathartic_adept", controller: 0 }, { id: "a2", cardId: "cathartic_adept", controller: 0 }] });
+    expect(a.scorePriorityAction(hand, { type: "castSpell", objectId: "h_tr", targets: [] })).toBeGreaterThan(a.scorePriorityAction(hand, { type: "castSpell", objectId: "h_crab", targets: [] }));
+    // The counter: their Terror aims at our Traumatizer with two Islands up — Counterspell beats pass.
+    const threat = mkView({ step: "MAIN1", activePlayer: 1, hand: [{ objectId: "h_cs", cardId: "counterspell" }], battlefield: [...lands(2), { id: "tr", cardId: "traumatizer", controller: 0 }, { id: "a1", cardId: "cathartic_adept", controller: 0 }, { id: "a2", cardId: "cathartic_adept", controller: 0 }, ...theirLands(2)], stack: [{ id: "s1", kind: "spell", cardId: "terror", controller: 1, targets: [{ kind: "object", id: "tr" }] } as never] });
+    expect(a.scorePriorityAction(threat, { type: "castSpell", objectId: "h_cs", targets: [{ kind: "stackItem", id: "s1" }] })).toBeGreaterThan(a.scorePriorityAction(threat, { type: "pass" }));
+  });
+
+  it("book of shame 46 (S31, Artisan of Kozilek — R-094 word 1): the 10/9 attacks into a board of Bears and lands, holds against untapped deathtouch Rats; as the DEFENDER under annihilator the token goes first, the land last", async () => {
+    const a = agent("midrange");
+    const theirs = (extra: { id: string; cardId: string }[]) => mkView({ battlefield: [{ id: "art", cardId: "artisan_of_kozilek", controller: 0 }, { id: "f1", cardId: "forest", controller: 1 }, { id: "f2", cardId: "forest", controller: 1 }, { id: "f3", cardId: "forest", controller: 1 }, ...extra.map((o) => ({ ...o, controller: 1 as const }))] });
+    const bears = theirs([{ id: "b", cardId: "grizzly_bears" }]);
+    expect(await a.scoreAttackSet(bears, viewCreatures(bears), 0, ["art"])).toBeGreaterThan(0);
+    const rats = theirs([{ id: "r", cardId: "typhoid_rats" }]);
+    expect(await agent("midrange").scoreAttackSet(rats, viewCreatures(rats), 0, ["art"])).toBeLessThan(0);
+    // The defender's choice: the Artisan's edict asks us — token, then Bears, never the Forest first.
+    const mine = mkView({ battlefield: [{ id: "tok", cardId: "elemental_1_1_r", controller: 0 }, { id: "bear", cardId: "grizzly_bears", controller: 0 }, { id: "land", cardId: "forest", controller: 0 }, { id: "art", cardId: "artisan_of_kozilek", controller: 1 }] });
+    const req = (ids: string[]) => ({ player: 0 as const, purpose: "chooseSacrifice" as const, actions: ids.map((objectId) => ({ type: "sacrifice" as const, objectId })), source: { cardId: "artisan_of_kozilek", effects: [{ type: "sacrifice" as const, who: "opponent" as const, count: 2, predicate: "permanent" as const }] } });
+    expect(a.sacrificeChoice(mine, req(["tok", "bear", "land"]) as never)).toEqual({ type: "sacrifice", objectId: "tok" });
+    expect(a.sacrificeChoice(mine, req(["bear", "land"]) as never)).toEqual({ type: "sacrifice", objectId: "bear" });
+  });
+
+  it("book of shame 47 (S31, Buried Alive under the Artisan): a search TO THE GRAVEYARD takes the best reanimation target — the Artisan over the Serra over the Gravedigger — where the Tutor's chooser would take the castable Gravedigger", () => {
+    const a = agent("midrange");
+    const view = mkView({ hand: [{ objectId: "h_z", cardId: "zombify" }], battlefield: [{ id: "s1", cardId: "swamp", controller: 0 }, { id: "s2", cardId: "swamp", controller: 0 }, { id: "s3", cardId: "swamp", controller: 0 }] });
+    const actions = [{ type: "declineSearch" as const }, { type: "searchPick" as const, objectId: "l_gd" }, { type: "searchPick" as const, objectId: "l_serra" }, { type: "searchPick" as const, objectId: "l_art" }];
+    const revealed = [{ objectId: "l_gd", cardId: "gravedigger" }, { objectId: "l_serra", cardId: "serra_angel" }, { objectId: "l_art", cardId: "artisan_of_kozilek" }];
+    const buried = { player: 0 as const, purpose: "searchLibrary" as const, actions, revealed, source: { cardId: "buried_alive", effects: [{ type: "searchLibrary" as const, predicate: "creatureCard" as const, to: "graveyard" as const, count: 3 }] } };
+    expect(a.searchChoice(view, buried as never)).toEqual({ type: "searchPick", objectId: "l_art" });
+    const tutor = { player: 0 as const, purpose: "searchLibrary" as const, actions, revealed, source: { cardId: "demonic_tutor", effects: [{ type: "searchLibrary" as const, predicate: "anyCard" as const, to: "hand" as const }] } };
+    expect(a.searchChoice(view, tutor as never)).toEqual({ type: "searchPick", objectId: "l_gd" });
+  });
+
+  it("book of shame 48 (S31, Zombify the Artisan): a targeted return is priced by its target — Zombify at the Artisan outscores Zombify at the Serra outscores Zombify at the Aristocrat (they used to tie at a flat 0.6)", () => {
+    const a = agent("midrange");
+    const yard = [{ objectId: "g_art", cardId: "artisan_of_kozilek" }, { objectId: "g_serra", cardId: "serra_angel" }, { objectId: "g_ari", cardId: "indulgent_aristocrat" }];
+    const view: GameView = { ...mkView({ hand: [{ objectId: "h_z", cardId: "zombify" }], battlefield: [{ id: "s1", cardId: "swamp", controller: 0 }, { id: "s2", cardId: "swamp", controller: 0 }, { id: "s3", cardId: "swamp", controller: 0 }, { id: "s4", cardId: "swamp", controller: 0 }] }), graveyardObjects: [yard, []], graveyards: [yard.map((g) => g.cardId), []] };
+    const z = (id: string) => a.scorePriorityAction(view, { type: "castSpell", objectId: "h_z", targets: [{ kind: "object", id }] });
+    expect(z("g_art")).toBeGreaterThan(z("g_serra"));
+    expect(z("g_serra")).toBeGreaterThan(z("g_ari"));
+  });
+
   it("book of shame 37 (S29, the Altar of Dementia): lethal mill takes the biggest body; otherwise the outlet holds unless a creature is doomed; Quill's Pelakka Wurm closes a seven-card library", () => {
     const a = agent();
     const view = (lib: number, extra: { id: string; cardId: string; controller: 0 | 1 }[] = [], stack: { id: string; kind: string; cardId: string; controller: 0 | 1; targets?: unknown[] }[] = []) =>

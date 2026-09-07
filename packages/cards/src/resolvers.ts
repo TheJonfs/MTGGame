@@ -87,6 +87,10 @@ export interface EffectContext {
   /** S23 (ADR-084): sacrifice the resolving ability's own SOURCE (the Thundersnake) — a sacrifice,
    * not a destruction (no indestructible shield); DIES fires; no-op if the source left already. */
   sacrificeSource(): void;
+  /** S31 (R-094 word 1 — the edict): `player` chooses `count` of their permanents matching the predicate
+   * (one logged pick each — ADR-013's incremental shape; a lone candidate is forced), then all leave
+   * together (CR 701.17; DIES triggers pend). Fewer candidates than count: every one goes. */
+  sacrificeChoose(player: number, count: number, predicate: "permanent" | "creature"): Promise<void>;
   /** Move a card from a graveyard to the battlefield or its owner's hand (Zombify, Gravedigger, Rancor's self-return).
    * A10 (S22): `temporary` — the package rule (haste; sacrificed at the beginning of the next end
    * step); `withCounters` — it enters with counters (Graceful Restoration). */
@@ -170,10 +174,12 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
     for (const p of ctx.players(e.who)) ctx.mill(p, ctx.amount(e.count));
   },
 
-  sacrifice: (e, ctx) => {
+  sacrifice: async (e, ctx) => {
     if (e.type !== "sacrifice") throw new Error("resolver mismatch");
-    // S23 (ADR-084): self-only v1 — the Thundersnake's exit. No-op if the source raced away.
-    ctx.sacrificeSource();
+    // S23 (ADR-084): the self form — the Thundersnake's exit. No-op if the source raced away.
+    if ("scope" in e) { ctx.sacrificeSource(); return; }
+    // S31 (R-094 word 1): the edict — each stated player chooses and sacrifices.
+    for (const p of ctx.players(e.who)) await ctx.sacrificeChoose(p, e.count, e.predicate);
   },
 
   modifyPT: (e, ctx) => {

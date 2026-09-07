@@ -1,5 +1,5 @@
 /**
- * pnpm mage-sweep [--games N] [--seed S] [--part 1|2|3|4|all] [--baseline <json>|none]
+ * pnpm mage-sweep [--games N] [--seed S] [--part 1|2|3|4|5|all] [--baseline <json>|none]
  *
  * S29 Part 5: the mage cleansheet's three round-robins under the heuristic ladder (both seats; the
  * tier's profile; the tier's life for both sides unless noted).
@@ -11,6 +11,8 @@
  * Per pairing: win rate, mean turns, and the share of wins by library (DECKED) — the mill decks' axis.
  * S30: a delta column against a baseline sweep; per-deck CAST COUNTS (facts.spellsCast) with the
  * never-cast list; part 4 — the five starters against each other (journeyman at 10).
+ * S31: part 5 — the tier-2 and tier-3 mages against the five starters (the library size the mill
+ * decks actually face); the baseline defaults to the S30 run (sweep-baselines/s30.json).
  */
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -32,7 +34,8 @@ const seed0 = Number(arg("seed", "1"));
 const part = arg("part", "all");
 // S30 Part 5: a baseline sweep (pairing key → A's win %) for a delta column; the S29 run ships as
 // sweep-baselines/s29.json (`--baseline none` to drop the column).
-const baselineArg = arg("baseline", join(dirname(fileURLToPath(import.meta.url)), "sweep-baselines/s29.json"));
+const baselineArg = arg("baseline", join(dirname(fileURLToPath(import.meta.url)), "sweep-baselines/s30.json"));
+const baselineName = baselineArg === "none" ? "—" : (baselineArg.match(/(s\d+)\.json$/)?.[1] ?? "baseline").toUpperCase();
 const baseline: Record<string, number> = baselineArg === "none" ? {} : (JSON.parse(readFileSync(baselineArg, "utf8")) as Record<string, number>);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const pool = loadCardPool(join(ROOT, "data/cards")).cards;
@@ -105,7 +108,7 @@ async function pairing(a: Side, b: Side, label: string): Promise<void> {
   console.log(`| ${label} | ${a.name} | ${b.name} | ${pct(aWins)}${byLib(aWins, aDecked)} | ${pct(bWins)}${byLib(bWins, bDecked)} | ${draws} | ${(turns / Math.max(1, total)).toFixed(1)} | ${delta} |`);
 }
 
-const header = () => console.log(`\n| part | A | B | A wins | B wins | draws | mean turns | Δ A wins vs S29 |\n|---|---|---|---|---|---|---|---|`);
+const header = () => console.log(`\n| part | A | B | A wins | B wins | draws | mean turns | Δ A wins vs ${baselineName} |\n|---|---|---|---|---|---|---|---|`);
 const byTier: Record<1 | 2 | 3, string[]> = { 1: [], 2: [], 3: [] };
 for (const [k, m] of Object.entries(MAGE_DECKS)) byTier[m.tier].push(k);
 
@@ -128,6 +131,11 @@ if (part === "all" || part === "4") {
   header();
   const ss = catalog.starters.map((x) => x.id);
   for (let i = 0; i < ss.length; i++) for (let j = i + 1; j < ss.length; j++) await pairing(starter(ss[i]!), starter(ss[j]!), `starters`);
+}
+if (part === "all" || part === "5") {
+  console.log(`\n## 5. Tier-2 and tier-3 mages vs the five starters (the mage at its tier's profile and life; starters at ${knobs.startingWorldLife} / journeyman)`);
+  header();
+  for (const t of [2, 3] as const) for (const k of byTier[t]) for (const s of catalog.starters) await pairing(mage(k), starter(s.id), `T${t}×starter`);
 }
 if (part === "all" || part === "3") {
   console.log(`\n## 3. Children vs parents (parent mage at tier-1 settings; parent beast at its own)`);

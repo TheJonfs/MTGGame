@@ -13,17 +13,17 @@
 
 ## Dawn Levy (W, aggro) — `starter:white`
 
-- 30 cards · 12 lands · avg MV 1.83 · colours W · refills with Plains
-- Curve (nonland, by mana value): 1: 8 · 2: 7 · 3: 1 · 4: 2
+- 30 cards · 13 lands · avg MV 1.76 · colours W · refills with Plains
+- Curve (nonland, by mana value): 1: 7 · 2: 8 · 3: 1 · 4: 1
 - Easy: +1 Pacifism, +1 Glorious Anthem · Hard: +1 Plains, −1 Swords to Plowshares
-- 12 Plains · 2 Savannah Lions · 4 Suntail Hawk · 2 Swords to Plowshares · 3 Fencing Ace · 2 Pacifism · 2 Raise the Alarm · 1 Glorious Anthem · 2 Cunning Tactician
+- 13 Plains · 2 Savannah Lions · 4 Suntail Hawk · 1 Swords to Plowshares · 3 Fencing Ace · 2 Pacifism · 2 Raise the Alarm · 1 Youthful Valkyrie · 1 Glorious Anthem · 1 Cunning Tactician
 
 ## Tidal Grimoire (U, control) — `starter:blue`
 
-- 30 cards · 12 lands · avg MV 3.00 · colours U · refills with Island
-- Curve (nonland, by mana value): 2: 4 · 3: 11 · 4: 2 · 5: 1
+- 30 cards · 12 lands · avg MV 2.78 · colours U · refills with Island
+- Curve (nonland, by mana value): 1: 1 · 2: 4 · 3: 12 · 5: 1
 - Easy: +1 Boomerang, +1 Cloudkin Seer · Hard: +1 Island, −1 Essence Scatter
-- 12 Island · 2 Boomerang · 2 Essence Scatter · 2 Aether Channeler · 2 Cloudkin Seer · 4 Man-o'-War · 3 Wind Drake · 1 Aven Fisher · 1 Mist Raven · 1 Air Elemental
+- 12 Island · 1 Brainstorm · 2 Boomerang · 2 Essence Scatter · 2 Aether Channeler · 2 Cloudkin Seer · 4 Man-o'-War · 2 Wall of Air · 2 Wind Drake · 1 Air Elemental
 
 ## Pallid Court (B, midrange) — `starter:black`
 
@@ -34,14 +34,14 @@
 
 ## Ember Warband (R, aggro) — `starter:red`
 
-- 30 cards · 13 lands · avg MV 2.12 · colours R · refills with Mountain
-- Curve (nonland, by mana value): 1: 7 · 2: 3 · 3: 5 · 4: 2
+- 30 cards · 13 lands · avg MV 2.00 · colours R · refills with Mountain
+- Curve (nonland, by mana value): 1: 8 · 2: 3 · 3: 4 · 4: 2
 - Easy: +1 Shock, +1 Boggart Brute · Hard: +1 Mountain, −1 Lightning Bolt
-- 13 Mountain · 1 Lightning Bolt · 4 Raging Goblin · 2 Shock · 3 Goblin Piker · 2 Boggart Brute · 3 Gray Ogre · 2 Hill Giant
+- 13 Mountain · 2 Lightning Bolt · 4 Raging Goblin · 2 Shock · 3 Goblin Piker · 2 Boggart Brute · 2 Gray Ogre · 2 Hill Giant
 
 ## Verdant Trail (G, midrange) — `starter:green`
 
-- 30 cards · 12 lands · avg MV 2.00 · colours G · refills with Forest
-- Curve (nonland, by mana value): 1: 5 · 2: 9 · 3: 3 · 4: 1
+- 30 cards · 12 lands · avg MV 1.83 · colours G · refills with Forest
+- Curve (nonland, by mana value): 1: 8 · 2: 6 · 3: 3 · 4: 1
 - Easy: +1 Prey Upon, +1 Centaur Courser · Hard: +1 Forest, −1 Prey Upon
-- 12 Forest · 2 Giant Growth · 2 Llanowar Elves · 1 Prey Upon · 3 Elvish Visionary · 2 Grizzly Bears · 2 Rampant Growth · 2 Timberland Guide · 3 Centaur Courser · 1 Rumbling Baloth
+- 12 Forest · 2 Giant Growth · 2 Llanowar Elves · 2 Prey Upon · 2 Rancor · 1 Elvish Visionary · 2 Grizzly Bears · 2 Rampant Growth · 1 Timberland Guide · 3 Centaur Courser · 1 Rumbling Baloth

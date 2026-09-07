@@ -1,0 +1,34 @@
+{
+  "id": "grazing_gladehart",
+  "name": "Grazing Gladehart",
+  "source": "real",
+  "scryfallId": "078b5290-a613-496f-bd23-8fd109549f31",
+  "manaCost": "{2}{G}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Antelope"
+  ],
+  "power": 2,
+  "toughness": 2,
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "LAND_ENTERS_UNDER_YOUR_CONTROL",
+      "effects": [
+        {
+          "type": "gainLife",
+          "amount": 2,
+          "who": "you"
+        }
+      ],
+      "optional": true
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 1,
+  "priceOverride": 12
+}

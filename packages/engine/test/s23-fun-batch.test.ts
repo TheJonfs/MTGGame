@@ -98,7 +98,7 @@ describe("S23 — Gallows Djinn ({2}{B}{B} 5/5; the aggression tax)", () => {
   });
 });
 
-describe("S23 — Traumatizer ({2}{U}{U} 2/4 flying; combat damage to a player mills twice that many)", () => {
+describe("S23 — Traumatizer ({2}{U}{U} 2/4 flying; S31 retext, ADR-107: a creature you control deals damage to a player → that player mills twice that many; these three still hold)", () => {
   it("a full connection mills 4 (2 damage × 2)", async () => {
     const tg = await runFixture({
       name: "trauma-full",

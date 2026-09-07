@@ -57,7 +57,9 @@ describe("catalog v1", () => {
     expect(starterTemplate(catalog, "green").decklist.find((e) => e.cardId === "llanowar_elves")?.count).toBe(2);
     // ADR-078: blue = list C — creature-forward, no Adepts/Counterspell/Curiosity/Divination.
     const blue = Object.fromEntries(starterTemplate(catalog, "blue").decklist.map((e) => [e.cardId, e.count]));
-    expect(blue).toMatchObject({ aether_channeler: 2, aven_fisher: 1, essence_scatter: 2, mist_raven: 1, air_elemental: 1, man_o_war: 4 });
+    // S31 (ADR-106): the Raven and the Fisher left for two Walls of Air and a Brainstorm; the Drakes are two.
+    expect(blue).toMatchObject({ aether_channeler: 2, essence_scatter: 2, air_elemental: 1, man_o_war: 4, wall_of_air: 2, brainstorm: 1, wind_drake: 2 });
+    for (const gone of ["aven_fisher", "mist_raven"]) expect(blue[gone]).toBeUndefined();
     for (const gone of ["cathartic_adept", "counterspell", "curiosity", "divination"]) expect(blue[gone]).toBeUndefined();
     const bad = JSON.parse(JSON.stringify({ regions: { catalogVersion: "v1", regions: catalog.regions, strongholds: catalog.strongholds }, towns: { catalogVersion: "v1", names: catalog.townNames }, opponents: { catalogVersion: "v1", opponents: catalog.opponents }, starters: { catalogVersion: "v1", starters: catalog.starters.map((s) => (s.id === "red" ? { ...s, decklist: s.decklist.slice(1) } : s)) } }));
     expect(() => catalogFrom(bad)).toThrow(/total 30 cards/);
@@ -199,7 +201,8 @@ describe("WorldState + world-save-v3", () => {
       expect(regionAt(x.map, x.player.position).color).toBe(starterTemplate(catalog, id).color);
     }
     expect(deckSize(activeDeck(newWorld({ seed: 11, catalog, starter: "green", difficulty: "easy" })))).toBe(32);
-    expect(activeDeck(newWorld({ seed: 11, catalog, starter: "green", difficulty: "hard" })).some((e) => e.cardId === "prey_upon")).toBe(false);
+    // S31 (ADR-106): Verdant Trail runs two Prey Upon; hard removes one and keeps one.
+    expect(activeDeck(newWorld({ seed: 11, catalog, starter: "green", difficulty: "hard" })).find((e) => e.cardId === "prey_upon")?.count).toBe(1);
   });
   it("serialize → deserialize round-trips byte-identically, and rejects other formats", () => {
     const w = newWorld({ seed: 12, catalog, starter: "blue" });
@@ -1334,7 +1337,7 @@ describe("S19 shop tiers (ADR-078): availability by ring, price by tier factor, 
     // Distribution pin (audit v2 + Formation + the S20 land-and-legend batch as it lands: ten ABU duals at R so far).
     const tally: Record<string, number> = {};
     for (const d of pool.cards.values()) if (d.shopTier) tally[String(d.shopTier)] = (tally[String(d.shopTier)] ?? 0) + 1;
-    expect(tally).toEqual({ "1": 70, "2": 51, "3": 10, R: 22 }); // ADR-081 unification: the five guardian legendaries left the tiers for prizeOnly (Drana was T3, the S20 four were R). S22 batch: +10 R (eight real gold→R adds + Aetherbolt + Tainted Phoenix; the five lords are prizeOnly), +1 T1 (Abrade). S23 fun batch: +3 T2 (Thundersnake, Gallows Djinn, Traumatizer)
+    expect(tally).toEqual({ "1": 71, "2": 51, "3": 10, R: 23 }); // S31 (ADR-108): +1 T1 (Grazing Gladehart), +1 R (Artisan of Kozilek). // ADR-081 unification: the five guardian legendaries left the tiers for prizeOnly (Drana was T3, the S20 four were R). S22 batch: +10 R (eight real gold→R adds + Aetherbolt + Tainted Phoenix; the five lords are prizeOnly), +1 T1 (Abrade). S23 fun batch: +3 T2 (Thundersnake, Gallows Djinn, Traumatizer)
   });
   it("a civilized town's rolled stock is all tier 1 and every price matches shopPrice", async () => {
     const { rollShopStock, shopPrice } = await import("./shop.js");

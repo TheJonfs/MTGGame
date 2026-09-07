@@ -591,7 +591,7 @@ export class Game {
           x: action.x ?? 0,
           ...(action.mode !== undefined ? { mode: action.mode } : {}),
         });
-        this.ctx.bus.emit("SPELL_CAST", { cardId: obj.cardId, controller: player });
+        this.ctx.bus.emit("SPELL_CAST", { cardId: obj.cardId, controller: player, objectId: newId }); // S31: the stack object — its own cast trigger's source
         break;
       }
       case "tapForMana": {
@@ -825,8 +825,8 @@ export class Game {
       }
     }
 
-    const ectx = makeEffectContext(this.ctx, item, (player, purpose, actions, revealed) =>
-      this.request(player, purpose, actions, revealed),
+    const ectx = makeEffectContext(this.ctx, item, (player, purpose, actions, revealed, source) =>
+      this.request(player, purpose, actions, revealed, source),
     );
     for (const effect of item.effects) await resolveEffect(effect, ectx);
 
