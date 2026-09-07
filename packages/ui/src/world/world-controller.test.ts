@@ -197,6 +197,23 @@ describe("S14 acceptance: editor, shop v2, resume path, v1 migration", () => {
     expect(scr.preview === null || Array.isArray(scr.preview)).toBe(true);
   });
 
+  it("r6 note 3: a standing preview walks from the rail button (walkPreview), no destination click", async () => {
+    const c = freshController();
+    c.newGame({ starter: "green", difficulty: "standard", seed: 211 });
+    const w = c.world!;
+    const s = w.player.position;
+    const nbr = [{ x: s.x + 1, y: s.y }, { x: s.x - 1, y: s.y }, { x: s.x, y: s.y + 1 }, { x: s.x, y: s.y - 1 }]
+      .find((p) => p.x >= 0 && p.y >= 0 && p.x < w.map.width && p.y < w.map.height && w.map.passable[idx(w.map, p)] && !w.map.towns.some((t) => t.at.x === p.x && t.at.y === p.y) && !w.opponents.some((o) => !o.gone && o.at && o.at.x === p.x && o.at.y === p.y))!;
+    if (c.screen.kind === "town") c.leaveTown();
+    c.walkPreview(); // nothing previewed: a no-op
+    expect(c.world!.player.position).toEqual(s);
+    c.clickCell(nbr); // first click previews
+    expect((c.screen as { previewTarget: unknown }).previewTarget).toEqual(nbr);
+    c.walkPreview();
+    for (let i = 0; i < 50 && !(c.world!.player.position.x === nbr.x && c.world!.player.position.y === nbr.y); i++) await new Promise((r) => setTimeout(r, 5));
+    expect(c.world!.player.position).toEqual(nbr);
+  });
+
   it("a v2 save loads (migrated to v3: decks/provenance/roamer positions) and the world plays on; v1 too", () => {
     const c = freshController();
     c.newGame({ starter: "white", difficulty: "standard", seed: 204 });

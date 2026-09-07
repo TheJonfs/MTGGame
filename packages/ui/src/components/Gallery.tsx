@@ -193,7 +193,7 @@ function InspectorModal({
   oracle?: OracleEntry | undefined;
   onClose: () => void;
 }) {
-  const [printed, setPrinted] = useState(false);
+  const [printed, setPrinted] = useState(true); // r6 note 4: as-printed by default
   return (
     <div className="gallery-modal" onClick={onClose}>
       <div className="gallery-modal-box" onClick={(e) => e.stopPropagation()}>
@@ -226,7 +226,7 @@ export function Gallery() {
   const [batch, setBatch] = useState<string>("all");
   const [deck, setDeck] = useState<string>("all");
   const [search, setSearch] = useState("");
-  const [printedAll, setPrintedAll] = useState(false);
+  const [printedAll, setPrintedAll] = useState(true); // r6 note 4: as-printed by default; the toggle flips to our frame
   const [inspected, setInspected] = useState<string | null>(null);
   const [stripSubject, setStripSubject] = useState("serra_angel");
 

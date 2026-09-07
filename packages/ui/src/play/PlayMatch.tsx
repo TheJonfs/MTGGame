@@ -692,6 +692,8 @@ function PlayLog({ c, pool }: { c: MatchController; pool: Map<string, CardDef> }
       case "declineSearch": return mine ? "Search: found nothing" : "Searches their library and shuffles";
       // Bottoming is hidden information — never name the opponent's card.
       case "bottomCard": return mine ? `Bottom ${nameOf(a.objectId!)}` : "Bottom a card";
+      // Deploy playtest r6 (Chris, note 1): Brainstorm's put-backs are hidden the same way.
+      case "putOnTop": return mine ? `Put ${nameOf(a.objectId!)} on top` : "Puts a card on top of their library";
       default: return actionLabel(state, pool, a as never, c.idNames); // S22 r2: dead ids resolve through the ledger
     }
   };

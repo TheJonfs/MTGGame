@@ -506,9 +506,17 @@ export class WorldController {
     if (!this.world || this.screen.kind !== "map" || !this.resumePath || this.resumePath.length === 0) return;
     const target = this.resumePath[this.resumePath.length - 1] ?? null;
     const path = target ? this.planPath(target) ?? [] : [];
-    this.screen = { ...this.screen, preview: path, previewTarget: target, notice: target ? `Resume: ${path.length} steps left — click the destination to continue.` : null };
+    this.screen = { ...this.screen, preview: path, previewTarget: target, notice: target ? `Resume: ${path.length} steps left — click the destination or "Walk there" to continue.` : null };
     this.resumePath = null;
     this.emit();
+  }
+
+  /** Deploy playtest r6 (Chris, note 3): walk the standing preview from a button in the rail — the
+   *  resume flow's confirmation sits where the resume button was, no scroll to the destination. */
+  walkPreview(): void {
+    if (!this.world || this.screen.kind !== "map" || this.screen.walking) return;
+    if (!this.screen.preview || !this.screen.previewTarget) return;
+    void this.walk(this.screen.preview, this.screen.previewTarget);
   }
 
   // ---------- S14 Part 2: deck editor ----------

@@ -1756,6 +1756,11 @@ export function WorldApp({ onWatchReplay, paused = false }: { onWatchReplay: (ga
           {screen.kind === "map" && c.resumePath && c.resumePath.length > 0 && !screen.walking && (
             <button onClick={() => c.resumeWalk()}>Resume walk ({c.resumePath.length} steps)</button>
           )}
+          {/* r6 note 3: a standing preview walks from HERE too — the resume's second click lands
+              where its first did, instead of on the destination cell. */}
+          {screen.kind === "map" && screen.preview && screen.preview.length > 0 && screen.previewTarget && !screen.walking && !(c.resumePath && c.resumePath.length > 0) && (
+            <button onClick={() => c.walkPreview()}>Walk there ({screen.preview.length} steps)</button>
+          )}
           {/* S26: standing on a centre door — knock to reopen its telegraph (arriving opens it once). */}
           {c.doorHere() && <button className="linkish" style={{ marginRight: 10 }} onClick={() => c.knock()}>{c.doorHere() === "corolla" ? "✿ the Corolla's door — knock" : "◆ the Vault's door — knock"}</button>}
           <span className="seed">{seenRegions.size}/{w.map.regions.length} regions seen · {w.map.towns.filter((t) => seenCell(t.at)).length}/{w.map.towns.length} towns found</span>
@@ -1768,12 +1773,15 @@ export function WorldApp({ onWatchReplay, paused = false }: { onWatchReplay: (ga
           <div style={{ fontSize: 12 }}>Deck: {deckSize(activeDeck(w))} cards · basic {w.player.basicLand}</div>
         </RailPanel>
         <RailPanel title="Quests" badge={c.activeQuests().length || undefined}>
-          {c.activeQuests().length > 1 && c.activeQuests().some((x) => x.stepsLeft === null) && (
+          {/* Deploy playtest r6 (Chris, note 2): every quest shows by default; the toggle is offered
+              whenever there is anything to filter (and stays visible while it is on), and a filter
+              with nothing clocked to show is IGNORED rather than emptying the panel. */}
+          {(clockedOnly || (c.activeQuests().length > 0 && c.activeQuests().some((x) => x.stepsLeft === null))) && (
             <label style={{ fontSize: 10.5, color: "var(--ink-soft)", display: "block", marginBottom: 4, cursor: "pointer" }} title="hide the quests that have no deadline">
               <input type="checkbox" checked={clockedOnly} onChange={(e) => setClockedOnly(e.target.checked)} /> clocked only
             </label>
           )}
-          {c.activeQuests().filter((x) => !clockedOnly || x.stepsLeft !== null).map(({ quest: q, stepsLeft, destName, targetName, targetRegion }) => (
+          {c.activeQuests().filter((x) => !(clockedOnly && c.activeQuests().some((y) => y.stepsLeft !== null)) || x.stepsLeft !== null).map(({ quest: q, stepsLeft, destName, targetName, targetRegion }) => (
             <div key={q.id} style={{ fontSize: 11.5, marginBottom: 4 }}>
               {/* Deploy playtest r1 (Chris, item 3): the reward's KIND as small icons up front — gold,
                   a card, a manalink (its colour's pip; the life kind wears the life mark). */}
@@ -1813,7 +1821,7 @@ export function WorldApp({ onWatchReplay, paused = false }: { onWatchReplay: (ga
             </div>
           ))}
           {c.activeQuests().length === 0 && <div style={{ fontSize: 11, color: "var(--ink-soft)" }}>none — town boards post them</div>}
-          {clockedOnly && c.activeQuests().length > 0 && c.activeQuests().every((x) => x.stepsLeft === null) && <div style={{ fontSize: 11, color: "var(--ink-soft)" }}>none on a clock</div>}
+          {clockedOnly && c.activeQuests().length > 0 && c.activeQuests().every((x) => x.stepsLeft === null) && <div style={{ fontSize: 11, color: "var(--ink-soft)" }}>none on a clock — showing all</div>}
         </RailPanel>
         {(() => {
           // S21 Part 4 → S22 r1: the heard-rumors journal is its own FOLDING panel now — the
