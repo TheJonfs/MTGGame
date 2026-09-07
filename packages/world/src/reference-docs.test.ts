@@ -5,7 +5,7 @@ import { dirname, join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
 import { loadCatalog } from "./loader.js";
 import { defaultKnobs } from "./knobs.js";
-import { renderCardsReference, renderEnemiesReference, type OracleText } from "./reference-docs.js";
+import { renderCardsReference, renderEnemiesReference, renderStartersReference, type OracleText } from "./reference-docs.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 
@@ -23,6 +23,12 @@ describe("docs/reference (the standing reference; generated — principle 11)", 
     expect(readFileSync(join(ROOT, "docs/reference/enemies.md"), "utf8")).toBe(text);
     // Every enemy class is present and every decklist resolved to names (no raw ids leaked).
     for (const h of ["## Roaming opponents", "## The Mox court", "## The power-dungeon guardians", "## The stronghold lords", "## The petal courts", "## The Mirror", "## The Heart", "## The player's starters"]) expect(text).toContain(h);
+    expect(text).not.toMatch(/\d+ [a-z_]+_[a-z_]+( ·|\n)/);
+  });
+  it("starters.md is in sync with the catalog (run `pnpm reference` after a starter edit) and names all five roads", () => {
+    const text = renderStartersReference(catalog, pool, knobs);
+    expect(readFileSync(join(ROOT, "docs/reference/starters.md"), "utf8")).toBe(text);
+    for (const st of catalog.starters) expect(text).toContain(`starter:${st.id}`);
     expect(text).not.toMatch(/\d+ [a-z_]+_[a-z_]+( ·|\n)/);
   });
 });

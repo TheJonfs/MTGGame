@@ -309,7 +309,7 @@ Each tip fights under the RETURNED partisan law of the lord whose complement the
   1 Badlands · 1 Bayou · 1 Blood Crypt · 1 Breeding Pool · 1 Godless Shrine · 1 Hallowed Fountain · 1 Overgrown Tomb · 1 Plateau · 1 Sacred Foundry · 1 Savannah · 1 Scrubland · 1 Steam Vents · 1 Stomping Ground · 1 Taiga · 1 Temple Garden · 1 Tropical Island · 1 Tundra · 1 Underground Sea · 1 Volcanic Island · 1 Watery Grave · 1 Mox Emerald · 1 Mox Jet · 1 Mox Pearl · 1 Mox Ruby · 1 Mox Sapphire · 1 Lightning Bolt · 1 Prey Upon · 1 Counterspell · 1 Disenchant · 1 Doom Blade · 1 The Emerald Keeper · 1 Thundersnake · 1 Clio, Lady of the Depths · 1 Temporal Spring · 1 The Jet Witch · 1 The Pearl Cleric · 1 Vindicate · 1 Aetherbolt · 1 Control Magic · 1 Cunning Tactician · 1 Faldor, the Muster · 1 Frondland Felidar · 1 Gaean Wurm · 1 Gallows Djinn · 1 Glare of Subdual · 1 Lumen, the Hearth Fire · 1 Mystic Snake · 1 Phyrexian Purge · 1 Seraphina, the Initiative · 1 Traumatizer · 1 Wrath of God · 1 Yuloke, the Animus · 1 Aether Mutation · 1 Faerie Formation · 1 Graceful Restoration · 3 The Manafleur · 1 The Ruby Tyrant · 1 The Sapphire Sage
 
 
-## The player's starters (for the same read)
+## The player's starters (for the same read — the full standing page is starters.md)
 
 - **Dawn Levy** (W, aggro) — 30 cards, 12 lands, avg MV 1.83
   12 Plains · 2 Savannah Lions · 4 Suntail Hawk · 2 Swords to Plowshares · 3 Fencing Ace · 2 Pacifism · 2 Raise the Alarm · 1 Glorious Anthem · 2 Cunning Tactician
