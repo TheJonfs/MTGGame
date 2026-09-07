@@ -1279,6 +1279,29 @@ describe("deploy playtest r1: the tavern's pour is budgeted by ring (rumorsPerTo
   });
 });
 
+describe("deploy playtest r5 (Chris): the save fits the browser — replay logs trimmed to the last six", () => {
+  it("recordDuel keeps the full log on the last six duels only; an old save carrying every log is trimmed on load; the compact serialization is smaller and round-trips", async () => {
+    const { recordDuel } = await import("./journey.js");
+    const { DUEL_LOGS_KEPT, deserializeWorld, serializeWorld, trimDuelLogs } = await import("./state.js");
+    const w = newWorld({ seed: 71, catalog, starter: "black" });
+    const spec = { seed: 1, players: [{ name: "a", decklist: [{ cardId: "swamp", count: 1 }], agent: "human" }, { name: "b", decklist: [{ cardId: "swamp", count: 1 }], agent: "heuristic" }], rules: { startingLife: 20, handSize: 7, mulligan: "london" as const, maxTurns: 100 }, modifiers: [] };
+    const result = { winner: 0 as const, reason: "LIFE" as const, turns: 9, finalLife: [12, 0] as [number, number], log: Array.from({ length: 400 }, (_, i) => ({ t: "ACTION" as const, turn: 1, step: "MAIN1", player: 0, action: { type: "pass" as const }, i })), facts: { spellsCast: {}, damageDealt: [0, 0] } as never, finalStateSerialized: "{}" };
+    for (let i = 0; i < 10; i++) recordDuel(w, i, spec as never, result as never, { opponentId: `o${i}`, catalogId: "a1", outcome: "win", anteWon: [], anteLost: [] });
+    expect(w.duels).toHaveLength(10);
+    expect(w.duels.slice(-DUEL_LOGS_KEPT).every((d) => d.saved !== null)).toBe(true);
+    expect(w.duels.slice(0, -DUEL_LOGS_KEPT).every((d) => d.saved === null)).toBe(true);
+    // An old save with every log: trimmed on load.
+    for (const d of w.duels) d.saved = { format: "shandalar-log-v1", spec, result, log: result.log };
+    const loaded = deserializeWorld(serializeWorld(w));
+    expect(loaded.duels.slice(0, -DUEL_LOGS_KEPT).every((d) => d.saved === null)).toBe(true);
+    expect(loaded.duels.slice(-DUEL_LOGS_KEPT).every((d) => d.saved !== null)).toBe(true);
+    // Compact beats pretty, and round-trips.
+    expect(serializeWorld(w, { compact: true }).length).toBeLessThan(serializeWorld(w).length);
+    expect(deserializeWorld(serializeWorld(w, { compact: true })).duels).toHaveLength(10);
+    expect(trimDuelLogs(w, 0)).toBe(10); // every record was re-inflated above; keep 0 strips all ten
+  });
+});
+
 describe("S19 shop tiers (ADR-078): availability by ring, price by tier factor, R never stocks", () => {
   it("a civilized shop pool is tier-1 only; approach adds tier 2; wild adds tier 3; R (Demonic Tutor, Mystic Snake) and prizeOnly (Lotus) appear on no shelf; prices carry the factor", async () => {
     const { shopPoolFor, shopPrice } = await import("./shop.js");

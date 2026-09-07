@@ -394,3 +394,8 @@ See handoff Concerns for the authoritative list. Highlights: auto-pay greedy fea
 - **Birds on the dual path.** Five fixed tap abilities (one per colour) instead of the Lotus `anyOneColor` choice — auto-pay's pip matching (Kuhn, S20) then fixes colours for both seats; the choice shape is for bursts that must be deliberate. The oracle text still renders from Scryfall.
 - **Combination mana = logged multisets.** `anyCombinationOf` enumerates every multiset of `count` symbols as one variant each (`colors` on the action) — four for the Lumberjack; the UI lists them; the AI's burst gate checks the multiset covers the enabled card's pips in those colours. No picker, no new request purpose.
 - **Fixtures across seats: the harness resolves `attachedTo` in player order.** P0's aura on P1's creature cannot be placed by setup (P1's battlefield does not exist yet) — cast it in the script, or put the aura's controller in seat 1.
+
+## Deploy playtest r5 — the save must fit the browser
+
+- **localStorage is ~5 MB per origin and `setItem` THROWS past it** — and a throw inside a click handler kills the click. The autosave now never throws (trim → retry → notice). Any new per-event payload that rides the save (logs, snapshots) needs a cap at the source: `DUEL_LOGS_KEPT` is the precedent — keep what the UI can reach, drop the rest at record time AND on load.
+- **Pretty-printing the storage copy cost ~25%.** `serializeWorld(world, { compact: true })` for storage; the download keeps `null, 1` for readability.

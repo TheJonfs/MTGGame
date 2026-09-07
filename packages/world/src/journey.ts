@@ -7,7 +7,7 @@ import { creditSpokeKill, lordSealed, sealsHeld } from "./stronghold.js";
 import type { KnobValues } from "./knobs.js";
 import { findPath, fixedPointAt, idx, inBounds, manhattan, markExplored, regionAt, samePoint, townAt, type Point, type Town, type WorldMap } from "./map.js";
 import { WorldRng } from "./rng.js";
-import { activeDeck, clampWorldLife, deckSize, maxWorldLife, moxenHeld, worldKnobs, MOX_IDS, RENOWN_COLORS, type Decklist, type DuelRecord, type ProvenanceSource, type WorldState } from "./state.js";
+import { trimDuelLogs, activeDeck, clampWorldLife, deckSize, maxWorldLife, moxenHeld, worldKnobs, MOX_IDS, RENOWN_COLORS, type Decklist, type DuelRecord, type ProvenanceSource, type WorldState } from "./state.js";
 
 /**
  * The headless loop (brief Part 3's logic, S12 Part 2 carving (b)): walk →
@@ -564,6 +564,7 @@ export function recordDuel(
     },
   };
   world.duels.push(record);
+  trimDuelLogs(world); // r5: only the last DUEL_LOGS_KEPT duels keep their replay log
   return record;
 }
 

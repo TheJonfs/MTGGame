@@ -16,6 +16,11 @@ function memStorage() {
   const m = new Map<string, string>();
   return { getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => void m.set(k, v) };
 }
+/** Deploy playtest r5: a storage with a byte ceiling that throws the browser's quota error. */
+function cappedStorage(cap: number) {
+  const m = new Map<string, string>();
+  return { getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => { if (v.length > cap) throw new DOMException("exceeded the quota", "QuotaExceededError"); m.set(k, v); }, size: () => [...m.values()].reduce((n, v) => n + v.length, 0) };
+}
 
 const tick = () => new Promise((r) => setTimeout(r, 0));
 
@@ -88,6 +93,23 @@ function quiet(c: WorldController): void {
   for (const o of c.world!.opponents) if (!o.fixedAt) { o.gone = true; o.goneReason = "fled"; }
   c.extraKnobs = { event: { roamerRespawnSteps: { civilized: 0, approach: 0, wild: 0 } } };
 }
+
+describe("deploy playtest r5 (Chris): the autosave survives the browser's quota", () => {
+  it("a quota error never escapes — the autosave trims the replay logs and retries; the game goes on", async () => {
+    const storage = cappedStorage(1_500_000);
+    const c = new WorldController(pool, catalog, storage);
+    c.newGame({ starter: "black", difficulty: "standard", name: "Q", seed: 5 });
+    const w = c.world!;
+    // Inflate the record with fake logs past the cap, the way a long run does.
+    const bigLog = Array.from({ length: 6000 }, (_, i) => ({ t: "ACTION", turn: 1, step: "MAIN1", player: 0, action: { type: "pass" }, i }));
+    for (let i = 0; i < 8; i++) w.duels.push({ index: i, seed: i, opponentId: `o${i}`, catalogId: "a1", outcome: "win", anteWon: [], anteLost: [], saved: { format: "shandalar-log-v1", spec: {}, result: {}, log: bigLog } });
+    expect(() => c.save()).not.toThrow();
+    expect(storage.getItem("shandalar-world-save")).not.toBeNull();
+    const saved = JSON.parse(storage.getItem("shandalar-world-save")!) as { world: { duels: { saved: unknown }[] } };
+    expect(saved.world.duels).toHaveLength(8); // the records stay
+    expect(saved.world.duels.filter((d) => d.saved !== null).length).toBeLessThanOrEqual(1); // the logs went
+  });
+});
 
 describe("S14 acceptance: editor, shop v2, resume path, v1 migration", () => {
   it("editor: open → remove a nonbasic, add a spare → legal → save → the next duel's MatchSpec carries the edited deck; illegal drafts are unsaveable", async () => {

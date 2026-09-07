@@ -78,7 +78,8 @@ export interface DuelRecord {
   outcome: "win" | "loss" | "draw";
   anteWon: string[];
   anteLost: string[];
-  /** The duel's full saved game (shandalar-log-v1 payload) — every duel log is viewable. */
+  /** The duel's full saved game (shandalar-log-v1 payload) — viewable while it is one of the last
+   * DUEL_LOGS_KEPT duels; older records carry `null` here (r5: the save must fit the browser's quota). */
   saved: unknown;
   /** S19: reward text for bounties this duel completed (the result screen reads it). */
   questRewards?: string[];
@@ -341,8 +342,25 @@ export function newWorld(opts: NewWorldOptions): WorldState {
 
 // ---------- save / load ----------
 
-export function serializeWorld(world: WorldState): string {
-  return JSON.stringify({ format: SAVE_FORMAT, world }, null, 1);
+export function serializeWorld(world: WorldState, opts: { compact?: boolean } = {}): string {
+  // Deploy playtest r5 (Chris: the autosave hit the browser's quota late in a run): the storage
+  // copy is COMPACT; the download stays readable.
+  return opts.compact ? JSON.stringify({ format: SAVE_FORMAT, world }) : JSON.stringify({ format: SAVE_FORMAT, world }, null, 1);
+}
+
+/** Deploy playtest r5: how many duels keep their full replay log in the save. The rail's "Recent
+ * duels" offers the last six; older records keep their outcome and stakes, not their log — a
+ * forty-duel run carried forty logs (≈100 KB each) and blew past localStorage's ~5 MB. */
+export const DUEL_LOGS_KEPT = 6;
+/** Strip the replay logs of every duel older than the last `keep`. Returns how many were stripped. */
+export function trimDuelLogs(world: WorldState, keep = DUEL_LOGS_KEPT): number {
+  let stripped = 0;
+  const cutoff = world.duels.length - keep;
+  for (let i = 0; i < cutoff; i++) {
+    const d = world.duels[i]!;
+    if (d.saved !== null && d.saved !== undefined) { d.saved = null; stripped += 1; }
+  }
+  return stripped;
 }
 
 export function deserializeWorld(text: string): WorldState {
@@ -352,7 +370,9 @@ export function deserializeWorld(text: string): WorldState {
   }
   const w = parsed.world;
   if (!w || typeof w.seed !== "number" || !w.map) throw new Error("Malformed world save");
-  return migrateWorld(parsed.format, w);
+  const world = migrateWorld(parsed.format, w);
+  trimDuelLogs(world); // r5: an older save that carried every log shrinks on load
+  return world;
 }
 
 /** Legacy (v1/v2) shapes the migration reads. */

@@ -15,6 +15,10 @@
 - **Part 6**: the Pyromancer's 1/1 red Elemental has a plate (`token-elemental-red`, provisional — Chris to verdict); the epithet stays off the duel rail.
 - **Chris's observation**: the gallery's progressive reveal is production-only now — the dev server (and `?dev=1`) sees every card; verified live (203/203, the Lotus and the Manafleur in view, no "not yet encountered" tally).
 
+## Playtest round 7 (deploy playtest r5 — Chris, 2026-09-07: the autosave hit the browser's quota)
+
+**The bug**: at a stronghold door late in a run, "QuotaExceededError … 'shandalar-world-save' exceeded the quota" on every click and nothing happened. Every `DuelRecord` carried its full replay log (`saved`, ~100 KB each), pretty-printed — forty duels put the save past localStorage's ~5 MB, and the thrown error aborted the click's handler before the screen changed. **The fix (three layers)**: (1) only the last **six** duels keep their replay log (`DUEL_LOGS_KEPT`; the rail's "Recent duels" offers exactly those) — trimmed at `recordDuel` and again on load (`deserializeWorld`), so Chris's existing bloated save shrinks the moment the deploy loads it; older records keep their outcome and stakes, the rail shows "(log dropped)" in place of the replay link; (2) the storage copy is written COMPACT (the download stays pretty); (3) the autosave never throws: on a quota error it trims to one log, then none, retrying each time, and if the bare journey still will not fit it notices "Autosave failed — download your save" and the game goes on. Tests: the trim at record and at load, compact round-trips; a capped storage that throws the browser's `QuotaExceededError` — the save lands with the logs gone and the click never dies. **Chris's stuck game recovers on the next deploy** (load → trim → the next autosave fits); nothing to redo.
+
 ## Deviations from the brief
 
 1. **Thought Scour encoded from Dark Ascension** (its first printing; the brief said Innistrad). **The Skeleton's art is Archenemy's** (`art:fetch` resolves the oldest high-resolution printing by name; the def's `scryfallId` is M12's as the brief named) — say if the M12 art is wanted (a one-flag change to the fetch).
@@ -169,7 +173,7 @@ R-093. Pool-registry: Session 30 section (+6; the amendment note); printings reg
 
 ## Test status
 
-Default tier **537 passed / 2 skipped** (51 files; +7 S30 fixtures, +1 book pin; baselines: the loader's def count 197 → 203, the shop-tier counts 65/50 → 70/51). `pnpm typecheck` clean. **Fuzz-before-fixtures honoured**: the amended fifteen at the full tier (720 games, both seats, replays byte-exact) before the S30 fixtures. **The FUZZ_FULL ladder gate held** (every mirror cell > 40%, overall majority, zero surprises) and the 100/cell vs-random ladder PASSES. Sweep: 7,500 games. Browser: the dev gallery shows 203/203 with the prizeOnly cards in view.
+Playtest round 7: default tier **539 passed / 2 skipped** (+2 quota tests). S30 close: default tier **537 passed / 2 skipped** (51 files; +7 S30 fixtures, +1 book pin; baselines: the loader's def count 197 → 203, the shop-tier counts 65/50 → 70/51). `pnpm typecheck` clean. **Fuzz-before-fixtures honoured**: the amended fifteen at the full tier (720 games, both seats, replays byte-exact) before the S30 fixtures. **The FUZZ_FULL ladder gate held** (every mirror cell > 40%, overall majority, zero surprises) and the 100/cell vs-random ladder PASSES. Sweep: 7,500 games. Browser: the dev gallery shows 203/203 with the prizeOnly cards in view.
 
 ## Suggested next
 

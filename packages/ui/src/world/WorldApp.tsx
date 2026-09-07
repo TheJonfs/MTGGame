@@ -1933,7 +1933,7 @@ export function WorldApp({ onWatchReplay, paused = false }: { onWatchReplay: (ga
           {w.duels.slice(-6).reverse().map((d) => (
             <div key={d.index} style={{ fontSize: 11.5 }}>
               #{d.index + 1} {catalog.opponents.find((o) => o.id === d.catalogId)?.name ?? d.enemyName ?? d.catalogId} — <b>{d.outcome}</b>{" "}
-              <button className="linkish" onClick={() => watch(d.saved)}>replay</button>
+              {d.saved ? <button className="linkish" onClick={() => watch(d.saved)}>replay</button> : <span style={{ color: "var(--ink-soft)" }}>(log dropped)</span>}
             </div>
           ))}
           {w.duels.length === 0 && <div style={{ fontSize: 11, color: "var(--ink-soft)" }}>none yet</div>}

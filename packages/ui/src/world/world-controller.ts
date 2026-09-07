@@ -1,6 +1,6 @@
 import type { CardDef } from "@shandalar/cards";
 import type { MatchResult, MatchSpec } from "@shandalar/engine";
-import {
+import { trimDuelLogs,
   activeDeck,
   addCopy,
   advance,
@@ -351,9 +351,22 @@ export class WorldController {
     this.notice("Saved.");
   }
 
+  /** Deploy playtest r5 (Chris: "QuotaExceededError … 'shandalar-world-save' exceeded the quota" at a
+   * stronghold door, and the click did nothing): the storage copy is compact, and a quota error never
+   * escapes — the replay logs are trimmed (six → one → none) and the write retried; if even the bare
+   * journey will not fit, the game goes on unsaved with a notice. */
   private autosave(): void {
     if (!this.world) return;
-    this.storage?.setItem(SAVE_KEY, serializeWorld(this.world));
+    if (!this.storage) return;
+    const attempt = (): boolean => {
+      try { this.storage!.setItem(SAVE_KEY, serializeWorld(this.world!, { compact: true })); return true; } catch { return false; }
+    };
+    if (attempt()) return;
+    for (const keep of [1, 0]) {
+      trimDuelLogs(this.world, keep);
+      if (attempt()) { this.notice(`Storage was full — the older duel replays were dropped to fit the save (${keep === 0 ? "no" : "the last"} replay kept).`); return; }
+    }
+    this.notice("Autosave failed: the browser's storage is full. Download your save from the rail to keep it.");
   }
 
   private notice(text: string | null): void {
