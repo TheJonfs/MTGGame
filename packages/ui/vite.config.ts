@@ -122,6 +122,30 @@ through (\`~~...~~\`) when resolved. Newest note last within each card.
           } catch (e) { res.statusCode = 400; res.end(String(e)); }
         });
       });
+      // S33 director round: the Lab's custom decks — JSON under analysis/decks/ (same shape as the runs).
+      const deckDir = join(repo, "analysis/decks");
+      server.middlewares.use("/__lab-deck-list", (_req, res) => {
+        mkdirSync(deckDir, { recursive: true });
+        const decks = readdirSync(deckDir).filter((f) => f.endsWith(".json")).map((f) => { try { return JSON.parse(readFileSync(join(deckDir, f), "utf8")); } catch { return null; } }).filter(Boolean);
+        decks.sort((a, b) => String(a.name).localeCompare(String(b.name)));
+        res.setHeader("Content-Type", "application/json");
+        res.end(JSON.stringify(decks));
+      });
+      server.middlewares.use("/__lab-deck-save", (req, res, next) => {
+        if (req.method !== "POST") return next();
+        let body = "";
+        req.on("data", (c) => { body += c; });
+        req.on("end", () => {
+          try {
+            const deck = JSON.parse(body) as { name: string };
+            const safe = String(deck.name).replace(/[^A-Za-z0-9 ._-]+/g, "-").trim().slice(0, 80) || "custom";
+            mkdirSync(deckDir, { recursive: true });
+            writeFileSync(join(deckDir, `${safe.replace(/ /g, "_")}.json`), JSON.stringify({ ...deck, name: safe }, null, 2));
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify({ ok: true, name: safe }));
+          } catch (e) { res.statusCode = 400; res.end(String(e)); }
+        });
+      });
       server.middlewares.use("/__flag", (req, res, next) => {
         if (req.method !== "POST") return next();
         let body = "";

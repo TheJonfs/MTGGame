@@ -8,7 +8,14 @@ import { DECKS, DECK_ARCHETYPES, type DeckKey } from "@shandalar/sim/decks";
 import { MAGE_DECKS } from "@shandalar/sim/mage-decks";
 import { EXPANSION_DECKS } from "@shandalar/sim/expansion-decks";
 import { ROAD_DECKS } from "@shandalar/sim/road-decks";
+import { GUARDIAN_DECKS } from "@shandalar/sim/guardian-decks";
+import { COURT_DECKS } from "@shandalar/sim/court-decks";
+import { LORD_DECKS } from "@shandalar/sim/lord-decks";
+import { COROLLA_DECKS } from "@shandalar/sim/corolla-decks";
+import { HEART_DECK } from "@shandalar/sim/heart-deck";
 import type { CardDef } from "@shandalar/cards";
+import type { Modifier } from "@shandalar/engine";
+import type { LabBonus, LabSide, ResolvedSide } from "./lab-types.js";
 
 /** The world's JSON, bundled the way engine-bridge bundles the catalog (import.meta.glob; no json modules). */
 const WORLD = import.meta.glob("../../../../data/world/*.json", { eager: true }) as Record<string, { default: unknown }>;
@@ -24,7 +31,7 @@ export type Decklist = { cardId: string; count: number }[];
 
 export interface LabDeck {
   key: string;
-  group: "mages" | "beasts" | "starters" | "roads" | "slices";
+  group: "mages" | "beasts" | "starters" | "roads" | "bosses" | "slices" | "custom";
   name: string;
   label: string;
   archetype: Archetype;
@@ -35,6 +42,8 @@ export interface LabDeck {
   basics: number;
   /** A fixed entrance (the road decks carry theirs); otherwise the basics come from the colours by pips. */
   entrance?: string[];
+  /** The world's starting bonuses for this deck (a boss's law, roots, signature — data-model §5). */
+  bonuses?: LabBonus[];
 }
 
 const TIER_LIFE = { 1: 8, 2: 10, 3: 12 } as const;
@@ -43,6 +52,17 @@ const BASIC_OF: Record<string, string> = { W: "plains", U: "island", B: "swamp",
 
 type StarterRow = { id: string; name: string; archetype: Archetype; basicLand: string; decklist: Decklist };
 type OpponentRow = { id: string; deck: string; tier: 1 | 2 | 3; difficulty: Profile; worldLife: number; kind?: string };
+type LawBoth = { type: "permanentOnBattlefield"; cardId: string } | { type: "extraCards"; count: number };
+type DungeonsJson = {
+  mox: { id: string; color: string; guardian: { key: string; name: string; life: number }; law: { name: string; both: LawBoth[] } }[];
+  powerDungeons: { id: string; color: string; guardian: { key: string; name: string; life: number } }[];
+  strongholds: { id: string; color: string; lord: { key: string; name: string; cardId: string; baseLife: number }; law: { cardId: string; name: string } }[];
+  corolla: { bossLife: number; petals: { color: string; boss: { key: string; name: string }; signature: string }[]; heart?: { boss: { name: string; cardId: string } } };
+};
+/** The Heart's roots (corolla.ts HEART_ROOTS) — the five basics on the Manafleur's side. */
+const HEART_ROOTS = ["plains", "island", "swamp", "mountain", "forest"];
+/** The standard heartLife (knobs: 35 easy / 40 standard / 45 hard). */
+const HEART_LIFE_STANDARD = 40;
 
 export function labDecks(): LabDeck[] {
   const out: LabDeck[] = [];
@@ -60,8 +80,81 @@ export function labDecks(): LabDeck[] {
   for (const [k, r] of Object.entries(ROAD_DECKS)) {
     out.push({ key: `road:${k}`, group: "roads", name: r.name, label: `${r.name} (${r.decklist.reduce((n, e) => n + e.count, 0)} cards, ${r.life} life, ${r.entrance.length} in play)`, archetype: r.archetype, decklist: r.decklist, life: r.life, profile: "journeyman", basics: r.entrance.length, entrance: [...r.entrance] });
   }
+  // The bosses (S33 director round): each with the world's anchors — life, law, entrance — as default bonuses.
+  const dj = worldJson("dungeons") as DungeonsJson;
+  for (const pd of dj.powerDungeons) {
+    const g = GUARDIAN_DECKS[pd.guardian.key];
+    if (!g) continue;
+    out.push({ key: `boss:power:${pd.guardian.key}`, group: "bosses", name: g.name, label: `${g.name} — power guardian (${pd.color}, ${pd.guardian.life} life)`, archetype: g.archetype, decklist: g.decklist, life: pd.guardian.life, profile: "master", basics: 0, bonuses: [] });
+  }
+  for (const m of dj.mox) {
+    const c = COURT_DECKS[m.guardian.key];
+    if (!c) continue;
+    const law: LabBonus[] = m.law.both.map((b) => (b.type === "extraCards" ? { type: "extraCards", count: b.count, both: true } : { type: "permanent", cardId: b.cardId, both: true }));
+    out.push({ key: `boss:mox:${m.guardian.key}`, group: "bosses", name: c.name, label: `${c.name} — Mox court (${m.color}, ${m.guardian.life} life; law: ${m.law.name}, both sides)`, archetype: c.archetype, decklist: c.decklist, life: m.guardian.life, profile: "master", basics: 0, bonuses: law });
+  }
+  for (const s of dj.strongholds) {
+    const l = LORD_DECKS[s.lord.key];
+    if (!l) continue;
+    out.push({ key: `boss:lord:${s.lord.key}`, group: "bosses", name: l.name, label: `${l.name} — stronghold lord (${s.color}, ${s.lord.baseLife} base life; law ${s.law.name} in play, the signature to hand)`, archetype: l.archetype, decklist: l.decklist, life: s.lord.baseLife, profile: "master", basics: 0, bonuses: [{ type: "permanent", cardId: s.law.cardId }, { type: "cardInHand", cardId: s.lord.cardId }] });
+  }
+  for (const p of dj.corolla.petals) {
+    const c = COROLLA_DECKS[p.boss.key];
+    if (!c) continue;
+    const law = dj.strongholds.find((s) => s.color === p.color)?.law;
+    out.push({ key: `boss:petal:${p.boss.key}`, group: "bosses", name: c.name, label: `${c.name} — petal boss (${p.color}, ${dj.corolla.bossLife} life; the ${law?.name ?? "chamber's"} law returned)`, archetype: c.archetype, decklist: c.decklist, life: dj.corolla.bossLife, profile: "master", basics: 0, bonuses: law ? [{ type: "permanent", cardId: law.cardId }] : [] });
+  }
+  out.push({ key: "boss:heart", group: "bosses", name: HEART_DECK.name, label: `${HEART_DECK.name} — the Heart (${HEART_LIFE_STANDARD} life standard; five roots, the flower to hand, the law ring)`, archetype: HEART_DECK.archetype, decklist: HEART_DECK.decklist, life: HEART_LIFE_STANDARD, profile: "master", basics: 0, bonuses: [...HEART_ROOTS.map((cardId) => ({ type: "permanent" as const, cardId })), { type: "cardInHand", cardId: HEART_DECK.signature }, { type: "lawSequence" }] });
   for (const k of Object.keys(DECKS) as DeckKey[]) {
     out.push({ key: `slice:${k}`, group: "slices", name: DECKS[k].name, label: `${k} · ${DECKS[k].name} (slice)`, archetype: DECK_ARCHETYPES[k], decklist: DECKS[k].decklist, life: 20, profile: "journeyman", basics: 0 });
+  }
+  return out;
+}
+
+/** A custom deck (the Lab's editor; saved under analysis/decks/). */
+export interface CustomDeck { name: string; archetype: Archetype; decklist: Decklist; basedOn?: string; when?: string; notes?: string }
+export function customAsLabDeck(c: CustomDeck): LabDeck {
+  return { key: `custom:${c.name}`, group: "custom", name: c.name, label: `${c.name} (custom${c.basedOn ? `, from ${c.basedOn}` : ""}; ${c.decklist.reduce((n, e) => n + e.count, 0)} cards)`, archetype: c.archetype, decklist: c.decklist, life: 20, profile: "journeyman", basics: 0 };
+}
+
+/** Deck stats for the editor: cards, lands, average mana value of the nonland cards, unknown ids. */
+export function deckStats(decklist: Decklist, pool: Map<string, CardDef>): { cards: number; lands: number; avgMv: number; unknown: string[] } {
+  let cards = 0, lands = 0, mv = 0, nonland = 0; const unknown: string[] = [];
+  for (const e of decklist) {
+    const d = pool.get(e.cardId);
+    if (!d) { unknown.push(e.cardId); continue; }
+    cards += e.count;
+    if (d.types.includes("Land")) lands += e.count;
+    else { nonland += e.count; mv += e.count * manaValue(d.manaCost); }
+  }
+  return { cards, lands, avgMv: nonland ? mv / nonland : 0, unknown };
+}
+export function manaValue(cost: string): number {
+  let n = 0;
+  for (const sym of cost.match(/\{[^}]+\}/g) ?? []) { const inner = sym.slice(1, -1); n += /^\d+$/.test(inner) ? Number(inner) : inner === "X" ? 0 : 1; }
+  return n;
+}
+
+/** Resolve a side for the worker: the deck (catalogue or custom), its entrance basics, its bonuses. */
+export function resolveSide(side: LabSide, decks: Map<string, LabDeck>, pool: Map<string, CardDef>): ResolvedSide {
+  const deck = decks.get(side.deck);
+  if (!deck) throw new Error(`unknown deck ${side.deck}`);
+  return { name: deck.name, decklist: deck.decklist.map((e) => ({ ...e })), archetype: deck.archetype, life: side.life, profile: side.profile, entrance: entranceBasics(deck, side.basics, pool), bonuses: side.bonuses.map((b) => ({ ...b })) };
+}
+
+/** A side's engine modifiers for a seat — the entrance basics and every bonus; `both` bonuses also land on the other seat. */
+export function sideModifiers(side: ResolvedSide, seat: 0 | 1): Modifier[] {
+  const other = (1 - seat) as 0 | 1;
+  const out: Modifier[] = [{ type: "startingLife", player: seat, value: side.life }];
+  for (const cardId of side.entrance) out.push({ type: "permanentOnBattlefield", player: seat, cardId });
+  for (const b of side.bonuses) {
+    const seats: (0 | 1)[] = b.both ? [seat, other] : [seat];
+    for (const p of seats) {
+      if (b.type === "permanent") out.push({ type: "permanentOnBattlefield", player: p, cardId: b.cardId });
+      else if (b.type === "cardInHand") out.push({ type: "signatureToHand", player: p, cardId: b.cardId });
+      else if (b.type === "extraCards") out.push({ type: "extraCards", player: p, count: b.count });
+      else if (b.type === "lawSequence" && p === seat) out.push({ type: "lawSequence" });
+    }
   }
   return out;
 }
