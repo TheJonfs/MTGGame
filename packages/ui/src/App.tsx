@@ -7,6 +7,8 @@ import { Transport } from "./components/Transport";
 import { LogPanel, buildLogLines } from "./components/LogPanel";
 import { Gallery } from "./components/Gallery";
 import { PlayApp } from "./play/PlayApp";
+import { LabApp } from "./lab/LabApp";
+import { devMenuEnabled } from "./dev";
 import { WorldApp } from "./world/WorldApp";
 import { SoundBoard } from "./audio/SoundBoard";
 
@@ -205,6 +207,7 @@ function MainMenu() {
           <a href="/play"><img src="/menu-duel.png" alt="" /><b>A single match</b><span>one duel, any decks, no world attached</span></a>
           <a href="/gallery"><img src="/menu-gallery.png" alt="" /><b>The card gallery</b><span>every card in the pool, both frames</span></a>
           <a href="/viewer"><img src="/menu-viewer.png" alt="" /><b>The replay viewer</b><span>watch any saved game, decision by decision</span></a>
+          {devMenuEnabled() && <a href="/lab"><b>The matchup lab</b><span>dev: any pairing under any conditions, simulated live</span></a>}
         </div>
       </div>
     </div>
@@ -240,5 +243,6 @@ export default function App() {
     return game ? <Viewer game={game} /> : <Loader onLoad={setGame} />;
   }
   if (window.location.pathname === "/sound") return <SoundBoard />; // S24 r2: the SFX tuning board (dev surface)
+  if (window.location.pathname === "/lab" && devMenuEnabled()) return <LabApp />; // S33 director round: the matchup lab (dev surface)
   return <MainMenu />;
 }

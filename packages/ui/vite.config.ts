@@ -2,7 +2,7 @@ import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import { fileURLToPath } from "node:url";
 import { dirname, join, normalize } from "node:path";
-import { createReadStream, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { createReadStream, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repo = join(here, "../..");
@@ -96,6 +96,30 @@ through (\`~~...~~\`) when resolved. Newest note last within each card.
             res.statusCode = 400;
             res.end(JSON.stringify({ ok: false, error: String(e) }));
           }
+        });
+      });
+      // S33 director round: the Matchup Lab's runs — JSON under the gitignored analysis/runs/.
+      const labDir = join(repo, "analysis/runs");
+      server.middlewares.use("/__lab-list", (_req, res) => {
+        mkdirSync(labDir, { recursive: true });
+        const runs = readdirSync(labDir).filter((f) => f.endsWith(".json")).map((f) => { try { return JSON.parse(readFileSync(join(labDir, f), "utf8")); } catch { return null; } }).filter(Boolean);
+        runs.sort((a, b) => String(b.when).localeCompare(String(a.when)));
+        res.setHeader("Content-Type", "application/json");
+        res.end(JSON.stringify(runs));
+      });
+      server.middlewares.use("/__lab-save", (req, res, next) => {
+        if (req.method !== "POST") return next();
+        let body = "";
+        req.on("data", (c) => { body += c; });
+        req.on("end", () => {
+          try {
+            const run = JSON.parse(body) as { name: string };
+            const safe = String(run.name).replace(/[^A-Za-z0-9._-]+/g, "-").slice(0, 80) || "run";
+            mkdirSync(labDir, { recursive: true });
+            writeFileSync(join(labDir, `${safe}.json`), JSON.stringify({ ...run, name: safe }, null, 2));
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify({ ok: true, name: safe }));
+          } catch (e) { res.statusCode = 400; res.end(String(e)); }
         });
       });
       server.middlewares.use("/__flag", (req, res, next) => {

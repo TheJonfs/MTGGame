@@ -15,3 +15,7 @@ assets/temp/
 # S27 (the Vercel deploy): the build copies the fetched Scryfall art here for the static /real-art/* route
 packages/ui/public/real-art/
 packages/ui/public/audio/
+
+# S33 director round (Chris): the analysis scratch space — Matchup Lab runs (/lab saves JSON here) and
+# any other exploratory tables. Never committed; the handoff carries the reads.
+analysis/

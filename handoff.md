@@ -13,6 +13,10 @@
 - **Part 4**: Brainstorm's per-copy rate and its windows for the five blue decks (200 games each against their tier mates, a scratch script reading the ACTION log's step against the turn's active player) beside the S31 rates.
 - **Part 6**: the scoping below.
 
+## Director round (Chris, 2026-09-08): the Matchup Lab
+
+**`/lab` in the viewer (dev surface; `pnpm viewer` → the menu's "matchup lab" door or `/lab`)** — an interactive analysis tool for the tier question and any other matchup read. Pick side A from every deck the game has (the fifteen mages, the seventeen beasts at their catalog rows, the five starters, the road decks incl. `road-mid-W/B` and `chris-road-B`, the slice decks A–E), set its life, basics in play and AI profile; side B the same (the reference, fixed). The grid varies A over lists of lives × basics (any values), N games per cell both seats, from a seed; cells run in web workers (one fewer than the machine's cores) with the REAL engine and heuristic agents — the sweep's call, in the browser. Each cell shows B's (or A's) win rate with its 95% interval, mean turns and the by-library share, shaded green inside a band you set (55–65 by default) and redder the further outside; click a cell for the play/draw split, wins by library, the winners' life left (the margin), and a turns histogram. Runs save to the gitignored **`analysis/runs/<name>.json`** through the dev server (name + notes; listed, loadable, and one can be overlaid as a Δ column on the current grid); "download JSON" for the deploy case. `analysis/` is the exploratory scratch space going forward (README inside). Nine cells of 100 games take about two minutes on six workers; the S33 matrix cell for Corvane at 20/2 reproduced at 65% in a twenty-game smoke (the sweep said 59% at a hundred). Files: `packages/ui/src/lab/` (`LabApp.tsx`, `lab-worker.ts`, `lab-decks.ts`, `lab-types.ts`), the `/__lab-list` and `/__lab-save` dev middlewares in `vite.config.ts`. The Lab re-implements no rules.
+
 ## Deviations from the brief
 
 None. Nothing moved; the two findings below (Concerns 4–5) are reported, not changed — this being a measuring session.
