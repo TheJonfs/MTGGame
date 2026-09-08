@@ -63,6 +63,42 @@
 - **The roads**: Dawn Levy 68% over everyone (the gentle road, ADR-114, confirmed from this side too); Pallid Court, Ember Warband and Verdant Trail 56–57%; **Tidal Grimoire 51% overall and 46% against the mages** — the blue road is the hard one, and it is hard at every tier rather than progressively.
 - **Per-tier bands for the visual**: the Lab's roster mode shades each cell by its column's tier band, seeded with placeholders Chris can move — T1 65–80, T2 45–55, T3 30–45 (the row's win rate). Against those, the baseline's mages sit above every band at tiers 2 and 3 for most starters; the beasts sit inside at tiers 2–3 and above at tier 1.
 
+**The first tuning read (Chris, 2026-09-08 — `analysis/runs/first_tier_tuning.json`, 200 games per cell, fresh seeds, 62,000 games).** Shifts: tier-1 mages −2 life; tier-2 mages +2 life; tier-3 mages +2 life and one entrance basic; tier-3 beasts +2 life; tier-1/2 beasts untouched (the noise floor). Tier aggregates, the starter's win %, baseline → shifted, against the placeholder bands (T1 65–80, T2 45–55, T3 30–45; ✓ in band, ▲ above, ▼ below):
+
+| starter | T1 mages | T2 mages | T3 mages | T1 beasts | T2 beasts | T3 beasts |
+|---|---|---|---|---|---|---|
+| Dawn Levy (W) | 73 → **79** ✓ | 68 → **63** ▲ | 62 → **37** ✓ | 85 → 83 ▲ | 65 → 64 ▲ | 56 → 50 ▲ |
+| Tidal Grimoire (U) | 50 → **55** ▼ | 49 → **44** ▼ | 46 → **32** ✓ | 63 → 65 ▼ | 52 → 50 ✓ | 46 → 44 ✓ |
+| Pallid Court (B) | 62 → **66** ✓ | 60 → **53** ✓ | 57 → **36** ✓ | 73 → 72 ✓ | 49 → 51 ✓ | 39 → 33 ✓ |
+| Ember Warband (R) | 62 → **77** ✓ | 54 → **49** ✓ | 49 → **28** ▼ | 72 → 74 ✓ | 49 → 46 ✓ | 39 → 30 ✓ |
+| Verdant Trail (G) | 63 → **72** ✓ | 56 → **55** ▲ | 56 → **32** ✓ | 64 → 66 ✓ | 43 → 45 ✓ | 40 → 32 ✓ |
+| in band (of 5) | 4 | 2 | 4 | 3 | 4 | 4 |
+
+Per cell (the starter's win %, baseline → shifted):
+
+| starter | Oriel T1 | Tessaly T1 | Edric T1 | Brann T1 | Hask T1 | Vael T2 | Kessa T2 | Maelin T2 | Brennor T2 | Pell T2 | Corvane T3 | Varro T3 | Sorrel T3 | Ysolde T3 | Quill T3 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Dawn Levy | 54→58 | 80→91 | 74→80 | 78→78 | 80→90 | 48→48 | 66→60 | 83→80 | 67→62 | 76→68 | 76→54 | 52→27 | 53→38 | 54→26 | 76→40 |
+| Tidal Grimoire | 27→29 | 49→59 | 54→65 | 60→63 | 60→58 | 24→22 | 52→40 | 66→62 | 41→40 | 60→55 | 62→48 | 47→26 | 40→32 | 27→14 | 56→40 |
+| Pallid Court | 40→46 | 74→79 | 40→44 | 74→72 | 82→86 | 20→18 | 64→62 | 73→65 | 76→64 | 68→55 | 68→46 | 58→29 | 52→40 | 52→30 | 54→37 |
+| Ember Warband | 44→64 | 72→80 | 49→71 | 70→85 | 72→85 | 32→32 | 66→58 | 65→54 | 46→42 | 64→60 | 54→34 | 50→21 | 54→38 | 33→17 | 54→29 |
+| Verdant Trail | 45→60 | 78→84 | 54→62 | 68→77 | 68→80 | 31→38 | 63→63 | 60→61 | 54→50 | 72→64 | 66→34 | 54→32 | 54→33 | 47→23 | 62→36 |
+
+| starter | Grizzly T1 | Recluse T1 | Man-o'-War T1 | Tactician T1 | Rats T1 | Ogre T1 | Lion T1 | Warband T2 | Nighthawk T2 | Gale T2 | Baloth T2 | Siege-Gang T3 | Specter T3 | Serra T3 | Wurm T3 | Formation T3 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Dawn Levy | 87→88 | 77→77 | 94→91 | 92→94 | 86→84 | 84→80 | 71→69 | 64→62 | 43→46 | 88→86 | 63→62 | 49→50 | 82→76 | 28→20 | 54→46 | 68→61 |
+| Tidal Grimoire | 80→74 | 60→56 | 67→72 | 70→79 | 68→66 | 66→72 | 28→34 | 40→40 | 24→22 | 78→74 | 64→62 | 51→46 | 67→74 | 20→15 | 38→35 | 54→50 |
+| Pallid Court | 80→79 | 76→76 | 78→82 | 70→70 | 80→80 | 82→79 | 43→42 | 57→58 | 6→14 | 58→61 | 74→74 | 40→31 | 68→68 | 15→10 | 44→32 | 28→24 |
+| Ember Warband | 68→76 | 74→78 | 86→82 | 81→79 | 70→72 | 84→78 | 44→53 | 54→48 | 22→20 | 84→83 | 36→34 | 34→26 | 66→62 | 16→10 | 38→27 | 41→27 |
+| Verdant Trail | 64→70 | 44→52 | 70→75 | 78→80 | 59→64 | 82→83 | 48→42 | 50→57 | 17→17 | 67→68 | 37→38 | 49→43 | 56→48 | 28→20 | 30→22 | 38→28 |
+
+The reads:
+- **Chris's read holds**: 21 of 30 tier aggregates land in band, and every miss but two is one pattern — Dawn Levy punches above (T2 mages 63; all three beast tiers high) and Tidal Grimoire below (T1 mages 55, T2 mages 44, T1 beasts 65). Black, red and green are in band at every group except red's tier-3 mages at 28, just under. Chris's reading of the cause: tricky play with instants and counters is harder to build a good AI for than executing a weenie deck in a 10–20-life format — the white/blue split is the AI's, not only the lists'.
+- **The tier-3 lever is large and real**: +2 life and one basic moved the tier-3 mage aggregate −14 to −25 for every starter, against a measured noise floor of ±4 (the unshifted beast groups: mean Δ +1.0, sd 4.5 over 35 cells; max |Δ| 9). The tier-2 shift of +2 life alone moved −1 to −7, mostly inside the noise — life alone is the weak lever, the basic the strong one (the S33 matrix's conclusion from this side).
+- **The tier-1 shift worked the wanted way** (+4 to +15 for the starters); Oriel remains the wall even at 6 life (29–64 for the starters), Vael at 12 (18–48) — the two mages a tier shift does not reach: list problems.
+- Per cell, the mages moved from 18 to 26 of 75 cells in band; the beasts stayed at 26 of 80 (only tier 3 was shifted there; the tier-1 beasts sit above every starter's band, as in the baseline).
+- **The two starters that miss, miss in opposite directions by about the same amount** — a tier shift that brings blue into band pushes white further out. The next tests belong on the deck side: Dawn Levy and Tidal Grimoire list variations, run against the same roster with the Lab's custom decks (edit a copy → save → rows), the baseline overlaid. Chris and the planner to scope them.
+
 **The roster mode (the Lab).** A second mode beside the pairing grid: rows = any set of decks (the five starters by default; roads, custom decks and the slice decks may join), at their world defaults or one override for life / basics / AI; columns = every mage and/or every beast at THEIR defaults (a checkbox each); N games per cell; the grid shows the row's win rate per cell shaded by the column's tier band (three editable bands), a rows'-mean line, and a per-row aggregate table by group — T1/T2/T3 mages, T1/T2/T3 beasts, all mages, all beasts, everyone — each a number with n and a bar (0–100, the tick at 50, the band in green); click a cell for the play/draw split, margins and turns. Saves and loads as a run like the grid (the setup is kept, so a re-run after a list change is one click).
 
 **The differential (Chris, same day).** A Shifts panel beside Columns: for each of the six enemy groups (the three tiers of mages, the three tiers of beasts) a shift in life and in entrance basics, added to every column's world default. With "run a second sweep" on, the roster runs twice — the baseline at the defaults, then every cell again with the shifts — and each cell carries two values: the baseline win rate on top and the shifted sweep's Δ beneath (▲ marks a shifted column; the rows'-mean line carries the mean Δ). **The second sweep uses fresh seeds by default**, so the UNshifted cells show the Monte Carlo noise floor and an effect size can be read against it (the sim is deterministic per seed — paired seeds would make every unshifted Δ exactly zero; a "paired" toggle gives that low-variance comparison when wanted). The noise floor for a Δ at N games (the standard error of a difference of two proportions near 50%) is printed and Δs beyond it are coloured — blue when the row wins more, red when less. The aggregate table shows "baseline → shifted Δ" per group with the shifted mean as a dark marker on the bar; the band is now an outlined box in a higher-contrast green. Verified live: tier-3 mages at +4 life / +2 basics, 5 × 15 × 4 × 2 sweeps — the T3 aggregate moved −5 for Dawn Levy while the unshifted tiers showed +15 / +20 of noise at four games per cell (the floor there is ±35).
