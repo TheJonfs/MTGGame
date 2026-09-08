@@ -292,7 +292,7 @@ export class WorldController {
     let n = 0;
     for (const petal of def.petals) {
       if (fallen.has(petal.color)) continue;
-      const fake: MatchResult = { winner: 0, reason: "LIFE", turns: 0, finalLife: [this.world.player.worldLife, 0], facts: { damageDealt: [0, 0], creaturesLost: [0, 0], cardsDrawn: [0, 0], spellsCast: {}, ante: [[], []] }, log: [], finalStateSerialized: "" };
+      const fake: MatchResult = { winner: 0, reason: "LIFE", turns: 0, finalLife: [this.world.player.worldLife, 0], facts: { damageDealt: [0, 0], creaturesLost: [0, 0], cardsDrawn: [0, 0], spellsCast: {}, returned: {}, ante: [[], []] }, log: [], finalStateSerialized: "" };
       applyPetalDuel(this.world, this.knobs, this.pool, petal, fake);
       n += 1;
     }

@@ -282,6 +282,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | darksteel_myr | som | 151 | Randis Albion | 0f5712cf-c6a9-4a2e-90db-8ca17c621724 |
 | deadly_recluse | m10 | 175 | Warren Mahy | 6ab810f1-21d6-4a98-b77a-e455370aa6cc |
 | demonic_tutor | lea | 104 | Douglas Shuler | 711d4d54-5520-4de8-9b93-79902ed8e562 |
+| diabolic_edict | tmp | 128 | Ron Spencer | a2ecf2ee-1e2d-4ab2-8b2c-717c794b09b2 |
 | disenchant | lea | 18 | Amy Weber | 2722d7e2-61c6-4934-9c21-875ee78fd06c |
 | divination | m10 | 49 | Howard Lyon | 3102cec9-1cdc-4946-a2dd-caf04eaa8b97 |
 | doom_blade | m10 | 93 | Chippy | 6e19acff-f3dd-417a-a9ab-ea3e36c1ba61 |
@@ -349,6 +350,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | phyrexian_rager | apc | 49 | Mark Tedin | 3addf34c-ea54-42a3-bccd-b73453d964d2 |
 | plains | leb | 288 | Jesper Myrfors | b7331b03-be66-419c-94bc-ed494c042ea3 |
 | plateau | olgc | 2018A | Mark Poole | 0829af6e-7dd9-4bce-bf14-1c5d509556cb |
+| plumecreed_escort | blb | 65 | Manuel Castañón | f71320ed-2f30-49ce-bcb0-19aebba3f0e8 |
 | prey_upon | isd | 200 | Dave Kendall | b7b3eaf0-4207-4bac-923d-29f348c95a35 |
 | pyroclasm | ice | 214 | Pat Lewis | 88040748-ad76-4b9a-bd4e-87e5980e9816 |
 | raging_goblin | por | 145 | Pete Venters | fed57a17-7847-4e60-bc40-4452880f12a3 |
@@ -487,6 +489,15 @@ Pool 184 → **185**. The last card. Custom, five-colour, prizeOnly (sole-mechan
 | grazing_gladehart | Grazing Gladehart | tested | triggered(LAND_ENTERS_UNDER_YOUR_CONTROL) gainLife 2 you, optional | ZEN first printing (2009); tier 1 / 12g (priceOverride). Landfall — a Wood Elves' fetched Forest triggers it (fixture). Pell ×2. |
 
 *ADR-106/107/108 lists:* Tessaly (3 Traumatizer, 1 Wall of Air, 1 Counterspell, 16 Island), Pell (the pump-mill deck: 3 Traumatizer, 2 Gladehart, 2 Baloth, 2 Rancor, 2 Giant Growth; no counters), Corvane (+Terror, +1 Buried Alive, +Artisan; −Overseer, −2 Dark Ritual), Quill (−1 Wall of Blossoms, +1 Traumatizer); Varro unchanged. The five starters amended per ADR-106 (`data/world/starters.json`; `docs/reference/starters.md`).
+
+## Session 32 additions — the Escort and the Edict (ADR-109; planner-verified, implementer re-verified on Scryfall 2026-09-07)
+
+| id | Card | Status | Vocabulary | Notes |
+|---|---|---|---|---|
+| plumecreed_escort | Plumecreed Escort | tested | flash, flying; triggered(self ETB) targets creatureYouControl: grantKeyword hexproof, duration UNTIL_END_OF_TURN | BLB first printing (2024); tier 1 / 12g (priceOverride). **Zero words** — the resolved `grantKeyword` with the S22 haste rider's until-end-of-turn duration; hexproof is honoured by the targeting predicate (a Bolt / Pacifism at the saved creature fizzles; the grant ends at cleanup; an Escort saves another Escort; alone it is its own forced target — fixtures). AI (book 49): an instant, not a creature spell — the opponent's end step by default, in response to a spell aimed at ours (the flash cast IS the save; the ETB goes to the creature under fire), on our own turn only with idle mana. The view's stack now carries its targets (the S29 "doomed" read had been blind live). Tessaly ×2, Kessa ×1; the blue starter ×2. |
+| diabolic_edict | Diabolic Edict | tested | targets player: sacrifice who: target, count 1, predicate creature (R-094 word 3) | TMP first printing (1997); tier 2 / 16g (priceOverride). **Zero words** on S31's edict. The lone creature goes forced; no creatures resolves doing nothing; the defender picks (fixtures). AI (book 50): worth the LEAST creature the target would give up — never into no creatures, a token shield, or our own face. Sorrel ×1. |
+
+*ADR-110 lists:* Tessaly (−1 Wall of Air −1 Boomerang +2 Escort), Corvane (−1 Gravedigger −1 Unearth +2 Dark Ritual), Sorrel (−1 Terror +1 Edict), Kessa (−1 Boomerang +1 Escort); Dawn Levy and Tidal Grimoire amended (`starters.json`). *ADR-111:* the two mid-road references live in `packages/sim/src/road-decks.ts` (`roadMidW`, `roadMidB`; a world test keeps them equal to their starter plus the planner's eight cards). *S32 AI corrections:* the S28 cantrip window compared the step to "END_STEP" while the engine's step is "END" — Brainstorm's end-step cast never happened live (only the in-response path); fixed with the Escort's gate. The pump-waste gate reads instants and sorceries only (a permanent's until-end-of-turn ETB is a body, not a trick).
 
 ## Shop tiers (ADR-078, S19)
 

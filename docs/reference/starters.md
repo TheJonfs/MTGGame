@@ -13,17 +13,17 @@
 
 ## Dawn Levy (W, aggro) — `starter:white`
 
-- 30 cards · 13 lands · avg MV 1.76 · colours W · refills with Plains
-- Curve (nonland, by mana value): 1: 7 · 2: 8 · 3: 1 · 4: 1
+- 30 cards · 13 lands · avg MV 1.82 · colours W · refills with Plains
+- Curve (nonland, by mana value): 1: 7 · 2: 7 · 3: 2 · 4: 1
 - Easy: +1 Pacifism, +1 Glorious Anthem · Hard: +1 Plains, −1 Swords to Plowshares
-- 13 Plains · 2 Savannah Lions · 4 Suntail Hawk · 1 Swords to Plowshares · 3 Fencing Ace · 2 Pacifism · 2 Raise the Alarm · 1 Youthful Valkyrie · 1 Glorious Anthem · 1 Cunning Tactician
+- 13 Plains · 2 Savannah Lions · 4 Suntail Hawk · 1 Swords to Plowshares · 2 Fencing Ace · 1 Master Decoy · 2 Pacifism · 1 Raise the Alarm · 1 Youthful Valkyrie · 1 Glorious Anthem · 1 Inspiring Overseer · 1 Cunning Tactician
 
 ## Tidal Grimoire (U, control) — `starter:blue`
 
-- 30 cards · 12 lands · avg MV 2.78 · colours U · refills with Island
-- Curve (nonland, by mana value): 1: 1 · 2: 4 · 3: 12 · 5: 1
+- 30 cards · 12 lands · avg MV 2.67 · colours U · refills with Island
+- Curve (nonland, by mana value): 1: 1 · 2: 6 · 3: 10 · 5: 1
 - Easy: +1 Boomerang, +1 Cloudkin Seer · Hard: +1 Island, −1 Essence Scatter
-- 12 Island · 1 Brainstorm · 2 Boomerang · 2 Essence Scatter · 2 Aether Channeler · 2 Cloudkin Seer · 4 Man-o'-War · 2 Wall of Air · 2 Wind Drake · 1 Air Elemental
+- 12 Island · 1 Brainstorm · 2 Boomerang · 2 Essence Scatter · 2 Plumecreed Escort · 1 Aether Channeler · 1 Cloudkin Seer · 4 Man-o'-War · 2 Wall of Air · 2 Wind Drake · 1 Air Elemental
 
 ## Pallid Court (B, midrange) — `starter:black`
 

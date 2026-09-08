@@ -55,10 +55,10 @@ At session end, **overwrite `handoff.md`** using the template at the bottom of t
 - `docs/briefs/` — numbered session briefs; never edit existing ones.
 - `docs/art-direction.md`, `docs/prompts/*.md`, `docs/art/printings.md` — visual direction, generation prompts, Scryfall printing rules. Planner-maintained.
 - `.claude/skills/gemini-image/` — image generation skill. Read its SKILL.md before generating assets; its conventions own `assets/images/` and `assets/manifest.json` (S6 deviation 4). Derived, UI-ready assets live in `assets/generated/` with `MANIFEST.md` as the human ledger; locked subject prompts in `docs/art/subjects/`.
-- `assets/generated/` — generated art (committed) with `MANIFEST.md`. `data/art/real/` — Scryfall images (gitignored).
+- `assets/generated/` — generated art (committed) with `MANIFEST.md`. `data/art/real/` — Scryfall images (**tracked**; `art:fetch` adds scans, commit them with the def).
 - `fixtures-inbox/` — flagged replay moments awaiting triage (data-model §8).
 - `packages/` — TypeScript monorepo (see engine-design §1). Tests: `pnpm test` = smoke fuzz; `FUZZ_FULL=1 pnpm test` = full (ADR-034).
-- `data/cards/` — card definition files. `data/art/` — images (gitignored except custom-card folder).
+- `data/cards/` — card definition files. `data/art/` — images (**tracked**).
 - `assets/` (later) — build-time fetched art.
 
 ## Working style

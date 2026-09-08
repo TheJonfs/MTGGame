@@ -114,6 +114,22 @@ export function predictAction(
         for (const id of view.graveyards[me] ?? []) best = Math.max(best, reanimationWorth(defs.get(id)));
         adjustment += best;
       }
+      // S32 (ADR-109, Plumecreed Escort — book 49): a creature whose ETB grants HEXPROOF to a creature
+      // we control is a save when an opponent's stack item is aimed at one of ours — worth the
+      // threatened creature (the removal fizzles); the biggest one under fire.
+      const savesEtb = (d.abilities ?? []).some((a) => a.kind === "triggered" && a.event === "ENTERS_BATTLEFIELD" && a.effects.some((e) => e.type === "grantKeyword" && (e.keyword === "hexproof" || e.keyword === "shroud") && e.target !== undefined));
+      if (savesEtb) {
+        let saved = 0;
+        for (const it of view.stack) {
+          if (it.controller === me) continue;
+          for (const t of it.targets ?? []) {
+            if (t.kind !== "object") continue;
+            const o = view.battlefield.find((b) => b.id === t.id && b.controller === me);
+            if (o) saved = Math.max(saved, objectValue(defs, o, constants));
+          }
+        }
+        adjustment += saved;
+      }
       // S28 (ADR-096, the turn-one flower): a permanent that GROWS LAWS (a `createLaw` trigger — the
       // Manafleur's engine) is worth a petal a turn on top of its body; without this the master
       // priced Faerie Formation a hair above the flower and bloomed a turn late (heart-sim, seed 510).

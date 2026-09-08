@@ -153,6 +153,64 @@ describe("play-mode acceptance (headless; S10 DoD 1)", () => {
     expect(searchActions).toBeGreaterThan(0); // a Growth/Tutor resolved through the dialog path in at least one game
   }, 120_000);
 
+  it("S32 (the S31 small): the annihilator's sacrifice dialog reaches the human seat through the UI event path — the request is a chooseSacrifice with the Artisan as its source, one pick per permanent, and the picks resolve", async () => {
+    const pool = loadCardPool(CARDS_DIR);
+    const c = new MatchController(pool.cards, {
+      humanSeat: 0,
+      seed: 32,
+      aiDelayMs: 0,
+      custom: {
+        human: { name: "You", decklist: [{ cardId: "island", count: 40 }] },
+        enemy: { name: "Corvane", decklist: [{ cardId: "swamp", count: 40 }], difficulty: "master", archetype: "midrange" },
+        rules: { startingLife: 20, ante: 0, startingPlayer: 1 },
+        modifiers: [
+          { type: "permanentOnBattlefield", player: 1, cardId: "artisan_of_kozilek" },
+          { type: "permanentOnBattlefield", player: 0, cardId: "forest" },
+          { type: "permanentOnBattlefield", player: 0, cardId: "forest" },
+          { type: "permanentOnBattlefield", player: 0, cardId: "grizzly_bears" },
+        ],
+      },
+    });
+    c.start();
+    let guard = 0;
+    let sacDialogs = 0;
+    const picked: string[] = [];
+    while (!c.result && guard++ < 20000 && sacDialogs < 2) {
+      await new Promise((r) => setTimeout(r, 0));
+      if (c.phase.kind === "dialog") {
+        const req = c.phase.request;
+        if (req.purpose === "chooseSacrifice") {
+          expect(req.source?.cardId).toBe("artisan_of_kozilek");
+          expect(req.source?.effects.some((e) => e.type === "sacrifice" && "who" in e && e.who === "opponent")).toBe(true);
+          expect(req.actions.every((a) => a.type === "sacrifice")).toBe(true);
+          const forest = req.actions.findIndex((a) => a.type === "sacrifice" && c.game.state.objects[a.objectId]?.cardId === "forest");
+          picked.push(c.game.state.objects[(req.actions[Math.max(0, forest)] as { objectId: string }).objectId]!.cardId);
+          c.selectDialog(Math.max(0, forest));
+          c.confirmDialog();
+          sacDialogs += 1;
+        } else {
+          c.selectDialog(0);
+          c.confirmDialog();
+        }
+      } else if (c.phase.kind === "priority") {
+        c.pass();
+      } else if (c.phase.kind === "attackers") {
+        c.confirmAttackers();
+      } else if (c.phase.kind === "blockers") {
+        c.confirmBlocks();
+      }
+    }
+    expect(sacDialogs).toBe(2); // annihilator 2: two picks, one dialog each
+    expect(picked).toEqual(["forest", "forest"]);
+    // The batch move lands after the second pick's promise resolves — let the engine's continuation run.
+    for (let i = 0; i < 50 && c.game.state.players[0].graveyard.length < 2; i++) await new Promise((r) => setTimeout(r, 0));
+    expect(c.game.state.players[0].graveyard.filter((id) => c.game.state.objects[id]!.cardId === "forest")).toHaveLength(2);
+    expect(c.game.state.battlefield.some((id) => c.game.state.objects[id]!.cardId === "grizzly_bears")).toBe(true); // the Bears stayed
+    c.concede();
+    guard = 0;
+    while (!c.result && guard++ < 2000) await new Promise((r) => setTimeout(r, 0));
+  }, 60_000);
+
   it("S15 Lotus line through the play client: cast Lotus, activate → chooseColor → confirm → three mana floating, Lotus in the graveyard", async () => {
     const pool = loadCardPool(CARDS_DIR);
     const c = new MatchController(pool.cards, {

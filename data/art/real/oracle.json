@@ -2294,5 +2294,33 @@
     "art_crop": "https://cards.scryfall.io/art_crop/front/0/7/078b5290-a613-496f-bd23-8fd109549f31.jpg?1783942136",
     "normal": "https://cards.scryfall.io/normal/front/0/7/078b5290-a613-496f-bd23-8fd109549f31.jpg?1783942136",
     "via": "default oldest-highres"
+  },
+  "diabolic_edict": {
+    "scryfallId": "a2ecf2ee-1e2d-4ab2-8b2c-717c794b09b2",
+    "set": "tmp",
+    "set_name": "Tempest",
+    "collector_number": "128",
+    "artist": "Ron Spencer",
+    "name": "Diabolic Edict",
+    "mana_cost": "{1}{B}",
+    "type_line": "Instant",
+    "oracle_text": "Target player sacrifices a creature of their choice.",
+    "art_crop": "https://cards.scryfall.io/art_crop/front/a/2/a2ecf2ee-1e2d-4ab2-8b2c-717c794b09b2.jpg?1783946641",
+    "normal": "https://cards.scryfall.io/normal/front/a/2/a2ecf2ee-1e2d-4ab2-8b2c-717c794b09b2.jpg?1783946641",
+    "via": "default oldest-highres"
+  },
+  "plumecreed_escort": {
+    "scryfallId": "f71320ed-2f30-49ce-bcb0-19aebba3f0e8",
+    "set": "blb",
+    "set_name": "Bloomburrow",
+    "collector_number": "65",
+    "artist": "Manuel Castañón",
+    "name": "Plumecreed Escort",
+    "mana_cost": "{1}{U}",
+    "type_line": "Creature — Bird Scout",
+    "oracle_text": "Flash\nFlying\nWhen this creature enters, target creature you control gains hexproof until end of turn.",
+    "art_crop": "https://cards.scryfall.io/art_crop/front/f/7/f71320ed-2f30-49ce-bcb0-19aebba3f0e8.jpg?1783910845",
+    "normal": "https://cards.scryfall.io/normal/front/f/7/f71320ed-2f30-49ce-bcb0-19aebba3f0e8.jpg?1783910845",
+    "via": "default oldest-highres"
   }
 }

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { cardColors, type CardDef } from "@shandalar/cards";
 import { DECKS, type DeckKey } from "@shandalar/sim/decks";
+import { MAGE_DECKS } from "@shandalar/sim/mage-decks";
 import { loadOracle, loadPool, type OracleEntry } from "../engine-bridge";
 import { CardFrame } from "./CardFrame";
 import { readSeen } from "../seen";
@@ -55,12 +56,18 @@ function colorBucket(def: CardDef): (typeof COLOR_FILTERS)[number] {
   return c[0]!;
 }
 
-function deckMembership(): Map<string, DeckKey[]> {
-  const m = new Map<string, DeckKey[]>();
+/** Deck membership: the slice decks A–E (sim infrastructure) and, since S32 (the S30 small), the
+ * fifteen mages as `mage:<key>`. */
+type DeckFilterKey = DeckKey | `mage:${string}`;
+function deckMembership(): Map<string, DeckFilterKey[]> {
+  const m = new Map<string, DeckFilterKey[]>();
   for (const key of Object.keys(DECKS) as DeckKey[]) {
     for (const { cardId } of DECKS[key].decklist) {
       m.set(cardId, [...(m.get(cardId) ?? []), key]);
     }
+  }
+  for (const [key, mage] of Object.entries(MAGE_DECKS)) {
+    for (const { cardId } of mage.decklist) m.set(cardId, [...(m.get(cardId) ?? []), `mage:${key}` as const]);
   }
   return m;
 }
@@ -305,6 +312,7 @@ export function Gallery() {
         <select value={deck} onChange={(e) => setDeck(e.target.value)} title="Deck membership">
           <option value="all">deck: all</option>
           {(Object.keys(DECKS) as DeckKey[]).map((k) => <option key={k} value={k}>{k} · {DECKS[k].name}</option>)}
+          {Object.entries(MAGE_DECKS).map(([k, m]) => <option key={`mage:${k}`} value={`mage:${k}`}>{m.name} (T{m.tier} {m.colors})</option>)}
         </select>
         <label style={{ fontSize: 11, display: "flex", alignItems: "center", gap: 3 }}>
           <input type="checkbox" checked={printedAll} onChange={(e) => setPrintedAll(e.target.checked)} />

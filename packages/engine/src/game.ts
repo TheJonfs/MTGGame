@@ -158,6 +158,11 @@ export class Game {
       if (e.from === "battlefield" && e.to === "graveyard") {
         log.append({ t: "EVENT", name: "DIES", payload: { cardId: e.cardId, owner: e.owner } });
       }
+      // S32 (facts.returned): a graveyard → battlefield return (Zombify, Unearth, the Skeleton, the
+      // Artisan's cast trigger) — the reanimator decks' cast counts cannot see it (S31 deviation 6).
+      if (e.from === "graveyard" && e.to === "battlefield") {
+        log.append({ t: "EVENT", name: "RETURNED", payload: { cardId: e.cardId, controller: e.controller } });
+      }
       // Landfall's event exists from S2 even though nothing listens yet (skeleton-first).
       if (e.to === "battlefield" && e.newId && this.ctx.defs.def(e.cardId).types.includes("Land")) {
         bus.emit("LAND_ENTERS_UNDER_YOUR_CONTROL", { objectId: e.newId, controller: e.controller });

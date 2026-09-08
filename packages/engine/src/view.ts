@@ -1,3 +1,4 @@
+import type { ResolvedTarget } from "@shandalar/cards";
 import { characteristics } from "./characteristics.js";
 import type { EngineCtx } from "./ctx.js";
 import { getObject, opponentOf, type PlayerId } from "./state.js";
@@ -37,7 +38,9 @@ export interface GameView {
     toughness: number | null;
     keywords: string[];
   }[];
-  stack: { id: string; kind: string; cardId: string; controller: PlayerId }[];
+  /** S32: `targets` (public — the stack's targets are announced) so a creature under fire is visible
+   * to the agents: the Escort's save, the Altar's "doomed" read (which had been blind live since S29). */
+  stack: { id: string; kind: string; cardId: string; controller: PlayerId; targets?: ResolvedTarget[] }[];
   graveyards: [string[], string[]]; // cardIds, public zone
   /** S17: graveyard objects with ids (public) — graveyard-zone abilities (Mother Bear) are actions on object ids. */
   graveyardObjects: [{ objectId: string; cardId: string }[], { objectId: string; cardId: string }[]];
@@ -92,6 +95,7 @@ export function buildView(ctx: EngineCtx, player: PlayerId): GameView {
       kind: item.kind,
       cardId: item.sourceCardId,
       controller: item.controller,
+      targets: item.targets.map((t) => ({ ...t })),
     })),
     graveyards: [
       s.players[0].graveyard.map((id) => getObject(s, id).cardId),

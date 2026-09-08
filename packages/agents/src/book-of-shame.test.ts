@@ -541,7 +541,7 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
   it("book of shame 41–44 (S30, the floor): Thought Scour mills the opponent, not us; Buried Alive waits for a reanimator in hand; the Skeleton returns on their turn, or when behind, never over a spell the mana wants; Pyroclasm holds with our Pyromancer and Elementals out and fires into their X/2s; Wood Elves takes the Breeding Pool when a blue pip waits", () => {
     const a = agent();
     // 41 Thought Scour: the opponent's library, never our own.
-    const scour = mkView({ step: "END_STEP", activePlayer: 1, hand: [{ objectId: "h_ts", cardId: "thought_scour" }], battlefield: [{ id: "i1", cardId: "island", controller: 0 }] });
+    const scour = mkView({ step: "END", activePlayer: 1, hand: [{ objectId: "h_ts", cardId: "thought_scour" }], battlefield: [{ id: "i1", cardId: "island", controller: 0 }] });
     expect(a.scorePriorityAction(scour, { type: "castSpell", objectId: "h_ts", targets: [{ kind: "player", player: 1 }] })).toBeGreaterThan(a.scorePriorityAction(scour, { type: "castSpell", objectId: "h_ts", targets: [{ kind: "player", player: 0 }] }));
     // 42 Buried Alive: only with Zombify (or Unearth) in hand.
     const buried = (extra: { objectId: string; cardId: string }[]) => mkView({ step: "MAIN1", activePlayer: 0, hand: [{ objectId: "h_ba", cardId: "buried_alive" }, ...extra], battlefield: [{ id: "s1", cardId: "swamp", controller: 0 }, { id: "s2", cardId: "swamp", controller: 0 }, { id: "s3", cardId: "swamp", controller: 0 }] });
@@ -556,7 +556,7 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const withYard = (v: GameView): GameView => ({ ...v, graveyardObjects: [[{ objectId: "g_sk", cardId: "reassembling_skeleton" }], []] , graveyards: [["reassembling_skeleton"], []] });
     expect(a.scorePriorityAction(withYard(sk({ activePlayer: 0, step: "MAIN1", theirs: 0, hand: [{ objectId: "h_c", cardId: "child_of_night" }] })), ret)).toBe(-Infinity); // the Child wants the two mana
     expect(a.scorePriorityAction(withYard(sk({ activePlayer: 0, step: "MAIN1", theirs: 2, hand: [{ objectId: "h_c", cardId: "child_of_night" }] })), ret)).toBeGreaterThan(-Infinity); // behind: the blocker
-    expect(a.scorePriorityAction(withYard(sk({ activePlayer: 1, step: "END_STEP", theirs: 0, hand: [{ objectId: "h_c", cardId: "child_of_night" }] })), ret)).toBeGreaterThan(-Infinity); // their end step
+    expect(a.scorePriorityAction(withYard(sk({ activePlayer: 1, step: "END", theirs: 0, hand: [{ objectId: "h_c", cardId: "child_of_night" }] })), ret)).toBeGreaterThan(-Infinity); // their end step
     // Pyroclasm: with our Pyromancer + two Elementals out against one Bears, the sweep is a loss; against three X/2s with nothing of ours, a gain.
     const pyro = (mine: { id: string; cardId: string }[], theirs: { id: string; cardId: string }[]) =>
       mkView({ step: "MAIN1", activePlayer: 0, hand: [{ objectId: "h_p", cardId: "pyroclasm" }], battlefield: [{ id: "m1", cardId: "mountain", controller: 0 }, { id: "m2", cardId: "mountain", controller: 0 }, ...mine.map((o) => ({ ...o, controller: 0 as const })), ...theirs.map((o) => ({ ...o, controller: 1 as const }))] });
@@ -624,6 +624,35 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const z = (id: string) => a.scorePriorityAction(view, { type: "castSpell", objectId: "h_z", targets: [{ kind: "object", id }] });
     expect(z("g_art")).toBeGreaterThan(z("g_serra"));
     expect(z("g_serra")).toBeGreaterThan(z("g_ari"));
+  });
+
+  it("book of shame 49 (S32, Plumecreed Escort): a flash creature waits for the opponent's end step, flashes in against a Bolt at our Traumatizer (and its trigger picks the creature under fire), and on our own turn goes only when nothing else uses the mana", async () => {
+    const a = agent("control");
+    const lands = (n: number) => Array.from({ length: n }, (_, i) => ({ id: `i${i}`, cardId: "island", controller: 0 as const }));
+    const v = (opts: { step: string; activePlayer: 0 | 1; hand?: { objectId: string; cardId: string }[]; stack?: unknown[]; extra?: { id: string; cardId: string; controller: 0 | 1 }[] }) =>
+      mkView({ step: opts.step, activePlayer: opts.activePlayer, hand: [{ objectId: "h_esc", cardId: "plumecreed_escort" }, ...(opts.hand ?? [])], battlefield: [...lands(2), { id: "tr", cardId: "traumatizer", controller: 0 }, ...(opts.extra ?? [])], stack: (opts.stack ?? []) as never });
+    const cast = { type: "castSpell" as const, objectId: "h_esc", targets: [] };
+    expect(a.scorePriorityAction(v({ step: "MAIN1", activePlayer: 1 }), cast)).toBe(-Infinity); // their main phase, nothing to answer
+    expect(a.scorePriorityAction(v({ step: "END", activePlayer: 1 }), cast)).toBeGreaterThan(-Infinity); // their end step
+    expect(a.scorePriorityAction(v({ step: "MAIN1", activePlayer: 0, hand: [{ objectId: "h_crab", cardId: "hedron_crab" }] }), cast)).toBe(-Infinity); // our turn, the Crab wants the mana
+    expect(a.scorePriorityAction(v({ step: "MAIN1", activePlayer: 0 }), cast)).toBeGreaterThan(-Infinity); // our turn, idle mana
+    // The save: their Bolt at our Traumatizer — flash in (beats pass) and the ETB aims at the Traumatizer, not the untargeted Bears.
+    const bolt = { id: "s1", kind: "spell", cardId: "lightning_bolt", controller: 1, targets: [{ kind: "object", id: "tr" }] };
+    const threat = v({ step: "MAIN1", activePlayer: 1, stack: [bolt], extra: [{ id: "bear", cardId: "grizzly_bears", controller: 0 }] });
+    expect(a.scorePriorityAction(threat, cast)).toBeGreaterThan(a.scorePriorityAction(threat, { type: "pass" }));
+    const req = { player: 0 as const, purpose: "chooseTarget" as const, actions: [{ type: "chooseTriggerTargets" as const, targets: [{ kind: "object" as const, id: "bear" }] }, { type: "chooseTriggerTargets" as const, targets: [{ kind: "object" as const, id: "tr" }] }], source: { cardId: "plumecreed_escort", effects: [{ type: "grantKeyword" as const, keyword: "hexproof" as const, target: 0, duration: "UNTIL_END_OF_TURN" as const }] } };
+    expect(await a.chooseAction(threat, req as never)).toEqual({ type: "chooseTriggerTargets", targets: [{ kind: "object", id: "tr" }] });
+  });
+
+  it("book of shame 50 (S32, Diabolic Edict): never into no creatures, never into a 5/5 shielded by two Goblin tokens, never at our own face; a lone Serra is the play", () => {
+    const a = agent("midrange");
+    const v = (theirs: { id: string; cardId: string }[]) => mkView({ hand: [{ objectId: "h_ed", cardId: "diabolic_edict" }], battlefield: [{ id: "s1", cardId: "swamp", controller: 0 }, { id: "s2", cardId: "swamp", controller: 0 }, { id: "mine", cardId: "grizzly_bears", controller: 0 }, ...theirs.map((o) => ({ ...o, controller: 1 as const }))] });
+    const at = (player: 0 | 1) => ({ type: "castSpell" as const, objectId: "h_ed", targets: [{ kind: "player" as const, player }] });
+    expect(a.scorePriorityAction(v([]), at(1))).toBe(-Infinity);
+    expect(a.scorePriorityAction(v([{ id: "w", cardId: "pelakka_wurm" }, { id: "g1", cardId: "goblin_1_1" }, { id: "g2", cardId: "goblin_1_1" }]), at(1))).toBe(-Infinity);
+    const serra = v([{ id: "serra", cardId: "serra_angel" }]);
+    expect(a.scorePriorityAction(serra, at(0))).toBe(-Infinity);
+    expect(a.scorePriorityAction(serra, at(1))).toBeGreaterThan(a.scorePriorityAction(serra, { type: "pass" }));
   });
 
   it("book of shame 37 (S29, the Altar of Dementia): lethal mill takes the biggest body; otherwise the outlet holds unless a creature is doomed; Quill's Pelakka Wurm closes a seven-card library", () => {
@@ -696,7 +725,7 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.scorePriorityAction(view("MAIN1", 0), cast)).toBe(-Infinity);
     expect(a.scorePriorityAction(view("MAIN2", 0), cast)).toBe(-Infinity);
     expect(a.scorePriorityAction(view("DECLARE_ATTACKERS", 1), cast)).toBe(-Infinity);
-    expect(a.scorePriorityAction(view("END_STEP", 1), cast)).toBeGreaterThan(-Infinity);
+    expect(a.scorePriorityAction(view("END", 1), cast)).toBeGreaterThan(-Infinity);
     expect(a.scorePriorityAction(view("MAIN1", 1, [{ id: "s1", kind: "spell", cardId: "grizzly_bears", controller: 1 }]), cast)).toBeGreaterThan(-Infinity); // in response
   });
 

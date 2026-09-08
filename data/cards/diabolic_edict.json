@@ -1,0 +1,30 @@
+{
+  "id": "diabolic_edict",
+  "name": "Diabolic Edict",
+  "source": "real",
+  "scryfallId": "a2ecf2ee-1e2d-4ab2-8b2c-717c794b09b2",
+  "manaCost": "{1}{B}",
+  "types": [
+    "Instant"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "player",
+      "zone": "any"
+    }
+  ],
+  "spellEffect": [
+    {
+      "type": "sacrifice",
+      "who": "target",
+      "count": 1,
+      "predicate": "creature"
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2,
+  "priceOverride": 16
+}

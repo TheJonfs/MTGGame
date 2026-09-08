@@ -206,6 +206,8 @@ export class HeuristicAgent implements Agent {
     if (this.tapperGated(view, action)) return -Infinity; // S26 r3: hold the tapper for the opponent's turn
     if (this.legendDuplicateGated(view, action)) return -Infinity; // S27 r2: never cast a second copy of a legend we control
     if (this.cantripTimingGated(view, action)) return -Infinity; // S28: Brainstorm at the opponent's end step or in response
+    if (this.flashTimingGated(view, action)) return -Infinity; // S32: the Escort at the opponent's end step, in response, or when the mana is idle
+    if (this.edictWasteGated(view, action)) return -Infinity; // S32: never an Edict into no creatures, a token shield, or our own face
     if (this.altarGated(view, action)) return -Infinity; // S29: the Altar feeds a creature for lethal mill, or one already dying
     if (this.buriedGated(view, action)) return -Infinity; // S30: Buried Alive only with a reanimator in hand
     if (this.skeletonGated(view, action)) return -Infinity; // S30: the Skeleton returns with mana to spare, or as a blocker when behind
@@ -292,6 +294,11 @@ export class HeuristicAgent implements Agent {
    * of shame. */
   pumpWasteGated(view: GameView, action: Action): boolean {
     if (action.type !== "castSpell") return false;
+    // S32: a PERMANENT whose ETB is an until-end-of-turn grant (the Escort's hexproof) is a body, not a
+    // trick — the gate reads instants and sorceries only.
+    const card = view.hand.find((c) => c.objectId === action.objectId);
+    const cd = card ? this.def(card.cardId) : undefined;
+    if (cd && !cd.types.includes("Instant") && !cd.types.includes("Sorcery")) return false;
     const effects = this.actionEffects(view, action);
     if (!effects || effects.length === 0) return false;
     const allEotBuffs = effects.every(
@@ -1177,7 +1184,44 @@ export class HeuristicAgent implements Agent {
     if (!d || !d.types.includes("Instant") || !d.spellEffect || d.spellEffect.length === 0) return false;
     if (!d.spellEffect.every((e) => e.type === "draw" || e.type === "putOnTop")) return false;
     if (view.stack.length > 0) return false; // in response: fine
-    return !(view.activePlayer !== view.you && view.step === "END_STEP");
+    // S32: the engine's step is "END" (S28 wrote "END_STEP" here, so Brainstorm's end-step window
+    // never opened live — only the in-response path did; caught by the Escort's pin).
+    return !(view.activePlayer !== view.you && view.step === "END");
+  }
+
+  /** S32 (ADR-109, Plumecreed Escort — book 49): a FLASH creature is an instant, not a creature spell:
+   * cast at the opponent's end step by default, in response to anything on the stack (the save rides
+   * the view-sim credit), and on our own turn only when nothing else in hand could use the mana now.
+   * Never on the opponent's turn outside the end step with an empty stack. Exposed for the book. */
+  flashTimingGated(view: GameView, action: Action): boolean {
+    if (action.type !== "castSpell") return false;
+    const card = view.hand.find((c) => c.objectId === action.objectId);
+    const d = card ? this.def(card.cardId) : undefined;
+    if (!d || !d.types.includes("Creature") || !(d.keywords ?? []).includes("flash")) return false;
+    if (view.stack.length > 0) return false; // in response: fine
+    if (view.activePlayer !== view.you) return view.step !== "END";
+    const me = view.you;
+    const untapped = view.battlefield.filter((o) => o.controller === me && !o.tapped && this.def(o.cardId)?.types.includes("Land")).length;
+    return view.hand.some((c) => c.objectId !== action.objectId && !this.def(c.cardId)?.types.includes("Land") && !this.def(c.cardId)?.manaCost.includes("X") && this.mv(c.cardId) <= untapped);
+  }
+
+  /** S32 (ADR-109, Diabolic Edict — book 50): an edict is worth the LEAST creature its target would
+   * give up (the predictor already prices it so); it is never cast at a player with no creatures, at
+   * a board whose cheapest creature is a token shielding a real one, or at our own face. Exposed. */
+  edictWasteGated(view: GameView, action: Action): boolean {
+    if (action.type !== "castSpell") return false;
+    const effects = this.actionEffects(view, action);
+    if (!effects || effects.length === 0 || !effects.every((e) => e.type === "sacrifice" && "who" in e && e.who === "target")) return false;
+    const targets = (action as { targets?: ResolvedTarget[] }).targets ?? [];
+    for (const t of targets) {
+      if (t.kind !== "player") continue;
+      if (t.player === view.you) return true;
+      const theirs = view.battlefield.filter((o) => o.controller === t.player && o.power !== null);
+      if (theirs.length === 0) return true;
+      const cheapest = [...theirs].sort((a, b) => objectValue(this.defs, a, this.C) - objectValue(this.defs, b, this.C))[0]!;
+      if (this.def(cheapest.cardId)?.isTokenDef && theirs.some((o) => !this.def(o.cardId)?.isTokenDef)) return true;
+    }
+    return false;
   }
 
   /** S27 r2 (Chris: the AI threw away drawn Manafleurs to the legend rule): a legendary permanent
@@ -1364,6 +1408,9 @@ export class HeuristicAgent implements Agent {
       let s = 0;
       for (const t of ts) {
         if (t.kind === "object" && t.id) s += this.boardValue(view, t.id);
+        // S32 (the Escort's ETB): a HELPFUL effect goes to the creature UNDER FIRE first — the one an
+        // opponent's stack item is aimed at (the save is the point of the flash).
+        if (t.kind === "object" && t.id && cls === "helpful" && this.creatureIsDoomed(view, t.id)) s += 10;
         // S28 (Unearth): a GRAVEYARD target is worth its card — the best MV≤3 body comes back.
         if (t.kind === "object" && t.id && !view.battlefield.some((o) => o.id === t.id)) {
           const g = view.graveyardObjects[view.you].find((o) => o.objectId === t.id);

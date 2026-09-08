@@ -58,7 +58,8 @@ describe("catalog v1", () => {
     // ADR-078: blue = list C — creature-forward, no Adepts/Counterspell/Curiosity/Divination.
     const blue = Object.fromEntries(starterTemplate(catalog, "blue").decklist.map((e) => [e.cardId, e.count]));
     // S31 (ADR-106): the Raven and the Fisher left for two Walls of Air and a Brainstorm; the Drakes are two.
-    expect(blue).toMatchObject({ aether_channeler: 2, essence_scatter: 2, air_elemental: 1, man_o_war: 4, wall_of_air: 2, brainstorm: 1, wind_drake: 2 });
+    // S32 (ADR-110): a Channeler and a Seer left for two Plumecreed Escorts.
+    expect(blue).toMatchObject({ aether_channeler: 1, cloudkin_seer: 1, plumecreed_escort: 2, essence_scatter: 2, air_elemental: 1, man_o_war: 4, wall_of_air: 2, brainstorm: 1, wind_drake: 2 });
     for (const gone of ["aven_fisher", "mist_raven"]) expect(blue[gone]).toBeUndefined();
     for (const gone of ["cathartic_adept", "counterspell", "curiosity", "divination"]) expect(blue[gone]).toBeUndefined();
     const bad = JSON.parse(JSON.stringify({ regions: { catalogVersion: "v1", regions: catalog.regions, strongholds: catalog.strongholds }, towns: { catalogVersion: "v1", names: catalog.townNames }, opponents: { catalogVersion: "v1", opponents: catalog.opponents }, starters: { catalogVersion: "v1", starters: catalog.starters.map((s) => (s.id === "red" ? { ...s, decklist: s.decklist.slice(1) } : s)) } }));
@@ -353,7 +354,7 @@ describe("acceptance journey (headless): walk → encounter → each parley bran
     const enc = firstEncounter(w);
     const out = parley(w, catalog, enc, "fight");
     if (out.type !== "fight") throw new Error("expected fight");
-    const fake = { winner: 1 as const, reason: "LIFE" as const, turns: 5, finalLife: [0, 8] as [number, number], log: [], facts: { damageDealt: [0, 0] as [number, number], creaturesLost: [0, 0] as [number, number], cardsDrawn: [0, 0] as [number, number], spellsCast: {}, ante: [["lightning_bolt"], ["typhoid_rats"]] as [string[], string[]] }, finalStateSerialized: "{}" };
+    const fake = { winner: 1 as const, reason: "LIFE" as const, turns: 5, finalLife: [0, 8] as [number, number], log: [], facts: { damageDealt: [0, 0] as [number, number], creaturesLost: [0, 0] as [number, number], cardsDrawn: [0, 0] as [number, number], spellsCast: {}, returned: {}, ante: [["lightning_bolt"], ["typhoid_rats"]] as [string[], string[]] }, finalStateSerialized: "{}" };
     applyDuelResult(w, catalog, out.duel, fake);
     expect(w.player.worldLife).toBe(0);
     expect(w.gameOver).toBe(true);
@@ -1306,6 +1307,24 @@ describe("deploy playtest r5 (Chris): the save fits the browser — replay logs 
 });
 
 describe("S19 shop tiers (ADR-078): availability by ring, price by tier factor, R never stocks", () => {
+  it("S32 (ADR-111): the mid-road references are their starters plus exactly the planner's eight shop cards (sim/road-decks tracks data/world/starters.json)", async () => {
+    const { ROAD_DECKS } = await import("@shandalar/sim/road-decks");
+    const adds: Record<string, [string, Record<string, number>]> = {
+      roadMidW: ["white", { swords_to_plowshares: 2, glorious_anthem: 1, serra_angel: 1, restoration_angel: 1, soul_warden: 1, master_decoy: 1, plains: 1 }],
+      roadMidB: ["black", { doom_blade: 2, hymn_to_tourach: 1, vampire_nighthawk: 1, gravedigger: 1, unearth: 1, dark_ritual: 1, swamp: 1 }],
+    };
+    for (const [key, [starterId, extra]] of Object.entries(adds)) {
+      const want: Record<string, number> = {};
+      for (const e of starterTemplate(catalog, starterId as StarterId).decklist) want[e.cardId] = (want[e.cardId] ?? 0) + e.count;
+      for (const [id, n] of Object.entries(extra)) want[id] = (want[id] ?? 0) + n;
+      const have: Record<string, number> = {};
+      for (const e of ROAD_DECKS[key]!.decklist) have[e.cardId] = (have[e.cardId] ?? 0) + e.count;
+      expect(have, key).toEqual(want);
+      expect(ROAD_DECKS[key]!.life).toBe(12);
+      expect(ROAD_DECKS[key]!.entrance).toHaveLength(1);
+      for (const id of Object.keys(have)) expect(pool.cards.has(id), id).toBe(true);
+    }
+  });
   it("a civilized shop pool is tier-1 only; approach adds tier 2; wild adds tier 3; R (Demonic Tutor, Mystic Snake) and prizeOnly (Lotus) appear on no shelf; prices carry the factor", async () => {
     const { shopPoolFor, shopPrice } = await import("./shop.js");
     const knobs = defaultKnobs();
@@ -1337,7 +1356,7 @@ describe("S19 shop tiers (ADR-078): availability by ring, price by tier factor, 
     // Distribution pin (audit v2 + Formation + the S20 land-and-legend batch as it lands: ten ABU duals at R so far).
     const tally: Record<string, number> = {};
     for (const d of pool.cards.values()) if (d.shopTier) tally[String(d.shopTier)] = (tally[String(d.shopTier)] ?? 0) + 1;
-    expect(tally).toEqual({ "1": 71, "2": 51, "3": 10, R: 23 }); // S31 (ADR-108): +1 T1 (Grazing Gladehart), +1 R (Artisan of Kozilek). // ADR-081 unification: the five guardian legendaries left the tiers for prizeOnly (Drana was T3, the S20 four were R). S22 batch: +10 R (eight real gold→R adds + Aetherbolt + Tainted Phoenix; the five lords are prizeOnly), +1 T1 (Abrade). S23 fun batch: +3 T2 (Thundersnake, Gallows Djinn, Traumatizer)
+    expect(tally).toEqual({ "1": 72, "2": 52, "3": 10, R: 23 }); // S31 (ADR-108): +1 T1 (Grazing Gladehart), +1 R (Artisan of Kozilek). S32 (ADR-109): +1 T1 (Plumecreed Escort), +1 T2 (Diabolic Edict). // ADR-081 unification: the five guardian legendaries left the tiers for prizeOnly (Drana was T3, the S20 four were R). S22 batch: +10 R (eight real gold→R adds + Aetherbolt + Tainted Phoenix; the five lords are prizeOnly), +1 T1 (Abrade). S23 fun batch: +3 T2 (Thundersnake, Gallows Djinn, Traumatizer)
   });
   it("a civilized town's rolled stock is all tier 1 and every price matches shopPrice", async () => {
     const { rollShopStock, shopPrice } = await import("./shop.js");
@@ -2163,7 +2182,7 @@ describe("S22b strongholds: entry, generation, the partisan law, the entrance, t
     const before = strongholdState(w, "B").spokeMinionPoints;
     const rng = new WorldRng(9);
     const duel = prepareDuel(w, catalog, enc, rng, worldKnobs(w));
-    applyDuelResult(w, catalog, duel, { winner: 0, reason: "LIFE", turns: 5, finalLife: [10, 0], facts: { damageDealt: [0, 0], creaturesLost: [0, 0], cardsDrawn: [0, 0], spellsCast: {}, ante: [[], []] }, log: [], finalStateSerialized: "" }, QUIET);
+    applyDuelResult(w, catalog, duel, { winner: 0, reason: "LIFE", turns: 5, finalLife: [10, 0], facts: { damageDealt: [0, 0], creaturesLost: [0, 0], cardsDrawn: [0, 0], spellsCast: {}, returned: {}, ante: [[], []] }, log: [], finalStateSerialized: "" }, QUIET);
     expect(strongholdState(w, "B").spokeMinionPoints).toBe(before + spokeTmpl.tier);
   });
 
@@ -2212,7 +2231,7 @@ describe("S22b strongholds: entry, generation, the partisan law, the entrance, t
     const minion = run.minions[0]!;
     const minionTmpl = catalog.opponents.find((o) => o.id === minion.catalogId)!;
     const before = strongholdState(w, "W").spokeMinionPoints;
-    applyInteriorDuel(w, kn, run, { winner: 0, reason: "LIFE", turns: 6, finalLife: [8, 0], facts: { damageDealt: [0, 0], creaturesLost: [0, 0], cardsDrawn: [0, 0], spellsCast: {}, ante: [[], []] }, log: [], finalStateSerialized: "" }, minion.id, catalog);
+    applyInteriorDuel(w, kn, run, { winner: 0, reason: "LIFE", turns: 6, finalLife: [8, 0], facts: { damageDealt: [0, 0], creaturesLost: [0, 0], cardsDrawn: [0, 0], spellsCast: {}, returned: {}, ante: [[], []] }, log: [], finalStateSerialized: "" }, minion.id, catalog);
     expect(strongholdState(w, "W").spokeMinionPoints).toBe(before + minionTmpl.tier);
     expect(run.minions[0]!.defeated).toBe(true);
     // The lord himself, for real: his v1 deck, master profile, law + entrance, formula life.

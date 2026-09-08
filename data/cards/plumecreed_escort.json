@@ -1,0 +1,50 @@
+{
+  "id": "plumecreed_escort",
+  "name": "Plumecreed Escort",
+  "source": "real",
+  "scryfallId": "f71320ed-2f30-49ce-bcb0-19aebba3f0e8",
+  "manaCost": "{1}{U}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Bird",
+    "Scout"
+  ],
+  "power": 2,
+  "toughness": 1,
+  "keywords": [
+    "flash",
+    "flying"
+  ],
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "condition": {
+        "source": "self"
+      },
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "creatureYouControl",
+          "zone": "battlefield"
+        }
+      ],
+      "effects": [
+        {
+          "type": "grantKeyword",
+          "keyword": "hexproof",
+          "target": 0,
+          "duration": "UNTIL_END_OF_TURN"
+        }
+      ],
+      "optional": false
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 1,
+  "priceOverride": 12
+}

@@ -27,6 +27,8 @@ export interface MatchFacts {
   creaturesLost: [number, number];
   cardsDrawn: [number, number];
   spellsCast: Record<string, [number, number]>;
+  /** S32: graveyard → battlefield returns by card, per player (the RETURNED event) — reanimation the cast counts cannot see. */
+  returned: Record<string, [number, number]>;
   /** S12 (R-043): each player's ante stakes (cardIds) — empty when rules.ante is 0 or the library held no nonlands. */
   ante: [string[], string[]];
 }
@@ -64,6 +66,7 @@ export function deriveFacts(cards: Map<string, CardDef>, log: ActionLogEntry<Act
     creaturesLost: [0, 0],
     cardsDrawn: [0, 0],
     spellsCast: {},
+    returned: {},
     ante: [[], []],
   };
   for (const entry of log) {
@@ -85,6 +88,11 @@ export function deriveFacts(cards: Map<string, CardDef>, log: ActionLogEntry<Act
       case "ANTE_SET":
         facts.ante[p.player as PlayerId] = [...(p.cardIds as string[])];
         break;
+      case "RETURNED": {
+        const row = (facts.returned[p.cardId as string] ??= [0, 0]);
+        row[p.controller as PlayerId] += 1;
+        break;
+      }
       case "DIES": {
         const cardId = p.cardId as string;
         if (cards.get(cardId)?.types.includes("Creature")) {
