@@ -44,6 +44,8 @@ export interface LabDeck {
   entrance?: string[];
   /** The world's starting bonuses for this deck (a boss's law, roots, signature — data-model §5). */
   bonuses?: LabBonus[];
+  /** The catalog tier (mages and beasts) — the roster grid aggregates by it. */
+  tier?: 1 | 2 | 3;
 }
 
 const TIER_LIFE = { 1: 8, 2: 10, 3: 12 } as const;
@@ -67,12 +69,12 @@ const HEART_LIFE_STANDARD = 40;
 export function labDecks(): LabDeck[] {
   const out: LabDeck[] = [];
   for (const [k, m] of Object.entries(MAGE_DECKS)) {
-    out.push({ key: `mage:${k}`, group: "mages", name: m.name, label: `${m.name} (T${m.tier} ${m.colors}) — ${m.epithet}`, archetype: m.archetype, decklist: m.decklist, life: TIER_LIFE[m.tier], profile: TIER_PROFILE[m.tier], basics: 0 });
+    out.push({ key: `mage:${k}`, group: "mages", name: m.name, label: `${m.name} (T${m.tier} ${m.colors}) — ${m.epithet}`, archetype: m.archetype, decklist: m.decklist, life: TIER_LIFE[m.tier], profile: TIER_PROFILE[m.tier], basics: 0, tier: m.tier });
   }
   const rows = (worldJson("opponents") as { opponents: OpponentRow[] }).opponents.filter((o) => o.kind === "beast");
   for (const [k, b] of Object.entries(EXPANSION_DECKS)) {
     const row = rows.find((o) => o.deck === `beast:${k}`) ?? rows.find((o) => o.deck === `beast:${k}` && o.tier === b.tier);
-    out.push({ key: `beast:${k}`, group: "beasts", name: b.name, label: `${b.name} (T${b.tier} ${b.color})`, archetype: b.archetype, decklist: b.decklist, life: row?.worldLife ?? TIER_LIFE[b.tier], profile: row?.difficulty ?? TIER_PROFILE[b.tier], basics: 0 });
+    out.push({ key: `beast:${k}`, group: "beasts", name: b.name, label: `${b.name} (T${b.tier} ${b.color})`, archetype: b.archetype, decklist: b.decklist, life: row?.worldLife ?? TIER_LIFE[b.tier], profile: row?.difficulty ?? TIER_PROFILE[b.tier], basics: 0, tier: row?.tier ?? b.tier });
   }
   for (const s of (worldJson("starters") as { starters: StarterRow[] }).starters) {
     out.push({ key: `starter:${s.id}`, group: "starters", name: s.name, label: `${s.name} — starter:${s.id}`, archetype: s.archetype, decklist: s.decklist, life: 10, profile: "journeyman", basics: 0, entrance: [s.basicLand] });

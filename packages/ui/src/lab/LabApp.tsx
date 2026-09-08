@@ -27,9 +27,24 @@ interface RunSetup {
   games: number;
   seed: number;
 }
-interface SavedRun { name: string; when: string; setup: RunSetup; cells: Record<string, LabCell>; notes?: string; resolved?: { a: ResolvedSide; b: ResolvedSide } }
+interface SavedRun { name: string; when: string; setup: RunSetup; cells: Record<string, LabCell>; notes?: string; resolved?: { a: ResolvedSide; b: ResolvedSide }; roster?: RosterSetup }
+/** The roster grid (Chris, the baseline): rows (the starters, at their defaults or an override) against a
+ * roster of opponents at THEIR world defaults — every mage at its tier, every beast at its catalog row. */
+interface RosterSetup {
+  rows: string[];
+  rowLife: number | null;
+  rowProfile: Profile | null;
+  rowBasics: number | null;
+  mages: boolean;
+  beasts: boolean;
+  games: number;
+  seed: number;
+  /** The target band per opponent tier (the row's win rate): high at tier 1, even at tier 2, unfavourable at tier 3. */
+  bands: Record<1 | 2 | 3, [number, number]>;
+}
 
 const pct = (n: number, d: number) => (d > 0 ? (100 * n) / d : 0);
+const rosterId = (row: string, col: string) => `${row}|${col}`;
 const ci95 = (p: number, n: number) => (n > 0 ? 1.96 * Math.sqrt((p * (1 - p)) / n) : 0);
 const mean = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
 const cellId = (life: number, basics: number) => `${life}/${basics}`;
@@ -67,6 +82,9 @@ export function LabApp() {
   const [runName, setRunName] = useState("");
   const [notes, setNotes] = useState("");
   const [editor, setEditor] = useState<CustomDeck | null>(null);
+  const [mode, setMode] = useState<"grid" | "roster">("grid");
+  const [roster, setRoster] = useState<RosterSetup>(() => ({ rows: ["starter:white", "starter:blue", "starter:black", "starter:red", "starter:green"], rowLife: null, rowProfile: null, rowBasics: null, mages: true, beasts: true, games: 50, seed: 1, bands: { 1: [65, 80], 2: [45, 55], 3: [30, 45] } }));
+  const rosterCols = useMemo(() => decks.filter((d) => (roster.mages && d.group === "mages") || (roster.beasts && d.group === "beasts")), [decks, roster.mages, roster.beasts]);
   useEffect(() => {
     const p = new LabWorkerPool(threads, () => new Worker(new URL("./lab-worker.ts", import.meta.url), { type: "module" }));
     p.onCell = (cell) => setCells((c) => ({ ...c, [cell.id]: cell }));
@@ -105,15 +123,32 @@ export function LabApp() {
     workerPool.current.run(jobs);
   };
   const stop = () => { workerPool.current?.stop(); setRunning(false); };
+  const startRoster = () => {
+    const jobs: LabJob[] = [];
+    try {
+      for (const rk of roster.rows) {
+        const rd = byKey.get(rk); if (!rd) continue;
+        const rowSide: LabSide = { deck: rk, life: roster.rowLife ?? rd.life, basics: roster.rowBasics ?? rd.basics, profile: roster.rowProfile ?? rd.profile, bonuses: (rd.bonuses ?? []).map((b) => ({ ...b })) };
+        for (const cd of rosterCols) {
+          const colSide: LabSide = sideFromDeck(cd);
+          jobs.push({ id: rosterId(rk, cd.key), seed: roster.seed, games: roster.games, a: resolveSide(rowSide, byKey, pool), b: resolveSide(colSide, byKey, pool) });
+        }
+      }
+    } catch (e) { setErrors([String((e as Error).message)]); return; }
+    if (!workerPool.current || jobs.length === 0) return;
+    setCells({}); setErrors([]); setPicked(null); setResolved(null);
+    setRunning(true);
+    workerPool.current.run(jobs);
+  };
 
   const save = async () => {
     const name = runName.trim() || `${setup.a.deck.replace(/[:]/g, "-")}_vs_${setup.b.deck.replace(/[:]/g, "-")}_${new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-")}`;
-    const run: SavedRun = { name, when: new Date().toISOString(), setup, cells, notes, ...(resolved ? { resolved } : {}) };
+    const run: SavedRun = { name, when: new Date().toISOString(), setup, cells, notes, ...(resolved ? { resolved } : {}), ...(mode === "roster" ? { roster } : {}) };
     const r = await fetch("/__lab-save", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(run) });
     if (r.ok) { setRunName(""); void refresh(); }
   };
   const download = () => {
-    const run: SavedRun = { name: runName || "lab-run", when: new Date().toISOString(), setup, cells, notes, ...(resolved ? { resolved } : {}) };
+    const run: SavedRun = { name: runName || "lab-run", when: new Date().toISOString(), setup, cells, notes, ...(resolved ? { resolved } : {}), ...(mode === "roster" ? { roster } : {}) };
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([JSON.stringify(run, null, 2)], { type: "application/json" }));
     a.download = `${run.name}.json`; a.click();
@@ -121,6 +156,7 @@ export function LabApp() {
   const load = (run: SavedRun) => {
     const fix = (s: LabSide): LabSide => ({ ...s, bonuses: s.bonuses ?? [] });
     setSetup({ ...run.setup, a: fix(run.setup.a), b: fix(run.setup.b) }); setLivesText(run.setup.lives.join(", ")); setBasicsText(run.setup.basics.join(", ")); setCells(run.cells); setNotes(run.notes ?? ""); setPicked(null); setResolved(run.resolved ?? null);
+    if (run.roster) { setRoster(run.roster); setMode("roster"); } else setMode("grid");
   };
 
   // ---- the deck editor
@@ -164,9 +200,16 @@ export function LabApp() {
       <div style={{ display: "flex", alignItems: "baseline", gap: 14 }}>
         <h2 style={{ fontFamily: "var(--serif)", margin: 0 }}>Matchup Lab</h2>
         <a href="/" className="linkish">← menu</a>
+        <span style={{ fontSize: 12 }}>
+          <label style={{ marginRight: 8 }}><input type="radio" checked={mode === "grid"} onChange={() => setMode("grid")} /> one pairing over a grid</label>
+          <label><input type="radio" checked={mode === "roster"} onChange={() => setMode("roster")} /> a roster (rows × every mage and beast at their defaults)</label>
+        </span>
         <span className="seed" style={{ marginLeft: "auto" }} title="workers load the whole engine each; a worker that fails is replaced and its cell re-queued">{poolStatus.workers} worker{poolStatus.workers === 1 ? "" : "s"}: {poolStatus.ready} ready{poolStatus.busy ? `, ${poolStatus.busy} busy` : ""}{poolStatus.queued ? `, ${poolStatus.queued} cells queued` : ""}{poolStatus.failed ? `, ${poolStatus.failed} failed and replaced` : ""} · the engine and the heuristic agents, live · dev surface</span>
       </div>
-      <div style={{ display: "flex", gap: 12, marginTop: 10, flexWrap: "wrap", alignItems: "flex-start" }}>
+      {mode === "roster" && (
+        <RosterView roster={roster} setRoster={setRoster} decks={decks} byKey={byKey} cols={rosterCols} cells={cells} running={running} onRun={startRoster} onStop={stop} picked={picked} setPicked={setPicked} />
+      )}
+      <div style={{ display: mode === "grid" ? "flex" : "none", gap: 12, marginTop: 10, flexWrap: "wrap", alignItems: "flex-start" }}>
         <SidePanel label="a" side={setup.a} decks={decks} byKey={byKey} pool={pool} onPick={(k) => pickDeck("a", k)} onPatch={(p) => patchSide("a", p)} onEdit={() => openEditor(setup.a.deck)} />
         <SidePanel label="b" side={setup.b} decks={decks} byKey={byKey} pool={pool} onPick={(k) => pickDeck("b", k)} onPatch={(p) => patchSide("b", p)} onEdit={() => openEditor(setup.b.deck)} />
         <div className="panel" style={{ padding: 10, minWidth: 280 }}>
@@ -187,7 +230,7 @@ export function LabApp() {
         </div>
       </div>
 
-      <div style={{ display: "flex", gap: 16, marginTop: 14, flexWrap: "wrap", alignItems: "flex-start" }}>
+      <div style={{ display: mode === "grid" ? "flex" : "none", gap: 16, marginTop: 14, flexWrap: "wrap", alignItems: "flex-start" }}>
         <div className="panel" style={{ padding: 10 }}>
           <div style={{ fontFamily: "var(--serif)", fontSize: 15, marginBottom: 6 }}>
             {show === "b" ? `${B?.name ?? "B"}'s` : `${A?.name ?? "A"}'s`} win rate — {A?.name} at life × basics vs {B?.name} at {setup.b.life} / {setup.b.basics} in play / {setup.b.profile}{setup.b.bonuses.length ? ` / ${setup.b.bonuses.length} bonus${setup.b.bonuses.length === 1 ? "" : "es"}` : ""}
@@ -263,6 +306,164 @@ export function LabApp() {
         {errors.length > 0 && <div className="panel" style={{ padding: 10, fontSize: 11, color: "#8a3b2c", maxWidth: 420 }}>{errors.map((e, i) => <div key={i}>{e}</div>)}</div>}
       </div>
     </div>
+  );
+}
+
+const TIERS = [1, 2, 3] as const;
+
+/** The roster grid: rows' win rates against every column, shaded by the column's TIER band; per-row
+ * aggregates by tier for the mages and the beasts (a number and a bar each); a column-mean row. */
+function RosterView({ roster, setRoster, decks, byKey, cols, cells, running, onRun, onStop, picked, setPicked }: {
+  roster: RosterSetup; setRoster: (r: RosterSetup) => void; decks: LabDeck[]; byKey: Map<string, LabDeck>; cols: LabDeck[];
+  cells: Record<string, LabCell>; running: boolean; onRun: () => void; onStop: () => void; picked: string | null; setPicked: (id: string | null) => void;
+}) {
+  const rows = roster.rows.map((k) => byKey.get(k)).filter((d): d is LabDeck => !!d);
+  const rowPct = (rk: string, ck: string): number | null => { const c = cells[rosterId(rk, ck)]; return c && c.games > 0 ? pct(c.aWins, c.games) : null; };
+  const done = (rk: string, ck: string) => { const c = cells[rosterId(rk, ck)]; return !!c && c.games >= roster.games; };
+  const shade = (p: number | null, tier: 1 | 2 | 3 | undefined, isDone: boolean) => {
+    if (p === null) return "transparent";
+    if (!isDone) return "rgba(176,138,62,0.08)";
+    const band: [number, number] = tier ? roster.bands[tier] : [0, 100];
+    if (p >= band[0] && p <= band[1]) return "rgba(120,170,90,0.35)";
+    const d = p < band[0] ? band[0] - p : p - band[1];
+    return `rgba(190,80,60,${Math.min(0.45, 0.08 + d / 60)})`;
+  };
+  const agg = (rk: string, group: "mages" | "beasts" | "any", tier: 1 | 2 | 3 | 0): { p: number; n: number } => {
+    const xs = cols.filter((c) => (group === "any" || c.group === group) && (tier === 0 || c.tier === tier)).map((c) => rowPct(rk, c.key)).filter((x): x is number => x !== null);
+    return { p: mean(xs), n: xs.length };
+  };
+  const total = rows.length * cols.length * roster.games;
+  const doneGames = Object.values(cells).reduce((n, c) => n + c.games, 0);
+  const pickedCell = picked ? cells[picked] : undefined;
+  const pickedNames = picked ? picked.split("|").map((k) => byKey.get(k)?.name ?? k) : [];
+  const groups: { label: string; group: "mages" | "beasts" | "any"; tier: 1 | 2 | 3 | 0 }[] = [
+    ...(roster.mages ? TIERS.map((t) => ({ label: `T${t} mages`, group: "mages" as const, tier: t })) : []),
+    ...(roster.beasts ? TIERS.map((t) => ({ label: `T${t} beasts`, group: "beasts" as const, tier: t })) : []),
+    ...(roster.mages ? [{ label: "all mages", group: "mages" as const, tier: 0 as const }] : []),
+    ...(roster.beasts ? [{ label: "all beasts", group: "beasts" as const, tier: 0 as const }] : []),
+    ...(roster.mages && roster.beasts ? [{ label: "everyone", group: "any" as const, tier: 0 as const }] : []),
+  ];
+  const Bar = ({ p, band }: { p: number; band?: [number, number] }) => (
+    <div style={{ position: "relative", height: 10, background: "rgba(43,37,32,0.10)", borderRadius: 2, width: 120 }} title={band ? `band ${band[0]}–${band[1]}` : undefined}>
+      {band && <div style={{ position: "absolute", left: `${band[0]}%`, width: `${band[1] - band[0]}%`, top: 0, bottom: 0, background: "rgba(120,170,90,0.35)" }} />}
+      <div style={{ position: "absolute", left: 0, top: 2, bottom: 2, width: `${Math.max(0, Math.min(100, p))}%`, background: "var(--brass)", opacity: 0.9 }} />
+      <div style={{ position: "absolute", left: "50%", top: 0, bottom: 0, width: 1, background: "rgba(43,37,32,0.35)" }} />
+    </div>
+  );
+  return (
+    <>
+      <div style={{ display: "flex", gap: 12, marginTop: 10, flexWrap: "wrap", alignItems: "flex-start" }}>
+        <div className="panel" style={{ padding: 10, minWidth: 360 }}>
+          <div style={{ fontFamily: "var(--serif)", fontSize: 15, marginBottom: 6 }}>Rows — the decks whose win rate is read</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "2px 10px", fontSize: 12, maxHeight: 130, overflow: "auto" }}>
+            {decks.filter((d) => d.group !== "custom" || true).filter((d) => ["starters", "roads", "custom", "slices"].includes(d.group)).map((d) => (
+              <label key={d.key} style={{ whiteSpace: "nowrap" }}><input type="checkbox" checked={roster.rows.includes(d.key)} onChange={(e) => setRoster({ ...roster, rows: e.target.checked ? [...roster.rows, d.key] : roster.rows.filter((k) => k !== d.key) })} /> {d.name}</label>
+            ))}
+          </div>
+          <div style={{ display: "flex", gap: 10, marginTop: 6, alignItems: "center", flexWrap: "wrap", fontSize: 12 }}>
+            <label>life <input type="number" value={roster.rowLife ?? ""} placeholder="default" style={{ width: 60 }} onChange={(e) => setRoster({ ...roster, rowLife: e.target.value === "" ? null : Number(e.target.value) })} /></label>
+            <label>basics <input type="number" value={roster.rowBasics ?? ""} placeholder="default" style={{ width: 60 }} onChange={(e) => setRoster({ ...roster, rowBasics: e.target.value === "" ? null : Number(e.target.value) })} /></label>
+            <label>AI <select value={roster.rowProfile ?? ""} onChange={(e) => setRoster({ ...roster, rowProfile: (e.target.value || null) as Profile | null })}><option value="">default</option>{PROFILES.map((p) => <option key={p} value={p}>{p}</option>)}</select></label>
+            <span className="seed">blank = each row's world default (a starter: 10 / journeyman / none)</span>
+          </div>
+        </div>
+        <div className="panel" style={{ padding: 10, minWidth: 320 }}>
+          <div style={{ fontFamily: "var(--serif)", fontSize: 15, marginBottom: 6 }}>Columns — the roster at its world defaults</div>
+          <div style={{ fontSize: 12, display: "flex", gap: 12 }}>
+            <label><input type="checkbox" checked={roster.mages} onChange={(e) => setRoster({ ...roster, mages: e.target.checked })} /> the fifteen mages (T1 apprentice 8 · T2 journeyman 10 · T3 master 12)</label>
+          </div>
+          <div style={{ fontSize: 12, display: "flex", gap: 12 }}>
+            <label><input type="checkbox" checked={roster.beasts} onChange={(e) => setRoster({ ...roster, beasts: e.target.checked })} /> the seventeen beasts (their catalog life and profile)</label>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "4px 8px", fontSize: 12, alignItems: "center", marginTop: 6 }}>
+            <span>games / cell</span><input type="number" value={roster.games} min={2} max={1000} step={2} onChange={(e) => setRoster({ ...roster, games: Number(e.target.value) })} />
+            <span>seed</span><input type="number" value={roster.seed} onChange={(e) => setRoster({ ...roster, seed: Number(e.target.value) })} />
+            {TIERS.map((t) => (
+              <span key={t} style={{ display: "contents" }}>
+                <span>T{t} band</span>
+                <span><input type="number" value={roster.bands[t][0]} style={{ width: 48 }} onChange={(e) => setRoster({ ...roster, bands: { ...roster.bands, [t]: [Number(e.target.value), roster.bands[t][1]] } })} /> – <input type="number" value={roster.bands[t][1]} style={{ width: 48 }} onChange={(e) => setRoster({ ...roster, bands: { ...roster.bands, [t]: [roster.bands[t][0], Number(e.target.value)] } })} /> % <span className="seed">the row's win rate against a tier-{t} opponent</span></span>
+              </span>
+            ))}
+          </div>
+          <div style={{ display: "flex", gap: 8, marginTop: 8, alignItems: "center" }}>
+            {!running ? <button onClick={onRun}>Run {rows.length} × {cols.length} cells × {roster.games}</button> : <button onClick={onStop}>Stop</button>}
+            {running && <span className="seed">{doneGames}/{total} games</span>}
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display: "flex", gap: 16, marginTop: 14, flexWrap: "wrap", alignItems: "flex-start" }}>
+        <div className="panel" style={{ padding: 10, overflowX: "auto", maxWidth: "100%" }}>
+          <div style={{ fontFamily: "var(--serif)", fontSize: 15, marginBottom: 6 }}>The rows' win rate against the roster — shaded by the column's tier band</div>
+          <table style={{ borderCollapse: "collapse", fontSize: 11.5 }}>
+            <thead>
+              <tr>
+                <th style={{ textAlign: "left", padding: "3px 6px" }}></th>
+                {cols.map((c) => <th key={c.key} style={{ padding: "3px 4px", fontWeight: 500, maxWidth: 64, fontSize: 10.5, verticalAlign: "bottom" }} title={c.label}><div style={{ writingMode: "vertical-rl", transform: "rotate(180deg)", whiteSpace: "nowrap", maxHeight: 120, overflow: "hidden", textOverflow: "ellipsis" }}>{c.name}</div><div style={{ fontSize: 9.5, color: "var(--ink-soft)" }}>{c.group === "mages" ? "M" : "B"}{c.tier}</div></th>)}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.key}>
+                  <td style={{ padding: "3px 6px", fontWeight: 600, whiteSpace: "nowrap" }}>{r.name}</td>
+                  {cols.map((c) => {
+                    const id = rosterId(r.key, c.key); const p = rowPct(r.key, c.key); const isDone = done(r.key, c.key); const cell = cells[id];
+                    return (
+                      <td key={c.key} onClick={() => cell && setPicked(id)} title={cell ? `${r.name} vs ${c.name}: ${cell.games} games · click for detail` : "not run"} style={{ padding: "4px 4px", textAlign: "center", background: shade(p, c.tier, isDone), cursor: cell ? "pointer" : "default", outline: picked === id ? "2px solid var(--brass)" : "none", minWidth: 40 }}>
+                        {p === null ? <span style={{ color: "var(--ink-soft)" }}>—</span> : <span style={{ fontWeight: 600 }}>{p.toFixed(0)}</span>}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+              <tr style={{ borderTop: "1.5px solid var(--ink)" }}>
+                <td style={{ padding: "3px 6px", fontStyle: "italic" }}>rows' mean</td>
+                {cols.map((c) => { const xs = rows.map((r) => rowPct(r.key, c.key)).filter((x): x is number => x !== null); return <td key={c.key} style={{ textAlign: "center", padding: "3px 4px", color: "var(--ink-soft)" }}>{xs.length ? mean(xs).toFixed(0) : "—"}</td>; })}
+              </tr>
+            </tbody>
+          </table>
+          <div style={{ fontSize: 11, color: "var(--ink-soft)", marginTop: 6 }}>Numbers are the ROW's win rate (%). M/B = mage/beast, the digit its tier. ± at {roster.games} games per cell is about {(100 * ci95(0.5, roster.games)).toFixed(0)} points.</div>
+        </div>
+
+        <div className="panel" style={{ padding: 10 }}>
+          <div style={{ fontFamily: "var(--serif)", fontSize: 15, marginBottom: 6 }}>Aggregate by tier — each row's mean win rate over the group (bar: 0–100, the tick at 50, the band in green)</div>
+          <table style={{ borderCollapse: "collapse", fontSize: 12 }}>
+            <thead><tr><th></th>{groups.map((g) => <th key={g.label} style={{ padding: "3px 8px", fontWeight: 500 }}>{g.label}</th>)}</tr></thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.key}>
+                  <td style={{ padding: "3px 8px", fontWeight: 600, whiteSpace: "nowrap" }}>{r.name}</td>
+                  {groups.map((g) => {
+                    const a = agg(r.key, g.group, g.tier); const band = g.tier ? roster.bands[g.tier] : undefined;
+                    return <td key={g.label} style={{ padding: "3px 8px" }}>{a.n ? <><div style={{ fontWeight: 600 }}>{a.p.toFixed(0)}% <span className="seed">n={a.n}</span></div><Bar p={a.p} {...(band ? { band } : {})} /></> : <span style={{ color: "var(--ink-soft)" }}>—</span>}</td>;
+                  })}
+                </tr>
+              ))}
+              <tr style={{ borderTop: "1.5px solid var(--ink)" }}>
+                <td style={{ padding: "3px 8px", fontStyle: "italic" }}>all rows</td>
+                {groups.map((g) => { const xs = rows.map((r) => agg(r.key, g.group, g.tier)).filter((a) => a.n > 0).map((a) => a.p); return <td key={g.label} style={{ padding: "3px 8px", color: "var(--ink-soft)" }}>{xs.length ? `${mean(xs).toFixed(0)}%` : "—"}</td>; })}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        {pickedCell && (
+          <div className="panel" style={{ padding: 10, minWidth: 280 }}>
+            <div style={{ fontFamily: "var(--serif)", fontSize: 15, marginBottom: 6 }}>{pickedNames[0]} vs {pickedNames[1]}</div>
+            <table style={{ fontSize: 12, borderCollapse: "collapse" }}>
+              <tbody>
+                <tr><td style={{ padding: "2px 8px 2px 0" }}>games</td><td>{pickedCell.games}{pickedCell.draws ? ` (${pickedCell.draws} draws)` : ""}</td></tr>
+                <tr><td style={{ padding: "2px 8px 2px 0" }}>{pickedNames[0]} wins</td><td>{pct(pickedCell.aWins, pickedCell.games).toFixed(0)}% ±{(100 * ci95(pct(pickedCell.aWins, pickedCell.games) / 100, pickedCell.games)).toFixed(0)} — on the play {pct(pickedCell.aWinsBySeat[0], pickedCell.gamesBySeat[0]).toFixed(0)}%, on the draw {pct(pickedCell.aWinsBySeat[1], pickedCell.gamesBySeat[1]).toFixed(0)}%{pickedCell.aDecked ? ` · ${pickedCell.aDecked} by library` : ""}</td></tr>
+                <tr><td style={{ padding: "2px 8px 2px 0" }}>{pickedNames[1]} wins</td><td>{pct(pickedCell.bWins, pickedCell.games).toFixed(0)}%{pickedCell.bDecked ? ` · ${pickedCell.bDecked} by library` : ""}</td></tr>
+                <tr><td style={{ padding: "2px 8px 2px 0" }}>winner's life left</td><td>{mean(pickedCell.aMargin).toFixed(1)} · {mean(pickedCell.bMargin).toFixed(1)}</td></tr>
+                <tr><td style={{ padding: "2px 8px 2px 0" }}>turns</td><td>mean {mean(pickedCell.turns).toFixed(1)}</td></tr>
+              </tbody>
+            </table>
+            <Histogram values={pickedCell.turns} />
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 

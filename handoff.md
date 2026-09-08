@@ -21,6 +21,50 @@
 
 **Round three (Chris: grids stopped with cells never run — three lives → two swept; three lives × two basics → three cells).** The cause class: a module worker that fails to load or dies fires `error`, not `message`, and a job posted to it was lost silently — the page dispatched every cell to a worker at once and waited forever. Not reproduced here (six cells of the Usher ran clean), so the fix is structural: `lab-pool.ts` — a pool with a READY handshake (a worker takes a job only after its module graph loaded), `error`/`messageerror` handling (report, replace the worker, re-queue the cell at the front; three failures drop it), a stall watchdog (no progress for 90 s → the same), a status line ("4 workers: 4 ready, 2 busy, 3 cells queued, 1 failed and replaced"), and four workers by default instead of six (each loads the whole engine through the dev server; six at once is the likeliest way one fails). If a cell is ever lost again the errors panel will say which and why.
 
+## Director round (Chris, 2026-09-08): the BASELINE — the stock starters against the roster
+
+**The ask.** The five starters unmodified (stock lists, 10 life, no basics in play, journeyman) against the fifteen mages at their tier settings (T1 apprentice 8 · T2 journeyman 10 · T3 master 12) and the sixteen beasts at their catalog rows — the win-rate baseline before the more detailed variations, read for the shape Chris wants: fairly high at tier 1, near even at tier 2, unfavourable but winnable at tier 3. Run fresh in Node (`pnpm mage-sweep --part 2|5|6 --baseline none`, 100 games per pairing, both seats — 15,500 games; the S32 parts 2/5/6 were the same configuration and agree within noise). **The Lab's new roster mode** (below) draws the same grid live.
+
+### The starters against the fifteen mages (the STARTER's win %, 100 games each, both seats)
+
+| starter \ opponent | Sister Oriel (T1) | Tessaly Reed (T1) | Pale Edric (T1) | Brann the Scorched (T1) | Old Hask (T1) | Mistress Vael (T2) | Kessa Emberhand (T2) | Adept Maelin (T2) | Brennor of the Glade (T2) | Pell of the Shallows (T2) | Lord Corvane (T3) | Varro Flamebrand (T3) | High Warden Sorrel (T3) | Thornmother Ysolde (T3) | Magister Quill (T3) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| **Dawn Levy (W)** | 45 | 86 | 76 | 77 | 76 | 45 | 70 | 81 | 68 | 79 | 68 | 59 | 60 | 53 | 72 |
+| **Tidal Grimoire (U)** | 24 | 48 | 50 | 55 | 49 | 21 | 49 | 62 | 39 | 56 | 68 | 42 | 41 | 26 | 64 |
+| **Pallid Court (B)** | 41 | 70 | 35 | 65 | 83 | 20 | 66 | 69 | 70 | 65 | 72 | 56 | 55 | 44 | 52 |
+| **Ember Warband (R)** | 40 | 71 | 45 | 76 | 70 | 31 | 67 | 66 | 48 | 64 | 65 | 46 | 52 | 34 | 59 |
+| **Verdant Trail (G)** | 48 | 77 | 55 | 66 | 63 | 36 | 55 | 61 | 57 | 74 | 62 | 58 | 60 | 34 | 68 |
+
+### The starters against the sixteen beasts (the STARTER's win %)
+
+| starter \ opponent | A Grizzly Bear (T1) | The Deadly Recluse (T1) | A Bloom of Man-o'-War (T1) | The Cunning Tactician (T1) | A Plague of Rats (T1) | A Gray Ogre (T1) | A Savannah Lion (T1) | The Boggart Warband (T2) | A Vampire Nighthawk (T2) | The Living Gale (T2) | A Rumbling Baloth (T2) | The Siege-Gang (T3) | The Hypnotic Specter (T3) | The Serra Angel (T3) | The Pelakka Wurm (T3) | The Faerie Formation (T3) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| **Dawn Levy (W)** | 90 | 70 | 92 | 88 | 84 | 89 | 64 | 61 | 42 | 87 | 62 | 47 | 80 | 21 | 52 | 62 |
+| **Tidal Grimoire (U)** | 76 | 59 | 69 | 75 | 61 | 73 | 34 | 38 | 27 | 76 | 64 | 44 | 70 | 18 | 38 | 62 |
+| **Pallid Court (B)** | 71 | 73 | 74 | 69 | 77 | 78 | 46 | 51 | 8 | 58 | 72 | 38 | 71 | 14 | 36 | 29 |
+| **Ember Warband (R)** | 71 | 82 | 81 | 79 | 77 | 79 | 56 | 54 | 18 | 84 | 38 | 34 | 73 | 16 | 38 | 42 |
+| **Verdant Trail (G)** | 73 | 54 | 75 | 79 | 70 | 84 | 51 | 55 | 15 | 72 | 40 | 46 | 54 | 24 | 34 | 42 |
+
+### Aggregate by tier — each starter's mean win % over the group (n = opponents in the group)
+
+| starter | T1 mages (n=5) | T2 mages (n=5) | T3 mages (n=5) | T1 beasts (n=7) | T2 beasts (n=4) | T3 beasts (n=5) | all mages (n=15) | all beasts (n=16) | everyone (n=31) |
+|---|---|---|---|---|---|---|---|---|---|
+| **Dawn Levy (W)** | 72% | 69% | 62% | 82% | 63% | 52% | 68% | 68% | 68% |
+| **Tidal Grimoire (U)** | 45% | 45% | 48% | 64% | 51% | 46% | 46% | 55% | 51% |
+| **Pallid Court (B)** | 59% | 58% | 56% | 70% | 47% | 38% | 58% | 54% | 56% |
+| **Ember Warband (R)** | 60% | 55% | 51% | 75% | 48% | 41% | 56% | 58% | 57% |
+| **Verdant Trail (G)** | 62% | 57% | 56% | 69% | 46% | 40% | 58% | 54% | 56% |
+| *all five* | 60% | 57% | 55% | 72% | 51% | 43% | 57% | 58% | 57% |
+
+**The reads.**
+- **The tiers do not separate from the starters' side.** Against the mages the starters average 60% at tier 1, 57% at tier 2, 55% at tier 3 — a five-point slope where the shape wanted is high / even / unfavourable. The tier-3 masters at 12 life are still FAVOURABLE for four of the five starters (only Tidal Grimoire is under 50 against them, and it is under 50 against every tier). This is the S32/S33 finding from the other side: the mage ladder's difficulty lives in the lists more than the tiers, and the tier lever (S33's matrix — life plus entrance) is what would open the gap.
+- **The beasts DO have the gradient**: 72% / 51% / 43% by tier. The tier-1 beasts are fodder (Grizzly, Ogre, Man-o'-War, Tactician at 84–92 for Dawn Levy); the tier-3 beasts are the only opponents that are unfavourable across the board (the Serra 14–24, the Wurm 34–52, the Siege-Gang 34–47). The beast catalog is closer to the wanted shape than the mage ladder.
+- **The walls**: Sister Oriel at tier 1 (the starters win 24–48 — the lifegain wall the teachers' tier should not have), Mistress Vael at tier 2 (20–45), the Vampire Nighthawks at tier 2 (8–42 — the black starter wins 8%). Thornmother Ysolde is the one tier-3 mage that plays like a tier-3 (26–53). The fodder: Tessaly (48–86), Hask (49–83), Maelin (61–81), Pell (56–79), Corvane (62–72 — a tier-3 master the starters beat two games in three).
+- **The roads**: Dawn Levy 68% over everyone (the gentle road, ADR-114, confirmed from this side too); Pallid Court, Ember Warband and Verdant Trail 56–57%; **Tidal Grimoire 51% overall and 46% against the mages** — the blue road is the hard one, and it is hard at every tier rather than progressively.
+- **Per-tier bands for the visual**: the Lab's roster mode shades each cell by its column's tier band, seeded with placeholders Chris can move — T1 65–80, T2 45–55, T3 30–45 (the row's win rate). Against those, the baseline's mages sit above every band at tiers 2 and 3 for most starters; the beasts sit inside at tiers 2–3 and above at tier 1.
+
+**The roster mode (the Lab).** A second mode beside the pairing grid: rows = any set of decks (the five starters by default; roads, custom decks and the slice decks may join), at their world defaults or one override for life / basics / AI; columns = every mage and/or every beast at THEIR defaults (a checkbox each); N games per cell; the grid shows the row's win rate per cell shaded by the column's tier band (three editable bands), a rows'-mean line, and a per-row aggregate table by group — T1/T2/T3 mages, T1/T2/T3 beasts, all mages, all beasts, everyone — each a number with n and a bar (0–100, the tick at 50, the band in green); click a cell for the play/draw split, margins and turns. Saves and loads as a run like the grid (the setup is kept, so a re-run after a list change is one click).
+
 ## Deviations from the brief
 
 None. Nothing moved; the two findings below (Concerns 4–5) are reported, not changed — this being a measuring session.
