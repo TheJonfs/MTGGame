@@ -1,5 +1,5 @@
 /**
- * pnpm mage-sweep [--games N] [--seed S] [--part 1|2|3|4|5|6|7|all] [--baseline <json>|none]
+ * pnpm mage-sweep [--games N] [--seed S] [--part 1|2|3|4|5|6|7|8|9|all] [--baseline <json>|none] [--tier-life 8,10,12]
  *
  * S29 Part 5: the mage cleansheet's three round-robins under the heuristic ladder (both seats; the
  * tier's profile; the tier's life for both sides unless noted).
@@ -17,6 +17,12 @@
  * part 7 — every tier-2/3 mage against the two MID-ROAD references (sim/road-decks: a starter plus
  * eight shop cards, a manalink basic in play, 12 life, journeyman — ADR-111's yardstick); `returned`
  * counts (graveyard → battlefield by card) beside the cast counts; the baseline defaults to S31.
+ * S33 (the tiers against the road): part 8 — the MATRIX: every tier-3 mage at life {12,16,20} ×
+ * entrance {none, 1, 2 basics of its own colours} and every tier-2 mage at life {10,12,14} ×
+ * entrance {none, 1} against both mid-road references, with per-tier aggregates (the reference's
+ * win rate by life × entrance, averaged over the five mages and both references); part 9 — the
+ * tier-2/3 beasts at catalog life, +4 and +8 against both references (beasts get no roots).
+ * `--tier-life 8,10,12` parameterises the tier life for parts 1–7 (the catalog is untouched).
  */
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -48,12 +54,36 @@ const catalog = loadCatalog(join(ROOT, "data/world"));
 const knobs = defaultKnobs();
 
 type Side = { name: string; decklist: { cardId: string; count: number }[]; archetype: "aggro" | "midrange" | "control"; profile: Difficulty; life: number; entrance?: string[] };
-const TIER_LIFE: Record<1 | 2 | 3, number> = { 1: 8, 2: 10, 3: 12 };
+const tierLifeArg = arg("tier-life", "8,10,12").split(",").map(Number);
+const TIER_LIFE: Record<1 | 2 | 3, number> = { 1: tierLifeArg[0] ?? 8, 2: tierLifeArg[1] ?? 10, 3: tierLifeArg[2] ?? 12 };
 const TIER_PROFILE: Record<1 | 2 | 3, Difficulty> = { 1: "apprentice", 2: "journeyman", 3: "master" };
 const mage = (key: string, tierAs?: 1 | 2 | 3): Side => {
   const m = MAGE_DECKS[key]!;
   const t = tierAs ?? m.tier;
   return { name: `${m.name} (${key})`, decklist: m.decklist, archetype: m.archetype, profile: TIER_PROFILE[t], life: TIER_LIFE[t] };
+};
+/** S33 (Part 2): a mage's colours ranked by the list's pip count — the entrance basics come in that order
+ * (one basic = the primary colour; two = one of each for a two-colour mage). */
+const BASIC_OF: Record<string, string> = { W: "plains", U: "island", B: "swamp", R: "mountain", G: "forest" };
+const mageColorsByPips = (key: string): string[] => {
+  const m = MAGE_DECKS[key]!;
+  const pips: Record<string, number> = { W: 0, U: 0, B: 0, R: 0, G: 0 };
+  for (const e of m.decklist) {
+    const cost = pool.get(e.cardId)?.manaCost ?? "";
+    for (const c of Object.keys(pips)) pips[c]! += e.count * ((cost.match(new RegExp(`\\{${c}\\}`, "g")) ?? []).length);
+  }
+  return [...m.colors].sort((a, b) => (pips[b] ?? 0) - (pips[a] ?? 0));
+};
+/** S33: a mage at a chosen life with N entrance basics (its colours by pip count; a mono mage repeats its one). */
+const mageAt = (key: string, life: number, basics: number): Side => {
+  const base = mage(key);
+  const colours = mageColorsByPips(key);
+  const entrance = Array.from({ length: basics }, (_, i) => BASIC_OF[colours[i % colours.length]!]!);
+  return { ...base, name: `${base.name} @${life}/${basics}`, life, entrance };
+};
+const beastAt = (key: string, delta: number): Side => {
+  const b = beast(key);
+  return { ...b, name: `${b.name} @+${delta}`, life: b.life + delta };
 };
 const beast = (key: string): Side => {
   const b = EXPANSION_DECKS[key]!;
@@ -81,7 +111,7 @@ function noteCasts(side: Side, seat: 0 | 1, spellsCast: Record<string, [number, 
   casts.set(side.name, row);
 }
 
-async function pairing(a: Side, b: Side, label: string): Promise<void> {
+async function pairing(a: Side, b: Side, label: string): Promise<{ aPct: number; bPct: number; turns: number; bDecked: number }> {
   let aWins = 0, bWins = 0, draws = 0, turns = 0, aDecked = 0, bDecked = 0, total = 0;
   for (let i = 0; i < games; i++) {
     if (i % 10 === 0) await new Promise((r) => setTimeout(r, 0));
@@ -123,6 +153,7 @@ async function pairing(a: Side, b: Side, label: string): Promise<void> {
   const aPct = Math.round((100 * aWins) / Math.max(1, total));
   const delta = base === undefined ? "—" : `${aPct - base >= 0 ? "+" : ""}${aPct - base}`;
   console.log(`| ${label} | ${a.name} | ${b.name} | ${pct(aWins)}${byLib(aWins, aDecked)} | ${pct(bWins)}${byLib(bWins, bDecked)} | ${draws} | ${(turns / Math.max(1, total)).toFixed(1)} | ${delta} |`);
+  return { aPct: (100 * aWins) / Math.max(1, total), bPct: (100 * bWins) / Math.max(1, total), turns: turns / Math.max(1, total), bDecked: bWins > 0 ? (100 * bDecked) / bWins : 0 };
 }
 
 const header = () => console.log(`\n| part | A | B | A wins | B wins | draws | mean turns | Δ A wins vs ${baselineName} |\n|---|---|---|---|---|---|---|---|`);
@@ -164,6 +195,46 @@ if (part === "all" || part === "7") {
   console.log(`\n## 7. Tier-2 and tier-3 mages vs the mid-road references (ADR-111: a starter + eight shop cards, one manalink basic in play, 12 life, journeyman)`);
   header();
   for (const t of [2, 3] as const) for (const k of byTier[t]) for (const rk of ["roadMidW", "roadMidB"]) await pairing(mage(k), road(rk), `T${t}×road`);
+}
+if (part === "all" || part === "8") {
+  // S33 Part 2: the matrix. The mage is A, the reference is B; the read is the REFERENCE's win rate.
+  const refs = ["roadMidW", "roadMidB"];
+  const grid: Record<1 | 2 | 3, { lives: number[]; basics: number[] }> = { 1: { lives: [], basics: [] }, 2: { lives: [10, 12, 14], basics: [0, 1] }, 3: { lives: [12, 16, 20], basics: [0, 1, 2] } };
+  for (const t of [3, 2] as const) {
+    console.log(`\n## 8${t === 3 ? "a" : "b"}. The matrix — tier ${t} mages at life {${grid[t].lives.join(", ")}} × entrance {${grid[t].basics.join(", ")} basics} vs the mid-road references (the mage at ${TIER_PROFILE[t]}; the references at 12 / journeyman with a basic in play)`);
+    header();
+    const agg: Record<string, { ref: number[]; turns: number[]; decked: number[] }> = {};
+    const perMage: Record<string, Record<string, number[]>> = {};
+    for (const k of byTier[t]) {
+      for (const life of grid[t].lives) for (const basics of grid[t].basics) for (const rk of refs) {
+        const r = await pairing(mageAt(k, life, basics), road(rk), `T${t}×road`);
+        const cell = `${life}/${basics}`;
+        (agg[cell] ??= { ref: [], turns: [], decked: [] });
+        agg[cell]!.ref.push(r.bPct); agg[cell]!.turns.push(r.turns); agg[cell]!.decked.push(r.bDecked);
+        ((perMage[k] ??= {})[cell] ??= []).push(r.bPct);
+      }
+    }
+    const mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / Math.max(1, xs.length);
+    console.log(`\n### Aggregate — the references' win rate by life × entrance (tier ${t}; mean over ${byTier[t].length} mages × 2 references)\n`);
+    console.log(`| life \\ basics | ${grid[t].basics.map((b) => `${b}`).join(" | ")} |\n|---|${grid[t].basics.map(() => "---").join("|")}|`);
+    for (const life of grid[t].lives) console.log(`| ${life} | ${grid[t].basics.map((b) => { const c = agg[`${life}/${b}`]!; return `${mean(c.ref).toFixed(0)}% (turns ${mean(c.turns).toFixed(1)}; by library ${mean(c.decked).toFixed(0)}%)`; }).join(" | ")} |`);
+    console.log(`\n### Per mage — the references' win rate by cell (tier ${t}; mean over both references)\n`);
+    const cells = grid[t].lives.flatMap((l) => grid[t].basics.map((b) => `${l}/${b}`));
+    console.log(`| mage | ${cells.join(" | ")} |\n|---|${cells.map(() => "---").join("|")}|`);
+    for (const k of byTier[t]) console.log(`| ${MAGE_DECKS[k]!.name} | ${cells.map((c) => `${mean(perMage[k]![c] ?? []).toFixed(0)}%`).join(" | ")} |`);
+  }
+}
+if (part === "all" || part === "9") {
+  console.log(`\n## 9. The tier-2/3 beasts vs the mid-road references at catalog life, +4 and +8 (no roots; the beast at its catalog profile)`);
+  header();
+  const rows = catalog.opponents.filter((o) => o.kind === "beast" && (o.tier === 2 || o.tier === 3) && o.deck.startsWith("beast:"));
+  const keys = [...new Set(rows.map((o) => o.deck.slice(6)))];
+  const agg: Record<string, number[]> = {};
+  for (const k of keys) for (const delta of [0, 4, 8]) for (const rk of ["roadMidW", "roadMidB"]) {
+    const r = await pairing(beastAt(k, delta), road(rk), `beast×road`);
+    (agg[`+${delta}`] ??= []).push(r.bPct);
+  }
+  console.log(`\n### Aggregate — the references' win rate by life delta (mean over ${keys.length} beasts × 2 references): ${Object.entries(agg).map(([d, xs]) => `${d}: ${(xs.reduce((a, b) => a + b, 0) / Math.max(1, xs.length)).toFixed(0)}%`).join(" · ")}`);
 }
 if (part === "all" || part === "3") {
   console.log(`\n## 3. Children vs parents (parent mage at tier-1 settings; parent beast at its own)`);

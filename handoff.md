@@ -1,360 +1,343 @@
-# Handoff — after Session 32 (2026-09-07)
+# Handoff — after Session 33 (2026-09-08)
 
 ## State of the world
 
-**Cinquefoil v1 is live on Vercel; the deploy playtest continues.** Session 32 — **the Escort, the Edict, the last list turns, and the tier yardstick** — is done: Plumecreed Escort and Diabolic Edict in the pool (ADR-109; 192 → 194; both zero words — the Escort rides the resolved `grantKeyword` with the until-end-of-turn duration, the Edict rides S31's edict word; no R-095), the four lists and two starters turned (ADR-110), `facts.returned` so the reanimator decks read honestly, sweep parts 6 (the beasts vs the starters) and 7 (the mid-road yardstick, ADR-111 — `road-mid-W` / `road-mid-B` in `sim/road-decks`), the S31 baseline, and the full sweep re-run (parts 1–7, 22,000 games). Three AI corrections the work forced, all pinned and ladder-gated: the S28 cantrip window compared the step to a name the engine never uses (Brainstorm's end-step cast had never happened live), the pump-waste gate was swallowing the Escort as a "trick", and the view's stack now carries its targets (the Altar's "doomed" read had been blind live since S29). The smalls: CLAUDE.md's art lines, the gallery's mage filter, the annihilator dialog walked headlessly through the UI's own event path. Pool 194 cards (207 defs with tokens and test cards); `docs/reference/` regenerated.
+**Cinquefoil v1 is live on Vercel; the deploy playtest continues.** Session 33 — **the tiers against the road** — measured and moved nothing: no knob, no list, no catalog row. The matrix (sweep part 8: every tier-3 mage at life {12, 16, 20} × entrance {0, 1, 2 basics}, every tier-2 mage at {10, 12, 14} × {0, 1}, against both mid-road references) and the beast table (part 9: the tier-2/3 beasts at catalog life, +4, +8) are below with their aggregates; part 4's blue re-read is below; Part 6's scoping of the matchup resolver is below. The mage entrance rides the Heart's roots path unchanged and is fixtured at one and two basics with a byte-exact replay. `--tier-life` parameterises the sweep's tier life for parts 1–7. Pool 194 (unchanged).
 
 ## Done this session
 
-- **Part 0**: `docs/decision-updates/s32.md` — the ratifications, ADR-109/110/111, the CLAUDE.md ruling, filing notes.
-- **Part 1 — Plumecreed Escort** (BLB; T1/12g; zero words): flash + flying + an ETB `grantKeyword hexproof` at `creatureYouControl`, `UNTIL_END_OF_TURN` (the S22 haste rider's resolved form); hexproof was already honoured by the targeting predicate. Five fixtures: the save (their Bolt at our Crab fizzles when the Escort resolves first); Pacifism at a hexproofed creature fizzles; the grant ends at cleanup (a Terror is not even offered while it holds, and takes the creature next turn); an Escort saves another Escort from a Shock, and an Escort entering alone is its own forced target; flash offered at the opponent's end step, never a sorcery-speed creature. AI (book 49): a flash creature is an instant — the opponent's end step by default, in response to anything on the stack (the cast prediction credits the biggest creature of ours an opponent's stack item is aimed at — the save), on our own turn only with idle mana; the ETB's target chooser sends a helpful effect to the creature UNDER FIRE first. The FUZZ_FULL ladder gate held, the vs-random ladder PASS.
-- **Part 2 — Diabolic Edict** (TMP; T2/16g; zero words on R-094 word 3 at `who: target, count 1, predicate creature`). Three fixtures: the lone Serra goes forced; no creatures resolves doing nothing; the defender gives up the Goblin token over the Serra (one logged pick). AI (book 50): worth the LEAST creature the target would give up (the S31 predictor already priced it so), and gated — never into no creatures, never into a token shielding a real creature, never at our own face; a lone Serra is the play.
-- **Part 3**: Tessaly (−1 Wall of Air −1 Boomerang +2 Escort), Corvane (−1 Gravedigger −1 Unearth +2 Dark Ritual), Sorrel (−1 Terror +1 Edict), Kessa (−1 Boomerang +1 Escort) — exactly as given.
-- **Part 4**: Dawn Levy (−1 Fencing Ace −1 Raise the Alarm +1 Inspiring Overseer +1 Master Decoy) and Tidal Grimoire (−1 Aether Channeler −1 Cloudkin Seer +2 Escort); every easy/hard delta still legal; `starters.md` regenerated.
-- **Part 5**: `facts.returned` (a `RETURNED` log event on every graveyard → battlefield move; derived in `deriveFacts`) and the sweep's cast-count section now lists **returned from the graveyard** per deck; the baseline defaults to `sweep-baselines/s31.json`; part 6 (17 beasts × 5 starters). Full run below.
-- **Part 6**: `roadMidW` / `roadMidB` in `packages/sim/src/road-decks.ts` (the amended starter + the planner's eight cards, 38 each, one basic in play via `permanentOnBattlefield`, 12 life, journeyman — the Side gained `entrance`); a world test keeps each equal to its starter plus the eight; sweep part 7 (ten mages × two references). Tables below.
-- **Part 7**: CLAUDE.md's two art lines say tracked; the gallery's deck filter lists the fifteen mages (`mage:<key>`; each card's row names its mage decks — browser-verified: Tessaly shows her eleven distinct cards); the annihilator's sacrifice dialog walked through the UI's own event path (a headless MatchController match: the Artisan in play for the AI, two Forests and a Bears for the human — two `chooseSacrifice` dialogs reach the human seat with the Artisan as source, the picks resolve, the Bears stay).
-- **Fuzz before fixtures**: `s32-fuzz.test.ts` (the fifteen mages against a mage and a starter each, both seats, plus the starters' round-robin — 840 games at the full tier, replays byte-exact) ran before any S32 fixture.
+- **Part 0**: `docs/decision-updates/s33.md` — the ratifications (S32 deviation 1 as an erratum to S28), ADR-112/113/114/115, the filing note.
+- **Part 1**: both levers are already vocabulary — tier life is the sweep's `TIER_LIFE` (now `--tier-life 8,10,12`) and the catalog's `worldLife`; the entrance is `permanentOnBattlefield` (the Heart's roots path). `s33-entrance.test.ts`: one and two basics enter untapped under the mage before turn one (after the mulligans, ADR-002), fire no landfall, and the replay is byte-exact.
+- **Part 2**: sweep part 8 — the matrix. The mage's entrance basics are its own colours ranked by the list's pip count (one basic = the primary colour; two = one of each for a two-colour mage; a mono mage repeats its one). Per cell: the reference's win rate, mean turns, wins by library; per tier: the aggregate table (mean over the five mages × two references) and a per-mage table. 150 pairings, 15,000 games.
+- **Part 3**: sweep part 9 — the ten tier-2/3 beasts (the Tactician at tier 2) at catalog life, +4 and +8, no roots; 60 pairings, 6,000 games; the aggregate by delta.
+- **Part 4**: Brainstorm's per-copy rate and its windows for the five blue decks (200 games each against their tier mates, a scratch script reading the ACTION log's step against the turn's active player) beside the S31 rates.
+- **Part 6**: the scoping below.
 
 ## Deviations from the brief
 
-1. **The S28 cantrip window was dead live** — `cantripTimingGated` compared `view.step` to `"END_STEP"` while the engine's step is `"END"`; Brainstorm (and Thought Scour's window, had it used the gate) could only ever be cast in response. Caught by the Escort's pin (which used the same rule). Fixed in both gates and in book 36's pin. Every blue deck's timing changed; both ladder gates held; the sweep below includes it. The planner should note it as an S28 correction.
-2. **The pump-waste gate reads instants and sorceries only** — it was reading the Escort's ETB (an until-end-of-turn grant) as a combat trick and gating the cast. A permanent's timed ETB is a body, not a trick.
-3. **`GameView.stack[].targets` is public now.** The Escort's save needs to see which creature an opponent's spell is aimed at; the view's stack carried no targets, and the S29 Altar "doomed" read (`creatureIsDoomed`) had been reading a field that only tests supplied — blind live since S29. The stack's targets are announced information, so the view carries them.
-4. **The Edict's three gates** (no creatures / a token shield / our own face) go beyond "values the Edict by the least creature": the predictor alone still cast into a 5/5 behind two tokens (a token's half-point plus tempo outscored passing). The brief's pin wanted a hold, so the hold is a gate.
-5. **The mid-road references are static lists, not the catalog plus adds** — `sim` cannot read `data/world` (the dependency runs the other way), so `road-decks.ts` carries the 38 explicitly and a world test asserts each equals its starter plus the planner's eight. Edit the starter, then the road deck; the test says when they drift.
-6. **The annihilator walk is headless**, not a browser screenshot: a duel with a custom `permanentOnBattlefield` setup has no UI entry point, and the S10 pattern (the controller drives the same event path as the clicks) is the honest reproducible form. The visual panel is the generic `chooseSacrifice` dialog with the Artisan as its named source.
+None. Nothing moved; the two findings below (Concerns 4–5) are reported, not changed — this being a measuring session.
 
 ## Concerns
 
-1. **The sweep (100 games per pairing, both seats; mages at the tier's profile and life — 8/10/12; starters at 10 life piloted at journeyman; beasts at their catalog life/profile; the mid-road references at 12 life with a basic in play, journeyman; Δ = A's win % against the S31 run; parts 6–7 are new, no baseline):**
+1. **The matrix (100 games per cell, both seats; the mage at its tier's profile; the references at 12 life with a basic in play, journeyman; the read is the REFERENCE's win rate):**
 
-## 1. Tier by tier
-
-| part | A | B | A wins | B wins | draws | mean turns | Δ A wins vs S31 |
-|---|---|---|---|---|---|---|---|
-| T1 | Sister Oriel (oriel) | Tessaly Reed (tessaly) | 67% | 33% (97% by library) | 0 | 11.9 | -8 |
-| T1 | Sister Oriel (oriel) | Pale Edric (edric) | 62% | 38% | 0 | 16.2 | +1 |
-| T1 | Sister Oriel (oriel) | Brann the Scorched (brann) | 74% | 26% | 0 | 12.7 | +0 |
-| T1 | Sister Oriel (oriel) | Old Hask (hask) | 73% | 27% | 0 | 11.1 | +0 |
-| T1 | Tessaly Reed (tessaly) | Pale Edric (edric) | 26% (77% by library) | 74% | 0 | 12.5 | +8 |
-| T1 | Tessaly Reed (tessaly) | Brann the Scorched (brann) | 28% (61% by library) | 72% | 0 | 11.1 | +3 |
-| T1 | Tessaly Reed (tessaly) | Old Hask (hask) | 35% (63% by library) | 65% | 0 | 11.0 | +12 |
-| T1 | Pale Edric (edric) | Brann the Scorched (brann) | 59% | 41% | 0 | 12.7 | +0 |
-| T1 | Pale Edric (edric) | Old Hask (hask) | 66% | 34% | 0 | 12.7 | +0 |
-| T1 | Brann the Scorched (brann) | Old Hask (hask) | 55% | 45% | 0 | 9.9 | +0 |
-| T2 | Mistress Vael (vael) | Kessa Emberhand (kessa) | 68% | 32% | 0 | 19.6 | +0 |
-| T2 | Mistress Vael (vael) | Adept Maelin (maelin) | 65% | 35% | 0 | 16.9 | +0 |
-| T2 | Mistress Vael (vael) | Brennor of the Glade (brennor) | 66% (2% by library) | 34% | 0 | 19.1 | +1 |
-| T2 | Mistress Vael (vael) | Pell of the Shallows (pell) | 61% | 39% (85% by library) | 0 | 15.4 | -1 |
-| T2 | Kessa Emberhand (kessa) | Adept Maelin (maelin) | 46% | 54% | 0 | 14.5 | +6 |
-| T2 | Kessa Emberhand (kessa) | Brennor of the Glade (brennor) | 39% | 61% | 0 | 12.7 | +4 |
-| T2 | Kessa Emberhand (kessa) | Pell of the Shallows (pell) | 73% | 27% (22% by library) | 0 | 12.6 | +12 |
-| T2 | Adept Maelin (maelin) | Brennor of the Glade (brennor) | 48% | 52% | 0 | 13.3 | +2 |
-| T2 | Adept Maelin (maelin) | Pell of the Shallows (pell) | 58% | 42% (43% by library) | 0 | 13.7 | -1 |
-| T2 | Brennor of the Glade (brennor) | Pell of the Shallows (pell) | 62% | 38% (55% by library) | 0 | 13.2 | +1 |
-| T3 | Lord Corvane (corvane) | Varro Flamebrand (varro) | 66% | 34% (24% by library) | 0 | 17.3 | -4 |
-| T3 | Lord Corvane (corvane) | High Warden Sorrel (sorrel) | 46% | 54% | 0 | 16.4 | -5 |
-| T3 | Lord Corvane (corvane) | Thornmother Ysolde (ysolde) | 26% | 74% | 0 | 12.2 | +1 |
-| T3 | Lord Corvane (corvane) | Magister Quill (quill) | 50% | 50% (56% by library) | 0 | 15.6 | -3 |
-| T3 | Varro Flamebrand (varro) | High Warden Sorrel (sorrel) | 56% (7% by library) | 44% | 0 | 17.0 | +3 |
-| T3 | Varro Flamebrand (varro) | Thornmother Ysolde (ysolde) | 30% (7% by library) | 70% | 0 | 13.4 | +2 |
-| T3 | Varro Flamebrand (varro) | Magister Quill (quill) | 47% (17% by library) | 53% (38% by library) | 0 | 16.1 | +0 |
-| T3 | High Warden Sorrel (sorrel) | Thornmother Ysolde (ysolde) | 36% | 64% | 0 | 12.7 | +2 |
-| T3 | High Warden Sorrel (sorrel) | Magister Quill (quill) | 66% | 34% (29% by library) | 0 | 13.8 | -2 |
-| T3 | Thornmother Ysolde (ysolde) | Magister Quill (quill) | 75% | 25% (20% by library) | 0 | 11.2 | +0 |
-
-## 2. Teachers vs starters (tier-1 mages at 8 / apprentice; starters at 10 / journeyman)
+## 8a. The matrix — tier 3 mages at life {12, 16, 20} × entrance {0, 1, 2 basics} vs the mid-road references (the mage at master; the references at 12 / journeyman with a basic in play)
 
 | part | A | B | A wins | B wins | draws | mean turns | Δ A wins vs S31 |
 |---|---|---|---|---|---|---|---|
-| T1×starter | Sister Oriel (oriel) | starter:white | 55% | 45% | 0 | 17.1 | +6 |
-| T1×starter | Sister Oriel (oriel) | starter:blue | 76% (9% by library) | 24% | 0 | 20.5 | +2 |
-| T1×starter | Sister Oriel (oriel) | starter:black | 59% (5% by library) | 41% | 0 | 19.4 | +2 |
-| T1×starter | Sister Oriel (oriel) | starter:red | 60% | 40% | 0 | 12.7 | -3 |
-| T1×starter | Sister Oriel (oriel) | starter:green | 52% | 48% | 0 | 12.9 | +1 |
-| T1×starter | Tessaly Reed (tessaly) | starter:white | 14% (100% by library) | 86% | 0 | 9.7 | +4 |
-| T1×starter | Tessaly Reed (tessaly) | starter:blue | 52% (100% by library) | 48% | 0 | 12.4 | -15 |
-| T1×starter | Tessaly Reed (tessaly) | starter:black | 30% (100% by library) | 70% | 0 | 11.8 | -1 |
-| T1×starter | Tessaly Reed (tessaly) | starter:red | 29% (93% by library) | 71% | 0 | 10.2 | +5 |
-| T1×starter | Tessaly Reed (tessaly) | starter:green | 23% (100% by library) | 77% | 0 | 9.8 | +1 |
-| T1×starter | Pale Edric (edric) | starter:white | 24% | 76% | 0 | 12.4 | +1 |
-| T1×starter | Pale Edric (edric) | starter:blue | 50% | 50% | 0 | 15.7 | +0 |
-| T1×starter | Pale Edric (edric) | starter:black | 65% (20% by library) | 35% | 0 | 23.5 | +0 |
-| T1×starter | Pale Edric (edric) | starter:red | 55% | 45% | 0 | 13.2 | +0 |
-| T1×starter | Pale Edric (edric) | starter:green | 45% | 55% | 0 | 12.4 | +0 |
-| T1×starter | Brann the Scorched (brann) | starter:white | 23% | 77% | 0 | 13.0 | +1 |
-| T1×starter | Brann the Scorched (brann) | starter:blue | 45% | 55% | 0 | 13.1 | -2 |
-| T1×starter | Brann the Scorched (brann) | starter:black | 35% | 65% | 0 | 13.8 | +0 |
-| T1×starter | Brann the Scorched (brann) | starter:red | 24% | 76% | 0 | 9.9 | +0 |
-| T1×starter | Brann the Scorched (brann) | starter:green | 34% | 66% | 0 | 11.4 | +0 |
-| T1×starter | Old Hask (hask) | starter:white | 24% | 76% | 0 | 10.0 | +6 |
-| T1×starter | Old Hask (hask) | starter:blue | 51% | 49% | 0 | 12.1 | -14 |
-| T1×starter | Old Hask (hask) | starter:black | 17% | 83% | 0 | 13.4 | +0 |
-| T1×starter | Old Hask (hask) | starter:red | 30% | 70% | 0 | 10.6 | +0 |
-| T1×starter | Old Hask (hask) | starter:green | 37% (3% by library) | 63% | 0 | 12.4 | +0 |
+| T3×road | Lord Corvane (corvane) @12/0 | road-mid-W | 10% | 90% | 0 | 11.3 | — |
+| T3×road | Lord Corvane (corvane) @12/0 | road-mid-B | 12% (8% by library) | 88% | 0 | 16.6 | — |
+| T3×road | Lord Corvane (corvane) @12/1 | road-mid-W | 15% | 85% | 0 | 11.8 | — |
+| T3×road | Lord Corvane (corvane) @12/1 | road-mid-B | 26% | 74% | 0 | 17.9 | — |
+| T3×road | Lord Corvane (corvane) @12/2 | road-mid-W | 30% | 70% | 0 | 12.9 | — |
+| T3×road | Lord Corvane (corvane) @12/2 | road-mid-B | 26% | 74% (1% by library) | 0 | 18.2 | — |
+| T3×road | Lord Corvane (corvane) @16/0 | road-mid-W | 11% | 89% | 0 | 12.7 | — |
+| T3×road | Lord Corvane (corvane) @16/0 | road-mid-B | 14% (7% by library) | 86% | 0 | 19.7 | — |
+| T3×road | Lord Corvane (corvane) @16/1 | road-mid-W | 23% | 77% | 0 | 13.2 | — |
+| T3×road | Lord Corvane (corvane) @16/1 | road-mid-B | 32% (3% by library) | 68% | 0 | 21.2 | — |
+| T3×road | Lord Corvane (corvane) @16/2 | road-mid-W | 39% | 61% | 0 | 14.0 | — |
+| T3×road | Lord Corvane (corvane) @16/2 | road-mid-B | 36% (3% by library) | 64% (2% by library) | 0 | 21.5 | — |
+| T3×road | Lord Corvane (corvane) @20/0 | road-mid-W | 13% | 87% | 0 | 13.9 | — |
+| T3×road | Lord Corvane (corvane) @20/0 | road-mid-B | 21% (5% by library) | 79% | 0 | 22.4 | — |
+| T3×road | Lord Corvane (corvane) @20/1 | road-mid-W | 27% | 73% | 0 | 14.1 | — |
+| T3×road | Lord Corvane (corvane) @20/1 | road-mid-B | 37% (8% by library) | 63% | 0 | 23.3 | — |
+| T3×road | Lord Corvane (corvane) @20/2 | road-mid-W | 43% | 57% | 0 | 14.8 | — |
+| T3×road | Lord Corvane (corvane) @20/2 | road-mid-B | 39% (3% by library) | 61% (2% by library) | 0 | 22.8 | — |
+| T3×road | Varro Flamebrand (varro) @12/0 | road-mid-W | 18% (39% by library) | 82% | 0 | 13.4 | — |
+| T3×road | Varro Flamebrand (varro) @12/0 | road-mid-B | 14% (50% by library) | 86% | 0 | 15.8 | — |
+| T3×road | Varro Flamebrand (varro) @12/1 | road-mid-W | 24% (33% by library) | 76% | 0 | 15.3 | — |
+| T3×road | Varro Flamebrand (varro) @12/1 | road-mid-B | 26% (19% by library) | 74% | 0 | 16.9 | — |
+| T3×road | Varro Flamebrand (varro) @12/2 | road-mid-W | 36% (19% by library) | 64% | 0 | 14.8 | — |
+| T3×road | Varro Flamebrand (varro) @12/2 | road-mid-B | 29% (24% by library) | 71% | 0 | 16.5 | — |
+| T3×road | Varro Flamebrand (varro) @16/0 | road-mid-W | 22% (45% by library) | 78% | 0 | 15.4 | — |
+| T3×road | Varro Flamebrand (varro) @16/0 | road-mid-B | 19% (53% by library) | 81% | 0 | 18.4 | — |
+| T3×road | Varro Flamebrand (varro) @16/1 | road-mid-W | 27% (33% by library) | 73% | 0 | 17.0 | — |
+| T3×road | Varro Flamebrand (varro) @16/1 | road-mid-B | 31% (29% by library) | 69% | 0 | 18.5 | — |
+| T3×road | Varro Flamebrand (varro) @16/2 | road-mid-W | 42% (21% by library) | 58% | 0 | 15.8 | — |
+| T3×road | Varro Flamebrand (varro) @16/2 | road-mid-B | 36% (33% by library) | 64% | 0 | 18.0 | — |
+| T3×road | Varro Flamebrand (varro) @20/0 | road-mid-W | 28% (39% by library) | 72% | 0 | 17.1 | — |
+| T3×road | Varro Flamebrand (varro) @20/0 | road-mid-B | 24% (50% by library) | 76% | 0 | 20.6 | — |
+| T3×road | Varro Flamebrand (varro) @20/1 | road-mid-W | 35% (31% by library) | 65% | 0 | 18.0 | — |
+| T3×road | Varro Flamebrand (varro) @20/1 | road-mid-B | 33% (33% by library) | 67% | 0 | 19.9 | — |
+| T3×road | Varro Flamebrand (varro) @20/2 | road-mid-W | 45% (27% by library) | 55% | 0 | 16.4 | — |
+| T3×road | Varro Flamebrand (varro) @20/2 | road-mid-B | 44% (43% by library) | 56% | 0 | 19.7 | — |
+| T3×road | High Warden Sorrel (sorrel) @12/0 | road-mid-W | 12% | 88% | 0 | 13.3 | — |
+| T3×road | High Warden Sorrel (sorrel) @12/0 | road-mid-B | 14% | 86% | 0 | 16.8 | — |
+| T3×road | High Warden Sorrel (sorrel) @12/1 | road-mid-W | 19% | 81% | 0 | 15.2 | — |
+| T3×road | High Warden Sorrel (sorrel) @12/1 | road-mid-B | 33% | 67% | 0 | 17.5 | — |
+| T3×road | High Warden Sorrel (sorrel) @12/2 | road-mid-W | 30% | 70% | 0 | 14.9 | — |
+| T3×road | High Warden Sorrel (sorrel) @12/2 | road-mid-B | 37% | 63% | 0 | 16.6 | — |
+| T3×road | High Warden Sorrel (sorrel) @16/0 | road-mid-W | 13% | 87% | 0 | 15.4 | — |
+| T3×road | High Warden Sorrel (sorrel) @16/0 | road-mid-B | 21% | 79% | 0 | 20.5 | — |
+| T3×road | High Warden Sorrel (sorrel) @16/1 | road-mid-W | 25% | 75% | 0 | 16.6 | — |
+| T3×road | High Warden Sorrel (sorrel) @16/1 | road-mid-B | 39% | 61% | 0 | 18.8 | — |
+| T3×road | High Warden Sorrel (sorrel) @16/2 | road-mid-W | 34% | 66% | 0 | 16.1 | — |
+| T3×road | High Warden Sorrel (sorrel) @16/2 | road-mid-B | 41% | 59% | 0 | 18.2 | — |
+| T3×road | High Warden Sorrel (sorrel) @20/0 | road-mid-W | 16% | 84% | 0 | 17.0 | — |
+| T3×road | High Warden Sorrel (sorrel) @20/0 | road-mid-B | 24% (4% by library) | 76% | 0 | 22.4 | — |
+| T3×road | High Warden Sorrel (sorrel) @20/1 | road-mid-W | 27% | 73% | 0 | 18.1 | — |
+| T3×road | High Warden Sorrel (sorrel) @20/1 | road-mid-B | 42% | 58% | 0 | 20.9 | — |
+| T3×road | High Warden Sorrel (sorrel) @20/2 | road-mid-W | 39% | 61% | 0 | 17.0 | — |
+| T3×road | High Warden Sorrel (sorrel) @20/2 | road-mid-B | 41% | 59% | 0 | 19.6 | — |
+| T3×road | Thornmother Ysolde (ysolde) @12/0 | road-mid-W | 20% | 80% | 0 | 11.3 | — |
+| T3×road | Thornmother Ysolde (ysolde) @12/0 | road-mid-B | 22% | 78% | 0 | 14.7 | — |
+| T3×road | Thornmother Ysolde (ysolde) @12/1 | road-mid-W | 33% | 67% | 0 | 11.5 | — |
+| T3×road | Thornmother Ysolde (ysolde) @12/1 | road-mid-B | 41% (2% by library) | 59% | 0 | 15.2 | — |
+| T3×road | Thornmother Ysolde (ysolde) @12/2 | road-mid-W | 55% | 45% | 0 | 11.0 | — |
+| T3×road | Thornmother Ysolde (ysolde) @12/2 | road-mid-B | 55% (2% by library) | 45% | 0 | 14.3 | — |
+| T3×road | Thornmother Ysolde (ysolde) @16/0 | road-mid-W | 32% | 68% | 0 | 12.4 | — |
+| T3×road | Thornmother Ysolde (ysolde) @16/0 | road-mid-B | 36% (3% by library) | 64% | 0 | 16.7 | — |
+| T3×road | Thornmother Ysolde (ysolde) @16/1 | road-mid-W | 45% | 55% | 0 | 12.5 | — |
+| T3×road | Thornmother Ysolde (ysolde) @16/1 | road-mid-B | 50% (2% by library) | 50% | 0 | 16.3 | — |
+| T3×road | Thornmother Ysolde (ysolde) @16/2 | road-mid-W | 60% | 40% | 0 | 11.7 | — |
+| T3×road | Thornmother Ysolde (ysolde) @16/2 | road-mid-B | 61% (2% by library) | 39% | 0 | 15.2 | — |
+| T3×road | Thornmother Ysolde (ysolde) @20/0 | road-mid-W | 43% | 57% | 0 | 13.3 | — |
+| T3×road | Thornmother Ysolde (ysolde) @20/0 | road-mid-B | 41% (2% by library) | 59% | 0 | 18.0 | — |
+| T3×road | Thornmother Ysolde (ysolde) @20/1 | road-mid-W | 53% | 47% | 0 | 13.1 | — |
+| T3×road | Thornmother Ysolde (ysolde) @20/1 | road-mid-B | 56% (2% by library) | 44% | 0 | 17.3 | — |
+| T3×road | Thornmother Ysolde (ysolde) @20/2 | road-mid-W | 67% | 33% | 0 | 12.1 | — |
+| T3×road | Thornmother Ysolde (ysolde) @20/2 | road-mid-B | 63% (2% by library) | 37% | 0 | 15.8 | — |
+| T3×road | Magister Quill (quill) @12/0 | road-mid-W | 8% (25% by library) | 92% | 0 | 10.3 | — |
+| T3×road | Magister Quill (quill) @12/0 | road-mid-B | 18% (39% by library) | 82% | 0 | 14.4 | — |
+| T3×road | Magister Quill (quill) @12/1 | road-mid-W | 29% (34% by library) | 71% | 0 | 11.3 | — |
+| T3×road | Magister Quill (quill) @12/1 | road-mid-B | 22% (64% by library) | 78% | 0 | 14.6 | — |
+| T3×road | Magister Quill (quill) @12/2 | road-mid-W | 43% (40% by library) | 57% | 0 | 12.1 | — |
+| T3×road | Magister Quill (quill) @12/2 | road-mid-B | 35% (51% by library) | 65% | 0 | 16.0 | — |
+| T3×road | Magister Quill (quill) @16/0 | road-mid-W | 14% (29% by library) | 86% | 0 | 11.8 | — |
+| T3×road | Magister Quill (quill) @16/0 | road-mid-B | 27% (52% by library) | 73% | 0 | 16.2 | — |
+| T3×road | Magister Quill (quill) @16/1 | road-mid-W | 35% (31% by library) | 65% | 0 | 12.3 | — |
+| T3×road | Magister Quill (quill) @16/1 | road-mid-B | 31% (58% by library) | 69% | 0 | 16.8 | — |
+| T3×road | Magister Quill (quill) @16/2 | road-mid-W | 50% (36% by library) | 50% | 0 | 12.7 | — |
+| T3×road | Magister Quill (quill) @16/2 | road-mid-B | 40% (58% by library) | 60% | 0 | 17.6 | — |
+| T3×road | Magister Quill (quill) @20/0 | road-mid-W | 18% (39% by library) | 82% | 0 | 12.9 | — |
+| T3×road | Magister Quill (quill) @20/0 | road-mid-B | 30% (53% by library) | 70% | 0 | 17.9 | — |
+| T3×road | Magister Quill (quill) @20/1 | road-mid-W | 46% (35% by library) | 54% | 0 | 13.3 | — |
+| T3×road | Magister Quill (quill) @20/1 | road-mid-B | 35% (60% by library) | 65% | 0 | 18.4 | — |
+| T3×road | Magister Quill (quill) @20/2 | road-mid-W | 57% (35% by library) | 43% | 0 | 13.3 | — |
+| T3×road | Magister Quill (quill) @20/2 | road-mid-B | 47% (53% by library) | 53% | 0 | 19.0 | — |
 
-## 4. The starters against each other (journeyman at 10; a read on the five roads)
+### Aggregate — the references' win rate by life × entrance (tier 3; mean over 5 mages × 2 references)
 
-| part | A | B | A wins | B wins | draws | mean turns | Δ A wins vs S31 |
-|---|---|---|---|---|---|---|---|
-| starters | starter:white | starter:blue | 78% | 22% | 0 | 15.3 | -3 |
-| starters | starter:white | starter:black | 59% | 41% | 0 | 16.3 | -5 |
-| starters | starter:white | starter:red | 64% | 36% | 0 | 12.0 | +0 |
-| starters | starter:white | starter:green | 64% | 36% | 0 | 11.7 | -3 |
-| starters | starter:blue | starter:black | 55% (2% by library) | 45% (2% by library) | 0 | 18.0 | +19 |
-| starters | starter:blue | starter:red | 50% | 50% | 0 | 11.8 | +6 |
-| starters | starter:blue | starter:green | 61% | 39% | 0 | 13.5 | +14 |
-| starters | starter:black | starter:red | 54% | 46% | 0 | 15.0 | +0 |
-| starters | starter:black | starter:green | 74% (1% by library) | 26% | 0 | 15.9 | +0 |
-| starters | starter:red | starter:green | 44% | 56% | 0 | 11.1 | +0 |
+| life \ basics | 0 | 1 | 2 |
+|---|---|---|---|
+| 12 | 85% (turns 13.8; by library 0%) | 73% (turns 14.7; by library 0%) | 62% (turns 14.7; by library 0%) |
+| 16 | 79% (turns 15.9; by library 0%) | 66% (turns 16.3; by library 0%) | 56% (turns 16.1; by library 0%) |
+| 20 | 74% (turns 17.5; by library 0%) | 61% (turns 17.6; by library 0%) | 52% (turns 17.1; by library 0%) |
 
-## 5. Tier-2 and tier-3 mages vs the five starters (the mage at its tier's profile and life; starters at 10 / journeyman)
+### Per mage — the references' win rate by cell (tier 3; mean over both references)
 
-| part | A | B | A wins | B wins | draws | mean turns | Δ A wins vs S31 |
-|---|---|---|---|---|---|---|---|
-| T2×starter | Mistress Vael (vael) | starter:white | 55% (2% by library) | 45% | 0 | 17.7 | +0 |
-| T2×starter | Mistress Vael (vael) | starter:blue | 79% (9% by library) | 21% | 0 | 24.1 | -2 |
-| T2×starter | Mistress Vael (vael) | starter:black | 80% (36% by library) | 20% | 0 | 29.1 | +0 |
-| T2×starter | Mistress Vael (vael) | starter:red | 69% | 31% | 0 | 15.9 | +0 |
-| T2×starter | Mistress Vael (vael) | starter:green | 64% | 36% | 0 | 15.1 | +0 |
-| T2×starter | Kessa Emberhand (kessa) | starter:white | 30% | 70% | 0 | 14.7 | +7 |
-| T2×starter | Kessa Emberhand (kessa) | starter:blue | 51% | 49% | 0 | 15.4 | -4 |
-| T2×starter | Kessa Emberhand (kessa) | starter:black | 34% | 66% | 0 | 17.4 | +3 |
-| T2×starter | Kessa Emberhand (kessa) | starter:red | 33% | 67% | 0 | 13.7 | +6 |
-| T2×starter | Kessa Emberhand (kessa) | starter:green | 45% | 55% | 0 | 13.6 | +11 |
-| T2×starter | Adept Maelin (maelin) | starter:white | 19% | 81% | 0 | 11.1 | +4 |
-| T2×starter | Adept Maelin (maelin) | starter:blue | 38% | 62% | 0 | 13.7 | -2 |
-| T2×starter | Adept Maelin (maelin) | starter:black | 31% (10% by library) | 69% | 0 | 17.3 | +0 |
-| T2×starter | Adept Maelin (maelin) | starter:red | 34% | 66% | 0 | 11.7 | +0 |
-| T2×starter | Adept Maelin (maelin) | starter:green | 39% | 61% | 0 | 12.2 | +0 |
-| T2×starter | Brennor of the Glade (brennor) | starter:white | 32% | 68% | 0 | 12.6 | -3 |
-| T2×starter | Brennor of the Glade (brennor) | starter:blue | 61% (3% by library) | 39% | 0 | 15.7 | -7 |
-| T2×starter | Brennor of the Glade (brennor) | starter:black | 30% (10% by library) | 70% | 0 | 17.4 | +1 |
-| T2×starter | Brennor of the Glade (brennor) | starter:red | 52% | 48% | 0 | 11.3 | +0 |
-| T2×starter | Brennor of the Glade (brennor) | starter:green | 43% | 57% | 0 | 12.2 | -2 |
-| T2×starter | Pell of the Shallows (pell) | starter:white | 21% (81% by library) | 79% | 0 | 10.5 | +0 |
-| T2×starter | Pell of the Shallows (pell) | starter:blue | 44% (93% by library) | 56% | 0 | 12.9 | -14 |
-| T2×starter | Pell of the Shallows (pell) | starter:black | 35% (100% by library) | 65% | 0 | 13.8 | +1 |
-| T2×starter | Pell of the Shallows (pell) | starter:red | 36% (67% by library) | 64% | 0 | 11.0 | +0 |
-| T2×starter | Pell of the Shallows (pell) | starter:green | 26% (69% by library) | 74% | 0 | 11.3 | +1 |
-| T3×starter | Lord Corvane (corvane) | starter:white | 32% | 68% | 0 | 13.2 | +8 |
-| T3×starter | Lord Corvane (corvane) | starter:blue | 32% | 68% | 0 | 18.3 | -4 |
-| T3×starter | Lord Corvane (corvane) | starter:black | 28% (4% by library) | 72% | 0 | 17.0 | -16 |
-| T3×starter | Lord Corvane (corvane) | starter:red | 35% | 65% | 0 | 12.5 | -11 |
-| T3×starter | Lord Corvane (corvane) | starter:green | 38% | 62% | 0 | 12.6 | -6 |
-| T3×starter | Varro Flamebrand (varro) | starter:white | 41% (51% by library) | 59% | 0 | 16.1 | -5 |
-| T3×starter | Varro Flamebrand (varro) | starter:blue | 58% (53% by library) | 42% | 0 | 17.4 | -2 |
-| T3×starter | Varro Flamebrand (varro) | starter:black | 44% (55% by library) | 56% | 0 | 17.5 | +0 |
-| T3×starter | Varro Flamebrand (varro) | starter:red | 54% (31% by library) | 46% | 0 | 14.8 | +0 |
-| T3×starter | Varro Flamebrand (varro) | starter:green | 42% (21% by library) | 58% | 0 | 13.5 | +0 |
-| T3×starter | High Warden Sorrel (sorrel) | starter:white | 40% | 60% | 0 | 15.9 | -8 |
-| T3×starter | High Warden Sorrel (sorrel) | starter:blue | 59% | 41% | 0 | 17.6 | -2 |
-| T3×starter | High Warden Sorrel (sorrel) | starter:black | 45% (4% by library) | 55% | 0 | 17.8 | -2 |
-| T3×starter | High Warden Sorrel (sorrel) | starter:red | 48% | 52% | 0 | 13.6 | -2 |
-| T3×starter | High Warden Sorrel (sorrel) | starter:green | 40% | 60% | 0 | 13.2 | -1 |
-| T3×starter | Thornmother Ysolde (ysolde) | starter:white | 47% | 53% | 0 | 11.2 | +2 |
-| T3×starter | Thornmother Ysolde (ysolde) | starter:blue | 74% | 26% | 0 | 12.6 | -4 |
-| T3×starter | Thornmother Ysolde (ysolde) | starter:black | 56% | 44% | 0 | 14.2 | +0 |
-| T3×starter | Thornmother Ysolde (ysolde) | starter:red | 66% | 34% | 0 | 11.0 | +0 |
-| T3×starter | Thornmother Ysolde (ysolde) | starter:green | 66% | 34% | 0 | 10.9 | +0 |
-| T3×starter | Magister Quill (quill) | starter:white | 28% (71% by library) | 72% | 0 | 11.6 | -1 |
-| T3×starter | Magister Quill (quill) | starter:blue | 36% (78% by library) | 64% | 0 | 15.2 | -18 |
-| T3×starter | Magister Quill (quill) | starter:black | 48% (83% by library) | 52% | 0 | 16.0 | +2 |
-| T3×starter | Magister Quill (quill) | starter:red | 41% (56% by library) | 59% | 0 | 12.6 | +0 |
-| T3×starter | Magister Quill (quill) | starter:green | 32% (38% by library) | 68% | 0 | 11.9 | +0 |
+| mage | 12/0 | 12/1 | 12/2 | 16/0 | 16/1 | 16/2 | 20/0 | 20/1 | 20/2 |
+|---|---|---|---|---|---|---|---|---|---|
+| Lord Corvane | 89% | 80% | 72% | 88% | 73% | 63% | 83% | 68% | 59% |
+| Varro Flamebrand | 84% | 75% | 68% | 80% | 71% | 61% | 74% | 66% | 56% |
+| High Warden Sorrel | 87% | 74% | 67% | 83% | 68% | 63% | 80% | 66% | 60% |
+| Thornmother Ysolde | 79% | 63% | 45% | 66% | 53% | 40% | 58% | 46% | 35% |
+| Magister Quill | 87% | 75% | 61% | 80% | 67% | 55% | 76% | 60% | 48% |
 
-## 6. The beasts vs the five starters (each beast at its catalog life/profile; starters at 10 / journeyman) — is the part-5 gap the lists, or the tiers?
-
-| part | A | B | A wins | B wins | draws | mean turns | Δ A wins vs S31 |
-|---|---|---|---|---|---|---|---|
-| beast×starter | A Grizzly Bear (beast:grizzly) | starter:white | 10% | 90% | 0 | 9.8 | — |
-| beast×starter | A Grizzly Bear (beast:grizzly) | starter:blue | 24% | 76% | 0 | 12.5 | — |
-| beast×starter | A Grizzly Bear (beast:grizzly) | starter:black | 29% | 71% | 0 | 12.8 | — |
-| beast×starter | A Grizzly Bear (beast:grizzly) | starter:red | 29% | 71% | 0 | 10.1 | — |
-| beast×starter | A Grizzly Bear (beast:grizzly) | starter:green | 27% | 73% | 0 | 11.4 | — |
-| beast×starter | The Deadly Recluse (beast:recluse) | starter:white | 30% | 70% | 0 | 13.1 | — |
-| beast×starter | The Deadly Recluse (beast:recluse) | starter:blue | 41% | 59% | 0 | 17.6 | — |
-| beast×starter | The Deadly Recluse (beast:recluse) | starter:black | 27% (15% by library) | 73% | 0 | 19.9 | — |
-| beast×starter | The Deadly Recluse (beast:recluse) | starter:red | 18% | 82% | 0 | 11.6 | — |
-| beast×starter | The Deadly Recluse (beast:recluse) | starter:green | 46% | 54% | 0 | 12.7 | — |
-| beast×starter | A Bloom of Man-o'-War (beast:manowar) | starter:white | 8% | 92% | 0 | 11.9 | — |
-| beast×starter | A Bloom of Man-o'-War (beast:manowar) | starter:blue | 31% | 69% | 0 | 18.4 | — |
-| beast×starter | A Bloom of Man-o'-War (beast:manowar) | starter:black | 26% | 74% | 0 | 15.7 | — |
-| beast×starter | A Bloom of Man-o'-War (beast:manowar) | starter:red | 19% | 81% | 0 | 9.9 | — |
-| beast×starter | A Bloom of Man-o'-War (beast:manowar) | starter:green | 25% | 75% | 0 | 12.9 | — |
-| beast×starter | The Cunning Tactician (beast:tactician) | starter:white | 12% | 88% | 0 | 10.7 | — |
-| beast×starter | The Cunning Tactician (beast:tactician) | starter:blue | 25% | 75% | 0 | 13.4 | — |
-| beast×starter | The Cunning Tactician (beast:tactician) | starter:black | 31% (6% by library) | 69% | 0 | 15.2 | — |
-| beast×starter | The Cunning Tactician (beast:tactician) | starter:red | 21% | 79% | 0 | 11.8 | — |
-| beast×starter | The Cunning Tactician (beast:tactician) | starter:green | 21% (5% by library) | 79% | 0 | 12.2 | — |
-| beast×starter | The Boggart Warband (beast:warband) | starter:white | 39% | 61% | 0 | 9.5 | — |
-| beast×starter | The Boggart Warband (beast:warband) | starter:blue | 62% | 38% | 0 | 11.2 | — |
-| beast×starter | The Boggart Warband (beast:warband) | starter:black | 49% | 51% | 0 | 12.6 | — |
-| beast×starter | The Boggart Warband (beast:warband) | starter:red | 46% | 54% | 0 | 9.5 | — |
-| beast×starter | The Boggart Warband (beast:warband) | starter:green | 45% | 55% | 0 | 10.4 | — |
-| beast×starter | A Vampire Nighthawk (beast:nighthawk) | starter:white | 58% | 42% | 0 | 15.1 | — |
-| beast×starter | A Vampire Nighthawk (beast:nighthawk) | starter:blue | 73% | 27% | 0 | 15.9 | — |
-| beast×starter | A Vampire Nighthawk (beast:nighthawk) | starter:black | 92% (11% by library) | 8% | 0 | 22.2 | — |
-| beast×starter | A Vampire Nighthawk (beast:nighthawk) | starter:red | 82% | 18% | 0 | 14.1 | — |
-| beast×starter | A Vampire Nighthawk (beast:nighthawk) | starter:green | 85% | 15% | 0 | 13.4 | — |
-| beast×starter | The Living Gale (beast:gale) | starter:white | 13% | 87% | 0 | 12.3 | — |
-| beast×starter | The Living Gale (beast:gale) | starter:blue | 24% | 76% (1% by library) | 0 | 19.1 | — |
-| beast×starter | The Living Gale (beast:gale) | starter:black | 42% | 58% | 0 | 15.1 | — |
-| beast×starter | The Living Gale (beast:gale) | starter:red | 16% | 84% | 0 | 10.5 | — |
-| beast×starter | The Living Gale (beast:gale) | starter:green | 28% | 72% | 0 | 12.1 | — |
-| beast×starter | The Siege-Gang (beast:siegegang) | starter:white | 53% | 47% | 0 | 10.4 | — |
-| beast×starter | The Siege-Gang (beast:siegegang) | starter:blue | 56% | 44% | 0 | 13.9 | — |
-| beast×starter | The Siege-Gang (beast:siegegang) | starter:black | 62% | 38% | 0 | 15.5 | — |
-| beast×starter | The Siege-Gang (beast:siegegang) | starter:red | 66% | 34% | 0 | 11.4 | — |
-| beast×starter | The Siege-Gang (beast:siegegang) | starter:green | 54% | 46% | 0 | 11.1 | — |
-| beast×starter | The Hypnotic Specter (beast:specter) | starter:white | 20% | 80% | 0 | 13.7 | — |
-| beast×starter | The Hypnotic Specter (beast:specter) | starter:blue | 30% | 70% (1% by library) | 0 | 18.4 | — |
-| beast×starter | The Hypnotic Specter (beast:specter) | starter:black | 29% | 71% (3% by library) | 0 | 13.8 | — |
-| beast×starter | The Hypnotic Specter (beast:specter) | starter:red | 27% | 73% | 0 | 11.8 | — |
-| beast×starter | The Hypnotic Specter (beast:specter) | starter:green | 46% | 54% | 0 | 12.2 | — |
-| beast×starter | The Serra Angel (beast:serra) | starter:white | 79% | 21% | 0 | 16.1 | — |
-| beast×starter | The Serra Angel (beast:serra) | starter:blue | 82% | 18% | 0 | 20.5 | — |
-| beast×starter | The Serra Angel (beast:serra) | starter:black | 86% (1% by library) | 14% | 0 | 18.8 | — |
-| beast×starter | The Serra Angel (beast:serra) | starter:red | 84% | 16% | 0 | 13.6 | — |
-| beast×starter | The Serra Angel (beast:serra) | starter:green | 76% | 24% | 0 | 13.4 | — |
-| beast×starter | A Plague of Rats (beast:rats) | starter:white | 16% | 84% | 0 | 11.4 | — |
-| beast×starter | A Plague of Rats (beast:rats) | starter:blue | 39% | 61% | 0 | 14.4 | — |
-| beast×starter | A Plague of Rats (beast:rats) | starter:black | 23% (4% by library) | 77% (4% by library) | 0 | 17.6 | — |
-| beast×starter | A Plague of Rats (beast:rats) | starter:red | 23% | 77% (1% by library) | 0 | 13.9 | — |
-| beast×starter | A Plague of Rats (beast:rats) | starter:green | 30% (7% by library) | 70% (1% by library) | 0 | 13.8 | — |
-| beast×starter | A Gray Ogre (beast:ogre) | starter:white | 11% | 89% | 0 | 10.3 | — |
-| beast×starter | A Gray Ogre (beast:ogre) | starter:blue | 27% | 73% | 0 | 12.5 | — |
-| beast×starter | A Gray Ogre (beast:ogre) | starter:black | 22% | 78% | 0 | 13.1 | — |
-| beast×starter | A Gray Ogre (beast:ogre) | starter:red | 21% | 79% | 0 | 10.6 | — |
-| beast×starter | A Gray Ogre (beast:ogre) | starter:green | 16% | 84% | 0 | 10.3 | — |
-| beast×starter | A Savannah Lion (beast:lion) | starter:white | 36% | 64% | 0 | 13.2 | — |
-| beast×starter | A Savannah Lion (beast:lion) | starter:blue | 66% | 34% | 0 | 12.1 | — |
-| beast×starter | A Savannah Lion (beast:lion) | starter:black | 54% (2% by library) | 46% | 0 | 12.8 | — |
-| beast×starter | A Savannah Lion (beast:lion) | starter:red | 44% | 56% | 0 | 12.5 | — |
-| beast×starter | A Savannah Lion (beast:lion) | starter:green | 49% | 51% | 0 | 11.5 | — |
-| beast×starter | A Rumbling Baloth (beast:baloth) | starter:white | 38% | 62% | 0 | 12.0 | — |
-| beast×starter | A Rumbling Baloth (beast:baloth) | starter:blue | 36% | 64% | 0 | 15.1 | — |
-| beast×starter | A Rumbling Baloth (beast:baloth) | starter:black | 28% | 72% | 0 | 17.2 | — |
-| beast×starter | A Rumbling Baloth (beast:baloth) | starter:red | 62% | 38% | 0 | 12.2 | — |
-| beast×starter | A Rumbling Baloth (beast:baloth) | starter:green | 60% | 40% | 0 | 12.7 | — |
-| beast×starter | The Faerie Formation (beast:formation) | starter:white | 38% | 62% (5% by library) | 0 | 14.9 | — |
-| beast×starter | The Faerie Formation (beast:formation) | starter:blue | 38% | 62% (13% by library) | 0 | 21.9 | — |
-| beast×starter | The Faerie Formation (beast:formation) | starter:black | 71% | 29% (14% by library) | 0 | 17.2 | — |
-| beast×starter | The Faerie Formation (beast:formation) | starter:red | 58% | 42% | 0 | 12.3 | — |
-| beast×starter | The Faerie Formation (beast:formation) | starter:green | 58% | 42% | 0 | 13.7 | — |
-| beast×starter | The Pelakka Wurm (beast:wurm) | starter:white | 48% | 52% | 0 | 11.7 | — |
-| beast×starter | The Pelakka Wurm (beast:wurm) | starter:blue | 62% | 38% | 0 | 15.0 | — |
-| beast×starter | The Pelakka Wurm (beast:wurm) | starter:black | 64% | 36% | 0 | 15.0 | — |
-| beast×starter | The Pelakka Wurm (beast:wurm) | starter:red | 62% | 38% | 0 | 10.8 | — |
-| beast×starter | The Pelakka Wurm (beast:wurm) | starter:green | 66% | 34% | 0 | 11.5 | — |
-
-## 7. Tier-2 and tier-3 mages vs the mid-road references (ADR-111: a starter + eight shop cards, one manalink basic in play, 12 life, journeyman)
+## 8b. The matrix — tier 2 mages at life {10, 12, 14} × entrance {0, 1 basics} vs the mid-road references (the mage at journeyman; the references at 12 / journeyman with a basic in play)
 
 | part | A | B | A wins | B wins | draws | mean turns | Δ A wins vs S31 |
 |---|---|---|---|---|---|---|---|
-| T2×road | Mistress Vael (vael) | road-mid-W | 20% | 80% | 0 | 15.7 | — |
-| T2×road | Mistress Vael (vael) | road-mid-B | 61% (26% by library) | 39% | 0 | 30.7 | — |
-| T2×road | Kessa Emberhand (kessa) | road-mid-W | 7% | 93% | 0 | 12.7 | — |
-| T2×road | Kessa Emberhand (kessa) | road-mid-B | 9% | 91% | 0 | 16.9 | — |
-| T2×road | Adept Maelin (maelin) | road-mid-W | 6% | 94% | 0 | 10.0 | — |
-| T2×road | Adept Maelin (maelin) | road-mid-B | 16% (13% by library) | 84% | 0 | 16.0 | — |
-| T2×road | Brennor of the Glade (brennor) | road-mid-W | 16% | 84% | 0 | 11.1 | — |
-| T2×road | Brennor of the Glade (brennor) | road-mid-B | 21% (24% by library) | 79% | 0 | 20.2 | — |
-| T2×road | Pell of the Shallows (pell) | road-mid-W | 6% (100% by library) | 94% | 0 | 9.6 | — |
-| T2×road | Pell of the Shallows (pell) | road-mid-B | 7% (100% by library) | 93% | 0 | 12.0 | — |
-| T3×road | Lord Corvane (corvane) | road-mid-W | 10% | 90% | 0 | 11.3 | — |
-| T3×road | Lord Corvane (corvane) | road-mid-B | 12% (8% by library) | 88% | 0 | 16.6 | — |
-| T3×road | Varro Flamebrand (varro) | road-mid-W | 18% (39% by library) | 82% | 0 | 13.4 | — |
-| T3×road | Varro Flamebrand (varro) | road-mid-B | 14% (50% by library) | 86% | 0 | 15.8 | — |
-| T3×road | High Warden Sorrel (sorrel) | road-mid-W | 12% | 88% | 0 | 13.3 | — |
-| T3×road | High Warden Sorrel (sorrel) | road-mid-B | 14% | 86% | 0 | 16.8 | — |
-| T3×road | Thornmother Ysolde (ysolde) | road-mid-W | 20% | 80% | 0 | 11.3 | — |
-| T3×road | Thornmother Ysolde (ysolde) | road-mid-B | 22% | 78% | 0 | 14.7 | — |
-| T3×road | Magister Quill (quill) | road-mid-W | 8% (25% by library) | 92% | 0 | 10.3 | — |
-| T3×road | Magister Quill (quill) | road-mid-B | 18% (39% by library) | 82% | 0 | 14.4 | — |
+| T2×road | Mistress Vael (vael) @10/0 | road-mid-W | 20% | 80% | 0 | 15.7 | — |
+| T2×road | Mistress Vael (vael) @10/0 | road-mid-B | 61% (26% by library) | 39% | 0 | 30.7 | — |
+| T2×road | Mistress Vael (vael) @10/1 | road-mid-W | 31% | 69% | 0 | 16.3 | — |
+| T2×road | Mistress Vael (vael) @10/1 | road-mid-B | 63% (19% by library) | 37% | 0 | 29.5 | — |
+| T2×road | Mistress Vael (vael) @12/0 | road-mid-W | 25% | 75% | 0 | 17.0 | — |
+| T2×road | Mistress Vael (vael) @12/0 | road-mid-B | 65% (29% by library) | 35% | 0 | 32.1 | — |
+| T2×road | Mistress Vael (vael) @12/1 | road-mid-W | 34% | 66% | 0 | 17.2 | — |
+| T2×road | Mistress Vael (vael) @12/1 | road-mid-B | 65% (18% by library) | 35% | 0 | 29.9 | — |
+| T2×road | Mistress Vael (vael) @14/0 | road-mid-W | 31% | 69% | 0 | 19.0 | — |
+| T2×road | Mistress Vael (vael) @14/0 | road-mid-B | 69% (35% by library) | 31% | 0 | 34.6 | — |
+| T2×road | Mistress Vael (vael) @14/1 | road-mid-W | 39% | 61% | 0 | 17.9 | — |
+| T2×road | Mistress Vael (vael) @14/1 | road-mid-B | 69% (22% by library) | 31% | 0 | 31.7 | — |
+| T2×road | Kessa Emberhand (kessa) @10/0 | road-mid-W | 7% | 93% | 0 | 12.7 | — |
+| T2×road | Kessa Emberhand (kessa) @10/0 | road-mid-B | 9% | 91% | 0 | 16.9 | — |
+| T2×road | Kessa Emberhand (kessa) @10/1 | road-mid-W | 21% | 79% | 0 | 13.7 | — |
+| T2×road | Kessa Emberhand (kessa) @10/1 | road-mid-B | 16% | 84% | 0 | 17.7 | — |
+| T2×road | Kessa Emberhand (kessa) @12/0 | road-mid-W | 11% | 89% | 0 | 13.5 | — |
+| T2×road | Kessa Emberhand (kessa) @12/0 | road-mid-B | 12% | 88% | 0 | 18.7 | — |
+| T2×road | Kessa Emberhand (kessa) @12/1 | road-mid-W | 24% | 76% | 0 | 14.5 | — |
+| T2×road | Kessa Emberhand (kessa) @12/1 | road-mid-B | 17% | 83% | 0 | 19.6 | — |
+| T2×road | Kessa Emberhand (kessa) @14/0 | road-mid-W | 14% | 86% | 0 | 14.6 | — |
+| T2×road | Kessa Emberhand (kessa) @14/0 | road-mid-B | 14% | 86% | 0 | 20.4 | — |
+| T2×road | Kessa Emberhand (kessa) @14/1 | road-mid-W | 27% | 73% | 0 | 14.9 | — |
+| T2×road | Kessa Emberhand (kessa) @14/1 | road-mid-B | 19% | 81% | 0 | 20.9 | — |
+| T2×road | Adept Maelin (maelin) @10/0 | road-mid-W | 6% | 94% | 0 | 10.0 | — |
+| T2×road | Adept Maelin (maelin) @10/0 | road-mid-B | 16% (13% by library) | 84% | 0 | 16.0 | — |
+| T2×road | Adept Maelin (maelin) @10/1 | road-mid-W | 11% | 89% | 0 | 10.9 | — |
+| T2×road | Adept Maelin (maelin) @10/1 | road-mid-B | 27% (11% by library) | 73% | 0 | 17.8 | — |
+| T2×road | Adept Maelin (maelin) @12/0 | road-mid-W | 8% | 92% | 0 | 10.7 | — |
+| T2×road | Adept Maelin (maelin) @12/0 | road-mid-B | 20% (10% by library) | 80% | 0 | 17.9 | — |
+| T2×road | Adept Maelin (maelin) @12/1 | road-mid-W | 13% | 87% | 0 | 11.8 | — |
+| T2×road | Adept Maelin (maelin) @12/1 | road-mid-B | 34% (15% by library) | 66% | 0 | 20.1 | — |
+| T2×road | Adept Maelin (maelin) @14/0 | road-mid-W | 10% | 90% | 0 | 11.8 | — |
+| T2×road | Adept Maelin (maelin) @14/0 | road-mid-B | 21% (10% by library) | 79% | 0 | 19.2 | — |
+| T2×road | Adept Maelin (maelin) @14/1 | road-mid-W | 21% | 79% | 0 | 12.5 | — |
+| T2×road | Adept Maelin (maelin) @14/1 | road-mid-B | 37% (11% by library) | 63% | 0 | 21.4 | — |
+| T2×road | Brennor of the Glade (brennor) @10/0 | road-mid-W | 16% | 84% | 0 | 11.1 | — |
+| T2×road | Brennor of the Glade (brennor) @10/0 | road-mid-B | 21% (24% by library) | 79% | 0 | 20.2 | — |
+| T2×road | Brennor of the Glade (brennor) @10/1 | road-mid-W | 22% | 78% | 0 | 11.8 | — |
+| T2×road | Brennor of the Glade (brennor) @10/1 | road-mid-B | 23% (4% by library) | 77% | 0 | 18.7 | — |
+| T2×road | Brennor of the Glade (brennor) @12/0 | road-mid-W | 18% | 82% | 0 | 11.7 | — |
+| T2×road | Brennor of the Glade (brennor) @12/0 | road-mid-B | 22% (18% by library) | 78% | 0 | 21.0 | — |
+| T2×road | Brennor of the Glade (brennor) @12/1 | road-mid-W | 31% | 69% | 0 | 12.3 | — |
+| T2×road | Brennor of the Glade (brennor) @12/1 | road-mid-B | 24% (4% by library) | 76% | 0 | 19.8 | — |
+| T2×road | Brennor of the Glade (brennor) @14/0 | road-mid-W | 24% | 76% | 0 | 12.2 | — |
+| T2×road | Brennor of the Glade (brennor) @14/0 | road-mid-B | 22% (18% by library) | 78% | 0 | 22.1 | — |
+| T2×road | Brennor of the Glade (brennor) @14/1 | road-mid-W | 35% | 65% | 0 | 12.7 | — |
+| T2×road | Brennor of the Glade (brennor) @14/1 | road-mid-B | 25% (4% by library) | 75% | 0 | 20.8 | — |
+| T2×road | Pell of the Shallows (pell) @10/0 | road-mid-W | 6% (100% by library) | 94% | 0 | 9.6 | — |
+| T2×road | Pell of the Shallows (pell) @10/0 | road-mid-B | 7% (100% by library) | 93% | 0 | 12.0 | — |
+| T2×road | Pell of the Shallows (pell) @10/1 | road-mid-W | 17% (53% by library) | 83% | 0 | 10.6 | — |
+| T2×road | Pell of the Shallows (pell) @10/1 | road-mid-B | 21% (90% by library) | 79% | 0 | 14.3 | — |
+| T2×road | Pell of the Shallows (pell) @12/0 | road-mid-W | 6% (100% by library) | 94% | 0 | 10.2 | — |
+| T2×road | Pell of the Shallows (pell) @12/0 | road-mid-B | 12% (100% by library) | 88% | 0 | 13.2 | — |
+| T2×road | Pell of the Shallows (pell) @12/1 | road-mid-W | 20% (60% by library) | 80% | 0 | 11.3 | — |
+| T2×road | Pell of the Shallows (pell) @12/1 | road-mid-B | 28% (93% by library) | 72% | 0 | 15.4 | — |
+| T2×road | Pell of the Shallows (pell) @14/0 | road-mid-W | 11% (82% by library) | 89% | 0 | 11.1 | — |
+| T2×road | Pell of the Shallows (pell) @14/0 | road-mid-B | 15% (100% by library) | 85% | 0 | 14.2 | — |
+| T2×road | Pell of the Shallows (pell) @14/1 | road-mid-W | 25% (60% by library) | 75% | 0 | 11.9 | — |
+| T2×road | Pell of the Shallows (pell) @14/1 | road-mid-B | 32% (94% by library) | 68% | 0 | 16.0 | — |
 
-## 3. Children vs parents (parent mage at tier-1 settings; parent beast at its own)
+### Aggregate — the references' win rate by life × entrance (tier 2; mean over 5 mages × 2 references)
+
+| life \ basics | 0 | 1 |
+|---|---|---|
+| 10 | 83% (turns 15.5; by library 0%) | 75% (turns 16.1; by library 0%) |
+| 12 | 80% (turns 16.6; by library 0%) | 71% (turns 17.2; by library 0%) |
+| 14 | 77% (turns 17.9; by library 0%) | 67% (turns 18.1; by library 0%) |
+
+### Per mage — the references' win rate by cell (tier 2; mean over both references)
+
+| mage | 10/0 | 10/1 | 12/0 | 12/1 | 14/0 | 14/1 |
+|---|---|---|---|---|---|---|
+| Mistress Vael | 60% | 53% | 55% | 51% | 50% | 46% |
+| Kessa Emberhand | 92% | 82% | 89% | 80% | 86% | 77% |
+| Adept Maelin | 89% | 81% | 86% | 77% | 85% | 71% |
+| Brennor of the Glade | 82% | 78% | 80% | 73% | 77% | 70% |
+| Pell of the Shallows | 94% | 81% | 91% | 76% | 87% | 72% |
+
+## 9. The tier-2/3 beasts vs the mid-road references at catalog life, +4 and +8 (no roots; the beast at its catalog profile)
 
 | part | A | B | A wins | B wins | draws | mean turns | Δ A wins vs S31 |
 |---|---|---|---|---|---|---|---|
-| T2×parent | Mistress Vael (vael) | Sister Oriel (oriel) | 55% | 45% | 0 | 23.3 | -1 |
-| T2×parent | Mistress Vael (vael) | Pale Edric (edric) | 57% (2% by library) | 43% (2% by library) | 0 | 22.9 | +0 |
-| T2×parent | Kessa Emberhand (kessa) | Brann the Scorched (brann) | 38% | 62% | 0 | 12.6 | +1 |
-| T2×parent | Kessa Emberhand (kessa) | A Bloom of Man-o'-War (beast:manowar) | 79% | 21% | 0 | 16.8 | +7 |
-| T2×parent | Adept Maelin (maelin) | Pale Edric (edric) | 34% | 66% | 0 | 15.4 | +0 |
-| T2×parent | Adept Maelin (maelin) | The Boggart Warband (beast:warband) | 35% | 65% | 0 | 10.4 | +0 |
-| T2×parent | Brennor of the Glade (brennor) | Old Hask (hask) | 59% | 41% | 0 | 12.3 | +1 |
-| T2×parent | Brennor of the Glade (brennor) | Sister Oriel (oriel) | 32% | 68% | 0 | 14.5 | -4 |
-| T2×parent | Pell of the Shallows (pell) | Tessaly Reed (tessaly) | 53% (28% by library) | 47% (91% by library) | 0 | 12.6 | -12 |
-| T2×parent | Pell of the Shallows (pell) | Old Hask (hask) | 40% (30% by library) | 60% | 0 | 11.7 | +0 |
-| T3×parent | Lord Corvane (corvane) | Pale Edric (edric) | 52% | 48% | 0 | 16.1 | -2 |
-| T3×parent | Lord Corvane (corvane) | The Serra Angel (beast:serra) | 14% | 86% | 0 | 16.8 | +2 |
-| T3×parent | Varro Flamebrand (varro) | Tessaly Reed (tessaly) | 74% (12% by library) | 26% (88% by library) | 0 | 13.1 | +1 |
-| T3×parent | Varro Flamebrand (varro) | Brann the Scorched (brann) | 66% | 34% | 0 | 13.4 | +0 |
-| T3×parent | High Warden Sorrel (sorrel) | Brann the Scorched (brann) | 58% | 42% | 0 | 13.8 | -1 |
-| T3×parent | High Warden Sorrel (sorrel) | The Hypnotic Specter (beast:specter) | 57% (2% by library) | 43% | 0 | 16.6 | +4 |
-| T3×parent | Thornmother Ysolde (ysolde) | Old Hask (hask) | 68% | 32% | 0 | 10.3 | +0 |
-| T3×parent | Thornmother Ysolde (ysolde) | A Savannah Lion (beast:lion) | 54% | 46% | 0 | 12.1 | +0 |
-| T3×parent | Magister Quill (quill) | Tessaly Reed (tessaly) | 54% (33% by library) | 46% (89% by library) | 0 | 12.9 | +1 |
-| T3×parent | Magister Quill (quill) | The Pelakka Wurm (beast:wurm) | 31% (77% by library) | 69% | 0 | 12.8 | -1 |
+| beast×road | The Cunning Tactician (beast:tactician) @+0 | road-mid-W | 2% | 98% | 0 | 10.1 | — |
+| beast×road | The Cunning Tactician (beast:tactician) @+0 | road-mid-B | 15% | 85% | 0 | 13.2 | — |
+| beast×road | The Cunning Tactician (beast:tactician) @+4 | road-mid-W | 4% | 96% | 0 | 11.8 | — |
+| beast×road | The Cunning Tactician (beast:tactician) @+4 | road-mid-B | 22% | 78% (3% by library) | 0 | 16.4 | — |
+| beast×road | The Cunning Tactician (beast:tactician) @+8 | road-mid-W | 8% | 92% | 0 | 13.0 | — |
+| beast×road | The Cunning Tactician (beast:tactician) @+8 | road-mid-B | 25% | 75% (4% by library) | 0 | 18.6 | — |
+| beast×road | The Boggart Warband (beast:warband) @+0 | road-mid-W | 14% | 86% | 0 | 9.2 | — |
+| beast×road | The Boggart Warband (beast:warband) @+0 | road-mid-B | 27% | 73% | 0 | 11.6 | — |
+| beast×road | The Boggart Warband (beast:warband) @+4 | road-mid-W | 29% | 71% | 0 | 10.6 | — |
+| beast×road | The Boggart Warband (beast:warband) @+4 | road-mid-B | 36% | 64% | 0 | 13.8 | — |
+| beast×road | The Boggart Warband (beast:warband) @+8 | road-mid-W | 39% | 61% | 0 | 11.4 | — |
+| beast×road | The Boggart Warband (beast:warband) @+8 | road-mid-B | 41% | 59% | 0 | 15.2 | — |
+| beast×road | A Vampire Nighthawk (beast:nighthawk) @+0 | road-mid-W | 27% | 73% | 0 | 13.5 | — |
+| beast×road | A Vampire Nighthawk (beast:nighthawk) @+0 | road-mid-B | 62% | 38% (42% by library) | 0 | 26.3 | — |
+| beast×road | A Vampire Nighthawk (beast:nighthawk) @+4 | road-mid-W | 38% | 62% | 0 | 14.7 | — |
+| beast×road | A Vampire Nighthawk (beast:nighthawk) @+4 | road-mid-B | 67% | 33% (61% by library) | 0 | 29.4 | — |
+| beast×road | A Vampire Nighthawk (beast:nighthawk) @+8 | road-mid-W | 45% | 55% | 0 | 15.9 | — |
+| beast×road | A Vampire Nighthawk (beast:nighthawk) @+8 | road-mid-B | 68% | 32% (72% by library) | 0 | 30.7 | — |
+| beast×road | The Living Gale (beast:gale) @+0 | road-mid-W | 6% | 94% | 0 | 11.0 | — |
+| beast×road | The Living Gale (beast:gale) @+0 | road-mid-B | 26% | 74% | 0 | 15.0 | — |
+| beast×road | The Living Gale (beast:gale) @+4 | road-mid-W | 15% | 85% | 0 | 12.9 | — |
+| beast×road | The Living Gale (beast:gale) @+4 | road-mid-B | 36% | 64% | 0 | 17.5 | — |
+| beast×road | The Living Gale (beast:gale) @+8 | road-mid-W | 21% | 79% | 0 | 14.5 | — |
+| beast×road | The Living Gale (beast:gale) @+8 | road-mid-B | 47% | 53% (2% by library) | 0 | 19.3 | — |
+| beast×road | The Siege-Gang (beast:siegegang) @+0 | road-mid-W | 20% | 80% | 0 | 10.6 | — |
+| beast×road | The Siege-Gang (beast:siegegang) @+0 | road-mid-B | 31% | 69% | 0 | 14.2 | — |
+| beast×road | The Siege-Gang (beast:siegegang) @+4 | road-mid-W | 33% | 67% | 0 | 11.7 | — |
+| beast×road | The Siege-Gang (beast:siegegang) @+4 | road-mid-B | 39% | 61% | 0 | 16.4 | — |
+| beast×road | The Siege-Gang (beast:siegegang) @+8 | road-mid-W | 39% | 61% | 0 | 12.6 | — |
+| beast×road | The Siege-Gang (beast:siegegang) @+8 | road-mid-B | 49% | 51% | 0 | 18.1 | — |
+| beast×road | The Hypnotic Specter (beast:specter) @+0 | road-mid-W | 5% | 95% | 0 | 12.0 | — |
+| beast×road | The Hypnotic Specter (beast:specter) @+0 | road-mid-B | 14% | 86% (5% by library) | 0 | 13.9 | — |
+| beast×road | The Hypnotic Specter (beast:specter) @+4 | road-mid-W | 10% | 90% | 0 | 13.4 | — |
+| beast×road | The Hypnotic Specter (beast:specter) @+4 | road-mid-B | 16% | 84% (7% by library) | 0 | 15.8 | — |
+| beast×road | The Hypnotic Specter (beast:specter) @+8 | road-mid-W | 14% | 86% | 0 | 14.6 | — |
+| beast×road | The Hypnotic Specter (beast:specter) @+8 | road-mid-B | 17% | 83% (8% by library) | 0 | 17.7 | — |
+| beast×road | The Serra Angel (beast:serra) @+0 | road-mid-W | 51% | 49% | 0 | 15.9 | — |
+| beast×road | The Serra Angel (beast:serra) @+0 | road-mid-B | 68% | 32% (9% by library) | 0 | 21.1 | — |
+| beast×road | The Serra Angel (beast:serra) @+4 | road-mid-W | 61% | 39% | 0 | 17.1 | — |
+| beast×road | The Serra Angel (beast:serra) @+4 | road-mid-B | 76% | 24% (13% by library) | 0 | 22.1 | — |
+| beast×road | The Serra Angel (beast:serra) @+8 | road-mid-W | 66% | 34% | 0 | 17.4 | — |
+| beast×road | The Serra Angel (beast:serra) @+8 | road-mid-B | 78% | 22% (18% by library) | 0 | 22.7 | — |
+| beast×road | A Rumbling Baloth (beast:baloth) @+0 | road-mid-W | 16% | 84% | 0 | 10.7 | — |
+| beast×road | A Rumbling Baloth (beast:baloth) @+0 | road-mid-B | 11% | 89% (2% by library) | 0 | 15.0 | — |
+| beast×road | A Rumbling Baloth (beast:baloth) @+4 | road-mid-W | 26% | 74% | 0 | 12.1 | — |
+| beast×road | A Rumbling Baloth (beast:baloth) @+4 | road-mid-B | 12% | 88% (2% by library) | 0 | 18.3 | — |
+| beast×road | A Rumbling Baloth (beast:baloth) @+8 | road-mid-W | 33% | 67% | 0 | 13.0 | — |
+| beast×road | A Rumbling Baloth (beast:baloth) @+8 | road-mid-B | 17% | 83% (4% by library) | 0 | 20.9 | — |
+| beast×road | The Faerie Formation (beast:formation) @+0 | road-mid-W | 18% | 82% (2% by library) | 0 | 12.8 | — |
+| beast×road | The Faerie Formation (beast:formation) @+0 | road-mid-B | 47% | 53% (9% by library) | 0 | 18.2 | — |
+| beast×road | The Faerie Formation (beast:formation) @+4 | road-mid-W | 28% | 72% (1% by library) | 0 | 14.9 | — |
+| beast×road | The Faerie Formation (beast:formation) @+4 | road-mid-B | 59% | 41% (17% by library) | 0 | 20.2 | — |
+| beast×road | The Faerie Formation (beast:formation) @+8 | road-mid-W | 37% | 63% (5% by library) | 0 | 16.1 | — |
+| beast×road | The Faerie Formation (beast:formation) @+8 | road-mid-B | 67% | 33% (39% by library) | 0 | 22.1 | — |
+| beast×road | The Pelakka Wurm (beast:wurm) @+0 | road-mid-W | 30% | 70% | 0 | 10.8 | — |
+| beast×road | The Pelakka Wurm (beast:wurm) @+0 | road-mid-B | 41% | 59% | 0 | 14.4 | — |
+| beast×road | The Pelakka Wurm (beast:wurm) @+4 | road-mid-W | 44% | 56% | 0 | 11.9 | — |
+| beast×road | The Pelakka Wurm (beast:wurm) @+4 | road-mid-B | 54% | 46% | 0 | 16.5 | — |
+| beast×road | The Pelakka Wurm (beast:wurm) @+8 | road-mid-W | 54% | 46% | 0 | 12.7 | — |
+| beast×road | The Pelakka Wurm (beast:wurm) @+8 | road-mid-B | 68% | 32% | 0 | 18.9 | — |
 
-## Cast counts per mage (every game the deck played in this run; casts per game in brackets; NEVER CAST listed)
+### Aggregate — the references' win rate by life delta (mean over 10 beasts × 2 references): +0: 73% · +4: 65% · +8: 58%
 
-- **Sister Oriel (oriel)** — 1100 games — Soul Warden ×4: 1604 (1.46) · Suntail Hawk ×3: 1241 (1.13) · Youthful Valkyrie ×3: 1234 (1.12) · Inspiring Overseer ×2: 776 (0.71) · Master Decoy ×2: 773 (0.70) · Spirit Link ×2: 789 (0.72) · Pacifism ×2: 693 (0.63) · Raise the Alarm ×2: 799 (0.73) · Swords to Plowshares ×1: 386 (0.35) · Glorious Anthem ×1: 324 (0.29) · Restoration Angel ×1: 284 (0.26) — **returned from the graveyard**: Child of Night 0 (0.00) · Typhoid Rats 0 (0.00) · Reassembling Skeleton 0 (0.00) · Indulgent Aristocrat 0 (0.00) · Vampire Nighthawk 0 (0.00) · Blood Artist 0 (0.00) · Soul Warden 0 (0.00) · Suntail Hawk 0 (0.00) · Youthful Valkyrie 0 (0.00)
-- **Tessaly Reed (tessaly)** — 1200 games — Hedron Crab ×4: 1476 (1.23) · Cathartic Adept ×4: 1557 (1.30) · Traumatizer ×3: 881 (0.73) · Plumecreed Escort ×2: 773 (0.64) · Thought Scour ×2: 790 (0.66) · Brainstorm ×2: 745 (0.62) · Essence Scatter ×2: 367 (0.31) · Counterspell ×1: 239 (0.20) · Altar of Dementia ×2: 651 (0.54) — **returned from the graveyard**: Typhoid Rats 0 (0.00) · Vampire Nighthawk 0 (0.00) · Reassembling Skeleton 0 (0.00) · Indulgent Aristocrat 0 (0.00) · Child of Night 0 (0.00) · Gravedigger 0 (0.00) · Blood Artist 0 (0.00)
-- **Pale Edric (edric)** — 1200 games — Unearth ×3: 969 (0.81) · Zombify ×1: 219 (0.18) · Gravedigger ×2: 560 (0.47) · Vampire Nighthawk ×2: 752 (0.63) · Blood Artist ×2: 637 (0.53) · Indulgent Aristocrat ×2: 993 (0.83) · Reassembling Skeleton ×2: 771 (0.64) · Child of Night ×2: 791 (0.66) · Typhoid Rats ×4: 1803 (1.50) · Terror ×2: 685 (0.57) · Dark Ritual ×1: 290 (0.24) — **returned from the graveyard**: Reassembling Skeleton 1058 (0.88) · Typhoid Rats 476 (0.40) · Indulgent Aristocrat 271 (0.23) · Child of Night 168 (0.14) · Vampire Nighthawk 105 (0.09) · Blood Artist 48 (0.04) · Gravedigger 29 (0.02) · Soul Warden 0 (0.00) · Suntail Hawk 0 (0.00) · Youthful Valkyrie 0 (0.00) · Goblin Piker 0 (0.00) · Skirk Prospector 0 (0.00) · Artisan of Kozilek 0 (0.00) · Serra Angel 0 (0.00) · Restoration Angel 0 (0.00)
-- **Brann the Scorched (brann)** — 1200 games — Young Pyromancer ×3: 937 (0.78) · Arc Mage ×2: 496 (0.41) · Lightning Bolt ×3: 1090 (0.91) · Shock ×3: 1123 (0.94) · Abrade ×2: 626 (0.52) · Blaze ×2: 596 (0.50) · Brute Force ×2: 481 (0.40) · Hordeling Outburst ×2: 433 (0.36) · Goblin Piker ×2: 599 (0.50) · Thundersnake ×1: 297 (0.25) · Pyroclasm ×1: 169 (0.14) — **returned from the graveyard**: Reassembling Skeleton 0 (0.00) · Blood Artist 0 (0.00) · Indulgent Aristocrat 0 (0.00) · Gravedigger 0 (0.00) · Vampire Nighthawk 0 (0.00) · Typhoid Rats 0 (0.00) · Child of Night 0 (0.00) · Arc Mage 0 (0.00) · Young Pyromancer 0 (0.00) · Hypnotic Specter 0 (0.00)
-- **Old Hask (hask)** — 1200 games — Gladecover Scout ×4: 1472 (1.23) · Blurred Mongoose ×3: 953 (0.79) · Birds of Paradise ×2: 686 (0.57) · Rancor ×3: 1238 (1.03) · Blanchwood Armor ×3: 697 (0.58) · Timberland Guide ×2: 735 (0.61) · Giant Growth ×3: 910 (0.76) · Prey Upon ×2: 583 (0.49) · Wall of Blossoms ×2: 570 (0.47) — **returned from the graveyard**: Indulgent Aristocrat 0 (0.00) · Reassembling Skeleton 0 (0.00) · Blood Artist 0 (0.00) · Child of Night 0 (0.00) · Typhoid Rats 0 (0.00) · Gravedigger 0 (0.00) · Vampire Nighthawk 0 (0.00)
-- **Mistress Vael (vael)** — 1300 games — Soul Warden ×3: 1714 (1.32) · Suntail Hawk ×2: 1114 (0.86) · Youthful Valkyrie ×2: 1184 (0.91) · Child of Night ×2: 1073 (0.83) · Vampire Nighthawk ×2: 1129 (0.87) · Blood Artist ×2: 972 (0.75) · Indulgent Aristocrat ×2: 1081 (0.83) · Spirit Link ×2: 971 (0.75) · Unearth ×2: 946 (0.73) · Gravedigger ×1: 472 (0.36) · Swords to Plowshares ×1: 525 (0.40) · Pacifism ×1: 475 (0.37) · Wrath of God ×1: 353 (0.27) — **returned from the graveyard**: Soul Warden 231 (0.18) · Vampire Nighthawk 142 (0.11) · Suntail Hawk 140 (0.11) · Youthful Valkyrie 137 (0.11) · Indulgent Aristocrat 135 (0.10) · Child of Night 135 (0.10) · Blood Artist 26 (0.02) · Typhoid Rats 0 (0.00) · Skirk Prospector 0 (0.00) · Goblin Piker 0 (0.00) · Phyrexian Rager 0 (0.00) · Reassembling Skeleton 0 (0.00) · Gravedigger 0 (0.00)
-- **Kessa Emberhand (kessa)** — 1300 games — Young Pyromancer ×3: 1418 (1.09) · Arc Mage ×3: 1126 (0.87) · Man-o'-War ×2: 976 (0.75) · Lightning Bolt ×3: 1385 (1.07) · Shock ×2: 835 (0.64) · Blaze ×1: 347 (0.27) · Hordeling Outburst ×1: 252 (0.19) · Plumecreed Escort ×1: 439 (0.34) · Brainstorm ×3: 1062 (0.82) · Boomerang ×1: 312 (0.24) · Essence Scatter ×2: 481 (0.37) · Counterspell ×1: 197 (0.15) — **returned from the graveyard**: Indulgent Aristocrat 0 (0.00) · Blood Artist 0 (0.00) · Vampire Nighthawk 0 (0.00) · Suntail Hawk 0 (0.00) · Child of Night 0 (0.00) · Soul Warden 0 (0.00) · Youthful Valkyrie 0 (0.00) · Goblin Piker 0 (0.00) · Typhoid Rats 0 (0.00) · Skirk Prospector 0 (0.00) · Phyrexian Rager 0 (0.00)
-- **Adept Maelin (maelin)** — 1300 games — Skirk Prospector ×2: 895 (0.69) · Goblin Piker ×2: 887 (0.68) · Hordeling Outburst ×2: 507 (0.39) · Goblin Grenade ×2: 478 (0.37) · Indulgent Aristocrat ×2: 887 (0.68) · Blood Artist ×2: 768 (0.59) · Unearth ×2: 607 (0.47) · Gravedigger ×2: 630 (0.48) · Gallows Djinn ×1: 276 (0.21) · Dark Ritual ×1: 294 (0.23) · Lightning Bolt ×1: 397 (0.31) · Terror ×1: 304 (0.23) · Siege-Gang Commander ×1: 239 (0.18) · Typhoid Rats ×2: 848 (0.65) — **returned from the graveyard**: Goblin Piker 196 (0.15) · Skirk Prospector 172 (0.13) · Indulgent Aristocrat 101 (0.08) · Typhoid Rats 94 (0.07) · Blood Artist 43 (0.03) · Youthful Valkyrie 0 (0.00) · Vampire Nighthawk 0 (0.00) · Soul Warden 0 (0.00) · Suntail Hawk 0 (0.00) · Child of Night 0 (0.00) · Phyrexian Rager 0 (0.00) · Reassembling Skeleton 0 (0.00) · Gravedigger 0 (0.00)
-- **Brennor of the Glade (brennor)** — 1300 games — Gladecover Scout ×3: 1287 (0.99) · Blurred Mongoose ×2: 803 (0.62) · Birds of Paradise ×2: 859 (0.66) · Soul Warden ×2: 801 (0.62) · Youthful Valkyrie ×2: 943 (0.73) · Rancor ×2: 1078 (0.83) · Blanchwood Armor ×2: 660 (0.51) · Spirit Link ×2: 723 (0.56) · Giant Growth ×2: 705 (0.54) · Glorious Anthem ×1: 303 (0.23) · Swords to Plowshares ×1: 430 (0.33) · Pacifism ×1: 371 (0.29) · Restoration Angel ×1: 276 (0.21) — **returned from the graveyard**: Soul Warden 0 (0.00) · Suntail Hawk 0 (0.00) · Child of Night 0 (0.00) · Indulgent Aristocrat 0 (0.00) · Youthful Valkyrie 0 (0.00) · Vampire Nighthawk 0 (0.00) · Blood Artist 0 (0.00) · Skirk Prospector 0 (0.00) · Goblin Piker 0 (0.00) · Typhoid Rats 0 (0.00) · Phyrexian Rager 0 (0.00)
-- **Pell of the Shallows (pell)** — 1300 games — Hedron Crab ×4: 1473 (1.13) · Traumatizer ×3: 966 (0.74) · Rampant Growth ×3: 823 (0.63) · Wood Elves ×2: 710 (0.55) · Grazing Gladehart ×2: 695 (0.53) · Rumbling Baloth ×2: 567 (0.44) · Rancor ×2: 981 (0.75) · Giant Growth ×2: 522 (0.40) · Birds of Paradise ×1: 368 (0.28) · Brainstorm ×1: 346 (0.27) · Altar of Dementia ×1: 311 (0.24) — **returned from the graveyard**: Vampire Nighthawk 0 (0.00) · Youthful Valkyrie 0 (0.00) · Soul Warden 0 (0.00) · Child of Night 0 (0.00) · Indulgent Aristocrat 0 (0.00) · Suntail Hawk 0 (0.00) · Skirk Prospector 0 (0.00) · Typhoid Rats 0 (0.00) · Goblin Piker 0 (0.00) · Blood Artist 0 (0.00) · Phyrexian Rager 0 (0.00)
-- **Lord Corvane (corvane)** — 1300 games — Youthful Valkyrie ×2: 992 (0.76) · Indulgent Aristocrat ×2: 919 (0.71) · Blood Artist ×2: 768 (0.59) · Terror ×1: 318 (0.24) · Dark Ritual ×2: 688 (0.53) · Unearth ×1: 308 (0.24) · Zombify ×3: 854 (0.66) · Buried Alive ×3: 569 (0.44) · Restoration Angel ×1: 316 (0.24) · Serra Angel ×3: 784 (0.60) · Artisan of Kozilek ×1: 34 (0.03) · Swords to Plowshares ×2: 872 (0.67) — **returned from the graveyard**: Serra Angel 266 (0.20) · Indulgent Aristocrat 262 (0.20) · Youthful Valkyrie 255 (0.20) · Artisan of Kozilek 236 (0.18) · Blood Artist 109 (0.08) · Restoration Angel 47 (0.04) · Young Pyromancer 0 (0.00) · Arc Mage 0 (0.00) · Vampire Nighthawk 0 (0.00) · Hypnotic Specter 0 (0.00) · Child of Night 0 (0.00) · Typhoid Rats 0 (0.00) · Phyrexian Rager 0 (0.00) · Reassembling Skeleton 0 (0.00) · Gravedigger 0 (0.00)
-- **Varro Flamebrand (varro)** — 1300 games — Hedron Crab ×3: 1242 (0.96) · Young Pyromancer ×2: 911 (0.70) · Arc Mage ×2: 892 (0.69) · Traumatizer ×2: 600 (0.46) · Lightning Bolt ×3: 1440 (1.11) · Shock ×2: 865 (0.67) · Blaze ×1: 351 (0.27) · Brainstorm ×2: 784 (0.60) · Divination ×1: 336 (0.26) · Boomerang ×2: 632 (0.49) · Counterspell ×1: 277 (0.21) · Essence Scatter ×1: 296 (0.23) · Faerie Formation ×1: 242 (0.19) — **returned from the graveyard**: Youthful Valkyrie 0 (0.00) · Artisan of Kozilek 0 (0.00) · Serra Angel 0 (0.00) · Indulgent Aristocrat 0 (0.00) · Blood Artist 0 (0.00) · Restoration Angel 0 (0.00) · Young Pyromancer 0 (0.00) · Hypnotic Specter 0 (0.00) · Vampire Nighthawk 0 (0.00) · Arc Mage 0 (0.00) · Child of Night 0 (0.00) · Typhoid Rats 0 (0.00) · Phyrexian Rager 0 (0.00)
-- **High Warden Sorrel (sorrel)** — 1300 games — Young Pyromancer ×3: 1245 (0.96) · Arc Mage ×2: 765 (0.59) · Hypnotic Specter ×2: 587 (0.45) · Hymn to Tourach ×1: 202 (0.16) · Duress ×2: 609 (0.47) · Mind Rot ×2: 380 (0.29) · Lightning Bolt ×3: 1222 (0.94) · Shock ×2: 809 (0.62) · Blaze ×1: 395 (0.30) · Terror ×1: 296 (0.23) · Diabolic Edict ×1: 384 (0.30) · Vampire Nighthawk ×1: 388 (0.30) · Dark Ritual ×1: 286 (0.22) · Unearth ×1: 252 (0.19) — **returned from the graveyard**: Young Pyromancer 96 (0.07) · Arc Mage 64 (0.05) · Hypnotic Specter 60 (0.05) · Vampire Nighthawk 32 (0.02) · Artisan of Kozilek 0 (0.00) · Serra Angel 0 (0.00) · Youthful Valkyrie 0 (0.00) · Indulgent Aristocrat 0 (0.00) · Blood Artist 0 (0.00) · Restoration Angel 0 (0.00) · Child of Night 0 (0.00) · Phyrexian Rager 0 (0.00) · Typhoid Rats 0 (0.00)
-- **Thornmother Ysolde (ysolde)** — 1300 games — Savannah Lions ×2: 787 (0.61) · Suntail Hawk ×2: 834 (0.64) · Fencing Ace ×2: 722 (0.56) · Gladecover Scout ×2: 804 (0.62) · Blurred Mongoose ×2: 767 (0.59) · Birds of Paradise ×2: 775 (0.60) · Raise the Alarm ×2: 725 (0.56) · Glorious Anthem ×2: 535 (0.41) · Rancor ×2: 1026 (0.79) · Blanchwood Armor ×2: 612 (0.47) · Giant Growth ×1: 314 (0.24) · Swords to Plowshares ×1: 405 (0.31) · Serra Angel ×1: 197 (0.15) — **returned from the graveyard**: Serra Angel 0 (0.00) · Youthful Valkyrie 0 (0.00) · Restoration Angel 0 (0.00) · Indulgent Aristocrat 0 (0.00) · Artisan of Kozilek 0 (0.00) · Blood Artist 0 (0.00) · Arc Mage 0 (0.00) · Young Pyromancer 0 (0.00) · Hypnotic Specter 0 (0.00) · Vampire Nighthawk 0 (0.00) · Typhoid Rats 0 (0.00) · Phyrexian Rager 0 (0.00) · Child of Night 0 (0.00)
-- **Magister Quill (quill)** — 1300 games — Hedron Crab ×4: 1479 (1.14) · Rampant Growth ×3: 712 (0.55) · Llanowar Elves ×2: 870 (0.67) · Wood Elves ×2: 848 (0.65) · Wall of Blossoms ×1: 402 (0.31) · Traumatizer ×1: 419 (0.32) · Gaean Wurm ×2: 702 (0.54) · Pelakka Wurm ×1: 186 (0.14) · Baru, Wurmspeaker ×1: 353 (0.27) · Altar of Dementia ×2: 814 (0.63) · Essence Scatter ×2: 539 (0.41) · Counterspell ×1: 296 (0.23) · Brainstorm ×1: 353 (0.27) — **returned from the graveyard**: Youthful Valkyrie 0 (0.00) · Artisan of Kozilek 0 (0.00) · Serra Angel 0 (0.00) · Restoration Angel 0 (0.00) · Indulgent Aristocrat 0 (0.00) · Blood Artist 0 (0.00) · Vampire Nighthawk 0 (0.00) · Arc Mage 0 (0.00) · Young Pyromancer 0 (0.00) · Hypnotic Specter 0 (0.00) · Child of Night 0 (0.00) · Phyrexian Rager 0 (0.00) · Typhoid Rats 0 (0.00)
+   **The reads the planner asked for.**
+   - **The entrance is the stronger lever.** Tier 3, averaged: one basic is worth about twelve points off the reference (85 → 73 at 12 life), two about twenty-two (85 → 62); four life is worth about six (85 → 79), eight about eleven (85 → 74). Turns lengthen with life (13.8 → 17.5) and barely with basics (13.8 → 14.7) — life makes the game longer, the roots make the mage's plan arrive.
+   - **Where the 55–65 band sits (tier 3)**: **16 life + 2 basics = 56%**, **20 + 1 = 61%**, **12 + 2 = 62%**. Nearest above: 16 + 1 (66%), 12 + 1 (73%); nearest below: 20 + 2 (52%). Three cells qualify; 16/2 is the one where the mage plays its own game rather than a longer one.
+   - **Corvane turns on the roots, not on life**: at no basics he is flat across life (89 / 88 / 83 — the reference's win rate) — a deck that dies to a plan, not a race; with two basics he moves (72 / 63 / 59). The Rituals plus two roots put Buried Alive on turn one and Zombify on turn two. He reaches the band only at 20/2 (59%); at 16/2 he is 63%. ADR-113's question — does the reanimator turn at 16 or 20 — is answered "at 20 with two roots, nearly at 16 with two". The archetype is not wrong for the tier; it is a two-root deck.
+   - **Flat across life (list problems after all)**: Corvane at 0 basics (89 → 83) and Sorrel at 0 basics (87 → 80) — both black-red/white-black decks that lose to the road's curve before their plan; both move with basics (Sorrel 87 → 67 at 12/2). **Ysolde moves most** (79 → 58 across life; 45 → 35 with two basics — already past the band at 12/2: the aggro mage wants life, not roots). Quill and Varro sit in between (87 → 48, 84 → 56 at the corners).
+   - **Tier 2 does not reach the band in the cells measured**: the best aggregate is 14/1 = 67%; Vael alone is inside it everywhere (60 → 46 — the lifegain deck beats the road already; 14/1 puts her BELOW the band), while Kessa, Maelin, Brennor and Pell sit 70–94. Two basics were not in the tier-2 grid; the tier-3 slope (−10 to −12 per basic) puts 14/2 near 57 and 12/2 near 61 — the cells to measure next (the sweep takes `--part 8` with the grid edited in one line).
+   - **The beasts (part 9)**: aggregate 73% at catalog life, 65% at +4, 58% at +8 — the beasts do reach the band on life alone (+8), which the mages do not. Per beast: the Serra is past the band already (49 / 32 at +0 — the top of the bestiary is a real fight for a mid-road player); the Nighthawks and the Wurm reach it at +4 (62 / 33, 56 / 46); the Siege-Gang and the Warband at +8 (61 / 51, 61 / 59); the Specter and the Tactician are flat (95 → 86, 98 → 92 against the white road — plan decks that die to the curve; they would need something other than life); the Baloths and the Gale never get there against the black road.
+   - **The white road is the harder reference everywhere** (the mage-side columns run 10–20 points worse against road-mid-W than road-mid-B) — the same weenie-over-40-cards read as the five roads.
 
+2. **The implementer's read of the number.** Standard tier 3 = **16 life + 2 basics** (56%; the mage's own game, 16 turns); Hard one cell harder = 20 + 2 (52%); Easy one cell easier = 16 + 1 (66%) or 12 + 2 (62%). Tier 2 needs the two-basic cells measured before its number is picked; on the slope, Standard tier 2 ≈ 14 + 2 or 12 + 2. Beasts: +8 at Standard puts the aggregate at 58% with the plan beasts still folding and the Serra already past the band — the beasts may want per-beast deltas rather than a tier one (the Specter and the Tactician are the cases). Tier 1 stays 8 / none (the brief).
+3. **Part 4 — the blue re-read.** Brainstorm per copy: Tessaly 0.33 (S31: 0.32), Kessa 0.25 (0.27), Pell 0.31 (0.28), Varro 0.35 (0.30), Quill 0.35 (0.28) — no material change from the window opening. Where it is cast now: their END step 8–28%, in response to their spell 29–49%, their turn elsewhere 2–6%, **our own turn 17–59%** — and of the own-turn casts, **56–92% are cast over the caster's OWN spell on the stack** (Concern 4). No blue deck's tier standing moved from the window alone; the S32 deltas were the Escort.
+4. **The S28 window has a second defect**: the "in response" test is `view.stack.length > 0`, which is true right after we cast our own spell and get priority back — so Brainstorm (and the Escort's gate, which copies the rule) fires on our own turn over our own Crab. The fix is one clause (an opponent's item on the stack) plus a ladder run; not made this session. The S32 numbers carry it as the S31 numbers carried the first defect.
+5. **`facts.returned` is not in the matrix tables** — part 8 reports win rates, turns and library wins per the brief; Corvane's return rates per cell would sharpen the "two-root deck" read (a two-line addition to `pairing()` if wanted).
+6. **The white road as the harder reference** (read 1, last bullet) means a Standard cell picked on the aggregate is ~5 points easier against a black-road player and ~5 harder against a white-road one; if the dial wants a per-road term that is the legacy hook's sibling (Part 6).
 
-   **The reads.**
-   - **The mid-road yardstick (part 7) is decisive: every tier-2 and tier-3 mage loses 78–94% to a mid-road starter** (Vael is the one exception — 61% over road-mid-B, 20% under road-mid-W). A journeyman piloting Dawn Levy plus eight shop cards at 12 life beats the tier-3 masters at their tier life in nine games of ten. This is the read ADR-111 wanted before the tier-life argument: the ladder's opponents are not merely below the player's deck, they are two full steps below a mid-road one.
-   - **The beasts (part 6) tell the same story from the catalog side**: the tier-1 beasts lose to every starter (Grizzly 10–29%, Man-o'-War 8–31, the Tactician 12–31, the Ogre 11–27, the Rats 16–39, the Gale 13–42, the Specter 20–46, the Recluse 18–46); only the top of the bestiary stands (the Serra 76–86%, the Nighthawk 58–92, the Siege-Gang 47–66, the Wurm 48–66, the Formation 38–71). The starters at journeyman are in the tier-3 beasts' band — the gap is the tiers, not the mage lists.
-   - **Tessaly moved at last**: inside the tier 26 / 28 / **35** (+8 / +3 / +12), and her wins are no longer all by library (61–77% — the Escorts and the Traumatizer kill now); against the starters 14 / 52 / 30 / 29 / 23 (blue −15: the blue starter got the same Escorts). The Escort cast 0.64/game. She is in ADR-103's band against black (30) and near it against red (29); white still walls her (14).
-   - **Corvane's engine turns and the deck still falls**: returned per game — the Serra 0.20, the Aristocrat 0.20, the Valkyrie 0.20, **the Artisan 0.18**; Dark Ritual cast 0.53/game, Buried Alive 0.44, Zombify 0.66. Inside the tier 66 / 46 / 26 / 50 (−4 / −5 / +1 / −3); against the starters 32 / 32 / 28 / 35 / 38 (white +8, black **−16**, red −11, green −6); 14% against the Serra beast. The Rituals bought the turn-two Buried Alive and the Artisan comes back one game in five, but a reanimated 10/9 on turn four is still losing to the starters' curves; against the black starter the Rituals' card disadvantage shows.
-   - **Kessa is the Escort's other winner**: 46 / 39 / 73 inside the tier (+6 / +4 / +12), 30 / 51 / 34 / 33 / 45 against the starters (+7 / −4 / +3 / +6 / +11). **Sorrel's Edict** cast 0.30/game; Sorrel 40 / 59 / 45 / 48 / 40 against the starters (−8 / −2 / −2 / −2 / −1 — noise around the Terror it replaced).
-   - **The five roads**: **white 78 / 59 / 64 / 64** (blue −3, black −5, red 0, green −3) — the planner's stop rule ("still over 60% against all four") is met on three of four; against black it is 59. **Blue is a road now**: 55 over black (+19), 50 over red (+6), 61 over green (+14) — the Escorts made Tidal Grimoire close. Inside 40–60: white–black, blue–black, blue–red, black–red, red–green (five); outside: white–blue 78, white–red 64, white–green 64, blue–green 61, black–green 74.
-   - **Teachers vs the starters**: Oriel 55 / 76 / 59 / 60 / 52 (white +6 — the Overseer/Decoy step slowed Dawn Levy a little); Hask 24 / 51 / 17 / 30 / 37 (blue −14); Edric and Brann unchanged.
-   - **`returned` across the field**: Edric's Skeleton comes back 0.88/game (the S30 add is the most-reanimated card in the pool), the Rats 0.40; Vael's Unearth returns Soul Wardens 0.18; Maelin's Piker 0.15; Sorrel's Unearth 0.07–0.05 (the Pyromancer, Arc Mage, the Specter). Nothing in any list went uncast.
+## Part 6 — Scoping the matchup resolver (no build)
 
-2. **The tier-life lever is the planner's next move** (ADR-111): the yardstick says a mid-road player is two steps above the tier-3 ladder as tuned. If tier life is the lever, the numbers to beat are part 7's 78–94%; if the answer is worldcraft elsewhere (the AI profile, manalinks for the mages, shop cards in the mage lists), the same table is the baseline.
-3. **Corvane** remains the tier-3 deck the amendments cannot reach by list turns alone — three sessions of turns have moved him between 22 and 46 against the starters. Either the reanimator is a tier-3 identity the tier's life should carry (Concern 2), or the archetype is wrong for a 40-card deck at 12 life against 10-life aggro starters.
-4. **White still walls three roads** (78 / 64 / 64) after two trims; the stop rule is met in spirit — the planner's "take the white road as the gentle one to Chris" is due.
-5. **The S28 correction** (Deviation 1) means every blue sweep number before this session was measured with Brainstorm never cast at end step; the S31 baseline carries that. Tessaly's, Kessa's, Pell's, Varro's and Quill's deltas mix the Escort/Edict turns with the window opening — the cast counts (Brainstorm's per-copy rate) are the way to tell them apart next session if it matters.
-6. **`facts.returned` counts every graveyard → battlefield move**, the Skeleton's self-return and the Artisan's cast trigger included — read it beside the reanimator casts, not as "Zombify resolved".
+**How a duel's setup is resolved today.** (a) *Encounter duels* (`prepareDuel`, `packages/world/src/journey.ts`): the enemy's life is the catalog template's `worldLife` (`data/world/opponents.json`, per row — tier-1 8, tier-2 8–10, tier-3 12, the Heart's petals and lords by their own rows) plus situational terms (`lairResidentLifeBonus` for a lair resident; the Barrage's negative delta, floored at 1); the AI profile is the template's `difficulty` (apprentice / journeyman / master) through the `heuristic:<difficulty>` agent factory (`difficultyProfile` in the agents package); the ante is `knobs.anteCount`; the modifiers are the enemy's `startingLife` plus the PLAYER's manalinks (`manalinkModifiers(world)` — the player's roots; the enemy has none). (b) *Dungeon interiors* (`dungeonDuelSpec`): the same template life plus the empowerment clock (`dungeonEmpowermentTiers` by steps — life, a basic, a token, a card; lords read `lordEmpowermentTiers` and the global `lordGrowthLife`). (c) *Sieges* (`siegeDuelSpec`): template life, no bonus. (d) *The Corolla* (`petalDuelSpec` / `mirrorDuelSpec` / `heartDuelSpec`): the petals at their rows; the Heart at the `heartLife` knob — **the one place the difficulty mode sets an enemy's life today (35 / 40 / 45)** — with the five roots (`heartRootModifiers`) and the card in hand. (e) *The mode itself*: `world.difficulty` (easy / standard / hard) reaches duels only through the `DIFFICULTIES` knob bundle (`anteCount`, `lossLifePenalty`, `heartLife`, the empowerment tables, `lordGrowthLife`, prices) and the starters' variants (`starterDecklist`); **an enemy's tier life and profile do not read the mode anywhere.** (f) *The sweep*: `TIER_LIFE` / `TIER_PROFILE` in `mage-sweep-cli` (now `--tier-life`), independent of the catalog.
+
+**The resolver.** `resolveMatchup(opponent: OpponentTemplate, mode: DifficultyName, legacy: Legacy | null, knobs: KnobValues) → { life: number; profile: Difficulty; entrance: string[]; ante: number }` in `packages/world/src/matchup.ts`:
+- **Tables in the knobs registry** (the registry's per-mode bundles already exist): `tierLife: Record<1|2|3, number>` and `tierEntrance: Record<1|2|3, number>` (basics count) for mages, `beastLifeDelta: Record<1|2|3, number>` for beasts (no entrance — Part 1), each with an easy/standard/hard value in `DIFFICULTIES`; the registry renders them into `docs/knobs.md` as today.
+- **life** = the table's cell for a mage (or the catalog `worldLife` + the beast delta for a beast, the lords/petals/Heart untouched), and the situational terms (lair bonus, empowerment, the Barrage) stay in their callers, applied to the resolver's result.
+- **profile** = the template's `difficulty`, unchanged (ADR-103: the dial is not AI sophistication).
+- **entrance** = N basics of the mage's colours by pip count (the sweep's `mageColorsByPips` moves into `sim/mage-decks` as data — a `primaryColors` per mage computed once — so world and sweep read the same order), emitted as `permanentOnBattlefield` modifiers for player 1 (the S33 fixture's path).
+- **ante** = `knobs.anteCount` (already mode-bundled).
+- **The legacy hook**: `legacyTerm(legacy, opponent) → { lifeDelta: number; entranceDelta: number }`, called inside the resolver, returning zeros today; phase two fills it ("the player holds N ministers / M powers → +X"), and a per-road term (Concern 6) is the same shape.
+
+**What moves**: `prepareDuel`, `dungeonDuelSpec`, `siegeDuelSpec` call the resolver for the enemy's life/entrance/ante (the Corolla keeps `heartLife` and its roots); the catalog's `worldLife` stays as the beasts' base and the mages' rows become documentation (or are dropped from the mage rows — planner's call); the telegraph/parley gains the entrance line the planner writes; `docs/reference/enemies.md` renders per mode.
+
+**Tests it needs**: the resolver's table lookup per mode and tier (a table test); a prepared encounter duel carrying the mage's two basics in colour order and the right life at each mode (the world.test pattern at line ~857, which already asserts `permanentOnBattlefield` modifiers on a dungeon spec); the replay byte-exact fixture (S33's, re-pointed at `prepareDuel`); the `enemies.md` sync test per mode; the existing `worldLife` pins re-based.
+
+**What the sweep needs**: `--mode easy|standard|hard` reading the same tables through the resolver (replacing `--tier-life` and the CLI's `TIER_LIFE`), so a sweep row is "the catalog at this mode" and parts 1–9 can be run per mode without editing the CLI; the S33 baseline files keyed by mode.
 
 ## Registry entries added/changed
 
-No R-number (both cards zero words); R-094's row notes the Edict, the Escort, the public stack targets and `facts.returned`. Pool-registry: Session 32 section (+2; the S32 AI corrections noted); printings regenerated (`art:fetch`). ADRs 109–111 in `docs/decision-updates/s32.md`. Knobs unchanged. Engine: `RETURNED` log event, `MatchFacts.returned`, `GameView.stack[].targets`. AI: `flashTimingGated`, `edictWasteGated`, the under-fire target preference, the save credit, the two corrections (the END step name, the pump-waste gate's reach); books 49–50 (+ book 36's pin corrected). Sim: `s32-fuzz.test.ts`, `road-decks` +2, `mage-sweep` parts 6–7 + `returned` + `sweep-baselines/s31.json`. World: the two starters; the mid-road sync test. UI: the gallery's mage filter; the annihilator dialog test. CLAUDE.md: the two art lines. `docs/reference/` regenerated.
+None (no words, no cards, no knobs). ADRs 112–115 in `docs/decision-updates/s33.md`. Sim: `mage-sweep` parts 8–9, `--tier-life`, `mageAt`/`beastAt`/`mageColorsByPips`, `pairing()` returns its numbers; `s33-entrance.test.ts`. Implementer-notes: S32–S33 lessons.
 
 ## Test status
 
-Default tier **573 passed / 2 skipped** (55 files; +8 S32 fixtures, +2 fuzz tests, +2 book pins, +1 mid-road sync test, +1 annihilator dialog test; baselines: the loader's def count 205 → 207, the shop-tier counts 71/51 → 72/52, the blue starter's pin, three `MatchFacts` literals gained `returned`). `pnpm typecheck` clean. **Fuzz-before-fixtures honoured**: 840 games at the full tier, replays byte-exact, before the S32 fixtures. **The FUZZ_FULL ladder gate held and the 100/cell vs-random ladder PASSES** after the Escort, the Edict, the END-step correction and the pump-gate change. Sweep: 22,000 games (parts 1–7, 220 pairings). Browser: the gallery's mage filter verified live (207 cards; Tessaly's eleven); the annihilator dialog verified headlessly through the controller.
+Default tier **576 passed / 2 skipped** (56 files; +3 entrance tests). `pnpm typecheck` clean. No fuzz beyond the entrance path (the brief); the entrance replays byte-exact. No AI change, so no ladder run. Sweep: parts 8 (15,000 games) and 9 (6,000); part 4's 1,000-game read.
 
 ## Suggested next
 
-1. **Chris / planner**: the tier-life argument from part 7 (Concern 2); Corvane's identity (3); the white road as the gentle one (4); Deviations 1–4 to ratify (the S28 correction especially).
-2. **Planner (S33)**: whatever the tier-life ruling implies for the sweep's tier settings (`TIER_LIFE` in `mage-sweep-cli`) and the catalog; a re-read of the mill decks' Brainstorm rates now that the window is open.
-3. **Implementer smalls**: none outstanding from the brief; the dev "single battle" could take a custom-modifier setup so scenes like the annihilator dialog can be walked in the browser.
+1. **Chris / planner**: the number — tier 3 at 16/2 (Standard), 20/2 (Hard), 16/1 or 12/2 (Easy) from the table; tier 2's two-basic cells to measure first; the beasts' per-beast vs per-tier delta.
+2. **Planner (S34)**: the resolver brief from Part 6; the S28 window's second defect (Concern 4 — one clause + a ladder run); Corvane's return rates per cell if the "two-root deck" read wants sharpening.
+3. **Implementer smalls**: tier-2 cells at two basics (`--part 8` with the grid edited); `facts.returned` in the matrix rows.
 
 ## How to run
 
 ```
 pnpm test / FUZZ_FULL=1 pnpm test
 pnpm typecheck
-pnpm mage-sweep --games 100 [--part 1|2|3|4|5|6|7] [--baseline none]   # ~15 min; the delta column reads sweep-baselines/s31.json
+pnpm mage-sweep --games 100 --part 8      # the matrix (~12 min); --part 9 the beasts (~5 min); parts 1–7 as before, --tier-life 8,10,12
 FUZZ_FULL=1 pnpm exec vitest run packages/sim/src/ladder-smoke.test.ts / pnpm ladder --games 100
 pnpm reference / pnpm knobs:doc / pnpm art:fetch
-pnpm viewer → /gallery (dev: every card; printed frames by default; deck filter incl. the mages) · /play → any mage vs any mage
+pnpm viewer → /gallery · /play → any mage vs any mage
 ```
