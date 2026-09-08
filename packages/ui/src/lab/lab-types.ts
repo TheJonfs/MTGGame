@@ -62,4 +62,4 @@ export interface LabCell {
   errors: number;
 }
 export type WorkerIn = { type: "run"; job: LabJob };
-export type WorkerOut = { type: "progress" | "done"; cell: LabCell } | { type: "error"; id: string; message: string };
+export type WorkerOut = { type: "progress" | "done"; cell: LabCell } | { type: "error"; id: string; message: string } | { type: "ready" };

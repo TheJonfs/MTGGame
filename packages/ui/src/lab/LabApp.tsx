@@ -10,7 +10,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { CardDef } from "@shandalar/cards";
 import { loadPool } from "../engine-bridge";
 import { customAsLabDeck, deckStats, entranceBasics, labDecks, manaValue, resolveSide, type Archetype, type CustomDeck, type Decklist, type LabDeck, type Profile } from "./lab-decks";
-import type { LabBonus, LabCell, LabJob, LabSide, ResolvedSide, WorkerOut } from "./lab-types";
+import type { LabBonus, LabCell, LabJob, LabSide, ResolvedSide } from "./lab-types";
+import { LabWorkerPool, type PoolStatus } from "./lab-pool";
 
 const PROFILES: Profile[] = ["apprentice", "journeyman", "master"];
 const ARCHETYPES: Archetype[] = ["aggro", "midrange", "control"];
@@ -40,10 +41,12 @@ export function LabApp() {
   const [customs, setCustoms] = useState<CustomDeck[]>([]);
   const decks = useMemo(() => [...baseDecks, ...customs.map(customAsLabDeck)], [baseDecks, customs]);
   const byKey = useMemo(() => new Map(decks.map((d) => [d.key, d])), [decks]);
-  const threads = Math.max(1, Math.min(6, (navigator.hardwareConcurrency || 4) - 1));
-  const workers = useRef<Worker[]>([]);
-  const spawn = () => Array.from({ length: threads }, () => new Worker(new URL("./lab-worker.ts", import.meta.url), { type: "module" }));
-  useEffect(() => { workers.current = spawn(); return () => { for (const w of workers.current) w.terminate(); }; }, [threads]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Round three (Chris: grids ended with cells never run — a worker that fails to load loses its job
+  // silently): a pool with a ready handshake, error replacement and a stall watchdog; four workers by
+  // default (the dev server serves every module to every worker; six was the failure mode).
+  const threads = Math.max(1, Math.min(4, (navigator.hardwareConcurrency || 4) - 1));
+  const workerPool = useRef<LabWorkerPool | null>(null);
+  const [poolStatus, setPoolStatus] = useState<PoolStatus>({ workers: 0, ready: 0, busy: 0, failed: 0, queued: 0 });
 
   const [setup, setSetup] = useState<RunSetup>(() => ({
     a: { deck: "mage:corvane", life: 12, basics: 0, profile: "master", bonuses: [] },
@@ -64,8 +67,15 @@ export function LabApp() {
   const [runName, setRunName] = useState("");
   const [notes, setNotes] = useState("");
   const [editor, setEditor] = useState<CustomDeck | null>(null);
-  const queue = useRef<LabJob[]>([]);
-  const busy = useRef<Set<Worker>>(new Set());
+  useEffect(() => {
+    const p = new LabWorkerPool(threads, () => new Worker(new URL("./lab-worker.ts", import.meta.url), { type: "module" }));
+    p.onCell = (cell) => setCells((c) => ({ ...c, [cell.id]: cell }));
+    p.onError = (m) => setErrors((e) => [...e.slice(-19), m]);
+    p.onStatus = setPoolStatus;
+    p.onIdle = () => setRunning(false);
+    workerPool.current = p;
+    return () => { p.dispose(); workerPool.current = null; };
+  }, [threads]);
 
   const pickDeck = (side: "a" | "b", key: string) => {
     const d = byKey.get(key);
@@ -89,29 +99,12 @@ export function LabApp() {
     try { rb = resolveSide(s.b, byKey, pool); ra0 = resolveSide(s.a, byKey, pool); } catch (e) { setErrors([String((e as Error).message)]); return; }
     setSetup(s); setResolved({ a: ra0, b: rb });
     setCells({}); setErrors([]); setPicked(null);
-    queue.current = lives.flatMap((life) => basics.map((nb) => ({ id: cellId(life, nb), seed: s.seed, games: s.games, a: resolveSide({ ...s.a, life, basics: nb }, byKey, pool), b: rb })));
+    const jobs: LabJob[] = lives.flatMap((life) => basics.map((nb) => ({ id: cellId(life, nb), seed: s.seed, games: s.games, a: resolveSide({ ...s.a, life, basics: nb }, byKey, pool), b: rb })));
+    if (!workerPool.current || jobs.length === 0) return;
     setRunning(true);
-    for (const w of workers.current) {
-      w.onmessage = (ev: MessageEvent<WorkerOut>) => {
-        const m = ev.data;
-        if (m.type === "error") { setErrors((e) => [...e.slice(-19), m.message]); return; }
-        setCells((c) => ({ ...c, [m.cell.id]: m.cell }));
-        if (m.type === "done") {
-          busy.current.delete(w);
-          const next = queue.current.shift();
-          if (next) { busy.current.add(w); w.postMessage({ type: "run", job: next }); }
-          else if (busy.current.size === 0) setRunning(false);
-        }
-      };
-    }
-    for (const w of workers.current) {
-      const next = queue.current.shift();
-      if (!next) break;
-      busy.current.add(w); w.postMessage({ type: "run", job: next });
-    }
-    if (busy.current.size === 0) setRunning(false);
+    workerPool.current.run(jobs);
   };
-  const stop = () => { queue.current = []; for (const w of workers.current) w.terminate(); busy.current.clear(); setRunning(false); workers.current = spawn(); };
+  const stop = () => { workerPool.current?.stop(); setRunning(false); };
 
   const save = async () => {
     const name = runName.trim() || `${setup.a.deck.replace(/[:]/g, "-")}_vs_${setup.b.deck.replace(/[:]/g, "-")}_${new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-")}`;
@@ -171,7 +164,7 @@ export function LabApp() {
       <div style={{ display: "flex", alignItems: "baseline", gap: 14 }}>
         <h2 style={{ fontFamily: "var(--serif)", margin: 0 }}>Matchup Lab</h2>
         <a href="/" className="linkish">← menu</a>
-        <span className="seed" style={{ marginLeft: "auto" }}>{threads} worker{threads === 1 ? "" : "s"} · the engine and the heuristic agents, live · dev surface</span>
+        <span className="seed" style={{ marginLeft: "auto" }} title="workers load the whole engine each; a worker that fails is replaced and its cell re-queued">{poolStatus.workers} worker{poolStatus.workers === 1 ? "" : "s"}: {poolStatus.ready} ready{poolStatus.busy ? `, ${poolStatus.busy} busy` : ""}{poolStatus.queued ? `, ${poolStatus.queued} cells queued` : ""}{poolStatus.failed ? `, ${poolStatus.failed} failed and replaced` : ""} · the engine and the heuristic agents, live · dev surface</span>
       </div>
       <div style={{ display: "flex", gap: 12, marginTop: 10, flexWrap: "wrap", alignItems: "flex-start" }}>
         <SidePanel label="a" side={setup.a} decks={decks} byKey={byKey} pool={pool} onPick={(k) => pickDeck("a", k)} onPatch={(p) => patchSide("a", p)} onEdit={() => openEditor(setup.a.deck)} />

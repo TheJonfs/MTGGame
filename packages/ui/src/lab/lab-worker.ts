@@ -48,3 +48,6 @@ async function run(job: LabJob): Promise<void> {
 (self as unknown as { onmessage: (ev: MessageEvent<WorkerIn>) => void }).onmessage = (ev: MessageEvent<WorkerIn>) => {
   if (ev.data.type === "run") void run(ev.data.job);
 };
+// The READY handshake: the pool dispatches only to workers whose module graph finished loading
+// (a worker that failed to load fires `error` and never says this).
+(self as unknown as Worker).postMessage({ type: "ready" });
