@@ -41,10 +41,22 @@ interface RosterSetup {
   seed: number;
   /** The target band per opponent tier (the row's win rate): high at tier 1, even at tier 2, unfavourable at tier 3. */
   bands: Record<1 | 2 | 3, [number, number]>;
+  /** The differential (Chris): shifts in life and entrance basics per enemy GROUP — the three tiers of mages
+   * and the three tiers of beasts. A second sweep runs with the shifts applied and every cell shows its delta. */
+  shifts: Record<GroupKey, { life: number; basics: number }>;
+  /** Run the second (shifted) sweep at all. */
+  differential: boolean;
+  /** "fresh": the shifted sweep uses new seeds, so unshifted cells show the Monte Carlo noise floor; "paired":
+   * the same seeds, so unshifted cells are exactly zero and shifted cells are a paired comparison. */
+  shiftSeeds: "fresh" | "paired";
 }
+type GroupKey = "M1" | "M2" | "M3" | "B1" | "B2" | "B3";
+const GROUP_KEYS: GroupKey[] = ["M1", "M2", "M3", "B1", "B2", "B3"];
+const groupOf = (d: LabDeck): GroupKey | null => (d.tier && (d.group === "mages" || d.group === "beasts") ? (`${d.group === "mages" ? "M" : "B"}${d.tier}` as GroupKey) : null);
+const ZERO_SHIFTS: Record<GroupKey, { life: number; basics: number }> = { M1: { life: 0, basics: 0 }, M2: { life: 0, basics: 0 }, M3: { life: 0, basics: 0 }, B1: { life: 0, basics: 0 }, B2: { life: 0, basics: 0 }, B3: { life: 0, basics: 0 } };
 
 const pct = (n: number, d: number) => (d > 0 ? (100 * n) / d : 0);
-const rosterId = (row: string, col: string) => `${row}|${col}`;
+const rosterId = (row: string, col: string, phase: "base" | "shift" = "base") => `${phase}|${row}|${col}`;
 const ci95 = (p: number, n: number) => (n > 0 ? 1.96 * Math.sqrt((p * (1 - p)) / n) : 0);
 const mean = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
 const cellId = (life: number, basics: number) => `${life}/${basics}`;
@@ -83,7 +95,7 @@ export function LabApp() {
   const [notes, setNotes] = useState("");
   const [editor, setEditor] = useState<CustomDeck | null>(null);
   const [mode, setMode] = useState<"grid" | "roster">("grid");
-  const [roster, setRoster] = useState<RosterSetup>(() => ({ rows: ["starter:white", "starter:blue", "starter:black", "starter:red", "starter:green"], rowLife: null, rowProfile: null, rowBasics: null, mages: true, beasts: true, games: 50, seed: 1, bands: { 1: [65, 80], 2: [45, 55], 3: [30, 45] } }));
+  const [roster, setRoster] = useState<RosterSetup>(() => ({ rows: ["starter:white", "starter:blue", "starter:black", "starter:red", "starter:green"], rowLife: null, rowProfile: null, rowBasics: null, mages: true, beasts: true, games: 50, seed: 1, bands: { 1: [65, 80], 2: [45, 55], 3: [30, 45] }, shifts: { ...ZERO_SHIFTS }, differential: true, shiftSeeds: "fresh" }));
   const rosterCols = useMemo(() => decks.filter((d) => (roster.mages && d.group === "mages") || (roster.beasts && d.group === "beasts")), [decks, roster.mages, roster.beasts]);
   useEffect(() => {
     const p = new LabWorkerPool(threads, () => new Worker(new URL("./lab-worker.ts", import.meta.url), { type: "module" }));
@@ -131,7 +143,21 @@ export function LabApp() {
         const rowSide: LabSide = { deck: rk, life: roster.rowLife ?? rd.life, basics: roster.rowBasics ?? rd.basics, profile: roster.rowProfile ?? rd.profile, bonuses: (rd.bonuses ?? []).map((b) => ({ ...b })) };
         for (const cd of rosterCols) {
           const colSide: LabSide = sideFromDeck(cd);
-          jobs.push({ id: rosterId(rk, cd.key), seed: roster.seed, games: roster.games, a: resolveSide(rowSide, byKey, pool), b: resolveSide(colSide, byKey, pool) });
+          jobs.push({ id: rosterId(rk, cd.key, "base"), seed: roster.seed, games: roster.games, a: resolveSide(rowSide, byKey, pool), b: resolveSide(colSide, byKey, pool) });
+        }
+      }
+      if (roster.differential) {
+        // The second sweep: every column at its defaults PLUS its group's shift; fresh seeds by default (the
+        // noise floor shows on the unshifted cells), paired seeds on request. Queued after the base sweep.
+        const seed2 = roster.shiftSeeds === "paired" ? roster.seed : roster.seed + 100_003;
+        for (const rk of roster.rows) {
+          const rd = byKey.get(rk); if (!rd) continue;
+          const rowSide: LabSide = { deck: rk, life: roster.rowLife ?? rd.life, basics: roster.rowBasics ?? rd.basics, profile: roster.rowProfile ?? rd.profile, bonuses: (rd.bonuses ?? []).map((b) => ({ ...b })) };
+          for (const cd of rosterCols) {
+            const g = groupOf(cd); const sh = g ? roster.shifts[g] : { life: 0, basics: 0 };
+            const colSide: LabSide = { ...sideFromDeck(cd), life: Math.max(1, cd.life + sh.life), basics: Math.max(0, cd.basics + sh.basics) };
+            jobs.push({ id: rosterId(rk, cd.key, "shift"), seed: seed2, games: roster.games, a: resolveSide(rowSide, byKey, pool), b: resolveSide(colSide, byKey, pool) });
+          }
         }
       }
     } catch (e) { setErrors([String((e as Error).message)]); return; }
@@ -156,7 +182,7 @@ export function LabApp() {
   const load = (run: SavedRun) => {
     const fix = (s: LabSide): LabSide => ({ ...s, bonuses: s.bonuses ?? [] });
     setSetup({ ...run.setup, a: fix(run.setup.a), b: fix(run.setup.b) }); setLivesText(run.setup.lives.join(", ")); setBasicsText(run.setup.basics.join(", ")); setCells(run.cells); setNotes(run.notes ?? ""); setPicked(null); setResolved(run.resolved ?? null);
-    if (run.roster) { setRoster(run.roster); setMode("roster"); } else setMode("grid");
+    if (run.roster) { setRoster({ ...run.roster, shifts: { ...ZERO_SHIFTS, ...(run.roster.shifts ?? {}) }, differential: run.roster.differential ?? false, shiftSeeds: run.roster.shiftSeeds ?? "fresh" }); setMode("roster"); } else setMode("grid");
   };
 
   // ---- the deck editor
@@ -318,8 +344,14 @@ function RosterView({ roster, setRoster, decks, byKey, cols, cells, running, onR
   cells: Record<string, LabCell>; running: boolean; onRun: () => void; onStop: () => void; picked: string | null; setPicked: (id: string | null) => void;
 }) {
   const rows = roster.rows.map((k) => byKey.get(k)).filter((d): d is LabDeck => !!d);
-  const rowPct = (rk: string, ck: string): number | null => { const c = cells[rosterId(rk, ck)]; return c && c.games > 0 ? pct(c.aWins, c.games) : null; };
-  const done = (rk: string, ck: string) => { const c = cells[rosterId(rk, ck)]; return !!c && c.games >= roster.games; };
+  const rowPct = (rk: string, ck: string, phase: "base" | "shift" = "base"): number | null => { const c = cells[rosterId(rk, ck, phase)]; return c && c.games > 0 ? pct(c.aWins, c.games) : null; };
+  const done = (rk: string, ck: string, phase: "base" | "shift" = "base") => { const c = cells[rosterId(rk, ck, phase)]; return !!c && c.games >= roster.games; };
+  const delta = (rk: string, ck: string): number | null => { const b = rowPct(rk, ck, "base"), s = rowPct(rk, ck, "shift"); return b === null || s === null || !done(rk, ck, "shift") ? null : s - b; };
+  const shifted = (d: LabDeck): boolean => { const g = groupOf(d); return !!g && (roster.shifts[g].life !== 0 || roster.shifts[g].basics !== 0); };
+  const setShift = (g: GroupKey, patch: Partial<{ life: number; basics: number }>) => setRoster({ ...roster, shifts: { ...roster.shifts, [g]: { ...roster.shifts[g], ...patch } } });
+  const anyShift = GROUP_KEYS.some((g) => roster.shifts[g].life !== 0 || roster.shifts[g].basics !== 0);
+  /** The noise floor: the standard error of a difference of two independent proportions near 50%, at this cell size. */
+  const noise = 100 * Math.sqrt((2 * 0.25) / Math.max(1, roster.games));
   const shade = (p: number | null, tier: 1 | 2 | 3 | undefined, isDone: boolean) => {
     if (p === null) return "transparent";
     if (!isDone) return "rgba(176,138,62,0.08)";
@@ -328,14 +360,16 @@ function RosterView({ roster, setRoster, decks, byKey, cols, cells, running, onR
     const d = p < band[0] ? band[0] - p : p - band[1];
     return `rgba(190,80,60,${Math.min(0.45, 0.08 + d / 60)})`;
   };
-  const agg = (rk: string, group: "mages" | "beasts" | "any", tier: 1 | 2 | 3 | 0): { p: number; n: number } => {
-    const xs = cols.filter((c) => (group === "any" || c.group === group) && (tier === 0 || c.tier === tier)).map((c) => rowPct(rk, c.key)).filter((x): x is number => x !== null);
+  const agg = (rk: string, group: "mages" | "beasts" | "any", tier: 1 | 2 | 3 | 0, phase: "base" | "shift" = "base"): { p: number; n: number } => {
+    const xs = cols.filter((c) => (group === "any" || c.group === group) && (tier === 0 || c.tier === tier)).map((c) => rowPct(rk, c.key, phase)).filter((x): x is number => x !== null);
     return { p: mean(xs), n: xs.length };
   };
-  const total = rows.length * cols.length * roster.games;
+  const total = rows.length * cols.length * roster.games * (roster.differential ? 2 : 1);
   const doneGames = Object.values(cells).reduce((n, c) => n + c.games, 0);
   const pickedCell = picked ? cells[picked] : undefined;
-  const pickedNames = picked ? picked.split("|").map((k) => byKey.get(k)?.name ?? k) : [];
+  const pickedParts = picked ? picked.split("|") : [];
+  const pickedNames = pickedParts.length === 3 ? pickedParts.slice(1).map((k) => byKey.get(k)?.name ?? k) : [];
+  const pickedShift = pickedParts.length === 3 ? cells[rosterId(pickedParts[1]!, pickedParts[2]!, "shift")] : undefined;
   const groups: { label: string; group: "mages" | "beasts" | "any"; tier: 1 | 2 | 3 | 0 }[] = [
     ...(roster.mages ? TIERS.map((t) => ({ label: `T${t} mages`, group: "mages" as const, tier: t })) : []),
     ...(roster.beasts ? TIERS.map((t) => ({ label: `T${t} beasts`, group: "beasts" as const, tier: t })) : []),
@@ -343,12 +377,18 @@ function RosterView({ roster, setRoster, decks, byKey, cols, cells, running, onR
     ...(roster.beasts ? [{ label: "all beasts", group: "beasts" as const, tier: 0 as const }] : []),
     ...(roster.mages && roster.beasts ? [{ label: "everyone", group: "any" as const, tier: 0 as const }] : []),
   ];
-  const Bar = ({ p, band }: { p: number; band?: [number, number] }) => (
-    <div style={{ position: "relative", height: 10, background: "rgba(43,37,32,0.10)", borderRadius: 2, width: 120 }} title={band ? `band ${band[0]}–${band[1]}` : undefined}>
-      {band && <div style={{ position: "absolute", left: `${band[0]}%`, width: `${band[1] - band[0]}%`, top: 0, bottom: 0, background: "rgba(120,170,90,0.35)" }} />}
-      <div style={{ position: "absolute", left: 0, top: 2, bottom: 2, width: `${Math.max(0, Math.min(100, p))}%`, background: "var(--brass)", opacity: 0.9 }} />
-      <div style={{ position: "absolute", left: "50%", top: 0, bottom: 0, width: 1, background: "rgba(43,37,32,0.35)" }} />
+  // The bar: the baseline in brass, the shifted value as a dark marker, the band as an outlined box in a
+  // higher-contrast green (Chris: delineate the bounds), the tick at 50.
+  const Bar = ({ p, s, band }: { p: number; s?: number; band?: [number, number] }) => (
+    <div style={{ position: "relative", height: 12, background: "rgba(43,37,32,0.10)", borderRadius: 2, width: 140 }} title={`${band ? `band ${band[0]}–${band[1]}; ` : ""}baseline ${p.toFixed(0)}%${s !== undefined ? `, shifted ${s.toFixed(0)}%` : ""}`}>
+      {band && <div style={{ position: "absolute", left: `${band[0]}%`, width: `${band[1] - band[0]}%`, top: 0, bottom: 0, background: "rgba(84,160,74,0.28)", border: "1px solid rgba(60,130,50,0.9)", boxSizing: "border-box" }} />}
+      <div style={{ position: "absolute", left: 0, top: 3, bottom: 3, width: `${Math.max(0, Math.min(100, p))}%`, background: "var(--brass)", opacity: 0.95 }} />
+      {s !== undefined && <div style={{ position: "absolute", left: `calc(${Math.max(0, Math.min(100, s))}% - 1.5px)`, top: -2, bottom: -2, width: 3, background: "var(--ink)", borderRadius: 1 }} title={`shifted ${s.toFixed(0)}%`} />}
+      <div style={{ position: "absolute", left: "50%", top: 0, bottom: 0, width: 1, background: "rgba(43,37,32,0.45)" }} />
     </div>
+  );
+  const Delta = ({ d, small }: { d: number | null; small?: boolean }) => d === null ? null : (
+    <span style={{ fontSize: small ? 9.5 : 11, color: Math.abs(d) > noise ? (d < 0 ? "#8a3b2c" : "#2f6b8a") : "var(--ink-soft)", fontWeight: Math.abs(d) > noise ? 600 : 400 }} title={`shifted − baseline; the noise floor at ${roster.games} games is about ±${noise.toFixed(0)}`}>{d >= 0 ? "+" : "−"}{Math.abs(d).toFixed(0)}</span>
   );
   return (
     <>
@@ -386,9 +426,32 @@ function RosterView({ roster, setRoster, decks, byKey, cols, cells, running, onR
             ))}
           </div>
           <div style={{ display: "flex", gap: 8, marginTop: 8, alignItems: "center" }}>
-            {!running ? <button onClick={onRun}>Run {rows.length} × {cols.length} cells × {roster.games}</button> : <button onClick={onStop}>Stop</button>}
+            {!running ? <button onClick={onRun}>Run {rows.length} × {cols.length} cells × {roster.games}{roster.differential ? " × 2 sweeps" : ""}</button> : <button onClick={onStop}>Stop</button>}
             {running && <span className="seed">{doneGames}/{total} games</span>}
           </div>
+        </div>
+        <div className="panel" style={{ padding: 10, minWidth: 300 }}>
+          <div style={{ fontFamily: "var(--serif)", fontSize: 15, marginBottom: 6 }}>Shifts — the differential, per enemy group</div>
+          <div style={{ fontSize: 12 }}><label><input type="checkbox" checked={roster.differential} onChange={(e) => setRoster({ ...roster, differential: e.target.checked })} /> run a second sweep with these shifts; every cell then carries baseline and Δ</label></div>
+          <table style={{ fontSize: 12, borderCollapse: "collapse", marginTop: 4 }}>
+            <thead><tr><th></th><th style={{ fontWeight: 500, padding: "2px 6px" }}>life</th><th style={{ fontWeight: 500, padding: "2px 6px" }}>basics in play</th></tr></thead>
+            <tbody>
+              {GROUP_KEYS.map((g) => (
+                <tr key={g}>
+                  <td style={{ padding: "2px 6px", fontWeight: 600 }}>{g.startsWith("M") ? "tier-" + g[1] + " mages" : "tier-" + g[1] + " beasts"}</td>
+                  <td style={{ padding: "2px 6px" }}><input type="number" value={roster.shifts[g].life} step={1} style={{ width: 56 }} onChange={(e) => setShift(g, { life: Number(e.target.value) })} /></td>
+                  <td style={{ padding: "2px 6px" }}><input type="number" value={roster.shifts[g].basics} step={1} min={0} style={{ width: 56 }} onChange={(e) => setShift(g, { basics: Number(e.target.value) })} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div style={{ fontSize: 12, marginTop: 4, display: "flex", gap: 10, alignItems: "center" }}>
+            <span>seeds for the shifted sweep</span>
+            <label title="new seeds: unshifted cells show the Monte Carlo noise floor, so effect sizes can be read against it"><input type="radio" checked={roster.shiftSeeds === "fresh"} onChange={() => setRoster({ ...roster, shiftSeeds: "fresh" })} /> fresh</label>
+            <label title="the same seeds: unshifted cells are exactly zero; shifted cells are a paired comparison (lower variance)"><input type="radio" checked={roster.shiftSeeds === "paired"} onChange={() => setRoster({ ...roster, shiftSeeds: "paired" })} /> paired</label>
+            <button className="linkish" onClick={() => setRoster({ ...roster, shifts: { ...ZERO_SHIFTS } })}>zero all</button>
+          </div>
+          <div style={{ fontSize: 11, color: "var(--ink-soft)", marginTop: 4 }}>Shifts add to each column's world default (a tier-3 mage at 12 with +4 life and +2 basics fights at 16 with two of its colours in play). The noise floor for a Δ at {roster.games} games per cell is about ±{noise.toFixed(0)} points; Δs beyond it are coloured.{!anyShift && roster.differential ? " No shift set: the second sweep measures the noise floor alone." : ""}</div>
         </div>
       </div>
 
@@ -399,7 +462,7 @@ function RosterView({ roster, setRoster, decks, byKey, cols, cells, running, onR
             <thead>
               <tr>
                 <th style={{ textAlign: "left", padding: "3px 6px" }}></th>
-                {cols.map((c) => <th key={c.key} style={{ padding: "3px 4px", fontWeight: 500, maxWidth: 64, fontSize: 10.5, verticalAlign: "bottom" }} title={c.label}><div style={{ writingMode: "vertical-rl", transform: "rotate(180deg)", whiteSpace: "nowrap", maxHeight: 120, overflow: "hidden", textOverflow: "ellipsis" }}>{c.name}</div><div style={{ fontSize: 9.5, color: "var(--ink-soft)" }}>{c.group === "mages" ? "M" : "B"}{c.tier}</div></th>)}
+                {cols.map((c) => <th key={c.key} style={{ padding: "3px 4px", fontWeight: 500, maxWidth: 64, fontSize: 10.5, verticalAlign: "bottom", background: shifted(c) ? "rgba(47,107,138,0.10)" : "transparent" }} title={`${c.label}${shifted(c) ? ` — shifted: life ${roster.shifts[groupOf(c)!].life >= 0 ? "+" : ""}${roster.shifts[groupOf(c)!].life}, basics +${roster.shifts[groupOf(c)!].basics}` : ""}`}><div style={{ writingMode: "vertical-rl", transform: "rotate(180deg)", whiteSpace: "nowrap", maxHeight: 120, overflow: "hidden", textOverflow: "ellipsis" }}>{c.name}</div><div style={{ fontSize: 9.5, color: "var(--ink-soft)" }}>{c.group === "mages" ? "M" : "B"}{c.tier}{shifted(c) ? " ▲" : ""}</div></th>)}
               </tr>
             </thead>
             <tbody>
@@ -407,10 +470,10 @@ function RosterView({ roster, setRoster, decks, byKey, cols, cells, running, onR
                 <tr key={r.key}>
                   <td style={{ padding: "3px 6px", fontWeight: 600, whiteSpace: "nowrap" }}>{r.name}</td>
                   {cols.map((c) => {
-                    const id = rosterId(r.key, c.key); const p = rowPct(r.key, c.key); const isDone = done(r.key, c.key); const cell = cells[id];
+                    const id = rosterId(r.key, c.key); const p = rowPct(r.key, c.key); const isDone = done(r.key, c.key); const cell = cells[id]; const d = roster.differential ? delta(r.key, c.key) : null;
                     return (
-                      <td key={c.key} onClick={() => cell && setPicked(id)} title={cell ? `${r.name} vs ${c.name}: ${cell.games} games · click for detail` : "not run"} style={{ padding: "4px 4px", textAlign: "center", background: shade(p, c.tier, isDone), cursor: cell ? "pointer" : "default", outline: picked === id ? "2px solid var(--brass)" : "none", minWidth: 40 }}>
-                        {p === null ? <span style={{ color: "var(--ink-soft)" }}>—</span> : <span style={{ fontWeight: 600 }}>{p.toFixed(0)}</span>}
+                      <td key={c.key} onClick={() => cell && setPicked(id)} title={cell ? `${r.name} vs ${c.name}: ${cell.games} games · baseline ${p?.toFixed(0)}%${d !== null ? `, shifted ${(p! + d).toFixed(0)}% (Δ ${d >= 0 ? "+" : ""}${d.toFixed(0)})` : ""} · click for detail` : "not run"} style={{ padding: "3px 4px", textAlign: "center", background: shade(p, c.tier, isDone), cursor: cell ? "pointer" : "default", outline: picked === id ? "2px solid var(--brass)" : "none", minWidth: 40, lineHeight: 1.1 }}>
+                        {p === null ? <span style={{ color: "var(--ink-soft)" }}>—</span> : <><div style={{ fontWeight: 600 }}>{p.toFixed(0)}</div>{roster.differential && <div style={{ minHeight: 11 }}>{d === null ? <span style={{ color: "var(--ink-soft)", fontSize: 9.5 }}>{cells[rosterId(r.key, c.key, "shift")] ? "…" : ""}</span> : <Delta d={d} small />}</div>}</>}
                       </td>
                     );
                   })}
@@ -418,15 +481,15 @@ function RosterView({ roster, setRoster, decks, byKey, cols, cells, running, onR
               ))}
               <tr style={{ borderTop: "1.5px solid var(--ink)" }}>
                 <td style={{ padding: "3px 6px", fontStyle: "italic" }}>rows' mean</td>
-                {cols.map((c) => { const xs = rows.map((r) => rowPct(r.key, c.key)).filter((x): x is number => x !== null); return <td key={c.key} style={{ textAlign: "center", padding: "3px 4px", color: "var(--ink-soft)" }}>{xs.length ? mean(xs).toFixed(0) : "—"}</td>; })}
+                {cols.map((c) => { const xs = rows.map((r) => rowPct(r.key, c.key)).filter((x): x is number => x !== null); const ds = rows.map((r) => delta(r.key, c.key)).filter((x): x is number => x !== null); return <td key={c.key} style={{ textAlign: "center", padding: "3px 4px", color: "var(--ink-soft)", lineHeight: 1.1 }}>{xs.length ? mean(xs).toFixed(0) : "—"}{roster.differential && ds.length === rows.length && ds.length > 0 ? <div><Delta d={mean(ds)} small /></div> : null}</td>; })}
               </tr>
             </tbody>
           </table>
-          <div style={{ fontSize: 11, color: "var(--ink-soft)", marginTop: 6 }}>Numbers are the ROW's win rate (%). M/B = mage/beast, the digit its tier. ± at {roster.games} games per cell is about {(100 * ci95(0.5, roster.games)).toFixed(0)} points.</div>
+          <div style={{ fontSize: 11, color: "var(--ink-soft)", marginTop: 6 }}>Numbers are the ROW's win rate (%): the baseline sweep on top{roster.differential ? ", the shifted sweep's Δ beneath (▲ marks a shifted column; Δs beyond the ±" + noise.toFixed(0) + " noise floor are coloured — blue when the row wins more, red when less)" : ""}. M/B = mage/beast, the digit its tier. ± on a single cell at {roster.games} games is about {(100 * ci95(0.5, roster.games)).toFixed(0)} points.</div>
         </div>
 
         <div className="panel" style={{ padding: 10 }}>
-          <div style={{ fontFamily: "var(--serif)", fontSize: 15, marginBottom: 6 }}>Aggregate by tier — each row's mean win rate over the group (bar: 0–100, the tick at 50, the band in green)</div>
+          <div style={{ fontFamily: "var(--serif)", fontSize: 15, marginBottom: 6 }}>Aggregate by tier — each row's mean win rate over the group (bar: baseline in brass, the shifted mean as the dark marker, the band outlined in green, the tick at 50)</div>
           <table style={{ borderCollapse: "collapse", fontSize: 12 }}>
             <thead><tr><th></th>{groups.map((g) => <th key={g.label} style={{ padding: "3px 8px", fontWeight: 500 }}>{g.label}</th>)}</tr></thead>
             <tbody>
@@ -435,13 +498,15 @@ function RosterView({ roster, setRoster, decks, byKey, cols, cells, running, onR
                   <td style={{ padding: "3px 8px", fontWeight: 600, whiteSpace: "nowrap" }}>{r.name}</td>
                   {groups.map((g) => {
                     const a = agg(r.key, g.group, g.tier); const band = g.tier ? roster.bands[g.tier] : undefined;
-                    return <td key={g.label} style={{ padding: "3px 8px" }}>{a.n ? <><div style={{ fontWeight: 600 }}>{a.p.toFixed(0)}% <span className="seed">n={a.n}</span></div><Bar p={a.p} {...(band ? { band } : {})} /></> : <span style={{ color: "var(--ink-soft)" }}>—</span>}</td>;
+                    const sAgg = roster.differential ? agg(r.key, g.group, g.tier, "shift") : { p: 0, n: 0 };
+                    const complete = sAgg.n === a.n && a.n > 0;
+                    return <td key={g.label} style={{ padding: "3px 8px" }}>{a.n ? <><div style={{ fontWeight: 600 }}>{a.p.toFixed(0)}%{complete ? <> → {sAgg.p.toFixed(0)}% <Delta d={sAgg.p - a.p} /></> : null} <span className="seed">n={a.n}</span></div><Bar p={a.p} {...(complete ? { s: sAgg.p } : {})} {...(band ? { band } : {})} /></> : <span style={{ color: "var(--ink-soft)" }}>—</span>}</td>;
                   })}
                 </tr>
               ))}
               <tr style={{ borderTop: "1.5px solid var(--ink)" }}>
                 <td style={{ padding: "3px 8px", fontStyle: "italic" }}>all rows</td>
-                {groups.map((g) => { const xs = rows.map((r) => agg(r.key, g.group, g.tier)).filter((a) => a.n > 0).map((a) => a.p); return <td key={g.label} style={{ padding: "3px 8px", color: "var(--ink-soft)" }}>{xs.length ? `${mean(xs).toFixed(0)}%` : "—"}</td>; })}
+                {groups.map((g) => { const xs = rows.map((r) => agg(r.key, g.group, g.tier)).filter((a) => a.n > 0).map((a) => a.p); const ss = roster.differential ? rows.map((r) => agg(r.key, g.group, g.tier, "shift")).filter((a) => a.n > 0).map((a) => a.p) : []; return <td key={g.label} style={{ padding: "3px 8px", color: "var(--ink-soft)" }}>{xs.length ? `${mean(xs).toFixed(0)}%` : "—"}{ss.length === xs.length && ss.length > 0 ? <> → {mean(ss).toFixed(0)}% <Delta d={mean(ss) - mean(xs)} /></> : null}</td>; })}
               </tr>
             </tbody>
           </table>
@@ -449,10 +514,11 @@ function RosterView({ roster, setRoster, decks, byKey, cols, cells, running, onR
 
         {pickedCell && (
           <div className="panel" style={{ padding: 10, minWidth: 280 }}>
-            <div style={{ fontFamily: "var(--serif)", fontSize: 15, marginBottom: 6 }}>{pickedNames[0]} vs {pickedNames[1]}</div>
+            <div style={{ fontFamily: "var(--serif)", fontSize: 15, marginBottom: 6 }}>{pickedNames[0]} vs {pickedNames[1]} <span className="seed">baseline</span></div>
             <table style={{ fontSize: 12, borderCollapse: "collapse" }}>
               <tbody>
                 <tr><td style={{ padding: "2px 8px 2px 0" }}>games</td><td>{pickedCell.games}{pickedCell.draws ? ` (${pickedCell.draws} draws)` : ""}</td></tr>
+                {pickedShift && <tr><td style={{ padding: "2px 8px 2px 0" }}>shifted sweep</td><td>{pct(pickedShift.aWins, pickedShift.games).toFixed(0)}% for {pickedNames[0]} over {pickedShift.games} games ({pickedShift.bEntrance.length ? `${pickedNames[1]} with ${pickedShift.bEntrance.length} in play` : "no basics"}; Δ <Delta d={pct(pickedShift.aWins, pickedShift.games) - pct(pickedCell.aWins, pickedCell.games)} />)</td></tr>}
                 <tr><td style={{ padding: "2px 8px 2px 0" }}>{pickedNames[0]} wins</td><td>{pct(pickedCell.aWins, pickedCell.games).toFixed(0)}% ±{(100 * ci95(pct(pickedCell.aWins, pickedCell.games) / 100, pickedCell.games)).toFixed(0)} — on the play {pct(pickedCell.aWinsBySeat[0], pickedCell.gamesBySeat[0]).toFixed(0)}%, on the draw {pct(pickedCell.aWinsBySeat[1], pickedCell.gamesBySeat[1]).toFixed(0)}%{pickedCell.aDecked ? ` · ${pickedCell.aDecked} by library` : ""}</td></tr>
                 <tr><td style={{ padding: "2px 8px 2px 0" }}>{pickedNames[1]} wins</td><td>{pct(pickedCell.bWins, pickedCell.games).toFixed(0)}%{pickedCell.bDecked ? ` · ${pickedCell.bDecked} by library` : ""}</td></tr>
                 <tr><td style={{ padding: "2px 8px 2px 0" }}>winner's life left</td><td>{mean(pickedCell.aMargin).toFixed(1)} · {mean(pickedCell.bMargin).toFixed(1)}</td></tr>
