@@ -22,6 +22,7 @@ Only where the default would pick something we don't want, or where a card has m
 | Restoration Angel | avr | S17: default resolved to the PAVR prerelease promo (Wesley Burt alternate art); Avacyn Restored #32, Johannes Voss, is the original (Phyrexian Rager precedent) |
 | Expansion 1 (S17), everything else | default | Air Elemental LEA Thomas, Hypnotic Specter LEA Shuler, Dark Ritual LEA Everingham, Disenchant LEA Weber, Goblin Grenade FEM 56a Spencer, Goblin Matron P02 Gelon, Youthful Valkyrie KHM #382 (Theme Booster original), Little Bear HOB (2026 set — its original); UB printings fine per ADR-076 (Airship Crash FIN) |
 | Abrade | brc, collector 111 | S22 brief: the Brothers War Commander printing per Chris (Evolving Wilds BRC precedent) |
+| Angel of the Ruins | brc, collector 68 | S36 (Chris): the Brothers' War Commander printing — the retro (1997) frame is Chris's default aesthetic pending specific choices (the ABU duals); the def's scryfallId follows the printing |
 | Everything else | default | |
 
 ## Rendering note

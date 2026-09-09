@@ -360,6 +360,66 @@
         }
       }
     },
+    "card-arcane-collector-r2-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:e93b720a15c6dfc23a214616b699a1c7dd0ea179281a64697c03276531836bd1",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:e93b720a15c6dfc23a214616b699a1c7dd0ea179281a64697c03276531836bd1",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-arcane-collector-r2-1/canonical.png",
+          "rendered_at": "2026-09-09T19:59:07+00:00",
+          "thumb": "assets/thumbs/card-arcane-collector-r2-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-arcane-collector-r2-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:e59867259106894e40bdfa60675dc904f7fe37f9e80ebc605fbefc84a36a6efa",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:e59867259106894e40bdfa60675dc904f7fe37f9e80ebc605fbefc84a36a6efa",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-arcane-collector-r2-2/canonical.png",
+          "rendered_at": "2026-09-09T19:59:15+00:00",
+          "thumb": "assets/thumbs/card-arcane-collector-r2-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-arcane-collector-r2-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:de0d07d9acb224632cfd56d7c4fc2125a45f1bae0bb4a2a44b81b28778c86a95",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:de0d07d9acb224632cfd56d7c4fc2125a45f1bae0bb4a2a44b81b28778c86a95",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-arcane-collector-r2-3/canonical.png",
+          "rendered_at": "2026-09-09T19:59:25+00:00",
+          "thumb": "assets/thumbs/card-arcane-collector-r2-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-arcane-collector-r2-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:509f19879753a30f4469fdc5c8513325c0423d3facbbd04f4201ee7cd77bd30e",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:509f19879753a30f4469fdc5c8513325c0423d3facbbd04f4201ee7cd77bd30e",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-arcane-collector-r2-4/canonical.png",
+          "rendered_at": "2026-09-09T19:59:34+00:00",
+          "thumb": "assets/thumbs/card-arcane-collector-r2-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "card-back": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:e2c612699292049237803fe590502ff9567d153df70c09025a785dca39d3d027",
