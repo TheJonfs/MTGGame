@@ -6,6 +6,7 @@
  * `pnpm reference` writes docs/reference/*.md; a sync test pins the files to the renderers (the
  * knobs.md precedent, principle 11).
  */
+import { resolveMatchup } from "./matchup.js";
 import type { CardDef } from "@shandalar/cards";
 import { manaValue, parseManaCost } from "@shandalar/cards";
 import { DECKS, DECK_ARCHETYPES, type DeckKey } from "@shandalar/sim/decks";
@@ -93,7 +94,8 @@ export function renderEnemiesReference(catalog: Catalog, pool: Map<string, CardD
 
 | Class | Starting life | Deck | AI profile |
 |---|---|---|---|
-| Roaming opponent (overworld; also the minion floors of every dungeon) | its \`worldLife\` (the catalog row); a LAIR resident fights at +\`lairResidentLifeBonus\` = ${tri("lairResidentLifeBonus")} | the catalog's deck ref (a slice deck, a beast deck, or a starter) | the row's difficulty |
+| Roaming MAGE (overworld; also the minion floors of every dungeon) | S34 (ADR-117, the matchup resolver): \`mageTierLife\` by tier = ${tri("mageTierLife")}, with \`mageTierEntrance\` basics of its colours (pip order) on its battlefield before turn one = ${tri("mageTierEntrance")}; + a row's \`worldLifeOffset\`; a LAIR resident fights at +\`lairResidentLifeBonus\` = ${tri("lairResidentLifeBonus")} | the catalog's deck ref | the row's difficulty |
+| Roaming BEAST | its \`worldLife\` (the catalog row) + \`beastTierLifeDelta\` by tier = ${tri("beastTierLifeDelta")} + a row's \`worldLifeOffset\` (the Serra Angel −4); no entrance; a LAIR resident +\`lairResidentLifeBonus\` | a beast deck | the row's difficulty |
 | Mox-court guardian (the five Mox dungeons, civilized ring) | the dungeon's \`guardian.life\` + the empowerment tiers reached by steps walked inside (\`dungeonEmpowermentTiers\` = ${JSON.stringify(std.dungeonEmpowermentTiers)}) | COURT_DECKS by key | master |
 | Power-dungeon guardian (the five approach-ring dungeons) | the dungeon's \`guardian.life\` + the same empowerment tiers | GUARDIAN_DECKS by key | master |
 | Stronghold lord (the five seats, wild ring) | \`baseLife\` + growth − the spoke hunt's reduction: growth = min(\`lordGrowthCap\` ${tri("lordGrowthCap")}, floor(steps / \`lordGrowthSteps\` ${tri("lordGrowthSteps")}) × \`lordGrowthLife\` ${tri("lordGrowthLife")}); reduction = floor(spokeMinionPoints / \`spokePointsPerLife\` ${tri("spokePointsPerLife")}); never below \`lordLifeFloor\` ${tri("lordLifeFloor")}; + the stronghold's empowerment tiers (\`strongholdEmpowermentTiers\` = ${JSON.stringify(std.strongholdEmpowermentTiers)}) | LORD_DECKS by key | master |
@@ -110,14 +112,16 @@ Player-side constants for the same reads: \`startingWorldLife\` ${tri("startingW
 
 Mages roam anywhere; beasts are spoke-bound (their colour's ring). Tier 1 rolls in civilized rings, 2 in the approach, 3 in the wilds (the S18 spawn tables). The same templates staff the dungeons' minion floors by spoke.
 
-| Opponent | Kind | Tier | Spoke | Life | AI profile | Deck | Cards / lands / avg MV / colours | Notes |
-|---|---|---|---|---|---|---|---|---|`);
+| Opponent | Kind | Tier | Spoke | Life easy / **standard** / hard | Entrance (basics) easy / **standard** / hard | AI profile | Deck | Cards / lands / avg MV / colours | Notes |
+|---|---|---|---|---|---|---|---|---|---|`);
   const deckUsers = new Map<string, string[]>();
   for (const o of ops) {
     const d = enemyDeck(catalog, o.deck);
     const s = deckLines(d.decklist, pool);
-    const notes = [o.epithet ? o.epithet : "", o.buyable === false ? "not buyable" : "", o.knobs ? `knobs ${JSON.stringify(o.knobs)}` : ""].filter(Boolean).join("; ");
-    out.push(`| ${o.name} | ${o.kind ?? "mage"} | ${o.tier} | ${o.spoke ?? "—"} | ${o.worldLife} | ${o.difficulty} | ${o.deck} (${d.archetype}) | ${s.total} / ${s.lands} / ${s.avgMv} / ${s.colours} | ${notes} |`);
+    const notes = [o.epithet ? o.epithet : "", o.buyable === false ? "not buyable" : "", o.knobs ? `knobs ${JSON.stringify(o.knobs)}` : "", o.worldLifeOffset ? `worldLifeOffset ${o.worldLifeOffset}` : ""].filter(Boolean).join("; ");
+    // S34: the resolver's cell at each mode (the same call the world makes).
+    const m = { easy: resolveMatchup(o, easy), standard: resolveMatchup(o, std), hard: resolveMatchup(o, hard) };
+    out.push(`| ${o.name} | ${o.kind ?? "mage"} | ${o.tier} | ${o.spoke ?? "—"} | ${m.easy.life} / **${m.standard.life}** / ${m.hard.life} | ${m.easy.entrance.length} / **${m.standard.entrance.length}** / ${m.hard.entrance.length}${m.standard.entrance.length ? ` (${m.standard.entrance.join(", ")})` : ""} | ${o.difficulty} | ${o.deck} (${d.archetype}) | ${s.total} / ${s.lands} / ${s.avgMv} / ${s.colours} | ${notes} |`);
     deckUsers.set(o.deck, [...(deckUsers.get(o.deck) ?? []), o.name]);
   }
   out.push(`\n### The roaming decklists (one entry per deck; who plays it)\n`);

@@ -53,8 +53,12 @@ export interface OpponentTemplate {
   difficulty: Difficulty;
   /** Portrait subject slug (docs/art/subjects/<slug>.md → /portraits/<slug>.png). */
   portrait: string;
-  /** Enemy world life = their duel starting life (manifest §2a: per-opponent data). */
+  /** Enemy world life = their duel starting life (manifest §2a: per-opponent data). S34: for MAGES this is
+   * documentation of the Standard cell of `mageTierLife` (regenerated, sync-tested); the resolver reads the
+   * table. For BEASTS it is the base the tier delta adds to. */
   worldLife: number;
+  /** S34 (ADR-117): a per-row offset applied after the tier table/delta (the Serra Angel −4: past the band at +0). */
+  worldLifeOffset?: number;
   /** S29 (Chris): the mage's epithet ("the Almoner"), shown beside the name on the encounter line. */
   epithet?: string;
   /** Colour identity string for UI washes, e.g. "R", "WU". */
@@ -245,6 +249,7 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
     if (![1, 2, 3].includes(op.tier)) errors.push(`opponent ${op.id}: bad tier ${op.tier}`);
     if (!["apprentice", "journeyman", "master"].includes(op.difficulty)) errors.push(`opponent ${op.id}: bad difficulty ${op.difficulty}`);
     if (!Number.isInteger(op.worldLife) || op.worldLife < 1) errors.push(`opponent ${op.id}: bad worldLife`);
+    if (op.worldLifeOffset !== undefined && !Number.isInteger(op.worldLifeOffset)) errors.push(`opponent ${op.id}: bad worldLifeOffset (S34)`);
     if (op.kind && !["mage", "beast"].includes(op.kind)) errors.push(`opponent ${op.id}: bad kind ${op.kind}`);
     if (op.epithet !== undefined && (typeof op.epithet !== "string" || !op.epithet.trim())) errors.push(`opponent ${op.id}: epithet must be a non-empty string (S29)`);
     if (op.knobs) {

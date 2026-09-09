@@ -1,3 +1,4 @@
+import { entranceModifiers, resolveMatchup } from "./matchup.js";
 import type { RegionTier } from "./knobs.js";
 /**
  * S21 Part 2 — sieges (overworld manifest §5; the session's milestone).
@@ -233,14 +234,16 @@ export function siegeDuelSpec(
   if (!legal.ok) throw new Error(`cannot fight: ${legal.reason}`);
   const tmpl = catalog.opponents.find((o) => o.id === eng.remaining[0]);
   if (!tmpl) throw new Error(`catalog has no opponent ${eng.remaining[0]}`);
-  const modifiers: Modifier[] = [{ type: "startingLife", player: 1, value: tmpl.worldLife }, ...manalinkModifiers(world)];
+  // S34: the resolver's life and entrance at this world's mode (the party member is a roaming template).
+  const matchup = resolveMatchup(tmpl, knobs, null);
+  const modifiers: Modifier[] = [{ type: "startingLife", player: 1, value: matchup.life }, ...entranceModifiers(matchup, 1), ...manalinkModifiers(world)];
   const spec: MatchSpec = {
     seed: rng.int(1_000_000_000),
     players: [
       { name: world.player.name, decklist: activeDeck(world).map((e) => ({ ...e })), agent: "human" },
-      { name: tmpl.name, decklist: enemyDeck(catalog, tmpl.deck).decklist, agent: `heuristic:${tmpl.difficulty}` },
+      { name: tmpl.name, decklist: enemyDeck(catalog, tmpl.deck).decklist, agent: `heuristic:${matchup.profile}` },
     ],
-    rules: { startingLife: eng.life, handSize: 7, mulligan: "london", maxTurns: 100, ante: knobs.anteCount, startingPlayer: rng.chance(0.5) ? 0 : 1 }, // S22 r2: the coin flip
+    rules: { startingLife: eng.life, handSize: 7, mulligan: "london", maxTurns: 100, ante: matchup.ante, startingPlayer: rng.chance(0.5) ? 0 : 1 }, // S22 r2: the coin flip
     modifiers,
   };
   return { spec, tmpl, remainingAfter: eng.remaining.length - 1 };

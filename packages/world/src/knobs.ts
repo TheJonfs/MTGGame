@@ -102,6 +102,22 @@ export const KNOBS = {
     unit: "cumulative tiers by interior steps",
     description: "The guardian's empowerment clock (dungeon-design §3, Normal column; difficulty bundles override whole-value per principle 5 — easy shifts thresholds up, hard doubles life). Steps are the ONLY input; tiers are visible in the dungeon UI with the next threshold named. S20 playtest r2 (Chris): 60/120/180 → 30/60/90 — even at the doubled 24×18 grid an optimal full-loot tour (~71 steps) barely crossed the old tier 1; pending future shifts.",
   }),
+  // ---- S34 (ADR-115/116/117): the tier tables the matchup resolver reads (matchup.ts) ----
+  mageTierLife: knob<Record<1 | 2 | 3, number>>({
+    default: { 1: 8, 2: 12, 3: 16 },
+    unit: "starting life by mage tier",
+    description: "S34 (ADR-117): a roaming mage's starting life by tier — the resolver's table (the catalog's mage rows' worldLife is documentation of the Standard cell, regenerated). Standard 8 / 12 / 16 from the S33 matrix (tier 3's 55–65 band vs a mid-road reference sits at 16 life + 2 basics) and Chris's roster runs; easy 8 / 12 / 14, hard 8 / 14 / 20. Tier 1 stays 8 at every mode (the teachers; ADR-103). ⚠ provisional until ratified.",
+  }),
+  mageTierEntrance: knob<Record<1 | 2 | 3, number>>({
+    default: { 1: 0, 2: 1, 3: 2 },
+    unit: "basics in play before turn one, by mage tier",
+    description: "S34 (ADR-117): the mage ENTRANCE — basics of the mage's colours (pip order) on its battlefield before turn one, the player's manalink shape (permanentOnBattlefield; the Heart's roots path). The strong lever (S33: one basic ≈ twelve points, two ≈ twenty-two, where eight life ≈ eleven). Standard 0 / 1 / 2; easy 0 / 0 / 1; hard 0 / 2 / 2. ⚠ provisional until ratified.",
+  }),
+  beastTierLifeDelta: knob<Record<1 | 2 | 3, number>>({
+    default: { 1: 0, 2: 2, 3: 4 },
+    unit: "life added to a beast's catalog worldLife, by tier",
+    description: "S34 (ADR-117): beasts keep their catalog worldLife as the base and gain this by tier (no entrance — beasts have not walked the roads). Standard +0 / +2 / +4 (the S33 beast table: aggregate 65% for a mid-road reference at +4); easy +0 / +0 / +2; hard +0 / +4 / +8. A per-row worldLifeOffset on the catalog row applies after (the Serra −4). ⚠ provisional until ratified.",
+  }),
   // ---- S27 (ADR-093): the Heart and the chronicle ----
   heartLife: knob<number>({
     default: 40,
@@ -561,6 +577,9 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
     siegeIntervalSteps: { civilized: 1500, approach: 1125, wild: 750 }, // S26 r3: +33% with the standard shift (ratio held)
     siegeMaxActive: 1, // S25 r3 (Chris): easy = one siege at a time
     heartLife: 35, // S29 Part 0 (Chris: 40 standard, from the S28 sim + his 5–1 at 40)
+    mageTierLife: { 1: 8, 2: 12, 3: 14 }, // S34 (ADR-117): one cell easier on the entrance axis first, life second
+    mageTierEntrance: { 1: 0, 2: 0, 3: 1 },
+    beastTierLifeDelta: { 1: 0, 2: 0, 3: 2 },
     siegePartySizeWeights: { civilized: [1], approach: [0.6, 0.4], wild: [0.45, 0.4, 0.15] }, // S26 r3: lighter parties
     lordGrowthSteps: 200, // S25 r4: 0.5 life per 100 steps
     siegeWarningSteps: 90,
@@ -582,6 +601,9 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
     siegeIntervalSteps: { civilized: 750, approach: 560, wild: 375 }, // S26 r3: +33% (ratio held)
     siegeMaxActive: 3, // S25 r3 (Chris): hard = three skies can burn
     heartLife: 45, // S27 (ADR-093)
+    mageTierLife: { 1: 8, 2: 14, 3: 20 }, // S34 (ADR-117): one cell harder
+    mageTierEntrance: { 1: 0, 2: 2, 3: 2 },
+    beastTierLifeDelta: { 1: 0, 2: 4, 3: 8 },
     siegePartySizeWeights: { civilized: [0.6, 0.4], approach: [0.25, 0.5, 0.25], wild: [0.15, 0.35, 0.5] }, // S26 r3: heavier parties (the cap still rules)
     lordGrowthLife: 2, // S25 r4: 2 life per 100 steps
     siegeWarningSteps: 40,

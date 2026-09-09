@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { CardDef } from "@shandalar/cards";
 import { cardColors } from "@shandalar/cards";
-import { activeDeck, buyOffPrice, deckSize, deckStats, dungeonAsWorldMap, isBasic, isExplored, lordPronouns, maxWorldLife, sellPrice, spares, BASIC_LANDS, type DifficultyName, type Point, type ShopItem, type StarterId } from "@shandalar/world";
+import { resolveMatchup, activeDeck, buyOffPrice, deckSize, deckStats, dungeonAsWorldMap, isBasic, isExplored, lordPronouns, maxWorldLife, sellPrice, spares, BASIC_LANDS, type DifficultyName, type Point, type ShopItem, type StarterId } from "@shandalar/world";
 import { loadOracle, loadPool, loadWorldCatalog, type OracleEntry, type SavedGame } from "../engine-bridge";
 import { CardFrame } from "../components/CardFrame";
 import { PlayMatch, loadStops } from "../play/PlayMatch";
@@ -315,6 +315,9 @@ function ParleyPanel({ c }: { c: WorldController }) {
           <img className="parley-portrait" src={`/portraits/${tmpl.portrait}.png`} alt="" />
           <div>
             <h3 style={{ margin: 0, fontFamily: "var(--serif)" }}>{tmpl.name}{tmpl.epithet ? <span style={{ fontWeight: 400, color: "var(--ink-soft)" }}>, {tmpl.epithet}</span> : null}</h3>
+            {/* S34 (Part 5): the entrance clause — the resolver's cell for this opponent at this world's mode;
+                the telegraph names nothing (as the Heart's roots did not on the rail). Planner's lines. */}
+            {(() => { const n = resolveMatchup(tmpl, knobs).entrance.length; return n === 1 ? <p className="parley-voice" style={{ fontStyle: "italic" }}>The ground is already theirs; a land lies ready before the first word.</p> : n >= 2 ? <p className="parley-voice" style={{ fontStyle: "italic" }}>Two lands lie ready. This one has walked the roads before you.</p> : null; })()}
             <div className="parley-sub">
               <span className={`tier-badge t${tmpl.tier}`}>{TIER_BADGE[tmpl.tier]}</span>
               <span className="colour-id">{tmpl.colors.split("").map((ch) => <i key={ch} className={`colour-pip c-${ch}`} title={ch} />)}</span>

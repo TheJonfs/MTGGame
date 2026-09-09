@@ -1,513 +1,514 @@
 {
- "catalogVersion": "v1",
- "opponents": [
-  {
-   "id": "a1",
-   "name": "Brann the Scorched",
-   "deck": "mage:brann",
-   "tier": 1,
-   "difficulty": "apprentice",
-   "portrait": "portrait-mage-brann",
-   "worldLife": 8,
-   "colors": "R",
-   "epithet": "the Sparkwright"
-  },
-  {
-   "id": "a2",
-   "name": "Kessa Emberhand",
-   "deck": "mage:kessa",
-   "tier": 2,
-   "difficulty": "journeyman",
-   "portrait": "portrait-mage-kessa",
-   "worldLife": 10,
-   "colors": "UR",
-   "epithet": "the Stormcaller"
-  },
-  {
-   "id": "a3",
-   "name": "Varro Flamebrand",
-   "deck": "mage:varro",
-   "tier": 3,
-   "difficulty": "master",
-   "portrait": "portrait-mage-varro",
-   "worldLife": 12,
-   "colors": "UR",
-   "knobs": {
-    "anteCount": 2
-   },
-   "epithet": "the Ashwright"
-  },
-  {
-   "id": "b1",
-   "name": "Sister Oriel",
-   "deck": "mage:oriel",
-   "tier": 1,
-   "difficulty": "apprentice",
-   "portrait": "portrait-mage-oriel",
-   "worldLife": 8,
-   "colors": "W",
-   "epithet": "the Almoner"
-  },
-  {
-   "id": "b2",
-   "name": "Adept Maelin",
-   "deck": "mage:maelin",
-   "tier": 2,
-   "difficulty": "journeyman",
-   "portrait": "portrait-mage-maelin",
-   "worldLife": 10,
-   "colors": "BR",
-   "epithet": "the Pyre-Warden"
-  },
-  {
-   "id": "b3",
-   "name": "High Warden Sorrel",
-   "deck": "mage:sorrel",
-   "tier": 3,
-   "difficulty": "master",
-   "portrait": "portrait-mage-sorrel",
-   "worldLife": 12,
-   "colors": "BR",
-   "knobs": {
-    "anteCount": 2
-   },
-   "epithet": "the Inquisitor"
-  },
-  {
-   "id": "c1",
-   "name": "Old Hask",
-   "deck": "mage:hask",
-   "tier": 1,
-   "difficulty": "apprentice",
-   "portrait": "portrait-mage-hask",
-   "worldLife": 8,
-   "colors": "G",
-   "epithet": "the Wardener"
-  },
-  {
-   "id": "c2",
-   "name": "Brennor of the Glade",
-   "deck": "mage:brennor",
-   "tier": 2,
-   "difficulty": "journeyman",
-   "portrait": "portrait-mage-brennor",
-   "worldLife": 10,
-   "colors": "WG",
-   "epithet": "the Sanctuary"
-  },
-  {
-   "id": "c3",
-   "name": "Thornmother Ysolde",
-   "deck": "mage:ysolde",
-   "tier": 3,
-   "difficulty": "master",
-   "portrait": "portrait-mage-ysolde",
-   "worldLife": 12,
-   "colors": "WG",
-   "knobs": {
-    "anteCount": 2
-   },
-   "epithet": "the Thornmother"
-  },
-  {
-   "id": "d1",
-   "name": "Pale Edric",
-   "deck": "mage:edric",
-   "tier": 1,
-   "difficulty": "apprentice",
-   "portrait": "portrait-mage-edric",
-   "worldLife": 8,
-   "colors": "B",
-   "epithet": "the Sexton"
-  },
-  {
-   "id": "d2",
-   "name": "Mistress Vael",
-   "deck": "mage:vael",
-   "tier": 2,
-   "difficulty": "journeyman",
-   "portrait": "portrait-mage-vael",
-   "worldLife": 10,
-   "colors": "WB",
-   "epithet": "the Tithe-Reeve"
-  },
-  {
-   "id": "d3",
-   "name": "Lord Corvane",
-   "deck": "mage:corvane",
-   "tier": 3,
-   "difficulty": "master",
-   "portrait": "portrait-mage-corvane",
-   "worldLife": 12,
-   "colors": "WB",
-   "knobs": {
-    "anteCount": 2
-   },
-   "epithet": "the Sepulchre"
-  },
-  {
-   "id": "e1",
-   "name": "Tessaly Reed",
-   "deck": "mage:tessaly",
-   "tier": 1,
-   "difficulty": "apprentice",
-   "portrait": "portrait-mage-tessaly",
-   "worldLife": 8,
-   "colors": "U",
-   "epithet": "the Tidewright"
-  },
-  {
-   "id": "e2",
-   "name": "Pell of the Shallows",
-   "deck": "mage:pell",
-   "tier": 2,
-   "difficulty": "journeyman",
-   "portrait": "portrait-mage-pell",
-   "worldLife": 10,
-   "colors": "UG",
-   "epithet": "the Tidesower"
-  },
-  {
-   "id": "e3",
-   "name": "Magister Quill",
-   "deck": "mage:quill",
-   "tier": 3,
-   "difficulty": "master",
-   "portrait": "portrait-mage-quill",
-   "worldLife": 12,
-   "colors": "UG",
-   "knobs": {
-    "anteCount": 2
-   },
-   "epithet": "the Drowned Grove"
-  },
-  {
-   "id": "beast_grizzly",
-   "name": "A Grizzly Bear",
-   "deck": "beast:grizzly",
-   "tier": 1,
-   "difficulty": "apprentice",
-   "portrait": "beast-grizzly-bear",
-   "portraitChip": "beast-grizzly-bear-chip",
-   "worldLife": 8,
-   "colors": "G",
-   "kind": "beast",
-   "spoke": "G",
-   "buyable": true,
-   "parley": {
-    "verb": "Toss it your rations",
-    "line": "A great brown bear up on its hind legs. It wants the road, not you — and it can be fed off it."
-   }
-  },
-  {
-   "id": "beast_recluse",
-   "name": "The Deadly Recluse",
-   "deck": "beast:recluse",
-   "tier": 1,
-   "difficulty": "apprentice",
-   "portrait": "beast-deadly-recluse",
-   "portraitChip": "beast-deadly-recluse-chip",
-   "worldLife": 8,
-   "colors": "G",
-   "kind": "beast",
-   "spoke": "G",
-   "buyable": false,
-   "parley": {
-    "line": "A deadly recluse broad as a cartwheel, hanging in the path on a single thread.",
-    "refusal": "A spider does not bargain. It waits."
-   }
-  },
-  {
-   "id": "beast_manowar",
-   "name": "A Bloom of Man-o'-War",
-   "deck": "beast:manowar",
-   "tier": 1,
-   "difficulty": "apprentice",
-   "portrait": "beast-man-o-war",
-   "portraitChip": "beast-man-o-war-chip",
-   "worldLife": 8,
-   "colors": "U",
-   "kind": "beast",
-   "spoke": "U",
-   "buyable": false,
-   "parley": {
-    "line": "A bloom of man-o'-war drifts across the shallows, trailing stingers longer than a mast.",
-    "refusal": "The bloom has no ears for coin. It drifts where it drifts."
-   }
-  },
-  {
-   "id": "beast_tactician_1",
-   "name": "A Cunning Tactician",
-   "deck": "beast:tactician",
-   "tier": 1,
-   "difficulty": "apprentice",
-   "portrait": "beast-cunning-tactician",
-   "portraitChip": "beast-cunning-tactician-chip",
-   "worldLife": 8,
-   "colors": "W",
-   "kind": "beast",
-   "spoke": "W",
-   "buyable": true,
-   "parley": {
-    "verb": "Buy off",
-    "line": "A field captain with an eye for the ground. \"You'll pay the toll, traveler, or you'll pay in blood.\""
-   }
-  },
-  {
-   "id": "beast_tactician_2",
-   "name": "The Cunning Tactician",
-   "deck": "beast:tactician",
-   "tier": 2,
-   "difficulty": "journeyman",
-   "portrait": "beast-cunning-tactician",
-   "portraitChip": "beast-cunning-tactician-chip",
-   "worldLife": 10,
-   "colors": "W",
-   "kind": "beast",
-   "spoke": "W",
-   "buyable": true,
-   "parley": {
-    "verb": "Buy off",
-    "line": "The captain again, older and no kinder. \"I've beaten better than you on worse ground.\""
-   }
-  },
-  {
-   "id": "beast_warband",
-   "name": "The Boggart Warband",
-   "deck": "beast:warband",
-   "tier": 2,
-   "difficulty": "journeyman",
-   "portrait": "beast-boggart-warband",
-   "portraitChip": "beast-boggart-warband-chip",
-   "worldLife": 8,
-   "colors": "R",
-   "kind": "beast",
-   "spoke": "R",
-   "buyable": true,
-   "parley": {
-    "verb": "Bribe",
-    "line": "Boggarts, a dozen at least, pushing and crowing. They would sooner take your gold than your head. Probably."
-   }
-  },
-  {
-   "id": "beast_nighthawk",
-   "name": "A Vampire Nighthawk",
-   "deck": "beast:nighthawk",
-   "tier": 2,
-   "difficulty": "journeyman",
-   "portrait": "beast-vampire-nighthawk",
-   "portraitChip": "beast-vampire-nighthawk-chip",
-   "worldLife": 8,
-   "colors": "B",
-   "kind": "beast",
-   "spoke": "B",
-   "buyable": true,
-   "parley": {
-    "verb": "Offer tribute",
-    "line": "A vampire nighthawk, wings folded, watching your throat. The fen roads know it by the ones it leaves — walk wide, or walk in numbers. The purse on this one runs deep, and mostly unclaimed."
-   },
-   "knobs": {
-    "goldRewardByTier": {
-     "1": 10,
-     "2": 50,
-     "3": 60
+  "catalogVersion": "v1",
+  "opponents": [
+    {
+      "id": "a1",
+      "name": "Brann the Scorched",
+      "deck": "mage:brann",
+      "tier": 1,
+      "difficulty": "apprentice",
+      "portrait": "portrait-mage-brann",
+      "worldLife": 8,
+      "colors": "R",
+      "epithet": "the Sparkwright"
+    },
+    {
+      "id": "a2",
+      "name": "Kessa Emberhand",
+      "deck": "mage:kessa",
+      "tier": 2,
+      "difficulty": "journeyman",
+      "portrait": "portrait-mage-kessa",
+      "worldLife": 12,
+      "colors": "UR",
+      "epithet": "the Stormcaller"
+    },
+    {
+      "id": "a3",
+      "name": "Varro Flamebrand",
+      "deck": "mage:varro",
+      "tier": 3,
+      "difficulty": "master",
+      "portrait": "portrait-mage-varro",
+      "worldLife": 16,
+      "colors": "UR",
+      "knobs": {
+        "anteCount": 2
+      },
+      "epithet": "the Ashwright"
+    },
+    {
+      "id": "b1",
+      "name": "Sister Oriel",
+      "deck": "mage:oriel",
+      "tier": 1,
+      "difficulty": "apprentice",
+      "portrait": "portrait-mage-oriel",
+      "worldLife": 8,
+      "colors": "W",
+      "epithet": "the Almoner"
+    },
+    {
+      "id": "b2",
+      "name": "Adept Maelin",
+      "deck": "mage:maelin",
+      "tier": 2,
+      "difficulty": "journeyman",
+      "portrait": "portrait-mage-maelin",
+      "worldLife": 12,
+      "colors": "BR",
+      "epithet": "the Pyre-Warden"
+    },
+    {
+      "id": "b3",
+      "name": "High Warden Sorrel",
+      "deck": "mage:sorrel",
+      "tier": 3,
+      "difficulty": "master",
+      "portrait": "portrait-mage-sorrel",
+      "worldLife": 16,
+      "colors": "BR",
+      "knobs": {
+        "anteCount": 2
+      },
+      "epithet": "the Inquisitor"
+    },
+    {
+      "id": "c1",
+      "name": "Old Hask",
+      "deck": "mage:hask",
+      "tier": 1,
+      "difficulty": "apprentice",
+      "portrait": "portrait-mage-hask",
+      "worldLife": 8,
+      "colors": "G",
+      "epithet": "the Wardener"
+    },
+    {
+      "id": "c2",
+      "name": "Brennor of the Glade",
+      "deck": "mage:brennor",
+      "tier": 2,
+      "difficulty": "journeyman",
+      "portrait": "portrait-mage-brennor",
+      "worldLife": 12,
+      "colors": "WG",
+      "epithet": "the Sanctuary"
+    },
+    {
+      "id": "c3",
+      "name": "Thornmother Ysolde",
+      "deck": "mage:ysolde",
+      "tier": 3,
+      "difficulty": "master",
+      "portrait": "portrait-mage-ysolde",
+      "worldLife": 16,
+      "colors": "WG",
+      "knobs": {
+        "anteCount": 2
+      },
+      "epithet": "the Thornmother"
+    },
+    {
+      "id": "d1",
+      "name": "Pale Edric",
+      "deck": "mage:edric",
+      "tier": 1,
+      "difficulty": "apprentice",
+      "portrait": "portrait-mage-edric",
+      "worldLife": 8,
+      "colors": "B",
+      "epithet": "the Sexton"
+    },
+    {
+      "id": "d2",
+      "name": "Mistress Vael",
+      "deck": "mage:vael",
+      "tier": 2,
+      "difficulty": "journeyman",
+      "portrait": "portrait-mage-vael",
+      "worldLife": 12,
+      "colors": "WB",
+      "epithet": "the Tithe-Reeve"
+    },
+    {
+      "id": "d3",
+      "name": "Lord Corvane",
+      "deck": "mage:corvane",
+      "tier": 3,
+      "difficulty": "master",
+      "portrait": "portrait-mage-corvane",
+      "worldLife": 16,
+      "colors": "WB",
+      "knobs": {
+        "anteCount": 2
+      },
+      "epithet": "the Sepulchre"
+    },
+    {
+      "id": "e1",
+      "name": "Tessaly Reed",
+      "deck": "mage:tessaly",
+      "tier": 1,
+      "difficulty": "apprentice",
+      "portrait": "portrait-mage-tessaly",
+      "worldLife": 8,
+      "colors": "U",
+      "epithet": "the Tidewright"
+    },
+    {
+      "id": "e2",
+      "name": "Pell of the Shallows",
+      "deck": "mage:pell",
+      "tier": 2,
+      "difficulty": "journeyman",
+      "portrait": "portrait-mage-pell",
+      "worldLife": 12,
+      "colors": "UG",
+      "epithet": "the Tidesower"
+    },
+    {
+      "id": "e3",
+      "name": "Magister Quill",
+      "deck": "mage:quill",
+      "tier": 3,
+      "difficulty": "master",
+      "portrait": "portrait-mage-quill",
+      "worldLife": 16,
+      "colors": "UG",
+      "knobs": {
+        "anteCount": 2
+      },
+      "epithet": "the Drowned Grove"
+    },
+    {
+      "id": "beast_grizzly",
+      "name": "A Grizzly Bear",
+      "deck": "beast:grizzly",
+      "tier": 1,
+      "difficulty": "apprentice",
+      "portrait": "beast-grizzly-bear",
+      "portraitChip": "beast-grizzly-bear-chip",
+      "worldLife": 8,
+      "colors": "G",
+      "kind": "beast",
+      "spoke": "G",
+      "buyable": true,
+      "parley": {
+        "verb": "Toss it your rations",
+        "line": "A great brown bear up on its hind legs. It wants the road, not you \u2014 and it can be fed off it."
+      }
+    },
+    {
+      "id": "beast_recluse",
+      "name": "The Deadly Recluse",
+      "deck": "beast:recluse",
+      "tier": 1,
+      "difficulty": "apprentice",
+      "portrait": "beast-deadly-recluse",
+      "portraitChip": "beast-deadly-recluse-chip",
+      "worldLife": 8,
+      "colors": "G",
+      "kind": "beast",
+      "spoke": "G",
+      "buyable": false,
+      "parley": {
+        "line": "A deadly recluse broad as a cartwheel, hanging in the path on a single thread.",
+        "refusal": "A spider does not bargain. It waits."
+      }
+    },
+    {
+      "id": "beast_manowar",
+      "name": "A Bloom of Man-o'-War",
+      "deck": "beast:manowar",
+      "tier": 1,
+      "difficulty": "apprentice",
+      "portrait": "beast-man-o-war",
+      "portraitChip": "beast-man-o-war-chip",
+      "worldLife": 8,
+      "colors": "U",
+      "kind": "beast",
+      "spoke": "U",
+      "buyable": false,
+      "parley": {
+        "line": "A bloom of man-o'-war drifts across the shallows, trailing stingers longer than a mast.",
+        "refusal": "The bloom has no ears for coin. It drifts where it drifts."
+      }
+    },
+    {
+      "id": "beast_tactician_1",
+      "name": "A Cunning Tactician",
+      "deck": "beast:tactician",
+      "tier": 1,
+      "difficulty": "apprentice",
+      "portrait": "beast-cunning-tactician",
+      "portraitChip": "beast-cunning-tactician-chip",
+      "worldLife": 8,
+      "colors": "W",
+      "kind": "beast",
+      "spoke": "W",
+      "buyable": true,
+      "parley": {
+        "verb": "Buy off",
+        "line": "A field captain with an eye for the ground. \"You'll pay the toll, traveler, or you'll pay in blood.\""
+      }
+    },
+    {
+      "id": "beast_tactician_2",
+      "name": "The Cunning Tactician",
+      "deck": "beast:tactician",
+      "tier": 2,
+      "difficulty": "journeyman",
+      "portrait": "beast-cunning-tactician",
+      "portraitChip": "beast-cunning-tactician-chip",
+      "worldLife": 10,
+      "colors": "W",
+      "kind": "beast",
+      "spoke": "W",
+      "buyable": true,
+      "parley": {
+        "verb": "Buy off",
+        "line": "The captain again, older and no kinder. \"I've beaten better than you on worse ground.\""
+      }
+    },
+    {
+      "id": "beast_warband",
+      "name": "The Boggart Warband",
+      "deck": "beast:warband",
+      "tier": 2,
+      "difficulty": "journeyman",
+      "portrait": "beast-boggart-warband",
+      "portraitChip": "beast-boggart-warband-chip",
+      "worldLife": 8,
+      "colors": "R",
+      "kind": "beast",
+      "spoke": "R",
+      "buyable": true,
+      "parley": {
+        "verb": "Bribe",
+        "line": "Boggarts, a dozen at least, pushing and crowing. They would sooner take your gold than your head. Probably."
+      }
+    },
+    {
+      "id": "beast_nighthawk",
+      "name": "A Vampire Nighthawk",
+      "deck": "beast:nighthawk",
+      "tier": 2,
+      "difficulty": "journeyman",
+      "portrait": "beast-vampire-nighthawk",
+      "portraitChip": "beast-vampire-nighthawk-chip",
+      "worldLife": 8,
+      "colors": "B",
+      "kind": "beast",
+      "spoke": "B",
+      "buyable": true,
+      "parley": {
+        "verb": "Offer tribute",
+        "line": "A vampire nighthawk, wings folded, watching your throat. The fen roads know it by the ones it leaves \u2014 walk wide, or walk in numbers. The purse on this one runs deep, and mostly unclaimed."
+      },
+      "knobs": {
+        "goldRewardByTier": {
+          "1": 10,
+          "2": 50,
+          "3": 60
+        }
+      }
+    },
+    {
+      "id": "beast_gale",
+      "name": "The Living Gale",
+      "deck": "beast:gale",
+      "tier": 2,
+      "difficulty": "journeyman",
+      "portrait": "beast-living-gale",
+      "portraitChip": "beast-living-gale-chip",
+      "worldLife": 10,
+      "colors": "U",
+      "kind": "beast",
+      "spoke": "U",
+      "buyable": false,
+      "parley": {
+        "line": "The air itself turns on you \u2014 a living gale with a face in it.",
+        "refusal": "You cannot pay the wind."
+      }
+    },
+    {
+      "id": "beast_siegegang",
+      "name": "The Siege-Gang",
+      "deck": "beast:siegegang",
+      "tier": 3,
+      "difficulty": "master",
+      "portrait": "beast-siege-gang",
+      "portraitChip": "beast-siege-gang-chip",
+      "worldLife": 12,
+      "colors": "R",
+      "kind": "beast",
+      "spoke": "R",
+      "buyable": true,
+      "parley": {
+        "verb": "Bribe",
+        "line": "The Siege-Gang, its commander barking orders. They count your coin before they count your soldiers."
+      },
+      "knobs": {
+        "anteCount": 2
+      }
+    },
+    {
+      "id": "beast_specter",
+      "name": "The Hypnotic Specter",
+      "deck": "beast:specter",
+      "tier": 3,
+      "difficulty": "master",
+      "portrait": "beast-hypnotic-specter",
+      "portraitChip": "beast-hypnotic-specter-chip",
+      "worldLife": 12,
+      "colors": "B",
+      "kind": "beast",
+      "spoke": "B",
+      "buyable": false,
+      "parley": {
+        "line": "The Hypnotic Specter \u2014 a wrongness with wings. Its eyes are already inside your head.",
+        "refusal": "It wants what you know, not what you carry."
+      },
+      "knobs": {
+        "anteCount": 2
+      }
+    },
+    {
+      "id": "beast_serra",
+      "name": "The Serra Angel",
+      "deck": "beast:serra",
+      "tier": 3,
+      "difficulty": "master",
+      "portrait": "beast-serra-angel",
+      "portraitChip": "beast-serra-angel-chip",
+      "worldLife": 12,
+      "colors": "W",
+      "kind": "beast",
+      "spoke": "W",
+      "buyable": true,
+      "parley": {
+        "verb": "Tithe",
+        "line": "The Serra Angel, sword lowered, gaze level. She will take a tithe for the road's poor \u2014 or the fight."
+      },
+      "knobs": {
+        "anteCount": 2
+      },
+      "worldLifeOffset": -4
+    },
+    {
+      "id": "beast_rats",
+      "name": "A Plague of Rats",
+      "deck": "beast:rats",
+      "tier": 1,
+      "difficulty": "apprentice",
+      "portrait": "beast-plague-of-rats",
+      "portraitChip": "beast-plague-of-rats-chip",
+      "worldLife": 8,
+      "colors": "B",
+      "kind": "beast",
+      "spoke": "B",
+      "buyable": true,
+      "parley": {
+        "verb": "Feed them",
+        "line": "A plague of rats, a floor of grey bodies moving as one hunger. It can be fed. For now."
+      }
+    },
+    {
+      "id": "beast_ogre",
+      "name": "A Gray Ogre",
+      "deck": "beast:ogre",
+      "tier": 1,
+      "difficulty": "apprentice",
+      "portrait": "beast-gray-ogre",
+      "portraitChip": "beast-gray-ogre-chip",
+      "worldLife": 8,
+      "colors": "R",
+      "kind": "beast",
+      "spoke": "R",
+      "buyable": true,
+      "parley": {
+        "verb": "Pay the toll",
+        "line": "A gray ogre fills the road, counting your coin on thick fingers. The counting takes a while."
+      }
+    },
+    {
+      "id": "beast_lion",
+      "name": "A Savannah Lion",
+      "deck": "beast:lion",
+      "tier": 1,
+      "difficulty": "apprentice",
+      "portrait": "beast-savannah-lion",
+      "portraitChip": "beast-savannah-lion-chip",
+      "worldLife": 8,
+      "colors": "W",
+      "kind": "beast",
+      "spoke": "W",
+      "buyable": true,
+      "parley": {
+        "verb": "Offer fresh meat",
+        "line": "A savannah lion regards you without hurry. You are prey, or you are boring."
+      }
+    },
+    {
+      "id": "beast_baloth",
+      "name": "A Rumbling Baloth",
+      "deck": "beast:baloth",
+      "tier": 2,
+      "difficulty": "journeyman",
+      "portrait": "beast-rumbling-baloth",
+      "portraitChip": "beast-rumbling-baloth-chip",
+      "worldLife": 10,
+      "colors": "G",
+      "kind": "beast",
+      "spoke": "G",
+      "buyable": true,
+      "parley": {
+        "verb": "Toss it your rations",
+        "line": "The ground shakes before you see it \u2014 a rumbling baloth, and this is its ground."
+      }
+    },
+    {
+      "id": "beast_formation",
+      "name": "The Faerie Formation",
+      "deck": "beast:formation",
+      "tier": 3,
+      "difficulty": "master",
+      "portrait": "beast-faerie-formation",
+      "portraitChip": "beast-faerie-formation-chip",
+      "worldLife": 12,
+      "colors": "U",
+      "kind": "beast",
+      "spoke": "U",
+      "buyable": true,
+      "parley": {
+        "verb": "Offer something shiny",
+        "line": "A glittering throng wheels overhead, all wings and whispers. They were going to take something anyway; you may choose what."
+      },
+      "knobs": {
+        "anteCount": 2
+      }
+    },
+    {
+      "id": "beast_wurm",
+      "name": "the Pelakka Wurm",
+      "deck": "beast:wurm",
+      "tier": 3,
+      "difficulty": "master",
+      "portrait": "beast-pelakka-wurm",
+      "portraitChip": "beast-pelakka-wurm-chip",
+      "worldLife": 12,
+      "colors": "G",
+      "kind": "beast",
+      "spoke": "G",
+      "buyable": false,
+      "parley": {
+        "line": "The Pelakka Wurm, slow and vast. Nothing you carry is worth its notice.",
+        "refusal": "It is not hungry for what you have. It is hungry."
+      },
+      "knobs": {
+        "anteCount": 2
+      }
     }
-   }
-  },
-  {
-   "id": "beast_gale",
-   "name": "The Living Gale",
-   "deck": "beast:gale",
-   "tier": 2,
-   "difficulty": "journeyman",
-   "portrait": "beast-living-gale",
-   "portraitChip": "beast-living-gale-chip",
-   "worldLife": 10,
-   "colors": "U",
-   "kind": "beast",
-   "spoke": "U",
-   "buyable": false,
-   "parley": {
-    "line": "The air itself turns on you — a living gale with a face in it.",
-    "refusal": "You cannot pay the wind."
-   }
-  },
-  {
-   "id": "beast_siegegang",
-   "name": "The Siege-Gang",
-   "deck": "beast:siegegang",
-   "tier": 3,
-   "difficulty": "master",
-   "portrait": "beast-siege-gang",
-   "portraitChip": "beast-siege-gang-chip",
-   "worldLife": 12,
-   "colors": "R",
-   "kind": "beast",
-   "spoke": "R",
-   "buyable": true,
-   "parley": {
-    "verb": "Bribe",
-    "line": "The Siege-Gang, its commander barking orders. They count your coin before they count your soldiers."
-   },
-   "knobs": {
-    "anteCount": 2
-   }
-  },
-  {
-   "id": "beast_specter",
-   "name": "The Hypnotic Specter",
-   "deck": "beast:specter",
-   "tier": 3,
-   "difficulty": "master",
-   "portrait": "beast-hypnotic-specter",
-   "portraitChip": "beast-hypnotic-specter-chip",
-   "worldLife": 12,
-   "colors": "B",
-   "kind": "beast",
-   "spoke": "B",
-   "buyable": false,
-   "parley": {
-    "line": "The Hypnotic Specter — a wrongness with wings. Its eyes are already inside your head.",
-    "refusal": "It wants what you know, not what you carry."
-   },
-   "knobs": {
-    "anteCount": 2
-   }
-  },
-  {
-   "id": "beast_serra",
-   "name": "The Serra Angel",
-   "deck": "beast:serra",
-   "tier": 3,
-   "difficulty": "master",
-   "portrait": "beast-serra-angel",
-   "portraitChip": "beast-serra-angel-chip",
-   "worldLife": 12,
-   "colors": "W",
-   "kind": "beast",
-   "spoke": "W",
-   "buyable": true,
-   "parley": {
-    "verb": "Tithe",
-    "line": "The Serra Angel, sword lowered, gaze level. She will take a tithe for the road's poor — or the fight."
-   },
-   "knobs": {
-    "anteCount": 2
-   }
-  },
-  {
-   "id": "beast_rats",
-   "name": "A Plague of Rats",
-   "deck": "beast:rats",
-   "tier": 1,
-   "difficulty": "apprentice",
-   "portrait": "beast-plague-of-rats",
-   "portraitChip": "beast-plague-of-rats-chip",
-   "worldLife": 8,
-   "colors": "B",
-   "kind": "beast",
-   "spoke": "B",
-   "buyable": true,
-   "parley": {
-    "verb": "Feed them",
-    "line": "A plague of rats, a floor of grey bodies moving as one hunger. It can be fed. For now."
-   }
-  },
-  {
-   "id": "beast_ogre",
-   "name": "A Gray Ogre",
-   "deck": "beast:ogre",
-   "tier": 1,
-   "difficulty": "apprentice",
-   "portrait": "beast-gray-ogre",
-   "portraitChip": "beast-gray-ogre-chip",
-   "worldLife": 8,
-   "colors": "R",
-   "kind": "beast",
-   "spoke": "R",
-   "buyable": true,
-   "parley": {
-    "verb": "Pay the toll",
-    "line": "A gray ogre fills the road, counting your coin on thick fingers. The counting takes a while."
-   }
-  },
-  {
-   "id": "beast_lion",
-   "name": "A Savannah Lion",
-   "deck": "beast:lion",
-   "tier": 1,
-   "difficulty": "apprentice",
-   "portrait": "beast-savannah-lion",
-   "portraitChip": "beast-savannah-lion-chip",
-   "worldLife": 8,
-   "colors": "W",
-   "kind": "beast",
-   "spoke": "W",
-   "buyable": true,
-   "parley": {
-    "verb": "Offer fresh meat",
-    "line": "A savannah lion regards you without hurry. You are prey, or you are boring."
-   }
-  },
-  {
-   "id": "beast_baloth",
-   "name": "A Rumbling Baloth",
-   "deck": "beast:baloth",
-   "tier": 2,
-   "difficulty": "journeyman",
-   "portrait": "beast-rumbling-baloth",
-   "portraitChip": "beast-rumbling-baloth-chip",
-   "worldLife": 10,
-   "colors": "G",
-   "kind": "beast",
-   "spoke": "G",
-   "buyable": true,
-   "parley": {
-    "verb": "Toss it your rations",
-    "line": "The ground shakes before you see it — a rumbling baloth, and this is its ground."
-   }
-  },
-  {
-   "id": "beast_formation",
-   "name": "The Faerie Formation",
-   "deck": "beast:formation",
-   "tier": 3,
-   "difficulty": "master",
-   "portrait": "beast-faerie-formation",
-   "portraitChip": "beast-faerie-formation-chip",
-   "worldLife": 12,
-   "colors": "U",
-   "kind": "beast",
-   "spoke": "U",
-   "buyable": true,
-   "parley": {
-    "verb": "Offer something shiny",
-    "line": "A glittering throng wheels overhead, all wings and whispers. They were going to take something anyway; you may choose what."
-   },
-   "knobs": {
-    "anteCount": 2
-   }
-  },
-  {
-   "id": "beast_wurm",
-   "name": "the Pelakka Wurm",
-   "deck": "beast:wurm",
-   "tier": 3,
-   "difficulty": "master",
-   "portrait": "beast-pelakka-wurm",
-   "portraitChip": "beast-pelakka-wurm-chip",
-   "worldLife": 12,
-   "colors": "G",
-   "kind": "beast",
-   "spoke": "G",
-   "buyable": false,
-   "parley": {
-    "line": "The Pelakka Wurm, slow and vast. Nothing you carry is worth its notice.",
-    "refusal": "It is not hungry for what you have. It is hungry."
-   },
-   "knobs": {
-    "anteCount": 2
-   }
-  }
- ]
+  ]
 }

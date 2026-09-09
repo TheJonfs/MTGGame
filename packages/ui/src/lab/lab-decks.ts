@@ -15,6 +15,7 @@ import { COROLLA_DECKS } from "@shandalar/sim/corolla-decks";
 import { HEART_DECK } from "@shandalar/sim/heart-deck";
 import type { CardDef } from "@shandalar/cards";
 import type { Modifier } from "@shandalar/engine";
+import { DIFFICULTIES, resolveKnobs, type DifficultyName } from "@shandalar/world";
 import type { LabBonus, LabSide, ResolvedSide } from "./lab-types.js";
 
 /** The world's JSON, bundled the way engine-bridge bundles the catalog (import.meta.glob; no json modules). */
@@ -48,12 +49,12 @@ export interface LabDeck {
   tier?: 1 | 2 | 3;
 }
 
-const TIER_LIFE = { 1: 8, 2: 10, 3: 12 } as const;
 const TIER_PROFILE = { 1: "apprentice", 2: "journeyman", 3: "master" } as const;
+export type LabMode = DifficultyName;
 const BASIC_OF: Record<string, string> = { W: "plains", U: "island", B: "swamp", R: "mountain", G: "forest" };
 
 type StarterRow = { id: string; name: string; archetype: Archetype; basicLand: string; decklist: Decklist };
-type OpponentRow = { id: string; deck: string; tier: 1 | 2 | 3; difficulty: Profile; worldLife: number; kind?: string };
+type OpponentRow = { id: string; deck: string; tier: 1 | 2 | 3; difficulty: Profile; worldLife: number; worldLifeOffset?: number; kind?: string };
 type LawBoth = { type: "permanentOnBattlefield"; cardId: string } | { type: "extraCards"; count: number };
 type DungeonsJson = {
   mox: { id: string; color: string; guardian: { key: string; name: string; life: number }; law: { name: string; both: LawBoth[] } }[];
@@ -66,15 +67,21 @@ const HEART_ROOTS = ["plains", "island", "swamp", "mountain", "forest"];
 /** The standard heartLife (knobs: 35 easy / 40 standard / 45 hard). */
 const HEART_LIFE_STANDARD = 40;
 
-export function labDecks(): LabDeck[] {
+/** S34: the mages' and beasts' world defaults come from the resolver's tier tables at a MODE (the knobs'
+ * easy / standard / hard bundles) — a saved run names the mode it measured. */
+export function labDecks(mode: LabMode = "standard"): LabDeck[] {
+  const knobs = resolveKnobs({ difficulty: DIFFICULTIES[mode] });
   const out: LabDeck[] = [];
+  const mageRows = (worldJson("opponents") as { opponents: OpponentRow[] }).opponents.filter((o) => (o.kind ?? "mage") === "mage");
   for (const [k, m] of Object.entries(MAGE_DECKS)) {
-    out.push({ key: `mage:${k}`, group: "mages", name: m.name, label: `${m.name} (T${m.tier} ${m.colors}) — ${m.epithet}`, archetype: m.archetype, decklist: m.decklist, life: TIER_LIFE[m.tier], profile: TIER_PROFILE[m.tier], basics: 0, tier: m.tier });
+    const row = mageRows.find((o) => o.deck === `mage:${k}`);
+    out.push({ key: `mage:${k}`, group: "mages", name: m.name, label: `${m.name} (T${m.tier} ${m.colors}) — ${m.epithet}`, archetype: m.archetype, decklist: m.decklist, life: knobs.mageTierLife[m.tier] + (row?.worldLifeOffset ?? 0), profile: TIER_PROFILE[m.tier], basics: knobs.mageTierEntrance[m.tier], tier: m.tier });
   }
   const rows = (worldJson("opponents") as { opponents: OpponentRow[] }).opponents.filter((o) => o.kind === "beast");
   for (const [k, b] of Object.entries(EXPANSION_DECKS)) {
     const row = rows.find((o) => o.deck === `beast:${k}`) ?? rows.find((o) => o.deck === `beast:${k}` && o.tier === b.tier);
-    out.push({ key: `beast:${k}`, group: "beasts", name: b.name, label: `${b.name} (T${b.tier} ${b.color})`, archetype: b.archetype, decklist: b.decklist, life: row?.worldLife ?? TIER_LIFE[b.tier], profile: row?.difficulty ?? TIER_PROFILE[b.tier], basics: 0, tier: row?.tier ?? b.tier });
+    const tier = row?.tier ?? b.tier;
+    out.push({ key: `beast:${k}`, group: "beasts", name: b.name, label: `${b.name} (T${b.tier} ${b.color})`, archetype: b.archetype, decklist: b.decklist, life: (row?.worldLife ?? 8) + knobs.beastTierLifeDelta[tier] + (row?.worldLifeOffset ?? 0), profile: row?.difficulty ?? TIER_PROFILE[b.tier], basics: 0, tier });
   }
   for (const s of (worldJson("starters") as { starters: StarterRow[] }).starters) {
     out.push({ key: `starter:${s.id}`, group: "starters", name: s.name, label: `${s.name} — starter:${s.id}`, archetype: s.archetype, decklist: s.decklist, life: 10, profile: "journeyman", basics: 0, entrance: [s.basicLand] });
@@ -174,7 +181,8 @@ export function colorsByPips(decklist: Decklist, pool: Map<string, CardDef>): st
 /** The N entrance basics for a deck: its fixed entrance first (a road's, a starter's basic), then its colours by pips, repeating. */
 export function entranceBasics(deck: LabDeck, n: number, pool: Map<string, CardDef>): string[] {
   const fixed = deck.entrance ?? [];
-  const colours = colorsByPips(deck.decklist, pool);
+  const mageKey = deck.key.startsWith("mage:") ? deck.key.slice(5) : null;
+  const colours = mageKey && MAGE_DECKS[mageKey] ? [...MAGE_DECKS[mageKey].primaryColors] : colorsByPips(deck.decklist, pool);
   const out: string[] = [];
   for (let i = 0; i < n; i++) {
     if (i < fixed.length) out.push(fixed[i]!);

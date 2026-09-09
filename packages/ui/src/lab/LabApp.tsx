@@ -9,9 +9,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CardDef } from "@shandalar/cards";
 import { loadPool } from "../engine-bridge";
-import { customAsLabDeck, deckStats, entranceBasics, labDecks, manaValue, resolveSide, type Archetype, type CustomDeck, type Decklist, type LabDeck, type Profile } from "./lab-decks";
+import { customAsLabDeck, deckStats, entranceBasics, labDecks, manaValue, resolveSide, type Archetype, type CustomDeck, type Decklist, type LabDeck, type LabMode, type Profile } from "./lab-decks";
 import type { LabBonus, LabCell, LabJob, LabSide, ResolvedSide } from "./lab-types";
 import { LabWorkerPool, type PoolStatus } from "./lab-pool";
+import { DIFFICULTIES, resolveKnobs } from "@shandalar/world";
 
 const PROFILES: Profile[] = ["apprentice", "journeyman", "master"];
 const ARCHETYPES: Archetype[] = ["aggro", "midrange", "control"];
@@ -46,6 +47,8 @@ interface RosterSetup {
   shifts: Record<GroupKey, { life: number; basics: number }>;
   /** Run the second (shifted) sweep at all. */
   differential: boolean;
+  /** S34: the difficulty mode whose tier tables set the columns' defaults. */
+  mode?: LabMode;
   /** "fresh": the shifted sweep uses new seeds, so unshifted cells show the Monte Carlo noise floor; "paired":
    * the same seeds, so unshifted cells are exactly zero and shifted cells are a paired comparison. */
   shiftSeeds: "fresh" | "paired";
@@ -64,7 +67,10 @@ const sideFromDeck = (d: LabDeck): LabSide => ({ deck: d.key, life: d.life, basi
 
 export function LabApp() {
   const pool = useMemo(() => loadPool(), []);
-  const baseDecks = useMemo(() => labDecks(), []);
+  // S34: the world defaults (a mage's tier life and entrance, a beast's tier delta) come from the resolver's
+  // tables at a MODE; the selector sits beside the roster's columns and a saved run names it.
+  const [labMode, setLabMode] = useState<LabMode>("standard");
+  const baseDecks = useMemo(() => labDecks(labMode), [labMode]);
   const [customs, setCustoms] = useState<CustomDeck[]>([]);
   const decks = useMemo(() => [...baseDecks, ...customs.map(customAsLabDeck)], [baseDecks, customs]);
   const byKey = useMemo(() => new Map(decks.map((d) => [d.key, d])), [decks]);
@@ -169,7 +175,7 @@ export function LabApp() {
 
   const save = async () => {
     const name = runName.trim() || `${setup.a.deck.replace(/[:]/g, "-")}_vs_${setup.b.deck.replace(/[:]/g, "-")}_${new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-")}`;
-    const run: SavedRun = { name, when: new Date().toISOString(), setup, cells, notes, ...(resolved ? { resolved } : {}), ...(mode === "roster" ? { roster } : {}) };
+    const run: SavedRun = { name, when: new Date().toISOString(), setup, cells, notes, ...(resolved ? { resolved } : {}), ...(mode === "roster" ? { roster: { ...roster, mode: labMode } } : {}) };
     const r = await fetch("/__lab-save", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(run) });
     if (r.ok) { setRunName(""); void refresh(); }
   };
@@ -182,7 +188,7 @@ export function LabApp() {
   const load = (run: SavedRun) => {
     const fix = (s: LabSide): LabSide => ({ ...s, bonuses: s.bonuses ?? [] });
     setSetup({ ...run.setup, a: fix(run.setup.a), b: fix(run.setup.b) }); setLivesText(run.setup.lives.join(", ")); setBasicsText(run.setup.basics.join(", ")); setCells(run.cells); setNotes(run.notes ?? ""); setPicked(null); setResolved(run.resolved ?? null);
-    if (run.roster) { setRoster({ ...run.roster, shifts: { ...ZERO_SHIFTS, ...(run.roster.shifts ?? {}) }, differential: run.roster.differential ?? false, shiftSeeds: run.roster.shiftSeeds ?? "fresh" }); setMode("roster"); } else setMode("grid");
+    if (run.roster) { setRoster({ ...run.roster, shifts: { ...ZERO_SHIFTS, ...(run.roster.shifts ?? {}) }, differential: run.roster.differential ?? false, shiftSeeds: run.roster.shiftSeeds ?? "fresh" }); if (run.roster.mode) setLabMode(run.roster.mode); setMode("roster"); } else setMode("grid");
   };
 
   // ---- the deck editor
@@ -233,7 +239,7 @@ export function LabApp() {
         <span className="seed" style={{ marginLeft: "auto" }} title="workers load the whole engine each; a worker that fails is replaced and its cell re-queued">{poolStatus.workers} worker{poolStatus.workers === 1 ? "" : "s"}: {poolStatus.ready} ready{poolStatus.busy ? `, ${poolStatus.busy} busy` : ""}{poolStatus.queued ? `, ${poolStatus.queued} cells queued` : ""}{poolStatus.failed ? `, ${poolStatus.failed} failed and replaced` : ""} · the engine and the heuristic agents, live · dev surface</span>
       </div>
       {mode === "roster" && (
-        <RosterView roster={roster} setRoster={setRoster} decks={decks} byKey={byKey} cols={rosterCols} cells={cells} running={running} onRun={startRoster} onStop={stop} picked={picked} setPicked={setPicked} />
+        <RosterView roster={roster} setRoster={setRoster} decks={decks} byKey={byKey} cols={rosterCols} cells={cells} running={running} onRun={startRoster} onStop={stop} picked={picked} setPicked={setPicked} labMode={labMode} setLabMode={setLabMode} />
       )}
       <div style={{ display: mode === "grid" ? "flex" : "none", gap: 12, marginTop: 10, flexWrap: "wrap", alignItems: "flex-start" }}>
         <SidePanel label="a" side={setup.a} decks={decks} byKey={byKey} pool={pool} onPick={(k) => pickDeck("a", k)} onPatch={(p) => patchSide("a", p)} onEdit={() => openEditor(setup.a.deck)} />
@@ -336,12 +342,14 @@ export function LabApp() {
 }
 
 const TIERS = [1, 2, 3] as const;
+const resolveKnobsDelta = (mode: LabMode, t: 1 | 2 | 3): number => resolveKnobs({ difficulty: DIFFICULTIES[mode] }).beastTierLifeDelta[t];
 
 /** The roster grid: rows' win rates against every column, shaded by the column's TIER band; per-row
  * aggregates by tier for the mages and the beasts (a number and a bar each); a column-mean row. */
-function RosterView({ roster, setRoster, decks, byKey, cols, cells, running, onRun, onStop, picked, setPicked }: {
+function RosterView({ roster, setRoster, decks, byKey, cols, cells, running, onRun, onStop, picked, setPicked, labMode, setLabMode }: {
   roster: RosterSetup; setRoster: (r: RosterSetup) => void; decks: LabDeck[]; byKey: Map<string, LabDeck>; cols: LabDeck[];
   cells: Record<string, LabCell>; running: boolean; onRun: () => void; onStop: () => void; picked: string | null; setPicked: (id: string | null) => void;
+  labMode: LabMode; setLabMode: (m: LabMode) => void;
 }) {
   const rows = roster.rows.map((k) => byKey.get(k)).filter((d): d is LabDeck => !!d);
   const rowPct = (rk: string, ck: string, phase: "base" | "shift" = "base"): number | null => { const c = cells[rosterId(rk, ck, phase)]; return c && c.games > 0 ? pct(c.aWins, c.games) : null; };
@@ -409,11 +417,16 @@ function RosterView({ roster, setRoster, decks, byKey, cols, cells, running, onR
         </div>
         <div className="panel" style={{ padding: 10, minWidth: 320 }}>
           <div style={{ fontFamily: "var(--serif)", fontSize: 15, marginBottom: 6 }}>Columns — the roster at its world defaults</div>
-          <div style={{ fontSize: 12, display: "flex", gap: 12 }}>
-            <label><input type="checkbox" checked={roster.mages} onChange={(e) => setRoster({ ...roster, mages: e.target.checked })} /> the fifteen mages (T1 apprentice 8 · T2 journeyman 10 · T3 master 12)</label>
+          <div style={{ fontSize: 12, display: "flex", gap: 8, alignItems: "center", marginBottom: 4 }}>
+            <span>mode</span>
+            {(["easy", "standard", "hard"] as LabMode[]).map((m) => <label key={m}><input type="radio" checked={labMode === m} onChange={() => setLabMode(m)} /> {m}</label>)}
+            <span className="seed">the resolver's tier tables (knobs: mageTierLife / mageTierEntrance / beastTierLifeDelta) set every column's life and entrance</span>
           </div>
           <div style={{ fontSize: 12, display: "flex", gap: 12 }}>
-            <label><input type="checkbox" checked={roster.beasts} onChange={(e) => setRoster({ ...roster, beasts: e.target.checked })} /> the seventeen beasts (their catalog life and profile)</label>
+            <label><input type="checkbox" checked={roster.mages} onChange={(e) => setRoster({ ...roster, mages: e.target.checked })} /> the fifteen mages ({[1, 2, 3].map((t) => { const d = decks.find((x) => x.group === "mages" && x.tier === t); return d ? `T${t} ${d.profile} ${d.life}/${d.basics}` : ""; }).join(" · ")})</label>
+          </div>
+          <div style={{ fontSize: 12, display: "flex", gap: 12 }}>
+            <label><input type="checkbox" checked={roster.beasts} onChange={(e) => setRoster({ ...roster, beasts: e.target.checked })} /> the beasts (catalog life + the tier delta {[1, 2, 3].map((t) => `T${t} +${resolveKnobsDelta(labMode, t as 1 | 2 | 3)}`).join(" · ")}, their catalog profile)</label>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "4px 8px", fontSize: 12, alignItems: "center", marginTop: 6 }}>
             <span>games / cell</span><input type="number" value={roster.games} min={2} max={1000} step={2} onChange={(e) => setRoster({ ...roster, games: Number(e.target.value) })} />

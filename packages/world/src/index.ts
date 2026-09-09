@@ -14,3 +14,4 @@ export * from "./siege.js";
 export * from "./stronghold.js";
 export * from "./powers.js";
 export * from "./corolla.js";
+export * from "./matchup.js";

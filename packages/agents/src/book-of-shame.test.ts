@@ -636,6 +636,7 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.scorePriorityAction(v({ step: "END", activePlayer: 1 }), cast)).toBeGreaterThan(-Infinity); // their end step
     expect(a.scorePriorityAction(v({ step: "MAIN1", activePlayer: 0, hand: [{ objectId: "h_crab", cardId: "hedron_crab" }] }), cast)).toBe(-Infinity); // our turn, the Crab wants the mana
     expect(a.scorePriorityAction(v({ step: "MAIN1", activePlayer: 0 }), cast)).toBeGreaterThan(-Infinity); // our turn, idle mana
+    expect(a.scorePriorityAction(v({ step: "MAIN1", activePlayer: 0, hand: [{ objectId: "h_crab", cardId: "hedron_crab" }], stack: [{ id: "s0", kind: "spell", cardId: "hedron_crab", controller: 0 }] }), cast)).toBe(-Infinity); // S34: our own spell on the stack is not "in response"
     // The save: their Bolt at our Traumatizer — flash in (beats pass) and the ETB aims at the Traumatizer, not the untargeted Bears.
     const bolt = { id: "s1", kind: "spell", cardId: "lightning_bolt", controller: 1, targets: [{ kind: "object", id: "tr" }] };
     const threat = v({ step: "MAIN1", activePlayer: 1, stack: [bolt], extra: [{ id: "bear", cardId: "grizzly_bears", controller: 0 }] });
@@ -727,6 +728,8 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.scorePriorityAction(view("DECLARE_ATTACKERS", 1), cast)).toBe(-Infinity);
     expect(a.scorePriorityAction(view("END", 1), cast)).toBeGreaterThan(-Infinity);
     expect(a.scorePriorityAction(view("MAIN1", 1, [{ id: "s1", kind: "spell", cardId: "grizzly_bears", controller: 1 }]), cast)).toBeGreaterThan(-Infinity); // in response
+    // S34 (the second S28 erratum): our OWN spell on the stack on our own turn is not a window.
+    expect(a.scorePriorityAction(view("MAIN1", 0, [{ id: "s2", kind: "spell", cardId: "hedron_crab", controller: 0 }]), cast)).toBe(-Infinity);
   });
 
   it("S28 (ADR-096, the Heart's roots + the sixty): the master casts a turn-one Manafleur off five roots and nothing else; Disenchant never points at its own law (the misaim cliff); Prey Upon with the flower prices as removal", () => {

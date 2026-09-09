@@ -18,6 +18,7 @@
  * roll) and LAIR-DUNGEONS (the tier-3 signatures' lairs converted to small procedural dungeons
  * with R-card rewards, no law, small empowerment schedule). Strongholds (S22) reuse everything.
  */
+import { entranceModifiers, resolveMatchup } from "./matchup.js";
 import type { CardDef } from "@shandalar/cards";
 import type { Modifier, MatchResult, MatchSpec } from "@shandalar/engine";
 import type { Catalog, OpponentTemplate } from "./catalog.js";
@@ -520,14 +521,17 @@ export function dungeonDuelSpec(
     );
   const empowerment = enemy.kind === "guardian" ? reachedTiers(run, knobs) : [];
   const emp = enemy.kind === "guardian" ? empowermentModifiers(empowerment, enemy.color) : { lifeBonus: 0, modifiers: [] };
+  // S34: a MINION (a roaming template on a dungeon floor) resolves like an encounter — the tier tables at
+  // this world's mode, the mage's entrance included; the guardian's setup is content-defined (unchanged).
+  const minionMatchup = enemy.kind === "minion" ? resolveMatchup(enemy.tmpl, knobs, null) : null;
   const base =
     enemy.kind === "minion"
       ? {
           name: enemy.tmpl.name,
           decklist: enemyDeck(catalog, enemy.tmpl.deck).decklist,
-          agent: `heuristic:${enemy.tmpl.difficulty}`,
+          agent: `heuristic:${minionMatchup!.profile}`,
           archetype: enemyDeck(catalog, enemy.tmpl.deck).archetype,
-          life: enemy.tmpl.worldLife,
+          life: minionMatchup!.life,
         }
       : { name: enemy.name, decklist: enemy.decklist.map((e) => ({ ...e })), agent: "heuristic:master", archetype: enemy.archetype, life: enemy.life };
   const enemyLife = Math.max(1, base.life + (enemy.kind === "guardian" && run.residentCatalogId ? knobs.lairResidentLifeBonus : 0) + emp.lifeBonus + (opts.enemyLifeDelta ?? 0));
@@ -540,6 +544,7 @@ export function dungeonDuelSpec(
     rules: { startingLife: run.interiorLife, handSize: 7, mulligan: "london", maxTurns: 100, ante: knobs.anteCount, startingPlayer: rng.chance(0.5) ? 0 : 1 }, // S22 r2: the coin flip inside too
     modifiers: [
       { type: "startingLife", player: 1, value: enemyLife },
+      ...(minionMatchup ? entranceModifiers(minionMatchup, 1) : []),
       ...lawMods(0),
       ...lawMods(1),
       ...extraModifiers,

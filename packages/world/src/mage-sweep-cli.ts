@@ -1,5 +1,5 @@
 /**
- * pnpm mage-sweep [--games N] [--seed S] [--part 1|2|3|4|5|6|7|8|9|all] [--baseline <json>|none] [--tier-life 8,10,12]
+ * pnpm mage-sweep [--games N] [--seed S] [--part 1|2|3|4|5|6|7|8|9|all] [--baseline <json>|none] [--mode easy|standard|hard]
  *
  * S29 Part 5: the mage cleansheet's three round-robins under the heuristic ladder (both seats; the
  * tier's profile; the tier's life for both sides unless noted).
@@ -22,7 +22,10 @@
  * entrance {none, 1} against both mid-road references, with per-tier aggregates (the reference's
  * win rate by life × entrance, averaged over the five mages and both references); part 9 — the
  * tier-2/3 beasts at catalog life, +4 and +8 against both references (beasts get no roots).
- * `--tier-life 8,10,12` parameterises the tier life for parts 1–7 (the catalog is untouched).
+ * S34: `--mode easy|standard|hard` (default standard) — the mages and beasts take the resolver's tables at
+ * that mode (mageTierLife / mageTierEntrance / beastTierLifeDelta + the row offsets), so a sweep row is
+ * "the catalog at this mode"; `--tier-life` is gone. Part 8's rows carry A's graveyard → battlefield
+ * returns per game (Corvane's engine per cell).
  */
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -34,7 +37,8 @@ import { MAGE_DECKS } from "@shandalar/sim/mage-decks";
 import { EXPANSION_DECKS } from "@shandalar/sim/expansion-decks";
 import { ROAD_DECKS } from "@shandalar/sim/road-decks";
 import { loadCatalog } from "./loader.js";
-import { defaultKnobs } from "./knobs.js";
+import { DIFFICULTIES, resolveKnobs, type DifficultyName } from "./knobs.js";
+import { entranceFor, resolveMatchup } from "./matchup.js";
 
 function arg(name: string, fallback: string): string {
   const i = process.argv.indexOf(`--${name}`);
@@ -51,35 +55,26 @@ const baseline: Record<string, number> = baselineArg === "none" ? {} : (JSON.par
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const pool = loadCardPool(join(ROOT, "data/cards")).cards;
 const catalog = loadCatalog(join(ROOT, "data/world"));
-const knobs = defaultKnobs();
+const mode = arg("mode", "standard") as DifficultyName;
+if (!(mode in DIFFICULTIES)) throw new Error(`--mode must be easy|standard|hard`);
+const knobs = resolveKnobs({ difficulty: DIFFICULTIES[mode] });
 
 type Side = { name: string; decklist: { cardId: string; count: number }[]; archetype: "aggro" | "midrange" | "control"; profile: Difficulty; life: number; entrance?: string[] };
-const tierLifeArg = arg("tier-life", "8,10,12").split(",").map(Number);
-const TIER_LIFE: Record<1 | 2 | 3, number> = { 1: tierLifeArg[0] ?? 8, 2: tierLifeArg[1] ?? 10, 3: tierLifeArg[2] ?? 12 };
+/** S34: the tier life is the resolver's table at the chosen mode. */
+const TIER_LIFE: Record<1 | 2 | 3, number> = knobs.mageTierLife;
 const TIER_PROFILE: Record<1 | 2 | 3, Difficulty> = { 1: "apprentice", 2: "journeyman", 3: "master" };
 const mage = (key: string, tierAs?: 1 | 2 | 3): Side => {
   const m = MAGE_DECKS[key]!;
   const t = tierAs ?? m.tier;
-  return { name: `${m.name} (${key})`, decklist: m.decklist, archetype: m.archetype, profile: TIER_PROFILE[t], life: TIER_LIFE[t] };
-};
-/** S33 (Part 2): a mage's colours ranked by the list's pip count — the entrance basics come in that order
- * (one basic = the primary colour; two = one of each for a two-colour mage). */
-const BASIC_OF: Record<string, string> = { W: "plains", U: "island", B: "swamp", R: "mountain", G: "forest" };
-const mageColorsByPips = (key: string): string[] => {
-  const m = MAGE_DECKS[key]!;
-  const pips: Record<string, number> = { W: 0, U: 0, B: 0, R: 0, G: 0 };
-  for (const e of m.decklist) {
-    const cost = pool.get(e.cardId)?.manaCost ?? "";
-    for (const c of Object.keys(pips)) pips[c]! += e.count * ((cost.match(new RegExp(`\\{${c}\\}`, "g")) ?? []).length);
-  }
-  return [...m.colors].sort((a, b) => (pips[b] ?? 0) - (pips[a] ?? 0));
+  // S34: the resolver's cell at this mode — life AND entrance (the catalog row, when one exists, carries the offset).
+  const row = catalog.opponents.find((o) => o.deck === `mage:${key}`);
+  const entrance = entranceFor(`mage:${key}`, knobs.mageTierEntrance[t]);
+  return { name: `${m.name} (${key})`, decklist: m.decklist, archetype: m.archetype, profile: TIER_PROFILE[t], life: TIER_LIFE[t] + (row?.worldLifeOffset ?? 0), entrance };
 };
 /** S33: a mage at a chosen life with N entrance basics (its colours by pip count; a mono mage repeats its one). */
 const mageAt = (key: string, life: number, basics: number): Side => {
   const base = mage(key);
-  const colours = mageColorsByPips(key);
-  const entrance = Array.from({ length: basics }, (_, i) => BASIC_OF[colours[i % colours.length]!]!);
-  return { ...base, name: `${base.name} @${life}/${basics}`, life, entrance };
+  return { ...base, name: `${base.name} @${life}/${basics}`, life, entrance: entranceFor(`mage:${key}`, basics) };
 };
 const beastAt = (key: string, delta: number): Side => {
   const b = beast(key);
@@ -88,7 +83,9 @@ const beastAt = (key: string, delta: number): Side => {
 const beast = (key: string): Side => {
   const b = EXPANSION_DECKS[key]!;
   const row = catalog.opponents.find((o) => o.deck === `beast:${key}`);
-  return { name: `${b.name} (beast:${key})`, decklist: b.decklist, archetype: b.archetype, profile: row?.difficulty ?? TIER_PROFILE[b.tier], life: row?.worldLife ?? TIER_LIFE[b.tier] };
+  // S34: the resolver's life at this mode (catalog base + the tier delta + the row offset); no entrance for beasts.
+  const life = row ? resolveMatchup(row, knobs).life : TIER_LIFE[b.tier];
+  return { name: `${b.name} (beast:${key})`, decklist: b.decklist, archetype: b.archetype, profile: row?.difficulty ?? TIER_PROFILE[b.tier], life };
 };
 const starter = (id: string): Side => {
   const s = catalog.starters.find((x) => x.id === id)!;
@@ -111,8 +108,8 @@ function noteCasts(side: Side, seat: 0 | 1, spellsCast: Record<string, [number, 
   casts.set(side.name, row);
 }
 
-async function pairing(a: Side, b: Side, label: string): Promise<{ aPct: number; bPct: number; turns: number; bDecked: number }> {
-  let aWins = 0, bWins = 0, draws = 0, turns = 0, aDecked = 0, bDecked = 0, total = 0;
+async function pairing(a: Side, b: Side, label: string): Promise<{ aPct: number; bPct: number; turns: number; bDecked: number; aReturned: number }> {
+  let aWins = 0, bWins = 0, draws = 0, turns = 0, aDecked = 0, bDecked = 0, total = 0, aReturned = 0;
   for (let i = 0; i < games; i++) {
     if (i % 10 === 0) await new Promise((r) => setTimeout(r, 0));
     const seat = i % 2; // both seats, alternating
@@ -139,6 +136,7 @@ async function pairing(a: Side, b: Side, label: string): Promise<{ aPct: number;
       const aSeat = seat === 0 ? 0 : 1;
       noteCasts(a, aSeat as 0 | 1, r.facts.spellsCast, r.facts.returned);
       noteCasts(b, (1 - aSeat) as 0 | 1, r.facts.spellsCast, r.facts.returned);
+      for (const by of Object.values(r.facts.returned)) aReturned += by[aSeat as 0 | 1] ?? 0;
       if (r.winner === null) draws += 1;
       else if (r.winner === aSeat) { aWins += 1; if (r.reason === "DECKED") aDecked += 1; }
       else { bWins += 1; if (r.reason === "DECKED") bDecked += 1; }
@@ -153,14 +151,14 @@ async function pairing(a: Side, b: Side, label: string): Promise<{ aPct: number;
   const aPct = Math.round((100 * aWins) / Math.max(1, total));
   const delta = base === undefined ? "—" : `${aPct - base >= 0 ? "+" : ""}${aPct - base}`;
   console.log(`| ${label} | ${a.name} | ${b.name} | ${pct(aWins)}${byLib(aWins, aDecked)} | ${pct(bWins)}${byLib(bWins, bDecked)} | ${draws} | ${(turns / Math.max(1, total)).toFixed(1)} | ${delta} |`);
-  return { aPct: (100 * aWins) / Math.max(1, total), bPct: (100 * bWins) / Math.max(1, total), turns: turns / Math.max(1, total), bDecked: bWins > 0 ? (100 * bDecked) / bWins : 0 };
+  return { aPct: (100 * aWins) / Math.max(1, total), bPct: (100 * bWins) / Math.max(1, total), turns: turns / Math.max(1, total), bDecked: bWins > 0 ? (100 * bDecked) / bWins : 0, aReturned: aReturned / Math.max(1, total) };
 }
 
 const header = () => console.log(`\n| part | A | B | A wins | B wins | draws | mean turns | Δ A wins vs ${baselineName} |\n|---|---|---|---|---|---|---|---|`);
 const byTier: Record<1 | 2 | 3, string[]> = { 1: [], 2: [], 3: [] };
 for (const [k, m] of Object.entries(MAGE_DECKS)) byTier[m.tier].push(k);
 
-console.log(`mage-sweep: ${games} games per pairing (both seats), heuristic at the tier's profile; tier life 8/10/12; starters at ${knobs.startingWorldLife} (journeyman); beasts at their catalog life/profile.`);
+console.log(`mage-sweep: ${games} games per pairing (both seats), heuristic at the tier's profile; MODE ${mode} — mage tier life ${TIER_LIFE[1]}/${TIER_LIFE[2]}/${TIER_LIFE[3]}, entrance ${knobs.mageTierEntrance[1]}/${knobs.mageTierEntrance[2]}/${knobs.mageTierEntrance[3]} basics, beast tier delta +${knobs.beastTierLifeDelta[1]}/+${knobs.beastTierLifeDelta[2]}/+${knobs.beastTierLifeDelta[3]}; starters at ${knobs.startingWorldLife} (journeyman).`);
 if (part === "all" || part === "1") {
   console.log(`\n## 1. Tier by tier`);
   header();
@@ -199,7 +197,8 @@ if (part === "all" || part === "7") {
 if (part === "all" || part === "8") {
   // S33 Part 2: the matrix. The mage is A, the reference is B; the read is the REFERENCE's win rate.
   const refs = ["roadMidW", "roadMidB"];
-  const grid: Record<1 | 2 | 3, { lives: number[]; basics: number[] }> = { 1: { lives: [], basics: [] }, 2: { lives: [10, 12, 14], basics: [0, 1] }, 3: { lives: [12, 16, 20], basics: [0, 1, 2] } };
+  // S34 Part 3: tier 2 gains the two-basic cells (12/2, 14/2 were the S33 read's missing cells).
+  const grid: Record<1 | 2 | 3, { lives: number[]; basics: number[] }> = { 1: { lives: [], basics: [] }, 2: { lives: [10, 12, 14], basics: [0, 1, 2] }, 3: { lives: [12, 16, 20], basics: [0, 1, 2] } };
   for (const t of [3, 2] as const) {
     console.log(`\n## 8${t === 3 ? "a" : "b"}. The matrix — tier ${t} mages at life {${grid[t].lives.join(", ")}} × entrance {${grid[t].basics.join(", ")} basics} vs the mid-road references (the mage at ${TIER_PROFILE[t]}; the references at 12 / journeyman with a basic in play)`);
     header();
@@ -208,6 +207,7 @@ if (part === "all" || part === "8") {
     for (const k of byTier[t]) {
       for (const life of grid[t].lives) for (const basics of grid[t].basics) for (const rk of refs) {
         const r = await pairing(mageAt(k, life, basics), road(rk), `T${t}×road`);
+        if (r.aReturned > 0) console.log(`|   ↳ ${MAGE_DECKS[k]!.name} returned ${r.aReturned.toFixed(2)} creatures/game from the graveyard in this cell |`);
         const cell = `${life}/${basics}`;
         (agg[cell] ??= { ref: [], turns: [], decked: [] });
         agg[cell]!.ref.push(r.bPct); agg[cell]!.turns.push(r.turns); agg[cell]!.decked.push(r.bDecked);

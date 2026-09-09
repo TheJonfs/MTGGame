@@ -1183,7 +1183,9 @@ export class HeuristicAgent implements Agent {
     const d = card ? this.def(card.cardId) : undefined;
     if (!d || !d.types.includes("Instant") || !d.spellEffect || d.spellEffect.length === 0) return false;
     if (!d.spellEffect.every((e) => e.type === "draw" || e.type === "putOnTop")) return false;
-    if (view.stack.length > 0) return false; // in response: fine
+    // S34 (the second S28 erratum; S33 Part 4 measured 56–92% of own-turn Brainstorms cast over the caster's
+    // OWN spell): "in response" means an OPPONENT's item on the stack — our own Crab on the stack is not a window.
+    if (view.stack.some((it) => it.controller !== view.you)) return false;
     // S32: the engine's step is "END" (S28 wrote "END_STEP" here, so Brainstorm's end-step window
     // never opened live — only the in-response path did; caught by the Escort's pin).
     return !(view.activePlayer !== view.you && view.step === "END");
@@ -1198,7 +1200,7 @@ export class HeuristicAgent implements Agent {
     const card = view.hand.find((c) => c.objectId === action.objectId);
     const d = card ? this.def(card.cardId) : undefined;
     if (!d || !d.types.includes("Creature") || !(d.keywords ?? []).includes("flash")) return false;
-    if (view.stack.length > 0) return false; // in response: fine
+    if (view.stack.some((it) => it.controller !== view.you)) return false; // in response to THEIRS: fine (S34, as the cantrip gate)
     if (view.activePlayer !== view.you) return view.step !== "END";
     const me = view.you;
     const untapped = view.battlefield.filter((o) => o.controller === me && !o.tapped && this.def(o.cardId)?.types.includes("Land")).length;

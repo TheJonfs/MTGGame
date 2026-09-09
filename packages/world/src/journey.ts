@@ -1,3 +1,4 @@
+import { entranceModifiers, resolveMatchup } from "./matchup.js";
 import type { MatchResult, MatchSpec, Modifier } from "@shandalar/engine";
 import { enemyDeck, type Catalog, type OpponentTemplate } from "./catalog.js";
 import { isTownCell, regionCells, roamerTarget, rollMage, rollTemplate, type GoneReason, type OpponentInstance } from "./generate.js";
@@ -493,7 +494,7 @@ export interface PreparedDuel {
   seed: number;
   spec: MatchSpec;
   /** The AI profile inputs for the caller's agent factory. */
-  enemy: { name: string; difficulty: OpponentTemplate["difficulty"]; deck: OpponentTemplate["deck"]; archetype: "aggro" | "midrange" | "control"; portrait: string; worldLife: number; tier: 1 | 2 | 3 };
+  enemy: { name: string; difficulty: OpponentTemplate["difficulty"]; deck: OpponentTemplate["deck"]; archetype: "aggro" | "midrange" | "control"; portrait: string; worldLife: number; tier: 1 | 2 | 3; /** S34: the basics on the enemy's battlefield before turn one (the resolver's entrance). */ entrance: string[] };
 }
 
 export function buyOffPrice(knobs: KnobValues, tier: 1 | 2 | 3, tmpl?: Pick<OpponentTemplate, "kind">): number {
@@ -582,21 +583,24 @@ export function prepareDuel(world: WorldState, catalog: Catalog, enc: Encounter,
   // S22 r2 (Chris — the Shandalar coin flip): the world rolls play/draw from its seeded stream;
   // the spec carries it, so the replay is exact and the UI can stage the flip.
   const startingPlayer = rng.chance(0.5) ? (0 as const) : (1 as const);
-  // S18 (OQ-8): a lair resident fights at its template life + the lair bonus knob.
-  // S25: the Barrage's delta lands here, floored at 1.
-  const enemyLife = Math.max(1, tmpl.worldLife + (enc.contact === "lair" ? knobs.lairResidentLifeBonus : 0) + (opts.enemyLifeDelta ?? 0));
+  // S34 (ADR-115/117): the resolver sets the enemy's life, profile, entrance and ante from the tier tables
+  // at this world's mode (the knobs carry it); the situational terms stay here on top of its result.
+  const matchup = resolveMatchup(tmpl, knobs, null);
+  // S18 (OQ-8): a lair resident fights at + the lair bonus knob. S25: the Barrage's delta lands here, floored at 1.
+  const enemyLife = Math.max(1, matchup.life + (enc.contact === "lair" ? knobs.lairResidentLifeBonus : 0) + (opts.enemyLifeDelta ?? 0));
   // S19 (ADR-069): every duel starts with your manalinks on the battlefield (manifest §5 — zero engine work).
-  const modifiers: Modifier[] = [{ type: "startingLife", player: 1, value: enemyLife }, ...manalinkModifiers(world)];
+  // S34: and the mage's ENTRANCE on its side (the same path).
+  const modifiers: Modifier[] = [{ type: "startingLife", player: 1, value: enemyLife }, ...entranceModifiers(matchup, 1), ...manalinkModifiers(world)];
   const spec: MatchSpec = {
     seed,
     players: [
       { name: world.player.name, decklist: activeDeck(world).map((e) => ({ ...e })), agent: "human" },
-      { name: tmpl.name, decklist: enemyDeck(catalog, tmpl.deck).decklist, agent: `heuristic:${tmpl.difficulty}` },
+      { name: tmpl.name, decklist: enemyDeck(catalog, tmpl.deck).decklist, agent: `heuristic:${matchup.profile}` },
     ],
-    rules: { startingLife: world.player.worldLife, handSize: 7, mulligan: "london", maxTurns: 100, ante: knobs.anteCount, startingPlayer },
+    rules: { startingLife: world.player.worldLife, handSize: 7, mulligan: "london", maxTurns: 100, ante: matchup.ante, startingPlayer },
     modifiers,
   };
-  return { encounter: enc, seed, spec, enemy: { name: tmpl.name, difficulty: tmpl.difficulty, deck: tmpl.deck, archetype: enemyDeck(catalog, tmpl.deck).archetype, portrait: tmpl.portrait, worldLife: enemyLife, tier: tmpl.tier } };
+  return { encounter: enc, seed, spec, enemy: { name: tmpl.name, difficulty: matchup.profile, deck: tmpl.deck, archetype: enemyDeck(catalog, tmpl.deck).archetype, portrait: tmpl.portrait, worldLife: enemyLife, tier: tmpl.tier, entrance: matchup.entrance } };
 }
 
 /** Resolve a finished duel into the world: ante both ways, gold, world life. */

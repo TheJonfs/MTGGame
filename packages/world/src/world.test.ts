@@ -312,7 +312,9 @@ describe("acceptance journey (headless): walk → encounter → each parley bran
       const { duel } = out;
       expect(duel.spec.rules.startingLife).toBe(10);
       expect(duel.spec.rules.ante).toBe(enc.tier === 3 ? 2 : 1);
-      expect(duel.spec.modifiers).toEqual([{ type: "startingLife", player: 1, value: duel.enemy.worldLife }]);
+      // S34: the enemy's life from the resolver, then its ENTRANCE (a tier-2/3 mage's basics), then the player's manalinks (none here).
+      expect(duel.spec.modifiers[0]).toEqual({ type: "startingLife", player: 1, value: duel.enemy.worldLife });
+      expect(duel.spec.modifiers.slice(1)).toEqual(duel.enemy.entrance.map((cardId) => ({ type: "permanentOnBattlefield", player: 1, cardId })));
       expect(duel.spec.players[1].agent).toBe(`heuristic:${duel.enemy.difficulty}`);
       const lifeBefore = w.player.worldLife;
       const goldBefore = w.player.gold;
@@ -1736,10 +1738,10 @@ describe("S18 Part 6 (scripted acceptance): a beast encounter end-to-end — roa
     const { duel } = out;
     expect(duel.enemy.name).toBe("The Boggart Warband");
     expect(duel.enemy.difficulty).toBe("journeyman");
-    expect(duel.enemy.worldLife).toBe(8); // S19 mid-session ruling (Chris): Nighthawk and Warband walk down two — the first per-opponent life tuning
+    expect(duel.enemy.worldLife).toBe(8 + worldKnobs(w).beastTierLifeDelta[2]); // S19: the Warband's row is 8 (Nighthawk and Warband walked down two); S34: + the tier-2 beast delta (+2 standard)
     expect(duel.enemy.archetype).toBe("aggro");
     expect(duel.spec.players[1].decklist).toEqual(EXPANSION_DECKS.warband!.decklist);
-    expect(duel.spec.modifiers).toEqual([{ type: "startingLife", player: 1, value: 8 }]);
+    expect(duel.spec.modifiers).toEqual([{ type: "startingLife", player: 1, value: duel.enemy.worldLife }]); // S34: the resolver's life; a beast has no entrance
     const result = await runMatch(duel.spec, pool.cards, agentsFor(w, duel.enemy.difficulty, duel.enemy.deck, 5));
     const rec = applyDuelResult(w, catalog, duel, result);
     expect(["win", "loss", "draw"]).toContain(rec.outcome);
