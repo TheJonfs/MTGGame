@@ -35,8 +35,10 @@
     }
   ],
   "art": {
+    "asset": "/custom-art/arcane_collector.png",
     "fallback": "rendered"
   },
   "shopTier": 2,
-  "priceOverride": 16
+  "priceOverride": 16,
+  "printedAsset": "arcane_collector.jpg"
 }
