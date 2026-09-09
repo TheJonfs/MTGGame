@@ -107,7 +107,8 @@
       "knobs": {
         "anteCount": 2
       },
-      "epithet": "the Thornmother"
+      "epithet": "the Thornmother",
+      "worldLifeOffset": -4
     },
     {
       "id": "d1",
@@ -312,7 +313,8 @@
           "2": 50,
           "3": 60
         }
-      }
+      },
+      "worldLifeOffset": -4
     },
     {
       "id": "beast_gale",
@@ -330,7 +332,8 @@
       "parley": {
         "line": "The air itself turns on you \u2014 a living gale with a face in it.",
         "refusal": "You cannot pay the wind."
-      }
+      },
+      "worldLifeOffset": 4
     },
     {
       "id": "beast_siegegang",

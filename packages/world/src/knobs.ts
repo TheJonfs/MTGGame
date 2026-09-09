@@ -106,17 +106,17 @@ export const KNOBS = {
   mageTierLife: knob<Record<1 | 2 | 3, number>>({
     default: { 1: 8, 2: 12, 3: 16 },
     unit: "starting life by mage tier",
-    description: "S34 (ADR-117): a roaming mage's starting life by tier — the resolver's table (the catalog's mage rows' worldLife is documentation of the Standard cell, regenerated). Standard 8 / 12 / 16 from the S33 matrix (tier 3's 55–65 band vs a mid-road reference sits at 16 life + 2 basics) and Chris's roster runs; easy 8 / 12 / 14, hard 8 / 14 / 20. Tier 1 stays 8 at every mode (the teachers; ADR-103). ⚠ provisional until ratified.",
+    description: "S34 (ADR-117): a roaming mage's starting life by tier — the resolver's table (the catalog's mage rows' worldLife is documentation of the Standard cell, regenerated). Standard 8 / 12 / 16 from the S33 matrix (tier 3's 55–65 band vs a mid-road reference sits at 16 life + 2 basics) and Chris's roster runs; easy 8 / 12 / 14, hard 8 / 14 / 20. Tier 1 stays 8 at every mode (the teachers; ADR-103). Ratified S35 (ADR-117).",
   }),
   mageTierEntrance: knob<Record<1 | 2 | 3, number>>({
     default: { 1: 0, 2: 1, 3: 2 },
     unit: "basics in play before turn one, by mage tier",
-    description: "S34 (ADR-117): the mage ENTRANCE — basics of the mage's colours (pip order) on its battlefield before turn one, the player's manalink shape (permanentOnBattlefield; the Heart's roots path). The strong lever (S33: one basic ≈ twelve points, two ≈ twenty-two, where eight life ≈ eleven). Standard 0 / 1 / 2; easy 0 / 0 / 1; hard 0 / 2 / 2. ⚠ provisional until ratified.",
+    description: "S34 (ADR-117): the mage ENTRANCE — basics of the mage's colours (pip order) on its battlefield before turn one, the player's manalink shape (permanentOnBattlefield; the Heart's roots path). The strong lever (S33: one basic ≈ twelve points, two ≈ twenty-two, where eight life ≈ eleven). Standard 0 / 1 / 2; easy 0 / 0 / 1; hard 0 / 2 / 2. Ratified S35 (ADR-117).",
   }),
   beastTierLifeDelta: knob<Record<1 | 2 | 3, number>>({
     default: { 1: 0, 2: 2, 3: 4 },
     unit: "life added to a beast's catalog worldLife, by tier",
-    description: "S34 (ADR-117): beasts keep their catalog worldLife as the base and gain this by tier (no entrance — beasts have not walked the roads). Standard +0 / +2 / +4 (the S33 beast table: aggregate 65% for a mid-road reference at +4); easy +0 / +0 / +2; hard +0 / +4 / +8. A per-row worldLifeOffset on the catalog row applies after (the Serra −4). ⚠ provisional until ratified.",
+    description: "S34 (ADR-117): beasts keep their catalog worldLife as the base and gain this by tier (no entrance — beasts have not walked the roads). Standard +0 / +2 / +4 (the S33 beast table: aggregate 65% for a mid-road reference at +4); easy +0 / +0 / +2; hard +0 / +4 / +8. A per-row worldLifeOffset on the catalog row applies after (the Serra −4). Ratified S35 (ADR-117).",
   }),
   // ---- S27 (ADR-093): the Heart and the chronicle ----
   heartLife: knob<number>({

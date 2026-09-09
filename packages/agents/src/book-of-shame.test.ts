@@ -4,6 +4,7 @@ import { dirname, join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
 import type { GameView } from "@shandalar/engine";
 import { HeuristicAgent } from "./heuristic-agent.js";
+import { difficultyProfile } from "./evaluator.js";
 import { viewCreatures, type SimObject } from "./combat-sim.js";
 
 const CARDS_DIR = join(dirname(fileURLToPath(import.meta.url)), "../../../data/cards");
@@ -624,6 +625,23 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const z = (id: string) => a.scorePriorityAction(view, { type: "castSpell", objectId: "h_z", targets: [{ kind: "object", id }] });
     expect(z("g_art")).toBeGreaterThan(z("g_serra"));
     expect(z("g_serra")).toBeGreaterThan(z("g_ari"));
+  });
+
+  it("book of shame 51 (S35, the apprentice's first land): a land drop with no competing play is taken at every profile, every time — the softmax never sees it; with a castable spell beside it the choice is the softmax's", async () => {
+    for (const profile of ["apprentice", "journeyman", "master"] as const) {
+      const a = new HeuristicAgent(7, pool, difficultyProfile(profile, "midrange", []));
+      const view = mkView({ step: "MAIN1", activePlayer: 0, hand: [{ objectId: "h_pl", cardId: "plains" }, { objectId: "h_sw", cardId: "soul_warden" }], battlefield: [] });
+      const req = { player: 0 as const, purpose: "priority" as const, actions: [{ type: "pass" as const }, { type: "playLand" as const, objectId: "h_pl" }] };
+      for (let i = 0; i < 40; i++) expect((await a.chooseAction(view, req as never)).type, profile).toBe("playLand");
+      expect(a.landOnlyCandidates(req.actions as never)).toEqual([{ type: "playLand", objectId: "h_pl" }]);
+      // A competing play (a castable spell) leaves the choice to the softmax — no forcing.
+      expect(a.landOnlyCandidates([{ type: "pass" }, { type: "playLand", objectId: "h_pl" }, { type: "castSpell", objectId: "h_sw", targets: [] }] as never)).toBeNull();
+      // Two land drops offered: WHICH land is a real choice; passing still is not.
+      expect(a.landOnlyCandidates([{ type: "pass" }, { type: "playLand", objectId: "h_pl" }, { type: "playLand", objectId: "h_pl2" }] as never)).toHaveLength(2);
+      const two = mkView({ step: "MAIN1", activePlayer: 0, hand: [{ objectId: "h_pl", cardId: "plains" }, { objectId: "h_pl2", cardId: "secluded_steppe" }], battlefield: [] });
+      const req2 = { player: 0 as const, purpose: "priority" as const, actions: [{ type: "pass" as const }, { type: "playLand" as const, objectId: "h_pl" }, { type: "playLand" as const, objectId: "h_pl2" }] };
+      for (let i = 0; i < 40; i++) expect((await a.chooseAction(two, req2 as never)).type, profile).toBe("playLand");
+    }
   });
 
   it("book of shame 49 (S32, Plumecreed Escort): a flash creature waits for the opponent's end step, flashes in against a Bolt at our Traumatizer (and its trigger picks the creature under fire), and on our own turn goes only when nothing else uses the mana", async () => {

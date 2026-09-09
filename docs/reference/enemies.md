@@ -30,10 +30,10 @@ Mages roam anywhere; beasts are spoke-bound (their colour's ring). Tier 1 rolls 
 | A Bloom of Man-o'-War | beast | 1 | U | 8 / **8** / 8 | 0 / **0** / 0 | apprentice | beast:manowar (control) | 30 / 12 / 2.78 / U | not buyable |
 | A Cunning Tactician | beast | 1 | W | 8 / **8** / 8 | 0 / **0** / 0 | apprentice | beast:tactician (aggro) | 30 / 12 / 2.44 / W |  |
 | A Savannah Lion | beast | 1 | W | 8 / **8** / 8 | 0 / **0** / 0 | apprentice | beast:lion (aggro) | 30 / 12 / 1.50 / W |  |
-| A Vampire Nighthawk | beast | 2 | B | 8 / **10** / 12 | 0 / **0** / 0 | journeyman | beast:nighthawk (midrange) | 30 / 12 / 2.11 / B | knobs {"goldRewardByTier":{"1":10,"2":50,"3":60}} |
+| A Vampire Nighthawk | beast | 2 | B | 4 / **6** / 8 | 0 / **0** / 0 | journeyman | beast:nighthawk (midrange) | 30 / 12 / 2.11 / B | knobs {"goldRewardByTier":{"1":10,"2":50,"3":60}}; worldLifeOffset -4 |
 | A Rumbling Baloth | beast | 2 | G | 10 / **12** / 14 | 0 / **0** / 0 | journeyman | beast:baloth (midrange) | 30 / 12 / 2.22 / G |  |
 | The Boggart Warband | beast | 2 | R | 8 / **10** / 12 | 0 / **0** / 0 | journeyman | beast:warband (aggro) | 30 / 12 / 2.06 / R |  |
-| The Living Gale | beast | 2 | U | 10 / **12** / 14 | 0 / **0** / 0 | journeyman | beast:gale (control) | 30 / 12 / 3.44 / U | not buyable |
+| The Living Gale | beast | 2 | U | 14 / **16** / 18 | 0 / **0** / 0 | journeyman | beast:gale (control) | 30 / 12 / 3.44 / U | not buyable; worldLifeOffset 4 |
 | The Cunning Tactician | beast | 2 | W | 10 / **12** / 14 | 0 / **0** / 0 | journeyman | beast:tactician (aggro) | 30 / 12 / 2.44 / W |  |
 | The Hypnotic Specter | beast | 3 | B | 14 / **16** / 20 | 0 / **0** / 0 | master | beast:specter (midrange) | 30 / 12 / 2.28 / B | not buyable; knobs {"anteCount":2} |
 | the Pelakka Wurm | beast | 3 | G | 14 / **16** / 20 | 0 / **0** / 0 | master | beast:wurm (midrange) | 30 / 12 / 3.33 / G | not buyable; knobs {"anteCount":2} |
@@ -53,7 +53,7 @@ Mages roam anywhere; beasts are spoke-bound (their colour's ring). Tier 1 rolls 
 | High Warden Sorrel | mage | 3 | — | 14 / **16** / 20 | 1 / **2** / 2 (swamp, mountain) | master | mage:sorrel (midrange) | 40 / 17 / 1.87 / BR | the Inquisitor; knobs {"anteCount":2} |
 | Lord Corvane | mage | 3 | — | 14 / **16** / 20 | 1 / **2** / 2 (swamp, plains) | master | mage:corvane (midrange) | 40 / 17 / 2.87 / BW | the Sepulchre; knobs {"anteCount":2} |
 | Magister Quill | mage | 3 | — | 14 / **16** / 20 | 1 / **2** / 2 (forest, island) | master | mage:quill (control) | 40 / 17 / 2.35 / GU | the Drowned Grove; knobs {"anteCount":2} |
-| Thornmother Ysolde | mage | 3 | — | 14 / **16** / 20 | 1 / **2** / 2 (plains, forest) | master | mage:ysolde (aggro) | 40 / 17 / 1.78 / GW | the Thornmother; knobs {"anteCount":2} |
+| Thornmother Ysolde | mage | 3 | — | 10 / **12** / 16 | 1 / **2** / 2 (plains, forest) | master | mage:ysolde (aggro) | 40 / 17 / 1.78 / GW | the Thornmother; knobs {"anteCount":2}; worldLifeOffset -4 |
 | Varro Flamebrand | mage | 3 | — | 14 / **16** / 20 | 1 / **2** / 2 (island, mountain) | master | mage:varro (control) | 40 / 17 / 1.96 / RU | the Ashwright; knobs {"anteCount":2} |
 
 ### The roaming decklists (one entry per deck; who plays it)

@@ -567,6 +567,14 @@ export class HeuristicAgent implements Agent {
   private priorityChoice(view: GameView, request: ActionRequest): Action {
     const candidates = request.actions.filter((a) => a.type !== "tapForMana" && a.type !== "untapForMana"); // S25 r3: takebacks are human conveniences
     if (candidates.length === 1) return candidates[0]!;
+    // S35 Part 3 (Chris: Oriel skipped her first land twice; measured 24.7% of apprentice first main phases
+    // passed over an available land when pass was the only alternative — the softmax at 1.2 over a small
+    // gap): a land drop with NO competing play is never passed over, at any profile (book 51).
+    const landsOnly = this.landOnlyCandidates(candidates);
+    if (landsOnly) {
+      if (landsOnly.length === 1) return landsOnly[0]!;
+      return landsOnly[this.softmaxPick(landsOnly.map((a) => this.scorePriorityAction(view, a)))]!; // which land — a real choice; passing is not
+    }
     const scores = candidates.map((a) => this.scorePriorityAction(view, a));
     const pick = candidates[this.softmaxPick(scores)]!;
     // S27 r2: the Witch's per-turn budget — count each life-for-cards activation taken.
@@ -638,6 +646,14 @@ export class HeuristicAgent implements Agent {
       return d?.keywords?.includes("flash") && this.mv(c.cardId) <= untappedLands;
     });
     return holdable ? 0.35 : 0;
+  }
+
+  /** S35: when every candidate is a land drop or a pass, the pass is never taken — the land drops (one or a
+   * choice of which) are the only candidates. Null when any other play competes. Exposed for the book. */
+  landOnlyCandidates(candidates: Action[]): Action[] | null {
+    const lands = candidates.filter((a) => a.type === "playLand");
+    if (lands.length === 0) return null;
+    return candidates.every((a) => a.type === "playLand" || a.type === "pass") ? lands : null;
   }
 
   private softmaxPick(scores: number[]): number {

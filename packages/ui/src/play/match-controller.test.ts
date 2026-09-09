@@ -564,8 +564,10 @@ describe("S18 Part 5: dedicated dialogs for chooseMode / discardCost / A7 sacrif
       const labels = phase.request.actions.map((a) => (a.type === "chooseMode" ? a.label : ""));
       expect(labels.some((l) => /Bird/.test(l))).toBe(true);
       expect(labels.some((l) => /Draw a card/.test(l))).toBe(true);
-      // With only Islands + the Channeler itself out, "another nonland permanent" has no legal target → that mode is absent.
-      const others = c.game.state.battlefield.filter((id) => c.game.state.objects[id]!.controller === 0 && !c.game.state.objects[id]!.cardId.includes("island") && c.game.state.objects[id]!.cardId !== "aether_channeler");
+      // With no OTHER nonland permanent on either side (the predicate is any player's — "another target nonland
+      // permanent"), the bounce mode has no legal target → absent. S35: the AI's board counts too (it develops on
+      // schedule now — the land-drop gate — and had a creature out at a seed where it used to have none).
+      const others = c.game.state.battlefield.filter((id) => !pool.cards.get(c.game.state.objects[id]!.cardId)!.types.includes("Land") && c.game.state.objects[id]!.cardId !== "aether_channeler");
       if (others.length === 0) expect(labels.some((l) => /Return/.test(l))).toBe(false);
       const draw = phase.request.actions.findIndex((a) => a.type === "chooseMode" && /Draw/.test(a.label));
       const handBefore = c.game.state.players[0].hand.length;

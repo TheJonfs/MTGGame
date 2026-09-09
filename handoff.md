@@ -1,136 +1,82 @@
-# Handoff — after Session 34 (2026-09-08)
+# Handoff — after Session 35 (2026-09-08)
 
 ## State of the world
 
-**Cinquefoil v1 is live on Vercel; the deploy playtest continues.** Session 34 — **the matchup resolver and the tier tables** — is built and wired: `resolveMatchup(opponent, knobs, legacy)` (R-095) turns a roaming template into a duel's life, profile, entrance and ante from three new knobs with easy/standard/hard bundles (`mageTierLife` 8/12/16, `mageTierEntrance` 0/1/2 basics in pip order, `beastTierLifeDelta` +0/+2/+4; the Serra's `worldLifeOffset` −4), called from `prepareDuel`, the siege and the dungeon minion path; the parley speaks the entrance; `pnpm mage-sweep --mode`, `enemies.md` and the Lab read the same tables. **The cells are encoded as drafted and are ⚠ provisional until ratified (Part 2).** The S28 window's second defect is fixed and gated. Part 3 is measured (tables below): tier 2's two-basic cells, the stock starters against the roster at the Standard cells (saved as `analysis/runs/s34_standard.json`). Part 4's trims are measured, not applied — they do not move the walls. Pool 194 (unchanged); `docs/reference/` and `docs/knobs.md` regenerated.
+**Cinquefoil v1 is live on Vercel; the deploy playtest continues. The tuning arc is closed.** Session 35 ratified the tier tables (ADR-117: mages 8/0 · 12/1 · 16/2 at Standard, beasts +0/+2/+4; the ⚠ is off), amended ADR-116, added the four row offsets (ADR-119: Ysolde −4, the Nighthawks −4, the Gale +4, the Serra −4 standing), let the lifegain walls stand (ADR-120; the Part 4 trims withdrawn), ran and saved **the baseline of record** (`analysis/runs/s35_standard_final.json` — the stock starters against the roster at the final Standard cells, 15,500 games on the final code), and fixed the apprentice's first land (Part 3: measured, not guessed — the softmax, not the mulligan; a class gate at every profile, pinned as book 51, both ladder gates green). Pool 194 (unchanged); `docs/knobs.md` and `docs/reference/` regenerated. The planner's next brief is phase two.
 
 ## Done this session
 
-- **Part 0**: `docs/decision-updates/s34.md` — ADR-116/117/118, the second S28 erratum, the Lab-ledger rule, filing notes. **The window fix**: "in response" means an OPPONENT's item on the stack, in both gates (the cantrip window, the flash creature); pins 36 and 49 extended (our own spell on the stack on our turn is not a window); the FUZZ_FULL ladder gate held and the vs-random ladder PASSES.
-- **Part 1 — the resolver** (`packages/world/src/matchup.ts`): tables in the knobs registry with the bundles; `worldLifeOffset` on the catalog row (validated); `primaryColors` on every mage row in `sim/mage-decks` (the pip order — sync-tested against the pool); `entranceFor` (one basic per colour in pip order, repeating for a mono mage); `legacyTerm()` zeros; `prepareDuel` / `siegeDuelSpec` / the dungeon MINION path resolve through it (guardians, lords, petals, the Heart untouched, as scoped); `PreparedDuel.enemy.entrance`; the world index exports it. The catalog's mage rows' `worldLife` regenerated to the Standard cell (T2 10 → 12, T3 12 → 16) and sync-tested. `pnpm mage-sweep --mode easy|standard|hard` replaces `--tier-life`; `enemies.md` shows life and entrance per mode for every roaming opponent; the Lab's roster columns take a mode selector and a saved run names its mode. Tests: the table lookup per mode and tier (mages, beasts, the Serra's offset); the entrance order (Corvane swamp then plains; Kessa mountain first; a mono mage repeats); `primaryColors` sync; the mage rows' sync; `prepareDuel` at each mode for Corvane (14/1, 16/2, 20/2 — life, entrance modifiers before the manalinks, master, the ante); the fuzz — every mage at every mode through `prepareDuel` with random pilots (45 duels), replays byte-exact. Two pins re-based (a mage duel's modifiers now carry the entrance; the Warband's life carries the tier delta).
-- **Part 2**: the drafted cells encoded (T1 8/0 at every mode — the planner's 8, not Chris's 6). ⚠ For ratification.
-- **Part 3**: sweep part 8 with tier 2's two-basic cells (27,000 games) and the stock-starter roster at the Standard cells (`--mode standard --part 2/5/6`, 15,500 games; converted to `analysis/runs/s34_standard.json` so the Lab loads and compares it). Tables in Concern 1.
-- **Part 4**: the two trims MEASURED against the five starters (100 games each, both seats, at the Standard cells) without touching the lists — Concern 3.
-- **Part 5**: the parley shows the entrance clause (the planner's two lines) from the resolver's cell at parley time; the telegraph names nothing.
-- **Part 6**: part 8's rows print the mage's graveyard → battlefield returns per game (Corvane's engine per cell — Concern 4); the Lab's mode selector.
-
-## Director round (Chris, 2026-09-08): the single match's dev setup
-
-**`/play` in the dev server (and `?dev=1`) is the Lab's dials on a duel you pilot; production keeps the plain screen.** The many per-deck buttons collapse into the Lab's grouped picker (every mage, beast, starter, road deck, boss and the custom decks from the editor); each side has life, entrance basics, starting bonuses (in play / to hand / bonus cards / the law ring, "both seats" for a symmetric law) and, for the opponent, the AI profile; a mode selector loads the resolver's defaults (a mage's tier life and entrance, a boss's law and signature, a starter at 10) when a deck is picked; "edit a copy" opens the deck editor (save to `analysis/decks/`, use on either side); play/draw or a coin flip; a seed; zero ante. The match is built as a `CustomMatch` from the same `resolveSide` / `sideModifiers` the Lab's worker uses, so the duel you play is the duel the sweep measured. Rematch keeps the setup and seed. Files: `packages/ui/src/play/DevSetup.tsx`; the Lab's panels moved to `packages/ui/src/lab/lab-panels.tsx` (shared). Verified live: Dawn Levy (10) vs Lord Corvane at the Standard cell — turn one opens with Corvane at 16 and a Swamp and a Plains on his battlefield.
+- **Part 0**: `docs/decision-updates/s35.md` — ADR-117 ratified, ADR-116 amended, ADR-119, ADR-120, filing notes. The ⚠ removed from the three knobs' descriptions and R-095.
+- **Part 1**: the four offsets on the catalog rows (`worldLifeOffset`: `mage:ysolde` −4, `beast:nighthawk` −4, `beast:gale` +4, `beast:serra` −4); `pnpm knobs:doc && pnpm reference`; the mage rows' `worldLife` sync holds (the offset is a separate field); `enemies.md` shows the offset rows' cells per mode (Ysolde 10 / **12** / 16 with two basics; the Nighthawks 4 / **6** / 8; the Gale 14 / **16** / 18; the Serra 10 / **12** / 16); the Lab reads them (its mage/beast defaults add the row offset).
+- **Part 2**: the baseline of record — `--mode standard --part 2/5/6`, 100 games both seats, **re-run in full on the final code** (the first pass had straddled the Part 3 fix: the three parts run as separate processes and the gate landed between them — the unchanged rows moving under identical seeds was the tell). Converted to `analysis/runs/s35_standard_final.json` (the Lab loads and compares it). Tables in Concern 1.
+- **Part 3**: measured over 1,000 Oriel-apprentice openings against the five starters (a probe agent wrapping `chooseAction`): keeps on zero-landers 0 of 8, on one-landers 0 of 74 (the mulligan policy is innocent); on the first own main phase with a land in hand, **the land was dropped 753 of 1,000 times — 247 passes**, every one with the offered actions exactly {pass, playLand} (or two land drops and pass): the softmax at 1.2 over a small gap. **The fix**: when every candidate is a land drop or a pass, the pass is never a candidate — the single land is taken outright, a choice of lands goes to the softmax without the pass; any competing play leaves the whole choice to the softmax. At every profile. Re-measured: **1,000 of 1,000**. Book 51 pins it (all three profiles, forty draws each; a castable spell beside the land un-forces it; two lands offered never pass). The FUZZ_FULL ladder gate held and the vs-random ladder PASSES.
+- One test re-based for the fix's side effect: the Channeler's chooseMode test counted only the human's nonland permanents when deciding whether the bounce mode should be offered — the predicate is any player's, and the AI (developing on schedule now) had a creature out at a seed where it used to have none. The test counts both boards.
 
 ## Deviations from the brief
 
-1. **The resolver takes the knobs, not a `mode` argument**: `resolveMatchup(opponent, knobs, legacy)`. Every caller already holds `worldKnobs(world)` with the bundle applied; a separate mode would have been a second source of truth for the same fact. `enemies.md` and the sweep resolve the three bundles explicitly.
-2. **Part 4's trims are not applied.** The brief marks them ⚠ Chris and Chris framed this session as analysis before list changes; measured instead (Concern 3) — and they do not move the walls, so applying them would have been a change without an effect.
-3. **The T1 cell is 8** (the planner's preference; Chris ran 6). The tables are data — a one-number edit in `knobs.ts` if the ruling goes the other way.
-4. **`s34_standard.json` is converted from the sweep's output**, not run in the Lab: it carries every cell's win rate, games and mean turns but not the seat split or the margins (its notes say so). The Lab's own roster run at Standard reproduces it live in a few minutes.
-5. **The Lab's standing description moved to `docs/implementer-notes.md`** ("The Matchup Lab (standing reference)") — the handoff is overwritten each session and the Lab is now infrastructure.
+None. (Part 2 was run twice; the second run is the record.)
 
 ## Concerns
 
-1. **Part 3 — the measurements.**
+1. **The baseline of record** (`analysis/runs/s35_standard_final.json`; the STARTER's win %, 100 games per pairing, both seats; mages at 8/0 · 12/1 · 16/2 with the row offsets, beasts at +0/+2/+4 with the row offsets; the starters stock at 10 / journeyman / no basics):
 
-   **Tier 2 with the two-basic cells (the mid-road references' win rate; mean over the five mages × two references):**
+| tier means (the starters' win %) | mages S34 → **S35 final** | beasts S34 → **S35 final** |
+|---|---|---|
+| T1 | 59 → **57** | 72 → **69** |
+| T2 | 36 → **36** | 44 → **44** |
+| T3 | 21 → **22** | 34 → **34** |
 
-### Aggregate — the references' win rate by life × entrance (tier 2; mean over 5 mages × 2 references)
+| offset row (ADR-119) | Standard cell | white | blue | black | red | green | mean S34 → **S35** |
+|---|---|---|---|---|---|---|---|
+| Thornmother Ysolde | 16 − 4 = 12 life, 2 basics | 26 | 9 | 24 | 12 | 13 | 13 → **17** |
+| A Vampire Nighthawk | 8 + 2 − 4 = 6 life | 50 | 31 | 13 | 38 | 27 | 18 → **32** |
+| The Living Gale | 12 + 2 + 4 = 18 life | 67 | 59 | 37 | 52 | 54 | 68 → **54** |
+| The Serra Angel | 12 + 4 − 4 = 12 life (unchanged) | 23 | 20 | 13 | 12 | 30 | 19 → **20** |
 
-| life \ basics | 0 | 1 | 2 |
-|---|---|---|---|
-| 10 | 83% (turns 15.5; by library 0%) | 75% (turns 16.1; by library 0%) | 66% (turns 16.4; by library 0%) |
-| 12 | 80% (turns 16.6; by library 0%) | 70% (turns 17.2; by library 0%) | 64% (turns 17.2; by library 0%) |
-| 14 | 77% (turns 17.9; by library 0%) | 67% (turns 18.1; by library 0%) | 61% (turns 18.1; by library 0%) |
+The 28 unchanged rows S34 → S35 (same seeds; the only code change is the land-drop gate): mean Δ -1.1, sd 3.9 over 140 cells.
 
-### Per mage — the references' win rate by cell (tier 2; mean over both references)
+**The starters against the mages at the final Standard cells (the STARTER's win %, 100 games each, both seats)**
 
-| mage | 10/0 | 10/1 | 10/2 | 12/0 | 12/1 | 12/2 | 14/0 | 14/1 | 14/2 |
-|---|---|---|---|---|---|---|---|---|---|
-| Mistress Vael | 60% | 53% | 47% | 55% | 50% | 44% | 50% | 46% | 42% |
-| Kessa Emberhand | 92% | 81% | 70% | 89% | 78% | 69% | 87% | 76% | 64% |
-| Adept Maelin | 89% | 81% | 74% | 86% | 77% | 70% | 85% | 71% | 63% |
-| Brennor of the Glade | 82% | 77% | 67% | 80% | 72% | 65% | 77% | 70% | 65% |
-| Pell of the Shallows | 93% | 82% | 75% | 91% | 76% | 74% | 88% | 72% | 71% |
+| starter | Sister Oriel T1 | Tessaly Reed T1 | Pale Edric T1 | Brann the Scorched T1 | Old Hask T1 | Mistress Vael T2 | Kessa Emberhand T2 | Adept Maelin T2 | Brennor of the Glade T2 | Pell of the Shallows T2 | Lord Corvane T3 | Varro Flamebrand T3 | High Warden Sorrel T3 | Thornmother Ysolde T3 | Magister Quill T3 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Dawn Levy (W) | 48 | 84 | 75 | 70 | 81 | 37 | 44 | 59 | 49 | 40 | 33 | 30 | 20 | 26 | 37 |
+| Tidal Grimoire (U) | 25 | 41 | 46 | 51 | 41 | 17 | 21 | 42 | 31 | 29 | 25 | 14 | 13 | 9 | 16 |
+| Pallid Court (B) | 42 | 65 | 35 | 67 | 81 | 20 | 45 | 46 | 61 | 28 | 36 | 26 | 29 | 24 | 31 |
+| Ember Warband (R) | 41 | 69 | 46 | 66 | 61 | 21 | 45 | 29 | 25 | 34 | 15 | 16 | 26 | 12 | 13 |
+| Verdant Trail (G) | 45 | 79 | 45 | 66 | 65 | 29 | 42 | 44 | 35 | 30 | 15 | 26 | 24 | 13 | 19 |
 
-   **The stock starters (10 / journeyman / no basics) against the mages at the Standard cells (the STARTER's win %, 100 games each, both seats):**
+**The starters against the beasts at the final Standard deltas and offsets**
 
-| mage (Standard cell) | Dawn Levy | Tidal Grimoire | Pallid Court | Ember Warband | Verdant Trail | mean |
-|---|---|---|---|---|---|---|
-| Sister Oriel (T1, 8/0) | 45 | 25 | 41 | 40 | 48 | 40 |
-| Tessaly Reed (T1) | 87 | 39 | 72 | 69 | 73 | 68 |
-| Pale Edric (T1) | 76 | 52 | 35 | 45 | 55 | 53 |
-| Brann the Scorched (T1) | 77 | 55 | 65 | 76 | 66 | 68 |
-| Old Hask (T1) | 76 | 50 | 83 | 70 | 63 | 68 |
-| Mistress Vael (T2, 12/1) | 35 | 15 | 20 | 24 | 26 | 24 |
-| Kessa Emberhand (T2) | 36 | 27 | 45 | 41 | 39 | 38 |
-| Adept Maelin (T2) | 60 | 40 | 45 | 35 | 40 | 44 |
-| Brennor of the Glade (T2) | 50 | 29 | 62 | 26 | 37 | 41 |
-| Pell of the Shallows (T2) | 47 | 30 | 33 | 32 | 35 | 35 |
-| Lord Corvane (T3, 16/2) | 34 | 24 | 35 | 13 | 14 | 24 |
-| Varro Flamebrand (T3) | 33 | 11 | 28 | 18 | 26 | 23 |
-| High Warden Sorrel (T3) | 20 | 13 | 33 | 23 | 22 | 22 |
-| Thornmother Ysolde (T3) | 18 | 9 | 19 | 6 | 12 | 13 |
-| Magister Quill (T3) | 35 | 19 | 23 | 15 | 19 | 22 |
-| **T1 mean** | 72 | 44 | 59 | 60 | 61 | **59** |
-| **T2 mean** | 46 | 28 | 41 | 32 | 35 | **36** |
-| **T3 mean** | 28 | 15 | 28 | 15 | 19 | **21** |
-
-   **The stock starters against the beasts at the Standard deltas (+0 / +2 / +4; the Serra −4):**
-
-| beast | Dawn Levy | Tidal Grimoire | Pallid Court | Ember Warband | Verdant Trail | mean |
-|---|---|---|---|---|---|---|
-| A Grizzly Bear (T1) | 90 | 77 | 71 | 71 | 73 | 76 |
-| The Deadly Recluse (T1) | 70 | 59 | 73 | 82 | 54 | 68 |
-| A Bloom of Man-o'-War (T1) | 92 | 66 | 74 | 81 | 75 | 78 |
-| The Cunning Tactician (T1) | 88 | 75 | 69 | 79 | 79 | 78 |
-| A Plague of Rats (T1) | 84 | 61 | 77 | 77 | 70 | 74 |
-| A Gray Ogre (T1) | 89 | 73 | 78 | 79 | 84 | 81 |
-| A Savannah Lion (T1) | 64 | 34 | 46 | 56 | 51 | 50 |
-| The Boggart Warband (T2, +2) | 46 | 31 | 44 | 34 | 46 | 40 |
-| A Vampire Nighthawk (T2, +2) | 36 | 21 | 9 | 11 | 12 | 18 |
-| The Living Gale (T2, +2) | 82 | 69 | 51 | 73 | 67 | 68 |
-| A Rumbling Baloth (T2, +2) | 56 | 59 | 69 | 30 | 31 | 49 |
-| The Siege-Gang (T3, +4) | 32 | 35 | 28 | 21 | 33 | 30 |
-| The Hypnotic Specter (T3, +4) | 70 | 63 | 64 | 58 | 45 | 60 |
-| The Serra Angel (T3, +4 −4) | 21 | 20 | 14 | 16 | 25 | 19 |
-| The Pelakka Wurm (T3, +4) | 34 | 29 | 20 | 21 | 22 | 25 |
-| The Faerie Formation (T3, +4) | 53 | 53 | 22 | 18 | 30 | 35 |
-| **T1 beasts mean** | 82 | 64 | 70 | 75 | 69 | **72** |
-| **T2 beasts mean** | 55 | 45 | 43 | 37 | 39 | **44** |
-| **T3 beasts mean** | 42 | 40 | 30 | 27 | 31 | **34** |
+| starter | A Grizzly Bear T1 | The Deadly Recluse T1 | A Bloom of Man-o'-War T1 | The Cunning Tactician T1 | A Plague of Rats T1 | A Gray Ogre T1 | A Savannah Lion T1 | The Boggart Warband T2 | A Vampire Nighthawk T2 | The Living Gale T2 | A Rumbling Baloth T2 | The Siege-Gang T3 | The Hypnotic Specter T3 | The Serra Angel T3 | The Pelakka Wurm T3 | The Faerie Formation T3 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Dawn Levy (W) | 86 | 70 | 92 | 83 | 83 | 79 | 64 | 51 | 50 | 67 | 57 | 33 | 72 | 23 | 37 | 50 |
+| Tidal Grimoire (U) | 75 | 56 | 64 | 66 | 60 | 70 | 27 | 36 | 31 | 59 | 56 | 35 | 60 | 20 | 29 | 46 |
+| Pallid Court (B) | 70 | 72 | 65 | 70 | 76 | 82 | 38 | 51 | 13 | 37 | 68 | 31 | 67 | 13 | 17 | 20 |
+| Ember Warband (R) | 64 | 81 | 74 | 76 | 70 | 83 | 43 | 33 | 38 | 52 | 29 | 20 | 54 | 12 | 24 | 17 |
+| Verdant Trail (G) | 71 | 56 | 68 | 80 | 66 | 83 | 46 | 44 | 27 | 54 | 33 | 33 | 50 | 30 | 18 | 30 |
 
    **The reads.**
-   - **Tier 2's shape, against the brief's test** ("12/1 above 75% for the mid-road references AND below 40% for the stock starters"): half met. The stock starters are at **36%** (below 40 ✓); the mid-road references at 12/1 read **70%** (not above 75; the S33 read was 71). The two-basic cells the S33 read lacked: **12/2 = 64%, 14/2 = 61%** — both inside the 55–65 band, where 12/1 sits above it. So tier 2 has two candidate Standards: **12/1** (mid-road 70, starters 36 — "beatable once upgraded, hard walked into early", the brief's wanted shape, with the mid-road a shade over the band) or **12/2** (mid-road 64 in band; the stock starters would land nearer 28 on the tier-3 slope — not measured for stock). The planner's call; the tables are one number each.
-   - **Tier 3 at 16/2**: the stock starters win **21%** (ADR-116 asked for "unfavourable but winnable, roughly 25–40") — a shade under, and Ysolde (13) and Varro (11 for blue) are past winnable for the raw starter; Corvane at 16/2 is 24. The mid-road side is in band (56%, S33). If both bounds must hold, **16/1** (mid-road 66, S33; starters unmeasured, ~28 by the slope) or **14/2** (mid-road ~59 interpolated) are the neighbours. As drafted, Standard tier 3 punishes a raw starter a little harder than the ADR's words.
-   - **Tier 1 at 8/0 is unchanged** (59% for the starters; 72 for white, 44 for blue — ADR-118's split).
-   - **The beasts at the Standard deltas land where the bands point**: T1 72% (fodder, unchanged), **T2 44%** (the 45–55 band, a point under — the Nighthawks at 18 drag it; the Gale at 68 is the soft one), **T3 34%** (inside 30–45; the Serra 19 even at −4, the Specter 60 — the plan beast that life does not touch).
-   - **Vael at 12/1 is a wall by the tier's own band**: 24% for the starters (15–35), and 44–60% for the mid-road references at every tier-2 cell (she is the only tier-2 mage already inside the band at 10/0). Oriel at 8/0: 40% (25–48) — the tier-1 wall stands. Neither is a tier problem (Concern 3).
-2. **The tables are ⚠ provisional** — encoded as the brief drafted them so the world, the sweep, the docs and the Lab all read one source; changing a cell is one number in `knobs.ts` (plus `pnpm knobs:doc` / `pnpm reference`; the catalog's mage rows follow through the sync test — the S34 filing note says how).
-3. **Part 4 — the trims do not move the walls.** Measured at the Standard cells against the five starters, 100 games each both seats:
-
-| variant | starter:white | starter:blue | starter:black | starter:red | starter:green | mean |
-|---|---|---|---|---|---|---|
-| Oriel as shipped (T1, 8 life, 0 basics) | 50 | 23 | 41 | 47 | 43 | 41 |
-| Oriel trimmed (−1 Soul Warden −1 Spirit Link +1 Suntail Hawk +1 Raise the Alarm) (T1, 8 life, 0 basics) | 52 | 26 | 41 | 43 | 37 | 40 |
-| Vael as shipped (T2, 12 life, 1 basics) | 30 | 18 | 22 | 18 | 24 | 22 |
-| Vael trimmed (−1 Soul Warden −1 Spirit Link +1 Suntail Hawk +1 Swords) (T2, 12 life, 1 basics) | 33 | 18 | 18 | 23 | 21 | 23 |
-
-   Oriel −1 / Vael +1 — inside the noise (±5 on the mean). Two-card trims are below the resolution of the walls' problem: both are lifegain decks and the AI races lifegain badly (S33 read). Either a bigger redesign of the two lists, or accept them as the two walls the roads meet (ADR-103's "unless it also walls the player" — they do, at 24 and 40).
-4. **Corvane's engine per cell** (part 8's new rows): returns per game rise with the roots — 0.38 at 12/0, 0.61 at 12/1, 0.84 at 12/2 … 1.32 at 20/2; 0.81 at the Standard 16/2. The reanimator turns once a game at the Standard cell; the S33 "two-root deck" read holds.
-5. **The catalog's mage rows' `worldLife` is generated data now** — a hand edit fails the sync test; the number to change is the knob.
-6. **The stock starters' tier gradient is now 59 / 36 / 21** (was 60 / 57 / 55 in the baseline): the tiers separate. Whether the middle and bottom sit where Chris wants them is the ratification; the shape the sweep could not produce before the resolver, it produces now.
+   - **The tier means did not move from S34** (57 / 36 / 22 for the mages against 59 / 36 / 21; 69 / 44 / 34 for the beasts against 72 / 44 / 34) — the offsets touched four rows and the land-drop gate is worth about a point to the mages across the board (mean Δ −1.1 on the 140 unchanged cells; the apprentice's turn-one land was a fifth of Oriel's openings, so the tier-1 mean moved most, 59 → 57). The shape the arc set out to produce — high, even-ish, unfavourable — is now the ladder's shape from the stock starters' side: **57 / 36 / 22**.
+   - **The offsets landed where ADR-119 aimed**: the Nighthawks from 18 to 32 for the starters (a wall softened to a hard fight; black still 13 — lifelink against a deck with no fliers), the Gale from 68 to 54 (the soft tier-2 beast brought to even), Ysolde from 13 to 17 (still the hardest tier-3 mage for a raw starter — an aggro master at 12 with two basics; her row is the one to watch in world play), the Serra 20 (unchanged, as ruled).
+   - **The walls stand as ruled**: Oriel 40 → 41 (48 / 21 / 41 / 43 / 51), Vael 24 → 25 (37 / 15 / 20 / 28 / 26). ADR-120's reading — Chris's three wins over Oriel at Standard — is the human bound; the roster's number is the AI's.
+   - **Tidal Grimoire is still the hard road at every tier** (T1 44, T2 27, T3 14 against the mages); Dawn Levy the gentle one (69 / 46 / 29). ADR-118 stands: both are the AI's blue and white, not the lists'.
+2. **The land-drop gate is a class rule, not a temperature change** — nothing else in the softmax moved. If Chris sees other first-turn oddities from the apprentice (a one-drop not cast with the mana up), the same probe pattern (`scratchpad/first-land.mts`, documented in implementer-notes S35) measures them in two minutes before any policy edit.
+3. **Two baselines now live in `analysis/runs/`**: `s34_standard.json` (pre-fix, pre-offsets) and `s35_standard_final.json` (the record). The Lab's "compare" overlays either; the S34 file is history, not a reference.
+4. **Phase two will want the resolver's `legacyTerm`** filled (ministers/powers → the enemy's setup) and the per-road term beside it — both are zeros with the shape in place (R-095).
 
 ## Registry entries added/changed
 
-R-095 (the matchup resolver). No pool changes. ADRs 116–118 + the second S28 erratum in `docs/decision-updates/s34.md`. Knobs: `mageTierLife`, `mageTierEntrance`, `beastTierLifeDelta` (+ bundles; `docs/knobs.md` regenerated). Catalog: `worldLifeOffset` (the Serra −4); the mage rows' `worldLife` regenerated (12 / 16). Sim: `primaryColors` on the mage rows; `mage-sweep --mode`, part 8's tier-2 two-basic cells and the returns line. World: `matchup.ts`, `prepareDuel` / `siegeDuelSpec` / dungeon minions through it; `PreparedDuel.enemy.entrance`; `enemies.md` per mode. UI: the parley's entrance clause; the Lab's mode selector. Agents: both gates' "in response" test; pins 36/49. Docs: implementer-notes S34 lessons + the Lab's standing reference.
+R-095's row: the cells ratified, the four offsets named. No pool changes. ADRs 117 (ratified) / 116 (amended) / 119 / 120 in `docs/decision-updates/s35.md`. Knobs: descriptions only (the ⚠ off; `docs/knobs.md` regenerated). Catalog: four `worldLifeOffset` rows. Agents: `landOnlyCandidates` in `priorityChoice`; book 51. UI test: the Channeler's mode-availability count. Docs: implementer-notes S35 lessons; `enemies.md` regenerated.
 
 ## Test status
 
-Default tier **582 passed / 2 skipped** (57 files; +6 resolver tests incl. the 45-duel fuzz through `prepareDuel` at three modes with byte-exact replays; two pins re-based — a mage duel's modifiers carry the entrance, the Warband's life carries the tier delta; `docs/knobs.md`, `enemies.md`, `starters.md` regenerated and in sync). `pnpm typecheck` clean. **The FUZZ_FULL ladder gate held and the 100/cell vs-random ladder PASSES** after the window fix. Sweeps: part 8 (27,000 games), the Standard roster (15,500), the walls (4,000). Browser: the Lab's mode selector verified live (Standard 8/0 · 12/1 · 16/2; Hard 8/0 · 14/2 · 20/2; beasts +0/+2/+4 → +0/+4/+8).
+Default tier **583 passed / 2 skipped** (57 files; +1 book pin; the Channeler test's count corrected; docs in sync). `pnpm typecheck` clean. **The FUZZ_FULL ladder gate held and the 100/cell vs-random ladder PASSES** with the land-drop gate. Measurements: 1,000 apprentice openings before and after the fix; the baseline of record 15,500 games (run twice; the clean run is the file).
 
 ## Suggested next
 
-1. **Chris / planner — the ratification**: tier 2 at 12/1 or 12/2 (Concern 1); tier 3 at 16/2 as drafted or a cell easier (16/1 / 14/2) if the raw-starter bound must hold; tier 1 at 8 or 6; the beasts' T2 delta (+2 lands at 44). Then `pnpm knobs:doc && pnpm reference` and the ⚠ comes off.
-2. **The walls**: Oriel and Vael need more than a two-card trim (Concern 3) — a redesign brief or a ruling that they stand.
-3. **Implementer smalls**: the stock starters at the tier-2/3 neighbour cells (12/2, 16/1, 14/2) if the ratification wants them measured first — the Lab's roster with shifts, or `--mode` with a temporary bundle; the Lab's grid mode could take the mode too (its pickers default to Standard today).
+1. **Planner**: phase two — the resolver's `legacyTerm` and the per-road term (R-095's hooks), the mage entrance's telegraph line if wanted (the parley speaks it; the rail does not), the Lumberjack's home.
+2. **Chris**: world play at the ratified cells — Ysolde at 12/2 and the Nighthawks at 6 are the two rows the offsets moved most; the dev `/play` setup reproduces any cell for a hand-piloted read.
+3. **Implementer smalls**: none outstanding from the brief.
 
 ## How to run
 
@@ -140,5 +86,5 @@ pnpm typecheck
 pnpm mage-sweep --games 100 [--mode easy|standard|hard] [--part 1..9] [--baseline none]
 FUZZ_FULL=1 pnpm exec vitest run packages/sim/src/ladder-smoke.test.ts / pnpm ladder --games 100
 pnpm reference / pnpm knobs:doc / pnpm art:fetch
-pnpm viewer → /lab (the Matchup Lab: grid, roster, differential; mode selector) · /gallery · /play
+pnpm viewer → /lab (the Matchup Lab) · /play (dev: the Lab's dials on a duel) · /gallery · /world
 ```
