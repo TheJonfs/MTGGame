@@ -8,6 +8,7 @@ import { MAGE_DECKS } from "@shandalar/sim/mage-decks";
 import { ROAD_DECKS } from "@shandalar/sim/road-decks";
 import { heartRootModifiers } from "@shandalar/world";
 import { devMenuEnabled } from "../dev";
+import { DevSetup, type DevMatch } from "./DevSetup";
 import { loadOracle, loadPool, type OracleEntry, type SavedGame } from "../engine-bridge";
 import { MatchController } from "./match-controller";
 import { PlayMatch, loadStops } from "./PlayMatch";
@@ -206,6 +207,21 @@ export function PlayApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =>
     loadOracle().then(setOracle);
   }, []);
 
+  // S34 director round: the dev setup hands a finished custom spec (the Lab's dials) straight to the controller.
+  const [lastDev, setLastDev] = useState<DevMatch | null>(null);
+  const beginDev = (m: DevMatch, seedOverride?: number) => {
+    const c = new MatchController(pool, {
+      humanSeat: m.humanSeat,
+      custom: m.custom,
+      ...((seedOverride ?? m.seed) !== undefined ? { seed: (seedOverride ?? m.seed)! } : {}),
+      aiDelayMs: Number(localStorage.getItem("shandalar-ai-delay") ?? 400),
+    });
+    c.stops = loadStops();
+    setLastDev(m); setLastSetup(null);
+    setController(c);
+    setScreen("match");
+    void c.start();
+  };
   const begin = (setup: Setup, seedOverride?: number) => {
     const seed = seedOverride ?? (setup.seed.trim() !== "" ? Number(setup.seed) : undefined);
     const human = playDeck(setup.humanDeck), enemy = playDeck(setup.aiDeck);
@@ -241,7 +257,7 @@ export function PlayApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =>
     void c.start();
   };
 
-  if (screen === "setup" || !controller) return <SetupScreen onStart={begin} />;
+  if (screen === "setup" || !controller) return devMenuEnabled() ? <DevSetup pool={pool} onStart={beginDev} /> : <SetupScreen onStart={begin} />;
   if (screen === "match") {
     return (
       <PlayMatch
@@ -256,7 +272,7 @@ export function PlayApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =>
     <EndScreen
       c={controller}
       pool={pool}
-      onRematch={() => lastSetup && begin(lastSetup, controller.seed)}
+      onRematch={() => (lastDev ? beginDev(lastDev, controller.seed) : lastSetup && begin(lastSetup, controller.seed))}
       onNew={() => setScreen("setup")}
       onWatch={() => onWatchReplay(JSON.parse(controller.savedGame()) as SavedGame)}
     />

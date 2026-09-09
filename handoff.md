@@ -14,6 +14,10 @@
 - **Part 5**: the parley shows the entrance clause (the planner's two lines) from the resolver's cell at parley time; the telegraph names nothing.
 - **Part 6**: part 8's rows print the mage's graveyard → battlefield returns per game (Corvane's engine per cell — Concern 4); the Lab's mode selector.
 
+## Director round (Chris, 2026-09-08): the single match's dev setup
+
+**`/play` in the dev server (and `?dev=1`) is the Lab's dials on a duel you pilot; production keeps the plain screen.** The many per-deck buttons collapse into the Lab's grouped picker (every mage, beast, starter, road deck, boss and the custom decks from the editor); each side has life, entrance basics, starting bonuses (in play / to hand / bonus cards / the law ring, "both seats" for a symmetric law) and, for the opponent, the AI profile; a mode selector loads the resolver's defaults (a mage's tier life and entrance, a boss's law and signature, a starter at 10) when a deck is picked; "edit a copy" opens the deck editor (save to `analysis/decks/`, use on either side); play/draw or a coin flip; a seed; zero ante. The match is built as a `CustomMatch` from the same `resolveSide` / `sideModifiers` the Lab's worker uses, so the duel you play is the duel the sweep measured. Rematch keeps the setup and seed. Files: `packages/ui/src/play/DevSetup.tsx`; the Lab's panels moved to `packages/ui/src/lab/lab-panels.tsx` (shared). Verified live: Dawn Levy (10) vs Lord Corvane at the Standard cell — turn one opens with Corvane at 16 and a Swamp and a Plains on his battlefield.
+
 ## Deviations from the brief
 
 1. **The resolver takes the knobs, not a `mode` argument**: `resolveMatchup(opponent, knobs, legacy)`. Every caller already holds `worldKnobs(world)` with the bundle applied; a separate mode would have been a second source of truth for the same fact. `enemies.md` and the sweep resolve the three bundles explicitly.

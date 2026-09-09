@@ -47,6 +47,8 @@ export interface LabDeck {
   bonuses?: LabBonus[];
   /** The catalog tier (mages and beasts) — the roster grid aggregates by it. */
   tier?: 1 | 2 | 3;
+  /** The catalog portrait slug (mages, beasts), for the dev setup's duel rail. */
+  portrait?: string;
 }
 
 const TIER_PROFILE = { 1: "apprentice", 2: "journeyman", 3: "master" } as const;
@@ -54,7 +56,7 @@ export type LabMode = DifficultyName;
 const BASIC_OF: Record<string, string> = { W: "plains", U: "island", B: "swamp", R: "mountain", G: "forest" };
 
 type StarterRow = { id: string; name: string; archetype: Archetype; basicLand: string; decklist: Decklist };
-type OpponentRow = { id: string; deck: string; tier: 1 | 2 | 3; difficulty: Profile; worldLife: number; worldLifeOffset?: number; kind?: string };
+type OpponentRow = { id: string; deck: string; tier: 1 | 2 | 3; difficulty: Profile; worldLife: number; worldLifeOffset?: number; kind?: string; portrait?: string };
 type LawBoth = { type: "permanentOnBattlefield"; cardId: string } | { type: "extraCards"; count: number };
 type DungeonsJson = {
   mox: { id: string; color: string; guardian: { key: string; name: string; life: number }; law: { name: string; both: LawBoth[] } }[];
@@ -75,13 +77,13 @@ export function labDecks(mode: LabMode = "standard"): LabDeck[] {
   const mageRows = (worldJson("opponents") as { opponents: OpponentRow[] }).opponents.filter((o) => (o.kind ?? "mage") === "mage");
   for (const [k, m] of Object.entries(MAGE_DECKS)) {
     const row = mageRows.find((o) => o.deck === `mage:${k}`);
-    out.push({ key: `mage:${k}`, group: "mages", name: m.name, label: `${m.name} (T${m.tier} ${m.colors}) — ${m.epithet}`, archetype: m.archetype, decklist: m.decklist, life: knobs.mageTierLife[m.tier] + (row?.worldLifeOffset ?? 0), profile: TIER_PROFILE[m.tier], basics: knobs.mageTierEntrance[m.tier], tier: m.tier });
+    out.push({ key: `mage:${k}`, group: "mages", name: m.name, label: `${m.name} (T${m.tier} ${m.colors}) — ${m.epithet}`, archetype: m.archetype, decklist: m.decklist, life: knobs.mageTierLife[m.tier] + (row?.worldLifeOffset ?? 0), profile: TIER_PROFILE[m.tier], basics: knobs.mageTierEntrance[m.tier], tier: m.tier, ...(row?.portrait ? { portrait: row.portrait } : {}) });
   }
   const rows = (worldJson("opponents") as { opponents: OpponentRow[] }).opponents.filter((o) => o.kind === "beast");
   for (const [k, b] of Object.entries(EXPANSION_DECKS)) {
     const row = rows.find((o) => o.deck === `beast:${k}`) ?? rows.find((o) => o.deck === `beast:${k}` && o.tier === b.tier);
     const tier = row?.tier ?? b.tier;
-    out.push({ key: `beast:${k}`, group: "beasts", name: b.name, label: `${b.name} (T${b.tier} ${b.color})`, archetype: b.archetype, decklist: b.decklist, life: (row?.worldLife ?? 8) + knobs.beastTierLifeDelta[tier] + (row?.worldLifeOffset ?? 0), profile: row?.difficulty ?? TIER_PROFILE[b.tier], basics: 0, tier });
+    out.push({ key: `beast:${k}`, group: "beasts", name: b.name, label: `${b.name} (T${b.tier} ${b.color})`, archetype: b.archetype, decklist: b.decklist, life: (row?.worldLife ?? 8) + knobs.beastTierLifeDelta[tier] + (row?.worldLifeOffset ?? 0), profile: row?.difficulty ?? TIER_PROFILE[b.tier], basics: 0, tier, ...(row?.portrait ? { portrait: row.portrait } : {}) });
   }
   for (const s of (worldJson("starters") as { starters: StarterRow[] }).starters) {
     out.push({ key: `starter:${s.id}`, group: "starters", name: s.name, label: `${s.name} — starter:${s.id}`, archetype: s.archetype, decklist: s.decklist, life: 10, profile: "journeyman", basics: 0, entrance: [s.basicLand] });
