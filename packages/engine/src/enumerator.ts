@@ -200,6 +200,8 @@ export function legalActions(ctx: EngineCtx, player: PlayerId): Action[] {
       const timing = ability.equip ? "sorcery" : (ability.timing ?? "instant"); // equip is sorcery-speed by rule (702.6b)
       if (timing === "sorcery" && !atSorcerySpeed) return;
       if (ability.cost.tap && (obj.tapped || (obj.summoningSick && !characteristics(ctx, id).keywords.has("haste")))) return;
+      // S36 (R-096 word 2): "Activate only if you have exactly N cards in hand" (Library of Alexandria).
+      if (ability.activateOnlyIf && state.players[player].hand.length !== ability.activateOnlyIf.handSize) return;
       if (ability.cost.sacrifice && sacrificeCandidates(ctx, player, id, ability.cost.sacrifice.predicate).length === 0) return;
       // ADR-076: a discard cost needs that many cards in hand (Waterfront Bouncer).
       if (ability.cost.discard && state.players[player].hand.length < ability.cost.discard) return;

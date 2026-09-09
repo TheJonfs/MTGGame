@@ -189,6 +189,11 @@ export function validateCard(raw: unknown): ValidationResult {
       }
     }
   }
+  // S36 (R-096): typed cycling — plainscycling and kin — needs a cycling cost and a restricted search predicate.
+  if (raw.cyclingSearch !== undefined) {
+    if (raw.cycling === undefined) err(`"cyclingSearch" needs "cycling" (S36)`);
+    if (typeof raw.cyclingSearch !== "string" || !/^(basicLand|subtype:[A-Za-z]+)$/.test(raw.cyclingSearch)) err(`"cyclingSearch" must be "basicLand" or "subtype:<Subtype>" (S36)`);
+  }
 
   if (raw.abilities !== undefined) {
     if (!Array.isArray(raw.abilities)) err(`"abilities" must be an array`);
@@ -378,6 +383,11 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
         if (a.cost.discardSelf !== undefined && a.cost.discardSelf !== true) err(`cost.discardSelf must be true when present`);
         if (a.cost.exileSelf !== undefined && a.cost.exileSelf !== true) err(`cost.exileSelf must be true when present`);
         if (a.cost.reduceBy !== undefined && !isAnyValueRef(a.cost.reduceBy)) err(`cost.reduceBy must be a value ref (A4/ADR-076)`);
+        // S36 (R-096 word 2, Library of Alexandria): "Activate only if you have exactly N cards in hand".
+        if (a.activateOnlyIf !== undefined) {
+          const c = isRecord(a.activateOnlyIf) ? a.activateOnlyIf : {};
+          if (!Number.isInteger(c.handSize) || (c.handSize as number) < 0) err(`activateOnlyIf.handSize must be a non-negative integer (S36)`);
+        }
         if (a.cost.reduceBy !== undefined && typeof a.cost.mana !== "string") err(`cost.reduceBy needs a mana cost to reduce`);
         // A10 word 2 (S22): the bounce cost (the Unwinder).
         if (a.cost.returnToHand !== undefined) {
@@ -485,7 +495,11 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     if (!Number.isInteger(e.target) && !Number.isInteger(e.targetSpec)) err(`"destroy" needs "target" or "targetSpec"`);
   },
   destroyAll: needScope,
-  exile: needTargetOrScope, // S27: target OR scope (the Manafleur's "exile all laws")
+  exile: (e, err) => {
+    // S27: target OR scope (the Manafleur's "exile all laws"); S36: OR a range spec's index (the Angel of the Ruins' "up to two").
+    if (Number.isInteger(e.targetSpec)) return;
+    needTargetOrScope(e, err);
+  },
   bounce: (e, err) => {
     needTargetOrScope(e, err); // S20: Arcanis returns itself via scope "self"
     if (e.to !== undefined && e.to !== "hand" && e.to !== "libraryTop") err(`bounce "to" must be hand|libraryTop (A10 — Temporal Spring)`);
@@ -559,6 +573,11 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     // S25: count may be a value ref (the Emerald Keeper's xPaid).
     if (!isAnyValueRef(e.count)) needCount(e, err);
     needTargetOrScope(e, err); // ADR-076: scope form ("each Vampire you control")
+  },
+  returnSelfAtCleanup: () => { /* self-only by construction: no fields */ },
+  revealRandomIfNamed: (e, err) => {
+    if (!Array.isArray(e.onHit) || e.onHit.length === 0) err(`"revealRandomIfNamed" needs a non-empty "onHit" effects array (S36)`);
+    else validateEffects(e.onHit, 0, err, [], "revealRandomIfNamed.onHit");
   },
   exileThenReturn: (e, err) => {
     needTargetIndex(e, err);
@@ -739,11 +758,12 @@ function validateEffects(
 export function asCardDef(raw: unknown): CardDef {
   const def = raw as CardDef;
   if (def.cycling) {
+    // S36 (R-096): typed cycling searches for the named card type to hand (revealed, CR 701.19.4) instead of drawing.
     const cycling: ActivatedAbilityDef = {
       kind: "activated",
       zone: "hand",
       cost: { mana: def.cycling, discardSelf: true },
-      effects: [{ type: "draw", count: 1, who: "you" }],
+      effects: def.cyclingSearch ? [{ type: "searchLibrary", predicate: def.cyclingSearch, to: "hand" }] : [{ type: "draw", count: 1, who: "you" }],
     };
     return { ...def, abilities: [...(def.abilities ?? []), cycling] };
   }

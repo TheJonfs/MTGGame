@@ -2322,5 +2322,47 @@
     "art_crop": "https://cards.scryfall.io/art_crop/front/f/7/f71320ed-2f30-49ce-bcb0-19aebba3f0e8.jpg?1783910845",
     "normal": "https://cards.scryfall.io/normal/front/f/7/f71320ed-2f30-49ce-bcb0-19aebba3f0e8.jpg?1783910845",
     "via": "default oldest-highres"
+  },
+  "angel_of_the_ruins": {
+    "scryfallId": "ea96229a-5c33-4f79-97d4-059947dd7617",
+    "set": "c21",
+    "set_name": "Commander 2021",
+    "collector_number": "11",
+    "artist": "Viko Menezes",
+    "name": "Angel of the Ruins",
+    "mana_cost": "{5}{W}{W}",
+    "type_line": "Artifact Creature — Angel",
+    "oracle_text": "Flying\nWhen this creature enters, exile up to two target artifacts and/or enchantments.\nPlainscycling {2} ({2}, Discard this card: Search your library for a Plains card, reveal it, put it into your hand, then shuffle.)",
+    "art_crop": "https://cards.scryfall.io/art_crop/front/e/a/ea96229a-5c33-4f79-97d4-059947dd7617.jpg?1783927610",
+    "normal": "https://cards.scryfall.io/normal/front/e/a/ea96229a-5c33-4f79-97d4-059947dd7617.jpg?1783927610",
+    "via": "default oldest-highres"
+  },
+  "library_of_alexandria": {
+    "scryfallId": "ee266113-34ce-4189-84e7-ee2c86a2722c",
+    "set": "arn",
+    "set_name": "Arabian Nights",
+    "collector_number": "76",
+    "artist": "Mark Poole",
+    "name": "Library of Alexandria",
+    "mana_cost": "",
+    "type_line": "Land",
+    "oracle_text": "{T}: Add {C}.\n{T}: Draw a card. Activate only if you have exactly seven cards in hand.",
+    "art_crop": "https://cards.scryfall.io/art_crop/front/e/e/ee266113-34ce-4189-84e7-ee2c86a2722c.jpg?1783948374",
+    "normal": "https://cards.scryfall.io/normal/front/e/e/ee266113-34ce-4189-84e7-ee2c86a2722c.jpg?1783948374",
+    "via": "default oldest-highres"
+  },
+  "thawing_glaciers": {
+    "scryfallId": "6411a8c6-010f-4863-a0fa-bbebe09d5c34",
+    "set": "all",
+    "set_name": "Alliances",
+    "collector_number": "144",
+    "artist": "Jeff A. Menges",
+    "name": "Thawing Glaciers",
+    "mana_cost": "",
+    "type_line": "Land",
+    "oracle_text": "This land enters tapped.\n{1}, {T}: Search your library for a basic land card, put that card onto the battlefield tapped, then shuffle. Return this land to its owner's hand at the beginning of the next cleanup step.",
+    "art_crop": "https://cards.scryfall.io/art_crop/front/6/4/6411a8c6-010f-4863-a0fa-bbebe09d5c34.jpg?1783947155",
+    "normal": "https://cards.scryfall.io/normal/front/6/4/6411a8c6-010f-4863-a0fa-bbebe09d5c34.jpg?1783947155",
+    "via": "default oldest-highres"
   }
 }

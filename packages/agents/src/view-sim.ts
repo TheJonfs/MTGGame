@@ -618,6 +618,17 @@ function applyEffect(
     }
     case "searchLibrary":
       return 0.5;
+    case "returnSelfAtCleanup":
+      return 0; // the Glaciers: the fetch is the value; the return is its cost of doing business
+    case "revealRandomIfNamed": {
+      // S36 (the Collector): the expected value of the hit — the best name's share of the hand times the onHit's worth.
+      const counts = new Map<string, number>();
+      for (const c of view.hand) counts.set(c.cardId, (counts.get(c.cardId) ?? 0) + 1);
+      const best = Math.max(0, ...counts.values());
+      const p = view.hand.length ? best / view.hand.length : 0;
+      const worth = e.onHit.reduce((n, x) => n + (x.type === "draw" ? 0.9 * x.count : 0.5), 0);
+      return p * worth;
+    }
     case "addMana":
       return 0; // Ritual/Prospector: the agent-level mana-burst policy decides (book of shame 12)
     case "exileThenReturn": {

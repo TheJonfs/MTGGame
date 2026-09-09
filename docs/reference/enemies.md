@@ -51,7 +51,7 @@ Mages roam anywhere; beasts are spoke-bound (their colour's ring). Tier 1 rolls 
 | Mistress Vael | mage | 2 | — | 12 / **12** / 14 | 0 / **1** / 2 (plains) | journeyman | mage:vael (midrange) | 40 / 17 / 1.74 / BW | the Tithe-Reeve |
 | Pell of the Shallows | mage | 2 | — | 12 / **12** / 14 | 0 / **1** / 2 (forest) | journeyman | mage:pell (control) | 40 / 17 / 2.17 / GU | the Tidesower |
 | High Warden Sorrel | mage | 3 | — | 14 / **16** / 20 | 1 / **2** / 2 (swamp, mountain) | master | mage:sorrel (midrange) | 40 / 17 / 1.87 / BR | the Inquisitor; knobs {"anteCount":2} |
-| Lord Corvane | mage | 3 | — | 14 / **16** / 20 | 1 / **2** / 2 (swamp, plains) | master | mage:corvane (midrange) | 40 / 17 / 2.87 / BW | the Sepulchre; knobs {"anteCount":2} |
+| Lord Corvane | mage | 3 | — | 14 / **16** / 20 | 1 / **2** / 2 (swamp, plains) | master | mage:corvane (midrange) | 40 / 17 / 2.96 / BW | the Sepulchre; knobs {"anteCount":2} |
 | Magister Quill | mage | 3 | — | 14 / **16** / 20 | 1 / **2** / 2 (forest, island) | master | mage:quill (control) | 40 / 17 / 2.35 / GU | the Drowned Grove; knobs {"anteCount":2} |
 | Thornmother Ysolde | mage | 3 | — | 10 / **12** / 16 | 1 / **2** / 2 (plains, forest) | master | mage:ysolde (aggro) | 40 / 17 / 1.78 / GW | the Thornmother; knobs {"anteCount":2}; worldLifeOffset -4 |
 | Varro Flamebrand | mage | 3 | — | 14 / **16** / 20 | 1 / **2** / 2 (island, mountain) | master | mage:varro (control) | 40 / 17 / 1.96 / RU | the Ashwright; knobs {"anteCount":2} |
@@ -94,26 +94,26 @@ Mages roam anywhere; beasts are spoke-bound (their colour's ring). Tier 1 rolls 
   2 Forgotten Cave · 15 Mountain · 2 Blaze · 2 Brute Force · 3 Lightning Bolt · 3 Shock · 2 Abrade · 2 Goblin Piker · 1 Pyroclasm · 1 Thundersnake · 3 Young Pyromancer · 2 Arc Mage · 2 Hordeling Outburst
 - **Brennor of the Glade, the Sanctuary (mage:brennor, WG tier 2, midrange)** — played by Brennor of the Glade — 40 cards, 17 lands, avg MV 1.61
   9 Forest · 6 Plains · 2 Temple Garden · 2 Birds of Paradise · 2 Giant Growth · 3 Gladecover Scout · 2 Rancor · 2 Soul Warden · 2 Spirit Link · 1 Swords to Plowshares · 2 Blurred Mongoose · 1 Pacifism · 2 Youthful Valkyrie · 2 Blanchwood Armor · 1 Glorious Anthem · 1 Restoration Angel
-- **Lord Corvane, the Sepulchre (mage:corvane, WB tier 3, midrange)** — played by Lord Corvane — 40 cards, 17 lands, avg MV 2.87
-  2 Godless Shrine · 7 Plains · 1 Scrubland · 7 Swamp · 2 Dark Ritual · 2 Indulgent Aristocrat · 2 Swords to Plowshares · 1 Unearth · 2 Blood Artist · 1 Terror · 2 Youthful Valkyrie · 3 Buried Alive · 1 Restoration Angel · 3 Zombify · 3 Serra Angel · 1 Artisan of Kozilek
+- **Lord Corvane, the Sepulchre (mage:corvane, WB tier 3, midrange)** — played by Lord Corvane — 40 cards, 17 lands, avg MV 2.96
+  2 Godless Shrine · 7 Plains · 1 Scrubland · 7 Swamp · 2 Dark Ritual · 2 Indulgent Aristocrat · 2 Swords to Plowshares · 1 Unearth · 2 Blood Artist · 1 Terror · 2 Youthful Valkyrie · 3 Buried Alive · 1 Restoration Angel · 3 Zombify · 2 Serra Angel · 1 Angel of the Ruins · 1 Artisan of Kozilek
 - **Pale Edric, the Sexton (mage:edric, B tier 1, midrange)** — played by Pale Edric — 40 cards, 17 lands, avg MV 1.91
   2 Barren Moor · 15 Swamp · 1 Dark Ritual · 2 Indulgent Aristocrat · 4 Typhoid Rats · 3 Unearth · 2 Blood Artist · 2 Child of Night · 2 Reassembling Skeleton · 2 Terror · 2 Vampire Nighthawk · 2 Gravedigger · 1 Zombify
 - **Old Hask, the Wardener (mage:hask, G tier 1, aggro)** — played by Old Hask — 40 cards, 16 lands, avg MV 1.54
   16 Forest · 2 Birds of Paradise · 3 Giant Growth · 4 Gladecover Scout · 2 Prey Upon · 3 Rancor · 3 Blurred Mongoose · 2 Timberland Guide · 2 Wall of Blossoms · 3 Blanchwood Armor
 - **Kessa Emberhand, the Stormcaller (mage:kessa, UR tier 2, control)** — played by Kessa Emberhand — 40 cards, 17 lands, avg MV 1.87
-  7 Island · 8 Mountain · 2 Steam Vents · 1 Blaze · 3 Brainstorm · 3 Lightning Bolt · 2 Shock · 1 Boomerang · 1 Counterspell · 2 Essence Scatter · 1 Plumecreed Escort · 3 Young Pyromancer · 3 Arc Mage · 1 Hordeling Outburst · 2 Man-o'-War
+  7 Island · 8 Mountain · 2 Steam Vents · 1 Arcane Collector · 1 Blaze · 3 Brainstorm · 3 Lightning Bolt · 1 Shock · 1 Boomerang · 1 Counterspell · 2 Essence Scatter · 1 Plumecreed Escort · 3 Young Pyromancer · 3 Arc Mage · 1 Hordeling Outburst · 2 Man-o'-War
 - **Adept Maelin, the Pyre-Warden (mage:maelin, BR tier 2, aggro)** — played by Adept Maelin — 40 cards, 17 lands, avg MV 1.96
   2 Blood Crypt · 7 Mountain · 8 Swamp · 1 Dark Ritual · 2 Goblin Grenade · 2 Indulgent Aristocrat · 1 Lightning Bolt · 2 Skirk Prospector · 2 Typhoid Rats · 2 Unearth · 2 Blood Artist · 2 Goblin Piker · 1 Terror · 2 Hordeling Outburst · 1 Gallows Djinn · 2 Gravedigger · 1 Siege-Gang Commander
 - **Sister Oriel, the Almoner (mage:oriel, W tier 1, midrange)** — played by Sister Oriel — 40 cards, 17 lands, avg MV 1.78
   15 Plains · 2 Secluded Steppe · 4 Soul Warden · 2 Spirit Link · 3 Suntail Hawk · 1 Swords to Plowshares · 2 Master Decoy · 2 Pacifism · 2 Raise the Alarm · 3 Youthful Valkyrie · 1 Glorious Anthem · 2 Inspiring Overseer · 1 Restoration Angel
 - **Pell of the Shallows, the Tidesower (mage:pell, UG tier 2, control)** — played by Pell of the Shallows — 40 cards, 17 lands, avg MV 2.17
-  2 Breeding Pool · 2 Evolving Wilds · 6 Forest · 7 Island · 1 Birds of Paradise · 1 Brainstorm · 2 Giant Growth · 4 Hedron Crab · 2 Rancor · 1 Altar of Dementia · 3 Rampant Growth · 2 Grazing Gladehart · 2 Wood Elves · 2 Rumbling Baloth · 3 Traumatizer
+  2 Breeding Pool · 2 Evolving Wilds · 6 Forest · 6 Island · 1 Thawing Glaciers · 1 Birds of Paradise · 1 Brainstorm · 2 Giant Growth · 4 Hedron Crab · 2 Rancor · 1 Altar of Dementia · 3 Rampant Growth · 2 Grazing Gladehart · 2 Wood Elves · 2 Rumbling Baloth · 3 Traumatizer
 - **Magister Quill, the Drowned Grove (mage:quill, UG tier 3, control)** — played by Magister Quill — 40 cards, 17 lands, avg MV 2.35
-  2 Breeding Pool · 1 Evolving Wilds · 7 Forest · 6 Island · 1 Tropical Island · 1 Brainstorm · 4 Hedron Crab · 2 Llanowar Elves · 2 Altar of Dementia · 1 Counterspell · 2 Essence Scatter · 3 Rampant Growth · 1 Wall of Blossoms · 2 Wood Elves · 1 Baru, Wurmspeaker · 2 Gaean Wurm · 1 Traumatizer · 1 Pelakka Wurm
+  2 Breeding Pool · 1 Evolving Wilds · 6 Forest · 6 Island · 1 Thawing Glaciers · 1 Tropical Island · 1 Brainstorm · 4 Hedron Crab · 2 Llanowar Elves · 2 Altar of Dementia · 1 Counterspell · 2 Essence Scatter · 3 Rampant Growth · 1 Wall of Blossoms · 2 Wood Elves · 1 Baru, Wurmspeaker · 2 Gaean Wurm · 1 Traumatizer · 1 Pelakka Wurm
 - **High Warden Sorrel, the Inquisitor (mage:sorrel, BR tier 3, midrange)** — played by High Warden Sorrel — 40 cards, 17 lands, avg MV 1.87
   1 Badlands · 2 Blood Crypt · 7 Mountain · 7 Swamp · 1 Blaze · 1 Dark Ritual · 2 Duress · 3 Lightning Bolt · 2 Shock · 1 Unearth · 1 Diabolic Edict · 1 Hymn to Tourach · 1 Terror · 3 Young Pyromancer · 2 Arc Mage · 2 Hypnotic Specter · 2 Mind Rot · 1 Vampire Nighthawk
 - **Tessaly Reed, the Tidewright (mage:tessaly, U tier 1, control)** — played by Tessaly Reed — 40 cards, 18 lands, avg MV 1.73
-  2 Evolving Wilds · 16 Island · 2 Brainstorm · 4 Cathartic Adept · 4 Hedron Crab · 2 Thought Scour · 2 Altar of Dementia · 1 Counterspell · 2 Essence Scatter · 2 Plumecreed Escort · 3 Traumatizer
+  2 Evolving Wilds · 16 Island · 1 Arcane Collector · 2 Brainstorm · 3 Cathartic Adept · 4 Hedron Crab · 2 Thought Scour · 2 Altar of Dementia · 1 Counterspell · 2 Essence Scatter · 2 Plumecreed Escort · 3 Traumatizer
 - **Mistress Vael, the Tithe-Reeve (mage:vael, WB tier 2, midrange)** — played by Mistress Vael — 40 cards, 17 lands, avg MV 1.74
   2 Godless Shrine · 8 Plains · 7 Swamp · 2 Indulgent Aristocrat · 3 Soul Warden · 2 Spirit Link · 2 Suntail Hawk · 1 Swords to Plowshares · 2 Unearth · 2 Blood Artist · 2 Child of Night · 1 Pacifism · 2 Youthful Valkyrie · 2 Vampire Nighthawk · 1 Gravedigger · 1 Wrath of God
 - **Varro Flamebrand, the Ashwright (mage:varro, UR tier 3, control)** — played by Varro Flamebrand — 40 cards, 17 lands, avg MV 1.96

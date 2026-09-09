@@ -172,6 +172,9 @@ export interface GameState {
    * first turn whose END step collects it (created at/after END → the next turn's). The id is the
    * battlefield object; if it left (died, bounced, blinked — the launder) the entry is inert. */
   endStepSacrifices: { objectId: string; dueTurn: number }[];
+  /** S36 (R-096 word 1, Thawing Glaciers): permanents due to return to their owner's hand at the beginning of the
+   * cleanup step of `dueTurn` (created during a cleanup → the next turn's). Inert if the object left. */
+  cleanupReturns: { objectId: string; dueTurn: number }[];
   /** S27 (ADR-093): the game-level LAW SEQUENCE the Manafleur reads — the order of law card ids,
    * the pointer to the next one, and the mode (`sequence` walks the ring; `random` draws from the
    * logged RNG; `accumulate` walks the ring without the exile). Set by the `lawSequence` modifier;
@@ -221,6 +224,7 @@ export function initialGameState(startingLife: number): GameState {
     timestamp: 0,
     result: null,
     endStepSacrifices: [],
+    cleanupReturns: [],
     lawSequence: { order: [...DEFAULT_LAW_ORDER], next: 0, mode: "sequence" },
   };
 }

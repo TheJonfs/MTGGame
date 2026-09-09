@@ -49,6 +49,8 @@ export interface GameView {
   /** S22 (A10 word 3): battlefield objects awaiting their end-step sacrifice — PUBLIC (both players
    * watched the temporary reanimation). The blink classification prices the launder off this. */
   pendingEndStepSacrifices: string[];
+  /** S36: permanents that return to hand at the next cleanup (the Glaciers). */
+  pendingCleanupReturns: string[];
 }
 
 export function buildView(ctx: EngineCtx, player: PlayerId): GameView {
@@ -102,5 +104,6 @@ export function buildView(ctx: EngineCtx, player: PlayerId): GameView {
       s.players[1].graveyard.map((id) => getObject(s, id).cardId),
     ],
     pendingEndStepSacrifices: s.endStepSacrifices.map((e) => e.objectId).filter((id) => s.objects[id]?.zone === "battlefield"),
+    pendingCleanupReturns: s.cleanupReturns.map((e) => e.objectId).filter((id) => s.objects[id]?.zone === "battlefield"),
   };
 }

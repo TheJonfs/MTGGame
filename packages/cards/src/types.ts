@@ -75,6 +75,8 @@ export const TARGET_PREDICATES = [
   "artifact",
   "enchantment",
   "nonlandPermanent",
+  /** S36 (Angel of the Ruins): "artifacts and/or enchantments" — one predicate so a range spec can span both. */
+  "artifactOrEnchantment",
   "creatureSpell",
   // A10 (S22): Experimental Overload's regrowth predicate.
   "instantOrSorceryCardInYourGraveyard",
@@ -192,7 +194,18 @@ export type EffectBase =
   | { type: "destroyAll"; scope: Scope }
   /** S27 (the Manafleur): `scope` — exile-by-predicate on the Wrath-class scope machinery ("exile all laws").
    * A `laws` scope is a no-op under the `accumulate` law-sequence mode (the reserved all-five climax). */
-  | { type: "exile"; target?: number; scope?: Scope }
+  /** S36: `targetSpec` fans out over a range spec (the Angel of the Ruins' "up to two"), as tapTarget's does. */
+  | { type: "exile"; target?: number; targetSpec?: number; scope?: Scope }
+  /** S36 (R-096 word 1, Thawing Glaciers): return this permanent to its owner's hand at the beginning of the NEXT
+   * cleanup step — a self-contained package rule beside the temporary guest's end-step exit (CR 514.1a's
+   * "beginning of the cleanup step" is a trigger point the engine keeps as a due list, not a stack trigger:
+   * nothing else pends there). Self-only (validator-confined); a no-op if the source already left. */
+  | { type: "returnSelfAtCleanup" }
+  /** S36 (R-096 words 3–4, Arcane Collector): the controller NAMES a card (a logged choice among the hand's
+   * distinct names — naming a card not in hand is never right; a single name is forced and unlogged), then a
+   * card is REVEALED at random from the hand (the game RNG, logged; a REVEALED event; the card stays in hand);
+   * if it is the named card, `onHit` resolves. An empty hand does nothing. */
+  | { type: "revealRandomIfNamed"; onHit: Effect[] }
   /** A10 (S22): `to: "libraryTop"` — Temporal Spring. Deliberately NOT a hand return: it never
    * fires RETURNED_TO_HAND (the Spring unwinds too far for the tide to taste — ratified). */
   | { type: "bounce"; target?: number; scope?: Scope; to?: "hand" | "libraryTop" }
@@ -298,6 +311,8 @@ export const EFFECT_TYPES: readonly EffectType[] = [
   "loseLife",
   "modifyPT",
   "grantKeyword",
+  "returnSelfAtCleanup",
+  "revealRandomIfNamed",
   "restrict",
   "createToken",
   "addCounters",
@@ -453,6 +468,10 @@ export interface ActivatedCost {
 export interface ActivatedAbilityDef {
   kind: "activated";
   cost: ActivatedCost;
+  /** S36 (R-096 word 2, Library of Alexandria): "Activate only if …" — an activation condition on the controller's
+   * hand size (exactly N cards), checked at enumeration and at activation. */
+  activateOnlyIf?: { handSize: number };
+  
   timing?: "instant" | "sorcery";
   targets?: TargetSpec[];
   effects: Effect[];
@@ -510,6 +529,9 @@ export interface CardDef {
   selfExileOnResolve?: true;
   /** A5: cycling {cost} — compiled by the loader into a hand-zone ability {cost, discardSelf; draw 1}. */
   cycling?: string;
+  /** S36 (R-096, plainscycling): typed cycling — the compiled hand-zone ability SEARCHES for a card matching this
+   * predicate (`subtype:Plains`) to hand instead of drawing (the Tutor's word, revealed like every typed search). */
+  cyclingSearch?: `subtype:${string}` | "basicLand";
   /** A9 (S20, ADR-079): conditional enters-tapped (the shock clause). On resolving the LAND PLAY the
    * controller chooses: pay (life) → untapped, else tapped. Payable only at life ≥ pay.life (paying to
    * exactly 0 is legal and lethal). Anything PUT onto the battlefield by other means enters tapped,

@@ -115,9 +115,10 @@ describe("no-peeking (permanent; ADR-048)", () => {
       const keys = Object.keys(v).sort();
       // S17: graveyardObjects (public zone, with ids) and the viewer's own manaPool joined the view — both public.
       // S22: pendingEndStepSacrifices (A10 word 3) — public; both players watched the temporary reanimation.
+      // S36: pendingCleanupReturns (R-096 word 1, the Glaciers) — public for the same reason.
       expect(keys).toEqual([
         "activePlayer", "battlefield", "combat", "graveyardObjects", "graveyards", "hand", "librarySizes",
-        "life", "manaPool", "mulliganCount", "opponentHandCount", "pendingEndStepSacrifices", "stack", "startingLife", "step", "turn", "you",
+        "life", "manaPool", "mulliganCount", "opponentHandCount", "pendingCleanupReturns", "pendingEndStepSacrifices", "stack", "startingLife", "step", "turn", "you",
       ]);
     }
   });

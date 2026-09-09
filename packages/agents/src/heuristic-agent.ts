@@ -54,6 +54,8 @@ export class HeuristicAgent implements Agent {
         return this.mulliganChoice(view, request);
       case "bottomCards":
         return this.lowestValueCard(view, request, "bottomCard");
+      case "chooseName":
+        return this.nameChoice(view, request);
       case "discard":
         return this.lowestValueCard(view, request, "discard");
       case "priority":
@@ -207,6 +209,11 @@ export class HeuristicAgent implements Agent {
     if (this.legendDuplicateGated(view, action)) return -Infinity; // S27 r2: never cast a second copy of a legend we control
     if (this.cantripTimingGated(view, action)) return -Infinity; // S28: Brainstorm at the opponent's end step or in response
     if (this.flashTimingGated(view, action)) return -Infinity; // S32: the Escort at the opponent's end step, in response, or when the mana is idle
+    if (this.glaciersDropGated(view, action)) return -Infinity; // S36 (book 52): the Glaciers as the land drop only for a reason; otherwise the real land
+    if (this.glaciersActivationGated(view, action)) return -Infinity; // S36 (book 52): fetch at their end step, or on our turn for a colour we lack
+    if (this.libraryDrawGated(view, action)) return -Infinity; // S36: the Library draws at the opponent's end step only
+    if (this.collectorGated(view, action)) return -Infinity; // S36: the Collector at the opponent's end step (every turn at one card in hand)
+    if (this.plainscyclingGated(view, action)) return -Infinity; // S36 (book 53): the Angel cycles for a reanimator in hand or a short land count
     if (this.edictWasteGated(view, action)) return -Infinity; // S32: never an Edict into no creatures, a token shield, or our own face
     if (this.altarGated(view, action)) return -Infinity; // S29: the Altar feeds a creature for lethal mill, or one already dying
     if (this.buriedGated(view, action)) return -Infinity; // S30: Buried Alive only with a reanimator in hand
@@ -1207,6 +1214,93 @@ export class HeuristicAgent implements Agent {
     return !(view.activePlayer !== view.you && view.step === "END");
   }
 
+  // ---------- S36 (ADR-121): the four cards' policies ----------
+
+  /** The land drop in hand of a card whose ability returns itself at cleanup (the Glaciers). */
+  private isGlaciers(cardId: string): boolean {
+    return (this.def(cardId)?.abilities ?? []).some((a) => a.kind === "activated" && a.effects.some((e) => e.type === "returnSelfAtCleanup"));
+  }
+  /** Book 52: the Glaciers is played as the land drop only (a) as the only land in hand, (b) with a landfall
+   * permanent on our board, or (c) when lands in play already meet the hand's top mana value (the drop is spare).
+   * Otherwise the real land is played (the Glaciers' drop is gated); and when a reason holds, the other lands
+   * yield to it. Exposed for the book. */
+  glaciersDropGated(view: GameView, action: Action): boolean {
+    if (action.type !== "playLand") return false;
+    const me = view.you;
+    const hand = view.hand.filter((c) => this.def(c.cardId)?.types.includes("Land"));
+    const glaciers = hand.filter((c) => this.isGlaciers(c.cardId));
+    if (glaciers.length === 0) return false;
+    const thisCard = view.hand.find((c) => c.objectId === action.objectId);
+    const thisIsGlaciers = !!thisCard && this.isGlaciers(thisCard.cardId);
+    const otherLands = hand.length - glaciers.length;
+    if (otherLands === 0) return false; // the only land: play it
+    const landfall = view.battlefield.some((o) => o.controller === me && (this.def(o.cardId)?.abilities ?? []).some((a) => a.kind === "triggered" && a.event === "LAND_ENTERS_UNDER_YOUR_CONTROL"));
+    const landsInPlay = view.battlefield.filter((o) => o.controller === me && (this.def(o.cardId)?.types ?? []).includes("Land")).length;
+    const topMv = Math.max(0, ...view.hand.filter((c) => !this.def(c.cardId)?.types.includes("Land")).map((c) => this.mv(c.cardId)));
+    const reason = landfall || landsInPlay >= topMv;
+    return reason ? !thisIsGlaciers : thisIsGlaciers;
+  }
+  /** Book 52: the Glaciers' fetch at the opponent's end step whenever it is untapped with the mana spare, or on
+   * our own turn when the hand needs a colour our lands do not make. Exposed for the book. */
+  glaciersActivationGated(view: GameView, action: Action): boolean {
+    if (action.type !== "activateAbility") return false;
+    const o = view.battlefield.find((b) => b.id === action.objectId);
+    if (!o || !this.isGlaciers(o.cardId)) return false;
+    if (view.activePlayer !== view.you) return view.step !== "END";
+    return !this.colourLacking(view);
+  }
+  /** A colour the hand's costs want that no land or mana rock we control produces. */
+  private colourLacking(view: GameView): boolean {
+    const me = view.you;
+    const produced = new Set<string>();
+    for (const o of view.battlefield) {
+      if (o.controller !== me) continue;
+      for (const a of this.def(o.cardId)?.abilities ?? []) if (a.kind === "activated") for (const e of a.effects) if (e.type === "addMana" && "mana" in e && typeof e.mana === "string") for (const c of e.mana.match(/[WUBRG]/g) ?? []) produced.add(c);
+    }
+    for (const c of view.hand) for (const sym of (this.def(c.cardId)?.manaCost ?? "").match(/[WUBRG]/g) ?? []) if (!produced.has(sym)) return true;
+    return false;
+  }
+  /** The Library's draw only at the opponent's end step (the hand is at seven by construction). */
+  libraryDrawGated(view: GameView, action: Action): boolean {
+    if (action.type !== "activateAbility") return false;
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+    if (!ab || ab.kind !== "activated" || !ab.activateOnlyIf) return false;
+    return !(view.activePlayer !== view.you && view.step === "END");
+  }
+  /** The Collector at the opponent's end step with the mana spare; at one card in hand, every turn (its own too). */
+  collectorGated(view: GameView, action: Action): boolean {
+    if (action.type !== "activateAbility") return false;
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+    if (!ab || ab.kind !== "activated" || !ab.effects.some((e) => e.type === "revealRandomIfNamed")) return false;
+    if (view.hand.length === 0) return true;
+    if (view.hand.length === 1) return false;
+    return !(view.activePlayer !== view.you && view.step === "END");
+  }
+  /** Book 53: plainscycling when the hand holds a reanimator, or lands in play + hand < 5 by turn three; a dead
+   * card cycles by the S17 rule regardless. Exposed for the book. */
+  plainscyclingGated(view: GameView, action: Action): boolean {
+    if (action.type !== "activateAbility" || !this.isCycling(view, action)) return false;
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+    if (!ab || ab.kind !== "activated" || !ab.effects.some((e) => e.type === "searchLibrary")) return false;
+    if (this.cardIsDead(view, action)) return false;
+    const me = view.you;
+    const reanimator = view.hand.some((c) => (this.def(c.cardId)?.spellEffect ?? []).some((e) => e.type === "returnFromGraveyard" && e.to === "battlefield"));
+    const lands = view.battlefield.filter((o) => o.controller === me && (this.def(o.cardId)?.types ?? []).includes("Land")).length + view.hand.filter((c) => this.def(c.cardId)?.types.includes("Land")).length;
+    return !(reanimator || (view.turn <= 3 && lands < 5));
+  }
+  /** The Collector's name: the most-duplicated card in hand (ties to the first). Exposed for the book. */
+  nameChoice(view: GameView, request: ActionRequest): Action {
+    const counts = new Map<string, number>();
+    for (const c of view.hand) counts.set(c.cardId, (counts.get(c.cardId) ?? 0) + 1);
+    let best: Action | null = null, bestN = -1;
+    for (const a of request.actions) {
+      if (a.type !== "nameCard") continue;
+      const n = counts.get(a.cardId) ?? 0;
+      if (n > bestN) { best = a; bestN = n; }
+    }
+    return best ?? request.actions[0]!;
+  }
+
   /** S32 (ADR-109, Plumecreed Escort — book 49): a FLASH creature is an instant, not a creature spell:
    * cast at the opponent's end step by default, in response to anything on the stack (the save rides
    * the view-sim credit), and on our own turn only when nothing else in hand could use the mana now.
@@ -1429,6 +1523,13 @@ export class HeuristicAgent implements Agent {
         // S32 (the Escort's ETB): a HELPFUL effect goes to the creature UNDER FIRE first — the one an
         // opponent's stack item is aimed at (the save is the point of the flash).
         if (t.kind === "object" && t.id && cls === "helpful" && this.creatureIsDoomed(view, t.id)) s += 10;
+        // S36 (book 53, the Angel of the Ruins): a HARMFUL effect on an opponent's aura that sits on OUR creature
+        // is worth the creature it holds (Control Magic, Pacifism) — before their other artifacts and enchantments.
+        if (t.kind === "object" && t.id && cls === "harmful") {
+          const o = view.battlefield.find((b) => b.id === t.id);
+          const host = o?.attachedTo ? view.battlefield.find((b) => b.id === o.attachedTo) : undefined;
+          if (o && o.controller !== view.you && host && host.controller === view.you) s += this.boardValue(view, host.id);
+        }
         // S28 (Unearth): a GRAVEYARD target is worth its card — the best MV≤3 body comes back.
         if (t.kind === "object" && t.id && !view.battlefield.some((o) => o.id === t.id)) {
           const g = view.graveyardObjects[view.you].find((o) => o.objectId === t.id);

@@ -189,6 +189,8 @@ export type ScriptEntry =
   | { player: PlayerId; do: "search"; card?: string }
   /** A6 (S17): pick a mode for a modal trigger as it goes on the stack. */
   | { player: PlayerId; do: "chooseMode"; mode: number }
+  /** S36 (the Collector): name a card by id. */
+  | { player: PlayerId; do: "nameCard"; card: string }
   /** A10 (S22): pick the permanent bounced to pay a returnToHand cost (the Unwinder). */
   | { player: PlayerId; do: "bounceCost"; card: string }
   /** A10 (S22): pick the untapped creature tapped to pay a tapCreature cost (Glare). */
@@ -473,6 +475,8 @@ export class TestGame {
           : one(actions.find((a) => a.type === "declineSearch"));
       case "chooseMode":
         return one(actions.find((a) => a.type === "chooseMode" && a.mode === entry.mode));
+      case "nameCard":
+        return one(actions.find((a) => a.type === "nameCard" && a.cardId === entry.card));
       case "bounceCost":
         return one(actions.find((a) => a.type === "returnToHand" && cardIdOf(a.objectId) === entry.card));
       case "tapCost":

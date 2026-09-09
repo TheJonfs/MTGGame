@@ -46,11 +46,12 @@ describe("S34 — the matchup resolver", () => {
     }
   });
 
-  it("the entrance comes in the mage's PIP order and repeats for a mono mage: Corvane (BW) two basics = swamp, plains; Oriel one = plains; Kessa (UR by colours, R first by pips) = mountain", () => {
+  it("the entrance comes in the mage's PIP order and repeats for a mono mage: Corvane (BW) two basics = swamp, plains; Oriel one = plains; Kessa (UR, tied by pips since S36) = island", () => {
     expect(entranceFor("mage:corvane", 2)).toEqual(["swamp", "plains"]);
     expect(entranceFor("mage:corvane", 3)).toEqual(["swamp", "plains", "swamp"]);
     expect(entranceFor("mage:oriel", 2)).toEqual(["plains", "plains"]);
-    expect(entranceFor("mage:kessa", 1)).toEqual(["mountain"]);
+    // S36: Kessa's placement (−1 Shock +1 Collector) tied her pips 13/13 — the colours' order stands, so island.
+    expect(entranceFor("mage:kessa", 1)).toEqual(["island"]);
     expect(entranceFor("mage:kessa", 0)).toEqual([]);
     expect(entranceFor("beast:serra", 2)).toEqual([]);
   });

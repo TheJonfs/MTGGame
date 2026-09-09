@@ -1,4 +1,4 @@
-import { type TargetSpec,
+import { resolveEffect, type TargetSpec,
   parseManaProduction,
   parseManaCost,
   manaValue,
@@ -28,7 +28,7 @@ import { characteristics, isCreature } from "./characteristics.js";
  */
 export type EffectRequester = (
   player: PlayerId,
-  purpose: "discard" | "searchLibrary" | "putOnTop" | "chooseSacrifice",
+  purpose: "discard" | "searchLibrary" | "putOnTop" | "chooseSacrifice" | "chooseName",
   actions: Action[],
   revealed?: { objectId: string; cardId: string }[],
   source?: { cardId: string; effects: Effect[] },
@@ -251,6 +251,35 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
     },
     lawMode(): "sequence" | "random" | "accumulate" {
       return ctx.state.lawSequence.mode;
+    },
+
+    returnSelfAtCleanup(): void {
+      // S36 (R-096 word 1): the resolving ability's source; created during a cleanup → the next turn's.
+      const sourceId = item.sourceId ?? item.objectId;
+      if (!sourceId || ctx.state.objects[sourceId]?.zone !== "battlefield") return;
+      const dueTurn = ctx.state.step === "CLEANUP" ? ctx.state.turn + 1 : ctx.state.turn;
+      ctx.state.cleanupReturns.push({ objectId: sourceId, dueTurn });
+    },
+
+    async revealRandomIfNamed(onHit: Effect[]): Promise<void> {
+      // S36 (R-096 words 3–4, the Collector): name (a logged choice among the hand's distinct names —
+      // forced and unlogged when there is one), reveal one at random (the game RNG), resolve on a hit.
+      const hand = ctx.state.players[controller].hand;
+      if (hand.length === 0) return;
+      const names = new Map<string, string>();
+      for (const id of hand) { const cid = getObject(ctx.state, id).cardId; if (!names.has(cid)) names.set(cid, ctx.defs.def(cid).name); }
+      const actions: Action[] = [...names.entries()].map(([cardId, name]) => ({ type: "nameCard" as const, cardId, name }));
+      let pick = actions[0]!;
+      if (actions.length > 1) {
+        if (!requester) throw new Error("revealRandomIfNamed needs an agent (not available at initialization)");
+        pick = await requester(controller, "chooseName", actions, undefined, { cardId: item.sourceCardId, effects: item.effects });
+      }
+      if (pick.type !== "nameCard") throw new Error("expected nameCard");
+      const idx = ctx.rng.int(hand.length, "reveal");
+      const revealedCardId = getObject(ctx.state, hand[idx]!).cardId;
+      const hit = revealedCardId === pick.cardId;
+      ctx.bus.emit("REVEALED", { player: controller, cardId: revealedCardId, named: pick.name, hit });
+      if (hit) for (const e of onHit) await resolveEffect(e, makeEffectContext(ctx, item, requester));
     },
 
     exileThenReturn(objectId: string): void {
@@ -708,6 +737,12 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
     },
     async sacrificeChoose(): Promise<void> {
       throw new Error("initialization effects cannot ask a player to sacrifice");
+    },
+    returnSelfAtCleanup(): void {
+      throw new Error("initialization effects have no source to return");
+    },
+    async revealRandomIfNamed(): Promise<void> {
+      throw new Error("initialization effects cannot ask a player to name a card");
     },
     ...sharedOps(ctx, player),
     ...discardOp(ctx, player), // random mode works; choice modes throw without a requester

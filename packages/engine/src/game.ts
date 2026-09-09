@@ -69,7 +69,9 @@ export type RequestPurpose =
   /** A10 word 4 (S22): the any-number cast loop — add a target or done (Phyrexian Purge). */
   | "chooseVariableTarget"
   /** A10 word 7 (S22): the punisher fork — pay the stated cost or suffer the effect (the Stoker). */
-  | "unlessPay";
+  | "unlessPay"
+  /** S36 (R-096 word 3): name a card from the hand's distinct names (the Collector). */
+  | "chooseName";
 
 /** ADR-048: identity + pending effects of the thing asking for targets, so
  * agents can classify (rule 8 / evaluation) without guessing the source. */
@@ -152,6 +154,7 @@ export class Game {
     bus.on("ANTE_SET", (e) => log.append({ t: "EVENT", name: "ANTE_SET", payload: e }));
     bus.on("MILLED", (e) => log.append({ t: "EVENT", name: "MILLED", payload: e })); // ADR-070: narration/facts; replay ignores EVENTs
     bus.on("SEARCH_REVEAL", (e) => log.append({ t: "EVENT", name: "SEARCH_REVEAL", payload: e })); // S22 r4: CR 701.19.4 narration
+    bus.on("REVEALED", (e) => log.append({ t: "EVENT", name: "REVEALED", payload: e })); // S36: the Collector's random reveal
     bus.on("SHUFFLED", (e) => log.append({ t: "EVENT", name: "SHUFFLED", payload: e })); // S24 r3: the shuffle sound
     bus.on("SACRIFICED", (e) => log.append({ t: "EVENT", name: "SACRIFICED", payload: e })); // S24 r5: the sac-cause marker
     bus.on("ZONE_CHANGE", (e) => {
@@ -442,6 +445,13 @@ export class Game {
   private async cleanup(): Promise<void> {
     const { state } = this.ctx;
     const active = state.activePlayer;
+    // S36 (R-096 word 1): "at the beginning of the next cleanup step" — the Glaciers go home before the
+    // hand-size discard (CR 514.1a's slot; a due list, not a stack trigger).
+    const due = state.cleanupReturns.filter((r) => r.dueTurn <= state.turn);
+    if (due.length > 0) {
+      state.cleanupReturns = state.cleanupReturns.filter((r) => r.dueTurn > state.turn);
+      for (const r of due) if (state.objects[r.objectId]?.zone === "battlefield") moveObject(this.ctx, r.objectId, "hand");
+    }
     while (state.players[active].hand.length > this.rules.handSize) {
       const chosen = await this.request(active, "discard", discardChoices(this.ctx, active));
       if (chosen.type !== "discard") throw new Error("expected discard");

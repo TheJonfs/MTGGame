@@ -58,6 +58,7 @@ export function actionLabel(state: GameState, pool: Map<string, CardDef>, a: Act
     case "searchPick": return `Take ${name(a.objectId)} from your library`;
     case "declineSearch": return "Find nothing (shuffle)";
     case "chooseMode": return `Mode: ${a.label}`;
+    case "nameCard": return `Name ${a.name}`;
     case "returnToHand": return `Return ${name(a.objectId)} to hand (cost)`;
     case "tapCreature": return `Tap ${name(a.objectId)} (cost)`;
     case "chooseVariableTarget": return `Add target: ${targetLabel(state, pool, a.target)}`;
@@ -107,6 +108,8 @@ export function eventLabel(
     // S22 r4 (Chris, item 6): a restricted search's find is revealed (CR 701.19.4) — the engine
     // only emits this for basicLand/subtype searches, never Demonic Tutor's anyCard.
     case "SEARCH_REVEAL": return `${who(payload.player)} reveal${payload.player === you ? "" : "s"} ${cardName(pool, payload.cardId as string)} — found by search`;
+    // S36 (the Collector): the named card and the random reveal are both public.
+    case "REVEALED": return `${who(payload.player)} name${payload.player === you ? "" : "s"} ${payload.named} and reveal${payload.player === you ? "" : "s"} ${cardName(pool, payload.cardId as string)} at random${payload.hit ? " — a hit" : ""}`;
     case "FIZZLE": return `${cardName(pool, payload.cardId as string)} fizzles (all targets illegal)`;
     case "TRIGGER_NO_TARGETS": return `${cardName(pool, payload.cardId as string)} trigger: no legal targets`;
     case "ATTACHED": return null; // too chatty for the log; inspector shows attachments

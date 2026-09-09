@@ -64,6 +64,10 @@ export interface EffectContext {
   searchLibrary(player: number, predicate: "basicLand" | "anyCard" | "creatureCard" | `subtype:${string}`, to: "hand" | "battlefield" | "graveyard", entersTapped: boolean, count?: number): Promise<void>;
   /** ADR-075 A8: exile the object and return it to the battlefield under the effect controller's control as a new object (ETBs fire). */
   exileThenReturn(objectId: string): void;
+  /** S36 (R-096 word 1): schedule the resolving ability's SOURCE to return to its owner's hand at the beginning of the next cleanup step. */
+  returnSelfAtCleanup(): void;
+  /** S36 (R-096 words 3–4): the controller names a card from the hand's distinct names, a random hand card is revealed, `onHit` resolves on a match. */
+  revealRandomIfNamed(onHit: Effect[]): Promise<void>;
   /** A10 (S22): `pt` sets the tokens' base P/T, locked at creation (Overload's Weird). */
   createToken(player: number, tokenId: string, count: number, pt?: { power: number; toughness: number }): void;
   addCounters(objectId: string, kind: CounterKind, count: number): void;
@@ -264,6 +268,16 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
     if (e.scope !== undefined) {
       for (const id of ctx.objectsInScope(e.scope, { ...(e.subtype ? { subtype: e.subtype } : {}), ...(e.cardType ? { cardType: e.cardType } : {}), ...(e.other ? { other: true } : {}) })) ctx.addCounters(id, e.kind, count);
     }
+  },
+
+  returnSelfAtCleanup: (e, ctx) => {
+    if (e.type !== "returnSelfAtCleanup") throw new Error("resolver mismatch");
+    ctx.returnSelfAtCleanup();
+  },
+
+  revealRandomIfNamed: async (e, ctx) => {
+    if (e.type !== "revealRandomIfNamed") throw new Error("resolver mismatch");
+    await ctx.revealRandomIfNamed(e.onHit);
   },
 
   exileThenReturn: (e, ctx) => {

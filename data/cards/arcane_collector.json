@@ -1,0 +1,42 @@
+{
+  "id": "arcane_collector",
+  "name": "Arcane Collector",
+  "source": "custom",
+  "manaCost": "{U}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Human",
+    "Wizard"
+  ],
+  "power": 1,
+  "toughness": 1,
+  "text": "{1}{U}, {T}: Name a card. Then reveal a card at random from your hand. If it's the named card, draw two cards.",
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "mana": "{1}{U}",
+        "tap": true
+      },
+      "effects": [
+        {
+          "type": "revealRandomIfNamed",
+          "onHit": [
+            {
+              "type": "draw",
+              "count": 2,
+              "who": "you"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2,
+  "priceOverride": 16
+}

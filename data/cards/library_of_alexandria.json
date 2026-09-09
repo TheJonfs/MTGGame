@@ -1,0 +1,44 @@
+{
+  "id": "library_of_alexandria",
+  "name": "Library of Alexandria",
+  "source": "real",
+  "scryfallId": "ee266113-34ce-4189-84e7-ee2c86a2722c",
+  "manaCost": "",
+  "types": [
+    "Land"
+  ],
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "tap": true
+      },
+      "effects": [
+        {
+          "type": "addMana",
+          "mana": "{C}"
+        }
+      ]
+    },
+    {
+      "kind": "activated",
+      "cost": {
+        "tap": true
+      },
+      "activateOnlyIf": {
+        "handSize": 7
+      },
+      "effects": [
+        {
+          "type": "draw",
+          "count": 1,
+          "who": "you"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": "R"
+}

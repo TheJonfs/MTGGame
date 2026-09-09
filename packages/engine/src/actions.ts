@@ -32,6 +32,8 @@ export type Action =
   | { type: "chooseTriggerTargets"; targets: ResolvedTarget[] }
   /** A6: the chosen mode of a modal trigger (label for readability). */
   | { type: "chooseMode"; mode: number; label: string }
+  /** S36 (R-096 word 3): name a card — one action per distinct name in the controller's hand (the Collector). */
+  | { type: "nameCard"; cardId: string; name: string }
   | { type: "sacrifice"; objectId: string }
   | { type: "keepLegend"; objectId: string }
   | { type: "acceptOptional" }

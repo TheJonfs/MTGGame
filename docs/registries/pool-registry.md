@@ -248,6 +248,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | air_elemental | lea | 46 | Richard Thomas | 69c3b2a3-0daa-4d42-832d-fcdfda6555ea |
 | airship_crash | fin | 171 | Enora Mercier | ec91c4e4-711f-464d-bc83-e6813f4fdcdb |
 | altar_of_dementia | tmp | 276 | Brom | 4f2da99f-3c53-4980-97d6-2158c765aac0 |
+| angel_of_the_ruins | c21 | 11 | Viko Menezes | ea96229a-5c33-4f79-97d4-059947dd7617 |
 | arc_mage | nem | 77 | Terese Nielsen | 62982dab-4c27-45b3-9740-38fec3df7226 |
 | arcanis_the_omnipotent | ons | 66 | Justin Sweet | 90865f52-c062-4505-a204-b4d7d4b3fc4c |
 | artisan_of_kozilek | roe | 2 | Jason Felix | 3ac80eb8-321d-476a-87e7-d25bdac6a91c |
@@ -322,6 +323,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | indulgent_aristocrat | soi | 118 | Anna Steinbauer | f24200d4-cd98-424c-bc2f-69f8b361d8fc |
 | inspiring_overseer | snc | 18 | Irina Nordsol | 35d9da1d-8678-4252-b0f8-9960795642f0 |
 | island | leb | 291 | Mark Poole | bff33e91-8e52-43f2-b8ae-603b456b08fc |
+| library_of_alexandria | arn | 76 | Mark Poole | ee266113-34ce-4189-84e7-ee2c86a2722c |
 | lightning_bolt | lea | 161 | Christopher Rush | d573ef03-4730-45aa-93dd-e45ac1dbaf4a |
 | little_bear | hob | 128 | Tomas Duchek | 8a50858a-33b5-4c45-9c31-5956ae5a33a6 |
 | llanowar_elves | lea | 210 | Anson Maddocks | d4f1cc9e-4f99-4c26-ac1b-8ef069fa8ceb |
@@ -383,6 +385,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | temporal_spring | apc | 125 | John Matson | b584dfd1-a56c-406e-8504-47ea136dc102 |
 | tendrils_of_corruption | tsp | 136 | Mike Dringenberg | 7f61db9e-ef88-4dc8-b90c-1f8b2d7e9bb9 |
 | terror | lea | 130 | Ron Spencer | 21004958-2c7e-4a55-bc80-411c4d780106 |
+| thawing_glaciers | all | 144 | Jeff A. Menges | 6411a8c6-010f-4863-a0fa-bbebe09d5c34 |
 | thought_scour | dka | 52 | David Rapoza | 88bf1ebb-9d85-4b9b-a614-c7f965c0893d |
 | timberland_guide | avr | 197 | Zoltan Boros | ae80fefb-af78-4f98-8058-71b61e91842f |
 | titania_protector_of_argoth | mh2 | 416 | Magali Villeneuve | bab161d9-45d7-48b7-af47-21e3dbae4d85 |
@@ -498,6 +501,17 @@ Pool 184 → **185**. The last card. Custom, five-colour, prizeOnly (sole-mechan
 | diabolic_edict | Diabolic Edict | tested | targets player: sacrifice who: target, count 1, predicate creature (R-094 word 3) | TMP first printing (1997); tier 2 / 16g (priceOverride). **Zero words** on S31's edict. The lone creature goes forced; no creatures resolves doing nothing; the defender picks (fixtures). AI (book 50): worth the LEAST creature the target would give up — never into no creatures, a token shield, or our own face. Sorrel ×1. |
 
 *ADR-110 lists:* Tessaly (−1 Wall of Air −1 Boomerang +2 Escort), Corvane (−1 Gravedigger −1 Unearth +2 Dark Ritual), Sorrel (−1 Terror +1 Edict), Kessa (−1 Boomerang +1 Escort); Dawn Levy and Tidal Grimoire amended (`starters.json`). *ADR-111:* the two mid-road references live in `packages/sim/src/road-decks.ts` (`roadMidW`, `roadMidB`; a world test keeps them equal to their starter plus the planner's eight cards). *S32 AI corrections:* the S28 cantrip window compared the step to "END_STEP" while the engine's step is "END" — Brainstorm's end-step cast never happened live (only the in-response path); fixed with the Escort's gate. The pump-waste gate reads instants and sorceries only (a permanent's until-end-of-turn ETB is a body, not a trick).
+
+## Session 36 additions — four cards for the blue road (ADR-121; planner-verified, implementer re-verified on Scryfall 2026-09-09)
+
+| id | Card | Status | Vocabulary | Notes |
+|---|---|---|---|---|
+| thawing_glaciers | Thawing Glaciers | tested | land, entersTapped; activated {1},{T}: searchLibrary basicLand → battlefield tapped; returnSelfAtCleanup (R-096 word 1) | ALL first printing (1996); tier 2 / 20g (priceOverride). The fetched basic enters tapped and triggers a Crab; the Glaciers goes home at the next cleanup and is the land drop again (entering tapped, so no fetch the turn it lands) — fixture. AI (book 52): the drop only as the only land, with a landfall permanent out, or when the lands already meet the curve; the fetch at their end step or for a colour we lack. Pell ×1, Quill ×1. |
+| library_of_alexandria | Library of Alexandria | tested | land; {T}: add {C}; {T}: draw 1 with activateOnlyIf handSize 7 (R-096 word 2) | ARN first printing (1993); tier R (the R formula). No draw at six or eight, the draw at seven (fixture). AI: the draw at the opponent's end step only. Shop-only (R table); not in the Manafleur's sixty. |
+| arcane_collector | Arcane Collector | tested | custom; activated {1}{U},{T}: revealRandomIfNamed → onHit draw 2 (R-096 words 3–4: name-a-card, reveal at random) | Custom (Chris's pick for the blue road; art candidates 1–4 rendered, Chris to verdict; the as-printed render to follow). Tier 2 / 16g. The name is a logged choice among the hand's distinct names (forced when one); the random reveal is a REVEALED event and the card stays in hand; one card in hand hits every time (fixtures). AI: the most-duplicated name; their end step, or every turn at one card. Tessaly ×1, Kessa ×1. |
+| angel_of_the_ruins | Angel of the Ruins | tested | artifact creature, flying; triggered(self ETB) targets {0..2} artifactOrEnchantment: exile targetSpec 0; cycling {2} + cyclingSearch subtype:Plains (plainscycling) | C21 first printing (2021 — the earliest Scryfall carries); tier 3 / 50g (priceOverride). Plainscycling fetches a Godless Shrine (revealed); the ETB exiles a law token and an opposing Control Magic (our creature comes home); zero targets resolves; Disenchant destroys it (fixtures). AI (book 53): cycle with a reanimator in hand or short on lands by turn three; the ETB takes their aura on our creature first, never our own. Corvane ×1 (over the third Serra). |
+
+*ADR-121 placements:* Pell −1 Island +1 Glaciers; Quill −1 Forest +1 Glaciers; Tessaly −1 Cathartic Adept +1 Collector; Kessa −1 Shock +1 Collector; Corvane −1 Serra Angel +1 Angel of the Ruins.
 
 ## Shop tiers (ADR-078, S19)
 

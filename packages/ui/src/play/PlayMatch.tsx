@@ -330,6 +330,7 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption, printed }: { c: Ma
     bottomCards: "Choose a card to put on the bottom",
     discard: "Choose a card to discard",
     putOnTop: "Put a card on top of your library — the first you choose ends on top",
+    chooseName: "Name a card — a card is then revealed at random from your hand",
     chooseSacrifice: "Choose a permanent to sacrifice",
     legendRule: "Legend rule: choose which to keep",
     orderTriggers: "Choose which trigger goes on the stack next",
@@ -526,7 +527,9 @@ function CastOrActivateModal({ c, pool }: { c: MatchController; pool: Map<string
   const act = c.phase.activations[0];
   const ability = act && act.type === "activateAbility" ? viewAbilityAt(c.currentView()!, pool, act.objectId, act.abilityIndex) : undefined;
   const isCycle = !!ability && ability.kind === "activated" && ability.cost.discardSelf === true;
-  const actLabel = isCycle ? `Cycle${ability && ability.kind === "activated" && ability.cost.mana ? ` (${ability.cost.mana})` : ""} — discard it, draw a card` : "Use its ability from hand";
+  // S36: typed cycling (plainscycling) searches instead of drawing — the label says so.
+  const cycleSearch = isCycle && ability && ability.kind === "activated" ? ability.effects.find((e) => e.type === "searchLibrary") : undefined;
+  const actLabel = isCycle ? `Cycle${ability && ability.kind === "activated" && ability.cost.mana ? ` (${ability.cost.mana})` : ""} — discard it, ${cycleSearch && cycleSearch.type === "searchLibrary" ? `search for a ${cycleSearch.predicate.startsWith("subtype:") ? cycleSearch.predicate.slice(8) : "basic land"}` : "draw a card"}` : "Use its ability from hand";
   return (
     <div className="gallery-modal">
       <div className="gallery-modal-box play-dialog">

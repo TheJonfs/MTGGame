@@ -135,6 +135,13 @@ function basePredicate(ctx: EngineCtx, spec0: TargetSpec, target: ResolvedTarget
       if (!isLegalTarget(ctx, { ...spec, predicate: "permanent" }, target, by)) return false;
       return target.kind === "object" && !ctx.defs.def(state.objects[target.id]!.cardId).types.includes("Land");
     }
+    // S36 (Angel of the Ruins): "artifacts and/or enchantments" — one predicate so a range spec spans both.
+    case "artifactOrEnchantment": {
+      if (!isLegalTarget(ctx, { ...spec, predicate: "permanent" }, target, by)) return false;
+      if (target.kind !== "object") return false;
+      const types = ctx.defs.def(state.objects[target.id]!.cardId).types;
+      return types.includes("Artifact") || types.includes("Enchantment");
+    }
     case "creatureSpell":
       return target.kind === "stackItem" && state.stack.some((s) => s.id === target.id && s.kind === "spell" && ctx.defs.def(s.sourceCardId).types.includes("Creature"));
     // A10 (S22): Experimental Overload's regrowth.

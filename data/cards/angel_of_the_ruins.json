@@ -1,0 +1,52 @@
+{
+  "id": "angel_of_the_ruins",
+  "name": "Angel of the Ruins",
+  "source": "real",
+  "scryfallId": "ea96229a-5c33-4f79-97d4-059947dd7617",
+  "manaCost": "{5}{W}{W}",
+  "types": [
+    "Artifact",
+    "Creature"
+  ],
+  "subtypes": [
+    "Angel"
+  ],
+  "power": 5,
+  "toughness": 7,
+  "keywords": [
+    "flying"
+  ],
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "condition": {
+        "source": "self"
+      },
+      "targets": [
+        {
+          "count": {
+            "min": 0,
+            "max": 2
+          },
+          "predicate": "artifactOrEnchantment",
+          "zone": "battlefield"
+        }
+      ],
+      "effects": [
+        {
+          "type": "exile",
+          "targetSpec": 0
+        }
+      ],
+      "optional": false
+    }
+  ],
+  "cycling": "{2}",
+  "cyclingSearch": "subtype:Plains",
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 3,
+  "priceOverride": 50
+}

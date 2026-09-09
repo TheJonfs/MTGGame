@@ -1,0 +1,36 @@
+{
+  "id": "thawing_glaciers",
+  "name": "Thawing Glaciers",
+  "source": "real",
+  "scryfallId": "6411a8c6-010f-4863-a0fa-bbebe09d5c34",
+  "manaCost": "",
+  "types": [
+    "Land"
+  ],
+  "entersTapped": true,
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "mana": "{1}",
+        "tap": true
+      },
+      "effects": [
+        {
+          "type": "searchLibrary",
+          "predicate": "basicLand",
+          "to": "battlefield",
+          "entersTapped": true
+        },
+        {
+          "type": "returnSelfAtCleanup"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2,
+  "priceOverride": 20
+}

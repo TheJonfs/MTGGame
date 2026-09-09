@@ -76,7 +76,7 @@ function mkView(opts: {
     graveyards: [[], []],
     graveyardObjects: [[], []],
     manaPool: { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 },
-    pendingEndStepSacrifices: [],
+    pendingEndStepSacrifices: [], pendingCleanupReturns: [],
   };
 }
 
@@ -642,6 +642,62 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
       const req2 = { player: 0 as const, purpose: "priority" as const, actions: [{ type: "pass" as const }, { type: "playLand" as const, objectId: "h_pl" }, { type: "playLand" as const, objectId: "h_pl2" }] };
       for (let i = 0; i < 40; i++) expect((await a.chooseAction(two, req2 as never)).type, profile).toBe("playLand");
     }
+  });
+
+  it("book of shame 52 (S36, Thawing Glaciers): with another land in hand and no reason, the real land is played; the Glaciers is the drop as the only land, with a Crab out, or when the lands already meet the hand's curve; the fetch waits for their end step or a colour we lack", () => {
+    const a = agent("control");
+    const hand = (extra: { objectId: string; cardId: string }[] = []) => [{ objectId: "h_gl", cardId: "thawing_glaciers" }, { objectId: "h_is", cardId: "island" }, { objectId: "h_tr", cardId: "traumatizer" }, ...extra];
+    const dropGl = { type: "playLand" as const, objectId: "h_gl" }, dropIs = { type: "playLand" as const, objectId: "h_is" };
+    // No reason (an Island in hand, the Traumatizer wants four, one land out): the Island is played, the Glaciers gated.
+    const plain = mkView({ step: "MAIN1", activePlayer: 0, hand: hand(), battlefield: [{ id: "i1", cardId: "island", controller: 0 }] });
+    expect(a.glaciersDropGated(plain, dropGl)).toBe(true);
+    expect(a.glaciersDropGated(plain, dropIs)).toBe(false);
+    // The only land in hand: the Glaciers plays.
+    const only = mkView({ step: "MAIN1", activePlayer: 0, hand: [{ objectId: "h_gl", cardId: "thawing_glaciers" }, { objectId: "h_tr", cardId: "traumatizer" }], battlefield: [{ id: "i1", cardId: "island", controller: 0 }] });
+    expect(a.glaciersDropGated(only, dropGl)).toBe(false);
+    // A landfall permanent (a Crab) on our board: the Glaciers is the drop and the Island yields.
+    const crab = mkView({ step: "MAIN1", activePlayer: 0, hand: hand(), battlefield: [{ id: "i1", cardId: "island", controller: 0 }, { id: "c1", cardId: "hedron_crab", controller: 0 }] });
+    expect(a.glaciersDropGated(crab, dropGl)).toBe(false);
+    expect(a.glaciersDropGated(crab, dropIs)).toBe(true);
+    // Lands in play already meet the hand's top mana value: the drop is spare — the Glaciers.
+    const spare = mkView({ step: "MAIN1", activePlayer: 0, hand: hand(), battlefield: [1, 2, 3, 4].map((i) => ({ id: `i${i}`, cardId: "island", controller: 0 as const })) });
+    expect(a.glaciersDropGated(spare, dropGl)).toBe(false);
+    // The activation: their end step yes; their main phase no; our turn only when a colour is lacking.
+    const act = { type: "activateAbility" as const, objectId: "gl", abilityIndex: 0, targets: [] };
+    const onBoard = (step: string, active: 0 | 1, handCards: { objectId: string; cardId: string }[]) => mkView({ step, activePlayer: active, hand: handCards, battlefield: [{ id: "gl", cardId: "thawing_glaciers", controller: 0 }, { id: "i1", cardId: "island", controller: 0 }, { id: "i2", cardId: "island", controller: 0 }] });
+    expect(a.glaciersActivationGated(onBoard("END", 1, [{ objectId: "h_tr", cardId: "traumatizer" }]), act)).toBe(false);
+    expect(a.glaciersActivationGated(onBoard("MAIN1", 1, [{ objectId: "h_tr", cardId: "traumatizer" }]), act)).toBe(true);
+    expect(a.glaciersActivationGated(onBoard("MAIN1", 0, [{ objectId: "h_tr", cardId: "traumatizer" }]), act)).toBe(true); // blue is covered
+    expect(a.glaciersActivationGated(onBoard("MAIN1", 0, [{ objectId: "h_rg", cardId: "rampant_growth" }]), act)).toBe(false); // green is not
+  });
+
+  it("book of shame 53 (S36, Angel of the Ruins): plainscycling with a Zombify in hand, or short on lands by turn three; never with seven lands coming and no reanimator; the ETB aims at their Control Magic on our creature before their other enchantments and never at our own", async () => {
+    const a = agent("midrange");
+    const cyc = { type: "activateAbility" as const, objectId: "h_an", abilityIndex: 1, targets: [] };
+    const v = (hand: { objectId: string; cardId: string }[], lands: number, turn: number) => ({ ...mkView({ step: "MAIN1", activePlayer: 0, hand: [{ objectId: "h_an", cardId: "angel_of_the_ruins" }, ...hand], battlefield: Array.from({ length: lands }, (_, i) => ({ id: `p${i}`, cardId: "plains", controller: 0 as const })) }), turn });
+    expect(a.plainscyclingGated(v([{ objectId: "h_z", cardId: "zombify" }], 4, 5), cyc)).toBe(false); // a reanimator in hand: cycle
+    expect(a.plainscyclingGated(v([], 2, 2), cyc)).toBe(false); // two lands on turn two: cycle
+    expect(a.plainscyclingGated(v([], 6, 6), cyc)).toBe(true); // six lands, no reanimator: hold the Angel
+    // The ETB's target choice.
+    const board = mkView({ step: "MAIN1", activePlayer: 0, battlefield: [
+      { id: "ours", cardId: "serra_angel", controller: 0 }, { id: "cm", cardId: "control_magic", controller: 1, attachedTo: "ours" },
+      { id: "anthem", cardId: "glorious_anthem", controller: 1 }, { id: "myanthem", cardId: "glorious_anthem", controller: 0 },
+    ] as never });
+    const t = (ids: string[]) => ({ type: "chooseTriggerTargets" as const, targets: ids.map((id) => ({ kind: "object" as const, id })) });
+    const req = { player: 0 as const, purpose: "chooseTarget" as const, actions: [t([]), t(["cm"]), t(["anthem"]), t(["myanthem"]), t(["cm", "anthem"]), t(["cm", "myanthem"]), t(["anthem", "myanthem"])], source: { cardId: "angel_of_the_ruins", effects: [{ type: "exile" as const, targetSpec: 0 }] } };
+    const pick = await a.chooseAction(board, req as never);
+    expect(pick).toEqual(t(["cm", "anthem"]));
+  });
+
+  it("S36 (the Collector): the name is the most-duplicated card in hand — four Crabs and a land names the Crab; the activation waits for their end step unless the hand is one card", async () => {
+    const a = agent("control");
+    const view = mkView({ step: "END", activePlayer: 1, hand: [1, 2, 3, 4].map((i) => ({ objectId: `c${i}`, cardId: "hedron_crab" })).concat([{ objectId: "l1", cardId: "island" }]), battlefield: [{ id: "ac", cardId: "arcane_collector", controller: 0 }, { id: "i1", cardId: "island", controller: 0 }, { id: "i2", cardId: "island", controller: 0 }] });
+    const req = { player: 0 as const, purpose: "chooseName" as const, actions: [{ type: "nameCard" as const, cardId: "island", name: "Island" }, { type: "nameCard" as const, cardId: "hedron_crab", name: "Hedron Crab" }], source: { cardId: "arcane_collector", effects: [] } };
+    expect(await a.chooseAction(view, req as never)).toEqual({ type: "nameCard", cardId: "hedron_crab", name: "Hedron Crab" });
+    const act = { type: "activateAbility" as const, objectId: "ac", abilityIndex: 0, targets: [] };
+    expect(a.collectorGated(view, act)).toBe(false); // their end step
+    expect(a.collectorGated({ ...view, step: "MAIN1", activePlayer: 0 }, act)).toBe(true); // our main phase, five cards
+    expect(a.collectorGated({ ...view, step: "MAIN1", activePlayer: 0, hand: [{ objectId: "c1", cardId: "hedron_crab" }] }, act)).toBe(false); // one card: every turn
   });
 
   it("book of shame 49 (S32, Plumecreed Escort): a flash creature waits for the opponent's end step, flashes in against a Bolt at our Traumatizer (and its trigger picks the creature under fire), and on our own turn goes only when nothing else uses the mana", async () => {
