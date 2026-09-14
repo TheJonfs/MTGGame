@@ -24,10 +24,13 @@ export function targetLabel(state: GameState, pool: Map<string, CardDef>, t: Res
   return item ? `${cardName(pool, item.sourceCardId)} (on stack)` : "a spell";
 }
 
-export function actionLabel(state: GameState, pool: Map<string, CardDef>, a: Action, idNames?: Map<string, string>): string {
+/** Deploy playtest r8 (Chris: a Crab trigger "aimed at the opponent" milled him — from seat 1 the dialog's
+ * "Opponent" WAS him): `you` is the human's seat; player targets are named relative to it. Default 0 keeps
+ * the replay viewer's convention (player 0 rendered as You). */
+export function actionLabel(state: GameState, pool: Map<string, CardDef>, a: Action, idNames?: Map<string, string>, you: number = 0): string {
   const name = (id: string) => objectName(state, pool, id, idNames);
   const targets = (ts: ResolvedTarget[]) =>
-    ts.length ? ` → ${ts.map((t) => targetLabel(state, pool, t, 0, idNames)).join(", ")}` : "";
+    ts.length ? ` → ${ts.map((t) => targetLabel(state, pool, t, you, idNames)).join(", ")}` : "";
   switch (a.type) {
     case "pass": return "Pass";
     case "playLand": return `Play ${name(a.objectId)}`;
@@ -61,7 +64,7 @@ export function actionLabel(state: GameState, pool: Map<string, CardDef>, a: Act
     case "nameCard": return `Name ${a.name}`;
     case "returnToHand": return `Return ${name(a.objectId)} to hand (cost)`;
     case "tapCreature": return `Tap ${name(a.objectId)} (cost)`;
-    case "chooseVariableTarget": return `Add target: ${targetLabel(state, pool, a.target)}`;
+    case "chooseVariableTarget": return `Add target: ${targetLabel(state, pool, a.target, you, idNames)}`;
     case "doneChoosingTargets": return "Done choosing targets";
   }
 }

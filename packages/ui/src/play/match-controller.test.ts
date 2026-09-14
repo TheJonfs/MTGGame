@@ -4,6 +4,7 @@ import { dirname, join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
 import { expandDecklist, replayToDecision } from "@shandalar/engine";
 import { MatchController } from "./match-controller.js";
+import { actionLabel } from "../labels.js";
 import { DECKS } from "@shandalar/sim/decks";
 
 const CARDS_DIR = join(dirname(fileURLToPath(import.meta.url)), "../../../../data/cards");
@@ -209,6 +210,61 @@ describe("play-mode acceptance (headless; S10 DoD 1)", () => {
     c.concede();
     guard = 0;
     while (!c.result && guard++ < 2000) await new Promise((r) => setTimeout(r, 0));
+  }, 60_000);
+
+  it("deploy playtest r8 (Chris: a Crab trigger aimed at the opponent milled him): from EITHER seat, clicking the opponent's plate mills the opponent's library, never ours — and the logged target is labelled relative to our seat", async () => {
+    const pool = loadCardPool(CARDS_DIR);
+    for (const humanSeat of [0, 1] as const) {
+      const opp = (1 - humanSeat) as 0 | 1;
+      const c = new MatchController(pool.cards, {
+        humanSeat, seed: 8, aiDelayMs: 0,
+        custom: {
+          human: { name: "You", decklist: [{ cardId: "island", count: 40 }] },
+          enemy: { name: "Foe", decklist: [{ cardId: "swamp", count: 40 }], difficulty: "apprentice", archetype: "midrange" },
+          rules: { startingLife: 20, ante: 0, startingPlayer: humanSeat },
+          modifiers: [{ type: "permanentOnBattlefield", player: humanSeat, cardId: "hedron_crab" }],
+        },
+      });
+      c.start();
+      let guard = 0;
+      // Keep the hand, reach our first main phase, play a land.
+      const atOurMain = () => c.phase.kind === "priority" && c.game.state.activePlayer === humanSeat && c.game.state.step === "MAIN1";
+      while (guard++ < 5000 && !atOurMain()) {
+        await new Promise((r) => setTimeout(r, 0));
+        if (atOurMain()) break; // the window opened during the tick — act on it, don't pass it
+        if (c.phase.kind === "dialog") { c.selectDialog(0); c.confirmDialog(); }
+        else if (c.phase.kind === "priority") c.pass();
+        else if (c.phase.kind === "attackers") c.confirmAttackers();
+        else if (c.phase.kind === "blockers") c.confirmBlocks();
+      }
+      const lands = (c.phase as { lands: Map<string, unknown> }).lands;
+      const before: [number, number] = [c.game.state.players[0].library.length, c.game.state.players[1].library.length];
+      c.clickHand([...lands.keys()][0]!);
+      guard = 0;
+      while (guard++ < 5000 && c.phase.kind !== "targeting") await new Promise((r) => setTimeout(r, 0));
+      expect(c.phase.kind).toBe("targeting");
+      const t = c.phase as Extract<MatchController["phase"], { kind: "targeting" }>;
+      expect([...t.highlightPlayers].sort()).toEqual([0, 1]); // both players are legal targets, from either seat
+      c.clickPlayer(opp);
+      // The click stages the choice (the "Staged: Trigger targets → …" line — the label that lied from seat 1); confirm it.
+      expect(c.phase.kind).toBe("confirmCast");
+      expect(actionLabel(c.game.state, pool.cards, (c.phase as unknown as { action: never }).action, c.idNames, humanSeat)).toBe("Trigger targets → Opponent");
+      c.confirmCast();
+      guard = 0;
+      while (guard++ < 5000 && !(c.phase.kind === "priority" && c.game.state.stack.length === 0)) {
+        await new Promise((r) => setTimeout(r, 0));
+        if (c.phase.kind === "dialog") { c.selectDialog(0); c.confirmDialog(); }
+        else if (c.phase.kind === "priority" && c.game.state.stack.length > 0) c.pass();
+      }
+      const after: [number, number] = [c.game.state.players[0].library.length, c.game.state.players[1].library.length];
+      expect(after[opp], `seat ${humanSeat}: the opponent (seat ${opp}) is milled`).toBe(before[opp] - 3);
+      expect(after[humanSeat], `seat ${humanSeat}: our library untouched`).toBe(before[humanSeat]);
+      const aimed = c.log.entries.find((e) => e.t === "ACTION" && (e.action as { type: string }).type === "chooseTriggerTargets");
+      expect(aimed).toBeTruthy();
+      expect(actionLabel(c.game.state, pool.cards, (aimed as unknown as { action: never }).action, c.idNames, humanSeat)).toBe("Trigger targets → Opponent");
+      c.concede(); guard = 0;
+      while (!c.result && guard++ < 2000) await new Promise((r) => setTimeout(r, 0));
+    }
   }, 60_000);
 
   it("S15 Lotus line through the play client: cast Lotus, activate → chooseColor → confirm → three mana floating, Lotus in the graveyard", async () => {

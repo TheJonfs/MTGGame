@@ -425,7 +425,7 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption, printed }: { c: Ma
               {isAdditionalSac && castSource && castSource.type === "castSpell" && (
                 <>
                   <p>Casting this spell requires a sacrifice as an additional cost (paid now, after mana).</p>
-                  <p className="dialog-staged">Staged: {actionLabel(state, pool, castSource)}</p>
+                  <p className="dialog-staged">Staged: {actionLabel(state, pool, castSource, c.idNames, c.humanSeat)}</p>
                 </>
               )}
             </div>
@@ -492,9 +492,9 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption, printed }: { c: Ma
                 {asCards && cid ? (
                   <CardFrame def={pool.get(cid)!} oracle={oracle[cid]} mini showPrinted={printed} />
                 ) : (
-                  <span>{tagEl(a)}{actionLabel(state, pool, a)}</span>
+                  <span>{tagEl(a)}{actionLabel(state, pool, a, c.idNames, c.humanSeat)}</span>
                 )}
-                {asCards && <div className="dialog-caption">{tagEl(a)}{actionLabel(state, pool, a)}{(() => {
+                {asCards && <div className="dialog-caption">{tagEl(a)}{actionLabel(state, pool, a, c.idNames, c.humanSeat)}{(() => {
                   // Deploy playtest r1 (Chris: the bottom/discard dialogs collapse duplicates — say how
                   // many): one option stands for every copy in hand (ADR-011 enumerates per distinct
                   // card); the caption carries the count.
@@ -697,7 +697,7 @@ function PlayLog({ c, pool }: { c: MatchController; pool: Map<string, CardDef> }
       case "bottomCard": return mine ? `Bottom ${nameOf(a.objectId!)}` : "Bottom a card";
       // Deploy playtest r6 (Chris, note 1): Brainstorm's put-backs are hidden the same way.
       case "putOnTop": return mine ? `Put ${nameOf(a.objectId!)} on top` : "Puts a card on top of their library";
-      default: return actionLabel(state, pool, a as never, c.idNames); // S22 r2: dead ids resolve through the ledger
+      default: return actionLabel(state, pool, a as never, c.idNames, you); // S22 r2: dead ids resolve through the ledger; r8: player targets relative to OUR seat
     }
   };
   const lines: string[] = [];
@@ -856,7 +856,7 @@ export function PlayMatch({
   });
 
   const confirmLabel =
-    phase.kind === "confirmCast" ? actionLabel(ctx.state, pool, phase.action) : null;
+    phase.kind === "confirmCast" ? actionLabel(ctx.state, pool, phase.action, c.idNames, c.humanSeat) : null;
 
   // S22 r4 (Chris, item 8): while a spell sits on the stack, everything it targets wears a
   // bright ring on the board — bigger and hotter than the pick-a-target outline, because the

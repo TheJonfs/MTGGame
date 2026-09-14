@@ -15,6 +15,10 @@
 - **Part 5**: the five touched mages against the stock starters at Standard (`--mode standard --part 2/5`, 100 games both seats, the S35 baseline). Below.
 - **The Collector's art**: `docs/prompts/card-art.md` entry (the wager and the collection; no proper nouns) and four subject files (`card-arcane-collector-1..4`: classical oil, ink-and-gouache action, watercolor storybook, chiaroscuro portrait), rendered `--no-style` 1:1; thumbnails sent to Chris.
 
+## Deploy playtest r8 (Chris, 2026-09-14): the Crab trigger "aimed at the opponent" milled the player
+
+**The finding.** The engine mills exactly the chosen player and the board's plates map seats correctly; the fault was the shared action label: `actionLabel` named player targets with "you" hardcoded to seat 0, so from **seat 1** (on the draw in the dev setup; a coin flip) every dialog option, the "Staged: Trigger targets → …" confirmation and the play-by-play line said "Opponent" for the player and "You" for the opponent. Pick what reads as the opponent and you mill yourself. (In the world the human is always seat 0, so the campaign never showed it; the dev `/play` setup and its coin flip did.) **The fix**: the human's seat is threaded through `actionLabel` at every dialog, staging and log call site (the replay viewer keeps its player-0-as-You convention). Tests: `labels.test.ts` (player targets named relative to the seat); a controller regression in `match-controller.test.ts` — from EITHER seat, a Crab's trigger targeted by clicking the opponent's plate mills the opponent's library by three, never ours, and the staged and logged labels read "→ Opponent". UI suite 43 passed; typecheck clean.
+
 ## Deviations from the brief
 
 1. **Six words, not three.** The brief named the cleanup return and the activation condition and called the rest existing; encoding found the Collector needs an action (`nameCard`) and an event (`REVEALED`), plainscycling needs the search form of cycling, and the Angel's "artifacts and/or enchantments" needs one predicate for a range spec plus exile's fan-out. All six are general (R-096), no carve-outs.
