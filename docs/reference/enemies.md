@@ -47,7 +47,7 @@ Mages roam anywhere; beasts are spoke-bound (their colour's ring). Tier 1 rolls 
 | Tessaly Reed | mage | 1 | — | 8 / **8** / 8 | 0 / **0** / 0 | apprentice | mage:tessaly (control) | 40 / 18 / 1.73 / U | the Tidewright |
 | Adept Maelin | mage | 2 | — | 12 / **12** / 14 | 0 / **1** / 2 (swamp) | journeyman | mage:maelin (aggro) | 40 / 17 / 1.96 / BR | the Pyre-Warden |
 | Brennor of the Glade | mage | 2 | — | 12 / **12** / 14 | 0 / **1** / 2 (forest) | journeyman | mage:brennor (midrange) | 40 / 17 / 1.61 / GW | the Sanctuary |
-| Kessa Emberhand | mage | 2 | — | 12 / **12** / 14 | 0 / **1** / 2 (mountain) | journeyman | mage:kessa (control) | 40 / 17 / 1.87 / RU | the Stormcaller |
+| Kessa Emberhand | mage | 2 | — | 12 / **12** / 14 | 0 / **1** / 2 (island) | journeyman | mage:kessa (control) | 40 / 17 / 1.87 / RU | the Stormcaller |
 | Mistress Vael | mage | 2 | — | 12 / **12** / 14 | 0 / **1** / 2 (plains) | journeyman | mage:vael (midrange) | 40 / 17 / 1.74 / BW | the Tithe-Reeve |
 | Pell of the Shallows | mage | 2 | — | 12 / **12** / 14 | 0 / **1** / 2 (forest) | journeyman | mage:pell (control) | 40 / 17 / 2.17 / GU | the Tidesower |
 | High Warden Sorrel | mage | 3 | — | 14 / **16** / 20 | 1 / **2** / 2 (swamp, mountain) | master | mage:sorrel (midrange) | 40 / 17 / 1.87 / BR | the Inquisitor; knobs {"anteCount":2} |

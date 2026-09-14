@@ -1,4 +1,4 @@
-# Handoff — after Session 36 (2026-09-09)
+# Handoff — after Session 36 (2026-09-09; updated 2026-09-14 — the r8 seat audit and the Collector's art)
 
 ## State of the world
 
@@ -52,7 +52,7 @@ R-096. Pool-registry: Session 36 section (+4; the placements). ADR-121 in `docs/
 
 ## Test status
 
-Default tier **595 passed / 2 skipped** (59 files; +10 fixtures, +3 book pins, +2 fuzz tests; baselines: the loader's def count 207 → 211, the shop-tier tally 72/52/10/23 → 72/54/11/24, the no-peeking view-key pin gained `pendingCleanupReturns`, Kessa's `primaryColors`). `pnpm typecheck` clean. **Fuzz-before-fixtures honoured** (840 games). **Both ladder gates green.** Sweep: parts 2 and 5 at Standard (10,000 games).
+Default tier **602 passed / 2 skipped** (61 files — the S36 close was 595 / 59; since: +2 labels tests, +1 both-seats Crab controller regression, +4 engine seat fixtures; `enemies.md` regenerated after the Angel's printing moved to BRC; the S36 additions: +10 fixtures, +3 book pins, +2 fuzz tests; baselines: the loader's def count 207 → 211, the shop-tier tally 72/52/10/23 → 72/54/11/24, the no-peeking view-key pin gained `pendingCleanupReturns`, Kessa's `primaryColors`). `pnpm typecheck` clean. **Fuzz-before-fixtures honoured** (840 games). **Both ladder gates green.** Sweep: parts 2 and 5 at Standard (10,000 games).
 
 ## Suggested next
 
