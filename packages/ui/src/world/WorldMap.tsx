@@ -33,8 +33,16 @@ const TIER_WASH: Record<string, Record<string, string>> = {
 /** S27 (ADR-092/093): the Corolla's petals wear the LOGO's own five hues (sampled from the card
  * back's cinquefoil, lifted a step so ink still reads over them) — brighter than the wilds. */
 const COROLLA_WASH: Record<string, string> = { W: "#f1e8cf", U: "#6b86a0", B: "#5a4a52", R: "#b85e4c", G: "#8a9a63" };
-function washFor(tier: string, color: string, register?: "corolla"): string {
+/** S39 (Part 5; Chris): the FLOOD register — a distinct look, not a water world: every colour keeps its identity, the
+ * whole plane reads darker and cooler (dusk over the low country), evenly across the five. Same sprites, tinted. */
+const FLOOD_WASH: Record<string, Record<string, string>> = {
+  civilized: { W: "#d9d0b9", U: "#bcc8cf", B: "#c4bcc4", R: "#d1bdb0", G: "#c0c9b1", C: "#c9c1b0" },
+  approach: { W: "#c2b58a", U: "#93a7b8", B: "#9c8ca0", R: "#bb8f7c", G: "#96a67c", C: "#b1a68c" },
+  wild: { W: "#9c9074", U: "#73808a", B: "#756a78", R: "#8d6d5f", G: "#6f7c5c", C: "#857b66" },
+};
+function washFor(tier: string, color: string, register?: "corolla" | "flood"): string {
   if (register === "corolla" && tier === "wild" && COROLLA_WASH[color]) return COROLLA_WASH[color]!;
+  if (register === "flood") return FLOOD_WASH[tier]?.[color] ?? FLOOD_WASH[tier]?.C ?? "#c9c1b0";
   return TIER_WASH[tier]?.[color] ?? TIER_WASH[tier]?.C ?? "#e2d9c4";
 }
 
@@ -283,7 +291,7 @@ export function WorldMapView({
   /** S26 (ADR-091): the Corolla's register — the campaign grammar at flower scale: petal washes in
    * the five colours on unpainted paper (the void region paints nothing and grows no terrain),
    * petal outlines as region borders, the tips as petal sprites. */
-  register?: "corolla";
+  register?: "corolla" | "flood";
   /** S21 sieges: per-town threat state — threatened towns ring danger-dashed with a banner;
    * occupied towns go dark under a solid danger ring. */
   townStates?: Record<number, "threatened" | "occupied">;
@@ -744,7 +752,7 @@ export function WorldMapView({
           // not a ghosted keep (the broken silhouette is the statement).
           // S26: the two centre doors on the outer map (the Corolla's, the Vault's) and the petal
           // tips inside the flower — a fallen petal fades like a cleared lair.
-          const slug = castle ? (cleared ? "sprite-ruin" : "sprite-castle") : f.kind === "dungeon" ? "sprite-dungeon-door" : f.kind === "corolla" ? "sprite-corolla-door" : f.kind === "vault" ? "sprite-vault" : f.kind === "petal" ? "sprite-petal" : "sprite-lair";
+          const slug = castle ? (cleared ? "sprite-ruin" : "sprite-castle") : f.kind === "dungeon" ? "sprite-dungeon-door" : f.kind === "corolla" || f.kind === "deep" ? "sprite-corolla-door" : f.kind === "vault" ? "sprite-vault" : f.kind === "petal" ? "sprite-petal" : "sprite-lair";
           const sz = CELL * (castle ? 3 : f.kind === "corolla" ? 3.2 : f.kind === "petal" ? 2.6 : 2.4);
           return (
             <g key={`f${i}`} onMouseEnter={() => setHoverLair({ name: f.name ?? f.kind, at: f.at })} onMouseLeave={() => setHoverLair(null)} onClick={() => onClickCell(f.at)} style={{ cursor: "pointer" }}>

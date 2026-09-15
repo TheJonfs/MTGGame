@@ -15,5 +15,10 @@
     "Harrowgate",
     "Dunmere",
     "Ashford"
-  ]
+  ],
+  "namesPhaseTwo": [
+    "Wrackmoor", "Lowford", "Sunken Cross", "Drownmere", "Saltrise", "Highwater", "Reedhaven", "Gullmarsh", "Ebbstone", "Stillwater",
+    "Fordholm", "Mistgate", "Ferryhold", "Duskmere", "Cairnwash", "Sedgeport", "Lanternshoal", "Eelbridge", "Thornsedge", "Greyfen"
+  ],
+  "_namesPhaseTwoNote": "S39 Part 5: PLACEHOLDER flood names so the phase-two path works; the real list is Chris's/the planner's (the content rounds)."
 }

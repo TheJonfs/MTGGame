@@ -1,6 +1,7 @@
 import type { Catalog, StarterId, StarterTemplate } from "./catalog.js";
 import { generateWorld, type GeneratedWorld, type GeneratorOptions, type OpponentInstance, DEFAULT_GENERATOR, spawnRoamers } from "./generate.js";
 import { resolveKnobs, DIFFICULTIES, type DifficultyName, type KnobSource, type KnobValues, type Phase } from "./knobs.js";
+import type { PetalColor } from "./corolla.js";
 import { carveReachable, exploredAll, placeCentreDoors, type Point, type WorldMap } from "./map.js";
 import { WorldRng, type WorldRngState } from "./rng.js";
 import { emptyQuestState, type Manalink, type QuestState } from "./quests.js";
@@ -39,7 +40,7 @@ export type Collection = Record<string, number>;
 
 /** S16 v3: where a copy came from (append-only; never pruned on loss/sell —
  * it is history, and "new since last visit" reads it by step). */
-export type ProvenanceSource = "starter" | "ante" | "shop" | "reward";
+export type ProvenanceSource = "starter" | "ante" | "shop" | "reward" | "salvage"; // S39: the flood's start
 
 /** S25 v7 (ADR-088): the powers save-shape lives HERE (save shapes are state.ts's home; powers.ts
  * carries the behavior and imports these — the one-cycle rule holds, journey↔siege stays alone). */
@@ -181,8 +182,11 @@ export interface NewWorldOptions {
   difficulty?: DifficultyName;
   /** S38: the phase the world begins in (default 1; no shipped path passes 2 yet — the salvage start will). */
   phase?: Phase;
-  /** Starter deck = the catalog starter for the chosen colour (manifest §2b; ADR-069). */
-  starter: StarterId;
+  /** Starter deck = the catalog starter for the chosen colour (manifest §2b; ADR-069). Required unless `salvage`. */
+  starter?: StarterId;
+  /** S39 (ADR-126): the salvage start — phase two. The ten legends, the five picks, the two colours and the deck
+   * the assembler built (salvage.ts); the pack comes from the catalog. Phase 2, the purse, no manalinks. */
+  salvage?: SalvageSpec;
   playerName?: string;
   generator?: GeneratorOptions;
   /** Extra knob layers (tests force behaviour via the `event` layer). */
@@ -271,9 +275,26 @@ export function clampWorldLife(world: WorldState): void {
   world.player.worldLife = Math.min(world.player.worldLife, maxWorldLife(world));
 }
 
+/** S39 (ADR-126): what the player leaves the water with. */
+export interface SalvageSpec {
+  /** The ten legends (five ministers, five power guardians — legacyCarry per cut colour). */
+  legends: string[];
+  /** The five picks, one per colour. */
+  picks: string[];
+  /** The two colours carried first. */
+  pair: [PetalColor, PetalColor];
+  /** The first deck (assembleSalvageDeck) — legal by construction. */
+  deck: Decklist;
+  /** The deck's name in the save. */
+  deckName?: string;
+}
+const BASIC_OF_COLOR: Record<PetalColor, string> = { W: "plains", U: "island", B: "swamp", R: "mountain", G: "forest" };
+
 export function newWorld(opts: NewWorldOptions): WorldState {
   const difficulty = opts.difficulty ?? "standard";
   const knobs = resolveKnobs({ difficulty: DIFFICULTIES[difficulty], ...(opts.knobLayers ?? {}) });
+  if (opts.salvage) return newSalvageWorld(opts, opts.salvage, difficulty, knobs);
+  if (!opts.starter) throw new Error("newWorld: a starter or a salvage is required");
   const starter = starterTemplate(opts.catalog, opts.starter);
   const gen: GeneratedWorld = generateWorld(opts.seed, opts.catalog, opts.generator ?? DEFAULT_GENERATOR, { knobs, homeColor: starter.color });
   const deck = starterDecklist(starter, difficulty);
@@ -295,6 +316,33 @@ export function newWorld(opts: NewWorldOptions): WorldState {
       provenance.push({ cardId: e.cardId, source: "starter", step: 0 });
     }
   }
+  return worldFrom(opts, difficulty, knobs, gen, { deck, deckName: starter.name, basic, collection, provenance, starterId: starter.id, gold: knobs.startingGold, phase: opts.phase ?? 1 });
+}
+
+/** S39 (ADR-126): the flood's world — phase 2; the collection is the ten legends + the five picks + the pack +
+ * the deck's basics (one copy of each; provenance "salvage"); the purse; no manalinks (never applied); the
+ * phase-two seed names its towns from the flood list and leaves the centre as deep water. */
+function newSalvageWorld(opts: NewWorldOptions, salvage: SalvageSpec, difficulty: DifficultyName, knobs: KnobValues): WorldState {
+  const pack = opts.catalog.salvagePack;
+  if (!pack) throw new Error("newWorld: the catalog carries no salvage pack");
+  const home = salvage.pair[0];
+  const gen: GeneratedWorld = generateWorld(opts.seed, opts.catalog, opts.generator ?? DEFAULT_GENERATOR, { knobs, homeColor: home, phase: 2 });
+  const basic = BASIC_OF_COLOR[home];
+  const collection: Collection = {};
+  const provenance: ProvenanceEntry[] = [];
+  const grant = (id: string) => { collection[id] = (collection[id] ?? 0) + 1; provenance.push({ cardId: id, source: "salvage", step: 0 }); };
+  for (const id of salvage.legends) grant(id);
+  for (const id of salvage.picks) grant(id);
+  for (const c of ["W", "U", "B", "R", "G"] as const) for (const id of pack.colors[c]) grant(id);
+  for (const id of pack.colorless) grant(id);
+  for (const e of salvage.deck) if (BASICS.includes(e.cardId)) for (let i = 0; i < e.count; i++) grant(e.cardId);
+  for (const e of salvage.deck) if (!BASICS.includes(e.cardId) && (collection[e.cardId] ?? 0) < e.count) throw new Error(`newWorld: the salvage deck lists ${e.cardId} ×${e.count}; the salvage holds ${collection[e.cardId] ?? 0}`);
+  const starterId = (opts.catalog.starters.find((s) => s.color === home)?.id ?? "white") as StarterId;
+  return worldFrom(opts, difficulty, knobs, gen, { deck: salvage.deck.map((e) => ({ ...e })), deckName: salvage.deckName ?? "The Salvage", basic, collection, provenance, starterId, gold: knobs.salvagePurse, phase: 2 });
+}
+
+function worldFrom(opts: NewWorldOptions, difficulty: DifficultyName, knobs: KnobValues, gen: GeneratedWorld, p: { deck: Decklist; deckName: string; basic: string; collection: Collection; provenance: ProvenanceEntry[]; starterId: StarterId; gold: number; phase: Phase }): WorldState {
+  const { deck, basic, collection, provenance } = p;
   // The world RNG continues from the generator's stream? No — generation is a
   // pure function of the seed; the journey stream is its own seeded stream so
   // regenerating a map never perturbs a saved journey.
@@ -303,20 +351,20 @@ export function newWorld(opts: NewWorldOptions): WorldState {
   return {
     catalogVersion: opts.catalog.version,
     seed: opts.seed,
-    phase: opts.phase ?? 1,
+    phase: p.phase,
     difficulty,
     map: gen.map,
     player: {
       name: opts.playerName ?? "You",
       position: { ...start },
       worldLife: knobs.startingWorldLife,
-      gold: knobs.startingGold,
+      gold: p.gold,
       collection,
       basicLand: basic,
       stepsTaken: 0,
       renown: 0,
       renownByColor: zeroRenownByColor(),
-      starterId: starter.id,
+      starterId: p.starterId,
     },
     opponents: gen.opponents,
     rng: rng.state(),
@@ -331,8 +379,8 @@ export function newWorld(opts: NewWorldOptions): WorldState {
       const bd = best < 0 ? Infinity : Math.abs(gen.map.towns[best]!.at.x - start.x) + Math.abs(gen.map.towns[best]!.at.y - start.y);
       return d < bd ? i : best;
     }, -1),
-    decks: { [starter.name]: deck },
-    activeDeckName: starter.name,
+    decks: { [p.deckName]: deck },
+    activeDeckName: p.deckName,
     provenance,
     explored: gen.explored,
     quests: emptyQuestState(),
@@ -461,6 +509,7 @@ export function migrateWorld(format: string, input: Partial<WorldState>): WorldS
   // S26 (ADR-091): the centre doors — a pre-S26 radial map grows the Corolla's and the Vault's
   // doors on load (idempotent; carved reachable from the start). Non-radial (pre-S16) maps have
   // no centre and stay doorless — those worlds predate the lords entirely.
-  for (const door of placeCentreDoors(v3.map)) carveReachable(v3.map, v3.map.start, door.at);
+  // S39: a phase-two map keeps its deep water; only phase-one maps grow the Corolla's doors on load.
+  if ((v3.phase ?? 1) < 2) for (const door of placeCentreDoors(v3.map)) carveReachable(v3.map, v3.map.start, door.at);
   return v3;
 }

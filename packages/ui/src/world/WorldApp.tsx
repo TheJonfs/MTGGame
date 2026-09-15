@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { CardDef } from "@shandalar/cards";
 import { cardColors } from "@shandalar/cards";
-import { resolveMatchup, activeDeck, buyOffPrice, deckSize, deckStats, dungeonAsWorldMap, isBasic, isExplored, lordPronouns, maxWorldLife, sellPrice, spares, BASIC_LANDS, type DifficultyName, type Point, type ShopItem, type StarterId } from "@shandalar/world";
+import { resolveMatchup, activeDeck, buyOffPrice, deckSize, deckStats, dungeonAsWorldMap, isBasic, isExplored, lordPronouns, SALVAGE_COLORS, pairName, maxWorldLife, sellPrice, spares, BASIC_LANDS, type DifficultyName, type Point, type ShopItem, type StarterId } from "@shandalar/world";
 import { loadOracle, loadPool, loadWorldCatalog, type OracleEntry, type SavedGame } from "../engine-bridge";
 import { CardFrame } from "../components/CardFrame";
 import { PlayMatch, loadStops } from "../play/PlayMatch";
@@ -93,6 +93,13 @@ function StartScreen({ c, onStart }: { c: WorldController; onStart: (choice: New
             </span>
           </p>
         )}
+        {/* S39 (ADR-126): the Flood — offered once every colour has been cut. */}
+        {c.floodEligible() && (
+          <p className="dungeon-law" style={{ borderColor: "var(--brass)", fontSize: 12.5, textAlign: "left" }}>
+            <b>{c.catalog.questText?.flood?.offer ?? "Enter the Flood"}.</b> The fifth root is cut; the plane turns over. Phase two begins with what you carried out — the ten legends, five things from the wrack, a pack, a purse — on a new map.{" "}
+            <button className="primary" style={{ marginLeft: 8 }} onClick={() => c.enterFlood({ difficulty, name, ...(seed.trim() ? { seed: Number(seed) } : {}) })}>{c.catalog.questText?.flood?.offer ?? "Enter the Flood"}</button>
+          </p>
+        )}
         <p>
           <button className="primary" onClick={() => onStart({ starter, difficulty, name, ...(seed.trim() ? { seed: Number(seed) } : {}) })}>New game</button>{" "}
           {c.hasAutosave() && (() => { const s = c.saveSummary(); return <button onClick={() => c.continueFromAutosave()} title={s ? `${s.name} · ${s.difficulty} · phase ${s.phase} · ${s.steps} steps · ${s.worldLife} life · ${s.decks} deck${s.decks === 1 ? "" : "s"}` : "the autosave"}>Continue{s ? ` — ${s.name}, ${s.difficulty}, phase ${s.phase}, ${s.steps} steps` : ""}</button>; })()}{" "}
@@ -150,7 +157,10 @@ function DevTab({ c }: { c: WorldController }) {
               ))}
             </div>
             {/* S38: the world's phase (read-only here — no shipped path sets 2 this session; the salvage start will). */}
-            <p style={{ fontSize: 11.5, color: "var(--ink-soft)", marginBottom: 4, marginTop: 10 }}>World: phase <b>{c.world?.phase ?? 1}</b> · {c.world?.difficulty} · the resolver reads the phase-{c.world?.phase ?? 1} column (docs/knobs.md phaseTierTables){(c.world?.phase ?? 1) >= 2 ? " · the Heart's ring accumulates" : ""}</p>
+            <p style={{ fontSize: 11.5, color: "var(--ink-soft)", marginBottom: 4, marginTop: 10 }}>World: phase <b>{c.world?.phase ?? 1}</b> · {c.world?.difficulty} · the resolver reads the phase-{c.world?.phase ?? 1} column (docs/knobs.md phaseTierTables){(c.world?.phase ?? 1) >= 2 ? " · the Heart's ring accumulates" : ""}
+              {/* S39 (Part 0): the dev shortcut — the salvage start is the shipped path to 2. */}
+              {" · "}{([1, 2] as const).map((p) => <button key={p} className="linkish" style={{ fontSize: 11, marginRight: 4 }} disabled={c.world?.phase === p} onClick={() => c.devSetPhase(p)}>set phase {p}</button>)}
+            </p>
             {/* S27: the legacy toggle — grant a cutting per colour (writes the profile) or clear it. */}
             <p style={{ fontSize: 11.5, color: "var(--ink-soft)", marginBottom: 4, marginTop: 10 }}>Legacy (the profile, outside the save): cuttings {(["W", "U", "B", "R", "G"] as const).map((k) => `${k}${c.legacy().cuttings[k] ?? 0}`).join(" ")} · victories {c.legacy().victories}</p>
             <p style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 0 }}>
@@ -978,7 +988,9 @@ function HeartVictory({ c, pool, oracle }: { c: WorldController; pool: Map<strin
         <p style={{ fontSize: 12.5, color: "var(--ink-soft)" }}>{pack?.offer ?? "Stay in the quiet world, or begin again on a new road — carrying what you carried out."}</p>
         <p>
           <button onClick={() => c.stayAfterHeart()}>Stay in the quiet world</button>{" "}
-          <button className="primary" onClick={() => c.newRoadAfterHeart()}>Begin a new road</button>
+          <button className="primary" onClick={() => c.newRoadAfterHeart()}>Begin a new road</button>{" "}
+          {/* S39 (ADR-126): the fifth cutting opens the Flood — phase two, from here. */}
+          {s.fifth && c.floodEligible() && <button className="primary" style={{ background: "var(--brass)" }} onClick={() => c.enterFlood({ difficulty: c.world!.difficulty, name: c.world!.player.name })}>{c.catalog.questText?.flood?.offer ?? "Enter the Flood"}</button>}
         </p>
       </div>
     </div>
@@ -1455,7 +1467,7 @@ function EditorScreen({ c, pool, oracle }: { c: WorldController; pool: Map<strin
         <button className="linkish" onClick={() => setPrinted(!printed)}>{printed ? "our frame" : "printed card"}</button>
         <button className="primary" disabled={!legality.ok} title={legality.ok ? "save this deck" : legality.problems.join("; ")} onClick={() => c.editorSave()}>Save deck</button>
         <button onClick={() => c.editorReset()} title="discard draft changes (back to the saved deck)">Reset</button>
-        <button onClick={() => c.editorClose()}>Cancel</button>
+        <button disabled={!!c.screen.mustLeaveLegal && !legality.ok} title={c.screen.mustLeaveLegal && !legality.ok ? "the water waits for a legal deck — fix it or Reset" : ""} onClick={() => c.editorClose()}>{c.screen.mustLeaveLegal ? "Keep this deck" : "Cancel"}</button>
       </div>
       {op && (
         <div className="deck-op-row">
@@ -1526,6 +1538,84 @@ function EditorScreen({ c, pool, oracle }: { c: WorldController; pool: Map<strin
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+/** S39 (ADR-126): the flood's scene — the planner's lines (Chris: what was lost is metaphorical; no deck shown). */
+function FloodScene({ c }: { c: WorldController }) {
+  if (c.screen.kind !== "flood") return null;
+  const pack = c.catalog.questText?.flood;
+  return (
+    <div className="loader">
+      <div className="box play-setup world-result" style={{ maxWidth: 680 }}>
+        <h2 style={{ fontFamily: "var(--serif)", marginTop: 0 }}>The Flood</h2>
+        {(pack?.scene ?? ["The fifth root parts.", "The rest is water."]).map((line, i) => <p key={i} style={{ fontSize: 14, fontStyle: "italic" }}>{line}</p>)}
+        <p><button className="primary" onClick={() => c.floodContinue()}>Continue</button></p>
+      </div>
+    </div>
+  );
+}
+
+/** S39: the salvage — five colour tabs (one pick each; a pick banks when its tab is left), then the pair. */
+function SalvageScreen({ c, pool, oracle }: { c: WorldController; pool: Map<string, CardDef>; oracle: Record<string, OracleEntry> }) {
+  const [inspect, setInspect] = useState<string | null>(null);
+  if (c.screen.kind !== "salvage") return null;
+  const s = c.screen;
+  const pack = c.catalog.questText?.flood;
+  const picked = SALVAGE_COLORS.filter((col) => s.picks[col]).length;
+  return (
+    <div className="gallery world-collection">
+      <div className="gallery-header">
+        <b style={{ fontFamily: "var(--serif)" }}>{s.stage === "picks" ? "From the wrack" : "Two colours"}</b>
+        <span style={{ fontSize: 12, fontStyle: "italic" }}>{s.stage === "picks" ? (pack?.picks ?? "Five things — one of each colour.") : (pack?.pair ?? "Two colours you will carry first.")}</span>
+        <span style={{ flex: 1 }} />
+        {s.stage === "picks" && SALVAGE_COLORS.map((col) => (
+          <button key={col} className={s.tab === col ? "primary" : ""} onClick={() => c.salvageTab(col)} title={s.banked.includes(col) ? "banked — the current took it" : s.picks[col] ? "picked; banks when you leave the tab" : "no pick yet"}>
+            <i className={`colour-pip c-${col}`} /> {COLOUR_NAME[col]}{s.picks[col] ? (s.banked.includes(col) ? " ✓" : " ·") : ""}
+          </button>
+        ))}
+        {s.stage === "picks" && <button className="primary" disabled={picked < 5} title={picked < 5 ? `${5 - picked} colour${5 - picked === 1 ? "" : "s"} still to pick` : "on to the pair"} onClick={() => c.salvageToPair()}>Choose colours ({picked}/5)</button>}
+      </div>
+      {s.notice && <div style={{ color: "var(--danger)", fontSize: 12, padding: "4px 10px" }}>{s.notice}</div>}
+      {s.stage === "picks" ? (
+        <>
+          <div style={{ fontSize: 12, padding: "4px 10px", color: "var(--ink-soft)" }}>
+            {s.banked.includes(s.tab)
+              ? <>This colour's pick is <b>banked</b>: {pool.get(s.picks[s.tab]!)?.name}. The current took it.</>
+              : <>One card of {COLOUR_NAME[s.tab]} — any shelf, the R drawer included; a card of two colours sits on both. {s.picks[s.tab] ? <>Chosen: <b>{pool.get(s.picks[s.tab]!)?.name}</b> — click another to change your mind, </> : "Click to choose; "}<b>leaving the tab banks the pick</b> and the current takes the rest.</>}
+          </div>
+          <div className="gallery-grid">
+            {c.salvageTabCandidates().map((def) => {
+              const isPick = s.picks[s.tab] === def.id;
+              return (
+                <div key={def.id} className="gallery-cell" style={{ textAlign: "center", cursor: s.banked.includes(s.tab) ? "default" : "pointer", outline: isPick ? "3px solid var(--brass)" : "none", borderRadius: 6 }} onClick={() => c.salvagePick(def.id)} onMouseEnter={() => setInspect(def.id)}>
+                  <CardFrame def={def} oracle={oracle[def.id]} showPrinted />
+                  <div className="caption">{def.shopTier === "R" ? "the R drawer" : `tier ${String(def.shopTier)}`}</div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      ) : (
+        <div style={{ padding: 10 }}>
+          <div style={{ fontSize: 12, marginBottom: 8 }}>Your five: {SALVAGE_COLORS.map((col) => pool.get(s.picks[col]!)?.name ?? s.picks[col]).join(" · ")}.</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {c.salvagePairs().map(({ pair, name }) => {
+              const on = s.pair && s.pair[0] === pair[0] && s.pair[1] === pair[1];
+              return (
+                <button key={name} className={on ? "primary" : ""} style={{ minWidth: 150 }} onClick={() => c.salvagePair(pair)} title={`${COLOUR_NAME[pair[0]]} and ${COLOUR_NAME[pair[1]]}: their twenty from the pack, the picks in those colours, basics to thirty`}>
+                  <i className={`colour-pip c-${pair[0]}`} /><i className={`colour-pip c-${pair[1]}`} /> {name}
+                </button>
+              );
+            })}
+          </div>
+          <p style={{ marginTop: 12 }}>
+            <button className="primary" disabled={!s.pair} onClick={() => c.salvageBegin()}>{s.pair ? `Take ${pairName(s.pair)} to the water` : "Choose a pair"}</button>
+          </p>
+        </div>
+      )}
+      <FloatingCardInspector def={inspect ? pool.get(inspect) ?? null : null} oracle={oracle} printed onTogglePrinted={() => undefined} />
     </div>
   );
 }
@@ -1697,6 +1787,9 @@ export function WorldApp({ onWatchReplay, paused = false }: { onWatchReplay: (ga
     onWatchReplay(saved as SavedGame);
   };
 
+  // S39: the flood's two screens come BEFORE the start fallback — there is no world yet while the salvage is chosen.
+  if (c.screen.kind === "flood") return <FloodScene c={c} />;
+  if (c.screen.kind === "salvage") return <SalvageScreen c={c} pool={pool} oracle={oracle} />;
   if (c.screen.kind === "start" || !c.world) return <StartScreen c={c} onStart={(choice) => c.newGame(choice)} />;
   if (c.screen.kind === "duel" || c.screen.kind === "dungeonDuel" || c.screen.kind === "siegeDuel" || c.screen.kind === "corollaDuel") {
     const m = c.screen.match;
@@ -1745,6 +1838,7 @@ export function WorldApp({ onWatchReplay, paused = false }: { onWatchReplay: (ga
         <Chrome c={c} onDownload={download} />
         <div className="world-map-wrap">
           <WorldMapView
+            {...(w.phase >= 2 ? { register: "flood" as const } : {})}
             map={w.map}
             player={w.player.position}
             portrait="/portrait-you.png"
@@ -1798,7 +1892,7 @@ export function WorldApp({ onWatchReplay, paused = false }: { onWatchReplay: (ga
             <button onClick={() => c.walkPreview()}>Walk there ({screen.preview.length} steps)</button>
           )}
           {/* S26: standing on a centre door — knock to reopen its telegraph (arriving opens it once). */}
-          {c.doorHere() && <button className="linkish" style={{ marginRight: 10 }} onClick={() => c.knock()}>{c.doorHere() === "corolla" ? "✿ the Corolla's door — knock" : "◆ the Vault's door — knock"}</button>}
+          {c.doorHere() && <button className="linkish" style={{ marginRight: 10 }} onClick={() => c.knock()}>{c.doorHere() === "corolla" ? "✿ the Corolla's door — knock" : c.doorHere() === "deep" ? "≈ the deep water" : "◆ the Vault's door — knock"}</button>}
           <span className="seed">{seenRegions.size}/{w.map.regions.length} regions seen · {w.map.towns.filter((t) => seenCell(t.at)).length}/{w.map.towns.length} towns found</span>
         </div>
       </div>

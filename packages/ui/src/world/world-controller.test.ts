@@ -221,6 +221,103 @@ describe("S38 (ADR-125): the door on a SITE — a stronghold's deckRule through 
   }, 60_000);
 });
 
+describe("S39 (ADR-126): the Flood — the scene, the five picks, the pair, the first deck's editor (the S10 pattern)", () => {
+  it("ineligible until five cuttings; then: picks bank on leaving a tab, a gold card sits on either tab (once), the pair assembles a legal twelve-land deck, Cancel is refused until legal, the Chronicle carries the line, the map is the flood's", () => {
+    const storage = memStorage();
+    const c = new WorldController(pool, catalog, storage);
+    c.stepMs = 0;
+    expect(c.floodEligible()).toBe(false);
+    c.enterFlood({ difficulty: "standard" });
+    expect(c.screen.kind).toBe("start");
+    for (const col of ["W", "U", "B", "R", "G"] as const) c.devGrantCutting(col);
+    expect(c.floodEligible()).toBe(true);
+    const screen = () => (c as WorldController).screen;
+    c.enterFlood({ difficulty: "standard", seed: 3903, name: "Flood" });
+    expect(screen().kind).toBe("flood");
+    c.floodContinue();
+    expect(screen().kind).toBe("salvage");
+    const sv = () => screen() as { stage: string; tab: string; picks: Record<string, string>; banked: string[]; pair: [string, string] | null; notice: string | null };
+    expect(sv().tab).toBe("W");
+    // The W shelf: Vindicate (WB, R drawer) and Plateau (Plains Mountain) are on it; nothing prizeOnly.
+    const wShelf = c.salvageTabCandidates().map((d) => d.id);
+    expect(wShelf).toContain("vindicate");
+    expect(wShelf).toContain("plateau");
+    expect(wShelf).not.toContain("mox_pearl");
+    // Change of mind on the tab is free; leaving it banks.
+    c.salvagePick("savannah_lions");
+    c.salvagePick("vindicate");
+    expect(sv().picks.W).toBe("vindicate");
+    c.salvageTab("B");
+    expect(sv().banked).toEqual(["W"]);
+    expect(c.salvageTabCandidates().map((d) => d.id)).not.toContain("vindicate"); // taken on W: not offered again
+    c.salvagePick("vindicate");
+    expect(sv().notice).toMatch(/Not on this shelf/);
+    c.salvagePick("underground_sea"); // an Island Swamp sits on the B tab
+    c.salvageTab("W");
+    c.salvagePick("plateau"); // banked: refused
+    expect(sv().notice).toMatch(/banked/);
+    expect(sv().picks.W).toBe("vindicate");
+    c.salvageToPair();
+    expect(sv().stage).toBe("picks"); // three colours still to pick
+    expect(sv().notice).toMatch(/still U, R, G/);
+    c.salvageTab("U"); c.salvagePick("tropical_island");
+    c.salvageTab("R"); c.salvagePick("sacred_foundry");
+    c.salvageTab("G"); c.salvagePick("blanchwood_armor");
+    c.salvageToPair();
+    expect(sv().stage).toBe("pair");
+    expect(sv().banked.sort()).toEqual(["B", "G", "R", "U", "W"]);
+    expect(c.salvagePairs()).toHaveLength(10);
+    c.salvageBegin(); // no pair yet: nothing
+    expect(screen().kind).toBe("salvage");
+    c.salvagePair(["W", "B"]);
+    c.salvageBegin();
+    // The world and the editor.
+    expect(screen().kind).toBe("editor");
+    const w = c.world!;
+    expect(w.phase).toBe(2);
+    expect(w.player.gold).toBe(c.knobs.salvagePurse);
+    expect(w.manalinks).toEqual([]);
+    expect(w.activeDeckName).toBe("Orzhov salvage");
+    const deck = activeDeck(w);
+    expect(deck.reduce((n, e) => n + e.count, 0)).toBe(30);
+    expect(deck.reduce((n, e) => n + (pool.get(e.cardId)!.types.includes("Land") ? e.count : 0), 0)).toBe(12);
+    expect(deck.some((e) => e.cardId === "vindicate")).toBe(true); // the WB pick joins the WB pair
+    expect(deck.some((e) => e.cardId === "underground_sea")).toBe(true); // an Island Swamp is in a WB pair too
+    expect(deck.some((e) => e.cardId === "sacred_foundry")).toBe(true); // a Mountain Plains carries Plains: in a WB pair
+    expect(deck.some((e) => e.cardId === "tropical_island")).toBe(false); // a Forest Island: not
+    expect(deck.some((e) => e.cardId === "blanchwood_armor")).toBe(false);
+    expect(Object.keys(w.player.collection).filter((id) => !["plains", "island", "swamp", "mountain", "forest"].includes(id))).toHaveLength(70);
+    expect(w.map.strongholds.some((f) => f.kind === "deep")).toBe(true);
+    expect(w.map.strongholds.some((f) => f.kind === "corolla")).toBe(false);
+    // Cancel is refused while the draft is illegal; Reset then Cancel leaves for the map.
+    for (let k = 0; k < 6; k++) c.editorRemove("plains");
+    expect(c.editorLegality().ok).toBe(false);
+    c.editorClose();
+    expect(screen().kind).toBe("editor");
+    expect((screen() as { notice: string | null }).notice).toMatch(/legal deck/);
+    c.editorReset();
+    c.editorClose();
+    expect(screen().kind).toBe("map");
+    // The Chronicle: the profile's ledger and the run's carry the flood's line.
+    const last = c.chronicle()[c.chronicle().length - 1]!;
+    expect(last.kind).toBe("flood");
+    expect(last.color).toBe("W");
+    expect(last.text).toMatch(/^The plane turns over\. Salvaged: Vindicate, .*The first colours: Orzhov \(WB\)\.$/);
+    expect(c.chronicle()).toHaveLength(6);
+    expect(w.gauntlet.chronicle).toHaveLength(1);
+    // The deep water: standing on it, knock reads the line; the dev toggle sets the phase.
+    const deep = w.map.strongholds.find((f) => f.kind === "deep")!;
+    w.player.position = { ...deep.at };
+    expect(c.doorHere()).toBe("deep");
+    c.knock();
+    expect((screen() as { notice: string | null }).notice).toMatch(/The water is deep here/);
+    c.devSetPhase(1);
+    expect(w.phase).toBe(1);
+    c.devSetPhase(2);
+    expect(deserializeWorld(storage.getItem("shandalar-world-save")!).phase).toBe(2);
+  }, 60_000);
+});
+
 describe("deploy playtest r5 (Chris): the autosave survives the browser's quota", () => {
   it("a quota error never escapes — the autosave trims the replay logs and retries; the game goes on", async () => {
     const storage = cappedStorage(1_500_000);

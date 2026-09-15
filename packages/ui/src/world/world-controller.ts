@@ -1,6 +1,6 @@
 import type { CardDef } from "@shandalar/cards";
 import type { MatchResult, MatchSpec } from "@shandalar/engine";
-import { trimDuelLogs, checkDeck, doorCheck, doorRefusalText, describeDeckRule, type DeckCheck, type DeckRule, type Phase,
+import { trimDuelLogs, checkDeck, doorCheck, doorRefusalText, describeDeckRule, type DeckCheck, type DeckRule, type Phase, floodEligible, recordFlood, assembleSalvageDeck, salvageCandidates, SALVAGE_COLORS, SALVAGE_PAIRS, pairName,
   activeDeck,
   addCopy,
   advance,
@@ -102,6 +102,10 @@ export const SAVE_KEY = "shandalar-world-save";
 
 export type WorldScreen =
   | { kind: "start" }
+  /** S39 (ADR-126): the flood's scene — the planner's lines, then the picks. `choice` = the start screen's difficulty/name/seed. */
+  | { kind: "flood"; choice: FloodChoice }
+  /** S39: the salvage — five colour tabs (one pick each; a pick banks when its tab is left), then the pair. */
+  | { kind: "salvage"; choice: FloodChoice; stage: "picks" | "pair"; tab: PetalColor; picks: Partial<Record<PetalColor, string>>; banked: PetalColor[]; pair: [PetalColor, PetalColor] | null; notice: string | null }
   | { kind: "map"; preview: Point[] | null; previewTarget: Point | null; walking: boolean; notice: string | null }
   | { kind: "encounter"; encounter: Encounter; tmpl: OpponentTemplate; knobs: KnobValues; notice: string | null }
   | { kind: "duel"; duel: PreparedDuel; match: MatchController }
@@ -155,6 +159,8 @@ export type WorldScreen =
       draft: Decklist;
       name: string;
       notice: string | null;
+      /** S39: the salvage's first editor — Cancel is refused while the draft is illegal (the world must be left with a legal deck). */
+      mustLeaveLegal?: boolean;
     }
   | { kind: "gameOver"; fatal: DuelRecord | null };
 
@@ -164,6 +170,9 @@ export type EditorBack =
   | "map" | "town" | "corolla" | "corollaTown"
   | { kind: "dungeonTelegraph"; info: { dungeonId: string; kind: "mox" | "lair" | "stronghold" | "power"; name: string; at: Point; residentCatalogId?: string } }
   | { kind: "petalTelegraph"; color: PetalColor };
+
+/** S39: what the Flood's start carries from the start screen (no starter — the pair is chosen inside). */
+export interface FloodChoice { difficulty: DifficultyName; seed?: number; name?: string }
 
 export interface NewGameChoice {
   /** S16: catalog starter id (white|blue|black|red|green). */
@@ -248,6 +257,96 @@ export class WorldController {
     this.lastTown = townAt(this.world.map, this.world.player.position) ?? this.world.map.towns[this.world.lastTownIndex] ?? null;
     this.autosave();
     this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: `You set out from ${this.lastTown?.name ?? "the road"}.${carried && carried.colors.length ? ` ${this.newRoadLine()}` : ""}` };
+    this.emit();
+  }
+
+  // ---------- S39 (ADR-126): the Flood — the salvage start ----------
+
+  /** The Flood opens once every colour has been cut (the legacy's fifth flag). */
+  floodEligible(): boolean { return floodEligible(this.legacy()); }
+  /** The scene, from the start screen (eligible) or the fifth cutting's victory screen. */
+  enterFlood(choice: FloodChoice): void {
+    if (!this.floodEligible()) return;
+    this.screen = { kind: "flood", choice };
+    this.emit();
+  }
+  /** The picks: five colour tabs, one pick each. */
+  floodContinue(): void {
+    if (this.screen.kind !== "flood") return;
+    this.screen = { kind: "salvage", choice: this.screen.choice, stage: "picks", tab: "W", picks: {}, banked: [], pair: null, notice: null };
+    this.emit();
+  }
+  /** The current tab's candidates (the stronghold prize picker's rule), the already-picked ids excluded. */
+  salvageTabCandidates(): CardDef[] {
+    if (this.screen.kind !== "salvage") return [];
+    const taken = new Set(Object.values(this.screen.picks));
+    return salvageCandidates(this.pool, this.screen.tab).filter((d) => !taken.has(d.id) || this.screen.kind === "salvage" && this.screen.picks[this.screen.tab] === d.id);
+  }
+  /** Switch tabs — the tab being left BANKS its pick (it cannot be undone after; the screen says so). */
+  salvageTab(color: PetalColor): void {
+    if (this.screen.kind !== "salvage" || this.screen.stage !== "picks") return;
+    const s = this.screen;
+    const banked = s.picks[s.tab] && !s.banked.includes(s.tab) ? [...s.banked, s.tab] : s.banked;
+    this.screen = { ...s, tab: color, banked, notice: null };
+    this.emit();
+  }
+  /** Pick (or re-pick) on the current tab — unless the tab is banked. */
+  salvagePick(id: string): void {
+    if (this.screen.kind !== "salvage" || this.screen.stage !== "picks") return;
+    const s = this.screen;
+    if (s.banked.includes(s.tab)) { this.screen = { ...s, notice: "That colour's pick is banked — the current took it." }; this.emit(); return; }
+    if (!this.salvageTabCandidates().some((d) => d.id === id)) { this.screen = { ...s, notice: "Not on this shelf." }; this.emit(); return; }
+    this.screen = { ...s, picks: { ...s.picks, [s.tab]: id }, notice: null };
+    this.emit();
+  }
+  /** Five picks banked → the pair. The current tab's pick banks on the way. */
+  salvageToPair(): void {
+    if (this.screen.kind !== "salvage" || this.screen.stage !== "picks") return;
+    const s = this.screen;
+    const banked = s.picks[s.tab] && !s.banked.includes(s.tab) ? [...s.banked, s.tab] : s.banked;
+    const missing = SALVAGE_COLORS.filter((c) => !s.picks[c]);
+    if (missing.length) { this.screen = { ...s, banked, notice: `A pick of each colour first — still ${missing.join(", ")}.` }; this.emit(); return; }
+    this.screen = { ...s, banked, stage: "pair", notice: null };
+    this.emit();
+  }
+  salvagePairs(): { pair: [PetalColor, PetalColor]; name: string }[] { return SALVAGE_PAIRS.map((pair) => ({ pair, name: pairName(pair) })); }
+  salvagePair(pair: [PetalColor, PetalColor]): void {
+    if (this.screen.kind !== "salvage" || this.screen.stage !== "pair") return;
+    this.screen = { ...this.screen, pair, notice: null };
+    this.emit();
+  }
+  /** The world: the ten legends, the five picks, the pack, the pair's first deck; the chronicle's line; then the editor
+   * (Cancel refused until legal). */
+  salvageBegin(): void {
+    if (this.screen.kind !== "salvage" || this.screen.stage !== "pair" || !this.screen.pair) return;
+    const s = this.screen;
+    const pair = s.pair;
+    if (!pair) return;
+    const pack = this.catalog.salvagePack;
+    if (!pack) { this.screen = { ...s, notice: "The catalog carries no salvage pack." }; this.emit(); return; }
+    const legacy = this.legacy();
+    const legends = (["W", "U", "B", "R", "G"] as const).flatMap((c) => { const k = legacyCarry(this.catalog, c); return [k.guardianCard, k.minister].filter((x): x is string => !!x); });
+    const picks = SALVAGE_COLORS.map((c) => s.picks[c]!);
+    const deck = assembleSalvageDeck(this.pool, pack, pair, picks);
+    const seed = s.choice.seed ?? Math.floor(Math.random() * 1_000_000);
+    this.world = newWorld({ seed, catalog: this.catalog, difficulty: s.choice.difficulty, playerName: s.choice.name ?? "You", salvage: { legends, picks, pair, deck, deckName: `${pairName(pair)} salvage` } });
+    // The chronicle's line — the profile's ledger and the run's.
+    const names = picks.map((id) => this.pool.get(id)?.name ?? id).join(", ");
+    const text = `${this.catalog.questText?.flood?.chronicle ?? "The plane turns over."} Salvaged: ${names}. The first colours: ${pairName(pair)} (${pair.join("")}).`;
+    const entry = { color: pair[0], text, seed, difficulty: s.choice.difficulty, steps: 0, when: new Date().toISOString() };
+    const next = recordFlood(legacy, entry);
+    this.writeLegacy(next);
+    (this.world.gauntlet.chronicle ??= []).push(next.chronicle[next.chronicle.length - 1]!);
+    this.lastTown = townAt(this.world.map, this.world.player.position) ?? this.world.map.towns[this.world.lastTownIndex] ?? null;
+    this.autosave();
+    this.screen = { kind: "editor", back: "map", draft: activeDeck(this.world).map((e) => ({ ...e })), name: this.world.activeDeckName, notice: `${pairName(pair)}: the first deck. Twelve lands, one of each. Rebuild it as you like — the water waits for a legal deck.`, mustLeaveLegal: true };
+    this.emit();
+  }
+  /** Dev (S39, the brief's Part 0): set the world's phase — the salvage start is the shipped path to 2; this is the shortcut. */
+  devSetPhase(phase: Phase): void {
+    if (!this.world) return;
+    this.world.phase = phase;
+    this.autosave();
     this.emit();
   }
 
@@ -712,6 +811,12 @@ export class WorldController {
 
   editorClose(): void {
     if (!this.world || this.screen.kind !== "editor") return;
+    // S39: the salvage's first editor must be left with a legal deck — Cancel refuses an illegal draft (Reset or fix it).
+    if (this.screen.mustLeaveLegal && !this.editorLegality().ok) {
+      this.screen = { ...this.screen, notice: `The water waits for a legal deck: ${this.editorLegality().problems.join("; ")}. Fix it or Reset.` };
+      this.emit();
+      return;
+    }
     this.returnFrom(this.screen.back);
   }
 
@@ -1616,16 +1721,23 @@ export class WorldController {
     });
   }
   /** Standing on one of the centre doors (the map's transport offers a knock). */
-  doorHere(): "corolla" | "vault" | null {
+  doorHere(): "corolla" | "vault" | "deep" | null {
     if (!this.world || this.screen.kind !== "map") return null;
     const f = fixedPointAt(this.world.map, this.world.player.position);
     if (f?.kind === "corolla") return "corolla";
     if (f?.kind === "vault" && this.world.gauntlet.vault !== "cleared") return "vault";
+    if (f?.kind === "deep") return "deep"; // S39: the flood's centre placeholder
     return null;
   }
   knock(): void {
     if (!this.world) return;
     const d = this.doorHere();
+    if (d === "deep") {
+      // S39 (Part 5): no Corolla in the flood yet — the deep water's line.
+      this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: this.catalog.questText?.flood?.deep ?? "The water is deep here." };
+      this.emit();
+      return;
+    }
     if (d === "corolla") {
       const s = corollaDoor(this.world);
       this.screen = { kind: "corollaTelegraph", at: { ...this.world.player.position }, seals: s.seals, open: s.open, notice: null };

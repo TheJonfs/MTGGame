@@ -472,3 +472,14 @@ See handoff Concerns for the authoritative list. Highlights: auto-pay greedy fea
 - **The fixture harness has no `modifiers`**: a Heart fixture sets `tg.game.state.lawSequence.mode` directly (the S27 pattern); the modifier path is pinned at the world level (`heartDuelSpec` at phase 2 / the knob).
 - macOS has no `timeout`; a `... | grep` swallowed the error. Use a part that does no work (`--part none`) to read a CLI's banner.
 
+## S39 lessons (the salvage)
+
+- **`newWorld` has two branches now** (`starter` or `salvage`) over one `worldFrom` tail; `starter` is optional on `NewWorldOptions` and the function throws without either. The salvage branch never applies the legacy (`applyLegacy` is the starter path's carryover); the legends come in through the spec, the purse replaces both gold terms, `manalinks` stays empty, `phase` is 2.
+- **Dual lands sit in every pair they type for.** `pickInPair` reads a land's basic subtypes — a Plains Mountain is in a WB pair as much as in a WR one; a Forest Island is in neither. Two tests assumed otherwise before the code corrected them. Colourless artifacts sit in no pair (the assembler adds them separately, to eighteen nonland cards).
+- **A pick can repeat a pack card** (a second copy is a legal pick); the world-level composition test wants distinct picks, so it uses non-pack ids.
+- **The pick shelf is the stronghold prize picker's list** (`strongholdPrizeList`): R included, prizeOnly and tokens out, gold on every one of its colours, typed lands by their basic type. `salvageCandidates` is a one-line alias — keep it that way so the two pickers cannot drift.
+- **The flood register is a third wash table** in WorldMap.tsx (`FLOOD_WASH`), threaded like the Corolla's through `washFor` — the same sprites, tinted; a phase-two map's deep-water site reuses the Corolla door sprite until the Calyx's art exists.
+- **A phase-two map keeps its centre on load**: `migrateWorld` grows the Corolla's doors only when `phase < 2` — otherwise every reload would plant a Corolla beside the deep water.
+- **The first editor's "Cancel" is "Keep this deck"** (`mustLeaveLegal`): refused while the draft is illegal; Reset always works, so the player is never stuck. The assembled deck is committed and legal before the editor opens — the guard is a courtesy, not a safety.
+- **Part 10 through the sweep, both phases**: `pnpm mage-sweep --games 100 --part 10 --phase 2 --baseline none` (~2 minutes), then `--phase 1` — the paired read is the honest one (same seeds).
+

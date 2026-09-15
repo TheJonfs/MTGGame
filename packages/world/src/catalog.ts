@@ -4,6 +4,7 @@ import { MAGE_DECKS } from "@shandalar/sim/mage-decks";
 import { assertKnobSource, type KnobSource, type RegionTier, type EnemyTier } from "./knobs.js";
 import { validateCorollaDef } from "./corolla.js";
 import { validateDeckRule, type DeckRule } from "./legality.js";
+import { validateSalvagePack, type SalvagePack } from "./salvage.js";
 
 /**
  * Authored catalog v0 (overworld manifest §2 "authored inventory, procedural
@@ -132,6 +133,20 @@ export interface QuestTextPack {
   heart?: HeartTextPack;
   /** S37 (ADR-123): the door's voice — the refusal when the deck fails a template's deckRule. Optional. */
   door?: DoorTextPack;
+  /** S39 (ADR-126): the flood's voice — the scene, the picks, the pair, the chronicle's line, the deep water. Optional. */
+  flood?: FloodTextPack;
+}
+export interface FloodTextPack {
+  /** The scene's lines (the planner's text, Part 6), one paragraph each. */
+  scene: string[];
+  picks: string;
+  pair: string;
+  /** The Chronicle's line at the flood ("The plane turns over."). */
+  chronicle: string;
+  /** The map's centre in the flood — the placeholder site's line. */
+  deep: string;
+  /** The offer on the start screen and the fifth cutting ("Enter the Flood"). */
+  offer: string;
 }
 export interface DoorTextPack {
   /** The archaic line above the rule and its problems ({label} substituted). Planner's line; refine per rule later. */
@@ -168,6 +183,10 @@ export interface Catalog {
   corolla?: import("./corolla.js").CorollaDef;
   /** S21: the quest & rumor text pack (absent in minimal test catalogs → built-in fallback). */
   questText?: QuestTextPack;
+  /** S39 (ADR-126): the salvage pack — phase two's prescribed start (data/world/salvage-pack.json). */
+  salvagePack?: SalvagePack;
+  /** S39 Part 5: the flood's town names (towns.json `namesPhaseTwo`; placeholders until the content rounds). */
+  townNamesPhaseTwo?: string[];
 }
 
 /** Resolve an opponent's deck reference to a decklist + archetype (slice deck or catalog starter). */
@@ -194,9 +213,9 @@ export function enemyDeck(catalog: Catalog, ref: OpponentDeckRef): { decklist: S
 }
 
 /** Assemble + validate a catalog from already-parsed JSON objects (browser-safe). */
-export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents: unknown; starters: unknown; dungeons?: unknown; quests?: unknown }): Catalog {
+export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents: unknown; starters: unknown; dungeons?: unknown; quests?: unknown; salvage?: unknown }): Catalog {
   const r = parts.regions as { catalogVersion: string; regions: RegionTemplate[]; strongholds?: StrongholdTemplate[] };
-  const t = parts.towns as { catalogVersion: string; names: string[] };
+  const t = parts.towns as { catalogVersion: string; names: string[]; namesPhaseTwo?: string[] };
   const o = parts.opponents as { catalogVersion: string; opponents: OpponentTemplate[] };
   const st = parts.starters as { catalogVersion: string; starters: StarterTemplate[] };
   const du = (parts.dungeons ?? { catalogVersion: CATALOG_VERSION, mox: [] }) as { catalogVersion: string; mox: import("./dungeon.js").MoxDungeonDef[]; strongholds?: import("./stronghold.js").StrongholdContentDef[]; powerDungeons?: import("./dungeon.js").PowerDungeonDef[]; corolla?: import("./corolla.js").CorollaDef };
@@ -296,7 +315,7 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
   // S21: the quest & rumor text pack (planner content, wired as data).
   let questText: QuestTextPack | undefined;
   if (parts.quests) {
-    const qp = parts.quests as { catalogVersion: string; offers: QuestTextPack["offers"]; rumors: QuestTextPack["rumors"]; corolla?: CorollaTextPack; heart?: HeartTextPack; door?: DoorTextPack };
+    const qp = parts.quests as { catalogVersion: string; offers: QuestTextPack["offers"]; rumors: QuestTextPack["rumors"]; corolla?: CorollaTextPack; heart?: HeartTextPack; door?: DoorTextPack; flood?: FloodTextPack };
     if (qp.catalogVersion !== CATALOG_VERSION) errors.push(`quests: catalogVersion ${qp.catalogVersion} != ${CATALOG_VERSION}`);
     for (const k of ["courier", "cardCourier", "bounty", "retrieval"] as const) {
       if (!Array.isArray(qp.offers?.[k]) || qp.offers[k].length === 0) errors.push(`quests: offers.${k} must be a nonempty array`);
@@ -317,8 +336,22 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
     if (qp.heart) for (const k of ["doorOpen", "telegraph", "stakes", "victory", "victoryCard", "loss", "offer", "fifthCutting", "newRoad", "newRoadAll", "withheld", "chronicleHeader"] as const) if (!qp.heart[k]) errors.push(`quests: heart.${k} missing`);
     if (qp.heart) for (const c of ["W", "U", "B", "R", "G"]) if (!qp.heart.chronicle?.[c]) errors.push(`quests: heart.chronicle.${c} missing`);
     if (qp.door && (typeof qp.door.refused !== "string" || !qp.door.refused.trim())) errors.push("quests: door.refused missing (S37)");
-    questText = { offers: qp.offers, rumors: qp.rumors, ...(qp.corolla ? { corolla: qp.corolla } : {}), ...(qp.heart ? { heart: qp.heart } : {}), ...(qp.door ? { door: qp.door } : {}) };
+    // S39: the flood's pack — every line the screens read, named.
+    if (qp.flood) {
+      if (!Array.isArray(qp.flood.scene) || qp.flood.scene.length === 0) errors.push("quests: flood.scene must be a nonempty array (S39)");
+      for (const k of ["picks", "pair", "chronicle", "deep", "offer"] as const) if (typeof qp.flood[k] !== "string" || !qp.flood[k].trim()) errors.push(`quests: flood.${k} missing (S39)`);
+    }
+    questText = { offers: qp.offers, rumors: qp.rumors, ...(qp.corolla ? { corolla: qp.corolla } : {}), ...(qp.heart ? { heart: qp.heart } : {}), ...(qp.door ? { door: qp.door } : {}), ...(qp.flood ? { flood: qp.flood } : {}) };
   }
+  // S39 (ADR-126): the salvage pack (structure here; the pool check is salvagePackProblems, run by the test and the reference).
+  let salvagePack: SalvagePack | undefined;
+  if (parts.salvage) {
+    const sp = parts.salvage as { catalogVersion: string } & SalvagePack;
+    if (sp.catalogVersion !== CATALOG_VERSION) errors.push(`salvage: catalogVersion ${sp.catalogVersion} != ${CATALOG_VERSION}`);
+    errors.push(...validateSalvagePack(sp));
+    salvagePack = { colors: sp.colors, colorless: sp.colorless };
+  }
+  if (t.namesPhaseTwo !== undefined && (!Array.isArray(t.namesPhaseTwo) || t.namesPhaseTwo.some((n) => typeof n !== "string" || !n.trim()))) errors.push("towns: namesPhaseTwo must be an array of names (S39)");
   if (errors.length) throw new Error(`Catalog validation failed:\n${errors.join("\n")}`);
-  return { version: CATALOG_VERSION, regions: r.regions, townNames: t.names, opponents: o.opponents, starters: st.starters, strongholds: r.strongholds ?? [], dungeons: du.mox, ...(du.powerDungeons ? { powerDungeons: du.powerDungeons } : {}), ...(du.strongholds ? { strongholdContent: du.strongholds } : {}), ...(du.corolla ? { corolla: du.corolla } : {}), ...(questText ? { questText } : {}) };
+  return { version: CATALOG_VERSION, regions: r.regions, townNames: t.names, opponents: o.opponents, starters: st.starters, strongholds: r.strongholds ?? [], dungeons: du.mox, ...(du.powerDungeons ? { powerDungeons: du.powerDungeons } : {}), ...(du.strongholds ? { strongholdContent: du.strongholds } : {}), ...(du.corolla ? { corolla: du.corolla } : {}), ...(questText ? { questText } : {}), ...(salvagePack ? { salvagePack } : {}), ...(t.namesPhaseTwo ? { townNamesPhaseTwo: t.namesPhaseTwo } : {}) };
 }

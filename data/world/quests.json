@@ -104,5 +104,19 @@
  },
  "door": {
   "refused": "The gate knows your colours. It will not open to these."
+ },
+ "flood": {
+  "scene": [
+   "The fifth root parts.",
+   "For a breath the plane is still — stiller than it has ever been.",
+   "Then the stillness breaks. What the flower held, it holds no longer: the mana it stilled runs, and the low country goes under.",
+   "You keep your feet, and what you carried, and little else.",
+   "Ten faces you know. The rest is water."
+  ],
+  "picks": "From the wrack, five things — one of each colour — before the current takes them.",
+  "pair": "Two colours you will carry first. The rest can wait for dry ground.",
+  "chronicle": "The plane turns over.",
+  "deep": "The water is deep here. Whatever the flower was, it is under this now.",
+  "offer": "Enter the Flood"
  }
 }

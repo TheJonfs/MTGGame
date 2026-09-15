@@ -31,7 +31,7 @@ export interface Town {
 
 /** Fixed points the generator places with spacing constraints; strongholds
  * are the M6b+ kind — present in the shape, unused in the slice. */
-export type FixedPointKind = "town" | "stronghold" | "lair" | "dungeon" | "corolla" | "vault" | "petal"; // S20: + Mox dungeon sites (dungeon-design §5). S26: the two centre doors (the Corolla, the Vault) and, inside the flower, the petal tips.
+export type FixedPointKind = "town" | "stronghold" | "lair" | "dungeon" | "corolla" | "vault" | "petal" | "deep"; // S20: + Mox dungeon sites (dungeon-design §5). S26: the two centre doors (the Corolla, the Vault) and, inside the flower, the petal tips. S39: the flood's centre placeholder (the Calyx is not built).
 
 /** A fixed point with a resident (S14 round 1 prototype: a lair hosting one
  * opponent; strongholds/dungeons will reuse the shape). Walking onto it is a
@@ -199,6 +199,28 @@ export function placeCentreDoors(m: WorldMap): FixedPoint[] {
   }
   m.strongholds.push(...placed);
   return placed;
+}
+
+/** S39 (Part 5): a phase-two map has no Corolla until the Heart's content lands — the centre is a
+ * placeholder site ("the water is deep here"). Placed where the Corolla's door would be; no Vault. */
+export function placeCentreDeep(m: WorldMap): FixedPoint[] {
+  if (!m.centre || m.strongholds.some((f) => f.kind === "deep" || f.kind === "corolla")) return [];
+  const taken = (p: Point) => m.towns.some((t) => samePoint(t.at, p)) || m.strongholds.some((f) => samePoint(f.at, p));
+  let at: Point | null = null;
+  for (let d = 0; d <= 4 && !at; d++) {
+    for (let dy = -d; dy <= d && !at; dy++) {
+      const dx = d - Math.abs(dy);
+      for (const sx of dx === 0 ? [0] : [-dx, dx]) {
+        const p = { x: m.centre.x + sx, y: m.centre.y + dy };
+        if (inBounds(m, p) && !taken(p)) { at = p; break; }
+      }
+    }
+  }
+  if (!at) return [];
+  m.passable[idx(m, at)] = true;
+  const placed: FixedPoint = { kind: "deep", at, region: m.region[idx(m, at)]!, name: "The Deep Water" };
+  m.strongholds.push(placed);
+  return [placed];
 }
 
 /** Carve a passable path from `from` to `to` through rough terrain when none exists (the

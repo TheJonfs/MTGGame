@@ -1,6 +1,6 @@
 import type { Catalog, Color, RegionTemplate } from "./catalog.js";
-import { defaultKnobs, KNOBS, type KnobValues, type RegionTier } from "./knobs.js";
-import { exploredNone, findPath, idx, inBounds, manhattan, markExplored, placeCentreDoors, reachable, samePoint, type FixedPoint, type Point, type RegionInstance, type Town, type WorldMap } from "./map.js";
+import { defaultKnobs, KNOBS, type KnobValues, type Phase, type RegionTier } from "./knobs.js";
+import { exploredNone, findPath, idx, inBounds, manhattan, markExplored, placeCentreDeep, placeCentreDoors, reachable, samePoint, type FixedPoint, type Point, type RegionInstance, type Town, type WorldMap } from "./map.js";
 import { WorldRng } from "./rng.js";
 
 /**
@@ -98,6 +98,8 @@ export interface GenerateExtra {
   knobs?: KnobValues;
   /** The starter's colour: the start town is this colour's first civilized town (ADR-072 home start). */
   homeColor?: Color;
+  /** S39: a phase-two map — the flood's town names (towns.json namesPhaseTwo) and the centre placeholder instead of the Corolla's doors. */
+  phase?: Phase;
 }
 
 /** Passable (by default) cells of a region. */
@@ -327,8 +329,11 @@ export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOpt
   const usedNames = new Set<string>();
   const nextName = (r: RegionInstance): string => {
     const tmpl = catalog.regions.find((t) => t.id === r.templateId);
-    const pref = (tmpl?.townNames ?? []).filter((n) => !usedNames.has(n));
-    const name = pref[0] ?? catalog.townNames.filter((n) => !usedNames.has(n))[0] ?? `Town ${usedNames.size + 1}`;
+    // S39: the flood renames the low country — a phase-two map draws only from the flood list (the regions' phase-one names sit out).
+    const flood = (extra.phase ?? 1) >= 2;
+    const pref = flood ? [] : (tmpl?.townNames ?? []).filter((n) => !usedNames.has(n));
+    const shared = flood ? (catalog.townNamesPhaseTwo ?? catalog.townNames) : catalog.townNames;
+    const name = pref[0] ?? shared.filter((n) => !usedNames.has(n))[0] ?? `Town ${usedNames.size + 1}`;
     usedNames.add(name);
     return name;
   };
@@ -457,7 +462,8 @@ export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOpt
   // 5d. S26 (ADR-091): the two CENTRE DOORS — the Corolla's and the Vault's — at the spokes'
   // convergence, carved reachable like every fixed point. Pre-S26 saves grow theirs on load
   // (state.ts migration calls the same placement).
-  for (const door of placeCentreDoors(map)) carveTo(door.at);
+  // S39: a phase-two map has no Corolla yet — the centre is the deep water (a placeholder site).
+  for (const door of (extra.phase ?? 1) >= 2 ? placeCentreDeep(map) : placeCentreDoors(map)) carveTo(door.at);
 
   // 6. Roads (after carving: the paths exist).
   buildRoads(map, homeTowns);

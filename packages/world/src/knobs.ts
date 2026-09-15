@@ -149,6 +149,11 @@ export const KNOBS = {
     unit: "true | false",
     description: "S38 (design §7, the accumulating Heart): the Manafleur's law sequence KEEPS every prior law on the battlefield — the ring accumulates instead of rotating (the exile-all step is skipped; the order and cadence are unchanged; the fifth law joins four). The engine's `lawSequence` modifier in `accumulate` mode (S27's dormant hook). False in phase one; a phase-two world reads it as true regardless (`heartDuelSpec`: persist = the knob OR phase ≥ 2). The heart-sim's `--persist` runs both rings for the read.",
   }),
+  salvagePurse: knob<number>({
+    default: 100,
+    unit: "gold",
+    description: "S39 (ADR-126; ⚠ proposed): the purse a phase-two run begins with — replaces startingGold AND the legacy's gold term (legacyGoldPerCutting) for the salvage start. The ten legends and the pack are the rest of the start; no manalinks.",
+  }),
   // ---- S27 (ADR-093): the Heart and the chronicle ----
   heartLife: knob<number>({
     default: 40,

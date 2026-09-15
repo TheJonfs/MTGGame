@@ -22,6 +22,8 @@
  * entrance {none, 1} against both mid-road references, with per-tier aggregates (the reference's
  * win rate by life × entrance, averaged over the five mages and both references); part 9 — the
  * tier-2/3 beasts at catalog life, +4 and +8 against both references (beasts get no roots).
+ * S39: part 10 — every tier-2/3 mage at `--phase` against the two SALVAGE yardsticks (salvage-WR / salvage-UB:
+ * the pack + two duals, 12 life, journeyman, no basics, no legends) — the phase column's first read.
  * S34: `--mode easy|standard|hard` (default standard) — the mages and beasts take the resolver's tables at
  * that mode (mageTierLife / mageTierEntrance / beastTierLifeDelta + the row offsets), so a sweep row is
  * "the catalog at this mode"; `--tier-life` is gone. Part 8's rows carry A's graveyard → battlefield
@@ -240,6 +242,18 @@ if (part === "all" || part === "9") {
     (agg[`+${delta}`] ??= []).push(r.bPct);
   }
   console.log(`\n### Aggregate — the references' win rate by life delta (mean over ${keys.length} beasts × 2 references): ${Object.entries(agg).map(([d, xs]) => `${d}: ${(xs.reduce((a, b) => a + b, 0) / Math.max(1, xs.length)).toFixed(0)}%`).join(" · ")}`);
+}
+if (part === "all" || part === "10") {
+  // S39 (the brief's Part 4): the first read of the phase column — every tier-2/3 mage at `--phase` against the two
+  // salvage yardsticks (the flood's floor: the pack + two duals, 12 life, journeyman, no basics, no legends).
+  console.log(`\n## 10. Tier-2 and tier-3 mages vs the SALVAGE yardsticks (phase ${phase}; sim/road-decks salvage-WR / salvage-UB: the pack + two duals, 12 life, journeyman, no basics in play, no legends)`);
+  header();
+  const agg10: Record<string, number[]> = {};
+  for (const t of [2, 3] as const) for (const k of byTier[t]) for (const rk of ["salvageWR", "salvageUB"]) {
+    const r = await pairing(mage(k), road(rk), `T${t}×salvage`);
+    (agg10[`T${t}`] ??= []).push(r.bPct);
+  }
+  console.log(`\n### Aggregate — the yardsticks' win rate by mage tier at phase ${phase} (mean over the tier's mages × 2 yardsticks): ${Object.entries(agg10).map(([t, xs]) => `${t}: ${(xs.reduce((a, b) => a + b, 0) / Math.max(1, xs.length)).toFixed(0)}%`).join(" · ")}`);
 }
 if (part === "all" || part === "3") {
   console.log(`\n## 3. Children vs parents (parent mage at tier-1 settings; parent beast at its own)`);

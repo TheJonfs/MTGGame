@@ -1,0 +1,73 @@
+{
+ "catalogVersion": "v1",
+ "comment": "S39 (ADR-126): the salvage pack — phase two's prescribed start. Planner's list (the S39 brief, Part 3): ten per colour at tier 1–2 (no R, no prizeOnly), five colourless; one copy of each. The archetype anchors (Traumatizer, Hedron Crab, the Adept, the Altar, Blanchwood Armor, Buried Alive, Arc Mage, the Skeleton, Thought Scour) are deliberately absent — shop finds that let a player choose a plan in the flood. Validated against the pool by salvagePackProblems; rendered as docs/reference/salvage.md.",
+ "colors": {
+  "W": [
+   "savannah_lions",
+   "suntail_hawk",
+   "soul_warden",
+   "fencing_ace",
+   "youthful_valkyrie",
+   "master_decoy",
+   "inspiring_overseer",
+   "pacifism",
+   "swords_to_plowshares",
+   "raise_the_alarm"
+  ],
+  "U": [
+   "plumecreed_escort",
+   "man_o_war",
+   "cloudkin_seer",
+   "wind_drake",
+   "aether_channeler",
+   "air_elemental",
+   "brainstorm",
+   "counterspell",
+   "essence_scatter",
+   "boomerang"
+  ],
+  "B": [
+   "typhoid_rats",
+   "child_of_night",
+   "vampire_nighthawk",
+   "phyrexian_rager",
+   "gravedigger",
+   "nekrataal",
+   "terror",
+   "doom_blade",
+   "duress",
+   "unearth"
+  ],
+  "R": [
+   "young_pyromancer",
+   "goblin_piker",
+   "boggart_brute",
+   "goblin_chieftain",
+   "thundersnake",
+   "lightning_bolt",
+   "shock",
+   "abrade",
+   "hordeling_outburst",
+   "blaze"
+  ],
+  "G": [
+   "llanowar_elves",
+   "birds_of_paradise",
+   "grizzly_bears",
+   "deadly_recluse",
+   "wall_of_blossoms",
+   "centaur_courser",
+   "rumbling_baloth",
+   "rancor",
+   "giant_growth",
+   "rampant_growth"
+  ]
+ },
+ "colorless": [
+  "mind_stone",
+  "bonesplitter",
+  "loxodon_warhammer",
+  "darksteel_myr",
+  "evolving_wilds"
+ ]
+}

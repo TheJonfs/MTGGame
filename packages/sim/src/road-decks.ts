@@ -42,4 +42,25 @@ export const ROAD_DECKS: Record<string, { name: string; archetype: "aggro" | "mi
       ["lumen_the_hearth_fire", 1], ["clio_lady_of_the_depths", 1],
     ]),
   },
+  /** S39 (ADR-126, the brief's Part 4): the SALVAGE YARDSTICKS — phase two's floor: two decks from the salvage
+   * pack (data/world/salvage-pack.json) plus one pick set each (two duals), thirty cards, twelve lands, 12 life,
+   * journeyman, no basics in play, no legends. What the flood's player holds before the shop and the road. */
+  salvageWR: {
+    name: "salvage-WR", archetype: "aggro", life: 12, entrance: [],
+    decklist: d([
+      ["plateau", 1], ["sacred_foundry", 1], ["plains", 5], ["mountain", 5],
+      ["savannah_lions", 1], ["suntail_hawk", 1], ["soul_warden", 1], ["fencing_ace", 1], ["youthful_valkyrie", 1], ["inspiring_overseer", 1], ["pacifism", 1], ["swords_to_plowshares", 1],
+      ["young_pyromancer", 1], ["goblin_piker", 1], ["boggart_brute", 1], ["goblin_chieftain", 1], ["thundersnake", 1], ["lightning_bolt", 1], ["shock", 1], ["abrade", 1], ["hordeling_outburst", 1],
+      ["bonesplitter", 1],
+    ]),
+  },
+  salvageUB: {
+    name: "salvage-UB", archetype: "midrange", life: 12, entrance: [],
+    decklist: d([
+      ["underground_sea", 1], ["watery_grave", 1], ["island", 5], ["swamp", 5],
+      ["plumecreed_escort", 1], ["man_o_war", 1], ["cloudkin_seer", 1], ["wind_drake", 1], ["aether_channeler", 1], ["air_elemental", 1], ["brainstorm", 1], ["counterspell", 1], ["essence_scatter", 1],
+      ["typhoid_rats", 1], ["child_of_night", 1], ["vampire_nighthawk", 1], ["phyrexian_rager", 1], ["gravedigger", 1], ["nekrataal", 1], ["terror", 1], ["doom_blade", 1],
+      ["mind_stone", 1],
+    ]),
+  },
 };

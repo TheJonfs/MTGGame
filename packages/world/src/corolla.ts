@@ -541,6 +541,8 @@ export interface ChronicleEntry {
   steps: number;
   /** ISO date of the folding (the profile's ledger; not game state). */
   when: string;
+  /** S39: the flood's entry ("The plane turns over. Salvaged: …") — colour = the pair's first colour. Absent = a cutting. */
+  kind?: "flood";
 }
 
 /** ADR-096 (S28): the Heart's ROOTS — one basic of each type on the Manafleur's side, untapped,
@@ -671,6 +673,15 @@ export function setsFifthFlag(before: Legacy, after: Legacy): boolean {
 
 /** What a cut colour carries into a new road (the doc's table): the colour's power, its teaching
  * guardian's card (site pre-cleared), its lord's complement minister (the petal of that colour). */
+/** S39 (ADR-126): the Flood opens once every colour has been cut (the fifth flag's standing state). */
+export function floodEligible(legacy: Legacy): boolean {
+  return cutColors(legacy).length >= 5;
+}
+/** S39: the flood's chronicle entry — appended to the profile's ledger (no cutting counted). */
+export function recordFlood(legacy: Legacy, entry: Omit<ChronicleEntry, "n" | "kind">): Legacy {
+  return { ...legacy, chronicle: [...legacy.chronicle, { ...entry, n: legacy.chronicle.length + 1, kind: "flood" }] };
+}
+
 export function legacyCarry(catalog: Catalog, color: PetalColor): { power: PetalColor; guardianCard?: string; powerSiteId?: string; minister?: string } {
   const pd = (catalog.powerDungeons ?? []).find((d) => d.color === color);
   const petal = catalog.corolla?.petals.find((p) => p.color === color);
