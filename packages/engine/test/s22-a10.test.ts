@@ -31,8 +31,9 @@ describe("A10 words 1–2 — the Unwinder", () => {
     };
     const tg = await runFixture(spec);
     expect(tg.handCardIds(0).sort()).toEqual(["forest", "island"]); // the bounced land + the drawn card
-    const bears = onBf(tg, "grizzly_bears")[0]!;
-    expect(getObject(tg.game.state, bears).damage).toBe(1); // the ping resolved above the draw
+    // 2026-09-15 (Chris): the ping is 3 now (was 1) — the 2/2 Bears die to it (the ping resolved above the draw).
+    expect(onBf(tg, "grizzly_bears")).toHaveLength(0);
+    expect(tg.game.state.players[1].graveyard.map((id) => getObject(tg.game.state, id).cardId)).toContain("grizzly_bears");
   });
 
   it("the trigger is symmetric over controller and cause: the opponent's own Boomerang feeds the ping", async () => {
@@ -50,7 +51,7 @@ describe("A10 words 1–2 — the Unwinder", () => {
     };
     const tg = await runFixture(spec);
     expect(tg.handCardIds(1)).toContain("grizzly_bears");
-    expect(tg.game.state.players[1].life).toBe(19); // interacting with the tide costs you
+    expect(tg.game.state.players[1].life).toBe(17); // interacting with the tide costs you — 3 since 2026-09-15 (was 1)
   });
 });
 

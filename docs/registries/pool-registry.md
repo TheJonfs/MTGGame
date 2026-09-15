@@ -192,7 +192,7 @@ Tokens added: bear_2_2 (G), bird_1_1_flying (W), wurm_4_4 (G), zombie_2_2 (B), f
 
 | cardId | name | status | vocabulary | notes |
 |---|---|---|---|---|
-| the_unwinder | The Unwinder | tested | RETURNED_TO_HAND observed trigger (w1); returnToHand cost (w2) | custom Legendary {1}{U}{U}{R}{G} 3/4; prizeOnly (Spiral Spire sole-drop); printedAsset |
+| the_unwinder | The Unwinder | tested | RETURNED_TO_HAND observed trigger (w1); returnToHand cost (w2) | custom Legendary {1}{U}{U}{R}{G} 3/4; prizeOnly (Spiral Spire sole-drop); printedAsset. **2026-09-15 (Chris): the trigger deals 3 damage (was 1)** — def, text and the as-printed render v2 together. |
 | the_usher | The Usher | tested | temporary reanimate (w3) + who:any graveyard target; observed DIES drain | custom Legendary {1}{B}{B}{W}{R} 5/5; prizeOnly (Charnel Court); printedAsset |
 | the_warden | The Warden | tested | UNTAPPED law + event addressing (w5); ATTACKS + A8 range tap | custom Legendary {1}{W}{W}{G}{B} 4/4 vigilance reach; prizeOnly (Argent Bastion); printedAsset |
 | the_stoker | The Stoker | tested | unlessPay fork (w7); grantAbility hand cycling (w8); SPELL_CAST activation | custom Legendary {1}{R}{R}{B}{U} 5/5; prizeOnly (Furnace Gate); printedAsset |
