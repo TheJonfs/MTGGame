@@ -82,6 +82,17 @@ export const KNOBS = {
     unit: "mage | nearest",
     description: "S18: what a ring does when its spoke has no beast of the rolled tier (black/red have no tier-1 beast, blue no tier-3). `mage` keeps the ring's difficulty honest — a mage of the rolled tier spawns instead (civilized rings stay mostly tier 1); `nearest` puts the spoke's nearest-tier beast there (ties break down in civilized rings, up elsewhere) — more beasts, but a tier-2 deck in a tier-1 slot. The S18 handoff tables were measured under `nearest` first, then `mage`.",
   }),
+  // ---- S37 Part 3 (Chris: set up for a future tuning pass, change nothing): mage spawn weights ----
+  mageSpawnWeight: knob<Record<RegionTier, [number, number, number]>>({
+    default: { civilized: [3, 1, 0], approach: [1, 2, 1], wild: [0, 1, 2] },
+    unit: "relative weights for mage tiers 1/2/3, by region tier",
+    description: "S37: the roamer MAGE tier roll by ring (the non-beast branch of the spawn table; beasts keep beastTierBlend). The defaults are the S18 tables' effective weights exactly (civilized 3:1:0, approach 1:2:1, wild 0:1:2). The roll lays the tiers out by weight descending, ties by tier descending, and picks with ONE draw — at the defaults this reproduces the S36 pick byte-for-byte (spawn-pin.test.ts: same seeds, same roamers). Any other value changes which roamer a seed rolls, as a tuning knob should. A forced tier (beastTierFallback = mage) bypasses the weights.",
+  }),
+  mageSpawnRamp: knob<number>({
+    default: 1.0,
+    unit: "multiplier on the tier-2/3 mage weights per 100 steps taken",
+    description: "S37: a step-count ramp on the mage spawn — the tier-2 and tier-3 weights of mageSpawnWeight are multiplied by ramp^(stepsTaken / 100) at respawn time (world generation is step 0, unramped). 1.0 = no ramp (the default; nothing changes). 1.2 means a civilized ring at step 300 rolls tier 2 at weight 1.73 against tier 1's 3. A non-default value changes the roll's layout and so the roamers a seed spawns.",
+  }),
   // ---- S20 (ADR-079 / dungeon-design v2): dungeons ----
   dungeonGridWidth: knob<number>({
     default: 24,

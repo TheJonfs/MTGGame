@@ -9,7 +9,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { CardDef } from "@shandalar/cards";
 import type { PlayerId } from "@shandalar/engine";
 import type { CustomMatch } from "./match-controller";
-import { customAsLabDeck, labDecks, resolveSide, sideModifiers, type CustomDeck, type LabDeck, type LabMode } from "../lab/lab-decks";
+import { customAsLabDeck, labDecks, resolveSide, savedWorldDecks, sideModifiers, type CustomDeck, type LabDeck, type LabMode } from "../lab/lab-decks";
 import type { LabSide } from "../lab/lab-types";
 import { DeckEditor, SidePanel, sideFromDeck } from "../lab/lab-panels";
 
@@ -19,7 +19,8 @@ export function DevSetup({ pool, onStart }: { pool: Map<string, CardDef>; onStar
   const [mode, setMode] = useState<LabMode>("standard");
   const [customs, setCustoms] = useState<CustomDeck[]>([]);
   const baseDecks = useMemo(() => labDecks(mode), [mode]);
-  const decks = useMemo(() => [...baseDecks, ...customs.map(customAsLabDeck)], [baseDecks, customs]);
+  const saved = useMemo(() => savedWorldDecks(), []); // S37: the world save's decks
+  const decks = useMemo(() => [...baseDecks, ...saved, ...customs.map(customAsLabDeck)], [baseDecks, saved, customs]);
   const byKey = useMemo(() => new Map(decks.map((d) => [d.key, d])), [decks]);
   const [you, setYou] = useState<LabSide>({ deck: "starter:white", life: 10, basics: 0, profile: "journeyman", bonuses: [] });
   const [them, setThem] = useState<LabSide>(() => sideFromDeck(labDecks("standard").find((d) => d.key === "mage:corvane")!));

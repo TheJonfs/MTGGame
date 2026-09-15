@@ -1,6 +1,6 @@
 import type { CardDef } from "@shandalar/cards";
 import type { MatchResult, MatchSpec } from "@shandalar/engine";
-import { trimDuelLogs,
+import { trimDuelLogs, checkDeck, doorCheck, doorRefusalText, describeDeckRule, type DeckCheck,
   activeDeck,
   addCopy,
   advance,
@@ -8,7 +8,6 @@ import { trimDuelLogs,
   buyCard,
   commitDeck,
   createDeck,
-  deckLegal,
   deleteDeck,
   duplicateDeck,
   idx,
@@ -618,10 +617,31 @@ export class WorldController {
     return this.world ? visibleRoamers(this.world, this.catalog, this.knobs) : [];
   }
 
-  /** Legality of the current draft (the Save button's reason). */
-  editorLegality(): { ok: boolean; reason?: string } {
-    if (this.screen.kind !== "editor") return { ok: false, reason: "no draft" };
-    return deckLegal(this.screen.draft);
+  /** Legality of the current draft — S37: every problem as a sentence (the floor, the cap, ownership); the
+   * Save button's gate. A door rule (below) never blocks a save — it only closes that door. */
+  editorLegality(): DeckCheck {
+    if (this.screen.kind !== "editor" || !this.world) return { ok: false, problems: ["no draft"] };
+    return checkDeck(this.screen.draft, this.world.player.collection, null, this.pool);
+  }
+
+  // ---------- S37 (ADR-123): the editor checks the draft against a door's rule ----------
+
+  /** The door the editor is checking against (a template id with a deckRule), or none. */
+  editorRuleId: string | null = null;
+  /** Every door in the catalog: the templates that carry a deckRule (none today; phase two's gates). */
+  doorRules(): { id: string; name: string; label: string; description: string }[] {
+    return this.catalog.opponents.filter((o) => o.deckRule).map((o) => ({ id: o.id, name: o.name, label: o.deckRule!.label, description: describeDeckRule(o.deckRule!) }));
+  }
+  setEditorRule(id: string | null): void {
+    this.editorRuleId = id && this.catalog.opponents.some((o) => o.id === id && o.deckRule) ? id : null;
+    this.emit();
+  }
+  /** The selected door's verdict on the draft (live), or null when no door is selected. */
+  editorRuleCheck(): { id: string; label: string; description: string; check: DeckCheck } | null {
+    if (this.screen.kind !== "editor" || !this.editorRuleId) return null;
+    const tmpl = this.catalog.opponents.find((o) => o.id === this.editorRuleId);
+    if (!tmpl?.deckRule) return null;
+    return { id: tmpl.id, label: tmpl.deckRule.label, description: describeDeckRule(tmpl.deckRule), check: checkDeck(this.screen.draft, null, tmpl.deckRule, this.pool) };
   }
 
   /** Commit the draft (legal only — ADR-065); returns to where the editor was opened from. */
@@ -865,10 +885,20 @@ export class WorldController {
 
   // ---------- parley + duel ----------
 
+  /** S37 (ADR-123): the door's word before any choice — the refusal text when this encounter's template
+   * carries a deckRule the ACTIVE deck fails; null when the gate opens (or there is no gate). */
+  doorRefusal(): string | null {
+    if (!this.world || this.screen.kind !== "encounter") return null;
+    const { tmpl } = this.screen;
+    if (!tmpl.deckRule) return null;
+    const check = doorCheck(this.world, tmpl, this.pool)!;
+    return check.ok ? null : doorRefusalText(this.catalog, tmpl.deckRule, check);
+  }
+
   parley(choice: "fight" | "flee" | "buyoff"): void {
     if (!this.world || this.screen.kind !== "encounter") return;
     const { encounter } = this.screen;
-    const out = parley(this.world, this.catalog, encounter, choice, this.extraKnobs);
+    const out = parley(this.world, this.catalog, encounter, choice, this.extraKnobs, { pool: this.pool });
     switch (out.type) {
       case "boughtOff":
         this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: `You paid ${out.goldPaid} gold and they let you pass.` };
@@ -881,9 +911,11 @@ export class WorldController {
         break;
       case "fleeFailed": {
         // Caught: you fight, and the duel stakes again (ADR-063 compounding).
-        const again = parley(this.world, this.catalog, encounter, "fight", this.extraKnobs);
-        if (again.type === "fight") this.startDuel(again.duel, `Caught! Your flee stake is gone (${out.anteLost.map((id) => this.pool.get(id)?.name ?? id).join(", ")}) — and now you fight.`);
-        return;
+        const again = parley(this.world, this.catalog, encounter, "fight", this.extraKnobs, { pool: this.pool });
+        if (again.type === "fight") { this.startDuel(again.duel, `Caught! Your flee stake is gone (${out.anteLost.map((id) => this.pool.get(id)?.name ?? id).join(", ")}) — and now you fight.`); return; }
+        // S37: a door-ruled template refuses the forced fight too — the stake is gone, the gate stays shut.
+        if (again.type === "refused") this.screen = { ...this.screen, notice: again.reason };
+        break;
       }
       case "fight":
         this.startDuel(out.duel, null);

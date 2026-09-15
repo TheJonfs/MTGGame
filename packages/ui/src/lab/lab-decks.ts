@@ -15,7 +15,7 @@ import { COROLLA_DECKS } from "@shandalar/sim/corolla-decks";
 import { HEART_DECK } from "@shandalar/sim/heart-deck";
 import type { CardDef } from "@shandalar/cards";
 import type { Modifier } from "@shandalar/engine";
-import { DIFFICULTIES, resolveKnobs, type DifficultyName } from "@shandalar/world";
+import { DIFFICULTIES, deserializeWorld, resolveKnobs, type DifficultyName } from "@shandalar/world";
 import type { LabBonus, LabSide, ResolvedSide } from "./lab-types.js";
 
 /** The world's JSON, bundled the way engine-bridge bundles the catalog (import.meta.glob; no json modules). */
@@ -32,7 +32,7 @@ export type Decklist = { cardId: string; count: number }[];
 
 export interface LabDeck {
   key: string;
-  group: "mages" | "beasts" | "starters" | "roads" | "bosses" | "slices" | "custom";
+  group: "mages" | "beasts" | "starters" | "roads" | "bosses" | "slices" | "custom" | "saved";
   name: string;
   label: string;
   archetype: Archetype;
@@ -120,6 +120,21 @@ export function labDecks(mode: LabMode = "standard"): LabDeck[] {
     out.push({ key: `slice:${k}`, group: "slices", name: DECKS[k].name, label: `${k} · ${DECKS[k].name} (slice)`, archetype: DECK_ARCHETYPES[k], decklist: DECKS[k].decklist, life: 20, profile: "journeyman", basics: 0 });
   }
   return out;
+}
+
+/** S37 (ADR-123): the world save's decks — the player's saved decks, as rows in the Lab's roster and as
+ * picks in the single match (the dev setup and the production picker). Read from the autosave in the
+ * browser's storage; nothing when there is no save (or an unreadable one). */
+export function savedWorldDecks(storage: Pick<Storage, "getItem"> | null = typeof localStorage !== "undefined" ? localStorage : null): LabDeck[] {
+  try {
+    const raw = storage?.getItem("shandalar-world-save");
+    if (!raw) return [];
+    const w = deserializeWorld(raw);
+    return Object.entries(w.decks).map(([name, decklist]) => ({
+      key: `saved:${name}`, group: "saved", name, label: `${name} (your saved deck${name === w.activeDeckName ? ", active" : ""}; ${decklist.reduce((n, e) => n + e.count, 0)} cards)`,
+      archetype: "midrange", decklist: decklist.map((e) => ({ ...e })), life: w.player.worldLife, profile: "journeyman", basics: 0,
+    }));
+  } catch { return []; }
 }
 
 /** A custom deck (the Lab's editor; saved under analysis/decks/). */

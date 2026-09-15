@@ -4,7 +4,7 @@ import { DECKS, type DeckKey } from "@shandalar/sim/decks";
 import { MAGE_DECKS } from "@shandalar/sim/mage-decks";
 import { loadOracle, loadPool, type OracleEntry } from "../engine-bridge";
 import { CardFrame } from "./CardFrame";
-import { readSeen } from "../seen";
+import { readUnlocked } from "../seen";
 import { devMenuEnabled } from "../dev";
 
 /**
@@ -251,14 +251,7 @@ export function Gallery() {
   // Deploy playtest r4 (Chris): the DEV server always sees every card; the gate is production-only
   // (?all=1 stays as the deploy's bypass).
   const revealAll = devMenuEnabled() || new URLSearchParams(window.location.search).get("all") === "1";
-  const seen = useMemo(() => {
-    const s = readSeen();
-    try {
-      const save = localStorage.getItem("shandalar-world-save");
-      if (save) for (const id of Object.keys((JSON.parse(save) as { world?: { player?: { collection?: Record<string, number> } } }).world?.player?.collection ?? {})) s.add(id);
-    } catch { /* no save, or an unreadable one */ }
-    return s;
-  }, []);
+  const seen = useMemo(() => readUnlocked(), []); // S37: the same union, shared with the single-game picker
   const hiddenCount = useMemo(() => (revealAll ? 0 : [...pool.values()].filter((d) => d.prizeOnly && !seen.has(d.id)).length), [pool, seen, revealAll]);
   const cards = useMemo(() => {
     if (!registry) return [];

@@ -107,7 +107,7 @@ Mages roam anywhere; beasts are spoke-bound (their colour's ring). Tier 1 rolls 
 - **Sister Oriel, the Almoner (mage:oriel, W tier 1, midrange)** — played by Sister Oriel — 40 cards, 17 lands, avg MV 1.78
   15 Plains · 2 Secluded Steppe · 4 Soul Warden · 2 Spirit Link · 3 Suntail Hawk · 1 Swords to Plowshares · 2 Master Decoy · 2 Pacifism · 2 Raise the Alarm · 3 Youthful Valkyrie · 1 Glorious Anthem · 2 Inspiring Overseer · 1 Restoration Angel
 - **Pell of the Shallows, the Tidesower (mage:pell, UG tier 2, control)** — played by Pell of the Shallows — 40 cards, 17 lands, avg MV 2.17
-  2 Breeding Pool · 2 Evolving Wilds · 6 Forest · 6 Island · 1 Thawing Glaciers · 1 Birds of Paradise · 1 Brainstorm · 2 Giant Growth · 4 Hedron Crab · 2 Rancor · 1 Altar of Dementia · 3 Rampant Growth · 2 Grazing Gladehart · 2 Wood Elves · 2 Rumbling Baloth · 3 Traumatizer
+  2 Breeding Pool · 2 Evolving Wilds · 6 Forest · 7 Island · 1 Birds of Paradise · 1 Brainstorm · 2 Giant Growth · 4 Hedron Crab · 2 Rancor · 1 Altar of Dementia · 3 Rampant Growth · 2 Grazing Gladehart · 2 Wood Elves · 2 Rumbling Baloth · 3 Traumatizer
 - **Magister Quill, the Drowned Grove (mage:quill, UG tier 3, control)** — played by Magister Quill — 40 cards, 17 lands, avg MV 2.35
   2 Breeding Pool · 1 Evolving Wilds · 6 Forest · 6 Island · 1 Thawing Glaciers · 1 Tropical Island · 1 Brainstorm · 4 Hedron Crab · 2 Llanowar Elves · 2 Altar of Dementia · 1 Counterspell · 2 Essence Scatter · 3 Rampant Growth · 1 Wall of Blossoms · 2 Wood Elves · 1 Baru, Wurmspeaker · 2 Gaean Wurm · 1 Traumatizer · 1 Pelakka Wurm
 - **High Warden Sorrel, the Inquisitor (mage:sorrel, BR tier 3, midrange)** — played by High Warden Sorrel — 40 cards, 17 lands, avg MV 1.87

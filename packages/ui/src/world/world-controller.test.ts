@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
-import { activeDeck, deserializeWorld, idx } from "@shandalar/world";
+import { activeDeck, catalogFrom, commitDeck, deserializeWorld, idx, starterDecklist, starterTemplate } from "@shandalar/world";
+import { readFileSync } from "node:fs";
 import { loadCatalog } from "@shandalar/world/loader";
 import { WorldController } from "./world-controller.js";
 import type { MatchController } from "../play/match-controller.js";
@@ -66,8 +67,8 @@ function freshController(): WorldController {
   return c;
 }
 
-/** S16: force an encounter by standing a live roamer on the next cell (you step onto it). */
-async function forceEncounter(c: WorldController): Promise<void> {
+/** S16: force an encounter by standing a live roamer on the next cell (you step onto it). S37: the template to pin. */
+async function forceEncounter(c: WorldController, catalogId = "a1"): Promise<void> {
   const w = c.world!;
   // Any passable non-town neighbour of the start town.
   const s = w.player.position;
@@ -75,7 +76,7 @@ async function forceEncounter(c: WorldController): Promise<void> {
     .filter((p) => p.x >= 0 && p.y >= 0 && p.x < w.map.width && p.y < w.map.height && w.map.passable[idx(w.map, p)] && !w.map.towns.some((t) => t.at.x === p.x && t.at.y === p.y));
   for (const n of nbrs) {
     const inst = w.opponents.find((o) => !o.gone && !o.fixedAt && o.at)!;
-    inst.catalogId = "a1"; // S20: pin a buyable mage — the rolled template can be an unbuyable beast (WBRUG re-roll)
+    inst.catalogId = catalogId; // S20: pin a buyable mage — the rolled template can be an unbuyable beast (WBRUG re-roll)
     inst.at = { ...n };
     inst.region = w.map.region[idx(w.map, n)]!;
     if (c.screen.kind === "town") c.leaveTown();
@@ -93,6 +94,75 @@ function quiet(c: WorldController): void {
   for (const o of c.world!.opponents) if (!o.fixedAt) { o.gone = true; o.goneReason = "fled"; }
   c.extraKnobs = { event: { roamerRespawnSteps: { civilized: 0, approach: 0, wild: 0 } } };
 }
+
+describe("S37 (ADR-123): the door — a template's deckRule through the editor and the parley (the S10 pattern)", () => {
+  /** The catalog with one extra template carrying a rule: the white starter's colours, one more creature than it has. */
+  function gatedCatalog(): { cat: typeof catalog; creatures: number } {
+    const white = starterDecklist(starterTemplate(catalog, "white"), "standard");
+    const creatures = white.reduce((n, e) => n + (pool.get(e.cardId)!.types.includes("Creature") ? e.count : 0), 0);
+    const gate = { id: "test_gate", name: "The Test Gate", deck: "mage:brann", tier: 1, difficulty: "apprentice", portrait: "mage-brann", worldLife: 10, colors: "W", deckRule: { colorsWithin: ["W"], minCreatures: creatures + 1, label: "the White Gate" } };
+    const cat = catalogFrom(JSON.parse(JSON.stringify({
+      regions: { catalogVersion: "v1", regions: catalog.regions, strongholds: catalog.strongholds }, towns: { catalogVersion: "v1", names: catalog.townNames },
+      opponents: { catalogVersion: "v1", opponents: [...catalog.opponents, gate] }, starters: { catalogVersion: "v1", starters: catalog.starters },
+      dungeons: JSON.parse(readFileSync(join(ROOT, "data/world/dungeons.json"), "utf8")),
+      quests: JSON.parse(readFileSync(join(ROOT, "data/world/quests.json"), "utf8")),
+    })));
+    return { cat, creatures };
+  }
+  it("the editor checks the draft against the door live (never blocking Save); the parley refuses the fight naming the rule; a legal deck enters", async () => {
+    const { cat, creatures } = gatedCatalog();
+    const c = new WorldController(pool, cat, memStorage());
+    c.stepMs = 0;
+    c.newGame({ starter: "white", difficulty: "standard", seed: 3701 });
+    c.world!.player.collection["serra_angel"] = 1; // a spare white creature to answer the gate with
+    // The editor: the door list, the live verdict, Save unaffected.
+    c.openEditor();
+    expect(c.doorRules()).toEqual([{ id: "test_gate", name: "The Test Gate", label: "the White Gate", description: `colours within W; ≥ ${creatures + 1} creatures` }]);
+    expect(c.editorRuleCheck()).toBeNull();
+    c.setEditorRule("test_gate");
+    const before = c.editorRuleCheck()!;
+    expect(before.check.ok).toBe(false);
+    expect(before.check.problems).toEqual([`${creatures} creatures; the White Gate asks ${creatures + 1}`]);
+    expect(c.editorLegality().ok).toBe(true); // the door never blocks Save
+    c.editorAdd("serra_angel");
+    c.editorRemove("plains");
+    expect(c.editorRuleCheck()!.check.ok).toBe(true);
+    c.editorReset(); // back to the starter — the gate is shut again
+    expect(c.editorRuleCheck()!.check.ok).toBe(false);
+    c.setEditorRule(null);
+    expect(c.editorRuleCheck()).toBeNull();
+    c.editorClose();
+    // The parley: the gate's word is up before any choice; Fight is refused, naming the rule; the roamer stays.
+    await forceEncounter(c, "test_gate");
+    expect(c.screen.kind).toBe("encounter");
+    const refusal = c.doorRefusal();
+    expect(refusal).toMatch(/^The gate knows your colours\. It will not open to these\. the White Gate \(colours within W; ≥ \d+ creatures\): \d+ creatures; the White Gate asks \d+\.$/);
+    c.parley("fight");
+    expect(c.screen.kind).toBe("encounter");
+    expect((c.screen as { notice: string | null }).notice).toBe(refusal);
+    // A legal deck enters: the Lion for a Plains, committed through the world API (the editor is shut while parleying).
+    const draft = activeDeck(c.world!).map((e) => ({ ...e }));
+    draft.find((e) => e.cardId === "plains")!.count -= 1;
+    draft.push({ cardId: "serra_angel", count: 1 });
+    expect(commitDeck(c.world!, draft).ok).toBe(true);
+    expect(c.doorRefusal()).toBeNull();
+    c.parley("fight");
+    expect(c.screen.kind).toBe("duel");
+    expect(c.match!.spec.players[0].decklist.find((e) => e.cardId === "serra_angel")?.count).toBe(1);
+    c.match!.concede();
+    let g = 0;
+    while (c.screen.kind === "duel" && g++ < 500) await tick();
+    expect(c.screen.kind).toBe("duelResult");
+  }, 60_000);
+  it("no template in the shipped catalog carries a rule; the editor's door list is empty and every parley fight is unrefused by a door", () => {
+    const c = freshController();
+    c.newGame({ starter: "red", difficulty: "standard", seed: 3702 });
+    expect(c.doorRules()).toEqual([]);
+    c.openEditor();
+    c.setEditorRule("a1");
+    expect(c.editorRuleId).toBeNull(); // a template without a rule is not a door
+  });
+});
 
 describe("deploy playtest r5 (Chris): the autosave survives the browser's quota", () => {
   it("a quota error never escapes — the autosave trims the replay logs and retries; the game goes on", async () => {

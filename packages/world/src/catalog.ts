@@ -3,6 +3,7 @@ import { EXPANSION_DECKS } from "@shandalar/sim/expansion-decks";
 import { MAGE_DECKS } from "@shandalar/sim/mage-decks";
 import { assertKnobSource, type KnobSource, type RegionTier, type EnemyTier } from "./knobs.js";
 import { validateCorollaDef } from "./corolla.js";
+import { validateDeckRule, type DeckRule } from "./legality.js";
 
 /**
  * Authored catalog v0 (overworld manifest §2 "authored inventory, procedural
@@ -32,7 +33,7 @@ export type OpponentKind = "mage" | "beast";
 /** S16: an opponent's deck is a slice key (A–E) or a catalog starter ("starter:green") —
  * the measurement behind the tier-1 enemy-deck question lives on this.
  * S18: or a beast deck ("beast:warband") from packages/sim/src/expansion-decks.ts (ADR-074/077). */
-export type OpponentDeckRef = DeckKey | `starter:${StarterId}` | `beast:${string}`;
+export type OpponentDeckRef = DeckKey | `starter:${StarterId}` | `beast:${string}` | `mage:${string}`; // S37: the mage arm the loader always accepted, on the type at last
 
 /** S18 (ADR-066 reflavored parley): how this opponent's parley reads. All optional; defaults by kind. */
 export interface ParleyVoice {
@@ -76,6 +77,9 @@ export interface OpponentTemplate {
   spoke?: Exclude<Color, "C">;
   /** S18: parley voice (verb/line/refusal). */
   parley?: ParleyVoice;
+  /** S37 (ADR-123): a door's deckbuilding rule — the editor validates against it, the parley refuses a deck
+   * that fails it (naming the rule). Phase two's gates; no existing template carries one. */
+  deckRule?: DeckRule;
 }
 
 /** S16 (ADR-069/070): authored starter decks per colour — the world's new-game
@@ -126,6 +130,12 @@ export interface QuestTextPack {
   corolla?: CorollaTextPack;
   /** S27 (quest-text-pack-v4): the Heart's voice and the Chronicle of Cuttings. Optional. */
   heart?: HeartTextPack;
+  /** S37 (ADR-123): the door's voice — the refusal when the deck fails a template's deckRule. Optional. */
+  door?: DoorTextPack;
+}
+export interface DoorTextPack {
+  /** The archaic line above the rule and its problems ({label} substituted). Planner's line; refine per rule later. */
+  refused: string;
 }
 export interface CorollaTextPack {
   doorOpen: string; doorLocked: string; vaultOpen: string; vaultLocked: string;
@@ -252,6 +262,7 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
     if (op.worldLifeOffset !== undefined && !Number.isInteger(op.worldLifeOffset)) errors.push(`opponent ${op.id}: bad worldLifeOffset (S34)`);
     if (op.kind && !["mage", "beast"].includes(op.kind)) errors.push(`opponent ${op.id}: bad kind ${op.kind}`);
     if (op.epithet !== undefined && (typeof op.epithet !== "string" || !op.epithet.trim())) errors.push(`opponent ${op.id}: epithet must be a non-empty string (S29)`);
+    if (op.deckRule !== undefined) errors.push(...validateDeckRule(op.deckRule, `opponent ${op.id}`));
     if (op.knobs) {
       try {
         assertKnobSource(op.knobs as Record<string, unknown>, `opponent ${op.id}`);
@@ -284,7 +295,7 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
   // S21: the quest & rumor text pack (planner content, wired as data).
   let questText: QuestTextPack | undefined;
   if (parts.quests) {
-    const qp = parts.quests as { catalogVersion: string; offers: QuestTextPack["offers"]; rumors: QuestTextPack["rumors"]; corolla?: CorollaTextPack; heart?: HeartTextPack };
+    const qp = parts.quests as { catalogVersion: string; offers: QuestTextPack["offers"]; rumors: QuestTextPack["rumors"]; corolla?: CorollaTextPack; heart?: HeartTextPack; door?: DoorTextPack };
     if (qp.catalogVersion !== CATALOG_VERSION) errors.push(`quests: catalogVersion ${qp.catalogVersion} != ${CATALOG_VERSION}`);
     for (const k of ["courier", "cardCourier", "bounty", "retrieval"] as const) {
       if (!Array.isArray(qp.offers?.[k]) || qp.offers[k].length === 0) errors.push(`quests: offers.${k} must be a nonempty array`);
@@ -304,7 +315,8 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
     if (qp.corolla) for (const c of ["W", "U", "B", "R", "G"]) if (!qp.corolla.petals?.[c]) errors.push(`quests: corolla.petals.${c} missing`);
     if (qp.heart) for (const k of ["doorOpen", "telegraph", "stakes", "victory", "victoryCard", "loss", "offer", "fifthCutting", "newRoad", "newRoadAll", "withheld", "chronicleHeader"] as const) if (!qp.heart[k]) errors.push(`quests: heart.${k} missing`);
     if (qp.heart) for (const c of ["W", "U", "B", "R", "G"]) if (!qp.heart.chronicle?.[c]) errors.push(`quests: heart.chronicle.${c} missing`);
-    questText = { offers: qp.offers, rumors: qp.rumors, ...(qp.corolla ? { corolla: qp.corolla } : {}), ...(qp.heart ? { heart: qp.heart } : {}) };
+    if (qp.door && (typeof qp.door.refused !== "string" || !qp.door.refused.trim())) errors.push("quests: door.refused missing (S37)");
+    questText = { offers: qp.offers, rumors: qp.rumors, ...(qp.corolla ? { corolla: qp.corolla } : {}), ...(qp.heart ? { heart: qp.heart } : {}), ...(qp.door ? { door: qp.door } : {}) };
   }
   if (errors.length) throw new Error(`Catalog validation failed:\n${errors.join("\n")}`);
   return { version: CATALOG_VERSION, regions: r.regions, townNames: t.names, opponents: o.opponents, starters: st.starters, strongholds: r.strongholds ?? [], dungeons: du.mox, ...(du.powerDungeons ? { powerDungeons: du.powerDungeons } : {}), ...(du.strongholds ? { strongholdContent: du.strongholds } : {}), ...(du.corolla ? { corolla: du.corolla } : {}), ...(questText ? { questText } : {}) };

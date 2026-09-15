@@ -1,6 +1,8 @@
 import { entranceModifiers, resolveMatchup } from "./matchup.js";
 import type { MatchResult, MatchSpec, Modifier } from "@shandalar/engine";
 import { enemyDeck, type Catalog, type OpponentTemplate } from "./catalog.js";
+import { checkDeck, describeDeckRule, type DeckCheck, type DeckRule } from "./legality.js";
+import type { CardDef } from "@shandalar/cards";
 import { isTownCell, regionCells, roamerTarget, rollMage, rollTemplate, type GoneReason, type OpponentInstance } from "./generate.js";
 import { manalinkModifiers, questsOnDefeat, questsOnStep, type QuestEvent } from "./quests.js";
 import { siegesOnStep } from "./siege.js";
@@ -209,7 +211,7 @@ export function respawnRoamers(world: WorldState, catalog: Catalog, knobs: KnobV
     // its regions spawn NOTHING — not beasts, not mages (a Nighthawk after the Usher fell read as a
     // broken promise). Existing roamers remain until met; sieges of the colour already stop.
     if (lordSealed(world, r.color)) continue;
-    const tmpl = rollTemplate(rng, catalog, r, knobs);
+    const tmpl = rollTemplate(rng, catalog, r, knobs, world.player.stepsTaken); // S37: the ramp reads the step count
     const id = `opp_r${world.opponents.length}_${world.player.stepsTaken}`;
     const inst: OpponentInstance = { id, catalogId: tmpl.id, region: r.index, gone: false, at: { ...rng.pick(cells) }, moveDebt: 0 };
     world.opponents.push(inst);
@@ -461,13 +463,24 @@ export function forfeitCards(world: WorldState, cardIds: string[]): void {
   }
 }
 
-/** Deck legality for the slice: 30-card floor, 4-copy cap except basics. */
+/** Deck legality for the slice: 30-card floor, 4-copy cap except basics. S37: a view over `checkDeck`
+ * (the first problem as the reason) for the callers that want one line. */
 export function deckLegal(deck: Decklist): { ok: boolean; reason?: string } {
-  if (deckSize(deck) < 30) return { ok: false, reason: `deck has ${deckSize(deck)} cards; the floor is 30` };
-  for (const e of deck) {
-    if (!BASICS.includes(e.cardId) && e.count > 4) return { ok: false, reason: `${e.cardId} ×${e.count} exceeds the 4-copy cap` };
-  }
-  return { ok: true };
+  const c = checkDeck(deck);
+  return c.ok ? { ok: true } : { ok: false, reason: c.problems[0] ?? "illegal deck" };
+}
+
+/** S37 (ADR-123): the door — a template's `deckRule` against the ACTIVE deck. `null` when the template
+ * carries no rule; otherwise the check (ok = the gate opens). The pool reads the cards. */
+export function doorCheck(world: WorldState, tmpl: Pick<OpponentTemplate, "deckRule">, pool: Map<string, CardDef>): DeckCheck | null {
+  if (!tmpl.deckRule) return null;
+  return checkDeck(activeDeck(world), null, tmpl.deckRule, pool);
+}
+/** The refusal as the parley says it: the archaic line (quests.json `door.refused`, {label} substituted),
+ * then the rule's problems. */
+export function doorRefusalText(catalog: Pick<Catalog, "questText">, rule: DeckRule, check: DeckCheck): string {
+  const line = (catalog.questText?.door?.refused ?? "The gate will not open to this deck.").replaceAll("{label}", rule.label);
+  return `${line} ${rule.label} (${describeDeckRule(rule)}): ${check.problems.join("; ")}.`;
 }
 
 /** The flee forfeit: no duel happens, so the world picks your stake the way
@@ -502,8 +515,19 @@ export function buyOffPrice(knobs: KnobValues, tier: 1 | 2 | 3, tmpl?: Pick<Oppo
   return tmpl?.kind === "beast" ? Math.round(base * knobs.beastBuyOffMultiplier) : base;
 }
 
-export function parley(world: WorldState, catalog: Catalog, enc: Encounter, choice: ParleyChoice, extra: Parameters<typeof worldKnobs>[1] = {}, opts: { enemyLifeDelta?: number } = {}): ParleyOutcome {
+export function parley(world: WorldState, catalog: Catalog, enc: Encounter, choice: ParleyChoice, extra: Parameters<typeof worldKnobs>[1] = {}, opts: { enemyLifeDelta?: number; /** S37: the pool reads the deck for a door's rule; a door-ruled template without one throws. */ pool?: Map<string, CardDef> } = {}): ParleyOutcome {
   const knobs = encounterKnobs(world, catalog, enc, extra);
+  // S37 (ADR-123): the door — a template with a deckRule refuses the FIGHT of a deck that fails it, naming
+  // the rule; flee and buy-off stay (a roamer contact must remain leaveable). No RNG is drawn.
+  if (choice === "fight") {
+    const inst = world.opponents.find((o) => o.id === enc.opponentId);
+    const tmpl = inst ? opponentTemplate(catalog, inst) : undefined;
+    if (tmpl?.deckRule) {
+      if (!opts.pool) throw new Error(`parley: ${tmpl.name} carries a deckRule; pass the pool`);
+      const check = doorCheck(world, tmpl, opts.pool)!;
+      if (!check.ok) return { type: "refused", reason: doorRefusalText(catalog, tmpl.deckRule, check) };
+    }
+  }
   const rng = new WorldRng(world.rng);
   try {
     switch (choice) {

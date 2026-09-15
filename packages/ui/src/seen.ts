@@ -40,3 +40,20 @@ export function encounteredCards(result: MatchResult): string[] {
   } catch { /* an empty serialization (tests) contributes nothing */ }
   return [...out];
 }
+
+/** S37: what the gallery counts as UNLOCKED — the seen store plus the world autosave's collection (the same
+ * union the gallery's memo built inline since S27 r3). The autosave key is the world controller's SAVE_KEY. */
+export function readUnlocked(storage: Pick<Storage, "getItem" | "setItem"> | null = typeof localStorage !== "undefined" ? localStorage : null): Set<string> {
+  const s = readSeen(storage);
+  try {
+    const save = storage?.getItem("shandalar-world-save");
+    if (save) for (const id of Object.keys((JSON.parse(save) as { world?: { player?: { collection?: Record<string, number> } } }).world?.player?.collection ?? {})) s.add(id);
+  } catch { /* no save, or an unreadable one */ }
+  return s;
+}
+
+/** S37 (Chris): the single-game picker carries the gallery's rule — a deck is offered only when every
+ * prizeOnly card in it has been unlocked (seen in a duel, or owned). Cards the pool lacks don't gate. */
+export function deckUnlocked(decklist: { cardId: string }[], pool: Map<string, { prizeOnly?: boolean }>, unlocked: Set<string>): boolean {
+  return decklist.every((e) => !pool.get(e.cardId)?.prizeOnly || unlocked.has(e.cardId));
+}

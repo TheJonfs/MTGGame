@@ -49,7 +49,7 @@ const seed0 = Number(arg("seed", "1"));
 const part = arg("part", "all");
 // S30 Part 5: a baseline sweep (pairing key → A's win %) for a delta column; the S29 run ships as
 // sweep-baselines/s29.json (`--baseline none` to drop the column).
-const baselineArg = arg("baseline", join(dirname(fileURLToPath(import.meta.url)), "sweep-baselines/s31.json"));
+const baselineArg = arg("baseline", join(dirname(fileURLToPath(import.meta.url)), "sweep-baselines/s35.json")); // S37: the S35 run is the standing baseline
 const baselineName = baselineArg === "none" ? "—" : (baselineArg.match(/(s\d+)\.json$/)?.[1] ?? "baseline").toUpperCase();
 const baseline: Record<string, number> = baselineArg === "none" ? {} : (JSON.parse(readFileSync(baselineArg, "utf8")) as Record<string, number>);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");

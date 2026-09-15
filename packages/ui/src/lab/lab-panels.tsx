@@ -10,7 +10,7 @@ import type { LabBonus, LabSide } from "./lab-types";
 
 export const PROFILES: Profile[] = ["apprentice", "journeyman", "master"];
 export const ARCHETYPES: Archetype[] = ["aggro", "midrange", "control"];
-export const GROUPS = ["mages", "beasts", "starters", "roads", "bosses", "custom", "slices"] as const;
+export const GROUPS = ["mages", "beasts", "starters", "saved", "roads", "bosses", "custom", "slices"] as const; // S37: "saved" = the world save's decks
 export const sideFromDeck = (d: LabDeck): LabSide => ({ deck: d.key, life: d.life, basics: d.basics, profile: d.profile, bonuses: (d.bonuses ?? []).map((b) => ({ ...b })) });
 
 export function SidePanel({ label, side, decks, byKey, pool, onPick, onPatch, onEdit, title, showProfile = true }: { label: "a" | "b"; side: LabSide; decks: LabDeck[]; byKey: Map<string, LabDeck>; pool: Map<string, CardDef>; onPick: (key: string) => void; onPatch: (p: Partial<LabSide>) => void; onEdit: () => void; title?: string; showProfile?: boolean }) {

@@ -676,6 +676,9 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const cyc = { type: "activateAbility" as const, objectId: "h_an", abilityIndex: 1, targets: [] };
     const v = (hand: { objectId: string; cardId: string }[], lands: number, turn: number) => ({ ...mkView({ step: "MAIN1", activePlayer: 0, hand: [{ objectId: "h_an", cardId: "angel_of_the_ruins" }, ...hand], battlefield: Array.from({ length: lands }, (_, i) => ({ id: `p${i}`, cardId: "plains", controller: 0 as const })) }), turn });
     expect(a.plainscyclingGated(v([{ objectId: "h_z", cardId: "zombify" }], 4, 5), cyc)).toBe(false); // a reanimator in hand: cycle
+    // S37 Part 3: the reanimator must be able to RETURN a seven-drop — Unearth's ceiling (≤ 3) does not count.
+    expect(a.plainscyclingGated(v([{ objectId: "h_u", cardId: "unearth" }], 6, 6), cyc)).toBe(true); // Unearth cannot return the Angel: hold it
+    expect(a.plainscyclingGated(v([{ objectId: "h_u", cardId: "unearth" }, { objectId: "h_z", cardId: "zombify" }], 6, 6), cyc)).toBe(false); // the Zombify beside it can
     expect(a.plainscyclingGated(v([], 2, 2), cyc)).toBe(false); // two lands on turn two: cycle
     expect(a.plainscyclingGated(v([], 6, 6), cyc)).toBe(true); // six lands, no reanimator: hold the Angel
     // The ETB's target choice.

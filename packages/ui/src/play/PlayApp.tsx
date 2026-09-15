@@ -1,13 +1,13 @@
 import { useMemo, useState } from "react";
 import type { PlayerId } from "@shandalar/engine";
 import type { Difficulty } from "@shandalar/agents";
-import { DECKS, DECK_ARCHETYPES, type DeckKey } from "@shandalar/sim/decks";
-import { EXPANSION_DECKS } from "@shandalar/sim/expansion-decks";
+import type { CardDef } from "@shandalar/cards";
 import { HEART_DECK } from "@shandalar/sim/heart-deck";
-import { MAGE_DECKS } from "@shandalar/sim/mage-decks";
 import { ROAD_DECKS } from "@shandalar/sim/road-decks";
 import { heartRootModifiers } from "@shandalar/world";
 import { devMenuEnabled } from "../dev";
+import type { LabDeck } from "../lab/lab-decks";
+import { PLAY_GROUPS, playRoster } from "./play-roster";
 import { DevSetup, type DevMatch } from "./DevSetup";
 import { loadOracle, loadPool, type OracleEntry, type SavedGame } from "../engine-bridge";
 import { MatchController } from "./match-controller";
@@ -21,19 +21,18 @@ import { cardName } from "../labels";
  */
 
 /** S18: /play offers the slice decks A–E and the beast decks (beast:<key>) so the S17 cards
- * (Channeler, Bouncer, Grenade …) can be played by hand in the director round. */
-type PlayDeck = DeckKey | `beast:${string}` | `mage:${string}`;
-// S29 (ADR-099; Chris): the slice decks A–E retired from the player-facing picker — the fifteen mages
-// and the beasts are the world's decks; A–E stay as sim/test infrastructure.
-const PLAY_DECKS: { key: PlayDeck; label: string }[] = [
-  ...Object.entries(MAGE_DECKS).map(([k, v]) => ({ key: `mage:${k}` as PlayDeck, label: `${v.name} (${v.colors} ${v.tier}) — ${v.epithet}` })),
-  ...Object.entries(EXPANSION_DECKS).map(([k, v]) => ({ key: `beast:${k}` as PlayDeck, label: `${v.name} (${v.color} ${v.tier})` })),
-];
-function playDeck(key: PlayDeck): { name: string; decklist: { cardId: string; count: number }[]; archetype: "aggro" | "midrange" | "control" } {
-  if (key.startsWith("mage:")) { const m = MAGE_DECKS[key.slice(5)]!; return { name: m.name, decklist: m.decklist.map((e) => ({ ...e })), archetype: m.archetype }; }
-  if (key.startsWith("beast:")) { const b = EXPANSION_DECKS[key.slice(6)]!; return { name: b.name, decklist: b.decklist.map((e) => ({ ...e })), archetype: b.archetype }; }
-  const k = key as DeckKey;
-  return { name: DECKS[k].name, decklist: DECKS[k].decklist.map((e) => ({ ...e })), archetype: DECK_ARCHETYPES[k] };
+ * (Channeler, Bouncer, Grenade …) can be played by hand in the director round.
+ * S29 (ADR-099; Chris): the slice decks A–E retired from the player-facing picker — the fifteen mages
+ * and the beasts are the world's decks; A–E stay as sim/test infrastructure.
+ * S37 (ADR-123; Chris): the production picker reads the Lab's catalogue — the mages, the beasts, the
+ * bosses and the world save's SAVED DECKS — behind the gallery's unlock rule: a deck is offered only when
+ * every prizeOnly card in it has been met in a duel or is owned (`?all=1` is the deploy's bypass, as in
+ * the gallery). The saved decks pass by construction (their cards are owned). */
+type PlayDeck = string;
+function playDeck(roster: LabDeck[], key: PlayDeck): { name: string; decklist: { cardId: string; count: number }[]; archetype: "aggro" | "midrange" | "control"; portrait?: string } {
+  const d = roster.find((x) => x.key === key) ?? roster.find((x) => x.group === "mages") ?? roster[0];
+  if (!d) throw new Error("no deck to play");
+  return { name: d.name, decklist: d.decklist.map((e) => ({ ...e })), archetype: d.archetype, ...(d.portrait ? { portrait: d.portrait } : {}) };
 }
 
 interface Setup {
@@ -51,20 +50,30 @@ const HEART_LIVES = [35, 40, 45];
 
 const DIFFICULTIES: Difficulty[] = ["apprentice", "journeyman", "master"];
 
-function DeckPicker({ label, value, onChange }: { label: string; value: PlayDeck; onChange: (d: PlayDeck) => void }) {
+function DeckPicker({ label, value, roster, onChange }: { label: string; value: PlayDeck; roster: LabDeck[]; onChange: (d: PlayDeck) => void }) {
   return (
     <div className="deck-picker">
       <div className="flyout-title">{label}</div>
-      {PLAY_DECKS.map(({ key, label: text }, i) => (
-        <label key={key} className={value === key ? "picked" : ""} style={i === 15 ? { marginTop: 6, borderTop: "1px solid var(--ink-soft)", paddingTop: 4 } : undefined}>
-          <input type="radio" checked={value === key} onChange={() => onChange(key)} /> {text}
-        </label>
-      ))}
+      {PLAY_GROUPS.map(({ group, title }) => {
+        const decks = roster.filter((d) => d.group === group);
+        if (decks.length === 0) return null;
+        return (
+          <div key={group} style={{ marginTop: 6, borderTop: "1px solid var(--ink-soft)", paddingTop: 4 }}>
+            <div style={{ fontSize: 11, color: "var(--ink-soft)" }}>{title}</div>
+            {decks.map((d) => (
+              <label key={d.key} className={value === d.key ? "picked" : ""} title={d.label}>
+                <input type="radio" checked={value === d.key} onChange={() => onChange(d.key)} /> {d.label}
+              </label>
+            ))}
+          </div>
+        );
+      })}
     </div>
   );
 }
 
-function SetupScreen({ onStart }: { onStart: (s: Setup) => void }) {
+function SetupScreen({ pool, onStart }: { pool: Map<string, CardDef>; onStart: (s: Setup, roster: LabDeck[]) => void }) {
+  const roster = useMemo(() => playRoster(pool, { revealAll: new URLSearchParams(window.location.search).get("all") === "1" }), [pool]);
   const [setup, setSetup] = useState<Setup>({
     humanDeck: "mage:brann" as PlayDeck,
     aiDeck: "mage:edric" as PlayDeck,
@@ -77,8 +86,8 @@ function SetupScreen({ onStart }: { onStart: (s: Setup) => void }) {
       <div className="box play-setup">
         <h2 style={{ fontFamily: "var(--serif)", marginTop: 0 }}>New Match</h2>
         <div style={{ display: "flex", gap: 24, textAlign: "left", justifyContent: "center" }}>
-          <DeckPicker label="Your deck" value={setup.humanDeck} onChange={(d) => setSetup({ ...setup, humanDeck: d })} />
-          <DeckPicker label="Opponent deck" value={setup.aiDeck} onChange={(d) => setSetup({ ...setup, aiDeck: d })} />
+          <DeckPicker label="Your deck" value={setup.humanDeck} roster={roster} onChange={(d) => setSetup({ ...setup, humanDeck: d })} />
+          <DeckPicker label="Opponent deck" value={setup.aiDeck} roster={roster} onChange={(d) => setSetup({ ...setup, aiDeck: d })} />
           <div className="deck-picker">
             <div className="flyout-title">Opponent</div>
             {DIFFICULTIES.map((d) => (
@@ -126,7 +135,7 @@ function SetupScreen({ onStart }: { onStart: (s: Setup) => void }) {
           </div>
         </div>
         <p>
-          <button className="primary" onClick={() => onStart(setup)}>Start match</button>{" "}
+          <button className="primary" onClick={() => onStart(setup, roster)}>Start match</button>{" "}
           <a className="linkish" href="/">⟵ main menu</a>
         </p>
       </div>
@@ -201,7 +210,7 @@ export function PlayApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =>
   const [oracle, setOracle] = useState<Record<string, OracleEntry>>({});
   const [screen, setScreen] = useState<"setup" | "match" | "end">("setup");
   const [controller, setController] = useState<MatchController | null>(null);
-  const [lastSetup, setLastSetup] = useState<Setup | null>(null);
+  const [lastSetup, setLastSetup] = useState<{ setup: Setup; roster: LabDeck[] } | null>(null);
 
   useMemo(() => {
     loadOracle().then(setOracle);
@@ -222,9 +231,9 @@ export function PlayApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =>
     setScreen("match");
     void c.start();
   };
-  const begin = (setup: Setup, seedOverride?: number) => {
+  const begin = (setup: Setup, roster: LabDeck[], seedOverride?: number) => {
     const seed = seedOverride ?? (setup.seed.trim() !== "" ? Number(setup.seed) : undefined);
-    const human = playDeck(setup.humanDeck), enemy = playDeck(setup.aiDeck);
+    const human = playDeck(roster, setup.humanDeck), enemy = playDeck(roster, setup.aiDeck);
     const road = setup.heart ? ROAD_DECKS[setup.heart.road] : undefined;
     const me = setup.humanSeat, them = (1 - setup.humanSeat) as PlayerId;
     // S28 (Chris, dev-only): the Heart as a single battle — the road deck's basics and world life on
@@ -246,18 +255,18 @@ export function PlayApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =>
     const c = new MatchController(pool, {
       humanSeat: setup.humanSeat,
       // S18: always the explicit-spec path so beast decks and slice decks mix freely (rules as the old slice-deck form: 20 life, no ante).
-      custom: heartCustom ?? { human: { name: "You", decklist: human.decklist }, enemy: { name: enemy.name, decklist: enemy.decklist, difficulty: setup.difficulty, archetype: enemy.archetype }, rules: { startingLife: 20, ante: 0 }, modifiers: [] },
+      custom: heartCustom ?? { human: { name: `You · ${human.name}`, decklist: human.decklist }, enemy: { name: enemy.name, decklist: enemy.decklist, difficulty: setup.difficulty, archetype: enemy.archetype, ...(enemy.portrait ? { portrait: enemy.portrait } : {}) }, rules: { startingLife: 20, ante: 0 }, modifiers: [] },
       ...(seed !== undefined && Number.isFinite(seed) ? { seed } : {}),
       aiDelayMs: Number(localStorage.getItem("shandalar-ai-delay") ?? 400),
     });
     c.stops = loadStops();
-    setLastSetup(setup);
+    setLastSetup({ setup, roster });
     setController(c);
     setScreen("match");
     void c.start();
   };
 
-  if (screen === "setup" || !controller) return devMenuEnabled() ? <DevSetup pool={pool} onStart={beginDev} /> : <SetupScreen onStart={begin} />;
+  if (screen === "setup" || !controller) return devMenuEnabled() ? <DevSetup pool={pool} onStart={beginDev} /> : <SetupScreen pool={pool} onStart={(s, r) => begin(s, r)} />;
   if (screen === "match") {
     return (
       <PlayMatch
@@ -272,7 +281,7 @@ export function PlayApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =>
     <EndScreen
       c={controller}
       pool={pool}
-      onRematch={() => (lastDev ? beginDev(lastDev, controller.seed) : lastSetup && begin(lastSetup, controller.seed))}
+      onRematch={() => (lastDev ? beginDev(lastDev, controller.seed) : lastSetup && begin(lastSetup.setup, lastSetup.roster, controller.seed))}
       onNew={() => setScreen("setup")}
       onWatch={() => onWatchReplay(JSON.parse(controller.savedGame()) as SavedGame)}
     />

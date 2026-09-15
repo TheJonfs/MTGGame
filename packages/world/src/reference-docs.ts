@@ -6,6 +6,7 @@
  * `pnpm reference` writes docs/reference/*.md; a sync test pins the files to the renderers (the
  * knobs.md precedent, principle 11).
  */
+import { describeDeckRule } from "./legality.js";
 import { resolveMatchup } from "./matchup.js";
 import type { CardDef } from "@shandalar/cards";
 import { manaValue, parseManaCost } from "@shandalar/cards";
@@ -118,7 +119,7 @@ Mages roam anywhere; beasts are spoke-bound (their colour's ring). Tier 1 rolls 
   for (const o of ops) {
     const d = enemyDeck(catalog, o.deck);
     const s = deckLines(d.decklist, pool);
-    const notes = [o.epithet ? o.epithet : "", o.buyable === false ? "not buyable" : "", o.knobs ? `knobs ${JSON.stringify(o.knobs)}` : "", o.worldLifeOffset ? `worldLifeOffset ${o.worldLifeOffset}` : ""].filter(Boolean).join("; ");
+    const notes = [o.epithet ? o.epithet : "", o.buyable === false ? "not buyable" : "", o.knobs ? `knobs ${JSON.stringify(o.knobs)}` : "", o.worldLifeOffset ? `worldLifeOffset ${o.worldLifeOffset}` : "", o.deckRule ? `door: ${o.deckRule.label} (${describeDeckRule(o.deckRule)})` : ""].filter(Boolean).join("; ");
     // S34: the resolver's cell at each mode (the same call the world makes).
     const m = { easy: resolveMatchup(o, easy), standard: resolveMatchup(o, std), hard: resolveMatchup(o, hard) };
     out.push(`| ${o.name} | ${o.kind ?? "mage"} | ${o.tier} | ${o.spoke ?? "—"} | ${m.easy.life} / **${m.standard.life}** / ${m.hard.life} | ${m.easy.entrance.length} / **${m.standard.entrance.length}** / ${m.hard.entrance.length}${m.standard.entrance.length ? ` (${m.standard.entrance.join(", ")})` : ""} | ${o.difficulty} | ${o.deck} (${d.archetype}) | ${s.total} / ${s.lands} / ${s.avgMv} / ${s.colours} | ${notes} |`);

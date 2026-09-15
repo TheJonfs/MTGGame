@@ -10,6 +10,7 @@ export * from "./shop.js";
 export * from "./quests.js";
 export * from "./dungeon.js";
 export * from "./deck-edit.js";
+export * from "./legality.js";
 export * from "./siege.js";
 export * from "./stronghold.js";
 export * from "./powers.js";

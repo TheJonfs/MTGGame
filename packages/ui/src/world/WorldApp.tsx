@@ -308,6 +308,8 @@ function ParleyPanel({ c }: { c: WorldController }) {
   // S18: parley voice from the catalog (verb/line/refusal), defaults by kind (ADR-066).
   const voice = tmpl.parley ?? {};
   const verb = voice.verb ?? (beast ? "Distract" : "Buy off");
+  // S37 (ADR-123): a door-ruled template — the gate's refusal stands above the options; Fight is shut.
+  const door = c.doorRefusal();
   return (
     <div className="gallery-modal">
       <div className="gallery-modal-box play-dialog parley">
@@ -327,8 +329,9 @@ function ParleyPanel({ c }: { c: WorldController }) {
           </div>
         </div>
         {voice.line && <p className="parley-voice">{voice.line}</p>}
+        {door && <p className="parley-voice door-shut">{door}</p>}
         <div className="parley-options">
-          <button className="primary" onClick={() => c.parley("fight")}>
+          <button className="primary" disabled={!!door} title={door ?? ""} onClick={() => c.parley("fight")}>
             Fight
             <small>Duel at your world life ({c.world!.player.worldLife}). Win: their stake + gold. Lose: your stake and 1 world life.</small>
           </button>
@@ -1421,8 +1424,8 @@ function EditorScreen({ c, pool, oracle }: { c: WorldController; pool: Map<strin
         <button className="linkish" title="delete a non-active deck" disabled={c.deckNames().length < 2} onClick={() => setOp({ kind: "delete", value: c.deckNames().find((n) => n !== w.activeDeckName) ?? "" })}>delete</button>
         <input type="text" value={name} onChange={(e) => c.editorRename(e.target.value)} style={{ width: 140 }} title="deck name (saved with the deck)" />
         {dirty && <span className="draft-dirty" title="unsaved changes to this deck">unsaved</span>}
-        <span className={legality.ok ? "legal" : "illegal"} style={{ fontSize: 12 }}>
-          {stats.size} cards · {stats.lands} lands · {legality.ok ? "legal" : legality.reason}
+        <span className={legality.ok ? "legal" : "illegal"} style={{ fontSize: 12 }} title={legality.ok ? "the floor, the cap and ownership hold" : legality.problems.join("; ")}>
+          {stats.size} cards · {stats.lands} lands · avg MV {stats.avgMv.toFixed(2)} · {legality.ok ? "legal" : `${legality.problems.length} problem${legality.problems.length === 1 ? "" : "s"}`}
         </span>
         <span className="curve" title="mana curve (nonland, by mana value; last bar 7+)">
           {stats.curve.map((n, i) => (
@@ -1442,7 +1445,7 @@ function EditorScreen({ c, pool, oracle }: { c: WorldController; pool: Map<strin
           <option value="cost">by cost</option><option value="name">by name</option><option value="colour">by colour</option>
         </select>
         <button className="linkish" onClick={() => setPrinted(!printed)}>{printed ? "our frame" : "printed card"}</button>
-        <button className="primary" disabled={!legality.ok} title={legality.ok ? "save this deck" : legality.reason} onClick={() => c.editorSave()}>Save deck</button>
+        <button className="primary" disabled={!legality.ok} title={legality.ok ? "save this deck" : legality.problems.join("; ")} onClick={() => c.editorSave()}>Save deck</button>
         <button onClick={() => c.editorReset()} title="discard draft changes (back to the saved deck)">Reset</button>
         <button onClick={() => c.editorClose()}>Cancel</button>
       </div>
@@ -1475,6 +1478,28 @@ function EditorScreen({ c, pool, oracle }: { c: WorldController; pool: Map<strin
       )}
       <FloatingCardInspector def={inspect ? pool.get(inspect) ?? null : null} oracle={oracle} printed={printed} onTogglePrinted={() => setPrinted(!printed)} />
       {notice && <div style={{ color: "var(--danger)", fontSize: 12, padding: "0 6px 6px" }}>{notice}</div>}
+      {/* S37 (ADR-123): the legality panel — every problem as a sentence, live; and the door the draft is
+          checked against (a template's deckRule: the label, the rule, its verdict). A door never blocks Save. */}
+      {(() => {
+        const doors = c.doorRules();
+        const rule = c.editorRuleCheck();
+        if (legality.ok && doors.length === 0) return null;
+        return (
+          <div className="editor-legality">
+            {!legality.ok && <ul className="illegal">{legality.problems.map((p, i) => <li key={i}>{p}</li>)}</ul>}
+            {doors.length > 0 && (
+              <div className="editor-door">
+                <label>check against a door: <select value={c.editorRuleId ?? ""} onChange={(e) => c.setEditorRule(e.target.value || null)}>
+                  <option value="">none</option>
+                  {doors.map((d) => <option key={d.id} value={d.id}>{d.name} — {d.label}</option>)}
+                </select></label>
+                {rule && <span className={rule.check.ok ? "legal" : "door-shut"}>{rule.label} ({rule.description}): {rule.check.ok ? "the gate opens" : "the gate is shut"}</span>}
+                {rule && !rule.check.ok && <ul className="door-shut">{rule.check.problems.map((p, i) => <li key={i}>{p}</li>)}</ul>}
+              </div>
+            )}
+          </div>
+        );
+      })()}
       <div className="editor-panes">
         <div className="editor-pane">
           <div className="flyout-title">Spares — click to add ({spareIds.reduce((n, id) => n + (sp[id] ?? 0), 0)} owned, not in deck)</div>

@@ -1284,7 +1284,19 @@ export class HeuristicAgent implements Agent {
     if (!ab || ab.kind !== "activated" || !ab.effects.some((e) => e.type === "searchLibrary")) return false;
     if (this.cardIsDead(view, action)) return false;
     const me = view.you;
-    const reanimator = view.hand.some((c) => (this.def(c.cardId)?.spellEffect ?? []).some((e) => e.type === "returnFromGraveyard" && e.to === "battlefield"));
+    // S37: the reanimator must be able to RETURN the cycled card — a target ceiling (Unearth ≤ 3) below the
+    // Angel's own mana value does not count (Zombify, any, does).
+    const own = this.def(view.hand.find((c) => c.objectId === action.objectId)?.cardId ?? "");
+    const ownMv = own ? manaValue(parseManaCost(own.manaCost)) : 0;
+    const reanimator = view.hand.some((c) => {
+      const d = this.def(c.cardId);
+      if (!d) return false;
+      return (d.spellEffect ?? []).some((e) => {
+        if (e.type !== "returnFromGraveyard" || e.to !== "battlefield") return false;
+        const ceiling = typeof e.target === "number" ? d.targets?.[e.target]?.manaValueAtMost : undefined;
+        return ceiling === undefined || ceiling >= ownMv;
+      });
+    });
     const lands = view.battlefield.filter((o) => o.controller === me && (this.def(o.cardId)?.types ?? []).includes("Land")).length + view.hand.filter((c) => this.def(c.cardId)?.types.includes("Land")).length;
     return !(reanimator || (view.turn <= 3 && lands < 5));
   }

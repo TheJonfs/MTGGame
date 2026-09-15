@@ -1,5 +1,5 @@
 import type { Catalog, Color, RegionTemplate } from "./catalog.js";
-import { defaultKnobs, type KnobValues, type RegionTier } from "./knobs.js";
+import { defaultKnobs, KNOBS, type KnobValues, type RegionTier } from "./knobs.js";
 import { exploredNone, findPath, idx, inBounds, manhattan, markExplored, placeCentreDoors, reachable, samePoint, type FixedPoint, type Point, type RegionInstance, type Town, type WorldMap } from "./map.js";
 import { WorldRng } from "./rng.js";
 
@@ -57,12 +57,21 @@ export interface GeneratedWorld {
   explored: number[];
 }
 
-/** Encounter tables by region tier: which enemy tiers show up, weighted. */
-export const TIER_TABLES: Record<string, (1 | 2 | 3)[]> = {
-  civilized: [1, 1, 1, 2],
-  approach: [2, 2, 3, 1],
-  wild: [3, 3, 2],
-};
+/** S37: the mage tier roll — `mageSpawnWeight` by ring, ramped for the step count. The layout (tiers by
+ * weight descending, ties by tier descending, one draw) reproduces the S18 tables (civilized [1,1,1,2],
+ * approach [2,2,3,1], wild [3,3,2]) exactly at the defaults — spawn-pin.test.ts holds the S36 fingerprints. */
+export function rollMageTier(rng: WorldRng, knobs: Pick<KnobValues, "mageSpawnWeight" | "mageSpawnRamp">, tier: RegionInstance["tier"], stepsTaken = 0): 1 | 2 | 3 {
+  const base = knobs.mageSpawnWeight[tier] ?? [1, 0, 0];
+  const ramp = stepsTaken > 0 && knobs.mageSpawnRamp !== 1 ? Math.pow(knobs.mageSpawnRamp, stepsTaken / 100) : 1;
+  const w: { t: 1 | 2 | 3; w: number }[] = ([{ t: 1, w: base[0] }, { t: 2, w: base[1] * ramp }, { t: 3, w: base[2] * ramp }] as { t: 1 | 2 | 3; w: number }[]).filter((x) => x.w > 0);
+  if (w.length === 0) return 1;
+  w.sort((a, b) => b.w - a.w || b.t - a.t);
+  const total = w.reduce((n, x) => n + x.w, 0);
+  const f = rng.float() * total;
+  let acc = 0;
+  for (const x of w) { acc += x.w; if (f < acc) return x.t; }
+  return w[w.length - 1]!.t;
+}
 
 export const SPOKE_COLORS: Exclude<Color, "C">[] = ["W", "U", "B", "R", "G"];
 const TIERS: RegionTier[] = ["civilized", "approach", "wild"];
@@ -116,9 +125,8 @@ export function roamerTarget(map: WorldMap, region: RegionInstance, knobs: KnobV
 }
 
 /** Mage roll: a region's tier table (TIER_TABLES) over the mage roster (any colour roams anywhere). */
-export function rollMage(rng: WorldRng, catalog: Catalog, tier: RegionInstance["tier"], forceTier?: 1 | 2 | 3): Catalog["opponents"][number] {
-  const table = TIER_TABLES[tier] ?? [1];
-  const t = forceTier ?? rng.pick(table);
+export function rollMage(rng: WorldRng, catalog: Catalog, tier: RegionInstance["tier"], forceTier?: 1 | 2 | 3, spawn: { knobs: Pick<KnobValues, "mageSpawnWeight" | "mageSpawnRamp">; stepsTaken: number } = { knobs: { mageSpawnWeight: KNOBS.mageSpawnWeight.default, mageSpawnRamp: KNOBS.mageSpawnRamp.default }, stepsTaken: 0 }): Catalog["opponents"][number] {
+  const t = forceTier ?? rollMageTier(rng, spawn.knobs, tier, spawn.stepsTaken);
   // Spoke-bound signature opponents (beasts, the Tactician) never roll here — they come from rollBeast.
   const pool = catalog.opponents.filter((o) => o.tier === t && o.kind !== "beast" && !o.spoke);
   const fallback = pool.length ? pool : catalog.opponents.filter((o) => o.kind !== "beast" && !o.spoke);
@@ -151,13 +159,13 @@ export function rollBeast(rng: WorldRng, catalog: Catalog, region: { tier: Regio
 
 /** S18 spawn table: beast (spoke-bound, tier blend by ring) with probability beastShare[tier], else a mage.
  * One template per roamer (generation and respawn share this). */
-export function rollTemplate(rng: WorldRng, catalog: Catalog, region: { tier: RegionInstance["tier"]; color: string }, knobs: KnobValues): Catalog["opponents"][number] {
+export function rollTemplate(rng: WorldRng, catalog: Catalog, region: { tier: RegionInstance["tier"]; color: string }, knobs: KnobValues, stepsTaken = 0): Catalog["opponents"][number] {
   const share = knobs.beastShare[region.tier] ?? 0;
   if (share > 0 && rng.chance(share)) {
     const beast = rollBeast(rng, catalog, region, knobs);
     if (beast) return beast;
   }
-  return rollMage(rng, catalog, region.tier);
+  return rollMage(rng, catalog, region.tier, undefined, { knobs, stepsTaken });
 }
 
 /** Give every position-less roamer a seeded in-region cell (new worlds and

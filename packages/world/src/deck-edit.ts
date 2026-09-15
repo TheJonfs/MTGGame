@@ -1,6 +1,8 @@
 import { cardColors, manaValue, parseManaCost, type CardDef } from "@shandalar/cards";
-import { deckLegal } from "./journey.js";
+import { BASIC_LANDS, COPY_CAP, checkDeck, isBasic } from "./legality.js";
 import { activeDeck, deckSize, type Collection, type Decklist, type WorldState } from "./state.js";
+
+export { BASIC_LANDS, isBasic };
 
 /**
  * Deck editing (S14 Part 2): the collection is cardId → count, the active
@@ -10,9 +12,6 @@ import { activeDeck, deckSize, type Collection, type Decklist, type WorldState }
  * (you may be mid-edit) but the editor cannot SAVE an illegal deck (ADR-065):
  * the UI keeps a draft and commits only via `commitDeck`.
  */
-
-export const BASIC_LANDS = ["plains", "island", "swamp", "mountain", "forest"] as const;
-export const isBasic = (cardId: string) => (BASIC_LANDS as readonly string[]).includes(cardId);
 
 export function deckCount(deck: Decklist, cardId: string): number {
   return deck.find((e) => e.cardId === cardId)?.count ?? 0;
@@ -37,7 +36,7 @@ export function addCopy(collection: Collection, deck: Decklist, cardId: string):
   if (!isBasic(cardId)) {
     const free = (collection[cardId] ?? 0) - deckCount(deck, cardId);
     if (free <= 0) return { ok: false, reason: "no spare copy owned" };
-    if (deckCount(deck, cardId) >= 4) return { ok: false, reason: "4-copy cap" };
+    if (deckCount(deck, cardId) >= COPY_CAP) return { ok: false, reason: `${COPY_CAP}-copy cap` };
   }
   const e = next.find((x) => x.cardId === cardId);
   if (e) e.count += 1;
@@ -57,14 +56,9 @@ export function removeCopy(deck: Decklist, cardId: string): EditResult {
 
 /** Commit a draft: legal decks only (ADR-065). Mutates world. */
 export function commitDeck(world: WorldState, draft: Decklist, name?: string): EditResult {
-  const legal = deckLegal(draft);
-  if (!legal.ok) return { ok: false, reason: legal.reason ?? "illegal deck" };
-  // Every non-basic copy must be owned.
-  for (const e of draft) {
-    if (!isBasic(e.cardId) && (world.player.collection[e.cardId] ?? 0) < e.count) {
-      return { ok: false, reason: `${e.cardId}: deck has ${e.count}, you own ${world.player.collection[e.cardId] ?? 0}` };
-    }
-  }
+  // S37: one check — the floor, the cap and ownership (every non-basic copy must be owned).
+  const check = checkDeck(draft, world.player.collection);
+  if (!check.ok) return { ok: false, reason: check.problems.join("; ") };
   world.decks[world.activeDeckName] = draft.map((e) => ({ ...e }));
   // Basics are free: the collection's basic counts track the deck's for bookkeeping.
   for (const b of BASIC_LANDS) {
@@ -136,13 +130,8 @@ export function renameDeck(world: WorldState, from: string, to: string): DeckOp 
 export function switchDeck(world: WorldState, name: string): DeckOp {
   const deck = world.decks[name];
   if (!deck) return { ok: false, reason: `no deck "${name}"` };
-  const legal = deckLegal(deck);
-  if (!legal.ok) return { ok: false, reason: legal.reason ?? "illegal deck" };
-  for (const e of deck) {
-    if (!isBasic(e.cardId) && (world.player.collection[e.cardId] ?? 0) < e.count) {
-      return { ok: false, reason: `${e.cardId}: deck lists ${e.count}, you own ${world.player.collection[e.cardId] ?? 0} — edit it first` };
-    }
-  }
+  const check = checkDeck(deck, world.player.collection);
+  if (!check.ok) return { ok: false, reason: `${check.problems.join("; ")} — edit it first` };
   world.activeDeckName = name;
   return { ok: true };
 }
@@ -152,24 +141,28 @@ export function deckStats(pool: Map<string, CardDef>, deck: Decklist): {
   size: number;
   lands: number;
   curve: number[]; // index = mana value (0..7+, last bucket = 7+), nonland only
+  /** S37: the average mana value of the nonland cards (the Lab's stat, on the world editor too). */
+  avgMv: number;
   colors: Record<string, number>;
   types: Record<string, number>;
 } {
   const curve = new Array(8).fill(0);
   const colors: Record<string, number> = {};
   const types: Record<string, number> = {};
-  let lands = 0;
+  let lands = 0, mvSum = 0, nonland = 0;
   for (const e of deck) {
     const def = pool.get(e.cardId);
     if (!def) continue;
     if (def.types.includes("Land")) {
       lands += e.count;
     } else {
-      const mv = Math.min(7, manaValue(parseManaCost(def.manaCost)));
-      curve[mv] += e.count;
+      const full = manaValue(parseManaCost(def.manaCost));
+      curve[Math.min(7, full)] += e.count;
+      mvSum += full * e.count;
+      nonland += e.count;
     }
     for (const c of cardColors(def)) colors[c] = (colors[c] ?? 0) + e.count;
     for (const t of def.types) types[t] = (types[t] ?? 0) + e.count;
   }
-  return { size: deckSize(deck), lands, curve, colors, types };
+  return { size: deckSize(deck), lands, curve, avgMv: nonland ? mvSum / nonland : 0, colors, types };
 }

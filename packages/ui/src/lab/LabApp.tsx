@@ -9,7 +9,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CardDef } from "@shandalar/cards";
 import { loadPool } from "../engine-bridge";
-import { customAsLabDeck, deckStats, entranceBasics, labDecks, manaValue, resolveSide, type Archetype, type CustomDeck, type Decklist, type LabDeck, type LabMode, type Profile } from "./lab-decks";
+import { customAsLabDeck, deckStats, entranceBasics, labDecks, manaValue, resolveSide, type Archetype, type CustomDeck, type Decklist, type LabDeck, type LabMode, type Profile, savedWorldDecks } from "./lab-decks";
 import type { LabBonus, LabCell, LabJob, LabSide, ResolvedSide } from "./lab-types";
 import { LabWorkerPool, type PoolStatus } from "./lab-pool";
 import { BonusEditor, DeckEditor, PROFILES, SidePanel, sideFromDeck } from "./lab-panels";
@@ -69,7 +69,8 @@ export function LabApp() {
   const [labMode, setLabMode] = useState<LabMode>("standard");
   const baseDecks = useMemo(() => labDecks(labMode), [labMode]);
   const [customs, setCustoms] = useState<CustomDeck[]>([]);
-  const decks = useMemo(() => [...baseDecks, ...customs.map(customAsLabDeck)], [baseDecks, customs]);
+  const worldDecks = useMemo(() => savedWorldDecks(), []); // S37: the world save's decks, rows and picks alike
+  const decks = useMemo(() => [...baseDecks, ...worldDecks, ...customs.map(customAsLabDeck)], [baseDecks, worldDecks, customs]);
   const byKey = useMemo(() => new Map(decks.map((d) => [d.key, d])), [decks]);
   // Round three (Chris: grids ended with cells never run — a worker that fails to load loses its job
   // silently): a pool with a ready handshake, error replacement and a stall watchdog; four workers by
@@ -401,7 +402,7 @@ function RosterView({ roster, setRoster, decks, byKey, cols, cells, running, onR
         <div className="panel" style={{ padding: 10, minWidth: 360 }}>
           <div style={{ fontFamily: "var(--serif)", fontSize: 15, marginBottom: 6 }}>Rows — the decks whose win rate is read</div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "2px 10px", fontSize: 12, maxHeight: 130, overflow: "auto" }}>
-            {decks.filter((d) => d.group !== "custom" || true).filter((d) => ["starters", "roads", "custom", "slices"].includes(d.group)).map((d) => (
+            {decks.filter((d) => d.group !== "custom" || true).filter((d) => ["starters", "saved", "roads", "custom", "slices"].includes(d.group)).map((d) => (
               <label key={d.key} style={{ whiteSpace: "nowrap" }}><input type="checkbox" checked={roster.rows.includes(d.key)} onChange={(e) => setRoster({ ...roster, rows: e.target.checked ? [...roster.rows, d.key] : roster.rows.filter((k) => k !== d.key) })} /> {d.name}</label>
             ))}
           </div>
