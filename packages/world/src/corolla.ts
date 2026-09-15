@@ -31,6 +31,7 @@ import { manalinkModifiers } from "./quests.js";
 import { shopPrice, type ShopItem } from "./shop.js";
 import { findPath, idx, manhattan, samePoint, type FixedPoint, type Point, type Town, type WorldMap } from "./map.js";
 import type { KnobValues } from "./knobs.js";
+import { validateDeckRule, type DeckRule } from "./legality.js";
 import type { Catalog } from "./catalog.js";
 import type { WorldRng } from "./rng.js";
 
@@ -46,6 +47,8 @@ export interface CorollaPetalDef {
   /** The still-pair signature (sole-mechanism drop) and the pair's two duals (one copy each). */
   signature: string;
   duals: [string, string];
+  /** S38 (ADR-125): the court's door — a deck rule the tip's telegraph checks (phase two's shape gates). None shipped. */
+  deckRule?: DeckRule;
 }
 export interface CorollaDef {
   name: string;
@@ -70,6 +73,7 @@ export function validateCorollaDef(def: CorollaDef | undefined): string[] {
   for (const p of def.petals ?? []) {
     if (!p.boss?.key || !p.boss?.name || !p.boss?.portrait) errors.push(`corolla petal ${p.color}: boss key/name/portrait required`);
     if (!p.signature || !Array.isArray(p.duals) || p.duals.length !== 2) errors.push(`corolla petal ${p.color}: signature + two duals required`);
+    if (p.deckRule !== undefined) errors.push(...validateDeckRule(p.deckRule, `corolla petal ${p.color}`)); // S38
   }
   if (def.heart && (!def.heart.name || !def.heart.boss?.name || !def.heart.boss?.portrait || !def.heart.boss?.cardId)) errors.push("corolla.heart: name + boss name/portrait/cardId required");
   return errors;
@@ -550,6 +554,11 @@ export function heartRootModifiers(player: 0 | 1 = 1): { type: "permanentOnBattl
  * (the Manafleur in hand turn one) AND the roots (ADR-096: the five basics in play — WUBRG on the
  * table, a turn-one flower), ZERO ante, the default law sequence (the WBRUG ring). The player fights
  * at world life; manalinks apply. World-kind: nothing is escrowed. */
+/** S38 (design §7): does this world's Heart accumulate its laws? The knob, or any world past phase one. */
+export function heartLawsPersist(world: Pick<WorldState, "phase">, knobs: Pick<KnobValues, "heartLawsPersist">): boolean {
+  return knobs.heartLawsPersist || (world.phase ?? 1) >= 2;
+}
+
 export function heartDuelSpec(world: WorldState, catalog: Catalog, knobs: KnobValues, def: CorollaDef, enemy: PetalEnemy, rng: WorldRng): { spec: MatchSpec; enemyName: string; enemyLife: number } {
   const legal = deckLegal(activeDeck(world));
   if (!legal.ok) throw new Error(`cannot face the Heart: ${legal.reason}`);
@@ -567,7 +576,8 @@ export function heartDuelSpec(world: WorldState, catalog: Catalog, knobs: KnobVa
       { type: "startingLife", player: 1, value: enemyLife },
       { type: "signatureToHand", player: 1, cardId: heart.boss.cardId },
       ...heartRootModifiers(1),
-      { type: "lawSequence" },
+      // S38 (design §7): the accumulating ring — the knob, or any phase-two world (its Heart is the flood's).
+      { type: "lawSequence", ...(heartLawsPersist(world, knobs) ? { mode: "accumulate" as const } : {}) },
       ...manalinkModifiers(world),
     ],
   };

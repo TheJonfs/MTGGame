@@ -9,7 +9,7 @@
  * shape. The Corolla (heartLife, the petals, the roots) does not go through here.
  */
 import type { Modifier } from "@shandalar/engine";
-import type { EnemyTier, KnobValues } from "./knobs.js";
+import { tierTablesFor, type EnemyTier, type KnobValues, type Phase } from "./knobs.js";
 import type { OpponentTemplate, Difficulty } from "./catalog.js";
 import type { Legacy } from "./corolla.js";
 import { MAGE_DECKS } from "@shandalar/sim/mage-decks";
@@ -41,13 +41,16 @@ export function entranceFor(deck: string, count: number): string[] {
   return Array.from({ length: count }, (_, i) => BASIC_OF[colours[i % colours.length]!]!);
 }
 
-export function resolveMatchup(opponent: OpponentTemplate, knobs: KnobValues, legacy: Legacy | null = null): Matchup {
+/** S38: `phase` picks the column (the world's `phase`; 1 = the three phase-one knobs, 2 = `phaseTierTables[2]`);
+ * the difficulty still reaches it through the knobs, as before. */
+export function resolveMatchup(opponent: OpponentTemplate, knobs: KnobValues, legacy: Legacy | null = null, phase: Phase = 1): Matchup {
   const tier = opponent.tier as EnemyTier;
   const term = legacyTerm(legacy, opponent);
   const isMage = (opponent.kind ?? "mage") === "mage";
-  const baseLife = isMage ? knobs.mageTierLife[tier] : opponent.worldLife + knobs.beastTierLifeDelta[tier];
+  const tables = tierTablesFor(knobs, phase);
+  const baseLife = isMage ? tables.mageTierLife[tier] : opponent.worldLife + tables.beastTierLifeDelta[tier];
   const life = Math.max(1, baseLife + (opponent.worldLifeOffset ?? 0) + term.lifeDelta);
-  const basics = isMage ? Math.max(0, knobs.mageTierEntrance[tier] + term.entranceDelta) : 0;
+  const basics = isMage ? Math.max(0, tables.mageTierEntrance[tier] + term.entranceDelta) : 0;
   return { life, profile: opponent.difficulty, entrance: entranceFor(opponent.deck as string, basics), ante: knobs.anteCount };
 }
 

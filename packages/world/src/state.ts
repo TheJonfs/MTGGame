@@ -1,6 +1,6 @@
 import type { Catalog, StarterId, StarterTemplate } from "./catalog.js";
 import { generateWorld, type GeneratedWorld, type GeneratorOptions, type OpponentInstance, DEFAULT_GENERATOR, spawnRoamers } from "./generate.js";
-import { resolveKnobs, DIFFICULTIES, type DifficultyName, type KnobSource, type KnobValues } from "./knobs.js";
+import { resolveKnobs, DIFFICULTIES, type DifficultyName, type KnobSource, type KnobValues, type Phase } from "./knobs.js";
 import { carveReachable, exploredAll, placeCentreDoors, type Point, type WorldMap } from "./map.js";
 import { WorldRng, type WorldRngState } from "./rng.js";
 import { emptyQuestState, type Manalink, type QuestState } from "./quests.js";
@@ -109,6 +109,9 @@ export interface WorldState {
   catalogVersion: string;
   seed: number;
   difficulty: DifficultyName;
+  /** S38 (ADR-122): the campaign's phase — 1 today, 2 the Flood. The resolver's column and the Heart's ring read
+   * it. Additive (a pre-S38 save reads 1); the fifth flag does NOT set it — the flood scene will (S39+). */
+  phase: Phase;
   map: WorldMap;
   player: PlayerState;
   opponents: OpponentInstance[];
@@ -176,6 +179,8 @@ export interface NewWorldOptions {
   seed: number;
   catalog: Catalog;
   difficulty?: DifficultyName;
+  /** S38: the phase the world begins in (default 1; no shipped path passes 2 yet — the salvage start will). */
+  phase?: Phase;
   /** Starter deck = the catalog starter for the chosen colour (manifest §2b; ADR-069). */
   starter: StarterId;
   playerName?: string;
@@ -298,6 +303,7 @@ export function newWorld(opts: NewWorldOptions): WorldState {
   return {
     catalogVersion: opts.catalog.version,
     seed: opts.seed,
+    phase: opts.phase ?? 1,
     difficulty,
     map: gen.map,
     player: {
@@ -450,6 +456,8 @@ export function migrateWorld(format: string, input: Partial<WorldState>): WorldS
   // seals, so an already-fallen lord upgrades retroactively by construction.
   if (!v3.powers) v3.powers = emptyPowersState();
   if (!v3.gauntlet) v3.gauntlet = {};
+  // S38: the phase — additive; every earlier save is a phase-one world.
+  if (!v3.phase) v3.phase = 1;
   // S26 (ADR-091): the centre doors — a pre-S26 radial map grows the Corolla's and the Vault's
   // doors on load (idempotent; carved reachable from the start). Non-radial (pre-S16) maps have
   // no centre and stay doorless — those worlds predate the lords entirely.

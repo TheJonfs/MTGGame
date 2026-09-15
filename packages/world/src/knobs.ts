@@ -17,6 +17,15 @@
 
 export type RegionTier = "civilized" | "approach" | "wild";
 export type EnemyTier = 1 | 2 | 3;
+/** S38 (ADR-122): the campaign's phase — 1 today; 2 the Flood; 3 scarred for the horizon (the design's third act). */
+export type Phase = 1 | 2 | 3;
+/** S38: the three tier tables the matchup resolver reads, as one column. Phase one's are the three knobs
+ * below (mageTierLife / mageTierEntrance / beastTierLifeDelta); later phases' columns live in `phaseTierTables`. */
+export interface TierTables {
+  mageTierLife: Record<EnemyTier, number>;
+  mageTierEntrance: Record<EnemyTier, number>;
+  beastTierLifeDelta: Record<EnemyTier, number>;
+}
 
 export interface KnobSpec<T> {
   default: T;
@@ -128,6 +137,17 @@ export const KNOBS = {
     default: { 1: 0, 2: 2, 3: 4 },
     unit: "life added to a beast's catalog worldLife, by tier",
     description: "S34 (ADR-117): beasts keep their catalog worldLife as the base and gain this by tier (no entrance — beasts have not walked the roads). Standard +0 / +2 / +4 (the S33 beast table: aggregate 65% for a mid-road reference at +4); easy +0 / +0 / +2; hard +0 / +4 / +8. A per-row worldLifeOffset on the catalog row applies after (the Serra −4). Ratified S35 (ADR-117).",
+  }),
+  // ---- S38 (phase two, design §8): the resolver's later columns ----
+  phaseTierTables: knob<Partial<Record<2 | 3, TierTables>>>({
+    default: { 2: { mageTierLife: { 1: 12, 2: 16, 3: 20 }, mageTierEntrance: { 1: 1, 2: 2, 3: 3 }, beastTierLifeDelta: { 1: 4, 2: 8, 3: 12 } } },
+    unit: "the three tier tables (mageTierLife / mageTierEntrance / beastTierLifeDelta) by phase, for phases after the first",
+    description: "S38 (design §8; ⚠ proposed, unratified): the matchup resolver's column for a world at `phase` ≥ 2 — the mages' life and entrance and the beasts' delta by tier, read INSTEAD of the three phase-one knobs. Standard phase two: mages 12/1 · 16/2 · 20/3, beasts +4/+8/+12 (the brief's proposal; the Lab measures before ratification). The difficulty bundles carry their own phase-two column (easy/hard mirror the phase-one offsets — one cell on the entrance axis first, life second). A phase with no column falls back to the highest column below it (phase 3 reads phase 2's until it has its own — the scar for the third act). Lords, courts and the Heart do not read this (their phase-two rows come with their content).",
+  }),
+  heartLawsPersist: knob<boolean>({
+    default: false,
+    unit: "true | false",
+    description: "S38 (design §7, the accumulating Heart): the Manafleur's law sequence KEEPS every prior law on the battlefield — the ring accumulates instead of rotating (the exile-all step is skipped; the order and cadence are unchanged; the fifth law joins four). The engine's `lawSequence` modifier in `accumulate` mode (S27's dormant hook). False in phase one; a phase-two world reads it as true regardless (`heartDuelSpec`: persist = the knob OR phase ≥ 2). The heart-sim's `--persist` runs both rings for the read.",
   }),
   // ---- S27 (ADR-093): the Heart and the chronicle ----
   heartLife: knob<number>({
@@ -591,6 +611,8 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
     mageTierLife: { 1: 8, 2: 12, 3: 14 }, // S34 (ADR-117): one cell easier on the entrance axis first, life second
     mageTierEntrance: { 1: 0, 2: 0, 3: 1 },
     beastTierLifeDelta: { 1: 0, 2: 0, 3: 2 },
+    // S38 (⚠ unratified): phase two's easy column mirrors the phase-one offsets (tier 3 −2 life; tiers 2/3 one basic fewer; beasts −2 at tiers 2/3).
+    phaseTierTables: { 2: { mageTierLife: { 1: 12, 2: 16, 3: 18 }, mageTierEntrance: { 1: 1, 2: 1, 3: 2 }, beastTierLifeDelta: { 1: 4, 2: 6, 3: 10 } } },
     siegePartySizeWeights: { civilized: [1], approach: [0.6, 0.4], wild: [0.45, 0.4, 0.15] }, // S26 r3: lighter parties
     lordGrowthSteps: 200, // S25 r4: 0.5 life per 100 steps
     siegeWarningSteps: 90,
@@ -615,6 +637,8 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
     mageTierLife: { 1: 8, 2: 14, 3: 20 }, // S34 (ADR-117): one cell harder
     mageTierEntrance: { 1: 0, 2: 2, 3: 2 },
     beastTierLifeDelta: { 1: 0, 2: 4, 3: 8 },
+    // S38 (⚠ unratified): phase two's hard column mirrors the phase-one offsets (tiers 2/3 +2/+4 life; tier 2 one basic more; beasts +2/+4 at tiers 2/3).
+    phaseTierTables: { 2: { mageTierLife: { 1: 12, 2: 18, 3: 24 }, mageTierEntrance: { 1: 1, 2: 3, 3: 3 }, beastTierLifeDelta: { 1: 4, 2: 10, 3: 16 } } },
     siegePartySizeWeights: { civilized: [0.6, 0.4], approach: [0.25, 0.5, 0.25], wild: [0.15, 0.35, 0.5] }, // S26 r3: heavier parties (the cap still rules)
     lordGrowthLife: 2, // S25 r4: 2 life per 100 steps
     siegeWarningSteps: 40,
@@ -627,3 +651,15 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
     starterSpares: 6,
   },
 };
+
+/** S38: the resolver's tier tables for a phase — phase one is the three knobs; a later phase reads its
+ * `phaseTierTables` column, or the highest column below it (phase 3 → phase 2's until authored). */
+export function tierTablesFor(knobs: Pick<KnobValues, "mageTierLife" | "mageTierEntrance" | "beastTierLifeDelta" | "phaseTierTables">, phase: Phase = 1): TierTables {
+  if (phase <= 1) return { mageTierLife: knobs.mageTierLife, mageTierEntrance: knobs.mageTierEntrance, beastTierLifeDelta: knobs.beastTierLifeDelta };
+  for (let p = phase; p >= 2; p--) {
+    const col = knobs.phaseTierTables[p as 2 | 3];
+    if (col) return col;
+  }
+  return { mageTierLife: knobs.mageTierLife, mageTierEntrance: knobs.mageTierEntrance, beastTierLifeDelta: knobs.beastTierLifeDelta };
+}
+

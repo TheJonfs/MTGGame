@@ -9,7 +9,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { CardDef } from "@shandalar/cards";
 import type { PlayerId } from "@shandalar/engine";
 import type { CustomMatch } from "./match-controller";
-import { customAsLabDeck, labDecks, resolveSide, savedWorldDecks, sideModifiers, type CustomDeck, type LabDeck, type LabMode } from "../lab/lab-decks";
+import { customAsLabDeck, labDecks, resolveSide, savedWorldDecks, sideModifiers, type CustomDeck, type LabDeck, type LabMode, type LabPhase } from "../lab/lab-decks";
 import type { LabSide } from "../lab/lab-types";
 import { DeckEditor, SidePanel, sideFromDeck } from "../lab/lab-panels";
 
@@ -17,8 +17,9 @@ export interface DevMatch { custom: CustomMatch; humanSeat: PlayerId; seed?: num
 
 export function DevSetup({ pool, onStart }: { pool: Map<string, CardDef>; onStart: (m: DevMatch) => void }) {
   const [mode, setMode] = useState<LabMode>("standard");
+  const [phase, setPhase] = useState<LabPhase>(1); // S38: the phase column
   const [customs, setCustoms] = useState<CustomDeck[]>([]);
-  const baseDecks = useMemo(() => labDecks(mode), [mode]);
+  const baseDecks = useMemo(() => labDecks(mode, phase), [mode, phase]);
   const saved = useMemo(() => savedWorldDecks(), []); // S37: the world save's decks
   const decks = useMemo(() => [...baseDecks, ...saved, ...customs.map(customAsLabDeck)], [baseDecks, saved, customs]);
   const byKey = useMemo(() => new Map(decks.map((d) => [d.key, d])), [decks]);
@@ -32,7 +33,7 @@ export function DevSetup({ pool, onStart }: { pool: Map<string, CardDef>; onStar
   const refresh = async () => { try { const r = await fetch("/__lab-deck-list"); if (r.ok) setCustoms((await r.json()) as CustomDeck[]); } catch { /* no dev server */ } };
   useEffect(() => { void refresh(); }, []);
   // A mode change re-seats the opponent at that mode's defaults (the deck is kept).
-  useEffect(() => { const d = byKey.get(them.deck); if (d) setThem((t) => ({ ...sideFromDeck(d), deck: t.deck })); }, [mode]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { const d = byKey.get(them.deck); if (d) setThem((t) => ({ ...sideFromDeck(d), deck: t.deck })); }, [mode, phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const pick = (side: "you" | "them", key: string) => { const d = byKey.get(key); if (!d) return; (side === "you" ? setYou : setThem)(sideFromDeck(d)); };
   const openEditor = (key: string) => { const d = byKey.get(key); if (!d) return; setEditor({ name: d.group === "custom" ? d.name : `${d.name} v2`, archetype: d.archetype, decklist: d.decklist.map((e) => ({ ...e })), basedOn: d.group === "custom" ? (customs.find((c) => c.name === d.name)?.basedOn ?? d.name) : d.name }); };
@@ -76,7 +77,7 @@ export function DevSetup({ pool, onStart }: { pool: Map<string, CardDef>; onStar
           <div style={{ fontFamily: "var(--serif)", fontSize: 15, marginBottom: 6 }}>The match</div>
           <div style={{ fontSize: 12, display: "grid", gridTemplateColumns: "auto 1fr", gap: "6px 8px", alignItems: "center" }}>
             <span>defaults</span>
-            <span>{(["easy", "standard", "hard"] as LabMode[]).map((m) => <label key={m} style={{ marginRight: 8 }}><input type="radio" checked={mode === m} onChange={() => setMode(m)} /> {m}</label>)}</span>
+            <span>{(["easy", "standard", "hard"] as LabMode[]).map((m) => <label key={m} style={{ marginRight: 8 }}><input type="radio" checked={mode === m} onChange={() => setMode(m)} /> {m}</label>)} · phase {([1, 2] as LabPhase[]).map((p) => <label key={p} style={{ marginRight: 8 }}><input type="radio" checked={phase === p} onChange={() => setPhase(p)} /> {p}</label>)}</span>
             <span>you play</span>
             <span>{([["first", "first (on the play)"], ["second", "second (on the draw)"], ["flip", "coin flip"]] as const).map(([k, t]) => <label key={k} style={{ marginRight: 8 }}><input type="radio" checked={seat === k} onChange={() => setSeat(k)} /> {t}</label>)}</span>
             <span>seed</span>

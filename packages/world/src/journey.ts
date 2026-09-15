@@ -609,7 +609,7 @@ export function prepareDuel(world: WorldState, catalog: Catalog, enc: Encounter,
   const startingPlayer = rng.chance(0.5) ? (0 as const) : (1 as const);
   // S34 (ADR-115/117): the resolver sets the enemy's life, profile, entrance and ante from the tier tables
   // at this world's mode (the knobs carry it); the situational terms stay here on top of its result.
-  const matchup = resolveMatchup(tmpl, knobs, null);
+  const matchup = resolveMatchup(tmpl, knobs, null, world.phase); // S38: the world's phase picks the column
   // S18 (OQ-8): a lair resident fights at + the lair bonus knob. S25: the Barrage's delta lands here, floored at 1.
   const enemyLife = Math.max(1, matchup.life + (enc.contact === "lair" ? knobs.lairResidentLifeBonus : 0) + (opts.enemyLifeDelta ?? 0));
   // S19 (ADR-069): every duel starts with your manalinks on the battlefield (manifest §5 — zero engine work).

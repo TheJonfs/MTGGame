@@ -37,7 +37,7 @@ import { MAGE_DECKS } from "@shandalar/sim/mage-decks";
 import { EXPANSION_DECKS } from "@shandalar/sim/expansion-decks";
 import { ROAD_DECKS } from "@shandalar/sim/road-decks";
 import { loadCatalog } from "./loader.js";
-import { DIFFICULTIES, resolveKnobs, type DifficultyName } from "./knobs.js";
+import { DIFFICULTIES, resolveKnobs, type DifficultyName, tierTablesFor, type Phase } from "./knobs.js";
 import { entranceFor, resolveMatchup } from "./matchup.js";
 
 function arg(name: string, fallback: string): string {
@@ -58,18 +58,23 @@ const catalog = loadCatalog(join(ROOT, "data/world"));
 const mode = arg("mode", "standard") as DifficultyName;
 if (!(mode in DIFFICULTIES)) throw new Error(`--mode must be easy|standard|hard`);
 const knobs = resolveKnobs({ difficulty: DIFFICULTIES[mode] });
+// S38: `--phase 2` reads the resolver's phase-two column (phaseTierTables) for every mage and beast cell.
+const phase = Number(arg("phase", "1")) as Phase;
+if (![1, 2, 3].includes(phase)) throw new Error("--phase must be 1|2|3");
+const tables = tierTablesFor(knobs, phase);
 
 type Side = { name: string; decklist: { cardId: string; count: number }[]; archetype: "aggro" | "midrange" | "control"; profile: Difficulty; life: number; entrance?: string[] };
 /** S34: the tier life is the resolver's table at the chosen mode. */
-const TIER_LIFE: Record<1 | 2 | 3, number> = knobs.mageTierLife;
+const TIER_LIFE: Record<1 | 2 | 3, number> = tables.mageTierLife;
 const TIER_PROFILE: Record<1 | 2 | 3, Difficulty> = { 1: "apprentice", 2: "journeyman", 3: "master" };
 const mage = (key: string, tierAs?: 1 | 2 | 3): Side => {
   const m = MAGE_DECKS[key]!;
   const t = tierAs ?? m.tier;
   // S34: the resolver's cell at this mode — life AND entrance (the catalog row, when one exists, carries the offset).
   const row = catalog.opponents.find((o) => o.deck === `mage:${key}`);
-  const entrance = entranceFor(`mage:${key}`, knobs.mageTierEntrance[t]);
-  return { name: `${m.name} (${key})`, decklist: m.decklist, archetype: m.archetype, profile: TIER_PROFILE[t], life: TIER_LIFE[t] + (row?.worldLifeOffset ?? 0), entrance };
+  // S38: through the resolver (the row at its tier; a tier override re-rolls the table at that tier).
+  const cell = row ? resolveMatchup(tierAs ? { ...row, tier: tierAs } : row, knobs, null, phase) : { life: TIER_LIFE[t], entrance: entranceFor(`mage:${key}`, tables.mageTierEntrance[t]) };
+  return { name: `${m.name} (${key})`, decklist: m.decklist, archetype: m.archetype, profile: TIER_PROFILE[t], life: cell.life, entrance: cell.entrance };
 };
 /** S33: a mage at a chosen life with N entrance basics (its colours by pip count; a mono mage repeats its one). */
 const mageAt = (key: string, life: number, basics: number): Side => {
@@ -84,7 +89,7 @@ const beast = (key: string): Side => {
   const b = EXPANSION_DECKS[key]!;
   const row = catalog.opponents.find((o) => o.deck === `beast:${key}`);
   // S34: the resolver's life at this mode (catalog base + the tier delta + the row offset); no entrance for beasts.
-  const life = row ? resolveMatchup(row, knobs).life : TIER_LIFE[b.tier];
+  const life = row ? resolveMatchup(row, knobs, null, phase).life : TIER_LIFE[b.tier];
   return { name: `${b.name} (beast:${key})`, decklist: b.decklist, archetype: b.archetype, profile: row?.difficulty ?? TIER_PROFILE[b.tier], life };
 };
 const starter = (id: string): Side => {
@@ -158,7 +163,7 @@ const header = () => console.log(`\n| part | A | B | A wins | B wins | draws | m
 const byTier: Record<1 | 2 | 3, string[]> = { 1: [], 2: [], 3: [] };
 for (const [k, m] of Object.entries(MAGE_DECKS)) byTier[m.tier].push(k);
 
-console.log(`mage-sweep: ${games} games per pairing (both seats), heuristic at the tier's profile; MODE ${mode} — mage tier life ${TIER_LIFE[1]}/${TIER_LIFE[2]}/${TIER_LIFE[3]}, entrance ${knobs.mageTierEntrance[1]}/${knobs.mageTierEntrance[2]}/${knobs.mageTierEntrance[3]} basics, beast tier delta +${knobs.beastTierLifeDelta[1]}/+${knobs.beastTierLifeDelta[2]}/+${knobs.beastTierLifeDelta[3]}; starters at ${knobs.startingWorldLife} (journeyman).`);
+console.log(`mage-sweep: ${games} games per pairing (both seats), heuristic at the tier's profile; MODE ${mode}, PHASE ${phase} — mage tier life ${TIER_LIFE[1]}/${TIER_LIFE[2]}/${TIER_LIFE[3]}, entrance ${tables.mageTierEntrance[1]}/${tables.mageTierEntrance[2]}/${tables.mageTierEntrance[3]} basics, beast tier delta +${tables.beastTierLifeDelta[1]}/+${tables.beastTierLifeDelta[2]}/+${tables.beastTierLifeDelta[3]}; starters at ${knobs.startingWorldLife} (journeyman).`);
 if (part === "all" || part === "1") {
   console.log(`\n## 1. Tier by tier`);
   header();

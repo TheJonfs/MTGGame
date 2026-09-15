@@ -1,5 +1,10 @@
 /**
- * pnpm heart-sim [--games N] [--seed S] [--life L] [--lives 35,40,45] [--lands 20,18] [--refs all|stock|road]
+ * pnpm heart-sim [--games N] [--seed S] [--life L] [--lives 35,40,45] [--lands 20,18] [--refs all|stock|road] [--persist 0|1|both]
+ *
+ * S38 (design §7): `--persist` runs the ACCUMULATING ring (heartLawsPersist: every prior law stays; the
+ * engine's lawSequence `accumulate` mode) — `1` alone, `both` beside the rotating ring on the same seeds
+ * (the paired read); a `laws at death` column counts the laws standing on the flower's side when the
+ * player died.
  *
  * S27 Part 5 (ADR-093) → S28 Part 2c (ADR-096): the Manafleur's sixty WITH ROOTS (master profile, the
  * entrance, the five basics on its side, the default WBRUG sequence) at heartLife {35,40,45} × the
@@ -32,6 +37,8 @@ const refLife = Number(arg("life", "16"));
 const lives = arg("lives", "35,40,45").split(",").map(Number);
 const landCounts = arg("lands", "20,18").split(",").map(Number);
 const refFilter = arg("refs", "all");
+const persistArg = arg("persist", "0");
+const rings: ("rotating" | "accumulating")[] = persistArg === "both" ? ["rotating", "accumulating"] : persistArg === "1" ? ["accumulating"] : ["rotating"];
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const pool = loadCardPool(join(ROOT, "data/cards")).cards;
 const catalog = loadCatalog(join(ROOT, "data/world"));
@@ -68,15 +75,16 @@ function sixtyAt(lands: number): Deck {
 type LogEntry = { t: string; name?: string; payload?: Record<string, unknown>; afterAction?: number; turn?: number; player?: number; action?: { type: string } };
 const LAW_NAMES: Record<string, string> = { law_intake: "Intake", law_tithe: "Tithe", law_toll: "Toll", law_season: "Season", law_risen_tide: "Barrage" };
 
-console.log(`heart-sim: ${games} games per cell · lives ${lives.join("/")} · lands ${landCounts.join("/")} · ${references.length} references (stock journeyman at ${refLife}; chris-road-B master at 17 with four basics) · the Manafleur master with roots + entrance`);
-console.log(`\n| lands | heartLife | reference | kill % | T1 flower % | mean turns | died at (Intake/Tithe/Toll/Season/Barrage/none) | flower removed (games; by) |`);
-console.log(`|---|---|---|---|---|---|---|---|`);
-const totals = new Map<string, { wins: number; total: number; t1: number; turns: number; died: Record<string, number>; removed: number; by: Record<string, number> }>();
+console.log(`heart-sim: ${games} games per cell · lives ${lives.join("/")} · lands ${landCounts.join("/")} · rings ${rings.join("+")} · ${references.length} references (stock journeyman at ${refLife}; chris-road-B master at 17 with four basics) · the Manafleur master with roots + entrance`);
+console.log(`\n| ring | lands | heartLife | reference | kill % | T1 flower % | mean turns | died at (Intake/Tithe/Toll/Season/Barrage/none) | laws at death (mean; max) | flower removed (games; by) |`);
+console.log(`|---|---|---|---|---|---|---|---|---|---|`);
+const totals = new Map<string, { wins: number; total: number; t1: number; turns: number; died: Record<string, number>; removed: number; by: Record<string, number>; laws: number; lawsMax: number }>();
+for (const ring of rings) {
 for (const lands of landCounts) {
   const sixty = sixtyAt(lands);
   for (const life of lives) {
     for (const ref of references) {
-      let wins = 0, total = 0, t1 = 0, turns = 0, removed = 0;
+      let wins = 0, total = 0, t1 = 0, turns = 0, removed = 0, lawsSum = 0, lawsMax = 0;
       const died: Record<string, number> = { Intake: 0, Tithe: 0, Toll: 0, Season: 0, Barrage: 0, none: 0 };
       const by: Record<string, number> = {};
       for (let i = 0; i < games; i++) {
@@ -94,7 +102,7 @@ for (const lands of landCounts) {
             { type: "signatureToHand", player: 1, cardId: "the_manafleur" },
             ...heartRootModifiers(1),
             ...ref.entrance.map((cardId) => ({ type: "permanentOnBattlefield" as const, player: 0 as const, cardId })),
-            { type: "lawSequence" },
+            { type: "lawSequence", ...(ring === "accumulating" ? { mode: "accumulate" as const } : {}) },
           ],
         };
         const a0: Agent = new HeuristicAgent(seed * 2 + 1, pool, difficultyProfile(ref.profile, ref.archetype, [...sixty]));
@@ -113,8 +121,10 @@ for (const lands of landCounts) {
           // state (the log's EVENT stream carries no zone changes; the final state is canonical).
           if (r.winner === 1) {
             const fin = JSON.parse(r.finalStateSerialized) as { battlefield: string[]; objects: Record<string, { cardId: string; controller: number }> };
-            const law = fin.battlefield.map((id) => fin.objects[id]).find((o) => o && o.controller === 1 && o.cardId.startsWith("law_"));
+            const laws = fin.battlefield.map((id) => fin.objects[id]).filter((o) => o && o.controller === 1 && o.cardId.startsWith("law_"));
+            const law = laws[laws.length - 1]; // the newest petal (the accumulating ring keeps the older ones beneath)
             died[law ? (LAW_NAMES[law.cardId] ?? "none") : "none"]! += 1;
+            lawsSum += laws.length; lawsMax = Math.max(lawsMax, laws.length);
           }
           // The flower removed: its first DEATH (the EVENT stream logs DIES; exile and bounce are not
           // visible here — a floor, not a ceiling); by the player's last spell before it.
@@ -131,17 +141,18 @@ for (const lands of landCounts) {
       }
       const pct = (n: number) => `${((100 * n) / Math.max(1, total)).toFixed(0)}%`;
       const byTxt = Object.entries(by).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k, v]) => `${k} ×${v}`).join(", ");
-      console.log(`| ${lands} | ${life} | ${ref.name} | ${pct(wins)} | ${pct(t1)} | ${(turns / Math.max(1, total)).toFixed(1)} | ${["Intake", "Tithe", "Toll", "Season", "Barrage", "none"].map((k) => died[k]).join("/")} | ${removed}${byTxt ? `; ${byTxt}` : ""} |`);
-      const key = `${lands}|${life}|${ref.name === "chris-road-B" ? "road" : "stock"}`;
-      const t = totals.get(key) ?? { wins: 0, total: 0, t1: 0, turns: 0, died: { Intake: 0, Tithe: 0, Toll: 0, Season: 0, Barrage: 0, none: 0 }, removed: 0, by: {} };
-      t.wins += wins; t.total += total; t.t1 += t1; t.turns += turns; t.removed += removed;
+      console.log(`| ${ring} | ${lands} | ${life} | ${ref.name} | ${pct(wins)} | ${pct(t1)} | ${(turns / Math.max(1, total)).toFixed(1)} | ${["Intake", "Tithe", "Toll", "Season", "Barrage", "none"].map((k) => died[k]).join("/")} | ${wins ? (lawsSum / wins).toFixed(1) : "—"}; ${lawsMax} | ${removed}${byTxt ? `; ${byTxt}` : ""} |`);
+      const key = `${ring}|${lands}|${life}|${ref.name === "chris-road-B" ? "road" : "stock"}`;
+      const t = totals.get(key) ?? { wins: 0, total: 0, t1: 0, turns: 0, died: { Intake: 0, Tithe: 0, Toll: 0, Season: 0, Barrage: 0, none: 0 }, removed: 0, by: {}, laws: 0, lawsMax: 0 };
+      t.wins += wins; t.total += total; t.t1 += t1; t.turns += turns; t.removed += removed; t.laws += lawsSum; t.lawsMax = Math.max(t.lawsMax, lawsMax);
       for (const k of Object.keys(died)) t.died[k] = (t.died[k] ?? 0) + died[k]!;
       totals.set(key, t);
     }
   }
 }
-console.log(`\n**Aggregates** (stock = the seven references pooled; road = chris-road-B):\n\n| lands | heartLife | vs | kill % | T1 flower % | mean turns | died at (Intake/Tithe/Toll/Season/Barrage/none) | flower removed |\n|---|---|---|---|---|---|---|---|`);
+}
+console.log(`\n**Aggregates** (stock = the seven references pooled; road = chris-road-B):\n\n| ring | lands | heartLife | vs | kill % | T1 flower % | mean turns | died at (Intake/Tithe/Toll/Season/Barrage/none) | laws at death (mean; max) | flower removed |\n|---|---|---|---|---|---|---|---|---|---|`);
 for (const [key, t] of totals) {
-  const [lands, life, vs] = key.split("|");
-  console.log(`| ${lands} | ${life} | ${vs} | ${((100 * t.wins) / Math.max(1, t.total)).toFixed(0)}% | ${((100 * t.t1) / Math.max(1, t.total)).toFixed(0)}% | ${(t.turns / Math.max(1, t.total)).toFixed(1)} | ${["Intake", "Tithe", "Toll", "Season", "Barrage", "none"].map((k) => t.died[k]).join("/")} | ${t.removed}/${t.total} |`);
+  const [ring, lands, life, vs] = key.split("|");
+  console.log(`| ${ring} | ${lands} | ${life} | ${vs} | ${((100 * t.wins) / Math.max(1, t.total)).toFixed(0)}% | ${((100 * t.t1) / Math.max(1, t.total)).toFixed(0)}% | ${(t.turns / Math.max(1, t.total)).toFixed(1)} | ${["Intake", "Tithe", "Toll", "Season", "Barrage", "none"].map((k) => t.died[k]).join("/")} | ${t.wins ? (t.laws / t.wins).toFixed(1) : "—"}; ${t.lawsMax} | ${t.removed}/${t.total} |`);
 }

@@ -15,7 +15,7 @@ import { COROLLA_DECKS } from "@shandalar/sim/corolla-decks";
 import { HEART_DECK } from "@shandalar/sim/heart-deck";
 import type { CardDef } from "@shandalar/cards";
 import type { Modifier } from "@shandalar/engine";
-import { DIFFICULTIES, deserializeWorld, resolveKnobs, type DifficultyName } from "@shandalar/world";
+import { DIFFICULTIES, deserializeWorld, resolveKnobs, resolveMatchup, type DifficultyName, type OpponentTemplate, type Phase } from "@shandalar/world";
 import type { LabBonus, LabSide, ResolvedSide } from "./lab-types.js";
 
 /** The world's JSON, bundled the way engine-bridge bundles the catalog (import.meta.glob; no json modules). */
@@ -53,10 +53,10 @@ export interface LabDeck {
 
 const TIER_PROFILE = { 1: "apprentice", 2: "journeyman", 3: "master" } as const;
 export type LabMode = DifficultyName;
+export type LabPhase = Phase;
 const BASIC_OF: Record<string, string> = { W: "plains", U: "island", B: "swamp", R: "mountain", G: "forest" };
 
 type StarterRow = { id: string; name: string; archetype: Archetype; basicLand: string; decklist: Decklist };
-type OpponentRow = { id: string; deck: string; tier: 1 | 2 | 3; difficulty: Profile; worldLife: number; worldLifeOffset?: number; kind?: string; portrait?: string };
 type LawBoth = { type: "permanentOnBattlefield"; cardId: string } | { type: "extraCards"; count: number };
 type DungeonsJson = {
   mox: { id: string; color: string; guardian: { key: string; name: string; life: number }; law: { name: string; both: LawBoth[] } }[];
@@ -71,19 +71,22 @@ const HEART_LIFE_STANDARD = 40;
 
 /** S34: the mages' and beasts' world defaults come from the resolver's tier tables at a MODE (the knobs'
  * easy / standard / hard bundles) — a saved run names the mode it measured. */
-export function labDecks(mode: LabMode = "standard"): LabDeck[] {
+export function labDecks(mode: LabMode = "standard", phase: Phase = 1): LabDeck[] {
   const knobs = resolveKnobs({ difficulty: DIFFICULTIES[mode] });
   const out: LabDeck[] = [];
-  const mageRows = (worldJson("opponents") as { opponents: OpponentRow[] }).opponents.filter((o) => (o.kind ?? "mage") === "mage");
+  // S38: every mage and beast cell through the resolver itself (the phase picks the column) — no inline copy of its arithmetic.
+  const mageRows = (worldJson("opponents") as { opponents: OpponentTemplate[] }).opponents.filter((o) => (o.kind ?? "mage") === "mage");
   for (const [k, m] of Object.entries(MAGE_DECKS)) {
     const row = mageRows.find((o) => o.deck === `mage:${k}`);
-    out.push({ key: `mage:${k}`, group: "mages", name: m.name, label: `${m.name} (T${m.tier} ${m.colors}) — ${m.epithet}`, archetype: m.archetype, decklist: m.decklist, life: knobs.mageTierLife[m.tier] + (row?.worldLifeOffset ?? 0), profile: TIER_PROFILE[m.tier], basics: knobs.mageTierEntrance[m.tier], tier: m.tier, ...(row?.portrait ? { portrait: row.portrait } : {}) });
+    const cell = row ? resolveMatchup(row, knobs, null, phase) : null;
+    out.push({ key: `mage:${k}`, group: "mages", name: m.name, label: `${m.name} (T${m.tier} ${m.colors}) — ${m.epithet}`, archetype: m.archetype, decklist: m.decklist, life: cell?.life ?? knobs.mageTierLife[m.tier], profile: TIER_PROFILE[m.tier], basics: cell?.entrance.length ?? knobs.mageTierEntrance[m.tier], tier: m.tier, ...(row?.portrait ? { portrait: row.portrait } : {}) });
   }
-  const rows = (worldJson("opponents") as { opponents: OpponentRow[] }).opponents.filter((o) => o.kind === "beast");
+  const rows = (worldJson("opponents") as { opponents: OpponentTemplate[] }).opponents.filter((o) => o.kind === "beast");
   for (const [k, b] of Object.entries(EXPANSION_DECKS)) {
     const row = rows.find((o) => o.deck === `beast:${k}`) ?? rows.find((o) => o.deck === `beast:${k}` && o.tier === b.tier);
     const tier = row?.tier ?? b.tier;
-    out.push({ key: `beast:${k}`, group: "beasts", name: b.name, label: `${b.name} (T${b.tier} ${b.color})`, archetype: b.archetype, decklist: b.decklist, life: (row?.worldLife ?? 8) + knobs.beastTierLifeDelta[tier] + (row?.worldLifeOffset ?? 0), profile: row?.difficulty ?? TIER_PROFILE[b.tier], basics: 0, tier, ...(row?.portrait ? { portrait: row.portrait } : {}) });
+    const cell = row ? resolveMatchup(row, knobs, null, phase) : null;
+    out.push({ key: `beast:${k}`, group: "beasts", name: b.name, label: `${b.name} (T${b.tier} ${b.color})`, archetype: b.archetype, decklist: b.decklist, life: cell?.life ?? 8 + knobs.beastTierLifeDelta[tier], profile: row?.difficulty ?? TIER_PROFILE[b.tier], basics: 0, tier, ...(row?.portrait ? { portrait: row.portrait } : {}) });
   }
   for (const s of (worldJson("starters") as { starters: StarterRow[] }).starters) {
     out.push({ key: `starter:${s.id}`, group: "starters", name: s.name, label: `${s.name} — starter:${s.id}`, archetype: s.archetype, decklist: s.decklist, life: 10, profile: "journeyman", basics: 0, entrance: [s.basicLand] });

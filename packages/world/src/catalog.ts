@@ -212,6 +212,7 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
       for (const s of du.strongholds) {
         if (!s.id || !s.name || !s.lord?.key || !s.lord?.cardId || !s.lord?.baseLife || !s.law?.cardId) errors.push(`stronghold ${s.id ?? "?"}: missing fields`);
         if (!(r.strongholds ?? []).some((x) => x.id === s.id)) errors.push(`stronghold ${s.id}: no matching fixed point in regions.json`);
+        if (s.deckRule !== undefined) errors.push(...validateDeckRule(s.deckRule, `stronghold ${s.id}`)); // S38 (ADR-125)
       }
     }
     // S26: the Corolla's content — five petals, five colours, every field the tip needs.

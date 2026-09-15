@@ -1,6 +1,6 @@
 import type { CardDef } from "@shandalar/cards";
 import type { MatchResult, MatchSpec } from "@shandalar/engine";
-import { trimDuelLogs, checkDeck, doorCheck, doorRefusalText, describeDeckRule, type DeckCheck,
+import { trimDuelLogs, checkDeck, doorCheck, doorRefusalText, describeDeckRule, type DeckCheck, type DeckRule, type Phase,
   activeDeck,
   addCopy,
   advance,
@@ -126,7 +126,7 @@ export type WorldScreen =
   /** S26: inside the flower (world.gauntlet.corolla is where you stand). */
   | { kind: "corolla"; notice: string | null; walking: boolean }
   /** S26: at a petal's tip — the boss, the returned law, the stakes. */
-  | { kind: "petalTelegraph"; color: PetalColor }
+  | { kind: "petalTelegraph"; color: PetalColor; notice: string | null }
   /** S26: a petal fight or the Mirror — mounts PlayMatch like a world duel. */
   | { kind: "corollaDuel"; enemyName: string; match: MatchController; against: { petal?: PetalColor; mirror?: boolean; heart?: boolean } }
   /** S26: a petal fell — the payout (signature, duals, purse, ante). */
@@ -147,16 +147,23 @@ export type WorldScreen =
       after: { life: number; gold: number };
     }
   | { kind: "town"; town: Town; stock: ShopItem[]; notice: string | null }
-  | { kind: "collection"; back: "map" | "town" | "corolla" | "corollaTown" }
+  | { kind: "collection"; back: EditorBack }
   | {
       /** S14 Part 2: the deck editor — a DRAFT decklist; commit only when legal (ADR-065). */
       kind: "editor";
-      back: "map" | "town" | "corolla" | "corollaTown"; // S26 r2: the flower and its town return to themselves
+      back: EditorBack; // S26 r2: the flower and its town return to themselves; S38: a site's telegraph too
       draft: Decklist;
       name: string;
       notice: string | null;
     }
   | { kind: "gameOver"; fatal: DuelRecord | null };
+
+/** Where a browsing screen (the collection, the editor) returns to. S38 (ADR-125): a site's telegraph is
+ * stored whole so "edit your deck" at a door comes back to the door. */
+export type EditorBack =
+  | "map" | "town" | "corolla" | "corollaTown"
+  | { kind: "dungeonTelegraph"; info: { dungeonId: string; kind: "mox" | "lair" | "stronghold" | "power"; name: string; at: Point; residentCatalogId?: string } }
+  | { kind: "petalTelegraph"; color: PetalColor };
 
 export interface NewGameChoice {
   /** S16: catalog starter id (white|blue|black|red|green). */
@@ -301,6 +308,16 @@ export class WorldController {
     else if (this.screen.kind === "corolla") this.screen = { kind: "corolla", notice, walking: false };
     this.emit();
     return n;
+  }
+
+  /** S38 (Part 5): the autosave in a line for the start screen — the name, the difficulty, the phase, the steps. */
+  saveSummary(): { name: string; difficulty: DifficultyName; phase: Phase; steps: number; worldLife: number; decks: number } | null {
+    const raw = this.storage?.getItem(SAVE_KEY);
+    if (!raw) return null;
+    try {
+      const w = deserializeWorld(raw);
+      return { name: w.player.name, difficulty: w.difficulty, phase: w.phase, steps: w.player.stepsTaken, worldLife: w.player.worldLife, decks: Object.keys(w.decks).length };
+    } catch { return null; }
   }
 
   hasAutosave(): boolean {
@@ -534,11 +551,13 @@ export class WorldController {
 
   openEditor(): void {
     if (!this.world || !this.canEdit().ok) return;
-    const back: "map" | "town" | "corolla" | "corollaTown" =
+    const back: EditorBack =
       this.screen.kind === "collection" ? this.screen.back
       : this.screen.kind === "town" ? "town"
       : this.screen.kind === "corolla" ? "corolla"
       : this.screen.kind === "corollaTown" ? "corollaTown"
+      : this.screen.kind === "dungeonTelegraph" ? { kind: "dungeonTelegraph", info: this.screen.info }
+      : this.screen.kind === "petalTelegraph" ? { kind: "petalTelegraph", color: this.screen.color }
       : "map";
     this.screen = { kind: "editor", back, draft: activeDeck(this.world).map((e) => ({ ...e })), name: this.world.activeDeckName, notice: null };
     this.emit();
@@ -628,20 +647,53 @@ export class WorldController {
 
   /** The door the editor is checking against (a template id with a deckRule), or none. */
   editorRuleId: string | null = null;
-  /** Every door in the catalog: the templates that carry a deckRule (none today; phase two's gates). */
+  /** Every door in the catalog — S38 (ADR-125): the sites' rules (a stronghold's seat `stronghold:<id>`, a petal's
+   * tip `petal:<colour>`) beside any template's (its bare id). None shipped; phase two's gates. */
+  doors(): { id: string; name: string; label: string; description: string; rule: DeckRule }[] {
+    const out: { id: string; name: string; label: string; description: string; rule: DeckRule }[] = [];
+    for (const o of this.catalog.opponents) if (o.deckRule) out.push({ id: o.id, name: o.name, label: o.deckRule.label, description: describeDeckRule(o.deckRule), rule: o.deckRule });
+    for (const s of this.catalog.strongholdContent ?? []) if (s.deckRule) out.push({ id: `stronghold:${s.id}`, name: s.name, label: s.deckRule.label, description: describeDeckRule(s.deckRule), rule: s.deckRule });
+    for (const p of this.corollaDef?.petals ?? []) if (p.deckRule) out.push({ id: `petal:${p.color}`, name: `${p.boss.name} — the ${p.color} petal`, label: p.deckRule.label, description: describeDeckRule(p.deckRule), rule: p.deckRule });
+    return out;
+  }
   doorRules(): { id: string; name: string; label: string; description: string }[] {
-    return this.catalog.opponents.filter((o) => o.deckRule).map((o) => ({ id: o.id, name: o.name, label: o.deckRule!.label, description: describeDeckRule(o.deckRule!) }));
+    return this.doors().map(({ id, name, label, description }) => ({ id, name, label, description }));
   }
   setEditorRule(id: string | null): void {
-    this.editorRuleId = id && this.catalog.opponents.some((o) => o.id === id && o.deckRule) ? id : null;
+    this.editorRuleId = id && this.doors().some((d) => d.id === id) ? id : null;
     this.emit();
   }
   /** The selected door's verdict on the draft (live), or null when no door is selected. */
   editorRuleCheck(): { id: string; label: string; description: string; check: DeckCheck } | null {
     if (this.screen.kind !== "editor" || !this.editorRuleId) return null;
-    const tmpl = this.catalog.opponents.find((o) => o.id === this.editorRuleId);
-    if (!tmpl?.deckRule) return null;
-    return { id: tmpl.id, label: tmpl.deckRule.label, description: describeDeckRule(tmpl.deckRule), check: checkDeck(this.screen.draft, null, tmpl.deckRule, this.pool) };
+    const door = this.doors().find((d) => d.id === this.editorRuleId);
+    if (!door) return null;
+    return { id: door.id, label: door.label, description: door.description, check: checkDeck(this.screen.draft, null, door.rule, this.pool) };
+  }
+  /** S38 (ADR-125): the door of the site the player stands at — the stronghold's gate (its telegraph), the petal's
+   * tip, or a ruled roamer's parley. The refusal text when the ACTIVE deck fails; null when the gate opens. */
+  siteDoor(): { id: string; refusal: string | null } | null {
+    if (!this.world) return null;
+    let id: string | null = null, rule: DeckRule | undefined;
+    if (this.screen.kind === "dungeonTelegraph" && this.screen.info.kind === "stronghold") {
+      const sh = this.strongholdDef(this.screen.info.dungeonId);
+      if (sh?.deckRule) { id = `stronghold:${sh.id}`; rule = sh.deckRule; }
+    } else if (this.screen.kind === "petalTelegraph") {
+      const p = this.corollaDef?.petals.find((x) => x.color === (this.screen as { color: PetalColor }).color);
+      if (p?.deckRule) { id = `petal:${p.color}`; rule = p.deckRule; }
+    } else if (this.screen.kind === "encounter" && this.screen.tmpl.deckRule) {
+      id = this.screen.tmpl.id; rule = this.screen.tmpl.deckRule;
+    }
+    if (!id || !rule) return null;
+    const check = doorCheck(this.world, { deckRule: rule }, this.pool)!;
+    return { id, refusal: check.ok ? null : doorRefusalText(this.catalog, rule, check) };
+  }
+  /** "Edit your deck" at a door: the editor opens with the door pre-selected and returns to the door. */
+  openEditorForDoor(): void {
+    const door = this.siteDoor();
+    if (!door) return;
+    this.setEditorRule(door.id);
+    this.openEditor();
   }
 
   /** Commit the draft (legal only — ADR-065); returns to where the editor was opened from. */
@@ -664,7 +716,13 @@ export class WorldController {
   }
 
   /** S26 r2: where a browsing screen goes back to — the town, the flower, the flower's town, or the map. */
-  private returnFrom(back: "map" | "town" | "corolla" | "corollaTown"): void {
+  private returnFrom(back: EditorBack): void {
+    // S38 (ADR-125): back to the door the editor was opened from — the telegraph re-raised, its door re-checked live.
+    if (typeof back === "object") {
+      if (back.kind === "dungeonTelegraph") { this.screen = { kind: "dungeonTelegraph", info: back.info, notice: null }; this.emit(); return; }
+      if (this.world && insideCorolla(this.world)) { this.screen = { kind: "petalTelegraph", color: back.color, notice: null }; this.emit(); return; }
+      back = "map";
+    }
     if (back === "town" && this.lastTown) return this.enterTown(this.lastTown);
     if (back === "corollaTown" && this.world && insideCorolla(this.world)) return this.enterHeartTown();
     if (back === "corolla" && this.world && insideCorolla(this.world)) { this.screen = { kind: "corolla", notice: null, walking: false }; this.emit(); return; }
@@ -888,11 +946,7 @@ export class WorldController {
   /** S37 (ADR-123): the door's word before any choice — the refusal text when this encounter's template
    * carries a deckRule the ACTIVE deck fails; null when the gate opens (or there is no gate). */
   doorRefusal(): string | null {
-    if (!this.world || this.screen.kind !== "encounter") return null;
-    const { tmpl } = this.screen;
-    if (!tmpl.deckRule) return null;
-    const check = doorCheck(this.world, tmpl, this.pool)!;
-    return check.ok ? null : doorRefusalText(this.catalog, tmpl.deckRule, check);
+    return this.siteDoor()?.refusal ?? null;
   }
 
   parley(choice: "fight" | "flee" | "buyoff"): void {
@@ -1221,6 +1275,10 @@ export class WorldController {
   enterDungeon(): void {
     if (!this.world || this.screen.kind !== "dungeonTelegraph") return;
     const { info } = this.screen;
+    // S38 (ADR-125): the seat's door — the gate refuses the DESCENT (the whole run; no deck edits inside) of a deck
+    // that fails the stronghold's rule, naming it; the editor is a button away and returns here.
+    const door = this.siteDoor();
+    if (door?.refusal) { this.screen = { ...this.screen, notice: door.refusal }; this.emit(); return; }
     let run = this.world.activeDungeon;
     if (!run || run.dungeonId !== info.dungeonId) {
       const color = (this.strongholdDef(info.dungeonId)?.color ?? this.moxDef(info.dungeonId)?.color ?? this.powerDef(info.dungeonId)?.color ?? this.catalog.opponents.find((o) => o.id === info.residentCatalogId)?.spoke ?? "G") as "W" | "U" | "B" | "R" | "G";
@@ -1612,7 +1670,7 @@ export class WorldController {
       const g = this.corollaGeometry();
       if (samePoint(inside.position, g.town)) return this.enterHeartTown();
       const petal = petalAt(g, inside.position);
-      if (petal && !petalsFallen(this.world).includes(petal.color)) { this.screen = { kind: "petalTelegraph", color: petal.color }; this.emit(); }
+      if (petal && !petalsFallen(this.world).includes(petal.color)) { this.screen = { kind: "petalTelegraph", color: petal.color, notice: null }; this.emit(); }
       return;
     }
     void this.corollaWalk(path);
@@ -1629,7 +1687,7 @@ export class WorldController {
       for (const e of events) {
         if (e.type === "petal") {
           this.autosave();
-          this.screen = { kind: "petalTelegraph", color: e.color };
+          this.screen = { kind: "petalTelegraph", color: e.color, notice: null };
           this.emit();
           return;
         }
@@ -1651,6 +1709,9 @@ export class WorldController {
   /** The petal's telegraph: the boss, the returned law, the stakes — fight or step back. */
   fightPetal(): void {
     if (this.screen.kind !== "petalTelegraph") return;
+    // S38 (ADR-125): the court's door — the tip refuses a deck that fails the petal's rule, naming it.
+    const door = this.siteDoor();
+    if (door?.refusal) { this.screen = { ...this.screen, notice: door.refusal }; this.emit(); return; }
     this.startPetalDuel(this.screen.color);
   }
   declinePetal(): void {

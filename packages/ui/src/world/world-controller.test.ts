@@ -164,6 +164,63 @@ describe("S37 (ADR-123): the door — a template's deckRule through the editor a
   });
 });
 
+describe("S38 (ADR-125): the door on a SITE — a stronghold's deckRule through the telegraph, the editor round trip, entry with a legal deck", () => {
+  it("the gate refuses the descent naming the rule; 'edit your deck' opens the editor on the door and returns to the gate; a legal deck enters", async () => {
+    const white = starterDecklist(starterTemplate(catalog, "white"), "standard");
+    const creatures = white.reduce((n, e) => n + (pool.get(e.cardId)!.types.includes("Creature") ? e.count : 0), 0);
+    const dungeons = JSON.parse(readFileSync(join(ROOT, "data/world/dungeons.json"), "utf8")) as { strongholds: { id: string; deckRule?: unknown }[] };
+    dungeons.strongholds.find((s) => s.id === "argent_bastion")!.deckRule = { colorsWithin: ["W"], minCreatures: creatures + 1, label: "the Argent Gate" };
+    const cat = catalogFrom(JSON.parse(JSON.stringify({
+      regions: { catalogVersion: "v1", regions: catalog.regions, strongholds: catalog.strongholds }, towns: { catalogVersion: "v1", names: catalog.townNames },
+      opponents: { catalogVersion: "v1", opponents: catalog.opponents }, starters: { catalogVersion: "v1", starters: catalog.starters },
+      dungeons, quests: JSON.parse(readFileSync(join(ROOT, "data/world/quests.json"), "utf8")),
+    })));
+    const c = new WorldController(pool, cat, memStorage());
+    c.stepMs = 0;
+    c.newGame({ starter: "white", difficulty: "standard", seed: 3801 });
+    const w = c.world!;
+    w.player.collection["serra_angel"] = 1;
+    for (const o of w.opponents) if (!o.fixedAt) { o.gone = true; o.goneReason = "fled"; }
+    // Walk onto the Bastion's gate (the S22b pattern).
+    const fp = w.map.strongholds.find((f) => f.kind === "stronghold" && f.name === "The Argent Bastion")!;
+    const near = [{ x: fp.at.x + 1, y: fp.at.y }, { x: fp.at.x - 1, y: fp.at.y }, { x: fp.at.x, y: fp.at.y + 1 }, { x: fp.at.x, y: fp.at.y - 1 }].find((p) => w.map.passable[idx(w.map, p)])!;
+    w.player.position = near;
+    c.clickCell(fp.at);
+    await tick();
+    c.clickCell(fp.at);
+    for (let i = 0; i < 50 && c.screen.kind !== "dungeonTelegraph"; i++) await tick();
+    const screen = () => (c as WorldController).screen;
+    expect(screen().kind).toBe("dungeonTelegraph");
+    // The door's word is up; the descent is refused, naming the rule.
+    const door = c.siteDoor()!;
+    expect(door.id).toBe("stronghold:argent_bastion");
+    expect(door.refusal).toMatch(/^The gate knows your colours\. It will not open to these\. the Argent Gate \(colours within W; ≥ \d+ creatures\): \d+ creatures; the Argent Gate asks \d+\.$/);
+    expect(c.doorRules()).toEqual([{ id: "stronghold:argent_bastion", name: "The Argent Bastion", label: "the Argent Gate", description: `colours within W; ≥ ${creatures + 1} creatures` }]);
+    c.enterDungeon();
+    expect(screen().kind).toBe("dungeonTelegraph");
+    expect((screen() as { notice: string | null }).notice).toBe(door.refusal);
+    // "Edit your deck": the editor opens on the door, pre-selected; Cancel returns to the gate.
+    c.openEditorForDoor();
+    expect(screen().kind).toBe("editor");
+    expect(c.editorRuleId).toBe("stronghold:argent_bastion");
+    expect(c.editorRuleCheck()!.check.ok).toBe(false);
+    c.editorClose();
+    expect(screen().kind).toBe("dungeonTelegraph");
+    expect((screen() as { info: { dungeonId: string } }).info.dungeonId).toBe("argent_bastion");
+    // Back in: the Serra for a Plains, saved — the editor returns to the gate, which now opens.
+    c.openEditorForDoor();
+    c.editorAdd("serra_angel");
+    c.editorRemove("plains");
+    expect(c.editorRuleCheck()!.check.ok).toBe(true);
+    expect(c.editorSave()).toBe(true);
+    expect(screen().kind).toBe("dungeonTelegraph");
+    expect(c.siteDoor()!.refusal).toBeNull();
+    c.enterDungeon();
+    expect(screen().kind).toBe("dungeon");
+    expect(c.dungeonRun!.kind).toBe("stronghold");
+  }, 60_000);
+});
+
 describe("deploy playtest r5 (Chris): the autosave survives the browser's quota", () => {
   it("a quota error never escapes — the autosave trims the replay logs and retries; the game goes on", async () => {
     const storage = cappedStorage(1_500_000);

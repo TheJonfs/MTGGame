@@ -95,7 +95,7 @@ function StartScreen({ c, onStart }: { c: WorldController; onStart: (choice: New
         )}
         <p>
           <button className="primary" onClick={() => onStart({ starter, difficulty, name, ...(seed.trim() ? { seed: Number(seed) } : {}) })}>New game</button>{" "}
-          {c.hasAutosave() && <button onClick={() => c.continueFromAutosave()}>Continue</button>}{" "}
+          {c.hasAutosave() && (() => { const s = c.saveSummary(); return <button onClick={() => c.continueFromAutosave()} title={s ? `${s.name} · ${s.difficulty} · phase ${s.phase} · ${s.steps} steps · ${s.worldLife} life · ${s.decks} deck${s.decks === 1 ? "" : "s"}` : "the autosave"}>Continue{s ? ` — ${s.name}, ${s.difficulty}, phase ${s.phase}, ${s.steps} steps` : ""}</button>; })()}{" "}
           {/* S27 r4 (Chris): the Chronicle appears only after a first cutting — before that its very header gives the ending away. */}
           {c.chronicle().length > 0 && <><button className="linkish" onClick={() => setChronicle(true)} title="the profile's ledger — one entry per folding">Chronicle ({c.chronicle().length})</button>{" "}</>}
           <label className="linkish" style={{ cursor: "pointer" }}>
@@ -149,6 +149,8 @@ function DevTab({ c }: { c: WorldController }) {
                 </div>
               ))}
             </div>
+            {/* S38: the world's phase (read-only here — no shipped path sets 2 this session; the salvage start will). */}
+            <p style={{ fontSize: 11.5, color: "var(--ink-soft)", marginBottom: 4, marginTop: 10 }}>World: phase <b>{c.world?.phase ?? 1}</b> · {c.world?.difficulty} · the resolver reads the phase-{c.world?.phase ?? 1} column (docs/knobs.md phaseTierTables){(c.world?.phase ?? 1) >= 2 ? " · the Heart's ring accumulates" : ""}</p>
             {/* S27: the legacy toggle — grant a cutting per colour (writes the profile) or clear it. */}
             <p style={{ fontSize: 11.5, color: "var(--ink-soft)", marginBottom: 4, marginTop: 10 }}>Legacy (the profile, outside the save): cuttings {(["W", "U", "B", "R", "G"] as const).map((k) => `${k}${c.legacy().cuttings[k] ?? 0}`).join(" ")} · victories {c.legacy().victories}</p>
             <p style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 0 }}>
@@ -584,6 +586,7 @@ function DungeonTelegraph({ c }: { c: WorldController }) {
   const portrait = sh ? sh.lord.portrait : mox ? mox.guardian.portrait : pd ? pd.guardian.portrait : resident ? (resident.portraitChip ?? resident.portrait) : null;
   const holderName = sh ? sh.lord.name : mox ? mox.guardian.name : pd ? pd.guardian.name : resident?.name;
   const lordRow = sh ? c.lordStatusRows().find((r) => r.strongholdId === sh.id) : undefined;
+  const door = c.siteDoor(); // S38 (ADR-125): the seat's door — the rule, its verdict, the editor a button away
   return (
     <div className="gallery-modal">
       <div className="gallery-modal-box play-dialog dungeon-telegraph">
@@ -612,9 +615,11 @@ function DungeonTelegraph({ c }: { c: WorldController }) {
           <li><b>Your life inside carries from fight to fight</b> (it starts at your world life, {c.world?.player.worldLife}); it is discarded when you leave, but an interior LOSS still costs a world life and your stake.</li>
           <li><b>Everything found inside is held in escrow</b> until the {info.kind === "stronghold" ? "lord" : info.kind === "mox" || info.kind === "power" ? "guardian" : "resident"} falls — walk out or fall, and the mountain keeps it. Minions bar the way (no parley inside).</li>
         </ul>
+        {door?.refusal && <p className="dungeon-law door-shut">{door.refusal}</p>}
         <p style={{ textAlign: "right", marginBottom: 0 }}>
           <button onClick={() => c.declineDungeon()}>Not yet</button>{" "}
-          <button className="primary" onClick={() => c.enterDungeon()}>{c.world?.activeDungeon?.dungeonId === info.dungeonId ? "Descend again (your run resumes)" : "Enter"}</button>
+          {door && <><button onClick={() => c.openEditorForDoor()} title="the editor opens checking against this gate, and returns here">Edit your deck</button>{" "}</>}
+          <button className="primary" disabled={!!door?.refusal} title={door?.refusal ?? ""} onClick={() => c.enterDungeon()}>{c.world?.activeDungeon?.dungeonId === info.dungeonId ? "Descend again (your run resumes)" : "Enter"}</button>
         </p>
       </div>
     </div>
@@ -846,6 +851,7 @@ function PetalTelegraph({ c }: { c: WorldController }) {
   const pd = c.corollaDef!.petals.find((p) => p.color === color)!;
   const content = c.catalog.strongholdContent?.find((s) => s.color === color);
   const deck = COROLLA_DECKS[pd.boss.key];
+  const door = c.siteDoor(); // S38 (ADR-125): the court's door
   return (
     <div className="gallery-modal">
       <div className="gallery-modal-box play-dialog dungeon-telegraph">
@@ -864,9 +870,11 @@ function PetalTelegraph({ c }: { c: WorldController }) {
           <li>Win: <b>{c.pool.get(pd.signature)?.name ?? pd.signature}</b> (there is exactly one, and this is the only place it drops), one <b>{c.pool.get(pd.duals[0])?.name}</b> and one <b>{c.pool.get(pd.duals[1])?.name}</b>, <b>{c.knobs.petalGoldPrize} gold</b>, and the stake. The petal falls and stays fallen.</li>
           <li>Lose: a world life and your stake; you stand where you fell. No clock runs; nothing else changes.</li>
         </ul>
+        {door?.refusal && <p className="dungeon-law door-shut">{door.refusal}</p>}
         <p style={{ textAlign: "right", marginBottom: 0 }}>
           <button onClick={() => c.declinePetal()}>Step back</button>{" "}
-          <button className="primary" onClick={() => c.fightPetal()}>Fight</button>
+          {door && <><button onClick={() => c.openEditorForDoor()} title="the editor opens checking against this gate, and returns here">Edit your deck</button>{" "}</>}
+          <button className="primary" disabled={!!door?.refusal} title={door?.refusal ?? ""} onClick={() => c.fightPetal()}>Fight</button>
         </p>
       </div>
     </div>

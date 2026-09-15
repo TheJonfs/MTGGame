@@ -235,7 +235,7 @@ export function siegeDuelSpec(
   const tmpl = catalog.opponents.find((o) => o.id === eng.remaining[0]);
   if (!tmpl) throw new Error(`catalog has no opponent ${eng.remaining[0]}`);
   // S34: the resolver's life and entrance at this world's mode (the party member is a roaming template).
-  const matchup = resolveMatchup(tmpl, knobs, null);
+  const matchup = resolveMatchup(tmpl, knobs, null, world.phase); // S38
   const modifiers: Modifier[] = [{ type: "startingLife", player: 1, value: matchup.life }, ...entranceModifiers(matchup, 1), ...manalinkModifiers(world)];
   const spec: MatchSpec = {
     seed: rng.int(1_000_000_000),

@@ -523,7 +523,7 @@ export function dungeonDuelSpec(
   const emp = enemy.kind === "guardian" ? empowermentModifiers(empowerment, enemy.color) : { lifeBonus: 0, modifiers: [] };
   // S34: a MINION (a roaming template on a dungeon floor) resolves like an encounter — the tier tables at
   // this world's mode, the mage's entrance included; the guardian's setup is content-defined (unchanged).
-  const minionMatchup = enemy.kind === "minion" ? resolveMatchup(enemy.tmpl, knobs, null) : null;
+  const minionMatchup = enemy.kind === "minion" ? resolveMatchup(enemy.tmpl, knobs, null, world.phase) : null; // S38
   const base =
     enemy.kind === "minion"
       ? {

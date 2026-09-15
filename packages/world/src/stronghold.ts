@@ -19,6 +19,7 @@
  * colour and the colour's typed duals; prizeOnly blocked) + the SEAL (story flag; five seals =
  * the gauntlet-unlock state — the gauntlet itself is designed nowhere and built nowhere, per brief).
  */
+import type { DeckRule } from "./legality.js";
 import type { CardDef } from "@shandalar/cards";
 import { cardColors } from "@shandalar/cards";
 import type { Modifier } from "@shandalar/engine";
@@ -36,6 +37,9 @@ export interface StrongholdContentDef {
   /** gender (S24 r1, Chris): the Usher and the Sower are "she"; absent defaults to "he". */
   lord: { key: string; name: string; cardId: string; baseLife: number; portrait: string; gender?: "he" | "she" };
   law: { cardId: string; name: string; text: string };
+  /** S38 (ADR-125): the seat's door — a deck rule the gate's telegraph checks before the descent (phase two's
+   * colour gates: the deck within the lord's triad). None shipped. */
+  deckRule?: DeckRule;
 }
 
 /** S24 r1: the lord's pronoun set for player-facing prose (subject/object/possessive). */

@@ -3,7 +3,8 @@ import { fileURLToPath } from "node:url";
 import { existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
-import { deserializeWorld, strongholdState, MOX_IDS, PETAL_ORDER, corollaPath, insideCorolla, petalsFallen } from "@shandalar/world";
+import { catalogFrom, commitDeck, activeDeck, deserializeWorld, strongholdState, MOX_IDS, PETAL_ORDER, corollaPath, insideCorolla, petalsFallen } from "@shandalar/world";
+import { readFileSync } from "node:fs";
 import { loadCatalog } from "@shandalar/world/loader";
 import { WorldController } from "./world-controller.js";
 
@@ -329,3 +330,60 @@ describe("S27 — the Heart through the controller: the door at five, the fight,
     expect(c2.legacy().victories).toBe(0);
   });
 });
+
+describe("S38 (ADR-125): the door on a PETAL — the tip's deckRule through its telegraph, the editor returning to the tip, the fight with a legal deck", () => {
+  it("the tip refuses the fight naming the rule; the editor opens on the door and returns to the tip (not the outer map); a legal deck fights", async () => {
+    const dungeons = JSON.parse(readFileSync(join(ROOT, "data/world/dungeons.json"), "utf8")) as { corolla: { petals: { color: string; deckRule?: unknown }[] } };
+    dungeons.corolla.petals.find((p) => p.color === "B")!.deckRule = { maxLands: 10, label: "the Tithe's court" };
+    const cat = catalogFrom(JSON.parse(JSON.stringify({
+      regions: { catalogVersion: "v1", regions: catalog.regions, strongholds: catalog.strongholds }, towns: { catalogVersion: "v1", names: catalog.townNames },
+      opponents: { catalogVersion: "v1", opponents: catalog.opponents }, starters: { catalogVersion: "v1", starters: catalog.starters },
+      dungeons, quests: JSON.parse(readFileSync(join(ROOT, "data/world/quests.json"), "utf8")),
+    })));
+    const c = new WorldController(pool, cat, memStorage());
+    c.stepMs = 0;
+    c.newGame({ seed: 3802, starter: "green", difficulty: "standard" });
+    const w = c.world!;
+    const door = w.map.strongholds.find((f) => f.kind === "corolla")!;
+    for (const col of PETAL_ORDER) strongholdState(w, col).seal = true;
+    w.player.position = { ...door.at };
+    c.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: null };
+    const screen = () => (c as WorldController).screen;
+    c.knock();
+    c.enterCorolla();
+    expect(screen().kind).toBe("corolla");
+    const tithe = c.petalRows().find((r) => r.color === "B")!;
+    c.corollaClick(tithe.tip);
+    for (let i = 0; i < 200 && screen().kind === "corolla"; i++) await new Promise((r) => setTimeout(r, 0));
+    expect(screen().kind).toBe("petalTelegraph");
+    const lands = activeDeck(w).reduce((n, e) => n + (pool.get(e.cardId)!.types.includes("Land") ? e.count : 0), 0);
+    expect(lands).toBeGreaterThan(10);
+    const gate = c.siteDoor()!;
+    expect(gate.id).toBe("petal:B");
+    expect(gate.refusal).toMatch(new RegExp(`^The gate knows your colours\\. It will not open to these\\. the Tithe's court \\(≤ 10 lands\\): ${lands} lands; the Tithe's court allows 10\\.$`));
+    c.fightPetal();
+    expect(screen().kind).toBe("petalTelegraph"); // refused
+    expect((screen() as { notice: string | null }).notice).toBe(gate.refusal);
+    // The editor from the tip returns to the tip — inside the flower still.
+    c.openEditorForDoor();
+    expect(screen().kind).toBe("editor");
+    expect(c.editorRuleId).toBe("petal:B");
+    c.editorClose();
+    expect(screen().kind).toBe("petalTelegraph");
+    expect(insideCorolla(w)).not.toBeNull();
+    // A legal deck: lands down to ten, the spares in (the green starter's spares from the collection).
+    const draft = activeDeck(w).map((e) => ({ ...e }));
+    const spare = Object.entries(w.player.collection).find(([id, n]) => !pool.get(id)!.types.includes("Land") && n > (draft.find((e) => e.cardId === id)?.count ?? 0))!;
+    for (let k = lands; k > 10; k--) draft.find((e) => e.cardId === "forest")!.count -= 1;
+    const e = draft.find((x) => x.cardId === spare[0]);
+    const need = lands - 10;
+    if (e) e.count += Math.min(need, spare[1] - e.count); else draft.push({ cardId: spare[0], count: Math.min(need, spare[1]) });
+    while (draft.reduce((n, x) => n + x.count, 0) < 30) { const any = draft.find((x) => !pool.get(x.cardId)!.types.includes("Land") && x.count < 4 && (w.player.collection[x.cardId] ?? 0) > x.count); if (!any) break; any.count += 1; }
+    const r = commitDeck(w, draft);
+    expect(r.ok, r.ok ? "" : r.reason).toBe(true);
+    expect(c.siteDoor()!.refusal).toBeNull();
+    c.fightPetal();
+    expect(screen().kind).toBe("corollaDuel");
+  }, 60_000);
+});
+

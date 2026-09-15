@@ -1,0 +1,49 @@
+# The world UI — standing reference (hand-kept)
+
+*S38 Part 4 (the S37 handoff's Concern 1). A paragraph per screen: what it shows, what the player can do there, what gates it, and where the editor is and isn't reachable. The planner reads this before any brief that names a screen; the implementer updates it in the session that changes a screen. Hand-kept — not generated. Last touched: S38 (2026-09-16).*
+
+## The routes
+
+`/` is the title plate with four doors: **The journey** (`/world`), **A single match** (`/play`), **The card gallery** (`/gallery`), **The replay viewer** (`/viewer`); the dev server (and `?dev=1`) adds **The matchup lab** (`/lab`) and the SFX board (`/sound`). Sound is a persisted preference toggled on the front page and in the ribbon; there is no other settings screen.
+
+## The journey (`/world`)
+
+**The start screen.** New game: a starter (one of the five colours), a difficulty (easy / standard / hard), a name, an optional seed. **Continue** resumes the browser's autosave (S38: the button reads the save's name, difficulty, phase and steps; hover for life and deck count). A save file can be loaded; the Chronicle of Cuttings opens once a first cutting exists; the carried legacy (cuttings, victories, what a new road inherits) reads as a line with a "start from scratch" wipe behind a confirmation.
+
+**The ribbon** (on the map, in towns, in the flower): the player's name and region, world life (current / maximum), gold, steps (the clock; inside the flower "clock still" and the petals fallen), then **Deck** (the editor — disabled with its reason while parleying, duelling, on a result, or after game over), **Collection**, **Save**, **Download**, **Dev** (dev only: complete sites, grant cuttings, the world's phase read-only), the sound toggle, and the seed and difficulty.
+
+**The map.** Click a cell to preview a path (steps counted), click again or press "Walk there" to walk; the walk stops at an encounter, a threshold, a door, a town, or siege news. The rail (right) holds the panels: **Powers** (the five learned powers and their fuel — the fuel picker modal spends cards), **Journey** (life, gold, steps, renown by colour), **Quests** (accepted contracts and deadlines), **Rumors** (the tavern's pointers), **Sieges** (threatened and fallen towns), **Manalinks** (active terms), **The five lords** (each seat's lord, life today, seal state), **Lairs & strongholds**, **Regions**, and **Recent duels** (the last six keep a replay). Standing on a centre door shows a **Knock** button. Editor: reachable.
+
+**The town** (arrived at by walking in; an occupied town is a siege telegraph instead). Tabs: the **square** (the town's plates), the **market** (the shelf — stock rolled per town and epoch, `shopTier ≤ ring`, depletion shown; a bought card goes to the collection, or straight into the deck when the result stays legal), **sell**, the **board** (the quest board — seeded offers; accepting is free; card-courier offers pick a spare), the **tavern** (rumours and the manalink pointer), the **inn** (rest: steps for life). Manalink grants splash on the way in. Editor: reachable (Deck in the ribbon; the editor returns to the town).
+
+**The collection.** Every owned card with copies owned and copies in the active deck; filters by colour and land; printed frame or ours; the inspector on hover. Editor: reachable (it returns to where the collection was opened).
+
+**The deck editor.** The picker of saved decks (switch with a dirty-draft guard, new = 30 basics, duplicate, delete a non-active deck), the name, the chip (cards, lands, average mana value, legal or N problems), the curve, colour pips, the type counts, search / filter / sort, printed or our frame. Two panes: **spares** (owned, not in the deck — click to add; the four-copy cap and ownership gate adds) with the free basics row, and **the deck** (click to remove). The **legality panel** lists every problem as a sentence (the 30-card floor, the four-copy cap, ownership); Save is disabled until it is empty. The **door picker** ("check against a door") lists every door in the catalog — a ruled site (a stronghold's seat, a petal's tip) or a ruled roamer — with the rule, its live verdict ("the gate opens / is shut") and its problems; a door never blocks Save. Arriving from a site's telegraph pre-selects that door, and Save / Cancel return to the telegraph. Reachable from the map, a town, the collection, the flower and its town, and both site telegraphs; **not** while parleying, duelling, on a result screen, after game over, or anywhere inside a dungeon or stronghold run (the interior renders without the ribbon — no edits inside, by Chris's ruling).
+
+**The parley** (a roamer contact). The opponent's portrait, name and epithet, tier and colours, world life, the entrance clause, the stakes, its voice line. **Fight** (the duel at your world life), **Flee** (the tier's odds; the stake is forfeit either way; caught = you fight), **Buy off / Distract** (gold; some cannot be bought). A ruled roamer (none shipped) shows the gate's refusal above the options and shuts Fight. Editor: not reachable (leave first).
+
+**The duel** mounts the match client (the board, the rail, the play-by-play; the human's seat is threaded through every label). **The result** narrates ante, gold, life and renown, offers the replay, and returns to the map; a loss at the floor is game over.
+
+**The telegraphs** (each a modal with a decline): the **siege** (the party, the life-carry law, the stakes; the town is the fight); the **dungeon threshold** for a Mox court, a power dungeon, a lair, or a **stronghold** (the seat's gate plate and theme, the lord's life today, the law that stands inside, the clock that freezes, the escrow) — S38: a stronghold's **door** (its `deckRule`) shows the refusal line, shuts Enter, and offers **Edit your deck** (the editor on that door, returning here); the **Corolla's door** (locked until five seals) and the **Vault's** (five Moxen); the **petal's tip** (the boss, the returned law, the prizes) — S38: a petal's door likewise; the **Heart's** door in the heart's town. Editor: reachable from the dungeon and petal telegraphs (the door path), from the corolla and vault telegraphs via the ribbon.
+
+**Inside a dungeon or stronghold** (the interior): a grid walked cell by cell; minions bar the way (no parley inside); treasure and escrow; the guardian or lord at the deep end; the empowerment meter. Interior duels mount the match client; a loss costs a world life and the stake and resets the halls. **Victories**: the dungeon's payout, the stronghold's sole-drop and the prize picker (pick N from the colour's list) and the seal ceremony. Editor: not reachable inside.
+
+**The Corolla** (the flower, after five seals): the petal map with five tips and the town at the heart; walking a tip opens the petal telegraph; the town has an inn that asks nothing, the R drawer's only shelf, and the Heart's door (opens at five petals). **The Heart** telegraph and fight; the victory writes the chronicle's entry and offers the new road. The Mirror (the Vault) fights a copy of your deck plus a Lotus. Editor: reachable in the flower and its town; not at a tip's fight.
+
+**The Chronicle of Cuttings** (from the start screen): one entry per folding — colour, seed, difficulty, steps, the text. **Game over**: the fatal duel's replay, a new game.
+
+## The single match (`/play`)
+
+Production: the plain setup — **your deck** and **the opponent's** from the roster (your saved decks, the mages, the beasts, and the bosses you have met — the gallery's unlock rule: a deck is offered when every prizeOnly card in it has been met in a duel or is owned; `?all=1` bypasses), the AI profile, play/draw, a seed; 20 life, no ante, no modifiers. The end screen offers the replay, a rematch on the seed, a download. Dev (the dev server, `?dev=1`): the **dev setup** — the Lab's dials on a duel (any deck of the catalogue, life, entrance basics, AI profile, starting bonuses over the modifier vocabulary, the mode and — S38 — the phase whose tables set the defaults), plus the Lab's deck editor saving to `analysis/decks/`.
+
+## The matchup lab (`/lab`, dev)
+
+The **grid** (side A varied over lives and entrance basics against side B) and the **roster** (rows — the starters, roads, saved decks, custom decks, slices — against every mage and beast at their world defaults; a differential sweep with shifts; bands by tier). The **mode** selector (easy / standard / hard) and — S38 — the **phase** selector (1 / 2) pick the resolver's tables; a saved run records both. Runs save by name with notes.
+
+## The card gallery (`/gallery`)
+
+Every card in the pool in both frames, captioned from the Scryfall printings, filterable; prizeOnly cards stay hidden until met in a duel or owned (the seen store plus the autosave's collection; the dev server shows all; `?all=1` is the deploy's bypass).
+
+## The replay viewer (`/viewer`)
+
+Any saved game, decision by decision, with the enumerated alternatives reconstructed; the world's recent duels hand off here.
