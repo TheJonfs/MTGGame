@@ -680,3 +680,130 @@ describe("S18 Part 5: dedicated dialogs for chooseMode / discardCost / A7 sacrif
     expect(seen).toBe(true);
   }, 90_000);
 });
+
+describe("deploy playtest r9 (Chris): targets in any order, a response-window tap, cancel takes the taps back, Clear clears", () => {
+  const tick = () => new Promise((r) => setTimeout(r, 0));
+  it("the Warden's up-to-two: the SECOND candidate first, then the first — both tapped (the enumerator's order is not the player's); Clear empties the staged attackers", async () => {
+    const pool = loadCardPool(CARDS_DIR);
+    const c = new MatchController(pool.cards, {
+      humanSeat: 0, seed: 7, aiDelayMs: 0,
+      custom: {
+        human: { name: "You", decklist: [{ cardId: "the_warden", count: 40 }] },
+        enemy: { name: "D", decklist: [...DECKS.D.decklist], difficulty: "journeyman", archetype: "midrange" },
+        rules: { startingLife: 20, ante: 0, startingPlayer: 0 },
+        modifiers: [
+          { type: "permanentOnBattlefield" as const, player: 0 as const, cardId: "the_warden" },
+          { type: "permanentOnBattlefield" as const, player: 1 as const, cardId: "grizzly_bears" },
+          { type: "permanentOnBattlefield" as const, player: 1 as const, cardId: "centaur_courser" },
+        ],
+      },
+    });
+    c.start();
+    let guard = 0;
+    const until = async (kind: string) => { guard = 0; while (c.phase.kind !== kind && guard++ < 5000) { await tick(); if (c.phase.kind === "dialog" && kind !== "dialog") { c.selectDialog(0); c.confirmDialog(); } else if (c.phase.kind === "priority" && kind !== "priority") c.pass(); else if (c.phase.kind === "attackers" && kind !== "attackers") c.confirmAttackers(); else if (c.phase.kind === "blockers" && kind !== "blockers") c.confirmBlocks(); } };
+    for (let t = 0; t < 4; t++) {
+      await until("attackers");
+      if (c.phase.kind === "attackers" && [...c.phase.eligible].some((id) => c.game.state.objects[id]!.cardId === "the_warden")) break;
+      if (c.phase.kind === "attackers") c.confirmAttackers();
+    }
+    expect(c.phase.kind).toBe("attackers");
+    const warden = [...(c.phase as { eligible: Set<string> }).eligible].find((id) => c.game.state.objects[id]!.cardId === "the_warden")!;
+    // Clear: stage, clear, stage again.
+    c.clickBattlefield(warden);
+    expect((c.phase as { staged: Set<string> }).staged.size).toBe(1);
+    c.clearStaged();
+    expect(c.phase.kind).toBe("attackers");
+    expect((c.phase as { staged: Set<string> }).staged.size).toBe(0);
+    c.clickBattlefield(warden);
+    c.confirmAttackers();
+    await until("targeting");
+    expect(c.phase.kind).toBe("targeting");
+    const ids = [...(c.phase as { highlightObjects: Set<string> }).highlightObjects];
+    const bears = ids.find((id) => c.game.state.objects[id]!.cardId === "grizzly_bears")!;
+    const courser = ids.find((id) => c.game.state.objects[id]!.cardId === "centaur_courser")!;
+    expect(c.game.state.battlefield.indexOf(bears)).toBeLessThan(c.game.state.battlefield.indexOf(courser)); // the Bears precede the Courser
+    // The Courser FIRST: still targeting, the Bears offered next, finishing with one is legal too.
+    c.clickBattlefield(courser);
+    expect(c.phase.kind).toBe("targeting");
+    expect((c.phase as { highlightObjects: Set<string> }).highlightObjects.has(bears)).toBe(true);
+    expect((c.phase as { canFinish: boolean }).canFinish).toBe(true);
+    c.clickBattlefield(bears);
+    expect(c.phase.kind).toBe("confirmCast");
+    const action = (c.phase as { action: { targets: { id: string }[] } }).action;
+    expect(action.targets.map((t) => t.id).sort()).toEqual([bears, courser].sort());
+    c.confirmCast();
+    await until("priority");
+    expect(c.game.state.objects[bears]!.tapped).toBe(true);
+    expect(c.game.state.objects[courser]!.tapped).toBe(true);
+    c.concede();
+    guard = 0;
+    while (!c.result && guard++ < 2000) await tick();
+  }, 60_000);
+
+  it("a manual payment cancelled takes its taps back (the Forest untaps, no mana floats); a response window offers the producers to tap, and the tap floats the mana", async () => {
+    const pool = loadCardPool(CARDS_DIR);
+    const c = new MatchController(pool.cards, {
+      humanSeat: 0, seed: 11, aiDelayMs: 0,
+      custom: {
+        // Bears and Giant Growths: the Growth is the one-mana instant the floated mana is FOR (a window whose only
+        // action is a lone pass is auto-passed by the engine — no request, nothing to keep open).
+        human: { name: "You", decklist: [{ cardId: "grizzly_bears", count: 39 }, { cardId: "giant_growth", count: 1 }] }, // the signature modifier pulls the Growth from the library
+        enemy: { name: "D", decklist: [...DECKS.D.decklist], difficulty: "journeyman", archetype: "midrange" },
+        rules: { startingLife: 20, ante: 0, startingPlayer: 0 },
+        modifiers: [
+          { type: "permanentOnBattlefield" as const, player: 0 as const, cardId: "forest" },
+          { type: "permanentOnBattlefield" as const, player: 0 as const, cardId: "forest" },
+          { type: "permanentOnBattlefield" as const, player: 0 as const, cardId: "forest" },
+          { type: "permanentOnBattlefield" as const, player: 1 as const, cardId: "grizzly_bears" },
+          { type: "signatureToHand" as const, player: 0 as const, cardId: "giant_growth" },
+        ],
+      },
+    });
+    c.start();
+    let guard = 0;
+    const until = async (kind: string) => { guard = 0; while (c.phase.kind !== kind && guard++ < 5000) { await tick(); if (c.phase.kind === "dialog" && kind !== "dialog") { c.selectDialog(0); c.confirmDialog(); } } };
+    const forests = () => c.game.state.battlefield.filter((id) => c.game.state.objects[id]!.cardId === "forest" && c.game.state.objects[id]!.controller === 0);
+    const floating = () => Object.values(c.game.state.players[0].manaPool).reduce((n, v) => n + v, 0);
+    // The Growth (an instant) makes the upkeep window meaningful — pass until the main phase offers the Bears.
+    const bearsCastable = () => c.phase.kind === "priority" && [...(c.phase as { castable: Map<string, unknown> }).castable.keys()].some((id) => c.game.state.objects[id]!.cardId === "grizzly_bears");
+    await until("priority");
+    for (let k = 0; k < 8 && !bearsCastable(); k++) { c.pass(); await until("priority"); }
+    expect(bearsCastable()).toBe(true);
+    const bear = [...(c.phase as { castable: Map<string, unknown> }).castable.keys()].find((id) => c.game.state.objects[id]!.cardId === "grizzly_bears")!;
+    c.clickHand(bear);
+    expect(c.phase.kind).toBe("confirmCast");
+    expect((c.phase as { offerManualTap: boolean }).offerManualTap).toBe(true); // three Forests for a two-drop
+    c.beginManualTap();
+    expect(c.phase.kind).toBe("manualTap");
+    const f1 = forests()[0]!;
+    c.clickBattlefield(f1);
+    await until("manualTap");
+    expect(c.game.state.objects[f1]!.tapped).toBe(true);
+    expect(floating()).toBe(1);
+    // Cancel: the Forest comes back untapped and nothing floats; priority again.
+    c.cancel();
+    await until("priority");
+    expect(c.phase.kind).toBe("priority");
+    expect(c.game.state.objects[f1]!.tapped).toBe(false);
+    expect(floating()).toBe(0);
+    // Now cast the Bears holding priority: our spell is on the stack — a response window — and the untapped
+    // Forest is offered as a tap; the tap floats its mana.
+    c.clickHand(bear);
+    if (c.phase.kind === "confirmCast") c.confirmCast(true);
+    await until("priority");
+    expect(c.game.state.stack.length).toBeGreaterThan(0);
+    const tappable = (c.phase as { manaTappable: Map<string, unknown> }).manaTappable;
+    const untapped = forests().find((id) => !c.game.state.objects[id]!.tapped)!;
+    expect(tappable.has(untapped)).toBe(true);
+    c.clickBattlefield(untapped);
+    await until("priority");
+    expect(c.game.state.stack.length).toBeGreaterThan(0); // the window stays open: the mana floats for the Growth
+    expect(c.game.state.objects[untapped]!.tapped).toBe(true);
+    expect(floating()).toBe(1);
+    expect([...(c.phase as { castable: Map<string, unknown> }).castable.keys()].some((id) => c.game.state.objects[id]!.cardId === "giant_growth")).toBe(true);
+    c.concede();
+    guard = 0;
+    while (!c.result && guard++ < 2000) await tick();
+  }, 60_000);
+});
+

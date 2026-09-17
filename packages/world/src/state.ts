@@ -104,7 +104,11 @@ export interface PlayerState {
   renownByColor: Record<RenownColor, number>;
   /** S16 v3: which catalog starter this world began with (home colour; pilot archetype). */
   starterId: StarterId;
+  /** r9 (Chris): the player's portrait — one of the two S6 traveling-mage portraits. Absent = "you" (the hooded one). */
+  portrait?: PlayerPortrait;
 }
+export type PlayerPortrait = "you" | "mage-female";
+export const PLAYER_PORTRAITS: readonly PlayerPortrait[] = ["you", "mage-female"];
 
 export interface WorldState {
   catalogVersion: string;
@@ -188,6 +192,8 @@ export interface NewWorldOptions {
    * the assembler built (salvage.ts); the pack comes from the catalog. Phase 2, the purse, no manalinks. */
   salvage?: SalvageSpec;
   playerName?: string;
+  /** r9: the player's portrait. */
+  portrait?: PlayerPortrait;
   generator?: GeneratorOptions;
   /** Extra knob layers (tests force behaviour via the `event` layer). */
   knobLayers?: Partial<Record<"region" | "dungeon" | "opponent" | "event", KnobSource>>;
@@ -365,6 +371,7 @@ function worldFrom(opts: NewWorldOptions, difficulty: DifficultyName, knobs: Kno
       renown: 0,
       renownByColor: zeroRenownByColor(),
       starterId: p.starterId,
+      ...(opts.portrait ? { portrait: opts.portrait } : {}),
     },
     opponents: gen.opponents,
     rng: rng.state(),

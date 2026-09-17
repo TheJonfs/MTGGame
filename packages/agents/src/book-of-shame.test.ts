@@ -482,14 +482,63 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     };
     const idle = mkView(base); // main phase, empty stack — the "maximize mana usage" waste
     expect(a.scorePriorityAction(idle, { type: "castSpell", objectId: "h_gg", targets: [{ kind: "object", id: "mine" }] })).toBe(-Infinity);
-    // Combat live, our bear attacking: pumping it beats passing (the material credit stands in).
-    const combat = mkView({ ...base, combat: { attackers: ["mine"], blocks: [{ blocker: "theirs", attacker: "mine" }] } });
+    // Combat live, our bear attacking, the blocks declared (r9: the DECLARE_BLOCKERS round): pumping it beats passing.
+    const combat = mkView({ ...base, step: "DECLARE_BLOCKERS", combat: { attackers: ["mine"], blocks: [{ blocker: "theirs", attacker: "mine" }] } });
     const pumpAttacker = a.scorePriorityAction(combat, { type: "castSpell", objectId: "h_gg", targets: [{ kind: "object", id: "mine" }] });
     const pass = a.scorePriorityAction(combat, { type: "pass" });
     expect(pumpAttacker).toBeGreaterThan(pass);
     // An opponent spell on the stack lifts the gate too (the save is a legitimate window).
     const threatened = mkView({ ...base, stack: [{ id: "stk_bolt", kind: "spell", cardId: "lightning_bolt", controller: 1 }] });
     expect(a.scorePriorityAction(threatened, { type: "castSpell", objectId: "h_gg", targets: [{ kind: "object", id: "mine" }] })).toBeGreaterThan(-Infinity);
+  });
+
+  it("book of shame 54 (deploy playtest r9): a second Pacifism on a pacified creature, or a Spirit Link on one, scores below passing; a fresh Pacifism on an unenchanted creature does not; a steal aura on a pacified creature still steals", () => {
+    const a = agent();
+    const pass = (v: ReturnType<typeof mkView>) => a.scorePriorityAction(v, { type: "pass" });
+    const cast = (v: ReturnType<typeof mkView>, card: string, host: string) => a.scorePriorityAction(v, { type: "castSpell", objectId: card, targets: [{ kind: "object", id: host }] });
+    const pacified = mkView({
+      hand: [{ objectId: "h_pac", cardId: "pacifism" }, { objectId: "h_link", cardId: "spirit_link" }, { objectId: "h_cm", cardId: "control_magic" }],
+      battlefield: [
+        { id: "plains1", cardId: "plains", controller: 0 }, { id: "plains2", cardId: "plains", controller: 0 }, { id: "island1", cardId: "island", controller: 0 }, { id: "island2", cardId: "island", controller: 0 },
+        { id: "angel", cardId: "serra_angel", controller: 1 }, { id: "pac_on", cardId: "pacifism", controller: 0, attachedTo: "angel" },
+        { id: "bear", cardId: "grizzly_bears", controller: 1 },
+      ],
+    });
+    expect(cast(pacified, "h_pac", "angel")).toBeLessThan(pass(pacified)); // the same aura twice: nothing
+    expect(cast(pacified, "h_link", "angel")).toBeLessThan(pass(pacified)); // a lifelink aura on a creature that cannot deal damage: nothing
+    expect(cast(pacified, "h_pac", "bear")).toBeGreaterThan(pass(pacified)); // the Bears are unenchanted: a real Pacifism
+    expect(cast(pacified, "h_cm", "angel")).toBeGreaterThan(pass(pacified)); // a steal takes the body, pacified or not
+  });
+
+  it("book of shame 55 (deploy playtest r9): Giant Growth at DECLARE_ATTACKERS (blocks not yet declared) is gated at -Infinity; at DECLARE_BLOCKERS it is the trick, as the attacker or the blocker; the damage step keeps the window", () => {
+    const a = agent();
+    const gg = { type: "castSpell" as const, objectId: "h_gg", targets: [{ kind: "object" as const, id: "mine" }] };
+    const base = { hand: [{ objectId: "h_gg", cardId: "giant_growth" }], battlefield: [{ id: "mine", cardId: "grizzly_bears", controller: 0 as const }, { id: "theirs", cardId: "grizzly_bears", controller: 1 as const }, { id: "f1", cardId: "forest", controller: 0 as const }] };
+    const attackersDeclared = mkView({ ...base, step: "DECLARE_ATTACKERS", combat: { attackers: ["mine"], blocks: [] } });
+    expect(a.scorePriorityAction(attackersDeclared, gg)).toBe(-Infinity);
+    const beginCombat = mkView({ ...base, step: "COMBAT_BEGIN", combat: { attackers: [], blocks: [] } });
+    expect(a.scorePriorityAction(beginCombat, gg)).toBe(-Infinity);
+    const blocked = mkView({ ...base, step: "DECLARE_BLOCKERS", combat: { attackers: ["mine"], blocks: [{ blocker: "theirs", attacker: "mine" }] } });
+    expect(a.scorePriorityAction(blocked, gg)).toBeGreaterThan(a.scorePriorityAction(blocked, { type: "pass" }));
+    // Their turn: their Bears attack, ours blocks — the pump on the blocker at DECLARE_BLOCKERS.
+    const blocking = mkView({ ...base, step: "DECLARE_BLOCKERS", activePlayer: 1, combat: { attackers: ["theirs"], blocks: [{ blocker: "mine", attacker: "theirs" }] } });
+    expect(a.scorePriorityAction(blocking, gg)).toBeGreaterThan(-Infinity);
+    const damage = mkView({ ...base, step: "COMBAT_DAMAGE", combat: { attackers: ["mine"], blocks: [{ blocker: "theirs", attacker: "mine" }] } });
+    expect(a.scorePriorityAction(damage, gg)).toBeGreaterThan(-Infinity);
+  });
+
+  it("book of shame 56 (deploy playtest r9): a castable Hedron Crab in hand withholds the land drop from the decision (the Crab first, then the landfall); no Crab, the land competes; the Crab already out, the land competes", () => {
+    const a = agent();
+    const land = { type: "playLand" as const, objectId: "h_isl" };
+    const crab = { type: "castSpell" as const, objectId: "h_crab", targets: [] };
+    const pass = { type: "pass" as const };
+    const v = mkView({ hand: [{ objectId: "h_isl", cardId: "island" }, { objectId: "h_crab", cardId: "hedron_crab" }], battlefield: [{ id: "i1", cardId: "island", controller: 0 }] });
+    expect(a.landfallFirstCandidates(v, [land, crab, pass])).toEqual([crab, pass]);
+    expect(a.landfallFirstCandidates(v, [land, pass])).toBeNull(); // the Crab not castable (turn one, no mana): the land goes first
+    const out = mkView({ hand: [{ objectId: "h_isl", cardId: "island" }, { objectId: "h_bolt", cardId: "lightning_bolt" }], battlefield: [{ id: "i1", cardId: "island", controller: 0 }, { id: "c1", cardId: "hedron_crab", controller: 0 }] });
+    expect(a.landfallFirstCandidates(out, [land, { type: "castSpell", objectId: "h_bolt", targets: [{ kind: "player", player: 1 }] }, pass])).toBeNull();
+    // Through the choice itself: forty picks never take the land while the Crab is castable.
+    for (let i = 0; i < 40; i++) expect((a as unknown as { priorityChoice(v: unknown, r: unknown): { type: string } }).priorityChoice(v, { player: 0, purpose: "priority", actions: [land, crab, pass] }).type).not.toBe("playLand");
   });
 
   it("book of shame 29 (S27 r2, the Manafleur that never swung): a 7/7 at 35 life attacks into three 2/2s; the same 7/7 at 6 life holds (the counter-swing is the whole deterrence)", async () => {

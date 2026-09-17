@@ -314,9 +314,32 @@ export class HeuristicAgent implements Agent {
         (e.type === "grantKeyword" && e.duration === "UNTIL_END_OF_TURN"),
     );
     if (!allEotBuffs) return false;
+    // Deploy playtest r9 (Chris: Giant Growth at declare attackers, or at random moments): the trick's window is
+    // AFTER blocks are declared — the DECLARE_BLOCKERS priority round or the damage steps (the blocks are final,
+    // the trap springs) — on either player's turn; earlier in combat it only tells the opponent what to block.
+    // An opponent spell on the stack keeps the save window. Book 22 (amended), book 55.
     const combatLive = view.combat.attackers.length > 0;
+    const blocksFinal = combatLive && (view.step === "DECLARE_BLOCKERS" || view.step === "FIRST_STRIKE_DAMAGE" || view.step === "COMBAT_DAMAGE");
     const oppOnStack = view.stack.some((s) => s.controller !== view.you);
-    return !combatLive && !oppOnStack;
+    return !blocksFinal && !oppOnStack;
+  }
+
+  /** Deploy playtest r9 (Chris: the Crab cast AFTER the land drop, the landfall mill missed): when a castable
+   * candidate is a permanent with a landfall trigger, the land drop waits for it — the land is withheld from
+   * this decision (it returns the moment the permanent is cast or stops being castable). Null when the rule
+   * does not apply. Exposed for the book (56). */
+  landfallFirstCandidates(view: GameView, candidates: Action[]): Action[] | null {
+    if (!candidates.some((a) => a.type === "playLand")) return null;
+    const landfallInHand = candidates.some((a) => {
+      if (a.type !== "castSpell") return false;
+      const card = view.hand.find((c) => c.objectId === a.objectId);
+      const d = card ? this.def(card.cardId) : undefined;
+      if (!d || d.types.includes("Instant") || d.types.includes("Sorcery")) return false;
+      return (d.abilities ?? []).some((ab) => ab.kind === "triggered" && ab.event === "LAND_ENTERS_UNDER_YOUR_CONTROL");
+    });
+    if (!landfallInHand) return null;
+    const rest = candidates.filter((a) => a.type !== "playLand");
+    return rest.length > 0 ? rest : null;
   }
 
   /** S17: is this action a mana burst (a spell whose only effect is addMana, or a sacrifice-cost
@@ -582,8 +605,10 @@ export class HeuristicAgent implements Agent {
       if (landsOnly.length === 1) return landsOnly[0]!;
       return landsOnly[this.softmaxPick(landsOnly.map((a) => this.scorePriorityAction(view, a)))]!; // which land — a real choice; passing is not
     }
-    const scores = candidates.map((a) => this.scorePriorityAction(view, a));
-    const pick = candidates[this.softmaxPick(scores)]!;
+    // r9: a landfall permanent in hand is cast before the land drop (book 56).
+    const pool = this.landfallFirstCandidates(view, candidates) ?? candidates;
+    const scores = pool.map((a) => this.scorePriorityAction(view, a));
+    const pick = pool[this.softmaxPick(scores)]!;
     // S27 r2: the Witch's per-turn budget — count each life-for-cards activation taken.
     if (pick.type === "activateAbility") {
       const ab = viewAbilityAt(view, this.defs, pick.objectId, pick.abilityIndex);

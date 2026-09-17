@@ -1,6 +1,6 @@
 import type { CardDef } from "@shandalar/cards";
 import type { MatchResult, MatchSpec } from "@shandalar/engine";
-import { trimDuelLogs, checkDeck, doorCheck, doorRefusalText, describeDeckRule, type DeckCheck, type DeckRule, type Phase, floodEligible, recordFlood, assembleSalvageDeck, salvageCandidates, SALVAGE_COLORS, SALVAGE_PAIRS, pairName,
+import { trimDuelLogs, checkDeck, doorCheck, doorRefusalText, describeDeckRule, type DeckCheck, type DeckRule, type Phase, type PlayerPortrait, floodEligible, recordFlood, assembleSalvageDeck, salvageCandidates, SALVAGE_COLORS, SALVAGE_PAIRS, pairName,
   activeDeck,
   addCopy,
   advance,
@@ -172,7 +172,7 @@ export type EditorBack =
   | { kind: "petalTelegraph"; color: PetalColor };
 
 /** S39: what the Flood's start carries from the start screen (no starter — the pair is chosen inside). */
-export interface FloodChoice { difficulty: DifficultyName; seed?: number; name?: string }
+export interface FloodChoice { difficulty: DifficultyName; seed?: number; name?: string; portrait?: PlayerPortrait }
 
 export interface NewGameChoice {
   /** S16: catalog starter id (white|blue|black|red|green). */
@@ -180,6 +180,8 @@ export interface NewGameChoice {
   difficulty: DifficultyName;
   seed?: number;
   name?: string;
+  /** r9: the player's portrait. */
+  portrait?: PlayerPortrait;
 }
 
 export class WorldController {
@@ -248,7 +250,7 @@ export class WorldController {
 
   newGame(choice: NewGameChoice): void {
     const seed = choice.seed ?? Math.floor(Math.random() * 1_000_000);
-    this.world = newWorld({ seed, catalog: this.catalog, starter: choice.starter, difficulty: choice.difficulty, playerName: choice.name ?? "You" });
+    this.world = newWorld({ seed, catalog: this.catalog, starter: choice.starter, difficulty: choice.difficulty, playerName: choice.name ?? "You", ...(choice.portrait ? { portrait: choice.portrait } : {}) });
     // S27 (ADR-093): the chronicle's carryover — what the profile carries into every new road.
     const legacy = this.legacy();
     const carried = legacy.victories > 0 ? applyLegacy(this.world, this.catalog, legacy, this.knobs) : null;
@@ -329,7 +331,7 @@ export class WorldController {
     const picks = SALVAGE_COLORS.map((c) => s.picks[c]!);
     const deck = assembleSalvageDeck(this.pool, pack, pair, picks);
     const seed = s.choice.seed ?? Math.floor(Math.random() * 1_000_000);
-    this.world = newWorld({ seed, catalog: this.catalog, difficulty: s.choice.difficulty, playerName: s.choice.name ?? "You", salvage: { legends, picks, pair, deck, deckName: `${pairName(pair)} salvage` } });
+    this.world = newWorld({ seed, catalog: this.catalog, difficulty: s.choice.difficulty, playerName: s.choice.name ?? "You", ...(s.choice.portrait ? { portrait: s.choice.portrait } : {}), salvage: { legends, picks, pair, deck, deckName: `${pairName(pair)} salvage` } });
     // The chronicle's line — the profile's ledger and the run's.
     const names = picks.map((id) => this.pool.get(id)?.name ?? id).join(", ");
     const text = `${this.catalog.questText?.flood?.chronicle ?? "The plane turns over."} Salvaged: ${names}. The first colours: ${pairName(pair)} (${pair.join("")}).`;
@@ -1312,7 +1314,7 @@ export class WorldController {
       seed: duel.seed,
       aiDelayMs: this.aiDelay(),
       custom: {
-        human: { name: this.world.player.name, decklist: duel.spec.players[0].decklist },
+        human: { name: this.world.player.name, portrait: this.world.player.portrait ?? "you", decklist: duel.spec.players[0].decklist },
         enemy: { name: tmpl.name, decklist: duel.spec.players[1].decklist, difficulty: tmpl.difficulty, archetype: duel.enemy.archetype, portrait: tmpl.portrait },
         rules: { startingLife: duel.spec.rules.startingLife, ante: duel.spec.rules.ante ?? 0, ...(duel.spec.rules.startingPlayer !== undefined ? { startingPlayer: duel.spec.rules.startingPlayer } : {}) }, // S22 r2: the coin flip rides through
         modifiers: duel.spec.modifiers,
@@ -1543,7 +1545,7 @@ export class WorldController {
       seed: spec.seed,
       aiDelayMs: this.aiDelay(),
       custom: {
-        human: { name: this.world.player.name, decklist: spec.players[0].decklist },
+        human: { name: this.world.player.name, portrait: this.world.player.portrait ?? "you", decklist: spec.players[0].decklist },
         enemy: { name: enemyName, decklist: spec.players[1].decklist, difficulty: (spec.players[1].agent.split(":")[1] ?? "journeyman") as "apprentice" | "journeyman" | "master", archetype: enemy.kind === "minion" ? "midrange" : enemy.archetype, ...(portrait ? { portrait } : {}) },
         rules: { startingLife: spec.rules.startingLife, ante: spec.rules.ante ?? 0, ...(spec.rules.startingPlayer !== undefined ? { startingPlayer: spec.rules.startingPlayer } : {}) }, // S22 r2: the coin flip rides through
         modifiers: spec.modifiers,
@@ -1845,7 +1847,7 @@ export class WorldController {
       seed: spec.seed,
       aiDelayMs: this.aiDelay(),
       custom: {
-        human: { name: this.world.player.name, decklist: spec.players[0].decklist },
+        human: { name: this.world.player.name, portrait: this.world.player.portrait ?? "you", decklist: spec.players[0].decklist },
         enemy: { name: enemyName, decklist: spec.players[1].decklist, difficulty: "master", archetype: boss.archetype, portrait: petal.boss.portrait },
         rules: { startingLife: spec.rules.startingLife, ante: spec.rules.ante ?? 0, ...(spec.rules.startingPlayer !== undefined ? { startingPlayer: spec.rules.startingPlayer } : {}) },
         modifiers: spec.modifiers,
@@ -1931,7 +1933,7 @@ export class WorldController {
       seed: spec.seed,
       aiDelayMs: this.aiDelay(),
       custom: {
-        human: { name: this.world.player.name, decklist: spec.players[0].decklist },
+        human: { name: this.world.player.name, portrait: this.world.player.portrait ?? "you", decklist: spec.players[0].decklist },
         enemy: { name: enemyName, decklist: spec.players[1].decklist, difficulty: "master", archetype: HEART_DECK.archetype, portrait: this.corollaDef.heart.boss.portrait },
         rules: { startingLife: spec.rules.startingLife, ante: 0, ...(spec.rules.startingPlayer !== undefined ? { startingPlayer: spec.rules.startingPlayer } : {}) },
         modifiers: spec.modifiers,
@@ -1992,7 +1994,7 @@ export class WorldController {
       seed: spec.seed,
       aiDelayMs: this.aiDelay(),
       custom: {
-        human: { name: this.world.player.name, decklist: spec.players[0].decklist },
+        human: { name: this.world.player.name, portrait: this.world.player.portrait ?? "you", decklist: spec.players[0].decklist },
         enemy: { name: "Your reflection", decklist: spec.players[1].decklist, difficulty: "master", archetype, portrait: "reflection" }, // S26 r2 (Chris note 2): the mirrored player portrait under /portraits/
         rules: { startingLife: spec.rules.startingLife, ante: 0, ...(spec.rules.startingPlayer !== undefined ? { startingPlayer: spec.rules.startingPlayer } : {}) },
         modifiers: spec.modifiers,
@@ -2185,7 +2187,7 @@ export class WorldController {
       seed: spec.seed,
       aiDelayMs: this.aiDelay(),
       custom: {
-        human: { name: this.world.player.name, decklist: spec.players[0].decklist },
+        human: { name: this.world.player.name, portrait: this.world.player.portrait ?? "you", decklist: spec.players[0].decklist },
         enemy: {
           name: tmpl.name, decklist: spec.players[1].decklist,
           difficulty: (spec.players[1].agent.split(":")[1] ?? "journeyman") as "apprentice" | "journeyman" | "master",

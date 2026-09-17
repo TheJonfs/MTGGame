@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { CardDef } from "@shandalar/cards";
 import { cardColors } from "@shandalar/cards";
-import { resolveMatchup, activeDeck, buyOffPrice, deckSize, deckStats, dungeonAsWorldMap, isBasic, isExplored, lordPronouns, SALVAGE_COLORS, pairName, maxWorldLife, sellPrice, spares, BASIC_LANDS, type DifficultyName, type Point, type ShopItem, type StarterId } from "@shandalar/world";
+import { resolveMatchup, activeDeck, buyOffPrice, deckSize, deckStats, dungeonAsWorldMap, isBasic, isExplored, lordPronouns, SALVAGE_COLORS, pairName, PLAYER_PORTRAITS, type PlayerPortrait, maxWorldLife, sellPrice, spares, BASIC_LANDS, type DifficultyName, type Point, type ShopItem, type StarterId } from "@shandalar/world";
 import { loadOracle, loadPool, loadWorldCatalog, type OracleEntry, type SavedGame } from "../engine-bridge";
 import { CardFrame } from "../components/CardFrame";
 import { PlayMatch, loadStops } from "../play/PlayMatch";
@@ -30,6 +30,7 @@ function StartScreen({ c, onStart }: { c: WorldController; onStart: (choice: New
   const [difficulty, setDifficulty] = useState<DifficultyName>("standard");
   const [seed, setSeed] = useState("");
   const [name, setName] = useState("You");
+  const [portrait, setPortrait] = useState<PlayerPortrait>("you"); // r9 (Chris): the two S6 traveling-mage portraits
   const [error, setError] = useState<string | null>(null);
   const [chronicle, setChronicle] = useState(false); // S27: the Chronicle of Cuttings page
   const [confirmReset, setConfirmReset] = useState(false); // S27 r2: start from scratch (the profile wiped)
@@ -78,6 +79,15 @@ function StartScreen({ c, onStart }: { c: WorldController; onStart: (choice: New
             ))}
             <div className="flyout-title" style={{ marginTop: 8 }}>Name</div>
             <input type="text" value={name} onChange={(e) => setName(e.target.value)} style={{ width: 120 }} />
+            <div className="flyout-title" style={{ marginTop: 8 }}>Portrait</div>
+            <div style={{ display: "flex", gap: 8 }}>
+              {PLAYER_PORTRAITS.map((p) => (
+                <label key={p} className={portrait === p ? "picked" : ""} style={{ cursor: "pointer", padding: 2, borderRadius: 6, outline: portrait === p ? "2px solid var(--brass)" : "none" }} title={p === "you" ? "the hooded traveller" : "the traveling mage"}>
+                  <input type="radio" checked={portrait === p} onChange={() => setPortrait(p)} style={{ display: "none" }} />
+                  <img src={`/portrait-${p}.png`} alt={p === "you" ? "the hooded traveller" : "the traveling mage"} style={{ width: 56, height: 56, borderRadius: 6, display: "block" }} />
+                </label>
+              ))}
+            </div>
             <div className="flyout-title" style={{ marginTop: 8 }}>Seed</div>
             <input type="text" placeholder="random" value={seed} onChange={(e) => setSeed(e.target.value)} style={{ width: 90 }} />
           </div>
@@ -97,11 +107,11 @@ function StartScreen({ c, onStart }: { c: WorldController; onStart: (choice: New
         {c.floodEligible() && (
           <p className="dungeon-law" style={{ borderColor: "var(--brass)", fontSize: 12.5, textAlign: "left" }}>
             <b>{c.catalog.questText?.flood?.offer ?? "Enter the Flood"}.</b> The fifth root is cut; the plane turns over. Phase two begins with what you carried out — the ten legends, five things from the wrack, a pack, a purse — on a new map.{" "}
-            <button className="primary" style={{ marginLeft: 8 }} onClick={() => c.enterFlood({ difficulty, name, ...(seed.trim() ? { seed: Number(seed) } : {}) })}>{c.catalog.questText?.flood?.offer ?? "Enter the Flood"}</button>
+            <button className="primary" style={{ marginLeft: 8 }} onClick={() => c.enterFlood({ difficulty, name, portrait, ...(seed.trim() ? { seed: Number(seed) } : {}) })}>{c.catalog.questText?.flood?.offer ?? "Enter the Flood"}</button>
           </p>
         )}
         <p>
-          <button className="primary" onClick={() => onStart({ starter, difficulty, name, ...(seed.trim() ? { seed: Number(seed) } : {}) })}>New game</button>{" "}
+          <button className="primary" onClick={() => onStart({ starter, difficulty, name, portrait, ...(seed.trim() ? { seed: Number(seed) } : {}) })}>New game</button>{" "}
           {c.hasAutosave() && (() => { const s = c.saveSummary(); return <button onClick={() => c.continueFromAutosave()} title={s ? `${s.name} · ${s.difficulty} · phase ${s.phase} · ${s.steps} steps · ${s.worldLife} life · ${s.decks} deck${s.decks === 1 ? "" : "s"}` : "the autosave"}>Continue{s ? ` — ${s.name}, ${s.difficulty}, phase ${s.phase}, ${s.steps} steps` : ""}</button>; })()}{" "}
           {/* S27 r4 (Chris): the Chronicle appears only after a first cutting — before that its very header gives the ending away. */}
           {c.chronicle().length > 0 && <><button className="linkish" onClick={() => setChronicle(true)} title="the profile's ledger — one entry per folding">Chronicle ({c.chronicle().length})</button>{" "}</>}
@@ -663,7 +673,7 @@ function DungeonScreen({ c, pool }: { c: WorldController; pool: Map<string, Card
           <WorldMapView
             map={map}
             player={run.position}
-            portrait="/portrait-you.png"
+            portrait={`/portrait-${c.world?.player.portrait ?? "you"}.png`}
             preview={null}
             previewTarget={null}
             explored={run.explored}
@@ -813,7 +823,7 @@ function CorollaScreen({ c }: { c: WorldController }) {
           <WorldMapView
             map={map}
             player={inside.position}
-            portrait="/portrait-you.png"
+            portrait={`/portrait-${c.world?.player.portrait ?? "you"}.png`}
             preview={null}
             previewTarget={null}
             explored={null}
@@ -990,7 +1000,7 @@ function HeartVictory({ c, pool, oracle }: { c: WorldController; pool: Map<strin
           <button onClick={() => c.stayAfterHeart()}>Stay in the quiet world</button>{" "}
           <button className="primary" onClick={() => c.newRoadAfterHeart()}>Begin a new road</button>{" "}
           {/* S39 (ADR-126): the fifth cutting opens the Flood — phase two, from here. */}
-          {s.fifth && c.floodEligible() && <button className="primary" style={{ background: "var(--brass)" }} onClick={() => c.enterFlood({ difficulty: c.world!.difficulty, name: c.world!.player.name })}>{c.catalog.questText?.flood?.offer ?? "Enter the Flood"}</button>}
+          {s.fifth && c.floodEligible() && <button className="primary" style={{ background: "var(--brass)" }} onClick={() => c.enterFlood({ difficulty: c.world!.difficulty, name: c.world!.player.name, ...(c.world!.player.portrait ? { portrait: c.world!.player.portrait } : {}) })}>{c.catalog.questText?.flood?.offer ?? "Enter the Flood"}</button>}
         </p>
       </div>
     </div>
@@ -1841,7 +1851,7 @@ export function WorldApp({ onWatchReplay, paused = false }: { onWatchReplay: (ga
             {...(w.phase >= 2 ? { register: "flood" as const } : {})}
             map={w.map}
             player={w.player.position}
-            portrait="/portrait-you.png"
+            portrait={`/portrait-${c.world?.player.portrait ?? "you"}.png`}
             preview={screen.kind === "map" ? screen.preview : null}
             previewTarget={screen.kind === "map" ? screen.previewTarget : null}
             encounterAt={screen.kind === "encounter" ? screen.encounter.at : null}

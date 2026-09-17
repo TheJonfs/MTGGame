@@ -52,7 +52,8 @@ import { DECKS, DECK_ARCHETYPES, type DeckKey } from "@shandalar/sim/decks";
  * client (ADR-002 consumed from the world side): named decklists, the enemy's
  * AI profile inputs, world-life starting life, ante, and modifiers. */
 export interface CustomMatch {
-  human: { name: string; decklist: { cardId: string; count: number }[] };
+  /** r9: `portrait` = the player's portrait slug ("you" | "mage-female" → /portrait-<slug>.png); absent = the default. */
+  human: { name: string; decklist: { cardId: string; count: number }[]; portrait?: string };
   enemy: {
     name: string;
     decklist: { cardId: string; count: number }[];
@@ -88,6 +89,9 @@ export type UiPhase =
       lands: Map<string, Action>;
       /** battlefield objectId → its activateAbility variants (all abilities) */
       activatable: Map<string, Action[]>;
+      /** r9 (Chris: tap the Birds in response): the producers that can be tapped for mana in a RESPONSE window
+       * (the stack is not empty) — clicking one floats its mana for a spell cast in the same window. */
+      manaTappable: Map<string, Action[]>;
       canPass: boolean;
     }
   | {
@@ -146,7 +150,7 @@ export type UiPhase =
       kind: "chooseTapColor";
       objectId: string;
       options: Extract<Action, { type: "tapForMana" }>[];
-      back: Extract<UiPhase, { kind: "manualTap" }>;
+      back: Extract<UiPhase, { kind: "manualTap" | "priority" }>;
     }
   | {
       /** S11 (Chris's note 2): the opponent's spell is on the stack and you
@@ -203,7 +207,9 @@ export class MatchController {
   private seenStackItems = new Set<string>();
   private stackStopResolve: (() => void) | null = null;
   /** Manual tapping in progress: the cast we will submit once mana is floated. */
-  private manualTapPending: { sourceObjectId: string; action: Action } | null = null;
+  private manualTapPending: { sourceObjectId: string; action: Action; /** r9: this session's taps, for cancel's takeback */ tapped: string[] } | null = null;
+  /** r9 (Chris: cancelling a manual payment stranded the tapped lands): the takebacks still to submit after a cancel. */
+  private untapQueue: string[] | null = null;
 
   phase: UiPhase = { kind: "waiting" };
   result: MatchResult | null = null;
@@ -290,7 +296,8 @@ export class MatchController {
     for (const p of this.spec.players) validateDecklist(pool, p.decklist);
     this.names = [this.spec.players[0].name, this.spec.players[1].name];
     const enemyPortrait = custom?.enemy.portrait ? `/portraits/${custom.enemy.portrait}.png` : null;
-    this.portraits = opts.humanSeat === 0 ? [null, enemyPortrait] : [enemyPortrait, null];
+    const humanPortrait = custom?.human.portrait ? `/portrait-${custom.human.portrait}.png` : null;
+    this.portraits = opts.humanSeat === 0 ? [humanPortrait, enemyPortrait] : [enemyPortrait, humanPortrait];
 
     const aiArchetype = custom ? custom.enemy.archetype : DECK_ARCHETYPES[opts.aiDeck!];
     const aiInner = new HeuristicAgent(
@@ -522,6 +529,11 @@ export class MatchController {
     // Any non-priority request cancels fast-forward: the game needs YOU
     // (blocks, discard, triggers) — it never skips a decision.
     if (this.ff && request.purpose !== "priority") this.ff = null;
+    // r9: a cancelled manual payment takes its taps back one request at a time, then the base phase.
+    if (this.untapQueue) {
+      if (request.purpose === "priority" && this.drainUntaps(request)) return;
+      this.untapQueue = null;
+    }
     // S11 manual tapping: after each tapForMana the engine re-asks; stay in
     // the tapping phase as long as the staged cast is still on offer.
     if (this.manualTapPending) {
@@ -558,10 +570,25 @@ export class MatchController {
     }
   }
 
-  /** S26 r3: the variant whose targets are exactly `chosen` (order-sensitive, as enumerated). */
+  /** S26 r3 → r9: the variant whose targets are exactly `chosen` as a MULTISET — the enumerator emits every
+   * combination in battlefield order (the Warden's "up to two" lists [Bears, Courser], never [Courser, Bears]),
+   * and the player clicks in any order (Chris: "I have to pick targets left to right"). The committed action is
+   * the enumerated one, in its order. */
   private exactVariant(variants: Action[], chosen: ResolvedTarget[]): Action | undefined {
-    const key = JSON.stringify(chosen);
-    return variants.find((v) => JSON.stringify((v as { targets?: ResolvedTarget[] }).targets ?? []) === key);
+    const want = MatchController.targetKeys(chosen);
+    return variants.find((v) => { const have = MatchController.targetKeys((v as { targets?: ResolvedTarget[] }).targets ?? []); return have.length === want.length && MatchController.containsAll(have, want); });
+  }
+  private static targetKeys(targets: ResolvedTarget[]): string[] { return targets.map((t) => JSON.stringify(t)); }
+  /** Multiset containment: every key of `part` appears in `whole` at least as often. */
+  private static containsAll(whole: string[], part: string[]): boolean {
+    const left = [...whole];
+    for (const k of part) { const i = left.indexOf(k); if (i === -1) return false; left.splice(i, 1); }
+    return true;
+  }
+  /** The variants that could still be completed from `chosen` (a superset, as a multiset). */
+  private static compatible(variants: Action[], chosen: ResolvedTarget[]): Action[] {
+    const want = MatchController.targetKeys(chosen);
+    return variants.filter((v) => MatchController.containsAll(MatchController.targetKeys((v as { targets?: ResolvedTarget[] }).targets ?? []), want));
   }
 
   /** S26 r3: commit the targets chosen so far (a range spec's "done" / "no targets"). */
@@ -703,7 +730,7 @@ export class MatchController {
   beginManualTap(): void {
     if (this.phase.kind !== "confirmCast") return;
     const { sourceObjectId, action } = this.phase;
-    this.manualTapPending = { sourceObjectId, action };
+    this.manualTapPending = { sourceObjectId, action, tapped: [] };
     this.phase = { kind: "manualTap", sourceObjectId, action, tappable: this.tappableNow(this.currentRequest()) };
     this.emit();
   }
@@ -735,6 +762,7 @@ export class MatchController {
       this.emit();
       return;
     }
+    this.manualTapPending?.tapped.push(objectId);
     this.phase = { kind: "waiting" };
     this.human.submit(taps[0]!); // the next request re-enters manual tapping
     this.emit();
@@ -766,9 +794,21 @@ export class MatchController {
     }
     const tap = this.phase.options.find((a) => a.color === color);
     if (!tap) return;
+    if (this.phase.back.kind === "manualTap") this.manualTapPending?.tapped.push(tap.objectId);
     this.phase = { kind: "waiting" };
     this.human.submit(tap);
     this.emit();
+  }
+
+  /** r9: submit the next takeback the request offers for a cancelled payment's taps; false when none is left. */
+  private drainUntaps(request: ActionRequest): boolean {
+    const queue = this.untapQueue!;
+    while (queue.length > 0) {
+      const id = queue.shift()!;
+      const untap = request.actions.find((a) => a.type === "untapForMana" && a.objectId === id);
+      if (untap) { this.phase = { kind: "waiting" }; this.human.submit(untap); return true; }
+    }
+    return false;
   }
 
   /** Cast the staged spell now; auto-pay covers whatever the pool lacks. */
@@ -818,10 +858,14 @@ export class MatchController {
     const castable = new Map<string, Action[]>();
     const lands = new Map<string, Action>();
     const activatable = new Map<string, Action[]>();
+    const manaTappable = new Map<string, Action[]>();
     for (const a of request.actions) {
       if (a.type === "castSpell") castable.set(a.objectId, [...(castable.get(a.objectId) ?? []), a]);
       else if (a.type === "playLand") lands.set(a.objectId, a);
       else if (a.type === "activateAbility") activatable.set(a.objectId, [...(activatable.get(a.objectId) ?? []), a]);
+      // r9: in a RESPONSE window (something on the stack) a producer can be tapped on its own — a Birds
+      // answered before the spell resolves floats its mana for whatever the player casts in reply.
+      else if (a.type === "tapForMana" && view.stack.length > 0) manaTappable.set(a.objectId, [...(manaTappable.get(a.objectId) ?? []), a]);
     }
     // R-029 dedups hand actions by cardId, so only one copy of a duplicate
     // carries the action. Alias every copy in hand to the enumerated one:
@@ -864,7 +908,9 @@ export class MatchController {
     // the flow (fast-forward deliberately skips this; targeting cancels FF).
     const oppSpell = this.ff ? null : this.pendingOpponentSpell();
     const combatMoment = this.ff ? null : this.pendingCombatMoment();
-    const stopHere = this.stops.has(view.step as Step) || this.holdArmed || ownTurnAnchor || oppSpell !== null || combatMoment !== null;
+    // r9: mana the player floated on purpose (a response-window tap) keeps the window open — passing would waste it.
+    const floating = Object.values(this.game.state.players[this.humanSeat].manaPool).reduce((n, v) => n + v, 0) > 0;
+    const stopHere = this.stops.has(view.step as Step) || this.holdArmed || ownTurnAnchor || oppSpell !== null || combatMoment !== null || floating;
     if (!meaningful && !stopHere) {
       const pass = request.actions.find((a) => a.type === "pass");
       if (pass) {
@@ -880,7 +926,7 @@ export class MatchController {
       this.combatSeen.add(combatMoment.key);
       this.stopReason = combatMoment.text;
     }
-    this.phase = { kind: "priority", castable, lands, activatable, canPass: request.actions.some((a) => a.type === "pass") };
+    this.phase = { kind: "priority", castable, lands, activatable, manaTappable, canPass: request.actions.some((a) => a.type === "pass") };
     this.emit();
   }
 
@@ -974,6 +1020,20 @@ export class MatchController {
       this.beginCast(objectId, variants);
       return;
     }
+    // r9: a response-window tap for mana (the Birds in reply to the spell aimed at it); a many-coloured
+    // producer asks which colour, then the tap goes and priority returns with the mana floating.
+    const taps = this.phase.manaTappable.get(objectId);
+    if (taps && taps.length > 0) {
+      if (taps.length > 1) {
+        this.phase = { kind: "chooseTapColor", objectId, options: taps as Extract<Action, { type: "tapForMana" }>[], back: this.phase };
+        this.emit();
+        return;
+      }
+      this.phase = { kind: "waiting" };
+      this.human.submit(taps[0]!);
+      this.emit();
+      return;
+    }
     // S25 r3 (Chris: cancel mid-cast stranded the tap): clicking the tapped land takes the tap
     // back whenever the engine offers it (its floated mana still unspent).
     this.tryUntap(objectId);
@@ -1060,7 +1120,7 @@ export class MatchController {
       sourceObjectId,
       variants,
       chosen: [],
-      ...this.nextTargetHighlights(variants, 0),
+      ...this.nextTargetHighlights(variants, []),
       targetsNeeded: needed,
       canFinish: !!this.exactVariant(variants, []),
       ...(fromRequest ? { fromRequest: true as const } : {}),
@@ -1068,18 +1128,24 @@ export class MatchController {
     this.emit();
   }
 
+  /** r9: the NEXT legal picks — every target a still-compatible variant carries beyond what is chosen, in any order. */
   private nextTargetHighlights(
     variants: Action[],
-    position: number,
+    chosen: ResolvedTarget[],
   ): { highlightObjects: Set<string>; highlightPlayers: Set<PlayerId> } {
     const objects = new Set<string>();
     const players = new Set<PlayerId>();
-    for (const v of variants) {
-      const t = (v as { targets?: ResolvedTarget[] }).targets?.[position];
-      if (!t) continue;
-      if (t.kind === "object") objects.add(t.id);
-      else if (t.kind === "player") players.add(t.player as PlayerId);
-      else objects.add(t.id); // stack items highlight in the stack panel
+    const chosenKeys = MatchController.targetKeys(chosen);
+    for (const v of MatchController.compatible(variants, chosen)) {
+      const left = [...chosenKeys];
+      for (const t of (v as { targets?: ResolvedTarget[] }).targets ?? []) {
+        const k = JSON.stringify(t);
+        const i = left.indexOf(k);
+        if (i !== -1) { left.splice(i, 1); continue; } // already chosen: not a next pick
+        if (t.kind === "object") objects.add(t.id);
+        else if (t.kind === "player") players.add(t.player as PlayerId);
+        else objects.add(t.id); // stack items highlight in the stack panel
+      }
     }
     return { highlightObjects: objects, highlightPlayers: players };
   }
@@ -1093,16 +1159,16 @@ export class MatchController {
 
   private clickTarget(target: ResolvedTarget): void {
     if (this.phase.kind !== "targeting") return;
-    const pos = this.phase.chosen.length;
-    const matches = this.phase.variants.filter((v) => {
-      const t = (v as { targets?: ResolvedTarget[] }).targets?.[pos];
-      return t && JSON.stringify(t) === JSON.stringify(target);
-    });
-    if (matches.length === 0) return; // illegal click: ignore (dimmed in UI)
     const chosen = [...this.phase.chosen, target];
+    // r9: order-insensitive — the variants that still contain everything chosen (as a multiset).
+    const matches = MatchController.compatible(this.phase.variants, chosen);
+    if (matches.length === 0) return; // illegal click: ignore (dimmed in UI)
     const fromRequest = this.phase.fromRequest === true;
-    if (chosen.length >= this.phase.targetsNeeded || matches.length === 1) {
-      this.phase = { kind: "confirmCast", sourceObjectId: this.phase.sourceObjectId, action: matches[0]!, offerManualTap: fromRequest ? false : this.offerManualTapFor(matches[0]!) };
+    const exact = this.exactVariant(matches, chosen);
+    // Commit when the picks are complete, or when the only variant left is exactly what was chosen.
+    if (chosen.length >= this.phase.targetsNeeded || (matches.length === 1 && exact)) {
+      const action = exact ?? matches[0]!;
+      this.phase = { kind: "confirmCast", sourceObjectId: this.phase.sourceObjectId, action, offerManualTap: fromRequest ? false : this.offerManualTapFor(action) };
       this.emit();
       return;
     }
@@ -1110,8 +1176,8 @@ export class MatchController {
       ...this.phase,
       variants: matches,
       chosen,
-      ...this.nextTargetHighlights(matches, chosen.length),
-      canFinish: !!this.exactVariant(matches, chosen),
+      ...this.nextTargetHighlights(matches, chosen),
+      canFinish: !!exact,
     };
     this.emit();
   }
@@ -1125,11 +1191,25 @@ export class MatchController {
 
   cancel(): void {
     // Back out of any local staging to the pending request's base phase.
-    // (Manual tapping: floated mana stays in the pool until the step ends.)
+    // r9 (Chris): cancelling a manual payment takes this session's taps BACK (untapForMana, one request at a time)
+    // instead of leaving the lands tapped with their mana floating until the step ends.
+    const tapped = this.manualTapPending?.tapped ?? [];
     this.manualTapPending = null;
     const p = this.human.current();
     if (!p) return;
+    if (tapped.length > 0 && (this.phase.kind === "manualTap" || (this.phase.kind === "chooseTapColor" && this.phase.back.kind === "manualTap"))) {
+      this.untapQueue = [...tapped].reverse();
+      if (this.drainUntaps(p.request)) return;
+      this.untapQueue = null;
+    }
     this.onHumanRequest(p.view, p.request);
+  }
+
+  /** r9 (Chris: the Clear button on blocks did nothing): drop every staged declaration — attackers or blocks —
+   * before Confirm (staging is local until then, ADR-058). */
+  clearStaged(): void {
+    if (this.phase.kind === "attackers") { this.phase = { ...this.phase, staged: new Set() }; this.emit(); return; }
+    if (this.phase.kind === "blockers") { this.phase = { ...this.phase, stagedPairs: [], pendingBlocker: null }; this.emit(); }
   }
 
   // ---------- combat staging (ADR-058: local until Confirm, then final) ----------

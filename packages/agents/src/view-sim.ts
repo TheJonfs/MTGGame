@@ -173,6 +173,17 @@ export function predictAction(
       // worth of life; on THEIR biggest creature it neutralizes the damage (Chris's neutralizer
       // line) when their biggest out-powers ours. Book 35 pins the fork.
       const lifelinkAura = (d.abilities ?? []).some((a) => a.kind === "triggered" && a.event === "DEALS_DAMAGE" && a.effects.some((e) => e.type === "gainLife"));
+      // Deploy playtest r9 (Chris: a second Pacifism on a pacified creature; a Spirit Link on one): what already
+      // HANGS on the host. The same aura twice does nothing; any aura on a creature a restrict aura already holds
+      // (it can neither attack nor block, so it neither deals damage nor needs neutralizing) does nothing —
+      // both score as "unchanged" (strictly below passing, the re-equip rule). Book 54.
+      if (hostObj) {
+        const hanging = view.battlefield.filter((o) => o.attachedTo === hostObj.id);
+        const sameAlready = hanging.some((o) => o.cardId === d.id);
+        const restricts = (id: string) => (defs.get(id)?.abilities ?? []).some((a) => a.kind === "static" && a.effects.some((e) => e.type === "restrict" && e.scope === "attached"));
+        const hostRestricted = hanging.some((o) => restricts(o.cardId));
+        if (sameAlready || (hostRestricted && !steals)) return { view, adjustment: 0, unchanged: true };
+      }
       if (hostObj && lifelinkAura) {
         const power = hostObj.power ?? 0;
         const myBest = Math.max(0, ...view.battlefield.filter((o) => o.controller === me && o.power !== null).map((o) => o.power ?? 0));

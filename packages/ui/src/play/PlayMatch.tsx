@@ -161,7 +161,7 @@ function PromptBar({ c, phase, confirmLabel }: { c: MatchController; phase: UiPh
           <button className="primary" onClick={() => c.confirmAttackers()}>
             Confirm attackers ({phase.staged.size})
           </button>
-          <button onClick={() => c.cancel()}>Clear</button>
+          <button onClick={() => c.clearStaged()}>Clear</button>
         </>
       )}
       {phase.kind === "blockers" && (
@@ -171,7 +171,7 @@ function PromptBar({ c, phase, confirmLabel }: { c: MatchController; phase: UiPh
               Confirm blocks ({phase.stagedPairs.length})
             </button>
           )}
-          <button onClick={() => c.cancel()}>Clear</button>
+          <button onClick={() => c.clearStaged()}>Clear</button>
         </>
       )}
       <span style={{ flex: 1 }} />
@@ -880,6 +880,7 @@ export function PlayMatch({
         case "priority":
           if (phase.castable.has(id) || phase.lands.has(id)) return "castable";
           if (phase.activatable.has(id)) return "castable";
+          if (phase.manaTappable.has(id)) return "tappable"; // r9: a response-window tap
           return "";
         case "targeting":
           return phase.highlightObjects.has(id) ? "target" : "dim";
