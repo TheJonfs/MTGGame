@@ -1,0 +1,42 @@
+{
+ "id": "odile_the_tallyflame",
+ "name": "Odile, the Tallyflame",
+ "source": "custom",
+ "manaCost": "{2}{U}{R}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Elemental",
+  "Shaman"
+ ],
+ "supertypes": [
+  "Legendary"
+ ],
+ "power": 1,
+ "toughness": 4,
+ "text": "Whenever you draw a card, Odile, the Tallyflame deals damage equal to its power to each tapped creature.",
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "DRAW",
+   "condition": {
+    "controller": "you"
+   },
+   "effects": [
+    {
+     "type": "damageAll",
+     "amount": {
+      "ref": "sourcePower"
+     },
+     "scope": "allCreatures",
+     "tapped": true
+    }
+   ]
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "prizeOnly": true
+}

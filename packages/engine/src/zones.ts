@@ -1,5 +1,5 @@
 import type { EngineCtx } from "./ctx.js";
-import { imposedEntersTapped } from "./characteristics.js";
+import { characteristics, imposedEntersTapped } from "./characteristics.js";
 import { getObject, type GameObject, type PlayerId, type ZoneName } from "./state.js";
 
 export interface MoveOptions {
@@ -73,6 +73,9 @@ export function moveObject(
   const state = ctx.state;
   const obj = getObject(state, objectId);
   const from = obj.zone;
+  // S40 (R-097): a creature's last-known power as it leaves the battlefield (CR 603.10a) — read BEFORE anything
+  // detaches or the object is deleted; rides the ZONE_CHANGE payload for the leave observers (Zinnia, Meliyan).
+  const powerBefore = from === "battlefield" && ctx.defs.def(obj.cardId).types.includes("Creature") ? characteristics(ctx, objectId).power : undefined;
 
   // Detach anything attached to the moving object; SBAs will clean the
   // now-unattached auras up (CR 704.5m).
@@ -103,6 +106,7 @@ export function moveObject(
       owner: obj.owner,
       controller: obj.controller,
       controllerBefore: obj.controller,
+      ...(powerBefore !== undefined ? { powerBefore } : {}),
     });
     return null;
   }
@@ -155,6 +159,7 @@ export function moveObject(
     owner: newObj.owner,
     controller: newObj.controller,
     controllerBefore: obj.controller,
+    ...(powerBefore !== undefined ? { powerBefore } : {}),
   });
   return newId;
 }
@@ -165,7 +170,7 @@ export function createObject(
   cardId: string,
   owner: PlayerId,
   zone: ZoneName,
-  opts: { isToken?: boolean; attachedTo?: string; basePT?: { power: number; toughness: number } } = {},
+  opts: { isToken?: boolean; attachedTo?: string; basePT?: { power: number; toughness: number }; tapped?: boolean } = {},
 ): string {
   const card = ctx.defs.def(cardId); // throws on unknown card
   const id = ctx.ids.next("obj");
@@ -180,7 +185,7 @@ export function createObject(
     // whatever path created it — modifiers, harness setups, the empowerment packages.
     isToken: opts.isToken ?? !!(card.isTokenDef || card.uncastable),
     // A9/S20: shocks + taplands placed here enter tapped. S22b: the Intake imposes on tokens too.
-    tapped: zone === "battlefield" && (!!card.entersChoice || !!card.entersTapped || imposedEntersTapped(ctx, card, owner)),
+    tapped: zone === "battlefield" && (!!opts.tapped || !!card.entersChoice || !!card.entersTapped || imposedEntersTapped(ctx, card, owner)),
 
     damage: 0,
     deathtouchDamage: false,

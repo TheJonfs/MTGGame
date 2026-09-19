@@ -1,0 +1,23 @@
+{
+ "id": "shadow_summoning",
+ "name": "Shadow Summoning",
+ "source": "real",
+ "scryfallId": "ec0984b2-bed6-41b1-9087-2cfd16749037",
+ "manaCost": "{W}{B}",
+ "types": [
+  "Sorcery"
+ ],
+ "spellEffect": [
+  {
+   "type": "createToken",
+   "tokenId": "spirit_1_1_w_flying",
+   "count": 2,
+   "who": "you",
+   "tapped": true
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": 2
+}

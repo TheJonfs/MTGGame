@@ -1,0 +1,50 @@
+{
+ "id": "the_dredger",
+ "name": "The Dredger",
+ "source": "custom",
+ "manaCost": "{1}{U}{U}{W}{B}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Sphinx"
+ ],
+ "supertypes": [
+  "Legendary"
+ ],
+ "power": 3,
+ "toughness": 4,
+ "keywords": [
+  "flying"
+ ],
+ "text": "Flying\n{W}{U}{B}, Sacrifice a land: Return target instant or sorcery card from your graveyard to your hand.",
+ "abilities": [
+  {
+   "kind": "activated",
+   "cost": {
+    "mana": "{W}{U}{B}",
+    "sacrifice": {
+     "predicate": "land"
+    }
+   },
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "instantOrSorceryCardInYourGraveyard",
+     "zone": "graveyard"
+    }
+   ],
+   "effects": [
+    {
+     "type": "returnFromGraveyard",
+     "target": 0,
+     "to": "hand"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "prizeOnly": true
+}

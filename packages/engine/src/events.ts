@@ -13,6 +13,8 @@ export interface GameEventMap extends Record<string, unknown> {
     controller: PlayerId;
     /** Controller before the move (ADR-016) — DIES/LTB trigger ownership reads this. */
     controllerBefore: PlayerId;
+    /** S40 (R-097): a creature's last-known power as it left the battlefield (absent otherwise). */
+    powerBefore?: number;
   };
   LAND_ENTERS_UNDER_YOUR_CONTROL: { objectId: string; controller: PlayerId };
   /** S12 (R-043): a player's ante stakes were set aside at setup. Logged → facts.ante. */

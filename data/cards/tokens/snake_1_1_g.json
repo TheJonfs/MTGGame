@@ -1,0 +1,22 @@
+{
+ "id": "snake_1_1_g",
+ "name": "Snake Token",
+ "source": "custom",
+ "isTokenDef": true,
+ "manaCost": "",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Snake"
+ ],
+ "colors": [
+  "G"
+ ],
+ "power": 1,
+ "toughness": 1,
+ "text": "",
+ "art": {
+  "fallback": "rendered"
+ }
+}

@@ -1,0 +1,50 @@
+{
+ "id": "the_bailiff",
+ "name": "The Bailiff",
+ "source": "custom",
+ "manaCost": "{1}{W}{W}{U}{R}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Angel"
+ ],
+ "supertypes": [
+  "Legendary"
+ ],
+ "power": 3,
+ "toughness": 4,
+ "keywords": [
+  "flying",
+  "vigilance",
+  "haste"
+ ],
+ "text": "Flying, vigilance, haste\nWhenever The Bailiff attacks, you may return target tapped creature to its owner's hand.",
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "ATTACKS",
+   "condition": {
+    "source": "self"
+   },
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "tappedCreature",
+     "zone": "battlefield"
+    }
+   ],
+   "effects": [
+    {
+     "type": "bounce",
+     "target": 0
+    }
+   ],
+   "optional": true
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "prizeOnly": true
+}

@@ -36,6 +36,10 @@
       "types": "./src/heart-deck.ts",
       "default": "./src/heart-deck.ts"
     },
+    "./flood-decks": {
+      "types": "./src/flood-decks.ts",
+      "default": "./src/flood-decks.ts"
+    },
     "./road-decks": {
       "types": "./src/road-decks.ts",
       "default": "./src/road-decks.ts"

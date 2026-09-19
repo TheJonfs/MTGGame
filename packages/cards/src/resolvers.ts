@@ -34,7 +34,9 @@ export interface EffectContext {
   /** Players selected by a `who` param. */
   players(who: Who): number[];
   /** Object ids selected by a scope, evaluated now (ADR-020 params: subtype/cardType/other). */
-  objectsInScope(scope: Scope, params?: { subtype?: string; cardType?: string; other?: boolean }): string[];
+  objectsInScope(scope: Scope, params?: { subtype?: string; cardType?: string; other?: boolean; tapped?: boolean; withCounter?: CounterKind }): string[];
+  /** S40 (R-097): the triggering event's OBJECT, if it is still on the battlefield (the Minefield's attacker, the Cobra's victim). */
+  eventObject(): string | null;
   /** ADR-076: does the target at index i currently match these characteristics? (Little Bear's "if it's a Bear".) */
   targetMatches(cond: EffectCondition): boolean;
   /** Numeric value of an amount ("X" resolves from the stack item). */
@@ -69,7 +71,7 @@ export interface EffectContext {
   /** S36 (R-096 words 3–4): the controller names a card from the hand's distinct names, a random hand card is revealed, `onHit` resolves on a match. */
   revealRandomIfNamed(onHit: Effect[]): Promise<void>;
   /** A10 (S22): `pt` sets the tokens' base P/T, locked at creation (Overload's Weird). */
-  createToken(player: number, tokenId: string, count: number, pt?: { power: number; toughness: number }): void;
+  createToken(player: number, tokenId: string, count: number, pt?: { power: number; toughness: number }, tapped?: boolean): void;
   addCounters(objectId: string, kind: CounterKind, count: number): void;
   gainLife(player: number, amount: number): void;
   /** Destruction by effect (CR 701.7); honors indestructible. Death itself is still the SBA's call. */
@@ -149,6 +151,12 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
       return;
     }
     // S25: the controller's own recoil (the Ruby Tyrant) — the resolving source deals it.
+    // S40 (R-097): the event's object takes it (Powerstone Minefield's attacker or blocker).
+    if (e.to === "eventObject") {
+      const id = ctx.eventObject();
+      if (id !== null) ctx.dealDamage({ kind: "object", id }, ctx.amount(e.amount));
+      return;
+    }
     if (e.to === "you") {
       ctx.dealDamage({ kind: "player", player: ctx.players("you")[0]! }, ctx.amount(e.amount));
       return;
@@ -251,7 +259,7 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
     // A10: count-as-ref (Aether Mutation's X) and pt locked at resolution (Overload's Weird).
     const count = ctx.amount(e.count);
     const pt = e.pt ? { power: ctx.amount(e.pt), toughness: ctx.amount(e.pt) } : undefined;
-    for (const p of ctx.players(e.who)) ctx.createToken(p, e.tokenId, count, pt);
+    for (const p of ctx.players(e.who)) ctx.createToken(p, e.tokenId, count, pt, e.tapped === true);
   },
 
   addCounters: (e, ctx) => {
@@ -309,6 +317,12 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
 
   destroy: (e, ctx) => {
     if (e.type !== "destroy") throw new Error("resolver mismatch");
+    // S40 (R-097): the event's object (Voracious Cobra destroys the creature it damaged).
+    if (e.eventObject) {
+      const id = ctx.eventObject();
+      if (id !== null) ctx.destroy(id);
+      return;
+    }
     // A10: targetSpec fans out (Purge destroys every still-legal pick; per-target fizzle).
     for (const t of targeted(e, ctx)) if (t.kind === "object") ctx.destroy(t.id);
   },
@@ -350,7 +364,7 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
   damageAll: (e, ctx) => {
     if (e.type !== "damageAll") throw new Error("resolver mismatch");
     const amount = ctx.amount(e.amount);
-    for (const id of ctx.objectsInScope(e.scope)) ctx.dealDamage({ kind: "object", id }, amount);
+    for (const id of ctx.objectsInScope(e.scope, e.tapped ? { tapped: true } : {})) ctx.dealDamage({ kind: "object", id }, amount);
   },
 
   fight: (e, ctx) => {
@@ -368,6 +382,11 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
     // First user: Cunning Tactician (ADR-053). Tapping neither removes a
     // declared blocker nor undoes an attack (CR 506.4c-adjacent: nothing in
     // tapping removes a creature from combat).
+    // S40 (R-097, Static Sphere): the mass form — every object in scope (holding the counter, when asked).
+    if (e.scope !== undefined) {
+      for (const id of ctx.objectsInScope(e.scope, e.withCounter ? { withCounter: e.withCounter } : {})) ctx.tap(id);
+      return;
+    }
     for (const t of targeted(e, ctx)) {
       if (t.kind === "object") ctx.tap(t.id);
     }

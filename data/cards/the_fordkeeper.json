@@ -1,0 +1,77 @@
+{
+ "id": "the_fordkeeper",
+ "name": "The Fordkeeper",
+ "source": "custom",
+ "manaCost": "{1}{R}{R}{W}{G}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Spirit",
+  "Warrior"
+ ],
+ "supertypes": [
+  "Legendary"
+ ],
+ "power": 4,
+ "toughness": 5,
+ "text": "Whenever a noncreature source you control deals damage, you gain that much life.\nLands you control have \"{2}, {T}: This land deals 1 damage to any target.\"",
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "DEALS_DAMAGE",
+   "condition": {
+    "source": "any",
+    "controller": "you",
+    "notType": [
+     "Creature"
+    ]
+   },
+   "effects": [
+    {
+     "type": "gainLife",
+     "amount": {
+      "ref": "eventDamage"
+     },
+     "who": "you"
+    }
+   ]
+  },
+  {
+   "kind": "static",
+   "effects": [
+    {
+     "type": "grantAbility",
+     "zone": "battlefield",
+     "scope": "permanentsYouControl",
+     "cardType": "Land",
+     "ability": {
+      "kind": "activated",
+      "cost": {
+       "mana": "{2}",
+       "tap": true
+      },
+      "targets": [
+       {
+        "count": 1,
+        "predicate": "anyTarget",
+        "zone": "any"
+       }
+      ],
+      "effects": [
+       {
+        "type": "damage",
+        "amount": 1,
+        "target": 0
+       }
+      ]
+     }
+    }
+   ]
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "prizeOnly": true
+}

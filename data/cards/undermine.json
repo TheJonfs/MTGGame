@@ -1,0 +1,32 @@
+{
+ "id": "undermine",
+ "name": "Undermine",
+ "source": "real",
+ "scryfallId": "2334bc71-5f85-47ff-b393-601a1e746a4e",
+ "manaCost": "{U}{U}{B}",
+ "types": [
+  "Instant"
+ ],
+ "targets": [
+  {
+   "count": 1,
+   "predicate": "spell",
+   "zone": "stack"
+  }
+ ],
+ "spellEffect": [
+  {
+   "type": "counter",
+   "target": 0
+  },
+  {
+   "type": "loseLife",
+   "amount": 3,
+   "who": "controllerOfTarget"
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": "R"
+}

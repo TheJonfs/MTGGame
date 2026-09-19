@@ -479,7 +479,11 @@ export function doorCheck(world: WorldState, tmpl: Pick<OpponentTemplate, "deckR
 /** The refusal as the parley says it: the archaic line (quests.json `door.refused`, {label} substituted),
  * then the rule's problems. */
 export function doorRefusalText(catalog: Pick<Catalog, "questText">, rule: DeckRule, check: DeckCheck): string {
-  const line = (catalog.questText?.door?.refused ?? "The gate will not open to this deck.").replaceAll("{label}", rule.label);
+  // S40 (ADR-128): the first failed field's own line, when the pack carries one (the courts' gates).
+  const door = catalog.questText?.door;
+  const first = check.failed?.[0];
+  const byRule = first ? door?.byRule?.[first as keyof NonNullable<typeof door.byRule>] : undefined;
+  const line = (byRule ?? door?.refused ?? "The gate will not open to this deck.").replaceAll("{label}", rule.label);
   return `${line} ${rule.label} (${describeDeckRule(rule)}): ${check.problems.join("; ")}.`;
 }
 

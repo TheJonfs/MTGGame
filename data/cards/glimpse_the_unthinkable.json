@@ -1,0 +1,28 @@
+{
+ "id": "glimpse_the_unthinkable",
+ "name": "Glimpse the Unthinkable",
+ "source": "real",
+ "scryfallId": "48058253-54b8-403b-8d95-94d8da986e69",
+ "manaCost": "{U}{B}",
+ "types": [
+  "Sorcery"
+ ],
+ "targets": [
+  {
+   "count": 1,
+   "predicate": "player",
+   "zone": "any"
+  }
+ ],
+ "spellEffect": [
+  {
+   "type": "mill",
+   "count": 10,
+   "who": "target"
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": "R"
+}

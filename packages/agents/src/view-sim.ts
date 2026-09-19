@@ -83,6 +83,7 @@ export function predictAction(
     const d = card ? def(card.cardId) : undefined;
     next.hand = next.hand.filter((c) => c.objectId !== action.objectId);
     if (!d) return { view: next, adjustment: 0.2, unchanged: false };
+    adjustment += spellCastDraws(view, d, defs); // S40 (Ovna): the cast itself draws
     // A7 (S17): an additional sacrifice cost spends our cheapest matching creature (the engine asks
     // later; sacrificeChoice picks the lowest value) — Goblin Grenade is priced net of the Goblin.
     if (d.additionalCost?.sacrifice) removeCheapestMatching(next, me, d.additionalCost.sacrifice.predicate, defs, constants);
@@ -217,7 +218,11 @@ export function predictAction(
     }
     // Instant/sorcery: apply its effects (A6: the chosen mode's), card leaves hand.
     const effects = d.modes && action.mode !== undefined ? (d.modes[action.mode]?.effects ?? []) : (d.spellEffect ?? []);
-    for (const e of effects) adjustment += applyEffect(next, e, targets, x, defs, constants);
+    // S40 (R-097, Sacred Helix): the mana spent is the printed cost with the announced X — substituted here
+    // (the ref reads 0 in the view), so X for a kill or for lethal prices itself and the life rides along.
+    const spent = manaValue(parseManaCost(d.manaCost)) + x * (d.manaCost.match(/\{X\}/g)?.length ?? 0);
+    const substituted = JSON.parse(JSON.stringify(effects).replaceAll('{"ref":"manaSpent"}', String(spent))) as Effect[];
+    for (const e of substituted) adjustment += applyEffect(next, e, targets, x, defs, constants);
     return { view: next, adjustment, unchanged: false };
   }
 
@@ -254,6 +259,12 @@ export function predictAction(
       adjustment -= 0.5 * objectValue(defs, pick, constants); // the body is spent (the mill below pays it back when it closes)
       removeObject(next, pick.id);
     }
+  } else if (ability.cost.sacrifice?.predicate === "land") {
+    // S40 (the Dredger): a land is spent — a tapped one first (the chooser's pick); the spare-land pin decides WHEN.
+    const mine = next.battlefield.filter((o) => o.controller === me && (defs.get(o.cardId)?.types ?? []).includes("Land"));
+    const spentLand = mine.find((o) => o.tapped) ?? mine[0];
+    if (spentLand) removeObject(next, spentLand.id);
+    adjustment += 0.4; // the gate admits a SPARE land only — the evaluator's standing land value overcharges it
   } else if (ability.cost.sacrifice) {
     // Aristocrat / Prospector: the cheapest matching creature goes (sacrificeChoice picks it).
     removeCheapestMatching(next, me, ability.cost.sacrifice.predicate, defs, constants);
@@ -373,6 +384,7 @@ function applyEffect(
         return v;
       }
       const t = targets[e.target];
+      if (!opts.creatureSource) view.life[me] += noncreatureDamageGain(view, defs, me) * amt(e.amount); // S40: the Fordkeeper
       if (t?.kind === "player") {
         view.life[t.player as 0 | 1] -= amt(e.amount);
         // Nothing in this pool profits from hurting yourself: self-face
@@ -388,8 +400,11 @@ function applyEffect(
       return 0;
     }
     case "damageAll": {
+      const gainPer = opts.creatureSource ? 0 : noncreatureDamageGain(view, defs, me); // S40: once per creature hit
       for (const o of [...view.battlefield]) {
         if (o.toughness === null) continue;
+        if (e.tapped && !o.tapped) continue; // S40 (Odile's shape)
+        view.life[me] += gainPer * amt(e.amount);
         if (amt(e.amount) + o.damage >= o.toughness) removeObject(view, o.id);
       }
       return 0;
@@ -732,7 +747,8 @@ function applyEffect(
             view.battlefield.push({ id: `pred_${predSeq++}`, cardId: d.id, controller: me, tapped: e.tapped === true, damage: 0, attachedTo: null, power: d.types.includes("Creature") ? (d.power ?? 0) : null, toughness: d.types.includes("Creature") ? (d.toughness ?? 0) : null, keywords: [...(d.keywords ?? [])] });
             return worth;
           }
-          return Math.max(0.3, worth / 3);
+          // S40 (the Dredger, Shevelport): a NONCREATURE card back in hand is a card — reanimationWorth reads 0 for it.
+          return d.types.includes("Creature") ? Math.max(0.3, worth / 3) : 0.6 + 0.15 * manaValue(parseManaCost(d.manaCost));
         }
       }
       return 0.6;
@@ -741,3 +757,32 @@ function applyEffect(
       return 0.2; // unknown vocabulary: casting is mildly better than nothing
   }
 }
+
+/** S40 (the Fordkeeper): how many of OUR permanents gain life whenever a noncreature source we control deals
+ * damage ("you gain that much life") — the multiplier on a burn spell's or a land ping's amount. */
+function noncreatureDamageGain(view: GameView, defs: Map<string, CardDef>, me: number): number {
+  let n = 0;
+  for (const o of view.battlefield) {
+    if (o.controller !== me) continue;
+    for (const a of defs.get(o.cardId)?.abilities ?? []) {
+      if (a.kind === "triggered" && a.event === "DEALS_DAMAGE" && a.condition?.controller === "you" && (a.condition.notType ?? []).includes("Creature") && a.effects.some((e) => e.type === "gainLife" && typeof e.amount === "object" && e.amount.ref === "eventDamage")) n += 1;
+    }
+  }
+  return n;
+}
+
+/** S40 (Ovna): a permanent of ours that DRAWS when we cast a spell of this card's type makes the cast a
+ * cantrip — worth most of a card, so the enchantments come down before the creatures while she is out. */
+function spellCastDraws(view: GameView, cast: CardDef, defs: Map<string, CardDef>): number {
+  let v = 0;
+  for (const o of view.battlefield) {
+    if (o.controller !== view.you) continue;
+    for (const a of defs.get(o.cardId)?.abilities ?? []) {
+      if (a.kind !== "triggered" || a.event !== "SPELL_CAST" || a.condition?.controller !== "you" || (a.zone ?? "battlefield") !== "battlefield") continue;
+      if (a.condition.type && !a.condition.type.some((t) => cast.types.includes(t as never))) continue;
+      if (a.effects.some((e) => e.type === "draw" && e.who === "you")) v += 0.9;
+    }
+  }
+  return v;
+}
+

@@ -1,0 +1,33 @@
+{
+ "id": "char",
+ "name": "Char",
+ "source": "real",
+ "scryfallId": "ff3a24af-e995-4d05-ac2c-e9676048675d",
+ "manaCost": "{2}{R}",
+ "types": [
+  "Instant"
+ ],
+ "targets": [
+  {
+   "count": 1,
+   "predicate": "anyTarget",
+   "zone": "any"
+  }
+ ],
+ "spellEffect": [
+  {
+   "type": "damage",
+   "amount": 4,
+   "target": 0
+  },
+  {
+   "type": "damage",
+   "amount": 2,
+   "to": "you"
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": 2
+}

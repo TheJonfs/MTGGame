@@ -3,7 +3,7 @@ import { EXPANSION_DECKS } from "@shandalar/sim/expansion-decks";
 import { MAGE_DECKS } from "@shandalar/sim/mage-decks";
 import { assertKnobSource, type KnobSource, type RegionTier, type EnemyTier } from "./knobs.js";
 import { validateCorollaDef } from "./corolla.js";
-import { validateDeckRule, type DeckRule } from "./legality.js";
+import { DECK_RULE_FIELDS, validateDeckRule, type DeckRule } from "./legality.js";
 import { validateSalvagePack, type SalvagePack } from "./salvage.js";
 
 /**
@@ -151,6 +151,9 @@ export interface FloodTextPack {
 export interface DoorTextPack {
   /** The archaic line above the rule and its problems ({label} substituted). Planner's line; refine per rule later. */
   refused: string;
+  /** S40 (ADR-128): a line per rule FIELD — the door speaks the first failed field's line when it has one
+   * (the courts' shape gates); the colour gate and any field without a line keep `refused`. */
+  byRule?: Partial<Record<"minCreatures" | "minCreaturePower" | "bannedTypes" | "minLandFraction" | "maxManaValue" | "maxLands" | "singleton" | "minCards" | "colorsWithin", string>>;
 }
 export interface CorollaTextPack {
   doorOpen: string; doorLocked: string; vaultOpen: string; vaultLocked: string;
@@ -336,6 +339,7 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
     if (qp.heart) for (const k of ["doorOpen", "telegraph", "stakes", "victory", "victoryCard", "loss", "offer", "fifthCutting", "newRoad", "newRoadAll", "withheld", "chronicleHeader"] as const) if (!qp.heart[k]) errors.push(`quests: heart.${k} missing`);
     if (qp.heart) for (const c of ["W", "U", "B", "R", "G"]) if (!qp.heart.chronicle?.[c]) errors.push(`quests: heart.chronicle.${c} missing`);
     if (qp.door && (typeof qp.door.refused !== "string" || !qp.door.refused.trim())) errors.push("quests: door.refused missing (S37)");
+    if (qp.door?.byRule) for (const [k, v] of Object.entries(qp.door.byRule)) { if (!(DECK_RULE_FIELDS as readonly string[]).includes(k) || k === "label") errors.push(`quests: door.byRule has an unknown rule field "${k}" (S40)`); if (typeof v !== "string" || !v.trim()) errors.push(`quests: door.byRule.${k} must be a non-empty line (S40)`); }
     // S39: the flood's pack — every line the screens read, named.
     if (qp.flood) {
       if (!Array.isArray(qp.flood.scene) || qp.flood.scene.length === 0) errors.push("quests: flood.scene must be a nonempty array (S39)");

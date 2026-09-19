@@ -39,6 +39,11 @@ export const SCOPES = [
   // S27 (the Manafleur): every LAW on the battlefield, both sides (defs flagged `law: true`).
   "laws",
   "allCreatures",
+  // S40 (R-097, Static Sphere): every permanent on the battlefield, both sides — the mass-tap's reach
+  // (narrowed by `withCounter`).
+  "allPermanents",
+  // S40 (R-097, the Fordkeeper): permanents the source's controller controls — "lands you control" with cardType Land.
+  "permanentsYouControl",
   "attached",
   "self",
   "you",
@@ -80,6 +85,8 @@ export const TARGET_PREDICATES = [
   "creatureSpell",
   // A10 (S22): Experimental Overload's regrowth predicate.
   "instantOrSorceryCardInYourGraveyard",
+  // S40 (R-097, Shevelport): "artifact, enchantment, or land card" — the typed graveyard-to-hand family's third member.
+  "artifactEnchantmentOrLandCardInYourGraveyard",
   // S25 (the Sapphire Sage): controller-scoped permanent predicates — the creatureYouControl
   // pattern widened to permanents ("for each player, choose target permanent that player controls").
   "permanentYouControl",
@@ -160,7 +167,17 @@ export type ValueRef =
    * persisted onto the object at battlefield entry and carried into its ETB trigger's event
    * context (LKI by construction — the Emerald Keeper's pump survives the Keeper's death in
    * response, CR 603.3). ETB-trigger effects on X-cost permanents only (validator-confined). */
-  | { ref: "xPaid" };
+  | { ref: "xPaid" }
+  /** S40 (R-097, Sacred Helix): the total mana spent to cast the resolving SPELL (X included), captured on
+   * the stack item as the cost is paid (CR 601.2h). Spell effects only (validator-confined). */
+  | { ref: "manaSpent" }
+  /** S40 (R-097, Odile): the resolving ability's own SOURCE's power — live while it is on the battlefield,
+   * zero once it has left (no LKI is kept for a trigger source; registered as a simplification). */
+  | { ref: "sourcePower" }
+  /** S40 (R-097, Zinnia / Meliyan): the last-known POWER of the triggering zone-change event's creature
+   * (captured as it leaves the battlefield, CR 603.10a). DIES / LEAVES_BATTLEFIELD observers only
+   * (validator-confined). */
+  | { ref: "eventPower" };
 /** Counter kinds. +1/+1 and −1/−1 are the P/T pair characteristics() reads (S1 slots); S26 opens the
  * accumulator class — a NAMED kind (lowercase word) is inert state the card's own refs and costs
  * read (Clio's depth counters). Named kinds never touch P/T. */
@@ -187,10 +204,14 @@ export type EffectBase =
    * source matters: lifelink on the untapped creature nets its controller zero). */
   /** S25: `to: "you"` — the effect's controller takes the damage from the resolving source (the
    * Ruby Tyrant's recoil; the Djinn's event addressing can't reach activated abilities). */
-  | { type: "damage"; amount: Amount; target?: number; targetSpec?: number; to?: "eventPlayer" | "you"; from?: "eventObject" }
-  | { type: "damageAll"; amount: Amount; scope: Scope }
+  /** S40 (R-097, Powerstone Minefield): `to: "eventObject"` — the triggering event's OBJECT takes the damage
+   * from the resolving source (the attacker or blocker); a no-op if it left the battlefield. */
+  | { type: "damage"; amount: Amount; target?: number; targetSpec?: number; to?: "eventPlayer" | "you" | "eventObject"; from?: "eventObject" }
+  /** S40 (R-097, Odile): `tapped` narrows the scope to tapped objects. */
+  | { type: "damageAll"; amount: Amount; scope: Scope; tapped?: true }
   /** A10 (S22): `targetSpec` fans out over a spec's still-legal chosen targets (Purge's any-number). */
-  | { type: "destroy"; target?: number; targetSpec?: number }
+  /** S40 (R-097, Voracious Cobra): `eventObject` — destroy the triggering event's object (the creature it damaged). */
+  | { type: "destroy"; target?: number; targetSpec?: number; eventObject?: true }
   | { type: "destroyAll"; scope: Scope }
   /** S27 (the Manafleur): `scope` — exile-by-predicate on the Wrath-class scope machinery ("exile all laws").
    * A `laws` scope is a no-op under the `accumulate` law-sequence mode (the reserved all-five climax). */
@@ -239,10 +260,12 @@ export type EffectBase =
   | { type: "restrict"; what: "attack" | "block" | "both"; target?: number; scope?: Scope; subtype?: string; cardType?: string; other?: boolean; duration: Duration }
   /** A10 (S22): `count` may be a value ref (Aether Mutation's X Saprolings); `pt` sets the token's
    * base P/T, locked at resolution (Overload's X/X Weird — the printed ruling: it does not fluctuate). */
-  | { type: "createToken"; tokenId: string; count: number | ValueRef; who: Who; pt?: ValueRef }
+  /** S40 (Shadow Summoning): `tapped` — the tokens enter tapped. */
+  | { type: "createToken"; tokenId: string; count: number | ValueRef; who: Who; pt?: ValueRef; tapped?: true }
   | { type: "addCounters"; kind: CounterKind; count: number | ValueRef; target?: number; scope?: Scope; subtype?: string; cardType?: string; other?: boolean }
   /** A10 (S22): `targetSpec` fans out (the Warden's "tap up to two target creatures"). */
-  | { type: "tapTarget"; target?: number; targetSpec?: number }
+  /** S40 (R-097, Static Sphere): the MASS form — `scope` (+ `withCounter`: only objects holding a counter of that kind). */
+  | { type: "tapTarget"; target?: number; targetSpec?: number; scope?: Scope; withCounter?: CounterKind }
   | { type: "untapTarget"; target: number }
   /** S23 (ADR-084): sacrifice the ability's own SOURCE — A10 word 3's internal delayed-sac path
    * surfaced as an effect word (the Thundersnake's end-step exit). Self-only v1 (validator-confined);
@@ -396,6 +419,9 @@ export interface TriggerCondition {
   notType?: string[];
   subtype?: string[];
   player?: "opponentOfController" | "controller" | "any";
+  /** S40 (R-097, Voracious Cobra): DEALS_DAMAGE only — combat damage only / damage dealt to a creature only. */
+  combat?: true;
+  recipient?: "creature";
 }
 
 /** ADR-075 A6: one mode of a modal spell/trigger ("choose one —"). */

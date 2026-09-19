@@ -93,6 +93,8 @@ export interface StackItem {
   targets: ResolvedTarget[];
   effects: Effect[];
   x: number;
+  /** S40 (R-097, Sacred Helix): the total mana spent to cast this spell (X included), captured at payment. */
+  manaSpent?: number;
   /** Equip ability (CR 702.6): resolution attaches the source to the target. */
   isEquip?: boolean;
   /** "You may" trigger (ADR-027): controller is asked yes/no on resolution. */
@@ -101,7 +103,7 @@ export interface StackItem {
   mode?: number;
   /** A10 (S22): the triggering event's identity, for effects that address it (the Warden's law) and
    * for unlessPay's payer (the Stoker's caster). Captured at collection time — LKI by construction. */
-  eventContext?: { objectId?: string; cardId?: string; player?: PlayerId; amount?: number };
+  eventContext?: { objectId?: string; cardId?: string; player?: PlayerId; amount?: number; power?: number };
   /** A10 word 7 (S22): the punisher fork — resolution asks the event's player pay-or-suffer. */
   unlessPay?: { life: number };
   /** A10 word 9 rider (S22): an optional trigger whose "yes" pays this mana at resolution. */
@@ -131,7 +133,7 @@ export interface PendingTrigger {
   abilityIndex: number;
   timestamp: number;
   /** A10 (S22): the triggering event's identity, carried onto the StackItem. */
-  eventContext?: { objectId?: string; cardId?: string; player?: PlayerId; amount?: number };
+  eventContext?: { objectId?: string; cardId?: string; player?: PlayerId; amount?: number; power?: number };
 }
 
 export interface CombatState {

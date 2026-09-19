@@ -1,0 +1,45 @@
+{
+ "id": "zinnia_the_undertow",
+ "name": "Zinnia, the Undertow",
+ "source": "custom",
+ "manaCost": "{2}{U}{G}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Merfolk",
+  "Druid"
+ ],
+ "supertypes": [
+  "Legendary"
+ ],
+ "power": 2,
+ "toughness": 4,
+ "text": "Whenever a creature an opponent controls leaves the battlefield, that player mills cards equal to its power.",
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "LEAVES_BATTLEFIELD",
+   "condition": {
+    "source": "other",
+    "controller": "opponent",
+    "type": [
+     "Creature"
+    ]
+   },
+   "effects": [
+    {
+     "type": "mill",
+     "count": {
+      "ref": "eventPower"
+     },
+     "who": "opponent"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "prizeOnly": true
+}

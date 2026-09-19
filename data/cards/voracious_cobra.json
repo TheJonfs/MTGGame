@@ -1,0 +1,39 @@
+{
+ "id": "voracious_cobra",
+ "name": "Voracious Cobra",
+ "source": "real",
+ "scryfallId": "9d8c5669-11a9-4d95-8431-7065037f1fb6",
+ "manaCost": "{2}{R}{G}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Snake"
+ ],
+ "power": 2,
+ "toughness": 2,
+ "keywords": [
+  "first strike"
+ ],
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "DEALS_DAMAGE",
+   "condition": {
+    "source": "self",
+    "combat": true,
+    "recipient": "creature"
+   },
+   "effects": [
+    {
+     "type": "destroy",
+     "eventObject": true
+    }
+   ]
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": "R"
+}

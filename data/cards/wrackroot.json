@@ -1,0 +1,64 @@
+{
+ "id": "wrackroot",
+ "name": "Wrackroot",
+ "source": "custom",
+ "manaCost": "",
+ "types": [
+  "Land"
+ ],
+ "supertypes": [
+  "Legendary"
+ ],
+ "text": "{T}: Add {U} or {G}.\n{3}{U}{G}, {T}: Put target creature on top of its owner's library.",
+ "abilities": [
+  {
+   "kind": "activated",
+   "cost": {
+    "tap": true
+   },
+   "effects": [
+    {
+     "type": "addMana",
+     "mana": "{U}"
+    }
+   ]
+  },
+  {
+   "kind": "activated",
+   "cost": {
+    "tap": true
+   },
+   "effects": [
+    {
+     "type": "addMana",
+     "mana": "{G}"
+    }
+   ]
+  },
+  {
+   "kind": "activated",
+   "cost": {
+    "mana": "{3}{U}{G}",
+    "tap": true
+   },
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "creature",
+     "zone": "battlefield"
+    }
+   ],
+   "effects": [
+    {
+     "type": "bounce",
+     "target": 0,
+     "to": "libraryTop"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "prizeOnly": true
+}

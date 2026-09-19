@@ -1,0 +1,64 @@
+{
+ "id": "shevelport",
+ "name": "Shevelport",
+ "source": "custom",
+ "manaCost": "",
+ "types": [
+  "Land"
+ ],
+ "supertypes": [
+  "Legendary"
+ ],
+ "text": "{T}: Add {W} or {G}.\n{2}{G}{W}, {T}: Return target artifact, enchantment, or land card from your graveyard to your hand.",
+ "abilities": [
+  {
+   "kind": "activated",
+   "cost": {
+    "tap": true
+   },
+   "effects": [
+    {
+     "type": "addMana",
+     "mana": "{W}"
+    }
+   ]
+  },
+  {
+   "kind": "activated",
+   "cost": {
+    "tap": true
+   },
+   "effects": [
+    {
+     "type": "addMana",
+     "mana": "{G}"
+    }
+   ]
+  },
+  {
+   "kind": "activated",
+   "cost": {
+    "mana": "{2}{G}{W}",
+    "tap": true
+   },
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "artifactEnchantmentOrLandCardInYourGraveyard",
+     "zone": "graveyard"
+    }
+   ],
+   "effects": [
+    {
+     "type": "returnFromGraveyard",
+     "target": 0,
+     "to": "hand"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "prizeOnly": true
+}

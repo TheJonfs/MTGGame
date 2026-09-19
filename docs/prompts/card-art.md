@@ -242,3 +242,150 @@ The wager without playing-card props: the collector KNOWS her inventory and bets
 2. **Illuminated manuscript** — "Illuminated-manuscript miniature on vellum, flat perspective and gold leaf: a blindfolded wizard reaching into an open cabinet of tiny labelled drawers and phials, a second figure watching with a ledger, a blank unrolled ribbon curling around the scene, lapis blue and gold with red accents, marginal vine ornament behind (not a border)."
 3. **Art nouveau poster** — "Art nouveau poster, flat colour and flowing line: an arcane collector at a curio counter drawing one sealed phial from a rack of dozens without looking, her other hand raised as if naming it, sinuous hair and robe lines, decorative curls of smoke and leaves behind, muted teal, cream and a single warm gold accent."
 4. **Dark surrealist oil** — "Dark surrealist oil painting: a cabinet of numbered drawers receding into black on every side, one drawer pulled open spilling cold blue light, a gloved hand hovering above it about to choose by touch alone, the collector's face half-lit and certain, eerie stillness, deep navy and bone with one gold glint."
+
+## S40 — the flood's sixteen (ADR-052 ceremony; entries authored by the implementer from `docs/phase-two-legends-working.md`'s flavour lines, brief S40 Part 2; no proper nouns from outside the project). Legends and the two custom golds: three house registers + one from the round-2 set where it suits. The five High Grounds are landscapes: oil / ink-and-gouache / watercolor / woodblock print (a register new to the project, for lands).
+
+
+## the_bailiff — "The Bailiff" (WUR legendary (Angel, Tidelock Weir — the Intake's phase-two lord) — what arrives is undone: an angel as an officer of the court, swift and unresting, who serves the writ and sends the seized thing back where it came from; the dam across the drowned road is her bench)
+
+S40 (ADR-128). Entry authored by the implementer.
+
+1. **Classical oil** — "Oil painting in the warm classical fantasy style of 1990s trading-card art: a stern angel in a white officer's coat with blue and red sashes descending on broad grey-white wings onto the crest of a great stone dam across a flooded valley, a sealed writ in one outstretched hand and a ring of heavy iron keys at her belt, spray and dawn light behind her, the water held level and still on one side of the wall."
+2. **Ink-and-gouache action** — "High-contrast ink drawing with gouache highlights: an angel diving wings-folded in a steep diagonal, one gauntleted hand catching a kneeling armoured figure by the collar as that figure dissolves upward into loose pages and light, limited palette of white, slate blue and a single vermilion sash."
+3. **Watercolor storybook** — "Muted watercolor: a tall winged bailiff standing at a sluice-gate wheel on top of a weir at dusk with a lantern and a long ledger, small boats queued on the flat flooded water below waiting to be let through, soft blue-grey washes, patient unhurried authority."
+4. **Stained glass** — "Stained-glass window in the medieval style, thick black leading and jewel-toned glass: a winged angel-magistrate standing on a dam wall holding a staff of office upright and a sealed scroll, stylised water in blue panes held back on one side and dry red-gold ground on the other, white, cobalt and ruby glass, formal frontal symmetry."
+
+## odile_the_tallyflame — "Odile, the Tallyflame" (UR legendary (Elemental Shaman, Tallyflame Court) — every card drawn is a mark on the tally and every mark burns what lies spent: a flame that counts; a keeper of accounts made of fire, slight and unhurried, dangerous by arithmetic)
+
+S40 (ADR-128). Entry authored by the implementer.
+
+1. **Classical oil** — "Oil painting in the warm classical fantasy style of 1990s trading-card art: a slender elemental woman whose body is banked blue-and-orange flame inside a shaman's cloak of scorched reeds, standing before a tall slate wall scratched with hundreds of tally marks, touching one fingertip to the stone so a new mark ignites, embers drifting, cool blue shadows and hot rimlight."
+2. **Ink-and-gouache action** — "High-contrast ink drawing with gouache highlights: a flame-bodied shaman sweeping a burning stylus through the air in five quick strokes, each stroke a tally of fire that arcs away toward the ground, strong diagonal, cloak and sparks streaming, limited palette of ink black, cold cyan and a hot orange accent."
+3. **Watercolor storybook** — "Muted watercolor: a small fire-spirit woman seated cross-legged on a dry hilltop at night with a long knotted counting-cord across her lap, each knot a tiny glowing coal, the flooded lowlands dark and flat below, soft indigo washes with warm orange points, quiet and watchful."
+4. **Chiaroscuro portrait** — "Dramatic chiaroscuro three-quarter portrait: an elemental shaman whose face is lit entirely from within by her own fire, a reed hood, a string of charred counting-beads wound round one raised hand, one bead flaring, a dark ground, near-monochrome ember orange with a cold blue edge-light."
+
+## the_reeve — "The Reeve" (BUG legendary (Nightmare Warlock, Marrowfen — the Tithe's phase-two lord) — what the water took, he keeps: the steward of a larder in the bog, who fills both graves and takes the best thing out of either; patient, proprietary, deadly to the touch)
+
+S40 (ADR-128). Entry authored by the implementer.
+
+1. **Classical oil** — "Oil painting in the warm classical fantasy style of 1990s trading-card art: a tall gaunt warlock-steward in a long waxed coat of black and moss green standing knee-deep in a misty fen, a ring of bone keys at his belt and a hooked staff, behind him rows of pale shapes hanging preserved under the dark water like a larder, a huge beast's ribcage rising half out of the bog at his gesture, cold teal light."
+2. **Ink-and-gouache action** — "High-contrast ink drawing with gouache highlights: a nightmare-faced warlock hauling on a chain with both hands as a vast skeletal creature breaks the surface of black water in a burst of spray, strong rising diagonal, limited palette of ink black, bog green and a sickly blue-white accent."
+3. **Watercolor storybook** — "Muted watercolor: a stooped steward in a wide hat poling a flat boat through a drowned graveyard at dusk, a lantern on the prow, an open ledger on his knee, headstones and reeds just above the water, something large and pale following under the surface, soft grey-green washes, quiet dread."
+4. **Dark surrealist oil** — "Dark surrealist oil painting: a faceless figure in a steward's coat standing in a cellar whose floor is still black water, shelves receding into darkness on every side stocked with sleeping creatures under glass, one hand resting on a jar that has begun to glow green, eerie stillness, deep black, bone and verdigris."
+
+## zinnia_the_undertow — "Zinnia, the Undertow" (UG legendary (Merfolk Druid, the Wrackroot Shallows) — whatever leaves the field is pulled under, and takes a piece of its owner's mind with it: the current beneath calm water; a merfolk druid of the root-tangle, serene on the surface)
+
+S40 (ADR-128). Entry authored by the implementer.
+
+1. **Classical oil** — "Oil painting in the warm classical fantasy style of 1990s trading-card art: a merfolk druid with green-blue skin and fins, crowned with water flowers, risen waist-high from calm shallows among flooded tree roots, one hand extended palm-down over the water as a spiralling current opens beneath a distant wading beast, dappled green light, serene expression."
+2. **Ink-and-gouache action** — "High-contrast ink drawing with gouache highlights: seen from underwater, a merfolk druid coiling downward in a strong spiral with a trail of roots and weed, dragging a great armoured shape down by a tendril into the dark while loose pages and bubbles stream up toward the light, limited palette of ink black, deep teal and a pale gold accent."
+3. **Watercolor storybook** — "Muted watercolor: a merfolk woman sitting on a half-sunken root at the edge of a flooded wood, trailing her fingers in the water, and where she touches it small ripples pull floating leaves and a child's paper boat gently under, soft green and blue washes, calm and faintly unsettling."
+4. **Art nouveau poster** — "Art nouveau poster, flat colour and flowing line: a merfolk druid in profile with long hair becoming currents and water-weed that curl around the whole composition and draw small silhouetted creatures down into the depths at the bottom, zinnia-like flowers in her hair, muted teal, sea green and cream with one coral accent."
+
+## the_fordkeeper — "The Fordkeeper" (RWG legendary (Spirit Warrior, Emberford — the Toll's phase-two lord) — the roads became fords, and the ford is where the toll is taken: an ancestral spirit in a warrior's shape who is fed by every wound the land and the fire deal; the ground itself strikes for him)
+
+S40 (ADR-128). Entry authored by the implementer.
+
+1. **Classical oil** — "Oil painting in the warm classical fantasy style of 1990s trading-card art: a towering spirit-warrior of translucent ember-gold light in antlered helm and layered hide-and-bronze armour standing mid-stream at a wide river crossing, a great spear planted in the riverbed, stepping-stones around him glowing like coals and the far bank green with summer, travellers small on the near shore, warm sunset rimlight."
+2. **Ink-and-gouache action** — "High-contrast ink drawing with gouache highlights: a spirit-warrior driving the butt of his spear into the shallows so that cracks of fire race outward through the stones and the banks in all directions, water flung up in a strong radial burst, limited palette of ink black, bone white and a hot red-orange accent with one touch of leaf green."
+3. **Watercolor storybook** — "Muted watercolor: a large quiet ghostly warrior seated on a boulder beside a ford at evening with a toll bowl at his feet, fireflies and small flames drifting up from the grass to settle on his shoulders, a walled meadow behind, soft ochre, green and rose washes, unhurried and immovable."
+4. **Chiaroscuro portrait** — "Dramatic chiaroscuro three-quarter portrait: a spirit-warrior's face half-seen inside an antlered bronze helm, lit from below by glowing river stones, skin like smoke over embers, a hand resting on a spear shaft hung with toll-tokens, dark ground, near-monochrome red-gold with one cool green glint."
+
+## ovna_the_enchantress — "Ovna, the Enchantress" (WG legendary (Nymph, Shevelport Green) — she grows with every enchantment on the table and each one she casts teaches her another: a nymph of the one meadow above the flood, wreathed in her own workings; she wants the table full)
+
+S40 (ADR-128). Entry authored by the implementer.
+
+1. **Classical oil** — "Oil painting in the warm classical fantasy style of 1990s trading-card art: a graceful nymph in a white-and-green gown walking through a high sunlit meadow, a dozen luminous sigil-rings of different sizes orbiting her like hoops of gold thread, wildflowers bending toward her, the flooded lowlands hazy and far below, warm morning light."
+2. **Ink-and-gouache action** — "High-contrast ink drawing with gouache highlights: a nymph spinning with arms outstretched as ribbons of glowing script unwind from her hands and wrap around standing stones and saplings in a strong circular composition, hair and gown flying, limited palette of ink black, cream and spring green with a gold accent."
+3. **Watercolor storybook** — "Muted watercolor: a nymph kneeling in long grass at dusk tying a glowing ribbon-charm to a hawthorn branch already hung with dozens of others, each one a small soft light, a white hart watching from the meadow's edge, gentle green and gold washes, quiet industrious joy."
+4. **Art nouveau poster** — "Art nouveau poster, flat colour and flowing line: a nymph standing frontally with her arms raised, her long hair and the vines of the meadow weaving into a great halo of interlocked rings and blossoms behind her, stylised lilies and wheat, muted sage, ivory and gold with one rose accent."
+
+## the_dredger — "The Dredger" (UBW legendary (Sphinx, Lockmere — the Risen Tide's phase-two lord) — he spends the ground to bring a spell back up: a sphinx who keeps the locks on a lake that used to be a valley and dredges the drowned for what was cast and lost; patient attrition with wings)
+
+S40 (ADR-128). Entry authored by the implementer.
+
+1. **Classical oil** — "Oil painting in the warm classical fantasy style of 1990s trading-card art: a great sphinx with slate-grey wings, a pale human face and a collar of white and black enamel crouched on the stone gate of a canal lock above a wide still lake, one forepaw lifting from the water a dripping chain from which hang glowing scrolls, drowned rooftops visible beneath the surface, cool overcast light with a silver break in the cloud."
+2. **Ink-and-gouache action** — "High-contrast ink drawing with gouache highlights: a sphinx in low flight over a lake, talons raking the surface and tearing up a long sheet of water in which luminous written pages are caught, a small island crumbling into the wake behind it, strong horizontal sweep, limited palette of ink black, grey-blue and a pale gold accent."
+3. **Watercolor storybook** — "Muted watercolor: a sphinx lying along the top of a lock gate like a cat on a wall, watching a small bucket-dredge it works with one paw bring up mud, shells and one shining book from the lake bottom, a drowned church spire out in the water, soft grey, blue and cream washes, dry wit and patience."
+4. **Chiaroscuro portrait** — "Dramatic chiaroscuro three-quarter portrait: a sphinx's calm human face and the curve of one folded wing against a dark ground, lit by a single cold light from a glowing scroll held beneath its chin in a great paw still wet and hung with lake weed, near-monochrome blue-grey with ivory and one touch of black enamel."
+
+## isaura_the_levy — "Isaura, the Levy" (WB legendary (Human Cleric, the Obsidian Observatory) — a levee holds the water; a levy raises the army: a cleric-administrator who thins the weak one by one and raises everyone who remains, every turn, for a price; ledgers and musters, mercy with interest)
+
+S40 (ADR-128). Entry authored by the implementer.
+
+1. **Classical oil** — "Oil painting in the warm classical fantasy style of 1990s trading-card art: a composed human cleric in layered white vestments with a black stole and a chain of office standing on the steps of a black glass observatory, one hand raised in blessing over ranks of common soldiers and ghostly winged spirits assembling below, the other hand holding a closed ledger against her chest, pale gold light through storm cloud."
+2. **Ink-and-gouache action** — "High-contrast ink drawing with gouache highlights: a cleric striding along a line of kneeling levied soldiers touching each on the shoulder so that each rises taller and brighter in turn, while behind her a single frail figure withers into shadow, strong diagonal, limited palette of ink black, white and a tarnished gold accent."
+3. **Watercolor storybook** — "Muted watercolor: a cleric at a high desk inside a domed observatory at night, weighing small figurines of soldiers on a set of scales by candlelight, a great brass telescope behind her pointed not at the sky but down at the flooded land, soft grey-violet washes, precise and unsentimental."
+4. **Illuminated manuscript** — "Illuminated-manuscript miniature on vellum, flat perspective and gold leaf: a haloed cleric in black and white seated on a high chair receiving a line of small armed townsfolk, an attendant recording them in a roll, tiny white winged spirits above, a black tower behind, ivory, sable and gold with red accents, marginal vine ornament behind (not a border)."
+
+## the_reaper — "The Reaper" (GBR legendary (Snake, Harrowmoor — the Season's phase-two lord) — the Sower sows; the Reaper harvests: a great serpent on a moor where snakes are sown each dawn and one is cut each dusk to make the rest terrible; growth spent as violence)
+
+S40 (ADR-128). Entry authored by the implementer.
+
+1. **Classical oil** — "Oil painting in the warm classical fantasy style of 1990s trading-card art: an immense serpent with scales of dark green, black and rust red reared up out of a furrowed moor at sunset, a long curved bone crest along its back like a scythe blade, dozens of small green snakes rising from the plough-lines around it like a sprouting crop, heather and storm light."
+2. **Ink-and-gouache action** — "High-contrast ink drawing with gouache highlights: a giant serpent lashing in a tight sickle-shaped arc through a field of smaller snakes, one small snake dissolving into red light that races along the bodies of all the others, strong crescent composition, limited palette of ink black, moss green and a blood-red accent."
+3. **Watercolor storybook** — "Muted watercolor: a huge old snake coiled around a leaning scarecrow on a misty moor at dawn, watching with heavy-lidded patience as tiny snakes hatch from the furrows one by one, crows keeping their distance, soft brown, green and grey washes, stillness before the harvest."
+4. **Dark surrealist oil** — "Dark surrealist oil painting: a harvest field at night in which every stalk of grain is a thin standing snake, and above them a vast serpent's head hangs low like a moon with one ember eye, a single cut stalk falling and glowing red, eerie stillness, deep umber, black and green with one red glint."
+
+## static_sphere — "Static Sphere" (UW artifact (custom, the Intake's gold) — it marks one thing, and every dawn the mark holds that thing still; the mark outlives the machine: a device of stillness, crackle and hush, not a weapon)
+
+S40 (ADR-128). Entry authored by the implementer.
+
+1. **Classical oil** — "Oil painting in the warm classical fantasy style of 1990s trading-card art: a polished sphere of pale metal and blue glass the size of a helmet floating above a marble plinth in a white hall, fine threads of static lightning reaching from it to a single armoured knight who stands frozen mid-step, dust motes hanging motionless in the light around him, cool blue and ivory."
+2. **Ink-and-gouache** — "High-contrast ink drawing with gouache highlights: a banded metal sphere at the centre of the image throwing out jagged branching arcs that end in a small glowing sigil stamped on a rearing horse, the horse caught rigid, everything else in the scene blurred with motion, limited palette of ink black, white and an electric blue accent."
+3. **Watercolor storybook** — "Muted watercolor: a small humming orb of brass and glass resting on a windowsill at dawn, and outside in the courtyard one windmill among several standing perfectly still with a faint blue mark on its sail while the others turn, soft blue-grey and cream washes, a hush over everything."
+4. **Art nouveau poster** — "Art nouveau poster, flat colour and flowing line: a stylised sphere ringed with concentric halos and fine radiating filaments, a frozen bird held inside one of the rings with wings outstretched, decorative lightning curls filling the ground, muted silver-blue, ivory and a single gold accent."
+
+## sacred_helix — "Sacred Helix" (RW instant (custom, the Intake's gold) — as much harm as you pay for, and as much healing: two strands, fire and light, wound into one stroke; a small blessing that scales into a finishing blow)
+
+S40 (ADR-128). Entry authored by the implementer.
+
+1. **Classical oil** — "Oil painting in the warm classical fantasy style of 1990s trading-card art: a robed battle-priest with one arm thrust forward, from whose palm a double helix of red fire and white-gold light corkscrews across a battlefield into a dark armoured giant, while the white strand's trailing end coils back around the priest's own wounded shoulder and closes it, banners and smoke, warm dramatic light."
+2. **Ink-and-gouache action** — "High-contrast ink drawing with gouache highlights: two intertwined spirals, one jagged and flame-like, one smooth and radiant, drilling diagonally across the whole image and bursting through a shield at the far end, a caster's open hand at the near end, limited palette of ink black, white and a hot red accent with a touch of gold."
+3. **Watercolor storybook** — "Muted watercolor: a young cleric kneeling in a ruined chapel at evening holding up cupped hands, from which a gentle twisting column of red and gold light rises through the broken roof into the clouds like a spiral stair, wounded soldiers resting easier around her, soft rose and gold washes."
+4. **Stained glass** — "Stained-glass window in the medieval style, thick black leading and jewel-toned glass: a tall double helix of ruby-red flame and white-gold light rising the full height of the window between two open hands at the base, small stylised sparks and rays in the side panes, ruby, amber and clear glass, formal vertical symmetry."
+
+## tallyflame_court — "Tallyflame Court" (Legendary Land, UR (the High Ground of Odile's court) — one of the five places that stayed dry: a scorched hilltop court open to the sky where the counting-fires are kept above the flood; knowledge bought at the fire)
+
+S40 (ADR-128). Entry authored by the implementer.
+
+1. **Classical oil landscape** — "Oil painting in the warm classical fantasy style of 1990s trading-card art, a landscape: a ring of tall slate pillars scratched all over with tally marks on the flat summit of a rocky hill rising out of a vast flood, a blue-and-orange fire burning in a stone basin at the centre of the ring, steam where the hill meets the water, dusk sky in cobalt and ember orange."
+2. **Ink-and-gouache** — "High-contrast ink drawing with gouache highlights, a landscape: a steep island crag crowned by an open-air court of standing stones, seen from below across choppy water, a column of sparks rising from it into a night sky and reflected in the waves, limited palette of ink black, cold blue and a hot orange accent."
+3. **Watercolor** — "Muted watercolor landscape: a quiet hilltop court of low stone benches around a fire pit at early morning, thousands of small tally scratches on every surface, mist lying over the drowned valley below with only treetops and one tower showing, soft blue-grey washes with a single warm glow."
+4. **Woodblock print** — "A landscape in the style of a Japanese ukiyo-e woodblock print, flat colour and crisp outline: a conical island hill above stylised waves, a circle of pillars and a tall flame on its summit, bands of cloud, graded indigo sky, vermilion fire, restrained palette of indigo, slate and vermilion."
+
+## wrackroot — "Wrackroot" (Legendary Land, UG (the High Ground of Zinnia's court) — one of the five places that stayed dry: a colossal root-tangle matted with driftwrack standing over the shallows; what wanders in is quietly put back where it began)
+
+S40 (ADR-128). Entry authored by the implementer.
+
+1. **Classical oil landscape** — "Oil painting in the warm classical fantasy style of 1990s trading-card art, a landscape: an enormous ancient tree whose arching roots form a cathedral-sized tangle above clear green shallows, the roots hung with driftwood, weed, nets and the wrack of a drowned country, shafts of sunlight through the canopy onto the water, herons, deep greens and blue."
+2. **Ink-and-gouache** — "High-contrast ink drawing with gouache highlights, a landscape: a dense knot of giant mangrove-like roots seen from water level, a dark channel winding into its heart, a wrecked boat lifted high in the roots, limited palette of ink black, sea green and a pale blue accent."
+3. **Watercolor** — "Muted watercolor landscape: a mound of interwoven roots and driftwood rising from a still lagoon in morning mist, water lilies and small islands of moss, a current visibly curling around its base, soft green, teal and grey washes, tranquil and watchful."
+4. **Woodblock print** — "A landscape in the style of a Japanese ukiyo-e woodblock print, flat colour and crisp outline: a great arching root-tangle over stylised rippling shallows, a few fish shapes beneath, a flight of birds, graded blue-green sky, restrained palette of teal, moss green and cream."
+
+## shevelport — "Shevelport" (Legendary Land, WG (the High Ground of Ovna's court) — one of the five places that stayed dry: the one meadow above the flood, a hill-town green that was once a port's upper common; what was lost to the water is given back here)
+
+S40 (ADR-128). Entry authored by the implementer.
+
+1. **Classical oil landscape** — "Oil painting in the warm classical fantasy style of 1990s trading-card art, a landscape: a broad sunlit village green on a hilltop ringed by whitewashed cottages and old oaks, maypole ribbons and flowering hedges, and at the meadow's lower edge a stone harbour stair descending straight into floodwater where the masts of a sunken port still show, warm gold and green."
+2. **Ink-and-gouache** — "High-contrast ink drawing with gouache highlights, a landscape: a high meadow with a single great oak and a ring of standing charms on poles, seen from the flooded harbour below with half-sunk quays and bollards in the foreground, limited palette of ink black, cream and a fresh green accent with a touch of gold."
+3. **Watercolor** — "Muted watercolor landscape: a gentle green common at midday with sheep, a well, and washing on a line, the grass running down to a calm flood where a weathervane and a chimney stand out of the water, soft green, white and sky-blue washes, peaceful and a little wistful."
+4. **Woodblock print** — "A landscape in the style of a Japanese ukiyo-e woodblock print, flat colour and crisp outline: a rounded green hill with a cluster of white houses and one spreading tree above stylised flat water with a few mast-tips, bands of mist, restrained palette of spring green, ivory and soft gold."
+
+## obsidian_observatory — "Obsidian Observatory" (Legendary Land, WB (the High Ground of Isaura's court) — one of the five places that stayed dry: a black glass observatory on a white crag whose instrument looks down at the land, not up; from here an army is seen whole and sent all at once)
+
+S40 (ADR-128). Entry authored by the implementer.
+
+1. **Classical oil landscape** — "Oil painting in the warm classical fantasy style of 1990s trading-card art, a landscape: a domed observatory built of polished black volcanic glass on top of a sheer white chalk crag above a flooded plain, its great brass telescope angled downward toward the land, pale sunlight glancing off the dome, white birds wheeling, a switchback stair cut into the cliff."
+2. **Ink-and-gouache** — "High-contrast ink drawing with gouache highlights, a landscape: a stark black dome and tower on a pale cliff seen from far below, a single beam of white light sweeping from its open shutter across the dark water like a lighthouse, limited palette of ink black, bone white and a tarnished gold accent."
+3. **Watercolor** — "Muted watercolor landscape: a small dark observatory on a chalk headland at twilight, the first stars out, its dome slit glowing softly, the flood below mirror-still and violet, soft grey-violet and ivory washes, austere and calm."
+4. **Woodblock print** — "A landscape in the style of a Japanese ukiyo-e woodblock print, flat colour and crisp outline: a black domed building on a tall white crag above stylised waves, a thin crescent moon, flat bands of cloud, restrained palette of black, ivory and grey-violet with one gold detail."
+
+## cairnbrand — "Cairnbrand" (Legendary Land, BR (the High Ground of Meliyan's court) — one of the five places that stayed dry: a burial cairn on a black ridge with a fire on top that never goes out; something is given to the pyre and something else walks back down)
+
+S40 (ADR-128). Entry authored by the implementer.
+
+1. **Classical oil landscape** — "Oil painting in the warm classical fantasy style of 1990s trading-card art, a landscape: a huge cairn of piled black stones on a bare volcanic ridge above a dark flood, a tall pyre burning on its summit and throwing red light over rows of smaller grave cairns along the ridge, a narrow path of worn steps, smoke trailing into a bruised purple sky."
+2. **Ink-and-gouache** — "High-contrast ink drawing with gouache highlights, a landscape: a jagged heap of stones crowned with a roaring fire seen from the foot of the slope, long shadows of the grave markers radiating toward the viewer, limited palette of ink black, ash grey and a hot red-orange accent."
+3. **Watercolor** — "Muted watercolor landscape: a lonely stone cairn on a moorland rise at dusk with a small steady flame on top, the sky banded red and charcoal, black water in the low ground on either side, a single set of footprints leading down from it, soft grey, umber and red washes."
+4. **Woodblock print** — "A landscape in the style of a Japanese ukiyo-e woodblock print, flat colour and crisp outline: a dark pyramidal cairn on a ridge with a stylised flame and a ribbon of smoke curling across a graded red-to-black sky above flat dark water, restrained palette of black, charcoal and vermilion."

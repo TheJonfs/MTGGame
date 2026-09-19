@@ -81,6 +81,9 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
     return { power: characteristics(ctx, t.id).power, controller: obj.controller, manaValue: manaValue(parseManaCost(ctx.defs.def(obj.cardId).manaCost)) };
   });
 
+  // S40 (Undermine): the controllers of targeted stack items, snapshotted with the rest of the LKI.
+  const spellLki: (PlayerId | null)[] = item.targets.map((t) => (t.kind === "stackItem" ? (ctx.state.stack.find((s) => s.id === t.id)?.controller ?? null) : null));
+
   const sourceForDamage = () => {
     // A spell's damage source is the spell object; an ability's is its source permanent.
     const id = item.objectId ?? item.sourceId ?? "";
@@ -131,12 +134,15 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
         case "controllerOfTarget": {
           // LKI controller of the first object target (ADR-028; Swords).
           const snap = lki.find((l) => l !== null);
-          return snap ? [snap.controller] : [];
+          if (snap) return [snap.controller];
+          // S40 (Undermine): "its controller" of a targeted SPELL — captured before the counter removes it.
+          const spell = spellLki.find((c) => c !== null);
+          return spell !== undefined && spell !== null ? [spell] : [];
         }
       }
     },
 
-    objectsInScope(scope: Scope, params: { subtype?: string; cardType?: string; other?: boolean } = {}): string[] {
+    objectsInScope(scope: Scope, params: { subtype?: string; cardType?: string; other?: boolean; tapped?: boolean; withCounter?: CounterKind } = {}): string[] {
       // ADR-020 params on resolved effects (S17: Aristocrat's "each Vampire you control").
       const sourceId = item.sourceId ?? item.objectId;
       const narrow = (ids: string[]) =>
@@ -145,6 +151,9 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
           const def = ctx.defs.def(getObject(ctx.state, id).cardId);
           if (params.subtype && !(def.subtypes ?? []).includes(params.subtype)) return false;
           if (params.cardType && !def.types.includes(params.cardType as never)) return false;
+          // S40 (R-097): status filters — tapped objects (Odile), objects holding a counter of a kind (Static Sphere).
+          if (params.tapped && !getObject(ctx.state, id).tapped) return false;
+          if (params.withCounter && (getObject(ctx.state, id).counters[params.withCounter] ?? 0) <= 0) return false;
           return true;
         });
       switch (scope) {
@@ -158,6 +167,10 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
           ));
         case "laws":
           return ctx.state.battlefield.filter((id) => ctx.defs.def(getObject(ctx.state, id).cardId).law === true);
+        case "allPermanents":
+          return narrow([...ctx.state.battlefield]);
+        case "permanentsYouControl":
+          return narrow(ctx.state.battlefield.filter((id) => getObject(ctx.state, id).controller === controller));
         case "allCreatures":
           return narrow(ctx.state.battlefield.filter((id) => isCreature(ctx, id)));
         case "attached":
@@ -198,6 +211,13 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
         // S29 (R-092, Altar of Dementia): the cost's sacrificed creature's power, captured at payment.
         return item.eventContext?.amount ?? 0;
       }
+      // S40 (R-097): the spell's mana spent (captured at payment); the source's live power; the leaving creature's LKI power.
+      if (a.ref === "manaSpent") return item.manaSpent ?? 0;
+      if (a.ref === "sourcePower") {
+        const src = item.sourceId ? ctx.state.objects[item.sourceId] : undefined;
+        return src && src.zone === "battlefield" ? Math.max(0, characteristics(ctx, src.id).power) : 0;
+      }
+      if (a.ref === "eventPower") return Math.max(0, item.eventContext?.power ?? 0);
       if (a.ref === "xPaid") {
         // S25 (ADR-088, member seven): the announced X, captured into the ETB trigger's event
         // context at collection (LKI — the Keeper's death in response does not blank the pump).
@@ -207,6 +227,12 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
       }
       // A4 counting refs: evaluated NOW, from the controller's point of view (608.2h: Tendrils' X at resolution).
       return evaluateValueRef(ctx, a, controller, item.sourceId ?? item.objectId);
+    },
+
+    eventObject(): string | null {
+      // S40 (R-097): the event's object while it is still on the battlefield (a dead attacker takes no Minefield damage).
+      const id = item.eventContext?.objectId;
+      return id && ctx.state.objects[id]?.zone === "battlefield" ? id : null;
     },
 
     eventPlayer(): number | null {
@@ -438,10 +464,10 @@ function searchOp(ctx: EngineCtx, requester?: EffectRequester, source?: { cardId
  * controller); the ADR-038 who:"any" amendment makes it load-bearing (the Usher claims the guest). */
 function sharedOps(ctx: EngineCtx, asController: PlayerId) {
   return {
-    createToken(player: number, tokenId: string, count: number, pt?: { power: number; toughness: number }): void {
+    createToken(player: number, tokenId: string, count: number, pt?: { power: number; toughness: number }, tapped?: boolean): void {
       for (let i = 0; i < count; i++) {
-        // A10 (S22): pt locks the token's base P/T at creation (Overload's X/X Weird).
-        createObject(ctx, tokenId, player as PlayerId, "battlefield", { isToken: true, ...(pt ? { basePT: pt } : {}) });
+        // A10 (S22): pt locks the token's base P/T at creation (Overload's X/X Weird). S40: `tapped` (Shadow Summoning).
+        createObject(ctx, tokenId, player as PlayerId, "battlefield", { isToken: true, ...(pt ? { basePT: pt } : {}), ...(tapped ? { tapped: true } : {}) });
       }
     },
 
@@ -687,6 +713,10 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
           return ctx.state.battlefield.filter((id) => ctx.defs.def(getObject(ctx.state, id).cardId).law === true);
         case "allCreatures":
           return ctx.state.battlefield.filter((id) => isCreature(ctx, id));
+        case "allPermanents":
+          return [...ctx.state.battlefield];
+        case "permanentsYouControl":
+          return ctx.state.battlefield.filter((id) => getObject(ctx.state, id).controller === player);
         default:
           return []; // no source at initialization: "self"/"attached" select nothing
       }
@@ -697,6 +727,9 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
     },
     eventPlayer(): number | null {
       return null; // initialization has no triggering event
+    },
+    eventObject(): string | null {
+      return null;
     },
     sacrificeSource(): void {
       throw new Error("initialization effects have no source to sacrifice");
@@ -754,7 +787,15 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
 /** A4: counting value refs, evaluated live. `count`/`maxPower` scan battlefield permanents
  * from `controller`'s point of view; `graveyardCount` counts cards. Used by resolved effects
  * (Tendrils), statics (Gaean Wurm, Werebear's threshold) and cost reduction (Baru). */
-export function evaluateValueRef(ctx: EngineCtx, ref: Exclude<ValueRef, { ref: "targetPower" } | { ref: "targetManaValue" } | { ref: "eventDamage" } | { ref: "xPaid" } | { ref: "sacrificedPower" }>, controller: PlayerId, sourceId?: string): number {
+/** Refs that only a resolving stack item can answer (its targets, its event, its payment) — statics and cost
+ * reductions read them as zero. S40: one guard for the three live-evaluation sites. */
+export type StackOnlyRef = Extract<ValueRef, { ref: "targetPower" | "targetManaValue" | "eventDamage" | "xPaid" | "sacrificedPower" | "manaSpent" | "sourcePower" | "eventPower" }>;
+const STACK_ONLY = new Set(["targetPower", "targetManaValue", "eventDamage", "xPaid", "sacrificedPower", "manaSpent", "sourcePower", "eventPower"]);
+export function isStackOnlyRef(v: ValueRef): v is StackOnlyRef {
+  return STACK_ONLY.has(v.ref);
+}
+
+export function evaluateValueRef(ctx: EngineCtx, ref: Exclude<ValueRef, StackOnlyRef>, controller: PlayerId, sourceId?: string): number {
   if (ref.ref === "countersOnSelf") {
     // S26 (member eight — Clio): the source's own counters of a kind, live, times the bounded literal.
     // Zero when the source is gone (a graveyard card holds no counters — CR 122.2 by construction).

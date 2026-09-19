@@ -1,0 +1,21 @@
+{
+ "id": "savage_twister",
+ "name": "Savage Twister",
+ "source": "real",
+ "scryfallId": "eb73313b-d39a-46ab-abfc-76f94a75dfca",
+ "manaCost": "{X}{R}{G}",
+ "types": [
+  "Sorcery"
+ ],
+ "spellEffect": [
+  {
+   "type": "damageAll",
+   "amount": "X",
+   "scope": "allCreatures"
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": "R"
+}

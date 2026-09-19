@@ -1,5 +1,5 @@
 import { EventBus, IdGen, type LogSink, type Rng } from "@shandalar/core";
-import { parseManaCost, resolveEffect, type CardDef, type Effect, isChoiceManaAbility, parseManaProduction } from "@shandalar/cards";
+import { manaValue, parseManaCost, resolveEffect, type CardDef, type Effect, isChoiceManaAbility, parseManaProduction } from "@shandalar/cards";
 import { sameAction, type Action } from "./actions.js";
 import {
   assignCombatDamage,
@@ -604,6 +604,9 @@ export class Game {
           targets,
           effects,
           x: action.x ?? 0,
+          // S40 (R-097, Sacred Helix): the mana spent — the printed cost with the announced X (no spell cost
+          // modifiers exist in the engine; one that arrives must update this line).
+          manaSpent: manaValue(parseManaCost(def.manaCost)) + (action.x ?? 0) * (def.manaCost.match(/\{X\}/g)?.length ?? 0),
           ...(action.mode !== undefined ? { mode: action.mode } : {}),
         });
         this.ctx.bus.emit("SPELL_CAST", { cardId: obj.cardId, controller: player, objectId: newId }); // S31: the stack object — its own cast trigger's source

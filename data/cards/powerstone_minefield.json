@@ -1,0 +1,44 @@
+{
+ "id": "powerstone_minefield",
+ "name": "Powerstone Minefield",
+ "source": "real",
+ "scryfallId": "b17807b9-8feb-48ac-813a-829577f5b9e8",
+ "manaCost": "{2}{R}{W}",
+ "types": [
+  "Enchantment"
+ ],
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "ATTACKS",
+   "condition": {
+    "source": "any"
+   },
+   "effects": [
+    {
+     "type": "damage",
+     "amount": 2,
+     "to": "eventObject"
+    }
+   ]
+  },
+  {
+   "kind": "triggered",
+   "event": "BLOCKS",
+   "condition": {
+    "source": "any"
+   },
+   "effects": [
+    {
+     "type": "damage",
+     "amount": 2,
+     "to": "eventObject"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": "R"
+}

@@ -1,5 +1,5 @@
 import { isManaAbility, parseManaCost, parseManaProduction, type ActivatedAbilityDef, type CardDef, type ManaCost, type TargetSpec, isChoiceManaAbility, MANA_COLORS } from "@shandalar/cards";
-import { evaluateValueRef } from "./effect-context.js";
+import { evaluateValueRef, isStackOnlyRef } from "./effect-context.js";
 import type { Action } from "./actions.js";
 import { canBlock, eligibleAttackers, eligibleBlockers, menaceViolations } from "./combat.js";
 import { characteristics, maxLandDrops } from "./characteristics.js";
@@ -314,7 +314,7 @@ export function bottomChoices(ctx: EngineCtx, player: PlayerId): Action[] {
 export function effectiveAbilityCost(ctx: EngineCtx, player: PlayerId, ability: ActivatedAbilityDef, sourceId: string): ManaCost | undefined {
   if (!ability.cost.mana) return undefined;
   const cost = parseManaCost(ability.cost.mana);
-  if (!ability.cost.reduceBy || ability.cost.reduceBy.ref === "targetPower" || ability.cost.reduceBy.ref === "targetManaValue" || ability.cost.reduceBy.ref === "eventDamage" || ability.cost.reduceBy.ref === "xPaid" || ability.cost.reduceBy.ref === "sacrificedPower") return cost;
+  if (!ability.cost.reduceBy || isStackOnlyRef(ability.cost.reduceBy)) return cost;
   const x = evaluateValueRef(ctx, ability.cost.reduceBy, player, sourceId);
   return { ...cost, generic: Math.max(0, cost.generic - x) };
 }

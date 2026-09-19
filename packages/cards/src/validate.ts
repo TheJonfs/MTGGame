@@ -157,7 +157,7 @@ export function validateCard(raw: unknown): ValidationResult {
       err(`spellEffect on a non-Instant/Sorcery`);
     }
     if (raw.modes !== undefined) err(`a modal spell carries "modes", not "spellEffect" (A6)`);
-    validateEffects(raw.spellEffect, declaredTargets.length, err, warnings, id);
+    validateEffects(raw.spellEffect, declaredTargets.length, err, warnings, id, { spell: true });
   } else if (raw.modes !== undefined) {
     // A6: modal spell — each mode carries its own targets + effects.
     if (!types.includes("Instant") && !types.includes("Sorcery")) err(`"modes" on a non-Instant/Sorcery`);
@@ -281,6 +281,8 @@ function isAnyValueRef(v: unknown): boolean {
   if (v.ref === "xPaid") return true;
   // S29 (R-092): the power of the creature sacrificed to pay the ability's cost (Altar of Dementia).
   if (v.ref === "sacrificedPower") return true;
+  // S40 (R-097): the spell's mana spent (Sacred Helix), the source's power (Odile), the leaving creature's LKI power (Zinnia, Meliyan).
+  if (v.ref === "manaSpent" || v.ref === "sourcePower" || v.ref === "eventPower") return true;
   // S26 (member eight): counters of a kind on the source, times a bounded nonzero literal (Clio).
   if (v.ref === "countersOnSelf") return validCounterKind(v.kind) && (v.times === undefined || (Number.isInteger(v.times) && v.times !== 0));
   return false;
@@ -321,7 +323,14 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
         // S25: xPaid refs live only on the ETB trigger of a permanent whose own cost announces an X.
         const xTrigger = a.event === "ENTERS_BATTLEFIELD" && xCount >= 1;
         const lawTrigger = a.event === "END_STEP";
-        validateEffects(a.effects, nTargets, err, warnings, cardId, { damageTrigger, xTrigger, lawTrigger });
+        // S40 (R-097): eventPower reads the leaving creature's LKI power — observed DIES / LEAVES_BATTLEFIELD only.
+        const leaveTrigger = (a.event === "DIES" || a.event === "LEAVES_BATTLEFIELD") && isRecord(a.condition) && (a.condition.source === "other" || a.condition.source === "any");
+        if (isRecord(a.condition) && (a.condition.combat !== undefined || a.condition.recipient !== undefined)) {
+          if (a.event !== "DEALS_DAMAGE") err(`condition combat/recipient live only on DEALS_DAMAGE triggers (S40)`);
+          if (a.condition.combat !== undefined && a.condition.combat !== true) err(`condition combat must be true when present (S40)`);
+          if (a.condition.recipient !== undefined && a.condition.recipient !== "creature") err(`condition recipient must be "creature" (S40)`);
+        }
+        validateEffects(a.effects, nTargets, err, warnings, cardId, { damageTrigger, xTrigger, lawTrigger, leaveTrigger });
       }
       // A10 word 9 (S22): zone-scoped triggers — first zone graveyard, first event UPKEEP (the
       // collection only exists there; widening means a new collector, not a validator relax).
@@ -365,8 +374,8 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
         if (a.cost.sacrifice !== undefined) {
           const pred = isRecord(a.cost.sacrifice) ? a.cost.sacrifice.predicate : undefined;
           // S28 (ADR-098, Orcish Lumberjack): "land.subtype:<Subtype>" — sacrifice a typed land.
-          if (typeof pred !== "string" || !/^(self|creature(\.subtype:[A-Za-z]+)?|land\.subtype:[A-Za-z]+)$/.test(pred)) {
-            err(`sacrifice predicate must be "self", "creature", "creature.subtype:<Subtype>", or "land.subtype:<Subtype>"`);
+          if (typeof pred !== "string" || !/^(self|creature(\.subtype:[A-Za-z]+)?|land(\.subtype:[A-Za-z]+)?)$/.test(pred)) {
+            err(`sacrifice predicate must be "self", "creature", "creature.subtype:<Subtype>", "land", or "land.subtype:<Subtype>"`);
           }
         }
         // ADR-076 / A5 cost words.
@@ -482,17 +491,18 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     // A8 (S20): damage addresses a target index OR a range-spec index (targetSpec fans out).
     // A10 (S22): OR the triggering event's player (the Warden's law).
     // S25: to:"you" — the controller's own recoil (the Ruby Tyrant); no event context needed.
-    if (e.to !== undefined && e.to !== "eventPlayer" && e.to !== "you") err(`damage "to" must be "eventPlayer" or "you" (A10/S25)`);
+    if (e.to !== undefined && e.to !== "eventPlayer" && e.to !== "you" && e.to !== "eventObject") err(`damage "to" must be "eventPlayer", "you" or "eventObject" (A10/S25/S40)`);
     if (e.from !== undefined && e.from !== "eventObject") err(`damage "from" must be "eventObject" (A10)`);
     if (!Number.isInteger(e.target) && !Number.isInteger(e.targetSpec) && e.to === undefined) err(`"damage" needs "target", "targetSpec", or a "to" address`);
   },
   damageAll: (e, err) => {
     needAmount(e, err);
     needScope(e, err);
+    if (e.tapped !== undefined && e.tapped !== true) err(`damageAll.tapped must be true when present (S40)`);
   },
   destroy: (e, err) => {
     // A10 (S22): destroy addresses a target index OR a spec index (Purge's fan-out).
-    if (!Number.isInteger(e.target) && !Number.isInteger(e.targetSpec)) err(`"destroy" needs "target" or "targetSpec"`);
+    if (!Number.isInteger(e.target) && !Number.isInteger(e.targetSpec) && e.eventObject !== true) err(`"destroy" needs "target", "targetSpec" or eventObject (S40)`);
   },
   destroyAll: needScope,
   exile: (e, err) => {
@@ -585,7 +595,13 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
   },
   tapTarget: (e, err) => {
     // A10 (S22): tapTarget addresses a target index OR a spec index (the Warden's up-to-two).
-    if (!Number.isInteger(e.target) && !Number.isInteger(e.targetSpec)) err(`"tapTarget" needs "target" or "targetSpec"`);
+    if (e.scope !== undefined) {
+      // S40 (R-097, Static Sphere): the mass form.
+      needScope(e, err);
+      if (e.withCounter !== undefined && !validCounterKind(e.withCounter)) err(`tapTarget.withCounter must be a counter kind (S40)`);
+      return;
+    }
+    if (!Number.isInteger(e.target) && !Number.isInteger(e.targetSpec)) err(`"tapTarget" needs "target", "targetSpec" or "scope"`);
   },
   untapTarget: needTargetIndex,
   returnFromGraveyard: (e, err) => {
@@ -701,7 +717,7 @@ function validateEffects(
   err: (m: string) => void,
   warnings: string[],
   cardId: string,
-  opts: { isStatic?: boolean; damageTrigger?: boolean; xTrigger?: boolean; lawTrigger?: boolean; sacrificeCost?: boolean } = {},
+  opts: { isStatic?: boolean; damageTrigger?: boolean; xTrigger?: boolean; lawTrigger?: boolean; sacrificeCost?: boolean; leaveTrigger?: boolean; spell?: boolean } = {},
 ): void {
   if (!Array.isArray(effects) || effects.length === 0) return err(`effects must be a non-empty array`);
   for (const e of effects) {
@@ -724,6 +740,9 @@ function validateEffects(
     }
     // S29 (R-092): sacrificedPower reads the cost's sacrificed creature — only an activated ability with a sacrifice cost pays one.
     if (!opts.sacrificeCost && JSON.stringify(e).includes('"ref":"sacrificedPower"')) err(`sacrificedPower is confined to activated abilities with a sacrifice cost (S29)`);
+    // S40 (R-097): the two new confined refs.
+    if (!opts.leaveTrigger && JSON.stringify(e).includes('"ref":"eventPower"')) err(`eventPower refs live only on observed DIES / LEAVES_BATTLEFIELD triggers (S40)`);
+    if (!opts.spell && JSON.stringify(e).includes('"ref":"manaSpent"')) err(`manaSpent refs live only on a spell's own effects (S40)`);
     // S23 (ADR-084): the eventDamage ref reads a damage event's payload — meaningless anywhere else.
     if (!opts.damageTrigger && JSON.stringify(e).includes('"ref":"eventDamage"')) {
       err(`eventDamage refs live only on DEALS_[COMBAT_]DAMAGE_TO_PLAYER triggers (S23)`);

@@ -1,0 +1,71 @@
+{
+ "id": "the_reaper",
+ "name": "The Reaper",
+ "source": "custom",
+ "manaCost": "{1}{G}{G}{B}{R}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Snake"
+ ],
+ "supertypes": [
+  "Legendary"
+ ],
+ "power": 4,
+ "toughness": 4,
+ "text": "At the beginning of each upkeep, create a 1/1 green Snake creature token.\n{B}{R}{G}, Sacrifice a creature: Creatures you control get +X/+0 and gain haste and lifelink until end of turn, where X is the sacrificed creature's power.",
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "UPKEEP",
+   "condition": {
+    "controller": "any"
+   },
+   "effects": [
+    {
+     "type": "createToken",
+     "tokenId": "snake_1_1_g",
+     "count": 1,
+     "who": "you"
+    }
+   ]
+  },
+  {
+   "kind": "activated",
+   "cost": {
+    "mana": "{B}{R}{G}",
+    "sacrifice": {
+     "predicate": "creature"
+    }
+   },
+   "effects": [
+    {
+     "type": "modifyPT",
+     "power": {
+      "ref": "sacrificedPower"
+     },
+     "toughness": 0,
+     "scope": "creaturesYouControl",
+     "duration": "UNTIL_END_OF_TURN"
+    },
+    {
+     "type": "grantKeyword",
+     "keyword": "haste",
+     "scope": "creaturesYouControl",
+     "duration": "UNTIL_END_OF_TURN"
+    },
+    {
+     "type": "grantKeyword",
+     "keyword": "lifelink",
+     "scope": "creaturesYouControl",
+     "duration": "UNTIL_END_OF_TURN"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "prizeOnly": true
+}

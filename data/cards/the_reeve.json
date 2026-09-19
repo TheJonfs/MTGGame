@@ -1,0 +1,69 @@
+{
+ "id": "the_reeve",
+ "name": "The Reeve",
+ "source": "custom",
+ "manaCost": "{1}{B}{B}{U}{G}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Nightmare",
+  "Warlock"
+ ],
+ "supertypes": [
+  "Legendary"
+ ],
+ "power": 3,
+ "toughness": 5,
+ "keywords": [
+  "deathtouch"
+ ],
+ "text": "Deathtouch\n{1}{U}: Target player mills three cards.\n{3}{B}{G}: Return target creature card from a graveyard to the battlefield.",
+ "abilities": [
+  {
+   "kind": "activated",
+   "cost": {
+    "mana": "{1}{U}"
+   },
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "player",
+     "zone": "any"
+    }
+   ],
+   "effects": [
+    {
+     "type": "mill",
+     "count": 3,
+     "who": "target"
+    }
+   ]
+  },
+  {
+   "kind": "activated",
+   "cost": {
+    "mana": "{3}{B}{G}"
+   },
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "creatureCardInYourGraveyard",
+     "zone": "graveyard",
+     "who": "any"
+    }
+   ],
+   "effects": [
+    {
+     "type": "returnFromGraveyard",
+     "target": 0,
+     "to": "battlefield"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "prizeOnly": true
+}

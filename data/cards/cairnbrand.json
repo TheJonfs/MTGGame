@@ -1,0 +1,67 @@
+{
+ "id": "cairnbrand",
+ "name": "Cairnbrand",
+ "source": "custom",
+ "manaCost": "",
+ "types": [
+  "Land"
+ ],
+ "supertypes": [
+  "Legendary"
+ ],
+ "text": "{T}: Add {B} or {R}.\n{4}{B}{R}, {T}, Sacrifice a creature: Return target creature card from your graveyard to the battlefield.",
+ "abilities": [
+  {
+   "kind": "activated",
+   "cost": {
+    "tap": true
+   },
+   "effects": [
+    {
+     "type": "addMana",
+     "mana": "{B}"
+    }
+   ]
+  },
+  {
+   "kind": "activated",
+   "cost": {
+    "tap": true
+   },
+   "effects": [
+    {
+     "type": "addMana",
+     "mana": "{R}"
+    }
+   ]
+  },
+  {
+   "kind": "activated",
+   "cost": {
+    "mana": "{4}{B}{R}",
+    "tap": true,
+    "sacrifice": {
+     "predicate": "creature"
+    }
+   },
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "creatureCardInYourGraveyard",
+     "zone": "graveyard"
+    }
+   ],
+   "effects": [
+    {
+     "type": "returnFromGraveyard",
+     "target": 0,
+     "to": "battlefield"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "prizeOnly": true
+}

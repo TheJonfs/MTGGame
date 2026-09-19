@@ -243,6 +243,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | cardId | set | collector | artist | scryfallId |
 |---|---|---|---|---|
 | abrade | brc | 111 | Jonas De Ro | cccbc616-5592-4051-a066-a325209f349e |
+| absorb | inv | 226 | Andrew Goldhawk | 5d6a0f3e-457f-41f5-be26-5fb249874f1a |
 | aether_channeler | dmu | 42 | Caio Monteiro | 60afeb75-2c1e-4634-8c83-88b1dddb77c2 |
 | aether_mutation | apc | 91 | Ron Spencer | a9507116-ede8-40a1-8fa3-705e6f6f64c0 |
 | air_elemental | lea | 46 | Richard Thomas | 69c3b2a3-0daa-4d42-832d-fcdfda6555ea |
@@ -274,6 +275,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | buried_alive | wth | 63 | Brian Horton | 56b92eb5-72b0-46b4-8b16-8a7a7ac80f56 |
 | cathartic_adept | ala | 34 | Carl Critchlow | 8e63626d-f55c-4155-9712-511f591c0614 |
 | centaur_courser | m10 | 172 | Vance Kovacs | 03354b67-7df2-4b4b-a996-a37550e58561 |
+| char | rav | 117 | Adam Rex | ff3a24af-e995-4d05-ac2c-e9676048675d |
 | child_of_night | m10 | 88 | Ash Wood | e1f7a9a7-3679-4a18-a52a-e3a8ab16ad32 |
 | cloudkin_seer | m20 | 54 | Anastasia Ovchinnikova | e2111753-a930-403f-9d94-a86dfcb069da |
 | control_magic | lea | 52 | Dameon Willich | 7b52f459-c703-4a0b-9114-ff69eec61287 |
@@ -302,6 +304,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | giant_growth | lea | 197 | Sandra Everingham | 367dbefe-3366-408e-9fcf-7dc00f8cc201 |
 | gladecover_scout | m12 | 178 | Allen Williams | 26710d5c-01d1-498b-9f54-521dfd195843 |
 | glare_of_subdual | rav | 207 | Zoltan Boros & Gabor Szikszai | ed6166c1-3c2e-47af-873e-d3b39f42bd27 |
+| glimpse_the_unthinkable | rav | 208 | Brandon Kitkouski | 48058253-54b8-403b-8d95-94d8da986e69 |
 | glorious_anthem | usg | 15 | Kev Walker | 61f867c5-0727-4408-b479-b81518daa0ec |
 | goblin_chieftain | m10 | 139 | Sam Wood | f5c8a4a4-1611-4188-9c59-8aefb016b5ad |
 | goblin_grenade | fem | 56a | Ron Spencer | 8837eaba-9602-4f63-9897-85583fcdcf51 |
@@ -353,7 +356,10 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | plains | leb | 288 | Jesper Myrfors | b7331b03-be66-419c-94bc-ed494c042ea3 |
 | plateau | olgc | 2018A | Mark Poole | 0829af6e-7dd9-4bce-bf14-1c5d509556cb |
 | plumecreed_escort | blb | 65 | Manuel Castañón | f71320ed-2f30-49ce-bcb0-19aebba3f0e8 |
+| poison_tip_archer | m19 | 220 | Dmitry Burmak | 5e058ff8-043c-498b-8310-0ca45466ac27 |
+| powerstone_minefield | apc | 115 | Greg Hildebrandt | b17807b9-8feb-48ac-813a-829577f5b9e8 |
 | prey_upon | isd | 200 | Dave Kendall | b7b3eaf0-4207-4bac-923d-29f348c95a35 |
+| putrefy | rav | 221 | Jim Nelson | 0a16086c-5a74-45d0-8b38-e832cfbc80f7 |
 | pyroclasm | ice | 214 | Pat Lewis | 88040748-ad76-4b9a-bd4e-87e5980e9816 |
 | raging_goblin | por | 145 | Pete Venters | fed57a17-7847-4e60-bc40-4452880f12a3 |
 | raise_the_alarm | mrd | 16 | John Matson | 4be510c8-fc01-4374-ac04-7968d24480fe |
@@ -364,12 +370,14 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | reya_dawnbringer | inv | 33 | Matthew D. Wilson | e1e0e72b-e65e-4578-b610-9f529daa32d7 |
 | rumbling_baloth | m14 | 193 | Jesper Ejsing | d8610ff1-064b-4c75-a8df-d3b076370d1e |
 | sacred_foundry | rvr | 409 | Rob Alexander | a9eb59ea-bddd-4d5f-96e8-0c1f0ce84c11 |
+| savage_twister | mir | 280 | Bob Eggleton | eb73313b-d39a-46ab-abfc-76f94a75dfca |
 | savannah | olgc | 2017NA | Mark Poole | 931184cf-0b9a-49d5-8234-a25b90dbaedb |
 | savannah_lions | lea | 38 | Daniel Gelon | d05b92bd-797e-413f-a8b0-32e0937a1ee0 |
 | scepter_of_dominance | con | 17 | Howard Lyon | 888bc7ca-f9fa-4da4-b466-b9dc273d5319 |
 | scrubland | olgc | 2018 | Mark Poole | d1428846-e0da-4b62-b0e9-25efe846cc33 |
 | secluded_steppe | ons | 324 | Heather Hudson | ea454280-f7f4-4315-bb46-b56050c02c97 |
 | serra_angel | lea | 39 | Douglas Shuler | f8ac5006-91bd-4803-93da-f87cf196dd2f |
+| shadow_summoning | ltr | 226 | Campbell White | ec0984b2-bed6-41b1-9087-2cfd16749037 |
 | shock | sth | 98 | Randy Gallegos | f9b2ff2a-6dfe-4635-8da2-22d525e82b94 |
 | siege_gang_commander | scg | 103 | Christopher Moeller | 92e78cec-aaf9-4fe8-887b-b7e356d63315 |
 | skirk_prospector | ons | 230 | Doug Chaffee | eb545dcd-3a7a-46a7-9c35-d28faebc6d17 |
@@ -395,10 +403,12 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | tundra | olgc | 2015 | Raoul Vitale | 8ef5d61d-2648-4cbc-8083-3f3c6b362825 |
 | typhoid_rats | isd | 120 | Kev Walker | 4490ce65-c73a-4809-abd1-ccc3175bd2a4 |
 | underground_sea | olgc | 2016EU | Filip Burburan | 962719f7-ff8e-480b-985e-bd53a111793b |
+| undermine | inv | 282 | Massimiliano Frezzato | 2334bc71-5f85-47ff-b393-601a1e746a4e |
 | unearth | ulg | 72 | Don Hazeltine | b6cb2549-e485-44d6-9d65-7605c568909e |
 | vampire_nighthawk | zen | 116 | Jason Chan | 44f19fe3-7a17-4c45-adfa-590f73dfebfa |
 | vindicate | apc | 126 | Brian Snõddy | 2a1bfefd-dae8-49e9-9d56-cc852e3dc93b |
 | volcanic_island | olgc | 2018NA | Mark Poole | 154ce456-38d2-4195-93b7-302e11c006e2 |
+| voracious_cobra | inv | 288 | Terese Nielsen | 9d8c5669-11a9-4d95-8431-7065037f1fb6 |
 | wall_of_air | lea | 89 | Richard Thomas | da56fdf3-6a8f-4833-a5c3-197650cc4889 |
 | wall_of_blossoms | sth | 125 | Heather Hudson | 7eb4a1a3-efcf-4c9a-ad1f-0a3f8f2b456f |
 | waste_not | m15 | 122 | Matt Stewart | 241d8f7d-3981-47c1-b7b8-748277fa452f |
@@ -514,6 +524,42 @@ Pool 184 → **185**. The last card. Custom, five-colour, prizeOnly (sole-mechan
 *ADR-121 placements:* Pell −1 Island +1 Glaciers; Quill −1 Forest +1 Glaciers; Tessaly −1 Cathartic Adept +1 Collector; Kessa −1 Shock +1 Collector; Corvane −1 Serra Angel +1 Angel of the Ruins.
 
 *S37 placement (the brief's Part 0, after the S36 read of −7):* Pell of the Shallows −1 Thawing Glaciers +1 Island — Pell's list is the S35 list again (measured: his five cells against the stock starters land exactly on the S35 baseline, +0 each); the Glaciers stays in Quill and in the shop.
+
+## Session 40 additions — the flood's twenty-seven (ADR-128; docs/phase-two-legends-working.md; the ten real cards re-verified on Scryfall 2026-09-19)
+
+Pool 198 → **225** (the brief's "twenty-two" and "198 → 220" left the five High Grounds out of the count: ten legends + ten golds + five grounds + two adds = 27). Two token defs beside them. None enters a phase-one list.
+
+| id | Card | Status | Vocabulary | Notes |
+|---|---|---|---|---|
+| the_bailiff | The Bailiff | tested | custom legend (Angel 3/4, W·ur); flying, vigilance, haste; triggered(self ATTACKS, optional) target tappedCreature: bounce | The Intake's phase-two lord (Tidelock Weir). prizeOnly. The 'may' bounces a TAPPED creature only (fixture); AI book 57: their most valuable tapped creature; a may whose only targets are ours is declined (the self-bounce is never taken — the evaluator cannot price it). Art: four candidates, Chris to verdict. |
+| odile_the_tallyflame | Odile, the Tallyflame | tested | custom legend (Elemental Shaman 1/4, UR); triggered(DRAW you): damageAll allCreatures `tapped`, amount `sourcePower` (R-097) | The Intake's court (Tallyflame Court). prizeOnly. Each draw burns every tapped creature, both sides, for her live power; a counter scales it (fixture). The damage is hers. Known simplification: zero once she has left (no LKI for a trigger's own source). |
+| the_reeve | The Reeve | tested | custom legend (Nightmare Warlock 3/5, B·ug); deathtouch; {1}{U}: target player mills 3; {3}{B}{G}: returnFromGraveyard → battlefield, target creatureCardInYourGraveyard `who: any` | The Tithe's lord (Marrowfen). prizeOnly. Reanimates from A graveyard — the second who:any customer after the Usher (the ADR-038 sweep pin amended); the body enters under his controller (fixture). AI book 65: the best creature card in either yard; the mill at their end step, at them; self-mill never (unpriceable — said so). |
+| zinnia_the_undertow | Zinnia, the Undertow | tested | custom legend (Merfolk Druid 2/4, UG); triggered(LEAVES_BATTLEFIELD, source other, controller opponent, type Creature): mill `eventPower` opponent (R-097) | The Tithe's court (the Wrackroot Shallows). prizeOnly. The observed LEAVES_BATTLEFIELD collector's first customer; last-known power (counters count — fixture); bounce, death and put-on-top all leave. |
+| the_fordkeeper | The Fordkeeper | tested | custom legend (Spirit Warrior 4/5, R·wg); triggered(DEALS_DAMAGE, source any, controller you, `notType` Creature): gainLife eventDamage; static grantAbility battlefield `permanentsYouControl` cardType Land: {2},{T}: damage 1 anyTarget | The Toll's lord (Emberford). prizeOnly. The document's ⚠ confirmed: the law is a noncreature source its controller controls — the Toll's tax is his lifegain (fixture). Twister gains X per creature hit (one damage event each). AI book 60: pings at their end step (a kill, else face), any time it kills; burn priced with the gain. |
+| ovna_the_enchantress | Ovna, the Enchantress | tested | custom legend (Nymph 2/2, WG); static modifyPT self by count(Enchantment, you); triggered(SPELL_CAST you, type Enchantment): draw 1 | The Toll's court (Shevelport Green). prizeOnly. The law counts (an Artifact Enchantment she controls — 3/3 on arrival, fixture). AI book 66: an enchantment cast is priced as a cantrip while she is out. |
+| the_dredger | The Dredger | tested | custom legend (Sphinx 3/4, U·bw); flying; {W}{U}{B} + sacrifice `land`: returnFromGraveyard → hand, target instantOrSorceryCardInYourGraveyard | The Risen Tide's lord (Lockmere). prizeOnly. The `land` sacrifice predicate (the Lumberjack's word without the subtype). AI book 64: a SPARE land only (lands > the hand's top mana value + 1), the dearest spell, at their end step. |
+| isaura_the_levy | Isaura, the Levy | tested | custom legend (Human Cleric 2/3, WB); {1}{B}: modifyPT −1/−1 target EOT; {2}{W}{W}: addCounters +1/+1 scope creaturesYouControl | The Risen Tide's court (the Obsidian Observatory). prizeOnly. Negative pump already held (zero engine work). AI book 61: the shrink only where it kills (their end step, or in combat); the team counters on our main phase with three or more creatures. |
+| the_reaper | The Reaper | tested | custom legend (Snake 4/4, G·br); triggered(UPKEEP, controller any): createToken snake_1_1_g; {B}{R}{G} + sacrifice creature: modifyPT +sacrificedPower/+0, grantKeyword haste, lifelink — scope creaturesYouControl, EOT | The Season's lord (Harrowmoor). prizeOnly. Team-wide, no trample (fixture). AI book 62: the harvest before combat for a lethal or near-lethal (three-fifths) alpha; the body that makes the team biggest, never himself; never down to the last body while behind. NOT built: 'the freshest for haste' (the view carries no summoning sickness). |
+| meliyan_the_torment | Meliyan, the Torment | tested | custom legend (Devil 2/3, BR); triggered(DIES, source other, controller you, type Creature) target opponentPlayer: damage `eventPower` (R-097) | The Season's court (Cairnbrand Pyre). prizeOnly. The damage is hers (fixture reads the DAMAGE source). Art: Chris-delivered, punched in past the painted frame. AI book 63: a dying blocker is worth its power under her. |
+| static_sphere | Static Sphere | tested | custom artifact (UW); triggered(self ETB) target permanent: addCounters `static`; triggered(UPKEEP, controller any): tapTarget scope `allPermanents` `withCounter` static (R-097) | Tier R. The mark outlives the Sphere (fixture). AI book 58: a named counter on a target is hostile — their best creature, never ours. |
+| sacred_helix | Sacred Helix | tested | custom instant (RW, {X}{R}{R}{W}{W}); damage `manaSpent` anyTarget; gainLife `manaSpent` (R-097) | Tier R. X=0 is four and four (fixture). AI book 59: the view-sim substitutes the spent mana, so X for a kill or for lethal prices itself. |
+| glimpse_the_unthinkable | Glimpse the Unthinkable | tested | mill 10 target player | RAV #208; tier R. Oracle matches the document. |
+| putrefy | Putrefy | tested | destroy target anyOf(artifact, creature) | RAV #221; tier R. 'It can't be regenerated' is a no-op (no regeneration in the engine). |
+| powerstone_minefield | Powerstone Minefield | tested | enchantment; triggered(ATTACKS source any) and triggered(BLOCKS source any): damage 2 `to: eventObject` (R-097 — the observed attack/block triggers' first customer) | APC #115; tier R. Oracle matches. A 2/2 blocker dies before damage (fixture). |
+| savage_twister | Savage Twister | tested | damageAll X allCreatures | MIR #280; tier R. |
+| undermine | Undermine | tested | counter target spell; loseLife 3 `controllerOfTarget` (the spell's controller — a stack-item LKI added) | INV #282; tier R. |
+| absorb | Absorb | tested | counter target spell; gainLife 3 you | INV #226; tier R. |
+| poison_tip_archer | Poison-Tip Archer | tested | creature 2/3 reach, deathtouch; triggered(DIES source other, type Creature): loseLife 1 opponent | M19 #220; tier R. |
+| voracious_cobra | Voracious Cobra | tested | creature 2/2 first strike; triggered(DEALS_DAMAGE self, `combat`, `recipient: creature`): destroy `eventObject` (R-097) | INV #288; tier R. **Oracle differs from the document** (which had 'blocks or becomes blocked by'): 'Whenever this creature deals combat damage to a creature, destroy that creature.' Encoded verbatim. AI: blockGain treats the shape as deathtouch. |
+| char | Char | tested | damage 4 anyTarget; damage 2 to you | RAV #117; tier 2. |
+| shadow_summoning | Shadow Summoning | tested | createToken spirit_1_1_w_flying ×2 `tapped` | LTR #226 (the first printing — The Lord of the Rings; the TDC reprint has no highres scan yet); tier 2. The document named no set. |
+| tallyflame_court | Tallyflame Court | tested | custom Legendary Land; {T}: {U} / {T}: {R}; {2}{U}{R},{T}: draw 1 | Odile's High Ground. prizeOnly. |
+| wrackroot | Wrackroot | tested | custom Legendary Land; {T}: {U} / {T}: {G}; {3}{U}{G},{T}: bounce target creature `to: libraryTop` | Zinnia's. prizeOnly. The creature leaves before it lands on top: she mills it (fixture). |
+| shevelport | Shevelport | tested | custom Legendary Land; {T}: {W} / {T}: {G}; {2}{G}{W},{T}: returnFromGraveyard → hand, target `artifactEnchantmentOrLandCardInYourGraveyard` | Ovna's. prizeOnly. |
+| obsidian_observatory | Obsidian Observatory | tested | custom Legendary Land; {T}: {W} / {T}: {B}; {2}{W}{B},{T}: grantKeyword vigilance + menace, scope creaturesYouControl, EOT | Isaura's. prizeOnly. |
+| cairnbrand | Cairnbrand | tested | custom Legendary Land; {T}: {B} / {T}: {R}; {4}{B}{R},{T} + sacrifice creature: returnFromGraveyard → battlefield, target creatureCardInYourGraveyard (YOUR graveyard) | Meliyan's. prizeOnly. Under her the sacrifice is her burn (fixture). |
+| snake_1_1_g | Snake Token | tested | token def 1/1 green Snake | The Reaper's. Rendered frame (no plate yet). |
+| spirit_1_1_w_flying | Spirit Token | tested | token def 1/1 white Spirit, flying | Shadow Summoning's. Rendered frame (no plate yet). |
 
 ## Shop tiers (ADR-078, S19)
 

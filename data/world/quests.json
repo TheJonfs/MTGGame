@@ -103,7 +103,14 @@
   "chronicleHeader": "The Chronicle of Cuttings — the Manafleur, and what followed each folding."
  },
  "door": {
-  "refused": "The gate knows your colours. It will not open to these."
+  "refused": "The gate knows your colours. It will not open to these.",
+  "byRule": {
+   "minCreatures": "Bring bodies to the fire. Twelve, at the least.",
+   "minCreaturePower": "Nothing small. The water takes the small things first.",
+   "bannedTypes": "No sudden things. The Green does not answer in the moment.",
+   "minLandFraction": "Half of what you bring must be ground. The rest can be yours.",
+   "maxManaValue": "Nothing dear. What you bring here, you will lose."
+  }
  },
  "flood": {
   "scene": [

@@ -1,0 +1,52 @@
+{
+ "id": "static_sphere",
+ "name": "Static Sphere",
+ "source": "custom",
+ "manaCost": "{1}{U}{W}",
+ "types": [
+  "Artifact"
+ ],
+ "text": "When Static Sphere enters, put a static counter on target permanent.\nAt the beginning of each upkeep, tap each permanent with a static counter on it.",
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "ENTERS_BATTLEFIELD",
+   "condition": {
+    "source": "self"
+   },
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "permanent",
+     "zone": "battlefield"
+    }
+   ],
+   "effects": [
+    {
+     "type": "addCounters",
+     "kind": "static",
+     "count": 1,
+     "target": 0
+    }
+   ]
+  },
+  {
+   "kind": "triggered",
+   "event": "UPKEEP",
+   "condition": {
+    "controller": "any"
+   },
+   "effects": [
+    {
+     "type": "tapTarget",
+     "scope": "allPermanents",
+     "withCounter": "static"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": "R"
+}

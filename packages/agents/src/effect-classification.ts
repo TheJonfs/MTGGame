@@ -28,6 +28,9 @@ export function isHarmful(e: Effect): boolean {
     (e.type === "mill" && e.who === "target") ||
     (e.type === "sacrifice" && "who" in e && e.who === "target") || // S31: the edict
     (e.type === "addCounters" && e.kind === "-1/-1") ||
+    // S40 (Static Sphere): a NAMED counter put on a TARGET is a mark — hostile in this pool (the accumulators
+    // — Clio's depth — are self-scoped). The AI never marks its own.
+    (e.type === "addCounters" && e.kind !== "+1/+1" && e.kind !== "-1/-1" && e.target !== undefined) ||
     (e.type === "modifyPT" && ptSign(e.power) + ptSign(e.toughness) < 0)
   );
 }

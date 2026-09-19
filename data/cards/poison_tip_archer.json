@@ -1,0 +1,43 @@
+{
+ "id": "poison_tip_archer",
+ "name": "Poison-Tip Archer",
+ "source": "real",
+ "scryfallId": "5e058ff8-043c-498b-8310-0ca45466ac27",
+ "manaCost": "{2}{B}{G}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Elf",
+  "Archer"
+ ],
+ "power": 2,
+ "toughness": 3,
+ "keywords": [
+  "reach",
+  "deathtouch"
+ ],
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "DIES",
+   "condition": {
+    "source": "other",
+    "type": [
+     "Creature"
+    ]
+   },
+   "effects": [
+    {
+     "type": "loseLife",
+     "amount": 1,
+     "who": "opponent"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": "R"
+}

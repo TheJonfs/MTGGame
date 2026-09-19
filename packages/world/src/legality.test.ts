@@ -120,3 +120,56 @@ describe("S37 (ADR-123): deckRule on a template — the validator, enemies.md, t
     expect(doorRefusalText({}, gate.deckRule!, check)).toMatch(/^The gate will not open to this deck\./);
   });
 });
+
+describe("S40 (ADR-128): the three new gates — a stat floor, a fraction, a type ban; the door's own lines", () => {
+  const deck = (pairs: [string, number][]): Decklist => pairs.map(([cardId, count]) => ({ cardId, count }));
+  it("minCreaturePower: every creature card's printed power ≥ N, each offender named", () => {
+    const d = deck([["forest", 14], ["grizzly_bears", 4], ["hedron_crab", 3], ["llanowar_elves", 3], ["wall_of_blossoms", 2], ["giant_growth", 4]]);
+    const c = checkDeck(d, null, { label: "the Wrackroot gate", minCreaturePower: 2 }, pool);
+    expect(c.problems).toEqual(["8 creatures have power less than 2: Hedron Crab ×3, Llanowar Elves ×3, Wall of Blossoms ×2"]);
+    expect(c.failed).toEqual(["minCreaturePower"]);
+    expect(checkDeck(deck([["forest", 14], ["grizzly_bears", 4], ["giant_growth", 4], ["rampant_growth", 4], ["rumbling_baloth", 4]]), null, { label: "g", minCreaturePower: 2 }, pool).ok).toBe(true);
+  });
+  it("minLandFraction: lands ÷ cards ≥ N — 12 of 30 fails half, 15 of 30 passes, 15 of 31 fails", () => {
+    const rule: DeckRule = { label: "the Observatory gate", minLandFraction: 0.5 };
+    expect(checkDeck(deck([["plains", 12], ["savannah_lions", 4], ["soul_warden", 4], ["raise_the_alarm", 4], ["pacifism", 4], ["serra_angel", 2]]), null, rule, pool).problems).toEqual(["lands are 12 of 30; the Observatory gate asks half"]);
+    expect(checkDeck(deck([["plains", 15], ["savannah_lions", 4], ["soul_warden", 4], ["raise_the_alarm", 4], ["pacifism", 3]]), null, rule, pool).ok).toBe(true);
+    expect(checkDeck(deck([["plains", 15], ["savannah_lions", 4], ["soul_warden", 4], ["raise_the_alarm", 4], ["pacifism", 4]]), null, rule, pool).ok).toBe(false);
+    expect(checkDeck(deck([["plains", 10], ["savannah_lions", 4], ["soul_warden", 4], ["raise_the_alarm", 4], ["pacifism", 4], ["serra_angel", 4]]), null, { label: "g", minLandFraction: 0.4 }, pool).problems).toEqual(["lands are 10 of 30; g asks 40%"]);
+  });
+  it("bannedTypes: no card of the type — a flash creature is a creature, a sorcery stays", () => {
+    const d = deck([["forest", 8], ["island", 8], ["giant_growth", 2], ["counterspell", 1], ["mystic_snake", 2], ["rampant_growth", 4], ["grizzly_bears", 4], ["divination", 1]]);
+    const c = checkDeck(d, null, { label: "the Shevelport gate", bannedTypes: ["Instant"] }, pool);
+    expect(c.problems).toEqual(["3 instants: Giant Growth ×2, Counterspell"]);
+    expect(c.failed).toEqual(["bannedTypes"]);
+  });
+  it("the validator and the one-line description know the three fields", () => {
+    expect(validateDeckRule({ label: "x", minCreaturePower: -1, minLandFraction: 1.5, bannedTypes: ["Instant", "Planeswalker"] }, "t")).toEqual([
+      "t: deckRule.minCreaturePower must be a non-negative integer", "t: deckRule.minLandFraction must be a number in (0, 1]", "t: deckRule.bannedTypes must be a non-empty array of distinct card types",
+    ]);
+    expect(validateDeckRule({ label: "x", minCreaturePower: 2, minLandFraction: 0.5, bannedTypes: ["Instant"] }, "t")).toEqual([]);
+    expect(describeDeckRule({ label: "x", minCreaturePower: 2, minLandFraction: 0.5, bannedTypes: ["Instant"] })).toBe("every creature's power ≥ 2; lands ≥ half of the deck; no instants");
+  });
+  it("the door speaks the first failed field's own line (the planner's five); the colour gate keeps the S37 line; a bad pack names its field", () => {
+    const lines = catalog.questText!.door!.byRule!;
+    expect(Object.keys(lines).sort()).toEqual(["bannedTypes", "maxManaValue", "minCreaturePower", "minCreatures", "minLandFraction"]);
+    for (const [rule, opening] of [
+      [{ label: "Odile's gate", minCreatures: 99 }, "Bring bodies to the fire. Twelve, at the least."],
+      [{ label: "Zinnia's gate", minCreaturePower: 9 }, "Nothing small. The water takes the small things first."],
+      [{ label: "Isaura's gate", minLandFraction: 0.9 }, "Half of what you bring must be ground. The rest can be yours."],
+      [{ label: "Meliyan's gate", maxManaValue: 0 }, "Nothing dear. What you bring here, you will lose."],
+    ] as [DeckRule, string][]) {
+      const check = checkDeck(white, null, rule, pool);
+      expect(check.ok, rule.label).toBe(false);
+      expect(doorRefusalText(catalog, rule, check).startsWith(`${opening} ${rule.label} (`), rule.label).toBe(true);
+    }
+    const instants = deck([["forest", 20], ["giant_growth", 4], ["grizzly_bears", 4], ["rampant_growth", 2]]);
+    const ban: DeckRule = { label: "Ovna's gate", bannedTypes: ["Instant"] };
+    expect(doorRefusalText(catalog, ban, checkDeck(instants, null, ban, pool))).toMatch(/^No sudden things\. The Green does not answer in the moment\. Ovna's gate \(no instants\): 4 instants: Giant Growth ×4\.$/);
+    // Colour first: the S37 line stands even when a shape gate also fails.
+    const both: DeckRule = { label: "g", colorsWithin: ["U"], minCreatures: 99 };
+    expect(doorRefusalText(catalog, both, checkDeck(white, null, both, pool))).toMatch(/^The gate knows your colours\./);
+    // No shipped site carries a rule yet (S41 attaches them).
+    expect(catalog.opponents.filter((o) => o.deckRule)).toHaveLength(0);
+  });
+});

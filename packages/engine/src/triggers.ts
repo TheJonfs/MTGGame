@@ -19,7 +19,7 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
     sourceCardId: string,
     controller: PlayerId,
     abilityIndex: number,
-    eventContext?: { objectId?: string; cardId?: string; player?: PlayerId; amount?: number },
+    eventContext?: { objectId?: string; cardId?: string; player?: PlayerId; amount?: number; power?: number },
   ) => {
     ctx.state.pendingTriggers.push({
       sourceId,
@@ -67,16 +67,18 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
     // A10 word 1 (S22): battlefield→hand joins the observed shapes as RETURNED_TO_HAND
     // (any controller, any cause — the Unwinder's ping; his own bounce fires it via the
     // moved-object-observes-itself path, the Blood Artist precedent).
-    const observedEvent =
-      ev.to === "battlefield" && ev.newId ? "ENTERS_BATTLEFIELD"
-      : ev.from === "battlefield" && ev.to === "graveyard" ? "DIES"
-      : ev.from === "battlefield" && ev.to === "hand" ? "RETURNED_TO_HAND"
-      : null;
-    if (!observedEvent) return;
+    // S40 (R-097, Zinnia): LEAVES_BATTLEFIELD joins the observed shapes — the WIDER event beside DIES and
+    // RETURNED_TO_HAND (a death is also a leaving; both collect, each for its own customers). The context
+    // carries the creature's last-known power (`power`, from the ZONE_CHANGE payload) for the eventPower ref.
+    const observedEvents: ("ENTERS_BATTLEFIELD" | "DIES" | "RETURNED_TO_HAND" | "LEAVES_BATTLEFIELD")[] =
+      ev.to === "battlefield" && ev.newId ? ["ENTERS_BATTLEFIELD"]
+      : ev.from === "battlefield" ? [...(ev.to === "graveyard" ? ["DIES" as const] : ev.to === "hand" ? ["RETURNED_TO_HAND" as const] : []), "LEAVES_BATTLEFIELD"]
+      : [];
+    for (const observedEvent of observedEvents) {
     const movedId = observedEvent === "ENTERS_BATTLEFIELD" ? ev.newId! : ev.oldId;
     const movedDef = ctx.defs.def(ev.cardId);
     const movedController = observedEvent === "ENTERS_BATTLEFIELD" ? ev.controller : ev.controllerBefore;
-    const eventContext = { objectId: ev.newId || ev.oldId, cardId: ev.cardId, player: movedController };
+    const eventContext = { objectId: ev.newId || ev.oldId, cardId: ev.cardId, player: movedController, ...(ev.powerBefore !== undefined ? { power: ev.powerBefore } : {}) };
     const observers: { id: string; cardId: string; controller: PlayerId }[] = ctx.state.battlefield.map((id) => {
       const o = ctx.state.objects[id]!;
       return { id, cardId: o.cardId, controller: o.controller };
@@ -103,6 +105,7 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
         const sourceId = ctx.state.objects[obs.id] ? obs.id : obs.id === movedId ? (ev.newId || ev.oldId) : (ctx.lookback?.get(obs.id)?.currentId ?? obs.id);
         pend(sourceId, obs.cardId, obs.controller, i, eventContext);
       });
+    }
     }
   });
 
@@ -192,11 +195,37 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
       (ctx.defs.def(obj.cardId).abilities ?? []).forEach((a, i) => {
         if (a.kind !== "triggered" || a.event !== "ATTACKS") return;
         const src = a.condition?.source ?? "self";
-        if (src !== "self") return; // observed attack triggers arrive with their first customer
+        if (src !== "self") return; // observed attack triggers: below
         pend(attackerId, obj.cardId, obj.controller, i, { objectId: attackerId, cardId: obj.cardId, player: obj.controller });
       });
     }
+    observeCombatants("ATTACKS", ev.attackers);
   });
+
+  // S40 (R-097, Powerstone Minefield — the observed attack/block triggers' first customer): every battlefield
+  // permanent with a source "any"/"other" ATTACKS or BLOCKS trigger sees each declared creature, one trigger
+  // per creature; `controller` narrows by the creature's controller relative to the observer's. The context
+  // carries the creature (to: "eventObject").
+  const observeCombatants = (event: "ATTACKS" | "BLOCKS", ids: string[]) => {
+    for (const id of ids) {
+      const obj = ctx.state.objects[id];
+      if (!obj) continue;
+      for (const permId of [...ctx.state.battlefield]) {
+        const perm = ctx.state.objects[permId];
+        if (!perm) continue;
+        (ctx.defs.def(perm.cardId).abilities ?? []).forEach((a, i) => {
+          if (a.kind !== "triggered" || a.event !== event) return;
+          const src = a.condition?.source ?? "self";
+          if (src !== "any" && src !== "other") return;
+          if (src === "other" && permId === id) return;
+          const ctrl = a.condition?.controller ?? "any";
+          if (ctrl === "you" && obj.controller !== perm.controller) return;
+          if (ctrl === "opponent" && obj.controller === perm.controller) return;
+          pend(permId, perm.cardId, perm.controller, i, { objectId: id, cardId: obj.cardId, player: obj.controller });
+        });
+      }
+    }
+  };
 
   // ADR-076: upkeep triggers ("at the beginning of your upkeep" — Bitterblossom). Controller
   // condition is relative to whose upkeep it is: default "you" = the permanent's controller.
@@ -294,13 +323,18 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
   // WHICH source's damage counts — "whenever a creature you control deals damage to a player" is
   // `{source: "any", controller: "you", type: ["Creature"]}`, the shape every future "creatures
   // you control have X" observer reuses. Both damage collectors read it; defaults change nothing.
-  const damageSourceMatches = (cond: { controller?: "you" | "opponent" | "any"; type?: string[] } | undefined, observer: PlayerId, ev: { sourceCardId: string; sourceController: PlayerId }): boolean => {
+  const damageSourceMatches = (cond: { controller?: "you" | "opponent" | "any"; type?: string[]; notType?: string[] } | undefined, observer: PlayerId, ev: { sourceCardId: string; sourceController: PlayerId }): boolean => {
     const ctrl = cond?.controller ?? "any";
     if (ctrl === "you" && ev.sourceController !== observer) return false;
     if (ctrl === "opponent" && ev.sourceController === observer) return false;
     if (cond?.type) {
       const types = ctx.defs.def(ev.sourceCardId)?.types ?? [];
       if (!cond.type.some((t) => types.includes(t as never))) return false;
+    }
+    // S40 (R-097, the Fordkeeper): "a NONCREATURE source you control" — the S31 type filter, negated.
+    if (cond?.notType) {
+      const types = ctx.defs.def(ev.sourceCardId)?.types ?? [];
+      if (cond.notType.some((t) => types.includes(t as never))) return false;
     }
     return true;
   };
@@ -318,7 +352,11 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
         if (source === "attached" && (!perm.attachedTo || ev.sourceId !== perm.attachedTo)) return;
         if (source === "other" && ev.sourceId === permId) return;
         if (!damageSourceMatches(a.condition, perm.controller, ev)) return;
-        pend(permId, perm.cardId, perm.controller, i, { ...(ev.target.kind === "player" ? { player: ev.target.player } : {}), amount: ev.amount });
+        // S40 (R-097, Voracious Cobra): combat damage only / damage to a creature only; a damaged OBJECT rides the
+        // context (eventObject — "destroy that creature").
+        if (a.condition?.combat && !ev.combat) return;
+        if (a.condition?.recipient === "creature" && ev.target.kind !== "object") return;
+        pend(permId, perm.cardId, perm.controller, i, { ...(ev.target.kind === "player" ? { player: ev.target.player } : { objectId: ev.target.id }), amount: ev.amount });
       });
     }
   });
@@ -366,10 +404,11 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
       (ctx.defs.def(obj.cardId).abilities ?? []).forEach((a, i) => {
         if (a.kind !== "triggered" || a.event !== "BLOCKS") return;
         const src = a.condition?.source ?? "self";
-        if (src !== "self") return; // observed block triggers arrive with their first customer
+        if (src !== "self") return; // observed block triggers: observeCombatants
         pend(blocker, obj.cardId, obj.controller, i, { objectId: blocker, cardId: obj.cardId, player: obj.controller });
       });
     }
+    observeCombatants("BLOCKS", ev.blocks.map((b) => b.blocker));
   });
 
   // S23: END_STEP — "at the beginning of the end step" collects at STEP_BEGIN(END), before the

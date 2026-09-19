@@ -1,6 +1,6 @@
 import type { Effect, Keyword, Scope, ValueRef } from "@shandalar/cards";
 import type { EngineCtx } from "./ctx.js";
-import { evaluateValueRef } from "./effect-context.js";
+import { evaluateValueRef, isStackOnlyRef } from "./effect-context.js";
 import { getObject, type GameState, type PlayerId } from "./state.js";
 
 export interface Characteristics {
@@ -59,6 +59,11 @@ export function objectsInScope(ctx: EngineCtx, sourceId: string, scope: Scope, p
       );
     case "laws":
       return state.battlefield.filter((id) => ctx.defs.def(getObject(state, id).cardId).law === true);
+    // S40 (R-097): the permanent-wide scopes (Static Sphere's mass tap; the Fordkeeper's lands).
+    case "allPermanents":
+      return narrow([...state.battlefield]);
+    case "permanentsYouControl":
+      return narrow(state.battlefield.filter((id) => getObject(state, id).controller === source.controller));
     case "allCreatures":
       return narrow(
         state.battlefield.filter((id) => ctx.defs.def(getObject(state, id).cardId).types.includes("Creature")),
@@ -99,7 +104,7 @@ export function staticActive(ctx: EngineCtx, sourceId: string, condition?: { val
   const src = ctx.state.objects[sourceId];
   if (!src) return false;
   const v = condition.value;
-  const n = v.ref === "targetPower" || v.ref === "targetManaValue" || v.ref === "eventDamage" || v.ref === "xPaid" || v.ref === "sacrificedPower" ? 0 : evaluateValueRef(ctx, v, src.controller as PlayerId, sourceId);
+  const n = isStackOnlyRef(v) ? 0 : evaluateValueRef(ctx, v, src.controller as PlayerId, sourceId);
   return n >= condition.atLeast;
 }
 
@@ -131,7 +136,7 @@ export function characteristics(ctx: EngineCtx, objectId: string): Characteristi
       // source's point of view (Gaean Wurm: +1/+1 per Forest you control).
       const src = getObject(state, srcId);
       const val = (v: typeof e.power): number =>
-        typeof v === "number" ? v : typeof v === "object" && v.ref !== "targetPower" && v.ref !== "targetManaValue" && v.ref !== "eventDamage" && v.ref !== "xPaid" && v.ref !== "sacrificedPower" ? evaluateValueRef(ctx, v, src.controller, srcId) : 0;
+        typeof v === "number" ? v : typeof v === "object" && !isStackOnlyRef(v) ? evaluateValueRef(ctx, v, src.controller, srcId) : 0;
       result.power += val(e.power);
       result.toughness += val(e.toughness);
     }

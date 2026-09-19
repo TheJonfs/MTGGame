@@ -69,6 +69,9 @@ export class HeuristicAgent implements Agent {
       case "chooseTarget":
         return this.targetChoice(view, request);
       case "optionalTrigger":
+        // S40 (the Bailiff, book 57): a "may" whose harm points only at OUR side is declined — the self-bounce
+        // of an ETB creature is a line the evaluator cannot price, so it is never taken.
+        if (this.optionalHarmsOnlyUs(view)) return request.actions.find((a) => a.type === "declineOptional") ?? request.actions[0]!;
         return request.actions.find((a) => a.type === "acceptOptional") ?? request.actions[0]!;
       case "searchLibrary":
         return this.searchChoice(view, request);
@@ -220,6 +223,7 @@ export class HeuristicAgent implements Agent {
     if (this.skeletonGated(view, action)) return -Infinity; // S30: the Skeleton returns with mana to spare, or as a blocker when behind
     if (this.lifeForCardsGated(view, action)) return -Infinity; // S27 r2: the Witch's discipline
     if (this.accumulatorSpendGated(view, action)) return -Infinity; // S26: Clio holds the tax while the board threatens
+    if (this.floodSinkGated(view, action)) return -Infinity; // S40 (books 58–63): the flood's repeatable sinks — timing, targets, spare lands
     // The misaim rule: a FINITE cliff (not -Infinity) so book-of-shame orderings among
     // bad aims survive — at any softmax temperature exp(-MISAIM/t) is 0, so a misaimed
     // variant is never picked while any legitimate action (pass included) exists.
@@ -872,7 +876,13 @@ export class HeuristicAgent implements Agent {
     const lifelinkDenied = attacker.keywords.includes("lifelink") ? prevented * 0.25 : 0;
     // S23 (the Gallows Djinn): blocking's own tax is part of the exchange.
     const blockTax = this.selfTax(view, blocker.id, "BLOCKS") * this.C.weights[this.profile.archetype].ownLife;
-    return (kills ? valueOf(attacker.id) : 0) - (dies ? valueOf(blocker.id) : 0) + prevented * w + lifelinkDenied - blockTax;
+    // S40 (Voracious Cobra): a creature that destroys what it deals combat damage to trades like deathtouch.
+    if (attacker.power > 0 && this.destroysWhatItDamages(attacker.id, view) && !(bFirst && !aFirst && kills)) dies = true;
+    if (blocker.power > 0 && this.destroysWhatItDamages(blocker.id, view) && !(aFirst && !bFirst && dies)) kills = true;
+    // S40 (Meliyan, book 63): under a death-burn observer of ours, a blocker that dies is a burn spell for its
+    // power — counters-bearing bodies block more freely.
+    const deathBurn = dies ? this.deathBurnObservers(view, blocker.id) * blocker.power * 0.35 : 0;
+    return (kills ? valueOf(attacker.id) : 0) - (dies ? valueOf(blocker.id) : 0) + prevented * w + lifelinkDenied - blockTax + deathBurn;
   }
 
   /** Gain of double-blocking a menace attacker: kills if combined power is
@@ -1195,6 +1205,7 @@ export class HeuristicAgent implements Agent {
     const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
     if (!ab || ab.kind !== "activated" || !ab.cost.sacrifice || ab.cost.sacrifice.predicate === "self") return false;
     if (!JSON.stringify(ab.effects).includes('"sacrificedPower"')) return false;
+    if (!ab.effects.some((e) => e.type === "mill")) return false; // S40: the Reaper's harvest reads the same ref — its own gate (floodSinkGated)
     const me = view.you, opp = (1 - me) as 0 | 1;
     const mine = view.battlefield.filter((o) => o.controller === me && o.power !== null);
     if (mine.length === 0) return true;
@@ -1485,6 +1496,13 @@ export class HeuristicAgent implements Agent {
   }
 
   sacrificeChoice(view: GameView, request: ActionRequest): Action {
+    // S40 (the Reaper, book 62): a TEAM pump that reads the sacrificed creature's power wants the body that makes
+    // the alpha biggest — (n−1)·power gained against the power lost — never the source himself.
+    if (request.source && (request.source.effects ?? []).some((e) => e.type === "modifyPT" && e.scope === "creaturesYouControl" && typeof e.power === "object" && e.power.ref === "sacrificedPower")) {
+      const pick = this.harvestPick(view, (request.actions.filter((a) => a.type === "sacrifice") as { type: "sacrifice"; objectId: string }[]).map((a) => a.objectId), request.source.cardId);
+      const act = request.actions.find((a) => a.type === "sacrifice" && a.objectId === pick);
+      if (act) return act;
+    }
     // S29 (the Altar): the outlet that mills by POWER wants the biggest body when that closes the
     // library, and otherwise the creature already doomed (book 37).
     if (request.source && JSON.stringify(request.source.effects).includes('"sacrificedPower"')) {
@@ -1538,6 +1556,147 @@ export class HeuristicAgent implements Agent {
     return ranked[0]! as Action;
   }
 
+  // ---------- S40 (ADR-128): the flood's policies — shape-keyed, never card-keyed ----------
+
+  private destroysWhatItDamages(objectId: string, view: GameView): boolean {
+    const o = view.battlefield.find((b) => b.id === objectId);
+    return (this.def(o?.cardId ?? "")?.abilities ?? []).some((a) => a.kind === "triggered" && a.event === "DEALS_DAMAGE" && a.condition?.recipient === "creature" && a.effects.some((e) => e.type === "destroy" && e.eventObject));
+  }
+  /** Our permanents (other than `dyingId`) that burn the opponent for a dying creature's power. */
+  private deathBurnObservers(view: GameView, dyingId: string): number {
+    let n = 0;
+    for (const o of view.battlefield) {
+      if (o.controller !== view.you || o.id === dyingId) continue;
+      if ((this.def(o.cardId)?.abilities ?? []).some((a) => a.kind === "triggered" && a.event === "DIES" && a.condition?.source === "other" && a.condition.controller === "you" && a.effects.some((e) => e.type === "damage" && typeof e.amount === "object" && e.amount.ref === "eventPower"))) n += 1;
+    }
+    return n;
+  }
+  /** Book 57: the optional trigger on top of the stack is ours, harmful, and every object it targets is ours. */
+  optionalHarmsOnlyUs(view: GameView): boolean {
+    const top = view.stack[view.stack.length - 1];
+    if (!top || top.controller !== view.you) return false;
+    const harmful = (this.def(top.cardId)?.abilities ?? []).some((a) => a.kind === "triggered" && a.optional === true && classifyEffects(a.effects) === "harmful");
+    const objs = (top.targets ?? []).filter((t) => t.kind === "object");
+    return harmful && objs.length > 0 && objs.every((t) => targetSide(view, t) === view.you);
+  }
+  /** Book 62: which creature the harvest takes — maximise the team's added power net of the body spent; the
+   * source never; ties to the cheaper body. */
+  private harvestPick(view: GameView, candidates: string[], sourceCardId: string): string | undefined {
+    const me = view.you;
+    const team = view.battlefield.filter((o) => o.controller === me && o.power !== null);
+    const score = (id: string): number => { const c = team.find((o) => o.id === id); const p = Math.max(0, c?.power ?? 0); return (team.length - 1) * p - p; };
+    const pool = candidates.filter((id) => view.battlefield.find((o) => o.id === id)?.cardId !== sourceCardId);
+    return [...(pool.length > 0 ? pool : candidates)].sort((a, b) => score(b) - score(a) || this.boardValue(view, a) - this.boardValue(view, b) || a.localeCompare(b))[0];
+  }
+
+  /**
+   * Books 58–63 — the flood's repeatable sinks. One gate, dispatched on the ability's SHAPE:
+   *  · a LAND's non-mana ability (the High Grounds; the Fordkeeper's granted ping): draw / return-to-hand at the
+   *    opponent's end step; a ping there too (a kill, else face) or any time it kills or is lethal; put-on-top on
+   *    their best creature at their end step or while it attacks; the team keyword grant before our combat with
+   *    three or more ready creatures; reanimation-for-a-body when the best creature in our yard beats the
+   *    cheapest body by two.
+   *  · a CREATURE's free-repeat sink: a targeted shrink only where it kills (their end step, or in combat);
+   *    a targeted mill at their end step; the team counters on our own main phase with three or more creatures;
+   *    the harvest (sacrifice → team +X/+0) for a lethal or near-lethal alpha, never the last blocker while
+   *    behind; reanimation from a graveyard on the best creature card in either; the land-sacrifice rebuy with a
+   *    SPARE land only (lands in play > the hand's top mana value + 1), on the best spell in the yard.
+   */
+  floodSinkGated(view: GameView, action: Action): boolean {
+    if (action.type !== "activateAbility") return false;
+    const src = view.battlefield.find((b) => b.id === action.objectId);
+    if (!src) return false;
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+    if (!ab || ab.kind !== "activated" || ab.effects.length === 0 || ab.effects.every((e) => e.type === "addMana") || ab.equip || ab.modes) return false;
+    const me = view.you, opp = (1 - me) as 0 | 1;
+    const srcDef = this.def(src.cardId);
+    const onLand = !!srcDef?.types.includes("Land") && !!ab.cost.mana;
+    const theirEnd = view.activePlayer !== me && view.step === "END";
+    const ourMain = view.activePlayer === me && (view.step === "MAIN1" || view.step === "MAIN2") && view.stack.length === 0;
+    const preCombat = view.activePlayer === me && (view.step === "MAIN1" || view.step === "COMBAT_BEGIN");
+    const targets = (action as { targets?: ResolvedTarget[] }).targets ?? [];
+    const objT = targets[0]?.kind === "object" ? view.battlefield.find((o) => o.id === (targets[0] as { id: string }).id) : undefined;
+    const inCombat = (id: string) => view.combat.attackers.includes(id) || view.combat.blocks.some((b) => b.blocker === id);
+    const myCreatures = view.battlefield.filter((o) => o.controller === me && o.power !== null);
+    const e0 = ab.effects[0]!;
+    const yardBest = (who: number[], pred: (d: CardDef) => boolean, worth: (d: CardDef) => number): string | undefined => {
+      let best: { id: string; w: number } | undefined;
+      for (const p of who) for (const g of view.graveyardObjects[p as 0 | 1]) { const d = this.def(g.cardId); if (!d || !pred(d)) continue; const w = worth(d); if (!best || w > best.w) best = { id: g.objectId, w }; }
+      return best?.id;
+    };
+    const tId = targets[0]?.kind === "object" ? (targets[0] as { id: string }).id : undefined;
+
+    // The harvest — before the generic branches (its cost is a creature, its payload the team).
+    if (ab.cost.sacrifice && ab.effects.some((e) => e.type === "modifyPT" && e.scope === "creaturesYouControl" && typeof e.power === "object" && e.power.ref === "sacrificedPower")) {
+      if (!preCombat || myCreatures.length < 2) return true;
+      const pick = this.harvestPick(view, myCreatures.map((o) => o.id), src.cardId);
+      const p = Math.max(0, myCreatures.find((o) => o.id === pick)?.power ?? 0);
+      const attackers = myCreatures.filter((o) => o.id !== pick && !o.tapped).map((o) => Math.max(0, o.power ?? 0) + p).sort((a, b) => b - a);
+      const blockers = view.battlefield.filter((o) => o.controller === opp && o.power !== null && !o.tapped).length;
+      const through = attackers.slice(blockers).reduce((a, b) => a + b, 0); // their blockers stop our biggest
+      const theirs = view.battlefield.filter((o) => o.controller === opp && o.power !== null).length;
+      if (myCreatures.length - 1 <= 1 && myCreatures.length - 1 < theirs) return true; // never down to the last body while behind
+      return through < Math.ceil(view.life[opp] * 0.6);
+    }
+    // Reanimation with a creature as the cost (the pyre), or free (the Reeve): the best card only, and worth the body.
+    if (e0.type === "returnFromGraveyard" && e0.to === "battlefield" && e0.target !== undefined) {
+      const spec = ab.targets?.[0];
+      const best = yardBest(spec?.who === "any" ? [me, opp] : [me], (d) => d.types.includes("Creature"), reanimationWorth);
+      if (tId !== best) return true;
+      if (ab.cost.sacrifice) {
+        const cheapest = Math.min(...myCreatures.map((o) => objectValue(this.defs, o, this.C)));
+        const g = [...view.graveyardObjects[me], ...view.graveyardObjects[opp]].find((o) => o.objectId === tId);
+        if (!(reanimationWorth(g ? this.def(g.cardId) : undefined) >= cheapest + 2)) return true;
+      }
+      return !(ourMain || theirEnd);
+    }
+    // The rebuy that spends a land (the Dredger): a spare land only; the dearest spell in the yard.
+    if (ab.cost.sacrifice?.predicate === "land") {
+      const lands = view.battlefield.filter((o) => o.controller === me && this.def(o.cardId)?.types.includes("Land")).length;
+      const topMv = Math.max(0, ...view.hand.filter((c) => !this.def(c.cardId)?.types.includes("Land")).map((c) => this.mv(c.cardId)));
+      if (!(lands > topMv + 1)) return true;
+      const best = yardBest([me], (d) => d.types.includes("Instant") || d.types.includes("Sorcery"), (d) => manaValue(parseManaCost(d.manaCost)) + (d.spellEffect?.some((x) => x.type === "counter") ? 0.5 : 0));
+      if (tId !== best) return true;
+      return !(theirEnd || (ourMain && view.step === "MAIN2"));
+    }
+    const repeatable = !ab.cost.tap && !ab.cost.sacrifice && !!ab.cost.mana && src.power !== null;
+    if (!onLand && !repeatable) return false;
+    const kills = (n: number) => !!objT && objT.controller === opp && objT.toughness !== null && objT.toughness - objT.damage <= n;
+    // A creature's sinks are the shrink, the mill and the team counters only — every other creature ability keeps
+    // its pre-S40 scoring (the Tyrant's gun, the Sower's Sphinx).
+    if (!onLand && e0.type !== "modifyPT" && e0.type !== "mill" && e0.type !== "addCounters") return false;
+    switch (e0.type) {
+      case "draw":
+        return !theirEnd;
+      case "returnFromGraveyard": // to hand (Shevelport)
+        return !theirEnd;
+      case "damage": {
+        const n = typeof e0.amount === "number" ? e0.amount : 1;
+        if (targets[0]?.kind === "player") return !(targets[0].player === opp && (view.life[opp] <= n || (theirEnd && !view.battlefield.some((o) => o.controller === opp && o.toughness !== null && o.toughness - o.damage <= n))));
+        return !kills(n);
+      }
+      case "modifyPT": {
+        if (e0.target === undefined || typeof e0.toughness !== "number" || e0.toughness >= 0) return false;
+        return !(kills(-e0.toughness) && (theirEnd || (!!objT && inCombat(objT.id))));
+      }
+      case "mill":
+        return !(theirEnd && targets[0]?.kind === "player" && targets[0].player === opp);
+      case "bounce": {
+        if (!objT || objT.controller !== opp) return true;
+        const best = [...view.battlefield.filter((o) => o.controller === opp && o.power !== null)].sort((a, b) => objectValue(this.defs, b, this.C) - objectValue(this.defs, a, this.C))[0];
+        return !(view.combat.attackers.includes(objT.id) || (theirEnd && best?.id === objT.id));
+      }
+      case "grantKeyword":
+        if (e0.scope !== "creaturesYouControl") return false;
+        return !(preCombat && myCreatures.filter((o) => !o.tapped).length >= 3);
+      case "addCounters":
+        if (e0.scope !== "creaturesYouControl") return false;
+        return !(ourMain && myCreatures.length >= 3);
+      default:
+        return false;
+    }
+  }
+
   private boardValue(view: GameView, objectId: string): number {
     const o = view.battlefield.find((b) => b.id === objectId);
     return o ? objectValue(this.defs, o, this.C) : 0;
@@ -1569,7 +1728,7 @@ export class HeuristicAgent implements Agent {
         }
         // S28 (Unearth): a GRAVEYARD target is worth its card — the best MV≤3 body comes back.
         if (t.kind === "object" && t.id && !view.battlefield.some((o) => o.id === t.id)) {
-          const g = view.graveyardObjects[view.you].find((o) => o.objectId === t.id);
+          const g = view.graveyardObjects[view.you].find((o) => o.objectId === t.id) ?? view.graveyardObjects[(1 - view.you) as 0 | 1].find((o) => o.objectId === t.id); // S40: the Reeve reaches either yard
           s += reanimationWorth(g ? this.def(g.cardId) : undefined); // S31: the one valuation (evaluator.reanimationWorth)
         }
         if (t.kind === "player") s += 2; // face is worth a couple of mana units

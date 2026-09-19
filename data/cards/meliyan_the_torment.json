@@ -1,0 +1,52 @@
+{
+ "id": "meliyan_the_torment",
+ "name": "Meliyan, the Torment",
+ "source": "custom",
+ "manaCost": "{2}{B}{R}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Devil"
+ ],
+ "supertypes": [
+  "Legendary"
+ ],
+ "power": 2,
+ "toughness": 3,
+ "text": "Whenever another creature you control dies, Meliyan, the Torment deals damage equal to that creature's power to target opponent.",
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "DIES",
+   "condition": {
+    "source": "other",
+    "controller": "you",
+    "type": [
+     "Creature"
+    ]
+   },
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "opponentPlayer",
+     "zone": "any"
+    }
+   ],
+   "effects": [
+    {
+     "type": "damage",
+     "amount": {
+      "ref": "eventPower"
+     },
+     "target": 0
+    }
+   ]
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/meliyan_the_torment.png",
+  "fallback": "rendered"
+ },
+ "prizeOnly": true
+}

@@ -1,0 +1,25 @@
+{
+ "id": "spirit_1_1_w_flying",
+ "name": "Spirit Token",
+ "source": "custom",
+ "isTokenDef": true,
+ "manaCost": "",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Spirit"
+ ],
+ "colors": [
+  "W"
+ ],
+ "power": 1,
+ "toughness": 1,
+ "text": "",
+ "keywords": [
+  "flying"
+ ],
+ "art": {
+  "fallback": "rendered"
+ }
+}

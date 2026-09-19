@@ -19,6 +19,8 @@ export function matchesSacrificePredicate(
   if (landSub) { const d = ctx.defs.def(getObject(ctx.state, objectId).cardId); return d.types.includes("Land") && (d.subtypes ?? []).includes(landSub[1]!); }
   const obj = ctx.state.objects[objectId];
   if (!obj || obj.zone !== "battlefield") return false;
+  // S40 (the Dredger): "sacrifice a land" — the Lumberjack's word without the subtype.
+  if (predicate === "land") return ctx.defs.def(obj.cardId).types.includes("Land");
   if (!predicate.startsWith("creature")) return false;
   if (!isCreature(ctx, objectId)) return false;
   const sub = predicate.match(/^creature\.subtype:(.+)$/);

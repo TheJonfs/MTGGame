@@ -136,7 +136,7 @@ describe("S37 (ADR-123): the door — a template's deckRule through the editor a
     await forceEncounter(c, "test_gate");
     expect(c.screen.kind).toBe("encounter");
     const refusal = c.doorRefusal();
-    expect(refusal).toMatch(/^The gate knows your colours\. It will not open to these\. the White Gate \(colours within W; ≥ \d+ creatures\): \d+ creatures; the White Gate asks \d+\.$/);
+    expect(refusal).toMatch(/^Bring bodies to the fire\. Twelve, at the least\. the White Gate \(colours within W; ≥ \d+ creatures\): \d+ creatures; the White Gate asks \d+\.$/);
     c.parley("fight");
     expect(c.screen.kind).toBe("encounter");
     expect((c.screen as { notice: string | null }).notice).toBe(refusal);
@@ -194,7 +194,7 @@ describe("S38 (ADR-125): the door on a SITE — a stronghold's deckRule through 
     // The door's word is up; the descent is refused, naming the rule.
     const door = c.siteDoor()!;
     expect(door.id).toBe("stronghold:argent_bastion");
-    expect(door.refusal).toMatch(/^The gate knows your colours\. It will not open to these\. the Argent Gate \(colours within W; ≥ \d+ creatures\): \d+ creatures; the Argent Gate asks \d+\.$/);
+    expect(door.refusal).toMatch(/^Bring bodies to the fire\. Twelve, at the least\. the Argent Gate \(colours within W; ≥ \d+ creatures\): \d+ creatures; the Argent Gate asks \d+\.$/);
     expect(c.doorRules()).toEqual([{ id: "stronghold:argent_bastion", name: "The Argent Bastion", label: "the Argent Gate", description: `colours within W; ≥ ${creatures + 1} creatures` }]);
     c.enterDungeon();
     expect(screen().kind).toBe("dungeonTelegraph");

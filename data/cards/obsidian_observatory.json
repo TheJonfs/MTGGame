@@ -1,0 +1,64 @@
+{
+ "id": "obsidian_observatory",
+ "name": "Obsidian Observatory",
+ "source": "custom",
+ "manaCost": "",
+ "types": [
+  "Land"
+ ],
+ "supertypes": [
+  "Legendary"
+ ],
+ "text": "{T}: Add {W} or {B}.\n{2}{W}{B}, {T}: Creatures you control gain vigilance and menace until end of turn.",
+ "abilities": [
+  {
+   "kind": "activated",
+   "cost": {
+    "tap": true
+   },
+   "effects": [
+    {
+     "type": "addMana",
+     "mana": "{W}"
+    }
+   ]
+  },
+  {
+   "kind": "activated",
+   "cost": {
+    "tap": true
+   },
+   "effects": [
+    {
+     "type": "addMana",
+     "mana": "{B}"
+    }
+   ]
+  },
+  {
+   "kind": "activated",
+   "cost": {
+    "mana": "{2}{W}{B}",
+    "tap": true
+   },
+   "effects": [
+    {
+     "type": "grantKeyword",
+     "keyword": "vigilance",
+     "scope": "creaturesYouControl",
+     "duration": "UNTIL_END_OF_TURN"
+    },
+    {
+     "type": "grantKeyword",
+     "keyword": "menace",
+     "scope": "creaturesYouControl",
+     "duration": "UNTIL_END_OF_TURN"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "prizeOnly": true
+}
