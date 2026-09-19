@@ -63,6 +63,7 @@
   }
  ],
  "art": {
+  "asset": "/custom-art/the_reeve.png",
   "fallback": "rendered"
  },
  "prizeOnly": true

@@ -2,3 +2,4 @@
 {"at": "2026-08-24T19:52:20+00:00", "entity": "guardian-drana", "variant": "canonical", "reason": "model_refusal", "detail": "no image in response (finishReason=PROHIBITED_CONTENT) "}
 {"at": "2026-08-24T19:53:06+00:00", "entity": "guardian-drana", "variant": "canonical", "reason": "model_refusal", "detail": "no image in response (finishReason=PROHIBITED_CONTENT) "}
 {"at": "2026-08-25T19:43:51+00:00", "entity": "map-paper", "variant": "canonical", "reason": "model_refusal", "detail": "no image in response (finishReason=IMAGE_RECITATION) "}
+{"at": "2026-09-19T22:46:59+00:00", "entity": "flood-lord-dredger-2", "variant": "canonical", "reason": "model_refusal", "detail": "no image in response (finishReason=STOP) I have created an ink and wash illustration of the sphinx, following your detailed specifications for style, pose, and expression."}

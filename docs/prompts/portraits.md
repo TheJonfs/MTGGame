@@ -79,3 +79,19 @@ The five shared deck portraits (`portrait-opponent-*`) gave three mages one face
 | ysolde | Thornmother Ysolde | WG · 3 | the Thornmother | moss green + white-cream |
 | quill | Magister Quill | UG · 3 | the Drowned Grove | sea blue + moss green |
 
+### S40 flood portraits (ADR-128) — the ten legends' battle portraits, two candidates each (the S29 round's shape; Chris picks)
+
+Mage-portrait law (the Reaper and the Dredger lean on the bestiary plate's hatching — a serpent and a sphinx — but keep the head-and-shoulders bust). Each follows the KEPT card art's identity (signature-card rule; Chris's S40 verdicts). One colour wash + parchment: the lords take their law's colour, the courts the colour their card art leans on. Entries authored by the implementer.
+
+| Subject files (`docs/art/subjects/`) | Legend | Colour wash |
+|---|---|---|
+| `flood-lord-bailiff-1.md`, `flood-lord-bailiff-2.md` | The Bailiff (the Intake's phase-two lord, W·ur — Tidelock Weir) | pale gold |
+| `flood-court-odile-1.md`, `flood-court-odile-2.md` | Odile, the Tallyflame (the Intake's court, UR — Tallyflame Court) | ember orange |
+| `flood-lord-reeve-1.md`, `flood-lord-reeve-2.md` | The Reeve (the Tithe's phase-two lord, B·ug — Marrowfen) | bog green |
+| `flood-court-zinnia-1.md`, `flood-court-zinnia-2.md` | Zinnia, the Undertow (the Tithe's court, UG — the Wrackroot Shallows) | sea green |
+| `flood-lord-fordkeeper-1.md`, `flood-lord-fordkeeper-2.md` | The Fordkeeper (the Toll's phase-two lord, R·wg — Emberford) | ember red |
+| `flood-court-ovna-1.md`, `flood-court-ovna-2.md` | Ovna, the Enchantress (the Toll's court, WG — Shevelport Green) | spring green |
+| `flood-lord-dredger-1.md`, `flood-lord-dredger-2.md` | The Dredger (the Risen Tide's phase-two lord, U·bw — Lockmere) | sea blue |
+| `flood-court-isaura-1.md`, `flood-court-isaura-2.md` | Isaura, the Levy (the Risen Tide's court, WB — the Obsidian Observatory) | tarnished gold |
+| `flood-lord-reaper-1.md`, `flood-lord-reaper-2.md` | The Reaper (the Season's phase-two lord, G·br — Harrowmoor) | moss green |
+| `flood-court-meliyan-1.md`, `flood-court-meliyan-2.md` | Meliyan, the Torment (the Season's court, BR — Cairnbrand Pyre) | ember red |
