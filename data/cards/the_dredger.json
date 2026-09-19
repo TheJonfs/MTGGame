@@ -47,5 +47,6 @@
   "asset": "/custom-art/the_dredger.png",
   "fallback": "rendered"
  },
- "prizeOnly": true
+ "prizeOnly": true,
+ "printedAsset": "the_dredger.jpg"
 }
