@@ -62,5 +62,6 @@
   "asset": "/custom-art/ovna_the_enchantress.png",
   "fallback": "rendered"
  },
- "prizeOnly": true
+ "prizeOnly": true,
+ "printedAsset": "ovna_the_enchantress.jpg"
 }

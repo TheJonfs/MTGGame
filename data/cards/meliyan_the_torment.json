@@ -48,5 +48,6 @@
   "asset": "/custom-art/meliyan_the_torment.png",
   "fallback": "rendered"
  },
- "prizeOnly": true
+ "prizeOnly": true,
+ "printedAsset": "meliyan_the_torment.jpg"
 }

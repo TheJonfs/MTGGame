@@ -95,3 +95,4 @@ Mage-portrait law (the Reaper and the Dredger lean on the bestiary plate's hatch
 | `flood-court-isaura-1.md`, `flood-court-isaura-2.md` | Isaura, the Levy (the Risen Tide's court, WB — the Obsidian Observatory) | tarnished gold |
 | `flood-lord-reaper-1.md`, `flood-lord-reaper-2.md` | The Reaper (the Season's phase-two lord, G·br — Harrowmoor) | moss green |
 | `flood-court-meliyan-1.md`, `flood-court-meliyan-2.md` | Meliyan, the Torment (the Season's court, BR — Cairnbrand Pyre) | ember red |
+| `flood-lord-dredger-r2-1.md`, `flood-lord-dredger-r2-2.md` | The Dredger — ROUND 2 (Chris: less human — the card art's carved mask of a face, blank eyes, the nemes headdress; round 1's bearded man rejected) | sea blue |

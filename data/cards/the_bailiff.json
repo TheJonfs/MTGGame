@@ -47,5 +47,6 @@
   "asset": "/custom-art/the_bailiff.png",
   "fallback": "rendered"
  },
- "prizeOnly": true
+ "prizeOnly": true,
+ "printedAsset": "the_bailiff.jpg"
 }

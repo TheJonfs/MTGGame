@@ -49,5 +49,6 @@
   "asset": "/custom-art/static_sphere.png",
   "fallback": "rendered"
  },
- "shopTier": "R"
+ "shopTier": "R",
+ "printedAsset": "static_sphere.jpg"
 }

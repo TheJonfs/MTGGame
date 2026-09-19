@@ -3285,6 +3285,36 @@
         }
       }
     },
+    "flood-lord-dredger-r2-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:755ef77b75ffd4cf1b75abd13cb8d220c7482d36a1adf0bbd98a6142177b1dfe",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:755ef77b75ffd4cf1b75abd13cb8d220c7482d36a1adf0bbd98a6142177b1dfe",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/flood-lord-dredger-r2-1/canonical.png",
+          "rendered_at": "2026-09-19T23:24:02+00:00",
+          "thumb": "assets/thumbs/flood-lord-dredger-r2-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "flood-lord-dredger-r2-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:664544920a47f3fc8556ce46c5b8281b377e741f2d3e79b4b5964441b4d7c81b",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:664544920a47f3fc8556ce46c5b8281b377e741f2d3e79b4b5964441b4d7c81b",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/flood-lord-dredger-r2-2/canonical.png",
+          "rendered_at": "2026-09-19T23:24:10+00:00",
+          "thumb": "assets/thumbs/flood-lord-dredger-r2-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "flood-lord-fordkeeper-1": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:e20587ed8c9fa832b7d64b3db7abcf521bb5aa060447d4cc703074f71fe7ec10",

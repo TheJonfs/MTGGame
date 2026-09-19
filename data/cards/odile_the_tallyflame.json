@@ -39,5 +39,6 @@
   "asset": "/custom-art/odile_the_tallyflame.png",
   "fallback": "rendered"
  },
- "prizeOnly": true
+ "prizeOnly": true,
+ "printedAsset": "odile_the_tallyflame.jpg"
 }

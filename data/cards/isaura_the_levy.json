@@ -58,5 +58,6 @@
   "asset": "/custom-art/isaura_the_levy.png",
   "fallback": "rendered"
  },
- "prizeOnly": true
+ "prizeOnly": true,
+ "printedAsset": "isaura_the_levy.jpg"
 }

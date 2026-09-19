@@ -68,5 +68,6 @@
   "asset": "/custom-art/the_reaper.png",
   "fallback": "rendered"
  },
- "prizeOnly": true
+ "prizeOnly": true,
+ "printedAsset": "the_reaper.jpg"
 }
