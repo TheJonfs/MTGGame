@@ -39,6 +39,7 @@
   }
  ],
  "art": {
+  "asset": "/custom-art/zinnia_the_undertow.png",
   "fallback": "rendered"
  },
  "prizeOnly": true

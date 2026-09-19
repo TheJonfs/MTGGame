@@ -20,6 +20,7 @@
   "flying"
  ],
  "art": {
+  "asset": "/custom-art/spirit_1_1_w_flying.png",
   "fallback": "rendered"
  }
 }

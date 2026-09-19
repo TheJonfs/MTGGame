@@ -46,6 +46,7 @@
   }
  ],
  "art": {
+  "asset": "/custom-art/static_sphere.png",
   "fallback": "rendered"
  },
  "shopTier": "R"

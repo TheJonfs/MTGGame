@@ -58,6 +58,7 @@
   }
  ],
  "art": {
+  "asset": "/custom-art/obsidian_observatory.png",
   "fallback": "rendered"
  },
  "prizeOnly": true

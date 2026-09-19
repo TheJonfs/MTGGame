@@ -31,6 +31,7 @@
   }
  ],
  "art": {
+  "asset": "/custom-art/sacred_helix.png",
   "fallback": "rendered"
  },
  "shopTier": "R"

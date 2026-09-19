@@ -58,6 +58,7 @@
   }
  ],
  "art": {
+  "asset": "/custom-art/shevelport.png",
   "fallback": "rendered"
  },
  "prizeOnly": true

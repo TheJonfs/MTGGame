@@ -51,6 +51,7 @@
   }
  ],
  "art": {
+  "asset": "/custom-art/tallyflame_court.png",
   "fallback": "rendered"
  },
  "prizeOnly": true

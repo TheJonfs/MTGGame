@@ -71,6 +71,7 @@
   }
  ],
  "art": {
+  "asset": "/custom-art/the_fordkeeper.png",
   "fallback": "rendered"
  },
  "prizeOnly": true

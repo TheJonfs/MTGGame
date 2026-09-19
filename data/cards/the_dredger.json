@@ -44,6 +44,7 @@
   }
  ],
  "art": {
+  "asset": "/custom-art/the_dredger.png",
   "fallback": "rendered"
  },
  "prizeOnly": true

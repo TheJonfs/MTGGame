@@ -1635,6 +1635,66 @@
         }
       }
     },
+    "card-reeve-r2-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:2415111cd4d2fb374ef8cc82420e3cbbe3a04a3638046400c23d69514b7fbe16",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:2415111cd4d2fb374ef8cc82420e3cbbe3a04a3638046400c23d69514b7fbe16",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-reeve-r2-1/canonical.png",
+          "rendered_at": "2026-09-19T22:32:28+00:00",
+          "thumb": "assets/thumbs/card-reeve-r2-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-reeve-r2-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:8200bc1451c2c0253af5c8d6e0b26674edc86554e5037a99bc292eeba8e571dc",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:8200bc1451c2c0253af5c8d6e0b26674edc86554e5037a99bc292eeba8e571dc",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-reeve-r2-2/canonical.png",
+          "rendered_at": "2026-09-19T22:32:38+00:00",
+          "thumb": "assets/thumbs/card-reeve-r2-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-reeve-r2-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:da674e548eb34dc1fa5dbf9f9efd42eed1c804c688ea3367371bef2daf8f93c8",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:da674e548eb34dc1fa5dbf9f9efd42eed1c804c688ea3367371bef2daf8f93c8",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-reeve-r2-3/canonical.png",
+          "rendered_at": "2026-09-19T22:32:47+00:00",
+          "thumb": "assets/thumbs/card-reeve-r2-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-reeve-r2-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:a19026a49e972f19c9d413a09cedddb425460b7688bd1e220ca8a2924fd5d0d0",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:a19026a49e972f19c9d413a09cedddb425460b7688bd1e220ca8a2924fd5d0d0",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-reeve-r2-4/canonical.png",
+          "rendered_at": "2026-09-19T22:32:55+00:00",
+          "thumb": "assets/thumbs/card-reeve-r2-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "card-ruby-tyrant-1": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:6d585dc8346abee30248f6749065ebbd339c89b8dab7e6a2321f8f959a81446b",
@@ -5370,6 +5430,21 @@
         }
       }
     },
+    "token-snake-green": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:0daf26872619f8ecb921d433481d942dbdc06f3a85dcacb2042d187b3f3c8073",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:0daf26872619f8ecb921d433481d942dbdc06f3a85dcacb2042d187b3f3c8073",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/token-snake-green/canonical.png",
+          "rendered_at": "2026-09-19T22:33:02+00:00",
+          "thumb": "assets/thumbs/token-snake-green/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "token-soldier": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:68bcf8d9832d2071ad3d1924ce75f4fe1d1e07445ca144baed7b2b747ce6c948",
@@ -5396,6 +5471,21 @@
           "path": "assets/images/token-sphinx/canonical.png",
           "rendered_at": "2026-08-26T11:36:58+00:00",
           "thumb": "assets/thumbs/token-sphinx/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "token-spirit-white": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:7ccef4f7d87b9bb58e0f7dad891f24f3d4aba30dbf0bcba2f94fc3b923618242",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:7ccef4f7d87b9bb58e0f7dad891f24f3d4aba30dbf0bcba2f94fc3b923618242",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/token-spirit-white/canonical.png",
+          "rendered_at": "2026-09-19T22:33:10+00:00",
+          "thumb": "assets/thumbs/token-spirit-white/canonical.png",
           "variant_prompt": null
         }
       }

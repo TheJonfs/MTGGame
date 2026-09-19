@@ -61,6 +61,7 @@
   }
  ],
  "art": {
+  "asset": "/custom-art/cairnbrand.png",
   "fallback": "rendered"
  },
  "prizeOnly": true

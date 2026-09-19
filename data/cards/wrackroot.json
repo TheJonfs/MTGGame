@@ -58,6 +58,7 @@
   }
  ],
  "art": {
+  "asset": "/custom-art/wrackroot.png",
   "fallback": "rendered"
  },
  "prizeOnly": true
