@@ -252,31 +252,30 @@ The flood's register: the strongholds are the places the lords hold against the 
 ```
 7 Island · 6 Mountain · 1 Volcanic Island · 1 Steam Vents · 1 Lonely Sandbar · 1 Forgotten Cave
 3 Odile, the Tallyflame
-2 Brainstorm · 2 Thought Scour · 1 Divination · 2 Cloudkin Seer · 1 Curiosity
-2 Young Pyromancer · 1 Arc Mage · 1 Man-o'-War · 1 Wind Drake · 1 Air Elemental
+2 Brainstorm · 2 Thought Scour · 2 Cloudkin Seer · 1 Curiosity
+2 Young Pyromancer · 1 Arc Mage · 1 Man-o'-War · 2 Wind Drake · 1 Air Elemental
 2 Lightning Bolt · 1 Shock · 1 Pyroclasm · 1 Counterspell · 1 Aetherbolt
 ```
-17 / 23. Every draw is a Pyroclasm on the tapped board; the ground draws too.
+17 / 23; twelve creature cards — her own gate (ADR-129). Every draw is a Pyroclasm on the tapped board; the ground draws too.
 
 ### The Wrackroot Shallows — Zinnia (UG)
 ```
 7 Island · 6 Forest · 1 Tropical Island · 1 Breeding Pool · 1 Evolving Wilds · 1 Tranquil Thicket
 3 Zinnia, the Undertow
-2 Man-o'-War · 1 Mist Raven · 1 Aether Channeler · 2 Boomerang · 1 Temporal Spring · 1 Aether Mutation · 1 Mystic Snake
-2 Hedron Crab · 2 Prey Upon · 1 Altar of Dementia · 1 Rampant Growth
-2 Wall of Blossoms · 1 Rumbling Baloth · 1 Essence Scatter · 1 Counterspell
+3 Man-o'-War · 2 Mist Raven · 2 Aether Channeler · 2 Boomerang · 1 Temporal Spring · 1 Aether Mutation · 1 Mystic Snake
+2 Prey Upon · 1 Altar of Dementia · 1 Rampant Growth
+2 Rumbling Baloth · 1 Essence Scatter · 1 Counterspell
 ```
-17 / 23. Everything that makes a creature leave; the ground does it every turn.
+17 / 23; nothing under power 2 — her own gate (ADR-129). Everything that makes a creature leave; the ground does it every turn; the mill is Zinnia's.
 
 ### Shevelport Green — Ovna (WG)
 ```
 6 Forest · 6 Plains · 1 Savannah · 1 Temple Garden · 1 Secluded Steppe · 1 Tranquil Thicket · 1 Evolving Wilds
 3 Ovna, the Enchantress
-3 Pacifism · 2 Glare of Subdual · 2 Blanchwood Armor · 2 Rancor · 2 Spirit Link · 1 Glorious Anthem
+4 Pacifism · 2 Glare of Subdual · 2 Blanchwood Armor · 2 Rancor · 2 Spirit Link · 1 Glorious Anthem
 2 Gladecover Scout · 1 Blurred Mongoose · 1 Frondland Felidar · 1 Soul Warden · 1 Inspiring Overseer · 1 Wall of Blossoms
-1 Swords to Plowshares
 ```
-17 / 23; fourteen enchantments. The hexproof bodies carry the auras when Ovna is answered; the ground brings the auras back.
+17 / 23; fifteen enchantments; no instants — her own gate (ADR-129; S41: −1 Swords to Plowshares, +1 Pacifism — Chris, 2026-09-20). The hexproof bodies carry the auras when Ovna is answered; the ground brings the auras back.
 
 ### The Obsidian Observatory — Isaura (WB)
 ```
@@ -299,6 +298,9 @@ The flood's register: the strongholds are the places the lords hold against the 
 17 / 23; nothing above mana value 4 — she keeps her own gate. The Phoenix dies and returns; the Skeleton dies and returns; every death is her burn.
 
 ## 9. Two pool adds from the lists (Chris, 2026-09-19) ✅
+
+*S41 amendments (ADR-129): Tallyflame Court −1 Divination +1 Wind Drake; the Wrackroot Shallows −2 Hedron Crab −2 Wall of Blossoms +1 Man-o'-War +1 Mist Raven +1 Aether Channeler +1 Rumbling Baloth. Voracious Cobra is encoded as printed (combat damage to a creature destroys it).*
+
 - **Char** (⚠ verify: {2}{R} Instant — Char deals 4 damage to any target and 2 damage to you. Ravnica). Red's instant-speed four; the Bailiff's answer for a player without the gold. In the Reaper's list for the Goblin Grenade (too few Goblins to feed it). Tier 2.
 - **Shadow Summoning** (⚠ verify: {W}{B} Sorcery — Create two tapped 1/1 white Spirit creature tokens with flying. A real card, not a custom — Chris). *The white-or-black token maker Isaura's seat wanted, without Lingering Souls' flashback; one new token def (1/1 white Spirit, flying). Tier 2. Two in the Observatory for a Valkyrie and a Doom Blade.*
 

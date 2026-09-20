@@ -1,6 +1,7 @@
 import { entranceModifiers, resolveMatchup } from "./matchup.js";
 import type { MatchResult, MatchSpec, Modifier } from "@shandalar/engine";
 import { enemyDeck, type Catalog, type OpponentTemplate } from "./catalog.js";
+import { strongholdContentFor } from "./flood.js";
 import { checkDeck, describeDeckRule, type DeckCheck, type DeckRule } from "./legality.js";
 import type { CardDef } from "@shandalar/cards";
 import { isTownCell, regionCells, roamerTarget, rollMage, rollTemplate, type GoneReason, type OpponentInstance } from "./generate.js";
@@ -52,7 +53,9 @@ export type StepEvent =
    * either way (the locked door still tells you how many you hold). */
   | { type: "corollaDoor"; at: Point; seals: number; open: boolean }
   /** S26: you stand at the Vault's door — five Moxen open the Mirror; cleared = plain ground (no stop). */
-  | { type: "vaultDoor"; at: Point; moxen: number; open: boolean };
+  | { type: "vaultDoor"; at: Point; moxen: number; open: boolean }
+  /** S41 (ADR-130): you stand on a High Ground — a court of the flood; the telegraph opens (a single duel, the petal's shape). */
+  | { type: "courtEntry"; courtId: string; name: string; at: Point };
 
 // ---------- S16 roamers: sight, flee, movement ----------
 
@@ -353,11 +356,15 @@ export function advance(
       // maximum scale (matched to its content by the spoke's colour; cleared = ground, sealed).
       if (fixed?.kind === "stronghold") {
         const color = regionAt(world.map, cell).color;
-        const content = (catalog.strongholdContent ?? []).find((c) => c.color === color);
+        const content = strongholdContentFor(catalog, world.phase).find((c) => c.color === color); // S41: a phase-two world's seats are the flood's
         if (content && !world.dungeons[content.id]?.cleared) {
           events.push({ type: "dungeonEntry", dungeonId: content.id, kind: "stronghold", name: content.name, at: { ...cell } });
           break;
         }
+      }
+      if (fixed?.kind === "ground" && fixed.contentId && !world.dungeons[fixed.contentId]?.cleared) {
+        events.push({ type: "courtEntry", courtId: fixed.contentId, name: fixed.name ?? "A court", at: { ...cell } });
+        break;
       }
       // You stepped onto a roamer (pursuit — the player-initiated contact).
       const stepped = contactAt(cell);
@@ -478,12 +485,14 @@ export function doorCheck(world: WorldState, tmpl: Pick<OpponentTemplate, "deckR
 }
 /** The refusal as the parley says it: the archaic line (quests.json `door.refused`, {label} substituted),
  * then the rule's problems. */
-export function doorRefusalText(catalog: Pick<Catalog, "questText">, rule: DeckRule, check: DeckCheck): string {
+export function doorRefusalText(catalog: Pick<Catalog, "questText">, rule: DeckRule, check: DeckCheck, siteId?: string): string {
   // S40 (ADR-128): the first failed field's own line, when the pack carries one (the courts' gates).
   const door = catalog.questText?.door;
   const first = check.failed?.[0];
   const byRule = first ? door?.byRule?.[first as keyof NonNullable<typeof door.byRule>] : undefined;
-  const line = (byRule ?? door?.refused ?? "The gate will not open to this deck.").replaceAll("{label}", rule.label);
+  // S41: the site's own line first (the courts' words, numbers included), then the field's fallback, then the colour line.
+  const bySite = siteId ? door?.bySite?.[siteId] : undefined;
+  const line = (bySite ?? byRule ?? door?.refused ?? "The gate will not open to this deck.").replaceAll("{label}", rule.label);
   return `${line} ${rule.label} (${describeDeckRule(rule)}): ${check.problems.join("; ")}.`;
 }
 

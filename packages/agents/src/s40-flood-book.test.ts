@@ -104,7 +104,8 @@ describe("the book of shame, S40 — the flood's legends and grounds", () => {
     const a = agent();
     const snakes = (n: number, p: number): Obj[] => Array.from({ length: n }, (_, i) => ({ id: `sn${i}`, cardId: "snake_1_1_g", controller: 0 as const, power: p + (i === 0 ? 2 : 0), toughness: p + (i === 0 ? 2 : 0) }));
     const v = (life: number, n: number, p: number, step = "MAIN1", theirs: Obj[] = []) => mkView({ step, life: [20, life], bf: [{ id: "reaper", cardId: "the_reaper", controller: 0 }, ...lands(3, "forest"), ...snakes(n, p), ...theirs] });
-    expect(a.scorePriorityAction(v(20, 2, 1), act("reaper", 1))).toBe(-Infinity); // 7 + 4 through against 20: short of three-fifths
+    expect(a.scorePriorityAction(v(20, 1, 1), act("reaper", 1))).toBe(-Infinity); // 7 through against 20: short of half (S41: the rule is half)
+    expect(a.scorePriorityAction(v(20, 2, 1), act("reaper", 1))).toBeGreaterThan(-Infinity); // 7 + 4: past half
     expect(a.scorePriorityAction(v(12, 4, 2), act("reaper", 1))).toBeGreaterThan(-Infinity); // the oldest snake (4) onto 4+2+2+2: lethal
     expect(a.scorePriorityAction(v(12, 4, 2, "MAIN2"), act("reaper", 1))).toBe(-Infinity); // after combat: never
     const view = v(12, 4, 2);

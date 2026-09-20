@@ -63,4 +63,27 @@ export const ROAD_DECKS: Record<string, { name: string; archetype: "aggro" | "mi
       ["mind_stone", 1],
     ]),
   },
+  /** S41 (the S39 Concern 7 entry): SALVAGE + LEGENDS — the two yardsticks with the carried legends of their pair
+   * added (the guardians of both colours and the pair's minister): what the flood's player actually holds on day
+   * one. Thirty-three cards (the three legends are added, nothing cut), 12 life, journeyman, no basics in play. */
+  salvageWRLegends: {
+    name: "salvage-WR+legends", archetype: "aggro", life: 12, entrance: [],
+    decklist: d([
+      ["plateau", 1], ["sacred_foundry", 1], ["plains", 5], ["mountain", 5],
+      ["savannah_lions", 1], ["suntail_hawk", 1], ["soul_warden", 1], ["fencing_ace", 1], ["youthful_valkyrie", 1], ["inspiring_overseer", 1], ["pacifism", 1], ["swords_to_plowshares", 1],
+      ["young_pyromancer", 1], ["goblin_piker", 1], ["boggart_brute", 1], ["goblin_chieftain", 1], ["thundersnake", 1], ["lightning_bolt", 1], ["shock", 1], ["abrade", 1], ["hordeling_outburst", 1],
+      ["bonesplitter", 1],
+      ["the_pearl_cleric", 1], ["the_ruby_tyrant", 1], ["lumen_the_hearth_fire", 1],
+    ]),
+  },
+  salvageUBLegends: {
+    name: "salvage-UB+legends", archetype: "midrange", life: 12, entrance: [],
+    decklist: d([
+      ["underground_sea", 1], ["watery_grave", 1], ["island", 5], ["swamp", 5],
+      ["plumecreed_escort", 1], ["man_o_war", 1], ["cloudkin_seer", 1], ["wind_drake", 1], ["aether_channeler", 1], ["air_elemental", 1], ["brainstorm", 1], ["counterspell", 1], ["essence_scatter", 1],
+      ["typhoid_rats", 1], ["child_of_night", 1], ["vampire_nighthawk", 1], ["phyrexian_rager", 1], ["gravedigger", 1], ["nekrataal", 1], ["terror", 1], ["doom_blade", 1],
+      ["mind_stone", 1],
+      ["the_sapphire_sage", 1], ["the_jet_witch", 1], ["clio_lady_of_the_depths", 1],
+    ]),
+  },
 };

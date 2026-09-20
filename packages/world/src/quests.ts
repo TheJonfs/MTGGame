@@ -478,7 +478,9 @@ export function resolveRetrieval(
  * whenever they materialize — pure in (seed, catalog, map)). */
 export function rumorState(world: WorldState, catalog: Catalog): RumorState {
   const rs = (world.quests.rumors ??= { chains: [], heard: [] });
-  if (rs.chains.length === 0 && catalog.dungeons.length > 0) {
+  // S41 (Chris, 2026-09-20): a phase-two map has no Mox courts — no chain points at a site that is not there
+  // (the flood's rumours are content-round work).
+  if (rs.chains.length === 0 && catalog.dungeons.length > 0 && (world.phase ?? 1) < 2) {
     for (const mox of catalog.dungeons) {
       const rng = new WorldRng(((world.seed * 3_266_489_917) ^ hash32(`chain:${mox.id}`)) >>> 0);
       const towns = [...world.map.towns];

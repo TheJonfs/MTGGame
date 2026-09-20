@@ -1,0 +1,1339 @@
+{
+ "catalogVersion": "v1",
+ "decks": {
+  "bailiff": {
+   "seat": "Tidelock Weir",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "plains",
+     "count": 4
+    },
+    {
+     "cardId": "island",
+     "count": 3
+    },
+    {
+     "cardId": "mountain",
+     "count": 3
+    },
+    {
+     "cardId": "tundra",
+     "count": 1
+    },
+    {
+     "cardId": "plateau",
+     "count": 1
+    },
+    {
+     "cardId": "volcanic_island",
+     "count": 1
+    },
+    {
+     "cardId": "hallowed_fountain",
+     "count": 1
+    },
+    {
+     "cardId": "sacred_foundry",
+     "count": 1
+    },
+    {
+     "cardId": "steam_vents",
+     "count": 1
+    },
+    {
+     "cardId": "secluded_steppe",
+     "count": 1
+    },
+    {
+     "cardId": "the_bailiff",
+     "count": 3
+    },
+    {
+     "cardId": "static_sphere",
+     "count": 2
+    },
+    {
+     "cardId": "sacred_helix",
+     "count": 2
+    },
+    {
+     "cardId": "plumecreed_escort",
+     "count": 2
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 1
+    },
+    {
+     "cardId": "man_o_war",
+     "count": 2
+    },
+    {
+     "cardId": "aether_channeler",
+     "count": 1
+    },
+    {
+     "cardId": "serra_angel",
+     "count": 1
+    },
+    {
+     "cardId": "master_decoy",
+     "count": 1
+    },
+    {
+     "cardId": "cunning_tactician",
+     "count": 1
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 2
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 1
+    },
+    {
+     "cardId": "counterspell",
+     "count": 2
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 1
+    },
+    {
+     "cardId": "boomerang",
+     "count": 1
+    }
+   ],
+   "name": "The Bailiff"
+  },
+  "reeve": {
+   "seat": "Marrowfen",
+   "archetype": "control",
+   "decklist": [
+    {
+     "cardId": "swamp",
+     "count": 4
+    },
+    {
+     "cardId": "island",
+     "count": 3
+    },
+    {
+     "cardId": "forest",
+     "count": 3
+    },
+    {
+     "cardId": "underground_sea",
+     "count": 1
+    },
+    {
+     "cardId": "bayou",
+     "count": 1
+    },
+    {
+     "cardId": "tropical_island",
+     "count": 1
+    },
+    {
+     "cardId": "watery_grave",
+     "count": 1
+    },
+    {
+     "cardId": "overgrown_tomb",
+     "count": 1
+    },
+    {
+     "cardId": "breeding_pool",
+     "count": 1
+    },
+    {
+     "cardId": "barren_moor",
+     "count": 1
+    },
+    {
+     "cardId": "the_reeve",
+     "count": 3
+    },
+    {
+     "cardId": "glimpse_the_unthinkable",
+     "count": 2
+    },
+    {
+     "cardId": "putrefy",
+     "count": 2
+    },
+    {
+     "cardId": "hedron_crab",
+     "count": 3
+    },
+    {
+     "cardId": "thought_scour",
+     "count": 2
+    },
+    {
+     "cardId": "buried_alive",
+     "count": 1
+    },
+    {
+     "cardId": "zombify",
+     "count": 1
+    },
+    {
+     "cardId": "gravedigger",
+     "count": 1
+    },
+    {
+     "cardId": "gaean_wurm",
+     "count": 2
+    },
+    {
+     "cardId": "pelakka_wurm",
+     "count": 1
+    },
+    {
+     "cardId": "artisan_of_kozilek",
+     "count": 1
+    },
+    {
+     "cardId": "nekrataal",
+     "count": 1
+    },
+    {
+     "cardId": "deadly_recluse",
+     "count": 1
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 1
+    },
+    {
+     "cardId": "counterspell",
+     "count": 1
+    }
+   ],
+   "name": "The Reeve"
+  },
+  "fordkeeper": {
+   "seat": "Emberford",
+   "archetype": "control",
+   "decklist": [
+    {
+     "cardId": "mountain",
+     "count": 4
+    },
+    {
+     "cardId": "plains",
+     "count": 3
+    },
+    {
+     "cardId": "forest",
+     "count": 3
+    },
+    {
+     "cardId": "plateau",
+     "count": 1
+    },
+    {
+     "cardId": "taiga",
+     "count": 1
+    },
+    {
+     "cardId": "savannah",
+     "count": 1
+    },
+    {
+     "cardId": "sacred_foundry",
+     "count": 1
+    },
+    {
+     "cardId": "stomping_ground",
+     "count": 1
+    },
+    {
+     "cardId": "temple_garden",
+     "count": 1
+    },
+    {
+     "cardId": "forgotten_cave",
+     "count": 1
+    },
+    {
+     "cardId": "evolving_wilds",
+     "count": 1
+    },
+    {
+     "cardId": "the_fordkeeper",
+     "count": 3
+    },
+    {
+     "cardId": "powerstone_minefield",
+     "count": 2
+    },
+    {
+     "cardId": "savage_twister",
+     "count": 2
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 2
+    },
+    {
+     "cardId": "shock",
+     "count": 1
+    },
+    {
+     "cardId": "blaze",
+     "count": 1
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 1
+    },
+    {
+     "cardId": "abrade",
+     "count": 1
+    },
+    {
+     "cardId": "rampant_growth",
+     "count": 2
+    },
+    {
+     "cardId": "wood_elves",
+     "count": 2
+    },
+    {
+     "cardId": "llanowar_elves",
+     "count": 1
+    },
+    {
+     "cardId": "glare_of_subdual",
+     "count": 1
+    },
+    {
+     "cardId": "rumbling_baloth",
+     "count": 1
+    },
+    {
+     "cardId": "frondland_felidar",
+     "count": 1
+    },
+    {
+     "cardId": "serra_angel",
+     "count": 1
+    }
+   ],
+   "name": "The Fordkeeper"
+  },
+  "dredger": {
+   "seat": "Lockmere",
+   "archetype": "control",
+   "decklist": [
+    {
+     "cardId": "island",
+     "count": 3
+    },
+    {
+     "cardId": "plains",
+     "count": 3
+    },
+    {
+     "cardId": "swamp",
+     "count": 3
+    },
+    {
+     "cardId": "tundra",
+     "count": 1
+    },
+    {
+     "cardId": "scrubland",
+     "count": 1
+    },
+    {
+     "cardId": "underground_sea",
+     "count": 1
+    },
+    {
+     "cardId": "hallowed_fountain",
+     "count": 1
+    },
+    {
+     "cardId": "godless_shrine",
+     "count": 1
+    },
+    {
+     "cardId": "watery_grave",
+     "count": 1
+    },
+    {
+     "cardId": "lonely_sandbar",
+     "count": 1
+    },
+    {
+     "cardId": "secluded_steppe",
+     "count": 1
+    },
+    {
+     "cardId": "barren_moor",
+     "count": 1
+    },
+    {
+     "cardId": "the_dredger",
+     "count": 3
+    },
+    {
+     "cardId": "undermine",
+     "count": 2
+    },
+    {
+     "cardId": "absorb",
+     "count": 2
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 1
+    },
+    {
+     "cardId": "vindicate",
+     "count": 2
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 1
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 1
+    },
+    {
+     "cardId": "counterspell",
+     "count": 1
+    },
+    {
+     "cardId": "hymn_to_tourach",
+     "count": 1
+    },
+    {
+     "cardId": "duress",
+     "count": 1
+    },
+    {
+     "cardId": "graceful_restoration",
+     "count": 1
+    },
+    {
+     "cardId": "divination",
+     "count": 1
+    },
+    {
+     "cardId": "brainstorm",
+     "count": 1
+    },
+    {
+     "cardId": "serra_angel",
+     "count": 1
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 1
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 1
+    },
+    {
+     "cardId": "air_elemental",
+     "count": 1
+    }
+   ],
+   "name": "The Dredger"
+  },
+  "reaper": {
+   "seat": "Harrowmoor",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "forest",
+     "count": 4
+    },
+    {
+     "cardId": "swamp",
+     "count": 3
+    },
+    {
+     "cardId": "mountain",
+     "count": 3
+    },
+    {
+     "cardId": "bayou",
+     "count": 1
+    },
+    {
+     "cardId": "taiga",
+     "count": 1
+    },
+    {
+     "cardId": "badlands",
+     "count": 1
+    },
+    {
+     "cardId": "overgrown_tomb",
+     "count": 1
+    },
+    {
+     "cardId": "stomping_ground",
+     "count": 1
+    },
+    {
+     "cardId": "blood_crypt",
+     "count": 1
+    },
+    {
+     "cardId": "tranquil_thicket",
+     "count": 1
+    },
+    {
+     "cardId": "the_reaper",
+     "count": 3
+    },
+    {
+     "cardId": "poison_tip_archer",
+     "count": 2
+    },
+    {
+     "cardId": "voracious_cobra",
+     "count": 2
+    },
+    {
+     "cardId": "moss_viper",
+     "count": 1
+    },
+    {
+     "cardId": "skirk_prospector",
+     "count": 2
+    },
+    {
+     "cardId": "hordeling_outburst",
+     "count": 1
+    },
+    {
+     "cardId": "bitterblossom",
+     "count": 1
+    },
+    {
+     "cardId": "blood_artist",
+     "count": 1
+    },
+    {
+     "cardId": "indulgent_aristocrat",
+     "count": 1
+    },
+    {
+     "cardId": "char",
+     "count": 1
+    },
+    {
+     "cardId": "llanowar_elves",
+     "count": 1
+    },
+    {
+     "cardId": "deadly_recluse",
+     "count": 1
+    },
+    {
+     "cardId": "rumbling_baloth",
+     "count": 1
+    },
+    {
+     "cardId": "gaean_wurm",
+     "count": 1
+    },
+    {
+     "cardId": "gravedigger",
+     "count": 1
+    },
+    {
+     "cardId": "rancor",
+     "count": 1
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 1
+    },
+    {
+     "cardId": "terror",
+     "count": 1
+    }
+   ],
+   "name": "The Reaper"
+  },
+  "odile": {
+   "seat": "Tallyflame Court",
+   "archetype": "control",
+   "decklist": [
+    {
+     "cardId": "island",
+     "count": 7
+    },
+    {
+     "cardId": "mountain",
+     "count": 6
+    },
+    {
+     "cardId": "volcanic_island",
+     "count": 1
+    },
+    {
+     "cardId": "steam_vents",
+     "count": 1
+    },
+    {
+     "cardId": "lonely_sandbar",
+     "count": 1
+    },
+    {
+     "cardId": "forgotten_cave",
+     "count": 1
+    },
+    {
+     "cardId": "odile_the_tallyflame",
+     "count": 3
+    },
+    {
+     "cardId": "brainstorm",
+     "count": 2
+    },
+    {
+     "cardId": "thought_scour",
+     "count": 2
+    },
+    {
+     "cardId": "cloudkin_seer",
+     "count": 2
+    },
+    {
+     "cardId": "curiosity",
+     "count": 1
+    },
+    {
+     "cardId": "young_pyromancer",
+     "count": 2
+    },
+    {
+     "cardId": "arc_mage",
+     "count": 1
+    },
+    {
+     "cardId": "man_o_war",
+     "count": 1
+    },
+    {
+     "cardId": "wind_drake",
+     "count": 2
+    },
+    {
+     "cardId": "air_elemental",
+     "count": 1
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 2
+    },
+    {
+     "cardId": "shock",
+     "count": 1
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 1
+    },
+    {
+     "cardId": "counterspell",
+     "count": 1
+    },
+    {
+     "cardId": "aetherbolt",
+     "count": 1
+    }
+   ],
+   "name": "Odile, the Tallyflame"
+  },
+  "zinnia": {
+   "seat": "The Wrackroot Shallows",
+   "archetype": "control",
+   "decklist": [
+    {
+     "cardId": "island",
+     "count": 7
+    },
+    {
+     "cardId": "forest",
+     "count": 6
+    },
+    {
+     "cardId": "tropical_island",
+     "count": 1
+    },
+    {
+     "cardId": "breeding_pool",
+     "count": 1
+    },
+    {
+     "cardId": "evolving_wilds",
+     "count": 1
+    },
+    {
+     "cardId": "tranquil_thicket",
+     "count": 1
+    },
+    {
+     "cardId": "zinnia_the_undertow",
+     "count": 3
+    },
+    {
+     "cardId": "man_o_war",
+     "count": 3
+    },
+    {
+     "cardId": "mist_raven",
+     "count": 2
+    },
+    {
+     "cardId": "aether_channeler",
+     "count": 2
+    },
+    {
+     "cardId": "boomerang",
+     "count": 2
+    },
+    {
+     "cardId": "temporal_spring",
+     "count": 1
+    },
+    {
+     "cardId": "aether_mutation",
+     "count": 1
+    },
+    {
+     "cardId": "mystic_snake",
+     "count": 1
+    },
+    {
+     "cardId": "prey_upon",
+     "count": 2
+    },
+    {
+     "cardId": "altar_of_dementia",
+     "count": 1
+    },
+    {
+     "cardId": "rampant_growth",
+     "count": 1
+    },
+    {
+     "cardId": "rumbling_baloth",
+     "count": 2
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 1
+    },
+    {
+     "cardId": "counterspell",
+     "count": 1
+    }
+   ],
+   "name": "Zinnia, the Undertow"
+  },
+  "ovna": {
+   "seat": "Shevelport Green",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "forest",
+     "count": 6
+    },
+    {
+     "cardId": "plains",
+     "count": 6
+    },
+    {
+     "cardId": "savannah",
+     "count": 1
+    },
+    {
+     "cardId": "temple_garden",
+     "count": 1
+    },
+    {
+     "cardId": "secluded_steppe",
+     "count": 1
+    },
+    {
+     "cardId": "tranquil_thicket",
+     "count": 1
+    },
+    {
+     "cardId": "evolving_wilds",
+     "count": 1
+    },
+    {
+     "cardId": "ovna_the_enchantress",
+     "count": 3
+    },
+    {
+     "cardId": "pacifism",
+     "count": 4
+    },
+    {
+     "cardId": "glare_of_subdual",
+     "count": 2
+    },
+    {
+     "cardId": "blanchwood_armor",
+     "count": 2
+    },
+    {
+     "cardId": "rancor",
+     "count": 2
+    },
+    {
+     "cardId": "spirit_link",
+     "count": 2
+    },
+    {
+     "cardId": "glorious_anthem",
+     "count": 1
+    },
+    {
+     "cardId": "gladecover_scout",
+     "count": 2
+    },
+    {
+     "cardId": "blurred_mongoose",
+     "count": 1
+    },
+    {
+     "cardId": "frondland_felidar",
+     "count": 1
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 1
+    },
+    {
+     "cardId": "inspiring_overseer",
+     "count": 1
+    },
+    {
+     "cardId": "wall_of_blossoms",
+     "count": 1
+    }
+   ],
+   "name": "Ovna, the Enchantress"
+  },
+  "isaura": {
+   "seat": "The Obsidian Observatory",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "plains",
+     "count": 5
+    },
+    {
+     "cardId": "swamp",
+     "count": 5
+    },
+    {
+     "cardId": "secluded_steppe",
+     "count": 4
+    },
+    {
+     "cardId": "barren_moor",
+     "count": 4
+    },
+    {
+     "cardId": "scrubland",
+     "count": 1
+    },
+    {
+     "cardId": "godless_shrine",
+     "count": 1
+    },
+    {
+     "cardId": "isaura_the_levy",
+     "count": 3
+    },
+    {
+     "cardId": "raise_the_alarm",
+     "count": 3
+    },
+    {
+     "cardId": "shadow_summoning",
+     "count": 2
+    },
+    {
+     "cardId": "bitterblossom",
+     "count": 2
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 1
+    },
+    {
+     "cardId": "blood_artist",
+     "count": 1
+    },
+    {
+     "cardId": "indulgent_aristocrat",
+     "count": 1
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 1
+    },
+    {
+     "cardId": "serra_angel",
+     "count": 1
+    },
+    {
+     "cardId": "glorious_anthem",
+     "count": 1
+    },
+    {
+     "cardId": "vindicate",
+     "count": 2
+    },
+    {
+     "cardId": "graceful_restoration",
+     "count": 1
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 1
+    }
+   ],
+   "name": "Isaura, the Levy"
+  },
+  "meliyan": {
+   "seat": "Cairnbrand Pyre",
+   "archetype": "aggro",
+   "decklist": [
+    {
+     "cardId": "swamp",
+     "count": 7
+    },
+    {
+     "cardId": "mountain",
+     "count": 6
+    },
+    {
+     "cardId": "badlands",
+     "count": 1
+    },
+    {
+     "cardId": "blood_crypt",
+     "count": 1
+    },
+    {
+     "cardId": "barren_moor",
+     "count": 1
+    },
+    {
+     "cardId": "forgotten_cave",
+     "count": 1
+    },
+    {
+     "cardId": "meliyan_the_torment",
+     "count": 3
+    },
+    {
+     "cardId": "tainted_phoenix",
+     "count": 2
+    },
+    {
+     "cardId": "phyrexian_purge",
+     "count": 1
+    },
+    {
+     "cardId": "typhoid_rats",
+     "count": 2
+    },
+    {
+     "cardId": "reassembling_skeleton",
+     "count": 1
+    },
+    {
+     "cardId": "child_of_night",
+     "count": 1
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 1
+    },
+    {
+     "cardId": "goblin_piker",
+     "count": 1
+    },
+    {
+     "cardId": "boggart_brute",
+     "count": 1
+    },
+    {
+     "cardId": "goblin_chieftain",
+     "count": 1
+    },
+    {
+     "cardId": "thundersnake",
+     "count": 1
+    },
+    {
+     "cardId": "hordeling_outburst",
+     "count": 2
+    },
+    {
+     "cardId": "goblin_grenade",
+     "count": 1
+    },
+    {
+     "cardId": "blood_artist",
+     "count": 1
+    },
+    {
+     "cardId": "indulgent_aristocrat",
+     "count": 1
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 1
+    },
+    {
+     "cardId": "shock",
+     "count": 1
+    },
+    {
+     "cardId": "terror",
+     "count": 1
+    }
+   ],
+   "name": "Meliyan, the Torment"
+  }
+ },
+ "strongholds": [
+  {
+   "id": "tidelock_weir",
+   "name": "Tidelock Weir",
+   "color": "W",
+   "lord": {
+    "key": "bailiff",
+    "name": "The Bailiff",
+    "cardId": "the_bailiff",
+    "baseLife": 34,
+    "portrait": "flood-lord-bailiff",
+    "gender": "she"
+   },
+   "law": {
+    "cardId": "law_intake",
+    "name": "The Intake",
+    "text": "Creatures your opponents control enter the battlefield tapped."
+   },
+   "deckRule": {
+    "colorsWithin": [
+     "W",
+     "U",
+     "R"
+    ],
+    "label": "the Tidelock Weir gate"
+   },
+   "triad": [
+    "W",
+    "U",
+    "R"
+   ],
+   "golds": [
+    "static_sphere",
+    "sacred_helix"
+   ]
+  },
+  {
+   "id": "marrowfen",
+   "name": "Marrowfen",
+   "color": "B",
+   "lord": {
+    "key": "reeve",
+    "name": "The Reeve",
+    "cardId": "the_reeve",
+    "baseLife": 34,
+    "portrait": "flood-lord-reeve",
+    "gender": "he"
+   },
+   "law": {
+    "cardId": "law_tithe",
+    "name": "The Tithe",
+    "text": "Whenever a creature dies, each opponent loses 1 life."
+   },
+   "deckRule": {
+    "colorsWithin": [
+     "B",
+     "U",
+     "G"
+    ],
+    "label": "the Marrowfen gate"
+   },
+   "triad": [
+    "B",
+    "U",
+    "G"
+   ],
+   "golds": [
+    "glimpse_the_unthinkable",
+    "putrefy"
+   ]
+  },
+  {
+   "id": "emberford",
+   "name": "Emberford",
+   "color": "R",
+   "lord": {
+    "key": "fordkeeper",
+    "name": "The Fordkeeper",
+    "cardId": "the_fordkeeper",
+    "baseLife": 34,
+    "portrait": "flood-lord-fordkeeper",
+    "gender": "he"
+   },
+   "law": {
+    "cardId": "law_toll",
+    "name": "The Toll",
+    "text": "Whenever an opponent casts a spell, The Toll deals 1 damage to that player."
+   },
+   "deckRule": {
+    "colorsWithin": [
+     "R",
+     "W",
+     "G"
+    ],
+    "label": "the Emberford gate"
+   },
+   "triad": [
+    "R",
+    "W",
+    "G"
+   ],
+   "golds": [
+    "powerstone_minefield",
+    "savage_twister"
+   ]
+  },
+  {
+   "id": "lockmere",
+   "name": "Lockmere",
+   "color": "U",
+   "lord": {
+    "key": "dredger",
+    "name": "The Dredger",
+    "cardId": "the_dredger",
+    "baseLife": 34,
+    "portrait": "flood-lord-dredger",
+    "gender": "he"
+   },
+   "law": {
+    "cardId": "law_risen_tide",
+    "name": "The Risen Tide",
+    "text": "You may play an additional land on each of your turns."
+   },
+   "deckRule": {
+    "colorsWithin": [
+     "U",
+     "B",
+     "W"
+    ],
+    "label": "the Lockmere gate"
+   },
+   "triad": [
+    "U",
+    "B",
+    "W"
+   ],
+   "golds": [
+    "undermine",
+    "absorb"
+   ]
+  },
+  {
+   "id": "harrowmoor",
+   "name": "Harrowmoor",
+   "color": "G",
+   "lord": {
+    "key": "reaper",
+    "name": "The Reaper",
+    "cardId": "the_reaper",
+    "baseLife": 34,
+    "portrait": "flood-lord-reaper",
+    "gender": "he"
+   },
+   "law": {
+    "cardId": "law_season",
+    "name": "The Season",
+    "text": "At the beginning of your upkeep, put a +1/+1 counter on each creature you control."
+   },
+   "deckRule": {
+    "colorsWithin": [
+     "G",
+     "B",
+     "R"
+    ],
+    "label": "the Harrowmoor gate"
+   },
+   "triad": [
+    "G",
+    "B",
+    "R"
+   ],
+   "golds": [
+    "poison_tip_archer",
+    "voracious_cobra"
+   ]
+  }
+ ],
+ "courts": [
+  {
+   "id": "tallyflame_court",
+   "name": "Tallyflame Court",
+   "color": "W",
+   "pair": [
+    "U",
+    "R"
+   ],
+   "minister": {
+    "key": "odile",
+    "name": "Odile, the Tallyflame",
+    "cardId": "odile_the_tallyflame",
+    "life": 34,
+    "portrait": "flood-court-odile",
+    "gender": "she"
+   },
+   "law": {
+    "cardId": "law_intake",
+    "name": "The Intake",
+    "text": "Creatures your opponents control enter the battlefield tapped."
+   },
+   "ground": "tallyflame_court",
+   "deckRule": {
+    "minCreatures": 12,
+    "label": "the Tallyflame gate"
+   }
+  },
+  {
+   "id": "wrackroot_shallows",
+   "name": "The Wrackroot Shallows",
+   "color": "B",
+   "pair": [
+    "U",
+    "G"
+   ],
+   "minister": {
+    "key": "zinnia",
+    "name": "Zinnia, the Undertow",
+    "cardId": "zinnia_the_undertow",
+    "life": 34,
+    "portrait": "flood-court-zinnia",
+    "gender": "she"
+   },
+   "law": {
+    "cardId": "law_tithe",
+    "name": "The Tithe",
+    "text": "Whenever a creature dies, each opponent loses 1 life."
+   },
+   "ground": "wrackroot",
+   "deckRule": {
+    "minCreaturePower": 2,
+    "label": "the Wrackroot gate"
+   }
+  },
+  {
+   "id": "shevelport_green",
+   "name": "Shevelport Green",
+   "color": "R",
+   "pair": [
+    "W",
+    "G"
+   ],
+   "minister": {
+    "key": "ovna",
+    "name": "Ovna, the Enchantress",
+    "cardId": "ovna_the_enchantress",
+    "life": 34,
+    "portrait": "flood-court-ovna",
+    "gender": "she"
+   },
+   "law": {
+    "cardId": "law_toll",
+    "name": "The Toll",
+    "text": "Whenever an opponent casts a spell, The Toll deals 1 damage to that player."
+   },
+   "ground": "shevelport",
+   "deckRule": {
+    "bannedTypes": [
+     "Instant"
+    ],
+    "label": "the Shevelport gate"
+   }
+  },
+  {
+   "id": "obsidian_observatory",
+   "name": "The Obsidian Observatory",
+   "color": "U",
+   "pair": [
+    "W",
+    "B"
+   ],
+   "minister": {
+    "key": "isaura",
+    "name": "Isaura, the Levy",
+    "cardId": "isaura_the_levy",
+    "life": 34,
+    "portrait": "flood-court-isaura",
+    "gender": "she"
+   },
+   "law": {
+    "cardId": "law_risen_tide",
+    "name": "The Risen Tide",
+    "text": "You may play an additional land on each of your turns."
+   },
+   "ground": "obsidian_observatory",
+   "deckRule": {
+    "minLandFraction": 0.5,
+    "label": "the Observatory gate"
+   }
+  },
+  {
+   "id": "cairnbrand_pyre",
+   "name": "Cairnbrand Pyre",
+   "color": "G",
+   "pair": [
+    "B",
+    "R"
+   ],
+   "minister": {
+    "key": "meliyan",
+    "name": "Meliyan, the Torment",
+    "cardId": "meliyan_the_torment",
+    "life": 34,
+    "portrait": "flood-court-meliyan",
+    "gender": "she"
+   },
+   "law": {
+    "cardId": "law_season",
+    "name": "The Season",
+    "text": "At the beginning of your upkeep, put a +1/+1 counter on each creature you control."
+   },
+   "ground": "cairnbrand",
+   "deckRule": {
+    "maxManaValue": 4,
+    "label": "the Cairnbrand gate"
+   }
+  }
+ ]
+}

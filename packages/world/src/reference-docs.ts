@@ -164,6 +164,19 @@ Mages roam anywhere; beasts are spoke-bound (their colour's ring). Tier 1 rolls 
       const g = LORD_DECKS[c.lord.key]!;
       return { name: `${c.lord.name} — ${c.name} (${c.color})`, life: `base ${c.lord.baseLife} + growth − reduction (see above)`, law: `${c.law.name} — ${c.law.text}`, extra: `Card: ${pool.get(c.lord.cardId)?.name ?? c.lord.cardId}${c.deckRule ? `; door: ${c.deckRule.label} (${describeDeckRule(c.deckRule)})` : ""}`, decklist: g.decklist, archetype: g.archetype };
     }));
+  if (catalog.flood) {
+    const fl = catalog.flood;
+    section("The flood's strongholds (phase two — five seats)", "A phase-two world's stronghold sites (the phase-one placement rule, the phase-one machinery: the descent, the law on the lord's side every battle, the signature in hand at the lord's duel). The gate is the triad's colours. The fall pays the lord's card and five picks across the triad, and the pair's two golds join the shops.",
+      fl.strongholds.map((c) => {
+        const g = fl.decks[c.lord.key]!;
+        return { name: `${c.lord.name} — ${c.name} (${c.triad.join("")})`, life: `base ${c.lord.baseLife} ⚠ + growth − reduction`, law: `${c.law.name} — ${c.law.text}`, extra: `Card: ${pool.get(c.lord.cardId)?.name ?? c.lord.cardId}; door: ${c.deckRule ? `${c.deckRule.label} (${describeDeckRule(c.deckRule)})` : "none"}; golds to the shops: ${c.golds.map((d) => pool.get(d)?.name ?? d).join(" + ")}`, decklist: g.decklist, archetype: g.archetype };
+      }));
+    section("The flood's courts (phase two — the five High Grounds in the Calyx)", "Each court is one duel on its island in the deep water, at the player's world life: the law AND the High Ground on the court's side from the first turn. The fall pays the ground (the only copy) and the minister. The Heart opens on the five LORDS' fall; the courts are prizes.",
+      fl.courts.map((c) => {
+        const g = fl.decks[c.minister.key]!;
+        return { name: `${c.minister.name} — ${c.name} (${c.pair.join("")})`, life: `${c.minister.life} ⚠ (floodCourtLife overrides)`, law: `${c.law.name} — ${c.law.text}`, extra: `Ground: ${pool.get(c.ground)?.name ?? c.ground}; door: ${c.deckRule ? `${c.deckRule.label} (${describeDeckRule(c.deckRule)})` : "none"}`, decklist: g.decklist, archetype: g.archetype };
+      }));
+  }
   if (catalog.corolla) {
     const laws = new Map((catalog.strongholdContent ?? []).map((c) => [c.color, c.law]));
     section("The petal courts (the Corolla's five tips)", "Each tip fights under the RETURNED partisan law of the lord whose complement the pair is; win = the signature, both duals, the purse.",

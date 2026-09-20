@@ -293,6 +293,26 @@ export const KNOBS = {
     unit: "normalised radius (0 = centre, 1 = map edge), by ring",
     description: "ADR-072: region hearts sit on five colour spokes at these elliptically-normalised radii (jittered per sector by ringJitter). Strongholds sit at strongholdRadius.",
   }),
+  floodCourtLife: knob<number>({
+    default: 0,
+    unit: "life (0 = the court def's own row)",
+    description: "S41 (⚠ provisional): an override for every flood court's life — 0 reads the def's (34: the phase-one court was 30; the High Ground is the court's escalation). The flood's LORDS read their def's baseLife (34 ⚠) through the phase-one growth/hunt formula.",
+  }),
+  floodMapScale: knob<number>({
+    default: 1.2,
+    unit: "multiplier on the generator's width and height",
+    description: "S41 (ADR-130): a phase-two map is this much larger than phase one's (48×34 at the default 40×28) — the Calyx takes the centre, so the rings move out (floodRingRadii) and the country needs the room.",
+  }),
+  floodRingRadii: knob<Record<RegionTier, number>>({
+    default: { civilized: 0.36, approach: 0.6, wild: 0.84 },
+    unit: "normalised radius by ring (phase two)",
+    description: "S41 (ADR-130): the phase-two rings — pushed outward from ringRadii so the civilized towns stand on the shore of the Calyx, not under it.",
+  }),
+  calyxRadius: knob<number>({
+    default: 0.2,
+    unit: "normalised radius",
+    description: "S41 (ADR-130): the deep water at a phase-two map's centre — an impassable disc this wide; the five High Grounds stand on a ring at 0.6 of it, each between its pair's two shores, with a ford to each shore and to the centre.",
+  }),
   strongholdRadius: knob<number>({
     default: 0.92,
     unit: "normalised radius",

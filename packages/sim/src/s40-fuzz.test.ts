@@ -5,11 +5,14 @@ import { readFileSync } from "node:fs";
 import { loadCardPool } from "@shandalar/cards/loader";
 import { replayGame, runMatch, type MatchSpec } from "@shandalar/engine";
 import { RandomAgent } from "@shandalar/agents";
-import { FLOOD_DECKS } from "./flood-decks.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const CARDS_DIR = join(ROOT, "data/cards");
 const RULES = { startingLife: 20, handSize: 7, mulligan: "london" as const, maxTurns: 100 };
+// S41: the lists live in the catalog (data/world/flood.json, synced to the working document); sim never imports
+// world, so the file is read directly — the starters' pattern.
+const FLOOD = JSON.parse(readFileSync(join(ROOT, "data/world/flood.json"), "utf8")) as { decks: Record<string, { name: string; seat: string; decklist: { cardId: string; count: number }[] }>; courts: { minister: { key: string }; ground: string }[] };
+const FLOOD_DECKS: Record<string, { name: string; seat: string; ground?: string; decklist: { cardId: string; count: number }[] }> = Object.fromEntries(Object.entries(FLOOD.decks).map(([k, d]) => { const g = FLOOD.courts.find((c) => c.minister.key === k)?.ground; return [k, { ...d, ...(g ? { ground: g } : {}) }]; }));
 
 /**
  * S40 fuzz-before-fixtures (ADR-128, R-097): the flood's twenty-seven cards under random play — the ten lists

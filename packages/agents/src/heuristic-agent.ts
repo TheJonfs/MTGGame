@@ -1598,7 +1598,7 @@ export class HeuristicAgent implements Agent {
    *    cheapest body by two.
    *  · a CREATURE's free-repeat sink: a targeted shrink only where it kills (their end step, or in combat);
    *    a targeted mill at their end step; the team counters on our own main phase with three or more creatures;
-   *    the harvest (sacrifice → team +X/+0) for a lethal or near-lethal alpha, never the last blocker while
+   *    the harvest (sacrifice → team +X/+0) for a lethal or near-lethal (half their life) alpha, never the last blocker while
    *    behind; reanimation from a graveyard on the best creature card in either; the land-sacrifice rebuy with a
    *    SPARE land only (lands in play > the hand's top mana value + 1), on the best spell in the yard.
    */
@@ -1636,7 +1636,7 @@ export class HeuristicAgent implements Agent {
       const through = attackers.slice(blockers).reduce((a, b) => a + b, 0); // their blockers stop our biggest
       const theirs = view.battlefield.filter((o) => o.controller === opp && o.power !== null).length;
       if (myCreatures.length - 1 <= 1 && myCreatures.length - 1 < theirs) return true; // never down to the last body while behind
-      return through < Math.ceil(view.life[opp] * 0.6);
+      return through < Math.ceil(view.life[opp] * 0.5); // S41 (the planner's ruling): half, not three-fifths — he should PLAY like the Reaper
     }
     // Reanimation with a creature as the cost (the pyre), or free (the Reeve): the best card only, and worth the body.
     if (e0.type === "returnFromGraveyard" && e0.to === "battlefield" && e0.target !== undefined) {

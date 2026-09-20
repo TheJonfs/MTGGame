@@ -116,11 +116,15 @@ export function rollShopStock(world: WorldState, town: Town, pool: Map<string, C
   };
   take(fresh, false); take(stale, false); take(fresh, true); take(stale, true);
   const sold = st?.epoch === epoch ? st.sold : {};
-  return picked.map((def) => {
+  // S41 (Chris, 2026-09-20): the flood's finds — a fallen stronghold's two golds join the shelf of every town whose
+  // colour they share (one copy an epoch, at the old R shelf's price). The only R-tier cards a shop ever stocks.
+  const golds = (((world.gauntlet as { flood?: { golds?: string[] } }).flood?.golds) ?? []).map((id) => pool.get(id)).filter((d): d is CardDef => !!d && (region.color === "C" || cardColors(d).includes(region.color as never)));
+  const goldRows: ShopItem[] = golds.map((def) => ({ cardId: def.id, price: Math.round(shopPrice(def, knobs) * knobs.corollaShopMultiplier), stock: 1, remaining: Math.max(0, 1 - (sold[def.id] ?? 0)) }));
+  return [...picked.map((def) => {
     const stock = 1 + rng.int(Math.max(1, knobs.shopRowCopies)); // 1..shopRowCopies copies per row this epoch
     const remaining = Math.max(0, stock - (sold[def.id] ?? 0));
     return { cardId: def.id, price: shopPrice(def, knobs), stock, remaining };
-  });
+  }), ...goldRows];
 }
 
 export type BuyOutcome = { ok: true; price: number; addedToDeck: boolean; note?: string } | { ok: false; reason: string };

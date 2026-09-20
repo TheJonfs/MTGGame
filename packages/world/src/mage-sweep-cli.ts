@@ -255,6 +255,17 @@ if (part === "all" || part === "10") {
   }
   console.log(`\n### Aggregate — the yardsticks' win rate by mage tier at phase ${phase} (mean over the tier's mages × 2 yardsticks): ${Object.entries(agg10).map(([t, xs]) => `${t}: ${(xs.reduce((a, b) => a + b, 0) / Math.max(1, xs.length)).toFixed(0)}%`).join(" · ")}`);
 }
+if (part === "11") {
+  // S41 (Part 7): the phase column against what the flood's player HOLDS — the yardsticks plus their pair's carried legends.
+  console.log(`\n## 11. Tier-2 and tier-3 mages vs SALVAGE + LEGENDS (phase ${phase}; sim/road-decks salvage-WR+legends / salvage-UB+legends: the yardsticks with the pair's two guardians and minister added, 33 cards, 12 life, journeyman)`);
+  header();
+  const agg11: Record<string, number[]> = {};
+  for (const t of [2, 3] as const) for (const k of byTier[t]) for (const rk of ["salvageWRLegends", "salvageUBLegends"]) {
+    const r = await pairing(mage(k), road(rk), `T${t}×salvage+L`);
+    (agg11[`T${t}`] ??= []).push(r.bPct);
+  }
+  console.log(`\n### Aggregate — the references' win rate by mage tier at phase ${phase}: ${Object.entries(agg11).map(([t, xs]) => `${t}: ${(xs.reduce((a, b) => a + b, 0) / Math.max(1, xs.length)).toFixed(0)}%`).join(" · ")}`);
+}
 if (part === "all" || part === "3") {
   console.log(`\n## 3. Children vs parents (parent mage at tier-1 settings; parent beast at its own)`);
   header();

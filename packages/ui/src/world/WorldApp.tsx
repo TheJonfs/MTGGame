@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { CardDef } from "@shandalar/cards";
 import { cardColors } from "@shandalar/cards";
-import { resolveMatchup, activeDeck, buyOffPrice, deckSize, deckStats, dungeonAsWorldMap, isBasic, isExplored, lordPronouns, SALVAGE_COLORS, pairName, PLAYER_PORTRAITS, type PlayerPortrait, maxWorldLife, sellPrice, spares, BASIC_LANDS, type DifficultyName, type Point, type ShopItem, type StarterId } from "@shandalar/world";
+import { describeDeckRule, strongholdContentFor, resolveMatchup, activeDeck, buyOffPrice, deckSize, deckStats, dungeonAsWorldMap, isBasic, isExplored, lordPronouns, SALVAGE_COLORS, pairName, PLAYER_PORTRAITS, type PlayerPortrait, maxWorldLife, sellPrice, spares, BASIC_LANDS, type DifficultyName, type Point, type ShopItem, type StarterId } from "@shandalar/world";
 import { loadOracle, loadPool, loadWorldCatalog, type OracleEntry, type SavedGame } from "../engine-bridge";
 import { CardFrame } from "../components/CardFrame";
 import { PlayMatch, loadStops } from "../play/PlayMatch";
@@ -901,6 +901,68 @@ function PetalTelegraph({ c }: { c: WorldController }) {
   );
 }
 
+/** S41 (ADR-130): a court of the flood on its High Ground — the seat's approach and greeting (the planner's lines), the
+ * law and the ground on its side, the gate, the stakes. The petal's telegraph on the outer map. */
+function CourtTelegraph({ c }: { c: WorldController }) {
+  if (c.screen.kind !== "courtTelegraph" || !c.world) return null;
+  const court = c.courtDef(c.screen.courtId);
+  if (!court) return null;
+  const text = c.seatText(court.id);
+  const door = c.siteDoor();
+  const ground = c.pool.get(court.ground);
+  const life = c.knobs.floodCourtLife > 0 ? c.knobs.floodCourtLife : court.minister.life;
+  return (
+    <div className="gallery-modal">
+      <div className="gallery-modal-box play-dialog dungeon-telegraph">
+        <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
+          <img className="parley-portrait" src={`/portraits/${court.minister.portrait}.png`} alt="" style={{ width: 72, height: 72, flexShrink: 0 }} title={court.minister.name} onError={(e) => { (e.target as HTMLImageElement).style.visibility = "hidden"; }} />
+          <div>
+            <h2 style={{ margin: 0, fontFamily: "var(--serif)" }}>{court.name}</h2>
+            <p className="parley-sub" style={{ marginBottom: 0 }}>{text?.telegraph ?? `${court.minister.name} holds this ground.`}</p>
+          </div>
+        </div>
+        {text?.parley && <p style={{ fontSize: 13, fontStyle: "italic", margin: "10px 0 0" }}>{text.parley}</p>}
+        <p className="dungeon-law"><b>{court.law.name}:</b> {court.law.text} <i>(the law stands on the court's side)</i></p>
+        {ground && <p className="dungeon-law"><b>{ground.name}:</b> {(ground.text ?? "").split("\n").slice(1).join(" ")} <i>(the court fights on its own ground — it is on {court.minister.name}'s side from the first turn)</i></p>}
+        <ul className="dungeon-stakes">
+          <li><b>{court.minister.name}</b> fights at <b>{life}</b> life; you at your world life ({c.world.player.worldLife}). Ante as the world's ({c.knobs.anteCount}).</li>
+          {court.deckRule && <li>The gate: <b>{court.deckRule.label}</b> — {describeDeckRule(court.deckRule)}.</li>}
+          <li>Win: <b>{ground?.name ?? court.ground}</b> — the ground itself, the only one there is — and <b>{court.minister.name}</b>, <b>{c.knobs.petalGoldPrize} gold</b>, and the stake. The court falls and stays fallen.</li>
+          <li>Lose: a world life and your stake; you stand where you fell.</li>
+        </ul>
+        {door?.refusal && <p className="dungeon-law door-shut">{door.refusal}</p>}
+        <p style={{ textAlign: "right", marginBottom: 0 }}>
+          <button onClick={() => c.declineCourt()}>Step back</button>{" "}
+          {door && <><button onClick={() => c.openEditorForDoor()} title="the editor opens checking against this gate, and returns here">Edit your deck</button>{" "}</>}
+          <button className="primary" disabled={!!door?.refusal} title={door?.refusal ?? ""} onClick={() => c.fightCourt()}>Fight</button>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/** S41: a court fell — the ground is yours. */
+function CourtVictory({ c, pool, oracle }: { c: WorldController; pool: Map<string, CardDef>; oracle: Record<string, OracleEntry> }) {
+  if (c.screen.kind !== "courtVictory") return null;
+  const s = c.screen;
+  const frames = (ids: string[]) => ids.map((id, i) => <div className="card-slot" key={`${id}${i}`}><CardFrame def={pool.get(id)!} oracle={oracle[id]} showPrinted /></div>);
+  return (
+    <div className="loader">
+      <div className="box play-setup world-result">
+        <h2 style={{ fontFamily: "var(--serif)", marginTop: 0 }}>Victory — {s.ministerName} yields {s.name}</h2>
+        <p style={{ fontSize: 13 }}>{s.fallLine}</p>
+        {s.ministerWithheld && <p style={{ fontSize: 12.5, color: "var(--ink-soft)" }}>◆ The minister is already yours. The court yields coin instead.</p>}
+        <div className="flyout-title">{s.prizeLine || "Yours"} — and {s.paidGold} gold</div>
+        <div className="dialog-cards">{frames(s.paidCards)}</div>
+        {s.anteWon.length > 0 && <><div className="flyout-title">You claim their stake</div><div className="dialog-cards">{frames(s.anteWon)}</div></>}
+        {s.anteWithheld.length > 0 && <p style={{ fontSize: 12.5, color: "var(--ink-soft)" }}>◆ Their staked {s.anteWithheld.map((id) => pool.get(id)?.name ?? id).join(", ")} stays with them — there is exactly one, and it drops by defeat, not by ante.</p>}
+        <p style={{ fontSize: 12.5, color: "var(--ink-soft)" }}>{s.fallen} of five High Grounds are yours.</p>
+        <p><button className="primary" onClick={() => c.continueAfterCourtVictory()}>Back to the water</button></p>
+      </div>
+    </div>
+  );
+}
+
 /** S26: a petal fell. */
 function PetalVictory({ c, pool, oracle }: { c: WorldController; pool: Map<string, CardDef>; oracle: Record<string, OracleEntry> }) {
   if (c.screen.kind !== "petalVictory") return null;
@@ -1714,7 +1776,7 @@ export function WorldApp({ onWatchReplay, paused = false }: { onWatchReplay: (ga
       const t = w2.map.towns[w2.lastTownIndex]!;
       const reg = w2.map.regions[t.region]!;
       cue = townMusicCue(reg.color, reg.tier);
-    } else if (scr.kind === "duel" || scr.kind === "siegeDuel" || scr.kind === "dungeonDuel" || scr.kind === "corollaDuel") cue = "music.duel";
+    } else if (scr.kind === "duel" || scr.kind === "siegeDuel" || scr.kind === "dungeonDuel" || scr.kind === "corollaDuel" || scr.kind === "courtDuel") cue = "music.duel";
     // S26: the Corolla's cue rows — registered, silent until mapped (the town's is Chris's LocMus0).
     else if (scr.kind === "corollaTelegraph") cue = "splash.corolla";
     else if (scr.kind === "vaultTelegraph") cue = "splash.vault";
@@ -1801,7 +1863,7 @@ export function WorldApp({ onWatchReplay, paused = false }: { onWatchReplay: (ga
   if (c.screen.kind === "flood") return <FloodScene c={c} />;
   if (c.screen.kind === "salvage") return <SalvageScreen c={c} pool={pool} oracle={oracle} />;
   if (c.screen.kind === "start" || !c.world) return <StartScreen c={c} onStart={(choice) => c.newGame(choice)} />;
-  if (c.screen.kind === "duel" || c.screen.kind === "dungeonDuel" || c.screen.kind === "siegeDuel" || c.screen.kind === "corollaDuel") {
+  if (c.screen.kind === "duel" || c.screen.kind === "dungeonDuel" || c.screen.kind === "siegeDuel" || c.screen.kind === "corollaDuel" || c.screen.kind === "courtDuel") {
     const m = c.screen.match;
     if (lastDuel.current?.match !== m) {
       m.stops = loadStops();
@@ -1823,6 +1885,8 @@ export function WorldApp({ onWatchReplay, paused = false }: { onWatchReplay: (ga
   if (c.screen.kind === "vaultTelegraph") return <VaultTelegraph c={c} />;
   if (c.screen.kind === "corolla") return <CorollaScreen c={c} />;
   if (c.screen.kind === "petalTelegraph") return <PetalTelegraph c={c} />;
+  if (c.screen.kind === "courtVictory") return <CourtVictory c={c} pool={pool} oracle={oracle} />;
+  if (c.screen.kind === "courtTelegraph") return <CourtTelegraph c={c} />;
   if (c.screen.kind === "petalVictory") return <PetalVictory c={c} pool={pool} oracle={oracle} />;
   if (c.screen.kind === "mirrorVictory") return <MirrorVictory c={c} pool={pool} oracle={oracle} />;
   if (c.screen.kind === "heartTelegraph") return <HeartTelegraph c={c} />;
@@ -1859,9 +1923,10 @@ export function WorldApp({ onWatchReplay, paused = false }: { onWatchReplay: (ga
             clearedFixed={new Set(w.map.strongholds.map((f, i) => {
               // S21 r2 fix (Chris): mox sites have no resident — their cleared state lives in world.dungeons.
               if (f.kind === "dungeon") return w.dungeons[`mox_${w.map.regions[f.region]?.color}`.toLowerCase()]?.cleared ? i : -1;
+              if (f.kind === "ground") return f.contentId && w.dungeons[f.contentId]?.cleared ? i : -1; // S41: a fallen court
               // S22 r1 (Chris): a broken seat draws as RUBBLE — cleared strongholds read from world.dungeons by content id.
               if (f.kind === "stronghold") {
-                const content = (c.catalog.strongholdContent ?? []).find((s) => s.color === w.map.regions[f.region]?.color);
+                const content = strongholdContentFor(c.catalog, w.phase).find((s) => s.color === w.map.regions[f.region]?.color);
                 return content && w.dungeons[content.id]?.cleared ? i : -1;
               }
               return w.opponents.find((o) => o.id === f.opponentId)?.gone ? i : -1;

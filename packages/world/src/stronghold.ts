@@ -132,7 +132,8 @@ export interface LordStatusRow {
   voice: string;
 }
 export function lordStatus(world: WorldState, catalog: Catalog, knobs: KnobValues): LordStatusRow[] {
-  return (catalog.strongholdContent ?? []).map((c) => {
+  const content = (world.phase ?? 1) >= 2 && catalog.flood ? catalog.flood.strongholds : (catalog.strongholdContent ?? []); // S41 (flood.ts strongholdContentFor — inlined: flood.ts imports this file)
+  return content.map((c) => {
     const st = strongholdState(world, c.color);
     const growth = lordGrowth(world, knobs);
     const reduction = Math.floor(st.spokeMinionPoints / knobs.spokePointsPerLife);

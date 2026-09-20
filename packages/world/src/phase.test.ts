@@ -132,6 +132,6 @@ describe("S38 Part 2 — deckRule on the sites", () => {
     // The shipped enemies.md carries the phase-two column and no door.
     const shipped = renderEnemiesReference(catalog, pool, defaultKnobs());
     expect(shipped).toContain("Phase two: life / entrance (standard)");
-    expect(shipped).not.toContain("door:");
+    expect(shipped.match(/door: /g)).toHaveLength(10); // S41: the flood's ten seats — the only shipped doors; phase one's sites carry none
   });
 });

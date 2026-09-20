@@ -136,7 +136,7 @@ describe("S37 (ADR-123): the door — a template's deckRule through the editor a
     await forceEncounter(c, "test_gate");
     expect(c.screen.kind).toBe("encounter");
     const refusal = c.doorRefusal();
-    expect(refusal).toMatch(/^Bring bodies to the fire\. Twelve, at the least\. the White Gate \(colours within W; ≥ \d+ creatures\): \d+ creatures; the White Gate asks \d+\.$/);
+    expect(refusal).toMatch(/^Bring bodies to the fire\. the White Gate \(colours within W; ≥ \d+ creatures\): \d+ creatures; the White Gate asks \d+\.$/);
     c.parley("fight");
     expect(c.screen.kind).toBe("encounter");
     expect((c.screen as { notice: string | null }).notice).toBe(refusal);
@@ -194,7 +194,7 @@ describe("S38 (ADR-125): the door on a SITE — a stronghold's deckRule through 
     // The door's word is up; the descent is refused, naming the rule.
     const door = c.siteDoor()!;
     expect(door.id).toBe("stronghold:argent_bastion");
-    expect(door.refusal).toMatch(/^Bring bodies to the fire\. Twelve, at the least\. the Argent Gate \(colours within W; ≥ \d+ creatures\): \d+ creatures; the Argent Gate asks \d+\.$/);
+    expect(door.refusal).toMatch(/^Bring bodies to the fire\. the Argent Gate \(colours within W; ≥ \d+ creatures\): \d+ creatures; the Argent Gate asks \d+\.$/);
     expect(c.doorRules()).toEqual([{ id: "stronghold:argent_bastion", name: "The Argent Bastion", label: "the Argent Gate", description: `colours within W; ≥ ${creatures + 1} creatures` }]);
     c.enterDungeon();
     expect(screen().kind).toBe("dungeonTelegraph");
@@ -698,4 +698,88 @@ describe("S22b acceptance: the stronghold flow through the controller (entry →
     const back = deserializeWorld(JSON.stringify(JSON.parse(c.saveText())));
     expect((back.strongholds as { color: string; seal: boolean }[]).find((e) => e.color === "W")?.seal).toBe(true);
   }, 60_000);
+});
+
+describe("S41 (ADR-130): the flood's seats through the controller — a court's threshold, its gate by site, the editor round trip; a flood stronghold's gate", () => {
+  async function floodController(): Promise<WorldController> {
+    const c = new WorldController(pool, catalog, memStorage());
+    c.stepMs = 0;
+    for (const col of ["W", "U", "B", "R", "G"] as const) c.devGrantCutting(col);
+    c.enterFlood({ difficulty: "standard", seed: 4101, name: "Flood" });
+    c.floodContinue();
+    for (const [tab, pick] of [["W", "savannah_lions"], ["U", "wind_drake"], ["B", "typhoid_rats"], ["R", "goblin_piker"], ["G", "grizzly_bears"]] as const) { c.salvageTab(tab); c.salvagePick(pick); }
+    c.salvageTab("W");
+    c.salvageToPair();
+    c.salvagePair(["W", "R"]);
+    c.salvageBegin();
+    c.editorClose();
+    expect(c.screen.kind).toBe("map");
+    quiet(c);
+    return c;
+  }
+  /** Stand beside a site and step onto it. */
+  async function stepOnto(c: WorldController, at: { x: number; y: number }): Promise<void> {
+    const w = c.world!;
+    const nbr = [{ x: at.x + 1, y: at.y }, { x: at.x - 1, y: at.y }, { x: at.x, y: at.y + 1 }, { x: at.x, y: at.y - 1 }].find((p) => w.map.passable[idx(w.map, p)])!;
+    w.player.position = { ...nbr };
+    c.clickCell(at); c.clickCell(at);
+    let guard = 0;
+    while (c.screen.kind === "map" && (c.screen as { walking: boolean }).walking && guard++ < 100) await tick();
+  }
+
+  it("every door of the flood is in the editor's list; a court's threshold opens its telegraph with the seat's voice; the gate refuses in the COURT's own words; 'edit your deck' returns to the court; stepping back leaves it standing", async () => {
+    const c = await floodController();
+    const w = c.world!;
+    expect(c.doorRules().map((d) => d.id).sort()).toEqual([...catalog.flood!.courts.map((x) => `court:${x.id}`), ...catalog.flood!.strongholds.map((x) => `stronghold:${x.id}`)].sort());
+    const site = w.map.strongholds.find((f) => f.kind === "ground" && f.contentId === "tallyflame_court")!;
+    await stepOnto(c, site.at);
+    expect(c.screen.kind).toBe("courtTelegraph");
+    expect(c.seatText("tallyflame_court")!.parley).toMatch(/^"Every card you turn/);
+    // The twelve-land salvage deck has fewer than twelve creature cards? Make sure: strip creatures to be certain.
+    const deck = activeDeck(w);
+    const creatures = deck.reduce((n, e) => n + (pool.get(e.cardId)!.types.includes("Creature") ? e.count : 0), 0);
+    const door = c.siteDoor()!;
+    expect(door.id).toBe("court:tallyflame_court");
+    if (creatures < 12) {
+      expect(door.refusal).toMatch(/^Bring bodies to the fire\. Twelve, at the least\. the Tallyflame gate \(≥ 12 creatures\): \d+ creatures; the Tallyflame gate asks 12\.$/);
+      c.fightCourt();
+      expect(c.screen.kind).toBe("courtTelegraph"); // refused: no duel
+      expect((c.screen as { notice: string | null }).notice).toMatch(/^Bring bodies to the fire\. Twelve/);
+    } else expect(door.refusal).toBeNull();
+    c.openEditorForDoor();
+    expect(c.screen.kind).toBe("editor");
+    expect(c.editorRuleCheck()!.id).toBe("court:tallyflame_court");
+    c.editorClose();
+    expect(c.screen.kind).toBe("courtTelegraph");
+    c.declineCourt();
+    expect(c.screen.kind).toBe("map");
+    expect(w.dungeons["tallyflame_court"]?.cleared ?? false).toBe(false);
+  });
+
+  it("a flood stronghold's threshold is the flood's seat: the Bailiff's gate (colours within WUR) refuses a green card with the colour line; the deep water's knock changes when the five lords have fallen", async () => {
+    const c = await floodController();
+    const w = c.world!;
+    const site = w.map.strongholds.find((f) => f.kind === "stronghold" && f.name === "Tidelock Weir")!;
+    await stepOnto(c, site.at);
+    expect(c.screen.kind).toBe("dungeonTelegraph");
+    expect((c.screen as { info: { dungeonId: string } }).info.dungeonId).toBe("tidelock_weir");
+    expect(c.strongholdDef("tidelock_weir")!.lord.name).toBe("The Bailiff");
+    expect(c.siteDoor()!.refusal).toBeNull(); // a WR salvage deck sits inside WUR
+    c.openEditorForDoor();
+    c.editorAdd("grizzly_bears"); c.editorRemove("plains");
+    c.editorSave();
+    expect(c.screen.kind).toBe("dungeonTelegraph");
+    expect(c.siteDoor()!.refusal).toMatch(/^The gate knows your colours\. It will not open to these\. the Tidelock Weir gate \(colours within WUR\): 1 card is outside/);
+    c.enterDungeon();
+    expect(c.screen.kind).toBe("dungeonTelegraph"); // the whole descent is refused
+    // The Heart's site.
+    c.declineDungeon();
+    const deep = w.map.strongholds.find((f) => f.kind === "deep")!;
+    w.player.position = { ...deep.at };
+    c.knock();
+    expect((c.screen as { notice: string | null }).notice).toBe(catalog.questText!.flood!.deep);
+    for (const s of catalog.flood!.strongholds) w.strongholds.push({ color: s.color, seal: true, spokeMinionPoints: 0 });
+    c.knock();
+    expect((c.screen as { notice: string | null }).notice).toMatch(/^The fifth stronghold falls, and the deep water moves\./);
+  });
 });

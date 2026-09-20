@@ -81,6 +81,7 @@ import {
 } from "@shandalar/world";
 import type { Modifier } from "@shandalar/engine";
 import { WorldRng as DungeonRng } from "@shandalar/world";
+import { applyCourtDuel, courtDuelSpec, courtsFallen, floodCourt, floodDeck, floodHeartOpen, floodRun, floodStronghold, recordFloodLordFall, strongholdContentFor, type FloodCourtDef } from "@shandalar/world";
 import {
   applyMirrorDuel, applyPetalDuel, corollaAdvance, corollaAsWorldMap, corollaDoor, corollaInnRest, corollaPath, corollaTown, enterCorolla,
   fixedPointAt, generateCorolla, insideCorolla, leaveCorolla, mirrorDuelSpec, petalAt, petalDistance, petalDuelSpec, petalLawName, petalsFallen,
@@ -131,6 +132,10 @@ export type WorldScreen =
   | { kind: "corolla"; notice: string | null; walking: boolean }
   /** S26: at a petal's tip — the boss, the returned law, the stakes. */
   | { kind: "petalTelegraph"; color: PetalColor; notice: string | null }
+  /** S41 (ADR-130): a court of the flood on its High Ground — the telegraph, the fight (the petal's shape on the outer map), the fall. */
+  | { kind: "courtTelegraph"; courtId: string; notice: string | null }
+  | { kind: "courtDuel"; courtId: string; enemyName: string; match: MatchController }
+  | { kind: "courtVictory"; courtId: string; name: string; ministerName: string; fallLine: string; prizeLine: string; paidGold: number; paidCards: string[]; anteWon: string[]; anteWithheld: string[]; ministerWithheld: boolean; fallen: number }
   /** S26: a petal fight or the Mirror — mounts PlayMatch like a world duel. */
   | { kind: "corollaDuel"; enemyName: string; match: MatchController; against: { petal?: PetalColor; mirror?: boolean; heart?: boolean } }
   /** S26: a petal fell — the payout (signature, duals, purse, ante). */
@@ -169,7 +174,8 @@ export type WorldScreen =
 export type EditorBack =
   | "map" | "town" | "corolla" | "corollaTown"
   | { kind: "dungeonTelegraph"; info: { dungeonId: string; kind: "mox" | "lair" | "stronghold" | "power"; name: string; at: Point; residentCatalogId?: string } }
-  | { kind: "petalTelegraph"; color: PetalColor };
+  | { kind: "petalTelegraph"; color: PetalColor }
+  | { kind: "courtTelegraph"; courtId: string };
 
 /** S39: what the Flood's start carries from the start screen (no starter — the pair is chosen inside). */
 export interface FloodChoice { difficulty: DifficultyName; seed?: number; name?: string; portrait?: PlayerPortrait }
@@ -552,6 +558,11 @@ export class WorldController {
       // Trim the preview to what's left (round 3: the polyline from the
       // current position back to the path's start drew a stray diagonal).
       if (this.screen.kind === "map") this.screen = { ...this.screen, preview: path.slice(i + 1) };
+      // S41 (ADR-130): the first ford across the deep water speaks once (the planner's line).
+      if (this.world.map.deepFord?.[idx(this.world.map, cell)] && !floodRun(this.world).fordSeen) {
+        floodRun(this.world).fordSeen = true;
+        if (this.screen.kind === "map") this.screen = { ...this.screen, notice: this.catalog.questText?.flood?.fords ?? "Someone has laid a way across the deep water." };
+      }
       this.emit();
       for (const e of events) {
         if (e.type === "questExpired") {
@@ -561,6 +572,12 @@ export class WorldController {
         if (e.type === "dungeonEntry") {
           this.resumePath = path.slice(i + 1);
           this.screen = { kind: "dungeonTelegraph", info: { dungeonId: e.dungeonId, kind: e.kind, name: e.name, at: e.at, ...(e.residentCatalogId ? { residentCatalogId: e.residentCatalogId } : {}) }, notice: null };
+          this.emit();
+          return;
+        }
+        if (e.type === "courtEntry") {
+          this.resumePath = path.slice(i + 1);
+          this.screen = { kind: "courtTelegraph", courtId: e.courtId, notice: null };
           this.emit();
           return;
         }
@@ -659,6 +676,7 @@ export class WorldController {
       : this.screen.kind === "corollaTown" ? "corollaTown"
       : this.screen.kind === "dungeonTelegraph" ? { kind: "dungeonTelegraph", info: this.screen.info }
       : this.screen.kind === "petalTelegraph" ? { kind: "petalTelegraph", color: this.screen.color }
+      : this.screen.kind === "courtTelegraph" ? { kind: "courtTelegraph", courtId: this.screen.courtId }
       : "map";
     this.screen = { kind: "editor", back, draft: activeDeck(this.world).map((e) => ({ ...e })), name: this.world.activeDeckName, notice: null };
     this.emit();
@@ -753,7 +771,8 @@ export class WorldController {
   doors(): { id: string; name: string; label: string; description: string; rule: DeckRule }[] {
     const out: { id: string; name: string; label: string; description: string; rule: DeckRule }[] = [];
     for (const o of this.catalog.opponents) if (o.deckRule) out.push({ id: o.id, name: o.name, label: o.deckRule.label, description: describeDeckRule(o.deckRule), rule: o.deckRule });
-    for (const s of this.catalog.strongholdContent ?? []) if (s.deckRule) out.push({ id: `stronghold:${s.id}`, name: s.name, label: s.deckRule.label, description: describeDeckRule(s.deckRule), rule: s.deckRule });
+    for (const c of (this.world?.phase ?? 1) >= 2 ? (this.catalog.flood?.courts ?? []) : []) if (c.deckRule) out.push({ id: `court:${c.id}`, name: c.name, label: c.deckRule.label, description: describeDeckRule(c.deckRule), rule: c.deckRule });
+    for (const s of strongholdContentFor(this.catalog, this.world?.phase)) if (s.deckRule) out.push({ id: `stronghold:${s.id}`, name: s.name, label: s.deckRule.label, description: describeDeckRule(s.deckRule), rule: s.deckRule });
     for (const p of this.corollaDef?.petals ?? []) if (p.deckRule) out.push({ id: `petal:${p.color}`, name: `${p.boss.name} — the ${p.color} petal`, label: p.deckRule.label, description: describeDeckRule(p.deckRule), rule: p.deckRule });
     return out;
   }
@@ -775,10 +794,13 @@ export class WorldController {
    * tip, or a ruled roamer's parley. The refusal text when the ACTIVE deck fails; null when the gate opens. */
   siteDoor(): { id: string; refusal: string | null } | null {
     if (!this.world) return null;
-    let id: string | null = null, rule: DeckRule | undefined;
+    let id: string | null = null, rule: DeckRule | undefined, siteId: string | undefined;
     if (this.screen.kind === "dungeonTelegraph" && this.screen.info.kind === "stronghold") {
       const sh = this.strongholdDef(this.screen.info.dungeonId);
-      if (sh?.deckRule) { id = `stronghold:${sh.id}`; rule = sh.deckRule; }
+      if (sh?.deckRule) { id = `stronghold:${sh.id}`; rule = sh.deckRule; siteId = sh.id; }
+    } else if (this.screen.kind === "courtTelegraph") {
+      const c = floodCourt(this.catalog, this.screen.courtId);
+      if (c?.deckRule) { id = `court:${c.id}`; rule = c.deckRule; siteId = c.id; }
     } else if (this.screen.kind === "petalTelegraph") {
       const p = this.corollaDef?.petals.find((x) => x.color === (this.screen as { color: PetalColor }).color);
       if (p?.deckRule) { id = `petal:${p.color}`; rule = p.deckRule; }
@@ -787,7 +809,7 @@ export class WorldController {
     }
     if (!id || !rule) return null;
     const check = doorCheck(this.world, { deckRule: rule }, this.pool)!;
-    return { id, refusal: check.ok ? null : doorRefusalText(this.catalog, rule, check) };
+    return { id, refusal: check.ok ? null : doorRefusalText(this.catalog, rule, check, siteId) };
   }
   /** "Edit your deck" at a door: the editor opens with the door pre-selected and returns to the door. */
   openEditorForDoor(): void {
@@ -827,7 +849,8 @@ export class WorldController {
     // S38 (ADR-125): back to the door the editor was opened from — the telegraph re-raised, its door re-checked live.
     if (typeof back === "object") {
       if (back.kind === "dungeonTelegraph") { this.screen = { kind: "dungeonTelegraph", info: back.info, notice: null }; this.emit(); return; }
-      if (this.world && insideCorolla(this.world)) { this.screen = { kind: "petalTelegraph", color: back.color, notice: null }; this.emit(); return; }
+      if (back.kind === "courtTelegraph") { this.screen = { kind: "courtTelegraph", courtId: back.courtId, notice: null }; this.emit(); return; }
+      if (back.kind === "petalTelegraph" && this.world && insideCorolla(this.world)) { this.screen = { kind: "petalTelegraph", color: back.color, notice: null }; this.emit(); return; }
       back = "map";
     }
     if (back === "town" && this.lastTown) return this.enterTown(this.lastTown);
@@ -1369,7 +1392,7 @@ export class WorldController {
 
   /** S22b: the stronghold content entry for a dungeonId (argent_bastion, spiral_spire, …). */
   strongholdDef(dungeonId: string): StrongholdContentDef | undefined {
-    return (this.catalog.strongholdContent ?? []).find((s) => s.id === dungeonId);
+    return [...(this.catalog.strongholdContent ?? []), ...(this.catalog.flood?.strongholds ?? [])].find((s) => s.id === dungeonId);
   }
 
   /** S22b (§5 visible schedules): each lord's current strength for the rail telegraph. */
@@ -1509,7 +1532,7 @@ export class WorldController {
     let portrait: string | undefined;
     if (against.guardian) {
       if (sh) {
-        const g = LORD_DECKS[sh.lord.key]!;
+        const g = LORD_DECKS[sh.lord.key] ?? floodDeck(this.catalog, sh.lord.key); // S41: a flood lord's list lives in the catalog
         enemy = { kind: "guardian", name: sh.lord.name, decklist: g.decklist, archetype: g.archetype, life: lordStartingLife(this.world, this.knobs, sh), color: sh.color };
         portrait = sh.lord.portrait;
         extraModifiers.push(entranceModifier(sh)); // the signature always looms (Chris-ratified)
@@ -1583,6 +1606,8 @@ export class WorldController {
         const sh = this.strongholdDef(run.dungeonId)!;
         const paid = clearDungeon(this.world, run, { gold: 0, cardIds: [sh.lord.cardId] });
         strongholdState(this.world, sh.color).seal = true;
+        const fsh = floodStronghold(this.catalog, sh.id); // S41: the flood's fall — the pair's golds join the shops; chronicled
+        if (fsh) recordFloodLordFall(this.world, fsh);
         creditRenown(this.world.player, sh.color, 3); // a lord's fall echoes like a tier-3 kill (flagged for ratification)
         this.autosave();
         this.screen = {
@@ -1593,7 +1618,8 @@ export class WorldController {
           lordCardId: sh.lord.cardId,
           paidGold: paid.paidGold,
           paidCards: paid.paidCards,
-          prizeList: strongholdPrizeList(this.pool, sh.color).map((d) => d.id),
+          // S41: a flood lord's picker reaches his whole triad (its duals with it); phase one's reads the one colour.
+          prizeList: (fsh ? [...new Map(fsh.triad.flatMap((c) => strongholdPrizeList(this.pool, c)).map((d) => [d.id, d])).values()] : strongholdPrizeList(this.pool, sh.color)).map((d) => d.id),
           picks: [],
           pickCount: this.knobs.strongholdPrizePicks,
           sealCount: sealsHeld(this.world),
@@ -1658,7 +1684,7 @@ export class WorldController {
     return [
       ...this.catalog.dungeons.map((m) => ({ id: m.id, kind: "mox" as const, name: m.name, cleared: !!w.dungeons[m.id]?.cleared })),
       ...(this.catalog.powerDungeons ?? []).map((d) => ({ id: d.id, kind: "power" as const, name: d.name, cleared: !!w.dungeons[d.id]?.cleared })),
-      ...(this.catalog.strongholdContent ?? []).map((c) => ({ id: c.id, kind: "stronghold" as const, name: c.name, cleared: !!w.dungeons[c.id]?.cleared })),
+      ...strongholdContentFor(this.catalog, w.phase).map((c) => ({ id: c.id, kind: "stronghold" as const, name: c.name, cleared: !!w.dungeons[c.id]?.cleared })),
     ];
   }
   /** Complete one site as if its guardian had fallen: cleared = ground, and the prize that unlocks
@@ -1736,7 +1762,9 @@ export class WorldController {
     const d = this.doorHere();
     if (d === "deep") {
       // S39 (Part 5): no Corolla in the flood yet — the deep water's line.
-      this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: this.catalog.questText?.flood?.deep ?? "The water is deep here." };
+      const ft = this.catalog.questText?.flood;
+      // S41 (ADR-130): the Heart opens when the five lords have fallen — its content is S42's; until then the line changes.
+      this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: floodHeartOpen(this.world) ? (ft?.heartOpens ?? "The way down is open.") : (ft?.deep ?? "The water is deep here.") };
       this.emit();
       return;
     }
@@ -1818,6 +1846,62 @@ export class WorldController {
       this.screen = { ...this.screen, walking: false };
       this.emit();
     }
+  }
+
+  // ---------- S41 (ADR-130): the flood's courts ----------
+  courtDef(courtId: string): FloodCourtDef | undefined { return floodCourt(this.catalog, courtId); }
+  /** The seat's voice (docs/flood-seats-text.md through quests.json). */
+  seatText(siteId: string): { telegraph: string; parley: string; fall: string; prize: string } | undefined { return this.catalog.questText?.flood?.seats?.[siteId]; }
+  fightCourt(): void {
+    if (this.screen.kind !== "courtTelegraph" || !this.world) return;
+    const door = this.siteDoor();
+    if (door?.refusal) { this.screen = { ...this.screen, notice: door.refusal }; this.emit(); return; }
+    const court = this.courtDef(this.screen.courtId);
+    if (!court) return;
+    const rng = new DungeonRng(this.world.rng);
+    const { spec, enemyName } = courtDuelSpec(this.world, this.catalog, this.knobs, court, rng);
+    this.world.rng = rng.state();
+    this.autosave();
+    const archetype = floodDeck(this.catalog, court.minister.key).archetype;
+    const match = new MatchController(this.pool, {
+      humanSeat: 0, seed: spec.seed, aiDelayMs: this.aiDelay(),
+      custom: {
+        human: { name: this.world.player.name, portrait: this.world.player.portrait ?? "you", decklist: spec.players[0].decklist },
+        enemy: { name: enemyName, decklist: spec.players[1].decklist, difficulty: "master", archetype, portrait: court.minister.portrait },
+        rules: { startingLife: spec.rules.startingLife, ante: spec.rules.ante ?? 0, ...(spec.rules.startingPlayer !== undefined ? { startingPlayer: spec.rules.startingPlayer } : {}) },
+        modifiers: spec.modifiers,
+      },
+    });
+    this.screen = { kind: "courtDuel", courtId: court.id, enemyName, match };
+    this.emit();
+    const rec = { seed: spec.seed, spec, enemyName };
+    void match.start().then((result) => this.finishCourtDuel(court, result, rec));
+  }
+  declineCourt(): void {
+    if (this.screen.kind !== "courtTelegraph") return;
+    this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: "You step back from the court. It will be here." };
+    this.emit();
+  }
+  private finishCourtDuel(court: FloodCourtDef, result: MatchResult, rec: { seed: number; spec: MatchSpec; enemyName: string }): void {
+    this.noteSeen(result);
+    if (!this.world) return;
+    const out = applyCourtDuel(this.world, this.knobs, this.pool, court, result, rec);
+    this.autosave();
+    this.ringResult(out.type === "win" ? "win" : "loss");
+    if (out.type === "loss") {
+      if (this.world.gameOver) { this.screen = { kind: "gameOver", fatal: this.world.duels[this.world.duels.length - 1] ?? null }; this.emit(); return; }
+      this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: `The court holds. A world life and your stake${out.anteLost.length ? ` (${out.anteLost.map((id) => this.pool.get(id)?.name ?? id).join(", ")})` : ""} are gone.` };
+      this.emit();
+      return;
+    }
+    const text = this.seatText(court.id);
+    this.screen = { kind: "courtVictory", courtId: court.id, name: court.name, ministerName: court.minister.name, fallLine: text?.fall ?? `${court.name} has fallen.`, prizeLine: text?.prize ?? "", paidGold: out.paidGold, paidCards: out.paidCards, anteWon: out.anteWon, anteWithheld: out.anteWithheld, ministerWithheld: out.ministerWithheld, fallen: courtsFallen(this.world) };
+    this.emit();
+  }
+  continueAfterCourtVictory(): void {
+    if (this.screen.kind !== "courtVictory") return;
+    this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: `${this.screen.fallLine} ${this.screen.fallen} of five High Grounds are yours.` };
+    this.emit();
   }
 
   /** The petal's telegraph: the boss, the returned law, the stakes — fight or step back. */
@@ -2057,7 +2141,11 @@ export class WorldController {
     const gauntlet = s.sealCount >= 5
       ? " Five seals. Something at the heart of the plane has noticed."
       : ` Seals held: ${s.sealCount} of 5.`;
-    this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: `${s.name} is broken; its seal is yours.${gauntlet}` };
+    // S41: a seat of the flood speaks its own fall (the planner's line); the fifth opens the Heart.
+    const ft = this.catalog.questText?.flood;
+    const fall = floodStronghold(this.catalog, s.strongholdId) ? ft?.seats?.[s.strongholdId]?.fall : undefined;
+    const notice = fall ? `${fall} ${s.sealCount >= 5 ? (ft?.heartOpens ?? "") : `${s.sealCount} of five holds broken.`}`.trim() : `${s.name} is broken; its seal is yours.${gauntlet}`;
+    this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice };
     this.emit();
   }
 

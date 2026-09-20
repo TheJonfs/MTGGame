@@ -1,6 +1,6 @@
 import type { Catalog, Color, RegionTemplate } from "./catalog.js";
 import { defaultKnobs, KNOBS, type KnobValues, type Phase, type RegionTier } from "./knobs.js";
-import { exploredNone, findPath, idx, inBounds, manhattan, markExplored, placeCentreDeep, placeCentreDoors, reachable, samePoint, type FixedPoint, type Point, type RegionInstance, type Town, type WorldMap } from "./map.js";
+import { exploredNone, findPath, idx, inBounds, manhattan, markExplored, placeCentreDoors, reachable, samePoint, type FixedPoint, type Point, type RegionInstance, type Town, type WorldMap } from "./map.js";
 import { WorldRng } from "./rng.js";
 
 /**
@@ -249,7 +249,9 @@ export function buildRoads(map: WorldMap, homeTowns: Town[]): void {
 export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOptions = DEFAULT_GENERATOR, extra: GenerateExtra = {}): GeneratedWorld {
   const rng = new WorldRng(seed ^ 0x9e3779b9);
   const knobs = extra.knobs ?? defaultKnobs();
-  const scale = Math.max(1, knobs.mapScale);
+  const flood = (extra.phase ?? 1) >= 2;
+  const scale = Math.max(1, knobs.mapScale) * (flood ? knobs.floodMapScale : 1);
+  const ringRadii = flood ? knobs.floodRingRadii : knobs.ringRadii;
   const width = Math.round(opts.width * scale);
   const height = Math.round(opts.height * scale);
   const cells = width * height;
@@ -281,7 +283,7 @@ export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOpt
   colours.forEach((color, i) => {
     TIERS.forEach((tier) => {
       const tmpl = pickTemplate(color, tier);
-      const r = Math.max(0.02, knobs.ringRadii[tier] + jitter(knobs.ringJitter));
+      const r = Math.max(0.02, ringRadii[tier] + jitter(knobs.ringJitter));
       regions.push({ index: regions.length, templateId: tmpl.id, name: tmpl.name, tier, color, heart: polar(spokeAngle[i]! + jitter(4), r), spoke: i });
     });
     strongholdPts.push({ at: polar(spokeAngle[i]!, knobs.strongholdRadius), color, spoke: i });
@@ -308,13 +310,25 @@ export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOpt
   // 3. Rough terrain, then towns per region (density by tier; ≥1 in every non-wild region).
   const passable = new Array<boolean>(cells).fill(true);
   for (let i = 0; i < cells; i++) if (rng.chance(opts.roughness)) passable[i] = false;
-  const map: WorldMap = { width, height, region, passable, road: new Array<boolean>(cells).fill(false), regions, towns: [], strongholds: [], start: { ...centre }, centre };
+  // S41 (ADR-130): the Calyx — a phase-two map's centre is DEEP WATER (impassable), an ellipse of calyxRadius.
+  // Laid before anything is placed so towns, lairs and carved paths all keep to the shore.
+  const deep = new Array<boolean>(cells).fill(false);
+  if (flood) {
+    const rx = knobs.calyxRadius * (width / 2 - 1), ry = knobs.calyxRadius * (height / 2 - 1);
+    for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+      if (((x - centre.x) / rx) ** 2 + ((y - centre.y) / ry) ** 2 <= 1) { deep[y * width + x] = true; passable[y * width + x] = false; }
+    }
+  }
+  const map: WorldMap = { width, height, region, passable, road: new Array<boolean>(cells).fill(false), regions, towns: [], strongholds: [], start: { ...centre }, centre, ...(flood ? { deep, deepFord: new Array<boolean>(cells).fill(false) } : {}) };
   const townSpacing = knobs.townSpacingMin;
   const townPts: { at: Point; region: RegionInstance }[] = [];
   for (const r of regions) {
-    const cand = regionCells(map, r.index).filter((p) => manhattan(p, centre) > 1);
+    const cand = regionCells(map, r.index).filter((p) => manhattan(p, centre) > 1 && !deep[idx(map, p)]);
     const area = cand.length;
-    const want = r.tier === "wild" ? Math.round((knobs.townsPer100Cells.wild * area) / 100) : Math.max(1, Math.round((knobs.townsPer100Cells[r.tier] * area) / 100));
+    // S41: a phase-two map is larger (floodMapScale) — the town density is normalised by the added area so the flood
+    // has phase one's count of towns, further apart, not half again as many.
+    const density = (tier: RegionTier) => knobs.townsPer100Cells[tier] / (flood ? knobs.floodMapScale ** 2 : 1);
+    const want = r.tier === "wild" ? Math.round((density("wild") * area) / 100) : Math.max(1, Math.round((density(r.tier) * area) / 100));
     if (want <= 0) continue;
     let ts = townSpacing;
     let pts = placeFixedPoints(rng, cand, want, ts, townPts.map((t) => t.at));
@@ -365,7 +379,8 @@ export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOpt
   // 4. Strongholds (ADR-072): the nearest passable non-town cell to each spoke point; carved reachable.
   const fixed: FixedPoint[] = [];
   for (const sp of strongholdPts) {
-    const tmpl = catalog.strongholds.find((s) => s.color === sp.color);
+    // S41: a phase-two map's strongholds are the flood's seats (one per law colour, the phase-one placement rule).
+    const tmpl = (flood ? catalog.flood?.strongholds.find((s) => s.color === sp.color) : undefined) ?? catalog.strongholds.find((s) => s.color === sp.color);
     let at = sp.at;
     if (isTownCell(map, at) || !passable[idx(map, at)]) {
       let best: Point | null = null;
@@ -384,7 +399,7 @@ export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOpt
   // Carve: every town/stronghold reachable from the start, every region has a reachable cell.
   const carveTo = (target: Point) => {
     if (findPath(map, map.start, target)) return;
-    const p = findPath(map, map.start, target, (q) => inBounds(map, q));
+    const p = findPath(map, map.start, target, (q) => inBounds(map, q) && !deep[idx(map, q)]); // S41: never carve through the Calyx — the fords are laid on purpose
     if (!p) return;
     for (const c of p) passable[idx(map, c)] = true;
   };
@@ -411,7 +426,7 @@ export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOpt
   for (const r of regions) {
     const want = knobs.lairsPerRegion[r.tier];
     if (want <= 0) continue;
-    const candidates = regionCells(map, r.index).filter((p) => !isTownCell(map, p));
+    const candidates = regionCells(map, r.index).filter((p) => !isTownCell(map, p) && !deep[idx(map, p)]);
     const pts = placeFixedPoints(rng, candidates, want, townSpacing, [...towns.map((t) => t.at), ...map.strongholds.map((f) => f.at)]);
     const spokeBeasts = beasts.filter((o) => o.spoke === r.color);
     const topTier = Math.max(0, ...spokeBeasts.map((o) => o.tier));
@@ -428,7 +443,8 @@ export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOpt
 
   // 5b. S20 (ADR-079): one MOX DUNGEON site per wild region — a sealed fixed point until entered;
   // the dungeon interior generates on entry (dungeon.ts). Named from the catalog's dungeons file.
-  for (const r of regions) {
+  // S41 (Chris, 2026-09-20): a phase-two map is a NEW map — no Mox courts, no power dungeons (phase one's sites).
+  for (const r of flood ? [] : regions) {
     if (r.tier !== "wild") continue;
     const dungeon = catalog.dungeons.find((d) => d.color === r.color);
     if (!dungeon) continue;
@@ -446,7 +462,7 @@ export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOpt
   // as a mox site; the REGION TIER disambiguates at the threshold (journey.advance). Existing
   // saves keep their maps and therefore never grow these sites (Chris's grandfather ruling:
   // the powers program is fresh-world-only).
-  for (const r of regions) {
+  for (const r of flood ? [] : regions) {
     if (r.tier !== "approach") continue;
     const dungeon = (catalog.powerDungeons ?? []).find((d) => d.color === r.color);
     if (!dungeon) continue;
@@ -463,7 +479,45 @@ export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOpt
   // convergence, carved reachable like every fixed point. Pre-S26 saves grow theirs on load
   // (state.ts migration calls the same placement).
   // S39: a phase-two map has no Corolla yet — the centre is the deep water (a placeholder site).
-  for (const door of (extra.phase ?? 1) >= 2 ? placeCentreDeep(map) : placeCentreDoors(map)) carveTo(door.at);
+  if (flood) {
+    // S41 (ADR-130): the Calyx. The Heart's site at the very centre; the five HIGH GROUNDS on a ring inside the
+    // water, each at the angular midpoint of its pair's two spokes (the flowing pairs are ring-adjacent), with a
+    // FORD to the nearest shore cell of EACH of the pair's territories and one inward to the centre.
+    passable[idx(map, centre)] = true;
+    map.strongholds.push({ kind: "deep", at: { ...centre }, region: region[idx(map, centre)]!, name: "The Deep Water" });
+    const layFord = (from: Point, to: Point) => {
+      // A straight causeway: a 4-connected Bresenham line (one axis a step, so every cell is walkable from the last).
+      let p = { ...from };
+      const dx = Math.abs(to.x - from.x), dy = Math.abs(to.y - from.y), sx = Math.sign(to.x - from.x), sy = Math.sign(to.y - from.y);
+      let err = dx - dy, guard = 0;
+      while ((p.x !== to.x || p.y !== to.y) && guard++ < 2 * (width + height)) {
+        if (2 * err > -dy && p.x !== to.x) { err -= dy; p = { x: p.x + sx, y: p.y }; } else { err += dx; p = { x: p.x, y: p.y + sy }; }
+        const i = idx(map, p);
+        if (deep[i]) { passable[i] = true; map.deepFord![i] = true; } else passable[i] = true;
+      }
+    };
+    const angleOf = (c: Color) => spokeAngle[colours.indexOf(c as Exclude<Color, "C">)]!;
+    for (const court of catalog.flood?.courts ?? []) {
+      const [a, b] = court.pair.map((c) => (angleOf(c) * Math.PI) / 180);
+      const mid = (Math.atan2(Math.sin(a!) + Math.sin(b!), Math.cos(a!) + Math.cos(b!)) * 180) / Math.PI;
+      const at = polar(mid, knobs.calyxRadius * 0.6);
+      passable[idx(map, at)] = true;
+      map.strongholds.push({ kind: "ground", at, region: region[idx(map, at)]!, name: court.name, contentId: court.id });
+      for (const c of court.pair) {
+        // The nearest dry, passable, non-town cell of that colour's territory: the shore the ford lands on.
+        let shore: Point | null = null;
+        for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+          const p = { x, y }, i = idx(map, p);
+          if (deep[i] || !passable[i] || isTownCell(map, p) || regions[region[i]!]!.color !== c) continue;
+          if (!shore || manhattan(p, at) < manhattan(shore, at)) shore = p;
+        }
+        if (shore) { layFord(at, shore); carveTo(shore); }
+      }
+      layFord(at, centre);
+    }
+  } else {
+    for (const door of placeCentreDoors(map)) carveTo(door.at);
+  }
 
   // 6. Roads (after carving: the paths exist).
   buildRoads(map, homeTowns);
@@ -519,6 +573,8 @@ export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOpt
   // S23 playtest r1 (Chris: ran the map's whole length hunting a crossing — one bridge, unread
   // fords): rivers are FLAVOR now — they never touch passable[]. Bridges (river ∧ road) and
   // ford marks stay as rendering; the reachability-repair machinery is gone with the barrier.
+  // S41: the rivers end at the Calyx's shore — no ribbon is drawn across the deep water.
+  if (flood) for (let i = 0; i < cells; i++) if (deep[i]) { river[i] = false; ford[i] = false; }
   map.river = river;
   map.ford = ford;
 

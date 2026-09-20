@@ -15,9 +15,11 @@ import { dirname, join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
 import { runMatch, type Action, type ActionRequest, type Agent, type GameView, type MatchSpec, type Modifier } from "@shandalar/engine";
 import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
-import { FLOOD_DECKS } from "@shandalar/sim/flood-decks";
+import { loadCatalog } from "./loader.js";
 import { ROAD_DECKS } from "@shandalar/sim/road-decks";
 import { defaultKnobs } from "./knobs.js";
+import { cardColors, manaValue, parseManaCost } from "@shandalar/cards";
+import { checkDeck, type DeckRule } from "./legality.js";
 
 const arg = (name: string, fallback: string): string => { const i = process.argv.indexOf(`--${name}`); return i !== -1 ? process.argv[i + 1]! : fallback; };
 const games = Number(arg("games", "10"));
@@ -26,8 +28,14 @@ const only = arg("only", "");
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const pool = loadCardPool(join(ROOT, "data/cards")).cards;
 const knobs = defaultKnobs();
-const T3 = { life: knobs.phaseTierTables[2]!.mageTierLife[3], entrance: knobs.phaseTierTables[2]!.mageTierEntrance[3] };
-const COURT_LIFE = 30;
+const catalog = loadCatalog(join(ROOT, "data/world"));
+const flood = catalog.flood!;
+const FLOOD_DECKS: Record<string, { name: string; seat: string; law: string; kind: "lord" | "court"; ground?: string; decklist: { cardId: string; count: number }[] }> = Object.fromEntries([
+  ...flood.strongholds.map((s) => [s.lord.key, { ...flood.decks[s.lord.key]!, law: s.color, kind: "lord" as const }]),
+  ...flood.courts.map((c) => [c.minister.key, { ...flood.decks[c.minister.key]!, law: c.color, kind: "court" as const, ground: c.ground }]),
+]);
+// S41: the seats as BUILT — the lords at their def's baseLife (34 ⚠) with the law and signatureToHand (the phase-one
+// lords' entrance; no growth, no hunt); the courts at their def's life (34 ⚠) on their ground with the law.
 const LAW: Record<string, string> = { W: "law_intake", B: "law_tithe", R: "law_toll", U: "law_risen_tide", G: "law_season" };
 const BASIC: Record<string, string> = { W: "plains", U: "island", B: "swamp", R: "mountain", G: "forest" };
 const LEGEND: Record<string, string> = { bailiff: "the_bailiff", reeve: "the_reeve", fordkeeper: "the_fordkeeper", dredger: "the_dredger", reaper: "the_reaper", odile: "odile_the_tallyflame", zinnia: "zinnia_the_undertow", ovna: "ovna_the_enchantress", isaura: "isaura_the_levy", meliyan: "meliyan_the_torment" };
@@ -49,17 +57,56 @@ class Counting implements Agent {
   }
 }
 
-const yardsticks = [ROAD_DECKS.salvageWR!, ROAD_DECKS.salvageUB!, ROAD_DECKS.chrisRoadB!];
-console.log(`flood-sim: ${games} games per seat per pairing; lords at the phase-two T3 row (life ${T3.life}, ${T3.entrance} basics), courts at ${COURT_LIFE} on their ground; the law on the seat's side; master vs journeyman.`);
+const yardsticks = [ROAD_DECKS.salvageWRLegends!, ROAD_DECKS.salvageUBLegends!, ROAD_DECKS.chrisRoadB!];
+console.log(`flood-sim (S41): ${games} games per seat per pairing; lords at ${flood.strongholds[0]!.lord.baseLife} with the law and the signature in hand; courts at ${flood.courts[0]!.minister.life} on their ground with the law; master vs journeyman. A court's intruder is the reference's NEAREST LEGAL CUT for that court's gate (the changes are listed under the table).`);
+
+/** The nearest legal cut of a reference for a court's gate: offenders out (replaced by pack creatures of the deck's
+ * colours that pass the gate, else basics of its colours), creatures topped up to the floor from the same shelf
+ * (the dearest noncreature spells leave first), basics added until the land fraction holds. Deterministic. */
+function legalCut(ref: { decklist: { cardId: string; count: number }[] }, rule: DeckRule): { decklist: { cardId: string; count: number }[]; changes: string[] } {
+  const list = ref.decklist.map((e) => ({ ...e }));
+  const changes: string[] = [];
+  const def = (id: string) => pool.get(id)!;
+  const mv = (id: string) => manaValue(parseManaCost(def(id).manaCost));
+  const colours = [...new Set(list.flatMap((e) => (def(e.cardId).types.includes("Land") ? [] : cardColors(def(e.cardId)))))];
+  const basics = colours.map((c) => BASIC[c]!);
+  const passes = (id: string) => { const d = def(id); if (rule.bannedTypes?.some((t) => d.types.includes(t))) return false; if (rule.maxManaValue !== undefined && mv(id) > rule.maxManaValue) return false; if (rule.minCreaturePower !== undefined && d.types.includes("Creature") && (d.power ?? 0) < rule.minCreaturePower) return false; return true; };
+  const shelf = () => colours.flatMap((c) => catalog.salvagePack!.colors[c as "W"] ?? []).filter((id) => def(id).types.includes("Creature") && passes(id) && !list.some((e) => e.cardId === id));
+  const add = (id: string) => { const e = list.find((x) => x.cardId === id); if (e) e.count += 1; else list.push({ cardId: id, count: 1 }); };
+  const remove = (id: string) => { const e = list.find((x) => x.cardId === id)!; e.count -= 1; if (e.count === 0) list.splice(list.indexOf(e), 1); };
+  let b = 0;
+  for (const e of [...list]) if (!def(e.cardId).types.includes("Land") && !passes(e.cardId)) for (let k = e.count; k > 0; k--) { remove(e.cardId); const r = shelf()[0] ?? basics[b++ % basics.length]!; add(r); changes.push(`−${def(e.cardId).name} +${def(r).name}`); }
+  const creatures = () => list.reduce((n, e) => n + (def(e.cardId).types.includes("Creature") ? e.count : 0), 0);
+  while (rule.minCreatures !== undefined && creatures() < rule.minCreatures) {
+    const out = [...list].filter((e) => !def(e.cardId).types.includes("Land") && !def(e.cardId).types.includes("Creature")).sort((x, y) => mv(y.cardId) - mv(x.cardId))[0];
+    const r = shelf()[0];
+    if (!out || !r) break;
+    remove(out.cardId); add(r); changes.push(`−${def(out.cardId).name} +${def(r).name}`);
+  }
+  const lands = () => list.reduce((n, e) => n + (def(e.cardId).types.includes("Land") ? e.count : 0), 0);
+  const size = () => list.reduce((n, e) => n + e.count, 0);
+  let added = 0;
+  while (rule.minLandFraction !== undefined && lands() < rule.minLandFraction * size()) { add(basics[b++ % basics.length]!); added += 1; }
+  if (added) changes.push(`+${added} basics (${size()} cards)`);
+  const check = checkDeck(list, null, rule, pool);
+  if (!check.ok) changes.push(`STILL ILLEGAL: ${check.problems.join("; ")}`);
+  return { decklist: list, changes };
+}
+const cutNotes: string[] = [];
 console.log(`| seat | legend | vs | seat wins | mean turns | legend casts/game | legend activations/game | ground or granted activations/game |`);
 console.log(`|---|---|---|---|---|---|---|---|`);
 for (const [key, deck] of Object.entries(FLOOD_DECKS)) {
   if (only && only !== key) continue;
   const legendId = LEGEND[key]!;
   const colours = [deck.law, ...(["W", "U", "B", "R", "G"] as const).filter((c) => c !== deck.law && pool.get(legendId)!.manaCost.includes(`{${c}}`))];
-  const entrance = deck.kind === "lord" ? Array.from({ length: T3.entrance }, (_, i) => BASIC[colours[i % colours.length]!]!) : [];
-  const life = deck.kind === "lord" ? T3.life : COURT_LIFE;
-  for (const y of yardsticks) {
+  void colours;
+  const site = deck.kind === "lord" ? flood.strongholds.find((x) => x.lord.key === key)! : undefined;
+  const court = deck.kind === "court" ? flood.courts.find((x) => x.minister.key === key)! : undefined;
+  const life = site ? site.lord.baseLife : court!.minister.life;
+  for (const y0 of yardsticks) {
+    const cut = court?.deckRule ? legalCut(y0, court.deckRule) : { decklist: y0.decklist, changes: [] };
+    if (cut.changes.length) cutNotes.push(`- ${court!.name} × ${y0.name}: ${cut.changes.join(", ")}`);
+    const y = { ...y0, decklist: cut.decklist };
     let wins = 0, total = 0, turns = 0, casts = 0, acts = 0, side = 0;
     for (const seat of [0, 1] as const) {
       const ySeat = (1 - seat) as 0 | 1;
@@ -71,7 +118,7 @@ for (const [key, deck] of Object.entries(FLOOD_DECKS)) {
           { type: "startingLife", player: ySeat, value: y.life },
           { type: "permanentOnBattlefield", player: seat, cardId: LAW[deck.law]! },
           ...(deck.ground ? [{ type: "permanentOnBattlefield" as const, player: seat, cardId: deck.ground }] : []),
-          ...entrance.map((cardId) => ({ type: "permanentOnBattlefield" as const, player: seat, cardId })),
+          ...(site ? [{ type: "signatureToHand" as const, player: seat, cardId: site.lord.cardId }] : []),
           ...y.entrance.map((cardId) => ({ type: "permanentOnBattlefield" as const, player: ySeat, cardId })),
         ];
         const me = { name: deck.name, decklist: [...deck.decklist], agent: "heuristic" as const };
@@ -94,3 +141,4 @@ for (const [key, deck] of Object.entries(FLOOD_DECKS)) {
     console.log(`| ${deck.seat} | ${deck.name} | ${y.name} | ${((100 * wins) / Math.max(1, total)).toFixed(0)}% | ${per(turns)} | ${per(casts)} | ${per(acts)} | ${per(side)} |`);
   }
 }
+if (cutNotes.length) { console.log(`\nThe legal cuts (a court's intruder must pass its gate):`); for (const n of cutNotes) console.log(n); }

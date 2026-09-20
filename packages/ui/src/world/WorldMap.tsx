@@ -40,6 +40,8 @@ const FLOOD_WASH: Record<string, Record<string, string>> = {
   approach: { W: "#c2b58a", U: "#93a7b8", B: "#9c8ca0", R: "#bb8f7c", G: "#96a67c", C: "#b1a68c" },
   wild: { W: "#9c9074", U: "#73808a", B: "#756a78", R: "#8d6d5f", G: "#6f7c5c", C: "#857b66" },
 };
+/** S41 (ADR-130): the Calyx's three tones — the deep water, a ford across it, a High Ground standing dry. */
+const CALYX = { deep: "#31505f", ford: "#9fb0ad", ground: "#d9d2b0" };
 function washFor(tier: string, color: string, register?: "corolla" | "flood"): string {
   if (register === "corolla" && tier === "wild" && COROLLA_WASH[color]) return COROLLA_WASH[color]!;
   if (register === "flood") return FLOOD_WASH[tier]?.[color] ?? FLOOD_WASH[tier]?.C ?? "#c9c1b0";
@@ -370,7 +372,7 @@ export function WorldMapView({
     let nBlobs = 0;
     for (let y = 0; y < map.height; y++) for (let x = 0; x < map.width; x++) {
       const i = y * map.width + x;
-      if (map.passable[i] || blobOf[i] !== -1) continue;
+      if (map.passable[i] || blobOf[i] !== -1 || map.deep?.[i]) continue; // S41: deep water is not rough ground — no terrain glyphs in the Calyx
       const reg = map.region[i];
       const cellsIn: Pt[] = [];
       const q: Pt[] = [[x, y]];
@@ -382,7 +384,7 @@ export function WorldMapView({
           const nx = cx + dx, ny = cy + dy;
           if (nx < 0 || ny < 0 || nx >= map.width || ny >= map.height) continue;
           const ni = ny * map.width + nx;
-          if (map.passable[ni] || blobOf[ni] !== -1 || map.region[ni] !== reg) continue;
+          if (map.passable[ni] || blobOf[ni] !== -1 || map.region[ni] !== reg || map.deep?.[ni]) continue;
           blobOf[ni] = nBlobs;
           q.push([nx, ny]);
         }
@@ -530,6 +532,8 @@ export function WorldMapView({
           const fill = interior
             ? (!seenXY(x, y) ? INTERIOR.dark : map.passable[i] ? INTERIOR.floor : INTERIOR.rock)
             : isVoid(map.region[i]!) ? "url(#paper-pat)"
+            // S41 (ADR-130): the Calyx — deep water, the fords laid across it (pale stone), and the High Grounds (dry, light).
+            : seenXY(x, y) && map.deep?.[i] ? (map.strongholds.some((f) => f.kind === "ground" && f.at.x === x && f.at.y === y) ? CALYX.ground : map.deepFord?.[i] ? CALYX.ford : CALYX.deep)
             : (seenXY(x, y) ? washFor(reg.tier, reg.color, register) : "transparent");
           return (
             <rect
@@ -752,7 +756,7 @@ export function WorldMapView({
           // not a ghosted keep (the broken silhouette is the statement).
           // S26: the two centre doors on the outer map (the Corolla's, the Vault's) and the petal
           // tips inside the flower — a fallen petal fades like a cleared lair.
-          const slug = castle ? (cleared ? "sprite-ruin" : "sprite-castle") : f.kind === "dungeon" ? "sprite-dungeon-door" : f.kind === "corolla" || f.kind === "deep" ? "sprite-corolla-door" : f.kind === "vault" ? "sprite-vault" : f.kind === "petal" ? "sprite-petal" : "sprite-lair";
+          const slug = castle ? (cleared ? "sprite-ruin" : "sprite-castle") : f.kind === "dungeon" ? "sprite-dungeon-door" : f.kind === "corolla" || f.kind === "deep" ? "sprite-corolla-door" : f.kind === "ground" ? "sprite-u-islet" : f.kind === "vault" ? "sprite-vault" : f.kind === "petal" ? "sprite-petal" : "sprite-lair";
           const sz = CELL * (castle ? 3 : f.kind === "corolla" ? 3.2 : f.kind === "petal" ? 2.6 : 2.4);
           return (
             <g key={`f${i}`} onMouseEnter={() => setHoverLair({ name: f.name ?? f.kind, at: f.at })} onMouseLeave={() => setHoverLair(null)} onClick={() => onClickCell(f.at)} style={{ cursor: "pointer" }}>

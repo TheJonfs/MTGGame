@@ -31,7 +31,7 @@ export interface Town {
 
 /** Fixed points the generator places with spacing constraints; strongholds
  * are the M6b+ kind — present in the shape, unused in the slice. */
-export type FixedPointKind = "town" | "stronghold" | "lair" | "dungeon" | "corolla" | "vault" | "petal" | "deep"; // S20: + Mox dungeon sites (dungeon-design §5). S26: the two centre doors (the Corolla, the Vault) and, inside the flower, the petal tips. S39: the flood's centre placeholder (the Calyx is not built).
+export type FixedPointKind = "town" | "stronghold" | "lair" | "dungeon" | "corolla" | "vault" | "petal" | "deep" | "ground"; // S41 (ADR-130): + the Calyx's five High Grounds (the courts' islands). // S20: + Mox dungeon sites (dungeon-design §5). S26: the two centre doors (the Corolla, the Vault) and, inside the flower, the petal tips. S39: the flood's centre placeholder (the Calyx is not built).
 
 /** A fixed point with a resident (S14 round 1 prototype: a lair hosting one
  * opponent; strongholds/dungeons will reuse the shape). Walking onto it is a
@@ -42,6 +42,9 @@ export interface FixedPoint {
   region: number;
   name?: string;
   opponentId?: string;
+  /** S41: the content def this site carries (a flood court's id) — sites were matched by kind + region colour + tier
+   * until two classes per colour made that ambiguous. Optional and additive: old saves have none. */
+  contentId?: string;
 }
 
 export interface WorldMap {
@@ -58,6 +61,11 @@ export interface WorldMap {
   river?: boolean[];
   /** S23: row-major natural-ford flag (passable river crossings that are not road bridges). */
   ford?: boolean[];
+  /** S41 (ADR-130, the Calyx): row-major DEEP WATER — impassable, unlike a river (which is flavour). The fords
+   * across it are passable cells flagged in `deepFord` (its own channel — `ford` belongs to the rivers). Phase-two
+   * maps only. */
+  deep?: boolean[];
+  deepFord?: boolean[];
   regions: RegionInstance[];
   towns: Town[];
   /** Fixed points: lairs (with residents) and the five colour strongholds (ADR-072; unused until S19+). */

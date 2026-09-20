@@ -1,3 +1,4 @@
+import { validateFloodDef, floodDeck } from "./flood.js";
 import { DECKS, DECK_ARCHETYPES, type DeckKey } from "@shandalar/sim/decks";
 import { EXPANSION_DECKS } from "@shandalar/sim/expansion-decks";
 import { MAGE_DECKS } from "@shandalar/sim/mage-decks";
@@ -34,7 +35,7 @@ export type OpponentKind = "mage" | "beast";
 /** S16: an opponent's deck is a slice key (A–E) or a catalog starter ("starter:green") —
  * the measurement behind the tier-1 enemy-deck question lives on this.
  * S18: or a beast deck ("beast:warband") from packages/sim/src/expansion-decks.ts (ADR-074/077). */
-export type OpponentDeckRef = DeckKey | `starter:${StarterId}` | `beast:${string}` | `mage:${string}`; // S37: the mage arm the loader always accepted, on the type at last
+export type OpponentDeckRef = DeckKey | `starter:${StarterId}` | `beast:${string}` | `mage:${string}` | `lord:${string}` | `court:${string}`; // S41: the flood's seats (catalog lists) // S37: the mage arm the loader always accepted, on the type at last
 
 /** S18 (ADR-066 reflavored parley): how this opponent's parley reads. All optional; defaults by kind. */
 export interface ParleyVoice {
@@ -147,12 +148,21 @@ export interface FloodTextPack {
   deep: string;
   /** The offer on the start screen and the fifth cutting ("Enter the Flood"). */
   offer: string;
+  /** S41 (docs/flood-seats-text.md): the ten seats' voices by site id — the approach, the greeting at the door, the
+   * Chronicle's line at the fall, the treasure line. */
+  seats?: Record<string, { telegraph: string; parley: string; fall: string; prize: string }>;
+  /** S41: a ford's line on first crossing; the fifth lord's fall (the Heart opens) and its Chronicle line. */
+  fords?: string;
+  heartOpens?: string;
+  chronicleFifth?: string;
 }
 export interface DoorTextPack {
   /** The archaic line above the rule and its problems ({label} substituted). Planner's line; refine per rule later. */
   refused: string;
   /** S40 (ADR-128): a line per rule FIELD — the door speaks the first failed field's line when it has one
    * (the courts' shape gates); the colour gate and any field without a line keep `refused`. */
+  /** S41: a line per SITE id (the five courts' own words, numbers included) — preferred over the field's fallback. */
+  bySite?: Record<string, string>;
   byRule?: Partial<Record<"minCreatures" | "minCreaturePower" | "bannedTypes" | "minLandFraction" | "maxManaValue" | "maxLands" | "singleton" | "minCards" | "colorsWithin", string>>;
 }
 export interface CorollaTextPack {
@@ -190,6 +200,8 @@ export interface Catalog {
   salvagePack?: SalvagePack;
   /** S39 Part 5: the flood's town names (towns.json `namesPhaseTwo`; placeholders until the content rounds). */
   townNamesPhaseTwo?: string[];
+  /** S41 (ADR-128/130): the flood's ten seats and their lists (data/world/flood.json). */
+  flood?: import("./flood.js").FloodDef;
 }
 
 /** Resolve an opponent's deck reference to a decklist + archetype (slice deck or catalog starter). */
@@ -209,6 +221,11 @@ export function enemyDeck(catalog: Catalog, ref: OpponentDeckRef): { decklist: S
     if (!m) throw new Error(`unknown mage deck ${ref}`);
     return { decklist: m.decklist.map((e) => ({ ...e })), archetype: m.archetype };
   }
+  // S41: the flood's seats — the lists live in the CATALOG (data/world/flood.json), synced to the working document.
+  if (ref.startsWith("lord:") || ref.startsWith("court:")) {
+    const d = floodDeck(catalog, ref.slice(ref.indexOf(":") + 1));
+    return { decklist: d.decklist, archetype: d.archetype };
+  }
   const id = ref.slice("starter:".length);
   const s = catalog.starters.find((x) => x.id === id);
   if (!s) throw new Error(`unknown opponent deck ${ref}`);
@@ -216,7 +233,7 @@ export function enemyDeck(catalog: Catalog, ref: OpponentDeckRef): { decklist: S
 }
 
 /** Assemble + validate a catalog from already-parsed JSON objects (browser-safe). */
-export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents: unknown; starters: unknown; dungeons?: unknown; quests?: unknown; salvage?: unknown }): Catalog {
+export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents: unknown; starters: unknown; dungeons?: unknown; quests?: unknown; salvage?: unknown; flood?: unknown }): Catalog {
   const r = parts.regions as { catalogVersion: string; regions: RegionTemplate[]; strongholds?: StrongholdTemplate[] };
   const t = parts.towns as { catalogVersion: string; names: string[]; namesPhaseTwo?: string[] };
   const o = parts.opponents as { catalogVersion: string; opponents: OpponentTemplate[] };
@@ -339,11 +356,13 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
     if (qp.heart) for (const k of ["doorOpen", "telegraph", "stakes", "victory", "victoryCard", "loss", "offer", "fifthCutting", "newRoad", "newRoadAll", "withheld", "chronicleHeader"] as const) if (!qp.heart[k]) errors.push(`quests: heart.${k} missing`);
     if (qp.heart) for (const c of ["W", "U", "B", "R", "G"]) if (!qp.heart.chronicle?.[c]) errors.push(`quests: heart.chronicle.${c} missing`);
     if (qp.door && (typeof qp.door.refused !== "string" || !qp.door.refused.trim())) errors.push("quests: door.refused missing (S37)");
+    if (qp.door?.bySite) for (const [k, v] of Object.entries(qp.door.bySite)) if (typeof v !== "string" || !v.trim()) errors.push(`quests: door.bySite.${k} must be a non-empty line (S41)`);
     if (qp.door?.byRule) for (const [k, v] of Object.entries(qp.door.byRule)) { if (!(DECK_RULE_FIELDS as readonly string[]).includes(k) || k === "label") errors.push(`quests: door.byRule has an unknown rule field "${k}" (S40)`); if (typeof v !== "string" || !v.trim()) errors.push(`quests: door.byRule.${k} must be a non-empty line (S40)`); }
     // S39: the flood's pack — every line the screens read, named.
     if (qp.flood) {
       if (!Array.isArray(qp.flood.scene) || qp.flood.scene.length === 0) errors.push("quests: flood.scene must be a nonempty array (S39)");
       for (const k of ["picks", "pair", "chronicle", "deep", "offer"] as const) if (typeof qp.flood[k] !== "string" || !qp.flood[k].trim()) errors.push(`quests: flood.${k} missing (S39)`);
+      for (const [sid, s] of Object.entries(qp.flood.seats ?? {})) for (const k of ["telegraph", "parley", "fall", "prize"] as const) if (typeof s?.[k] !== "string" || !s[k].trim()) errors.push(`quests: flood.seats.${sid}.${k} missing (S41)`);
     }
     questText = { offers: qp.offers, rumors: qp.rumors, ...(qp.corolla ? { corolla: qp.corolla } : {}), ...(qp.heart ? { heart: qp.heart } : {}), ...(qp.door ? { door: qp.door } : {}), ...(qp.flood ? { flood: qp.flood } : {}) };
   }
@@ -356,6 +375,13 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
     salvagePack = { colors: sp.colors, colorless: sp.colorless };
   }
   if (t.namesPhaseTwo !== undefined && (!Array.isArray(t.namesPhaseTwo) || t.namesPhaseTwo.some((n) => typeof n !== "string" || !n.trim()))) errors.push("towns: namesPhaseTwo must be an array of names (S39)");
+  errors.push(...validateFloodDef(parts.flood));
+  if (parts.flood && questText?.flood?.seats) {
+    const fl0 = parts.flood as import("./flood.js").FloodDef;
+    for (const id of [...(fl0.strongholds ?? []).map((s) => s.id), ...(fl0.courts ?? []).map((c) => c.id)]) if (!questText.flood.seats[id]) errors.push(`quests: flood.seats has no entry for ${id} (S41)`);
+    for (const id of Object.keys(questText.door?.bySite ?? {})) if (![...(fl0.strongholds ?? []), ...(fl0.courts ?? [])].some((x) => x.id === id)) errors.push(`quests: door.bySite names an unknown site "${id}" (S41)`);
+  }
   if (errors.length) throw new Error(`Catalog validation failed:\n${errors.join("\n")}`);
-  return { version: CATALOG_VERSION, regions: r.regions, townNames: t.names, opponents: o.opponents, starters: st.starters, strongholds: r.strongholds ?? [], dungeons: du.mox, ...(du.powerDungeons ? { powerDungeons: du.powerDungeons } : {}), ...(du.strongholds ? { strongholdContent: du.strongholds } : {}), ...(du.corolla ? { corolla: du.corolla } : {}), ...(questText ? { questText } : {}), ...(salvagePack ? { salvagePack } : {}), ...(t.namesPhaseTwo ? { townNamesPhaseTwo: t.namesPhaseTwo } : {}) };
+  const fl = parts.flood as (import("./flood.js").FloodDef & { catalogVersion?: string }) | undefined;
+  return { ...(fl ? { flood: { decks: fl.decks, strongholds: fl.strongholds, courts: fl.courts } } : {}), version: CATALOG_VERSION, regions: r.regions, townNames: t.names, opponents: o.opponents, starters: st.starters, strongholds: r.strongholds ?? [], dungeons: du.mox, ...(du.powerDungeons ? { powerDungeons: du.powerDungeons } : {}), ...(du.strongholds ? { strongholdContent: du.strongholds } : {}), ...(du.corolla ? { corolla: du.corolla } : {}), ...(questText ? { questText } : {}), ...(salvagePack ? { salvagePack } : {}), ...(t.namesPhaseTwo ? { townNamesPhaseTwo: t.namesPhaseTwo } : {}) };
 }

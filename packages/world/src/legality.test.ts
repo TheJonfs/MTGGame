@@ -103,7 +103,8 @@ describe("S37 (ADR-123): deckRule on a template — the validator, enemies.md, t
     const text = renderEnemiesReference(withDoor({ label: "the Jeskai gate", colorsWithin: ["W", "U", "R"], minCreatures: 15 }), pool, defaultKnobs());
     expect(text).toContain("| The Test Gate |");
     expect(text).toContain("door: the Jeskai gate (colours within WUR; ≥ 15 creatures)");
-    expect(renderEnemiesReference(catalog, pool, defaultKnobs())).not.toContain("door:");
+    // S41: the only shipped doors are the flood's ten seats (five colour gates, five shape gates); phase one carries none.
+    expect(renderEnemiesReference(catalog, pool, defaultKnobs()).match(/door: /g)).toHaveLength(10);
   });
   it("the door: doorCheck reads the ACTIVE deck; the refusal is the planner's line, the label, the rule and the problems", () => {
     const cat = withDoor({ label: "the Test Gate", colorsWithin: ["U", "R"], minCreatures: 99 });
@@ -154,10 +155,10 @@ describe("S40 (ADR-128): the three new gates — a stat floor, a fraction, a typ
     const lines = catalog.questText!.door!.byRule!;
     expect(Object.keys(lines).sort()).toEqual(["bannedTypes", "maxManaValue", "minCreaturePower", "minCreatures", "minLandFraction"]);
     for (const [rule, opening] of [
-      [{ label: "Odile's gate", minCreatures: 99 }, "Bring bodies to the fire. Twelve, at the least."],
+      [{ label: "Odile's gate", minCreatures: 99 }, "Bring bodies to the fire."],
       [{ label: "Zinnia's gate", minCreaturePower: 9 }, "Nothing small. The water takes the small things first."],
-      [{ label: "Isaura's gate", minLandFraction: 0.9 }, "Half of what you bring must be ground. The rest can be yours."],
-      [{ label: "Meliyan's gate", maxManaValue: 0 }, "Nothing dear. What you bring here, you will lose."],
+      [{ label: "Isaura's gate", minLandFraction: 0.9 }, "Half of what you bring must be ground."],
+      [{ label: "Meliyan's gate", maxManaValue: 0 }, "Nothing dear."],
     ] as [DeckRule, string][]) {
       const check = checkDeck(white, null, rule, pool);
       expect(check.ok, rule.label).toBe(false);
@@ -165,7 +166,11 @@ describe("S40 (ADR-128): the three new gates — a stat floor, a fraction, a typ
     }
     const instants = deck([["forest", 20], ["giant_growth", 4], ["grizzly_bears", 4], ["rampant_growth", 2]]);
     const ban: DeckRule = { label: "Ovna's gate", bannedTypes: ["Instant"] };
-    expect(doorRefusalText(catalog, ban, checkDeck(instants, null, ban, pool))).toMatch(/^No sudden things\. The Green does not answer in the moment\. Ovna's gate \(no instants\): 4 instants: Giant Growth ×4\.$/);
+    expect(doorRefusalText(catalog, ban, checkDeck(instants, null, ban, pool))).toMatch(/^No sudden things\. Ovna's gate \(no instants\): 4 instants: Giant Growth ×4\.$/);
+    // S41: a SITE's own line wins over the field's fallback (the courts' words, numbers and all).
+    const odile = catalog.flood!.courts.find((c) => c.id === "tallyflame_court")!;
+    expect(doorRefusalText(catalog, odile.deckRule!, checkDeck(instants, null, odile.deckRule!, pool), odile.id)).toMatch(/^Bring bodies to the fire\. Twelve, at the least\. the Tallyflame gate \(≥ 12 creatures\): 4 creatures; the Tallyflame gate asks 12\.$/);
+    expect(Object.keys(catalog.questText!.door!.bySite!).sort()).toEqual(["cairnbrand_pyre", "obsidian_observatory", "shevelport_green", "tallyflame_court", "wrackroot_shallows"]);
     // Colour first: the S37 line stands even when a shape gate also fails.
     const both: DeckRule = { label: "g", colorsWithin: ["U"], minCreatures: 99 };
     expect(doorRefusalText(catalog, both, checkDeck(white, null, both, pool))).toMatch(/^The gate knows your colours\./);
