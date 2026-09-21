@@ -86,4 +86,32 @@ export const ROAD_DECKS: Record<string, { name: string; archetype: "aggro" | "mi
       ["the_sapphire_sage", 1], ["the_jet_witch", 1], ["clio_lady_of_the_depths", 1],
     ]),
   },
+  /** S42b (ADR-135's (b)): the POST-LORDS references — what the flood's player holds at the deep water after five
+   * lords: salvage + legends plus ten prizes, all in the PAIR (Chris, 2026-09-21: the deck stays two colours; the
+   * lords' cards are triads and the off-pair golds do not cast, so the ten are the pair's two golds and tier-3 / R
+   * cards of the pair, multiples allowed — a lord's fall and a quest can each pay one). Forty-three cards, 12 life,
+   * journeyman, TWO basics in play (the player's manalinks by then). */
+  salvageWRLords: {
+    name: "salvage-WR+lords", archetype: "aggro", life: 12, entrance: ["plains", "mountain"],
+    decklist: d([
+      ["plateau", 2], ["sacred_foundry", 1], ["plains", 5], ["mountain", 5], // a second Plateau among the ten
+      ["savannah_lions", 1], ["suntail_hawk", 1], ["soul_warden", 1], ["fencing_ace", 1], ["youthful_valkyrie", 1], ["inspiring_overseer", 1], ["pacifism", 1], ["swords_to_plowshares", 1],
+      ["young_pyromancer", 1], ["goblin_piker", 1], ["boggart_brute", 1], ["goblin_chieftain", 1], ["thundersnake", 1], ["lightning_bolt", 1], ["shock", 1], ["abrade", 1], ["hordeling_outburst", 1],
+      ["bonesplitter", 1],
+      ["the_pearl_cleric", 1], ["the_ruby_tyrant", 1], ["lumen_the_hearth_fire", 1],
+      // the ten: the pair's golds, then the pair's tier-3 / R prizes
+      ["sacred_helix", 2], ["powerstone_minefield", 1], ["serra_angel", 2], ["siege_gang_commander", 2], ["angel_of_the_ruins", 1], ["wrath_of_god", 1],
+    ]),
+  },
+  salvageUBLords: {
+    name: "salvage-UB+lords", archetype: "midrange", life: 12, entrance: ["island", "swamp"],
+    decklist: d([
+      ["underground_sea", 2], ["watery_grave", 1], ["island", 5], ["swamp", 5], // a second Sea among the ten
+      ["plumecreed_escort", 1], ["man_o_war", 1], ["cloudkin_seer", 1], ["wind_drake", 1], ["aether_channeler", 1], ["air_elemental", 1], ["brainstorm", 1], ["counterspell", 1], ["essence_scatter", 1],
+      ["typhoid_rats", 1], ["child_of_night", 1], ["vampire_nighthawk", 1], ["phyrexian_rager", 1], ["gravedigger", 1], ["nekrataal", 1], ["terror", 1], ["doom_blade", 1],
+      ["mind_stone", 1],
+      ["the_sapphire_sage", 1], ["the_jet_witch", 1], ["clio_lady_of_the_depths", 1],
+      ["undermine", 1], ["glimpse_the_unthinkable", 1], ["hypnotic_specter", 2], ["hymn_to_tourach", 1], ["control_magic", 1], ["faerie_formation", 1], ["demonic_tutor", 1], ["bitterblossom", 1],
+    ]),
+  },
 };

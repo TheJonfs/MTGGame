@@ -480,7 +480,7 @@ Pool 184 → **185**. The last card. Custom, five-colour, prizeOnly (sole-mechan
 | blanchwood_armor | Blanchwood Armor | tested | aura; static modifyPT +count(Forest, you)/+count (scope attached) | USG first printing; tier 1 / 12g (priceOverride). Temple Garden counts (fixture). AI (book 39): the hexproof host first, worth the Forests. Hask ×3, Brennor ×2, Ysolde ×2. |
 | elemental_1_1_r | Elemental Token | token | — | 1/1 red Elemental; the Pyromancer's token. No plate yet (renders the placeholder icon) — an art-round item. |
 
-*The mage cleansheet (ADR-099):* fifteen decks in `packages/sim/src/mage-decks.ts`, one per named mage (`mage:<key>`); the slice decks A–E retired from the catalog (Chris, S29 kickoff) and kept as sim/test infrastructure. Reya Dawnbringer (prizeOnly) left Lord Corvane's list for a third Serra Angel. The Cunning Tactician is a beast (ADR-100). Orcish Lumberjack stays shop-only until phase two (ADR-101).
+*The mage cleansheet (ADR-099):* fifteen decks in `packages/sim/src/mage-decks.ts`, one per named mage (`mage:<key>`); the slice decks A–E retired from the catalog (Chris, S29 kickoff) and kept as sim/test infrastructure. Reya Dawnbringer (prizeOnly) left Lord Corvane's list for a third Serra Angel. The Cunning Tactician is a beast (ADR-100). Orcish Lumberjack stayed shop-only until phase two (ADR-101); **S42b closes that note** — it lives in Brennor's and Quill's flood lists (the mage inversion, ADR-122 §9; `packages/sim/src/mage-decks-flood.ts`, generated from `docs/mage-inversion-lists.md`).
 
 ## Session 30 additions — six cards for the floor (ADR-104; planner-verified, implementer re-verified on Scryfall 2026-09-06)
 
@@ -570,6 +570,10 @@ Pool 225 → **227**.
 |---|---|---|---|---|
 | the_cinquefont | The Cinquefont | tested | custom legend (Elemental 7/7, WBRUG); triggered(END_STEP you): exile scope laws `ifLawsAtLeast` 5; createLaw next with `order` U G W B R (R-098) | The flood's capstone (ADR-131) — not the Manafleur: the source the flower stilled. prizeOnly; three in the fount's sixty (the Manafleur's deck with the three flowers replaced). The tide: one law at each of its end steps; five stand for a turn cycle; the wash, then U again. The place in the tide is the duel's (fixtures: blink, theft, a destroyed law, both sides counted, the legend rule, the Season's counter on itself). AI: the Manafleur master's policy by shape (book 67). Art: four candidates + two portraits with Chris. |
 | time_walk | Time Walk | tested | sorcery; `extraTurn` you (R-098) | LEA #83 (Amy Weber — the brief's printing; override pinned). prizeOnly: the deep water's prize, the flood's only Power (ADR-133). AI (book 68): priced by the board it buys another attack for. |
+
+## Session 42b — the mage inversion (ADR-122 §9; no new cards: pool stays 227)
+
+In a phase-two world the ten tier-2/3 mages play the five STILL pairs — one colour kept, the other turned (Vael WB→WR, Kessa UR→UB, Maelin BR→BG, Brennor WG→GR, Pell UG→UW; Corvane WB→BG, Varro UR→UB, Sorrel BR→RW, Ysolde WG→WU, Quill UG→GR). Forty / seventeen, no gold, no prizeOnly, the S29 title caps (≤ 1 at tier 2, ≤ 2 at tier 3; the Artisan is R-table, not a title). Every card was already in the pool — the lists were validated by script before a line of code (all ten clean). `mageListFor(key, phase)` is the one switch; `pnpm mage-inversion:gen` regenerates `packages/sim/src/mage-decks-flood.ts` from `docs/mage-inversion-lists.md`; `s42b-mage-inversion.test.ts` pins them together. The post-lords references (`salvage-WR+lords` / `salvage-UB+lords`, sim/road-decks) use pool cards only.
 
 ## Shop tiers (ADR-078, S19)
 

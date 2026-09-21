@@ -61,8 +61,9 @@ class Counting implements Agent {
   }
 }
 
-const yardsticks = [ROAD_DECKS.salvageWRLegends!, ROAD_DECKS.salvageUBLegends!, ROAD_DECKS.chrisRoadB!];
-console.log(`flood-sim (S41): ${games} games per seat per pairing; lords at ${flood.strongholds[0]!.lord.baseLife} with the law and the signature in hand; courts at ${flood.courts[0]!.minister.life} on their ground with the law; master vs journeyman. A court's intruder is the reference's NEAREST LEGAL CUT for that court's gate (the changes are listed under the table).`);
+// S42b: `--refs postlords` = the two post-lords references (ADR-135's (b)) + chris-road-B; the default is S41's three.
+const yardsticks = arg("refs", "flood") === "postlords" ? [ROAD_DECKS.salvageWRLords!, ROAD_DECKS.salvageUBLords!, ROAD_DECKS.chrisRoadB!] : [ROAD_DECKS.salvageWRLegends!, ROAD_DECKS.salvageUBLegends!, ROAD_DECKS.chrisRoadB!];
+console.log(`flood-sim (S41): ${games} games per seat per pairing; lords at ${flood.strongholds[0]!.lord.baseLife + knobs.floodLordLifeBonus} + ${knobs.floodLordBasics} basics (ADR-134) with the law and the signature in hand; courts at ${flood.courts[0]!.minister.life} on their ground with the law; master vs journeyman. A court's intruder is the reference's NEAREST LEGAL CUT for that court's gate (the changes are listed under the table).`);
 
 /** The nearest legal cut of a reference for a court's gate: offenders out (replaced by pack creatures of the deck's
  * colours that pass the gate, else basics of its colours), creatures topped up to the floor from the same shelf
@@ -107,7 +108,8 @@ for (const [key, deck] of Object.entries(FLOOD_DECKS)) {
   const site = deck.kind === "lord" ? flood.strongholds.find((x) => x.lord.key === key)! : undefined;
   const court = deck.kind === "court" ? flood.courts.find((x) => x.minister.key === key)! : undefined;
   // S42a (the rows): `--grid 1` runs each LORD over life {30, 34} × basics {0, 3 of the triad} (the courts keep their row).
-  const cells: { life: number; basics: number }[] = site && grid ? gridLives.flatMap((l) => gridBasics.map((b) => ({ life: l, basics: b }))) : [{ life: site ? site.lord.baseLife : court!.minister.life, basics: 0 }];
+  // S42b (ADR-134): a lord's default cell is the ratified Standard row — his def's baseLife + `floodLordLifeBonus`, `floodLordBasics` of the triad.
+  const cells: { life: number; basics: number }[] = site && grid ? gridLives.flatMap((l) => gridBasics.map((b) => ({ life: l, basics: b }))) : [{ life: site ? site.lord.baseLife + knobs.floodLordLifeBonus : court!.minister.life, basics: site ? knobs.floodLordBasics : 0 }];
   for (const cell of cells) {
   const life = cell.life;
   const entrance = site ? Array.from({ length: cell.basics }, (_, i) => BASIC[site.triad[i % 3]!]!) : [];

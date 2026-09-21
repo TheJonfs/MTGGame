@@ -43,6 +43,10 @@
     "./mage-decks": {
       "types": "./src/mage-decks.ts",
       "default": "./src/mage-decks.ts"
+    },
+    "./mage-decks-flood": {
+      "types": "./src/mage-decks-flood.ts",
+      "default": "./src/mage-decks-flood.ts"
     }
   },
   "dependencies": {

@@ -25,7 +25,7 @@ describe("catalog v1", () => {
     expect(catalog.opponents.filter((o) => (o.kind ?? "mage") === "mage" && !o.spoke)).toHaveLength(15);
     expect(catalog.opponents.filter((o) => o.kind === "beast")).toHaveLength(17); // S29 (ADR-100): the Tactician ×2 is a beast now
     expect(catalog.opponents.filter((o) => o.spoke)).toHaveLength(17); // 17 beasts (the Tactician ×2 included)
-    for (const o of catalog.opponents) expect(enemyDeck(catalog, o.deck).decklist.reduce((n, e) => n + e.count, 0)).toBeGreaterThanOrEqual(30);
+    for (const o of catalog.opponents) expect(enemyDeck(catalog, o.deck, 1).decklist.reduce((n, e) => n + e.count, 0)).toBeGreaterThanOrEqual(30);
     for (const o of catalog.opponents.filter((x) => x.spoke)) expect(o.deck.startsWith("beast:")).toBe(true);
     // ADR-078: the grid is complete — every spoke has a signature at every tier.
     for (const c of ["W", "U", "B", "R", "G"]) for (const t of [1, 2, 3]) expect(catalog.opponents.some((o) => o.spoke === c && o.tier === t), `${c} T${t}`).toBe(true);
@@ -225,7 +225,7 @@ describe("WorldState + world-save-v3", () => {
 // ---------- the acceptance journey (brief Part 4, scripted half; S12 carving (b)) ----------
 
 function agentsFor(spec: WorldState, enemyDifficulty: "apprentice" | "journeyman" | "master", enemyDeckRef: OpponentDeckRef, seed: number): [Agent, Agent] {
-  const enemy = enemyDeck(catalog, enemyDeckRef);
+  const enemy = enemyDeck(catalog, enemyDeckRef, 1);
   const me = new HeuristicAgent(seed * 2 + 1, pool.cards, difficultyProfile("journeyman", starterTemplate(catalog, spec.player.starterId).archetype, enemy.decklist));
   const them = new HeuristicAgent(seed * 2 + 2, pool.cards, difficultyProfile(enemyDifficulty, enemy.archetype, activeDeck(spec).map((e) => ({ ...e }))));
   return [me, them];
@@ -975,7 +975,7 @@ describe("S20 Part 3+7 (dungeons, scripted acceptance): topology, escrow, interi
     const { dungeonDuelSpec } = await dg();
     const knobs = worldKnobs(w);
     const boss = catalog.opponents.find((o) => o.id === "beast_siegegang")!;
-    const g = dungeonDuelSpec(w, catalog, knobs, run, { kind: "guardian", name: boss.name, decklist: enemyDeck(catalog, boss.deck).decklist, archetype: "aggro", life: boss.worldLife, color: "R" }, [], new WorldRng(3));
+    const g = dungeonDuelSpec(w, catalog, knobs, run, { kind: "guardian", name: boss.name, decklist: enemyDeck(catalog, boss.deck, 1).decklist, archetype: "aggro", life: boss.worldLife, color: "R" }, [], new WorldRng(3));
     expect(g.enemyLife).toBe(boss.worldLife + knobs.lairResidentLifeBonus); // 12 + 2, no law, zero steps
   });
 });
@@ -1971,8 +1971,8 @@ describe("S16 roamers (ADR-071): sight, pursuit, fleeing, contact, removal, resp
     const white = catalog.opponents.find((o) => o.tier === 1 && o.colors.includes("W") && !o.colors.includes("G"))!;
     w.player.renownByColor.G = 10; // over tier 1's flee threshold (1 × 4)
     w.player.renown = 10;
-    expect(isFleeing(green, knobs, renownAgainst(w.player, green))).toBe(true);
-    expect(isFleeing(white, knobs, renownAgainst(w.player, white))).toBe(false); // white hasn't heard of you
+    expect(isFleeing(green, knobs, renownAgainst(w.player, green, 1))).toBe(true);
+    expect(isFleeing(white, knobs, renownAgainst(w.player, white, 1))).toBe(false); // white hasn't heard of you
     // Credit: a WU opponent's defeat lands on W and U (and the total), not on G.
     creditRenown(w.player, "WU", 2);
     expect(w.player.renown).toBe(12);

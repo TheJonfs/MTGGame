@@ -1,6 +1,6 @@
 import { entranceModifiers, resolveMatchup } from "./matchup.js";
 import type { MatchResult, MatchSpec, Modifier } from "@shandalar/engine";
-import { enemyDeck, type Catalog, type OpponentTemplate } from "./catalog.js";
+import { enemyDeck, opponentColors, type Catalog, type OpponentTemplate } from "./catalog.js";
 import { strongholdContentFor } from "./flood.js";
 import { checkDeck, describeDeckRule, type DeckCheck, type DeckRule } from "./legality.js";
 import type { CardDef } from "@shandalar/cards";
@@ -98,8 +98,9 @@ export function isFleeing(tmpl: OpponentTemplate, knobs: KnobValues, renown: num
  * renown among its own colours (its template `colors`), so beating up green enemies scares
  * green enemies while white tier 1s still line up. A template with no WUBRG colour (none in
  * the catalog today) falls back to total renown. */
-export function renownAgainst(player: WorldState["player"], tmpl: OpponentTemplate): number {
-  const colors = RENOWN_COLORS.filter((c) => tmpl.colors.includes(c));
+export function renownAgainst(player: WorldState["player"], tmpl: OpponentTemplate, phase: number | undefined): number {
+  const worn = opponentColors(tmpl, phase); // S42b: a flood mage fears the renown of the pair it wears NOW
+  const colors = RENOWN_COLORS.filter((c) => worn.includes(c));
   return colors.length ? Math.max(...colors.map((c) => player.renownByColor[c])) : player.renown;
 }
 
@@ -116,7 +117,7 @@ export function visibleRoamers(world: WorldState, catalog: Catalog, knobs: KnobV
     if (o.gone || !o.at || o.fixedAt) continue;
     if (!playerSees(world, knobs, o.at)) continue;
     const tmpl = opponentTemplate(catalog, o);
-    out.push({ inst: o, tmpl, fleeing: isFleeing(tmpl, knobs, renownAgainst(world.player, tmpl)) });
+    out.push({ inst: o, tmpl, fleeing: isFleeing(tmpl, knobs, renownAgainst(world.player, tmpl, world.phase)) });
   }
   return out;
 }
@@ -152,7 +153,7 @@ function moveRoamer(world: WorldState, catalog: Catalog, knobs: KnobValues, rng:
   if (moves.length === 0) return;
   const dist = manhattan(o.at!, me);
   if (dist <= knobs.sightRadius) {
-    const fleeing = isFleeing(tmpl, knobs, renownAgainst(world.player, tmpl));
+    const fleeing = isFleeing(tmpl, knobs, renownAgainst(world.player, tmpl, world.phase));
     const scored = moves.map((q) => ({ q, d: manhattan(q, me) }));
     const best = fleeing ? Math.max(...scored.map((s) => s.d)) : Math.min(...scored.map((s) => s.d));
     // A fleeing roamer that can't gain distance holds still rather than stepping into you.
@@ -281,7 +282,7 @@ export function advance(
     world.opponents.find((o) => !o.gone && o.at && !o.fixedAt && samePoint(o.at, cell));
   const encounterOf = (inst: OpponentInstance, cell: Point, contact: Encounter["contact"]): Encounter => {
     const tmpl = opponentTemplate(catalog, inst);
-    return { opponentId: inst.id, catalogId: inst.catalogId, tier: tmpl.tier, region: regionAt(world.map, cell).index, at: { ...cell }, fleeing: !inst.fixedAt && isFleeing(tmpl, knobs, renownAgainst(world.player, tmpl)), contact };
+    return { opponentId: inst.id, catalogId: inst.catalogId, tier: tmpl.tier, region: regionAt(world.map, cell).index, at: { ...cell }, fleeing: !inst.fixedAt && isFleeing(tmpl, knobs, renownAgainst(world.player, tmpl, world.phase)), contact };
   };
   try {
     for (const cell of path) {
@@ -632,12 +633,12 @@ export function prepareDuel(world: WorldState, catalog: Catalog, enc: Encounter,
     seed,
     players: [
       { name: world.player.name, decklist: activeDeck(world).map((e) => ({ ...e })), agent: "human" },
-      { name: tmpl.name, decklist: enemyDeck(catalog, tmpl.deck).decklist, agent: `heuristic:${matchup.profile}` },
+      { name: tmpl.name, decklist: enemyDeck(catalog, tmpl.deck, world.phase).decklist, agent: `heuristic:${matchup.profile}` },
     ],
     rules: { startingLife: world.player.worldLife, handSize: 7, mulligan: "london", maxTurns: 100, ante: matchup.ante, startingPlayer },
     modifiers,
   };
-  return { encounter: enc, seed, spec, enemy: { name: tmpl.name, difficulty: matchup.profile, deck: tmpl.deck, archetype: enemyDeck(catalog, tmpl.deck).archetype, portrait: tmpl.portrait, worldLife: enemyLife, tier: tmpl.tier, entrance: matchup.entrance } };
+  return { encounter: enc, seed, spec, enemy: { name: tmpl.name, difficulty: matchup.profile, deck: tmpl.deck, archetype: enemyDeck(catalog, tmpl.deck, world.phase).archetype, portrait: tmpl.portrait, worldLife: enemyLife, tier: tmpl.tier, entrance: matchup.entrance } };
 }
 
 /** Resolve a finished duel into the world: ante both ways, gold, world life. */
@@ -655,8 +656,8 @@ export function applyDuelResult(world: WorldState, catalog: Catalog, duel: Prepa
     addToCollection(world, anteWon, "ante");
     world.player.gold += knobs.goldRewardByTier[duel.encounter.tier];
     const beatenTmpl = catalog.opponents.find((o) => o.id === duel.encounter.catalogId);
-    creditRenown(world.player, beatenTmpl?.colors ?? "", duel.encounter.tier); // §5 total + S20 playtest per-colour
-    creditSpokeKill(world, beatenTmpl?.colors, duel.encounter.tier); // S22 r1: the pace war mirrors renown — every colour worn bleeds its lord
+    creditRenown(world.player, beatenTmpl ? opponentColors(beatenTmpl, world.phase) : "", duel.encounter.tier); // §5 total + S20 playtest per-colour
+    creditSpokeKill(world, beatenTmpl ? opponentColors(beatenTmpl, world.phase) : undefined, duel.encounter.tier); // S22 r1: the pace war mirrors renown — every colour worn bleeds its lord
     if (inst) removeOpponent(world, inst.id, "defeated");
     // S19: bounty completion — the mark's defeat pays out (recorded on the DuelRecord for the UI).
     // S22 r4 (item 7): a TWIN of the mark pays too (same catalog template — the player can't tell

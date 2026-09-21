@@ -302,7 +302,7 @@ export function newWorld(opts: NewWorldOptions): WorldState {
   if (opts.salvage) return newSalvageWorld(opts, opts.salvage, difficulty, knobs);
   if (!opts.starter) throw new Error("newWorld: a starter or a salvage is required");
   const starter = starterTemplate(opts.catalog, opts.starter);
-  const gen: GeneratedWorld = generateWorld(opts.seed, opts.catalog, opts.generator ?? DEFAULT_GENERATOR, { knobs, homeColor: starter.color });
+  const gen: GeneratedWorld = generateWorld(opts.seed, opts.catalog, opts.generator ?? DEFAULT_GENERATOR, { knobs, homeColor: starter.color, phase: opts.phase ?? 1 }); // S42b: a starter world at phase 2 (dev/tests) gets the flood's map too
   const deck = starterDecklist(starter, difficulty);
   const basic = starter.basicLand;
   const collection = collectionFrom(deck);

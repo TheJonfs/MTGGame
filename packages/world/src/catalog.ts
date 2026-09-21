@@ -1,7 +1,7 @@
 import { validateFloodDef, floodDeck } from "./flood.js";
 import { DECKS, DECK_ARCHETYPES, type DeckKey } from "@shandalar/sim/decks";
 import { EXPANSION_DECKS } from "@shandalar/sim/expansion-decks";
-import { MAGE_DECKS } from "@shandalar/sim/mage-decks";
+import { MAGE_DECKS, mageListFor } from "@shandalar/sim/mage-decks";
 import { assertKnobSource, type KnobSource, type RegionTier, type EnemyTier } from "./knobs.js";
 import { validateCorollaDef } from "./corolla.js";
 import { DECK_RULE_FIELDS, validateDeckRule, type DeckRule } from "./legality.js";
@@ -21,6 +21,9 @@ export type Color = "W" | "U" | "B" | "R" | "G" | "C";
 export interface RegionTemplate {
   id: string;
   name: string;
+  /** S42b (Part 5, the planner's fifteen): this region's name in a PHASE-TWO world — the flood renames the country
+   * (inner / approach / wild by colour); phase one's `name` stands at phase one. Read through `regionName`. */
+  namePhaseTwo?: string;
   tier: RegionTier;
   /** Wash colour on the map + shop stock colour (S13). "C" = wild/colourless. */
   color: Color;
@@ -43,6 +46,9 @@ export interface ParleyVoice {
   verb?: string;
   /** One line under the name in the parley dialog (the opponent's voice or the field-guide note). */
   line?: string;
+  /** S42b (the mage inversion): one more line in a PHASE-TWO world, after `line` — "the water changed me, too",
+   * in each mage's own words. Read through `parleyLines`. */
+  linePhaseTwo?: string;
   /** Replaces the "cannot be bought" explanation when buyable is false. */
   refusal?: string;
 }
@@ -66,6 +72,9 @@ export interface OpponentTemplate {
   epithet?: string;
   /** Colour identity string for UI washes, e.g. "R", "WU". */
   colors: string;
+  /** S42b (the mage inversion): a tier-2/3 mage's colours in a PHASE-TWO world (kept colour first) — the parley/rail
+   * wash and the renown its fall pays; sync-tested against the flood list. Read through `opponentColors`. */
+  colorsPhaseTwo?: string;
   /** Knob overrides at the `opponent` layer (e.g. a tier-3 carries anteCount 2). */
   knobs?: KnobSource;
   /** ADR-066 (S14 PoC): default "mage". */
@@ -206,8 +215,26 @@ export interface Catalog {
   flood?: import("./flood.js").FloodDef;
 }
 
+/** S42b: a region template's name in a world of this phase (the one reader of `namePhaseTwo`). */
+export function regionName(tmpl: Pick<RegionTemplate, "name" | "namePhaseTwo">, phase: number | undefined): string {
+  return (phase ?? 1) >= 2 && tmpl.namePhaseTwo ? tmpl.namePhaseTwo : tmpl.name;
+}
+
+/** S42b: the parley's voice lines in a world of this phase (the one reader of `linePhaseTwo`). */
+export function parleyLines(op: Pick<OpponentTemplate, "parley">, phase: number | undefined): string[] {
+  return [op.parley?.line, (phase ?? 1) >= 2 ? op.parley?.linePhaseTwo : undefined].filter((l): l is string => !!l);
+}
+
+/** S42b: an opponent's colours in a world of this phase (the one reader of `colorsPhaseTwo`). */
+export function opponentColors(op: Pick<OpponentTemplate, "colors" | "colorsPhaseTwo">, phase: number | undefined): string {
+  return (phase ?? 1) >= 2 && op.colorsPhaseTwo ? op.colorsPhaseTwo : op.colors;
+}
+
 /** Resolve an opponent's deck reference to a decklist + archetype (slice deck or catalog starter). */
-export function enemyDeck(catalog: Catalog, ref: OpponentDeckRef): { decklist: StarterDecklist; archetype: StarterArchetype } {
+/** S42b: `phase` is REQUIRED (pass `world.phase`; `undefined` = phase one) — in a phase-two world a tier-2/3 mage
+ * plays its flood list (`mageListFor`, the one switch), and a caller that forgets the phase would silently field
+ * phase one's deck. */
+export function enemyDeck(catalog: Catalog, ref: OpponentDeckRef, phase: number | undefined): { decklist: StarterDecklist; archetype: StarterArchetype } {
   if (ref in DECKS) {
     const k = ref as DeckKey;
     return { decklist: DECKS[k].decklist.map((e) => ({ ...e })), archetype: DECK_ARCHETYPES[k] };
@@ -219,7 +246,7 @@ export function enemyDeck(catalog: Catalog, ref: OpponentDeckRef): { decklist: S
   }
   // S29 (ADR-099): the mage cleansheet — one deck per named mage.
   if (ref.startsWith("mage:")) {
-    const m = MAGE_DECKS[ref.slice("mage:".length)];
+    const m = mageListFor(ref.slice("mage:".length), phase);
     if (!m) throw new Error(`unknown mage deck ${ref}`);
     return { decklist: m.decklist.map((e) => ({ ...e })), archetype: m.archetype };
   }
@@ -270,6 +297,7 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
   const tiers = new Set<string>(["civilized", "approach", "wild"]);
   for (const reg of r.regions) {
     if (!reg.id || !reg.name) errors.push(`region missing id/name: ${JSON.stringify(reg)}`);
+    if (reg.namePhaseTwo !== undefined && (typeof reg.namePhaseTwo !== "string" || !reg.namePhaseTwo.trim())) errors.push(`region ${reg.id}: namePhaseTwo must be a non-empty string (S42b)`);
     if (!tiers.has(reg.tier)) errors.push(`region ${reg.id}: bad tier ${reg.tier}`);
     if (!Array.isArray(reg.townNames)) errors.push(`region ${reg.id}: townNames must be an array`);
   }
@@ -296,6 +324,12 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
       || (typeof op.deck === "string" && op.deck.startsWith("beast:") && op.deck.slice("beast:".length) in EXPANSION_DECKS)
       || (typeof op.deck === "string" && op.deck.startsWith("mage:") && op.deck.slice("mage:".length) in MAGE_DECKS);
     if (!deckOk) errors.push(`opponent ${op.id}: unknown deck ${op.deck}`);
+    // S42b: a mage row's phase-two colours ARE its flood list's (kept colour first); no flood list, no field.
+    if (typeof op.deck === "string" && op.deck.startsWith("mage:")) {
+      const flood = mageListFor(op.deck.slice(5), 2), base = MAGE_DECKS[op.deck.slice(5)];
+      const want = flood && flood !== base ? flood.colors : undefined;
+      if (op.colorsPhaseTwo !== want) errors.push(`opponent ${op.id}: colorsPhaseTwo ${op.colorsPhaseTwo ?? "(none)"} ≠ the flood list's ${want ?? "(none)"} (S42b)`);
+    } else if (op.colorsPhaseTwo) errors.push(`opponent ${op.id}: colorsPhaseTwo is a mage's field (S42b)`);
     if (op.spoke && !["W", "U", "B", "R", "G"].includes(op.spoke)) errors.push(`opponent ${op.id}: bad spoke ${op.spoke}`);
     if (op.kind === "beast" && !op.spoke) errors.push(`opponent ${op.id}: beasts need a spoke (S18 region binding)`);
     if (![1, 2, 3].includes(op.tier)) errors.push(`opponent ${op.id}: bad tier ${op.tier}`);

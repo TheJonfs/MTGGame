@@ -13,7 +13,8 @@ import type { CardDef } from "@shandalar/cards";
 import { manaValue, parseManaCost } from "@shandalar/cards";
 import { DECKS, DECK_ARCHETYPES, type DeckKey } from "@shandalar/sim/decks";
 import { EXPANSION_DECKS } from "@shandalar/sim/expansion-decks";
-import { MAGE_DECKS } from "@shandalar/sim/mage-decks";
+import { MAGE_DECKS, mageListFor } from "@shandalar/sim/mage-decks";
+import { MAGE_FLOOD_LISTS } from "@shandalar/sim/mage-decks-flood";
 import { ROAD_DECKS } from "@shandalar/sim/road-decks";
 import { COURT_DECKS } from "@shandalar/sim/court-decks";
 import { GUARDIAN_DECKS } from "@shandalar/sim/guardian-decks";
@@ -118,27 +119,33 @@ Player-side constants for the same reads: \`startingWorldLife\` ${tri("startingW
 
 Mages roam anywhere; beasts are spoke-bound (their colour's ring). Tier 1 rolls in civilized rings, 2 in the approach, 3 in the wilds (the S18 spawn tables). The same templates staff the dungeons' minion floors by spoke.
 
-| Opponent | Kind | Tier | Spoke | Life easy / **standard** / hard | Entrance (basics) easy / **standard** / hard | Phase two: life / entrance (standard) | AI profile | Deck | Cards / lands / avg MV / colours | Notes |
-|---|---|---|---|---|---|---|---|---|---|---|`);
+| Opponent | Kind | Tier | Spoke | Life easy / **standard** / hard | Entrance (basics) easy / **standard** / hard | Phase two: life / entrance (standard) | Phase two: pair (S42b) | AI profile | Deck | Cards / lands / avg MV / colours | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|---|`);
   const deckUsers = new Map<string, string[]>();
   for (const o of ops) {
-    const d = enemyDeck(catalog, o.deck);
+    const d = enemyDeck(catalog, o.deck, 1);
     const s = deckLines(d.decklist, pool);
     const notes = [o.epithet ? o.epithet : "", o.buyable === false ? "not buyable" : "", o.knobs ? `knobs ${JSON.stringify(o.knobs)}` : "", o.worldLifeOffset ? `worldLifeOffset ${o.worldLifeOffset}` : "", o.deckRule ? `door: ${o.deckRule.label} (${describeDeckRule(o.deckRule)})` : ""].filter(Boolean).join("; ");
     // S34: the resolver's cell at each mode (the same call the world makes).
     const m = { easy: resolveMatchup(o, easy), standard: resolveMatchup(o, std), hard: resolveMatchup(o, hard), phaseTwo: resolveMatchup(o, std, null, 2) };
-    out.push(`| ${o.name} | ${o.kind ?? "mage"} | ${o.tier} | ${o.spoke ?? "—"} | ${m.easy.life} / **${m.standard.life}** / ${m.hard.life} | ${m.easy.entrance.length} / **${m.standard.entrance.length}** / ${m.hard.entrance.length}${m.standard.entrance.length ? ` (${m.standard.entrance.join(", ")})` : ""} | ${m.phaseTwo.life} / ${m.phaseTwo.entrance.length} | ${o.difficulty} | ${o.deck} (${d.archetype}) | ${s.total} / ${s.lands} / ${s.avgMv} / ${s.colours} | ${notes} |`);
+    out.push(`| ${o.name} | ${o.kind ?? "mage"} | ${o.tier} | ${o.spoke ?? "—"} | ${m.easy.life} / **${m.standard.life}** / ${m.hard.life} | ${m.easy.entrance.length} / **${m.standard.entrance.length}** / ${m.hard.entrance.length}${m.standard.entrance.length ? ` (${m.standard.entrance.join(", ")})` : ""} | ${m.phaseTwo.life} / ${m.phaseTwo.entrance.length}${m.phaseTwo.entrance.length ? ` (${m.phaseTwo.entrance.join(", ")})` : ""} | ${o.colorsPhaseTwo ? `**${o.colorsPhaseTwo}** (${mageListFor(o.deck.slice(5), 2)!.archetype})` : "—"} | ${o.difficulty} | ${o.deck} (${d.archetype}) | ${s.total} / ${s.lands} / ${s.avgMv} / ${s.colours} | ${notes} |`);
     deckUsers.set(o.deck, [...(deckUsers.get(o.deck) ?? []), o.name]);
   }
   out.push(`\n### The roaming decklists (one entry per deck; who plays it)\n`);
   for (const [ref, users] of [...deckUsers.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
-    const d = enemyDeck(catalog, ref as OpponentDeckRef);
+    const d = enemyDeck(catalog, ref as OpponentDeckRef, 1);
     const s = deckLines(d.decklist, pool);
     const title = ref in DECKS ? `${DECKS[ref as DeckKey].name} (slice deck ${ref}, ${DECK_ARCHETYPES[ref as DeckKey]})`
       : ref.startsWith("beast:") ? `${EXPANSION_DECKS[ref.slice(6)]!.name} (${ref}, tier ${EXPANSION_DECKS[ref.slice(6)]!.tier}, ${d.archetype})`
       : ref.startsWith("mage:") ? `${MAGE_DECKS[ref.slice(5)]!.name}, ${MAGE_DECKS[ref.slice(5)]!.epithet} (${ref}, ${MAGE_DECKS[ref.slice(5)]!.colors} tier ${MAGE_DECKS[ref.slice(5)]!.tier}, ${d.archetype})`
       : `${ref} (${d.archetype})`;
     out.push(`- **${title}** — played by ${users.join(", ")} — ${s.total} cards, ${s.lands} lands, avg MV ${s.avgMv}\n  ${s.list}`);
+  }
+  // S42b (ADR-122 §9): the mage inversion — the ten tier-2/3 mages' phase-two lists (the still pairs).
+  out.push(`\n### The flood's lists — the mage inversion (phase two; generated from docs/mage-inversion-lists.md)\n\nIn a phase-two world the ten tier-2/3 mages keep their names, portraits, epithets and tiers, keep one colour and turn the other: they play the five STILL pairs. Tier 1 plays phase one's lists at both phases.\n`);
+  for (const [k, f] of Object.entries(MAGE_FLOOD_LISTS)) {
+    const s = deckLines(f.decklist, pool);
+    out.push(`- **${MAGE_DECKS[k]!.name}, ${MAGE_DECKS[k]!.epithet} (mage:${k} at phase two, ${MAGE_DECKS[k]!.colors} → ${f.colors}, tier ${MAGE_DECKS[k]!.tier}, ${f.archetype})** — ${s.total} cards, ${s.lands} lands, avg MV ${s.avgMv}\n  ${s.list}`);
   }
 
   // ---- the bosses ----

@@ -85,7 +85,8 @@ export function lordGrowth(world: WorldState, knobs: KnobValues): number {
 /** The pace-war formula (interior empowerment stacks on top of this at the fight itself). */
 export function lordStartingLife(world: WorldState, knobs: KnobValues, content: StrongholdContentDef): number {
   const reduction = Math.floor(strongholdState(world, content.color).spokeMinionPoints / knobs.spokePointsPerLife);
-  return Math.max(knobs.lordLifeFloor, content.lord.baseLife + lordGrowth(world, knobs) - reduction);
+  const floodBonus = "triad" in content ? knobs.floodLordLifeBonus : 0; // S42b (ADR-134): Hard's 34 — a flood lord only
+  return Math.max(knobs.lordLifeFloor, content.lord.baseLife + floodBonus + lordGrowth(world, knobs) - reduction);
 }
 
 /** The colour prize list (§treasures; S22 playtest r1 — Chris: ALL the colour's cards, not just
@@ -145,7 +146,7 @@ export function lordStatus(world: WorldState, catalog: Catalog, knobs: KnobValue
         : growth > 0
           ? `${c.lord.name} has grown while you walked.` /* S25 r4: the growth clock is YOUR road, not a calendar */
           : `${c.lord.name} waits, untested.`;
-    return { color: c.color, strongholdId: c.id, strongholdName: c.name, lordName: c.lord.name, life, base: c.lord.baseLife, growth, reduction, sealed: st.seal, voice };
+    return { color: c.color, strongholdId: c.id, strongholdName: c.name, lordName: c.lord.name, life, base: c.lord.baseLife + ("triad" in c ? knobs.floodLordLifeBonus : 0), growth, reduction, sealed: st.seal, voice };
   });
 }
 

@@ -1025,7 +1025,7 @@
     "key": "bailiff",
     "name": "The Bailiff",
     "cardId": "the_bailiff",
-    "baseLife": 34,
+    "baseLife": 30,
     "portrait": "flood-lord-bailiff",
     "gender": "she"
    },
@@ -1060,7 +1060,7 @@
     "key": "reeve",
     "name": "The Reeve",
     "cardId": "the_reeve",
-    "baseLife": 34,
+    "baseLife": 30,
     "portrait": "flood-lord-reeve",
     "gender": "he"
    },
@@ -1095,7 +1095,7 @@
     "key": "fordkeeper",
     "name": "The Fordkeeper",
     "cardId": "the_fordkeeper",
-    "baseLife": 34,
+    "baseLife": 30,
     "portrait": "flood-lord-fordkeeper",
     "gender": "he"
    },
@@ -1130,7 +1130,7 @@
     "key": "dredger",
     "name": "The Dredger",
     "cardId": "the_dredger",
-    "baseLife": 34,
+    "baseLife": 30,
     "portrait": "flood-lord-dredger",
     "gender": "he"
    },
@@ -1165,7 +1165,7 @@
     "key": "reaper",
     "name": "The Reaper",
     "cardId": "the_reaper",
-    "baseLife": 34,
+    "baseLife": 30,
     "portrait": "flood-lord-reaper",
     "gender": "he"
    },

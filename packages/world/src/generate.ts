@@ -1,4 +1,4 @@
-import type { Catalog, Color, RegionTemplate } from "./catalog.js";
+import { regionName, type Catalog, type Color, type RegionTemplate } from "./catalog.js";
 import { defaultKnobs, KNOBS, type KnobValues, type Phase, type RegionTier } from "./knobs.js";
 import { exploredNone, findPath, idx, inBounds, manhattan, markExplored, placeCentreDoors, reachable, samePoint, type FixedPoint, type Point, type RegionInstance, type Town, type WorldMap } from "./map.js";
 import { WorldRng } from "./rng.js";
@@ -284,7 +284,7 @@ export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOpt
     TIERS.forEach((tier) => {
       const tmpl = pickTemplate(color, tier);
       const r = Math.max(0.02, ringRadii[tier] + jitter(knobs.ringJitter));
-      regions.push({ index: regions.length, templateId: tmpl.id, name: tmpl.name, tier, color, heart: polar(spokeAngle[i]! + jitter(4), r), spoke: i });
+      regions.push({ index: regions.length, templateId: tmpl.id, name: regionName(tmpl, extra.phase) /* S42b: the flood renames the country */, tier, color, heart: polar(spokeAngle[i]! + jitter(4), r), spoke: i });
     });
     strongholdPts.push({ at: polar(spokeAngle[i]!, knobs.strongholdRadius), color, spoke: i });
   });

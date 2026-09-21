@@ -22,40 +22,40 @@ Player-side constants for the same reads: `startingWorldLife` 10 (easy 10 / hard
 
 Mages roam anywhere; beasts are spoke-bound (their colour's ring). Tier 1 rolls in civilized rings, 2 in the approach, 3 in the wilds (the S18 spawn tables). The same templates staff the dungeons' minion floors by spoke.
 
-| Opponent | Kind | Tier | Spoke | Life easy / **standard** / hard | Entrance (basics) easy / **standard** / hard | Phase two: life / entrance (standard) | AI profile | Deck | Cards / lands / avg MV / colours | Notes |
-|---|---|---|---|---|---|---|---|---|---|---|
-| A Plague of Rats | beast | 1 | B | 8 / **8** / 8 | 0 / **0** / 0 | 12 / 0 | apprentice | beast:rats (midrange) | 30 / 13 / 2.12 / B |  |
-| A Grizzly Bear | beast | 1 | G | 8 / **8** / 8 | 0 / **0** / 0 | 12 / 0 | apprentice | beast:grizzly (midrange) | 30 / 13 / 2.41 / G |  |
-| The Deadly Recluse | beast | 1 | G | 8 / **8** / 8 | 0 / **0** / 0 | 12 / 0 | apprentice | beast:recluse (midrange) | 30 / 13 / 1.88 / G | not buyable |
-| A Gray Ogre | beast | 1 | R | 8 / **8** / 8 | 0 / **0** / 0 | 12 / 0 | apprentice | beast:ogre (aggro) | 30 / 12 / 1.94 / R |  |
-| A Bloom of Man-o'-War | beast | 1 | U | 8 / **8** / 8 | 0 / **0** / 0 | 12 / 0 | apprentice | beast:manowar (control) | 30 / 12 / 2.78 / U | not buyable |
-| A Cunning Tactician | beast | 1 | W | 8 / **8** / 8 | 0 / **0** / 0 | 12 / 0 | apprentice | beast:tactician (aggro) | 30 / 12 / 2.44 / W |  |
-| A Savannah Lion | beast | 1 | W | 8 / **8** / 8 | 0 / **0** / 0 | 12 / 0 | apprentice | beast:lion (aggro) | 30 / 12 / 1.50 / W |  |
-| A Vampire Nighthawk | beast | 2 | B | 4 / **6** / 8 | 0 / **0** / 0 | 12 / 0 | journeyman | beast:nighthawk (midrange) | 30 / 12 / 2.11 / B | knobs {"goldRewardByTier":{"1":10,"2":50,"3":60}}; worldLifeOffset -4 |
-| A Rumbling Baloth | beast | 2 | G | 10 / **12** / 14 | 0 / **0** / 0 | 18 / 0 | journeyman | beast:baloth (midrange) | 30 / 12 / 2.22 / G |  |
-| The Boggart Warband | beast | 2 | R | 8 / **10** / 12 | 0 / **0** / 0 | 16 / 0 | journeyman | beast:warband (aggro) | 30 / 12 / 2.06 / R |  |
-| The Living Gale | beast | 2 | U | 14 / **16** / 18 | 0 / **0** / 0 | 22 / 0 | journeyman | beast:gale (control) | 30 / 12 / 3.44 / U | not buyable; worldLifeOffset 4 |
-| The Cunning Tactician | beast | 2 | W | 10 / **12** / 14 | 0 / **0** / 0 | 18 / 0 | journeyman | beast:tactician (aggro) | 30 / 12 / 2.44 / W |  |
-| The Hypnotic Specter | beast | 3 | B | 14 / **16** / 20 | 0 / **0** / 0 | 24 / 0 | master | beast:specter (midrange) | 30 / 12 / 2.28 / B | not buyable; knobs {"anteCount":2} |
-| the Pelakka Wurm | beast | 3 | G | 14 / **16** / 20 | 0 / **0** / 0 | 24 / 0 | master | beast:wurm (midrange) | 30 / 12 / 3.33 / G | not buyable; knobs {"anteCount":2} |
-| The Siege-Gang | beast | 3 | R | 14 / **16** / 20 | 0 / **0** / 0 | 24 / 0 | master | beast:siegegang (aggro) | 30 / 12 / 2.78 / R | knobs {"anteCount":2} |
-| The Faerie Formation | beast | 3 | U | 14 / **16** / 20 | 0 / **0** / 0 | 24 / 0 | master | beast:formation (control) | 30 / 13 / 3.82 / U | knobs {"anteCount":2} |
-| The Serra Angel | beast | 3 | W | 10 / **12** / 16 | 0 / **0** / 0 | 20 / 0 | master | beast:serra (control) | 30 / 12 / 2.94 / W | knobs {"anteCount":2}; worldLifeOffset -4 |
-| Brann the Scorched | mage | 1 | — | 8 / **8** / 8 | 0 / **0** / 0 | 12 / 1 | apprentice | mage:brann (aggro) | 40 / 17 / 1.74 / R | the Sparkwright |
-| Old Hask | mage | 1 | — | 8 / **8** / 8 | 0 / **0** / 0 | 12 / 1 | apprentice | mage:hask (aggro) | 40 / 16 / 1.54 / G | the Wardener |
-| Pale Edric | mage | 1 | — | 8 / **8** / 8 | 0 / **0** / 0 | 12 / 1 | apprentice | mage:edric (midrange) | 40 / 17 / 1.91 / B | the Sexton |
-| Sister Oriel | mage | 1 | — | 8 / **8** / 8 | 0 / **0** / 0 | 12 / 1 | apprentice | mage:oriel (midrange) | 40 / 17 / 1.78 / W | the Almoner |
-| Tessaly Reed | mage | 1 | — | 8 / **8** / 8 | 0 / **0** / 0 | 12 / 1 | apprentice | mage:tessaly (control) | 40 / 18 / 1.73 / U | the Tidewright |
-| Adept Maelin | mage | 2 | — | 12 / **12** / 14 | 0 / **1** / 2 (swamp) | 16 / 1 | journeyman | mage:maelin (aggro) | 40 / 17 / 1.96 / BR | the Pyre-Warden |
-| Brennor of the Glade | mage | 2 | — | 12 / **12** / 14 | 0 / **1** / 2 (forest) | 16 / 1 | journeyman | mage:brennor (midrange) | 40 / 17 / 1.61 / GW | the Sanctuary |
-| Kessa Emberhand | mage | 2 | — | 12 / **12** / 14 | 0 / **1** / 2 (island) | 16 / 1 | journeyman | mage:kessa (control) | 40 / 17 / 1.87 / RU | the Stormcaller |
-| Mistress Vael | mage | 2 | — | 12 / **12** / 14 | 0 / **1** / 2 (plains) | 16 / 1 | journeyman | mage:vael (midrange) | 40 / 17 / 1.74 / BW | the Tithe-Reeve |
-| Pell of the Shallows | mage | 2 | — | 12 / **12** / 14 | 0 / **1** / 2 (forest) | 16 / 1 | journeyman | mage:pell (control) | 40 / 17 / 2.17 / GU | the Tidesower |
-| High Warden Sorrel | mage | 3 | — | 14 / **16** / 20 | 1 / **2** / 2 (swamp, mountain) | 20 / 3 | master | mage:sorrel (midrange) | 40 / 17 / 1.87 / BR | the Inquisitor; knobs {"anteCount":2} |
-| Lord Corvane | mage | 3 | — | 14 / **16** / 20 | 1 / **2** / 2 (swamp, plains) | 20 / 3 | master | mage:corvane (midrange) | 40 / 17 / 2.96 / BW | the Sepulchre; knobs {"anteCount":2} |
-| Magister Quill | mage | 3 | — | 14 / **16** / 20 | 1 / **2** / 2 (forest, island) | 20 / 3 | master | mage:quill (control) | 40 / 17 / 2.35 / GU | the Drowned Grove; knobs {"anteCount":2} |
-| Thornmother Ysolde | mage | 3 | — | 10 / **12** / 16 | 1 / **2** / 2 (plains, forest) | 16 / 3 | master | mage:ysolde (aggro) | 40 / 17 / 1.78 / GW | the Thornmother; knobs {"anteCount":2}; worldLifeOffset -4 |
-| Varro Flamebrand | mage | 3 | — | 14 / **16** / 20 | 1 / **2** / 2 (island, mountain) | 20 / 3 | master | mage:varro (control) | 40 / 17 / 1.96 / RU | the Ashwright; knobs {"anteCount":2} |
+| Opponent | Kind | Tier | Spoke | Life easy / **standard** / hard | Entrance (basics) easy / **standard** / hard | Phase two: life / entrance (standard) | Phase two: pair (S42b) | AI profile | Deck | Cards / lands / avg MV / colours | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| A Plague of Rats | beast | 1 | B | 8 / **8** / 8 | 0 / **0** / 0 | 12 / 0 | — | apprentice | beast:rats (midrange) | 30 / 13 / 2.12 / B |  |
+| A Grizzly Bear | beast | 1 | G | 8 / **8** / 8 | 0 / **0** / 0 | 12 / 0 | — | apprentice | beast:grizzly (midrange) | 30 / 13 / 2.41 / G |  |
+| The Deadly Recluse | beast | 1 | G | 8 / **8** / 8 | 0 / **0** / 0 | 12 / 0 | — | apprentice | beast:recluse (midrange) | 30 / 13 / 1.88 / G | not buyable |
+| A Gray Ogre | beast | 1 | R | 8 / **8** / 8 | 0 / **0** / 0 | 12 / 0 | — | apprentice | beast:ogre (aggro) | 30 / 12 / 1.94 / R |  |
+| A Bloom of Man-o'-War | beast | 1 | U | 8 / **8** / 8 | 0 / **0** / 0 | 12 / 0 | — | apprentice | beast:manowar (control) | 30 / 12 / 2.78 / U | not buyable |
+| A Cunning Tactician | beast | 1 | W | 8 / **8** / 8 | 0 / **0** / 0 | 12 / 0 | — | apprentice | beast:tactician (aggro) | 30 / 12 / 2.44 / W |  |
+| A Savannah Lion | beast | 1 | W | 8 / **8** / 8 | 0 / **0** / 0 | 12 / 0 | — | apprentice | beast:lion (aggro) | 30 / 12 / 1.50 / W |  |
+| A Vampire Nighthawk | beast | 2 | B | 4 / **6** / 8 | 0 / **0** / 0 | 12 / 0 | — | journeyman | beast:nighthawk (midrange) | 30 / 12 / 2.11 / B | knobs {"goldRewardByTier":{"1":10,"2":50,"3":60}}; worldLifeOffset -4 |
+| A Rumbling Baloth | beast | 2 | G | 10 / **12** / 14 | 0 / **0** / 0 | 18 / 0 | — | journeyman | beast:baloth (midrange) | 30 / 12 / 2.22 / G |  |
+| The Boggart Warband | beast | 2 | R | 8 / **10** / 12 | 0 / **0** / 0 | 16 / 0 | — | journeyman | beast:warband (aggro) | 30 / 12 / 2.06 / R |  |
+| The Living Gale | beast | 2 | U | 14 / **16** / 18 | 0 / **0** / 0 | 22 / 0 | — | journeyman | beast:gale (control) | 30 / 12 / 3.44 / U | not buyable; worldLifeOffset 4 |
+| The Cunning Tactician | beast | 2 | W | 10 / **12** / 14 | 0 / **0** / 0 | 18 / 0 | — | journeyman | beast:tactician (aggro) | 30 / 12 / 2.44 / W |  |
+| The Hypnotic Specter | beast | 3 | B | 14 / **16** / 20 | 0 / **0** / 0 | 24 / 0 | — | master | beast:specter (midrange) | 30 / 12 / 2.28 / B | not buyable; knobs {"anteCount":2} |
+| the Pelakka Wurm | beast | 3 | G | 14 / **16** / 20 | 0 / **0** / 0 | 24 / 0 | — | master | beast:wurm (midrange) | 30 / 12 / 3.33 / G | not buyable; knobs {"anteCount":2} |
+| The Siege-Gang | beast | 3 | R | 14 / **16** / 20 | 0 / **0** / 0 | 24 / 0 | — | master | beast:siegegang (aggro) | 30 / 12 / 2.78 / R | knobs {"anteCount":2} |
+| The Faerie Formation | beast | 3 | U | 14 / **16** / 20 | 0 / **0** / 0 | 24 / 0 | — | master | beast:formation (control) | 30 / 13 / 3.82 / U | knobs {"anteCount":2} |
+| The Serra Angel | beast | 3 | W | 10 / **12** / 16 | 0 / **0** / 0 | 20 / 0 | — | master | beast:serra (control) | 30 / 12 / 2.94 / W | knobs {"anteCount":2}; worldLifeOffset -4 |
+| Brann the Scorched | mage | 1 | — | 8 / **8** / 8 | 0 / **0** / 0 | 12 / 1 (mountain) | — | apprentice | mage:brann (aggro) | 40 / 17 / 1.74 / R | the Sparkwright |
+| Old Hask | mage | 1 | — | 8 / **8** / 8 | 0 / **0** / 0 | 12 / 1 (forest) | — | apprentice | mage:hask (aggro) | 40 / 16 / 1.54 / G | the Wardener |
+| Pale Edric | mage | 1 | — | 8 / **8** / 8 | 0 / **0** / 0 | 12 / 1 (swamp) | — | apprentice | mage:edric (midrange) | 40 / 17 / 1.91 / B | the Sexton |
+| Sister Oriel | mage | 1 | — | 8 / **8** / 8 | 0 / **0** / 0 | 12 / 1 (plains) | — | apprentice | mage:oriel (midrange) | 40 / 17 / 1.78 / W | the Almoner |
+| Tessaly Reed | mage | 1 | — | 8 / **8** / 8 | 0 / **0** / 0 | 12 / 1 (island) | — | apprentice | mage:tessaly (control) | 40 / 18 / 1.73 / U | the Tidewright |
+| Adept Maelin | mage | 2 | — | 12 / **12** / 14 | 0 / **1** / 2 (swamp) | 16 / 1 (swamp) | **BG** (midrange) | journeyman | mage:maelin (aggro) | 40 / 17 / 1.96 / BR | the Pyre-Warden |
+| Brennor of the Glade | mage | 2 | — | 12 / **12** / 14 | 0 / **1** / 2 (forest) | 16 / 1 (forest) | **GR** (aggro) | journeyman | mage:brennor (midrange) | 40 / 17 / 1.61 / GW | the Sanctuary |
+| Kessa Emberhand | mage | 2 | — | 12 / **12** / 14 | 0 / **1** / 2 (island) | 16 / 1 (island) | **UB** (control) | journeyman | mage:kessa (control) | 40 / 17 / 1.87 / RU | the Stormcaller |
+| Mistress Vael | mage | 2 | — | 12 / **12** / 14 | 0 / **1** / 2 (plains) | 16 / 1 (plains) | **WR** (midrange) | journeyman | mage:vael (midrange) | 40 / 17 / 1.74 / BW | the Tithe-Reeve |
+| Pell of the Shallows | mage | 2 | — | 12 / **12** / 14 | 0 / **1** / 2 (forest) | 16 / 1 (island) | **UW** (midrange) | journeyman | mage:pell (control) | 40 / 17 / 2.17 / GU | the Tidesower |
+| High Warden Sorrel | mage | 3 | — | 14 / **16** / 20 | 1 / **2** / 2 (swamp, mountain) | 20 / 3 (mountain, plains, mountain) | **RW** (aggro) | master | mage:sorrel (midrange) | 40 / 17 / 1.87 / BR | the Inquisitor; knobs {"anteCount":2} |
+| Lord Corvane | mage | 3 | — | 14 / **16** / 20 | 1 / **2** / 2 (swamp, plains) | 20 / 3 (swamp, forest, swamp) | **BG** (midrange) | master | mage:corvane (midrange) | 40 / 17 / 2.96 / BW | the Sepulchre; knobs {"anteCount":2} |
+| Magister Quill | mage | 3 | — | 14 / **16** / 20 | 1 / **2** / 2 (forest, island) | 20 / 3 (forest, mountain, forest) | **GR** (midrange) | master | mage:quill (control) | 40 / 17 / 2.35 / GU | the Drowned Grove; knobs {"anteCount":2} |
+| Thornmother Ysolde | mage | 3 | — | 10 / **12** / 16 | 1 / **2** / 2 (plains, forest) | 16 / 3 (plains, island, plains) | **WU** (aggro) | master | mage:ysolde (aggro) | 40 / 17 / 1.78 / GW | the Thornmother; knobs {"anteCount":2}; worldLifeOffset -4 |
+| Varro Flamebrand | mage | 3 | — | 14 / **16** / 20 | 1 / **2** / 2 (island, mountain) | 20 / 3 (island, swamp, island) | **UB** (control) | master | mage:varro (control) | 40 / 17 / 1.96 / RU | the Ashwright; knobs {"anteCount":2} |
 
 ### The roaming decklists (one entry per deck; who plays it)
 
@@ -121,6 +121,31 @@ Mages roam anywhere; beasts are spoke-bound (their colour's ring). Tier 1 rolls 
   7 Island · 7 Mountain · 2 Steam Vents · 1 Volcanic Island · 1 Blaze · 2 Brainstorm · 3 Hedron Crab · 3 Lightning Bolt · 2 Shock · 2 Boomerang · 1 Counterspell · 1 Essence Scatter · 2 Young Pyromancer · 2 Arc Mage · 1 Divination · 2 Traumatizer · 1 Faerie Formation
 - **Thornmother Ysolde, the Thornmother (mage:ysolde, WG tier 3, aggro)** — played by Thornmother Ysolde — 40 cards, 17 lands, avg MV 1.78
   8 Forest · 6 Plains · 1 Savannah · 2 Temple Garden · 2 Birds of Paradise · 1 Giant Growth · 2 Gladecover Scout · 2 Rancor · 2 Savannah Lions · 2 Suntail Hawk · 1 Swords to Plowshares · 2 Blurred Mongoose · 2 Fencing Ace · 2 Raise the Alarm · 2 Blanchwood Armor · 2 Glorious Anthem · 1 Serra Angel
+
+### The flood's lists — the mage inversion (phase two; generated from docs/mage-inversion-lists.md)
+
+In a phase-two world the ten tier-2/3 mages keep their names, portraits, epithets and tiers, keep one colour and turn the other: they play the five STILL pairs. Tier 1 plays phase one's lists at both phases.
+
+- **Mistress Vael, the Tithe-Reeve (mage:vael at phase two, WB → WR, tier 2, midrange)** — 40 cards, 17 lands, avg MV 1.74
+  7 Mountain · 8 Plains · 2 Sacred Foundry · 2 Lightning Bolt · 1 Shock · 3 Soul Warden · 2 Spirit Link · 2 Suntail Hawk · 1 Swords to Plowshares · 2 Fencing Ace · 1 Master Decoy · 1 Pacifism · 1 Thundersnake · 2 Youthful Valkyrie · 1 Boggart Brute · 1 Char · 1 Glorious Anthem · 2 Inspiring Overseer
+- **Kessa Emberhand, the Stormcaller (mage:kessa at phase two, UR → UB, tier 2, control)** — 40 cards, 17 lands, avg MV 1.83
+  8 Island · 7 Swamp · 2 Watery Grave · 1 Arcane Collector · 2 Brainstorm · 2 Duress · 3 Hedron Crab · 2 Thought Scour · 1 Altar of Dementia · 1 Counterspell · 2 Doom Blade · 2 Essence Scatter · 1 Hymn to Tourach · 2 Plumecreed Escort · 1 Man-o'-War · 1 Vampire Nighthawk · 2 Traumatizer
+- **Adept Maelin, the Pyre-Warden (mage:maelin at phase two, BR → BG, tier 2, midrange)** — 40 cards, 17 lands, avg MV 1.91
+  7 Forest · 2 Overgrown Tomb · 8 Swamp · 2 Indulgent Aristocrat · 1 Moss Viper · 1 Rancor · 2 Typhoid Rats · 2 Unearth · 2 Blood Artist · 2 Deadly Recluse · 1 Diabolic Edict · 2 Elvish Visionary · 2 Reassembling Skeleton · 1 Terror · 2 Wall of Blossoms · 1 Gallows Djinn · 1 Gravedigger · 1 Rumbling Baloth
+- **Brennor of the Glade, the Sanctuary (mage:brennor at phase two, WG → GR, tier 2, aggro)** — 40 cards, 17 lands, avg MV 1.57
+  8 Forest · 7 Mountain · 2 Stomping Ground · 1 Birds of Paradise · 1 Brute Force · 2 Giant Growth · 3 Gladecover Scout · 2 Lightning Bolt · 2 Llanowar Elves · 1 Orcish Lumberjack · 2 Rancor · 1 Shock · 1 Abrade · 2 Blurred Mongoose · 1 Timberland Guide · 2 Blanchwood Armor · 1 Boggart Brute · 1 Rumbling Baloth
+- **Pell of the Shallows, the Tidesower (mage:pell at phase two, UG → UW, tier 2, midrange)** — 40 cards, 17 lands, avg MV 1.74
+  2 Evolving Wilds · 2 Hallowed Fountain · 6 Island · 6 Plains · 1 Thawing Glaciers · 2 Brainstorm · 4 Hedron Crab · 2 Soul Warden · 2 Suntail Hawk · 1 Swords to Plowshares · 1 Altar of Dementia · 1 Counterspell · 1 Pacifism · 2 Plumecreed Escort · 2 Raise the Alarm · 1 Cloudkin Seer · 1 Glorious Anthem · 1 Wall of Air · 2 Wind Drake
+- **Lord Corvane, the Sepulchre (mage:corvane at phase two, WB → BG, tier 3, midrange)** — 40 cards, 17 lands, avg MV 3.04
+  2 Barren Moor · 1 Bayou · 6 Forest · 2 Overgrown Tomb · 6 Swamp · 2 Dark Ritual · 2 Indulgent Aristocrat · 2 Unearth · 2 Blood Artist · 1 Deadly Recluse · 1 Terror · 3 Buried Alive · 1 Wood Elves · 1 Baru, Wurmspeaker · 2 Gaean Wurm · 1 Gravedigger · 3 Zombify · 1 Pelakka Wurm · 1 Artisan of Kozilek
+- **Varro Flamebrand, the Ashwright (mage:varro at phase two, UR → UB, tier 3, control)** — 40 cards, 17 lands, avg MV 1.78
+  1 Barren Moor · 6 Island · 1 Lonely Sandbar · 6 Swamp · 1 Underground Sea · 2 Watery Grave · 1 Arcane Collector · 2 Brainstorm · 2 Cathartic Adept · 2 Duress · 3 Hedron Crab · 2 Thought Scour · 1 Altar of Dementia · 1 Counterspell · 2 Doom Blade · 1 Essence Scatter · 1 Hymn to Tourach · 2 Hypnotic Specter · 1 Mind Rot · 2 Traumatizer
+- **High Warden Sorrel, the Inquisitor (mage:sorrel at phase two, BR → RW, tier 3, aggro)** — 40 cards, 17 lands, avg MV 1.87
+  1 Forgotten Cave · 6 Mountain · 6 Plains · 1 Plateau · 2 Sacred Foundry · 1 Secluded Steppe · 1 Blaze · 1 Brute Force · 3 Lightning Bolt · 2 Savannah Lions · 2 Shock · 1 Swords to Plowshares · 1 Fencing Ace · 1 Master Decoy · 1 Pacifism · 2 Raise the Alarm · 3 Young Pyromancer · 2 Arc Mage · 1 Char · 1 Glorious Anthem · 1 Serra Angel
+- **Thornmother Ysolde, the Thornmother (mage:ysolde at phase two, WG → WU, tier 3, aggro)** — 40 cards, 17 lands, avg MV 2.26
+  2 Hallowed Fountain · 6 Island · 1 Lonely Sandbar · 6 Plains · 1 Secluded Steppe · 1 Tundra · 1 Brainstorm · 2 Savannah Lions · 2 Suntail Hawk · 1 Swords to Plowshares · 1 Counterspell · 1 Essence Scatter · 2 Fencing Ace · 1 Master Decoy · 1 Pacifism · 2 Plumecreed Escort · 2 Raise the Alarm · 2 Glorious Anthem · 2 Wind Drake · 1 Cunning Tactician · 1 Faerie Formation · 1 Serra Angel
+- **Magister Quill, the Drowned Grove (mage:quill at phase two, UG → GR, tier 3, midrange)** — 40 cards, 17 lands, avg MV 2.43
+  1 Evolving Wilds · 6 Forest · 6 Mountain · 2 Stomping Ground · 1 Taiga · 1 Tranquil Thicket · 1 Birds of Paradise · 1 Blaze · 2 Lightning Bolt · 2 Llanowar Elves · 1 Orcish Lumberjack · 1 Rancor · 1 Abrade · 1 Pyroclasm · 3 Rampant Growth · 1 Wall of Blossoms · 1 Char · 2 Wood Elves · 1 Baru, Wurmspeaker · 2 Gaean Wurm · 2 Rumbling Baloth · 1 Pelakka Wurm
 
 ## The Mox court (five Mox dungeons)
 
@@ -258,7 +283,7 @@ A phase-two world's stronghold sites (the phase-one placement rule, the phase-on
 
 ### The Bailiff — Tidelock Weir (WUR)
 
-- Starting life: base 34 ⚠ + growth − reduction
+- Starting life: base 30 ⚠ + growth − reduction
 - Law: The Intake — Creatures your opponents control enter the battlefield tapped.
 - Card: The Bailiff; door: the Tidelock Weir gate (colours within WUR); golds to the shops: Static Sphere + Sacred Helix
 - Deck (midrange): 40 cards, 17 lands, avg MV 2.96, colours RUW
@@ -266,7 +291,7 @@ A phase-two world's stronghold sites (the phase-one placement rule, the phase-on
 
 ### The Reeve — Marrowfen (BUG)
 
-- Starting life: base 34 ⚠ + growth − reduction
+- Starting life: base 30 ⚠ + growth − reduction
 - Law: The Tithe — Whenever a creature dies, each opponent loses 1 life.
 - Card: The Reeve; door: the Marrowfen gate (colours within BUG); golds to the shops: Glimpse the Unthinkable + Putrefy
 - Deck (control): 40 cards, 17 lands, avg MV 3.26, colours BGU
@@ -274,7 +299,7 @@ A phase-two world's stronghold sites (the phase-one placement rule, the phase-on
 
 ### The Fordkeeper — Emberford (RWG)
 
-- Starting life: base 34 ⚠ + growth − reduction
+- Starting life: base 30 ⚠ + growth − reduction
 - Law: The Toll — Whenever an opponent casts a spell, The Toll deals 1 damage to that player.
 - Card: The Fordkeeper; door: the Emberford gate (colours within RWG); golds to the shops: Powerstone Minefield + Savage Twister
 - Deck (control): 40 cards, 18 lands, avg MV 2.86, colours GRW
@@ -282,7 +307,7 @@ A phase-two world's stronghold sites (the phase-one placement rule, the phase-on
 
 ### The Dredger — Lockmere (UBW)
 
-- Starting life: base 34 ⚠ + growth − reduction
+- Starting life: base 30 ⚠ + growth − reduction
 - Law: The Risen Tide — You may play an additional land on each of your turns.
 - Card: The Dredger; door: the Lockmere gate (colours within UBW); golds to the shops: Undermine + Absorb
 - Deck (control): 40 cards, 18 lands, avg MV 3.23, colours BUW
@@ -290,7 +315,7 @@ A phase-two world's stronghold sites (the phase-one placement rule, the phase-on
 
 ### The Reaper — Harrowmoor (GBR)
 
-- Starting life: base 34 ⚠ + growth − reduction
+- Starting life: base 30 ⚠ + growth − reduction
 - Law: The Season — At the beginning of your upkeep, put a +1/+1 counter on each creature you control.
 - Card: The Reaper; door: the Harrowmoor gate (colours within GBR); golds to the shops: Poison-Tip Archer + Voracious Cobra
 - Deck (midrange): 40 cards, 17 lands, avg MV 2.83, colours BGR

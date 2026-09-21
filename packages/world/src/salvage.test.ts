@@ -156,6 +156,31 @@ describe("S39 (ADR-126) — newWorld({ salvage })", () => {
       expect(r.decklist.filter((e) => !isLand(e.cardId))).toHaveLength(18);
     }
   });
+  it("S42b (ADR-135's (b)): the post-lords references are salvage + legends plus TEN prizes of the pair — the pair's two golds and tier-3 / R cards, no prizeOnly, no third colour — 43 cards, 12 life, two basics in play", () => {
+    const colourOf = (id: string) => [...new Set((pool.get(id)!.manaCost ?? "").match(/[WUBRG]/g) ?? [])];
+    for (const [key, base, pair, golds] of [["salvageWRLords", "salvageWRLegends", "WR", ["sacred_helix", "powerstone_minefield"]], ["salvageUBLords", "salvageUBLegends", "UB", ["undermine", "glimpse_the_unthinkable"]]] as const) {
+      const r = ROAD_DECKS[key]!, b = ROAD_DECKS[base]!;
+      expect(size(r.decklist)).toBe(43);
+      expect(r.life).toBe(12);
+      expect(r.entrance.map((id) => pool.get(id)!.name[0])).toEqual([...pair].map((c) => ({ W: "P", U: "I", B: "S", R: "M", G: "F" })[c]));
+      const count = (d: { cardId: string; count: number }[], id: string) => d.find((e) => e.cardId === id)?.count ?? 0;
+      const added: string[] = [];
+      for (const e of r.decklist) {
+        expect(pool.has(e.cardId), e.cardId).toBe(true);
+        expect(e.count).toBeGreaterThanOrEqual(count(b.decklist, e.cardId));
+        for (let i = count(b.decklist, e.cardId); i < e.count; i++) added.push(e.cardId);
+      }
+      for (const e of b.decklist) expect(count(r.decklist, e.cardId), e.cardId).toBeGreaterThanOrEqual(e.count);
+      expect(added).toHaveLength(10);
+      for (const g of golds) expect(added).toContain(g);
+      for (const id of added) {
+        const def = pool.get(id)!;
+        expect(def.prizeOnly ?? false, id).toBe(false);
+        for (const c of colourOf(id)) expect(pair, id).toContain(c);
+        if (!golds.includes(id as never)) expect([3, "R"], id).toContain((def as { shopTier?: unknown }).shopTier);
+      }
+    }
+  });
 });
 
 /** A forced encounter on the next passable cell (world.test's helper, reduced). */

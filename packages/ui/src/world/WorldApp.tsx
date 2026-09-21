@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { CardDef } from "@shandalar/cards";
 import { cardColors } from "@shandalar/cards";
-import { describeDeckRule, strongholdContentFor, resolveMatchup, activeDeck, buyOffPrice, deckSize, deckStats, dungeonAsWorldMap, isBasic, isExplored, lordPronouns, SALVAGE_COLORS, pairName, PLAYER_PORTRAITS, type PlayerPortrait, maxWorldLife, sellPrice, spares, BASIC_LANDS, type DifficultyName, type Point, type ShopItem, type StarterId } from "@shandalar/world";
+import { opponentColors, parleyLines, describeDeckRule, strongholdContentFor, resolveMatchup, activeDeck, buyOffPrice, deckSize, deckStats, dungeonAsWorldMap, isBasic, isExplored, lordPronouns, SALVAGE_COLORS, pairName, PLAYER_PORTRAITS, type PlayerPortrait, maxWorldLife, sellPrice, spares, BASIC_LANDS, type DifficultyName, type Point, type ShopItem, type StarterId } from "@shandalar/world";
 import { loadOracle, loadPool, loadWorldCatalog, type OracleEntry, type SavedGame } from "../engine-bridge";
 import { CardFrame } from "../components/CardFrame";
 import { PlayMatch, loadStops } from "../play/PlayMatch";
@@ -149,13 +149,17 @@ function DevTab({ c }: { c: WorldController }) {
       {open && (
         <div className="gallery-modal" onClick={() => setOpen(false)}>
           <div className="gallery-modal-box play-dialog" style={{ maxWidth: 560 }} onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ marginTop: 0, fontFamily: "var(--serif)" }}>Dev — complete the fifteen</h3>
+            <h3 style={{ marginTop: 0, fontFamily: "var(--serif)" }}>{(c.world?.phase ?? 1) >= 2 ? "Dev — fell the five lords" : "Dev — complete the fifteen"}</h3>
             <p style={{ fontSize: 12, color: "var(--ink-soft)", marginTop: 0 }}>Each completion is the site's fall without the crawl: cleared = ground, and only the prize that unlocks things (the Mox and guardian card; the power and guardian card; the lord's card and the seal). Autosaved.</p>
             <p style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-              <button className="primary" onClick={() => c.devCompleteAll()}>Complete all 15</button>
-              <button onClick={() => c.devCompleteAll("mox")}>The five Moxen</button>
-              <button onClick={() => c.devCompleteAll("power")}>The five Powers</button>
-              <button onClick={() => c.devCompleteAll("stronghold")}>The five Strongholds</button>
+              {(c.world?.phase ?? 1) >= 2
+                ? <button className="primary" onClick={() => c.devCompleteAll("stronghold")} title="S42b: the five flood lords fall as if fought — cards, seals, golds to the shops, the chronicle; the deep water opens">Fell the five lords</button>
+                : <>
+                  <button className="primary" onClick={() => c.devCompleteAll()}>Complete all 15</button>
+                  <button onClick={() => c.devCompleteAll("mox")}>The five Moxen</button>
+                  <button onClick={() => c.devCompleteAll("power")}>The five Powers</button>
+                  <button onClick={() => c.devCompleteAll("stronghold")}>The five Strongholds</button>
+                </>}
             </p>
             <div style={{ maxHeight: 300, overflowY: "auto", fontSize: 12 }}>
               {rows.map((r) => (
@@ -341,16 +345,16 @@ function ParleyPanel({ c }: { c: WorldController }) {
             <h3 style={{ margin: 0, fontFamily: "var(--serif)" }}>{tmpl.name}{tmpl.epithet ? <span style={{ fontWeight: 400, color: "var(--ink-soft)" }}>, {tmpl.epithet}</span> : null}</h3>
             {/* S34 (Part 5): the entrance clause — the resolver's cell for this opponent at this world's mode;
                 the telegraph names nothing (as the Heart's roots did not on the rail). Planner's lines. */}
-            {(() => { const n = resolveMatchup(tmpl, knobs).entrance.length; return n === 1 ? <p className="parley-voice" style={{ fontStyle: "italic" }}>The ground is already theirs; a land lies ready before the first word.</p> : n >= 2 ? <p className="parley-voice" style={{ fontStyle: "italic" }}>Two lands lie ready. This one has walked the roads before you.</p> : null; })()}
+            {(() => { const n = resolveMatchup(tmpl, knobs, null, c.world?.phase ?? 1).entrance.length; return n === 1 ? <p className="parley-voice" style={{ fontStyle: "italic" }}>The ground is already theirs; a land lies ready before the first word.</p> : n >= 2 ? <p className="parley-voice" style={{ fontStyle: "italic" }}>Two lands lie ready. This one has walked the roads before you.</p> : null; })()}
             <div className="parley-sub">
               <span className={`tier-badge t${tmpl.tier}`}>{TIER_BADGE[tmpl.tier]}</span>
-              <span className="colour-id">{tmpl.colors.split("").map((ch) => <i key={ch} className={`colour-pip c-${ch}`} title={ch} />)}</span>
+              <span className="colour-id">{opponentColors(tmpl, c.world?.phase).split("").map((ch) => <i key={ch} className={`colour-pip c-${ch}`} title={ch} />)}</span>
               {tmpl.difficulty} · world life {tmpl.worldLife}
             </div>
             <div className="parley-sub">Stakes: {stake} card{stake === 1 ? "" : "s"} each (ante). You have {gold} gold.</div>
           </div>
         </div>
-        {voice.line && <p className="parley-voice">{voice.line}</p>}
+        {parleyLines(tmpl, c.world?.phase).map((l) => <p key={l} className="parley-voice">{l}</p>)}
         {door && <p className="parley-voice door-shut">{door}</p>}
         <div className="parley-options">
           <button className="primary" disabled={!!door} title={door ?? ""} onClick={() => c.parley("fight")}>

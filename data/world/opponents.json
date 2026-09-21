@@ -21,6 +21,10 @@
       "portrait": "portrait-mage-kessa",
       "worldLife": 12,
       "colors": "UR",
+      "colorsPhaseTwo": "UB",
+      "parley": {
+       "linePhaseTwo": "The storm went under, and I went with it. The water changed me, too."
+      },
       "epithet": "the Stormcaller"
     },
     {
@@ -32,6 +36,10 @@
       "portrait": "portrait-mage-varro",
       "worldLife": 16,
       "colors": "UR",
+      "colorsPhaseTwo": "UB",
+      "parley": {
+       "linePhaseTwo": "Ash does not float. The water changed me, too."
+      },
       "knobs": {
         "anteCount": 2
       },
@@ -57,6 +65,10 @@
       "portrait": "portrait-mage-maelin",
       "worldLife": 12,
       "colors": "BR",
+      "colorsPhaseTwo": "BG",
+      "parley": {
+       "linePhaseTwo": "The pyres drowned. The water changed me, too."
+      },
       "epithet": "the Pyre-Warden"
     },
     {
@@ -68,6 +80,10 @@
       "portrait": "portrait-mage-sorrel",
       "worldLife": 16,
       "colors": "BR",
+      "colorsPhaseTwo": "RW",
+      "parley": {
+       "linePhaseTwo": "This time the water asked the questions. It changed me, too."
+      },
       "knobs": {
         "anteCount": 2
       },
@@ -93,6 +109,10 @@
       "portrait": "portrait-mage-brennor",
       "worldLife": 12,
       "colors": "WG",
+      "colorsPhaseTwo": "GR",
+      "parley": {
+       "linePhaseTwo": "The glade did not keep. The water changed us both."
+      },
       "epithet": "the Sanctuary"
     },
     {
@@ -104,6 +124,10 @@
       "portrait": "portrait-mage-ysolde",
       "worldLife": 16,
       "colors": "WG",
+      "colorsPhaseTwo": "WU",
+      "parley": {
+       "linePhaseTwo": "The thorns are under water now. It changed me, as it changed you."
+      },
       "knobs": {
         "anteCount": 2
       },
@@ -130,6 +154,10 @@
       "portrait": "portrait-mage-vael",
       "worldLife": 12,
       "colors": "WB",
+      "colorsPhaseTwo": "WR",
+      "parley": {
+       "linePhaseTwo": "The water took my ledgers. It changed me, too."
+      },
       "epithet": "the Tithe-Reeve"
     },
     {
@@ -141,6 +169,10 @@
       "portrait": "portrait-mage-corvane",
       "worldLife": 16,
       "colors": "WB",
+      "colorsPhaseTwo": "BG",
+      "parley": {
+       "linePhaseTwo": "Even the dead came back different. The water changed me, too."
+      },
       "knobs": {
         "anteCount": 2
       },
@@ -166,6 +198,10 @@
       "portrait": "portrait-mage-pell",
       "worldLife": 12,
       "colors": "UG",
+      "colorsPhaseTwo": "UW",
+      "parley": {
+       "linePhaseTwo": "I sowed the tide, and it came up changed. So did I."
+      },
       "epithet": "the Tidesower"
     },
     {
@@ -177,6 +213,10 @@
       "portrait": "portrait-mage-quill",
       "worldLife": 16,
       "colors": "UG",
+      "colorsPhaseTwo": "GR",
+      "parley": {
+       "linePhaseTwo": "My grove was drowned before the flood came. Now the water has changed me, too."
+      },
       "knobs": {
         "anteCount": 2
       },

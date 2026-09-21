@@ -83,7 +83,7 @@ import type { Modifier } from "@shandalar/engine";
 import { WorldRng as DungeonRng } from "@shandalar/world";
 import { applyFountDuel, floodLordEntrance, fountDuelSpec, fountFallen, recordFount } from "@shandalar/world";
 import { FOUNT_DECK } from "@shandalar/sim/heart-deck";
-import { applyCourtDuel, courtDuelSpec, courtsFallen, floodCourt, floodDeck, floodHeartOpen, floodRun, floodStronghold, recordFloodLordFall, strongholdContentFor, type FloodCourtDef } from "@shandalar/world";
+import { opponentColors, applyCourtDuel, courtDuelSpec, courtsFallen, floodCourt, floodDeck, floodHeartOpen, floodRun, floodStronghold, recordFloodLordFall, strongholdContentFor, type FloodCourtDef } from "@shandalar/world";
 import {
   applyMirrorDuel, applyPetalDuel, corollaAdvance, corollaAsWorldMap, corollaDoor, corollaInnRest, corollaPath, corollaTown, enterCorolla,
   fixedPointAt, generateCorolla, insideCorolla, leaveCorolla, mirrorDuelSpec, petalAt, petalDistance, petalDuelSpec, petalLawName, petalsFallen,
@@ -1556,7 +1556,7 @@ export class WorldController {
         portrait = pd.guardian.portrait;
       } else {
         const tmpl = this.catalog.opponents.find((o) => o.id === run.residentCatalogId)!;
-        const deck = enemyDeckOf(this.catalog, tmpl.deck);
+        const deck = enemyDeckOf(this.catalog, tmpl.deck, this.world?.phase);
         enemy = { kind: "guardian", name: tmpl.name, decklist: deck.decklist, archetype: deck.archetype, life: tmpl.worldLife, color: (tmpl.spoke ?? "G") as "W" | "U" | "B" | "R" | "G" };
         portrait = tmpl.portrait;
       }
@@ -1667,7 +1667,7 @@ export class WorldController {
           residentInst.gone = true;
           residentInst.goneReason = "defeated";
           const tmpl = this.catalog.opponents.find((o) => o.id === residentInst.catalogId);
-          creditRenown(this.world.player, tmpl?.colors ?? "", tmpl?.tier ?? 3); // OQ-14: lair boss = its tier; per-colour (S20 playtest)
+          creditRenown(this.world.player, tmpl ? opponentColors(tmpl, this.world.phase) : "", tmpl?.tier ?? 3); // OQ-14: lair boss = its tier; per-colour (S20 playtest)
         }
       }
       const paid = clearDungeon(this.world, run, prize);
@@ -1688,9 +1688,10 @@ export class WorldController {
   devDungeonRows(): { id: string; kind: "mox" | "power" | "stronghold"; name: string; cleared: boolean }[] {
     if (!this.world) return [];
     const w = this.world;
+    const flood = (w.phase ?? 1) >= 2; // S42b: a phase-two map has no Mox courts and no power dungeons (S41) — its rows are the five lords
     return [
-      ...this.catalog.dungeons.map((m) => ({ id: m.id, kind: "mox" as const, name: m.name, cleared: !!w.dungeons[m.id]?.cleared })),
-      ...(this.catalog.powerDungeons ?? []).map((d) => ({ id: d.id, kind: "power" as const, name: d.name, cleared: !!w.dungeons[d.id]?.cleared })),
+      ...(flood ? [] : this.catalog.dungeons.map((m) => ({ id: m.id, kind: "mox" as const, name: m.name, cleared: !!w.dungeons[m.id]?.cleared }))),
+      ...(flood ? [] : (this.catalog.powerDungeons ?? []).map((d) => ({ id: d.id, kind: "power" as const, name: d.name, cleared: !!w.dungeons[d.id]?.cleared }))),
       ...strongholdContentFor(this.catalog, w.phase).map((c) => ({ id: c.id, kind: "stronghold" as const, name: c.name, cleared: !!w.dungeons[c.id]?.cleared })),
     ];
   }
@@ -1706,14 +1707,23 @@ export class WorldController {
     const pd = this.powerDef(id);
     if (pd) { mark(); addToCollection(w, [pd.prize.guardianCard], "reward"); unlockPower(w, pd.color); this.autosave(); return true; }
     const sh = this.strongholdDef(id);
-    if (sh) { mark(); addToCollection(w, [sh.lord.cardId], "reward"); strongholdState(w, sh.color).seal = true; this.autosave(); return true; }
+    if (sh) {
+      mark(); addToCollection(w, [sh.lord.cardId], "reward"); strongholdState(w, sh.color).seal = true;
+      // S42b (the brief's Part 4): on a phase-two world the shortcut is the FLOOD's fall too — the pair's golds join the
+      // shops and the fall is chronicled, so five of these open the deep water exactly as five fights would (the fount
+      // can be walked live; Chris's hand read — ADR-135's (c)).
+      const fsh = floodStronghold(this.catalog, sh.id);
+      if (fsh) recordFloodLordFall(w, fsh);
+      this.autosave(); return true;
+    }
     return false;
   }
   /** Complete every site of a kind (or all fifteen). Returns how many newly fell. */
   devCompleteAll(kind?: "mox" | "power" | "stronghold"): number {
     let n = 0;
     for (const row of this.devDungeonRows()) if ((!kind || row.kind === kind) && !row.cleared && this.devCompleteDungeon(row.id)) n += 1;
-    if (this.screen.kind === "map") this.screen = { ...this.screen, notice: n ? `Dev: ${n} site${n === 1 ? "" : "s"} completed — ${sealsHeld(this.world!)}/5 seals held; the doors at the centre read the new counts.` : "Dev: nothing left to complete." };
+    const flood = (this.world?.phase ?? 1) >= 2;
+    if (this.screen.kind === "map") this.screen = { ...this.screen, notice: n ? (flood ? `Dev: ${n} lord${n === 1 ? "" : "s"} felled — ${sealsHeld(this.world!)}/5; ${sealsHeld(this.world!) >= 5 ? "the deep water is open — walk to the centre" : "the deep water waits on five"}.` : `Dev: ${n} site${n === 1 ? "" : "s"} completed — ${sealsHeld(this.world!)}/5 seals held; the doors at the centre read the new counts.`) : "Dev: nothing left to complete." };
     this.emit();
     return n;
   }
@@ -2341,7 +2351,7 @@ export class WorldController {
         enemy: {
           name: tmpl.name, decklist: spec.players[1].decklist,
           difficulty: (spec.players[1].agent.split(":")[1] ?? "journeyman") as "apprentice" | "journeyman" | "master",
-          archetype: enemyDeckOf(this.catalog, tmpl.deck).archetype,
+          archetype: enemyDeckOf(this.catalog, tmpl.deck, this.world?.phase).archetype,
           portrait: tmpl.portraitChip ?? tmpl.portrait,
         },
         rules: { startingLife: spec.rules.startingLife, ante: spec.rules.ante ?? 0, ...(spec.rules.startingPlayer !== undefined ? { startingPlayer: spec.rules.startingPlayer } : {}) }, // S22 r2: the coin flip rides through
@@ -2404,8 +2414,8 @@ export class WorldController {
 }
 
 /** Local alias (avoids a name clash with the class's import list). */
-function enemyDeckOf(catalog: import("@shandalar/world").Catalog, ref: import("@shandalar/world").OpponentDeckRef) {
+function enemyDeckOf(catalog: import("@shandalar/world").Catalog, ref: import("@shandalar/world").OpponentDeckRef, phase: number | undefined) {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  return enemyDeckImpl(catalog, ref);
+  return enemyDeckImpl(catalog, ref, phase); // S42b: the world's phase picks a mage's list
 }
 import { enemyDeck as enemyDeckImpl } from "@shandalar/world";

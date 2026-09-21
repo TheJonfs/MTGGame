@@ -1,3 +1,5 @@
+import { MAGE_FLOOD_LISTS } from "./mage-decks-flood.js";
+
 /**
  * S29 (ADR-099): THE MAGE CLEANSHEET — fifteen mage decks, one per named mage, rebuilt from the
  * planner's three cleansheet documents (docs/mage-cleansheet-tier{1,2,3}.md). Tier 1: five mono-colour
@@ -30,3 +32,37 @@ export const MAGE_DECKS: Record<string, { opponentId: string; name: string; epit
   ysolde: { opponentId: "c3", name: "Thornmother Ysolde", epithet: "the Thornmother", colors: "WG", primaryColors: "WG", tier: 3, archetype: "aggro", decklist: d([["forest", 8], ["plains", 6], ["temple_garden", 2], ["savannah", 1], ["savannah_lions", 2], ["suntail_hawk", 2], ["fencing_ace", 2], ["gladecover_scout", 2], ["blurred_mongoose", 2], ["birds_of_paradise", 2], ["raise_the_alarm", 2], ["glorious_anthem", 2], ["rancor", 2], ["blanchwood_armor", 2], ["giant_growth", 1], ["swords_to_plowshares", 1], ["serra_angel", 1]]) },
   quill: { opponentId: "e3", name: "Magister Quill", epithet: "the Drowned Grove", colors: "UG", primaryColors: "GU", tier: 3, archetype: "control", decklist: d([["forest", 6], ["island", 6], ["breeding_pool", 2], ["tropical_island", 1], ["evolving_wilds", 1], ["thawing_glaciers", 1], ["hedron_crab", 4], ["rampant_growth", 3], ["llanowar_elves", 2], ["wood_elves", 2], ["wall_of_blossoms", 1], ["traumatizer", 1], ["gaean_wurm", 2], ["pelakka_wurm", 1], ["baru_wurmspeaker", 1], ["altar_of_dementia", 2], ["essence_scatter", 2], ["counterspell", 1], ["brainstorm", 1]]) },
 };
+
+/** S42b (ADR-122 §9): THE MAGE INVERSION — in a phase-two world the ten tier-2/3 mages play the five STILL pairs.
+ * The lists are GENERATED from docs/mage-inversion-lists.md by `pnpm mage-inversion:gen` into
+ * mage-decks-flood.ts (the document is the source; s42b-mage-inversion.test.ts pins them together). Names,
+ * epithets, tiers and portraits are phase one's; colours, pip order, archetype and the forty are the flood's. */
+export type MageDeck = (typeof MAGE_DECKS)[string];
+export interface MageFloodList { colors: string; primaryColors: string; archetype: MageDeck["archetype"]; decklist: MageDecklist }
+
+/** THE ONE SWITCH (the `strongholdContentFor` pattern): the list a mage plays in a world of this phase. Tier 1 —
+ * and any mage without a flood list — reads phase one's at both phases. */
+export function mageListFor(key: string, phase: number | undefined): MageDeck | undefined {
+  const base = MAGE_DECKS[key];
+  if (!base) return undefined;
+  const flood = (phase ?? 1) >= 2 ? MAGE_FLOOD_LISTS[key] : undefined;
+  return flood ? { ...base, ...flood } : base;
+}
+
+/** The document's code blocks as lists (card NAMES resolved by the caller's map) — the generator's reader and the
+ * sync test's. A heading is `### <mage name> — <PAIR>, …`; the pair is written kept-colour-first by the caller. */
+export function parseMageInversionLists(markdown: string, idOfName: (name: string) => string | undefined): { name: string; pair: string; decklist: MageDecklist }[] {
+  const out: { name: string; pair: string; decklist: MageDecklist }[] = [];
+  for (const m of markdown.matchAll(/### (.+?) — ([WUBRG]{2}),.*\n```\n([\s\S]*?)```/g)) {
+    const decklist: MageDecklist = [];
+    for (const entry of m[3]!.trim().split(/\s·\s|\n/)) {
+      const e = entry.trim().match(/^(\d+) (.+)$/);
+      if (!e) throw new Error(`mage inversion: cannot read "${entry}"`);
+      const id = idOfName(e[2]!.trim());
+      if (!id) throw new Error(`mage inversion: no card named "${e[2]}"`);
+      decklist.push({ cardId: id, count: Number(e[1]) });
+    }
+    out.push({ name: m[1]!.trim(), pair: m[2]!, decklist });
+  }
+  return out;
+}

@@ -135,3 +135,26 @@ describe("S38 Part 2 — deckRule on the sites", () => {
     expect(shipped.match(/door: /g)).toHaveLength(10); // S41: the flood's ten seats — the only shipped doors; phase one's sites carry none
   });
 });
+
+// ---------- S42b Part 5: the flood's regions ----------
+describe("S42b — the flood renames the country (the planner's fifteen; the Emberford collision ends)", () => {
+  it("a phase-two map's fifteen regions carry the flood's names, one per colour per ring; a phase-one map keeps phase one's", async () => {
+    const { loadCatalog } = await import("./loader.js");
+    const { newWorld } = await import("./state.js");
+    const { fileURLToPath } = await import("node:url");
+    const { dirname, join } = await import("node:path");
+    const catalog = loadCatalog(join(dirname(fileURLToPath(import.meta.url)), "../../../data/world"));
+    const FLOOD: Record<string, [string, string, string]> = {
+      W: ["The Chalkwater", "The Saltings", "The Strand of Bells"], U: ["The Deepreach", "The Glassmere", "The Drowned Verge"], B: ["The Blackwash", "The Sedgemoor", "The Bonefens"],
+      R: ["The Cinderflats", "The Scaldings", "The Smokereach"], G: ["The Rushlands", "The Reedholt", "The Wildwater"],
+    };
+    const w2 = newWorld({ seed: 4205, catalog, starter: "red", phase: 2 });
+    expect(w2.map.regions).toHaveLength(15);
+    for (const r of w2.map.regions) expect(r.name, `${r.color} ${r.tier}`).toBe(FLOOD[r.color]![["civilized", "approach", "wild"].indexOf(r.tier)]);
+    expect(w2.map.regions.some((r) => r.name === "The Emberford")).toBe(false);
+    expect(w2.map.strongholds.some((s) => s.name === "Emberford")).toBe(true); // the red stronghold keeps its name; the region no longer shares it
+    const w1 = newWorld({ seed: 4205, catalog, starter: "red" });
+    expect(w1.map.regions.map((r) => r.name)).toContain("The Emberford");
+    expect(w1.map.regions.every((r) => !Object.values(FLOOD).flat().includes(r.name))).toBe(true);
+  });
+});

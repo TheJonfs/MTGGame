@@ -19,7 +19,7 @@ import type { Catalog } from "./catalog.js";
 import { spares } from "./deck-edit.js";
 import { addToCollection, encounterKnobs, opponentTemplate, parley, pickAnteFromDeck, removeOpponent, type Encounter, type ParleyOutcome } from "./journey.js";
 import type { KnobValues } from "./knobs.js";
-import { enemyDeck } from "./catalog.js";
+import { enemyDeck, opponentColors } from "./catalog.js";
 import { WorldRng } from "./rng.js";
 import { shopPrice } from "./shop.js";
 import { activeDeck, maxWorldLife, worldKnobs, RENOWN_COLORS, type PowerColor, type WorldState } from "./state.js";
@@ -241,9 +241,9 @@ export function quietusStrike(world: WorldState, catalog: Catalog, pool: Map<str
   const rng = new WorldRng(world.rng);
   try {
     burnFuel(world, pool, "B", fuel);
-    const anteWon = pickAnteFromDeck(rng, enemyDeck(catalog, tmpl.deck).decklist, knobs.anteCount);
+    const anteWon = pickAnteFromDeck(rng, enemyDeck(catalog, tmpl.deck, world.phase).decklist, knobs.anteCount);
     addToCollection(world, anteWon, "ante");
-    for (const c of RENOWN_COLORS) if (tmpl.colors.includes(c)) world.player.renownByColor[c] += enc.tier; // fear only
+    for (const c of RENOWN_COLORS) if (opponentColors(tmpl, world.phase).includes(c)) world.player.renownByColor[c] += enc.tier; // fear only
     removeOpponent(world, enc.opponentId, "defeated");
     return { ok: true, anteWon };
   } finally {

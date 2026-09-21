@@ -21,7 +21,7 @@ import type { RegionTier } from "./knobs.js";
  * the save; reload resumes it (durability law: autosave at every siege consequence).
  */
 import type { MatchResult, MatchSpec, Modifier } from "@shandalar/engine";
-import { enemyDeck, type Catalog, type OpponentTemplate } from "./catalog.js";
+import { enemyDeck, opponentColors, type Catalog, type OpponentTemplate } from "./catalog.js";
 import { manalinkModifiers } from "./quests.js";
 import type { KnobValues } from "./knobs.js";
 import type { Town } from "./map.js";
@@ -241,7 +241,7 @@ export function siegeDuelSpec(
     seed: rng.int(1_000_000_000),
     players: [
       { name: world.player.name, decklist: activeDeck(world).map((e) => ({ ...e })), agent: "human" },
-      { name: tmpl.name, decklist: enemyDeck(catalog, tmpl.deck).decklist, agent: `heuristic:${matchup.profile}` },
+      { name: tmpl.name, decklist: enemyDeck(catalog, tmpl.deck, world.phase).decklist, agent: `heuristic:${matchup.profile}` },
     ],
     rules: { startingLife: eng.life, handSize: 7, mulligan: "london", maxTurns: 100, ante: matchup.ante, startingPlayer: rng.chance(0.5) ? 0 : 1 }, // S22 r2: the coin flip
     modifiers,
@@ -293,8 +293,8 @@ export function applySiegeDuel(
     world.player.gold += goldWon;
     eng.goldWon = (eng.goldWon ?? 0) + goldWon; // r3 item 10: the running purse
     eng.anteWon = [...(eng.anteWon ?? []), ...anteWon];
-    creditRenown(world.player, tmpl.colors, tmpl.tier);
-    creditSpokeKill(world, tmpl.colors, tmpl.tier); // S22 r1: siege defenders' kills bleed their lords too (outside = everywhere renown pays)
+    creditRenown(world.player, opponentColors(tmpl, world.phase), tmpl.tier);
+    creditSpokeKill(world, opponentColors(tmpl, world.phase), tmpl.tier); // S22 r1: siege defenders' kills bleed their lords too (outside = everywhere renown pays)
     if (eng.remaining.length > 0) return { type: "fightWon", remaining: eng.remaining.length, lifeNow: eng.life, anteWon, goldWon };
     const kind = eng.kind;
     const totalGold = eng.goldWon;

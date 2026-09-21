@@ -24,6 +24,11 @@
  * tier-2/3 beasts at catalog life, +4 and +8 against both references (beasts get no roots).
  * S39: part 10 — every tier-2/3 mage at `--phase` against the two SALVAGE yardsticks (salvage-WR / salvage-UB:
  * the pack + two duals, 12 life, journeyman, no basics, no legends) — the phase column's first read.
+ * S42b (the mage inversion): at `--phase 2` every tier-2/3 mage plays its FLOOD list (`mageListFor`; the side is
+ * named `… (key~flood)`); `--lists 1` keeps phase one's lists at the phase-two column (the S42a baseline's shape).
+ * Part 13 — the tier-2/3 mages against the two POST-LORDS references (ADR-135's (b)).
+ * Part 12 — THE MIRROR: each flood list against its phase-one self, both at the PHASE-ONE column (a different
+ * deck, not a weaker one).
  * S34: `--mode easy|standard|hard` (default standard) — the mages and beasts take the resolver's tables at
  * that mode (mageTierLife / mageTierEntrance / beastTierLifeDelta + the row offsets), so a sweep row is
  * "the catalog at this mode"; `--tier-life` is gone. Part 8's rows carry A's graveyard → battlefield
@@ -35,7 +40,8 @@ import { dirname, join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
 import { runMatch, type Agent, type MatchSpec } from "@shandalar/engine";
 import { HeuristicAgent, difficultyProfile, type Difficulty } from "@shandalar/agents";
-import { MAGE_DECKS } from "@shandalar/sim/mage-decks";
+import { MAGE_DECKS, mageListFor } from "@shandalar/sim/mage-decks";
+import { MAGE_FLOOD_LISTS } from "@shandalar/sim/mage-decks-flood";
 import { EXPANSION_DECKS } from "@shandalar/sim/expansion-decks";
 import { ROAD_DECKS } from "@shandalar/sim/road-decks";
 import { loadCatalog } from "./loader.js";
@@ -64,24 +70,29 @@ const knobs = resolveKnobs({ difficulty: DIFFICULTIES[mode] });
 const phase = Number(arg("phase", "1")) as Phase;
 if (![1, 2, 3].includes(phase)) throw new Error("--phase must be 1|2|3");
 const tables = tierTablesFor(knobs, phase);
+// S42b: which lists the mages play — the phase's by default; `--lists 1` holds phase one's at any column.
+const listPhase = Number(arg("lists", String(phase)));
 
 type Side = { name: string; decklist: { cardId: string; count: number }[]; archetype: "aggro" | "midrange" | "control"; profile: Difficulty; life: number; entrance?: string[] };
 /** S34: the tier life is the resolver's table at the chosen mode. */
 const TIER_LIFE: Record<1 | 2 | 3, number> = tables.mageTierLife;
 const TIER_PROFILE: Record<1 | 2 | 3, Difficulty> = { 1: "apprentice", 2: "journeyman", 3: "master" };
-const mage = (key: string, tierAs?: 1 | 2 | 3): Side => {
-  const m = MAGE_DECKS[key]!;
+const mage = (key: string, tierAs?: 1 | 2 | 3, lists: number = listPhase, cellPhase: Phase = phase): Side => {
+  const m = mageListFor(key, lists)!;
+  const flood = lists >= 2 && key in MAGE_FLOOD_LISTS;
   const t = tierAs ?? m.tier;
   // S34: the resolver's cell at this mode — life AND entrance (the catalog row, when one exists, carries the offset).
   const row = catalog.opponents.find((o) => o.deck === `mage:${key}`);
   // S38: through the resolver (the row at its tier; a tier override re-rolls the table at that tier).
-  const cell = row ? resolveMatchup(tierAs ? { ...row, tier: tierAs } : row, knobs, null, phase) : { life: TIER_LIFE[t], entrance: entranceFor(`mage:${key}`, tables.mageTierEntrance[t]) };
-  return { name: `${m.name} (${key})`, decklist: m.decklist, archetype: m.archetype, profile: TIER_PROFILE[t], life: cell.life, entrance: cell.entrance };
+  const cell = row ? resolveMatchup(tierAs ? { ...row, tier: tierAs } : row, knobs, null, cellPhase) : { life: TIER_LIFE[t], entrance: entranceFor(`mage:${key}`, tables.mageTierEntrance[t], lists) };
+  // The resolver's entrance follows the WORLD's phase; a sweep that crosses lists and column re-reads it for the list played.
+  if (row) cell.entrance = entranceFor(`mage:${key}`, cell.entrance.length, lists);
+  return { name: `${m.name} (${key}${flood ? "~flood" : ""})`, decklist: m.decklist, archetype: m.archetype, profile: TIER_PROFILE[t], life: cell.life, entrance: cell.entrance };
 };
 /** S33: a mage at a chosen life with N entrance basics (its colours by pip count; a mono mage repeats its one). */
 const mageAt = (key: string, life: number, basics: number): Side => {
   const base = mage(key);
-  return { ...base, name: `${base.name} @${life}/${basics}`, life, entrance: entranceFor(`mage:${key}`, basics) };
+  return { ...base, name: `${base.name} @${life}/${basics}`, life, entrance: entranceFor(`mage:${key}`, basics, listPhase) };
 };
 const beastAt = (key: string, delta: number): Side => {
   const b = beast(key);
@@ -266,6 +277,18 @@ if (part === "11") {
   }
   console.log(`\n### Aggregate — the references' win rate by mage tier at phase ${phase}: ${Object.entries(agg11).map(([t, xs]) => `${t}: ${(xs.reduce((a, b) => a + b, 0) / Math.max(1, xs.length)).toFixed(0)}%`).join(" · ")}`);
 }
+if (part === "13") {
+  // S42b (ADR-135's (b)): the phase column against the POST-LORDS references — salvage + legends + ten prizes of the pair,
+  // two basics in play (what reaches the deep water after five lords).
+  console.log(`\n## 13. Tier-2 and tier-3 mages vs the POST-LORDS references (phase ${phase}; sim/road-decks salvage-WR+lords / salvage-UB+lords: 43 cards, 12 life, journeyman, two basics in play)`);
+  header();
+  const agg13: Record<string, number[]> = {};
+  for (const t of [2, 3] as const) for (const k of byTier[t]) for (const rk of ["salvageWRLords", "salvageUBLords"]) {
+    const r = await pairing(mage(k), road(rk), `T${t}×postlords`);
+    (agg13[`T${t}`] ??= []).push(r.bPct);
+  }
+  console.log(`\n### Aggregate — the references' win rate by mage tier at phase ${phase}: ${Object.entries(agg13).map(([t, xs]) => `${t}: ${(xs.reduce((a, b) => a + b, 0) / Math.max(1, xs.length)).toFixed(0)}%`).join(" · ")}`);
+}
 if (part === "all" || part === "3") {
   console.log(`\n## 3. Children vs parents (parent mage at tier-1 settings; parent beast at its own)`);
   header();
@@ -281,8 +304,16 @@ if (part === "all" || part === "3") {
   }
 }
 
+if (part === "12") {
+  console.log(`\n## 12. THE MIRROR — each flood list against its phase-one self (both at the phase-ONE column: the tier's life, profile and entrance)`);
+  header();
+  const agg12: number[] = [];
+  for (const k of Object.keys(MAGE_FLOOD_LISTS)) agg12.push((await pairing(mage(k, undefined, 2, 1), mage(k, undefined, 1, 1), `T${MAGE_DECKS[k]!.tier}×self`)).aPct);
+  console.log(`\n### Aggregate — the flood lists' win rate against their phase-one selves: mean ${(agg12.reduce((a, b) => a + b, 0) / agg12.length).toFixed(0)}% · min ${Math.min(...agg12).toFixed(0)}% · max ${Math.max(...agg12).toFixed(0)}%`);
+}
+
 // ---- S30 Part 5: per-deck cast counts (the mages only) ----
-const mageNames = new Set(Object.entries(MAGE_DECKS).map(([k, m]) => `${m.name} (${k})`));
+const mageNames = new Set(Object.entries(MAGE_DECKS).flatMap(([k, m]) => [`${m.name} (${k})`, `${m.name} (${k}~flood)`]));
 const mageRows = [...casts.entries()].filter(([name]) => mageNames.has(name));
 if (mageRows.length > 0) {
   console.log(`\n## Cast counts per mage (every game the deck played in this run; casts per game in brackets; NEVER CAST listed)\n`);

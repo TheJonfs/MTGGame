@@ -12,7 +12,7 @@ import type { Modifier } from "@shandalar/engine";
 import { tierTablesFor, type EnemyTier, type KnobValues, type Phase } from "./knobs.js";
 import type { OpponentTemplate, Difficulty } from "./catalog.js";
 import type { Legacy } from "./corolla.js";
-import { MAGE_DECKS } from "@shandalar/sim/mage-decks";
+import { mageListFor } from "@shandalar/sim/mage-decks";
 
 export interface Matchup {
   life: number;
@@ -33,10 +33,10 @@ export function legacyTerm(_legacy: Legacy | null | undefined, _opponent: Oppone
 
 /** The entrance basics for a mage deck ref: its colours in pip order (`primaryColors`, a data field on the
  * mage row, sync-tested against the pool's pip counts), one basic each, repeating for a mono mage. */
-export function entranceFor(deck: string, count: number): string[] {
+export function entranceFor(deck: string, count: number, phase: number | undefined): string[] {
   if (count <= 0) return [];
   const key = deck.startsWith("mage:") ? deck.slice(5) : null;
-  const colours = key && MAGE_DECKS[key] ? [...MAGE_DECKS[key].primaryColors] : [];
+  const colours = key ? [...(mageListFor(key, phase)?.primaryColors ?? "")] : []; // S42b: the flood list's pip order at phase two
   if (colours.length === 0) return [];
   return Array.from({ length: count }, (_, i) => BASIC_OF[colours[i % colours.length]!]!);
 }
@@ -51,7 +51,7 @@ export function resolveMatchup(opponent: OpponentTemplate, knobs: KnobValues, le
   const baseLife = isMage ? tables.mageTierLife[tier] : opponent.worldLife + tables.beastTierLifeDelta[tier];
   const life = Math.max(1, baseLife + (opponent.worldLifeOffset ?? 0) + term.lifeDelta);
   const basics = isMage ? Math.max(0, tables.mageTierEntrance[tier] + term.entranceDelta) : 0;
-  return { life, profile: opponent.difficulty, entrance: entranceFor(opponent.deck as string, basics), ante: knobs.anteCount };
+  return { life, profile: opponent.difficulty, entrance: entranceFor(opponent.deck as string, basics, phase), ante: knobs.anteCount };
 }
 
 /** The entrance as engine modifiers on the enemy seat. */

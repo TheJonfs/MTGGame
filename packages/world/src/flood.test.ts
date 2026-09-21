@@ -27,18 +27,18 @@ describe("S41 (ADR-128/129): the flood's ten lists live in the catalog, pinned t
   });
   it("every list is forty pool cards carrying its legend ×3; `lord:` / `court:` refs resolve through enemyDeck", () => {
     for (const s of flood.strongholds) {
-      const d = enemyDeck(catalog, `lord:${s.lord.key}`);
+      const d = enemyDeck(catalog, `lord:${s.lord.key}`, 2);
       expect(d.decklist.reduce((n, e) => n + e.count, 0)).toBe(40);
       expect(d.decklist.find((e) => e.cardId === s.lord.cardId)?.count, s.id).toBe(3);
       for (const e of d.decklist) expect(pool.has(e.cardId), e.cardId).toBe(true);
     }
     for (const c of flood.courts) {
-      const d = enemyDeck(catalog, `court:${c.minister.key}`);
+      const d = enemyDeck(catalog, `court:${c.minister.key}`, 2);
       expect(d.decklist.find((e) => e.cardId === c.minister.cardId)?.count, c.id).toBe(3);
       expect(d.decklist.some((e) => e.cardId === c.ground), `${c.id}: the ground is on the entrance, never in the list`).toBe(false);
       expect(pool.get(c.ground)?.prizeOnly).toBe(true);
     }
-    expect(() => enemyDeck(catalog, "lord:nobody")).toThrow(/unknown flood deck/);
+    expect(() => enemyDeck(catalog, "lord:nobody", 2)).toThrow(/unknown flood deck/);
   });
   it("ADR-129 — the seats keep their own gates: every court's list passes the gate it imposes; every lord's list sits inside his triad", () => {
     for (const c of flood.courts) expect(checkDeck(flood.decks[c.minister.key]!.decklist, null, c.deckRule!, pool).problems, c.id).toEqual([]);
@@ -76,6 +76,25 @@ describe("S41 (ADR-130): the flood's run — the court's duel, the falls, the go
   const world = (seed = 4101) => newWorld({ seed, catalog, salvage: { legends: legends(), picks: [], pair: ["W", "R"], deck: assembleSalvageDeck(pool, catalog.salvagePack!, ["W", "R"], []) }, playerName: "Flood" });
   const result = (winner: 0 | 1, ante: [string[], string[]] = [[], []]): MatchResult => ({ winner, reason: "LIFE", turns: 9, finalLife: winner === 0 ? [7, 0] : [0, 7], log: [], facts: { damageDealt: [0, 0], creaturesLost: [0, 0], cardsDrawn: [0, 0], spellsCast: {}, ante: { 0: ante[0], 1: ante[1] } } } as unknown as MatchResult);
 
+  it("ADR-134 (S42b): the lords' rows by difficulty — Easy 30 + 1, Standard 30 + 2, Hard 34 + 3, the basics of the triad with the law's colour first; phase one's lords take no bonus", async () => {
+    const { DIFFICULTIES, resolveKnobs } = await import("./knobs.js");
+    const { floodLordEntrance } = await import("./flood.js");
+    const want = { easy: [30, 1], standard: [30, 2], hard: [34, 3] } as const;
+    for (const mode of ["easy", "standard", "hard"] as const) {
+      const k = resolveKnobs({ difficulty: DIFFICULTIES[mode] });
+      const w = world();
+      for (const r of lordStatus(w, catalog, k)) expect(r.base, `${mode} ${r.lordName}`).toBe(want[mode][0]);
+      for (const sh of flood.strongholds) {
+        const e = floodLordEntrance(sh, k);
+        expect(e.length, `${mode} ${sh.id}`).toBe(want[mode][1]);
+        expect(e.every((m) => m.type === "permanentOnBattlefield" && m.player === 1)).toBe(true);
+      }
+    }
+    const hard = resolveKnobs({ difficulty: DIFFICULTIES.hard });
+    const w1 = newWorld({ seed: 4299, catalog, starter: "white", difficulty: "hard" });
+    for (const r of lordStatus(w1, catalog, hard)) expect(r.base, r.lordName).toBe(catalog.strongholdContent!.find((c) => c.id === r.strongholdId)!.lord.baseLife);
+  });
+
   it("walking onto a High Ground stops at the court's threshold (until it falls); a flood stronghold's threshold names the flood's seat; the rail's lords are the flood's", () => {
     const w = world();
     const ground = w.map.strongholds.find((f) => f.kind === "ground")!;
@@ -85,7 +104,7 @@ describe("S41 (ADR-130): the flood's run — the court's duel, the falls, the go
     const again = advance(w, catalog, [ground.at]);
     expect(again.some((e) => e.type === "courtEntry" && e.courtId === ground.contentId)).toBe(true);
     expect(lordStatus(w, catalog, knobs).map((r) => r.lordName).sort()).toEqual(["The Bailiff", "The Dredger", "The Fordkeeper", "The Reaper", "The Reeve"]);
-    expect(lordStatus(w, catalog, knobs).every((r) => r.base === 34)).toBe(true);
+    expect(lordStatus(w, catalog, knobs).every((r) => r.base === 30)).toBe(true);
   });
 
   it("the court's fight: world life, the world's ante, the minister's list at 34, the law AND the High Ground on the court's side", () => {

@@ -294,9 +294,14 @@ export const KNOBS = {
     description: "ADR-072: region hearts sit on five colour spokes at these elliptically-normalised radii (jittered per sector by ringJitter). Strongholds sit at strongholdRadius.",
   }),
   floodLordBasics: knob<number>({
-    default: 0,
+    default: 2,
     unit: "basic lands of the triad on the lord's battlefield before turn one (the law's colour first)",
-    description: "S42a (S41 Concern 1; ⚠ unratified — 0 until the planner reads the grid): a flood lord's ENTRANCE beside his signature in hand. The S41 table showed fourteen life was worth less than three lands; `flood-sim --grid 1 --lords 1` measures {30, 34} × {0, 3}. The lord's life is his def's `baseLife` in data/world/flood.json.",
+    description: "S42a (S41 Concern 1); RATIFIED S42b (ADR-134, from the S42a grid): Standard 30 + TWO basics (48–58% against a finished deck — the band's top edge for all five lords at once), Easy 30 + 1, Hard 34 + 3 (`floodLordLifeBonus`). A flood lord's ENTRANCE beside his signature in hand. The S41 table showed fourteen life was worth less than three lands; `flood-sim --grid 1 --lords 1` measures {30, 34} × {0, 3}. The lord's life is his def's `baseLife` in data/world/flood.json.",
+  }),
+  floodLordLifeBonus: knob<number>({
+    default: 0,
+    unit: "life added to a flood lord's `baseLife` (data/world/flood.json: 30)",
+    description: "S42b (ADR-134): the lords' rows by difficulty — Easy 30 + 1 basic, Standard 30 + 2, Hard 34 + 3: the entrance is `floodLordBasics`, and this is Hard's four life (the pace war's growth and the spoke hunt's reduction apply on top, as in phase one).",
   }),
   floodHeartLife: knob<number>({
     default: 50,
@@ -643,6 +648,7 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
     siegeIntervalSteps: { civilized: 1500, approach: 1125, wild: 750 }, // S26 r3: +33% with the standard shift (ratio held)
     siegeMaxActive: 1, // S25 r3 (Chris): easy = one siege at a time
     floodHeartLife: 45, // S42a
+    floodLordBasics: 1, // S42b (ADR-134): Easy 30 + 1
     heartLife: 35, // S29 Part 0 (Chris: 40 standard, from the S28 sim + his 5–1 at 40)
     mageTierLife: { 1: 8, 2: 12, 3: 14 }, // S34 (ADR-117): one cell easier on the entrance axis first, life second
     mageTierEntrance: { 1: 0, 2: 0, 3: 1 },
@@ -670,6 +676,7 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
     siegeIntervalSteps: { civilized: 750, approach: 560, wild: 375 }, // S26 r3: +33% (ratio held)
     siegeMaxActive: 3, // S25 r3 (Chris): hard = three skies can burn
     floodHeartLife: 55, // S42a
+    floodLordBasics: 3, floodLordLifeBonus: 4, // S42b (ADR-134): Hard 34 + 3
     heartLife: 45, // S27 (ADR-093)
     mageTierLife: { 1: 8, 2: 14, 3: 20 }, // S34 (ADR-117): one cell harder
     mageTierEntrance: { 1: 0, 2: 2, 3: 2 },

@@ -5,6 +5,7 @@
     {
       "id": "dawnmarch",
       "name": "The Dawnmarch",
+      "namePhaseTwo": "The Chalkwater",
       "tier": "civilized",
       "color": "W",
       "townNames": [
@@ -16,6 +17,7 @@
     {
       "id": "alabaster_downs",
       "name": "The Alabaster Downs",
+      "namePhaseTwo": "The Saltings",
       "tier": "approach",
       "color": "W",
       "townNames": [
@@ -26,6 +28,7 @@
     {
       "id": "reliquary_wastes",
       "name": "The Reliquary Wastes",
+      "namePhaseTwo": "The Strand of Bells",
       "tier": "wild",
       "color": "W",
       "townNames": [
@@ -35,6 +38,7 @@
     {
       "id": "tidemeet",
       "name": "The Tidemeet",
+      "namePhaseTwo": "The Deepreach",
       "tier": "civilized",
       "color": "U",
       "townNames": [
@@ -46,6 +50,7 @@
     {
       "id": "mistfen",
       "name": "The Mistfen",
+      "namePhaseTwo": "The Glassmere",
       "tier": "approach",
       "color": "U",
       "townNames": [
@@ -56,6 +61,7 @@
     {
       "id": "drowned_reach",
       "name": "The Drowned Reach",
+      "namePhaseTwo": "The Drowned Verge",
       "tier": "wild",
       "color": "U",
       "townNames": [
@@ -65,6 +71,7 @@
     {
       "id": "duskmoor",
       "name": "The Duskmoor",
+      "namePhaseTwo": "The Blackwash",
       "tier": "civilized",
       "color": "B",
       "townNames": [
@@ -76,6 +83,7 @@
     {
       "id": "gallows_fen",
       "name": "The Gallows Fen",
+      "namePhaseTwo": "The Sedgemoor",
       "tier": "approach",
       "color": "B",
       "townNames": [
@@ -86,6 +94,7 @@
     {
       "id": "barrowlands",
       "name": "The Barrowlands",
+      "namePhaseTwo": "The Bonefens",
       "tier": "wild",
       "color": "B",
       "townNames": [
@@ -95,6 +104,7 @@
     {
       "id": "emberford",
       "name": "The Emberford",
+      "namePhaseTwo": "The Cinderflats",
       "tier": "civilized",
       "color": "R",
       "townNames": [
@@ -106,6 +116,7 @@
     {
       "id": "cinder_scarps",
       "name": "The Cinder Scarps",
+      "namePhaseTwo": "The Scaldings",
       "tier": "approach",
       "color": "R",
       "townNames": [
@@ -116,6 +127,7 @@
     {
       "id": "shattered_caldera",
       "name": "The Shattered Caldera",
+      "namePhaseTwo": "The Smokereach",
       "tier": "wild",
       "color": "R",
       "townNames": [
@@ -125,6 +137,7 @@
     {
       "id": "greenholt",
       "name": "The Greenholt",
+      "namePhaseTwo": "The Rushlands",
       "tier": "civilized",
       "color": "G",
       "townNames": [
@@ -136,6 +149,7 @@
     {
       "id": "bramblemarch",
       "name": "The Bramblemarch",
+      "namePhaseTwo": "The Reedholt",
       "tier": "approach",
       "color": "G",
       "townNames": [
@@ -146,6 +160,7 @@
     {
       "id": "deepwood",
       "name": "The Deepwood",
+      "namePhaseTwo": "The Wildwater",
       "tier": "wild",
       "color": "G",
       "townNames": [

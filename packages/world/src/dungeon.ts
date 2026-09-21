@@ -22,7 +22,7 @@ import { entranceModifiers, resolveMatchup } from "./matchup.js";
 import type { CardDef } from "@shandalar/cards";
 import type { Modifier, MatchResult, MatchSpec } from "@shandalar/engine";
 import type { Catalog, OpponentTemplate } from "./catalog.js";
-import { enemyDeck } from "./catalog.js";
+import { enemyDeck, opponentColors } from "./catalog.js";
 import { addToCollection, forfeitCards, opponentTemplate, pickAnteFromDeck, recordDuel } from "./journey.js";
 import { manalinkModifiers } from "./quests.js";
 import type { KnobValues } from "./knobs.js";
@@ -528,9 +528,9 @@ export function dungeonDuelSpec(
     enemy.kind === "minion"
       ? {
           name: enemy.tmpl.name,
-          decklist: enemyDeck(catalog, enemy.tmpl.deck).decklist,
+          decklist: enemyDeck(catalog, enemy.tmpl.deck, world.phase).decklist,
           agent: `heuristic:${minionMatchup!.profile}`,
-          archetype: enemyDeck(catalog, enemy.tmpl.deck).archetype,
+          archetype: enemyDeck(catalog, enemy.tmpl.deck, world.phase).archetype,
           life: minionMatchup!.life,
         }
       : { name: enemy.name, decklist: enemy.decklist.map((e) => ({ ...e })), agent: "heuristic:master", archetype: enemy.archetype, life: enemy.life };
@@ -606,7 +606,7 @@ export function applyInteriorDuel(
         m.defeated = true;
         if (catalog) {
           const tmpl = catalog.opponents.find((o) => o.id === m.catalogId);
-          creditSpokeKill(world, tmpl?.colors, tmpl?.tier ?? 0); // S22 r1: colours, mirroring renown
+          creditSpokeKill(world, tmpl ? opponentColors(tmpl, world.phase) : undefined, tmpl?.tier ?? 0); // S22 r1: colours, mirroring renown
         }
       }
     }
