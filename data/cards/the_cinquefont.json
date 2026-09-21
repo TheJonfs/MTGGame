@@ -46,5 +46,6 @@
   "asset": "/custom-art/the_cinquefont.png",
   "fallback": "rendered"
  },
- "prizeOnly": true
+ "prizeOnly": true,
+ "printedAsset": "the_cinquefont.jpg"
 }
