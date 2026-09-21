@@ -4,7 +4,11 @@ import { audio, castTypeSfxCue, enterSfxCue } from "../audio/audio.js";
 import {
   DEFAULT_RULES,
   Game,
+  blockerChoices,
+  canBlock,
+  characteristics,
   deriveFacts,
+  eligibleBlockers,
   expandDecklist,
   stableStringify,
   validateDecklist,
@@ -400,12 +404,21 @@ export class MatchController {
       const names = e.attackers
         .map((id) => state.objects[id])
         .filter((o): o is NonNullable<typeof o> => !!o)
-        .map((o) => {
+        .map((o, i) => {
           const def = pool.get(o.cardId);
-          const kw = def?.keywords?.length ? ` (${def.keywords.join(", ")})` : "";
+          // Post-S42b (Chris's menace report): the LIVE keywords, not the printed ones — a granted menace or flying
+          // (the Observatory's "creatures you control gain vigilance and menace") is what decides the block.
+          const live = [...characteristics(this.game.ctx, e.attackers[i]!).keywords].filter((k) => ["flying", "menace", "reach", "trample", "first strike", "double strike", "deathtouch", "vigilance", "lifelink"].includes(k));
+          const kw = live.length ? ` (${live.join(", ")})` : "";
           return `${def?.name ?? o.cardId}${kw}`;
         });
       if (names.length > 0) this.showNotice(`Opponent attacks with ${names.join(", ")}`);
+      // Post-S42b (Chris's menace report): when the engine will auto-take "done" at declare blockers (ADR-014 — a lone
+      // choice is never asked, so enterBlockers never runs) while you have creatures standing, say why NOW.
+      if (blockerChoices(this.game.ctx).length === 1) {
+        const why = this.whyNoBlock();
+        if (why) this.showNotice(`No legal block: ${why}`);
+      }
     });
     bus.on("DAMAGE", (e) => {
       this.throttledSfx("sfx.damage"); // one ring per simultaneous batch (r4)
@@ -643,7 +656,10 @@ export class MatchController {
     if (!iAttack && st.step === "DECLARE_ATTACKERS") {
       const key = `${st.turn}:attack`;
       if (this.combatSeen.has(key)) return null;
-      return { key, text: `Opponent attacks with ${st.combat.attackers.map(name).join(", ")}.` };
+      // Post-S42b: the pause names the live keywords and, when no block will be offered, why (the engine's own read).
+      const kw = (id: string) => { const live = [...characteristics(this.game.ctx, id).keywords].filter((k) => ["flying", "menace", "reach", "first strike", "double strike", "deathtouch", "trample"].includes(k)); return live.length ? ` (${live.join(", ")})` : ""; };
+      const why = blockerChoices(this.game.ctx).length === 1 ? this.whyNoBlock() : null;
+      return { key, text: `Opponent attacks with ${st.combat.attackers.map((a) => name(a) + kw(a)).join(", ")}.${why ? ` No legal block: ${why}` : ""}` };
     }
     if (iAttack && st.step === "DECLARE_BLOCKERS") {
       const key = `${st.turn}:blocks`;
@@ -1261,12 +1277,32 @@ export class MatchController {
     const done = request.actions.some((a) => a.type === "doneDeclaringBlockers");
     const stagedPairs = this.phase.kind === "blockers" ? this.phase.stagedPairs : [];
     if (options.size === 0 && done && stagedPairs.length === 0 && !(this.pauseBlockersWithUntapped && this.humanHasUntappedCreature())) {
-      // No legal blocks at all: auto-done, no pause.
+      // No legal blocks at all: auto-done, no pause (the ATTACKERS_DECLARED narration has already said why).
       this.human.submit(request.actions.find((a) => a.type === "doneDeclaringBlockers")!);
       return;
     }
     this.phase = { kind: "blockers", options, stagedPairs, pendingBlocker: null, mustAddBlocker: !done };
     this.emit();
+  }
+
+  /** The engine's reason no block was offered, per attacker, when the human controls an untapped creature; null otherwise. */
+  private whyNoBlock(): string | null {
+    const ctx = this.game.ctx;
+    const st = ctx.state;
+    if (st.activePlayer === this.humanSeat) return null;
+    const free = eligibleBlockers(ctx);
+    const standing = st.battlefield.filter((id) => { const o = st.objects[id]; return !!o && o.controller === this.humanSeat && !o.tapped && this.pool.get(o.cardId)?.types.includes("Creature"); });
+    if (standing.length === 0) return null;
+    const name = (id: string) => this.pool.get(st.objects[id]?.cardId ?? "")?.name ?? id;
+    const reasons = st.combat.attackers.map((a) => {
+      const ch = characteristics(ctx, a);
+      const able = free.filter((b) => canBlock(ctx, b, a));
+      if (able.length === 0) return `${name(a)} ${ch.keywords.has("flying") ? "has flying and none of your creatures can reach it" : "cannot be blocked by your creatures"}`;
+      if (ch.keywords.has("menace") && able.length < 2) return `${name(a)} has menace and only ${name(able[0]!)} could block it (two are needed)`;
+      return `${name(a)} — blocks were offered`; // unreachable when the offer was empty; kept for honesty
+    });
+    const cantBlock = standing.filter((id) => !free.includes(id)).map(name);
+    return [...reasons, ...(cantBlock.length ? [`${cantBlock.join(", ")} can't block`] : [])].join("; ") + ".";
   }
 
   private humanHasUntappedCreature(): boolean {
