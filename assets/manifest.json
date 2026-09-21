@@ -567,6 +567,33 @@
           "rendered_at": "2026-09-21T20:43:58+00:00",
           "thumb": "assets/thumbs/card-cinquefont-1/canonical.png",
           "variant_prompt": null
+        },
+        "wbrug-a": {
+          "conditioned_on": "assets/images/card-cinquefont-1/canonical.png",
+          "descriptor_hash": "sha256:c86abc54c286204b9e41eff9e9215296c29cefa74f0aec6eb56d5306af8a7bf5",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-cinquefont-1/wbrug-a.png",
+          "rendered_at": "2026-09-21T21:19:56+00:00",
+          "thumb": "assets/thumbs/card-cinquefont-1/wbrug-a.png",
+          "variant_prompt": "Keep this exact composition, figure, sky, flooded plain and lighting. Change only the colours of the braided column of water: it must show five clearly separate bands of colour, in this exact order from the crowned head at the TOP down to the waves at the BOTTOM: white, then black, then red, then blue, then green. Each band one clear colour, none blended or repeated, all five clearly visible."
+        },
+        "wbrug-b": {
+          "conditioned_on": "assets/images/card-cinquefont-1/canonical.png",
+          "descriptor_hash": "sha256:c86abc54c286204b9e41eff9e9215296c29cefa74f0aec6eb56d5306af8a7bf5",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-cinquefont-1/wbrug-b.png",
+          "rendered_at": "2026-09-21T21:20:06+00:00",
+          "thumb": "assets/thumbs/card-cinquefont-1/wbrug-b.png",
+          "variant_prompt": "Keep this exact composition, figure, sky, flooded plain and lighting. Change only the colours of the braided column of water: it must show five clearly separate bands of colour, in this exact order from the crowned head at the TOP down to the waves at the BOTTOM: white, then black, then red, then blue, then green. Each band one clear colour, none blended or repeated, all five clearly visible. The five bands spiral around the column like the stripes of a twisted rope, still in that order from top to bottom."
+        },
+        "wbrug-c": {
+          "conditioned_on": "assets/images/card-cinquefont-1/canonical.png",
+          "descriptor_hash": "sha256:c86abc54c286204b9e41eff9e9215296c29cefa74f0aec6eb56d5306af8a7bf5",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-cinquefont-1/wbrug-c.png",
+          "rendered_at": "2026-09-21T21:20:15+00:00",
+          "thumb": "assets/thumbs/card-cinquefont-1/wbrug-c.png",
+          "variant_prompt": "Keep this exact composition, figure, sky, flooded plain and lighting. Recolour the column of water as five separate vertical currents rising side by side and braiding loosely, ordered from the viewer's LEFT to RIGHT exactly: white, black, red, blue, green. Each current one clear colour, all five clearly visible from base to crown."
         }
       }
     },
@@ -3311,6 +3338,66 @@
           "path": "assets/images/flood-heart-cinquefont-2/canonical.png",
           "rendered_at": "2026-09-21T20:44:38+00:00",
           "thumb": "assets/thumbs/flood-heart-cinquefont-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "flood-heart-cinquefont-r2-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:cce15644dccfb9c1ec859354cd65b58848f23f770ed29de8e3f8701f0c8cec34",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:cce15644dccfb9c1ec859354cd65b58848f23f770ed29de8e3f8701f0c8cec34",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/flood-heart-cinquefont-r2-1/canonical.png",
+          "rendered_at": "2026-09-21T21:20:23+00:00",
+          "thumb": "assets/thumbs/flood-heart-cinquefont-r2-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "flood-heart-cinquefont-r2-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:6ee5a5f8c7e311684d97553d31e1d8fe50d80154adcf2e9ec313151682b0cc64",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:6ee5a5f8c7e311684d97553d31e1d8fe50d80154adcf2e9ec313151682b0cc64",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/flood-heart-cinquefont-r2-2/canonical.png",
+          "rendered_at": "2026-09-21T21:20:30+00:00",
+          "thumb": "assets/thumbs/flood-heart-cinquefont-r2-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "flood-heart-cinquefont-r2-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:1a9c1ec25491819975916327676b2ddc4ce74d39b4a1d4fa698c3ddb495b0504",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:1a9c1ec25491819975916327676b2ddc4ce74d39b4a1d4fa698c3ddb495b0504",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/flood-heart-cinquefont-r2-3/canonical.png",
+          "rendered_at": "2026-09-21T21:20:38+00:00",
+          "thumb": "assets/thumbs/flood-heart-cinquefont-r2-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "flood-heart-cinquefont-r2-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:b3331f35104ffc28fbd571a11ac920537e84cf79227e499108e622acd7a9f23d",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:b3331f35104ffc28fbd571a11ac920537e84cf79227e499108e622acd7a9f23d",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/flood-heart-cinquefont-r2-4/canonical.png",
+          "rendered_at": "2026-09-21T21:21:08+00:00",
+          "thumb": "assets/thumbs/flood-heart-cinquefont-r2-4/canonical.png",
           "variant_prompt": null
         }
       }

@@ -97,3 +97,4 @@ Mage-portrait law (the Reaper and the Dredger lean on the bestiary plate's hatch
 | `flood-court-meliyan-1.md`, `flood-court-meliyan-2.md` | Meliyan, the Torment (the Season's court, BR — Cairnbrand Pyre) | ember red |
 | `flood-lord-dredger-r2-1.md`, `flood-lord-dredger-r2-2.md` | The Dredger — ROUND 2 (Chris: less human — the card art's carved mask of a face, blank eyes, the nemes headdress; round 1's bearded man rejected) | sea blue |
 | `flood-heart-cinquefont-1.md`, `flood-heart-cinquefont-2.md` | The Cinquefont (S42a — the flood's capstone; a water elemental's bust, five streams) | sea blue + five small accents |
+| `flood-heart-cinquefont-r2-1.md` … `-r2-4.md` | The Cinquefont — ROUND 2 (Chris: all five colours in Cinquefoil order W B R U G, the Manafleur portrait's precedent; crown / braid / radiating / mantle) | the five colours, pale |
