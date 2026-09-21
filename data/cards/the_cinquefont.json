@@ -43,6 +43,7 @@
   }
  ],
  "art": {
+  "asset": "/custom-art/the_cinquefont.png",
   "fallback": "rendered"
  },
  "prizeOnly": true
