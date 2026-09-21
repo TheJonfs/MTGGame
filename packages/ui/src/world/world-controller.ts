@@ -81,6 +81,8 @@ import {
 } from "@shandalar/world";
 import type { Modifier } from "@shandalar/engine";
 import { WorldRng as DungeonRng } from "@shandalar/world";
+import { applyFountDuel, floodLordEntrance, fountDuelSpec, fountFallen, recordFount } from "@shandalar/world";
+import { FOUNT_DECK } from "@shandalar/sim/heart-deck";
 import { applyCourtDuel, courtDuelSpec, courtsFallen, floodCourt, floodDeck, floodHeartOpen, floodRun, floodStronghold, recordFloodLordFall, strongholdContentFor, type FloodCourtDef } from "@shandalar/world";
 import {
   applyMirrorDuel, applyPetalDuel, corollaAdvance, corollaAsWorldMap, corollaDoor, corollaInnRest, corollaPath, corollaTown, enterCorolla,
@@ -134,7 +136,10 @@ export type WorldScreen =
   | { kind: "petalTelegraph"; color: PetalColor; notice: string | null }
   /** S41 (ADR-130): a court of the flood on its High Ground — the telegraph, the fight (the petal's shape on the outer map), the fall. */
   | { kind: "courtTelegraph"; courtId: string; notice: string | null }
-  | { kind: "courtDuel"; courtId: string; enemyName: string; match: MatchController }
+  /** S42a (ADR-131): the flood's capstone — the Cinquefont at the opened deep water: the telegraph, the fight (the courtDuel screen), the fall. */
+  | { kind: "fountTelegraph" }
+  | { kind: "fountVictory"; fallLine: string; prizeLine: string; paidCards: string[]; first: boolean }
+  | { kind: "courtDuel"; courtId: string; enemyName: string; match: MatchController } // S42a: courtId "the_fount" is the capstone's fight
   | { kind: "courtVictory"; courtId: string; name: string; ministerName: string; fallLine: string; prizeLine: string; paidGold: number; paidCards: string[]; anteWon: string[]; anteWithheld: string[]; ministerWithheld: boolean; fallen: number }
   /** S26: a petal fight or the Mirror — mounts PlayMatch like a world duel. */
   | { kind: "corollaDuel"; enemyName: string; match: MatchController; against: { petal?: PetalColor; mirror?: boolean; heart?: boolean } }
@@ -1536,6 +1541,8 @@ export class WorldController {
         enemy = { kind: "guardian", name: sh.lord.name, decklist: g.decklist, archetype: g.archetype, life: lordStartingLife(this.world, this.knobs, sh), color: sh.color };
         portrait = sh.lord.portrait;
         extraModifiers.push(entranceModifier(sh)); // the signature always looms (Chris-ratified)
+        const fl = floodStronghold(this.catalog, sh.id);
+        if (fl) extraModifiers.push(...floodLordEntrance(fl, this.knobs)); // S42a: the flood lord's basics (knob; 0 until ratified)
       } else if (run.kind === "mox" && mox) {
         // S25 (the great swap): the Moxen pass to the gem-titled court.
         const g = COURT_DECKS[mox.guardian.key]!;
@@ -1763,6 +1770,9 @@ export class WorldController {
     if (d === "deep") {
       // S39 (Part 5): no Corolla in the flood yet — the deep water's line.
       const ft = this.catalog.questText?.flood;
+      // S42a (ADR-131): the lords fallen and the fount still standing — the knock is the capstone's telegraph.
+      if (floodHeartOpen(this.world) && !fountFallen(this.world)) { this.screen = { kind: "fountTelegraph" }; this.emit(); return; }
+      if (fountFallen(this.world)) { this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: ft?.fount?.fall ?? "The fount is stopped." }; this.emit(); return; }
       // S41 (ADR-130): the Heart opens when the five lords have fallen — its content is S42's; until then the line changes.
       this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: floodHeartOpen(this.world) ? (ft?.heartOpens ?? "The way down is open.") : (ft?.deep ?? "The water is deep here.") };
       this.emit();
@@ -1846,6 +1856,58 @@ export class WorldController {
       this.screen = { ...this.screen, walking: false };
       this.emit();
     }
+  }
+
+  // ---------- S42a (ADR-131/132/133): the Cinquefont ----------
+  fountText(): { telegraph: string; parley: string; fall: string; prize: string } | undefined { return this.catalog.questText?.flood?.fount; }
+  fightFount(): void {
+    if (!this.world || this.screen.kind !== "fountTelegraph") return;
+    const rng = new DungeonRng(this.world.rng);
+    const { spec, enemyName } = fountDuelSpec(this.world, this.knobs, rng);
+    this.world.rng = rng.state();
+    this.autosave();
+    const match = new MatchController(this.pool, {
+      humanSeat: 0, seed: spec.seed, aiDelayMs: this.aiDelay(),
+      custom: {
+        human: { name: this.world.player.name, portrait: this.world.player.portrait ?? "you", decklist: spec.players[0].decklist },
+        enemy: { name: enemyName, decklist: spec.players[1].decklist, difficulty: "master", archetype: FOUNT_DECK.archetype, portrait: "flood-heart-cinquefont" },
+        rules: { startingLife: spec.rules.startingLife, ante: 0, ...(spec.rules.startingPlayer !== undefined ? { startingPlayer: spec.rules.startingPlayer } : {}) },
+        modifiers: spec.modifiers,
+      },
+    });
+    this.screen = { kind: "courtDuel", courtId: "the_fount", enemyName, match };
+    this.emit();
+    const rec = { seed: spec.seed, spec, enemyName };
+    void match.start().then((result) => this.finishFountDuel(result, rec));
+  }
+  declineFount(): void {
+    if (this.screen.kind !== "fountTelegraph") return;
+    this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: "You step back from the water. It is still rising." };
+    this.emit();
+  }
+  private finishFountDuel(result: MatchResult, rec: { seed: number; spec: MatchSpec; enemyName: string }): void {
+    this.noteSeen(result);
+    if (!this.world) return;
+    const text = this.fountText();
+    const out = applyFountDuel(this.world, this.catalog, this.knobs, result, text?.fall ?? "The fount is stopped.", rec);
+    this.ringResult(out.type === "win" ? "win" : "loss");
+    this.autosave();
+    if (out.type === "loss") {
+      if (this.world.gameOver) { this.screen = { kind: "gameOver", fatal: this.world.duels[this.world.duels.length - 1] ?? null }; this.emit(); return; }
+      this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: "The fount stands. A world life is gone; the water is still rising." };
+      this.emit();
+      return;
+    }
+    // The ledger (durability, as the Heart's): the capstone's line and the one flag — no cutting counted.
+    this.writeLegacy(recordFount(this.legacy(), out.entry));
+    this.screen = { kind: "fountVictory", fallLine: out.entry.text, prizeLine: text?.prize ?? "", paidCards: out.paidCards, first: out.first };
+    this.emit();
+  }
+  /** After the capstone the world continues: the courts still stand as prizes; the map is open. */
+  continueAfterFount(): void {
+    if (this.screen.kind !== "fountVictory") return;
+    this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: this.screen.fallLine };
+    this.emit();
   }
 
   // ---------- S41 (ADR-130): the flood's courts ----------

@@ -19,7 +19,7 @@ export type Modifier =
   | { type: "signatureToHand"; player: PlayerId; cardId: string }
   /** S27 (ADR-093): the law sequence the Manafleur walks — an ascension hook by data. Omitted
    * fields keep the defaults (the WBRUG ring; `sequence`). */
-  | { type: "lawSequence"; order?: string[]; mode?: "sequence" | "random" | "accumulate" };
+  | { type: "lawSequence"; order?: string[]; mode?: "sequence" | "random" | "accumulate" | "tide" };
 
 export function applyModifiers(ctx: EngineCtx, modifiers: Modifier[]): void {
   for (const m of modifiers) {

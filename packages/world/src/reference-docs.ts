@@ -19,7 +19,7 @@ import { COURT_DECKS } from "@shandalar/sim/court-decks";
 import { GUARDIAN_DECKS } from "@shandalar/sim/guardian-decks";
 import { LORD_DECKS } from "@shandalar/sim/lord-decks";
 import { COROLLA_DECKS } from "@shandalar/sim/corolla-decks";
-import { HEART_DECK } from "@shandalar/sim/heart-deck";
+import { FOUNT_DECK, HEART_DECK } from "@shandalar/sim/heart-deck";
 import { enemyDeck, type Catalog, type OpponentDeckRef } from "./catalog.js";
 import { DIFFICULTIES, resolveKnobs, tierTablesFor, type KnobValues } from "./knobs.js";
 import { shopPrice } from "./shop.js";
@@ -176,6 +176,10 @@ Mages roam anywhere; beasts are spoke-bound (their colour's ring). Tier 1 rolls 
         const g = fl.decks[c.minister.key]!;
         return { name: `${c.minister.name} — ${c.name} (${c.pair.join("")})`, life: `${c.minister.life} ⚠ (floodCourtLife overrides)`, law: `${c.law.name} — ${c.law.text}`, extra: `Ground: ${pool.get(c.ground)?.name ?? c.ground}; door: ${c.deckRule ? `${c.deckRule.label} (${describeDeckRule(c.deckRule)})` : "none"}`, decklist: g.decklist, archetype: g.archetype };
       }));
+  }
+  if (catalog.flood) {
+    section("The Cinquefont (phase two — the flood's capstone, at the opened deep water)", "Opens when the five lords have fallen. The Heart's shape: the player at world life, no ante, five roots and the card in hand — under the TIDE: one law at each of the fount's end steps in the order U G W B R; when five stand at its end step all are exiled and the tide begins again. The fall pays Time Walk and the Cinquefont's card; the world goes on.",
+      [{ name: `${FOUNT_DECK.name} — the deep water`, life: `floodHeartLife ${std.floodHeartLife} ⚠`, law: "the tide — the Risen Tide, the Season, the Intake, the Tithe, the Toll; the wash at five", extra: "Prize: Time Walk + The Cinquefont", decklist: FOUNT_DECK.decklist, archetype: FOUNT_DECK.archetype }]);
   }
   if (catalog.corolla) {
     const laws = new Map((catalog.strongholdContent ?? []).map((c) => [c.color, c.law]));

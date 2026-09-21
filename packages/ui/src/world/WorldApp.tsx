@@ -941,6 +941,54 @@ function CourtTelegraph({ c }: { c: WorldController }) {
   );
 }
 
+/** S42a (ADR-131): the Cinquefont's telegraph — the deep water opened. */
+function FountTelegraph({ c }: { c: WorldController }) {
+  if (c.screen.kind !== "fountTelegraph" || !c.world) return null;
+  const text = c.fountText();
+  return (
+    <div className="gallery-modal">
+      <div className="gallery-modal-box play-dialog dungeon-telegraph">
+        <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
+          <img className="parley-portrait" src="/portraits/flood-heart-cinquefont.png" alt="" style={{ width: 72, height: 72, flexShrink: 0 }} title="The Cinquefont" onError={(e) => { (e.target as HTMLImageElement).style.visibility = "hidden"; }} />
+          <div>
+            <h2 style={{ margin: 0, fontFamily: "var(--serif)" }}>The Cinquefont</h2>
+            <p className="parley-sub" style={{ marginBottom: 0 }}>{text?.telegraph ?? "Something is coming up out of the deep water."}</p>
+          </div>
+        </div>
+        {text?.parley && <p style={{ fontSize: 13, fontStyle: "italic", margin: "10px 0 0" }}>{text.parley}</p>}
+        <p className="dungeon-law"><b>The tide:</b> at each of its end steps the fount makes the next law — the Risen Tide, the Season, the Intake, the Tithe, the Toll. When five stand at its end step, all are washed away and the tide begins again. <i>(The laws are permanents; the fount is a creature. Both can be answered.)</i></p>
+        <ul className="dungeon-stakes">
+          <li><b>The Cinquefont</b> fights at <b>{c.knobs.floodHeartLife}</b> life with one of each basic land in play and itself in hand; you at your world life ({c.world.player.worldLife}). No ante.</li>
+          <li>Win: <b>Time Walk</b> — {text?.prize ?? "the flood's only Power"} — and <b>The Cinquefont</b>. The world goes on: the courts still stand.</li>
+          <li>Lose: a world life; you stand at the water's edge.</li>
+        </ul>
+        <p style={{ textAlign: "right", marginBottom: 0 }}>
+          <button onClick={() => c.declineFount()}>Step back</button>{" "}
+          <button className="primary" onClick={() => c.fightFount()}>Fight</button>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/** S42a: the fount is stopped. */
+function FountVictory({ c, pool, oracle }: { c: WorldController; pool: Map<string, CardDef>; oracle: Record<string, OracleEntry> }) {
+  if (c.screen.kind !== "fountVictory") return null;
+  const s = c.screen;
+  return (
+    <div className="loader">
+      <div className="box play-setup world-result">
+        <h2 style={{ fontFamily: "var(--serif)", marginTop: 0 }}>Victory — the Cinquefont is stopped</h2>
+        <p style={{ fontSize: 13 }}>{s.fallLine}</p>
+        {s.paidCards.length > 0 && <><div className="flyout-title">{s.prizeLine || "Yours"}</div><div className="dialog-cards">{s.paidCards.map((id, i) => <div className="card-slot" key={`${id}${i}`}><CardFrame def={pool.get(id)!} oracle={oracle[id]} showPrinted /></div>)}</div></>}
+        {s.paidCards.length === 0 && <p style={{ fontSize: 12.5, color: "var(--ink-soft)" }}>◆ There is exactly one of each, and you hold them already.</p>}
+        <p style={{ fontSize: 12.5, color: "var(--ink-soft)" }}>The Chronicle has the line. The courts still stand; the map is open.</p>
+        <p><button className="primary" onClick={() => c.continueAfterFount()}>Back to the water</button></p>
+      </div>
+    </div>
+  );
+}
+
 /** S41: a court fell — the ground is yours. */
 function CourtVictory({ c, pool, oracle }: { c: WorldController; pool: Map<string, CardDef>; oracle: Record<string, OracleEntry> }) {
   if (c.screen.kind !== "courtVictory") return null;
@@ -1082,7 +1130,7 @@ function ChroniclePage({ c, onClose }: { c: WorldController; onClose: () => void
         {entries.length === 0 && <p style={{ fontSize: 12.5, color: "var(--ink-soft)" }}>No cutting yet. The flower stands.</p>}
         {entries.map((e) => (
           <div key={`${e.n}-${e.when}`} className="dungeon-law" style={{ marginBottom: 8 }}>
-            <b>The {ordinal(e.n)} cutting</b> <span style={{ color: "var(--ink-soft)", fontSize: 11.5 }}>· the {names[e.color] ?? e.color} road · seed {e.seed} · {e.difficulty} · {e.steps} steps</span>
+            <b>{e.kind === "fount" ? "The fount is stopped" : e.kind === "flood" ? "The Flood" : `The ${ordinal(e.n)} cutting`}</b> <span style={{ color: "var(--ink-soft)", fontSize: 11.5 }}>· the {names[e.color] ?? e.color} road · seed {e.seed} · {e.difficulty} · {e.steps} steps</span>
             <div style={{ marginTop: 4 }}>{e.text}</div>
           </div>
         ))}
@@ -1887,6 +1935,8 @@ export function WorldApp({ onWatchReplay, paused = false }: { onWatchReplay: (ga
   if (c.screen.kind === "petalTelegraph") return <PetalTelegraph c={c} />;
   if (c.screen.kind === "courtVictory") return <CourtVictory c={c} pool={pool} oracle={oracle} />;
   if (c.screen.kind === "courtTelegraph") return <CourtTelegraph c={c} />;
+  if (c.screen.kind === "fountTelegraph") return <FountTelegraph c={c} />;
+  if (c.screen.kind === "fountVictory") return <FountVictory c={c} pool={pool} oracle={oracle} />;
   if (c.screen.kind === "petalVictory") return <PetalVictory c={c} pool={pool} oracle={oracle} />;
   if (c.screen.kind === "mirrorVictory") return <MirrorVictory c={c} pool={pool} oracle={oracle} />;
   if (c.screen.kind === "heartTelegraph") return <HeartTelegraph c={c} />;

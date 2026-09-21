@@ -196,6 +196,12 @@
   },
   "fords": "The water is deep here, and someone has laid a way across it — stones, or a boat that knows the way. It leads to dry ground.",
   "heartOpens": "The fifth stronghold falls, and the deep water moves. Something under it has felt the last dam go. The way down is open.",
-  "chronicleFifth": "Five holds broken in the flood. The Calyx is open."
+  "chronicleFifth": "Five holds broken in the flood. The Calyx is open.",
+  "fount": {
+   "telegraph": "The deep water is not deep any more. It is rising. From the middle of it, where the flower stood, something is coming up that the flower stood on — five colours, and none of them still. The Cinquefont.",
+   "parley": "It does not speak. The water speaks: one law, then another, then all of them, then none, then one.",
+   "fall": "The fount is stopped. The water falls back to where it was, and it was never still. Something must be planted here.",
+   "prize": "A moment the tide did not take."
+  }
  }
 }

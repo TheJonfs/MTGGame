@@ -39,6 +39,8 @@ export interface GameEventMap extends Record<string, unknown> {
   LIFE_CHANGE: { player: PlayerId; delta: number; total: number };
   SPELL_CAST: { cardId: string; controller: PlayerId; objectId?: string };
   CARD_DRAWN: { player: PlayerId };
+  /** S42a (R-098): an extra turn was created for this player. */
+  EXTRA_TURN: { player: PlayerId };
   /** ADR-070 Amendment 3: one per milled card (after its ZONE_CHANGE library→graveyard). */
   MILLED: { player: PlayerId; objectId: string; cardId: string };
   /** ADR-076 (S17): a card left a hand for the graveyard as a discard (effects, cleanup, costs, cycling).

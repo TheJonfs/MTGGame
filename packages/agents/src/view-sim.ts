@@ -753,6 +753,10 @@ function applyEffect(
       }
       return 0.6;
     }
+    case "extraTurn":
+      // S42a (Time Walk): a whole turn — an untap, a draw, a land drop, and another attack: a card and a half, plus half
+      // our standing power (the swing the turn buys). On an empty board it is an Explore, and a body comes first.
+      { const power = view.battlefield.reduce((n, o) => n + (o.controller === me && o.power !== null ? Math.max(0, o.power) : 0), 0); return (e.who === "opponent" ? -1 : 1) * (1.5 + 0.5 * power); }
     default:
       return 0.2; // unknown vocabulary: casting is mildly better than nothing
   }

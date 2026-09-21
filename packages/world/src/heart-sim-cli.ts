@@ -21,7 +21,7 @@ import { loadCardPool } from "@shandalar/cards/loader";
 import { manaValue, parseManaCost } from "@shandalar/cards";
 import { runMatch, type Agent, type MatchSpec } from "@shandalar/engine";
 import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
-import { HEART_DECK } from "@shandalar/sim/heart-deck";
+import { FOUNT_DECK, HEART_DECK, TIDE_ORDER } from "@shandalar/sim/heart-deck";
 import { DECKS } from "@shandalar/sim/decks";
 import { ROAD_DECKS } from "@shandalar/sim/road-decks";
 import { loadCatalog } from "./loader.js";
@@ -38,7 +38,11 @@ const lives = arg("lives", "35,40,45").split(",").map(Number);
 const landCounts = arg("lands", "20,18").split(",").map(Number);
 const refFilter = arg("refs", "all");
 const persistArg = arg("persist", "0");
-const rings: ("rotating" | "accumulating")[] = persistArg === "both" ? ["rotating", "accumulating"] : persistArg === "1" ? ["accumulating"] : ["rotating"];
+// S42a (ADR-131/132): `--tide 1` runs the CINQUEFONT (the fount's sixty, the tide mode in U G W B R) alone; `--tide both` beside
+// whatever `--persist` selected, on the same seeds. `--refs flood` = chris-road-B + the two salvage+legends references.
+const tideArg = arg("tide", "0");
+const baseRings: ("rotating" | "accumulating" | "tide")[] = persistArg === "both" ? ["rotating", "accumulating"] : persistArg === "1" ? ["accumulating"] : ["rotating"];
+const rings: ("rotating" | "accumulating" | "tide")[] = tideArg === "1" ? ["tide"] : tideArg === "both" ? [...baseRings, "tide"] : baseRings;
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const pool = loadCardPool(join(ROOT, "data/cards")).cards;
 const catalog = loadCatalog(join(ROOT, "data/world"));
@@ -56,7 +60,8 @@ const stock: Ref[] = [
   { name: "slice:D", archetype: "midrange", decklist: [...DECKS.D.decklist], profile: "journeyman", life: refLife, entrance: [] },
 ];
 const road: Ref = { name: ROAD_DECKS.chrisRoadB!.name, archetype: ROAD_DECKS.chrisRoadB!.archetype, decklist: CHRIS_ROAD_B, profile: "master", life: ROAD_DECKS.chrisRoadB!.life, entrance: [...ROAD_DECKS.chrisRoadB!.entrance] };
-const references: Ref[] = refFilter === "stock" ? stock : refFilter === "road" ? [road] : [...stock, road];
+const floodRefs: Ref[] = [road, ...(["salvageWRLegends", "salvageUBLegends"] as const).map((k) => ({ name: ROAD_DECKS[k]!.name, archetype: ROAD_DECKS[k]!.archetype, decklist: ROAD_DECKS[k]!.decklist, profile: "journeyman" as const, life: ROAD_DECKS[k]!.life, entrance: [...ROAD_DECKS[k]!.entrance] }))];
+const references: Ref[] = refFilter === "flood" ? floodRefs : refFilter === "stock" ? stock : refFilter === "road" ? [road] : [...stock, road];
 
 /** The sixty at 18 lands: the two Ravnica duals whose colour pair the nonland cards demand least leave. */
 const SHOCKS: Record<string, [string, string]> = { hallowed_fountain: ["W", "U"], watery_grave: ["U", "B"], blood_crypt: ["B", "R"], stomping_ground: ["R", "G"], temple_garden: ["G", "W"], godless_shrine: ["W", "B"], steam_vents: ["U", "R"], overgrown_tomb: ["B", "G"], sacred_foundry: ["R", "W"], breeding_pool: ["G", "U"] };
@@ -90,19 +95,21 @@ for (const lands of landCounts) {
       for (let i = 0; i < games; i++) {
         if (i % 10 === 0) await new Promise((r) => setTimeout(r, 0));
         const seed = seed0 + i + life * 101 + lands * 7;
+        const boss = ring === "tide" ? "the_cinquefont" : "the_manafleur";
+        const bossDeck = ring === "tide" ? sixty.map((e) => (e.cardId === "the_manafleur" ? { ...e, cardId: "the_cinquefont" } : { ...e })) : [...sixty];
         const spec: MatchSpec = {
           seed,
           players: [
             { name: ref.name, decklist: [...ref.decklist], agent: "heuristic" },
-            { name: HEART_DECK.name, decklist: [...sixty], agent: "heuristic" },
+            { name: ring === "tide" ? FOUNT_DECK.name : HEART_DECK.name, decklist: bossDeck, agent: "heuristic" },
           ],
           rules: { startingLife: ref.life, handSize: 7, mulligan: "london", maxTurns: 100 },
           modifiers: [
             { type: "startingLife", player: 1, value: life },
-            { type: "signatureToHand", player: 1, cardId: "the_manafleur" },
+            { type: "signatureToHand", player: 1, cardId: boss },
             ...heartRootModifiers(1),
             ...ref.entrance.map((cardId) => ({ type: "permanentOnBattlefield" as const, player: 0 as const, cardId })),
-            { type: "lawSequence", ...(ring === "accumulating" ? { mode: "accumulate" as const } : {}) },
+            ring === "tide" ? { type: "lawSequence", order: [...TIDE_ORDER], mode: "tide" as const } : { type: "lawSequence", ...(ring === "accumulating" ? { mode: "accumulate" as const } : {}) },
           ],
         };
         const a0: Agent = new HeuristicAgent(seed * 2 + 1, pool, difficultyProfile(ref.profile, ref.archetype, [...sixty]));
@@ -115,7 +122,7 @@ for (const lands of landCounts) {
           const log = r.log as LogEntry[];
           const actions = log.filter((e) => e.t === "ACTION");
           const turnOf = (e: LogEntry): number => (e.afterAction !== undefined && actions[e.afterAction] ? (actions[e.afterAction]!.turn ?? 0) : 0);
-          const cast = log.find((e) => e.t === "EVENT" && e.name === "SPELL_CAST" && e.payload?.cardId === "the_manafleur" && e.payload?.controller === 1);
+          const cast = log.find((e) => e.t === "EVENT" && e.name === "SPELL_CAST" && e.payload?.cardId === boss && e.payload?.controller === 1);
           if (cast && turnOf(cast) <= 2) t1 += 1; // the heart's first turn (turn 1 or 2 by the coin)
           // The standing petal when the player died: the law on the heart's battlefield in the FINAL
           // state (the log's EVENT stream carries no zone changes; the final state is canonical).
@@ -128,7 +135,7 @@ for (const lands of landCounts) {
           }
           // The flower removed: its first DEATH (the EVENT stream logs DIES; exile and bounce are not
           // visible here — a floor, not a ceiling); by the player's last spell before it.
-          const gone = log.findIndex((e) => e.t === "EVENT" && e.name === "DIES" && e.payload?.cardId === "the_manafleur" && e.payload?.owner === 1);
+          const gone = log.findIndex((e) => e.t === "EVENT" && e.name === "DIES" && e.payload?.cardId === boss && e.payload?.owner === 1);
           if (gone !== -1) {
             removed += 1;
             const before = log.slice(0, gone).reverse().find((e) => e.t === "EVENT" && e.name === "SPELL_CAST" && e.payload?.controller === 0);

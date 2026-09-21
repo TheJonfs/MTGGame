@@ -515,3 +515,12 @@ See handoff Concerns for the authoritative list. Highlights: auto-pay greedy fea
 - **Impassable water is laid BEFORE anything is placed** (towns, lairs, carves) and `carveTo`'s fallback refuses deep cells — otherwise the generator carves accidental fords. The Calyx's fords have their OWN channel (`deepFord`); `ford` belongs to the rivers and is reassigned wholesale at the end of generation (the first version's fords vanished there).
 - **A bigger map multiplies everything area-scaled** (towns went 16 → 26). Normalise densities by the scale, and check the name lists cover the count.
 - **Walking the UI by refs**: the salvage shelf's cards are images — click by screenshot coordinates (the 800×600 frame), the tabs and buttons by `find`/`read_page` refs. Each dev-server start is a new origin (autoPort), so its localStorage is empty — no risk to a real save, and the legacy must be re-granted from the Dev panel.
+
+## S42a lessons (the Cinquefont)
+
+- **A card's printed behaviour lives on the card, not in a duel mode.** The brief asked for a `tide` mode; the wash condition (`ifLawsAtLeast`) and the order (`createLaw.order`) went on the def so a Cinquefont in ANY duel does what it says. The mode remains only to stop `accumulate` from suppressing the exile in the fount's own fight.
+- **Check the prize card's words before the session is planned around it.** Time Walk needed extra turns — not in the manifest, not in the brief. Asked at kickoff; ruled in a minute. The active player is now explicit (`extraTurns.pop()` else the other player); nothing in the repo read the turn number's parity, but anything new must not.
+- **The engine cannot import agents** — a whole-game test with RandomAgents belongs in `packages/sim`. And `STEP_BEGIN` is not in the log: read turn ownership off ACTION entries (`playLand`), or log the event you need.
+- **The harness runs scripted casts at the first priority they are legal** — a flash creature in the script fires during an earlier END step if the mana is up. Keep the lands tapped until the step you mean.
+- **Workspace packages do not resolve from `scripts/`** — a CLI that imports `@shandalar/*` lives in a package's `src` (`flood-gen-cli.ts`), like every sim CLI.
+- **AI policy keyed on shape carried the new boss for free**: the law-engine cast bonus, the legend-duplicate gate and the counter-hold all read `createLaw` / `Legendary` / the stack — book 67 only had to prove it.

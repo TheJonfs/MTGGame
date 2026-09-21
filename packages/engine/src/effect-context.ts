@@ -262,7 +262,16 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
       return true;
     },
 
-    createLaw(): void {
+    lawCount(): number {
+      return ctx.state.battlefield.filter((id) => ctx.defs.def(getObject(ctx.state, id).cardId).law === true).length;
+    },
+    extraTurn(player: number): void {
+      ctx.state.extraTurns.push(player as PlayerId);
+      ctx.bus.emit("EXTRA_TURN", { player: player as PlayerId });
+    },
+    createLaw(order?: string[]): void {
+      // S42a (R-098): a law-maker with its own order turns the duel's sequence to it (once — the pointer is the duel's).
+      if (order && order.join() !== ctx.state.lawSequence.order.join()) { ctx.state.lawSequence.order = [...order]; ctx.state.lawSequence.next = 0; }
       // S27 (the Manafleur): the NEXT law of the game-level sequence, as a token (S26 r3: laws are
       // tokens by construction) under the effect's controller; the pointer advances. Random mode
       // draws from the logged game RNG, so replays reproduce the petal.
@@ -275,7 +284,7 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
       seq.next = (index + 1) % seq.order.length;
       createObject(ctx, cardId, controller, "battlefield", { isToken: true });
     },
-    lawMode(): "sequence" | "random" | "accumulate" {
+    lawMode(): "sequence" | "random" | "accumulate" | "tide" {
       return ctx.state.lawSequence.mode;
     },
 
@@ -737,7 +746,13 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
     createLaw(): void {
       throw new Error("initialization effects cannot create laws");
     },
-    lawMode(): "sequence" | "random" | "accumulate" {
+    lawCount(): number {
+      return 0;
+    },
+    extraTurn(): void {
+      throw new Error("initialization effects cannot grant turns");
+    },
+    lawMode(): "sequence" | "random" | "accumulate" | "tide" {
       return ctx.state.lawSequence.mode;
     },
     dealDamage(target: ResolvedTarget, amount: number): void {

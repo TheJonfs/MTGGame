@@ -555,6 +555,66 @@
         }
       }
     },
+    "card-cinquefont-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:c86abc54c286204b9e41eff9e9215296c29cefa74f0aec6eb56d5306af8a7bf5",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:c86abc54c286204b9e41eff9e9215296c29cefa74f0aec6eb56d5306af8a7bf5",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-cinquefont-1/canonical.png",
+          "rendered_at": "2026-09-21T20:43:58+00:00",
+          "thumb": "assets/thumbs/card-cinquefont-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-cinquefont-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:509d9d9f9c74dd8d156b17811b6d83b6f3ab807f9730547f24da327c67ef79fd",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:509d9d9f9c74dd8d156b17811b6d83b6f3ab807f9730547f24da327c67ef79fd",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-cinquefont-2/canonical.png",
+          "rendered_at": "2026-09-21T20:44:05+00:00",
+          "thumb": "assets/thumbs/card-cinquefont-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-cinquefont-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:23dc2865b8cdddcc3d13f1fe3adab7fb34735cd30250bf0d56fb82a96a04f6ee",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:23dc2865b8cdddcc3d13f1fe3adab7fb34735cd30250bf0d56fb82a96a04f6ee",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-cinquefont-3/canonical.png",
+          "rendered_at": "2026-09-21T20:44:13+00:00",
+          "thumb": "assets/thumbs/card-cinquefont-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-cinquefont-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:8d0088193bc96fe726c44644b96a56a74b93ed2e4e6fb8b502b175bd60a85ac0",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:8d0088193bc96fe726c44644b96a56a74b93ed2e4e6fb8b502b175bd60a85ac0",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-cinquefont-4/canonical.png",
+          "rendered_at": "2026-09-21T20:44:21+00:00",
+          "thumb": "assets/thumbs/card-cinquefont-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "card-cunning-tactician-1": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:12fe45018e9b6bd72e55548010a1dbd3e94ef2900c730f221165230cecfb63e8",
@@ -3221,6 +3281,36 @@
           "path": "assets/images/flood-court-zinnia-2/canonical.png",
           "rendered_at": "2026-09-19T22:44:37+00:00",
           "thumb": "assets/thumbs/flood-court-zinnia-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "flood-heart-cinquefont-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:90b72800ac37168f0671897aeb2313bf4c680d4cfc7d8da86ee718b1308f7b08",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:90b72800ac37168f0671897aeb2313bf4c680d4cfc7d8da86ee718b1308f7b08",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/flood-heart-cinquefont-1/canonical.png",
+          "rendered_at": "2026-09-21T20:44:31+00:00",
+          "thumb": "assets/thumbs/flood-heart-cinquefont-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "flood-heart-cinquefont-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:c5ccb972532a2fa24750261e2ec70fe91d1580cb15e90854019e10f16630ea65",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:c5ccb972532a2fa24750261e2ec70fe91d1580cb15e90854019e10f16630ea65",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/flood-heart-cinquefont-2/canonical.png",
+          "rendered_at": "2026-09-21T20:44:38+00:00",
+          "thumb": "assets/thumbs/flood-heart-cinquefont-2/canonical.png",
           "variant_prompt": null
         }
       }

@@ -25,6 +25,10 @@ const arg = (name: string, fallback: string): string => { const i = process.argv
 const games = Number(arg("games", "10"));
 const seed0 = Number(arg("seed", "1"));
 const only = arg("only", "");
+const grid = arg("grid", "0") === "1";
+const lordsOnly = arg("lords", "0") === "1";
+const gridLives = arg("gridLives", "30,34").split(",").map(Number);
+const gridBasics = arg("gridBasics", "0,3").split(",").map(Number);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const pool = loadCardPool(join(ROOT, "data/cards")).cards;
 const knobs = defaultKnobs();
@@ -97,12 +101,16 @@ console.log(`| seat | legend | vs | seat wins | mean turns | legend casts/game |
 console.log(`|---|---|---|---|---|---|---|---|`);
 for (const [key, deck] of Object.entries(FLOOD_DECKS)) {
   if (only && only !== key) continue;
+  if (lordsOnly && deck.kind !== "lord") continue;
   const legendId = LEGEND[key]!;
   const colours = [deck.law, ...(["W", "U", "B", "R", "G"] as const).filter((c) => c !== deck.law && pool.get(legendId)!.manaCost.includes(`{${c}}`))];
-  void colours;
   const site = deck.kind === "lord" ? flood.strongholds.find((x) => x.lord.key === key)! : undefined;
   const court = deck.kind === "court" ? flood.courts.find((x) => x.minister.key === key)! : undefined;
-  const life = site ? site.lord.baseLife : court!.minister.life;
+  // S42a (the rows): `--grid 1` runs each LORD over life {30, 34} × basics {0, 3 of the triad} (the courts keep their row).
+  const cells: { life: number; basics: number }[] = site && grid ? gridLives.flatMap((l) => gridBasics.map((b) => ({ life: l, basics: b }))) : [{ life: site ? site.lord.baseLife : court!.minister.life, basics: 0 }];
+  for (const cell of cells) {
+  const life = cell.life;
+  const entrance = site ? Array.from({ length: cell.basics }, (_, i) => BASIC[site.triad[i % 3]!]!) : [];
   for (const y0 of yardsticks) {
     const cut = court?.deckRule ? legalCut(y0, court.deckRule) : { decklist: y0.decklist, changes: [] };
     if (cut.changes.length) cutNotes.push(`- ${court!.name} × ${y0.name}: ${cut.changes.join(", ")}`);
@@ -119,6 +127,7 @@ for (const [key, deck] of Object.entries(FLOOD_DECKS)) {
           { type: "permanentOnBattlefield", player: seat, cardId: LAW[deck.law]! },
           ...(deck.ground ? [{ type: "permanentOnBattlefield" as const, player: seat, cardId: deck.ground }] : []),
           ...(site ? [{ type: "signatureToHand" as const, player: seat, cardId: site.lord.cardId }] : []),
+          ...entrance.map((cardId) => ({ type: "permanentOnBattlefield" as const, player: seat, cardId })),
           ...y.entrance.map((cardId) => ({ type: "permanentOnBattlefield" as const, player: ySeat, cardId })),
         ];
         const me = { name: deck.name, decklist: [...deck.decklist], agent: "heuristic" as const };
@@ -138,7 +147,8 @@ for (const [key, deck] of Object.entries(FLOOD_DECKS)) {
       }
     }
     const per = (n: number) => (n / Math.max(1, total)).toFixed(2);
-    console.log(`| ${deck.seat} | ${deck.name} | ${y.name} | ${((100 * wins) / Math.max(1, total)).toFixed(0)}% | ${per(turns)} | ${per(casts)} | ${per(acts)} | ${per(side)} |`);
+    console.log(`| ${deck.seat}${grid && site ? ` @ ${cell.life} + ${cell.basics} basics` : ""} | ${deck.name} | ${y.name} | ${((100 * wins) / Math.max(1, total)).toFixed(0)}% | ${per(turns)} | ${per(casts)} | ${per(acts)} | ${per(side)} |`);
+  }
   }
 }
 if (cutNotes.length) { console.log(`\nThe legal cuts (a court's intruder must pass its gate):`); for (const n of cutNotes) console.log(n); }

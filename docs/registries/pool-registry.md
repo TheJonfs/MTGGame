@@ -396,6 +396,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | thawing_glaciers | all | 144 | Jeff A. Menges | 6411a8c6-010f-4863-a0fa-bbebe09d5c34 |
 | thought_scour | dka | 52 | David Rapoza | 88bf1ebb-9d85-4b9b-a614-c7f965c0893d |
 | timberland_guide | avr | 197 | Zoltan Boros | ae80fefb-af78-4f98-8058-71b61e91842f |
+| time_walk | lea | 83 | Amy Weber | e0139f60-d48e-46fb-9f5a-1e3d7558c834 |
 | titania_protector_of_argoth | mh2 | 416 | Magali Villeneuve | bab161d9-45d7-48b7-af47-21e3dbae4d85 |
 | tranquil_thicket | ons | 326 | Heather Hudson | afcb7cef-8aeb-4c84-88e9-6df17768e292 |
 | treetop_snarespinner | fdn | 114 | Steve Ellis | 88e68fa3-159d-49a6-8ac6-afc9bd6f1718 |
@@ -560,6 +561,15 @@ Pool 198 → **225** (the brief's "twenty-two" and "198 → 220" left the five H
 | cairnbrand | Cairnbrand | tested | custom Legendary Land; {T}: {B} / {T}: {R}; {4}{B}{R},{T} + sacrifice creature: returnFromGraveyard → battlefield, target creatureCardInYourGraveyard (YOUR graveyard) | Meliyan's. prizeOnly. Under her the sacrifice is her burn (fixture). |
 | snake_1_1_g | Snake Token | tested | token def 1/1 green Snake | The Reaper's. Rendered frame (no plate yet). |
 | spirit_1_1_w_flying | Spirit Token | tested | token def 1/1 white Spirit, flying | Shadow Summoning's. Rendered frame (no plate yet). |
+
+## Session 42a additions — the flood's capstone and its prize (ADR-131/133; Time Walk re-verified on Scryfall 2026-09-21)
+
+Pool 225 → **227**.
+
+| id | Card | Status | Vocabulary | Notes |
+|---|---|---|---|---|
+| the_cinquefont | The Cinquefont | tested | custom legend (Elemental 7/7, WBRUG); triggered(END_STEP you): exile scope laws `ifLawsAtLeast` 5; createLaw next with `order` U G W B R (R-098) | The flood's capstone (ADR-131) — not the Manafleur: the source the flower stilled. prizeOnly; three in the fount's sixty (the Manafleur's deck with the three flowers replaced). The tide: one law at each of its end steps; five stand for a turn cycle; the wash, then U again. The place in the tide is the duel's (fixtures: blink, theft, a destroyed law, both sides counted, the legend rule, the Season's counter on itself). AI: the Manafleur master's policy by shape (book 67). Art: four candidates + two portraits with Chris. |
+| time_walk | Time Walk | tested | sorcery; `extraTurn` you (R-098) | LEA #83 (Amy Weber — the brief's printing; override pinned). prizeOnly: the deep water's prize, the flood's only Power (ADR-133). AI (book 68): priced by the board it buys another attack for. |
 
 ## Shop tiers (ADR-078, S19)
 

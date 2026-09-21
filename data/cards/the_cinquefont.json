@@ -1,0 +1,49 @@
+{
+ "id": "the_cinquefont",
+ "name": "The Cinquefont",
+ "source": "custom",
+ "manaCost": "{W}{B}{R}{U}{G}",
+ "types": [
+  "Creature"
+ ],
+ "supertypes": [
+  "Legendary"
+ ],
+ "subtypes": [
+  "Elemental"
+ ],
+ "power": 7,
+ "toughness": 7,
+ "text": "At the beginning of your end step, if there are five or more laws on the battlefield, exile all laws. Then create the next law in the tide's order. (The tide runs the Risen Tide, the Season, the Intake, the Tithe, the Toll, and begins again. The place in the tide is the duel's, not this card's: a Cinquefont that leaves and returns continues it.)",
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "END_STEP",
+   "condition": {
+    "controller": "you"
+   },
+   "effects": [
+    {
+     "type": "exile",
+     "scope": "laws",
+     "ifLawsAtLeast": 5
+    },
+    {
+     "type": "createLaw",
+     "sequence": "next",
+     "order": [
+      "law_risen_tide",
+      "law_season",
+      "law_intake",
+      "law_tithe",
+      "law_toll"
+     ]
+    }
+   ]
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "prizeOnly": true
+}

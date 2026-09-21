@@ -542,7 +542,7 @@ export interface ChronicleEntry {
   /** ISO date of the folding (the profile's ledger; not game state). */
   when: string;
   /** S39: the flood's entry ("The plane turns over. Salvaged: …") — colour = the pair's first colour. Absent = a cutting. */
-  kind?: "flood";
+  kind?: "flood" | "fount";
 }
 
 /** ADR-096 (S28): the Heart's ROOTS — one basic of each type on the Manafleur's side, untapped,
@@ -640,6 +640,8 @@ export interface Legacy {
   /** Every entry ever written, in order (the Chronicle of Cuttings). */
   chronicle: ChronicleEntry[];
   victories: number;
+  /** S42a (ADR-131): the flood's capstone has fallen in some run — ONE flag; what it unlocks is phase three's. */
+  floodSurvived?: true;
 }
 export const LEGACY_VERSION = 1 as const;
 export function emptyLegacy(): Legacy {
@@ -650,7 +652,7 @@ export function migrateLegacy(raw: unknown): Legacy {
   if (!raw || typeof raw !== "object") return emptyLegacy();
   const r = raw as Partial<Legacy>;
   if (r.version !== 1) return emptyLegacy();
-  return { version: 1, cuttings: { ...(r.cuttings ?? {}) }, chronicle: [...(r.chronicle ?? [])], victories: r.victories ?? 0 };
+  return { version: 1, cuttings: { ...(r.cuttings ?? {}) }, chronicle: [...(r.chronicle ?? [])], victories: r.victories ?? 0, ...(r.floodSurvived ? { floodSurvived: true as const } : {}) };
 }
 /** Record a Manafleur victory: the colour's cutting count, the entry, the total. Returns a new legacy. */
 export function recordCutting(legacy: Legacy, entry: ChronicleEntry): Legacy {
@@ -680,6 +682,11 @@ export function floodEligible(legacy: Legacy): boolean {
 /** S39: the flood's chronicle entry — appended to the profile's ledger (no cutting counted). */
 export function recordFlood(legacy: Legacy, entry: Omit<ChronicleEntry, "n" | "kind">): Legacy {
   return { ...legacy, chronicle: [...legacy.chronicle, { ...entry, n: legacy.chronicle.length + 1, kind: "flood" }] };
+}
+
+/** S42a (ADR-131): the fount's fall in the profile — the capstone's line (kind "fount"), NO cutting counted, the flag set. */
+export function recordFount(legacy: Legacy, entry: Omit<ChronicleEntry, "n" | "kind">): Legacy {
+  return { ...legacy, floodSurvived: true, chronicle: [...legacy.chronicle, { ...entry, n: legacy.chronicle.length + 1, kind: "fount" }] };
 }
 
 export function legacyCarry(catalog: Catalog, color: PetalColor): { power: PetalColor; guardianCard?: string; powerSiteId?: string; minister?: string } {

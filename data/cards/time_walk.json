@@ -1,0 +1,20 @@
+{
+ "id": "time_walk",
+ "name": "Time Walk",
+ "source": "real",
+ "scryfallId": "e0139f60-d48e-46fb-9f5a-1e3d7558c834",
+ "manaCost": "{1}{U}",
+ "types": [
+  "Sorcery"
+ ],
+ "spellEffect": [
+  {
+   "type": "extraTurn",
+   "who": "you"
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "prizeOnly": true
+}

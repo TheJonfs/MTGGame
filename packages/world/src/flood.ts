@@ -8,6 +8,8 @@ import type { WorldRng } from "./rng.js";
 import { activeDeck, type WorldState } from "./state.js";
 import { addToCollection, deckLegal, forfeitCards, recordDuel } from "./journey.js";
 import { manalinkModifiers } from "./quests.js";
+import { FOUNT_DECK, TIDE_ORDER } from "@shandalar/sim/heart-deck";
+import { heartRootModifiers, startingColor, type ChronicleEntry } from "./corolla.js";
 
 /**
  * S41 (ADR-128/129/130): the flood's ten seats — phase two's content (data/world/flood.json). Five
@@ -93,6 +95,12 @@ export function floodDeck(catalog: Pick<Catalog, "flood">, key: string): FloodDe
   const d = catalog.flood?.decks[key];
   if (!d) throw new Error(`unknown flood deck ${key}`);
   return { ...d, decklist: d.decklist.map((e) => ({ ...e })) };
+}
+
+/** S42a: a flood lord's entrance basics (`floodLordBasics` of his triad, the law's colour first) — beside the law and the signature. */
+export function floodLordEntrance(sh: FloodStrongholdDef, knobs: Pick<KnobValues, "floodLordBasics">): Modifier[] {
+  const BASIC: Record<LordColor, string> = { W: "plains", U: "island", B: "swamp", R: "mountain", G: "forest" };
+  return Array.from({ length: Math.max(0, knobs.floodLordBasics) }, (_, i) => ({ type: "permanentOnBattlefield" as const, player: 1 as const, cardId: BASIC[sh.triad[i % sh.triad.length]!] }));
 }
 
 /** The court's side of the table: its law and its High Ground (ADR-128 §6 — the courts fight on their own ground). */
@@ -208,3 +216,57 @@ export function applyCourtDuel(world: WorldState, knobs: KnobValues, pool: Map<s
   if (world.player.worldLife <= 0) world.gameOver = true;
   return { type: "loss", anteLost };
 }
+
+// ---------- S42a (ADR-131/132/133): the Cinquefont — the flood's capstone ----------
+
+export const FOUNT_CARD = "the_cinquefont";
+export const FOUNT_PRIZE = "time_walk";
+
+/** The fount's fight: the Heart's shape (world life, ZERO ante, five roots, the card in hand, the master) at
+ * `floodHeartLife`, under the TIDE — the duel declares the mode and the order; the wash and the order are also on
+ * the card, so a fount anywhere else behaves the same. The accumulating ring is superseded here. */
+export function fountDuelSpec(world: WorldState, knobs: KnobValues, rng: WorldRng): { spec: MatchSpec; enemyName: string; enemyLife: number } {
+  if (!floodHeartOpen(world)) throw new Error("the deep water is still deep: the five lords stand");
+  const legal = deckLegal(activeDeck(world));
+  if (!legal.ok) throw new Error(`cannot face the fount: ${legal.reason}`);
+  const enemyLife = Math.max(1, knobs.floodHeartLife);
+  const spec: MatchSpec = {
+    seed: rng.int(1_000_000_000),
+    players: [
+      { name: world.player.name, decklist: activeDeck(world).map((e) => ({ ...e })), agent: "human" },
+      { name: FOUNT_DECK.name, decklist: FOUNT_DECK.decklist.map((e) => ({ ...e })), agent: "heuristic:master" },
+    ],
+    rules: { startingLife: world.player.worldLife, handSize: 7, mulligan: "london", maxTurns: 100, ante: 0, startingPlayer: rng.chance(0.5) ? 0 : 1 },
+    modifiers: [
+      { type: "startingLife", player: 1, value: enemyLife },
+      { type: "signatureToHand", player: 1, cardId: FOUNT_CARD },
+      ...heartRootModifiers(1),
+      { type: "lawSequence", order: [...TIDE_ORDER], mode: "tide" },
+      ...manalinkModifiers(world),
+    ],
+  };
+  return { spec, enemyName: FOUNT_DECK.name, enemyLife };
+}
+
+export type FountOutcome = { type: "win"; paidCards: string[]; entry: Omit<ChronicleEntry, "n" | "kind">; first: boolean } | { type: "loss" };
+
+/** The fount's fall pays Time Walk (the flood's only Power) and the Cinquefont's card — one each, never
+ * duplicated — marks the run's capstone, and returns the Chronicle's line for the caller to write into the
+ * profile (`recordFount`: kind "fount", no cutting counted, `floodSurvived`). The world goes on: the courts still
+ * stand. A loss costs a world life; you stand at the water's edge. */
+export function applyFountDuel(world: WorldState, catalog: Catalog, knobs: KnobValues, result: MatchResult, text: string, record?: { seed: number; spec: MatchSpec; enemyName: string }): FountOutcome {
+  if (record) recordDuel(world, record.seed, record.spec, result, { opponentId: "the_fount", catalogId: "the_fount", enemyName: record.enemyName, outcome: result.winner === 0 ? "win" : result.winner === 1 ? "loss" : "draw", anteWon: [], anteLost: [] });
+  if (result.winner === 0) {
+    const run = floodRun(world) as FloodRunState & { fountFallen?: true };
+    const first = run.fountFallen !== true;
+    run.fountFallen = true;
+    (run.falls ??= []).push({ siteId: "the_fount", step: world.player.stepsTaken });
+    const paidCards = [FOUNT_PRIZE, FOUNT_CARD].filter((id) => (world.player.collection[id] ?? 0) === 0);
+    if (paidCards.length) addToCollection(world, paidCards, "reward");
+    return { type: "win", paidCards, first, entry: { color: startingColor(world, catalog), text, seed: world.seed, difficulty: world.difficulty, steps: world.player.stepsTaken, when: new Date().toISOString() } };
+  }
+  world.player.worldLife = Math.max(knobs.lifeFloor, world.player.worldLife - knobs.lossLifePenalty);
+  if (world.player.worldLife <= 0) world.gameOver = true;
+  return { type: "loss" };
+}
+export const fountFallen = (world: WorldState): boolean => (floodRun(world) as { fountFallen?: true }).fountFallen === true;

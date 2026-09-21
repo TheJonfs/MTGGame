@@ -484,6 +484,9 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
   }
 }
 
+/** The cards whose end-step trigger may create laws (validator-confined: S27 the Manafleur, S42a the Cinquefont). */
+const LAW_MAKERS = ["the_manafleur", "the_cinquefont"];
+
 /** Per-effect-type required params. Kept as data so growing the vocabulary means one row. */
 const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m: string) => void) => void> = {
   damage: (e, err) => {
@@ -631,8 +634,12 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     needTargetIndex(e, err);
     if (e.duration !== "UNTIL_END_OF_TURN") err(`gainControl resolved form must be UNTIL_END_OF_TURN (S26 — the threaten class)`);
   },
+  extraTurn: (e, err) => {
+    if (e.who !== "you" && e.who !== "opponent" && e.who !== "target") err(`extraTurn.who must be you|opponent|target (S42a)`);
+  },
   createLaw: (e, err) => {
     if (e.sequence !== "next") err(`createLaw sequence must be "next" (S27)`);
+    if (e.order !== undefined && (!Array.isArray(e.order) || e.order.length === 0 || (e.order as unknown[]).some((x) => typeof x !== "string"))) err(`createLaw.order must be a non-empty array of law card ids (S42a)`);
   },
   searchLibrary: (e, err) => {
     if (typeof e.predicate !== "string" || !(SEARCH_PREDICATE.test(e.predicate) || e.predicate === "creatureCard")) err(`searchLibrary predicate must be basicLand|anyCard|creatureCard|subtype:<Subtype> (ADR-068/076; S30)`);
@@ -733,7 +740,7 @@ function validateEffects(
     // S26: the static gainControl (scope attached) is interpreted live, never resolved (ADR-033).
     if (type === "gainControl" && !opts.isStatic && e.scope !== undefined) err(`gainControl with a scope is static-only (ADR-033); use target + duration for the resolved form (S26)`);
     // S27: createLaw belongs to the Manafleur's own END_STEP trigger and nowhere else.
-    if (type === "createLaw" && !(opts.lawTrigger && cardId === "the_manafleur")) err(`createLaw is confined to the Manafleur's end-step trigger (S27)`);
+    if (type === "createLaw" && !(opts.lawTrigger && LAW_MAKERS.includes(cardId))) err(`createLaw is confined to the law-makers' end-step triggers — the Manafleur, the Cinquefont (S27/S42a)`);
     if ((type === "grantAbility" || type === "extraLandDrops" || type === "imposeEntersTapped") && !opts.isStatic) {
       err(`${type} is static-only (A10 — interpreted live, never resolved)`);
       continue;

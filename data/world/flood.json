@@ -510,14 +510,6 @@
      "count": 1
     },
     {
-     "cardId": "skirk_prospector",
-     "count": 2
-    },
-    {
-     "cardId": "hordeling_outburst",
-     "count": 1
-    },
-    {
      "cardId": "bitterblossom",
      "count": 1
     },
@@ -534,8 +526,16 @@
      "count": 1
     },
     {
-     "cardId": "llanowar_elves",
+     "cardId": "rampant_growth",
      "count": 1
+    },
+    {
+     "cardId": "wood_elves",
+     "count": 1
+    },
+    {
+     "cardId": "llanowar_elves",
+     "count": 2
     },
     {
      "cardId": "deadly_recluse",
@@ -613,10 +613,6 @@
      "count": 2
     },
     {
-     "cardId": "curiosity",
-     "count": 1
-    },
-    {
      "cardId": "young_pyromancer",
      "count": 2
     },
@@ -633,8 +629,8 @@
      "count": 2
     },
     {
-     "cardId": "air_elemental",
-     "count": 1
+     "cardId": "wall_of_air",
+     "count": 2
     },
     {
      "cardId": "lightning_bolt",

@@ -155,4 +155,30 @@ describe("the book of shame, S40 — the flood's legends and grounds", () => {
     expect(d("glorious_anthem", 0)).toBeGreaterThan(0.7);
     expect(Math.abs(d("grizzly_bears", 1))).toBeLessThan(0.2);
   });
+
+  it("book 67 (S42a, the Cinquefont — the Manafleur master's policy carries by SHAPE): the turn-one fount off five roots clears the pass by a body's worth and comes before another five-drop; a 7/7 at high life swings into three 2/2s; a second copy is never cast; a counter answers a Control Magic aimed at it", async () => {
+    const a = agent();
+    const roots: Obj[] = ["plains", "island", "swamp", "mountain", "forest"].map((cardId, i) => ({ id: `r${i}`, cardId, controller: 0 as const }));
+    const bloom = mkView({ hand: ["the_cinquefont", "faerie_formation"], bf: roots });
+    const cast = (v: GameView, id: string) => a.scorePriorityAction(v, { type: "castSpell", objectId: id, targets: [] } as Action);
+    expect(cast(bloom, "h_the_cinquefont_0")).toBeGreaterThan(a.scorePriorityAction(bloom, { type: "pass" }) + 2);
+    expect(cast(bloom, "h_the_cinquefont_0")).toBeGreaterThan(cast(bloom, "h_faerie_formation_1"));
+    const second = mkView({ hand: ["the_cinquefont"], bf: [...roots, { id: "cf", cardId: "the_cinquefont", controller: 0 }] });
+    expect(cast(second, "h_the_cinquefont_0")).toBe(-Infinity);
+    const swing = mkView({ life: [50, 20], step: "DECLARE_ATTACKERS", bf: [{ id: "cf", cardId: "the_cinquefont", controller: 0 }, ...[1, 2, 3].map((n) => ({ id: `b${n}`, cardId: "grizzly_bears", controller: 1 as const }))] });
+    expect(await a.scoreAttackSet(swing, viewCreatures(swing) as never, 0, ["cf"])).toBeGreaterThan(0);
+    // Their Control Magic on the stack, aimed at the fount, a Counterspell in hand with the mana up: the counter outscores passing.
+    const theft = mkView({ active: 1, step: "MAIN1", hand: ["counterspell"], bf: [...roots, { id: "cf", cardId: "the_cinquefont", controller: 0 }], stack: [{ id: "s1", kind: "spell", cardId: "control_magic", controller: 1, targets: [obj("cf")] }] });
+    expect(a.scorePriorityAction(theft, { type: "castSpell", objectId: "h_counterspell_0", targets: [{ kind: "stackItem", id: "s1" }] } as Action)).toBeGreaterThan(a.scorePriorityAction(theft, { type: "pass" }));
+  });
+
+  it("book 68 (S42a, Time Walk): the extra turn is a play, priced by the board it buys another attack for — above passing always; above a fresh two-drop once three attackers stand; on an empty board the body comes first", () => {
+    const a = agent();
+    const v = (n: number) => mkView({ hand: ["time_walk", "wind_drake"], bf: [...lands(3, "island"), ...Array.from({ length: n }, (_, i) => ({ id: `c${i}`, cardId: "wind_drake", controller: 0 as const }))] });
+    const walk = (n: number) => a.scorePriorityAction(v(n), { type: "castSpell", objectId: "h_time_walk_0", targets: [] } as Action);
+    const drake = (n: number) => a.scorePriorityAction(v(n), { type: "castSpell", objectId: "h_wind_drake_1", targets: [] } as Action);
+    for (const n of [0, 1, 3]) expect(walk(n), `${n} creatures`).toBeGreaterThan(a.scorePriorityAction(v(n), { type: "pass" }) + 1);
+    expect(walk(0)).toBeLessThan(drake(0));
+    expect(walk(3)).toBeGreaterThan(drake(3));
+  });
 });

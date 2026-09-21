@@ -183,12 +183,14 @@ export interface GameState {
    * the default is the WBRUG ring beginning with white. Lives in state, not on the creature, so
    * copies, reanimations and thefts continue the sequence. */
   lawSequence: LawSequence;
+  /** S42a (R-098, Time Walk): extra turns owed, in creation order — the LAST created is taken first (CR 500.7). */
+  extraTurns: PlayerId[];
 }
 
 export interface LawSequence {
   order: string[];
   next: number;
-  mode: "sequence" | "random" | "accumulate";
+  mode: "sequence" | "random" | "accumulate" | "tide";
 }
 /** The WBRUG ring of laws, beginning with white (the Intake). */
 export const DEFAULT_LAW_ORDER = ["law_intake", "law_tithe", "law_toll", "law_risen_tide", "law_season"];
@@ -228,6 +230,7 @@ export function initialGameState(startingLife: number): GameState {
     endStepSacrifices: [],
     cleanupReturns: [],
     lawSequence: { order: [...DEFAULT_LAW_ORDER], next: 0, mode: "sequence" },
+    extraTurns: [],
   };
 }
 

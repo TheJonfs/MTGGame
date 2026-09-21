@@ -216,7 +216,9 @@ export type EffectBase =
   /** S27 (the Manafleur): `scope` — exile-by-predicate on the Wrath-class scope machinery ("exile all laws").
    * A `laws` scope is a no-op under the `accumulate` law-sequence mode (the reserved all-five climax). */
   /** S36: `targetSpec` fans out over a range spec (the Angel of the Ruins' "up to two"), as tapTarget's does. */
-  | { type: "exile"; target?: number; targetSpec?: number; scope?: Scope }
+  /** S42a (R-098, the Cinquefont): `ifLawsAtLeast` — the scope-laws exile happens only while that many laws stand on the
+   * battlefield, BOTH sides counted (a stolen law is still a law); otherwise the clause does nothing. */
+  | { type: "exile"; target?: number; targetSpec?: number; scope?: Scope; ifLawsAtLeast?: number }
   /** S36 (R-096 word 1, Thawing Glaciers): return this permanent to its owner's hand at the beginning of the NEXT
    * cleanup step — a self-contained package rule beside the temporary guest's end-step exit (CR 514.1a's
    * "beginning of the cleanup step" is a trigger point the engine keeps as a due list, not a stack trigger:
@@ -314,7 +316,13 @@ export type EffectBase =
    * sequence as a token under the effect's controller, and advance the pointer. The sequence lives in
    * game state (`lawSequence`: order + pointer + mode), set by a match modifier; the default is the
    * WBRUG ring beginning with white. Validator-confined to the Manafleur's own end-step trigger. */
-  | { type: "createLaw"; sequence: "next" };
+  /** S42a (R-098): `order` — the law-maker's OWN order (the Cinquefont's tide, U G W B R). When the game's sequence
+   * does not already run in that order it adopts it and the pointer restarts: the pointer is the DUEL's, not the
+   * card's — a blinked or copied fount continues the tide, it does not begin it again. */
+  | { type: "createLaw"; sequence: "next"; order?: string[] }
+  /** S42a (R-098, Time Walk): the stated player takes an extra turn after this one (CR 500.7 — the most recently
+   * created extra turn is taken first; afterwards the turn passes as it would have). */
+  | { type: "extraTurn"; who: Who };
 // Reserved, not implemented (data-model §3): copy, setPT, preventDamage, changeType.
 
 export type EffectType = EffectBase["type"];
@@ -353,6 +361,7 @@ export const EFFECT_TYPES: readonly EffectType[] = [
   "imposeEntersTapped",
   "createLaw",
   "putOnTop",
+  "extraTurn",
 ];
 
 export type TriggerEvent =

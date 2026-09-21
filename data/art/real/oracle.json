@@ -2504,5 +2504,19 @@
     "art_crop": "https://cards.scryfall.io/art_crop/front/9/d/9d8c5669-11a9-4d95-8431-7065037f1fb6.jpg?1783945652",
     "normal": "https://cards.scryfall.io/normal/front/9/d/9d8c5669-11a9-4d95-8431-7065037f1fb6.jpg?1783945652",
     "via": "default oldest-highres"
+  },
+  "time_walk": {
+    "scryfallId": "e0139f60-d48e-46fb-9f5a-1e3d7558c834",
+    "set": "lea",
+    "set_name": "Limited Edition Alpha",
+    "collector_number": "83",
+    "artist": "Amy Weber",
+    "name": "Time Walk",
+    "mana_cost": "{1}{U}",
+    "type_line": "Sorcery",
+    "oracle_text": "Take an extra turn after this one.",
+    "art_crop": "https://cards.scryfall.io/art_crop/front/e/0/e0139f60-d48e-46fb-9f5a-1e3d7558c834.jpg?1783948701",
+    "normal": "https://cards.scryfall.io/normal/front/e/0/e0139f60-d48e-46fb-9f5a-1e3d7558c834.jpg?1783948701",
+    "via": "override lea lowest collector"
   }
 }

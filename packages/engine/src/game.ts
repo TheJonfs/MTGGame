@@ -150,6 +150,7 @@ export class Game {
     bus.on("DAMAGE", (e) => log.append({ t: "EVENT", name: "DAMAGE", payload: e }));
     bus.on("ATTACHED", (e) => log.append({ t: "EVENT", name: "ATTACHED", payload: e }));
     bus.on("CARD_DRAWN", (e) => log.append({ t: "EVENT", name: "CARD_DRAWN", payload: e }));
+    bus.on("EXTRA_TURN", (e) => log.append({ t: "EVENT", name: "EXTRA_TURN", payload: e })); // S42a (R-098): viewers see the Walk land
     bus.on("SPELL_CAST", (e) => log.append({ t: "EVENT", name: "SPELL_CAST", payload: e }));
     bus.on("ANTE_SET", (e) => log.append({ t: "EVENT", name: "ANTE_SET", payload: e }));
     bus.on("MILLED", (e) => log.append({ t: "EVENT", name: "MILLED", payload: e })); // ADR-070: narration/facts; replay ignores EVENTs
@@ -296,7 +297,10 @@ export class Game {
         this.state.result = { winner: null, reason: "MAX_TURNS" };
         break;
       }
-      this.state.activePlayer = ((this.state.turn - 1 + (this.rules.startingPlayer ?? 0)) % 2) as PlayerId;
+      // S42a (R-098, Time Walk): turn order is explicit, not the turn number's parity — an extra turn owed is taken
+      // (the last created first, CR 500.7); otherwise the turn passes to the other player, as it would have.
+      const extra = this.state.extraTurns.pop();
+      this.state.activePlayer = this.state.turn === 1 ? ((this.rules.startingPlayer ?? 0) as PlayerId) : extra !== undefined ? extra : opponentOf(this.state.activePlayer);
       for (const p of this.state.players) p.landsPlayedThisTurn = 0;
       for (const step of STEPS) {
         await this.runStep(step);

@@ -242,8 +242,8 @@ The flood's register: the strongholds are the places the lords hold against the 
 ```
 4 Forest · 3 Swamp · 3 Mountain · 1 Bayou · 1 Taiga · 1 Badlands · 1 Overgrown Tomb · 1 Stomping Ground · 1 Blood Crypt · 1 Tranquil Thicket
 3 The Reaper · 2 Poison-Tip Archer · 2 Voracious Cobra
-1 Moss Viper · 2 Skirk Prospector · 1 Hordeling Outburst · 1 Bitterblossom · 1 Blood Artist · 1 Indulgent Aristocrat · 1 Char
-1 Llanowar Elves · 1 Deadly Recluse · 1 Rumbling Baloth · 1 Gaean Wurm · 1 Gravedigger · 1 Rancor
+1 Moss Viper · 1 Bitterblossom · 1 Blood Artist · 1 Indulgent Aristocrat · 1 Char · 1 Rampant Growth · 1 Wood Elves
+2 Llanowar Elves · 1 Deadly Recluse · 1 Rumbling Baloth · 1 Gaean Wurm · 1 Gravedigger · 1 Rancor
 1 Lightning Bolt · 1 Terror
 ```
 17 / 23. Fodder that grows, two death payoffs, and the Reaper's sacrifice as the alpha.
@@ -252,8 +252,8 @@ The flood's register: the strongholds are the places the lords hold against the 
 ```
 7 Island · 6 Mountain · 1 Volcanic Island · 1 Steam Vents · 1 Lonely Sandbar · 1 Forgotten Cave
 3 Odile, the Tallyflame
-2 Brainstorm · 2 Thought Scour · 2 Cloudkin Seer · 1 Curiosity
-2 Young Pyromancer · 1 Arc Mage · 1 Man-o'-War · 2 Wind Drake · 1 Air Elemental
+2 Brainstorm · 2 Thought Scour · 2 Cloudkin Seer
+2 Young Pyromancer · 1 Arc Mage · 1 Man-o'-War · 2 Wind Drake · 2 Wall of Air
 2 Lightning Bolt · 1 Shock · 1 Pyroclasm · 1 Counterspell · 1 Aetherbolt
 ```
 17 / 23; twelve creature cards — her own gate (ADR-129). Every draw is a Pyroclasm on the tapped board; the ground draws too.
@@ -298,6 +298,8 @@ The flood's register: the strongholds are the places the lords hold against the 
 17 / 23; nothing above mana value 4 — she keeps her own gate. The Phoenix dies and returns; the Skeleton dies and returns; every death is her burn.
 
 ## 9. Two pool adds from the lists (Chris, 2026-09-19) ✅
+
+*S42a shells (the brief's Part 0): Tallyflame Court −1 Curiosity −1 Air Elemental +2 Wall of Air (twelve creatures kept); Harrowmoor −2 Skirk Prospector −1 Hordeling Outburst +1 Llanowar Elves +1 Rampant Growth +1 Wood Elves.*
 
 *S41 amendments (ADR-129): Tallyflame Court −1 Divination +1 Wind Drake; the Wrackroot Shallows −2 Hedron Crab −2 Wall of Blossoms +1 Man-o'-War +1 Mist Raven +1 Aether Channeler +1 Rumbling Baloth. Voracious Cobra is encoded as printed (combat damage to a creature destroys it).*
 

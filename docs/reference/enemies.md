@@ -8,7 +8,7 @@
 |---|---|---|---|
 | Roaming MAGE (overworld; also the minion floors of every dungeon) | S34 (ADR-117, the matchup resolver): `mageTierLife` by tier = {"1":8,"2":12,"3":16} (easy {"1":8,"2":12,"3":14} / hard {"1":8,"2":14,"3":20}), with `mageTierEntrance` basics of its colours (pip order) on its battlefield before turn one = {"1":0,"2":1,"3":2} (easy {"1":0,"2":0,"3":1} / hard {"1":0,"2":2,"3":2}); + a row's `worldLifeOffset`; a LAIR resident fights at +`lairResidentLifeBonus` = 2 (easy 2 / hard 2) | the catalog's deck ref | the row's difficulty |
 | Roaming BEAST | its `worldLife` (the catalog row) + `beastTierLifeDelta` by tier = {"1":0,"2":2,"3":4} (easy {"1":0,"2":0,"3":2} / hard {"1":0,"2":4,"3":8}) + a row's `worldLifeOffset` (the Serra Angel −4); no entrance; a LAIR resident +`lairResidentLifeBonus` | a beast deck | the row's difficulty |
-| **Phase two** (S38, design §8; ⚠ proposed, unratified — a world at `phase` 2 reads `phaseTierTables[2]` instead of the three tables above) | mages: life {"1":12,"2":16,"3":20} (easy {"1":12,"2":16,"3":18} / hard {"1":12,"2":18,"3":24}), entrance {"1":1,"2":2,"3":3} (easy {"1":1,"2":1,"3":2} / hard {"1":1,"2":3,"3":3}); beasts: delta {"1":4,"2":8,"3":12} (easy {"1":4,"2":6,"3":10} / hard {"1":4,"2":10,"3":16}) | as above | as above |
+| **Phase two** (S38, design §8; ⚠ proposed, unratified — a world at `phase` 2 reads `phaseTierTables[2]` instead of the three tables above) | mages: life {"1":12,"2":16,"3":20} (easy {"1":12,"2":16,"3":18} / hard {"1":12,"2":18,"3":24}), entrance {"1":1,"2":1,"3":3} (easy {"1":1,"2":1,"3":2} / hard {"1":1,"2":3,"3":3}); beasts: delta {"1":4,"2":8,"3":12} (easy {"1":4,"2":6,"3":10} / hard {"1":4,"2":10,"3":16}) | as above | as above |
 | Mox-court guardian (the five Mox dungeons, civilized ring) | the dungeon's `guardian.life` + the empowerment tiers reached by steps walked inside (`dungeonEmpowermentTiers` = [{"steps":30,"addLife":2},{"steps":60,"addLife":2,"addBasic":true},{"steps":90,"addLife":2,"addToken":true,"addCard":true}]) | COURT_DECKS by key | master |
 | Power-dungeon guardian (the five approach-ring dungeons) | the dungeon's `guardian.life` + the same empowerment tiers | GUARDIAN_DECKS by key | master |
 | Stronghold lord (the five seats, wild ring) | `baseLife` + growth − the spoke hunt's reduction: growth = min(`lordGrowthCap` 20 (easy 20 / hard 20), floor(steps / `lordGrowthSteps` 100 (easy 200 / hard 100)) × `lordGrowthLife` 1 (easy 1 / hard 2)); reduction = floor(spokeMinionPoints / `spokePointsPerLife` 3 (easy 3 / hard 3)); never below `lordLifeFloor` 15 (easy 15 / hard 15); + the stronghold's empowerment tiers (`strongholdEmpowermentTiers` = [{"steps":50,"addLife":2},{"steps":75,"addLife":2,"addBasic":true},{"steps":100,"addLife":2,"addToken":true,"addCard":true}]) | LORD_DECKS by key | master |
@@ -46,11 +46,11 @@ Mages roam anywhere; beasts are spoke-bound (their colour's ring). Tier 1 rolls 
 | Pale Edric | mage | 1 | — | 8 / **8** / 8 | 0 / **0** / 0 | 12 / 1 | apprentice | mage:edric (midrange) | 40 / 17 / 1.91 / B | the Sexton |
 | Sister Oriel | mage | 1 | — | 8 / **8** / 8 | 0 / **0** / 0 | 12 / 1 | apprentice | mage:oriel (midrange) | 40 / 17 / 1.78 / W | the Almoner |
 | Tessaly Reed | mage | 1 | — | 8 / **8** / 8 | 0 / **0** / 0 | 12 / 1 | apprentice | mage:tessaly (control) | 40 / 18 / 1.73 / U | the Tidewright |
-| Adept Maelin | mage | 2 | — | 12 / **12** / 14 | 0 / **1** / 2 (swamp) | 16 / 2 | journeyman | mage:maelin (aggro) | 40 / 17 / 1.96 / BR | the Pyre-Warden |
-| Brennor of the Glade | mage | 2 | — | 12 / **12** / 14 | 0 / **1** / 2 (forest) | 16 / 2 | journeyman | mage:brennor (midrange) | 40 / 17 / 1.61 / GW | the Sanctuary |
-| Kessa Emberhand | mage | 2 | — | 12 / **12** / 14 | 0 / **1** / 2 (island) | 16 / 2 | journeyman | mage:kessa (control) | 40 / 17 / 1.87 / RU | the Stormcaller |
-| Mistress Vael | mage | 2 | — | 12 / **12** / 14 | 0 / **1** / 2 (plains) | 16 / 2 | journeyman | mage:vael (midrange) | 40 / 17 / 1.74 / BW | the Tithe-Reeve |
-| Pell of the Shallows | mage | 2 | — | 12 / **12** / 14 | 0 / **1** / 2 (forest) | 16 / 2 | journeyman | mage:pell (control) | 40 / 17 / 2.17 / GU | the Tidesower |
+| Adept Maelin | mage | 2 | — | 12 / **12** / 14 | 0 / **1** / 2 (swamp) | 16 / 1 | journeyman | mage:maelin (aggro) | 40 / 17 / 1.96 / BR | the Pyre-Warden |
+| Brennor of the Glade | mage | 2 | — | 12 / **12** / 14 | 0 / **1** / 2 (forest) | 16 / 1 | journeyman | mage:brennor (midrange) | 40 / 17 / 1.61 / GW | the Sanctuary |
+| Kessa Emberhand | mage | 2 | — | 12 / **12** / 14 | 0 / **1** / 2 (island) | 16 / 1 | journeyman | mage:kessa (control) | 40 / 17 / 1.87 / RU | the Stormcaller |
+| Mistress Vael | mage | 2 | — | 12 / **12** / 14 | 0 / **1** / 2 (plains) | 16 / 1 | journeyman | mage:vael (midrange) | 40 / 17 / 1.74 / BW | the Tithe-Reeve |
+| Pell of the Shallows | mage | 2 | — | 12 / **12** / 14 | 0 / **1** / 2 (forest) | 16 / 1 | journeyman | mage:pell (control) | 40 / 17 / 2.17 / GU | the Tidesower |
 | High Warden Sorrel | mage | 3 | — | 14 / **16** / 20 | 1 / **2** / 2 (swamp, mountain) | 20 / 3 | master | mage:sorrel (midrange) | 40 / 17 / 1.87 / BR | the Inquisitor; knobs {"anteCount":2} |
 | Lord Corvane | mage | 3 | — | 14 / **16** / 20 | 1 / **2** / 2 (swamp, plains) | 20 / 3 | master | mage:corvane (midrange) | 40 / 17 / 2.96 / BW | the Sepulchre; knobs {"anteCount":2} |
 | Magister Quill | mage | 3 | — | 14 / **16** / 20 | 1 / **2** / 2 (forest, island) | 20 / 3 | master | mage:quill (control) | 40 / 17 / 2.35 / GU | the Drowned Grove; knobs {"anteCount":2} |
@@ -293,8 +293,8 @@ A phase-two world's stronghold sites (the phase-one placement rule, the phase-on
 - Starting life: base 34 ⚠ + growth − reduction
 - Law: The Season — At the beginning of your upkeep, put a +1/+1 counter on each creature you control.
 - Card: The Reaper; door: the Harrowmoor gate (colours within GBR); golds to the shops: Poison-Tip Archer + Voracious Cobra
-- Deck (midrange): 40 cards, 17 lands, avg MV 2.78, colours BGR
-  1 Badlands · 1 Bayou · 1 Blood Crypt · 4 Forest · 3 Mountain · 1 Overgrown Tomb · 1 Stomping Ground · 3 Swamp · 1 Taiga · 1 Tranquil Thicket · 1 Indulgent Aristocrat · 1 Lightning Bolt · 1 Llanowar Elves · 1 Moss Viper · 1 Rancor · 2 Skirk Prospector · 1 Bitterblossom · 1 Blood Artist · 1 Deadly Recluse · 1 Terror · 1 Char · 1 Hordeling Outburst · 1 Gaean Wurm · 1 Gravedigger · 2 Poison-Tip Archer · 1 Rumbling Baloth · 2 Voracious Cobra · 3 The Reaper
+- Deck (midrange): 40 cards, 17 lands, avg MV 2.83, colours BGR
+  1 Badlands · 1 Bayou · 1 Blood Crypt · 4 Forest · 3 Mountain · 1 Overgrown Tomb · 1 Stomping Ground · 3 Swamp · 1 Taiga · 1 Tranquil Thicket · 1 Indulgent Aristocrat · 1 Lightning Bolt · 2 Llanowar Elves · 1 Moss Viper · 1 Rancor · 1 Bitterblossom · 1 Blood Artist · 1 Deadly Recluse · 1 Rampant Growth · 1 Terror · 1 Char · 1 Wood Elves · 1 Gaean Wurm · 1 Gravedigger · 2 Poison-Tip Archer · 1 Rumbling Baloth · 2 Voracious Cobra · 3 The Reaper
 
 
 ## The flood's courts (phase two — the five High Grounds in the Calyx)
@@ -307,7 +307,7 @@ Each court is one duel on its island in the deep water, at the player's world li
 - Law: The Intake — Creatures your opponents control enter the battlefield tapped.
 - Ground: Tallyflame Court; door: the Tallyflame gate (≥ 12 creatures)
 - Deck (control): 40 cards, 17 lands, avg MV 2.39, colours RU
-  1 Forgotten Cave · 7 Island · 1 Lonely Sandbar · 6 Mountain · 1 Steam Vents · 1 Volcanic Island · 2 Brainstorm · 1 Curiosity · 2 Lightning Bolt · 1 Shock · 2 Thought Scour · 1 Counterspell · 1 Pyroclasm · 2 Young Pyromancer · 1 Arc Mage · 2 Cloudkin Seer · 1 Man-o'-War · 2 Wind Drake · 1 Aetherbolt · 3 Odile, the Tallyflame · 1 Air Elemental
+  1 Forgotten Cave · 7 Island · 1 Lonely Sandbar · 6 Mountain · 1 Steam Vents · 1 Volcanic Island · 2 Brainstorm · 2 Lightning Bolt · 1 Shock · 2 Thought Scour · 1 Counterspell · 1 Pyroclasm · 2 Young Pyromancer · 1 Arc Mage · 2 Cloudkin Seer · 1 Man-o'-War · 2 Wall of Air · 2 Wind Drake · 1 Aetherbolt · 3 Odile, the Tallyflame
 
 ### Zinnia, the Undertow — The Wrackroot Shallows (UG)
 
@@ -340,6 +340,19 @@ Each court is one duel on its island in the deep water, at the player's world li
 - Ground: Cairnbrand; door: the Cairnbrand gate (mana value ≤ 4)
 - Deck (aggro): 40 cards, 17 lands, avg MV 2.39, colours BR
   1 Badlands · 1 Barren Moor · 1 Blood Crypt · 1 Forgotten Cave · 6 Mountain · 7 Swamp · 1 Goblin Grenade · 1 Indulgent Aristocrat · 1 Lightning Bolt · 1 Shock · 2 Typhoid Rats · 1 Blood Artist · 1 Child of Night · 1 Goblin Piker · 1 Reassembling Skeleton · 1 Terror · 1 Thundersnake · 1 Boggart Brute · 1 Goblin Chieftain · 2 Hordeling Outburst · 2 Tainted Phoenix · 1 Vampire Nighthawk · 3 Meliyan, the Torment · 1 Phyrexian Purge
+
+
+## The Cinquefont (phase two — the flood's capstone, at the opened deep water)
+
+Opens when the five lords have fallen. The Heart's shape: the player at world life, no ante, five roots and the card in hand — under the TIDE: one law at each of the fount's end steps in the order U G W B R; when five stand at its end step all are exiled and the tide begins again. The fall pays Time Walk and the Cinquefont's card; the world goes on.
+
+### The Cinquefont — the deep water
+
+- Starting life: floodHeartLife 50 ⚠
+- Law: the tide — the Risen Tide, the Season, the Intake, the Tithe, the Toll; the wash at five
+- Prize: Time Walk + The Cinquefont
+- Deck (midrange): 60 cards, 20 lands, avg MV 3.17, colours BGRUW
+  1 Badlands · 1 Bayou · 1 Blood Crypt · 1 Breeding Pool · 1 Godless Shrine · 1 Hallowed Fountain · 1 Overgrown Tomb · 1 Plateau · 1 Sacred Foundry · 1 Savannah · 1 Scrubland · 1 Steam Vents · 1 Stomping Ground · 1 Taiga · 1 Temple Garden · 1 Tropical Island · 1 Tundra · 1 Underground Sea · 1 Volcanic Island · 1 Watery Grave · 1 Mox Emerald · 1 Mox Jet · 1 Mox Pearl · 1 Mox Ruby · 1 Mox Sapphire · 1 Lightning Bolt · 1 Prey Upon · 1 Counterspell · 1 Disenchant · 1 Doom Blade · 1 The Emerald Keeper · 1 Thundersnake · 1 Clio, Lady of the Depths · 1 Temporal Spring · 1 The Jet Witch · 1 The Pearl Cleric · 1 Vindicate · 1 Aetherbolt · 1 Control Magic · 1 Cunning Tactician · 1 Faldor, the Muster · 1 Frondland Felidar · 1 Gaean Wurm · 1 Gallows Djinn · 1 Glare of Subdual · 1 Lumen, the Hearth Fire · 1 Mystic Snake · 1 Phyrexian Purge · 1 Seraphina, the Initiative · 1 Traumatizer · 1 Wrath of God · 1 Yuloke, the Animus · 1 Aether Mutation · 1 Faerie Formation · 1 Graceful Restoration · 3 The Cinquefont · 1 The Ruby Tyrant · 1 The Sapphire Sage
 
 
 ## The petal courts (the Corolla's five tips)

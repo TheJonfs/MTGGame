@@ -34,3 +34,15 @@ export const HEART_DECK: { name: string; archetype: "aggro" | "midrange" | "cont
   const n = HEART_DECK.decklist.reduce((s, e) => s + e.count, 0);
   if (n !== 60) throw new Error(`heart deck: ${n} cards (the gauntlet doc says 60)`);
 }
+
+/** S42a (ADR-131): THE CINQUEFONT'S DECK — the Manafleur's sixty with the three Manafleurs replaced by three
+ * Cinquefonts; the ring's conceit unchanged. The tide's order rides the card (`createLaw.order`), so the list
+ * needs nothing else; the duel declares `lawSequence` mode `tide`. */
+export const FOUNT_DECK: typeof HEART_DECK = {
+  name: "The Cinquefont",
+  archetype: HEART_DECK.archetype,
+  signature: "the_cinquefont",
+  decklist: HEART_DECK.decklist.map((e) => (e.cardId === HEART_DECK.signature ? { cardId: "the_cinquefont", count: e.count } : { ...e })),
+};
+/** The tide's order (ADR-132): the Risen Tide, the Season, the Intake, the Tithe, the Toll. */
+export const TIDE_ORDER = ["law_risen_tide", "law_season", "law_intake", "law_tithe", "law_toll"];

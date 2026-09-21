@@ -140,9 +140,9 @@ export const KNOBS = {
   }),
   // ---- S38 (phase two, design §8): the resolver's later columns ----
   phaseTierTables: knob<Partial<Record<2 | 3, TierTables>>>({
-    default: { 2: { mageTierLife: { 1: 12, 2: 16, 3: 20 }, mageTierEntrance: { 1: 1, 2: 2, 3: 3 }, beastTierLifeDelta: { 1: 4, 2: 8, 3: 12 } } },
+    default: { 2: { mageTierLife: { 1: 12, 2: 16, 3: 20 }, mageTierEntrance: { 1: 1, 2: 1, 3: 3 }, beastTierLifeDelta: { 1: 4, 2: 8, 3: 12 } } }, // S42a (the planner's ruling on the part-11 read): tier 2 → 16 / 1
     unit: "the three tier tables (mageTierLife / mageTierEntrance / beastTierLifeDelta) by phase, for phases after the first",
-    description: "S38 (design §8; ⚠ proposed, unratified): the matchup resolver's column for a world at `phase` ≥ 2 — the mages' life and entrance and the beasts' delta by tier, read INSTEAD of the three phase-one knobs. Standard phase two: mages 12/1 · 16/2 · 20/3, beasts +4/+8/+12 (the brief's proposal; the Lab measures before ratification). The difficulty bundles carry their own phase-two column (easy/hard mirror the phase-one offsets — one cell on the entrance axis first, life second). A phase with no column falls back to the highest column below it (phase 3 reads phase 2's until it has its own — the scar for the third act). Lords, courts and the Heart do not read this (their phase-two rows come with their content).",
+    description: "S38 (design §8; ⚠ proposed, unratified): the matchup resolver's column for a world at `phase` ≥ 2 — the mages' life and entrance and the beasts' delta by tier, read INSTEAD of the three phase-one knobs. Standard phase two: mages 12/1 · 16/1 · 20/3, beasts +4/+8/+12 (S42a: tier 2 cooled by one basic after the part-11 read). The difficulty bundles carry their own phase-two column (easy/hard mirror the phase-one offsets — one cell on the entrance axis first, life second). A phase with no column falls back to the highest column below it (phase 3 reads phase 2's until it has its own — the scar for the third act). Lords, courts and the Heart do not read this (their phase-two rows come with their content).",
   }),
   heartLawsPersist: knob<boolean>({
     default: false,
@@ -292,6 +292,16 @@ export const KNOBS = {
     default: { civilized: 0.18, approach: 0.45, wild: 0.78 },
     unit: "normalised radius (0 = centre, 1 = map edge), by ring",
     description: "ADR-072: region hearts sit on five colour spokes at these elliptically-normalised radii (jittered per sector by ringJitter). Strongholds sit at strongholdRadius.",
+  }),
+  floodLordBasics: knob<number>({
+    default: 0,
+    unit: "basic lands of the triad on the lord's battlefield before turn one (the law's colour first)",
+    description: "S42a (S41 Concern 1; ⚠ unratified — 0 until the planner reads the grid): a flood lord's ENTRANCE beside his signature in hand. The S41 table showed fourteen life was worth less than three lands; `flood-sim --grid 1 --lords 1` measures {30, 34} × {0, 3}. The lord's life is his def's `baseLife` in data/world/flood.json.",
+  }),
+  floodHeartLife: knob<number>({
+    default: 50,
+    unit: "life",
+    description: "S42a (ADR-131/132; ⚠ from ADR-127's read, measured by `heart-sim --tide`): the Cinquefont's life at the flood's capstone — flat, as the Heart's; five roots and the card in hand; the tide mode. Easy 45 / hard 55.",
   }),
   floodCourtLife: knob<number>({
     default: 0,
@@ -632,6 +642,7 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
     roamerDensityPer100Cells: { civilized: 0.7, approach: 1.1, wild: 1.5 },
     siegeIntervalSteps: { civilized: 1500, approach: 1125, wild: 750 }, // S26 r3: +33% with the standard shift (ratio held)
     siegeMaxActive: 1, // S25 r3 (Chris): easy = one siege at a time
+    floodHeartLife: 45, // S42a
     heartLife: 35, // S29 Part 0 (Chris: 40 standard, from the S28 sim + his 5–1 at 40)
     mageTierLife: { 1: 8, 2: 12, 3: 14 }, // S34 (ADR-117): one cell easier on the entrance axis first, life second
     mageTierEntrance: { 1: 0, 2: 0, 3: 1 },
@@ -658,6 +669,7 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
     roamerDensityPer100Cells: { civilized: 1.4, approach: 2.0, wild: 2.6 },
     siegeIntervalSteps: { civilized: 750, approach: 560, wild: 375 }, // S26 r3: +33% (ratio held)
     siegeMaxActive: 3, // S25 r3 (Chris): hard = three skies can burn
+    floodHeartLife: 55, // S42a
     heartLife: 45, // S27 (ADR-093)
     mageTierLife: { 1: 8, 2: 14, 3: 20 }, // S34 (ADR-117): one cell harder
     mageTierEntrance: { 1: 0, 2: 2, 3: 2 },

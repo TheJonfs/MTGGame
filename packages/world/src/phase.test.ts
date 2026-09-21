@@ -40,7 +40,7 @@ describe("S38 Part 1 — the resolver's phase column", () => {
   it("tierTablesFor: phase 1 is the three knobs; phase 2 the column; phase 3 falls back to 2 until authored; the bundles carry their own column", () => {
     const std = defaultKnobs();
     expect(tierTablesFor(std, 1)).toEqual({ mageTierLife: std.mageTierLife, mageTierEntrance: std.mageTierEntrance, beastTierLifeDelta: std.beastTierLifeDelta });
-    expect(tierTablesFor(std, 2)).toEqual({ mageTierLife: { 1: 12, 2: 16, 3: 20 }, mageTierEntrance: { 1: 1, 2: 2, 3: 3 }, beastTierLifeDelta: { 1: 4, 2: 8, 3: 12 } });
+    expect(tierTablesFor(std, 2)).toEqual({ mageTierLife: { 1: 12, 2: 16, 3: 20 }, mageTierEntrance: { 1: 1, 2: 1, 3: 3 }, beastTierLifeDelta: { 1: 4, 2: 8, 3: 12 } }); // S42a: tier 2 cooled to 16 / 1
     expect(tierTablesFor(std, 3)).toEqual(tierTablesFor(std, 2));
     expect(KNOBS.phaseTierTables.default[3]).toBeUndefined();
     const easy = resolveKnobs({ difficulty: DIFFICULTIES.easy }), hard = resolveKnobs({ difficulty: DIFFICULTIES.hard });
@@ -56,7 +56,7 @@ describe("S38 Part 1 — the resolver's phase column", () => {
       const row = catalog.opponents.find((o) => (o.kind ?? "mage") === "mage" && !o.spoke && o.tier === t)!;
       const p2 = resolveMatchup(row, std, null, 2), p1 = resolveMatchup(row, std, null, 1), p0 = resolveMatchup(row, std);
       expect(p2.life).toBe({ 1: 12, 2: 16, 3: 20 }[t] + (row.worldLifeOffset ?? 0));
-      expect(p2.entrance).toHaveLength({ 1: 1, 2: 2, 3: 3 }[t]);
+      expect(p2.entrance).toHaveLength({ 1: 1, 2: 1, 3: 3 }[t]); // S42a
       expect(p1).toEqual(p0);
       expect(p1.life).toBe({ 1: 8, 2: 12, 3: 16 }[t] + (row.worldLifeOffset ?? 0));
     }

@@ -156,4 +156,23 @@ describe("S41 (ADR-130): the flood's run — the court's duel, the falls, the go
     for (const s of flood.strongholds) strongholdState(one, s.color).seal = true;
     expect(floodHeartOpen(one)).toBe(false);
   });
+
+  it("S42a (ADR-131/132): the fount's fight is the Heart's shape under the TIDE — world life, no ante, floodHeartLife, five roots, the card in hand, mode tide in U G W B R; shut until the five lords fall", async () => {
+    const { fountDuelSpec } = await import("./flood.js");
+    const w = world();
+    expect(() => fountDuelSpec(w, knobs, new WorldRng(3))).toThrow(/five lords stand/);
+    for (const s of flood.strongholds) strongholdState(w, s.color).seal = true;
+    const { spec, enemyLife } = fountDuelSpec(w, knobs, new WorldRng(3));
+    expect(enemyLife).toBe(50);
+    expect(spec.rules.ante).toBe(0);
+    expect(spec.rules.startingLife).toBe(w.player.worldLife);
+    expect(spec.players[1].decklist.find((e) => e.cardId === "the_cinquefont")?.count).toBe(3);
+    expect(spec.players[1].decklist.some((e) => e.cardId === "the_manafleur")).toBe(false);
+    expect(spec.modifiers).toEqual(expect.arrayContaining([
+      { type: "startingLife", player: 1, value: 50 },
+      { type: "signatureToHand", player: 1, cardId: "the_cinquefont" },
+      { type: "lawSequence", order: ["law_risen_tide", "law_season", "law_intake", "law_tithe", "law_toll"], mode: "tide" },
+    ]));
+    expect(spec.modifiers.filter((m) => m.type === "permanentOnBattlefield" && m.player === 1).map((m) => (m as { cardId: string }).cardId).sort()).toEqual(["forest", "island", "mountain", "plains", "swamp"]);
+  });
 });

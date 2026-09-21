@@ -779,7 +779,29 @@ describe("S41 (ADR-130): the flood's seats through the controller — a court's 
     c.knock();
     expect((c.screen as { notice: string | null }).notice).toBe(catalog.questText!.flood!.deep);
     for (const s of catalog.flood!.strongholds) w.strongholds.push({ color: s.color, seal: true, spokeMinionPoints: 0 });
+    // S42a (ADR-131): the lords fallen — the knock is the Cinquefont's telegraph; stepping back leaves it rising.
     c.knock();
-    expect((c.screen as { notice: string | null }).notice).toMatch(/^The fifth stronghold falls, and the deep water moves\./);
+    expect(c.screen.kind).toBe("fountTelegraph");
+    expect(c.fountText()!.telegraph).toMatch(/The Cinquefont\.$/);
+    c.declineFount();
+    expect(c.screen.kind).toBe("map");
+    // Its fall (applied as the duel's result would): Time Walk and the card, the profile's flag and line, no cutting counted; the world goes on.
+    const before = c.legacy();
+    (c as unknown as { finishFountDuel: (r: unknown, rec: unknown) => void }).finishFountDuel({ winner: 0, reason: "LIFE", turns: 12, finalLife: [5, 0], log: [], facts: { damageDealt: [0, 0], creaturesLost: [0, 0], cardsDrawn: [0, 0], spellsCast: {}, ante: { 0: [], 1: [] } } }, undefined);
+    expect(c.screen.kind).toBe("fountVictory");
+    expect((c.screen as { paidCards: string[] }).paidCards).toEqual(["time_walk", "the_cinquefont"]);
+    expect(w.player.collection.time_walk).toBe(1);
+    const after = c.legacy();
+    expect(after.floodSurvived).toBe(true);
+    expect(after.victories).toBe(before.victories);
+    expect(after.cuttings).toEqual(before.cuttings);
+    expect(after.chronicle[after.chronicle.length - 1]).toMatchObject({ kind: "fount", text: catalog.questText!.flood!.fount!.fall });
+    c.continueAfterFount();
+    expect(c.screen.kind).toBe("map");
+    w.player.position = { ...deep.at };
+    c.knock(); // stopped: a quiet line, no second fight
+    expect(c.screen.kind).toBe("map");
+    expect((c.screen as { notice: string | null }).notice).toBe(catalog.questText!.flood!.fount!.fall);
+    expect(c.floodEligible()).toBe(true); // "Enter the Flood" stays available for new runs
   });
 });

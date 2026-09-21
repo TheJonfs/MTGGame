@@ -113,9 +113,13 @@ export interface EffectContext {
   putOnTop(player: number, count: number): Promise<void>;
   /** S27 (the Manafleur): manifest the next law of the game-level sequence as a token under the
    * effect's controller and advance the pointer (random mode draws from the logged game RNG). */
-  createLaw(): void;
+  createLaw(order?: string[]): void;
+  /** S42a (R-098): how many laws stand on the battlefield, both sides. */
+  lawCount(): number;
+  /** S42a (R-098, Time Walk): the player takes an extra turn after this one. */
+  extraTurn(player: number): void;
   /** S27: the law-sequence mode (`accumulate` skips the Manafleur's exile). */
-  lawMode(): "sequence" | "random" | "accumulate";
+  lawMode(): "sequence" | "random" | "accumulate" | "tide";
 }
 
 export class NotImplementedError extends Error {
@@ -331,12 +335,19 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
     if (e.type !== "exile") throw new Error("resolver mismatch");
     // S27: the scope form (the Manafleur's "exile all laws"); accumulate mode keeps the petals.
     if (e.scope === "laws" && ctx.lawMode() === "accumulate") return;
+    // S42a (the Cinquefont): the wash comes only at the full tide.
+    if (e.ifLawsAtLeast !== undefined && ctx.lawCount() < e.ifLawsAtLeast) return;
     for (const t of targeted(e, ctx)) if (t.kind === "object") ctx.exile(t.id);
   },
 
   createLaw: (e, ctx) => {
     if (e.type !== "createLaw") throw new Error("resolver mismatch");
-    ctx.createLaw();
+    ctx.createLaw(e.order);
+  },
+
+  extraTurn: (e, ctx) => {
+    if (e.type !== "extraTurn") throw new Error("resolver mismatch");
+    for (const p of ctx.players(e.who)) ctx.extraTurn(p);
   },
 
   putOnTop: async (e, ctx) => {

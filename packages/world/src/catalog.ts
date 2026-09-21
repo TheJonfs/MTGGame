@@ -153,6 +153,8 @@ export interface FloodTextPack {
   seats?: Record<string, { telegraph: string; parley: string; fall: string; prize: string }>;
   /** S41: a ford's line on first crossing; the fifth lord's fall (the Heart opens) and its Chronicle line. */
   fords?: string;
+  /** S42a (ADR-131): the Cinquefont's voice — the approach, the water's speech, the Chronicle's line at its fall, Time Walk's prize line. */
+  fount?: { telegraph: string; parley: string; fall: string; prize: string };
   heartOpens?: string;
   chronicleFifth?: string;
 }
