@@ -4,7 +4,7 @@
 
 **Cinquefoil v1 is live on Vercel; phase two has its manalink economy.** Session 43 — **the flood's lairs** (ADR-136) — is done. A phase-two map carries **fifteen lairs**, three per territory across its approach and wild rings: the **Landing** (a basic of the territory's colour in play, guarded by the tier-3 mage who kept that colour), the **Wellhouse** (+2 maximum world life, guarded by the territory's tier-3 beast) and the **Hearthstead** (+2 maximum world life, guarded by the tier-2 mage who kept the colour — Kessa in red by rule). A lair is the S14 shape again: a certain encounter with its resident (the parley — not buyable — one duel at the tier's phase-two row plus `lairResidentLifeBonus`), and the manalink on the win through `grantManalink`, the S25 award path made one function that quests and lairs both call. A lair's link has no town and no siege can darken it; the rail, the splash and the result screen name the lair. **Part 0 installed**: the three list amendments (regenerated; mirror below), ADR-134/135 stand, the region names and Odile were S42b's. **Part 4 measured**: the post-lairs references, the scripted stronghold run with a deck that earned its lairs (it reaches the Bailiff 18 of 20 times now; he holds 72% live), the ten seats and the fount against that deck, the purse. **Walked in the browser**: a dev "Stand at the nearest lair", the Smokereach Landing (Sorrel) and the Scaldings Hearthstead (Kessa) — parley, duel, ceremony, rail, splash, save. The S43 brief is committed with this session.
 
-*Not pushed; `pnpm build:web` not run.*
+*Pushed to origin/main on 2026-09-22 (five commits: S43, the Clear check, the Aetherbolt fix, the handoff); `pnpm build:web` run clean first — a push deploys to Vercel.*
 
 ## Done this session
 
