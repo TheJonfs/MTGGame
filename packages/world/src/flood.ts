@@ -138,6 +138,9 @@ export interface FloodRunState {
   courts?: Record<string, true>;
   /** Golds that joined the shops (a stronghold's fall adds its pair's two). */
   golds?: string[];
+  /** S43 (ADR-136): the lairs paid, by site id — the link's kind and colour, the step (once only; the rail and the
+   * Chronicle read it). */
+  lairs?: Record<string, { step: number; kind: "basic" | "life"; color: "W" | "U" | "B" | "R" | "G" }>;
   /** The falls, in order — the run's chronicle of the flood (site id + the step it fell at). */
   falls?: { siteId: string; step: number }[];
   /** The ford's line has been shown. */

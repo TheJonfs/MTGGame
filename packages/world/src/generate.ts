@@ -2,6 +2,7 @@ import { regionName, type Catalog, type Color, type RegionTemplate } from "./cat
 import { defaultKnobs, KNOBS, type KnobValues, type Phase, type RegionTier } from "./knobs.js";
 import { exploredNone, findPath, idx, inBounds, manhattan, markExplored, placeCentreDoors, reachable, samePoint, type FixedPoint, type Point, type RegionInstance, type Town, type WorldMap } from "./map.js";
 import { WorldRng } from "./rng.js";
+import { FLOOD_LAIR_KINDS, floodLairId, floodLairName, floodLairResidents } from "./flood-lairs.js";
 
 /**
  * Seeded world generator (manifest §6). Authored catalog in, `(catalogVersion,
@@ -423,7 +424,7 @@ export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOpt
   const beasts = catalog.opponents.filter((o) => o.kind === "beast");
   const lairHosts = beasts.length ? beasts : [[...catalog.opponents].sort((a, b) => b.tier - a.tier)[0]!];
   let lairN = 0;
-  for (const r of regions) {
+  for (const r of flood ? [] : regions) { // S43: a phase-two map's lairs are the flood's (5e), not the bestiary's
     const want = knobs.lairsPerRegion[r.tier];
     if (want <= 0) continue;
     const candidates = regionCells(map, r.index).filter((p) => !isTownCell(map, p) && !deep[idx(map, p)]);
@@ -514,6 +515,36 @@ export function generateWorld(seed: number, catalog: Catalog, opts: GeneratorOpt
         if (shore) { layFord(at, shore); carveTo(shore); }
       }
       layFord(at, centre);
+    }
+    // 5e. S43 (ADR-136): the flood's LAIRS — three per territory across its approach and wild rings (one and two, or
+    // two and one, by room), never adjacent to the stronghold or the High Ground, each a certain encounter with a
+    // resident drawn by rule (flood-lairs.ts) and a manalink at the end. Named by prize, the region's name first.
+    const residents = floodLairResidents(catalog);
+    const seats = map.strongholds.filter((f) => f.kind === "stronghold" || f.kind === "ground").map((f) => f.at);
+    for (const color of colours) {
+      const rings = regions.filter((r) => r.color === color && r.tier !== "civilized");
+      const approach = rings.find((r) => r.tier === "approach")!, wild = rings.find((r) => r.tier === "wild")!;
+      const cellsOf = (r: RegionInstance) => regionCells(map, r.index).filter((p) => !isTownCell(map, p) && !deep[idx(map, p)] && seats.every((q) => manhattan(p, q) > 1));
+      const taken = [...towns.map((t) => t.at), ...map.strongholds.map((f) => f.at)];
+      // The wild ring takes two when it has the room (it is the larger ring); else the approach does.
+      let pts = placeFixedPoints(rng, cellsOf(wild), 2, townSpacing, taken);
+      pts = pts.length === 2
+        ? [...pts, ...placeFixedPoints(rng, cellsOf(approach), 1, townSpacing, [...taken, ...pts])]
+        : [...pts, ...placeFixedPoints(rng, cellsOf(approach), 3 - pts.length, townSpacing, [...taken, ...pts])];
+      for (let spacing = townSpacing - 1; pts.length < 3 && spacing >= 2; spacing--) { // the room, relaxed a step at a time
+        pts = [...pts, ...placeFixedPoints(rng, [...cellsOf(wild), ...cellsOf(approach)], 3 - pts.length, spacing, [...taken, ...pts])];
+      }
+      if (pts.length < 3) throw new Error(`generateWorld: no room for the ${color} territory's three lairs (seed ${seed})`);
+      FLOOD_LAIR_KINDS.forEach((kind, i) => {
+        const at = pts[i]!;
+        passable[idx(map, at)] = true;
+        carveTo(at);
+        const host = residents[color][kind];
+        const r = regions[region[idx(map, at)]!]!;
+        const inst: OpponentInstance = { id: `opp_lair_${n++}`, catalogId: host.id, region: r.index, gone: false, fixedAt: at, moveDebt: 0 };
+        opponents.push(inst);
+        map.strongholds.push({ kind: "lair", at, region: r.index, name: floodLairName(r.name, kind, catalog.questText), opponentId: inst.id, contentId: floodLairId(kind, color) });
+      });
     }
   } else {
     for (const door of placeCentreDoors(map)) carveTo(door.at);

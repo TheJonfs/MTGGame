@@ -202,6 +202,23 @@
    "parley": "It does not speak. The water speaks: one law, then another, then all of them, then none, then one.",
    "fall": "The fount is stopped. The water falls back to where it was, and it was never still. Something must be planted here.",
    "prize": "A moment the tide did not take."
+  },
+  "lairs": {
+   "landing": {
+    "name": "Landing",
+    "line": "Dry ground, held. Whoever holds it holds a foot of the flood.",
+    "prize": "The ground stays under you."
+   },
+   "wellhouse": {
+    "name": "Wellhouse",
+    "line": "A spring the water did not take. Something drinks here.",
+    "prize": "The water gives back a little of what it took."
+   },
+   "hearthstead": {
+    "name": "Hearthstead",
+    "line": "A fire kept lit through the flood. Someone tends it, and does not share.",
+    "prize": "The water gives back a little of what it took."
+   }
   }
  }
 }

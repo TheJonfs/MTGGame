@@ -62,7 +62,7 @@ class Counting implements Agent {
 }
 
 // S42b: `--refs postlords` = the two post-lords references (ADR-135's (b)) + chris-road-B; the default is S41's three.
-const yardsticks = arg("refs", "flood") === "postlords" ? [ROAD_DECKS.salvageWRLords!, ROAD_DECKS.salvageUBLords!, ROAD_DECKS.chrisRoadB!] : [ROAD_DECKS.salvageWRLegends!, ROAD_DECKS.salvageUBLegends!, ROAD_DECKS.chrisRoadB!];
+const yardsticks = arg("refs", "flood") === "postlords" ? [ROAD_DECKS.salvageWRLords!, ROAD_DECKS.salvageUBLords!, ROAD_DECKS.chrisRoadB!] : arg("refs", "flood") === "postlairs" ? [ROAD_DECKS.salvageWRLordsLairs!, ROAD_DECKS.salvageUBLordsLairs!, ROAD_DECKS.chrisRoadB!] : [ROAD_DECKS.salvageWRLegends!, ROAD_DECKS.salvageUBLegends!, ROAD_DECKS.chrisRoadB!]; // S43: --refs postlairs
 console.log(`flood-sim (S41): ${games} games per seat per pairing; lords at ${flood.strongholds[0]!.lord.baseLife + knobs.floodLordLifeBonus} + ${knobs.floodLordBasics} basics (ADR-134) with the law and the signature in hand; courts at ${flood.courts[0]!.minister.life} on their ground with the law; master vs journeyman. A court's intruder is the reference's NEAREST LEGAL CUT for that court's gate (the changes are listed under the table).`);
 
 /** The nearest legal cut of a reference for a court's gate: offenders out (replaced by pack creatures of the deck's

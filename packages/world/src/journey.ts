@@ -5,7 +5,9 @@ import { strongholdContentFor } from "./flood.js";
 import { checkDeck, describeDeckRule, type DeckCheck, type DeckRule } from "./legality.js";
 import type { CardDef } from "@shandalar/cards";
 import { isTownCell, regionCells, roamerTarget, rollMage, rollTemplate, type GoneReason, type OpponentInstance } from "./generate.js";
-import { manalinkModifiers, questsOnDefeat, questsOnStep, type QuestEvent } from "./quests.js";
+import { grantManalink, manalinkModifiers, questsOnDefeat, questsOnStep, type QuestEvent } from "./quests.js";
+import { FLOOD_LAIR_PRIZE, parseFloodLairId, type LairColor } from "./flood-lairs.js";
+import type { FloodLairKind } from "./catalog.js";
 import { siegesOnStep } from "./siege.js";
 import { creditSpokeKill, lordSealed, sealsHeld } from "./stronghold.js";
 import type { KnobValues } from "./knobs.js";
@@ -326,6 +328,9 @@ export function advance(
       if (fixed?.kind === "lair" && fixed.opponentId) {
         const resident = world.opponents.find((o) => o.id === fixed.opponentId);
         if (resident && !resident.gone) {
+          // S43 (ADR-136): a FLOOD lair is the S14 shape again — a certain encounter with its resident (the parley,
+          // one duel, the manalink at the end), not a crawl. Phase one's lairs stay lair-dungeons.
+          if (parseFloodLairId(fixed.contentId)) { events.push({ type: "encounter", encounter: encounterOf(resident, cell, "lair") }); break; }
           events.push({ type: "dungeonEntry", dungeonId: `lair_${fixed.opponentId}`, kind: "lair", name: fixed.name ?? "A lair", at: { ...cell }, residentCatalogId: resident.catalogId });
           break;
         }
@@ -549,6 +554,7 @@ export function parley(world: WorldState, catalog: Catalog, enc: Encounter, choi
         const inst0 = world.opponents.find((o) => o.id === enc.opponentId);
         const tmpl0 = inst0 ? opponentTemplate(catalog, inst0) : undefined;
         if (tmpl0 && tmpl0.buyable === false) return { type: "refused", reason: `${tmpl0.name} cannot be bought off` };
+        if (enc.contact === "lair") return { type: "refused", reason: `${tmpl0?.name ?? "The resident"} guards this place — it wants the fight, not your gold` }; // S43: a lair is held, not passed
         const price = buyOffPrice(knobs, enc.tier, tmpl0);
         if (world.player.gold < price) return { type: "refused", reason: `${tmpl0?.kind === "beast" ? "distraction" : "buy-off"} costs ${price} gold; you have ${world.player.gold}` };
         world.player.gold -= price;
@@ -641,6 +647,20 @@ export function prepareDuel(world: WorldState, catalog: Catalog, enc: Encounter,
   return { encounter: enc, seed, spec, enemy: { name: tmpl.name, difficulty: matchup.profile, deck: tmpl.deck, archetype: enemyDeck(catalog, tmpl.deck, world.phase).archetype, portrait: tmpl.portrait, worldLife: enemyLife, tier: tmpl.tier, entrance: matchup.entrance } };
 }
 
+/** S43 (ADR-136): the lair's manalink — the Landing's basic of the territory's colour in play, the Wellhouse's and the
+ * Hearthstead's +2 maximum world life (two life links); recorded on the flood's run so it pays once and the Chronicle
+ * and the rail can name it. Returns the prize line (the planner's) with the link's note. */
+export function awardFloodLair(world: WorldState, knobs: KnobValues, catalog: Catalog, siteId: string, lair: { kind: FloodLairKind; color: LairColor }, siteName: string): string {
+  const run = (world.gauntlet as { flood?: { lairs?: Record<string, { step: number; kind: "basic" | "life"; color: LairColor }> } }).flood ??= {};
+  if (run.lairs?.[siteId]) return "The lair has already paid."; // once (the resident does not return; belt and braces)
+  const prize = FLOOD_LAIR_PRIZE[lair.kind];
+  const notes: string[] = [];
+  for (let i = 0; i < prize.count; i++) notes.push(grantManalink(world, knobs, { color: lair.color, kind: prize.kind, town: -1, lair: siteId }));
+  (run.lairs ??= {})[siteId] = { step: world.player.stepsTaken, kind: prize.kind, color: lair.color };
+  const line = catalog.questText?.flood?.lairs?.[lair.kind]?.prize ?? "";
+  return `${line ? `${line} ` : ""}${siteName}: ${[...new Set(notes)].join("; ")}.`;
+}
+
 /** Resolve a finished duel into the world: ante both ways, gold, world life. */
 export function applyDuelResult(world: WorldState, catalog: Catalog, duel: PreparedDuel, result: MatchResult, extra: Parameters<typeof worldKnobs>[1] = {}): DuelRecord {
   const knobs = encounterKnobs(world, catalog, duel.encounter, extra);
@@ -650,6 +670,7 @@ export function applyDuelResult(world: WorldState, catalog: Catalog, duel: Prepa
   let anteWon: string[] = [];
   let anteLost: string[] = [];
   let questEvents: QuestEvent[] = [];
+  let lairPrizeNote: string | null = null;
   if (result.winner === 0) {
     outcome = "win";
     anteWon = [...theirs];
@@ -659,6 +680,13 @@ export function applyDuelResult(world: WorldState, catalog: Catalog, duel: Prepa
     creditRenown(world.player, beatenTmpl ? opponentColors(beatenTmpl, world.phase) : "", duel.encounter.tier); // §5 total + S20 playtest per-colour
     creditSpokeKill(world, beatenTmpl ? opponentColors(beatenTmpl, world.phase) : undefined, duel.encounter.tier); // S22 r1: the pace war mirrors renown — every colour worn bleeds its lord
     if (inst) removeOpponent(world, inst.id, "defeated");
+    // S43 (ADR-136): a flood lair's resident fell — the manalink at the end (the S25 award path; once, the resident
+    // does not return).
+    if (duel.encounter.contact === "lair" && inst?.fixedAt) {
+      const site = fixedPointAt(world.map, inst.fixedAt);
+      const lair = site && parseFloodLairId(site.contentId);
+      if (site && lair) lairPrizeNote = awardFloodLair(world, knobs, catalog, site.contentId!, lair, site.name ?? "the lair");
+    }
     // S19: bounty completion — the mark's defeat pays out (recorded on the DuelRecord for the UI).
     // S22 r4 (item 7): a TWIN of the mark pays too (same catalog template — the player can't tell
     // them apart); the spawned mark then disperses.
@@ -687,5 +715,6 @@ export function applyDuelResult(world: WorldState, catalog: Catalog, duel: Prepa
     anteLost,
   });
   if (questEvents.length) record.questRewards = questEvents.filter((e) => e.type === "questDone").map((e) => (e.type === "questDone" ? e.rewardText : ""));
+  if (lairPrizeNote) record.lairPrize = lairPrizeNote;
   return record;
 }

@@ -30,11 +30,11 @@
 ### Kessa Emberhand — UB, "the Stormcaller" over dark water
 ```
 8 Island · 7 Swamp · 2 Watery Grave
-3 Hedron Crab · 2 Traumatizer · 2 Plumecreed Escort · 1 Man-o'-War · 1 Vampire Nighthawk · 1 Arcane Collector
+3 Hedron Crab · 2 Traumatizer · 2 Plumecreed Escort · 1 Man-o'-War · 2 Vampire Nighthawk · 1 Arcane Collector · 1 Wall of Air
 2 Thought Scour · 2 Brainstorm · 2 Duress · 1 Hymn to Tourach
-2 Essence Scatter · 1 Counterspell · 2 Doom Blade · 1 Altar of Dementia
+1 Counterspell · 2 Doom Blade · 1 Altar of Dementia
 ```
-40 / 17 / 23; one tier-3 title. Spells still make the plan; the plan is the library now.
+40 / 17 / 23; one tier-3 title. Spells still make the plan; the plan is the library now. *S43 (Part 0): −2 Essence Scatter +1 Wall of Air +1 Vampire Nighthawk.*
 
 ### Adept Maelin — BG, "the Pyre-Warden" in the fen
 ```
@@ -47,11 +47,11 @@
 ### Brennor of the Glade — RG, "the Sanctuary" burned green
 ```
 8 Forest · 7 Mountain · 2 Stomping Ground
-3 Gladecover Scout · 2 Blurred Mongoose · 2 Llanowar Elves · 1 Birds of Paradise · 1 Orcish Lumberjack · 1 Timberland Guide · 1 Rumbling Baloth · 1 Boggart Brute
-2 Rancor · 2 Blanchwood Armor · 2 Giant Growth · 1 Brute Force
+3 Gladecover Scout · 2 Blurred Mongoose · 2 Llanowar Elves · 1 Birds of Paradise · 1 Orcish Lumberjack · 1 Timberland Guide · 1 Rumbling Baloth · 2 Wall of Blossoms
+2 Rancor · 2 Blanchwood Armor · 2 Giant Growth
 2 Lightning Bolt · 1 Shock · 1 Abrade
 ```
-40 / 17 / 23. **The Lumberjack's home** — Forests to sacrifice and the burn to spend them on.
+40 / 17 / 23. **The Lumberjack's home** — Forests to sacrifice and the burn to spend them on. *S43 (Part 0): −1 Boggart Brute −1 Brute Force +2 Wall of Blossoms.*
 
 ### Pell of the Shallows — WU, "the Tidesower" on the wing
 ```
@@ -85,11 +85,11 @@
 ### High Warden Sorrel — WR, "the Inquisitor" with an army
 ```
 6 Mountain · 6 Plains · 2 Sacred Foundry · 1 Plateau · 1 Forgotten Cave · 1 Secluded Steppe
-3 Young Pyromancer · 2 Arc Mage · 2 Savannah Lions · 1 Fencing Ace · 1 Master Decoy · 1 Serra Angel
+3 Young Pyromancer · 2 Arc Mage · 1 Fencing Ace · 1 Master Decoy · 1 Serra Angel · 1 Siege-Gang Commander · 1 Thundersnake
 2 Raise the Alarm · 1 Glorious Anthem · 1 Brute Force
 3 Lightning Bolt · 2 Shock · 1 Char · 1 Blaze · 1 Swords to Plowshares · 1 Pacifism
 ```
-40 / 17 / 23; one tier-3 title. Every spell is a body; the Anthem makes the bodies matter.
+40 / 17 / 23; two tier-3 titles. Every spell is a body; the Anthem makes the bodies matter. *S43 (Part 0): −2 Savannah Lions +1 Siege-Gang Commander +1 Thundersnake.*
 
 ### Thornmother Ysolde — WU, "the Thornmother" in the air
 ```

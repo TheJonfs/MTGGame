@@ -81,9 +81,9 @@ import {
 } from "@shandalar/world";
 import type { Modifier } from "@shandalar/engine";
 import { WorldRng as DungeonRng } from "@shandalar/world";
-import { applyFountDuel, floodLordEntrance, fountDuelSpec, fountFallen, recordFount } from "@shandalar/world";
+import { exploreAround, manhattan, applyFountDuel, floodLordEntrance, fountDuelSpec, fountFallen, recordFount } from "@shandalar/world";
 import { FOUNT_DECK } from "@shandalar/sim/heart-deck";
-import { opponentColors, applyCourtDuel, courtDuelSpec, courtsFallen, floodCourt, floodDeck, floodHeartOpen, floodRun, floodStronghold, recordFloodLordFall, strongholdContentFor, type FloodCourtDef } from "@shandalar/world";
+import { FLOOD_LAIR_PRIZE, parseFloodLairId, type FloodLairKind, opponentColors, applyCourtDuel, courtDuelSpec, courtsFallen, floodCourt, floodDeck, floodHeartOpen, floodRun, floodStronghold, recordFloodLordFall, strongholdContentFor, type FloodCourtDef } from "@shandalar/world";
 import {
   applyMirrorDuel, applyPetalDuel, corollaAdvance, corollaAsWorldMap, corollaDoor, corollaInnRest, corollaPath, corollaTown, enterCorolla,
   fixedPointAt, generateCorolla, insideCorolla, leaveCorolla, mirrorDuelSpec, petalAt, petalDistance, petalDuelSpec, petalLawName, petalsFallen,
@@ -895,7 +895,7 @@ export class WorldController {
   /** S24 r5 (Chris): a granted manalink gets its OWN splash — the Manalink sting was drowning
    * under Winduel inside the news modal. Queued; the splash renders above everything and the
    * sting fires on mount (one-voice: it fades whatever rings). */
-  manalinkSplash: { kind: "basic" | "life"; color: "W" | "U" | "B" | "R" | "G"; townName: string }[] | null = null;
+  manalinkSplash: { kind: "basic" | "life"; color: "W" | "U" | "B" | "R" | "G"; townName: string; lair?: boolean }[] | null = null;
 
   dismissManalinkSplash(): void {
     if (!this.manalinkSplash) return;
@@ -909,10 +909,12 @@ export class WorldController {
   private queueNewManalinks(before: number): void {
     if (!this.world) return;
     for (const m of this.world.manalinks.slice(before)) {
+      const lairSite = m.lair ? this.world.map.strongholds.find((f) => f.contentId === m.lair) : undefined; // S43: a lair's link
       (this.manalinkSplash ??= []).push({
         kind: m.kind === "life" ? "life" : "basic",
         color: m.color,
-        townName: this.world.map.towns[m.town]?.name ?? "a town",
+        townName: lairSite?.name ?? this.world.map.towns[m.town]?.name ?? "a town",
+        ...(lairSite ? { lair: true } : {}),
       });
     }
   }
@@ -1683,6 +1685,37 @@ export class WorldController {
   }
 
   // ---------- S26 r1 (Chris): the DEV menu — autocomplete the fifteen in-world dungeons ----------
+
+  /** S43 (ADR-136): the flood lair at a cell — its threshold line and what it holds (the planner's text), for the parley. */
+  floodLairAt(at: Point): { line: string; holds: string; kind: FloodLairKind } | null {
+    if (!this.world) return null;
+    const site = fixedPointAt(this.world.map, at);
+    const lair = parseFloodLairId(site?.contentId);
+    if (!site || !lair) return null;
+    const text = this.catalog.questText?.flood?.lairs?.[lair.kind];
+    const prize = FLOOD_LAIR_PRIZE[lair.kind];
+    const LAND: Record<string, string> = { W: "Plains", U: "Island", B: "Swamp", R: "Mountain", G: "Forest" };
+    const holds = prize.kind === "basic" ? `holds a manalink: a ${LAND[lair.color]} in play at every duel` : `holds a manalink: +${prize.count} maximum world life`;
+    return { line: text?.line ?? "", holds, kind: lair.kind };
+  }
+
+  /** S43 (dev): stand beside the nearest un-felled flood lair (phase two) — a teleport, so the lairs can be walked live
+   * without crossing a fogged map; the next step onto it is the real threshold. Returns the lair's name, or null. */
+  devStandAtNearestLair(): string | null {
+    if (!this.world || this.screen.kind !== "map" || (this.world.phase ?? 1) < 2) return null;
+    const w = this.world;
+    const lairs = w.map.strongholds.filter((f) => f.kind === "lair" && parseFloodLairId(f.contentId) && !w.opponents.find((o) => o.id === f.opponentId)?.gone);
+    const target = [...lairs].sort((a, b) => manhattan(a.at, w.player.position) - manhattan(b.at, w.player.position))[0];
+    if (!target) return null;
+    const nbr = [{ x: target.at.x + 1, y: target.at.y }, { x: target.at.x - 1, y: target.at.y }, { x: target.at.x, y: target.at.y + 1 }, { x: target.at.x, y: target.at.y - 1 }].find((p) => p.x >= 0 && p.y >= 0 && p.x < w.map.width && p.y < w.map.height && w.map.passable[idx(w.map, p)]);
+    if (!nbr) return null;
+    w.player.position = { ...nbr };
+    exploreAround(w, this.knobs);
+    this.autosave();
+    this.screen = { kind: "map", preview: null, previewTarget: null, walking: false, notice: `Dev: you stand beside ${target.name ?? "a lair"} — step onto it.` };
+    this.clickCell(target.at); // the one-step path previewed: "Walk there (1 step)" is the threshold
+    return target.name ?? null;
+  }
 
   /** The fifteen authored sites with their cleared state, for the dev menu's rows. */
   devDungeonRows(): { id: string; kind: "mox" | "power" | "stronghold"; name: string; cleared: boolean }[] {

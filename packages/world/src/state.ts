@@ -84,6 +84,8 @@ export interface DuelRecord {
   saved: unknown;
   /** S19: reward text for bounties this duel completed (the result screen reads it). */
   questRewards?: string[];
+  /** S43 (ADR-136): a flood lair's manalink, paid on the resident's defeat (the prize line + the link's note). */
+  lairPrize?: string;
 }
 
 export interface PlayerState {

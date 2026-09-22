@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
-import { activeDeck, catalogFrom, commitDeck, deserializeWorld, dungeonPath, empowermentModifiers, floodRun, idx, lordStartingLife, reachedTiers, starterDecklist, starterTemplate } from "@shandalar/world";
+import { activeDeck, catalogFrom, commitDeck, deserializeWorld, dungeonPath, empowermentModifiers, floodRun, idx, lordStartingLife, maxWorldLife, reachedTiers, starterDecklist, starterTemplate } from "@shandalar/world";
 import { readFileSync } from "node:fs";
 import { loadCatalog } from "@shandalar/world/loader";
 import { WorldController } from "./world-controller.js";
@@ -700,83 +700,90 @@ describe("S22b acceptance: the stronghold flow through the controller (entry →
   }, 60_000);
 });
 
-describe("S42b (S41 Deviation 9): the scripted PHASE-TWO stronghold run — the Tidelock Weir walked, every interior duel played live on the controller's own spec, the Bailiff's fall through the flood's hooks", () => {
-  /** A phase-two world from the salvage path, its roamers gone, standing beside the Weir's gate. */
-  function floodWorldAtTheWeir(seed: number, deck?: { cardId: string; count: number }[]): WorldController {
-    const c = new WorldController(pool, catalog, memStorage());
-    c.stepMs = 0; c.aiDelayMs = 0;
-    for (const col of ["W", "U", "B", "R", "G"] as const) c.devGrantCutting(col);
-    c.enterFlood({ difficulty: "standard", seed, name: "Flood" });
-    c.floodContinue();
-    for (const [tab, pick] of [["W", "savannah_lions"], ["U", "wind_drake"], ["B", "typhoid_rats"], ["R", "goblin_piker"], ["G", "grizzly_bears"]] as const) { c.salvageTab(tab); c.salvagePick(pick); }
-    c.salvageTab("W"); c.salvageToPair(); c.salvagePair(["W", "R"]); c.salvageBegin(); c.editorClose();
-    const w = c.world!;
-    for (const o of w.opponents) if (!o.fixedAt) { o.gone = true; o.goneReason = "fled"; }
-    if (deck) { // a finished deck in the player's hands (its cards granted; a dev grant, not a ceremony)
-      for (const e of deck) w.player.collection[e.cardId] = Math.max(w.player.collection[e.cardId] ?? 0, e.count);
-      const r = commitDeck(w, deck.map((e) => ({ ...e })));
-      expect(r.ok, JSON.stringify(r)).toBe(true);
-    }
-    const site = w.map.strongholds.find((f) => f.kind === "stronghold" && f.name === "Tidelock Weir")!;
-    const nbr = [{ x: site.at.x + 1, y: site.at.y }, { x: site.at.x - 1, y: site.at.y }, { x: site.at.x, y: site.at.y + 1 }, { x: site.at.x, y: site.at.y - 1 }].find((p) => w.map.passable[idx(w.map, p)])!;
-    w.player.position = { ...nbr };
-    c.clickCell(site.at); c.clickCell(site.at);
-    return c;
+/** A phase-two world from the salvage path, its roamers gone, standing beside the Weir's gate. */
+function floodWorldAtTheWeir(seed: number, deck?: { cardId: string; count: number }[], lairs?: { basics: ("W" | "U" | "B" | "R" | "G")[]; lifeLinks: number }): WorldController {
+  const c = new WorldController(pool, catalog, memStorage());
+  c.stepMs = 0; c.aiDelayMs = 0;
+  for (const col of ["W", "U", "B", "R", "G"] as const) c.devGrantCutting(col);
+  c.enterFlood({ difficulty: "standard", seed, name: "Flood" });
+  c.floodContinue();
+  for (const [tab, pick] of [["W", "savannah_lions"], ["U", "wind_drake"], ["B", "typhoid_rats"], ["R", "goblin_piker"], ["G", "grizzly_bears"]] as const) { c.salvageTab(tab); c.salvagePick(pick); }
+  c.salvageTab("W"); c.salvageToPair(); c.salvagePair(["W", "R"]); c.salvageBegin(); c.editorClose();
+  const w = c.world!;
+  for (const o of w.opponents) if (!o.fixedAt) { o.gone = true; o.goneReason = "fled"; }
+  if (deck) { // a finished deck in the player's hands (its cards granted; a dev grant, not a ceremony)
+    for (const e of deck) w.player.collection[e.cardId] = Math.max(w.player.collection[e.cardId] ?? 0, e.count);
+    const r = commitDeck(w, deck.map((e) => ({ ...e })));
+    expect(r.ok, JSON.stringify(r)).toBe(true);
   }
-  /** One run to its end: the walk toward the guardian (re-planned after every reveal) and every duel played on the
-   * controller's OWN spec by two heuristic pilots (journeyman for the player — the click-path human of S10 loses every
-   * time), the real result fed to the finisher. Returns how it ended. */
-  async function walkTheWeir(c: WorldController, opts: { stopAtGuardian?: boolean } = {}): Promise<{ duels: number; guardianFought: boolean; end: "fell" | "lost" | "guardian" }> {
-    const { runMatch } = await import("@shandalar/engine");
-    const { HeuristicAgent, difficultyProfile } = await import("@shandalar/agents");
-    const w = c.world!;
-    const run = c.dungeonRun!;
-    const screen = () => (c as WorldController).screen;
-    let duels = 0, guardianFought = false;
-    for (let guard = 0; guard < 400; guard++) {
-      const sc = screen();
-      if (sc.kind === "strongholdVictory") return { duels, guardianFought, end: "fell" };
-      if (sc.kind === "map") return { duels, guardianFought, end: "lost" };
-      if (sc.kind === "dungeonDuel") {
-        duels += 1;
-        const spec = sc.match.spec;
-        const enemyLife = spec.modifiers.find((m) => m.type === "startingLife" && m.player === 1) as { value: number } | undefined;
-        if (sc.against.guardian) {
-          guardianFought = true;
-          expect(sc.enemyName).toBe("The Bailiff");
-          // ADR-134's 30 at Standard through the pace-war formula (the minions felled INSIDE bleed him — S22b) + the interior empowerment clock's life.
-          const sh = c.strongholdDef("tidelock_weir")!;
-          expect(sh.lord.baseLife + c.knobs.floodLordLifeBonus).toBe(30);
-          expect(enemyLife?.value).toBe(lordStartingLife(w, c.knobs, sh) + empowermentModifiers(reachedTiers(run, c.knobs), "W").lifeBonus);
-          expect(spec.modifiers.filter((m) => m.type === "permanentOnBattlefield" && m.player === 1).map((m) => (m as { cardId: string }).cardId)).toEqual(["law_intake", "plains", "island"]); // the seat's law, then ADR-134's two basics of WUR, the law's colour first
-          expect(spec.modifiers.some((m) => m.type === "signatureToHand" && (m as { cardId: string }).cardId === "the_bailiff")).toBe(true);
-        }
-        const enemyProfile = (spec.players[1].agent.split(":")[1] ?? "journeyman") as "apprentice" | "journeyman" | "master";
-        if (sc.against.guardian && opts.stopAtGuardian) {
-          // Play it live for the record; a win is the live fall, a loss leaves the screen on the duel for the caller.
-          const r = await runMatch(spec, pool, [new HeuristicAgent(spec.seed * 2 + 1, pool, difficultyProfile("journeyman", "aggro", spec.players[1].decklist)), new HeuristicAgent(spec.seed * 2 + 2, pool, difficultyProfile(enemyProfile, "control", spec.players[0].decklist))]);
-          if (r.winner === 0) { (c as never as { finishInteriorDuel(a: { guardian?: boolean }, res: unknown): void }).finishInteriorDuel(sc.against, r); return { duels, guardianFought, end: "fell" }; }
-          return { duels, guardianFought, end: "guardian" };
-        }
-        const result = await runMatch(spec, pool, [
-          new HeuristicAgent(spec.seed * 2 + 1, pool, difficultyProfile("journeyman", "aggro", spec.players[1].decklist)),
-          new HeuristicAgent(spec.seed * 2 + 2, pool, difficultyProfile(enemyProfile, sc.against.guardian ? "control" : "midrange", spec.players[0].decklist)),
-        ]);
-        if (process.env.S42B_DEBUG) console.log(`duel vs ${sc.enemyName}: winner ${result.winner} (${result.reason}) life ${result.finalLife.join("/")} turns ${result.turns}; start ${spec.rules.startingLife} vs ${enemyLife?.value}; player deck ${spec.players[0].decklist.reduce((n, e) => n + e.count, 0)} cards`);
-        (c as never as { finishInteriorDuel(a: { minionId?: string; guardian?: boolean }, r: typeof result): void }).finishInteriorDuel(sc.against, result);
-        continue;
+  if (lairs) { // S43: the lairs EARNED, in the world's own terms — basic links in play, life links on the maximum, life at the maximum
+    for (const c of lairs.basics) w.manalinks.push({ color: c, town: -1, lair: `lair:landing:${c}`, kind: "basic" });
+    for (let i = 0; i < lairs.lifeLinks; i++) w.manalinks.push({ color: "W", town: -1, lair: `lair:wellhouse:W`, kind: "life" });
+    w.player.worldLife = maxWorldLife(w);
+  }
+  const site = w.map.strongholds.find((f) => f.kind === "stronghold" && f.name === "Tidelock Weir")!;
+  const nbr = [{ x: site.at.x + 1, y: site.at.y }, { x: site.at.x - 1, y: site.at.y }, { x: site.at.x, y: site.at.y + 1 }, { x: site.at.x, y: site.at.y - 1 }].find((p) => w.map.passable[idx(w.map, p)])!;
+  w.player.position = { ...nbr };
+  c.clickCell(site.at); c.clickCell(site.at);
+  return c;
+}
+/** One run to its end: the walk toward the guardian (re-planned after every reveal) and every duel played on the
+ * controller's OWN spec by two heuristic pilots (journeyman for the player — the click-path human of S10 loses every
+ * time), the real result fed to the finisher. Returns how it ended. */
+async function walkTheWeir(c: WorldController, opts: { stopAtGuardian?: boolean } = {}): Promise<{ duels: number; guardianFought: boolean; end: "fell" | "lost" | "guardian"; lifeAtLord: number }> {
+  const { runMatch } = await import("@shandalar/engine");
+  const { HeuristicAgent, difficultyProfile } = await import("@shandalar/agents");
+  const w = c.world!;
+  const run = c.dungeonRun!;
+  const screen = () => (c as WorldController).screen;
+  let duels = 0, guardianFought = false, lifeAtLord = -1;
+  for (let guard = 0; guard < 400; guard++) {
+    const sc = screen();
+    if (sc.kind === "strongholdVictory") return { duels, guardianFought, end: "fell", lifeAtLord };
+    if (sc.kind === "map") return { duels, guardianFought, end: "lost", lifeAtLord };
+    if (sc.kind === "dungeonDuel") {
+      duels += 1;
+      const spec = sc.match.spec;
+      const enemyLife = spec.modifiers.find((m) => m.type === "startingLife" && m.player === 1) as { value: number } | undefined;
+      if (sc.against.guardian) {
+        guardianFought = true;
+        lifeAtLord = spec.rules.startingLife;
+        expect(sc.enemyName).toBe("The Bailiff");
+        // ADR-134's 30 at Standard through the pace-war formula (the minions felled INSIDE bleed him — S22b) + the interior empowerment clock's life.
+        const sh = c.strongholdDef("tidelock_weir")!;
+        expect(sh.lord.baseLife + c.knobs.floodLordLifeBonus).toBe(30);
+        expect(enemyLife?.value).toBe(lordStartingLife(w, c.knobs, sh) + empowermentModifiers(reachedTiers(run, c.knobs), "W").lifeBonus);
+        expect(spec.modifiers.filter((m) => m.type === "permanentOnBattlefield" && m.player === 1).map((m) => (m as { cardId: string }).cardId)).toEqual(["law_intake", "plains", "island"]); // the seat's law, then ADR-134's two basics of WUR, the law's colour first
+        expect(spec.modifiers.some((m) => m.type === "signatureToHand" && (m as { cardId: string }).cardId === "the_bailiff")).toBe(true);
       }
-      if (sc.kind !== "dungeon") throw new Error(`unexpected screen ${sc.kind}`);
-      if (sc.walking) { await tick(); continue; }
-      const path = dungeonPath(run, run.guardianAt);
-      expect(path, "a path toward the guardian exists").toBeTruthy();
-      c.dungeonClick(path![Math.min(path!.length - 1, 2)]!); // a few cells at a time so a reveal re-plans
-      for (let i = 0; i < 200 && screen().kind === "dungeon" && (screen() as { walking: boolean }).walking; i++) await tick();
-      if (run.position.x === run.guardianAt.x && run.position.y === run.guardianAt.y && screen().kind === "dungeon") throw new Error("stood on the guardian's cell without a duel");
+      const enemyProfile = (spec.players[1].agent.split(":")[1] ?? "journeyman") as "apprentice" | "journeyman" | "master";
+      if (sc.against.guardian && opts.stopAtGuardian) {
+        // Play it live for the record; a win is the live fall, a loss leaves the screen on the duel for the caller.
+        const r = await runMatch(spec, pool, [new HeuristicAgent(spec.seed * 2 + 1, pool, difficultyProfile("journeyman", "aggro", spec.players[1].decklist)), new HeuristicAgent(spec.seed * 2 + 2, pool, difficultyProfile(enemyProfile, "control", spec.players[0].decklist))]);
+        if (r.winner === 0) { (c as never as { finishInteriorDuel(a: { guardian?: boolean }, res: unknown): void }).finishInteriorDuel(sc.against, r); return { duels, guardianFought, end: "fell", lifeAtLord }; }
+        return { duels, guardianFought, end: "guardian", lifeAtLord };
+      }
+      const result = await runMatch(spec, pool, [
+        new HeuristicAgent(spec.seed * 2 + 1, pool, difficultyProfile("journeyman", "aggro", spec.players[1].decklist)),
+        new HeuristicAgent(spec.seed * 2 + 2, pool, difficultyProfile(enemyProfile, sc.against.guardian ? "control" : "midrange", spec.players[0].decklist)),
+      ]);
+      if (process.env.S42B_DEBUG) console.log(`duel vs ${sc.enemyName}: winner ${result.winner} (${result.reason}) life ${result.finalLife.join("/")} turns ${result.turns}; start ${spec.rules.startingLife} vs ${enemyLife?.value}; player deck ${spec.players[0].decklist.reduce((n, e) => n + e.count, 0)} cards`);
+      (c as never as { finishInteriorDuel(a: { minionId?: string; guardian?: boolean }, r: typeof result): void }).finishInteriorDuel(sc.against, result);
+      continue;
     }
-    throw new Error(`the walk did not end (${duels} duels; at ${JSON.stringify(run.position)}, guardian ${JSON.stringify(run.guardianAt)}); ${w.player.name}`);
+    if (sc.kind !== "dungeon") throw new Error(`unexpected screen ${sc.kind}`);
+    if (sc.walking) { await tick(); continue; }
+    const path = dungeonPath(run, run.guardianAt);
+    expect(path, "a path toward the guardian exists").toBeTruthy();
+    c.dungeonClick(path![Math.min(path!.length - 1, 2)]!); // a few cells at a time so a reveal re-plans
+    for (let i = 0; i < 200 && screen().kind === "dungeon" && (screen() as { walking: boolean }).walking; i++) await tick();
+    if (run.position.x === run.guardianAt.x && run.position.y === run.guardianAt.y && screen().kind === "dungeon") throw new Error("stood on the guardian's cell without a duel");
   }
+  throw new Error(`the walk did not end (${duels} duels; at ${JSON.stringify(run.position)}, guardian ${JSON.stringify(run.guardianAt)}); ${w.player.name}`);
+}
 
+
+describe("S42b (S41 Deviation 9): the scripted PHASE-TWO stronghold run — the Tidelock Weir walked, every interior duel played live on the controller's own spec, the Bailiff's fall through the flood's hooks", () => {
   it("the day-one salvage deck: entry through the gate → the interior at stronghold scale → the first duels fought live → a loss ejects and resets, nothing of the flood's recorded (six seeds; the floor deck does not take a stronghold — the S41/S42a sims' read, live)", async () => {
     const ends: string[] = [];
     for (let seed = 4242; seed < 4248; seed++) {
@@ -846,6 +853,26 @@ describe("S42b (S41 Deviation 9): the scripted PHASE-TWO stronghold run — the 
     const back = deserializeWorld(JSON.stringify(JSON.parse(c.saveText())));
     expect((back.strongholds as { color: string; seal: boolean }[]).find((e) => e.color === "W")?.seal).toBe(true);
     expect(floodRun(back).golds).toContain("sacred_helix"); // the golds survive the save
+  }, 600_000);
+});
+
+describe("S43 (Part 4): the scripted phase-two stronghold run with a deck that EARNED its lairs — twenty seeds", () => {
+  it("salvage-WR+lords+lairs (three basic links in play, two life lairs on the maximum, life at the maximum): how often the run reaches the Bailiff, at what life, and his rate live (the read for ADR-134)", async () => {
+    const { ROAD_DECKS } = await import("@shandalar/sim/road-decks");
+    const rows: { seed: number; duels: number; reached: boolean; life: number; end: string }[] = [];
+    for (let seed = 4342; seed < 4362; seed++) {
+      const c = floodWorldAtTheWeir(seed, ROAD_DECKS.salvageWRLordsLairs!.decklist, { basics: ["W", "R", "W"], lifeLinks: 4 });
+      for (let i = 0; i < 100 && c.screen.kind !== "dungeonTelegraph"; i++) await tick();
+      expect(c.screen.kind).toBe("dungeonTelegraph");
+      expect(c.world!.player.worldLife).toBe(maxWorldLife(c.world!));
+      c.enterDungeon();
+      const out = await walkTheWeir(c);
+      rows.push({ seed, duels: out.duels, reached: out.guardianFought, life: out.lifeAtLord, end: out.end });
+    }
+    const reached = rows.filter((r) => r.reached);
+    const fell = rows.filter((r) => r.end === "fell");
+    console.log(`S43 post-lairs runs — reached the Bailiff ${reached.length}/20 (life at the lord: ${reached.map((r) => r.life).join(", ") || "—"}); the Bailiff held ${reached.length - fell.length}/${reached.length} live; fell ${fell.length}/20 · ${rows.map((r) => `${r.seed}:${r.duels}d ${r.end}${r.reached ? `@${r.life}` : ""}`).join(" · ")}`);
+    expect(rows).toHaveLength(20);
   }, 600_000);
 });
 

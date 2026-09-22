@@ -127,6 +127,8 @@ export interface Manalink {
    * town-tied, suspension law shared: an occupied town's link stops counting and current life
    * clamps). Absent = "basic" (every pre-S24 save). */
   kind?: "basic" | "life";
+  /** S43 (ADR-136): a link earned at a flood LAIR (its site id; `town` is −1 — no town, no suspension). */
+  lair?: string;
 }
 
 /** S19 round 2 (Chris): a manalink puts a REGULAR basic land onto your battlefield — a green manalink
@@ -183,8 +185,10 @@ export function townOffers(world: WorldState, catalog: Catalog, town: Town, knob
       // S21 (Chris-ruled): targets are LAIR-DUNGEONS with a living resident; the item sits in
       // the prize room, escrowed like everything else — the quest is the dive. Keep-or-deliver
       // on return (the trade stated at the choice).
-      const lairs = world.map.strongholds.filter((f) => f.kind === "lair" && f.opponentId && !world.opponents.find((o) => o.id === f.opponentId)?.gone);
-      if (lairs.length === 0) continue; // every lair cleared: the dens hold nothing to fetch
+      // S43: a FLOOD lair (contentId `lair:…`) is a single duel with a manalink at the end — no prize room, nothing to
+      // fetch — so a phase-two board never posts a retrieval (there are no lair-dungeons on that map).
+      const lairs = world.map.strongholds.filter((f) => f.kind === "lair" && f.opponentId && !f.contentId?.startsWith("lair:") && !world.opponents.find((o) => o.id === f.opponentId)?.gone);
+      if (lairs.length === 0) continue; // every lair cleared (or the flood's map): the dens hold nothing to fetch
       const lair = rng.pick(lairs);
       const rs = [...pool.values()].filter((d) => !d.isTokenDef && !d.prizeOnly && d.shopTier === "R").sort((a, b) => a.id.localeCompare(b.id));
       if (rs.length === 0) continue;
@@ -329,30 +333,10 @@ function award(world: WorldState, q: ActiveQuest, knobs: KnobValues): string {
     notes.push(`the card ${q.reward.cardName ?? q.reward.cardId}`);
   }
   if (q.reward.manalink) {
-    if ((q.reward.manalinkKind ?? "basic") === "life") {
-      // S24 (ADR-086): the life kind — +1 maximum world life, town-tied. Cap counts EVERY life
-      // link owned (a suspended link exists; the town just holds it hostage).
-      const haveLife = world.manalinks.filter((m) => m.kind === "life").length;
-      // S25 r2 (Chris): life is UNCAPPED by default — cap ≤ 0 means no ceiling; a positive value restores one.
-      if (knobs.lifeManalinkCap <= 0 || haveLife < knobs.lifeManalinkCap) {
-        world.manalinks.push({ color: q.reward.manalink, town: q.fromTown, kind: "life" });
-        notes.push("a life manalink — your maximum world life rises by 1 while this town stands free");
-      } else {
-        gold += knobs.questGoldByTier[q.tier] ?? 20;
-        notes.push("gold in lieu (you carry all the life manalinks one heart can hold)");
-      }
-    } else {
-      const have = world.manalinks.filter((m) => (m.kind ?? "basic") === "basic" && m.color === q.reward.manalink).length;
-      if (have < knobs.manalinkCapPerColor) {
-        world.manalinks.push({ color: q.reward.manalink, town: q.fromTown, kind: "basic" });
-        notes.push(`a manalink — every duel now starts with a bonus ${MANALINK_LAND_NAME[q.reward.manalink]} on your battlefield`);
-      } else {
-        // S25 r4 (Chris): an over-cap BASIC falls back to a LIFE manalink, not gold — the reward
-        // stays a manalink (life is uncapped since r2). Only an over-cap life link still coins out.
-        world.manalinks.push({ color: q.reward.manalink, town: q.fromTown, kind: "life" });
-        notes.push(`a life manalink in lieu (you already hold a ${q.reward.manalink} land-link) — your maximum world life rises by 1 while this town stands free`);
-      }
-    }
+    // S43: the one award path (the lairs pay through it too) — over-cap life coins out, over-cap basic becomes life.
+    const r = grantManalink(world, knobs, { color: q.reward.manalink, kind: q.reward.manalinkKind ?? "basic", town: q.fromTown }, { coinInLieu: knobs.questGoldByTier[q.tier] ?? 20 });
+    if (r.startsWith("gold in lieu")) gold += knobs.questGoldByTier[q.tier] ?? 20;
+    notes.push(r);
   }
   world.player.gold += gold;
   notes.unshift(`${gold} gold`);
@@ -655,6 +639,33 @@ export function manalinkModifiers(world: WorldState): { type: "permanentOnBattle
   return world.manalinks
     .filter((m) => (m.kind ?? "basic") === "basic" && !occupied.has(m.town)) // S24: life links live in maxWorldLife, not in duels
     .map((m) => ({ type: "permanentOnBattlefield" as const, player: 0 as const, cardId: MANALINK_CARD[m.color] }));
+}
+
+/**
+ * S25 r4's award path, as ONE function (S43: the flood's lairs pay through it): a LIFE link is +1 maximum world life
+ * (uncapped by default — `lifeManalinkCap` ≤ 0; a positive cap coins the overflow out, the caller adds the gold); a
+ * BASIC link is the land in play, capped per colour, an over-cap basic becoming a life link instead of gold. `town` is
+ * the granting town (−1 = none: a lair's link is never suspended by a siege — S43); `lair` names the site. Returns the
+ * note the ceremony shows.
+ */
+export function grantManalink(world: WorldState, knobs: KnobValues, link: { color: Manalink["color"]; kind: "basic" | "life"; town: number; lair?: string }, opts: { coinInLieu?: number } = {}): string {
+  const where = link.lair ? { town: link.town, lair: link.lair } : { town: link.town };
+  if (link.kind === "life") {
+    const haveLife = world.manalinks.filter((m) => m.kind === "life").length;
+    if (knobs.lifeManalinkCap <= 0 || haveLife < knobs.lifeManalinkCap) {
+      world.manalinks.push({ color: link.color, ...where, kind: "life" });
+      return link.lair ? "a life manalink — your maximum world life rises by 1" : "a life manalink — your maximum world life rises by 1 while this town stands free";
+    }
+    return `gold in lieu (you carry all the life manalinks one heart can hold${opts.coinInLieu ? `: ${opts.coinInLieu} gold` : ""})`;
+  }
+  const have = world.manalinks.filter((m) => (m.kind ?? "basic") === "basic" && m.color === link.color).length;
+  if (have < knobs.manalinkCapPerColor) {
+    world.manalinks.push({ color: link.color, ...where, kind: "basic" });
+    return `a manalink — every duel now starts with a bonus ${MANALINK_LAND_NAME[link.color]} on your battlefield`;
+  }
+  // S25 r4 (Chris): an over-cap BASIC falls back to a LIFE manalink, not gold — the reward stays a manalink.
+  world.manalinks.push({ color: link.color, ...where, kind: "life" });
+  return `a life manalink in lieu (you already hold a ${link.color} land-link) — your maximum world life rises by 1${link.lair ? "" : " while this town stands free"}`;
 }
 
 /** Fresh quest state (new worlds; the v3→v4 migration). */

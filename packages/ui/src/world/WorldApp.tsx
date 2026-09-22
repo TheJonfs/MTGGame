@@ -154,6 +154,9 @@ function DevTab({ c }: { c: WorldController }) {
             <p style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
               {(c.world?.phase ?? 1) >= 2
                 ? <button className="primary" onClick={() => c.devCompleteAll("stronghold")} title="S42b: the five flood lords fall as if fought — cards, seals, golds to the shops, the chronicle; the deep water opens">Fell the five lords</button>
+                : null}
+              {(c.world?.phase ?? 1) >= 2 && <button onClick={() => { c.devStandAtNearestLair(); setOpen(false); }} title="S43: a teleport to the nearest un-felled lair — the next step onto it is the real threshold (the parley, the duel, the manalink)">Stand at the nearest lair</button>}
+              {(c.world?.phase ?? 1) >= 2 ? null
                 : <>
                   <button className="primary" onClick={() => c.devCompleteAll()}>Complete all 15</button>
                   <button onClick={() => c.devCompleteAll("mox")}>The five Moxen</button>
@@ -330,7 +333,8 @@ function ParleyPanel({ c }: { c: WorldController }) {
   const gold = c.world!.player.gold;
   const odds = Math.round(knobs.fleeOddsByTier[encounter.tier] * 100);
   const stake = knobs.anteCount;
-  const unbuyable = tmpl.buyable === false;
+  const lair = encounter.contact === "lair"; // S43: a lair is held, not passed — no buy-off
+  const unbuyable = tmpl.buyable === false || lair;
   // S18: parley voice from the catalog (verb/line/refusal), defaults by kind (ADR-066).
   const voice = tmpl.parley ?? {};
   const verb = voice.verb ?? (beast ? "Distract" : "Buy off");
@@ -345,16 +349,17 @@ function ParleyPanel({ c }: { c: WorldController }) {
             <h3 style={{ margin: 0, fontFamily: "var(--serif)" }}>{tmpl.name}{tmpl.epithet ? <span style={{ fontWeight: 400, color: "var(--ink-soft)" }}>, {tmpl.epithet}</span> : null}</h3>
             {/* S34 (Part 5): the entrance clause — the resolver's cell for this opponent at this world's mode;
                 the telegraph names nothing (as the Heart's roots did not on the rail). Planner's lines. */}
-            {(() => { const n = resolveMatchup(tmpl, knobs, null, c.world?.phase ?? 1).entrance.length; return n === 1 ? <p className="parley-voice" style={{ fontStyle: "italic" }}>The ground is already theirs; a land lies ready before the first word.</p> : n >= 2 ? <p className="parley-voice" style={{ fontStyle: "italic" }}>Two lands lie ready. This one has walked the roads before you.</p> : null; })()}
+            {(() => { const n = resolveMatchup(tmpl, knobs, null, c.world?.phase ?? 1).entrance.length; return n === 1 ? <p className="parley-voice" style={{ fontStyle: "italic" }}>The ground is already theirs; a land lies ready before the first word.</p> : n === 2 ? <p className="parley-voice" style={{ fontStyle: "italic" }}>Two lands lie ready. This one has walked the roads before you.</p> : n >= 3 ? <p className="parley-voice" style={{ fontStyle: "italic" }}>Three lands lie ready. This one has walked every road before you.</p> : null; })()}
             <div className="parley-sub">
               <span className={`tier-badge t${tmpl.tier}`}>{TIER_BADGE[tmpl.tier]}</span>
               <span className="colour-id">{opponentColors(tmpl, c.world?.phase).split("").map((ch) => <i key={ch} className={`colour-pip c-${ch}`} title={ch} />)}</span>
-              {tmpl.difficulty} · world life {tmpl.worldLife}
+              {tmpl.difficulty} · world life {resolveMatchup(tmpl, knobs, null, c.world?.phase ?? 1).life + (lair ? knobs.lairResidentLifeBonus : 0)}
             </div>
             <div className="parley-sub">Stakes: {stake} card{stake === 1 ? "" : "s"} each (ante). You have {gold} gold.</div>
           </div>
         </div>
         {parleyLines(tmpl, c.world?.phase).map((l) => <p key={l} className="parley-voice">{l}</p>)}
+        {encounter.contact === "lair" && (() => { const l = c.floodLairAt(encounter.at); return l ? <p className="parley-voice" style={{ fontStyle: "italic" }}>{l.line} <span style={{ color: "var(--brass)" }}>({l.holds})</span></p> : null; })()}
         {door && <p className="parley-voice door-shut">{door}</p>}
         <div className="parley-options">
           <button className="primary" disabled={!!door} title={door ?? ""} onClick={() => c.parley("fight")}>
@@ -369,7 +374,7 @@ function ParleyPanel({ c }: { c: WorldController }) {
             {verb} ({price} gold)
             <small>
               {unbuyable
-                ? voice.refusal ?? "Cannot be bought — it wants the fight."
+                ? (lair ? "Guards this place — it wants the fight, not your gold." : voice.refusal ?? "Cannot be bought — it wants the fight.")
                 : gold < price
                   ? `Unaffordable — ${price} gold needed.`
                   : beast
@@ -441,6 +446,9 @@ function DuelResultScreen({ c, pool, oracle, onWatch }: { c: WorldController; po
           </>
         )}
         {record.outcome === "draw" && <p>No stakes change hands.</p>}
+        {record.lairPrize && (
+          <p style={{ color: "var(--brass)", fontSize: 12.5 }}><b>The lair is yours</b> — {record.lairPrize}</p>
+        )}
         {record.questRewards && record.questRewards.length > 0 && (
           <p style={{ color: "var(--brass)", fontSize: 12.5 }}><b>Bounty complete</b> — {record.questRewards.join("; ")}</p>
         )}
@@ -542,7 +550,11 @@ function ManalinkSplash({ c }: { c: WorldController }) {
         <div style={{ padding: "12px 16px 14px" }}>
           <h2 style={{ fontFamily: "var(--serif)", margin: "0 0 6px" }}>A manalink is granted</h2>
           <p style={{ fontSize: 13.5, margin: "0 0 10px" }}>
-            {m.kind === "life"
+            {m.lair
+              ? (m.kind === "life"
+                ? <><b>{m.townName}</b> is yours — the water gives back a little of what it took: <b>your maximum world life rises by 1</b>. No town holds this; no siege can take it.</>
+                : <><b>{m.townName}</b> is yours — the ground stays under you: <b>a {LAND[m.color]} stands with you from the first turn</b> of every duel. No town holds this; no siege can take it.</>)
+              : m.kind === "life"
               ? <>The bond with <b>{m.townName}</b> steadies your very heart — <b>your maximum world life rises by 1</b> while the town stands free.</>
               : <>The bond with <b>{m.townName}</b> reaches every battlefield — <b>a {LAND[m.color]} stands with you from the first turn</b> of every duel, while the town stands free.</>}
           </p>
@@ -2121,16 +2133,17 @@ export function WorldApp({ onWatchReplay, paused = false }: { onWatchReplay: (ga
           return (
             <RailPanel title="Manalinks" badge={darkCount ? `${w.manalinks.length - darkCount}/${w.manalinks.length}` : w.manalinks.length}>
               {w.manalinks.map((m, i) => {
-                const town = w.map.towns[m.town];
-                const dark = occupied.has(m.town);
-                const hot = threatened.has(m.town);
+                const town = m.town >= 0 ? w.map.towns[m.town] : undefined;
+                const lairSite = m.lair ? w.map.strongholds.find((f) => f.contentId === m.lair) : undefined; // S43: a lair's link — no town, no siege
+                const dark = m.town >= 0 && occupied.has(m.town);
+                const hot = m.town >= 0 && threatened.has(m.town);
                 return (
                   <div key={i} style={{ fontSize: 12, display: "flex", justifyContent: "space-between", cursor: screen.kind === "map" && town ? "pointer" : "default" }} title="click to preview the path to its town" onClick={() => town && c.clickCell(town.at)}>
                     <span style={dark ? { textDecoration: "line-through", color: "var(--danger)" } : {}}>
                       <i className={`colour-pip c-${m.color}`} title={m.color} /> {(m.kind ?? "basic") === "life" ? "+1 max life" : `${LAND[m.color]} in play`}
                     </span>
                     <span style={{ color: dark || hot ? "var(--danger)" : "var(--ink-soft)", fontWeight: dark ? 700 : 400 }}>
-                      {town?.name ?? "a town"}{dark ? " · OCCUPIED" : hot ? " · besieged!" : ""}
+                      {lairSite?.name ?? town?.name ?? "a town"}{dark ? " · OCCUPIED" : hot ? " · besieged!" : ""}
                     </span>
                   </div>
                 );

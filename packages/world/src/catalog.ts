@@ -146,6 +146,12 @@ export interface QuestTextPack {
   /** S39 (ADR-126): the flood's voice — the scene, the picks, the pair, the chronicle's line, the deep water. Optional. */
   flood?: FloodTextPack;
 }
+/** S43 (ADR-136): the flood's three lairs per territory — a basic-land link guarded by the territory's tier-3 mage
+ * (the Landing), a life link guarded by its tier-3 beast (the Wellhouse), a life link guarded by its tier-2 mage (the
+ * Hearthstead). */
+export type FloodLairKind = "landing" | "wellhouse" | "hearthstead";
+export const FLOOD_LAIR_KINDS: readonly FloodLairKind[] = ["landing", "wellhouse", "hearthstead"];
+
 export interface FloodTextPack {
   /** The scene's lines (the planner's text, Part 6), one paragraph each. */
   scene: string[];
@@ -164,6 +170,9 @@ export interface FloodTextPack {
   fords?: string;
   /** S42a (ADR-131): the Cinquefont's voice — the approach, the water's speech, the Chronicle's line at its fall, Time Walk's prize line. */
   fount?: { telegraph: string; parley: string; fall: string; prize: string };
+  /** S43 (ADR-136; the planner's Part 5): the flood's three LAIR kinds by prize — the map name (the region's name is
+   * prefixed), the threshold's line, the prize line. */
+  lairs?: Record<FloodLairKind, { name: string; line: string; prize: string }>;
   heartOpens?: string;
   chronicleFifth?: string;
 }
@@ -399,6 +408,7 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
       if (!Array.isArray(qp.flood.scene) || qp.flood.scene.length === 0) errors.push("quests: flood.scene must be a nonempty array (S39)");
       for (const k of ["picks", "pair", "chronicle", "deep", "offer"] as const) if (typeof qp.flood[k] !== "string" || !qp.flood[k].trim()) errors.push(`quests: flood.${k} missing (S39)`);
       for (const [sid, s] of Object.entries(qp.flood.seats ?? {})) for (const k of ["telegraph", "parley", "fall", "prize"] as const) if (typeof s?.[k] !== "string" || !s[k].trim()) errors.push(`quests: flood.seats.${sid}.${k} missing (S41)`);
+      if (qp.flood.lairs !== undefined) for (const kind of FLOOD_LAIR_KINDS) for (const k of ["name", "line", "prize"] as const) if (typeof qp.flood.lairs[kind]?.[k] !== "string" || !qp.flood.lairs[kind][k].trim()) errors.push(`quests: flood.lairs.${kind}.${k} missing (S43)`);
     }
     questText = { offers: qp.offers, rumors: qp.rumors, ...(qp.corolla ? { corolla: qp.corolla } : {}), ...(qp.heart ? { heart: qp.heart } : {}), ...(qp.door ? { door: qp.door } : {}), ...(qp.flood ? { flood: qp.flood } : {}) };
   }
