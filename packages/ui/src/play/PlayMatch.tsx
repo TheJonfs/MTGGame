@@ -76,7 +76,7 @@ function PromptBar({ c, phase, confirmLabel }: { c: MatchController; phase: UiPh
         // S26 r3: "up to N" reads as optional picks; the Done button (below) commits early.
         return phase.canFinish
           ? (phase.chosen.length === 0 ? `Choose up to ${phase.targetsNeeded} target${phase.targetsNeeded === 1 ? "" : "s"} — or none.` : `${phase.chosen.length} chosen — choose another (up to ${phase.targetsNeeded}), or finish.`)
-          : `Choose a target (${phase.chosen.length + 1}/${phase.targetsNeeded}).${[...phase.highlightObjects].some((id) => c.game.state.objects[id]?.zone === "graveyard") ? " The legal targets are in a graveyard — pick one in the browser." : ""}`;
+          : `${phase.slotLabel ? `Choose a target for: ${phase.slotLabel}.` : `Choose a target (${phase.chosen.length + 1}/${phase.targetsNeeded}).`}${[...phase.highlightObjects].some((id) => c.game.state.objects[id]?.zone === "graveyard") ? " The legal targets are in a graveyard — pick one in the browser." : ""}`;
       case "confirmCast":
         // S10 playtest: say WHAT is being confirmed.
         return confirmLabel ? `${confirmLabel} — confirm?` : "Confirm?";

@@ -21,6 +21,7 @@ import {
   type MatchSpec,
   type Modifier,
   type PlayerId,
+  type RequestSource,
   type Step,
 } from "@shandalar/engine";
 import {
@@ -55,6 +56,10 @@ import { DECKS, DECK_ARCHETYPES, type DeckKey } from "@shandalar/sim/decks";
 /** S12 (Part 2b): an explicit duel — what the overworld hands the play
  * client (ADR-002 consumed from the world side): named decklists, the enemy's
  * AI profile inputs, world-life starting life, ante, and modifiers. */
+/** Post-S43: the shape of a def's target spec / effect the client reads for slots and labels (a subset of the card schema). */
+type TargetSpecLite = { count?: number | { min?: number; max?: number }; predicate?: unknown };
+type EffectLite = { type: string; target?: number; targetSpec?: number; amount?: number; keyword?: string; power?: number; toughness?: number };
+
 export interface CustomMatch {
   /** r9: `portrait` = the player's portrait slug ("you" | "mage-female" → /portrait-<slug>.png); absent = the default. */
   human: { name: string; decklist: { cardId: string; count: number }[]; portrait?: string };
@@ -125,6 +130,13 @@ export type UiPhase =
       canFinish: boolean;
       /** S26 r3: the phase answers a trigger's chooseTarget REQUEST (not a cast) — Cancel restarts it. */
       fromRequest?: true;
+      /** Post-S43: the source's target slots (widths), for the slot-wise matcher; null = one slot. */
+      slots: number[] | null;
+      /** Post-S43: a trigger request's source (the card and its effects), for the slots and the label. */
+      source?: RequestSource;
+      /** Post-S43 (Chris): WHICH effect the next pick is for, when the source's target slots are distinct
+       * ("Return to its owner's hand" · "3 damage") — absent for a single slot or an unknown source. */
+      slotLabel?: string;
     }
   | {
       kind: "confirmCast";
@@ -572,7 +584,7 @@ export class MatchController {
           const ts = (a as { targets?: ResolvedTarget[] }).targets;
           return Array.isArray(ts) && ts.every((t) => t.kind === "player" || (t.kind === "object" && this.game.state.objects[t.id]?.zone === "battlefield"));
         });
-        if (boardOnly) { this.enterTargeting("", request.actions, true); return; }
+        if (boardOnly) { this.enterTargeting("", request.actions, true, request.source); return; }
         this.phase = { kind: "dialog", request, view, selected: null };
         this.emit();
         return;
@@ -583,13 +595,16 @@ export class MatchController {
     }
   }
 
-  /** S26 r3 → r9: the variant whose targets are exactly `chosen` as a MULTISET — the enumerator emits every
-   * combination in battlefield order (the Warden's "up to two" lists [Bears, Courser], never [Courser, Bears]),
-   * and the player clicks in any order (Chris: "I have to pick targets left to right"). The committed action is
-   * the enumerated one, in its order. */
-  private exactVariant(variants: Action[], chosen: ResolvedTarget[]): Action | undefined {
+  /**
+   * S26 r3 → r9 → post-S43: WHICH variant the picks name. Targets are grouped by the source's SLOTS (a spell's
+   * `targets` specs, an ability's — `slots` is each slot's width; a trigger request has no spec and is one slot).
+   * Within a slot the order is the player's (the Warden's "up to two" is enumerated in battlefield order only —
+   * r9, Chris: "I have to pick targets left to right"); BETWEEN slots the order is the click order (Aetherbolt's
+   * bounce-then-damage — Chris, post-S43: the newer creature clicked first took the damage under a flat multiset).
+   */
+  private exactVariant(variants: Action[], chosen: ResolvedTarget[], slots: number[] | null): Action | undefined {
     const want = MatchController.targetKeys(chosen);
-    return variants.find((v) => { const have = MatchController.targetKeys((v as { targets?: ResolvedTarget[] }).targets ?? []); return have.length === want.length && MatchController.containsAll(have, want); });
+    return variants.find((v) => { const have = MatchController.targetKeys((v as { targets?: ResolvedTarget[] }).targets ?? []); return have.length === want.length && MatchController.slotsContain(have, want, slots, true); });
   }
   private static targetKeys(targets: ResolvedTarget[]): string[] { return targets.map((t) => JSON.stringify(t)); }
   /** Multiset containment: every key of `part` appears in `whole` at least as often. */
@@ -598,16 +613,52 @@ export class MatchController {
     for (const k of part) { const i = left.indexOf(k); if (i === -1) return false; left.splice(i, 1); }
     return true;
   }
-  /** The variants that could still be completed from `chosen` (a superset, as a multiset). */
-  private static compatible(variants: Action[], chosen: ResolvedTarget[]): Action[] {
+  /** Slot-wise containment: within each slot's range, the variant's targets contain the picks as a multiset
+   * (`exact`: and are no more than the picks, once the picks reach the slot). No slots = one slot = r9's multiset. */
+  private static slotsContain(have: string[], want: string[], slots: number[] | null, exact: boolean): boolean {
+    if (!slots || slots.length < 2) return exact ? have.length === want.length && MatchController.containsAll(have, want) : MatchController.containsAll(have, want);
+    let start = 0;
+    for (const width of slots) {
+      const h = have.slice(start, start + width), w = want.slice(start, start + width);
+      if (!MatchController.containsAll(h, w)) return false;
+      if (exact && h.length !== w.length) return false;
+      start += width;
+      if (start >= want.length && !exact) return true;
+    }
+    return true;
+  }
+  /** The variants that could still be completed from `chosen`. */
+  private static compatible(variants: Action[], chosen: ResolvedTarget[], slots: number[] | null): Action[] {
     const want = MatchController.targetKeys(chosen);
-    return variants.filter((v) => MatchController.containsAll(MatchController.targetKeys((v as { targets?: ResolvedTarget[] }).targets ?? []), want));
+    return variants.filter((v) => MatchController.slotsContain(MatchController.targetKeys((v as { targets?: ResolvedTarget[] }).targets ?? []), want, slots, false));
+  }
+  /** The source's target SPECS and the effects that read them: a cast's (the def's `targets` / `spellEffect`), an
+   * activation's (the ability's), or a trigger REQUEST's (the request's `source` names the card and the effects; the
+   * triggered ability with those effects is the spec). Null when unknown. */
+  private targetSpecsFor(sourceObjectId: string, action: Action, source?: RequestSource): { specs: TargetSpecLite[]; effects: EffectLite[] } | null {
+    type Ability = { kind?: string; targets?: TargetSpecLite[]; effects?: EffectLite[] };
+    if (source) {
+      const def = this.pool.get(source.cardId) as { abilities?: Ability[] } | undefined;
+      const want = JSON.stringify(source.effects);
+      const ab = def?.abilities?.find((a) => a.kind === "triggered" && JSON.stringify(a.effects ?? []) === want) ?? def?.abilities?.find((a) => a.kind === "triggered" && (a.targets ?? []).length > 0);
+      return ab?.targets?.length ? { specs: ab.targets, effects: ab.effects ?? [] } : null;
+    }
+    const def = this.pool.get(this.game.state.objects[sourceObjectId]?.cardId ?? "") as { targets?: TargetSpecLite[]; spellEffect?: EffectLite[]; abilities?: Ability[] } | undefined;
+    if (!def) return null;
+    if (action.type === "castSpell") return def.targets?.length ? { specs: def.targets, effects: def.spellEffect ?? [] } : null;
+    if (action.type === "activateAbility") { const ab = def.abilities?.[(action as { abilityIndex: number }).abilityIndex]; return ab?.targets?.length ? { specs: ab.targets, effects: ab.effects ?? [] } : null; }
+    return null;
+  }
+  /** The source's target slots (each one's width — an "up to N" is N); null = one slot. */
+  private slotsFor(sourceObjectId: string, action: Action, source?: RequestSource): number[] | null {
+    const found = this.targetSpecsFor(sourceObjectId, action, source);
+    return found ? found.specs.map((sp) => Math.max(1, typeof sp.count === "number" ? sp.count : (sp.count?.max ?? 1))) : null;
   }
 
   /** S26 r3: commit the targets chosen so far (a range spec's "done" / "no targets"). */
   finishTargeting(): void {
     if (this.phase.kind !== "targeting" || !this.phase.canFinish) return;
-    const action = this.exactVariant(this.phase.variants, this.phase.chosen);
+    const action = this.exactVariant(this.phase.variants, this.phase.chosen, this.phase.slots);
     if (!action) return;
     this.phase = { kind: "confirmCast", sourceObjectId: this.phase.sourceObjectId, action, offerManualTap: this.phase.fromRequest ? false : this.offerManualTapFor(action) };
     this.emit();
@@ -1122,7 +1173,7 @@ export class MatchController {
     this.enterTargeting(this.phase.sourceObjectId, remaining);
   }
 
-  private enterTargeting(sourceObjectId: string, variants: Action[], fromRequest = false): void {
+  private enterTargeting(sourceObjectId: string, variants: Action[], fromRequest = false, source?: RequestSource): void {
     // S26 r3: "up to N" variants differ in length — the phase runs to the LONGEST and lets the
     // player stop wherever a variant matches what's chosen (canFinish).
     const needed = Math.max(0, ...variants.map((v) => ((v as { targets?: ResolvedTarget[] }).targets ?? []).length));
@@ -1131,37 +1182,82 @@ export class MatchController {
       this.emit();
       return;
     }
+    const slots = this.slotsFor(sourceObjectId, variants[0]!, source);
     this.phase = {
       kind: "targeting",
       sourceObjectId,
       variants,
       chosen: [],
-      ...this.nextTargetHighlights(variants, []),
+      ...this.nextTargetHighlights(variants, [], slots),
       targetsNeeded: needed,
-      canFinish: !!this.exactVariant(variants, []),
+      slots,
+      canFinish: !!this.exactVariant(variants, [], slots),
       ...(fromRequest ? { fromRequest: true as const } : {}),
+      ...(source ? { source } : {}),
+      ...this.slotLabelFor(sourceObjectId, variants[0]!, 0, source),
     };
     this.emit();
+  }
+
+  /** Post-S43 (Chris): the effect the pick at `index` serves, read off the source's target SLOTS (a spell's `targets`,
+   * an ability's) and the effects that name each slot — only when there is more than one slot, so a single "any
+   * target" stays wordless. */
+  private slotLabelFor(sourceObjectId: string, action: Action, index: number, source?: RequestSource): { slotLabel?: string } {
+    const found = this.targetSpecsFor(sourceObjectId, action, source);
+    if (!found || found.specs.length < 2) return {};
+    const specs = found.specs.map((sp) => ({ count: Math.max(1, typeof sp.count === "number" ? sp.count : (sp.count?.max ?? 1)) }));
+    const effects = found.effects;
+    type Eff = EffectLite;
+    let slot = 0, seen = 0;
+    for (; slot < specs.length; slot++) { seen += Math.max(1, specs[slot]!.count ?? 1); if (index < seen) break; }
+    if (slot >= specs.length) return {};
+    const words = (e: Eff): string => {
+      switch (e.type) {
+        case "bounce": return "return to its owner's hand";
+        case "damage": return `${e.amount ?? "?"} damage`;
+        case "destroy": return "destroy";
+        case "exile": return "exile";
+        case "tapTarget": return "tap";
+        case "counter": return "counter";
+        case "modifyPT": return `${(e.power ?? 0) >= 0 ? "+" : ""}${e.power ?? 0}/${(e.toughness ?? 0) >= 0 ? "+" : ""}${e.toughness ?? 0}`;
+        case "grantKeyword": return `gains ${e.keyword ?? "a keyword"}`;
+        case "returnFromGraveyard": return "return from the graveyard";
+        case "gainLife": return `gain ${e.amount ?? "?"} life`;
+        case "loseLife": return `lose ${e.amount ?? "?"} life`;
+        case "discard": return "discard";
+        case "mill": return "mill";
+        case "draw": return "draw";
+        default: return e.type;
+      }
+    };
+    const mine = (effects ?? []).filter((e) => e.target === slot || e.targetSpec === slot).map(words); // a range slot is named by `targetSpec`
+    return { slotLabel: `${mine.length ? mine.join(", ") : `target ${slot + 1}`} (target ${slot + 1} of ${specs.length})` };
   }
 
   /** r9: the NEXT legal picks — every target a still-compatible variant carries beyond what is chosen, in any order. */
   private nextTargetHighlights(
     variants: Action[],
     chosen: ResolvedTarget[],
+    slots: number[] | null,
   ): { highlightObjects: Set<string>; highlightPlayers: Set<PlayerId> } {
     const objects = new Set<string>();
     const players = new Set<PlayerId>();
     const chosenKeys = MatchController.targetKeys(chosen);
-    for (const v of MatchController.compatible(variants, chosen)) {
+    // Post-S43: with slots, the next pick is in the slot the picks have reached — only that slot's targets glow.
+    let slotStart = 0, slotEnd = Infinity;
+    if (slots && slots.length >= 2) { let acc = 0; for (const w of slots) { if (chosen.length < acc + w) { slotStart = acc; slotEnd = acc + w; break; } acc += w; } }
+    for (const v of MatchController.compatible(variants, chosen, slots)) {
       const left = [...chosenKeys];
-      for (const t of (v as { targets?: ResolvedTarget[] }).targets ?? []) {
+      const targets = (v as { targets?: ResolvedTarget[] }).targets ?? [];
+      targets.forEach((t, i) => {
         const k = JSON.stringify(t);
-        const i = left.indexOf(k);
-        if (i !== -1) { left.splice(i, 1); continue; } // already chosen: not a next pick
+        const j = left.indexOf(k);
+        if (j !== -1 && i < chosen.length) { left.splice(j, 1); return; } // already chosen: not a next pick
+        if (i < slotStart || i >= slotEnd) return;
         if (t.kind === "object") objects.add(t.id);
         else if (t.kind === "player") players.add(t.player as PlayerId);
         else objects.add(t.id); // stack items highlight in the stack panel
-      }
+      });
     }
     return { highlightObjects: objects, highlightPlayers: players };
   }
@@ -1177,10 +1273,10 @@ export class MatchController {
     if (this.phase.kind !== "targeting") return;
     const chosen = [...this.phase.chosen, target];
     // r9: order-insensitive — the variants that still contain everything chosen (as a multiset).
-    const matches = MatchController.compatible(this.phase.variants, chosen);
+    const matches = MatchController.compatible(this.phase.variants, chosen, this.phase.slots);
     if (matches.length === 0) return; // illegal click: ignore (dimmed in UI)
     const fromRequest = this.phase.fromRequest === true;
-    const exact = this.exactVariant(matches, chosen);
+    const exact = this.exactVariant(matches, chosen, this.phase.slots);
     // Commit when the picks are complete, or when the only variant left is exactly what was chosen.
     if (chosen.length >= this.phase.targetsNeeded || (matches.length === 1 && exact)) {
       const action = exact ?? matches[0]!;
@@ -1188,12 +1284,15 @@ export class MatchController {
       this.emit();
       return;
     }
+    const { slotLabel: _drop, ...rest } = this.phase;
+    void _drop;
     this.phase = {
-      ...this.phase,
+      ...rest,
       variants: matches,
       chosen,
-      ...this.nextTargetHighlights(matches, chosen),
+      ...this.nextTargetHighlights(matches, chosen, this.phase.slots),
       canFinish: !!exact,
+      ...this.slotLabelFor(this.phase.sourceObjectId, matches[0]!, chosen.length, this.phase.source),
     };
     this.emit();
   }
