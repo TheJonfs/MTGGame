@@ -826,7 +826,9 @@ export class HeuristicAgent implements Agent {
     // ADR-060.1: attacking abandons defense — each non-vigilance attacker
     // pays the deterrence it was providing (evaluate credits the same term
     // to untapped holders; that asymmetry prices the Rats over-attack).
-    const oppCreatures = view.battlefield.filter((o) => o.controller !== me && o.power !== null);
+    // Post-S43 (Chris, book 69): a creature under a public "can't attack" (Pacifism) threatens no counter-swing — it
+    // deters nothing and adds no race risk.
+    const oppCreatures = view.battlefield.filter((o) => o.controller !== me && o.power !== null && !o.cantAttack);
     // S27 r2 (Chris: the Manafleur never swung its 7/7 into a board of 2/2s): deterrence is only worth
     // what the counter-swing could take — scale the deduction by the race risk (the opponent's
     // untapped power against our life above a margin). At 35 life facing six power the 7/7 attacks;
@@ -922,6 +924,7 @@ export class HeuristicAgent implements Agent {
       (c) =>
         c.controller === blockingPlayer &&
         !c.tapped &&
+        !c.cantBlock && // post-S43 (Chris): a Pacified creature is no wall — the Lions need not fear it
         !attackers.includes(c.id) &&
         // S23 (the Gallows Djinn's pin): never block with a creature whose own block tax is
         // lethal to its controller — the wall that kills you is no wall.

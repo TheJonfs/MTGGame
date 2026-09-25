@@ -9,14 +9,14 @@ import { viewCreatures } from "./combat-sim.js";
 const pool = loadCardPool(join(dirname(fileURLToPath(import.meta.url)), "../../../data/cards")).cards;
 const agent = () => new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35 });
 
-interface Obj { id: string; cardId: string; controller: 0 | 1; tapped?: boolean; power?: number; toughness?: number }
+interface Obj { id: string; cardId: string; controller: 0 | 1; tapped?: boolean; power?: number; toughness?: number; cantBlock?: boolean; cantAttack?: boolean }
 function mkView(o: { hand?: string[]; bf?: Obj[]; life?: [number, number]; step?: string; active?: 0 | 1; yards?: [string[], string[]]; stack?: GameView["stack"]; combat?: GameView["combat"]; librarySizes?: [number, number] }): GameView {
   const yards = o.yards ?? [[], []];
   return {
     you: 0, turn: 6, step: o.step ?? "MAIN1", activePlayer: o.active ?? 0, life: o.life ?? [20, 20], startingLife: 20,
     hand: (o.hand ?? []).map((cardId, i) => ({ objectId: `h_${cardId}_${i}`, cardId })), opponentHandCount: 3, librarySizes: o.librarySizes ?? [20, 20], mulliganCount: 0,
     combat: o.combat ?? { attackers: [], blocks: [] },
-    battlefield: (o.bf ?? []).map((b) => { const d = pool.get(b.cardId)!; const c = d.types.includes("Creature"); return { id: b.id, cardId: b.cardId, controller: b.controller, tapped: b.tapped ?? false, damage: 0, attachedTo: null, power: c ? (b.power ?? d.power ?? 0) : null, toughness: c ? (b.toughness ?? d.toughness ?? 0) : null, keywords: [...(d.keywords ?? [])] }; }),
+    battlefield: (o.bf ?? []).map((b) => { const d = pool.get(b.cardId)!; const c = d.types.includes("Creature"); return { id: b.id, ...(b.cantBlock ? { cantBlock: true } : {}), ...(b.cantAttack ? { cantAttack: true } : {}), cardId: b.cardId, controller: b.controller, tapped: b.tapped ?? false, damage: 0, attachedTo: null, power: c ? (b.power ?? d.power ?? 0) : null, toughness: c ? (b.toughness ?? d.toughness ?? 0) : null, keywords: [...(d.keywords ?? [])] }; }),
     stack: o.stack ?? [],
     graveyards: [yards[0], yards[1]],
     graveyardObjects: [yards[0].map((cardId, i) => ({ objectId: `g0_${cardId}_${i}`, cardId })), yards[1].map((cardId, i) => ({ objectId: `g1_${cardId}_${i}`, cardId }))],
@@ -180,5 +180,17 @@ describe("the book of shame, S40 — the flood's legends and grounds", () => {
     for (const n of [0, 1, 3]) expect(walk(n), `${n} creatures`).toBeGreaterThan(a.scorePriorityAction(v(n), { type: "pass" }) + 1);
     expect(walk(0)).toBeLessThan(drake(0));
     expect(walk(3)).toBeGreaterThan(drake(3));
+  });
+
+  it("book 69 (post-S43, Chris: the Lions that would not swing): a 2/1 attacks into a lone 5/5 that CANNOT block (Pacified) with the opponent's hand empty — the blocker model skips a public can't-block; the same 5/5 unpacified holds the Lions home", async () => {
+    const a = agent(), b = agent(); // two agents: the attack-set memo is keyed on attackers + life, not the board
+    const bf = (pacified: boolean): Obj[] => [{ id: "lion", cardId: "savannah_lions", controller: 0 }, { id: "usher", cardId: "the_usher", controller: 1, ...(pacified ? { cantBlock: true, cantAttack: true } : {}) }];
+    const walled = mkView({ life: [20, 20], step: "DECLARE_ATTACKERS", bf: bf(false) });
+    const open = mkView({ life: [20, 20], step: "DECLARE_ATTACKERS", bf: bf(true) });
+    (open as { opponentHandCount: number }).opponentHandCount = 0;
+    expect(await a.scoreAttackSet(walled, viewCreatures(walled) as never, 0, ["lion"])).toBeLessThan(0); // into an untapped 5/5: the Lions die for nothing
+    expect(await b.scoreAttackSet(open, viewCreatures(open) as never, 0, ["lion"])).toBeGreaterThan(0); // the wall cannot stand: two damage for free
+    const req = { player: 0, purpose: "declareAttacker", actions: [{ type: "doneDeclaringAttackers" }, { type: "declareAttacker", objectId: "lion" }] } as unknown as ActionRequest;
+    expect(await b.chooseAction(open, req)).toEqual({ type: "declareAttacker", objectId: "lion" });
   });
 });

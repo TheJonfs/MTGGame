@@ -46,7 +46,7 @@ for (const color of PETAL_ORDER) {
   const law = petalLawModifier(catalog, color);
   const cells: string[] = [];
   for (const variant of [{ name: "law", mods: law ? [law] : [] }, { name: "lawless", mods: [] as Modifier[] }]) {
-    let bossWins = 0, total = 0;
+    let bossWins = 0, total = 0, sigCasts = 0, sigGames = 0, turnsSum = 0;
     for (const ref of reference) {
       for (let i = 0; i < games; i++) {
         if (i % 10 === 0) await new Promise((r) => setTimeout(r, 0));
@@ -65,13 +65,16 @@ for (const color of PETAL_ORDER) {
         try {
           const r = await runMatch(spec, pool, [a0, a1]);
           if (r.winner === 1) bossWins += 1;
-          total += 1;
+          total += 1; turnsSum += r.turns;
+          // Post-S43 (Chris: "the petal bosses never cast their signature"): the signature's casts per game.
+          const n = r.facts.spellsCast[boss.signature]?.[1] ?? 0;
+          sigCasts += n; if (n > 0) sigGames += 1;
         } catch (e) {
           console.log(`    ERROR ${color} ${variant.name} vs ${ref.name} seed ${seed}: ${(e as Error).message}`);
         }
       }
     }
-    cells.push(`${variant.name} ${((100 * bossWins) / Math.max(1, total)).toFixed(0)}%`);
+    cells.push(`${variant.name} ${((100 * bossWins) / Math.max(1, total)).toFixed(0)}% (signature cast in ${((100 * sigGames) / Math.max(1, total)).toFixed(0)}% of games, ${(sigCasts / Math.max(1, total)).toFixed(2)}/game; ${(turnsSum / Math.max(1, total)).toFixed(1)} turns)`);
   }
   console.log(`  ${petalLawName(catalog, color) ?? color} petal (${color}) — ${boss.name} [${boss.pair}]: kill rate ${cells.join(" · ")}`);
 }

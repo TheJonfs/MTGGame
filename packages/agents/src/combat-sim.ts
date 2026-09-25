@@ -32,6 +32,8 @@ export interface SimObject {
   keywords: string[];
   tapped: boolean;
   damage: number;
+  /** Post-S43: a public "can't block" (Pacifism) — the blocker model skips it. */
+  cantBlock?: boolean;
 }
 
 export interface CombatOutcome {
@@ -67,6 +69,7 @@ export function viewCreatures(view: GameView): SimObject[] {
       keywords: o.keywords,
       tapped: o.tapped,
       damage: o.damage,
+      ...(o.cantBlock ? { cantBlock: true } : {}),
     }));
 }
 

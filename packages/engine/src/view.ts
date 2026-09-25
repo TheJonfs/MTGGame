@@ -37,6 +37,10 @@ export interface GameView {
     power: number | null;
     toughness: number | null;
     keywords: string[];
+    /** Post-S43 (Chris: the Lions feared a Pacified Usher): the restrictions a public aura or effect puts on it —
+     * "can't block" / "can't attack" — so an agent's opponent model never counts a wall that cannot stand. */
+    cantBlock?: boolean;
+    cantAttack?: boolean;
   }[];
   /** S32: `targets` (public — the stack's targets are announced) so a creature under fire is visible
    * to the agents: the Escort's save, the Altar's "doomed" read (which had been blind live since S29). */
@@ -90,6 +94,8 @@ export function buildView(ctx: EngineCtx, player: PlayerId): GameView {
         power: isCreature ? chars.power : null,
         toughness: isCreature ? chars.toughness : null,
         keywords: [...chars.keywords].sort(),
+        ...(chars.cantBlock ? { cantBlock: true } : {}),
+        ...(chars.cantAttack ? { cantAttack: true } : {}),
       };
     }),
     stack: s.stack.map((item) => ({
