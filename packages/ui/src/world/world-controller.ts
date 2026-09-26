@@ -443,6 +443,13 @@ export class WorldController {
 
   loadText(text: string): void {
     this.world = deserializeWorld(text);
+    // Post-S43 (Chris's first flood, the save from before the fix): a PHASE-TWO save made when the powers did not ride
+    // into the flood gets them now — the profile's cut colours, unlocked once, idempotent. A world-level rule would
+    // need the legacy, which lives outside the save; this is the one place both are in hand.
+    const restored = (this.world.phase ?? 1) >= 2 ? cutColors(this.legacy()).filter((c) => !this.world!.powers.unlocked.includes(c)) : [];
+    for (const c of restored) this.world.powers.unlocked.push(c);
+    const restoredNote = restored.length ? ` The five powers are yours again (${restored.join(", ")}) — knowledge survives the flood.` : "";
+    if (restored.length) this.autosave();
     if (this.world.gameOver) {
       this.screen = { kind: "gameOver", fatal: this.world.duels[this.world.duels.length - 1] ?? null };
     } else if (insideCorolla(this.world) && this.catalog.corolla) {
@@ -460,8 +467,8 @@ export class WorldController {
         return;
       }
       this.screen = town
-        ? { kind: "town", town, stock: rollShopStock(this.world, town, this.pool, this.knobs), notice: "Loaded." }
-        : { kind: "map", preview: null, previewTarget: null, walking: false, notice: "Loaded." };
+        ? { kind: "town", town, stock: rollShopStock(this.world, town, this.pool, this.knobs), notice: `Loaded.${restoredNote}` }
+        : { kind: "map", preview: null, previewTarget: null, walking: false, notice: `Loaded.${restoredNote}` };
     }
     this.emit();
   }

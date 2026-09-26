@@ -1015,4 +1015,29 @@ describe("post-S43 (Chris's first flood): the powers ride into phase two; the ta
     expect(poured.length).toBeGreaterThan(20);
     for (const line of poured) expect(line, line).not.toMatch(/Spire|Bastion|Chapel|Reach|Mox|Vault|door in the|sleepless|Whitewell|crossed currents|Five powers ride/);
   });
+
+  it("a phase-two save made BEFORE the fix (no powers) gets them on load — the profile's cut colours, once, with a notice; a phase-one save is untouched", () => {
+    const c = new WorldController(pool, catalog, memStorage());
+    c.stepMs = 0;
+    for (const col of ["W", "U", "B", "R", "G"] as const) c.devGrantCutting(col);
+    c.enterFlood({ difficulty: "standard", seed: 4344, name: "Flood" });
+    c.floodContinue();
+    for (const [tab, pick] of [["W", "savannah_lions"], ["U", "wind_drake"], ["B", "typhoid_rats"], ["R", "goblin_piker"], ["G", "grizzly_bears"]] as const) { c.salvageTab(tab); c.salvagePick(pick); }
+    c.salvageToPair(); c.salvagePair(["W", "R"]); c.salvageBegin(); c.editorClose();
+    c.world!.powers.unlocked = []; // the old save's shape
+    const stale = c.saveText();
+    c.loadText(stale);
+    expect([...c.world!.powers.unlocked].sort()).toEqual(["B", "G", "R", "U", "W"]);
+    expect((c.screen as { notice: string | null }).notice).toMatch(/Loaded\. The five powers are yours again/);
+    c.loadText(c.saveText()); // idempotent: nothing to restore, the plain notice
+    expect(c.world!.powers.unlocked).toHaveLength(5);
+    expect((c.screen as { notice: string | null }).notice).toBe("Loaded.");
+    // A phase-one world with a partial legacy keeps what applyLegacy gave it and gains nothing on load.
+    const d = new WorldController(pool, catalog, memStorage());
+    d.devGrantCutting("W");
+    d.newGame({ starter: "white", difficulty: "standard", seed: 4345 });
+    const before = [...d.world!.powers.unlocked];
+    d.loadText(d.saveText());
+    expect(d.world!.powers.unlocked).toEqual(before);
+  });
 });
