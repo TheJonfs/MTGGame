@@ -328,9 +328,9 @@ export function advance(
       if (fixed?.kind === "lair" && fixed.opponentId) {
         const resident = world.opponents.find((o) => o.id === fixed.opponentId);
         if (resident && !resident.gone) {
-          // S43 (ADR-136): a FLOOD lair is the S14 shape again — a certain encounter with its resident (the parley,
-          // one duel, the manalink at the end), not a crawl. Phase one's lairs stay lair-dungeons.
-          if (parseFloodLairId(fixed.contentId)) { events.push({ type: "encounter", encounter: encounterOf(resident, cell, "lair") }); break; }
+          // S43 built the flood's lairs as the S14 certain encounter; post-S43 (Chris's first flood: "make those into
+          // dungeons, so players can pick up gold and cards") they are LAIR-DUNGEONS like phase one's — the crawl, the
+          // caches, the escrow, the resident at the deep end, and the manalink paid with the prize on his fall.
           events.push({ type: "dungeonEntry", dungeonId: `lair_${fixed.opponentId}`, kind: "lair", name: fixed.name ?? "A lair", at: { ...cell }, residentCatalogId: resident.catalogId });
           break;
         }

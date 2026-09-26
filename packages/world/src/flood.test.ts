@@ -95,6 +95,26 @@ describe("S41 (ADR-130): the flood's run — the court's duel, the falls, the go
     for (const r of lordStatus(w1, catalog, hard)) expect(r.base, r.lordName).toBe(catalog.strongholdContent!.find((c) => c.id === r.strongholdId)!.lord.baseLife);
   });
 
+  it("post-S43 (Chris's first flood; floodClockSlack ⚠): a phase-two world's first siege threat schedules from a longer grace, and its lords grow a life every 150 steps instead of 100; phase one's clocks are untouched", async () => {
+    const { siegeEntry } = await import("./siege.js");
+    const { lordGrowth } = await import("./stronghold.js");
+    const k = defaultKnobs();
+    expect(k.floodClockSlack).toBe(1.5);
+    const w2 = world(4298);
+    const w1 = newWorld({ seed: 4298, catalog, starter: "white" });
+    // The grace: every town's first threat lands at or after grace × slack on a flood map, at or after the grace at phase one.
+    for (const t of w2.map.towns) expect(siegeEntry(w2, k, t).nextThreatStep, `${t.name} (flood)`).toBeGreaterThanOrEqual(Math.round(k.siegeGraceSteps * k.floodClockSlack));
+    for (const t of w1.map.towns) expect(siegeEntry(w1, k, t).nextThreatStep, `${t.name} (phase one)`).toBeGreaterThanOrEqual(k.siegeGraceSteps);
+    // The same flood town under slack 1: exactly the slack's steps sooner (the same seeded phase; still "the first").
+    const w3 = world(4298);
+    const t0 = w2.map.towns[0]!;
+    expect(siegeEntry(w2, k, t0).nextThreatStep - siegeEntry(w3, { ...k, floodClockSlack: 1 }, t0).nextThreatStep).toBe(Math.round(k.siegeGraceSteps * 0.5));
+    // The growth: at 300 steps, phase one's lords have grown 3, the flood's 2.
+    w1.player.stepsTaken = 300; w2.player.stepsTaken = 300;
+    expect(lordGrowth(w1, k)).toBe(3);
+    expect(lordGrowth(w2, k)).toBe(2);
+  });
+
   it("walking onto a High Ground stops at the court's threshold (until it falls); a flood stronghold's threshold names the flood's seat; the rail's lords are the flood's", () => {
     const w = world();
     const ground = w.map.strongholds.find((f) => f.kind === "ground")!;

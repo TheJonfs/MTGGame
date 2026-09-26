@@ -1214,12 +1214,9 @@ export class HeuristicAgent implements Agent {
     if (mine.length === 0) return true;
     const best = Math.max(...mine.map((o) => o.power ?? 0));
     if (best >= (view.librarySizes[opp] ?? 99) && best > 0) return false; // lethal by library
-    const theirs = view.battlefield.filter((o) => o.controller !== me && o.power !== null);
-    const dying = mine.some((o) => this.creatureIsDoomed(view, o.id));
-    if (!dying) return true;
-    const untappedBlockers = mine.filter((o) => !o.tapped).length;
-    if (untappedBlockers <= 1 && mine.length < theirs.length) return true; // never the last blocker while behind
-    return false;
+    // Post-S43 (Chris: a creature about to die to removal was never cashed): a DOOMED creature is fed whatever the
+    // board — the chooser takes the doomed one first, so the "last blocker" it would have been is already lost.
+    return !mine.some((o) => this.creatureIsDoomed(view, o.id));
   }
   /** A creature of ours that is about to die: in combat against lethal power, or the target of an
    * opposing harmful spell on the stack. */
@@ -1233,7 +1230,19 @@ export class HeuristicAgent implements Agent {
       const asBlocker = combat.blocks.filter((b) => b.blocker === id).reduce((n, b) => n + powerOf(b.attacker), 0);
       if (Math.max(asAttacker, asBlocker) + o.damage >= o.toughness) return true;
     }
-    return view.stack.some((it) => it.controller !== view.you && (((it as { targets?: { kind: string; id?: string }[] }).targets) ?? []).some((t) => t.kind === "object" && t.id === id));
+    return view.stack.some((it) => {
+      if (it.controller === view.you) return false;
+      if ((((it as { targets?: { kind: string; id?: string }[] }).targets) ?? []).some((t) => t.kind === "object" && t.id === id)) return true;
+      // Post-S43: a SWEEPER on the stack dooms it too — damage to all creatures reaching its toughness, or destroy-all.
+      const effects = this.def(it.cardId)?.spellEffect ?? [];
+      return effects.some((e) => {
+        const eff = e as { type: string; scope?: string; amount?: number };
+        if (eff.scope !== "allCreatures") return false;
+        if (eff.type === "destroyAll") return !o.keywords.includes("indestructible");
+        if (eff.type === "damageAll") return (eff.amount ?? 0) + o.damage >= (o.toughness ?? 99);
+        return false;
+      });
+    });
   }
 
   /** S28 (ADR-098, Brainstorm): an INSTANT whose whole payload is draw / put-back changes no board —
@@ -1514,7 +1523,8 @@ export class HeuristicAgent implements Agent {
       const pow = (id: string) => view.battlefield.find((o) => o.id === id)?.power ?? 0;
       const biggest = [...cands].sort((a, b) => pow(b.objectId) - pow(a.objectId))[0];
       if (biggest && pow(biggest.objectId) >= (view.librarySizes[opp] ?? 99)) return biggest;
-      const doomed = cands.find((a) => this.creatureIsDoomed(view, a.objectId));
+      // Post-S43: of several doomed (a sweeper on the stack), the biggest body mills the most.
+      const doomed = cands.filter((a) => this.creatureIsDoomed(view, a.objectId)).sort((a, b) => pow(b.objectId) - pow(a.objectId))[0];
       if (doomed) return doomed;
     }
     const candidates = request.actions.filter((a) => a.type === "sacrifice") as { type: string; objectId: string }[];

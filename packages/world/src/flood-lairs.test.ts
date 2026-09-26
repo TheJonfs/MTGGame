@@ -7,7 +7,9 @@ import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
 import { ROAD_DECKS } from "@shandalar/sim/road-decks";
 import { loadCatalog } from "./loader.js";
 import { newWorld, deserializeWorld, serializeWorld, maxWorldLife, worldKnobs, type WorldState } from "./state.js";
-import { advance, applyDuelResult, parley, prepareDuel, type Encounter } from "./journey.js";
+import { advance, awardFloodLair, prepareDuel, type Encounter } from "./journey.js";
+import { applyInteriorDuel, clearDungeon, dungeonDuelSpec, floodLairOfRun, generateDungeonRun, lairGuardian, lairPrizeRoll } from "./dungeon.js";
+import { enemyDeck } from "./catalog.js";
 import { fixedPointAt, manhattan, regionAt, type FixedPoint } from "./map.js";
 import { legacyCarry, PETAL_ORDER } from "./corolla.js";
 import { assembleSalvageDeck } from "./salvage.js";
@@ -88,78 +90,98 @@ describe("S43 (ADR-136) — the flood's lairs: generation", () => {
   });
 });
 
-describe("S43 — the flood's lairs: the threshold, the duel, the prize (fuzz before fixtures: the fifteen lair duels with the post-lords references as pilots, replays byte-exact)", () => {
-  it("fuzz: every lair on two maps (WR and UB pilots) — the certain encounter, the resident at its tier's phase-two row + the lair bonus, the duel terminates and replays exactly, the result applies; a WIN pays the lair's link once", async () => {
+describe("S43 → post-S43 — the flood's lairs are LAIR-DUNGEONS: the threshold, the crawl's guardian at the phase-two row, the prize with the manalink (fuzz before fixtures: the fifteen guardian duels with the post-lords references as pilots, replays byte-exact)", () => {
+  /** The lair's run generated as the controller does, and the guardian's spec as it builds it (lairGuardian + the bonus + the empowerment). */
+  const guardianOf = (w: WorldState, lair: FixedPoint) => {
+    const knobs = worldKnobs(w);
+    const resident = w.opponents.find((o) => o.id === lair.opponentId)!;
+    const { kind, color } = parseFloodLairId(lair.contentId)!;
+    const run = generateDungeonRun(w, catalog, knobs, pool, { dungeonId: `lair_${resident.id}`, kind: "lair", color, enteredFrom: { ...lair.at }, residentCatalogId: resident.catalogId, small: true });
+    w.activeDungeon = run;
+    const tmpl = catalog.opponents.find((o) => o.id === resident.catalogId)!;
+    const deck = enemyDeck(catalog, tmpl.deck, w.phase);
+    const g = lairGuardian(w, catalog, knobs, run);
+    const spec = dungeonDuelSpec(w, catalog, knobs, run, { kind: "guardian", name: tmpl.name, decklist: deck.decklist, archetype: deck.archetype, life: g.life, color }, [], new WorldRng(w.rng), g.extraModifiers);
+    return { knobs, run, tmpl, spec, kind, color, resident };
+  };
+
+  it("stepping onto a flood lair opens the DUNGEON threshold (kind lair, the resident named), not a parley; the guardian fights at the tier's phase-two row + the lair bonus with its entrance basics; the run's colour is the territory's", () => {
+    const w = floodWorld(4310);
+    for (const lair of lairsOf(w)) {
+      const events = stepOntoLair(w, lair);
+      const entry = events.find((e) => e.type === "dungeonEntry");
+      expect(entry, `${lair.contentId}: ${events.map((e) => e.type).join(",")}`).toBeTruthy();
+      if (!entry || entry.type !== "dungeonEntry") continue;
+      expect(entry.kind).toBe("lair");
+      expect(entry.name).toBe(lair.name);
+      expect(entry.residentCatalogId).toBe(w.opponents.find((o) => o.id === lair.opponentId)!.catalogId);
+      expect(events.some((e) => e.type === "encounter")).toBe(false);
+      const { knobs, run, tmpl, spec, kind, color } = guardianOf(w, lair);
+      expect(run.kind).toBe("lair");
+      expect(tmpl.tier).toBe(kind === "hearthstead" ? 2 : 3);
+      const row = resolveMatchup(tmpl, knobs, null, 2);
+      expect(spec.enemyLife, `${lair.contentId} ${tmpl.name}`).toBe(row.life + knobs.lairResidentLifeBonus);
+      const basics = spec.spec.modifiers.filter((m) => m.type === "permanentOnBattlefield" && m.player === 1).map((m) => (m as { cardId: string }).cardId);
+      expect(basics, `${lair.contentId}: the entrance`).toEqual(row.entrance);
+      expect(floodLairOfRun(w, run)?.color).toBe(color);
+      w.activeDungeon = null;
+    }
+  });
+
+  it("fuzz: every lair's GUARDIAN duel on two maps (WR and UB pilots) terminates and replays byte-exact; a WIN pays the lair's link with the prize (once), a loss leaves the resident and pays nothing", async () => {
     let fought = 0, won = 0;
     for (const [seed, pair, key] of [[4310, ["W", "R"], "salvageWRLords"], [4311, ["U", "B"], "salvageUBLords"]] as const) {
       const road = ROAD_DECKS[key]!;
       const w = floodWorld(seed, [pair[0], pair[1]] as ["W", "R"], road.decklist);
-      const knobs = defaultKnobs();
       for (const lair of lairsOf(w)) {
-        const events = stepOntoLair(w, lair);
-        const enc = events.find((e) => e.type === "encounter");
-        expect(enc, `${lair.contentId}: ${events.map((e) => e.type).join(",")}`).toBeTruthy();
-        if (!enc || enc.type !== "encounter") continue;
-        expect(enc.encounter.contact).toBe("lair");
-        expect(enc.encounter.fleeing).toBe(false);
-        expect(parley(w, catalog, enc.encounter, "buyoff", {}, { pool }).type).toBe("refused"); // a lair is held, not passed
-        const out = parley(w, catalog, enc.encounter, "fight", {}, { pool });
-        expect(out.type).toBe("fight");
-        if (out.type !== "fight") continue;
-        const { duel } = out;
-        const tmpl = catalog.opponents.find((o) => o.id === enc.encounter.catalogId)!;
-        const { kind, color } = parseFloodLairId(lair.contentId)!;
-        expect(tmpl.tier).toBe(kind === "hearthstead" ? 2 : 3);
-        // The resident's row: the phase-two column through the resolver (row offsets — ADR-119's Ysolde −4 — included) + the lair bonus.
-        expect(duel.enemy.worldLife, `${lair.contentId} ${tmpl.name}`).toBe(resolveMatchup(tmpl, worldKnobs(w), null, 2).life + knobs.lairResidentLifeBonus);
-        expect(duel.enemy.worldLife).toBeGreaterThan(resolveMatchup(tmpl, worldKnobs(w), null, 1).life); // harder than phase one's row
+        const { knobs, run, tmpl, spec, kind, color, resident } = guardianOf(w, lair);
         const linksBefore = w.manalinks.length, maxBefore = maxWorldLife(w);
-        const a0: Agent = new HeuristicAgent(duel.seed * 2 + 1, pool, difficultyProfile("journeyman", road.archetype, duel.spec.players[1]!.decklist));
-        const a1: Agent = new HeuristicAgent(duel.seed * 2 + 2, pool, difficultyProfile(duel.enemy.difficulty, duel.enemy.archetype, duel.spec.players[0]!.decklist));
-        const result = await runMatch(duel.spec, pool, [a0, a1]);
+        const a0: Agent = new HeuristicAgent(spec.spec.seed * 2 + 1, pool, difficultyProfile("journeyman", road.archetype, spec.spec.players[1]!.decklist));
+        const a1: Agent = new HeuristicAgent(spec.spec.seed * 2 + 2, pool, difficultyProfile("master", "midrange", spec.spec.players[0]!.decklist));
+        const result = await runMatch(spec.spec, pool, [a0, a1]);
         expect(result.reason).toBeTruthy();
         const flat = (d: { cardId: string; count: number }[]) => d.flatMap((e) => Array<string>(e.count).fill(e.cardId));
-        const replayed = await replayGame(pool, [flat(duel.spec.players[0]!.decklist), flat(duel.spec.players[1]!.decklist)], result.log, duel.spec.rules as Parameters<typeof replayGame>[3], duel.spec.modifiers);
+        const replayed = await replayGame(pool, [flat(spec.spec.players[0]!.decklist), flat(spec.spec.players[1]!.decklist)], result.log, spec.spec.rules as Parameters<typeof replayGame>[3], spec.spec.modifiers);
         expect(replayed).toBe(result.finalStateSerialized);
-        const rec = applyDuelResult(w, catalog, duel, result);
+        const out = applyInteriorDuel(w, knobs, run, result, undefined, catalog);
         fought += 1;
-        const resident = w.opponents.find((o) => o.id === lair.opponentId)!;
-        if (result.winner === 0) {
+        if (out.type === "win") {
           won += 1;
-          expect(resident.gone && resident.goneReason === "defeated").toBe(true);
-          expect(rec.lairPrize).toBeTruthy();
+          // The controller's victory branch, in the world's terms: the prize room + the manalink, the resident felled.
+          const fl = floodLairOfRun(w, run)!;
+          const note = awardFloodLair(w, knobs, catalog, fl.site.contentId!, { kind: fl.kind, color: fl.color }, fl.site.name ?? "the lair");
+          const paid = clearDungeon(w, run, lairPrizeRoll(w, pool, run.dungeonId));
+          resident.gone = true; resident.goneReason = "defeated";
+          expect(paid.paidGold).toBeGreaterThanOrEqual(30);
+          expect(paid.paidCards.length).toBeGreaterThanOrEqual(2);
           const prize = FLOOD_LAIR_PRIZE[kind];
           expect(w.manalinks.length).toBe(linksBefore + prize.count);
-          const mine = w.manalinks.slice(linksBefore);
-          expect(mine.every((m) => m.lair === lair.contentId && m.town === -1 && m.color === color && m.kind === prize.kind)).toBe(true);
-          if (prize.kind === "life") expect(maxWorldLife(w)).toBe(maxBefore + 2);
+          expect(w.manalinks.slice(linksBefore).every((m) => m.lair === lair.contentId && m.town === -1 && m.color === color && m.kind === prize.kind)).toBe(true);
+          if (prize.kind === "life") { expect(maxWorldLife(w)).toBe(maxBefore + 2); expect(note).toMatch(/two life manalinks — your maximum world life rises by 2/); }
           else expect(manalinkModifiers(w).some((m) => m.cardId === { W: "plains", U: "island", B: "swamp", R: "mountain", G: "forest" }[color])).toBe(true);
           expect(floodRun(w).lairs?.[lair.contentId!]).toMatchObject({ kind: prize.kind, color });
-          // Once: stepping back onto the lair is an ordinary cell now.
-          expect(stepOntoLair(w, lair).some((e) => e.type === "encounter")).toBe(false);
+          expect(awardFloodLair(w, knobs, catalog, fl.site.contentId!, { kind: fl.kind, color: fl.color }, "again")).toMatch(/already paid/); // once
+          expect(stepOntoLair(w, lair).some((e) => e.type === "dungeonEntry" || e.type === "encounter")).toBe(false); // an ordinary cell now
         } else {
-          expect(resident.gone).toBe(false); // a lair's resident stays
+          expect(resident.gone).toBe(false);
           expect(w.manalinks.length).toBe(linksBefore);
-          expect(rec.lairPrize).toBeUndefined();
+          expect(out.type === "loss" && out.ejected).toBe(true); // an interior loss ejects (the controller resets the run)
+          if (w.gameOver) { w.gameOver = false; w.player.worldLife = 10; }
         }
-        if (w.gameOver) { w.gameOver = false; w.player.worldLife = 10; } // keep the fuzz walking
+        w.activeDungeon = null;
+        expect(tmpl).toBeTruthy();
       }
     }
     expect(fought).toBe(30);
-    console.log(`S43 lair fuzz: ${fought} duels, ${won} won by the post-lords pilots`);
-    // The save round-trip carries the links, the paid lairs and the felled residents.
+    console.log(`post-S43 lair-dungeon fuzz: ${fought} guardian duels, ${won} won by the post-lords pilots`);
   }, 600_000);
 
   it("the Landing's basic is in play at the NEXT duel (any encounter); a lair's link is never suspended by a siege; the save carries links and paid lairs", async () => {
     const w = floodWorld(4312);
     const landing = lairsOf(w).find((l) => l.contentId === floodLairId("landing", "W"))!;
-    const enc = stepOntoLair(w, landing).find((e) => e.type === "encounter");
-    if (!enc || enc.type !== "encounter") throw new Error("no encounter");
-    const out = parley(w, catalog, enc.encounter, "fight", {}, { pool });
-    if (out.type !== "fight") throw new Error("no fight");
-    const win = { winner: 0 as const, reason: "LIFE" as const, turns: 9, finalLife: [6, 0] as [number, number], facts: { damageDealt: [0, 0] as [number, number], creaturesLost: [0, 0] as [number, number], cardsDrawn: [0, 0] as [number, number], spellsCast: {}, ante: [[], []] as [string[], string[]] }, log: [], finalStateSerialized: "" };
-    const rec = applyDuelResult(w, catalog, out.duel, win as never);
-    expect(rec.lairPrize).toMatch(/^The ground stays under you\. The .* Landing: a manalink — every duel now starts with a bonus Plains on your battlefield\.$/);
+    const knobs = worldKnobs(w);
+    const rec = awardFloodLair(w, knobs, catalog, landing.contentId!, { kind: "landing", color: "W" }, landing.name ?? "the lair");
+    expect(rec).toMatch(/^The ground stays under you\. The .* Landing: a manalink — every duel now starts with a bonus Plains on your battlefield\.$/);
     expect(w.manalinks).toEqual([{ color: "W", town: -1, lair: "lair:landing:W", kind: "basic" }]);
     // The next duel — any roamer — carries the Plains on the player's side.
     const roamer = w.opponents.find((o) => !o.fixedAt)!;
@@ -173,24 +195,19 @@ describe("S43 — the flood's lairs: the threshold, the duel, the prize (fuzz be
     const back = deserializeWorld(serializeWorld(w));
     expect(back.manalinks).toEqual(w.manalinks);
     expect(floodRun(back).lairs?.["lair:landing:W"]).toBeTruthy();
-    expect(back.opponents.find((o) => o.id === landing.opponentId)?.goneReason).toBe("defeated");
-    // A Wellhouse: +2 maximum world life, at once.
+    // A Wellhouse: +2 maximum world life, at once, worded as two.
     const well = lairsOf(w).find((l) => l.contentId === floodLairId("wellhouse", "R"))!;
     const max0 = maxWorldLife(w);
-    const e3 = stepOntoLair(w, well).find((e) => e.type === "encounter");
-    if (!e3 || e3.type !== "encounter") throw new Error("no encounter");
-    const o3 = parley(w, catalog, e3.encounter, "fight", {}, { pool });
-    if (o3.type !== "fight") throw new Error("no fight");
-    const rec3 = applyDuelResult(w, catalog, o3.duel, win as never);
+    const rec3 = awardFloodLair(w, knobs, catalog, well.contentId!, { kind: "wellhouse", color: "R" }, well.name ?? "the lair");
     expect(maxWorldLife(w)).toBe(max0 + 2);
-    expect(rec3.lairPrize).toMatch(/^The water gives back a little of what it took\. The .* Wellhouse: two life manalinks — your maximum world life rises by 2\.$/); // post-S43: the note counts its links
+    expect(rec3).toMatch(/^The water gives back a little of what it took\. The .* Wellhouse: two life manalinks — your maximum world life rises by 2\.$/);
     expect(fixedPointAt(w.map, well.at)?.contentId).toBe("lair:wellhouse:R");
     expect(regionAt(w.map, well.at).color).toBe("R");
   });
 });
 
 describe("S43 — the quest board beside the lairs", () => {
-  it("a phase-two town never posts a RETRIEVAL (its lairs have no prize room); the other kinds still roll manalinks of both kinds at tier 2+ (the phase-one rules, untouched)", async () => {
+  it("a phase-two board posts every kind — retrievals too, now the lairs are dungeons with a prize room (post-S43) — and rolls manalinks of both kinds at tier 2+ (the phase-one rules, untouched)", async () => {
     const { townOffers } = await import("./quests.js");
     const w = floodWorld(4313);
     const knobs = worldKnobs(w);
@@ -199,12 +216,12 @@ describe("S43 — the quest board beside the lairs", () => {
     for (const town of w.map.towns) {
       for (let epoch = 0; epoch < 3; epoch++) {
         w.player.stepsTaken = epoch * knobs.shopRefreshSteps;
-        for (const o of townOffers(w, catalog, town, knobs, pool)) { offers += 1; kinds.add(o.kind); if (o.reward.manalink) manalinks += 1; expect(o.kind).not.toBe("retrieval"); }
+        for (const o of townOffers(w, catalog, town, knobs, pool)) { offers += 1; kinds.add(o.kind); if (o.reward.manalink) manalinks += 1; if (o.kind === "retrieval") expect(o.retrievalDungeonId).toMatch(/^lair_/); }
       }
     }
     expect(offers).toBeGreaterThan(20);
     expect(manalinks).toBeGreaterThan(0);
-    expect([...kinds].sort()).toEqual(["bounty", "cardCourier", "courier"]);
+    expect([...kinds].sort()).toEqual(["bounty", "cardCourier", "courier", "retrieval"]);
     console.log(`S43 quest board (one phase-two map, every town × 3 epochs): ${offers} offers, ${manalinks} pay a manalink (${(100 * manalinks / offers).toFixed(0)}%); kinds ${[...kinds].sort().join(", ")}`);
   });
 });

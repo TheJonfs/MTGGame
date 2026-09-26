@@ -90,7 +90,7 @@ export function scheduleNextThreat(world: WorldState, knobs: KnobValues, town: T
   // scheduling from the grace) takes a wide phase — U(0.25, 1.75)×interval — so a ring's worth of
   // first threats spreads across a whole interval instead of bunching into the ±25% band.
   // Subsequent threats keep the tight cadence (the town has a rhythm once it has a history).
-  const first = epoch === 0 && baseStep === knobs.siegeGraceSteps;
+  const first = epoch === 0 && baseStep >= knobs.siegeGraceSteps; // post-S43: the flood's longer grace is still "the first"
   const factor = first ? 0.25 + rng.float() * 1.5 : 0.75 + rng.float() * 0.5;
   return baseStep + Math.max(1, Math.round(interval * factor));
 }
@@ -144,7 +144,9 @@ export function siegeEntry(world: WorldState, knobs: KnobValues, town: Town): Si
   if (!e) {
     // S22 playtest r3: the opening grace — the first threat schedules from siegeGraceSteps,
     // not step 0 (Last Chapel fell before Chris had heard its name).
-    e = { townIndex: town.index, epoch: 0, status: "quiet", nextThreatStep: scheduleNextThreat(world, knobs, town, 0, knobs.siegeGraceSteps) };
+    // Post-S43: a phase-two world's grace runs longer (floodClockSlack).
+    const grace = Math.round(knobs.siegeGraceSteps * ((world.phase ?? 1) >= 2 ? knobs.floodClockSlack : 1));
+    e = { townIndex: town.index, epoch: 0, status: "quiet", nextThreatStep: scheduleNextThreat(world, knobs, town, 0, grace) };
     sieges.push(e);
   }
   return e;

@@ -1041,3 +1041,81 @@ describe("post-S43 (Chris's first flood): the powers ride into phase two; the ta
     expect(d.world!.powers.unlocked).toEqual(before);
   });
 });
+
+describe("post-S43 (Chris's first flood): the flood's lairs are LAIR-DUNGEONS through the controller", () => {
+  it("the dev teleport → the threshold is a dungeon telegraph naming the lair → the run is the territory's colour → the resident guards the deep end at the phase-two row + the lair bonus with its entrance → the fall pays the prize room AND the manalink", async () => {
+    const { runMatch } = await import("@shandalar/engine");
+    const { HeuristicAgent, difficultyProfile } = await import("@shandalar/agents");
+    const { resolveMatchup, parseFloodLairId, fixedPointAt, empowermentModifiers, reachedTiers } = await import("@shandalar/world");
+    const c = new WorldController(pool, catalog, memStorage());
+    c.stepMs = 0; c.aiDelayMs = 0;
+    for (const col of ["W", "U", "B", "R", "G"] as const) c.devGrantCutting(col);
+    c.enterFlood({ difficulty: "standard", seed: 4346, name: "Flood" });
+    c.floodContinue();
+    for (const [tab, pick] of [["W", "savannah_lions"], ["U", "wind_drake"], ["B", "typhoid_rats"], ["R", "goblin_piker"], ["G", "grizzly_bears"]] as const) { c.salvageTab(tab); c.salvagePick(pick); }
+    c.salvageToPair(); c.salvagePair(["W", "R"]); c.salvageBegin(); c.editorClose();
+    const w = c.world!;
+    for (const o of w.opponents) if (!o.fixedAt && !o.gone) { o.gone = true; o.goneReason = "fled"; }
+    const name = c.devStandAtNearestLair();
+    expect(name).toBeTruthy();
+    c.walkPreview();
+    for (let i = 0; i < 100 && c.screen.kind !== "dungeonTelegraph"; i++) await tick();
+    expect(c.screen.kind).toBe("dungeonTelegraph");
+    const info = (c.screen as { info: { kind: string; name: string; at: { x: number; y: number }; residentCatalogId?: string } }).info;
+    expect(info.kind).toBe("lair");
+    expect(info.name).toBe(name);
+    const lair = parseFloodLairId(fixedPointAt(w.map, info.at)?.contentId)!;
+    expect(lair).toBeTruthy();
+    expect(c.floodLairAt(info.at)?.line).toBeTruthy();
+    c.enterDungeon();
+    expect(c.screen.kind).toBe("dungeon");
+    const run = c.dungeonRun!;
+    expect(run.kind).toBe("lair");
+    expect(run.residentCatalogId).toBe(info.residentCatalogId);
+    const tmpl = catalog.opponents.find((o) => o.id === run.residentCatalogId)!;
+    // Walk to the guardian; play the minions live on the controller's own spec; check the guardian's spec, then apply a scripted fall.
+    const screen = () => (c as WorldController).screen;
+    let guardianSeen = false, prizeNote = "";
+    for (let guard = 0; guard < 400 && !guardianSeen; guard++) {
+      const sc = screen();
+      if (sc.kind === "map") throw new Error("ejected before the guardian (a minion won) — the scripted lair walk needs another seed");
+      if (sc.kind === "dungeonDuel") {
+        const spec = sc.match.spec;
+        if (sc.against.guardian) {
+          guardianSeen = true;
+          expect(sc.enemyName).toBe(tmpl.name);
+          const row = resolveMatchup(tmpl, c.knobs, null, 2);
+          const enemyLife = spec.modifiers.find((m) => m.type === "startingLife" && m.player === 1) as { value: number };
+          expect(enemyLife.value).toBe(row.life + c.knobs.lairResidentLifeBonus + empowermentModifiers(reachedTiers(run, c.knobs), lair.color).lifeBonus);
+          const basics = spec.modifiers.filter((m) => m.type === "permanentOnBattlefield" && m.player === 1).map((m) => (m as { cardId: string }).cardId);
+          for (const b of row.entrance) expect(basics).toContain(b);
+          const win = { winner: 0 as const, reason: "LIFE" as const, turns: 9, finalLife: [6, 0] as [number, number], facts: { damageDealt: [0, 0] as [number, number], creaturesLost: [0, 0] as [number, number], cardsDrawn: [0, 0] as [number, number], spellsCast: {}, ante: [[], []] as [string[], string[]] }, log: [], finalStateSerialized: "" };
+          (c as never as { finishInteriorDuel(a: { guardian?: boolean }, r: unknown): void }).finishInteriorDuel(sc.against, win);
+          break;
+        }
+        const enemyProfile = (spec.players[1].agent.split(":")[1] ?? "journeyman") as "apprentice" | "journeyman" | "master";
+        const r = await runMatch(spec, pool, [new HeuristicAgent(spec.seed * 2 + 1, pool, difficultyProfile("master", "aggro", spec.players[1].decklist)), new HeuristicAgent(spec.seed * 2 + 2, pool, difficultyProfile(enemyProfile, "midrange", spec.players[0].decklist))]);
+        const forced = r.winner === 0 ? r : { ...r, winner: 0 as const, finalLife: [5, 0] as [number, number] }; // the minions are not the point here: the walk reaches the deep end
+        (c as never as { finishInteriorDuel(a: { minionId?: string; guardian?: boolean }, r: unknown): void }).finishInteriorDuel(sc.against, forced);
+        continue;
+      }
+      if (sc.kind !== "dungeon") throw new Error(`unexpected screen ${sc.kind}`);
+      if (sc.walking) { await tick(); continue; }
+      const path = dungeonPath(run, run.guardianAt);
+      expect(path).toBeTruthy();
+      c.dungeonClick(path![Math.min(path!.length - 1, 2)]!);
+      for (let i = 0; i < 200 && screen().kind === "dungeon" && (screen() as { walking: boolean }).walking; i++) await tick();
+    }
+    expect(guardianSeen).toBe(true);
+    const v = screen();
+    expect(v.kind).toBe("dungeonVictory");
+    if (v.kind !== "dungeonVictory") return;
+    expect(v.paidGold).toBeGreaterThanOrEqual(30);
+    expect(v.paidCards.length).toBeGreaterThanOrEqual(2); // the prize room: the R roll
+    prizeNote = (v.notes ?? []).find((n) => /manalink/.test(n)) ?? "";
+    expect(prizeNote).toMatch(lair.kind === "landing" ? /a manalink — every duel now starts with a bonus/ : /two life manalinks — your maximum world life rises by 2/);
+    expect(w.manalinks.length).toBe(lair.kind === "landing" ? 1 : 2);
+    expect(w.manalinks.every((m) => m.lair && m.town === -1 && m.color === lair.color)).toBe(true);
+    expect(w.opponents.find((o) => o.id === fixedPointAt(w.map, info.at)!.opponentId)?.goneReason).toBe("defeated");
+  }, 120_000);
+});

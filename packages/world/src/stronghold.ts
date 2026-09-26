@@ -79,7 +79,8 @@ export function creditSpokeKill(world: WorldState, colors: string | undefined, t
 
 /** The global growth term: +lordGrowthLife per lordGrowthSteps world steps, capped. */
 export function lordGrowth(world: WorldState, knobs: KnobValues): number {
-  return Math.min(knobs.lordGrowthCap, Math.floor(world.player.stepsTaken / knobs.lordGrowthSteps) * knobs.lordGrowthLife);
+  const steps = knobs.lordGrowthSteps * ((world.phase ?? 1) >= 2 ? knobs.floodClockSlack : 1); // post-S43: the flood's lords grow slower
+  return Math.min(knobs.lordGrowthCap, Math.floor(world.player.stepsTaken / steps) * knobs.lordGrowthLife);
 }
 
 /** The pace-war formula (interior empowerment stacks on top of this at the fight itself). */

@@ -185,10 +185,9 @@ export function townOffers(world: WorldState, catalog: Catalog, town: Town, knob
       // S21 (Chris-ruled): targets are LAIR-DUNGEONS with a living resident; the item sits in
       // the prize room, escrowed like everything else — the quest is the dive. Keep-or-deliver
       // on return (the trade stated at the choice).
-      // S43: a FLOOD lair (contentId `lair:…`) is a single duel with a manalink at the end — no prize room, nothing to
-      // fetch — so a phase-two board never posts a retrieval (there are no lair-dungeons on that map).
-      const lairs = world.map.strongholds.filter((f) => f.kind === "lair" && f.opponentId && !f.contentId?.startsWith("lair:") && !world.opponents.find((o) => o.id === f.opponentId)?.gone);
-      if (lairs.length === 0) continue; // every lair cleared (or the flood's map): the dens hold nothing to fetch
+      // Post-S43: the flood's lairs are lair-dungeons again (a prize room to fetch from) — every lair posts.
+      const lairs = world.map.strongholds.filter((f) => f.kind === "lair" && f.opponentId && !world.opponents.find((o) => o.id === f.opponentId)?.gone);
+      if (lairs.length === 0) continue; // every lair cleared: the dens hold nothing to fetch
       const lair = rng.pick(lairs);
       const rs = [...pool.values()].filter((d) => !d.isTokenDef && !d.prizeOnly && d.shopTier === "R").sort((a, b) => a.id.localeCompare(b.id));
       if (rs.length === 0) continue;

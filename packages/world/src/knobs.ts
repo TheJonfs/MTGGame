@@ -298,6 +298,11 @@ export const KNOBS = {
     unit: "basic lands of the triad on the lord's battlefield before turn one (the law's colour first)",
     description: "S42a (S41 Concern 1); RATIFIED S42b (ADR-134, from the S42a grid): Standard 30 + TWO basics (48–58% against a finished deck — the band's top edge for all five lords at once), Easy 30 + 1, Hard 34 + 3 (`floodLordLifeBonus`). A flood lord's ENTRANCE beside his signature in hand. The S41 table showed fourteen life was worth less than three lands; `flood-sim --grid 1 --lords 1` measures {30, 34} × {0, 3}. The lord's life is his def's `baseLife` in data/world/flood.json.",
   }),
+  floodClockSlack: knob<number>({
+    default: 1.5,
+    unit: "multiplier on the world's opening siege grace and on the lords' growth interval, in a phase-two world",
+    description: "Post-S43 (Chris's first flood; ⚠ unratified): the flood is harder and its clocks run a little slower for it — the first siege threat schedules from siegeGraceSteps × this, and a lord grows a life every lordGrowthSteps × this (the cap and the life per step unchanged). 1 = phase one's clocks.",
+  }),
   floodLordLifeBonus: knob<number>({
     default: 0,
     unit: "life added to a flood lord's `baseLife` (data/world/flood.json: 30)",

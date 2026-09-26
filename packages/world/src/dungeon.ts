@@ -19,6 +19,7 @@
  * with R-card rewards, no law, small empowerment schedule). Strongholds (S22) reuse everything.
  */
 import { entranceModifiers, resolveMatchup } from "./matchup.js";
+import { parseFloodLairId } from "./flood-lairs.js";
 import type { CardDef } from "@shandalar/cards";
 import type { Modifier, MatchResult, MatchSpec } from "@shandalar/engine";
 import type { Catalog, OpponentTemplate } from "./catalog.js";
@@ -655,6 +656,26 @@ export function colorPrizeRoll(world: WorldState, pool: Map<string, CardDef>, du
     .filter((d) => (d.manaCost ?? "").includes(color) || (d.types.includes("Land") && (d.subtypes ?? []).length > 0))
     .sort((a, b) => a.id.localeCompare(b.id));
   return candidates.length ? rng.pick(candidates).id : null;
+}
+
+/** Post-S43: a FLOOD lair's site (kind + colour) for a run, from the fixed point its resident holds; null for phase
+ * one's lairs and every other run. */
+export function floodLairOfRun(world: WorldState, run: Pick<DungeonRun, "residentCatalogId">): { site: import("./map.js").FixedPoint; kind: import("./catalog.js").FloodLairKind; color: "W" | "U" | "B" | "R" | "G" } | null {
+  const inst = world.opponents.find((o) => o.catalogId === run.residentCatalogId && o.fixedAt);
+  const site = inst ? world.map.strongholds.find((f) => f.kind === "lair" && f.opponentId === inst.id) : undefined;
+  const lair = site && parseFloodLairId(site.contentId);
+  return site && lair ? { site, ...lair } : null;
+}
+
+/** Post-S43: a FLOOD lair's guardian — the resident at its tier's PHASE-TWO row (the resolver: life, and its entrance
+ * basics as partisan modifiers); `dungeonDuelSpec` adds the lair bonus and the interior's empowerment on top. Phase
+ * one's lair residents keep the catalog's `worldLife` (the S20 shape). */
+export function lairGuardian(world: WorldState, catalog: Catalog, knobs: KnobValues, run: Pick<DungeonRun, "residentCatalogId">): { life: number; extraModifiers: Modifier[] } {
+  const tmpl = catalog.opponents.find((o) => o.id === run.residentCatalogId);
+  if (!tmpl) return { life: 1, extraModifiers: [] };
+  if (!floodLairOfRun(world, run)) return { life: tmpl.worldLife, extraModifiers: [] };
+  const m = resolveMatchup(tmpl, knobs, null, world.phase);
+  return { life: m.life, extraModifiers: entranceModifiers(m, 1) };
 }
 
 /** Lair-dungeon prize (§5): a couple of R-tier cards + a purse, seeded per dungeon. */

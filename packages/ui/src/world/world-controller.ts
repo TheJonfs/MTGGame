@@ -81,7 +81,7 @@ import {
 } from "@shandalar/world";
 import type { Modifier } from "@shandalar/engine";
 import { WorldRng as DungeonRng } from "@shandalar/world";
-import { exploreAround, manhattan, applyFountDuel, floodLordEntrance, fountDuelSpec, fountFallen, recordFount } from "@shandalar/world";
+import { exploreAround, manhattan, applyFountDuel, floodLordEntrance, fountDuelSpec, fountFallen, recordFount, awardFloodLair, floodLairOfRun, lairGuardian } from "@shandalar/world";
 import { FOUNT_DECK } from "@shandalar/sim/heart-deck";
 import { FLOOD_LAIR_PRIZE, parseFloodLairId, type FloodLairKind, opponentColors, applyCourtDuel, courtDuelSpec, courtsFallen, floodCourt, floodDeck, floodHeartOpen, floodRun, floodStronghold, recordFloodLordFall, strongholdContentFor, type FloodCourtDef } from "@shandalar/world";
 import {
@@ -1423,7 +1423,8 @@ export class WorldController {
     if (door?.refusal) { this.screen = { ...this.screen, notice: door.refusal }; this.emit(); return; }
     let run = this.world.activeDungeon;
     if (!run || run.dungeonId !== info.dungeonId) {
-      const color = (this.strongholdDef(info.dungeonId)?.color ?? this.moxDef(info.dungeonId)?.color ?? this.powerDef(info.dungeonId)?.color ?? this.catalog.opponents.find((o) => o.id === info.residentCatalogId)?.spoke ?? "G") as "W" | "U" | "B" | "R" | "G";
+      const floodLair = parseFloodLairId(fixedPointAt(this.world.map, info.at)?.contentId); // post-S43: a flood lair's colour is its territory's (its resident may be a mage, spokeless)
+      const color = (floodLair?.color ?? this.strongholdDef(info.dungeonId)?.color ?? this.moxDef(info.dungeonId)?.color ?? this.powerDef(info.dungeonId)?.color ?? this.catalog.opponents.find((o) => o.id === info.residentCatalogId)?.spoke ?? "G") as "W" | "U" | "B" | "R" | "G";
       run = generateDungeonRun(this.world, this.catalog, this.knobs, this.pool, {
         dungeonId: info.dungeonId,
         kind: info.kind,
@@ -1564,7 +1565,9 @@ export class WorldController {
       } else {
         const tmpl = this.catalog.opponents.find((o) => o.id === run.residentCatalogId)!;
         const deck = enemyDeckOf(this.catalog, tmpl.deck, this.world?.phase);
-        enemy = { kind: "guardian", name: tmpl.name, decklist: deck.decklist, archetype: deck.archetype, life: tmpl.worldLife, color: (tmpl.spoke ?? "G") as "W" | "U" | "B" | "R" | "G" };
+        const g = lairGuardian(this.world, this.catalog, this.knobs, run); // post-S43: a flood lair's resident at its phase-two row, with its entrance
+        enemy = { kind: "guardian", name: tmpl.name, decklist: deck.decklist, archetype: deck.archetype, life: g.life, color: (floodLairOfRun(this.world, run)?.color ?? tmpl.spoke ?? "G") as "W" | "U" | "B" | "R" | "G" };
+        extraModifiers.push(...g.extraModifiers);
         portrait = tmpl.portrait;
       }
     } else {
@@ -1661,6 +1664,9 @@ export class WorldController {
         victoryNotes.push(`You have learned ${powerRates(this.world, pd.color).name} — it waits on the Powers panel${pd.color === "B" || pd.color === "R" ? " and at every parley" : ""}.`);
       } else {
         prize = lairPrizeRoll(this.world, this.pool, run.dungeonId);
+        // Post-S43: a FLOOD lair pays its manalink WITH the prize — the resident fell, the link is earned (once).
+        const fl = floodLairOfRun(this.world, run);
+        if (fl) victoryNotes.push(awardFloodLair(this.world, this.knobs, this.catalog, fl.site.contentId!, { kind: fl.kind, color: fl.color }, fl.site.name ?? "the lair"));
         // S21 retrieval: the quest item was in this prize room, escrowed like everything else —
         // it pays out with the escrow; the keep-or-deliver choice waits at the offer town.
         for (const r of retrievalOnDungeonClear(this.world, run.dungeonId)) {

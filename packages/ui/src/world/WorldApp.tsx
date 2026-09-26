@@ -640,6 +640,7 @@ function DungeonTelegraph({ c }: { c: WorldController }) {
             <p className="parley-sub" style={{ marginBottom: 0 }}>{sh ? `${holderName} holds this seat. One-time: broken, it is broken forever.` : info.kind === "mox" || info.kind === "power" ? `${holderName} waits at the deep end. One-time: cleared, it is ground forever.` : `${resident?.name ?? "Something"} holds these halls.`}{status && status.resets > 0 ? ` · reset ${status.resets}×` : ""}</p>
           </div>
         </div>
+        {info.kind === "lair" && (() => { const l = c.floodLairAt(info.at); return l ? <p className="dungeon-law" style={{ fontStyle: "italic" }}>{l.line} <b>{resident?.name ?? "Something"} guards this place</b> — <span style={{ color: "var(--brass)" }}>it {l.holds}, paid with the prize when the resident falls.</span></p> : null; })()}
         {mox && <p className="dungeon-law"><b>{mox.law.name}:</b> {mox.law.text}</p>}
         {pd && <p className="dungeon-law" style={{ fontStyle: "italic" }}>{pd.teaches} <b>No law binds these halls.</b></p>}
         {sh && <p className="dungeon-law"><b>{sh.law.name}:</b> {sh.law.text} <i>(the law stands in every fight inside — tear it down and it returns for the next; it is a permanent, and permanents can be answered)</i></p>}

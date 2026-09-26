@@ -796,6 +796,16 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const doomed = view(20, [], [{ id: "s1", kind: "spell", cardId: "terror", controller: 1, targets: [{ kind: "object", id: "bear" }] }]);
     expect(a.scorePriorityAction(doomed, mill)).toBeGreaterThan(-Infinity);
     expect(a.sacrificeChoice(doomed, req as never)).toEqual({ type: "sacrifice", objectId: "bear" });
+    // Post-S43 (Chris): a LONE creature under their Terror is cashed too (it was our last blocker — and it is dying
+    // either way); a Pyroclasm on the stack dooms the 2/2 (the Wurm shrugs it); a Wrath dooms them all.
+    const lone = mkView({ librarySizes: [30, 20], battlefield: [{ id: "altar", cardId: "altar_of_dementia", controller: 0 }, { id: "bear", cardId: "grizzly_bears", controller: 0 }, { id: "ob1", cardId: "grizzly_bears", controller: 1 }, { id: "ob2", cardId: "grizzly_bears", controller: 1 }], stack: [{ id: "s1", kind: "spell", cardId: "terror", controller: 1, targets: [{ kind: "object", id: "bear" }] }] as never });
+    expect(a.scorePriorityAction(lone, mill)).toBeGreaterThan(-Infinity);
+    const clasm = view(20, [], [{ id: "s1", kind: "spell", cardId: "pyroclasm", controller: 1 }]);
+    expect(a.scorePriorityAction(clasm, mill)).toBeGreaterThan(-Infinity);
+    expect(a.sacrificeChoice(clasm, req as never)).toEqual({ type: "sacrifice", objectId: "bear" }); // the Wurm survives two; the bear does not
+    const wrath = view(20, [], [{ id: "s1", kind: "spell", cardId: "wrath_of_god", controller: 1 }]);
+    expect(a.sacrificeChoice(wrath, req as never)).toEqual({ type: "sacrifice", objectId: "wurm" }); // both doomed: the biggest body mills the most
+    expect(a.scorePriorityAction(view(20, [], [{ id: "s1", kind: "spell", cardId: "terror", controller: 0, targets: [{ kind: "object", id: "bear" }] }]), mill)).toBe(-Infinity); // our own spell dooms nothing
   });
 
   it("book of shame 38 (S29, Vael's Wrath): a board wipe with our Blood Artist out counts the drain — it outscores the same Wrath without the Artist", () => {
