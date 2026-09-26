@@ -295,6 +295,9 @@ export interface SalvageSpec {
   deck: Decklist;
   /** The deck's name in the save. */
   deckName?: string;
+  /** Post-S43 (Chris's first flood): the five powers are KNOWLEDGE and survive into phase two — the profile's cut
+   * colours, pre-unlocked (fuel still earned; there are no power-dungeons on a flood map to learn them again). */
+  powers?: PetalColor[];
 }
 const BASIC_OF_COLOR: Record<PetalColor, string> = { W: "plains", U: "island", B: "swamp", R: "mountain", G: "forest" };
 
@@ -346,7 +349,9 @@ function newSalvageWorld(opts: NewWorldOptions, salvage: SalvageSpec, difficulty
   for (const e of salvage.deck) if (BASICS.includes(e.cardId)) for (let i = 0; i < e.count; i++) grant(e.cardId);
   for (const e of salvage.deck) if (!BASICS.includes(e.cardId) && (collection[e.cardId] ?? 0) < e.count) throw new Error(`newWorld: the salvage deck lists ${e.cardId} ×${e.count}; the salvage holds ${collection[e.cardId] ?? 0}`);
   const starterId = (opts.catalog.starters.find((s) => s.color === home)?.id ?? "white") as StarterId;
-  return worldFrom(opts, difficulty, knobs, gen, { deck: salvage.deck.map((e) => ({ ...e })), deckName: salvage.deckName ?? "The Salvage", basic, collection, provenance, starterId, gold: knobs.salvagePurse, phase: 2 });
+  const world =   worldFrom(opts, difficulty, knobs, gen, { deck: salvage.deck.map((e) => ({ ...e })), deckName: salvage.deckName ?? "The Salvage", basic, collection, provenance, starterId, gold: knobs.salvagePurse, phase: 2 });
+  for (const c of salvage.powers ?? []) if (!world.powers.unlocked.includes(c)) world.powers.unlocked.push(c); // post-S43: the powers ride into the flood
+  return world;
 }
 
 function worldFrom(opts: NewWorldOptions, difficulty: DifficultyName, knobs: KnobValues, gen: GeneratedWorld, p: { deck: Decklist; deckName: string; basic: string; collection: Collection; provenance: ProvenanceEntry[]; starterId: StarterId; gold: number; phase: Phase }): WorldState {

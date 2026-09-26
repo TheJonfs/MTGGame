@@ -1707,7 +1707,7 @@ function SalvageScreen({ c, pool, oracle }: { c: WorldController; pool: Map<stri
         <span style={{ fontSize: 12, fontStyle: "italic" }}>{s.stage === "picks" ? (pack?.picks ?? "Five things — one of each colour.") : (pack?.pair ?? "Two colours you will carry first.")}</span>
         <span style={{ flex: 1 }} />
         {s.stage === "picks" && SALVAGE_COLORS.map((col) => (
-          <button key={col} className={s.tab === col ? "primary" : ""} onClick={() => c.salvageTab(col)} title={s.banked.includes(col) ? "banked — the current took it" : s.picks[col] ? "picked; banks when you leave the tab" : "no pick yet"}>
+          <button key={col} className={s.tab === col ? "primary" : ""} onClick={() => c.salvageTab(col)} title={s.banked.includes(col) ? "committed — the current took it" : s.picks[col] ? "picked — open until you choose your colours" : "no pick yet"}>
             <i className={`colour-pip c-${col}`} /> {COLOUR_NAME[col]}{s.picks[col] ? (s.banked.includes(col) ? " ✓" : " ·") : ""}
           </button>
         ))}
@@ -1718,8 +1718,8 @@ function SalvageScreen({ c, pool, oracle }: { c: WorldController; pool: Map<stri
         <>
           <div style={{ fontSize: 12, padding: "4px 10px", color: "var(--ink-soft)" }}>
             {s.banked.includes(s.tab)
-              ? <>This colour's pick is <b>banked</b>: {pool.get(s.picks[s.tab]!)?.name}. The current took it.</>
-              : <>One card of {COLOUR_NAME[s.tab]} — any shelf, the R drawer included; a card of two colours sits on both. {s.picks[s.tab] ? <>Chosen: <b>{pool.get(s.picks[s.tab]!)?.name}</b> — click another to change your mind, </> : "Click to choose; "}<b>leaving the tab banks the pick</b> and the current takes the rest.</>}
+              ? <>This colour's pick is <b>committed</b>: {pool.get(s.picks[s.tab]!)?.name}. The current took it.</>
+              : <>One card of {COLOUR_NAME[s.tab]} — any shelf, the R drawer included; a card of two colours sits on both. {s.picks[s.tab] ? <>Chosen: <b>{pool.get(s.picks[s.tab]!)?.name}</b> — click another to change your mind, </> : "Click to choose; "}<b>nothing is fixed until you choose your colours</b> — then the current takes the rest.</>}
           </div>
           <div className="gallery-grid">
             {c.salvageTabCandidates().map((def) => {

@@ -243,19 +243,24 @@ describe("S39 (ADR-126): the Flood — the scene, the five picks, the pair, the 
     expect(wShelf).toContain("vindicate");
     expect(wShelf).toContain("plateau");
     expect(wShelf).not.toContain("mox_pearl");
-    // Change of mind on the tab is free; leaving it banks.
+    // Post-S43 (Chris's first flood): a change of mind is free on ANY tab until the five are committed; a card of two
+    // colours still sits on one shelf only.
     c.salvagePick("savannah_lions");
     c.salvagePick("vindicate");
     expect(sv().picks.W).toBe("vindicate");
     c.salvageTab("B");
-    expect(sv().banked).toEqual(["W"]);
+    expect(sv().banked).toEqual([]); // leaving the tab banks nothing
     expect(c.salvageTabCandidates().map((d) => d.id)).not.toContain("vindicate"); // taken on W: not offered again
     c.salvagePick("vindicate");
     expect(sv().notice).toMatch(/Not on this shelf/);
     c.salvagePick("underground_sea"); // an Island Swamp sits on the B tab
     c.salvageTab("W");
-    c.salvagePick("plateau"); // banked: refused
-    expect(sv().notice).toMatch(/banked/);
+    c.salvagePick("plateau"); // back on W: still open — the pick changes
+    expect(sv().picks.W).toBe("plateau");
+    c.salvageTab("B");
+    expect(c.salvageTabCandidates().map((d) => d.id)).toContain("vindicate"); // W let it go: B may take it now
+    c.salvageTab("W");
+    c.salvagePick("vindicate");
     expect(sv().picks.W).toBe("vindicate");
     c.salvageToPair();
     expect(sv().stage).toBe("picks"); // three colours still to pick
@@ -265,7 +270,9 @@ describe("S39 (ADR-126): the Flood — the scene, the five picks, the pair, the 
     c.salvageTab("G"); c.salvagePick("blanchwood_armor");
     c.salvageToPair();
     expect(sv().stage).toBe("pair");
-    expect(sv().banked.sort()).toEqual(["B", "G", "R", "U", "W"]);
+    expect(sv().banked.sort()).toEqual(["B", "G", "R", "U", "W"]); // the commit: all five bank here
+    c.salvagePick("plateau"); // not at the pair stage
+    expect(sv().picks.W).toBe("vindicate");
     expect(c.salvagePairs()).toHaveLength(10);
     c.salvageBegin(); // no pair yet: nothing
     expect(screen().kind).toBe("salvage");
@@ -986,5 +993,26 @@ describe("S41 (ADR-130): the flood's seats through the controller — a court's 
     expect(c.screen.kind).toBe("map");
     expect((c.screen as { notice: string | null }).notice).toBe(catalog.questText!.flood!.fount!.fall);
     expect(c.floodEligible()).toBe(true); // "Enter the Flood" stays available for new runs
+  });
+});
+
+describe("post-S43 (Chris's first flood): the powers ride into phase two; the tavern pours the flood's lore", () => {
+  it("a flood entered with five cuttings has all five powers unlocked; a phase-two tavern never names the Spire, the Bastion, a Mox door or the Vault", async () => {
+    const c = new WorldController(pool, catalog, memStorage());
+    c.stepMs = 0;
+    for (const col of ["W", "U", "B", "R", "G"] as const) c.devGrantCutting(col);
+    c.enterFlood({ difficulty: "standard", seed: 4343, name: "Flood" });
+    c.floodContinue();
+    for (const [tab, pick] of [["W", "savannah_lions"], ["U", "wind_drake"], ["B", "typhoid_rats"], ["R", "goblin_piker"], ["G", "grizzly_bears"]] as const) { c.salvageTab(tab); c.salvagePick(pick); }
+    c.salvageToPair(); c.salvagePair(["W", "R"]); c.salvageBegin(); c.editorClose();
+    const w = c.world!;
+    expect(w.phase).toBe(2);
+    expect([...w.powers.unlocked].sort()).toEqual(["B", "G", "R", "U", "W"]);
+    const { tavernRumors } = await import("@shandalar/world");
+    const knobs = c.knobs;
+    const poured: string[] = [];
+    for (const town of w.map.towns) for (let epoch = 0; epoch < 4; epoch++) { w.player.stepsTaken = epoch * knobs.rumorRefreshSteps; poured.push(...tavernRumors(w, catalog, town, pool)); }
+    expect(poured.length).toBeGreaterThan(20);
+    for (const line of poured) expect(line, line).not.toMatch(/Spire|Bastion|Chapel|Reach|Mox|Vault|door in the|sleepless|Whitewell|crossed currents|Five powers ride/);
   });
 });

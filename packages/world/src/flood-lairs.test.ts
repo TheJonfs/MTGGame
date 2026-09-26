@@ -183,7 +183,7 @@ describe("S43 — the flood's lairs: the threshold, the duel, the prize (fuzz be
     if (o3.type !== "fight") throw new Error("no fight");
     const rec3 = applyDuelResult(w, catalog, o3.duel, win as never);
     expect(maxWorldLife(w)).toBe(max0 + 2);
-    expect(rec3.lairPrize).toMatch(/^The water gives back a little of what it took\. The .* Wellhouse: a life manalink — your maximum world life rises by 1\.$/);
+    expect(rec3.lairPrize).toMatch(/^The water gives back a little of what it took\. The .* Wellhouse: two life manalinks — your maximum world life rises by 2\.$/); // post-S43: the note counts its links
     expect(fixedPointAt(w.map, well.at)?.contentId).toBe("lair:wellhouse:R");
     expect(regionAt(w.map, well.at).color).toBe("R");
   });

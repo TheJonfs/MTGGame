@@ -295,31 +295,29 @@ export class WorldController {
     const taken = new Set(Object.values(this.screen.picks));
     return salvageCandidates(this.pool, this.screen.tab).filter((d) => !taken.has(d.id) || this.screen.kind === "salvage" && this.screen.picks[this.screen.tab] === d.id);
   }
-  /** Switch tabs — the tab being left BANKS its pick (it cannot be undone after; the screen says so). */
+  /** Switch tabs. Post-S43 (Chris's first flood): leaving a tab no longer banks its pick — every pick stays open until
+   * the five are committed at "Choose colours" (a card of two colours still sits on one shelf only). */
   salvageTab(color: PetalColor): void {
     if (this.screen.kind !== "salvage" || this.screen.stage !== "picks") return;
-    const s = this.screen;
-    const banked = s.picks[s.tab] && !s.banked.includes(s.tab) ? [...s.banked, s.tab] : s.banked;
-    this.screen = { ...s, tab: color, banked, notice: null };
+    this.screen = { ...this.screen, tab: color, notice: null };
     this.emit();
   }
-  /** Pick (or re-pick) on the current tab — unless the tab is banked. */
+  /** Pick (or re-pick) on the current tab — free until the five are committed. */
   salvagePick(id: string): void {
     if (this.screen.kind !== "salvage" || this.screen.stage !== "picks") return;
     const s = this.screen;
-    if (s.banked.includes(s.tab)) { this.screen = { ...s, notice: "That colour's pick is banked — the current took it." }; this.emit(); return; }
+    if (s.banked.includes(s.tab)) { this.screen = { ...s, notice: "The five are committed — the current took them." }; this.emit(); return; }
     if (!this.salvageTabCandidates().some((d) => d.id === id)) { this.screen = { ...s, notice: "Not on this shelf." }; this.emit(); return; }
     this.screen = { ...s, picks: { ...s.picks, [s.tab]: id }, notice: null };
     this.emit();
   }
-  /** Five picks banked → the pair. The current tab's pick banks on the way. */
+  /** Five picks → the pair. THIS is the commit: all five bank here (post-S43). */
   salvageToPair(): void {
     if (this.screen.kind !== "salvage" || this.screen.stage !== "picks") return;
     const s = this.screen;
-    const banked = s.picks[s.tab] && !s.banked.includes(s.tab) ? [...s.banked, s.tab] : s.banked;
     const missing = SALVAGE_COLORS.filter((c) => !s.picks[c]);
-    if (missing.length) { this.screen = { ...s, banked, notice: `A pick of each colour first — still ${missing.join(", ")}.` }; this.emit(); return; }
-    this.screen = { ...s, banked, stage: "pair", notice: null };
+    if (missing.length) { this.screen = { ...s, notice: `A pick of each colour first — still ${missing.join(", ")}.` }; this.emit(); return; }
+    this.screen = { ...s, banked: [...SALVAGE_COLORS], stage: "pair", notice: null };
     this.emit();
   }
   salvagePairs(): { pair: [PetalColor, PetalColor]; name: string }[] { return SALVAGE_PAIRS.map((pair) => ({ pair, name: pairName(pair) })); }
@@ -342,7 +340,7 @@ export class WorldController {
     const picks = SALVAGE_COLORS.map((c) => s.picks[c]!);
     const deck = assembleSalvageDeck(this.pool, pack, pair, picks);
     const seed = s.choice.seed ?? Math.floor(Math.random() * 1_000_000);
-    this.world = newWorld({ seed, catalog: this.catalog, difficulty: s.choice.difficulty, playerName: s.choice.name ?? "You", ...(s.choice.portrait ? { portrait: s.choice.portrait } : {}), salvage: { legends, picks, pair, deck, deckName: `${pairName(pair)} salvage` } });
+    this.world = newWorld({ seed, catalog: this.catalog, difficulty: s.choice.difficulty, playerName: s.choice.name ?? "You", ...(s.choice.portrait ? { portrait: s.choice.portrait } : {}), salvage: { legends, picks, pair, deck, powers: cutColors(legacy), deckName: `${pairName(pair)} salvage` } });
     // The chronicle's line — the profile's ledger and the run's.
     const names = picks.map((id) => this.pool.get(id)?.name ?? id).join(", ");
     const text = `${this.catalog.questText?.flood?.chronicle ?? "The plane turns over."} Salvaged: ${names}. The first colours: ${pairName(pair)} (${pair.join("")}).`;

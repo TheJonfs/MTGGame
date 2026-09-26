@@ -173,6 +173,10 @@ export interface FloodTextPack {
   /** S43 (ADR-136; the planner's Part 5): the flood's three LAIR kinds by prize — the map name (the region's name is
    * prefixed), the threshold's line, the prize line. */
   lairs?: Record<FloodLairKind, { name: string; line: string; prize: string }>;
+  /** Post-S43 (Chris's first flood): the flood's tavern LORE — what a phase-two mill pours instead of phase one's
+   * (the Spire, the Bastion, the Mox doors, the Vault are not on this map). Planner's lines; absent = only the
+   * phase-neutral texture and the Nighthawk's legend pour. */
+  rumors?: string[];
   heartOpens?: string;
   chronicleFifth?: string;
 }
@@ -408,6 +412,7 @@ export function catalogFrom(parts: { regions: unknown; towns: unknown; opponents
       if (!Array.isArray(qp.flood.scene) || qp.flood.scene.length === 0) errors.push("quests: flood.scene must be a nonempty array (S39)");
       for (const k of ["picks", "pair", "chronicle", "deep", "offer"] as const) if (typeof qp.flood[k] !== "string" || !qp.flood[k].trim()) errors.push(`quests: flood.${k} missing (S39)`);
       for (const [sid, s] of Object.entries(qp.flood.seats ?? {})) for (const k of ["telegraph", "parley", "fall", "prize"] as const) if (typeof s?.[k] !== "string" || !s[k].trim()) errors.push(`quests: flood.seats.${sid}.${k} missing (S41)`);
+      if (qp.flood.rumors !== undefined && (!Array.isArray(qp.flood.rumors) || qp.flood.rumors.some((l) => typeof l !== "string" || !l.trim()))) errors.push("quests: flood.rumors must be non-empty strings (post-S43)");
       if (qp.flood.lairs !== undefined) for (const kind of FLOOD_LAIR_KINDS) for (const k of ["name", "line", "prize"] as const) if (typeof qp.flood.lairs[kind]?.[k] !== "string" || !qp.flood.lairs[kind][k].trim()) errors.push(`quests: flood.lairs.${kind}.${k} missing (S43)`);
     }
     questText = { offers: qp.offers, rumors: qp.rumors, ...(qp.corolla ? { corolla: qp.corolla } : {}), ...(qp.heart ? { heart: qp.heart } : {}), ...(qp.door ? { door: qp.door } : {}), ...(qp.flood ? { flood: qp.flood } : {}) };

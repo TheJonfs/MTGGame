@@ -572,14 +572,21 @@ export function tavernRumors(world: WorldState, catalog: Catalog, town: Town, po
         .replace(/\{region\}/g, nextTown ? world.map.regions[nextTown.region]!.name : "the next country"),
     );
   }
-  const lore: string[] = [
-    ...Object.values(pack.rumors.guardians),
-    ...Object.values(pack.rumors.lords),
-    ...pack.rumors.warp,
-    ...pack.rumors.texture,
-    pack.rumors.nighthawkLegend,
-  ];
-  const fiveMoxen = catalog.dungeons.length === 5 && catalog.dungeons.every((d) => world.dungeons[d.id]?.cleared);
+  // Post-S43 (Chris's first flood: a rumour named the Spire): a PHASE-TWO mill pours the flood's own lore — the
+  // planner's `flood.rumors` plus the phase-neutral texture and the Nighthawk's legend (the beast roams both maps) —
+  // never phase one's guardians, lords, currents, Mox doors or the Vault, none of which stand on this map.
+  const flood = (world.phase ?? 1) >= 2;
+  const neutralTexture = pack.rumors.texture.filter((t) => !/Whitewell/.test(t)); // a phase-one town's name
+  const lore: string[] = flood
+    ? [...(catalog.questText?.flood?.rumors ?? []), ...neutralTexture, pack.rumors.nighthawkLegend]
+    : [
+      ...Object.values(pack.rumors.guardians),
+      ...Object.values(pack.rumors.lords),
+      ...pack.rumors.warp,
+      ...pack.rumors.texture,
+      pack.rumors.nighthawkLegend,
+    ];
+  const fiveMoxen = !flood && catalog.dungeons.length === 5 && catalog.dungeons.every((d) => world.dungeons[d.id]?.cleared);
   if (fiveMoxen) lore.push(pack.rumors.vaultTease);
   // S22 r2 (Chris): the lore rotates on the shop cadence — keyed by the rumor epoch, not the visit
   // count (re-entering within an epoch pours the same, no farming). Lore lines are drawn in a

@@ -658,7 +658,11 @@ export function awardFloodLair(world: WorldState, knobs: KnobValues, catalog: Ca
   for (let i = 0; i < prize.count; i++) notes.push(grantManalink(world, knobs, { color: lair.color, kind: prize.kind, town: -1, lair: siteId }));
   (run.lairs ??= {})[siteId] = { step: world.player.stepsTaken, kind: prize.kind, color: lair.color };
   const line = catalog.questText?.flood?.lairs?.[lair.kind]?.prize ?? "";
-  return `${line ? `${line} ` : ""}${siteName}: ${[...new Set(notes)].join("; ")}.`;
+  // Post-S43 (Chris: the result screen said +1 for a +2 lair): identical notes are COUNTED, not collapsed.
+  const counted = new Map<string, number>();
+  for (const n of notes) counted.set(n, (counted.get(n) ?? 0) + 1);
+  const worded = [...counted.entries()].map(([n, k]) => (k === 1 ? n : n.replace(/^a life manalink — your maximum world life rises by 1/, `${k === 2 ? "two" : k} life manalinks — your maximum world life rises by ${k}`).replace(/^a manalink — /, `${k} manalinks — `)));
+  return `${line ? `${line} ` : ""}${siteName}: ${worded.join("; ")}.`;
 }
 
 /** Resolve a finished duel into the world: ante both ways, gold, world life. */
