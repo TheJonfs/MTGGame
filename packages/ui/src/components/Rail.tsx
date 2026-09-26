@@ -196,7 +196,7 @@ export function Inspector({
       <h3>
         <IconChip src="/icons/ui-inspect.svg" alt="" size={22} />
         Inspector
-        {(obj ? ctx.defs.def(obj.cardId).source === "real" : fallbackDef?.source === "real") && (
+        {(() => { const d = obj ? ctx.defs.def(obj.cardId) : fallbackDef; return !!d && (d.source === "real" || !!d.printedAsset); })() && (
           <button className="linkish" onClick={onTogglePrinted}>{printed ? "our frame" : "printed card"}</button>
         )}
       </h3>

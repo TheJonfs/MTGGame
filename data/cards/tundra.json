@@ -37,7 +37,9 @@
     }
   ],
   "art": {
-    "fallback": "rendered"
+    "fallback": "rendered",
+    "asset": "/custom-art/tundra.png"
   },
-  "shopTier": "R"
+  "shopTier": "R",
+  "printedAsset": "tundra.jpg"
 }

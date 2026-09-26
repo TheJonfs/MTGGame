@@ -148,7 +148,7 @@ function NoteButton({ cardId, small }: { cardId: string; small?: boolean }) {
 function StripTile({ def }: { def: CardDef }) {
   return (
     <div className="tile" title={def.name} style={{ cursor: "default" }}>
-      {def.source === "real" ? (
+      {def.source === "real" && !def.art?.asset ? (
         <img
           className="art"
           src={`/real-art/${def.id}.tile.jpg`}
@@ -207,7 +207,7 @@ function InspectorModal({
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
           <span style={{ fontFamily: "var(--serif)", fontWeight: 700 }}>{def.name}</span>
           <span>
-            {def.source === "real" && (
+            {(def.source === "real" || !!def.printedAsset) && ( // post-S43: a custom face (the laws, the legends) toggles too
               <button className="linkish" onClick={() => setPrinted(!printed)}>{printed ? "our frame" : "printed card"}</button>
             )}
             <NoteButton cardId={def.id} />

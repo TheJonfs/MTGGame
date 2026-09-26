@@ -42,7 +42,7 @@ export function FloatingCardInspector({ def, oracle, printed, onTogglePrinted }:
       >
         <span>⋮⋮ Inspector</span>
         <span>
-          {def && def.source === "real" && <button className="linkish" onClick={onTogglePrinted}>{printed ? "our frame" : "printed card"}</button>}
+          {def && (def.source === "real" || !!def.printedAsset) && <button className="linkish" onClick={onTogglePrinted}>{printed ? "our frame" : "printed card"}</button>}
           <button className="linkish" onClick={() => setCollapsed(!collapsed)}>{collapsed ? "show" : "hide"}</button>
         </span>
       </div>

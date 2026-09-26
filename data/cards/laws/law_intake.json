@@ -29,5 +29,6 @@
   "law": true,
   "subtypes": [
     "Law"
-  ]
+  ],
+  "printedAsset": "law_intake.jpg"
 }

@@ -34,5 +34,6 @@
   "law": true,
   "subtypes": [
     "Law"
-  ]
+  ],
+  "printedAsset": "law_season.jpg"
 }

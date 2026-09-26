@@ -119,7 +119,7 @@ export function CardFrame({
   const body = colors.length === 1 ? BODY[colors[0]!] : "var(--frame-gold)";
   const bodyTex = colors.length === 1 ? BODY_TEX[colors[0]!] : "gold";
   const light = colors.length === 1 && LIGHT_TEXT.has(colors[0]!);
-  const isReal = def.source === "real";
+  const isReal = def.source === "real"; // post-S43: a real card with `art.asset` wears OUR art (Chris's renders of the duals, the Angel, Drana)
   const isCreature = def.types.includes("Creature");
   const placeholderIcon = MANA_ICON[colors[0] === "LAND" ? "C" : colors[0]!] ?? "mana-colorless";
   const tint = colors.length === 1 ? BODY[colors[0]!] : "var(--frame-gold)";
@@ -150,7 +150,7 @@ export function CardFrame({
         <ManaCostRow cost={def.manaCost} />
       </div>
       <div className="art-window">
-        {isReal ? (
+        {isReal && !def.art?.asset ? (
           // Mini/hand frames sit in halftone-moire territory (~210-320
           // physical px): use the prefiltered .hand.jpg derivative there.
           <img

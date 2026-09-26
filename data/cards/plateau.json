@@ -37,7 +37,9 @@
     }
   ],
   "art": {
-    "fallback": "rendered"
+    "fallback": "rendered",
+    "asset": "/custom-art/plateau.png"
   },
-  "shopTier": "R"
+  "shopTier": "R",
+  "printedAsset": "plateau.jpg"
 }

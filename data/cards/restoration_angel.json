@@ -42,7 +42,9 @@
     }
   ],
   "art": {
-    "fallback": "rendered"
+    "fallback": "rendered",
+    "asset": "/custom-art/restoration_angel.png"
   },
-  "shopTier": 2
+  "shopTier": 2,
+  "printedAsset": "restoration_angel.jpg"
 }

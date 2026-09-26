@@ -136,9 +136,10 @@ export function validateCard(raw: unknown): ValidationResult {
   }
   // ADR-068: prizeOnly (Black Lotus) — boolean when present; the pool registry column mirrors it.
   if (raw.prizeOnly !== undefined && typeof raw.prizeOnly !== "boolean") err(`"prizeOnly" must be boolean (ADR-068)`);
-  // ADR-082 (S22): printedAsset — custom cards only (real cards' printed view is the Scryfall normal).
-  if (raw.printedAsset !== undefined && (typeof raw.printedAsset !== "string" || raw.source !== "custom")) {
-    err(`"printedAsset" must be a string on a custom card (ADR-082)`);
+  // ADR-082 (S22): printedAsset — the card's own as-printed face. Post-S43 (Chris's art round, 2026-09-26): a REAL
+  // card may carry one too (our render of it replaces the Scryfall scan on printed-default surfaces).
+  if (raw.printedAsset !== undefined && typeof raw.printedAsset !== "string") {
+    err(`"printedAsset" must be a string (ADR-082)`);
   }
   // S22b: uncastable — the stronghold laws (custom, true-only).
   if (raw.uncastable !== undefined && (raw.uncastable !== true || raw.source !== "custom")) {

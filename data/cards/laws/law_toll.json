@@ -33,5 +33,6 @@
   "law": true,
   "subtypes": [
     "Law"
-  ]
+  ],
+  "printedAsset": "law_toll.jpg"
 }

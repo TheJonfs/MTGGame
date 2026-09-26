@@ -37,7 +37,9 @@
     }
   ],
   "art": {
-    "fallback": "rendered"
+    "fallback": "rendered",
+    "asset": "/custom-art/scrubland.png"
   },
-  "shopTier": "R"
+  "shopTier": "R",
+  "printedAsset": "scrubland.jpg"
 }

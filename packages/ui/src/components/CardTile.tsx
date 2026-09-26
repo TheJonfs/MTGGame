@@ -51,7 +51,7 @@ export function CardTile({
       onClick={() => onClick?.(obj.id)}
       title={def.name}
     >
-      {def.source === "real" ? (
+      {def.source === "real" && !def.art?.asset ? (
         // Tile-size derivative (art-tiles.py): prefiltered downscale kills the
         // halftone moire the browser's own resize produces at this size.
         <img

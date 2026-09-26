@@ -50,7 +50,8 @@
     }
   ],
   "art": {
-    "fallback": "rendered"
+    "fallback": "rendered",
+    "asset": "/custom-art/drana_kalastria_bloodchief.png"
   },
   "prizeOnly": true
 }
