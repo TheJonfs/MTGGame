@@ -409,20 +409,21 @@ export class MatchController {
       if (e.attackers.length > 0) audio.sfx("sfx.attack");
       const state = this.game.state;
       if (state.activePlayer === this.humanSeat) return; // your own attack is visible by construction
+      if (e.attackers.length === 0) return; // no attack, nothing to block — no "No legal block: ." (post-S43)
       // S11 playtest: name each attacker's keywords — an un-pausable combat
       // (e.g. menace attackers vs one untapped blocker enumerates no legal
       // block, so ADR-014 auto-takes "done") must SAY why it couldn't be
       // blocked, not just that it happened.
       const names = e.attackers
-        .map((id) => state.objects[id])
-        .filter((o): o is NonNullable<typeof o> => !!o)
-        .map((o, i) => {
-          const def = pool.get(o.cardId);
+        .filter((id) => !!state.objects[id])
+        .map((id) => {
+          const def = pool.get(state.objects[id]!.cardId);
           // Post-S42b (Chris's menace report): the LIVE keywords, not the printed ones — a granted menace or flying
           // (the Observatory's "creatures you control gain vigilance and menace") is what decides the block.
-          const live = [...characteristics(this.game.ctx, e.attackers[i]!).keywords].filter((k) => ["flying", "menace", "reach", "trample", "first strike", "double strike", "deathtouch", "vigilance", "lifelink"].includes(k));
+          // Post-S43: keyed by the attacker's id, not its index after the filter (a gone attacker shifted them).
+          const live = [...characteristics(this.game.ctx, id).keywords].filter((k) => ["flying", "menace", "reach", "trample", "first strike", "double strike", "deathtouch", "vigilance", "lifelink"].includes(k));
           const kw = live.length ? ` (${live.join(", ")})` : "";
-          return `${def?.name ?? o.cardId}${kw}`;
+          return `${def?.name ?? state.objects[id]!.cardId}${kw}`;
         });
       if (names.length > 0) this.showNotice(`Opponent attacks with ${names.join(", ")}`);
       // Post-S42b (Chris's menace report): when the engine will auto-take "done" at declare blockers (ADR-014 — a lone

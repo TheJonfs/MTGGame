@@ -6,7 +6,7 @@
  * the engine OFFERED, and the action the log says was taken. The viewer never re-implements
  * rules and neither does this: it is `replayToDecision` (ADR-040) at each blocker index.
  *
- *   pnpm blocks-audit path/to/duel.json [--seat 0|1]     (seat defaults to the human's: spec.players[i].agent === "human")
+ *   pnpm blocks-audit path/to/duel.json|flag.json [--seat 0|1]     (seat defaults to the human's: spec.players[i].agent === "human")
  */
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -25,7 +25,11 @@ if (!file) {
   console.error("usage: pnpm blocks-audit <saved-game.json> [--seat 0|1]");
   process.exit(2);
 }
-const game = JSON.parse(readFileSync(file, "utf8")) as { format: string; spec: MatchSpec; log: ActionLogEntry<Action>[] };
+type DuelLog = { format: string; spec: MatchSpec; log: ActionLogEntry<Action>[] };
+// A downloaded duel log, or a fixtures-inbox flag that carries one (data-model §8, post-S43).
+const raw = JSON.parse(readFileSync(file, "utf8")) as DuelLog & { game?: DuelLog; matchSpec?: unknown };
+if (raw.matchSpec && !raw.game) throw new Error("this flag predates the embedded duel log (post-S43) — it carries the spec but not the moves; a human's duel cannot be replayed from it");
+const game: DuelLog = raw.game ?? raw;
 if (game.format !== "shandalar-log-v1") throw new Error(`not a shandalar-log-v1 file: ${game.format}`);
 const humanSeat = game.spec.players.findIndex((p) => p.agent === "human");
 const seat = Number(argOf("seat") ?? (humanSeat === -1 ? 0 : humanSeat)) as 0 | 1;

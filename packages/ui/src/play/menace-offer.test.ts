@@ -72,6 +72,12 @@ describe("menace and the offer to block (post-S42b, Chris's report)", () => {
     expect(r.notices).toContain("Opponent attacks with Boggart Brute (menace), Rumbling Baloth");
   });
 
+  it("post-S43: an AI combat that declares no attackers says nothing — never the empty \"No legal block: .\"", async () => {
+    const r = await drive({ mine: ["raging_goblin", "raging_goblin", "raging_goblin", "lumen_the_hearth_fire", "boggart_brute", "goblin_chieftain"], theirs: ["boggart_brute", "goblin_chieftain", "siege_gang_commander"], attackFirst: 3 });
+    expect(r.attacks).toEqual([]); // the board that produced the empty notice: the AI stays home on turn two
+    expect(r.notices.filter((n) => n.startsWith("No legal block"))).toEqual([]);
+  });
+
   it("a Brute (menace) and a Wind Drake (flying) attack into ONE untapped Piker: no legal block exists, the step is skipped, and the notice says why in the engine's terms", async () => {
     const r = await drive({ mine: ["goblin_piker", "goblin_piker", "goblin_piker"], theirs: ["boggart_brute", "wind_drake"], attackFirst: 2 });
     expect(r.attacks).toContain("T2: Boggart Brute, Wind Drake");

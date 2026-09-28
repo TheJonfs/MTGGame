@@ -115,6 +115,9 @@ function Viewer({ game, onBack }: { game: SavedGame; onBack?: () => void }) {
       note,
       flaggedAt: new Date().toISOString(),
       viewerVersion: VIEWER_VERSION,
+      // Post-S43 (Chris's menace flag, seed 864778789): a spec alone replays an AI-vs-AI duel but not a
+      // human's — the flag carries the whole duel log (the Download-log file) so it replays on its own.
+      game,
     };
     try {
       const resp = await fetch("/__flag", { method: "POST", body: JSON.stringify(entry) });

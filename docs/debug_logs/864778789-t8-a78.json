@@ -1,0 +1,124 @@
+{
+  "matchSpec": {
+    "seed": 864778789,
+    "players": [
+      {
+        "name": "Chris",
+        "decklist": [
+          {
+            "cardId": "mountain",
+            "count": 8
+          },
+          {
+            "cardId": "raging_goblin",
+            "count": 4
+          },
+          {
+            "cardId": "boggart_brute",
+            "count": 2
+          },
+          {
+            "cardId": "lightning_bolt",
+            "count": 2
+          },
+          {
+            "cardId": "plains",
+            "count": 3
+          },
+          {
+            "cardId": "lumen_the_hearth_fire",
+            "count": 1
+          },
+          {
+            "cardId": "hordeling_outburst",
+            "count": 3
+          },
+          {
+            "cardId": "goblin_grenade",
+            "count": 2
+          },
+          {
+            "cardId": "blaze",
+            "count": 2
+          },
+          {
+            "cardId": "goblin_chieftain",
+            "count": 1
+          },
+          {
+            "cardId": "shock",
+            "count": 1
+          },
+          {
+            "cardId": "siege_gang_commander",
+            "count": 1
+          }
+        ],
+        "agent": "human"
+      },
+      {
+        "name": "The Siege-Gang",
+        "decklist": [
+          {
+            "cardId": "mountain",
+            "count": 12
+          },
+          {
+            "cardId": "siege_gang_commander",
+            "count": 3
+          },
+          {
+            "cardId": "goblin_matron",
+            "count": 3
+          },
+          {
+            "cardId": "goblin_chieftain",
+            "count": 3
+          },
+          {
+            "cardId": "skirk_prospector",
+            "count": 2
+          },
+          {
+            "cardId": "hordeling_outburst",
+            "count": 2
+          },
+          {
+            "cardId": "boggart_brute",
+            "count": 2
+          },
+          {
+            "cardId": "goblin_grenade",
+            "count": 2
+          },
+          {
+            "cardId": "lightning_bolt",
+            "count": 1
+          }
+        ],
+        "agent": "heuristic:master"
+      }
+    ],
+    "rules": {
+      "startingLife": 10,
+      "handSize": 7,
+      "mulligan": "london",
+      "maxTurns": 100,
+      "ante": 2,
+      "startingPlayer": 0
+    },
+    "modifiers": [
+      {
+        "type": "startingLife",
+        "player": 1,
+        "value": 16
+      }
+    ]
+  },
+  "actionIndex": 78,
+  "turn": 8,
+  "step": "DECLARE_ATTACKERS",
+  "note": "It seems I'm not offered the opportunity to block even though I could, which seems to be an ongoing issue with meance occasionally messing up options (maybe tracking the index of available blockers because I have three tapped creatures before three untapped creatures?)",
+  "flaggedAt": "2026-09-27T22:32:13.866Z",
+  "viewerVersion": "s6-0.1"
+}

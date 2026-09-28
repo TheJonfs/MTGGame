@@ -127,6 +127,7 @@ Ordering/choice actions (`orderTrigger`, `orderBlocker`, …) carry the source *
 { matchSpec: MatchSpec; actionIndex: number; turn: number; step: string;
   note: string;                 // free text from the flagger ("why did Piker not block?")
   expected?: string;            // optional: what the flagger thinks should have happened
-  flaggedAt: string; viewerVersion: string; }
+  flaggedAt: string; viewerVersion: string;
+  game?: SavedGame; }           // post-S43: the whole duel log (the Download-log file) — a human's duel is not replayable from the spec
 ```
 A later session reads the inbox, reproduces via `replay(matchSpec.seed…, actionIndex)`, and either files a scenario fixture (and a rules-registry note) or records "working as intended" in the entry and moves it to `fixtures-inbox/closed/`.
