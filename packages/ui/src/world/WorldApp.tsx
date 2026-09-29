@@ -630,7 +630,7 @@ function DungeonTelegraph({ c }: { c: WorldController }) {
             while its castle theme plays through this telegraph (interiors stay silent). */}
         {sh && (
           <div style={{ margin: "-14px -14px 12px", overflow: "hidden", borderBottom: "2px solid var(--ink)" }}>
-            <img src={`/gate-plates/${sh.id}.jpg`} alt="" style={{ width: "100%", display: "block", maxHeight: 240, objectFit: "cover" }} />
+            <img src={`/gate-plates/${sh.id}.jpg`} alt="" style={{ width: "100%", display: "block", maxHeight: 240, objectFit: "cover" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
           </div>
         )}
         <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
@@ -1846,6 +1846,9 @@ export function WorldApp({ onWatchReplay, paused = false }: { onWatchReplay: (ga
     else if (scr.kind === "corollaTelegraph") cue = "splash.corolla";
     else if (scr.kind === "vaultTelegraph") cue = "splash.vault";
     else if (scr.kind === "corollaTown") cue = "music.corolla.town";
+    // 2026-09-28 (Chris): the deck editor opened from a seat's gate keeps the gate's theme — you never left the door.
+    else if ((scr.kind === "editor" || scr.kind === "collection") && typeof scr.back === "object" && scr.back.kind === "dungeonTelegraph" && scr.back.info.kind === "stronghold") cue = strongholdSplashCue(scr.back.info.dungeonId);
+    else if ((scr.kind === "editor" || scr.kind === "collection") && typeof scr.back === "object" && scr.back.kind === "petalTelegraph") { const back = scr.back; const sh = controller.catalog.strongholdContent?.find((x) => x.color === back.color); cue = sh ? strongholdSplashCue(sh.id) : "music.corolla"; }
     else if ((scr.kind === "editor" || scr.kind === "collection") && w2 && w2.gauntlet.corolla) cue = "music.corolla.town";
     // S26 r2 (Chris note 5): a petal's tip announces itself with its LAW's seat — the stronghold theme.
     else if (scr.kind === "petalTelegraph") { const sh = controller.catalog.strongholdContent?.find((x) => x.color === scr.color); cue = sh ? strongholdSplashCue(sh.id) : "music.corolla"; }

@@ -3777,6 +3777,21 @@
         }
       }
     },
+    "gate-lockmere-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:045a2952ca493aa904be3bfcf9208e25ae32215bd65472520ffb907d1576056c",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:045a2952ca493aa904be3bfcf9208e25ae32215bd65472520ffb907d1576056c",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/gate-lockmere-1/canonical.png",
+          "rendered_at": "2026-09-29T01:52:46+00:00",
+          "thumb": "assets/thumbs/gate-lockmere-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "gate-spiral-spire": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:55a55a7a0d24d5d54bc5b77a1f4bb54ea45b34ff9c84ed85312609b8a323dec9",

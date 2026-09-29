@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { AudioManager } from "./audio.js";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+import { AudioManager, strongholdSplashCue } from "./audio.js";
 
 /**
  * S23 audio scaffolding — the cue contract (brief Part 3):
@@ -74,5 +77,16 @@ describe("S23 audio scaffolding (cue-first; ADR-083/084)", () => {
     off();
     a.setEnabled(false);
     expect(calls).toBe(2);
+  });
+});
+
+describe("the seats' castle themes (2026-09-28, Chris: phase two's gates were silent)", () => {
+  it("every stronghold of both phases has its splash theme mapped — phase one's dungeons.json seats and the flood's five", () => {
+    const root = join(dirname(fileURLToPath(import.meta.url)), "../../../../data");
+    const read = (f: string) => JSON.parse(readFileSync(join(root, f), "utf8"));
+    const mapping = read("audio/mapping.json") as Record<string, unknown>;
+    const ids = [...(read("world/dungeons.json").strongholds as { id: string }[]), ...(read("world/flood.json").strongholds as { id: string }[])].map((s) => s.id);
+    expect(ids.length).toBe(10);
+    for (const id of ids) expect(mapping[strongholdSplashCue(id)], id).toBeTruthy();
   });
 });
