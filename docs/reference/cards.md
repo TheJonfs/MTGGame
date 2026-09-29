@@ -221,7 +221,7 @@
 | Serra Angel | W | Creature — Angel | {3}{W}{W} | 5 | 4/4 | flying, vigilance | 3 | 60 |  | Flying Vigilance (Attacking doesn't cause this creature to tap.) |
 | Angel of the Ruins | W | Artifact Creature — Angel | {5}{W}{W} | 7 | 5/7 | flying | 3 | 50 |  | Flying When this creature enters, exile up to two target artifacts and/or enchantments. Plainscycling {2} ({2}, Discard this card: Search your library for a Plains card, reveal it, put it into your hand, then shuffle.) |
 | Reya Dawnbringer | W | Legendary Creature — Angel | {6}{W}{W}{W} | 9 | 4/6 | flying | — | 40 | prizeOnly | Flying At the beginning of your upkeep, you may return target creature card from your graveyard to the battlefield. |
-| Shadow Summoning | WB | Sorcery | {W}{B} | 2 |  |  | 2 | 18 |  | Create two tapped 1/1 white Spirit creature tokens with flying. |
+| Shadow Summoning | WB | Sorcery | {W}{B} | 2 |  |  | R | 30 |  | Create two tapped 1/1 white Spirit creature tokens with flying. |
 | Vindicate | WB | Sorcery | {1}{W}{B} | 3 |  |  | R | 40 |  | Destroy target permanent. |
 | Isaura, the Levy | WB | Legendary Creature — Human Cleric | {2}{W}{B} | 4 | 2/3 |  | — | 20 | prizeOnly, custom | {1}{B}: Target creature gets −1/−1 until end of turn. {2}{W}{W}: Put a +1/+1 counter on each creature you control. |
 | Graceful Restoration | WB | Sorcery | {3}{W}{B} | 5 |  |  | R | 60 |  | Choose one — • Return target creature card from your graveyard to the battlefield with an additional +1/+1 counter on it. • Return up to two target creature cards with power 2 or less from your graveyard to the battlefield. |

@@ -173,10 +173,10 @@ Mages roam anywhere; beasts are spoke-bound (their colour's ring). Tier 1 rolls 
     }));
   if (catalog.flood) {
     const fl = catalog.flood;
-    section("The flood's strongholds (phase two — five seats)", "A phase-two world's stronghold sites (the phase-one placement rule, the phase-one machinery: the descent, the law on the lord's side every battle, the signature in hand at the lord's duel). The gate is the triad's colours. The fall pays the lord's card and five picks across the triad, and the pair's two golds join the shops.",
+    section("The flood's strongholds (phase two — five seats)", "A phase-two world's stronghold sites (the phase-one placement rule, the phase-one machinery: the descent, the law on the lord's side every battle, the signature in hand at the lord's duel). The gate is the triad's colours. The fall pays the lord's card and five picks across the triad (the pair's two golds among them — R, never shop stock).",
       fl.strongholds.map((c) => {
         const g = fl.decks[c.lord.key]!;
-        return { name: `${c.lord.name} — ${c.name} (${c.triad.join("")})`, life: `base ${c.lord.baseLife} ⚠ + growth − reduction`, law: `${c.law.name} — ${c.law.text}`, extra: `Card: ${pool.get(c.lord.cardId)?.name ?? c.lord.cardId}; door: ${c.deckRule ? `${c.deckRule.label} (${describeDeckRule(c.deckRule)})` : "none"}; golds to the shops: ${c.golds.map((d) => pool.get(d)?.name ?? d).join(" + ")}`, decklist: g.decklist, archetype: g.archetype };
+        return { name: `${c.lord.name} — ${c.name} (${c.triad.join("")})`, life: `base ${c.lord.baseLife} ⚠ + growth − reduction`, law: `${c.law.name} — ${c.law.text}`, extra: `Card: ${pool.get(c.lord.cardId)?.name ?? c.lord.cardId}; door: ${c.deckRule ? `${c.deckRule.label} (${describeDeckRule(c.deckRule)})` : "none"}; the pair's golds: ${c.golds.map((d) => pool.get(d)?.name ?? d).join(" + ")}`, decklist: g.decklist, archetype: g.archetype };
       }));
     section("The flood's courts (phase two — the five High Grounds in the Calyx)", "Each court is one duel on its island in the deep water, at the player's world life: the law AND the High Ground on the court's side from the first turn. The fall pays the ground (the only copy) and the minister. The Heart opens on the five LORDS' fall; the courts are prizes.",
       fl.courts.map((c) => {

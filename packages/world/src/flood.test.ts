@@ -67,7 +67,7 @@ import { legacyCarry, PETAL_ORDER } from "./corolla.js";
 import { defaultKnobs } from "./knobs.js";
 import { WorldRng } from "./rng.js";
 import { rollShopStock } from "./shop.js";
-import { lordStatus, strongholdState } from "./stronghold.js";
+import { lordStatus, strongholdPrizeList, strongholdState } from "./stronghold.js";
 import { applyCourtDuel, courtDuelSpec, courtsFallen, floodHeartOpen, floodRun, recordFloodLordFall } from "./flood.js";
 
 describe("S41 (ADR-130): the flood's run — the court's duel, the falls, the golds, the Heart's gate", () => {
@@ -168,19 +168,23 @@ describe("S41 (ADR-130): the flood's run — the court's duel, the falls, the go
     expect(advance(back, catalog, [site.at]).some((e) => e.type === "courtEntry")).toBe(false);
   });
 
-  it("a lord's fall adds his pair's two golds to the shops of towns sharing their colour (one copy, the R shelf's price) — the only R-tier shop stock; nothing before", () => {
+  it("post-S43 (Chris, 2026-09-28): a lord's fall records his pair's two golds but puts NO R-tier row on any shelf — the golds circulate where R does (quest prizes, dungeon and lair finds, the lords' picks)", () => {
     const w = world();
-    const town = (colour: string) => w.map.towns.find((t) => w.map.regions[t.region]!.color === colour)!;
-    expect(rollShopStock(w, town("U"), pool, knobs).some((r) => pool.get(r.cardId)?.shopTier === "R")).toBe(false);
-    recordFloodLordFall(w, flood.strongholds.find((s) => s.id === "tidelock_weir")!);
-    const blue = rollShopStock(w, town("U"), pool, knobs).filter((r) => pool.get(r.cardId)?.shopTier === "R");
-    expect(blue.map((r) => r.cardId)).toEqual(["static_sphere"]); // {1}{U}{W}: a blue town stocks it; the Helix is red-white
-    expect(blue[0]!.stock).toBe(1);
-    expect(rollShopStock(w, town("R"), pool, knobs).filter((r) => pool.get(r.cardId)?.shopTier === "R").map((r) => r.cardId)).toEqual(["sacred_helix"]);
-    expect(rollShopStock(w, town("W"), pool, knobs).filter((r) => pool.get(r.cardId)?.shopTier === "R").map((r) => r.cardId).sort()).toEqual(["sacred_helix", "static_sphere"]);
-    expect(rollShopStock(w, town("G"), pool, knobs).some((r) => pool.get(r.cardId)?.shopTier === "R")).toBe(false);
-    recordFloodLordFall(w, flood.strongholds.find((s) => s.id === "tidelock_weir")!); // idempotent on the golds
+    const sh = flood.strongholds.find((s) => s.id === "tidelock_weir")!;
+    recordFloodLordFall(w, sh);
+    for (const t of w.map.towns) {
+      const rows = rollShopStock(w, t, pool, knobs);
+      expect(rows.filter((r) => pool.get(r.cardId)?.shopTier === "R").map((r) => r.cardId)).toEqual([]);
+      expect(rows.length).toBeLessThanOrEqual(knobs.shopStockSize);
+    }
+    recordFloodLordFall(w, sh); // idempotent on the golds
     expect(floodRun(w).golds).toEqual(["static_sphere", "sacred_helix"]);
+    // Every flood gold is R (ADR-078: gold is R) and so rides the R draws and the triad's picker.
+    for (const s of flood.strongholds) for (const g of s.golds) {
+      expect(pool.get(g)?.shopTier, g).toBe("R");
+      expect(pool.get(g)?.prizeOnly, g).toBeFalsy();
+      expect(s.triad.some((c) => strongholdPrizeList(pool, c).some((d) => d.id === g)), g).toBe(true);
+    }
   });
 
   it("ADR-130: the Heart opens when the five LORDS have fallen — the courts do not count; never in a phase-one world", () => {

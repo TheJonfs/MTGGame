@@ -110,6 +110,14 @@ Measured first with a throwaway probe (master vs master, 210 games: Corvane, the
 - **The empty-targets gate** (`emptyTargetsWasteGated`): a spell whose every effect acts on its targets, cast with none, is -Infinity (the X=0 family). The Restoration's empty casts: **0**. The -0.25 "unchanged" friction was softmax-reachable.
 - Books **70** and **71** (fail on the old agent). Ladder gate PASS (100/cell). 757 tests.
 
+## Post-session (Chris's ruling, 2026-09-28): the flood's golds leave the shelves; Shadow Summoning is R
+
+Chris saw Static Sphere and Sacred Helix as a 9th/10th shop row after the Bailiff fell. That was S41's gold rows (`shop.ts`, appended past the shelf, bypassing the R exclusion; the S41 brief's "the pair's two golds join the R drawer"). **Chris's intent: the new golds join the existing ones where gold already circulates** — the R draw for quest prizes and dungeon/lair finds, and the lords' picks. All three already take every R card (`quests.ts`, `colorPrizeRoll`/`lairPrizeRoll`, `strongholdPrizeList` over the triad), so the fix is removal:
+- **The gold rows are gone**; `run.golds` is still recorded at a fall (the chronicle, the save, the dev shortcut). `flood.test.ts` now pins: no R row on any town's shelf after a fall, the shelf never over `shopStockSize`, and every flood gold is R, not prizeOnly, and in its triad's picker.
+- **Shadow Summoning 2 → R** (gold is R, ADR-078). **Supersedes ADR-128's T2 placement — for the planner to record.** The tier tally pin is 72/55/11/R 35; pool-registry note amended; `docs/reference` regenerated.
+- Wording: the reference docs, the dev "Fell the five lords" tooltip and the comments no longer say "golds to the shops".
+- **For the planner (Chris is interested)**: if phase two should widen the shelves, the tidy lever is `shopStockSize` rising with lords fallen (the ordinary pool — R stays out), not appended rows. Not built.
+
 ## Registry entries added/changed
 
 No R-numbers (no rules changed). ADR-136 and the rulings in `docs/decision-updates/s43.md`. No new cards (pool 227). Data: `quests.json` `flood.lairs` (three kinds: name, line, prize). Types: `FloodLairKind`, `FLOOD_LAIR_KINDS`, `FloodTextPack.lairs`, `Manalink.lair`, `DuelRecord.lairPrize`, `FloodRunState.lairs`. Functions: `floodLairResidents`, `floodLairId` / `parseFloodLairId`, `floodLairName`, `FLOOD_LAIR_PRIZE`, `awardFloodLair`, `grantManalink`. Generator: step 5e. Journey: the lair threshold, the parley's lair refusal. Quests: retrieval targets exclude flood lairs. Sim: `ROAD_DECKS.salvageWRLordsLairs` / `salvageUBLordsLairs`; `flood-sim --refs postlairs`; `heart-sim --refs postlairs`. UI: the parley (lair line, holds, resolved life, three-basic clause, buy-off shut), the result's lair line, the rail, the splash, dev "Stand at the nearest lair", `floodLairAt`, `devStandAtNearestLair`.

@@ -153,7 +153,7 @@ function DevTab({ c }: { c: WorldController }) {
             <p style={{ fontSize: 12, color: "var(--ink-soft)", marginTop: 0 }}>Each completion is the site's fall without the crawl: cleared = ground, and only the prize that unlocks things (the Mox and guardian card; the power and guardian card; the lord's card and the seal). Autosaved.</p>
             <p style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
               {(c.world?.phase ?? 1) >= 2
-                ? <button className="primary" onClick={() => c.devCompleteAll("stronghold")} title="S42b: the five flood lords fall as if fought — cards, seals, golds to the shops, the chronicle; the deep water opens">Fell the five lords</button>
+                ? <button className="primary" onClick={() => c.devCompleteAll("stronghold")} title="S42b: the five flood lords fall as if fought — cards, seals, the golds recorded, the chronicle; the deep water opens">Fell the five lords</button>
                 : null}
               {(c.world?.phase ?? 1) >= 2 && <button onClick={() => { c.devStandAtNearestLair(); setOpen(false); }} title="S43: a teleport to the nearest un-felled lair — the next step onto it is the real threshold (the parley, the duel, the manalink)">Stand at the nearest lair</button>}
               {(c.world?.phase ?? 1) >= 2 ? null

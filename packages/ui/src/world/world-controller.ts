@@ -1623,7 +1623,7 @@ export class WorldController {
         const sh = this.strongholdDef(run.dungeonId)!;
         const paid = clearDungeon(this.world, run, { gold: 0, cardIds: [sh.lord.cardId] });
         strongholdState(this.world, sh.color).seal = true;
-        const fsh = floodStronghold(this.catalog, sh.id); // S41: the flood's fall — the pair's golds join the shops; chronicled
+        const fsh = floodStronghold(this.catalog, sh.id); // S41: the flood's fall — the pair's golds recorded (post-S43: not shop stock); chronicled
         if (fsh) recordFloodLordFall(this.world, fsh);
         creditRenown(this.world.player, sh.color, 3); // a lord's fall echoes like a tier-3 kill (flagged for ratification)
         this.autosave();
@@ -1753,8 +1753,8 @@ export class WorldController {
     const sh = this.strongholdDef(id);
     if (sh) {
       mark(); addToCollection(w, [sh.lord.cardId], "reward"); strongholdState(w, sh.color).seal = true;
-      // S42b (the brief's Part 4): on a phase-two world the shortcut is the FLOOD's fall too — the pair's golds join the
-      // shops and the fall is chronicled, so five of these open the deep water exactly as five fights would (the fount
+      // S42b (the brief's Part 4): on a phase-two world the shortcut is the FLOOD's fall too — the pair's golds are
+      // recorded and the fall is chronicled, so five of these open the deep water exactly as five fights would (the fount
       // can be walked live; Chris's hand read — ADR-135's (c)).
       const fsh = floodStronghold(this.catalog, sh.id);
       if (fsh) recordFloodLordFall(w, fsh);

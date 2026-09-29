@@ -19,5 +19,5 @@
  "art": {
   "fallback": "rendered"
  },
- "shopTier": 2
+ "shopTier": "R"
 }

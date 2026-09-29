@@ -279,13 +279,13 @@ The wild ring's seats. The lord's partisan law sits on his side every battle ins
 
 ## The flood's strongholds (phase two — five seats)
 
-A phase-two world's stronghold sites (the phase-one placement rule, the phase-one machinery: the descent, the law on the lord's side every battle, the signature in hand at the lord's duel). The gate is the triad's colours. The fall pays the lord's card and five picks across the triad, and the pair's two golds join the shops.
+A phase-two world's stronghold sites (the phase-one placement rule, the phase-one machinery: the descent, the law on the lord's side every battle, the signature in hand at the lord's duel). The gate is the triad's colours. The fall pays the lord's card and five picks across the triad (the pair's two golds among them — R, never shop stock).
 
 ### The Bailiff — Tidelock Weir (WUR)
 
 - Starting life: base 30 ⚠ + growth − reduction
 - Law: The Intake — Creatures your opponents control enter the battlefield tapped.
-- Card: The Bailiff; door: the Tidelock Weir gate (colours within WUR); golds to the shops: Static Sphere + Sacred Helix
+- Card: The Bailiff; door: the Tidelock Weir gate (colours within WUR); the pair's golds: Static Sphere + Sacred Helix
 - Deck (midrange): 40 cards, 17 lands, avg MV 2.96, colours RUW
   1 Hallowed Fountain · 3 Island · 3 Mountain · 4 Plains · 1 Plateau · 1 Sacred Foundry · 1 Secluded Steppe · 1 Steam Vents · 1 Tundra · 1 Volcanic Island · 2 Lightning Bolt · 1 Swords to Plowshares · 1 Boomerang · 2 Counterspell · 1 Essence Scatter · 1 Master Decoy · 2 Plumecreed Escort · 1 Aether Channeler · 2 Man-o'-War · 2 Static Sphere · 1 Cunning Tactician · 1 Restoration Angel · 2 Sacred Helix · 1 Serra Angel · 3 The Bailiff
 
@@ -293,7 +293,7 @@ A phase-two world's stronghold sites (the phase-one placement rule, the phase-on
 
 - Starting life: base 30 ⚠ + growth − reduction
 - Law: The Tithe — Whenever a creature dies, each opponent loses 1 life.
-- Card: The Reeve; door: the Marrowfen gate (colours within BUG); golds to the shops: Glimpse the Unthinkable + Putrefy
+- Card: The Reeve; door: the Marrowfen gate (colours within BUG); the pair's golds: Glimpse the Unthinkable + Putrefy
 - Deck (control): 40 cards, 17 lands, avg MV 3.26, colours BGU
   1 Barren Moor · 1 Bayou · 1 Breeding Pool · 3 Forest · 3 Island · 1 Overgrown Tomb · 4 Swamp · 1 Tropical Island · 1 Underground Sea · 1 Watery Grave · 3 Hedron Crab · 2 Thought Scour · 1 Counterspell · 1 Deadly Recluse · 1 Doom Blade · 2 Glimpse the Unthinkable · 1 Buried Alive · 2 Putrefy · 2 Gaean Wurm · 1 Gravedigger · 1 Nekrataal · 1 Zombify · 3 The Reeve · 1 Pelakka Wurm · 1 Artisan of Kozilek
 
@@ -301,7 +301,7 @@ A phase-two world's stronghold sites (the phase-one placement rule, the phase-on
 
 - Starting life: base 30 ⚠ + growth − reduction
 - Law: The Toll — Whenever an opponent casts a spell, The Toll deals 1 damage to that player.
-- Card: The Fordkeeper; door: the Emberford gate (colours within RWG); golds to the shops: Powerstone Minefield + Savage Twister
+- Card: The Fordkeeper; door: the Emberford gate (colours within RWG); the pair's golds: Powerstone Minefield + Savage Twister
 - Deck (control): 40 cards, 18 lands, avg MV 2.86, colours GRW
   1 Evolving Wilds · 3 Forest · 1 Forgotten Cave · 4 Mountain · 3 Plains · 1 Plateau · 1 Sacred Foundry · 1 Savannah · 1 Stomping Ground · 1 Taiga · 1 Temple Garden · 1 Blaze · 2 Lightning Bolt · 1 Llanowar Elves · 1 Shock · 1 Abrade · 1 Pyroclasm · 2 Rampant Growth · 2 Savage Twister · 2 Wood Elves · 1 Frondland Felidar · 1 Glare of Subdual · 2 Powerstone Minefield · 1 Rumbling Baloth · 1 Serra Angel · 3 The Fordkeeper
 
@@ -309,7 +309,7 @@ A phase-two world's stronghold sites (the phase-one placement rule, the phase-on
 
 - Starting life: base 30 ⚠ + growth − reduction
 - Law: The Risen Tide — You may play an additional land on each of your turns.
-- Card: The Dredger; door: the Lockmere gate (colours within UBW); golds to the shops: Undermine + Absorb
+- Card: The Dredger; door: the Lockmere gate (colours within UBW); the pair's golds: Undermine + Absorb
 - Deck (control): 40 cards, 18 lands, avg MV 3.23, colours BUW
   1 Barren Moor · 1 Godless Shrine · 1 Hallowed Fountain · 3 Island · 1 Lonely Sandbar · 3 Plains · 1 Scrubland · 1 Secluded Steppe · 3 Swamp · 1 Tundra · 1 Underground Sea · 1 Watery Grave · 1 Brainstorm · 1 Duress · 1 Swords to Plowshares · 1 Counterspell · 1 Doom Blade · 1 Hymn to Tourach · 2 Absorb · 1 Divination · 2 Undermine · 1 Vampire Nighthawk · 2 Vindicate · 1 Restoration Angel · 1 Wrath of God · 1 Air Elemental · 1 Graceful Restoration · 1 Serra Angel · 3 The Dredger
 
@@ -317,7 +317,7 @@ A phase-two world's stronghold sites (the phase-one placement rule, the phase-on
 
 - Starting life: base 30 ⚠ + growth − reduction
 - Law: The Season — At the beginning of your upkeep, put a +1/+1 counter on each creature you control.
-- Card: The Reaper; door: the Harrowmoor gate (colours within GBR); golds to the shops: Poison-Tip Archer + Voracious Cobra
+- Card: The Reaper; door: the Harrowmoor gate (colours within GBR); the pair's golds: Poison-Tip Archer + Voracious Cobra
 - Deck (midrange): 40 cards, 17 lands, avg MV 2.83, colours BGR
   1 Badlands · 1 Bayou · 1 Blood Crypt · 4 Forest · 3 Mountain · 1 Overgrown Tomb · 1 Stomping Ground · 3 Swamp · 1 Taiga · 1 Tranquil Thicket · 1 Indulgent Aristocrat · 1 Lightning Bolt · 2 Llanowar Elves · 1 Moss Viper · 1 Rancor · 1 Bitterblossom · 1 Blood Artist · 1 Deadly Recluse · 1 Rampant Growth · 1 Terror · 1 Char · 1 Wood Elves · 1 Gaean Wurm · 1 Gravedigger · 2 Poison-Tip Archer · 1 Rumbling Baloth · 2 Voracious Cobra · 3 The Reaper
 

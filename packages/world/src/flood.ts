@@ -22,7 +22,7 @@ import { heartRootModifiers, startingColor, type ChronicleEntry } from "./coroll
 export interface FloodDeckDef { name: string; seat: string; archetype: StarterArchetype; decklist: StarterDecklist }
 
 /** A phase-two stronghold: the phase-one content shape plus the triad (the colour gate and the prize picker's
- * reach) and the pair's two golds (they join the flood's shops when the seat falls). */
+ * reach) and the pair's two golds (recorded when the seat falls; R like every gold — prizes and picks, never a shelf). */
 export interface FloodStrongholdDef extends StrongholdContentDef {
   triad: LordColor[];
   golds: [string, string];
@@ -155,7 +155,7 @@ export const courtsFallen = (world: WorldState): number => Object.keys(floodRun(
 /** ADR-130 (Chris, 2026-09-20): the flood's Heart opens when the five LORDS have fallen — the courts are prizes. */
 export const floodHeartOpen = (world: WorldState): boolean => (world.phase ?? 1) >= 2 && sealsHeld(world) >= 5;
 
-/** A stronghold of the flood has fallen: its pair's two golds join the shops; the fall is chronicled. */
+/** A stronghold of the flood has fallen: its pair's two golds are recorded (post-S43: no longer shop stock); the fall is chronicled. */
 export function recordFloodLordFall(world: WorldState, sh: FloodStrongholdDef): void {
   const run = floodRun(world);
   run.golds = [...new Set([...(run.golds ?? []), ...sh.golds])];
