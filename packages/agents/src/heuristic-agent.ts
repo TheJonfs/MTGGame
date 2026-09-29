@@ -205,6 +205,7 @@ export class HeuristicAgent implements Agent {
     // Boomerang at its own Island, Mind Rot at its own head, Rancor on Chris's creature):
     // spending a card on provably nothing is never a play, at any temperature (the X=0 family).
     if (this.discardWasteGated(view, action)) return -Infinity; // Duress/Mind Rot into an empty hand
+    if (this.emptyTargetsWasteGated(view, action)) return -Infinity; // post-S43: an "up to" spell cast at nothing (Graceful Restoration's second mode)
     if (this.pumpWasteGated(view, action)) return -Infinity; // Giant Growth outside combat, empty stack
     if (this.fleetingWasteGated(view, action)) return -Infinity; // S23: the Thundersnake outside its window
     if (this.threatenGated(view, action)) return -Infinity; // S26: Lumen's steal only where the swing cashes
@@ -356,12 +357,15 @@ export class HeuristicAgent implements Agent {
     let spendsCard: string | null = null;
     let burstColor: string | null = null;
     let burstColors: string[] | null = null;
+    let fixedColors: string[] = []; // post-S43: a Ritual's BBB — the enabled card's OTHER pips come from the lands
+    let ownCost = 0;
     if (action.type === "castSpell") {
       const card = view.hand.find((c) => c.objectId === action.objectId);
       const d = card ? this.def(card.cardId) : undefined;
       if (!d || !d.spellEffect || d.spellEffect.length === 0 || !d.spellEffect.every((e) => e.type === "addMana")) return null;
-      for (const e of d.spellEffect) if (e.type === "addMana" && e.mana) produced += (e.mana.match(/\{/g) ?? []).length;
-      produced -= Math.max(1, manaValue(parseManaCost(d.manaCost))); // net of its own cost
+      for (const e of d.spellEffect) if (e.type === "addMana" && e.mana) { produced += (e.mana.match(/\{/g) ?? []).length; fixedColors.push(...(e.mana.match(/[WUBRG]/g) ?? [])); }
+      ownCost = Math.max(1, manaValue(parseManaCost(d.manaCost)));
+      produced -= ownCost; // net of its own cost
       spendsCard = card!.objectId;
     } else if (action.type === "activateAbility") {
       const o = view.battlefield.find((b) => b.id === action.objectId);
@@ -394,12 +398,24 @@ export class HeuristicAgent implements Agent {
       return hasMana && (isLand || true);
     }).length;
     const available = pool + producers;
+    // Post-S43 (Chris: "a Dark Ritual and then nothing" — 68 of 82 Rituals wasted in a probe, 50 of them in the
+    // AI's own upkeep or draw step): the burst's mana empties at the step's end, so the card it enables must be
+    // castable in THIS step — a sorcery-speed card only in our main phase on an empty stack.
+    const sorceryWindow = view.activePlayer === me && (view.step === "MAIN1" || view.step === "MAIN2") && view.stack.length === 0;
     const enables = view.hand.some((c) => {
       if (c.objectId === spendsCard) return false;
       const d = this.def(c.cardId);
       if (!d || d.types.includes("Land")) return false;
       const mv = manaValue(parseManaCost(d.manaCost));
       if (!(mv > available && mv <= available + produced)) return false;
+      if (!sorceryWindow && !d.types.includes("Instant") && !(d.keywords ?? []).includes("flash")) return false;
+      if (this.targetsAbsent(view, d)) return false; // a Terror with nothing to kill enables nothing
+      // An untargeted, unmoded, X-less card is its own cast action — ask our own scorer whether we would cast
+      // it at all (Buried Alive without a reanimator, a second copy of a legend: the gates say no).
+      if (!d.targets?.length && !d.modes && !/\{X\}/.test(d.manaCost) && action.type === "castSpell") {
+        if (this.scorePriorityAction(view, { type: "castSpell", objectId: c.objectId, targets: [] }) === -Infinity) return false;
+      }
+      if (fixedColors.length > 0 && !this.burstPayable(view, spendsCard!, fixedColors, d.manaCost)) return false;
       // S26: a coloured burst must match a pip of the card it enables (a Lotus popped for red
       // enables nothing blue); colourless costs take any colour.
       if (burstColor) {
@@ -421,6 +437,58 @@ export class HeuristicAgent implements Agent {
       return true;
     });
     return { enables };
+  }
+
+  /** Post-S43 (Chris: Graceful Restoration cast "with nothing happening" — its second mode, "up to two",
+   * cast with zero targets into a graveyard with no creatures: 27 of 124 casts in a probe). A spell whose
+   * every effect acts on its targets, cast with none chosen, does provably nothing — the X=0 family. */
+  private emptyTargetsWasteGated(view: GameView, action: Action): boolean {
+    if (action.type !== "castSpell" || (action.targets?.length ?? 0) > 0) return false;
+    const card = view.hand.find((c) => c.objectId === action.objectId);
+    const d = card ? this.def(card.cardId) : undefined;
+    if (!d) return false;
+    const specs = d.modes && action.mode !== undefined ? d.modes[action.mode]?.targets ?? [] : d.targets ?? [];
+    if (specs.length === 0) return false; // untargeted: its effects need no targets
+    const effects = d.modes && action.mode !== undefined ? d.modes[action.mode]?.effects ?? [] : d.spellEffect ?? [];
+    return effects.length > 0 && effects.every((e) => "target" in e || "targetSpec" in e);
+  }
+
+  /** Post-S43: can the Ritual be cast AND the card it enables be paid after it resolves — by colour? The
+   * Ritual's own pips and the card's pips its mana does not make are matched to our untapped producers
+   * (each by the colours it taps for) and the floating pool; the generic parts take whatever is left. */
+  private burstPayable(view: GameView, ritualId: string, burst: string[], costText: string): boolean {
+    const me = view.you;
+    const sources: string[][] = [];
+    for (const [c, n] of Object.entries(view.manaPool)) for (let i = 0; i < n; i++) sources.push([c]);
+    for (const o of view.battlefield) {
+      if (o.controller !== me || o.tapped) continue;
+      const ab = (this.def(o.cardId)?.abilities ?? []).find((a) => a.kind === "activated" && a.cost.tap && !a.cost.sacrifice && !a.cost.mana && a.effects.length > 0 && a.effects.every((e) => e.type === "addMana" && !e.choice));
+      if (!ab || ab.kind !== "activated") continue;
+      const cols = new Set<string>();
+      for (const e of ab.effects) if (e.type === "addMana") for (const c of (e.mana ?? "").match(/[WUBRGC]/g) ?? []) cols.add(c);
+      if (cols.size > 0) sources.push([...cols]);
+    }
+    const ritualCost = parseManaCost(this.def(view.hand.find((c) => c.objectId === ritualId)?.cardId ?? "")?.manaCost ?? "");
+    const cardCost = parseManaCost(costText);
+    const pipsOf = (text: string) => text.match(/\{([WUBRG])\}/g)?.map((x) => x[1]!) ?? [];
+    const ritualPips = pipsOf(this.def(view.hand.find((c) => c.objectId === ritualId)?.cardId ?? "")?.manaCost ?? "");
+    const left = [...burst];
+    const cardPips = pipsOf(costText).filter((p) => { const i = left.indexOf(p); if (i === -1) return true; left.splice(i, 1); return false; });
+    const need = [...ritualPips, ...cardPips];
+    const used = new Array(sources.length).fill(false);
+    const match = (k: number): boolean => {
+      if (k === need.length) return true;
+      for (let i = 0; i < sources.length; i++) {
+        if (used[i] || !sources[i]!.includes(need[k]!)) continue;
+        used[i] = true;
+        if (match(k + 1)) return true;
+        used[i] = false;
+      }
+      return false;
+    };
+    if (!match(0)) return false;
+    const spare = used.filter((u) => !u).length + left.length;
+    return spare >= ritualCost.generic + cardCost.generic;
   }
 
   /** S17: a hand-zone self-discard ability (cycling). S22: resolved through the virtual list so the
@@ -478,6 +546,12 @@ export class HeuristicAgent implements Agent {
       const spareLands = view.hand.filter((c) => this.def(c.cardId)?.types.includes("Land")).length;
       return inPlay >= 6 && spareLands >= 2;
     }
+    return this.targetsAbsent(view, d);
+  }
+
+  /** S17 (cycling's dead-card test), shared post-S43 with the mana burst: a spell whose target specs
+   * cannot all be met on this board. Approximate — graveyard and unknown predicates count as met. */
+  private targetsAbsent(view: GameView, d: CardDef): boolean {
     const specs = d.targets ?? [];
     if (specs.length === 0) return false; // untargeted spells always have a use
     // Approximate legality from the view: any battlefield object the spec's base/anyOf predicates could accept.

@@ -994,4 +994,33 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.scorePriorityAction(cleric(3), { type: "activateAbility", objectId: "cleric", abilityIndex: 0, targets: [] })).toBe(-Infinity);
     expect(a.scorePriorityAction(cleric(12), { type: "activateAbility", objectId: "cleric", abilityIndex: 0, targets: [] })).toBeGreaterThan(-Infinity);
   });
+
+  it("book of shame 70 (post-S43, Chris: a Dark Ritual and then nothing): the burst's card must be castable in THIS step, payable by colour, and one we would cast", () => {
+    const a = agent("midrange");
+    const rit = { type: "castSpell" as const, objectId: "rit", targets: [] };
+    const sw = (id: string) => ({ id, cardId: "swamp", controller: 0 as const });
+    const fo = (id: string) => ({ id, cardId: "forest", controller: 0 as const });
+    // The S17 pin's board (Swamp, Ritual + Specter) in our upkeep: the mana would empty before the main phase.
+    const specter = { hand: [{ objectId: "rit", cardId: "dark_ritual" }, { objectId: "spec", cardId: "hypnotic_specter" }], battlefield: [sw("s1")] };
+    expect(a.scorePriorityAction(mkView({ ...specter, step: "UPKEEP" }), rit)).toBe(-Infinity);
+    expect(a.scorePriorityAction(mkView({ ...specter, step: "MAIN1", stack: [{ id: "x", kind: "spell", cardId: "shock", controller: 1 }] }), rit)).toBe(-Infinity); // in response: a sorcery-speed card waits
+    expect(a.scorePriorityAction(mkView(specter), rit)).toBeGreaterThan(a.scorePriorityAction(mkView(specter), { type: "pass" }));
+    // Pelakka Wurm ({4}{G}{G}{G}) off five Swamps: seven mana, none of it green — never; off three Forests and two Swamps: a play.
+    const wurm = (lands: { id: string; cardId: string; controller: 0 }[]) => mkView({ hand: [{ objectId: "rit", cardId: "dark_ritual" }, { objectId: "pw", cardId: "pelakka_wurm" }], battlefield: lands });
+    expect(a.scorePriorityAction(wurm([sw("s1"), sw("s2"), sw("s3"), sw("s4"), sw("s5")]), rit)).toBe(-Infinity);
+    const green = wurm([fo("f1"), fo("f2"), fo("f3"), sw("s1"), sw("s2")]);
+    expect(a.scorePriorityAction(green, rit)).toBeGreaterThan(a.scorePriorityAction(green, { type: "pass" }));
+    // Buried Alive with no reanimator in hand: our own gate refuses it, so the Ritual enables nothing.
+    expect(a.scorePriorityAction(mkView({ hand: [{ objectId: "rit", cardId: "dark_ritual" }, { objectId: "ba", cardId: "buried_alive" }], battlefield: [sw("s1")] }), rit)).toBe(-Infinity);
+  });
+
+  it("book of shame 71 (post-S43, Chris: Graceful Restoration \"with nothing happening\"): the up-to-two mode cast at no targets is never a play; with a body to return it is", () => {
+    const a = agent("midrange");
+    const lands = [{ id: "p1", cardId: "plains", controller: 0 as const }, ...["s1", "s2", "s3", "s4"].map((id) => ({ id, cardId: "swamp", controller: 0 as const }))];
+    const empty = mkView({ hand: [{ objectId: "gr", cardId: "graceful_restoration" }], battlefield: lands });
+    expect(a.scorePriorityAction(empty, { type: "castSpell", objectId: "gr", targets: [], mode: 1 })).toBe(-Infinity);
+    const yard = [{ objectId: "g_b", cardId: "grizzly_bears" }];
+    const stocked: GameView = { ...empty, graveyardObjects: [yard, []], graveyards: [["grizzly_bears"], []] };
+    expect(a.scorePriorityAction(stocked, { type: "castSpell", objectId: "gr", targets: [{ kind: "object", id: "g_b" }], mode: 1 })).toBeGreaterThan(-Infinity);
+  });
 });
