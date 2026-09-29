@@ -213,6 +213,8 @@ export class HeuristicAgent implements Agent {
     if (this.legendDuplicateGated(view, action)) return -Infinity; // S27 r2: never cast a second copy of a legend we control
     if (this.cantripTimingGated(view, action)) return -Infinity; // S28: Brainstorm at the opponent's end step or in response
     if (this.flashTimingGated(view, action)) return -Infinity; // S32: the Escort at the opponent's end step, in response, or when the mana is idle
+    if (this.selfCounterGated(view, action)) return -Infinity; // post-S43: Mystic Snake with only our own spell to hit
+    if (this.idleSinkGated(view, action)) return -Infinity; // post-S43: the Cleric / Faerie Formation spend only mana that would idle
     if (this.glaciersDropGated(view, action)) return -Infinity; // S36 (book 52): the Glaciers as the land drop only for a reason; otherwise the real land
     if (this.glaciersActivationGated(view, action)) return -Infinity; // S36 (book 52): fetch at their end step, or on our turn for a colour we lack
     if (this.libraryDrawGated(view, action)) return -Infinity; // S36: the Library draws at the opponent's end step only
@@ -1449,6 +1451,40 @@ export class HeuristicAgent implements Agent {
     const me = view.you;
     const untapped = view.battlefield.filter((o) => o.controller === me && !o.tapped && this.def(o.cardId)?.types.includes("Land")).length;
     return view.hand.some((c) => c.objectId !== action.objectId && !this.def(c.cardId)?.types.includes("Land") && !this.def(c.cardId)?.manaCost.includes("X") && this.mv(c.cardId) <= untapped);
+  }
+
+  /** Post-S43 (Chris, the Cinquefont fight: the Ruby Tyrant cast, then Mystic Snake in response — its mandatory
+   * trigger's only target was our own Tyrant). A permanent whose enter-the-battlefield trigger counters a spell is
+   * never cast while no OPPONENT's spell is on the stack: the trigger must take a target, and ours would be the one.
+   * Keyed on the shape (a mandatory ETB counter), not the card. Exposed for the book. */
+  selfCounterGated(view: GameView, action: Action): boolean {
+    if (action.type !== "castSpell") return false;
+    const card = view.hand.find((c) => c.objectId === action.objectId);
+    const d = card ? this.def(card.cardId) : undefined;
+    const etbCounter = (d?.abilities ?? []).some((a) => a.kind === "triggered" && a.event === "ENTERS_BATTLEFIELD" && a.condition?.source === "self" && !a.optional && a.effects.some((e) => e.type === "counter"));
+    if (!etbCounter) return false;
+    return !view.stack.some((it) => it.kind === "spell" && it.controller !== view.you);
+  }
+
+  /** Post-S43 (Chris: the Pearl Cleric and Faerie Formation "exhaust mana as soon as it untaps", before the draw and
+   * before the hand). A REPEATABLE value sink — a permanent's activation paid in mana (no tap, no sacrifice) whose
+   * every effect is value for us (life, tokens, cards) — spends only mana that would otherwise idle: at the
+   * opponent's end step, or in our own second main phase when nothing in hand is castable with what is untapped.
+   * The end step is always open, so the sink is never locked out. Exposed for the book. */
+  idleSinkGated(view: GameView, action: Action): boolean {
+    if (action.type !== "activateAbility") return false;
+    const src = view.battlefield.find((b) => b.id === action.objectId);
+    if (!src || src.controller !== view.you) return false;
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+    if (!ab || ab.kind !== "activated" || !ab.cost.mana || ab.cost.tap || ab.cost.sacrifice || ab.equip || ab.modes || ab.zone === "hand") return false;
+    const VALUE = new Set(["gainLife", "createToken", "draw"]); // team counters stay with the S40 sink gate (books 58–63)
+    if (ab.effects.length === 0 || !ab.effects.every((e) => VALUE.has(e.type) && (!("who" in e) || e.who === "you" || e.who === undefined) && !("target" in e && e.target !== undefined))) return false;
+    const me = view.you;
+    if (view.activePlayer !== me) return view.step !== "END";
+    if (view.step !== "MAIN2" || view.stack.length > 0) return true;
+    const sources = view.battlefield.filter((o) => o.controller === me && !o.tapped && (this.def(o.cardId)?.abilities ?? []).some((a) => a.kind === "activated" && a.cost.tap && a.effects.length > 0 && a.effects.every((e) => e.type === "addMana"))).length
+      + Object.values(view.manaPool).reduce((a, b) => a + b, 0);
+    return view.hand.some((c) => { const d = this.def(c.cardId); return !!d && !d.types.includes("Land") && !d.manaCost.includes("X") && this.mv(c.cardId) <= sources; });
   }
 
   /** S32 (ADR-109, Diabolic Edict — book 50): an edict is worth the LEAST creature its target would

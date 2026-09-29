@@ -990,7 +990,8 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.scorePriorityAction(tyrant(1), { type: "activateAbility", objectId: "tyrant", abilityIndex: 0, targets: [{ kind: "object", id: "bear" }] })).toBe(-Infinity);
     expect(a.scorePriorityAction(tyrant(10), { type: "activateAbility", objectId: "tyrant", abilityIndex: 0, targets: [{ kind: "object", id: "bear" }] })).toBeGreaterThan(-Infinity);
     // The Cleric: an exile-top cost that leaves the library under 3 is the DECKED walk.
-    const cleric = (lib: number) => mkView({ librarySizes: [lib, 20], battlefield: [{ id: "cleric", cardId: "the_pearl_cleric", controller: 0 }] });
+    // Post-S43: the Cleric's life is an idle-mana sink — read at the opponent's end step, its open window (book 73).
+    const cleric = (lib: number) => mkView({ librarySizes: [lib, 20], step: "END", activePlayer: 1, battlefield: [{ id: "cleric", cardId: "the_pearl_cleric", controller: 0 }] });
     expect(a.scorePriorityAction(cleric(3), { type: "activateAbility", objectId: "cleric", abilityIndex: 0, targets: [] })).toBe(-Infinity);
     expect(a.scorePriorityAction(cleric(12), { type: "activateAbility", objectId: "cleric", abilityIndex: 0, targets: [] })).toBeGreaterThan(-Infinity);
   });
@@ -1022,5 +1023,34 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const yard = [{ objectId: "g_b", cardId: "grizzly_bears" }];
     const stocked: GameView = { ...empty, graveyardObjects: [yard, []], graveyards: [["grizzly_bears"], []] };
     expect(a.scorePriorityAction(stocked, { type: "castSpell", objectId: "gr", targets: [{ kind: "object", id: "g_b" }], mode: 1 })).toBeGreaterThan(-Infinity);
+  });
+
+  it("book of shame 72 (post-S43, Chris — the Cinquefont fight): Mystic Snake is never cast with only our own spell on the stack (its mandatory trigger would counter it); in response to theirs it is", () => {
+    const a = agent("midrange");
+    const lands = ["i1", "i2", "i3", "f1"].map((id, k) => ({ id, cardId: k < 3 ? "island" : "forest", controller: 0 as const }));
+    const snake = { type: "castSpell" as const, objectId: "sn", targets: [] };
+    const ours = mkView({ hand: [{ objectId: "sn", cardId: "mystic_snake" }], battlefield: lands, stack: [{ id: "ty", kind: "spell", cardId: "the_ruby_tyrant", controller: 0 }] });
+    expect(a.scorePriorityAction(ours, snake)).toBe(-Infinity);
+    const theirs = mkView({ hand: [{ objectId: "sn", cardId: "mystic_snake" }], battlefield: lands, stack: [{ id: "sa", kind: "spell", cardId: "serra_angel", controller: 1 }], activePlayer: 1, step: "MAIN1" });
+    expect(a.scorePriorityAction(theirs, snake)).toBeGreaterThan(-Infinity);
+  });
+
+  it("book of shame 73 (post-S43, Chris: the Pearl Cleric and Faerie Formation spent every mana on untap): a value sink spends only idle mana — never in our upkeep or first main; at their end step, or in our second main with nothing to cast", () => {
+    const a = agent("midrange");
+    const islands = ["i1", "i2", "i3", "i4"].map((id) => ({ id, cardId: "island", controller: 0 as const }));
+    const ff = { type: "activateAbility" as const, objectId: "ff", abilityIndex: 0, targets: [] };
+    const board = [...islands, { id: "ff", cardId: "faerie_formation", controller: 0 as const }];
+    const drake = [{ objectId: "wd", cardId: "wind_drake" }];
+    expect(a.scorePriorityAction(mkView({ battlefield: board, step: "UPKEEP" }), ff)).toBe(-Infinity);
+    expect(a.scorePriorityAction(mkView({ battlefield: board, step: "MAIN1" }), ff)).toBe(-Infinity);
+    expect(a.scorePriorityAction(mkView({ battlefield: board, step: "MAIN2", hand: drake }), ff)).toBe(-Infinity); // the Drake wants the mana
+    expect(a.scorePriorityAction(mkView({ battlefield: board, step: "MAIN2" }), ff)).toBeGreaterThan(-Infinity);
+    expect(a.scorePriorityAction(mkView({ battlefield: board, step: "END", activePlayer: 1, hand: drake }), ff)).toBeGreaterThan(-Infinity);
+    expect(a.scorePriorityAction(mkView({ battlefield: board, step: "UPKEEP", activePlayer: 1 }), ff)).toBe(-Infinity);
+    // The Cleric's life, the same rule.
+    const cl = { type: "activateAbility" as const, objectId: "pc", abilityIndex: 0, targets: [] };
+    const clBoard = [{ id: "p1", cardId: "plains", controller: 0 as const }, { id: "pc", cardId: "the_pearl_cleric", controller: 0 as const }];
+    expect(a.scorePriorityAction(mkView({ battlefield: clBoard, step: "MAIN1" }), cl)).toBe(-Infinity);
+    expect(a.scorePriorityAction(mkView({ battlefield: clBoard, step: "END", activePlayer: 1 }), cl)).toBeGreaterThan(-Infinity);
   });
 });
