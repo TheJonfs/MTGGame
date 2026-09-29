@@ -1,7 +1,7 @@
 import { entranceModifiers, resolveMatchup } from "./matchup.js";
 import type { MatchResult, MatchSpec, Modifier } from "@shandalar/engine";
 import { enemyDeck, opponentColors, type Catalog, type OpponentTemplate } from "./catalog.js";
-import { strongholdContentFor } from "./flood.js";
+import { floodHeartOpen, fountFallen, strongholdContentFor } from "./flood.js";
 import { checkDeck, describeDeckRule, type DeckCheck, type DeckRule } from "./legality.js";
 import type { CardDef } from "@shandalar/cards";
 import { isTownCell, regionCells, roamerTarget, rollMage, rollTemplate, type GoneReason, type OpponentInstance } from "./generate.js";
@@ -57,7 +57,11 @@ export type StepEvent =
   /** S26: you stand at the Vault's door — five Moxen open the Mirror; cleared = plain ground (no stop). */
   | { type: "vaultDoor"; at: Point; moxen: number; open: boolean }
   /** S41 (ADR-130): you stand on a High Ground — a court of the flood; the telegraph opens (a single duel, the petal's shape). */
-  | { type: "courtEntry"; courtId: string; name: string; at: Point };
+  | { type: "courtEntry"; courtId: string; name: string; at: Point }
+  /** 2026-09-28 (Chris: "I walk across the Deep Water and nothing happens"): the flood's centre, the lords fallen and the
+   * fount standing — the walk stops and the capstone's telegraph opens, as the Corolla's door does. Before the fifth lord
+   * (or after the fount) the cell is walked over; the map's "≈ the deep water" still reads its line. */
+  | { type: "deepDoor"; at: Point };
 
 // ---------- S16 roamers: sight, flee, movement ----------
 
@@ -351,6 +355,10 @@ export function advance(
       if (fixed?.kind === "corolla") {
         const seals = sealsHeld(world);
         events.push({ type: "corollaDoor", at: { ...cell }, seals, open: seals >= 5 });
+        break;
+      }
+      if (fixed?.kind === "deep" && floodHeartOpen(world) && !fountFallen(world)) {
+        events.push({ type: "deepDoor", at: { ...cell } });
         break;
       }
       if (fixed?.kind === "vault" && world.gauntlet.vault !== "cleared") {

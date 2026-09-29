@@ -598,6 +598,12 @@ export class WorldController {
           this.emit();
           return;
         }
+        if (e.type === "deepDoor") {
+          this.resumePath = path.slice(i + 1);
+          this.screen = { kind: "fountTelegraph" };
+          this.emit();
+          return;
+        }
         if (e.type === "vaultDoor") {
           this.resumePath = path.slice(i + 1);
           this.screen = { kind: "vaultTelegraph", at: e.at, moxen: e.moxen, open: e.open, notice: null };

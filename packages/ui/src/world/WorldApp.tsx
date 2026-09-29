@@ -2197,10 +2197,13 @@ export function WorldApp({ onWatchReplay, paused = false }: { onWatchReplay: (ga
             const moxCleared = f.kind === "dungeon" && w.dungeons[`${w.map.regions[f.region]?.tier === "approach" ? "power" : "mox"}_${w.map.regions[f.region]?.color}`.toLowerCase()]?.cleared; // S25: approach ring = power-dungeon
             // S22b: the seats are OPEN now — a stronghold reads by its lord's fate, not "sealed shut".
             const shRow = f.kind === "stronghold" ? c.lordStatusRows().find((r) => r.color === w.map.regions[f.region]?.color) : undefined;
-            const status = f.kind === "stronghold" ? (shRow?.sealed ? "broken · seal held" : `${shRow?.lordName ?? "a lord"} · ${shRow?.life ?? "?"} life`) : moxCleared || resident?.gone ? "cleared" : `${w.map.regions[f.region]?.name ?? ""} · waiting`;
+            // 2026-09-28 (Chris: the High Grounds read "waiting" after their fall): a court's fall lives in world.dungeons too.
+            const groundCleared = f.kind === "ground" && !!f.contentId && !!w.dungeons[f.contentId]?.cleared;
+            const done = moxCleared || groundCleared || resident?.gone;
+            const status = f.kind === "stronghold" ? (shRow?.sealed ? "broken · seal held" : `${shRow?.lordName ?? "a lord"} · ${shRow?.life ?? "?"} life`) : done ? "cleared" : `${w.map.regions[f.region]?.name ?? ""} · waiting`;
             return (
               <div key={i} style={{ fontSize: 12, display: "flex", justifyContent: "space-between", cursor: screen.kind === "map" ? "pointer" : "default" }} title="click to preview the path there" onClick={() => c.clickCell(f.at)}>
-                <span>{f.name ?? f.kind}</span><span style={{ color: f.kind === "stronghold" ? (shRow?.sealed ? "var(--boost)" : "var(--ink-soft)") : moxCleared || resident?.gone ? "var(--boost)" : "var(--danger)" }}>{status}</span>
+                <span>{f.name ?? f.kind}</span><span style={{ color: f.kind === "stronghold" ? (shRow?.sealed ? "var(--boost)" : "var(--ink-soft)") : done ? "var(--boost)" : "var(--danger)" }}>{status}</span>
               </div>
             );
           })}

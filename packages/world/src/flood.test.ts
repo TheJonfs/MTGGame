@@ -200,6 +200,22 @@ describe("S41 (ADR-130): the flood's run — the court's duel, the falls, the go
     expect(floodHeartOpen(one)).toBe(false);
   });
 
+  it("2026-09-28 (Chris: across the Deep Water and nothing happened): the centre is reachable; stepping onto it with the five lords fallen stops the walk at the fount's door — not before, not after the fount", async () => {
+    const { fountFallen } = await import("./flood.js");
+    const w = world();
+    const deep = w.map.strongholds.find((f) => f.kind === "deep")!;
+    expect(deep).toBeDefined();
+    expect(findPath(w.map, w.player.position, deep.at)).not.toBeNull();
+    const step = () => { w.player.position = { ...deep.at }; return advance(w, catalog, [deep.at]).some((e) => e.type === "deepDoor"); };
+    expect(step()).toBe(false); // the lords stand: the water is walked over
+    for (const s of flood.strongholds) strongholdState(w, s.color).seal = true;
+    expect(floodHeartOpen(w)).toBe(true);
+    expect(step()).toBe(true);
+    (floodRun(w) as { fountFallen?: true }).fountFallen = true;
+    expect(fountFallen(w)).toBe(true);
+    expect(step()).toBe(false);
+  });
+
   it("S42a (ADR-131/132): the fount's fight is the Heart's shape under the TIDE — world life, no ante, floodHeartLife, five roots, the card in hand, mode tide in U G W B R; shut until the five lords fall", async () => {
     const { fountDuelSpec } = await import("./flood.js");
     const w = world();

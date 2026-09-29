@@ -1042,6 +1042,30 @@ describe("post-S43 (Chris's first flood): the powers ride into phase two; the ta
   });
 });
 
+describe("2026-09-28 (Chris: the five lords fallen, across the Deep Water, nothing happened)", () => {
+  it("walking onto the Deep Water after the five lords fall stops at the fount's telegraph — no link to find", async () => {
+    const { findPath, idx } = await import("@shandalar/world");
+    const c = new WorldController(pool, catalog, memStorage());
+    c.stepMs = 0; c.aiDelayMs = 0;
+    for (const col of ["W", "U", "B", "R", "G"] as const) c.devGrantCutting(col);
+    c.enterFlood({ difficulty: "standard", seed: 4346, name: "Flood" });
+    c.floodContinue();
+    for (const [tab, pick] of [["W", "savannah_lions"], ["U", "wind_drake"], ["B", "typhoid_rats"], ["R", "goblin_piker"], ["G", "grizzly_bears"]] as const) { c.salvageTab(tab); c.salvagePick(pick); }
+    c.salvageToPair(); c.salvagePair(["W", "R"]); c.salvageBegin(); c.editorClose();
+    const w = c.world!;
+    for (const o of w.opponents) if (!o.gone) { o.gone = true; o.goneReason = "fled"; }
+    c.devCompleteAll("stronghold");
+    const deep = w.map.strongholds.find((f) => f.kind === "deep")!;
+    const nbr = [{ x: deep.at.x + 1, y: deep.at.y }, { x: deep.at.x - 1, y: deep.at.y }, { x: deep.at.x, y: deep.at.y + 1 }, { x: deep.at.x, y: deep.at.y - 1 }].find((p) => w.map.passable[idx(w.map, p)] && findPath(w.map, p, deep.at));
+    expect(nbr).toBeDefined();
+    w.player.position = { ...nbr! };
+    c.clickCell(deep.at);
+    c.walkPreview();
+    for (let i = 0; i < 100 && c.screen.kind !== "fountTelegraph"; i++) await tick();
+    expect(c.screen.kind).toBe("fountTelegraph");
+  });
+});
+
 describe("post-S43 (Chris's first flood): the flood's lairs are LAIR-DUNGEONS through the controller", () => {
   it("the dev teleport → the threshold is a dungeon telegraph naming the lair → the run is the territory's colour → the resident guards the deep end at the phase-two row + the lair bonus with its entrance → the fall pays the prize room AND the manalink", async () => {
     const { runMatch } = await import("@shandalar/engine");
