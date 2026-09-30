@@ -628,6 +628,12 @@ function DungeonTelegraph({ c }: { c: WorldController }) {
       <div className="gallery-modal-box play-dialog dungeon-telegraph">
         {/* S24 (mapping v3's companion): the SPLASH — a seat announces itself with its gate plate
             while its castle theme plays through this telegraph (interiors stay silent). */}
+        {/* S44 (Part 2): a flood lair announces itself with its kind's splash (storm-light oil). */}
+        {!sh && info.kind === "lair" && (() => { const l = c.floodLairAt(info.at); return l ? (
+          <div style={{ margin: "-14px -14px 12px", overflow: "hidden", borderBottom: "2px solid var(--ink)" }}>
+            <img src={`/gate-plates/lair-${l.kind}.jpg`} alt="" style={{ width: "100%", display: "block", maxHeight: 240, objectFit: "cover" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+          </div>
+        ) : null; })()}
         {sh && (
           <div style={{ margin: "-14px -14px 12px", overflow: "hidden", borderBottom: "2px solid var(--ink)" }}>
             <img src={`/gate-plates/${sh.id}.jpg`} alt="" style={{ width: "100%", display: "block", maxHeight: 240, objectFit: "cover" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
@@ -931,6 +937,10 @@ function CourtTelegraph({ c }: { c: WorldController }) {
   return (
     <div className="gallery-modal">
       <div className="gallery-modal-box play-dialog dungeon-telegraph">
+        {/* S44 (Part 2): the court's splash — its High Ground's woodblock card art, a 16:9 band. */}
+          <div style={{ margin: "-14px -14px 12px", overflow: "hidden", borderBottom: "2px solid var(--ink)" }}>
+            <img src={`/gate-plates/court-${court.id}.jpg`} alt="" style={{ width: "100%", display: "block", maxHeight: 240, objectFit: "cover" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+          </div>
         <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
           <img className="parley-portrait" src={`/portraits/${court.minister.portrait}.png`} alt="" style={{ width: 72, height: 72, flexShrink: 0 }} title={court.minister.name} onError={(e) => { (e.target as HTMLImageElement).style.visibility = "hidden"; }} />
           <div>

@@ -91,4 +91,16 @@ describe("the seats' castle themes (2026-09-28, Chris: phase two's gates were si
     // …and its gate plate (the splash asks for /gate-plates/<id>.jpg; phase two's five installed 2026-09-28).
     for (const id of ids) expect(existsSync(join(root, "../packages/ui/public/gate-plates", `${id}.jpg`)), `${id}.jpg`).toBe(true);
   });
+
+  it("S44 (Part 2): the flood's drawn pieces are installed — a splash per court and per lair kind, a map glyph per lair kind, the Calyx's three washes", () => {
+    const root = join(dirname(fileURLToPath(import.meta.url)), "../../../../data");
+    const pub = join(root, "../packages/ui/public");
+    const flood = JSON.parse(readFileSync(join(root, "world/flood.json"), "utf8")) as { courts: { id: string }[] };
+    for (const c of flood.courts) expect(existsSync(join(pub, "gate-plates", `court-${c.id}.jpg`)), c.id).toBe(true);
+    for (const k of ["landing", "wellhouse", "hearthstead"]) {
+      expect(existsSync(join(pub, "gate-plates", `lair-${k}.jpg`)), k).toBe(true);
+      expect(existsSync(join(pub, "map-sprites", `sprite-lair-${k}.png`)), k).toBe(true);
+    }
+    for (const k of ["deep", "ford", "ground"]) expect(existsSync(join(pub, "map-tex", `map-wash-${k}.jpg`)), k).toBe(true);
+  });
 });

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { idx, isExplored, type Point, type Town, type WorldMap as WorldMapModel } from "@shandalar/world";
+import { idx, isExplored, parseFloodLairId, type Point, type Town, type WorldMap as WorldMapModel } from "@shandalar/world";
 
 /**
  * Ink-and-wash cartography (S13 Part 1, art-direction §0): flat wash per
@@ -41,7 +41,7 @@ const FLOOD_WASH: Record<string, Record<string, string>> = {
   wild: { W: "#9c9074", U: "#73808a", B: "#756a78", R: "#8d6d5f", G: "#6f7c5c", C: "#857b66" },
 };
 /** S41 (ADR-130): the Calyx's three tones — the deep water, a ford across it, a High Ground standing dry. */
-const CALYX = { deep: "#31505f", ford: "#9fb0ad", ground: "#d9d2b0" };
+const CALYX = { deep: "#46707f", ford: "#aebfbb", ground: "#e2dbbb" }; // S44: the base UNDER the storm-light washes (a 50% multiply lands them near S41's flat tones)
 function washFor(tier: string, color: string, register?: "corolla" | "flood"): string {
   if (register === "corolla" && tier === "wild" && COROLLA_WASH[color]) return COROLLA_WASH[color]!;
   if (register === "flood") return FLOOD_WASH[tier]?.[color] ?? FLOOD_WASH[tier]?.C ?? "#c9c1b0";
@@ -335,6 +335,9 @@ export function WorldMapView({
   const inView = (p: Point) => p.x >= origin.x - 1 && p.y >= origin.y - 1 && p.x <= origin.x + vw && p.y <= origin.y + vh;
   const seen = (p: Point) => !explored || isExplored(explored, map, p);
   const seenXY = (x: number, y: number) => seen({ x, y });
+  // S41 → S44: a Calyx cell's kind — the High Ground (a court's island), a ford laid across the deep, or the deep itself.
+  const groundCells = new Set(map.strongholds.filter((f) => f.kind === "ground").map((f) => f.at.y * map.width + f.at.x));
+  const calyxKind = (_x: number, _y: number, i: number): "deep" | "ford" | "ground" => (groundCells.has(i) ? "ground" : map.deepFord?.[i] ? "ford" : "deep");
 
   // Only the window's cells render (the map is 4× the S13 grid at mapScale 2).
   const cells: Point[] = [];
@@ -498,6 +501,28 @@ export function WorldMapView({
                   <image href={`/map-tex/map-wash-${c2.toLowerCase()}.jpg`} width={256} height={256} preserveAspectRatio="none" />
                 </pattern>
               ))}
+              {/* S44 (Part 2): the Calyx's three washes (storm-light palette, Chris's #2s) — the base hue AND the wash painted
+                  through FEATHERED masks (the cell staircase blurred), so the water's edge bleeds like a wash, not a grid. */}
+              <filter id="calyx-feather" filterUnits="userSpaceOnUse" x={X0} y={Y0} width={X1 - X0} height={Y1 - Y0}>
+                <feGaussianBlur stdDeviation={CELL * 0.2} />
+              </filter>
+              {(["deep", "ford", "ground"] as const).map((k) => (
+                <pattern key={k} id={`calyx-pat-${k}`} width={256} height={256} patternUnits="userSpaceOnUse">
+                  <image href={`/map-tex/map-wash-${k}.jpg`} width={256} height={256} preserveAspectRatio="none" />
+                </pattern>
+              ))}
+              {map.deep && (["deep", "ford", "ground"] as const).map((k) => (
+                <mask key={`cm${k}`} id={`calyx-mask-${k}`} maskUnits="userSpaceOnUse" x={X0} y={Y0} width={X1 - X0} height={Y1 - Y0}>
+                  <rect x={X0} y={Y0} width={X1 - X0} height={Y1 - Y0} fill="black" />
+                  <g filter="url(#calyx-feather)">
+                    {cells.map(({ x, y }) => {
+                      const i = y * map.width + x;
+                      if (!seenXY(x, y) || !map.deep?.[i] || calyxKind(x, y, i) !== k) return null;
+                      return <rect key={i} x={x * CELL} y={y * CELL} width={CELL + 0.6} height={CELL + 0.6} fill="white" />;
+                    })}
+                  </g>
+                </mask>
+              ))}
               {(["W", "U", "B", "R", "G"] as const).map((c2) => (
                 <mask key={`m${c2}`} id={`wash-mask-${c2}`} maskUnits="userSpaceOnUse" x={X0} y={Y0} width={X1 - X0} height={Y1 - Y0}>
                   <rect x={X0} y={Y0} width={X1 - X0} height={Y1 - Y0} fill="black" />
@@ -533,7 +558,7 @@ export function WorldMapView({
             ? (!seenXY(x, y) ? INTERIOR.dark : map.passable[i] ? INTERIOR.floor : INTERIOR.rock)
             : isVoid(map.region[i]!) ? "url(#paper-pat)"
             // S41 (ADR-130): the Calyx — deep water, the fords laid across it (pale stone), and the High Grounds (dry, light).
-            : seenXY(x, y) && map.deep?.[i] ? (map.strongholds.some((f) => f.kind === "ground" && f.at.x === x && f.at.y === y) ? CALYX.ground : map.deepFord?.[i] ? CALYX.ford : CALYX.deep)
+            : seenXY(x, y) && map.deep?.[i] ? "transparent" // S44: the Calyx paints in its own feathered layer below
             : (seenXY(x, y) ? washFor(reg.tier, reg.color, register) : "transparent");
           return (
             <rect
@@ -550,6 +575,12 @@ export function WorldMapView({
         })}
         {/* Round 2: the pigment pass — each colour's wash texture multiplied over its flat tier
             hues through a seen-cells mask (the mask staircase hides under the Round-1 gutters). */}
+        {!interior && map.deep && (["deep", "ford", "ground"] as const).map((k) => (
+          <rect key={`calyxbase${k}`} x={X0} y={Y0} width={X1 - X0} height={Y1 - Y0} fill={CALYX[k]} mask={`url(#calyx-mask-${k})`} pointerEvents="none" />
+        ))}
+        {!interior && map.deep && (["deep", "ford", "ground"] as const).map((k) => (
+          <rect key={`calyx${k}`} x={X0} y={Y0} width={X1 - X0} height={Y1 - Y0} fill={`url(#calyx-pat-${k})`} mask={`url(#calyx-mask-${k})`} style={{ mixBlendMode: "multiply" }} opacity={0.5} pointerEvents="none" />
+        ))}
         {!interior && (["W", "U", "B", "R", "G"] as const).map((c2) => (
           <rect key={`wash${c2}`} x={X0} y={Y0} width={X1 - X0} height={Y1 - Y0} fill={`url(#wash-pat-${c2})`} mask={`url(#wash-mask-${c2})`} style={{ mixBlendMode: "multiply" }} opacity={0.5} pointerEvents="none" />
         ))}
@@ -756,7 +787,7 @@ export function WorldMapView({
           // not a ghosted keep (the broken silhouette is the statement).
           // S26: the two centre doors on the outer map (the Corolla's, the Vault's) and the petal
           // tips inside the flower — a fallen petal fades like a cleared lair.
-          const slug = castle ? (cleared ? "sprite-ruin" : "sprite-castle") : f.kind === "dungeon" ? "sprite-dungeon-door" : f.kind === "corolla" || f.kind === "deep" ? "sprite-corolla-door" : f.kind === "ground" ? "sprite-u-islet" : f.kind === "vault" ? "sprite-vault" : f.kind === "petal" ? "sprite-petal" : "sprite-lair";
+          const slug = castle ? (cleared ? "sprite-ruin" : "sprite-castle") : f.kind === "dungeon" ? "sprite-dungeon-door" : f.kind === "corolla" || f.kind === "deep" ? "sprite-corolla-door" : f.kind === "ground" ? "sprite-u-islet" : f.kind === "lair" && parseFloodLairId(f.contentId) ? `sprite-lair-${parseFloodLairId(f.contentId)!.kind}` : f.kind === "vault" ? "sprite-vault" : f.kind === "petal" ? "sprite-petal" : "sprite-lair";
           const sz = CELL * (castle ? 3 : f.kind === "corolla" ? 3.2 : f.kind === "petal" ? 2.6 : 2.4);
           return (
             <g key={`f${i}`} onMouseEnter={() => setHoverLair({ name: f.name ?? f.kind, at: f.at })} onMouseLeave={() => setHoverLair(null)} onClick={() => onClickCell(f.at)} style={{ cursor: "pointer" }}>
