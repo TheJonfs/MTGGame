@@ -2,7 +2,7 @@
 
 ## State of the world
 
-**Cinquefoil v1 is live on Vercel; the tier-3 round is in (pool 227 → 233, bestiary 17 → 23).** Session 45 added six tier-3 cards — Dragon Mage, Guttersnipe, Dread Presence, Emeria Angel, Seedborn Muse (real, Oracle verified, the printings Chris chose) and **Tidewall** (custom; the classical oil, Chris's printed face) — each fielding as a roaming tier-3 beast on both maps with its own thirty-card list, row, parley and portrait. The engine grew R-099's four small words. **ADR-141**: the newer tier-3 beast guards each colour's Wellhouse (all five change guard). The AI learned five shapes (books 74–77). The six beasts were swept against the starters and the post-lairs references, and Chris tuned three (the Guttersnipe, the Dread Presence, the Emeria Angel). The lairs' Chronicle lines are in. `pnpm test` = 783 green; `pnpm typecheck` clean. **Not pushed** (Chris's call).
+**Cinquefoil v1 is live on Vercel; the tier-3 round is in (pool 227 → 233, bestiary 17 → 23).** Session 45 added six tier-3 cards — Dragon Mage, Guttersnipe, Dread Presence, Emeria Angel, Seedborn Muse (real, Oracle verified, the printings Chris chose) and **Tidewall** (custom; the classical oil, Chris's printed face) — each fielding as a roaming tier-3 beast on both maps with its own thirty-card list, row, parley and portrait. The engine grew R-099's four small words. **ADR-141**: the newer tier-3 beast guards each colour's Wellhouse (all five change guard). The AI learned five shapes (books 74–77). The six beasts were swept against the starters and the post-lairs references, and Chris tuned three (the Guttersnipe, the Dread Presence, the Emeria Angel). The lairs' Chronicle lines are in. `pnpm test` = 783 green; `pnpm typecheck` clean. **Pushed 2026-09-30** with the planner's two follow-ups (the re-baseline, the Dragon Mage's line).
 
 ## Done this session
 
@@ -42,7 +42,7 @@ W Serra 63/78 → Emeria 90/85 · U Formation 77/82 → Tidewall 88/92 · B Spec
 4. **Two more words than the brief counted** (damage to each opponent; the subtype filter on landfall) — small, in R-099.
 5. **ADR-141 changes all five Wellhouses**, not only red's (Chris: apply it; re-measure).
 6. **Phase one's bestiary lairs now pick among a spoke's tier-3 beasts** (seeded) — the S18 rule was already "a random top-tier beast", and each spoke now has two (red three). Not ruled by the brief; a consequence of the rows roaming both maps.
-7. **The Dragon Mage's AI line** ("keeps burn in hand under it — the wheel refills") was not built: the probe showed it attacks whenever it can (a 7-drop on twelve lands rarely lands), and the line reads both ways (spend before the wheel discards, or hold because it refills). For the planner to restate if wanted.
+7. **The Dragon Mage's AI line** — *closed post-session: the planner restated it as spend-before-the-wheel; built (book 78).* Originally ("keeps burn in hand under it — the wheel refills") not built: the probe showed it attacks whenever it can (a 7-drop on twelve lands rarely lands), and the line reads both ways (spend before the wheel discards, or hold because it refills). For the planner to restate if wanted.
 
 ## Concerns
 
@@ -50,6 +50,18 @@ W Serra 63/78 → Emeria 90/85 · U Formation 77/82 → Tidewall 88/92 · B Spec
 2. **Graveyard-return trigger targets were random until now** (the classification table calls the return "neutral") — Gravedigger's and the Usher's choices change with this session; the ladder moved ±1 on one mirror only, but the lord/court sims that use those cards were not re-run.
 3. **The Tidewall mirror decks itself** in heuristic play (Hedron Crab mills the opponent every time — correct — so two Crab decks mill each other out); a beast-vs-beast pairing only, never met in the world.
 4. **A sed in my own session renumbered "ADR-104" inside five unrelated files** while renaming a draft R-number; caught the same minute from the diff and restored from git (no commit carried it). The lesson is principle 11's: a scripted replace must be scoped to the files meant.
+
+## Post-session (the planner's three notes, 2026-09-30)
+
+1. **Concern 2 re-baselined** (graveyard-return trigger targets scored, not random — the lists carrying such a trigger: the Usher; the Jet Witch's Mox court (Gravedigger); the Reeve (Gravedigger, Artisan of Kozilek) and the Reaper (Gravedigger); the Corolla's Seraphina and Yuloke petals; the fount (Yuloke). The trigger set is wider than the note named — Artisan, Reya, Titania and Yuloke return too). All run on the final agent, 100 games per cell; **the new baselines the Convocation's seed lists are measured against**:
+   - **`flood-sim --refs postlairs`** (seat win rate, WR / UB / road-B): Bailiff 69/72/57 · Reeve 55/39/52 · Fordkeeper 67/87/49 · Dredger 58/46/47 · Reaper 85/81/55 · Odile 27/41/21 · Zinnia 70/47/41 · Ovna 79/84/55 · Isaura 78/78/68 · Meliyan 91/89/66. Against S44's every seat within ±3; the Reeve's UB row moved most (42 → 39).
+   - **`lord-sim`** — the Usher's kill rate: hunted 15 @0/75/100 → 77/91/97%; base 30 → 91/98/99%; grown 50 → 97/99/100%.
+   - **`guardian-sim`** — the Jet Witch (life 15): @0/30/60/90 → 55/62/83/91%.
+   - **`petal-sim`** — Seraphina (W) law 86% / lawless 81%; Yuloke (U) law 66% / lawless 53% (the other three petals unchanged in shape: Lumen 83/79, Clio 86/78, Faldor 92/82).
+   - **`heart-sim --tide 1 --roots 5 --lives 50 --lands 20 --refs postlairs`** — the fount at 50: 94% vs WR, 90% vs UB (T1 fount 99%).
+   Full tables in `results/s45/rebase-*.txt` (local; `results/` is gitignored).
+2. **The Dragon Mage — spend before the wheel** (the restated line; Deviation 7 closed): `wheelSpendBonus` — in our MAIN1, with a creature of ours ready to attack whose combat-damage trigger discards our whole hand, an instant or sorcery in hand is credited the card the wheel would take. Keyed on the shape. Approximation: the view has no summoning sickness, so a wheel cast this turn counts as ready. Book 78; ladder PASS, mirror delta 0. 784 tests.
+3. **Pushed** (`pnpm build:web` first).
 
 ## Registry entries added/changed
 
