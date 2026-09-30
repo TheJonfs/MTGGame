@@ -9,7 +9,7 @@ import { activeDeck, type WorldState } from "./state.js";
 import { addToCollection, deckLegal, forfeitCards, recordDuel } from "./journey.js";
 import { manalinkModifiers } from "./quests.js";
 import { FOUNT_DECK, TIDE_ORDER } from "@shandalar/sim/heart-deck";
-import { heartRootModifiers, startingColor, type ChronicleEntry } from "./corolla.js";
+import { heartRootModifiers, startingColor, type ChronicleEntry, type ChronicleFall } from "./corolla.js";
 
 /**
  * S41 (ADR-128/129/130): the flood's ten seats — phase two's content (data/world/flood.json). Five
@@ -154,6 +154,29 @@ export const courtFallen = (world: WorldState, courtId: string): boolean => !!fl
 export const courtsFallen = (world: WorldState): number => Object.keys(floodRun(world).courts ?? {}).length;
 /** ADR-130 (Chris, 2026-09-20): the flood's Heart opens when the five LORDS have fallen — the courts are prizes. */
 export const floodHeartOpen = (world: WorldState): boolean => (world.phase ?? 1) >= 2 && sealsHeld(world) >= 5;
+
+/** S44 (Part 1): the run's chronicle of the flood — the lords' and the courts' falls (`falls`, in order) and the lairs'
+ * links (`lairs`), merged by the step each happened at, each with the pack's line: a seat's `fall`, a lair kind's
+ * `prize` (the lair kinds carry no fall line). */
+export function floodChronicleFalls(world: WorldState, catalog: Catalog): ChronicleFall[] {
+  const run = floodRun(world);
+  const seats = catalog.questText?.flood?.seats ?? {};
+  const out: ChronicleFall[] = [];
+  for (const f of run.falls ?? []) {
+    const sh = floodStronghold(catalog, f.siteId);
+    const court = sh ? undefined : floodCourt(catalog, f.siteId);
+    if (!sh && !court) continue;
+    const name = sh ? `${sh.name} — ${sh.lord.name}` : `${court!.name} — ${court!.minister.name}`;
+    out.push({ kind: sh ? "lord" : "court", siteId: f.siteId, name, text: seats[f.siteId]?.fall ?? "", step: f.step });
+  }
+  const lairText = catalog.questText?.flood?.lairs ?? {};
+  for (const [siteId, l] of Object.entries(run.lairs ?? {})) {
+    const site = world.map.strongholds.find((s) => s.contentId === siteId);
+    const kind = siteId.split(":")[1] ?? ""; // lair:<landing|wellhouse|hearthstead>:<colour>
+    out.push({ kind: "lair", siteId, name: site?.name ?? siteId, text: (lairText as Record<string, { prize?: string }>)[kind]?.prize ?? "", step: l.step });
+  }
+  return out.map((x, i) => ({ x, i })).sort((a, b) => a.x.step - b.x.step || a.i - b.i).map(({ x }) => x);
+}
 
 /** A stronghold of the flood has fallen: its pair's two golds are recorded (post-S43: no longer shop stock); the fall is chronicled. */
 export function recordFloodLordFall(world: WorldState, sh: FloodStrongholdDef): void {

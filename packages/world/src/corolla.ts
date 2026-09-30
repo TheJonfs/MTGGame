@@ -543,6 +543,25 @@ export interface ChronicleEntry {
   when: string;
   /** S39: the flood's entry ("The plane turns over. Salvaged: …") — colour = the pair's first colour. Absent = a cutting. */
   kind?: "flood" | "fount";
+  /** S44 (Part 1): a flood entry's falls — the lords, the courts and the lairs' links in the order they happened,
+   * each with its pack line. Mirrored from the run's world save (which does not outlive the run) by `withFloodFalls`. */
+  falls?: ChronicleFall[];
+}
+
+/** S44: one line of the flood's chronicle. */
+export interface ChronicleFall { kind: "lord" | "court" | "lair"; siteId: string; name: string; text: string; step: number }
+
+/** S44 (Part 1): write a run's falls onto ITS flood entry (the last flood entry with the run's seed) — idempotent;
+ * the same legacy object back when nothing changed (no entry for the seed, or the same list). */
+export function withFloodFalls(legacy: Legacy, seed: number, falls: ChronicleFall[]): Legacy {
+  let i = -1;
+  for (let k = legacy.chronicle.length - 1; k >= 0; k--) { const e = legacy.chronicle[k]!; if (e.kind === "flood" && e.seed === seed) { i = k; break; } }
+  if (i === -1) return legacy;
+  const entry = legacy.chronicle[i]!;
+  if (JSON.stringify(entry.falls ?? []) === JSON.stringify(falls)) return legacy;
+  const chronicle = [...legacy.chronicle];
+  chronicle[i] = { ...entry, falls: [...falls] };
+  return { ...legacy, chronicle };
 }
 
 /** ADR-096 (S28): the Heart's ROOTS — one basic of each type on the Manafleur's side, untapped,

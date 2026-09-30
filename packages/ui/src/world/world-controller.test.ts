@@ -1042,6 +1042,26 @@ describe("post-S43 (Chris's first flood): the powers ride into phase two; the ta
   });
 });
 
+describe("S44 (Part 1): the Chronicle of the falls", () => {
+  it("a flood run's lord falls reach the PROFILE's flood entry, in order with their lines — and survive a new run", async () => {
+    const storage = memStorage();
+    const c = new WorldController(pool, catalog, storage);
+    c.stepMs = 0; c.aiDelayMs = 0;
+    for (const col of ["W", "U", "B", "R", "G"] as const) c.devGrantCutting(col);
+    c.enterFlood({ difficulty: "standard", seed: 4346, name: "Flood" });
+    c.floodContinue();
+    for (const [tab, pick] of [["W", "savannah_lions"], ["U", "wind_drake"], ["B", "typhoid_rats"], ["R", "goblin_piker"], ["G", "grizzly_bears"]] as const) { c.salvageTab(tab); c.salvagePick(pick); }
+    c.salvageToPair(); c.salvagePair(["W", "R"]); c.salvageBegin(); c.editorClose();
+    c.devCompleteAll("stronghold");
+    const entry = c.chronicle().filter((e) => e.kind === "flood").pop()!;
+    expect(entry.seed).toBe(4346);
+    expect(entry.falls?.map((f) => f.kind)).toEqual(["lord", "lord", "lord", "lord", "lord"]);
+    expect(entry.falls?.every((f) => f.text.length > 0)).toBe(true);
+    const again = new WorldController(pool, catalog, storage); // the profile outlives the run's controller
+    expect(again.chronicle().filter((e) => e.kind === "flood").pop()!.falls?.length).toBe(5);
+  });
+});
+
 describe("2026-09-28 (Chris: the five lords fallen, across the Deep Water, nothing happened)", () => {
   it("walking onto the Deep Water after the five lords fall stops at the fount's telegraph — no link to find", async () => {
     const { findPath, idx } = await import("@shandalar/world");

@@ -218,6 +218,30 @@ describe("S41 (ADR-130): the flood's run — the court's duel, the falls, the go
     expect(pool.get(flood1.cardIds[0]!)?.shopTier).toBe("R");
   });
 
+  it("S44 (Part 1): the chronicle of the flood — the lords' and courts' falls and the lairs' links merged by step, each with its pack line; written onto the run's own flood entry, idempotently", async () => {
+    const { floodChronicleFalls } = await import("./flood.js");
+    const { withFloodFalls, emptyLegacy, recordFlood } = await import("./corolla.js");
+    const w = world();
+    const run = floodRun(w);
+    const lairSite = w.map.strongholds.find((f) => f.kind === "lair" && f.contentId?.startsWith("lair:wellhouse:"))!;
+    w.player.stepsTaken = 40; recordFloodLordFall(w, flood.strongholds.find((s) => s.id === "tidelock_weir")!);
+    (run.lairs ??= {})[lairSite.contentId!] = { step: 25, kind: "life", color: "W" };
+    (run.falls ??= []).push({ siteId: "tallyflame_court", step: 60 }); (run.courts ??= {}).tallyflame_court = true;
+    const falls = floodChronicleFalls(w, catalog);
+    expect(falls.map((f) => [f.kind, f.step])).toEqual([["lair", 25], ["lord", 40], ["court", 60]]);
+    const seats = catalog.questText!.flood!.seats!;
+    expect(falls[1]).toMatchObject({ siteId: "tidelock_weir", name: "Tidelock Weir — The Bailiff", text: seats.tidelock_weir!.fall });
+    expect(falls[2]!.text).toBe(seats.tallyflame_court!.fall);
+    expect(falls[0]).toMatchObject({ name: lairSite.name, text: catalog.questText!.flood!.lairs!.wellhouse.prize });
+    const other = recordFlood(emptyLegacy(), { color: "W", text: "another run", seed: w.seed + 1, difficulty: "standard", steps: 0, when: "x" });
+    const legacy = recordFlood(other, { color: "W", text: "this run", seed: w.seed, difficulty: "standard", steps: 0, when: "y" });
+    const next = withFloodFalls(legacy, w.seed, falls);
+    expect(next.chronicle[1]!.falls).toEqual(falls);
+    expect(next.chronicle[0]!.falls).toBeUndefined(); // another run's entry is untouched
+    expect(withFloodFalls(next, w.seed, falls)).toBe(next); // idempotent: the same object back
+    expect(withFloodFalls(emptyLegacy(), w.seed, falls).chronicle).toEqual([]); // no entry for the seed: nothing written
+  });
+
   it("ADR-130: the Heart opens when the five LORDS have fallen — the courts do not count; never in a phase-one world", () => {
     const w = world();
     for (const c of flood.courts) (floodRun(w).courts ??= {})[c.id] = true;

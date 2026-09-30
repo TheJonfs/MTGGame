@@ -1149,6 +1149,17 @@ function ChroniclePage({ c, onClose }: { c: WorldController; onClose: () => void
           <div key={`${e.n}-${e.when}`} className="dungeon-law" style={{ marginBottom: 8 }}>
             <b>{e.kind === "fount" ? "The fount is stopped" : e.kind === "flood" ? "The Flood" : `The ${ordinal(e.n)} cutting`}</b> <span style={{ color: "var(--ink-soft)", fontSize: 11.5 }}>· the {names[e.color] ?? e.color} road · seed {e.seed} · {e.difficulty} · {e.steps} steps</span>
             <div style={{ marginTop: 4 }}>{e.text}</div>
+            {/* S44 (Part 1): the flood's falls — the lords, the courts and the lairs' links, in the order they happened. */}
+            {e.kind === "flood" && (e.falls ?? []).length > 0 && (
+              <ul style={{ margin: "6px 0 0", paddingLeft: 18, fontSize: 12.5 }}>
+                {e.falls!.map((f) => (
+                  <li key={f.siteId} style={{ marginBottom: 3 }}>
+                    <b>{f.name}</b> <span style={{ color: "var(--ink-soft)", fontSize: 11 }}>· {f.kind === "lord" ? "a lord falls" : f.kind === "court" ? "a court falls" : "a lair held"} · step {f.step}</span>
+                    {f.text && <div style={{ fontStyle: "italic" }}>{f.text}</div>}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         ))}
         <p style={{ textAlign: "right", marginBottom: 0 }}><button onClick={onClose}>Close</button></p>

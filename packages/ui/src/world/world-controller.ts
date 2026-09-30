@@ -81,7 +81,7 @@ import {
 } from "@shandalar/world";
 import type { Modifier } from "@shandalar/engine";
 import { WorldRng as DungeonRng } from "@shandalar/world";
-import { exploreAround, manhattan, applyFountDuel, floodLordEntrance, fountDuelSpec, fountFallen, recordFount, awardFloodLair, floodLairOfRun, lairGuardian } from "@shandalar/world";
+import { exploreAround, manhattan, applyFountDuel, floodLordEntrance, fountDuelSpec, fountFallen, recordFount, awardFloodLair, floodLairOfRun, lairGuardian, withFloodFalls, floodChronicleFalls } from "@shandalar/world";
 import { FOUNT_DECK } from "@shandalar/sim/heart-deck";
 import { FLOOD_LAIR_PRIZE, parseFloodLairId, type FloodLairKind, opponentColors, applyCourtDuel, courtDuelSpec, courtsFallen, floodCourt, floodDeck, floodHeartOpen, floodRun, floodStronghold, recordFloodLordFall, strongholdContentFor, type FloodCourtDef } from "@shandalar/world";
 import {
@@ -370,6 +370,14 @@ export class WorldController {
     try { return migrateLegacy(JSON.parse(raw)); } catch { return emptyLegacy(); }
   }
   private writeLegacy(l: Legacy): void { this.storage?.setItem(WorldController.LEGACY_KEY, JSON.stringify(l)); }
+  /** S44 (Part 1): mirror a phase-two run's falls (lords, courts, lairs' links — in order, with their lines) onto its
+   * flood entry in the profile's ledger. Idempotent; writes only on a change; backfills a run from before S44. */
+  private syncFloodChronicle(): void {
+    if (!this.world || (this.world.phase ?? 1) < 2) return;
+    const legacy = this.legacy();
+    const next = withFloodFalls(legacy, this.world.seed, floodChronicleFalls(this.world, this.catalog));
+    if (next !== legacy) this.writeLegacy(next);
+  }
   /** The new-road line for the start screen and the first notice (the pack's two variants). */
   newRoadLine(): string | null {
     const l = this.legacy();
@@ -450,6 +458,7 @@ export class WorldController {
     for (const c of restored) this.world.powers.unlocked.push(c);
     const restoredNote = restored.length ? ` The five powers are yours again (${restored.join(", ")}) — knowledge survives the flood.` : "";
     if (restored.length) this.autosave();
+    this.syncFloodChronicle(); // S44: a save from before the Chronicle's falls fills its entry on load
     if (this.world.gameOver) {
       this.screen = { kind: "gameOver", fatal: this.world.duels[this.world.duels.length - 1] ?? null };
     } else if (insideCorolla(this.world) && this.catalog.corolla) {
@@ -491,6 +500,8 @@ export class WorldController {
   private autosave(): void {
     if (!this.world) return;
     if (!this.storage) return;
+    this.syncFloodChronicle(); // S44: every fall autosaves — the profile's ledger follows
+
     const attempt = (): boolean => {
       try { this.storage!.setItem(SAVE_KEY, serializeWorld(this.world!, { compact: true })); return true; } catch { return false; }
     };
