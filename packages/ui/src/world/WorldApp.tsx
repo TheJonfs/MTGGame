@@ -2163,7 +2163,7 @@ export function WorldApp({ onWatchReplay, paused = false }: { onWatchReplay: (ga
                   </div>
                 );
               })}
-              <div style={{ fontSize: 10.5, color: "var(--ink-soft)", marginTop: 4 }}>Town-tied: an occupied town's link goes dark until liberated. Basics start every duel in play; life links raise your maximum.</div>
+              <div style={{ fontSize: 10.5, color: "var(--ink-soft)", marginTop: 4 }}>A quest's link is town-tied: it goes dark while its town is occupied, until liberated. A lair's link is the lair's own: no siege can darken it. Basics start every duel in play; life links raise your maximum.</div>
             </RailPanel>
           );
         })()}

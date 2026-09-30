@@ -242,6 +242,22 @@ describe("S41 (ADR-130): the flood's run — the court's duel, the falls, the go
     expect(withFloodFalls(emptyLegacy(), w.seed, falls).chronicle).toEqual([]); // no entry for the seed: nothing written
   });
 
+  it("S44 (Part 3): the flood's sixteen rumours are installed and poured — every line reaches some phase-two tavern over the epochs; none in a phase-one world", async () => {
+    const { tavernRumors } = await import("./quests.js");
+    const lines = catalog.questText!.flood!.rumors!;
+    expect(lines.length).toBe(16);
+    expect(lines[0]).toBe("The Bailiff at Tidelock keeps what comes through the gate. Nothing that goes in comes out free."); // Chris's amendment
+    const heard = (w: ReturnType<typeof world>) => {
+      const out = new Set<string>();
+      for (let epoch = 0; epoch < 40; epoch++) { w.player.stepsTaken = epoch * 200; for (const t of w.map.towns) for (const l of tavernRumors(w, catalog, t)) out.add(l); }
+      return out;
+    };
+    const flood2 = heard(world());
+    for (const l of lines) expect(flood2.has(l), l).toBe(true);
+    const one = heard(newWorld({ seed: 1, catalog, starter: "white" }));
+    for (const l of lines) expect(one.has(l), l).toBe(false);
+  });
+
   it("ADR-130: the Heart opens when the five LORDS have fallen — the courts do not count; never in a phase-one world", () => {
     const w = world();
     for (const c of flood.courts) (floodRun(w).courts ??= {})[c.id] = true;

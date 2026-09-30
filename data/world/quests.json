@@ -203,6 +203,24 @@
    "fall": "The fount is stopped. The water falls back to where it was, and it was never still. Something must be planted here.",
    "prize": "A moment the tide did not take."
   },
+  "rumors": [
+   "The Bailiff at Tidelock keeps what comes through the gate. Nothing that goes in comes out free.",
+   "They say the Reeve counts every death in the fen and spends them like coin. Do not die near Marrowfen.",
+   "The ford at Emberford is lit from underneath. The Fordkeeper takes his toll in what you cast — and drinks it.",
+   "The Dredger raises what the lake took. Spells, mostly. He can raise them more than once.",
+   "Something is growing in the rows on Harrowmoor. The Reaper says the Sower planted it. The Reaper is what came up.",
+   "There is a court on the water where the fire counts your cards. Bring bodies, they say. Bring many.",
+   "The roots in the shallows take the small things first. Go big or do not go.",
+   "On the Green nothing is sudden. Whatever you mean to do there, you must set down and leave.",
+   "The black tower has counted the dry ground that is left. Half of what you bring must be ground, or the tower will not see you.",
+   "The pyre on the cairn burns what is dear. Bring cheap things. Bring them in numbers.",
+   "A Landing is dry ground, held. Whoever takes one keeps a foot of the flood under them.",
+   "A Wellhouse is a spring the water did not take. Something drinks there before you.",
+   "A Hearthstead is a fire kept lit through the flood. The one who tends it does not share.",
+   "Five holds stand against the water. When all five are broken, the deep water moves.",
+   "The flower stood on something. Nobody has seen what.",
+   "The islands in the middle are the only dry ground that was dry before. The water rose around them, and they did not care."
+  ],
   "lairs": {
    "landing": {
     "name": "Landing",
