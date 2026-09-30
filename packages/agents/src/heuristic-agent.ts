@@ -214,6 +214,7 @@ export class HeuristicAgent implements Agent {
     if (this.cantripTimingGated(view, action)) return -Infinity; // S28: Brainstorm at the opponent's end step or in response
     if (this.flashTimingGated(view, action)) return -Infinity; // S32: the Escort at the opponent's end step, in response, or when the mana is idle
     if (this.selfCounterGated(view, action)) return -Infinity; // post-S43: Mystic Snake with only our own spell to hit
+    if (this.spellPayoffHoldGated(view, action)) return -Infinity; // S45: hold the cheap spell for the Guttersnipe / Pyromancer in hand
     if (this.idleSinkGated(view, action)) return -Infinity; // post-S43: the Cleric / Faerie Formation spend only mana that would idle
     if (this.glaciersDropGated(view, action)) return -Infinity; // S36 (book 52): the Glaciers as the land drop only for a reason; otherwise the real land
     if (this.glaciersActivationGated(view, action)) return -Infinity; // S36 (book 52): fetch at their end step, or on our turn for a colour we lack
@@ -588,6 +589,17 @@ export class HeuristicAgent implements Agent {
     const token = modes.find((m) => labelOf(m).includes("token"));
     const theirBest = Math.max(0, ...view.battlefield.filter((o) => o.controller !== me && !(this.def(o.cardId)?.types.includes("Land") ?? false)).map((o) => objectValue(this.defs, o, this.C)));
     if (bounce && theirBest >= 2.5) return bounce;
+    // S45 (Dread Presence — the draw was taken 95 of 95): a DAMAGE mode beside a draw is chosen by the board — a
+    // creature it kills, a lethal point, or our own life low (the draw costs life; the burn mode heals); else the
+    // draw while the hand is short, the face once it is full. Keyed on the labels' shape, not the card.
+    const damage = modes.find((m) => labelOf(m).includes("damage"));
+    if (damage && draw) {
+      const n = Number(/(\d+) damage/.exec(labelOf(damage))?.[1] ?? 2);
+      const killable = view.battlefield.some((o) => o.controller !== me && o.toughness !== null && o.toughness - o.damage <= n && objectValue(this.defs, o, this.C) >= 1);
+      const lethal = view.life[(1 - me) as 0 | 1] <= n;
+      if (killable || lethal || view.life[me] <= 5) return damage;
+      return view.hand.length <= 3 ? draw : damage;
+    }
     if (draw) return draw;
     return token ?? modes[0]!;
   }
@@ -861,6 +873,8 @@ export class HeuristicAgent implements Agent {
     const opp = (me === 0 ? 1 : 0) as PlayerId;
     const blocks = this.greedyBlocks(view, creatures, attackers, opp, /*lethalChumps*/ false);
     const outcome = await simulateCombat(creatures, me, attackers, blocks, [view.life[0], view.life[1]]);
+    // S45 (the Tidewall): an attack its block trigger meets costs us the card it hands back.
+    const handedBack = blocks.reduce((n, b) => n + this.blockReturnValue(view, b.blocker), 0);
     const valueOf = (id: string) => {
       const o = view.battlefield.find((b) => b.id === id);
       return o ? objectValue(this.defs, o, this.C) : 1;
@@ -914,9 +928,12 @@ export class HeuristicAgent implements Agent {
     const maxOppPower = untappedOpp.reduce((m, o) => Math.max(m, o.power ?? 0), 0);
     const oppDeathtouch = untappedOpp.some((o) => o.keywords.includes("deathtouch"));
     const raceRisk = Math.min(1, oppPower / Math.max(1, view.life[me] - 5));
+    // S45 (Seedborn Muse): under an untap-in-their-untap-step static every attacker stands again to block — the
+    // counter-swing costs nothing, as vigilance.
+    const untapsForTheirTurn = view.battlefield.some((b) => b.controller === me && (this.def(b.cardId)?.abilities ?? []).some((a) => a.kind === "static" && a.effects.some((e) => e.type === "untapDuringOthersUntap")));
     for (const id of attackers) {
       const o = view.battlefield.find((b) => b.id === id);
-      if (!o || o.keywords.includes("vigilance")) continue;
+      if (!o || o.keywords.includes("vigilance") || untapsForTheirTurn) continue;
       // Only a SAFE attacker (no single block can kill it) trades its deterrence for race risk; a
       // fragile trader (the deathtouch 1/1 of book-of-shame's deterrence pin) keeps the full deduction.
       const safe = (o.toughness ?? 0) > maxOppPower && !oppDeathtouch;
@@ -925,6 +942,7 @@ export class HeuristicAgent implements Agent {
     // S23 (the Gallows Djinn): each attacker's own attack tax is priced at the archetype's
     // own-life rate — the 5/5's swing is honest, not free.
     for (const id of attackers) score -= this.selfTax(view, id, "ATTACKS") * this.C.weights[this.profile.archetype].ownLife;
+    score -= handedBack;
     if (view.life[opp] - outcome.playerDamage[opp] <= 0) score += 1000;
     this.simMemo.set(memoKey, score);
     return score;
@@ -960,7 +978,23 @@ export class HeuristicAgent implements Agent {
     // S40 (Meliyan, book 63): under a death-burn observer of ours, a blocker that dies is a burn spell for its
     // power — counters-bearing bodies block more freely.
     const deathBurn = dies ? this.deathBurnObservers(view, blocker.id) * blocker.power * 0.35 : 0;
-    return (kills ? valueOf(attacker.id) : 0) - (dies ? valueOf(blocker.id) : 0) + prevented * w + lifelinkDenied - blockTax + deathBurn;
+    // S45 (the Tidewall): a block that hands back a spell is worth that card — the 0/4 wall blocks whenever it is safe.
+    const trigger = dies ? 0 : this.blockReturnValue(view, blocker.id);
+    return (kills ? valueOf(attacker.id) : 0) - (dies ? valueOf(blocker.id) : 0) + prevented * w + lifelinkDenied - blockTax + deathBurn + trigger;
+  }
+
+  /** S45 (the Tidewall): what a blocker's "whenever this blocks, return target instant or sorcery card from your
+   * graveyard to your hand" is worth now — the dearest spell in its controller's yard (mana value, a counter +0.5),
+   * scaled as a card; 0 when the yard holds none or the blocker has no such trigger. Keyed on the SHAPE. */
+  blockReturnValue(view: GameView, blockerId: string): number {
+    const o = view.battlefield.find((b) => b.id === blockerId);
+    const d = o ? this.def(o.cardId) : undefined;
+    if (!o || !d) return 0;
+    const returns = (d.abilities ?? []).some((a) => a.kind === "triggered" && a.event === "BLOCKS" && a.effects.some((e) => e.type === "returnFromGraveyard" && e.to === "hand"));
+    if (!returns) return 0;
+    const spells = view.graveyardObjects[o.controller as 0 | 1].map((g) => this.def(g.cardId)).filter((x): x is CardDef => !!x && (x.types.includes("Instant") || x.types.includes("Sorcery")));
+    if (spells.length === 0) return 0;
+    return 1 + 0.3 * Math.max(...spells.map((x) => manaValue(parseManaCost(x.manaCost)) + (x.spellEffect?.some((e) => e.type === "counter") ? 0.5 : 0)));
   }
 
   /** Gain of double-blocking a menace attacker: kills if combined power is
@@ -1466,6 +1500,31 @@ export class HeuristicAgent implements Agent {
     return !view.stack.some((it) => it.kind === "spell" && it.controller !== view.you);
   }
 
+  /** S45 (the Guttersnipe — 69 of 90 spells cast while it waited in hand): a creature whose trigger pays on OUR
+   * instant/sorcery casts (the shape: SPELL_CAST, controller you, type Instant/Sorcery — the Guttersnipe, Young
+   * Pyromancer) makes a non-urgent spell worth holding until it is down. Held only while the payoff can land by next
+   * turn (its mana value ≤ our lands + 1), our life is above 6, and the spell is not removal aimed at a creature or
+   * lethal. Exposed for the book. */
+  spellPayoffHoldGated(view: GameView, action: Action): boolean {
+    if (action.type !== "castSpell") return false;
+    const me = view.you;
+    const card = view.hand.find((c) => c.objectId === action.objectId);
+    const d = card ? this.def(card.cardId) : undefined;
+    if (!d || !(d.types.includes("Instant") || d.types.includes("Sorcery"))) return false;
+    const isPayoff = (cd: CardDef | undefined) => !!cd && (cd.abilities ?? []).some((a) => a.kind === "triggered" && a.event === "SPELL_CAST" && a.condition?.controller === "you" && (a.condition?.type ?? []).some((t) => t === "Instant" || t === "Sorcery"));
+    if (view.battlefield.some((o) => o.controller === me && isPayoff(this.def(o.cardId)))) return false; // it is out: cast away
+    const lands = view.battlefield.filter((o) => o.controller === me && this.def(o.cardId)?.types.includes("Land")).length;
+    const waiting = view.hand.some((c) => c.objectId !== action.objectId && isPayoff(this.def(c.cardId)) && this.mv(c.cardId) <= lands + 1);
+    if (!waiting || view.life[me] <= 6) return false;
+    const targets = (action as { targets?: ResolvedTarget[] }).targets ?? [];
+    if (targets.some((t) => t.kind === "object" && view.battlefield.some((o) => o.id === t.id && o.controller !== me))) return false; // removal is never held
+    if (targets.some((t) => t.kind === "stackItem")) return false; // a counter answers now or never
+    const faceDamage = (d.spellEffect ?? []).reduce((n, e) => n + (e.type === "damage" && typeof e.amount === "number" ? e.amount : 0), 0);
+    const opp = (1 - me) as 0 | 1;
+    if (faceDamage > 0 && targets.some((t) => t.kind === "player" && t.player === opp) && faceDamage >= view.life[opp]) return false; // lethal now
+    return true;
+  }
+
   /** Post-S43 (Chris: the Pearl Cleric and Faerie Formation "exhaust mana as soon as it untaps", before the draw and
    * before the hand). A REPEATABLE value sink — a permanent's activation paid in mana (no tap, no sacrifice) whose
    * every effect is value for us (life, tokens, cards) — spends only mana that would otherwise idle: at the
@@ -1833,7 +1892,10 @@ export class HeuristicAgent implements Agent {
     // Within the preferred side: harmful → hit their most valuable; helpful →
     // help our most valuable. Neutral → uniform.
     const cls = request.source ? classifyEffects(request.source.effects) : "neutral";
-    if (cls === "neutral") return this.rngPick(variants);
+    // S45 (the Tidewall's return was a coin flip): a graveyard return is neutral by the table but never random — the
+    // scorer below prices its card (a spell by mana value, a body by reanimationWorth). Gravedigger and the Usher gain too.
+    const returnsFromYard = (request.source?.effects ?? []).some((e) => e.type === "returnFromGraveyard");
+    if (cls === "neutral" && !returnsFromYard) return this.rngPick(variants);
     const score = (a: Action): number => {
       const ts = (a as { targets?: { kind: string; id?: string }[] }).targets ?? [];
       let s = 0;
@@ -1852,7 +1914,10 @@ export class HeuristicAgent implements Agent {
         // S28 (Unearth): a GRAVEYARD target is worth its card — the best MV≤3 body comes back.
         if (t.kind === "object" && t.id && !view.battlefield.some((o) => o.id === t.id)) {
           const g = view.graveyardObjects[view.you].find((o) => o.objectId === t.id) ?? view.graveyardObjects[(1 - view.you) as 0 | 1].find((o) => o.objectId === t.id); // S40: the Reeve reaches either yard
-          s += reanimationWorth(g ? this.def(g.cardId) : undefined); // S31: the one valuation (evaluator.reanimationWorth)
+          const gd = g ? this.def(g.cardId) : undefined;
+          // S45 (the Tidewall): a SPELL back to hand is worth its mana value, a counter half again — the dearest comes back.
+          if (gd && (gd.types.includes("Instant") || gd.types.includes("Sorcery"))) s += manaValue(parseManaCost(gd.manaCost)) + (gd.spellEffect?.some((e) => e.type === "counter") ? 0.5 : 0);
+          else s += reanimationWorth(gd); // S31: the one valuation (evaluator.reanimationWorth)
         }
         if (t.kind === "player") s += 2; // face is worth a couple of mana units
         const side = targetSide(view, t as never);

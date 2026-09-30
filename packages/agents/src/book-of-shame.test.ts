@@ -1053,4 +1053,61 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.scorePriorityAction(mkView({ battlefield: clBoard, step: "MAIN1" }), cl)).toBe(-Infinity);
     expect(a.scorePriorityAction(mkView({ battlefield: clBoard, step: "END", activePlayer: 1 }), cl)).toBeGreaterThan(-Infinity);
   });
+
+  it("book of shame 74 (S45, Dread Presence — the draw 95 of 95): the damage mode for a creature it kills or a lethal point or low life; the draw while the hand is short; the face once it is full", () => {
+    const a = agent("midrange");
+    const req = { player: 0 as const, purpose: "chooseMode" as const, actions: [{ type: "chooseMode" as const, mode: 0, label: "You draw a card and you lose 1 life" }, { type: "chooseMode" as const, mode: 1, label: "Dread Presence deals 2 damage to any target and you gain 2 life" }] };
+    const dp = { id: "dp", cardId: "dread_presence", controller: 0 as const };
+    const pick = (v: GameView) => (a.modeChoice(v, req) as { mode: number }).mode;
+    expect(pick(mkView({ battlefield: [dp, { id: "bears", cardId: "grizzly_bears", controller: 1 }] }))).toBe(1); // kills the Bears
+    expect(pick(mkView({ battlefield: [dp, { id: "wurm", cardId: "pelakka_wurm", controller: 1 }], hand: [{ objectId: "h1", cardId: "island" }] }))).toBe(0); // nothing dies, hand short: draw
+    expect(pick(mkView({ battlefield: [dp], life: [20, 2] }))).toBe(1); // lethal
+    expect(pick(mkView({ battlefield: [dp], life: [4, 20] }))).toBe(1); // our life low: the heal, not the life-cost draw
+    const full = [1, 2, 3, 4, 5].map((n) => ({ objectId: `h${n}`, cardId: "island" }));
+    expect(pick(mkView({ battlefield: [dp, { id: "wurm", cardId: "pelakka_wurm", controller: 1 }], hand: full }))).toBe(1); // hand full: the face
+  });
+
+  it("book of shame 75 (S45, the Tidewall): a safe block that hands back a spell is worth the card (and costs the attacker it); the return takes the dearest spell — Counterspell over Brainstorm", async () => {
+    const a = agent("control");
+    const board = (yard: string[]): GameView => ({ ...mkView({ battlefield: [{ id: "tw", cardId: "tidewall", controller: 0 }, { id: "gi", cardId: "hill_giant", controller: 1 }] }), graveyardObjects: [yard.map((c, i) => ({ objectId: `g${i}`, cardId: c })), []], graveyards: [yard, []] });
+    const gain = (v: GameView) => { const cs = viewCreatures(v); return a.blockGain(v, cs.find((c) => c.id === "tw")!, cs.find((c) => c.id === "gi")!); };
+    expect(gain(board(["counterspell"]))).toBeGreaterThan(gain(board([])));
+    expect(gain(board([]))).toBeGreaterThan(0); // prevented damage alone: 0 power never trades, the block is safe
+    // The attacker's side: swinging a Hill Giant into the Tidewall with a spell in its yard scores below the same swing without.
+    const atk = (yard: string[]): GameView => ({ ...mkView({ step: "DECLARE_ATTACKERS", activePlayer: 1, battlefield: [{ id: "tw", cardId: "tidewall", controller: 0 }, { id: "gi", cardId: "hill_giant", controller: 1 }] }), you: 1, graveyardObjects: [yard.map((c, i) => ({ objectId: `g${i}`, cardId: c })), []], graveyards: [yard, []] });
+    const cs = (v: GameView) => viewCreatures(v);
+    // (a fresh agent per board: the attack scorer memoizes by attacker set and life within a turn)
+    expect(await agent("aggro").scoreAttackSet(atk(["counterspell"]), cs(atk(["counterspell"])) as never, 1, ["gi"])).toBeLessThan(await agent("aggro").scoreAttackSet(atk([]), cs(atk([])) as never, 1, ["gi"]));
+    // The trigger's target: the dearest spell.
+    const v = board(["brainstorm", "counterspell", "grizzly_bears"]);
+    const req = { player: 0 as const, purpose: "chooseTarget" as const, source: { cardId: "tidewall", effects: [{ type: "returnFromGraveyard" as const, target: 0, to: "hand" as const }] }, actions: ["g0", "g1"].map((id) => ({ type: "chooseTriggerTargets" as const, targets: [{ kind: "object" as const, id }] })) };
+    const picked = (await a.chooseAction(v, req as never)) as { targets: { id: string }[] };
+    expect(picked.targets[0]!.id).toBe("g1");
+  });
+
+  it("book of shame 76 (S45, the Guttersnipe — 69 of 90 spells cast while it waited): a cheap spell at the face waits for the payoff in hand; removal, a lethal point, low life and a payoff already out do not wait", () => {
+    const a = agent("aggro");
+    const lands = [{ id: "m1", cardId: "mountain", controller: 0 as const }, { id: "m2", cardId: "mountain", controller: 0 as const }];
+    const hand = [{ objectId: "sh", cardId: "shock" }, { objectId: "gs", cardId: "guttersnipe" }];
+    const face = { type: "castSpell" as const, objectId: "sh", targets: [{ kind: "player" as const, player: 1 }] };
+    expect(a.scorePriorityAction(mkView({ hand, battlefield: lands }), face)).toBe(-Infinity);
+    const withBears = mkView({ hand, battlefield: [...lands, { id: "bears", cardId: "grizzly_bears", controller: 1 }] });
+    expect(a.scorePriorityAction(withBears, { type: "castSpell", objectId: "sh", targets: [{ kind: "object", id: "bears" }] })).toBeGreaterThan(-Infinity); // removal
+    expect(a.scorePriorityAction(mkView({ hand, battlefield: lands, life: [20, 2] }), face)).toBeGreaterThan(-Infinity); // lethal
+    expect(a.scorePriorityAction(mkView({ hand, battlefield: lands, life: [5, 20] }), face)).toBeGreaterThan(-Infinity); // our life low
+    expect(a.scorePriorityAction(mkView({ hand: [hand[0]!], battlefield: [...lands, { id: "gso", cardId: "guttersnipe", controller: 0 }] }), face)).toBeGreaterThan(-Infinity); // it is out
+    expect(a.scorePriorityAction(mkView({ hand, battlefield: [lands[0]!] }), face)).toBeGreaterThan(-Infinity); // one land: the Guttersnipe cannot land by next turn
+  });
+
+  it("book of shame 77 (S45, Seedborn Muse): under the Muse the attack pays no deterrence — every attacker untaps in their untap step to block", async () => {
+    const a = agent("midrange");
+    const board = (muse: boolean) => mkView({
+      life: [8, 20], step: "DECLARE_ATTACKERS", activePlayer: 0,
+      battlefield: [{ id: "bal", cardId: "rumbling_baloth", controller: 0 }, ...(muse ? [{ id: "muse", cardId: "seedborn_muse", controller: 0 as const }] : []), { id: "b1", cardId: "grizzly_bears", controller: 1 }, { id: "b2", cardId: "grizzly_bears", controller: 1 }],
+    });
+    const creaturesOf = (v: GameView) => v.battlefield.filter((o) => o.power !== null).map((o) => ({ id: o.id, controller: o.controller, power: o.power!, toughness: o.toughness!, keywords: o.keywords, damage: 0 }));
+    const on = board(true), off = board(false);
+    void a; // a fresh agent per board: the attack scorer memoizes by attacker set and life within a turn
+    expect(await agent("midrange").scoreAttackSet(on, creaturesOf(on) as never, 0, ["bal"])).toBeGreaterThan(await agent("midrange").scoreAttackSet(off, creaturesOf(off) as never, 0, ["bal"]));
+  });
 });
