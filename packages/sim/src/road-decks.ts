@@ -43,10 +43,10 @@ export const ROAD_DECKS: Record<string, { name: string; archetype: "aggro" | "mi
     ]),
   },
   /** S39 (ADR-126, the brief's Part 4): the SALVAGE YARDSTICKS — phase two's floor: two decks from the salvage
-   * pack (data/world/salvage-pack.json) plus one pick set each (two duals), thirty cards, twelve lands, 12 life,
+   * pack (data/world/salvage-pack.json) plus one pick set each (two duals), thirty cards, twelve lands, 10 life (S44: the world's phase-two start; was 12),
    * journeyman, no basics in play, no legends. What the flood's player holds before the shop and the road. */
   salvageWR: {
-    name: "salvage-WR", archetype: "aggro", life: 12, entrance: [],
+    name: "salvage-WR", archetype: "aggro", life: 10, entrance: [],
     decklist: d([
       ["plateau", 1], ["sacred_foundry", 1], ["plains", 5], ["mountain", 5],
       ["savannah_lions", 1], ["suntail_hawk", 1], ["soul_warden", 1], ["fencing_ace", 1], ["youthful_valkyrie", 1], ["inspiring_overseer", 1], ["pacifism", 1], ["swords_to_plowshares", 1],
@@ -55,7 +55,7 @@ export const ROAD_DECKS: Record<string, { name: string; archetype: "aggro" | "mi
     ]),
   },
   salvageUB: {
-    name: "salvage-UB", archetype: "midrange", life: 12, entrance: [],
+    name: "salvage-UB", archetype: "midrange", life: 10, entrance: [],
     decklist: d([
       ["underground_sea", 1], ["watery_grave", 1], ["island", 5], ["swamp", 5],
       ["plumecreed_escort", 1], ["man_o_war", 1], ["cloudkin_seer", 1], ["wind_drake", 1], ["aether_channeler", 1], ["air_elemental", 1], ["brainstorm", 1], ["counterspell", 1], ["essence_scatter", 1],
@@ -67,7 +67,7 @@ export const ROAD_DECKS: Record<string, { name: string; archetype: "aggro" | "mi
    * added (the guardians of both colours and the pair's minister): what the flood's player actually holds on day
    * one. Thirty-three cards (the three legends are added, nothing cut), 12 life, journeyman, no basics in play. */
   salvageWRLegends: {
-    name: "salvage-WR+legends", archetype: "aggro", life: 12, entrance: [],
+    name: "salvage-WR+legends", archetype: "aggro", life: 10, entrance: [],
     decklist: d([
       ["plateau", 1], ["sacred_foundry", 1], ["plains", 5], ["mountain", 5],
       ["savannah_lions", 1], ["suntail_hawk", 1], ["soul_warden", 1], ["fencing_ace", 1], ["youthful_valkyrie", 1], ["inspiring_overseer", 1], ["pacifism", 1], ["swords_to_plowshares", 1],
@@ -77,7 +77,7 @@ export const ROAD_DECKS: Record<string, { name: string; archetype: "aggro" | "mi
     ]),
   },
   salvageUBLegends: {
-    name: "salvage-UB+legends", archetype: "midrange", life: 12, entrance: [],
+    name: "salvage-UB+legends", archetype: "midrange", life: 10, entrance: [],
     decklist: d([
       ["underground_sea", 1], ["watery_grave", 1], ["island", 5], ["swamp", 5],
       ["plumecreed_escort", 1], ["man_o_war", 1], ["cloudkin_seer", 1], ["wind_drake", 1], ["aether_channeler", 1], ["air_elemental", 1], ["brainstorm", 1], ["counterspell", 1], ["essence_scatter", 1],
@@ -92,7 +92,7 @@ export const ROAD_DECKS: Record<string, { name: string; archetype: "aggro" | "mi
    * cards of the pair, multiples allowed — a lord's fall and a quest can each pay one). Forty-three cards, 12 life,
    * journeyman, TWO basics in play (the player's manalinks by then). */
   salvageWRLords: {
-    name: "salvage-WR+lords", archetype: "aggro", life: 12, entrance: ["plains", "mountain"],
+    name: "salvage-WR+lords", archetype: "aggro", life: 10, entrance: ["plains", "mountain"],
     decklist: d([
       ["plateau", 2], ["sacred_foundry", 1], ["plains", 5], ["mountain", 5], // a second Plateau among the ten
       ["savannah_lions", 1], ["suntail_hawk", 1], ["soul_warden", 1], ["fencing_ace", 1], ["youthful_valkyrie", 1], ["inspiring_overseer", 1], ["pacifism", 1], ["swords_to_plowshares", 1],
@@ -104,7 +104,7 @@ export const ROAD_DECKS: Record<string, { name: string; archetype: "aggro" | "mi
     ]),
   },
   salvageUBLords: {
-    name: "salvage-UB+lords", archetype: "midrange", life: 12, entrance: ["island", "swamp"],
+    name: "salvage-UB+lords", archetype: "midrange", life: 10, entrance: ["island", "swamp"],
     decklist: d([
       ["underground_sea", 2], ["watery_grave", 1], ["island", 5], ["swamp", 5], // a second Sea among the ten
       ["plumecreed_escort", 1], ["man_o_war", 1], ["cloudkin_seer", 1], ["wind_drake", 1], ["aether_channeler", 1], ["air_elemental", 1], ["brainstorm", 1], ["counterspell", 1], ["essence_scatter", 1],
@@ -117,7 +117,7 @@ export const ROAD_DECKS: Record<string, { name: string; archetype: "aggro" | "mi
   /** S43 (Part 4): the POST-LAIRS references — the post-lords decks with three basics of the pair in play (three lairs
    * earned across the pair's two territories) and 16 life (two life links): the honest post-lairs yardstick. */
   salvageWRLordsLairs: {
-    name: "salvage-WR+lords+lairs", archetype: "aggro", life: 16, entrance: ["plains", "mountain", "plains"],
+    name: "salvage-WR+lords+lairs", archetype: "aggro", life: 14, entrance: ["plains", "mountain", "plains"],
     decklist: d([
       ["plateau", 2], ["sacred_foundry", 1], ["plains", 5], ["mountain", 5], // a second Plateau among the ten
       ["savannah_lions", 1], ["suntail_hawk", 1], ["soul_warden", 1], ["fencing_ace", 1], ["youthful_valkyrie", 1], ["inspiring_overseer", 1], ["pacifism", 1], ["swords_to_plowshares", 1],
@@ -129,7 +129,7 @@ export const ROAD_DECKS: Record<string, { name: string; archetype: "aggro" | "mi
     ]),
   },
   salvageUBLordsLairs: {
-    name: "salvage-UB+lords+lairs", archetype: "midrange", life: 16, entrance: ["island", "swamp", "island"],
+    name: "salvage-UB+lords+lairs", archetype: "midrange", life: 14, entrance: ["island", "swamp", "island"],
     decklist: d([
       ["underground_sea", 2], ["watery_grave", 1], ["island", 5], ["swamp", 5], // a second Sea among the ten
       ["plumecreed_escort", 1], ["man_o_war", 1], ["cloudkin_seer", 1], ["wind_drake", 1], ["aether_channeler", 1], ["air_elemental", 1], ["brainstorm", 1], ["counterspell", 1], ["essence_scatter", 1],

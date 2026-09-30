@@ -175,7 +175,7 @@ describe("S41 (ADR-130): the flood's run — the court's duel, the falls, the go
     for (const t of w.map.towns) {
       const rows = rollShopStock(w, t, pool, knobs);
       expect(rows.filter((r) => pool.get(r.cardId)?.shopTier === "R").map((r) => r.cardId)).toEqual([]);
-      expect(rows.length).toBeLessThanOrEqual(knobs.shopStockSize);
+      expect(rows.length).toBeLessThanOrEqual(knobs.shopStockSize + knobs.floodShelfBonus); // S44 (ADR-139): the Weir's white towns widen
     }
     recordFloodLordFall(w, sh); // idempotent on the golds
     expect(floodRun(w).golds).toEqual(["static_sphere", "sacred_helix"]);
@@ -185,6 +185,37 @@ describe("S41 (ADR-130): the flood's run — the court's duel, the falls, the go
       expect(pool.get(g)?.prizeOnly, g).toBeFalsy();
       expect(s.triad.some((c) => strongholdPrizeList(pool, c).some((d) => d.id === g)), g).toBe(true);
     }
+  });
+
+  it("S44 (ADR-139): a lord's fall widens every shelf in HIS colour's territory (all three rings) by floodShelfBonus ordinary rows — not other colours, not cumulative, R still out; phase one untouched", () => {
+    const w = world();
+    const rows = (colour: string) => w.map.towns.filter((t) => w.map.regions[t.region]!.color === colour).map((t) => rollShopStock(w, t, pool, knobs));
+    const sizes = (colour: string) => rows(colour).map((r) => r.length);
+    const before = { W: sizes("W"), U: sizes("U") };
+    expect(Math.max(...before.W, ...before.U)).toBeLessThanOrEqual(knobs.shopStockSize);
+    const tiers = new Set(w.map.towns.filter((t) => w.map.regions[t.region]!.color === "W").map((t) => w.map.regions[t.region]!.tier));
+    expect(tiers.size).toBe(3); // the territory spans the civilized, approach and wild rings
+    recordFloodLordFall(w, flood.strongholds.find((s) => s.id === "tidelock_weir")!);
+    strongholdState(w, "W").seal = true;
+    expect(sizes("W")).toEqual(before.W.map((n) => n + knobs.floodShelfBonus)); // every white town, every ring (the pools are deep enough)
+    expect(sizes("U")).toEqual(before.U);
+    strongholdState(w, "U").seal = true; // a second lord: his own territory widens, the first does not widen again
+    expect(sizes("W")).toEqual(before.W.map((n) => n + knobs.floodShelfBonus));
+    expect(sizes("U")).toEqual(before.U.map((n) => n + knobs.floodShelfBonus));
+    for (const r of [...rows("W"), ...rows("U")]) expect(r.filter((x) => pool.get(x.cardId)?.shopTier === "R")).toEqual([]);
+    const one = newWorld({ seed: 1, catalog, starter: "white" });
+    strongholdState(one, "W").seal = true;
+    for (const t of one.map.towns) expect(rollShopStock(one, t, pool, knobs).length).toBeLessThanOrEqual(knobs.shopStockSize);
+  });
+
+  it("S44 (ADR-137): a flood lair's prize room holds ONE R card and the purse — the first of phase one's two, same stream", async () => {
+    const { floodLairPrizeRoll, lairPrizeRoll } = await import("./dungeon.js");
+    const w = world();
+    const full = lairPrizeRoll(w, pool, "lair:landing:W");
+    const flood1 = floodLairPrizeRoll(w, pool, "lair:landing:W");
+    expect(full.cardIds.length).toBe(2);
+    expect(flood1).toEqual({ gold: full.gold, cardIds: [full.cardIds[0]] });
+    expect(pool.get(flood1.cardIds[0]!)?.shopTier).toBe("R");
   });
 
   it("ADR-130: the Heart opens when the five LORDS have fallen — the courts do not count; never in a phase-one world", () => {

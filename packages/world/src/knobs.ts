@@ -301,7 +301,7 @@ export const KNOBS = {
   floodClockSlack: knob<number>({
     default: 1.5,
     unit: "multiplier on the world's opening siege grace and on the lords' growth interval, in a phase-two world",
-    description: "Post-S43 (Chris's first flood; ⚠ unratified): the flood is harder and its clocks run a little slower for it — the first siege threat schedules from siegeGraceSteps × this, and a lord grows a life every lordGrowthSteps × this (the cap and the life per step unchanged). 1 = phase one's clocks.",
+    description: "Post-S43 (Chris's first flood); RATIFIED S44 (ADR-138): the flood is harder and its clocks run a little slower for it — the first siege threat schedules from siegeGraceSteps × this, and a lord grows a life every lordGrowthSteps × this (the cap and the life per step unchanged). 1 = phase one's clocks.",
   }),
   floodLordLifeBonus: knob<number>({
     default: 0,
@@ -412,6 +412,11 @@ export const KNOBS = {
     default: 8,
     unit: "cards",
     description: "Distinct cards a town shop offers from its seeded stock roll. Deploy playtest r3 (Chris): the restock draws cards NOT in the lineup the player last saw there (ShopState.prev), so a card repeats in a town at most every other refresh.",
+  }),
+  floodShelfBonus: knob<number>({
+    default: 2,
+    unit: "extra ordinary rows on a phase-two territory's shelves once its lord has fallen",
+    description: "S44 (ADR-139): the shelves widen per region — every town in the fallen lord's colour (civilized, approach and wild rings) stocks shopStockSize + this; not cumulative across lords; R stays out (the ordinary pool). Phase one untouched.",
   }),
   shopMaxArtifacts: knob<number>({
     default: 1,

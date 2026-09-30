@@ -5,6 +5,7 @@ import type { KnobValues } from "./knobs.js";
 import type { Town } from "./map.js";
 import { WorldRng } from "./rng.js";
 import { activeDeck, type WorldState } from "./state.js";
+import { lordSealed } from "./stronghold.js";
 
 /**
  * Town shops. S13: stock is a pure function of (world seed, town index, epoch),
@@ -102,11 +103,14 @@ export function rollShopStock(world: WorldState, town: Town, pool: Map<string, C
   // of one colour can run short of fresh non-artifacts).
   const fresh = rng.shuffle(all.filter((d) => !exclude.has(d.id)));
   const stale = rng.shuffle(all.filter((d) => exclude.has(d.id)));
+  // S44 (ADR-139): a phase-two territory's shelves widen by floodShelfBonus once ITS lord has fallen (all three rings).
+  const widened = (world.phase ?? 1) >= 2 && region.color !== "C" && lordSealed(world, region.color);
+  const size = knobs.shopStockSize + (widened ? knobs.floodShelfBonus : 0);
   const picked: CardDef[] = [];
   let artifacts = 0;
   const take = (list: CardDef[], beyondCap: boolean) => {
     for (const d of list) {
-      if (picked.length >= knobs.shopStockSize) return;
+      if (picked.length >= size) return;
       if (picked.includes(d)) continue;
       const isArtifact = d.types.includes("Artifact");
       if (isArtifact && !beyondCap && knobs.shopMaxArtifacts > 0 && artifacts >= knobs.shopMaxArtifacts) continue;

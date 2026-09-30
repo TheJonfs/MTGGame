@@ -687,6 +687,13 @@ export function lairPrizeRoll(world: WorldState, pool: Map<string, CardDef>, dun
   return { gold: 30, cardIds };
 }
 
+/** S44 (ADR-137): a FLOOD lair's prize room — ONE R card and the purse (the manalink is the second prize; the
+ * interior's chests already add cards). Seeded per dungeon, the same stream as `lairPrizeRoll`. */
+export function floodLairPrizeRoll(world: WorldState, pool: Map<string, CardDef>, dungeonId: string): { gold: number; cardIds: string[] } {
+  const full = lairPrizeRoll(world, pool, dungeonId);
+  return { gold: full.gold, cardIds: full.cardIds.slice(0, 1) };
+}
+
 /** The ante the player stakes inside (same rules as outside — the deck's top nonlands at shuffle
  * are engine-side; this helper only reports the count for the telegraph). */
 export function interiorAnteCount(knobs: KnobValues): number {

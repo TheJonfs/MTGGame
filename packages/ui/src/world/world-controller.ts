@@ -61,7 +61,7 @@ function popcount(words: number[]): number {
 import { abandonQuest, acceptQuest, addToCollection, cardMatches, creditRenown, innRest, pendingRetrievalChoice, questsOnArrival, resolveRetrieval, retrievalOnDungeonClear, rumorState, rumorsOnArrival, tavernRumors, spares, townOffers, type ActiveQuest, type QuestOffer } from "@shandalar/world";
 import {
   applyInteriorDuel, clearDungeon, colorPrizeRoll, dungeonAdvance, dungeonAsWorldMap, dungeonDuelSpec, dungeonPath,
-  empowermentTiersFor, generateDungeonRun, lairPrizeRoll, reachedTiers, resetDungeon, type DungeonRun, type MoxDungeonDef, type PowerDungeonDef,
+  empowermentTiersFor, generateDungeonRun, lairPrizeRoll, floodLairPrizeRoll, reachedTiers, resetDungeon, type DungeonRun, type MoxDungeonDef, type PowerDungeonDef,
 } from "@shandalar/world";
 import {
   applySiegeDuel, beginSiegeEngagement, isTownOccupied, isTownThreatened, siegeDuelSpec, siegeFor, siegeWarnings,
@@ -1669,9 +1669,10 @@ export class WorldController {
         unlockPower(this.world, pd.color);
         victoryNotes.push(`You have learned ${powerRates(this.world, pd.color).name} — it waits on the Powers panel${pd.color === "B" || pd.color === "R" ? " and at every parley" : ""}.`);
       } else {
-        prize = lairPrizeRoll(this.world, this.pool, run.dungeonId);
         // Post-S43: a FLOOD lair pays its manalink WITH the prize — the resident fell, the link is earned (once).
+        // S44 (ADR-137): and its prize room holds ONE R card (the purse stays).
         const fl = floodLairOfRun(this.world, run);
+        prize = fl ? floodLairPrizeRoll(this.world, this.pool, run.dungeonId) : lairPrizeRoll(this.world, this.pool, run.dungeonId);
         if (fl) victoryNotes.push(awardFloodLair(this.world, this.knobs, this.catalog, fl.site.contentId!, { kind: fl.kind, color: fl.color }, fl.site.name ?? "the lair"));
         // S21 retrieval: the quest item was in this prize room, escrowed like everything else —
         // it pays out with the escrow; the keep-or-deliver choice waits at the offer town.

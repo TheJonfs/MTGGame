@@ -142,7 +142,7 @@ describe("S39 (ADR-126) — newWorld({ salvage })", () => {
       const r = ROAD_DECKS[key]!;
       expect(size(r.decklist)).toBe(30);
       expect(lands(r.decklist)).toBe(12);
-      expect(r.life).toBe(12);
+      expect(r.life).toBe(10); // S44: the world's phase-two start (was 12)
       expect(r.entrance).toEqual([]);
       const basics = ["plains", "island", "swamp", "mountain", "forest"];
       for (const e of r.decklist) {
@@ -156,12 +156,12 @@ describe("S39 (ADR-126) — newWorld({ salvage })", () => {
       expect(r.decklist.filter((e) => !isLand(e.cardId))).toHaveLength(18);
     }
   });
-  it("S42b (ADR-135's (b)): the post-lords references are salvage + legends plus TEN prizes of the pair — the pair's two golds and tier-3 / R cards, no prizeOnly, no third colour — 43 cards, 12 life, two basics in play", () => {
+  it("S42b (ADR-135's (b)): the post-lords references are salvage + legends plus TEN prizes of the pair — the pair's two golds and tier-3 / R cards, no prizeOnly, no third colour — 43 cards, 10 life (S44; was 12), two basics in play", () => {
     const colourOf = (id: string) => [...new Set((pool.get(id)!.manaCost ?? "").match(/[WUBRG]/g) ?? [])];
     for (const [key, base, pair, golds] of [["salvageWRLords", "salvageWRLegends", "WR", ["sacred_helix", "powerstone_minefield"]], ["salvageUBLords", "salvageUBLegends", "UB", ["undermine", "glimpse_the_unthinkable"]]] as const) {
       const r = ROAD_DECKS[key]!, b = ROAD_DECKS[base]!;
       expect(size(r.decklist)).toBe(43);
-      expect(r.life).toBe(12);
+      expect(r.life).toBe(10); // S44: the world's phase-two start (was 12)
       expect(r.entrance.map((id) => pool.get(id)!.name[0])).toEqual([...pair].map((c) => ({ W: "P", U: "I", B: "S", R: "M", G: "F" })[c]));
       const count = (d: { cardId: string; count: number }[], id: string) => d.find((e) => e.cardId === id)?.count ?? 0;
       const added: string[] = [];

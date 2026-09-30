@@ -34,10 +34,10 @@ The flood's floor for the sim: the pack's two colours plus two duals as the pick
 
 ### salvage-WR
 
-- 30 cards, 12 lands, avg MV 1.83, colours RW; aggro; 12 life
+- 30 cards, 12 lands, avg MV 1.83, colours RW; aggro; 10 life
   5 Mountain · 5 Plains · 1 Plateau · 1 Sacred Foundry · 1 Bonesplitter · 1 Lightning Bolt · 1 Savannah Lions · 1 Shock · 1 Soul Warden · 1 Suntail Hawk · 1 Swords to Plowshares · 1 Abrade · 1 Fencing Ace · 1 Goblin Piker · 1 Pacifism · 1 Thundersnake · 1 Young Pyromancer · 1 Youthful Valkyrie · 1 Boggart Brute · 1 Goblin Chieftain · 1 Hordeling Outburst · 1 Inspiring Overseer
 
 ### salvage-UB
 
-- 30 cards, 12 lands, avg MV 2.61, colours BU; midrange; 12 life
+- 30 cards, 12 lands, avg MV 2.61, colours BU; midrange; 10 life
   5 Island · 5 Swamp · 1 Underground Sea · 1 Watery Grave · 1 Brainstorm · 1 Typhoid Rats · 1 Child of Night · 1 Counterspell · 1 Doom Blade · 1 Essence Scatter · 1 Mind Stone · 1 Plumecreed Escort · 1 Terror · 1 Aether Channeler · 1 Cloudkin Seer · 1 Man-o'-War · 1 Phyrexian Rager · 1 Vampire Nighthawk · 1 Wind Drake · 1 Gravedigger · 1 Nekrataal · 1 Air Elemental
