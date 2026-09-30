@@ -284,6 +284,8 @@ function isAnyValueRef(v: unknown): boolean {
   if (v.ref === "sacrificedPower") return true;
   // S40 (R-097): the spell's mana spent (Sacred Helix), the source's power (Odile), the leaving creature's LKI power (Zinnia, Meliyan).
   if (v.ref === "manaSpent" || v.ref === "sourcePower" || v.ref === "eventPower") return true;
+  // S46 (R-100): the life gained in the LIFE_GAINED event (Vitalist).
+  if (v.ref === "eventLife") return true;
   // S26 (member eight): counters of a kind on the source, times a bounded nonzero literal (Clio).
   if (v.ref === "countersOnSelf") return validCounterKind(v.kind) && (v.times === undefined || (Number.isInteger(v.times) && v.times !== 0));
   return false;
@@ -331,7 +333,8 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
           if (a.condition.combat !== undefined && a.condition.combat !== true) err(`condition combat must be true when present (S40)`);
           if (a.condition.recipient !== undefined && a.condition.recipient !== "creature") err(`condition recipient must be "creature" (S40)`);
         }
-        validateEffects(a.effects, nTargets, err, warnings, cardId, { damageTrigger, xTrigger, lawTrigger, leaveTrigger });
+        const lifeTrigger = a.event === "LIFE_GAINED"; // S46 (R-100): eventLife lives only here
+        validateEffects(a.effects, nTargets, err, warnings, cardId, { damageTrigger, xTrigger, lawTrigger, leaveTrigger, lifeTrigger });
       }
       // A10 word 9 (S22): zone-scoped triggers — first zone graveyard, first event UPKEEP (the
       // collection only exists there; widening means a new collector, not a validator relax).
@@ -445,8 +448,8 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
       if (Array.isArray(a.effects)) {
         for (const e of a.effects) {
           if (isRecord(e) && e.type === "gainControl" && e.scope === undefined) err(`a static gainControl needs scope "attached" (ADR-033); the targeted form is a resolved effect (S26)`);
-          if (isRecord(e) && !["modifyPT", "grantKeyword", "restrict", "gainControl", "grantAbility", "extraLandDrops", "untapDuringOthersUntap", "imposeEntersTapped"].includes(e.type as string)) {
-            err(`static ability cannot carry effect "${e.type}" (only modifyPT/grantKeyword/restrict/gainControl/grantAbility/extraLandDrops/untapDuringOthersUntap/imposeEntersTapped)`);
+          if (isRecord(e) && !["modifyPT", "grantKeyword", "restrict", "gainControl", "grantAbility", "extraLandDrops", "untapDuringOthersUntap", "grantSubtype", "imposeEntersTapped"].includes(e.type as string)) {
+            err(`static ability cannot carry effect "${e.type}" (only modifyPT/grantKeyword/restrict/gainControl/grantAbility/extraLandDrops/untapDuringOthersUntap/grantSubtype/imposeEntersTapped)`);
           }
           // A10 word 8 (S22): the granted ability is itself validated as an activated ability of
           // the target zone (a hand grant must be cycling-shaped; a battlefield grant needs a scope).
@@ -659,6 +662,16 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
   untapDuringOthersUntap: () => {
     // S45 (R-099, Seedborn Muse): static-only, no params.
   },
+  grantSubtype: (e, err) => {
+    // S46 (R-100, Angelic Destiny): static-only; a non-empty subtype list and a scope.
+    if (!Array.isArray(e.subtypes) || e.subtypes.length === 0 || (e.subtypes as unknown[]).some((x) => typeof x !== "string")) err(`grantSubtype.subtypes must be a non-empty string array (S46)`);
+    if (e.scope === undefined) err(`grantSubtype needs a scope (S46)`);
+  },
+  reorderTop: (e, err) => {
+    // S46 (R-100, Ponder): look at the top N and put them back in any order; optionally shuffle.
+    if (!Number.isInteger(e.count) || (e.count as number) < 1) err(`reorderTop.count must be a positive integer (S46)`);
+    if (e.mayShuffle !== undefined && typeof e.mayShuffle !== "boolean") err(`reorderTop.mayShuffle must be boolean (S46)`);
+  },
   imposeEntersTapped: (e, err) => {
     // S22b law-word: static-only.
     if (e.who !== "you" && e.who !== "opponent" && e.who !== "eachPlayer") err(`imposeEntersTapped.who must be you|opponent|eachPlayer (A10/S22b)`);
@@ -728,7 +741,7 @@ function validateEffects(
   err: (m: string) => void,
   warnings: string[],
   cardId: string,
-  opts: { isStatic?: boolean; damageTrigger?: boolean; xTrigger?: boolean; lawTrigger?: boolean; sacrificeCost?: boolean; leaveTrigger?: boolean; spell?: boolean } = {},
+  opts: { isStatic?: boolean; damageTrigger?: boolean; xTrigger?: boolean; lawTrigger?: boolean; sacrificeCost?: boolean; leaveTrigger?: boolean; spell?: boolean; lifeTrigger?: boolean } = {},
 ): void {
   if (!Array.isArray(effects) || effects.length === 0) return err(`effects must be a non-empty array`);
   for (const e of effects) {
@@ -745,7 +758,7 @@ function validateEffects(
     if (type === "gainControl" && !opts.isStatic && e.scope !== undefined) err(`gainControl with a scope is static-only (ADR-033); use target + duration for the resolved form (S26)`);
     // S27: createLaw belongs to the Manafleur's own END_STEP trigger and nowhere else.
     if (type === "createLaw" && !(opts.lawTrigger && LAW_MAKERS.includes(cardId))) err(`createLaw is confined to the law-makers' end-step triggers — the Manafleur, the Cinquefont (S27/S42a)`);
-    if ((type === "grantAbility" || type === "extraLandDrops" || type === "untapDuringOthersUntap" || type === "imposeEntersTapped") && !opts.isStatic) {
+    if ((type === "grantAbility" || type === "extraLandDrops" || type === "untapDuringOthersUntap" || type === "grantSubtype" || type === "imposeEntersTapped") && !opts.isStatic) {
       err(`${type} is static-only (A10 — interpreted live, never resolved)`);
       continue;
     }
@@ -753,6 +766,7 @@ function validateEffects(
     if (!opts.sacrificeCost && JSON.stringify(e).includes('"ref":"sacrificedPower"')) err(`sacrificedPower is confined to activated abilities with a sacrifice cost (S29)`);
     // S40 (R-097): the two new confined refs.
     if (!opts.leaveTrigger && JSON.stringify(e).includes('"ref":"eventPower"')) err(`eventPower refs live only on observed DIES / LEAVES_BATTLEFIELD triggers (S40)`);
+    if (!opts.lifeTrigger && JSON.stringify(e).includes('"ref":"eventLife"')) err(`eventLife refs live only on LIFE_GAINED triggers (S46)`);
     if (!opts.spell && JSON.stringify(e).includes('"ref":"manaSpent"')) err(`manaSpent refs live only on a spell's own effects (S40)`);
     // S23 (ADR-084): the eventDamage ref reads a damage event's payload — meaningless anywhere else.
     if (!opts.damageTrigger && JSON.stringify(e).includes('"ref":"eventDamage"')) {

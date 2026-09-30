@@ -1,0 +1,22 @@
+{
+  "id": "beast_4_4_g",
+  "name": "Beast Token",
+  "source": "custom",
+  "isTokenDef": true,
+  "manaCost": "",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Beast"
+  ],
+  "colors": [
+    "G"
+  ],
+  "power": 4,
+  "toughness": 4,
+  "text": "",
+  "art": {
+    "fallback": "rendered"
+  }
+}

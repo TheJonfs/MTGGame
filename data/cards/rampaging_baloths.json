@@ -1,0 +1,40 @@
+{
+  "id": "rampaging_baloths",
+  "name": "Rampaging Baloths",
+  "source": "real",
+  "scryfallId": "c25ee47b-d099-4788-9c2b-73d151bf56fb",
+  "manaCost": "{4}{G}{G}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Beast"
+  ],
+  "power": 6,
+  "toughness": 6,
+  "keywords": [
+    "trample"
+  ],
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "LAND_ENTERS_UNDER_YOUR_CONTROL",
+      "condition": {
+        "controller": "you"
+      },
+      "effects": [
+        {
+          "type": "createToken",
+          "tokenId": "beast_4_4_g",
+          "count": 1,
+          "who": "you"
+        }
+      ],
+      "optional": false
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 3
+}

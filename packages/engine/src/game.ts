@@ -60,6 +60,10 @@ export type RequestPurpose =
   | "discardCost"
   /** S28 (Brainstorm): pick a card from hand to put on top of the library (the first pick ends on top). */
   | "putOnTop"
+  /** S46 (R-100, Ponder): order the library's top N — pick which goes on top next (one pick per distinct card). */
+  | "orderTop"
+  /** S46 (R-100, Ponder): "you may shuffle" — acceptOptional shuffles, declineOptional keeps the order. */
+  | "mayShuffle"
   /** A9 (S20): the shock clause — pay life to enter untapped, or enter tapped. */
   | "entersChoice"
   /** A10 word 2 (S22): pick the permanent to bounce as an activation cost (the Unwinder). */

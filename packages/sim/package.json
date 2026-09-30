@@ -47,6 +47,14 @@
     "./mage-decks-flood": {
       "types": "./src/mage-decks-flood.ts",
       "default": "./src/mage-decks-flood.ts"
+    },
+    "./open-lists": {
+      "types": "./src/open-lists.ts",
+      "default": "./src/open-lists.ts"
+    },
+    "./open-decks": {
+      "types": "./src/open-decks.ts",
+      "default": "./src/open-decks.ts"
     }
   },
   "dependencies": {

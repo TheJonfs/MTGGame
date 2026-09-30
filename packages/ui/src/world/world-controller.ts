@@ -83,6 +83,7 @@ import type { Modifier } from "@shandalar/engine";
 import { WorldRng as DungeonRng } from "@shandalar/world";
 import { exploreAround, manhattan, applyFountDuel, floodLordEntrance, fountDuelSpec, fountFallen, recordFount, awardFloodLair, floodLairOfRun, lairGuardian, withFloodFalls, floodChronicleFalls } from "@shandalar/world";
 import { FOUNT_DECK } from "@shandalar/sim/heart-deck";
+import { FORMATS } from "@shandalar/world";
 import { FLOOD_LAIR_PRIZE, parseFloodLairId, type FloodLairKind, opponentColors, applyCourtDuel, courtDuelSpec, courtsFallen, floodCourt, floodDeck, floodHeartOpen, floodRun, floodStronghold, recordFloodLordFall, strongholdContentFor, type FloodCourtDef } from "@shandalar/world";
 import {
   applyMirrorDuel, applyPetalDuel, corollaAdvance, corollaAsWorldMap, corollaDoor, corollaInnRest, corollaPath, corollaTown, enterCorolla,
@@ -801,6 +802,8 @@ export class WorldController {
     for (const c of (this.world?.phase ?? 1) >= 2 ? (this.catalog.flood?.courts ?? []) : []) if (c.deckRule) out.push({ id: `court:${c.id}`, name: c.name, label: c.deckRule.label, description: describeDeckRule(c.deckRule), rule: c.deckRule });
     for (const s of strongholdContentFor(this.catalog, this.world?.phase)) if (s.deckRule) out.push({ id: `stronghold:${s.id}`, name: s.name, label: s.deckRule.label, description: describeDeckRule(s.deckRule), rule: s.deckRule });
     for (const p of this.corollaDef?.petals ?? []) if (p.deckRule) out.push({ id: `petal:${p.color}`, name: `${p.boss.name} — the ${p.color} petal`, label: p.deckRule.label, description: describeDeckRule(p.deckRule), rule: p.deckRule });
+    // S46 (ADR-142): the Convocation's formats are doors too — "check against the Open".
+    for (const f of FORMATS) out.push({ id: `format:${f.id}`, name: `${f.name} (format)`, label: f.rule.label, description: describeDeckRule(f.rule), rule: f.rule });
     return out;
   }
   doorRules(): { id: string; name: string; label: string; description: string }[] {

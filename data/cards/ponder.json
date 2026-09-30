@@ -1,0 +1,26 @@
+{
+  "id": "ponder",
+  "name": "Ponder",
+  "source": "real",
+  "scryfallId": "ba6b6fc5-5077-4812-b8e9-906783dbaf67",
+  "manaCost": "{U}",
+  "types": [
+    "Sorcery"
+  ],
+  "spellEffect": [
+    {
+      "type": "reorderTop",
+      "count": 3,
+      "mayShuffle": true
+    },
+    {
+      "type": "draw",
+      "count": 1,
+      "who": "you"
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 1
+}

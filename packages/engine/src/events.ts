@@ -15,6 +15,9 @@ export interface GameEventMap extends Record<string, unknown> {
     controllerBefore: PlayerId;
     /** S40 (R-097): a creature's last-known power as it left the battlefield (absent otherwise). */
     powerBefore?: number;
+    /** S46 (R-100, Angelic Destiny): the objects that were ATTACHED to it as it left the battlefield — look-back
+     * (CR 603.10a), captured before the detach so "when enchanted creature dies" can find its Aura. */
+    attachedBefore?: string[];
   };
   LAND_ENTERS_UNDER_YOUR_CONTROL: { objectId: string; controller: PlayerId };
   /** S12 (R-043): a player's ante stakes were set aside at setup. Logged → facts.ante. */

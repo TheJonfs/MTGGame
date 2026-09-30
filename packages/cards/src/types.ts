@@ -177,7 +177,10 @@ export type ValueRef =
   /** S40 (R-097, Zinnia / Meliyan): the last-known POWER of the triggering zone-change event's creature
    * (captured as it leaves the battlefield, CR 603.10a). DIES / LEAVES_BATTLEFIELD observers only
    * (validator-confined). */
-  | { ref: "eventPower" };
+  | { ref: "eventPower" }
+  /** S46 (R-100, Vitalist): the life GAINED in the triggering LIFE_GAINED event ("that many"). LIFE_GAINED triggers only
+   * (validator-confined). */
+  | { ref: "eventLife" };
 /** Counter kinds. +1/+1 and −1/−1 are the P/T pair characteristics() reads (S1 slots); S26 opens the
  * accumulator class — a NAMED kind (lowercase word) is inert state the card's own refs and costs
  * read (Clio's depth counters). Named kinds never touch P/T. */
@@ -310,6 +313,12 @@ export type EffectBase =
   | { type: "extraLandDrops"; count: number }
   /** S45 (R-099, Seedborn Muse): static — the controller untaps all their permanents during each OTHER player's untap step (CR 502.3). */
   | { type: "untapDuringOthersUntap" }
+  /** S46 (R-100, Angelic Destiny): static — the scoped object has these subtypes in addition to its own (a characteristic:
+   * Restoration Angel's "non-Angel" reads it). `subtypes` (plural) so it is never read as a scope filter. */
+  | { type: "grantSubtype"; subtypes: string[]; scope: Scope }
+  /** S46 (R-100, Ponder): look at the top `count` cards of your library and put them back in any order; then you MAY
+   * shuffle (`mayShuffle`). The controller orders them (the first chosen goes on top). */
+  | { type: "reorderTop"; count: number; mayShuffle?: boolean }
   /** A10 law-word (S22b): STATIC-ONLY — matching permanents entering under a `who`-selected player's
    * control (relative to the static's controller) enter tapped, whatever put them there (the
    * sanctioned enters-tapped special case, extended; the Intake). */
@@ -361,6 +370,8 @@ export const EFFECT_TYPES: readonly EffectType[] = [
   "grantAbility",
   "extraLandDrops",
   "untapDuringOthersUntap",
+  "grantSubtype",
+  "reorderTop",
   "imposeEntersTapped",
   "createLaw",
   "putOnTop",
@@ -395,7 +406,10 @@ export type TriggerEvent =
   /** S26 (the Corolla batch): a player drew a card — DISCARD's sibling, the first collector counts
    * as skeleton (Faldor, the Muster). Condition `controller` = who drew, relative to the observer's
    * controller (default "you"). Opening hands are not draws (CR 103.4) — the collector is gated. */
-  | "DRAW";
+  | "DRAW"
+  /** S46 (R-100, Vitalist): a player gained life (a positive LIFE_CHANGE). Condition `controller` = who gained, relative to
+   * the observer's controller (default "you"); the context carries the amount (the `eventLife` ref). */
+  | "LIFE_GAINED";
 
 export const TRIGGER_EVENTS: readonly TriggerEvent[] = [
   "ENTERS_BATTLEFIELD",
@@ -415,6 +429,7 @@ export const TRIGGER_EVENTS: readonly TriggerEvent[] = [
   "UNTAPPED",
   "LAND_PLAYED",
   "DRAW",
+  "LIFE_GAINED",
 ];
 
 /**

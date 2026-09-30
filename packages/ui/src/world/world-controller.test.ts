@@ -117,7 +117,7 @@ describe("S37 (ADR-123): the door — a template's deckRule through the editor a
     c.world!.player.collection["serra_angel"] = 1; // a spare white creature to answer the gate with
     // The editor: the door list, the live verdict, Save unaffected.
     c.openEditor();
-    expect(c.doorRules()).toEqual([{ id: "test_gate", name: "The Test Gate", label: "the White Gate", description: `colours within W; ≥ ${creatures + 1} creatures` }]);
+    expect(c.doorRules().filter((d) => !d.id.startsWith("format:"))).toEqual([{ id: "test_gate", name: "The Test Gate", label: "the White Gate", description: `colours within W; ≥ ${creatures + 1} creatures` }]);
     expect(c.editorRuleCheck()).toBeNull();
     c.setEditorRule("test_gate");
     const before = c.editorRuleCheck()!;
@@ -157,7 +157,8 @@ describe("S37 (ADR-123): the door — a template's deckRule through the editor a
   it("no template in the shipped catalog carries a rule; the editor's door list is empty and every parley fight is unrefused by a door", () => {
     const c = freshController();
     c.newGame({ starter: "red", difficulty: "standard", seed: 3702 });
-    expect(c.doorRules()).toEqual([]);
+    expect(c.doorRules().filter((d) => !d.id.startsWith("format:"))).toEqual([]);
+    expect(c.doorRules().map((d) => d.id)).toContain("format:open"); // S46 (ADR-142): the editor lists the Open as a format to check against
     c.openEditor();
     c.setEditorRule("a1");
     expect(c.editorRuleId).toBeNull(); // a template without a rule is not a door
@@ -195,7 +196,7 @@ describe("S38 (ADR-125): the door on a SITE — a stronghold's deckRule through 
     const door = c.siteDoor()!;
     expect(door.id).toBe("stronghold:argent_bastion");
     expect(door.refusal).toMatch(/^Bring bodies to the fire\. the Argent Gate \(colours within W; ≥ \d+ creatures\): \d+ creatures; the Argent Gate asks \d+\.$/);
-    expect(c.doorRules()).toEqual([{ id: "stronghold:argent_bastion", name: "The Argent Bastion", label: "the Argent Gate", description: `colours within W; ≥ ${creatures + 1} creatures` }]);
+    expect(c.doorRules().filter((d) => !d.id.startsWith("format:"))).toEqual([{ id: "stronghold:argent_bastion", name: "The Argent Bastion", label: "the Argent Gate", description: `colours within W; ≥ ${creatures + 1} creatures` }]);
     c.enterDungeon();
     expect(screen().kind).toBe("dungeonTelegraph");
     expect((screen() as { notice: string | null }).notice).toBe(door.refusal);
@@ -913,7 +914,7 @@ describe("S41 (ADR-130): the flood's seats through the controller — a court's 
   it("every door of the flood is in the editor's list; a court's threshold opens its telegraph with the seat's voice; the gate refuses in the COURT's own words; 'edit your deck' returns to the court; stepping back leaves it standing", async () => {
     const c = await floodController();
     const w = c.world!;
-    expect(c.doorRules().map((d) => d.id).sort()).toEqual([...catalog.flood!.courts.map((x) => `court:${x.id}`), ...catalog.flood!.strongholds.map((x) => `stronghold:${x.id}`)].sort());
+    expect(c.doorRules().map((d) => d.id).sort()).toEqual([...catalog.flood!.courts.map((x) => `court:${x.id}`), ...catalog.flood!.strongholds.map((x) => `stronghold:${x.id}`), "format:open"].sort()); // S46: + the Open (ADR-142)
     const site = w.map.strongholds.find((f) => f.kind === "ground" && f.contentId === "tallyflame_court")!;
     await stepOnto(c, site.at);
     expect(c.screen.kind).toBe("courtTelegraph");

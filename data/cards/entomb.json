@@ -1,0 +1,22 @@
+{
+  "id": "entomb",
+  "name": "Entomb",
+  "source": "real",
+  "scryfallId": "f60a2091-fb97-4f04-911b-fce9b6351044",
+  "manaCost": "{B}",
+  "types": [
+    "Instant"
+  ],
+  "spellEffect": [
+    {
+      "type": "searchLibrary",
+      "predicate": "anyCard",
+      "to": "graveyard",
+      "count": 1
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2
+}

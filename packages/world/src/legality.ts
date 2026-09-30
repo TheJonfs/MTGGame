@@ -34,10 +34,14 @@ export interface DeckRule {
   minLandFraction?: number;
   /** S40 (the Shevelport gate — a type ban): no card of any of these types. */
   bannedTypes?: CardType[];
+  /** S46 (ADR-142, the Open): card ids at most ONE copy each (Black Lotus, the Moxen, …). */
+  restricted?: string[];
+  /** S46 (ADR-142): card ids not allowed at all (the five laws in every Convocation format). */
+  banned?: string[];
   /** "the Jeskai gate" — shown by the editor and the parley. */
   label: string;
 }
-export const DECK_RULE_FIELDS = ["colorsWithin", "minCreatures", "maxLands", "maxManaValue", "singleton", "minCards", "minCreaturePower", "minLandFraction", "bannedTypes", "label"] as const;
+export const DECK_RULE_FIELDS = ["colorsWithin", "minCreatures", "maxLands", "maxManaValue", "singleton", "minCards", "minCreaturePower", "minLandFraction", "bannedTypes", "restricted", "banned", "label"] as const;
 const RULE_CARD_TYPES: readonly CardType[] = ["Land", "Creature", "Instant", "Sorcery", "Enchantment", "Artifact"];
 
 /** `failed` (S40): the rule fields that produced a problem, in check order — the door picks its voice by the first. */
@@ -126,7 +130,18 @@ export function checkDeck(list: Decklist, collection?: Collection | null, rule?:
         if (k > 0) problems.push(`${plural(k, t.toLowerCase())}: ${listOf(out)}`);
       }
     }
-    mark("bannedTypes", at);
+    mark("bannedTypes", at); at = before();
+    // S46 (ADR-142): the Open's lists — restricted (one copy) and banned (none).
+    if (rule.restricted) {
+      const out = list.filter((e) => rule.restricted!.includes(e.cardId) && e.count > 1);
+      if (out.length > 0) problems.push(`restricted to one copy in ${rule.label}: ${listOf(out)}`);
+    }
+    mark("restricted", at); at = before();
+    if (rule.banned) {
+      const out = list.filter((e) => rule.banned!.includes(e.cardId));
+      if (out.length > 0) problems.push(`banned in ${rule.label}: ${listOf(out)}`);
+    }
+    mark("banned", at);
   }
   return { ok: problems.length === 0, problems, ...(failed.length > 0 ? { failed } : {}) };
 }
@@ -143,6 +158,8 @@ export function describeDeckRule(rule: DeckRule): string {
   if (rule.minCreaturePower !== undefined) parts.push(`every creature's power ≥ ${rule.minCreaturePower}`);
   if (rule.minLandFraction !== undefined) parts.push(`lands ≥ ${rule.minLandFraction === 0.5 ? "half" : `${Math.round(rule.minLandFraction * 100)}%`} of the deck`);
   if (rule.bannedTypes) parts.push(`no ${rule.bannedTypes.map((t) => `${t.toLowerCase()}s`).join(" or ")}`);
+  if (rule.restricted?.length) parts.push(`${rule.restricted.length} cards restricted to one`);
+  if (rule.banned?.length) parts.push(`${rule.banned.length} banned`);
   return parts.join("; ") || "no constraint";
 }
 
@@ -161,6 +178,7 @@ export function validateDeckRule(rule: unknown, where: string): string[] {
   }
   if (r.singleton !== undefined && typeof r.singleton !== "boolean") errors.push(`${where}: deckRule.singleton must be a boolean`);
   if (r.minLandFraction !== undefined && (typeof r.minLandFraction !== "number" || !(r.minLandFraction > 0 && r.minLandFraction <= 1))) errors.push(`${where}: deckRule.minLandFraction must be a number in (0, 1]`);
+  for (const k of ["restricted", "banned"] as const) if (r[k] !== undefined && (!Array.isArray(r[k]) || (r[k] as unknown[]).length === 0 || (r[k] as unknown[]).some((x) => typeof x !== "string"))) errors.push(`${where}: deckRule.${k} must be a non-empty array of card ids`);
   if (r.bannedTypes !== undefined && (!Array.isArray(r.bannedTypes) || r.bannedTypes.length === 0 || r.bannedTypes.some((t) => !RULE_CARD_TYPES.includes(t as CardType)) || new Set(r.bannedTypes).size !== r.bannedTypes.length)) errors.push(`${where}: deckRule.bannedTypes must be a non-empty array of distinct card types`);
   return errors;
 }

@@ -1,0 +1,72 @@
+{
+  "id": "angelic_destiny",
+  "name": "Angelic Destiny",
+  "source": "real",
+  "scryfallId": "a0cd7438-fde2-4e26-9c34-52c476a971e9",
+  "manaCost": "{2}{W}{W}",
+  "types": [
+    "Enchantment"
+  ],
+  "subtypes": [
+    "Aura"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "creature",
+      "zone": "battlefield"
+    }
+  ],
+  "abilities": [
+    {
+      "kind": "static",
+      "effects": [
+        {
+          "type": "modifyPT",
+          "power": 4,
+          "toughness": 4,
+          "scope": "attached",
+          "duration": "WHILE_SOURCE_ON_BATTLEFIELD"
+        },
+        {
+          "type": "grantKeyword",
+          "keyword": "flying",
+          "scope": "attached",
+          "duration": "WHILE_SOURCE_ON_BATTLEFIELD"
+        },
+        {
+          "type": "grantKeyword",
+          "keyword": "first strike",
+          "scope": "attached",
+          "duration": "WHILE_SOURCE_ON_BATTLEFIELD"
+        },
+        {
+          "type": "grantSubtype",
+          "subtypes": [
+            "Angel"
+          ],
+          "scope": "attached"
+        }
+      ]
+    },
+    {
+      "kind": "triggered",
+      "event": "DIES",
+      "condition": {
+        "source": "attached"
+      },
+      "effects": [
+        {
+          "type": "returnFromGraveyard",
+          "scope": "self",
+          "to": "hand"
+        }
+      ],
+      "optional": false
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 3
+}

@@ -77,6 +77,9 @@ export function moveObject(
   // detaches or the object is deleted; rides the ZONE_CHANGE payload for the leave observers (Zinnia, Meliyan).
   const powerBefore = from === "battlefield" && ctx.defs.def(obj.cardId).types.includes("Creature") ? characteristics(ctx, objectId).power : undefined;
 
+  // S46 (R-100): what was attached, for the look-back (CR 603.10a) — before the detach below clears it.
+  const attachedBefore = from === "battlefield" ? Object.values(state.objects).filter((o) => o.attachedTo === objectId).map((o) => o.id) : [];
+
   // Detach anything attached to the moving object; SBAs will clean the
   // now-unattached auras up (CR 704.5m).
   for (const other of Object.values(state.objects)) {
@@ -107,6 +110,7 @@ export function moveObject(
       controller: obj.controller,
       controllerBefore: obj.controller,
       ...(powerBefore !== undefined ? { powerBefore } : {}),
+      ...(attachedBefore.length > 0 ? { attachedBefore } : {}),
     });
     return null;
   }
@@ -160,6 +164,7 @@ export function moveObject(
     controller: newObj.controller,
     controllerBefore: obj.controller,
     ...(powerBefore !== undefined ? { powerBefore } : {}),
+    ...(attachedBefore.length > 0 ? { attachedBefore } : {}),
   });
   return newId;
 }

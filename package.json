@@ -34,6 +34,7 @@
     "flood-sim": "tsx packages/world/src/flood-sim-cli.ts",
     "flood:gen": "tsx packages/world/src/flood-gen-cli.ts",
     "mage-inversion:gen": "tsx packages/world/src/mage-inversion-gen-cli.ts",
+    "open:gen": "tsx packages/world/src/open-gen-cli.ts",
     "blocks-audit": "tsx packages/sim/src/blocks-audit-cli.ts",
     "build:web": "bash scripts/build-web.sh"
   },

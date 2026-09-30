@@ -1,0 +1,48 @@
+{
+  "id": "vitalist",
+  "name": "Vitalist",
+  "source": "custom",
+  "manaCost": "{2}{W}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Human",
+    "Cleric"
+  ],
+  "power": 1,
+  "toughness": 1,
+  "text": "Whenever you gain life, put that many +1/+1 counters on target creature.",
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "LIFE_GAINED",
+      "condition": {
+        "controller": "you"
+      },
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "creature",
+          "zone": "battlefield"
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounters",
+          "kind": "+1/+1",
+          "count": {
+            "ref": "eventLife"
+          },
+          "target": 0
+        }
+      ],
+      "optional": false
+    }
+  ],
+  "art": {
+    "asset": "/custom-art/vitalist.png",
+    "fallback": "rendered"
+  },
+  "shopTier": 2
+}

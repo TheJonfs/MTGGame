@@ -108,6 +108,8 @@ export interface EffectContext {
    * random draws from the game RNG (logged).
    */
   discard(player: number, count: number | "all", mode: DiscardMode, filter?: DiscardFilter): Promise<void>;
+  /** S46 (R-100, Ponder): the top `count` of the player's library, reordered by the player; then an optional shuffle. */
+  reorderTop(player: number, count: number, mayShuffle: boolean): Promise<void>;
   /** S28 (ADR-098, Brainstorm): the player puts `count` cards from hand on top of the library, a
    * logged pick per card; the FIRST pick ends on top. Fewer cards than count: what is there goes. */
   putOnTop(player: number, count: number): Promise<void>;
@@ -187,6 +189,11 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
   draw: (e, ctx) => {
     if (e.type !== "draw") throw new Error("resolver mismatch");
     for (const p of ctx.players(e.who)) ctx.draw(p, e.count);
+  },
+
+  reorderTop: async (e, ctx) => {
+    if (e.type !== "reorderTop") throw new Error("resolver mismatch");
+    for (const p of ctx.players("you")) await ctx.reorderTop(p, e.count, e.mayShuffle ?? false);
   },
 
   mill: (e, ctx) => {

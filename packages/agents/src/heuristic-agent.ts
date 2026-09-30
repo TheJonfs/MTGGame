@@ -85,6 +85,11 @@ export class HeuristicAgent implements Agent {
         return this.putOnTopChoice(view, request);
       case "entersChoice":
         return this.entersChoice(view, request);
+      // S46 (Ponder): the top three by the hand's needs, and the shuffle only when all three are poor.
+      case "orderTop":
+        return this.orderTopChoice(view, request);
+      case "mayShuffle":
+        return this.mayShuffleChoice(view, request);
       // S22 (A10) — the new cost/fork/loop requests:
       case "chooseBounceCost":
         return this.bounceCostChoice(view, request);
@@ -515,6 +520,43 @@ export class HeuristicAgent implements Agent {
     if (!match(0)) return false;
     const spare = used.filter((u) => !u).length + left.length;
     return spare >= ritualCost.generic + cardCost.generic;
+  }
+
+  /** S46 (Ponder — the brief's Part 3): what the next draw wants. Short of mana (fewer than three lands in play, or no
+   * land in hand and fewer than five in play) → a land; otherwise the best spell castable soon (mana value ≤ lands + 1,
+   * the dearest first). A card is POOR when it is a land we do not need or a spell two beyond our mana. Exposed. */
+  ponderWants(view: GameView): { land: boolean; lands: number } {
+    const me = view.you;
+    const lands = view.battlefield.filter((o) => o.controller === me && this.def(o.cardId)?.types.includes("Land")).length;
+    const landInHand = view.hand.some((c) => this.def(c.cardId)?.types.includes("Land"));
+    return { land: lands < 3 || (!landInHand && lands < 5), lands };
+  }
+  ponderPoor(view: GameView, cardId: string): boolean {
+    const d = this.def(cardId);
+    const w = this.ponderWants(view);
+    if (!d) return true;
+    if (d.types.includes("Land")) return !w.land;
+    return this.mv(cardId) > w.lands + 2;
+  }
+  orderTopChoice(view: GameView, request: ActionRequest): Action {
+    const picks = request.actions.filter((a): a is Extract<Action, { type: "putOnTop" }> => a.type === "putOnTop");
+    if (picks.length === 0) return request.actions[0]!;
+    const cardOf = new Map((request.revealed ?? []).map((r) => [r.objectId, r.cardId]));
+    const w = this.ponderWants(view);
+    const score = (a: (typeof picks)[number]): number => {
+      const id = cardOf.get(a.objectId) ?? "";
+      const d = this.def(id);
+      if (!d) return -10;
+      if (d.types.includes("Land")) return w.land ? 10 : -5;
+      const mv = this.mv(id);
+      return mv <= w.lands + 1 ? 5 + mv : 1 - (mv - w.lands);
+    };
+    return [...picks].sort((x, y) => score(y) - score(x) || (cardOf.get(x.objectId) ?? "").localeCompare(cardOf.get(y.objectId) ?? ""))[0]!;
+  }
+  mayShuffleChoice(view: GameView, request: ActionRequest): Action {
+    const seen = (request.revealed ?? []).map((r) => r.cardId);
+    const allPoor = seen.length > 0 && seen.every((id) => this.ponderPoor(view, id));
+    return request.actions.find((a) => a.type === (allPoor ? "acceptOptional" : "declineOptional")) ?? request.actions[0]!;
   }
 
   /** S17: a hand-zone self-discard ability (cycling). S22: resolved through the virtual list so the

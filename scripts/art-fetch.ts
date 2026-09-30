@@ -59,6 +59,7 @@ const OVERRIDES: Record<string, { set: string; collector?: string }> = {
   abrade: { set: "brc", collector: "111" }, // S22 brief: Brothers War Commander printing per Chris (BRC Evolving Wilds precedent)
   angel_of_the_ruins: { set: "brc", collector: "68" }, // S36 (Chris): the Brothers' War Commander printing — the old (1997) frame, Chris's default aesthetic pending specific choices
   // S8 feedback round: Beta over Unlimited — black borders like the new frame.
+  rampaging_baloths: { set: "fdn", collector: "645" }, // S46 (Chris): a printing whose text matches the Oracle (landfall is mandatory; ZEN's said "you may")
   guttersnipe: { set: "rvr", collector: "332" }, // S45 (Chris): Ravnica Remastered — the old frame (first printing RTR is modern)
   dragon_mage: { set: "scg", collector: "87" }, // S45 (Chris): the first printing, old frame
   seedborn_muse: { set: "lgn", collector: "138" }, // S45 (Chris): the first printing, old frame

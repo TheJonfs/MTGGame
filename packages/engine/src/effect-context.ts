@@ -28,7 +28,7 @@ import { characteristics, isCreature } from "./characteristics.js";
  */
 export type EffectRequester = (
   player: PlayerId,
-  purpose: "discard" | "searchLibrary" | "putOnTop" | "chooseSacrifice" | "chooseName",
+  purpose: "discard" | "searchLibrary" | "putOnTop" | "chooseSacrifice" | "chooseName" | "orderTop" | "mayShuffle",
   actions: Action[],
   revealed?: { objectId: string; cardId: string }[],
   source?: { cardId: string; effects: Effect[] },
@@ -207,6 +207,7 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
         // damage — the ref is validator-confined to damage-event triggers, so that's belt-and-braces.
         return (item.eventContext?.amount ?? 0) * (a.times ?? 1);
       }
+      if (a.ref === "eventLife") return item.eventContext?.amount ?? 0; // S46 (R-100, Vitalist): the life gained
       if (a.ref === "sacrificedPower") {
         // S29 (R-092, Altar of Dementia): the cost's sacrificed creature's power, captured at payment.
         return item.eventContext?.amount ?? 0;
@@ -627,6 +628,42 @@ function discardOp(ctx: EngineCtx, caster: PlayerId, requester?: EffectRequester
       }
       for (const id of [...picks].reverse()) moveObject(ctx, id, "library", { position: "top" });
     },
+    // S46 (R-100, Ponder): look at the top N and put them back in any order — the player picks which goes on top next
+    // (one representative per cardId), the first pick ends on top; then, if the card allows, the player may shuffle.
+    // A reorder within the library is not a zone change (no moveObject): the shuffle's own precedent.
+    async reorderTop(playerNum: number, count: number, mayShuffle: boolean): Promise<void> {
+      const player = playerNum as PlayerId;
+      const p = ctx.state.players[player];
+      const top = p.library.slice(0, count);
+      if (top.length === 0) return;
+      const revealed = top.map((id) => ({ objectId: id, cardId: getObject(ctx.state, id).cardId }));
+      const order: string[] = [];
+      let rest = [...top];
+      while (rest.length > 1) {
+        const seen = new Set<string>();
+        const candidates: string[] = [];
+        for (const id of rest) { const c = getObject(ctx.state, id).cardId; if (seen.has(c)) continue; seen.add(c); candidates.push(id); }
+        let pick = candidates[0]!;
+        if (candidates.length > 1) {
+          if (!requester) throw new Error("reorderTop needs an agent (not available at initialization)");
+          const a = await requester(player, "orderTop", candidates.map((objectId) => ({ type: "putOnTop", objectId })), revealed);
+          if (a.type !== "putOnTop") throw new Error("expected putOnTop");
+          pick = a.objectId;
+        }
+        order.push(pick);
+        rest = rest.filter((id) => id !== pick);
+      }
+      order.push(...rest);
+      p.library = [...order, ...p.library.slice(order.length)];
+      if (mayShuffle) {
+        if (!requester) throw new Error("reorderTop needs an agent (not available at initialization)");
+        const a = await requester(player, "mayShuffle", [{ type: "acceptOptional" }, { type: "declineOptional" }], revealed);
+        if (a.type === "acceptOptional") {
+          p.library = ctx.rng.shuffle(p.library, "shuffle");
+          ctx.bus.emit("SHUFFLED", { player });
+        }
+      }
+    },
     async discard(playerNum: number, count: number | "all", mode: DiscardMode, filter?: DiscardFilter): Promise<void> {
       const player = playerNum as PlayerId;
       // S45 (R-099, Dragon Mage): "discards their hand" — every card, no choice (CR 701.8a); in hand order.
@@ -809,8 +846,8 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
  * (Tendrils), statics (Gaean Wurm, Werebear's threshold) and cost reduction (Baru). */
 /** Refs that only a resolving stack item can answer (its targets, its event, its payment) — statics and cost
  * reductions read them as zero. S40: one guard for the three live-evaluation sites. */
-export type StackOnlyRef = Extract<ValueRef, { ref: "targetPower" | "targetManaValue" | "eventDamage" | "xPaid" | "sacrificedPower" | "manaSpent" | "sourcePower" | "eventPower" }>;
-const STACK_ONLY = new Set(["targetPower", "targetManaValue", "eventDamage", "xPaid", "sacrificedPower", "manaSpent", "sourcePower", "eventPower"]);
+export type StackOnlyRef = Extract<ValueRef, { ref: "targetPower" | "targetManaValue" | "eventDamage" | "xPaid" | "sacrificedPower" | "manaSpent" | "sourcePower" | "eventPower" | "eventLife" }>;
+const STACK_ONLY = new Set(["targetPower", "targetManaValue", "eventDamage", "xPaid", "sacrificedPower", "manaSpent", "sourcePower", "eventPower", "eventLife"]);
 export function isStackOnlyRef(v: ValueRef): v is StackOnlyRef {
   return STACK_ONLY.has(v.ref);
 }

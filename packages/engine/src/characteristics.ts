@@ -141,6 +141,8 @@ export function characteristics(ctx: EngineCtx, objectId: string): Characteristi
       result.toughness += val(e.toughness);
     }
     if (phase === "grants" && e.type === "grantKeyword") result.keywords.add(e.keyword);
+    // S46 (R-100, Angelic Destiny): "is an Angel in addition to its other types".
+    if (phase === "grants" && e.type === "grantSubtype") for (const st of e.subtypes) if (!result.subtypes.includes(st)) result.subtypes.push(st);
     if (phase === "grants" && e.type === "restrict") {
       if (e.what === "attack" || e.what === "both") result.cantAttack = true;
       if (e.what === "block" || e.what === "both") result.cantBlock = true;

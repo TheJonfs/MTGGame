@@ -33,6 +33,10 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
 
   // Zone-change-shaped events: the moving object's own abilities (self conditions)…
   ctx.bus.on("ZONE_CHANGE", (ev) => {
+    // S46 (R-100): a following trigger's source went battlefield → graveyard: the trigger follows the card.
+    if (ev.from === "battlefield" && ev.to === "graveyard" && ev.newId) {
+      for (const pt of ctx.state.pendingTriggers) if (pt.followsSource && pt.sourceId === ev.oldId) pt.sourceId = ev.newId;
+    }
     const abilities = ctx.defs.def(ev.cardId).abilities ?? [];
     const isSelf = (a: import("@shandalar/cards").TriggeredAbilityDef) => {
       const src = a.condition?.source ?? (a.condition?.self === false ? "other" : "self");
@@ -91,7 +95,16 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
         if (a.kind !== "triggered" || a.event !== observedEvent) return;
         const cond = a.condition ?? {};
         const source = cond.source ?? "self";
-        if (source === "self" || source === "attached") return; // handled above / not an observer shape
+        // S46 (R-100, Angelic Destiny): "when ENCHANTED creature dies" — an Aura attached (at the moment of death) to the
+        // creature that died. The Aura is still on the battlefield here (it leaves by the SBA after); the trigger follows it.
+        if (source === "attached") {
+          if (observedEvent !== "DIES") return;
+          const aura = ctx.state.objects[obs.id];
+          if (!aura || aura.zone !== "battlefield" || !(ev.attachedBefore ?? []).includes(obs.id)) return; // look-back: attached as the host left
+          ctx.state.pendingTriggers.push({ sourceId: obs.id, sourceCardId: obs.cardId, controller: obs.controller, abilityIndex: i, timestamp: nextTimestamp(ctx.state), eventContext, followsSource: true });
+          return;
+        }
+        if (source === "self") return; // handled above
         if (source === "other" && obs.id === movedId) return;
         // "any" includes itself: Blood Artist's own death is collected HERE (not as a self trigger) so it isn't double-counted.
         if (source === "any" && obs.id === movedId && isSelfCollected(a)) return;
@@ -132,6 +145,23 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
         if (cond.type && !cond.type.some((t) => untappedDef.types.includes(t as never))) return;
         if (cond.subtype && !cond.subtype.some((t) => (untappedDef.subtypes ?? []).includes(t))) return;
         pend(permId, perm.cardId, perm.controller, i, eventContext);
+      });
+    }
+  });
+
+  // S46 (R-100, Vitalist): LIFE_GAINED — a positive life change. Condition `controller` = who gained, relative to the
+  // observer's controller (default "you"); the context carries the gainer and the amount (the `eventLife` ref).
+  ctx.bus.on("LIFE_CHANGE", (ev) => {
+    if (ev.delta <= 0) return;
+    for (const permId of [...ctx.state.battlefield]) {
+      const perm = ctx.state.objects[permId];
+      if (!perm) continue;
+      (ctx.defs.def(perm.cardId).abilities ?? []).forEach((a, i) => {
+        if (a.kind !== "triggered" || a.event !== "LIFE_GAINED") return;
+        const ctrl = a.condition?.controller ?? "you";
+        if (ctrl === "you" && ev.player !== perm.controller) return;
+        if (ctrl === "opponent" && ev.player === perm.controller) return;
+        pend(permId, perm.cardId, perm.controller, i, { player: ev.player, amount: ev.delta });
       });
     }
   });
