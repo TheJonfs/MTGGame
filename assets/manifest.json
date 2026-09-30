@@ -3777,6 +3777,21 @@
         }
       }
     },
+    "gate-lair-hearthstead-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:33b42a02d99abe095749e93f48a8ae9557e64ac1b4ad77364ba07ad622224bdd",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:33b42a02d99abe095749e93f48a8ae9557e64ac1b4ad77364ba07ad622224bdd",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/gate-lair-hearthstead-2/canonical.png",
+          "rendered_at": "2026-09-30T01:20:16+00:00",
+          "thumb": "assets/thumbs/gate-lair-hearthstead-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "gate-lockmere-1": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:045a2952ca493aa904be3bfcf9208e25ae32215bd65472520ffb907d1576056c",
