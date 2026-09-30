@@ -165,6 +165,14 @@ export class HeuristicAgent implements Agent {
 
   // ---------- Priority: score → softmax ----------
 
+  /** S45 follow-up (Chris: the AI could not see summoning sickness): can OUR permanent act this turn — attack or pay a
+   * {T} cost? Untapped and not summoning-sick (the view's flag is the engine's rule: entered this turn, no haste). Used
+   * for our own attack and tap READINESS only — a sick creature still blocks, and the opponent's sick creatures still
+   * threaten their next turn, so the blocker and threat readers keep "untapped". */
+  private canActNow(o: GameView["battlefield"][number]): boolean {
+    return !o.tapped && !o.summoningSick;
+  }
+
   /** Exposed for the book-of-shame suite: the score one action would get. */
   scorePriorityAction(view: GameView, action: Action): number {
     if (action.type === "pass") {
@@ -252,7 +260,7 @@ export class HeuristicAgent implements Agent {
     const d = card ? this.def(card.cardId) : undefined;
     if (!d || !(d.types.includes("Instant") || d.types.includes("Sorcery"))) return 0;
     const wheels = (cd: CardDef | undefined) => !!cd && (cd.abilities ?? []).some((a) => a.kind === "triggered" && a.event === "DEALS_COMBAT_DAMAGE_TO_PLAYER" && a.effects.some((e) => e.type === "discard" && e.count === "all" && (e.who === "eachPlayer" || e.who === "you")));
-    const ready = view.battlefield.some((o) => o.controller === view.you && !o.tapped && !o.cantAttack && o.power !== null && wheels(this.def(o.cardId)));
+    const ready = view.battlefield.some((o) => o.controller === view.you && this.canActNow(o) && !o.cantAttack && o.power !== null && wheels(this.def(o.cardId))); // S45: a sick wheel does not swing this turn
     return ready ? 1.0 : 0;
   }
 
@@ -408,7 +416,7 @@ export class HeuristicAgent implements Agent {
     } else return null;
     const pool = Object.values(view.manaPool).reduce((a, b) => a + b, 0);
     const producers = view.battlefield.filter((o) => {
-      if (o.controller !== me || o.tapped) return false;
+      if (o.controller !== me || !this.canActNow(o)) return false; // S45: a sick mana creature is no mana this turn
       const d = this.def(o.cardId);
       if (!d) return false;
       const isLand = d.types.includes("Land");
@@ -479,7 +487,7 @@ export class HeuristicAgent implements Agent {
     const sources: string[][] = [];
     for (const [c, n] of Object.entries(view.manaPool)) for (let i = 0; i < n; i++) sources.push([c]);
     for (const o of view.battlefield) {
-      if (o.controller !== me || o.tapped) continue;
+      if (o.controller !== me || !this.canActNow(o)) continue; // S45: a sick mana creature pays nothing
       const ab = (this.def(o.cardId)?.abilities ?? []).find((a) => a.kind === "activated" && a.cost.tap && !a.cost.sacrifice && !a.cost.mana && a.effects.length > 0 && a.effects.every((e) => e.type === "addMana" && !e.choice));
       if (!ab || ab.kind !== "activated") continue;
       const cols = new Set<string>();
@@ -1284,7 +1292,7 @@ export class HeuristicAgent implements Agent {
     // tap-a-creature COST spends an attacker — on our own turn the Glare never fires.
     if (ab.cost.tapCreature) return true;
     if (!(view.step === "MAIN1" || view.step === "COMBAT_BEGIN")) return true;
-    const swing = view.battlefield.some((o) => o.controller === me && !o.tapped && o.power !== null && o.id !== action.objectId);
+    const swing = view.battlefield.some((o) => o.controller === me && this.canActNow(o) && !o.cantAttack && o.power !== null && o.id !== action.objectId); // S45: a creature cast this turn is no swing
     return !swing;
   }
 
@@ -1317,7 +1325,7 @@ export class HeuristicAgent implements Agent {
     const mine = view.battlefield.filter((o) => o.controller === me && o.power !== null).length;
     const theirs = view.battlefield.filter((o) => o.controller !== me && o.power !== null && !o.keywords.includes("defender")).length;
     if (mine < theirs) return false; // behind: the blocker comes back
-    const available = view.battlefield.filter((o) => o.controller === me && !o.tapped && (this.def(o.cardId)?.abilities ?? []).some((a) => a.kind === "activated" && a.cost.tap && a.effects.every((e) => e.type === "addMana" && !e.choice))).length + Object.values(view.manaPool).reduce((a, b) => a + b, 0);
+    const available = view.battlefield.filter((o) => o.controller === me && this.canActNow(o) && (this.def(o.cardId)?.abilities ?? []).some((a) => a.kind === "activated" && a.cost.tap && a.effects.every((e) => e.type === "addMana" && !e.choice))).length + Object.values(view.manaPool).reduce((a, b) => a + b, 0);
     const abilityCost = ab.cost.mana ? manaValue(parseManaCost(ab.cost.mana)) : 0;
     const wantsMana = view.hand.some((c) => { const d = this.def(c.cardId); if (!d || d.types.includes("Land")) return false; const mv = manaValue(parseManaCost(d.manaCost)); return mv <= available && mv > available - abilityCost; });
     return wantsMana;
@@ -1556,7 +1564,7 @@ export class HeuristicAgent implements Agent {
     const me = view.you;
     if (view.activePlayer !== me) return view.step !== "END";
     if (view.step !== "MAIN2" || view.stack.length > 0) return true;
-    const sources = view.battlefield.filter((o) => o.controller === me && !o.tapped && (this.def(o.cardId)?.abilities ?? []).some((a) => a.kind === "activated" && a.cost.tap && a.effects.length > 0 && a.effects.every((e) => e.type === "addMana"))).length
+    const sources = view.battlefield.filter((o) => o.controller === me && this.canActNow(o) && (this.def(o.cardId)?.abilities ?? []).some((a) => a.kind === "activated" && a.cost.tap && a.effects.length > 0 && a.effects.every((e) => e.type === "addMana"))).length
       + Object.values(view.manaPool).reduce((a, b) => a + b, 0);
     return view.hand.some((c) => { const d = this.def(c.cardId); return !!d && !d.types.includes("Land") && !d.manaCost.includes("X") && this.mv(c.cardId) <= sources; });
   }
@@ -1828,7 +1836,7 @@ export class HeuristicAgent implements Agent {
       if (!preCombat || myCreatures.length < 2) return true;
       const pick = this.harvestPick(view, myCreatures.map((o) => o.id), src.cardId);
       const p = Math.max(0, myCreatures.find((o) => o.id === pick)?.power ?? 0);
-      const attackers = myCreatures.filter((o) => o.id !== pick && !o.tapped).map((o) => Math.max(0, o.power ?? 0) + p).sort((a, b) => b - a);
+      const attackers = myCreatures.filter((o) => o.id !== pick && this.canActNow(o) && !o.cantAttack).map((o) => Math.max(0, o.power ?? 0) + p).sort((a, b) => b - a); // S45: only who can swing this turn
       const blockers = view.battlefield.filter((o) => o.controller === opp && o.power !== null && !o.tapped).length;
       const through = attackers.slice(blockers).reduce((a, b) => a + b, 0); // their blockers stop our biggest
       const theirs = view.battlefield.filter((o) => o.controller === opp && o.power !== null).length;
@@ -1885,7 +1893,7 @@ export class HeuristicAgent implements Agent {
       }
       case "grantKeyword":
         if (e0.scope !== "creaturesYouControl") return false;
-        return !(preCombat && myCreatures.filter((o) => !o.tapped).length >= 3);
+        return !(preCombat && myCreatures.filter((o) => this.canActNow(o) && !o.cantAttack).length >= 3); // S45: ready attackers only
       case "addCounters":
         if (e0.scope !== "creaturesYouControl") return false;
         return !(ourMain && myCreatures.length >= 3);

@@ -30,6 +30,8 @@ interface Obj {
   controller: 0 | 1;
   tapped?: boolean;
   attachedTo?: string | null;
+  /** S45 follow-up: entered this turn without haste (the view's flag). */
+  summoningSick?: boolean;
 }
 
 function mkView(opts: {
@@ -70,6 +72,7 @@ function mkView(opts: {
         power: isCreature ? (def.power ?? 0) : null,
         toughness: isCreature ? (def.toughness ?? 0) : null,
         keywords: [...(def.keywords ?? [])],
+        ...(o.summoningSick ? { summoningSick: true } : {}),
       };
     }),
     stack: opts.stack ?? [],
@@ -1122,5 +1125,26 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const on = board(true), off = board(false);
     void a; // a fresh agent per board: the attack scorer memoizes by attacker set and life within a turn
     expect(await agent("midrange").scoreAttackSet(on, creaturesOf(on) as never, 0, ["bal"])).toBeGreaterThan(await agent("midrange").scoreAttackSet(off, creaturesOf(off) as never, 0, ["bal"]));
+  });
+
+  it("book of shame 79 (S45 follow-up, the Warden's Scepter — 18 of 100 games): the tapper fires in MAIN1 only for a swing that can happen — a creature cast this turn is no swing; the wheel's spend bonus waits for a wheel that can attack", () => {
+    const a = agent("midrange");
+    const scepter = { type: "activateAbility" as const, objectId: "sc", abilityIndex: 0, targets: [{ kind: "object" as const, id: "their" }] };
+    const board = (sick: boolean) => mkView({ step: "MAIN1", battlefield: [{ id: "sc", cardId: "scepter_of_dominance", controller: 0 }, ...["p1", "p2", "p3"].map((id) => ({ id, cardId: "plains", controller: 0 as const })), { id: "lions", cardId: "savannah_lions", controller: 0, summoningSick: sick }, { id: "their", cardId: "grizzly_bears", controller: 1 }] });
+    expect(a.tapperGated(board(true), scepter)).toBe(true); // the Lions came down this turn: nothing swings
+    expect(a.tapperGated(board(false), scepter)).toBe(false); // a ready Lions: the tap clears the way
+    const shock = { type: "castSpell" as const, objectId: "sh", targets: [{ kind: "player" as const, player: 1 }] };
+    const wheel = (sick: boolean) => mkView({ hand: [{ objectId: "sh", cardId: "shock" }], battlefield: [{ id: "m1", cardId: "mountain", controller: 0 }, { id: "dm", cardId: "dragon_mage", controller: 0, summoningSick: sick }] });
+    expect(a.wheelSpendBonus(wheel(true), shock)).toBe(0);
+    expect(a.wheelSpendBonus(wheel(false), shock)).toBe(1);
+  });
+
+  it("book of shame 80 (S45 follow-up — 17 Rituals refused on a sick Elf's mana): a mana creature cast this turn is no mana, so the Ritual that enables the two-drop IS a play; with the Elf ready, the two-drop is already affordable and the Ritual waits", () => {
+    const a = agent("midrange");
+    const rit = { type: "castSpell" as const, objectId: "rit", targets: [] };
+    const board = (sick: boolean) => mkView({ hand: [{ objectId: "rit", cardId: "dark_ritual" }, { objectId: "cn", cardId: "child_of_night" }], battlefield: [{ id: "sw", cardId: "swamp", controller: 0 }, { id: "elf", cardId: "llanowar_elves", controller: 0, summoningSick: sick }] });
+    expect(a.manaBurst(board(true), rit)).toEqual({ enables: true });
+    expect(a.scorePriorityAction(board(true), rit)).toBeGreaterThan(a.scorePriorityAction(board(true), { type: "pass" }));
+    expect(a.manaBurst(board(false), rit)).toEqual({ enables: false });
   });
 });
