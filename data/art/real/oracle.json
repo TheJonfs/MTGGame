@@ -2588,5 +2588,61 @@
     "art_crop": "https://cards.scryfall.io/art_crop/front/3/5/35b13321-e429-4497-aef2-93a9df421d38.jpg?1783944897",
     "normal": "https://cards.scryfall.io/normal/front/3/5/35b13321-e429-4497-aef2-93a9df421d38.jpg?1783944897",
     "via": "override lgn #138"
+  },
+  "angelic_destiny": {
+    "scryfallId": "a0cd7438-fde2-4e26-9c34-52c476a971e9",
+    "set": "m12",
+    "set_name": "Magic 2012",
+    "collector_number": "3",
+    "artist": "Jana Schirmer & Johannes Voss",
+    "name": "Angelic Destiny",
+    "mana_cost": "{2}{W}{W}",
+    "type_line": "Enchantment — Aura",
+    "oracle_text": "Enchant creature\nEnchanted creature gets +4/+4, has flying and first strike, and is an Angel in addition to its other types.\nWhen enchanted creature dies, return this card to its owner's hand.",
+    "art_crop": "https://cards.scryfall.io/art_crop/front/a/0/a0cd7438-fde2-4e26-9c34-52c476a971e9.jpg?1783941107",
+    "normal": "https://cards.scryfall.io/normal/front/a/0/a0cd7438-fde2-4e26-9c34-52c476a971e9.jpg?1783941107",
+    "via": "default oldest-highres"
+  },
+  "entomb": {
+    "scryfallId": "f60a2091-fb97-4f04-911b-fce9b6351044",
+    "set": "ody",
+    "set_name": "Odyssey",
+    "collector_number": "132",
+    "artist": "Ron Spears",
+    "name": "Entomb",
+    "mana_cost": "{B}",
+    "type_line": "Instant",
+    "oracle_text": "Search your library for a card, put that card into your graveyard, then shuffle.",
+    "art_crop": "https://cards.scryfall.io/art_crop/front/f/6/f60a2091-fb97-4f04-911b-fce9b6351044.jpg?1783945246",
+    "normal": "https://cards.scryfall.io/normal/front/f/6/f60a2091-fb97-4f04-911b-fce9b6351044.jpg?1783945246",
+    "via": "default oldest-highres"
+  },
+  "ponder": {
+    "scryfallId": "ba6b6fc5-5077-4812-b8e9-906783dbaf67",
+    "set": "lrw",
+    "set_name": "Lorwyn",
+    "collector_number": "79",
+    "artist": "Mark Tedin",
+    "name": "Ponder",
+    "mana_cost": "{U}",
+    "type_line": "Sorcery",
+    "oracle_text": "Look at the top three cards of your library, then put them back in any order. You may shuffle.\nDraw a card.",
+    "art_crop": "https://cards.scryfall.io/art_crop/front/b/a/ba6b6fc5-5077-4812-b8e9-906783dbaf67.jpg?1783942899",
+    "normal": "https://cards.scryfall.io/normal/front/b/a/ba6b6fc5-5077-4812-b8e9-906783dbaf67.jpg?1783942899",
+    "via": "default oldest-highres"
+  },
+  "rampaging_baloths": {
+    "scryfallId": "c25ee47b-d099-4788-9c2b-73d151bf56fb",
+    "set": "fdn",
+    "set_name": "Foundations",
+    "collector_number": "645",
+    "artist": "Steve Prescott",
+    "name": "Rampaging Baloths",
+    "mana_cost": "{4}{G}{G}",
+    "type_line": "Creature — Beast",
+    "oracle_text": "Trample\nLandfall — Whenever a land you control enters, create a 4/4 green Beast creature token.",
+    "art_crop": "https://cards.scryfall.io/art_crop/front/c/2/c25ee47b-d099-4788-9c2b-73d151bf56fb.jpg?1783908915",
+    "normal": "https://cards.scryfall.io/normal/front/c/2/c25ee47b-d099-4788-9c2b-73d151bf56fb.jpg?1783908915",
+    "via": "override fdn #645"
   }
 }

@@ -2832,6 +2832,21 @@
         }
       }
     },
+    "card-vitalist-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:cadfdcd11c3e9e11f16613730737e53783d6ef7aaaf2ccc86a76bc65d01a87d9",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:cadfdcd11c3e9e11f16613730737e53783d6ef7aaaf2ccc86a76bc65d01a87d9",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-vitalist-4/canonical.png",
+          "rendered_at": "2026-09-30T19:27:54+00:00",
+          "thumb": "assets/thumbs/card-vitalist-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "card-wrackroot-1": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:4d601dd156a22f8d75452f60387b0539b4a0dd9aa8280488f36488b4ae3bd66a",

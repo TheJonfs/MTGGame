@@ -6,7 +6,7 @@
 |---|---|---|---|---|---|---|---|---|---|---|
 | Dark Ritual | B | Instant | {B} | 1 |  |  | 2 | 12 |  | Add {B}{B}{B}. |
 | Duress | B | Sorcery | {B} | 1 |  |  | 2 | 12 |  | Target opponent reveals their hand. You choose a noncreature, nonland card from it. That player discards that card. |
-| Entomb | B | Instant | {B} | 1 |  |  | 2 | 12 |  |  |
+| Entomb | B | Instant | {B} | 1 |  |  | 2 | 12 |  | Search your library for a card, put that card into your graveyard, then shuffle. |
 | Indulgent Aristocrat | B | Creature — Vampire Noble | {B} | 1 | 1/1 | lifelink | 1 | 8 |  | Lifelink {2}, Sacrifice a creature: Put a +1/+1 counter on each Vampire you control. |
 | Typhoid Rats | B | Creature — Rat | {B} | 1 | 1/1 | deathtouch | 1 | 8 |  | Deathtouch (Any amount of damage this deals to a creature is enough to destroy it.) |
 | Unearth | B | Sorcery | {B} | 1 |  |  | 2 | 12 |  | Return target creature card with mana value 3 or less from your graveyard to the battlefield. Cycling {2} ({2}, Discard this card: Draw a card.) |
@@ -125,7 +125,7 @@
 | Treetop Snarespinner | G | Creature — Spider | {3}{G} | 4 | 1/4 | reach, deathtouch | 1 | 20 |  | Reach (This creature can block creatures with flying.) Deathtouch (Any amount of damage this deals to a creature is enough to destroy it.) {2}{G}: Put a +1/+1 counter on target creature you control. Activate only as a sorcery. |
 | Seedborn Muse | G | Creature — Spirit | {3}{G}{G} | 5 | 2/4 |  | 3 | 60 |  | Untap all permanents you control during each other player's untap step. |
 | Titania, Protector of Argoth | G | Legendary Creature — Elemental | {3}{G}{G} | 5 | 5/3 |  | — | 24 | prizeOnly | When Titania enters, return target land card from your graveyard to the battlefield. Whenever a land you control is put into a graveyard from the battlefield, create a 5/3 green Elemental creature token. |
-| Rampaging Baloths | G | Creature — Beast | {4}{G}{G} | 6 | 6/6 | trample | 3 | 70 |  |  |
+| Rampaging Baloths | G | Creature — Beast | {4}{G}{G} | 6 | 6/6 | trample | 3 | 70 |  | Trample Landfall — Whenever a land you control enters, create a 4/4 green Beast creature token. |
 | Pelakka Wurm | G | Creature — Wurm | {4}{G}{G}{G} | 7 | 7/7 | trample | 3 | 80 |  | Trample (This creature can deal excess combat damage to the player or planeswalker it's attacking.) When this creature enters, you gain 7 life. When this creature dies, draw a card. |
 | The Reaper | GBR | Legendary Creature — Snake | {1}{G}{G}{B}{R} | 5 | 4/4 |  | — | 24 | prizeOnly, custom | At the beginning of each upkeep, create a 1/1 green Snake creature token. {B}{R}{G}, Sacrifice a creature: Creatures you control get +X/+0 and gain haste and lifelink until end of turn, where X is the sacrificed creature's power. |
 | Temporal Spring | GU | Sorcery | {1}{G}{U} | 3 |  |  | R | 40 |  | Put target permanent on top of its owner's library. |
@@ -174,7 +174,7 @@
 | Cathartic Adept | U | Creature — Human Wizard | {U} | 1 | 1/1 |  | 1 | 8 |  | {T}: Target player mills a card. |
 | Curiosity | U | Enchantment — Aura | {U} | 1 |  |  | 1 | 8 |  | Enchant creature Whenever enchanted creature deals damage to an opponent, you may draw a card. |
 | Hedron Crab | U | Creature — Crab | {U} | 1 | 0/2 |  | 1 | 8 |  | Landfall — Whenever a land you control enters, target player mills three cards. (They put the top three cards of their library into their graveyard.) |
-| Ponder | U | Sorcery | {U} | 1 |  |  | 1 | 8 |  |  |
+| Ponder | U | Sorcery | {U} | 1 |  |  | 1 | 8 |  | Look at the top three cards of your library, then put them back in any order. You may shuffle. Draw a card. |
 | Thought Scour | U | Instant | {U} | 1 |  |  | 1 | 8 |  | Target player mills two cards. Draw a card. |
 | Boomerang | U | Instant | {U}{U} | 2 |  |  | 1 | 12 |  | Return target permanent to its owner's hand. |
 | Counterspell | U | Instant | {U}{U} | 2 |  |  | 2 | 18 |  | Counter target spell. |
@@ -224,7 +224,7 @@
 | Scepter of Dominance | W | Artifact | {1}{W}{W} | 3 |  |  | 2 | 24 |  | {W}, {T}: Tap target permanent. |
 | The Pearl Cleric | W | Legendary Creature — Human Cleric | {1}{W}{W} | 3 | 3/3 |  | — | 16 | prizeOnly, custom | {W}, Exile the top card of your library: You gain 1 life. {W}{W}, Exile the top two cards of your library: Target creature gains indestructible until end of turn. |
 | Vitalist | W | Creature — Human Cleric | {2}{W} | 3 | 1/1 |  | 2 | 24 | custom | Whenever you gain life, put that many +1/+1 counters on target creature. |
-| Angelic Destiny | W | Enchantment — Aura | {2}{W}{W} | 4 |  |  | 3 | 50 |  |  |
+| Angelic Destiny | W | Enchantment — Aura | {2}{W}{W} | 4 |  |  | 3 | 50 |  | Enchant creature Enchanted creature gets +4/+4, has flying and first strike, and is an Angel in addition to its other types. When enchanted creature dies, return this card to its owner's hand. |
 | Cunning Tactician | W | Creature — Human Soldier | {2}{W}{W} | 4 | 2/2 | vigilance | 2 | 30 | custom | Vigilance {W}, {T}: Tap target creature. |
 | Emeria Angel | W | Creature — Angel | {2}{W}{W} | 4 | 3/3 | flying | 3 | 50 |  | Flying Landfall — Whenever a land you control enters, you may create a 1/1 white Bird creature token with flying. |
 | Restoration Angel | W | Creature — Angel | {3}{W} | 4 | 3/4 | flash, flying | 2 | 30 |  | Flash Flying When this creature enters, you may exile target non-Angel creature you control, then return that card to the battlefield under your control. |

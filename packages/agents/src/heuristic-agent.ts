@@ -251,7 +251,23 @@ export class HeuristicAgent implements Agent {
       // passing (kills same-host re-equip churn and no-benefit activations).
       return evaluate(view, this.profile, this.defs) - 0.25 - misaim;
     }
-    return evaluate(pred.view, this.profile, this.defs) + pred.adjustment - misaim + this.wheelSpendBonus(view, action);
+    return evaluate(pred.view, this.profile, this.defs) + pred.adjustment - misaim + this.wheelSpendBonus(view, action) + this.lifegainPayoffBonus(view, action);
+  }
+
+  /** S46 (Vitalist — the brief's "a term, not a rule"): while we control a LIFE_GAINED payoff (the shape: a trigger on
+   * our life gain), a play that gains life is worth more — the gain becomes counters. A spell/ability's own gainLife
+   * (0.4 per life), a creature with lifelink or its own gainLife trigger (0.6). Exposed for the book. */
+  lifegainPayoffBonus(view: GameView, action: Action): number {
+    if (action.type !== "castSpell" && action.type !== "activateAbility") return 0;
+    const payoff = view.battlefield.some((o) => o.controller === view.you && (this.def(o.cardId)?.abilities ?? []).some((a) => a.kind === "triggered" && a.event === "LIFE_GAINED"));
+    if (!payoff) return 0;
+    const effects = this.actionEffects(view, action) ?? [];
+    let bonus = effects.reduce((n, e) => n + (e.type === "gainLife" && e.who === "you" && typeof e.amount === "number" ? 0.4 * e.amount : 0), 0);
+    if (action.type === "castSpell") {
+      const d = this.def(view.hand.find((c) => c.objectId === action.objectId)?.cardId ?? "");
+      if (d?.types.includes("Creature") && ((d.keywords ?? []).includes("lifelink") || (d.abilities ?? []).some((a) => a.kind === "triggered" && a.effects.some((e) => e.type === "gainLife" && e.who === "you")))) bonus += 0.6;
+    }
+    return bonus;
   }
 
   /** S45 (the Dragon Mage — the planner's restated line: SPEND BEFORE THE WHEEL): in our first main phase, with a
@@ -1349,6 +1365,8 @@ export class HeuristicAgent implements Agent {
     if (!d || !(d.spellEffect ?? []).some((e) => e.type === "searchLibrary" && e.to === "graveyard")) return false;
     const reanimates = (x: CardDef | undefined): boolean =>
       !!x && ([...(x.spellEffect ?? []), ...(x.abilities ?? []).flatMap((a) => ("effects" in a ? a.effects : []))] as Effect[]).some((e) => e.type === "returnFromGraveyard" && e.to === "battlefield" && e.scope !== "self");
+    // S46 (Entomb, the brief's "or on the board"): a reanimator of ours on the battlefield counts (the Reeve's activation).
+    if (view.battlefield.some((o) => o.controller === view.you && reanimates(this.def(o.cardId)))) return false;
     return !view.hand.some((c) => c.objectId !== action.objectId && reanimates(this.def(c.cardId)));
   }
 
@@ -1969,6 +1987,12 @@ export class HeuristicAgent implements Agent {
         // S32 (the Escort's ETB): a HELPFUL effect goes to the creature UNDER FIRE first — the one an
         // opponent's stack item is aimed at (the save is the point of the flash).
         if (t.kind === "object" && t.id && cls === "helpful" && this.creatureIsDoomed(view, t.id)) s += 10;
+        // S46 (Vitalist — the brief's Part 3): +1/+1 counters go on the best EVASIVE creature we control (flying,
+        // trample), else the best body; never the opponent's (preferSide keeps the helpful effect on our side).
+        if (t.kind === "object" && t.id && cls === "helpful" && (request.source?.effects ?? []).some((e) => e.type === "addCounters" && e.kind === "+1/+1")) {
+          const o = view.battlefield.find((b) => b.id === t.id);
+          if (o && o.controller === view.you && (o.keywords.includes("flying") || o.keywords.includes("trample"))) s += 3;
+        }
         // S36 (book 53, the Angel of the Ruins): a HARMFUL effect on an opponent's aura that sits on OUR creature
         // is worth the creature it holds (Control Magic, Pacifism) — before their other artifacts and enchantments.
         if (t.kind === "object" && t.id && cls === "harmful") {

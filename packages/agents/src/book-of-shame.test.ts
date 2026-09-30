@@ -1147,4 +1147,49 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.scorePriorityAction(board(true), rit)).toBeGreaterThan(a.scorePriorityAction(board(true), { type: "pass" }));
     expect(a.manaBurst(board(false), rit)).toEqual({ enables: false });
   });
+
+  it("book of shame 81 (S46, Entomb): never without a reanimator — in hand OR on our board (the Reeve's activation); with one, a play; its search takes the best body to bring back", async () => {
+    const a = agent("midrange");
+    const ent = { type: "castSpell" as const, objectId: "en", targets: [] };
+    const sw = { id: "s1", cardId: "swamp", controller: 0 as const };
+    expect(a.scorePriorityAction(mkView({ hand: [{ objectId: "en", cardId: "entomb" }], battlefield: [sw] }), ent)).toBe(-Infinity);
+    expect(a.scorePriorityAction(mkView({ hand: [{ objectId: "en", cardId: "entomb" }, { objectId: "zo", cardId: "zombify" }], battlefield: [sw] }), ent)).toBeGreaterThan(-Infinity);
+    expect(a.scorePriorityAction(mkView({ hand: [{ objectId: "en", cardId: "entomb" }], battlefield: [sw, { id: "rv", cardId: "the_reeve", controller: 0 }] }), ent)).toBeGreaterThan(-Infinity);
+    const req = { player: 0 as const, purpose: "searchLibrary" as const, source: { cardId: "entomb", effects: [{ type: "searchLibrary" as const, predicate: "anyCard" as const, to: "graveyard" as const, count: 1 }] }, revealed: [{ objectId: "l1", cardId: "grizzly_bears" }, { objectId: "l2", cardId: "artisan_of_kozilek" }, { objectId: "l3", cardId: "island" }], actions: [{ type: "searchPick" as const, objectId: "l1" }, { type: "searchPick" as const, objectId: "l2" }, { type: "searchPick" as const, objectId: "l3" }, { type: "declineSearch" as const }] };
+    expect(((await a.chooseAction(mkView({}), req as never)) as { objectId: string }).objectId).toBe("l2");
+  });
+
+  it("book of shame 82 (S46, Ponder): short of lands the land goes on top; with lands enough the castable spell; the shuffle only when all three are poor", async () => {
+    const a = agent("midrange");
+    const rev = [{ objectId: "x1", cardId: "island" }, { objectId: "x2", cardId: "counterspell" }, { objectId: "x3", cardId: "pelakka_wurm" }];
+    const order = { player: 0 as const, purpose: "orderTop" as const, revealed: rev, actions: rev.map((r) => ({ type: "putOnTop" as const, objectId: r.objectId })) };
+    const islands = (n: number) => Array.from({ length: n }, (_, i) => ({ id: `i${i}`, cardId: "island", controller: 0 as const }));
+    expect(((await a.chooseAction(mkView({ battlefield: islands(2) }), order as never)) as { objectId: string }).objectId).toBe("x1"); // two lands: the Island
+    expect(((await a.chooseAction(mkView({ battlefield: islands(5), hand: [{ objectId: "h", cardId: "island" }] }), order as never)) as { objectId: string }).objectId).toBe("x2"); // five lands and one in hand: Counterspell
+    const shuffle = (r: typeof rev) => ({ player: 0 as const, purpose: "mayShuffle" as const, revealed: r, actions: [{ type: "acceptOptional" as const }, { type: "declineOptional" as const }] });
+    const poor = [{ objectId: "y1", cardId: "island" }, { objectId: "y2", cardId: "island" }, { objectId: "y3", cardId: "artisan_of_kozilek" }];
+    expect(((await a.chooseAction(mkView({ battlefield: islands(5), hand: [{ objectId: "h", cardId: "island" }] }), shuffle(poor) as never)) as { type: string }).type).toBe("acceptOptional"); // flooded: lands poor, the 10-drop far off
+    expect(((await a.chooseAction(mkView({ battlefield: islands(2) }), shuffle(rev) as never)) as { type: string }).type).toBe("declineOptional");
+  });
+
+  it("book of shame 83 (S46, Vitalist): the counters go on our evasive creature, never theirs; lifegain plays are worth more while she is out", async () => {
+    const a = agent("midrange");
+    const v = mkView({ battlefield: [{ id: "vt", cardId: "vitalist", controller: 0 }, { id: "hawk", cardId: "suntail_hawk", controller: 0 }, { id: "bears", cardId: "grizzly_bears", controller: 0 }, { id: "wurm", cardId: "pelakka_wurm", controller: 1 }] });
+    const req = { player: 0 as const, purpose: "chooseTarget" as const, source: { cardId: "vitalist", effects: [{ type: "addCounters" as const, kind: "+1/+1", count: { ref: "eventLife" as const }, target: 0 }] }, actions: ["hawk", "bears", "wurm"].map((id) => ({ type: "chooseTriggerTargets" as const, targets: [{ kind: "object" as const, id }] })) };
+    expect(((await a.chooseAction(v, req as never)) as { targets: { id: string }[] }).targets[0]!.id).toBe("hawk");
+    const warden = { type: "castSpell" as const, objectId: "sw", targets: [] };
+    expect(a.lifegainPayoffBonus(mkView({ hand: [{ objectId: "sw", cardId: "soul_warden" }], battlefield: [{ id: "vt", cardId: "vitalist", controller: 0 }] }), warden)).toBeGreaterThan(0);
+    expect(a.lifegainPayoffBonus(mkView({ hand: [{ objectId: "sw", cardId: "soul_warden" }], battlefield: [] }), warden)).toBe(0);
+  });
+
+  it("book of shame 84 (S46, Angelic Destiny and the Baloths): the Aura prefers the hexproof host (S29's rule, unchanged); a landfall creature is cast before the land drop (book 56's rule reaches the Baloths)", () => {
+    const a = agent("aggro");
+    const plains = ["p1", "p2", "p3", "p4"].map((id) => ({ id, cardId: "plains", controller: 0 as const }));
+    const v = mkView({ hand: [{ objectId: "ad", cardId: "angelic_destiny" }], battlefield: [...plains, { id: "scout", cardId: "gladecover_scout", controller: 0 }, { id: "bears", cardId: "grizzly_bears", controller: 0 }] });
+    const on = (id: string) => a.scorePriorityAction(v, { type: "castSpell", objectId: "ad", targets: [{ kind: "object", id }] });
+    expect(on("scout")).toBeGreaterThan(on("bears"));
+    const forests = Array.from({ length: 6 }, (_, i) => ({ id: `f${i}`, cardId: "forest", controller: 0 as const }));
+    const cands = [{ type: "playLand" as const, objectId: "land" }, { type: "castSpell" as const, objectId: "rb", targets: [] }, { type: "pass" as const }];
+    expect(a.landfallFirstCandidates(mkView({ hand: [{ objectId: "land", cardId: "forest" }, { objectId: "rb", cardId: "rampaging_baloths" }], battlefield: forests }), cands)?.some((x) => x.type === "playLand")).toBe(false);
+  });
 });
