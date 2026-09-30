@@ -250,6 +250,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | airship_crash | fin | 171 | Enora Mercier | ec91c4e4-711f-464d-bc83-e6813f4fdcdb |
 | altar_of_dementia | tmp | 276 | Brom | 4f2da99f-3c53-4980-97d6-2158c765aac0 |
 | angel_of_the_ruins | brc | 68 | Viko Menezes | f95bbb9b-aeae-4c3d-9106-3bb4cd8140c2 |
+| angelic_destiny | m12 | 3 | Jana Schirmer & Johannes Voss | a0cd7438-fde2-4e26-9c34-52c476a971e9 |
 | arc_mage | nem | 77 | Terese Nielsen | 62982dab-4c27-45b3-9740-38fec3df7226 |
 | arcanis_the_omnipotent | ons | 66 | Justin Sweet | 90865f52-c062-4505-a204-b4d7d4b3fc4c |
 | artisan_of_kozilek | roe | 2 | Jason Felix | 3ac80eb8-321d-476a-87e7-d25bdac6a91c |
@@ -289,10 +290,14 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | disenchant | lea | 18 | Amy Weber | 2722d7e2-61c6-4934-9c21-875ee78fd06c |
 | divination | m10 | 49 | Howard Lyon | 3102cec9-1cdc-4946-a2dd-caf04eaa8b97 |
 | doom_blade | m10 | 93 | Chippy | 6e19acff-f3dd-417a-a9ab-ea3e36c1ba61 |
+| dragon_mage | scg | 87 | Matthew D. Wilson | 7687a201-0ecc-4739-86e3-3b4090d345a8 |
 | drakuseth_maw_of_flames | cmm | 535 | Grzegorz Rutkowski | c34ec655-4210-4237-92e4-c9adf207e2e0 |
 | drana_kalastria_bloodchief | roe | 107 | Mike Bierek | aca8d295-e8e9-4213-bc9b-f1acf57fb520 |
+| dread_presence | m20 | 96 | Anthony Palumbo | 0430db1a-5cad-4444-ba93-57fb32e65606 |
 | duress | usg | 132 | Lawrence Snelly | ca367f49-0f4a-4b7f-8104-851893fbcd8a |
 | elvish_visionary | ala | 130 | D. Alexander Gregory | faccfa5f-4d89-4a86-92d7-36cb5a16c5c9 |
+| emeria_angel | zen | 11 | Jim Murray | 8b386d39-ba41-42f8-ba05-f9ed602ee23f |
+| entomb | ody | 132 | Ron Spears | f60a2091-fb97-4f04-911b-fce9b6351044 |
 | essence_scatter | m10 | 51 | Jon Foster | c231101e-6620-46fc-a0ad-a53291d12dc2 |
 | evolving_wilds | brc | 184 | Steven Belledin | 1334e6ac-1edb-4945-935c-0e0ccdde134d |
 | experimental_overload | m21 | 218 | Lie Setiawan | 6f1bace4-a327-4eb6-a6ef-8394e76c06b7 |
@@ -317,6 +322,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | gray_ogre | lea | 156 | Dan Frazier | 73ae5276-b607-4f23-a9d2-e8cc7b8e3693 |
 | grazing_gladehart | zen | 163 | Ryan Pancoast | 078b5290-a613-496f-bd23-8fd109549f31 |
 | grizzly_bears | lea | 199 | Jeff A. Menges | ce2d603a-3231-4a8c-bf39-1617586ea870 |
+| guttersnipe | rvr | 332 | Steve Prescott | 937e6fd7-ff20-46cd-8107-1f5339267a6f |
 | hallowed_fountain | rvr | 404 | Rob Alexander | 438fb324-2c51-4763-a32a-6e315e9f769c |
 | hedron_crab | zen | 47 | Jesper Ejsing | f0fa1946-4f97-4c52-b5f2-b80571230616 |
 | hill_giant | lea | 157 | Dan Frazier | 0ddb98e8-13fe-4786-83f7-b72c56db135a |
@@ -357,12 +363,14 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | plateau | olgc | 2018A | Mark Poole | 0829af6e-7dd9-4bce-bf14-1c5d509556cb |
 | plumecreed_escort | blb | 65 | Manuel Castañón | f71320ed-2f30-49ce-bcb0-19aebba3f0e8 |
 | poison_tip_archer | m19 | 220 | Dmitry Burmak | 5e058ff8-043c-498b-8310-0ca45466ac27 |
+| ponder | lrw | 79 | Mark Tedin | ba6b6fc5-5077-4812-b8e9-906783dbaf67 |
 | powerstone_minefield | apc | 115 | Greg Hildebrandt | b17807b9-8feb-48ac-813a-829577f5b9e8 |
 | prey_upon | isd | 200 | Dave Kendall | b7b3eaf0-4207-4bac-923d-29f348c95a35 |
 | putrefy | rav | 221 | Jim Nelson | 0a16086c-5a74-45d0-8b38-e832cfbc80f7 |
 | pyroclasm | ice | 214 | Pat Lewis | 88040748-ad76-4b9a-bd4e-87e5980e9816 |
 | raging_goblin | por | 145 | Pete Venters | fed57a17-7847-4e60-bc40-4452880f12a3 |
 | raise_the_alarm | mrd | 16 | John Matson | 4be510c8-fc01-4374-ac04-7968d24480fe |
+| rampaging_baloths | fdn | 645 | Steve Prescott | c25ee47b-d099-4788-9c2b-73d151bf56fb |
 | rampant_growth | mir | 235 | Pat Lewis | a9dd8043-4099-42bb-9d54-4efc8b38fe18 |
 | rancor | ulg | 110 | Kev Walker | 59e256c2-38df-4012-9308-ce17dd889e5f |
 | reassembling_skeleton | arc | 22 | Austin Hsu | 655f983e-3b23-48ee-89d5-d01d469d5a6f |
@@ -376,6 +384,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | scepter_of_dominance | con | 17 | Howard Lyon | 888bc7ca-f9fa-4da4-b466-b9dc273d5319 |
 | scrubland | olgc | 2018 | Mark Poole | d1428846-e0da-4b62-b0e9-25efe846cc33 |
 | secluded_steppe | ons | 324 | Heather Hudson | ea454280-f7f4-4315-bb46-b56050c02c97 |
+| seedborn_muse | lgn | 138 | Adam Rex | 35b13321-e429-4497-aef2-93a9df421d38 |
 | serra_angel | lea | 39 | Douglas Shuler | f8ac5006-91bd-4803-93da-f87cf196dd2f |
 | shadow_summoning | ltr | 226 | Campbell White | ec0984b2-bed6-41b1-9087-2cfd16749037 |
 | shock | sth | 98 | Randy Gallegos | f9b2ff2a-6dfe-4635-8da2-22d525e82b94 |
@@ -587,6 +596,18 @@ Pool 227 → **233**. Every card tier 3 (the formula's price: Guttersnipe and Ti
 | emeria_angel | Emeria Angel | tested | flying; triggered(LAND_ENTERS_UNDER_YOUR_CONTROL you, optional): createToken bird_1_1_flying | ZEN #11 (Jim Murray; modern frame only). Zero words. Beast: `beast:emeria` — white's Wellhouse. |
 | seedborn_muse | Seedborn Muse | tested | static `untapDuringOthersUntap` (R-099) | LGN #138 (Adam Rex — the first printing, old frame). Beast: `beast:seedborn` — green's Wellhouse. |
 | tidewall | Tidewall | tested | custom Wall 0/4 flying, defender; triggered(BLOCKS self): returnFromGraveyard target instant-or-sorcery card to hand | {1}{U}{U}. Art: the classical oil (Chris, of four). Beast: `beast:tidewall` — blue's Wellhouse. Printed face (Chris, 2026-09-30) verified word-for-word; `printedAsset`. |
+
+## Session 46 additions — the Open's pool round (ADR-143; Oracle re-verified on Scryfall 2026-10-01)
+
+Pool 233 → **238** (+ the Beast 4/4 token). The Open format (ADR-142) and its twelve seed lists (`pnpm open:gen` → `packages/sim/src/open-decks.ts`).
+
+| id | Card | Status | Vocabulary | Notes |
+|---|---|---|---|---|
+| entomb | Entomb | tested | searchLibrary anyCard → graveyard, count 1 | ODY #132 (Ron Spears). T2. AI: Buried Alive's gate (a reanimator in hand or on our board) and its chooser (the best body back). |
+| rampaging_baloths | Rampaging Baloths | tested | trample; triggered(LAND_ENTERS_UNDER_YOUR_CONTROL you): createToken beast_4_4_g (mandatory) | **FDN #645** (Steve Prescott — Chris: a printing whose text matches the Oracle; ZEN's "you may" is superseded). T3. |
+| ponder | Ponder | tested | `reorderTop` 3 `mayShuffle`, then draw 1 (R-100) | LRW #79 (Mark Tedin). T1. AI: the top by the hand's needs; the shuffle when all three are poor. |
+| angelic_destiny | Angelic Destiny | tested | Aura; static +4/+4, flying, first strike, `grantSubtype` Angel; DIES `source: attached` → returnFromGraveyard self to hand (R-100) | M12 #3 (Jana Schirmer & Johannes Voss). T3. AI: the hexproof host first (S29's view-sim rule). |
+| vitalist | Vitalist | tested | custom Human Cleric 1/1 {2}{W}; triggered(LIFE_GAINED you) target creature: addCounters +1/+1 `eventLife` (R-100) | T2. Art: four candidates with Chris. AI: counters on our evasive creature, never theirs; a lifegain term while she is out. |
 
 ## Shop tiers (ADR-078, S19)
 
