@@ -1067,6 +1067,19 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(pick(mkView({ battlefield: [dp, { id: "wurm", cardId: "pelakka_wurm", controller: 1 }], hand: full }))).toBe(1); // hand full: the face
   });
 
+  it("book of shame 78 (S45, the planner's restated Dragon Mage line — spend before the wheel): in our MAIN1 with the wheel ready to attack, the Shock in hand is cast (it would be discarded); without the wheel, or after combat, no such credit", () => {
+    const a = agent("aggro");
+    const lands = [{ id: "m1", cardId: "mountain", controller: 0 as const }];
+    const shock = { type: "castSpell" as const, objectId: "sh", targets: [{ kind: "player" as const, player: 1 }] };
+    const hand = [{ objectId: "sh", cardId: "shock" }];
+    const withMage = mkView({ hand, battlefield: [...lands, { id: "dm", cardId: "dragon_mage", controller: 0 }] });
+    const noMage = mkView({ hand, battlefield: [...lands, { id: "hg", cardId: "hill_giant", controller: 0 }] });
+    expect(a.wheelSpendBonus(withMage, shock)).toBe(1);
+    expect(a.wheelSpendBonus(noMage, shock)).toBe(0);
+    expect(a.wheelSpendBonus(mkView({ hand, step: "MAIN2", battlefield: withMage.battlefield.map((o) => ({ id: o.id, cardId: o.cardId, controller: o.controller })) }), shock)).toBe(0); // after combat: the wheel has turned or will not
+    expect(a.scorePriorityAction(withMage, shock) - a.scorePriorityAction(withMage, { type: "pass" })).toBeGreaterThan(a.scorePriorityAction(noMage, shock) - a.scorePriorityAction(noMage, { type: "pass" }));
+  });
+
   it("book of shame 75 (S45, the Tidewall): a safe block that hands back a spell is worth the card (and costs the attacker it); the return takes the dearest spell — Counterspell over Brainstorm", async () => {
     const a = agent("control");
     const board = (yard: string[]): GameView => ({ ...mkView({ battlefield: [{ id: "tw", cardId: "tidewall", controller: 0 }, { id: "gi", cardId: "hill_giant", controller: 1 }] }), graveyardObjects: [yard.map((c, i) => ({ objectId: `g${i}`, cardId: c })), []], graveyards: [yard, []] });

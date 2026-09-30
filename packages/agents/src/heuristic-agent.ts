@@ -238,7 +238,22 @@ export class HeuristicAgent implements Agent {
       // passing (kills same-host re-equip churn and no-benefit activations).
       return evaluate(view, this.profile, this.defs) - 0.25 - misaim;
     }
-    return evaluate(pred.view, this.profile, this.defs) + pred.adjustment - misaim;
+    return evaluate(pred.view, this.profile, this.defs) + pred.adjustment - misaim + this.wheelSpendBonus(view, action);
+  }
+
+  /** S45 (the Dragon Mage — the planner's restated line: SPEND BEFORE THE WHEEL): in our first main phase, with a
+   * creature of ours ready to attack whose combat-damage trigger discards our whole hand, an instant or sorcery in hand
+   * is worth nothing held — the wheel discards what it does not refill in kind — so casting it is credited the card it
+   * would otherwise lose. Keyed on the SHAPE (a DEALS_COMBAT_DAMAGE_TO_PLAYER trigger with `discard count: "all"` that
+   * reaches us). Approximation: the view carries no summoning sickness, so a wheel cast this turn counts as ready. */
+  wheelSpendBonus(view: GameView, action: Action): number {
+    if (action.type !== "castSpell" || view.activePlayer !== view.you || view.step !== "MAIN1") return 0;
+    const card = view.hand.find((c) => c.objectId === action.objectId);
+    const d = card ? this.def(card.cardId) : undefined;
+    if (!d || !(d.types.includes("Instant") || d.types.includes("Sorcery"))) return 0;
+    const wheels = (cd: CardDef | undefined) => !!cd && (cd.abilities ?? []).some((a) => a.kind === "triggered" && a.event === "DEALS_COMBAT_DAMAGE_TO_PLAYER" && a.effects.some((e) => e.type === "discard" && e.count === "all" && (e.who === "eachPlayer" || e.who === "you")));
+    const ready = view.battlefield.some((o) => o.controller === view.you && !o.tapped && !o.cantAttack && o.power !== null && wheels(this.def(o.cardId)));
+    return ready ? 1.0 : 0;
   }
 
   /** S22 playtest r3: the effects an action's targets receive — mode-aware for A6 modal casts,
