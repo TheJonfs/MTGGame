@@ -1,0 +1,46 @@
+{
+  "id": "dragon_mage",
+  "name": "Dragon Mage",
+  "source": "real",
+  "scryfallId": "7687a201-0ecc-4739-86e3-3b4090d345a8",
+  "manaCost": "{5}{R}{R}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Dragon",
+    "Wizard"
+  ],
+  "power": 5,
+  "toughness": 5,
+  "keywords": [
+    "flying"
+  ],
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "DEALS_COMBAT_DAMAGE_TO_PLAYER",
+      "condition": {
+        "source": "self"
+      },
+      "effects": [
+        {
+          "type": "discard",
+          "count": "all",
+          "who": "eachPlayer",
+          "mode": "ownerChooses"
+        },
+        {
+          "type": "draw",
+          "count": 7,
+          "who": "eachPlayer"
+        }
+      ],
+      "optional": false
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 3
+}

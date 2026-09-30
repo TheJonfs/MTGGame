@@ -1,0 +1,29 @@
+{
+  "id": "seedborn_muse",
+  "name": "Seedborn Muse",
+  "source": "real",
+  "scryfallId": "35b13321-e429-4497-aef2-93a9df421d38",
+  "manaCost": "{3}{G}{G}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Spirit"
+  ],
+  "power": 2,
+  "toughness": 4,
+  "abilities": [
+    {
+      "kind": "static",
+      "effects": [
+        {
+          "type": "untapDuringOthersUntap"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 3
+}

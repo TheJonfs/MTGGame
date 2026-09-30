@@ -232,7 +232,7 @@ describe("S41 (ADR-130): the flood's run — the court's duel, the falls, the go
     const seats = catalog.questText!.flood!.seats!;
     expect(falls[1]).toMatchObject({ siteId: "tidelock_weir", name: "Tidelock Weir — The Bailiff", text: seats.tidelock_weir!.fall });
     expect(falls[2]!.text).toBe(seats.tallyflame_court!.fall);
-    expect(falls[0]).toMatchObject({ name: lairSite.name, text: catalog.questText!.flood!.lairs!.wellhouse.prize });
+    expect(falls[0]).toMatchObject({ name: lairSite.name, text: "The Wellhouse is yours. The spring gives back a little." }); // S45: the kind's fall line
     const other = recordFlood(emptyLegacy(), { color: "W", text: "another run", seed: w.seed + 1, difficulty: "standard", steps: 0, when: "x" });
     const legacy = recordFlood(other, { color: "W", text: "this run", seed: w.seed, difficulty: "standard", steps: 0, when: "y" });
     const next = withFloodFalls(legacy, w.seed, falls);

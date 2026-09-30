@@ -172,7 +172,7 @@ export interface FloodTextPack {
   fount?: { telegraph: string; parley: string; fall: string; prize: string };
   /** S43 (ADR-136; the planner's Part 5): the flood's three LAIR kinds by prize — the map name (the region's name is
    * prefixed), the threshold's line, the prize line. */
-  lairs?: Record<FloodLairKind, { name: string; line: string; prize: string }>;
+  lairs?: Record<FloodLairKind, { name: string; line: string; prize: string; fall?: string }>; // S45: fall — the Chronicle line (S44 Deviation 2)
   /** Post-S43 (Chris's first flood): the flood's tavern LORE — what a phase-two mill pours instead of phase one's
    * (the Spire, the Bastion, the Mox doors, the Vault are not on this map). Planner's lines; absent = only the
    * phase-neutral texture and the Nighthawk's legend pour. */

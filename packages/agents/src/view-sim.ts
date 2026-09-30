@@ -373,6 +373,10 @@ function applyEffect(
         view.life[me] -= amt(e.amount);
         return -0.4 * amt(e.amount);
       }
+      if (e.to === "opponent") { // S45 (Guttersnipe): each opponent, no target
+        view.life[opp as 0 | 1] -= amt(e.amount);
+        return traumaMill(amt(e.amount));
+      }
       if (e.target === undefined) {
         // A8 range fan-out (Drakuseth): value every chosen target from the remainder of the list.
         let v = 0;
@@ -500,8 +504,9 @@ function applyEffect(
         : e.who === "eachPlayer" ? [me, opp]
         : targets.flatMap((t) => (t.kind === "player" ? [t.player] : []));
       for (const p of ps) {
-        if (p === me) view.hand.length = Math.max(0, view.hand.length - e.count);
-        else view.opponentHandCount = Math.max(0, view.opponentHandCount - e.count);
+        // S45: "all" — the whole hand (Dragon Mage's wheel discards before it draws).
+        if (p === me) view.hand.length = e.count === "all" ? 0 : Math.max(0, view.hand.length - e.count);
+        else view.opponentHandCount = e.count === "all" ? 0 : Math.max(0, view.opponentHandCount - e.count);
       }
       return 0;
     }

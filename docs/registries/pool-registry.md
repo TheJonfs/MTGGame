@@ -575,6 +575,19 @@ Pool 225 → **227**.
 
 In a phase-two world the ten tier-2/3 mages play the five STILL pairs — one colour kept, the other turned (Vael WB→WR, Kessa UR→UB, Maelin BR→BG, Brennor WG→GR, Pell UG→UW; Corvane WB→BG, Varro UR→UB, Sorrel BR→RW, Ysolde WG→WU, Quill UG→GR). Forty / seventeen, no gold, no prizeOnly, the S29 title caps (≤ 1 at tier 2, ≤ 2 at tier 3; the Artisan is R-table, not a title). Every card was already in the pool — the lists were validated by script before a line of code (all ten clean). `mageListFor(key, phase)` is the one switch; `pnpm mage-inversion:gen` regenerates `packages/sim/src/mage-decks-flood.ts` from `docs/mage-inversion-lists.md`; `s42b-mage-inversion.test.ts` pins them together. The post-lords references (`salvage-WR+lords` / `salvage-UB+lords`, sim/road-decks) use pool cards only.
 
+## Session 45 additions — the tier-3 round (ADR-140; Oracle re-verified on Scryfall 2026-09-30)
+
+Pool 227 → **233**. Every card tier 3 (the formula's price: Guttersnipe and Tidewall 40, Dread Presence and Emeria Angel 50, Seedborn Muse 60, Dragon Mage 80), none prizeOnly; each fields as a roaming tier-3 beast on both maps.
+
+| id | Card | Status | Vocabulary | Notes |
+|---|---|---|---|---|
+| dragon_mage | Dragon Mage | tested | flying; triggered(DEALS_COMBAT_DAMAGE_TO_PLAYER self): discard `count: "all"` eachPlayer, then draw 7 eachPlayer (R-099) | SCG #87 (Matthew D. Wilson — the first printing, old frame; override pinned). Beast: `beast:dragonmage`. |
+| guttersnipe | Guttersnipe | tested | triggered(SPELL_CAST you, Instant/Sorcery): damage 2 `to: "opponent"` (R-099) | **RVR #332** (Steve Prescott — Ravnica Remastered, old frame, per Chris; the brief's "M13" was an error, the first printing is RTR). Beast: `beast:guttersnipe` — red's Wellhouse (ADR-141). |
+| dread_presence | Dread Presence | tested | triggered(LAND_ENTERS_UNDER_YOUR_CONTROL, `subtype: Swamp`) modal: draw 1 + lose 1 / 2 damage any target + gain 2 (R-099) | M20 #96 (Anthony Palumbo; modern frame only). A dual with the Swamp type counts. Beast: `beast:dreadpresence` — black's Wellhouse. |
+| emeria_angel | Emeria Angel | tested | flying; triggered(LAND_ENTERS_UNDER_YOUR_CONTROL you, optional): createToken bird_1_1_flying | ZEN #11 (Jim Murray; modern frame only). Zero words. Beast: `beast:emeria` — white's Wellhouse. |
+| seedborn_muse | Seedborn Muse | tested | static `untapDuringOthersUntap` (R-099) | LGN #138 (Adam Rex — the first printing, old frame). Beast: `beast:seedborn` — green's Wellhouse. |
+| tidewall | Tidewall | tested | custom Wall 0/4 flying, defender; triggered(BLOCKS self): returnFromGraveyard target instant-or-sorcery card to hand | {1}{U}{U}. Art: the classical oil (Chris, of four). Beast: `beast:tidewall` — blue's Wellhouse. Printed face pending (Chris). |
+
 ## Shop tiers (ADR-078, S19)
 
 The `shopTier` column (`1 | 2 | 3 | R`) is repo-canonical **on the card defs themselves** (`data/cards/*.json`, validated by the loader: every non-token, non-basic, non-prizeOnly card must carry one) rather than duplicated per row above; `docs/card-tier-audit-v2.md` is the curation source (planner-maintained), and `pnpm card-manifest` regenerates the human-readable price sheet. Distribution at adoption: **T1 ×53 · T2 ×31 · T3 ×10 · R ×2** (Demonic Tutor, Mystic Snake) + Lotus `prizeOnly` + 5 basics; Faerie Formation joins at T3 this session (→ T3 ×11). Availability: a town stocks `shopTier ≤ ring` (civilized 1 / approach 2 / wild 3); price × `shopTierMultiplier` (1.0/1.5/2.5 knobs); **R never stocks** — ante/quest/treasure circulation only.

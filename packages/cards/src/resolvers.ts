@@ -107,7 +107,7 @@ export interface EffectContext {
    * this the one async op: ownerChooses/casterChooses issue DecisionRequests;
    * random draws from the game RNG (logged).
    */
-  discard(player: number, count: number, mode: DiscardMode, filter?: DiscardFilter): Promise<void>;
+  discard(player: number, count: number | "all", mode: DiscardMode, filter?: DiscardFilter): Promise<void>;
   /** S28 (ADR-098, Brainstorm): the player puts `count` cards from hand on top of the library, a
    * logged pick per card; the FIRST pick ends on top. Fewer cards than count: what is there goes. */
   putOnTop(player: number, count: number): Promise<void>;
@@ -163,6 +163,11 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
     }
     if (e.to === "you") {
       ctx.dealDamage({ kind: "player", player: ctx.players("you")[0]! }, ctx.amount(e.amount));
+      return;
+    }
+    // S45 (R-099, Guttersnipe): "each opponent" — no target; the resolving source deals it.
+    if (e.to === "opponent") {
+      for (const p of ctx.players("opponent")) ctx.dealDamage({ kind: "player", player: p }, ctx.amount(e.amount));
       return;
     }
     for (const t of targeted(e, ctx)) ctx.dealDamage(t, ctx.amount(e.amount), e.from); // A8: targetSpec fans out

@@ -225,17 +225,20 @@
    "landing": {
     "name": "Landing",
     "line": "Dry ground, held. Whoever holds it holds a foot of the flood.",
-    "prize": "The ground stays under you."
+    "prize": "The ground stays under you.",
+    "fall": "The Landing is held. A foot of the flood is yours."
    },
    "wellhouse": {
     "name": "Wellhouse",
     "line": "A spring the water did not take. Something drinks here.",
-    "prize": "The water gives back a little of what it took."
+    "prize": "The water gives back a little of what it took.",
+    "fall": "The Wellhouse is yours. The spring gives back a little."
    },
    "hearthstead": {
     "name": "Hearthstead",
     "line": "A fire kept lit through the flood. Someone tends it, and does not share.",
-    "prize": "The water gives back a little of what it took."
+    "prize": "The water gives back a little of what it took.",
+    "fall": "The Hearthstead's fire is yours to sit by."
    }
   }
  }

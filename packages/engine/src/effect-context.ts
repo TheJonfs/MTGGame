@@ -627,8 +627,13 @@ function discardOp(ctx: EngineCtx, caster: PlayerId, requester?: EffectRequester
       }
       for (const id of [...picks].reverse()) moveObject(ctx, id, "library", { position: "top" });
     },
-    async discard(playerNum: number, count: number, mode: DiscardMode, filter?: DiscardFilter): Promise<void> {
+    async discard(playerNum: number, count: number | "all", mode: DiscardMode, filter?: DiscardFilter): Promise<void> {
       const player = playerNum as PlayerId;
+      // S45 (R-099, Dragon Mage): "discards their hand" — every card, no choice (CR 701.8a); in hand order.
+      if (count === "all") {
+        for (const id of [...ctx.state.players[player].hand]) discardCard(ctx, id);
+        return;
+      }
       for (let i = 0; i < count; i++) {
         const hand = ctx.state.players[player].hand;
         if (hand.length === 0 && mode !== "casterChooses") return;

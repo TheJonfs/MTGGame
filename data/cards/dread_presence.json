@@ -1,0 +1,72 @@
+{
+  "id": "dread_presence",
+  "name": "Dread Presence",
+  "source": "real",
+  "scryfallId": "0430db1a-5cad-4444-ba93-57fb32e65606",
+  "manaCost": "{3}{B}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Nightmare"
+  ],
+  "power": 3,
+  "toughness": 3,
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "LAND_ENTERS_UNDER_YOUR_CONTROL",
+      "condition": {
+        "controller": "you",
+        "subtype": [
+          "Swamp"
+        ]
+      },
+      "effects": [],
+      "optional": false,
+      "modes": [
+        {
+          "label": "You draw a card and you lose 1 life",
+          "effects": [
+            {
+              "type": "draw",
+              "count": 1,
+              "who": "you"
+            },
+            {
+              "type": "loseLife",
+              "amount": 1,
+              "who": "you"
+            }
+          ]
+        },
+        {
+          "label": "Dread Presence deals 2 damage to any target and you gain 2 life",
+          "targets": [
+            {
+              "count": 1,
+              "predicate": "anyTarget",
+              "zone": "any"
+            }
+          ],
+          "effects": [
+            {
+              "type": "damage",
+              "amount": 2,
+              "target": 0
+            },
+            {
+              "type": "gainLife",
+              "amount": 2,
+              "who": "you"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 3
+}

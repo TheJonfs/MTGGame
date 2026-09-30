@@ -1,0 +1,48 @@
+{
+  "id": "tidewall",
+  "name": "Tidewall",
+  "source": "custom",
+  "manaCost": "{1}{U}{U}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Wall"
+  ],
+  "power": 0,
+  "toughness": 4,
+  "keywords": [
+    "defender",
+    "flying"
+  ],
+  "text": "Flying, defender\nWhenever Tidewall blocks, return target instant or sorcery card from your graveyard to your hand.",
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "BLOCKS",
+      "condition": {
+        "source": "self"
+      },
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "instantOrSorceryCardInYourGraveyard",
+          "zone": "graveyard"
+        }
+      ],
+      "effects": [
+        {
+          "type": "returnFromGraveyard",
+          "target": 0,
+          "to": "hand"
+        }
+      ],
+      "optional": false
+    }
+  ],
+  "art": {
+    "asset": "/custom-art/tidewall.png",
+    "fallback": "rendered"
+  },
+  "shopTier": 3
+}

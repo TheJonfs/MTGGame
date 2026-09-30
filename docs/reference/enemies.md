@@ -18,7 +18,7 @@
 
 Player-side constants for the same reads: `startingWorldLife` 10 (easy 10 / hard 10), `anteCount` 1 (easy 1 / hard 2) (the stake per duel), `lossLifePenalty` 1 (easy 1 / hard 1).
 
-## Roaming opponents (32)
+## Roaming opponents (38)
 
 Mages roam anywhere; beasts are spoke-bound (their colour's ring). Tier 1 rolls in civilized rings, 2 in the approach, 3 in the wilds (the S18 spawn tables). The same templates staff the dungeons' minion floors by spoke.
 
@@ -36,10 +36,16 @@ Mages roam anywhere; beasts are spoke-bound (their colour's ring). Tier 1 rolls 
 | The Boggart Warband | beast | 2 | R | 8 / **10** / 12 | 0 / **0** / 0 | 16 / 0 | — | journeyman | beast:warband (aggro) | 30 / 12 / 2.06 / R |  |
 | The Living Gale | beast | 2 | U | 14 / **16** / 18 | 0 / **0** / 0 | 22 / 0 | — | journeyman | beast:gale (control) | 30 / 12 / 3.44 / U | not buyable; worldLifeOffset 4 |
 | The Cunning Tactician | beast | 2 | W | 10 / **12** / 14 | 0 / **0** / 0 | 18 / 0 | — | journeyman | beast:tactician (aggro) | 30 / 12 / 2.44 / W |  |
+| The Dread Presence | beast | 3 | B | 14 / **16** / 20 | 0 / **0** / 0 | 24 / 0 | — | master | beast:dreadpresence (midrange) | 30 / 12 / 2.50 / B | not buyable; knobs {"anteCount":2} |
 | The Hypnotic Specter | beast | 3 | B | 14 / **16** / 20 | 0 / **0** / 0 | 24 / 0 | — | master | beast:specter (midrange) | 30 / 12 / 2.28 / B | not buyable; knobs {"anteCount":2} |
 | the Pelakka Wurm | beast | 3 | G | 14 / **16** / 20 | 0 / **0** / 0 | 24 / 0 | — | master | beast:wurm (midrange) | 30 / 12 / 3.33 / G | not buyable; knobs {"anteCount":2} |
+| The Seedborn Muse | beast | 3 | G | 14 / **16** / 20 | 0 / **0** / 0 | 24 / 0 | — | master | beast:seedborn (midrange) | 30 / 12 / 2.33 / G | not buyable; knobs {"anteCount":2} |
+| The Dragon Mage | beast | 3 | R | 14 / **16** / 20 | 0 / **0** / 0 | 24 / 0 | — | master | beast:dragonmage (aggro) | 30 / 12 / 2.56 / R | knobs {"anteCount":2} |
+| The Guttersnipe | beast | 3 | R | 14 / **16** / 20 | 0 / **0** / 0 | 24 / 0 | — | master | beast:guttersnipe (aggro) | 30 / 12 / 1.83 / R | knobs {"anteCount":2} |
 | The Siege-Gang | beast | 3 | R | 14 / **16** / 20 | 0 / **0** / 0 | 24 / 0 | — | master | beast:siegegang (aggro) | 30 / 12 / 2.78 / R | knobs {"anteCount":2} |
 | The Faerie Formation | beast | 3 | U | 14 / **16** / 20 | 0 / **0** / 0 | 24 / 0 | — | master | beast:formation (control) | 30 / 13 / 3.82 / U | knobs {"anteCount":2} |
+| The Tidewall | beast | 3 | U | 14 / **16** / 20 | 0 / **0** / 0 | 24 / 0 | — | master | beast:tidewall (control) | 30 / 12 / 2.06 / U | not buyable; knobs {"anteCount":2} |
+| The Emeria Angel | beast | 3 | W | 14 / **16** / 20 | 0 / **0** / 0 | 24 / 0 | — | master | beast:emeria (midrange) | 30 / 12 / 2.11 / W | knobs {"anteCount":2} |
 | The Serra Angel | beast | 3 | W | 10 / **12** / 16 | 0 / **0** / 0 | 20 / 0 | — | master | beast:serra (control) | 30 / 12 / 2.94 / W | knobs {"anteCount":2}; worldLifeOffset -4 |
 | Brann the Scorched | mage | 1 | — | 8 / **8** / 8 | 0 / **0** / 0 | 12 / 1 (mountain) | — | apprentice | mage:brann (aggro) | 40 / 17 / 1.74 / R | the Sparkwright |
 | Old Hask | mage | 1 | — | 8 / **8** / 8 | 0 / **0** / 0 | 12 / 1 (forest) | — | apprentice | mage:hask (aggro) | 40 / 16 / 1.54 / G | the Wardener |
@@ -61,12 +67,20 @@ Mages roam anywhere; beasts are spoke-bound (their colour's ring). Tier 1 rolls 
 
 - **A Rumbling Baloth (beast:baloth, tier 2, midrange)** — played by A Rumbling Baloth — 30 cards, 12 lands, avg MV 2.22
   12 Forest · 2 Giant Growth · 3 Llanowar Elves · 2 Prey Upon · 2 Elvish Visionary · 2 Grizzly Bears · 3 Centaur Courser · 4 Rumbling Baloth
+- **The Dragon Mage (beast:dragonmage, tier 3, aggro)** — played by The Dragon Mage — 30 cards, 12 lands, avg MV 2.56
+  12 Mountain · 1 Blaze · 3 Lightning Bolt · 2 Shock · 2 Goblin Piker · 1 Pyroclasm · 1 Thundersnake · 1 Arc Mage · 2 Boggart Brute · 1 Char · 2 Hordeling Outburst · 2 Dragon Mage
+- **The Dread Presence (beast:dreadpresence, tier 3, midrange)** — played by The Dread Presence — 30 cards, 12 lands, avg MV 2.50
+  11 Swamp · 1 Thawing Glaciers · 1 Dark Ritual · 1 Duress · 2 Typhoid Rats · 2 Child of Night · 1 Diabolic Edict · 2 Doom Blade · 1 Terror · 2 Phyrexian Rager · 1 Vampire Nighthawk · 2 Dread Presence · 1 Gravedigger · 2 Tendrils of Corruption
+- **The Emeria Angel (beast:emeria, tier 3, midrange)** — played by The Emeria Angel — 30 cards, 12 lands, avg MV 2.11
+  1 Evolving Wilds · 11 Plains · 2 Soul Warden · 1 Spirit Link · 2 Suntail Hawk · 1 Swords to Plowshares · 1 Master Decoy · 2 Pacifism · 2 Raise the Alarm · 2 Youthful Valkyrie · 1 Glorious Anthem · 1 Inspiring Overseer · 2 Emeria Angel · 1 Restoration Angel
 - **The Faerie Formation (beast:formation, tier 3, control)** — played by The Faerie Formation — 30 cards, 13 lands, avg MV 3.82
   13 Island · 1 Counterspell · 2 Essence Scatter · 2 Man-o'-War · 2 Wind Drake · 1 Control Magic · 2 Mist Raven · 2 Air Elemental · 3 Faerie Formation · 2 Gravitational Shift
 - **The Living Gale (beast:gale, tier 2, control)** — played by The Living Gale — 30 cards, 12 lands, avg MV 3.44
   12 Island · 2 Boomerang · 2 Counterspell · 2 Aether Channeler · 2 Cloudkin Seer · 3 Wind Drake · 2 Aven Fisher · 3 Air Elemental · 2 Gravitational Shift
 - **A Grizzly Bear (beast:grizzly, tier 1, midrange)** — played by A Grizzly Bear — 30 cards, 13 lands, avg MV 2.41
   13 Forest · 2 Giant Growth · 4 Grizzly Bears · 2 Mother Bear · 2 Werebear · 2 Centaur Courser · 3 Little Bear · 2 Rumbling Baloth
+- **The Guttersnipe (beast:guttersnipe, tier 3, aggro)** — played by The Guttersnipe — 30 cards, 12 lands, avg MV 1.83
+  12 Mountain · 1 Blaze · 1 Brute Force · 3 Lightning Bolt · 3 Shock · 2 Abrade · 1 Thundersnake · 2 Young Pyromancer · 1 Arc Mage · 1 Char · 2 Guttersnipe · 1 Hordeling Outburst
 - **A Savannah Lion (beast:lion, tier 1, aggro)** — played by A Savannah Lion — 30 cards, 12 lands, avg MV 1.50
   12 Plains · 4 Savannah Lions · 4 Suntail Hawk · 1 Swords to Plowshares · 3 Fencing Ace · 2 Master Decoy · 2 Pacifism · 2 Raise the Alarm
 - **A Bloom of Man-o'-War (beast:manowar, tier 1, control)** — played by A Bloom of Man-o'-War — 30 cards, 12 lands, avg MV 2.78
@@ -79,6 +93,8 @@ Mages roam anywhere; beasts are spoke-bound (their colour's ring). Tier 1 rolls 
   13 Swamp · 2 Duress · 4 Typhoid Rats · 3 Child of Night · 2 Terror · 2 Mind Rot · 2 Phyrexian Rager · 2 Gravedigger
 - **The Deadly Recluse (beast:recluse, tier 1, midrange)** — played by The Deadly Recluse — 30 cards, 13 lands, avg MV 1.88
   13 Forest · 3 Giant Growth · 3 Moss Viper · 2 Prey Upon · 4 Deadly Recluse · 2 Elvish Visionary · 3 Treetop Snarespinner
+- **The Seedborn Muse (beast:seedborn, tier 3, midrange)** — played by The Seedborn Muse — 30 cards, 12 lands, avg MV 2.33
+  12 Forest · 1 Birds of Paradise · 2 Giant Growth · 3 Llanowar Elves · 1 Prey Upon · 1 Rancor · 2 Grizzly Bears · 2 Centaur Courser · 2 Wood Elves · 1 Gaean Wurm · 1 Rumbling Baloth · 2 Seedborn Muse
 - **The Serra Angel (beast:serra, tier 3, control)** — played by The Serra Angel — 30 cards, 12 lands, avg MV 2.94
   12 Plains · 2 Swords to Plowshares · 2 Pacifism · 1 Raise the Alarm · 3 Youthful Valkyrie · 2 Glorious Anthem · 2 Inspiring Overseer · 2 Restoration Angel · 1 Wrath of God · 3 Serra Angel
 - **The Siege-Gang (beast:siegegang, tier 3, aggro)** — played by The Siege-Gang — 30 cards, 12 lands, avg MV 2.78
@@ -87,6 +103,8 @@ Mages roam anywhere; beasts are spoke-bound (their colour's ring). Tier 1 rolls 
   12 Swamp · 2 Dark Ritual · 2 Duress · 2 Doom Blade · 2 Hymn to Tourach · 2 Waste Not · 4 Hypnotic Specter · 1 Mind Rot · 2 Phyrexian Rager · 1 Tendrils of Corruption
 - **The Cunning Tactician (beast:tactician, tier 1, aggro)** — played by A Cunning Tactician, The Cunning Tactician — 30 cards, 12 lands, avg MV 2.44
   12 Plains · 2 Savannah Lions · 3 Fencing Ace · 3 Master Decoy · 2 Pacifism · 2 Raise the Alarm · 2 Scepter of Dominance · 4 Cunning Tactician
+- **The Tidewall (beast:tidewall, tier 3, control)** — played by The Tidewall — 30 cards, 12 lands, avg MV 2.06
+  12 Island · 2 Brainstorm · 2 Hedron Crab · 2 Thought Scour · 1 Altar of Dementia · 2 Boomerang · 2 Counterspell · 1 Essence Scatter · 2 Tidewall · 2 Wall of Air · 1 Wind Drake · 1 Traumatizer
 - **The Boggart Warband (beast:warband, tier 2, aggro)** — played by The Boggart Warband — 30 cards, 12 lands, avg MV 2.06
   12 Mountain · 2 Goblin Grenade · 3 Raging Goblin · 2 Skirk Prospector · 3 Goblin Piker · 4 Boggart Brute · 2 Goblin Chieftain · 2 Hordeling Outburst
 - **The Pelakka Wurm (beast:wurm, tier 3, midrange)** — played by the Pelakka Wurm — 30 cards, 12 lands, avg MV 3.33

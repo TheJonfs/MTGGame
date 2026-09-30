@@ -206,7 +206,7 @@ export type EffectBase =
    * Ruby Tyrant's recoil; the Djinn's event addressing can't reach activated abilities). */
   /** S40 (R-097, Powerstone Minefield): `to: "eventObject"` — the triggering event's OBJECT takes the damage
    * from the resolving source (the attacker or blocker); a no-op if it left the battlefield. */
-  | { type: "damage"; amount: Amount; target?: number; targetSpec?: number; to?: "eventPlayer" | "you" | "eventObject"; from?: "eventObject" }
+  | { type: "damage"; amount: Amount; target?: number; targetSpec?: number; to?: "eventPlayer" | "you" | "eventObject" | "opponent"; from?: "eventObject" } // S45 (R-099): to "opponent" — each opponent (Guttersnipe)
   /** S40 (R-097, Odile): `tapped` narrows the scope to tapped objects. */
   | { type: "damageAll"; amount: Amount; scope: Scope; tapped?: true }
   /** A10 (S22): `targetSpec` fans out over a spec's still-legal chosen targets (Purge's any-number). */
@@ -238,7 +238,7 @@ export type EffectBase =
    * order — a logged pick per card (ADR-013's incremental shape); the FIRST pick ends on top. With
    * fewer than N cards in hand, what is there goes back. */
   | { type: "putOnTop"; count: number }
-  | { type: "discard"; count: number; who: Who; mode: DiscardMode; filter?: DiscardFilter }
+  | { type: "discard"; count: number | "all"; who: Who; mode: DiscardMode; filter?: DiscardFilter } // S45 (R-099): "all" — the whole hand (Dragon Mage)
   /** ADR-070 Amendment 3: top N of the library to its owner's graveyard via moveObject; NOT a draw (no empty-draw loss).
    * S23: count may be a value ref (the Traumatizer's eventDamage). */
   | { type: "mill"; count: number | ValueRef; who: Who }
@@ -308,6 +308,8 @@ export type EffectBase =
   /** A10 law-word (S22b): STATIC-ONLY — the controller may play `count` additional lands each turn.
    * A rules counter the land-play legality check reads (the Risen Tide). */
   | { type: "extraLandDrops"; count: number }
+  /** S45 (R-099, Seedborn Muse): static — the controller untaps all their permanents during each OTHER player's untap step (CR 502.3). */
+  | { type: "untapDuringOthersUntap" }
   /** A10 law-word (S22b): STATIC-ONLY — matching permanents entering under a `who`-selected player's
    * control (relative to the static's controller) enter tapped, whatever put them there (the
    * sanctioned enters-tapped special case, extended; the Intake). */
@@ -358,6 +360,7 @@ export const EFFECT_TYPES: readonly EffectType[] = [
   "exileThenReturn",
   "grantAbility",
   "extraLandDrops",
+  "untapDuringOthersUntap",
   "imposeEntersTapped",
   "createLaw",
   "putOnTop",

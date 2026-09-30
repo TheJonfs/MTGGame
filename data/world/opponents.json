@@ -552,6 +552,132 @@
       "knobs": {
         "anteCount": 2
       }
+    },
+    {
+      "id": "beast_dragonmage",
+      "name": "The Dragon Mage",
+      "deck": "beast:dragonmage",
+      "tier": 3,
+      "difficulty": "master",
+      "portrait": "beast-dragon-mage",
+      "portraitChip": "beast-dragon-mage-chip",
+      "worldLife": 12,
+      "colors": "R",
+      "kind": "beast",
+      "spoke": "R",
+      "buyable": true,
+      "parley": {
+        "verb": "Offer it a book",
+        "line": "It reads as it flies. Whatever it takes from you, it will hand back \u2014 and take again."
+      },
+      "knobs": {
+        "anteCount": 2
+      }
+    },
+    {
+      "id": "beast_guttersnipe",
+      "name": "The Guttersnipe",
+      "deck": "beast:guttersnipe",
+      "tier": 3,
+      "difficulty": "master",
+      "portrait": "beast-guttersnipe",
+      "portraitChip": "beast-guttersnipe-chip",
+      "worldLife": 12,
+      "colors": "R",
+      "kind": "beast",
+      "spoke": "R",
+      "buyable": true,
+      "parley": {
+        "verb": "Toss it something to burn",
+        "line": "Every spark it throws lands twice. It has thrown many."
+      },
+      "knobs": {
+        "anteCount": 2
+      }
+    },
+    {
+      "id": "beast_dreadpresence",
+      "name": "The Dread Presence",
+      "deck": "beast:dreadpresence",
+      "tier": 3,
+      "difficulty": "master",
+      "portrait": "beast-dread-presence",
+      "portraitChip": "beast-dread-presence-chip",
+      "worldLife": 12,
+      "colors": "B",
+      "kind": "beast",
+      "spoke": "B",
+      "buyable": false,
+      "parley": {
+        "line": "The ground is wet under it, and getting wetter. It is glad of every swamp you give it.",
+        "refusal": "It wants the ground under you, not what you carry."
+      },
+      "knobs": {
+        "anteCount": 2
+      }
+    },
+    {
+      "id": "beast_emeria",
+      "name": "The Emeria Angel",
+      "deck": "beast:emeria",
+      "tier": 3,
+      "difficulty": "master",
+      "portrait": "beast-emeria-angel",
+      "portraitChip": "beast-emeria-angel-chip",
+      "worldLife": 12,
+      "colors": "W",
+      "kind": "beast",
+      "spoke": "W",
+      "buyable": true,
+      "parley": {
+        "verb": "Make an offering",
+        "line": "Birds rise from every place she lands. There are a great many places."
+      },
+      "knobs": {
+        "anteCount": 2
+      }
+    },
+    {
+      "id": "beast_seedborn",
+      "name": "The Seedborn Muse",
+      "deck": "beast:seedborn",
+      "tier": 3,
+      "difficulty": "master",
+      "portrait": "beast-seedborn-muse",
+      "portraitChip": "beast-seedborn-muse-chip",
+      "worldLife": 12,
+      "colors": "G",
+      "kind": "beast",
+      "spoke": "G",
+      "buyable": false,
+      "parley": {
+        "line": "Nothing near it rests. Whatever attacks will stand again to block.",
+        "refusal": "Nothing you carry grows."
+      },
+      "knobs": {
+        "anteCount": 2
+      }
+    },
+    {
+      "id": "beast_tidewall",
+      "name": "The Tidewall",
+      "deck": "beast:tidewall",
+      "tier": 3,
+      "difficulty": "master",
+      "portrait": "beast-tidewall",
+      "portraitChip": "beast-tidewall-chip",
+      "worldLife": 12,
+      "colors": "U",
+      "kind": "beast",
+      "spoke": "U",
+      "buyable": false,
+      "parley": {
+        "line": "It does not come to you. It waits, and what it stops, it remembers.",
+        "refusal": "A wall does not bargain."
+      },
+      "knobs": {
+        "anteCount": 2
+      }
     }
   ]
 }

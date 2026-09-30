@@ -63,7 +63,9 @@ export function floodLairResidents(catalog: Pick<Catalog, "opponents">): Record<
   for (const c of COLORS) {
     const spoke = beasts.filter((o) => o.spoke === c);
     const top = Math.max(0, ...spoke.map((o) => o.tier));
-    const beast = spoke.find((o) => o.tier === top);
+    // S45 (ADR-141): where a spoke has two tier-3 beasts the NEWER guards the spring — the catalog's order is the rows'
+    // age, so the last row wins (red: the Guttersnipe, appended after the Dragon Mage; the older keep roaming).
+    const beast = [...spoke].reverse().find((o) => o.tier === top);
     if (!beast) throw new Error(`flood lairs: no beast on the ${c} spoke`);
     out[c] = { landing: t3[c], wellhouse: beast, hearthstead: t2[c] };
   }

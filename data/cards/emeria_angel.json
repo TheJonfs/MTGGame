@@ -1,0 +1,40 @@
+{
+  "id": "emeria_angel",
+  "name": "Emeria Angel",
+  "source": "real",
+  "scryfallId": "8b386d39-ba41-42f8-ba05-f9ed602ee23f",
+  "manaCost": "{2}{W}{W}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Angel"
+  ],
+  "power": 3,
+  "toughness": 3,
+  "keywords": [
+    "flying"
+  ],
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "LAND_ENTERS_UNDER_YOUR_CONTROL",
+      "condition": {
+        "controller": "you"
+      },
+      "effects": [
+        {
+          "type": "createToken",
+          "tokenId": "bird_1_1_flying",
+          "count": 1,
+          "who": "you"
+        }
+      ],
+      "optional": true
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 3
+}

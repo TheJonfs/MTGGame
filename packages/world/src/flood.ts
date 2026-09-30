@@ -173,7 +173,8 @@ export function floodChronicleFalls(world: WorldState, catalog: Catalog): Chroni
   for (const [siteId, l] of Object.entries(run.lairs ?? {})) {
     const site = world.map.strongholds.find((s) => s.contentId === siteId);
     const kind = siteId.split(":")[1] ?? ""; // lair:<landing|wellhouse|hearthstead>:<colour>
-    out.push({ kind: "lair", siteId, name: site?.name ?? siteId, text: (lairText as Record<string, { prize?: string }>)[kind]?.prize ?? "", step: l.step });
+    const t = (lairText as Record<string, { prize?: string; fall?: string }>)[kind];
+    out.push({ kind: "lair", siteId, name: site?.name ?? siteId, text: t?.fall ?? t?.prize ?? "", step: l.step }); // S45: the kind's fall line (the prize line before it)
   }
   return out.map((x, i) => ({ x, i })).sort((a, b) => a.x.step - b.x.step || a.i - b.i).map(({ x }) => x);
 }

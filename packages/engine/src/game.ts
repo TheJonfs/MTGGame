@@ -12,7 +12,7 @@ import {
   stageBlock,
 } from "./combat.js";
 import type { EngineCtx } from "./ctx.js";
-import { characteristics, expireEndOfTurnEffects } from "./characteristics.js";
+import { characteristics, expireEndOfTurnEffects, untapsDuringOthersUntap } from "./characteristics.js";
 import { makeEffectContext } from "./effect-context.js";
 import { attackerChoices, blockerChoices, bottomChoices, discardChoices, effectiveAbilityCost, legalActions } from "./enumerator.js";
 import type { GameEventMap } from "./events.js";
@@ -317,8 +317,17 @@ export class Game {
 
     switch (step) {
       case "UNTAP": {
+        // S45 (R-099, Seedborn Muse — CR 502.3): a non-active player with the static untaps alongside the active
+        // player's untap (simultaneously; summoning sickness is the active player's alone — CR 302.6).
+        const others = ([0, 1] as PlayerId[]).filter((p) => p !== active && untapsDuringOthersUntap(this.ctx, p));
         for (const id of state.battlefield) {
           const obj = getObject(state, id);
+          if (others.includes(obj.controller)) {
+            const wasTapped = obj.tapped;
+            obj.tapped = false;
+            if (wasTapped) bus.emit("UNTAPPED", { objectId: id });
+            continue;
+          }
           if (obj.controller === active) {
             const wasTapped = obj.tapped;
             obj.tapped = false;

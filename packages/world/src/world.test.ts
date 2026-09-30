@@ -21,10 +21,10 @@ const pool = loadCardPool(join(ROOT, "data/cards"));
 describe("catalog v1", () => {
   it("loads and validates; 15 mages over 5 decks × 3 tiers + the full bestiary grid (S18 ten + S19 round-2 five; the Tactician at tiers 1 and 2); every deck ref resolves; ADR-072: 15 regions (colour × tier) + 5 strongholds", () => {
     expect(catalog.version).toBe("v1");
-    expect(catalog.opponents).toHaveLength(32);
+    expect(catalog.opponents).toHaveLength(38); // S45 (ADR-140): + six tier-3 beasts
     expect(catalog.opponents.filter((o) => (o.kind ?? "mage") === "mage" && !o.spoke)).toHaveLength(15);
-    expect(catalog.opponents.filter((o) => o.kind === "beast")).toHaveLength(17); // S29 (ADR-100): the Tactician ×2 is a beast now
-    expect(catalog.opponents.filter((o) => o.spoke)).toHaveLength(17); // 17 beasts (the Tactician ×2 included)
+    expect(catalog.opponents.filter((o) => o.kind === "beast")).toHaveLength(23); // S45: +6 tier-3 (ADR-140); S29 (ADR-100): the Tactician ×2 is a beast now
+    expect(catalog.opponents.filter((o) => o.spoke)).toHaveLength(23); // 23 beasts (the Tactician ×2 included; S45 +6)
     for (const o of catalog.opponents) expect(enemyDeck(catalog, o.deck, 1).decklist.reduce((n, e) => n + e.count, 0)).toBeGreaterThanOrEqual(30);
     for (const o of catalog.opponents.filter((x) => x.spoke)) expect(o.deck.startsWith("beast:")).toBe(true);
     // ADR-078: the grid is complete — every spoke has a signature at every tier.
@@ -708,9 +708,10 @@ describe("lair fixed point (S14 round 1 prototype)", () => {
       const lair = lairs.find((f) => w.map.regions[f.region]!.color === "G")!;
       expect(lair.kind).toBe("lair");
       const resident = w.opponents.find((o) => o.id === lair.opponentId)!;
-      expect(resident.catalogId).toBe("beast_wurm");
-      const TOP: Record<string, string> = { W: "beast_serra", U: "beast_formation", B: "beast_specter", R: "beast_siegegang", G: "beast_wurm" }; // S19: U lair → the Formation (top-signature rule, Chris's kickoff nod)
-      for (const f of lairs) expect(w.opponents.find((o) => o.id === f.opponentId)!.catalogId).toBe(TOP[w.map.regions[f.region]!.color]);
+      // S45 (ADR-140): each spoke has TWO tier-3 beasts now (three in red) — phase one's bestiary lair picks among them (seeded).
+      const TOP: Record<string, string[]> = { W: ["beast_serra", "beast_emeria"], U: ["beast_formation", "beast_tidewall"], B: ["beast_specter", "beast_dreadpresence"], R: ["beast_siegegang", "beast_dragonmage", "beast_guttersnipe"], G: ["beast_wurm", "beast_seedborn"] }; // S19: the top-signature rule
+      expect(TOP.G).toContain(resident.catalogId);
+      for (const f of lairs) expect(TOP[w.map.regions[f.region]!.color]).toContain(w.opponents.find((o) => o.id === f.opponentId)!.catalogId);
       expect(resident.fixedAt).toEqual(lair.at);
       expect(findPath(w.map, w.map.start, lair.at)).not.toBeNull();
       // Walk there with random encounters off: the threshold telegraphs (no fight yet — entering is a choice).
@@ -726,7 +727,7 @@ describe("lair fixed point (S14 round 1 prototype)", () => {
       }
       expect(entry && entry.type === "dungeonEntry" && entry.kind).toBe("lair");
       if (entry?.type === "dungeonEntry") {
-        expect(entry.residentCatalogId).toBe("beast_wurm");
+        expect(entry.residentCatalogId).toBe(resident.catalogId); // S45: the seeded pick among green's two tier-3 beasts
         expect(entry.dungeonId).toBe(`lair_${lair.opponentId}`);
       }
       expect(ev.some((e) => e.type === "encounter")).toBe(false);
@@ -1358,7 +1359,7 @@ describe("S19 shop tiers (ADR-078): availability by ring, price by tier factor, 
     // Distribution pin (audit v2 + Formation + the S20 land-and-legend batch as it lands: ten ABU duals at R so far).
     const tally: Record<string, number> = {};
     for (const d of pool.cards.values()) if (d.shopTier) tally[String(d.shopTier)] = (tally[String(d.shopTier)] ?? 0) + 1;
-    expect(tally).toEqual({ "1": 72, "2": 55, "3": 11, R: 35 }); // Post-S43 (Chris, 2026-09-28): Shadow Summoning T2 → R (gold is R, ADR-078). // S40 (ADR-128): +10 R (the ten golds — eight real, Static Sphere, Sacred Helix), +2 T2 (Char, Shadow Summoning); the legends and grounds are prizeOnly. // S36 (ADR-121): +2 T2, +1 T3, +1 R. // S31 (ADR-108): +1 T1 (Grazing Gladehart), +1 R (Artisan of Kozilek). S32 (ADR-109): +1 T1 (Plumecreed Escort), +1 T2 (Diabolic Edict). // ADR-081 unification: the five guardian legendaries left the tiers for prizeOnly (Drana was T3, the S20 four were R). S22 batch: +10 R (eight real gold→R adds + Aetherbolt + Tainted Phoenix; the five lords are prizeOnly), +1 T1 (Abrade). S23 fun batch: +3 T2 (Thundersnake, Gallows Djinn, Traumatizer)
+    expect(tally).toEqual({ "1": 72, "2": 55, "3": 17, R: 35 }); // S45 (ADR-140): +6 T3. // Post-S43 (Chris, 2026-09-28): Shadow Summoning T2 → R (gold is R, ADR-078). // S40 (ADR-128): +10 R (the ten golds — eight real, Static Sphere, Sacred Helix), +2 T2 (Char, Shadow Summoning); the legends and grounds are prizeOnly. // S36 (ADR-121): +2 T2, +1 T3, +1 R. // S31 (ADR-108): +1 T1 (Grazing Gladehart), +1 R (Artisan of Kozilek). S32 (ADR-109): +1 T1 (Plumecreed Escort), +1 T2 (Diabolic Edict). // ADR-081 unification: the five guardian legendaries left the tiers for prizeOnly (Drana was T3, the S20 four were R). S22 batch: +10 R (eight real gold→R adds + Aetherbolt + Tainted Phoenix; the five lords are prizeOnly), +1 T1 (Abrade). S23 fun batch: +3 T2 (Thundersnake, Gallows Djinn, Traumatizer)
   });
   it("a civilized town's rolled stock is all tier 1 and every price matches shopPrice", async () => {
     const { rollShopStock, shopPrice } = await import("./shop.js");
@@ -1807,7 +1808,7 @@ describe("S18 spawn tables (ADR-066/074, Chris's ring blends): spoke-bound beast
       const bw = w7.map.regions.find((r) => r.color === "U" && r.tier === "wild")!;
       for (const o of w7.opponents.filter((o) => o.region === bw.index && !o.fixedAt)) {
         const t = catalog.opponents.find((x) => x.id === o.catalogId)!;
-        if (t.spoke) expect(["beast_gale", "beast_formation"]).toContain(t.id);
+        if (t.spoke) expect(["beast_gale", "beast_formation", "beast_tidewall"]).toContain(t.id); // S45: + the Tidewall (T3)
         else expect([2, 3]).toContain(t.tier); // wild mage table rolls 3,3,2
       }
     }

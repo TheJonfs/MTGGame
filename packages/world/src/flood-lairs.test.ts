@@ -80,7 +80,7 @@ describe("S43 (ADR-136) — the flood's lairs: generation", () => {
     const t = floodLairResidents(catalog);
     const names = (k: "landing" | "wellhouse" | "hearthstead") => COLORS.map((c) => t[c][k].name);
     expect(names("landing")).toEqual(["Thornmother Ysolde", "Varro Flamebrand", "Lord Corvane", "High Warden Sorrel", "Magister Quill"]);
-    expect(names("wellhouse")).toEqual(["The Serra Angel", "The Faerie Formation", "The Hypnotic Specter", "The Siege-Gang", "the Pelakka Wurm"]);
+    expect(names("wellhouse")).toEqual(["The Emeria Angel", "The Tidewall", "The Dread Presence", "The Guttersnipe", "The Seedborn Muse"]); // S45 (ADR-141): the NEWER tier-3 beast guards the spring (red: the Guttersnipe over the Dragon Mage and the Siege-Gang)
     expect(names("hearthstead")).toEqual(["Mistress Vael", "Pell of the Shallows", "Adept Maelin", "Kessa Emberhand", "Brennor of the Glade"]);
     const w = floodWorld(4309);
     for (const l of lairsOf(w)) {

@@ -445,8 +445,8 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
       if (Array.isArray(a.effects)) {
         for (const e of a.effects) {
           if (isRecord(e) && e.type === "gainControl" && e.scope === undefined) err(`a static gainControl needs scope "attached" (ADR-033); the targeted form is a resolved effect (S26)`);
-          if (isRecord(e) && !["modifyPT", "grantKeyword", "restrict", "gainControl", "grantAbility", "extraLandDrops", "imposeEntersTapped"].includes(e.type as string)) {
-            err(`static ability cannot carry effect "${e.type}" (only modifyPT/grantKeyword/restrict/gainControl/grantAbility/extraLandDrops/imposeEntersTapped)`);
+          if (isRecord(e) && !["modifyPT", "grantKeyword", "restrict", "gainControl", "grantAbility", "extraLandDrops", "untapDuringOthersUntap", "imposeEntersTapped"].includes(e.type as string)) {
+            err(`static ability cannot carry effect "${e.type}" (only modifyPT/grantKeyword/restrict/gainControl/grantAbility/extraLandDrops/untapDuringOthersUntap/imposeEntersTapped)`);
           }
           // A10 word 8 (S22): the granted ability is itself validated as an activated ability of
           // the target zone (a hand grant must be cycling-shaped; a battlefield grant needs a scope).
@@ -495,7 +495,7 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     // A8 (S20): damage addresses a target index OR a range-spec index (targetSpec fans out).
     // A10 (S22): OR the triggering event's player (the Warden's law).
     // S25: to:"you" — the controller's own recoil (the Ruby Tyrant); no event context needed.
-    if (e.to !== undefined && e.to !== "eventPlayer" && e.to !== "you" && e.to !== "eventObject") err(`damage "to" must be "eventPlayer", "you" or "eventObject" (A10/S25/S40)`);
+    if (e.to !== undefined && e.to !== "eventPlayer" && e.to !== "you" && e.to !== "eventObject" && e.to !== "opponent") err(`damage "to" must be "eventPlayer", "you", "eventObject" or "opponent" (A10/S25/S40/S45)`);
     if (e.from !== undefined && e.from !== "eventObject") err(`damage "from" must be "eventObject" (A10)`);
     if (!Number.isInteger(e.target) && !Number.isInteger(e.targetSpec) && e.to === undefined) err(`"damage" needs "target", "targetSpec", or a "to" address`);
   },
@@ -527,7 +527,7 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     needCount(e, err); // S28: Brainstorm's put-back
   },
   discard: (e, err) => {
-    needCount(e, err);
+    if (e.count !== "all") needCount(e, err); // S45 (R-099): "all" — the whole hand
     needWho(e, err);
     if (e.mode !== "ownerChooses" && e.mode !== "random" && e.mode !== "casterChooses") {
       err(`discard mode must be ownerChooses|random|casterChooses (ADR-029)`);
@@ -656,6 +656,9 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     // S22b law-word: static-only (rejected outside statics below).
     if (!Number.isInteger(e.count) || (e.count as number) < 1) err(`extraLandDrops.count must be a positive integer (A10/S22b)`);
   },
+  untapDuringOthersUntap: () => {
+    // S45 (R-099, Seedborn Muse): static-only, no params.
+  },
   imposeEntersTapped: (e, err) => {
     // S22b law-word: static-only.
     if (e.who !== "you" && e.who !== "opponent" && e.who !== "eachPlayer") err(`imposeEntersTapped.who must be you|opponent|eachPlayer (A10/S22b)`);
@@ -742,7 +745,7 @@ function validateEffects(
     if (type === "gainControl" && !opts.isStatic && e.scope !== undefined) err(`gainControl with a scope is static-only (ADR-033); use target + duration for the resolved form (S26)`);
     // S27: createLaw belongs to the Manafleur's own END_STEP trigger and nowhere else.
     if (type === "createLaw" && !(opts.lawTrigger && LAW_MAKERS.includes(cardId))) err(`createLaw is confined to the law-makers' end-step triggers — the Manafleur, the Cinquefont (S27/S42a)`);
-    if ((type === "grantAbility" || type === "extraLandDrops" || type === "imposeEntersTapped") && !opts.isStatic) {
+    if ((type === "grantAbility" || type === "extraLandDrops" || type === "untapDuringOthersUntap" || type === "imposeEntersTapped") && !opts.isStatic) {
       err(`${type} is static-only (A10 — interpreted live, never resolved)`);
       continue;
     }

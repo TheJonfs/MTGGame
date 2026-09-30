@@ -294,6 +294,13 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
         const ctrl = a.condition?.controller ?? "you";
         if (ctrl === "you" && ev.controller !== perm.controller) return;
         if (ctrl === "opponent" && ev.controller === perm.controller) return;
+        // S45 (R-099, Dread Presence): "whenever a Swamp you control enters" — the land's subtypes (a dual's count).
+        const sub = a.condition?.subtype;
+        if (sub && sub.length > 0) {
+          const land = ctx.state.objects[ev.objectId];
+          const subs = land ? ctx.defs.def(land.cardId).subtypes ?? [] : [];
+          if (!sub.some((st) => subs.includes(st))) return;
+        }
         pend(permId, perm.cardId, perm.controller, i, { objectId: ev.objectId, player: ev.controller });
       });
     }

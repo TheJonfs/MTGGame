@@ -216,6 +216,19 @@ export function maxLandDrops(ctx: EngineCtx, player: PlayerId): number {
   return 1 + extra;
 }
 
+/** S45 (R-099, Seedborn Muse): does `player` control an active untapDuringOthersUntap static? */
+export function untapsDuringOthersUntap(ctx: EngineCtx, player: PlayerId): boolean {
+  for (const srcId of ctx.state.battlefield) {
+    const src = getObject(ctx.state, srcId);
+    if (src.controller !== player) continue;
+    for (const ability of ctx.defs.def(src.cardId).abilities ?? []) {
+      if (ability.kind !== "static" || !staticActive(ctx, srcId, ability.condition)) continue;
+      if (ability.effects.some((e) => e.type === "untapDuringOthersUntap")) return true;
+    }
+  }
+  return false;
+}
+
 /** S22b law-word (the Intake): does an active static impose enters-tapped on a matching permanent
  * entering under `enteringController`? Consulted by the one zone-move primitive — every entry path
  * (play, put, search, reanimate, token) pays the law. `who` is relative to the static's controller. */

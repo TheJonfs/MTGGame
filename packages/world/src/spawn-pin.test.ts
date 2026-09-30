@@ -40,7 +40,9 @@ describe("spawn pin (S37): the default mageSpawnWeight / mageSpawnRamp reproduce
         out[`${seed}:${tier}`] = { fp: fnv(ids.join(",")), tiers };
       }
     }
-    expect(out).toEqual({"1:civilized":{"fp":"78e78e2d","tiers":[323,77,0]},"1:approach":{"fp":"99f6208d","tiers":[119,214,67]},"1:wild":{"fp":"0ff9219a","tiers":[0,163,237]},"42:civilized":{"fp":"8350066a","tiers":[310,90,0]},"42:approach":{"fp":"52a4200f","tiers":[116,189,95]},"42:wild":{"fp":"84ecea6c","tiers":[0,167,233]},"20260915:civilized":{"fp":"15cd2de1","tiers":[320,80,0]},"20260915:approach":{"fp":"1e39471d","tiers":[121,202,77]},"20260915:wild":{"fp":"6439b3bb","tiers":[0,180,220]}});
+    // S45 (ADR-140) re-baseline: six tier-3 beasts joined the catalog — the TIER split is identical in every cell (the
+    // weights hold; the new rows share the tier-3 slot), only which template fills it moved (civilized, no tier 3, unchanged).
+    expect(out).toEqual({"1:civilized":{"fp":"78e78e2d","tiers":[323,77,0]},"1:approach":{"fp":"8314be45","tiers":[119,214,67]},"1:wild":{"fp":"f36709a0","tiers":[0,163,237]},"42:civilized":{"fp":"8350066a","tiers":[310,90,0]},"42:approach":{"fp":"103e5add","tiers":[116,189,95]},"42:wild":{"fp":"6606223a","tiers":[0,167,233]},"20260915:civilized":{"fp":"15cd2de1","tiers":[320,80,0]},"20260915:approach":{"fp":"a1b01559","tiers":[121,202,77]},"20260915:wild":{"fp":"6417227b","tiers":[0,180,220]}});
   });
   it("world generation and the roamer roster at three seeds — the same catalog ids as S36", () => {
     const out: Record<string, string> = {};
@@ -50,7 +52,7 @@ describe("spawn pin (S37): the default mageSpawnWeight / mageSpawnRamp reproduce
       const w = newWorld({ seed, catalog, starter: "white", difficulty: "standard", playerName: "Pin" });
       out[`world:${seed}`] = fnv(w.opponents.map((o) => o.catalogId).join(","));
     }
-    expect(out).toEqual({"gen:1":"f7d37a6a","world:1":"f7d37a6a","gen:42":"18791d92","world:42":"18791d92","gen:20260915":"26cdc1d6","world:20260915":"26cdc1d6"});
+    expect(out).toEqual({"gen:1":"0686fe0f","world:1":"0686fe0f","gen:42":"29d7627d","world:42":"29d7627d","gen:20260915":"b4ce106b","world:20260915":"b4ce106b"}); // S45 re-baseline (the new rows in the roster)
   });
   it("the knob defaults document today's effective weights (civilized 3:1:0, approach 1:2:1, wild 0:1:2) and no ramp", () => {
     expect(KNOBS.mageSpawnWeight.default).toEqual({ civilized: [3, 1, 0], approach: [1, 2, 1], wild: [0, 1, 2] });

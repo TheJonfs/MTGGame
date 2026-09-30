@@ -45,6 +45,21 @@
         }
       }
     },
+    "beast-dread-presence-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:95692a358fe24cac2391860bcb0dd4e2d60755ecfb2bc2b6ac6c0b1b3e628dc4",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:95692a358fe24cac2391860bcb0dd4e2d60755ecfb2bc2b6ac6c0b1b3e628dc4",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/beast-dread-presence-1/canonical.png",
+          "rendered_at": "2026-09-30T14:00:14+00:00",
+          "thumb": "assets/thumbs/beast-dread-presence-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "beast-faerie-formation": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:0481f01996c6534f82442a4436bcdd8d56ed66797540fa99970740d48c955856",
@@ -2678,6 +2693,21 @@
           "path": "assets/images/card-thundersnake-r2-4/canonical.png",
           "rendered_at": "2026-08-28T03:14:29+00:00",
           "thumb": "assets/thumbs/card-thundersnake-r2-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-tidewall-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:84a7590bc6e312846e818a777f1c9f81865374d91b73854998b05a24463f80c7",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:84a7590bc6e312846e818a777f1c9f81865374d91b73854998b05a24463f80c7",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-tidewall-1/canonical.png",
+          "rendered_at": "2026-09-30T13:47:25+00:00",
+          "thumb": "assets/thumbs/card-tidewall-1/canonical.png",
           "variant_prompt": null
         }
       }

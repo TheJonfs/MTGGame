@@ -1,0 +1,41 @@
+{
+  "id": "guttersnipe",
+  "name": "Guttersnipe",
+  "source": "real",
+  "scryfallId": "937e6fd7-ff20-46cd-8107-1f5339267a6f",
+  "manaCost": "{2}{R}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Goblin",
+    "Shaman"
+  ],
+  "power": 2,
+  "toughness": 2,
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "SPELL_CAST",
+      "condition": {
+        "controller": "you",
+        "type": [
+          "Instant",
+          "Sorcery"
+        ]
+      },
+      "effects": [
+        {
+          "type": "damage",
+          "amount": 2,
+          "to": "opponent"
+        }
+      ],
+      "optional": false
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 3
+}
