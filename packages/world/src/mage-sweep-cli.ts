@@ -206,6 +206,12 @@ if (part === "all" || part === "6") {
   header();
   const beastKeys = catalog.opponents.filter((o) => o.kind === "beast" && o.deck.startsWith("beast:")).map((o) => o.deck.slice(6));
   for (const k of [...new Set(beastKeys)]) for (const s of catalog.starters) await pairing(beast(k), starter(s.id), `beast×starter`);
+  // S45 (the brief's Part 4 — part 6 extended): the TIER-3 beasts against the flood's post-lairs references (14 life,
+  // three basics — the world's own terms since S44), the beast at this `--phase`'s row.
+  console.log(`\n## 6b. The tier-3 beasts vs the post-lairs references (phase ${phase} rows; the references at their life / entrance, journeyman)`);
+  header();
+  const t3 = [...new Set(catalog.opponents.filter((o) => o.kind === "beast" && o.tier === 3 && o.deck.startsWith("beast:")).map((o) => o.deck.slice(6)))];
+  for (const k of t3) for (const rk of ["salvageWRLordsLairs", "salvageUBLordsLairs"]) await pairing(beast(k), road(rk), `T3 beast×postlairs`);
 }
 if (part === "all" || part === "7") {
   console.log(`\n## 7. Tier-2 and tier-3 mages vs the mid-road references (ADR-111: a starter + eight shop cards, one manalink basic in play, 12 life, journeyman)`);
