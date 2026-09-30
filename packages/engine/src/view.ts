@@ -41,6 +41,10 @@ export interface GameView {
      * "can't block" / "can't attack" — so an agent's opponent model never counts a wall that cannot stand. */
     cantBlock?: boolean;
     cantAttack?: boolean;
+    /** S45 follow-up (Chris: "the AI can't see summoning sickness"): a creature under summoning sickness that has no haste —
+     * it cannot attack or pay a {T} cost this turn (CR 302.6), but it CAN block. Public (every player sees what entered
+     * this turn). The engine's own rule (combat.ts / enumerator.ts / mana.ts), read here so the two cannot drift. */
+    summoningSick?: boolean;
   }[];
   /** S32: `targets` (public — the stack's targets are announced) so a creature under fire is visible
    * to the agents: the Escort's save, the Altar's "doomed" read (which had been blind live since S29). */
@@ -96,6 +100,7 @@ export function buildView(ctx: EngineCtx, player: PlayerId): GameView {
         keywords: [...chars.keywords].sort(),
         ...(chars.cantBlock ? { cantBlock: true } : {}),
         ...(chars.cantAttack ? { cantAttack: true } : {}),
+        ...(o.summoningSick && isCreature && !chars.keywords.has("haste") ? { summoningSick: true } : {}),
       };
     }),
     stack: s.stack.map((item) => ({
