@@ -92,6 +92,16 @@ describe("the seats' castle themes (2026-09-28, Chris: phase two's gates were si
     for (const id of ids) expect(existsSync(join(root, "../packages/ui/public/gate-plates", `${id}.jpg`)), `${id}.jpg`).toBe(true);
   });
 
+  it("S45: every catalog opponent's portrait (and a beast's map chip) is installed — the six tier-3 beasts' included", () => {
+    const root = join(dirname(fileURLToPath(import.meta.url)), "../../../../data");
+    const pub = join(root, "../packages/ui/public/portraits");
+    const ops = (JSON.parse(readFileSync(join(root, "world/opponents.json"), "utf8")) as { opponents: { id: string; kind?: string; portrait?: string; portraitChip?: string }[] }).opponents;
+    for (const o of ops) {
+      if (o.portrait) expect(existsSync(join(pub, `${o.portrait}.png`)), `${o.id} → ${o.portrait}`).toBe(true);
+      if (o.kind === "beast" && o.portraitChip) expect(existsSync(join(pub, `${o.portraitChip}.png`)), `${o.id} → ${o.portraitChip}`).toBe(true);
+    }
+  });
+
   it("S44 (Part 2): the flood's drawn pieces are installed — a splash per court and per lair kind, a map glyph per lair kind, the Calyx's three washes", () => {
     const root = join(dirname(fileURLToPath(import.meta.url)), "../../../../data");
     const pub = join(root, "../packages/ui/public");

@@ -44,5 +44,6 @@
     "asset": "/custom-art/tidewall.png",
     "fallback": "rendered"
   },
-  "shopTier": 3
+  "shopTier": 3,
+  "printedAsset": "tidewall.jpg"
 }

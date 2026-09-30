@@ -586,7 +586,7 @@ Pool 227 → **233**. Every card tier 3 (the formula's price: Guttersnipe and Ti
 | dread_presence | Dread Presence | tested | triggered(LAND_ENTERS_UNDER_YOUR_CONTROL, `subtype: Swamp`) modal: draw 1 + lose 1 / 2 damage any target + gain 2 (R-099) | M20 #96 (Anthony Palumbo; modern frame only). A dual with the Swamp type counts. Beast: `beast:dreadpresence` — black's Wellhouse. |
 | emeria_angel | Emeria Angel | tested | flying; triggered(LAND_ENTERS_UNDER_YOUR_CONTROL you, optional): createToken bird_1_1_flying | ZEN #11 (Jim Murray; modern frame only). Zero words. Beast: `beast:emeria` — white's Wellhouse. |
 | seedborn_muse | Seedborn Muse | tested | static `untapDuringOthersUntap` (R-099) | LGN #138 (Adam Rex — the first printing, old frame). Beast: `beast:seedborn` — green's Wellhouse. |
-| tidewall | Tidewall | tested | custom Wall 0/4 flying, defender; triggered(BLOCKS self): returnFromGraveyard target instant-or-sorcery card to hand | {1}{U}{U}. Art: the classical oil (Chris, of four). Beast: `beast:tidewall` — blue's Wellhouse. Printed face pending (Chris). |
+| tidewall | Tidewall | tested | custom Wall 0/4 flying, defender; triggered(BLOCKS self): returnFromGraveyard target instant-or-sorcery card to hand | {1}{U}{U}. Art: the classical oil (Chris, of four). Beast: `beast:tidewall` — blue's Wellhouse. Printed face (Chris, 2026-09-30) verified word-for-word; `printedAsset`. |
 
 ## Shop tiers (ADR-078, S19)
 

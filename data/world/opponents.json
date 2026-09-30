@@ -593,7 +593,8 @@
       },
       "knobs": {
         "anteCount": 2
-      }
+      },
+      "worldLifeOffset": -4
     },
     {
       "id": "beast_dreadpresence",
@@ -614,7 +615,8 @@
       },
       "knobs": {
         "anteCount": 2
-      }
+      },
+      "worldLifeOffset": -6
     },
     {
       "id": "beast_emeria",
@@ -635,7 +637,8 @@
       },
       "knobs": {
         "anteCount": 2
-      }
+      },
+      "worldLifeOffset": -4
     },
     {
       "id": "beast_seedborn",

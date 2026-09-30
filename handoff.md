@@ -1,69 +1,78 @@
-# Handoff — after Session 44 (2026-09-29)
+# Handoff — after Session 45 (2026-09-30)
 
 ## State of the world
 
-**Cinquefoil v1 is live on Vercel; phase two is polished from Chris's first full run.** Session 44 — **the flood, polished** — is done, Part 2's art installed on Chris's verdict and walked in the browser. The playtest week's rulings are filed (`docs/decision-updates/s44.md`): a flood lair's prize room holds **one R card and the purse** (ADR-137), `floodClockSlack` 1.5 is ratified (ADR-138), and a fallen lord's territory stocks **+2 ordinary rows** in every ring (ADR-139, `floodShelfBonus`). A phase-two run's **Chronicle** now lists its lords', courts' and lairs' falls in order under the Flood entry, mirrored into the profile's ledger so it outlives the run. The flood's **sixteen rumours** pour in phase-two taverns (Chris's amended Bailiff line), and the rail's footer names both link kinds. The flood references sit at the world's **10 life** (post-lairs 14), and `flood-sim --refs postlairs` is re-baselined below. The Calyx is drawn in the storm-light washes with feathered edges, each lair kind has its own map glyph and gate splash, and each court its woodblock band. `pnpm test` = 768 green; `pnpm typecheck` clean; pushed at the close.
-
-*Before this session (the playtest week, 2026-09-26…29, all pushed and ratified in the brief's Part 0): the lairs as lair-dungeons, the Altar, the clock slack, the art round, the menace flag carrying the duel log, the Ritual/Restoration/Snake/sink AI corrections (books 70–73), the golds off the shelves and Shadow Summoning at R, the flood's gate plates and castle themes, the Deep Water's threshold, the High Grounds' "cleared" on the rail.*
+**Cinquefoil v1 is live on Vercel; the tier-3 round is in (pool 227 → 233, bestiary 17 → 23).** Session 45 added six tier-3 cards — Dragon Mage, Guttersnipe, Dread Presence, Emeria Angel, Seedborn Muse (real, Oracle verified, the printings Chris chose) and **Tidewall** (custom; the classical oil, Chris's printed face) — each fielding as a roaming tier-3 beast on both maps with its own thirty-card list, row, parley and portrait. The engine grew R-099's four small words. **ADR-141**: the newer tier-3 beast guards each colour's Wellhouse (all five change guard). The AI learned five shapes (books 74–77). The six beasts were swept against the starters and the post-lairs references, and Chris tuned three (the Guttersnipe, the Dread Presence, the Emeria Angel). The lairs' Chronicle lines are in. `pnpm test` = 783 green; `pnpm typecheck` clean. **Not pushed** (Chris's call).
 
 ## Done this session
 
-- **Part 0 — rulings**: `docs/decision-updates/s44.md` (the brief's appends + the kickoff answers). **ADR-137**: `floodLairPrizeRoll` (dungeon.ts) — the first of `lairPrizeRoll`'s two R cards on the same stream, the 30-gold purse kept (Chris); the controller picks it for a flood lair. **ADR-138**: the knob's text says ratified. **ADR-139**: `floodShelfBonus` = 2 (knobs.ts); `rollShopStock` widens a phase-two town's shelf when `lordSealed(world, region.color)` — every ring of the colour (Chris), not cumulative, the ordinary pool (R out); read-only (the S44 fix of my own first draft, which called the mutating `strongholdState`). **The references at 10**: the six `salvage-*` yardsticks 12 → 10, the post-lairs pair 16 → 14 (the world's 10 + two life lairs); `road-mid-*` (phase one) unchanged.
-- **Part 1 — the Chronicle of the falls**: `ChronicleEntry.falls` (`ChronicleFall`: kind, site, name, line, step); `floodChronicleFalls(world, catalog)` merges `floodRun.falls` (lords and courts, in order) with `floodRun.lairs` by step, each with the pack's line — a seat's `fall`, a lair kind's `prize` (the kinds have no fall line); `withFloodFalls(legacy, seed, falls)` writes onto the run's own flood entry, idempotent. The controller syncs on every autosave and on load (backfilling a pre-S44 run — Chris's current save fills on load). The page nests the falls under "The Flood"; the fount's entry follows as before.
-- **Part 2 — the Calyx and the lairs, drawn**: eighteen renders, zero refusals, reviewed on sheets built as the map paints them. **Chris kept**: the washes #2 ×3 (deep, ford, High Ground); the glyphs and the splashes Landing 1, Wellhouse 2, Hearthstead 1; the court bands as cut (16:9 from the woodblock card art). Installed: `public/map-tex/map-wash-{deep,ford,ground}.jpg`, `public/map-sprites/sprite-lair-{kind}.png`, `public/gate-plates/lair-{kind}.jpg` and `court-{id}.jpg` (MANIFEST). Wired: the Calyx paints its base hue AND its wash through **feathered masks** (`feGaussianBlur` at 0.2 cell — the staircase softened; 0.32 read as digital soft-focus beside the regions' crisp borders), the base hues lightened so the 50% multiply lands near S41's tones; the map picks a flood lair's glyph by its kind (`parseFloodLairId`); the lair telegraph shows its kind's splash, the court telegraph its band (both hide on a missing file). Pinned: every court and lair kind has its splash, every kind its glyph, the three washes exist.
-- **Part 3 — the rumours**: `quests.json` `flood.rumors`, sixteen lines (Chris's Bailiff amendment); pinned — every line reaches some phase-two tavern over forty epochs, none in phase one.
-- **Part 4 — the footer**: "A quest's link is town-tied … A lair's link is the lair's own: no siege can darken it."
-- Docs: `knobs.md`, `docs/reference` regenerated.
+- **Part 0**: `docs/decision-updates/s45.md` — ADR-140, ADR-141, the lairs' fall lines (as `fall` on the kinds; the Chronicle prefers them), and Chris's kickoff answers (price by formula; ADR-141 in all five colours; the parley field; the printings; the tuning; the portraits).
+- **Part 1 — the cards**: six defs (`data/cards/`); `art:fetch` overrides — Guttersnipe **RVR #332**, Dragon Mage SCG #87, Seedborn Muse LGN #138 (old frames), Emeria Angel ZEN #11, Dread Presence M20 #96; `docs/art/printings.md` rows. **R-099**: `damage.to: "opponent"` (Guttersnipe), `discard.count: "all"` (Dragon Mage), `condition.subtype` on the land-enters collector (Dread Presence — a dual's Swamp type counts), the static `untapDuringOthersUntap` read by the untap step (Seedborn Muse; summoning sickness untouched). **Fuzz first** (2,640 random + 1,320 heuristic expansion games, zero errors), then ten fixtures (`packages/engine/test/s45-tier3.test.ts`). Tidewall: four card-art candidates (oil kept), printed face verified word-for-word and installed.
+- **Part 2 — the beasts**: six lists in `EXPANSION_DECKS` (the brief's, tuned — below), six `opponents.json` rows (tier 3, master, worldLife 12, anteCount 2; buy-off verbs / refusals per Chris), twelve portrait candidates → six kept with their chips. **ADR-141** in `floodLairResidents`: the catalog's order is the rows' age, the last top-tier beast of a spoke guards the spring — Emeria (W), Tidewall (U), Dread Presence (B), **Guttersnipe (R)**, Seedborn Muse (G).
+- **Part 3 — AI** (probe-measured first; books 74–77, each failing on the old agent): Dread Presence's mode by the board (was the draw 95/95 → the burn 76, the draw 9); Tidewall's block trigger priced (`blockReturnValue` — the defender's gain, the attacker's cost) and **graveyard-return trigger targets scored, never random** (the dearest spell back — Counterspell first; Gravedigger and the Usher gain too); the spell-payoff hold (a face spell waits for a Guttersnipe/Pyromancer in hand — removal, lethal, low life and a payoff already out never wait); Seedborn Muse's attack pays no deterrence. Ladder PASS; mirror delta 0 (D ±1).
+- **Part 4 — measure**: `mage-sweep --part 6` extended (6b: the tier-3 beasts vs the post-lairs references), run at both phases before and after the tuning; the density read (below); the Wellhouse tie rule pinned.
+
+## The sweep — the starters' win rate against each tier-3 beast (phase one; the band is 30–45)
+
+| beast | as listed | tuned (Chris) | post-lairs refs, phase two (WR / UB) |
+|---|---|---|---|
+| Dragon Mage | 32% | — | 88 / 79 |
+| Tidewall | 45% | — | 88 / 92 |
+| Seedborn Muse | 28% | — | 80 / 86 |
+| Guttersnipe | 21% | **30%** (row −4 life) | 84 / 63 → 89 / 71 |
+| Dread Presence | 12% | **30%** (−Doom Blade −Terror +2 Swamp; −6 life) | 78 / 73 → 91 / 79 |
+| Emeria Angel | 8% | **27%** (−2 Pacifism −Swords −Anthem +4 Plains; −4 life) | 68 / 72 → 90 / 85 |
+| *Serra / Formation / Specter / Siege-Gang / Wurm (unchanged)* | *22 / 28 / 59 / 28 / 26* | | |
+
+Chris: the Emeria Angel stays a hard fight on purpose — a player first dropped into the world should fear a tier-3 beast. The old tier-3 beasts mostly sit under the band too (the Serra at 22 with her −4 offset); the band is a floor the bestiary as a whole does not yet meet.
+
+## The Wellhouse re-measure (ADR-141; the post-lairs references' win rate against the guard at its phase-two row, WR / UB — the lair's own life bonus not included)
+
+W Serra 63/78 → Emeria 90/85 · U Formation 77/82 → Tidewall 88/92 · B Specter 96/85 → Dread Presence 91/79 · R Siege-Gang 84/82 → Guttersnipe 89/71 · G Wurm 63/81 → Seedborn 80/86. The springs got easier for the finished deck except black and red's UB row.
+
+## Density (the brief's Part 4 question)
+
+**Unchanged.** `rollTemplate` over 4,000 rolls per ring × colour, the catalog with and without the six rows: the beast share (35 / 50 / 50%) and the tier-3 beast share (0 / 8 / 24%) are identical in every cell — the share is `beastShare`'s and the split the ring weights'; the new rows only divide a colour's tier-3 slot (red three ways, the others two). Red's wilds are not denser; nothing for the planner to rule. The S37 spawn pin was re-baselined for the same reason (its tier split identical, only the templates filling tier 3 moved).
 
 ## Deviations from the brief
 
-1. **The Chronicle is the profile's ledger, not the world's** — the brief's sources (`gauntlet.flood.falls`, `floodRun.lairs`) live in a save that does not outlive its run; the falls are mirrored onto the run's flood entry (Chris, kickoff).
-2. **A lair's Chronicle line is its kind's `prize` line** — the lair kinds carry no `fall` line (Chris, kickoff). A planner fall line per kind would drop in with no code.
-3. **Part 2's register split** (Chris, kickoff): the map's pieces in the house ink-wash under the storm-light palette (oil cannot multiply into the parchment); the glyphs are INK ONLY like every map sprite (the palette lives in the washes); the splashes in storm-light oil.
-4. **The Bailiff's rumour amended by Chris**: "Nothing that goes in comes out free." (the brief's "the same size" matched nothing at the seat) — for the planner's awareness.
+1. **The price is the formula** (40–80 gold), not "60 gold, the tier's price" (Chris).
+2. **The parley verbs** are the player's buy-off actions, not the beasts' approach; three beasts are not buyable (Chris's pen from the implementer's drafts).
+3. **Guttersnipe's printing** is Ravnica Remastered #332 (Chris) — the brief's "M13" was an error.
+4. **Two more words than the brief counted** (damage to each opponent; the subtype filter on landfall) — small, in R-099.
+5. **ADR-141 changes all five Wellhouses**, not only red's (Chris: apply it; re-measure).
+6. **Phase one's bestiary lairs now pick among a spoke's tier-3 beasts** (seeded) — the S18 rule was already "a random top-tier beast", and each spoke now has two (red three). Not ruled by the brief; a consequence of the rows roaming both maps.
+7. **The Dragon Mage's AI line** ("keeps burn in hand under it — the wheel refills") was not built: the probe showed it attacks whenever it can (a 7-drop on twelve lands rarely lands), and the line reads both ways (spend before the wheel discards, or hold because it refills). For the planner to restate if wanted.
 
 ## Concerns
 
-1. **The references at 10 move the flood's seats 0–10 points up** (table below): the Fordkeeper against the UB pilot 77 → 86%, Ovna 74 → 84%; the Reaper and Meliyan stay above 80 against both salvage pilots. Odile is still the soft court (20–41%).
-2. **`chris-road-B`'s rows moved without its life moving** (Ovna 49 → 55%, the Dredger 50 → 48%) — the week's AI gates (the Snake, the idle sinks, the burst) are in this baseline too; it is the new baseline for both reasons, not the 10-life ruling alone.
-3. **ADR-139 can fall short of +2 on a thin pool**: a civilized ring's single-colour tier-1 pool is small and the "not last seen" rule plus the artifact cap fill first; the seed tested gave every white town its +2, but a short pool gives fewer rows, never an error. Not measured beyond that.
-4. **A mirror-tiled wash can show its seams**: candidate "deep 1" reads as kaleidoscope X-shapes at swatch scale (the 2×2 mirror of a bloomy texture); "deep 2" tiles clean. The map scale (256 px per tile) will show which.
-5. **Walked in the browser** (a scripted phase-two save beside the Saltings Hearthstead, served to the dev server): the Calyx's feathered washes, the Hearthstead glyph, the Hearthstead's telegraph with its splash; the five court bands and three lair splashes fetched (200); no console errors. **Not walked**: a court's telegraph (the High Grounds are across the deep — same markup as the lair's), the Chronicle page with falls, the rail footer, the widened shelf — pinned headless.
-6. **The Calyx keeps its cell silhouette**: the feather softens the edge, not the shape — the deep still reads as a stepped mass at a distance. A true coastline would need a traced path (contour) instead of cell masks; not in scope.
-
-## flood-sim --refs postlairs at the world's 10 (S44 baseline; 100 games per seat per pairing — the seat's win rate: WR / UB / road-B)
-
-Bailiff 70 / 72 / 58 · Reeve 55 / 42 / 53 · Fordkeeper 69 / 86 / 48 · Dredger 57 / 47 / 48 · Reaper 84 / 81 / 54 · Odile 27 / 41 / 20 · Zinnia 69 / 46 / 42 · Ovna 79 / 84 / 55 · Isaura 78 / 78 / 68 · Meliyan 91 / 89 / 67. (S43 at 16: Bailiff 67/68/58 · Reeve 53/42/54 · Fordkeeper 66/77/48 · Dredger 56/43/50 · Reaper 82/80/54 · Odile 24/39/20 · Zinnia 66/48/42 · Ovna 76/74/49 · Isaura 75/74/68 · Meliyan 91/87/67.) `results/` is gitignored; the full table is in `results/s44/flood-sim-postlairs-10life.txt` locally.
-
-## The tier-3 round — what it would cost (the implementer's read)
-
-**Where it starts**: one tier-3 beast per colour today (Serra Angel W, Faerie Formation U, Hypnotic Specter B, Siege-Gang Commander R, Pelakka Wurm G), and the tier-3 shelf is thin — W 3, U 2, B 3, **R 1**, G 2 cards. Red is the round's first need.
-
-**Per card (a plain body with keywords — the cheap case)**: Scryfall verification and the def (minutes); four card-art candidates in distinct styles (ADR-052) and the crop; a 40-card beast list in `EXPANSION_DECKS` built around it (the S18 pattern); an `opponents.json` row (tier 3, worldLife 12, spoke, `buyable`, the parley verb and line — **Chris's pen**); a battle portrait (two house-style candidates) and its chip, following the kept card art; fuzz, then a book entry only if the AI misplays it. **Per card with a new shape** (an ETB, an activation, a static): add the engine word, its fixture and R-entry, and usually an AI pin — this is what makes a round expensive, not the count.
-
-**Five cards (one per colour)**: one session plus two verdict rounds (card art, portraits). **Ten**: a heavy session or two, and the placement weights (`rollTemplate`) with a second tier-3 beast per colour change the wild ring's density — a `world-sim` re-read. **The flood**: beasts already roam both maps (the Nighthawk's rule), so a new beast row fields in phase two for free; but **the Wellhouse's resident rule picks "the territory's tier-3 beast"** — a second per colour needs a tie rule (the stronger, the newer, or a seeded pick). **Phase one optionally**: nothing extra, the same rows roam.
+1. **The old tier-3 bestiary sits under the 30–45 band** (Serra 22, Formation 28, Siege-Gang 28, Wurm 26; the Specter over at 59). The new six are tuned into it or held there by Chris's choice; the old five were not touched.
+2. **Graveyard-return trigger targets were random until now** (the classification table calls the return "neutral") — Gravedigger's and the Usher's choices change with this session; the ladder moved ±1 on one mirror only, but the lord/court sims that use those cards were not re-run.
+3. **The Tidewall mirror decks itself** in heuristic play (Hedron Crab mills the opponent every time — correct — so two Crab decks mill each other out); a beast-vs-beast pairing only, never met in the world.
+4. **A sed in my own session renumbered "ADR-104" inside five unrelated files** while renaming a draft R-number; caught the same minute from the diff and restored from git (no commit carried it). The lesson is principle 11's: a scripted replace must be scoped to the files meant.
 
 ## Registry entries added/changed
 
-No R-numbers (no rules). No new cards. Knob `floodShelfBonus` (2). Types: `ChronicleEntry.falls`, `ChronicleFall`. Functions: `floodLairPrizeRoll`, `floodChronicleFalls`, `withFloodFalls`. Data: `quests.json` `flood.rumors` (16). Road decks: the flood references' `life`. Art: eighteen renders ledgered (nine kept, nine rejected) and the five court bands (derived).
+R-099 (rules). Pool rows: the six S45 cards (`## Session 45 additions`). Knobs: none. Data: six cards, six rows (three with `worldLifeOffset`: Guttersnipe −4, Dread Presence −6, Emeria −4), six `EXPANSION_DECKS`, `quests.json` lair `fall` lines. Types: `damage.to "opponent"`, `discard.count "all"`, effect `untapDuringOthersUntap`; `blockReturnValue`, `spellPayoffHoldGated`.
 
 ## Test status
 
-**768 passed / 2 skipped** (from 762: +2 ADR-137/139, +1 Chronicle merge, +1 rumours, +1 controller Chronicle, +1 the drawn pieces installed; two S39 pins moved 12 → 10 by the ruling; one S43 shop pin now allows the widened shelf). `pnpm typecheck` clean. No AI change this session (no ladder run needed); the baseline sim ran 3,000 games.
+**783 passed / 2 skipped** (from 768: +10 fixtures, +4 books, +1 portraits installed; pins updated with reasons — the pool 242 → 248, the catalog 32 → 38 opponents / 17 → 23 beasts, the T3 tally 11 → 17, the Wellhouse names, phase one's lair residents as a set, the spawn pin re-baselined). Ladder PASS (mirror delta 0, D ±1). Sweeps: part 6 at both phases, before and after tuning (100 games per pairing each).
 
 ## Suggested next
 
-1. The planner's call on the tier-3 round (above), and on lair fall lines for the Chronicle.
-2. Chris's next run tests ADR-139 and refuses land-granting quests (the watch item).
+1. The old tier-3 beasts against the band (Concern 1) — the same sweep, a life offset or a list trim per beast.
+2. Re-run the lord/court sims whose decks carry Gravedigger or the Usher (Concern 2).
+3. Chris's next run: a tier-3 beast early (the Emeria Angel's fear), a Wellhouse under its new guard.
 
 ## How to run
 
 ```
 pnpm test / FUZZ_FULL=1 pnpm test
 pnpm typecheck
-pnpm exec vitest run packages/world/src/flood.test.ts
-pnpm exec vitest run packages/ui/src/world/world-controller.test.ts -t "Chronicle"
-pnpm flood-sim --games 100 --refs postlairs          # S44 baseline at the world's 10
-pnpm reference ; pnpm knobs:doc
-pnpm build:web && git push                             # a push deploys to Vercel
+pnpm exec vitest run packages/engine/test/s45-tier3.test.ts
+pnpm fuzz:expansion --games 20 --agents random     # and --agents heuristic
+pnpm mage-sweep --games 100 --part 6 --baseline none              # + --phase 2
+pnpm ladder --games 100 ; pnpm reference ; pnpm knobs:doc
+pnpm build:web && git push                           # a push deploys to Vercel
 ```
