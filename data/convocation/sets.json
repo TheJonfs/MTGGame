@@ -1,0 +1,121 @@
+{
+ "_comment": "S47 (ADR-145): the Convocation's sets — pool subsets as filters (world/packs.ts). Never in a pack: basics, tokens, the laws, prizeOnly. A set names its recipe.",
+ "sets": [
+  {
+   "id": "plane",
+   "name": "The Plane",
+   "recipe": "classic",
+   "note": "everything below prizeOnly",
+   "filter": {}
+  },
+  {
+   "id": "first_bloom",
+   "name": "The First Bloom",
+   "recipe": "classic",
+   "note": "phase one's cards: the Plane without what Session 40 and after added",
+   "filter": {
+    "exclude": [
+     "absorb",
+     "angelic_destiny",
+     "char",
+     "dragon_mage",
+     "dread_presence",
+     "emeria_angel",
+     "entomb",
+     "glimpse_the_unthinkable",
+     "guttersnipe",
+     "poison_tip_archer",
+     "ponder",
+     "powerstone_minefield",
+     "putrefy",
+     "rampaging_baloths",
+     "sacred_helix",
+     "savage_twister",
+     "seedborn_muse",
+     "shadow_summoning",
+     "static_sphere",
+     "tidewall",
+     "undermine",
+     "vitalist",
+     "voracious_cobra"
+    ]
+   }
+  },
+  {
+   "id": "flood",
+   "name": "The Flood",
+   "recipe": "rich",
+   "note": "a superset of the First Bloom (Chris, S47): it and everything added since Session 40 — today the Plane's cards under the Rich recipe",
+   "filter": {}
+  },
+  {
+   "id": "pair_wu",
+   "name": "The WU pair",
+   "recipe": "classic",
+   "note": "a still pair (the other two colours of a phase-one triad): its colours' cards and the colourless",
+   "filter": {
+    "colorsWithin": [
+     "W",
+     "U"
+    ]
+   }
+  },
+  {
+   "id": "pair_ub",
+   "name": "The UB pair",
+   "recipe": "classic",
+   "note": "a still pair (the other two colours of a phase-one triad): its colours' cards and the colourless",
+   "filter": {
+    "colorsWithin": [
+     "U",
+     "B"
+    ]
+   }
+  },
+  {
+   "id": "pair_wr",
+   "name": "The WR pair",
+   "recipe": "classic",
+   "note": "a still pair (the other two colours of a phase-one triad): its colours' cards and the colourless",
+   "filter": {
+    "colorsWithin": [
+     "W",
+     "R"
+    ]
+   }
+  },
+  {
+   "id": "pair_bg",
+   "name": "The BG pair",
+   "recipe": "classic",
+   "note": "a still pair (the other two colours of a phase-one triad): its colours' cards and the colourless",
+   "filter": {
+    "colorsWithin": [
+     "B",
+     "G"
+    ]
+   }
+  },
+  {
+   "id": "pair_rg",
+   "name": "The RG pair",
+   "recipe": "classic",
+   "note": "a still pair (the other two colours of a phase-one triad): its colours' cards and the colourless",
+   "filter": {
+    "colorsWithin": [
+     "R",
+     "G"
+    ]
+   }
+  },
+  {
+   "id": "pauper",
+   "name": "Pauper",
+   "recipe": "pauper",
+   "note": "tier 1 only",
+   "filter": {
+    "maxTier": 1
+   }
+  }
+ ]
+}

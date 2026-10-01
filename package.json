@@ -36,6 +36,10 @@
     "mage-inversion:gen": "tsx packages/world/src/mage-inversion-gen-cli.ts",
     "open:gen": "tsx packages/world/src/open-gen-cli.ts",
     "open:rr": "tsx packages/world/src/open-rr-cli.ts",
+    "rating:run": "tsx packages/world/src/rating-run-cli.ts",
+    "rating:build": "tsx packages/world/src/rating-build-cli.ts",
+    "booster": "tsx packages/world/src/pack-cli.ts",
+    "sealed-pool": "tsx packages/world/src/pack-cli.ts --sealed",
     "blocks-audit": "tsx packages/sim/src/blocks-audit-cli.ts",
     "build:web": "bash scripts/build-web.sh"
   },

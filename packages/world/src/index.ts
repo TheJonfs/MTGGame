@@ -20,3 +20,6 @@ export * from "./matchup.js";
 export * from "./flood.js";
 export * from "./flood-lairs.js";
 export * from "./formats.js";
+export * from "./packs.js";
+export * from "./rating.js";
+export { MatchSeries, runSeries, SERIES_POINTS, type SeriesGame, type SeriesState, type RunSeriesOptions } from "./series.js";
