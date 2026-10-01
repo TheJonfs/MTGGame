@@ -676,6 +676,7 @@ export function migrateLegacy(raw: unknown): Legacy {
 /** Record a Manafleur victory: the colour's cutting count, the entry, the total. Returns a new legacy. */
 export function recordCutting(legacy: Legacy, entry: ChronicleEntry): Legacy {
   return {
+    ...legacy, // post-S48 (Chris): a later cutting keeps what the profile already holds — `floodSurvived` was dropped here
     version: 1,
     cuttings: { ...legacy.cuttings, [entry.color]: (legacy.cuttings[entry.color] ?? 0) + 1 },
     chronicle: [...legacy.chronicle, entry],

@@ -206,13 +206,16 @@ function MainMenu() {
           <h1 className="title-name">Cinquefoil</h1>
           <div className="title-sub">five petals · three rings · one journey</div>
         </div>
+        {/* Post-S48 (Chris): the two modes first; the single match and the gallery next; the viewer (and the dev lab) as minor links. */}
         <div className="main-menu">
           <a href="/world"><img src="/menu-journey.png" alt="" /><b>The journey</b><span>walk the world — new game or continue</span></a>
+          <a href="/convocation"><img src="/menu-convocation.png" alt="" /><b>The Convocation</b><span>Sealed, eight seats, three rounds</span></a>
           <a href="/play"><img src="/menu-duel.png" alt="" /><b>A single match</b><span>one duel, any decks, no world attached</span></a>
-          <a href="/convocation"><b>The Convocation</b><span>Sealed, eight seats, three rounds</span></a>
           <a href="/gallery"><img src="/menu-gallery.png" alt="" /><b>The card gallery</b><span>every card in the pool, both frames</span></a>
-          <a href="/viewer"><img src="/menu-viewer.png" alt="" /><b>The replay viewer</b><span>watch any saved game, decision by decision</span></a>
-          {devMenuEnabled() && <a href="/lab"><b>The matchup lab</b><span>dev: any pairing under any conditions, simulated live</span></a>}
+        </div>
+        <div className="main-menu-minor">
+          <a href="/viewer" title="watch any saved game, decision by decision">The replay viewer</a>
+          {devMenuEnabled() && <a href="/lab" title="dev: any pairing under any conditions, simulated live">The matchup lab</a>}
         </div>
       </div>
     </div>

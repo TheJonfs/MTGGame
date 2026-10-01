@@ -56,6 +56,11 @@ Games average 19.5 turns; 8–9% end by decking; under ten of 20,000 are drawn.
 
 The direction is right: cards that need a deck built around them (Entomb, Buried Alive, Zombify, Cathartic Adept, Waste Not, the Aristocrat) fall; cards that are good on their own (Drana, the Baloths, Angelic Destiny, Birds) rise. `pnpm rating:view --compare data/convocation/card-rating-v0.json` shows every card's change.
 
+## After the handoff (2026-10-02, Chris)
+
+- **Concern 3 fixed**: `recordCutting` keeps what the profile already holds — a Manafleur victory after the flood no longer drops `floodSurvived` (replaying phase one never costs phase two's credit). Nothing reads the flag yet (it is phase three's), so no player lost anything visible; the chronicle's entries were never affected. One test.
+- **The menu**: the journey and the Convocation are the top two doors, the single match and the gallery the next two; the replay viewer and (dev) the lab are a quiet row of links beneath. Deviation 9's missing plate is made: three candidates (`docs/art/subjects/menu-convocation-{a,b,c}.md`); **a** — the round hall from above — is installed pending Chris's verdict.
+
 ## Deviations from the brief
 1. **The editor's source object is wider than the brief's shape** — a host carrying the source (`collection`, `savedDeck`, `activeDeckName`), the draft and its verbs; the world's adapter passes its controller's editor methods through unchanged rather than re-implementing them over `save(decks)`. The world's editor logic was not moved, so its pins could not break. *Rule on*: nothing, unless the planner wants the world's editor logic itself lifted out.
 2. **The Lab's worker was not timed; the field runs on the main thread.** Measured in the browser (dev build): the field's three series took **1.6 s in round one (cold) and 0.2–0.3 s in rounds two and three**, behind an "other tables finish their matches" screen. For eight seats that is enough and avoids the worker's lifetime question. *Rule on*: nothing now; sixteen seats (seven series) is about twice this and still fine; a hundred needs the worker and its timing.

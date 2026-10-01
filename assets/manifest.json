@@ -4632,6 +4632,21 @@
         }
       }
     },
+    "menu-convocation-c": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:f755360810482b5aa993df0d98c3dbc1643e072ded5c0cc6001e3973bb659f05",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:f755360810482b5aa993df0d98c3dbc1643e072ded5c0cc6001e3973bb659f05",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/menu-convocation-c/canonical.png",
+          "rendered_at": "2026-10-01T22:55:41+00:00",
+          "thumb": "assets/thumbs/menu-convocation-c/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "menu-duel": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:a562ea367d555765cccbd86c60d030c3091c4828ff503b1e161de177cd48efc0",

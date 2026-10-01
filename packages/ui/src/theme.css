@@ -633,6 +633,10 @@ button.primary { background: var(--brass); color: var(--parchment); border: 1.5p
 .main-menu a img { width: 100%; aspect-ratio: 2 / 1; object-fit: cover; display: block; border-bottom: 1.5px solid var(--ink); }
 .main-menu a b { display: block; font-family: var(--serif); font-size: 16px; padding: 8px 12px 2px; }
 .main-menu a span { display: block; font-size: 11px; color: var(--ink-soft); padding: 0 12px 10px; }
+/* Post-S48: the minor destinations — the replay viewer and (dev) the lab — as a quiet row under the doors. */
+.main-menu-minor { display: flex; gap: 18px; justify-content: center; margin-top: 14px; font-size: 12px; }
+.main-menu-minor a { color: var(--ink-soft); text-decoration: underline; text-underline-offset: 2px; }
+.main-menu-minor a:hover { color: var(--ink); }
 
 /* S19: quest board + rail */
 .quest-board { display: flex; flex-direction: column; gap: 6px; text-align: left; }

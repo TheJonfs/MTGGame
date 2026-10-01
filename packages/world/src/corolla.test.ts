@@ -477,4 +477,17 @@ describe("S27 — the Heart, the chronicle, the legacy (ADR-093)", () => {
     expect(Object.keys(t.heart!.chronicle).sort()).toEqual(["B", "G", "R", "U", "W"]);
     expect(t.heart?.newRoad).toContain("{colour}");
   });
+
+  it("post-S48 (Chris): a cutting after the flood keeps the flood's flag — replaying phase one never costs phase two's credit", async () => {
+    const { emptyLegacy, migrateLegacy, recordCutting, recordFount } = await import("./corolla.js");
+    const entry = { color: "R" as const, text: "x", seed: 1, difficulty: "standard", steps: 100, when: "2026-10-02" };
+    const survived = recordFount(emptyLegacy(), entry);
+    expect(survived.floodSurvived).toBe(true);
+    const after = recordCutting(survived, { ...entry, n: 2 });
+    expect(after.floodSurvived).toBe(true);
+    expect(after.victories).toBe(1);
+    expect(after.chronicle).toHaveLength(2);
+    expect(migrateLegacy(JSON.parse(JSON.stringify(after))).floodSurvived).toBe(true);
+    expect(recordCutting(emptyLegacy(), { ...entry, n: 1 }).floodSurvived).toBeUndefined();
+  });
 });
