@@ -32,7 +32,7 @@ export const OPEN_AMENDMENTS: Record<string, Record<string, number>> = {
   // U G b — Glimpse the Unthinkable, Tidewalls to rebuy it, one Reeve as a repeatable mill and a second win condition.
   // Written against draft 2 (so the S46 Brainstorm → Ponder swap is superseded: the two cantrips leave).
   undertow: {
-    "Man-o'-War": -1, "Cathartic Adept": -4, "Brainstorm": -2, "Zinnia, the Undertow": -1, "Glimpse the Unthinkable": 4, "Tidewall": 4,
+    "Man-o'-War": -1, "Cathartic Adept": -4, "Brainstorm": -2, "Zinnia, the Undertow": -1, "Glimpse the Unthinkable": 4, "Tidewall": 4, "Altar of Dementia": -2, "Thought Scour": -2, "Clio, Lady of the Depths": 4,
     "Breeding Pool": -4, "Island": -2, "Forest": -2, "Library of Alexandria": -1, "Underground Sea": 4, "Bayou": 2, "Swamp": 1, "Mox Jet": 1, "Black Lotus": 1,
   },
   enchantress: { "Giant Growth": -3, "Angelic Destiny": 3 },
