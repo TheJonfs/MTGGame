@@ -28,7 +28,13 @@ export const OPEN_AMENDMENTS: Record<string, Record<string, number>> = {
   wurmspeaker: { "Pelakka Wurm": -1, "Gaean Wurm": -1, "Rampaging Baloths": 2 },
   tally: { "Thought Scour": -3, "Ponder": 3 },
   locks: { "Brainstorm": -2, "Ponder": 2 },
-  undertow: { "Brainstorm": -2, "Ponder": 2 },
+  // Chris, 2026-10-01 (after the first round-robin: the Undertow at 25% — "no damage in a sixty-card deck"): the list goes
+  // U G b — Glimpse the Unthinkable, Tidewalls to rebuy it, one Reeve as a repeatable mill and a second win condition.
+  // Written against draft 2 (so the S46 Brainstorm → Ponder swap is superseded: the two cantrips leave).
+  undertow: {
+    "Man-o'-War": -3, "Cathartic Adept": -4, "Brainstorm": -2, "Glimpse the Unthinkable": 4, "Tidewall": 4, "The Reeve": 1,
+    "Breeding Pool": -4, "Island": -1, "Forest": -1, "Library of Alexandria": -1, "Underground Sea": 2, "Bayou": 2, "Swamp": 1, "Mox Jet": 1, "Black Lotus": 1,
+  },
   enchantress: { "Giant Growth": -3, "Angelic Destiny": 3 },
   ford: { "Wood Elves": -2, "Char": -2, "Vitalist": 4 },
   muster: { "Sacred Helix": -2, "Vitalist": 2 },

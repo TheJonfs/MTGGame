@@ -607,7 +607,7 @@ Pool 233 → **238** (+ the Beast 4/4 token). The Open format (ADR-142) and its 
 | rampaging_baloths | Rampaging Baloths | tested | trample; triggered(LAND_ENTERS_UNDER_YOUR_CONTROL you): createToken beast_4_4_g (mandatory) | **FDN #645** (Steve Prescott — Chris: a printing whose text matches the Oracle; ZEN's "you may" is superseded). T3. |
 | ponder | Ponder | tested | `reorderTop` 3 `mayShuffle`, then draw 1 (R-100) | LRW #79 (Mark Tedin). T1. AI: the top by the hand's needs; the shuffle when all three are poor. |
 | angelic_destiny | Angelic Destiny | tested | Aura; static +4/+4, flying, first strike, `grantSubtype` Angel; DIES `source: attached` → returnFromGraveyard self to hand (R-100) | M12 #3 (Jana Schirmer & Johannes Voss). T3. AI: the hexproof host first (S29's view-sim rule). |
-| vitalist | Vitalist | tested | custom Human Cleric 1/1 {2}{W}; triggered(LIFE_GAINED you) target creature: addCounters +1/+1 `eventLife` (R-100) | T2. Art: four candidates with Chris. AI: counters on our evasive creature, never theirs; a lifegain term while she is out. |
+| vitalist | Vitalist | tested | custom Human Cleric 1/1 {2}{W}; triggered(LIFE_GAINED you) target creature: addCounters +1/+1 `eventLife` (R-100) | T2. Art: the watercolor storybook (#4, Chris); printed face installed (verified word for word). AI: counters on our evasive creature, never theirs; a lifegain term while she is out. |
 
 ## Shop tiers (ADR-078, S19)
 

@@ -1,5 +1,7 @@
 /**
- * pnpm open:rr [--games N] [--seed S] [--shard i/n] [--out file] | --merge file1 file2 … --out file
+ * pnpm open:rr [--games N] [--seed S] [--shard i/n] [--only key] [--out file] | --merge file1 file2 … --out file
+ *   --only key   run only the pairings that include that list (re-measuring one amended list);
+ *   --merge      a LATER file's games replace an earlier file's for the same pairing.
  *
  * S46 (Part 4): the Open's round-robin — every pair of the twelve lists (sim/open-decks), N games per pairing, seats
  * alternating, master both, 20 life, no entrances. Per game it records the winner and the reason, and per seat the
@@ -46,12 +48,14 @@ class Tracker implements Agent {
 async function run(): Promise<void> {
   const pool = loadCardPool(join(ROOT, "data/cards")).cards;
   const G = Number(arg("games", "100")), seed0 = Number(arg("seed", "46")), [si, sn] = arg("shard", "0/1").split("/").map(Number) as [number, number];
+  const only = arg("only", "");
   const pairs: [string, string][] = [];
   for (let i = 0; i < KEYS.length; i++) for (let j = i + 1; j < KEYS.length; j++) pairs.push([KEYS[i]!, KEYS[j]!]);
   const games: Game[] = [];
   for (let p = 0; p < pairs.length; p++) {
     if (p % sn !== si) continue;
     const [ka, kb] = pairs[p]!;
+    if (only && ka !== only && kb !== only) continue;
     const A = OPEN_DECKS[ka]!, B = OPEN_DECKS[kb]!;
     for (let g = 0; g < G; g++) {
       const seatA = (g % 2) as 0 | 1;
@@ -73,7 +77,14 @@ async function run(): Promise<void> {
 
 function merge(): void {
   const files = process.argv.slice(process.argv.indexOf("--merge") + 1).filter((f) => !f.startsWith("--") && f !== arg("out", ""));
-  const games: Game[] = files.flatMap((f) => (JSON.parse(readFileSync(f, "utf8")) as { results: Game[] }).results);
+  // A later file replaces an earlier one's games for the same pairing (an amended list re-measured with --only).
+  const byPair = new Map<string, Game[]>();
+  for (const f of files) {
+    const fresh = new Map<string, Game[]>();
+    for (const g of (JSON.parse(readFileSync(f, "utf8")) as { results: Game[] }).results) { const k = `${g.a}|${g.b}`; (fresh.get(k) ?? fresh.set(k, []).get(k)!).push(g); }
+    for (const [k, v] of fresh) byPair.set(k, v);
+  }
+  const games: Game[] = [...byPair.values()].flat();
   const wins: Record<string, Record<string, [number, number]>> = {};
   const logs: Record<string, SeatLog[]> = {};
   const decked: Record<string, { wins: number; byLibrary: number }> = {};

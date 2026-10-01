@@ -50,6 +50,12 @@
 - **The editor — reusable with a pool source.** The legality panel and the door picker already take a `Format` (`format:open` today; `checkDeck` with `restricted`/`banned`). The gaps for Limited: a `kind: "limited"`; the ownership check fed the sealed pool as its collection; and the editor's spares and save read `world.player.collection` / write `world.decks` — a tournament deck needs its own source and destination.
 - **Pack recipes** are pure data over the pool's tiers (a `slots × weights` table and a seeded draw) — the smallest of the seven pieces.
 
+## After the handoff (2026-10-01)
+
+- Vitalist's art picked (storybook #4) and her printed face installed.
+- The Undertow amended by Chris (Glimpse ×4, Tidewall ×4, the Reeve; a black splash — see `docs/decision-updates/s46.md`); `open-decks.ts` regenerated, sixty and legal. Re-measured: **25% → 24%** — the list moved its matchups, not its mean. Glimpse lands on turn 8.8 on average; the black sources are too few for a {U}{B} spell. The table above is round-robin #1; the Undertow row is superseded (`analysis/runs/open_rr_2`, local).
+- `pnpm open:rr` gained `--only key`; `--merge` lets a later file replace an earlier one's pairings.
+
 ## Deviations from the brief
 
 1. **The lists' source of truth is `packages/sim/src/open-decks.ts`**, not `analysis/decks/*.json` — `analysis/` is gitignored, so a sync test cannot pin files there. `pnpm open:gen` writes both (the Lab's copies are local). The brief's amendments and the Loop are a declared table in `sim/open-lists.ts`; the planner's document is untouched.
