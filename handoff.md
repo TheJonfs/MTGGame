@@ -1,109 +1,110 @@
-# Handoff — after Session 47 (2026-10-01)
+# Handoff — after Session 48 (2026-10-02)
 
 ## State of the world
-v1 is live; S46 (the Open) and S47 are committed locally and **not pushed**. S47 was the Convocation's scoping session and nothing in it has a screen: the plan is `docs/convocation-plan.md`; the card rating v0 is `data/convocation/card-rating.json` (measured over 33,600 games, 112 authored lists); the sets and pack recipes are `data/convocation/{sets,recipes}.json` with `pnpm booster` and `pnpm sealed-pool`; the match series is built headless in `packages/world/src/series.ts`. The campaign is untouched. `pnpm typecheck`, `pnpm test` and `pnpm build:web` pass.
+**A Sealed Convocation of eight can be played start to finish.** `/convocation` (a door on the main menu): six Classic packs from the Plane, the deck editor over the sealed pool, three Swiss rounds of best-of-three against seven AI seats built by the Limited builder, sideboarding between games, standings, a finish written to a ledger. The event saves under its own key and resumes after a reload, including mid-series; the campaign's save is never read or written. The card rating is at v1 (the Sealed sim's 20,000 games joined the lift term). S46, S47 and S48 are committed locally and **not pushed**. `pnpm typecheck`, `pnpm test` (825) and `pnpm build:web` pass.
 
 ## Done this session
-- **Part 0 — rulings filed**: `docs/decision-updates/s47.md` (ADR-144, ADR-145, Chris's four kickoff answers, the interim choices).
-- **Part 1 — the plan**: `docs/convocation-plan.md`. The overview's six questions answered; five stages (Sealed single event → series and standings at sixteen seats → the drafter → Constructed by select-and-repair → the full ladder), each with files, types, screens, tests and what the Lab measures; the save key; six risks. **Estimate: 5–6½ sessions after this one (S48–S53).**
-- **Part 2 — the card rating, v0**: `pnpm rating:run` (every authored list against sixty others at even entrances — 20 life, master both; cards seen in hand and cards cast, per game) and `pnpm rating:build` → `data/convocation/card-rating.json` + `card-rating-report.md`. `world/rating.ts` — `cardRating(def, table)`, falling back to the tier prior. 228 cards rated; two (Airship Crash, Darksteel Myr) are in no list and read their prior.
-- **Part 3 — sets and recipes**: nine sets (the Plane, the First Bloom, the Flood, the five still pairs WU / UB / WR / BG / RG, Pauper) as filters; four recipes (Classic, Flat, Rich, Pauper); `world/packs.ts` (`resolveSet`, `validatePackData`, `fillErrors`, `rollPack`, `rollSealedPool`). Validated: no basics, tokens, laws or power; weights sum to one; every set fills its recipe. **The legends draft at tier R; the power (the Lotus, the Moxen, Time Walk, the High Grounds — `sets.json`'s `power` list) never does** (Chris, after the handoff's first draft).
-- **The rating as a standalone page** (Chris): `pnpm rating:view` → `analysis/rating-view.html` (local, self-contained; sort, filter by tier / colour / type / sample, search; `--compare other.json` adds a change column for a later table). Not part of the game's interface.
-- **Part 4 — the series, built**: `MatchSeries` (the record, the chooser, per-game seeds from the series seed, resumable from the games played) and `runSeries` over `runMatch` with a `betweenGames` hook for the sideboard screen. Four tests: best-of-three to a majority with the loser taking the play; the chooser taking the draw; a forced draw (three games at a two-turn cap → a drawn series, one point each); a 1–0–2 series, the hook, a resumed series.
-- **Part 5 — the save key**: `convocation-event-v1`, designed in the plan (shape, size, resuming, what the world's UI lends).
-- **`world/authored-lists.ts`**: every authored list in one table (112) — the rating's field, the Constructed builder's library.
+- **Part 0 — rulings applied** (`docs/decision-updates/s48.md`): Rich's slots; the series ends at two wins and a 1–0–2 series is now a **draw**; game one's coin winner **chooses**; a spent tier **rolls down**; ADR-146 (the Manafleur and the Cinquefont on the power list — fourteen ids, thirty legends draft); R-101 amended.
+- **Part 1 — the editor's source**: the editor is `components/DeckEditor.tsx` over a `DeckEditorHost` (the collection it draws from, the saved deck, the draft's verbs; the deck picker and the door picker optional). The world passes its own through `worldEditorHost`; the event passes its pool and its one deck. **Pinned**: the world's S37/S38 controller tests pass untouched; the world's editor walked in the browser (picker, Save deck, Cancel all present); `convocation-controller.test.ts` — an event's editor saves to the event, a world save in the same storage keeps its exact bytes.
+- **Part 2 — the builder and the Sealed sim**: `buildLimitedDeck` (`world/limited-builder.ts`) — the pair by rated playables, a bomb-only splash with two fixers, the curve mended to five two-drops, four three-drops and thirteen creatures, seventeen lands (sixteen at a low curve) split by pips. `pnpm sealed-sim` — 200 pools, 20,000 games; the report and **the rating's v1** below. A 150-pool test: forty cards, legal, at least fifteen lands, no unfixed third colour, deterministic.
+- **Part 3 — the event engine** (`world/event.ts`, pure state): `newSealedEvent`, `registerDeck`, `pairRound` (round one by seed, then Swiss with no rematch), `playSeriesHeadless` / `playFieldRound`, `standings` (3 / 1 / 0; opponents' match-win share), `advanceEvent`, `ledgerEntry`, `serializeEvent` (`convocation-event-v1`). The knob `convocationEntrance` and the resolver's `convocationSeat` are wired and all zeros. **Tests**: a full event headless with a heuristic in every seat (three rounds, twelve series, no rematch, the standings add up, the ledger's line, the same seed the same event); saved and resumed mid-round — the human's series one game in and a field series already recorded — ending as the uninterrupted event.
+- **Part 4 — the four screens**, walked in the browser as the human with the dev concession (seed 48, a full three-round event): the pool and the build ("Register the deck"); the pairings ("Round 1. You are paired with Hesper Lune."); the series banner over `PlayMatch` (game N of 3, the record, play or draw) with the play/draw choice and the sideboard editor between games; the standings ("The table after round 1."); the prize ("You finish first of eight. The Umbel is yours."), a card kept, the ledger's line on the door. A reload mid-series resumed at one game played. No console errors.
+- **Part 5 — text**: the brief's lines, verbatim, on the door, the pairings, the standings and the finish.
 
-## The card rating — what it says
+## The Sealed sim — what it found
 
-`rating = prior(tier) + 0.5 × ½(presence′/σP + lift′/σL)`; σP = 4.6 points, σL = 1.4 points. The full tables are in `data/convocation/card-rating-report.md`.
+200 pools, each deck against twenty others, ten games a pairing, master both.
 
-**Top ten**: Clio, Lady of the Depths 3.72 · The Usher 3.59 · Obsidian Observatory 3.41 · Drana 3.31 · The Fordkeeper 3.29 · Lumen 3.27 · Wrackroot 3.23 · Cairnbrand 3.19 · Tundra 3.19 · Time Walk 3.18.
+| | decks built from v0 | decks built from v1 |
+|---|---|---|
+| the builder's checks (under forty; under fifteen lands; an unfixed third colour) | 0 / 0 / 0 | 0 / 0 / 0 |
+| splashing | 90 of 200 | 59 of 200 |
+| a colour's share of decks (even = 40%) | W 49 · U 35 · **B 73** · **R 6** · G 38 | W 52 · U 36 · **B 65** · **R 10** · G 39 |
+| the commonest pairs | WB 26% · UB 23% · BG 21% | WB 25% · UB 20% · BG 18% |
+| deck win rates: 10th percentile / median / 90th | 38 / 51 / 63% | 39 / 49 / 62% |
+| a deck's mean rating against its win rate | r = 0.43 | r = 0.35 |
+| curve (cards at 1 / 2 / 3 / 4 / 5 / 6+); creatures | 3.7 / 6.1 / 5.4 / 5.6 / 1.5 / 0.9; 14.6 | 3.5 / 5.8 / 5.6 / 5.8 / 1.5 / 0.9; 15.0 |
 
-**Bottom ten**: Forgotten Cave 0.19 · Gray Ogre 0.29 · Disenchant 0.31 · Brute Force 0.37 · Waterfront Bouncer 0.46 · Hill Giant 0.48 · Shock 0.58 · Lonely Sandbar 0.62 · Giant Growth 0.63 · Orcish Lumberjack 0.66.
+Games average 19.5 turns; 8–9% end by decking; under ten of 20,000 are drawn.
 
-**The rating against the tier — for the planner to read by hand:**
+**The pairs under v1, and how each fared**: WB 49 pools, 52% · UB 40, 51% · BG 35, 47% · WG 28, 50% · WU 21, 57% · UG 8, 54% · RG 6, 41% · WR 6, 38% · BR 5, 39% · UR 2, 42%.
 
-| card | tier | rating | vs tier | lists | presence | seen | lift | cast when drawn |
-|---|---|---|---|---|---|---|---|---|
-| Clio, Lady of the Depths | prize | 3.72 | +1.22 | 8 | +9.0 | 2602 | +5.4 | 74% |
-| The Usher | prize | 3.59 | +1.09 | 4 | +14.5 | 1776 | +3.8 | 64% |
-| Vampire Nighthawk | 2 | 2.56 | +1.06 | 23 | +8.7 | 8945 | +3.7 | 88% |
-| Control Magic | 3 | 3.06 | +1.06 | 8 | +1.7 | 2320 | +6.4 | 72% |
-| Nekrataal | 2 | 2.46 | +0.96 | 7 | +16.6 | 2535 | +1.7 | 78% |
-| Forgotten Cave | 1 | 0.19 | −0.81 | 8 | −12.6 | 2441 | −1.7 | 91% |
-| Arc Mage | 2 | 0.77 | −0.73 | 9 | −12.2 | 3359 | −1.2 | 88% |
-| Gray Ogre | 1 | 0.29 | −0.71 | 3 | −18.1 | 1243 | −0.9 | 94% |
-| Disenchant | 1 | 0.31 | −0.69 | 2 | −9.3 | 334 | −4.8 | 30% |
-| Scepter of Dominance | 2 | 0.85 | −0.65 | 2 | −16.1 | 861 | −1.7 | 82% |
+**The twenty that moved most from v0 to v1** (the planner reads these):
 
-(presence and lift in win-rate points.) Clio at the top of the whole pool agrees with what the Undertow showed. Vampire Nighthawk is the strongest evidence in the table: 23 lists, 8,945 sightings, positive on both terms. Control Magic's number is nearly all lift (+6.4 within its lists). Forgotten Cave and Gray Ogre are the presence term's confound — the lists that play them lose.
-
-## A sample pack and pool
-
-`pnpm booster --set plane --recipe classic --seed 7`: Angelic Destiny (3) · Rampaging Baloths (3) · Goblin Chieftain (2) · Counterspell (2) · Savannah Lions · Centaur Courser · Little Bear (2) · Gravedigger · Master Decoy · Wood Elves · Tranquil Thicket · Brute Force · Evolving Wilds · Shock · Wall of Air.
-
-`pnpm sealed-pool --seed 7`: 90 cards, 68 distinct — W 11 · U 16 · B 11 · R 23 · G 17 · lands 12; tier 1 56 · tier 2 23 · tier 3 11. Across eight seeds a pool holds 6–11 tier-3 cards, 0–2 tier-R, 4–13 nonbasic lands and 0–5 colourless cards. (The pack and pool above were printed before the legends joined tier R; the draw at a given seed has changed since.) **With the legends in: tier R is 67 cards — 32 legends, the ten duals, 25 others; 26 of 60 seeded pools held at least one legend, 0.77 a pool.**
-
-| set | recipe | T1 | T2 | T3 | R | total |
+| card | tier | v0 | v1 | change | sealed seen | sealed lift |
 |---|---|---|---|---|---|---|
-| plane | classic | 73 | 57 | 19 | 67 | 216 |
-| first_bloom | classic | 72 | 54 | 11 | 45 | 182 |
-| flood | rich | 73 | 57 | 19 | 67 | 216 |
-| pair_wu | classic | 32 | 18 | 8 | 10 | 68 |
-| pair_ub | classic | 29 | 26 | 7 | 11 | 73 |
-| pair_wr | classic | 28 | 20 | 8 | 10 | 66 |
-| pair_bg | classic | 33 | 24 | 8 | 11 | 76 |
-| pair_rg | classic | 36 | 20 | 7 | 10 | 73 |
-| pauper | pauper | 73 | 0 | 0 | 0 | 73 |
+| Waste Not | 2 | 1.38 | 0.72 | −0.65 | 4708 | −4.0 |
+| Entomb | 2 | 1.26 | 0.67 | −0.60 | 1984 | −4.8 |
+| Cathartic Adept | 1 | 1.22 | 0.69 | −0.53 | 2591 | −2.9 |
+| Gravitational Shift | 2 | 1.86 | 1.35 | −0.51 | 4187 | −2.7 |
+| Buried Alive | 2 | 1.23 | 0.78 | −0.45 | 2370 | −3.9 |
+| Darksteel Myr | 1 | 1.00 | 0.56 | −0.44 | 1061 | −3.5 |
+| Drana, Kalastria Bloodchief | legend | 3.31 | 3.65 | +0.35 | 620 | +7.4 |
+| Angelic Destiny | 3 | 2.23 | 2.57 | +0.34 | 5292 | +3.1 |
+| Birds of Paradise | 2 | 1.47 | 1.80 | +0.33 | 3621 | +2.3 |
+| Rampaging Baloths | 3 | 2.70 | 3.02 | +0.32 | 3973 | +4.5 |
+| Tendrils of Corruption | 2 | 1.95 | 1.65 | −0.31 | 6271 | −0.8 |
+| Gladecover Scout | 1 | 1.28 | 0.97 | −0.30 | 2579 | −2.1 |
+| Zombify | 2 | 1.74 | 1.45 | −0.30 | 6497 | −0.5 |
+| Indulgent Aristocrat | 1 | 1.62 | 1.34 | −0.28 | 8046 | +0.0 |
+| Wrath of God | 3 | 2.47 | 2.20 | −0.27 | 3918 | +0.0 |
+| Gaean Wurm | 2 | 2.36 | 2.10 | −0.26 | 4757 | +1.4 |
+| Mind Stone | 1 | 1.33 | 1.09 | −0.24 | 7636 | −1.6 |
+| Angel of the Ruins | 3 | 1.46 | 1.68 | +0.22 | 3747 | +0.4 |
+| Bonesplitter | 1 | 1.12 | 0.90 | −0.22 | 1134 | −3.5 |
+| Tainted Phoenix | R | 2.81 | 2.59 | −0.22 | 308 | −2.8 |
+
+The direction is right: cards that need a deck built around them (Entomb, Buried Alive, Zombify, Cathartic Adept, Waste Not, the Aristocrat) fall; cards that are good on their own (Drana, the Baloths, Angelic Destiny, Birds) rise. `pnpm rating:view --compare data/convocation/card-rating-v0.json` shows every card's change.
 
 ## Deviations from the brief
-1. **The rating is measured fresh, not from the runs on disk** (Chris, kickoff). The campaign sweeps are text at lopsided entrances; the Open's round-robin logs casts but not draws. *Rule on*: nothing — ratified at kickoff.
-2. **The rating has a second term the brief did not ask for** — *lift*: the pilot's result in games where the card was seen in hand, less that list's own win rate. The brief's presence term alone hands every card its list's strength. Both are blended half and half after shrinkage. *Rule on*: the blend's weights, or presence alone.
-3. **"Cast rate when drawn" is reported, not blended** — a low rate (Disenchant 30%) is information, but folding it in would punish reactive cards for being held.
-4. **`pnpm booster`, not `pnpm pack`** — `pack` is pnpm's own command and shadows a script of that name. `pnpm sealed-pool` is as the brief wrote it.
-5. **The Flood's cards equal the Plane's.** By Chris's ruling the Flood is the First Bloom plus everything since Session 40, which is every card a pack may hold. The two sets differ only in recipe (Rich against Classic). *Rule on*: whether the Flood should instead carry a curated list, or stay as the Plane-under-Rich.
-6. **The First Bloom is an id list by exclusion** — the Plane less the 23 non-prize cards and the eleven legends in the pool registry's Session 40–46 sections; card data has no session marker.
-7. **Rich's rare slot is Classic's** ({3: 0.8, R: 0.2}) — the formats doc gives "2 rares" without weights.
-8. **The series' length and game one's coin are interim** — the series stops after N games (more wins takes it; level is a draw); the coin names the starting player outright where CR 103.1 has its winner choose. *Rule on*: both.
-9. **A prize card's rating prior is R's (2.5)** — the brief's prior covers tiers 1, 2, 3 and R only.
+1. **The editor's source object is wider than the brief's shape** — a host carrying the source (`collection`, `savedDeck`, `activeDeckName`), the draft and its verbs; the world's adapter passes its controller's editor methods through unchanged rather than re-implementing them over `save(decks)`. The world's editor logic was not moved, so its pins could not break. *Rule on*: nothing, unless the planner wants the world's editor logic itself lifted out.
+2. **The Lab's worker was not timed; the field runs on the main thread.** Measured in the browser (dev build): the field's three series took **1.6 s in round one (cold) and 0.2–0.3 s in rounds two and three**, behind an "other tables finish their matches" screen. For eight seats that is enough and avoids the worker's lifetime question. *Rule on*: nothing now; sixteen seats (seven series) is about twice this and still fine; a hundred needs the worker and its timing.
+3. **The ledger is its own storage key**, not a field of the campaign's profile object (ADR-147 says "the profile's `convocation` record"). The profile's writers rebuild that object field by field (`migrateLegacy`, `recordCutting`) and would silently drop an unknown field. The ledger is per-browser, beside the profile; a linkage reads it the same way. *Rule on*: whether to move it inside the profile object once those writers are fixed.
+4. **The v1 blend is the implementer's** — the brief says "at the brief's weights" and names none. The Sealed sim's sightings are pooled with the authored lists' into the one lift term; presence is unchanged; half and half as before.
+5. **The AI does not sideboard** (the brief allowed "or none this session — say which"). The player can.
+6. **"Suggest a deck"** on the build screen fills the draft with the builder's deck — not in the brief; it made the browser walk possible without hand-building, and it is a fair convenience. Say if it should go.
+7. **`poolIsCap`** — a new `DeckRule` field so a sealed deck may run five of a common; `addCopy` takes a cap.
+8. **The splash rule is stricter than the brief's sketch** — the brief asks two fixers; with Evolving Wilds at tier 1 that alone let 80% of decks splash. It is now also bombs only (rated 2.0+, 0.75 over the card replaced, one pip, at most two cards): 45% of decks under v0, 30% under v1.
+9. **No Convocation door plate** — the menu's door is text only (the other four have art). The names of the field are twelve placeholders, as the brief marks.
 
 ## Concerns
-1. **The rating's field is uneven, and it shows.** Thirty-card beasts and sixty-card Open lists play each other; the best list in the run is the mono-black slice (80%), and the Undertow is 66% here against 38% in the Open because mill is strong against thirty-card decks. The presence term carries all of that into the cards. The lift term does not, which is why I added it — but it has its own lean (cards are seen more in long games). v0 is fit for "play your bombs, cut your Disenchants"; it is not fit for close calls between playables.
-2. **The first real correction is the Sealed sim, not more authored-list games.** Decks built from random pools have no author, so a card's lift there is free of the list confound. I would build `pnpm sealed-sim` in S48 beside the builder and treat v0 as the prior it updates — the shape Chris described at kickoff. Each row already stores its sample for that.
-3. **The legends are in packs at tier R — all thirty-two, at the rare slot's 0.2.** Chris's ruling replaces the brief's "everything below prizeOnly". Two things for the planner: (a) the **Manafleur and the Cinquefont** are legends and so are in — five-colour bosses as Limited cards; say if they should join the power list; (b) the rate is a consequence, not a choice — a Classic pack's rare slot is a legend about one time in ten, a six-pack pool holds one about four times in ten. If legends should be rarer or commoner, they want their own weight (a fifth pack tier) rather than a share of R.
-4. **The browser's game rate is not on record.** The S46 handoff said "~7.5 games/s on six workers (implementer-notes)"; the notes hold no such figure. I repeated it into the plan's first draft before checking, and have removed it. Node runs ~20 games/s per process. S48 should time the Lab worker before deciding between a worker pool and running the other seats' series on the main thread.
-5. **The deck editor is tied to the world.** Its spares read `world.player.collection` and its save writes `world.decks`. Giving it a pool source is a refactor of a large component, and it is the part of S48 most likely to overrun — the reason my estimate for S48 is "one session, tight; one and a half honest".
-6. **Nonbasic lands in the common slots.** A Classic pool carries about ten nonbasic lands (the tier-1 cycling lands and Evolving Wilds). Not wrong, but it is ten of ninety cards that are rarely playables, and it is visible in the first pools.
-7. **Tier 3 is nineteen cards** (eleven in the First Bloom; seven or eight in a pair set). Nothing obvious is *missing* yet — that read wants pools played, not pools printed — but an eight-seat pod opens 48 rare slots from 19 + 35 cards, so repeats will be the norm.
-8. **ADR-144's text is already stale on one row**: it names the Undertow a pilot floor; with Clio it is 38%. The Larder is the one list left under 35%.
-9. **`fillErrors` is conservative**: the First Bloom fails the Flat recipe on paper (eleven tier-3 cards, fifteen slots that *may* roll tier 3) though a real pack would almost never need more than four. If Flat is wanted for the First Bloom, the roll needs a fallback tier rather than the validator loosening.
+1. **The builder plays black two times in three and red one time in ten — and red loses when it is played.** The rating carried the authored lists' colour skew into Sealed (the mono-black slice was the rating run's best list; the red lists its worst). v1 moved it a little (black 73 → 65%, red 6 → 10%). But the red pairs' decks win 38–42% (on only 19 decks), so this may not be the rating alone: red's cards in this pool may be weak in forty-card games under this pilot — burn the heuristic aims at faces, small creatures outclassed by turn five. I cannot separate those from this data. It matters for the field: seven AI seats will mostly be W/B/U/G, and a player who reads that can draft… nothing yet, but will in S50.
+2. **The update did not make the rating a better predictor.** A deck's mean rating against its win rate went from r = 0.43 (v0 decks) to 0.35 (v1 decks). The two runs are different decks, so they are not a clean comparison, but v1 is not shown to be better — only less wrong on the synergy cards. The honest read: the lift term is noisy, and one round of updating on decks the rating itself built is partly circular (a card the builder never plays gets no new evidence). A fix worth scoping: build a share of sim decks with rating noise, so under-rated cards get played.
+3. **`recordCutting` drops `floodSurvived`** (`world/corolla.ts`): it returns a new profile object without the flag, so a player who beat the flood's capstone and then wins a Manafleur run loses the flag. Found while reading the profile's writers for the ledger; not touched (campaign code, outside the brief). Flagged as a separate task.
+4. **The legality panel says the same thing twice** in a short sealed deck: "deck has 0 cards; the floor is 30" and "0 cards; Sealed asks 40". The base floor should stand down when a rule asks more; left alone because the Open's editor has shown both since S46 and a test may pin the text.
+5. **The tiebreak's one-third floor is from memory** of the tournament rules, not verified (they are not the Comprehensive Rules). It only matters for ordering tied seats.
+6. **A game abandoned mid-play restarts from its seed** — the same opening hand. A player who dislikes a hand can reload for the same hand, not a new one, so there is nothing to exploit; but a reload during a lost game replays it. The campaign has the same property.
+7. **The builder's suggestion for seed 48's pool averaged 3.39 mana value** — heavier than the field's 2.97 mean. The six-drop cap holds the top end; nothing caps the four- and five-drops together. Worth a look when the builder is next touched.
+8. **Under four three-drops in 4–5 of 200 decks, under thirteen creatures in 1** — the pool did not have them in the pair; the mend does not change the pair to find them.
 
 ## Registry entries added/changed
-- **R-101** — the match series: CR 103.1 (who chooses the first turn across games) and 104.4a (the drawn game), both verified against the Comprehensive Rules this session; the series' length and the standings' points marked as tournament policy, interim.
+- **R-101** amended — the S48 rulings (two wins; a drawn series without a majority; the coin's winner chooses; the tiebreak and its unverified floor).
+- **Knobs**: `convocationEntrance` (new; `docs/knobs.md` regenerated).
 - Pool registry: no rows changed (no cards this session).
 
 ## Test status
-`pnpm test`: 85 files passed, 1 skipped; **815 tests passed, 2 skipped** (the two skips are the standing ones). New: `series.test.ts` (4), `packs.test.ts` (7, including the rating table's check). No fixtures re-baselined. `pnpm typecheck` and `pnpm build:web` pass. No fuzz this session — no new cards entered a deck.
+`pnpm test`: 87 files passed, 1 skipped; **825 tests passed, 2 skipped** (the standing two). New: `event.test.ts` (6 — the builder over 150 pools; the field; registration; the full event; save and resume; the ladder), `convocation-controller.test.ts` (4 — the event's editor and the world's bytes; the pool as the cap; the series over the match with a reload; the finish and the ledger). Amended: `series.test.ts` (the 1–0–2 draw; the coin's chooser), `packs.test.ts` (fourteen power ids; the roll-down). No fuzz — no new card entered a deck; the Sealed sim's 40,000 games over built decks raised no engine error.
 
-Not verified: the series over `MatchController` (headless only); the browser worker's speed; any screen.
+One false alarm: the world generator's 200-seed fuzz timed out during a full run while six sim processes were going; it passes alone and in the clean full run above.
+
+Not verified: the Lab worker's rate; the production build in a browser (the walk was the dev server); a full event played by hand without the dev concession; the editor's world side beyond rendering and its existing controller tests.
 
 ## Suggested next
-**S48 — Sealed, a single event**, as the brief scopes it, in this order so the risky piece is found early:
-1. The editor's source object (the refactor) — first, because it is the overrun risk.
-2. `buildLimitedDeck` from the rating, with `pnpm sealed-sim` (200 pools → 200 decks → a round-robin) as its check and as the rating's first update.
-3. `event.ts` — eight seats, three Swiss rounds, standings — headless end to end, saved and resumed.
-4. The four screens (pool and build, pairings and standings, the series banner over `PlayMatch`, the prize).
-
-If the session must shed something, shed the prize screen's content, not the save.
+**S49 — the series and standings at sixteen seats, and the drafter's data.** Estimate: **one session.**
+- Sixteen seats, five rounds: the engine already takes `seats` and `rounds`; byes are written but untested (no odd field yet). A Top-8 bracket is new (single elimination over `MatchSeries`).
+- The AI's sideboarding (shape-keyed), and the human's play/draw screen are small.
+- The tiebreak verified against the tournament rules.
+- The drafter's data: a pick-order view of the rating, a colour-commitment term, and a `pnpm draft-sim` that reports how many seats fight over black — which, from Concern 1, will be most of them. I would fix the colour skew first: a rating-noise option in the Sealed sim, one more update, and a check that red's share rises without its win rate falling further.
+- A door plate for the menu, and the field's real names, are Chris's and the planner's.
 
 ## How to run
 ```
-pnpm booster --validate                              # the sets by tier; the data's errors
-pnpm booster --set plane --recipe classic --seed 7   # one pack
-pnpm sealed-pool --seed 7                            # six Classic packs (--json for the ids)
-pnpm rating:run --offsets 30 --games 10 --shard 0/6  # the measurement (six shards → analysis/runs, local)
-pnpm rating:build                                    # → data/convocation/card-rating.json + the report
-pnpm rating:view                                     # → analysis/rating-view.html (open in a browser)
-npx vitest run packages/world/src/series.test.ts packages/world/src/packs.test.ts
+pnpm viewer                    # then /convocation — or the menu's "The Convocation"
+pnpm sealed-sim --pools 200 --games 10 --shard 0/6    # six shards → analysis/runs (local)
+pnpm sealed-sim --report                               # the builder's checks, pairs, curve, win rates
+pnpm rating:build --sealed                             # v1 → data/convocation/card-rating.json
+pnpm rating:view --compare data/convocation/card-rating-v0.json   # the page, with each card's change
+npx vitest run packages/world/src/event.test.ts packages/ui/src/convocation
 pnpm typecheck && pnpm test
 ```
+In the browser console, `__cc` is the controller: `__cc.newEvent(48); __cc.suggestDeck(); __cc.register(); __cc.playMatch(); __cc.match.autoWin()`.

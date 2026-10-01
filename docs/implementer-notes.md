@@ -555,3 +555,14 @@ See handoff Concerns for the authoritative list. Highlights: auto-pay greedy fea
 - **`authoredLists(root)`** (world/authored-lists.ts) is every list the game has, keyed `group:key` — 112 of them, thirty to sixty cards. Use it rather than importing the nine sim deck modules again.
 - **A set too thin for a recipe is a validation error, not a fallback**: `fillErrors` asks that each tier hold as many cards as the slots that *could* draw it (the worst roll must fill without a duplicate). Conservative — the First Bloom fails Flat (eleven tier-3 cards, fifteen slots that may roll tier 3) though a real pack would almost never need more than four.
 - **`MatchSeries` takes the games already played** — a resumed series is `new MatchSeries({ seed, games })`; the per-game seeds come from the series seed, so a resumed game three has the seed it always had.
+
+## S48 — Sealed, a single event (2026-10-02)
+
+- **A `.ts` file in `packages/ui` cannot import a `.tsx`** (node16 resolution wants `.js`, and the tsx check is a second project). A type a controller needs from a component lives in a plain `.ts` beside it (`components/deck-editor-host.ts`), re-exported by the component.
+- **The deck editor is `components/DeckEditor.tsx` over a `DeckEditorHost`.** The world's adapter is `worldEditorHost(c)` in WorldApp; the event's is `ConvocationController.editorHost()`. A new source implements the host; it does not touch the component.
+- **`addCopy(collection, deck, id, cap)`** — pass `Infinity` for a Limited source; the rule's `poolIsCap` does the same for `checkDeck`.
+- **Do not run the suite while a sim is running.** The world generator's fuzz (200 seeds) timed out under six sim processes and passed alone. A red test during a background run is load until shown otherwise — re-run it alone before reading it.
+- **The field's series on the main thread** (dev build, this machine): 1.6 s for the first round's three series (cold), 0.2–0.3 s after. The controller yields 30 ms first so the "other tables" screen paints.
+- **`window.__cc`** is the Convocation controller in the browser (as `__mc` is the match). A full event can be walked from the console: `newEvent(seed)`, `suggestDeck()`, `register()`, `playMatch()`, `match.autoWin()`, `nextGame()`, `next()`.
+- **The event is pure state** (`world/event.ts`); every function returns a new event. `recordSeries` is idempotent for a pairing already recorded — a resumed round skips what is done.
+- **`sealed-sim --report` rebuilds the decks from the CURRENT rating file** — a report read after `rating:build --sealed` describes v1's decks, not the decks that played. Pass `--rating data/convocation/card-rating-v0.json` to describe a v0 run.

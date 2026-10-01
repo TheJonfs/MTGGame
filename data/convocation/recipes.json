@@ -1,5 +1,5 @@
 {
- "_comment": "S47 (ADR-145): pack recipes — slots × tier weights (formats doc §2.2). A slot's weights sum to one. Rich's 'rare' slot is Classic's (3: 0.8, R: 0.2) — the doc gives counts only.",
+ "_comment": "S47 (ADR-145): pack recipes \u2014 slots \u00d7 tier weights (formats doc \u00a72.2). A slot's weights sum to one. Rich's slots are the S48 brief's ruling. A slot whose rolled tier has no card left rolls DOWN a tier (S48: Flat over a short set).",
  "recipes": [
   {
    "id": "classic",
@@ -46,19 +46,20 @@
   {
    "id": "rich",
    "name": "Rich",
-   "note": "2 rares, 4 uncommons, 9 commons — the flood's register",
+   "note": "2 rares, 4 uncommons, 9 commons \u2014 the flood's register",
    "slots": [
     {
      "count": 2,
      "weights": {
-      "3": 0.8,
-      "R": 0.2
+      "3": 0.6,
+      "R": 0.4
      }
     },
     {
      "count": 4,
      "weights": {
-      "2": 1
+      "2": 0.8,
+      "3": 0.2
      }
     },
     {

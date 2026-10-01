@@ -144,6 +144,12 @@ export const KNOBS = {
     unit: "the three tier tables (mageTierLife / mageTierEntrance / beastTierLifeDelta) by phase, for phases after the first",
     description: "S38 (design §8; ⚠ proposed, unratified): the matchup resolver's column for a world at `phase` ≥ 2 — the mages' life and entrance and the beasts' delta by tier, read INSTEAD of the three phase-one knobs. Standard phase two: mages 12/1 · 16/1 · 20/3, beasts +4/+8/+12 (S42a: tier 2 cooled by one basic after the part-11 read). The difficulty bundles carry their own phase-two column (easy/hard mirror the phase-one offsets — one cell on the entrance axis first, life second). A phase with no column falls back to the highest column below it (phase 3 reads phase 2's until it has its own — the scar for the third act). Lords, courts and the Heart do not read this (their phase-two rows come with their content).",
   }),
+  // ---- S48 (ADR-145): the Convocation's ladder — an AI seat's entrance against the human, by round ----
+  convocationEntrance: knob<Record<number, { life: number; basics: number }>>({
+    default: { 1: { life: 0, basics: 0 }, 2: { life: 0, basics: 0 }, 3: { life: 0, basics: 0 } },
+    unit: "by round (from 1): life added to 20, and basics of the seat's colours in play before turn one",
+    description: "S48 (ADR-145; the plan's stage 1): the Convocation's ladder — what an AI seat brings against the HUMAN in round N (AI against AI is always flat; the human seat never gets an entrance). Read through `convocationSeat`. Wired and all zeros for the first Sealed event: the format's fairness is the pool's. A round past the table reads its last row.",
+  }),
   heartLawsPersist: knob<boolean>({
     default: false,
     unit: "true | false",

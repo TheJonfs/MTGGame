@@ -31,7 +31,8 @@ describe("the Convocation's packs (S47 Part 3)", () => {
     expect(bad({ ...data, recipes: [...data.recipes.slice(1), { id: "classic", name: "x", slots: [{ count: 15, weights: { "1": 0.7 } }] }] })).toBe(true);
     expect(bad({ ...data, sets: [{ id: "x", name: "x", recipe: "classic", filter: { exclude: ["no_such_card"] } }] })).toBe(true);
     expect(bad({ ...data, sets: [{ id: "x", name: "x", recipe: "classic", filter: { exclude: ["black_lotus_token", "plains"] } }] })).toBe(true);
-    expect(fillErrors(set("pauper"), recipe("classic"), pool, data.power).length).toBeGreaterThan(0); // no tier 2, 3 or R in a Pauper set
+    expect(fillErrors(set("pauper"), recipe("classic"), pool, data.power)).toEqual([]); // S48: every slot rolls down to tier 1
+    expect(fillErrors(set("pauper"), { id: "x", name: "x", slots: [{ count: 80, weights: { "1": 1 } }] }, pool, data.power).length).toBeGreaterThan(0); // 73 cards, 80 slots
   });
 
   it("no set holds a basic, a token, a law or the power; the legends are in at tier R; the pair sets stay in their colours; Pauper is tier 1", () => {
@@ -55,7 +56,9 @@ describe("the Convocation's packs (S47 Part 3)", () => {
     const plane = resolveSet(set("plane"), pool);
     expect(plane.R).toEqual(expect.arrayContaining(["clio_lady_of_the_depths", "the_fordkeeper", "the_usher"]));
     for (const id of ["black_lotus", "mox_jet", "time_walk", "wrackroot", "tallyflame_court"]) expect(plane.R).not.toContain(id);
-    expect(data.power).toHaveLength(12);
+    expect(data.power).toHaveLength(14); // ADR-146: the Manafleur and the Cinquefont never draft
+    expect(plane.R).not.toContain("the_manafleur");
+    expect(fillErrors(set("first_bloom"), recipe("flat"), pool, data.power)).toEqual([]); // S48: a spent tier rolls down
     expect(resolveSet(set("pair_ub"), pool).R).toContain("clio_lady_of_the_depths");
     expect(resolveSet(set("first_bloom"), pool).R).not.toContain("the_fordkeeper"); // a flood legend
     expect(resolveSet(set("first_bloom"), pool).R).toEqual(expect.arrayContaining(["the_usher", "clio_lady_of_the_depths"]));

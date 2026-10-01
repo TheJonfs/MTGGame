@@ -38,10 +38,12 @@ export interface DeckRule {
   restricted?: string[];
   /** S46 (ADR-142): card ids not allowed at all (the five laws in every Convocation format). */
   banned?: string[];
+  /** S48 (Limited): the copy cap is the collection itself — the 4-copy cap does not apply (a sealed pool may hold five of a common). */
+  poolIsCap?: boolean;
   /** "the Jeskai gate" — shown by the editor and the parley. */
   label: string;
 }
-export const DECK_RULE_FIELDS = ["colorsWithin", "minCreatures", "maxLands", "maxManaValue", "singleton", "minCards", "minCreaturePower", "minLandFraction", "bannedTypes", "restricted", "banned", "label"] as const;
+export const DECK_RULE_FIELDS = ["colorsWithin", "minCreatures", "maxLands", "maxManaValue", "singleton", "minCards", "minCreaturePower", "minLandFraction", "bannedTypes", "restricted", "banned", "poolIsCap", "label"] as const;
 const RULE_CARD_TYPES: readonly CardType[] = ["Land", "Creature", "Instant", "Sorcery", "Enchantment", "Artifact"];
 
 /** `failed` (S40): the rule fields that produced a problem, in check order — the door picks its voice by the first. */
@@ -63,7 +65,7 @@ export function checkDeck(list: Decklist, collection?: Collection | null, rule?:
   const failed: (keyof DeckRule)[] = [];
   const n = deckSize(list);
   if (n < DECK_FLOOR) problems.push(`deck has ${n} cards; the floor is ${DECK_FLOOR}`);
-  for (const e of list) if (!isBasic(e.cardId) && e.count > COPY_CAP) problems.push(`${name(e.cardId)} ×${e.count} exceeds the ${COPY_CAP}-copy cap`);
+  if (!rule?.poolIsCap) for (const e of list) if (!isBasic(e.cardId) && e.count > COPY_CAP) problems.push(`${name(e.cardId)} ×${e.count} exceeds the ${COPY_CAP}-copy cap`);
   if (collection) {
     for (const e of list) {
       const owned = collection[e.cardId] ?? 0;
@@ -160,6 +162,7 @@ export function describeDeckRule(rule: DeckRule): string {
   if (rule.bannedTypes) parts.push(`no ${rule.bannedTypes.map((t) => `${t.toLowerCase()}s`).join(" or ")}`);
   if (rule.restricted?.length) parts.push(`${rule.restricted.length} cards restricted to one`);
   if (rule.banned?.length) parts.push(`${rule.banned.length} banned`);
+  if (rule.poolIsCap) parts.push("the pool is the copy cap");
   return parts.join("; ") || "no constraint";
 }
 

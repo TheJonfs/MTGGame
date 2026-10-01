@@ -30,13 +30,14 @@ export function spares(collection: Collection, deck: Decklist): Record<string, n
 
 export type EditResult = { ok: true; deck: Decklist } | { ok: false; reason: string };
 
-/** Add one copy to a draft deck (basics always; others only if a spare exists and the 4-cap holds). */
-export function addCopy(collection: Collection, deck: Decklist, cardId: string): EditResult {
+/** Add one copy to a draft deck (basics always; others only if a spare exists and the 4-cap holds).
+ * S48: `cap` — a Limited source passes Infinity (the pool is the cap). */
+export function addCopy(collection: Collection, deck: Decklist, cardId: string, cap: number = COPY_CAP): EditResult {
   const next = deck.map((e) => ({ ...e }));
   if (!isBasic(cardId)) {
     const free = (collection[cardId] ?? 0) - deckCount(deck, cardId);
     if (free <= 0) return { ok: false, reason: "no spare copy owned" };
-    if (deckCount(deck, cardId) >= COPY_CAP) return { ok: false, reason: `${COPY_CAP}-copy cap` };
+    if (deckCount(deck, cardId) >= cap) return { ok: false, reason: `${cap}-copy cap` };
   }
   const e = next.find((x) => x.cardId === cardId);
   if (e) e.count += 1;

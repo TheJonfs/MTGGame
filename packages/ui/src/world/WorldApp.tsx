@@ -10,6 +10,7 @@ import { audio, townMusicCue, strongholdSplashCue, type MusicCue } from "../audi
 import { COROLLA_DECKS } from "@shandalar/sim/corolla-decks";
 import { WorldMapView } from "./WorldMap";
 import { FloatingCardInspector } from "./FloatingCardInspector";
+import { DeckEditor, type DeckEditorHost } from "../components/DeckEditor";
 import { devMenuEnabled } from "../dev";
 
 /** Screens that return early from the world layout (no rail, no popups, no manalink splash). */
@@ -1549,155 +1550,28 @@ function CollectionScreen({ c, pool, oracle }: { c: WorldController; pool: Map<s
 
 /** S14 Part 2: the deck editor — spares | deck, click to move copies, basics row,
  * live legality (Save disabled with the reason), reading aids, name. */
-function EditorScreen({ c, pool, oracle }: { c: WorldController; pool: Map<string, CardDef>; oracle: Record<string, OracleEntry> }) {
-  const [filter, setFilter] = useState<"all" | "W" | "U" | "B" | "R" | "G" | "Creature" | "Instant" | "Sorcery" | "Enchantment" | "Artifact" | "Land">("all");
-  const [sort, setSort] = useState<"name" | "cost" | "colour">("cost");
-  const [search, setSearch] = useState("");
-  const [printed, setPrinted] = useState(true); // S14 round 1 (Chris): printed by default in the editor too
-  const [inspect, setInspect] = useState<string | null>(null); // S14 round 2: hover → floating inspector
-  // S18 rider (deck-picker polish): in-page deck ops replace the browser prompt() dialogs.
-  const [op, setOp] = useState<null | { kind: "new" | "duplicate" | "delete" | "switch"; value: string }>(null);
+/** S48 (Part 1): the world's source for the deck editor — its collection, its decks, its doors. */
+function worldEditorHost(c: WorldController): DeckEditorHost | null {
   if (c.screen.kind !== "editor" || !c.world) return null;
-  const { draft, name, notice } = c.screen;
-  const w = c.world;
-  const savedDeck = activeDeck(w);
-  const dirty = name !== w.activeDeckName || draft.length !== savedDeck.length || draft.some((e) => savedDeck.find((x) => x.cardId === e.cardId)?.count !== e.count);
-  const sp = spares(w.player.collection, draft);
-  const legality = c.editorLegality();
-  const stats = deckStats(pool, draft);
-  const mv = (id: string) => { const d = pool.get(id)!; return d.types.includes("Land") ? -1 : deckStats(pool, [{ cardId: id, count: 1 }]).curve.findIndex((n) => n > 0); };
-  const passes = (id: string) => {
-    const def = pool.get(id);
-    if (!def) return false;
-    if (search && !def.name.toLowerCase().includes(search.toLowerCase())) return false;
-    if (filter === "all") return true;
-    if (["W", "U", "B", "R", "G"].includes(filter)) return cardColors(def).includes(filter as "W");
-    return (def.types as string[]).includes(filter);
+  const w = c.world, s = c.screen;
+  return {
+    title: "Deck editor",
+    draft: s.draft, name: s.name, notice: s.notice,
+    source: { collection: w.player.collection, savedDeck: activeDeck(w), activeDeckName: w.activeDeckName },
+    legality: () => c.editorLegality(),
+    add: (id) => c.editorAdd(id), remove: (id) => c.editorRemove(id), reset: () => c.editorReset(),
+    save: () => { c.editorSave(); }, saveLabel: "Save deck",
+    close: () => c.editorClose(), closeLabel: s.mustLeaveLegal ? "Keep this deck" : "Cancel",
+    mustLeaveLegal: s.mustLeaveLegal ? "the water waits for a legal deck — fix it or Reset" : undefined,
+    rename: (n) => c.editorRename(n),
+    decks: { names: () => c.deckNames(), switch: (n) => { c.deckSwitch(n); }, create: (n) => c.deckNew(n), duplicate: (n) => c.deckDuplicate(n), remove: (n) => c.deckDelete(n) },
+    doors: { list: () => c.doorRules(), selected: c.editorRuleId, select: (id) => c.setEditorRule(id), check: () => c.editorRuleCheck() },
   };
-  const order = (a: string, b: string) => {
-    const da = pool.get(a)!, db = pool.get(b)!;
-    if (sort === "name") return da.name.localeCompare(db.name);
-    if (sort === "colour") return (cardColors(da).join("") || "z").localeCompare(cardColors(db).join("") || "z") || da.name.localeCompare(db.name);
-    return mv(a) - mv(b) || da.name.localeCompare(db.name);
-  };
-  const spareIds = Object.keys(sp).filter(passes).sort(order);
-  const deckIds = draft.map((e) => e.cardId).filter(passes).sort(order);
-  const cell = (id: string, n: number, onClick: () => void, label: string) => (
-    <div key={id} className="editor-card" onClick={onClick} onMouseEnter={() => setInspect(id)} title={label}>
-      <div className="editor-slot"><CardFrame def={pool.get(id)!} oracle={oracle[id]} showPrinted={printed} /></div>
-      <div className="editor-count">×{n}</div>
-    </div>
-  );
-  const maxCurve = Math.max(1, ...stats.curve);
-  return (
-    <div className="gallery world-editor">
-      <div className="gallery-header">
-        <b style={{ fontFamily: "var(--serif)" }}>Deck editor</b>
-        {/* S16 (v3): the deck picker — switch / new / duplicate / delete. S18: in-page ops, dirty-draft guard on switch. */}
-        <select value={w.activeDeckName} title={dirty ? "your saved decks (you have unsaved changes — switching asks first)" : "your saved decks"} onChange={(e) => { const n = e.target.value; if (n === w.activeDeckName) return; if (dirty) setOp({ kind: "switch", value: n }); else c.deckSwitch(n); }}>
-          {c.deckNames().map((n) => <option key={n} value={n}>{n}{n === w.activeDeckName ? " (active)" : ""}</option>)}
-        </select>
-        <button className="linkish" title="a new deck of 30 basics to build from" onClick={() => setOp({ kind: "new", value: `Deck ${c.deckNames().length + 1}` })}>new</button>
-        <button className="linkish" title="copy the active deck" onClick={() => setOp({ kind: "duplicate", value: `${w.activeDeckName} (copy)` })}>duplicate</button>
-        <button className="linkish" title="delete a non-active deck" disabled={c.deckNames().length < 2} onClick={() => setOp({ kind: "delete", value: c.deckNames().find((n) => n !== w.activeDeckName) ?? "" })}>delete</button>
-        <input type="text" value={name} onChange={(e) => c.editorRename(e.target.value)} style={{ width: 140 }} title="deck name (saved with the deck)" />
-        {dirty && <span className="draft-dirty" title="unsaved changes to this deck">unsaved</span>}
-        <span className={legality.ok ? "legal" : "illegal"} style={{ fontSize: 12 }} title={legality.ok ? "the floor, the cap and ownership hold" : legality.problems.join("; ")}>
-          {stats.size} cards · {stats.lands} lands · avg MV {stats.avgMv.toFixed(2)} · {legality.ok ? "legal" : `${legality.problems.length} problem${legality.problems.length === 1 ? "" : "s"}`}
-        </span>
-        <span className="curve" title="mana curve (nonland, by mana value; last bar 7+)">
-          {stats.curve.map((n, i) => (
-            <span key={i} className="curve-bar" title={`mv ${i === 7 ? "7+" : i}: ${n}`}>
-              <i style={{ height: `${Math.round((n / maxCurve) * 22) + 2}px` }} /><small>{i === 7 ? "7+" : i}</small>
-            </span>
-          ))}
-        </span>
-        <span className="colour-id">{Object.entries(stats.colors).map(([col, n]) => <span key={col} title={`${n} ${col}`}><i className={`colour-pip c-${col}`} /> {n}</span>)}</span>
-        <span style={{ fontSize: 11, color: "var(--ink-soft)" }}>{Object.entries(stats.types).filter(([t]) => t !== "Land").map(([t, n]) => `${t} ${n}`).join(" · ")}</span>
-        <span style={{ flex: 1 }} />
-        <input type="text" placeholder="search" value={search} onChange={(e) => setSearch(e.target.value)} style={{ width: 110 }} />
-        <select value={filter} onChange={(e) => setFilter(e.target.value as typeof filter)}>
-          {["all", "W", "U", "B", "R", "G", "Creature", "Instant", "Sorcery", "Enchantment", "Artifact", "Land"].map((f) => <option key={f} value={f}>{f}</option>)}
-        </select>
-        <select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)}>
-          <option value="cost">by cost</option><option value="name">by name</option><option value="colour">by colour</option>
-        </select>
-        <button className="linkish" onClick={() => setPrinted(!printed)}>{printed ? "our frame" : "printed card"}</button>
-        <button className="primary" disabled={!legality.ok} title={legality.ok ? "save this deck" : legality.problems.join("; ")} onClick={() => c.editorSave()}>Save deck</button>
-        <button onClick={() => c.editorReset()} title="discard draft changes (back to the saved deck)">Reset</button>
-        <button disabled={!!c.screen.mustLeaveLegal && !legality.ok} title={c.screen.mustLeaveLegal && !legality.ok ? "the water waits for a legal deck — fix it or Reset" : ""} onClick={() => c.editorClose()}>{c.screen.mustLeaveLegal ? "Keep this deck" : "Cancel"}</button>
-      </div>
-      {op && (
-        <div className="deck-op-row">
-          {op.kind === "switch" ? (
-            <>
-              <span>Switch to <b>{op.value}</b>? Your unsaved changes to <b>{w.activeDeckName}</b> will be discarded.</span>
-              <button className="primary" onClick={() => { c.deckSwitch(op.value); setOp(null); }}>Switch</button>
-              <button onClick={() => setOp(null)}>Keep editing</button>
-            </>
-          ) : op.kind === "delete" ? (
-            <>
-              <span>Delete which deck?</span>
-              <select value={op.value} onChange={(e) => setOp({ ...op, value: e.target.value })}>
-                {c.deckNames().filter((n) => n !== w.activeDeckName).map((n) => <option key={n} value={n}>{n}</option>)}
-              </select>
-              <button className="danger" disabled={!op.value} onClick={() => { if (c.deckDelete(op.value)) setOp(null); }}>Delete</button>
-              <button onClick={() => setOp(null)}>Cancel</button>
-            </>
-          ) : (
-            <>
-              <span>{op.kind === "new" ? "Name the new deck (30 basics to build from):" : `Copy "${w.activeDeckName}" as:`}</span>
-              <input type="text" autoFocus value={op.value} onChange={(e) => setOp({ ...op, value: e.target.value })} onKeyDown={(e) => { if (e.key === "Enter" && op.value.trim()) { if ((op.kind === "new" ? c.deckNew(op.value) : c.deckDuplicate(op.value))) setOp(null); } if (e.key === "Escape") setOp(null); }} style={{ width: 180 }} />
-              <button className="primary" disabled={!op.value.trim() || c.deckNames().includes(op.value.trim())} title={c.deckNames().includes(op.value.trim()) ? "a deck with that name exists" : ""} onClick={() => { if ((op.kind === "new" ? c.deckNew(op.value) : c.deckDuplicate(op.value))) setOp(null); }}>{op.kind === "new" ? "Create" : "Duplicate"}</button>
-              <button onClick={() => setOp(null)}>Cancel</button>
-            </>
-          )}
-        </div>
-      )}
-      <FloatingCardInspector def={inspect ? pool.get(inspect) ?? null : null} oracle={oracle} printed={printed} onTogglePrinted={() => setPrinted(!printed)} />
-      {notice && <div style={{ color: "var(--danger)", fontSize: 12, padding: "0 6px 6px" }}>{notice}</div>}
-      {/* S37 (ADR-123): the legality panel — every problem as a sentence, live; and the door the draft is
-          checked against (a template's deckRule: the label, the rule, its verdict). A door never blocks Save. */}
-      {(() => {
-        const doors = c.doorRules();
-        const rule = c.editorRuleCheck();
-        if (legality.ok && doors.length === 0) return null;
-        return (
-          <div className="editor-legality">
-            {!legality.ok && <ul className="illegal">{legality.problems.map((p, i) => <li key={i}>{p}</li>)}</ul>}
-            {doors.length > 0 && (
-              <div className="editor-door">
-                <label>check against a door: <select value={c.editorRuleId ?? ""} onChange={(e) => c.setEditorRule(e.target.value || null)}>
-                  <option value="">none</option>
-                  {doors.map((d) => <option key={d.id} value={d.id}>{d.name} — {d.label}</option>)}
-                </select></label>
-                {rule && <span className={rule.check.ok ? "legal" : "door-shut"}>{rule.label} ({rule.description}): {rule.check.ok ? "the gate opens" : "the gate is shut"}</span>}
-                {rule && !rule.check.ok && <ul className="door-shut">{rule.check.problems.map((p, i) => <li key={i}>{p}</li>)}</ul>}
-              </div>
-            )}
-          </div>
-        );
-      })()}
-      <div className="editor-panes">
-        <div className="editor-pane">
-          <div className="flyout-title">Spares — click to add ({spareIds.reduce((n, id) => n + (sp[id] ?? 0), 0)} owned, not in deck)</div>
-          <div className="editor-grid">{spareIds.map((id) => cell(id, sp[id]!, () => c.editorAdd(id), "add one copy to the deck"))}</div>
-          <div className="flyout-title" style={{ marginTop: 8 }}>Basic lands — free and infinite</div>
-          <div className="basics-row">
-            {BASIC_LANDS.map((b) => (
-              <button key={b} onClick={() => c.editorAdd(b)}>+ {pool.get(b)?.name ?? b}</button>
-            ))}
-          </div>
-        </div>
-        <div className="editor-pane">
-          <div className="flyout-title">Deck — click to remove ({stats.size})</div>
-          <div className="editor-grid">
-            {deckIds.map((id) => cell(id, draft.find((e) => e.cardId === id)!.count, () => c.editorRemove(id), isBasic(id) ? "remove one (basics are free to re-add)" : "remove one copy (back to spares)"))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+}
+
+function EditorScreen({ c, pool, oracle }: { c: WorldController; pool: Map<string, CardDef>; oracle: Record<string, OracleEntry> }) {
+  const host = worldEditorHost(c);
+  return host ? <DeckEditor host={host} pool={pool} oracle={oracle} /> : null;
 }
 
 /** S39 (ADR-126): the flood's scene — the planner's lines (Chris: what was lost is metaphorical; no deck shown). */

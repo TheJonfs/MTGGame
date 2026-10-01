@@ -164,3 +164,15 @@ export function loadWorldCatalog(): import("@shandalar/world").Catalog {
   // Lazy require keeps the viewer bundle free of world code until /world is opened.
   return catalogFromJson({ regions: byName("regions"), towns: byName("towns"), opponents: byName("opponents"), starters: byName("starters"), dungeons: byName("dungeons"), quests: byName("quests"), salvage: byName("salvage-pack"), flood: byName("flood") });
 }
+
+/** S48: the Convocation's data (data/convocation/*.json) — the sets, the recipes, the card rating. */
+export function loadConvocationData(): { packs: import("@shandalar/world").ConvocationPackData; rating: import("@shandalar/world").CardRatingTable } {
+  const modules = import.meta.glob("../../../data/convocation/{sets,recipes,card-rating}.json", { eager: true }) as Record<string, { default: unknown }>;
+  const byName = <T,>(name: string): T => {
+    const key = Object.keys(modules).find((k) => k.endsWith(`/${name}.json`));
+    if (!key) throw new Error(`data/convocation/${name}.json not bundled`);
+    return modules[key]!.default as T;
+  };
+  const sets = byName<{ power: string[]; sets: import("@shandalar/world").SetDef[] }>("sets");
+  return { packs: { power: sets.power, sets: sets.sets, recipes: byName<{ recipes: import("@shandalar/world").Recipe[] }>("recipes").recipes }, rating: byName<import("@shandalar/world").CardRatingTable>("card-rating") };
+}

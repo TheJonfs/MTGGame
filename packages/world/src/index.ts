@@ -22,4 +22,6 @@ export * from "./flood-lairs.js";
 export * from "./formats.js";
 export * from "./packs.js";
 export * from "./rating.js";
+export * from "./limited-builder.js";
+export * from "./event.js";
 export { MatchSeries, runSeries, SERIES_POINTS, type SeriesGame, type SeriesState, type RunSeriesOptions } from "./series.js";

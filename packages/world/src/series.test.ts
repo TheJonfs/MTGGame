@@ -21,7 +21,7 @@ describe("MatchSeries — best-of-three over single games (S47 Part 4)", () => {
       expect(s.games.length).toBeLessThanOrEqual(3);
       expect(Math.max(...s.wins)).toBe(2);
       expect(s.winner).toBe(s.wins[0] > s.wins[1] ? 0 : 1);
-      expect(s.games[0]!.chooser).toBeNull();
+      expect(s.games[0]!.startingPlayer).toBe(s.games[0]!.chooser); // the coin's winner chooses, and plays
       for (let i = 1; i < s.games.length; i++) {
         const prev = s.games[i - 1]!;
         expect(prev.winner).not.toBeNull();
@@ -35,6 +35,7 @@ describe("MatchSeries — best-of-three over single games (S47 Part 4)", () => {
 
   it("the chooser may take the draw: the other seat starts", async () => {
     const s = await runSeries({ seed: 5, decklists: lists, agents, choosePlayDraw: () => "draw" }, pool);
+    expect(s.games[0]!.startingPlayer).toBe(1 - s.games[0]!.chooser);
     for (let i = 1; i < s.games.length; i++) expect(s.games[i]!.startingPlayer).toBe(s.games[i - 1]!.winner);
   }, 120_000);
 
@@ -48,18 +49,18 @@ describe("MatchSeries — best-of-three over single games (S47 Part 4)", () => {
     expect(new Set(s.games.map((g) => g.startingPlayer)).size).toBe(1);
   }, 120_000);
 
-  it("the state machine: a 1–0–2 series goes to the seat with the win; the between-games hook sees each break; a resumed series continues", async () => {
-    const m = new MatchSeries({ seed: 9, firstPlayer: 0 });
+  it("the state machine: a 1–0–2 series is a DRAW (no majority after three — S48 ruling); the between-games hook sees each break; a resumed series continues", async () => {
+    const m = new MatchSeries({ seed: 9, firstChooser: 0 });
     const g1 = m.nextGame(); m.record(g1, { winner: null, reason: "MAX_TURNS", turns: 100 });
     expect(m.nextChooser()).toBe(0);
     const g2 = m.nextGame("draw"); expect(g2.startingPlayer).toBe(1); m.record(g2, { winner: 1, reason: "LIFE", turns: 9 });
     expect(m.done).toBe(false);
-    const resumed = new MatchSeries({ seed: 9, firstPlayer: 0, games: m.state().games });
+    const resumed = new MatchSeries({ seed: 9, firstChooser: 0, games: m.state().games });
     expect(resumed.nextChooser()).toBe(0);
     const g3 = resumed.nextGame(); expect(g3.seed).toBe(m.nextGame().seed); resumed.record(g3, { winner: null, reason: "DRAW", turns: 30 });
     expect(resumed.done).toBe(true);
-    expect(resumed.winner).toBe(1);
-    expect([resumed.points(0), resumed.points(1)]).toEqual([0, 3]);
+    expect(resumed.winner).toBe("draw");
+    expect([resumed.points(0), resumed.points(1)]).toEqual([1, 1]);
     expect(() => resumed.nextGame()).toThrow();
     const breaks: number[] = [];
     await runSeries({ seed: 1, decklists: lists, agents, betweenGames: (st) => { breaks.push(st.games.length); } }, pool);

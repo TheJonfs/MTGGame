@@ -6,7 +6,7 @@
  */
 import type { DeckRule } from "./legality.js";
 
-export interface Format {
+export interface ConstructedFormat {
   id: string;
   name: string;
   kind: "constructed";
@@ -14,13 +14,27 @@ export interface Format {
   /** A line for the editor's picker and the reference. */
   note: string;
 }
+/** S48 (ADR-145): a Limited format — a set and a recipe from data/convocation, a pool shape, and the build rule
+ * (the pool is the collection and the copy cap; basics unlimited). */
+export interface LimitedFormat {
+  id: string;
+  name: string;
+  kind: "limited";
+  shape: "sealed" | "draft";
+  set: string;
+  recipe: string;
+  packs: number;
+  rule: DeckRule;
+  note: string;
+}
+export type Format = ConstructedFormat | LimitedFormat;
 
 /** The five High Grounds — legendary lands, restricted for consistency (formats doc §1.1). */
 export const HIGH_GROUNDS = ["tallyflame_court", "wrackroot", "shevelport", "obsidian_observatory", "cairnbrand"] as const;
 /** The five laws — not player cards until phase three; banned in every Convocation format. */
 export const LAW_IDS = ["law_intake", "law_tithe", "law_toll", "law_risen_tide", "law_season"] as const;
 
-export const OPEN_FORMAT: Format = {
+export const OPEN_FORMAT: ConstructedFormat = {
   id: "open",
   name: "The Open",
   kind: "constructed",
@@ -33,4 +47,19 @@ export const OPEN_FORMAT: Format = {
   },
 };
 
-export const FORMATS: readonly Format[] = [OPEN_FORMAT];
+/** Sealed from the Plane: six Classic packs, forty cards (formats doc §2.3). */
+export const SEALED_PLANE: LimitedFormat = {
+  id: "sealed-plane",
+  name: "Sealed — the Plane",
+  kind: "limited",
+  shape: "sealed",
+  set: "plane",
+  recipe: "classic",
+  packs: 6,
+  note: "six Classic packs from the Plane; forty cards from the pool and any basics",
+  rule: { label: "Sealed", minCards: 40, poolIsCap: true },
+};
+
+/** The Constructed formats (the editor's doors read these). */
+export const FORMATS: readonly ConstructedFormat[] = [OPEN_FORMAT];
+export const LIMITED_FORMATS: readonly LimitedFormat[] = [SEALED_PLANE];

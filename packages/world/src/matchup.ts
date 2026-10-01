@@ -58,3 +58,15 @@ export function resolveMatchup(opponent: OpponentTemplate, knobs: KnobValues, le
 export function entranceModifiers(m: Matchup, player: 0 | 1 = 1): Modifier[] {
   return m.entrance.map((cardId) => ({ type: "permanentOnBattlefield" as const, player, cardId }));
 }
+
+/** S48 (ADR-145): an AI seat against the human in a Convocation round — life and entrance basics from the knobs'
+ * `convocationEntrance[round]` (a round past the table reads its last row; a round before it, none). The basics are
+ * of the seat's colours, in order. AI against AI, and the human's own seat, never read this. */
+export function convocationSeat(round: number, colors: readonly string[], knobs: Pick<KnobValues, "convocationEntrance">): { life: number; entrance: string[] } {
+  const rows = Object.keys(knobs.convocationEntrance).map(Number).sort((a, b) => a - b);
+  const at = rows.filter((r) => r <= round).pop();
+  const row = at === undefined ? { life: 0, basics: 0 } : knobs.convocationEntrance[at]!;
+  const BASIC: Record<string, string> = { W: "plains", U: "island", B: "swamp", R: "mountain", G: "forest" };
+  const cs = colors.filter((c) => BASIC[c]);
+  return { life: Math.max(1, 20 + row.life), entrance: cs.length ? Array.from({ length: Math.max(0, row.basics) }, (_, i) => BASIC[cs[i % cs.length]!]!) : [] };
+}

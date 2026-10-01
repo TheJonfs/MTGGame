@@ -85,15 +85,17 @@ export function validatePackData(data: ConvocationPackData, pool: Map<string, Ca
   return errors;
 }
 
-/** Why this set cannot fill this recipe: a tier a slot draws from must hold at least as many cards as the slots that
- * can draw from it (a pack holds no duplicate, so the worst roll must still fill). */
+/** Why this set cannot fill this recipe. A slot whose rolled tier is spent rolls DOWN a tier (S48 ruling), so the
+ * worst roll fills when, for every tier, the slots that can only draw at or below it fit in the cards at or below it. */
 export function fillErrors(set: SetDef, recipe: Recipe, pool: Map<string, CardDef>, power: readonly string[]): string[] {
   const cards = resolveSet(set, pool, power);
   const errors: string[] = [];
-  for (const t of PACK_TIERS) {
-    const need = recipe.slots.reduce((n, s) => n + ((s.weights[t] ?? 0) > 0 ? s.count : 0), 0);
-    if (need > cards[t].length) errors.push(`set ${set.id} × recipe ${recipe.id}: tier ${t} holds ${cards[t].length} cards, the pack may draw ${need}`);
+  for (let i = 0; i < PACK_TIERS.length; i++) {
+    const below = PACK_TIERS.slice(0, i + 1), have = below.reduce((n, t) => n + cards[t].length, 0);
+    const need = recipe.slots.reduce((n, s) => n + (PACK_TIERS.some((t, j) => j <= i && (s.weights[t] ?? 0) > 0) && !PACK_TIERS.some((t, j) => j > i && (s.weights[t] ?? 0) > 0) ? s.count : 0), 0);
+    if (need > have) errors.push(`set ${set.id} × recipe ${recipe.id}: ${need} slots draw at tier ${PACK_TIERS[i]} or below, the set holds ${have} such cards`);
   }
+  for (const [i, s] of recipe.slots.entries()) if (!PACK_TIERS.some((t, j) => j <= Math.max(...PACK_TIERS.map((u, k) => ((s.weights[u] ?? 0) > 0 ? k : -1))) && cards[t].length > 0)) errors.push(`set ${set.id} × recipe ${recipe.id}: slot ${i} has no card at or below its tiers`);
   return errors;
 }
 
@@ -103,8 +105,9 @@ export function rollPack(cards: Record<PackTier, string[]>, recipe: Recipe, rng:
   for (const slot of recipe.slots) for (let i = 0; i < slot.count; i++) {
     let roll = rng.float(), tier: PackTier | undefined;
     for (const t of PACK_TIERS) { const w = slot.weights[t] ?? 0; if (w <= 0) continue; tier = t; if (roll < w) break; roll -= w; }
-    const left = cards[tier!].filter((id) => !pack.includes(id));
-    if (!left.length) throw new Error(`rollPack: tier ${tier} exhausted (validate the set against the recipe first)`);
+    let left: string[] = [];
+    for (let k = PACK_TIERS.indexOf(tier!); k >= 0 && !left.length; k--) left = cards[PACK_TIERS[k]!].filter((id) => !pack.includes(id)); // a spent tier rolls down
+    if (!left.length) throw new Error(`rollPack: nothing at or below tier ${tier} (validate the set against the recipe first)`);
     pack.push(left[rng.int(left.length)]!);
   }
   return pack;

@@ -30,7 +30,7 @@
 
 ## The stages
 
-### Stage 1 (S48) — Sealed, a single event · **1 session, tight; 1½ honest**
+### Stage 1 (S48) — Sealed, a single event · **BUILT (S48)** — see handoff.md for what it found
 Six Classic packs from the Plane, the AI builder, seven AI seats, three Swiss rounds at a flat entrance, a prize screen.
 
 - **New code (world, pure):** `limited-builder.ts` — `buildLimitedDeck(pool: string[], rating, cards) → Decklist` (colours by rated playables, curve fill, lands by pips); `event.ts` — `ConvocationEvent` (the state below), `startEvent`, `pairRound` (round one random by seed, then by record), `recordSeries`, `standings`; `Format` grows `kind: "limited"`.

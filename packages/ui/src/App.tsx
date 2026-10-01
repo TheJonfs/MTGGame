@@ -10,6 +10,7 @@ import { PlayApp } from "./play/PlayApp";
 import { LabApp } from "./lab/LabApp";
 import { devMenuEnabled } from "./dev";
 import { WorldApp } from "./world/WorldApp";
+import { ConvocationApp } from "./convocation/ConvocationApp";
 import { SoundBoard } from "./audio/SoundBoard";
 
 const VIEWER_VERSION = "s6-0.1";
@@ -208,6 +209,7 @@ function MainMenu() {
         <div className="main-menu">
           <a href="/world"><img src="/menu-journey.png" alt="" /><b>The journey</b><span>walk the world — new game or continue</span></a>
           <a href="/play"><img src="/menu-duel.png" alt="" /><b>A single match</b><span>one duel, any decks, no world attached</span></a>
+          <a href="/convocation"><b>The Convocation</b><span>Sealed, eight seats, three rounds</span></a>
           <a href="/gallery"><img src="/menu-gallery.png" alt="" /><b>The card gallery</b><span>every card in the pool, both frames</span></a>
           <a href="/viewer"><img src="/menu-viewer.png" alt="" /><b>The replay viewer</b><span>watch any saved game, decision by decision</span></a>
           {devMenuEnabled() && <a href="/lab"><b>The matchup lab</b><span>dev: any pairing under any conditions, simulated live</span></a>}
@@ -245,6 +247,7 @@ export default function App() {
   if (window.location.pathname === "/viewer") {
     return game ? <Viewer game={game} /> : <Loader onLoad={setGame} />;
   }
+  if (window.location.pathname === "/convocation") return <ConvocationApp />; // S48: a Sealed Convocation of eight
   if (window.location.pathname === "/sound") return <SoundBoard />; // S24 r2: the SFX tuning board (dev surface)
   if (window.location.pathname === "/lab" && devMenuEnabled()) return <LabApp />; // S33 director round: the matchup lab (dev surface)
   return <MainMenu />;

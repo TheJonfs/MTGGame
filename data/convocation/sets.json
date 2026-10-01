@@ -1,5 +1,5 @@
 {
- "_comment": "S47 (ADR-145): the Convocation's sets \u2014 pool subsets as filters (world/packs.ts). Never in a pack: basics, tokens, the laws, and the power below. The other prize cards (the legends) are in packs at tier R (Chris, S47). A set names its recipe.",
+ "_comment": "S47 (ADR-145): the Convocation's sets \u2014 pool subsets as filters (world/packs.ts). Never in a pack: basics, tokens, the laws, and the power below (ADR-146: with the Manafleur and the Cinquefont). The other prize cards (the legends) are in packs at tier R (Chris, S47). A set names its recipe.",
  "power": [
   "black_lotus",
   "mox_pearl",
@@ -12,7 +12,9 @@
   "wrackroot",
   "shevelport",
   "obsidian_observatory",
-  "cairnbrand"
+  "cairnbrand",
+  "the_manafleur",
+  "the_cinquefont"
  ],
  "sets": [
   {
@@ -53,7 +55,6 @@
      "shadow_summoning",
      "static_sphere",
      "the_bailiff",
-     "the_cinquefont",
      "the_dredger",
      "the_fordkeeper",
      "the_reaper",
