@@ -54,6 +54,7 @@
 
 - Vitalist's art picked (storybook #4) and her printed face installed.
 - The Undertow amended by Chris (Glimpse ×4, Tidewall ×4, the Reeve; a black splash — see `docs/decision-updates/s46.md`); `open-decks.ts` regenerated, sixty and legal. Re-measured: **25% → 24%** — the list moved its matchups, not its mean. Glimpse lands on turn 8.8 on average; the black sources are too few for a {U}{B} spell. The table above is round-robin #1; the Undertow row is superseded (`analysis/runs/open_rr_2`, local).
+- **The Undertow, second amendment** (Chris): −1 Island −1 Forest +2 Underground Sea (two Seas rather than Sea + Bayou — the list is blue throughout with {U}{U} costs, and green pays only for three Zinnia and two Temporal Spring); −1 The Reeve −1 Zinnia +2 Man-o'-War. Sixty, legal. Re-measured (1,100 games): the mean **25%** — unchanged again (coin 17, larder 36, muster 17, warband 15, tally 20, locks 69, wurmspeaker 18, ford 40, enchantress 16, levy 7, loop 22). Glimpse casts per game 0.93 → 0.99.
 - `pnpm open:rr` gained `--only key`; `--merge` lets a later file replace an earlier one's pairings.
 
 ## Deviations from the brief
