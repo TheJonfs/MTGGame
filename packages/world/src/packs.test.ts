@@ -6,13 +6,15 @@ import { loadCardPool } from "@shandalar/cards/loader";
 import { cardColors } from "@shandalar/cards";
 import { LAW_IDS } from "./formats.js";
 import { isBasic } from "./legality.js";
-import { PACK_TIERS, fillErrors, resolveSet, rollPack, rollSealedPool, validatePackData, type ConvocationPackData } from "./packs.js";
+import { PACK_TIERS, fillErrors, packTier, resolveSet as resolveSetRaw, rollPack, rollSealedPool as rollSealedRaw, validatePackData, type ConvocationPackData, type SetDef, type Recipe } from "./packs.js";
 import { WorldRng } from "./rng.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const pool = loadCardPool(join(ROOT, "data/cards")).cards;
 const read = (f: string) => JSON.parse(readFileSync(join(ROOT, "data/convocation", f), "utf8"));
-const data: ConvocationPackData = { sets: read("sets.json").sets, recipes: read("recipes.json").recipes };
+const data: ConvocationPackData = { power: read("sets.json").power, sets: read("sets.json").sets, recipes: read("recipes.json").recipes };
+const resolveSet = (s: SetDef, p: typeof pool) => resolveSetRaw(s, p, data.power);
+const rollSealedPool = (s: SetDef, r: Recipe, p: typeof pool, seed: number) => rollSealedRaw(s, r, p, data.power, seed);
 const set = (id: string) => data.sets.find((s) => s.id === id)!;
 const recipe = (id: string) => data.recipes.find((r) => r.id === id)!;
 
@@ -29,16 +31,17 @@ describe("the Convocation's packs (S47 Part 3)", () => {
     expect(bad({ ...data, recipes: [...data.recipes.slice(1), { id: "classic", name: "x", slots: [{ count: 15, weights: { "1": 0.7 } }] }] })).toBe(true);
     expect(bad({ ...data, sets: [{ id: "x", name: "x", recipe: "classic", filter: { exclude: ["no_such_card"] } }] })).toBe(true);
     expect(bad({ ...data, sets: [{ id: "x", name: "x", recipe: "classic", filter: { exclude: ["black_lotus_token", "plains"] } }] })).toBe(true);
-    expect(fillErrors(set("pauper"), recipe("classic"), pool).length).toBeGreaterThan(0); // no tier 2, 3 or R in a Pauper set
+    expect(fillErrors(set("pauper"), recipe("classic"), pool, data.power).length).toBeGreaterThan(0); // no tier 2, 3 or R in a Pauper set
   });
 
-  it("no set holds a basic, a token, a law or a prize card; the pair sets stay in their colours; Pauper is tier 1", () => {
+  it("no set holds a basic, a token, a law or the power; the legends are in at tier R; the pair sets stay in their colours; Pauper is tier 1", () => {
     for (const s of data.sets) {
       const cards = resolveSet(s, pool);
       for (const t of PACK_TIERS) for (const id of cards[t]) {
         const d = pool.get(id)!;
-        expect(isBasic(id) || d.isTokenDef || d.prizeOnly || (LAW_IDS as readonly string[]).includes(id), `${s.id}: ${id}`).toBeFalsy();
-        expect(String(d.shopTier)).toBe(t);
+        expect(isBasic(id) || d.isTokenDef || data.power.includes(id) || (LAW_IDS as readonly string[]).includes(id), `${s.id}: ${id}`).toBeFalsy();
+        expect(packTier(d)).toBe(t);
+        if (d.prizeOnly) expect(t).toBe("R");
         if (s.filter.colorsWithin) expect(cardColors(d).every((c) => s.filter.colorsWithin!.includes(c)), `${s.id}: ${id}`).toBe(true);
       }
     }
@@ -48,6 +51,14 @@ describe("the Convocation's packs (S47 Part 3)", () => {
     expect(all).toContain("tundra");
     expect(all).not.toContain("bayou");
     expect(resolveSet(set("first_bloom"), pool)["3"]).not.toContain("dragon_mage");
+    // Chris, S47: a Clio or a Fordkeeper as pack one, pick one — the legends draft; the power does not.
+    const plane = resolveSet(set("plane"), pool);
+    expect(plane.R).toEqual(expect.arrayContaining(["clio_lady_of_the_depths", "the_fordkeeper", "the_usher"]));
+    for (const id of ["black_lotus", "mox_jet", "time_walk", "wrackroot", "tallyflame_court"]) expect(plane.R).not.toContain(id);
+    expect(data.power).toHaveLength(12);
+    expect(resolveSet(set("pair_ub"), pool).R).toContain("clio_lady_of_the_depths");
+    expect(resolveSet(set("first_bloom"), pool).R).not.toContain("the_fordkeeper"); // a flood legend
+    expect(resolveSet(set("first_bloom"), pool).R).toEqual(expect.arrayContaining(["the_usher", "clio_lady_of_the_depths"]));
     expect(resolveSet(set("flood"), pool)).toEqual(resolveSet(set("plane"), pool)); // Chris, S47: the Flood is a superset of the First Bloom
   });
 
@@ -55,7 +66,7 @@ describe("the Convocation's packs (S47 Part 3)", () => {
     const cards = resolveSet(set("plane"), pool);
     for (let seed = 1; seed <= 200; seed++) {
       const pack = rollPack(cards, recipe("classic"), new WorldRng(seed));
-      const tiers = pack.map((id) => String(pool.get(id)!.shopTier));
+      const tiers = pack.map((id) => String(packTier(pool.get(id)!)));
       expect(pack).toHaveLength(15);
       expect(new Set(pack).size).toBe(15);
       expect(["3", "R"]).toContain(tiers[0]);
@@ -76,7 +87,7 @@ describe("the Convocation's packs (S47 Part 3)", () => {
   it("the slot weights hold over many packs (Classic's rare slot: about one R in five)", () => {
     const cards = resolveSet(set("plane"), pool), rng = new WorldRng(47);
     let r = 0; const N = 4000;
-    for (let i = 0; i < N; i++) if (String(pool.get(rollPack(cards, recipe("classic"), rng)[0]!)!.shopTier) === "R") r++;
+    for (let i = 0; i < N; i++) if (String(packTier(pool.get(rollPack(cards, recipe("classic"), rng)[0]!)!)) === "R") r++;
     expect(r / N).toBeGreaterThan(0.17);
     expect(r / N).toBeLessThan(0.23);
   });

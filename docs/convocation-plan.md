@@ -7,8 +7,8 @@
 | piece | where | state |
 |---|---|---|
 | the series | `world/series.ts` — `MatchSeries` (the state machine), `runSeries` (headless over `runMatch`) | built, tested headless |
-| sets and recipes | `data/convocation/{sets,recipes}.json`, `world/packs.ts`, `pnpm booster`, `pnpm sealed-pool` | built, validated |
-| the card rating | `data/convocation/card-rating.json`, `world/rating.ts`, `pnpm rating:run` / `rating:build` | v0, measured |
+| sets and recipes | `data/convocation/{sets,recipes}.json`, `world/packs.ts`, `pnpm booster`, `pnpm sealed-pool` | built, validated; the legends at tier R, the power out |
+| the card rating | `data/convocation/card-rating.json`, `world/rating.ts`, `pnpm rating:run` / `rating:build` / `rating:view` (a standalone page) | v0, measured |
 | every authored list | `world/authored-lists.ts` (112 lists) | built — the Constructed builder's library |
 | the Open | `world/formats.ts` (`OPEN_FORMAT`), `sim/open-decks.ts` | S46 |
 
@@ -100,7 +100,7 @@ interface ConvocationEventSave {
 2. **The card rating.** v0 is coarse in known ways (below). The builder should be tested for *sanity* (plays its bombs, does not play Disenchant main), not for strength; the Lab's Sealed sim is the correction loop, and the table is designed for updates (`seen`, `lists` and the raw terms are stored beside the rating).
 3. **The draw rule.** Built, but two calls are interim: a series is capped at N games (paper Magic plays on until time is called, so a 1–0–2 series there is also a win, but a 0–0–3 never happens in three games); and game one's coin picks the starting player outright (CR 103.1 has the coin's winner *choose*; the series reads that as choosing to play, so the human never gets a game-one play/draw choice until a screen offers one). The loser's choice and the same seat choosing again after a drawn game are CR 103.1, verified.
 4. **The editor's source.** The editor's spares read `world.player.collection` and its save writes `world.decks`. Extracting a source object is a refactor of a large component inside S48; it is the part of S48 most likely to overrun.
-5. **Small tiers.** Tier 3 is nineteen cards in the Plane (eleven in the First Bloom) and the pair sets hold seven or eight; a pod's rare slots will repeat. Packs avoid duplicates within a pack only (ruled, S47). Whether tier 3 wants more cards is a pool question for after Sealed plays.
+5. **Small tiers.** Tier 3 is nineteen cards in the Plane (eleven in the First Bloom) and the pair sets hold seven or eight; a pod's rare slots will repeat. Tier R is 67 with the legends in (32 of them). Packs avoid duplicates within a pack only (ruled, S47). Whether tier 3 wants more cards is a pool question for after Sealed plays.
 6. **Lopsided authored lists as a library.** The 112 lists span thirty to sixty cards; the Constructed builder must select by format size, not treat them as one field.
 
 ## What the rating is, and is not (v0)

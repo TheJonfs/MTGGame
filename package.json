@@ -38,6 +38,7 @@
     "open:rr": "tsx packages/world/src/open-rr-cli.ts",
     "rating:run": "tsx packages/world/src/rating-run-cli.ts",
     "rating:build": "tsx packages/world/src/rating-build-cli.ts",
+    "rating:view": "tsx packages/world/src/rating-view-cli.ts",
     "booster": "tsx packages/world/src/pack-cli.ts",
     "sealed-pool": "tsx packages/world/src/pack-cli.ts --sealed",
     "blocks-audit": "tsx packages/sim/src/blocks-audit-cli.ts",

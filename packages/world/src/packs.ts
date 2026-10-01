@@ -1,8 +1,9 @@
 /**
  * S47 (Part 3, ADR-145): the Convocation's Limited data — a SET is a pool subset (a filter over the card pool) and a
  * RECIPE is `slots × tier weights`; a pack is a seeded draw. Pure and browser-safe: the data (data/convocation) is
- * handed in. Never in a pack, whatever the filter says: basics, tokens, the laws, prizeOnly cards. A pack holds no
- * duplicate; two packs may share a card (Chris, S47 kickoff — tier 3 is nineteen cards, an event's worth of rare
+ * handed in. Never in a pack, whatever the filter says: basics, tokens, the laws, and the POWER (the data's list — the
+ * Lotus, the Moxen, Time Walk, the High Grounds). The other prize cards — the legends — are in packs at tier R
+ * (Chris, S47: a Clio or a Fordkeeper as pack one, pick one is a possibility). A pack holds no duplicate; two packs may share a card (Chris, S47 kickoff — tier 3 is nineteen cards, an event's worth of rare
  * slots is more).
  */
 import { cardColors, type CardDef } from "@shandalar/cards";
@@ -25,9 +26,10 @@ export interface SetFilter {
 export interface SetDef { id: string; name: string; recipe: string; note?: string; filter: SetFilter }
 export interface RecipeSlot { count: number; weights: Partial<Record<PackTier, number>> }
 export interface Recipe { id: string; name: string; note?: string; slots: RecipeSlot[] }
-export interface ConvocationPackData { sets: SetDef[]; recipes: Recipe[] }
+export interface ConvocationPackData { /** Prize cards never in a pack. */ power: string[]; sets: SetDef[]; recipes: Recipe[] }
 
-const tierOf = (d: CardDef): PackTier | undefined => (d.shopTier === undefined ? undefined : (String(d.shopTier) as PackTier));
+/** A card's tier in a pack: its shop tier; a prize card (no shop tier) is tier R. */
+export const packTier = (d: CardDef): PackTier | undefined => (d.shopTier !== undefined ? (String(d.shopTier) as PackTier) : d.prizeOnly ? "R" : undefined);
 const TIER_RANK: Record<PackTier, number> = { "1": 1, "2": 2, "3": 3, R: 4 };
 
 /** A card's colours for a set's colour filter: its cost's, and — a land — every colour its abilities name. */
@@ -37,19 +39,19 @@ export function packColors(d: CardDef): PackColor[] {
   return [...out];
 }
 
-/** Whether a card may ever sit in a pack: not a basic, a token, a law or a prize, and it carries a tier. */
-export function packable(d: CardDef): boolean {
-  return !isBasic(d.id) && !d.isTokenDef && !d.prizeOnly && !(LAW_IDS as readonly string[]).includes(d.id) && tierOf(d) !== undefined;
+/** Whether a card may ever sit in a pack: not a basic, a token, a law or the power, and it has a pack tier. */
+export function packable(d: CardDef, power: readonly string[]): boolean {
+  return !isBasic(d.id) && !d.isTokenDef && !power.includes(d.id) && !(LAW_IDS as readonly string[]).includes(d.id) && packTier(d) !== undefined;
 }
 
 /** The set's cards by tier (ids sorted — the draw is seed-stable across load orders). */
-export function resolveSet(set: SetDef, pool: Map<string, CardDef>): Record<PackTier, string[]> {
+export function resolveSet(set: SetDef, pool: Map<string, CardDef>, power: readonly string[]): Record<PackTier, string[]> {
   const out: Record<PackTier, string[]> = { "1": [], "2": [], "3": [], R: [] };
   const exclude = new Set(set.filter.exclude ?? []);
   const within = set.filter.colorsWithin ? new Set<PackColor>(set.filter.colorsWithin) : undefined;
   for (const d of pool.values()) {
-    if (!packable(d) || exclude.has(d.id)) continue;
-    const t = tierOf(d)!;
+    if (!packable(d, power) || exclude.has(d.id)) continue;
+    const t = packTier(d)!;
     if (set.filter.maxTier !== undefined && TIER_RANK[t] > set.filter.maxTier) continue;
     if (within && packColors(d).some((c) => !within.has(c))) continue;
     out[t].push(d.id);
@@ -62,6 +64,7 @@ export function resolveSet(set: SetDef, pool: Map<string, CardDef>): Record<Pack
 export function validatePackData(data: ConvocationPackData, pool: Map<string, CardDef>): string[] {
   const errors: string[] = [];
   const recipes = new Map(data.recipes.map((r) => [r.id, r]));
+  for (const id of data.power) { const d = pool.get(id); if (!d) errors.push(`power: unknown card ${id}`); else if (!d.prizeOnly) errors.push(`power: ${id} is not a prize card`); }
   if (recipes.size !== data.recipes.length) errors.push("recipes: duplicate id");
   for (const r of data.recipes) {
     if (!r.slots.length) errors.push(`recipe ${r.id}: no slots`);
@@ -74,18 +77,18 @@ export function validatePackData(data: ConvocationPackData, pool: Map<string, Ca
   }
   if (new Set(data.sets.map((s) => s.id)).size !== data.sets.length) errors.push("sets: duplicate id");
   for (const s of data.sets) {
-    for (const id of s.filter.exclude ?? []) { const d = pool.get(id); if (!d) errors.push(`set ${s.id}: unknown card ${id}`); else if (!packable(d)) errors.push(`set ${s.id}: excludes ${id}, which is never in a pack`); }
+    for (const id of s.filter.exclude ?? []) { const d = pool.get(id); if (!d) errors.push(`set ${s.id}: unknown card ${id}`); else if (!packable(d, data.power)) errors.push(`set ${s.id}: excludes ${id}, which is never in a pack`); }
     const r = recipes.get(s.recipe);
     if (!r) { errors.push(`set ${s.id}: unknown recipe ${s.recipe}`); continue; }
-    errors.push(...fillErrors(s, r, pool));
+    errors.push(...fillErrors(s, r, pool, data.power));
   }
   return errors;
 }
 
 /** Why this set cannot fill this recipe: a tier a slot draws from must hold at least as many cards as the slots that
  * can draw from it (a pack holds no duplicate, so the worst roll must still fill). */
-export function fillErrors(set: SetDef, recipe: Recipe, pool: Map<string, CardDef>): string[] {
-  const cards = resolveSet(set, pool);
+export function fillErrors(set: SetDef, recipe: Recipe, pool: Map<string, CardDef>, power: readonly string[]): string[] {
+  const cards = resolveSet(set, pool, power);
   const errors: string[] = [];
   for (const t of PACK_TIERS) {
     const need = recipe.slots.reduce((n, s) => n + ((s.weights[t] ?? 0) > 0 ? s.count : 0), 0);
@@ -108,7 +111,7 @@ export function rollPack(cards: Record<PackTier, string[]>, recipe: Recipe, rng:
 }
 
 /** A Sealed pool: `packs` packs from one seed (the formats doc §2.3 — six Classic packs). */
-export function rollSealedPool(set: SetDef, recipe: Recipe, pool: Map<string, CardDef>, seed: number, packs = 6): string[][] {
-  const cards = resolveSet(set, pool), rng = new WorldRng(seed);
+export function rollSealedPool(set: SetDef, recipe: Recipe, pool: Map<string, CardDef>, power: readonly string[], seed: number, packs = 6): string[][] {
+  const cards = resolveSet(set, pool, power), rng = new WorldRng(seed);
   return Array.from({ length: packs }, () => rollPack(cards, recipe, rng));
 }

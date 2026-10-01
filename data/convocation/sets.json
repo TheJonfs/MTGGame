@@ -1,11 +1,25 @@
 {
- "_comment": "S47 (ADR-145): the Convocation's sets — pool subsets as filters (world/packs.ts). Never in a pack: basics, tokens, the laws, prizeOnly. A set names its recipe.",
+ "_comment": "S47 (ADR-145): the Convocation's sets \u2014 pool subsets as filters (world/packs.ts). Never in a pack: basics, tokens, the laws, and the power below. The other prize cards (the legends) are in packs at tier R (Chris, S47). A set names its recipe.",
+ "power": [
+  "black_lotus",
+  "mox_pearl",
+  "mox_sapphire",
+  "mox_jet",
+  "mox_ruby",
+  "mox_emerald",
+  "time_walk",
+  "tallyflame_court",
+  "wrackroot",
+  "shevelport",
+  "obsidian_observatory",
+  "cairnbrand"
+ ],
  "sets": [
   {
    "id": "plane",
    "name": "The Plane",
    "recipe": "classic",
-   "note": "everything below prizeOnly",
+   "note": "every card but the power: the shop tiers, and the legends at tier R",
    "filter": {}
   },
   {
@@ -24,6 +38,10 @@
      "entomb",
      "glimpse_the_unthinkable",
      "guttersnipe",
+     "isaura_the_levy",
+     "meliyan_the_torment",
+     "odile_the_tallyflame",
+     "ovna_the_enchantress",
      "poison_tip_archer",
      "ponder",
      "powerstone_minefield",
@@ -34,10 +52,17 @@
      "seedborn_muse",
      "shadow_summoning",
      "static_sphere",
+     "the_bailiff",
+     "the_cinquefont",
+     "the_dredger",
+     "the_fordkeeper",
+     "the_reaper",
+     "the_reeve",
      "tidewall",
      "undermine",
      "vitalist",
-     "voracious_cobra"
+     "voracious_cobra",
+     "zinnia_the_undertow"
     ]
    }
   },
@@ -45,7 +70,7 @@
    "id": "flood",
    "name": "The Flood",
    "recipe": "rich",
-   "note": "a superset of the First Bloom (Chris, S47): it and everything added since Session 40 — today the Plane's cards under the Rich recipe",
+   "note": "a superset of the First Bloom (Chris, S47): it and everything added since Session 40 \u2014 today the Plane's cards under the Rich recipe",
    "filter": {}
   },
   {
