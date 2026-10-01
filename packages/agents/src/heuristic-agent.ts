@@ -394,6 +394,33 @@ export class HeuristicAgent implements Agent {
     return rest.length > 0 ? rest : null;
   }
 
+  /** Post-S48 (book 87; Chris: a creature cast before the Soul Warden, the life missed): a permanent in hand that
+   * WATCHES creatures enter (the shape: a trigger on ENTERS_BATTLEFIELD whose source is another permanent and whose
+   * type is Creature, ours or anyone's) is cast before the other creatures it would watch — when the mana covers
+   * both this turn (colour-blind: untapped lands against the two mana values). Then the other creature casts leave
+   * the pool; the watcher and everything else stay. The landfall-first rule's shape (book 56), one step along. */
+  watcherFirstCandidates(view: GameView, candidates: Action[]): Action[] | null {
+    const cardOf = (a: Action) => (a.type === "castSpell" ? view.hand.find((c) => c.objectId === a.objectId) : undefined);
+    const watches = (d: CardDef | undefined) => !!d && !d.types.includes("Instant") && !d.types.includes("Sorcery") && (d.abilities ?? []).some((ab) => {
+      if (ab.kind !== "triggered" || ab.event !== "ENTERS_BATTLEFIELD") return false;
+      const c = ab.condition as { source?: string; controller?: string; type?: string[] } | undefined;
+      return c?.source === "other" && (c.controller === "any" || c.controller === "you" || c.controller === undefined) && (!c.type || c.type.includes("Creature"));
+    });
+    const watchers = candidates.filter((a) => watches(this.def(cardOf(a)?.cardId ?? "")));
+    if (!watchers.length) return null;
+    const lands = view.battlefield.filter((o) => o.controller === view.you && !o.tapped && this.def(o.cardId)?.types.includes("Land")).length;
+    const cheapest = Math.min(...watchers.map((a) => this.mv(cardOf(a)!.cardId)));
+    const watcherIds = new Set(watchers.map((a) => (a as { objectId: string }).objectId));
+    const rest = candidates.filter((a) => {
+      const card = cardOf(a);
+      if (!card || watcherIds.has(card.objectId)) return true;
+      const d = this.def(card.cardId);
+      if (!d?.types.includes("Creature")) return true;
+      return this.mv(card.cardId) + cheapest > lands; // not both this turn: the other creature stays a candidate
+    });
+    return rest.length < candidates.length ? rest : null;
+  }
+
   /** S17: is this action a mana burst (a spell whose only effect is addMana, or a sacrifice-cost
    * mana ability)? If so, does the burst enable a cast from hand this step that we couldn't pay now?
    * Mana model: untapped lands + untapped rested creature producers + the floating pool vs. nonland
@@ -779,7 +806,8 @@ export class HeuristicAgent implements Agent {
       return landsOnly[this.softmaxPick(landsOnly.map((a) => this.scorePriorityAction(view, a)))]!; // which land — a real choice; passing is not
     }
     // r9: a landfall permanent in hand is cast before the land drop (book 56).
-    const pool = this.landfallFirstCandidates(view, candidates) ?? candidates;
+    const first = this.landfallFirstCandidates(view, candidates) ?? candidates;
+    const pool = this.watcherFirstCandidates(view, first) ?? first; // post-S48 (book 87)
     const scores = pool.map((a) => this.scorePriorityAction(view, a));
     const pick = pool[this.softmaxPick(scores)]!;
     // S27 r2: the Witch's per-turn budget — count each life-for-cards activation taken.

@@ -1192,4 +1192,43 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const cands = [{ type: "playLand" as const, objectId: "land" }, { type: "castSpell" as const, objectId: "rb", targets: [] }, { type: "pass" as const }];
     expect(a.landfallFirstCandidates(mkView({ hand: [{ objectId: "land", cardId: "forest" }, { objectId: "rb", cardId: "rampaging_baloths" }], battlefield: forests }), cands)?.some((x) => x.type === "playLand")).toBe(false);
   });
+
+  it("book of shame 85 (post-S48, Chris — Tendrils for two at a three-toughness creature): a counted amount is counted — the spell is no play when its damage would not kill, and a play when it would", () => {
+    const a = agent();
+    const swamps = (n: number) => Array.from({ length: n }, (_, i) => ({ id: `s${i}`, cardId: "swamp", controller: 0 as const }));
+    const cast = { type: "castSpell" as const, objectId: "t", targets: [{ kind: "object" as const, id: "x" }] };
+    const at = (n: number, who: string, step = "MAIN1") => { const v = mkView({ step, hand: [{ objectId: "t", cardId: "tendrils_of_corruption" }], battlefield: [...swamps(n), { id: "p0", cardId: "plains", controller: 0 }, { id: "p1", cardId: "plains", controller: 0 }, { id: "x", cardId: who, controller: 1 }] }); return a.scorePriorityAction(v, cast) - a.scorePriorityAction(v, { type: "pass" }); };
+    expect(at(2, "hill_giant")).toBeLessThan(0); // two Swamps, a 3/3: the reported cast
+    expect(at(2, "hill_giant", "UPKEEP")).toBeLessThan(0);
+    expect(at(3, "hill_giant")).toBeGreaterThan(0); // the third Swamp makes it removal
+    expect(at(2, "grizzly_bears")).toBeGreaterThan(0);
+  });
+
+  it("book of shame 86 (post-S48, Chris — the Warhammer passed back and forth until the mana ran out): equipment on a creature of ours does not move to another unless the move puts it to work this turn", () => {
+    const a = agent();
+    const lands = Array.from({ length: 6 }, (_, i) => ({ id: `l${i}`, cardId: "swamp", controller: 0 as const }));
+    const equip = (to: string) => ({ type: "activateAbility" as const, objectId: "wh", abilityIndex: 1, targets: [{ kind: "object" as const, id: to }] });
+    const board = (b1: Partial<Obj>, b2: Partial<Obj>, on: string | null = "b1") => mkView({ battlefield: [...lands, { id: "wh", cardId: "loxodon_warhammer", controller: 0, attachedTo: on }, { id: "b1", cardId: "grizzly_bears", controller: 0, ...b1 }, { id: "b2", cardId: "grizzly_bears", controller: 0, ...b2 }] });
+    const gain = (v: GameView, to: string) => a.scorePriorityAction(v, equip(to)) - a.scorePriorityAction(v, { type: "pass" });
+    expect(gain(board({}, {}), "b2")).toBeLessThan(0); // two ready hosts: the churn
+    expect(gain(board({}, {}), "b1")).toBeLessThan(0); // the same host (the S14 rule, unchanged)
+    expect(gain(board({}, { summoningSick: true }), "b2")).toBeLessThan(0); // onto a creature that cannot swing
+    expect(gain(board({ tapped: true }, {}), "b2")).toBeGreaterThan(0); // off a tapped host onto a ready one, before combat
+    expect(gain(board({ summoningSick: true }, {}), "b2")).toBeGreaterThan(0);
+    expect(gain(board({}, {}, null), "b2")).toBeGreaterThan(0); // unattached: equipping is a play, as before
+  });
+
+  it("book of shame 87 (post-S48, Chris — a creature cast before the Soul Warden, the life missed): with mana for both, the creature-watcher is cast first; short of mana for both, the choice stays open", () => {
+    const a = agent();
+    const cast = (id: string) => ({ type: "castSpell" as const, objectId: id, targets: [] });
+    const hand = [{ objectId: "sw", cardId: "soul_warden" }, { objectId: "gb", cardId: "grizzly_bears" }, { objectId: "sh", cardId: "shock" }];
+    const lands = (n: number) => Array.from({ length: n }, (_, i) => ({ id: `l${i}`, cardId: i % 2 ? "plains" : "forest", controller: 0 as const }));
+    const all = [cast("sw"), cast("gb"), cast("sh"), { type: "pass" as const }];
+    const three = a.watcherFirstCandidates(mkView({ hand, battlefield: lands(3) }), all)!;
+    expect(three.map((x) => (x as { objectId?: string }).objectId ?? "pass")).toEqual(["sw", "sh", "pass"]); // the Bears wait; the Shock and the pass stay
+    expect(a.watcherFirstCandidates(mkView({ hand, battlefield: lands(2) }), all)).toBeNull(); // two lands: Warden + Bears is three mana
+    expect(a.watcherFirstCandidates(mkView({ hand, battlefield: lands(3) }), [cast("gb"), cast("sh"), { type: "pass" as const }])).toBeNull(); // no watcher among the plays
+    // a watcher of OPPONENTS' creatures only is no reason to hurry (the shape reads the controller)
+    expect(a.watcherFirstCandidates(mkView({ hand: [{ objectId: "gb", cardId: "grizzly_bears" }, { objectId: "hg", cardId: "hill_giant" }], battlefield: lands(6) }), [cast("gb"), cast("hg")])).toBeNull();
+  });
 });

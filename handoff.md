@@ -61,6 +61,15 @@ The direction is right: cards that need a deck built around them (Entomb, Buried
 - **Concern 3 fixed**: `recordCutting` keeps what the profile already holds — a Manafleur victory after the flood no longer drops `floodSurvived` (replaying phase one never costs phase two's credit). Nothing reads the flag yet (it is phase three's), so no player lost anything visible; the chronicle's entries were never affected. One test.
 - **The menu**: the journey and the Convocation are the top two doors, the single match and the gallery the next two; the replay viewer and (dev) the lab are a quiet row of links beneath. Deviation 9's missing plate is made: three candidates (`docs/art/subjects/menu-convocation-{a,b,c}.md`); **a** — the round hall from above — is installed pending Chris's verdict.
 
+### Chris's first Sealed playtest (2026-10-02) — 3–0, 6–0 with a blue-black build; the flow "felt good", the round-end wait trivial
+
+- **Door A** (the round hall) is the Convocation's plate.
+- **Three AI misplays reported, fixed, pinned** (books 85–87; ladder mirror gate PASS). Measured over 320 Sealed games, before → after:
+  - *The Warhammer passed back and forth until the mana ran out* — a move between two of our creatures scored the full worth of equipping every time. Now a move is a play only when it puts the equipment to work this turn (onto a ready creature, off one that cannot swing, before combat). Equip moves **325 → 84**.
+  - *Tendrils of Corruption for two at a three-toughness creature* — the prediction read every counted amount as "some" (three). It now counts the battlefield through the ref's predicate. Counted-damage casts that would not kill **26 → 8** (of ~95; the remaining eight not investigated).
+  - *A creature cast before the Soul Warden* — with mana for both, a permanent that watches creatures enter is cast first (the landfall-first rule's shape). Watcher skipped **33 → 0**.
+- **The seats play at master** — the strongest profile — with even life and no entrance. Chris swept the event. The lever the mode has for this is `convocationEntrance` (all zeros today); whether a single Sealed event should stay flat is the planner's.
+
 ## Deviations from the brief
 1. **The editor's source object is wider than the brief's shape** — a host carrying the source (`collection`, `savedDeck`, `activeDeckName`), the draft and its verbs; the world's adapter passes its controller's editor methods through unchanged rather than re-implementing them over `save(decks)`. The world's editor logic was not moved, so its pins could not break. *Rule on*: nothing, unless the planner wants the world's editor logic itself lifted out.
 2. **The Lab's worker was not timed; the field runs on the main thread.** Measured in the browser (dev build): the field's three series took **1.6 s in round one (cold) and 0.2–0.3 s in rounds two and three**, behind an "other tables finish their matches" screen. For eight seats that is enough and avoids the worker's lifetime question. *Rule on*: nothing now; sixteen seats (seven series) is about twice this and still fine; a hundred needs the worker and its timing.

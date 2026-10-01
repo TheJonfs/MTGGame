@@ -301,9 +301,19 @@ export function predictAction(
       if (equip.attachedTo === host.id) {
         return { view, adjustment: 0, unchanged: true }; // re-equip same host: nothing happens
       }
+      // Post-S48 (book 86; Chris: the Warhammer passed back and forth until the mana ran out): equipment already on
+      // a creature of ours MOVES — the +0.4 below is the worth of attaching, and a move re-attaches nothing new. A
+      // move is a play only when it puts the equipment to work this turn: the new host can attack and the old cannot
+      // (tapped, or entered this turn). Otherwise it is churn — "unchanged", strictly below passing.
+      const oldHost = equip.attachedTo ? view.battlefield.find((o) => o.id === equip.attachedTo && o.controller === me) : undefined;
+      if (oldHost) {
+        const newHost = view.battlefield.find((o) => o.id === host.id);
+        const ready = (o: typeof oldHost | undefined) => !!o && !o.tapped && !o.summoningSick;
+        if (!(ready(newHost) && !ready(oldHost) && view.activePlayer === me && view.step === "MAIN1")) return { view, adjustment: 0, unchanged: true };
+      }
       const e2 = next.battlefield.find((o) => o.id === action.objectId);
       if (e2) e2.attachedTo = host.id;
-      adjustment += 0.4; // statics will land on the host next time the real view arrives
+      adjustment += oldHost ? 0.1 : 0.4; // statics will land on the host next time the real view arrives
     }
     return { view: next, adjustment, unchanged: false };
   }
@@ -358,8 +368,18 @@ function applyEffect(
     if (!ref.types) return yard.length;
     return yard.filter((id) => { const d = defs.get(id); return !!d && ref.types!.some((t) => d.types.includes(t as never)); }).length;
   };
-  const amt = (a: number | "X" | { ref: string; who?: string; types?: string[] }): number =>
-    typeof a === "number" ? a : a === "X" ? x : a.ref === "xPaid" ? x : a.ref === "graveyardCount" ? gyCount(a) : a.ref === "count" ? 3 : 0;
+  // Post-S48 (book 85; Chris: Tendrils for two at a three-toughness creature): a `count` ref reads the VIEW's
+  // battlefield through its predicate (printed types and subtypes; the controller defaults to us) instead of the old
+  // "some" (3) — the spell is worth what it would do now. `attacking` / `other` are not read (no damage counts them).
+  const countRef = (p: { cardType?: string; subtype?: string; controller?: string } | undefined): number =>
+    view.battlefield.filter((o) => {
+      const who = p?.controller ?? "you";
+      if (who === "you" ? o.controller !== me : who === "opponent" ? o.controller === me : false) return false;
+      const d = defs.get(o.cardId);
+      return !!d && (!p?.cardType || d.types.includes(p.cardType as never)) && (!p?.subtype || (d.subtypes ?? []).includes(p.subtype));
+    }).length;
+  const amt = (a: number | "X" | { ref: string; who?: string; types?: string[]; predicate?: { cardType?: string; subtype?: string; controller?: string } }): number =>
+    typeof a === "number" ? a : a === "X" ? x : a.ref === "xPaid" ? x : a.ref === "graveyardCount" ? gyCount(a) : a.ref === "count" ? countRef(a.predicate) : 0;
   const objAt = (i: number) => {
     const t = targets[i];
     return t?.kind === "object" ? view.battlefield.find((o) => o.id === t.id) : undefined;
