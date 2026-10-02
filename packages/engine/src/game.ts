@@ -13,7 +13,7 @@ import {
 } from "./combat.js";
 import type { EngineCtx } from "./ctx.js";
 import { characteristics, expireEndOfTurnEffects, untapsDuringOthersUntap } from "./characteristics.js";
-import { makeEffectContext } from "./effect-context.js";
+import { makeEffectContext, specOfFlatIndex } from "./effect-context.js";
 import { attackerChoices, blockerChoices, bottomChoices, discardChoices, effectiveAbilityCost, legalActions } from "./enumerator.js";
 import type { GameEventMap } from "./events.js";
 import { autoPay, canPay, emptyManaPools, tapForMana, untapForMana } from "./mana.js";
@@ -801,7 +801,9 @@ export class Game {
     // fizzles — "countered by game rules" (CR 608.2b, R-004). A zero-target cast
     // (A10's any-number loop closed immediately) is not a fizzle — it resolves doing nothing.
     if (item.targetSpecs.length > 0 && item.targets.length > 0) {
-      const anyLegal = item.targets.some((t, i) => isLegalTarget(this.ctx, item.targetSpecs[i]!, t, item.controller, item.sourceId ?? item.objectId));
+      // Post-S52: a target's spec is by its FLAT index (one spec may hold several targets — "up to two target
+      // creatures"); reading `targetSpecs[i]` crashed when the first target had left and the second was checked.
+      const anyLegal = item.targets.some((t, i) => { const spec = specOfFlatIndex(item.targetSpecs, i); return !!spec && isLegalTarget(this.ctx, spec, t, item.controller, item.sourceId ?? item.objectId); });
       if (!anyLegal) {
         this.ctx.log.append({ t: "EVENT", name: "FIZZLE", payload: { cardId: item.sourceCardId } });
         if (item.objectId) moveObject(this.ctx, item.objectId, "graveyard");

@@ -19,20 +19,28 @@ const d = (id: string) => cards.get(id)!;
 
 /** S52 (Part 1): Constructed by select-and-repair. */
 describe("the Constructed builder (S52)", () => {
-  it("the Open: every seed yields a legal sixty from one of the five strongest lists; a seed is a deck; the noise makes five seats five decks", () => {
-    const top = Object.entries(OPEN_MEANS).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([k]) => k);
-    const builds = Array.from({ length: 60 }, (_, i) => buildConstructedDeck(OPEN_FORMAT, rating, i + 1, library, cards));
+  it("the Open: every seed yields a legal sixty from one of the TWELVE Open lists; a seed is a deck; a quarter of the seats play their list as written, the rest tinker lightly or heavily", () => {
+    const top = Object.keys(OPEN_MEANS);
+    const builds = Array.from({ length: 120 }, (_, i) => buildConstructedDeck(OPEN_FORMAT, rating, i + 1, library, cards));
     for (const b of builds) {
       expect(b.check.problems, b.from).toEqual([]);
       expect(size(b.deck)).toBe(60);
       expect(top).toContain(b.from);
       expect(b.legalShare).toBe(1);
-      expect(b.swaps.length).toBeGreaterThanOrEqual(1);
+      const stock = library.find((l) => l.key === b.from)!.decklist, moved = b.deck.reduce((n, e) => n + Math.max(0, e.count - (stock.find((x) => x.cardId === e.cardId)?.count ?? 0)), 0);
+      if (b.tinker === "stock") { expect(b.swaps).toEqual([]); expect(moved).toBe(0); } // the list as written
+      if (b.tinker === "light") expect(moved).toBeLessThanOrEqual(3);
+      if (b.tinker === "heavy") expect(b.swaps.length).toBeGreaterThanOrEqual(3);
     }
-    expect(new Set(builds.map((b) => b.from)).size).toBe(5); // the field varies
+    expect(new Set(builds.map((b) => b.from)).size).toBe(12); // every Open list is in the field
+    const share = (t: string) => builds.filter((b) => b.tinker === t).length / builds.length;
+    expect(share("stock")).toBeGreaterThan(0.12); expect(share("stock")).toBeLessThan(0.4);
+    expect(share("light")).toBeGreaterThan(0.35); expect(share("heavy")).toBeGreaterThan(0.12);
+    expect(buildConstructedDeck(OPEN_FORMAT, rating, 9, library, cards, { tinker: "heavy", from: "open:larder" })).toMatchObject({ from: "open:larder", tinker: "heavy" });
     const levy = builds.filter((b) => b.from === "open:levy");
     expect(new Set(levy.map((b) => JSON.stringify(b.deck))).size).toBeGreaterThan(1); // one archetype, several decks
     expect(buildConstructedDeck(OPEN_FORMAT, rating, 7, library, cards)).toEqual(builds[6]);
+    void levy;
     // the restricted list holds through repair and noise
     for (const b of builds) for (const e of b.deck) expect(e.count).toBeLessThanOrEqual(copyCap(e.cardId, OPEN_FORMAT.rule));
   });

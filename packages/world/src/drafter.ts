@@ -105,6 +105,11 @@ export function draftPick(pack: readonly string[], picks: readonly string[], pic
   return [...pack].sort((a, b) => pickValue(b, picks, pick, rating, cards, signals) - pickValue(a, picks, pick, rating, cards, signals) || a.localeCompare(b))[0]!;
 }
 
+/** A whole pod's draft, headless: every seat's picks (the event's other pods — post-S52). */
+export function runDraftPacks(set: SetDef, recipe: Recipe, data: ConvocationPackData, cards: Map<string, CardDef>, rating: CardRatingTable, seed: number, seats: number, rounds: number): string[][] {
+  return runDraft(set, recipe, data, cards, rating, seed, seats, rounds).picks;
+}
+
 export interface DraftResult { picks: string[][]; /** For each seat: the pick at which its top two colours last changed. */ settledAt: number[] }
 /** A pod's draft: `seats` seats, `rounds` packs each, passed left, right, left; every seat picks by `draftPick`. */
 export function runDraft(set: SetDef, recipe: Recipe, data: ConvocationPackData, cards: Map<string, CardDef>, rating: CardRatingTable, seed: number, seats = 8, rounds = 3, read = true): DraftResult {

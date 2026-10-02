@@ -446,7 +446,8 @@ describe("the Constructed event (S52 Part 2, ADR-152)", () => {
       expect(seat.pool).toEqual([]);
     }
     expect(new Set(e.field.slice(1).map((x) => x.list)).size).toBeGreaterThanOrEqual(3); // the field varies
-    expect(new Set(e.field.slice(1).map((x) => JSON.stringify(x.deck))).size).toBe(15); // no two seats share a list exactly
+    expect(new Set(e.field.slice(1).map((x) => JSON.stringify(x.deck))).size).toBeGreaterThanOrEqual(11); // the tinkerers differ; two stock seats on one list may not
+    for (const seat of e.field.slice(1)) expect(["stock", "light", "heavy"]).toContain(seat.tinker);
     expect(start(52)).toEqual(e);
     // the player's deck: the format's whole legal pool is theirs — no collection is asked
     expect(registerDeck(e, 0, [{ cardId: "plains", count: 40 }], cards).ok).toBe(false); // sixty is the floor

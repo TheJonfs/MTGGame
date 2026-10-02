@@ -57,6 +57,35 @@ The term does not reach 50% and does not thin black's crowd, so its weights are 
 - **`guardian-sim`**: within ±2, except **Drakuseth** +4 at the two lower tiers (59 → 63, 68 → 72).
 - **`petal-sim`**: within ±1.
 
+## After the handoff (2026-10-05, Chris's four tweaks)
+
+**1. Thirty-two seats in the five-round events** (the Draft, the big Sealed, the Open) — no rematch in five Swiss rounds, the Umbel from thirty-two. A Draft is **four pods of eight**: the player's pod drafts live, the other three draft headless when the event begins. Names come from a builder (`world/convocation-names.ts`): the planner's sixteen first, then given × family names in the same register (926 available). In the browser: the event is made in 0.2 s, a round's fifteen other series take 1.2–1.4 s, the save is 82 KB.
+
+**2. The Open's field draws on all twelve lists**, and the noise has a noise: a seat is *stock* (a quarter — the list as written), a *light* tinkerer (half — one or two swaps and a land) or a *heavy* one (a quarter — four to six swaps and a land). A 31-seat round-robin (5,580 games): eleven of the twelve lists appeared; against its own list's mean a stock seat is +0.8 points, a light one −0.1, a heavy one −0.6 (small samples, the expected direction).
+
+**3. Learning from the variations — `pnpm tinker --list open:warband`.** The list as written plays the other eleven Open lists (20 games each); then 24 variants, each ONE same-role swap, play the same gauntlet on the same seeds; a swap's delta carries a paired standard error. Run on the Warband, the Levy and the Larder:
+- **A single swap is below the noise at this size.** With 220 games a swap the standard error is about 2.5 points, and a one-card change in sixty moves a list by one or two. Of 71 swaps, one cleared |z| ≥ 2 (about three would by chance): Zombify → Pacifism in the Larder, −5.9.
+- So there is signal, but not free at 220 games: resolving a two-point swap needs about 1,400 games on it. The cheaper route to the same information is the one the rating already uses — log what was in hand across many varied decks and read the lift; the Constructed field's tinkered seats are exactly that sample. I have not wired Constructed games into the rating.
+- Each run is saved (`analysis/runs/tinker_<list>.json`: every swap, its delta, its error, by opponent).
+- **It found an engine bug.** A Larder variant with the Warden crashed against the Undertow: a stack item whose one target spec holds several targets ("tap up to two target creatures") crashed at resolution when its FIRST target had left (bounced in response). Fixed (the spec is now read by the target's flat index — CR 608.2b), with two fixtures (`multi-target-fizzle.test.ts`). The study now reports an engine error per variant instead of dying.
+
+**4. The pod as the unit — `pnpm draft-sim --pods 100 --games 4`** (800 seats, 11,200 games, each seat against its own pod):
+
+| | seats | win rate |
+|---|---|---|
+| a seat sharing its more crowded colour with 2 / 3 / 4 / 5 / 6+ seats | 13 / 138 / 387 / 207 / 55 | 55 / 53 / 50 / 49 / 48% |
+| black seats, with 2 / 3 / 4 / 5 / 6+ black seats in the pod | 22 / 96 / 136 / 80 / 43 | 49 / 45 / 46 / 47 / 47% |
+| the seats NOT on black, in those pods | 66 / 160 / 136 / 48 / 13 | 50 / 53 / 54 / 56 / 59% |
+| in a pod with four or more on black, a seat whose first three picks included black: **left black** / stayed | 42 / 212 | **53% / 46%** |
+| colours settled by pick 3 / picks 4–8 / picks 9–15 / pick 16 or later | 329 / 296 / 78 / 97 | 51 / 50 / 46 / 50% |
+| the only seat on its pair / shares its pair | 431 / 369 | 51 / 48% |
+
+- **Black loses wherever it sits** (45–49%), crowded or not; the seats that avoid it win more the more crowded it gets (up to 59%).
+- **Leaving black is worth about seven points** in a crowded pod, and the pick rule almost never does it (42 seats of 254).
+- **A late change of colours costs** (46% for seats settling at picks 9–15): the pivot worth making is the early one.
+- A deck's mean rating explains more than its crowding (r = 0.32 against −0.10), and crowding lowers the rating (r = −0.18) — the mechanism is fewer good cards each.
+- The read for the pick rule: the fault is not that seats fail to *read* the table but that the rating tells every seat black is best while black's decks are the pod's worst. A correction to black's rating would do what the pack-reading term could not.
+
 ## Deviations from the brief
 1. **The pack-reading term ships switched off.** Built to the ruling (the whole pack remembered, each time); it lowered the field's quality in every variant tried, and the process rule says such a change reverts. The code and the tuning hook remain. *Rule on*: whether to keep trying it, and against which measure (Deviation 2).
 2. **The 50% target is measured against six-pack Sealed decks**, which a three-pack draft deck should not be expected to beat; against three-pack Sealed decks the drafter is at 66%. I report both and changed neither the target nor the entrance.

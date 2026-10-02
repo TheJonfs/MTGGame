@@ -45,7 +45,7 @@ interface TargetLki {
 
 /** Engine implementation of the cards package's EffectContext seam. */
 /** A8 (S20): fixed specs consume `count` flat slots in order; a range spec (validator: last) consumes the rest. */
-function specOfFlatIndex(specs: readonly TargetSpec[], flat: number): TargetSpec | undefined {
+export function specOfFlatIndex(specs: readonly TargetSpec[], flat: number): TargetSpec | undefined {
   let at = 0;
   for (const spec of specs) {
     if (typeof spec.count === "number") {

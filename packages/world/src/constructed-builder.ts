@@ -11,7 +11,7 @@
  *          for a land — basics by the list's pips; a creature for a creature; a spell for a spell) — copies of what
  *          the list already plays first, then the best-rated cards the format allows; then the floors (creatures,
  *          the land fraction) by swapping the lowest-rated cards of the other role.
- *  NOISE   two or three same-role swaps to a card rated within 0.5 of the one it replaces (never a free card — the
+ *  NOISE   by the seat's tinker level (stock: none; light: one or two; heavy: four to six) same-role swaps to a card rated within 0.5 of the one it replaces (never a free card — the
  *          Lotus and the Moxen neither leave nor arrive by noise), and a land ±1 (a land for
  *          the lowest spell, or the reverse). A swap that breaks the rule is not made.
  * Deterministic for a seed.
@@ -27,11 +27,15 @@ import { WorldRng } from "./rng.js";
 export interface LibraryList { key: string; archetype: "aggro" | "midrange" | "control"; decklist: Decklist }
 /** The Open's round-robin means (S46's 6,600 games, with the S46 follow-ups' Undertow) — a list's measured strength. */
 export const OPEN_MEANS: Record<string, number> = { "open:levy": 68, "open:wurmspeaker": 61, "open:warband": 60, "open:coin": 59, "open:muster": 57, "open:loop": 55, "open:ford": 53, "open:enchantress": 51, "open:tally": 39, "open:locks": 39, "open:undertow": 38, "open:larder": 31 };
-export const CONSTRUCTED_TERMS = { candidates: 5, noiseSwaps: [2, 3] as const, noiseBand: 0.5, inListBonus: 0.3 } as const;
+/** Post-S52 (Chris): the candidates are the TWELVE best-fitting lists (the Open's whole library, not its top five),
+ * and the noise has a noise of its own — a seat is STOCK (the list as written), a LIGHT tinkerer (one or two swaps),
+ * or a HEAVY one (four to six); the light and the heavy also move a land. The shares are a quarter, a half, a quarter. */
+export const CONSTRUCTED_TERMS = { candidates: 12, noiseBand: 0.5, inListBonus: 0.3, tinker: { stock: { share: 0.25, swaps: [0, 0] }, light: { share: 0.5, swaps: [1, 2] }, heavy: { share: 0.25, swaps: [4, 6] } } } as const;
+export type Tinker = keyof typeof CONSTRUCTED_TERMS.tinker;
 
 type Role = "land" | "creature" | "spell";
 const BASIC_OF: Record<string, string> = { W: "plains", U: "island", B: "swamp", R: "mountain", G: "forest" };
-export interface ConstructedBuild { deck: Decklist; from: string; archetype: LibraryList["archetype"]; legalShare: number; cut: Decklist; added: Decklist; swaps: { out: string; in: string }[]; check: DeckCheck }
+export interface ConstructedBuild { deck: Decklist; from: string; /** How far the seat moved from its list. */ tinker: Tinker; archetype: LibraryList["archetype"]; legalShare: number; cut: Decklist; added: Decklist; swaps: { out: string; in: string }[]; check: DeckCheck }
 
 /** May one copy of this card be in a deck of this format at all? (The per-card half of the rule.) */
 export function cardLegal(d: CardDef, rule: DeckRule): boolean {
@@ -55,7 +59,7 @@ export function legalShare(list: Decklist, rule: DeckRule, cards: Map<string, Ca
   return all ? ok / all : 0;
 }
 
-export function buildConstructedDeck(format: ConstructedFormat, rating: CardRatingTable, seed: number, library: readonly LibraryList[], cards: Map<string, CardDef>): ConstructedBuild {
+export function buildConstructedDeck(format: ConstructedFormat, rating: CardRatingTable, seed: number, library: readonly LibraryList[], cards: Map<string, CardDef>, opts: { /** Force the tinker level (the tinker study); default: rolled from the seed. */ tinker?: Tinker; /** Force the source list. */ from?: string } = {}): ConstructedBuild {
   const rule = format.rule, rng = new WorldRng(seed);
   const def = (id: string) => { const d = cards.get(id); if (!d) throw new Error(`buildConstructedDeck: ${id} is not in the card pool`); return d; };
   const rate = (id: string) => cardRating(def(id), rating);
@@ -68,7 +72,10 @@ export function buildConstructedDeck(format: ConstructedFormat, rating: CardRati
   const total = scored.reduce((n, s) => n + s.share, 0);
   let roll = rng.float() * (total || 1), chosen = scored[0]!;
   for (const s of scored) { if (roll < s.share) { chosen = s; break; } roll -= s.share; }
+  if (opts.from) { const forced = library.find((l) => l.key === opts.from); if (!forced) throw new Error(`buildConstructedDeck: no list ${opts.from}`); chosen = { l: forced, share: legalShare(forced.decklist, rule, cards), strength: 0 }; }
   const source = chosen.l;
+  const tRoll = rng.float();
+  const tinker: Tinker = opts.tinker ?? (tRoll < CONSTRUCTED_TERMS.tinker.stock.share ? "stock" : tRoll < CONSTRUCTED_TERMS.tinker.stock.share + CONSTRUCTED_TERMS.tinker.light.share ? "light" : "heavy");
 
   // ---- repair ----
   const deck = new Map<string, number>(), cut: Decklist = [], added = new Map<string, number>();
@@ -112,7 +119,8 @@ export function buildConstructedDeck(format: ConstructedFormat, rating: CardRati
   const list = (): Decklist => [...deck].map(([cardId, n]) => ({ cardId, count: n }));
   const legalNow = () => checkDeck(list(), null, rule, cards).ok;
   const swaps: { out: string; in: string }[] = [];
-  const nSwaps = CONSTRUCTED_TERMS.noiseSwaps[0] + rng.int(CONSTRUCTED_TERMS.noiseSwaps[1] - CONSTRUCTED_TERMS.noiseSwaps[0] + 1);
+  const [lo, hi] = CONSTRUCTED_TERMS.tinker[tinker].swaps;
+  const nSwaps = lo + rng.int(hi - lo + 1);
   for (let i = 0; i < nSwaps; i++) {
     // a swap never touches a free card (mana value 0 — the Lotus, a Mox): the first round-robin swapped Power out for a
     // two-drop and an off-colour Mox in, on rating alone
@@ -127,7 +135,7 @@ export function buildConstructedDeck(format: ConstructedFormat, rating: CardRati
     deck.set(out, deck.get(out)! - 1); if (deck.get(out) === 0) deck.delete(out); deck.set(into, (deck.get(into) ?? 0) + 1);
     if (legalNow()) swaps.push({ out, in: into }); else { deck.clear(); for (const [k, v] of before) deck.set(k, v); }
   }
-  { // a land ±1
+  if (tinker !== "stock") { // a land ±1
     const before = new Map(deck), up = rng.int(2) === 0;
     if (up) { const out = lowest("spell") ?? lowest("creature"); if (out) { deck.set(out, deck.get(out)! - 1); if (deck.get(out) === 0) deck.delete(out); const b = basic(); deck.set(b, (deck.get(b) ?? 0) + 1); swaps.push({ out, in: b }); } }
     else { const b = BASIC_LANDS.map((x) => x as string).filter((x) => (deck.get(x) ?? 0) > 0).sort((x, y) => deck.get(y)! - deck.get(x)! || x.localeCompare(y))[0]; const into = best("creature") ?? best("spell"); if (b && into) { deck.set(b, deck.get(b)! - 1); if (deck.get(b) === 0) deck.delete(b); deck.set(into, (deck.get(into) ?? 0) + 1); swaps.push({ out: b, in: into }); } }
@@ -135,5 +143,5 @@ export function buildConstructedDeck(format: ConstructedFormat, rating: CardRati
   }
   const order = (a: string, b: string) => ["land", "creature", "spell"].indexOf(role(a)) - ["land", "creature", "spell"].indexOf(role(b)) || a.localeCompare(b);
   const final: Decklist = [...deck.keys()].sort(order).map((cardId) => ({ cardId, count: deck.get(cardId)! }));
-  return { deck: final, from: source.key, archetype: source.archetype, legalShare: chosen.share, cut: cut.filter((c) => c.count > 0), added: [...added].map(([cardId, n]) => ({ cardId, count: n })), swaps, check: checkDeck(final, null, rule, cards) };
+  return { deck: final, from: source.key, tinker, archetype: source.archetype, legalShare: chosen.share, cut: cut.filter((c) => c.count > 0), added: [...added].map(([cardId, n]) => ({ cardId, count: n })), swaps, check: checkDeck(final, null, rule, cards) };
 }

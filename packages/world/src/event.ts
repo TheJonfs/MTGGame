@@ -16,7 +16,7 @@ import type { Decklist, Collection } from "./state.js";
 import { checkDeck, isBasic, type DeckCheck } from "./legality.js";
 import { CONSTRUCTED_FORMATS, DRAFT_PLANE, LIMITED_FORMATS, OPEN_FORMAT, type ConstructedFormat, type Format, type LimitedFormat } from "./formats.js";
 import { buildConstructedDeck, type LibraryList } from "./constructed-builder.js";
-import { draftPick } from "./drafter.js";
+import { draftPick, runDraftPacks } from "./drafter.js";
 import { rollPack, resolveSet, type ConvocationPackData } from "./packs.js";
 import { buildLimitedDeck } from "./limited-builder.js";
 import type { CardRatingTable } from "./rating.js";
@@ -35,8 +35,9 @@ export interface EventSeat {
   pool: string[];
   deck: Decklist;
   sideboard: Decklist;
-  /** S52 (Constructed): the authored list the seat's deck was built from. */
+  /** S52 (Constructed): the authored list the seat's deck was built from, and how far it moved from it. */
   list?: string;
+  tinker?: "stock" | "light" | "heavy";
   /** The deck's colours (the pair, then a splash), for the face and the entrance. */
   colors: string;
   archetype: "aggro" | "midrange" | "control";
@@ -130,7 +131,7 @@ export function newConstructedEvent(opts: Omit<NewEventOptions, "format"> & { fo
     const open = fits.length ? fits : opts.faces.filter((f) => !used.has(f.portrait));
     const face = open.length ? open[rng.int(open.length)]!.portrait : undefined;
     if (face) used.add(face);
-    field.push({ name: names[(s - 1) % Math.max(1, names.length)] ?? `Seat ${s + 1}`, ...(face ? { face } : {}), human: false, pool: [], deck: b.deck, sideboard: [], list: b.from, colors, archetype: b.archetype });
+    field.push({ name: names[(s - 1) % Math.max(1, names.length)] ?? `Seat ${s + 1}`, ...(face ? { face } : {}), human: false, pool: [], deck: b.deck, sideboard: [], list: b.from, tinker: b.tinker, colors, archetype: b.archetype });
   }
   return { version: EVENT_SAVE_VERSION, seed: opts.seed, formatId: format.id, rounds, difficulty: opts.difficulty ?? "standard", phase: "build", round: 0, field, pairings: [], results: [], ...(opts.top8 ? { top8: true } : {}) };
 }
@@ -151,8 +152,29 @@ export function newDraftEvent(opts: NewEventOptions, deps: EventDeps): Convocati
   const rng = new WorldRng(sub(opts.seed, 1));
   const names = [...opts.names]; for (let i = names.length - 1; i > 0; i--) { const j = rng.int(i + 1); [names[i], names[j]] = [names[j]!, names[i]!]; }
   const field: EventSeat[] = Array.from({ length: seats }, (_, s) => ({ name: s === 0 ? (opts.playerName ?? "You") : (names[(s - 1) % Math.max(1, names.length)] ?? `Seat ${s + 1}`), human: s === 0, pool: [], deck: [], sideboard: [], colors: "", archetype: "midrange" as const }));
+  if (seats % DRAFT_POD !== 0) throw new Error(`event: a draft seats pods of ${DRAFT_POD} (${seats} asked)`);
+  // Post-S52 (Chris: thirty-two players, no rematch in five rounds): the field is PODS of eight. The human's pod
+  // (seats 0–7) drafts live; every other pod drafts now, headless on the pick rule, and its decks are built.
+  const rngFace = new WorldRng(sub(opts.seed, 7)), used = new Set<string>();
+  const set = deps.packs.sets.find((s) => s.id === format.set), recipe = deps.packs.recipes.find((r) => r.id === format.recipe);
+  if (!set || !recipe) throw new Error(`event: format ${format.id} names a set or recipe the data lacks`);
+  for (let pod = 1; pod < seats / DRAFT_POD; pod++) {
+    const picks = runDraftPacks(set, recipe, deps.packs, deps.cards, deps.rating, sub(opts.seed, 9, pod), DRAFT_POD, format.packs);
+    picks.forEach((p, k) => { const s = pod * DRAFT_POD + k; field[s] = builtSeat(field[s]!, p, deps, opts.faces, used, rngFace); });
+  }
   const event: ConvocationEvent = { version: EVENT_SAVE_VERSION, seed: opts.seed, formatId: format.id, rounds, difficulty: opts.difficulty ?? "standard", phase: "draft", round: 0, field, pairings: [], results: [], ...(opts.top8 ? { top8: true } : {}) };
-  return { ...event, draft: { round: 0, pick: 1, packs: draftPacks(event, 0, deps), picks: field.map(() => []) } };
+  return { ...event, draft: { round: 0, pick: 1, packs: draftPacks(event, 0, deps), picks: Array.from({ length: DRAFT_POD }, () => []) } };
+}
+/** A draft pod's size: eight seats pass three packs. */
+export const DRAFT_POD = 8;
+/** An AI seat once its picks are known: its pool, its deck by the Limited builder, a face by its colours. */
+function builtSeat(seat: EventSeat, picks: string[], deps: Pick<EventDeps, "cards" | "rating">, faces: readonly { portrait: string; colors: string }[], used: Set<string>, rng: WorldRng): EventSeat {
+  const b = buildLimitedDeck(picks, deps.rating, deps.cards);
+  const fits = faces.filter((f) => !used.has(f.portrait) && [...f.colors].some((c) => b.colors.includes(c as never)));
+  const open = fits.length ? fits : faces.filter((f) => !used.has(f.portrait));
+  const face = open.length ? open[rng.int(open.length)]!.portrait : undefined;
+  if (face) used.add(face);
+  return { ...seat, ...(face ? { face } : {}), pool: picks, deck: b.deck, sideboard: b.sideboard, colors: b.colors.join("") + (b.splash ?? ""), archetype: b.avgMv <= 2.6 ? "aggro" : "midrange" };
 }
 /** A pack round's packs — one a seat, from the event's seed and the round. */
 function draftPacks(event: ConvocationEvent, round: number, deps: Pick<EventDeps, "cards" | "packs">): string[][] {
@@ -160,7 +182,7 @@ function draftPacks(event: ConvocationEvent, round: number, deps: Pick<EventDeps
   const set = deps.packs.sets.find((s) => s.id === format.set), recipe = deps.packs.recipes.find((r) => r.id === format.recipe);
   if (!set || !recipe) throw new Error(`event: format ${format.id} names a set or recipe the data lacks`);
   const tiers = resolveSet(set, deps.cards, deps.packs.power), rng = new WorldRng(sub(event.seed, 6, round));
-  return event.field.map(() => rollPack(tiers, recipe, rng));
+  return Array.from({ length: DRAFT_POD }, () => rollPack(tiers, recipe, rng)); // the human's pod
 }
 /** The pack the human is looking at, and where it goes next ("left" on packs one and three, "right" on two). */
 export const draftPack = (event: ConvocationEvent): string[] => event.draft?.packs[0] ?? [];
@@ -179,7 +201,7 @@ export function draftStep(event: ConvocationEvent, cardId: string, deps: EventDe
   const d = event.draft;
   if (event.phase !== "draft" || !d) throw new Error("event: no draft in progress");
   if (!d.packs[0]!.includes(cardId)) throw new Error(`event: ${cardId} is not in the pack`);
-  const seats = event.field.length, format = formatOf(event.formatId);
+  const seats = d.packs.length, format = formatOf(event.formatId); // the human's pod
   const packs = d.packs.map((p) => [...p]), picks = d.picks.map((p) => [...p]);
   for (let s = 0; s < seats; s++) {
     const choice = s === 0 ? cardId : draftPick(packs[s]!, picks[s]!, d.pick, deps.rating, deps.cards);
@@ -190,18 +212,10 @@ export function draftStep(event: ConvocationEvent, cardId: string, deps: EventDe
     return { ...event, draft: { round: d.round, pick: d.pick + 1, packs: packs.map((_, s) => packs[(s - dir + seats) % seats]!), picks } };
   }
   if (d.round + 1 < format.packs) return { ...event, draft: { round: d.round + 1, pick: d.pick + 1, packs: draftPacks(event, d.round + 1, deps), picks } };
-  // the draft is done: the picks are the pools; the AI seats build
-  const rng = new WorldRng(sub(event.seed, 7));
-  const used = new Set<string>();
-  const field = event.field.map((seat, s) => {
-    if (s === 0) return { ...seat, pool: picks[0]! };
-    const b = buildLimitedDeck(picks[s]!, deps.rating, deps.cards);
-    const fits = faces.filter((f) => !used.has(f.portrait) && [...f.colors].some((c) => b.colors.includes(c as never)));
-    const open = fits.length ? fits : faces.filter((f) => !used.has(f.portrait));
-    const face = open.length ? open[rng.int(open.length)]!.portrait : undefined;
-    if (face) used.add(face);
-    return { ...seat, ...(face ? { face } : {}), pool: picks[s]!, deck: b.deck, sideboard: b.sideboard, colors: b.colors.join("") + (b.splash ?? ""), archetype: (b.avgMv <= 2.6 ? "aggro" : "midrange") as EventSeat["archetype"] };
-  });
+  // the draft is done: the picks are the pools; the pod's AI seats build (the other pods built when the event began)
+  const rng = new WorldRng(sub(event.seed, 10));
+  const used = new Set(event.field.map((x) => x.face).filter((x): x is string => !!x));
+  const field = event.field.map((seat, s) => (s === 0 ? { ...seat, pool: picks[0]! } : s < seats ? builtSeat(seat, picks[s]!, deps, faces, used, rng) : seat));
   const { draft: _d, ...rest } = event;
   return { ...rest, field, phase: "build" };
 }

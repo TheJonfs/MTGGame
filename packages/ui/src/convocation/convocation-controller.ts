@@ -8,7 +8,7 @@
 import type { CardDef } from "@shandalar/cards";
 import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
 import {
-  CONSTRUCTED_FORMATS, CONVOCATION_NAMES, DIFFICULTIES, DRAFT_PLANE, authoredListsFrom, cardLegal, copyCap, deserializeWorld, eventFormat, isBasic, newConstructedEvent, suggestedConstructedDeck, draftDirection, draftPack, draftStep, draftTotalPicks, newDraftEvent, suggestedPick, EVENT_SAVE_KEY, LEDGER_KEY, MatchSeries, SEALED_PLANE, addCopy, advanceBracket, advanceEvent, bracketRound, bracketRoundComplete, buildLimitedDeck, checkEventDeck, closeRound, deserializeEvent, finalPlaces, playBracketFieldRound, recordBracketSeries, resolveKnobs, seatForGame,
+  CONSTRUCTED_FORMATS, convocationNames, DIFFICULTIES, DRAFT_PLANE, authoredListsFrom, cardLegal, copyCap, deserializeWorld, eventFormat, isBasic, newConstructedEvent, suggestedConstructedDeck, draftDirection, draftPack, draftStep, draftTotalPicks, newDraftEvent, suggestedPick, EVENT_SAVE_KEY, LEDGER_KEY, MatchSeries, SEALED_PLANE, addCopy, advanceBracket, advanceEvent, bracketRound, bracketRoundComplete, buildLimitedDeck, checkEventDeck, closeRound, deserializeEvent, finalPlaces, playBracketFieldRound, recordBracketSeries, resolveKnobs, seatForGame,
   ledgerEntry, lifeModifiers, newSealedEvent, pairingOf, playFieldRound, poolCollection, recordSeries, registerDeck, removeCopy, resultOf, roundComplete, saveCurrentSeries,
   serializeEvent, seriesSeed, seriesSetup, standings, type CardRatingTable, type Catalog, type ConvocationEvent, type ConvocationLedgerEntry, type ConvocationPackData,
   type Decklist, type DifficultyName, type KnobValues, type SeatAgents, type Standing,
@@ -75,17 +75,17 @@ export class ConvocationController {
     const faces = this.faces();
     if (opts.constructed) { // S52 (ADR-152): a Constructed event — the field by select-and-repair, the player's deck from the format's whole pool
       const format = CONSTRUCTED_FORMATS.find((f) => f.id === opts.constructed); if (!format) return;
-      this.set(newConstructedEvent({ seed, format, names: CONVOCATION_NAMES, faces, library: this.library(), seats: opts.seats ?? 16, rounds: opts.rounds ?? 5, top8: opts.top8 ?? true, difficulty: opts.difficulty ?? "standard" }, this.deps()));
+      this.set(newConstructedEvent({ seed, format, names: convocationNames(Math.max(16, (opts.seats ?? 32) - 1)), faces, library: this.library(), seats: opts.seats ?? 16, rounds: opts.rounds ?? 5, top8: opts.top8 ?? true, difficulty: opts.difficulty ?? "standard" }, this.deps()));
       this.series = null; this.match = null;
       return this.openBuild(false);
     }
     if (opts.draft) { // S51: a pod of eight drafts three packs; then the build, the rounds and the Umbel as before
-      this.set(newDraftEvent({ seed, format: DRAFT_PLANE, names: CONVOCATION_NAMES, faces, seats: opts.seats ?? 8, rounds: opts.rounds ?? 5, top8: opts.top8 ?? true, difficulty: opts.difficulty ?? "standard" }, this.deps()));
+      this.set(newDraftEvent({ seed, format: DRAFT_PLANE, names: convocationNames(Math.max(16, (opts.seats ?? 32) - 1)), faces, seats: opts.seats ?? 8, rounds: opts.rounds ?? 5, top8: opts.top8 ?? true, difficulty: opts.difficulty ?? "standard" }, this.deps()));
       this.series = null; this.match = null; this.passNote = null;
       this.screen = { kind: "draft" }; this.emit();
       return;
     }
-    this.set(newSealedEvent({ seed, format: SEALED_PLANE, names: CONVOCATION_NAMES, faces, seats: opts.seats ?? 8, rounds: opts.rounds ?? 3, ...(opts.top8 ? { top8: true } : {}), difficulty: opts.difficulty ?? "standard" }, { cards: this.pool, packs: this.packs, rating: this.rating }));
+    this.set(newSealedEvent({ seed, format: SEALED_PLANE, names: convocationNames(Math.max(16, (opts.seats ?? 32) - 1)), faces, seats: opts.seats ?? 8, rounds: opts.rounds ?? 3, ...(opts.top8 ? { top8: true } : {}), difficulty: opts.difficulty ?? "standard" }, { cards: this.pool, packs: this.packs, rating: this.rating }));
     this.series = null; this.match = null;
     this.openBuild(false);
   }

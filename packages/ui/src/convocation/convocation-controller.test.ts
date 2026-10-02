@@ -320,4 +320,33 @@ describe("the Convocation controller (S48)", () => {
     expect(again.event!.results).toHaveLength(8);
     expect(s.getItem(SAVE_KEY)).toBe(worldBytes);
   }, 180_000);
+
+  it("post-S52 (Chris) — thirty-two seats: a draft is four pods (the player's live, three drafted at the start), the Open draws on all twelve lists, thirty-one different names and faces, sixteen pairings and no rematch in five rounds", async () => {
+    const d = make().c;
+    d.newEvent(532, { draft: true, seats: 32, rounds: 5, top8: true });
+    expect(d.event!.field).toHaveLength(32);
+    expect(d.draftView()!.pack).toHaveLength(15);
+    expect(d.event!.draft!.packs).toHaveLength(8); // the player's pod
+    for (const seat of d.event!.field.slice(8)) { expect(seat.pool).toHaveLength(45); expect(size(seat.deck)).toBe(40); }
+    for (const seat of d.event!.field.slice(1, 8)) expect(seat.pool).toHaveLength(0); // still drafting with the player
+    while (d.screen.kind === "draft") d.pickCard(d.suggestedPick()!);
+    for (const seat of d.event!.field.slice(1)) { expect(seat.pool).toHaveLength(45); expect(size(seat.deck)).toBe(40); }
+    expect(new Set(d.event!.field.map((x) => x.name)).size).toBe(32);
+    expect(new Set(d.event!.field.slice(1).map((x) => x.face)).size).toBe(31);
+    d.suggestDeck(); d.register();
+    expect(d.event!.pairings).toHaveLength(16);
+    for (let round = 1; round <= 5; round++) { await series(d, true); expect(d.event!.results.filter((r) => r.round === round)).toHaveLength(16); d.next(); }
+    expect(new Set(d.event!.results.map((r) => [r.a, r.b].sort((x, y) => x - y).join("-"))).size).toBe(80); // no rematch
+    expect(d.screen.kind).toBe("bracket");
+    expect(d.event!.bracket!.seeds).toHaveLength(8);
+    expect(d.fieldMs).not.toBeNull();
+
+    const o = make().c;
+    o.newEvent(533, { constructed: "open", seats: 32, rounds: 5, top8: true });
+    expect(o.event!.field).toHaveLength(32);
+    const lists = new Set(o.event!.field.slice(1).map((x) => x.list));
+    expect(lists.size).toBeGreaterThanOrEqual(9); // thirty-one draws over twelve lists
+    for (const l of lists) expect(l).toMatch(/^open:/);
+    expect(new Set(o.event!.field.slice(1).map((x) => x.tinker))).toEqual(new Set(["stock", "light", "heavy"]));
+  }, 600_000);
 });

@@ -606,3 +606,7 @@ See handoff Concerns for the authoritative list. Highlights: auto-pay greedy fea
 - **A colour whose cards rate higher always "flows"** — any signal built on absolute rating pushes seats toward the best-rated colour. Normalising by colour did not rescue it either.
 - **The draft-versus-Sealed comparison is not like for like**: a Sealed seat has six packs to itself, a draft seat ends with three packs' worth. `--sealed-packs 3` is the fair one.
 - **The builder is not the draft's weak point**: on 45 picks the curve mends cost 0.01 of mean rating; a drafted seat has 32 playables in its pair.
+
+- **Post-S52: a variation study is also a fuzz.** `pnpm tinker` put the Warden into a deck that never played it against a deck that bounces — and found a crash 880 tests and 100,000 sim games had not. New card-in-deck combinations reach lines the authored lists do not.
+- **`array.some((t, i) => f(specs[i]))` hides an index bug** while the first element passes. The multi-target fizzle check only failed when target one had left.
+- **A draft event's field is pods**: `event.draft.packs` is the player's pod (eight); seats 8+ are drafted and built in `newDraftEvent`. `draftStep` loops over the pod, not the field.
