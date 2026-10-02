@@ -62,6 +62,10 @@ Red's forced mean: 35% → 43%. The gap to the deck the builder would rather mak
 ## The Open's two red lists (the lists unchanged; the AI changed)
 Warband 60% → **59%**; Tally 39% → **37%** against the field (1,100 games each). Both inside the noise. Neither list was amended, and neither new card was tried in them — whether the Kavu or the Whelp earns a slot is untested and the planner's call.
 
+## After the handoff (2026-10-03)
+
+- **Rage Cobra's art is chosen**: candidate 4 (the watercolor storybook — Vitalist's register) with the modern hiker replaced by a hooded ranger (three variants rendered; Chris took the ranger). Cropped 5:4 and installed; the printed face follows from Chris.
+
 ## Deviations from the brief
 1. **Shocking Sharpshooter is encoded as Scryfall has it, not as the brief does**: Tarkir: Dragonstorm #121, a **1/3 Human Archer** (the brief: a 2/2 Lizard Archer from Bloomburrow), and "target opponent" (the brief: "each opponent"). No Bloomburrow card of that name exists.
 2. **Its targeting is simplified** to each opponent — the pool has no player-targeting word for a trigger and nothing that makes a player an illegal target, so the two read the same in play.

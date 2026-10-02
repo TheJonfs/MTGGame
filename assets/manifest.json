@@ -1632,6 +1632,21 @@
         }
       }
     },
+    "card-rage-cobra-4": {
+      "canonical": "pilgrim",
+      "descriptor_hash": "sha256:77bf262746bc583c34d0846b42d3922f76634f4331ee316b80add1fe4738097b",
+      "renders": {
+        "pilgrim": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:77bf262746bc583c34d0846b42d3922f76634f4331ee316b80add1fe4738097b",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-rage-cobra-4/pilgrim.png",
+          "rendered_at": "2026-10-02T02:14:14+00:00",
+          "thumb": "assets/thumbs/card-rage-cobra-4/pilgrim.png",
+          "variant_prompt": "Keep everything else exactly as it is: the same watercolor storybook style, the night forest, the campfire, the small red snake on its rock and its huge hooded cobra shadow on the cliff behind it. Change only the seated figure: replace the modern hiker with a travelling hedge-wizard in patched grey robes and a wide-brimmed pointed hat, a gnarled staff across his knees and a satchel of herbs at his side, binding a wound on his forearm with a strip of linen and smiling with relief. No backpack, no modern clothing or boots."
+        }
+      }
+    },
     "card-reaper-1": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:5f999f39ceebedf2f6ab1251306df8f048f576c0f8124525a3499f9c84b1ea75",
