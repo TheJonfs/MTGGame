@@ -14,7 +14,8 @@ import { cardColors, parseManaCost } from "@shandalar/cards";
 import { runMatch, type Agent, type MatchSpec, type Modifier } from "@shandalar/engine";
 import type { Decklist, Collection } from "./state.js";
 import { checkDeck, isBasic, type DeckCheck } from "./legality.js";
-import { DRAFT_PLANE, LIMITED_FORMATS, type LimitedFormat } from "./formats.js";
+import { CONSTRUCTED_FORMATS, DRAFT_PLANE, LIMITED_FORMATS, OPEN_FORMAT, type ConstructedFormat, type Format, type LimitedFormat } from "./formats.js";
+import { buildConstructedDeck, type LibraryList } from "./constructed-builder.js";
 import { draftPick } from "./drafter.js";
 import { rollPack, resolveSet, type ConvocationPackData } from "./packs.js";
 import { buildLimitedDeck } from "./limited-builder.js";
@@ -34,6 +35,8 @@ export interface EventSeat {
   pool: string[];
   deck: Decklist;
   sideboard: Decklist;
+  /** S52 (Constructed): the authored list the seat's deck was built from. */
+  list?: string;
   /** The deck's colours (the pair, then a splash), for the face and the entrance. */
   colors: string;
   archetype: "aggro" | "midrange" | "control";
@@ -74,7 +77,9 @@ export interface ConvocationEvent {
 export interface EventDeps { cards: Map<string, CardDef>; packs: ConvocationPackData; rating: CardRatingTable }
 export interface NewEventOptions { seed: number; format?: LimitedFormat; seats?: number; rounds?: number; top8?: boolean; difficulty?: string; names: readonly string[]; faces: readonly { portrait: string; colors: string }[]; playerName?: string }
 
-const formatOf = (id: string): LimitedFormat => { const f = LIMITED_FORMATS.find((x) => x.id === id); if (!f) throw new Error(`event: unknown format ${id}`); return f; };
+const formatOf = (id: string): LimitedFormat => { const f = LIMITED_FORMATS.find((x) => x.id === id); if (!f) throw new Error(`event: ${id} is not a Limited format`); return f; };
+/** Any format an event may be played in — Limited or Constructed. */
+export const eventFormat = (id: string): Format => { const f = [...LIMITED_FORMATS, ...CONSTRUCTED_FORMATS].find((x) => x.id === id); if (!f) throw new Error(`event: unknown format ${id}`); return f; };
 const sub = (seed: number, ...salt: number[]) => { const r = new WorldRng((seed ^ 0x9e3779b9) >>> 0); let x = r.int(0x7fffffff); for (const s of salt) x = new WorldRng((x + Math.imul(s + 1, 0x85ebca6b)) >>> 0).int(0x7fffffff); return x; };
 
 /** A new Sealed event: every seat's pool from the event's seed; the AI seats' decks built; the human's to build. */
@@ -102,6 +107,38 @@ export function newSealedEvent(opts: NewEventOptions, deps: EventDeps): Convocat
   }
   if (opts.top8 && seats < 8) throw new Error("event: a Top 8 needs eight seats");
   return { version: EVENT_SAVE_VERSION, seed: opts.seed, formatId: format.id, rounds, difficulty: opts.difficulty ?? "standard", phase: "build", round: 0, field, pairings: [], results: [], ...(opts.top8 ? { top8: true } : {}) };
+}
+
+// ---------- S52: Constructed ----------
+
+/** A new Constructed event (ADR-152): the field's decks by select-and-repair from the library (each seat its own
+ * seed, so one archetype is several variations); the human's to build in the editor over the format's legal pool, to
+ * take from "Suggest a deck", or to bring as a saved deck — checked at registration. */
+export function newConstructedEvent(opts: Omit<NewEventOptions, "format"> & { format?: ConstructedFormat; library: readonly LibraryList[] }, deps: Pick<EventDeps, "cards" | "rating">): ConvocationEvent {
+  const format = opts.format ?? OPEN_FORMAT, seats = opts.seats ?? 16, rounds = opts.rounds ?? 5;
+  if (seats < 2) throw new Error("event: at least two seats");
+  if (opts.top8 && seats < 8) throw new Error("event: a Top 8 needs eight seats");
+  const rng = new WorldRng(sub(opts.seed, 1));
+  const names = [...opts.names]; for (let i = names.length - 1; i > 0; i--) { const j = rng.int(i + 1); [names[i], names[j]] = [names[j]!, names[i]!]; }
+  const used = new Set<string>();
+  const field: EventSeat[] = [];
+  for (let s = 0; s < seats; s++) {
+    if (s === 0) { field.push({ name: opts.playerName ?? "You", human: true, pool: [], deck: [], sideboard: [], colors: "", archetype: "midrange" }); continue; }
+    const b = buildConstructedDeck(format, deps.rating, sub(opts.seed, 8, s), opts.library, deps.cards);
+    const colors = deckColors(b.deck, deps.cards);
+    const fits = opts.faces.filter((f) => !used.has(f.portrait) && [...f.colors].some((c) => colors.includes(c)));
+    const open = fits.length ? fits : opts.faces.filter((f) => !used.has(f.portrait));
+    const face = open.length ? open[rng.int(open.length)]!.portrait : undefined;
+    if (face) used.add(face);
+    field.push({ name: names[(s - 1) % Math.max(1, names.length)] ?? `Seat ${s + 1}`, ...(face ? { face } : {}), human: false, pool: [], deck: b.deck, sideboard: [], list: b.from, colors, archetype: b.archetype });
+  }
+  return { version: EVENT_SAVE_VERSION, seed: opts.seed, formatId: format.id, rounds, difficulty: opts.difficulty ?? "standard", phase: "build", round: 0, field, pairings: [], results: [], ...(opts.top8 ? { top8: true } : {}) };
+}
+/** The human's seat's own select-and-repair deck — "Suggest a deck" in a Constructed event. */
+export function suggestedConstructedDeck(event: ConvocationEvent, library: readonly LibraryList[], deps: Pick<EventDeps, "cards" | "rating">): Decklist {
+  const format = eventFormat(event.formatId);
+  if (format.kind !== "constructed") throw new Error("event: not a Constructed event");
+  return buildConstructedDeck(format, deps.rating, sub(event.seed, 8, 0), library, deps.cards).deck;
 }
 
 // ---------- S51: the draft ----------
@@ -172,7 +209,9 @@ export function draftStep(event: ConvocationEvent, cardId: string, deps: EventDe
 export const poolCollection = (pool: readonly string[]): Collection => { const c: Collection = {}; for (const id of pool) c[id] = (c[id] ?? 0) + 1; return c; };
 /** A deck against the event's format: the pool is the collection and the cap; basics are free. */
 export function checkEventDeck(event: ConvocationEvent, seat: number, deck: Decklist, cards: Map<string, CardDef>): DeckCheck {
-  return checkDeck(deck, poolCollection(event.field[seat]!.pool), formatOf(event.formatId).rule, cards);
+  const format = eventFormat(event.formatId);
+  // S52 (ADR-152): a Constructed deck is checked against the format alone — the player's pool is every card it allows.
+  return format.kind === "constructed" ? checkDeck(deck, null, format.rule, cards) : checkDeck(deck, poolCollection(event.field[seat]!.pool), format.rule, cards);
 }
 const sideboardOf = (pool: readonly string[], deck: Decklist): Decklist => {
   const left = poolCollection(pool); for (const e of deck) if (!isBasic(e.cardId)) left[e.cardId] = (left[e.cardId] ?? 0) - e.count;
@@ -189,7 +228,8 @@ const deckColors = (deck: Decklist, cards: Map<string, CardDef>): string => {
 export function registerDeck(event: ConvocationEvent, seat: number, deck: Decklist, cards: Map<string, CardDef>): { ok: true; event: ConvocationEvent } | { ok: false; problems: string[] } {
   const check = checkEventDeck(event, seat, deck, cards);
   if (!check.ok) return { ok: false, problems: check.problems };
-  const field = event.field.map((s, i) => (i === seat ? { ...s, deck: deck.map((e) => ({ ...e })), sideboard: sideboardOf(s.pool, deck), colors: deckColors(deck, cards) } : s));
+  const constructed = eventFormat(event.formatId).kind === "constructed"; // no pool: no sideboard this session
+  const field = event.field.map((s, i) => (i === seat ? { ...s, deck: deck.map((e) => ({ ...e })), sideboard: constructed ? [] : sideboardOf(s.pool, deck), colors: deckColors(deck, cards) } : s));
   const next: ConvocationEvent = { ...event, field };
   return { ok: true, event: event.phase === "build" && seat === 0 ? pairRound(next) : next };
 }

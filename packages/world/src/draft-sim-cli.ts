@@ -17,7 +17,7 @@ import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
 import { PACK_TIERS, packTier, resolveSet, type ConvocationPackData } from "./packs.js";
 import { buildLimitedDeck } from "./limited-builder.js";
 import { cardRating, type CardRatingTable } from "./rating.js";
-import { runDraft } from "./drafter.js";
+import { runDraft, tuneDraftTerms } from "./drafter.js";
 import { rollSealedPool } from "./packs.js";
 
 const arg = (k: string, d: string) => { const i = process.argv.indexOf(`--${k}`); return i >= 0 ? process.argv[i + 1]! : d; };
@@ -27,6 +27,7 @@ const read = (f: string) => JSON.parse(readFileSync(join(ROOT, "data/convocation
 const data: ConvocationPackData = { power: read("sets.json").power, sets: read("sets.json").sets, recipes: read("recipes.json").recipes };
 const rating = JSON.parse(readFileSync(join(ROOT, arg("rating", "data/convocation/card-rating.json")), "utf8")) as CardRatingTable;
 const set = data.sets.find((s) => s.id === arg("set", "plane"))!, recipe = data.recipes.find((r) => r.id === arg("recipe", set.recipe))!;
+{ const t = arg("terms", ""); if (t) tuneDraftTerms(Object.fromEntries(t.split(",").map((kv) => { const [k, v] = kv.split("="); return [k, Number(v)]; }))); }
 const pct = (x: number) => `${Math.round(x * 100)}%`, mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / Math.max(1, xs.length);
 
 if (process.argv.includes("--pick-order")) {
@@ -45,9 +46,10 @@ if (process.argv.includes("--pick-order")) {
   let games = 0, splash = 0;
   // S51 (Part 2): the field's pick quality — each drafted deck against Sealed decks from pools at the same seed
   // (six packs a seat, the builder on each): a draft concentrates colours, so the drafter should build the better deck.
+  const SEALED_PACKS = Number(arg("sealed-packs", "6")); // S52: 3 = the same number of cards a draft seat ends with
   const VS = process.argv.includes("--vs-sealed"); let vsN = 0, vsW = 0; const sealedRatings: number[] = [];
   for (let p = 0; p < PODS; p++) {
-    const d = runDraft(set, recipe, data, cards, rating, seed0 * 1000 + p);
+    const d = runDraft(set, recipe, data, cards, rating, seed0 * 1000 + p, 8, 3, !process.argv.includes("--no-read")); // S52: --no-read turns the pack-reading term off (the A/B)
     const builds = d.picks.map((x) => buildLimitedDeck(x, rating, cards));
     settled.push(...d.settledAt);
     const w = builds.map(() => 0), n = builds.map(() => 0);
@@ -60,7 +62,7 @@ if (process.argv.includes("--pick-order")) {
       w[i]! += a; w[j]! += 1 - a; n[i]! += 1; n[j]! += 1; games += 1;
     }
     if (VS) {
-      const sealed = Array.from({ length: 8 }, (_, s) => buildLimitedDeck(rollSealedPool(set, recipe, cards, data.power, (seed0 * 1000 + p) * 31 + s).flat(), rating, cards));
+      const sealed = Array.from({ length: 8 }, (_, s) => buildLimitedDeck(rollSealedPool(set, recipe, cards, data.power, (seed0 * 1000 + p) * 31 + s, SEALED_PACKS).flat(), rating, cards));
       for (const b of sealed) sealedRatings.push(b.rating);
       for (let i = 0; i < 8; i++) for (let k = 0; k < 4; k++) for (let g = 0; g < 2; g++) {
         const j = (i + k) % 8, seatA = g % 2, seed = seed0 + p * 100003 + i * 2003 + k * 59 + g + 7;
@@ -85,7 +87,7 @@ if (process.argv.includes("--pick-order")) {
     `A seat's two colours last change at pick ${mean(settled).toFixed(1)} on average (of 45); ${pct(settled.filter((x) => x <= 8).length / settled.length)} of seats are settled by the cut at pick 8; ${pct(settled.filter((x) => x > 15).length / settled.length)} change after the first pack. Splashing decks: ${splash} of ${seats}.`,
     `\n## The pod's spread\n\nBest seat minus worst seat, win rate: mean ${pct(mean(spread))} (a pod's seven-opponent round-robin). Standard deviation of a seat's win rate within its pod: ${(mean(sd) * 100).toFixed(1)} points. A drafted deck's mean card rating: ${mean(ratings).toFixed(2)}.`,
   ];
-  if (VS) L.push(`\n## Drafted decks against Sealed decks (the same seeds; ${vsN} games)\n\nThe drafted decks win **${pct(vsW / vsN)}**. Mean card rating: drafted ${mean(ratings).toFixed(2)}, Sealed ${mean(sealedRatings).toFixed(2)}.`);
+  if (VS) L.push(`\n## Drafted decks against Sealed decks of ${SEALED_PACKS} packs (the same seeds; ${vsN} games)\n\nThe drafted decks win **${pct(vsW / vsN)}**. Mean card rating: drafted ${mean(ratings).toFixed(2)}, Sealed ${mean(sealedRatings).toFixed(2)}.`);
   const text = L.join("\n"); console.log(text);
   mkdirSync(join(ROOT, "analysis/runs"), { recursive: true }); writeFileSync(join(ROOT, "analysis/runs/draft_sim.md"), text + "\n");
 }

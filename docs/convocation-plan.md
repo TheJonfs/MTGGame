@@ -58,7 +58,7 @@ Six Classic packs from the Plane, the AI builder, seven AI seats, three Swiss ro
 - **Tests:** a draft is deterministic by seed; every seat ends with 45 cards; the AI's colours settle by pick ~8 in most seats.
 - **The Lab measures:** the drafted decks against Sealed decks from the same set (the drafter should beat the builder alone); colour over- and under-drafting across 200 drafts — the first read of whether a set is draftable.
 
-### Stage 4 — Constructed by select-and-repair · **1 session**
+### Stage 4 — Constructed by select-and-repair · **BUILT (S52)** — the builder (`world/constructed-builder.ts`), seven formats, the Open as an event
 - `constructed-builder.ts` over `authoredLists()`: choose the lists that fit the format (`checkDeck` passes or nearly), cut what the rule forbids, fill by rating within colour, noise (same-role swaps, a land ±1) so five seats on one archetype are five variations. Formats past the Open: the tier formats (`maxTier` on the rule), the gate formats (rules that exist).
 - **Tests:** every built deck is legal in its format; noise is seeded; no two seats in a field share a list exactly.
 - **The Lab measures:** each format's metagame (the S46 round-robin, per format) before it is offered.

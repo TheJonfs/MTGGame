@@ -595,3 +595,14 @@ See handoff Concerns for the authoritative list. Highlights: auto-pay greedy fea
 - **Sealed runs carry `pilotVersion`** (ADR-150). `rating:build --prefixes` refuses a run from another pilot; add a book and every earlier run is stale for the rating. Archive, don't delete.
 - **The brief can be in `assets/temp/Cinquefoil Assets/`** rather than `docs/briefs/` — copy it in (S51).
 - **The editor's grid is small for fifteen cards**: `.draft-pack` enlarges the slots (150 px); reuse it for any pick-one-of-few screen.
+
+## S52 — Constructed (2026-10-05)
+
+- **`authored-lists-core.ts` is the browser-safe table**; `authored-lists.ts` is the node wrapper that reads data/world. Import the core from anything the UI bundles (a `node:fs` import anywhere in the world index breaks the web build).
+- **The rating's arithmetic is `rating-compute.ts`** — change it there, and the fixture test will say if a run's records leak into another's. The CLI only reads and writes.
+- **`eventFormat(id)`** finds any format (Limited or Constructed); `formatOf` is Limited-only and throws on a Constructed id.
+- **A Constructed seat has an empty `pool`** — the player's collection in the editor is built by the controller from the format's rule (`cardLegal` × `copyCap`), not stored in the event.
+- **`pnpm draft-sim --terms k=v,…`** tunes `DRAFT_TERMS` for one run; run the variants as separate background processes with their output redirected (each writes the same `analysis/runs/draft_sim.md` at the end — read the redirected stdout, not that file).
+- **A colour whose cards rate higher always "flows"** — any signal built on absolute rating pushes seats toward the best-rated colour. Normalising by colour did not rescue it either.
+- **The draft-versus-Sealed comparison is not like for like**: a Sealed seat has six packs to itself, a draft seat ends with three packs' worth. `--sealed-packs 3` is the fair one.
+- **The builder is not the draft's weak point**: on 45 picks the curve mends cost 0.01 of mean rating; a drafted seat has 32 playables in its pair.

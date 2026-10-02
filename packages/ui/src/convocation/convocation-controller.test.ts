@@ -6,7 +6,7 @@ import { loadCardPool } from "@shandalar/cards/loader";
 import { loadCatalog } from "@shandalar/world/loader";
 import { EVENT_SAVE_KEY, LEDGER_KEY, type ConvocationPackData } from "@shandalar/world";
 import { ConvocationController } from "./convocation-controller.js";
-import { SAVE_KEY } from "../world/world-controller.js";
+import { SAVE_KEY, WorldController } from "../world/world-controller.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
 const pool = loadCardPool(join(ROOT, "data/cards")).cards;
@@ -267,4 +267,57 @@ describe("the Convocation controller (S48)", () => {
     expect(again.event!.top8).toBe(true);
     expect(s.getItem(EVENT_SAVE_KEY)).toContain("draft-plane");
   }, 120_000);
+
+  it("S52 (ADR-152) — the Open: the editor over the format's whole legal pool (the restricted at one, the laws absent), a suggested deck, a saved deck from the journey checked by the format, the field of fifteen, the event as before; the journey's save is read and never written", async () => {
+    const s = memStorage();
+    const world = new WorldController(pool, catalog, s as never);
+    world.newGame({ starter: "white", difficulty: "standard", seed: 5201 });
+    const worldBytes = s.getItem(SAVE_KEY)!;
+    expect(worldBytes).toBeTruthy();
+    const c = new ConvocationController(pool, packs, rating, catalog, s, () => "2026-10-05T00:00:00Z");
+    c.newEvent(52, { constructed: "open" });
+    expect(c.screen).toEqual({ kind: "build", sideboarding: false });
+    expect(c.isConstructed()).toBe(true);
+    expect(c.event!.field).toHaveLength(16);
+    for (const seat of c.event!.field.slice(1)) { expect(size(seat.deck)).toBe(60); expect(seat.list).toBeDefined(); }
+    const host = c.editorHost()!;
+    expect(host.title).toBe("The Open — build 60");
+    expect(host.source.collection.black_lotus).toBe(1);
+    expect(host.source.collection.serra_angel).toBe(4);
+    expect(host.source.collection.clio_lady_of_the_depths).toBe(4); // prizeOnly is legal for the player (S47)
+    expect(host.source.collection.law_intake).toBeUndefined();
+    expect(host.source.collection.plains).toBeUndefined(); // basics are free, not owned
+    for (let i = 0; i < 5; i++) c.editorHost()!.add("serra_angel");
+    expect(c.draft.find((e) => e.cardId === "serra_angel")!.count).toBe(4);
+    c.editorHost()!.add("black_lotus"); c.editorHost()!.add("black_lotus");
+    expect(c.draft.find((e) => e.cardId === "black_lotus")!.count).toBe(1);
+    c.register(); expect(c.screen.kind).toBe("build"); expect(c.notice).toMatch(/the Open asks 60/);
+    // a saved deck from the journey: offered with the format's verdict (a thirty-card starter is not legal here)
+    const saved = c.savedDecks();
+    expect(saved.length).toBeGreaterThan(0);
+    expect(saved[0]!.ok).toBe(false);
+    c.useSavedDeck(saved[0]!.name);
+    expect(size(c.draft)).toBe(30);
+    c.register(); expect(c.screen.kind).toBe("build");
+    // the suggestion: a legal sixty; registering opens round one
+    c.suggestDeck();
+    expect(size(c.draft)).toBe(60); expect(c.editorLegality().ok).toBe(true);
+    c.register();
+    expect(c.screen.kind).toBe("pairings");
+    expect(c.event!.pairings).toHaveLength(8);
+    c.playMatch(); if (c.screen.kind === "playDraw") c.choose("play");
+    expect(size(c.match!.spec.players[1].decklist)).toBe(60);
+    c.match!.autoWin(); await tick(20);
+    expect(c.screen.kind).toBe("between");
+    c.openSideboard(); expect(c.screen.kind).toBe("between"); // no sideboard in Constructed this session
+    // a reload mid-round resumes; the journey's save is byte for byte what it was
+    const again = new ConvocationController(pool, packs, rating, catalog, s);
+    again.resume();
+    expect(again.screen.kind).toBe("between");
+    expect(again.isConstructed()).toBe(true);
+    await series(again, true);
+    expect(again.screen.kind).toBe("standings");
+    expect(again.event!.results).toHaveLength(8);
+    expect(s.getItem(SAVE_KEY)).toBe(worldBytes);
+  }, 180_000);
 });

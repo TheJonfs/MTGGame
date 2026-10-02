@@ -1,98 +1,103 @@
-# Handoff — after Session 51 (2026-10-04)
+# Handoff — after Session 52 (2026-10-05)
 
 ## State of the world
-**The Convocation can be drafted.** `/convocation` now opens on a Draft event: a pod of eight, three Classic packs picked and passed left-right-left against seven AI seats on the pick rule, the human's forty-five picks becoming the pool, then the existing build → five rounds → the Umbel. The two Sealed events remain beside it. The draft saves and resumes mid-pick. The card rating was rebuilt from post-fix games only and **adopted** (v1.1 — the brief's v1′); a pooling bug in the rating builder was found and fixed on the way, and it invalidates one thing reported in S49 (below). The campaign's three baselines were re-run after books 88–92. S46–S51 are committed locally and **not pushed**. `pnpm typecheck`, `pnpm test` (865) and `pnpm build:web` pass.
+**The Convocation has a Constructed event.** `/convocation` now offers the Open beside the Draft and the two Sealed events: sixteen seats, five rounds, the Umbel; the field's fifteen decks built by select-and-repair from the authored lists; the player's deck built in the editor over every card the Open allows, taken from "Suggest a deck", or brought as a saved deck from the journey and checked by the format. The builder passes its tests in seven formats (the Open, Pauper, the five gates). The rating pipeline has a test. The drafter's pack-reading term was built as ruled, measured in seven variants, never beat the rule without it, and **ships switched off**. S46–S52 are committed locally and **not pushed**. `pnpm typecheck`, `pnpm test` (877) and `pnpm build:web` pass.
 
 ## Done this session
-- **Part 0 — rulings applied** (`docs/decision-updates/s51.md`): ADR-150 (post-fix evidence only; Sealed runs carry `pilotVersion`; the older runs archived); the commitment slope; the campaign re-baselined.
-- **Part 1 — the draft**:
-  - *Engine* (`world/event.ts`): `newDraftEvent`, `draftStep` (the human's pick, the seven AI picks, the pass; the next pack; at the end the picks are the pools and the AI decks are built), `draftPack`, `draftDirection`, `suggestedPick`. The draft is `event.draft` while `phase === "draft"`; after it the event is an ordinary one at the build.
-  - *Screen*: the pack in hand (cards shown larger than the editor's grid), "Pick {n} of 45 — pack {p}.", "The pack goes left." / "right.", the picks so far by colour, hover to inspect, one click to take — no take-backs. The build's banner reads "Forty-five picks. Build from them."
-  - *The door*: "A Convocation — Draft, eight seats: three packs, five rounds, the Umbel." (the default), and the two Sealed events.
-  - **Walked in the browser** (dev build): a card taken by click, the pass line, a reload at pick 22 resuming at pick 22 with 21 picks, the draft finished, the build over the 45 picks, five rounds and the Umbel won with the dev concession — "first of eight", the ledger's line `draft-plane`. The field's four series a round took 0.2–0.5 s. No console errors.
-- **Part 2 — measured**: tables below. A headless draft event end to end (the pod drafts, eight decks, five rounds with no rematch, the Umbel), saved and resumed mid-draft (pick 21) and mid-round, ending as the uninterrupted event.
-- **Part 3 — text**: the brief's lines, verbatim.
+- **Part 0**: rulings filed (`docs/decision-updates/s52.md`). **ADR-151** — the rating's arithmetic is now a pure function (`world/rating-compute.ts`) with a fixture test: two runs whose decks share names keep their records apart; the bug's own shape pinned for the record (the same games pooled give +0.3 and −0.3 where the truth is zero); a lift recomputed by hand; the pinned output. The live table rebuilds byte-identical through it. The lord, guardian and petal sims re-run on pilot 92.
+- **Part 1 — the builder** (`world/constructed-builder.ts`): select (legal share, ties by measured strength, the top five, a seeded pick), repair (cut what the rule forbids; fill role for role inside the list's colours; the floors), noise (two or three same-role swaps within 0.5 of rating; a land ±1), check. `pnpm constructed:report`. Seven formats in `CONSTRUCTED_FORMATS`; a new rule field `maxTier` for Pauper.
+- **Part 2 — the Constructed event**: `newConstructedEvent`, `suggestedConstructedDeck`; the controller's legal-pool collection, the saved decks (read from the journey's save, never written), the door's fourth option. **Walked in the browser**: a saved journey deck loaded (refused at 30 cards with the format's one line; padded to sixty and registered — round one posted); a second event with a suggested deck, game one won, a reload resuming between games, the round finished to the standings (the field's seven series: 1.5 s with sims running alongside). No console errors.
+- **Part 3 — the drafter reads what is passed**: `colourSignals` (perfect memory of every pack; flow and cut), a term in `pickValue`, a tuning hook for the sim. Measured; off. Below.
+- **Part 4 — measured**: the Open's field in a round-robin; the campaign's three sims.
 
-## A correction to S49: the "v2 candidate" was wrong, and why
-`pnpm rating:build` pooled several Sealed runs by deck name, and every run names its decks `pool:0 … pool:199`. Two runs' decks therefore shared one win record, so each deck was measured against the average of two unrelated decks and the lift came out meaningless. **v0 and v1 were single-run builds and are unaffected.** The S49 "v2 candidate" (and S50's `--also` candidate) pooled two or three runs and were wrong. So S49's statement that "the update's movers are mostly red cards going down" was an artefact of this bug, not evidence. The forced-pair experiment — the thing S49's conclusion rested on — never went through the rating builder and stands. The candidate files are deleted; the builder now keeps each run's deck records apart.
+## The builder, by format (40 seeded builds each, from the 112 authored lists)
 
-I found it because the first v1′ again marked red down hard while the same cards' lifts, computed run by run, were near zero or positive.
+| format | legal | started from | mean cut | mean added | distinct decks |
+|---|---|---|---|---|---|
+| The Open | 40/40 | coin 10 · wurmspeaker 10 · warband 8 · levy 6 · muster 6 | 0.0 | 0.0 | 40 |
+| Pauper | 40/40 | beast:rats 11 · beast:ogre 11 · beast:lion 7 · beast:recluse 6 · mage:oriel 5 | 1.1 | 29.9 | 38 |
+| Bodies (24 creatures) | 40/40 | the Open's five | 2.7 | 2.7 | 40 |
+| Nothing Small (power ≥ 2) | 40/40 | guardian:drana 10 · road:chrisRoadB 10 · flood:dredger 8 · open:tally 6 · corolla:faldor 6 | 0.0 | 19.5 | 40 |
+| Nothing Sudden (no instants) | 40/40 | flood:ovna 10 · open:enchantress 10 · beast:wurm 8 · open:wurmspeaker 6 · beast:warband 6 | 0.0 | 15.5 | 40 |
+| Half Ground (half lands) | 40/40 | the Open's five | 7.5 | 7.5 | 40 |
+| Nothing Dear (mana value ≤ 4) | 40/40 | open:tally 10 · open:muster 10 · open:enchantress 8 · open:levy 6 · open:undertow 6 | 0.0 | 0.0 | 40 |
 
-## The rating — v1.1 (v1′), adopted
-The authored presence term (unchanged) + the lift from S50's 20,000 games and a fresh noise run (20,000 games, σ 0.4 on a third of the decks), both played on pilot 92. v1 is kept as `card-rating-v1.json`.
+Every build is a legal sixty. A thirty-card starter and the campaign's forties repair to sixty in their own colours with their own share of lands (tested).
 
-**The brief's test**: red's share of Sealed decks rises without red's win rate falling.
+## The Open's field of fifteen in a round-robin (seed 52; 2,100 games)
 
-| | v1 (S50's run) | v1.1 |
+| list | seats | mean win rate | range within the list |
+|---|---|---|---|
+| open:levy | 6 | 55% | 50–60% |
+| open:wurmspeaker | 4 | 53% | 51–55% |
+| open:warband | 3 | 44% | 41–47% |
+| open:coin | 1 | 44% | — |
+| open:muster | 1 | 34% | — |
+
+- **The archetypes spread unevenly by chance** — five lists at equal weight, fifteen draws: six Levies, one Coin.
+- **The variation within an archetype is real**: the six Levy seats span ten points on three or four cards each.
+- **No list is broken by the repair** (the Open cuts nothing). What the noise does badly is swap by rating alone: a Pyroclasm into a weenie deck, a Blaze into the Warband, Graceful Restoration into the Levy. The first run also took a Black Lotus out and put an off-colour Mox in; noise now never moves a free card.
+
+## The drafter reads what is passed — three numbers, and what they mean
+
+| | the rule alone | with the term (the best of seven variants) |
 |---|---|---|
-| red's share of Sealed decks | 22% | **27%** |
-| red pairs chosen | 44 of 200 | 54 of 200 |
-| red pairs' win rate (weighted) | 42% | **46%** |
-| a colour's share | W 45 · U 33 · B 56 · R 22 · G 45 | W 45 · U 30 · B 56 · R 27 · G 43 |
+| drafted decks against six-pack Sealed decks | **46%** | 45% (the others 42–44%) |
+| pods with four or more seats on black | 29 of 50 | 30 (29–34 across variants) |
+| the pod's spread | 48 points | 50 (50–53) |
 
-Passed; v1.1 is the live table. The six new cards now have measured ratings: Flametongue Kavu 2.41 (prior 1.5), Shocking Sharpshooter 1.52 (1.0), Seasoned Pyromancer 2.05 (2.0), Furnace Whelp 1.45 (1.5), Rage Cobra 1.34 (1.5), Dragon Fodder 0.87 (1.0).
+The term does not reach 50% and does not thin black's crowd, so its weights are zero. Why it fails, as far as I can see: **the signal follows the rating.** Black's cards rate highest, so black cards are what is "still there" in any pack and black always reads as flowing — the flow term herds seats *toward* black (four-or-more-on-black rose in most variants). Normalising each colour by its own average did not rescue it, and the cut term alone was neutral.
 
-**The twenty that moved most (v1 → v1.1)**: Entomb +0.61 · Waste Not +0.57 · Cathartic Adept +0.39 · Titania −0.27 · Bonesplitter +0.26 · Gladecover Scout +0.25 · Goblin Chieftain −0.22 · Guttersnipe −0.21 · Aven Fisher −0.19 · Tidewall −0.19 · Putrefy −0.18 · Goblin Grenade −0.17 · Blanchwood Armor −0.17 · Reya Dawnbringer +0.16 · Voracious Cobra −0.16 · Arcanis +0.15 · Altar of Dementia −0.15 · Phyrexian Purge −0.14 · Cunning Tactician −0.13 · Mother Bear −0.13. (See Concern 2 on the first three.)
+**The builder-on-45 read the brief asked for — it is not the lever either.** A drafted seat ends with 32 playables in its pair (a Sealed seat has 36); no seat of 400 was short of 23; the curve mends cost 0.01 of mean rating. The builder plays what it is given.
 
-## The draft sim — 50 pods at v1.1 with the slope
+**What the 46% actually is: card supply.** A Sealed seat has six packs to itself; a draft seat ends with three packs' worth, contested. Against Sealed decks built from **three** packs — the same number of cards — **the drafted decks win 66%** (mean rating 1.57 against 1.37). The drafter builds a much better deck than an equal pool hands it; it cannot match a pool twice the size. The brief's target compares a three-pack deck with a six-pack one.
 
-| | S50 | S51 |
-|---|---|---|
-| seats per colour | W 42 · U 37 · B 47 · R 33 · G 42 | W 41 · U 38 · B 48 · R 32 · G 42 |
-| a colour's seats win | W 52 · U 55 · B 48 · R 45 · G 50 | W 54 · U 53 · B 46 · **R 47** · G 51 |
-| pods with four or more seats on black | 27 of 50 | 29 of 50 |
-| seats whose colours change after pick 8 | 16% | **23%** (the target: 20–30%) |
-| a seat's colours last change at pick | 5.6 | 6.5 |
-| the pod's spread (best − worst seat) | 50 points | 48 |
-
-**The field's pick quality — the check failed.** Drafted decks against Sealed decks at the same seeds (3,200 games): **the drafted decks win 46%**. Their mean card rating is 1.57 against the Sealed decks' 1.77. The brief expected the drafter to build the better deck; it does not. A Sealed seat chooses 23 cards from 90 uncontested; a draft seat ends with 45, taken one at a time against seven others — and half the pods have four seats fighting over black.
-
-## The campaign's new baselines (after books 88–92; `results/s51/`, local)
-- **`mage-sweep --part 5`, Standard** (tier-2 and tier-3 mages against the five starters, 50 cells): the mages win **72.8%** on average, +1.8 against the S35 baseline the sweep compares to. One mage moved: **Kessa Emberhand +9** (70% — her Lightning Bolts are removal now); the rest are within about ±5 (Magister Quill +5, Varro +3, Sorrel +3, Pell −3).
-- **`flood-sim --refs postlairs`** (30 cells): the seats win 60.6% on average against 61.8% at S45. The largest moves are against the stronger reference deck: Emberford 49 → 41, the Tallyflame Court 21 → 13.
-- **`heart-sim --tide 1`** at 50 life: the Manafleur's kill rate against the stock references is 92%, as at S45.
+## The campaign's baselines on pilot 92 (`results/s52/`, local)
+- **`lord-sim`**: every cell within ±2 of S45's (15 cells).
+- **`guardian-sim`**: within ±2, except **Drakuseth** +4 at the two lower tiers (59 → 63, 68 → 72).
+- **`petal-sim`**: within ±1.
 
 ## Deviations from the brief
-1. **"Full slope 0.50 → 0.35" is read as the bonus at the cut**: 0.10 → 0.07 a pick (and 0.035 a pick before the cut). The share landed at 23%, inside the target, so the cut stays at pick 8.
-2. **The field's pick-quality check failed** (46%) and nothing was changed in response — the brief asks for the measure, not a fix. *Rule on*: whether the drafter wants work before S52, or whether a weaker draft field is acceptable.
-3. **The S49 candidate files were deleted** (`card-rating-v2-candidate.*`) — they were wrong (the pooling bug).
-4. **S50's Sealed run was stamped `pilotVersion: 92` after the fact** so it could be pooled under ADR-150; it was played after books 88–92 were in.
-5. **A draft of eight puts every seat in the Umbel** — the brief's event; the Swiss rounds decide only the seeding.
-6. **The sweep's part five is compared with its S35 baseline** (the only one the sweep carries); there is no S45 part-five run to compare with.
-7. **No rating-builder test** for the pooling fix: the builder reads local run files. The fix is described here and in the notes; a small fixture-driven test would be worth an hour.
+1. **The pack-reading term ships switched off.** Built to the ruling (the whole pack remembered, each time); it lowered the field's quality in every variant tried, and the process rule says such a change reverts. The code and the tuning hook remain. *Rule on*: whether to keep trying it, and against which measure (Deviation 2).
+2. **The 50% target is measured against six-pack Sealed decks**, which a three-pack draft deck should not be expected to beat; against three-pack Sealed decks the drafter is at 66%. I report both and changed neither the target nor the entrance.
+3. **The draft event does not store the AI seats' pack memory** — with the term off there is nothing to read it. If the term returns, `event.draft` grows a `seen` list per seat (about 40 KB a draft).
+4. **Bodies asks 24 creatures**; the gate formats are "the Open plus the gate" (its pool and restricted list). The formats doc leaves both open.
+5. **No sideboarding in a Constructed event** this session, for the player or the field.
+6. **Noise never moves a free card** — not in the brief; added after the first round-robin.
+7. **"Suggest a deck" for the human is the same select-and-repair** as the field's, on the human seat's own seed — so the suggestion is one of the five strongest lists with a few swaps.
+8. **A saved deck is offered whatever its legality**, with "(not legal here)" beside it; it loads into the editor, where the legality panel says why. Registration still refuses an illegal deck.
 
 ## Concerns
-1. **The AI drafts worse than it builds Sealed.** 46% against Sealed decks, and a 48-point spread inside a pod. A human who drafts sensibly should beat this field more easily than the Sealed field — and Chris swept the Sealed field. The levers, in the order I would try them: (a) the colour fight (29 of 50 pods have four or more seats on black — a seat that read "black is being cut" would move; the pick rule cannot see what was passed); (b) the builder on 45 cards (it was tuned on 90 — with fewer playables its curve mends cost more); (c) the entrance (life is the mode's own lever for a weak field).
-2. **ADR-150 threw away some true evidence.** The archived runs were the ones that said Entomb, Waste Not and Cathartic Adept are poor in Sealed; the builder now rarely plays them, so the post-fix runs hardly saw them (81 to 304 sightings) and they drift back up toward their authored-list numbers (+0.4 to +0.6). They are still low (1.1–1.3), but the next noise run should be watched for them.
-3. **A pick is one click with no confirmation.** That is the brief, and a draft's rule; it is also an easy misclick on a fifteen-card grid. A two-step pick (select, then "take it") would cost one click a pick. Chris's playtest will say.
-4. **The player sees nothing of what the table took.** As specified (a real draft). The picks pane is the player's only memory; there is no view of the pack as it was when first seen.
-5. **The rating builder had a silent bug for two sessions.** Nothing failed; the numbers were simply wrong, and I reported them. The check that caught it was computing the same statistic a second way. The rating's pipeline has no tests; it should have at least one.
-6. **Black is still over-drafted** (48% of seats, winning 46%) — S49's Concern 2, unchanged by the rebuilt rating.
-7. **Kessa at +9 against the starters** is a tier-2 mage a new player meets early. The burn rule made her a better pilot; whether her row wants a point of life back is the planner's.
+1. **The Open's field is five lists.** Select takes the top five by measured strength, and in the Open every list is fully legal, so the field is always the Levy, the Wurmspeaker, the Warband, the Coin and the Muster — never the Loop, the Ford, the Enchantress, the Tally, the Locks, the Undertow or the Larder. That is the brief's rule working as written; it makes the Open a five-deck format for the AI. A wider candidate set (ten), or a weight by strength rather than a cut-off, would show the player the format's range.
+2. **The noise swaps by rating, not by role in the deck.** "Same role" is land / creature / spell; a sweeper and a token-maker are both spells. Within one list the seats span ten points. A finer role (removal, pump, card advantage, mana) would need a small table of effect shapes — the sideboarding rules already classify three of them.
+3. **Black is over-rated, and that is now the draft's main fault.** Black seats win 46% in drafts and four seats crowd into it in most pods; reading the table cannot fix a rating that tells every seat black is best. A per-colour correction to the rating (so each colour's mean rating matches its measured deck win rate) is a small, testable change and the likeliest way to spread the seats.
+4. **The Open's first turn is Vintage's.** The entrance is the Sealed table's life rows; I did not measure whether a few points of life mean anything against a deck with a Lotus. The brief flags this; it wants its own rows after someone plays it.
+5. **The player's editor shows 234 cards** in the Open — the whole pool, with the filters the editor already has. It works; it is a lot to scroll. A "start from a list" picker (the twelve Open lists as starting points) would serve a player better than an empty deck.
+6. **A saved journey deck is almost never legal in the Open** (thirty or forty cards against sixty). The path works and will matter once the campaign linkage exists; today "bring a saved deck" mostly reports "not legal here".
+7. **ADR-150's watch**: no new noise run this session, so Entomb, Waste Not and the Adept were not re-observed.
 
 ## Registry entries added/changed
-- No R-numbers (no rules mechanics this session). Pool registry unchanged. Knobs unchanged.
+- No R-numbers (no rules mechanics). Pool registry unchanged. Knobs unchanged.
+- `DeckRule.maxTier` (new field, validated and described).
 
 ## Test status
-`pnpm test`: 89 files passed, 1 skipped; **865 tests passed, 2 skipped** (the standing two). New in `event.test.ts`: the pod and the first pick; three packs left-right-left to the build; the full draft event with both resumes. New in `convocation-controller.test.ts`: the draft through the controller (the view, a refused pick, the pass, a reload mid-draft, the build over the picks, the event after). Amended: the pick rule's slope values.
+`pnpm test`: 91 files passed, 1 skipped; **877 tests passed, 2 skipped** (the standing two). New: `rating-compute.test.ts` (4), `constructed-builder.test.ts` (4), the Constructed event headless and the two pack-reading tests in `event.test.ts`, the Open through the controller in `convocation-controller.test.ts`. No AI heuristic changed (the pack-reading term is the drafter's and is off), so no ladder run. No fuzz — no new card. About 58,000 sim games raised no engine error.
 
-No AI heuristic changed this session (the pick rule is the drafter's, in the world package), so no ladder run. No fuzz — no new card. Over 60,000 sim games raised no engine error.
-
-Not verified: a draft made by hand, pick by pick, in the browser (one real click, the rest through the controller); the production build in a browser; the campaign's lord, guardian and petal sims (the brief named three; these were not re-run).
+Not verified: a full Open event played to the Umbel in the browser (one round was walked); the six other Constructed formats as events (the builder's tests only); the production build in a browser.
 
 ## Suggested next
-**S52 — Constructed by select-and-repair** against the Open's library. Estimate: **one session** for the builder (`authoredLists()` → the lists that fit a format → cut what the rule forbids → fill by rating within colour → seeded noise), a Constructed event (the player brings a saved deck or builds one in the editor against the format's rule; the build screen is the editor with the world's collection or an open pool — a question for the brief), and the Open's metagame through the event's field.
+**S53 — the full ladder.** Estimate: **one to two sessions.** The pieces exist separately (a draft, Limited rounds, Constructed rounds, a bracket); what is new is an event with **stages** — today `ConvocationEvent` has one `formatId`, one pool and one deck. It needs: a stage list (format, rounds), the player's deck and pool per stage, the standings carried across stages, a second draft mid-event, the bracket in a chosen format, the entrance table indexed across stages, and prizes by finish. The save grows accordingly; I would version it (`convocation-event-v2`) and refuse a v1 save rather than migrate one.
 
-Before or beside it, if the planner agrees: one pass at the draft field's strength (Concern 1) — a "what is being cut" term for the pick rule is small and measurable with `pnpm draft-sim --vs-sealed`.
+Before it, cheaply: the per-colour rating correction (Concern 3) and a wider Open field (Concern 1) — both change what the ladder's field looks like.
 
 ## How to run
 ```
-pnpm viewer                                   # /convocation — the Draft is the default event
-pnpm sealed-sim --pools 200 --games 10 --seed 5101 --noise 0.4 --shard 0/6 --out analysis/runs/noise51_shard0.json   # ×6
-pnpm rating:build --prefixes sealed50,noise51 --candidate v1p --version 1.1     # exact runs, one pilot; writes card-rating-v1p.json
-pnpm draft-sim --pods 50 --vs-sealed           # the colour table, the commitment share, drafted against Sealed
-pnpm rating:view --compare data/convocation/card-rating-v1.json
-npx vitest run packages/world/src/event.test.ts packages/ui/src/convocation
+pnpm viewer                                   # /convocation — "The Open (Constructed)" on the door
+pnpm constructed:report                       # the builder, by format
+pnpm constructed:rr --format open --seed 52   # the field of fifteen in a round-robin
+pnpm draft-sim --pods 50 --vs-sealed                     # the rule as shipped (the term off), against six-pack Sealed
+pnpm draft-sim --pods 50 --vs-sealed --sealed-packs 3    # like for like
+pnpm draft-sim --pods 50 --vs-sealed --terms signalFlow=0.06,signalCut=0.08   # the pack-reading term on
+npx vitest run packages/world/src/rating-compute.test.ts packages/world/src/constructed-builder.test.ts
 pnpm typecheck && pnpm test
 ```
-In the browser console: `__cc.newEvent(51, { draft: true }); while (__cc.screen.kind === "draft") __cc.pickCard(__cc.suggestedPick())`.

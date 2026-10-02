@@ -28,7 +28,8 @@ import { loadCardPool } from "@shandalar/cards/loader";
 import { LAW_IDS } from "./formats.js";
 import { isBasic } from "./legality.js";
 import { authoredLists } from "./authored-lists.js";
-import { ratingPrior, type CardRatingRow } from "./rating.js";
+import type { CardRatingRow } from "./rating.js";
+import { computeRating } from "./rating-compute.js";
 import type { RatingGame } from "./rating-run-cli.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
@@ -47,17 +48,8 @@ if (!files.length) throw new Error("rating:build — no rating run on disk (pnpm
 const games: RatingGame[] = files.flatMap((f) => (JSON.parse(readFileSync(f, "utf8")) as { results: RatingGame[] }).results);
 const lists = new Map(authoredLists(ROOT).map((l) => [l.key, l]));
 
-const rec: Record<string, { n: number; w: number }> = {};
-const sides = (g: RatingGame) => [[g.a, g.winner === "a" ? 1 : g.winner === "draw" ? 0.5 : 0, g.seenA, g.usedA], [g.b, g.winner === "b" ? 1 : g.winner === "draw" ? 0.5 : 0, g.seenB, g.usedB]] as [string, number, string[], string[]][];
-for (const g of games) for (const [k, r] of sides(g)) { const x = (rec[k] ??= { n: 0, w: 0 }); x.n += 1; x.w += r; }
-const wr = (k: string) => rec[k]!.w / rec[k]!.n;
-const field = Object.values(rec).reduce((a, x) => a + x.w, 0) / Object.values(rec).reduce((a, x) => a + x.n, 0);
-
-const seen: Record<string, { n: number; d: number; used: number }> = {};
-for (const g of games) for (const [k, r, s, u] of sides(g)) for (const c of s) { const x = (seen[c] ??= { n: 0, d: 0, used: 0 }); x.n += 1; x.d += r - wr(k); if (u.includes(c)) x.used += 1; }
-// S48: the Sealed sim's sightings — the same lift, over decks no author built
-const sealed: Record<string, { n: number; d: number }> = {};
-let sealedGames = 0;
+// S52 (ADR-151): the arithmetic is rating-compute.ts (pure, tested); this file reads the runs and writes the tables.
+let sealedRuns: RatingGame[][] | null = null;
 if (withSealed) {
   const sf = readdirSync(join(ROOT, "analysis/runs")).filter((f) => (prefixes.length ? new RegExp(`^(${prefixes.join("|")})_shard\\d+\\.json$`) : withNoise ? new RegExp(`^(sealed_shard|sealednoise_shard${alsoPrefix ? `|${alsoPrefix}_shard` : ""})\\d+\\.json$`) : /^sealed_shard\d+\.json$/).test(f)).sort().map((f) => join(ROOT, "analysis/runs", f));
   if (!sf.length) throw new Error("rating:build --sealed — no Sealed sim on disk (pnpm sealed-sim first)");
@@ -65,39 +57,17 @@ if (withSealed) {
     const now = Math.max(0, ...[...readFileSync(join(ROOT, "packages/agents/src/book-of-shame.test.ts"), "utf8").matchAll(/book of shame (\d+)/g)].map((m) => Number(m[1])));
     for (const f of sf) { const v = (JSON.parse(readFileSync(f, "utf8")) as { pilotVersion?: number }).pilotVersion; if (v !== now) throw new Error(`rating:build — ${f} was played on pilot ${v ?? "(unversioned)"}; the current pilot is ${now} (ADR-150: no pooling across pilots)`); }
   }
-  // S51: each run's decks are its own — two runs both name their decks "pool:0…", so a deck's win rate is kept PER
-  // FILE GROUP (the run's prefix). Pooling them under one key (S49's and S50's candidates did) gave every deck the
-  // average of two unrelated decks' records and made the lift meaningless.
+  // Each run's decks are its own (every run names its decks "pool:0…"): the files are grouped by run, never pooled by key.
   const runOf = (f: string) => f.replace(/^.*\//, "").replace(/_?shard\d+\.json$/, "").replace(/_\d+\.json$/, "");
   const byRun = new Map<string, RatingGame[]>();
   for (const f of sf) { const g = (JSON.parse(readFileSync(f, "utf8")) as { results: RatingGame[] }).results; byRun.set(runOf(f), [...(byRun.get(runOf(f)) ?? []), ...g]); }
-  for (const sg of byRun.values()) {
-    sealedGames += sg.length;
-    const srec: Record<string, { n: number; w: number }> = {};
-    for (const g of sg) for (const [k, r] of sides(g)) { const x = (srec[k] ??= { n: 0, w: 0 }); x.n += 1; x.w += r; }
-    for (const g of sg) for (const [k, r, s] of sides(g)) for (const c of s) { const x = (sealed[c] ??= { n: 0, d: 0 }); x.n += 1; x.d += r - srec[k]!.w / srec[k]!.n; }
-  }
+  sealedRuns = [...byRun.values()];
 }
-const liftN = (id: string) => (seen[id]?.n ?? 0) + (sealed[id]?.n ?? 0), liftD = (id: string) => (seen[id]?.d ?? 0) + (sealed[id]?.d ?? 0);
-const pres: Record<string, { w: number; d: number; lists: number }> = {};
-for (const [k, l] of lists) { if (!rec[k]) continue; for (const e of l.decklist) { const x = (pres[e.cardId] ??= { w: 0, d: 0, lists: 0 }); const w = e.count * rec[k]!.n; x.w += w; x.d += w * (wr(k) - field); x.lists += 1; } }
-
 const rated = [...pool.values()].filter((d) => !d.isTokenDef && !isBasic(d.id) && !(LAW_IDS as readonly string[]).includes(d.id));
-const sd = (xs: number[]) => { const m = xs.reduce((a, b) => a + b, 0) / xs.length; return Math.sqrt(xs.reduce((a, b) => a + (b - m) ** 2, 0) / xs.length); };
-const P = (id: string) => (pres[id] ? (pres[id]!.d / pres[id]!.w) * (pres[id]!.lists / (pres[id]!.lists + 2)) : 0);
-const L = (id: string) => (liftN(id) ? (liftD(id) / liftN(id)) * (liftN(id) / (liftN(id) + 300)) : 0);
-const sdP = sd(rated.filter((d) => pres[d.id]).map((d) => P(d.id))), sdL = sd(rated.filter((d) => liftN(d.id)).map((d) => L(d.id)));
+const computed = computeRating({ authored: games, lists: [...lists.values()], sealedRuns, rated });
+const { cards, rec, field, sealedGames } = computed, sdP = computed.sigmaPresence, sdL = computed.sigmaLift;
+const wr = (k: string) => rec[k]!.w / rec[k]!.n;
 const r3 = (x: number) => Math.round(x * 1000) / 1000;
-const cards: Record<string, CardRatingRow> = {};
-for (const d of rated.sort((a, b) => a.id.localeCompare(b.id))) {
-  const prior = ratingPrior(d), signal = 0.5 * (P(d.id) / sdP + L(d.id) / sdL);
-  cards[d.id] = {
-    rating: r3(prior + 0.5 * signal), prior, lists: pres[d.id]?.lists ?? 0, seen: seen[d.id]?.n ?? 0,
-    presence: pres[d.id] ? r3(pres[d.id]!.d / pres[d.id]!.w) : null, lift: seen[d.id] ? r3(seen[d.id]!.d / seen[d.id]!.n) : null,
-    castWhenDrawn: seen[d.id] ? r3(seen[d.id]!.used / seen[d.id]!.n) : null,
-    ...(withSealed ? { sealedSeen: sealed[d.id]?.n ?? 0, sealedLift: sealed[d.id] ? r3(sealed[d.id]!.d / sealed[d.id]!.n) : null } : {}),
-  };
-}
 const out = {
   _comment: "S47/S48 (ADR-145): the card rating — generated by pnpm rating:build from pnpm rating:run (analysis/runs, local). rating = prior(tier) + 0.5 × ½(presence′/σP + lift′/σL); see world/rating-build-cli.ts. presence and lift are raw win-rate differences; seen is the sample behind lift and castWhenDrawn.",
   version: argOf("version") ? Number(argOf("version")) : withNoise ? 2 : withSealed ? 1 : 0,

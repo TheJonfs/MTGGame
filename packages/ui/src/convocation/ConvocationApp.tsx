@@ -54,19 +54,20 @@ function Page({ children, wide = false }: { children: React.ReactNode; wide?: bo
 function Door({ c }: { c: ConvocationController }) {
   const [seed, setSeed] = useState("");
   const [confirm, setConfirm] = useState(false);
-  const [size, setSize] = useState<"draft" | "sixteen" | "eight">("draft");
+  const [size, setSize] = useState<"draft" | "sixteen" | "eight" | "open">("draft");
   const [difficulty, setDifficulty] = useState<DifficultyName>("standard");
   const ledger = c.ledger();
-  const start = () => c.newEvent(seed.trim() && Number.isFinite(Number(seed)) ? Number(seed) : undefined, size === "draft" ? { draft: true, seats: 8, rounds: 5, top8: true, difficulty } : size === "sixteen" ? { seats: 16, rounds: 5, top8: true, difficulty } : { seats: 8, rounds: 3, difficulty });
+  const start = () => c.newEvent(seed.trim() && Number.isFinite(Number(seed)) ? Number(seed) : undefined, size === "open" ? { constructed: "open", seats: 16, rounds: 5, top8: true, difficulty } : size === "draft" ? { draft: true, seats: 8, rounds: 5, top8: true, difficulty } : size === "sixteen" ? { seats: 16, rounds: 5, top8: true, difficulty } : { seats: 8, rounds: 3, difficulty });
   return (
     <Page>
       <h2 style={{ fontFamily: "var(--serif)", margin: "0 0 4px" }}>The Convocation</h2>
-      <p style={{ margin: "0 0 10px" }}>{size === "draft" ? "A Convocation — Draft, eight seats: three packs, five rounds, the Umbel." : size === "sixteen" ? "A Convocation — Sealed, sixteen seats, five rounds, and the Umbel: a final table of eight." : "A Convocation — Sealed, eight seats, three rounds."}</p>
-      <p style={{ fontSize: 13, color: "var(--ink-soft)", margin: "0 0 12px" }}>{size === "draft" ? "Pick one card from each pack as it comes round, build forty cards from your picks, and play rounds of best-of-three against the pod." : "Open six packs, build forty cards from them, and play rounds of best-of-three against the field."}</p>
+      <p style={{ margin: "0 0 10px" }}>{size === "open" ? "A Convocation — the Open, sixteen seats, five rounds, the Umbel." : size === "draft" ? "A Convocation — Draft, eight seats: three packs, five rounds, the Umbel." : size === "sixteen" ? "A Convocation — Sealed, sixteen seats, five rounds, and the Umbel: a final table of eight." : "A Convocation — Sealed, eight seats, three rounds."}</p>
+      <p style={{ fontSize: 13, color: "var(--ink-soft)", margin: "0 0 12px" }}>{size === "open" ? "Constructed: bring sixty cards — any card the Open allows, the power restricted to one of each — and play rounds of best-of-three against a field of fifteen." : size === "draft" ? "Pick one card from each pack as it comes round, build forty cards from your picks, and play rounds of best-of-three against the pod." : "Open six packs, build forty cards from them, and play rounds of best-of-three against the field."}</p>
       <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 14, fontSize: 13 }}>
         <label className={size === "draft" ? "picked" : ""}><input type="radio" checked={size === "draft"} onChange={() => setSize("draft")} /> Draft — eight seats, three packs, five rounds, the Umbel</label>
         <label className={size === "sixteen" ? "picked" : ""}><input type="radio" checked={size === "sixteen"} onChange={() => setSize("sixteen")} /> Sealed — sixteen seats, five rounds, the Umbel</label>
         <label className={size === "eight" ? "picked" : ""}><input type="radio" checked={size === "eight"} onChange={() => setSize("eight")} /> Sealed — eight seats, three rounds</label>
+        <label className={size === "open" ? "picked" : ""}><input type="radio" checked={size === "open"} onChange={() => setSize("open")} /> The Open (Constructed) — sixteen seats, five rounds, the Umbel</label>
         <select value={difficulty} onChange={(e) => setDifficulty(e.target.value as DifficultyName)} title="the field's entrance: Easy is flat; Standard and Hard give the later rounds' opponents more life" style={{ alignSelf: "flex-start", marginTop: 4 }}>
           <option value="easy">easy</option><option value="standard">standard</option><option value="hard">hard</option>
         </select>
@@ -207,7 +208,7 @@ function Between({ c }: { c: ConvocationController }) {
       <p style={{ margin: "0 0 12px" }}><SeriesLine c={c} /></p>
       <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
         <button className="primary" onClick={() => c.nextGame()}>Game {s.games.length + 1} of 3</button>
-        <button onClick={() => c.openSideboard()} title="change your deck from your pool before the next game">Sideboard</button>
+        {!c.isConstructed() && <button onClick={() => c.openSideboard()} title="change your deck from your pool before the next game">Sideboard</button>}
         <button className="linkish" style={{ marginLeft: "auto" }} onClick={() => c.toDoor()}>leave for now</button>
       </div>
     </Page>
@@ -312,9 +313,15 @@ export function ConvocationApp() {
     return (
       <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
         <div className="convocation-banner" style={{ padding: "6px 12px", background: "var(--ink)", color: "var(--parchment)", fontSize: 13, display: "flex", gap: 12, alignItems: "center" }}>
-          <b style={{ fontFamily: "var(--serif)" }}>{c.screen.sideboarding ? "Between games" : c.isDraft() ? "Forty-five picks. Build from them." : `A Convocation — Sealed, ${COUNT[c.event.field.length] ?? c.event.field.length} seats.`}</b>
-          <span>{c.screen.sideboarding ? "Change your deck from your pool; forty cards or more." : c.isDraft() ? "Build at least forty cards from your picks; basic lands are free." : "Six packs are open. Build at least forty cards; basic lands are free."}</span>
+          <b style={{ fontFamily: "var(--serif)" }}>{c.screen.sideboarding ? "Between games" : c.isConstructed() ? `A Convocation — ${c.formatName()}.` : c.isDraft() ? "Forty-five picks. Build from them." : `A Convocation — Sealed, ${COUNT[c.event.field.length] ?? c.event.field.length} seats.`}</b>
+          <span>{c.screen.sideboarding ? "Change your deck from your pool; forty cards or more." : c.isConstructed() ? "Every card the format allows is yours. Build sixty or more, take a suggestion, or bring a saved deck." : c.isDraft() ? "Build at least forty cards from your picks; basic lands are free." : "Six packs are open. Build at least forty cards; basic lands are free."}</span>
           <span style={{ flex: 1 }} />
+          {!c.screen.sideboarding && c.isConstructed() && c.savedDecks().length > 0 && (
+            <select value="" onChange={(e) => { if (e.target.value) c.useSavedDeck(e.target.value); }} title="your saved decks from the journey — the format checks the one you bring">
+              <option value="">bring a saved deck…</option>
+              {c.savedDecks().map((d) => <option key={d.name} value={d.name}>{d.name}{d.ok ? "" : " (not legal here)"}</option>)}
+            </select>
+          )}
           {!c.screen.sideboarding && <button onClick={() => c.suggestDeck()} title="a deck built from this pool by the rating — a starting point you can change">Suggest a deck</button>}
           {!c.screen.sideboarding && <button className="linkish" style={{ color: "var(--parchment)" }} onClick={() => c.toDoor()}>leave for now</button>}
         </div>

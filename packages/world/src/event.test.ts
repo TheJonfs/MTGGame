@@ -425,4 +425,81 @@ describe("the draft event (S51 Part 1)", () => {
     expect(await play(e)).toEqual(whole);
   }, 600_000);
 });
+
+describe("the Constructed event (S52 Part 2, ADR-152)", () => {
+  const sdeps = { cards, knobs, rating };
+  it("the Open at sixteen seats: fifteen select-and-repair decks, each a legal sixty with the list it came from; the player registers a suggested deck, a saved deck that passes, and is refused one that does not", async () => {
+    const { authoredLists } = await import("./authored-lists.js");
+    const { OPEN_FORMAT } = await import("./formats.js");
+    const { OPEN_DECKS } = await import("@shandalar/sim/open-decks");
+    const { newConstructedEvent, suggestedConstructedDeck } = await import("./event.js");
+    const library = authoredLists(ROOT);
+    const start = (seed: number) => newConstructedEvent({ seed, format: OPEN_FORMAT, seats: 16, rounds: 5, top8: true, names: CONVOCATION_NAMES, faces: FACES, library }, deps);
+    let e = start(52);
+    expect(e.phase).toBe("build");
+    expect(e.formatId).toBe("open");
+    expect(e.field).toHaveLength(16);
+    for (const seat of e.field.slice(1)) {
+      expect(seat.deck.reduce((n, x) => n + x.count, 0)).toBe(60);
+      expect(checkEventDeck(e, e.field.indexOf(seat), seat.deck, cards).problems).toEqual([]);
+      expect(seat.list).toMatch(/^open:/);
+      expect(seat.pool).toEqual([]);
+    }
+    expect(new Set(e.field.slice(1).map((x) => x.list)).size).toBeGreaterThanOrEqual(3); // the field varies
+    expect(new Set(e.field.slice(1).map((x) => JSON.stringify(x.deck))).size).toBe(15); // no two seats share a list exactly
+    expect(start(52)).toEqual(e);
+    // the player's deck: the format's whole legal pool is theirs — no collection is asked
+    expect(registerDeck(e, 0, [{ cardId: "plains", count: 40 }], cards).ok).toBe(false); // sixty is the floor
+    expect(registerDeck(e, 0, [{ cardId: "plains", count: 56 }, { cardId: "black_lotus", count: 4 }], cards).ok).toBe(false); // restricted
+    expect(registerDeck(e, 0, [...OPEN_DECKS.levy!.decklist], cards).ok).toBe(true); // a saved deck that passes
+    const mine = suggestedConstructedDeck(e, library, deps);
+    expect(mine.reduce((n, x) => n + x.count, 0)).toBe(60);
+    const r = registerDeck(e, 0, mine, cards); expect(r.ok).toBe(true);
+    e = (r as { event: ConvocationEvent }).event;
+    expect(e.phase).toBe("round");
+    expect(e.pairings).toHaveLength(8);
+    expect(e.field[0]!.sideboard).toEqual([]);
+    // a round headless, through the save; the series' entrance and the standings as built
+    const m = pairingOf(e, 0)!;
+    e = deserializeEvent(serializeEvent(recordSeries(e, m.a, m.b!, await playSeriesHeadless(e, m.a, m.b!, sdeps, agents))))!;
+    e = closeRound(await playFieldRound(e, sdeps, agents));
+    expect(e.results).toHaveLength(8);
+    expect(standings(e).reduce((n, x) => n + x.wins + x.losses + x.draws, 0)).toBe(16);
+    expect(ledgerEntry({ ...e, phase: "over" }, "2026-10-05T00:00:00Z").formatId).toBe("open");
+  }, 300_000);
+});
+
+describe("the drafter reads what is passed (S52 Part 3) — built, measured, and shipped switched off", () => {
+  it("perfect memory: a colour whose rated cards are still in the pack late is flowing; the colours missing when a pack comes back round are being cut; the seat's own pick is not counted as cut", async () => {
+    const { colourSignals, tuneDraftTerms, DRAFT_TERMS, pickValue } = await import("./drafter.js");
+    const before = { ...DRAFT_TERMS };
+    try {
+      tuneDraftTerms({ signalFlow: 0.06, signalCut: 0.08, signalNormalise: 0 });
+      // a pack seen at index 6 still holding two strong white cards: white is flowing
+      const flow = colourSignals([{ round: 0, index: 6, cards: ["serra_angel", "angelic_destiny", "goblin_piker"] }], [], 8, rating, cards);
+      expect(flow.W).toBeGreaterThan(0);
+      expect(flow.W).toBeGreaterThan(flow.R);
+      expect(Object.values(flow).reduce((a, b) => a + b, 0)).toBeCloseTo(0); // centred across the colours
+      // the wheel: the pack opened (index 0) comes back at index 8 without its black cards — black is being cut
+      const first = { round: 0, index: 0, cards: ["vampire_nighthawk", "terror", "nekrataal", "savannah_lions", "wind_drake", "grizzly_bears"] };
+      const back = { round: 0, index: 8, cards: ["wind_drake", "grizzly_bears"] };
+      const filler = Array.from({ length: 7 }, (_, k) => ({ round: 0, index: k + 1, cards: [] as string[] }));
+      const mine = ["savannah_lions", ...Array(7).fill("plains")]; // the seat itself took the Lions from that pack
+      const cut = colourSignals([first, ...filler, back], mine, 8, rating, cards);
+      expect(cut.B).toBeLessThan(0);
+      expect(cut.B).toBeLessThan(cut.W); // the Lions were our own pick: white is not read as cut
+      expect(cut.B).toBeLessThan(cut.U);
+      // the term in the pick's value: a black card is worth less to this seat, a blue one more
+      expect(pickValue("terror", [], 9, rating, cards, cut)).toBeLessThan(pickValue("terror", [], 9, rating, cards));
+      expect(pickValue("wind_drake", [], 9, rating, cards, cut)).toBeGreaterThan(pickValue("wind_drake", [], 9, rating, cards));
+    } finally { tuneDraftTerms(before); }
+  });
+
+  it("switched off as shipped: the weights are zero, so a draft with the memory on is the draft without it", async () => {
+    const { runDraft, DRAFT_TERMS } = await import("./drafter.js");
+    expect([DRAFT_TERMS.signalFlow, DRAFT_TERMS.signalCut]).toEqual([0, 0]);
+    const set = packs.sets.find((x) => x.id === "plane")!, recipe = packs.recipes.find((r) => r.id === "classic")!;
+    expect(runDraft(set, recipe, packs, cards, rating, 52, 8, 3, true).picks).toEqual(runDraft(set, recipe, packs, cards, rating, 52, 8, 3, false).picks);
+  });
+});
 });

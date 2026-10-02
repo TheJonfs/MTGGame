@@ -38,12 +38,15 @@ export interface DeckRule {
   restricted?: string[];
   /** S46 (ADR-142): card ids not allowed at all (the five laws in every Convocation format). */
   banned?: string[];
+  /** S52 (the tier formats — Pauper): no card above this shop tier; a card without a tier (a prize card) or at tier R
+   * is above every bound. Basics are always legal. */
+  maxTier?: 1 | 2 | 3;
   /** S48 (Limited): the copy cap is the collection itself — the 4-copy cap does not apply (a sealed pool may hold five of a common). */
   poolIsCap?: boolean;
   /** "the Jeskai gate" — shown by the editor and the parley. */
   label: string;
 }
-export const DECK_RULE_FIELDS = ["colorsWithin", "minCreatures", "maxLands", "maxManaValue", "singleton", "minCards", "minCreaturePower", "minLandFraction", "bannedTypes", "restricted", "banned", "poolIsCap", "label"] as const;
+export const DECK_RULE_FIELDS = ["colorsWithin", "minCreatures", "maxLands", "maxManaValue", "singleton", "minCards", "minCreaturePower", "minLandFraction", "bannedTypes", "restricted", "banned", "maxTier", "poolIsCap", "label"] as const;
 const RULE_CARD_TYPES: readonly CardType[] = ["Land", "Creature", "Instant", "Sorcery", "Enchantment", "Artifact"];
 
 /** `failed` (S40): the rule fields that produced a problem, in check order — the door picks its voice by the first. */
@@ -74,7 +77,7 @@ export function checkDeck(list: Decklist, collection?: Collection | null, rule?:
     }
   }
   if (rule) {
-    const needsPool = rule.colorsWithin || rule.minCreatures !== undefined || rule.maxLands !== undefined || rule.maxManaValue !== undefined || rule.minCreaturePower !== undefined || rule.minLandFraction !== undefined || rule.bannedTypes !== undefined;
+    const needsPool = rule.maxTier !== undefined || rule.colorsWithin || rule.minCreatures !== undefined || rule.maxLands !== undefined || rule.maxManaValue !== undefined || rule.minCreaturePower !== undefined || rule.minLandFraction !== undefined || rule.bannedTypes !== undefined;
     if (needsPool && !pool) throw new Error(`checkDeck: the rule "${rule.label}" reads the cards; pass the pool`);
     const def = (id: string) => pool?.get(id);
     const listOf = (ids: { cardId: string; count: number }[]) => ids.map((e) => (e.count > 1 ? `${name(e.cardId)} ×${e.count}` : name(e.cardId))).join(", ");
@@ -144,7 +147,14 @@ export function checkDeck(list: Decklist, collection?: Collection | null, rule?:
       const out = list.filter((e) => rule.banned!.includes(e.cardId));
       if (out.length > 0) problems.push(`banned in ${rule.label}: ${listOf(out)}`);
     }
-    mark("banned", at);
+    mark("banned", at); at = before();
+    if (rule.maxTier !== undefined) { // S52: Pauper and Peasant
+      const max = rule.maxTier;
+      const out = list.filter((e) => { if (isBasic(e.cardId)) return false; const d = def(e.cardId); return d ? !(typeof d.shopTier === "number" && d.shopTier <= max) : false; });
+      const k = out.reduce((m, e) => m + e.count, 0);
+      if (k > 0) problems.push(`${plural(k, "card is", "cards are")} above tier ${max}; ${rule.label} allows none: ${listOf(out)}`);
+    }
+    mark("maxTier", at);
   }
   return { ok: problems.length === 0, problems, ...(failed.length > 0 ? { failed } : {}) };
 }
@@ -163,6 +173,7 @@ export function describeDeckRule(rule: DeckRule): string {
   if (rule.bannedTypes) parts.push(`no ${rule.bannedTypes.map((t) => `${t.toLowerCase()}s`).join(" or ")}`);
   if (rule.restricted?.length) parts.push(`${rule.restricted.length} cards restricted to one`);
   if (rule.banned?.length) parts.push(`${rule.banned.length} banned`);
+  if (rule.maxTier !== undefined) parts.push(`tier ${rule.maxTier} and below`);
   if (rule.poolIsCap) parts.push("the pool is the copy cap");
   return parts.join("; ") || "no constraint";
 }

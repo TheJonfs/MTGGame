@@ -8,7 +8,7 @@
 import type { CardDef } from "@shandalar/cards";
 import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
 import {
-  CONVOCATION_NAMES, DIFFICULTIES, DRAFT_PLANE, draftDirection, draftPack, draftStep, draftTotalPicks, newDraftEvent, suggestedPick, EVENT_SAVE_KEY, LEDGER_KEY, MatchSeries, SEALED_PLANE, addCopy, advanceBracket, advanceEvent, bracketRound, bracketRoundComplete, buildLimitedDeck, checkEventDeck, closeRound, deserializeEvent, finalPlaces, playBracketFieldRound, recordBracketSeries, resolveKnobs, seatForGame,
+  CONSTRUCTED_FORMATS, CONVOCATION_NAMES, DIFFICULTIES, DRAFT_PLANE, authoredListsFrom, cardLegal, copyCap, deserializeWorld, eventFormat, isBasic, newConstructedEvent, suggestedConstructedDeck, draftDirection, draftPack, draftStep, draftTotalPicks, newDraftEvent, suggestedPick, EVENT_SAVE_KEY, LEDGER_KEY, MatchSeries, SEALED_PLANE, addCopy, advanceBracket, advanceEvent, bracketRound, bracketRoundComplete, buildLimitedDeck, checkEventDeck, closeRound, deserializeEvent, finalPlaces, playBracketFieldRound, recordBracketSeries, resolveKnobs, seatForGame,
   ledgerEntry, lifeModifiers, newSealedEvent, pairingOf, playFieldRound, poolCollection, recordSeries, registerDeck, removeCopy, resultOf, roundComplete, saveCurrentSeries,
   serializeEvent, seriesSeed, seriesSetup, standings, type CardRatingTable, type Catalog, type ConvocationEvent, type ConvocationLedgerEntry, type ConvocationPackData,
   type Decklist, type DifficultyName, type KnobValues, type SeatAgents, type Standing,
@@ -71,8 +71,14 @@ export class ConvocationController {
   // ---------- the door ----------
 
   /** S49: the event's size — sixteen seats, five rounds and a Top 8 by default; the S48 event of eight stays offered. */
-  newEvent(seed: number = Math.floor(Math.random() * 1_000_000), opts: { seats?: number; rounds?: number; top8?: boolean; difficulty?: DifficultyName; draft?: boolean } = {}): void {
+  newEvent(seed: number = Math.floor(Math.random() * 1_000_000), opts: { seats?: number; rounds?: number; top8?: boolean; difficulty?: DifficultyName; draft?: boolean; constructed?: string } = {}): void {
     const faces = this.faces();
+    if (opts.constructed) { // S52 (ADR-152): a Constructed event — the field by select-and-repair, the player's deck from the format's whole pool
+      const format = CONSTRUCTED_FORMATS.find((f) => f.id === opts.constructed); if (!format) return;
+      this.set(newConstructedEvent({ seed, format, names: CONVOCATION_NAMES, faces, library: this.library(), seats: opts.seats ?? 16, rounds: opts.rounds ?? 5, top8: opts.top8 ?? true, difficulty: opts.difficulty ?? "standard" }, this.deps()));
+      this.series = null; this.match = null;
+      return this.openBuild(false);
+    }
     if (opts.draft) { // S51: a pod of eight drafts three packs; then the build, the rounds and the Umbel as before
       this.set(newDraftEvent({ seed, format: DRAFT_PLANE, names: CONVOCATION_NAMES, faces, seats: opts.seats ?? 8, rounds: opts.rounds ?? 5, top8: opts.top8 ?? true, difficulty: opts.difficulty ?? "standard" }, this.deps()));
       this.series = null; this.match = null; this.passNote = null;
@@ -107,6 +113,28 @@ export class ConvocationController {
   /** "The pack goes left." — the last pass, for the screen's line. */
   passNote: string | null = null;
   isDraft(): boolean { return this.event?.formatId === DRAFT_PLANE.id; }
+  // ---------- S52: Constructed ----------
+  /** The select-and-repair library: every authored list, from the catalog's data. */
+  library() { return authoredListsFrom(this.catalog.starters, (this.catalog.flood?.decks ?? {}) as never); }
+  isConstructed(): boolean { return !!this.event && eventFormat(this.event.formatId).kind === "constructed"; }
+  formatName(): string { return this.event ? eventFormat(this.event.formatId).name : ""; }
+  /** ADR-152: the player's pool is the format's whole legal pool — every legal card at its copy cap. */
+  private legalPool(): Record<string, number> {
+    const rule = eventFormat(this.event!.formatId).rule, out: Record<string, number> = {};
+    for (const d of this.pool.values()) if (!isBasic(d.id) && cardLegal(d, rule)) out[d.id] = copyCap(d.id, rule);
+    return out;
+  }
+  /** The campaign's saved decks (read from its save, never written), each with the format's verdict. */
+  savedDecks(): { name: string; deck: Decklist; ok: boolean; problems: string[] }[] {
+    if (!this.event || !this.isConstructed()) return [];
+    try {
+      const raw = this.storage?.getItem("shandalar-world-save"); if (!raw) return [];
+      const w = deserializeWorld(raw);
+      return Object.entries(w.decks).map(([name, deck]) => { const c = checkEventDeck(this.event!, 0, deck, this.pool); return { name, deck: deck.map((e) => ({ ...e })), ok: c.ok, problems: c.problems }; });
+    } catch { return []; }
+  }
+  /** Bring a saved deck into the draft (the legality panel says whether it may be registered). */
+  useSavedDeck(name: string): void { const d = this.savedDecks().find((x) => x.name === name); if (!d || this.screen.kind !== "build") return; this.draft = d.deck; this.notice = null; this.emit(); }
   /** What the draft screen shows: the pack in hand, the picks so far, pick N of the total, the pack round. */
   draftView(): { pack: string[]; picks: string[]; pick: number; total: number; packRound: number; packs: number; direction: "left" | "right" } | null {
     const e = this.event; if (!e || e.phase !== "draft" || !e.draft) return null;
@@ -132,27 +160,29 @@ export class ConvocationController {
     this.draft = me.deck.map((e) => ({ ...e })); this.notice = null;
     this.screen = { kind: "build", sideboarding }; this.emit();
   }
-  openSideboard(): void { if (this.event && this.series && !this.series.done) this.openBuild(true); }
+  /** Between games: the Limited pool is the sideboard. A Constructed event has none this session. */
+  openSideboard(): void { if (this.event && this.series && !this.series.done && !this.isConstructed()) this.openBuild(true); }
   editorLegality() { return checkEventDeck(this.event!, 0, this.draft, this.pool); }
   /** The builder's deck for the player's pool — a starting point, not a registration. */
-  suggestDeck(): void { if (!this.event) return; this.draft = buildLimitedDeck(this.event.field[0]!.pool, this.rating, this.pool).deck; this.notice = null; this.emit(); }
+  suggestDeck(): void { if (!this.event) return; this.draft = this.isConstructed() ? suggestedConstructedDeck(this.event, this.library(), this.deps()) : buildLimitedDeck(this.event.field[0]!.pool, this.rating, this.pool).deck; this.notice = null; this.emit(); }
   editorHost(): DeckEditorHost | null {
     const e = this.event; if (!e || this.screen.kind !== "build") return null;
-    const me = e.field[0]!, collection = poolCollection(me.pool), sideboarding = this.screen.sideboarding;
-    const formatName = this.isDraft() ? DRAFT_PLANE.name : SEALED_PLANE.name;
+    const constructed = this.isConstructed();
+    const me = e.field[0]!, collection = constructed ? this.legalPool() : poolCollection(me.pool), sideboarding = this.screen.sideboarding;
+    const formatName = this.formatName();
     const edit = (r: ReturnType<typeof addCopy>) => { if (r.ok) { this.draft = r.deck; this.notice = null; } else this.notice = r.reason; this.emit(); };
     const host: DeckEditorHost = {
-      title: sideboarding ? "Sideboard — your pool" : this.isDraft() ? "Your picks — build forty" : "Your pool — build forty",
+      title: sideboarding ? "Sideboard — your pool" : constructed ? `${formatName} — build ${eventFormat(e.formatId).rule.minCards ?? 60}` : this.isDraft() ? "Your picks — build forty" : "Your pool — build forty",
       draft: this.draft, name: formatName, notice: this.notice,
       source: { collection, savedDeck: me.deck, activeDeckName: formatName },
       legality: () => this.editorLegality(),
-      add: (id: string) => edit(addCopy(collection, this.draft, id, Infinity)),
+      add: (id: string) => edit(constructed ? addCopy(collection, this.draft, id) : addCopy(collection, this.draft, id, Infinity)),
       remove: (id: string) => edit(removeCopy(this.draft, id)),
       reset: () => { this.draft = me.deck.map((x) => ({ ...x })); this.notice = null; this.emit(); },
       save: () => this.register(),
       saveLabel: sideboarding ? "Keep this deck" : "Register the deck",
       ...(sideboarding ? { close: () => { this.screen = { kind: "between" }; this.emit(); }, closeLabel: "Cancel" } : {}),
-      sparesLabel: sideboarding ? "Sideboard" : "The pool",
+      sparesLabel: sideboarding ? "Sideboard" : constructed ? "The format's pool" : "The pool",
     };
     return host;
   }
