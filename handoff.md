@@ -64,7 +64,7 @@ Warband 60% → **59%**; Tally 39% → **37%** against the field (1,100 games ea
 
 ## After the handoff (2026-10-03)
 
-- **Rage Cobra's art is chosen**: candidate 4 (the watercolor storybook — Vitalist's register) with the modern hiker replaced by a hooded ranger (three variants rendered; Chris took the ranger). Cropped 5:4 and installed; the printed face follows from Chris.
+- **Rage Cobra's art is chosen**: candidate 4 (the watercolor storybook — Vitalist's register) with the modern hiker replaced by a hooded ranger (three variants rendered; Chris took the ranger). Cropped 5:4 and installed. **The printed face is installed too** (Chris's render, verified word for word against the def: {2}{R}, Summon Snake, the trigger, 1/1).
 
 ## Deviations from the brief
 1. **Shocking Sharpshooter is encoded as Scryfall has it, not as the brief does**: Tarkir: Dragonstorm #121, a **1/3 Human Archer** (the brief: a 2/2 Lizard Archer from Bloomburrow), and "target opponent" (the brief: "each opponent"). No Bloomburrow card of that name exists.

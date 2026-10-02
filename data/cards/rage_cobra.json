@@ -43,5 +43,6 @@
   "asset": "/custom-art/rage_cobra.png",
   "fallback": "rendered"
  },
- "shopTier": 2
+ "shopTier": 2,
+ "printedAsset": "rage_cobra.jpg"
 }
