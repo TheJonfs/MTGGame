@@ -82,7 +82,10 @@ async function run(): Promise<void> {
 }
 
 // ---------- S49 Part 1: the forced-pair experiment ----------
-const PAIRS: [PackColor, PackColor][] = []; { const C: PackColor[] = ["W", "U", "B", "R", "G"]; for (let i = 0; i < 5; i++) for (let j = i + 1; j < 5; j++) PAIRS.push([C[i]!, C[j]!]); }
+const ALL_PAIRS: [PackColor, PackColor][] = []; { const C: PackColor[] = ["W", "U", "B", "R", "G"]; for (let i = 0; i < 5; i++) for (let j = i + 1; j < 5; j++) ALL_PAIRS.push([C[i]!, C[j]!]); }
+// S50: `--pairs WR,UR,BR,RG` runs the experiment for those pairs only.
+const ONLY_PAIRS = arg("pairs", "").split(",").filter(Boolean);
+const PAIRS = ONLY_PAIRS.length ? ALL_PAIRS.filter((p) => ONLY_PAIRS.includes(p.join(""))) : ALL_PAIRS;
 const PER_PAIR = Number(arg("per-pair", "40")), FIELD = 40;
 /** For each pair, the first PER_PAIR pools (from a stream past the field's) in which the pair is at least third by the
  * builder's own score; the deck forced into that pair, and the deck the builder would choose from the same pool. */
@@ -119,10 +122,11 @@ async function runForced(): Promise<void> {
       }
     }
   }
-  writeFileSync(arg("out", join(ROOT, `analysis/runs/forced_shard${si}.json`)), JSON.stringify({ results: games }));
+  writeFileSync(arg("out", join(ROOT, `analysis/runs/${arg("tag", "forced")}_shard${si}.json`)), JSON.stringify({ results: games }));
 }
 function reportForced(): void {
-  const files = readdirSync(join(ROOT, "analysis/runs")).filter((f) => /^forced_shard\d+\.json$/.test(f)).sort().map((f) => join(ROOT, "analysis/runs", f));
+  const tag = arg("tag", "forced");
+  const files = readdirSync(join(ROOT, "analysis/runs")).filter((f) => new RegExp(`^${tag}_shard\\d+\\.json$`).test(f)).sort().map((f) => join(ROOT, "analysis/runs", f));
   const games = files.flatMap((f) => (JSON.parse(readFileSync(f, "utf8")) as { results: { deck: number; kind: "forced" | "chosen"; opp: number; win: number }[] }).results);
   const fb = forcedBuilds();
   const acc = fb.map(() => ({ forced: { n: 0, w: 0 }, chosen: { n: 0, w: 0 } }));
@@ -140,7 +144,7 @@ function reportForced(): void {
   }
   const byColor = (c: string) => mean(rows.filter((r) => r.pair.includes(c)).map((r) => r.f));
   L.push(`\nA colour's forced win rate (the mean of its four pairs): ${["W", "U", "B", "R", "G"].map((c) => `${c} ${pct(byColor(c))}`).join(" · ")}.`);
-  const text = L.join("\n"); console.log(text); writeFileSync(join(ROOT, "analysis/runs/forced_pairs.md"), text + "\n");
+  const text = L.join("\n"); console.log(text); writeFileSync(join(ROOT, `analysis/runs/${arg("tag", "forced")}_pairs.md`), text + "\n");
 }
 
 function report(): void {
@@ -186,7 +190,7 @@ function report(): void {
   L.push(`A deck's mean card rating against its win rate: r = ${corr.toFixed(2)} (the rating's first check — does a deck the rating likes win?).`);
   const text = L.join("\n");
   console.log(text);
-  writeFileSync(join(ROOT, "analysis/runs/sealed_sim.md"), text + "\n");
+  writeFileSync(join(ROOT, `analysis/runs/${arg("report-name", "sealed_sim")}.md`), text + "\n");
   void isBasic;
 }
 

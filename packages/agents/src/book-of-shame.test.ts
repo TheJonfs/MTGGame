@@ -1249,4 +1249,77 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const drain = mkView({ hand: [{ objectId: "h", cardId: "sacred_helix" }], battlefield: [] });
     expect(mid.faceBurnHoldGated(drain, { type: "castSpell", objectId: "h", targets: [{ kind: "player", player: 1 }] })).toBe(false);
   });
+
+  it("book of shame 89 (S50, Flametongue Kavu): the four goes at the best creature it KILLS before the biggest it only wounds; with only our own side to hit, at the one that survives or costs least; the cast waits when its trigger can only hurt us, and is worth more when it kills", async () => {
+    const a = agent();
+    const L = Array.from({ length: 4 }, (_, i) => ({ id: `l${i}`, cardId: "mountain", controller: 0 as const }));
+    const req = (ids: string[]) => ({ player: 0 as const, purpose: "chooseTarget" as const, source: { cardId: "flametongue_kavu", effects: [{ type: "damage" as const, amount: 4, target: 0 }] }, actions: ids.map((id) => ({ type: "chooseTriggerTargets" as const, targets: [{ kind: "object" as const, id }] })) });
+    const pick = async (v: GameView, ids: string[]) => ((await a.chooseAction(v, req(ids) as never)) as { targets: { id: string }[] }).targets[0]!.id;
+    const board = mkView({ battlefield: [{ id: "k", cardId: "flametongue_kavu", controller: 0 }, { id: "angel", cardId: "serra_angel", controller: 0 }, { id: "wurm", cardId: "pelakka_wurm", controller: 0 }, { id: "g", cardId: "hill_giant", controller: 1 }, { id: "w", cardId: "pelakka_wurm", controller: 1 }, { id: "b", cardId: "grizzly_bears", controller: 1 }] });
+    expect(await pick(board, ["k", "angel", "g", "w", "b"])).toBe("g"); // the 3/3 dies; the 7/7 would not (it took the Wurm before)
+    expect(await pick(board, ["k", "angel", "w"])).toBe("w"); // nothing dies: the biggest
+    expect(await pick(board, ["k", "angel", "wurm"])).toBe("wurm"); // only ours: the one that survives four
+    expect(["k", "angel"]).toContain(await pick(board, ["k", "angel"])); // only ours, both die: the lesser loss
+    expect(await pick(mkView({ battlefield: [{ id: "k", cardId: "flametongue_kavu", controller: 0 }, { id: "angel", cardId: "serra_angel", controller: 0 }] }), ["k", "angel"])).toBe("k"); // a 4/2 for {3}{R} before a 4/4 flier
+    const cast = { type: "castSpell" as const, objectId: "h", targets: [] };
+    const hand = [{ objectId: "h", cardId: "flametongue_kavu" }];
+    expect(a.entersHarmGated(mkView({ hand, battlefield: L }), cast)).toBe(true); // an empty table: it would shoot itself
+    expect(a.entersHarmGated(mkView({ hand, battlefield: [...L, { id: "b", cardId: "grizzly_bears", controller: 0 }] }), cast)).toBe(true); // or our Bears
+    expect(a.entersHarmGated(mkView({ hand, battlefield: [...L, { id: "wurm", cardId: "pelakka_wurm", controller: 0 }] }), cast)).toBe(false); // our Wurm shrugs it off
+    expect(a.entersHarmGated(mkView({ hand, battlefield: [...L, { id: "w", cardId: "pelakka_wurm", controller: 1 }] }), cast)).toBe(false); // theirs to hit, even unkillable: the body is the point
+    expect(a.scorePriorityAction(mkView({ hand, battlefield: L }), cast)).toBe(-Infinity);
+    const kill = mkView({ hand, battlefield: [...L, { id: "g", cardId: "hill_giant", controller: 1 }] }), noKill = mkView({ hand, battlefield: [...L, { id: "w", cardId: "pelakka_wurm", controller: 1 }] });
+    expect(a.entersKillBonus(kill, cast)).toBeGreaterThan(0);
+    expect(a.entersKillBonus(noKill, cast)).toBe(0);
+    expect(a.entersHarmGated(mkView({ hand: [{ objectId: "h", cardId: "grizzly_bears" }], battlefield: L }), cast)).toBe(false); // any other creature: not the shape
+  });
+
+  it("book of shame 90 (S50, Furnace Whelp — the pump scored +0.2 at any moment and drained the lands): a self-pump is combat damage on an unblocked attacker or a fight it then wins and survives; never idle, never into a fight that kills it anyway", () => {
+    const a = agent();
+    const L = Array.from({ length: 3 }, (_, i) => ({ id: `l${i}`, cardId: "mountain", controller: 0 as const }));
+    const pump = { type: "activateAbility" as const, objectId: "wh", abilityIndex: 0, targets: [] };
+    const v = (foe: string, o: Parameters<typeof mkView>[0] = {}) => mkView({ battlefield: [...L, { id: "wh", cardId: "furnace_whelp", controller: 0 }, { id: "x", cardId: foe, controller: 1 }], ...o });
+    const blocks = (foe: string) => v(foe, { step: "DECLARE_BLOCKERS", combat: { attackers: ["wh"], blocks: [{ blocker: "x", attacker: "wh" }] } });
+    expect(a.selfPumpGated(v("wall_of_air"), pump)).toBe(true); // the first main phase: the reported drain
+    expect(a.scorePriorityAction(v("wall_of_air"), pump)).toBe(-Infinity);
+    expect(a.selfPumpGated(v("wall_of_air", { step: "MAIN2" }), pump)).toBe(true);
+    expect(a.selfPumpGated(v("wall_of_air", { step: "END", activePlayer: 1 }), pump)).toBe(true);
+    expect(a.selfPumpGated(v("wall_of_air", { step: "DECLARE_BLOCKERS", combat: { attackers: ["wh"], blocks: [] } }), pump)).toBe(false); // unblocked: each {R} is a point
+    expect(a.selfPumpGated(blocks("wall_of_air"), pump)).toBe(false); // a 1/5 in the way: three more power kills it, and it cannot kill a 2/2
+    expect(a.selfPumpGated(blocks("serra_angel"), pump)).toBe(true); // a 4/4 kills the Whelp whatever it does
+    expect(a.selfPumpGated(blocks("suntail_hawk"), pump)).toBe(true); // a 1/1: two power is already enough
+    // blocking: the pump wins the fight against an attacker that cannot kill it
+    expect(a.selfPumpGated(v("wall_of_air", { step: "DECLARE_BLOCKERS", activePlayer: 1, combat: { attackers: ["x"], blocks: [{ blocker: "wh", attacker: "x" }] } }), pump)).toBe(false);
+    // not the shape: the Warhammer's equip, a mana ability
+    expect(a.selfPumpGated(mkView({ battlefield: [...L, { id: "eb", cardId: "llanowar_elves", controller: 0 }] }), { type: "activateAbility", objectId: "eb", abilityIndex: 0, targets: [] })).toBe(false);
+  });
+
+  it("book of shame 91 (S50, Seasoned Pyromancer): our own discard gives up a land first once the mana is comfortable; short of lands it keeps them; the graveyard's two Elementals wait for idle mana", async () => {
+    const a = agent();
+    const L = (n: number) => Array.from({ length: n }, (_, i) => ({ id: `l${i}`, cardId: "mountain", controller: 0 as const }));
+    const hand = [{ objectId: "m", cardId: "mountain" }, { objectId: "s", cardId: "shock" }, { objectId: "k", cardId: "flametongue_kavu" }];
+    const req = { player: 0 as const, purpose: "discard" as const, actions: hand.map((h) => ({ type: "discard" as const, objectId: h.objectId })) };
+    const pick = async (lands: number) => ((await a.chooseAction(mkView({ hand, battlefield: L(lands) }), req as never)) as { objectId: string }).objectId;
+    expect(await pick(5)).toBe("m"); // six lands with this one: it is the free discard (and makes no Elemental — the cost of keeping a spell)
+    expect(await pick(2)).not.toBe("m"); // three lands in all: the land stays
+    const gv = (o: Parameters<typeof mkView>[0]) => { const v = mkView({ battlefield: L(5), ...o }); (v as { graveyardObjects: unknown }).graveyardObjects = [[{ objectId: "gp", cardId: "seasoned_pyromancer" }], []]; (v as { graveyards: unknown }).graveyards = [["seasoned_pyromancer"], []]; return v; };
+    const act = { type: "activateAbility" as const, objectId: "gp", abilityIndex: 1, targets: [] };
+    expect(a.graveyardTokensGated(gv({}), act)).toBe(true); // the first main phase: the hand comes first
+    expect(a.graveyardTokensGated(gv({ step: "MAIN2" }), act)).toBe(false); // the second, nothing in hand: idle mana
+    expect(a.graveyardTokensGated(gv({ step: "MAIN2", hand: [{ objectId: "k", cardId: "flametongue_kavu" }] }), act)).toBe(true); // a castable card first
+    expect(a.scorePriorityAction(gv({ step: "MAIN2" }), act)).toBeGreaterThan(a.scorePriorityAction(gv({ step: "MAIN2" }), { type: "pass" }));
+  });
+
+  it("book of shame 92 (S50, pinned as they stand): Rage Cobra's counters go on our evasive creature, else our best body, never theirs (Vitalist's rule, book 83); the Sharpshooter is cast before the creature it would watch (book 87)", async () => {
+    const a = agent();
+    const v = mkView({ battlefield: [{ id: "c", cardId: "rage_cobra", controller: 0 }, { id: "hawk", cardId: "suntail_hawk", controller: 0 }, { id: "gi", cardId: "hill_giant", controller: 0 }, { id: "t", cardId: "pelakka_wurm", controller: 1 }] });
+    const req = (ids: string[]) => ({ player: 0 as const, purpose: "chooseTarget" as const, source: { cardId: "rage_cobra", effects: [{ type: "addCounters" as const, kind: "+1/+1", count: { ref: "eventLife" as const }, target: 0 }] }, actions: ids.map((id) => ({ type: "chooseTriggerTargets" as const, targets: [{ kind: "object" as const, id }] })) });
+    const pick = async (ids: string[]) => ((await a.chooseAction(v, req(ids) as never)) as { targets: { id: string }[] }).targets[0]!.id;
+    expect(await pick(["c", "hawk", "gi", "t"])).toBe("hawk");
+    expect(await pick(["c", "gi", "t"])).toBe("gi");
+    expect(await pick(["c", "t"])).toBe("c");
+    const cast = (id: string) => ({ type: "castSpell" as const, objectId: id, targets: [] });
+    const w = mkView({ hand: [{ objectId: "ss", cardId: "shocking_sharpshooter" }, { objectId: "gp", cardId: "goblin_piker" }], battlefield: Array.from({ length: 4 }, (_, i) => ({ id: `l${i}`, cardId: "mountain", controller: 0 as const })) });
+    expect(a.watcherFirstCandidates(w, [cast("ss"), cast("gp")])!.map((x) => (x as { objectId: string }).objectId)).toEqual(["ss"]);
+  });
 });

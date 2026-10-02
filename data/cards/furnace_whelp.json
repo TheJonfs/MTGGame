@@ -1,0 +1,38 @@
+{
+ "id": "furnace_whelp",
+ "name": "Furnace Whelp",
+ "source": "real",
+ "manaCost": "{2}{R}{R}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Dragon"
+ ],
+ "power": 2,
+ "toughness": 2,
+ "keywords": [
+  "flying"
+ ],
+ "abilities": [
+  {
+   "kind": "activated",
+   "cost": {
+    "mana": "{R}"
+   },
+   "effects": [
+    {
+     "type": "modifyPT",
+     "power": 1,
+     "toughness": 0,
+     "scope": "self",
+     "duration": "UNTIL_END_OF_TURN"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": 2
+}

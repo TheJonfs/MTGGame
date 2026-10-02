@@ -146,9 +146,9 @@ export const KNOBS = {
   }),
   // ---- S48 (ADR-145): the Convocation's ladder — an AI seat's entrance against the human, by round ----
   convocationEntrance: knob<Record<number, { life: number; basics: number }>>({
-    default: { 1: { life: 0, basics: 0 }, 2: { life: 2, basics: 0 }, 3: { life: 4, basics: 0 } }, // S49 (ADR-148, ⚠ provisional): Sealed's entrance is life only
+    default: { 1: { life: 0, basics: 0 }, 2: { life: 2, basics: 0 }, 3: { life: 4, basics: 0 }, 4: { life: 4, basics: 0 }, 5: { life: 6, basics: 0 } }, // S49/S50 (ADR-148, ⚠ provisional): Sealed's entrance is life only; five rows
     unit: "by round (from 1): life added to 20, and basics of the seat's colours in play before turn one",
-    description: "S48 (ADR-145; the plan's stage 1): the Convocation's ladder — what an AI seat brings against the HUMAN in round N (AI against AI is always flat; the human seat never gets an entrance). Read through `convocationSeat`. S49 (ADR-148, ⚠ provisional — read by Chris's next event): a Sealed event's entrance is LIFE ONLY (a basic in play distorts a forty-card game) — Standard +0 / +2 / +4 by round; Easy flat; Hard +2 / +4 / +6. A round past the table reads its last row.",
+    description: "S48 (ADR-145; the plan's stage 1): the Convocation's ladder — what an AI seat brings against the HUMAN in round N (AI against AI is always flat; the human seat never gets an entrance). Read through `convocationSeat`. S49 (ADR-148, ⚠ provisional — read by Chris's next event): a Sealed event's entrance is LIFE ONLY (a basic in play distorts a forty-card game) — Standard +0 / +2 / +4 / +4 / +6 by round (S50: five rows); Easy flat; Hard +2 / +4 / +6 / +6 / +8 (the implementer's rows four and five). A round past the table reads its last row.",
   }),
   convocationBracketEntrance: knob<Record<number, { life: number; basics: number }>>({
     default: { 1: { life: 4, basics: 0 }, 2: { life: 6, basics: 0 }, 3: { life: 8, basics: 0 } },
@@ -703,7 +703,7 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
     heartLife: 45, // S27 (ADR-093)
     mageTierLife: { 1: 8, 2: 14, 3: 20 }, // S34 (ADR-117): one cell harder
     mageTierEntrance: { 1: 0, 2: 2, 3: 2 },
-    convocationEntrance: { 1: { life: 2, basics: 0 }, 2: { life: 4, basics: 0 }, 3: { life: 6, basics: 0 } }, // S49 (ADR-148)
+    convocationEntrance: { 1: { life: 2, basics: 0 }, 2: { life: 4, basics: 0 }, 3: { life: 6, basics: 0 }, 4: { life: 6, basics: 0 }, 5: { life: 8, basics: 0 } }, // S49/S50 (ADR-148)
     convocationBracketEntrance: { 1: { life: 6, basics: 0 }, 2: { life: 8, basics: 0 }, 3: { life: 10, basics: 0 } },
     beastTierLifeDelta: { 1: 0, 2: 4, 3: 8 },
     // S38 (⚠ unratified): phase two's hard column mirrors the phase-one offsets (tiers 2/3 +2/+4 life; tier 2 one basic more; beasts +2/+4 at tiers 2/3).

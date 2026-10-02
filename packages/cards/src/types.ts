@@ -180,7 +180,10 @@ export type ValueRef =
   | { ref: "eventPower" }
   /** S46 (R-100, Vitalist): the life GAINED in the triggering LIFE_GAINED event ("that many"). LIFE_GAINED triggers only
    * (validator-confined). */
-  | { ref: "eventLife" };
+  | { ref: "eventLife" }
+  /** S50 (R-102, Seasoned Pyromancer): the nonland cards discarded so far by THIS resolution ("for each nonland card
+   * discarded this way"). Stack-only; zero anywhere else. */
+  | { ref: "discardedNonland" };
 /** Counter kinds. +1/+1 and −1/−1 are the P/T pair characteristics() reads (S1 slots); S26 opens the
  * accumulator class — a NAMED kind (lowercase word) is inert state the card's own refs and costs
  * read (Clio's depth counters). Named kinds never touch P/T. */

@@ -2644,5 +2644,61 @@
     "art_crop": "https://cards.scryfall.io/art_crop/front/c/2/c25ee47b-d099-4788-9c2b-73d151bf56fb.jpg?1783908915",
     "normal": "https://cards.scryfall.io/normal/front/c/2/c25ee47b-d099-4788-9c2b-73d151bf56fb.jpg?1783908915",
     "via": "override fdn #645"
+  },
+  "dragon_fodder": {
+    "scryfallId": "9eab4120-e7d8-4132-a304-30b88e3175e2",
+    "set": "ala",
+    "set_name": "Shards of Alara",
+    "collector_number": "97",
+    "artist": "Jaime Jones",
+    "name": "Dragon Fodder",
+    "mana_cost": "{1}{R}",
+    "type_line": "Sorcery",
+    "oracle_text": "Create two 1/1 red Goblin creature tokens.",
+    "art_crop": "https://cards.scryfall.io/art_crop/front/9/e/9eab4120-e7d8-4132-a304-30b88e3175e2.jpg?1783942562",
+    "normal": "https://cards.scryfall.io/normal/front/9/e/9eab4120-e7d8-4132-a304-30b88e3175e2.jpg?1783942562",
+    "via": "default oldest-highres"
+  },
+  "flametongue_kavu": {
+    "scryfallId": "e5056bca-bd90-4b50-8630-105558f8ef92",
+    "set": "pls",
+    "set_name": "Planeshift",
+    "collector_number": "60",
+    "artist": "Pete Venters",
+    "name": "Flametongue Kavu",
+    "mana_cost": "{3}{R}",
+    "type_line": "Creature — Kavu",
+    "oracle_text": "When this creature enters, it deals 4 damage to target creature.",
+    "art_crop": "https://cards.scryfall.io/art_crop/front/e/5/e5056bca-bd90-4b50-8630-105558f8ef92.jpg?1783945617",
+    "normal": "https://cards.scryfall.io/normal/front/e/5/e5056bca-bd90-4b50-8630-105558f8ef92.jpg?1783945617",
+    "via": "default oldest-highres"
+  },
+  "furnace_whelp": {
+    "scryfallId": "a1726eba-c471-40bd-a487-40d910b75d64",
+    "set": "5dn",
+    "set_name": "Fifth Dawn",
+    "collector_number": "65",
+    "artist": "Matt Cavotta",
+    "name": "Furnace Whelp",
+    "mana_cost": "{2}{R}{R}",
+    "type_line": "Creature — Dragon",
+    "oracle_text": "Flying\n{R}: This creature gets +1/+0 until end of turn.",
+    "art_crop": "https://cards.scryfall.io/art_crop/front/a/1/a1726eba-c471-40bd-a487-40d910b75d64.jpg?1783944396",
+    "normal": "https://cards.scryfall.io/normal/front/a/1/a1726eba-c471-40bd-a487-40d910b75d64.jpg?1783944396",
+    "via": "default oldest-highres"
+  },
+  "seasoned_pyromancer": {
+    "scryfallId": "2e139ad1-1079-49e9-babd-6399c44ad333",
+    "set": "mh1",
+    "set_name": "Modern Horizons",
+    "collector_number": "145",
+    "artist": "Cynthia Sheppard",
+    "name": "Seasoned Pyromancer",
+    "mana_cost": "{1}{R}{R}",
+    "type_line": "Creature — Human Shaman",
+    "oracle_text": "When this creature enters, discard two cards, then draw two cards. For each nonland card discarded this way, create a 1/1 red Elemental creature token.\n{3}{R}{R}, Exile this card from your graveyard: Create two 1/1 red Elemental creature tokens.",
+    "art_crop": "https://cards.scryfall.io/art_crop/front/2/e/2e139ad1-1079-49e9-babd-6399c44ad333.jpg?1783933105",
+    "normal": "https://cards.scryfall.io/normal/front/2/e/2e139ad1-1079-49e9-babd-6399c44ad333.jpg?1783933105",
+    "via": "default oldest-highres"
   }
 }

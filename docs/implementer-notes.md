@@ -576,3 +576,14 @@ See handoff Concerns for the authoritative list. Highlights: auto-pay greedy fea
 - **The bracket is part of the event** (`event.bracket`, phase "bracket"); `seriesSeed` and `seriesSetup` read the phase, so the same controller code plays a Swiss series and a bracket series. `resolveBracket()` stops when the human has a match to play.
 - **`aiSideboard` is stateless** — computed from the registered deck each game; a seat's `deck` in the save is always the registered one.
 - **The MTR is not the CR**: the tiebreak floor is 0.33, not one third. The text is at blogs.magicjudges.org/rules/mtr-appendix-c/.
+
+## S50 — red for Limited (2026-10-03)
+
+- **A new card after Session 40 must be added to the First Bloom's exclude list** (`data/convocation/sets.json`) — the set is "the Plane minus these", and card data has no session marker. Nothing fails if it is forgotten.
+- **Three pins move with every pool round**: the loader's pool size (`cards/loader.test.ts`), the shop tiers' tally (`world.test.ts`, "S19 shop tiers"), and `pnpm reference` (docs/reference is sync-tested). `pnpm knobs:doc` if a knob changed.
+- **`art:fetch` needs a high-resolution English scan.** A very recent set may have none (Shocking Sharpshooter, TDM): the card is flagged and shows our frame; re-run later.
+- **A mandatory enters trigger with a creature target can target the entering creature** — Flametongue Kavu alone on the battlefield shoots itself (CR 603.3d). The harness needs no script step for it: one legal target is chosen automatically.
+- **The predictor does not resolve an enters trigger.** A creature's cast is priced as a body; anything its trigger does needs its own term (`entersKillBonus`) or gate (`entersHarmGated`).
+- **A mana-only activation that changes the board scores above passing by default** (+0.2 for the Whelp's pump, as for the Warhammer's move). Any new repeatable activation needs a gate or it drains the lands in the first main phase.
+- **`rating:build --also <prefix>` pools every Sealed shard on disk** — including runs from before an AI or builder fix. The candidate it writes then carries stale evidence (S50: red still fell, on pre-fix games). For a clean update, move the old shards aside first.
+- **Don't run `pnpm test` while a sim chain is running** (again): the chain here took ~45 minutes; the suite was run after `s50_done.txt` appeared.

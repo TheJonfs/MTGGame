@@ -1617,6 +1617,21 @@
         }
       }
     },
+    "card-rage-cobra-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:06c530b759eb28dade93769cd34f96866f2a5a47936d83802497b78961be14ee",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:06c530b759eb28dade93769cd34f96866f2a5a47936d83802497b78961be14ee",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-rage-cobra-3/canonical.png",
+          "rendered_at": "2026-10-02T01:32:48+00:00",
+          "thumb": "assets/thumbs/card-rage-cobra-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "card-reaper-1": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:5f999f39ceebedf2f6ab1251306df8f048f576c0f8124525a3499f9c84b1ea75",

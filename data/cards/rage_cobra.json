@@ -1,0 +1,46 @@
+{
+ "id": "rage_cobra",
+ "name": "Rage Cobra",
+ "source": "custom",
+ "manaCost": "{2}{R}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Snake"
+ ],
+ "power": 1,
+ "toughness": 1,
+ "text": "Whenever an opponent gains life, put that many +1/+1 counters on target creature.",
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "LIFE_GAINED",
+   "condition": {
+    "controller": "opponent"
+   },
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "creature",
+     "zone": "battlefield"
+    }
+   ],
+   "effects": [
+    {
+     "type": "addCounters",
+     "kind": "+1/+1",
+     "count": {
+      "ref": "eventLife"
+     },
+     "target": 0
+    }
+   ],
+   "optional": false
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": 2
+}

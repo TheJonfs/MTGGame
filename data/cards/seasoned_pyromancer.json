@@ -1,0 +1,66 @@
+{
+ "id": "seasoned_pyromancer",
+ "name": "Seasoned Pyromancer",
+ "source": "real",
+ "manaCost": "{1}{R}{R}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Human",
+  "Shaman"
+ ],
+ "power": 2,
+ "toughness": 2,
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "ENTERS_BATTLEFIELD",
+   "condition": {
+    "source": "self"
+   },
+   "effects": [
+    {
+     "type": "discard",
+     "count": 2,
+     "who": "you",
+     "mode": "ownerChooses"
+    },
+    {
+     "type": "draw",
+     "count": 2,
+     "who": "you"
+    },
+    {
+     "type": "createToken",
+     "tokenId": "elemental_1_1_r",
+     "count": {
+      "ref": "discardedNonland"
+     },
+     "who": "you"
+    }
+   ],
+   "optional": false
+  },
+  {
+   "kind": "activated",
+   "zone": "graveyard",
+   "cost": {
+    "mana": "{3}{R}{R}",
+    "exileSelf": true
+   },
+   "effects": [
+    {
+     "type": "createToken",
+     "tokenId": "elemental_1_1_r",
+     "count": 2,
+     "who": "you"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": 3
+}

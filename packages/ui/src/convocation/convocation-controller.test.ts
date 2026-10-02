@@ -162,7 +162,7 @@ describe("the Convocation controller (S48)", () => {
       expect(c.event!.results.filter((r) => r.round === round)).toHaveLength(8);
       c.next();
     }
-    expect(lives).toEqual([20, 22, 24, 24, 24]); // ADR-148: +0 / +2 / +4, the last row after
+    expect(lives).toEqual([20, 22, 24, 24, 26]); // ADR-148 (S50's five rows): +0 / +2 / +4 / +4 / +6
     expect(c.screen.kind).toBe("bracket");
     expect(c.event!.bracket!.seeds[0]).toBe(0); // 5–0: the first seed
     expect(c.ledger()).toHaveLength(0);

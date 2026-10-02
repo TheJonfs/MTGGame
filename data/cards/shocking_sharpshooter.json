@@ -1,0 +1,43 @@
+{
+ "id": "shocking_sharpshooter",
+ "name": "Shocking Sharpshooter",
+ "source": "real",
+ "manaCost": "{1}{R}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Human",
+  "Archer"
+ ],
+ "power": 1,
+ "toughness": 3,
+ "keywords": [
+  "reach"
+ ],
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "ENTERS_BATTLEFIELD",
+   "condition": {
+    "source": "other",
+    "controller": "you",
+    "type": [
+     "Creature"
+    ]
+   },
+   "effects": [
+    {
+     "type": "damage",
+     "amount": 1,
+     "to": "opponent"
+    }
+   ],
+   "optional": false
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": 1
+}

@@ -159,7 +159,10 @@ export class HeuristicAgent implements Agent {
       const landB = this.def(cb)?.types.includes("Land") ? 1 : 0;
       // Bottoming (sane's rule): ditch expensive spells first, keep lands —
       // unless we're flooding (5+ lands), then lands go first.
-      const landFirst = type === "discard" && lands >= 4 ? -1 : 1;
+      // S50 (book 91, Seasoned Pyromancer): our OWN discard gives up a land first once the mana is comfortable —
+      // five or more lands between the battlefield and the hand (Brainstorm's line, S28).
+      const boardLands = view.battlefield.filter((o) => o.controller === view.you && this.def(o.cardId)?.types.includes("Land")).length;
+      const landFirst = type === "discard" && (lands >= 4 || lands + boardLands >= 5) ? -1 : 1;
       if (landA !== landB) return (landA - landB) * landFirst;
       const mvDiff = this.mv(cb) - this.mv(ca);
       if (mvDiff !== 0) return mvDiff;
@@ -229,6 +232,9 @@ export class HeuristicAgent implements Agent {
     if (this.selfCounterGated(view, action)) return -Infinity; // post-S43: Mystic Snake with only our own spell to hit
     if (this.spellPayoffHoldGated(view, action)) return -Infinity; // S45: hold the cheap spell for the Guttersnipe / Pyromancer in hand
     if (this.faceBurnHoldGated(view, action)) return -Infinity; // post-S49 (book 88): removal is not thrown at a healthy face
+    if (this.entersHarmGated(view, action)) return -Infinity; // S50 (book 89): the Kavu is not cast into a board where its four can only hit us
+    if (this.selfPumpGated(view, action)) return -Infinity; // S50 (book 90): the Whelp's pump is combat damage or a won fight, never idle
+    if (this.graveyardTokensGated(view, action)) return -Infinity; // S50 (book 91): the Pyromancer's second life spends only idle mana
     if (this.idleSinkGated(view, action)) return -Infinity; // post-S43: the Cleric / Faerie Formation spend only mana that would idle
     if (this.glaciersDropGated(view, action)) return -Infinity; // S36 (book 52): the Glaciers as the land drop only for a reason; otherwise the real land
     if (this.glaciersActivationGated(view, action)) return -Infinity; // S36 (book 52): fetch at their end step, or on our turn for a colour we lack
@@ -252,7 +258,7 @@ export class HeuristicAgent implements Agent {
       // passing (kills same-host re-equip churn and no-benefit activations).
       return evaluate(view, this.profile, this.defs) - 0.25 - misaim;
     }
-    return evaluate(pred.view, this.profile, this.defs) + pred.adjustment - misaim + this.wheelSpendBonus(view, action) + this.lifegainPayoffBonus(view, action);
+    return evaluate(pred.view, this.profile, this.defs) + pred.adjustment - misaim + this.wheelSpendBonus(view, action) + this.lifegainPayoffBonus(view, action) + this.entersKillBonus(view, action);
   }
 
   /** S46 (Vitalist — the brief's "a term, not a rule"): while we control a LIFE_GAINED payoff (the shape: a trigger on
@@ -1637,6 +1643,88 @@ export class HeuristicAgent implements Agent {
     return true;
   }
 
+  /** S50 (book 89, Flametongue Kavu): a creature whose own ENTERS trigger is a mandatory harmful effect at target
+   * creature (the shape: a self ENTERS_BATTLEFIELD trigger, not optional, with a creature target and damage / destroy
+   * / exile on it). Returns the trigger's read of this board, or null for any other card. */
+  private entersHarm(view: GameView, action: Action): { kills: number; bestKill: number; theirs: number; safeOurs: boolean; selfLegal: boolean; ours: number } | null {
+    if (action.type !== "castSpell") return null;
+    const card = view.hand.find((c) => c.objectId === action.objectId);
+    const d = card ? this.def(card.cardId) : undefined;
+    if (!d?.types.includes("Creature")) return null;
+    const ab = (d.abilities ?? []).find((a) => a.kind === "triggered" && a.event === "ENTERS_BATTLEFIELD" && a.condition?.source === "self" && a.optional !== true && (a.targets ?? []).length === 1 && a.effects.some((e) => (e.type === "damage" || e.type === "destroy" || e.type === "exile") && "target" in e && e.target === 0));
+    if (!ab || ab.kind !== "triggered") return null;
+    const pred = String((ab.targets![0] as { predicate?: string }).predicate ?? "");
+    if (!/creature$/i.test(pred)) return null;
+    const dmg = ab.effects.reduce((n, e) => n + (e.type === "damage" && typeof e.amount === "number" ? e.amount : 0), 0);
+    const hard = ab.effects.some((e) => e.type === "destroy" || e.type === "exile");
+    const dies = (o: { toughness: number | null; damage: number }) => hard || (o.toughness !== null && dmg >= o.toughness - o.damage);
+    const creatures = view.battlefield.filter((o) => o.power !== null);
+    const theirs = creatures.filter((o) => o.controller !== view.you), ours = creatures.filter((o) => o.controller === view.you);
+    const killed = theirs.filter(dies);
+    return {
+      kills: killed.length, bestKill: Math.max(0, ...killed.map((o) => objectValue(this.defs, o, this.C))), theirs: theirs.length, ours: ours.length,
+      safeOurs: ours.some((o) => !dies(o)),
+      selfLegal: pred === "creature" && (hard || dmg >= (d.toughness ?? 0)), // the entering creature is itself a legal target, and would die
+    };
+  }
+  /** S50 (book 89): with no creature across the table the mandatory trigger turns on us — on our own creature, or on
+   * the entering one (CR 603.3d: a target is chosen if one can be). The cast waits unless one of ours would survive
+   * it. With creatures across the table it is cast whatever it can kill — the body is the point (the brief). Exposed. */
+  entersHarmGated(view: GameView, action: Action): boolean {
+    const h = this.entersHarm(view, action);
+    if (!h || h.theirs > 0) return false;
+    return (h.selfLegal || h.ours > 0) && !h.safeOurs;
+  }
+  /** S50 (book 89): the cast is worth more when its trigger kills — the predictor does not resolve an enters trigger,
+   * so the best kill's value is credited here (half: the trigger can still be answered). Exposed. */
+  entersKillBonus(view: GameView, action: Action): number {
+    const h = this.entersHarm(view, action);
+    return h && h.kills > 0 ? 0.5 * h.bestKill : 0;
+  }
+
+  /** S50 (book 90, Furnace Whelp): a repeatable SELF-PUMP (the shape: an activation paid in mana alone whose every
+   * effect is +N/+0-or-more on its own source until end of turn) is not a mana sink — it scored +0.2 at any moment
+   * and drained the lands in the first main phase (the Warhammer's churn, book 86, in another coat). It is a play
+   * only in combat, after blocks: on an UNBLOCKED attacker (each activation is damage), or in a fight it then wins
+   * and survives — the pump lifting its power to what kills the creature it fights, and that creature not killing
+   * it. Never into a fight that kills it anyway (the brief). Exposed. */
+  selfPumpGated(view: GameView, action: Action): boolean {
+    if (action.type !== "activateAbility") return false;
+    const src = view.battlefield.find((b) => b.id === action.objectId);
+    if (!src || src.controller !== view.you || src.power === null || src.toughness === null) return false;
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+    if (!ab || ab.kind !== "activated" || !ab.cost.mana || ab.cost.tap || ab.cost.sacrifice || ab.equip || ab.modes || ab.zone) return false;
+    const pump = ab.effects.length > 0 && ab.effects.every((e) => e.type === "modifyPT" && e.scope === "self" && e.duration === "UNTIL_END_OF_TURN" && typeof e.power === "number" && e.power > 0 && typeof e.toughness === "number" && e.toughness >= 0);
+    if (!pump) return false;
+    const toughUp = ab.effects.reduce((n, e) => n + (e.type === "modifyPT" && typeof e.toughness === "number" ? e.toughness : 0), 0);
+    const afterBlocks = view.step === "DECLARE_BLOCKERS" || view.step === "FIRST_STRIKE_DAMAGE";
+    if (!afterBlocks || view.stack.length > 0) return true;
+    const combat = view.combat ?? { attackers: [], blocks: [] };
+    const foes = combat.attackers.includes(src.id)
+      ? combat.blocks.filter((b) => b.attacker === src.id).map((b) => b.blocker)
+      : combat.blocks.filter((b) => b.blocker === src.id).map((b) => b.attacker);
+    if (combat.attackers.includes(src.id) && foes.length === 0) return false; // unblocked: every activation is damage
+    if (foes.length !== 1) return true; // not in combat, or a gang block: not priced
+    const foe = view.battlefield.find((o) => o.id === foes[0]);
+    if (!foe || foe.power === null || foe.toughness === null) return true;
+    if (foe.power >= src.toughness - src.damage + toughUp) return true; // it dies anyway: never into that fight
+    return src.power >= foe.toughness - foe.damage; // already enough to kill: no more
+  }
+
+  /** S50 (book 91, Seasoned Pyromancer's second life — Mother Bear's word): a GRAVEYARD activation that only makes
+   * tokens is taken with idle mana — in our second main phase with nothing castable left in hand, or at the
+   * opponent's end step when its timing allows. Exposed. */
+  graveyardTokensGated(view: GameView, action: Action): boolean {
+    if (action.type !== "activateAbility") return false;
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+    if (!ab || ab.kind !== "activated" || ab.zone !== "graveyard" || ab.effects.length === 0 || !ab.effects.every((e) => e.type === "createToken")) return false;
+    const me = view.you;
+    if (view.activePlayer !== me) return view.step !== "END";
+    if (view.step !== "MAIN2" || view.stack.length > 0) return true;
+    const lands = view.battlefield.filter((o) => o.controller === me && !o.tapped && this.def(o.cardId)?.types.includes("Land")).length;
+    return view.hand.some((c) => { const d = this.def(c.cardId); return !!d && !d.types.includes("Land") && !d.manaCost.includes("X") && this.mv(c.cardId) <= lands; });
+  }
+
   /** Post-S49 (book 88 — the Sealed probe: 69 of 195 Lightning Bolts went at the face of an opponent with an empty
    * board and thirteen or more life, on the first turns; the card's lift was −3.7 where Terror's was +1.7). A damage
    * spell that CAN hit a creature (the shape: numeric damage at an any-target slot) is removal first: aimed at the
@@ -2028,11 +2116,22 @@ export class HeuristicAgent implements Agent {
     // scorer below prices its card (a spell by mana value, a body by reanimationWorth). Gravedigger and the Usher gain too.
     const returnsFromYard = (request.source?.effects ?? []).some((e) => e.type === "returnFromGraveyard");
     if (cls === "neutral" && !returnsFromYard) return this.rngPick(variants);
+    // S50 (book 89, Flametongue Kavu): a harmful NUMERIC damage aims at the best creature it KILLS before the most
+    // valuable one it only wounds; and when every legal target is our own (an empty table across), at the one that
+    // survives it, else the one we lose least by.
+    const dmgAmount = (request.source?.effects ?? []).reduce((n, e) => n + (e.type === "damage" && typeof e.amount === "number" && "target" in e && e.target !== undefined ? e.amount : 0), 0);
+    const diesTo = (id: string) => { const o = view.battlefield.find((b) => b.id === id); return !!o && o.toughness !== null && dmgAmount > 0 && dmgAmount >= o.toughness - o.damage; };
+    const allOurs = cls === "harmful" && variants.every((a) => ((a as { targets?: { kind: string; id?: string }[] }).targets ?? []).every((t) => t.kind === "object" && view.battlefield.some((b) => b.id === t.id && b.controller === view.you)));
+    if (allOurs && dmgAmount > 0) {
+      const loss = (a: Action) => ((a as { targets?: { id?: string }[] }).targets ?? []).reduce((n, t) => n + (t.id && diesTo(t.id) ? this.boardValue(view, t.id) : 0), 0);
+      return [...variants].sort((a, b) => loss(a) - loss(b))[0]!;
+    }
     const score = (a: Action): number => {
       const ts = (a as { targets?: { kind: string; id?: string }[] }).targets ?? [];
       let s = 0;
       for (const t of ts) {
         if (t.kind === "object" && t.id) s += this.boardValue(view, t.id);
+        if (t.kind === "object" && t.id && cls === "harmful" && dmgAmount > 0 && diesTo(t.id)) s += 100; // a kill before a wound
         // S32 (the Escort's ETB): a HELPFUL effect goes to the creature UNDER FIRE first — the one an
         // opponent's stack item is aimed at (the save is the point of the flash).
         if (t.kind === "object" && t.id && cls === "helpful" && this.creatureIsDoomed(view, t.id)) s += 10;

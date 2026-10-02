@@ -1,0 +1,21 @@
+{
+ "id": "dragon_fodder",
+ "name": "Dragon Fodder",
+ "source": "real",
+ "manaCost": "{1}{R}",
+ "types": [
+  "Sorcery"
+ ],
+ "spellEffect": [
+  {
+   "type": "createToken",
+   "tokenId": "goblin_1_1",
+   "count": 2,
+   "who": "you"
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": 1
+}

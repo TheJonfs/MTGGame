@@ -1,0 +1,42 @@
+{
+ "id": "flametongue_kavu",
+ "name": "Flametongue Kavu",
+ "source": "real",
+ "manaCost": "{3}{R}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Kavu"
+ ],
+ "power": 4,
+ "toughness": 2,
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "ENTERS_BATTLEFIELD",
+   "condition": {
+    "source": "self"
+   },
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "creature",
+     "zone": "battlefield"
+    }
+   ],
+   "effects": [
+    {
+     "type": "damage",
+     "amount": 4,
+     "target": 0
+    }
+   ],
+   "optional": false
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": 2
+}

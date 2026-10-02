@@ -70,6 +70,7 @@ function flatRangeOfSpec(specs: readonly TargetSpec[], si: number, totalTargets:
 }
 
 export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: EffectRequester): EffectContext {
+  let discardedNonland = 0; // S50 (R-102): the nonland cards this resolution has discarded
   const controller = item.controller;
 
   // LKI snapshot before any effect applies: an object exiled by effect 1 can
@@ -208,6 +209,7 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
         return (item.eventContext?.amount ?? 0) * (a.times ?? 1);
       }
       if (a.ref === "eventLife") return item.eventContext?.amount ?? 0; // S46 (R-100, Vitalist): the life gained
+      if (a.ref === "discardedNonland") return discardedNonland; // S50 (R-102): counted as this resolution discards
       if (a.ref === "sacrificedPower") {
         // S29 (R-092, Altar of Dementia): the cost's sacrificed creature's power, captured at payment.
         return item.eventContext?.amount ?? 0;
@@ -411,7 +413,7 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
     },
 
     ...sharedOps(ctx, controller),
-    ...discardOp(ctx, controller, requester),
+    ...discardOp(ctx, controller, requester, (cardId) => { if (!ctx.defs.def(cardId).types.includes("Land")) discardedNonland += 1; }),
     ...searchOp(ctx, requester, { cardId: item.sourceCardId, effects: item.effects }),
   };
 }
@@ -592,7 +594,7 @@ function sharedOps(ctx: EngineCtx, asController: PlayerId) {
 }
 
 /** ADR-029 discard implementation. `caster` = controller of the discarding effect. */
-function discardOp(ctx: EngineCtx, caster: PlayerId, requester?: EffectRequester) {
+function discardOp(ctx: EngineCtx, caster: PlayerId, requester?: EffectRequester, onDiscard?: (cardId: string) => void) {
   const matchesFilter = (cardId: string, filter?: DiscardFilter): boolean => {
     if (!filter) return true;
     const def = ctx.defs.def(cardId);
@@ -666,9 +668,11 @@ function discardOp(ctx: EngineCtx, caster: PlayerId, requester?: EffectRequester
     },
     async discard(playerNum: number, count: number | "all", mode: DiscardMode, filter?: DiscardFilter): Promise<void> {
       const player = playerNum as PlayerId;
+      // S50 (R-102): the resolution hears each card it discards (Seasoned Pyromancer counts the nonland ones).
+      const toss = (id: string) => { onDiscard?.(getObject(ctx.state, id).cardId); discardCard(ctx, id); };
       // S45 (R-099, Dragon Mage): "discards their hand" — every card, no choice (CR 701.8a); in hand order.
       if (count === "all") {
-        for (const id of [...ctx.state.players[player].hand]) discardCard(ctx, id);
+        for (const id of [...ctx.state.players[player].hand]) toss(id);
         return;
       }
       for (let i = 0; i < count; i++) {
@@ -677,7 +681,7 @@ function discardOp(ctx: EngineCtx, caster: PlayerId, requester?: EffectRequester
 
         if (mode === "random") {
           const idx = ctx.rng.int(hand.length, "discard");
-          discardCard(ctx, hand[idx]!);
+          toss(hand[idx]!);
           continue;
         }
 
@@ -703,7 +707,7 @@ function discardOp(ctx: EngineCtx, caster: PlayerId, requester?: EffectRequester
           const actions: Action[] =
             candidates.length > 0 ? candidates.map((objectId) => ({ type: "discard", objectId })) : [{ type: "declineOptional" }];
           const pick = await requester(chooser, "discard", actions, revealed);
-          if (pick.type === "discard") discardCard(ctx, pick.objectId);
+          if (pick.type === "discard") toss(pick.objectId);
           else if (candidates.length > 0) throw new Error("expected discard action");
           else return; // nothing to take; the reveal was the effect
           continue;
@@ -718,7 +722,7 @@ function discardOp(ctx: EngineCtx, caster: PlayerId, requester?: EffectRequester
           if (pick.type !== "discard") throw new Error("expected discard action");
           pickId = pick.objectId;
         }
-        discardCard(ctx, pickId);
+        toss(pickId);
       }
     },
   };
@@ -846,8 +850,8 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
  * (Tendrils), statics (Gaean Wurm, Werebear's threshold) and cost reduction (Baru). */
 /** Refs that only a resolving stack item can answer (its targets, its event, its payment) — statics and cost
  * reductions read them as zero. S40: one guard for the three live-evaluation sites. */
-export type StackOnlyRef = Extract<ValueRef, { ref: "targetPower" | "targetManaValue" | "eventDamage" | "xPaid" | "sacrificedPower" | "manaSpent" | "sourcePower" | "eventPower" | "eventLife" }>;
-const STACK_ONLY = new Set(["targetPower", "targetManaValue", "eventDamage", "xPaid", "sacrificedPower", "manaSpent", "sourcePower", "eventPower", "eventLife"]);
+export type StackOnlyRef = Extract<ValueRef, { ref: "targetPower" | "targetManaValue" | "eventDamage" | "xPaid" | "sacrificedPower" | "manaSpent" | "sourcePower" | "eventPower" | "eventLife" | "discardedNonland" }>;
+const STACK_ONLY = new Set(["targetPower", "targetManaValue", "eventDamage", "xPaid", "sacrificedPower", "manaSpent", "sourcePower", "eventPower", "eventLife", "discardedNonland"]);
 export function isStackOnlyRef(v: ValueRef): v is StackOnlyRef {
   return STACK_ONLY.has(v.ref);
 }

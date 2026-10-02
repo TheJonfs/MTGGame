@@ -33,7 +33,9 @@ import type { RatingGame } from "./rating-run-cli.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const pool = loadCardPool(join(ROOT, "data/cards")).cards;
-const withNoise = process.argv.includes("--noise");
+const withNoise = process.argv.includes("--noise") || process.argv.includes("--also");
+// S50: `--also <prefix>` — further Sealed shards (analysis/runs/<prefix>_shardN.json) join the candidate's sample.
+const alsoPrefix = (() => { const i = process.argv.indexOf("--also"); return i >= 0 ? process.argv[i + 1]! : ""; })();
 const withSealed = process.argv.includes("--sealed") || withNoise;
 const given = process.argv.slice(2).filter((a) => a.endsWith(".json"));
 const files = given.length ? given : readdirSync(join(ROOT, "analysis/runs")).filter((f) => /^rating_shard\d+\.json$/.test(f)).sort().map((f) => join(ROOT, "analysis/runs", f));
@@ -53,7 +55,7 @@ for (const g of games) for (const [k, r, s, u] of sides(g)) for (const c of s) {
 const sealed: Record<string, { n: number; d: number }> = {};
 let sealedGames = 0;
 if (withSealed) {
-  const sf = readdirSync(join(ROOT, "analysis/runs")).filter((f) => (withNoise ? /^(sealed_shard|sealednoise_shard)\d+\.json$/ : /^sealed_shard\d+\.json$/).test(f)).sort().map((f) => join(ROOT, "analysis/runs", f));
+  const sf = readdirSync(join(ROOT, "analysis/runs")).filter((f) => (withNoise ? new RegExp(`^(sealed_shard|sealednoise_shard${alsoPrefix ? `|${alsoPrefix}_shard` : ""})\\d+\\.json$`) : /^sealed_shard\d+\.json$/).test(f)).sort().map((f) => join(ROOT, "analysis/runs", f));
   if (!sf.length) throw new Error("rating:build --sealed — no Sealed sim on disk (pnpm sealed-sim first)");
   const sg: RatingGame[] = sf.flatMap((f) => (JSON.parse(readFileSync(f, "utf8")) as { results: RatingGame[] }).results);
   sealedGames = sg.length;

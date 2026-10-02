@@ -286,6 +286,8 @@ function isAnyValueRef(v: unknown): boolean {
   if (v.ref === "manaSpent" || v.ref === "sourcePower" || v.ref === "eventPower") return true;
   // S46 (R-100): the life gained in the LIFE_GAINED event (Vitalist).
   if (v.ref === "eventLife") return true;
+  // S50 (R-102): the nonland cards this resolution has discarded (Seasoned Pyromancer).
+  if (v.ref === "discardedNonland") return true;
   // S26 (member eight): counters of a kind on the source, times a bounded nonzero literal (Clio).
   if (v.ref === "countersOnSelf") return validCounterKind(v.kind) && (v.times === undefined || (Number.isInteger(v.times) && v.times !== 0));
   return false;

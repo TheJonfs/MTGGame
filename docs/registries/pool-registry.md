@@ -290,6 +290,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | disenchant | lea | 18 | Amy Weber | 2722d7e2-61c6-4934-9c21-875ee78fd06c |
 | divination | m10 | 49 | Howard Lyon | 3102cec9-1cdc-4946-a2dd-caf04eaa8b97 |
 | doom_blade | m10 | 93 | Chippy | 6e19acff-f3dd-417a-a9ab-ea3e36c1ba61 |
+| dragon_fodder | ala | 97 | Jaime Jones | 9eab4120-e7d8-4132-a304-30b88e3175e2 |
 | dragon_mage | scg | 87 | Matthew D. Wilson | 7687a201-0ecc-4739-86e3-3b4090d345a8 |
 | drakuseth_maw_of_flames | cmm | 535 | Grzegorz Rutkowski | c34ec655-4210-4237-92e4-c9adf207e2e0 |
 | drana_kalastria_bloodchief | roe | 107 | Mike Bierek | aca8d295-e8e9-4213-bc9b-f1acf57fb520 |
@@ -303,9 +304,11 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | experimental_overload | m21 | 218 | Lie Setiawan | 6f1bace4-a327-4eb6-a6ef-8394e76c06b7 |
 | faerie_formation | eld | 316 | Ryan Yee | 15709316-7382-46b9-9b70-53a5147e7051 |
 | fencing_ace | rtr | 11 | David Rapoza | a42d3066-f4ec-4d28-83ab-e48141206c72 |
+| flametongue_kavu | pls | 60 | Pete Venters | e5056bca-bd90-4b50-8630-105558f8ef92 |
 | forest | leb | 300 | Christopher Rush | b5a922eb-49c7-45f0-92bc-671d7a8758f4 |
 | forgotten_cave | ons | 317 | Tony Szczudlo | c5202668-a32c-4473-b272-e86264992576 |
 | frondland_felidar | iko | 186 | Steve Prescott | ab220695-e1a9-45ec-a1b1-5a82c9c90a03 |
+| furnace_whelp | 5dn | 65 | Matt Cavotta | a1726eba-c471-40bd-a487-40d910b75d64 |
 | giant_growth | lea | 197 | Sandra Everingham | 367dbefe-3366-408e-9fcf-7dc00f8cc201 |
 | gladecover_scout | m12 | 178 | Allen Williams | 26710d5c-01d1-498b-9f54-521dfd195843 |
 | glare_of_subdual | rav | 207 | Zoltan Boros & Gabor Szikszai | ed6166c1-3c2e-47af-873e-d3b39f42bd27 |
@@ -383,6 +386,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | savannah_lions | lea | 38 | Daniel Gelon | d05b92bd-797e-413f-a8b0-32e0937a1ee0 |
 | scepter_of_dominance | con | 17 | Howard Lyon | 888bc7ca-f9fa-4da4-b466-b9dc273d5319 |
 | scrubland | olgc | 2018 | Mark Poole | d1428846-e0da-4b62-b0e9-25efe846cc33 |
+| seasoned_pyromancer | mh1 | 145 | Cynthia Sheppard | 2e139ad1-1079-49e9-babd-6399c44ad333 |
 | secluded_steppe | ons | 324 | Heather Hudson | ea454280-f7f4-4315-bb46-b56050c02c97 |
 | seedborn_muse | lgn | 138 | Adam Rex | 35b13321-e429-4497-aef2-93a9df421d38 |
 | serra_angel | lea | 39 | Douglas Shuler | f8ac5006-91bd-4803-93da-f87cf196dd2f |
@@ -608,6 +612,19 @@ Pool 233 → **238** (+ the Beast 4/4 token). The Open format (ADR-142) and its 
 | ponder | Ponder | tested | `reorderTop` 3 `mayShuffle`, then draw 1 (R-100) | LRW #79 (Mark Tedin). T1. AI: the top by the hand's needs; the shuffle when all three are poor. |
 | angelic_destiny | Angelic Destiny | tested | Aura; static +4/+4, flying, first strike, `grantSubtype` Angel; DIES `source: attached` → returnFromGraveyard self to hand (R-100) | M12 #3 (Jana Schirmer & Johannes Voss). T3. AI: the hexproof host first (S29's view-sim rule). |
 | vitalist | Vitalist | tested | custom Human Cleric 1/1 {2}{W}; triggered(LIFE_GAINED you) target creature: addCounters +1/+1 `eventLife` (R-100) | T2. Art: the watercolor storybook (#4, Chris); printed face installed (verified word for word). AI: counters on our evasive creature, never theirs; a lifegain term while she is out. |
+
+## Session 50 additions — red for Limited (ADR-149; Oracle re-verified on Scryfall 2026-10-03)
+
+Pool 238 → **244**. Six cards that are good alone in a forty-card deck.
+
+| id | Card | Status | Vocabulary | Notes |
+|---|---|---|---|---|
+| flametongue_kavu | Flametongue Kavu | tested | triggered(ENTERS self, mandatory) target creature: damage 4 | **PLS #60** (Pete Venters — the brief said Invasion; its first printing is Planeshift). T2. Zero words. The trigger must take a target if one exists — with no other creature, itself (CR 603.3d). AI (book 89): the best creature it kills; held when it could only hit us. |
+| furnace_whelp | Furnace Whelp | tested | flying; activated {R}: modifyPT +1/+0 self until end of turn | 5DN #65 (Matt Cavotta). T2. Zero words (a self-pump activation: the existing `modifyPT` at scope self). AI (book 90): combat only — unblocked, or a fight it wins and survives. |
+| shocking_sharpshooter | Shocking Sharpshooter | tested | reach; triggered(ENTERS other, controller you, Creature): damage 1 to opponent | **TDM #121 — a 1/3 Human Archer** (the brief had a 2/2 Lizard Archer from Bloomburrow; no such card). T1. *Known simplification*: the Oracle's "target opponent" is encoded untargeted (`to: opponent`) — the pool has no player-targeting word for a trigger and no effect that makes a player an illegal target. **No art**: Scryfall has no high-resolution English scan yet; it shows our frame. AI: cast before the creatures it watches (book 87). |
+| dragon_fodder | Dragon Fodder | tested | createToken goblin_1_1 × 2 | ALA #97. T1. Zero words. |
+| seasoned_pyromancer | Seasoned Pyromancer | tested | triggered(ENTERS self): discard 2 (you choose), draw 2, createToken elemental_1_1_r × `discardedNonland` (R-102); activated from the graveyard {3}{R}{R}, exile self: two Elementals | MH1 #145 (Cynthia Sheppard). T3. One word: the `discardedNonland` ref. AI (book 91): a land first when the mana is comfortable; the graveyard activation with idle mana. |
+| rage_cobra | Rage Cobra | tested | custom Snake 1/1; triggered(LIFE_GAINED opponent) target creature: addCounters +1/+1 `eventLife` | {2}{R}. T2. Zero words (Vitalist's collector at `controller: opponent`). Art: four candidates with Chris. AI: Vitalist's rule (book 92). |
 
 ## Shop tiers (ADR-078, S19)
 

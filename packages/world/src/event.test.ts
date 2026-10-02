@@ -149,11 +149,11 @@ describe("a Sealed Convocation of eight (S48 Part 3)", () => {
     expect(deserializeEvent(JSON.stringify({ format: "convocation-event-v1", event: { version: 2, field: [] } }))).toBeNull();
   }, 240_000);
 
-  it("the ladder (ADR-148): Sealed's entrance is life only — Standard +0 / +2 / +4 by round, Easy flat, Hard +2 / +4 / +6; it reaches the AI seat against the human only", () => {
+  it("the ladder (ADR-148): Sealed's entrance is life only — Standard +0 / +2 / +4 / +4 / +6 by round, Easy flat, Hard +2 / +4 / +6; it reaches the AI seat against the human only", () => {
     const e = register(fresh(48)), mine = pairingOf(e, 0)!;
     expect(seriesSetup(e, mine.a, mine.b!, knobs)).toEqual({ life: [20, 20], modifiers: [] }); // round one: flat
     const at = (round: number, k = knobs) => seriesSetup({ ...e, round }, mine.a, mine.b!, k);
-    expect([at(2).life, at(3).life, at(5).life]).toEqual([[20, 22], [20, 24], [20, 24]]); // past the table: its last row
+    expect([at(2).life, at(3).life, at(4).life, at(5).life, at(7).life]).toEqual([[20, 22], [20, 24], [20, 24], [20, 26], [20, 26]]); // S50: five rows; past the table, its last
     expect(at(3).modifiers).toEqual([]); // life only: no basic in play
     expect(lifeModifiers(at(3).life)).toEqual([{ type: "startingLife", player: 1, value: 24 }]);
     const easy = resolveKnobs({ difficulty: DIFFICULTIES.easy }), hard = resolveKnobs({ difficulty: DIFFICULTIES.hard });
@@ -330,10 +330,16 @@ describe("the drafter's data (S49 Part 3)", () => {
     const white = ["savannah_lions", "serra_angel", "soul_warden"], wb = [...white, "terror", "vampire_nighthawk", "gravedigger"];
     expect(pickValue("shock", white, 2, rating, cards)).toBe(r("shock")); // picks 1–3: the rating alone
     expect(colourRanks(wb, rating, cards).slice(0, 2).sort()).toEqual(["B", "W"]);
-    expect(pickValue("suntail_hawk", wb, 7, rating, cards)).toBeCloseTo(r("suntail_hawk") + DRAFT_TERMS.bonusPerPick * 4); // in the colours
+    expect(pickValue("suntail_hawk", wb, 7, rating, cards)).toBeCloseTo(r("suntail_hawk") + DRAFT_TERMS.bonusPerPick * 4 * DRAFT_TERMS.earlySlope); // in the colours: half the slope before the cut (S50)
+    expect(pickValue("suntail_hawk", wb, 8, rating, cards)).toBeCloseTo(r("suntail_hawk") + DRAFT_TERMS.bonusPerPick * 5); // the full slope from the cut
     expect(pickValue("shock", wb, 7, rating, cards)).toBe(r("shock")); // a fourth colour: nothing
     const wbu = [...wb, "wind_drake"];
-    expect(pickValue("counterspell", wbu, 7, rating, cards)).toBeCloseTo(r("counterspell") + DRAFT_TERMS.bonusPerPick * 4 * DRAFT_TERMS.thirdShare); // the third colour: half, before the cut
+    expect(pickValue("counterspell", wbu, 7, rating, cards)).toBeCloseTo(r("counterspell") + DRAFT_TERMS.bonusPerPick * 4 * DRAFT_TERMS.earlySlope * DRAFT_TERMS.thirdShare); // the third colour: half again, before the cut
+    // S50: a land is flat and low until the cut — a dual is never a first pick over a playable; from the cut, its rating inside the colours
+    expect(pickValue("scrubland", [], 1, rating, cards)).toBe(DRAFT_TERMS.landFlat);
+    expect(pickValue("scrubland", [], 1, rating, cards)).toBeLessThan(pickValue("savannah_lions", [], 1, rating, cards));
+    expect(pickValue("scrubland", wb, 9, rating, cards)).toBe(r("scrubland"));
+    expect(pickValue("taiga", wb, 9, rating, cards)).toBeLessThan(DRAFT_TERMS.landFlat);
     expect(pickValue("counterspell", wbu, 8, rating, cards)).toBe(r("counterspell")); // the cut at pick eight
     expect(pickValue("mind_stone", wb, 12, rating, cards)).toBeCloseTo(r("mind_stone") + DRAFT_TERMS.bonusPerPick * 9); // colourless: castable
     const short = pickValue("suntail_hawk", wb, 20, rating, cards), plenty = pickValue("suntail_hawk", [...wb, "soul_warden", "soul_warden", "savannah_lions", "suntail_hawk"], 20, rating, cards);

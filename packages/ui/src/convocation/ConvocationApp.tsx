@@ -23,11 +23,11 @@ function Pips({ colors }: { colors: string }) {
   return <span style={{ display: "inline-flex", gap: 2, verticalAlign: -2 }}>{[...colors].map((c) => <img key={c} src={`/icons/mana-${PIP[c] ?? "colorless"}.svg`} alt={c} style={{ width: 13, height: 13 }} />)}</span>;
 }
 
-function Table({ c, rows }: { c: ConvocationController; rows: Standing[] }) {
+function Table({ c, rows, swiss = false }: { c: ConvocationController; rows: Standing[]; /** S50: the finish's table is ordered by final place; its record columns are the Swiss rounds'. */ swiss?: boolean }) {
   const e = c.event!;
   return (
     <table className="convocation-table" style={{ borderCollapse: "collapse", width: "100%", fontSize: 13, fontVariantNumeric: "tabular-nums" }}>
-      <thead><tr style={{ textAlign: "left", borderBottom: "1.5px solid var(--ink)" }}><th style={{ padding: "4px 6px" }}></th><th>Seat</th><th>Deck</th><th style={{ textAlign: "right" }}>Record</th><th style={{ textAlign: "right" }}>Points</th><th style={{ textAlign: "right" }} title="opponents' match-win share — the tiebreak">Opp.</th><th style={{ textAlign: "right" }} title="games won of games played">Games</th></tr></thead>
+      <thead><tr style={{ textAlign: "left", borderBottom: "1.5px solid var(--ink)" }}><th style={{ padding: "4px 6px" }}></th><th>Seat</th><th>Deck</th><th style={{ textAlign: "right" }}>{swiss ? "Swiss record" : "Record"}</th><th style={{ textAlign: "right" }}>{swiss ? "Swiss points" : "Points"}</th><th style={{ textAlign: "right" }} title="opponents' match-win share — the tiebreak">Opp.</th><th style={{ textAlign: "right" }} title="games won of games played">Games</th></tr></thead>
       <tbody>
         {rows.map((r) => (
           <tr key={r.seat} style={{ borderBottom: "1px solid var(--ink-soft)", fontWeight: r.seat === 0 ? 700 : 400 }}>
@@ -228,7 +228,7 @@ function Prize({ c, pool, oracle }: { c: ConvocationController; pool: Map<string
       <h2 style={{ fontFamily: "var(--serif)", margin: "0 0 4px" }}>You finish {ORDINAL[place] ?? place} of {COUNT[e.field.length] ?? e.field.length}.</h2>
       {place === 1 && <p style={{ margin: "0 0 8px", fontFamily: "var(--serif)", fontSize: 17 }}>The Umbel is yours.</p>}
       <p style={{ margin: "0 0 10px", fontSize: 13 }}>{me.wins}–{me.losses}{me.draws ? `–${me.draws}` : ""} · {me.points} points · entered in the ledger (seed {e.seed}).</p>
-      <Table c={c} rows={rows} />
+      <Table c={c} rows={rows} swiss={!!e.bracket} />
       <div className="flyout-title" style={{ marginTop: 14 }}>{e.kept ? `You keep ${pool.get(e.kept)?.name ?? e.kept}.` : "Keep one card from your pool"}</div>
       {!e.kept && (
         <div className="editor-grid" style={{ maxHeight: 300, overflowY: "auto", marginTop: 6 }}>
