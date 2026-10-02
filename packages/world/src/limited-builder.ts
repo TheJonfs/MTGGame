@@ -22,7 +22,7 @@ import { isBasic } from "./legality.js";
 
 const COLORS: readonly PackColor[] = ["W", "U", "B", "R", "G"];
 const BASIC_OF: Record<PackColor, string> = { W: "plains", U: "island", B: "swamp", R: "mountain", G: "forest" };
-export const LIMITED_TARGETS = { deck: 40, lands: 17, landsLow: 16, lowCurve: 2.6, twoDrops: 5, threeDrops: 4, sixPlusCap: 3, fourFiveCap: 9, creatures: 13, splashMax: 2, splashMargin: 0.75, splashFloor: 2.0, fixersForSplash: 2 } as const;
+export const LIMITED_TARGETS = { deck: 40, lands: 17, landsLow: 16, lowCurve: 2.6, twoDrops: 5, threeDrops: 4, sixPlusCap: 3, fourFiveCap: 9, creatures: 13, tribeForCost: 5, splashMax: 2, splashMargin: 0.75, splashFloor: 2.0, fixersForSplash: 2 } as const;
 
 export interface LimitedBuild {
   deck: Decklist;
@@ -93,7 +93,18 @@ export function buildLimitedDeck(poolIds: readonly string[], rating: CardRatingT
     }
     return out;
   };
+  // Post-S49 (the burn probe: Goblin Grenade sat in hand in 54% of the games it was drawn — no Goblin to sacrifice):
+  // a card whose ADDITIONAL COST sacrifices a creature of a subtype is a playable only in a deck that holds that
+  // subtype — five creature cards of it among the cards PLAYED, or the card is left out. Keyed on the cost's shape.
+  const needs = (id: string) => /^creature\.subtype:(.+)$/.exec(((def(id) as { additionalCost?: { sacrifice?: { predicate?: string } } }).additionalCost?.sacrifice?.predicate) ?? "")?.[1];
   let picked = take(23, candidates);
+  for (let guard = 0; guard < 4; guard++) {
+    const tribe = (sub: string) => picked.filter((id) => isCreature(id) && (def(id).subtypes ?? []).includes(sub)).length;
+    const stranded = new Set(picked.filter((id) => { const sub = needs(id); return !!sub && tribe(sub) < LIMITED_TARGETS.tribeForCost; }));
+    if (!stranded.size) break;
+    candidates = candidates.filter((id) => !stranded.has(id));
+    picked = take(23, candidates);
+  }
 
   // 2. a splash
   let splash: PackColor | null = null;

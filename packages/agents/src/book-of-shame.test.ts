@@ -1231,4 +1231,22 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     // a watcher of OPPONENTS' creatures only is no reason to hurry (the shape reads the controller)
     expect(a.watcherFirstCandidates(mkView({ hand: [{ objectId: "gb", cardId: "grizzly_bears" }, { objectId: "hg", cardId: "hill_giant" }], battlefield: lands(6) }), [cast("gb"), cast("hg")])).toBeNull();
   });
+
+  it("book of shame 88 (post-S49 — the Sealed probe: 69 of 195 Lightning Bolts at the face of an empty board, thirteen life or more): removal is not thrown at a healthy face — it waits for a creature, for lethal, or for an opponent within reach; the aggro deck's burn is reach, as before", () => {
+    const bolt = (to: "face" | string) => ({ type: "castSpell" as const, objectId: "lb", targets: [to === "face" ? { kind: "player" as const, player: 1 as const } : { kind: "object" as const, id: to }] });
+    const v = (life: [number, number], theirs: Obj[] = []) => mkView({ life, hand: [{ objectId: "lb", cardId: "lightning_bolt" }], battlefield: [{ id: "m", cardId: "mountain", controller: 0 }, ...theirs] });
+    const mid = agent("midrange"), ctl = agent("control"), agg = agent("aggro");
+    expect(mid.faceBurnHoldGated(v([20, 20]), bolt("face"))).toBe(true); // the reported cast: turn one, an empty board
+    expect(ctl.faceBurnHoldGated(v([20, 14]), bolt("face"))).toBe(true);
+    expect(mid.scorePriorityAction(v([20, 20]), bolt("face"))).toBe(-Infinity);
+    expect(mid.faceBurnHoldGated(v([20, 8]), bolt("face"))).toBe(false); // within reach: the burn is closing
+    expect(mid.faceBurnHoldGated(v([20, 3]), bolt("face"))).toBe(false); // lethal
+    expect(agg.faceBurnHoldGated(v([20, 20]), bolt("face"))).toBe(false); // the race is the plan
+    const bears: Obj[] = [{ id: "x", cardId: "grizzly_bears", controller: 1 }];
+    expect(mid.faceBurnHoldGated(v([20, 20], bears), bolt("x"))).toBe(false); // at a creature: removal, never held
+    expect(mid.scorePriorityAction(v([20, 20], bears), bolt("x"))).toBeGreaterThan(mid.scorePriorityAction(v([20, 20], bears), { type: "pass" }));
+    // outside the rule (known): a VARIABLE amount (X / mana spent — Sacred Helix, Blaze) is not read; only numeric damage is
+    const drain = mkView({ hand: [{ objectId: "h", cardId: "sacred_helix" }], battlefield: [] });
+    expect(mid.faceBurnHoldGated(drain, { type: "castSpell", objectId: "h", targets: [{ kind: "player", player: 1 }] })).toBe(false);
+  });
 });

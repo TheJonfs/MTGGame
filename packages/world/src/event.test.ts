@@ -54,6 +54,17 @@ describe("the Limited builder (S48 Part 2)", () => {
   });
 });
 
+describe("the builder and a card that needs a tribe (post-S49 — Goblin Grenade stranded in 54% of the games it was drawn)", () => {
+  const base = ["mountain", "savannah_lions", "savannah_lions", "soul_warden", "soul_warden", "suntail_hawk", "suntail_hawk", "master_decoy", "master_decoy", "serra_angel", "inspiring_overseer", "inspiring_overseer", "youthful_valkyrie", "youthful_valkyrie", "hill_giant", "hill_giant", "gray_ogre", "gray_ogre", "pacifism", "lightning_bolt", "shock", "char", "goblin_grenade", "goblin_grenade"];
+  const has = (pool: string[], id: string) => buildLimitedDeck(pool, rating, cards, { forcePair: ["W", "R"] }).deck.some((e) => e.cardId === id);
+  it("a card whose additional cost sacrifices a Goblin is played only beside five Goblin creatures", () => {
+    expect(has(base, "goblin_grenade")).toBe(false); // no Goblin to sacrifice
+    expect(has([...base, "goblin_piker", "goblin_piker", "raging_goblin"], "goblin_grenade")).toBe(false); // three is not a tribe
+    expect(has([...base, "goblin_piker", "goblin_piker", "raging_goblin", "boggart_brute", "goblin_chieftain", "goblin_matron"], "goblin_grenade")).toBe(true);
+    expect(has(base, "lightning_bolt")).toBe(true); // ordinary burn is untouched
+  });
+});
+
 describe("a Sealed Convocation of eight (S48 Part 3)", () => {
   it("the field: eight seats from one seed — ninety-card pools, seven built decks with names and faces, the human's deck unbuilt", () => {
     const e = fresh(48);

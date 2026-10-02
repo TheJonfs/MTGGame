@@ -84,6 +84,23 @@ Read from the v2 candidate's Sealed sample (the v1 run plus the noise run), mono
 
 **The implementer's read**: both. The pool question has enough evidence to act on — red wants a handful of self-sufficient tier-1/tier-2 cards (bodies with evasion or an enters-the-battlefield effect; a solid three- and four-drop) more than it wants another bomb. The burn finding wants an AI look before any card is judged by these numbers.
 
+### The burn, looked at (Chris: why is red presumably misusing its burn?) — two causes found and fixed; red still loses
+
+A probe over 640 Sealed games of forty red decks, each burn spell followed from the hand to its use:
+
+| card | drawn | at a creature (killing it) | at the face | of those: an EMPTY enemy board, not lethal | left in hand at the game's end |
+|---|---|---|---|---|---|
+| Lightning Bolt | 202 | 108 | **87** | **69** | 7 |
+| Char | 139 | 118 | 9 (7 lethal) | 0 | 12 |
+| Goblin Grenade | 301 | 111 | 27 (23 lethal) | 2 | **163 (54%)** |
+
+1. **Lightning Bolt went at the face on the first turns** — 69 of 195 casts hit an opponent with no creatures and thirteen or more life, held two turns on average. With nothing to kill and the mana idle, the face was the best-scoring use. **Fixed (book 88)**: a numeric-damage spell that can hit a creature is removal first; aimed at the opponent's face it waits unless it is lethal, the opponent is at eight life or less, or the deck is the aggro archetype (whose burn is its reach — unchanged). After: Bolt at the face 87 → 12, kills 108 → 188 (same forty pools).
+2. **Goblin Grenade was put in decks with no Goblins** — its additional cost sacrifices one, and the builder read only its rating. It sat in hand in 54% of the games it was drawn. **Fixed in the builder**: a card whose additional cost sacrifices a creature of a subtype is played only beside five creature cards of that subtype. Grenade's appearances fell from 301 to 90 over the same pools.
+3. **Char was used well** (118 kills of 127 casts). Instants are mostly cast in the AI's own upkeep or draw step (104 of 127 for Char; the same for Terror and Doom Blade) — the first window after the opponent's creature lands. Odd to watch, not costly.
+4. **Not fixed, noted**: a VARIABLE amount (Blaze, Sacred Helix) is outside the new rule — only numeric damage is read.
+
+**What it bought**: eighty forced red decks, 1,600 games against a fixed field, before → after: **39.4% → 40.6%**. Inside the noise (about ±1.2), and a point at most. The burn misuse was real and is gone, but it was never the reason red loses — which puts the weight back on the pool: red's tier 1 and tier 2 have no card that is good on its own. Ladder mirror gate PASS; the campaign's non-aggro red mages now hold their burn for creatures too (not measured in the campaign's sims).
+
 ## Deviations from the brief
 1. **v2 is written as a candidate file and v1 stands** — the brief's own rule, applied; the planner can overrule by copying the candidate over.
 2. **A drawn bracket series goes to the higher seed.** The brief does not say; single elimination needs a winner and a best-of-three can end 1–1–1.

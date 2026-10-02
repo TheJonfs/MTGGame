@@ -228,6 +228,7 @@ export class HeuristicAgent implements Agent {
     if (this.flashTimingGated(view, action)) return -Infinity; // S32: the Escort at the opponent's end step, in response, or when the mana is idle
     if (this.selfCounterGated(view, action)) return -Infinity; // post-S43: Mystic Snake with only our own spell to hit
     if (this.spellPayoffHoldGated(view, action)) return -Infinity; // S45: hold the cheap spell for the Guttersnipe / Pyromancer in hand
+    if (this.faceBurnHoldGated(view, action)) return -Infinity; // post-S49 (book 88): removal is not thrown at a healthy face
     if (this.idleSinkGated(view, action)) return -Infinity; // post-S43: the Cleric / Faerie Formation spend only mana that would idle
     if (this.glaciersDropGated(view, action)) return -Infinity; // S36 (book 52): the Glaciers as the land drop only for a reason; otherwise the real land
     if (this.glaciersActivationGated(view, action)) return -Infinity; // S36 (book 52): fetch at their end step, or on our turn for a colour we lack
@@ -1634,6 +1635,26 @@ export class HeuristicAgent implements Agent {
     const opp = (1 - me) as 0 | 1;
     if (faceDamage > 0 && targets.some((t) => t.kind === "player" && t.player === opp) && faceDamage >= view.life[opp]) return false; // lethal now
     return true;
+  }
+
+  /** Post-S49 (book 88 — the Sealed probe: 69 of 195 Lightning Bolts went at the face of an opponent with an empty
+   * board and thirteen or more life, on the first turns; the card's lift was −3.7 where Terror's was +1.7). A damage
+   * spell that CAN hit a creature (the shape: numeric damage at an any-target slot) is removal first: aimed at the
+   * opponent's face it waits, unless it is lethal, the opponent is within reach (eight life or less — the burn is
+   * closing), or the deck's plan is the race (the aggro archetype: its burn is reach, as before). A creature target,
+   * a planeswalker-less board and our own face are other gates' business. Exposed for the book. */
+  faceBurnHoldGated(view: GameView, action: Action): boolean {
+    if (action.type !== "castSpell" || this.profile.archetype === "aggro") return false;
+    const me = view.you, opp = (1 - me) as 0 | 1;
+    const card = view.hand.find((c) => c.objectId === action.objectId);
+    const d = card ? this.def(card.cardId) : undefined;
+    if (!d || !(d.types.includes("Instant") || d.types.includes("Sorcery"))) return false;
+    const effects = d.modes && action.mode !== undefined ? (d.modes[action.mode]?.effects ?? []) : (d.spellEffect ?? []);
+    const dmg = effects.reduce((n, e) => n + (e.type === "damage" && typeof e.amount === "number" && e.target !== undefined ? e.amount : 0), 0);
+    if (dmg <= 0 || !((d.targets ?? []) as { predicate?: string }[]).some((t) => t.predicate === "anyTarget")) return false;
+    const targets = (action as { targets?: ResolvedTarget[] }).targets ?? [];
+    if (!targets.some((t) => t.kind === "player" && t.player === opp)) return false;
+    return view.life[opp] > dmg && view.life[opp] > 8;
   }
 
   /** Post-S43 (Chris: the Pearl Cleric and Faerie Formation "exhaust mana as soon as it untaps", before the draw and
