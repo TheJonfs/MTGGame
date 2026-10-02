@@ -14,7 +14,8 @@ import { cardColors, parseManaCost } from "@shandalar/cards";
 import { runMatch, type Agent, type MatchSpec, type Modifier } from "@shandalar/engine";
 import type { Decklist, Collection } from "./state.js";
 import { checkDeck, isBasic, type DeckCheck } from "./legality.js";
-import { LIMITED_FORMATS, type LimitedFormat } from "./formats.js";
+import { DRAFT_PLANE, LIMITED_FORMATS, type LimitedFormat } from "./formats.js";
+import { draftPick } from "./drafter.js";
 import { rollPack, resolveSet, type ConvocationPackData } from "./packs.js";
 import { buildLimitedDeck } from "./limited-builder.js";
 import type { CardRatingTable } from "./rating.js";
@@ -45,7 +46,7 @@ export interface ConvocationEvent {
   rounds: number;
   difficulty: string;
   /** build → (round: pairings posted, series being played) → standings → … → over. */
-  phase: "build" | "round" | "standings" | "bracket" | "over";
+  phase: "draft" | "build" | "round" | "standings" | "bracket" | "over";
   /** The current round, from 1 (0 while building). */
   round: number;
   /** Seat 0 is the human. */
@@ -56,6 +57,9 @@ export interface ConvocationEvent {
   /** The human's series in progress: the games played (the next is replayed from its seed). */
   current?: SeriesState;
   byes?: { round: number; seat: number }[];
+  /** S51: the draft in progress — the pack each seat is holding (index = seat), every seat's picks so far, the pack
+   * round (0…) and the pick number across the whole draft (1…). Gone once the draft is done (the picks are the pools). */
+  draft?: { round: number; pick: number; packs: string[][]; picks: string[][] };
   /** S49: a Top 8 follows the Swiss rounds (single elimination). */
   top8?: boolean;
   /** S49: the bracket — the eight seats in standings order (seed 1 first), and each round's matches as they are
@@ -98,6 +102,71 @@ export function newSealedEvent(opts: NewEventOptions, deps: EventDeps): Convocat
   }
   if (opts.top8 && seats < 8) throw new Error("event: a Top 8 needs eight seats");
   return { version: EVENT_SAVE_VERSION, seed: opts.seed, formatId: format.id, rounds, difficulty: opts.difficulty ?? "standard", phase: "build", round: 0, field, pairings: [], results: [], ...(opts.top8 ? { top8: true } : {}) };
+}
+
+// ---------- S51: the draft ----------
+
+/** A new Draft event: the pod's first packs opened; every seat's pool empty until the draft is done. */
+export function newDraftEvent(opts: NewEventOptions, deps: EventDeps): ConvocationEvent {
+  const format = opts.format ?? DRAFT_PLANE, seats = opts.seats ?? 8, rounds = opts.rounds ?? 5;
+  if (format.shape !== "draft") throw new Error(`event: ${format.id} is not a draft format`);
+  if (opts.top8 && seats < 8) throw new Error("event: a Top 8 needs eight seats");
+  const rng = new WorldRng(sub(opts.seed, 1));
+  const names = [...opts.names]; for (let i = names.length - 1; i > 0; i--) { const j = rng.int(i + 1); [names[i], names[j]] = [names[j]!, names[i]!]; }
+  const field: EventSeat[] = Array.from({ length: seats }, (_, s) => ({ name: s === 0 ? (opts.playerName ?? "You") : (names[(s - 1) % Math.max(1, names.length)] ?? `Seat ${s + 1}`), human: s === 0, pool: [], deck: [], sideboard: [], colors: "", archetype: "midrange" as const }));
+  const event: ConvocationEvent = { version: EVENT_SAVE_VERSION, seed: opts.seed, formatId: format.id, rounds, difficulty: opts.difficulty ?? "standard", phase: "draft", round: 0, field, pairings: [], results: [], ...(opts.top8 ? { top8: true } : {}) };
+  return { ...event, draft: { round: 0, pick: 1, packs: draftPacks(event, 0, deps), picks: field.map(() => []) } };
+}
+/** A pack round's packs — one a seat, from the event's seed and the round. */
+function draftPacks(event: ConvocationEvent, round: number, deps: Pick<EventDeps, "cards" | "packs">): string[][] {
+  const format = formatOf(event.formatId);
+  const set = deps.packs.sets.find((s) => s.id === format.set), recipe = deps.packs.recipes.find((r) => r.id === format.recipe);
+  if (!set || !recipe) throw new Error(`event: format ${format.id} names a set or recipe the data lacks`);
+  const tiers = resolveSet(set, deps.cards, deps.packs.power), rng = new WorldRng(sub(event.seed, 6, round));
+  return event.field.map(() => rollPack(tiers, recipe, rng));
+}
+/** The pack the human is looking at, and where it goes next ("left" on packs one and three, "right" on two). */
+export const draftPack = (event: ConvocationEvent): string[] => event.draft?.packs[0] ?? [];
+export const draftDirection = (event: ConvocationEvent): "left" | "right" => ((event.draft?.round ?? 0) % 2 === 0 ? "left" : "right");
+export const draftTotalPicks = (event: ConvocationEvent, deps: Pick<EventDeps, "packs">): number => { const f = formatOf(event.formatId), r = deps.packs.recipes.find((x) => x.id === f.recipe)!; return f.packs * r.slots.reduce((n, s) => n + s.count, 0); };
+/** The pick the pick rule would make for the human's seat (a headless human; the screen's "suggest"). */
+export function suggestedPick(event: ConvocationEvent, deps: Pick<EventDeps, "cards" | "rating">): string {
+  const d = event.draft!; return draftPick(d.packs[0]!, d.picks[0]!, d.pick, deps.rating, deps.cards);
+}
+
+/** One step of the draft: the human takes `cardId` from their pack, every AI seat takes its pick by the pick rule
+ * (hidden from the human — a real draft), and the packs pass: left on the first and third packs, right on the
+ * second. When a pack round is spent the next is opened; when the last is spent the picks become the pools, the AI
+ * seats' decks are built from theirs (the Limited builder), and the event stands at the build. No take-backs. */
+export function draftStep(event: ConvocationEvent, cardId: string, deps: EventDeps, faces: readonly { portrait: string; colors: string }[] = []): ConvocationEvent {
+  const d = event.draft;
+  if (event.phase !== "draft" || !d) throw new Error("event: no draft in progress");
+  if (!d.packs[0]!.includes(cardId)) throw new Error(`event: ${cardId} is not in the pack`);
+  const seats = event.field.length, format = formatOf(event.formatId);
+  const packs = d.packs.map((p) => [...p]), picks = d.picks.map((p) => [...p]);
+  for (let s = 0; s < seats; s++) {
+    const choice = s === 0 ? cardId : draftPick(packs[s]!, picks[s]!, d.pick, deps.rating, deps.cards);
+    packs[s]!.splice(packs[s]!.indexOf(choice), 1); picks[s]!.push(choice);
+  }
+  if (packs[0]!.length > 0) {
+    const dir = d.round % 2 === 0 ? 1 : -1; // seat s receives the pack of the seat to its right on a leftward pass
+    return { ...event, draft: { round: d.round, pick: d.pick + 1, packs: packs.map((_, s) => packs[(s - dir + seats) % seats]!), picks } };
+  }
+  if (d.round + 1 < format.packs) return { ...event, draft: { round: d.round + 1, pick: d.pick + 1, packs: draftPacks(event, d.round + 1, deps), picks } };
+  // the draft is done: the picks are the pools; the AI seats build
+  const rng = new WorldRng(sub(event.seed, 7));
+  const used = new Set<string>();
+  const field = event.field.map((seat, s) => {
+    if (s === 0) return { ...seat, pool: picks[0]! };
+    const b = buildLimitedDeck(picks[s]!, deps.rating, deps.cards);
+    const fits = faces.filter((f) => !used.has(f.portrait) && [...f.colors].some((c) => b.colors.includes(c as never)));
+    const open = fits.length ? fits : faces.filter((f) => !used.has(f.portrait));
+    const face = open.length ? open[rng.int(open.length)]!.portrait : undefined;
+    if (face) used.add(face);
+    return { ...seat, ...(face ? { face } : {}), pool: picks[s]!, deck: b.deck, sideboard: b.sideboard, colors: b.colors.join("") + (b.splash ?? ""), archetype: (b.avgMv <= 2.6 ? "aggro" : "midrange") as EventSeat["archetype"] };
+  });
+  const { draft: _d, ...rest } = event;
+  return { ...rest, field, phase: "build" };
 }
 
 export const poolCollection = (pool: readonly string[]): Collection => { const c: Collection = {}; for (const id of pool) c[id] = (c[id] ?? 0) + 1; return c; };

@@ -47,7 +47,7 @@ Six Classic packs from the Plane, the AI builder, seven AI seats, three Swiss ro
 - **Tests:** tiebreak arithmetic against a hand-worked table; a sixteen-seat, five-round event headless; a bracket.
 - **The Lab measures:** the field's record distribution by entrance row; how often a drawn series occurs.
 
-### Stage 3 — the drafter · **1 session** (the data is built — S49: `world/drafter.ts`, `pnpm draft-sim`)
+### Stage 3 — the drafter · **BUILT (S51)** — the draft as a screen and an event (`newDraftEvent`, `draftStep`); the data from S49 (`world/drafter.ts`, `pnpm draft-sim`)
 
 **The pick rule (S49 Part 3; `DRAFT_TERMS`).** A card's worth to a seat at pick *n* (1–45 across the three packs) is its rating plus:
 - **Colour commitment.** Picks 1–3: the rating alone. From pick 4: a bonus of `0.1 × (n − 3)` (capped at 1.2) to a card castable in the seat's two colours with the most rated picks so far (a gold card counts to each of its colours; a colourless card is castable). Until pick 8 a card that needs the seat's *third* colour draws half the bonus; at pick 8 that is cut. A land earns the bonus when it taps for two of the seat's colours and loses it when it taps outside them.

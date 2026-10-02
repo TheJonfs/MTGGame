@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { loadCardPool } from "@shandalar/cards/loader";
 import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
 import { defaultKnobs } from "./knobs.js";
-import { lifeModifiers, advanceBracket, aliveInBracket, bracketRound, bracketRoundComplete, bracketWinner, finalPlaces, playBracketFieldRound, recordBracketSeries, startBracket, advanceEvent, checkEventDeck, closeRound, deserializeEvent, ledgerEntry, newSealedEvent, pairingOf, playFieldRound, playSeriesHeadless, recordSeries, registerDeck, roundComplete, serializeEvent, seriesSetup, standings, type ConvocationEvent, type SeatAgents } from "./event.js";
+import { draftDirection, draftPack, draftStep, newDraftEvent, suggestedPick, lifeModifiers, advanceBracket, aliveInBracket, bracketRound, bracketRoundComplete, bracketWinner, finalPlaces, playBracketFieldRound, recordBracketSeries, startBracket, advanceEvent, checkEventDeck, closeRound, deserializeEvent, ledgerEntry, newSealedEvent, pairingOf, playFieldRound, playSeriesHeadless, recordSeries, registerDeck, roundComplete, serializeEvent, seriesSetup, standings, type ConvocationEvent, type SeatAgents } from "./event.js";
 import { buildLimitedDeck, LIMITED_TARGETS } from "./limited-builder.js";
 import { rollSealedPool, type ConvocationPackData } from "./packs.js";
 import { convocationSeat } from "./matchup.js";
@@ -345,5 +345,84 @@ describe("the drafter's data (S49 Part 3)", () => {
     const short = pickValue("suntail_hawk", wb, 20, rating, cards), plenty = pickValue("suntail_hawk", [...wb, "soul_warden", "soul_warden", "savannah_lions", "suntail_hawk"], 20, rating, cards);
     expect(short - plenty).toBeCloseTo(DRAFT_TERMS.curveBonus); // short of two-drops from pick twenty
   });
+});
+
+describe("the draft event (S51 Part 1)", () => {
+  const sdeps = { cards, knobs, rating };
+  const start = (seed: number) => newDraftEvent({ seed, seats: 8, rounds: 5, top8: true, names: CONVOCATION_NAMES, faces: FACES }, deps);
+  const auto = (e: ConvocationEvent, n = 999) => { for (let i = 0; i < n && e.phase === "draft"; i++) e = draftStep(e, suggestedPick(e, deps), deps, FACES); return e; };
+
+  it("the pod: eight seats, fifteen-card packs; a pick takes one card from every pack and passes them left — the human's next pack is the one the seat on their right held; no pick outside the pack", () => {
+    const e = start(51);
+    expect(e.phase).toBe("draft");
+    expect(e.field).toHaveLength(8);
+    expect(e.draft!.packs.map((p) => p.length)).toEqual(Array(8).fill(15));
+    expect(draftDirection(e)).toBe("left");
+    expect(() => draftStep(e, "black_lotus", deps)).toThrow();
+    const mine = draftPack(e)[0]!, rightNeighbour = e.draft!.packs[7]!;
+    const n = draftStep(e, mine, deps);
+    expect(n.draft!.picks[0]).toEqual([mine]);
+    expect(n.draft!.pick).toBe(2);
+    expect(n.draft!.packs.map((p) => p.length)).toEqual(Array(8).fill(14));
+    expect(draftPack(n).every((c) => rightNeighbour.includes(c))).toBe(true); // the pack came from seat 7 (it went left)
+    expect(rightNeighbour.filter((c) => !draftPack(n).includes(c)).length).toBeLessThanOrEqual(1); // less its pick (a duplicate name aside)
+    for (const p of n.draft!.picks) expect(p).toHaveLength(1);
+    expect(start(51)).toEqual(e); // the seed is the pod
+  });
+
+  it("three packs, left-right-left, forty-five picks; then the picks are the pools, the seven AI decks are built, and the event stands at the build", () => {
+    let e = start(51);
+    e = auto(e, 15);
+    expect(e.draft!.round).toBe(1); expect(e.draft!.pick).toBe(16); expect(draftDirection(e)).toBe("right");
+    expect(e.draft!.packs.map((p) => p.length)).toEqual(Array(8).fill(15));
+    e = auto(e, 15);
+    expect(draftDirection(e)).toBe("left");
+    e = auto(e);
+    expect(e.phase).toBe("build");
+    expect(e.draft).toBeUndefined();
+    for (const seat of e.field) expect(seat.pool).toHaveLength(45);
+    expect(e.field[0]!.deck).toEqual([]);
+    for (const seat of e.field.slice(1)) { expect(seat.deck.reduce((n, x) => n + x.count, 0)).toBe(40); expect(checkEventDeck(e, e.field.indexOf(seat), seat.deck, cards).ok).toBe(true); expect(seat.face).toBeDefined(); }
+    expect(auto(start(51))).toEqual(e);
+  });
+
+  it("a full draft event headless — the pod drafts, eight decks, five rounds, the Umbel — saved and resumed mid-draft and mid-round, ending as the uninterrupted event", async () => {
+    const play = async (e: ConvocationEvent): Promise<ConvocationEvent> => {
+      e = auto(e);
+      if (e.phase === "build") { const r = registerDeck(e, 0, buildLimitedDeck(e.field[0]!.pool, rating, cards).deck, cards); if (!r.ok) throw new Error(r.problems.join("; ")); e = r.event; }
+      while (e.phase === "round" || e.phase === "standings") {
+        if (e.phase === "standings") { e = advanceEvent(e); continue; }
+        const mine = pairingOf(e, 0)!;
+        if (mine.b !== null && !e.results.some((r) => r.round === e.round && r.a === mine.a && r.b === mine.b)) e = recordSeries(e, mine.a, mine.b, await playSeriesHeadless(e, mine.a, mine.b, sdeps, agents, e.current));
+        e = closeRound(await playFieldRound(e, sdeps, agents));
+      }
+      while (e.phase === "bracket") {
+        const m = bracketRound(e).find((x) => x.a === 0 && x.winner === undefined);
+        if (m) e = recordBracketSeries(e, m.a, m.b, await playSeriesHeadless(e, m.a, m.b, sdeps, agents));
+        e = advanceBracket(await playBracketFieldRound(e, sdeps, agents));
+      }
+      return e;
+    };
+    const whole = await play(start(52));
+    expect(whole.phase).toBe("over");
+    expect(whole.results).toHaveLength(20); // five rounds of four series
+    expect(new Set(whole.results.map((r) => [r.a, r.b].sort((x, y) => x - y).join("-"))).size).toBe(20); // no rematch in five rounds of eight
+    expect(whole.bracket!.rounds.map((r) => r.length)).toEqual([4, 2, 1]);
+    expect(whole.bracket!.seeds.slice().sort((a, b) => a - b)).toEqual([0, 1, 2, 3, 4, 5, 6, 7]); // eight seats: all in the Umbel, seeded by the Swiss
+    expect(ledgerEntry(whole, "2026-10-04T00:00:00Z")).toMatchObject({ formatId: "draft-plane", seats: 8, rounds: 5, top8: true });
+    // mid-draft: twenty picks in, through the save
+    const midDraft = deserializeEvent(serializeEvent(auto(start(52), 20)))!;
+    expect(midDraft.draft!.pick).toBe(21);
+    expect(midDraft.draft!.picks[0]).toHaveLength(20);
+    expect(await play(midDraft)).toEqual(whole);
+    // mid-round: round two, the human's series one game in
+    let e = auto(start(52));
+    e = (registerDeck(e, 0, buildLimitedDeck(e.field[0]!.pool, rating, cards).deck, cards) as { event: ConvocationEvent }).event;
+    const m1 = pairingOf(e, 0)!;
+    e = advanceEvent(closeRound(await playFieldRound(recordSeries(e, m1.a, m1.b!, await playSeriesHeadless(e, m1.a, m1.b!, sdeps, agents)), sdeps, agents)));
+    const m2 = pairingOf(e, 0)!, full = await playSeriesHeadless(e, m2.a, m2.b!, sdeps, agents);
+    e = deserializeEvent(serializeEvent({ ...e, current: { ...full, games: full.games.slice(0, 1), done: false, winner: null } }))!;
+    expect(await play(e)).toEqual(whole);
+  }, 600_000);
 });
 });

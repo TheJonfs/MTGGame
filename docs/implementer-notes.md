@@ -587,3 +587,11 @@ See handoff Concerns for the authoritative list. Highlights: auto-pay greedy fea
 - **A mana-only activation that changes the board scores above passing by default** (+0.2 for the Whelp's pump, as for the Warhammer's move). Any new repeatable activation needs a gate or it drains the lands in the first main phase.
 - **`rating:build --also <prefix>` pools every Sealed shard on disk** — including runs from before an AI or builder fix. The candidate it writes then carries stale evidence (S50: red still fell, on pre-fix games). For a clean update, move the old shards aside first.
 - **Don't run `pnpm test` while a sim chain is running** (again): the chain here took ~45 minutes; the suite was run after `s50_done.txt` appeared.
+
+## S51 — the draft (2026-10-04)
+
+- **A draft event is a Sealed event with a different way of getting the pool**: `event.draft` holds the packs and picks while `phase === "draft"`; when the last card is taken the picks become every seat's `pool`, the AI decks are built, and the event is at `"build"` exactly as a Sealed event is. Nothing after the build knows the difference except `formatId`.
+- **`draftStep` is pure and does all eight picks**: the human's card, then the seven AI seats by `draftPick`, then the pass. `event.draft.packs[s]` is the pack seat `s` is holding NOW.
+- **Sealed runs carry `pilotVersion`** (ADR-150). `rating:build --prefixes` refuses a run from another pilot; add a book and every earlier run is stale for the rating. Archive, don't delete.
+- **The brief can be in `assets/temp/Cinquefoil Assets/`** rather than `docs/briefs/` — copy it in (S51).
+- **The editor's grid is small for fifteen cards**: `.draft-pack` enlarges the slots (150 px); reuse it for any pick-one-of-few screen.

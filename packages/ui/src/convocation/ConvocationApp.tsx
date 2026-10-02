@@ -4,6 +4,8 @@ import { BRACKET_ROUND_NAMES, type DifficultyName, type Standing } from "@shanda
 import { loadConvocationData, loadOracle, loadPool, loadWorldCatalog, type OracleEntry } from "../engine-bridge";
 import { DeckEditor } from "../components/DeckEditor";
 import { CardFrame } from "../components/CardFrame";
+import { FloatingCardInspector } from "../world/FloatingCardInspector";
+import { cardColors } from "@shandalar/cards";
 import { PlayMatch } from "../play/PlayMatch";
 import { ConvocationController } from "./convocation-controller";
 
@@ -52,26 +54,27 @@ function Page({ children, wide = false }: { children: React.ReactNode; wide?: bo
 function Door({ c }: { c: ConvocationController }) {
   const [seed, setSeed] = useState("");
   const [confirm, setConfirm] = useState(false);
-  const [size, setSize] = useState<"sixteen" | "eight">("sixteen");
+  const [size, setSize] = useState<"draft" | "sixteen" | "eight">("draft");
   const [difficulty, setDifficulty] = useState<DifficultyName>("standard");
   const ledger = c.ledger();
-  const start = () => c.newEvent(seed.trim() && Number.isFinite(Number(seed)) ? Number(seed) : undefined, size === "sixteen" ? { seats: 16, rounds: 5, top8: true, difficulty } : { seats: 8, rounds: 3, difficulty });
+  const start = () => c.newEvent(seed.trim() && Number.isFinite(Number(seed)) ? Number(seed) : undefined, size === "draft" ? { draft: true, seats: 8, rounds: 5, top8: true, difficulty } : size === "sixteen" ? { seats: 16, rounds: 5, top8: true, difficulty } : { seats: 8, rounds: 3, difficulty });
   return (
     <Page>
       <h2 style={{ fontFamily: "var(--serif)", margin: "0 0 4px" }}>The Convocation</h2>
-      <p style={{ margin: "0 0 10px" }}>{size === "sixteen" ? "A Convocation — Sealed, sixteen seats, five rounds, and the Umbel: a final table of eight." : "A Convocation — Sealed, eight seats, three rounds."}</p>
-      <p style={{ fontSize: 13, color: "var(--ink-soft)", margin: "0 0 12px" }}>Open six packs, build forty cards from them, and play rounds of best-of-three against the field.</p>
-      <div style={{ display: "flex", gap: 14, alignItems: "center", marginBottom: 14, fontSize: 13 }}>
-        <label className={size === "sixteen" ? "picked" : ""}><input type="radio" checked={size === "sixteen"} onChange={() => setSize("sixteen")} /> sixteen seats, five rounds, a Top 8</label>
-        <label className={size === "eight" ? "picked" : ""}><input type="radio" checked={size === "eight"} onChange={() => setSize("eight")} /> eight seats, three rounds</label>
-        <select value={difficulty} onChange={(e) => setDifficulty(e.target.value as DifficultyName)} title="the field's entrance: Easy is flat; Standard and Hard give the later rounds' opponents more life" style={{ marginLeft: "auto" }}>
+      <p style={{ margin: "0 0 10px" }}>{size === "draft" ? "A Convocation — Draft, eight seats: three packs, five rounds, the Umbel." : size === "sixteen" ? "A Convocation — Sealed, sixteen seats, five rounds, and the Umbel: a final table of eight." : "A Convocation — Sealed, eight seats, three rounds."}</p>
+      <p style={{ fontSize: 13, color: "var(--ink-soft)", margin: "0 0 12px" }}>{size === "draft" ? "Pick one card from each pack as it comes round, build forty cards from your picks, and play rounds of best-of-three against the pod." : "Open six packs, build forty cards from them, and play rounds of best-of-three against the field."}</p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 14, fontSize: 13 }}>
+        <label className={size === "draft" ? "picked" : ""}><input type="radio" checked={size === "draft"} onChange={() => setSize("draft")} /> Draft — eight seats, three packs, five rounds, the Umbel</label>
+        <label className={size === "sixteen" ? "picked" : ""}><input type="radio" checked={size === "sixteen"} onChange={() => setSize("sixteen")} /> Sealed — sixteen seats, five rounds, the Umbel</label>
+        <label className={size === "eight" ? "picked" : ""}><input type="radio" checked={size === "eight"} onChange={() => setSize("eight")} /> Sealed — eight seats, three rounds</label>
+        <select value={difficulty} onChange={(e) => setDifficulty(e.target.value as DifficultyName)} title="the field's entrance: Easy is flat; Standard and Hard give the later rounds' opponents more life" style={{ alignSelf: "flex-start", marginTop: 4 }}>
           <option value="easy">easy</option><option value="standard">standard</option><option value="hard">hard</option>
         </select>
       </div>
       {c.hasSave() && c.event!.phase !== "over" && !confirm && (
         <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 12 }}>
           <button className="primary" onClick={() => c.resume()}>Continue the event</button>
-          <span style={{ fontSize: 12, color: "var(--ink-soft)" }}>{c.event!.phase === "build" ? "your pool is open" : c.event!.phase === "bracket" ? "the Umbel" : `round ${c.event!.round} of ${c.event!.rounds}`}</span>
+          <span style={{ fontSize: 12, color: "var(--ink-soft)" }}>{c.event!.phase === "draft" ? `the draft — pick ${c.event!.draft!.pick}` : c.event!.phase === "build" ? "your pool is open" : c.event!.phase === "bracket" ? "the Umbel" : `round ${c.event!.round} of ${c.event!.rounds}`}</span>
         </div>
       )}
       {c.hasSave() && c.event!.phase === "over" && <div style={{ marginBottom: 12 }}><button onClick={() => c.resume()}>See the finish</button></div>}
@@ -97,6 +100,55 @@ function Door({ c }: { c: ConvocationController }) {
         </div>
       )}
     </Page>
+  );
+}
+
+/** S51: the draft — the pack in hand (click a card to take it; no take-backs), the picks so far by colour. */
+function Draft({ c, pool, oracle }: { c: ConvocationController; pool: Map<string, CardDef>; oracle: Record<string, OracleEntry> }) {
+  const [inspect, setInspect] = useState<string | null>(null);
+  const [printed, setPrinted] = useState(true);
+  const v = c.draftView();
+  if (!v) return null;
+  const group = (id: string) => { const d = pool.get(id)!; const cs = cardColors(d); return d.types.includes("Land") ? "Land" : cs.length === 0 ? "Colourless" : cs.length > 1 ? "Gold" : cs[0]!; };
+  const GROUPS = ["W", "U", "B", "R", "G", "Gold", "Colourless", "Land"];
+  const byGroup = new Map<string, string[]>(GROUPS.map((g) => [g, []]));
+  for (const id of v.picks) byGroup.get(group(id))!.push(id);
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+      <div className="convocation-banner" style={{ padding: "6px 12px", background: "var(--ink)", color: "var(--parchment)", fontSize: 13, display: "flex", gap: 14, alignItems: "center" }}>
+        <b style={{ fontFamily: "var(--serif)" }}>Pick {v.pick} of {v.total} — pack {v.packRound}.</b>
+        <span>{c.passNote ?? (v.pick === 1 ? "Take one card; the rest goes round the table." : (v.pick - 1) % (v.total / v.packs) === 0 ? `Pack ${v.packRound} is opened.` : "")}</span>
+        <span style={{ flex: 1 }} />
+        <span style={{ opacity: 0.8 }}>click a card to take it — no take-backs</span>
+        <button className="linkish" style={{ color: "var(--parchment)" }} onClick={() => setPrinted(!printed)}>{printed ? "our frame" : "printed card"}</button>
+        <button className="linkish" style={{ color: "var(--parchment)" }} onClick={() => c.toDoor()}>leave for now</button>
+      </div>
+      <FloatingCardInspector def={inspect ? pool.get(inspect) ?? null : null} oracle={oracle} printed={printed} onTogglePrinted={() => setPrinted(!printed)} />
+      <div className="gallery world-editor" style={{ flex: 1, minHeight: 0 }}>
+        <div className="editor-panes draft-panes">
+          <div className="editor-pane draft-pack">
+            <div className="flyout-title">The pack — {v.pack.length} card{v.pack.length === 1 ? "" : "s"}; it goes {v.direction} next</div>
+            <div className="editor-grid">
+              {v.pack.map((id, i) => (
+                <div key={`${id}-${i}`} className="editor-card" title={`take ${pool.get(id)!.name}`} onClick={() => { setInspect(null); c.pickCard(id); }} onMouseEnter={() => setInspect(id)}>
+                  <div className="editor-slot"><CardFrame def={pool.get(id)!} oracle={oracle[id]} showPrinted={printed} /></div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="editor-pane">
+            <div className="flyout-title">Your picks ({v.picks.length})</div>
+            {GROUPS.filter((g) => byGroup.get(g)!.length > 0).map((g) => (
+              <div key={g} style={{ marginBottom: 8, fontSize: 12.5 }}>
+                <div style={{ fontWeight: 700 }}>{PIP[g] ? <img src={`/icons/mana-${PIP[g]}.svg`} alt={g} style={{ width: 13, height: 13, verticalAlign: -2, marginRight: 4 }} /> : null}{PIP[g] ? "" : g} <span style={{ fontWeight: 400, color: "var(--ink-soft)" }}>{byGroup.get(g)!.length}</span></div>
+                {byGroup.get(g)!.map((id, i) => <div key={i} onMouseEnter={() => setInspect(id)} style={{ paddingLeft: 17, cursor: "default" }}>{pool.get(id)!.name}</div>)}
+              </div>
+            ))}
+            {v.picks.length === 0 && <div style={{ fontSize: 12, color: "var(--ink-soft)" }}>Nothing yet.</div>}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -253,14 +305,15 @@ export function ConvocationApp() {
 
   const k = c.screen.kind;
   if (k === "door" || !c.event) return <Door c={c} />;
+  if (k === "draft") return <Draft c={c} pool={pool} oracle={oracle} />;
   if (k === "build") {
     const host = c.editorHost();
     if (!host) return null;
     return (
       <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
         <div className="convocation-banner" style={{ padding: "6px 12px", background: "var(--ink)", color: "var(--parchment)", fontSize: 13, display: "flex", gap: 12, alignItems: "center" }}>
-          <b style={{ fontFamily: "var(--serif)" }}>{c.screen.sideboarding ? "Between games" : `A Convocation — Sealed, ${COUNT[c.event.field.length] ?? c.event.field.length} seats.`}</b>
-          <span>{c.screen.sideboarding ? "Change your deck from your pool; forty cards or more." : "Six packs are open. Build at least forty cards; basic lands are free."}</span>
+          <b style={{ fontFamily: "var(--serif)" }}>{c.screen.sideboarding ? "Between games" : c.isDraft() ? "Forty-five picks. Build from them." : `A Convocation — Sealed, ${COUNT[c.event.field.length] ?? c.event.field.length} seats.`}</b>
+          <span>{c.screen.sideboarding ? "Change your deck from your pool; forty cards or more." : c.isDraft() ? "Build at least forty cards from your picks; basic lands are free." : "Six packs are open. Build at least forty cards; basic lands are free."}</span>
           <span style={{ flex: 1 }} />
           {!c.screen.sideboarding && <button onClick={() => c.suggestDeck()} title="a deck built from this pool by the rating — a starting point you can change">Suggest a deck</button>}
           {!c.screen.sideboarding && <button className="linkish" style={{ color: "var(--parchment)" }} onClick={() => c.toDoor()}>leave for now</button>}

@@ -3,7 +3,7 @@
  * the card's rating plus two terms keyed on the seat's picks so far (never on a card's name):
  *  - COLOUR COMMITMENT: picks 1–3 by rating alone. From pick 4 a bonus to cards castable in the seat's two colours
  *    with the most rated picks so far (colourless cards too), growing by pick — at HALF its slope until the cut
- *    (+0.05 a pick: S50, a slower commitment), at the full +0.1 a pick from pick 8, to a cap. Until pick 8 the third
+ *    (S50, a slower commitment), at the full slope from pick 8 (S51: +0.07 a pick — 0.35 at the cut, was 0.50), to a cap. Until pick 8 the third
  *    colour draws half the bonus; at pick 8 it is cut.
  *  - LANDS (S50): a land is worth a flat low value until the cut (a dual is never a first pick over a playable —
  *    its rating is Constructed's); from pick 8 its rating when it taps inside the seat's colours, the flat value less
@@ -15,7 +15,7 @@ import { packColors, rollPack, resolveSet, type ConvocationPackData, type PackCo
 import { cardRating, type CardRatingTable } from "./rating.js";
 import { WorldRng } from "./rng.js";
 
-export const DRAFT_TERMS = { freePicks: 3, bonusPerPick: 0.1, earlySlope: 0.5, bonusCap: 1.2, cutAt: 8, thirdShare: 0.5, landFlat: 0.5, curveFrom: 20, twoDropsWanted: 5, curveBonus: 0.3 } as const;
+export const DRAFT_TERMS = { freePicks: 3, bonusPerPick: 0.07, /* S51: the bonus at the cut 0.50 → 0.35 */ earlySlope: 0.5, bonusCap: 1.2, cutAt: 8, thirdShare: 0.5, landFlat: 0.5, curveFrom: 20, twoDropsWanted: 5, curveBonus: 0.3 } as const;
 const COLORS: readonly PackColor[] = ["W", "U", "B", "R", "G"];
 
 /** The seat's colours by the summed rating of its picks (a gold card counts to each of its colours), best first. */

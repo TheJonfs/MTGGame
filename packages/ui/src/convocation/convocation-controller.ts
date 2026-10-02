@@ -8,7 +8,7 @@
 import type { CardDef } from "@shandalar/cards";
 import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
 import {
-  CONVOCATION_NAMES, DIFFICULTIES, EVENT_SAVE_KEY, LEDGER_KEY, MatchSeries, SEALED_PLANE, addCopy, advanceBracket, advanceEvent, bracketRound, bracketRoundComplete, buildLimitedDeck, checkEventDeck, closeRound, deserializeEvent, finalPlaces, playBracketFieldRound, recordBracketSeries, resolveKnobs, seatForGame,
+  CONVOCATION_NAMES, DIFFICULTIES, DRAFT_PLANE, draftDirection, draftPack, draftStep, draftTotalPicks, newDraftEvent, suggestedPick, EVENT_SAVE_KEY, LEDGER_KEY, MatchSeries, SEALED_PLANE, addCopy, advanceBracket, advanceEvent, bracketRound, bracketRoundComplete, buildLimitedDeck, checkEventDeck, closeRound, deserializeEvent, finalPlaces, playBracketFieldRound, recordBracketSeries, resolveKnobs, seatForGame,
   ledgerEntry, lifeModifiers, newSealedEvent, pairingOf, playFieldRound, poolCollection, recordSeries, registerDeck, removeCopy, resultOf, roundComplete, saveCurrentSeries,
   serializeEvent, seriesSeed, seriesSetup, standings, type CardRatingTable, type Catalog, type ConvocationEvent, type ConvocationLedgerEntry, type ConvocationPackData,
   type Decklist, type DifficultyName, type KnobValues, type SeatAgents, type Standing,
@@ -18,6 +18,7 @@ import type { DeckEditorHost } from "../components/deck-editor-host.js";
 
 export type ConvocationScreen =
   | { kind: "door" }
+  | { kind: "draft" }
   | { kind: "build"; sideboarding: boolean }
   | { kind: "pairings" }
   | { kind: "playDraw" }
@@ -70,8 +71,14 @@ export class ConvocationController {
   // ---------- the door ----------
 
   /** S49: the event's size — sixteen seats, five rounds and a Top 8 by default; the S48 event of eight stays offered. */
-  newEvent(seed: number = Math.floor(Math.random() * 1_000_000), opts: { seats?: number; rounds?: number; top8?: boolean; difficulty?: DifficultyName } = {}): void {
-    const faces = this.catalog.opponents.map((o) => ({ portrait: o.portrait, colors: o.colorsPhaseTwo ?? o.colors }));
+  newEvent(seed: number = Math.floor(Math.random() * 1_000_000), opts: { seats?: number; rounds?: number; top8?: boolean; difficulty?: DifficultyName; draft?: boolean } = {}): void {
+    const faces = this.faces();
+    if (opts.draft) { // S51: a pod of eight drafts three packs; then the build, the rounds and the Umbel as before
+      this.set(newDraftEvent({ seed, format: DRAFT_PLANE, names: CONVOCATION_NAMES, faces, seats: opts.seats ?? 8, rounds: opts.rounds ?? 5, top8: opts.top8 ?? true, difficulty: opts.difficulty ?? "standard" }, this.deps()));
+      this.series = null; this.match = null; this.passNote = null;
+      this.screen = { kind: "draft" }; this.emit();
+      return;
+    }
     this.set(newSealedEvent({ seed, format: SEALED_PLANE, names: CONVOCATION_NAMES, faces, seats: opts.seats ?? 8, rounds: opts.rounds ?? 3, ...(opts.top8 ? { top8: true } : {}), difficulty: opts.difficulty ?? "standard" }, { cards: this.pool, packs: this.packs, rating: this.rating }));
     this.series = null; this.match = null;
     this.openBuild(false);
@@ -80,6 +87,7 @@ export class ConvocationController {
   resume(): void {
     const e = this.event; if (!e) return;
     this.series = null; this.match = null;
+    if (e.phase === "draft") { this.passNote = null; this.screen = { kind: "draft" }; return this.emit(); }
     if (e.phase === "build") return this.openBuild(false);
     if (e.phase === "standings") { this.screen = { kind: "standings" }; return this.emit(); }
     if (e.phase === "over") { this.screen = { kind: "prize" }; return this.emit(); }
@@ -91,6 +99,31 @@ export class ConvocationController {
   }
   abandon(): void { this.event = null; this.series = null; this.match = null; this.storage?.removeItem(EVENT_SAVE_KEY); this.screen = { kind: "door" }; this.emit(); }
   toDoor(): void { this.screen = { kind: "door" }; this.emit(); }
+
+  // ---------- S51: the draft ----------
+
+  private faces() { return this.catalog.opponents.map((o) => ({ portrait: o.portrait, colors: o.colorsPhaseTwo ?? o.colors })); }
+  private deps() { return { cards: this.pool, packs: this.packs, rating: this.rating }; }
+  /** "The pack goes left." — the last pass, for the screen's line. */
+  passNote: string | null = null;
+  isDraft(): boolean { return this.event?.formatId === DRAFT_PLANE.id; }
+  /** What the draft screen shows: the pack in hand, the picks so far, pick N of the total, the pack round. */
+  draftView(): { pack: string[]; picks: string[]; pick: number; total: number; packRound: number; packs: number; direction: "left" | "right" } | null {
+    const e = this.event; if (!e || e.phase !== "draft" || !e.draft) return null;
+    return { pack: draftPack(e), picks: e.draft.picks[0]!, pick: e.draft.pick, total: draftTotalPicks(e, this.deps()), packRound: e.draft.round + 1, packs: DRAFT_PLANE.packs, direction: draftDirection(e) };
+  }
+  /** Take a card from the pack (no take-backs); the pod picks and the packs pass. The last pick opens the build. */
+  pickCard(cardId: string): void {
+    const e = this.event; if (!e || e.phase !== "draft" || this.screen.kind !== "draft" || !draftPack(e).includes(cardId)) return;
+    const dir = draftDirection(e), lastOfPack = draftPack(e).length === 1;
+    const next = draftStep(e, cardId, this.deps(), this.faces());
+    this.set(next);
+    this.passNote = lastOfPack ? null : `The pack goes ${dir}.`;
+    if (next.phase === "build") return this.openBuild(false);
+    this.emit();
+  }
+  /** The pick rule's own choice for the human's seat (the dev walk; never shown as advice). */
+  suggestedPick(): string | null { const e = this.event; return e && e.phase === "draft" ? suggestedPick(e, this.deps()) : null; }
 
   // ---------- the pool and the build (the editor's source) ----------
 
@@ -106,11 +139,12 @@ export class ConvocationController {
   editorHost(): DeckEditorHost | null {
     const e = this.event; if (!e || this.screen.kind !== "build") return null;
     const me = e.field[0]!, collection = poolCollection(me.pool), sideboarding = this.screen.sideboarding;
+    const formatName = this.isDraft() ? DRAFT_PLANE.name : SEALED_PLANE.name;
     const edit = (r: ReturnType<typeof addCopy>) => { if (r.ok) { this.draft = r.deck; this.notice = null; } else this.notice = r.reason; this.emit(); };
     const host: DeckEditorHost = {
-      title: sideboarding ? "Sideboard — your pool" : "Your pool — build forty",
-      draft: this.draft, name: SEALED_PLANE.name, notice: this.notice,
-      source: { collection, savedDeck: me.deck, activeDeckName: SEALED_PLANE.name },
+      title: sideboarding ? "Sideboard — your pool" : this.isDraft() ? "Your picks — build forty" : "Your pool — build forty",
+      draft: this.draft, name: formatName, notice: this.notice,
+      source: { collection, savedDeck: me.deck, activeDeckName: formatName },
       legality: () => this.editorLegality(),
       add: (id: string) => edit(addCopy(collection, this.draft, id, Infinity)),
       remove: (id: string) => edit(removeCopy(this.draft, id)),

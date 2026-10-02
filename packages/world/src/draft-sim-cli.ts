@@ -18,6 +18,7 @@ import { PACK_TIERS, packTier, resolveSet, type ConvocationPackData } from "./pa
 import { buildLimitedDeck } from "./limited-builder.js";
 import { cardRating, type CardRatingTable } from "./rating.js";
 import { runDraft } from "./drafter.js";
+import { rollSealedPool } from "./packs.js";
 
 const arg = (k: string, d: string) => { const i = process.argv.indexOf(`--${k}`); return i >= 0 ? process.argv[i + 1]! : d; };
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
@@ -42,6 +43,9 @@ if (process.argv.includes("--pick-order")) {
   const colourSeats: Record<string, number> = {}, pairSeats: Record<string, number> = {}, perPodMax: number[] = [], spread: number[] = [], sd: number[] = [], settled: number[] = [], blackPerPod: number[] = [], ratings: number[] = [], rates: number[] = [];
   const colourWins: Record<string, number[]> = {};
   let games = 0, splash = 0;
+  // S51 (Part 2): the field's pick quality — each drafted deck against Sealed decks from pools at the same seed
+  // (six packs a seat, the builder on each): a draft concentrates colours, so the drafter should build the better deck.
+  const VS = process.argv.includes("--vs-sealed"); let vsN = 0, vsW = 0; const sealedRatings: number[] = [];
   for (let p = 0; p < PODS; p++) {
     const d = runDraft(set, recipe, data, cards, rating, seed0 * 1000 + p);
     const builds = d.picks.map((x) => buildLimitedDeck(x, rating, cards));
@@ -54,6 +58,17 @@ if (process.argv.includes("--pick-order")) {
       const r = await runMatch(spec, cards, [new HeuristicAgent(seed * 2 + 1, cards, difficultyProfile("master", "midrange", d1)), new HeuristicAgent(seed * 2 + 2, cards, difficultyProfile("master", "midrange", d0))]);
       const a = r.winner === null ? 0.5 : r.winner === seatA ? 1 : 0;
       w[i]! += a; w[j]! += 1 - a; n[i]! += 1; n[j]! += 1; games += 1;
+    }
+    if (VS) {
+      const sealed = Array.from({ length: 8 }, (_, s) => buildLimitedDeck(rollSealedPool(set, recipe, cards, data.power, (seed0 * 1000 + p) * 31 + s).flat(), rating, cards));
+      for (const b of sealed) sealedRatings.push(b.rating);
+      for (let i = 0; i < 8; i++) for (let k = 0; k < 4; k++) for (let g = 0; g < 2; g++) {
+        const j = (i + k) % 8, seatA = g % 2, seed = seed0 + p * 100003 + i * 2003 + k * 59 + g + 7;
+        const [d0, d1] = seatA === 0 ? [builds[i]!.deck, sealed[j]!.deck] : [sealed[j]!.deck, builds[i]!.deck];
+        const spec = { seed, players: [{ name: "a", decklist: d0, agent: "h" }, { name: "b", decklist: d1, agent: "h" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 }, modifiers: [] } as unknown as MatchSpec;
+        const r = await runMatch(spec, cards, [new HeuristicAgent(seed * 2 + 1, cards, difficultyProfile("master", "midrange", d1)), new HeuristicAgent(seed * 2 + 2, cards, difficultyProfile("master", "midrange", d0))]);
+        vsN += 1; vsW += r.winner === null ? 0.5 : r.winner === seatA ? 1 : 0;
+      }
     }
     const wr = w.map((x, i) => x / n[i]!);
     const counts: Record<string, number> = {};
@@ -70,6 +85,7 @@ if (process.argv.includes("--pick-order")) {
     `A seat's two colours last change at pick ${mean(settled).toFixed(1)} on average (of 45); ${pct(settled.filter((x) => x <= 8).length / settled.length)} of seats are settled by the cut at pick 8; ${pct(settled.filter((x) => x > 15).length / settled.length)} change after the first pack. Splashing decks: ${splash} of ${seats}.`,
     `\n## The pod's spread\n\nBest seat minus worst seat, win rate: mean ${pct(mean(spread))} (a pod's seven-opponent round-robin). Standard deviation of a seat's win rate within its pod: ${(mean(sd) * 100).toFixed(1)} points. A drafted deck's mean card rating: ${mean(ratings).toFixed(2)}.`,
   ];
+  if (VS) L.push(`\n## Drafted decks against Sealed decks (the same seeds; ${vsN} games)\n\nThe drafted decks win **${pct(vsW / vsN)}**. Mean card rating: drafted ${mean(ratings).toFixed(2)}, Sealed ${mean(sealedRatings).toFixed(2)}.`);
   const text = L.join("\n"); console.log(text);
   mkdirSync(join(ROOT, "analysis/runs"), { recursive: true }); writeFileSync(join(ROOT, "analysis/runs/draft_sim.md"), text + "\n");
 }

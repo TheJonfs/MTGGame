@@ -46,6 +46,9 @@ const builds: { pool: string[]; build: LimitedBuild; noisy: boolean }[] = Array.
   return { pool, build: buildLimitedDeck(pool, rating, cards, { noise: () => NOISE * gauss(rng) }), noisy: true };
 });
 const key = (i: number) => `pool:${i}`;
+/** S51 (ADR-150): the pilot's version — the highest book of shame at the time of the run. A rating pools only runs
+ * played on the current pilot. */
+export const pilotVersion = (): number => Math.max(0, ...[...readFileSync(join(ROOT, "packages/agents/src/book-of-shame.test.ts"), "utf8").matchAll(/book of shame (\d+)/g)].map((m) => Number(m[1])));
 
 class Tracker implements Agent {
   seen = new Set<string>(); used = new Set<string>();
@@ -78,7 +81,7 @@ async function run(): Promise<void> {
   }
   const out = arg("out", join(ROOT, `analysis/runs/sealed_shard${si}.json`));
   mkdirSync(dirname(out), { recursive: true });
-  writeFileSync(out, JSON.stringify({ pools: N, games: G, opponents: OPP, seed: seed0, set: set.id, recipe: recipe.id, rating: ratingFile, shard: `${si}/${sn}`, results: games }));
+  writeFileSync(out, JSON.stringify({ pools: N, games: G, opponents: OPP, seed: seed0, set: set.id, recipe: recipe.id, rating: ratingFile, noise: NOISE, pilotVersion: pilotVersion(), shard: `${si}/${sn}`, results: games }));
 }
 
 // ---------- S49 Part 1: the forced-pair experiment ----------

@@ -60,6 +60,19 @@ export const SEALED_PLANE: LimitedFormat = {
   rule: { label: "Sealed", minCards: 40, poolIsCap: true },
 };
 
+/** S51: a draft from the Plane — three Classic packs a seat, forty cards from the picks and any basics. */
+export const DRAFT_PLANE: LimitedFormat = {
+  id: "draft-plane",
+  name: "Draft — the Plane",
+  kind: "limited",
+  shape: "draft",
+  set: "plane",
+  recipe: "classic",
+  packs: 3,
+  note: "three Classic packs from the Plane, picked and passed; forty cards from the picks and any basics",
+  rule: { label: "Draft", minCards: 40, poolIsCap: true },
+};
+
 /** The Constructed formats (the editor's doors read these). */
 export const FORMATS: readonly ConstructedFormat[] = [OPEN_FORMAT];
-export const LIMITED_FORMATS: readonly LimitedFormat[] = [SEALED_PLANE];
+export const LIMITED_FORMATS: readonly LimitedFormat[] = [SEALED_PLANE, DRAFT_PLANE];

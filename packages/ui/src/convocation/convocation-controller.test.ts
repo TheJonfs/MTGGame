@@ -226,4 +226,45 @@ describe("the Convocation controller (S48)", () => {
     const owned: Record<string, number> = {}; for (const id of opp.pool) owned[id] = (owned[id] ?? 0) + 1;
     for (const e of g2) if (!["plains", "island", "swamp", "mountain", "forest"].includes(e.cardId)) expect(owned[e.cardId] ?? 0).toBeGreaterThanOrEqual(e.count);
   }, 60_000);
+
+  it("S51 — the draft: a pod of eight, the pack in hand, a pick by click (no take-backs, nothing outside the pack), the pass, a reload mid-draft, forty-five picks into the build; then the event as before", async () => {
+    const { s, c } = make();
+    c.newEvent(51, { draft: true });
+    expect(c.screen.kind).toBe("draft");
+    expect(c.isDraft()).toBe(true);
+    let v = c.draftView()!;
+    expect([v.pick, v.total, v.packRound, v.packs, v.direction, v.pack.length, v.picks.length]).toEqual([1, 45, 1, 3, "left", 15, 0]);
+    c.pickCard("black_lotus"); // not in the pack: nothing happens
+    expect(c.draftView()!.pick).toBe(1);
+    const first = v.pack[0]!;
+    c.pickCard(first);
+    v = c.draftView()!;
+    expect([v.pick, v.pack.length, v.picks]).toEqual([2, 14, [first]]);
+    expect(c.passNote).toBe("The pack goes left.");
+    expect(c.editorHost()).toBeNull(); // no build before the draft is done
+    for (let i = 0; i < 16; i++) c.pickCard(c.suggestedPick()!);
+    expect(c.draftView()!.packRound).toBe(2);
+    expect(c.draftView()!.direction).toBe("right");
+    // a reload mid-draft
+    const again = new ConvocationController(pool, packs, rating, catalog, s, () => "2026-10-04T00:00:00Z");
+    again.resume();
+    expect(again.screen.kind).toBe("draft");
+    expect(again.draftView()!.pick).toBe(18);
+    expect(again.draftView()!.picks).toEqual(c.draftView()!.picks);
+    while (again.screen.kind === "draft") again.pickCard(again.suggestedPick()!);
+    expect(again.screen).toEqual({ kind: "build", sideboarding: false });
+    expect(again.event!.phase).toBe("build");
+    expect(again.event!.draft).toBeUndefined();
+    expect(again.event!.field[0]!.pool).toHaveLength(45);
+    expect(again.editorHost()!.title).toBe("Your picks — build forty");
+    expect(Object.values(again.editorHost()!.source.collection).reduce((a, b) => a + b, 0)).toBe(45);
+    for (const seat of again.event!.field.slice(1)) expect(size(seat.deck)).toBe(40);
+    again.suggestDeck(); again.register();
+    expect(again.screen.kind).toBe("pairings");
+    expect(again.event!.pairings).toHaveLength(4);
+    await series(again, true);
+    expect(again.screen.kind).toBe("standings");
+    expect(again.event!.top8).toBe(true);
+    expect(s.getItem(EVENT_SAVE_KEY)).toContain("draft-plane");
+  }, 120_000);
 });
