@@ -86,6 +86,20 @@ The term does not reach 50% and does not thin black's crowd, so its weights are 
 - A deck's mean rating explains more than its crowding (r = 0.32 against −0.10), and crowding lowers the rating (r = −0.18) — the mechanism is fewer good cards each.
 - The read for the pick rule: the fault is not that seats fail to *read* the table but that the rating tells every seat black is best while black's decks are the pod's worst. A correction to black's rating would do what the pack-reading term could not.
 
+### Chris's Draft and Open playtest (2026-10-05) — "it was great"; his first match losses (one in the Swiss, one in the quarter-final)
+
+- **Three Essence Scatters at one creature spell** — the AI saw its own first counter on the stack and countered the same spell again, twice. **Book 94**: a counter is aimed only at a stack item that is still going to resolve; an item is answered when a live counter of the other side targets it, read down the stack from the top — so when the opponent counters our counter, the spell is live again and either is a target.
+- **A Bonesplitter passed back and forth** — book 86's rule was only a lower score ("unchanged", a quarter-point under passing), and under the softmax a quarter-point is still picked about one window in ten. **Book 93**: an equip the predictor calls unchanged is refused outright. A 200-game probe: equipment moves 154 → 16, all of them off a creature that cannot attack onto one that can.
+- **The life buffs are suppressed** (Chris: wait until a full tournament has been played). `convocationEntrance` and `convocationBracketEntrance` are flat at every difficulty; the wiring and its tests stay; ADR-148's rows are kept as `CONVOCATION_ENTRANCE_ADR148`.
+- Ladder mirror gate PASS after books 93–94.
+
+### Black's rating — a colour term, measured and not adopted
+
+- `rating:build --colour` (in `rating-compute.ts`, with a test): a colour's rate is the mean (result − ½) of its mono-coloured cards' Sealed sightings, added as ½ × rate/σP; gold cards take the mean of their colours. Built from fresh Sealed runs on pilot 94 (40,000 games): **W +3.3 · U +2.8 · B +0.1 · G +0.6 · R −3.3 points** — in Sealed, black is level.
+- The term moves each card about ±0.26, and the builder's pair choice is a threshold, so it swings decks hard: **red in Sealed decks 27% → 2%**, white 45% → 65%, black 56% → 54%; the median deck's win rate is flat (51% → 50%).
+- The draft A/B (100 pods): black's seats 47% → 44% of seats, and black still wins 47%; red falls to 23% of seats; the crowding of the most-drafted colour gets worse (six or more seats: 49 → 105). Drafted decks win 65% against three-pack Sealed either way.
+- The read: black's problem is not its cards' rating (in Sealed it is level) but the crowd in a pod. The candidates `card-rating-v12base.json` / `card-rating-v12.json` and their reports are left uncommitted in `data/convocation/`; `card-rating.json` is still v1.1. *Rule on*: whether to keep the colour term at all, and whether the drafter's crowding signal is the next experiment.
+
 ## Deviations from the brief
 1. **The pack-reading term ships switched off.** Built to the ruling (the whole pack remembered, each time); it lowered the field's quality in every variant tried, and the process rule says such a change reverts. The code and the tuning hook remain. *Rule on*: whether to keep trying it, and against which measure (Deviation 2).
 2. **The 50% target is measured against six-pack Sealed decks**, which a three-pack draft deck should not be expected to beat; against three-pack Sealed decks the drafter is at 66%. I report both and changed neither the target nor the entrance.

@@ -56,4 +56,25 @@ describe("the rating pipeline (ADR-151)", () => {
     // an authored-only build (v0) carries no Sealed columns
     expect(computeRating({ authored, lists, sealedRuns: null, rated }).cards.gamma).not.toHaveProperty("sealedSeen");
   });
+
+  it("v1.2 — the colour term: a colour whose decks lose in Sealed pulls its cards down, one whose decks win lifts them; gold takes the mean; without the flag nothing moves", () => {
+    const col = (id: string, cost: string): CardDef => ({ id, name: id, source: "custom", manaCost: cost, types: ["Creature"], power: 1, toughness: 1, shopTier: 1, art: { fallback: "rendered" } }) as unknown as CardDef;
+    const pool = [col("black_card", "{B}"), col("white_card", "{W}"), col("gold_card", "{W}{B}"), col("myr", "{2}")];
+    // the black deck (pool:0) loses 7 of 10 to the white deck (pool:1); each card is in hand every game
+    const run = [...times(3, g("pool:0", "pool:1", "a", ["black_card", "gold_card", "myr"], ["white_card"])), ...times(7, g("pool:0", "pool:1", "b", ["black_card", "gold_card", "myr"], ["white_card"]))];
+    const plain = computeRating({ authored: [], lists: [], sealedRuns: [run], rated: pool });
+    const withC = computeRating({ authored: [], lists: [], sealedRuns: [run], rated: pool, colourTerm: true });
+    expect(plain.colourRates).toBeNull();
+    expect(withC.colourRates).toEqual({ B: -0.2, W: 0.2 });
+    expect(withC.cards.black_card!.colour).toBe(-0.2);
+    expect(withC.cards.white_card!.colour).toBe(0.2);
+    expect(withC.cards.gold_card!.colour).toBe(0); // the mean of its colours
+    expect(withC.cards.myr!.colour).toBe(0); // colourless: none
+    expect(withC.cards.black_card!.rating).toBeLessThan(plain.cards.black_card!.rating);
+    expect(withC.cards.white_card!.rating).toBeGreaterThan(plain.cards.white_card!.rating);
+    expect(withC.cards.myr!.rating).toBe(plain.cards.myr!.rating);
+    expect(plain.cards.black_card).not.toHaveProperty("colour");
+    // every card's lift is still zero here (in hand every game): the colour term is the only thing that moved
+    expect(withC.cards.black_card!.sealedLift).toBe(0);
+  });
 });

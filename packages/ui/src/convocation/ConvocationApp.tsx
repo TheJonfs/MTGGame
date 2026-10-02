@@ -68,7 +68,7 @@ function Door({ c }: { c: ConvocationController }) {
         <label className={size === "sixteen" ? "picked" : ""}><input type="radio" checked={size === "sixteen"} onChange={() => setSize("sixteen")} /> Sealed — thirty-two seats, five rounds, the Umbel</label>
         <label className={size === "eight" ? "picked" : ""}><input type="radio" checked={size === "eight"} onChange={() => setSize("eight")} /> Sealed — eight seats, three rounds</label>
         <label className={size === "open" ? "picked" : ""}><input type="radio" checked={size === "open"} onChange={() => setSize("open")} /> The Open (Constructed) — thirty-two seats, five rounds, the Umbel</label>
-        <select value={difficulty} onChange={(e) => setDifficulty(e.target.value as DifficultyName)} title="the field's entrance: Easy is flat; Standard and Hard give the later rounds' opponents more life" style={{ alignSelf: "flex-start", marginTop: 4 }}>
+        <select value={difficulty} onChange={(e) => setDifficulty(e.target.value as DifficultyName)} title="the field's entrance by round — flat at every difficulty for now" style={{ alignSelf: "flex-start", marginTop: 4 }}>
           <option value="easy">easy</option><option value="standard">standard</option><option value="hard">hard</option>
         </select>
       </div>

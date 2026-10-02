@@ -146,14 +146,14 @@ export const KNOBS = {
   }),
   // ---- S48 (ADR-145): the Convocation's ladder — an AI seat's entrance against the human, by round ----
   convocationEntrance: knob<Record<number, { life: number; basics: number }>>({
-    default: { 1: { life: 0, basics: 0 }, 2: { life: 2, basics: 0 }, 3: { life: 4, basics: 0 }, 4: { life: 4, basics: 0 }, 5: { life: 6, basics: 0 } }, // S49/S50 (ADR-148, ⚠ provisional): Sealed's entrance is life only; five rows
+    default: { 1: { life: 0, basics: 0 } }, // post-S52 (Chris): FLAT — the life buffs are suppressed until a full tournament has been played; ADR-148's rows are kept in CONVOCATION_ENTRANCE_ADR148
     unit: "by round (from 1): life added to 20, and basics of the seat's colours in play before turn one",
-    description: "S48 (ADR-145; the plan's stage 1): the Convocation's ladder — what an AI seat brings against the HUMAN in round N (AI against AI is always flat; the human seat never gets an entrance). Read through `convocationSeat`. S49 (ADR-148, ⚠ provisional — read by Chris's next event): a Sealed event's entrance is LIFE ONLY (a basic in play distorts a forty-card game) — Standard +0 / +2 / +4 / +4 / +6 by round (S50: five rows); Easy flat; Hard +2 / +4 / +6 / +6 / +8 (the implementer's rows four and five). A round past the table reads its last row.",
+    description: "S48 (ADR-145): the Convocation's ladder — what an AI seat brings against the HUMAN in round N (AI against AI is always flat; the human seat never gets an entrance). Read through `convocationSeat`; a round past the table reads its last row. Post-S52 (Chris, after losing a Swiss match and a quarter-final in his first draft): FLAT at every difficulty for now — the wiring stays, and ADR-148's provisional rows (Standard +0 / +2 / +4 / +4 / +6; Hard +2 / +4 / +6 / +6 / +8) are kept as `CONVOCATION_ENTRANCE_ADR148` to bring back or tune.",
   }),
   convocationBracketEntrance: knob<Record<number, { life: number; basics: number }>>({
-    default: { 1: { life: 4, basics: 0 }, 2: { life: 6, basics: 0 }, 3: { life: 8, basics: 0 } },
+    default: { 1: { life: 0, basics: 0 } }, // post-S52 (Chris): flat, as above
     unit: "by bracket round (1 quarter-final, 2 semi-final, 3 final): life added to 20, and basics in play",
-    description: "S49 (⚠ provisional): the Top 8's ladder — what an AI seat brings against the HUMAN in the quarter-final, the semi-final and the final. Standard +4 / +6 / +8 life; Easy flat; Hard +6 / +8 / +10 (the implementer's: the brief names Standard only). Read through `convocationSeat`.",
+    description: "S49: the Top 8's ladder — what an AI seat brings against the HUMAN in the quarter-final, the semi-final and the final. Post-S52 (Chris): FLAT for now; ADR-148's provisional rows (Standard +4 / +6 / +8; Hard +6 / +8 / +10) are kept in `CONVOCATION_ENTRANCE_ADR148`. Read through `convocationSeat`.",
   }),
   heartLawsPersist: knob<boolean>({
     default: false,
@@ -618,6 +618,12 @@ export type KnobValues = { [K in KnobKey]: (typeof KNOBS)[K]["default"] };
 /** One source of overrides (a difficulty bundle, a region, an opponent…). */
 export type KnobSource = Partial<KnobValues>;
 
+/** ADR-148's provisional entrance rows, kept for when the life buffs return (post-S52: the live knobs are flat). */
+export const CONVOCATION_ENTRANCE_ADR148 = {
+  standard: { rounds: { 1: { life: 0, basics: 0 }, 2: { life: 2, basics: 0 }, 3: { life: 4, basics: 0 }, 4: { life: 4, basics: 0 }, 5: { life: 6, basics: 0 } }, bracket: { 1: { life: 4, basics: 0 }, 2: { life: 6, basics: 0 }, 3: { life: 8, basics: 0 } } },
+  hard: { rounds: { 1: { life: 2, basics: 0 }, 2: { life: 4, basics: 0 }, 3: { life: 6, basics: 0 }, 4: { life: 6, basics: 0 }, 5: { life: 8, basics: 0 } }, bracket: { 1: { life: 6, basics: 0 }, 2: { life: 8, basics: 0 }, 3: { life: 10, basics: 0 } } },
+} as const;
+
 /** Merge precedence, lowest to highest (manifest principle 5). */
 export const KNOB_LAYERS = ["difficulty", "region", "dungeon", "opponent", "event"] as const;
 export type KnobLayer = (typeof KNOB_LAYERS)[number];
@@ -673,8 +679,6 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
     heartLife: 35, // S29 Part 0 (Chris: 40 standard, from the S28 sim + his 5–1 at 40)
     mageTierLife: { 1: 8, 2: 12, 3: 14 }, // S34 (ADR-117): one cell easier on the entrance axis first, life second
     mageTierEntrance: { 1: 0, 2: 0, 3: 1 },
-    convocationEntrance: { 1: { life: 0, basics: 0 } }, // S49 (ADR-148): Easy is flat
-    convocationBracketEntrance: { 1: { life: 0, basics: 0 } },
     beastTierLifeDelta: { 1: 0, 2: 0, 3: 2 },
     // S38 (⚠ unratified): phase two's easy column mirrors the phase-one offsets (tier 3 −2 life; tiers 2/3 one basic fewer; beasts −2 at tiers 2/3).
     phaseTierTables: { 2: { mageTierLife: { 1: 12, 2: 16, 3: 18 }, mageTierEntrance: { 1: 1, 2: 1, 3: 2 }, beastTierLifeDelta: { 1: 4, 2: 6, 3: 10 } } },
@@ -703,8 +707,6 @@ export const DIFFICULTIES: Record<DifficultyName, KnobSource> = {
     heartLife: 45, // S27 (ADR-093)
     mageTierLife: { 1: 8, 2: 14, 3: 20 }, // S34 (ADR-117): one cell harder
     mageTierEntrance: { 1: 0, 2: 2, 3: 2 },
-    convocationEntrance: { 1: { life: 2, basics: 0 }, 2: { life: 4, basics: 0 }, 3: { life: 6, basics: 0 }, 4: { life: 6, basics: 0 }, 5: { life: 8, basics: 0 } }, // S49/S50 (ADR-148)
-    convocationBracketEntrance: { 1: { life: 6, basics: 0 }, 2: { life: 8, basics: 0 }, 3: { life: 10, basics: 0 } },
     beastTierLifeDelta: { 1: 0, 2: 4, 3: 8 },
     // S38 (⚠ unratified): phase two's hard column mirrors the phase-one offsets (tiers 2/3 +2/+4 life; tier 2 one basic more; beasts +2/+4 at tiers 2/3).
     phaseTierTables: { 2: { mageTierLife: { 1: 12, 2: 18, 3: 24 }, mageTierEntrance: { 1: 1, 2: 3, 3: 3 }, beastTierLifeDelta: { 1: 4, 2: 10, 3: 16 } } },

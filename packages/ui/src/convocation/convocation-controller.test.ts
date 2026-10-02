@@ -162,7 +162,7 @@ describe("the Convocation controller (S48)", () => {
       expect(c.event!.results.filter((r) => r.round === round)).toHaveLength(8);
       c.next();
     }
-    expect(lives).toEqual([20, 22, 24, 24, 26]); // ADR-148 (S50's five rows): +0 / +2 / +4 / +4 / +6
+    expect(lives).toEqual([20, 20, 20, 20, 20]); // post-S52 (Chris): the life buffs are suppressed — flat
     expect(c.screen.kind).toBe("bracket");
     expect(c.event!.bracket!.seeds[0]).toBe(0); // 5–0: the first seed
     expect(c.ledger()).toHaveLength(0);
@@ -176,7 +176,7 @@ describe("the Convocation controller (S48)", () => {
       await series(c, true);
       expect(c.screen.kind).toBe("bracket");
     }
-    expect(bracketLives).toEqual([24, 26, 28]);
+    expect(bracketLives).toEqual([20, 20, 20]);
     expect(c.event!.phase).toBe("over");
     expect(c.event!.bracket!.rounds.map((r) => r.length)).toEqual([4, 2, 1]);
     expect(c.places()[0]!.seat).toBe(0);

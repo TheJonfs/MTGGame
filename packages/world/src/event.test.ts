@@ -149,16 +149,17 @@ describe("a Sealed Convocation of eight (S48 Part 3)", () => {
     expect(deserializeEvent(JSON.stringify({ format: "convocation-event-v1", event: { version: 2, field: [] } }))).toBeNull();
   }, 240_000);
 
-  it("the ladder (ADR-148): Sealed's entrance is life only — Standard +0 / +2 / +4 / +4 / +6 by round, Easy flat, Hard +2 / +4 / +6; it reaches the AI seat against the human only", () => {
+  it("the ladder: FLAT as shipped (post-S52, Chris — the life buffs are suppressed), the wiring intact — ADR-148's rows, handed in, give +0 / +2 / +4 / +4 / +6 by round; it reaches the AI seat against the human only", async () => {
+    const { CONVOCATION_ENTRANCE_ADR148 } = await import("./knobs.js");
     const e = register(fresh(48)), mine = pairingOf(e, 0)!;
-    expect(seriesSetup(e, mine.a, mine.b!, knobs)).toEqual({ life: [20, 20], modifiers: [] }); // round one: flat
-    const at = (round: number, k = knobs) => seriesSetup({ ...e, round }, mine.a, mine.b!, k);
+    expect(seriesSetup(e, mine.a, mine.b!, knobs)).toEqual({ life: [20, 20], modifiers: [] });
+    for (const k of [knobs, resolveKnobs({ difficulty: DIFFICULTIES.easy }), resolveKnobs({ difficulty: DIFFICULTIES.hard })]) for (const round of [1, 2, 3, 5, 9]) expect(seriesSetup({ ...e, round }, mine.a, mine.b!, k).life).toEqual([20, 20]); // flat at every difficulty
+    const adr = { convocationEntrance: CONVOCATION_ENTRANCE_ADR148.standard.rounds }, adrHard = { convocationEntrance: CONVOCATION_ENTRANCE_ADR148.hard.rounds };
+    const at = (round: number, k: Parameters<typeof seriesSetup>[3] = adr) => seriesSetup({ ...e, round }, mine.a, mine.b!, k);
     expect([at(2).life, at(3).life, at(4).life, at(5).life, at(7).life]).toEqual([[20, 22], [20, 24], [20, 24], [20, 26], [20, 26]]); // S50: five rows; past the table, its last
     expect(at(3).modifiers).toEqual([]); // life only: no basic in play
     expect(lifeModifiers(at(3).life)).toEqual([{ type: "startingLife", player: 1, value: 24 }]);
-    const easy = resolveKnobs({ difficulty: DIFFICULTIES.easy }), hard = resolveKnobs({ difficulty: DIFFICULTIES.hard });
-    expect([at(1, easy).life[1], at(3, easy).life[1]]).toEqual([20, 20]);
-    expect([at(1, hard).life[1], at(2, hard).life[1], at(3, hard).life[1]]).toEqual([22, 24, 26]);
+    expect([at(1, adrHard).life[1], at(2, adrHard).life[1], at(3, adrHard).life[1]]).toEqual([22, 24, 26]);
     const hot = { convocationEntrance: { 1: { life: 4, basics: 2 } } };
     const s = seriesSetup(e, mine.a, mine.b!, hot);
     expect(s.life).toEqual([20, 24]);
@@ -231,14 +232,17 @@ describe("sixteen seats, five rounds, a Top 8 (S49 Part 2)", () => {
     expect(aliveInBracket(whole, final.winner!)).toBe(false); // over
   }, 400_000);
 
-  it("the bracket's entrance: +4 / +6 / +8 life against the human by bracket round (Standard); a drawn bracket series goes to the higher seed", () => {
+  it("the bracket's entrance: flat as shipped; ADR-148's rows, handed in, give +4 / +6 / +8 life against the human by bracket round; a drawn bracket series goes to the higher seed", async () => {
+    const { CONVOCATION_ENTRANCE_ADR148 } = await import("./knobs.js");
+    const adr = { convocationEntrance: CONVOCATION_ENTRANCE_ADR148.standard.rounds, convocationBracketEntrance: CONVOCATION_ENTRANCE_ADR148.standard.bracket };
     let e = register(big(49));
     e = startBracket({ ...e, round: 5, phase: "standings" });
     const withHuman = { ...e, bracket: { seeds: [0, ...e.bracket!.seeds.filter((s) => s !== 0)].slice(0, 8), rounds: [[{ a: 0, b: 5 }]] } } as ConvocationEvent;
-    expect(seriesSetup(withHuman, 0, 5, knobs).life).toEqual([20, 24]);
+    expect(seriesSetup(withHuman, 0, 5, knobs).life).toEqual([20, 20]); // suppressed
+    expect(seriesSetup(withHuman, 0, 5, adr).life).toEqual([20, 24]);
     const semi = { ...withHuman, bracket: { ...withHuman.bracket!, rounds: [[], [{ a: 0, b: 5 }]] } } as ConvocationEvent;
     const fin = { ...withHuman, bracket: { ...withHuman.bracket!, rounds: [[], [], [{ a: 0, b: 5 }]] } } as ConvocationEvent;
-    expect([seriesSetup(semi, 0, 5, knobs).life[1], seriesSetup(fin, 0, 5, knobs).life[1]]).toEqual([26, 28]);
+    expect([seriesSetup(semi, 0, 5, adr).life[1], seriesSetup(fin, 0, 5, adr).life[1]]).toEqual([26, 28]);
     expect(seriesSetup({ ...withHuman, bracket: { ...withHuman.bracket!, rounds: [[{ a: 3, b: 5 }]] } } as ConvocationEvent, 3, 5, knobs).life).toEqual([20, 20]); // AI against AI: flat
     const drawn = { seed: 1, bestOf: 3, games: [], wins: [1, 1] as [number, number], draws: 1, done: true, winner: "draw" as const };
     const [hi, lo] = [e.bracket!.seeds[0]!, e.bracket!.seeds[7]!];

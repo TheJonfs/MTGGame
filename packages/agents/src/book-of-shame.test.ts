@@ -1322,4 +1322,45 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const w = mkView({ hand: [{ objectId: "ss", cardId: "shocking_sharpshooter" }, { objectId: "gp", cardId: "goblin_piker" }], battlefield: Array.from({ length: 4 }, (_, i) => ({ id: `l${i}`, cardId: "mountain", controller: 0 as const })) });
     expect(a.watcherFirstCandidates(w, [cast("ss"), cast("gp")])!.map((x) => (x as { objectId: string }).objectId)).toEqual(["ss"]);
   });
+
+  it("book of shame 93 (post-S52, Chris — a Bonesplitter passed back and forth to use up the mana): an equip the predictor calls unchanged is REFUSED, not merely scored a quarter-point under passing (the softmax still picked it one window in ten)", () => {
+    const a = agent();
+    const lands = Array.from({ length: 6 }, (_, i) => ({ id: `l${i}`, cardId: "swamp", controller: 0 as const }));
+    const equip = (to: string) => ({ type: "activateAbility" as const, objectId: "bs", abilityIndex: 1, targets: [{ kind: "object" as const, id: to }] });
+    const board = (o: Parameters<typeof mkView>[0] = {}, b1: Partial<Obj> = {}, b2: Partial<Obj> = {}) => mkView({ battlefield: [...lands, { id: "bs", cardId: "bonesplitter", controller: 0, attachedTo: "b1" }, { id: "b1", cardId: "grizzly_bears", controller: 0, ...b1 }, { id: "b2", cardId: "hill_giant", controller: 0, ...b2 }], ...o });
+    expect(a.scorePriorityAction(board(), equip("b2"))).toBe(-Infinity); // two ready creatures, the first main phase
+    expect(a.scorePriorityAction(board(), equip("b1"))).toBe(-Infinity); // the same host
+    expect(a.scorePriorityAction(board({ step: "MAIN2" }, { tapped: true }), equip("b2"))).toBe(-Infinity); // after combat, onto the one that stayed home
+    expect(a.scorePriorityAction(board({ step: "MAIN2" }, {}, { tapped: true }), equip("b2"))).toBe(-Infinity);
+    expect(a.scorePriorityAction(board({}, { summoningSick: true }), equip("b2"))).toBeGreaterThan(a.scorePriorityAction(board({}, { summoningSick: true }), { type: "pass" })); // book 86's one real move stands
+  });
+
+  it("book of shame 94 (post-S52, Chris — three Essence Scatters at one creature spell, the second creature then walking in): one counter answers one spell; when ours is countered the spell is live again", () => {
+    const a = agent("control");
+    const lands = Array.from({ length: 6 }, (_, i) => ({ id: `l${i}`, cardId: "island", controller: 0 as const }));
+    const hand = [{ objectId: "es", cardId: "essence_scatter" }, { objectId: "cs", cardId: "counterspell" }];
+    const cast = (id: string, at: string) => ({ type: "castSpell" as const, objectId: id, targets: [{ kind: "stackItem" as const, id: at }] });
+    const theirs = { id: "s1", kind: "spell", cardId: "hill_giant", controller: 1 as const };
+    const ourFirst = { id: "s2", kind: "spell", cardId: "essence_scatter", controller: 0 as const, targets: [{ kind: "stackItem" as const, id: "s1" }] };
+    const theirCounter = { id: "s3", kind: "spell", cardId: "counterspell", controller: 1 as const, targets: [{ kind: "stackItem" as const, id: "s2" }] };
+    const v = (stack: unknown[]) => mkView({ hand, battlefield: lands, stack: stack as never, activePlayer: 1 });
+    // their creature alone on the stack: a counter is a play
+    expect(a.counterWarGated(v([theirs]), cast("es", "s1"))).toBe(false);
+    expect(a.scorePriorityAction(v([theirs]), cast("es", "s1"))).toBeGreaterThan(a.scorePriorityAction(v([theirs]), { type: "pass" }));
+    // our Scatter is already on it: the second (and the Counterspell) wait
+    expect(a.counterWarGated(v([theirs, ourFirst]), cast("es", "s1"))).toBe(true);
+    expect(a.scorePriorityAction(v([theirs, ourFirst]), cast("cs", "s1"))).toBe(-Infinity);
+    expect(a.stackLive(v([theirs, ourFirst])).get("s1")).toBe(false);
+    // they counter our Scatter: their creature is live again — countering it, or their counter, is a play
+    const war = v([theirs, ourFirst, theirCounter]);
+    expect([...a.stackLive(war)]).toEqual([["s1", true], ["s2", false], ["s3", true]]);
+    expect(a.counterWarGated(war, cast("cs", "s3"))).toBe(false);
+    expect(a.counterWarGated(war, cast("cs", "s1"))).toBe(false);
+    expect(a.counterWarGated(war, cast("cs", "s2"))).toBe(true); // never our own doomed counter
+    // and once we have answered their counter, the creature is answered again: no third spell at it
+    const ourSecond = { id: "s4", kind: "spell", cardId: "counterspell", controller: 0 as const, targets: [{ kind: "stackItem" as const, id: "s3" }] };
+    expect(a.counterWarGated(v([theirs, ourFirst, theirCounter, ourSecond]), cast("es", "s1"))).toBe(true);
+    // not a counter: untouched
+    expect(a.counterWarGated(v([theirs]), { type: "castSpell", objectId: "x", targets: [] })).toBe(false);
+  });
 });

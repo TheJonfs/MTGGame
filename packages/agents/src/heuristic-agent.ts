@@ -232,6 +232,7 @@ export class HeuristicAgent implements Agent {
     if (this.selfCounterGated(view, action)) return -Infinity; // post-S43: Mystic Snake with only our own spell to hit
     if (this.spellPayoffHoldGated(view, action)) return -Infinity; // S45: hold the cheap spell for the Guttersnipe / Pyromancer in hand
     if (this.faceBurnHoldGated(view, action)) return -Infinity; // post-S49 (book 88): removal is not thrown at a healthy face
+    if (this.counterWarGated(view, action)) return -Infinity; // post-S52 (book 94): one counter answers one spell
     if (this.entersHarmGated(view, action)) return -Infinity; // S50 (book 89): the Kavu is not cast into a board where its four can only hit us
     if (this.selfPumpGated(view, action)) return -Infinity; // S50 (book 90): the Whelp's pump is combat damage or a won fight, never idle
     if (this.graveyardTokensGated(view, action)) return -Infinity; // S50 (book 91): the Pyromancer's second life spends only idle mana
@@ -254,6 +255,12 @@ export class HeuristicAgent implements Agent {
     const misaim = this.misaimPenalty(view, action);
     const pred = predictAction(view, action, this.defs, this.C);
     if (pred.unchanged) {
+      // Post-S52 (book 93; Chris: a Bonesplitter passed back and forth to use up the mana — again): an EQUIP the
+      // predictor calls unchanged (the same host, or a move that puts nothing to work — book 86) is refused outright.
+      // The friction below is only a lower SCORE: under the softmax an action a quarter-point under passing is still
+      // picked about one window in ten, and an idle turn offers many windows — 58 of 154 moves in a 200-game probe
+      // were between two ready creatures.
+      if (action.type === "activateAbility") { const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex); if (ab && ab.kind === "activated" && ab.equip) return -Infinity; }
       // Friction: an action that visibly does nothing scores strictly below
       // passing (kills same-host re-equip churn and no-benefit activations).
       return evaluate(view, this.profile, this.defs) - 0.25 - misaim;
@@ -1723,6 +1730,34 @@ export class HeuristicAgent implements Agent {
     if (view.step !== "MAIN2" || view.stack.length > 0) return true;
     const lands = view.battlefield.filter((o) => o.controller === me && !o.tapped && this.def(o.cardId)?.types.includes("Land")).length;
     return view.hand.some((c) => { const d = this.def(c.cardId); return !!d && !d.types.includes("Land") && !d.manaCost.includes("X") && this.mv(c.cardId) <= lands; });
+  }
+
+  /** Post-S52 (book 94; Chris: three Essence Scatters spent on one creature spell, the second creature then walking
+   * in): a counter is aimed at a stack item that is still going to RESOLVE. An item is "answered" when a live counter
+   * of the other side targets it; a counter is live unless it is itself answered — read down the stack from the top
+   * (the last cast resolves first). So: our second counter at a spell our first already answers is refused; when the
+   * opponent counters our counter, the spell is unanswered again and either their counter or the spell is a target.
+   * Keyed on the shape (a stack item whose card has a `counter` effect and whose target is a stack item). Exposed. */
+  stackLive(view: GameView): Map<string, boolean> {
+    const counters = (cardId: string) => { const d = this.def(cardId); return !!d && ((d.spellEffect ?? []).some((e) => e.type === "counter") || (d.modes ?? []).some((m) => m.effects.some((e) => e.type === "counter")) || (d.abilities ?? []).some((a) => (a.kind === "triggered" || a.kind === "activated") && a.effects.some((e) => e.type === "counter"))); };
+    const live = new Map<string, boolean>();
+    for (const it of view.stack) live.set(it.id, true);
+    // from the top of the stack down: a live counter makes its target not live
+    for (let i = view.stack.length - 1; i >= 0; i--) {
+      const it = view.stack[i]!;
+      if (!live.get(it.id) || !counters(it.cardId)) continue;
+      for (const t of it.targets ?? []) if (t.kind === "stackItem" && live.has(t.id)) live.set(t.id, false);
+    }
+    return live;
+  }
+  counterWarGated(view: GameView, action: Action): boolean {
+    if (action.type !== "castSpell" && action.type !== "activateAbility") return false;
+    const effects = this.actionEffects(view, action);
+    if (!effects || !effects.some((e) => e.type === "counter")) return false;
+    const targets = ((action as { targets?: ResolvedTarget[] }).targets ?? []).filter((t) => t.kind === "stackItem");
+    if (!targets.length) return false;
+    const live = this.stackLive(view);
+    return targets.every((t) => t.kind === "stackItem" && live.get(t.id) === false); // every target is already answered
   }
 
   /** Post-S49 (book 88 — the Sealed probe: 69 of 195 Lightning Bolts went at the face of an opponent with an empty
