@@ -135,4 +135,95 @@ describe("the Convocation controller (S48)", () => {
     expect(s.getItem(LEDGER_KEY)).not.toBeNull();
     expect(c.screen.kind).toBe("door");
   }, 180_000);
+
+  /** Drive one series: the human wins (auto-win) or loses (concede) every game. */
+  async function series(c: ConvocationController, win: boolean): Promise<void> {
+    c.playMatch();
+    for (let guard = 0; guard < 2000 && (c.screen.kind === "playDraw" || c.screen.kind === "match" || c.screen.kind === "between" || c.screen.kind === "field"); guard++) {
+      if (c.screen.kind === "playDraw") c.choose("play");
+      else if (c.screen.kind === "match") { if (win) c.match!.autoWin(); else c.match!.concede(); await tick(20); }
+      else if (c.screen.kind === "between") c.nextGame();
+      else await tick(40);
+    }
+  }
+
+  it("S49 — sixteen seats, five rounds, the Top 8 with the human in it: the bracket's entrance (+4 / +6 / +8 life), a reload in the bracket, the win — 'first of sixteen', the ledger's line", async () => {
+    const { s, c } = make();
+    c.newEvent(49, { seats: 16, rounds: 5, top8: true });
+    expect(c.event!.field).toHaveLength(16);
+    c.suggestDeck(); c.register();
+    const lives: number[] = [];
+    for (let round = 1; round <= 5; round++) {
+      c.playMatch(); if (c.screen.kind === "playDraw") c.choose("play");
+      lives.push(c.match!.spec.modifiers.find((m) => m.type === "startingLife")?.value ?? 20);
+      c.match!.autoWin(); await tick(20);
+      await series(c, true);
+      expect(c.screen.kind).toBe("standings");
+      expect(c.event!.results.filter((r) => r.round === round)).toHaveLength(8);
+      c.next();
+    }
+    expect(lives).toEqual([20, 22, 24, 24, 24]); // ADR-148: +0 / +2 / +4, the last row after
+    expect(c.screen.kind).toBe("bracket");
+    expect(c.event!.bracket!.seeds[0]).toBe(0); // 5–0: the first seed
+    expect(c.ledger()).toHaveLength(0);
+    const bracketLives: number[] = [];
+    for (let r = 0; r < 3; r++) {
+      expect(c.opponentSeat()).not.toBeNull();
+      if (r === 1) { const again = new ConvocationController(pool, packs, rating, catalog, s, () => "2026-10-03T00:00:00Z"); again.resume(); expect(again.screen.kind).toBe("bracket"); expect(again.opponentSeat()).toBe(c.opponentSeat()); }
+      c.playMatch(); if (c.screen.kind === "playDraw") c.choose("play");
+      bracketLives.push(c.match!.spec.modifiers.find((m) => m.type === "startingLife")?.value ?? 20);
+      c.match!.autoWin(); await tick(20);
+      await series(c, true);
+      expect(c.screen.kind).toBe("bracket");
+    }
+    expect(bracketLives).toEqual([24, 26, 28]);
+    expect(c.event!.phase).toBe("over");
+    expect(c.event!.bracket!.rounds.map((r) => r.length)).toEqual([4, 2, 1]);
+    expect(c.places()[0]!.seat).toBe(0);
+    expect(c.ledger()).toHaveLength(1);
+    expect(c.ledger()[0]).toMatchObject({ place: 1, seats: 16, rounds: 5, top8: true });
+    c.toPrize(); expect(c.screen.kind).toBe("prize");
+  }, 300_000);
+
+  it("S49 — the human outside the eight watches the bracket resolve and takes the standings' finish; a human who loses the quarter-final finishes fifth to eighth", async () => {
+    const { c } = make();
+    c.newEvent(50, { seats: 16, rounds: 5, top8: true });
+    c.suggestDeck(); c.register();
+    for (let round = 1; round <= 5; round++) { await series(c, false); c.next(); }
+    expect(c.screen.kind).toBe("bracket");
+    expect(c.event!.bracket!.seeds).not.toContain(0);
+    expect(c.opponentSeat()).toBeNull();
+    await c.resolveBracket();
+    expect(c.event!.phase).toBe("over");
+    expect(c.screen.kind).toBe("bracket");
+    const place = c.places().find((p) => p.seat === 0)!.place;
+    expect(place).toBeGreaterThanOrEqual(9);
+    expect(place).toBe(c.standings().find((r) => r.seat === 0)!.place);
+    expect(c.ledger()[0]!.place).toBe(place);
+
+    const q = make().c;
+    q.newEvent(51, { seats: 16, rounds: 5, top8: true });
+    q.suggestDeck(); q.register();
+    for (let round = 1; round <= 5; round++) { await series(q, true); q.next(); }
+    await series(q, false); // the quarter-final, lost
+    expect(q.screen.kind).toBe("bracket");
+    expect(q.opponentSeat()).toBeNull();
+    expect(q.event!.phase).toBe("bracket"); // the semi-finals are still to play
+    await q.resolveBracket();
+    expect(q.event!.phase).toBe("over");
+    const qp = q.places().find((p) => p.seat === 0)!.place;
+    expect(qp).toBeGreaterThanOrEqual(5); expect(qp).toBeLessThanOrEqual(8);
+  }, 400_000);
+
+  it("S49 — the AI sideboards from game two: the deck it brings to game two is forty cards from its own pool", async () => {
+    const { c } = make();
+    c.newEvent(48); c.suggestDeck(); c.register();
+    c.playMatch(); if (c.screen.kind === "playDraw") c.choose("play");
+    const g1 = c.match!.spec.players[1].decklist;
+    c.match!.autoWin(); await tick(20); c.nextGame(); if (c.screen.kind === "playDraw") c.choose("play");
+    const g2 = c.match!.spec.players[1].decklist, opp = c.event!.field[c.opponentSeat()!]!;
+    expect(size(g1)).toBe(40); expect(size(g2)).toBe(40);
+    const owned: Record<string, number> = {}; for (const id of opp.pool) owned[id] = (owned[id] ?? 0) + 1;
+    for (const e of g2) if (!["plains", "island", "swamp", "mountain", "forest"].includes(e.cardId)) expect(owned[e.cardId] ?? 0).toBeGreaterThanOrEqual(e.count);
+  }, 60_000);
 });

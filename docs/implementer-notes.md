@@ -566,3 +566,13 @@ See handoff Concerns for the authoritative list. Highlights: auto-pay greedy fea
 - **`window.__cc`** is the Convocation controller in the browser (as `__mc` is the match). A full event can be walked from the console: `newEvent(seed)`, `suggestDeck()`, `register()`, `playMatch()`, `match.autoWin()`, `nextGame()`, `next()`.
 - **The event is pure state** (`world/event.ts`); every function returns a new event. `recordSeries` is idempotent for a pairing already recorded — a resumed round skips what is done.
 - **`sealed-sim --report` rebuilds the decks from the CURRENT rating file** — a report read after `rating:build --sealed` describes v1's decks, not the decks that played. Pass `--rating data/convocation/card-rating-v0.json` to describe a v0 run.
+
+## S49 — sixteen seats, the colour question, the drafter's data (2026-10-03)
+
+- **`pnpm sealed-sim --forced` / `--forced-report`** (shards → `analysis/runs/forced_shard*.json`): forced-pair decks against a fixed field of forty; pass the same `--games` to the report as to the run (the report rebuilds the decks to label them).
+- **`--noise 0.4`** on the Sealed sim builds every third deck with Gaussian rating noise; write its shards with `--out analysis/runs/sealednoise_shardN.json` so `rating:build --noise` finds them and `--sealed` does not.
+- **`rating:build --noise` never overwrites `card-rating.json`** — it writes `card-rating-v2-candidate.json` and its own report, with movers against the current rating.
+- **A text edit hot-reloads the page under a console walk.** `window.__cc` is then a new controller and the old reference drives state nobody sees. Reload and `resume()` after any edit mid-walk.
+- **The bracket is part of the event** (`event.bracket`, phase "bracket"); `seriesSeed` and `seriesSetup` read the phase, so the same controller code plays a Swiss series and a bracket series. `resolveBracket()` stops when the human has a match to play.
+- **`aiSideboard` is stateless** — computed from the registered deck each game; a seat's `deck` in the save is always the registered one.
+- **The MTR is not the CR**: the tiebreak floor is 0.33, not one third. The text is at blogs.magicjudges.org/rules/mtr-appendix-c/.

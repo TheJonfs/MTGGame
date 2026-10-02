@@ -16,7 +16,9 @@ import { loadCardPool } from "@shandalar/cards/loader";
 import { runMatch, type Action, type ActionRequest, type Agent, type GameView, type MatchSpec } from "@shandalar/engine";
 import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
 import { rollSealedPool, packColors, type ConvocationPackData } from "./packs.js";
-import { buildLimitedDeck, LIMITED_TARGETS, type LimitedBuild } from "./limited-builder.js";
+import { buildLimitedDeck, pairScores, LIMITED_TARGETS, type LimitedBuild } from "./limited-builder.js";
+import { WorldRng } from "./rng.js";
+import type { PackColor } from "./packs.js";
 import { isBasic } from "./legality.js";
 import type { CardRatingTable } from "./rating.js";
 import type { RatingGame } from "./rating-run-cli.js";
@@ -31,7 +33,18 @@ const set = data.sets.find((s) => s.id === arg("set", "plane"))!, recipe = data.
 const ratingFile = arg("rating", "data/convocation/card-rating.json");
 const rating = JSON.parse(readFileSync(join(ROOT, ratingFile), "utf8")) as CardRatingTable;
 
-const builds: { pool: string[]; build: LimitedBuild }[] = Array.from({ length: N }, (_, i) => { const pool = rollSealedPool(set, recipe, cards, data.power, seed0 * 100003 + i).flat(); return { pool, build: buildLimitedDeck(pool, rating, cards) }; });
+// S49 (rating noise): `--noise 0.4 --noise-share 0.33` — that share of the decks is built with Gaussian noise on each
+// card's rating (seeded per deck), so cards the rating under-rates get played and gather evidence.
+const NOISE = Number(arg("noise", "0")), NOISE_SHARE = Number(arg("noise-share", "0.3333"));
+const gauss = (rng: WorldRng) => Math.sqrt(-2 * Math.log(Math.max(1e-12, rng.float()))) * Math.cos(2 * Math.PI * rng.float());
+const noisy = (i: number) => NOISE > 0 && i % Math.round(1 / NOISE_SHARE) === 0;
+const poolOf = (i: number) => rollSealedPool(set, recipe, cards, data.power, seed0 * 100003 + i).flat();
+const builds: { pool: string[]; build: LimitedBuild; noisy: boolean }[] = Array.from({ length: N }, (_, i) => {
+  const pool = poolOf(i);
+  if (!noisy(i)) return { pool, build: buildLimitedDeck(pool, rating, cards), noisy: false };
+  const rng = new WorldRng(seed0 * 7919 + i);
+  return { pool, build: buildLimitedDeck(pool, rating, cards, { noise: () => NOISE * gauss(rng) }), noisy: true };
+});
 const key = (i: number) => `pool:${i}`;
 
 class Tracker implements Agent {
@@ -66,6 +79,68 @@ async function run(): Promise<void> {
   const out = arg("out", join(ROOT, `analysis/runs/sealed_shard${si}.json`));
   mkdirSync(dirname(out), { recursive: true });
   writeFileSync(out, JSON.stringify({ pools: N, games: G, opponents: OPP, seed: seed0, set: set.id, recipe: recipe.id, rating: ratingFile, shard: `${si}/${sn}`, results: games }));
+}
+
+// ---------- S49 Part 1: the forced-pair experiment ----------
+const PAIRS: [PackColor, PackColor][] = []; { const C: PackColor[] = ["W", "U", "B", "R", "G"]; for (let i = 0; i < 5; i++) for (let j = i + 1; j < 5; j++) PAIRS.push([C[i]!, C[j]!]); }
+const PER_PAIR = Number(arg("per-pair", "40")), FIELD = 40;
+/** For each pair, the first PER_PAIR pools (from a stream past the field's) in which the pair is at least third by the
+ * builder's own score; the deck forced into that pair, and the deck the builder would choose from the same pool. */
+function forcedBuilds(): { pair: string; pool: number; rank: number; forced: LimitedBuild; chosen: LimitedBuild }[] {
+  const out: { pair: string; pool: number; rank: number; forced: LimitedBuild; chosen: LimitedBuild }[] = [];
+  const need = new Map(PAIRS.map((p) => [p.join(""), PER_PAIR]));
+  for (let i = 100000; [...need.values()].some((n) => n > 0) && i < 140000; i++) {
+    const pool = poolOf(i), scores = pairScores(pool, rating, cards);
+    scores.slice(0, 3).forEach((s, rank) => {
+      const k = s.pair.join(""); if ((need.get(k) ?? 0) <= 0) return;
+      need.set(k, need.get(k)! - 1);
+      out.push({ pair: k, pool: i, rank: rank + 1, forced: buildLimitedDeck(pool, rating, cards, { forcePair: s.pair }), chosen: buildLimitedDeck(pool, rating, cards) });
+    });
+  }
+  return out;
+}
+async function runForced(): Promise<void> {
+  const [si, sn] = arg("shard", "0/1").split("/").map(Number) as [number, number];
+  const fb = forcedBuilds();
+  const field = builds.slice(0, FIELD).map((b) => b.build.deck);
+  const games: { deck: number; kind: "forced" | "chosen"; opp: number; win: number }[] = [];
+  let job = 0;
+  for (let d = 0; d < fb.length; d++) for (const kind of ["forced", "chosen"] as const) {
+    if (kind === "chosen" && fb[d]!.chosen.colors.join("") === fb[d]!.pair && JSON.stringify(fb[d]!.chosen.deck) === JSON.stringify(fb[d]!.forced.deck)) continue; // the same deck: its forced games stand for both
+    for (let o = 0; o < OPP; o++) {
+      if (job++ % sn !== si) continue;
+      const opp = (d * 7 + o) % FIELD, A = fb[d]![kind].deck, Bd = field[opp]!;
+      for (let g = 0; g < G; g++) {
+        const seatA = g % 2, seed = seed0 + d * 7919 + o * 104729 + g * 37; // the same seeds for forced and chosen
+        const [d0, d1] = seatA === 0 ? [A, Bd] : [Bd, A];
+        const spec = { seed, players: [{ name: "a", decklist: d0, agent: "h" }, { name: "b", decklist: d1, agent: "h" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 }, modifiers: [] } as unknown as MatchSpec;
+        const r = await runMatch(spec, cards, [new HeuristicAgent(seed * 2 + 1, cards, difficultyProfile("master", "midrange", d1)), new HeuristicAgent(seed * 2 + 2, cards, difficultyProfile("master", "midrange", d0))]);
+        games.push({ deck: d, kind, opp, win: r.winner === null ? 0.5 : r.winner === seatA ? 1 : 0 });
+      }
+    }
+  }
+  writeFileSync(arg("out", join(ROOT, `analysis/runs/forced_shard${si}.json`)), JSON.stringify({ results: games }));
+}
+function reportForced(): void {
+  const files = readdirSync(join(ROOT, "analysis/runs")).filter((f) => /^forced_shard\d+\.json$/.test(f)).sort().map((f) => join(ROOT, "analysis/runs", f));
+  const games = files.flatMap((f) => (JSON.parse(readFileSync(f, "utf8")) as { results: { deck: number; kind: "forced" | "chosen"; opp: number; win: number }[] }).results);
+  const fb = forcedBuilds();
+  const acc = fb.map(() => ({ forced: { n: 0, w: 0 }, chosen: { n: 0, w: 0 } }));
+  for (const g of games) { const x = acc[g.deck]![g.kind]; x.n += 1; x.w += g.win; }
+  const wr = (d: number, kind: "forced" | "chosen") => { const same = acc[d]!.chosen.n === 0; const x = kind === "chosen" && same ? acc[d]!.forced : acc[d]![kind]; return x.n ? x.w / x.n : NaN; };
+  const mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / Math.max(1, xs.length), pct = (x: number) => `${(x * 100).toFixed(0)}%`;
+  const L: string[] = [`# The forced-pair experiment (S49 Part 1) — ${games.length} games; each deck against twenty of the field's forty chosen decks, ${G} games a pairing, master both\n`, `For each pair: ${PER_PAIR} pools in which the pair is at least third by the builder's own score. FORCED is the best deck the builder makes in that pair; CHOSEN is the deck the builder would pick from the same pool, on the same seeds.\n`, `| pair | decks | pair was 1st / 2nd / 3rd | forced | chosen (same pools) | forced − chosen | forced, where the pair was 1st | forced, where 2nd or 3rd | creatures | avg MV | mean rating |`, `|---|---|---|---|---|---|---|---|---|---|---|`];
+  const rows: { pair: string; f: number }[] = [];
+  for (const p of PAIRS.map((x) => x.join(""))) {
+    const ds = fb.map((b, i) => [b, i] as const).filter(([b]) => b.pair === p);
+    const f = mean(ds.map(([, i]) => wr(i, "forced"))), c = mean(ds.map(([, i]) => wr(i, "chosen")));
+    const first = ds.filter(([b]) => b.rank === 1), rest = ds.filter(([b]) => b.rank > 1);
+    rows.push({ pair: p, f });
+    L.push(`| ${p} | ${ds.length} | ${[1, 2, 3].map((r) => ds.filter(([b]) => b.rank === r).length).join(" / ")} | **${pct(f)}** | ${pct(c)} | ${((f - c) * 100 >= 0 ? "+" : "") + ((f - c) * 100).toFixed(1)} | ${first.length ? pct(mean(first.map(([, i]) => wr(i, "forced")))) : "—"} | ${rest.length ? pct(mean(rest.map(([, i]) => wr(i, "forced")))) : "—"} | ${mean(ds.map(([b]) => b.forced.creatures)).toFixed(1)} | ${mean(ds.map(([b]) => b.forced.avgMv)).toFixed(2)} | ${mean(ds.map(([b]) => b.forced.rating)).toFixed(2)} |`);
+  }
+  const byColor = (c: string) => mean(rows.filter((r) => r.pair.includes(c)).map((r) => r.f));
+  L.push(`\nA colour's forced win rate (the mean of its four pairs): ${["W", "U", "B", "R", "G"].map((c) => `${c} ${pct(byColor(c))}`).join(" · ")}.`);
+  const text = L.join("\n"); console.log(text); writeFileSync(join(ROOT, "analysis/runs/forced_pairs.md"), text + "\n");
 }
 
 function report(): void {
@@ -115,4 +190,4 @@ function report(): void {
   void isBasic;
 }
 
-if (process.argv.includes("--report")) report(); else await run();
+if (process.argv.includes("--forced-report")) reportForced(); else if (process.argv.includes("--forced")) await runForced(); else if (process.argv.includes("--report")) report(); else await run();

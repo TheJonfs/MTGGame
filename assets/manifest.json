@@ -3057,6 +3057,21 @@
         }
       }
     },
+    "convocation-umbel": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:d84b26ce060389790890cb8448431e727ae9438760996337ac6a8490c63e8390",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:d84b26ce060389790890cb8448431e727ae9438760996337ac6a8490c63e8390",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/convocation-umbel/canonical.png",
+          "rendered_at": "2026-10-02T00:17:25+00:00",
+          "thumb": "assets/thumbs/convocation-umbel/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "corolla-clio": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:548302a5621e43fb385ffc0e506c12e59b5dce8e9d51a0fc297db2d910c87d0a",

@@ -5,10 +5,13 @@ import { fileURLToPath } from "node:url";
 import { loadCardPool } from "@shandalar/cards/loader";
 import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
 import { defaultKnobs } from "./knobs.js";
-import { advanceEvent, checkEventDeck, closeRound, deserializeEvent, ledgerEntry, newSealedEvent, pairingOf, playFieldRound, playSeriesHeadless, recordSeries, registerDeck, roundComplete, serializeEvent, seriesSetup, standings, type ConvocationEvent, type SeatAgents } from "./event.js";
+import { lifeModifiers, advanceBracket, aliveInBracket, bracketRound, bracketRoundComplete, bracketWinner, finalPlaces, playBracketFieldRound, recordBracketSeries, startBracket, advanceEvent, checkEventDeck, closeRound, deserializeEvent, ledgerEntry, newSealedEvent, pairingOf, playFieldRound, playSeriesHeadless, recordSeries, registerDeck, roundComplete, serializeEvent, seriesSetup, standings, type ConvocationEvent, type SeatAgents } from "./event.js";
 import { buildLimitedDeck, LIMITED_TARGETS } from "./limited-builder.js";
 import { rollSealedPool, type ConvocationPackData } from "./packs.js";
 import { convocationSeat } from "./matchup.js";
+import { aiSideboard, answersCreatures, answersRelics, isCounter } from "./sideboard-ai.js";
+import { resolveKnobs, DIFFICULTIES } from "./knobs.js";
+import { CONVOCATION_NAMES } from "./event.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const cards = loadCardPool(join(ROOT, "data/cards")).cards;
@@ -135,9 +138,16 @@ describe("a Sealed Convocation of eight (S48 Part 3)", () => {
     expect(deserializeEvent(JSON.stringify({ format: "convocation-event-v1", event: { version: 2, field: [] } }))).toBeNull();
   }, 240_000);
 
-  it("the ladder: convocationEntrance is wired and all zeros — twenty life, no basics; a filled row reaches the AI seat against the human only", () => {
+  it("the ladder (ADR-148): Sealed's entrance is life only — Standard +0 / +2 / +4 by round, Easy flat, Hard +2 / +4 / +6; it reaches the AI seat against the human only", () => {
     const e = register(fresh(48)), mine = pairingOf(e, 0)!;
-    expect(seriesSetup(e, mine.a, mine.b!, knobs)).toEqual({ life: [20, 20], modifiers: [] });
+    expect(seriesSetup(e, mine.a, mine.b!, knobs)).toEqual({ life: [20, 20], modifiers: [] }); // round one: flat
+    const at = (round: number, k = knobs) => seriesSetup({ ...e, round }, mine.a, mine.b!, k);
+    expect([at(2).life, at(3).life, at(5).life]).toEqual([[20, 22], [20, 24], [20, 24]]); // past the table: its last row
+    expect(at(3).modifiers).toEqual([]); // life only: no basic in play
+    expect(lifeModifiers(at(3).life)).toEqual([{ type: "startingLife", player: 1, value: 24 }]);
+    const easy = resolveKnobs({ difficulty: DIFFICULTIES.easy }), hard = resolveKnobs({ difficulty: DIFFICULTIES.hard });
+    expect([at(1, easy).life[1], at(3, easy).life[1]]).toEqual([20, 20]);
+    expect([at(1, hard).life[1], at(2, hard).life[1], at(3, hard).life[1]]).toEqual([22, 24, 26]);
     const hot = { convocationEntrance: { 1: { life: 4, basics: 2 } } };
     const s = seriesSetup(e, mine.a, mine.b!, hot);
     expect(s.life).toEqual([20, 24]);
@@ -147,4 +157,176 @@ describe("a Sealed Convocation of eight (S48 Part 3)", () => {
     expect(seriesSetup(e, field.a, field.b!, hot)).toEqual({ life: [20, 20], modifiers: [] }); // AI against AI is flat
     expect(convocationSeat(9, ["W", "B"], hot)).toEqual({ life: 24, entrance: ["plains", "swamp"] }); // past the table: its last row
   });
+
+describe("sixteen seats, five rounds, a Top 8 (S49 Part 2)", () => {
+  const big = (seed: number, seats = 16) => newSealedEvent({ seed, seats, rounds: 5, top8: true, names: CONVOCATION_NAMES, faces: FACES }, deps);
+  const sdeps = { cards, knobs, rating };
+  async function swiss(e: ConvocationEvent): Promise<ConvocationEvent> {
+    for (let round = 1; round <= e.rounds; round++) {
+      const mine = pairingOf(e, 0)!;
+      if (mine.b !== null) e = recordSeries(e, mine.a, mine.b, await playSeriesHeadless(e, mine.a, mine.b, sdeps, agents));
+      e = advanceEvent(closeRound(await playFieldRound(e, sdeps, agents)));
+    }
+    return e;
+  }
+  async function bracket(e: ConvocationEvent): Promise<ConvocationEvent> {
+    while (e.phase === "bracket") {
+      const mine = bracketRound(e).find((m) => m.a === 0 && m.winner === undefined);
+      if (mine) e = recordBracketSeries(e, mine.a, mine.b, await playSeriesHeadless(e, mine.a, mine.b, sdeps, agents));
+      e = advanceBracket(await playBracketFieldRound(e, sdeps, agents));
+    }
+    return e;
+  }
+
+  it("the planner's sixteen names: fifteen AI seats, all different", () => {
+    expect(CONVOCATION_NAMES).toHaveLength(16);
+    const e = big(49);
+    expect(e.field).toHaveLength(16);
+    expect(new Set(e.field.map((s) => s.name)).size).toBe(16);
+  });
+
+  it("a full event headless: five Swiss rounds of eight series with no rematch, the bracket seeded 1v8 / 4v5 / 2v7 / 3v6, three bracket rounds, the finish by the bracket for the eight and by the standings for the rest; saved and resumed in the bracket", async () => {
+    let e = await swiss(register(big(49)));
+    expect(e.results).toHaveLength(40);
+    expect(new Set(e.results.map((r) => [r.a, r.b].sort((x, y) => x - y).join("-"))).size).toBe(40);
+    expect(e.phase).toBe("bracket");
+    const table = standings(e), seeds = e.bracket!.seeds;
+    expect(seeds).toEqual(table.slice(0, 8).map((r) => r.seat));
+    const pair = (m: { a: number; b: number }) => [seeds.indexOf(m.a) + 1, seeds.indexOf(m.b) + 1].sort((x, y) => x - y);
+    expect(bracketRound(e).map(pair)).toEqual([[1, 8], [4, 5], [2, 7], [3, 6]]);
+    for (const m of bracketRound(e)) if (m.a === 0 || m.b === 0) expect(m.a).toBe(0); // the human is seat 0 of its series
+    // the quarter-finals, then a save in the middle of the bracket
+    const mine = bracketRound(e).find((m) => m.a === 0);
+    if (mine) e = recordBracketSeries(e, mine.a, mine.b, await playSeriesHeadless(e, mine.a, mine.b, sdeps, agents));
+    e = await playBracketFieldRound(e, sdeps, agents);
+    expect(bracketRoundComplete(e)).toBe(true);
+    const whole = await bracket(e);
+    const back = await bracket(deserializeEvent(serializeEvent(e))!);
+    expect(back).toEqual(whole);
+    expect(whole.phase).toBe("over");
+    expect(whole.bracket!.rounds.map((r) => r.length)).toEqual([4, 2, 1]);
+    // the semi-finals are the quarter-finals' neighbours
+    const qf = whole.bracket!.rounds[0]!, sf = whole.bracket!.rounds[1]!;
+    expect([sf[0]!.a, sf[0]!.b].sort()).toEqual([qf[0]!.winner!, qf[1]!.winner!].sort());
+    const places = finalPlaces(whole), final = whole.bracket!.rounds[2]![0]!;
+    expect(places.map((p) => p.place)).toEqual(Array.from({ length: 16 }, (_, i) => i + 1));
+    expect(places[0]!.seat).toBe(final.winner);
+    expect(new Set(places.slice(0, 8).map((p) => p.seat))).toEqual(new Set(seeds));
+    expect(places.slice(8).map((p) => p.seat)).toEqual(table.slice(8).map((r) => r.seat)); // 9th–16th: the standings
+    const line = ledgerEntry(whole, "2026-10-03T00:00:00Z");
+    expect(line.place).toBe(places.find((p) => p.seat === 0)!.place);
+    expect(line.top8).toBe(true);
+    expect(line.field.map((f) => f.place)).toEqual(Array.from({ length: 16 }, (_, i) => i + 1));
+    expect(aliveInBracket(whole, final.winner!)).toBe(false); // over
+  }, 400_000);
+
+  it("the bracket's entrance: +4 / +6 / +8 life against the human by bracket round (Standard); a drawn bracket series goes to the higher seed", () => {
+    let e = register(big(49));
+    e = startBracket({ ...e, round: 5, phase: "standings" });
+    const withHuman = { ...e, bracket: { seeds: [0, ...e.bracket!.seeds.filter((s) => s !== 0)].slice(0, 8), rounds: [[{ a: 0, b: 5 }]] } } as ConvocationEvent;
+    expect(seriesSetup(withHuman, 0, 5, knobs).life).toEqual([20, 24]);
+    const semi = { ...withHuman, bracket: { ...withHuman.bracket!, rounds: [[], [{ a: 0, b: 5 }]] } } as ConvocationEvent;
+    const fin = { ...withHuman, bracket: { ...withHuman.bracket!, rounds: [[], [], [{ a: 0, b: 5 }]] } } as ConvocationEvent;
+    expect([seriesSetup(semi, 0, 5, knobs).life[1], seriesSetup(fin, 0, 5, knobs).life[1]]).toEqual([26, 28]);
+    expect(seriesSetup({ ...withHuman, bracket: { ...withHuman.bracket!, rounds: [[{ a: 3, b: 5 }]] } } as ConvocationEvent, 3, 5, knobs).life).toEqual([20, 20]); // AI against AI: flat
+    const drawn = { seed: 1, bestOf: 3, games: [], wins: [1, 1] as [number, number], draws: 1, done: true, winner: "draw" as const };
+    const [hi, lo] = [e.bracket!.seeds[0]!, e.bracket!.seeds[7]!];
+    expect(bracketWinner(e, hi, lo, drawn)).toBe(hi);
+    expect(bracketWinner(e, lo, hi, drawn)).toBe(hi);
+  });
+
+  it("byes: fifteen seats — one bye a round to the lowest seat without one, never twice; a bye is a win of three points with no games", async () => {
+    let e = register(big(15, 15));
+    expect(e.field).toHaveLength(15);
+    for (let round = 1; round <= 3; round++) {
+      expect(e.pairings.filter((p) => p.b === null)).toHaveLength(1);
+      expect(e.pairings).toHaveLength(8);
+      const mine = pairingOf(e, 0)!;
+      if (mine.b !== null) e = recordSeries(e, mine.a, mine.b, await playSeriesHeadless(e, mine.a, mine.b, sdeps, agents));
+      e = closeRound(await playFieldRound(e, sdeps, agents));
+      const t = standings(e);
+      expect(t.reduce((n, r) => n + r.wins + r.losses + r.draws, 0)).toBe(round * 15);
+      e = advanceEvent(e);
+    }
+    expect(new Set(e.byes!.map((b) => b.seat)).size).toBe(e.byes!.length);
+    const first = e.byes![0]!, row = standings({ ...e, results: e.results.filter((r) => r.round === 1), byes: [first] }).find((r) => r.seat === first.seat)!;
+    expect([row.points, row.gamesPlayed]).toEqual([3, 0]);
+  }, 300_000);
+});
+
+describe("the AI's sideboarding (S49 Part 2 — shape-keyed, from the seat's unused playables)", () => {
+  const D = (ids: Record<string, number>) => Object.entries(ids).map(([cardId, count]) => ({ cardId, count }));
+  const base = D({ plains: 17, savannah_lions: 4, suntail_hawk: 4, soul_warden: 4, master_decoy: 4, serra_angel: 3, glorious_anthem: 4 });
+  const side = D({ disenchant: 2, swords_to_plowshares: 2, terror: 1, wrath_of_god: 1 });
+  const creatures = D({ forest: 17, grizzly_bears: 4, little_bear: 4, wood_elves: 4, centaur_courser: 4, hill_giant: 4, giant_growth: 3 });
+  const relics = D({ forest: 17, grizzly_bears: 4, wood_elves: 4, rancor: 3, blanchwood_armor: 3, bonesplitter: 3, giant_growth: 6 });
+
+  it("the shapes: Disenchant answers relics; Swords, Terror and Shock answer creatures; Counterspell is a counter", () => {
+    const d = (id: string) => cards.get(id)!;
+    expect([answersRelics(d("disenchant")), answersCreatures(d("disenchant"))]).toEqual([true, false]);
+    expect(["swords_to_plowshares", "terror", "shock", "putrefy"].map((id) => answersCreatures(d(id)))).toEqual([true, true, true, true]);
+    expect(answersRelics(d("terror"))).toBe(false);
+    expect([isCounter(d("counterspell")), isCounter(d("essence_scatter")), isCounter(d("shock"))]).toEqual([true, true, false]);
+  });
+
+  it("against fifteen or more creatures the creature removal comes in (in colour only); the deck stays forty and its lands stand", () => {
+    const sb = aiSideboard(base, side, creatures, cards, rating);
+    expect(sb.swaps.filter((x) => x.rule === "creatures").map((x) => x.in)).toEqual(["swords_to_plowshares", "swords_to_plowshares"]); // Terror is black: not castable
+    expect(sb.swaps.some((x) => x.rule === "relics")).toBe(false);
+    expect(sb.deck.reduce((n, e) => n + e.count, 0)).toBe(40);
+    expect(sb.deck.find((e) => e.cardId === "plains")!.count).toBe(17);
+    expect(sb.sideboard.reduce((n, e) => n + e.count, 0)).toBe(6);
+    expect(aiSideboard(base, side, creatures, cards, rating)).toEqual(sb);
+  });
+
+  it("against auras and equipment the Disenchants come in; against neither shape nothing moves", () => {
+    const sb = aiSideboard(base, side, relics, cards, rating);
+    expect(sb.swaps.map((x) => [x.rule, x.in])).toEqual([["relics", "disenchant"], ["relics", "disenchant"]]);
+    const quiet = aiSideboard(base, side, D({ island: 17, counterspell: 4, essence_scatter: 4, boomerang: 4, wall_of_air: 4, air_elemental: 4, ponder: 3 }), cards, rating);
+    expect(quiet.swaps).toEqual([]);
+    expect(quiet.deck).toEqual(base);
+  });
+
+  it("counters go out against a creature deck, for the best playables left", () => {
+    const blue = D({ island: 17, counterspell: 2, wall_of_air: 4, air_elemental: 4, wind_drake: 4, man_o_war: 4, boomerang: 5 });
+    const sb = aiSideboard(blue, D({ aether_channeler: 2 }), creatures, cards, rating);
+    expect(sb.swaps.filter((x) => x.rule === "counters").map((x) => [x.out, x.in])).toEqual([["counterspell", "aether_channeler"], ["counterspell", "aether_channeler"]]);
+    expect(sb.deck.some((e) => e.cardId === "counterspell")).toBe(false);
+  });
+
+  it("in a series: from game two an AI seat plays its sideboarded deck; the human's seat plays as registered", async () => {
+    const { seatForGame } = await import("./event.js");
+    const e = register(fresh(48)), opp = pairingOf(e, 0)!.b!;
+    expect(seatForGame(e, 0, opp, { cards, rating })).toBe(e.field[0]);
+    const them = seatForGame(e, opp, 0, { cards, rating });
+    expect(them.deck.reduce((n, x) => n + x.count, 0)).toBe(40);
+    expect(seatForGame(e, opp, 0, { cards })).toBe(e.field[opp]); // without the rating: no sideboarding (the S48 behaviour)
+  });
+});
+
+describe("the drafter's data (S49 Part 3)", () => {
+  it("a pod's draft: eight seats, forty-five picks each, deterministic by seed; picks one to three by rating alone; the colour bonus from pick four, a third colour cut at pick eight; the curve term from pick twenty", async () => {
+    const { runDraft, pickValue, colourRanks, DRAFT_TERMS } = await import("./drafter.js");
+    const { cardRating } = await import("./rating.js");
+    const set = packs.sets.find((s) => s.id === "plane")!, recipe = packs.recipes.find((r) => r.id === "classic")!;
+    const d = runDraft(set, recipe, packs, cards, rating, 49);
+    expect(d.picks).toHaveLength(8);
+    for (const p of d.picks) expect(p).toHaveLength(45);
+    expect(runDraft(set, recipe, packs, cards, rating, 49)).toEqual(d);
+    expect(runDraft(set, recipe, packs, cards, rating, 50).picks).not.toEqual(d.picks);
+    for (const p of d.picks) { const b = buildLimitedDeck(p, rating, cards); expect(b.deck.reduce((n, e) => n + e.count, 0)).toBe(40); }
+    const r = (id: string) => cardRating(cards.get(id)!, rating);
+    const white = ["savannah_lions", "serra_angel", "soul_warden"], wb = [...white, "terror", "vampire_nighthawk", "gravedigger"];
+    expect(pickValue("shock", white, 2, rating, cards)).toBe(r("shock")); // picks 1–3: the rating alone
+    expect(colourRanks(wb, rating, cards).slice(0, 2).sort()).toEqual(["B", "W"]);
+    expect(pickValue("suntail_hawk", wb, 7, rating, cards)).toBeCloseTo(r("suntail_hawk") + DRAFT_TERMS.bonusPerPick * 4); // in the colours
+    expect(pickValue("shock", wb, 7, rating, cards)).toBe(r("shock")); // a fourth colour: nothing
+    const wbu = [...wb, "wind_drake"];
+    expect(pickValue("counterspell", wbu, 7, rating, cards)).toBeCloseTo(r("counterspell") + DRAFT_TERMS.bonusPerPick * 4 * DRAFT_TERMS.thirdShare); // the third colour: half, before the cut
+    expect(pickValue("counterspell", wbu, 8, rating, cards)).toBe(r("counterspell")); // the cut at pick eight
+    expect(pickValue("mind_stone", wb, 12, rating, cards)).toBeCloseTo(r("mind_stone") + DRAFT_TERMS.bonusPerPick * 9); // colourless: castable
+    const short = pickValue("suntail_hawk", wb, 20, rating, cards), plenty = pickValue("suntail_hawk", [...wb, "soul_warden", "soul_warden", "savannah_lions", "suntail_hawk"], 20, rating, cards);
+    expect(short - plenty).toBeCloseTo(DRAFT_TERMS.curveBonus); // short of two-drops from pick twenty
+  });
+});
 });

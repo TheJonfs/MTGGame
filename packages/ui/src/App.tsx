@@ -209,7 +209,7 @@ function MainMenu() {
         {/* Post-S48 (Chris): the two modes first; the single match and the gallery next; the viewer (and the dev lab) as minor links. */}
         <div className="main-menu">
           <a href="/world"><img src="/menu-journey.png" alt="" /><b>The journey</b><span>walk the world — new game or continue</span></a>
-          <a href="/convocation"><img src="/menu-convocation.png" alt="" /><b>The Convocation</b><span>Sealed, eight seats, three rounds</span></a>
+          <a href="/convocation"><img src="/menu-convocation.png" alt="" /><b>The Convocation</b><span>Sealed — a field of sixteen, five rounds, the Umbel</span></a>
           <a href="/play"><img src="/menu-duel.png" alt="" /><b>A single match</b><span>one duel, any decks, no world attached</span></a>
           <a href="/gallery"><img src="/menu-gallery.png" alt="" /><b>The card gallery</b><span>every card in the pool, both frames</span></a>
         </div>

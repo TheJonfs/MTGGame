@@ -8,10 +8,10 @@
 import type { CardDef } from "@shandalar/cards";
 import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
 import {
-  CONVOCATION_NAMES, EVENT_SAVE_KEY, LEDGER_KEY, MatchSeries, SEALED_PLANE, addCopy, advanceEvent, buildLimitedDeck, checkEventDeck, closeRound, defaultKnobs, deserializeEvent,
+  CONVOCATION_NAMES, DIFFICULTIES, EVENT_SAVE_KEY, LEDGER_KEY, MatchSeries, SEALED_PLANE, addCopy, advanceBracket, advanceEvent, bracketRound, bracketRoundComplete, buildLimitedDeck, checkEventDeck, closeRound, deserializeEvent, finalPlaces, playBracketFieldRound, recordBracketSeries, resolveKnobs, seatForGame,
   ledgerEntry, lifeModifiers, newSealedEvent, pairingOf, playFieldRound, poolCollection, recordSeries, registerDeck, removeCopy, resultOf, roundComplete, saveCurrentSeries,
   serializeEvent, seriesSeed, seriesSetup, standings, type CardRatingTable, type Catalog, type ConvocationEvent, type ConvocationLedgerEntry, type ConvocationPackData,
-  type Decklist, type SeatAgents, type Standing,
+  type Decklist, type DifficultyName, type KnobValues, type SeatAgents, type Standing,
 } from "@shandalar/world";
 import { MatchController } from "../play/match-controller.js";
 import type { DeckEditorHost } from "../components/deck-editor-host.js";
@@ -25,6 +25,7 @@ export type ConvocationScreen =
   | { kind: "between" }
   | { kind: "field" }
   | { kind: "standings" }
+  | { kind: "bracket" }
   | { kind: "prize" };
 
 type Store = Pick<Storage, "getItem" | "setItem" | "removeItem">;
@@ -39,7 +40,8 @@ export class ConvocationController {
   match: MatchController | null = null;
   /** The last field round's wall time on the main thread, ms (S47 Concern 4: measured, shown in the dev line). */
   fieldMs: number | null = null;
-  readonly knobs = defaultKnobs();
+  /** The event's knobs: its difficulty's bundle (the entrance tables — ADR-148). */
+  get knobs(): KnobValues { return resolveKnobs({ difficulty: DIFFICULTIES[(this.event?.difficulty ?? "standard") as DifficultyName] ?? {} }); }
   private listeners = new Set<() => void>();
 
   constructor(
@@ -67,9 +69,10 @@ export class ConvocationController {
 
   // ---------- the door ----------
 
-  newEvent(seed: number = Math.floor(Math.random() * 1_000_000)): void {
+  /** S49: the event's size — sixteen seats, five rounds and a Top 8 by default; the S48 event of eight stays offered. */
+  newEvent(seed: number = Math.floor(Math.random() * 1_000_000), opts: { seats?: number; rounds?: number; top8?: boolean; difficulty?: DifficultyName } = {}): void {
     const faces = this.catalog.opponents.map((o) => ({ portrait: o.portrait, colors: o.colorsPhaseTwo ?? o.colors }));
-    this.set(newSealedEvent({ seed, format: SEALED_PLANE, names: CONVOCATION_NAMES, faces }, { cards: this.pool, packs: this.packs, rating: this.rating }));
+    this.set(newSealedEvent({ seed, format: SEALED_PLANE, names: CONVOCATION_NAMES, faces, seats: opts.seats ?? 8, rounds: opts.rounds ?? 3, ...(opts.top8 ? { top8: true } : {}), difficulty: opts.difficulty ?? "standard" }, { cards: this.pool, packs: this.packs, rating: this.rating }));
     this.series = null; this.match = null;
     this.openBuild(false);
   }
@@ -80,8 +83,9 @@ export class ConvocationController {
     if (e.phase === "build") return this.openBuild(false);
     if (e.phase === "standings") { this.screen = { kind: "standings" }; return this.emit(); }
     if (e.phase === "over") { this.screen = { kind: "prize" }; return this.emit(); }
-    const mine = pairingOf(e, 0);
-    if (e.current && mine && mine.b !== null) { this.series = new MatchSeries({ seed: seriesSeed(e, mine.a, mine.b), games: e.current.games }); this.screen = { kind: "between" }; return this.emit(); }
+    const opp = this.opponentSeat();
+    if (e.current && opp !== null) { this.series = new MatchSeries({ seed: seriesSeed(e, 0, opp), games: e.current.games }); this.screen = { kind: "between" }; return this.emit(); }
+    if (e.phase === "bracket") { this.screen = { kind: "bracket" }; return this.emit(); }
     if (resultOf(e, e.round, 0) && !roundComplete(e)) { this.screen = { kind: "field" }; this.emit(); void this.finishRound(); return; }
     this.screen = { kind: "pairings" }; this.emit();
   }
@@ -131,7 +135,17 @@ export class ConvocationController {
 
   // ---------- the series over the match ----------
 
-  opponentSeat(): number | null { const p = this.event ? pairingOf(this.event, 0) : undefined; return p && p.b !== null ? (p.a === 0 ? p.b : p.a) : null; }
+  /** The human's opponent: this round's pairing, or — in the bracket — the match they are still to play. */
+  opponentSeat(): number | null {
+    const e = this.event; if (!e) return null;
+    if (e.phase === "bracket") { const m = bracketRound(e).find((x) => x.a === 0 && x.winner === undefined); return m ? m.b : null; }
+    const p = pairingOf(e, 0); return p && p.b !== null ? (p.a === 0 ? p.b : p.a) : null;
+  }
+  /** The human has the bye this round (an odd field). */
+  hasBye(): boolean { const e = this.event; return !!e && e.phase === "round" && pairingOf(e, 0)?.b === null; }
+  /** Sit out a bye: the field plays, then the standings. */
+  sitOut(): void { if (!this.hasBye()) return; this.screen = { kind: "field" }; this.emit(); void this.finishRound(); }
+  places() { return this.event ? finalPlaces(this.event) : []; }
   standings(): Standing[] { return this.event ? standings(this.event) : []; }
 
   /** "Play the match": the series begins (or continues); the coin's winner chooses — the AI plays first. */
@@ -150,7 +164,8 @@ export class ConvocationController {
 
   private startGame(choice: "play" | "draw"): void {
     const e = this.event!, s = this.series!, opp = this.opponentSeat()!;
-    const game = s.nextGame(choice), me = e.field[0]!, them = e.field[opp]!, setup = seriesSetup(e, 0, opp, this.knobs);
+    const game = s.nextGame(choice), me = e.field[0]!, setup = seriesSetup(e, 0, opp, this.knobs);
+    const them = game.index === 0 ? e.field[opp]! : seatForGame(e, opp, 0, { cards: this.pool, rating: this.rating }); // S49: the AI sideboards from game two
     const m = new MatchController(this.pool, {
       humanSeat: 0, seed: game.seed,
       custom: {
@@ -173,29 +188,63 @@ export class ConvocationController {
 
   /** The human's series is done: record it, then the field's series (headless, here), then the standings. */
   private async finishSeries(): Promise<void> {
-    const opp = this.opponentSeat()!;
-    this.set(recordSeries(this.event!, 0, opp, this.series!.state()));
+    const opp = this.opponentSeat()!, e = this.event!;
+    this.set(e.phase === "bracket" ? recordBracketSeries(e, 0, opp, this.series!.state()) : recordSeries(e, 0, opp, this.series!.state()));
     this.screen = { kind: "field" }; this.emit();
-    await this.finishRound();
+    if (e.phase === "bracket") await this.finishBracketRound(); else await this.finishRound();
   }
   private async finishRound(): Promise<void> {
     await new Promise((r) => setTimeout(r, 30)); // let the screen paint before the main thread is taken
     const agents: SeatAgents = (seat, opponent, seed, side) => new HeuristicAgent(seed * 2 + 1 + side, this.pool, difficultyProfile("master", seat.archetype, opponent.deck));
     const t0 = typeof performance !== "undefined" ? performance.now() : 0;
-    const played = await playFieldRound(this.event!, { cards: this.pool, knobs: this.knobs }, agents);
+    const played = await playFieldRound(this.event!, { cards: this.pool, knobs: this.knobs, rating: this.rating }, agents);
     this.fieldMs = typeof performance !== "undefined" ? Math.round(performance.now() - t0) : null;
     this.set(closeRound(played));
     this.series = null; this.match = null;
     this.screen = { kind: "standings" }; this.emit();
   }
+  private fieldAgents(): SeatAgents { return (seat, opponent, seed, side) => new HeuristicAgent(seed * 2 + 1 + side, this.pool, difficultyProfile("master", seat.archetype, opponent.deck)); }
+  /** S49: the bracket round's other matches (headless, here), then the next round's matches — or the finish. */
+  private async finishBracketRound(): Promise<void> {
+    await new Promise((r) => setTimeout(r, 30));
+    const t0 = typeof performance !== "undefined" ? performance.now() : 0;
+    let e = await playBracketFieldRound(this.event!, { cards: this.pool, knobs: this.knobs, rating: this.rating }, this.fieldAgents());
+    this.fieldMs = typeof performance !== "undefined" ? Math.round(performance.now() - t0) : null;
+    if (bracketRoundComplete(e)) e = this.finished(advanceBracket(e));
+    this.set(e);
+    this.series = null; this.match = null;
+    this.screen = { kind: "bracket" }; this.emit();
+  }
+  /** A player outside the eight (or out of it) watches the bracket resolve: every remaining round, headless. */
+  async resolveBracket(): Promise<void> {
+    if (!this.event || this.event.phase !== "bracket" || this.opponentSeat() !== null) return;
+    this.screen = { kind: "field" }; this.emit();
+    await new Promise((r) => setTimeout(r, 30));
+    let e = this.event;
+    while (e.phase === "bracket") {
+      e = await playBracketFieldRound(e, { cards: this.pool, knobs: this.knobs, rating: this.rating }, this.fieldAgents());
+      if (!bracketRoundComplete(e)) break; // the human's own match is still to play
+      e = this.finished(advanceBracket(e));
+      if (e.phase === "bracket" && bracketRound(e).some((m) => m.a === 0 && m.winner === undefined)) break; // the human plays on
+    }
+    this.set(e);
+    this.screen = { kind: "bracket" }; this.emit();
+  }
+  /** The ledger's line, written once, when the event is over. */
+  private finished(e: ConvocationEvent): ConvocationEvent {
+    if (e.phase !== "over" || e.ledgered) return e;
+    this.writeLedger(e);
+    return { ...e, ledgered: true };
+  }
+  /** From the bracket screen once the event is over: the prize. */
+  toPrize(): void { if (this.event?.phase === "over") { this.screen = { kind: "prize" }; this.emit(); } }
 
   /** From the standings: the next round's pairings, or the finish (the ledger's line, written once). */
   next(): void {
     const e = this.event; if (!e || e.phase !== "standings") return;
-    let n = advanceEvent(e);
-    if (n.phase === "over" && !n.ledgered) { this.writeLedger(n); n = { ...n, ledgered: true }; }
+    const n = this.finished(advanceEvent(e));
     this.set(n);
-    this.screen = n.phase === "over" ? { kind: "prize" } : { kind: "pairings" };
+    this.screen = n.phase === "over" ? { kind: "prize" } : n.phase === "bracket" ? { kind: "bracket" } : { kind: "pairings" };
     this.emit();
   }
   private writeLedger(e: ConvocationEvent): void { this.storage?.setItem(LEDGER_KEY, JSON.stringify([...this.ledger(), ledgerEntry(e, this.now())])); }

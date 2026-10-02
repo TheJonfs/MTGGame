@@ -1,124 +1,117 @@
-# Handoff — after Session 48 (2026-10-02)
+# Handoff — after Session 49 (2026-10-03)
 
 ## State of the world
-**A Sealed Convocation of eight can be played start to finish.** `/convocation` (a door on the main menu): six Classic packs from the Plane, the deck editor over the sealed pool, three Swiss rounds of best-of-three against seven AI seats built by the Limited builder, sideboarding between games, standings, a finish written to a ledger. The event saves under its own key and resumes after a reload, including mid-series; the campaign's save is never read or written. The card rating is at v1 (the Sealed sim's 20,000 games joined the lift term). S46, S47 and S48 are committed locally and **not pushed**. `pnpm typecheck`, `pnpm test` (825) and `pnpm build:web` pass.
+**The Convocation is a sixteen-seat event with a Top 8.** `/convocation`: six Classic packs, the build, five Swiss rounds of best-of-three (byes for an odd field), the Umbel — quarter-finals, semi-finals, a final — and a finish written to the ledger. The S48 event of eight (three rounds, no bracket) is still offered beside it, with a difficulty (easy / standard / hard) that sets the AI seats' extra life by round. The AI seats sideboard from game two. The colour question has an answer of the kind the brief asked for — **red's record is not the rating's doing** — and the drafter's pick rule and sim exist as data (no draft screen yet). S46–S49 are committed locally and **not pushed**. `pnpm typecheck`, `pnpm test` (842) and `pnpm build:web` pass.
 
 ## Done this session
-- **Part 0 — rulings applied** (`docs/decision-updates/s48.md`): Rich's slots; the series ends at two wins and a 1–0–2 series is now a **draw**; game one's coin winner **chooses**; a spent tier **rolls down**; ADR-146 (the Manafleur and the Cinquefont on the power list — fourteen ids, thirty legends draft); R-101 amended.
-- **Part 1 — the editor's source**: the editor is `components/DeckEditor.tsx` over a `DeckEditorHost` (the collection it draws from, the saved deck, the draft's verbs; the deck picker and the door picker optional). The world passes its own through `worldEditorHost`; the event passes its pool and its one deck. **Pinned**: the world's S37/S38 controller tests pass untouched; the world's editor walked in the browser (picker, Save deck, Cancel all present); `convocation-controller.test.ts` — an event's editor saves to the event, a world save in the same storage keeps its exact bytes.
-- **Part 2 — the builder and the Sealed sim**: `buildLimitedDeck` (`world/limited-builder.ts`) — the pair by rated playables, a bomb-only splash with two fixers, the curve mended to five two-drops, four three-drops and thirteen creatures, seventeen lands (sixteen at a low curve) split by pips. `pnpm sealed-sim` — 200 pools, 20,000 games; the report and **the rating's v1** below. A 150-pool test: forty cards, legal, at least fifteen lands, no unfixed third colour, deterministic.
-- **Part 3 — the event engine** (`world/event.ts`, pure state): `newSealedEvent`, `registerDeck`, `pairRound` (round one by seed, then Swiss with no rematch), `playSeriesHeadless` / `playFieldRound`, `standings` (3 / 1 / 0; opponents' match-win share), `advanceEvent`, `ledgerEntry`, `serializeEvent` (`convocation-event-v1`). The knob `convocationEntrance` and the resolver's `convocationSeat` are wired and all zeros. **Tests**: a full event headless with a heuristic in every seat (three rounds, twelve series, no rematch, the standings add up, the ledger's line, the same seed the same event); saved and resumed mid-round — the human's series one game in and a field series already recorded — ending as the uninterrupted event.
-- **Part 4 — the four screens**, walked in the browser as the human with the dev concession (seed 48, a full three-round event): the pool and the build ("Register the deck"); the pairings ("Round 1. You are paired with Hesper Lune."); the series banner over `PlayMatch` (game N of 3, the record, play or draw) with the play/draw choice and the sideboard editor between games; the standings ("The table after round 1."); the prize ("You finish first of eight. The Umbel is yours."), a card kept, the ledger's line on the door. A reload mid-series resumed at one game played. No console errors.
-- **Part 5 — text**: the brief's lines, verbatim, on the door, the pairings, the standings and the finish.
+- **Part 0 — rulings applied** (`docs/decision-updates/s49.md`): the tiebreaks verified against the Magic Tournament Rules' Appendix C and corrected to it (the floor is 0.33, not one third; game-win share is floored too; opponents' game-win share added as the third tiebreak); ADR-148's life-only entrance (Standard +0 / +2 / +4, Easy flat, Hard +2 / +4 / +6) and the bracket's (+4 / +6 / +8); the base floor's legality line stands down when a format asks more; the builder caps four-and-five-drops at nine.
+- **Part 1 — the colour question**: `pnpm sealed-sim --forced` (55,200 games) and `--noise 0.4` (20,000 games), and a v2 candidate (`pnpm rating:build --noise`). Tables below. **v2 did not replace v1.**
+- **Part 2 — sixteen seats, five rounds, a Top 8**: `newSealedEvent({ seats: 16, rounds: 5, top8: true })`; byes (a fifteen-seat test: one a round, never twice, three points and no games); the bracket in the event's state (`startBracket`, `recordBracketSeries`, `advanceBracket`, `finalPlaces`) seeded 1v8 / 4v5 / 2v7 / 3v6; the human plays theirs live and the rest resolves headless; a player outside the eight watches it resolve from one screen; the save carries the bracket and resumes inside it. **The AI's sideboarding** (`world/sideboard-ai.ts`), pinned: artifact/enchantment removal in against three or more auras and equipment; creature removal in against fifteen or more creatures; counters out against a creature deck. "The Umbel is yours" only for the win.
+- **Part 3 — the drafter's data**: `world/drafter.ts` (the pick rule — `DRAFT_TERMS`; designed in the plan's stage 3), `pnpm draft-sim --pods 50`, and `pnpm draft-sim --pick-order` → `data/convocation/pick-order-plane.md` (the top sixty).
+- **Part 4 — text and art**: the planner's sixteen names; the Umbel plate (`docs/art/subjects/convocation-umbel.md` — eight stalks from one point), installed beside the bracket **pending Chris's verdict**.
+- **Walked in the browser** (dev build): a sixteen-seat event with the human winning all five rounds and the Top 8 (seeded first; +4 life on the quarter-final opponent; a reload mid-quarter-final resumed at one game played; "The Umbel is yours"; ledger "first of 16"); and a second with the human losing every round (outside the eight; "Watch the bracket resolve"; sixteenth of sixteen). No console errors.
 
-## The Sealed sim — what it found
+## The colour question — what the two experiments say
 
-200 pools, each deck against twenty others, ten games a pairing, master both.
+**1. Forced pairs.** For each pair, forty pools in which that pair is at least third by the builder's own score. *Forced* is the best deck the builder makes in the pair; *chosen* is the deck it would pick from the same pool, on the same seeds. Each deck plays twenty of a fixed field of forty.
 
-| | decks built from v0 | decks built from v1 |
-|---|---|---|
-| the builder's checks (under forty; under fifteen lands; an unfixed third colour) | 0 / 0 / 0 | 0 / 0 / 0 |
-| splashing | 90 of 200 | 59 of 200 |
-| a colour's share of decks (even = 40%) | W 49 · U 35 · **B 73** · **R 6** · G 38 | W 52 · U 36 · **B 65** · **R 10** · G 39 |
-| the commonest pairs | WB 26% · UB 23% · BG 21% | WB 25% · UB 20% · BG 18% |
-| deck win rates: 10th percentile / median / 90th | 38 / 51 / 63% | 39 / 49 / 62% |
-| a deck's mean rating against its win rate | r = 0.43 | r = 0.35 |
-| curve (cards at 1 / 2 / 3 / 4 / 5 / 6+); creatures | 3.7 / 6.1 / 5.4 / 5.6 / 1.5 / 0.9; 14.6 | 3.5 / 5.8 / 5.6 / 5.8 / 1.5 / 0.9; 15.0 |
+| pair | forced | chosen (same pools) | forced − chosen | forced, where the pair was the builder's 1st | where it was 2nd or 3rd |
+|---|---|---|---|---|---|
+| WU | **51%** | 49% | +2.5 | 48% | 52% |
+| UG | **49%** | 49% | +0.5 | 53% | 47% |
+| UB | **47%** | 47% | −0.6 | 51% | 45% |
+| WG | **46%** | 45% | +1.0 | 45% | 47% |
+| WB | **43%** | 46% | −2.2 | 45% | 41% |
+| BG | **41%** | 44% | −3.4 | 44% | 39% |
+| UR | **37%** | 45% | −8.2 | 36% | 38% |
+| WR | **35%** | 42% | −7.7 | 33% | 35% |
+| BR | **35%** | 43% | −7.9 | 38% | 34% |
+| RG | **33%** | 40% | −7.6 | 35% | 32% |
 
-Games average 19.5 turns; 8–9% end by decking; under ten of 20,000 are drawn.
+By colour (the mean of its four pairs): W 44% · U 46% · B 41% · **R 35%** · G 42%. (The field's forty decks ran a few points above average, so read the columns against each other, not against 50%.)
 
-**The pairs under v1, and how each fared**: WB 49 pools, 52% · UB 40, 51% · BG 35, 47% · WG 28, 50% · WU 21, 57% · UG 8, 54% · RG 6, 41% · WR 6, 38% · BR 5, 39% · UR 2, 42%.
+**The reading the brief set up:** forced red decks do not win 45–50% from red-rich pools — they win 33–38% even in the pools where a red pair was the builder's own first choice. So **the rating was not under-rating red; the cause is the pool or the pilot.** v1 stands.
 
-**The twenty that moved most from v0 to v1** (the planner reads these):
+**2. Rating noise.** A third of 200 decks built with σ = 0.4 noise on every card's rating. Red's share of decks: 10% (v1's run) → 8%; red pairs' win rates 38–48% on fifteen decks. The update's movers (v1 → the v2 candidate) are mostly **red cards going down** — once the noise got them played, the evidence was against them:
 
-| card | tier | v0 | v1 | change | sealed seen | sealed lift |
-|---|---|---|---|---|---|---|
-| Waste Not | 2 | 1.38 | 0.72 | −0.65 | 4708 | −4.0 |
-| Entomb | 2 | 1.26 | 0.67 | −0.60 | 1984 | −4.8 |
-| Cathartic Adept | 1 | 1.22 | 0.69 | −0.53 | 2591 | −2.9 |
-| Gravitational Shift | 2 | 1.86 | 1.35 | −0.51 | 4187 | −2.7 |
-| Buried Alive | 2 | 1.23 | 0.78 | −0.45 | 2370 | −3.9 |
-| Darksteel Myr | 1 | 1.00 | 0.56 | −0.44 | 1061 | −3.5 |
-| Drana, Kalastria Bloodchief | legend | 3.31 | 3.65 | +0.35 | 620 | +7.4 |
-| Angelic Destiny | 3 | 2.23 | 2.57 | +0.34 | 5292 | +3.1 |
-| Birds of Paradise | 2 | 1.47 | 1.80 | +0.33 | 3621 | +2.3 |
-| Rampaging Baloths | 3 | 2.70 | 3.02 | +0.32 | 3973 | +4.5 |
-| Tendrils of Corruption | 2 | 1.95 | 1.65 | −0.31 | 6271 | −0.8 |
-| Gladecover Scout | 1 | 1.28 | 0.97 | −0.30 | 2579 | −2.1 |
-| Zombify | 2 | 1.74 | 1.45 | −0.30 | 6497 | −0.5 |
-| Indulgent Aristocrat | 1 | 1.62 | 1.34 | −0.28 | 8046 | +0.0 |
-| Wrath of God | 3 | 2.47 | 2.20 | −0.27 | 3918 | +0.0 |
-| Gaean Wurm | 2 | 2.36 | 2.10 | −0.26 | 4757 | +1.4 |
-| Mind Stone | 1 | 1.33 | 1.09 | −0.24 | 7636 | −1.6 |
-| Angel of the Ruins | 3 | 1.46 | 1.68 | +0.22 | 3747 | +0.4 |
-| Bonesplitter | 1 | 1.12 | 0.90 | −0.22 | 1134 | −3.5 |
-| Tainted Phoenix | R | 2.81 | 2.59 | −0.22 | 308 | −2.8 |
+| card | tier | v1 | v2 | sealed seen | sealed lift |
+|---|---|---|---|---|---|
+| Guttersnipe | 3 | 1.89 | 1.30 | 2232 | −5.9 |
+| Dragon Mage | 3 | 1.71 | 1.26 | 2172 | −5.1 |
+| Titania, Protector of Argoth | legend | 2.96 | 2.61 | 621 | −2.7 |
+| Siege-Gang Commander | 3 | 2.38 | 2.04 | 1985 | −4.6 |
+| Young Pyromancer | 2 | 1.36 | 1.03 | 2031 | −6.7 |
+| Goblin Chieftain | 2 | 2.13 | 1.81 | 2692 | −1.9 |
+| Goblin Matron | 2 | 1.67 | 1.38 | 2038 | −2.9 |
+| Entomb | 2 | 0.67 | 0.39 | 2263 | −9.2 |
+| The Warden | legend | 2.60 | 2.33 | 185 | −4.3 |
+| Curiosity | 1 | 0.77 | 0.52 | 605 | −6.1 |
 
-The direction is right: cards that need a deck built around them (Entomb, Buried Alive, Zombify, Cathartic Adept, Waste Not, the Aristocrat) fall; cards that are good on their own (Drana, the Baloths, Angelic Destiny, Birds) rise. `pnpm rating:view --compare data/convocation/card-rating-v0.json` shows every card's change.
+(The other ten of the twenty are in `data/convocation/card-rating-v2-candidate-report.md`; all twenty moved down.)
 
-## After the handoff (2026-10-02, Chris)
+**What I could and could not separate, pool against pilot** (a 720-game probe: thirty red-pair decks and thirty others, twelve games each):
+- *Not burn at faces.* Red decks hold 1.6 burn spells and cast one every other game; 23% of those go at the face — about one face-burn in ten games.
+- *The bodies differ.* Red's commons and uncommons are the pool's highest in power and lowest in toughness (2.0 / 1.5 on average, against 1.5–1.8 / 1.7–2.1 elsewhere) — creatures that want to attack early and trade badly late. Red decks' games run as long as anyone's (19.5 turns).
+- *I cannot say whether a better pilot would win with them.* That needs a human, or an attack-policy experiment; it is the note the brief asked for: **for the AI ledger — in Limited, a term for racing with a low-toughness board (when the opponent's blockers outclass ours and the clock is not ours, small attackers are being spent, not used); burn at faces is not the problem.**
 
-- **Concern 3 fixed**: `recordCutting` keeps what the profile already holds — a Manafleur victory after the flood no longer drops `floodSurvived` (replaying phase one never costs phase two's credit). Nothing reads the flag yet (it is phase three's), so no player lost anything visible; the chronicle's entries were never affected. One test.
-- **The menu**: the journey and the Convocation are the top two doors, the single match and the gallery the next two; the replay viewer and (dev) the lab are a quiet row of links beneath. Deviation 9's missing plate is made: three candidates (`docs/art/subjects/menu-convocation-{a,b,c}.md`); **a** — the round hall from above — is installed pending Chris's verdict.
+## The draft sim — 50 pods of eight, three Classic packs, the pick rule, 2,800 games
 
-### Chris's first Sealed playtest (2026-10-02) — 3–0, 6–0 with a blue-black build; the flow "felt good", the round-end wait trivial
-
-- **Door A** (the round hall) is the Convocation's plate.
-- **Three AI misplays reported, fixed, pinned** (books 85–87; ladder mirror gate PASS). Measured over 320 Sealed games, before → after:
-  - *The Warhammer passed back and forth until the mana ran out* — a move between two of our creatures scored the full worth of equipping every time. Now a move is a play only when it puts the equipment to work this turn (onto a ready creature, off one that cannot swing, before combat). Equip moves **325 → 84**.
-  - *Tendrils of Corruption for two at a three-toughness creature* — the prediction read every counted amount as "some" (three). It now counts the battlefield through the ref's predicate. Counted-damage casts that would not kill **26 → 8** (of ~95; the remaining eight not investigated).
-  - *A creature cast before the Soul Warden* — with mana for both, a permanent that watches creatures enter is cast first (the landfall-first rule's shape). Watcher skipped **33 → 0**.
-- **The seats play at master** — the strongest profile — with even life and no entrance. Chris swept the event. The lever the mode has for this is `convocationEntrance` (all zeros today); whether a single Sealed event should stay flat is the planner's.
+- **Seats per colour** (even is 40%): W 43% · U 38% · **B 51%** · **R 27%** · G 42%. Drafting spreads the colours far more than Sealed did (red 8–10% there) — a seat takes what is passed.
+- **They do fight over black**: four or more of eight seats are on black in 33 of 50 pods (five or more in 17). The most-drafted colour in a pod is shared by five or more seats in 31 pods.
+- **A colour's seats win**: W 54% · U 54% · B 49% · **R 38%** · G 51% — red again, now with 106 seats behind it.
+- **Pairs**: BG 14% · UB 14% · WG 13% · WB 13% · WU 11% · BR 10% · UG 9% · WR 6% · UR 6% · RG 5%.
+- **Commitment**: a seat's two colours last change at pick 4.9 on average; 88% are settled by the cut at pick 8; 8% change after the first pack. 25 of 400 decks splash.
+- **The pod's spread**: the best seat's win rate less the worst's averages 53 points; a seat's standard deviation within its pod is 16.7 points.
+- **The pick order's top ten** (`pick-order-plane.md`): Clio, Drana, the Usher, Lumen, the Fordkeeper, then **Tundra, Tropical Island, Scrubland**, Vindicate, **Plateau** — four dual lands (see Concern 3).
 
 ## Deviations from the brief
-1. **The editor's source object is wider than the brief's shape** — a host carrying the source (`collection`, `savedDeck`, `activeDeckName`), the draft and its verbs; the world's adapter passes its controller's editor methods through unchanged rather than re-implementing them over `save(decks)`. The world's editor logic was not moved, so its pins could not break. *Rule on*: nothing, unless the planner wants the world's editor logic itself lifted out.
-2. **The Lab's worker was not timed; the field runs on the main thread.** Measured in the browser (dev build): the field's three series took **1.6 s in round one (cold) and 0.2–0.3 s in rounds two and three**, behind an "other tables finish their matches" screen. For eight seats that is enough and avoids the worker's lifetime question. *Rule on*: nothing now; sixteen seats (seven series) is about twice this and still fine; a hundred needs the worker and its timing.
-3. **The ledger is its own storage key**, not a field of the campaign's profile object (ADR-147 says "the profile's `convocation` record"). The profile's writers rebuild that object field by field (`migrateLegacy`, `recordCutting`) and would silently drop an unknown field. The ledger is per-browser, beside the profile; a linkage reads it the same way. *Rule on*: whether to move it inside the profile object once those writers are fixed.
-4. **The v1 blend is the implementer's** — the brief says "at the brief's weights" and names none. The Sealed sim's sightings are pooled with the authored lists' into the one lift term; presence is unchanged; half and half as before.
-5. **The AI does not sideboard** (the brief allowed "or none this session — say which"). The player can.
-6. **"Suggest a deck"** on the build screen fills the draft with the builder's deck — not in the brief; it made the browser walk possible without hand-building, and it is a fair convenience. Say if it should go.
-7. **`poolIsCap`** — a new `DeckRule` field so a sealed deck may run five of a common; `addCopy` takes a cap.
-8. **The splash rule is stricter than the brief's sketch** — the brief asks two fixers; with Evolving Wilds at tier 1 that alone let 80% of decks splash. It is now also bombs only (rated 2.0+, 0.75 over the card replaced, one pip, at most two cards): 45% of decks under v0, 30% under v1.
-9. **No Convocation door plate** — the menu's door is text only (the other four have art). The names of the field are twelve placeholders, as the brief marks.
+1. **v2 is written as a candidate file and v1 stands** — the brief's own rule, applied; the planner can overrule by copying the candidate over.
+2. **A drawn bracket series goes to the higher seed.** The brief does not say; single elimination needs a winner and a best-of-three can end 1–1–1.
+3. **The AI sideboards on the opponent's registered list, not on cards "seen".** The heuristic is already handed that list every game; reading the last game's log for what was seen is more code for a rule that would mostly reach the same answer. *Rule on*: whether open lists are acceptable here.
+4. **"Auras seen"** is three or more noncreature artifacts and enchantments in the list — auras and equipment both, since the same removal answers either.
+5. **The door offers two events and a difficulty.** The brief asks for sixteen seats; I kept the eight-seat event as the short option, and added the difficulty select because ADR-148's table is per difficulty and nothing else chooses it.
+6. **Hard's bracket entrance** is +6 / +8 / +10 and Easy's is flat — the brief names Standard only.
+7. **The forced-pair field is forty decks** with each deck meeting twenty of them (the brief says "the field's twenty"), and every forced deck is paired with the chosen deck from the same pool on the same seeds — that pairing is what makes the "forced − chosen" column possible.
+8. **The Top 8's "one screen"** for a player outside the eight is the bracket itself with one button; the same screen serves a player still in it.
 
 ## Concerns
-1. **The builder plays black two times in three and red one time in ten — and red loses when it is played.** The rating carried the authored lists' colour skew into Sealed (the mono-black slice was the rating run's best list; the red lists its worst). v1 moved it a little (black 73 → 65%, red 6 → 10%). But the red pairs' decks win 38–42% (on only 19 decks), so this may not be the rating alone: red's cards in this pool may be weak in forty-card games under this pilot — burn the heuristic aims at faces, small creatures outclassed by turn five. I cannot separate those from this data. It matters for the field: seven AI seats will mostly be W/B/U/G, and a player who reads that can draft… nothing yet, but will in S50.
-2. **The update did not make the rating a better predictor.** A deck's mean rating against its win rate went from r = 0.43 (v0 decks) to 0.35 (v1 decks). The two runs are different decks, so they are not a clean comparison, but v1 is not shown to be better — only less wrong on the synergy cards. The honest read: the lift term is noisy, and one round of updating on decks the rating itself built is partly circular (a card the builder never plays gets no new evidence). A fix worth scoping: build a share of sim decks with rating noise, so under-rated cards get played.
-3. **`recordCutting` drops `floodSurvived`** (`world/corolla.ts`): it returns a new profile object without the flag, so a player who beat the flood's capstone and then wins a Manafleur run loses the flag. Found while reading the profile's writers for the ledger; not touched (campaign code, outside the brief). Flagged as a separate task.
-4. **The legality panel says the same thing twice** in a short sealed deck: "deck has 0 cards; the floor is 30" and "0 cards; Sealed asks 40". The base floor should stand down when a rule asks more; left alone because the Open's editor has shown both since S46 and a test may pin the text.
-5. **The tiebreak's one-third floor is from memory** of the tournament rules, not verified (they are not the Comprehensive Rules). It only matters for ordering tied seats.
-6. **A game abandoned mid-play restarts from its seed** — the same opening hand. A player who dislikes a hand can reload for the same hand, not a new one, so there is nothing to exploit; but a reload during a lost game replays it. The campaign has the same property.
-7. **The builder's suggestion for seed 48's pool averaged 3.39 mana value** — heavier than the field's 2.97 mean. The six-drop cap holds the top end; nothing caps the four- and five-drops together. Worth a look when the builder is next touched.
-8. **Under four three-drops in 4–5 of 200 decks, under thirteen creatures in 1** — the pool did not have them in the pair; the mend does not change the pair to find them.
+1. **Red is a real problem for the mode, and the rating cannot fix it.** A draft puts a quarter of the seats on red and they win 38%. In Sealed the builder avoids red, which hides it; in a draft the cards have to go somewhere. Updating the rating on this evidence lowers red further (the v2 candidate), which is honest about results and makes the avoidance stronger — a loop that ends with red undraftable for the AI and a free lane for a human who can pilot it. Whether a human *can* is the open question; Chris drafting or building red deliberately in his next event would tell more than another sim.
+2. **The builder leans on black more than black earns.** Black is in 64% of Sealed decks and 51% of draft seats, but forced black pairs win 41% — below white (44%) and blue (46%). WU is the best forced pair (51%) and is chosen 8–11% of the time. The rating's black cards came from authored lists where black was strong at sixty cards; the Sealed updates have not corrected the colour as a whole.
+3. **Dual lands are first picks.** Their ratings come from Constructed lists (a Tundra is in the best decks), and the pick rule takes rating alone for picks one to three. An AI seat opening a dual will take it over a removal spell. The builder then plays the dual only if it fits. A land's draft value wants its own treatment — a flat low value before the colours settle is the obvious one.
+4. **Seats commit at pick four.** The bonus starts at +0.1 and compounds, so whatever two colours lead after three picks are almost always the seat's colours for the draft (88% never change after pick 8). That is a rigid drafter: it will not move into an open colour. Fine for a first field; worth a look before the human's draft, because a rigid field is easy to read.
+5. **The pod's spread is wide** — 53 points between the best and worst seat. Some of that is seven-opponent noise at two games a pairing; some is real (a seat that fought over black against a seat that had blue to itself). It is the number to watch when the pick rule changes.
+6. **The field's round time under load**: seven series took 0.7–1.2 s on the main thread while six sim processes were running on the same machine — inside the brief's 3 s line, but not a clean measurement. The S48 figure for three series (0.2–0.3 s warm) suggests about 0.6 s clean.
+7. **The entrance at rounds four and five is round three's** (+4): the table has three rows and a later round reads the last. A five-round event at Standard is +0 / +2 / +4 / +4 / +4, then +4 / +6 / +8 in the bracket — so the quarter-final is no harder than round five. If the ramp should continue, the table wants five rows.
+8. **A finished event's Swiss standings place and bracket place differ**, and the prize screen's table is ordered by the final place while its record columns are the Swiss rounds' — a quarter-final loss does not show in "Record". Correct, but it may read oddly.
 
 ## Registry entries added/changed
-- **R-101** amended — the S48 rulings (two wins; a drawn series without a majority; the coin's winner chooses; the tiebreak and its unverified floor).
-- **Knobs**: `convocationEntrance` (new; `docs/knobs.md` regenerated).
+- **R-101** amended — the tiebreaks are the Magic Tournament Rules' Appendix C, verified against the text (0.33 floors; three tiebreaks).
+- **Knobs**: `convocationEntrance` filled (ADR-148), `convocationBracketEntrance` added; `docs/knobs.md` regenerated.
 - Pool registry: no rows changed (no cards this session).
 
 ## Test status
-`pnpm test`: 87 files passed, 1 skipped; **825 tests passed, 2 skipped** (the standing two). New: `event.test.ts` (6 — the builder over 150 pools; the field; registration; the full event; save and resume; the ladder), `convocation-controller.test.ts` (4 — the event's editor and the world's bytes; the pool as the cap; the series over the match with a reload; the finish and the ledger). Amended: `series.test.ts` (the 1–0–2 draw; the coin's chooser), `packs.test.ts` (fourteen power ids; the roll-down). No fuzz — no new card entered a deck; the Sealed sim's 40,000 games over built decks raised no engine error.
+`pnpm test`: 87 files passed, 1 skipped; **842 tests passed, 2 skipped** (the standing two). New in `event.test.ts`: the sixteen names; a full sixteen-seat event with the bracket, saved and resumed inside it; the bracket's entrance and the drawn-series rule; byes at fifteen seats; five sideboarding tests; the pick rule. New in `convocation-controller.test.ts`: the sixteen-seat event through the controller with the human winning the Top 8 (the entrance by round and bracket round, a reload in the bracket, the ledger); the human outside the eight, and a quarter-final loser's finish; the AI's game-two deck. Amended: the ladder test (ADR-148's values).
 
-One false alarm: the world generator's 200-seed fuzz timed out during a full run while six sim processes were going; it passes alone and in the clean full run above.
+No AI heuristic changed this session (the sideboarding is deck choice, in the world package), so no ladder run. No fuzz — no new card entered a deck; 78,000 sim games over built decks raised no engine error.
 
-Not verified: the Lab worker's rate; the production build in a browser (the walk was the dev server); a full event played by hand without the dev concession; the editor's world side beyond rendering and its existing controller tests.
+Not verified: the Lab worker's rate (still); the production build in a browser; an event played by hand without the dev concession at sixteen seats; whether ADR-148's life values are right (Chris's next event reads them).
 
 ## Suggested next
-**S49 — the series and standings at sixteen seats, and the drafter's data.** Estimate: **one session.**
-- Sixteen seats, five rounds: the engine already takes `seats` and `rounds`; byes are written but untested (no odd field yet). A Top-8 bracket is new (single elimination over `MatchSeries`).
-- The AI's sideboarding (shape-keyed), and the human's play/draw screen are small.
-- The tiebreak verified against the tournament rules.
-- The drafter's data: a pick-order view of the rating, a colour-commitment term, and a `pnpm draft-sim` that reports how many seats fight over black — which, from Concern 1, will be most of them. I would fix the colour skew first: a rating-noise option in the Sealed sim, one more update, and a check that red's share rises without its win rate falling further.
-- A door plate for the menu, and the field's real names, are Chris's and the planner's.
+**S50 — the drafter as a screen.** Estimate: **one session** for pick-and-pass with the pod's seven AI seats on the pick rule, the human's picks into the event's pool, then the existing build → rounds → Umbel flow (a draft event is a Sealed event with a different way of getting the pool). Before it, two small things I would settle because a human will exploit them at once:
+- lands' pick value (Concern 3) — a line in the pick rule;
+- whether the field should be less rigid (Concern 4) — a slower bonus before the cut.
+
+And one thing for Chris rather than for code: **play red on purpose** in the next event and report whether it is the cards or the pilot.
 
 ## How to run
 ```
-pnpm viewer                    # then /convocation — or the menu's "The Convocation"
-pnpm sealed-sim --pools 200 --games 10 --shard 0/6    # six shards → analysis/runs (local)
-pnpm sealed-sim --report                               # the builder's checks, pairs, curve, win rates
-pnpm rating:build --sealed                             # v1 → data/convocation/card-rating.json
-pnpm rating:view --compare data/convocation/card-rating-v0.json   # the page, with each card's change
+pnpm viewer                                  # /convocation — sixteen seats and the Umbel by default
+pnpm sealed-sim --forced --games 4 --shard 0/6     # six shards, then:
+pnpm sealed-sim --forced-report --games 4          # the forced-pair table → analysis/runs/forced_pairs.md
+pnpm sealed-sim --pools 200 --games 10 --seed 4901 --noise 0.4 --shard 0/6 --out analysis/runs/sealednoise_shard0.json
+pnpm rating:build --noise                    # → data/convocation/card-rating-v2-candidate.json (v1 untouched)
+pnpm draft-sim --pods 50                     # the draft's colour table
+pnpm draft-sim --pick-order                  # → data/convocation/pick-order-plane.md
 npx vitest run packages/world/src/event.test.ts packages/ui/src/convocation
 pnpm typecheck && pnpm test
 ```
-In the browser console, `__cc` is the controller: `__cc.newEvent(48); __cc.suggestDeck(); __cc.register(); __cc.playMatch(); __cc.match.autoWin()`.

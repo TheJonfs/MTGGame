@@ -40,14 +40,20 @@ Six Classic packs from the Plane, the AI builder, seven AI seats, three Swiss ro
 - **Tests:** the builder (legal, forty, two colours, a curve inside bounds, deterministic by seed) over 200 seeded pools; Swiss pairing (no rematch in three rounds of eight; a bye never needed at eight); an event headless end to end (eight seats, three rounds, standings sum to the points played); save → load → continue equals an uninterrupted run.
 - **The Lab measures:** the builder's decks against each other and against the yardsticks (`pnpm sealed-sim`: N pools → N decks → a round-robin — the deck's floor is what the entrance compensates); land counts and colour splits by pool; how often a pool has no two-colour deck of 23 playables.
 
-### Stage 2 — series and standings generalised; sixteen seats · **1 session**
+### Stage 2 — series and standings generalised; sixteen seats · **BUILT (S49)** — sixteen seats, five rounds, byes, the Top 8, the AI's sideboarding, the tiebreaks verified
 - Sideboarding: the human's screen in the `betweenGames` hook (the editor against pool-minus-deck); the AI's is "unused playables" plus a few shape-keyed rules (more removal against a creature-heavy list; counters out against aggro) — keyed on the opponent's *shape*, never a card id.
 - Swiss to N rounds with tiebreaks (opponents' match-win percentage, then game-win percentage — the tournament rules' order, which are not the Comprehensive Rules; **to be verified at build**), byes for odd fields, a Top-8 single-elimination bracket.
 - Play/draw: the human's choice screen (the AI always plays).
 - **Tests:** tiebreak arithmetic against a hand-worked table; a sixteen-seat, five-round event headless; a bracket.
 - **The Lab measures:** the field's record distribution by entrance row; how often a drawn series occurs.
 
-### Stage 3 — the drafter · **1 session**
+### Stage 3 — the drafter · **1 session** (the data is built — S49: `world/drafter.ts`, `pnpm draft-sim`)
+
+**The pick rule (S49 Part 3; `DRAFT_TERMS`).** A card's worth to a seat at pick *n* (1–45 across the three packs) is its rating plus:
+- **Colour commitment.** Picks 1–3: the rating alone. From pick 4: a bonus of `0.1 × (n − 3)` (capped at 1.2) to a card castable in the seat's two colours with the most rated picks so far (a gold card counts to each of its colours; a colourless card is castable). Until pick 8 a card that needs the seat's *third* colour draws half the bonus; at pick 8 that is cut. A land earns the bonus when it taps for two of the seat's colours and loses it when it taps outside them.
+- **The curve.** From pick 20: a two-drop (mana value ≤ 2) in the seat's colours earns +0.3 while the seat holds fewer than five.
+- What the first run shows (50 pods): a seat's colours last change at pick 4.9 on average and 88% are settled by pick 8 — the bonus locks a seat the moment it starts. If later reading wants seats to stay open longer, the lever is the bonus's slope before the cut, not the cut.
+
 - `drafter.ts`: pick = rating + a colour-commitment bonus (grows with picks made in the colour) + a curve term; eight seats, three packs, pass left/right/left; the human's pick screen (a pack, the picks so far, the timerless pass).
 - **Tests:** a draft is deterministic by seed; every seat ends with 45 cards; the AI's colours settle by pick ~8 in most seats.
 - **The Lab measures:** the drafted decks against Sealed decks from the same set (the drafter should beat the builder alone); colour over- and under-drafting across 200 drafts — the first read of whether a set is draftable.

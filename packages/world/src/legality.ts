@@ -64,7 +64,8 @@ export function checkDeck(list: Decklist, collection?: Collection | null, rule?:
   const problems: string[] = [];
   const failed: (keyof DeckRule)[] = [];
   const n = deckSize(list);
-  if (n < DECK_FLOOR) problems.push(`deck has ${n} cards; the floor is ${DECK_FLOOR}`);
+  // S49: the base floor stands down when the rule asks more — one line, the format's.
+  if (n < DECK_FLOOR && !(rule?.minCards !== undefined && rule.minCards >= DECK_FLOOR)) problems.push(`deck has ${n} cards; the floor is ${DECK_FLOOR}`);
   if (!rule?.poolIsCap) for (const e of list) if (!isBasic(e.cardId) && e.count > COPY_CAP) problems.push(`${name(e.cardId)} ×${e.count} exceeds the ${COPY_CAP}-copy cap`);
   if (collection) {
     for (const e of list) {

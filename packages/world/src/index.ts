@@ -24,4 +24,6 @@ export * from "./packs.js";
 export * from "./rating.js";
 export * from "./limited-builder.js";
 export * from "./event.js";
+export * from "./sideboard-ai.js";
+export * from "./drafter.js";
 export { MatchSeries, runSeries, SERIES_POINTS, type SeriesGame, type SeriesState, type RunSeriesOptions } from "./series.js";

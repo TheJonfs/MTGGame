@@ -62,10 +62,12 @@ export function entranceModifiers(m: Matchup, player: 0 | 1 = 1): Modifier[] {
 /** S48 (ADR-145): an AI seat against the human in a Convocation round — life and entrance basics from the knobs'
  * `convocationEntrance[round]` (a round past the table reads its last row; a round before it, none). The basics are
  * of the seat's colours, in order. AI against AI, and the human's own seat, never read this. */
-export function convocationSeat(round: number, colors: readonly string[], knobs: Pick<KnobValues, "convocationEntrance">): { life: number; entrance: string[] } {
-  const rows = Object.keys(knobs.convocationEntrance).map(Number).sort((a, b) => a - b);
-  const at = rows.filter((r) => r <= round).pop();
-  const row = at === undefined ? { life: 0, basics: 0 } : knobs.convocationEntrance[at]!;
+export function convocationSeat(round: number, colors: readonly string[], knobs: Pick<KnobValues, "convocationEntrance"> & Partial<Pick<KnobValues, "convocationBracketEntrance">>, bracketRound?: number): { life: number; entrance: string[] } {
+  // S49: in the Top 8 the bracket's table is read (1 quarter-final, 2 semi-final, 3 final) instead of the Swiss rounds'.
+  const table = bracketRound !== undefined && knobs.convocationBracketEntrance ? knobs.convocationBracketEntrance : knobs.convocationEntrance, key = bracketRound ?? round;
+  const rows = Object.keys(table).map(Number).sort((a, b) => a - b);
+  const at = rows.filter((r) => r <= key).pop();
+  const row = at === undefined ? { life: 0, basics: 0 } : table[at]!;
   const BASIC: Record<string, string> = { W: "plains", U: "island", B: "swamp", R: "mountain", G: "forest" };
   const cs = colors.filter((c) => BASIC[c]);
   return { life: Math.max(1, 20 + row.life), entrance: cs.length ? Array.from({ length: Math.max(0, row.basics) }, (_, i) => BASIC[cs[i % cs.length]!]!) : [] };

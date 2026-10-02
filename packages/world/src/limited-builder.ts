@@ -7,7 +7,7 @@
  *  2. A SPLASH: a third colour only with two fixing sources in the pool (a land that fetches a basic, or a land
  *     that taps for the colour and one of the pair's), and only cards with a single pip of it; at most two, each
  *     rated a tier-3 card's prior or better and beating the card it replaces by a clear margin — a splash is for a bomb.
- *  3. THE CURVE: the best-rated 23 under a cap of three six-drops, then mended — two-drops (mana value ≤ 2) to
+ *  3. THE CURVE: the best-rated 23 under a cap of three six-drops and nine four-and-five-drops, then mended — two-drops (mana value ≤ 2) to
  *     five, three-drops to four, creatures to thirteen — each mend the cheapest trade in rating available.
  *  4. THE LANDS: seventeen (sixteen, and a twenty-fourth spell, when the average mana value is 2.6 or less): the
  *     pool's lands that tap only within the deck's colours, then basics split by the spells' pips — each main colour
@@ -22,7 +22,7 @@ import { isBasic } from "./legality.js";
 
 const COLORS: readonly PackColor[] = ["W", "U", "B", "R", "G"];
 const BASIC_OF: Record<PackColor, string> = { W: "plains", U: "island", B: "swamp", R: "mountain", G: "forest" };
-export const LIMITED_TARGETS = { deck: 40, lands: 17, landsLow: 16, lowCurve: 2.6, twoDrops: 5, threeDrops: 4, sixPlusCap: 3, creatures: 13, splashMax: 2, splashMargin: 0.75, splashFloor: 2.0, fixersForSplash: 2 } as const;
+export const LIMITED_TARGETS = { deck: 40, lands: 17, landsLow: 16, lowCurve: 2.6, twoDrops: 5, threeDrops: 4, sixPlusCap: 3, fourFiveCap: 9, creatures: 13, splashMax: 2, splashMargin: 0.75, splashFloor: 2.0, fixersForSplash: 2 } as const;
 
 export interface LimitedBuild {
   deck: Decklist;
@@ -40,11 +40,30 @@ export interface LimitedBuild {
 
 const fetchesBasic = (d: CardDef) => JSON.stringify(d.abilities ?? []).includes('"basicLand"');
 
-export function buildLimitedDeck(poolIds: readonly string[], rating: CardRatingTable, cards: Map<string, CardDef>): LimitedBuild {
+export interface LimitedBuildOptions {
+  /** S49 (the colour question): build in this pair whatever the pool prefers. */
+  forcePair?: [PackColor, PackColor];
+  /** S49 (rating noise): added to a card's rating for this build — under-rated cards get played. */
+  noise?: (cardId: string) => number;
+}
+/** The ten pairs' scores for a pool (the builder's step 1), best first — the forced-pair experiment's "at least third". */
+export function pairScores(poolIds: readonly string[], rating: CardRatingTable, cards: Map<string, CardDef>): { pair: [PackColor, PackColor]; score: number }[] {
+  const spells = poolIds.filter((id) => !isBasic(id) && !cards.get(id)!.types.includes("Land"));
+  const out: { pair: [PackColor, PackColor]; score: number }[] = [];
+  for (let i = 0; i < COLORS.length; i++) for (let j = i + 1; j < COLORS.length; j++) {
+    const pair: [PackColor, PackColor] = [COLORS[i]!, COLORS[j]!];
+    const top = spells.filter((id) => cardColors(cards.get(id)!).every((c) => pair.includes(c))).sort((a, b) => cardRating(cards.get(b)!, rating) - cardRating(cards.get(a)!, rating) || a.localeCompare(b)).slice(0, 23);
+    out.push({ pair, score: top.reduce((n, id) => n + cardRating(cards.get(id)!, rating), 0) - (23 - top.length) * 1.0 - Math.max(0, LIMITED_TARGETS.creatures - top.filter((id) => cards.get(id)!.types.includes("Creature")).length) * 0.3 });
+  }
+  return out.sort((a, b) => b.score - a.score);
+}
+
+export function buildLimitedDeck(poolIds: readonly string[], rating: CardRatingTable, cards: Map<string, CardDef>, opts: LimitedBuildOptions = {}): LimitedBuild {
   const def = (id: string) => { const d = cards.get(id); if (!d) throw new Error(`buildLimitedDeck: ${id} is not in the card pool`); return d; };
   const ids = poolIds.filter((id) => !isBasic(id));
   const mv = (id: string) => manaValue(parseManaCost(def(id).manaCost));
-  const rate = (id: string) => cardRating(def(id), rating);
+  const noise = new Map<string, number>();
+  const rate = (id: string) => { if (!opts.noise) return cardRating(def(id), rating); if (!noise.has(id)) noise.set(id, opts.noise(id)); return cardRating(def(id), rating) + noise.get(id)!; };
   const isLand = (id: string) => def(id).types.includes("Land");
   const isCreature = (id: string) => def(id).types.includes("Creature");
   const pips = (id: string, c: PackColor) => parseManaCost(def(id).manaCost).colored[c];
@@ -60,13 +79,18 @@ export function buildLimitedDeck(poolIds: readonly string[], rating: CardRatingT
     const score = top.reduce((n, id) => n + rate(id), 0) - (23 - top.length) * 1.0 - Math.max(0, LIMITED_TARGETS.creatures - top.filter(isCreature).length) * 0.3;
     if (!best || score > best.score + 1e-9) best = { pair, score };
   }
-  const pair = best!.pair;
+  const pair = opts.forcePair ?? best!.pair;
   let candidates = spells.filter((id) => within(id, pair)).sort(byRating);
 
   // 3a. the best 23 under the six-drop cap
   const take = (n: number, from: string[]): string[] => {
-    const out: string[] = []; let six = 0;
-    for (const id of from) { if (out.length >= n) break; if (mv(id) >= 6) { if (six >= LIMITED_TARGETS.sixPlusCap) continue; six += 1; } out.push(id); }
+    const out: string[] = []; let six = 0, mid = 0;
+    for (const id of from) {
+      if (out.length >= n) break;
+      if (mv(id) >= 6) { if (six >= LIMITED_TARGETS.sixPlusCap) continue; six += 1; }
+      else if (mv(id) >= 4) { if (mid >= LIMITED_TARGETS.fourFiveCap) continue; mid += 1; } // S49: the four- and five-drops together
+      out.push(id);
+    }
     return out;
   };
   let picked = take(23, candidates);
