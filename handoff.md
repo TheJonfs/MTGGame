@@ -64,6 +64,26 @@ By colour (the mean of its four pairs): W 44% · U 46% · B 41% · **R 35%** · 
 - **The pod's spread**: the best seat's win rate less the worst's averages 53 points; a seat's standard deviation within its pod is 16.7 points.
 - **The pick order's top ten** (`pick-order-plane.md`): Clio, Drana, the Usher, Lumen, the Fordkeeper, then **Tundra, Tropical Island, Scrubland**, Vindicate, **Plateau** — four dual lands (see Concern 3).
 
+## After the handoff (Chris's question: does red need help at tiers 1 and 2, or is it short of bombs?)
+
+Read from the v2 candidate's Sealed sample (the v1 run plus the noise run), mono-coloured cards, lift in win-rate points weighted by sightings:
+
+| colour | tier 1 (cards; lift; sightings) | tier 2 | tier 3 |
+|---|---|---|---|
+| W | 11; +2.2; 70,237 | 6; +0.8; 44,692 | 5; +2.9; 43,284 |
+| U | 15; +1.0; 39,090 | 8; +3.0; 60,329 | 3; +4.1; 29,107 |
+| B | 8; 0.0; 79,396 | 14; +0.1; 127,656 | 4; +1.2; 49,809 |
+| **R** | **11; −3.0; 2,187** | **10; −3.0; 14,349** | **3; −5.2; 6,389** |
+| G | 19; −0.7; 51,688 | 6; +0.1; 45,670 | 4; +2.0; 32,326 |
+
+- **It is not a count problem and not only a bomb problem.** Red has as many tier-1 and tier-2 cards as white. What it lacks is cards that are good on their own: no mono-red card with 600+ sightings has a positive lift (the best is Boggart Brute, −0.7), where every other colour has several commons and uncommons at +2 to +5 (Inspiring Overseer, Soul Warden, Pacifism; Cloudkin Seer, Mist Raven, Aether Channeler; Vampire Nighthawk, Nekrataal, Terror; Wood Elves, Centaur Courser).
+- **Red's tiers 1–2 are a Constructed package.** Seven cards are the Goblin deck's (Piker, Prospector, Matron, Chieftain, Grenade, Outburst, and Siege-Gang above them), three are spell payoffs (Young Pyromancer, Guttersnipe, Arc Mage), and the plain bodies are the pool's weakest (Raging Goblin, Gray Ogre, Hill Giant, Orcish Lumberjack). A sealed pool rarely assembles the tribe or the spell count those cards want.
+- **Tier 3 is thin for Limited**: Siege-Gang (−4.6), Dragon Mage (−5.1), Guttersnipe (−5.9) — two of the three are build-arounds. The legends are barely sampled (Drakuseth +11.3 on 79 sightings; the Ruby Tyrant −2.5 on 195): nothing can be said of them.
+- **But the burn's numbers point at the pilot too**: Lightning Bolt −3.7 (849 sightings), Char −2.2, Goblin Grenade −3.1, Pyroclasm −3.1, where black's Terror is +1.7 and white's Pacifism +2.6. Lift is measured against the deck's own average, so "red decks are weak" does not explain it — a red deck does *worse* than its own norm when it holds a Bolt. That is not a believable verdict on Lightning Bolt in Limited; it says the heuristic is not getting removal's worth out of burn. Not investigated.
+- **Caveat**: tier 1's sample is small (2,187 sightings; four of the eleven cards never seen) because the builder so rarely plays red commons.
+
+**The implementer's read**: both. The pool question has enough evidence to act on — red wants a handful of self-sufficient tier-1/tier-2 cards (bodies with evasion or an enters-the-battlefield effect; a solid three- and four-drop) more than it wants another bomb. The burn finding wants an AI look before any card is judged by these numbers.
+
 ## Deviations from the brief
 1. **v2 is written as a candidate file and v1 stands** — the brief's own rule, applied; the planner can overrule by copying the candidate over.
 2. **A drawn bracket series goes to the higher seed.** The brief does not say; single elimination needs a winner and a best-of-three can end 1–1–1.
