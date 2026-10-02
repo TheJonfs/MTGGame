@@ -18,15 +18,17 @@ import { WorldRng } from "./rng.js";
 // S52: the pack-reading term's weights are ZERO — measured (seven variants, 50 pods each) it never beat the rule
 // without it (42–45% against Sealed decks where the rule alone makes 46%), so it ships switched off; `pnpm draft-sim
 // --terms signalFlow=0.06,signalCut=0.08` turns it on for the next attempt.
-export const DRAFT_TERMS = { signalFlow: 0, signalCut: 0, signalCap: 0.6, signalLate: 6, signalBase: 0.2, freePicks: 3, bonusPerPick: 0.07, /* S51: the bonus at the cut 0.50 → 0.35 */ earlySlope: 0.5, bonusCap: 1.2, cutAt: 8, thirdShare: 0.5, landFlat: 0.5, curveFrom: 20, twoDropsWanted: 5, curveBonus: 0.3, signalAfterCut: 1, signalNormalise: 0 };
+export const DRAFT_TERMS = { signalFlow: 0, signalCut: 0, signalCap: 0.6, signalLate: 6, signalBase: 0.2, freePicks: 3, bonusPerPick: 0.07, /* S51: the bonus at the cut 0.50 → 0.35 */ earlySlope: 0.5, bonusCap: 1.2, cutAt: 8, thirdShare: 0.5, landFlat: 0.5, curveFrom: 20, twoDropsWanted: 5, curveBonus: 0.3, signalAfterCut: 1, signalNormalise: 0, /* post-S52: the crowding penalty (off) */ crowdWeight: 0, crowdAfterCut: 1, crowdLater: 1, crowdUntil: 99, crowdRanks: 0 };
 /** S52: the draft sim's tuning hook (`pnpm draft-sim --terms key=value,…`) — never called by the game. */
 export function tuneDraftTerms(over: Partial<Record<keyof typeof DRAFT_TERMS, number>>): void { Object.assign(DRAFT_TERMS, over); }
 const COLORS: readonly PackColor[] = ["W", "U", "B", "R", "G"];
 
 /** The seat's colours by the summed rating of its picks (a gold card counts to each of its colours), best first. */
-export function colourRanks(picks: readonly string[], rating: CardRatingTable, cards: Map<string, CardDef>): PackColor[] {
+export function colourRanks(picks: readonly string[], rating: CardRatingTable, cards: Map<string, CardDef>, crowd?: ColourSignals): PackColor[] {
   const sum: Record<string, number> = { W: 0, U: 0, B: 0, R: 0, G: 0 };
   for (const id of picks) { const d = cards.get(id)!; if (d.types.includes("Land")) continue; for (const c of cardColors(d)) sum[c]! += cardRating(d, rating); }
+  // Post-S52 (off): a crowded colour's picks count for less when the seat chooses its two colours.
+  if (crowd && DRAFT_TERMS.crowdRanks) for (const c of COLORS) sum[c]! *= Math.max(0, 1 - DRAFT_TERMS.crowdRanks * Math.max(0, crowd[c]));
   return [...COLORS].sort((a, b) => sum[b]! - sum[a]! || COLORS.indexOf(a) - COLORS.indexOf(b));
 }
 
@@ -71,10 +73,52 @@ export function colourSignals(memory: readonly SeenPack[], picks: readonly strin
   return s;
 }
 
+/** Post-S52 — a colour's share of the cards in a fresh pack (a gold card counts a part to each of its colours; lands
+ * and colourless cards to none), from a fixed sample of packs on its own seed: the drafter's expectation of a pack. */
+export function colourShares(tiers: Record<string, string[]>, recipe: Recipe, cards: Map<string, CardDef>, sample = 300): ColourSignals {
+  const rng = new WorldRng(0x5c0ff), n: ColourSignals = { W: 0, U: 0, B: 0, R: 0, G: 0 }; let all = 0;
+  for (let i = 0; i < sample; i++) for (const id of rollPack(tiers as Record<"1" | "2" | "3" | "R", string[]>, recipe, rng)) {
+    all += 1; const d = cards.get(id)!; if (d.types.includes("Land")) continue;
+    const cs = cardColors(d); for (const c of cs) n[c as PackColor] += 1 / cs.length;
+  }
+  for (const c of COLORS) n[c] /= all;
+  return n;
+}
+
+/** Post-S52 — CROWDING, read by COUNT at the WHEEL. S52's lesson: a signal built on the rating follows the rating
+ * (black rates highest, so black always "flows"). A count of what is missing from a pack on its first pass fails too —
+ * measured against the upstream seats' colours, r = 0.02: a pack's own mix of colours is noise that swamps the few
+ * picks taken from it. The wheel cancels the mix: a pack seen at index i and again at i + seats lost exactly what the
+ * other seats took (less the seat's own pick) — against how many of the other seats end on a colour, r = 0.41 (black
+ * 0.46). The crowd is a colour's part of those coloured cards (a gold card a part to each) less its part of a fresh
+ * pack's: positive is a colour the table is taking more than its share of. Every wheel the seat has seen counts. */
+export function colourCrowding(memory: readonly SeenPack[], picks: readonly string[], seats: number, shares: ColourSignals, cards: Map<string, CardDef>): ColourSignals {
+  const gone: ColourSignals = { W: 0, U: 0, B: 0, R: 0, G: 0 };
+  memory.forEach((m) => {
+    if (m.index < seats) return;
+    const before = memory.find((x) => x.round === m.round && x.index === m.index - seats); if (!before) return;
+    const left = [...m.cards], g: string[] = [];
+    for (const id of before.cards) { const i = left.indexOf(id); if (i >= 0) left.splice(i, 1); else g.push(id); }
+    const mine = picks[memory.indexOf(before)]; const i = mine === undefined ? -1 : g.indexOf(mine); if (i >= 0) g.splice(i, 1);
+    for (const id of g) { const d = cards.get(id)!; if (d.types.includes("Land")) continue; const cs = cardColors(d); for (const c of cs) gone[c as PackColor] += 1 / cs.length; }
+  });
+  const out: ColourSignals = { W: 0, U: 0, B: 0, R: 0, G: 0 };
+  const tg = COLORS.reduce((n, c) => n + gone[c], 0), ts = COLORS.reduce((n, c) => n + shares[c], 0);
+  if (tg > 0 && ts > 0) for (const c of COLORS) out[c] = gone[c] / tg - shares[c] / ts;
+  return out;
+}
+function crowdTerm(cardId: string, pick: number, round: number, cards: Map<string, CardDef>, crowd?: ColourSignals): number {
+  if (!crowd || !DRAFT_TERMS.crowdWeight || pick > DRAFT_TERMS.crowdUntil) return 0;
+  const d = cards.get(cardId)!; if (d.types.includes("Land")) return 0;
+  const cs = cardColors(d); if (!cs.length) return 0;
+  const v = cs.reduce((n, c) => n + Math.max(0, crowd[c as PackColor]), 0) / cs.length;
+  return -DRAFT_TERMS.crowdWeight * v * (pick >= DRAFT_TERMS.cutAt ? DRAFT_TERMS.crowdAfterCut : 1) * (round > 0 ? DRAFT_TERMS.crowdLater : 1);
+}
+
 /** What a card is worth to a seat at this pick (1-based across the whole draft). `signals` (S52): what the seat has
  * read from the packs — added to a card in a colour that is flowing, taken from one in a colour being cut. */
-export function pickValue(cardId: string, picks: readonly string[], pick: number, rating: CardRatingTable, cards: Map<string, CardDef>, signals?: ColourSignals): number {
-  return pickValueBase(cardId, picks, pick, rating, cards) + signalTerm(cardId, pick, cards, signals);
+export function pickValue(cardId: string, picks: readonly string[], pick: number, rating: CardRatingTable, cards: Map<string, CardDef>, signals?: ColourSignals, crowd?: ColourSignals, round = 0): number {
+  return pickValueBase(cardId, picks, pick, rating, cards, crowd) + signalTerm(cardId, pick, cards, signals) + crowdTerm(cardId, pick, round, cards, crowd);
 }
 function signalTerm(cardId: string, pick: number, cards: Map<string, CardDef>, signals?: ColourSignals): number {
   if (!signals) return 0;
@@ -83,11 +127,11 @@ function signalTerm(cardId: string, pick: number, cards: Map<string, CardDef>, s
   const v = (cs.reduce((n, c) => n + signals[c], 0) / cs.length) * (pick >= DRAFT_TERMS.cutAt ? DRAFT_TERMS.signalAfterCut : 1);
   return Math.max(-DRAFT_TERMS.signalCap, Math.min(DRAFT_TERMS.signalCap, v));
 }
-function pickValueBase(cardId: string, picks: readonly string[], pick: number, rating: CardRatingTable, cards: Map<string, CardDef>): number {
+function pickValueBase(cardId: string, picks: readonly string[], pick: number, rating: CardRatingTable, cards: Map<string, CardDef>, crowd?: ColourSignals): number {
   const d = cards.get(cardId)!, base = cardRating(d, rating), land = d.types.includes("Land");
   if (land && pick < DRAFT_TERMS.cutAt) return DRAFT_TERMS.landFlat; // S50: flat and low until the colours settle
   if (pick <= DRAFT_TERMS.freePicks) return base;
-  const ranks = colourRanks(picks, rating, cards), main = ranks.slice(0, 2), third = ranks[2]!;
+  const ranks = colourRanks(picks, rating, cards, crowd), main = ranks.slice(0, 2), third = ranks[2]!;
   const slope = DRAFT_TERMS.bonusPerPick * (pick < DRAFT_TERMS.cutAt ? DRAFT_TERMS.earlySlope : 1); // S50: half the slope before the cut
   const bonus = Math.min(DRAFT_TERMS.bonusCap, slope * (pick - DRAFT_TERMS.freePicks));
   const cs = land ? packColors(d) : cardColors(d);
@@ -101,8 +145,9 @@ function pickValueBase(cardId: string, picks: readonly string[], pick: number, r
   return v;
 }
 
-export function draftPick(pack: readonly string[], picks: readonly string[], pick: number, rating: CardRatingTable, cards: Map<string, CardDef>, signals?: ColourSignals): string {
-  return [...pack].sort((a, b) => pickValue(b, picks, pick, rating, cards, signals) - pickValue(a, picks, pick, rating, cards, signals) || a.localeCompare(b))[0]!;
+export function draftPick(pack: readonly string[], picks: readonly string[], pick: number, rating: CardRatingTable, cards: Map<string, CardDef>, signals?: ColourSignals, crowd?: ColourSignals, round = 0): string {
+  const v = (id: string) => pickValue(id, picks, pick, rating, cards, signals, crowd, round);
+  return [...pack].sort((a, b) => v(b) - v(a) || a.localeCompare(b))[0]!;
 }
 
 /** A whole pod's draft, headless: every seat's picks (the event's other pods — post-S52). */
@@ -110,13 +155,14 @@ export function runDraftPacks(set: SetDef, recipe: Recipe, data: ConvocationPack
   return runDraft(set, recipe, data, cards, rating, seed, seats, rounds).picks;
 }
 
-export interface DraftResult { picks: string[][]; /** For each seat: the pick at which its top two colours last changed. */ settledAt: number[] }
+export interface DraftResult { picks: string[][]; /** For each seat: the pick at which its top two colours last changed. */ settledAt: number[]; /** Every pack each seat saw (the sim's diagnostics). */ memory: SeenPack[][] }
 /** A pod's draft: `seats` seats, `rounds` packs each, passed left, right, left; every seat picks by `draftPick`. */
 export function runDraft(set: SetDef, recipe: Recipe, data: ConvocationPackData, cards: Map<string, CardDef>, rating: CardRatingTable, seed: number, seats = 8, rounds = 3, read = true): DraftResult {
   const tiers = resolveSet(set, cards, data.power), rng = new WorldRng(seed);
   const picks: string[][] = Array.from({ length: seats }, () => []);
   const memory: SeenPack[][] = Array.from({ length: seats }, () => []);
   const settledAt = Array.from({ length: seats }, () => 1), lastTop: string[] = Array.from({ length: seats }, () => "");
+  const shares = DRAFT_TERMS.crowdWeight || DRAFT_TERMS.crowdRanks ? colourShares(tiers, recipe, cards) : undefined;
   let n = 0;
   for (let r = 0; r < rounds; r++) {
     let packs = Array.from({ length: seats }, () => rollPack(tiers, recipe, rng));
@@ -126,7 +172,7 @@ export function runDraft(set: SetDef, recipe: Recipe, data: ConvocationPackData,
       n += 1;
       for (let s = 0; s < seats; s++) {
         memory[s]!.push({ round: r, index, cards: [...packs[s]!] });
-        const choice = draftPick(packs[s]!, picks[s]!, n, rating, cards, read ? colourSignals(memory[s]!, picks[s]!, seats, rating, cards) : undefined);
+        const choice = draftPick(packs[s]!, picks[s]!, n, rating, cards, read ? colourSignals(memory[s]!, picks[s]!, seats, rating, cards) : undefined, read && shares ? colourCrowding(memory[s]!, picks[s]!, seats, shares, cards) : undefined, r);
         packs[s]!.splice(packs[s]!.indexOf(choice), 1); picks[s]!.push(choice);
         const top = colourRanks(picks[s]!, rating, cards).slice(0, 2).sort().join("");
         if (top !== lastTop[s]) { lastTop[s] = top; settledAt[s] = n; }
@@ -135,5 +181,5 @@ export function runDraft(set: SetDef, recipe: Recipe, data: ConvocationPackData,
       index += 1;
     }
   }
-  return { picks, settledAt };
+  return { picks, settledAt, memory };
 }

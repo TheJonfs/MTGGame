@@ -98,7 +98,22 @@ The term does not reach 50% and does not thin black's crowd, so its weights are 
 - `rating:build --colour` (in `rating-compute.ts`, with a test): a colour's rate is the mean (result − ½) of its mono-coloured cards' Sealed sightings, added as ½ × rate/σP; gold cards take the mean of their colours. Built from fresh Sealed runs on pilot 94 (40,000 games): **W +3.3 · U +2.8 · B +0.1 · G +0.6 · R −3.3 points** — in Sealed, black is level.
 - The term moves each card about ±0.26, and the builder's pair choice is a threshold, so it swings decks hard: **red in Sealed decks 27% → 2%**, white 45% → 65%, black 56% → 54%; the median deck's win rate is flat (51% → 50%).
 - The draft A/B (100 pods): black's seats 47% → 44% of seats, and black still wins 47%; red falls to 23% of seats; the crowding of the most-drafted colour gets worse (six or more seats: 49 → 105). Drafted decks win 65% against three-pack Sealed either way.
-- The read: black's problem is not its cards' rating (in Sealed it is level) but the crowd in a pod. The candidates `card-rating-v12base.json` / `card-rating-v12.json` and their reports are left uncommitted in `data/convocation/`; `card-rating.json` is still v1.1. *Rule on*: whether to keep the colour term at all, and whether the drafter's crowding signal is the next experiment.
+- The read: black's problem is not its cards' rating (in Sealed it is level) but the crowd in a pod. The candidates `card-rating-v12base.json` / `card-rating-v12.json` and their reports are left uncommitted in `data/convocation/`; `card-rating.json` is still v1.1. Chris: the candidates deleted; try the crowding penalty.
+
+### The crowding penalty — built, measured, shipped off
+
+- **The signal must be read at the wheel.** Counting what a pack is missing on its first pass (against a fresh pack's colour shares) correlates with the upstream seats' colours at r = 0.02 — a pack's own mix swamps the few picks taken from it. The same pack seen again eight picks later lost exactly what the other seven took: r = 0.41 against how many of them end on a colour (black 0.46). `colourCrowding` reads every wheel by count, never by rating.
+- **Two levers**, `crowdWeight` (a crowded colour's cards are worth less) and `crowdRanks` (a crowded colour's picks count for less when the seat picks its two colours); 100 paired pods each:
+
+| | rule alone | w2 | w4 | r2 | r4 | w2r2 | w4r4 |
+|---|---|---|---|---|---|---|---|
+| seats on black | 47% | 47% | 47% | 47% | 47% | 47% | 47% |
+| black seats win | 46% | 46% | 46% | 46% | 46% | 46% | 46% |
+| pods with 6+ on black | 7 | 6 | 6 | 6 | 3 | 4 | 4 |
+| settled by pick 8 | 78% | 78% | 76% | 73% | 66% | 73% | 66% |
+| drafted vs three-pack Sealed | 65% | 65% | 65% | 65% | 65% | 65% | 65% |
+
+- The ranks lever thins the worst pods and delays commitment; nothing moves black's share or its win rate. **The finding that matters: black's seats win 45–49% at every crowding level, two black seats in the pod included.** Black's draft decks lose whether or not they are crowded, while black's Sealed decks are level — the crowding read of the pod analysis was the arithmetic of a big losing group (the others win more as it grows), and "left black wins 54%" is a selection effect. Weights zero; the code and two tests stay (`--terms crowdWeight=…,crowdRanks=…`).
 
 ## Deviations from the brief
 1. **The pack-reading term ships switched off.** Built to the ruling (the whole pack remembered, each time); it lowered the field's quality in every variant tried, and the process rule says such a change reverts. The code and the tuning hook remain. *Rule on*: whether to keep trying it, and against which measure (Deviation 2).

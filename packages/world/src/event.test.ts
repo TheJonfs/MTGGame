@@ -506,5 +506,33 @@ describe("the drafter reads what is passed (S52 Part 3) — built, measured, and
     const set = packs.sets.find((x) => x.id === "plane")!, recipe = packs.recipes.find((r) => r.id === "classic")!;
     expect(runDraft(set, recipe, packs, cards, rating, 52, 8, 3, true).picks).toEqual(runDraft(set, recipe, packs, cards, rating, 52, 8, 3, false).picks);
   });
+
+  it("post-S52 — crowding by count at the wheel: what the other seats took, against a fresh pack's colours, never by rating; the seat's own pick is not counted; the penalty only subtracts", async () => {
+    const { colourCrowding, tuneDraftTerms, DRAFT_TERMS, pickValue } = await import("./drafter.js");
+    const before = { ...DRAFT_TERMS };
+    try {
+      const even = { W: 0.2, U: 0.2, B: 0.2, R: 0.2, G: 0.2 };
+      const first = { round: 0, index: 0, cards: ["vampire_nighthawk", "terror", "nekrataal", "savannah_lions", "wind_drake", "grizzly_bears"] };
+      const back = { round: 0, index: 8, cards: ["wind_drake", "grizzly_bears"] };
+      const filler = Array.from({ length: 7 }, (_, k) => ({ round: 0, index: k + 1, cards: [] as string[] }));
+      const mine = ["savannah_lions", ...Array(7).fill("plains")];
+      const crowd = colourCrowding([first, ...filler, back], mine, 8, even, cards);
+      expect(crowd.B).toBeCloseTo(1 - 0.2); // the others took three black cards and nothing else coloured
+      expect(crowd.W).toBeCloseTo(-0.2); // the Lions were our own pick
+      expect(Object.values(crowd).reduce((a, b) => a + b, 0)).toBeCloseTo(0);
+      // no wheel yet: nothing is read
+      expect(Object.values(colourCrowding([first, ...filler], mine, 8, even, cards)).every((x) => x === 0)).toBe(true);
+      tuneDraftTerms({ crowdWeight: 2 });
+      expect(pickValue("terror", [], 9, rating, cards, undefined, crowd)).toBeCloseTo(pickValue("terror", [], 9, rating, cards) - 2 * 0.8);
+      expect(pickValue("wind_drake", [], 9, rating, cards, undefined, crowd)).toBeCloseTo(pickValue("wind_drake", [], 9, rating, cards)); // an uncrowded colour gains nothing
+    } finally { tuneDraftTerms(before); }
+  });
+
+  it("post-S52 — the crowding penalty is off as shipped: a draft with it is the draft without it", async () => {
+    const { runDraft, DRAFT_TERMS } = await import("./drafter.js");
+    expect([DRAFT_TERMS.crowdWeight, DRAFT_TERMS.crowdRanks]).toEqual([0, 0]);
+    const set = packs.sets.find((x) => x.id === "plane")!, recipe = packs.recipes.find((r) => r.id === "classic")!;
+    expect(runDraft(set, recipe, packs, cards, rating, 52, 8, 3, true).picks).toEqual(runDraft(set, recipe, packs, cards, rating, 52, 8, 3, false).picks);
+  });
 });
 });
