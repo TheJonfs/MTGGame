@@ -37,7 +37,9 @@
   }
  ],
  "art": {
-  "fallback": "rendered"
+  "fallback": "rendered",
+  "asset": "/custom-art/shocking_sharpshooter.png"
  },
- "shopTier": 1
+ "shopTier": 1,
+ "printedAsset": "shocking_sharpshooter.jpg"
 }
