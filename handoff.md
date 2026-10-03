@@ -144,6 +144,7 @@ The term does not reach 50% and does not thin black's crowd, so its weights are 
 
 - Concerns: blue is now in 67% of Sealed decks (two in three) and games end by decking 17% of the time (7% before) — the builder's pull to blue control is a variety question; red is still last (its v2 decks 48.5–50% head to head). The same-seat comparisons (the same packs or pool read both ways) are 49.8% and 50.5% — inside their larger error (800 and 200 meetings), but not the clear edge the whole-field figure shows.
 - Tools: `pnpm rating:build <authored shards> --limited a,b,c --candidate <name>`; `pnpm rating-ab --draft A B` / `--sealed a.json b.json` / `--report` (the head to head). The candidate `card-rating-v2.json` and its report sit uncommitted in `data/convocation/`.
+- **Adopted, the Limited half (Chris, 2026-10-05)** — `card-rating.json` is v1.3: every row keeps v1.1's `rating` (the Constructed score, unchanged) and carries v2's `limited` fields; `run.limited` records the runs. The Constructed half waits on its own check (a larger authored run, then the Open).
 
 ## Deviations from the brief
 1. **The pack-reading term ships switched off.** Built to the ruling (the whole pack remembered, each time); it lowered the field's quality in every variant tried, and the process rule says such a change reverts. The code and the tuning hook remain. *Rule on*: whether to keep trying it, and against which measure (Deviation 2).
