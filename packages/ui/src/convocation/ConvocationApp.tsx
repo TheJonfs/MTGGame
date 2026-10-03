@@ -19,8 +19,10 @@ const COUNT: Record<number, string> = { 8: "eight", 15: "fifteen", 16: "sixteen"
 const DAY = ["", "one", "two", "three", "four", "five", "six"];
 const PIP: Record<string, string> = { W: "white", U: "blue", B: "black", R: "red", G: "green" };
 
-function Face({ slug, size = 56 }: { slug?: string | undefined; size?: number }) {
-  return slug ? <img src={`/portraits/${slug}.png`} alt="" style={{ width: size, height: size, objectFit: "cover", borderRadius: 6, border: "1.5px solid var(--ink)" }} /> : <div style={{ width: size, height: size, borderRadius: 6, border: "1.5px solid var(--ink)", display: "grid", placeItems: "center", fontFamily: "var(--serif)" }}>you</div>;
+/** A seat's portrait; without one (S53: 38 portraits for 127 seats), its initials — "you" only for the player. */
+function Face({ slug, size = 56, name }: { slug?: string | undefined; size?: number; /** a faceless AI seat's name, for its initials */ name?: string }) {
+  const initials = name ? name.split(/\s+/).filter((w) => /^[A-Z]/.test(w)).slice(0, 2).map((w) => w[0]).join("") : "you";
+  return slug ? <img src={`/portraits/${slug}.png`} alt="" style={{ width: size, height: size, objectFit: "cover", borderRadius: 6, border: "1.5px solid var(--ink)" }} /> : <div style={{ width: size, height: size, borderRadius: 6, border: "1.5px solid var(--ink)", display: "grid", placeItems: "center", fontFamily: "var(--serif)", fontSize: name ? size / 2.6 : undefined }}>{initials}</div>;
 }
 function Pips({ colors }: { colors: string }) {
   return <span style={{ display: "inline-flex", gap: 2, verticalAlign: -2 }}>{[...colors].map((c) => <img key={c} src={`/icons/mana-${PIP[c] ?? "colorless"}.svg`} alt={c} style={{ width: 13, height: 13 }} />)}</span>;
@@ -181,7 +183,7 @@ function Pairings({ c }: { c: ConvocationController }) {
       {!them && <div style={{ marginBottom: 14 }}><button className="primary" onClick={() => c.sitOut()}>Sit out the round</button> <span style={{ fontSize: 12, color: "var(--ink-soft)" }}>a bye is a win</span></div>}
       {them && rec && (
         <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 14 }}>
-          <Face slug={them.face} size={72} />
+          <Face slug={them.face} size={72} name={them.name} />
           <div><b>{them.name}</b><div style={{ fontSize: 13 }}><Pips colors={them.colors} /> · {rec.wins}–{rec.losses}{rec.draws ? `–${rec.draws}` : ""}</div></div>
           <span style={{ flex: 1 }} />
           <button className="primary" onClick={() => c.playMatch()}>Play the match</button>
