@@ -2,15 +2,15 @@
  "id": "rage_cobra",
  "name": "Rage Cobra",
  "source": "custom",
- "manaCost": "{2}{R}",
+ "manaCost": "{1}{R}",
  "types": [
   "Creature"
  ],
  "subtypes": [
   "Snake"
  ],
- "power": 1,
- "toughness": 1,
+ "power": 2,
+ "toughness": 2,
  "text": "Whenever an opponent gains life, put that many +1/+1 counters on target creature.",
  "abilities": [
   {

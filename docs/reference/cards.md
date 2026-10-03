@@ -147,6 +147,7 @@
 | Dragon Fodder | R | Sorcery | {1}{R} | 2 |  |  | 1 | 12 |  | Create two 1/1 red Goblin creature tokens. |
 | Goblin Piker | R | Creature — Goblin Warrior | {1}{R} | 2 | 2/1 |  | 1 | 12 |  |  |
 | Pyroclasm | R | Sorcery | {1}{R} | 2 |  |  | 2 | 18 |  | Pyroclasm deals 2 damage to each creature. |
+| Rage Cobra | R | Creature — Snake | {1}{R} | 2 | 2/2 |  | 2 | 18 | custom | Whenever an opponent gains life, put that many +1/+1 counters on target creature. |
 | Shocking Sharpshooter | R | Creature — Human Archer | {1}{R} | 2 | 1/3 | reach | 1 | 12 |  |  |
 | Thundersnake | R | Creature — Elemental Snake | {R}{R} | 2 | 4/1 | trample, haste | 2 | 18 | custom | Trample, haste At the beginning of the end step, sacrifice Thundersnake. |
 | Young Pyromancer | R | Creature — Human Shaman | {1}{R} | 2 | 2/1 |  | 2 | 12 |  | Whenever you cast an instant or sorcery spell, create a 1/1 red Elemental creature token. |
@@ -158,7 +159,6 @@
 | Gray Ogre | R | Creature — Ogre | {2}{R} | 3 | 2/2 |  | 1 | 16 |  |  |
 | Guttersnipe | R | Creature — Goblin Shaman | {2}{R} | 3 | 2/2 |  | 3 | 40 |  | Whenever you cast an instant or sorcery spell, this creature deals 2 damage to each opponent. |
 | Hordeling Outburst | R | Sorcery | {1}{R}{R} | 3 |  |  | 1 | 16 |  | Create three 1/1 red Goblin creature tokens. |
-| Rage Cobra | R | Creature — Snake | {2}{R} | 3 | 1/1 |  | 2 | 24 | custom | Whenever an opponent gains life, put that many +1/+1 counters on target creature. |
 | Seasoned Pyromancer | R | Creature — Human Shaman | {1}{R}{R} | 3 | 2/2 |  | 3 | 40 |  | When this creature enters, discard two cards, then draw two cards. For each nonland card discarded this way, create a 1/1 red Elemental creature token. {3}{R}{R}, Exile this card from your graveyard: Create two 1/1 red Elemental creature tokens. |
 | Flametongue Kavu | R | Creature — Kavu | {3}{R} | 4 | 4/2 |  | 2 | 30 |  | When this creature enters, it deals 4 damage to target creature. |
 | Furnace Whelp | R | Creature — Dragon | {2}{R}{R} | 4 | 2/2 | flying | 2 | 30 |  | Flying {R}: This creature gets +1/+0 until end of turn. |

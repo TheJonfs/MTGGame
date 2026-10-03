@@ -111,6 +111,6 @@ describe("Rage Cobra (custom): whenever an OPPONENT gains life, that many +1/+1 
     const cobra = getObject(tg.game.state, tg.findBattlefield("rage_cobra"));
     expect(cobra.counters["+1/+1"]).toBe(1); // their one life; our own one life is not an opponent's
     const ch = characteristics(tg.game.ctx, cobra.id);
-    expect([ch.power, ch.toughness]).toEqual([2, 2]);
+    expect([ch.power, ch.toughness]).toEqual([3, 3]); // post-S53 (Chris): a 2/2 for {1}{R} — re-baselined from [2, 2] with the card
   });
 });
