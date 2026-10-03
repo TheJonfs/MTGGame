@@ -1,123 +1,141 @@
-# Handoff — after Session 52 and the post-S52 work (2026-10-05)
+# Handoff — after Session 53 (2026-10-06)
 
 ## State of the world
-**The Convocation runs all three event kinds at up to thirty-two seats, and Limited and Constructed are now rated apart.** `/convocation` offers the Draft (four pods of eight; the player's pod live), the two Sealed events and the Open (Constructed: select-and-repair decks from all twelve Open lists, with stock, light and heavy tinkerers), five Swiss rounds and the Umbel. The card rating is **v1.3**: each card keeps v1.1's number as its Constructed score and carries a new **Limited score** (empirical Bayes on 73,600 Limited games), which every Limited path reads. Decks built on the Limited score beat v1.1's 52% in draft and 54% in Sealed, and black's draft seats went from 46% to 52%. Chris played a Draft ("it was great"; his first match losses, one in the Swiss and one in the quarter-final); his playtest fixes are in (books 93–94; the life buffs suppressed). Five experiments are built, measured and **shipped switched off** (the S52 pack-reading term, the colour term, the crowding penalty, an authored-only Constructed rating, the Constructed noise's plan rules) — each with its code, a test and the switch. Shocking Sharpshooter has its art. **S46–S52 and everything after are committed locally and not pushed.** `pnpm typecheck`, `pnpm test` (888) and `pnpm build:web` pass; the ladder gate passed after books 93–94.
+**The full Convocation is playable at `/convocation`:** four days at 128 seats, sixteen Swiss rounds and the Umbel. Day 1 is a draft (three rounds inside your pod of eight), Day 2 is a Constructed format (five rounds), Day 3 is a second draft (your pod is the seven seats nearest your record), Day 4 is a second Constructed format (five rounds), and then the Umbel in the last format. The door chooses both Constructed days from the seven formats. The record carries across days, there's a day's-end screen between stages, and the field's sixty-three series a round play on web workers (1.5–3.7 s a round in the browser). The finish gives a title and kept cards (the champion keeps two, the rest of the eight one, from the last draft), and the door has a trophy room. The save is `convocation-event-v2`; v1 saves still load. **The card rating is v1.4**: the Limited score re-measured on 147,200 games, with the Constructed score unchanged. The three single events (Draft, Sealed, the Open) are unchanged, except that the Sealed field now varies its pair (ADR-154). Walked in the browser from the door to the trophy room at 128 seats. `pnpm typecheck`, `pnpm test` (895) and `pnpm build:web` pass. **S46–S53 are committed locally and not pushed.**
 
 ## Done this session
 
-### Session 52 (the brief)
-- **Part 0**: rulings filed (`docs/decision-updates/s52.md`). **ADR-151** — the rating's arithmetic is a pure function (`world/rating-compute.ts`) with the fixture the S49–S51 pooling bug would have failed. The lord, guardian and petal baselines re-run on pilot 92 (within ±2, except Drakuseth +4 at the two lower tiers).
-- **Part 1 — the Constructed builder** (`world/constructed-builder.ts`): select (legal share, ties by measured strength), repair (cut what the rule forbids; fill role for role inside the list's colours; the floors), noise, check. Seven formats (`CONSTRUCTED_FORMATS`: the Open, Pauper, the five gates), every seeded build a legal sixty; a new rule field `maxTier` for Pauper. `pnpm constructed:report`.
-- **Part 2 — the Constructed event**: `newConstructedEvent`, `suggestedConstructedDeck`; the editor over the format's whole legal pool; saved journey decks read (never written) and checked by the format. Walked in the browser.
-- **Part 3 — the drafter reads what is passed** (`colourSignals`, perfect memory, flow and cut): seven variants, never above the rule without it (42–45% against six-pack Sealed, where the rule makes 46%). **Shipped off.** Why: a signal built on the rating follows the rating — black rates highest, so black always reads as flowing.
-- **Part 4 — measured**: drafted decks win 46% against six-pack Sealed but **66% against three-pack Sealed**; the gap is card supply, not the drafter or the builder.
+### Kickoff — Chris's rulings (`docs/decision-updates/s53.md`)
+- **128 seats**, not the brief's 32 (Chris: a 16-round Swiss wants 100–200 seats so it doesn't rematch). Measured on the event's own pairer over 100 random 16-round events per row:
 
-### After the S52 handoff — Chris's four tweaks
-1. **Thirty-two seats** in the five-round events; a Draft is four pods of eight (the others drafted headless at the start); a name builder (`world/convocation-names.ts`, the planner's sixteen then 926 more).
-2. **The Open's field from all twelve lists**, and the noise has a noise: stock (a quarter), light (half: one or two swaps and a land), heavy (a quarter: four to six swaps and a land).
-3. **`pnpm tinker`** — single-swap variants of a list on paired seeds. A single swap is below the noise at 220 games (SE ≈ 2.5 points); resolving two points needs about 1,400. **It found an engine crash** — a multi-target spec's fizzle check read the spec by the wrong index when the first target had left (CR 608.2b); fixed, two fixtures.
-4. **The pod analysis** in `draft-sim` (the seat in its own pod): black seats lose wherever they sit.
+| seats | draft rounds room-wide | in-pod, 2nd pods random | in-pod, 2nd pods by standings |
+|---|---|---|---|
+| 32 | 0 rematches, but pairings 0.49 wins apart; search up to 141k steps | 17% of events | 91% |
+| 64 | 0 · 0.17 | 1% | 29% |
+| **128** | 0 · 0.07 | 0% | **1%** |
 
-### Chris's Draft playtest
-- **Book 94 — a basic counter war.** The AI cast three Essence Scatters at one creature spell. A counter now aims only at a stack item still going to resolve, read down the stack: when the opponent counters our counter, the spell is live again.
-- **Book 93 — no equipment shuffling.** A Bonesplitter passed back and forth: book 86's "unchanged" score was a quarter-point under passing, still picked about one window in ten under the softmax. Now refused outright; a 200-game probe: equipment moves 154 → 16, all off a creature that can't attack onto one that can.
-- **The life buffs suppressed** (Chris: wait for a full tournament). `convocationEntrance` and `convocationBracketEntrance` are flat at every difficulty; the wiring and tests stay; ADR-148's tables kept as `CONVOCATION_ENTRANCE_ADR148`.
-- Ladder mirror gate PASS after books 93–94.
+- **Draft rounds pair inside the pod** (MTR 7.6, verified: "Players within a pod may play only against other players within that pod").
+- **The second draft's pods are formed by standings.** MTR 7.6's text says "random drafting circles". By standings is the Pro Tour's Day-2 practice as I understand it, **not verified** against a published document.
+- Also verified: MTR 10.4 names the Swiss algorithm without detail (no written no-rematch line), and has early Top-8 lock-ins with byes at a Pro Tour (not built). Appendix E recommends 8 Swiss rounds for 129–226 players.
 
-### Black's rating — from "crowding" to the Limited score (Chris: dive in before the next session)
-The question: black's draft seats won 46% while black's Sealed decks were level. Four steps, each measured:
+### Part 0 — rulings and measures
+- Filed: S52 ratified, ADR-153 (two scores), ADR-154, the draft target against three-pack Sealed, red tracked.
+- **ADR-154 built** (`LimitedBuildOptions.pairChoice`; the Sealed field chooses over its top three pairs, weighted by score). It is applied to the single Sealed event's AI seats and to a Convocation's Sealed stage. **Measured: it moves little and costs a little.**
+  - Blue's share of Sealed decks went 67% → 63% and decking 17% → 16%.
+  - Varied-pair decks win **48.0% ± 0.8** head to head against best-pair decks.
+- **The noise run on v1.3 → v1.4 adopted.** Three new runs (sealed55, noise55, draft55) were pooled with S52's three.
+  - Against v1.3: **draft 52.8% ± 0.5**, **Sealed 51.3% ± 0.8**. The colours' draft win rates went from 47–54% to 49–52%.
+  - The twenty movers are in `s53.md`. Mostly they're cards v1.1 avoided (Gray Ogre, Disenchant, Hill Giant, Orcish Lumberjack): v1.3 rated them at their tier's mean, played them, and v1.4 measured them losing.
 
-| step | what it showed | outcome |
-|---|---|---|
-| **Colour term** (`rating:build --colour`) | Sealed colour rates W +3.3 · U +2.8 · **B +0.1** · G +0.6 · R −3.3 — black is level in Sealed; the term drove red out of Sealed decks (27% → 2%) through the builder's pair threshold | not adopted; code off |
-| **Crowding penalty** (`colourCrowding`, two levers, six variants) | crowding is readable only at the wheel (r = 0.41; a first-pass count is r = 0.02); no variant moved black's share (47%) or win rate (46%). **Black seats lose at every crowding level, two black seats included** — the earlier "crowding" read was the arithmetic of a big losing group | shipped off |
-| **Three-pack Sealed** (`sealed-sim --packs 3`) | black's share 56% → 39%, its win rate 50% → 48%: depth matters a little; drafted black (46%) is below even that | diagnostic |
-| **Per-card draft study** (`pnpm draft-cards`, 300 pods, 33,600 games) | no black card is oversold as a pick; **black decks carry dead filler** — 2.3 slots a deck with lift below −1 point (W 0.4 · U 0.5 · R 0.8 · G 1.1): Entomb (cast when drawn 21%), Waste Not, Buried Alive (8%), Duress, Reassembling Skeleton, Dark Ritual — held up by the tier-2 prior (Entomb rated 1.28, above Typhoid Rats) | led to the split |
+### Part 1 — the staged event (`world/event.ts`)
+- **`newConvocation` / `beginStage` / `nextStage`.**
+  - `formatId` is always the current stage's, so every single-event path works unchanged. `rounds` is the whole event's. The results accumulate, so the standings carry across stages without extra work.
+  - Every per-stage roll is salted by the stage; unstaged events roll exactly as before.
+- **A draft stage:**
+  - The first draft's pods are random; a later draft's are formed by standings.
+  - Every pod but the player's drafts headless at the stage start. The player's pod drafts live, and it can be any pod (`draft.pod`).
+  - Rounds pair inside the pods (`pairRound` over `event.pods`).
+- **A Sealed stage** deals every seat a pool, and the field varies its pair. **A Constructed stage** builds the field by select-and-repair.
+- One face a seat for the whole event. The `interlude` phase sits between stages. The player's pool and deck per stage go in `history`.
+- **The Umbel** takes the top eight by the carried standings, in the last stage's format.
+- **The save is `convocation-event-v2`**; v1 still loads. It's resumable at any transition: tested by serializing after every one of 100+ transitions, including mid-draft, between stages and in the bracket.
+- **The field on workers** (`ui/convocation/convocation-worker.ts`, `field-pool.ts`): one series a job, each job sent the event with only its two seats. Results are identical to the main thread (a series is its seed's). Tests in Node keep the main thread.
+- **The door:** "The Convocation — four days, 128 seats" with Day two and Day four format choosers. **Screens:** the day's end, the trophy room, and a big-field table (the top sixteen plus the rows around you, with "all 128 seats" on request). Pairings and match lists show the top tables plus yours.
 
-Entomb's v1.1 number came from 81 sightings (± 5 points) — under v1.0 no Sealed deck played it; v1.1 lifted it into decks, and 6,700 sightings now read −3.4. Thin evidence fed the next rating.
+### Part 2 — prizes by finish
+- **Titles** (`finishTitle`): "Champion of the Umbel", "the Umbel's second stalk", "a semi-finalist", "an Umbel seat", else "21st of 128".
+- **Kept cards** (`keepAllowance`, `lastLimitedPool`): the champion keeps two, the other seven of the eight one each, from the last draft's pool.
+- **The ledger line** gains the stages, the title, every registered deck and the kept cards.
+- **The trophy room** shows the Convocations played, their titles, the kept cards and the champion's four decks.
 
-### Limited and Constructed rated apart (Chris: "both 1 and 2") — the Limited half adopted
-- **One table, two scores.** Each row keeps `rating` (the Constructed score) and carries `limited`; `limitedView(table)` hands the Limited score to the Limited builder, the drafter, Sealed and draft events, the AI's sideboarding in a Limited event, the player's Limited "suggest a deck" and the Limited sims. The Constructed builder, the Open and the tinker read `rating`.
-- **The Limited score** (`computeLimitedRating`, tested): Limited games only (sealed53, noise53, draftcards — pilot 94). Each tier's prior is its cards' *measured* mean lift (1: +0.7 · 2: +0.9 · 3: +1.9 · R: +1.5 points); a card moves from it by τ²/(τ² + se²) of its own lift (τ = 1.6 points); scaled to v1.1's mean and spread (1.8, 0.8) over the pack cards so the builders' terms keep their meaning.
-- **Why the tier is only the shrink target** — measured out of sample on 2,400 drafted decks: a deck's mean tier prior predicts its win rate at **r = −0.06**; v1.1 0.34; the posterior lift 0.59.
-- **The A/B on fresh seeds** (draft seed 54, 200 pods; Sealed seed 49, 200 pools):
+### Part 3 — smalls
+- **"Start from a list"** in the Constructed editor: the twelve lists that format's field is drawn from (`selectCandidates`, extracted from the builder's select step), repaired to the format and played as written.
+- **Walked in the browser** at 128 seats, seed 5301 (Day 4 Pauper):
+  - **Door, Day 1 draft and build:** the door; the event created in 1.2 s; the first draft (one pick by click, the rest driven); the build with "Suggest a deck" and Register.
+  - **Rounds and the day's end:** the pairings and the match screen; a reload mid-event, resumed; the standings; the day's end.
+  - **Days 2–4:** Day 2's editor with the list picker (the Levy, a legal 60); Day 3's pod checked to be exactly the top eight; Day 4 Pauper (every field deck legal, from 12 source lists).
+  - **The Umbel and the finish:** the Umbel's opening line; the champion's finish with two cards kept; the trophy room.
+  - **Results:** no console errors, no rematches, every draft round inside its pod. The save peaked at 452 KB.
+  - **Found and fixed during the walk:** the live pod was dropped by every draft pass. Any pod other than seats 0–7 would build the wrong seats and leave its own empty. A test now checks every seat's 45 cards and deck after a draft; it fails without the fix.
+  - Also fixed: a faceless seat now shows its initials instead of "you".
 
-| | v1.1 | Limited score |
-|---|---|---|
-| draft: seats on black / black seats win | 47% / 46% | 34% / **52%** |
-| draft: colours' seat win rates | 46–54% | 47–52% |
-| draft: dead-filler slots a deck | 2.6 (black 1.9) | 1.0 (black 0.15) |
-| Sealed: colours' share of decks | W 46 · U 28 · B 63 · R 26 · G 38 | W 34 · **U 67** · B 29 · R 30 · G 41 |
-| Sealed: colours' decks win | 47–54% | 49–51% |
-| Sealed: deck rating against win rate, r | 0.44 | 0.61 |
-| **head to head (`rating-ab`)** | | **draft 52.1% ± 0.5 · Sealed 53.8% ± 0.8** |
+### Part 4 — measured (`pnpm convocation-sim`; 4 full events at 128 seats, a heuristic in the player's seat)
+- **Clean:** 0 rematches, 0 draft-round pairings outside their pod. The heuristic finished 21st, 81st, 4th and 1st.
+- **Time:** about 5 min an event in Node on one thread (alongside other sims). Per stage: 80, 91, 66 and 52 s; the Umbel 1 s. In the browser, a field round on eight workers took 1.2–3.7 s. A stage's start (fifteen pods drafted headless) took about 2.7 s on the main thread.
+- **The save:** 268 KB at creation; 300–520 KB in play (the draft stages, every seat holding 45 cards). A ledger line is about 12 KB.
+- **Does the carried record find the strong seats? Barely.** A seat's deck quality (its percentile in the field, by the stage's own score) against its finish gives r = −0.09.
 
-- **Adopted (Chris)** — `card-rating.json` v1.3: v1.1's `rating` untouched, v2's `limited` fields added, `run.limited` records the runs.
-- **The Constructed check — v1.1 stays.** A full-size authored run on pilot 94 (33,600 games) built an authored-only Constructed candidate; on the Open, head to head with the same seeds (`rating-ab --constructed`), its decks win **48.7% ± 0.8**. v1.1's number carries Sealed lift on top of the authored evidence, and dropping it didn't help: without Sealed evidence the reanimator pieces (Entomb 1.55, Buried Alive 1.33, Unearth 1.30) rate as ordinary spells and the noise swaps them into decks with nothing to reanimate.
+| finish | mean deck percentile across the four days |
+|---|---|
+| the champion | 0.38 |
+| 2nd–8th | 0.54 |
+| 9th–32nd | 0.52 |
+| 33rd–64th | 0.50 |
+| 65th–128th | 0.49 |
 
-### "Why do the Larder and the Undertow repair badly?" (Chris) — they don't
-- In the Open nothing is repaired (the lists are legal); a rating reaches a deck only through the noise. My first by-list table read list strength: the Larder (31% in S46's round-robin) and the Undertow (38%) are the two weakest Open lists under any rating. Set against the same list's own decks, only the Undertow's −9.7 ± 4.1 was clear — one 2.4-SE result in twelve lists.
-- The noise does have three blind spots for a synergy list: a swap can take out an engine piece or bring in an enabler without its payoff; the land-down move adds the single best-rated creature in the colours (Drana in 9 of 16 Undertow decks); the land-up move cuts the lowest-rated spell (always an engine piece in the Larder).
-- **The plan rules, built and measured** (`VARIATION_TERMS.plan`, tested): a swap's card shares an authored list with the one it replaces; a nonland four-of never leaves; the land-down move adds a copy of a card the deck plays. Head to head on the Open (`rating-ab --variation`, 8,000 games): **49.4% ± 0.6**, the Undertow −3.3 and the Larder −0.8 (each ± 4), variety down (distinct decks 299 → 270 of 400). **Shipped off.** The noise's harm was small to begin with.
-
-### Art
-- **Shocking Sharpshooter** (a real card with no Scryfall high-resolution scan): Chris's storm archer as `art.asset` (5:4 crop, 1024×819) and his printed face as `printedAsset` (745px). The face verified word for word against Scryfall and the def ({1}{R}, Summon Human Archer, Reach, the enters trigger at target opponent, 1/3); it names the card where today's Oracle says "this creature". Seen in the gallery both ways.
+### Part 5 — text
+All four lines are in place:
+- The door: "The Convocation — four days: a draft, the Open, a draft, {format}; the Umbel of Eight."
+- The day's end: "Day one ends. The table stands at 3–0. Tomorrow: the Open."
+- The Umbel: "Eight remain. The Umbel opens in Pauper."
+- The finish: "Champion of the Umbel."
 
 ## Deviations from the brief
-1. **The pack-reading term ships switched off** (S52 Part 3) — it lowered the field's quality in every variant, and the process rule says such a change reverts. *Rule on*: whether to keep the code.
-2. **The 50% draft target is measured against six-pack Sealed**, which a three-pack draft deck should not be expected to beat; against three-pack Sealed the drafter wins 65–66%. Neither the target nor the entrance was changed.
-3. **The draft event does not store the AI seats' pack memory** — with the reading terms off there is nothing to read it. If one returns, `event.draft` grows a `seen` list per seat (about 40 KB a draft).
-4. **Bodies asks 24 creatures**; the gate formats are "the Open plus the gate". The formats doc leaves both open.
-5. **No sideboarding in a Constructed event**, for the player or the field.
-6. **Noise never moves a free card** (the Lotus, a Mox) — added after the first round-robin swapped them on rating alone.
-7. **"Suggest a deck" in the Open is the field's select-and-repair** on the human seat's seed.
-8. **A saved deck is offered whatever its legality**, marked "(not legal here)"; registration still refuses it.
-9. **Post-S52 work outside any brief**, all at Chris's direction: the four tweaks, the playtest fixes, the black investigation, the rating split and its adoption, the Constructed checks, the variation rules. The rating's adoption (v1.3) is Chris's ruling; the planner may want an ADR for "Limited and Constructed are rated apart" (it supersedes part of ADR-145's single number).
+1. **128 seats** (Chris), not thirty-two; the default stages are otherwise the brief's.
+2. **Draft rounds inside the pod; the second draft's pods by standings** (Chris). The brief said only "the Swiss pairs on [the carried record]".
+3. **Both Constructed days are chosen at the door.** The brief's door line names only the second, so the line now names both.
+4. **The Umbel plays in the last stage's format only**; `top8Format` as a separate choice isn't built (the brief's default is the last stage's).
+5. **No sideboarding for the player in a Constructed event** ("if cheap"). The field doesn't sideboard in Constructed either; a player's sideboard needs a registered fifteen and an editor for it, which isn't cheap.
+6. **The thirty-two-seat single Draft and the single Open were not walked separately.** The full Convocation walk covers both formats: two drafts, the Open and Pauper, and the Umbel. The series were auto-won through the controller; one match screen was checked, not a game played by hand.
+7. **ADR-154 also applies to the single Sealed event's AI seats** (the ruling reads "the Sealed builder").
+8. **Only 38 portraits for 127 seats:** 89 seats show initials.
 
 ## Concerns
-1. **Blue takes over Sealed under the Limited score.** Blue is in 67% of Sealed decks (28% before) and games end by decking 17% of the time (7% before). The score is right about blue's cards (Control Magic, Traumatizer, Cloudkin Seer, Faerie Formation at the top), so this is a variety question for the pool or the builder, not the rating. In draft, seats compete and blue sits at 49% of seats winning 49%.
-2. **Red is still the weakest colour** in both formats (47–50% in draft, 48.5–50% head to head) after S50's six cards.
-3. **The tier ladder says nothing about Limited** (r = −0.06). Tiers still set shop prices, pack slots and the shrink target. Worth a planner look: Inspiring Overseer and Shocking Sharpshooter (tier 1) are top-15 Limited cards; Entomb and Waste Not (tier 2) are the bottom.
-4. **Context-dependent cards break any context-free number.** Reanimator pieces are dead in Limited and fine in their own Constructed list; a single score per format still can't say "good with partners". The Constructed builder's noise is where it bites (Concern 6).
-5. **The Limited score will drift as decks change.** It was measured on decks built by v1.1; v1.3's builder plays different cards, so some numbers rest on fewer sightings (the 20 unseen cards read their tier's mean). A re-measure after a noise run on v1.3 would close the loop (ADR-150's watch).
-6. **The Constructed noise swaps by rating within role**, blind to a list's plan; the plan rules didn't pay, so a finer role or a synergy record would be needed to do better. The Larder and the Undertow are weak as lists — a design question, not a builder bug.
-7. **The Open's first turn is Vintage's**; the entrance is flat for now (Chris), so this waits on play.
-8. **The player's editor shows 234 cards** in the Open; a "start from a list" picker would serve better than an empty deck.
-9. **A saved journey deck is almost never legal in the Open** (thirty or forty cards against sixty) until the campaign linkage exists.
+1. **The Convocation is close to a lottery among the AI seats.** Deck quality barely predicts finish (r = −0.09). The champions' decks averaged the 38th percentile and the Umbel's 54th. The field is built by one set of rules, so its decks come out close in strength, and sixteen best-of-three rounds among near-equal decks are mostly variance. The player's edge over the field matters, but "the Umbel finds the best" isn't what happens. Options: a field of varied strength (stronger and weaker builders and pilots by seat), or accept it as the format's drama. (In Constructed, a deck's mean card score is a weak proxy, since the list matters more.)
+2. **ADR-154 is a weak lever on blue** (67% → 63% of Sealed decks) and costs two points a deck. Blue's strength is in its cards: Control Magic, Traumatizer, Cloudkin Seer and Faerie Formation sit at the top of the Limited score. This is a pool question.
+3. **The rating feeds back on itself through unseen cards.** The Limited score shrinks a little-seen card to its tier's mean, the mean of cards that are played. An avoided card belongs below that, so each rebuild plays the last one's avoided cards and corrects them next time (v1.3 → v1.4: Gray Ogre 1.95 → 0.65). A lower shrink target for little-seen cards, or a noise run after every rebuild, would damp it.
+4. **Red in Sealed is 15% of decks under v1.4** (24% under v1.3), though its decks win 54% head to head. In draft, red seats win 49%.
+5. **The save is 300–520 KB** at 128 seats (the plan estimated 60 KB for a hundred seats without pools), within localStorage's ~5 MB. A full Convocation's ledger line is about 12 KB, because it lists the whole field. A hundred events would be 1.2 MB; trim the field to the top 16 plus the player if that matters.
+6. **A stage's start freezes the page for about 2.7 s** (fifteen pods drafted headless on the main thread). It could move to the workers.
+7. **A full Convocation is long for a player:** two drafts of 45 picks, four builds, sixteen rounds of up to three games, and the Umbel. Save and resume work at every step; Chris's play-through will say whether it wants a shorter shape (the stage list makes any shape a data change).
+8. **Names repeat their given names** across 127 seats (two Xanthes, two Cyprians); harmless, noted.
 
 ## Registry entries added/changed
-- No R-numbers. The engine fix (multi-target fizzle, CR 608.2b) is a bug fix with two fixtures, not a new mechanic.
-- **Pool registry**: Shocking Sharpshooter's row (art and printed face).
-- **Knobs**: `convocationEntrance` and `convocationBracketEntrance` flat (`{1: {life: 0, basics: 0}}`); the hard/easy overrides removed; `docs/knobs.md` regenerated.
-- **Data**: `card-rating.json` v1.3 (the `limited` fields). `DeckRule.maxTier` (S52).
-- **Books of shame**: 93 (equip refused when unchanged), 94 (counter war).
-- **New switches, all off**: `DRAFT_TERMS.signal*` (S52), `crowdWeight` / `crowdRanks`, `rating:build --colour`, `VARIATION_TERMS.plan`.
+- No R-numbers (tournament policy, not the rules). No pool changes; no knobs changed (the entrance stays flat).
+- **Data:** `card-rating.json` v1.4 (the Limited fields; `run.limited` lists six runs).
+- **Save:** `convocation-event-v2` (`stages`, `stage`, `pods`, `draft.pod`, `history`, `keptCards`, the `interlude` phase); the v1 format still loads.
+- **Ledger:** `stages`, `title`, `decks`, `keptCards` on a full Convocation's line.
 
 ## Test status
-`pnpm test`: 92 files passed, 1 skipped; **888 tests passed, 2 skipped** (the standing two). New since S52's 877: the multi-target fizzle fixtures (2), books 93–94, the crowding signal and its off switch (2), the colour term, the Limited score and `limitedView` (2), the plan rules. Ladder gate PASS after books 93–94. No fuzz — no new card. About 450,000 sim games this stretch; one engine error (the fizzle crash, fixed).
+`pnpm test`: 93 files passed, 1 skipped; **895 tests passed, 2 skipped** (the standing two). New:
+- `convocation.test.ts` (6): the default shape; four stages headless (pods, in-pod pairing, second pods by standings, every seat's deck after a draft, the carried record, no rematch, faces, the Umbel, titles, kept cards); save and resume after every transition; Sealed and Constructed stages; v1 → v2; the titles.
+- The controller's full Convocation (door → draft → interlude reloaded → the list picker → the Umbel → champion → two kept cards → trophies).
+- One pin updated: the save's format string is now v2 (by the brief).
 
-Not verified: a full Open or a thirty-two-seat Draft played to the Umbel in the browser after the rating change (the event tests pass, and the gallery was checked for the art); the production build in a browser.
+No AI heuristic changed (no ladder run); no new card (no fuzz). About 330,000 sim games this session raised no engine error.
+
+**Not verified:** a game of the Convocation played by hand (auto-won through the controller in the walk); the single 32-seat Draft and Open walked separately; the production build in a browser.
 
 ## Suggested next
-**S53 — the full ladder** (staged events), as planned: a stage list (format, rounds), the player's pool and deck per stage, standings carried across stages, a second draft mid-event, the bracket in a chosen format, prizes by finish; a versioned save (`convocation-event-v2`). One to two sessions.
-
-Before it, cheaply, for the planner to weigh:
-- **Blue in Sealed** (Concern 1) — a pool or builder ruling.
-- **Red** (Concern 2) — still last after S50.
-- **A noise run on v1.3** to re-measure the Limited score on the decks it now builds (Concern 5).
-- **An ADR** for the two-score rating.
+**Chris plays a full Convocation.** Then, for the planner, the implementer's read of what remains of the Convocation plan:
+- **The worker for a hundred seats is done** (the field's series). The stage start's headless drafts could join it (Concern 6).
+- **The campaign linkage's hooks, as they stand:**
+  - The ledger (`shandalar-convocation-ledger`) holds every finish with its title, decks and kept cards.
+  - `keptCards` is the collection's future input.
+  - The trophy room is the shape a linkage page would read.
+  - What's missing is the write into the journey's collection and any entry cost or prize from the world. Both are one-way, from the ledger into the world save, and the event never reads the world except for saved decks.
+- **Field strength** (Concern 1) is the design question that most changes how the Convocation feels.
+- **The pool:** blue's dominance in Sealed, and red.
+- **The rating loop** (Concern 3): a lower prior for little-seen cards.
 
 ## How to run
 ```
-pnpm viewer                                                   # /convocation — the Draft, the Sealed events, the Open
+pnpm viewer                                                    # /convocation — "The Convocation" is the door's first option
 pnpm typecheck && pnpm test
-pnpm ladder                                                   # the AI gate (after any heuristic change)
-pnpm draft-sim --pods 100 --games 4 --vs-sealed --sealed-packs 3     # pods, the pod analysis, drafted vs three-pack Sealed
-pnpm sealed-sim --pools 200 --games 10 --seed 49 [--packs 3]          # Sealed (shard with --shard i/n, then --report)
-pnpm draft-cards --pods 300 --games 4 --seed 53 --shard i/9           # the per-card draft study; then --report <shards>
-pnpm rating:run --games 15 --shard i/9 --out analysis/runs/<name>_shardI.json   # the authored-list run
-pnpm rating:build <authored shards> --limited sealed53,noise53,draftcards --candidate <name>   # a candidate with both scores
-pnpm rating-ab --draft <A prefix> <B prefix> | --sealed a.json b.json | --constructed a.json b.json | --variation   # head to head; then --report
-pnpm tinker --list open:warband                               # single-swap variants of a list
-pnpm constructed:rr --format open --seed 52                   # the Open's field in a round-robin
+pnpm convocation-sim --events 4 --seed 53 --shard i/4          # full 128-seat Convocations headless; then --report <shards>
+pnpm sealed-sim --pools 200 --games 10 --seed 49 --vary 3       # the Sealed sim with ADR-154's varied pair
+pnpm rating-ab --sealed a.json b.json --vary-b 3               # varied-pair decks against best-pair decks
+pnpm rating:build <authored shards> --limited a,b,c --candidate <name>   # a rating candidate (then merge `limited` into card-rating.json)
+pnpm draft-cards --pods 200 --games 4 --seed 56 [--rating x.json] --shard i/5   # the per-card draft study
+npx vitest run packages/world/src/convocation.test.ts
 ```
