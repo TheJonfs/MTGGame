@@ -1,6 +1,7 @@
 /**
  * pnpm rating-ab --draft <A prefix> <B prefix> [--pods 100] [--games 2] --shard i/n      drafted decks, head to head
  * pnpm rating-ab --sealed <A rating.json> <B rating.json> [--pools 200] [--games 4] [--seed 49] --shard i/n
+ * pnpm rating-ab --constructed <A rating.json> <B rating.json> [--format open] [--decks 200] [--games 4] [--seed 53] --shard i/n
  * pnpm rating-ab --report <shard.json …>
  *
  * Post-S52 (Chris: a Limited score apart from the Constructed one): does a rating build BETTER decks? Within one run
@@ -8,6 +9,8 @@
  *  - DRAFT: two `draft-cards` runs on the same seed (the same packs), drafted under A and under B; every B seat of a
  *    pod plays every A seat of that pod (the same seat too — the same packs, read two ways);
  *  - SEALED: the same pools, built under A and under B; pool i's B deck plays pool i+1…i+k's A decks and pool i's own.
+ *  - CONSTRUCTED: the select-and-repair builder on the same seeds (the same source list and tinker roll) under A's
+ *    `rating` and B's — the Constructed score, read raw; deck i under B plays decks i…i+k under A.
  * Master both, 20 life, seats alternating. The report: B's decks' win rate against A's, with its standard error.
  */
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from "node:fs";
@@ -19,6 +22,9 @@ import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
 import { rollSealedPool, type ConvocationPackData } from "./packs.js";
 import { buildLimitedDeck } from "./limited-builder.js";
 import { limitedView, type CardRatingTable } from "./rating.js";
+import { CONSTRUCTED_FORMATS } from "./formats.js";
+import { authoredLists } from "./authored-lists.js";
+import { buildConstructedDeck } from "./constructed-builder.js";
 
 const arg = (k: string, d: string) => { const i = process.argv.indexOf(`--${k}`); return i >= 0 ? process.argv[i + 1]! : d; };
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
@@ -76,6 +82,25 @@ async function sealed(): Promise<void> {
   save(out, { mode: "sealed", a: fa, b: fb });
 }
 
+async function constructed(): Promise<void> {
+  const [fa, fb] = process.argv.slice(process.argv.indexOf("--constructed") + 1, process.argv.indexOf("--constructed") + 3) as [string, string];
+  const ra = JSON.parse(readFileSync(join(ROOT, fa), "utf8")) as CardRatingTable, rb = JSON.parse(readFileSync(join(ROOT, fb), "utf8")) as CardRatingTable;
+  const format = CONSTRUCTED_FORMATS.find((f) => f.id === arg("format", "open"))!, library = authoredLists(ROOT);
+  const N = Number(arg("decks", "200")), K = Number(arg("opponents", "4")), seed0 = Number(arg("seed", "53"));
+  const seat = (k: number, r: CardRatingTable): Seat & { list: string } => { const b = buildConstructedDeck(format, r, seed0 * 100003 + k, library, cards); return { deck: b.deck, colors: b.from, list: b.from }; };
+  const A = Array.from({ length: N }, (_, k) => seat(k, ra)), B = Array.from({ length: N }, (_, k) => seat(k, rb));
+  const key = (d: Deck) => JSON.stringify([...d].sort((x, y) => x.cardId.localeCompare(y.cardId)));
+  const same = A.filter((a, k) => key(a.deck) === key(B[k]!.deck)).length;
+  const out: Result[] = [];
+  let k = 0;
+  for (let i = 0; i < N; i++) for (let d = 0; d <= K; d++) {
+    if (k++ % sn !== si) continue;
+    const j = (i + d) % N;
+    out.push({ a: `deck:${j}`, b: `deck:${i}`, colorsA: A[j]!.colors, colorsB: B[i]!.colors, bScore: await meet(A[j]!, B[i]!, seed0 * 1000 + i * 1009 + d * 37) });
+  }
+  save(out, { mode: `constructed-${format.id}`, a: fa, b: fb, identical: `${same} of ${N}` });
+}
+
 function save(results: Result[], meta: Record<string, string>): void {
   const out = arg("out", join(ROOT, `analysis/runs/ab_${meta.mode}_shard${si}.json`));
   mkdirSync(dirname(out), { recursive: true });
@@ -84,14 +109,21 @@ function save(results: Result[], meta: Record<string, string>): void {
 
 function report(): void {
   const files = process.argv.slice(2).filter((a) => a.endsWith(".json"));
-  const runs = files.map((f) => JSON.parse(readFileSync(f, "utf8")) as { mode: string; a: string; b: string; games: number; results: Result[] });
+  const runs = files.map((f) => JSON.parse(readFileSync(f, "utf8")) as { mode: string; a: string; b: string; games: number; identical?: string; results: Result[] });
   const rs = runs.flatMap((r) => r.results);
   const m = rs.reduce((n, r) => n + r.bScore, 0) / rs.length, sd = Math.sqrt(rs.reduce((n, r) => n + (r.bScore - m) ** 2, 0) / rs.length);
   const pct = (x: number) => `${(x * 100).toFixed(1)}%`;
   const L = [`# Rating A/B (post-S52) — ${runs[0]!.mode}: B (${runs[0]!.b}) against A (${runs[0]!.a}), ${rs.length} meetings × ${runs[0]!.games} games`, ``, `**B's decks win ${pct(m)}** (± ${(100 * sd / Math.sqrt(rs.length)).toFixed(1)} points, one standard error over meetings).`, ``];
+  if (runs[0]!.identical) L.push(`Decks identical under both ratings: ${runs[0]!.identical}.`);
   const same = rs.filter((r) => r.a === r.b);
   if (same.length) { const s = same.reduce((n, r) => n + r.bScore, 0) / same.length; L.push(`The same packs or pool read two ways (B's deck against A's from the same seat): B wins ${pct(s)} over ${same.length} meetings.`); }
   const share = (key: "colorsA" | "colorsB", c: string) => { const seen = new Map<string, string>(); for (const r of rs) seen.set(key === "colorsA" ? r.a : r.b, r[key]); const xs = [...seen.values()]; return xs.filter((x) => x.includes(c)).length / xs.length; };
+  if (runs[0]!.mode.startsWith("constructed")) { // by source list
+    const lists = [...new Set(rs.map((r) => r.colorsB))].sort();
+    L.push(``, `| source list | B's decks from it win (against A) | meetings |`, `|---|---|---|`);
+    for (const l of lists) { const on = rs.filter((r) => r.colorsB === l); L.push(`| ${l} | ${pct(on.reduce((n, r) => n + r.bScore, 0) / on.length)} | ${on.length} |`); }
+    const text = L.join("\n"); writeFileSync(join(ROOT, `analysis/runs/${arg("report-name", `ab_${runs[0]!.mode}`)}.md`), text + "\n"); console.log(text); return;
+  }
   L.push(``, `| colour | A's decks on it | B's decks on it | B's decks on it win (against A) |`, `|---|---|---|---|`);
   for (const c of ["W", "U", "B", "R", "G"]) { const on = rs.filter((r) => r.colorsB.includes(c)); L.push(`| ${c} | ${pct(share("colorsA", c))} | ${pct(share("colorsB", c))} | ${on.length ? pct(on.reduce((n, r) => n + r.bScore, 0) / on.length) : "—"} |`); }
   const text = L.join("\n");
@@ -99,4 +131,4 @@ function report(): void {
   console.log(text);
 }
 
-if (process.argv.includes("--report")) report(); else if (process.argv.includes("--draft")) await draft(); else if (process.argv.includes("--sealed")) await sealed(); else throw new Error("rating-ab: --draft, --sealed or --report");
+if (process.argv.includes("--report")) report(); else if (process.argv.includes("--draft")) await draft(); else if (process.argv.includes("--sealed")) await sealed(); else if (process.argv.includes("--constructed")) await constructed(); else throw new Error("rating-ab: --draft, --sealed or --report");
