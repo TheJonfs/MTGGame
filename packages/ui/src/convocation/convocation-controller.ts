@@ -36,6 +36,8 @@ export type ConvocationScreen =
 
 type Store = Pick<Storage, "getItem" | "setItem" | "removeItem">;
 
+/** Post-S53: the field round gives up on its workers when no series has finished for this long (a series takes a second or two). */
+export const FIELD_STALL_MS = 60_000;
 /** A library list's name for the picker: the Open's by their name ("the Levy"), the rest with their group. */
 export function listLabel(key: string): string {
   const [group, name = ""] = key.split(":"), nice = name.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^./, (x) => x.toUpperCase());
@@ -56,6 +58,8 @@ export class ConvocationController {
   match: MatchController | null = null;
   /** The last field round's wall time, ms (S47 Concern 4: measured, shown in the dev line). */
   fieldMs: number | null = null;
+  /** Post-S53: why the field fell back from the workers to the main thread (the field screen's second line). */
+  fieldNote: string | null = null;
   /** S53: the field round's progress — series played of series to play (the field screen's line). */
   fieldProgress: { done: number; of: number } | null = null;
   /** S53: the field's workers (a page with Workers); null in the tests — the main thread plays. */
@@ -331,8 +335,21 @@ export class ConvocationController {
     await new Promise((r) => setTimeout(r, 30)); // let the screen paint before the main thread is taken
     const agents: SeatAgents = (seat, opponent, seed, side) => new HeuristicAgent(seed * 2 + 1 + side, this.pool, difficultyProfile("master", seat.archetype, opponent.deck));
     const t0 = typeof performance !== "undefined" ? performance.now() : 0;
-    const pool = this.workers();
-    const played = pool ? await this.fieldOnWorkers(this.event!, pool) : await playFieldRound(this.event!, { cards: this.pool, knobs: this.knobs, rating: this.rating }, agents);
+    const pool = this.workers(), main = () => playFieldRound(this.event!, { cards: this.pool, knobs: this.knobs, rating: this.rating }, agents);
+    let played: ConvocationEvent;
+    if (!pool) played = await main();
+    else {
+      // post-S53: workers that fail or stall never strand the round — it plays on the main thread (the same series,
+      // a series being its seed's), and the page stops using them
+      try { played = await this.fieldOnWorkers(this.event!, pool); }
+      catch (err) {
+        pool.dispose(); this.fieldPool = null;
+        this.fieldNote = `The other tables play here instead (${err instanceof Error ? err.message : String(err)}).`; this.fieldProgress = null; this.emit();
+        await new Promise((r) => setTimeout(r, 30));
+        played = await main();
+      }
+    }
+    this.fieldNote = null;
     this.fieldMs = typeof performance !== "undefined" ? Math.round(performance.now() - t0) : null;
     this.fieldProgress = null;
     this.set(closeRound(played));
@@ -344,7 +361,12 @@ export class ConvocationController {
     const todo = e.pairings.filter((p) => p.b !== null && p.a !== 0 && p.b !== 0 && !resultOf(e, e.round, p.a)) as { a: number; b: number }[];
     this.fieldProgress = { done: 0, of: todo.length }; this.emit();
     const knobs = this.knobs;
-    const done = await Promise.all(todo.map((p) => pool.series(e, p.a, p.b, knobs).then((s) => { this.fieldProgress = { done: (this.fieldProgress?.done ?? 0) + 1, of: todo.length }; this.emit(); return s; })));
+    let last = Date.now();
+    const watch = setInterval(() => { if (Date.now() - last > FIELD_STALL_MS) pool.breakAll(`no match finished in ${FIELD_STALL_MS / 1000} s`); }, 2_000);
+    let done: Awaited<ReturnType<FieldPool["series"]>>[];
+    try {
+      done = await Promise.all(todo.map((p) => pool.series(e, p.a, p.b, knobs).then((s) => { last = Date.now(); this.fieldProgress = { done: (this.fieldProgress?.done ?? 0) + 1, of: todo.length }; this.emit(); return s; })));
+    } finally { clearInterval(watch); }
     let x = e; todo.forEach((p, i) => { x = recordSeries(x, p.a, p.b, done[i]!); });
     return x;
   }

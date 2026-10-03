@@ -418,7 +418,7 @@ export function ConvocationApp() {
     );
   }
   if (k === "between") return <Between c={c} />;
-  if (k === "field") return <Page><h2 style={{ fontFamily: "var(--serif)", margin: 0 }}>The other tables finish their matches…</h2>{c.fieldProgress && <p style={{ fontSize: 13, margin: "8px 0 0" }}>{c.fieldProgress.done} of {c.fieldProgress.of} matches played.</p>}</Page>;
+  if (k === "field") return <Page><h2 style={{ fontFamily: "var(--serif)", margin: 0 }}>The other tables finish their matches…</h2>{c.fieldProgress && <p style={{ fontSize: 13, margin: "8px 0 0" }}>{c.fieldProgress.done} of {c.fieldProgress.of} matches played.</p>}{c.fieldNote && <p style={{ fontSize: 12, margin: "6px 0 0", color: "var(--ink-soft)" }}>{c.fieldNote}</p>}</Page>;
   if (k === "standings") return <Standings c={c} />;
   if (k === "bracket") return <Bracket c={c} />;
   if (k === "prize") return <Prize c={c} pool={pool} oracle={oracle} />;
