@@ -17,6 +17,7 @@
   "toughness": 4,
   "text": "",
   "art": {
+    "asset": "/custom-art/beast_4_4_g.png",
     "fallback": "rendered"
   }
 }

@@ -15,6 +15,7 @@ import {
 } from "@shandalar/world";
 import { MatchController } from "../play/match-controller.js";
 import { makeFieldPool, type FieldPool } from "./field-pool.js";
+import { TOKEN_FACES } from "./token-faces.js";
 import type { DeckEditorHost } from "../components/deck-editor-host.js";
 
 export type ConvocationScreen =
@@ -160,7 +161,8 @@ export class ConvocationController {
 
   // ---------- S51: the draft ----------
 
-  private faces() { return this.catalog.opponents.map((o) => ({ portrait: o.portrait, colors: o.colorsPhaseTwo ?? o.colors })); }
+  /** The field's faces: the world catalog's opponents, and (post-S53, Chris) the tokens' art promoted to portraits. */
+  private faces() { return [...this.catalog.opponents.map((o) => ({ portrait: o.portrait, colors: o.colorsPhaseTwo ?? o.colors })), ...TOKEN_FACES]; }
   private deps() { return { cards: this.pool, packs: this.packs, rating: this.rating }; }
   /** "The pack goes left." — the last pass, for the screen's line. */
   passNote: string | null = null;

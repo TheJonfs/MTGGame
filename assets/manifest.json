@@ -5967,6 +5967,21 @@
         }
       }
     },
+    "token-beast": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:a8b928b7e0e2c992e469a8541b5ecde126caafa0685bbf1b4d0f8f333fd0dfbf",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:a8b928b7e0e2c992e469a8541b5ecde126caafa0685bbf1b4d0f8f333fd0dfbf",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/token-beast/canonical.png",
+          "rendered_at": "2026-10-03T13:13:34+00:00",
+          "thumb": "assets/thumbs/token-beast/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "token-bird": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:4a40522c0e608e4b5d459baef3e97ab35413661af8417df4c71e27d28818d74c",
