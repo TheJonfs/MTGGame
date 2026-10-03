@@ -100,6 +100,15 @@ All four lines are in place:
 - **The Beast token's art**, and **all sixteen token arts promoted to Convocation portraits** (38 faces → 54).
 - **The metagame grows from play.** Lists contributed from Convocations live in `data/convocation/open-contributed.json`; `pnpm open:gen` validates and appends them. The first: **the Sweep** (Chris's 19–0 Jund Aristocrats; the name provisional). The field draws on every list with a measured strength (`candidateCount`). The Open's round-robin re-measured with thirteen lists on pilot 95 (7,800 games): levy 66 · **sweep 61** · wurmspeaker 61 · coin 59 · muster 55 · warband 54 · ford 52 · loop 50 · enchantress 49 · tally 38 · undertow 35 · locks 35 · larder 34. *For the planner*: contributed lists are a new source beside the planner's document; whether they want a ruling (how many, how chosen, when retired).
 
+### The Sweep — the list that went 19–0 (Chris's exact sixty, the Open on Days 2 and 4 and in the Umbel)
+
+- **Creatures (25):** 4 The Reaper, 3 Meliyan, the Torment, 4 Blood Artist, 4 Birds of Paradise, 4 Shocking Sharpshooter, 2 Seasoned Pyromancer, 2 Vampire Nighthawk, 2 Voracious Cobra
+- **Noncreature spells (11):** 4 Bitterblossom, 3 Putrefy, 2 Rancor, 1 Prey Upon, 1 Lightning Bolt
+- **Mana: Moxen and the Lotus (6):** 1 Black Lotus, 1 Mox Emerald, 1 Mox Jet, 1 Mox Ruby, 1 Mox Sapphire, 1 Mox Pearl
+- **Lands (18):** 1 Cairnbrand, 4 Badlands, 4 Bayou, 4 Taiga, 1 Tallyflame Court, 1 Obsidian Observatory, 1 Shevelport, 1 Underground Sea, 1 Savannah
+- **Measured** in the Open's round-robin (pilot 95, 100 games a pairing): 61% against the field — the Coin 44 · the Levy 49 · the Wurmspeaker 50 · the Ford 50 · the Muster 58 · the Loop 60 · the Enchantress 61 · the Warband 61 · the Tally 71 · the Locks 71 · the Undertow 77 · the Larder 77.
+
+
 ## Deviations from the brief
 1. **128 seats** (Chris), not thirty-two; the default stages are otherwise the brief's.
 2. **Draft rounds inside the pod; the second draft's pods by standings** (Chris). The brief said only "the Swiss pairs on [the carried record]".
