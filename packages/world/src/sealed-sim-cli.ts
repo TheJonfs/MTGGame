@@ -38,7 +38,8 @@ const rating = JSON.parse(readFileSync(join(ROOT, ratingFile), "utf8")) as CardR
 const NOISE = Number(arg("noise", "0")), NOISE_SHARE = Number(arg("noise-share", "0.3333"));
 const gauss = (rng: WorldRng) => Math.sqrt(-2 * Math.log(Math.max(1e-12, rng.float()))) * Math.cos(2 * Math.PI * rng.float());
 const noisy = (i: number) => NOISE > 0 && i % Math.round(1 / NOISE_SHARE) === 0;
-const poolOf = (i: number) => rollSealedPool(set, recipe, cards, data.power, seed0 * 100003 + i).flat();
+const PACKS = Number(arg("packs", "6")); // post-S52: 3 = a draft seat's card count (is black's Sealed strength depth?)
+const poolOf = (i: number) => rollSealedPool(set, recipe, cards, data.power, seed0 * 100003 + i, PACKS).flat();
 const builds: { pool: string[]; build: LimitedBuild; noisy: boolean }[] = Array.from({ length: N }, (_, i) => {
   const pool = poolOf(i);
   if (!noisy(i)) return { pool, build: buildLimitedDeck(pool, rating, cards), noisy: false };
@@ -163,7 +164,7 @@ function report(): void {
   const wr = (i: number) => (rec[key(i)] ? rec[key(i)]!.w / rec[key(i)]!.n : NaN);
   const L: string[] = [];
   const pct = (x: number) => `${Math.round(x * 100)}%`;
-  L.push(`# The Sealed sim (S48) — ${N} pools (${set.name}, six ${recipe.name} packs), ${games.length} games, master both, 20 life\n`);
+  L.push(`# The Sealed sim (S48) — ${N} pools (${set.name}, ${PACKS === 6 ? "six" : PACKS} ${recipe.name} packs), ${games.length} games, master both, 20 life\n`);
   // the builder's checks
   const fixers = (b: { pool: string[]; build: LimitedBuild }) => b.pool.filter((id) => { const d = cards.get(id)!; return d.types.includes("Land") && (JSON.stringify(d.abilities ?? []).includes('"basicLand"') || (b.build.splash !== null && packColors(d).includes(b.build.splash) && packColors(d).some((c) => b.build.colors.includes(c)))); }).length;
   const size = (b: LimitedBuild) => b.deck.reduce((n, e) => n + e.count, 0);
@@ -180,6 +181,7 @@ function report(): void {
   for (const [p, is] of Object.entries(byPair).sort((a, b) => b[1].length - a[1].length)) L.push(`| ${p} | ${is.length} | ${pct(is.length / N)} | ${pct(mean(is.map(wr).filter((x) => !Number.isNaN(x))))} |`);
   const colorShare: Record<string, number> = {}; for (const b of builds) for (const c of b.build.colors) colorShare[c] = (colorShare[c] ?? 0) + 1;
   L.push(`\nA colour's share of decks: ${["W", "U", "B", "R", "G"].map((c) => `${c} ${pct((colorShare[c] ?? 0) / N)}`).join(" · ")} (even would be 40% each).`);
+  L.push(`A colour's decks win: ${["W", "U", "B", "R", "G"].map((c) => `${c} ${pct(mean(builds.map((b, i) => [b, wr(i)] as const).filter(([b, x]) => b.build.colors.includes(c as PackColor) && !Number.isNaN(x)).map(([, x]) => x)))}`).join(" · ")}.`);
   const sp = builds.map((b, i) => [b.build.splash !== null, wr(i)] as const).filter(([, x]) => !Number.isNaN(x));
   L.push(`Splashing decks win ${pct(mean(sp.filter(([s]) => s).map(([, x]) => x)))}; two-colour decks ${pct(mean(sp.filter(([s]) => !s).map(([, x]) => x)))}.`);
   // curve
