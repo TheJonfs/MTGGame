@@ -8,7 +8,7 @@
 import type { CardDef } from "@shandalar/cards";
 import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
 import {
-  CONSTRUCTED_FORMATS, CONVOCATION_SEATS, buildConstructedDeck, selectCandidates, type ConstructedFormat, currentStage, defaultStages, finishTitle, keepAllowance, lastLimitedPool, newConvocation, nextStage, stageLastRound, type ConvocationStage, convocationNames, limitedView, DIFFICULTIES, DRAFT_PLANE, authoredListsFrom, cardLegal, copyCap, deserializeWorld, eventFormat, isBasic, newConstructedEvent, suggestedConstructedDeck, draftDirection, draftPack, draftStep, draftTotalPicks, newDraftEvent, suggestedPick, EVENT_SAVE_KEY, LEDGER_KEY, MatchSeries, SEALED_PLANE, addCopy, advanceBracket, advanceEvent, bracketRound, bracketRoundComplete, buildLimitedDeck, checkEventDeck, closeRound, deserializeEvent, finalPlaces, playBracketFieldRound, recordBracketSeries, resolveKnobs, seatForGame,
+  CONSTRUCTED_FORMATS, CONVOCATION_SEATS, buildConstructedDeck, selectCandidates, type ConstructedFormat, currentStage, defaultStages, finishTitle, keepAllowance, lastLimitedPool, newConvocation, nextStage, registerDecklist, stageLastRound, type ConvocationStage, convocationNames, limitedView, DIFFICULTIES, DRAFT_PLANE, authoredListsFrom, cardLegal, copyCap, deserializeWorld, eventFormat, isBasic, newConstructedEvent, suggestedConstructedDeck, draftDirection, draftPack, draftStep, draftTotalPicks, newDraftEvent, suggestedPick, EVENT_SAVE_KEY, LEDGER_KEY, MatchSeries, SEALED_PLANE, addCopy, advanceBracket, advanceEvent, bracketRound, bracketRoundComplete, buildLimitedDeck, checkEventDeck, closeRound, deserializeEvent, finalPlaces, playBracketFieldRound, recordBracketSeries, resolveKnobs, seatForGame,
   ledgerEntry, lifeModifiers, newSealedEvent, pairingOf, playFieldRound, poolCollection, recordSeries, registerDeck, removeCopy, resultOf, roundComplete, saveCurrentSeries,
   serializeEvent, seriesSeed, seriesSetup, standings, type CardRatingTable, type Catalog, type ConvocationEvent, type ConvocationLedgerEntry, type ConvocationPackData,
   type Decklist, type DifficultyName, type KnobValues, type SeatAgents, type Standing,
@@ -114,7 +114,14 @@ export class ConvocationController {
     const seats = opts.seats ?? CONVOCATION_SEATS;
     this.set(newConvocation({ seed, stages: opts.stages ?? defaultStages(opts.second ?? "open", opts.first ?? "open"), seats, names: convocationNames(seats - 1), faces: this.faces(), library: this.library(), difficulty: opts.difficulty ?? "standard" }, this.deps()));
     this.series = null; this.match = null; this.passNote = null;
+    if (this.event!.registering?.length) return this.openBuild(false); // the decklists first
     this.screen = { kind: "draft" }; this.emit();
+  }
+  /** S53 (Chris): before Day 1, the decklists — the format being registered, and the days it will play. */
+  registration(): { formatName: string; days: number[]; left: number } | null {
+    const e = this.event; if (!e?.registering?.length) return null;
+    const f = e.registering[0]!, days = (e.stages ?? []).flatMap((st, i) => (st.formatId === f ? [i + 1] : []));
+    return { formatName: eventFormat(f).name, days, left: e.registering.length };
   }
   isStaged(): boolean { return !!this.event?.stages; }
   /** "Day 2 — the Open" for the banners; "" outside a full Convocation. */
@@ -127,6 +134,7 @@ export class ConvocationController {
     this.set(nextStage(e, this.deps(), this.library()));
     this.series = null; this.match = null; this.passNote = null;
     if (this.event!.phase === "draft") { this.screen = { kind: "draft" }; return this.emit(); }
+    if (this.event!.phase === "round") { this.screen = { kind: "pairings" }; return this.emit(); } // a registered deck: straight to the round
     this.openBuild(false);
   }
   /** The door's trophy room: the full Convocations in the ledger. */
@@ -244,10 +252,15 @@ export class ConvocationController {
   /** Register the deck (the build) or keep the sideboarded deck (between games). An illegal draft is refused. */
   register(): void {
     const e = this.event; if (!e || this.screen.kind !== "build") return;
-    const r = registerDeck(e, 0, this.draft, this.pool);
+    const registering = !!e.registering?.length;
+    const r = registering ? registerDecklist(e, this.draft, this.deps(), this.library()) : registerDeck(e, 0, this.draft, this.pool);
     if (!r.ok) { this.notice = r.problems.join("; "); return this.emit(); }
     const sideboarding = this.screen.sideboarding;
     this.set(r.event);
+    if (registering) { // the next decklist, or Day 1
+      if (r.event.phase === "build") return this.openBuild(false);
+      this.passNote = null; this.screen = r.event.phase === "draft" ? { kind: "draft" } : { kind: "pairings" }; return this.emit();
+    }
     this.screen = sideboarding ? { kind: "between" } : { kind: "pairings" };
     this.emit();
   }

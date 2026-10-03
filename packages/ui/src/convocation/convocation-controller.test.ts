@@ -354,6 +354,18 @@ describe("the Convocation controller (S48)", () => {
     const { s, c } = make();
     const stages = [{ kind: "draft" as const, formatId: "draft-plane", rounds: 1 }, { kind: "constructed" as const, formatId: "open", rounds: 1 }, { kind: "draft" as const, formatId: "draft-plane", rounds: 1 }, { kind: "constructed" as const, formatId: "pauper", rounds: 1 }];
     c.newConvocation(53, { seats: 16, stages });
+    // the decklists first (Chris): the Open (Day 2), then Pauper (Day 4 and the Umbel)
+    expect(c.screen).toEqual({ kind: "build", sideboarding: false });
+    expect(c.registration()).toEqual({ formatName: "The Open", days: [2], left: 2 });
+    // S53 (Part 3): "start from a list" — the twelve the field is drawn from, repaired to the format
+    const lists = c.startingLists();
+    expect(lists).toHaveLength(12);
+    expect(lists.map((l) => l.key)).toContain("open:levy");
+    expect(lists.find((l) => l.key === "open:levy")!.label).toBe("the Levy");
+    c.startFromList("open:levy"); expect(c.editorLegality().ok).toBe(true); expect(size(c.draft)).toBe(60);
+    c.register();
+    expect(c.registration()).toEqual({ formatName: "Pauper", days: [4], left: 1 });
+    c.suggestDeck(); c.register();
     expect(c.screen.kind).toBe("draft");
     expect(c.isStaged()).toBe(true);
     expect(c.stageLabel()).toBe("Day 1 — a draft");
@@ -371,20 +383,15 @@ describe("the Convocation controller (S48)", () => {
     const again = new ConvocationController(pool, packs, rating, catalog, s, () => "2026-10-02T00:00:00Z");
     again.resume(); expect(again.screen.kind).toBe("interlude");
     c.toNextStage();
-    expect(c.screen).toEqual({ kind: "build", sideboarding: false });
+    expect(c.screen.kind).toBe("pairings"); // the registered deck plays: no build
     expect(c.stageLabel()).toBe("Day 2 — the Open");
     expect(c.isConstructed()).toBe(true);
-    // S53 (Part 3): "start from a list" — the twelve the field is drawn from, repaired to the format
-    const lists = c.startingLists();
-    expect(lists).toHaveLength(12);
-    expect(lists.map((l) => l.key)).toContain("open:levy");
-    expect(lists.find((l) => l.key === "open:levy")!.label).toBe("the Levy");
-    c.startFromList("open:levy"); expect(c.editorLegality().ok).toBe(true); expect(size(c.draft)).toBe(60);
-    c.suggestDeck(); c.register(); await day();
+    expect(c.event!.field[0]!.deck).toEqual(c.event!.decklists!.open);
+    await day();
     expect(c.nextStageName()).toBe("a draft");
     c.toNextStage(); expect(c.screen.kind).toBe("draft"); draftAll(); c.suggestDeck(); c.register(); await day();
     expect(c.nextStageName()).toBe("Pauper");
-    c.toNextStage(); c.suggestDeck(); c.register();
+    c.toNextStage(); expect(c.screen.kind).toBe("pairings");
     await series(c, true); c.next();
     expect(c.screen.kind).toBe("bracket"); // four wins: the first seed
     for (let r = 0; r < 3; r++) { await series(c, true); }

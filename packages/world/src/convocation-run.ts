@@ -10,7 +10,7 @@ import type { LibraryList } from "./constructed-builder.js";
 import { limitedView } from "./rating.js";
 import {
   advanceBracket, advanceEvent, bracketRound, bracketRoundComplete, closeRound, draftStep, eventFormat, nextStage, pairingOf, playBracketFieldRound, playFieldRound, playSeriesHeadless,
-  recordBracketSeries, recordSeries, registerDeck, suggestedConstructedDeck, suggestedPick, type ConvocationEvent, type EventDeps, type SeatAgents, type SeriesDeps,
+  recordBracketSeries, recordSeries, registerDeck, registerDecklist, suggestedConstructedDeck, suggestedPick, type ConvocationEvent, type EventDeps, type SeatAgents, type SeriesDeps,
 } from "./event.js";
 
 export interface HeadlessDeps extends EventDeps { knobs: SeriesDeps["knobs"]; library: readonly LibraryList[] }
@@ -22,7 +22,7 @@ export async function stepHeadless(e: ConvocationEvent, deps: HeadlessDeps, agen
     case "draft": return draftStep(e, suggestedPick(e, deps), deps);
     case "build": {
       const deck = eventFormat(e.formatId).kind === "constructed" ? suggestedConstructedDeck(e, deps.library, deps) : buildLimitedDeck(e.field[0]!.pool, limitedView(deps.rating), cards).deck;
-      const r = registerDeck(e, 0, deck, cards);
+      const r = e.registering?.length ? registerDecklist(e, deck, deps, deps.library) : registerDeck(e, 0, deck, cards); // S53: the decklists come first
       if (!r.ok) throw new Error(`headless: the suggested deck is refused (${r.problems.join("; ")})`);
       return r.event;
     }

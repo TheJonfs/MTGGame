@@ -80,6 +80,11 @@ All four lines are in place:
 - The Umbel: "Eight remain. The Umbel opens in Pauper."
 - The finish: "Champion of the Umbel."
 
+## After the handoff — Chris's two rulings (2026-10-03)
+- **Decklists up front, locked through the Umbel.** A full Convocation now opens on registration: the player registers one deck per Constructed format (stage order) before the first draft (`registerDecklist`; `decklists`, `registering` in the save). A Constructed day seats the registered deck and posts its round directly; the AI seats' decks are built from the roll of the format's first stage, so Day 4 in the same format (and the Umbel) plays the same decks. Tested: Day 2 and Day 4 decks identical for every seat; two formats register two decks in stage order. Later shapes (a Sealed day, a different Day-4 format) work from the stage list; a Top 8 in a format of its own (a draft or Sealed Umbel) is the next piece if wanted — not built.
+- **Portraits recycle** across the 128 seats (38 portraits; every opponent has a face).
+- 896 tests pass.
+
 ## Deviations from the brief
 1. **128 seats** (Chris), not thirty-two; the default stages are otherwise the brief's.
 2. **Draft rounds inside the pod; the second draft's pods by standings** (Chris). The brief said only "the Swiss pairs on [the carried record]".
@@ -88,7 +93,7 @@ All four lines are in place:
 5. **No sideboarding for the player in a Constructed event** ("if cheap"). The field doesn't sideboard in Constructed either; a player's sideboard needs a registered fifteen and an editor for it, which isn't cheap.
 6. **The thirty-two-seat single Draft and the single Open were not walked separately.** The full Convocation walk covers both formats: two drafts, the Open and Pauper, and the Umbel. The series were auto-won through the controller; one match screen was checked, not a game played by hand.
 7. **ADR-154 also applies to the single Sealed event's AI seats** (the ruling reads "the Sealed builder").
-8. **Only 38 portraits for 127 seats:** 89 seats show initials.
+8. **Only 38 portraits for 127 seats:** recycled (Chris).
 
 ## Concerns
 1. **The Convocation is close to a lottery among the AI seats.** Deck quality barely predicts finish (r = −0.09). The champions' decks averaged the 38th percentile and the Umbel's 54th. The field is built by one set of rules, so its decks come out close in strength, and sixteen best-of-three rounds among near-equal decks are mostly variance. The player's edge over the field matters, but "the Umbel finds the best" isn't what happens. Options: a field of varied strength (stronger and weaker builders and pilots by seat), or accept it as the format's drama. (In Constructed, a deck's mean card score is a weak proxy, since the list matters more.)

@@ -378,9 +378,10 @@ export function ConvocationApp() {
     return (
       <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
         <div className="convocation-banner" style={{ padding: "6px 12px", background: "var(--ink)", color: "var(--parchment)", fontSize: 13, display: "flex", gap: 12, alignItems: "center" }}>
-          {c.isStaged() && !c.screen.sideboarding && <span style={{ opacity: 0.85 }}>{c.stageLabel()}</span>}
-          <b style={{ fontFamily: "var(--serif)" }}>{c.screen.sideboarding ? "Between games" : c.isConstructed() ? `A Convocation — ${c.formatName()}.` : c.isDraft() ? "Forty-five picks. Build from them." : `A Convocation — Sealed, ${COUNT[c.event.field.length] ?? c.event.field.length} seats.`}</b>
-          <span>{c.screen.sideboarding ? "Change your deck from your pool; forty cards or more." : c.isConstructed() ? "Every card the format allows is yours. Build sixty or more, take a suggestion, or bring a saved deck." : c.isDraft() ? "Build at least forty cards from your picks; basic lands are free." : "Six packs are open. Build at least forty cards; basic lands are free."}</span>
+          {c.isStaged() && !c.screen.sideboarding && !c.registration() && <span style={{ opacity: 0.85 }}>{c.stageLabel()}</span>}
+          {c.registration() && <span style={{ opacity: 0.85 }}>Decklists{c.registration()!.left > 1 ? ` (${c.registration()!.left} to register)` : ""}</span>}
+          <b style={{ fontFamily: "var(--serif)" }}>{c.registration() ? `Register your deck for ${c.registration()!.formatName.replace(/^The /, "the ")} — it plays Day ${c.registration()!.days.join(" and Day ")}${c.registration()!.days.includes(c.event.stages!.length) ? ", and the Umbel" : ""}.` : c.screen.sideboarding ? "Between games" : c.isConstructed() ? `A Convocation — ${c.formatName()}.` : c.isDraft() ? "Forty-five picks. Build from them." : `A Convocation — Sealed, ${COUNT[c.event.field.length] ?? c.event.field.length} seats.`}</b>
+          <span>{c.registration() ? "As at the Pro Tour, the deck is registered before the first draft and cannot change." : c.screen.sideboarding ? "Change your deck from your pool; forty cards or more." : c.isConstructed() ? "Every card the format allows is yours. Build sixty or more, take a suggestion, or bring a saved deck." : c.isDraft() ? "Build at least forty cards from your picks; basic lands are free." : "Six packs are open. Build at least forty cards; basic lands are free."}</span>
           <span style={{ flex: 1 }} />
           {!c.screen.sideboarding && c.isConstructed() && (
             <select value="" onChange={(e) => { if (e.target.value) c.startFromList(e.target.value); }} title="start from one of the lists the field is drawn from — repaired to this format, as written">

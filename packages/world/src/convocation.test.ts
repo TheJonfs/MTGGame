@@ -38,11 +38,18 @@ describe("the full Convocation (S53)", () => {
 
   it("four stages headless: the pods of eight, the draft rounds inside them, the second draft's pods by the standings, the record carried, no rematch, one face a seat, the Umbel in the last format, the finish and its title", async () => {
     let e = make(531);
+    // the decklists first (Chris: registered at the start, locked through the Umbel): both days are the Open — one deck
+    expect([e.phase, e.registering, e.formatId]).toEqual(["build", ["open"], "open"]);
+    e = await stepHeadless(e, deps, agents);
+    expect(e.registering).toBeUndefined();
+    expect(Object.keys(e.decklists!)).toEqual(["open"]);
     expect(e.phase).toBe("draft");
     expect(e.pods!.length).toBe(4);
     expect(new Set(e.pods!.flat()).size).toBe(32);
     expect(e.draft!.pod![0]).toBe(0);
     const faces = e.field.map((s) => s.face);
+    expect(faces.slice(1).every(Boolean)).toBe(true); // the portraits recycle: every opponent has a face
+    let day2: ConvocationEvent | null = null;
     const seen: { stage: number; phase: string; round: number }[] = [];
     let secondPods: number[][] | null = null, standingsBefore: number[] | null = null;
     while (e.phase !== "over") {
@@ -57,6 +64,11 @@ describe("the full Convocation (S53)", () => {
         }
       }
       if (before.phase === "interlude" && e.stage === 2) { secondPods = e.pods!; standingsBefore = standings(before).map((r) => r.seat); }
+      if (before.phase === "interlude" && e.stage === 1) { expect(e.phase).toBe("round"); day2 = e; } // the registered deck plays: no build
+      if (before.phase === "interlude" && e.stage === 3) { // Day 4 in the same format: every seat plays its Day 2 deck
+        expect(e.phase).toBe("round");
+        expect(e.field.map((x) => x.deck)).toEqual(day2!.field.map((x) => x.deck));
+      }
       if (e.phase === "round" && before.phase !== "round" && e.stages![e.stage!]!.kind === "draft") { // a draft round's pairings stay inside the pods
         for (const p of e.pairings) expect(e.pods!.some((pod) => pod.includes(p.a) && pod.includes(p.b!))).toBe(true);
       }
@@ -78,6 +90,8 @@ describe("the full Convocation (S53)", () => {
     expect(e.field.filter((s) => !s.human).every((s) => s.list)).toBe(true); // the field's last decks are Constructed
     // the human's four registrations
     expect(e.history!.map((h) => [h.stage, h.formatId])).toEqual([[0, "draft-plane"], [1, "open"], [2, "draft-plane"], [3, "open"]]);
+    expect(e.history![3]!.deck).toEqual(e.decklists!.open); // the Umbel plays the registered deck
+    expect(e.field[0]!.deck).toEqual(e.decklists!.open);
     expect(e.history![0]!.pool.length).toBe(45);
     expect(e.history![2]!.pool).not.toEqual(e.history![0]!.pool); // the second draft is its own
     // the finish
@@ -99,13 +113,29 @@ describe("the full Convocation (S53)", () => {
     expect(finalPlaces(resumed)).toEqual(finalPlaces(straight));
   }, 240_000);
 
-  it("a Sealed stage deals every seat its own pool and the field varies its pair (ADR-154); a Constructed stage builds the field by select-and-repair", () => {
-    const e = make(533, [{ kind: "sealed", formatId: "sealed-plane", rounds: 1 }, { kind: "constructed", formatId: "open", rounds: 1 }], 16);
+  it("a Sealed stage deals every seat its own pool and the field varies its pair (ADR-154); a Constructed stage builds the field by select-and-repair", async () => {
+    let e = make(533, [{ kind: "sealed", formatId: "sealed-plane", rounds: 1 }, { kind: "constructed", formatId: "open", rounds: 1 }], 16);
+    expect(e.registering).toEqual(["open"]);
+    e = await stepHeadless(e, deps, agents); // the Open's decklist; then the Sealed day deals
     expect(e.phase).toBe("build");
     expect(e.pods).toBeUndefined();
     expect(new Set(e.field.map((s) => s.pool.join())).size).toBe(16);
     expect(e.field.slice(1).every((s) => s.deck.length > 0)).toBe(true);
     expect(() => make(534, [{ kind: "constructed", formatId: "sealed-plane", rounds: 1 }], 16)).toThrow(/stage constructed/);
+  });
+
+  it("two Constructed formats: two decklists before Day 1, in the stages' order; an illegal one is refused", async () => {
+    const { registerDecklist, suggestedConstructedDeck } = await import("./event.js");
+    let e = make(536, [{ kind: "sealed", formatId: "sealed-plane", rounds: 1 }, { kind: "constructed", formatId: "pauper", rounds: 1 }, { kind: "constructed", formatId: "open", rounds: 1 }], 16);
+    expect(e.registering).toEqual(["pauper", "open"]);
+    const bad = registerDecklist(e, [{ cardId: "black_lotus", count: 1 }], deps, library);
+    expect(bad.ok).toBe(false);
+    const r1 = registerDecklist(e, suggestedConstructedDeck(e, library, deps), deps, library); if (!r1.ok) throw new Error(r1.problems.join());
+    expect([r1.event.registering, r1.event.formatId, r1.event.phase]).toEqual([["open"], "open", "build"]);
+    const r2 = registerDecklist(r1.event, suggestedConstructedDeck(r1.event, library, deps), deps, library); if (!r2.ok) throw new Error(r2.problems.join());
+    e = r2.event;
+    expect(Object.keys(e.decklists!)).toEqual(["pauper", "open"]);
+    expect([e.formatId, e.phase, e.stage]).toEqual(["sealed-plane", "build", 0]);
   });
 
   it("a v1 save (a single event) still loads; the save is now v2", () => {

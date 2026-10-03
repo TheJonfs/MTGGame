@@ -78,6 +78,10 @@ export interface ConvocationEvent {
   history?: { stage: number; formatId: string; pool: string[]; deck: Decklist }[];
   /** S53 (Part 2): the cards the human kept at the finish (the eight one, the champion two). */
   keptCards?: string[];
+  /** S53 (Chris): the Pro Tour's decklists — the human registers one deck per Constructed format before the first
+   * stage, and plays it every round of that format and in the Umbel. `registering` is the formats still to register. */
+  decklists?: Record<string, Decklist>;
+  registering?: string[];
   /** S49: a Top 8 follows the Swiss rounds (single elimination). */
   top8?: boolean;
   /** S49: the bracket — the eight seats in standings order (seed 1 first), and each round's matches as they are
@@ -514,10 +518,28 @@ export function newConvocation(opts: NewConvocationOptions, deps: EventDeps): Co
   const rng = new WorldRng(sub(opts.seed, 1));
   const names = [...opts.names]; for (let i = names.length - 1; i > 0; i--) { const j = rng.int(i + 1); [names[i], names[j]] = [names[j]!, names[i]!]; }
   const faces = [...opts.faces]; for (let i = faces.length - 1; i > 0; i--) { const j = rng.int(i + 1); [faces[i], faces[j]] = [faces[j]!, faces[i]!]; }
-  const field: EventSeat[] = Array.from({ length: seats }, (_, s) => ({ name: s === 0 ? (opts.playerName ?? "You") : (names[(s - 1) % Math.max(1, names.length)] ?? `Seat ${s + 1}`), ...(s > 0 && faces[s - 1] ? { face: faces[s - 1]!.portrait } : {}), human: s === 0, pool: [], deck: [], sideboard: [], colors: "", archetype: "midrange" as const }));
+  // the portraits recycle across the field (Chris, S53: fine while there are fewer portraits than seats)
+  const field: EventSeat[] = Array.from({ length: seats }, (_, s) => ({ name: s === 0 ? (opts.playerName ?? "You") : (names[(s - 1) % Math.max(1, names.length)] ?? `Seat ${s + 1}`), ...(s > 0 && faces.length ? { face: faces[(s - 1) % faces.length]!.portrait } : {}), human: s === 0, pool: [], deck: [], sideboard: [], colors: "", archetype: "midrange" as const }));
   const rounds = stages.reduce((n, st) => n + st.rounds, 0);
   const event: ConvocationEvent = { version: EVENT_SAVE_VERSION, seed: opts.seed, formatId: stages[0]!.formatId, rounds, difficulty: opts.difficulty ?? "standard", phase: "build", round: 0, field, pairings: [], results: [], top8: true, stages, stage: 0, history: [] };
+  // the decklists first (the Pro Tour's registration): one deck per Constructed format, before Day 1
+  const formats = [...new Set(stages.filter((st) => st.kind === "constructed").map((st) => st.formatId))];
+  if (formats.length) return { ...event, formatId: formats[0]!, registering: formats, decklists: {} };
   return beginStage(event, 0, deps, opts.library);
+}
+
+/** S53 (Chris): register the human's deck for the format at the head of `registering` (checked by the format); the
+ * last one begins Day 1. A registered deck is locked: it plays every round of its format and the Umbel. */
+export function registerDecklist(event: ConvocationEvent, deck: Decklist, deps: EventDeps, library: readonly LibraryList[]): { ok: true; event: ConvocationEvent } | { ok: false; problems: string[] } {
+  const [formatId, ...rest] = event.registering ?? [];
+  if (!formatId || event.phase !== "build") throw new Error("event: no decklist to register");
+  const check = checkEventDeck(event, 0, deck, deps.cards);
+  if (!check.ok) return { ok: false, problems: check.problems };
+  const decklists = { ...(event.decklists ?? {}), [formatId]: deck.map((e) => ({ ...e })) };
+  const field = event.field.map((s, i) => (i === 0 ? { ...s, deck: [], colors: "" } : s));
+  if (rest.length) return { ok: true, event: { ...event, field, decklists, registering: rest, formatId: rest[0]! } };
+  const { registering: _r, ...done } = event;
+  return { ok: true, event: beginStage({ ...done, field, decklists, formatId: event.stages![0]!.formatId }, 0, deps, library) };
 }
 
 /** Stage k begins: every seat a fresh pool or deck for it (the record carries — the standings read every result).
@@ -532,12 +554,18 @@ export function beginStage(event: ConvocationEvent, k: number, deps: EventDeps, 
   const bare = (seat: EventSeat): EventSeat => { const { list: _l, tinker: _t, ...rest } = seat; return { ...rest, pool: [], deck: [], sideboard: [], colors: "" }; };
   if (st.kind === "constructed") {
     const format = eventFormat(st.formatId) as ConstructedFormat;
+    // S53 (Chris): a deck is registered once per format — the AI seats' from the format's first stage's roll, so a
+    // second stage (and the Umbel) in the same format plays the same decks
+    const first = at.stages!.findIndex((x) => x.formatId === st.formatId), deckSalt = stageSalt({ stages: at.stages!, stage: first });
+    const mine = at.decklists?.[st.formatId];
     const field = at.field.map((seat, s) => {
-      if (s === 0) return bare(seat);
-      const b = buildConstructedDeck(format, deps.rating, sub(at.seed, 8, s, ...salt), library, deps.cards);
+      if (s === 0) return mine ? { ...bare(seat), deck: mine.map((e) => ({ ...e })), colors: deckColors(mine, deps.cards) } : bare(seat);
+      const b = buildConstructedDeck(format, deps.rating, sub(at.seed, 8, s, ...deckSalt), library, deps.cards);
       return { ...bare(seat), deck: b.deck, list: b.from, tinker: b.tinker, colors: deckColors(b.deck, deps.cards), archetype: b.archetype };
     });
-    return { ...at, field };
+    if (!mine) return { ...at, field };
+    const history = [...(at.history ?? []).filter((h) => h.stage !== k), { stage: k, formatId: st.formatId, pool: [], deck: mine.map((e) => ({ ...e })) }];
+    return pairRound({ ...at, field, history }); // the registered deck plays: the round is posted
   }
   const format = formatOf(st.formatId);
   const set = deps.packs.sets.find((x) => x.id === format.set), recipe = deps.packs.recipes.find((r) => r.id === format.recipe);
