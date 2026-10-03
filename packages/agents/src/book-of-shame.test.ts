@@ -1335,6 +1335,14 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.scorePriorityAction(board({}, { summoningSick: true }), equip("b2"))).toBeGreaterThan(a.scorePriorityAction(board({}, { summoningSick: true }), { type: "pass" })); // book 86's one real move stands
   });
 
+  it("book of shame 95 (post-S53, Chris — the field kept attacking into Voracious Cobra): a creature that destroys what it deals combat damage to is a deathtoucher in the attack simulation — a 3/3 stays home against it, and still swings into a plain 2/2", async () => {
+    const req = { player: 0 as const, purpose: "declareAttacker" as const, actions: [{ type: "declareAttacker" as const, objectId: "g" }, { type: "doneDeclaringAttackers" as const }] };
+    const into = (blocker: string) => mkView({ life: [20, 20], battlefield: [{ id: "g", cardId: "hill_giant", controller: 0 }, { id: "b", cardId: blocker, controller: 1 }] });
+    // a fresh agent a board: the attack scores are memoised per turn on the attackers and the lives, not the board
+    expect((await agent("midrange").attackChoice(into("voracious_cobra"), req)).type).toBe("doneDeclaringAttackers"); // first strike, then "destroy that creature"
+    expect((await agent("midrange").attackChoice(into("grizzly_bears"), req)).type).toBe("declareAttacker"); // a plain 2/2 cannot block it profitably
+  });
+
   it("book of shame 94 (post-S52, Chris — three Essence Scatters at one creature spell, the second creature then walking in): one counter answers one spell; when ours is countered the spell is live again", () => {
     const a = agent("control");
     const lands = Array.from({ length: 6 }, (_, i) => ({ id: `l${i}`, cardId: "island", controller: 0 as const }));

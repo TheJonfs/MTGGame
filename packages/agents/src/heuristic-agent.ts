@@ -929,7 +929,7 @@ export class HeuristicAgent implements Agent {
     if (offered.length === 0) return done ?? request.actions[0]!;
 
     const staged = new Set(view.combat.attackers);
-    const creatures = viewCreatures(view);
+    const creatures = this.attackSimCreatures(view);
     const me = view.you as PlayerId;
 
     let bestSet = [...staged];
@@ -1049,7 +1049,7 @@ export class HeuristicAgent implements Agent {
     const untappedOpp = oppCreatures.filter((o) => !o.tapped && !o.keywords.includes("defender")); // S30: a Wall is no race
     const oppPower = untappedOpp.reduce((n, o) => n + (o.power ?? 0), 0);
     const maxOppPower = untappedOpp.reduce((m, o) => Math.max(m, o.power ?? 0), 0);
-    const oppDeathtouch = untappedOpp.some((o) => o.keywords.includes("deathtouch"));
+    const oppDeathtouch = untappedOpp.some((o) => o.keywords.includes("deathtouch") || this.destroysWhatItDamages(o.id, view)); // book 95
     const raceRisk = Math.min(1, oppPower / Math.max(1, view.life[me] - 5));
     // S45 (Seedborn Muse): under an untap-in-their-untap-step static every attacker stands again to block — the
     // counter-swing costs nothing, as vigilance.
@@ -1995,6 +1995,12 @@ export class HeuristicAgent implements Agent {
 
   // ---------- S40 (ADR-128): the flood's policies — shape-keyed, never card-keyed ----------
 
+  /** Book 95 (Chris: the AI attacked into Voracious Cobra): the attack simulator knows keywords, not triggers — a
+   * creature that destroys what it deals combat damage to is, for combat, a deathtoucher; it enters the simulation as
+   * one (blocks already price it — S40's blockGain). Shape-keyed: the DEALS_DAMAGE → destroy-that-creature trigger. */
+  private attackSimCreatures(view: GameView): SimObject[] {
+    return viewCreatures(view).map((c) => (!c.keywords.includes("deathtouch") && this.destroysWhatItDamages(c.id, view) ? { ...c, keywords: [...c.keywords, "deathtouch"] as SimObject["keywords"] } : c));
+  }
   private destroysWhatItDamages(objectId: string, view: GameView): boolean {
     const o = view.battlefield.find((b) => b.id === objectId);
     return (this.def(o?.cardId ?? "")?.abilities ?? []).some((a) => a.kind === "triggered" && a.event === "DEALS_DAMAGE" && a.condition?.recipient === "creature" && a.effects.some((e) => e.type === "destroy" && e.eventObject));
