@@ -32,7 +32,7 @@ describe("the Constructed builder (S52)", () => {
       if (b.tinker === "light") expect(moved).toBeLessThanOrEqual(3);
       if (b.tinker === "heavy") expect(b.swaps.length).toBeGreaterThanOrEqual(3);
     }
-    expect(new Set(builds.map((b) => b.from)).size).toBe(12); // every Open list is in the field
+    expect(new Set(builds.map((b) => b.from)).size).toBe(Object.keys(OPEN_MEANS).length); // every measured Open list is in the field (twelve, and post-S53 the contributed)
     const share = (t: string) => builds.filter((b) => b.tinker === t).length / builds.length;
     expect(share("stock")).toBeGreaterThan(0.12); expect(share("stock")).toBeLessThan(0.4);
     expect(share("light")).toBeGreaterThan(0.35); expect(share("heavy")).toBeGreaterThan(0.12);

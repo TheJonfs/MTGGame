@@ -13,9 +13,11 @@ const pool = loadCardPool(join(ROOT, "data/cards")).cards;
 const idOf = new Map([...pool.values()].map((d) => [d.name, d.id]));
 
 describe("S46 (ADR-142/143): the Open format and its twelve seed lists", () => {
-  it("open-decks.ts is in sync with the planner's document + the S46 amendments + the Loop (run `pnpm open:gen` after an edit)", () => {
+  it("open-decks.ts is in sync with the planner's document + the S46 amendments + the Loop + the lists contributed from play (run `pnpm open:gen` after an edit)", () => {
     const lists = parseOpenLists(readFileSync(join(ROOT, "docs/convocation/convocation-open-lists-draft-2.md"), "utf8"), (n) => idOf.get(n));
     lists.push(buildLoop(lists.find((l) => l.key === "coin")!, (n) => idOf.get(n)));
+    // post-S53 (Chris): data/convocation/open-contributed.json, after the twelve
+    for (const c of (JSON.parse(readFileSync(join(ROOT, "data/convocation/open-contributed.json"), "utf8")) as { lists: { key: string; decklist: { cardId: string; count: number }[] }[] }).lists) lists.push({ key: c.key, decklist: c.decklist } as never);
     expect(Object.keys(OPEN_DECKS)).toEqual(lists.map((l) => l.key));
     for (const l of lists) expect(OPEN_DECKS[l.key]!.decklist, l.key).toEqual(l.decklist);
   });

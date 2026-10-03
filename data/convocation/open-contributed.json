@@ -1,0 +1,126 @@
+{
+ "_comment": "Post-S53 (Chris): Open lists contributed from play — each one a deck that did something in a Convocation, added to the Open's library beside the planner's twelve. pnpm open:gen validates (sixty, legal in the Open) and appends them; its strength is measured by pnpm open:rr before it can enter the field (OPEN_MEANS). Grows as Convocations are played.",
+ "lists": [
+  {
+   "key": "sweep",
+   "name": "the Sweep",
+   "title": "Jund Aristocrats (B R G)",
+   "archetype": "midrange",
+   "source": "Chris's Convocation, seed 418014, 2026-10-03 — 16–0 in the Swiss and the Umbel (19–0), the Open on both Constructed days",
+   "decklist": [
+    {
+     "cardId": "the_reaper",
+     "count": 4
+    },
+    {
+     "cardId": "meliyan_the_torment",
+     "count": 3
+    },
+    {
+     "cardId": "blood_artist",
+     "count": 4
+    },
+    {
+     "cardId": "bitterblossom",
+     "count": 4
+    },
+    {
+     "cardId": "birds_of_paradise",
+     "count": 4
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "shocking_sharpshooter",
+     "count": 4
+    },
+    {
+     "cardId": "putrefy",
+     "count": 3
+    },
+    {
+     "cardId": "seasoned_pyromancer",
+     "count": 2
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 2
+    },
+    {
+     "cardId": "voracious_cobra",
+     "count": 2
+    },
+    {
+     "cardId": "rancor",
+     "count": 2
+    },
+    {
+     "cardId": "prey_upon",
+     "count": 1
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 1
+    },
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "badlands",
+     "count": 4
+    },
+    {
+     "cardId": "bayou",
+     "count": 4
+    },
+    {
+     "cardId": "taiga",
+     "count": 4
+    },
+    {
+     "cardId": "tallyflame_court",
+     "count": 1
+    },
+    {
+     "cardId": "obsidian_observatory",
+     "count": 1
+    },
+    {
+     "cardId": "shevelport",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "underground_sea",
+     "count": 1
+    },
+    {
+     "cardId": "savannah",
+     "count": 1
+    }
+   ]
+  }
+ ]
+}

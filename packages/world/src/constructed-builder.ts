@@ -25,13 +25,16 @@ import { cardRating, type CardRatingTable } from "./rating.js";
 import { WorldRng } from "./rng.js";
 
 export interface LibraryList { key: string; archetype: "aggro" | "midrange" | "control"; decklist: Decklist }
-/** The Open's round-robin means (S46's 6,600 games, with the S46 follow-ups' Undertow) — a list's measured strength. */
-export const OPEN_MEANS: Record<string, number> = { "open:levy": 68, "open:wurmspeaker": 61, "open:warband": 60, "open:coin": 59, "open:muster": 57, "open:loop": 55, "open:ford": 53, "open:enchantress": 51, "open:tally": 39, "open:locks": 39, "open:undertow": 38, "open:larder": 31 };
+/** The Open's round-robin means — a list's measured strength. Post-S53: re-measured on pilot 95 with the thirteenth list (the Sweep, contributed from play): 7,800 games, analysis/runs/open_rr13.json. (S46's were levy 68, wurmspeaker 61, warband 60, coin 59, muster 57, loop 55, ford 53, enchantress 51, tally 39, locks 39, undertow 38, larder 31.) */
+export const OPEN_MEANS: Record<string, number> = { "open:levy": 66, "open:wurmspeaker": 61, "open:sweep": 61, "open:coin": 59, "open:muster": 55, "open:warband": 54, "open:ford": 52, "open:loop": 50, "open:enchantress": 49, "open:tally": 38, "open:undertow": 35, "open:locks": 35, "open:larder": 34 };
 /** Post-S52 (Chris): the candidates are the TWELVE best-fitting lists (the Open's whole library, not its top five),
  * and the noise has a noise of its own — a seat is STOCK (the list as written), a LIGHT tinkerer (one or two swaps),
  * or a HEAVY one (four to six); the light and the heavy also move a land. The shares are a quarter, a half, a quarter. */
 export const CONSTRUCTED_TERMS = { candidates: 12, noiseBand: 0.5, inListBonus: 0.3, tinker: { stock: { share: 0.25, swaps: [0, 0] }, light: { share: 0.5, swaps: [1, 2] }, heavy: { share: 0.25, swaps: [4, 6] } } } as const;
 export type Tinker = keyof typeof CONSTRUCTED_TERMS.tinker;
+/** Post-S53 (Chris: lists contributed from play grow the metagame): the candidates are at least the twelve, and every
+ * list with a measured Open strength — a contributed list enters the field once `pnpm open:rr` has measured it. */
+export const candidateCount = (): number => Math.max(CONSTRUCTED_TERMS.candidates, Object.keys(OPEN_MEANS).length);
 /** Post-S52 (Chris: "the Larder and the Undertow repair badly" — the noise was blind to a list's plan). The PLAN rules,
  * keyed on data, never on a card's name: (1) a swap's incoming card must share an authored list with the card it
  * replaces (the library's lists are the record of what goes together); (2) a card the source list plays four of is its
@@ -74,7 +77,7 @@ export function selectCandidates(format: ConstructedFormat, rating: CardRatingTa
   const rule = format.rule, role = (id: string) => (cards.get(id)!.types.includes("Land") ? "land" : "other");
   const size = (l: Decklist) => l.reduce((n, e) => n + e.count, 0);
   const strength = (l: LibraryList) => OPEN_MEANS[l.key] !== undefined ? 1000 + OPEN_MEANS[l.key]! : (() => { const xs = l.decklist.filter((e) => role(e.cardId) !== "land"); const n = size(xs); return n ? xs.reduce((a, e) => a + cardRating(cards.get(e.cardId)!, rating) * e.count, 0) / n : 0; })();
-  return library.map((l) => ({ l, share: legalShare(l.decklist, rule, cards), strength: strength(l) })).sort((a, b) => b.share - a.share || b.strength - a.strength || a.l.key.localeCompare(b.l.key)).slice(0, CONSTRUCTED_TERMS.candidates);
+  return library.map((l) => ({ l, share: legalShare(l.decklist, rule, cards), strength: strength(l) })).sort((a, b) => b.share - a.share || b.strength - a.strength || a.l.key.localeCompare(b.l.key)).slice(0, candidateCount());
 }
 
 export function buildConstructedDeck(format: ConstructedFormat, rating: CardRatingTable, seed: number, library: readonly LibraryList[], cards: Map<string, CardDef>, opts: { /** Force the tinker level (the tinker study); default: rolled from the seed. */ tinker?: Tinker; /** Force the source list. */ from?: string } = {}): ConstructedBuild {
