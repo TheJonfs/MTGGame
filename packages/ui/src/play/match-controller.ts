@@ -274,6 +274,11 @@ export class MatchController {
   private listeners = new Set<() => void>();
   /** Queue of staged declarations being streamed after a combat Confirm. */
   private declQueue: Action[] | null = null;
+  /** Post-S53 (Chris: "not offered the block" in the Convocation): the stage a declQueue belongs to. When the last
+   * staged declaration leaves only "done", the engine auto-takes it (ADR-014) and never asks — so the queue was left
+   * set, and the human's NEXT request (a tapped-out player's next ask is the opponent's declare-blockers) was answered
+   * from it with "done". A queue now answers only its own stage, on its own turn; anything else drops it. */
+  private declStage: { purpose: string; turn: number } | null = null;
   /** Last own-turn anchor stop already shown ("turn:step") — anchors pause once. */
   private anchorSeen: string | null = null;
   /** Fast-forward to my next turn (ADR-059): auto-pass every priority window
@@ -549,8 +554,11 @@ export class MatchController {
     }
     // Streaming a confirmed combat stage: answer from the queue.
     if (this.declQueue) {
-      this.streamDeclarations(request);
-      return;
+      if (this.declStage && request.purpose === this.declStage.purpose && view.turn === this.declStage.turn) {
+        this.streamDeclarations(request);
+        return;
+      }
+      this.declQueue = null; this.declStage = null; // the stage ended without asking again: a leftover never answers another
     }
     // Any non-priority request cancels fast-forward: the game needs YOU
     // (blocks, discard, triggers) — it never skips a decision.
@@ -1360,7 +1368,7 @@ export class MatchController {
   confirmAttackers(): void {
     if (this.phase.kind !== "attackers") return;
     const queue: Action[] = [...this.phase.staged].map((objectId) => ({ type: "declareAttacker", objectId }));
-    this.declQueue = queue;
+    this.declQueue = queue; this.declStage = { purpose: "declareAttacker", turn: this.game.state.turn };
     this.phase = { kind: "waiting" };
     this.streamDeclarations(this.currentRequest());
     this.emit();
@@ -1447,7 +1455,7 @@ export class MatchController {
       blocker: p.blocker,
       attacker: p.attacker,
     }));
-    this.declQueue = queue;
+    this.declQueue = queue; this.declStage = { purpose: "declareBlocker", turn: this.game.state.turn };
     this.phase = { kind: "waiting" };
     this.streamDeclarations(this.currentRequest());
     this.emit();
@@ -1469,7 +1477,7 @@ export class MatchController {
     const done = request.actions.find(
       (a) => a.type === "doneDeclaringAttackers" || a.type === "doneDeclaringBlockers",
     );
-    this.declQueue = null;
+    this.declQueue = null; this.declStage = null;
     if (done) {
       this.human.submit(done);
       return;

@@ -1,0 +1,651 @@
+{
+ "round": 3,
+ "stage": 0,
+ "formatId": "draft-plane",
+ "me": [
+  {
+   "cardId": "nekrataal",
+   "count": 1,
+   "name": "Nekrataal"
+  },
+  {
+   "cardId": "vampire_nighthawk",
+   "count": 2,
+   "name": "Vampire Nighthawk"
+  },
+  {
+   "cardId": "treetop_snarespinner",
+   "count": 1,
+   "name": "Treetop Snarespinner"
+  },
+  {
+   "cardId": "seedborn_muse",
+   "count": 1,
+   "name": "Seedborn Muse"
+  },
+  {
+   "cardId": "the_reaper",
+   "count": 1,
+   "name": "The Reaper"
+  },
+  {
+   "cardId": "grazing_gladehart",
+   "count": 3,
+   "name": "Grazing Gladehart"
+  },
+  {
+   "cardId": "terror",
+   "count": 1,
+   "name": "Terror"
+  },
+  {
+   "cardId": "prey_upon",
+   "count": 1,
+   "name": "Prey Upon"
+  },
+  {
+   "cardId": "indulgent_aristocrat",
+   "count": 1,
+   "name": "Indulgent Aristocrat"
+  },
+  {
+   "cardId": "rancor",
+   "count": 1,
+   "name": "Rancor"
+  },
+  {
+   "cardId": "bitterblossom",
+   "count": 1,
+   "name": "Bitterblossom"
+  },
+  {
+   "cardId": "timberland_guide",
+   "count": 2,
+   "name": "Timberland Guide"
+  },
+  {
+   "cardId": "werebear",
+   "count": 1,
+   "name": "Werebear"
+  },
+  {
+   "cardId": "arc_mage",
+   "count": 2,
+   "name": "Arc Mage"
+  },
+  {
+   "cardId": "little_bear",
+   "count": 2,
+   "name": "Little Bear"
+  },
+  {
+   "cardId": "baru_wurmspeaker",
+   "count": 1,
+   "name": "Baru, Wurmspeaker"
+  },
+  {
+   "cardId": "abrade",
+   "count": 1,
+   "name": "Abrade"
+  },
+  {
+   "cardId": "overgrown_tomb",
+   "count": 2,
+   "name": "Overgrown Tomb"
+  },
+  {
+   "cardId": "evolving_wilds",
+   "count": 4,
+   "name": "Evolving Wilds"
+  },
+  {
+   "cardId": "mountain",
+   "count": 2,
+   "name": "Mountain"
+  },
+  {
+   "cardId": "forest",
+   "count": 6,
+   "name": "Forest"
+  },
+  {
+   "cardId": "swamp",
+   "count": 3,
+   "name": "Swamp"
+  }
+ ],
+ "myDecklists": {
+  "open": [
+   {
+    "cardId": "cairnbrand",
+    "count": 1
+   },
+   {
+    "cardId": "obsidian_observatory",
+    "count": 1
+   },
+   {
+    "cardId": "badlands",
+    "count": 4
+   },
+   {
+    "cardId": "plateau",
+    "count": 4
+   },
+   {
+    "cardId": "scrubland",
+    "count": 4
+   },
+   {
+    "cardId": "black_lotus",
+    "count": 1
+   },
+   {
+    "cardId": "mox_pearl",
+    "count": 1
+   },
+   {
+    "cardId": "mox_ruby",
+    "count": 1
+   },
+   {
+    "cardId": "mox_jet",
+    "count": 1
+   },
+   {
+    "cardId": "library_of_alexandria",
+    "count": 1
+   },
+   {
+    "cardId": "tallyflame_court",
+    "count": 1
+   },
+   {
+    "cardId": "shevelport",
+    "count": 1
+   },
+   {
+    "cardId": "mox_emerald",
+    "count": 1
+   },
+   {
+    "cardId": "mox_sapphire",
+    "count": 1
+   },
+   {
+    "cardId": "bayou",
+    "count": 1
+   },
+   {
+    "cardId": "taiga",
+    "count": 1
+   },
+   {
+    "cardId": "savannah",
+    "count": 1
+   },
+   {
+    "cardId": "tundra",
+    "count": 1
+   },
+   {
+    "cardId": "underground_sea",
+    "count": 1
+   },
+   {
+    "cardId": "volcanic_island",
+    "count": 1
+   },
+   {
+    "cardId": "vindicate",
+    "count": 2
+   },
+   {
+    "cardId": "lumen_the_hearth_fire",
+    "count": 4
+   },
+   {
+    "cardId": "meliyan_the_torment",
+    "count": 2
+   },
+   {
+    "cardId": "restoration_angel",
+    "count": 4
+   },
+   {
+    "cardId": "the_usher",
+    "count": 2
+   },
+   {
+    "cardId": "altar_of_dementia",
+    "count": 2
+   },
+   {
+    "cardId": "blood_artist",
+    "count": 4
+   },
+   {
+    "cardId": "bitterblossom",
+    "count": 3
+   },
+   {
+    "cardId": "soul_warden",
+    "count": 4
+   },
+   {
+    "cardId": "sacred_helix",
+    "count": 3
+   },
+   {
+    "cardId": "clio_lady_of_the_depths",
+    "count": 1
+   }
+  ]
+ },
+ "history": [
+  {
+   "stage": 0,
+   "formatId": "draft-plane",
+   "pool": [
+    "vampire_nighthawk",
+    "bitterblossom",
+    "treetop_snarespinner",
+    "werebear",
+    "grazing_gladehart",
+    "overgrown_tomb",
+    "prey_upon",
+    "temple_garden",
+    "little_bear",
+    "dark_ritual",
+    "timberland_guide",
+    "giant_growth",
+    "evolving_wilds",
+    "waterfront_bouncer",
+    "buried_alive",
+    "vampire_nighthawk",
+    "terror",
+    "master_decoy",
+    "indulgent_aristocrat",
+    "rancor",
+    "grazing_gladehart",
+    "blanchwood_armor",
+    "overgrown_tomb",
+    "little_bear",
+    "grazing_gladehart",
+    "evolving_wilds",
+    "blurred_mongoose",
+    "evolving_wilds",
+    "blurred_mongoose",
+    "orcish_lumberjack",
+    "seedborn_muse",
+    "baru_wurmspeaker",
+    "the_reaper",
+    "nekrataal",
+    "evolving_wilds",
+    "timberland_guide",
+    "reassembling_skeleton",
+    "furnace_whelp",
+    "arc_mage",
+    "abrade",
+    "tranquil_thicket",
+    "arc_mage",
+    "giant_growth",
+    "breeding_pool",
+    "steam_vents"
+   ],
+   "deck": [
+    {
+     "cardId": "nekrataal",
+     "count": 1
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 2
+    },
+    {
+     "cardId": "treetop_snarespinner",
+     "count": 1
+    },
+    {
+     "cardId": "seedborn_muse",
+     "count": 1
+    },
+    {
+     "cardId": "the_reaper",
+     "count": 1
+    },
+    {
+     "cardId": "grazing_gladehart",
+     "count": 3
+    },
+    {
+     "cardId": "terror",
+     "count": 1
+    },
+    {
+     "cardId": "prey_upon",
+     "count": 1
+    },
+    {
+     "cardId": "indulgent_aristocrat",
+     "count": 1
+    },
+    {
+     "cardId": "rancor",
+     "count": 1
+    },
+    {
+     "cardId": "bitterblossom",
+     "count": 1
+    },
+    {
+     "cardId": "timberland_guide",
+     "count": 2
+    },
+    {
+     "cardId": "werebear",
+     "count": 1
+    },
+    {
+     "cardId": "arc_mage",
+     "count": 2
+    },
+    {
+     "cardId": "little_bear",
+     "count": 2
+    },
+    {
+     "cardId": "baru_wurmspeaker",
+     "count": 1
+    },
+    {
+     "cardId": "abrade",
+     "count": 1
+    },
+    {
+     "cardId": "overgrown_tomb",
+     "count": 2
+    },
+    {
+     "cardId": "evolving_wilds",
+     "count": 4
+    },
+    {
+     "cardId": "mountain",
+     "count": 2
+    },
+    {
+     "cardId": "forest",
+     "count": 6
+    },
+    {
+     "cardId": "swamp",
+     "count": 3
+    }
+   ]
+  }
+ ],
+ "opponent": {
+  "seat": 96,
+  "name": "Zenna Candlewick",
+  "deck": [
+   {
+    "cardId": "dark_ritual",
+    "count": 1,
+    "name": "Dark Ritual"
+   },
+   {
+    "cardId": "indulgent_aristocrat",
+    "count": 1,
+    "name": "Indulgent Aristocrat"
+   },
+   {
+    "cardId": "savannah_lions",
+    "count": 1,
+    "name": "Savannah Lions"
+   },
+   {
+    "cardId": "suntail_hawk",
+    "count": 3,
+    "name": "Suntail Hawk"
+   },
+   {
+    "cardId": "blood_artist",
+    "count": 1,
+    "name": "Blood Artist"
+   },
+   {
+    "cardId": "diabolic_edict",
+    "count": 1,
+    "name": "Diabolic Edict"
+   },
+   {
+    "cardId": "fencing_ace",
+    "count": 1,
+    "name": "Fencing Ace"
+   },
+   {
+    "cardId": "pacifism",
+    "count": 1,
+    "name": "Pacifism"
+   },
+   {
+    "cardId": "terror",
+    "count": 1,
+    "name": "Terror"
+   },
+   {
+    "cardId": "youthful_valkyrie",
+    "count": 1,
+    "name": "Youthful Valkyrie"
+   },
+   {
+    "cardId": "glorious_anthem",
+    "count": 1,
+    "name": "Glorious Anthem"
+   },
+   {
+    "cardId": "inspiring_overseer",
+    "count": 1,
+    "name": "Inspiring Overseer"
+   },
+   {
+    "cardId": "mind_rot",
+    "count": 1,
+    "name": "Mind Rot"
+   },
+   {
+    "cardId": "phyrexian_rager",
+    "count": 1,
+    "name": "Phyrexian Rager"
+   },
+   {
+    "cardId": "vampire_nighthawk",
+    "count": 1,
+    "name": "Vampire Nighthawk"
+   },
+   {
+    "cardId": "vitalist",
+    "count": 2,
+    "name": "Vitalist"
+   },
+   {
+    "cardId": "angelic_destiny",
+    "count": 1,
+    "name": "Angelic Destiny"
+   },
+   {
+    "cardId": "dread_presence",
+    "count": 1,
+    "name": "Dread Presence"
+   },
+   {
+    "cardId": "emeria_angel",
+    "count": 1,
+    "name": "Emeria Angel"
+   },
+   {
+    "cardId": "gravedigger",
+    "count": 2,
+    "name": "Gravedigger"
+   },
+   {
+    "cardId": "plains",
+    "count": 9,
+    "name": "Plains"
+   },
+   {
+    "cardId": "swamp",
+    "count": 7,
+    "name": "Swamp"
+   }
+  ],
+  "sideboard": [
+   {
+    "cardId": "barren_moor",
+    "count": 1,
+    "name": "Barren Moor"
+   },
+   {
+    "cardId": "baru_wurmspeaker",
+    "count": 1,
+    "name": "Baru, Wurmspeaker"
+   },
+   {
+    "cardId": "birds_of_paradise",
+    "count": 1,
+    "name": "Birds of Paradise"
+   },
+   {
+    "cardId": "blaze",
+    "count": 1,
+    "name": "Blaze"
+   },
+   {
+    "cardId": "cathartic_adept",
+    "count": 1,
+    "name": "Cathartic Adept"
+   },
+   {
+    "cardId": "cunning_tactician",
+    "count": 1,
+    "name": "Cunning Tactician"
+   },
+   {
+    "cardId": "disenchant",
+    "count": 1,
+    "name": "Disenchant"
+   },
+   {
+    "cardId": "duress",
+    "count": 1,
+    "name": "Duress"
+   },
+   {
+    "cardId": "elvish_visionary",
+    "count": 1,
+    "name": "Elvish Visionary"
+   },
+   {
+    "cardId": "goblin_chieftain",
+    "count": 1,
+    "name": "Goblin Chieftain"
+   },
+   {
+    "cardId": "hordeling_outburst",
+    "count": 1,
+    "name": "Hordeling Outburst"
+   },
+   {
+    "cardId": "man_o_war",
+    "count": 1,
+    "name": "Man-o'-War"
+   },
+   {
+    "cardId": "mist_raven",
+    "count": 1,
+    "name": "Mist Raven"
+   },
+   {
+    "cardId": "pyroclasm",
+    "count": 1,
+    "name": "Pyroclasm"
+   },
+   {
+    "cardId": "raging_goblin",
+    "count": 1,
+    "name": "Raging Goblin"
+   },
+   {
+    "cardId": "sacred_foundry",
+    "count": 1,
+    "name": "Sacred Foundry"
+   },
+   {
+    "cardId": "secluded_steppe",
+    "count": 1,
+    "name": "Secluded Steppe"
+   },
+   {
+    "cardId": "spirit_link",
+    "count": 1,
+    "name": "Spirit Link"
+   },
+   {
+    "cardId": "steam_vents",
+    "count": 1,
+    "name": "Steam Vents"
+   },
+   {
+    "cardId": "thawing_glaciers",
+    "count": 1,
+    "name": "Thawing Glaciers"
+   },
+   {
+    "cardId": "the_unwinder",
+    "count": 1,
+    "name": "The Unwinder"
+   }
+  ]
+ },
+ "series": {
+  "seed": 1116341453,
+  "bestOf": 3,
+  "games": [
+   {
+    "index": 0,
+    "seed": 1051145796,
+    "startingPlayer": 0,
+    "chooser": 0,
+    "winner": 1,
+    "reason": "LIFE",
+    "turns": 20
+   },
+   {
+    "index": 1,
+    "seed": 1610798981,
+    "startingPlayer": 0,
+    "chooser": 0,
+    "winner": 0,
+    "reason": "LIFE",
+    "turns": 21
+   },
+   {
+    "index": 2,
+    "seed": 1518549491,
+    "startingPlayer": 1,
+    "chooser": 1,
+    "winner": 1,
+    "reason": "LIFE",
+    "turns": 11
+   }
+  ],
+  "wins": [
+   1,
+   2
+  ],
+  "draws": 0,
+  "done": true,
+  "winner": 1
+ }
+}
