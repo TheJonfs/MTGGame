@@ -122,7 +122,28 @@ The term does not reach 50% and does not thin black's crowd, so its weights are 
 - **No black card is oversold to the drafter as a pick.** Black's cards lift their draft decks as they lift Sealed decks (mean +0.8 against +0.7); the early-and-weak list is empty.
 - **Black's decks carry dead filler.** Nonland slots per deck in a colour whose draft lift is below −1 point: W 0.4 · U 0.5 · R 0.8 · G 1.1 · **B 2.3**. The cards: Entomb (in the deck at 64% of picks, cast when drawn 21%, lift −3.1), Waste Not (−3.7), Buried Alive (cast 8%), Duress, Reassembling Skeleton, Dark Ritual, Unearth/Zombify (about zero). Black decks holding each win 4–7 points less than black decks without (confounded — a thin deck is the one that plays them — but every one points the same way).
 - **Why the builder plays them: the tier prior.** Entomb rates 1.28 — above Typhoid Rats (1.14) and Gravedigger (1.08) — because its tier-2 prior (1.5) outweighs evidence worth −0.2: the signal moves a card about a quarter-point per standard deviation, and Constructed presence (one reanimator list) is part of it. Black holds seven tier-2 Constructed-package cards (Entomb, Buried Alive, Zombify, Unearth, Waste Not, Dark Ritual, Duress).
-- An open question: Entomb's Sealed lift in v1.1 (pilot 92) is +1.2, in sealed53 (pilot 94) −3.6 — a swing beyond the noise that books 93–94 should not cause. Not chased yet.
+- Entomb's swing, chased: under v1.0 no Sealed deck played it (0 sightings in sealed50); v1.1's +1.2 came from 81 sightings in the noise run (± about 5 points). v1.1 then lifted it into decks, and 6,700 sightings now read −3.4. Thin evidence fed back into the next rating — the case for weighing evidence by its amount.
+
+### Limited and Constructed rated apart (Chris: "both 1 and 2") — the v2 candidate, not adopted
+
+- **One table, two scores.** Each row keeps `rating` (now the Constructed score) and gains `limited`. `limitedView(table)` hands the Limited score to every Limited path: the Limited builder, the drafter, Sealed and draft events (`event.ts`), the AI's sideboarding in a Limited event, the player's Limited "suggest a deck", and the Limited sims. The Constructed builder, the Open and the tinker read `rating`. A table without `limited` (v1.1) reads exactly as before.
+- **Constructed** = the v1.1 formula on the authored lists only, re-run on pilot 94 (`authored94`, 13,440 games: 112 lists × 40 opponents × 6 games — fewer games than S47's run; not A/B'd against the Open yet).
+- **Limited** = `computeLimitedRating`: empirical Bayes on Limited games only (sealed53, noise53, draftcards — 73,600 games, pilot 94). Each tier's prior is its cards' measured mean lift (1: +0.7 · 2: +0.9 · 3: +1.9 · R: +1.5 points); τ = 1.6 points; a card moves from its tier's mean by τ²/(τ² + se²) of its own lift; scaled to mean 1.8 and spread 0.8 over the pack cards. Tested (two cases).
+- **Why the tier is only the shrink target**, measured out of sample (posterior from the two Sealed runs, scored on 2,400 drafted decks): a deck's mean tier prior predicts its win rate at r = −0.06; v1.1 0.34; prior plus evidence at one tier per τ 0.55; the posterior alone 0.59.
+- **The A/B on fresh seeds** (draft seed 54, 200 pods; Sealed seed 49, 200 pools):
+
+| | v1.1 | v2 |
+|---|---|---|
+| draft: seats on black / black seats win | 47% / 46% | 34% / 52% |
+| draft: colours' seat win rates | 46–54% | 47–52% |
+| draft: dead-filler slots a deck (lift under −1 pt) | 2.6 (black 1.9) | 1.0 (black 0.15) |
+| Sealed: colours' share of decks | W 46 · U 28 · B 63 · R 26 · G 38 | W 34 · U 67 · B 29 · R 30 · G 41 |
+| Sealed: colours' decks win | 47–54% | 49–51% |
+| Sealed: deck rating against win rate, r | 0.44 | 0.61 |
+| **head to head: v2's decks against v1.1's** | | **draft 52.1% ± 0.5 · Sealed 53.8% ± 0.8** |
+
+- Concerns: blue is now in 67% of Sealed decks (two in three) and games end by decking 17% of the time (7% before) — the builder's pull to blue control is a variety question; red is still last (its v2 decks 48.5–50% head to head). The same-seat comparisons (the same packs or pool read both ways) are 49.8% and 50.5% — inside their larger error (800 and 200 meetings), but not the clear edge the whole-field figure shows.
+- Tools: `pnpm rating:build <authored shards> --limited a,b,c --candidate <name>`; `pnpm rating-ab --draft A B` / `--sealed a.json b.json` / `--report` (the head to head). The candidate `card-rating-v2.json` and its report sit uncommitted in `data/convocation/`.
 
 ## Deviations from the brief
 1. **The pack-reading term ships switched off.** Built to the ruling (the whole pack remembered, each time); it lowered the field's quality in every variant tried, and the process rule says such a change reverts. The code and the tuning hook remain. *Rule on*: whether to keep trying it, and against which measure (Deviation 2).

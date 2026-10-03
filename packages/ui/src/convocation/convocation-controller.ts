@@ -8,7 +8,7 @@
 import type { CardDef } from "@shandalar/cards";
 import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
 import {
-  CONSTRUCTED_FORMATS, convocationNames, DIFFICULTIES, DRAFT_PLANE, authoredListsFrom, cardLegal, copyCap, deserializeWorld, eventFormat, isBasic, newConstructedEvent, suggestedConstructedDeck, draftDirection, draftPack, draftStep, draftTotalPicks, newDraftEvent, suggestedPick, EVENT_SAVE_KEY, LEDGER_KEY, MatchSeries, SEALED_PLANE, addCopy, advanceBracket, advanceEvent, bracketRound, bracketRoundComplete, buildLimitedDeck, checkEventDeck, closeRound, deserializeEvent, finalPlaces, playBracketFieldRound, recordBracketSeries, resolveKnobs, seatForGame,
+  CONSTRUCTED_FORMATS, convocationNames, limitedView, DIFFICULTIES, DRAFT_PLANE, authoredListsFrom, cardLegal, copyCap, deserializeWorld, eventFormat, isBasic, newConstructedEvent, suggestedConstructedDeck, draftDirection, draftPack, draftStep, draftTotalPicks, newDraftEvent, suggestedPick, EVENT_SAVE_KEY, LEDGER_KEY, MatchSeries, SEALED_PLANE, addCopy, advanceBracket, advanceEvent, bracketRound, bracketRoundComplete, buildLimitedDeck, checkEventDeck, closeRound, deserializeEvent, finalPlaces, playBracketFieldRound, recordBracketSeries, resolveKnobs, seatForGame,
   ledgerEntry, lifeModifiers, newSealedEvent, pairingOf, playFieldRound, poolCollection, recordSeries, registerDeck, removeCopy, resultOf, roundComplete, saveCurrentSeries,
   serializeEvent, seriesSeed, seriesSetup, standings, type CardRatingTable, type Catalog, type ConvocationEvent, type ConvocationLedgerEntry, type ConvocationPackData,
   type Decklist, type DifficultyName, type KnobValues, type SeatAgents, type Standing,
@@ -164,7 +164,7 @@ export class ConvocationController {
   openSideboard(): void { if (this.event && this.series && !this.series.done && !this.isConstructed()) this.openBuild(true); }
   editorLegality() { return checkEventDeck(this.event!, 0, this.draft, this.pool); }
   /** The builder's deck for the player's pool — a starting point, not a registration. */
-  suggestDeck(): void { if (!this.event) return; this.draft = this.isConstructed() ? suggestedConstructedDeck(this.event, this.library(), this.deps()) : buildLimitedDeck(this.event.field[0]!.pool, this.rating, this.pool).deck; this.notice = null; this.emit(); }
+  suggestDeck(): void { if (!this.event) return; this.draft = this.isConstructed() ? suggestedConstructedDeck(this.event, this.library(), this.deps()) : buildLimitedDeck(this.event.field[0]!.pool, limitedView(this.rating), this.pool).deck; this.notice = null; this.emit(); }
   editorHost(): DeckEditorHost | null {
     const e = this.event; if (!e || this.screen.kind !== "build") return null;
     const constructed = this.isConstructed();

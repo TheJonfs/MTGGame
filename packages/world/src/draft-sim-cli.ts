@@ -16,7 +16,7 @@ import { runMatch, type MatchSpec } from "@shandalar/engine";
 import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
 import { PACK_TIERS, packTier, resolveSet, type ConvocationPackData } from "./packs.js";
 import { buildLimitedDeck } from "./limited-builder.js";
-import { cardRating, type CardRatingTable } from "./rating.js";
+import { cardRating, limitedView, type CardRatingTable } from "./rating.js";
 import { colourRanks, runDraft, tuneDraftTerms } from "./drafter.js";
 import { rollSealedPool } from "./packs.js";
 
@@ -25,7 +25,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const cards = loadCardPool(join(ROOT, "data/cards")).cards;
 const read = (f: string) => JSON.parse(readFileSync(join(ROOT, "data/convocation", f), "utf8"));
 const data: ConvocationPackData = { power: read("sets.json").power, sets: read("sets.json").sets, recipes: read("recipes.json").recipes };
-const rating = JSON.parse(readFileSync(join(ROOT, arg("rating", "data/convocation/card-rating.json")), "utf8")) as CardRatingTable;
+const rating = limitedView(JSON.parse(readFileSync(join(ROOT, arg("rating", "data/convocation/card-rating.json")), "utf8")) as CardRatingTable); // post-S52: a Limited sim reads the Limited score (a table without one reads as before)
 const set = data.sets.find((s) => s.id === arg("set", "plane"))!, recipe = data.recipes.find((r) => r.id === arg("recipe", set.recipe))!;
 { const t = arg("terms", ""); if (t) tuneDraftTerms(Object.fromEntries(t.split(",").map((kv) => { const [k, v] = kv.split("="); return [k, Number(v)]; }))); }
 const pct = (x: number) => `${Math.round(x * 100)}%`, mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / Math.max(1, xs.length);

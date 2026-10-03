@@ -44,6 +44,7 @@
     "sealed-sim": "tsx packages/world/src/sealed-sim-cli.ts",
     "draft-sim": "tsx packages/world/src/draft-sim-cli.ts",
     "draft-cards": "tsx packages/world/src/draft-cards-cli.ts",
+    "rating-ab": "tsx packages/world/src/rating-ab-cli.ts",
     "constructed:report": "tsx packages/world/src/constructed-report-cli.ts",
     "constructed:rr": "tsx packages/world/src/constructed-rr-cli.ts",
     "tinker": "tsx packages/world/src/tinker-cli.ts",

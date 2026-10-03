@@ -83,3 +83,54 @@ export function computeRating(input: RatingInput): RatingOutput {
   }
   return { cards, rec, field, sigmaPresence: sdP, sigmaLift: sdL, sealedGames, colourRates: colourRates ? Object.fromEntries(Object.entries(colourRates).map(([c, v]) => [c, r3(v)])) : null };
 }
+
+/**
+ * Post-S52 (Chris: "a rating for Limited drafting and deckbuilding separate from the one that makes switches in a
+ * Constructed deck") — the LIMITED score. Its evidence is Limited games only (Sealed, noise and draft runs on the
+ * current pilot); the authored lists' presence plays no part. Empirical Bayes, so the evidence moves a card by as much
+ * as there is of it (Entomb: 81 sightings once read +1.2 and lifted it into decks; 6,700 now read −3.4):
+ *  - a card's LIFT and its standard error, sightings pooled across the runs, each against its own deck's mean in its
+ *    own run (ADR-151);
+ *  - each tier's PRIOR is the measured mean lift of the tier's cards (sightings-weighted); a prize card counts as R;
+ *  - τ², the true spread of cards about their tier's mean, by moments: the mean of (lift − tier mean)² − se² over the
+ *    cards seen at least `minSeen` times, pooled across tiers;
+ *  - the posterior: tier mean + τ²/(τ² + se²) × (lift − tier mean); a card nothing saw reads its tier's mean;
+ *  - the SCALE: the posterior itself, placed by a straight line so that over the pack cards (`scaleOver`) its mean and
+ *    spread are v1.1's (1.8, 0.8) — the builders' terms keep their meaning (a flat land at 0.5, +0.07 a pick).
+ * The tier enters ONLY as the shrink target. Measured out of sample (the posterior from the two Sealed runs, scored on
+ * 2,400 drafted decks): a deck's mean TIER PRIOR predicts its win rate at r = −0.06; v1.1 at 0.34; prior + evidence at
+ * one tier per τ, 0.55; the posterior alone, 0.59. The tier ladder (rarity, Constructed power) says nothing about a
+ * Limited deck.
+ */
+export interface LimitedRow { limited: number; limitedSeen: number; limitedLift: number | null; limitedSe: number | null; limitedPost: number }
+export interface LimitedOutput { cards: Record<string, LimitedRow>; tierMeans: Record<string, number>; tau: number; scale: { a: number; b: number }; games: number }
+const tierKey = (d: CardDef) => (d.shopTier === undefined ? "R" : String(d.shopTier));
+export const LIMITED_SCALE = { mean: 1.8, sd: 0.8 } as const;
+export function computeLimitedRating(runs: RatingGameLike[][], rated: CardDef[], scaleOver: readonly string[], minSeen = 100): LimitedOutput {
+  const acc: Record<string, { n: number; d: number; d2: number }> = {};
+  let games = 0;
+  for (const run of runs) {
+    games += run.length;
+    const rec = records(run);
+    for (const g of run) for (const [k, r, s] of sides(g)) for (const c of s) { const x = (acc[c] ??= { n: 0, d: 0, d2: 0 }); const v = r - rec[k]!.w / rec[k]!.n; x.n += 1; x.d += v; x.d2 += v * v; }
+  }
+  const obs = (id: string) => { const x = acc[id]; if (!x || x.n < 2) return null; const m = x.d / x.n; return { n: x.n, m, se2: Math.max(1e-9, x.d2 / x.n - m * m) / x.n }; };
+  const tiers: Record<string, { w: number; s: number }> = {};
+  for (const d of rated) { const o = obs(d.id); if (!o) continue; const t = (tiers[tierKey(d)] ??= { w: 0, s: 0 }); t.w += o.n; t.s += o.n * o.m; }
+  const tierMeans = Object.fromEntries(Object.entries(tiers).map(([t, v]) => [t, v.s / v.w]));
+  const mu = (d: CardDef) => tierMeans[tierKey(d)] ?? 0;
+  let ss = 0, k = 0;
+  for (const d of rated) { const o = obs(d.id); if (!o || o.n < minSeen) continue; ss += (o.m - mu(d)) ** 2 - o.se2; k += 1; }
+  const tau2 = Math.max(1e-6, k ? ss / k : 1e-6);
+  const postOf = (d: CardDef) => { const o = obs(d.id), m = mu(d); return o ? m + (tau2 / (tau2 + o.se2)) * (o.m - m) : m; };
+  const byId = new Map(rated.map((d) => [d.id, d]));
+  const xs = scaleOver.filter((id) => byId.has(id)).map((id) => postOf(byId.get(id)!));
+  const mx = xs.reduce((n, x) => n + x, 0) / Math.max(1, xs.length), sx = Math.sqrt(xs.reduce((n, x) => n + (x - mx) ** 2, 0) / Math.max(1, xs.length)) || 1;
+  const b = LIMITED_SCALE.sd / sx, a = LIMITED_SCALE.mean - b * mx;
+  const cards: Record<string, LimitedRow> = {};
+  for (const d of [...rated].sort((x, y) => x.id.localeCompare(y.id))) {
+    const o = obs(d.id), post = postOf(d);
+    cards[d.id] = { limited: r3(a + b * post), limitedSeen: acc[d.id]?.n ?? 0, limitedLift: o ? r3(o.m) : null, limitedSe: o ? r3(Math.sqrt(o.se2)) : null, limitedPost: r3(post) };
+  }
+  return { cards, tierMeans: Object.fromEntries(Object.entries(tierMeans).map(([t, v]) => [t, r3(v)])), tau: r3(Math.sqrt(tau2)), scale: { a: r3(a), b: r3(b) }, games };
+}

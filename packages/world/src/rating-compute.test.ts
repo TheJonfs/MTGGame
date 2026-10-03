@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { CardDef } from "@shandalar/cards";
-import { computeRating, type RatingGameLike } from "./rating-compute.js";
+import { computeLimitedRating, computeRating, LIMITED_SCALE, type RatingGameLike } from "./rating-compute.js";
+import { limitedView } from "./rating.js";
 
 /** S52 (ADR-151): the rating pipeline, tested. The fixture is the S49–S51 bug's own shape — two Sealed runs whose
  * decks share names — and the check is the one that found it: the same statistic computed a second way. */
@@ -76,5 +77,37 @@ describe("the rating pipeline (ADR-151)", () => {
     expect(plain.cards.black_card).not.toHaveProperty("colour");
     // every card's lift is still zero here (in hand every game): the colour term is the only thing that moved
     expect(withC.cards.black_card!.sealedLift).toBe(0);
+  });
+
+  it("post-S52 — the Limited score: runs kept apart; the evidence moves a card by as much as there is of it; a card nothing saw reads its tier's mean; the scale over the pack cards is 1.8 ± 0.8", () => {
+    // runs kept apart, as the Constructed half: a card in hand every game of its deck has zero lift in either run
+    const apart = computeLimitedRating([run1, run2], rated, ["alpha", "beta", "gamma"], 1);
+    expect([apart.cards.alpha!.limitedLift, apart.cards.beta!.limitedLift]).toEqual([0, 0]);
+    // one run, pool:0 wins 100 of 200. "many" is in hand in 100 games, 70 won; "few" in 10 games, 7 won — the same
+    // raw lift (+0.2), ten times the evidence. "base" is in hand every game (lift 0).
+    const won = (seen: string[]) => g("pool:0", "pool:1", "a", ["base", ...seen], []), lost = (seen: string[]) => g("pool:0", "pool:1", "b", ["base", ...seen], []);
+    const run = [...times(70, won(["many"])), ...times(30, lost(["many"])), ...times(7, won(["few"])), ...times(3, lost(["few"])), ...times(23, won([])), ...times(67, lost([]))];
+    const pool = [card("many", 1), card("few", 1), card("base", 1), card("unseen", 3)];
+    const r = computeLimitedRating([run], pool, ["many", "few", "base"], 5);
+    expect(r.games).toBe(200);
+    expect([r.cards.many!.limitedLift, r.cards.few!.limitedLift, r.cards.base!.limitedLift]).toEqual([0.2, 0.2, 0]);
+    expect([r.cards.many!.limitedSeen, r.cards.few!.limitedSeen, r.cards.unseen!.limitedSeen]).toEqual([100, 10, 0]);
+    const mu = r.tierMeans["1"]!;
+    expect(mu).toBeCloseTo((100 * 0.2 + 10 * 0.2) / 310, 3); // the tier's prior is its cards' sightings-weighted lift
+    expect(r.cards.few!.limitedPost).toBeGreaterThan(mu); // pulled toward the tier's mean …
+    expect(r.cards.few!.limitedPost).toBeLessThan(r.cards.many!.limitedPost); // … further than the card with ten times the evidence
+    expect(r.cards.unseen).toMatchObject({ limitedSeen: 0, limitedLift: null, limitedSe: null, limitedPost: 0 }); // tier 3: no tier evidence → the average
+    // the scale: over the pack cards, mean and spread are LIMITED_SCALE's (to the rounding)
+    const xs = ["many", "few", "base"].map((id) => r.cards[id]!.limited), m = xs.reduce((a, b) => a + b) / 3, sd = Math.sqrt(xs.reduce((a, b) => a + (b - m) ** 2, 0) / 3);
+    expect(m).toBeCloseTo(LIMITED_SCALE.mean, 2);
+    expect(sd).toBeCloseTo(LIMITED_SCALE.sd, 2);
+    expect(computeLimitedRating([run], pool, ["many", "few", "base"], 5)).toEqual(r); // deterministic
+  });
+
+  it("post-S52 — the Limited view: a row with a Limited score reads it as its rating; a row without reads as before; the table itself is untouched", () => {
+    const table = { cards: { a: { rating: 1.5, prior: 1.5, lists: 0, seen: 0, presence: null, lift: null, castWhenDrawn: null, limited: 0.4 }, b: { rating: 2.0, prior: 2, lists: 0, seen: 0, presence: null, lift: null, castWhenDrawn: null } } };
+    const v = limitedView(table);
+    expect([v.cards.a!.rating, v.cards.b!.rating]).toEqual([0.4, 2.0]);
+    expect(table.cards.a.rating).toBe(1.5);
   });
 });

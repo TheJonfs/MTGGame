@@ -20,7 +20,7 @@ import { buildLimitedDeck, pairScores, LIMITED_TARGETS, type LimitedBuild } from
 import { WorldRng } from "./rng.js";
 import type { PackColor } from "./packs.js";
 import { isBasic } from "./legality.js";
-import type { CardRatingTable } from "./rating.js";
+import { limitedView, type CardRatingTable } from "./rating.js";
 import type { RatingGame } from "./rating-run-cli.js";
 
 const arg = (k: string, d: string) => { const i = process.argv.indexOf(`--${k}`); return i >= 0 ? process.argv[i + 1]! : d; };
@@ -31,7 +31,7 @@ const data: ConvocationPackData = { power: read("sets.json").power, sets: read("
 const N = Number(arg("pools", "200")), G = Number(arg("games", "10")), OPP = Number(arg("opponents", "20")), seed0 = Number(arg("seed", "48"));
 const set = data.sets.find((s) => s.id === arg("set", "plane"))!, recipe = data.recipes.find((r) => r.id === arg("recipe", set.recipe))!;
 const ratingFile = arg("rating", "data/convocation/card-rating.json");
-const rating = JSON.parse(readFileSync(join(ROOT, ratingFile), "utf8")) as CardRatingTable;
+const rating = limitedView(JSON.parse(readFileSync(join(ROOT, ratingFile), "utf8")) as CardRatingTable); // post-S52: a Limited sim reads the Limited score (a table without one reads as before)
 
 // S49 (rating noise): `--noise 0.4 --noise-share 0.33` — that share of the decks is built with Gaussian noise on each
 // card's rating (seeded per deck), so cards the rating under-rates get played and gather evidence.
