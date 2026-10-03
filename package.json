@@ -46,6 +46,7 @@
     "draft-cards": "tsx packages/world/src/draft-cards-cli.ts",
     "rating-ab": "tsx packages/world/src/rating-ab-cli.ts",
     "convocation-sim": "tsx packages/world/src/convocation-sim-cli.ts",
+    "card-test": "tsx packages/world/src/card-test-cli.ts",
     "constructed:report": "tsx packages/world/src/constructed-report-cli.ts",
     "constructed:rr": "tsx packages/world/src/constructed-rr-cli.ts",
     "tinker": "tsx packages/world/src/tinker-cli.ts",
