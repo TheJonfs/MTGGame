@@ -39,12 +39,14 @@ const NOISE = Number(arg("noise", "0")), NOISE_SHARE = Number(arg("noise-share",
 const gauss = (rng: WorldRng) => Math.sqrt(-2 * Math.log(Math.max(1e-12, rng.float()))) * Math.cos(2 * Math.PI * rng.float());
 const noisy = (i: number) => NOISE > 0 && i % Math.round(1 / NOISE_SHARE) === 0;
 const PACKS = Number(arg("packs", "6")); // post-S52: 3 = a draft seat's card count (is black's Sealed strength depth?)
+const VARY = Number(arg("vary", "0"));
 const poolOf = (i: number) => rollSealedPool(set, recipe, cards, data.power, seed0 * 100003 + i, PACKS).flat();
 const builds: { pool: string[]; build: LimitedBuild; noisy: boolean }[] = Array.from({ length: N }, (_, i) => {
   const pool = poolOf(i);
-  if (!noisy(i)) return { pool, build: buildLimitedDeck(pool, rating, cards), noisy: false };
+  const vary = VARY ? { pairChoice: { seed: seed0 * 6007 + i, top: VARY } } : {}; // S53 (ADR-154): --vary 3
+  if (!noisy(i)) return { pool, build: buildLimitedDeck(pool, rating, cards, vary), noisy: false };
   const rng = new WorldRng(seed0 * 7919 + i);
-  return { pool, build: buildLimitedDeck(pool, rating, cards, { noise: () => NOISE * gauss(rng) }), noisy: true };
+  return { pool, build: buildLimitedDeck(pool, rating, cards, { ...vary, noise: () => NOISE * gauss(rng) }), noisy: true };
 });
 const key = (i: number) => `pool:${i}`;
 /** S51 (ADR-150): the pilot's version — the highest book of shame at the time of the run. A rating pools only runs

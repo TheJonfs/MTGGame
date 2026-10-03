@@ -14,6 +14,7 @@
  *     at least six sources where the count allows, a splash colour one basic for the fetch lands to find.
  * Deterministic: ties break by card id; no randomness.
  */
+import { WorldRng } from "./rng.js";
 import { cardColors, manaValue, parseManaCost, type CardDef } from "@shandalar/cards";
 import type { Decklist } from "./state.js";
 import { packColors, type PackColor } from "./packs.js";
@@ -45,6 +46,10 @@ export interface LimitedBuildOptions {
   forcePair?: [PackColor, PackColor];
   /** S49 (rating noise): added to a card's rating for this build — under-rated cards get played. */
   noise?: (cardId: string) => number;
+  /** S53 (ADR-154): the Sealed field varies its pair — a seeded choice over the top `top` pairs, weighted by score
+   * (the Constructed select's rule), not the argmax; so a field is a field. Unset: the best pair (the player's
+   * suggestion, the drafter's seats). */
+  pairChoice?: { seed: number; top: number };
 }
 /** The ten pairs' scores for a pool (the builder's step 1), best first — the forced-pair experiment's "at least third". */
 export function pairScores(poolIds: readonly string[], rating: CardRatingTable, cards: Map<string, CardDef>): { pair: [PackColor, PackColor]; score: number }[] {
@@ -72,14 +77,21 @@ export function buildLimitedDeck(poolIds: readonly string[], rating: CardRatingT
   const within = (id: string, cs: readonly PackColor[]) => cardColors(def(id)).every((c) => cs.includes(c));
 
   // 1. the pair
-  let best: { pair: [PackColor, PackColor]; score: number } | null = null;
+  const scored: { pair: [PackColor, PackColor]; score: number }[] = [];
   for (let i = 0; i < COLORS.length; i++) for (let j = i + 1; j < COLORS.length; j++) {
     const pair: [PackColor, PackColor] = [COLORS[i]!, COLORS[j]!];
     const top = spells.filter((id) => within(id, pair)).sort(byRating).slice(0, 23);
-    const score = top.reduce((n, id) => n + rate(id), 0) - (23 - top.length) * 1.0 - Math.max(0, LIMITED_TARGETS.creatures - top.filter(isCreature).length) * 0.3;
-    if (!best || score > best.score + 1e-9) best = { pair, score };
+    scored.push({ pair, score: top.reduce((n, id) => n + rate(id), 0) - (23 - top.length) * 1.0 - Math.max(0, LIMITED_TARGETS.creatures - top.filter(isCreature).length) * 0.3 });
   }
-  const pair = opts.forcePair ?? best!.pair;
+  scored.sort((a, b) => b.score - a.score || COLORS.indexOf(a.pair[0]) - COLORS.indexOf(b.pair[0]) || COLORS.indexOf(a.pair[1]) - COLORS.indexOf(b.pair[1]));
+  const chosen = (() => {
+    if (!opts.pairChoice) return scored[0]!;
+    const top = scored.slice(0, Math.max(1, opts.pairChoice.top)), w = top.map((x) => Math.max(1e-6, x.score)), total = w.reduce((a, b) => a + b, 0);
+    let roll = new WorldRng(opts.pairChoice.seed).float() * total;
+    for (let k = 0; k < top.length; k++) { if (roll < w[k]!) return top[k]!; roll -= w[k]!; }
+    return top[top.length - 1]!;
+  })();
+  const pair = opts.forcePair ?? chosen.pair;
   let candidates = spells.filter((id) => within(id, pair)).sort(byRating);
 
   // 3a. the best 23 under the six-drop cap

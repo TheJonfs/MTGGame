@@ -27,6 +27,7 @@ export * from "./event.js";
 export * from "./sideboard-ai.js";
 export * from "./drafter.js";
 export * from "./convocation-names.js";
+export * from "./convocation-run.js";
 export { authoredListsFrom, type AuthoredList } from "./authored-lists-core.js";
 export * from "./constructed-builder.js";
 export { MatchSeries, runSeries, SERIES_POINTS, type SeriesGame, type SeriesState, type RunSeriesOptions } from "./series.js";

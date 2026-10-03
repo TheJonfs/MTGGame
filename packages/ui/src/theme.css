@@ -712,3 +712,6 @@ button.chrome-tab:hover:not(:disabled) { background: #f4ecd8; }
 
 /* S22 r2 (item 9): quest/delivery tags on town names read against the dark town sprite. */
 .map-tag-outline { paint-order: stroke; stroke: #fdf8ec; stroke-width: 2.6px; }
+
+/* S53: a big field's table skips rows between the top sixteen and the player's place */
+.convocation-table tr.gap-above td { border-top: 3px double var(--ink-soft); }

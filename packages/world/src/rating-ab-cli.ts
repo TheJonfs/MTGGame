@@ -71,8 +71,9 @@ async function sealed(): Promise<void> {
   const ra = limitedView(JSON.parse(readFileSync(join(ROOT, fa), "utf8")) as CardRatingTable), rb = limitedView(JSON.parse(readFileSync(join(ROOT, fb), "utf8")) as CardRatingTable);
   const N = Number(arg("pools", "200")), K = Number(arg("opponents", "4")), seed0 = Number(arg("seed", "49"));
   const pools = Array.from({ length: N }, (_, i) => rollSealedPool(set, recipe, cards, data.power, seed0 * 100003 + i).flat());
-  const seat = (pool: string[], r: CardRatingTable): Seat => { const b = buildLimitedDeck(pool, r, cards); return { deck: b.deck, colors: b.colors.join("") }; };
-  const A = pools.map((p) => seat(p, ra)), B = pools.map((p) => seat(p, rb));
+  const VARY_B = Number(arg("vary-b", "0")); // S53 (ADR-154): B's decks vary their pair over the top N
+  const seat = (pool: string[], r: CardRatingTable, i: number, vary = 0): Seat => { const b = buildLimitedDeck(pool, r, cards, vary ? { pairChoice: { seed: seed0 * 6007 + i, top: vary } } : {}); return { deck: b.deck, colors: b.colors.join("") }; };
+  const A = pools.map((p, i) => seat(p, ra, i)), B = pools.map((p, i) => seat(p, rb, i, VARY_B));
   const out: Result[] = [];
   let k = 0;
   for (let i = 0; i < N; i++) for (let d = 0; d <= K; d++) {

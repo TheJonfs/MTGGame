@@ -52,7 +52,7 @@ describe("the Convocation controller (S48)", () => {
     expect(size(c.event!.field[0]!.deck)).toBe(40);
     expect(size(c.event!.field[0]!.sideboard)).toBeGreaterThan(40);
     // the storage: the event under its own key; the world's bytes untouched
-    expect(s.getItem(EVENT_SAVE_KEY)).toContain("convocation-event-v1");
+    expect(s.getItem(EVENT_SAVE_KEY)).toContain("convocation-event-v2");
     expect(s.getItem(SAVE_KEY)).toBe(WORLD);
     expect(s.keys().sort()).toEqual([EVENT_SAVE_KEY, SAVE_KEY].sort());
   });
@@ -349,4 +349,55 @@ describe("the Convocation controller (S48)", () => {
     for (const l of lists) expect(l).toMatch(/^open:/);
     expect(new Set(o.event!.field.slice(1).map((x) => x.tinker))).toEqual(new Set(["stock", "light", "heavy"]));
   }, 600_000);
+
+  it("S53 — the full Convocation through the controller: the door's two Constructed days, a draft in the pod, the day's end (saved and reloaded there), the next day's build, the Umbel, the champion's title and two kept cards from the last draft, the trophy room", async () => {
+    const { s, c } = make();
+    const stages = [{ kind: "draft" as const, formatId: "draft-plane", rounds: 1 }, { kind: "constructed" as const, formatId: "open", rounds: 1 }, { kind: "draft" as const, formatId: "draft-plane", rounds: 1 }, { kind: "constructed" as const, formatId: "pauper", rounds: 1 }];
+    c.newConvocation(53, { seats: 16, stages });
+    expect(c.screen.kind).toBe("draft");
+    expect(c.isStaged()).toBe(true);
+    expect(c.stageLabel()).toBe("Day 1 — a draft");
+    expect(c.event!.pods).toHaveLength(2);
+    const draftAll = () => { for (let i = 0; i < 45; i++) c.pickCard(c.suggestedPick()!); };
+    draftAll();
+    expect(c.screen).toEqual({ kind: "build", sideboarding: false });
+    c.suggestDeck(); c.register();
+    expect(c.screen.kind).toBe("pairings");
+    const day = async () => { await series(c, true); expect(c.screen.kind).toBe("standings"); c.next(); };
+    await day();
+    expect(c.screen.kind).toBe("interlude");
+    expect(c.nextStageName()).toBe("the Open");
+    // reload at the day's end: a new controller over the same storage stands at the interlude
+    const again = new ConvocationController(pool, packs, rating, catalog, s, () => "2026-10-02T00:00:00Z");
+    again.resume(); expect(again.screen.kind).toBe("interlude");
+    c.toNextStage();
+    expect(c.screen).toEqual({ kind: "build", sideboarding: false });
+    expect(c.stageLabel()).toBe("Day 2 — the Open");
+    expect(c.isConstructed()).toBe(true);
+    // S53 (Part 3): "start from a list" — the twelve the field is drawn from, repaired to the format
+    const lists = c.startingLists();
+    expect(lists).toHaveLength(12);
+    expect(lists.map((l) => l.key)).toContain("open:levy");
+    expect(lists.find((l) => l.key === "open:levy")!.label).toBe("the Levy");
+    c.startFromList("open:levy"); expect(c.editorLegality().ok).toBe(true); expect(size(c.draft)).toBe(60);
+    c.suggestDeck(); c.register(); await day();
+    expect(c.nextStageName()).toBe("a draft");
+    c.toNextStage(); expect(c.screen.kind).toBe("draft"); draftAll(); c.suggestDeck(); c.register(); await day();
+    expect(c.nextStageName()).toBe("Pauper");
+    c.toNextStage(); c.suggestDeck(); c.register();
+    await series(c, true); c.next();
+    expect(c.screen.kind).toBe("bracket"); // four wins: the first seed
+    for (let r = 0; r < 3; r++) { await series(c, true); }
+    expect(c.event!.phase).toBe("over");
+    c.toPrize(); expect(c.screen.kind).toBe("prize");
+    expect(c.places().find((p) => p.seat === 0)!.place).toBe(1);
+    const lastDraft = c.event!.history!.find((h) => h.stage === 2)!.pool;
+    c.keep(lastDraft[0]!); c.keep(c.event!.history![0]!.pool.find((x) => !lastDraft.includes(x)) ?? "black_lotus"); c.keep(lastDraft[1]!); c.keep(lastDraft[2]!);
+    expect(c.event!.keptCards).toEqual([lastDraft[0], lastDraft[1]]); // two, from the last draft only
+    const line = JSON.parse(s.getItem(LEDGER_KEY)!).at(-1);
+    expect(line.title).toBe("Champion of the Umbel");
+    expect(line.keptCards).toEqual([lastDraft[0], lastDraft[1]]);
+    expect(line.decks.map((d: { formatId: string }) => d.formatId)).toEqual(["draft-plane", "open", "draft-plane", "pauper"]);
+    c.leave(); c.toTrophies(); expect(c.screen.kind).toBe("trophies");
+  }, 180_000);
 });

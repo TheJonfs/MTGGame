@@ -67,6 +67,16 @@ export function legalShare(list: Decklist, rule: DeckRule, cards: Map<string, Ca
   return all ? ok / all : 0;
 }
 
+/** The select step's candidates: every library list by legal share, ties by measured strength (the Open's
+ * round-robin mean where known, else its nonland cards' mean rating); the top twelve. S53: also the player's
+ * "start from a list" picker. */
+export function selectCandidates(format: ConstructedFormat, rating: CardRatingTable, library: readonly LibraryList[], cards: Map<string, CardDef>): { l: LibraryList; share: number; strength: number }[] {
+  const rule = format.rule, role = (id: string) => (cards.get(id)!.types.includes("Land") ? "land" : "other");
+  const size = (l: Decklist) => l.reduce((n, e) => n + e.count, 0);
+  const strength = (l: LibraryList) => OPEN_MEANS[l.key] !== undefined ? 1000 + OPEN_MEANS[l.key]! : (() => { const xs = l.decklist.filter((e) => role(e.cardId) !== "land"); const n = size(xs); return n ? xs.reduce((a, e) => a + cardRating(cards.get(e.cardId)!, rating) * e.count, 0) / n : 0; })();
+  return library.map((l) => ({ l, share: legalShare(l.decklist, rule, cards), strength: strength(l) })).sort((a, b) => b.share - a.share || b.strength - a.strength || a.l.key.localeCompare(b.l.key)).slice(0, CONSTRUCTED_TERMS.candidates);
+}
+
 export function buildConstructedDeck(format: ConstructedFormat, rating: CardRatingTable, seed: number, library: readonly LibraryList[], cards: Map<string, CardDef>, opts: { /** Force the tinker level (the tinker study); default: rolled from the seed. */ tinker?: Tinker; /** Force the source list. */ from?: string } = {}): ConstructedBuild {
   const rule = format.rule, rng = new WorldRng(seed);
   const def = (id: string) => { const d = cards.get(id); if (!d) throw new Error(`buildConstructedDeck: ${id} is not in the card pool`); return d; };
@@ -75,8 +85,7 @@ export function buildConstructedDeck(format: ConstructedFormat, rating: CardRati
   const size = (l: Decklist) => l.reduce((n, e) => n + e.count, 0);
 
   // ---- select ----
-  const strength = (l: LibraryList) => OPEN_MEANS[l.key] !== undefined ? 1000 + OPEN_MEANS[l.key]! : (() => { const xs = l.decklist.filter((e) => role(e.cardId) !== "land"); const n = size(xs); return n ? xs.reduce((a, e) => a + rate(e.cardId) * e.count, 0) / n : 0; })();
-  const scored = library.map((l) => ({ l, share: legalShare(l.decklist, rule, cards), strength: strength(l) })).sort((a, b) => b.share - a.share || b.strength - a.strength || a.l.key.localeCompare(b.l.key)).slice(0, CONSTRUCTED_TERMS.candidates);
+  const scored = selectCandidates(format, rating, library, cards);
   const total = scored.reduce((n, s) => n + s.share, 0);
   let roll = rng.float() * (total || 1), chosen = scored[0]!;
   for (const s of scored) { if (roll < s.share) { chosen = s; break; } roll -= s.share; }

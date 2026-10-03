@@ -8,12 +8,13 @@
 import type { CardDef } from "@shandalar/cards";
 import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
 import {
-  CONSTRUCTED_FORMATS, convocationNames, limitedView, DIFFICULTIES, DRAFT_PLANE, authoredListsFrom, cardLegal, copyCap, deserializeWorld, eventFormat, isBasic, newConstructedEvent, suggestedConstructedDeck, draftDirection, draftPack, draftStep, draftTotalPicks, newDraftEvent, suggestedPick, EVENT_SAVE_KEY, LEDGER_KEY, MatchSeries, SEALED_PLANE, addCopy, advanceBracket, advanceEvent, bracketRound, bracketRoundComplete, buildLimitedDeck, checkEventDeck, closeRound, deserializeEvent, finalPlaces, playBracketFieldRound, recordBracketSeries, resolveKnobs, seatForGame,
+  CONSTRUCTED_FORMATS, CONVOCATION_SEATS, buildConstructedDeck, selectCandidates, type ConstructedFormat, currentStage, defaultStages, finishTitle, keepAllowance, lastLimitedPool, newConvocation, nextStage, stageLastRound, type ConvocationStage, convocationNames, limitedView, DIFFICULTIES, DRAFT_PLANE, authoredListsFrom, cardLegal, copyCap, deserializeWorld, eventFormat, isBasic, newConstructedEvent, suggestedConstructedDeck, draftDirection, draftPack, draftStep, draftTotalPicks, newDraftEvent, suggestedPick, EVENT_SAVE_KEY, LEDGER_KEY, MatchSeries, SEALED_PLANE, addCopy, advanceBracket, advanceEvent, bracketRound, bracketRoundComplete, buildLimitedDeck, checkEventDeck, closeRound, deserializeEvent, finalPlaces, playBracketFieldRound, recordBracketSeries, resolveKnobs, seatForGame,
   ledgerEntry, lifeModifiers, newSealedEvent, pairingOf, playFieldRound, poolCollection, recordSeries, registerDeck, removeCopy, resultOf, roundComplete, saveCurrentSeries,
   serializeEvent, seriesSeed, seriesSetup, standings, type CardRatingTable, type Catalog, type ConvocationEvent, type ConvocationLedgerEntry, type ConvocationPackData,
   type Decklist, type DifficultyName, type KnobValues, type SeatAgents, type Standing,
 } from "@shandalar/world";
 import { MatchController } from "../play/match-controller.js";
+import { makeFieldPool, type FieldPool } from "./field-pool.js";
 import type { DeckEditorHost } from "../components/deck-editor-host.js";
 
 export type ConvocationScreen =
@@ -27,9 +28,22 @@ export type ConvocationScreen =
   | { kind: "field" }
   | { kind: "standings" }
   | { kind: "bracket" }
-  | { kind: "prize" };
+  | { kind: "prize" }
+  /** S53: the day's end between stages, and the door's trophy room. */
+  | { kind: "interlude" }
+  | { kind: "trophies" };
 
 type Store = Pick<Storage, "getItem" | "setItem" | "removeItem">;
+
+/** A library list's name for the picker: the Open's by their name ("the Levy"), the rest with their group. */
+export function listLabel(key: string): string {
+  const [group, name = ""] = key.split(":"), nice = name.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^./, (x) => x.toUpperCase());
+  return group === "open" ? `the ${nice}` : `${nice} (${group})`;
+}
+/** A stage's name in the screens' text: "a draft", "Sealed", or the Constructed format's ("the Open"). */
+export function stageName(st: ConvocationStage): string { return st.kind === "draft" ? "a draft" : st.kind === "sealed" ? "Sealed" : formatTitle(st.formatId); }
+const formatTitle = (id: string) => { const n = eventFormat(id).name; return /^the /i.test(n) ? n.replace(/^The /, "the ") : n; };
+export { finishTitle, stageLastRound };
 
 export class ConvocationController {
   event: ConvocationEvent | null = null;
@@ -39,8 +53,13 @@ export class ConvocationController {
   notice: string | null = null;
   series: MatchSeries | null = null;
   match: MatchController | null = null;
-  /** The last field round's wall time on the main thread, ms (S47 Concern 4: measured, shown in the dev line). */
+  /** The last field round's wall time, ms (S47 Concern 4: measured, shown in the dev line). */
   fieldMs: number | null = null;
+  /** S53: the field round's progress — series played of series to play (the field screen's line). */
+  fieldProgress: { done: number; of: number } | null = null;
+  /** S53: the field's workers (a page with Workers); null in the tests — the main thread plays. */
+  private fieldPool: FieldPool | null | undefined = undefined;
+  private workers(): FieldPool | null { if (this.fieldPool === undefined) this.fieldPool = makeFieldPool(); return this.fieldPool; }
   /** The event's knobs: its difficulty's bundle (the entrance tables — ADR-148). */
   get knobs(): KnobValues { return resolveKnobs({ difficulty: DIFFICULTIES[(this.event?.difficulty ?? "standard") as DifficultyName] ?? {} }); }
   private listeners = new Set<() => void>();
@@ -89,6 +108,30 @@ export class ConvocationController {
     this.series = null; this.match = null;
     this.openBuild(false);
   }
+  /** S53: the full Convocation — four days (a draft, a Constructed format, a draft, a Constructed format) and the
+   * Umbel, at 128 seats (Chris). The two Constructed formats are the door's choice of the seven. */
+  newConvocation(seed: number = Math.floor(Math.random() * 1_000_000), opts: { difficulty?: DifficultyName; first?: string; second?: string; seats?: number; /** the tests' short shape */ stages?: ConvocationStage[] } = {}): void {
+    const seats = opts.seats ?? CONVOCATION_SEATS;
+    this.set(newConvocation({ seed, stages: opts.stages ?? defaultStages(opts.second ?? "open", opts.first ?? "open"), seats, names: convocationNames(seats - 1), faces: this.faces(), library: this.library(), difficulty: opts.difficulty ?? "standard" }, this.deps()));
+    this.series = null; this.match = null; this.passNote = null;
+    this.screen = { kind: "draft" }; this.emit();
+  }
+  isStaged(): boolean { return !!this.event?.stages; }
+  /** "Day 2 — the Open" for the banners; "" outside a full Convocation. */
+  stageLabel(): string { const e = this.event, st = e ? currentStage(e) : undefined; return st ? `Day ${(e!.stage ?? 0) + 1} — ${stageName(st)}` : ""; }
+  /** The next stage's name ("a draft", "the Open") — the interlude's "Tomorrow". */
+  nextStageName(): string { const e = this.event, st = e?.stages?.[(e.stage ?? 0) + 1]; return st ? stageName(st) : ""; }
+  /** From the interlude: the next day begins — the draft, or the build. */
+  toNextStage(): void {
+    const e = this.event; if (!e || e.phase !== "interlude") return;
+    this.set(nextStage(e, this.deps(), this.library()));
+    this.series = null; this.match = null; this.passNote = null;
+    if (this.event!.phase === "draft") { this.screen = { kind: "draft" }; return this.emit(); }
+    this.openBuild(false);
+  }
+  /** The door's trophy room: the full Convocations in the ledger. */
+  toTrophies(): void { this.screen = { kind: "trophies" }; this.emit(); }
+
   /** Back to where the saved event stands. */
   resume(): void {
     const e = this.event; if (!e) return;
@@ -96,6 +139,7 @@ export class ConvocationController {
     if (e.phase === "draft") { this.passNote = null; this.screen = { kind: "draft" }; return this.emit(); }
     if (e.phase === "build") return this.openBuild(false);
     if (e.phase === "standings") { this.screen = { kind: "standings" }; return this.emit(); }
+    if (e.phase === "interlude") { this.screen = { kind: "interlude" }; return this.emit(); }
     if (e.phase === "over") { this.screen = { kind: "prize" }; return this.emit(); }
     const opp = this.opponentSeat();
     if (e.current && opp !== null) { this.series = new MatchSeries({ seed: seriesSeed(e, 0, opp), games: e.current.games }); this.screen = { kind: "between" }; return this.emit(); }
@@ -132,6 +176,17 @@ export class ConvocationController {
       const w = deserializeWorld(raw);
       return Object.entries(w.decks).map(([name, deck]) => { const c = checkEventDeck(this.event!, 0, deck, this.pool); return { name, deck: deck.map((e) => ({ ...e })), ok: c.ok, problems: c.problems }; });
     } catch { return []; }
+  }
+  /** S53 (Part 3): the format's starting lists — the twelve its field is drawn from — for "start from a list". */
+  startingLists(): { key: string; label: string; archetype: string }[] {
+    if (!this.event || !this.isConstructed()) return [];
+    return selectCandidates(eventFormat(this.event.formatId) as ConstructedFormat, this.rating, this.library(), this.pool).map(({ l }) => ({ key: l.key, label: listLabel(l.key), archetype: l.archetype }));
+  }
+  /** Start the build from one of them, repaired to the format and played as written (no tinkering). */
+  startFromList(key: string): void {
+    const e = this.event; if (!e || this.screen.kind !== "build" || !this.isConstructed()) return;
+    this.draft = buildConstructedDeck(eventFormat(e.formatId) as ConstructedFormat, this.rating, 0, this.library(), this.pool, { from: key, tinker: "stock" }).deck;
+    this.notice = null; this.emit();
   }
   /** Bring a saved deck into the draft (the legality panel says whether it may be registered). */
   useSavedDeck(name: string): void { const d = this.savedDecks().find((x) => x.name === name); if (!d || this.screen.kind !== "build") return; this.draft = d.deck; this.notice = null; this.emit(); }
@@ -261,11 +316,22 @@ export class ConvocationController {
     await new Promise((r) => setTimeout(r, 30)); // let the screen paint before the main thread is taken
     const agents: SeatAgents = (seat, opponent, seed, side) => new HeuristicAgent(seed * 2 + 1 + side, this.pool, difficultyProfile("master", seat.archetype, opponent.deck));
     const t0 = typeof performance !== "undefined" ? performance.now() : 0;
-    const played = await playFieldRound(this.event!, { cards: this.pool, knobs: this.knobs, rating: this.rating }, agents);
+    const pool = this.workers();
+    const played = pool ? await this.fieldOnWorkers(this.event!, pool) : await playFieldRound(this.event!, { cards: this.pool, knobs: this.knobs, rating: this.rating }, agents);
     this.fieldMs = typeof performance !== "undefined" ? Math.round(performance.now() - t0) : null;
+    this.fieldProgress = null;
     this.set(closeRound(played));
     this.series = null; this.match = null;
     this.screen = { kind: "standings" }; this.emit();
+  }
+  /** S53: the round's other series on the workers, recorded in the pairings' order (a series is its seed's). */
+  private async fieldOnWorkers(e: ConvocationEvent, pool: FieldPool): Promise<ConvocationEvent> {
+    const todo = e.pairings.filter((p) => p.b !== null && p.a !== 0 && p.b !== 0 && !resultOf(e, e.round, p.a)) as { a: number; b: number }[];
+    this.fieldProgress = { done: 0, of: todo.length }; this.emit();
+    const knobs = this.knobs;
+    const done = await Promise.all(todo.map((p) => pool.series(e, p.a, p.b, knobs).then((s) => { this.fieldProgress = { done: (this.fieldProgress?.done ?? 0) + 1, of: todo.length }; this.emit(); return s; })));
+    let x = e; todo.forEach((p, i) => { x = recordSeries(x, p.a, p.b, done[i]!); });
+    return x;
   }
   private fieldAgents(): SeatAgents { return (seat, opponent, seed, side) => new HeuristicAgent(seed * 2 + 1 + side, this.pool, difficultyProfile("master", seat.archetype, opponent.deck)); }
   /** S49: the bracket round's other matches (headless, here), then the next round's matches — or the finish. */
@@ -308,13 +374,23 @@ export class ConvocationController {
     const e = this.event; if (!e || e.phase !== "standings") return;
     const n = this.finished(advanceEvent(e));
     this.set(n);
-    this.screen = n.phase === "over" ? { kind: "prize" } : n.phase === "bracket" ? { kind: "bracket" } : { kind: "pairings" };
+    this.screen = n.phase === "over" ? { kind: "prize" } : n.phase === "bracket" ? { kind: "bracket" } : n.phase === "interlude" ? { kind: "interlude" } : { kind: "pairings" };
     this.emit();
   }
   private writeLedger(e: ConvocationEvent): void { this.storage?.setItem(LEDGER_KEY, JSON.stringify([...this.ledger(), ledgerEntry(e, this.now())])); }
   /** The prize placeholder (ADR-147): a card from the pool to keep — recorded on the event and its ledger line. */
   keep(cardId: string): void {
-    const e = this.event; if (!e || e.phase !== "over" || e.kept || !e.field[0]!.pool.includes(cardId)) return;
+    const e = this.event; if (!e || e.phase !== "over") return;
+    if (e.stages) { // S53 (Part 2): the eight keep one, the champion two — from the last Limited stage's pool
+      const kept = e.keptCards ?? [], pool = lastLimitedPool(e);
+      if (kept.length >= keepAllowance(e) || !pool.includes(cardId) || kept.filter((x) => x === cardId).length >= pool.filter((x) => x === cardId).length) return;
+      const next = [...kept, cardId];
+      this.set({ ...e, keptCards: next });
+      const l = this.ledger(); const last = l[l.length - 1];
+      if (last && last.seed === e.seed) { l[l.length - 1] = { ...last, keptCards: next }; this.storage?.setItem(LEDGER_KEY, JSON.stringify(l)); }
+      return this.emit();
+    }
+    if (e.kept || !e.field[0]!.pool.includes(cardId)) return;
     this.set({ ...e, kept: cardId });
     const l = this.ledger(); const last = l[l.length - 1];
     if (last && last.seed === e.seed) { l[l.length - 1] = { ...last, kept: cardId }; this.storage?.setItem(LEDGER_KEY, JSON.stringify(l)); }
