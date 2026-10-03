@@ -153,7 +153,7 @@ function PromptBar({ c, phase, confirmLabel }: { c: MatchController; phase: UiPh
       {phase.kind === "targeting" && phase.canFinish && (
         <button className="primary" onClick={() => c.finishTargeting()}>{phase.chosen.length === 0 ? "No targets" : `Done (${phase.chosen.length})`}</button>
       )}
-      {(phase.kind === "targeting" || phase.kind === "chooseX" || phase.kind === "chooseColor") && (
+      {(phase.kind === "targeting" || phase.kind === "chooseX" || phase.kind === "chooseColor" || phase.kind === "chooseAbility") && (
         <button onClick={() => c.cancel()}>Cancel</button>
       )}
       {phase.kind === "attackers" && (
@@ -603,6 +603,25 @@ function ColorModal({ c }: { c: MatchController }) {
   );
 }
 
+/** Post-S53 (Chris — The Reeve): which of the permanent's abilities to activate. */
+function AbilityModal({ c, phase }: { c: MatchController; phase: Extract<UiPhase, { kind: "chooseAbility" }> }) {
+  return (
+    <div className="gallery-modal">
+      <div className="gallery-modal-box play-dialog">
+        <h3 style={{ marginTop: 0, fontFamily: "var(--serif)" }}>Activate which ability?</h3>
+        <div className="dialog-list" style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          {phase.options.map((o) => (
+            <button key={o.abilityIndex} style={{ textAlign: "left" }} onClick={() => c.chooseAbility(o.abilityIndex)}>{o.label}</button>
+          ))}
+        </div>
+        <div style={{ marginTop: 8, textAlign: "right" }}>
+          <button onClick={() => c.cancel()}>Cancel</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function XModal({ c, phase }: { c: MatchController; phase: Extract<UiPhase, { kind: "chooseX" }> }) {
   return (
     <div className="gallery-modal">
@@ -966,6 +985,7 @@ export function PlayMatch({
       <FloatingInspector ctx={ctx} objectId={inspected} fallbackCardId={snapCard} oracle={oracle} printed={printed} onTogglePrinted={() => setPrinted(!printed)} />
       {phase.kind === "dialog" && <DialogModal c={c} phase={phase} pool={pool} oracle={oracle} onHoverOption={setDialogHover} printed={printed} />}
       {phase.kind === "chooseX" && <XModal c={c} phase={phase} />}
+      {phase.kind === "chooseAbility" && <AbilityModal c={c} phase={phase} />}
       {phase.kind === "chooseColor" && <ColorModal c={c} />}
       {phase.kind === "chooseTapColor" && <TapColorModal c={c} pool={pool} />}
       {phase.kind === "castOrActivate" && <CastOrActivateModal c={c} pool={pool} />}

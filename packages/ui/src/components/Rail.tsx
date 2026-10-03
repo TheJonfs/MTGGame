@@ -92,7 +92,7 @@ export function StatusBlock({
               <div
                 key={icon}
                 className={`zone${clickable ? " clickable" : ""}`}
-                onClick={clickable ? () => onZoneClick!(player, zone!) : undefined}
+                onClick={clickable ? (ev) => { ev.stopPropagation(); onZoneClick!(player, zone!); } : undefined /* post-S53 (Chris — The Reeve): opening a pile never also targets its player */}
                 title={zoneLabel[icon]}
               >
                 <IconChip src={`/icons/${icon}.svg`} alt={zoneLabel[icon] ?? icon} size={30} scale={icon === "zone-exile" ? 0.66 : 0.8} />

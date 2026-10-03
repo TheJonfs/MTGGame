@@ -110,6 +110,13 @@ export type UiPhase =
       variants: Action[];
     }
   | {
+      /** Post-S53 (Chris — The Reeve): a permanent with two or more activated abilities on offer asks WHICH first;
+       * the targeting then holds only that ability's targets (a player for the mill, a graveyard card to return). */
+      kind: "chooseAbility";
+      sourceObjectId: string;
+      options: { abilityIndex: number; label: string; variants: Action[] }[];
+    }
+  | {
       /** S15 (ADR-068 Amendment 2): a choice-bearing mana ability — pick the colour. */
       kind: "chooseColor";
       sourceObjectId: string;
@@ -1145,6 +1152,14 @@ export class MatchController {
   // ---------- casting: X → targets → confirm ----------
 
   private beginCast(sourceObjectId: string, variants: Action[]): void {
+    // Post-S53 (Chris — The Reeve): two abilities' activations in one targeting step mixed players and graveyard
+    // cards (and a click on the opponent's graveyard chose "mill the opponent"). Choose the ability, then its targets.
+    const indices = [...new Set(variants.filter((v) => v.type === "activateAbility").map((v) => (v as { abilityIndex: number }).abilityIndex))];
+    if (indices.length > 1 && variants.every((v) => v.type === "activateAbility")) {
+      this.phase = { kind: "chooseAbility", sourceObjectId, options: indices.sort((a, b) => a - b).map((abilityIndex) => ({ abilityIndex, label: this.abilityLabel(sourceObjectId, abilityIndex), variants: variants.filter((v) => (v as { abilityIndex: number }).abilityIndex === abilityIndex) })) };
+      this.emit();
+      return;
+    }
     if (variants.some((v) => (v as { color?: string; colors?: string[] }).color !== undefined || (v as { colors?: string[] }).colors !== undefined)) {
       this.phase = { kind: "chooseColor", sourceObjectId, variants };
       this.emit();
@@ -1157,6 +1172,22 @@ export class MatchController {
       return;
     }
     this.enterTargeting(sourceObjectId, variants);
+  }
+
+  /** Post-S53: the chosen ability's activations go on as a single-ability cast (colour, X, then its targets). */
+  chooseAbility(abilityIndex: number): void {
+    if (this.phase.kind !== "chooseAbility") return;
+    const o = this.phase.options.find((x) => x.abilityIndex === abilityIndex);
+    if (!o) return;
+    this.beginCast(this.phase.sourceObjectId, o.variants);
+  }
+  /** An ability's line of the card's rules text (its cost then its effect), found by its cost; the cost alone if none. */
+  private abilityLabel(objectId: string, abilityIndex: number): string {
+    const o = this.game.state.objects[objectId], d = o ? this.pool.get(o.cardId) : undefined, ab = d?.abilities?.[abilityIndex];
+    if (!ab || ab.kind !== "activated") return `Ability ${abilityIndex + 1}`;
+    const cost = [ab.cost.mana, ab.cost.tap ? "{T}" : null].filter(Boolean).join(", ");
+    const line = (d!.text ?? "").split("\n").map((l) => l.trim()).find((l) => cost && l.startsWith(`${cost}:`));
+    return line ?? (cost ? `${cost}: ability ${abilityIndex + 1}` : `Ability ${abilityIndex + 1}`);
   }
 
   chooseColor(color: "W" | "U" | "B" | "R" | "G"): void {
