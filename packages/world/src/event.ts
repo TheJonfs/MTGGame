@@ -226,9 +226,9 @@ export function draftStep(event: ConvocationEvent, cardId: string, deps: EventDe
   }
   if (packs[0]!.length > 0) {
     const dir = d.round % 2 === 0 ? 1 : -1; // seat s receives the pack of the seat to its right on a leftward pass
-    return { ...event, draft: { round: d.round, pick: d.pick + 1, packs: packs.map((_, s) => packs[(s - dir + seats) % seats]!), picks } };
+    return { ...event, draft: { round: d.round, pick: d.pick + 1, packs: packs.map((_, s) => packs[(s - dir + seats) % seats]!), picks, ...(d.pod ? { pod: d.pod } : {}) } };
   }
-  if (d.round + 1 < format.packs) return { ...event, draft: { round: d.round + 1, pick: d.pick + 1, packs: draftPacks(event, d.round + 1, deps), picks } };
+  if (d.round + 1 < format.packs) return { ...event, draft: { round: d.round + 1, pick: d.pick + 1, packs: draftPacks(event, d.round + 1, deps), picks, ...(d.pod ? { pod: d.pod } : {}) } }; // S53: the live pod rides along
   // the draft is done: the picks are the pools; the pod's AI seats build (the other pods built when the event began)
   const rng = new WorldRng(sub(event.seed, 10, ...stageSalt(event)));
   const used = new Set(event.field.map((x) => x.face).filter((x): x is string => !!x));

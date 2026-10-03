@@ -48,6 +48,14 @@ describe("the full Convocation (S53)", () => {
     while (e.phase !== "over") {
       const before = e;
       e = await stepHeadless(e, deps, agents);
+      if (before.phase === "draft" && e.phase !== "draft") { // the draft is done: every seat holds its own forty-five and a deck from them (the live pod's included)
+        for (const [s, seat] of e.field.entries()) { expect(seat.pool.length, `seat ${s}`).toBe(45); if (s > 0) expect(seat.deck.reduce((n, x) => n + x.count, 0), `seat ${s}`).toBeGreaterThanOrEqual(40); }
+        const live = before.draft!.pod!;
+        for (const [s, seat] of before.field.entries()) {
+          if (live.includes(s)) expect(seat.pool, `live seat ${s} drafts live`).toEqual([]);
+          else expect(e.field[s]!.pool, `seat ${s} keeps its pod's picks`).toEqual(seat.pool);
+        }
+      }
       if (before.phase === "interlude" && e.stage === 2) { secondPods = e.pods!; standingsBefore = standings(before).map((r) => r.seat); }
       if (e.phase === "round" && before.phase !== "round" && e.stages![e.stage!]!.kind === "draft") { // a draft round's pairings stay inside the pods
         for (const p of e.pairings) expect(e.pods!.some((pod) => pod.includes(p.a) && pod.includes(p.b!))).toBe(true);
