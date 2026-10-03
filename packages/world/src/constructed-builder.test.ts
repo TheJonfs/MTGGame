@@ -6,7 +6,7 @@ import { loadCardPool } from "@shandalar/cards/loader";
 import { cardColors, manaValue, parseManaCost } from "@shandalar/cards";
 import { CONSTRUCTED_FORMATS, OPEN_FORMAT, PAUPER_FORMAT, BODIES_FORMAT, HALF_GROUND_FORMAT, NOTHING_DEAR_FORMAT, NOTHING_SMALL_FORMAT, NOTHING_SUDDEN_FORMAT } from "./formats.js";
 import { authoredLists } from "./authored-lists.js";
-import { buildConstructedDeck, cardLegal, copyCap, legalShare, OPEN_MEANS } from "./constructed-builder.js";
+import { buildConstructedDeck, cardLegal, copyCap, legalShare, OPEN_MEANS, tuneVariation, VARIATION_TERMS } from "./constructed-builder.js";
 import { checkDeck } from "./legality.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
@@ -43,6 +43,28 @@ describe("the Constructed builder (S52)", () => {
     void levy;
     // the restricted list holds through repair and noise
     for (const b of builds) for (const e of b.deck) expect(e.count).toBeLessThanOrEqual(copyCap(e.cardId, OPEN_FORMAT.rule));
+  });
+
+  it("post-S52 — the plan rules: a four-of is never swapped out or cut; a swap's card shares an authored list with the card it replaces; the land-down move adds a card the deck already plays; off, the noise is S52's", () => {
+    const before = { ...VARIATION_TERMS };
+    const isLand = (id: string) => d(id).types.includes("Land");
+    try {
+      const off = Array.from({ length: 40 }, (_, i) => buildConstructedDeck(OPEN_FORMAT, rating, 500 + i, library, cards, { tinker: "heavy", from: "open:undertow" }));
+      tuneVariation({ plan: 1 });
+      for (const from of ["open:undertow", "open:larder", "open:levy"]) for (let i = 0; i < 40; i++) {
+        const b = buildConstructedDeck(OPEN_FORMAT, rating, 500 + i, library, cards, { tinker: "heavy", from });
+        const src = library.find((l) => l.key === from)!.decklist, n = (l: { cardId: string; count: number }[], id: string) => l.find((e) => e.cardId === id)?.count ?? 0;
+        expect(b.check.problems).toEqual([]);
+        for (const e of src) if (e.count >= 4 && !isLand(e.cardId)) expect(n(b.deck, e.cardId), `${from} ${e.cardId}`).toBe(4); // the plan stands
+        for (const sw of b.swaps) {
+          if (isLand(sw.out)) expect(n(src, sw.in) > 0 || b.swaps.some((x) => x.in === sw.in && x !== sw), `${from}: the land-down move adds ${sw.in}`).toBe(true);
+          else if (!isLand(sw.in)) expect(library.some((l) => l.decklist.some((e) => e.cardId === sw.out) && l.decklist.some((e) => e.cardId === sw.in)), `${from}: ${sw.out} → ${sw.in}`).toBe(true);
+        }
+        expect(b.swaps.length).toBeGreaterThanOrEqual(3); // still a heavy tinkerer
+      }
+      tuneVariation({ plan: 0 });
+      expect(Array.from({ length: 40 }, (_, i) => buildConstructedDeck(OPEN_FORMAT, rating, 500 + i, library, cards, { tinker: "heavy", from: "open:undertow" }))).toEqual(off);
+    } finally { tuneVariation(before); }
   });
 
   it("the campaign's forties and a thirty-card list are repaired to a legal sixty in their own colours and proportions", () => {

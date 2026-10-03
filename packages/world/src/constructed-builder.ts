@@ -32,6 +32,14 @@ export const OPEN_MEANS: Record<string, number> = { "open:levy": 68, "open:wurms
  * or a HEAVY one (four to six); the light and the heavy also move a land. The shares are a quarter, a half, a quarter. */
 export const CONSTRUCTED_TERMS = { candidates: 12, noiseBand: 0.5, inListBonus: 0.3, tinker: { stock: { share: 0.25, swaps: [0, 0] }, light: { share: 0.5, swaps: [1, 2] }, heavy: { share: 0.25, swaps: [4, 6] } } } as const;
 export type Tinker = keyof typeof CONSTRUCTED_TERMS.tinker;
+/** Post-S52 (Chris: "the Larder and the Undertow repair badly" — the noise was blind to a list's plan). The PLAN rules,
+ * keyed on data, never on a card's name: (1) a swap's incoming card must share an authored list with the card it
+ * replaces (the library's lists are the record of what goes together); (2) a card the source list plays four of is its
+ * plan — never swapped out, never the land move's cut; (3) the land-down move adds a copy of a card the deck already
+ * plays, not the best-rated creature in the colours. `plan: 0` is the S52 noise. */
+export const VARIATION_TERMS = { plan: 0 };
+/** The A/B's hook (`pnpm rating-ab --variation`) — never called by the game. */
+export function tuneVariation(over: Partial<typeof VARIATION_TERMS>): void { Object.assign(VARIATION_TERMS, over); }
 
 type Role = "land" | "creature" | "spell";
 const BASIC_OF: Record<string, string> = { W: "plains", U: "island", B: "swamp", R: "mountain", G: "forest" };
@@ -116,6 +124,15 @@ export function buildConstructedDeck(format: ConstructedFormat, rating: CardRati
   for (let guard = 0; rule.maxLands !== undefined && count("land") > rule.maxLands && guard < 200; guard++) { const out = [...deck.keys()].filter((id) => role(id) === "land").sort((a, b) => Number(isBasic(b)) - Number(isBasic(a)) || a.localeCompare(b))[0]; const into = best("creature") ?? best("spell"); if (!out || !into) break; remove(out); add(into); }
 
   // ---- noise ----
+  const plan = VARIATION_TERMS.plan > 0;
+  const srcCount = (id: string) => source.decklist.reduce((n, e) => n + (e.cardId === id ? e.count : 0), 0);
+  const core = (id: string) => plan && srcCount(id) >= 4; // rule 2
+  const together = (() => { // rule 1: the nonland cards each library list plays
+    if (!plan) return null;
+    const m = new Map<string, Set<number>>();
+    library.forEach((l, i) => { for (const e of l.decklist) if (role(e.cardId) !== "land") { const x = m.get(e.cardId) ?? new Set<number>(); x.add(i); m.set(e.cardId, x); } });
+    return (a: string, b: string) => { const x = m.get(a), y = m.get(b); if (!x || !y) return false; for (const i of x) if (y.has(i)) return true; return false; };
+  })();
   const list = (): Decklist => [...deck].map(([cardId, n]) => ({ cardId, count: n }));
   const legalNow = () => checkDeck(list(), null, rule, cards).ok;
   const swaps: { out: string; in: string }[] = [];
@@ -125,10 +142,10 @@ export function buildConstructedDeck(format: ConstructedFormat, rating: CardRati
     // a swap never touches a free card (mana value 0 — the Lotus, a Mox): the first round-robin swapped Power out for a
     // two-drop and an off-colour Mox in, on rating alone
     const free = (id: string) => manaValue(parseManaCost(def(id).manaCost)) === 0;
-    const outs = [...deck.keys()].filter((id) => role(id) !== "land" && !free(id)).sort();
+    const outs = [...deck.keys()].filter((id) => role(id) !== "land" && !free(id) && !core(id)).sort();
     if (!outs.length) break;
     const out = outs[rng.int(outs.length)]!, r = role(out) as Exclude<Role, "land">;
-    const ins = poolOf(r).filter((id) => id !== out && !free(id) && (deck.get(id) ?? 0) < copyCap(id, rule) && Math.abs(rate(id) - rate(out)) <= CONSTRUCTED_TERMS.noiseBand);
+    const ins = poolOf(r).filter((id) => id !== out && !free(id) && (deck.get(id) ?? 0) < copyCap(id, rule) && Math.abs(rate(id) - rate(out)) <= CONSTRUCTED_TERMS.noiseBand && (!together || together(out, id)));
     if (!ins.length) continue;
     const into = ins[rng.int(ins.length)]!;
     const before = new Map(deck);
@@ -137,8 +154,9 @@ export function buildConstructedDeck(format: ConstructedFormat, rating: CardRati
   }
   if (tinker !== "stock") { // a land ±1
     const before = new Map(deck), up = rng.int(2) === 0;
-    if (up) { const out = lowest("spell") ?? lowest("creature"); if (out) { deck.set(out, deck.get(out)! - 1); if (deck.get(out) === 0) deck.delete(out); const b = basic(); deck.set(b, (deck.get(b) ?? 0) + 1); swaps.push({ out, in: b }); } }
-    else { const b = BASIC_LANDS.map((x) => x as string).filter((x) => (deck.get(x) ?? 0) > 0).sort((x, y) => deck.get(y)! - deck.get(x)! || x.localeCompare(y))[0]; const into = best("creature") ?? best("spell"); if (b && into) { deck.set(b, deck.get(b)! - 1); if (deck.get(b) === 0) deck.delete(b); deck.set(into, (deck.get(into) ?? 0) + 1); swaps.push({ out: b, in: into }); } }
+    if (up) { const out = lowest("spell", (id) => !core(id)) ?? lowest("creature", (id) => !core(id)); if (out) { deck.set(out, deck.get(out)! - 1); if (deck.get(out) === 0) deck.delete(out); const b = basic(); deck.set(b, (deck.get(b) ?? 0) + 1); swaps.push({ out, in: b }); } }
+    else { const b = BASIC_LANDS.map((x) => x as string).filter((x) => (deck.get(x) ?? 0) > 0).sort((x, y) => deck.get(y)! - deck.get(x)! || x.localeCompare(y))[0]; const again = plan ? [...deck.keys()].filter((id) => role(id) !== "land" && manaValue(parseManaCost(def(id).manaCost)) > 0 && deck.get(id)! < copyCap(id, rule)).sort((x, y) => rate(y) - rate(x) || x.localeCompare(y))[0] : undefined; // rule 3
+      const into = again ?? best("creature") ?? best("spell"); if (b && into) { deck.set(b, deck.get(b)! - 1); if (deck.get(b) === 0) deck.delete(b); deck.set(into, (deck.get(into) ?? 0) + 1); swaps.push({ out: b, in: into }); } }
     if (!legalNow()) { deck.clear(); for (const [k, v] of before) deck.set(k, v); swaps.pop(); }
   }
   const order = (a: string, b: string) => ["land", "creature", "spell"].indexOf(role(a)) - ["land", "creature", "spell"].indexOf(role(b)) || a.localeCompare(b);
