@@ -1335,6 +1335,30 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.scorePriorityAction(board({}, { summoningSick: true }), equip("b2"))).toBeGreaterThan(a.scorePriorityAction(board({}, { summoningSick: true }), { type: "pass" })); // book 86's one real move stands
   });
 
+  it("book of shame 97 (post-S53, Chris — the Levy's wide board under Clio never blocked until lethal): a creature with no power left is cheap to throw in front of an attacker — the locked tokens chump; live 1/1s at healthy life still do not", async () => {
+    const board = (depth: number) => {
+      const v = mkView({ step: "DECLARE_BLOCKERS", activePlayer: 1, life: [14, 20], combat: { attackers: ["clio"], blocks: [] }, battlefield: [...Array.from({ length: 6 }, (_, i) => ({ id: `t${i}`, cardId: "soldier_1_1", controller: 0 as const })), { id: "clio", cardId: "clio_lady_of_the_depths", controller: 1, tapped: true }, { id: "tr", cardId: "traumatizer", controller: 1 }] });
+      for (const o of v.battlefield) { if (o.controller === 0 && o.power !== null) o.power = 1 - depth; if (o.id === "clio") o.counters = { depth }; }
+      return v;
+    };
+    const req = { player: 0 as const, purpose: "declareBlocker" as const, actions: [{ type: "doneDeclaringBlockers" as const }, ...[0, 1, 2, 3, 4, 5].map((i) => ({ type: "declareBlocker" as const, blocker: `t${i}`, attacker: "clio" }))] };
+    const blocks = async (depth: number) => { let n = 0; for (let k = 0; k < 20; k++) if ((await new HeuristicAgent(k + 1, pool, difficultyProfile("master", "midrange", [])).chooseAction(board(depth), req as never)).type === "declareBlocker") n += 1; return n; };
+    expect(await blocks(2)).toBeGreaterThanOrEqual(18); // −1/1 tokens under Clio: chump the 2/4 (and deny the Traumatizer its mill)
+    expect(await blocks(0)).toBeLessThanOrEqual(2); // live 1/1s are worth keeping at 14 life
+  });
+
+  it("book of shame 96 (post-S53, Chris — the field burned its removal on anything but Clio, whose depth counters locked its board): a removal's prediction lifts the removed permanent's static P/T from what remains, a debuffed creature is worth less, and a lock that grows each end step is worth its next step — Swords takes Clio over Serra Angel against a wide locked board, and still takes the Angel against a narrow one", () => {
+    const board = (tokens: number, depth: number) => {
+      const v = mkView({ life: [14, 20], hand: [{ objectId: "h", cardId: "swords_to_plowshares" }], battlefield: [{ id: "pl", cardId: "plains", controller: 0 }, ...Array.from({ length: tokens }, (_, i) => ({ id: `t${i}`, cardId: "soldier_1_1", controller: 0 as const })), { id: "clio", cardId: "clio_lady_of_the_depths", controller: 1 }, { id: "serra", cardId: "serra_angel", controller: 1 }] });
+      for (const o of v.battlefield) { if (o.controller === 0 && o.power !== null) o.power = 1 - depth; if (o.id === "clio") o.counters = { depth }; } // Clio's lock, as the engine's view shows it
+      return v;
+    };
+    const swords = (v: GameView, id: string) => agent().scorePriorityAction(v, { type: "castSpell", objectId: "h", targets: [{ kind: "object", id }] });
+    const wide = board(6, 2), narrow = board(2, 1);
+    expect(swords(wide, "clio")).toBeGreaterThan(swords(wide, "serra") + 1); // the lock on six bodies, and its next step
+    expect(swords(narrow, "serra")).toBeGreaterThan(swords(narrow, "clio")); // one counter on two bodies: the 4/4 flier is the threat
+  });
+
   it("book of shame 95 (post-S53, Chris — the field kept attacking into Voracious Cobra): a creature that destroys what it deals combat damage to is a deathtoucher in the attack simulation — a 3/3 stays home against it, and still swings into a plain 2/2", async () => {
     const req = { player: 0 as const, purpose: "declareAttacker" as const, actions: [{ type: "declareAttacker" as const, objectId: "g" }, { type: "doneDeclaringAttackers" as const }] };
     const into = (blocker: string) => mkView({ life: [20, 20], battlefield: [{ id: "g", cardId: "hill_giant", controller: 0 }, { id: "b", cardId: blocker, controller: 1 }] });

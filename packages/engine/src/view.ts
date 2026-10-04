@@ -45,6 +45,9 @@ export interface GameView {
      * it cannot attack or pay a {T} cost this turn (CR 302.6), but it CAN block. Public (every player sees what entered
      * this turn). The engine's own rule (combat.ts / enumerator.ts / mana.ts), read here so the two cannot drift. */
     summoningSick?: boolean;
+    /** Post-S53 (Chris: the field never killed Clio): the counters on it, when any — public (CR 122) — so an agent can
+     * read a counter-scaled effect (Clio's depth counters, each −1/−0 to every opposing creature). */
+    counters?: Record<string, number>;
   }[];
   /** S32: `targets` (public — the stack's targets are announced) so a creature under fire is visible
    * to the agents: the Escort's save, the Altar's "doomed" read (which had been blind live since S29). */
@@ -101,6 +104,7 @@ export function buildView(ctx: EngineCtx, player: PlayerId): GameView {
         ...(chars.cantBlock ? { cantBlock: true } : {}),
         ...(chars.cantAttack ? { cantAttack: true } : {}),
         ...(o.summoningSick && isCreature && !chars.keywords.has("haste") ? { summoningSick: true } : {}),
+        ...(Object.values(o.counters).some((n) => n) ? { counters: Object.fromEntries(Object.entries(o.counters).filter(([, n]) => n)) } : {}),
       };
     }),
     stack: s.stack.map((item) => ({

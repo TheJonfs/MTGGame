@@ -40,7 +40,49 @@ function clone(view: GameView): GameView {
 }
 
 function removeObject(view: GameView, id: string): void {
+  const gone = view.battlefield.find((o) => o.id === id);
   view.battlefield = view.battlefield.filter((o) => o.id !== id);
+  if (gone && simDefs) revertStatics(view, gone, simDefs);
+}
+/** The defs of the prediction in progress (set by predictAction) — removeObject reads the removed permanent's statics. */
+let simDefs: Map<string, CardDef> | null = null;
+/** Book 96: the credit a removal earns beyond the board it leaves — a GROWING lock's next step (see revertStatics),
+ * banked by removeObject and collected by the effect loops. */
+let removalCredit = 0;
+const takeRemovalCredit = (): number => { const c = removalCredit; removalCredit = 0; return c; };
+/** Book 96 (Chris: the field burned its removal on anything but Clio, whose depth counters locked its whole board):
+ * the view's P/T are LIVE, so a permanent removed in a prediction left its static P/T effects on everything else —
+ * killing Clio looked like killing any 2/4. Its statics are undone on the creatures that remain: an anthem's bonus
+ * leaves its controller's creatures, a debuff leaves the opponent's (Clio: −1/−0 a depth counter, read off the view's
+ * counters). Shape-keyed on the static modifyPT's scope; literal amounts and counters-on-self. */
+function revertStatics(view: GameView, gone: GameView["battlefield"][number], defs: Map<string, CardDef>): void {
+  for (const a of defs.get(gone.cardId)?.abilities ?? []) {
+    if (a.kind !== "static") continue;
+    for (const e of a.effects) {
+      if (e.type !== "modifyPT") continue;
+      const scope = (e as { scope?: string }).scope;
+      if (scope !== "creaturesYouControl" && scope !== "creaturesYouDontControl" && scope !== "allCreatures") continue;
+      const amt = (v: unknown): number | null => typeof v === "number" ? v : v && typeof v === "object" && (v as { ref?: string }).ref === "countersOnSelf" ? (gone.counters?.[(v as { kind: string }).kind] ?? 0) * ((v as { times?: number }).times ?? 1) : null;
+      const p = amt(e.power), t = amt(e.toughness);
+      if (p === null || t === null) continue; // a count-scaled lord: left as it stands
+      const x = e as { subtype?: string; other?: boolean; withKeyword?: string; withoutKeyword?: string };
+      // a lock that GROWS — its counters added to itself at every end step (Clio's depth) — would take one more point
+      // from each creature it covers next turn: removing it saves that too (0.4 a point, the P/T rate)
+      const ref = (v: unknown) => (v && typeof v === "object" && (v as { ref?: string }).ref === "countersOnSelf" ? (v as { kind: string; times?: number }) : null);
+      const grows = (r: { kind: string } | null) => !!r && (defs.get(gone.cardId)?.abilities ?? []).some((ab) => ab.kind === "triggered" && ab.event === "END_STEP" && ab.effects.some((f) => f.type === "addCounters" && (f as { kind?: string }).kind === r.kind && (f as { scope?: string }).scope === "self"));
+      const growP = grows(ref(e.power)) ? Math.abs(ref(e.power)!.times ?? 1) : 0;
+      for (const o of view.battlefield) {
+        if (o.power === null || o.toughness === null) continue;
+        if (scope === "creaturesYouControl" && o.controller !== gone.controller) continue;
+        if (scope === "creaturesYouDontControl" && o.controller === gone.controller) continue;
+        if (x.subtype && !(defs.get(o.cardId)?.subtypes ?? []).includes(x.subtype)) continue;
+        if (x.withKeyword && !o.keywords.includes(x.withKeyword)) continue;
+        if (x.withoutKeyword && o.keywords.includes(x.withoutKeyword)) continue;
+        o.power -= p; o.toughness -= t;
+        if (growP && p < 0 === (o.controller !== gone.controller)) removalCredit += 0.4 * growP; // only a lock on the remover's side is a saving
+      }
+    }
+  }
 }
 
 let predSeq = 0;
@@ -54,6 +96,7 @@ export function predictAction(
   const me = view.you;
   const next = clone(view);
   let adjustment = 0;
+  simDefs = defs; // book 96: removeObject undoes a removed permanent's statics
 
   const def = (cardId: string) => defs.get(cardId);
 
@@ -222,7 +265,7 @@ export function predictAction(
     // (the ref reads 0 in the view), so X for a kill or for lethal prices itself and the life rides along.
     const spent = manaValue(parseManaCost(d.manaCost)) + x * (d.manaCost.match(/\{X\}/g)?.length ?? 0);
     const substituted = JSON.parse(JSON.stringify(effects).replaceAll('{"ref":"manaSpent"}', String(spent))) as Effect[];
-    for (const e of substituted) adjustment += applyEffect(next, e, targets, x, defs, constants);
+    for (const e of substituted) adjustment += applyEffect(next, e, targets, x, defs, constants) + takeRemovalCredit();
     return { view: next, adjustment, unchanged: false };
   }
 
@@ -321,7 +364,7 @@ export function predictAction(
   // S29 (R-092, Arc Mage): a modal activation applies its chosen mode's effects.
   const abilityEffects = (ability.modes && action.mode !== undefined ? (ability.modes[action.mode]?.effects ?? []) : ability.effects)
     .map((e) => (sacrificedPower !== null && e.type === "mill" && typeof e.count === "object" && "ref" in e.count && e.count.ref === "sacrificedPower" ? { ...e, count: sacrificedPower } : e));
-  for (const e of abilityEffects) adjustment += applyEffect(next, e, targets, x, defs, constants, { creatureSource: !!objEntry && objEntry.power !== null && objEntry.controller === me });
+  for (const e of abilityEffects) adjustment += applyEffect(next, e, targets, x, defs, constants, { creatureSource: !!objEntry && objEntry.power !== null && objEntry.controller === me }) + takeRemovalCredit();
   const unchanged = adjustment === 0 && JSON.stringify(next) === before && !ability.cost.tap;
   return { view: next, adjustment, unchanged };
 }

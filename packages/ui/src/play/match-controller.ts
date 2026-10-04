@@ -522,6 +522,12 @@ export class MatchController {
   }
 
   /** Saved-game payload for the viewer route / download (shandalar-log-v1). */
+  /** Post-S53 (Chris: AI decisions worth replaying, mid-Convocation): the game SO FAR — its spec and every log entry —
+   * in the saved-game shape the replay tools read (blocks-audit, replayToDecision); unlike savedGame, mid-match. */
+  logSnapshot(note?: string): string {
+    return JSON.stringify({ format: "shandalar-log-v1", spec: this.spec, log: this.log.entries, inProgress: !this.result, turn: this.game.state.turn, step: this.game.state.step, ...(note ? { note } : {}) });
+  }
+
   savedGame(): string {
     if (!this.result) throw new Error("match not finished");
     return JSON.stringify(

@@ -36,7 +36,7 @@ const seat = Number(argOf("seat") ?? (humanSeat === -1 ? 0 : humanSeat)) as 0 | 
 
 const pool = loadCardPool(join(dirname(fileURLToPath(import.meta.url)), "../../../data/cards")).cards;
 const decklists: [string[], string[]] = [expandDecklist(game.spec.players[0].decklist), expandDecklist(game.spec.players[1].decklist)];
-const rules = { startingLife: game.spec.rules.startingLife, handSize: game.spec.rules.handSize, maxTurns: game.spec.rules.maxTurns, ante: game.spec.rules.ante ?? 0 };
+const rules = { startingLife: game.spec.rules.startingLife, handSize: game.spec.rules.handSize, maxTurns: game.spec.rules.maxTurns, ante: game.spec.rules.ante ?? 0, ...(game.spec.rules.startingPlayer !== undefined ? { startingPlayer: game.spec.rules.startingPlayer } : {}) }; // post-S53: the Convocation's coin decides who plays first
 const actions = game.log.filter((e) => e.t === "ACTION");
 const name = (cardId: string) => pool.get(cardId)?.name ?? cardId;
 

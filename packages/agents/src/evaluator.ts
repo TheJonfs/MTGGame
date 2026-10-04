@@ -144,10 +144,14 @@ export function objectValue(
   const def2 = def;
   const printed = (def2?.power ?? 0) + (def2?.toughness ?? 0);
   v += 0.4 * Math.max(0, o.power + o.toughness - printed);
+  // Book 96 (Chris: Clio's depth counters locked the field's board, and nothing valued the lock): live P/T BELOW
+  // printed is material lost at the same rate — a debuffed creature is worth less, and lifting the debuff is worth
+  // what it gives back. (Damage is not here: the view's toughness is the characteristic, not toughness less damage.)
+  v -= 0.4 * Math.max(0, printed - (o.power + o.toughness));
   for (const k of o.keywords) v += constants.keywordBonus[k] ?? 0;
-  // A creature that can't do anything much (0 power, no keywords) is worth less.
-  if (o.power === 0) v *= 0.5;
-  return v;
+  // A creature that can't do anything much (no power left, no keywords) is worth less — book 96: zero OR LESS.
+  if (o.power <= 0) v *= 0.5;
+  return Math.max(0.1, v);
 }
 
 /** ADR-060.1 deterrence: what one untapped blocker threatens against the

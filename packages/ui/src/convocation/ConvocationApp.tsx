@@ -412,6 +412,8 @@ export function ConvocationApp() {
           <b style={{ fontFamily: "var(--serif)" }}>Game {s.games.length + 1} of 3</b>
           <SeriesLine c={c} />
           <span>{c.match.spec.rules.startingPlayer === 0 ? "you play first" : "you draw first"}</span>
+          <span style={{ flex: 1 }} />
+          <button className="linkish" style={{ color: "var(--parchment)" }} title="download this game so far — the spec and every move — for a bug report or an AI decision to replay" onClick={() => { const e = c.event!, b = new Blob([c.match!.logSnapshot(`Convocation seed ${e.seed}, round ${e.round}${e.stages ? `, day ${(e.stage ?? 0) + 1}` : ""}`)], { type: "application/json" }), a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = `convocation-game-r${e.round}-t${c.match!.game.state.turn}.json`; a.click(); }}>save this game's log</button>
         </div>
         <div style={{ flex: 1, minHeight: 0 }}><PlayMatch key={c.match.seed} c={c.match} pool={pool} oracle={oracle} onGameOver={() => { /* the controller's series takes over */ }} /></div>
       </div>
