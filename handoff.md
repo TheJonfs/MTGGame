@@ -73,6 +73,22 @@ Walked in the browser: the door (short, Hard) → register the Sweep → "the ot
 ### Part 3 — text
 - The door's short line and the difficulty lines are as briefed. The field's strength is never announced.
 
+## After the handoff — Chris's third Convocation (2026-10-04): books 98–99
+- **Book 98 — a Reassembling Skeleton activated three times in one upkeep.**
+  - The cause: the card stays in the graveyard while its return waits on the stack, so the engine offers the ability again; each further activation pays {1}{B} and finds nothing.
+  - Measured over 40 games with a Skeleton deck: the AI took **111 of 117** such offers. Now 0 of 93.
+  - The rule (`yardReturnPending`): a graveyard card's ability that returns the card itself is refused while one of ours from that card is on the stack. An ability that exiles its card as a cost (Mother Bear) is never offered twice, so it is untouched. Another Skeleton's return is its own.
+  - The view's stack items now carry `sourceId` (public).
+  - Found on the way: the predictor's view clone shared the graveyard-object lists, so predicting a Skeleton's return removed the card from the real view for the rest of the decision. Fixed.
+- **Book 99 — the Usher's loop** (Chris; found by the field in an Usher mirror).
+  - Confirmed in the engine: an Usher entering with a second Usher in either graveyard returns it, the legend rule puts one in the graveyard, and the newcomer's trigger returns it again. Both Ushers see each death: **4 life a pass**, a kill on the turn it starts. Against an opposing Usher on the battlefield it nets 2 a pass and still ends.
+  - The AI already tended to take the Usher (its reanimation worth is high), but an Artisan of Kozilek outranked it. Now `legendLoopWorth` (evaluator) adds a game-sized bonus wherever a reanimation target is priced: the enter trigger's target, a reanimation spell (Zombify, Unearth), the Reeve's activation, and Buried Alive's pick when the first Usher is in hand or on our battlefield.
+  - It is data-driven, not a card rule: a Legendary creature whose enter trigger returns a creature card to the battlefield and which drains on a creature's death, with a second copy on our battlefield or in a graveyard its trigger reaches.
+  - A loop that gains nothing is avoided: when the opponent's drain per death matches ours, the copy is priced *below* every other target.
+- **Measured** (100 games a pairing against the other thirteen lists, the old AI and the new on the same seeds): **the Coin 58.7% → 59.7% (+1.1 ± 0.8)**, **the Loop 50.9% → 52.1% (+1.2 ± 0.8)**. A small gain for both Usher lists.
+- **Ladder mirror gate PASS.** Tests 914 (books 98 and 99 added).
+- The S54 tests moved to `convocation-s54.test.ts`: `convocation.test.ts` had passed 60 s of synchronous work, which is what raised vitest's "Timeout calling onTaskUpdate". The run is clean again.
+
 ## Deviations from the brief
 1. **Two difficulties, not three; every pilot master** (Chris's rulings 1 and 3). The seat records `pilot: "master"` for when that changes.
 2. **v1.5 not adopted.** The head-to-head failed, as the rule allows.
@@ -102,13 +118,14 @@ Walked in the browser: the door (short, Hard) → register the Sweep → "the ot
    - Options: (a) kept cards exclude the power slot; (b) power comes home as a proxy that counts for no lock; (c) a campaign-entered Convocation drafts a campaign-safe set. I'd take (a): one filter at the finish, and the campaign's keys stay the campaign's.
    - **The prize** (gold or a card by place band) rides the same outbox, as a knob table like the campaign's other rewards.
    - **Cost:** about one session — the outbox and drain (~150 lines with tests), an additive save field, a provenance source, the door's invitation chooser and the kept-card filter, with the fence decided first.
-4. **The vitest run once logged "Timeout calling onTaskUpdate"** (vitest's own RPC, under load); all tests passed. Noted in case it recurs.
+4. **The engine has no rule for a mandatory loop** (CR 104.4b / 732.4: a loop of mandatory actions that nobody can stop is a draw). The Usher's loop always ends today because the looping side drains twice a death. A board where the drains cancel and the only legal target is the other Usher would never end: the game, a field worker, or the page would hang. The AI avoids choosing into it (book 99), but cannot when the choice is forced. A cap on stack items resolved without a change in life or board, ending in a draw, would close it. Escalated, not built.
+5. **The pilot is now 99.** Every rating run is stale again (Concern 2).
 
 ## Registry entries added/changed
 None. No card or rules change.
 
 ## Test status
-`pnpm test`: 98 files passed, 1 skipped; **912 tests passed, 2 skipped** (the standing two). One vitest-internal RPC timeout was logged, with no test failing.
+`pnpm test`: 99 files passed, 1 skipped; **914 tests passed, 2 skipped** (the standing two).
 
 New tests:
 - `convocation.test.ts` (3):

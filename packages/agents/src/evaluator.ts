@@ -230,6 +230,35 @@ export function reanimationWorth(d: CardDef | undefined): number {
   return Math.max(0.5, manaValue(parseManaCost(d.manaCost))) + 0.2 * ((d.power ?? 0) + (d.toughness ?? 0)) + (d.abilities?.some((a) => a.kind === "triggered" && a.event === "ENTERS_BATTLEFIELD") ? 0.8 : 0);
 }
 
+/** A permanent's drain on a creature's death ("whenever a creature dies, target opponent loses N life"): N, else 0. */
+const deathDrain = (d: CardDef | undefined): number =>
+  (d?.abilities ?? []).reduce((n, a) => n + (a.kind === "triggered" && a.event === "DIES" && (a.condition as { source?: string } | undefined)?.source === "any"
+    ? a.effects.reduce((m, e) => m + (e.type === "loseLife" && typeof e.amount === "number" ? e.amount : 0), 0) : 0), 0);
+
+/** Post-S54 (book 99; Chris — the Usher mirror, found by the field): a LEGENDARY creature whose enter trigger returns
+ * a creature card from a graveyard to the battlefield, and which drains on a creature's death, LOOPS with a second
+ * copy of itself: the copy returns, the legend rule puts one of the two in the graveyard (it dies — the drain), and
+ * the newcomer's trigger returns it again, until the opponent is dead. So a reanimation that brings `d` back is worth
+ * the game when a second copy stands on our battlefield or lies in a graveyard its trigger reaches — as long as our
+ * drain per death beats the opponent's (a loop that gains nothing never ends). Both copies are on the battlefield at
+ * each death, so ours counts twice (measured: 4 life a pass with the Usher; 2 net against an opposing Usher).
+ * `exceptId` is the candidate itself. */
+export const LOOP_WORTH = 50;
+export function legendLoopWorth(view: GameView, defs: Map<string, CardDef>, d: CardDef | undefined, exceptId?: string): number {
+  if (!d || !d.types.includes("Creature") || !d.supertypes?.includes("Legendary")) return 0;
+  const etb = (d.abilities ?? []).find((a) => a.kind === "triggered" && a.event === "ENTERS_BATTLEFIELD" && a.effects.some((e) => e.type === "returnFromGraveyard" && e.to === "battlefield" && e.target !== undefined));
+  const drain = deathDrain(d);
+  if (!etb || etb.kind !== "triggered" || drain <= 0) return 0;
+  const me = view.you, opp = (1 - me) as 0 | 1;
+  const yards = etb.targets?.[0]?.who === "any" ? [me, opp] : [me];
+  const second = view.battlefield.some((o) => o.controller === me && o.cardId === d.id && o.id !== exceptId)
+    || yards.some((p) => view.graveyardObjects[p as 0 | 1].some((g) => g.cardId === d.id && g.objectId !== exceptId));
+  if (!second) return 0;
+  const ours = 2 * drain + view.battlefield.reduce((n, o) => n + (o.controller === me && o.cardId !== d.id ? deathDrain(defs.get(o.cardId)) : 0), 0);
+  const theirs = view.battlefield.reduce((n, o) => n + (o.controller === opp ? deathDrain(defs.get(o.cardId)) : 0), 0);
+  return ours > theirs ? LOOP_WORTH : -LOOP_WORTH;
+}
+
 export function evaluate(view: GameView, profile: AiProfile, defs: Map<string, CardDef>): number {
   const C = profile.constants ?? DEFAULT_CONSTANTS;
   const w = C.weights[profile.archetype];

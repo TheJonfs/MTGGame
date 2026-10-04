@@ -2,7 +2,7 @@ import { NullLog, SeededRng } from "@shandalar/core";
 import { parseManaCost, manaValue, type CardDef, type Effect, type ResolvedTarget } from "@shandalar/cards";
 import type { Action, ActionRequest, Agent, GameView, PlayerId } from "@shandalar/engine";
 import { preferSide, targetSide, classifyEffects, effectsForAction, ptSign } from "./effect-classification.js";
-import { DEFAULT_CONSTANTS, deterrence, evaluate, millPerDamage, millValue, objectValue, reanimationWorth, type AiProfile, type EvalConstants } from "./evaluator.js";
+import { DEFAULT_CONSTANTS, deterrence, evaluate, legendLoopWorth, LOOP_WORTH, millPerDamage, millValue, objectValue, reanimationWorth, type AiProfile, type EvalConstants } from "./evaluator.js";
 import { predictAction } from "./view-sim.js";
 import { viewAbilityAt } from "./granted-view.js";
 import { simulateCombat, viewCreatures, type SimObject } from "./combat-sim.js";
@@ -246,6 +246,7 @@ export class HeuristicAgent implements Agent {
     if (this.altarGated(view, action)) return -Infinity; // S29: the Altar feeds a creature for lethal mill, or one already dying
     if (this.buriedGated(view, action)) return -Infinity; // S30: Buried Alive only with a reanimator in hand
     if (this.skeletonGated(view, action)) return -Infinity; // S30: the Skeleton returns with mana to spare, or as a blocker when behind
+    if (this.yardReturnPending(view, action)) return -Infinity; // book 98: its return is already on the stack
     if (this.lifeForCardsGated(view, action)) return -Infinity; // S27 r2: the Witch's discipline
     if (this.accumulatorSpendGated(view, action)) return -Infinity; // S26: Clio holds the tax while the board threatens
     if (this.floodSinkGated(view, action)) return -Infinity; // S40 (books 58–63): the flood's repeatable sinks — timing, targets, spare lands
@@ -766,7 +767,9 @@ export class HeuristicAgent implements Agent {
     // the Gravedigger; S30's cast counts had the chooser burying Gravediggers.
     const toGraveyard = (request.source?.effects ?? []).some((e) => e.type === "searchLibrary" && e.to === "graveyard");
     if (toGraveyard && nonlands.length > 0) {
-      const worth = (cardId: string): number => reanimationWorth(this.def(cardId));
+      // book 99: the loop's second copy goes to the graveyard when the first is in hand or on our battlefield
+      const holds = (cardId: string) => view.hand.some((c) => c.cardId === cardId) || view.battlefield.some((o) => o.controller === view.you && o.cardId === cardId);
+      const worth = (cardId: string): number => reanimationWorth(this.def(cardId)) + (holds(cardId) && legendLoopWorth({ ...view, graveyardObjects: view.graveyardObjects.map((g, p) => (p === view.you ? [...g, { objectId: "pred_buried", cardId }] : g)) as GameView["graveyardObjects"] }, this.defs, this.def(cardId), view.hand.some((c) => c.cardId === cardId) ? undefined : "pred_buried") > 0 ? LOOP_WORTH : 0);
       return [...nonlands].sort((a, b) => worth(cardOf.get(b.objectId) ?? "") - worth(cardOf.get(a.objectId) ?? "") || (cardOf.get(a.objectId) ?? "").localeCompare(cardOf.get(b.objectId) ?? ""))[0]!;
     }
     // S30 (Wood Elves — Pell, Quill): a land is scored by the BEST need over every colour it produces,
@@ -1410,6 +1413,19 @@ export class HeuristicAgent implements Agent {
     // S46 (Entomb, the brief's "or on the board"): a reanimator of ours on the battlefield counts (the Reeve's activation).
     if (view.battlefield.some((o) => o.controller === view.you && reanimates(this.def(o.cardId)))) return false;
     return !view.hand.some((c) => c.objectId !== action.objectId && reanimates(this.def(c.cardId)));
+  }
+
+  /** Post-S54 (book 98; Chris — a Reassembling Skeleton activated three times in one upkeep): a graveyard card's
+   * ability that moves the card itself (its own return) resolves ONCE — the card is still in the graveyard while the
+   * first activation waits on the stack, so the ability is offered again, and every further activation pays its cost
+   * and finds nothing. Refused while one of ours from the same card is on the stack. (An ability that exiles its card
+   * as a COST — Mother Bear — is never offered twice; one that leaves its card where it is may be repeated.) */
+  yardReturnPending(view: GameView, action: Action): boolean {
+    if (action.type !== "activateAbility") return false;
+    if (!view.graveyardObjects[view.you].some((c) => c.objectId === action.objectId)) return false;
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+    if (!ab || ab.kind !== "activated" || !ab.effects.some((e) => e.type === "returnFromGraveyard" && e.scope === "self")) return false;
+    return view.stack.some((s) => s.kind === "ability" && s.controller === view.you && s.sourceId === action.objectId);
   }
 
   /** S30 (Part 3, Reassembling Skeleton): the graveyard return is a MANA question — on our own turn it
@@ -2062,9 +2078,9 @@ export class HeuristicAgent implements Agent {
     const inCombat = (id: string) => view.combat.attackers.includes(id) || view.combat.blocks.some((b) => b.blocker === id);
     const myCreatures = view.battlefield.filter((o) => o.controller === me && o.power !== null);
     const e0 = ab.effects[0]!;
-    const yardBest = (who: number[], pred: (d: CardDef) => boolean, worth: (d: CardDef) => number): string | undefined => {
+    const yardBest = (who: number[], pred: (d: CardDef) => boolean, worth: (d: CardDef) => number, extra?: (d: CardDef, objectId: string) => number): string | undefined => {
       let best: { id: string; w: number } | undefined;
-      for (const p of who) for (const g of view.graveyardObjects[p as 0 | 1]) { const d = this.def(g.cardId); if (!d || !pred(d)) continue; const w = worth(d); if (!best || w > best.w) best = { id: g.objectId, w }; }
+      for (const p of who) for (const g of view.graveyardObjects[p as 0 | 1]) { const d = this.def(g.cardId); if (!d || !pred(d)) continue; const w = worth(d) + (extra ? extra(d, g.objectId) : 0); if (!best || w > best.w) best = { id: g.objectId, w }; }
       return best?.id;
     };
     const tId = targets[0]?.kind === "object" ? (targets[0] as { id: string }).id : undefined;
@@ -2084,7 +2100,7 @@ export class HeuristicAgent implements Agent {
     // Reanimation with a creature as the cost (the pyre), or free (the Reeve): the best card only, and worth the body.
     if (e0.type === "returnFromGraveyard" && e0.to === "battlefield" && e0.target !== undefined) {
       const spec = ab.targets?.[0];
-      const best = yardBest(spec?.who === "any" ? [me, opp] : [me], (d) => d.types.includes("Creature"), reanimationWorth);
+      const best = yardBest(spec?.who === "any" ? [me, opp] : [me], (d) => d.types.includes("Creature"), reanimationWorth, (d, id) => legendLoopWorth(view, this.defs, d, id)); // book 99: the loop
       if (tId !== best) return true;
       if (ab.cost.sacrifice) {
         const cheapest = Math.min(...myCreatures.map((o) => objectValue(this.defs, o, this.C)));
@@ -2156,6 +2172,7 @@ export class HeuristicAgent implements Agent {
     // S45 (the Tidewall's return was a coin flip): a graveyard return is neutral by the table but never random — the
     // scorer below prices its card (a spell by mana value, a body by reanimationWorth). Gravedigger and the Usher gain too.
     const returnsFromYard = (request.source?.effects ?? []).some((e) => e.type === "returnFromGraveyard");
+    const returnsToBattlefield = (request.source?.effects ?? []).some((e) => e.type === "returnFromGraveyard" && e.to === "battlefield");
     if (cls === "neutral" && !returnsFromYard) return this.rngPick(variants);
     // S50 (book 89, Flametongue Kavu): a harmful NUMERIC damage aims at the best creature it KILLS before the most
     // valuable one it only wounds; and when every legal target is our own (an empty table across), at the one that
@@ -2195,7 +2212,7 @@ export class HeuristicAgent implements Agent {
           const gd = g ? this.def(g.cardId) : undefined;
           // S45 (the Tidewall): a SPELL back to hand is worth its mana value, a counter half again — the dearest comes back.
           if (gd && (gd.types.includes("Instant") || gd.types.includes("Sorcery"))) s += manaValue(parseManaCost(gd.manaCost)) + (gd.spellEffect?.some((e) => e.type === "counter") ? 0.5 : 0);
-          else s += reanimationWorth(gd); // S31: the one valuation (evaluator.reanimationWorth)
+          else s += reanimationWorth(gd) + (returnsToBattlefield ? legendLoopWorth(view, this.defs, gd, t.id) : 0); // S31: the one valuation (evaluator.reanimationWorth); book 99: the loop
         }
         if (t.kind === "player") s += 2; // face is worth a couple of mana units
         const side = targetSide(view, t as never);

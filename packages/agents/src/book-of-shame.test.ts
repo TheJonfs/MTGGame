@@ -1395,4 +1395,37 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     // not a counter: untouched
     expect(a.counterWarGated(v([theirs]), { type: "castSpell", objectId: "x", targets: [] })).toBe(false);
   });
+
+  it("book of shame 98 (post-S54, Chris — a Reassembling Skeleton activated three times in one upkeep): a graveyard card's own return resolves once — while ours from that card is on the stack, a second activation is refused; another Skeleton's is not", () => {
+    const a = agent();
+    const lands = Array.from({ length: 6 }, (_, i) => ({ id: `l${i}`, cardId: "swamp", controller: 0 as const }));
+    const ret = (id: string) => ({ type: "activateAbility" as const, objectId: id, abilityIndex: 0, targets: [] });
+    const board = (stack: { id: string; kind: string; cardId: string; controller: 0 | 1; sourceId?: string }[]): GameView => ({ ...mkView({ step: "UPKEEP", activePlayer: 1, battlefield: lands }), stack, graveyardObjects: [[{ objectId: "g1", cardId: "reassembling_skeleton" }, { objectId: "g2", cardId: "reassembling_skeleton" }], []], graveyards: [["reassembling_skeleton", "reassembling_skeleton"], []] });
+    const pending = [{ id: "stk1", kind: "ability", cardId: "reassembling_skeleton", controller: 0 as const, sourceId: "g1" }];
+    expect(a.scorePriorityAction(board([]), ret("g1"))).toBeGreaterThan(-Infinity); // the first is a fine buy on their turn
+    expect(a.scorePriorityAction(board(pending), ret("g1"))).toBe(-Infinity); // the same card again: mana for nothing
+    expect(a.scorePriorityAction(board(pending), ret("g2"))).toBeGreaterThan(-Infinity); // the other Skeleton is its own return
+    expect(a.scorePriorityAction(board([{ ...pending[0]!, controller: 1 }]), ret("g1"))).toBeGreaterThan(-Infinity); // not ours on the stack
+  });
+
+  it("book of shame 99 (post-S54, Chris — the Usher mirror's loop, found by the field): a legendary reanimator that drains on a death loops with a second copy of itself, so its return takes the other Usher over any body, from either graveyard; a reanimation spell takes the Usher when one of ours stands; an opposing Usher only slows it (4 a pass against 2); not when the opponent's drain matches ours", async () => {
+    const a = agent();
+    const t = (id: string) => ({ type: "chooseTriggerTargets" as const, targets: [{ kind: "object" as const, id }] });
+    const usherEtb = pool.get("the_usher")!.abilities!.find((x) => x.kind === "triggered" && x.event === "ENTERS_BATTLEFIELD")!;
+    const req = (ids: string[]) => ({ player: 0 as const, purpose: "chooseTarget" as const, actions: ids.map(t), source: { cardId: "the_usher", effects: (usherEtb as { effects: unknown[] }).effects } });
+    const yards = (mine: string[], theirs: string[], bf: Obj[] = []): GameView => ({ ...mkView({ battlefield: [{ id: "u1", cardId: "the_usher", controller: 0 }, ...bf] }), graveyardObjects: [mine.map((c, i) => ({ objectId: `m${i}`, cardId: c })), theirs.map((c, i) => ({ objectId: `t${i}`, cardId: c }))], graveyards: [mine, theirs] });
+    // without a second Usher the best body comes back (the Artisan); with one — ours or theirs — the Usher does
+    for (let i = 0; i < 20; i++) {
+      expect(await a.chooseAction(yards(["artisan_of_kozilek", "serra_angel"], []), req(["m0", "m1"]) as never)).toEqual(t("m0"));
+      expect(await a.chooseAction(yards(["artisan_of_kozilek", "the_usher"], []), req(["m0", "m1"]) as never)).toEqual(t("m1"));
+      expect(await a.chooseAction(yards(["artisan_of_kozilek"], ["the_usher"]), req(["m0", "t0"]) as never)).toEqual(t("t0"));
+      expect(await a.chooseAction(yards(["artisan_of_kozilek", "the_usher"], [], [{ id: "x1", cardId: "the_usher", controller: 1 }]), req(["m0", "m1"]) as never)).toEqual(t("m1"));
+      // the opponent's drains (an Usher and two Blood Artists: 4 a death) match ours: the loop gains nothing and never ends — the Artisan
+      expect(await a.chooseAction(yards(["artisan_of_kozilek", "the_usher"], [], [{ id: "x1", cardId: "the_usher", controller: 1 }, { id: "x2", cardId: "blood_artist", controller: 1 }, { id: "x3", cardId: "blood_artist", controller: 1 }]), req(["m0", "m1"]) as never)).toEqual(t("m0"));
+    }
+    // Zombify with our Usher on the battlefield: the Usher in the graveyard before the Artisan
+    const z: GameView = { ...yards(["artisan_of_kozilek", "the_usher"], [], Array.from({ length: 4 }, (_, i) => ({ id: `s${i}`, cardId: "swamp", controller: 0 as const }))), hand: [{ objectId: "h_z", cardId: "zombify" }] };
+    const cast = (id: string) => ({ type: "castSpell" as const, objectId: "h_z", targets: [{ kind: "object" as const, id }] });
+    expect(a.scorePriorityAction(z, cast("m1"))).toBeGreaterThan(a.scorePriorityAction(z, cast("m0")));
+  });
 });

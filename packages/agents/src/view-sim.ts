@@ -2,7 +2,7 @@ import { parseManaCost, manaValue, type CardDef, type Effect, type ResolvedTarge
 import type { Action, GameView } from "@shandalar/engine";
 import { classifyEffects, effectsForAction } from "./effect-classification.js";
 import { viewAbilityAt } from "./granted-view.js";
-import { DEFAULT_CONSTANTS, millPerDamage, millValue, objectValue, reanimationWorth, type EvalConstants } from "./evaluator.js";
+import { DEFAULT_CONSTANTS, legendLoopWorth, millPerDamage, millValue, objectValue, reanimationWorth, type EvalConstants } from "./evaluator.js";
 
 /**
  * View-level action prediction (S8 brief Part 2): apply an action's visible
@@ -36,6 +36,9 @@ function clone(view: GameView): GameView {
     battlefield: view.battlefield.map((o) => ({ ...o, keywords: [...o.keywords] })),
     stack: view.stack.map((s) => ({ ...s })),
     graveyards: [[...view.graveyards[0]], [...view.graveyards[1]]],
+    // post-S54: the Skeleton's predicted return removed its card from the CALLER's list (the tuple was shared) — every
+    // action scored after it in the same decision read a graveyard without it
+    graveyardObjects: [[...view.graveyardObjects[0]], [...view.graveyardObjects[1]]],
   };
 }
 
@@ -810,7 +813,7 @@ function applyEffect(
         const g = view.graveyardObjects[me].find((o) => o.objectId === t.id) ?? view.graveyardObjects[opp].find((o) => o.objectId === t.id);
         const d = g ? defs.get(g.cardId) : undefined;
         if (d) {
-          const worth = reanimationWorth(d);
+          const worth = reanimationWorth(d) + (e.to === "battlefield" ? legendLoopWorth(view, defs, d, t.id) : 0); // book 99: the loop
           if (e.to === "battlefield") {
             view.battlefield.push({ id: `pred_${predSeq++}`, cardId: d.id, controller: me, tapped: e.tapped === true, damage: 0, attachedTo: null, power: d.types.includes("Creature") ? (d.power ?? 0) : null, toughness: d.types.includes("Creature") ? (d.toughness ?? 0) : null, keywords: [...(d.keywords ?? [])] });
             return worth;
