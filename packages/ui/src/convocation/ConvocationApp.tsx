@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CardDef } from "@shandalar/cards";
-import { BRACKET_ROUND_NAMES, CONSTRUCTED_FORMATS, keepAllowance, lastLimitedPool, type DifficultyName, type Standing } from "@shandalar/world";
+import { BRACKET_ROUND_NAMES, CONSTRUCTED_FORMATS, keepAllowance, lastLimitedPool, type ConvocationDifficulty, type Standing } from "@shandalar/world";
 import { loadConvocationData, loadOracle, loadPool, loadWorldCatalog, type OracleEntry } from "../engine-bridge";
 import { DeckEditor } from "../components/DeckEditor";
 import { CardFrame } from "../components/CardFrame";
@@ -64,32 +64,36 @@ const title = (id: string) => { const n = CONSTRUCTED_FORMATS.find((f) => f.id =
 function Door({ c }: { c: ConvocationController }) {
   const [seed, setSeed] = useState("");
   const [confirm, setConfirm] = useState(false);
-  const [size, setSize] = useState<"convocation" | "draft" | "sixteen" | "eight" | "open">("convocation");
+  const [size, setSize] = useState<"convocation" | "short" | "draft" | "sixteen" | "eight" | "open">("convocation");
   const [day2, setDay2] = useState("open"), [day4, setDay4] = useState("open"); // S53: the two Constructed days
-  const [difficulty, setDifficulty] = useState<DifficultyName>("standard");
+  const [difficulty, setDifficulty] = useState<ConvocationDifficulty>("normal");
   const ledger = c.ledger();
   const seedOf = () => (seed.trim() && Number.isFinite(Number(seed)) ? Number(seed) : undefined);
-  const start = () => size === "convocation" ? c.newConvocation(seedOf(), { difficulty, first: day2, second: day4 }) : c.newEvent(seed.trim() && Number.isFinite(Number(seed)) ? Number(seed) : undefined, size === "open" ? { constructed: "open", seats: 32, rounds: 5, top8: true, difficulty } : size === "draft" ? { draft: true, seats: 32, rounds: 5, top8: true, difficulty } : size === "sixteen" ? { seats: 32, rounds: 5, top8: true, difficulty } : { seats: 8, rounds: 3, difficulty });
+  const start = () => size === "convocation" ? c.newConvocation(seedOf(), { difficulty, first: day2, second: day4 }) : size === "short" ? c.newConvocation(seedOf(), { difficulty, first: day2, short: true }) : c.newEvent(seed.trim() && Number.isFinite(Number(seed)) ? Number(seed) : undefined, size === "open" ? { constructed: "open", seats: 32, rounds: 5, top8: true, difficulty } : size === "draft" ? { draft: true, seats: 32, rounds: 5, top8: true, difficulty } : size === "sixteen" ? { seats: 32, rounds: 5, top8: true, difficulty } : { seats: 8, rounds: 3, difficulty });
   return (
     <Page>
       <h2 style={{ fontFamily: "var(--serif)", margin: "0 0 4px" }}>The Convocation</h2>
-      <p style={{ margin: "0 0 10px" }}>{size === "convocation" ? `The Convocation — four days: a draft, ${title(day2)}, a draft, ${title(day4)}; the Umbel of Eight.` : size === "open" ? "A Convocation — the Open, thirty-two seats, five rounds, the Umbel." : size === "draft" ? "A Convocation — Draft, thirty-two seats in pods of eight: three packs, five rounds, the Umbel." : size === "sixteen" ? "A Convocation — Sealed, thirty-two seats, five rounds, and the Umbel: a final table of eight." : "A Convocation — Sealed, eight seats, three rounds."}</p>
-      <p style={{ fontSize: 13, color: "var(--ink-soft)", margin: "0 0 12px" }}>{size === "convocation" ? "A hundred and twenty-eight seats and sixteen Swiss rounds: draft three rounds inside your pod, play five in a Constructed format, draft again with the seven nearest your record, five more rounds — and the eight best meet in the Umbel." : size === "open" ? "Constructed: bring sixty cards — any card the Open allows, the power restricted to one of each — and play rounds of best-of-three against a field of thirty-one." : size === "draft" ? "Pick one card from each pack as it comes round, build forty cards from your picks, and play rounds of best-of-three against the whole field — your pod and three others." : "Open six packs, build forty cards from them, and play rounds of best-of-three against the field."}</p>
+      <p style={{ margin: "0 0 10px" }}>{size === "convocation" ? `The Convocation — four days: a draft, ${title(day2)}, a draft, ${title(day4)}; the Umbel of Eight.` : size === "short" ? `A Convocation — two days: a draft and ${title(day2)}; the Umbel of Eight.` : size === "open" ? "A Convocation — the Open, thirty-two seats, five rounds, the Umbel." : size === "draft" ? "A Convocation — Draft, thirty-two seats in pods of eight: three packs, five rounds, the Umbel." : size === "sixteen" ? "A Convocation — Sealed, thirty-two seats, five rounds, and the Umbel: a final table of eight." : "A Convocation — Sealed, eight seats, three rounds."}</p>
+      <p style={{ fontSize: 13, color: "var(--ink-soft)", margin: "0 0 12px" }}>{size === "short" ? "A hundred and twenty-eight seats and eight Swiss rounds: draft three rounds inside your pod, then five in a Constructed format with the deck you registered — and the eight best meet in the Umbel." : size === "convocation" ? "A hundred and twenty-eight seats and sixteen Swiss rounds: draft three rounds inside your pod, play five in a Constructed format, draft again with the seven nearest your record, five more rounds — and the eight best meet in the Umbel." : size === "open" ? "Constructed: bring sixty cards — any card the Open allows, the power restricted to one of each — and play rounds of best-of-three against a field of thirty-one." : size === "draft" ? "Pick one card from each pack as it comes round, build forty cards from your picks, and play rounds of best-of-three against the whole field — your pod and three others." : "Open six packs, build forty cards from them, and play rounds of best-of-three against the field."}</p>
       <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 14, fontSize: 13 }}>
         <label className={size === "convocation" ? "picked" : ""}><input type="radio" checked={size === "convocation"} onChange={() => setSize("convocation")} /> The Convocation — four days, 128 seats, sixteen rounds, the Umbel</label>
-        {size === "convocation" && (
+        {(size === "convocation" || size === "short") && (
           <div style={{ display: "flex", gap: 10, paddingLeft: 22, fontSize: 12.5 }}>
             <label>Day two <select value={day2} onChange={(e) => setDay2(e.target.value)}>{CONSTRUCTED_FORMATS.map((f) => <option key={f.id} value={f.id}>{f.name}</option>)}</select></label>
-            <label>Day four <select value={day4} onChange={(e) => setDay4(e.target.value)}>{CONSTRUCTED_FORMATS.map((f) => <option key={f.id} value={f.id}>{f.name}</option>)}</select></label>
+            {size === "convocation" && <label>Day four <select value={day4} onChange={(e) => setDay4(e.target.value)}>{CONSTRUCTED_FORMATS.map((f) => <option key={f.id} value={f.id}>{f.name}</option>)}</select></label>}
           </div>
         )}
+        <label className={size === "short" ? "picked" : ""}><input type="radio" checked={size === "short"} onChange={() => setSize("short")} /> A short Convocation — two days, 128 seats, eight rounds, the Umbel</label>
         <label className={size === "draft" ? "picked" : ""}><input type="radio" checked={size === "draft"} onChange={() => setSize("draft")} /> Draft — thirty-two seats in pods of eight, five rounds, the Umbel</label>
         <label className={size === "sixteen" ? "picked" : ""}><input type="radio" checked={size === "sixteen"} onChange={() => setSize("sixteen")} /> Sealed — thirty-two seats, five rounds, the Umbel</label>
         <label className={size === "eight" ? "picked" : ""}><input type="radio" checked={size === "eight"} onChange={() => setSize("eight")} /> Sealed — eight seats, three rounds</label>
         <label className={size === "open" ? "picked" : ""}><input type="radio" checked={size === "open"} onChange={() => setSize("open")} /> The Open (Constructed) — thirty-two seats, five rounds, the Umbel</label>
-        <select value={difficulty} onChange={(e) => setDifficulty(e.target.value as DifficultyName)} title="the field's entrance by round — flat at every difficulty for now" style={{ alignSelf: "flex-start", marginTop: 4 }}>
-          <option value="easy">easy</option><option value="standard">standard</option><option value="hard">hard</option>
-        </select>
+        <div style={{ display: "flex", gap: 10, alignItems: "baseline", marginTop: 6 }}>
+          <select value={difficulty} onChange={(e) => setDifficulty(e.target.value as ConvocationDifficulty)} style={{ alignSelf: "flex-start" }}>
+            <option value="normal">Normal</option><option value="hard">Hard</option>
+          </select>
+          <span style={{ fontSize: 12, color: "var(--ink-soft)" }}>{difficulty === "hard" ? "Hard — the field grows a little each round." : "Normal — the field plays you straight."}</span>
+        </div>
       </div>
       {c.hasSave() && c.event!.phase !== "over" && !confirm && (
         <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 12 }}>
@@ -115,7 +119,7 @@ function Door({ c }: { c: ConvocationController }) {
         <div style={{ marginTop: 18 }}>
           <div className="flyout-title">The ledger {ledger.some((l) => l.stages) && <button className="linkish" style={{ fontSize: 12, marginLeft: 8 }} onClick={() => c.toTrophies()}>the trophy room</button>}</div>
           <ul style={{ margin: "4px 0 0", paddingLeft: 18, fontSize: 12.5 }}>
-            {[...ledger].reverse().slice(0, 8).map((l, i) => <li key={i}>{l.when.slice(0, 10)} — {l.stages ? <><b>{l.title}</b> · the Convocation, </> : ""}{ORDINAL[l.place] ?? l.place} of {l.seats}, {l.record} <span style={{ color: "var(--ink-soft)" }}>(seed {l.seed})</span></li>)}
+            {[...ledger].reverse().slice(0, 8).map((l, i) => <li key={i}>{l.when.slice(0, 10)} — {l.stages ? <><b>{l.title}</b> · {l.stages.length === 2 ? "a short Convocation" : "the Convocation"}{l.difficulty === "hard" ? " (Hard)" : ""}, </> : l.difficulty === "hard" ? "(Hard) " : ""}{ORDINAL[l.place] ?? l.place} of {l.seats}, {l.record} <span style={{ color: "var(--ink-soft)" }}>(seed {l.seed})</span></li>)}
           </ul>
         </div>
       )}
@@ -265,7 +269,7 @@ function Trophies({ c, pool }: { c: ConvocationController; pool: Map<string, Car
       {runs.length === 0 && <p style={{ fontSize: 13 }}>No full Convocation played yet.</p>}
       {runs.map((l, i) => (
         <div key={i} style={{ borderBottom: "1px solid var(--ink-soft)", padding: "8px 0", fontSize: 13 }}>
-          <div><b style={{ fontFamily: "var(--serif)", fontSize: 15 }}>{l.title}</b> · {l.when.slice(0, 10)} · {l.record} · {l.stages!.map((s) => stageName(s)).join(", ")} <span style={{ color: "var(--ink-soft)" }}>(seed {l.seed})</span></div>
+          <div><b style={{ fontFamily: "var(--serif)", fontSize: 15 }}>{l.title}</b>{l.difficulty === "hard" ? " · Hard" : ""} · {l.when.slice(0, 10)} · {l.record} · {l.stages!.map((s) => stageName(s)).join(", ")} <span style={{ color: "var(--ink-soft)" }}>(seed {l.seed})</span></div>
           {l.keptCards?.length ? <div>Kept: {l.keptCards.map(name).join(", ")}</div> : null}
           {l.place === 1 && l.decks && <details style={{ marginTop: 4 }}><summary>The champion's decks</summary>{l.decks.map((d, k) => <div key={k} style={{ margin: "4px 0 0 12px" }}><i>Day {DAY[d.stage + 1]}:</i> {d.deck.filter((e) => !["plains", "island", "swamp", "mountain", "forest"].includes(e.cardId)).map((e) => `${e.count} ${name(e.cardId)}`).join(", ")}</div>)}</details>}
         </div>
@@ -420,7 +424,7 @@ export function ConvocationApp() {
     );
   }
   if (k === "between") return <Between c={c} />;
-  if (k === "field") return <Page><h2 style={{ fontFamily: "var(--serif)", margin: 0 }}>The other tables finish their matches…</h2>{c.fieldProgress && <p style={{ fontSize: 13, margin: "8px 0 0" }}>{c.fieldProgress.done} of {c.fieldProgress.of} matches played.</p>}{c.fieldNote && <p style={{ fontSize: 12, margin: "6px 0 0", color: "var(--ink-soft)" }}>{c.fieldNote}</p>}</Page>;
+  if (k === "field") return <Page><h2 style={{ fontFamily: "var(--serif)", margin: 0 }}>{c.fieldProgress?.pods ? "The other pods draft…" : "The other tables finish their matches…"}</h2>{c.fieldProgress && <p style={{ fontSize: 13, margin: "8px 0 0" }}>{c.fieldProgress.done} of {c.fieldProgress.of} {c.fieldProgress.pods ? "pods drafted" : "matches played"}.</p>}{c.fieldNote && <p style={{ fontSize: 12, margin: "6px 0 0", color: "var(--ink-soft)" }}>{c.fieldNote}</p>}</Page>;
   if (k === "standings") return <Standings c={c} />;
   if (k === "bracket") return <Bracket c={c} />;
   if (k === "prize") return <Prize c={c} pool={pool} oracle={oracle} />;

@@ -12,7 +12,7 @@
 import type { ConvocationEvent, EntranceKnobs, SeriesState } from "@shandalar/world";
 import type { FieldJob, FieldOut } from "./convocation-worker.js";
 
-interface Slot { worker: Worker; ready: boolean; job: (FieldJob & { resolve: (s: SeriesState) => void; reject: (e: Error) => void }) | null }
+interface Slot { worker: Worker; ready: boolean; job: (FieldJob & { resolve: (s: never) => void; reject: (e: Error) => void }) | null }
 type Pending = NonNullable<Slot["job"]>;
 
 export const READY_MS = 20_000;
@@ -37,7 +37,7 @@ export class FieldPool {
       const m = ev.data;
       if (m.type === "ready") { slot.ready = true; this.everReady = true; if (this.readyTimer) { clearTimeout(this.readyTimer); this.readyTimer = null; } return this.dispatch(); }
       const job = slot.job; slot.job = null;
-      if (job && m.id === job.id) { if (m.type === "done") job.resolve(m.series); else job.reject(new Error(m.message)); }
+      if (job && m.id === job.id) { if (m.type === "done") job.resolve(m.series as never); else if (m.type === "drafted") job.resolve(m.picks as never); else job.reject(new Error(m.message)); }
       this.dispatch();
     };
     slot.worker.onerror = () => this.replace(slot);
@@ -77,7 +77,12 @@ export class FieldPool {
     if (this.broken) return Promise.reject(new Error(this.broken));
     const field = new Array(event.field.length); field[a] = event.field[a]; field[b] = event.field[b];
     const { results: _r, history: _h, draft: _d, ...rest } = event;
-    return new Promise((resolve, reject) => { this.queue.push({ id: this.nextId++, event: { ...rest, field, results: [] } as ConvocationEvent, a, b, knobs, resolve, reject }); this.dispatch(); });
+    return new Promise((resolve, reject) => { this.queue.push({ kind: "series", id: this.nextId++, event: { ...rest, field, results: [] } as ConvocationEvent, a, b, knobs, resolve: resolve as (s: never) => void, reject }); this.dispatch(); });
+  }
+  /** S54 (Concern 6): one pod's headless draft (runDraftPacks on its seed) — the picks, seat by seat. */
+  draft(job: { seed: number; setId: string; recipeId: string; packs: number; seats: number }): Promise<string[][]> {
+    if (this.broken) return Promise.reject(new Error(this.broken));
+    return new Promise((resolve, reject) => { this.queue.push({ kind: "draft", id: this.nextId++, ...job, resolve: resolve as (s: never) => void, reject }); this.dispatch(); });
   }
   dispose(): void { if (this.readyTimer) clearTimeout(this.readyTimer); for (const s of this.slots) { try { s.worker.terminate(); } catch { /* gone */ } } this.slots = []; this.queue = []; }
 }

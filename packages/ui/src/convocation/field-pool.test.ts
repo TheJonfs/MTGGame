@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
 import { loadCatalog } from "@shandalar/world/loader";
-import type { ConvocationEvent, ConvocationPackData, SeriesState } from "@shandalar/world";
+import { limitedView, runDraftPacks, type ConvocationEvent, type ConvocationPackData, type SeriesState } from "@shandalar/world";
 import { FieldPool } from "./field-pool.js";
 import { ConvocationController } from "./convocation-controller.js";
 
@@ -78,5 +78,38 @@ describe("the field's workers fail safe (post-S53)", () => {
     expect(fallen.screen.kind).toBe("standings"); // not stranded on the field screen
     expect((fallen as unknown as { fieldPool: FieldPool | null }).fieldPool).toBeNull(); // the page stops using them
     expect(fallen.event!.results).toEqual(plain.event!.results); // the same series, a series being its seed's
+  }, 120_000);
+
+  it("S54 (Concern 6): a draft stage's other pods draft on the workers — the field the main thread would draft", async () => {
+    const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
+    const pool = loadCardPool(join(ROOT, "data/cards")).cards, catalog = loadCatalog(join(ROOT, "data/world"));
+    const read = (f: string) => JSON.parse(readFileSync(join(ROOT, "data/convocation", f), "utf8"));
+    const packs: ConvocationPackData = { power: read("sets.json").power, sets: read("sets.json").sets, recipes: read("recipes.json").recipes };
+    const rating = read("card-rating.json");
+    let drafted = 0;
+    // a worker that drafts in-process: what convocation-worker.ts does with a draft job
+    class DraftWorker extends FakeWorker {
+      constructor() { super("ok"); }
+      override postMessage(msg: { id: number; kind?: string; seed?: number; setId?: string; recipeId?: string; packs?: number; seats?: number }): void {
+        if (msg.kind !== "draft") return super.postMessage(msg);
+        const set = packs.sets.find((x) => x.id === msg.setId)!, recipe = packs.recipes.find((r) => r.id === msg.recipeId)!;
+        const picks = runDraftPacks(set, recipe, packs, pool, limitedView(rating), msg.seed!, msg.seats!, msg.packs!);
+        drafted += 1;
+        setTimeout(() => this.onmessage?.({ data: { type: "drafted", id: msg.id, picks } }), 0);
+      }
+    }
+    const mem = () => { const m = new Map<string, string>(); return { getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => void m.set(k, v), removeItem: (k: string) => void m.delete(k) }; };
+    const day1 = async (workers: boolean) => {
+      const c = new ConvocationController(pool, packs, rating, catalog, mem(), () => "2026-10-03T00:00:00Z");
+      if (workers) (c as unknown as { fieldPool: FieldPool | null }).fieldPool = new FieldPool(2, () => asWorker(new DraftWorker()));
+      c.newConvocation(83, { short: true, seats: 32 });
+      expect(c.screen.kind).toBe("build"); // the Open's decklist first
+      c.suggestDeck(); await c.register();
+      expect(c.screen.kind).toBe("draft");
+      return c.event!;
+    };
+    const plain = await day1(false), worked = await day1(true);
+    expect(drafted).toBe(3); // 32 seats: four pods, the human's drafts live
+    expect(worked.field).toEqual(plain.field);
   }, 120_000);
 });

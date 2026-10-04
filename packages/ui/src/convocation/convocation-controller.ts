@@ -8,10 +8,10 @@
 import type { CardDef } from "@shandalar/cards";
 import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
 import {
-  CONSTRUCTED_FORMATS, CONVOCATION_SEATS, buildConstructedDeck, selectCandidates, type ConstructedFormat, currentStage, defaultStages, finishTitle, keepAllowance, lastLimitedPool, newConvocation, nextStage, registerDecklist, stageLastRound, type ConvocationStage, convocationNames, limitedView, DIFFICULTIES, DRAFT_PLANE, authoredListsFrom, cardLegal, copyCap, deserializeWorld, eventFormat, isBasic, newConstructedEvent, suggestedConstructedDeck, draftDirection, draftPack, draftStep, draftTotalPicks, newDraftEvent, suggestedPick, EVENT_SAVE_KEY, LEDGER_KEY, MatchSeries, SEALED_PLANE, addCopy, advanceBracket, advanceEvent, bracketRound, bracketRoundComplete, buildLimitedDeck, checkEventDeck, closeRound, deserializeEvent, finalPlaces, playBracketFieldRound, recordBracketSeries, resolveKnobs, seatForGame,
+  CONSTRUCTED_FORMATS, CONVOCATION_SEATS, shortStages, stagePodDrafts, eventDifficulty, type ConvocationDifficulty, buildConstructedDeck, selectCandidates, type ConstructedFormat, currentStage, defaultStages, finishTitle, keepAllowance, lastLimitedPool, newConvocation, nextStage, registerDecklist, stageLastRound, type ConvocationStage, convocationNames, limitedView, DRAFT_PLANE, authoredListsFrom, cardLegal, copyCap, deserializeWorld, eventFormat, isBasic, newConstructedEvent, suggestedConstructedDeck, draftDirection, draftPack, draftStep, draftTotalPicks, newDraftEvent, suggestedPick, EVENT_SAVE_KEY, LEDGER_KEY, MatchSeries, SEALED_PLANE, addCopy, advanceBracket, advanceEvent, bracketRound, bracketRoundComplete, buildLimitedDeck, checkEventDeck, closeRound, deserializeEvent, finalPlaces, playBracketFieldRound, recordBracketSeries, resolveKnobs, seatForGame,
   ledgerEntry, lifeModifiers, newSealedEvent, pairingOf, playFieldRound, poolCollection, recordSeries, registerDeck, removeCopy, resultOf, roundComplete, saveCurrentSeries,
   serializeEvent, seriesSeed, seriesSetup, standings, type CardRatingTable, type Catalog, type ConvocationEvent, type ConvocationLedgerEntry, type ConvocationPackData,
-  type Decklist, type DifficultyName, type KnobValues, type SeatAgents, type Standing,
+  type Decklist, type KnobValues, type SeatAgents, type Standing,
 } from "@shandalar/world";
 import { MatchController } from "../play/match-controller.js";
 import { makeFieldPool, type FieldPool } from "./field-pool.js";
@@ -46,7 +46,7 @@ export function listLabel(key: string): string {
 /** A stage's name in the screens' text: "a draft", "Sealed", or the Constructed format's ("the Open"). */
 export function stageName(st: ConvocationStage): string { return st.kind === "draft" ? "a draft" : st.kind === "sealed" ? "Sealed" : formatTitle(st.formatId); }
 const formatTitle = (id: string) => { const n = eventFormat(id).name; return /^the /i.test(n) ? n.replace(/^The /, "the ") : n; };
-export { finishTitle, stageLastRound };
+export { finishTitle, stageLastRound, eventDifficulty };
 
 export class ConvocationController {
   event: ConvocationEvent | null = null;
@@ -61,12 +61,13 @@ export class ConvocationController {
   /** Post-S53: why the field fell back from the workers to the main thread (the field screen's second line). */
   fieldNote: string | null = null;
   /** S53: the field round's progress — series played of series to play (the field screen's line). */
-  fieldProgress: { done: number; of: number } | null = null;
+  fieldProgress: { done: number; of: number; /** S54: a draft stage's pods, not a round's matches */ pods?: boolean } | null = null;
   /** S53: the field's workers (a page with Workers); null in the tests — the main thread plays. */
   private fieldPool: FieldPool | null | undefined = undefined;
   private workers(): FieldPool | null { if (this.fieldPool === undefined) this.fieldPool = makeFieldPool(); return this.fieldPool; }
-  /** The event's knobs: its difficulty's bundle (the entrance tables — ADR-148). */
-  get knobs(): KnobValues { return resolveKnobs({ difficulty: DIFFICULTIES[(this.event?.difficulty ?? "standard") as DifficultyName] ?? {} }); }
+  /** The event's knobs — the defaults (the entrance flat); S54 (ADR-157): Hard's life is the event's own (hardLife), not a
+   * campaign difficulty bundle. */
+  get knobs(): KnobValues { return resolveKnobs({}); }
   private listeners = new Set<() => void>();
 
   constructor(
@@ -95,29 +96,29 @@ export class ConvocationController {
   // ---------- the door ----------
 
   /** S49: the event's size — sixteen seats, five rounds and a Top 8 by default; the S48 event of eight stays offered. */
-  newEvent(seed: number = Math.floor(Math.random() * 1_000_000), opts: { seats?: number; rounds?: number; top8?: boolean; difficulty?: DifficultyName; draft?: boolean; constructed?: string } = {}): void {
+  newEvent(seed: number = Math.floor(Math.random() * 1_000_000), opts: { seats?: number; rounds?: number; top8?: boolean; difficulty?: ConvocationDifficulty; draft?: boolean; constructed?: string } = {}): void {
     const faces = this.faces();
     if (opts.constructed) { // S52 (ADR-152): a Constructed event — the field by select-and-repair, the player's deck from the format's whole pool
       const format = CONSTRUCTED_FORMATS.find((f) => f.id === opts.constructed); if (!format) return;
-      this.set(newConstructedEvent({ seed, format, names: convocationNames(Math.max(16, (opts.seats ?? 32) - 1)), faces, library: this.library(), seats: opts.seats ?? 16, rounds: opts.rounds ?? 5, top8: opts.top8 ?? true, difficulty: opts.difficulty ?? "standard" }, this.deps()));
+      this.set(newConstructedEvent({ seed, format, names: convocationNames(Math.max(16, (opts.seats ?? 32) - 1)), faces, library: this.library(), seats: opts.seats ?? 16, rounds: opts.rounds ?? 5, top8: opts.top8 ?? true, difficulty: opts.difficulty ?? "normal" }, this.deps()));
       this.series = null; this.match = null;
       return this.openBuild(false);
     }
     if (opts.draft) { // S51: a pod of eight drafts three packs; then the build, the rounds and the Umbel as before
-      this.set(newDraftEvent({ seed, format: DRAFT_PLANE, names: convocationNames(Math.max(16, (opts.seats ?? 32) - 1)), faces, seats: opts.seats ?? 8, rounds: opts.rounds ?? 5, top8: opts.top8 ?? true, difficulty: opts.difficulty ?? "standard" }, this.deps()));
+      this.set(newDraftEvent({ seed, format: DRAFT_PLANE, names: convocationNames(Math.max(16, (opts.seats ?? 32) - 1)), faces, seats: opts.seats ?? 8, rounds: opts.rounds ?? 5, top8: opts.top8 ?? true, difficulty: opts.difficulty ?? "normal" }, this.deps()));
       this.series = null; this.match = null; this.passNote = null;
       this.screen = { kind: "draft" }; this.emit();
       return;
     }
-    this.set(newSealedEvent({ seed, format: SEALED_PLANE, names: convocationNames(Math.max(16, (opts.seats ?? 32) - 1)), faces, seats: opts.seats ?? 8, rounds: opts.rounds ?? 3, ...(opts.top8 ? { top8: true } : {}), difficulty: opts.difficulty ?? "standard" }, { cards: this.pool, packs: this.packs, rating: this.rating }));
+    this.set(newSealedEvent({ seed, format: SEALED_PLANE, names: convocationNames(Math.max(16, (opts.seats ?? 32) - 1)), faces, seats: opts.seats ?? 8, rounds: opts.rounds ?? 3, ...(opts.top8 ? { top8: true } : {}), difficulty: opts.difficulty ?? "normal" }, { cards: this.pool, packs: this.packs, rating: this.rating }));
     this.series = null; this.match = null;
     this.openBuild(false);
   }
   /** S53: the full Convocation — four days (a draft, a Constructed format, a draft, a Constructed format) and the
    * Umbel, at 128 seats (Chris). The two Constructed formats are the door's choice of the seven. */
-  newConvocation(seed: number = Math.floor(Math.random() * 1_000_000), opts: { difficulty?: DifficultyName; first?: string; second?: string; seats?: number; /** the tests' short shape */ stages?: ConvocationStage[] } = {}): void {
+  newConvocation(seed: number = Math.floor(Math.random() * 1_000_000), opts: { difficulty?: ConvocationDifficulty; first?: string; second?: string; seats?: number; /** S54: two days — a draft and the first Constructed format */ short?: boolean; /** the tests' short shape */ stages?: ConvocationStage[] } = {}): void {
     const seats = opts.seats ?? CONVOCATION_SEATS;
-    this.set(newConvocation({ seed, stages: opts.stages ?? defaultStages(opts.second ?? "open", opts.first ?? "open"), seats, names: convocationNames(seats - 1), faces: this.faces(), library: this.library(), difficulty: opts.difficulty ?? "standard" }, this.deps()));
+    this.set(newConvocation({ seed, stages: opts.stages ?? (opts.short ? shortStages(opts.first ?? "open") : defaultStages(opts.second ?? "open", opts.first ?? "open")), seats, names: convocationNames(seats - 1), faces: this.faces(), library: this.library(), difficulty: opts.difficulty ?? "normal" }, this.deps()));
     this.series = null; this.match = null; this.passNote = null;
     if (this.event!.registering?.length) return this.openBuild(false); // the decklists first
     this.screen = { kind: "draft" }; this.emit();
@@ -134,9 +135,10 @@ export class ConvocationController {
   /** The next stage's name ("a draft", "the Open") — the interlude's "Tomorrow". */
   nextStageName(): string { const e = this.event, st = e?.stages?.[(e.stage ?? 0) + 1]; return st ? stageName(st) : ""; }
   /** From the interlude: the next day begins — the draft, or the build. */
-  toNextStage(): void {
+  async toNextStage(): Promise<void> {
     const e = this.event; if (!e || e.phase !== "interlude") return;
-    this.set(nextStage(e, this.deps(), this.library()));
+    const job = this.podsOnWorkers(e, (e.stage ?? 0) + 1), picks = job && (await job);
+    this.set(nextStage(e, this.deps(), this.library(), picks));
     this.series = null; this.match = null; this.passNote = null;
     if (this.event!.phase === "draft") { this.screen = { kind: "draft" }; return this.emit(); }
     if (this.event!.phase === "round") { this.screen = { kind: "pairings" }; return this.emit(); } // a registered deck: straight to the round
@@ -256,10 +258,13 @@ export class ConvocationController {
     return host;
   }
   /** Register the deck (the build) or keep the sideboarded deck (between games). An illegal draft is refused. */
-  register(): void {
+  async register(): Promise<void> {
     const e = this.event; if (!e || this.screen.kind !== "build") return;
     const registering = !!e.registering?.length;
-    const r = registering ? registerDecklist(e, this.draft, this.deps(), this.library()) : registerDeck(e, 0, this.draft, this.pool);
+    // the last decklist begins Day 1: a draft's other pods on the workers first (a refused deck drafts nothing)
+    const day1 = registering && e.registering!.length === 1 && checkEventDeck(e, 0, this.draft, this.pool).ok;
+    const job = day1 ? this.podsOnWorkers(e, 0) : undefined, picks = job && (await job);
+    const r = registering ? registerDecklist(e, this.draft, this.deps(), this.library(), picks) : registerDeck(e, 0, this.draft, this.pool);
     if (!r.ok) { this.notice = r.problems.join("; "); return this.emit(); }
     const sideboarding = this.screen.sideboarding;
     this.set(r.event);
@@ -355,6 +360,27 @@ export class ConvocationController {
     this.set(closeRound(played));
     this.series = null; this.match = null;
     this.screen = { kind: "standings" }; this.emit();
+  }
+  /** S54 (Concern 6): a draft stage's other pods, drafted on the workers (each pod its seed's — the picks are the main
+   * thread's). No promise without workers or pods (the tests: the event drafts them itself and the caller stays
+   * synchronous); undefined picks when the workers fail (the event drafts them on the main thread). */
+  private podsOnWorkers(e: ConvocationEvent, k: number): Promise<Map<number, string[][]> | undefined> | undefined {
+    const { jobs } = stagePodDrafts(e, k);
+    const pool = jobs.length ? this.workers() : null;
+    return pool ? this.draftPods(jobs, pool) : undefined;
+  }
+  private async draftPods(jobs: ReturnType<typeof stagePodDrafts>["jobs"], pool: FieldPool): Promise<Map<number, string[][]> | undefined> {
+    const back = this.screen;
+    this.screen = { kind: "field" }; this.fieldProgress = { done: 0, of: jobs.length, pods: true }; this.emit();
+    try {
+      const picks = await Promise.all(jobs.map((j) => pool.draft(j).then((p) => { this.fieldProgress = { done: (this.fieldProgress?.done ?? 0) + 1, of: jobs.length, pods: true }; this.emit(); return p; })));
+      return new Map(jobs.map((j, i) => [j.pod, picks[i]!]));
+    } catch (err) {
+      pool.dispose(); this.fieldPool = null;
+      this.fieldNote = `The other pods draft here instead (${err instanceof Error ? err.message : String(err)}).`; this.emit();
+      await new Promise((r) => setTimeout(r, 30));
+      return undefined;
+    } finally { this.fieldProgress = null; this.screen = back; }
   }
   /** S53: the round's other series on the workers, recorded in the pairings' order (a series is its seed's). */
   private async fieldOnWorkers(e: ConvocationEvent, pool: FieldPool): Promise<ConvocationEvent> {

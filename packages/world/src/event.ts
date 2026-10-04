@@ -43,6 +43,12 @@ export interface EventSeat {
   tinker?: "stock" | "light" | "heavy";
   /** The deck's colours (the pair, then a splash), for the face and the entrance. */
   colors: string;
+  /** S54 (ADR-158): the seat's strength, drawn at the event's creation and kept at every stage — never shown. The pilot
+   * (master throughout, Chris); the Constructed builder (how far it tinkers from its list); the Limited builder's
+   * rating noise σ (0, 0.2 or 0.4 — a noisier builder misjudges its cards). */
+  pilot?: "master";
+  builder?: "stock" | "light" | "heavy";
+  noise?: number;
   archetype: "aggro" | "midrange" | "control";
 }
 export interface EventResult { round: number; a: number; b: number; series: SeriesState }
@@ -101,6 +107,13 @@ const formatOf = (id: string): LimitedFormat => { const f = LIMITED_FORMATS.find
 export const eventFormat = (id: string): Format => { const f = [...LIMITED_FORMATS, ...CONSTRUCTED_FORMATS].find((x) => x.id === id); if (!f) throw new Error(`event: unknown format ${id}`); return f; };
 /** S53: a staged event's rolls are salted by the stage, so the second draft is not the first; an unstaged event's are as before. */
 const stageSalt = (event: Pick<ConvocationEvent, "stages" | "stage">): number[] => (event.stages ? [1000 + (event.stage ?? 0)] : []);
+/** S54 (ADR-158): a seat's strength, seeded by the event and the seat — builders stock / light / heavy (a quarter, a
+ * half, a quarter), Limited noise 0 / 0.2 / 0.4 by thirds; every pilot master (Chris). */
+export function seatStrength(seed: number, s: number): Required<Pick<EventSeat, "pilot" | "builder" | "noise">> {
+  const r = new WorldRng(sub(seed, 13, s)), b = r.float(), n = r.int(3);
+  return { pilot: "master", builder: b < 0.25 ? "stock" : b < 0.75 ? "light" : "heavy", noise: [0, 0.2, 0.4][n]! };
+}
+const gauss = (rng: WorldRng) => Math.sqrt(-2 * Math.log(Math.max(1e-12, rng.float()))) * Math.cos(2 * Math.PI * rng.float());
 const sub = (seed: number, ...salt: number[]) => { const r = new WorldRng((seed ^ 0x9e3779b9) >>> 0); let x = r.int(0x7fffffff); for (const s of salt) x = new WorldRng((x + Math.imul(s + 1, 0x85ebca6b)) >>> 0).int(0x7fffffff); return x; };
 
 /** A new Sealed event: every seat's pool from the event's seed; the AI seats' decks built; the human's to build. */
@@ -118,13 +131,14 @@ export function newSealedEvent(opts: NewEventOptions, deps: EventDeps): Convocat
     const packRng = new WorldRng(sub(opts.seed, 2, s));
     const pool = Array.from({ length: format.packs }, () => rollPack(tiers, recipe, packRng)).flat();
     if (s === 0) { field.push({ name: opts.playerName ?? "You", human: true, pool, deck: [], sideboard: [], colors: "", archetype: "midrange" }); continue; }
-    const b = buildLimitedDeck(pool, limitedView(deps.rating), deps.cards, { pairChoice: { seed: sub(opts.seed, 11, s), top: 3 } }); // post-S52: the Limited score; S53 (ADR-154): the field varies its pair
+    const strength = seatStrength(opts.seed, s), nr = new WorldRng(sub(opts.seed, 14, s));
+    const b = buildLimitedDeck(pool, limitedView(deps.rating), deps.cards, { pairChoice: { seed: sub(opts.seed, 11, s), top: 3 }, ...(strength.noise ? { noise: () => strength.noise * gauss(nr) } : {}) }); // post-S52: the Limited score; S53 (ADR-154): the field varies its pair; S54 (ADR-158): its builder's noise
     const colors = b.colors.join("") + (b.splash ?? "");
     const fits = opts.faces.filter((f) => !usedFaces.has(f.portrait) && [...f.colors].some((c) => b.colors.includes(c as never)));
     const open = fits.length ? fits : opts.faces.filter((f) => !usedFaces.has(f.portrait));
     const face = open.length ? open[rng.int(open.length)]!.portrait : undefined;
     if (face) usedFaces.add(face);
-    field.push({ name: names[(s - 1) % Math.max(1, names.length)] ?? `Seat ${s + 1}`, ...(face ? { face } : {}), human: false, pool, deck: b.deck, sideboard: b.sideboard, colors, archetype: b.avgMv <= 2.6 ? "aggro" : "midrange" });
+    field.push({ name: names[(s - 1) % Math.max(1, names.length)] ?? `Seat ${s + 1}`, ...(face ? { face } : {}), human: false, pool, deck: b.deck, sideboard: b.sideboard, colors, archetype: b.avgMv <= 2.6 ? "aggro" : "midrange", ...strength });
   }
   if (opts.top8 && seats < 8) throw new Error("event: a Top 8 needs eight seats");
   return { version: EVENT_SAVE_VERSION, seed: opts.seed, formatId: format.id, rounds, difficulty: opts.difficulty ?? "standard", phase: "build", round: 0, field, pairings: [], results: [], ...(opts.top8 ? { top8: true } : {}) };
@@ -145,13 +159,14 @@ export function newConstructedEvent(opts: Omit<NewEventOptions, "format"> & { fo
   const field: EventSeat[] = [];
   for (let s = 0; s < seats; s++) {
     if (s === 0) { field.push({ name: opts.playerName ?? "You", human: true, pool: [], deck: [], sideboard: [], colors: "", archetype: "midrange" }); continue; }
-    const b = buildConstructedDeck(format, deps.rating, sub(opts.seed, 8, s), opts.library, deps.cards);
+    const strength = seatStrength(opts.seed, s);
+    const b = buildConstructedDeck(format, deps.rating, sub(opts.seed, 8, s), opts.library, deps.cards, { tinker: strength.builder }); // S54: the seat's builder
     const colors = deckColors(b.deck, deps.cards);
     const fits = opts.faces.filter((f) => !used.has(f.portrait) && [...f.colors].some((c) => colors.includes(c)));
     const open = fits.length ? fits : opts.faces.filter((f) => !used.has(f.portrait));
     const face = open.length ? open[rng.int(open.length)]!.portrait : undefined;
     if (face) used.add(face);
-    field.push({ name: names[(s - 1) % Math.max(1, names.length)] ?? `Seat ${s + 1}`, ...(face ? { face } : {}), human: false, pool: [], deck: b.deck, sideboard: [], list: b.from, tinker: b.tinker, colors, archetype: b.archetype });
+    field.push({ name: names[(s - 1) % Math.max(1, names.length)] ?? `Seat ${s + 1}`, ...(face ? { face } : {}), human: false, pool: [], deck: b.deck, sideboard: [], list: b.from, tinker: b.tinker, colors, archetype: b.archetype, ...strength });
   }
   return { version: EVENT_SAVE_VERSION, seed: opts.seed, formatId: format.id, rounds, difficulty: opts.difficulty ?? "standard", phase: "build", round: 0, field, pairings: [], results: [], ...(opts.top8 ? { top8: true } : {}) };
 }
@@ -171,7 +186,7 @@ export function newDraftEvent(opts: NewEventOptions, deps: EventDeps): Convocati
   if (opts.top8 && seats < 8) throw new Error("event: a Top 8 needs eight seats");
   const rng = new WorldRng(sub(opts.seed, 1));
   const names = [...opts.names]; for (let i = names.length - 1; i > 0; i--) { const j = rng.int(i + 1); [names[i], names[j]] = [names[j]!, names[i]!]; }
-  const field: EventSeat[] = Array.from({ length: seats }, (_, s) => ({ name: s === 0 ? (opts.playerName ?? "You") : (names[(s - 1) % Math.max(1, names.length)] ?? `Seat ${s + 1}`), human: s === 0, pool: [], deck: [], sideboard: [], colors: "", archetype: "midrange" as const }));
+  const field: EventSeat[] = Array.from({ length: seats }, (_, s) => ({ name: s === 0 ? (opts.playerName ?? "You") : (names[(s - 1) % Math.max(1, names.length)] ?? `Seat ${s + 1}`), human: s === 0, pool: [], deck: [], sideboard: [], colors: "", archetype: "midrange" as const, ...(s > 0 ? seatStrength(opts.seed, s) : {}) }));
   if (seats % DRAFT_POD !== 0) throw new Error(`event: a draft seats pods of ${DRAFT_POD} (${seats} asked)`);
   // Post-S52 (Chris: thirty-two players, no rematch in five rounds): the field is PODS of eight. The human's pod
   // (seats 0–7) drafts live; every other pod drafts now, headless on the pick rule, and its decks are built.
@@ -180,7 +195,7 @@ export function newDraftEvent(opts: NewEventOptions, deps: EventDeps): Convocati
   if (!set || !recipe) throw new Error(`event: format ${format.id} names a set or recipe the data lacks`);
   for (let pod = 1; pod < seats / DRAFT_POD; pod++) {
     const picks = runDraftPacks(set, recipe, deps.packs, deps.cards, limitedView(deps.rating), sub(opts.seed, 9, pod), DRAFT_POD, format.packs);
-    picks.forEach((p, k) => { const s = pod * DRAFT_POD + k; field[s] = builtSeat(field[s]!, p, deps, opts.faces, used, rngFace); });
+    picks.forEach((p, k) => { const s = pod * DRAFT_POD + k; field[s] = builtSeat(field[s]!, p, deps, opts.faces, used, rngFace, {}, sub(opts.seed, 14, s)); });
   }
   const event: ConvocationEvent = { version: EVENT_SAVE_VERSION, seed: opts.seed, formatId: format.id, rounds, difficulty: opts.difficulty ?? "standard", phase: "draft", round: 0, field, pairings: [], results: [], ...(opts.top8 ? { top8: true } : {}) };
   return { ...event, draft: { round: 0, pick: 1, packs: draftPacks(event, 0, deps), picks: Array.from({ length: DRAFT_POD }, () => []) } };
@@ -188,8 +203,10 @@ export function newDraftEvent(opts: NewEventOptions, deps: EventDeps): Convocati
 /** A draft pod's size: eight seats pass three packs. */
 export const DRAFT_POD = 8;
 /** An AI seat once its picks are known: its pool, its deck by the Limited builder, a face by its colours. */
-function builtSeat(seat: EventSeat, picks: string[], deps: Pick<EventDeps, "cards" | "rating">, faces: readonly { portrait: string; colors: string }[], used: Set<string>, rng: WorldRng, opts: Parameters<typeof buildLimitedDeck>[3] = {}): EventSeat {
-  const b = buildLimitedDeck(picks, limitedView(deps.rating), deps.cards, opts);
+function builtSeat(seat: EventSeat, picks: string[], deps: Pick<EventDeps, "cards" | "rating">, faces: readonly { portrait: string; colors: string }[], used: Set<string>, rng: WorldRng, opts: Parameters<typeof buildLimitedDeck>[3] = {}, noiseSeed?: number): EventSeat {
+  // S54 (ADR-158): a noisy builder misjudges its cards — its rating read with the seat's σ, seeded
+  const noisy = seat.noise && noiseSeed !== undefined ? (() => { const nr = new WorldRng(noiseSeed); return { noise: () => seat.noise! * gauss(nr) }; })() : {};
+  const b = buildLimitedDeck(picks, limitedView(deps.rating), deps.cards, { ...opts, ...noisy });
   if (seat.face) return { ...seat, pool: picks, deck: b.deck, sideboard: b.sideboard, colors: b.colors.join("") + (b.splash ?? ""), archetype: b.avgMv <= 2.6 ? "aggro" : "midrange" }; // S53: one face for the whole event
   const fits = faces.filter((f) => !used.has(f.portrait) && [...f.colors].some((c) => b.colors.includes(c as never)));
   const open = fits.length ? fits : faces.filter((f) => !used.has(f.portrait));
@@ -237,7 +254,7 @@ export function draftStep(event: ConvocationEvent, cardId: string, deps: EventDe
   const rng = new WorldRng(sub(event.seed, 10, ...stageSalt(event)));
   const used = new Set(event.field.map((x) => x.face).filter((x): x is string => !!x));
   const pod = d.pod ?? Array.from({ length: seats }, (_, k) => k); // S53: position → seat
-  const field = event.field.map((seat, s) => { const k = pod.indexOf(s); return s === 0 ? { ...seat, pool: picks[0]! } : k >= 0 ? builtSeat(seat, picks[k]!, deps, faces, used, rng) : seat; });
+  const field = event.field.map((seat, s) => { const k = pod.indexOf(s); return s === 0 ? { ...seat, pool: picks[0]! } : k >= 0 ? builtSeat(seat, picks[k]!, deps, faces, used, rng, {}, sub(event.seed, 14, s, ...stageSalt(event))) : seat; });
   const { draft: _d, ...rest } = event;
   return { ...rest, field, phase: "build" };
 }
@@ -373,10 +390,34 @@ export function seriesSetup(event: ConvocationEvent, a: number, b: number, knobs
   const A = event.field[a]!, B = event.field[b]!;
   const life: [number, number] = [20, 20]; const modifiers: Modifier[] = [];
   const bracketRound = event.phase === "bracket" && event.bracket ? event.bracket.rounds.length : undefined;
-  const apply = (seat: Seat, s: EventSeat) => { const e = convocationSeat(event.round, [...s.colors], knobs, bracketRound); life[seat] = e.life; for (const cardId of e.entrance) modifiers.push({ type: "permanentOnBattlefield", player: seat, cardId }); };
+  const apply = (seat: Seat, s: EventSeat) => { const e = convocationSeat(event.round, [...s.colors], knobs, bracketRound); life[seat] = e.life + hardLife(event); for (const cardId of e.entrance) modifiers.push({ type: "permanentOnBattlefield", player: seat, cardId }); };
   if (A.human && !B.human) apply(1, B);
   if (B.human && !A.human) apply(0, A);
   return { life, modifiers };
+}
+
+// ---------- S54 (ADR-157, Chris): the difficulty — Normal plays straight up, Hard grows a little each round ----------
+
+export type ConvocationDifficulty = "normal" | "hard";
+/** A saved event's difficulty: "hard" is Hard; anything else (the retired "easy" and "standard") is Normal. */
+export const eventDifficulty = (event: Pick<ConvocationEvent, "difficulty">): ConvocationDifficulty => (event.difficulty === "hard" ? "hard" : "normal");
+/** ADR-148's rows, which Hard plays: by Swiss round within a day (from 1; past the table, its last), and by bracket round. */
+export const HARD_ENTRANCE = { swiss: [0, 2, 4, 4, 6], bracket: [4, 6, 8] } as const;
+/** Chris (S54): the day scale — a four-day Convocation Day 1 ×0, Day 2 ×0.5, Days 3–4 and the Umbel ×1; a single event is
+ * one full day (×1); a shorter Convocation's last day and the Umbel ×1 — the climb always ends at full strength. */
+export function dayScale(event: Pick<ConvocationEvent, "stages" | "stage" | "phase">): number {
+  if (!event.stages || event.phase === "bracket" || event.phase === "over") return 1;
+  const k = event.stage ?? 0, last = event.stages.length - 1;
+  if (k >= last) return 1;
+  return k === 0 ? 0 : k === 1 ? 0.5 : 1;
+}
+/** The life an AI seat adds against the HUMAN on Hard (Normal: none). AI against AI is always flat. */
+export function hardLife(event: ConvocationEvent): number {
+  if (eventDifficulty(event) !== "hard") return 0;
+  if (event.phase === "bracket" && event.bracket) { const r = event.bracket.rounds.length - 1; return HARD_ENTRANCE.bracket[Math.min(r, HARD_ENTRANCE.bracket.length - 1)]!; }
+  const start = event.stages ? stageLastRound(event, (event.stage ?? 0) - 1) : 0;
+  const inDay = Math.max(1, event.round - start);
+  return Math.round(HARD_ENTRANCE.swiss[Math.min(inDay, HARD_ENTRANCE.swiss.length) - 1]! * dayScale(event));
 }
 
 export interface SeriesDeps { cards: Map<string, CardDef>; knobs: EntranceKnobs; /** S49: with the rating, the AI seats sideboard between games. */ rating?: CardRatingTable }
@@ -500,6 +541,10 @@ export function defaultStages(secondConstructed: string = "open", firstConstruct
     { kind: "constructed", formatId: secondConstructed, rounds: 5 },
   ];
 }
+/** S54: the short Convocation — two days, a draft and a Constructed format; the Umbel in the second. */
+export function shortStages(constructed: string = "open"): ConvocationStage[] {
+  return [{ kind: "draft", formatId: DRAFT_PLANE.id, rounds: 3 }, { kind: "constructed", formatId: constructed, rounds: 5 }];
+}
 /** The full Convocation seats 128 (Chris, S53: sixteen pods; a sixteen-round Swiss without rematches). */
 export const CONVOCATION_SEATS = 128;
 /** The last Swiss round of stage k (rounds counted across the whole event, from 1). */
@@ -519,7 +564,7 @@ export function newConvocation(opts: NewConvocationOptions, deps: EventDeps): Co
   const names = [...opts.names]; for (let i = names.length - 1; i > 0; i--) { const j = rng.int(i + 1); [names[i], names[j]] = [names[j]!, names[i]!]; }
   const faces = [...opts.faces]; for (let i = faces.length - 1; i > 0; i--) { const j = rng.int(i + 1); [faces[i], faces[j]] = [faces[j]!, faces[i]!]; }
   // the portraits recycle across the field (Chris, S53: fine while there are fewer portraits than seats)
-  const field: EventSeat[] = Array.from({ length: seats }, (_, s) => ({ name: s === 0 ? (opts.playerName ?? "You") : (names[(s - 1) % Math.max(1, names.length)] ?? `Seat ${s + 1}`), ...(s > 0 && faces.length ? { face: faces[(s - 1) % faces.length]!.portrait } : {}), human: s === 0, pool: [], deck: [], sideboard: [], colors: "", archetype: "midrange" as const }));
+  const field: EventSeat[] = Array.from({ length: seats }, (_, s) => ({ name: s === 0 ? (opts.playerName ?? "You") : (names[(s - 1) % Math.max(1, names.length)] ?? `Seat ${s + 1}`), ...(s > 0 && faces.length ? { face: faces[(s - 1) % faces.length]!.portrait } : {}), human: s === 0, pool: [], deck: [], sideboard: [], colors: "", archetype: "midrange" as const, ...(s > 0 ? seatStrength(opts.seed, s) : {}) }));
   const rounds = stages.reduce((n, st) => n + st.rounds, 0);
   const event: ConvocationEvent = { version: EVENT_SAVE_VERSION, seed: opts.seed, formatId: stages[0]!.formatId, rounds, difficulty: opts.difficulty ?? "standard", phase: "build", round: 0, field, pairings: [], results: [], top8: true, stages, stage: 0, history: [] };
   // the decklists first (the Pro Tour's registration): one deck per Constructed format, before Day 1
@@ -530,7 +575,7 @@ export function newConvocation(opts: NewConvocationOptions, deps: EventDeps): Co
 
 /** S53 (Chris): register the human's deck for the format at the head of `registering` (checked by the format); the
  * last one begins Day 1. A registered deck is locked: it plays every round of its format and the Umbel. */
-export function registerDecklist(event: ConvocationEvent, deck: Decklist, deps: EventDeps, library: readonly LibraryList[]): { ok: true; event: ConvocationEvent } | { ok: false; problems: string[] } {
+export function registerDecklist(event: ConvocationEvent, deck: Decklist, deps: EventDeps, library: readonly LibraryList[], podPicks?: Map<number, string[][]>): { ok: true; event: ConvocationEvent } | { ok: false; problems: string[] } {
   const [formatId, ...rest] = event.registering ?? [];
   if (!formatId || event.phase !== "build") throw new Error("event: no decklist to register");
   const check = checkEventDeck(event, 0, deck, deps.cards);
@@ -539,14 +584,27 @@ export function registerDecklist(event: ConvocationEvent, deck: Decklist, deps: 
   const field = event.field.map((s, i) => (i === 0 ? { ...s, deck: [], colors: "" } : s));
   if (rest.length) return { ok: true, event: { ...event, field, decklists, registering: rest, formatId: rest[0]! } };
   const { registering: _r, ...done } = event;
-  return { ok: true, event: beginStage({ ...done, field, decklists, formatId: event.stages![0]!.formatId }, 0, deps, library) };
+  return { ok: true, event: beginStage({ ...done, field, decklists, formatId: event.stages![0]!.formatId }, 0, deps, library, podPicks) };
+}
+
+/** S54 (Concern 6): a draft stage's pods and the headless drafts it needs — every pod but the human's, each with its
+ * seed — so the page can draft them on its workers and hand the picks to beginStage. */
+export function stagePodDrafts(event: ConvocationEvent, k: number): { pods: number[][]; jobs: { pod: number; seed: number; setId: string; recipeId: string; packs: number; seats: number }[] } {
+  const st = event.stages?.[k]; if (!st || st.kind !== "draft") return { pods: [], jobs: [] };
+  const salt = stageSalt({ stages: event.stages!, stage: k }), format = formatOf(st.formatId);
+  const order = (() => {
+    if (!event.results.length) { const r = new WorldRng(sub(event.seed, 12, ...salt)); const xs = event.field.map((_, i) => i); for (let i = xs.length - 1; i > 0; i--) { const j = r.int(i + 1); [xs[i], xs[j]] = [xs[j]!, xs[i]!]; } return xs; }
+    return standings(event).map((r) => r.seat); // by the standings: the top eight records draft together
+  })();
+  const pods: number[][] = []; for (let i = 0; i < event.field.length; i += DRAFT_POD) pods.push(order.slice(i, i + DRAFT_POD));
+  return { pods, jobs: pods.flatMap((p, q) => (p.includes(0) ? [] : [{ pod: q, seed: sub(event.seed, 9, q, ...salt), setId: format.set, recipeId: format.recipe, packs: format.packs, seats: DRAFT_POD }])) };
 }
 
 /** Stage k begins: every seat a fresh pool or deck for it (the record carries — the standings read every result).
  * A draft: the pods (the first draft's at random, a later one's by the standings — Chris, S53), every pod but the
  * human's drafted now, the human's live. A Sealed stage deals every seat a pool (the field varies its pair, ADR-154).
  * A Constructed stage builds the field by select-and-repair (each seat its own seed). The human builds or registers. */
-export function beginStage(event: ConvocationEvent, k: number, deps: EventDeps, library: readonly LibraryList[]): ConvocationEvent {
+export function beginStage(event: ConvocationEvent, k: number, deps: EventDeps, library: readonly LibraryList[], podPicks?: Map<number, string[][]>): ConvocationEvent {
   const st = event.stages?.[k]; if (!st) throw new Error(`event: no stage ${k}`);
   const { current: _c, draft: _d, pods: _p, ...base } = event;
   const at: ConvocationEvent = { ...base, stage: k, formatId: st.formatId, phase: "build", pairings: [] };
@@ -560,7 +618,7 @@ export function beginStage(event: ConvocationEvent, k: number, deps: EventDeps, 
     const mine = at.decklists?.[st.formatId];
     const field = at.field.map((seat, s) => {
       if (s === 0) return mine ? { ...bare(seat), deck: mine.map((e) => ({ ...e })), colors: deckColors(mine, deps.cards) } : bare(seat);
-      const b = buildConstructedDeck(format, deps.rating, sub(at.seed, 8, s, ...deckSalt), library, deps.cards);
+      const b = buildConstructedDeck(format, deps.rating, sub(at.seed, 8, s, ...deckSalt), library, deps.cards, seat.builder ? { tinker: seat.builder } : {}); // S54: the seat's builder
       return { ...bare(seat), deck: b.deck, list: b.from, tinker: b.tinker, colors: deckColors(b.deck, deps.cards), archetype: b.archetype };
     });
     if (!mine) return { ...at, field };
@@ -576,34 +634,33 @@ export function beginStage(event: ConvocationEvent, k: number, deps: EventDeps, 
     const field = at.field.map((seat, s) => {
       const packRng = new WorldRng(sub(at.seed, 2, s, ...salt));
       const pool = Array.from({ length: format.packs }, () => rollPack(tiers, recipe, packRng)).flat();
-      return s === 0 ? { ...bare(seat), pool } : builtSeat(bare(seat), pool, deps, noFaces, used, rng, { pairChoice: { seed: sub(at.seed, 11, s, ...salt), top: 3 } });
+      return s === 0 ? { ...bare(seat), pool } : builtSeat(bare(seat), pool, deps, noFaces, used, rng, { pairChoice: { seed: sub(at.seed, 11, s, ...salt), top: 3 } }, sub(at.seed, 14, s, ...salt));
     });
     return { ...at, field };
   }
   // a draft: the pods
-  const order = (() => {
-    if (!at.results.length) { const r = new WorldRng(sub(at.seed, 12, ...salt)); const xs = at.field.map((_, i) => i); for (let i = xs.length - 1; i > 0; i--) { const j = r.int(i + 1); [xs[i], xs[j]] = [xs[j]!, xs[i]!]; } return xs; }
-    return standings(at).map((r) => r.seat); // by the standings: the top eight records draft together
-  })();
-  const pods: number[][] = []; for (let i = 0; i < n; i += DRAFT_POD) pods.push(order.slice(i, i + DRAFT_POD));
+  const { pods, jobs } = stagePodDrafts(event, k);
   const field = at.field.map(bare);
   pods.forEach((podSeats, q) => {
     if (podSeats.includes(0)) return; // the human's pod drafts live
-    const picks = runDraftPacks(set, recipe, deps.packs, deps.cards, limitedView(deps.rating), sub(at.seed, 9, q, ...salt), DRAFT_POD, format.packs);
-    podSeats.forEach((seat, pos) => { field[seat] = builtSeat(field[seat]!, picks[pos]!, deps, noFaces, used, rng); });
+    // S54 (Concern 6): picks drafted elsewhere (the page's workers) are used as given — the same seeds, the same picks
+    const picks = podPicks?.get(q) ?? runDraftPacks(set, recipe, deps.packs, deps.cards, limitedView(deps.rating), jobs.find((j) => j.pod === q)!.seed, DRAFT_POD, format.packs);
+    podSeats.forEach((seat, pos) => { field[seat] = builtSeat(field[seat]!, picks[pos]!, deps, noFaces, used, rng, {}, sub(at.seed, 14, seat, ...salt)); });
   });
   const live = pods.find((x) => x.includes(0))!, pod = [0, ...live.filter((x) => x !== 0)];
   const drafting: ConvocationEvent = { ...at, field, pods, phase: "draft" };
   return { ...drafting, draft: { round: 0, pick: 1, packs: draftPacks(drafting, 0, deps), picks: Array.from({ length: DRAFT_POD }, () => []), pod } };
 }
 /** From the interlude: the next stage begins. */
-export function nextStage(event: ConvocationEvent, deps: EventDeps, library: readonly LibraryList[]): ConvocationEvent {
+export function nextStage(event: ConvocationEvent, deps: EventDeps, library: readonly LibraryList[], podPicks?: Map<number, string[][]>): ConvocationEvent {
   if (event.phase !== "interlude" || !event.stages) throw new Error("event: the next stage begins from the interlude");
-  return beginStage(event, (event.stage ?? 0) + 1, deps, library);
+  return beginStage(event, (event.stage ?? 0) + 1, deps, library, podPicks);
 }
 
 // ---------- the finish and the ledger (ADR-147) ----------
 
+/** S54: how many of the field a ledger line keeps (and the player, wherever they finished). */
+export const LEDGER_FIELD = 16;
 export interface ConvocationLedgerEntry { when: string; formatId: string; seed: number; seats: number; rounds: number; difficulty: string; place: number; record: string; points: number; field: { name: string; place: number; points: number; colors: string }[]; deck: Decklist; kept?: string; top8?: true;
   /** S53: a full Convocation — its stages, the title won, every deck the human registered, the cards kept. */
   stages?: ConvocationStage[]; title?: string; decks?: { stage: number; formatId: string; deck: Decklist }[]; keptCards?: string[] }
@@ -632,7 +689,8 @@ export function ledgerEntry(event: ConvocationEvent, when: string): ConvocationL
   return {
     when, formatId: event.formatId, seed: event.seed, seats: event.field.length, rounds: event.rounds, difficulty: event.difficulty,
     place: placeOf(0), record: `${me.wins}–${me.losses}${me.draws ? `–${me.draws}` : ""}`, points: me.points,
-    field: [...table].sort((x, y) => placeOf(x.seat) - placeOf(y.seat)).map((r) => ({ name: r.name, place: placeOf(r.seat), points: r.points, colors: event.field[r.seat]!.colors })),
+    // S54 (Concern 5): the field trimmed to the top sixteen and the player — a 128-seat line was ~12 KB
+    field: [...table].sort((x, y) => placeOf(x.seat) - placeOf(y.seat)).filter((r) => placeOf(r.seat) <= LEDGER_FIELD || r.seat === 0).map((r) => ({ name: r.name, place: placeOf(r.seat), points: r.points, colors: event.field[r.seat]!.colors })),
     ...(event.bracket ? { top8: true as const } : {}),
     deck: event.field[0]!.deck.map((e) => ({ ...e })), ...(event.kept ? { kept: event.kept } : {}),
     ...(event.stages ? { stages: event.stages.map((x) => ({ ...x })), title: finishTitle(placeOf(0), event.field.length), decks: (event.history ?? []).map((h) => ({ stage: h.stage, formatId: h.formatId, deck: h.deck.map((e) => ({ ...e })) })), ...(event.keptCards?.length ? { keptCards: [...event.keptCards] } : {}) } : {}),
