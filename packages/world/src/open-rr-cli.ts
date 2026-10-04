@@ -2,6 +2,8 @@
  * pnpm open:rr [--games N] [--seed S] [--shard i/n] [--only key] [--out file] | --merge file1 file2 … --out file
  *   --only key   run only the pairings that include that list (re-measuring one amended list);
  *   --merge      a LATER file's games replace an earlier file's for the same pairing.
+ *   --journeyman k1,k2   S54 (ADR-158's test): those lists are piloted by journeyman (every other seat master) — run
+ *                with --only on the same seed as a master run, and every game is paired with its master twin.
  *
  * S46 (Part 4): the Open's round-robin — every pair of the twelve lists (sim/open-decks), N games per pairing, seats
  * alternating, master both, 20 life, no entrances. Per game it records the winner and the reason, and per seat the
@@ -48,7 +50,8 @@ class Tracker implements Agent {
 async function run(): Promise<void> {
   const pool = loadCardPool(join(ROOT, "data/cards")).cards;
   const G = Number(arg("games", "100")), seed0 = Number(arg("seed", "46")), [si, sn] = arg("shard", "0/1").split("/").map(Number) as [number, number];
-  const only = arg("only", "");
+  const only = arg("only", ""), journeyman = new Set(arg("journeyman", "").split(",").filter(Boolean));
+  const pilot = (key: string) => (journeyman.has(key) ? "journeyman" : "master");
   const pairs: [string, string][] = [];
   for (let i = 0; i < KEYS.length; i++) for (let j = i + 1; j < KEYS.length; j++) pairs.push([KEYS[i]!, KEYS[j]!]);
   const games: Game[] = [];
@@ -62,8 +65,8 @@ async function run(): Promise<void> {
       const seed = seed0 + p * 1009 + g * 37;
       const [d0, d1] = seatA === 0 ? [A, B] : [B, A];
       const spec = { seed, players: [{ name: d0.key, decklist: [...d0.decklist], agent: "heuristic:master" }, { name: d1.key, decklist: [...d1.decklist], agent: "heuristic:master" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 }, modifiers: [] } as unknown as MatchSpec;
-      const t0 = new Tracker(new HeuristicAgent(seed * 2 + 1, pool, difficultyProfile("master", d0.archetype, [...d1.decklist])), d0.key === "loop");
-      const t1 = new Tracker(new HeuristicAgent(seed * 2 + 2, pool, difficultyProfile("master", d1.archetype, [...d0.decklist])), d1.key === "loop");
+      const t0 = new Tracker(new HeuristicAgent(seed * 2 + 1, pool, difficultyProfile(pilot(d0.key), d0.archetype, [...d1.decklist])), d0.key === "loop");
+      const t1 = new Tracker(new HeuristicAgent(seed * 2 + 2, pool, difficultyProfile(pilot(d1.key), d1.archetype, [...d0.decklist])), d1.key === "loop");
       const r = await runMatch(spec, pool, [t0, t1]);
       const tA = seatA === 0 ? t0 : t1, tB = seatA === 0 ? t1 : t0;
       games.push({ a: ka, b: kb, seatA, winner: r.winner === null ? "draw" : r.winner === seatA ? "a" : "b", reason: r.reason, turns: r.turns, logA: tA.log, logB: tB.log });

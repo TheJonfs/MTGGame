@@ -7,6 +7,9 @@
  * per event: rematches, the draft rounds' pod check, the human's finish; and the question the brief asks — does the
  * carried record find the strong seats? (each seat's deck quality per stage, as its percentile in the field, against
  * where it finished).
+ * S54 (ADR-158): the field has strength — each seat's builder (Constructed) and rating noise (Limited) are recorded,
+ * and the report reads the finish by them, the Umbel's mean deck percentile against the field's median, and r.
+ * `--short` plays the short Convocation (a draft, then the Open).
  */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -17,7 +20,7 @@ import { defaultKnobs } from "./knobs.js";
 import { authoredLists } from "./authored-lists.js";
 import { convocationNames } from "./convocation-names.js";
 import { stepHeadless } from "./convocation-run.js";
-import { CONVOCATION_SEATS, defaultStages, eventFormat, finalPlaces, newConvocation, serializeEvent, type ConvocationEvent, type SeatAgents } from "./event.js";
+import { CONVOCATION_SEATS, defaultStages, shortStages, eventFormat, finalPlaces, newConvocation, serializeEvent, type ConvocationEvent, type SeatAgents } from "./event.js";
 import { cardRating, limitedView, type CardRatingTable } from "./rating.js";
 import type { ConvocationPackData } from "./packs.js";
 
@@ -32,7 +35,7 @@ const deps = { cards, packs, rating, knobs: defaultKnobs(), library };
 const agents: SeatAgents = (seat, opp, seed, side) => new HeuristicAgent(seed * 2 + 1 + side, cards, difficultyProfile("master", seat.archetype, opp.deck));
 
 interface StageRow { stage: number; formatId: string; ms: number; saveBytes: number; quality: number[] }
-interface EventRow { seed: number; stages: StageRow[]; finalSaveBytes: number; rematches: number; podViolations: number; places: number[]; humanPlace: number; bracketMs: number; totalMs: number }
+interface EventRow { seed: number; strength: { builder?: string; noise?: number }[]; stages: StageRow[]; finalSaveBytes: number; rematches: number; podViolations: number; places: number[]; humanPlace: number; bracketMs: number; totalMs: number }
 
 /** A seat's deck quality: the mean score of its nonland cards (the Limited score in a Limited stage, the Constructed one else). */
 const quality = (e: ConvocationEvent, seat: number) => {
@@ -48,13 +51,15 @@ async function play(): Promise<void> {
   for (let k = 0; k < EVENTS; k++) {
     if (k % sn !== si) continue;
     const seed = seed0 * 1000 + k, t0 = Date.now();
-    let e = newConvocation({ seed, stages: defaultStages(arg("second", "open")), seats: SEATS, names: convocationNames(SEATS - 1), faces: [], library }, deps);
+    let e = newConvocation({ seed, stages: process.argv.includes("--short") ? shortStages(arg("second", "open")) : defaultStages(arg("second", "open")), seats: SEATS, names: convocationNames(SEATS - 1), faces: [], library }, deps);
     const stages: StageRow[] = []; let stageT = Date.now(), podViolations = 0, bracketT = 0;
     let qual: number[] = [];
     while (e.phase !== "over") {
       const before = e;
       e = await stepHeadless(e, deps, agents);
-      if (before.phase === "build" && e.phase === "round") qual = e.field.map((_, s) => quality(e, s)); // every deck registered
+      // every deck in: the build ends (a draft or Sealed stage) or the stage starts with registered decks (S54: a
+      // Constructed day after the first skips the build — the snapshot was Day 1's, read again)
+      if ((before.phase === "build" || before.phase === "interlude") && e.phase === "round") qual = e.field.map((_, s) => quality(e, s));
       if (e.phase === "round" && before.phase !== "round" && e.stages![e.stage!]!.kind === "draft") for (const p of e.pairings) if (!e.pods!.some((pod) => pod.includes(p.a) && pod.includes(p.b!))) podViolations += 1;
       if ((e.phase === "interlude" || (e.phase === "bracket" && before.phase === "standings")) && before.phase === "standings") {
         stages.push({ stage: before.stage!, formatId: before.formatId, ms: Date.now() - stageT, saveBytes: serializeEvent(e).length, quality: qual });
@@ -64,7 +69,7 @@ async function play(): Promise<void> {
     }
     const pairs = e.results.map((r) => [r.a, r.b].sort((x, y) => x - y).join("-"));
     const places = finalPlaces(e).sort((x, y) => x.seat - y.seat).map((p) => p.place);
-    rows.push({ seed, stages, finalSaveBytes: serializeEvent(e).length, rematches: pairs.length - new Set(pairs).size, podViolations, places, humanPlace: places[0]!, bracketMs: Date.now() - bracketT, totalMs: Date.now() - t0 });
+    rows.push({ seed, strength: e.field.map((x) => ({ ...(x.builder ? { builder: x.builder } : {}), ...(x.noise !== undefined ? { noise: x.noise } : {}) })), stages, finalSaveBytes: serializeEvent(e).length, rematches: pairs.length - new Set(pairs).size, podViolations, places, humanPlace: places[0]!, bracketMs: Date.now() - bracketT, totalMs: Date.now() - t0 });
     console.error(`event ${seed}: ${Math.round((Date.now() - t0) / 1000)} s, the human ${places[0]} of ${SEATS}`);
   }
   const out = arg("out", join(ROOT, `analysis/runs/convocation_shard${si}.json`));
@@ -79,17 +84,27 @@ function report(): void {
   const mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / Math.max(1, xs.length);
   const pctile = (xs: number[], i: number) => xs.filter((x) => x < xs[i]!).length / (xs.length - 1); // the seat's deck against the field's
   const corr = (xs: number[], ys: number[]) => { const mx = mean(xs), my = mean(ys); let c = 0, sx = 0, sy = 0; xs.forEach((x, i) => { c += (x - mx) * (ys[i]! - my); sx += (x - mx) ** 2; sy += (ys[i]! - my) ** 2; }); return c / Math.sqrt(sx * sy); };
-  const L: string[] = [`# The full Convocation headless (S53 Part 4) — ${rows.length} events at ${seats} seats, sixteen Swiss rounds and the Umbel, the human's seat a heuristic\n`];
+  const L: string[] = [`# The Convocation headless (S53 Part 4; S54 with the field's strength, ADR-158) — ${rows.length} events at ${seats} seats, ${rows[0]!.stages.length} days and the Umbel, the human's seat a heuristic\n`];
   L.push(`## Time and the save (Node, one process an event)\n\n| stage | format | wall time (field included) | the save after it |\n|---|---|---|---|`);
-  for (let k = 0; k < 4; k++) { const st = rows.map((r) => r.stages[k]!).filter(Boolean); L.push(`| ${k + 1} | ${st[0]?.formatId} | ${Math.round(mean(st.map((x) => x.ms)) / 1000)} s | ${Math.round(mean(st.map((x) => x.saveBytes)) / 1024)} KB |`); }
+  const days = Math.max(...rows.map((r) => r.stages.length));
+  for (let k = 0; k < days; k++) { const st = rows.map((r) => r.stages[k]!).filter(Boolean); L.push(`| ${k + 1} | ${st[0]?.formatId} | ${Math.round(mean(st.map((x) => x.ms)) / 1000)} s | ${Math.round(mean(st.map((x) => x.saveBytes)) / 1024)} KB |`); }
   L.push(`| the Umbel | | ${Math.round(mean(rows.map((r) => r.bracketMs)) / 1000)} s | ${Math.round(mean(rows.map((r) => r.finalSaveBytes)) / 1024)} KB at the finish |`);
   L.push(`\nWhole event: ${Math.round(mean(rows.map((r) => r.totalMs)) / 1000)} s. Rematches: ${rows.reduce((n, r) => n + r.rematches, 0)} in ${rows.length} events. Draft-round pairings outside their pod: ${rows.reduce((n, r) => n + r.podViolations, 0)}. The human's finishes: ${rows.map((r) => r.humanPlace).join(", ")}.`);
   // does the record find the strong seats?
   const seatRows = rows.flatMap((r) => r.places.map((place, s) => ({ place, q: r.stages.map((st) => pctile(st.quality, s)) })));
-  L.push(`\n## Does the carried record find the strong seats?\n\nA seat's deck quality in a stage is its percentile in the field (0 the weakest deck, 1 the strongest), by the stage's own score.\n\n| finish | seats | Day 1 | Day 2 | Day 3 | Day 4 | mean |\n|---|---|---|---|---|---|---|`);
-  const band = (lo: number, hi: number, label: string) => { const xs = seatRows.filter((x) => x.place >= lo && x.place <= hi); L.push(`| ${label} | ${xs.length} | ${[0, 1, 2, 3].map((k) => mean(xs.map((x) => x.q[k] ?? 0)).toFixed(2)).join(" | ")} | ${mean(xs.map((x) => mean(x.q))).toFixed(2)} |`); };
+  const dk = [...Array(days).keys()];
+  L.push(`\n## Does the carried record find the strong seats?\n\nA seat's deck quality in a stage is its percentile in the field (0 the weakest deck, 1 the strongest), by the stage's own score.\n\n| finish | seats | ${dk.map((k) => `Day ${k + 1}`).join(" | ")} | mean |\n|---|---|${dk.map(() => "---|").join("")}---|`);
+  const band = (lo: number, hi: number, label: string) => { const xs = seatRows.filter((x) => x.place >= lo && x.place <= hi); L.push(`| ${label} | ${xs.length} | ${dk.map((k) => mean(xs.map((x) => x.q[k] ?? 0)).toFixed(2)).join(" | ")} | ${mean(xs.map((x) => mean(x.q))).toFixed(2)} |`); };
   band(1, 1, "the champion"); band(2, 8, "2nd–8th (the Umbel)"); band(9, 32, "9th–32nd"); band(33, 64, "33rd–64th"); band(65, seats, `65th–${seats}th`);
-  L.push(`\nA seat's mean deck percentile against its finish (lower is better): r = ${corr(seatRows.map((x) => mean(x.q)), seatRows.map((x) => x.place)).toFixed(2)}. Each day alone: ${[0, 1, 2, 3].map((k) => `Day ${k + 1} r = ${corr(seatRows.map((x) => x.q[k] ?? 0), seatRows.map((x) => x.place)).toFixed(2)}`).join(" · ")}.`);
+  L.push(`\nA seat's mean deck percentile against its finish (lower is better): r = ${corr(seatRows.map((x) => mean(x.q)), seatRows.map((x) => x.place)).toFixed(2)}. Each day alone: ${dk.map((k) => `Day ${k + 1} r = ${corr(seatRows.map((x) => x.q[k] ?? 0), seatRows.map((x) => x.place)).toFixed(2)}`).join(" · ")}.`);
+  // S54 (ADR-158): the Umbel's eight against the field's median (0.5), and the finish by the seat's strength
+  const umbel = seatRows.filter((x) => x.place <= 8), umbelQ = mean(umbel.map((x) => mean(x.q)));
+  L.push(`\nThe Umbel's eight: mean deck percentile ${umbelQ.toFixed(2)} (the field's median 0.50; the brief wants it above).`);
+  const strengthRows = rows.flatMap((r) => r.places.map((place, s) => ({ place, s, ...(r.strength?.[s] ?? {}) }))).filter((x) => x.s !== 0);
+  const finishBy = (label: string, xs: { place: number }[]) => `| ${label} | ${xs.length} | ${mean(xs.map((x) => x.place)).toFixed(1)} | ${(100 * xs.filter((x) => x.place <= 8).length / Math.max(1, xs.length)).toFixed(1)}% | ${(100 * xs.filter((x) => x.place <= seats / 4).length / Math.max(1, xs.length)).toFixed(0)}% |`;
+  L.push(`\n## The finish by the seat's strength (the AI seats)\n\nEvery pilot is master (ADR-158 as amended). The builder shapes the Constructed decks, the noise the Limited ones. An even field finishes ${((seats + 1) / 2).toFixed(1)} on average, ${(800 / seats).toFixed(1)}% in the Umbel.\n\n| strength | seats | mean finish | in the Umbel | top quarter |\n|---|---|---|---|---|`);
+  for (const b of ["stock", "light", "heavy"]) L.push(finishBy(`builder ${b}`, strengthRows.filter((x) => x.builder === b)));
+  for (const n of [0, 0.2, 0.4]) L.push(finishBy(`noise σ ${n}`, strengthRows.filter((x) => x.noise === n)));
   const text = L.join("\n");
   writeFileSync(join(ROOT, `analysis/runs/${arg("report-name", "convocation_sim")}.md`), text + "\n");
   console.log(text);
