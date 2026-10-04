@@ -121,6 +121,155 @@
      "count": 1
     }
    ]
+  },
+  {
+   "key": "depths",
+   "name": "the Depths",
+   "title": "Sultai Control (U B G)",
+   "archetype": "control",
+   "source": "Chris's Convocation, seed 186842, 2026-10-03 — 16–0 in the Swiss and the Umbel (19–0; 32–3 in Swiss games), the Open on both Constructed days",
+   "decklist": [
+    {
+     "cardId": "clio_lady_of_the_depths",
+     "count": 4
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "undermine",
+     "count": 2
+    },
+    {
+     "cardId": "tidewall",
+     "count": 4
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    },
+    {
+     "cardId": "boomerang",
+     "count": 1
+    },
+    {
+     "cardId": "control_magic",
+     "count": 2
+    },
+    {
+     "cardId": "seraphina_the_initiative",
+     "count": 1
+    },
+    {
+     "cardId": "temporal_spring",
+     "count": 2
+    },
+    {
+     "cardId": "putrefy",
+     "count": 1
+    },
+    {
+     "cardId": "the_reeve",
+     "count": 1
+    },
+    {
+     "cardId": "faerie_formation",
+     "count": 1
+    },
+    {
+     "cardId": "traumatizer",
+     "count": 2
+    },
+    {
+     "cardId": "drana_kalastria_bloodchief",
+     "count": 1
+    },
+    {
+     "cardId": "zombify",
+     "count": 1
+    },
+    {
+     "cardId": "mystic_snake",
+     "count": 1
+    },
+    {
+     "cardId": "zinnia_the_undertow",
+     "count": 1
+    },
+    {
+     "cardId": "time_walk",
+     "count": 1
+    },
+    {
+     "cardId": "wall_of_blossoms",
+     "count": 1
+    },
+    {
+     "cardId": "birds_of_paradise",
+     "count": 4
+    },
+    {
+     "cardId": "arcane_collector",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "library_of_alexandria",
+     "count": 1
+    },
+    {
+     "cardId": "wrackroot",
+     "count": 1
+    },
+    {
+     "cardId": "bayou",
+     "count": 4
+    },
+    {
+     "cardId": "tropical_island",
+     "count": 4
+    },
+    {
+     "cardId": "underground_sea",
+     "count": 4
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "brainstorm",
+     "count": 1
+    },
+    {
+     "cardId": "watery_grave",
+     "count": 1
+    },
+    {
+     "cardId": "breeding_pool",
+     "count": 1
+    }
+   ]
   }
  ]
 }
