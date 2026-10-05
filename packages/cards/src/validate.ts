@@ -640,6 +640,9 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     needTargetIndex(e, err);
     if (e.duration !== "UNTIL_END_OF_TURN") err(`gainControl resolved form must be UNTIL_END_OF_TURN (S26 — the threaten class)`);
   },
+  exileGraveyard: (e, err) => {
+    if (e.who !== "you" && e.who !== "opponent" && e.who !== "target" && e.who !== "eachPlayer") err(`exileGraveyard.who must be you|opponent|target|eachPlayer (S55)`);
+  },
   extraTurn: (e, err) => {
     if (e.who !== "you" && e.who !== "opponent" && e.who !== "target") err(`extraTurn.who must be you|opponent|target (S42a)`);
   },

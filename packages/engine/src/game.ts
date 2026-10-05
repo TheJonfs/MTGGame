@@ -112,7 +112,14 @@ export interface GameRules {
    * Default 0 — every existing spec, replay, and sim is unchanged. The WORLD rolls it from its
    * seeded RNG; the engine just obeys the spec (determinism as ever). */
   startingPlayer?: PlayerId;
+  /** S55 (R-103; CR 104.4b / 732.4): stack items that may resolve in one turn without the game moving before it is a
+   * draw. Default LOOP_DRAW_CAP. */
+  loopDrawCap?: number;
 }
+
+/** S55 (R-103): the mandatory-loop draw's cap — a hundred stack items resolved in one turn, each leaving the game in
+ * a position it has already been in this turn. */
+export const LOOP_DRAW_CAP = 100;
 
 export const DEFAULT_RULES: GameRules = { startingLife: 20, handSize: 7, maxTurns: 100, ante: 0 };
 
@@ -524,6 +531,8 @@ export class Game {
           holder = state.activePlayer;
           await this.checkStateAndTriggers();
           if (state.result) return;
+          this.checkLoopDraw();
+          if (state.result) return;
         } else {
           holder = opponentOf(holder);
         }
@@ -533,6 +542,41 @@ export class Game {
         await this.checkStateAndTriggers();
         if (state.result) return;
       }
+    }
+  }
+
+  // ---------- S55 (R-103): the mandatory-loop draw ----------
+
+  private loopTurn = -1;
+  private loopSeen = new Set<string>();
+  private loopRepeats = 0;
+  /**
+   * CR 104.4b / 732.4: a game that enters a loop of mandatory actions with no way to stop is a draw. The engine
+   * cannot prove "no way to stop"; it counts. After each stack item resolves (state-based actions and triggers done),
+   * the POSITION is taken — life totals, floating mana, and what every zone holds (cards by name, a permanent with
+   * its controller, tapped state, damage, counters and host; a card that left and returned is the same card, so
+   * object ids are not in it, and neither is the order of a library). A position already seen this turn is a
+   * repeat; a new one clears the count (the game moved). At the cap the game is a draw.
+   *
+   * So a loop that moves a life total, a library or a counter never trips it (the Usher's drain, the Altar's mill),
+   * and neither does anything that pays mana (the pool or the tapped lands differ). A loop whose effects cancel does:
+   * two players' drains on each death, the Usher returning the Usher.
+   *
+   * Known simplification (rules-registry R-103): CR 104.4b excepts a loop containing an OPTIONAL action. The count
+   * does not ask whether a choice was available — a player who repeats a position a hundred times in a turn by
+   * choice also draws. (The heuristic agent avoids choosing into a loop that gains nothing: book 99.)
+   */
+  private checkLoopDraw(): void {
+    const s = this.state;
+    if (s.turn !== this.loopTurn) { this.loopTurn = s.turn; this.loopSeen.clear(); this.loopRepeats = 0; }
+    const zone = (ids: readonly string[]) => ids.map((id) => s.objects[id]!.cardId).sort().join(",");
+    const field = s.battlefield.map((id) => { const o = s.objects[id]!; const c = Object.entries(o.counters).filter(([, n]) => n !== 0).sort(([a], [b]) => (a < b ? -1 : 1)).map(([k, n]) => k + n).join("+"); return `${o.cardId}:${o.controller}:${o.tapped ? 1 : 0}:${o.damage}:${c}:${o.attachedTo ? s.objects[o.attachedTo]?.cardId : ""}`; }).sort().join(",");
+    const pos = `${s.step}|${s.players.map((p) => `${p.life}/${Object.values(p.manaPool).join(".")}/${zone(p.hand)}/${zone(p.library)}/${zone(p.graveyard)}/${zone(p.exile)}`).join("|")}|${field}|${s.stack.map((x) => x.sourceCardId).join(",")}`;
+    if (!this.loopSeen.has(pos)) { this.loopSeen.add(pos); this.loopRepeats = 0; return; }
+    this.loopRepeats += 1;
+    if (this.loopRepeats >= (this.rules.loopDrawCap ?? LOOP_DRAW_CAP)) {
+      this.ctx.log.append({ t: "EVENT", name: "LOOP_DRAW", payload: { turn: s.turn, repeats: this.loopRepeats } });
+      s.result = { winner: null, reason: "DRAW" };
     }
   }
 

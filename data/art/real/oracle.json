@@ -2700,5 +2700,33 @@
     "art_crop": "https://cards.scryfall.io/art_crop/front/2/e/2e139ad1-1079-49e9-babd-6399c44ad333.jpg?1783933105",
     "normal": "https://cards.scryfall.io/normal/front/2/e/2e139ad1-1079-49e9-babd-6399c44ad333.jpg?1783933105",
     "via": "default oldest-highres"
+  },
+  "faerie_macabre": {
+    "scryfallId": "ead8befa-27dd-4ec4-b317-1c231407e0ac",
+    "set": "shm",
+    "set_name": "Shadowmoor",
+    "collector_number": "66",
+    "artist": "rk post",
+    "name": "Faerie Macabre",
+    "mana_cost": "{1}{B}{B}",
+    "type_line": "Creature — Faerie Rogue",
+    "oracle_text": "Flying\nDiscard this card: Exile up to two target cards from graveyards.",
+    "art_crop": "https://cards.scryfall.io/art_crop/front/e/a/ead8befa-27dd-4ec4-b317-1c231407e0ac.jpg?1783942754",
+    "normal": "https://cards.scryfall.io/normal/front/e/a/ead8befa-27dd-4ec4-b317-1c231407e0ac.jpg?1783942754",
+    "via": "default oldest-highres"
+  },
+  "tormods_crypt": {
+    "scryfallId": "0f9668ba-d26d-4484-b4b8-6fb91fbfb617",
+    "set": "drk",
+    "set_name": "The Dark",
+    "collector_number": "112",
+    "artist": "Christopher Rush",
+    "name": "Tormod's Crypt",
+    "mana_cost": "{0}",
+    "type_line": "Artifact",
+    "oracle_text": "{T}, Sacrifice this artifact: Exile target player's graveyard.",
+    "art_crop": "https://cards.scryfall.io/art_crop/front/0/f/0f9668ba-d26d-4484-b4b8-6fb91fbfb617.jpg?1783947925",
+    "normal": "https://cards.scryfall.io/normal/front/0/f/0f9668ba-d26d-4484-b4b8-6fb91fbfb617.jpg?1783947925",
+    "via": "default oldest-highres"
   }
 }

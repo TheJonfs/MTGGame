@@ -336,7 +336,10 @@ export type EffectBase =
   | { type: "createLaw"; sequence: "next"; order?: string[] }
   /** S42a (R-098, Time Walk): the stated player takes an extra turn after this one (CR 500.7 — the most recently
    * created extra turn is taken first; afterwards the turn passes as it would have). */
-  | { type: "extraTurn"; who: Who };
+  | { type: "extraTurn"; who: Who }
+  /** S55 (R-104, Tormod's Crypt): exile every card in that player's graveyard — one zone emptied at once (the
+   * targeted player's, or each addressed player's). Not a death (CR 700.4) and not a per-card target. */
+  | { type: "exileGraveyard"; who: Who };
 // Reserved, not implemented (data-model §3): copy, setPT, preventDamage, changeType.
 
 export type EffectType = EffectBase["type"];
@@ -379,6 +382,7 @@ export const EFFECT_TYPES: readonly EffectType[] = [
   "createLaw",
   "putOnTop",
   "extraTurn",
+  "exileGraveyard",
 ];
 
 export type TriggerEvent =

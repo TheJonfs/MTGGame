@@ -1,0 +1,38 @@
+{
+  "id": "tormods_crypt",
+  "name": "Tormod's Crypt",
+  "source": "real",
+  "scryfallId": "0f9668ba-d26d-4484-b4b8-6fb91fbfb617",
+  "manaCost": "{0}",
+  "types": [
+    "Artifact"
+  ],
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "tap": true,
+        "sacrifice": {
+          "predicate": "self"
+        }
+      },
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "player",
+          "zone": "any"
+        }
+      ],
+      "effects": [
+        {
+          "type": "exileGraveyard",
+          "who": "target"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2
+}

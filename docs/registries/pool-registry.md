@@ -303,6 +303,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | evolving_wilds | brc | 184 | Steven Belledin | 1334e6ac-1edb-4945-935c-0e0ccdde134d |
 | experimental_overload | m21 | 218 | Lie Setiawan | 6f1bace4-a327-4eb6-a6ef-8394e76c06b7 |
 | faerie_formation | eld | 316 | Ryan Yee | 15709316-7382-46b9-9b70-53a5147e7051 |
+| faerie_macabre | shm | 66 | rk post | ead8befa-27dd-4ec4-b317-1c231407e0ac |
 | fencing_ace | rtr | 11 | David Rapoza | a42d3066-f4ec-4d28-83ab-e48141206c72 |
 | flametongue_kavu | pls | 60 | Pete Venters | e5056bca-bd90-4b50-8630-105558f8ef92 |
 | forest | leb | 300 | Christopher Rush | b5a922eb-49c7-45f0-92bc-671d7a8758f4 |
@@ -411,6 +412,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | timberland_guide | avr | 197 | Zoltan Boros | ae80fefb-af78-4f98-8058-71b61e91842f |
 | time_walk | lea | 83 | Amy Weber | e0139f60-d48e-46fb-9f5a-1e3d7558c834 |
 | titania_protector_of_argoth | mh2 | 416 | Magali Villeneuve | bab161d9-45d7-48b7-af47-21e3dbae4d85 |
+| tormods_crypt | drk | 112 | Christopher Rush | 0f9668ba-d26d-4484-b4b8-6fb91fbfb617 |
 | tranquil_thicket | ons | 326 | Heather Hudson | afcb7cef-8aeb-4c84-88e9-6df17768e292 |
 | treetop_snarespinner | fdn | 114 | Steve Ellis | 88e68fa3-159d-49a6-8ac6-afc9bd6f1718 |
 | tropical_island | olgc | 2019 | Mark Poole | 2674e6d9-51b9-405c-ab01-75474abcf690 |
@@ -625,6 +627,15 @@ Pool 238 → **244**. Six cards that are good alone in a forty-card deck.
 | dragon_fodder | Dragon Fodder | tested | createToken goblin_1_1 × 2 | ALA #97. T1. Zero words. |
 | seasoned_pyromancer | Seasoned Pyromancer | tested | triggered(ENTERS self): discard 2 (you choose), draw 2, createToken elemental_1_1_r × `discardedNonland` (R-102); activated from the graveyard {3}{R}{R}, exile self: two Elementals | MH1 #145 (Cynthia Sheppard). T3. One word: the `discardedNonland` ref. AI (book 91): a land first when the mana is comfortable; the graveyard activation with idle mana. |
 | rage_cobra | Rage Cobra | tested | custom Snake 2/2; triggered(LIFE_GAINED opponent) target creature: addCounters +1/+1 `eventLife` | **{1}{R} 2/2 (post-S53, Chris, 2026-10-03 — was {2}{R} 1/1; `pnpm card-test`: +2.5 ± 0.4 over the old card, ≈ 2.3 on the Limited score; the face re-printed and verified).** T2. Zero words (Vitalist's collector at `controller: opponent`). Art: the watercolor storybook with a hooded ranger at the fire (Chris, 2026-10-03 — #4, the modern hiker replaced). Printed face (Chris, 2026-10-03) verified word-for-word; `printedAsset`. AI: Vitalist's rule (book 92). |
+
+## Session 55 additions — graveyard hate for sideboards (ADR-162; Oracle verified on Scryfall 2026-10-05)
+
+Pool 244 → **246**. Two answers to a graveyard loop that any deck can sideboard: one on the board, one in the hand. The field's builder never mains them; its fourth sideboarding rule brings them in.
+
+| id | Card | Status | Vocabulary | Notes |
+|---|---|---|---|---|
+| tormods_crypt | Tormod's Crypt | tested | activated {T}, sacrifice self; target player: `exileGraveyard` who target (R-104 — the one new word) | DRK #112 (Christopher Rush). T2. {0} Artifact. As briefed. |
+| faerie_macabre | Faerie Macabre | tested | flying; activated from the HAND, cost `discardSelf` (cycling's cost, no mana): exile `targetSpec` 0 — up to two `cardInYourGraveyard` who any | SHM #66 (rk post). T2. **{1}{B}{B} Creature — Faerie Rogue 2/2 with flying** — the brief flagged its memory of the cost and body; these are Scryfall's. Zero new words: the hand-zone activation (A5), the up-to range (A8) and the fan-out exile (S36) existed; `exile` now reaches a card in a graveyard. |
 
 ## Shop tiers (ADR-078, S19)
 

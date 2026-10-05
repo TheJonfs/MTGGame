@@ -1,0 +1,49 @@
+{
+  "id": "faerie_macabre",
+  "name": "Faerie Macabre",
+  "source": "real",
+  "scryfallId": "ead8befa-27dd-4ec4-b317-1c231407e0ac",
+  "manaCost": "{1}{B}{B}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Faerie",
+    "Rogue"
+  ],
+  "power": 2,
+  "toughness": 2,
+  "keywords": [
+    "flying"
+  ],
+  "abilities": [
+    {
+      "kind": "activated",
+      "zone": "hand",
+      "cost": {
+        "discardSelf": true
+      },
+      "targets": [
+        {
+          "count": {
+            "min": 0,
+            "max": 2
+          },
+          "predicate": "cardInYourGraveyard",
+          "zone": "graveyard",
+          "who": "any"
+        }
+      ],
+      "effects": [
+        {
+          "type": "exile",
+          "targetSpec": 0
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2
+}

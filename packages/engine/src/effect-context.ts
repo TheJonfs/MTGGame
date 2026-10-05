@@ -268,6 +268,10 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
     lawCount(): number {
       return ctx.state.battlefield.filter((id) => ctx.defs.def(getObject(ctx.state, id).cardId).law === true).length;
     },
+    exileGraveyard(player: number): void {
+      // S55 (R-104): every card there now, each through the one zone-move primitive (a token never rests in a graveyard)
+      for (const id of [...ctx.state.players[player as PlayerId].graveyard]) moveObject(ctx, id, "exile");
+    },
     extraTurn(player: number): void {
       ctx.state.extraTurns.push(player as PlayerId);
       ctx.bus.emit("EXTRA_TURN", { player: player as PlayerId });
@@ -542,7 +546,7 @@ function sharedOps(ctx: EngineCtx, asController: PlayerId) {
 
     exile(objectId: string): void {
       const obj = ctx.state.objects[objectId];
-      if (!obj || obj.zone !== "battlefield") return;
+      if (!obj || (obj.zone !== "battlefield" && obj.zone !== "graveyard")) return; // S55: a graveyard card too (Faerie Macabre)
       moveObject(ctx, objectId, "exile"); // not a death: no DIES trigger fires (700.4)
     },
 
@@ -794,6 +798,9 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
     },
     lawCount(): number {
       return 0;
+    },
+    exileGraveyard(player: number): void {
+      for (const id of [...ctx.state.players[player as PlayerId].graveyard]) moveObject(ctx, id, "exile");
     },
     extraTurn(): void {
       throw new Error("initialization effects cannot grant turns");

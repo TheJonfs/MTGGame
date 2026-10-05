@@ -88,7 +88,7 @@ export interface EffectContext {
    * deathtouch/lifelink apply). Callers have already verified both are legal.
    */
   fight(idA: string, idB: string): void;
-  /** Exile (CR 700.4: not a death — no DIES trigger). */
+  /** Exile (CR 700.4: not a death — no DIES trigger). S55: a permanent, or a card in a graveyard (Faerie Macabre). */
   exile(objectId: string): void;
   /** S23 (ADR-084): sacrifice the resolving ability's own SOURCE (the Thundersnake) — a sacrifice,
    * not a destruction (no indestructible shield); DIES fires; no-op if the source left already. */
@@ -120,6 +120,8 @@ export interface EffectContext {
   lawCount(): number;
   /** S42a (R-098, Time Walk): the player takes an extra turn after this one. */
   extraTurn(player: number): void;
+  /** S55 (R-104): exile every card in the player's graveyard. */
+  exileGraveyard(player: number): void;
   /** S27: the law-sequence mode (`accumulate` skips the Manafleur's exile). */
   lawMode(): "sequence" | "random" | "accumulate" | "tide";
 }
@@ -360,6 +362,11 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
   extraTurn: (e, ctx) => {
     if (e.type !== "extraTurn") throw new Error("resolver mismatch");
     for (const p of ctx.players(e.who)) ctx.extraTurn(p);
+  },
+
+  exileGraveyard: (e, ctx) => {
+    if (e.type !== "exileGraveyard") throw new Error("resolver mismatch");
+    for (const p of ctx.players(e.who)) ctx.exileGraveyard(p);
   },
 
   putOnTop: async (e, ctx) => {
