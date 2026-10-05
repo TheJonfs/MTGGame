@@ -65,7 +65,7 @@ function PromptBar({ c, phase, confirmLabel }: { c: MatchController; phase: UiPh
   const prompt = (() => {
     switch (phase.kind) {
       case "waiting":
-        return c.fastForwarding ? "Fast-forwarding to your turn…" : "Opponent is thinking…";
+        return c.repeating ? `Repeating the loop — ${c.repeating.done} of ${c.repeating.total}…` : c.fastForwarding ? "Fast-forwarding to your turn…" : "Opponent is thinking…";
       case "priority":
         return "You have priority.";
       case "chooseX":
@@ -175,13 +175,36 @@ function PromptBar({ c, phase, confirmLabel }: { c: MatchController; phase: UiPh
         </>
       )}
       <span style={{ flex: 1 }} />
+      <Shortcuts c={c} phase={phase} />
+    </div>
+  );
+}
+
+/** Post-S54 (Chris): the repeat and the take-back — on the rail, and inside a dialog (which covers the rail). */
+function Shortcuts({ c, phase }: { c: MatchController; phase: UiPhase }) {
+  return (
+    <>
+      {/* post-S54 (Chris): the repeat — offered once a loop has come round (the same decision, and something moved); play/repeat.ts */}
+      {c.repeating && <button onClick={() => c.stopRepeat("stopped by you")}>Stop</button>}
+      {!c.repeating && c.loopOffer && (phase.kind === "priority" || phase.kind === "dialog" || phase.kind === "targeting") && (() => {
+        const o = c.loopOffer!, opp = (1 - c.humanSeat) as 0 | 1;
+        const moved = [o.life[opp] ? `opponent ${o.life[opp] > 0 ? "+" : ""}${o.life[opp]} life` : "", o.libs[opp] ? `opponent's library ${o.libs[opp]}` : "", o.life[c.humanSeat] ? `you ${o.life[c.humanSeat] > 0 ? "+" : ""}${o.life[c.humanSeat]} life` : "", o.libs[c.humanSeat] ? `your library ${o.libs[c.humanSeat]}` : ""].filter(Boolean).join(", ");
+        const tip = `You have been here before this turn: a loop of ${o.cycle.length} decision${o.cycle.length === 1 ? "" : "s"} (${moved} a pass). Repeating plays the same decisions again, one real step at a time, and stops the moment anything differs — a step that is not on offer, a changed board, or an answer from the opponent.`;
+        return (
+          <span className="loop-offer" title={tip}>
+            <span style={{ fontSize: 12, opacity: 0.8, marginRight: 6 }}>loop: {moved} a pass</span>
+            <button onClick={() => c.repeatLoop(1)}>↻ once</button>
+            {o.toEnd && o.toEnd > 1 ? <button onClick={() => c.repeatLoop(o.toEnd!)}>↻ to the end (×{o.toEnd})</button> : <button onClick={() => c.repeatLoop(5)}>↻ ×5</button>}
+          </span>
+        );
+      })()}
       {/* post-S54 (Chris): the take-back — at the rail's far end, away from Pass; only while nothing irreversible has happened since (play/undo.ts) */}
       {(phase.kind === "priority" || phase.kind === "stackStop" || phase.kind === "attackers" || phase.kind === "blockers" || phase.kind === "dialog") && c.undoLabel() && (
         <button className="linkish" title={`Take back ${c.undoLabel()} — allowed while no card has been drawn or revealed, no damage dealt, and the opponent has decided nothing since.`} onClick={() => c.undo()}>
           ↶ take back {c.undoLabel()}
         </button>
       )}
-    </div>
+    </>
   );
 }
 
@@ -514,7 +537,9 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption, printed }: { c: Ma
             );
           })}
         </div>
-        <div style={{ marginTop: 8, textAlign: "right" }}>
+        <div style={{ marginTop: 8, display: "flex", alignItems: "center", gap: 8 }}>
+          <Shortcuts c={c} phase={phase} />
+          <span style={{ flex: 1 }} />
           <button className="primary" disabled={phase.selected === null} onClick={() => c.confirmDialog()}>
             Confirm
           </button>

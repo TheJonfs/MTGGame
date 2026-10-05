@@ -2,6 +2,7 @@ import { ArrayLog, SeededRng } from "@shandalar/core";
 import { cardColors, manaValue, parseManaCost, type CardDef, type ResolvedTarget } from "@shandalar/cards";
 import { audio, castTypeSfxCue, enterSfxCue } from "../audio/audio.js";
 import { UNDO_ENABLED, UndoLedger } from "./undo.js";
+import { LoopRecorder, REPEAT_ENABLED, REPEAT_MAX_CYCLES, describeAction, fingerprint, objectSigs, type LoopOffer, type LoopStep } from "./repeat.js";
 import {
   DEFAULT_RULES,
   Game,
@@ -342,7 +343,7 @@ export class MatchController {
       pool,
       difficultyProfile(aiDifficulty, aiArchetype, humanPlayer.decklist.map((e) => ({ ...e }))),
     );
-    const delayed = new DelayedAgent(aiInner, () => (this.conceding ? 0 : this.aiDelayMs));
+    const delayed = new DelayedAgent(aiInner, () => (this.conceding || this.repeat ? 0 : this.aiDelayMs));
     const ai: Agent = {
       chooseAction: async (view: GameView, request: ActionRequest): Promise<Action> => {
         const a = await delayed.chooseAction(view, request);
@@ -617,6 +618,14 @@ export class MatchController {
       this.answer(request.actions[0]!, true);
       return;
     }
+    // post-S54 (the repeat): every decision is fingerprinted; a repeat in progress answers it, or stops here
+    this.loopOffer = null;
+    if (REPEAT_ENABLED) {
+      const sigs = objectSigs(view, this.game.state, this.idNames);
+      this.seen = { view, purpose: request.purpose, sigs, fp: fingerprint(view, request, this.game.state, sigs) };
+      if (this.repeat && this.repeatStep(request)) return;
+      this.loopOffer = this.loops.offer(view, this.seen.fp, this.humanSeat);
+    }
     // Streaming a confirmed combat stage: answer from the queue.
     if (this.declQueue) {
       if (this.declStage && request.purpose === this.declStage.purpose && view.turn === this.declStage.turn) {
@@ -755,6 +764,8 @@ export class MatchController {
   private answer(action: Action, auto = false): void {
     if (!auto && this.undoPending !== null && UNDO_ENABLED) this.undoLedger.mark(this.undoPending, this.describeAction(action));
     this.undoPending = null;
+    if (this.seen && !this.conceding) this.loops.record(this.seen.view, this.seen.fp, this.seen.purpose, describeAction(action, this.seen.sigs));
+    this.seen = null; this.loopOffer = null;
     this.human.submit(action);
   }
   private describeAction(a: Action): string {
@@ -770,6 +781,45 @@ export class MatchController {
       case "declareBlocker": case "doneDeclaringBlockers": return "the blocks";
       default: return "that choice";
     }
+  }
+
+  // ---------- post-S54: the repeat (play/repeat.ts has the rule) ----------
+
+  private readonly loops = new LoopRecorder();
+  /** The decision on screen, fingerprinted. */
+  private seen: { view: GameView; purpose: string; sigs: (id: string) => string | null; fp: string } | null = null;
+  /** The loop the decision on screen closes — the same decision came up earlier this turn and something moved since. */
+  loopOffer: LoopOffer | null = null;
+  private repeat: { cycle: LoopStep[]; k: number; done: number; total: number } | null = null;
+  /** "pass 3 of 12" while a repeat runs. */
+  get repeating(): { done: number; total: number } | null { return this.repeat ? { done: this.repeat.done, total: this.repeat.total } : null; }
+  /** Play the demonstrated loop `cycles` more times. Each step is the engine's own offer, taken only if the game at
+   * that step is the game recorded there; the first step that is not stops the repeat and is the player's to answer. */
+  repeatLoop(cycles: number): void {
+    const cur = this.human.current(), offer = this.loopOffer;
+    if (!REPEAT_ENABLED || !cur || !offer || !this.seen || this.result || this.conceding || this.rewinding) return;
+    this.repeat = { cycle: offer.cycle, k: 0, done: 0, total: Math.max(1, Math.min(REPEAT_MAX_CYCLES, Math.floor(cycles))) };
+    if (!this.repeatStep(cur.request)) this.onHumanRequest(cur.view, cur.request);
+    this.emit();
+  }
+  stopRepeat(why?: string): void {
+    if (!this.repeat) return;
+    const { done, total } = this.repeat;
+    this.repeat = null;
+    if (why) this.showNotice(`The loop stopped after ${done} of ${total}: ${why}.`);
+  }
+  /** One step of the repeat at this decision; false when it stopped (the decision is then shown as any other). */
+  private repeatStep(request: ActionRequest): boolean {
+    const r = this.repeat!, exp = r.cycle[r.k]!, seen = this.seen;
+    if (!seen || seen.fp !== exp.fp) { this.stopRepeat("the game no longer matches it"); return false; }
+    const action = request.actions.find((a) => describeAction(a, seen.sigs) === exp.answer);
+    if (!action) { this.stopRepeat("its next step is not on offer"); return false; }
+    r.k += 1;
+    if (r.k === r.cycle.length) { r.k = 0; r.done += 1; if (r.done >= r.total) this.repeat = null; }
+    this.phase = { kind: "waiting" };
+    this.stopReason = null;
+    this.answer(action);
+    return true;
   }
 
   // ---------- post-S54: the take-back ----------
@@ -800,6 +850,7 @@ export class MatchController {
       this.game = built.game; this.log = built.log; this.built = built; this.runToken = token;
       this.declQueue = null; this.declStage = null; this.manualTapPending = null; this.untapQueue = null; this.ff = null;
       this.stackStopResolve = null; this.stopReason = null; this.undoPending = null; this.undoForceStop = true;
+      this.repeat = null; this.seen = null; this.loopOffer = null; this.loops.clear(); // a loop is demonstrated afresh after a take-back
       this.phase = { kind: "waiting" };
       this.rewinding = false;
     };
@@ -878,6 +929,7 @@ export class MatchController {
     const oppSpell = this.pendingOpponentSpell();
     const combatMoment = oppSpell ? null : this.pendingCombatMoment();
     if (!oppSpell && !combatMoment) return;
+    if (this.repeat) { if (!oppSpell) return; this.stopRepeat("the opponent responded"); } // post-S54: a repeat pauses for nothing but an answer
     this.markStackSeen();
     if (combatMoment) {
       this.combatSeen.add(combatMoment.key);

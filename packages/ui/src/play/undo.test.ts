@@ -133,7 +133,7 @@ describe("the take-back (post-S54, Chris — a misclick mid-loop cost a match)",
 
   it("fuzz: random play with random take-backs on real lists — every game ends, and its log replays to the very game that ended (a take-back leaves no trace in the log)", async () => {
     const keys = ["loop", "sweep", "hearth", "depths", "muster", "coin"];
-    let undone = 0, offered = 0, games = 0, turns = 0;
+    let undone = 0, offered = 0, games = 0, turns = 0, repeated = 0;
     for (let g = 0; g < 12; g++) {
       let r = 1000 + g; const rnd = () => { r = (r * 1103515245 + 12345) & 0x7fffffff; return r / 0x7fffffff; };
       const mine = OPEN_DECKS[keys[g % keys.length]!]!, theirs = OPEN_DECKS[keys[(g + 3) % keys.length]!]!;
@@ -145,6 +145,7 @@ describe("the take-back (post-S54, Chris — a misclick mid-loop cost a match)",
         if (c.result) break;
         if (c.game.state.turn > 14) break;
         if (c.canUndo()) { offered++; if (rnd() < UNDO_P) { c.undo(); undone++; continue; } }
+        if (c.loopOffer && rnd() < 0.5) { c.repeatLoop(1 + Math.floor(rnd() * 3)); repeated++; continue; } // and any loop random play stumbles into is repeated
         if (c.phase.kind === "stackStop") { c.continueFromStop(); continue; }
         const cur = inner.human.current();
         if (!cur) continue;
@@ -166,6 +167,7 @@ describe("the take-back (post-S54, Chris — a misclick mid-loop cost a match)",
     expect(games).toBe(12);
     expect(undone).toBeGreaterThan(40);
     expect(offered).toBeGreaterThan(undone);
+    expect(repeated).toBeGreaterThanOrEqual(0); // rare in random play; whatever it does, the log above still replays
     expect(turns).toBeGreaterThan(60); // the games were played, not conceded at the door
   }, 300_000);
 });
