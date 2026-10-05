@@ -270,6 +270,147 @@
      "count": 1
     }
    ]
+  },
+  {
+   "key": "hearth",
+   "name": "the Hearth",
+   "title": "Mardu Aristocrats, the value build (W B R)",
+   "archetype": "midrange",
+   "source": "Chris's Convocation, seed 798567, 2026-10-04 — 15–1 in the Swiss and the Umbel (18–1; the loss a misclick mid-loop), the Open on both Constructed days. A variation on the Mardu Aristocrats macro-archetype (the Loop's family): the Usher / Restoration Angel / Altar of Dementia finish in a removal-and-value shell.",
+   "decklist": [
+    {
+     "cardId": "lumen_the_hearth_fire",
+     "count": 4
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 4
+    },
+    {
+     "cardId": "sacred_helix",
+     "count": 3
+    },
+    {
+     "cardId": "the_usher",
+     "count": 3
+    },
+    {
+     "cardId": "altar_of_dementia",
+     "count": 3
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "graceful_restoration",
+     "count": 1
+    },
+    {
+     "cardId": "drana_kalastria_bloodchief",
+     "count": 2
+    },
+    {
+     "cardId": "vindicate",
+     "count": 3
+    },
+    {
+     "cardId": "the_jet_witch",
+     "count": 1
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 2
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 2
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 1
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 2
+    },
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "obsidian_observatory",
+     "count": 1
+    },
+    {
+     "cardId": "badlands",
+     "count": 4
+    },
+    {
+     "cardId": "plateau",
+     "count": 4
+    },
+    {
+     "cardId": "scrubland",
+     "count": 4
+    },
+    {
+     "cardId": "sacred_foundry",
+     "count": 1
+    },
+    {
+     "cardId": "godless_shrine",
+     "count": 1
+    },
+    {
+     "cardId": "shevelport",
+     "count": 1
+    },
+    {
+     "cardId": "tallyflame_court",
+     "count": 1
+    },
+    {
+     "cardId": "tundra",
+     "count": 1
+    },
+    {
+     "cardId": "savannah",
+     "count": 1
+    },
+    {
+     "cardId": "blood_crypt",
+     "count": 1
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 1
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    }
+   ]
   }
  ]
 }

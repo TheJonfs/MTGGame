@@ -25,8 +25,8 @@ import { cardRating, type CardRatingTable } from "./rating.js";
 import { WorldRng } from "./rng.js";
 
 export interface LibraryList { key: string; archetype: "aggro" | "midrange" | "control"; decklist: Decklist }
-/** The Open's round-robin means — a list's measured strength. Post-S53: re-measured on pilot 97 with the two lists contributed from play (the Sweep, the Depths): 9,100 games, analysis/runs/open_rr14.json. (S46's were levy 68, wurmspeaker 61, warband 60, coin 59, muster 57, loop 55, ford 53, enchantress 51, tally 39, locks 39, undertow 38, larder 31.) */
-export const OPEN_MEANS: Record<string, number> = { "open:levy": 65, "open:wurmspeaker": 62, "open:coin": 59, "open:sweep": 59, "open:depths": 57, "open:muster": 53, "open:warband": 53, "open:loop": 53, "open:ford": 51, "open:enchantress": 50, "open:tally": 37, "open:undertow": 35, "open:locks": 35, "open:larder": 28 };
+/** The Open's round-robin means — a list's measured strength. Post-S53: re-measured on pilot 97 with the two lists contributed from play (the Sweep, the Depths): 9,100 games, analysis/runs/open_rr14.json. Post-S54: the Hearth (Chris's 18–1 Mardu list) measured alone against the fourteen on pilot 99 — 63.6% over 1,400 games; the others' means are not re-run with it. (S46's were levy 68, wurmspeaker 61, warband 60, coin 59, muster 57, loop 55, ford 53, enchantress 51, tally 39, locks 39, undertow 38, larder 31.) */
+export const OPEN_MEANS: Record<string, number> = { "open:levy": 65, "open:hearth": 64, "open:wurmspeaker": 62, "open:coin": 59, "open:sweep": 59, "open:depths": 57, "open:muster": 53, "open:warband": 53, "open:loop": 53, "open:ford": 51, "open:enchantress": 50, "open:tally": 37, "open:undertow": 35, "open:locks": 35, "open:larder": 28 };
 /** Post-S52 (Chris): the candidates are the TWELVE best-fitting lists (the Open's whole library, not its top five),
  * and the noise has a noise of its own — a seat is STOCK (the list as written), a LIGHT tinkerer (one or two swaps),
  * or a HEAVY one (four to six); the light and the heavy also move a land. The shares are a quarter, a half, a quarter. */
