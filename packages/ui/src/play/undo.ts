@@ -5,7 +5,8 @@
  *
  * The rule (Chris): an action can be taken back only while nothing irreversible has happened since — no card has left
  * a library (a draw, a mill, a search), nothing has been shuffled or drawn at random, no hidden card has been shown,
- * no damage has been dealt and no life total has moved, and the opponent has made no decision. The ledger keeps a SEAL counter that grows at each of those moments; a mark
+ * no damage has been dealt and no life total has moved, and the opponent has done nothing but pass priority (a spell cast, an ability, a block or a choice of theirs seals;
+ * letting ours resolve does not). The ledger keeps a SEAL counter that grows at each of those moments; a mark
  * (the decision the player was shown, as a count of the log's actions before it) can be taken back only while the
  * seal still reads what it read when the mark was made. Taking a mark back returns the game to that moment, where the
  * seal read the same — so the mark before it can be judged by the same comparison.

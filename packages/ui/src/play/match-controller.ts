@@ -387,7 +387,10 @@ export class MatchController {
       if (!st.live) { st.live = true; onLive?.(); }
       if (req.player === this.humanSeat) return this.human.chooseAction(view, req);
       const a = await this.ai.chooseAction(view, req);
-      this.undoLedger.sealNow(); // the opponent decided something: nothing before it comes back
+      // the opponent DID something: nothing before it comes back. Passing priority is not that (Chris, taking it out
+      // for a spin: a Dark Ritual cast in the draw step could not be taken back — the opponent is asked to pass after
+      // nearly every spell, so a pass that sealed closed the take-back the moment anything resolved).
+      if (a.type !== "pass") this.undoLedger.sealNow();
       return a;
     };
     const decklists: [string[], string[]] = [expandDecklist(this.spec.players[0].decklist), expandDecklist(this.spec.players[1].decklist)];

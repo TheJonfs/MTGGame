@@ -95,6 +95,28 @@ describe("the take-back (post-S54, Chris — a misclick mid-loop cost a match)",
     d.concede();
   }, 30_000);
 
+  it("Chris's case — a Dark Ritual cast in the draw step by mistake: it resolves (the opponent, with lands and instants, only passes) and still comes back — the Ritual in hand, the mana gone, the draw step again (the fuzz below holds the other half: nothing comes back past an opponent's action)", async () => {
+    const mk = (deck: string, aiDeck: string, aiLand: string, mine: string[], theirs: string[]) => new MatchController(pool, { humanSeat: 0, seed: 31, aiDelayMs: 0, custom: {
+      human: { name: "me", decklist: [{ cardId: deck, count: 30 }, { cardId: "swamp", count: 10 }] },
+      enemy: { name: "ai", decklist: [{ cardId: aiDeck, count: 30 }, { cardId: aiLand, count: 10 }], difficulty: "master", archetype: "control" },
+      rules: { startingLife: 20, ante: 0, startingPlayer: 1 }, modifiers: [...mine.map((x) => perm(0, x)), ...theirs.map((x) => perm(1, x))],
+    } });
+    const c = mk("dark_ritual", "lightning_bolt", "mountain", ["swamp"], ["mountain", "mountain"]);
+    c.stops.add("DRAW" as never);
+    void c.start();
+    await waitFor(c, () => c.phase.kind === "priority" && c.game.state.step === "DRAW" && c.game.state.activePlayer === 0);
+    const before = stableStringify(c.game.state);
+    c.clickHand(inHand(c, "dark_ritual")); if (c.phase.kind === "confirmCast") c.confirmCast();
+    for (let g = 0; g < 100 && !(c.phase.kind === "priority" && c.game.state.stack.length === 0); g++) await tick();
+    expect(c.game.state.players[0].manaPool.B).toBe(3); // it resolved
+    expect(c.game.state.step).toBe("DRAW");
+    expect(c.undoLabel()).toBe("casting Dark Ritual");
+    c.undo();
+    await waitFor(c, () => c.phase.kind === "priority");
+    expect(stableStringify(c.game.state)).toBe(before);
+    c.concede();
+  }, 30_000);
+
   it("an attack streamed out by one confirm comes back whole: the declaration is asked again with nobody attacking", async () => {
     const c = await atMain({ mine: ["grizzly_bears", "grizzly_bears", "hill_giant"] });
     c.stops.add("DECLARE_ATTACKERS" as never); c.stops.add("DECLARE_BLOCKERS" as never); // our own stops: the attack is declared and we hold priority before damage
@@ -133,7 +155,7 @@ describe("the take-back (post-S54, Chris — a misclick mid-loop cost a match)",
 
   it("fuzz: random play with random take-backs on real lists — every game ends, and its log replays to the very game that ended (a take-back leaves no trace in the log)", async () => {
     const keys = ["loop", "sweep", "hearth", "depths", "muster", "coin"];
-    let undone = 0, offered = 0, games = 0, turns = 0, repeated = 0;
+    let undone = 0, offered = 0, games = 0, turns = 0, repeated = 0, opponentPassed = 0;
     for (let g = 0; g < 12; g++) {
       let r = 1000 + g; const rnd = () => { r = (r * 1103515245 + 12345) & 0x7fffffff; return r / 0x7fffffff; };
       const mine = OPEN_DECKS[keys[g % keys.length]!]!, theirs = OPEN_DECKS[keys[(g + 3) % keys.length]!]!;
@@ -144,7 +166,13 @@ describe("the take-back (post-S54, Chris — a misclick mid-loop cost a match)",
         await tick();
         if (c.result) break;
         if (c.game.state.turn > 14) break;
-        if (c.canUndo()) { offered++; if (rnd() < UNDO_P) { c.undo(); undone++; continue; } }
+        if (c.canUndo()) {
+          // whenever a take-back is on offer, the opponent has done nothing but pass since the decision it returns to
+          const mark = (c as unknown as { undoLedger: { top(): { actions: number } | null } }).undoLedger.top()!;
+          const since = c.log.entries.filter((e) => e.t === "ACTION").slice(mark.actions) as { player: number; action: Action }[];
+          expect(since.filter((e) => e.player !== c.humanSeat && e.action.type !== "pass"), `game ${g}`).toEqual([]);
+          opponentPassed += since.filter((e) => e.player !== c.humanSeat).length;
+          offered++; if (rnd() < UNDO_P) { c.undo(); undone++; continue; } }
         if (c.loopOffer && rnd() < 0.5) { c.repeatLoop(1 + Math.floor(rnd() * 3)); repeated++; continue; } // and any loop random play stumbles into is repeated
         if (c.phase.kind === "stackStop") { c.continueFromStop(); continue; }
         const cur = inner.human.current();
@@ -167,6 +195,7 @@ describe("the take-back (post-S54, Chris — a misclick mid-loop cost a match)",
     expect(games).toBe(12);
     expect(undone).toBeGreaterThan(40);
     expect(offered).toBeGreaterThan(undone);
+    expect(opponentPassed).toBeGreaterThan(0); // and it does stay on offer across an opponent's pass
     expect(repeated).toBeGreaterThanOrEqual(0); // rare in random play; whatever it does, the log above still replays
     expect(turns).toBeGreaterThan(60); // the games were played, not conceded at the door
   }, 300_000);
