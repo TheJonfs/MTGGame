@@ -1,6 +1,7 @@
 import { ArrayLog, SeededRng } from "@shandalar/core";
 import { cardColors, manaValue, parseManaCost, type CardDef, type ResolvedTarget } from "@shandalar/cards";
 import { audio, castTypeSfxCue, enterSfxCue } from "../audio/audio.js";
+import { UNDO_ENABLED, UndoLedger } from "./undo.js";
 import {
   DEFAULT_RULES,
   Game,
@@ -195,8 +196,16 @@ export type UiPhase =
   | { kind: "gameOver"; result: MatchResult };
 
 export class MatchController {
-  readonly game: Game;
-  readonly log = new ArrayLog<Action>();
+  /** The live game and its log. Post-S54: a take-back replaces both with a rewound game's (never cache them). */
+  game: Game;
+  log: ArrayLog<Action>;
+  private built: { game: Game; log: ArrayLog<Action>; isLive: () => boolean };
+  private ai!: Agent;
+  private rules!: ConstructorParameters<typeof Game>[5];
+  /** Post-S54: the take-back's ledger (play/undo.ts). */
+  private readonly undoLedger = new UndoLedger();
+  /** The decision on screen, as the log's action count before it — marked when the player answers it. */
+  private undoPending: number | null = null;
   readonly spec: MatchSpec;
   readonly seed: number;
   readonly humanSeat: PlayerId;
@@ -343,37 +352,70 @@ export class MatchController {
     };
 
     this.human.onRequest = (view, request) => this.onHumanRequest(view, request);
-    const agents: [Agent, Agent] = opts.humanSeat === 0 ? [this.human, ai] : [ai, this.human];
-    const rng = new SeededRng(this.seed, this.log);
-    const source: ActionSource = (req, view) => agents[req.player].chooseAction(view, req);
-    const decklists: [string[], string[]] = [
-      expandDecklist(this.spec.players[0].decklist),
-      expandDecklist(this.spec.players[1].decklist),
-    ];
-    this.game = new Game(pool, decklists, rng, this.log, source, {
-      startingLife,
-      handSize: 7,
-      maxTurns: DEFAULT_RULES.maxTurns,
-      ante,
-      ...(startingPlayer !== undefined ? { startingPlayer } : {}), // S22 r2: the coin flip
-    });
-
-    // S11: observe lone-pass windows so an opponent's spell can be shown
-    // before it resolves even when nobody can respond (ADR-014 auto-take).
-    this.game.onLonePass = (player, view) => this.onLonePass(player, view);
+    this.ai = ai;
+    this.rules = { startingLife, handSize: 7, maxTurns: DEFAULT_RULES.maxTurns, ante, ...(startingPlayer !== undefined ? { startingPlayer } : {}) }; // S22 r2: the coin flip
+    const built = this.buildGame([]);
+    this.game = built.game; this.log = built.log; this.built = built;
 
     // Dev handle for debugging live matches from the console.
     (globalThis as { __mc?: MatchController }).__mc = this;
+  }
+
+  /**
+   * The game and everything hung on it — its log, its seeded RNG, the two seats' action source and the event hooks.
+   * Post-S54 (the take-back): built from a PREFIX of logged actions, it replays them silently (same seed + same
+   * actions ⇒ the same game, principle 1: the hooks, the sounds and both agents stay out of it) and goes LIVE at the
+   * first decision past the prefix — `onLive` runs there, before the request reaches the human. With an empty prefix
+   * it is live from the start: the game the constructor builds.
+   */
+  private buildGame(prefix: { player: PlayerId; action: Action }[], onLive?: () => void): { game: Game; log: ArrayLog<Action>; isLive: () => boolean } {
+    const pool = this.pool;
+    const st = { live: prefix.length === 0 };
+    const log = new ArrayLog<Action>();
+    // a random draw is irreversible: it seals the take-back (the replay's own draws are the same draws again)
+    const rngLog = { append: (e: Parameters<ArrayLog<Action>["append"]>[0]) => { if (st.live) this.undoLedger.sealNow(); log.append(e); } };
+    const rng = new SeededRng(this.seed, rngLog);
+    let cursor = 0;
+    const source: ActionSource = async (req, view) => {
+      if (cursor < prefix.length) {
+        const e = prefix[cursor]!;
+        if (e.player !== req.player) throw new Error(`take-back: the replay diverged at decision ${cursor}`);
+        cursor += 1;
+        return e.action;
+      }
+      if (!st.live) { st.live = true; onLive?.(); }
+      if (req.player === this.humanSeat) return this.human.chooseAction(view, req);
+      const a = await this.ai.chooseAction(view, req);
+      this.undoLedger.sealNow(); // the opponent decided something: nothing before it comes back
+      return a;
+    };
+    const decklists: [string[], string[]] = [expandDecklist(this.spec.players[0].decklist), expandDecklist(this.spec.players[1].decklist)];
+    const game = new Game(pool, decklists, rng, log, source, this.rules);
+
+    // S11: observe lone-pass windows so an opponent's spell can be shown
+    // before it resolves even when nobody can respond (ADR-014 auto-take).
+    game.onLonePass = (player, view) => (st.live ? this.onLonePass(player, view) : Promise.resolve());
+
+    // every hook below is silent while a prefix replays
+    const on = ((name: never, fn: (e: never) => void) => game.ctx.bus.on(name, ((e: never) => { if (st.live) fn(e); }) as never)) as typeof game.ctx.bus.on;
+    // the take-back's seals: a card leaves a library, a hidden card is shown, a library is shuffled ...
+    on("ZONE_CHANGE", (e) => { if (e.from === "library" || (e.from === "hand" && e.owner !== this.humanSeat)) this.undoLedger.sealNow(); });
+    on("SHUFFLED", () => this.undoLedger.sealNow());
+    // ... and the scoreboard moves: damage dealt and life gained or lost are done (an attack is not taken back after it lands)
+    on("DAMAGE", () => this.undoLedger.sealNow());
+    on("LIFE_CHANGE", () => this.undoLedger.sealNow());
+    on("REVEALED", () => this.undoLedger.sealNow());
+    on("SEARCH_REVEAL", () => this.undoLedger.sealNow());
 
     // Combat visibility (S10 playtest): re-render on step changes so the lane
     // paints during auto-resolved combat, and narrate incoming attacks/damage
     // that produce no human pause (ADR-014 auto-takes pass-only windows).
-    const bus = this.game.ctx.bus;
+    const bus = game.ctx.bus;
     // Objects get fresh ids on every zone move (CR 400.7); track every id's
     // cardId from live ZONE_CHANGE events so the play log can name historical
     // actions. (Display-side masking keeps hidden info hidden.)
-    bus.on("SACRIFICED", (e) => this.pendingSacIds.add(e.objectId)); // S24 r5: the cause marker rings Sacrifice, not Destroy
-    bus.on("ZONE_CHANGE", (e) => {
+    on("SACRIFICED", (e) => this.pendingSacIds.add(e.objectId)); // S24 r5: the cause marker rings Sacrifice, not Destroy
+    on("ZONE_CHANGE", (e) => {
       this.idNames.set(e.oldId, e.cardId);
       this.idNames.set(e.newId, e.cardId);
       // S24 r3: ENTERING PLAY rings the permanent's colour — resolved creatures, played and
@@ -389,13 +431,13 @@ export class MatchController {
         else this.throttledSfx("sfx.destroy");
       }
     });
-    bus.on("DISCARD", () => this.throttledSfx("sfx.discard")); // S24 r5 (a Mind Rot's two rings once)
-    bus.on("BLOCKERS_DECLARED", (e) => {
+    on("DISCARD", () => this.throttledSfx("sfx.discard")); // S24 r5 (a Mind Rot's two rings once)
+    on("BLOCKERS_DECLARED", (e) => {
       if (e.blocks.length > 0) audio.sfx("sfx.block"); // S24 r5: ONE ring at the block commit
     });
-    bus.on("STEP_BEGIN", () => {
+    on("STEP_BEGIN", () => {
       // S24 r3: End Turn — the turn number rolling over IS the previous turn ending.
-      const turn = this.game.state.turn;
+      const turn = game.state.turn;
       if (turn > this.lastSfxTurn) {
         if (this.lastSfxTurn > 0) audio.sfx("sfx.end-turn"); // silent at the game's first turn
         this.lastSfxTurn = turn;
@@ -403,11 +445,11 @@ export class MatchController {
       this.emit();
     });
     // Bursts ring once (opening hands, the untap step); singles ring normally.
-    bus.on("CARD_DRAWN", () => this.throttledSfx("sfx.draw"));
-    bus.on("SHUFFLED", () => audio.sfx("sfx.shuffle"));
-    bus.on("TAPPED", () => audio.sfx("sfx.tap"));
-    bus.on("UNTAPPED", () => this.throttledSfx("sfx.untap"));
-    bus.on("SPELL_CAST", (e) => {
+    on("CARD_DRAWN", () => this.throttledSfx("sfx.draw"));
+    on("SHUFFLED", () => audio.sfx("sfx.shuffle"));
+    on("TAPPED", () => audio.sfx("sfx.tap"));
+    on("UNTAPPED", () => this.throttledSfx("sfx.untap"));
+    on("SPELL_CAST", (e) => {
       this.snapCardId = e.cardId; // inspector snap — event-driven, so it fires
       this.emit(); //              even when the spell resolves render-free
       // S24 r3 (Chris's sequencing): the CAST rings the card's TYPE — Summon for a creature,
@@ -416,10 +458,10 @@ export class MatchController {
       const cue = d && castTypeSfxCue(d.types);
       if (cue) audio.sfx(cue);
     });
-    bus.on("ATTACKERS_DECLARED", (e) => {
+    on("ATTACKERS_DECLARED", (e) => {
       // S24 r3: ONE Attack sound at the commit (either seat), not one per attacker.
       if (e.attackers.length > 0) audio.sfx("sfx.attack");
-      const state = this.game.state;
+      const state = game.state;
       if (state.activePlayer === this.humanSeat) return; // your own attack is visible by construction
       if (e.attackers.length === 0) return; // no attack, nothing to block — no "No legal block: ." (post-S43)
       // S11 playtest: name each attacker's keywords — an un-pausable combat
@@ -433,24 +475,25 @@ export class MatchController {
           // Post-S42b (Chris's menace report): the LIVE keywords, not the printed ones — a granted menace or flying
           // (the Observatory's "creatures you control gain vigilance and menace") is what decides the block.
           // Post-S43: keyed by the attacker's id, not its index after the filter (a gone attacker shifted them).
-          const live = [...characteristics(this.game.ctx, id).keywords].filter((k) => ["flying", "menace", "reach", "trample", "first strike", "double strike", "deathtouch", "vigilance", "lifelink"].includes(k));
+          const live = [...characteristics(game.ctx, id).keywords].filter((k) => ["flying", "menace", "reach", "trample", "first strike", "double strike", "deathtouch", "vigilance", "lifelink"].includes(k));
           const kw = live.length ? ` (${live.join(", ")})` : "";
           return `${def?.name ?? state.objects[id]!.cardId}${kw}`;
         });
       if (names.length > 0) this.showNotice(`Opponent attacks with ${names.join(", ")}`);
       // Post-S42b (Chris's menace report): when the engine will auto-take "done" at declare blockers (ADR-014 — a lone
       // choice is never asked, so enterBlockers never runs) while you have creatures standing, say why NOW.
-      if (blockerChoices(this.game.ctx).length === 1) {
+      if (blockerChoices(game.ctx).length === 1) {
         const why = this.whyNoBlock();
         if (why) this.showNotice(`No legal block: ${why}`);
       }
     });
-    bus.on("DAMAGE", (e) => {
+    on("DAMAGE", (e) => {
       this.throttledSfx("sfx.damage"); // one ring per simultaneous batch (r4)
       if (e.target.kind === "player" && e.target.player === this.humanSeat && e.combat) {
         this.showNotice(`You take ${e.amount} combat damage (${pool.get(e.sourceCardId)?.name ?? e.sourceCardId})`);
       }
     });
+    return { game, log, isLive: () => st.live };
   }
 
   private showNotice(text: string): void {
@@ -468,16 +511,25 @@ export class MatchController {
 
   start(): Promise<MatchResult> {
     if (this.runPromise) return this.runPromise;
-    this.runPromise = this.game
-      .run(this.spec.modifiers)
-      .then(() => this.finish())
-      .catch((e) => {
+    this.runPromise = new Promise<MatchResult>((resolve, reject) => { this.resolveRun = resolve; this.rejectRun = reject; });
+    this.launch(this.game, this.runToken);
+    return this.runPromise;
+  }
+  /** The run that counts (post-S54: a take-back starts another game's run; the one it replaced never finishes). */
+  private runToken: object = {};
+  private resolveRun: ((r: MatchResult) => void) | null = null;
+  private rejectRun: ((e: unknown) => void) | null = null;
+  private launch(game: Game, token: object, failedBeforeLive?: () => void): void {
+    game.run(this.spec.modifiers).then(
+      () => { if (this.runToken === token) this.resolveRun?.(this.finish()); },
+      (e) => {
+        if (this.runToken !== token) { if (failedBeforeLive && this.rewinding) { console.error("take-back:", e); failedBeforeLive(); } return; }
         // Concede unwinds by resolving pending requests after result is set;
         // anything else is a real bug worth surfacing.
-        if (!this.conceding) throw e;
-        return this.finish();
-      });
-    return this.runPromise;
+        if (!this.conceding) { this.rejectRun?.(e); return; }
+        this.resolveRun?.(this.finish());
+      },
+    );
   }
 
   private finish(): MatchResult {
@@ -506,7 +558,7 @@ export class MatchController {
     this.game.state.result = { winner: (this.humanSeat === 0 ? 1 : 0) as PlayerId, reason: "CONCEDE" };
     this.stackStopResolve?.();
     const pending = this.human.current();
-    if (pending) this.human.submit(pending.request.actions[0]!);
+    if (pending) this.answer(pending.request.actions[0]!, true);
   }
 
   /** S13 round 2 (Chris): playtest convenience — end the duel as an opponent
@@ -518,7 +570,7 @@ export class MatchController {
     this.game.state.result = { winner: this.humanSeat, reason: "CONCEDE" };
     this.stackStopResolve?.();
     const pending = this.human.current();
-    if (pending) this.human.submit(pending.request.actions[0]!);
+    if (pending) this.answer(pending.request.actions[0]!, true);
   }
 
   /** Saved-game payload for the viewer route / download (shandalar-log-v1). */
@@ -562,7 +614,7 @@ export class MatchController {
 
   private onHumanRequest(view: GameView, request: ActionRequest): void {
     if (this.conceding) {
-      this.human.submit(request.actions[0]!);
+      this.answer(request.actions[0]!, true);
       return;
     }
     // Streaming a confirmed combat stage: answer from the queue.
@@ -587,6 +639,10 @@ export class MatchController {
       if (request.purpose === "priority" && this.resumeManualTap(request)) return;
       this.manualTapPending = null;
     }
+    // post-S54: this decision is the player's to answer — the take-back's mark, made when they do. A request that
+    // shows hidden cards (a search, a look) seals everything before it.
+    if (request.revealed?.length || request.actions.some((a) => { const z = this.game.state.objects[(a as { objectId?: string }).objectId ?? ""]?.zone; return z === "library"; })) this.undoLedger.sealNow();
+    this.undoPending = this.log.entries.reduce((n, e) => n + (e.t === "ACTION" ? 1 : 0), 0);
     switch (request.purpose) {
       case "priority":
         this.enterPriority(view, request);
@@ -692,11 +748,75 @@ export class MatchController {
     return p.request;
   }
 
+  /** Every answer to the engine goes through here. Post-S54 (the take-back): an answer the PLAYER gave to a decision
+   * they were shown marks that decision as one that can be taken back; an answer the controller gives for them (an
+   * auto-pass, a concession's drain) marks nothing. The later answers of one gesture — a staged attack streaming
+   * out, a manual payment's taps — arrive with no decision pending, so the whole gesture comes back as one. */
+  private answer(action: Action, auto = false): void {
+    if (!auto && this.undoPending !== null && UNDO_ENABLED) this.undoLedger.mark(this.undoPending, this.describeAction(action));
+    this.undoPending = null;
+    this.human.submit(action);
+  }
+  private describeAction(a: Action): string {
+    const name = (id: string | undefined) => { const c = id ? (this.game.state.objects[id]?.cardId ?? this.idNames.get(id)) : undefined; return c ? (this.pool.get(c)?.name ?? c) : ""; };
+    const id = (a as { objectId?: string }).objectId;
+    switch (a.type) {
+      case "pass": return "passing";
+      case "castSpell": return `casting ${name(id)}`;
+      case "playLand": return `playing ${name(id)}`;
+      case "activateAbility": return `${name(id)}'s ability`;
+      case "tapForMana": return `tapping ${name(id)}`;
+      case "declareAttacker": case "doneDeclaringAttackers": return "the attack";
+      case "declareBlocker": case "doneDeclaringBlockers": return "the blocks";
+      default: return "that choice";
+    }
+  }
+
+  // ---------- post-S54: the take-back ----------
+
+  private rewinding = false;
+  /** The first decision after a take-back is always shown (never auto-passed: the player came back to choose). */
+  private undoForceStop = false;
+  /** What a take-back would undo ("casting Lightning Bolt"), or null when nothing can be taken back: nothing
+   * irreversible may have happened since the player's last decision (play/undo.ts has the rule). */
+  undoLabel(): string | null {
+    if (!UNDO_ENABLED || this.result || this.conceding || this.rewinding || !this.built.isLive() || !(this.human.current() || this.phase.kind === "stackStop")) return null; // a decision of ours, or a pause the game holds for us (blocks declared, an opposing spell): either way it waits
+    return this.undoLedger.top()?.label ?? null;
+  }
+  canUndo(): boolean { return this.undoLabel() !== null; }
+  /**
+   * Take back the player's last decision: the game is REBUILT from its own log up to that decision (the same seed and
+   * the same actions are the same game — nothing is un-done in place), silently, beside the live one; only when the
+   * rebuilt game stands at that decision is it swapped in. If the rebuild fails the live game is untouched.
+   */
+  undo(): void {
+    if (!this.canUndo()) return;
+    const mark = this.undoLedger.pop()!;
+    const prefix = this.log.entries.flatMap((e) => (e.t === "ACTION" ? [{ player: e.player as PlayerId, action: e.action }] : [])).slice(0, mark.actions);
+    this.rewinding = true;
+    const token = {};
+    const swap = (): void => {
+      this.human.abandon(); // the old game waits on a request nobody will answer; it is dropped
+      this.game = built.game; this.log = built.log; this.built = built; this.runToken = token;
+      this.declQueue = null; this.declStage = null; this.manualTapPending = null; this.untapQueue = null; this.ff = null;
+      this.stackStopResolve = null; this.stopReason = null; this.undoPending = null; this.undoForceStop = true;
+      this.phase = { kind: "waiting" };
+      this.rewinding = false;
+    };
+    const built = this.buildGame(prefix, swap);
+    if (prefix.length === 0) swap();
+    this.launch(built.game, token, () => { // the rebuild failed before it went live: keep the game on screen
+      this.rewinding = false; this.undoLedger.clear();
+      this.showNotice("That could not be taken back.");
+    });
+    this.emit();
+  }
+
   private submit(action: Action): void {
     this.phase = { kind: "waiting" };
     this.stopReason = null;
     if (action.type === "castSpell") this.lastCast = action;
-    this.human.submit(action);
+    this.answer(action);
     this.emit();
   }
 
@@ -853,7 +973,7 @@ export class MatchController {
     }
     this.manualTapPending?.tapped.push(objectId);
     this.phase = { kind: "waiting" };
-    this.human.submit(taps[0]!); // the next request re-enters manual tapping
+    this.answer(taps[0]!); // the next request re-enters manual tapping
     this.emit();
   }
 
@@ -885,7 +1005,7 @@ export class MatchController {
     if (!tap) return;
     if (this.phase.back.kind === "manualTap") this.manualTapPending?.tapped.push(tap.objectId);
     this.phase = { kind: "waiting" };
-    this.human.submit(tap);
+    this.answer(tap);
     this.emit();
   }
 
@@ -895,7 +1015,7 @@ export class MatchController {
     while (queue.length > 0) {
       const id = queue.shift()!;
       const untap = request.actions.find((a) => a.type === "untapForMana" && a.objectId === id);
-      if (untap) { this.phase = { kind: "waiting" }; this.human.submit(untap); return true; }
+      if (untap) { this.phase = { kind: "waiting" }; this.answer(untap); return true; }
     }
     return false;
   }
@@ -938,7 +1058,7 @@ export class MatchController {
       } else {
         const pass = request.actions.find((a) => a.type === "pass");
         if (pass) {
-          this.human.submit(pass);
+          this.answer(pass, true);
           return;
         }
         this.ff = null; // no pass on offer: fall back to a normal pause
@@ -999,11 +1119,12 @@ export class MatchController {
     const combatMoment = this.ff ? null : this.pendingCombatMoment();
     // r9: mana the player floated on purpose (a response-window tap) keeps the window open — passing would waste it.
     const floating = Object.values(this.game.state.players[this.humanSeat].manaPool).reduce((n, v) => n + v, 0) > 0;
-    const stopHere = this.stops.has(view.step as Step) || this.holdArmed || ownTurnAnchor || oppSpell !== null || combatMoment !== null || floating;
+    const stopHere = this.stops.has(view.step as Step) || this.holdArmed || ownTurnAnchor || oppSpell !== null || combatMoment !== null || floating || this.undoForceStop;
+    this.undoForceStop = false;
     if (!meaningful && !stopHere) {
       const pass = request.actions.find((a) => a.type === "pass");
       if (pass) {
-        this.human.submit(pass);
+        this.answer(pass, true);
         return; // no phase change, no flicker
       }
     }
@@ -1119,7 +1240,7 @@ export class MatchController {
         return;
       }
       this.phase = { kind: "waiting" };
-      this.human.submit(taps[0]!);
+      this.answer(taps[0]!);
       this.emit();
       return;
     }
@@ -1135,7 +1256,7 @@ export class MatchController {
     const untaps = cur.request.actions.filter((a) => a.type === "untapForMana" && a.objectId === objectId);
     if (untaps.length === 0) return;
     this.phase = { kind: "waiting" };
-    this.human.submit(untaps[0]!); // duals: the engine returns exactly what that tap floated per symbol; first offer is the click's pick
+    this.answer(untaps[0]!); // duals: the engine returns exactly what that tap floated per symbol; first offer is the click's pick
     this.emit();
   }
 
@@ -1384,7 +1505,7 @@ export class MatchController {
       // Nothing can attack: auto-done, no pause.
       const done = request.actions.find((a) => a.type === "doneDeclaringAttackers");
       if (done) {
-        this.human.submit(done);
+        this.answer(done, true);
         return;
       }
     }
@@ -1423,7 +1544,7 @@ export class MatchController {
     const stagedPairs = this.phase.kind === "blockers" ? this.phase.stagedPairs : [];
     if (options.size === 0 && done && stagedPairs.length === 0 && !(this.pauseBlockersWithUntapped && this.humanHasUntappedCreature())) {
       // No legal blocks at all: auto-done, no pause (the ATTACKERS_DECLARED narration has already said why).
-      this.human.submit(request.actions.find((a) => a.type === "doneDeclaringBlockers")!);
+      this.answer(request.actions.find((a) => a.type === "doneDeclaringBlockers")!, true);
       return;
     }
     this.phase = { kind: "blockers", options, stagedPairs, pendingBlocker: null, mustAddBlocker: !done };
@@ -1508,7 +1629,7 @@ export class MatchController {
       const offered = request.actions.find((a) => JSON.stringify(a) === JSON.stringify(next));
       if (!offered) break; // shouldn't happen: enumerator re-offers independent declarations
       queue.shift();
-      this.human.submit(offered);
+      this.answer(offered);
       return; // the next request re-enters streamDeclarations
     }
     const done = request.actions.find(
@@ -1516,7 +1637,7 @@ export class MatchController {
     );
     this.declQueue = null; this.declStage = null;
     if (done) {
-      this.human.submit(done);
+      this.answer(done);
       return;
     }
     // Menace: a second blocker is owed. Re-enter staging with what's offered.

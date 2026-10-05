@@ -175,6 +175,12 @@ function PromptBar({ c, phase, confirmLabel }: { c: MatchController; phase: UiPh
         </>
       )}
       <span style={{ flex: 1 }} />
+      {/* post-S54 (Chris): the take-back — at the rail's far end, away from Pass; only while nothing irreversible has happened since (play/undo.ts) */}
+      {(phase.kind === "priority" || phase.kind === "stackStop" || phase.kind === "attackers" || phase.kind === "blockers" || phase.kind === "dialog") && c.undoLabel() && (
+        <button className="linkish" title={`Take back ${c.undoLabel()} — allowed while no card has been drawn or revealed, no damage dealt, and the opponent has decided nothing since.`} onClick={() => c.undo()}>
+          ↶ take back {c.undoLabel()}
+        </button>
+      )}
     </div>
   );
 }

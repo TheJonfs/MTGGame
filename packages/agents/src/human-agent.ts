@@ -33,6 +33,9 @@ export class HumanAgent implements Agent {
     return this.pending ? { view: this.pending.view, request: this.pending.request } : null;
   }
 
+  /** Post-S54 (the take-back): forget the pending request — its game has been replaced by a rewound one. */
+  abandon(): void { this.pending = null; }
+
   /** Answer the pending request. Throws if nothing is pending or the action isn't offered. */
   submit(action: Action): void {
     const p = this.pending;
