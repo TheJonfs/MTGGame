@@ -14,6 +14,9 @@ import {
 } from "./event.js";
 import type { ConvocationPackData } from "./packs.js";
 import { OPEN_DECKS } from "@shandalar/sim/open-decks";
+import { OPEN_FORMAT } from "./formats.js";
+import { buildSideboard } from "./constructed-builder.js";
+import { AI_SIDEBOARD_CONSTRUCTED, aiSideboard, answersCreatures, answersRelics } from "./sideboard-ai.js";
 import { checkEventDeck, checkSideboard, newConstructedEvent, recordSeries, registerDeck, registerDecklist, seatForGame } from "./event.js";
 
 /** S54: the difficulty, the field's strength, the ledger trim and the short Convocation. Its own file: a test file's
@@ -161,5 +164,24 @@ describe("the Convocation after S54", () => {
     const after = recordSeries(g2.event, p.a, p.b!, done);
     expect(after.field[0]!.deck).toEqual(deck);
     expect(after.field[0]!.sideboard).toEqual(side);
+  });
+
+  it("post-S55 (Chris's matchup study) — sideboarding reads plans: the Pall never sideboards out a card of its own plan (it was cutting two Buried Alives for two Tendrils); against the Pall the graveyard exile comes in and STAYS in, and counterspells are not taken out", () => {
+    const pall = OPEN_DECKS.pall!, n = (l: { cardId: string; count: number }[], id: string) => l.find((e) => e.cardId === id)?.count ?? 0;
+    for (const k of ["coin", "muster", "undertow", "levy", "wurmspeaker"]) {
+      const sb = aiSideboard(pall.decklist, [...pall.sideboard!], OPEN_DECKS[k]!.decklist, cards, rating, AI_SIDEBOARD_CONSTRUCTED);
+      for (const id of ["buried_alive", "zombify", "the_usher", "the_jet_witch", "demonic_tutor", "dark_ritual", "black_lotus"]) expect(n(sb.deck, id), `${id} against ${k}`).toBe(n(pall.decklist, id));
+      expect(sb.deck.reduce((a, e) => a + e.count, 0)).toBe(60);
+    }
+    for (const k of ["levy", "sweep", "hearth", "coin", "locks", "muster"]) {
+      const o = OPEN_DECKS[k]!, fifteen = buildSideboard(o.decklist, OPEN_FORMAT, rating, cards, answersRelics, answersCreatures);
+      expect(n(fifteen, "tormods_crypt") + n(fifteen, "faerie_macabre"), k).toBe(4);
+      const sb = aiSideboard(o.decklist, fifteen, pall.decklist, cards, rating, AI_SIDEBOARD_CONSTRUCTED);
+      expect(n(sb.deck, "tormods_crypt") + n(sb.deck, "faerie_macabre"), `the hate stays in for ${k}`).toBe(4); // the black lists' creature answers used to swap three back out
+      for (const c of ["counterspell", "undermine", "absorb", "essence_scatter"]) expect(n(sb.deck, c), `${c} in ${k}`).toBe(n(o.decklist, c));
+    }
+    // and against a list with no plan the Locks' counters still go out for a creature deck, as before
+    const locks = OPEN_DECKS.locks!, sb = aiSideboard(locks.decklist, buildSideboard(locks.decklist, OPEN_FORMAT, rating, cards, answersRelics, answersCreatures), OPEN_DECKS.muster!.decklist, cards, rating, AI_SIDEBOARD_CONSTRUCTED);
+    expect(sb.swaps.some((x) => x.rule === "counters")).toBe(true);
   });
 });

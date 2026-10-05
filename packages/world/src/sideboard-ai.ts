@@ -19,6 +19,7 @@ import { cardColors, type CardDef } from "@shandalar/cards";
 import type { Decklist } from "./state.js";
 import { isBasic } from "./legality.js";
 import { cardRating, type CardRatingTable } from "./rating.js";
+import { PLANS, matchPlan } from "@shandalar/agents";
 
 export const AI_SIDEBOARD = { relicsSeen: 3, creaturesSeen: 15, perRule: 2 } as const;
 /** Post-S54 (Chris: Constructed sideboards): the same three rules over sixty cards and a registered fifteen — a deck
@@ -63,13 +64,19 @@ export function aiSideboard(deck: Decklist, sideboard: Decklist, opponentDeck: D
   const manaOnly = (d: CardDef) => (d.abilities ?? []).length > 0 && (d.abilities ?? []).every((a) => a.kind === "activated" && a.effects.every((e) => e.type === "addMana"));
   const oppRelics = opp.filter((d) => !d.types.includes("Creature") && !d.types.includes("Land") && (d.types.includes("Artifact") || d.types.includes("Enchantment")) && !manaOnly(d)).length;
   const oppGraveyard = opp.filter(usesGraveyard).length;
+  // Post-S55 (Chris's matchup study: the Pall's own sideboarding cut two Buried Alives for two Tendrils, and the Locks
+  // took their Counterspells out against it): the rules read PLANS. A deck never sideboards out a card of its own plan
+  // (its lowest-RATED cards are the plan's — a card that only fills a graveyard rates badly); and against a plan whose
+  // answers name counterspells, the counters stay in.
+  const myPlan = matchPlan(deck, PLANS), theirPlan = matchPlan(opponentDeck, PLANS);
+  const planCards = new Set(myPlan ? [myPlan.piece, ...myPlan.setup.map((x) => x.card), ...myPlan.start.map((x) => x.card), ...myPlan.dig, ...myPlan.fuel] : []);
   const swaps: AiSideboarding["swaps"] = [];
   // S55 (rule 4), first: its answers come in whatever the deck's colours, for the lowest-rated cards that answer nothing
   if (terms.graveyardSeen !== undefined && oppGraveyard >= terms.graveyardSeen) {
     for (let n = 0; n < (terms.graveyardIn ?? terms.perRule); n++) {
       const ins = side.filter((id) => answersGraveyards(def(id)) && (usableByAnyDeck(def(id)) || castable(id))).sort((a, b) => a.localeCompare(b));
       const inId = n % 2 === 0 ? ins[0] : ins[ins.length - 1]; // one of each kind in turn (the Crypt on the board, the Macabre in hand)
-      const outId = main.filter((id) => !def(id).types.includes("Land") && !answersGraveyards(def(id)) && !answersCreatures(def(id)) && !answersRelics(def(id)) && !isCounter(def(id))).sort((a, b) => rate(a) - rate(b) || b.localeCompare(a))[0];
+      const outId = main.filter((id) => !def(id).types.includes("Land") && !planCards.has(id) && !answersGraveyards(def(id)) && !answersCreatures(def(id)) && !answersRelics(def(id)) && !isCounter(def(id))).sort((a, b) => rate(a) - rate(b) || b.localeCompare(a))[0];
       if (!inId || !outId) break;
       main.splice(main.indexOf(outId), 1, inId); side.splice(side.indexOf(inId), 1, outId);
       swaps.push({ out: outId, in: inId, rule: "graveyards" });
@@ -80,16 +87,17 @@ export function aiSideboard(deck: Decklist, sideboard: Decklist, opponentDeck: D
       const inId = side.filter((id) => castable(id) && wantIn(def(id))).sort((a, b) => rate(b) - rate(a) || a.localeCompare(b))[0];
       // (post-S55: never a graveyard answer rule 4 has just brought in — unrated, they read as the deck's worst cards,
       // and the black lists' creature answers were swapping three of the four straight back out)
-      const outId = main.filter((id) => !def(id).types.includes("Land") && mayLeave(def(id)) && !answersGraveyards(def(id))).sort((a, b) => rate(a) - rate(b) || b.localeCompare(a))[0];
+      const outId = main.filter((id) => !def(id).types.includes("Land") && !planCards.has(id) && mayLeave(def(id)) && !answersGraveyards(def(id))).sort((a, b) => rate(a) - rate(b) || b.localeCompare(a))[0];
       if (!inId || !outId || (onlyIfBetter && rate(inId) <= rate(outId))) return;
       main.splice(main.indexOf(outId), 1, inId); side.splice(side.indexOf(inId), 1, outId);
       swaps.push({ out: outId, in: inId, rule });
     }
   };
-  if (oppRelics >= terms.relicsSeen) swap("relics", (d) => answersRelics(d) && !d.types.includes("Creature"), (d) => !answersRelics(d), !!terms.betterOnly);
+  const keepCounters = (d: CardDef) => !(theirPlan?.answers.counter.length && isCounter(d));
+  if (oppRelics >= terms.relicsSeen) swap("relics", (d) => answersRelics(d) && !d.types.includes("Creature"), (d) => !answersRelics(d) && keepCounters(d), !!terms.betterOnly);
   if (oppCreatures >= terms.creaturesSeen) {
-    swap("creatures", (d) => answersCreatures(d) && !d.types.includes("Creature"), (d) => !answersCreatures(d) && !answersRelics(d), !!terms.betterOnly);
-    swap("counters", (d) => !isCounter(d), (d) => isCounter(d));
+    swap("creatures", (d) => answersCreatures(d) && !d.types.includes("Creature"), (d) => !answersCreatures(d) && !answersRelics(d) && keepCounters(d), !!terms.betterOnly);
+    if (!theirPlan?.answers.counter.length) swap("counters", (d) => !isCounter(d), (d) => isCounter(d));
   }
   const pack = (ids: string[]): Decklist => { const out: Decklist = []; for (const id of ids) { const e = out.find((x) => x.cardId === id); if (e) e.count += 1; else out.push({ cardId: id, count: 1 }); } return out; };
   // keep the registered deck's order and its basics; only the swapped cards change

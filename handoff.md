@@ -78,26 +78,42 @@ The Open now has a combo deck, the AI can pilot it and play against it, and the 
 
 **The retire count reached three** for the Larder, the Locks and the Undertow. Their reviews are in `docs/proposals/retire-reviews-s55.md`: give the Larder a plan (it is an unpiloted reanimator), overhaul the Locks in family, overhaul the Undertow or accept it as the field's floor.
 
-## After the handoff — the Pall's matches and the sideboard dial (Chris, 2026-10-05)
+## After the handoff — the Pall's matches, the sideboard dial and the Coin study (Chris, 2026-10-05)
 
-- **A bug in the fourth rule, fixed.** The field's other sideboarding rules ran after it and swapped the graveyard exile back out (unrated, the two cards read as the deck's worst). The Levy, the Sweep and the Hearth were keeping one of four. The numbers in Part 4 above were measured before this fix; the boarded figure there (56%) is slightly generous to the Pall.
-- **`pnpm combo-probe --matches N [--hate C:M] [--only k]`**: best-of-three matches (game one registered, then sideboarded, the loser playing first), with the opponent's Crypt and Macabre counts as a dial.
-- **The Pall's match win rate against the field: 60.6%** (1,800 matches). Best: the Undertow 86%, the Larder 79%, the Locks 75%. Worst: the Coin 45%, the Hearth 45%, the Loop 47% — the three other Usher decks.
-- **The dial, against those six** (240 matches a cell, paired by seed; the Pall's match win rate):
+**Two sideboarding bugs found and fixed** (a test pins both):
+- The field's other rules ran after the graveyard rule and swapped the hate cards back out (unrated, they read as the deck's worst). The black lists kept one of four.
+- **The rules did not read plans.** The Pall's own sideboarding cut two Buried Alives for two Tendrils against every creature deck; the Locks took their counterspells out against the Pall. Now a deck never sideboards out a card of its own plan, and against a plan that names counterspells the counters stay.
+- Part 4's boarded figure (56%) was measured before both fixes.
+
+**`pnpm combo-probe --matches N [--hate C:M] [--only k]`**: best-of-three matches (game one registered, then sideboarded, the loser playing first), with the opponent's Crypt and Macabre counts as a dial.
+
+**The Pall's match win rate against the field: 61.2%** (1,800 matches, after the fixes).
+- Best: the Undertow 90%, the Larder 79%, the Locks 78%.
+- Worst: the Coin 41%, the Loop 48%, the Hearth 49% — the three other Usher decks.
+
+**The dial, against those six** (240 matches a cell, the same seeds; the Pall's match win rate):
 
 | the opponent's graveyard exile | all six | best three | worst three |
 |---|---|---|---|
-| 2 Crypt + 2 Macabre (current) | 66.9% | 84% | 50% |
-| 4 Crypt + 0 Macabre | 68.3% | 85% | 51% |
-| 0 Crypt + 4 Macabre | 67.8% | 84% | 51% |
-| 4 Crypt + 2 Macabre | 62.4% | 76% | 48% |
-| 2 Crypt + 4 Macabre | 63.9% | 78% | 50% |
-| 4 Crypt + 4 Macabre | 61.7% | 78% | 46% |
+| 2 Crypt + 2 Macabre (current) | 67.5% | 85% | 50% |
+| 4 Crypt + 0 Macabre | 68.8% | 87% | 51% |
+| 0 Crypt + 4 Macabre | 68.3% | 85% | 52% |
+| 4 Crypt + 2 Macabre | 63.7% | 82% | 46% |
+| 2 Crypt + 4 Macabre | 63.9% | 81% | 46% |
+| 4 Crypt + 4 Macabre | 62.6% | 83% | 42% |
 
-- **What it says.** The mix does not matter; the count does, a little. Six hate cards cost the Pall about four points and eight cost about five: more than half a sideboard moves the match rate from 67% to 62%. The loop itself is cut hard (from about 30% of sideboarded games to about 18%), but the Pall wins most of those games anyway.
-- **Where the hate works:** the Locks (80% → 67% at six or eight): a control deck that can protect the answer.
-- **Where it does nothing:** the Coin (45–46% at every setting). The Usher decks already beat the Pall after sideboards for another reason — see Concern 10.
-- **Chris walked the repeat's buttons** during his Pall run: they behaved, with an occasional refusal that the next offer or a different trigger order resolved. Concern 7 is closed.
+- The mix does not matter; the count does, a little: eight hate cards of fifteen cost the Pall five points.
+- The loop is cut hard (about 30% of sideboarded games to about 16%), but the Pall wins most of those games anyway.
+- The extra hate bites most where the Pall is already losing (the Usher decks: 50% → 42%), and hardly at all where it is winning.
+
+**Why the Usher decks beat it — 300 games each of game one and sideboarded against the Coin:**
+- **Whoever lands the first Usher wins.** Game one: the Pall first, 188 games, wins 89%; the Coin first, 79 games, the Pall wins 13%; neither, 33 games, the Pall wins 6%.
+- **The Coin's loop runs on the Pall's graveyard.** Of the Coin's 48 loop wins in game one, 42 began by returning an Usher from the *Pall's* graveyard, and the Pall had cast Buried Alive in 42 of the 48. The Usher's text reaches either graveyard: the Pall's setup is the opponent's too.
+- **Most of the Coin's wins are not the loop.** 72 of its 120 game-one wins are ordinary damage and drain, typically ending on turn 13 of the game; in 56 of those the Pall never had an Usher on the battlefield.
+- **After sideboards the Coin lands the first Usher more often** (112 games against 79) and answers the Pall's (Vindicate 20, Swords 11, Sacred Helix 8), and the Pall drops to 40%.
+- The Witch's digging is not the problem: the Pall won more of the games where it paid eight or more life (66% against 57% in game one).
+
+**Chris walked the repeat's buttons** during his Pall run: they behaved, with an occasional refusal that the next offer or a different trigger order resolved. Concern 7 is closed.
 
 ## Deviations from the brief
 1. **`loopDrawCap` is an engine rule field, not a world knob** (`GameRules.loopDrawCap`, default 100). A match's rules are built in a dozen places that do not read the knob table.
@@ -120,7 +136,7 @@ The Open now has a combo deck, the AI can pilot it and play against it, and the 
 6. **The take-back's availability leaks a little**, and where its line sits is a dial (carried from S54).
 7. **The repeat's buttons are still not walked in a browser** (carried from S54; the controller tests drive the same code on the real engine).
 8. **The field's sideboards are built by rule, not authored** (carried from S54).
-10. **The Pall's worst matchups are the other Usher decks, and I have not confirmed why.** My reading: the Usher returns a creature card from *a* graveyard, so the three Ushers the Pall buries are also targets for an opposing Usher — Buried Alive sets up the opponent's loop as well as its own. If that is right, the mirror is decided by who casts an Usher first, and graveyard exile aimed at the Pall protects the Pall's opponent from nothing it needs. A replay study of a dozen Coin games would settle it.
+10. **The Usher mirror is decided by who lands an Usher first, and Buried Alive arms both players** (confirmed in the Coin study above). A list with four Ushers of its own is the natural predator of the Pall. That is a real metagame answer already in the field, and it is not sideboard hate.
 11. **Sideboard hate is not the lever.** Half a sideboard of it buys five points. The Pall's edge is game one (64–88% against these six) and a fair plan that wins without the loop. If it needs holding back, the levers are a main-deck answer in the field's lists, a restriction, or a faster field.
 9. **The rating's feedback loop** (S54 Concern 2) stands. The pilot is now book 106, so every rating run is stale again.
 
