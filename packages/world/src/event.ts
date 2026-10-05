@@ -13,16 +13,16 @@ import type { CardDef } from "@shandalar/cards";
 import { cardColors, parseManaCost } from "@shandalar/cards";
 import { runMatch, type Agent, type MatchSpec, type Modifier } from "@shandalar/engine";
 import type { Decklist, Collection } from "./state.js";
-import { checkDeck, isBasic, type DeckCheck } from "./legality.js";
+import { checkDeck, isBasic, type DeckCheck, type DeckRule } from "./legality.js";
 import { CONSTRUCTED_FORMATS, DRAFT_PLANE, LIMITED_FORMATS, OPEN_FORMAT, type ConstructedFormat, type Format, type LimitedFormat } from "./formats.js";
-import { buildConstructedDeck, type LibraryList } from "./constructed-builder.js";
+import { SIDEBOARD_SIZE, buildConstructedDeck, buildSideboard, type LibraryList } from "./constructed-builder.js";
 import { draftPick, runDraftPacks } from "./drafter.js";
 import { rollPack, resolveSet, type ConvocationPackData } from "./packs.js";
 import { buildLimitedDeck } from "./limited-builder.js";
 import { limitedView, type CardRatingTable } from "./rating.js";
 import { MatchSeries, SERIES_POINTS, type Seat, type SeriesState } from "./series.js";
 import { convocationSeat } from "./matchup.js";
-import { aiSideboard } from "./sideboard-ai.js";
+import { AI_SIDEBOARD, AI_SIDEBOARD_CONSTRUCTED, aiSideboard, answersCreatures, answersRelics } from "./sideboard-ai.js";
 import type { KnobValues } from "./knobs.js";
 import { WorldRng } from "./rng.js";
 
@@ -87,6 +87,9 @@ export interface ConvocationEvent {
   /** S53 (Chris): the Pro Tour's decklists — the human registers one deck per Constructed format before the first
    * stage, and plays it every round of that format and in the Umbel. `registering` is the formats still to register. */
   decklists?: Record<string, Decklist>;
+  /** Post-S54 (Chris): the fifteen registered with each Constructed deck — locked with it; the deck and the fifteen
+   * are the seventy-five a match is sideboarded within, and game one of every match is the registered sixty. */
+  sideboards?: Record<string, Decklist>;
   registering?: string[];
   /** S49: a Top 8 follows the Swiss rounds (single elimination). */
   top8?: boolean;
@@ -166,10 +169,36 @@ export function newConstructedEvent(opts: Omit<NewEventOptions, "format"> & { fo
     const open = fits.length ? fits : opts.faces.filter((f) => !used.has(f.portrait));
     const face = open.length ? open[rng.int(open.length)]!.portrait : undefined;
     if (face) used.add(face);
-    field.push({ name: names[(s - 1) % Math.max(1, names.length)] ?? `Seat ${s + 1}`, ...(face ? { face } : {}), human: false, pool: [], deck: b.deck, sideboard: [], list: b.from, tinker: b.tinker, colors, archetype: b.archetype, ...strength });
+    field.push({ name: names[(s - 1) % Math.max(1, names.length)] ?? `Seat ${s + 1}`, ...(face ? { face } : {}), human: false, pool: [], deck: b.deck, sideboard: fieldSideboard(b.deck, format, deps), list: b.from, tinker: b.tinker, colors, archetype: b.archetype, ...strength });
   }
   return { version: EVENT_SAVE_VERSION, seed: opts.seed, formatId: format.id, rounds, difficulty: opts.difficulty ?? "standard", phase: "build", round: 0, field, pairings: [], results: [], ...(opts.top8 ? { top8: true } : {}) };
 }
+/** Post-S54: a field seat's registered fifteen (constructed-builder.buildSideboard, by the Constructed score). */
+export const fieldSideboard = (deck: Decklist, format: ConstructedFormat, deps: Pick<EventDeps, "cards" | "rating">): Decklist => buildSideboard(deck, format, deps.rating, deps.cards, answersRelics, answersCreatures);
+/** Post-S54: "suggest a sideboard" for the human's sixty — the field's own builder. */
+export function suggestedSideboard(event: ConvocationEvent, deck: Decklist, deps: Pick<EventDeps, "cards" | "rating">): Decklist {
+  const format = eventFormat(event.formatId);
+  if (format.kind !== "constructed") throw new Error("event: not a Constructed event");
+  return fieldSideboard(deck, format, deps);
+}
+const mergeLists = (a: Decklist, b: Decklist): Decklist => { const m = new Map<string, number>(); for (const e of [...a, ...b]) m.set(e.cardId, (m.get(e.cardId) ?? 0) + e.count); return [...m.entries()].map(([cardId, count]) => ({ cardId, count })); };
+/** Post-S54: a sideboard beside its deck — at most fifteen; every card legal in the format; and the format's limits
+ * on a card (the copy cap, the restricted list, the bans, a tier or colour bound) hold over the seventy-five. The
+ * format's rules about a DECK's shape (its size, its lands, its creatures) are the sixty's alone. */
+export function checkSideboard(event: ConvocationEvent, deck: Decklist, sideboard: Decklist, cards: Map<string, CardDef>): DeckCheck {
+  const format = eventFormat(event.formatId);
+  if (format.kind !== "constructed") return { ok: sideboard.length === 0, problems: sideboard.length ? ["a Limited event's sideboard is its pool"] : [] };
+  const n = sideboard.reduce((k, e) => k + e.count, 0), problems: string[] = [];
+  if (n > SIDEBOARD_SIZE) problems.push(`the sideboard has ${n} cards; ${format.name} allows ${SIDEBOARD_SIZE}`);
+  const r = format.rule;
+  const perCard: DeckRule = { label: r.label, ...(r.restricted ? { restricted: r.restricted } : {}), ...(r.banned ? { banned: r.banned } : {}), ...(r.maxTier !== undefined ? { maxTier: r.maxTier } : {}), ...(r.colorsWithin ? { colorsWithin: r.colorsWithin } : {}), ...(r.maxManaValue !== undefined ? { maxManaValue: r.maxManaValue } : {}), ...(r.minCreaturePower !== undefined ? { minCreaturePower: r.minCreaturePower } : {}), ...(r.bannedTypes ? { bannedTypes: r.bannedTypes } : {}), ...(r.singleton ? { singleton: true } : {}) };
+  const over = checkDeck(mergeLists(deck, sideboard), null, perCard, cards).problems.filter((p) => !/the floor is/.test(p));
+  // a card the sixty already fails on is the deck's problem, not the sideboard's: only what the fifteen adds
+  const deckAlone = new Set(checkDeck(deck, null, perCard, cards).problems);
+  for (const p of over) if (!deckAlone.has(p)) problems.push(`with the sideboard: ${p}`);
+  return { ok: problems.length === 0, problems };
+}
+
 /** The human's seat's own select-and-repair deck — "Suggest a deck" in a Constructed event. */
 export function suggestedConstructedDeck(event: ConvocationEvent, library: readonly LibraryList[], deps: Pick<EventDeps, "cards" | "rating">): Decklist {
   const format = eventFormat(event.formatId);
@@ -278,12 +307,35 @@ const deckColors = (deck: Decklist, cards: Map<string, CardDef>): string => {
 
 /** Set a seat's deck (legal only); the rest of its pool is its sideboard. Registering the human's deck while
  * building opens round one. Between games of a series this is the sideboarding. */
-export function registerDeck(event: ConvocationEvent, seat: number, deck: Decklist, cards: Map<string, CardDef>): { ok: true; event: ConvocationEvent } | { ok: false; problems: string[] } {
+export function registerDeck(event: ConvocationEvent, seat: number, deck: Decklist, cards: Map<string, CardDef>, sideboard: Decklist = []): { ok: true; event: ConvocationEvent } | { ok: false; problems: string[] } {
   const check = checkEventDeck(event, seat, deck, cards);
   if (!check.ok) return { ok: false, problems: check.problems };
-  const constructed = eventFormat(event.formatId).kind === "constructed"; // no pool: no sideboard this session
-  const field = event.field.map((s, i) => (i === seat ? { ...s, deck: deck.map((e) => ({ ...e })), sideboard: constructed ? [] : sideboardOf(s.pool, deck), colors: deckColors(deck, cards) } : s));
+  const constructed = eventFormat(event.formatId).kind === "constructed";
   const opening = event.phase === "build" && seat === 0;
+  // Post-S54 (Chris): a Constructed seat has a registered fifteen. At the build the deck and its sideboard are
+  // registered together; between games the deck may only be remade from the registered seventy-five (basics counted
+  // — nothing is free in Constructed), and what is left of them is the sideboard.
+  let side: Decklist = [];
+  let registered: { decklists: Record<string, Decklist>; sideboards: Record<string, Decklist> } | null = null;
+  if (constructed && seat === 0) {
+    if (opening) {
+      const sb = checkSideboard(event, deck, sideboard, cards);
+      if (!sb.ok) return { ok: false, problems: sb.problems };
+      side = sideboard.filter((e) => e.count > 0).map((e) => ({ ...e }));
+      registered = { decklists: { ...(event.decklists ?? {}), [event.formatId]: deck.map((e) => ({ ...e })) }, sideboards: { ...(event.sideboards ?? {}), [event.formatId]: side.map((e) => ({ ...e })) } };
+    } else {
+      const reg = event.decklists?.[event.formatId];
+      if (reg) {
+        const all = new Map(mergeLists(reg, event.sideboards?.[event.formatId] ?? []).map((e) => [e.cardId, e.count]));
+        const problems: string[] = [];
+        for (const e of deck) { const have = all.get(e.cardId) ?? 0; if (e.count > have) problems.push(`${cards.get(e.cardId)?.name ?? e.cardId}: the deck has ${e.count}, your registered seventy-five has ${have}`); all.set(e.cardId, have - e.count); }
+        if (problems.length) return { ok: false, problems };
+        side = [...all.entries()].filter(([, n]) => n > 0).sort(([a], [b]) => a.localeCompare(b)).map(([cardId, count]) => ({ cardId, count }));
+      }
+    }
+  } else if (constructed) side = event.field[seat]!.sideboard;
+  const field = event.field.map((s, i) => (i === seat ? { ...s, deck: deck.map((e) => ({ ...e })), sideboard: constructed ? side : sideboardOf(s.pool, deck), colors: deckColors(deck, cards) } : s));
+  if (registered) event = { ...event, ...registered };
   // S53: a staged event keeps the human's pool and deck for each stage (the ledger lists every deck registered)
   const history = event.stages && opening ? [...(event.history ?? []).filter((h) => h.stage !== (event.stage ?? 0)), { stage: event.stage ?? 0, formatId: event.formatId, pool: [...event.field[0]!.pool], deck: deck.map((e) => ({ ...e })) }] : event.history;
   const next: ConvocationEvent = { ...event, field, ...(history ? { history } : {}) };
@@ -360,13 +412,21 @@ export const resultOf = (event: ConvocationEvent, round: number, seat: number) =
 export const roundComplete = (event: ConvocationEvent) => event.pairings.every((p) => p.b === null || !!resultOf(event, event.round, p.a));
 
 /** Record a finished series of this round (a over b: seat 0 of the series is `a`). */
+/** Post-S54: the human's match is over — their seat is the registered sixty and fifteen again (a Constructed event;
+ * a Limited deck stays as built, as before). */
+function unsideboarded(event: ConvocationEvent, humans: boolean): ConvocationEvent {
+  const reg = humans ? event.decklists?.[event.formatId] : undefined;
+  if (!reg || eventFormat(event.formatId).kind !== "constructed") return event;
+  const side = event.sideboards?.[event.formatId] ?? [];
+  return { ...event, field: event.field.map((s, i) => (i === 0 ? { ...s, deck: reg.map((e) => ({ ...e })), sideboard: side.map((e) => ({ ...e })) } : s)) };
+}
 export function recordSeries(event: ConvocationEvent, a: number, b: number, series: SeriesState): ConvocationEvent {
   if (!series.done) throw new Error("event: a series is recorded when done");
   if (!event.pairings.some((p) => p.a === a && p.b === b)) throw new Error(`event: ${a} v ${b} is not a pairing of round ${event.round}`);
   if (resultOf(event, event.round, a)) return event;
   const { current, ...rest } = event;
   // the human's own series, once recorded, is no longer "in progress"; a field series leaves it be
-  return { ...rest, ...(current && a !== 0 && b !== 0 ? { current } : {}), results: [...event.results, { round: event.round, a, b, series }] };
+  return unsideboarded({ ...rest, ...(current && a !== 0 && b !== 0 ? { current } : {}), results: [...event.results, { round: event.round, a, b, series }] }, a === 0 || b === 0);
 }
 /** The human's series in progress (saved between games). */
 export function saveCurrentSeries(event: ConvocationEvent, series: SeriesState): ConvocationEvent { return { ...event, current: series }; }
@@ -443,7 +503,7 @@ export function seatForGame(event: ConvocationEvent, seat: number, opp: number, 
   const s = event.field[seat]!;
   if (s.human || !deps.rating) return s;
   const rating = eventFormat(event.formatId).kind === "limited" ? limitedView(deps.rating) : deps.rating; // post-S52: each format its own score
-  const sb = aiSideboard(s.deck, s.sideboard, event.field[opp]!.deck, deps.cards, rating);
+  const sb = aiSideboard(s.deck, s.sideboard, event.field[opp]!.deck, deps.cards, rating, eventFormat(event.formatId).kind === "limited" ? AI_SIDEBOARD : AI_SIDEBOARD_CONSTRUCTED);
   return sb.swaps.length ? { ...s, deck: sb.deck, sideboard: sb.sideboard } : s;
 }
 
@@ -491,7 +551,7 @@ export function recordBracketSeries(event: ConvocationEvent, a: number, b: numbe
   if (match.series) return event;
   match.series = series; match.winner = bracketWinner(event, a, b, series);
   const { current, ...rest } = event;
-  return { ...rest, ...(current && a !== 0 && b !== 0 ? { current } : {}), bracket: { seeds: event.bracket.seeds, rounds } };
+  return unsideboarded({ ...rest, ...(current && a !== 0 && b !== 0 ? { current } : {}), bracket: { seeds: event.bracket.seeds, rounds } }, a === 0 || b === 0);
 }
 export const bracketRoundComplete = (event: ConvocationEvent) => bracketRound(event).every((m) => m.winner !== undefined);
 /** After a bracket round: the winners meet (neighbours), or the event is over. */
@@ -575,16 +635,19 @@ export function newConvocation(opts: NewConvocationOptions, deps: EventDeps): Co
 
 /** S53 (Chris): register the human's deck for the format at the head of `registering` (checked by the format); the
  * last one begins Day 1. A registered deck is locked: it plays every round of its format and the Umbel. */
-export function registerDecklist(event: ConvocationEvent, deck: Decklist, deps: EventDeps, library: readonly LibraryList[], podPicks?: Map<number, string[][]>): { ok: true; event: ConvocationEvent } | { ok: false; problems: string[] } {
+export function registerDecklist(event: ConvocationEvent, deck: Decklist, deps: EventDeps, library: readonly LibraryList[], podPicks?: Map<number, string[][]>, sideboard: Decklist = []): { ok: true; event: ConvocationEvent } | { ok: false; problems: string[] } {
   const [formatId, ...rest] = event.registering ?? [];
   if (!formatId || event.phase !== "build") throw new Error("event: no decklist to register");
   const check = checkEventDeck(event, 0, deck, deps.cards);
   if (!check.ok) return { ok: false, problems: check.problems };
+  const sb = checkSideboard(event, deck, sideboard, deps.cards); // post-S54: the fifteen, registered with the sixty
+  if (!sb.ok) return { ok: false, problems: sb.problems };
   const decklists = { ...(event.decklists ?? {}), [formatId]: deck.map((e) => ({ ...e })) };
-  const field = event.field.map((s, i) => (i === 0 ? { ...s, deck: [], colors: "" } : s));
-  if (rest.length) return { ok: true, event: { ...event, field, decklists, registering: rest, formatId: rest[0]! } };
+  const sideboards = { ...(event.sideboards ?? {}), [formatId]: sideboard.filter((e) => e.count > 0).map((e) => ({ ...e })) };
+  const field = event.field.map((s, i) => (i === 0 ? { ...s, deck: [], sideboard: [], colors: "" } : s));
+  if (rest.length) return { ok: true, event: { ...event, field, decklists, sideboards, registering: rest, formatId: rest[0]! } };
   const { registering: _r, ...done } = event;
-  return { ok: true, event: beginStage({ ...done, field, decklists, formatId: event.stages![0]!.formatId }, 0, deps, library, podPicks) };
+  return { ok: true, event: beginStage({ ...done, field, decklists, sideboards, formatId: event.stages![0]!.formatId }, 0, deps, library, podPicks) };
 }
 
 /** S54 (Concern 6): a draft stage's pods and the headless drafts it needs — every pod but the human's, each with its
@@ -617,9 +680,9 @@ export function beginStage(event: ConvocationEvent, k: number, deps: EventDeps, 
     const first = at.stages!.findIndex((x) => x.formatId === st.formatId), deckSalt = stageSalt({ stages: at.stages!, stage: first });
     const mine = at.decklists?.[st.formatId];
     const field = at.field.map((seat, s) => {
-      if (s === 0) return mine ? { ...bare(seat), deck: mine.map((e) => ({ ...e })), colors: deckColors(mine, deps.cards) } : bare(seat);
+      if (s === 0) return mine ? { ...bare(seat), deck: mine.map((e) => ({ ...e })), sideboard: (at.sideboards?.[st.formatId] ?? []).map((e) => ({ ...e })), colors: deckColors(mine, deps.cards) } : bare(seat);
       const b = buildConstructedDeck(format, deps.rating, sub(at.seed, 8, s, ...deckSalt), library, deps.cards, seat.builder ? { tinker: seat.builder } : {}); // S54: the seat's builder
-      return { ...bare(seat), deck: b.deck, list: b.from, tinker: b.tinker, colors: deckColors(b.deck, deps.cards), archetype: b.archetype };
+      return { ...bare(seat), deck: b.deck, sideboard: fieldSideboard(b.deck, format, deps), list: b.from, tinker: b.tinker, colors: deckColors(b.deck, deps.cards), archetype: b.archetype };
     });
     if (!mine) return { ...at, field };
     const history = [...(at.history ?? []).filter((h) => h.stage !== k), { stage: k, formatId: st.formatId, pool: [], deck: mine.map((e) => ({ ...e })) }];
@@ -663,7 +726,9 @@ export function nextStage(event: ConvocationEvent, deps: EventDeps, library: rea
 export const LEDGER_FIELD = 16;
 export interface ConvocationLedgerEntry { when: string; formatId: string; seed: number; seats: number; rounds: number; difficulty: string; place: number; record: string; points: number; field: { name: string; place: number; points: number; colors: string }[]; deck: Decklist; kept?: string; top8?: true;
   /** S53: a full Convocation — its stages, the title won, every deck the human registered, the cards kept. */
-  stages?: ConvocationStage[]; title?: string; decks?: { stage: number; formatId: string; deck: Decklist }[]; keptCards?: string[] }
+  stages?: ConvocationStage[]; title?: string; decks?: { stage: number; formatId: string; deck: Decklist; /** post-S54: a Constructed deck's registered fifteen */ sideboard?: Decklist }[]; keptCards?: string[];
+  /** Post-S54: a single Constructed event's registered sideboard. */
+  sideboard?: Decklist }
 /** S53 (Part 2): the finish's title — the Umbel's eight by their round, the rest by their place. */
 export function finishTitle(place: number, seats: number): string {
   if (place === 1) return "Champion of the Umbel";
@@ -693,7 +758,8 @@ export function ledgerEntry(event: ConvocationEvent, when: string): ConvocationL
     field: [...table].sort((x, y) => placeOf(x.seat) - placeOf(y.seat)).filter((r) => placeOf(r.seat) <= LEDGER_FIELD || r.seat === 0).map((r) => ({ name: r.name, place: placeOf(r.seat), points: r.points, colors: event.field[r.seat]!.colors })),
     ...(event.bracket ? { top8: true as const } : {}),
     deck: event.field[0]!.deck.map((e) => ({ ...e })), ...(event.kept ? { kept: event.kept } : {}),
-    ...(event.stages ? { stages: event.stages.map((x) => ({ ...x })), title: finishTitle(placeOf(0), event.field.length), decks: (event.history ?? []).map((h) => ({ stage: h.stage, formatId: h.formatId, deck: h.deck.map((e) => ({ ...e })) })), ...(event.keptCards?.length ? { keptCards: [...event.keptCards] } : {}) } : {}),
+    ...(event.sideboards?.[event.formatId]?.length ? { sideboard: event.sideboards[event.formatId]!.map((e) => ({ ...e })) } : {}),
+    ...(event.stages ? { stages: event.stages.map((x) => ({ ...x })), title: finishTitle(placeOf(0), event.field.length), decks: (event.history ?? []).map((h) => ({ stage: h.stage, formatId: h.formatId, deck: h.deck.map((e) => ({ ...e })), ...(event.sideboards?.[h.formatId]?.length ? { sideboard: event.sideboards[h.formatId]!.map((e) => ({ ...e })) } : {}) })), ...(event.keptCards?.length ? { keptCards: [...event.keptCards] } : {}) } : {}),
   };
 }
 

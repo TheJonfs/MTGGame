@@ -2,6 +2,8 @@
  * pnpm open:rr [--games N] [--seed S] [--shard i/n] [--only key] [--out file] | --merge file1 file2 … --out file
  *   --only key   run only the pairings that include that list (re-measuring one amended list);
  *   --merge      a LATER file's games replace an earlier file's for the same pairing.
+ *   --sideboarded   post-S54: every seat plays the sixty it would bring to games two and three against that opponent
+ *                (its built fifteen, the field's three rules) — run beside a plain run on the same seed.
  *   --journeyman k1,k2   S54 (ADR-158's test): those lists are piloted by journeyman (every other seat master) — run
  *                with --only on the same seed as a master run, and every game is paired with its master twin.
  *
@@ -20,6 +22,10 @@ import { runMatch, type Action, type ActionRequest, type Agent, type GameView, t
 import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
 import { OPEN_DECKS } from "@shandalar/sim/open-decks";
 import { OPEN_FORMAT } from "./formats.js";
+import { buildSideboard } from "./constructed-builder.js";
+import { AI_SIDEBOARD_CONSTRUCTED, aiSideboard, answersCreatures, answersRelics } from "./sideboard-ai.js";
+import type { CardRatingTable } from "./rating.js";
+import type { Decklist } from "./state.js";
 
 const arg = (k: string, d: string) => { const i = process.argv.indexOf(`--${k}`); return i >= 0 ? process.argv[i + 1]! : d; };
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
@@ -50,6 +56,16 @@ class Tracker implements Agent {
 async function run(): Promise<void> {
   const pool = loadCardPool(join(ROOT, "data/cards")).cards;
   const G = Number(arg("games", "100")), seed0 = Number(arg("seed", "46")), [si, sn] = arg("shard", "0/1").split("/").map(Number) as [number, number];
+  const sideboarded = process.argv.includes("--sideboarded") || process.argv.includes("--sideboarded-only");
+  const rating = sideboarded ? (JSON.parse(readFileSync(join(ROOT, "data/convocation/card-rating.json"), "utf8")) as CardRatingTable) : null;
+  const fifteen = new Map<string, Decklist>();
+  // `--sideboarded-only k1,k2`: only those lists sideboard (one side's swaps against the other's registered sixty)
+  const boardedOnly = new Set(arg("sideboarded-only", "").split(",").filter(Boolean));
+  const boarded = (me: (typeof OPEN_DECKS)[string], them: (typeof OPEN_DECKS)[string]): Decklist => {
+    if (!rating || (boardedOnly.size > 0 && !boardedOnly.has(me.key))) return me.decklist;
+    if (!fifteen.has(me.key)) fifteen.set(me.key, buildSideboard(me.decklist, OPEN_FORMAT, rating, pool, answersRelics, answersCreatures));
+    return aiSideboard(me.decklist, fifteen.get(me.key)!, them.decklist, pool, rating, AI_SIDEBOARD_CONSTRUCTED).deck;
+  };
   const only = arg("only", ""), journeyman = new Set(arg("journeyman", "").split(",").filter(Boolean));
   const pilot = (key: string) => (journeyman.has(key) ? "journeyman" : "master");
   const pairs: [string, string][] = [];
@@ -63,7 +79,7 @@ async function run(): Promise<void> {
     for (let g = 0; g < G; g++) {
       const seatA = (g % 2) as 0 | 1;
       const seed = seed0 + p * 1009 + g * 37;
-      const [d0, d1] = seatA === 0 ? [A, B] : [B, A];
+      const [d0, d1] = (seatA === 0 ? [A, B] : [B, A]).map((d, i, both) => ({ ...d, decklist: boarded(d, both[1 - i]!) })) as [typeof A, typeof B];
       const spec = { seed, players: [{ name: d0.key, decklist: [...d0.decklist], agent: "heuristic:master" }, { name: d1.key, decklist: [...d1.decklist], agent: "heuristic:master" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 }, modifiers: [] } as unknown as MatchSpec;
       const t0 = new Tracker(new HeuristicAgent(seed * 2 + 1, pool, difficultyProfile(pilot(d0.key), d0.archetype, [...d1.decklist])), d0.key === "loop");
       const t1 = new Tracker(new HeuristicAgent(seed * 2 + 2, pool, difficultyProfile(pilot(d1.key), d1.archetype, [...d0.decklist])), d1.key === "loop");

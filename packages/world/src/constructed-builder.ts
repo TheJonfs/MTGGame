@@ -25,8 +25,8 @@ import { cardRating, type CardRatingTable } from "./rating.js";
 import { WorldRng } from "./rng.js";
 
 export interface LibraryList { key: string; archetype: "aggro" | "midrange" | "control"; decklist: Decklist }
-/** The Open's round-robin means — a list's measured strength. Post-S53: re-measured on pilot 97 with the two lists contributed from play (the Sweep, the Depths): 9,100 games, analysis/runs/open_rr14.json. Post-S54: the Hearth (Chris's 18–1 Mardu list) measured alone against the fourteen on pilot 99 — 63.6% over 1,400 games; the others' means are not re-run with it. (S46's were levy 68, wurmspeaker 61, warband 60, coin 59, muster 57, loop 55, ford 53, enchantress 51, tally 39, locks 39, undertow 38, larder 31.) */
-export const OPEN_MEANS: Record<string, number> = { "open:levy": 65, "open:hearth": 64, "open:wurmspeaker": 62, "open:coin": 59, "open:sweep": 59, "open:depths": 57, "open:muster": 53, "open:warband": 53, "open:loop": 53, "open:ford": 51, "open:enchantress": 50, "open:tally": 37, "open:undertow": 35, "open:locks": 35, "open:larder": 28 };
+/** The Open's round-robin means — a list's measured strength. Post-S53: re-measured on pilot 97 with the two lists contributed from play (the Sweep, the Depths): 9,100 games, analysis/runs/open_rr14.json. Post-S54: all fifteen re-measured on pilot 99 with the Hearth (Chris's 18–1 Mardu list): 10,500 games, analysis/runs/rr15_plain.json — the registered sixties, no sideboarding. (Pilot 97's fourteen were levy 65, wurmspeaker 62, coin 59, sweep 59, depths 57, muster 53, warband 53, loop 53, ford 51, enchantress 50, tally 37, undertow 35, locks 35, larder 28.) (S46's were levy 68, wurmspeaker 61, warband 60, coin 59, muster 57, loop 55, ford 53, enchantress 51, tally 39, locks 39, undertow 38, larder 31.) */
+export const OPEN_MEANS: Record<string, number> = { "open:levy": 64, "open:hearth": 64, "open:sweep": 60, "open:coin": 59, "open:wurmspeaker": 59, "open:depths": 57, "open:warband": 55, "open:muster": 52, "open:loop": 51, "open:ford": 51, "open:enchantress": 45, "open:tally": 37, "open:undertow": 36, "open:locks": 35, "open:larder": 27 };
 /** Post-S52 (Chris): the candidates are the TWELVE best-fitting lists (the Open's whole library, not its top five),
  * and the noise has a noise of its own — a seat is STOCK (the list as written), a LIGHT tinkerer (one or two swaps),
  * or a HEAVY one (four to six); the light and the heavy also move a land. The shares are a quarter, a half, a quarter. */
@@ -174,4 +174,35 @@ export function buildConstructedDeck(format: ConstructedFormat, rating: CardRati
   const order = (a: string, b: string) => ["land", "creature", "spell"].indexOf(role(a)) - ["land", "creature", "spell"].indexOf(role(b)) || a.localeCompare(b);
   const final: Decklist = [...deck.keys()].sort(order).map((cardId) => ({ cardId, count: deck.get(cardId)! }));
   return { deck: final, from: source.key, tinker, archetype: source.archetype, legalShare: chosen.share, cut: cut.filter((c) => c.count > 0), added: [...added].map(([cardId, n]) => ({ cardId, count: n })), swaps, check: checkDeck(final, null, rule, cards) };
+}
+
+/** Post-S54 (Chris: fifteen-card sideboards in Constructed, the field too): a list's sideboard, built for the three
+ * rules the field sideboards by (sideboard-ai.ts) — answers to artifacts and enchantments, answers to creatures, and
+ * the best cards left for when its counterspells come out. From the format's legal cards, castable in the deck's
+ * colours, within the copy cap over the seventy-five (a restricted card in the sixty is not in the fifteen).
+ * Deterministic (the Constructed score, ties by id): the same deck always registers the same fifteen. */
+export const SIDEBOARD_SIZE = 15;
+export const SIDEBOARD_SHAPE = { relics: 4, creatures: 5 } as const;
+export function buildSideboard(deck: Decklist, format: ConstructedFormat, rating: CardRatingTable, cards: Map<string, CardDef>, isRelicAnswer: (d: CardDef) => boolean, isCreatureAnswer: (d: CardDef) => boolean): Decklist {
+  const rule = format.rule;
+  const inDeck = new Map(deck.map((e) => [e.cardId, e.count]));
+  const colors = new Set(deck.flatMap((e) => { const d = cards.get(e.cardId); return d && !d.types.includes("Land") ? cardColors(d) : []; }));
+  const room = (d: CardDef) => Math.max(0, Math.min(copyCap(d.id, rule), COPY_CAP) - (inDeck.get(d.id) ?? 0));
+  const pool = [...cards.values()].filter((d) => !d.types.includes("Land") && cardLegal(d, rule) && cardColors(d).every((c) => colors.has(c)) && room(d) > 0)
+    .sort((a, b) => cardRating(b, rating) - cardRating(a, rating) || a.id.localeCompare(b.id));
+  const side = new Map<string, number>();
+  const size = () => [...side.values()].reduce((n, x) => n + x, 0);
+  const take = (want: (d: CardDef) => boolean, slots: number, perCard: number) => {
+    let left = Math.min(slots, SIDEBOARD_SIZE - size());
+    for (const d of pool) {
+      if (left <= 0) break;
+      if (!want(d)) continue;
+      const n = Math.min(left, perCard, room(d) - (side.get(d.id) ?? 0));
+      if (n > 0) { side.set(d.id, (side.get(d.id) ?? 0) + n); left -= n; }
+    }
+  };
+  take((d) => !d.types.includes("Creature") && isRelicAnswer(d), SIDEBOARD_SHAPE.relics, 2);
+  take((d) => !d.types.includes("Creature") && isCreatureAnswer(d), SIDEBOARD_SHAPE.creatures, 3);
+  take(() => true, SIDEBOARD_SIZE, 2); // the best of the rest, two of each
+  return [...side.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([cardId, count]) => ({ cardId, count }));
 }

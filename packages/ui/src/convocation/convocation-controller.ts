@@ -8,7 +8,7 @@
 import type { CardDef } from "@shandalar/cards";
 import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
 import {
-  CONSTRUCTED_FORMATS, CONVOCATION_SEATS, shortStages, stagePodDrafts, eventDifficulty, type ConvocationDifficulty, buildConstructedDeck, selectCandidates, type ConstructedFormat, currentStage, defaultStages, finishTitle, keepAllowance, lastLimitedPool, newConvocation, nextStage, registerDecklist, stageLastRound, type ConvocationStage, convocationNames, limitedView, DRAFT_PLANE, authoredListsFrom, cardLegal, copyCap, deserializeWorld, eventFormat, isBasic, newConstructedEvent, suggestedConstructedDeck, draftDirection, draftPack, draftStep, draftTotalPicks, newDraftEvent, suggestedPick, EVENT_SAVE_KEY, LEDGER_KEY, MatchSeries, SEALED_PLANE, addCopy, advanceBracket, advanceEvent, bracketRound, bracketRoundComplete, buildLimitedDeck, checkEventDeck, closeRound, deserializeEvent, finalPlaces, playBracketFieldRound, recordBracketSeries, resolveKnobs, seatForGame,
+  CONSTRUCTED_FORMATS, CONVOCATION_SEATS, shortStages, stagePodDrafts, checkSideboard, suggestedSideboard, SIDEBOARD_SIZE, eventDifficulty, type ConvocationDifficulty, buildConstructedDeck, selectCandidates, type ConstructedFormat, currentStage, defaultStages, finishTitle, keepAllowance, lastLimitedPool, newConvocation, nextStage, registerDecklist, stageLastRound, type ConvocationStage, convocationNames, limitedView, DRAFT_PLANE, authoredListsFrom, cardLegal, copyCap, deserializeWorld, eventFormat, isBasic, newConstructedEvent, suggestedConstructedDeck, draftDirection, draftPack, draftStep, draftTotalPicks, newDraftEvent, suggestedPick, EVENT_SAVE_KEY, LEDGER_KEY, MatchSeries, SEALED_PLANE, addCopy, advanceBracket, advanceEvent, bracketRound, bracketRoundComplete, buildLimitedDeck, checkEventDeck, closeRound, deserializeEvent, finalPlaces, playBracketFieldRound, recordBracketSeries, resolveKnobs, seatForGame,
   ledgerEntry, lifeModifiers, newSealedEvent, pairingOf, playFieldRound, poolCollection, recordSeries, registerDeck, removeCopy, resultOf, roundComplete, saveCurrentSeries,
   serializeEvent, seriesSeed, seriesSetup, standings, type CardRatingTable, type Catalog, type ConvocationEvent, type ConvocationLedgerEntry, type ConvocationPackData,
   type Decklist, type KnobValues, type SeatAgents, type Standing,
@@ -21,7 +21,7 @@ import type { DeckEditorHost } from "../components/deck-editor-host.js";
 export type ConvocationScreen =
   | { kind: "door" }
   | { kind: "draft" }
-  | { kind: "build"; sideboarding: boolean }
+  | { kind: "build"; sideboarding: boolean; /** post-S54: a Constructed build's second page — the fifteen */ side?: boolean }
   | { kind: "pairings" }
   | { kind: "playDraw" }
   | { kind: "match" }
@@ -229,31 +229,60 @@ export class ConvocationController {
   private openBuild(sideboarding: boolean): void {
     const me = this.event!.field[0]!;
     this.draft = me.deck.map((e) => ({ ...e })); this.notice = null;
+    this.otherDraft = sideboarding ? [] : me.sideboard.map((e) => ({ ...e })); this.sideVisited = false;
     this.screen = { kind: "build", sideboarding }; this.emit();
   }
-  /** Between games: the Limited pool is the sideboard. A Constructed event has none this session. */
-  openSideboard(): void { if (this.event && this.series && !this.series.done && !this.isConstructed()) this.openBuild(true); }
-  editorLegality() { return checkEventDeck(this.event!, 0, this.draft, this.pool); }
-  /** The builder's deck for the player's pool — a starting point, not a registration. */
-  suggestDeck(): void { if (!this.event) return; this.draft = this.isConstructed() ? suggestedConstructedDeck(this.event, this.library(), this.deps()) : buildLimitedDeck(this.event.field[0]!.pool, limitedView(this.rating), this.pool).deck; this.notice = null; this.emit(); }
+  /** Post-S54 (Chris): a Constructed build has two pages — the sixty and the fifteen. `draft` is the page on screen;
+   * this is the other one. */
+  private otherDraft: Decklist = [];
+  private sideVisited = false;
+  /** The build's page: true on the sideboard's. */
+  buildingSide(): boolean { return this.screen.kind === "build" && !!this.screen.side; }
+  private buildDeck(): Decklist { return this.buildingSide() ? this.otherDraft : this.draft; }
+  private buildSide(): Decklist { return this.buildingSide() ? this.draft : this.otherDraft; }
+  sideboardCount(): number { return (this.screen.kind === "build" && !this.screen.sideboarding ? this.buildSide() : this.event?.field[0]!.sideboard ?? []).reduce((n, e) => n + e.count, 0); }
+  /** From the sixty to the fifteen, and back. */
+  toSideboard(): void { if (this.screen.kind !== "build" || this.screen.sideboarding || this.screen.side || !this.isConstructed()) return; [this.draft, this.otherDraft] = [this.otherDraft, this.draft]; this.sideVisited = true; this.notice = null; this.screen = { kind: "build", sideboarding: false, side: true }; this.emit(); }
+  toMainDeck(): void { if (!this.buildingSide()) return; [this.draft, this.otherDraft] = [this.otherDraft, this.draft]; this.notice = null; this.screen = { kind: "build", sideboarding: false }; this.emit(); }
+  /** Between games: a Limited pool is the sideboard; a Constructed seat has its registered fifteen (post-S54). */
+  canSideboard(): boolean { const e = this.event; return !!e && !!this.series && !this.series.done && (!this.isConstructed() || e.field[0]!.sideboard.length > 0 || (e.sideboards?.[e.formatId]?.length ?? 0) > 0); }
+  openSideboard(): void { if (this.canSideboard()) this.openBuild(true); }
+  editorLegality() { return this.buildingSide() ? checkSideboard(this.event!, this.otherDraft, this.draft, this.pool) : checkEventDeck(this.event!, 0, this.draft, this.pool); }
+  /** The builder's deck for the player's pool — a starting point, not a registration. On the sideboard's page: the
+   * fifteen the field's own builder would register beside this sixty. */
+  suggestDeck(): void {
+    if (!this.event) return;
+    this.draft = this.buildingSide() ? suggestedSideboard(this.event, this.otherDraft, this.deps())
+      : this.isConstructed() ? suggestedConstructedDeck(this.event, this.library(), this.deps()) : buildLimitedDeck(this.event.field[0]!.pool, limitedView(this.rating), this.pool).deck;
+    this.notice = null; this.emit();
+  }
   editorHost(): DeckEditorHost | null {
     const e = this.event; if (!e || this.screen.kind !== "build") return null;
     const constructed = this.isConstructed();
-    const me = e.field[0]!, collection = constructed ? this.legalPool() : poolCollection(me.pool), sideboarding = this.screen.sideboarding;
+    const me = e.field[0]!, sideboarding = this.screen.sideboarding, side = this.buildingSide();
+    const count = (l: Decklist) => { const c: Record<string, number> = {}; for (const x of l) c[x.cardId] = (c[x.cardId] ?? 0) + x.count; return c; };
+    // post-S54: the sideboard's page draws on what the sixty leaves of each card's cap; between games a Constructed
+    // seat draws on its registered seventy-five and nothing else
+    const collection = !constructed ? poolCollection(me.pool)
+      : sideboarding ? count([...me.deck, ...me.sideboard])
+      : side ? (() => { const pool = this.legalPool(), used = count(this.otherDraft); for (const id of Object.keys(pool)) pool[id] = Math.max(0, pool[id]! - (used[id] ?? 0)); return pool; })()
+      : this.legalPool();
     const formatName = this.formatName();
     const edit = (r: ReturnType<typeof addCopy>) => { if (r.ok) { this.draft = r.deck; this.notice = null; } else this.notice = r.reason; this.emit(); };
+    const sideN = this.sideboardCount();
     const host: DeckEditorHost = {
-      title: sideboarding ? "Sideboard — your pool" : constructed ? `${formatName} — build ${eventFormat(e.formatId).rule.minCards ?? 60}` : this.isDraft() ? "Your picks — build forty" : "Your pool — build forty",
-      draft: this.draft, name: formatName, notice: this.notice,
-      source: { collection, savedDeck: me.deck, activeDeckName: formatName },
+      title: sideboarding ? (constructed ? "Sideboard — your seventy-five" : "Sideboard — your pool") : side ? `${formatName} — the sideboard, up to ${SIDEBOARD_SIZE}` : constructed ? `${formatName} — build ${eventFormat(e.formatId).rule.minCards ?? 60}` : this.isDraft() ? "Your picks — build forty" : "Your pool — build forty",
+      draft: this.draft, name: side ? `${formatName} — sideboard` : formatName, notice: this.notice,
+      source: { collection, savedDeck: side ? me.sideboard : me.deck, activeDeckName: formatName },
       legality: () => this.editorLegality(),
-      add: (id: string) => edit(constructed ? addCopy(collection, this.draft, id) : addCopy(collection, this.draft, id, Infinity)),
+      add: (id: string) => edit(constructed && !sideboarding ? addCopy(collection, this.draft, id) : addCopy(collection, this.draft, id, Infinity)),
       remove: (id: string) => edit(removeCopy(this.draft, id)),
-      reset: () => { this.draft = me.deck.map((x) => ({ ...x })); this.notice = null; this.emit(); },
-      save: () => this.register(),
-      saveLabel: sideboarding ? "Keep this deck" : "Register the deck",
-      ...(sideboarding ? { close: () => { this.screen = { kind: "between" }; this.emit(); }, closeLabel: "Cancel" } : {}),
-      sparesLabel: sideboarding ? "Sideboard" : constructed ? "The format's pool" : "The pool",
+      reset: () => { this.draft = (side ? me.sideboard : me.deck).map((x) => ({ ...x })); this.notice = null; this.emit(); },
+      // a Constructed build's first save leads to the sideboard's page (a deck is not registered by accident without one)
+      save: () => (constructed && !sideboarding && !side && !this.sideVisited ? this.toSideboard() : void this.register()),
+      saveLabel: sideboarding ? "Keep this deck" : side ? "Register the deck and its sideboard" : constructed ? (this.sideVisited ? `Register the deck${sideN ? ` and its sideboard of ${sideN}` : " — no sideboard"}` : "Next: the sideboard") : "Register the deck",
+      ...(sideboarding ? { close: () => { this.screen = { kind: "between" }; this.emit(); }, closeLabel: "Cancel" } : side ? { close: () => this.toMainDeck(), closeLabel: "Back to the sixty" } : {}),
+      sparesLabel: sideboarding ? "Sideboard" : side ? "The format's pool — what the sixty leaves" : constructed ? "The format's pool" : "The pool",
     };
     return host;
   }
@@ -261,10 +290,13 @@ export class ConvocationController {
   async register(): Promise<void> {
     const e = this.event; if (!e || this.screen.kind !== "build") return;
     const registering = !!e.registering?.length;
+    // post-S54: a Constructed build registers its sixty and its fifteen together (whichever page is on screen)
+    const building = this.isConstructed() && !this.screen.sideboarding;
+    const deck = building ? this.buildDeck() : this.draft, side = building ? this.buildSide() : [];
     // the last decklist begins Day 1: a draft's other pods on the workers first (a refused deck drafts nothing)
-    const day1 = registering && e.registering!.length === 1 && checkEventDeck(e, 0, this.draft, this.pool).ok;
+    const day1 = registering && e.registering!.length === 1 && checkEventDeck(e, 0, deck, this.pool).ok && checkSideboard(e, deck, side, this.pool).ok;
     const job = day1 ? this.podsOnWorkers(e, 0) : undefined, picks = job && (await job);
-    const r = registering ? registerDecklist(e, this.draft, this.deps(), this.library(), picks) : registerDeck(e, 0, this.draft, this.pool);
+    const r = registering ? registerDecklist(e, deck, this.deps(), this.library(), picks, side) : registerDeck(e, 0, deck, this.pool, side);
     if (!r.ok) { this.notice = r.problems.join("; "); return this.emit(); }
     const sideboarding = this.screen.sideboarding;
     this.set(r.event);

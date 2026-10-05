@@ -234,7 +234,7 @@ function Between({ c }: { c: ConvocationController }) {
       <p style={{ margin: "0 0 12px" }}><SeriesLine c={c} /></p>
       <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
         <button className="primary" onClick={() => c.nextGame()}>Game {s.games.length + 1} of 3</button>
-        {!c.isConstructed() && <button onClick={() => c.openSideboard()} title="change your deck from your pool before the next game">Sideboard</button>}
+        {c.canSideboard() && <button onClick={() => c.openSideboard()} title={c.isConstructed() ? "change your deck from your registered seventy-five before the next game" : "change your deck from your pool before the next game"}>Sideboard</button>}
         <button className="linkish" style={{ marginLeft: "auto" }} onClick={() => c.toDoor()}>leave for now</button>
       </div>
     </Page>
@@ -385,21 +385,24 @@ export function ConvocationApp() {
           {c.isStaged() && !c.screen.sideboarding && !c.registration() && <span style={{ opacity: 0.85 }}>{c.stageLabel()}</span>}
           {c.registration() && <span style={{ opacity: 0.85 }}>Decklists{c.registration()!.left > 1 ? ` (${c.registration()!.left} to register)` : ""}</span>}
           <b style={{ fontFamily: "var(--serif)" }}>{c.registration() ? `Register your deck for ${c.registration()!.formatName.replace(/^The /, "the ")} — it plays Day ${c.registration()!.days.join(" and Day ")}${c.registration()!.days.includes(c.event.stages!.length) ? ", and the Umbel" : ""}.` : c.screen.sideboarding ? "Between games" : c.isConstructed() ? `A Convocation — ${c.formatName()}.` : c.isDraft() ? "Forty-five picks. Build from them." : `A Convocation — Sealed, ${COUNT[c.event.field.length] ?? c.event.field.length} seats.`}</b>
-          <span>{c.registration() ? "As at the Pro Tour, the deck is registered before the first draft and cannot change." : c.screen.sideboarding ? "Change your deck from your pool; forty cards or more." : c.isConstructed() ? "Every card the format allows is yours. Build sixty or more, take a suggestion, or bring a saved deck." : c.isDraft() ? "Build at least forty cards from your picks; basic lands are free." : "Six packs are open. Build at least forty cards; basic lands are free."}</span>
+          <span>{c.registration() ? "As at the Pro Tour, the deck is registered before the first draft and cannot change." : c.screen.sideboarding ? (c.isConstructed() ? "Change your deck from your registered seventy-five; sixty cards or more. Your next match starts from the registered sixty again." : "Change your deck from your pool; forty cards or more.") : c.buildingSide() ? "Up to fifteen cards beside the sixty — registered with it, and locked with it. Between games you may swap within the seventy-five." : c.isConstructed() ? "Every card the format allows is yours. Build sixty or more, take a suggestion, or bring a saved deck — then its sideboard." : c.isDraft() ? "Build at least forty cards from your picks; basic lands are free." : "Six packs are open. Build at least forty cards; basic lands are free."}</span>
           <span style={{ flex: 1 }} />
           {!c.screen.sideboarding && c.isConstructed() && (
+            <button onClick={() => (c.buildingSide() ? c.toMainDeck() : c.toSideboard())} title="the two pages of a Constructed registration: the sixty, and the sideboard of up to fifteen">{c.buildingSide() ? "← the sixty" : `the sideboard (${c.sideboardCount()}/15) →`}</button>
+          )}
+          {!c.screen.sideboarding && c.isConstructed() && !c.buildingSide() && (
             <select value="" onChange={(e) => { if (e.target.value) c.startFromList(e.target.value); }} title="start from one of the lists the field is drawn from — repaired to this format, as written">
               <option value="">start from a list…</option>
               {c.startingLists().map((l) => <option key={l.key} value={l.key}>{l.label} — {l.archetype}</option>)}
             </select>
           )}
-          {!c.screen.sideboarding && c.isConstructed() && c.savedDecks().length > 0 && (
+          {!c.screen.sideboarding && c.isConstructed() && !c.buildingSide() && c.savedDecks().length > 0 && (
             <select value="" onChange={(e) => { if (e.target.value) c.useSavedDeck(e.target.value); }} title="your saved decks from the journey — the format checks the one you bring">
               <option value="">bring a saved deck…</option>
               {c.savedDecks().map((d) => <option key={d.name} value={d.name}>{d.name}{d.ok ? "" : " (not legal here)"}</option>)}
             </select>
           )}
-          {!c.screen.sideboarding && <button onClick={() => c.suggestDeck()} title="a deck built from this pool by the rating — a starting point you can change">Suggest a deck</button>}
+          {!c.screen.sideboarding && <button onClick={() => c.suggestDeck()} title={c.buildingSide() ? "the fifteen the field's own builder would register beside this sixty — answers to artifacts and enchantments, answers to creatures, the best of the rest" : "a deck built from this pool by the rating — a starting point you can change"}>{c.buildingSide() ? "Suggest a sideboard" : "Suggest a deck"}</button>}
           {!c.screen.sideboarding && <button className="linkish" style={{ color: "var(--parchment)" }} onClick={() => c.toDoor()}>leave for now</button>}
         </div>
         <div style={{ flex: 1, minHeight: 0 }}><DeckEditor host={host} pool={pool} oracle={oracle} /></div>

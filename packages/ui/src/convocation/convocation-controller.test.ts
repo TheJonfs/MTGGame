@@ -407,4 +407,60 @@ describe("the Convocation controller (S48)", () => {
     expect(line.decks.map((d: { formatId: string }) => d.formatId)).toEqual(["draft-plane", "open", "draft-plane", "pauper"]);
     c.leave(); c.toTrophies(); expect(c.screen.kind).toBe("trophies");
   }, 180_000);
+
+  it("post-S54 (Chris) — a Constructed sideboard: the build's first save leads to the sideboard's page (what the sixty leaves of each cap, a suggested fifteen); registered together; between games the deck is changed within the seventy-five; the next match starts from the registered sixty", async () => {
+    const { c } = make();
+    c.newEvent(5410, { constructed: "open", seats: 16, rounds: 2 });
+    c.suggestDeck();
+    const sixty = c.draft.map((e) => ({ ...e }));
+    expect(c.editorHost()!.saveLabel).toBe("Next: the sideboard");
+    c.editorHost()!.save();
+    expect(c.screen).toEqual({ kind: "build", sideboarding: false, side: true });
+    expect(c.buildingSide()).toBe(true);
+    const host = c.editorHost()!;
+    expect(host.title).toBe("The Open — the sideboard, up to 15");
+    expect(size(c.draft)).toBe(0);
+    // the cap is over the seventy-five: a card the sixty holds four of has no copy left for the sideboard
+    const four = sixty.find((e) => e.count === 4 && !["plains", "island", "swamp", "mountain", "forest"].includes(e.cardId));
+    if (four) { expect(host.source.collection[four.cardId]).toBe(0); host.add(four.cardId); expect(c.notice).toBe("no spare copy owned"); }
+    c.suggestDeck();
+    expect(size(c.draft)).toBe(15);
+    expect(c.editorLegality().ok).toBe(true);
+    for (let i = 0; i < 3; i++) c.editorHost()!.add("plains");
+    expect(c.editorLegality().problems.join()).toMatch(/18 cards.*allows 15/);
+    for (let i = 0; i < 3; i++) c.editorHost()!.remove("plains");
+    const fifteen = c.draft.map((e) => ({ ...e }));
+    // back to the sixty and forth: both pages keep their cards
+    c.editorHost()!.close!(); expect(c.buildingSide()).toBe(false); expect(c.draft).toEqual(sixty); expect(c.sideboardCount()).toBe(15);
+    expect(c.editorHost()!.saveLabel).toBe("Register the deck and its sideboard of 15");
+    c.toSideboard(); expect(c.draft).toEqual(fifteen);
+    c.editorHost()!.save();
+    expect(c.screen.kind).toBe("pairings");
+    expect(c.event!.field[0]!.deck).toEqual(sixty);
+    expect(size(c.event!.field[0]!.sideboard)).toBe(15);
+    // game one, then the sideboarding
+    c.playMatch();
+    for (let g = 0; g < 400 && c.screen.kind !== "between"; g++) { if (c.screen.kind === "playDraw") c.choose("play"); else if (c.screen.kind === "match") { c.match!.autoWin(); await tick(20); } else await tick(10); }
+    expect(c.screen.kind).toBe("between");
+    expect(c.canSideboard()).toBe(true);
+    c.openSideboard();
+    expect(c.screen).toEqual({ kind: "build", sideboarding: true });
+    const sb = c.editorHost()!;
+    expect(sb.title).toBe("Sideboard — your seventy-five");
+    expect(sb.saveLabel).toBe("Keep this deck");
+    const inCard = c.event!.field[0]!.sideboard[0]!.cardId, outCard = sixty.find((e) => !pool.get(e.cardId)!.types.includes("Land") && e.cardId !== inCard)!.cardId;
+    sb.remove(outCard); c.editorHost()!.add(inCard);
+    c.editorHost()!.add("counterspell"); // nothing from outside the seventy-five
+    if (!sixty.some((e) => e.cardId === "counterspell") && !fifteen.some((e) => e.cardId === "counterspell")) expect(c.notice).toBe("no spare copy owned");
+    c.editorHost()!.save();
+    expect(c.screen.kind).toBe("between");
+    const g2 = c.event!.field[0]!;
+    expect(size(g2.deck)).toBe(60); expect(size(g2.sideboard)).toBe(15);
+    expect(g2.deck.find((e) => e.cardId === inCard)!.count).toBe((sixty.find((e) => e.cardId === inCard)?.count ?? 0) + 1);
+    // the match ends: the registered sixty and fifteen are back for the next
+    for (let g = 0; g < 800 && c.screen.kind !== "standings"; g++) { if (c.screen.kind === "between") c.nextGame(); else if (c.screen.kind === "playDraw") c.choose("play"); else if (c.screen.kind === "match") { c.match!.autoWin(); await tick(20); } else await tick(30); }
+    expect(c.screen.kind).toBe("standings");
+    expect(c.event!.field[0]!.deck).toEqual(sixty);
+    expect(c.event!.field[0]!.sideboard).toEqual(fifteen.filter((e) => e.count > 0));
+  }, 240_000);
 });

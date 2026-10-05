@@ -89,6 +89,40 @@ Walked in the browser: the door (short, Hard) → register the Sweep → "the ot
 - **Ladder mirror gate PASS.** Tests 914 (books 98 and 99 added).
 - The S54 tests moved to `convocation-s54.test.ts`: `convocation.test.ts` had passed 60 s of synchronous work, which is what raised vitest's "Timeout calling onTaskUpdate". The run is clean again.
 
+## After the handoff — Chris's fourth Convocation (18–1, 2026-10-04): the Hearth, the take-back, the repeat, Constructed sideboards
+
+### The Hearth — the third contributed list
+- Chris's 18–1 Mardu list (`docs/debug_logs/convocation-18-1.json`), in `open-contributed.json` as **the Hearth** (a working name): a variation on the Mardu Aristocrats macro-archetype (the Loop's family) — the Usher / Restoration Angel / Altar finish in a removal-and-value shell.
+- **All fifteen lists re-measured on pilot 99** (10,500 games, registered sixties): levy 64 · **hearth 64** · sweep 60 · coin 59 · wurmspeaker 59 · depths 57 · warband 55 · muster 52 · loop 51 · ford 51 · enchantress 45 · tally 37 · undertow 36 · locks 35 · larder 27. `OPEN_MEANS` updated.
+- **The retire count is now two of three** for the Larder, the Locks and the Undertow (the same bottom three as the pilot-97 run). One more and each gets its deep-dive review.
+- In that run the AI assembled the Loop's three pieces by turn ten in 1% of the Loop's games and activated the Altar 0.01 times a game. It does not play the Altar combo (Chris's note; see Suggested next).
+
+### The take-back (`ui/play/undo.ts`, one switch: `UNDO_ENABLED`)
+- **The rule:** the player's last decision can be taken back while nothing irreversible has happened since — no card off a library (a draw, a mill, a search), no shuffle or random draw, no hidden card shown, no damage dealt or life changed, and no decision by the opponent.
+- **How:** the game is *rebuilt* from its own log up to that decision (same seed + same actions = the same game), beside the live game, and swapped in only when it stands at that decision. Nothing is reversed in place. A failed rebuild leaves the live game untouched and says so.
+- A whole gesture comes back as one: a staged attack, a manual payment.
+- The log after a take-back is the old log's prefix, so saved games and replays never see one.
+- On the rail's far end, and inside dialogs: "↶ take back playing Scrubland".
+- **Tests:** exact state and log restored; the sealed cases; a streamed attack back whole (and not after it lands); a fuzz of random play with 40+ take-backs on real lists, each log replaying to the game on the table. Walked in the browser.
+- **To remove it:** set `UNDO_ENABLED = false`.
+
+### The repeat (`ui/play/repeat.ts`, one switch: `REPEAT_ENABLED`)
+- Every answer is recorded as a **description by role** — an object by what can be seen of it (card, zone, controller, tapped, power/toughness, counters, due an end-step sacrifice), never by id, because a creature that returns is a new object each pass.
+- Every decision is recorded with a **fingerprint** of the game around it (turn, step, stack, every permanent, hand, mana) — without life totals, libraries or graveyards, which are what a loop moves.
+- **A loop is offered** when the decision on screen has the fingerprint of an earlier one this turn and something moved in between. The offer shows what a pass moves and offers "once" or "to the end (×N)".
+- **A repeat plays the same decisions as real engine actions.** At every step the fingerprint must match the recording and the recorded answer must be on offer; otherwise it stops and the decision is the player's. The opponent gets priority at every step; an answer from them stops it. Capped at 200 passes.
+- **Tested on the real engine:** the Usher's own loop, and Chris's Usher / Restoration Angel / Altar loop (eight decisions a pass), each repeated to the kill; the stop on a mismatch; the cap.
+- **Not yet verified:** the repeat buttons in a browser (staging the combo by hand there was not practical). The controller tests drive the same code.
+- **To remove it:** set `REPEAT_ENABLED = false`.
+
+### Constructed sideboards
+- **Fifteen cards, registered with the sixty and locked with it.** The format's limits on a card (copy cap, restricted, banned) hold over the seventy-five.
+- **The player:** the build has a second page ("Next: the sideboard"), with "Suggest a sideboard". Between games the deck is remade only from the registered seventy-five. Each new match starts from the registered sixty.
+- **The field:** every Constructed seat registers a fifteen, built for the three rules it already sideboards by in Limited — answers to artifacts and enchantments, answers to creatures, and the best cards left for when counterspells come out.
+- Two adjustments for Constructed: mana-only artifacts (Moxen, the Lotus) no longer count as targets for the first rule; and an answer comes in only for a card it out-rates.
+- **Measured** (each list's sideboarded sixty against the others' registered sixties, 1,400 paired games a list): **+2.1 points on average**. The weaker lists gain most: the Locks +13.0, the Tally +5.9, the Loop +5.5, the Undertow +5.4. With the out-rates rule the tuned lists no longer lose: the Levy −0.9 ± 2.4, the Wurmspeaker 0; the Sweep and the Warband read −2 ± 2.
+- The ledger line records the registered sideboard.
+
 ## Deviations from the brief
 1. **Two difficulties, not three; every pilot master** (Chris's rulings 1 and 3). The seat records `pilot: "master"` for when that changes.
 2. **v1.5 not adopted.** The head-to-head failed, as the rule allows.
@@ -118,6 +152,9 @@ Walked in the browser: the door (short, Hard) → register the Sweep → "the ot
    - Options: (a) kept cards exclude the power slot; (b) power comes home as a proxy that counts for no lock; (c) a campaign-entered Convocation drafts a campaign-safe set. I'd take (a): one filter at the finish, and the campaign's keys stay the campaign's.
    - **The prize** (gold or a card by place band) rides the same outbox, as a knob table like the campaign's other rewards.
    - **Cost:** about one session — the outbox and drain (~150 lines with tests), an additive save field, a provenance source, the door's invitation chooser and the kept-card filter, with the fence decided first.
+6. **The take-back's availability leaks a little.** It disappears when the opponent has made a decision, so its absence after a spell tells the player the AI had something it could have done. The same is already true of the AI's thinking pause.
+7. **Where the take-back's line sits is a dial.** I sealed on damage and life changes as well as hidden information, so an attack cannot be taken back once it lands. A resolved creature spell the opponent could not respond to *can* still be taken back. If that feels wrong in play, sealing on any resolution is a one-line change.
+8. **The field's sideboards are built by rule, not authored.** They help on average but are generic. Authored fifteens for the top lists would be the planner's.
 4. **The engine has no rule for a mandatory loop** (CR 104.4b / 732.4: a loop of mandatory actions that nobody can stop is a draw). The Usher's loop always ends today because the looping side drains twice a death. A board where the drains cancel and the only legal target is the other Usher would never end: the game, a field worker, or the page would hang. The AI avoids choosing into it (book 99), but cannot when the choice is forced. A cap on stack items resolved without a change in life or board, ending in a draw, would close it. Escalated, not built.
 5. **The pilot is now 99.** Every rating run is stale again (Concern 2).
 
@@ -125,7 +162,7 @@ Walked in the browser: the door (short, Hard) → register the Sweep → "the ot
 None. No card or rules change.
 
 ## Test status
-`pnpm test`: 99 files passed, 1 skipped; **914 tests passed, 2 skipped** (the standing two).
+`pnpm test`: 101 files passed, 1 skipped; **929 tests passed, 2 skipped** (the standing two).
 
 New tests:
 - `convocation.test.ts` (3):
@@ -137,6 +174,9 @@ New tests:
 No AI heuristic changed (no ladder run); no new card (no fuzz). About 110,000 sim games this session raised no engine error.
 
 ## Suggested next
+- **From Chris, for the planner's next card batch:** a **colourless graveyard-removal card** for sideboards, in case the Usher combo proves too strong. The field would need a fourth sideboarding rule for it (keyed on the opponent's reanimation shape); that is a small addition once the card exists.
+- **Teaching the AI the Altar / Restoration Angel / Usher loop** (Chris). Today it assembles the pieces in 1% of games and almost never activates the Altar. The Altar's gate only fires for lethal mill or a doomed creature; it does not see that sacrificing the Angel with its blink trigger on the stack restarts the Usher. A loop-aware credit, like book 99's, is the likely shape.
+- **A sellout combo list** Chris wants to build and test.
 - **Chris plays the short Convocation on Hard.**
 - **For the planner:**
   - the lever for field strength (Concern 1);
