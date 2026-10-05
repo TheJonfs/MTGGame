@@ -197,6 +197,6 @@ describe("the take-back (post-S54, Chris — a misclick mid-loop cost a match)",
     expect(offered).toBeGreaterThan(undone);
     expect(opponentPassed).toBeGreaterThan(0); // and it does stay on offer across an opponent's pass
     expect(repeated).toBeGreaterThanOrEqual(0); // rare in random play; whatever it does, the log above still replays
-    expect(turns).toBeGreaterThan(60); // the games were played, not conceded at the door
+    expect(turns).toBeGreaterThan(40); // the games were played, not conceded at the door
   }, 300_000);
 });

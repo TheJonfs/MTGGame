@@ -22,6 +22,7 @@ import { convocationNames } from "./convocation-names.js";
 import { stepHeadless } from "./convocation-run.js";
 import { CONVOCATION_SEATS, defaultStages, shortStages, eventFormat, finalPlaces, newConvocation, serializeEvent, type ConvocationEvent, type SeatAgents } from "./event.js";
 import { cardRating, limitedView, type CardRatingTable } from "./rating.js";
+import { OPEN_MEANS } from "./constructed-builder.js";
 import type { ConvocationPackData } from "./packs.js";
 
 const arg = (k: string, d: string) => { const i = process.argv.indexOf(`--${k}`); return i >= 0 ? process.argv[i + 1]! : d; };
@@ -32,10 +33,10 @@ const packs: ConvocationPackData = { power: read("sets.json").power, sets: read(
 const rating = read("card-rating.json") as CardRatingTable, limited = limitedView(rating);
 const library = authoredLists(ROOT);
 const deps = { cards, packs, rating, knobs: defaultKnobs(), library };
-const agents: SeatAgents = (seat, opp, seed, side) => new HeuristicAgent(seed * 2 + 1 + side, cards, difficultyProfile("master", seat.archetype, opp.deck));
+const agents: SeatAgents = (seat, opp, seed, side) => new HeuristicAgent(seed * 2 + 1 + side, cards, difficultyProfile("master", seat.archetype, opp.deck, seat.deck));
 
 interface StageRow { stage: number; formatId: string; ms: number; saveBytes: number; quality: number[] }
-interface EventRow { seed: number; strength: { builder?: string; noise?: number }[]; stages: StageRow[]; finalSaveBytes: number; rematches: number; podViolations: number; places: number[]; humanPlace: number; bracketMs: number; totalMs: number }
+interface EventRow { seed: number; strength: { builder?: string; noise?: number; lists?: string }[]; /** S55: each seat's list at the first Constructed stage, as its measured Open mean (0 when unmeasured) */ listMeans?: number[]; stages: StageRow[]; finalSaveBytes: number; rematches: number; podViolations: number; places: number[]; humanPlace: number; bracketMs: number; totalMs: number }
 
 /** A seat's deck quality: the mean score of its nonland cards (the Limited score in a Limited stage, the Constructed one else). */
 const quality = (e: ConvocationEvent, seat: number) => {
@@ -53,13 +54,14 @@ async function play(): Promise<void> {
     const seed = seed0 * 1000 + k, t0 = Date.now();
     let e = newConvocation({ seed, stages: process.argv.includes("--short") ? shortStages(arg("second", "open")) : defaultStages(arg("second", "open")), seats: SEATS, names: convocationNames(SEATS - 1), faces: [], library }, deps);
     const stages: StageRow[] = []; let stageT = Date.now(), podViolations = 0, bracketT = 0;
-    let qual: number[] = [];
+    let qual: number[] = [], listMeans: number[] = [];
     while (e.phase !== "over") {
       const before = e;
       e = await stepHeadless(e, deps, agents);
       // every deck in: the build ends (a draft or Sealed stage) or the stage starts with registered decks (S54: a
       // Constructed day after the first skips the build — the snapshot was Day 1's, read again)
       if ((before.phase === "build" || before.phase === "interlude") && e.phase === "round") qual = e.field.map((_, s) => quality(e, s));
+      if (!listMeans.length && e.phase === "round" && eventFormat(e.formatId).kind === "constructed") listMeans = e.field.map((x) => OPEN_MEANS[x.list ?? ""] ?? 0);
       if (e.phase === "round" && before.phase !== "round" && e.stages![e.stage!]!.kind === "draft") for (const p of e.pairings) if (!e.pods!.some((pod) => pod.includes(p.a) && pod.includes(p.b!))) podViolations += 1;
       if ((e.phase === "interlude" || (e.phase === "bracket" && before.phase === "standings")) && before.phase === "standings") {
         stages.push({ stage: before.stage!, formatId: before.formatId, ms: Date.now() - stageT, saveBytes: serializeEvent(e).length, quality: qual });
@@ -69,7 +71,7 @@ async function play(): Promise<void> {
     }
     const pairs = e.results.map((r) => [r.a, r.b].sort((x, y) => x - y).join("-"));
     const places = finalPlaces(e).sort((x, y) => x.seat - y.seat).map((p) => p.place);
-    rows.push({ seed, strength: e.field.map((x) => ({ ...(x.builder ? { builder: x.builder } : {}), ...(x.noise !== undefined ? { noise: x.noise } : {}) })), stages, finalSaveBytes: serializeEvent(e).length, rematches: pairs.length - new Set(pairs).size, podViolations, places, humanPlace: places[0]!, bracketMs: Date.now() - bracketT, totalMs: Date.now() - t0 });
+    rows.push({ seed, strength: e.field.map((x) => ({ ...(x.builder ? { builder: x.builder } : {}), ...(x.noise !== undefined ? { noise: x.noise } : {}), ...(x.lists ? { lists: x.lists } : {}) })), ...(listMeans.length ? { listMeans } : {}), stages, finalSaveBytes: serializeEvent(e).length, rematches: pairs.length - new Set(pairs).size, podViolations, places, humanPlace: places[0]!, bracketMs: Date.now() - bracketT, totalMs: Date.now() - t0 });
     console.error(`event ${seed}: ${Math.round((Date.now() - t0) / 1000)} s, the human ${places[0]} of ${SEATS}`);
   }
   const out = arg("out", join(ROOT, `analysis/runs/convocation_shard${si}.json`));
@@ -105,6 +107,10 @@ function report(): void {
   L.push(`\n## The finish by the seat's strength (the AI seats)\n\nEvery pilot is master (ADR-158 as amended). The builder shapes the Constructed decks, the noise the Limited ones. An even field finishes ${((seats + 1) / 2).toFixed(1)} on average, ${(800 / seats).toFixed(1)}% in the Umbel.\n\n| strength | seats | mean finish | in the Umbel | top quarter |\n|---|---|---|---|---|`);
   for (const b of ["stock", "light", "heavy"]) L.push(finishBy(`builder ${b}`, strengthRows.filter((x) => x.builder === b)));
   for (const n of [0, 0.2, 0.4]) L.push(finishBy(`noise σ ${n}`, strengthRows.filter((x) => x.noise === n)));
+  // S55 (ADR-158 amended): the list draw, and the list's own measured strength against the finish
+  for (const l of ["top", "any", "low"]) { const xs = strengthRows.filter((x) => (x as { lists?: string }).lists === l); if (xs.length) L.push(finishBy(`list draw ${l}`, xs)); }
+  const lm = rows.flatMap((r) => (r.listMeans ?? []).map((m, s) => ({ m, place: r.places[s]!, s }))).filter((x) => x.s !== 0 && x.m > 0);
+  if (lm.length) L.push(`\nA seat's list (its measured Open mean) against its finish: r = ${corr(lm.map((x) => x.m), lm.map((x) => x.place)).toFixed(2)} over ${lm.length} seats. The Umbel's eight hold lists averaging ${mean(lm.filter((x) => x.place <= 8).map((x) => x.m)).toFixed(1)}; the field ${mean(lm.map((x) => x.m)).toFixed(1)}.`);
   const text = L.join("\n");
   writeFileSync(join(ROOT, `analysis/runs/${arg("report-name", "convocation_sim")}.md`), text + "\n");
   console.log(text);

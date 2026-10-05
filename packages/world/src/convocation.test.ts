@@ -22,7 +22,7 @@ const packs: ConvocationPackData = { power: read("sets.json").power, sets: read(
 const rating = read("card-rating.json");
 const library = authoredLists(ROOT);
 const deps = { cards, packs, rating, knobs: defaultKnobs(), library };
-const agents: SeatAgents = (seat, opp, seed, side) => new HeuristicAgent(seed * 2 + 1 + side, cards, difficultyProfile("master", seat.archetype, opp.deck));
+const agents: SeatAgents = (seat, opp, seed, side) => new HeuristicAgent(seed * 2 + 1 + side, cards, difficultyProfile("master", seat.archetype, opp.deck, seat.deck));
 const FACES = Array.from({ length: 40 }, (_, i) => ({ portrait: `face${i}`, colors: "WUBRG"[i % 5]! }));
 /** The default's shape, one round a stage (the test's size; the measure plays the full sixteen). */
 const SHORT: ConvocationStage[] = defaultStages("open").map((s) => ({ ...s, rounds: 1 }));

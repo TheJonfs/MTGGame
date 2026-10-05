@@ -29,7 +29,7 @@ import { cardName } from "../labels";
  * every prizeOnly card in it has been met in a duel or is owned (`?all=1` is the deploy's bypass, as in
  * the gallery). The saved decks pass by construction (their cards are owned). */
 type PlayDeck = string;
-function playDeck(roster: LabDeck[], key: PlayDeck): { name: string; decklist: { cardId: string; count: number }[]; archetype: "aggro" | "midrange" | "control"; portrait?: string } {
+function playDeck(roster: LabDeck[], key: PlayDeck): { name: string; decklist: { cardId: string; count: number }[]; archetype: "aggro" | "midrange" | "control" | "combo"; portrait?: string } {
   const d = roster.find((x) => x.key === key) ?? roster.find((x) => x.group === "mages") ?? roster[0];
   if (!d) throw new Error("no deck to play");
   return { name: d.name, decklist: d.decklist.map((e) => ({ ...e })), archetype: d.archetype, ...(d.portrait ? { portrait: d.portrait } : {}) };

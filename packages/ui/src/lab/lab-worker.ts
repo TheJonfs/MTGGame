@@ -27,8 +27,8 @@ async function run(job: LabJob): Promise<void> {
       modifiers,
     };
     const agents: [Agent, Agent] = [
-      new HeuristicAgent(seed * 2 + 1, pool, difficultyProfile(p0.profile, p0.archetype, p1.decklist.map((e) => ({ ...e })))),
-      new HeuristicAgent(seed * 2 + 2, pool, difficultyProfile(p1.profile, p1.archetype, p0.decklist.map((e) => ({ ...e })))),
+      new HeuristicAgent(seed * 2 + 1, pool, difficultyProfile(p0.profile, p0.archetype, p1.decklist.map((e) => ({ ...e })), p0.decklist.map((e) => ({ ...e })))),
+      new HeuristicAgent(seed * 2 + 2, pool, difficultyProfile(p1.profile, p1.archetype, p0.decklist.map((e) => ({ ...e })), p1.decklist.map((e) => ({ ...e })))),
     ];
     try {
       const r = await runMatch(spec, pool, agents);

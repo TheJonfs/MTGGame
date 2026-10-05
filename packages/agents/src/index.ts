@@ -7,3 +7,5 @@ export * from "./combat-sim.js";
 export * from "./heuristic-agent.js";
 export * from "./human-agent.js";
 export * from "./granted-view.js"; // S22 r3: the UI's manual-tap-for-abilities resolves costs through the virtual list
+export * from "./plans.js";
+export * from "./plans.generated.js";

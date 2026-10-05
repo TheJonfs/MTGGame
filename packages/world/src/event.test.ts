@@ -21,7 +21,7 @@ const rating = read("card-rating.json");
 const deps = { cards, packs, rating }, knobs = defaultKnobs();
 const NAMES = ["Ansel", "Brida", "Corwen", "Dessa", "Edmar", "Fenna", "Garrick", "Hesper"];
 const FACES = [{ portrait: "oriel", colors: "W" }, { portrait: "tessaly", colors: "U" }, { portrait: "edric", colors: "B" }, { portrait: "brann", colors: "R" }, { portrait: "hask", colors: "G" }, { portrait: "vael", colors: "WB" }, { portrait: "kessa", colors: "UR" }];
-const agents: SeatAgents = (seat, opp, seed, side) => new HeuristicAgent(seed * 2 + 1 + side, cards, difficultyProfile("master", seat.archetype, opp.deck));
+const agents: SeatAgents = (seat, opp, seed, side) => new HeuristicAgent(seed * 2 + 1 + side, cards, difficultyProfile("master", seat.archetype, opp.deck, seat.deck));
 const fresh = (seed: number) => newSealedEvent({ seed, names: NAMES, faces: FACES }, deps);
 /** The human's seat played by a heuristic: its deck by the builder, its series headless. */
 const register = (e: ConvocationEvent) => { const r = registerDeck(e, 0, buildLimitedDeck(e.field[0]!.pool, rating, cards).deck, cards); if (!r.ok) throw new Error(r.problems.join("; ")); return r.event; };

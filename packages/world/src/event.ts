@@ -47,9 +47,11 @@ export interface EventSeat {
    * (master throughout, Chris); the Constructed builder (how far it tinkers from its list); the Limited builder's
    * rating noise σ (0, 0.2 or 0.4 — a noisier builder misjudges its cards). */
   pilot?: "master";
+  /** S55 (ADR-158 amended): how the seat draws its Constructed list — toward the lists that measure strong, or weak. */
+  lists?: "top" | "any" | "low";
   builder?: "stock" | "light" | "heavy";
   noise?: number;
-  archetype: "aggro" | "midrange" | "control";
+  archetype: "aggro" | "midrange" | "control" | "combo";
 }
 export interface EventResult { round: number; a: number; b: number; series: SeriesState }
 export interface ConvocationEvent {
@@ -112,9 +114,9 @@ export const eventFormat = (id: string): Format => { const f = [...LIMITED_FORMA
 const stageSalt = (event: Pick<ConvocationEvent, "stages" | "stage">): number[] => (event.stages ? [1000 + (event.stage ?? 0)] : []);
 /** S54 (ADR-158): a seat's strength, seeded by the event and the seat — builders stock / light / heavy (a quarter, a
  * half, a quarter), Limited noise 0 / 0.2 / 0.4 by thirds; every pilot master (Chris). */
-export function seatStrength(seed: number, s: number): Required<Pick<EventSeat, "pilot" | "builder" | "noise">> {
-  const r = new WorldRng(sub(seed, 13, s)), b = r.float(), n = r.int(3);
-  return { pilot: "master", builder: b < 0.25 ? "stock" : b < 0.75 ? "light" : "heavy", noise: [0, 0.2, 0.4][n]! };
+export function seatStrength(seed: number, s: number): Required<Pick<EventSeat, "pilot" | "builder" | "noise" | "lists">> {
+  const r = new WorldRng(sub(seed, 13, s)), b = r.float(), n = r.int(3), l = r.float(); // (the list draw is the stream's LAST roll: S54's two are unmoved)
+  return { pilot: "master", builder: b < 0.25 ? "stock" : b < 0.75 ? "light" : "heavy", noise: [0, 0.2, 0.4][n]!, lists: l < 0.25 ? "top" : l < 0.75 ? "any" : "low" };
 }
 const gauss = (rng: WorldRng) => Math.sqrt(-2 * Math.log(Math.max(1e-12, rng.float()))) * Math.cos(2 * Math.PI * rng.float());
 const sub = (seed: number, ...salt: number[]) => { const r = new WorldRng((seed ^ 0x9e3779b9) >>> 0); let x = r.int(0x7fffffff); for (const s of salt) x = new WorldRng((x + Math.imul(s + 1, 0x85ebca6b)) >>> 0).int(0x7fffffff); return x; };
@@ -163,18 +165,28 @@ export function newConstructedEvent(opts: Omit<NewEventOptions, "format"> & { fo
   for (let s = 0; s < seats; s++) {
     if (s === 0) { field.push({ name: opts.playerName ?? "You", human: true, pool: [], deck: [], sideboard: [], colors: "", archetype: "midrange" }); continue; }
     const strength = seatStrength(opts.seed, s);
-    const b = buildConstructedDeck(format, deps.rating, sub(opts.seed, 8, s), opts.library, deps.cards, { tinker: strength.builder }); // S54: the seat's builder
+    const b = buildConstructedDeck(format, deps.rating, sub(opts.seed, 8, s), opts.library, deps.cards, { tinker: strength.builder, lists: strength.lists }); // S54: the seat's builder; S55: its list draw
     const colors = deckColors(b.deck, deps.cards);
     const fits = opts.faces.filter((f) => !used.has(f.portrait) && [...f.colors].some((c) => colors.includes(c)));
     const open = fits.length ? fits : opts.faces.filter((f) => !used.has(f.portrait));
     const face = open.length ? open[rng.int(open.length)]!.portrait : undefined;
     if (face) used.add(face);
-    field.push({ name: names[(s - 1) % Math.max(1, names.length)] ?? `Seat ${s + 1}`, ...(face ? { face } : {}), human: false, pool: [], deck: b.deck, sideboard: fieldSideboard(b.deck, format, deps), list: b.from, tinker: b.tinker, colors, archetype: b.archetype, ...strength });
+    field.push({ name: names[(s - 1) % Math.max(1, names.length)] ?? `Seat ${s + 1}`, ...(face ? { face } : {}), human: false, pool: [], deck: b.deck, sideboard: seatSideboard(b.deck, format, deps, b.from, opts.library), list: b.from, tinker: b.tinker, colors, archetype: b.archetype, ...strength });
   }
   return { version: EVENT_SAVE_VERSION, seed: opts.seed, formatId: format.id, rounds, difficulty: opts.difficulty ?? "standard", phase: "build", round: 0, field, pairings: [], results: [], ...(opts.top8 ? { top8: true } : {}) };
 }
 /** Post-S54: a field seat's registered fifteen (constructed-builder.buildSideboard, by the Constructed score). */
 export const fieldSideboard = (deck: Decklist, format: ConstructedFormat, deps: Pick<EventDeps, "cards" | "rating">): Decklist => buildSideboard(deck, format, deps.rating, deps.cards, answersRelics, answersCreatures);
+/** S55 (ADR-156/161): a seat on a contributed list registers that list's own fifteen when it stands beside the seat's
+ * sixty (a tinkered sixty may have taken a fourth copy of something the fifteen holds — then the builder's). */
+function seatSideboard(deck: Decklist, format: ConstructedFormat, deps: Pick<EventDeps, "cards" | "rating">, from: string, library: readonly LibraryList[]): Decklist {
+  const authored = library.find((l) => l.key === from)?.sideboard;
+  if (authored && authored.reduce((n, e) => n + e.count, 0) <= SIDEBOARD_SIZE) {
+    const merged = mergeLists(deck, authored), rule = format.rule;
+    if (merged.every((e) => isBasic(e.cardId) || e.count <= ((rule.restricted ?? []).includes(e.cardId) ? 1 : 4))) return authored.map((e) => ({ ...e }));
+  }
+  return fieldSideboard(deck, format, deps);
+}
 /** Post-S54: "suggest a sideboard" for the human's sixty — the field's own builder. */
 export function suggestedSideboard(event: ConvocationEvent, deck: Decklist, deps: Pick<EventDeps, "cards" | "rating">): Decklist {
   const format = eventFormat(event.formatId);
@@ -681,8 +693,8 @@ export function beginStage(event: ConvocationEvent, k: number, deps: EventDeps, 
     const mine = at.decklists?.[st.formatId];
     const field = at.field.map((seat, s) => {
       if (s === 0) return mine ? { ...bare(seat), deck: mine.map((e) => ({ ...e })), sideboard: (at.sideboards?.[st.formatId] ?? []).map((e) => ({ ...e })), colors: deckColors(mine, deps.cards) } : bare(seat);
-      const b = buildConstructedDeck(format, deps.rating, sub(at.seed, 8, s, ...deckSalt), library, deps.cards, seat.builder ? { tinker: seat.builder } : {}); // S54: the seat's builder
-      return { ...bare(seat), deck: b.deck, sideboard: fieldSideboard(b.deck, format, deps), list: b.from, tinker: b.tinker, colors: deckColors(b.deck, deps.cards), archetype: b.archetype };
+      const b = buildConstructedDeck(format, deps.rating, sub(at.seed, 8, s, ...deckSalt), library, deps.cards, seat.builder ? { tinker: seat.builder, ...(seat.lists ? { lists: seat.lists } : {}) } : {}); // S54: the seat's builder; S55: its list draw
+      return { ...bare(seat), deck: b.deck, sideboard: seatSideboard(b.deck, format, deps, b.from, library), list: b.from, tinker: b.tinker, colors: deckColors(b.deck, deps.cards), archetype: b.archetype };
     });
     if (!mine) return { ...at, field };
     const history = [...(at.history ?? []).filter((h) => h.stage !== k), { stage: k, formatId: st.formatId, pool: [], deck: mine.map((e) => ({ ...e })) }];

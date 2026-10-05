@@ -23,8 +23,9 @@ import type { ConstructedFormat } from "./formats.js";
 import { LAW_IDS } from "./formats.js";
 import { cardRating, type CardRatingTable } from "./rating.js";
 import { WorldRng } from "./rng.js";
+import { answersGraveyards, usableByAnyDeck } from "./sideboard-ai.js";
 
-export interface LibraryList { key: string; archetype: "aggro" | "midrange" | "control"; decklist: Decklist }
+export interface LibraryList { key: string; archetype: "aggro" | "midrange" | "control" | "combo"; decklist: Decklist; /** S55: a contributed list's registered fifteen */ sideboard?: Decklist }
 /** The Open's round-robin means — a list's measured strength. Post-S53: re-measured on pilot 97 with the two lists contributed from play (the Sweep, the Depths): 9,100 games, analysis/runs/open_rr14.json. Post-S54: all fifteen re-measured on pilot 99 with the Hearth (Chris's 18–1 Mardu list): 10,500 games, analysis/runs/rr15_plain.json — the registered sixties, no sideboarding. (Pilot 97's fourteen were levy 65, wurmspeaker 62, coin 59, sweep 59, depths 57, muster 53, warband 53, loop 53, ford 51, enchantress 50, tally 37, undertow 35, locks 35, larder 28.) (S46's were levy 68, wurmspeaker 61, warband 60, coin 59, muster 57, loop 55, ford 53, enchantress 51, tally 39, locks 39, undertow 38, larder 31.) */
 export const OPEN_MEANS: Record<string, number> = { "open:levy": 64, "open:hearth": 64, "open:sweep": 60, "open:coin": 59, "open:wurmspeaker": 59, "open:depths": 57, "open:warband": 55, "open:muster": 52, "open:loop": 51, "open:ford": 51, "open:enchantress": 45, "open:tally": 37, "open:undertow": 36, "open:locks": 35, "open:larder": 27 };
 /** Post-S52 (Chris): the candidates are the TWELVE best-fitting lists (the Open's whole library, not its top five),
@@ -32,6 +33,9 @@ export const OPEN_MEANS: Record<string, number> = { "open:levy": 64, "open:heart
  * or a HEAVY one (four to six); the light and the heavy also move a land. The shares are a quarter, a half, a quarter. */
 export const CONSTRUCTED_TERMS = { candidates: 12, noiseBand: 0.5, inListBonus: 0.3, tinker: { stock: { share: 0.25, swaps: [0, 0] }, light: { share: 0.5, swaps: [1, 2] }, heavy: { share: 0.25, swaps: [4, 6] } } } as const;
 export type Tinker = keyof typeof CONSTRUCTED_TERMS.tinker;
+/** S55 (ADR-158 amended): how a seat draws its list — a quarter of seats lean to the strong lists, a quarter to the weak. */
+export type ListDraw = "top" | "any" | "low";
+export const LIST_DRAW_SCALE = 10;
 /** Post-S53 (Chris: lists contributed from play grow the metagame): the candidates are at least the twelve, and every
  * list with a measured Open strength — a contributed list enters the field once `pnpm open:rr` has measured it. */
 export const candidateCount = (): number => Math.max(CONSTRUCTED_TERMS.candidates, Object.keys(OPEN_MEANS).length);
@@ -80,7 +84,7 @@ export function selectCandidates(format: ConstructedFormat, rating: CardRatingTa
   return library.map((l) => ({ l, share: legalShare(l.decklist, rule, cards), strength: strength(l) })).sort((a, b) => b.share - a.share || b.strength - a.strength || a.l.key.localeCompare(b.l.key)).slice(0, candidateCount());
 }
 
-export function buildConstructedDeck(format: ConstructedFormat, rating: CardRatingTable, seed: number, library: readonly LibraryList[], cards: Map<string, CardDef>, opts: { /** Force the tinker level (the tinker study); default: rolled from the seed. */ tinker?: Tinker; /** Force the source list. */ from?: string } = {}): ConstructedBuild {
+export function buildConstructedDeck(format: ConstructedFormat, rating: CardRatingTable, seed: number, library: readonly LibraryList[], cards: Map<string, CardDef>, opts: { /** Force the tinker level (the tinker study); default: rolled from the seed. */ tinker?: Tinker; /** Force the source list. */ from?: string; /** S55 (ADR-158 amended): the seat's list draw — `top` leans to the lists that measure strong, `low` to those that measure weak. */ lists?: ListDraw } = {}): ConstructedBuild {
   const rule = format.rule, rng = new WorldRng(seed);
   const def = (id: string) => { const d = cards.get(id); if (!d) throw new Error(`buildConstructedDeck: ${id} is not in the card pool`); return d; };
   const rate = (id: string) => cardRating(def(id), rating);
@@ -89,9 +93,14 @@ export function buildConstructedDeck(format: ConstructedFormat, rating: CardRati
 
   // ---- select ----
   const scored = selectCandidates(format, rating, library, cards);
-  const total = scored.reduce((n, s) => n + s.share, 0);
+  // S55 (ADR-158 amended — the lever S54 found missing): a seat's list is drawn BY ITS STRENGTH. A measured list's
+  // share is scaled by e^(±(mean − 50)/LIST_DRAW_SCALE): a `top` seat draws the Levy about four times as often as
+  // the Larder would otherwise suggest, a `low` seat the reverse; an `any` seat (and every unmeasured list) as before.
+  const lean = opts.lists === "top" ? 1 : opts.lists === "low" ? -1 : 0;
+  const weight = (s: { share: number; strength: number }) => s.share * (lean !== 0 && s.strength >= 1000 ? Math.exp((lean * (s.strength - 1000 - 50)) / LIST_DRAW_SCALE) : 1);
+  const total = scored.reduce((n, s) => n + weight(s), 0);
   let roll = rng.float() * (total || 1), chosen = scored[0]!;
-  for (const s of scored) { if (roll < s.share) { chosen = s; break; } roll -= s.share; }
+  for (const s of scored) { if (roll < weight(s)) { chosen = s; break; } roll -= weight(s); }
   if (opts.from) { const forced = library.find((l) => l.key === opts.from); if (!forced) throw new Error(`buildConstructedDeck: no list ${opts.from}`); chosen = { l: forced, share: legalShare(forced.decklist, rule, cards), strength: 0 }; }
   const source = chosen.l;
   const tRoll = rng.float();
@@ -111,7 +120,7 @@ export function buildConstructedDeck(format: ConstructedFormat, rating: CardRati
   const add = (id: string) => { deck.set(id, (deck.get(id) ?? 0) + 1); added.set(id, (added.get(id) ?? 0) + 1); };
   const remove = (id: string) => { const k = deck.get(id)! - 1; if (k <= 0) deck.delete(id); else deck.set(id, k); if (added.get(id)) { const a = added.get(id)! - 1; if (a <= 0) added.delete(id); else added.set(id, a); } else { const c = cut.find((x) => x.cardId === id); if (c) c.count += 1; else cut.push({ cardId: id, count: 1 }); } };
   const inSource = new Set(source.decklist.map((e) => e.cardId));
-  const poolOf = (r: Exclude<Role, "land">) => [...cards.values()].filter((d) => !isBasic(d.id) && !d.types.includes("Land") && role(d.id) === r && cardLegal(d, rule) && inColours(d.id)).map((d) => d.id)
+  const poolOf = (r: Exclude<Role, "land">) => [...cards.values()].filter((d) => !isBasic(d.id) && !d.types.includes("Land") && role(d.id) === r && cardLegal(d, rule) && inColours(d.id) && !answersGraveyards(d)) /* S55: graveyard exile is never mained by the builder */.map((d) => d.id)
     .sort((a, b) => (rate(b) + (inSource.has(b) ? CONSTRUCTED_TERMS.inListBonus : 0)) - (rate(a) + (inSource.has(a) ? CONSTRUCTED_TERMS.inListBonus : 0)) || a.localeCompare(b));
   const best = (r: Exclude<Role, "land">) => poolOf(r).find((id) => (deck.get(id) ?? 0) < copyCap(id, rule));
   const basic = () => { // the basic the deck's pips want most, against what it already has
@@ -182,13 +191,16 @@ export function buildConstructedDeck(format: ConstructedFormat, rating: CardRati
  * colours, within the copy cap over the seventy-five (a restricted card in the sixty is not in the fifteen).
  * Deterministic (the Constructed score, ties by id): the same deck always registers the same fifteen. */
 export const SIDEBOARD_SIZE = 15;
-export const SIDEBOARD_SHAPE = { relics: 4, creatures: 5 } as const;
+export const SIDEBOARD_SHAPE = { relics: 4, creatures: 5, graveyards: 4 } as const;
 export function buildSideboard(deck: Decklist, format: ConstructedFormat, rating: CardRatingTable, cards: Map<string, CardDef>, isRelicAnswer: (d: CardDef) => boolean, isCreatureAnswer: (d: CardDef) => boolean): Decklist {
   const rule = format.rule;
   const inDeck = new Map(deck.map((e) => [e.cardId, e.count]));
   const colors = new Set(deck.flatMap((e) => { const d = cards.get(e.cardId); return d && !d.types.includes("Land") ? cardColors(d) : []; }));
   const room = (d: CardDef) => Math.max(0, Math.min(copyCap(d.id, rule), COPY_CAP) - (inDeck.get(d.id) ?? 0));
-  const pool = [...cards.values()].filter((d) => !d.types.includes("Land") && cardLegal(d, rule) && cardColors(d).every((c) => colors.has(c)) && room(d) > 0)
+  // S55 (ADR-162): graveyard exile is a sideboard card by nature — any deck may register it (it is used for no mana),
+  // two of each, in slots of its own; it is never among "the best of the rest"
+  const hate = [...cards.values()].filter((d) => cardLegal(d, rule) && answersGraveyards(d) && usableByAnyDeck(d) && room(d) > 0).sort((a, b) => a.id.localeCompare(b.id));
+  const pool = [...cards.values()].filter((d) => !d.types.includes("Land") && cardLegal(d, rule) && cardColors(d).every((c) => colors.has(c)) && room(d) > 0 && !answersGraveyards(d))
     .sort((a, b) => cardRating(b, rating) - cardRating(a, rating) || a.id.localeCompare(b.id));
   const side = new Map<string, number>();
   const size = () => [...side.values()].reduce((n, x) => n + x, 0);
@@ -201,6 +213,7 @@ export function buildSideboard(deck: Decklist, format: ConstructedFormat, rating
       if (n > 0) { side.set(d.id, (side.get(d.id) ?? 0) + n); left -= n; }
     }
   };
+  { let left = SIDEBOARD_SHAPE.graveyards; for (const d of hate) { const n = Math.min(left, 2, room(d)); if (n > 0) { side.set(d.id, n); left -= n; } } }
   take((d) => !d.types.includes("Creature") && isRelicAnswer(d), SIDEBOARD_SHAPE.relics, 2);
   take((d) => !d.types.includes("Creature") && isCreatureAnswer(d), SIDEBOARD_SHAPE.creatures, 3);
   take(() => true, SIDEBOARD_SIZE, 2); // the best of the rest, two of each

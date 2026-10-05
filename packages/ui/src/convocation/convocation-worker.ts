@@ -19,7 +19,7 @@ const pool = loadPool();
 const { rating, packs } = loadConvocationData();
 const draftRating = limitedView(rating);
 const post = (m: FieldOut) => (self as unknown as Worker).postMessage(m);
-const agents: SeatAgents = (seat, opponent, seed, side) => new HeuristicAgent(seed * 2 + 1 + side, pool, difficultyProfile("master", seat.archetype, opponent.deck));
+const agents: SeatAgents = (seat, opponent, seed, side) => new HeuristicAgent(seed * 2 + 1 + side, pool, difficultyProfile("master", seat.archetype, opponent.deck, seat.deck));
 
 self.onmessage = async (ev: MessageEvent<FieldJob>) => {
   const job = ev.data;

@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
 import type { GameView } from "@shandalar/engine";
+import { readFileSync } from "node:fs";
 import { HeuristicAgent } from "./heuristic-agent.js";
 import { difficultyProfile } from "./evaluator.js";
 import { viewCreatures, type SimObject } from "./combat-sim.js";
@@ -1427,5 +1428,131 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const z: GameView = { ...yards(["artisan_of_kozilek", "the_usher"], [], Array.from({ length: 4 }, (_, i) => ({ id: `s${i}`, cardId: "swamp", controller: 0 as const }))), hand: [{ objectId: "h_z", cardId: "zombify" }] };
     const cast = (id: string) => ({ type: "castSpell" as const, objectId: "h_z", targets: [{ kind: "object" as const, id }] });
     expect(a.scorePriorityAction(z, cast("m1"))).toBeGreaterThan(a.scorePriorityAction(z, cast("m0")));
+  });
+
+  // ---------- S55 (ADR-161): the combo archetype — books 100–106 ----------
+  // (the agents package does not import the sim: the Pall straight from the lists' data; plain sixties across)
+  const PALL = (JSON.parse(readFileSync(join(CARDS_DIR, "../convocation/open-contributed.json"), "utf8")) as { lists: { key: string; decklist: { cardId: string; count: number }[] }[] }).lists.find((l) => l.key === "pall")!.decklist;
+  const MUSTER = [{ cardId: "savannah_lions", count: 4 }, { cardId: "grizzly_bears", count: 32 }, { cardId: "plains", count: 24 }];
+  const LOCKS = [{ cardId: "counterspell", count: 4 }, { cardId: "serra_angel", count: 32 }, { cardId: "island", count: 24 }];
+  const combo = () => new HeuristicAgent(1, pool, difficultyProfile("master", "combo", MUSTER, PALL));
+  const against = () => new HeuristicAgent(1, pool, difficultyProfile("master", "control", PALL, LOCKS));
+  const L = (n: number, card = "badlands") => Array.from({ length: n }, (_, i) => ({ id: `l${i}`, cardId: card, controller: 0 as const }));
+  const withYards = (v: GameView, mine: string[], theirs: string[] = []): GameView => ({ ...v, graveyards: [mine, theirs], graveyardObjects: [mine.map((c, i) => ({ objectId: `m${i}`, cardId: c })), theirs.map((c, i) => ({ objectId: `t${i}`, cardId: c }))] });
+  const castAt = (id: string, target?: string) => ({ type: "castSpell" as const, objectId: id, targets: target ? [{ kind: "object" as const, id: target }] : [] });
+
+  it("the plan is the list's: a deck that holds the setup, a start and two of the piece has it — the Pall's own sixty, piloted as combo or not; the Muster has none; an opponent on the Pall is read as one", () => {
+    expect(difficultyProfile("master", "combo", MUSTER, PALL).plan?.key).toBe("pall");
+    expect(difficultyProfile("master", "combo", MUSTER, PALL).archetype).toBe("midrange"); // weighed as midrange, steered by the plan
+    expect(difficultyProfile("master", "aggro", PALL, MUSTER).plan).toBeUndefined();
+    expect(difficultyProfile("master", "aggro", PALL, MUSTER).opponentPlan?.key).toBe("pall");
+    expect(difficultyProfile("master", "combo", MUSTER).plan).toBeUndefined(); // no list given: no plan (as before S55)
+    expect(difficultyProfile("apprentice", "combo", MUSTER, PALL).plan).toBeUndefined(); // the apprentice does not read plans
+  });
+
+  it("book of shame 100 (S55 — Buried Alive sat in hand until turn six): a combo list casts its setup when a start is in hand, on the battlefield or within reach by the deck's count — without the plan the S30 gate holds; the setup buries three Ushers; a fourth setup is not cast into three", () => {
+    const a = combo();
+    const v = mkView({ hand: [{ objectId: "h_b", cardId: "buried_alive" }, { objectId: "h_n", cardId: "vampire_nighthawk" }], battlefield: L(3) });
+    expect(a.buriedGated(v, castAt("h_b"))).toBe(false); // nine starts and five dig cards in fifty: within two draws
+    expect(agent().buriedGated(v, castAt("h_b"))).toBe(true); // a deck with no plan: only with a reanimator in hand
+    expect(a.scorePriorityAction(v, castAt("h_b"))).toBeGreaterThan(a.scorePriorityAction(v, castAt("h_n"))); // the setup before the fair body
+    expect(a.scorePriorityAction(v, castAt("h_n"))).toBe(-Infinity); // book 102: a fair card waits while the setup is castable
+    // what it buries: the Usher, three times, whatever else the library offers
+    const pick = (id: string) => ({ type: "searchPick" as const, objectId: id });
+    const req = { player: 0 as const, purpose: "searchLibrary" as const, actions: [{ type: "declineSearch" as const }, pick("x_a"), pick("x_u"), pick("x_n")], revealed: [{ objectId: "x_a", cardId: "blood_artist" }, { objectId: "x_u", cardId: "the_usher" }, { objectId: "x_n", cardId: "vampire_nighthawk" }], source: { cardId: "buried_alive", effects: pool.get("buried_alive")!.spellEffect! } };
+    for (const yard of [[], ["the_usher"], ["the_usher", "the_usher"]]) expect(a.searchChoice(withYards(v, yard), req as never)).toEqual(pick("x_u"));
+    expect(a.planGated(withYards(v, ["the_usher", "the_usher", "the_usher"]), castAt("h_b"))).toBe(true);
+    // and the second Usher cast beside the first IS the loop — the S27 "never a second copy of a legend" rule steps aside
+    const two = mkView({ hand: [{ objectId: "h_u", cardId: "the_usher" }], battlefield: [...L(6), { id: "u1", cardId: "the_usher", controller: 0 }] });
+    expect(a.legendDuplicateGated(two, castAt("h_u"))).toBe(false);
+    expect(a.loopCastBonus(two, castAt("h_u"))).toBeGreaterThan(40);
+    const witch = mkView({ hand: [{ objectId: "h_w", cardId: "the_jet_witch" }], battlefield: [...L(6), { id: "w1", cardId: "the_jet_witch", controller: 0 }] });
+    expect(a.legendDuplicateGated(witch, castAt("h_w"))).toBe(true); // a legend that does not loop is still never doubled
+  });
+
+  it("book of shame 101 (S55 — 220 of 338 Zombifies brought back a Nighthawk, the Rats, a Witch): the plan's start is aimed at the plan's piece; a fair return waits while the plan is live", () => {
+    const a = combo();
+    const board = (yard: string[], life: [number, number] = [20, 20], hand: { objectId: string; cardId: string }[] = []) => withYards(mkView({ hand: [{ objectId: "h_z", cardId: "zombify" }, ...hand], battlefield: L(4), life }), yard);
+    const v = board(["vampire_nighthawk", "the_usher", "the_usher"]);
+    expect(a.planGated(v, castAt("h_z", "m0"))).toBe(true);
+    expect(a.planGated(v, castAt("h_z", "m1"))).toBe(false);
+    expect(a.scorePriorityAction(v, castAt("h_z", "m1"))).toBeGreaterThan(a.scorePriorityAction(v, { type: "pass" }) + 20); // the loop
+    expect(a.planGated(board(["vampire_nighthawk"], [20, 20], [{ objectId: "h_b", cardId: "buried_alive" }]), castAt("h_z", "m0"))).toBe(true); // the setup is in hand: wait
+    expect(a.planGated(board(["vampire_nighthawk"], [20, 20]), castAt("h_z", "m0"))).toBe(true); // healthy, nothing buried: still held
+    expect(a.planGated(board(["vampire_nighthawk"], [8, 20]), castAt("h_z", "m0"))).toBe(false); // at eight life with nothing set up: the body
+  });
+
+  it("book of shame 102 (S55 — no draw from the Jet Witch in 58% of games): a combo list digs while its plan is not assembled — the Witch's draw whatever the hand holds, to a floor over the opponent's power; it stops when the plan is assembled", () => {
+    const a = combo();
+    const draw = { type: "activateAbility" as const, objectId: "w", abilityIndex: 0, targets: [] };
+    const board = (o: { life?: [number, number]; hand?: { objectId: string; cardId: string }[]; yard?: string[]; theirs?: Obj[] } = {}) => withYards(mkView({ step: "MAIN2", hand: o.hand ?? Array.from({ length: 5 }, (_, i) => ({ objectId: `h${i}`, cardId: "badlands" })), battlefield: [...L(3), { id: "w", cardId: "the_jet_witch", controller: 0 }, ...(o.theirs ?? [])], life: o.life ?? [20, 20] }), o.yard ?? []);
+    expect(a.lifeForCardsGated(board(), draw)).toBe(false); // five cards in hand, nothing assembled: dig
+    expect(agent().lifeForCardsGated(board(), draw)).toBe(true); // the S27 discipline, for a deck with no plan
+    expect(a.lifeForCardsGated(board({ life: [6, 20] }), draw)).toBe(true); // never under five
+    expect(a.lifeForCardsGated(board({ life: [12, 20], theirs: [{ id: "g1", cardId: "hill_giant", controller: 1 }, { id: "g2", cardId: "hill_giant", controller: 1 }, { id: "g3", cardId: "hill_giant", controller: 1 }] }), draw)).toBe(true); // nine power across: the floor is thirteen
+    expect(a.lifeForCardsGated(board({ yard: ["the_usher", "the_usher"], hand: [{ objectId: "h_z", cardId: "zombify" }] }), draw)).toBe(true); // assembled: stop paying
+    // the Tutor fetches the missing half
+    const pick = (id: string) => ({ type: "searchPick" as const, objectId: id });
+    const req = { player: 0 as const, purpose: "searchLibrary" as const, actions: [{ type: "declineSearch" as const }, pick("x_n"), pick("x_b"), pick("x_z")], revealed: [{ objectId: "x_n", cardId: "vampire_nighthawk" }, { objectId: "x_b", cardId: "buried_alive" }, { objectId: "x_z", cardId: "zombify" }], source: { cardId: "demonic_tutor", effects: pool.get("demonic_tutor")!.spellEffect! } };
+    expect(a.searchChoice(board({ hand: [{ objectId: "h_z", cardId: "zombify" }] }), req as never)).toEqual(pick("x_b")); // a start in hand: the setup
+    expect(a.searchChoice(board({ hand: [{ objectId: "h_b", cardId: "buried_alive" }] }), req as never)).toEqual(pick("x_z")); // the setup in hand: a start
+  });
+
+  it("book of shame 103 (S55 — Dark Ritual paid for a Nighthawk 81 times and for nothing 77): fuel is spent only to make a wanted plan card castable — by colour as well as count, and on our own main phase", () => {
+    const a = combo();
+    const ritual = castAt("h_r");
+    const board = (o: { lands?: number; land?: string; hand: string[]; yard?: string[]; step?: string; activePlayer?: 0 | 1 }) => withYards(mkView({ step: o.step ?? "MAIN1", activePlayer: o.activePlayer ?? 0, hand: [{ objectId: "h_r", cardId: "dark_ritual" }, ...o.hand.map((c, i) => ({ objectId: `h${i}`, cardId: c }))], battlefield: L(o.lands ?? 1, o.land ?? "badlands") }), o.yard ?? []);
+    expect(a.scorePriorityAction(board({ hand: ["buried_alive"] }), ritual)).toBeGreaterThan(-Infinity); // one land: the Ritual makes the setup
+    expect(a.scorePriorityAction(board({ hand: ["vampire_nighthawk", "blood_artist"] }), ritual)).toBe(-Infinity); // only fair cards: it stays in hand
+    expect(a.scorePriorityAction(board({ hand: ["buried_alive"], lands: 3 }), ritual)).toBe(-Infinity); // the setup is castable without it
+    expect(a.scorePriorityAction(board({ hand: ["buried_alive"], activePlayer: 1, step: "END" }), ritual)).toBe(-Infinity); // not on their turn: the mana floats away
+    // colour: the Usher wants white and red — two Barren Moors and a Ritual make five black mana, not an Usher
+    expect(a.scorePriorityAction(board({ hand: ["the_usher"], yard: ["the_usher"], lands: 3, land: "barren_moor" }), ritual)).toBe(-Infinity);
+    expect(a.scorePriorityAction(withYards(mkView({ hand: [{ objectId: "h_r", cardId: "dark_ritual" }, { objectId: "h0", cardId: "the_usher" }], battlefield: [{ id: "a", cardId: "scrubland", controller: 0 }, { id: "b", cardId: "badlands", controller: 0 }, { id: "c", cardId: "blood_crypt", controller: 0 }] }), ["the_usher"]), ritual)).toBeGreaterThan(-Infinity); // white from the Scrubland, red from the Badlands
+  });
+
+  it("book of shame 104 (S55 — playing against a plan): a counterspell is worth the game at the plan's setup or start and a little less than usual at anything else while the plan stands", () => {
+    const a = against();
+    const board = (cardId: string) => mkView({ activePlayer: 1, hand: [{ objectId: "h_c", cardId: "counterspell" }], battlefield: [{ id: "i1", cardId: "island", controller: 0 }, { id: "i2", cardId: "island", controller: 0 }], stack: [{ id: "s1", kind: "spell", cardId, controller: 1 }] });
+    const counter = { type: "castSpell" as const, objectId: "h_c", targets: [{ kind: "stackItem" as const, id: "s1" }] };
+    expect(a.againstPlanBonus(board("buried_alive"), counter)).toBeGreaterThan(20);
+    expect(a.againstPlanBonus(board("zombify"), counter)).toBeGreaterThan(20);
+    expect(a.againstPlanBonus(board("vampire_nighthawk"), counter)).toBeLessThan(0);
+    expect(a.scorePriorityAction(board("buried_alive"), counter)).toBeGreaterThan(a.scorePriorityAction(board("vampire_nighthawk"), counter) + 20);
+    expect(agent("control").againstPlanBonus(board("buried_alive"), counter)).toBe(0); // no plan across: nothing changes
+  });
+
+  it("book of shame 105 (S55 — graveyard exile is spent once): the Crypt waits for the opponent's graveyard to hold the plan's piece, or for something aimed at that graveyard; the Macabre is used only in response, on the card aimed at, with the next piece as its second; it is not cast as a 2/2 while the plan stands", () => {
+    const a = against();
+    const crypt = (player: 0 | 1) => ({ type: "activateAbility" as const, objectId: "tc", abilityIndex: 0, targets: [{ kind: "player" as const, player }] });
+    const base = (theirs: string[], stack: { id: string; kind: string; cardId: string; controller: 0 | 1; targets?: { kind: "object"; id: string }[] }[] = [], hand: { objectId: string; cardId: string }[] = []) => withYards(mkView({ activePlayer: 1, hand, battlefield: [{ id: "tc", cardId: "tormods_crypt", controller: 0 }], stack }), ["grizzly_bears"], theirs);
+    expect(a.scorePriorityAction(base(["vampire_nighthawk", "badlands"]), crypt(1))).toBe(-Infinity); // nothing there worth it yet
+    expect(a.scorePriorityAction(base(["the_usher", "the_usher", "the_usher"]), crypt(1))).toBeGreaterThan(a.scorePriorityAction(base(["the_usher", "the_usher", "the_usher"]), { type: "pass" })); // the setup has resolved
+    expect(a.scorePriorityAction(base(["the_usher", "the_usher", "the_usher"]), crypt(0))).toBe(-Infinity); // never our own
+    const zomb = [{ id: "s1", kind: "spell", cardId: "zombify", controller: 1 as const, targets: [{ kind: "object" as const, id: "t0" }] }];
+    expect(agent("control").scorePriorityAction(base(["serra_angel"], zomb), crypt(1))).toBeGreaterThan(-Infinity); // with no plan across: in response to the return
+    expect(agent("control").scorePriorityAction(base(["serra_angel"]), crypt(1))).toBe(-Infinity);
+    // the Macabre, from the hand
+    const mac = (...ids: string[]) => ({ type: "activateAbility" as const, objectId: "h_m", abilityIndex: 0, targets: ids.map((id) => ({ kind: "object" as const, id })) });
+    const hand = [{ objectId: "h_m", cardId: "faerie_macabre" }];
+    const idle = base(["the_usher", "the_usher"], [], hand);
+    expect(a.scorePriorityAction(idle, mac("t0", "t1"))).toBe(-Infinity); // nothing on the stack: held
+    expect(a.scorePriorityAction(idle, mac())).toBe(-Infinity);
+    expect(a.scorePriorityAction({ ...idle, activePlayer: 0, battlefield: [...idle.battlefield, ...mkView({ battlefield: [{ id: "s1", cardId: "swamp", controller: 0 }, { id: "s2", cardId: "swamp", controller: 0 }, { id: "s3", cardId: "swamp", controller: 0 }] }).battlefield] }, castAt("h_m"))).toBe(-Infinity); // not a 2/2 flyer today
+    const trig = [{ id: "s1", kind: "trigger", cardId: "the_usher", controller: 1 as const, targets: [{ kind: "object" as const, id: "t1" }] }];
+    const live = base(["vampire_nighthawk", "the_usher", "the_usher"], trig, hand);
+    expect(a.scorePriorityAction(live, mac("t1", "t2"))).toBeGreaterThan(a.scorePriorityAction(live, { type: "pass" }) + 20); // the trigger's target, and the next Usher
+    expect(a.scorePriorityAction(live, mac("t1", "t0"))).toBe(-Infinity); // not the Nighthawk while an Usher remains
+    expect(a.scorePriorityAction(live, mac("t0", "t2"))).toBe(-Infinity); // it must take the card aimed at
+    expect(a.scorePriorityAction(live, mac("t1"))).toBe(-Infinity); // and not leave the second Usher behind
+  });
+
+  it("book of shame 106 (S55): against a plan, discard is worth most before the turn the plan names", () => {
+    const a = against();
+    const hymn = { type: "castSpell" as const, objectId: "h_h", targets: [{ kind: "player" as const, player: 1 }] };
+    const v = (turn: number) => ({ ...mkView({ hand: [{ objectId: "h_h", cardId: "hymn_to_tourach" }], battlefield: [{ id: "s1", cardId: "swamp", controller: 0 }, { id: "s2", cardId: "swamp", controller: 0 }] }), turn });
+    expect(a.againstPlanBonus(v(3), hymn)).toBeGreaterThan(0);
+    expect(a.againstPlanBonus(v(9), hymn)).toBe(0);
+    expect(agent().againstPlanBonus(v(3), hymn)).toBe(0);
   });
 });

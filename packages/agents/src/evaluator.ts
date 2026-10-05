@@ -1,4 +1,6 @@
 import { parseManaCost, manaValue, type CardDef } from "@shandalar/cards";
+import { matchPlan, type ComboPlan } from "./plans.js";
+import { PLANS } from "./plans.generated.js";
 import type { GameView } from "@shandalar/engine";
 
 /**
@@ -9,11 +11,19 @@ import type { GameView } from "@shandalar/engine";
  */
 
 export type Archetype = "aggro" | "midrange" | "control";
+/** S55 (ADR-161): what a LIST may declare — the three, or `combo`: a deck with a plan (plans.ts). A combo deck is
+ * weighed as a midrange deck (the evaluator's exchange rates) and steered by its plan. */
+export type DeckArchetype = Archetype | "combo";
 
 export interface AiProfile {
   archetype: Archetype;
   /** ADR-051: the opponent's decklist is known (Shandalar-honest); hidden zones never. */
   opponentDecklist: { cardId: string; count: number }[];
+  /** S55 (ADR-161): this deck's plan (the combo archetype pilots by it), and the opponent's (read like their list). */
+  plan?: ComboPlan;
+  opponentPlan?: ComboPlan;
+  /** S55: this deck's own list, when the caller gave it — the plan's "by the deck's count" reads it. */
+  decklist?: { cardId: string; count: number }[];
   /** ADR-050 softmax temperature; higher = noisier (weak opponents run hot). */
   temperature: number;
   /** S9 Part 3: hold counter/flash mana (journeyman+). Default true.
@@ -77,9 +87,18 @@ export type Difficulty = "apprentice" | "journeyman" | "master";
 
 export function difficultyProfile(
   difficulty: Difficulty,
-  deckArchetype: Archetype,
+  declared: DeckArchetype,
   opponentDecklist: { cardId: string; count: number }[],
+  /** S55 (ADR-161): this seat's own decklist — a plan is matched to it (a deck piloted without it has no plan and
+   * plays as before). The opponent's plan is matched from their list, which every caller already gives. */
+  ownDecklist?: { cardId: string; count: number }[],
 ): AiProfile {
+  const deckArchetype: Archetype = declared === "combo" ? "midrange" : declared;
+  const plan = matchPlan(ownDecklist, PLANS), opponentPlan = matchPlan(opponentDecklist, PLANS);
+  const base = baseProfile(difficulty, deckArchetype, opponentDecklist);
+  return { ...base, ...(plan && difficulty !== "apprentice" ? { plan } : {}), ...(opponentPlan && difficulty !== "apprentice" ? { opponentPlan } : {}), ...(ownDecklist ? { decklist: ownDecklist } : {}) };
+}
+function baseProfile(difficulty: Difficulty, deckArchetype: Archetype, opponentDecklist: { cardId: string; count: number }[]): AiProfile {
   switch (difficulty) {
     case "apprentice":
       // Runs hot, plays every deck like an aggro deck, never holds mana.

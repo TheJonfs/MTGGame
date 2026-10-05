@@ -81,8 +81,8 @@ async function run(): Promise<void> {
       const seed = seed0 + p * 1009 + g * 37;
       const [d0, d1] = (seatA === 0 ? [A, B] : [B, A]).map((d, i, both) => ({ ...d, decklist: boarded(d, both[1 - i]!) })) as [typeof A, typeof B];
       const spec = { seed, players: [{ name: d0.key, decklist: [...d0.decklist], agent: "heuristic:master" }, { name: d1.key, decklist: [...d1.decklist], agent: "heuristic:master" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 }, modifiers: [] } as unknown as MatchSpec;
-      const t0 = new Tracker(new HeuristicAgent(seed * 2 + 1, pool, difficultyProfile(pilot(d0.key), d0.archetype, [...d1.decklist])), d0.key === "loop");
-      const t1 = new Tracker(new HeuristicAgent(seed * 2 + 2, pool, difficultyProfile(pilot(d1.key), d1.archetype, [...d0.decklist])), d1.key === "loop");
+      const t0 = new Tracker(new HeuristicAgent(seed * 2 + 1, pool, difficultyProfile(pilot(d0.key), d0.archetype, [...d1.decklist], [...d0.decklist])), d0.key === "loop");
+      const t1 = new Tracker(new HeuristicAgent(seed * 2 + 2, pool, difficultyProfile(pilot(d1.key), d1.archetype, [...d0.decklist], [...d1.decklist])), d1.key === "loop");
       const r = await runMatch(spec, pool, [t0, t1]);
       const tA = seatA === 0 ? t0 : t1, tB = seatA === 0 ? t1 : t0;
       games.push({ a: ka, b: kb, seatA, winner: r.winner === null ? "draw" : r.winner === seatA ? "a" : "b", reason: r.reason, turns: r.turns, logA: tA.log, logB: tB.log });

@@ -69,7 +69,7 @@ export interface CustomMatch {
     name: string;
     decklist: { cardId: string; count: number }[];
     difficulty: Difficulty;
-    archetype: "aggro" | "midrange" | "control";
+    archetype: "aggro" | "midrange" | "control" | "combo";
     portrait?: string;
   };
   rules: { startingLife: number; ante: number; startingPlayer?: 0 | 1 };
@@ -341,7 +341,7 @@ export class MatchController {
     const aiInner = new HeuristicAgent(
       this.seed * 2 + 7,
       pool,
-      difficultyProfile(aiDifficulty, aiArchetype, humanPlayer.decklist.map((e) => ({ ...e }))),
+      difficultyProfile(aiDifficulty, aiArchetype, humanPlayer.decklist.map((e) => ({ ...e })), aiPlayer.decklist.map((e) => ({ ...e }))), // S55: its own list too — a combo deck's plan is matched to it
     );
     const delayed = new DelayedAgent(aiInner, () => (this.conceding || this.repeat ? 0 : this.aiDelayMs));
     const ai: Agent = {

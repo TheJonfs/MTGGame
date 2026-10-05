@@ -66,7 +66,7 @@ async function play(deck: Deck): Promise<number[][]> {
       const [a0, a1] = seat === 0 ? [list!.archetype, opp.archetype] : [opp.archetype, list!.archetype];
       const spec = { seed, players: [{ name: "a", decklist: d0, agent: "h" }, { name: "b", decklist: d1, agent: "h" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 }, modifiers: [] } as unknown as MatchSpec;
       let r;
-      try { r = await runMatch(spec, cards, [new HeuristicAgent(seed * 2 + 1, cards, difficultyProfile("master", a0, d1)), new HeuristicAgent(seed * 2 + 2, cards, difficultyProfile("master", a1, d0))]); }
+      try { r = await runMatch(spec, cards, [new HeuristicAgent(seed * 2 + 1, cards, difficultyProfile("master", a0, d1, d0)), new HeuristicAgent(seed * 2 + 2, cards, difficultyProfile("master", a1, d0, d1))]); }
       catch (e) { throw new Error(`engine error against ${opp.key}, seed ${seed}, seat ${seat}: ${(e as Error).message}`); }
       row.push(r.winner === null ? 0.5 : r.winner === seat ? 1 : 0);
     }

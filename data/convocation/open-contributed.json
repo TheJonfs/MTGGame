@@ -1,5 +1,5 @@
 {
- "_comment": "Post-S53 (Chris): Open lists contributed from play — each one a deck that did something in a Convocation, added to the Open's library beside the planner's twelve. pnpm open:gen validates (sixty, legal in the Open) and appends them; its strength is measured by pnpm open:rr before it can enter the field (OPEN_MEANS). Grows as Convocations are played.",
+ "_comment": "Post-S53 (Chris): Open lists contributed from play — each one a deck that did something in a Convocation, added to the Open's library beside the planner's twelve. pnpm open:gen validates (sixty, legal in the Open) and appends them; its strength is measured by pnpm open:rr before it can enter the field (OPEN_MEANS). Grows as Convocations are played. S55 (ADR-161): a list may declare archetype \"combo\" with a `plan` (setup / start / dig / fuel / answers — packages/agents/src/plans.ts has the shape) and its registered `sideboard`.",
  "lists": [
   {
    "key": "sweep",
@@ -411,6 +411,168 @@
      "count": 1
     }
    ]
+  },
+  {
+   "key": "pall",
+   "name": "the Pall",
+   "title": "Usher Combo (B w r)",
+   "archetype": "combo",
+   "source": "Chris's Open, seed 189758, 2026-10-05 — 5–0 and the Umbel. Buried Alive into the Usher's loop, the Jet Witch as its engine; \"the Pall\" is the planner's placeholder name until Chris names it (S55).",
+   "decklist": [
+    {
+     "cardId": "the_usher",
+     "count": 4
+    },
+    {
+     "cardId": "zombify",
+     "count": 4
+    },
+    {
+     "cardId": "the_jet_witch",
+     "count": 4
+    },
+    {
+     "cardId": "buried_alive",
+     "count": 4
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    },
+    {
+     "cardId": "dark_ritual",
+     "count": 4
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "badlands",
+     "count": 4
+    },
+    {
+     "cardId": "scrubland",
+     "count": 4
+    },
+    {
+     "cardId": "barren_moor",
+     "count": 4
+    },
+    {
+     "cardId": "blood_crypt",
+     "count": 4
+    },
+    {
+     "cardId": "godless_shrine",
+     "count": 4
+    },
+    {
+     "cardId": "blood_artist",
+     "count": 4
+    },
+    {
+     "cardId": "typhoid_rats",
+     "count": 4
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "tendrils_of_corruption",
+     "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "tendrils_of_corruption",
+     "count": 2
+    },
+    {
+     "cardId": "drana_kalastria_bloodchief",
+     "count": 1
+    },
+    {
+     "cardId": "nekrataal",
+     "count": 1
+    },
+    {
+     "cardId": "hymn_to_tourach",
+     "count": 4
+    },
+    {
+     "cardId": "indulgent_aristocrat",
+     "count": 4
+    },
+    {
+     "cardId": "hypnotic_specter",
+     "count": 3
+    }
+   ],
+   "plan": {
+    "piece": "the_usher",
+    "setup": [
+     {
+      "card": "buried_alive",
+      "bury": [
+       {
+        "card": "the_usher",
+        "count": 3
+       }
+      ]
+     }
+    ],
+    "start": [
+     {
+      "card": "zombify",
+      "on": "the_usher"
+     },
+     {
+      "card": "the_usher",
+      "on": "the_usher"
+     },
+     {
+      "card": "cairnbrand",
+      "on": "the_usher"
+     }
+    ],
+    "dig": [
+     "the_jet_witch",
+     "demonic_tutor"
+    ],
+    "fuel": [
+     "dark_ritual",
+     "black_lotus",
+     "mox_jet",
+     "mox_pearl",
+     "mox_ruby"
+    ],
+    "answers": {
+     "counter": [
+      "buried_alive",
+      "zombify"
+     ],
+     "graveyardExile": true,
+     "discardBeforeTurn": 3
+    }
+   }
   }
  ]
 }

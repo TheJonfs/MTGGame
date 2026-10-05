@@ -26,7 +26,7 @@ const worldJson = (name: string): unknown => {
   return WORLD[key]!.default;
 };
 
-export type Archetype = "aggro" | "midrange" | "control";
+export type Archetype = "aggro" | "midrange" | "control" | "combo";
 export type Profile = "apprentice" | "journeyman" | "master";
 export type Decklist = { cardId: string; count: number }[];
 

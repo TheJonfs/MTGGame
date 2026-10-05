@@ -559,7 +559,7 @@ describe("ADR-038 no-regression sweep: every existing card stays who:you", () =>
     };
     for (const [id, def] of pool) {
       for (const sp of specsOf(def) as { who?: string }[]) {
-        if (sp.who === "any") expect(["the_usher", "the_reeve"]).toContain(id); // the Usher; S40: the Reeve ("from a graveyard" — ADR-128)
+        if (sp.who === "any") expect(["the_usher", "the_reeve", "faerie_macabre"]).toContain(id); // the Usher; S40: the Reeve ("from a graveyard" — ADR-128)
         else expect(sp.who === undefined || sp.who === "you").toBe(true);
       }
     }

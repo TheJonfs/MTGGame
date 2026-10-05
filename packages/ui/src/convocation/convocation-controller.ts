@@ -370,7 +370,7 @@ export class ConvocationController {
   }
   private async finishRound(): Promise<void> {
     await new Promise((r) => setTimeout(r, 30)); // let the screen paint before the main thread is taken
-    const agents: SeatAgents = (seat, opponent, seed, side) => new HeuristicAgent(seed * 2 + 1 + side, this.pool, difficultyProfile("master", seat.archetype, opponent.deck));
+    const agents: SeatAgents = (seat, opponent, seed, side) => new HeuristicAgent(seed * 2 + 1 + side, this.pool, difficultyProfile("master", seat.archetype, opponent.deck, seat.deck));
     const t0 = typeof performance !== "undefined" ? performance.now() : 0;
     const pool = this.workers(), main = () => playFieldRound(this.event!, { cards: this.pool, knobs: this.knobs, rating: this.rating }, agents);
     let played: ConvocationEvent;
@@ -428,7 +428,7 @@ export class ConvocationController {
     let x = e; todo.forEach((p, i) => { x = recordSeries(x, p.a, p.b, done[i]!); });
     return x;
   }
-  private fieldAgents(): SeatAgents { return (seat, opponent, seed, side) => new HeuristicAgent(seed * 2 + 1 + side, this.pool, difficultyProfile("master", seat.archetype, opponent.deck)); }
+  private fieldAgents(): SeatAgents { return (seat, opponent, seed, side) => new HeuristicAgent(seed * 2 + 1 + side, this.pool, difficultyProfile("master", seat.archetype, opponent.deck, seat.deck)); }
   /** S49: the bracket round's other matches (headless, here), then the next round's matches — or the finish. */
   private async finishBracketRound(): Promise<void> {
     await new Promise((r) => setTimeout(r, 30));
