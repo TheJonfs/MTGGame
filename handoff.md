@@ -98,7 +98,7 @@ Walked in the browser: the door (short, Hard) → register the Sweep → "the ot
 - In that run the AI assembled the Loop's three pieces by turn ten in 1% of the Loop's games and activated the Altar 0.01 times a game. It does not play the Altar combo (Chris's note; see Suggested next).
 
 ### The take-back (`ui/play/undo.ts`, one switch: `UNDO_ENABLED`)
-- **The rule:** the player's last decision can be taken back while nothing irreversible has happened since — no card off a library (a draw, a mill, a search), no shuffle or random draw, no hidden card shown, no damage dealt or life changed, and no decision by the opponent.
+- **The rule:** the player's last decision can be taken back while nothing irreversible has happened since — no card off a library (a draw, a mill, a search), no shuffle or random draw, no hidden card shown, no damage dealt or life changed, and nothing done by the opponent beyond passing priority. (First built with any opponent decision sealing it; Chris found a Dark Ritual cast in the draw step could not be taken back, because the opponent is asked to pass after nearly every spell. Fixed.)
 - **How:** the game is *rebuilt* from its own log up to that decision (same seed + same actions = the same game), beside the live game, and swapped in only when it stands at that decision. Nothing is reversed in place. A failed rebuild leaves the live game untouched and says so.
 - A whole gesture comes back as one: a staged attack, a manual payment.
 - The log after a take-back is the old log's prefix, so saved games and replays never see one.
@@ -174,6 +174,7 @@ New tests:
 No AI heuristic changed (no ladder run); no new card (no fuzz). About 110,000 sim games this session raised no engine error.
 
 ## Suggested next
+- **Read `docs/proposals/combo-archetype-proposal.md` beside this handoff.** Chris's 5–0 combo list (Buried Alive into the Usher loop, the Jet Witch as its engine), how the AI plays it today (58%, the loop in 30% of games), and three proposals: a "combo" archetype with a plan carried by the list as data, sideboard answers to a graveyard loop, and the Jet Witch on a watch list for Restricted.
 - **From Chris, for the planner's next card batch:** a **colourless graveyard-removal card** for sideboards, in case the Usher combo proves too strong. The field would need a fourth sideboarding rule for it (keyed on the opponent's reanimation shape); that is a small addition once the card exists.
 - **Teaching the AI the Altar / Restoration Angel / Usher loop** (Chris). Today it assembles the pieces in 1% of games and almost never activates the Altar. The Altar's gate only fires for lethal mill or a doomed creature; it does not see that sacrificing the Angel with its blink trigger on the stack restarts the Usher. A loop-aware credit, like book 99's, is the likely shape.
 - **A sellout combo list** Chris wants to build and test.
