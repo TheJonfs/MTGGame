@@ -1,199 +1,139 @@
-# Handoff — after Session 54 (2026-10-04)
+# Handoff — after Session 55 (2026-10-05)
 
 ## State of the world
-The Convocation at `/convocation` now has three new choices at the door.
-- **Normal or Hard:** every event carries a difficulty. Hard adds ADR-148's life to your opponents, by Swiss round and in the Umbel, scaled by the day.
-- **A short Convocation:** a draft (three rounds in the pod), then a Constructed day (five rounds), then the Umbel.
-- **The field's strength:** seeded per seat, recorded and never shown.
+The Open now has a combo deck, the AI can pilot it and play against it, and the pool has two answers to it.
 
-The ledger keeps the field's top sixteen and the player. A draft stage's other pods now draft on the page's workers (15 pods in about 2 s, start-up included), with the main thread as the fallback.
+- **The engine draws a game stuck in a loop** (R-103): a hundred stack items resolved in one turn without the position changing.
+- **`combo` is a fourth AI archetype** (ADR-161). A list declares it and carries a plan as data; the pilot reads its own plan and every opponent reads it too.
+- **The Pall** (Chris's 5–0 list; the planner's placeholder name) is the fourth contributed list, with its plan and its fifteen.
+- **Tormod's Crypt and Faerie Macabre** are in the pool (244 → 246). The field's sideboards hold them and a fourth sideboarding rule brings them in.
+- **A Constructed seat's list is drawn by strength** (ADR-158 amended).
+- From after S54, also unpushed: the take-back, the repeat, Constructed sideboards, the Hearth.
 
-Walked in the browser: the door (short, Hard) → register the Sweep → "the other pods draft… 0 of 15" → Day 1's draft. No console errors.
-
-`pnpm typecheck`, `pnpm test` (912) and `pnpm build:web` pass. The card rating stays **v1.4**: the v1.5 candidate failed its head-to-head. **S54 is committed locally, not pushed.** Before S54, everything through `4845e4e` was pushed.
+`pnpm typecheck`, `pnpm test` (949) and `pnpm build:web` pass. **Nothing since `85a413e` is pushed** — the post-S54 work and all of S55 are local commits.
 
 ## Done this session
 
-### Part 0 — rulings (`docs/decision-updates/s54.md`)
-- The brief's ADRs (155–158), plus Chris's five kickoff rulings:
-  1. Normal and Hard only.
-  2. The day scale.
-  3. Master pilots everywhere; journeyman to be tested.
-  4. Pilot data reported only if journeyman joins the field.
-  5. Retirement is a review sent to the planner, counted from the pilot-97 round-robin.
+### Part 0 — rulings (`docs/decision-updates/s55.md`)
+- ADR-159 to ADR-162 and the planner's three calls filed.
+- Both cards and both rules verified against their sources. **Faerie Macabre is {1}{B}{B}, a 2/2 Faerie Rogue with flying** (the brief did not trust its memory of the cost or body). Tormod's Crypt is as briefed.
 
-### Part 1 — build
-- **ADR-157, the difficulty** (`event.ts`):
-  - `eventDifficulty`, `hardLife`, `dayScale` and `HARD_ENTRANCE` (Swiss +0/+2/+4/+4/+6 by round within a day; bracket +4/+6/+8).
-  - The day scale: the four-day event ×0 / ×0.5 / ×1 / ×1 and ×1 in the Umbel. A single event ×1. The short event's Day 1 ×0, then ×1.
-  - `seriesSetup` adds it to the seat's life.
-  - Saved "easy" or "standard" events load as Normal.
-  - The door's chooser carries the brief's lines. The ledger line and the trophy room show "(Hard)" or "· Hard".
-- **ADR-158 as amended, the field's strength** (`seatStrength`):
-  - Every pilot is master.
-  - Builders: stock ¼, light ½, heavy ¼.
-  - Limited rating noise: σ 0 / 0.2 / 0.4 by thirds.
-  - Drawn from `sub(seed, 13, seat)` when any event is created, and kept on the seat across stages.
-  - The Constructed builds pass the seat's builder as `tinker`. The Limited builds apply the seat's noise from its own stream.
-- **The short Convocation:** `shortStages(first)` returns `[draft ×3, constructed ×5]`. The door's text is from the brief, and the Day-four chooser is hidden for it.
-- **Concern 6, the pod drafts on the workers.**
-  - `stagePodDrafts(event, k)` names a draft stage's pods, and each non-human pod's job and seed. `beginStage`, `nextStage` and `registerDecklist` take optional precomputed picks.
-  - The worker gained a draft job, and `FieldPool.draft` serves it.
-  - The controller's `register` (the last decklist starts Day 1) and `toNextStage` draft on the workers first, under the field screen's "The other pods draft… n of m pods drafted." They stay synchronous without workers.
-  - A failure disposes the pool and drafts on the main thread.
-  - A test checks the worker-drafted field is identical to the main thread's.
-- **The ledger trim:** `LEDGER_FIELD = 16`, plus seat 0. The trophy room reads the same line.
+### Part 1 — the mandatory-loop draw (R-103)
+- `engine/game.ts checkLoopDraw`. After each stack item resolves, the position is taken: the step, life totals, floating mana, every zone's cards by name, each permanent's state, the stack by source. No object ids, so a card that left and came back is the same card.
+- A position already seen this turn is a repeat; a new one clears the count; at the cap (100) the game is a draw.
+- **Fuzz first:** 1,440 full-tier games on the Usher lists and a graveyard-heavy list holding the new cards. No exceptions, no hangs, replays byte-exact, no draws in ordinary play.
+- **Fixtures (4):** the Usher loop with cancelling drains is a draw at the cap on turn 1; the Usher's own loop and the Altar's loop never trip it; a Skeleton returned a hundred times by hand does not.
 
-### Part 2 — measured (reports, untracked: `results/s54/` and `analysis/runs/convocation_sim54.md`, `h2h15_*.md`)
-- **`convocation-sim --events 8` (ADR-158), 1,016 AI seats.**
-  - r = **−0.25** between a seat's mean deck percentile and its finish (lower finish is better, so negative is the good direction). S53's was −0.09. The brief wanted a magnitude of 0.3.
-  - The Umbel's eight averaged the **61st percentile**, above the median as the brief wanted. The champions averaged the 62nd.
-  - By day: Day 1 −0.12, Day 2 −0.21, Day 3 −0.09, Day 4 −0.21. The Open's days carry most of it.
-  - **The strength draws themselves do nothing measurable.** Mean finish by builder: stock 64.0, light 64.6, heavy 65.3. By noise: σ 0 64.7, σ 0.2 65.5, σ 0.4 63.7. An even field is 64.5. See Concern 1.
-  - Event health: 0 rematches; 0 draft-round pairings outside the pod; the save 359–544 KB; 211 s an event in Node (one process).
-  - The heuristic in the player's seat finished 21, 21, 43, 43, 58, 90, 34, 61.
-  - The sim's day-quality snapshot was fixed: a registered Constructed day skips the build phase, so the first run read Day 1's quality again for Day 2. S53's table had the same flaw for any registered day.
-- **Journeyman against master** (Chris's test; `open:rr --journeyman`). Four lists against the other thirteen, 650 games each, paired with the master twin on the same seed:
+### Part 2 — the combo archetype and the plan
+- **The plan is data on the list** (`open-contributed.json`): `piece`, `setup`, `start`, `dig`, `fuel`, `answers`. `pnpm open:gen` validates it and writes `agents/plans.generated.ts`.
+- **A plan is matched to a decklist by its cards** (a setup card, a start card, two of the piece). So a player's own build of the deck is recognised when the AI plays against it.
+- **Books 100–106, each pinned:**
+  - **100:** the setup is cast when a start is in hand, on the battlefield or within two draws by the deck's count; it buries three Ushers; a second Usher cast beside the first is the loop, so the S27 "never a second copy of a legend" rule steps aside for a legend that loops.
+  - **101:** the start is aimed at the plan's piece; a fair reanimation waits while the plan is live.
+  - **102:** dig while the plan is not assembled (the Witch's draw to a floor over the opponent's power; the Tutor fetches the missing half); a fair card waits while a wanted plan card is castable.
+  - **103:** fuel is spent only to make a wanted plan card castable, by colour as well as count, on our own main phase.
+  - **104:** against a plan, a counterspell is worth the game at the setup or start.
+  - **105:** graveyard exile is held for the moment it answers (below).
+  - **106:** against a plan, discard is worth most before the turn the plan names.
+- **Two older bugs fixed on the way:** the Ritual check read only a dual land's first colour (a Badlands made no red); and Faerie Macabre's discard was being treated as cycling.
 
-| list | master | journeyman | change |
+### Part 3 — graveyard hate and the fourth rule
+- **One new word:** `exileGraveyard { who }`. `exile` now reaches a card in a graveyard. Faerie Macabre needed nothing else (a hand-zone ability with cycling's discard-self cost, an up-to-two target range across both graveyards).
+- **Fixtures (5),** including Faerie Macabre exiling the Usher's target in response: the trigger does not resolve and nobody is drained.
+- **The fourth sideboarding rule:** against four or more copies of cards that return a creature card to the battlefield or search one into a graveyard, graveyard exile comes in — whatever the deck's colours, since both cards are used for no mana.
+- **The field's fifteen** reserves four slots for them (two of each). The deck builder never mains them.
+- **How the AI uses them:** the Crypt as soon as the opponent's graveyard holds the plan's piece, or in response to anything aimed at that graveyard; the Macabre only in response, on the card aimed at, with the next piece as its second target. It is not cast as a 2/2 while the opponent's plan stands.
+
+### Part 4 — measured (reports in `results/s55/`, untracked, and `analysis/runs/`)
+
+**The Pall against the other fifteen** (`pnpm combo-probe`, 600 games a row, master both):
+
+| | win rate | the loop fires | own turn (median) |
 |---|---|---|---|
-| the Levy | 64.6% | 63.2% | −1.4 ± 2.8 |
-| the Muster | 53.8% | 53.1% | −0.7 ± 1.9 |
-| the Depths | 55.5% | 58.6% | +3.1 ± 2.9 |
-| the Undertow | 35.8% | 36.2% | +0.4 ± 3.4 |
+| S54 pilot (no plan) | 58% | 30% of games | 7 |
+| the combo archetype, game one | **68%** | 55% | 6 |
+| the combo archetype, both sides sideboarded | **56%** | 32% | 6 |
 
-  Journeyman (temperature 0.35) and master (0.12) are indistinguishable. Between 6% and 19% of games change hands, but they change in both directions. **Journeyman has no play, so the field stays master**, per Chris's ruling.
-- **The noise run after v1.4 → v1.5 not adopted.**
-  - Three runs on v1.4's decks at pilot 97: sealed57, noise57 and draft57, 73,600 games.
-  - Head to head against v1.4, the v1.5 candidate's decks won **44.1% ± 0.5 in draft and 42.3% ± 0.8 in Sealed** (43.8% and 42.4% from the same packs).
-  - It moved 124 of 234 cards more than 0.25 (v1.4 moved 58). The risers are the rarely-seen cards shrinking to their tier's mean: Waste Not seen 13 times, +2.06; Entomb, Demonic Tutor, the Pearl Cleric, Altar of Dementia. See Concern 2.
-  - The candidate is archived in `analysis/runs/s54/`.
-- **The Open round-robin baseline** for the retire rule is the pilot-97 run of 2026-10-03, filed in `s54.md`. Its first bottom three are the Larder, the Locks and the Undertow (one of three re-measures).
+- In the full sixteen-list round-robin (12,000 games, registered sixties) the Pall is **72%**, ten points clear of the Levy and the Hearth (62%).
+- Against the sideboarded field, graveyard exile is used in 46% of games and the Pall wins half of those.
+- **ADR-160's read:** the brief's measure is the boarded one. **56% is in the 50–65% band: a deck to beat, and an answer. No restriction is proposed.** See Concern 1 for why I would not treat that as settled.
+- What the pilot now does: the setup in 75% of games, burying the Usher; Rituals pay only for Buried Alive, the Witch, Zombify and the Tutor; Zombify is aimed at the Usher 300 times in 350.
+- What it still does not do: kill early. The loop is on turn 3 or earlier in 2% of games and by turn 4 in 9%. A person does it on turn 2 or 3.
 
-### Part 3 — text
-- The door's short line and the difficulty lines are as briefed. The field's strength is never announced.
+**The Witch at four against one** (three Witches swapped in place for Hypnotic Specters, 900 paired games): **+0.9 ± 1.9 points.** The pilot gets almost nothing from her, so this number says nothing about what she does for a person. The limit the brief asked to be noted is the whole result.
 
-## After the handoff — Chris's third Convocation (2026-10-04): books 98–99
-- **Book 98 — a Reassembling Skeleton activated three times in one upkeep.**
-  - The cause: the card stays in the graveyard while its return waits on the stack, so the engine offers the ability again; each further activation pays {1}{B} and finds nothing.
-  - Measured over 40 games with a Skeleton deck: the AI took **111 of 117** such offers. Now 0 of 93.
-  - The rule (`yardReturnPending`): a graveyard card's ability that returns the card itself is refused while one of ours from that card is on the stack. An ability that exiles its card as a cost (Mother Bear) is never offered twice, so it is untouched. Another Skeleton's return is its own.
-  - The view's stack items now carry `sourceId` (public).
-  - Found on the way: the predictor's view clone shared the graveyard-object lists, so predicting a Skeleton's return removed the card from the real view for the rest of the decision. Fixed.
-- **Book 99 — the Usher's loop** (Chris; found by the field in an Usher mirror).
-  - Confirmed in the engine: an Usher entering with a second Usher in either graveyard returns it, the legend rule puts one in the graveyard, and the newcomer's trigger returns it again. Both Ushers see each death: **4 life a pass**, a kill on the turn it starts. Against an opposing Usher on the battlefield it nets 2 a pass and still ends.
-  - The AI already tended to take the Usher (its reanimation worth is high), but an Artisan of Kozilek outranked it. Now `legendLoopWorth` (evaluator) adds a game-sized bonus wherever a reanimation target is priced: the enter trigger's target, a reanimation spell (Zombify, Unearth), the Reeve's activation, and Buried Alive's pick when the first Usher is in hand or on our battlefield.
-  - It is data-driven, not a card rule: a Legendary creature whose enter trigger returns a creature card to the battlefield and which drains on a creature's death, with a second copy on our battlefield or in a graveyard its trigger reaches.
-  - A loop that gains nothing is avoided: when the opponent's drain per death matches ours, the copy is priced *below* every other target.
-- **Measured** (100 games a pairing against the other thirteen lists, the old AI and the new on the same seeds): **the Coin 58.7% → 59.7% (+1.1 ± 0.8)**, **the Loop 50.9% → 52.1% (+1.2 ± 0.8)**. A small gain for both Usher lists.
-- **Ladder mirror gate PASS.** Tests 914 (books 98 and 99 added).
-- The S54 tests moved to `convocation-s54.test.ts`: `convocation.test.ts` had passed 60 s of synchronous work, which is what raised vitest's "Timeout calling onTaskUpdate". The run is clean again.
+**The list draw by strength** (`convocation-sim --events 8`, 1,016 AI seats):
 
-## After the handoff — Chris's fourth Convocation (18–1, 2026-10-04): the Hearth, the take-back, the repeat, Constructed sideboards
+| list draw | seats | mean finish | in the Umbel |
+|---|---|---|---|
+| top | 263 | 50.8 | 11.8% |
+| any | 489 | 62.3 | 5.7% |
+| low | 264 | 82.6 | 1.5% |
 
-### The Hearth — the third contributed list
-- Chris's 18–1 Mardu list (`docs/debug_logs/convocation-18-1.json`), in `open-contributed.json` as **the Hearth** (a working name): a variation on the Mardu Aristocrats macro-archetype (the Loop's family) — the Usher / Restoration Angel / Altar finish in a removal-and-value shell.
-- **All fifteen lists re-measured on pilot 99** (10,500 games, registered sixties): levy 64 · **hearth 64** · sweep 60 · coin 59 · wurmspeaker 59 · depths 57 · warband 55 · muster 52 · loop 51 · ford 51 · enchantress 45 · tally 37 · undertow 36 · locks 35 · larder 27. `OPEN_MEANS` updated.
-- **The retire count is now two of three** for the Larder, the Locks and the Undertow (the same bottom three as the pilot-97 run). One more and each gets its deep-dive review.
-- In that run the AI assembled the Loop's three pieces by turn ten in 1% of the Loop's games and activated the Altar 0.01 times a game. It does not play the Altar combo (Chris's note; see Suggested next).
+- A seat's list (its measured Open mean) against its finish: **r = −0.50**. The Umbel's eight hold lists averaging 59.9; the field 49.6.
+- Deck quality by card rating against finish: r = −0.28 (S54: −0.25); the Umbel's eight at the 61st percentile.
+- Two rematches in eight events (S54: none).
 
-### The take-back (`ui/play/undo.ts`, one switch: `UNDO_ENABLED`)
-- **The rule:** the player's last decision can be taken back while nothing irreversible has happened since — no card off a library (a draw, a mill, a search), no shuffle or random draw, no hidden card shown, no damage dealt or life changed, and nothing done by the opponent beyond passing priority. (First built with any opponent decision sealing it; Chris found a Dark Ritual cast in the draw step could not be taken back, because the opponent is asked to pass after nearly every spell. Fixed.)
-- **How:** the game is *rebuilt* from its own log up to that decision (same seed + same actions = the same game), beside the live game, and swapped in only when it stands at that decision. Nothing is reversed in place. A failed rebuild leaves the live game untouched and says so.
-- A whole gesture comes back as one: a staged attack, a manual payment.
-- The log after a take-back is the old log's prefix, so saved games and replays never see one.
-- On the rail's far end, and inside dialogs: "↶ take back playing Scrubland".
-- **Tests:** exact state and log restored; the sealed cases; a streamed attack back whole (and not after it lands); a fuzz of random play with 40+ take-backs on real lists, each log replaying to the game on the table. Walked in the browser.
-- **To remove it:** set `UNDO_ENABLED = false`.
+**The Open's round-robin, sixteen lists:** pall 72 · levy 62 · hearth 62 · coin 59 · sweep 56 · wurmspeaker 54 · muster 53 · loop 53 · warband 51 · depths 51 · ford 48 · enchantress 46 · tally 38 · undertow 34 · locks 32 · larder 28. `OPEN_MEANS` updated.
 
-### The repeat (`ui/play/repeat.ts`, one switch: `REPEAT_ENABLED`)
-- Every answer is recorded as a **description by role** — an object by what can be seen of it (card, zone, controller, tapped, power/toughness, counters, due an end-step sacrifice), never by id, because a creature that returns is a new object each pass.
-- Every decision is recorded with a **fingerprint** of the game around it (turn, step, stack, every permanent, hand, mana) — without life totals, libraries or graveyards, which are what a loop moves.
-- **A loop is offered** when the decision on screen has the fingerprint of an earlier one this turn and something moved in between. The offer shows what a pass moves and offers "once" or "to the end (×N)".
-- **A repeat plays the same decisions as real engine actions.** At every step the fingerprint must match the recording and the recorded answer must be on offer; otherwise it stops and the decision is the player's. The opponent gets priority at every step; an answer from them stops it. Capped at 200 passes.
-- **Tested on the real engine:** the Usher's own loop, and Chris's Usher / Restoration Angel / Altar loop (eight decisions a pass), each repeated to the kill; the stop on a mismatch; the cap.
-- **Not yet verified:** the repeat buttons in a browser (staging the combo by hand there was not practical). The controller tests drive the same code.
-- **To remove it:** set `REPEAT_ENABLED = false`.
-
-### Constructed sideboards
-- **Fifteen cards, registered with the sixty and locked with it.** The format's limits on a card (copy cap, restricted, banned) hold over the seventy-five.
-- **The player:** the build has a second page ("Next: the sideboard"), with "Suggest a sideboard". Between games the deck is remade only from the registered seventy-five. Each new match starts from the registered sixty.
-- **The field:** every Constructed seat registers a fifteen, built for the three rules it already sideboards by in Limited — answers to artifacts and enchantments, answers to creatures, and the best cards left for when counterspells come out.
-- Two adjustments for Constructed: mana-only artifacts (Moxen, the Lotus) no longer count as targets for the first rule; and an answer comes in only for a card it out-rates.
-- **Measured** (each list's sideboarded sixty against the others' registered sixties, 1,400 paired games a list): **+2.1 points on average**. The weaker lists gain most: the Locks +13.0, the Tally +5.9, the Loop +5.5, the Undertow +5.4. With the out-rates rule the tuned lists no longer lose: the Levy −0.9 ± 2.4, the Wurmspeaker 0; the Sweep and the Warband read −2 ± 2.
-- The ledger line records the registered sideboard.
+**The retire count reached three** for the Larder, the Locks and the Undertow. Their reviews are in `docs/proposals/retire-reviews-s55.md`: give the Larder a plan (it is an unpiloted reanimator), overhaul the Locks in family, overhaul the Undertow or accept it as the field's floor.
 
 ## Deviations from the brief
-1. **Two difficulties, not three; every pilot master** (Chris's rulings 1 and 3). The seat records `pilot: "master"` for when that changes.
-2. **v1.5 not adopted.** The head-to-head failed, as the rule allows.
-3. **The noise run could not pool with v1.4's runs.** Books 96–97 moved the pilot, and ADR-150 refuses to mix pilots. So the candidate stood on 73,600 fresh games, half of v1.4's evidence.
-4. **The field's per-stage time on workers was measured only in the browser walk's draft start** (15 pods, about 2 s). The sim's stage times are Node, one process an event. The workers' round times stand from S53 (1.5–3.7 s).
-5. **Hard was not simulated.** Its effect on a player is untested beyond the life table's test. A heuristic in the player's seat against a Hard field would measure it.
+1. **`loopDrawCap` is an engine rule field, not a world knob** (`GameRules.loopDrawCap`, default 100). A match's rules are built in a dozen places that do not read the knob table.
+2. **The loop draw does not apply CR 104.4b's exception for an optional action.** A player who repeats a position a hundred times in a turn by choice also draws. Recorded in R-103.
+3. **The rule numbers are R-103 and R-104** (the registry stood at R-102).
+4. **The Hearth is the third contributed list**, not the second; the Pall is the fourth.
+5. **"Reachable within two draws by the deck's count"** is implemented as: the starts and dig cards left in the library give a one-in-four chance or better over two draws. For the Pall that is nearly always true.
+6. **Book 100 goes one step past the brief:** casting a second copy of a looping legend is allowed and valued for any deck, not only a combo list. The Coin, the Loop and the Hearth hold four Ushers each.
+7. **The Witch test used the combo probe's in-place swap**, not `card-test` (which builds Sealed hosts). The method is the same: one slot, the same seeds, paired by game.
+8. **The rating's lower shrink target is not built.** The brief says "before the next rebuild"; no rebuild was run.
+9. **The linkage's fence (a) is recorded, not built** (the linkage itself is not built).
+10. **The Pall's fifteen is Chris's own**, as registered. It holds no graveyard exile, so a field seat on the Pall does not board against another Usher deck.
 
 ## Concerns
-1. **ADR-158's spread is not a strength spread.**
-   - The builders (stock/light/heavy tinkering) and the Limited noise up to σ 0.4 leave every group's mean finish within a place of even. And journeyman is master.
-   - The deck-quality correlation that exists (−0.25) comes from what the seat draws: the list chosen, the packs opened. It doesn't come from the seat's drawn strength.
-   - If the field should have strong and weak seats, the lever has to be one that moves results:
-     - draw a Constructed seat's **list** by its strength (weak seats more often from the round-robin's bottom);
-     - widen the Limited noise (σ 0.8–1.2);
-     - or give weak seats a build that misses the curve.
-   - Each is measurable with this sim. Which one is a design call.
-2. **The rating's feedback loop is now the binding problem.**
-   - Each pilot change discards every Limited run (ADR-150). So each rebuild stands on fewer games, and the shrink-to-tier-mean lifts every rarely-seen card, here enough to lose 6–8 points.
-   - Two fixes, either sufficient:
-     - a lower shrink target for little-seen cards (the tier mean minus the "avoided" penalty the last rebuilds measured);
-     - or a noise run sized to match the evidence it replaces (about 150,000 games, roughly two hours on ten cores).
-   - Until then a rebuild after a book of shame is a regression. v1.4 (pilot 95's games) is a better rating than a pilot-97 rebuild of this size.
-3. **The campaign linkage's one-way write** — the implementer's read, as it would be built:
-   - **The Convocation never writes the world save; it posts to a mailbox.** The journey's controller rewrites the whole save on every autosave (`world-controller.ts` `autosave`). A Convocation tab writing the save while a journey tab is open would be silently overwritten. So the Convocation appends `{ id, kind: "kept" | "prize" | "spent", cards, gold }` to its own key (`convocation-outbox`). The world drains it on load and on focus. It records each id once (a new provenance source `"convocation"`), and removes an entry only after its own save succeeds.
-   - **The entry cost is paid in the journey.** Taking gold from the Convocation page has the same race. So an *invitation* is bought or earned in the world: a town board or a quest reward, held in an additive reserved field. The door reads unspent invitations (read-only, as it reads decks today). Entering posts "spent", and the Convocation's ledger records the id so a reload can't spend it twice. An invitation could carry the shape: a draft ticket, or a sealed letter for the four days.
-   - **What comes home must be fenced, and this is the design question.** The packs' power slot (`sets.json` `power`) holds Black Lotus, the five Moxen, Time Walk, the five High Grounds, **the Manafleur** and the Cinquefont. The Vault's lock counts Moxen in the collection (`moxenHeld`), and the Manafleur is the Heart's prize. A champion's two kept cards could skip the campaign's spine.
-   - Options: (a) kept cards exclude the power slot; (b) power comes home as a proxy that counts for no lock; (c) a campaign-entered Convocation drafts a campaign-safe set. I'd take (a): one filter at the finish, and the campaign's keys stay the campaign's.
-   - **The prize** (gold or a card by place band) rides the same outbox, as a knob table like the campaign's other rewards.
-   - **Cost:** about one session — the outbox and drain (~150 lines with tests), an additive save field, a provenance source, the door's invitation chooser and the kept-card filter, with the fence decided first.
-6. **The take-back's availability leaks a little.** It disappears when the opponent has made a decision, so its absence after a spell tells the player the AI had something it could have done. The same is already true of the AI's thinking pause.
-7. **Where the take-back's line sits is a dial.** I sealed on damage and life changes as well as hidden information, so an attack cannot be taken back once it lands. A resolved creature spell the opponent could not respond to *can* still be taken back. If that feels wrong in play, sealing on any resolution is a one-line change.
-8. **The field's sideboards are built by rule, not authored.** They help on average but are generic. Authored fifteens for the top lists would be the planner's.
-4. **The engine has no rule for a mandatory loop** (CR 104.4b / 732.4: a loop of mandatory actions that nobody can stop is a draw). The Usher's loop always ends today because the looping side drains twice a death. A board where the drains cancel and the only legal target is the other Usher would never end: the game, a field worker, or the page would hang. The AI avoids choosing into it (book 99), but cannot when the choice is forced. A cap on stack items resolved without a change in life or board, ending in a draw, would close it. Escalated, not built.
-5. **The pilot is now 99.** Every rating run is stale again (Concern 2).
+1. **Game one is where the Pall is too strong, and the brief's measure does not look there.** 68–72% in game one, 56% after sideboards. A best-of-three is one game of each kind and then a third boarded, so the match rate is nearer 60%. And the pilot is still slow: it kills on turn 6 where a person kills on turn 2 or 3. In a person's hands the game-one number will be higher. I would not read 56% as "the format has an answer" until a person has played against a field that boards.
+2. **The answer is only as good as the draw.** A seat boards in four hate cards; they are used in under half its games. Used, they hold the Pall to 50%.
+3. **The Witch cannot be measured yet.** ADR-160 names her as the first restriction, but the pilot does not use her well enough for a number. Teaching the dig rule to dig harder (Chris pays to six or eight life) comes before any measure of her.
+4. **Two tier-2 cards now appear in campaign shops.** Tormod's Crypt and Faerie Macabre carry `shopTier: 2`, as briefed, so the journey's shops stock them (the shop-tier pin moved from 60 to 62 tier-2 cards). If they are meant for the Convocation only, they need a different marking.
+5. **The plan vocabulary has one customer.** `piece` assumes a loop of one card returning itself. The Larder's plan (the Artisan reanimated once) would be the first test of whether the shape generalises; the reviews recommend it.
+6. **The take-back's availability leaks a little**, and where its line sits is a dial (carried from S54).
+7. **The repeat's buttons are still not walked in a browser** (carried from S54; the controller tests drive the same code on the real engine).
+8. **The field's sideboards are built by rule, not authored** (carried from S54).
+9. **The rating's feedback loop** (S54 Concern 2) stands. The pilot is now book 106, so every rating run is stale again.
 
 ## Registry entries added/changed
-None. No card or rules change.
+- **R-103** — the mandatory-loop draw. **R-104** — `exileGraveyard`; `exile` on a graveyard card.
+- **Pool registry:** `tormods_crypt`, `faerie_macabre` (Session 55 section; 244 → 246).
 
 ## Test status
-`pnpm test`: 101 files passed, 1 skipped; **929 tests passed, 2 skipped** (the standing two).
+`pnpm test`: 104 files passed, 1 skipped; **949 tests passed, 2 skipped** (the standing two). `pnpm typecheck` and `pnpm build:web` pass.
 
-New tests:
-- `convocation.test.ts` (3):
-  - Hard's life table, with the day scale and the retired names;
-  - the seat's strength (seeded, kept across stages, noise changes a deck);
-  - the ledger trim and the short Convocation headless to its Umbel.
-- `field-pool.test.ts` (1): the pods drafted on (fake) workers give the field the main thread drafts.
+New this session:
+- `sim/s55-fuzz.test.ts` (2), `sim/s55-loop-draw.test.ts` (4), `sim/s55-cards.test.ts` (5).
+- Books 100–106 and the plan-matching test in `agents/book-of-shame.test.ts` (8).
+- Three pins moved for the new cards: the pool count (260 → 262 defs), the shop-tier tally, and the list of cards that reach any graveyard.
+- **Ladder mirror gate PASS** (pilot 106).
+- About 45,000 sim games this session raised no engine error.
 
-No AI heuristic changed (no ladder run); no new card (no fuzz). About 110,000 sim games this session raised no engine error.
+**Not verified:** the two new cards in a browser; the Pall played by a person against a boarding field; the repeat's buttons.
 
 ## Suggested next
-- **Read `docs/proposals/combo-archetype-proposal.md` beside this handoff.** Chris's 5–0 combo list (Buried Alive into the Usher loop, the Jet Witch as its engine), how the AI plays it today (58%, the loop in 30% of games), and three proposals: a "combo" archetype with a plan carried by the list as data, sideboard answers to a graveyard loop, and the Jet Witch on a watch list for Restricted.
-- **From Chris, for the planner's next card batch:** a **colourless graveyard-removal card** for sideboards, in case the Usher combo proves too strong. The field would need a fourth sideboarding rule for it (keyed on the opponent's reanimation shape); that is a small addition once the card exists.
-- **Teaching the AI the Altar / Restoration Angel / Usher loop** (Chris). Today it assembles the pieces in 1% of games and almost never activates the Altar. The Altar's gate only fires for lethal mill or a doomed creature; it does not see that sacrificing the Angel with its blink trigger on the stack restarts the Usher. A loop-aware credit, like book 99's, is the likely shape.
-- **A sellout combo list** Chris wants to build and test.
-- **Chris plays the short Convocation on Hard.**
-- **For the planner:**
-  - the lever for field strength (Concern 1);
-  - the rating loop's fix before the next rebuild (Concern 2);
-  - the linkage's fence (Concern 3) — the build is about a session once it is chosen.
-- **The retire count** advances at the next Open round-robin.
+- **Chris plays the Pall and plays against it**, on the local build, against a field that boards. That is the number ADR-160 needs.
+- **Dig harder** (Concern 3), then measure the Witch.
+- **The Larder's plan** (the reviews): the second combo list, and the test of the plan's vocabulary.
+- **A counter rule for control lists** (the Locks' review): spend the held mana on the turn's best spell.
+- **The campaign linkage**, with fence (a).
+- **The rating's shrink target**, then a rebuild sized to the evidence it replaces.
 
 ## How to run
 ```
-pnpm viewer                                                    # /convocation — the door: the four-day, the short, the single events; Normal/Hard
+pnpm viewer                                                    # /convocation; /play for a single match
 pnpm typecheck && pnpm test
-pnpm convocation-sim --events 8 --seed 54 [--short] --shard i/8 --out analysis/runs/convocation54_shard$i.json   # then --report <shards>
-pnpm open:rr --games 50 --seed 54 --only levy [--journeyman levy] --out x.json   # a list against the field, master or journeyman, paired by seed
-pnpm sealed-sim --pools 200 --games 10 --seed 57 [--noise 0.4] --shard i/5      # the rating's Limited runs (pilot-versioned)
-pnpm draft-cards --pods 300 --games 4 --seed 57 --shard i/9
-pnpm rating:build <authored shards> --limited a,b,c --candidate <name>   # then merge `limited` into a copy of card-rating.json and run rating-ab
-pnpm rating-ab --sealed a.json b.json --pools 200 --opponents 4 --games 4 --seed 59 --shard i/10
-npx vitest run packages/world/src/convocation.test.ts packages/ui/src/convocation
+pnpm open:gen                                                  # the lists and their plans from open-contributed.json
+pnpm combo-probe --games 40 --shard i/5 [--boarded] [--no-plan] [--swap the_jet_witch:3:hypnotic_specter] --out analysis/runs/x_$i.json
+pnpm combo-probe --report analysis/runs/x_*.json
+pnpm open:rr --games 100 --seed 46 --shard i/10 --out analysis/runs/rr16_$i.json   # then --merge
+pnpm convocation-sim --events 8 --seed 55 --shard i/8 --out analysis/runs/convocation55_shard$i.json   # then --report
+pnpm ladder                                                    # the gate for any AI change (run alone)
+FUZZ_FULL=1 npx vitest run packages/sim/src/s55-fuzz.test.ts
 ```

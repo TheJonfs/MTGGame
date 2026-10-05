@@ -1,11 +1,13 @@
 /**
- * pnpm combo-probe [--list pall] [--games 60] [--seed 9000] [--boarded] [--no-plan] [--shard i/n] [--out file]
+ * pnpm combo-probe [--list pall] [--games 60] [--seed 9000] [--boarded] [--no-plan] [--swap from:n:to] [--shard i/n] [--out file]
  * pnpm combo-probe --report file1 file2 …
  *
  * S55 (Part 4): a combo list against every other Open list — how often and how early its loop fires, its win rate,
  * what its setup buries, what its fuel pays for and what its start is aimed at. Master both sides, 20 life, seats
  * alternating; `--boarded` plays the post-sideboard sixties on both sides (the field's fifteen and its four rules, the
  * list's own fifteen); `--no-plan` pilots the list without its plan (the S54 baseline). Turns are the list's OWN turns.
+ * `--swap the_jet_witch:3:hypnotic_specter` replaces n copies of a card IN PLACE (the same slot of the list, so the
+ * same shuffle: card-test's paired method) — run beside a plain run on the same seed and compare game by game.
  */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -26,7 +28,10 @@ interface Row { opp: string; won: boolean; reason: string; myTurns: number; loop
 
 async function play(): Promise<void> {
   const pool = loadCardPool(join(ROOT, "data/cards")).cards;
-  const key = arg("list", "pall"), me = OPEN_DECKS[key]; if (!me) throw new Error(`combo-probe: no list ${key}`);
+  const key = arg("list", "pall"), listed = OPEN_DECKS[key]; if (!listed) throw new Error(`combo-probe: no list ${key}`);
+  const swap = arg("swap", "");
+  const me = swap ? (() => { const [from, n, to] = swap.split(":") as [string, string, string]; if (!pool.has(to)) throw new Error(`combo-probe: no card ${to}`);
+    return { ...listed, decklist: listed.decklist.flatMap((e) => (e.cardId === from ? [{ cardId: from, count: e.count - Number(n) }, { cardId: to, count: Number(n) }].filter((x) => x.count > 0) : [e])) }; })() : listed;
   const plan = matchPlan(me.decklist, PLANS); if (!plan) throw new Error(`combo-probe: ${key} has no plan`);
   const G = Number(arg("games", "60")), seed0 = Number(arg("seed", "9000")), [si, sn] = arg("shard", "0/1").split("/").map(Number) as [number, number];
   const boarded = process.argv.includes("--boarded"), noPlan = process.argv.includes("--no-plan");
