@@ -6,6 +6,10 @@
  * what its setup buries, what its fuel pays for and what its start is aimed at. Master both sides, 20 life, seats
  * alternating; `--boarded` plays the post-sideboard sixties on both sides (the field's fifteen and its four rules, the
  * list's own fifteen); `--no-plan` pilots the list without its plan (the S54 baseline). Turns are the list's OWN turns.
+ * `--matches N [--hate C:M] [--only k1,k2]` (post-S55, Chris): best-of-three MATCHES instead of games — game one on the
+ * registered sixties, games two and three sideboarded, the loser of a game playing first in the next. `--hate C:M`
+ * sets the opponent's fifteen to C Tormod's Crypts and M Faerie Macabres (the field's default is 2:2; the rest of its
+ * fifteen is its best-rated other cards) and brings every one of them in. Seeds are shared across `--hate` settings.
  * `--swap the_jet_witch:3:hypnotic_specter` replaces n copies of a card IN PLACE (the same slot of the list, so the
  * same shuffle: card-test's paired method) — run beside a plain run on the same seed and compare game by game.
  */
@@ -18,12 +22,13 @@ import { HeuristicAgent, difficultyProfile, matchPlan, PLANS } from "@shandalar/
 import { OPEN_DECKS } from "@shandalar/sim/open-decks";
 import { OPEN_FORMAT } from "./formats.js";
 import { buildSideboard } from "./constructed-builder.js";
-import { AI_SIDEBOARD_CONSTRUCTED, aiSideboard, answersCreatures, answersRelics } from "./sideboard-ai.js";
-import type { CardRatingTable } from "./rating.js";
+import { AI_SIDEBOARD_CONSTRUCTED, aiSideboard, answersCreatures, answersGraveyards, answersRelics } from "./sideboard-ai.js";
+import { cardRating, type CardRatingTable } from "./rating.js";
 import type { Decklist } from "./state.js";
 
 const arg = (k: string, d: string) => { const i = process.argv.indexOf(`--${k}`); return i >= 0 ? process.argv[i + 1]! : d; };
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
+interface MatchRow { opp: string; won: boolean; games: { won: boolean; boarded: boolean; loop: boolean; exile: boolean; first: boolean }[] }
 interface Row { opp: string; won: boolean; reason: string; myTurns: number; loopTurn: number; readyTurn: number; firstSetup: number; buried: string[][]; fuelFor: string[]; startTargets: string[]; digDraws: number; cast: Record<string, number>; oppCast: Record<string, number>; oppExiles: number }
 
 async function play(): Promise<void> {
@@ -39,6 +44,51 @@ async function play(): Promise<void> {
   const fifteen = (l: (typeof OPEN_DECKS)[string]): Decklist => (l.sideboard ? [...l.sideboard] : buildSideboard(l.decklist, OPEN_FORMAT, rating, pool, answersRelics, answersCreatures));
   const sixty = (a: (typeof OPEN_DECKS)[string], b: (typeof OPEN_DECKS)[string]): Decklist => (boarded ? aiSideboard(a.decklist, fifteen(a), b.decklist, pool, rating, AI_SIDEBOARD_CONSTRUCTED).deck : a.decklist);
   const others = Object.keys(OPEN_DECKS).filter((k) => k !== key), rows: Row[] = [];
+  const M = Number(arg("matches", "0"));
+  if (M > 0) {
+    const [hc, hm] = arg("hate", "2:2").split(":").map(Number) as [number, number], only = arg("only", "").split(",").filter(Boolean);
+    const rate = (id: string) => cardRating(pool.get(id)!, rating);
+    const oppFifteen = (l: (typeof OPEN_DECKS)[string]): Decklist => {
+      const base = l.sideboard ? [...l.sideboard] : buildSideboard(l.decklist, OPEN_FORMAT, rating, pool, answersRelics, answersCreatures);
+      const rest = base.filter((e) => !answersGraveyards(pool.get(e.cardId)!)).flatMap((e) => Array<string>(e.count).fill(e.cardId)).sort((a, b) => rate(b) - rate(a) || a.localeCompare(b)).slice(0, 15 - hc - hm);
+      const out = new Map<string, number>(); for (const id of rest) out.set(id, (out.get(id) ?? 0) + 1);
+      if (hc) out.set("tormods_crypt", hc); if (hm) out.set("faerie_macabre", hm);
+      return [...out.entries()].map(([cardId, count]) => ({ cardId, count }));
+    };
+    const terms = { ...AI_SIDEBOARD_CONSTRUCTED, graveyardIn: hc + hm };
+    const mrows: MatchRow[] = [];
+    for (let k = 0; k < others.length; k++) {
+      if (k % sn !== si || (only.length && !only.includes(others[k]!))) continue;
+      const opp = OPEN_DECKS[others[k]!]!;
+      const mine2 = aiSideboard(me.decklist, fifteen(me), opp.decklist, pool, rating, AI_SIDEBOARD_CONSTRUCTED).deck;
+      const theirs2 = aiSideboard(opp.decklist, oppFifteen(opp), me.decklist, pool, rating, terms).deck;
+      for (let m = 0; m < M; m++) {
+        const row: MatchRow = { opp: opp.key, won: false, games: [] };
+        let wins = 0, losses = 0, first: 0 | 1 = (m % 2) as 0 | 1; // seat 0 is the list; the loser of a game plays first in the next
+        for (let g = 0; g < 3 && wins < 2 && losses < 2; g++) {
+          const boardedGame = g > 0, mineD = boardedGame ? mine2 : me.decklist, theirsD = boardedGame ? theirs2 : opp.decklist;
+          const seed = seed0 + k * 1009 + m * 31 + g * 7;
+          const spec = { seed, players: [{ name: key, decklist: mineD, agent: "x" }, { name: opp.key, decklist: theirsD, agent: "x" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100, startingPlayer: first }, modifiers: [] } as unknown as MatchSpec;
+          let turnStart = 20, lastTurn = -1, loop = false, exile = false;
+          const pi = new HeuristicAgent(seed * 2 + 1, pool, difficultyProfile("master", me.archetype, [...theirsD], [...mineD]));
+          const pilot: Agent = { chooseAction: async (v, r) => { if (v.turn !== lastTurn) { lastTurn = v.turn; turnStart = v.life[1]; } if (turnStart - v.life[1] >= 12) loop = true; return pi.chooseAction(v, r); } };
+          const oi = new HeuristicAgent(seed * 2 + 2, pool, difficultyProfile("master", opp.archetype, [...mineD], [...theirsD]));
+          const oa: Agent = { chooseAction: async (v, r) => { const a = await oi.chooseAction(v, r); if (a.type === "activateAbility") { const id = a.objectId, c = v.hand.find((h) => h.objectId === id)?.cardId ?? v.battlefield.find((b) => b.id === id)?.cardId; if (c === "tormods_crypt" || c === "faerie_macabre") exile = true; } return a; } };
+          const res = await runMatch(spec, pool, [pilot, oa]);
+          const won = res.winner === 0;
+          row.games.push({ won, boarded: boardedGame, loop, exile, first: first === 0 });
+          if (res.winner === 0) { wins += 1; first = 1; } else if (res.winner === 1) { losses += 1; first = 0; }
+        }
+        row.won = wins > losses;
+        mrows.push(row);
+      }
+      console.error(`shard ${si}/${sn}: ${key} v ${opp.key} (${hc}:${hm}) done`);
+    }
+    const out = arg("out", join(ROOT, `analysis/runs/combo_matches_${key}_${si}.json`));
+    mkdirSync(dirname(out), { recursive: true });
+    writeFileSync(out, JSON.stringify({ list: key, hate: `${hc}:${hm}`, matches: M, rows: mrows }));
+    return;
+  }
   for (let k = 0; k < others.length; k++) {
     if (k % sn !== si) continue;
     const opp = OPEN_DECKS[others[k]!]!;

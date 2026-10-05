@@ -78,7 +78,9 @@ export function aiSideboard(deck: Decklist, sideboard: Decklist, opponentDeck: D
   const swap = (rule: "relics" | "creatures" | "counters", wantIn: (d: CardDef) => boolean, mayLeave: (d: CardDef) => boolean, onlyIfBetter = false) => {
     for (let n = 0; n < terms.perRule; n++) {
       const inId = side.filter((id) => castable(id) && wantIn(def(id))).sort((a, b) => rate(b) - rate(a) || a.localeCompare(b))[0];
-      const outId = main.filter((id) => !def(id).types.includes("Land") && mayLeave(def(id))).sort((a, b) => rate(a) - rate(b) || b.localeCompare(a))[0];
+      // (post-S55: never a graveyard answer rule 4 has just brought in — unrated, they read as the deck's worst cards,
+      // and the black lists' creature answers were swapping three of the four straight back out)
+      const outId = main.filter((id) => !def(id).types.includes("Land") && mayLeave(def(id)) && !answersGraveyards(def(id))).sort((a, b) => rate(a) - rate(b) || b.localeCompare(a))[0];
       if (!inId || !outId || (onlyIfBetter && rate(inId) <= rate(outId))) return;
       main.splice(main.indexOf(outId), 1, inId); side.splice(side.indexOf(inId), 1, outId);
       swaps.push({ out: outId, in: inId, rule });
