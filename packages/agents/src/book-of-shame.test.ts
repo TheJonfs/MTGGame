@@ -7,6 +7,7 @@ import { readFileSync } from "node:fs";
 import { HeuristicAgent } from "./heuristic-agent.js";
 import { payableBy, reserveTaps } from "./reserve.js";
 import { difficultyProfile } from "./evaluator.js";
+import { PLANS } from "./plans.generated.js";
 import { viewCreatures, type SimObject } from "./combat-sim.js";
 
 const CARDS_DIR = join(dirname(fileURLToPath(import.meta.url)), "../../../data/cards");
@@ -1636,5 +1637,34 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(at("b")).toBeGreaterThan(pass + 1);
     expect(at("b")).toBeGreaterThan(at("w"));
     expect(at("m")).toBeLessThan(pass); // our own creature
+  });
+
+  it("book of shame 111 (S57 — the Larder's plan, `goal: once`): one piece in the graveyard is set up; the setup is wanted with none there and refused with one; the start is aimed at a piece, never a fair body; a start beside a buried piece is the plan assembled; the opponent's Crypt reads any piece; `fuelKeptForStart` is on no plan", () => {
+    const LARDER = [{ cardId: "artisan_of_kozilek", count: 2 }, { cardId: "angel_of_the_ruins", count: 2 }, { cardId: "pelakka_wurm", count: 2 }, { cardId: "buried_alive", count: 4 }, { cardId: "entomb", count: 4 }, { cardId: "zombify", count: 4 }, { cardId: "graceful_restoration", count: 3 }, { cardId: "dark_ritual", count: 4 }, { cardId: "demonic_tutor", count: 1 }, { cardId: "swamp", count: 34 }];
+    const profile = difficultyProfile("master", "combo", [{ cardId: "grizzly_bears", count: 30 }, { cardId: "forest", count: 30 }], LARDER);
+    expect(profile.plan).toMatchObject({ key: "larder", goal: "once", pieces: ["artisan_of_kozilek", "angel_of_the_ruins"] });
+    expect(PLANS.every((p) => !p.fuelKeptForStart)).toBe(true); // measured: no change for the Pall or the Larder
+    const a = new HeuristicAgent(1, pool, profile);
+    const lands = Array.from({ length: 4 }, (_, i) => ({ id: `l${i}`, cardId: "swamp", controller: 0 as const }));
+    const board = (hand: string[], mine: string[] = []) => withYards(mkView({ hand: hand.map((c, i) => ({ objectId: `h${i}`, cardId: c })), battlefield: lands }), mine);
+    const cast = (i: number, t?: string) => ({ type: "castSpell" as const, objectId: `h${i}`, targets: t ? [{ kind: "object" as const, id: t }] : [] });
+    const facts = (v: ReturnType<typeof board>) => (a as unknown as { plans: { planFacts(v: unknown): { setUp: boolean; assembled: boolean } } }).plans.planFacts(v);
+    expect(facts(board(["zombify"]))).toMatchObject({ setUp: false, assembled: false });
+    expect(facts(board(["zombify"], ["angel_of_the_ruins"]))).toMatchObject({ setUp: true, assembled: true }); // one piece is enough
+    expect(facts(board(["zombify"], ["pelakka_wurm"]))).toMatchObject({ setUp: false }); // a fair body is not a piece
+    // the setup: wanted with nothing buried, refused once a piece is there
+    expect(a.planGated(board(["buried_alive", "zombify"]), cast(0))).toBe(false);
+    expect(a.planBonus(board(["buried_alive", "zombify"]), cast(0))).toBeGreaterThan(0);
+    expect(a.planGated(board(["buried_alive", "zombify"], ["artisan_of_kozilek"]), cast(0))).toBe(true);
+    // the start: at the piece, not at the Wurm beside it (m0 is the first card of our graveyard, m1 the second)
+    const two = board(["zombify"], ["artisan_of_kozilek", "pelakka_wurm"]);
+    expect(a.planGated(two, cast(0, "m0"))).toBe(false);
+    expect(a.planGated(two, cast(0, "m1"))).toBe(true);
+    // playing against it: the Crypt is used once ANY piece is in their graveyard
+    const hater = new HeuristicAgent(1, pool, difficultyProfile("master", "control", LARDER, [{ cardId: "island", count: 60 }]));
+    const crypt = { type: "activateAbility" as const, objectId: "tc", abilityIndex: 0, targets: [{ kind: "player" as const, player: 1 as const }] };
+    const yard = (theirs: string[]) => withYards(mkView({ activePlayer: 1, battlefield: [{ id: "tc", cardId: "tormods_crypt", controller: 0 }] }), [], theirs);
+    expect(hater.graveyardHateGated(yard(["pelakka_wurm"]), crypt)).toBe(true);
+    expect(hater.graveyardHateGated(yard(["angel_of_the_ruins"]), crypt)).toBe(false);
   });
 });

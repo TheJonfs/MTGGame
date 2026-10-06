@@ -48,7 +48,7 @@ describe("broader sideboarding (S56)", () => {
 
   it("each shape comes in against the list it is for, and not otherwise", () => {
     // a steal against prizes (the Larder's fatties), none against the Tally
-    expect(ins("locks", "larder", "steal").map((s) => s.in)).toEqual(["control_magic", "control_magic"]);
+    expect(ins("locks", "larder", "steal").map((s) => stealsCreatures(d(s.in)))).toEqual([true, true]); // (S57: the Locks main their Control Magics now; the fifteen's steal is Protocol)
     expect(ins("locks", "tally", "steal")).toEqual([]);
     // creature counters against twenty creatures, for a general counter and never the reverse; not against the Tally
     for (const s of ins("locks", "muster", "creatureCounters")) { expect(isCreatureCounter(d(s.in))).toBe(true); expect(isCounter(d(s.out)) && !isCreatureCounter(d(s.out))).toBe(true); }
@@ -76,13 +76,24 @@ describe("broader sideboarding (S56)", () => {
     const g = ins("kiln", "pall", "graveyards");
     expect(g.map((s) => s.out)).toEqual(["tidewall", "tidewall", "tidewall", "tidewall"]);
     expect(g.every((s) => answersGraveyards(d(s.in)))).toBe(true);
-    // against the Larder (a graveyard deck with no plan) the old order stands: the lowest-rated cards
-    expect(ins("kiln", "larder", "graveyards").map((s) => s.out)).not.toContain("tidewall");
+    // (S57: the Larder has a plan now, and the same holds against it)
+    expect(ins("kiln", "larder", "graveyards").map((s) => s.out)).toEqual(["tidewall", "tidewall", "tidewall", "tidewall"]);
   });
 
   it("Limited sideboarding is as it was: the four shapes are a Constructed matter", () => {
     expect("shapes" in AI_SIDEBOARD).toBe(false);
     const sb = aiSideboard(OPEN_DECKS.locks!.decklist, fifteenOf("locks"), OPEN_DECKS.larder!.decklist, cards, rating, AI_SIDEBOARD);
     expect(sb.swaps.filter((s) => ["sweepers", "creatureCounters", "steal", "blockers"].includes(s.rule))).toEqual([]);
+  });
+
+  it("S57 (Part 4) — the out-rule's three parts exist and are OFF (measured: no gain): with dead-first, creature-only removal leaves first against a list of few creatures; with four-ofs kept, a rule takes a lesser copy; by default neither happens", () => {
+    expect(AI_SIDEBOARD_CONSTRUCTED.outRule).toBeUndefined();
+    const deck = [{ cardId: "island", count: 24 }, { cardId: "doom_blade", count: 3 }, { cardId: "grizzly_bears", count: 4 }, { cardId: "soul_warden", count: 2 }, { cardId: "counterspell", count: 4 }, { cardId: "swamp", count: 23 }];
+    const side = [{ cardId: "disenchant", count: 2 }, { cardId: "tormods_crypt", count: 2 }];
+    const few = [{ cardId: "glorious_anthem", count: 4 }, { cardId: "bitterblossom", count: 4 }, { cardId: "serra_angel", count: 4 }, { cardId: "plains", count: 48 }];
+    const run = (outRule?: { deadFirst?: boolean; keepFourOfs?: boolean }) => aiSideboard([...deck, { cardId: "plains", count: 0 }].filter((e) => e.count > 0), side, few, cards, rating, { relicsSeen: 4, creaturesSeen: 16, perRule: 2, ...(outRule ? { outRule } : {}) }).swaps.map((s) => s.out);
+    expect(run({ deadFirst: true })).toEqual(["doom_blade", "doom_blade"]); // four creatures across: the Doom Blades are dead
+    expect(run()).not.toContain("doom_blade");
+    expect(run({ keepFourOfs: true })).not.toContain("grizzly_bears");
   });
 });

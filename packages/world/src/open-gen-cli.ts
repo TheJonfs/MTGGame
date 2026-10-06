@@ -19,11 +19,24 @@ const lists = parseOpenLists(readFileSync(join(ROOT, "docs/convocation/convocati
 if (lists.length !== 11) throw new Error(`open:gen — the document has ${lists.length} lists; the Open's seed is eleven`);
 lists.push(buildLoop(lists.find((l) => l.key === "coin")!, (n) => idOf.get(n)));
 // Post-S53 (Chris): the lists contributed from play (data/convocation/open-contributed.json), after the twelve
-const contributedFile = JSON.parse(readFileSync(join(ROOT, "data/convocation/open-contributed.json"), "utf8")) as { archived?: Record<string, string> };
+const contributedFile = JSON.parse(readFileSync(join(ROOT, "data/convocation/open-contributed.json"), "utf8")) as { archived?: Record<string, string>; plans?: Record<string, Omit<ComboPlan, "key">> };
 // S56 (ADR-164): the archive — a list by key (a seed list or a contributed one) with the reason; it stays in the data
 const archived = contributedFile.archived ?? {};
 const contributed = (JSON.parse(readFileSync(join(ROOT, "data/convocation/open-contributed.json"), "utf8")) as { lists: { key: string; name: string; title: string; archetype: "aggro" | "midrange" | "control" | "combo"; decklist: { cardId: string; count: number }[]; sideboard?: { cardId: string; count: number }[]; plan?: Omit<ComboPlan, "key"> }[] }).lists;
 const plans: ComboPlan[] = [];
+/** Every card a plan names is a card of the pool and of its list; a `once` plan names its pieces. */
+function checkPlan(key: string, plan: Omit<ComboPlan, "key">, decklist: { cardId: string; count: number }[]): void {
+  const named = [plan.piece, ...(plan.pieces ?? []), ...plan.setup.flatMap((s) => [s.card, ...s.bury.map((b) => b.card)]), ...plan.start.flatMap((s) => [s.card, s.on]), ...plan.dig, ...plan.fuel, ...plan.answers.counter];
+  for (const id of named) { if (!pool.has(id)) throw new Error(`open:gen — ${key}'s plan names ${id}, not in the pool`); if (!decklist.some((e) => e.cardId === id)) throw new Error(`open:gen — ${key}'s plan names ${id}, which the list does not hold`); }
+  if (plan.pieces && plan.pieces[0] !== plan.piece) throw new Error(`open:gen — ${key}'s plan: the first of its pieces is its piece`);
+}
+// S57 (ADR-165): a plan for a SEED list (the Larder) — the list becomes a combo list, piloted by it
+for (const [key, plan] of Object.entries(contributedFile.plans ?? {})) {
+  const l = lists.find((x) => x.key === key); if (!l) throw new Error(`open:gen — a plan names the list ${key}, which is not a seed list`);
+  checkPlan(key, plan, l.decklist);
+  (l as { archetype: string }).archetype = "combo";
+  plans.push({ key, ...plan });
+}
 for (const c of contributed) {
   if (lists.some((l) => l.key === c.key)) throw new Error(`open:gen — a contributed list reuses the key ${c.key}`);
   for (const e of c.decklist) if (!pool.has(e.cardId)) throw new Error(`open:gen — ${c.key} names ${e.cardId}, not in the pool`);
@@ -31,8 +44,7 @@ for (const c of contributed) {
   // S55 (ADR-161): a combo list carries its plan; every card the plan names is a card of the pool and of the list
   if ((c.archetype === "combo") !== !!c.plan) throw new Error(`open:gen — ${c.key}: a combo list carries a plan, and only a combo list does`);
   if (c.plan) {
-    const named = [c.plan.piece, ...c.plan.setup.flatMap((s) => [s.card, ...s.bury.map((b) => b.card)]), ...c.plan.start.flatMap((s) => [s.card, s.on]), ...c.plan.dig, ...c.plan.fuel, ...c.plan.answers.counter];
-    for (const id of named) { if (!pool.has(id)) throw new Error(`open:gen — ${c.key}'s plan names ${id}, not in the pool`); if (!c.decklist.some((e) => e.cardId === id)) throw new Error(`open:gen — ${c.key}'s plan names ${id}, which the list does not hold`); }
+    checkPlan(c.key, c.plan, c.decklist);
     plans.push({ key: c.key, ...c.plan });
   }
   lists.push({ key: c.key, name: c.name, title: c.title, archetype: c.archetype, decklist: c.decklist.map((e) => ({ ...e })), ...(c.sideboard ? { sideboard: c.sideboard.map((e) => ({ ...e })) } : {}) } as never);

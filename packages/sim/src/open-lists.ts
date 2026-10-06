@@ -39,6 +39,17 @@ export const OPEN_AMENDMENTS: Record<string, Record<string, number>> = {
   ford: { "Wood Elves": -2, "Char": -2, "Vitalist": 4 },
   muster: { "Sacred Helix": -2, "Vitalist": 2 },
 };
+/** S57 (the revision round): the swaps adopted against the round-robin of record (pilot 108) — each gained two
+ * points clear of its error against the field, 1,500 games paired by seed (`open:rr --swap`; the numbers are in
+ * docs/decision-updates/s57.md). Applied after the S46 amendments, by card NAME → delta. */
+export const OPEN_REVISIONS_S57: Record<string, Record<string, number>> = {
+  locks: { "Tidewall": -2, "Ponder": -2, "Control Magic": 4 }, // +11.0 ± 2.2
+  undertow: { "Boomerang": -3, "Control Magic": 3 }, // +8.9 ± 1.8 (ADR-165's bar of 38: 43.8)
+  tally: { "Arc Mage": -2, "Abrade": -2, "Flametongue Kavu": 4 }, // +13.0 ± 2.0
+  muster: { "Vitalist": -2, "Suntail Hawk": -2, "Flametongue Kavu": 4 }, // +10.0 ± 1.9
+  ford: { "Savage Twister": -2, "Restoration Angel": -2, "Flametongue Kavu": 2, "Rage Cobra": 2 }, // +5.1 ± 1.8
+  warband: { "Boggart Brute": -2, "Restoration Angel": -1, "Flametongue Kavu": 2, "Lumen, the Hearth Fire": 1 }, // +3.9 ± 1.5
+};
 /** The twelfth list (S46 brief; Chris: in Mardu's colours only) — the Usher's Coin −3 Vampire Nighthawk (the Coin runs
  * three) −2 Meliyan −1 Sacred Helix → +4 Restoration Angel +2 Altar of Dementia; the Coin's lands unchanged. */
 export const LOOP_FROM_COIN: Record<string, number> = { "Vampire Nighthawk": -3, "Meliyan, the Torment": -2, "Sacred Helix": -1, "Restoration Angel": 4, "Altar of Dementia": 2 };
@@ -65,6 +76,7 @@ export function parseOpenLists(doc: string, idOf: (name: string) => string | und
       }
     }
     for (const [name, d] of Object.entries(OPEN_AMENDMENTS[meta.key] ?? {})) byName.set(name, (byName.get(name) ?? 0) + d);
+    for (const [name, d] of Object.entries(OPEN_REVISIONS_S57[meta.key] ?? {})) { const n = (byName.get(name) ?? 0) + d; if (n < 0) throw new Error(`open lists: the S57 revision cuts more ${name} than ${meta.key} runs`); byName.set(name, n); }
     out.push(build(meta.key, nick?.replace(/"/g, "") ?? meta.key, head!, meta.archetype, byName, idOf));
   }
   return out;

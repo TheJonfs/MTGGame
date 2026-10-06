@@ -1,217 +1,155 @@
-# Handoff — after Session 56 (2026-10-06)
+# Handoff — after Session 57 (2026-10-07)
 
 ## State of the world
-Session 56 was the pilot before the lists: three AI changes proposed, each measured before shipping. Two shipped, in altered form; one was measured and not taken.
+Session 57 was the revision round. Six lists were revised by measured swaps, the Larder got its plan, and the Open has a new strength table.
 
-- **The counter rule** (book 108) ships, but it is not the rule the brief designed. The probe showed the pilot was not declining to counter; it was losing its counters to the colour of its untapped lands and to tapping out. The Locks gain 3.8 points, the Undertow 2.1.
-- **Four more sideboarding shapes** ship (sweepers, creature counters, a steal, blockers). Their measured gain is small (+3.0 → +3.4 points from sideboarding). One fix found on the way is large: the Kiln against the Pall goes from 42% to 59%.
-- **"Dig harder" was measured and not taken.** It cost the Pall three to seven points. The measurement found where the Pall's turns actually go: mana.
-- **The archive exists and the Loop is in it** (ADR-164). The Open's field is sixteen lists.
-- **The strength table is now one measurement**: sixteen lists, one pilot, 12,000 games.
+- **Six lists changed**, each by a swap that gained at least two points clear of its error: the Locks, the Undertow, the Tally, the Muster, the Ford and the Warband.
+- **Nothing in Part 1 (mana) was adopted.** The planner's mana fix for the Locks measured as a loss.
+- **The Larder is a combo list now**, piloted by a plan. It needed two new plan fields. It gains about three points and is still last.
+- **The better out-rule for sideboarding was built, measured and left off.** It bought nothing; one part of it cost a point.
+- **The new table is tighter:** thirteen of sixteen lists sit between 45 and 58.
 
-`pnpm typecheck`, `pnpm test` (969) and the ladder gate pass. `pnpm build:web` passes. **Everything here is pushed.** After the session proper Chris added a card, Protocol: its own section below.
+`pnpm typecheck` and `pnpm test` (971) pass. **Nothing from this session is pushed.**
 
 ## For the planner — the decisions waiting
-1. **Three places where I built something other than the brief's design** (Deviations 1–3). Each has its numbers; each needs a ruling.
-2. **The Pall's speed is a mana question, not a pilot question** (Concern 2). That changes what S57 should try for it, and what the Larder's plan will need.
-3. **The Locks lose about one counter a game to their own mana base** (Concern 1). That belongs to the overhaul ADR-165 already scheduled.
-4. **The Undertow is at 35** against ADR-165's bar of 38.
-5. **The swap trials for S57** are listed under "Suggested next".
+1. **The Undertow and ADR-165's bar.** Its swap read 43.8 against the old field and it stands at 36 in the new table. I did not archive it (Deviation 2).
+2. **Four near-misses under a strict reading of the bar** (Deviation 1). If the bar is meant more loosely, these are the next to take: the Tally's Control Magics, the Enchantress's fourth Pacifism, the Pall's Swamps, the Locks' two Islands.
+3. **Flametongue Kavu is now in five lists** (Concern 1).
+4. **The Locks now lose seven points by sideboarding** (Concern 3).
+5. **The planner's document** needs the six revisions folded in; they live in code for now (`sim/open-lists.ts OPEN_REVISIONS_S57`).
+6. **Still owed by Chris:** the Sweep's registered fifteen; a hand read of the tuned Kiln; the Pall against a boarding field.
 
 ## Done this session
 
-### Part 0 — rulings (`docs/decision-updates/s56.md`)
-- ADR-163, ADR-164 and ADR-165 filed, with the ratifications and the sequence.
-- The hate cards stay in campaign shops: no change needed.
+### Part 0 — rulings (`docs/decision-updates/s57.md`)
+- ADR-166 and ADR-167 filed, with the ratifications and the bar.
+- **Ten of the brief's trials named cards the lists no longer hold or would pass the copy cap** (the brief was written against the planner's document; the lists were amended in S46 and on 2026-10-01). The decision file has a table of each and what was run instead.
 
-### Part 1 — the counter rule (book 108)
-- **A new probe, `pnpm counter-probe`**, written first. Per game it counts counters drawn and cast, and sorts every window (an opposing spell on the stack, a counter in hand) into: cast, passed with the mana, or no mana — and what the mana was lost to.
-- **What it found** (the Locks, the old pilot, 320 games):
+### Part 1 — mana first: nothing adopted
 
-| a game | |
+| trial | change against the field |
 |---|---|
-| counters drawn | 5.2 |
-| counters cast | 3.1 |
-| windows | 7.2 |
-| — cast | 3.0 |
-| — passed with the mana (spells of mean mana value 1.2) | 0.7 |
-| — no mana: too few lands yet | 0.9 |
-| — no mana: the colours are not on the battlefield at all | about 1.0 |
-| — no mana: spent on its own turn, or a counter already cast | about 1.6 |
+| the Locks: the full change (22 blue sources) | −2.0 ± 2.3 |
+| the Pall: Barren Moor → Swamp | +2.1 ± 1.3 |
+| the Pall: Tendrils → lands | +1.1 ± 1.6 |
+| the Kiln: 2 Mountain → 2 Island | +2.4 ± 1.1, then +0.4 ± 1.2 on a second seed |
+| the Undertow: Forest → Island | −0.9 ± 1.5 |
 
-- **What was built:**
-  - With a counter held, the pilot pays for a cast by hand, tapping the lands the counter does not need (`agents/reserve.ts`).
-  - A play that leaves the counter payable keeps the hold bonus (before, only passing did).
-  - A control deck weighs the hold three times as much on its own turn.
-- **Measured, each game paired with its old-pilot twin** (1,500 games a list):
+- **The Locks:** more blue cost them their white (−15 against the Muster).
+- **The Pall:** the loop's turn did not move (median 6), so the fuel option was measured anyway and changed nothing (68% → 68%; the Larder 33% → 33%). `fuelKeptForStart` exists as a plan field and is on no plan.
 
-| list | old | new | difference | counters cast a game |
-|---|---|---|---|---|
-| the Locks | 33.0% | 36.8% | **+3.8 ± 2.0** | 3.35 → 3.63 |
-| the Undertow | 32.8% | 34.9% | **+2.1 ± 1.4** | 0.92 → 0.97 |
-| the Depths | 54.2% | 55.9% | +1.7 ± 1.7 | 1.39 → 1.49 |
-| the Kiln | 55.1% | 55.0% | −0.1 ± 0.6 | 0.71 → 0.72 |
-| the Tally | 37.7% | 37.7% | +0.1 ± 0.7 | 0.36 → 0.35 |
+### Part 2 — the swap trials
+Forty-odd trials, 1,500 games each, paired by seed. Adopted:
 
-- **Ladder mirror gate PASS.**
+| list | swap | gain at the trial | old table → new |
+|---|---|---|---|
+| the Locks | −2 Tidewall −2 Ponder → +4 Control Magic | +11.0 ± 2.2 | 36 → 45 |
+| the Undertow | −3 Boomerang → +3 Control Magic | +8.9 ± 1.8 | 35 → 36 |
+| the Tally | −2 Arc Mage −2 Abrade → +4 Flametongue Kavu | +13.0 ± 2.0 | 38 → 46 |
+| the Muster | −2 Vitalist −2 Suntail Hawk → +4 Flametongue Kavu | +10.0 ± 1.9 | 47 → 53 |
+| the Ford | −2 Savage Twister → +2 Flametongue Kavu; −2 Restoration Angel → +2 Rage Cobra | +5.1 ± 1.8 | 45 → 46 |
+| the Warband | −2 Boggart Brute → +2 Flametongue Kavu; −1 Restoration Angel → +1 Lumen | +3.9 ± 1.5 | 52 → 52 |
 
-### Part 2 — broader sideboarding
-- **Rules 5–8** in `world/sideboard-ai.ts`: sweepers against a wide board; creature counters against a creature deck (Essence Scatter in for a general counter, never the reverse); Control Magic against prizes; blockers against fliers or an aggressive list.
-- **The field's fifteen** reserves slots for them.
-- **A new tool, `pnpm sideboard:show`**: what a list's AI brings in and takes out against each other list. Reading its output found three faults:
-  - Rule 3 brought graveyard exile in as "the best playable left" (a Tormod's Crypt for a Counterspell against the Coin). Fixed.
-  - A shape could take out the Lotus. Fixed: a card that only makes mana never leaves.
-  - "Flying blockers" included a nine-mana Angel. Fixed: four mana or less.
-- **Measured** (`open:rr --sideboarded-one`: each list's sideboarded sixty against the others' registered sixties, 450 games a list, paired with the plain run):
+- Not adopted for any list: the Enchantress, the Wurmspeaker, the Kiln, the Pall.
+- Every trial's number is in the decision file, list by list.
+- The planner's headline trials that failed: the Muster's four Sharpshooters (+1.6 ± 1.6), the Enchantress's Vitalists (−1.8 and −2.6), the Locks' Essence Scatters for Absorb (−3.8).
 
-| | mean gain from sideboarding |
-|---|---|
-| the S55 rules | +3.0 points |
-| with rules 5–8 | **+3.4 points** |
-| each shape alone | sweepers +0.2 · creature counters +0.3 · a steal +0.7 · blockers 0.0 |
+### Part 3 — the Larder's plan
+- **Two new plan fields:** `goal: "once"` and `pieces`. One piece in the graveyard is set up; a start beside it is the plan assembled. A `loop` plan is untouched (the Pall plays as before).
+- A seed list's plan lives in `open-contributed.json` under `plans`.
 
-- **The brief's check, the Kiln against the Pall** (300 games): 35% as registered → 42% under the S55 rule → **59%** once the walls leave first. A person's plan measured 60%.
-
-### Part 3 — dig harder: measured, not taken
-- The brief's rule and three narrower versions, 600 games each on the same seeds:
-
-| the dig rule | the Pall's win rate | the loop fires |
+| the Larder against the field (600 games) | old pilot | with its plan |
 |---|---|---|
-| S55's, as shipped | **68%** | 54% |
-| the brief's | 61% | 49% |
-| three narrower versions | 64–67% | 52–54% |
+| win rate | 28% | 33% |
+| a piece lands | 58% of games | 64% |
+| on its own turn (median) | 6 | 5 |
+| fuel spent on nothing | 131 times | 9 |
+| armed turns unable to pay for the start | 380 | 535 |
 
-- The dig rule is as S55 left it. The measurement is recorded in the code beside it.
-- **The Witch at four against one, re-measured** (900 paired games): **+2.3 ± 1.9** (S55: +0.9 ± 1.9).
-- **The loop's turn is still 6** (median). Concern 2 says why.
+- In the round-robin, paired with the old pilot: +3.4 ± 2.2. It stands at 31 in the new table.
 
-### Part 4 — the archive and the round-robin of record
-- The archive is a map in `open-contributed.json`; `open:gen` writes the flag and exports `OPEN_FIELD`; the builder, the round-robin and the probes respect it. A test pins it.
-- **The Loop is archived.** It stays in the data and in the authored-lists table.
-- **The round-robin of record** (sixteen lists, pilot 108, registered sixties, 12,000 games, `analysis/runs/rr16_s56.json`):
+### Part 4 — a better out-rule: built, measured, left off
+
+| what leaves | mean gain from sideboarding (the revised sixteen) |
+|---|---|
+| the lowest-rated card (as shipped) | +2.06 |
+| dead cards first | +2.08 |
+| four-ofs kept | +1.01 |
+| all parts, with a ninth rule for dead cards | +1.08 |
+
+- The parts stay in `sideboard-ai.ts` behind `outRule`, off.
+- The Sweep's loss from sideboarding is unchanged (−3.1 ± 4.2).
+
+### Part 5 — the new table
+Sixteen lists, pilot 110, registered sixties, 12,000 games (`analysis/runs/rr16_s57.json`). In brackets, the change from S56's table.
 
 | | | | |
 |---|---|---|---|
-| pall 71 | levy 62 | hearth 62 | coin 58 |
-| sweep 56 | depths 56 | kiln 55 | warband 52 |
-| wurmspeaker 50 | muster 47 | enchantress 47 | ford 45 |
-| tally 38 | locks 36 | undertow 35 | larder 29 |
+| pall 69 (−2) | levy 58 (−4) | hearth 58 (−4) | coin 56 (−2) |
+| kiln 54 (−1) | muster 53 (+6) | warband 52 (0) | sweep 52 (−4) |
+| depths 52 (−4) | wurmspeaker 47 (−3) | tally 46 (+8) | ford 46 (+1) |
+| locks 45 (+9) | enchantress 45 (−2) | undertow 36 (+1) | larder 31 (+2) |
 
 - `OPEN_MEANS` is this table.
-- **The retire count:** the bottom three are again the Larder, the Undertow and the Locks.
-
-### Part 5 — measured
-- **`convocation-sim --events 8`:** a seat's list against its finish r = **−0.55** (S55: −0.50). The Umbel's eight hold lists averaging 60.1; the field 49.1. "Top" seats reach the Umbel 9.6% of the time, "low" seats 0.7%. No rematch.
-
-## After the session — Protocol (Chris, 2026-10-06)
-
-Chris delivered a new custom card with its art and printed face:
-
-> **Protocol** — {U}{U} Enchantment — Aura. Enchant creature. Enchanted creature gets −2/−0. You control enchanted creature as long as its power would be 0 or less if you didn't control it.
-
-- **In the pool** (246 → 247), **tier 2**. Chris allowed tier 2 or 3; it measures below the tier-3 Control Magic in every slot tried.
-- **One new word (R-105):** a control static conditional on the enchanted creature's power (`{ref: "attachedPower"}`, and `atMost` on a static condition).
-- **Fuzz first:** 768 full-tier games beside anthems, pump Auras, Control Magic, Lumen, bounce and Aura removal. No exception; replays byte-exact. Then 8 fixtures.
-- **The AI** prices it as a steal on a creature the shrink brings to 0 and as a partial shrink otherwise (book 110). It casts it 0.4–1.1 times a game.
-- **`open:rr --swap` now takes a variant** (`protocol~cost={1}{U}~shrink=3`), so a card's parameters can be tested in a real list.
-
-**The sensitivity grid.** Four costs × three shrink sizes, in five slots of four lists, each cell 1,500 games paired by seed with the round-robin of record (93,000 games; the full tables are in `results/s56/protocol-grid.md`, untracked). The change in the list's win rate, averaged over the five slots:
-
-| cost | −1/−0 | −2/−0 | −3/−0 |
-|---|---|---|---|
-| {U} | -1.7 | +2.5 | +5.0 |
-| {U}{U} | -3.5 | +0.2 | +2.3 |
-| {1}{U} | -2.4 | +1.9 | +4.2 |
-| {1}{U}{U} | -3.8 | -1.0 | +1.1 |
-
-The card as printed ({U}{U}, −2/−0), slot by slot:
-
-| slot | Protocol as printed | Control Magic in the same slot |
-|---|---|---|
-| the Kiln: in place of its 4 Control Magic | −6.2 ± 2.0 | (the baseline) |
-| the Depths: in place of its 2 Control Magic | −3.4 ± 1.6 | (the baseline) |
-| the Kiln: in place of 4 Tidewall, beside Control Magic | +4.5 ± 1.9 | not run |
-| the Locks: in place of 2 Tidewall + 2 Ponder | +2.2 ± 2.1 | +11.0 ± 2.2 |
-| the Undertow: in place of 3 Boomerang | +3.9 ± 1.7 | +8.9 ± 1.8 |
-
-What the grid says:
-- **As printed it is a fair card: an addition, not a replacement.** It improves a list when it takes a weak slot and costs the list when it replaces Control Magic.
-- **The shrink is the strong dial.** Each point of it is worth about 2 to 4 points of win rate. At −1/−0 the card is a liability; at −3/−0 it approaches Control Magic at half the cost.
-- **The second blue pip matters more than the mana.** {1}{U} measures about 1.5 points better than {U}{U} at the same mana value, and nearly as well as {U}. This is Concern 1 again (these lists are short of blue).
-- **Nothing in the grid is broken.** The strongest cell tried ({U}, −3/−0) is +5.0 on average and still below Control Magic where both were run.
-
-**The wording was settled the same day (Chris).** The first face read "As long as enchanted creature's power is 0 or less, you control enchanted creature." A creature's power can depend on who controls it (an anthem, Clio), and that text has no stable answer then: taken, its power rises; released, it falls. The engine had been built to read the power the creature would have if we did not control it, and Chris reworded the card to say so. Nothing in the engine or the grid changed.
-- An opponent's Glorious Anthem keeps their 2/2 safe (3 − 2 = 1); our own Anthem does not hand a taken 2/2 back.
-- With our Clio, a 3/3 under Protocol is taken at her first depth counter and kept (a fixture pins it). This is the synergy the card was written for.
-- Chris considered a stronger version (the creature comes over at full power) and kept the shrink, so the card is not a two-mana Control Magic beside Clio.
-- The corrected face (no power/toughness box, the new text) is wired.
+- **The retire count:** the bottom three are the Larder (30.8), the Undertow (36.1) and the Locks (44.5). The Locks are under a point from three other lists.
+- **`convocation-sim --events 4`:** a seat's list against its finish r = −0.53; the Umbel's eight hold lists averaging 56.9, the field 49.6; two rematches in four events.
 
 ## Deviations from the brief
-1. **The counter rule is not the brief's design.** The brief's two clauses (spend held mana at the opponent's end step; cast when the spell's worth exceeds the counter's held value) address what the probe found to be the small parts: the end-step case arises 0.2–0.4 times a game with nothing worth casting, and the pilot already passes only on cheap spells. I built the three things the probe pointed to instead. *The planner should rule on whether the brief's clauses are still wanted.*
-2. **"Dig harder" is not shipped.** It measured three to seven points worse in every form tried. *The planner should rule on whether book 109 is closed.*
-3. **Two sideboarding rules beyond the brief:** rule 6 does not run against a plan that counterspells answer; against such a plan, graveyard exile takes the walls out first. The second is what made the brief's own check pass.
-4. **The thresholds the brief left open are mine:** eight fliers; twelve creatures of mana value two or less for "an aggressive list"; four mana for a blocker; two cards a shape.
-5. **A sweeper also needs the opponent's small creatures to be twice our own.** Without it the Muster swept its own board.
-6. **The archive lives in the contributed-lists file**, not on the list's own entry: the Loop is a seed list built in code and has no entry of its own there.
-7. **An archived list still builds when asked for by key**, so an older save with a Loop seat keeps working.
-8. **The Loop stays in the authored-lists table.** The card rating's record and the tinker's "shares a list" rule still read it. No rating rebuild was run.
-9. **Rule 3 (counterspells leave against creature decks) was tested off and kept.** I expected it to be wrong for Constructed; it measured right (the Locks' gain from sideboarding fell from +7.6 to +1.6 without it).
+1. **The bar is read strictly:** the gain less its 95% error is at least two points. Four trials fall just short and are not adopted: the Tally's −2 Blaze +2 Control Magic (+3.2 ± 1.5, and +3.1 ± 1.5 stacked), the Enchantress's fourth Pacifism (+1.9 ± 0.7 pooled over two seeds), the Pall's Swamps (+2.1 ± 1.3), the Locks' two Islands on top of the Control Magics (+1.6 ± 1.4). *The planner should say whether the strict reading is the one meant.*
+2. **The Undertow is not archived.** By the trial it reached 43.8; in the new table it is 36. The brief's rule ("if no combination reaches 38: archive") does not say which measure. *The planner's to rule.*
+3. **Two adopted swaps are pairs where neither half clears the bar alone** (the Ford's, the Warband's). Each half is a planner's trial; the pair clears.
+4. **Ten trials were substituted or not run** because the list had changed since the planner's document (the table is in the decision file). Three adopted swaps come from substitutes or additions of mine: the Muster's Kavus (the brief's Helix slot is two Vitalists today; two more for two Hawks), and the stacking of the Tally's two Kavu trials.
+5. **The Larder's plan differs from the brief's sketch in four places:** no Thought Scour to dig with (cut in S46); the Angel's plainscycling is not a setup in the plan (the older rule still cycles her); the Artisan's own cast is not a start; there is no "bounce" answer field.
+6. **`fuelKeptForStart` was measured although the Pall's turn did not move** (the brief made it conditional). It was cheap, and the answer is now known.
+7. **"Four-ofs kept" and a ninth rule were my additions to Part 4.** Both measured no better.
+8. **Part 4's "graveyard exile against a list without a graveyard" and "counterspells against a plan that names them not" are not built.** No list mains graveyard exile, and every plan names counterspells.
+9. **The revisions are in code, not in the planner's document** (`OPEN_REVISIONS_S57`, applied after the S46 amendments).
 
 ## Concerns
-1. **Mana bases are costing the control lists their counters.** About one window a game for the Locks is lost because the colours are not on the battlefield at all: Absorb is WUU and Undermine UUB, and ten of the list's twenty-four lands make no blue. The Kiln loses about half a window a game the same way (Counterspell with an Island and a Mountain). No pilot rule reaches this. It is list work for S57.
-2. **The Pall is slow because of mana, not because of its pilot's choices.** With the setup resolved and a start in hand, the pilot spent 544 own turns (in 600 games) unable to pay for the start and none declining to. Zombify is four mana and the Usher five in three colours; the list has twenty lands, four of them entering tapped. A person reaches turn 2–3 by sequencing Rituals and Moxes that the AI also holds, so some pilot gain may remain (for instance keeping a Ritual for the start when lands will pay for the setup), but it has not been measured.
-3. **Three AI rules this session and last read right and measured wrong** (book 107, the brief's counter clauses, dig harder). Measuring first is now cheap enough to be the rule, as the brief says. The probes are what make it cheap: writing the probe before the rule changed the design of Part 1 completely.
-4. **The four sideboarding shapes buy little.** +0.4 points on average, inside the noise. What moved a matchup was the choice of what leaves (the walls against the Pall: +17 points). The rules still take out "the lowest-rated card", which is often the wrong card. A better out-rule is where the next gain is.
-5. **The Sweep loses by sideboarding** (−4.4 ± 4.1, and −3.6 under the S55 rules). Its built fifteen and the lowest-rated-out rule do not suit it. It may want a registered fifteen of its own, as the Pall and the Kiln have.
-6. **The Witch's number is still weak evidence.** +2.3 ± 1.9 is the pilot's use of her. In games where she stands the loop fires no more often than in games where she does not (50% against 58%).
-7. **The plan vocabulary still has one customer** (carried). The Larder's plan in S57 is the test. Concern 2 suggests the Larder will meet the same mana wall.
-8. **The take-back's availability leaks a little** (carried from S54).
-9. **The rating's feedback loop** (carried). The pilot is now book 108, so every rating run is stale again.
+1. **Flametongue Kavu is carrying the revision.** It is now in five lists (the Kiln 3, the Tally 4, the Muster 4, the Ford 2, the Warband 2), and it was the best or second-best trial in every red list. The AI pilots it well (a body with removal attached needs no judgment). The lists are converging on it. If that is not wanted, the lever is the card or a cap, not more trials.
+2. **Control Magic is the same story in blue** (the Kiln 4, the Locks 4, the Undertow 3, the Depths 2). Between them the two cards are in all six adopted revisions.
+3. **The Locks lose 6.9 ± 5.3 points by sideboarding** since the revision. Their built fifteen brings removal in for their counterspells. Keeping the counters in was worse (−14.1: then the win conditions leave). The field's builder does not suit a control list; the Locks may want a registered fifteen, as the Sweep does.
+4. **The mana diagnosis from S56 did not survive measurement.** The probe was right that the Locks lose counters to colour, but fixing the colour cost more elsewhere than it gained. A probe says where turns go; it does not say what a fix is worth.
+5. **A trial's gain against the old field overstates its place in the new one.** The Undertow gained 8.9 at the trial and 1 in the table, because six of its fifteen opponents changed too. The bar should probably be read on the final table for a list near a threshold.
+6. **The Larder's problem is not its pilot.** With the plan a piece lands in 64% of games and it wins 33%. It arms early and then waits for four mana in four colours; when the body lands it is often answered. This is a list question (and the same wall as the Pall's).
+7. **The plan vocabulary held for a second customer, with two fields added.** `once` and `pieces` were enough. A third shape (a plan that wins without the graveyard) has not been tried.
+8. **Sideboarding by rule has stopped paying.** The mean gain is +2.1; no out-rule moved it. The remaining gains are list-specific (a registered fifteen), not rule-shaped.
+9. **The rating's feedback loop** (carried). The pilot is now book 111 and six lists have changed, so every rating run is stale.
 
 ## Registry entries added/changed
-- **R-105** — a control static conditional on the enchanted creature's power (Protocol).
-- **Pool registry:** `protocol` (Session 56 section; 246 → 247).
+None. No rule of the game and no card changed this session.
 
 ## Test status
-`pnpm test`: 107 files passed, 1 skipped; **969 tests passed, 2 skipped** (the standing two). `pnpm typecheck` passes. `pnpm build:web` passes.
+`pnpm test`: 107 files passed, 1 skipped; **971 tests passed, 2 skipped** (the standing two). `pnpm typecheck` passes. `pnpm build:web` not run (nothing pushed).
 
 New this session:
-- Book 108 in `agents/book-of-shame.test.ts` (the payment solver, the hand-tapped cast through `chooseAction`, the kept hold, the control multiple, the old pilot).
-- `world/sideboard-s56.test.ts` (5): the shapes read from card data; the fifteen's slots; each shape against the list it is for and not otherwise, across every pairing; the walls leaving first; Limited unchanged.
-- The archive test in `world/constructed-builder.test.ts`.
-- `sim/s56-fuzz.test.ts` (2), `sim/s56-cards.test.ts` (8) and book 110 for Protocol; three pins moved for the new card (the pool count, the shop-tier tally, the generated reference).
-- **Ladder mirror gate PASS** (pilot 108). Book 110 was added after it: it changes only how an Aura with a conditional steal is priced, and no ladder deck holds one.
-- About 210,000 sim games this session raised no engine error. The hand-tapped payment is a new action path for the AI and ran through all of them.
+- Book 111 (the Larder's plan: `once`, the setup wanted and refused, the start's target, the opponent's Crypt, `fuelKeptForStart` on no plan).
+- The out-rule's test in `world/sideboard-s56.test.ts` (its parts work, and are off).
+- Two S56 sideboarding pins moved with the lists (the Locks main their Control Magics; the Larder has a plan).
+- **No ladder run.** The agent changes are confined to decks with a plan (`plan-play.ts`), and no ladder deck has one. For the Pall's `loop` plan they change nothing: its 560 probe games against the fourteen lists other than the Larder are identical to S56's, game for game.
+- About 150,000 sim games this session raised no engine error.
 
-**Not verified:** Protocol in a browser (its art, its face, a steal and a release seen on the board); the AI's hand-tapping seen in a browser (the AI now taps lands one at a time before some casts; the log will show it); the two S55 cards in a browser; the Pall played by a person against a boarding field; the tuned Kiln played by a person.
+**Not verified:** anything in a browser this session (no UI change). Carried: Protocol on the board; the AI's hand-tapping; the tuned Kiln and the Pall in a person's hands.
 
 ## Suggested next
-**The swap trials cheapest to run in S57.** Each is one `open:rr --only <list> --swap …` row beside the round-robin of record: 1,500 games, a minute or two, paired by seed.
-- **The Locks' mana** (Concern 1): non-blue lands for blue ones (Scrubland → Watery Grave; a Plains and a Swamp → Islands); Absorb or Undermine → Essence Scatter or a second removal suite. Read with `counter-probe --detail`: the "colours are not on the battlefield" line is the target.
-- **The Pall's mana** (Concern 2): Barren Moor → Swamp; a Tendrils or two → lands. Read with `combo-probe --report`: the "could not be paid for" count and the loop's turn.
-- **The Kiln's blue** (Concern 1): a Mountain or two → Islands.
-- **The Undertow's overhaul** (ADR-165): the bar is 38 and it stands at 35.
-- **The Tally, the Ford, the Enchantress, the Muster**: single-card swaps, as the Kiln's were.
-
-Beyond the swaps:
-- **The Larder's plan** (ADR-165). Run `combo-probe --list larder` from the first draft: the armed-turn lines will show whether it is mana-bound as the Pall is.
-- **A better out-rule for sideboarding** (Concern 4), measured with `open:rr --sideboarded-one`.
-- **A registered fifteen for the Sweep** (Concern 5).
-- **Chris plays the tuned Kiln, and the Pall against a field that boards** (carried).
+- **Rule on the four near-misses and the Undertow** (the decisions above).
+- **Registered fifteens** for the Sweep and the Locks: the two lists that lose by sideboarding.
+- **The Larder as a list:** its mana (four colours for a four-mana start) and what protects the body once it lands. `combo-probe --list larder` reads both.
+- **The Enchantress and the Wurmspeaker** took nothing from the planner's trials. They need different ideas, not more of the same.
+- **Decide what to do about the Kavu** (Concern 1) before another revision round, or the next round will find it again.
+- **Chris's hand reads** when they come.
 
 ## How to run
 ```
 pnpm viewer                                                    # /convocation; /play for a single match
 pnpm typecheck && pnpm test
-pnpm open:gen                                                  # the lists, their plans and the archive from open-contributed.json
-pnpm counter-probe --lists locks,kiln,undertow --games 20 [--detail] [--off counter]   # what a pilot does with its counters
-pnpm sideboard:show --list kiln [--vs pall,levy] [--shapes none]                        # what the AI brings in and takes out
-pnpm combo-probe --games 40 --shard i/5 --out analysis/runs/x_$i.json ; pnpm combo-probe --report analysis/runs/x_*.json
-pnpm open:rr --games 100 --seed 56 --shard i/10 --out analysis/runs/rr_$i.json          # then --merge; the field only (--with-archived for the Loop)
-pnpm open:rr --games 100 --seed 56 --only locks --off counter --off-for locks --out x.json   # the old pilot's twin of the same games
-pnpm open:rr --games 60 --seed 56 --sideboarded-one [--shapes none|sweepers,steal] --out x.json   # one seat sideboards a game; pair with a plain run
-pnpm open:rr --games 100 --seed 56 --only kiln [--vs levy,pall] [--swap "kiln:mountain:2:island"] --out x.json   # a swap trial
-pnpm open:rr --games 100 --seed 56 --only locks --swap "locks:ponder:2:protocol~cost={1}{U}~shrink=3" --out x.json   # a card variant in a real list
-pnpm convocation-sim --events 8 --seed 56 --shard i/8 --out analysis/runs/convocation56_shard$i.json   # then --report
-pnpm ladder                                                    # the gate for any AI change (run alone; about twelve minutes)
+pnpm open:gen                                                  # the lists (with the S57 revisions), the plans and the archive
+pnpm open:rr --games 100 --seed 56 --only tally --swap "tally:blaze:2:control_magic" --out x.json   # a swap trial; pair with the same list's plain run
+pnpm open:rr --games 100 --seed 56 --shard i/10 --out analysis/runs/rr_$i.json          # the round-robin; then --merge
+pnpm open:rr --games 60 --seed 56 --sideboarded-one [--out-rule none|dead,four,rule9] --out x.json   # sideboarding, one seat at a time
+pnpm combo-probe --list larder --games 40 --shard i/5 [--no-plan] --out analysis/runs/x_$i.json ; pnpm combo-probe --report analysis/runs/x_*.json
+pnpm counter-probe --lists locks --games 20 --detail
+pnpm sideboard:show --list locks [--vs muster,coin]
+pnpm convocation-sim --events 4 --seed 57 --shard i/4 --out analysis/runs/convocation57_shard$i.json   # then --report
+pnpm ladder                                                    # the gate for any AI change outside plan-play (run alone)
 ```

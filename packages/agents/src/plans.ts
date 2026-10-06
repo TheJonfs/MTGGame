@@ -10,6 +10,12 @@ export interface ComboPlan {
   key: string;
   /** The loop's piece: the card the plan puts in a graveyard and returns (The Usher). */
   piece: string;
+  /** S57 (ADR-165, the Larder — the vocabulary's second customer): what the plan is after. `loop` (the default): the
+   * piece returns itself and the plan wants two of it within reach. `once`: one of the `pieces` reanimated is the
+   * whole plan (an Artisan of Kozilek on turn three) — one in the graveyard is set up, and the start is any of them. */
+  goal?: "loop" | "once";
+  /** S57: the cards a `once` plan is content to return (the first is `piece`). */
+  pieces?: string[];
   /** What sets it up, and what that card should put in the graveyard ("Buried Alive → the graveyard: The Usher ×3"). */
   setup: { card: string; bury: { card: string; count: number }[] }[];
   /** What starts it: a card that returns the piece ("Zombify on The Usher"), or the piece itself cast ("cast The Usher"). */
@@ -26,9 +32,16 @@ export interface ComboPlan {
    * turn one it cost nine points of matches (50% → 41%: it gave up the race for the first Usher); held only once the
    * opponent could cast the piece, 50% → 47% (within noise). The option stays for a plan — or a pilot — it suits. */
   holdSetupAgainstPiece?: boolean;
+  /** S57 (the brief's Part 1: "a Ritual kept for the start when lands pay the setup"): with a start in hand, fuel is
+   * not spent on the SETUP when our lands alone will pay for the setup next turn (the mana sources now, one more for
+   * a land in hand) — it is kept for the start, the dearer half. Measured before it was set on any plan (the handoff). */
+  fuelKeptForStart?: boolean;
   /** What an opponent should hold. */
   answers: { /** spells worth a counter ahead of any other */ counter: string[]; /** exile the returning piece's target / the graveyard */ graveyardExile: boolean; /** discard is worth most before this turn of the deck's own */ discardBeforeTurn: number };
 }
+
+/** The cards the plan returns: its `pieces`, or its one piece. */
+export const planPieces = (p: ComboPlan): string[] => p.pieces ?? [p.piece];
 
 type Decklist = readonly { cardId: string; count: number }[];
 const copies = (deck: Decklist, id: string) => deck.reduce((n, e) => n + (e.cardId === id ? e.count : 0), 0);
@@ -36,5 +49,5 @@ const copies = (deck: Decklist, id: string) => deck.reduce((n, e) => n + (e.card
 /** The plan a decklist follows: it holds a setup card, a start card, and at least two of the piece. */
 export function matchPlan(deck: Decklist | undefined, plans: readonly ComboPlan[]): ComboPlan | undefined {
   if (!deck) return undefined;
-  return plans.find((p) => copies(deck, p.piece) >= 2 && p.setup.some((s) => copies(deck, s.card) > 0) && p.start.some((s) => copies(deck, s.card) > 0));
+  return plans.find((p) => planPieces(p).reduce((n, id) => n + copies(deck, id), 0) >= 2 && p.setup.some((s) => copies(deck, s.card) > 0) && p.start.some((s) => copies(deck, s.card) > 0));
 }

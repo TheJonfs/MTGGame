@@ -4,6 +4,76 @@ import type { ComboPlan } from "./plans.js";
 /** S55 (ADR-161): the plans authored with the Open's combo lists. */
 export const PLANS: readonly ComboPlan[] = [
   {
+    "key": "larder",
+    "goal": "once",
+    "piece": "artisan_of_kozilek",
+    "pieces": [
+      "artisan_of_kozilek",
+      "angel_of_the_ruins"
+    ],
+    "setup": [
+      {
+        "card": "entomb",
+        "bury": [
+          {
+            "card": "artisan_of_kozilek",
+            "count": 1
+          },
+          {
+            "card": "angel_of_the_ruins",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "card": "buried_alive",
+        "bury": [
+          {
+            "card": "artisan_of_kozilek",
+            "count": 1
+          },
+          {
+            "card": "angel_of_the_ruins",
+            "count": 1
+          },
+          {
+            "card": "pelakka_wurm",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "start": [
+      {
+        "card": "zombify",
+        "on": "artisan_of_kozilek"
+      },
+      {
+        "card": "graceful_restoration",
+        "on": "artisan_of_kozilek"
+      }
+    ],
+    "dig": [
+      "demonic_tutor"
+    ],
+    "fuel": [
+      "dark_ritual",
+      "black_lotus",
+      "mox_jet",
+      "mox_emerald",
+      "mox_pearl",
+      "mox_sapphire"
+    ],
+    "answers": {
+      "counter": [
+        "zombify",
+        "graceful_restoration"
+      ],
+      "graveyardExile": true,
+      "discardBeforeTurn": 3
+    }
+  },
+  {
     "key": "pall",
     "piece": "the_usher",
     "setup": [

@@ -3,6 +3,9 @@
  "archived": {
   "loop": "S56 (ADR-164): redundant with the Coin — 31 of its 37 nonland cards shared, matchup profiles r = 0.88, worse against eleven of the other twelve. Last measured 53 (pilot 106, sixteen lists)."
  },
+ "plans": {
+  "larder": {"goal": "once", "piece": "artisan_of_kozilek", "pieces": ["artisan_of_kozilek", "angel_of_the_ruins"], "setup": [{"card": "entomb", "bury": [{"card": "artisan_of_kozilek", "count": 1}, {"card": "angel_of_the_ruins", "count": 1}]}, {"card": "buried_alive", "bury": [{"card": "artisan_of_kozilek", "count": 1}, {"card": "angel_of_the_ruins", "count": 1}, {"card": "pelakka_wurm", "count": 1}]}], "start": [{"card": "zombify", "on": "artisan_of_kozilek"}, {"card": "graceful_restoration", "on": "artisan_of_kozilek"}], "dig": ["demonic_tutor"], "fuel": ["dark_ritual", "black_lotus", "mox_jet", "mox_emerald", "mox_pearl", "mox_sapphire"], "answers": {"counter": ["zombify", "graceful_restoration"], "graveyardExile": true, "discardBeforeTurn": 3}}
+ },
  "lists": [
   {
    "key": "sweep",

@@ -15,6 +15,7 @@ import { parseManaCost, type CardDef, type Effect, type ResolvedTarget } from "@
 import type { Action, ActionRequest, GameView } from "@shandalar/engine";
 import { viewAbilityAt } from "./granted-view.js";
 import { LOOP_WORTH, reanimationWorth, type AiProfile } from "./evaluator.js";
+import { planPieces } from "./plans.js";
 
 /** What the plan rules need of the agent they serve. */
 export interface PlanHost {
@@ -27,6 +28,8 @@ export interface PlanHost {
   actionEffects(view: GameView, action: Action): Effect[] | null;
 }
 
+const FUEL_KEPT = process.env.FUEL_KEPT === "1"; // (the measuring switch for `fuelKeptForStart`; never set in play)
+
 export class PlanPlay {
   constructor(private readonly h: PlanHost) {}
 
@@ -36,15 +39,17 @@ export class PlanPlay {
   planFacts(view: GameView): { yardMine: number; yardTheirs: number; onField: boolean; pieceInHand: boolean; reanimInHand: boolean; startOnField: boolean; setupInHand: boolean; setUp: boolean; byCast: boolean; byReanim: boolean; assembled: boolean } {
     const p = this.h.profile.plan!, me = view.you, opp = (1 - me) as 0 | 1;
     const inHand = (id: string) => view.hand.some((c) => c.cardId === id);
-    const yardMine = view.graveyards[me].filter((c) => c === p.piece).length, yardTheirs = view.graveyards[opp].filter((c) => c === p.piece).length;
-    const onField = view.battlefield.some((o) => o.controller === me && o.cardId === p.piece);
-    const pieceInHand = inHand(p.piece);
+    const ps = planPieces(p), once = p.goal === "once";
+    const yardMine = view.graveyards[me].filter((c) => ps.includes(c)).length, yardTheirs = view.graveyards[opp].filter((c) => ps.includes(c)).length;
+    const onField = view.battlefield.some((o) => o.controller === me && ps.includes(o.cardId));
+    const pieceInHand = ps.some(inHand);
     const reanimInHand = p.start.some((x) => x.card !== p.piece && inHand(x.card));
     const startOnField = p.start.some((x) => x.card !== p.piece && view.battlefield.some((o) => o.controller === me && o.cardId === x.card));
     const setupInHand = p.setup.some((x) => inHand(x.card));
-    const byCast = pieceInHand && (yardMine + yardTheirs >= 1 || onField);
-    const byReanim = (reanimInHand || startOnField) && (yardMine >= 2 || (yardMine >= 1 && onField));
-    const setUp = yardMine >= 2 || (yardMine >= 1 && (onField || pieceInHand)) || (yardTheirs >= 1 && pieceInHand) || (onField && pieceInHand);
+    // S57 (`goal: "once"`): one piece in our graveyard is set up; a start in hand beside it is the plan assembled
+    const byCast = !once && pieceInHand && (yardMine + yardTheirs >= 1 || onField);
+    const byReanim = (reanimInHand || startOnField) && (once ? yardMine >= 1 : yardMine >= 2 || (yardMine >= 1 && onField));
+    const setUp = once ? yardMine >= 1 : yardMine >= 2 || (yardMine >= 1 && (onField || pieceInHand)) || (yardTheirs >= 1 && pieceInHand) || (onField && pieceInHand);
     return { yardMine, yardTheirs, onField, pieceInHand, reanimInHand, startOnField, setupInHand, setUp, byCast, byReanim, assembled: byCast || byReanim };
   }
   /** The engine offers this card's cast now — its cost, colours and timing all met. Outside a decision: by mana count. */
@@ -103,6 +108,12 @@ export class PlanPlay {
     if (spend === 0) return pays(all);
     if (spend > 1) { const rest = [...all].sort((a, b) => a.length - b.length).slice(spend); return all.length >= spend && pays(rest); }
     return all.some((_, i) => pays(all.filter((__, j) => j !== i)));
+  }
+  /** Our permanent mana sources (lands and other tap-for-mana permanents, tapped or not), and one more for a land in hand. */
+  private landsNextTurn(view: GameView): number {
+    const me = view.you;
+    const sources = view.battlefield.filter((o) => o.controller === me && (this.h.def(o.cardId)?.abilities ?? []).some((a) => a.kind === "activated" && a.cost.tap && !a.cost.sacrifice && a.effects.some((e) => e.type === "addMana"))).length;
+    return sources + (view.hand.some((c) => this.h.def(c.cardId)?.types.includes("Land")) ? 1 : 0);
   }
   /** Mana we could make now: each untapped mana producer as one, and what floats. */
   private manaNow(view: GameView): number {
@@ -165,7 +176,8 @@ export class PlanPlay {
   planWants(view: GameView): { cardId: string; mv: number }[] {
     const p = this.h.profile.plan!, f = this.planFacts(view), out: { cardId: string; mv: number }[] = [];
     const hand = (id: string) => view.hand.some((c) => c.cardId === id);
-    if (!f.setUp || f.yardMine < 2) for (const x of p.setup) if (hand(x.card) && f.yardMine < 3 && !this.setupGated(view)) out.push({ cardId: x.card, mv: this.h.mv(x.card) });
+    const [need, enough] = p.goal === "once" ? [1, 1] : [2, 3];
+    if (!f.setUp || f.yardMine < need) for (const x of p.setup) if (hand(x.card) && f.yardMine < enough && !this.setupGated(view)) out.push({ cardId: x.card, mv: this.h.mv(x.card) });
     if (f.byCast) out.push({ cardId: p.piece, mv: this.h.mv(p.piece) });
     if (f.byReanim) for (const x of p.start) if (x.card !== p.piece && hand(x.card)) out.push({ cardId: x.card, mv: this.h.mv(x.card) });
     if (!f.assembled) for (const id of p.dig) if (hand(id) && !(this.h.def(id)?.supertypes?.includes("Legendary") && view.battlefield.some((o) => o.controller === view.you && o.cardId === id))) out.push({ cardId: id, mv: this.h.mv(id) });
@@ -195,10 +207,10 @@ export class PlanPlay {
     const startRole = p.start.find((x) => x.card === src && x.card !== p.piece);
     if (startRole && tId) {
       const g = [...view.graveyardObjects[0], ...view.graveyardObjects[1]].find((o) => o.objectId === tId.id);
-      if (g && g.cardId !== startRole.on) { const live = f.yardMine >= 1 || f.setupInHand; if (live || view.life[me] > 10) return true; }
+      if (g && (p.goal === "once" ? !planPieces(p).includes(g.cardId) : g.cardId !== startRole.on)) { const live = f.yardMine >= 1 || f.setupInHand; if (live || view.life[me] > 10) return true; }
     }
     // 100: enough is buried
-    if (action.type === "castSpell" && p.setup.some((x) => x.card === src) && f.yardMine >= 3) return true;
+    if (action.type === "castSpell" && p.setup.some((x) => x.card === src) && f.yardMine >= (p.goal === "once" ? 1 : 3)) return true;
     // 103: fuel
     const isFuelSpell = action.type === "castSpell" && p.fuel.includes(src) && (d.spellEffect ?? []).some((e) => e.type === "addMana");
     const isFuelSac = action.type === "activateAbility" && p.fuel.includes(src) && (() => { const ab = viewAbilityAt(view, this.h.defs, action.objectId, action.abilityIndex); return !!ab && ab.kind === "activated" && !!ab.cost.sacrifice && ab.effects.some((e) => e.type === "addMana"); })();
@@ -207,13 +219,15 @@ export class PlanPlay {
       if (view.activePlayer !== me || (view.step !== "MAIN1" && view.step !== "MAIN2") || view.stack.length > 0) return true;
       // spent only when it makes a wanted plan card castable that is not castable now — by colour as well as count
       const [yieldMana, spend] = isFuelSpell ? ["BBB", this.h.mv(src)] : ["***", 0];
-      if (wants.some((w) => !this.castOffered(view, w.cardId, now) && this.payableWith(view, w.cardId, yieldMana, spend))) return false;
+      // S57 (the plan's `fuelKeptForStart`): a setup our lands will pay for next turn does not take the fuel a start in hand will need
+      const keptFor = (w: { cardId: string; mv: number }) => (p.fuelKeptForStart || FUEL_KEPT) && p.setup.some((x) => x.card === w.cardId) && (f.reanimInHand || f.pieceInHand) && this.landsNextTurn(view) >= w.mv;
+      if (wants.some((w) => !keptFor(w) && !this.castOffered(view, w.cardId, now) && this.payableWith(view, w.cardId, yieldMana, spend))) return false;
       // book 107: a held setup is released by fuel that pays for the setup AND the start that follows it
       return !(this.setupHeld(view) && this.planStartReachable(view) && !this.setupHeld(view, yieldMana, spend));
     }
     // 102: plan before fair plays — a nonland card outside the plan waits while a wanted plan card is castable
     if (action.type === "castSpell" && !d.types.includes("Land")) {
-      const inPlan = src === p.piece || p.setup.some((x) => x.card === src) || p.start.some((x) => x.card === src) || p.dig.includes(src) || p.fuel.includes(src);
+      const inPlan = planPieces(p).includes(src) || p.setup.some((x) => x.card === src) || p.start.some((x) => x.card === src) || p.dig.includes(src) || p.fuel.includes(src);
       if (!inPlan && view.activePlayer === me && wants.some((w) => w.cardId !== src && this.castOffered(view, w.cardId, now))) return true;
     }
     return false;
@@ -225,7 +239,7 @@ export class PlanPlay {
     if (!p || action.type !== "castSpell") return 0;
     const src = view.hand.find((c) => c.objectId === action.objectId)?.cardId; if (!src) return 0;
     const f = this.planFacts(view);
-    if (p.setup.some((x) => x.card === src)) return f.yardMine < 2 ? 8 : 0;
+    if (p.setup.some((x) => x.card === src)) return f.yardMine < (p.goal === "once" ? 1 : 2) ? 8 : 0;
     if (p.dig.includes(src) && !f.assembled) return 4; // (the piece cast into its loop: loopCastBonus, for any deck)
     return 0;
   }
@@ -291,13 +305,13 @@ export class PlanPlay {
     if (kind.whole) {
       if (!targets.some((t) => t.kind === "player" && t.player === opp)) return true;
       if (aimed && view.graveyardObjects[opp].some((g) => g.objectId === aimed.targetId)) return false;
-      return !(op && view.graveyards[opp].includes(op.piece));
+      return !(op && view.graveyards[opp].some((c) => planPieces(op).includes(c)));
     }
     if (!aimed) return true;
     if (!targets.some((t) => t.kind === "object" && t.id === aimed.targetId)) return true;
     // the second target: the best other card to deny — the plan's piece first, else the dearest creature card of theirs
     const others = [...view.graveyardObjects[opp]].filter((g) => g.objectId !== aimed.targetId);
-    const worth = (g: { cardId: string }) => (op && g.cardId === op.piece ? 100 : 0) + reanimationWorth(this.h.def(g.cardId));
+    const worth = (g: { cardId: string }) => (op && planPieces(op).includes(g.cardId) ? 100 : 0) + reanimationWorth(this.h.def(g.cardId));
     const best = others.sort((a, b) => worth(b) - worth(a) || a.objectId.localeCompare(b.objectId))[0];
     const second = targets.find((t) => t.kind === "object" && t.id !== aimed.targetId) as { id: string } | undefined;
     if (best && worth(best) > 0) return second?.id !== best.objectId;

@@ -14,6 +14,7 @@
  *                sideboarding is read from the games where it was the one (each game records `boarded`).
  *   --shapes none|a,b   S56: with --sideboarded, only those of sideboard-ai's rules 5–8 run (sweepers, creatureCounters,
  *                steal, blockers); `none` is the S55 sideboarding and the S55 fifteen. Default: all four.
+ *   --out-rule none|dead,four,rule9   S57 (Part 4): which of the out-rule's parts run (sideboard-ai SideboardOutRule).
  *   --off rule[,rule] [--off-for k1,k2]   S56: the OLD pilot — those S56 rules ("counter") switched off, for every
  *                seat or only for those lists. Run beside a plain run on the same seed: each game has its twin.
  *   --journeyman k1,k2   S54 (ADR-158's test): those lists are piloted by journeyman (every other seat master) — run
@@ -74,6 +75,7 @@ async function run(): Promise<void> {
   const sideboarded = one || process.argv.includes("--sideboarded") || process.argv.includes("--sideboarded-only");
   const rating = sideboarded ? (JSON.parse(readFileSync(join(ROOT, "data/convocation/card-rating.json"), "utf8")) as CardRatingTable) : null;
   const fifteen = new Map<string, Decklist>();
+  const outArg = process.argv.includes("--out-rule") ? arg("out-rule", "none") : null; // S57: none | dead,four,rule9 (any of)
   const shapesArg = arg("shapes", "all"), { shapes: _all, ...s55 } = AI_SIDEBOARD_CONSTRUCTED;
   const terms: AiSideboardTerms = shapesArg === "all" ? AI_SIDEBOARD_CONSTRUCTED : shapesArg === "none" ? s55 : { ...s55, shapes: { perShape: SIDEBOARD_SHAPES.perShape, ...Object.fromEntries(shapesArg.split(",").map((k) => { if (!(k in SIDEBOARD_SHAPES) || k === "perShape") throw new Error(`open:rr --shapes: no shape ${k}`); return [k, SIDEBOARD_SHAPES[k as keyof typeof SIDEBOARD_SHAPES]]; })) } };
   // `--sideboarded-only k1,k2`: only those lists sideboard (one side's swaps against the other's registered sixty)
@@ -82,7 +84,7 @@ async function run(): Promise<void> {
     if (!rating || (boardedOnly.size > 0 && !boardedOnly.has(me.key))) return me.decklist;
     // (S56: a list's own registered fifteen where it has one — the Pall's, the Kiln's — as the event plays it)
     if (!fifteen.has(me.key)) fifteen.set(me.key, me.sideboard ? [...me.sideboard] : buildSideboard(me.decklist, OPEN_FORMAT, rating, pool, answersRelics, answersCreatures, !!terms.shapes));
-    return aiSideboard(me.decklist, fifteen.get(me.key)!, them.decklist, pool, rating, process.argv.includes("--counters-stay") ? { ...terms, countersStay: true } : process.argv.includes("--counters-leave") ? { ...terms, countersStay: false } : terms).deck;
+    return aiSideboard(me.decklist, fifteen.get(me.key)!, them.decklist, pool, rating, outArg !== null ? (() => { const { outRule: _o, ...rest0 } = terms; const rest = process.argv.includes("--counters-stay") ? { ...rest0, countersStay: true } : rest0; return outArg === "none" ? rest : { ...rest, outRule: { deadFirst: outArg.includes("dead"), keepFourOfs: outArg.includes("four"), deadOut: outArg.includes("rule9") ? 3 : 0 } }; })() : terms).deck;
   };
   const swapArg = arg("swap", "");
   const DECKS: typeof OPEN_DECKS = swapArg ? (() => {

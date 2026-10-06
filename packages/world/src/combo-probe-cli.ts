@@ -18,7 +18,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadCardPool } from "@shandalar/cards/loader";
 import { runMatch, type Agent, type MatchSpec } from "@shandalar/engine";
-import { HeuristicAgent, difficultyProfile, matchPlan, PLANS } from "@shandalar/agents";
+import { HeuristicAgent, difficultyProfile, matchPlan, planPieces, PLANS } from "@shandalar/agents";
 import { OPEN_DECKS, OPEN_FIELD } from "@shandalar/sim/open-decks";
 import { OPEN_FORMAT } from "./formats.js";
 import { buildSideboard } from "./constructed-builder.js";
@@ -38,6 +38,7 @@ async function play(): Promise<void> {
   const me = swap ? (() => { const [from, n, to] = swap.split(":") as [string, string, string]; if (!pool.has(to)) throw new Error(`combo-probe: no card ${to}`);
     return { ...listed, decklist: listed.decklist.flatMap((e) => (e.cardId === from ? [{ cardId: from, count: e.count - Number(n) }, { cardId: to, count: Number(n) }].filter((x) => x.count > 0) : [e])) }; })() : listed;
   const plan = matchPlan(me.decklist, PLANS); if (!plan) throw new Error(`combo-probe: ${key} has no plan`);
+  const PS = planPieces(plan), once = plan.goal === "once";
   const G = Number(arg("games", "60")), seed0 = Number(arg("seed", "9000")), [si, sn] = arg("shard", "0/1").split("/").map(Number) as [number, number];
   const boarded = process.argv.includes("--boarded"), noPlan = process.argv.includes("--no-plan");
   const off = arg("off", "").split(",").filter(Boolean); // S56: the list piloted without those S56 rules ("counter")
@@ -103,18 +104,19 @@ async function play(): Promise<void> {
       const inner = new HeuristicAgent(seed * 2 + 1 + seat, pool, { ...difficultyProfile("master", noPlan ? "midrange" : me.archetype, [...theirs], noPlan ? undefined : [...mine]), ...(off.length ? { off } : {}) });
       const pilot: Agent = { chooseAction: async (v, r) => {
         if (v.activePlayer === seat && v.turn !== lastTurn) { lastTurn = v.turn; row.myTurns += 1; turnStartOpp = v.life[1 - seat]!; }
-        const hand = v.hand.map((h) => h.cardId), yard = v.graveyards[seat]!, pieces = yard.filter((c) => c === plan.piece).length;
+        const hand = v.hand.map((h) => h.cardId), yard = v.graveyards[seat]!, pieces = yard.filter((c) => PS.includes(c)).length;
         if (watch && v.stack.length === 0) { const added = [...yard]; for (const c of watch) { const i = added.indexOf(c); if (i >= 0) added.splice(i, 1); } const cr = added.filter((c) => !plan.setup.some((s) => s.card === c)); if (cr.length) { row.buried.push(cr.sort()); watch = null; } }
-        const onField = v.battlefield.some((b) => b.controller === seat && b.cardId === plan.piece);
+        const onField = v.battlefield.some((b) => b.controller === seat && PS.includes(b.cardId));
         if (v.activePlayer === seat && v.turn !== digTurnSeen && v.battlefield.some((b) => b.controller === seat && plan.dig.includes(b.cardId) && pool.get(b.cardId)!.types.includes("Creature"))) { digTurnSeen = v.turn; row.digTurns = (row.digTurns ?? 0) + 1; row.digOn ??= Math.max(1, row.myTurns); }
         const ready = (hand.includes(plan.piece) && (pieces >= 1 || onField || v.graveyards[1 - seat]!.includes(plan.piece))) || (plan.start.some((s) => s.card !== plan.piece && (hand.includes(s.card) || v.battlefield.some((b) => b.controller === seat && b.cardId === s.card))) && (pieces >= 2 || (pieces >= 1 && onField))) || (plan.setup.some((s) => hand.includes(s.card)) && plan.start.some((s) => hand.includes(s.card)));
         if (ready && !row.readyTurn) row.readyTurn = Math.max(1, row.myTurns);
         const startHeld = plan.start.some((s) => hand.includes(s.card) || (s.card !== plan.piece && v.battlefield.some((b) => b.controller === seat && b.cardId === s.card)));
-        if (!row.armedTurn && v.activePlayer === seat && startHeld && (pieces >= 2 || (pieces >= 1 && onField))) row.armedTurn = Math.max(1, row.myTurns);
-        if (!row.loopTurn && turnStartOpp - v.life[1 - seat]! >= 12) row.loopTurn = Math.max(1, row.myTurns);
+        if (!row.armedTurn && v.activePlayer === seat && startHeld && (once ? pieces >= 1 : pieces >= 2 || (pieces >= 1 && onField))) row.armedTurn = Math.max(1, row.myTurns);
+        // (S57: a `once` plan has "fired" when one of its pieces stands on our battlefield)
+        if (!row.loopTurn && (once ? onField : turnStartOpp - v.life[1 - seat]! >= 12)) row.loopTurn = Math.max(1, row.myTurns);
         const a = await inner.chooseAction(v, r);
         // S56: an armed turn of ours, read at its first main-phase decision with the stack empty
-        if (row.armedTurn && !row.loopTurn && r.purpose === "priority" && v.activePlayer === seat && v.step === "MAIN1" && v.stack.length === 0 && v.turn !== armedSeen && (pieces >= 2 || (pieces >= 1 && onField)) && startHeld) {
+        if (row.armedTurn && !row.loopTurn && r.purpose === "priority" && v.activePlayer === seat && v.step === "MAIN1" && v.stack.length === 0 && v.turn !== armedSeen && (once ? pieces >= 1 : pieces >= 2 || (pieces >= 1 && onField)) && startHeld) {
           const startOffered = r.actions.some((x) => x.type === "castSpell" && plan.start.some((s) => s.card === v.hand.find((h) => h.objectId === x.objectId)?.cardId));
           const castsStart = a.type === "castSpell" && plan.start.some((s) => s.card === v.hand.find((h) => h.objectId === a.objectId)?.cardId);
           if (castsStart || a.type === "pass" || !startOffered) { armedSeen = v.turn; if (castsStart) row.armedCast = (row.armedCast ?? 0) + 1; else if (startOffered) row.armedHeld = (row.armedHeld ?? 0) + 1; else if (a.type === "pass") row.armedNoMana = (row.armedNoMana ?? 0) + 1; else armedSeen = -1; }
