@@ -9,7 +9,7 @@ Session 56 was the pilot before the lists: three AI changes proposed, each measu
 - **The archive exists and the Loop is in it** (ADR-164). The Open's field is sixteen lists.
 - **The strength table is now one measurement**: sixteen lists, one pilot, 12,000 games.
 
-`pnpm typecheck`, `pnpm test` (969) and the ladder gate pass. **Nothing from this session is pushed.** After the session proper Chris added a card, Protocol: its own section below.
+`pnpm typecheck`, `pnpm test` (969) and the ladder gate pass. `pnpm build:web` passes. **Everything here is pushed.** After the session proper Chris added a card, Protocol: its own section below.
 
 ## For the planner — the decisions waiting
 1. **Three places where I built something other than the brief's design** (Deviations 1–3). Each has its numbers; each needs a ruling.
@@ -173,7 +173,7 @@ What the grid says:
 - **Pool registry:** `protocol` (Session 56 section; 246 → 247).
 
 ## Test status
-`pnpm test`: 107 files passed, 1 skipped; **969 tests passed, 2 skipped** (the standing two). `pnpm typecheck` passes. `pnpm build:web` not run (nothing pushed).
+`pnpm test`: 107 files passed, 1 skipped; **969 tests passed, 2 skipped** (the standing two). `pnpm typecheck` passes. `pnpm build:web` passes.
 
 New this session:
 - Book 108 in `agents/book-of-shame.test.ts` (the payment solver, the hand-tapped cast through `chooseAction`, the kept hold, the control multiple, the old pilot).
