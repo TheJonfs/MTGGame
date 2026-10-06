@@ -1555,4 +1555,39 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.againstPlanBonus(v(9), hymn)).toBe(0);
     expect(agent().againstPlanBonus(v(3), hymn)).toBe(0);
   });
+
+  it("book of shame 107 (post-S55, Chris's Coin study — 42 of the Coin's 48 loop wins began from the Pall's own graveyard): a plan's OPTION, `holdSetupAgainstPiece` — against a list that holds the piece too and has the mana for it, the setup is held until the start can follow the same turn; a Ritual that pays for both releases it; against any other list nothing changes. Measured and left off for the Pall (it lost the race for the first Usher): the Pall's own plan is never held", () => {
+    const COIN = [{ cardId: "the_usher", count: 4 }, { cardId: "blood_artist", count: 32 }, { cardId: "swamp", count: 24 }];
+    const withHold = (opp: typeof COIN) => { const p = difficultyProfile("master", "combo", opp, PALL); return new HeuristicAgent(1, pool, { ...p, plan: { ...p.plan!, holdSetupAgainstPiece: true } }); };
+    const vsUsher = withHold(COIN), vsOther = withHold(MUSTER);
+    // (the opponent stands on five lands: an Usher of theirs could come next turn)
+    const board = (lands: number, hand: string[], theirLands = 5) => mkView({ hand: hand.map((c, i) => ({ objectId: `h${i}`, cardId: c })), battlefield: [...L(lands), ...Array.from({ length: theirLands }, (_, i) => ({ id: `o${i}`, cardId: "swamp", controller: 1 as const }))] });
+    const ba = castAt("h0");
+    // three lands, Buried Alive and Zombify in hand: against the Muster it is cast; against the Usher deck it waits
+    expect(vsOther.buriedGated(board(3, ["buried_alive", "zombify"]), ba)).toBe(false);
+    expect(vsUsher.buriedGated(board(3, ["buried_alive", "zombify"]), ba)).toBe(true);
+    expect(vsUsher.setupHeld(board(3, ["buried_alive", "zombify"]))).toBe(true);
+    expect(vsUsher.scorePriorityAction(board(3, ["buried_alive", "zombify"]), ba)).toBe(-Infinity);
+    // seven lands: Buried Alive and then Zombify this turn — go
+    expect(vsUsher.buriedGated(board(7, ["buried_alive", "zombify"]), ba)).toBe(false);
+    expect(vsUsher.scorePriorityAction(board(7, ["buried_alive", "zombify"]), ba)).toBeGreaterThan(vsUsher.scorePriorityAction(board(7, ["buried_alive", "zombify"]), { type: "pass" }));
+    // with no start in hand it waits however much mana there is (a setup with nothing to follow only arms them)
+    expect(vsUsher.buriedGated(board(8, ["buried_alive", "vampire_nighthawk"]), ba)).toBe(true);
+    // the Usher itself as the start needs eight, and its colours: eight Badlands make no white
+    expect(vsUsher.buriedGated(board(8, ["buried_alive", "the_usher"]), ba)).toBe(true);
+    const eight = board(6, ["buried_alive", "the_usher"]);
+    expect(vsUsher.buriedGated({ ...eight, battlefield: [...eight.battlefield, ...mkView({ battlefield: [{ id: "w1", cardId: "scrubland", controller: 0 }, { id: "w2", cardId: "scrubland", controller: 0 }] }).battlefield] }, ba)).toBe(false);
+    // while they are short of the mana for an Usher of their own, the race is on: set up
+    expect(vsUsher.buriedGated(board(3, ["buried_alive", "zombify"], 2), ba)).toBe(false);
+    // five lands and a Ritual: the Ritual makes seven — it is fuel for the setup AND the start, so it is cast, and then the setup is free
+    const five = board(5, ["buried_alive", "zombify", "dark_ritual"]);
+    expect(vsUsher.buriedGated(five, ba)).toBe(true);
+    expect(vsUsher.scorePriorityAction(five, castAt("h2"))).toBeGreaterThan(-Infinity);
+    expect(vsUsher.buriedGated({ ...five, hand: five.hand.filter((c) => c.cardId !== "dark_ritual"), manaPool: { ...five.manaPool, B: 3 }, battlefield: five.battlefield.map((o, i) => (i === 0 ? { ...o, tapped: true } : o)) }, ba)).toBe(false);
+    // three lands and a Ritual make five: not enough for both — the Ritual stays in hand
+    expect(vsUsher.scorePriorityAction(board(3, ["buried_alive", "zombify", "dark_ritual"]), castAt("h2"))).toBe(-Infinity);
+    // the Pall's own plan does not carry the option (measured: it loses the race), so the Pall is never held
+    const plain = new HeuristicAgent(1, pool, difficultyProfile("master", "combo", COIN, PALL));
+    expect(plain.buriedGated(board(3, ["buried_alive", "zombify"]), ba)).toBe(false);
+  });
 });

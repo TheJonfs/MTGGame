@@ -122,12 +122,46 @@ export class PlanPlay {
     const miss = ((lib - left) / lib) * ((lib - 1 - left) / (lib - 1));
     return 1 - Math.max(0, miss) >= 0.25;
   }
+  /** Book 107 (the plan's `holdSetupAgainstPiece`): the opponent's list holds the piece too, so a setup that fills
+   * our graveyard fills theirs to use — it is HELD until a start in hand can follow in the same turn (mana for both
+   * now; the start's colours checked). `extra` and `extraCost` are fuel about to be spent (its colour symbols and its
+   * own cost). Exposed for the book. */
+  setupHeld(view: GameView, extra = "", extraCost = 0): boolean {
+    const p = this.h.profile.plan!;
+    if (!p.holdSetupAgainstPiece) return false;
+    if (!this.h.profile.opponentDecklist.some((e) => e.cardId === p.piece && e.count > 0)) return false;
+    // ... and only once they could cast it: their mana sources, and one more for the land they will play, reach its
+    // cost (measured: held from turn one, the Pall lost nine points of matches against the Usher decks — it gave up
+    // the race for the first Usher)
+    const opp = (1 - view.you) as 0 | 1;
+    const theirMana = view.battlefield.filter((o) => o.controller === opp && (this.h.def(o.cardId)?.abilities ?? []).some((x) => x.kind === "activated" && x.cost.tap && x.effects.some((e) => e.type === "addMana"))).length;
+    if (theirMana + 1 < this.h.mv(p.piece)) return false;
+    const hand = (id: string) => view.hand.some((c) => c.cardId === id);
+    const setups = p.setup.filter((x) => hand(x.card));
+    if (!setups.length) return false;
+    const setupCost = Math.min(...setups.map((x) => this.h.mv(x.card)));
+    // the starts that would follow at once: a reanimation in hand, or the piece itself (cast into the graveyard it just filled)
+    const follow = p.start.map((x) => x.card).filter((id) => hand(id) && !this.h.def(id)?.types.includes("Land"));
+    return !follow.some((id) => this.payableWith(view, id, extra, setupCost + extraCost));
+  }
+  /** Book 107: this fuel pays for a HELD setup and the start after it — the one burst the general "enables a card
+   * this step" test cannot see (neither card alone needs it). Only for a plan that carries the option. */
+  fuelReleasesSetup(view: GameView, action: Action): boolean {
+    const p = this.h.profile.plan;
+    if (!p?.holdSetupAgainstPiece || (action.type !== "castSpell" && action.type !== "activateAbility")) return false;
+    const src = action.type === "castSpell" ? view.hand.find((c) => c.objectId === action.objectId)?.cardId : view.battlefield.find((o) => o.id === action.objectId)?.cardId;
+    if (!src || !p.fuel.includes(src)) return false;
+    const [yieldMana, spend] = action.type === "castSpell" ? ["BBB", this.h.mv(src)] as const : ["***", 0] as const;
+    return this.setupHeld(view) && this.planStartReachable(view) && !this.setupHeld(view, yieldMana, spend);
+  }
+  /** The setup is not to be cast now: no start within reach (book 100), or held against a list that would use it (book 107). */
+  setupGated(view: GameView): boolean { return !this.planStartReachable(view) || this.setupHeld(view); }
   /** What the plan wants cast next, by cost: the setup while it is not set up, the start once a start would loop, the
    * dig cards until then. */
   planWants(view: GameView): { cardId: string; mv: number }[] {
     const p = this.h.profile.plan!, f = this.planFacts(view), out: { cardId: string; mv: number }[] = [];
     const hand = (id: string) => view.hand.some((c) => c.cardId === id);
-    if (!f.setUp || f.yardMine < 2) for (const x of p.setup) if (hand(x.card) && f.yardMine < 3 && this.planStartReachable(view)) out.push({ cardId: x.card, mv: this.h.mv(x.card) });
+    if (!f.setUp || f.yardMine < 2) for (const x of p.setup) if (hand(x.card) && f.yardMine < 3 && !this.setupGated(view)) out.push({ cardId: x.card, mv: this.h.mv(x.card) });
     if (f.byCast) out.push({ cardId: p.piece, mv: this.h.mv(p.piece) });
     if (f.byReanim) for (const x of p.start) if (x.card !== p.piece && hand(x.card)) out.push({ cardId: x.card, mv: this.h.mv(x.card) });
     if (!f.assembled) for (const id of p.dig) if (hand(id) && !(this.h.def(id)?.supertypes?.includes("Legendary") && view.battlefield.some((o) => o.controller === view.you && o.cardId === id))) out.push({ cardId: id, mv: this.h.mv(id) });
@@ -169,7 +203,9 @@ export class PlanPlay {
       if (view.activePlayer !== me || (view.step !== "MAIN1" && view.step !== "MAIN2") || view.stack.length > 0) return true;
       // spent only when it makes a wanted plan card castable that is not castable now — by colour as well as count
       const [yieldMana, spend] = isFuelSpell ? ["BBB", this.h.mv(src)] : ["***", 0];
-      return !wants.some((w) => !this.castOffered(view, w.cardId, now) && this.payableWith(view, w.cardId, yieldMana, spend));
+      if (wants.some((w) => !this.castOffered(view, w.cardId, now) && this.payableWith(view, w.cardId, yieldMana, spend))) return false;
+      // book 107: a held setup is released by fuel that pays for the setup AND the start that follows it
+      return !(this.setupHeld(view) && this.planStartReachable(view) && !this.setupHeld(view, yieldMana, spend));
     }
     // 102: plan before fair plays — a nonland card outside the plan waits while a wanted plan card is castable
     if (action.type === "castSpell" && !d.types.includes("Land")) {

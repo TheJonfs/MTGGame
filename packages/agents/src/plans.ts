@@ -18,6 +18,14 @@ export interface ComboPlan {
   dig: string[];
   /** Acceleration that is spent only on the plan (Dark Ritual, the Lotus, the Moxen). */
   fuel: string[];
+  /** Post-S55 (Chris's Coin study): when the OPPONENT's list also holds the piece, the setup arms both players (the
+   * Usher returns a creature card from either graveyard — 42 of the Coin's 48 loop wins began from the Pall's own
+   * graveyard, and whoever landed the first Usher won nine games in ten). With this set, the setup is held against
+   * such a list — once they have the mana for the piece — until the start can be cast the same turn.
+   * MEASURED AND LEFT OFF FOR THE PALL (2026-10-06, 720 matches against the Coin, the Hearth and the Loop): held from
+   * turn one it cost nine points of matches (50% → 41%: it gave up the race for the first Usher); held only once the
+   * opponent could cast the piece, 50% → 47% (within noise). The option stays for a plan — or a pilot — it suits. */
+  holdSetupAgainstPiece?: boolean;
   /** What an opponent should hold. */
   answers: { /** spells worth a counter ahead of any other */ counter: string[]; /** exile the returning piece's target / the graveyard */ graveyardExile: boolean; /** discard is worth most before this turn of the deck's own */ discardBeforeTurn: number };
 }

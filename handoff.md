@@ -115,6 +115,22 @@ The Open now has a combo deck, the AI can pilot it and play against it, and the 
 
 **Chris walked the repeat's buttons** during his Pall run: they behaved, with an occasional refusal that the next offer or a different trigger order resolved. Concern 7 is closed.
 
+## After the handoff — the combo rules in their own module, and a rule that was tried and left off (Chris, 2026-10-06)
+
+- **`agents/plan-play.ts`** now holds every rule of the combo archetype (Chris: keep the combo logic separable from the broader AI). The agent calls in at named points and keeps thin methods of the same names. No behaviour changed: the books pass and 600 probe games are byte-identical.
+- **What keeps it from becoming bespoke** (the module's header says so): every rule runs only for a deck with a plan or against one; the conditions come from the plan's data and from card data, never a card's name in code; a rule one deck needs and another does not is a *field on the plan*.
+- **Book 107, a plan option: `holdSetupAgainstPiece`** — against a list that also holds the piece (and has the mana for it), hold the setup until the start can follow the same turn.
+- **Measured against the Coin, the Hearth and the Loop (720 matches, the same seeds) and LEFT OFF for the Pall:**
+
+| | match win across the three |
+|---|---|
+| no hold (as shipped) | 49.7% |
+| hold from turn one | 40.7% |
+| hold only once the opponent can cast an Usher | 47.2% |
+
+- **Why it fails:** the Coin study said whoever lands the first Usher wins. Holding the setup gives up that race. The AI is better off arming both players and trying to be first.
+- The option, its test and its fuel rule stay in the module for a plan it suits. With it off, the Pall plays exactly as it did before (600 games byte-identical).
+
 ## Deviations from the brief
 1. **`loopDrawCap` is an engine rule field, not a world knob** (`GameRules.loopDrawCap`, default 100). A match's rules are built in a dozen places that do not read the knob table.
 2. **The loop draw does not apply CR 104.4b's exception for an optional action.** A player who repeats a position a hundred times in a turn by choice also draws. Recorded in R-103.

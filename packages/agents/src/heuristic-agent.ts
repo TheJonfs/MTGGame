@@ -206,6 +206,8 @@ export class HeuristicAgent implements Agent {
     const burst = this.manaBurst(view, action);
     // S55 (book 103): a combo list's fuel answers to its plan first — a Ritual that would enable only a fair card stays in hand
     if (burst !== null && this.profile.plan && this.planGated(view, action)) return -Infinity;
+    // (book 107: a burst that pays for a held setup and its start — only for a plan that carries the hold option)
+    if (burst !== null && this.plans.fuelReleasesSetup(view, action)) return evaluate(view, this.profile, this.defs) + 0.6;
     if (burst !== null) return burst.enables ? evaluate(view, this.profile, this.defs) + 0.6 : -Infinity;
     if (action.type === "activateAbility" && action.color !== undefined) return -Infinity;
     // S17 (book of shame 13): cycling a spell is a cantrip of last resort — only when the card has
@@ -1425,7 +1427,7 @@ export class HeuristicAgent implements Agent {
     const d = card ? this.def(card.cardId) : undefined;
     if (!d || !(d.spellEffect ?? []).some((e) => e.type === "searchLibrary" && e.to === "graveyard")) return false;
     // S55 (book 100): a combo list's setup is cast when its start is in hand, on the battlefield, or within reach
-    if (this.profile.plan?.setup.some((x) => x.card === d.id)) return !this.planStartReachable(view);
+    if (this.profile.plan?.setup.some((x) => x.card === d.id)) return this.plans.setupGated(view); // book 100; book 107 (held against a list that would use it)
     const reanimates = (x: CardDef | undefined): boolean =>
       !!x && ([...(x.spellEffect ?? []), ...(x.abilities ?? []).flatMap((a) => ("effects" in a ? a.effects : []))] as Effect[]).some((e) => e.type === "returnFromGraveyard" && e.to === "battlefield" && e.scope !== "self");
     // S46 (Entomb, the brief's "or on the board"): a reanimator of ours on the battlefield counts (the Reeve's activation).
@@ -1440,6 +1442,7 @@ export class HeuristicAgent implements Agent {
   private readonly plans: PlanPlay;
   planFacts(view: GameView) { return this.plans.planFacts(view); }
   planStartReachable(view: GameView): boolean { return this.plans.planStartReachable(view); }
+  setupHeld(view: GameView): boolean { return this.plans.setupHeld(view); }
   planWants(view: GameView) { return this.plans.planWants(view); }
   planGated(view: GameView, action: Action): boolean { return this.plans.planGated(view, action); }
   planBonus(view: GameView, action: Action): number { return this.plans.planBonus(view, action); }
