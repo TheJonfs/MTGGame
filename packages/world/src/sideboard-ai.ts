@@ -5,7 +5,7 @@
  *     artifact/enchantment removal comes in;
  *  2. against fifteen or more creatures: creature removal comes in;
  *  3. against fifteen or more creatures: counterspells go out for the best playables left.
- *  4. (S55, ADR-162) against a list that works from the graveyard — four or more copies of cards that return a
+ *  4. (S55, ADR-162) against a list that works from the graveyard — eight or more copies of cards that return a
  *     creature card to the battlefield or search one into a graveyard (Zombify, Unearth, Buried Alive, Entomb, the
  *     Reeve, Cairnbrand, the Usher) — graveyard exile comes in (Tormod's Crypt, Faerie Macabre). These cost no mana
  *     to use, so the deck's colours do not matter; they come in whatever they rate (they are sideboard cards by
@@ -25,7 +25,10 @@ export const AI_SIDEBOARD = { relicsSeen: 3, creaturesSeen: 15, perRule: 2 } as 
 /** Post-S54 (Chris: Constructed sideboards): the same three rules over sixty cards and a registered fifteen — a deck
  * that wins with creatures holds sixteen or more, one that leans on artifacts and enchantments four or more, and
  * three cards a rule come in (the fifteen is built to hold them: constructed-builder.buildSideboard). */
-export const AI_SIDEBOARD_CONSTRUCTED = { relicsSeen: 4, creaturesSeen: 16, perRule: 3, betterOnly: true, graveyardSeen: 4, graveyardIn: 4 } as const;
+export const AI_SIDEBOARD_CONSTRUCTED = { relicsSeen: 4, creaturesSeen: 16, perRule: 3, betterOnly: true, graveyardSeen: 8, graveyardIn: 4 } as const;
+// (post-S55, the Kiln's tuning: graveyardSeen was 4, which brought the exile in against the Coin, the Loop and the
+// Hearth — four or five Ushers each, but fair decks that do not need their graveyards; there it cost the Kiln two to
+// ten points. Eight separates the decks built on the graveyard — the Pall 13, the Larder 16 — from those.)
 /** `betterOnly`: an answer comes in only for a card it out-rates. A Limited deck's last cards are filler, and any
  * answer beats them; a tuned sixty's lowest-rated card is often what the deck runs on (measured: without it the
  * Levy, the Sweep, the Wurmspeaker and the Warband each lost about three points by sideboarding). */
