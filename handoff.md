@@ -1,16 +1,24 @@
-# Handoff — after Session 55 (2026-10-05)
+# Handoff — after Session 55 and the work that followed it (2026-10-06)
 
 ## State of the world
-The Open now has a combo deck, the AI can pilot it and play against it, and the pool has two answers to it.
+The Open now has a combo deck, the AI can pilot it and play against it, and the pool has two answers to it. Since the session proper, Chris and I used the simulators to study that deck's matchups, tune a new list, and test (and reject) a rule.
 
 - **The engine draws a game stuck in a loop** (R-103): a hundred stack items resolved in one turn without the position changing.
-- **`combo` is a fourth AI archetype** (ADR-161). A list declares it and carries a plan as data; the pilot reads its own plan and every opponent reads it too.
-- **The Pall** (Chris's 5–0 list; the planner's placeholder name) is the fourth contributed list, with its plan and its fifteen.
-- **Tormod's Crypt and Faerie Macabre** are in the pool (244 → 246). The field's sideboards hold them and a fourth sideboarding rule brings them in.
+- **`combo` is a fourth AI archetype** (ADR-161). A list carries a plan as data; its pilot and its opponents both read it. The rules live in their own module, `agents/plan-play.ts`.
+- **Tormod's Crypt and Faerie Macabre** are in the pool (244 → 246), with a fourth sideboarding rule for the field.
 - **A Constructed seat's list is drawn by strength** (ADR-158 amended).
-- From after S54, also unpushed: the take-back, the repeat, Constructed sideboards, the Hearth.
+- **The Open has seventeen lists.** Five are contributed from Chris's play: the Sweep, the Depths, the Hearth, the Pall (the combo list) and the Kiln (Izzet, tuned in simulation). All five names are working names until Chris names them.
+- From after S54: the take-back, the repeat, Constructed sideboards.
 
-`pnpm typecheck`, `pnpm test` (949) and `pnpm build:web` pass. **Nothing since `85a413e` is pushed** — the post-S54 work and all of S55 are local commits.
+`pnpm typecheck`, `pnpm test` (951) and `pnpm build:web` pass. **Everything here is pushed.**
+
+## For the planner — the decisions waiting
+1. **Archive the Loop?** It is redundant with the Coin (the Mardu grid, below). Chris agrees unless the planner objects. It needs an archive mechanism: a flag that keeps a list in the data and out of the field. The same mechanism would serve the bottom three if their revisions do not rescue them.
+2. **The three reviews** (`docs/proposals/retire-reviews-s55.md`): a plan for the Larder; an overhaul of the Locks; an overhaul of the Undertow or accepting it as the floor.
+3. **The Pall's strength.** By the brief's measure it is in the "deck to beat, with an answer" band, so no restriction is proposed. Concern 1 says why that is not settled: game one is 68–72%, and sideboard hate is a weak lever (Concern 9).
+4. **The field's sideboarding rules are narrow.** They know targeted removal, counterspells and graveyard exile. They do not know sweepers, creature-countering spells or creatures as answers, so most of a hand-built fifteen is never used by the AI (Concern 10).
+5. **Should the two hate cards be in campaign shops?** (Concern 4.)
+6. **Names:** the Sweep, the Depths, the Hearth, the Pall, the Kiln are all Chris's to name.
 
 ## Done this session
 
@@ -40,7 +48,7 @@ The Open now has a combo deck, the AI can pilot it and play against it, and the 
 ### Part 3 — graveyard hate and the fourth rule
 - **One new word:** `exileGraveyard { who }`. `exile` now reaches a card in a graveyard. Faerie Macabre needed nothing else (a hand-zone ability with cycling's discard-self cost, an up-to-two target range across both graveyards).
 - **Fixtures (5),** including Faerie Macabre exiling the Usher's target in response: the trigger does not resolve and nobody is drained.
-- **The fourth sideboarding rule:** against four or more copies of cards that return a creature card to the battlefield or search one into a graveyard, graveyard exile comes in — whatever the deck's colours, since both cards are used for no mana.
+- **The fourth sideboarding rule:** against a list that works from the graveyard (cards that return a creature card to the battlefield or search one into a graveyard), graveyard exile comes in — whatever the deck's colours, since both cards are used for no mana. Built at four such cards; **now eight** (the Kiln's tuning, below).
 - **The field's fifteen** reserves four slots for them (two of each). The deck builder never mains them.
 - **How the AI uses them:** the Crypt as soon as the opponent's graveyard holds the plan's piece, or in response to anything aimed at that graveyard; the Macabre only in response, on the card aimed at, with the next piece as its second target. It is not cast as a 2/2 while the opponent's plan stands.
 
@@ -113,7 +121,7 @@ The Open now has a combo deck, the AI can pilot it and play against it, and the 
 - **After sideboards the Coin lands the first Usher more often** (112 games against 79) and answers the Pall's (Vindicate 20, Swords 11, Sacred Helix 8), and the Pall drops to 40%.
 - The Witch's digging is not the problem: the Pall won more of the games where it paid eight or more life (66% against 57% in game one).
 
-**Chris walked the repeat's buttons** during his Pall run: they behaved, with an occasional refusal that the next offer or a different trigger order resolved. Concern 7 is closed.
+**Chris walked the repeat's buttons** during his Pall run: they behaved, with an occasional refusal that the next offer or a different trigger order resolved. That item is off the unverified list.
 
 ## After the handoff — the combo rules in their own module, and a rule that was tried and left off (Chris, 2026-10-06)
 
@@ -149,7 +157,7 @@ The Open now has a combo deck, the AI can pilot it and play against it, and the 
 **The Kiln** (Chris's 5–0 Izzet list, `docs/debug_logs/convocation-open-5–0 UR.json`; a working name) is the fifth contributed list, with its fifteen.
 - Against the sixteen in the AI's hands: **46.8%** as midrange, 45.3% as control (paired difference −1.5 ± 1.6, so no real difference; registered as midrange).
 - Best: the Tally 84, the Locks 69, the Undertow 67. Worst: the Levy 22, the Pall 27, the Loop 28.
-- Chris expects to tune its sixty and fifteen; `combo-probe`'s in-place `--swap` and `open:rr --only` are the tools.
+- These are the list as Chris played it. It was then tuned: the next section.
 
 ## After the handoff — the Kiln tuned for the AI's hands (Chris, 2026-10-06; applied)
 
@@ -178,41 +186,44 @@ The Open now has a combo deck, the AI can pilot it and play against it, and the 
 10. **The Pall's fifteen is Chris's own**, as registered. It holds no graveyard exile, so a field seat on the Pall does not board against another Usher deck.
 
 ## Concerns
-1. **Game one is where the Pall is too strong, and the brief's measure does not look there.** 68–72% in game one, 56% after sideboards. A best-of-three is one game of each kind and then a third boarded, so the match rate is nearer 60%. And the pilot is still slow: it kills on turn 6 where a person kills on turn 2 or 3. In a person's hands the game-one number will be higher. I would not read 56% as "the format has an answer" until a person has played against a field that boards.
-2. **The answer is only as good as the draw.** A seat boards in four hate cards; they are used in under half its games. Used, they hold the Pall to 50%.
-3. **The Witch cannot be measured yet.** ADR-160 names her as the first restriction, but the pilot does not use her well enough for a number. Teaching the dig rule to dig harder (Chris pays to six or eight life) comes before any measure of her.
-4. **Two tier-2 cards now appear in campaign shops.** Tormod's Crypt and Faerie Macabre carry `shopTier: 2`, as briefed, so the journey's shops stock them (the shop-tier pin moved from 60 to 62 tier-2 cards). If they are meant for the Convocation only, they need a different marking.
-5. **The plan vocabulary has one customer.** `piece` assumes a loop of one card returning itself. The Larder's plan (the Artisan reanimated once) would be the first test of whether the shape generalises; the reviews recommend it.
-6. **The take-back's availability leaks a little**, and where its line sits is a dial (carried from S54).
-7. **The repeat's buttons are still not walked in a browser** (carried from S54; the controller tests drive the same code on the real engine).
-8. **The field's sideboards are built by rule, not authored** (carried from S54).
-10. **The Usher mirror is decided by who lands an Usher first, and Buried Alive arms both players** (confirmed in the Coin study above). A list with four Ushers of its own is the natural predator of the Pall. That is a real metagame answer already in the field, and it is not sideboard hate.
-11. **Sideboard hate is not the lever.** Half a sideboard of it buys five points. The Pall's edge is game one (64–88% against these six) and a fair plan that wins without the loop. If it needs holding back, the levers are a main-deck answer in the field's lists, a restriction, or a faster field.
-9. **The rating's feedback loop** (S54 Concern 2) stands. The pilot is now book 106, so every rating run is stale again.
+1. **Game one is where the Pall is too strong, and the brief's measure does not look there.** 68–72% in game one; **61.2% of best-of-three matches** against the field (1,800 matches, after the sideboarding fixes). And the pilot is still slow: it starts the loop on its turn 6 where a person does it on turn 2 or 3. In a person's hands these numbers will be higher. I would not read the boarded figure as "the format has an answer" until a person has played it against a field that boards.
+2. **The Witch cannot be measured yet.** ADR-160 names her as the first restriction, but the pilot does not use her well enough for a number (four copies against one: +0.9 ± 1.9). Teaching the dig rule to dig harder comes before any measure of her.
+3. **The Usher mirror is decided by who lands an Usher first, and Buried Alive arms both players** (the Coin study). A list with four Ushers of its own is the Pall's natural predator: a real metagame answer already in the field. Archiving the Loop removes one of the three such lists; the Coin and the Hearth remain.
+4. **Two tier-2 cards now appear in campaign shops.** Tormod's Crypt and Faerie Macabre carry `shopTier: 2`, as briefed, so the journey's shops stock them. If they are meant for the Convocation only, they need a different marking.
+5. **The plan vocabulary has one customer.** `piece` assumes a loop of one card returning itself. The Larder's plan (the Artisan reanimated once) would be the first test of whether the shape generalises.
+6. **A rule that reads right can measure wrong.** "Don't arm the opponent" (book 107) cost the Pall nine points against the Usher decks and is left off. New AI rules for a list should be measured on the matchups they are for before they ship; the tools now make that a ten-minute job.
+7. **The take-back's availability leaks a little**, and where its line sits is a dial (carried from S54).
+8. **The field's sideboards are built by rule, not authored** (carried from S54), except the Pall's and the Kiln's.
+9. **Sideboard hate is not the lever against the Pall.** For the Mardu-family lists, half a sideboard of it buys five points of matches. It matters far more for a deck that can close the game behind it (the Kiln: 37% → 65%).
+10. **The AI sideboards by three narrow shapes plus graveyard exile.** Pyroclasm, Essence Scatter, Control Magic and creatures-as-answers never come in. The Kiln's fifteen was tested by swapping cards by hand; in the field's hands only its hate and its Blazes are used. Broadening the rules (a sweeper against a wide board; a creature counter against a creature deck) is the natural next step for Constructed.
+11. **Counterspells are under-cast by the AI** (the Locks cast about three of twelve a game; the Kiln 0.8 of four). The reviews suggest a rule that spends held mana on the turn's best spell.
+12. **The Open's strength table is a patchwork.** Sixteen lists were measured together on pilot 106; the Kiln was measured alone afterwards and then retuned; the fourth sideboarding rule and the plan-aware sideboarding changed after. A full seventeen-list round-robin would square it (and would be the next retire measure).
+13. **The rating's feedback loop** (S54 Concern 2) stands. The pilot is now book 107, so every rating run is stale again.
 
 ## Registry entries added/changed
 - **R-103** — the mandatory-loop draw. **R-104** — `exileGraveyard`; `exile` on a graveyard card.
 - **Pool registry:** `tormods_crypt`, `faerie_macabre` (Session 55 section; 244 → 246).
 
 ## Test status
-`pnpm test`: 104 files passed, 1 skipped; **949 tests passed, 2 skipped** (the standing two). `pnpm typecheck` and `pnpm build:web` pass.
+`pnpm test`: 104 files passed, 1 skipped; **951 tests passed, 2 skipped** (the standing two). `pnpm typecheck` and `pnpm build:web` pass.
 
 New this session:
 - `sim/s55-fuzz.test.ts` (2), `sim/s55-loop-draw.test.ts` (4), `sim/s55-cards.test.ts` (5).
-- Books 100–106 and the plan-matching test in `agents/book-of-shame.test.ts` (8).
+- Books 100–107 and the plan-matching test in `agents/book-of-shame.test.ts` (9); the plan-aware sideboarding test in `world/convocation-s54.test.ts`.
 - Three pins moved for the new cards: the pool count (260 → 262 defs), the shop-tier tally, and the list of cards that reach any graveyard.
-- **Ladder mirror gate PASS** (pilot 106).
-- About 45,000 sim games this session raised no engine error.
+- **Ladder mirror gate PASS** (pilot 106). The agent changes after it were the move to `plan-play.ts` and book 107's option, off: 600 probe games byte-identical before and after.
+- About 150,000 sim games across the session and the studies after it raised no engine error.
 
-**Not verified:** the two new cards in a browser; the Pall played by a person against a boarding field; the repeat's buttons.
+**Not verified:** the two new cards in a browser; the Pall played by a person against a boarding field; the Kiln's tuned list played by a person.
 
 ## Suggested next
-- **Chris plays the Pall and plays against it**, on the local build, against a field that boards. That is the number ADR-160 needs.
-- **Dig harder** (Concern 3), then measure the Witch.
+- **Chris plays the tuned Kiln, and the Pall against a field that boards.** The second is the number ADR-160 needs.
+- **A seventeen-list round-robin** once the Loop's fate is ruled (Concern 12).
+- **Broaden the field's sideboarding** (Concern 10) and **the counter rule** (Concern 11): both help every Constructed list, not one.
+- **Dig harder** (Concern 2), then measure the Witch.
 - **The Larder's plan** (the reviews): the second combo list, and the test of the plan's vocabulary.
-- **A counter rule for control lists** (the Locks' review): spend the held mana on the turn's best spell.
-- **The campaign linkage**, with fence (a).
-- **The rating's shrink target**, then a rebuild sized to the evidence it replaces.
+- **List tuning as a standing practice.** The Kiln gained eleven points from a few hours of paired swaps. The same pass over the planner's weaker lists (the Tally, the Enchantress, the Ford) would likely pay; `open:rr --swap` makes each trial about two minutes of simulation.
+- **The campaign linkage**, with fence (a). **The rating's shrink target**, then a rebuild sized to the evidence it replaces.
 
 ## How to run
 ```
@@ -222,6 +233,8 @@ pnpm open:gen                                                  # the lists and t
 pnpm combo-probe --games 40 --shard i/5 [--boarded] [--no-plan] [--swap the_jet_witch:3:hypnotic_specter] --out analysis/runs/x_$i.json
 pnpm combo-probe --report analysis/runs/x_*.json
 pnpm open:rr --games 100 --seed 46 --shard i/10 --out analysis/runs/rr16_$i.json   # then --merge
+pnpm open:rr --games 100 --seed 46 --only kiln [--vs levy,pall] [--sideboarded-only levy,pall] [--swap "kiln:tidewall:4:essence_scatter"] --out x.json   # tuning: a card swapped in place, paired by seed
+pnpm combo-probe --matches 240 --only coin --hate 4:2 --out x.json   # best-of-three matches; the opponent's Crypt:Macabre counts
 pnpm convocation-sim --events 8 --seed 55 --shard i/8 --out analysis/runs/convocation55_shard$i.json   # then --report
 pnpm ladder                                                    # the gate for any AI change (run alone)
 FUZZ_FULL=1 npx vitest run packages/sim/src/s55-fuzz.test.ts
