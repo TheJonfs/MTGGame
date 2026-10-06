@@ -5,6 +5,7 @@ import { loadCardPool } from "@shandalar/cards/loader";
 import type { GameView } from "@shandalar/engine";
 import { readFileSync } from "node:fs";
 import { HeuristicAgent } from "./heuristic-agent.js";
+import { payableBy, reserveTaps } from "./reserve.js";
 import { difficultyProfile } from "./evaluator.js";
 import { viewCreatures, type SimObject } from "./combat-sim.js";
 
@@ -1589,5 +1590,40 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     // the Pall's own plan does not carry the option (measured: it loses the race), so the Pall is never held
     const plain = new HeuristicAgent(1, pool, difficultyProfile("master", "combo", COIN, PALL));
     expect(plain.buriedGated(board(3, ["buried_alive", "zombify"]), ba)).toBe(false);
+  });
+
+  it("book of shame 108 (S56 — the counter rule; the probe: counters were lost to COLOUR and to tapping out, not to declining): with a counterspell held, a cast is paid from the lands the counter does not need; a play that leaves the counter payable keeps the hold; a control deck weighs the hold three times as much on its own turn", async () => {
+    // the pure solver: Vindicate {1}{W}{B} from two Tundras, two Scrublands and a Swamp, holding Counterspell {U}{U}
+    const src = [{ id: "t1", colors: ["W", "U"], creature: false }, { id: "t2", colors: ["W", "U"], creature: false }, { id: "s1", colors: ["W", "B"], creature: false }, { id: "s2", colors: ["W", "B"], creature: false }, { id: "sw", colors: ["B"], creature: false }];
+    const taps = reserveTaps(src, "{1}{W}{B}", 0, "{U}{U}")!;
+    expect(taps.map((t) => t.id).sort()).toEqual(["s1", "s2", "sw"]); // both Tundras stay
+    expect(reserveTaps(src, "{1}{W}{B}", 0, "{W}{U}{U}")).toBeNull(); // Absorb cannot be kept: nothing to arrange
+    expect(payableBy(src.slice(0, 2), "{U}{U}")).toBe(true);
+    expect(payableBy([src[0]!, src[4]!], "{U}{U}")).toBe(false);
+    // the agent: the same board — it answers with a tap of a land the Counterspell does not need, then the rest, then the cast
+    const a = agent("control");
+    const lands = [["t1", "tundra"], ["t2", "tundra"], ["s1", "scrubland"], ["s2", "scrubland"], ["sw", "swamp"]].map(([id, cardId]) => ({ id: id!, cardId: cardId!, controller: 0 as const }));
+    const v = mkView({ hand: [{ objectId: "h_v", cardId: "vindicate" }, { objectId: "h_c", cardId: "counterspell" }], battlefield: [...lands, { id: "o1", cardId: "serra_angel", controller: 1 }] });
+    const cast = { type: "castSpell" as const, objectId: "h_v", targets: [{ kind: "object" as const, id: "o1" }] };
+    const tapsOffered = [{ type: "tapForMana" as const, objectId: "t1", color: "W" as const }, { type: "tapForMana" as const, objectId: "t1", color: "U" as const }, { type: "tapForMana" as const, objectId: "t2", color: "W" as const }, { type: "tapForMana" as const, objectId: "t2", color: "U" as const }, { type: "tapForMana" as const, objectId: "s1", color: "W" as const }, { type: "tapForMana" as const, objectId: "s1", color: "B" as const }, { type: "tapForMana" as const, objectId: "s2", color: "W" as const }, { type: "tapForMana" as const, objectId: "s2", color: "B" as const }, { type: "tapForMana" as const, objectId: "sw" }];
+    const request = { purpose: "priority" as const, player: 0 as const, actions: [{ type: "pass" as const }, cast, ...tapsOffered] };
+    const first = a.reservePayment(v, request as never, cast)!;
+    expect(first.type).toBe("tapForMana");
+    expect(["s1", "s2", "sw"]).toContain((first as { objectId: string }).objectId);
+    const second = await a.chooseAction(v, request as never), third = await a.chooseAction(v, request as never), then = await a.chooseAction(v, request as never);
+    expect(new Set([first, second, third].map((x) => (x as { objectId: string }).objectId))).toEqual(new Set(["s1", "s2", "sw"]));
+    expect(then).toEqual(cast);
+    // the old pilot (the rule off) lets the engine pay
+    const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "control", []), off: ["counter"] });
+    expect(old.reservePayment(v, request as never, cast)).toBeNull();
+    // the hold is kept by a play that leaves the counter payable, and given up by one that does not
+    const threats = [{ cardId: "serra_angel", count: 4 }, { cardId: "hill_giant", count: 4 }];
+    const c = new HeuristicAgent(1, pool, difficultyProfile("master", "control", threats)), m = new HeuristicAgent(1, pool, difficultyProfile("master", "midrange", threats));
+    const quiet = mkView({ hand: [{ objectId: "h_v", cardId: "vindicate" }, { objectId: "h_c", cardId: "counterspell" }, { objectId: "h_a", cardId: "serra_angel" }], battlefield: [...lands, { id: "l1", cardId: "plains", controller: 1 }, { id: "l2", cardId: "plains", controller: 1 }, { id: "l3", cardId: "plains", controller: 1 }, { id: "l4", cardId: "plains", controller: 1 }] });
+    const vind = { type: "castSpell" as const, objectId: "h_v", targets: [{ kind: "object" as const, id: "l1" }] }, angel = { type: "castSpell" as const, objectId: "h_a", targets: [] };
+    expect(c.holdKeptBonus(quiet, vind)).toBeGreaterThan(0);
+    expect(c.holdKeptBonus(quiet, angel)).toBe(0); // five lands, a five-drop: the counter is given up
+    expect(c.holdKeptBonus(quiet, vind)).toBeCloseTo(3 * m.holdKeptBonus(quiet, vind), 5);
+    expect(old.holdKeptBonus(quiet, vind)).toBe(0);
   });
 });

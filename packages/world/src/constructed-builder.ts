@@ -23,11 +23,12 @@ import type { ConstructedFormat } from "./formats.js";
 import { LAW_IDS } from "./formats.js";
 import { cardRating, type CardRatingTable } from "./rating.js";
 import { WorldRng } from "./rng.js";
-import { answersGraveyards, usableByAnyDeck } from "./sideboard-ai.js";
+import { answersGraveyards, blocksFliers, isCreatureCounter, isSweeper, isWall, stealsCreatures, usableByAnyDeck } from "./sideboard-ai.js";
 
-export interface LibraryList { key: string; archetype: "aggro" | "midrange" | "control" | "combo"; decklist: Decklist; /** S55: a contributed list's registered fifteen */ sideboard?: Decklist }
-/** The Open's round-robin means — a list's measured strength. Post-S53: re-measured on pilot 97 with the two lists contributed from play (the Sweep, the Depths): 9,100 games, analysis/runs/open_rr14.json. Post-S55: the Kiln (Chris's 5–0 Izzet list, tuned 2026-10-06: +4 Control Magic +3 Flametongue Kavu) measured alone against the sixteen on pilot 107 — 57.7% over 1,600 games (46.8% as Chris played it); the others are not re-run with it. S55: all sixteen re-measured on pilot 106 with the Pall (Chris's 5–0 combo list, piloted by its plan; every seat reads it): 12,000 games, analysis/runs/rr16.json — registered sixties. (Pilot 99's fifteen: levy 64, hearth 64, sweep 60, coin 59, wurmspeaker 59, depths 57, warband 55, muster 52, loop 51, ford 51, enchantress 45, tally 37, undertow 36, locks 35, larder 27.) Post-S54: all fifteen re-measured on pilot 99 with the Hearth (Chris's 18–1 Mardu list): 10,500 games, analysis/runs/rr15_plain.json — the registered sixties, no sideboarding. (Pilot 97's fourteen were levy 65, wurmspeaker 62, coin 59, sweep 59, depths 57, muster 53, warband 53, loop 53, ford 51, enchantress 50, tally 37, undertow 35, locks 35, larder 28.) (S46's were levy 68, wurmspeaker 61, warband 60, coin 59, muster 57, loop 55, ford 53, enchantress 51, tally 39, locks 39, undertow 38, larder 31.) */
-export const OPEN_MEANS: Record<string, number> = { "open:pall": 72, "open:levy": 62, "open:hearth": 62, "open:coin": 59, "open:sweep": 56, "open:wurmspeaker": 54, "open:muster": 53, "open:loop": 53, "open:warband": 51, "open:depths": 51, "open:ford": 48, "open:kiln": 58, "open:enchantress": 46, "open:tally": 38, "open:undertow": 34, "open:locks": 32, "open:larder": 28 };
+export interface LibraryList { key: string; archetype: "aggro" | "midrange" | "control" | "combo"; decklist: Decklist; /** S55: a contributed list's registered fifteen */ sideboard?: Decklist; /** S56 (ADR-164): archived — never a candidate */ archived?: true }
+/** The Open's round-robin means — a list's measured strength. S56 — THE TABLE OF RECORD: the sixteen active lists (the Loop archived, ADR-164) measured together on pilot 108 (the counter rule), registered sixties: 12,000 games, analysis/runs/rr16_s56.json. (The patchwork it replaces — pilot 106's sixteen with the Loop, the Kiln measured alone: pall 72, levy 62, hearth 62, coin 59, kiln 58, sweep 56, wurmspeaker 54, muster 53, loop 53, warband 51, depths 51, ford 48, enchantress 46, tally 38, undertow 34, locks 32, larder 28.) Earlier: Post-S53: re-measured on pilot 97 with the two lists contributed from play (the Sweep, the Depths): 9,100 games, analysis/runs/open_rr14.json. Post-S55: the Kiln (Chris's 5–0 Izzet list, tuned 2026-10-06: +4 Control Magic +3 Flametongue Kavu) measured alone against the sixteen on pilot 107 — 57.7% over 1,600 games (46.8% as Chris played it); the others are not re-run with it. S55: all sixteen re-measured on pilot 106 with the Pall (Chris's 5–0 combo list, piloted by its plan; every seat reads it): 12,000 games, analysis/runs/rr16.json — registered sixties. (Pilot 99's fifteen: levy 64, hearth 64, sweep 60, coin 59, wurmspeaker 59, depths 57, warband 55, muster 52, loop 51, ford 51, enchantress 45, tally 37, undertow 36, locks 35, larder 27.) Post-S54: all fifteen re-measured on pilot 99 with the Hearth (Chris's 18–1 Mardu list): 10,500 games, analysis/runs/rr15_plain.json — the registered sixties, no sideboarding. (Pilot 97's fourteen were levy 65, wurmspeaker 62, coin 59, sweep 59, depths 57, muster 53, warband 53, loop 53, ford 51, enchantress 50, tally 37, undertow 35, locks 35, larder 28.) (S46's were levy 68, wurmspeaker 61, warband 60, coin 59, muster 57, loop 55, ford 53, enchantress 51, tally 39, locks 39, undertow 38, larder 31.) */
+/** S56 (ADR-164): the Loop is ARCHIVED and out of this table (its last measure: 53, pilot 106). */
+export const OPEN_MEANS: Record<string, number> = { "open:pall": 71, "open:levy": 62, "open:hearth": 62, "open:coin": 58, "open:sweep": 56, "open:depths": 56, "open:kiln": 55, "open:warband": 52, "open:wurmspeaker": 50, "open:muster": 47, "open:enchantress": 47, "open:ford": 45, "open:tally": 38, "open:locks": 36, "open:undertow": 35, "open:larder": 29 };
 /** Post-S52 (Chris): the candidates are the TWELVE best-fitting lists (the Open's whole library, not its top five),
  * and the noise has a noise of its own — a seat is STOCK (the list as written), a LIGHT tinkerer (one or two swaps),
  * or a HEAVY one (four to six); the light and the heavy also move a land. The shares are a quarter, a half, a quarter. */
@@ -81,7 +82,7 @@ export function selectCandidates(format: ConstructedFormat, rating: CardRatingTa
   const rule = format.rule, role = (id: string) => (cards.get(id)!.types.includes("Land") ? "land" : "other");
   const size = (l: Decklist) => l.reduce((n, e) => n + e.count, 0);
   const strength = (l: LibraryList) => OPEN_MEANS[l.key] !== undefined ? 1000 + OPEN_MEANS[l.key]! : (() => { const xs = l.decklist.filter((e) => role(e.cardId) !== "land"); const n = size(xs); return n ? xs.reduce((a, e) => a + cardRating(cards.get(e.cardId)!, rating) * e.count, 0) / n : 0; })();
-  return library.map((l) => ({ l, share: legalShare(l.decklist, rule, cards), strength: strength(l) })).sort((a, b) => b.share - a.share || b.strength - a.strength || a.l.key.localeCompare(b.l.key)).slice(0, candidateCount());
+  return library.filter((l) => !l.archived).map((l) => ({ l, share: legalShare(l.decklist, rule, cards), strength: strength(l) })).sort((a, b) => b.share - a.share || b.strength - a.strength || a.l.key.localeCompare(b.l.key)).slice(0, candidateCount());
 }
 
 export function buildConstructedDeck(format: ConstructedFormat, rating: CardRatingTable, seed: number, library: readonly LibraryList[], cards: Map<string, CardDef>, opts: { /** Force the tinker level (the tinker study); default: rolled from the seed. */ tinker?: Tinker; /** Force the source list. */ from?: string; /** S55 (ADR-158 amended): the seat's list draw — `top` leans to the lists that measure strong, `low` to those that measure weak. */ lists?: ListDraw } = {}): ConstructedBuild {
@@ -192,7 +193,10 @@ export function buildConstructedDeck(format: ConstructedFormat, rating: CardRati
  * Deterministic (the Constructed score, ties by id): the same deck always registers the same fifteen. */
 export const SIDEBOARD_SIZE = 15;
 export const SIDEBOARD_SHAPE = { relics: 4, creatures: 5, graveyards: 4 } as const;
-export function buildSideboard(deck: Decklist, format: ConstructedFormat, rating: CardRatingTable, cards: Map<string, CardDef>, isRelicAnswer: (d: CardDef) => boolean, isCreatureAnswer: (d: CardDef) => boolean): Decklist {
+/** S56 (Part 2): slots for the four shapes the field now sideboards by (sideboard-ai rules 5–8), taken after the three
+ * above; a deck whose colours hold none of a kind leaves that slot to the best of the rest. */
+export const SIDEBOARD_SHAPE_S56 = { relics: 3, creatures: 3, graveyards: 4, sweepers: 2, creatureCounters: 2, steal: 2, blockers: 2 } as const;
+export function buildSideboard(deck: Decklist, format: ConstructedFormat, rating: CardRatingTable, cards: Map<string, CardDef>, isRelicAnswer: (d: CardDef) => boolean, isCreatureAnswer: (d: CardDef) => boolean, /** S56: reserve the four shapes' slots (the field does; `false` is the S55 fifteen) */ shapes = true): Decklist {
   const rule = format.rule;
   const inDeck = new Map(deck.map((e) => [e.cardId, e.count]));
   const colors = new Set(deck.flatMap((e) => { const d = cards.get(e.cardId); return d && !d.types.includes("Land") ? cardColors(d) : []; }));
@@ -214,8 +218,15 @@ export function buildSideboard(deck: Decklist, format: ConstructedFormat, rating
     }
   };
   { let left = SIDEBOARD_SHAPE.graveyards; for (const d of hate) { const n = Math.min(left, 2, room(d)); if (n > 0) { side.set(d.id, n); left -= n; } } }
-  take((d) => !d.types.includes("Creature") && isRelicAnswer(d), SIDEBOARD_SHAPE.relics, 2);
-  take((d) => !d.types.includes("Creature") && isCreatureAnswer(d), SIDEBOARD_SHAPE.creatures, 3);
+  const S = shapes ? SIDEBOARD_SHAPE_S56 : SIDEBOARD_SHAPE;
+  take((d) => !d.types.includes("Creature") && isRelicAnswer(d), S.relics, 2);
+  take((d) => !d.types.includes("Creature") && isCreatureAnswer(d) && !isSweeper(d), S.creatures, 3);
+  if (shapes) {
+    take(isSweeper, SIDEBOARD_SHAPE_S56.sweepers, 2);
+    take(isCreatureCounter, SIDEBOARD_SHAPE_S56.creatureCounters, 2);
+    take(stealsCreatures, SIDEBOARD_SHAPE_S56.steal, 2);
+    take((d) => isWall(d) || blocksFliers(d), SIDEBOARD_SHAPE_S56.blockers, 1);
+  }
   take(() => true, SIDEBOARD_SIZE, 2); // the best of the rest, two of each
   return [...side.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([cardId, count]) => ({ cardId, count }));
 }

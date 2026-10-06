@@ -62,6 +62,10 @@ export class PlanPlay {
     if (!p || action.type !== "activateAbility" || !p.dig.includes(view.battlefield.find((o) => o.id === action.objectId)?.cardId ?? "")) return null;
     const power = view.battlefield.filter((o) => o.controller !== me && o.power !== null && !o.keywords.includes("defender")).reduce((n, o) => n + Math.max(0, o.power ?? 0), 0);
     if (this.planFacts(view).assembled) return true;
+    // (S56, book 109 — "dig harder" was measured and NOT taken: a floor of half the opponent's power, and digging
+    // whatever the board with one half of the plan held, each raised the draws (4.95 → 5.4–6.9 a game with the Witch
+    // out) and none raised the loop's rate (54% → 49–54%); the win rate fell 68% → 61–67% — the life paid is the life
+    // the burn decks take. The floor below is S55's.)
     if (view.life[me] - lifeCost < Math.max(5, power + 4)) return true;
     return drawsThisTurn >= 6;
   }

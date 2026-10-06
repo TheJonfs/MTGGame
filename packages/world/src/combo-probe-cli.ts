@@ -19,7 +19,7 @@ import { fileURLToPath } from "node:url";
 import { loadCardPool } from "@shandalar/cards/loader";
 import { runMatch, type Agent, type MatchSpec } from "@shandalar/engine";
 import { HeuristicAgent, difficultyProfile, matchPlan, PLANS } from "@shandalar/agents";
-import { OPEN_DECKS } from "@shandalar/sim/open-decks";
+import { OPEN_DECKS, OPEN_FIELD } from "@shandalar/sim/open-decks";
 import { OPEN_FORMAT } from "./formats.js";
 import { buildSideboard } from "./constructed-builder.js";
 import { AI_SIDEBOARD_CONSTRUCTED, aiSideboard, answersCreatures, answersGraveyards, answersRelics } from "./sideboard-ai.js";
@@ -29,7 +29,7 @@ import type { Decklist } from "./state.js";
 const arg = (k: string, d: string) => { const i = process.argv.indexOf(`--${k}`); return i >= 0 ? process.argv[i + 1]! : d; };
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 interface MatchRow { opp: string; won: boolean; games: { won: boolean; boarded: boolean; loop: boolean; exile: boolean; first: boolean }[] }
-interface Row { opp: string; won: boolean; reason: string; myTurns: number; loopTurn: number; readyTurn: number; firstSetup: number; buried: string[][]; fuelFor: string[]; startTargets: string[]; digDraws: number; cast: Record<string, number>; oppCast: Record<string, number>; oppExiles: number }
+interface Row { opp: string; won: boolean; reason: string; myTurns: number; loopTurn: number; readyTurn: number; firstSetup: number; buried: string[][]; fuelFor: string[]; startTargets: string[]; digDraws: number; /** S56: the first own turn a dig card stood on our battlefield, and the own turns it did */ digOn?: number; digTurns?: number; /** S56: the first own turn the setup had resolved AND a start was in hand; whether a start was in hand when the setup was first cast */ armedTurn?: number; startAtSetup?: boolean; /** S56: own turns spent armed without the loop — the start not offered (mana, colours), offered and not cast, cast and the loop did not follow */ armedNoMana?: number; armedHeld?: number; armedCast?: number; cast: Record<string, number>; oppCast: Record<string, number>; oppExiles: number }
 
 async function play(): Promise<void> {
   const pool = loadCardPool(join(ROOT, "data/cards")).cards;
@@ -40,10 +40,11 @@ async function play(): Promise<void> {
   const plan = matchPlan(me.decklist, PLANS); if (!plan) throw new Error(`combo-probe: ${key} has no plan`);
   const G = Number(arg("games", "60")), seed0 = Number(arg("seed", "9000")), [si, sn] = arg("shard", "0/1").split("/").map(Number) as [number, number];
   const boarded = process.argv.includes("--boarded"), noPlan = process.argv.includes("--no-plan");
+  const off = arg("off", "").split(",").filter(Boolean); // S56: the list piloted without those S56 rules ("counter")
   const rating = JSON.parse(readFileSync(join(ROOT, "data/convocation/card-rating.json"), "utf8")) as CardRatingTable;
   const fifteen = (l: (typeof OPEN_DECKS)[string]): Decklist => (l.sideboard ? [...l.sideboard] : buildSideboard(l.decklist, OPEN_FORMAT, rating, pool, answersRelics, answersCreatures));
   const sixty = (a: (typeof OPEN_DECKS)[string], b: (typeof OPEN_DECKS)[string]): Decklist => (boarded ? aiSideboard(a.decklist, fifteen(a), b.decklist, pool, rating, AI_SIDEBOARD_CONSTRUCTED).deck : a.decklist);
-  const others = Object.keys(OPEN_DECKS).filter((k) => k !== key), rows: Row[] = [];
+  const others = Object.keys(OPEN_FIELD).filter((k) => k !== key), rows: Row[] = [];
   const M = Number(arg("matches", "0"));
   if (M > 0) {
     const [hc, hm] = arg("hate", "2:2").split(":").map(Number) as [number, number], only = arg("only", "").split(",").filter(Boolean);
@@ -98,24 +99,33 @@ async function play(): Promise<void> {
       const pm = { name: key, decklist: mine, agent: "x" }, pt = { name: opp.key, decklist: theirs, agent: "x" };
       const spec = { seed, players: seat === 0 ? [pm, pt] : [pt, pm], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 }, modifiers: [] } as unknown as MatchSpec;
       const row: Row = { opp: opp.key, won: false, reason: "", myTurns: 0, loopTurn: 0, readyTurn: 0, firstSetup: 0, buried: [], fuelFor: [], startTargets: [], digDraws: 0, cast: {}, oppCast: {}, oppExiles: 0 };
-      let lastTurn = -1, fuelPending = false, turnStartOpp = 20, watch: string[] | null = null;
-      const inner = new HeuristicAgent(seed * 2 + 1 + seat, pool, difficultyProfile("master", noPlan ? "midrange" : me.archetype, [...theirs], noPlan ? undefined : [...mine]));
+      let lastTurn = -1, digTurnSeen = -1, armedSeen = -1, fuelPending = false, turnStartOpp = 20, watch: string[] | null = null;
+      const inner = new HeuristicAgent(seed * 2 + 1 + seat, pool, { ...difficultyProfile("master", noPlan ? "midrange" : me.archetype, [...theirs], noPlan ? undefined : [...mine]), ...(off.length ? { off } : {}) });
       const pilot: Agent = { chooseAction: async (v, r) => {
         if (v.activePlayer === seat && v.turn !== lastTurn) { lastTurn = v.turn; row.myTurns += 1; turnStartOpp = v.life[1 - seat]!; }
         const hand = v.hand.map((h) => h.cardId), yard = v.graveyards[seat]!, pieces = yard.filter((c) => c === plan.piece).length;
         if (watch && v.stack.length === 0) { const added = [...yard]; for (const c of watch) { const i = added.indexOf(c); if (i >= 0) added.splice(i, 1); } const cr = added.filter((c) => !plan.setup.some((s) => s.card === c)); if (cr.length) { row.buried.push(cr.sort()); watch = null; } }
         const onField = v.battlefield.some((b) => b.controller === seat && b.cardId === plan.piece);
+        if (v.activePlayer === seat && v.turn !== digTurnSeen && v.battlefield.some((b) => b.controller === seat && plan.dig.includes(b.cardId) && pool.get(b.cardId)!.types.includes("Creature"))) { digTurnSeen = v.turn; row.digTurns = (row.digTurns ?? 0) + 1; row.digOn ??= Math.max(1, row.myTurns); }
         const ready = (hand.includes(plan.piece) && (pieces >= 1 || onField || v.graveyards[1 - seat]!.includes(plan.piece))) || (plan.start.some((s) => s.card !== plan.piece && (hand.includes(s.card) || v.battlefield.some((b) => b.controller === seat && b.cardId === s.card))) && (pieces >= 2 || (pieces >= 1 && onField))) || (plan.setup.some((s) => hand.includes(s.card)) && plan.start.some((s) => hand.includes(s.card)));
         if (ready && !row.readyTurn) row.readyTurn = Math.max(1, row.myTurns);
+        const startHeld = plan.start.some((s) => hand.includes(s.card) || (s.card !== plan.piece && v.battlefield.some((b) => b.controller === seat && b.cardId === s.card)));
+        if (!row.armedTurn && v.activePlayer === seat && startHeld && (pieces >= 2 || (pieces >= 1 && onField))) row.armedTurn = Math.max(1, row.myTurns);
         if (!row.loopTurn && turnStartOpp - v.life[1 - seat]! >= 12) row.loopTurn = Math.max(1, row.myTurns);
         const a = await inner.chooseAction(v, r);
+        // S56: an armed turn of ours, read at its first main-phase decision with the stack empty
+        if (row.armedTurn && !row.loopTurn && r.purpose === "priority" && v.activePlayer === seat && v.step === "MAIN1" && v.stack.length === 0 && v.turn !== armedSeen && (pieces >= 2 || (pieces >= 1 && onField)) && startHeld) {
+          const startOffered = r.actions.some((x) => x.type === "castSpell" && plan.start.some((s) => s.card === v.hand.find((h) => h.objectId === x.objectId)?.cardId));
+          const castsStart = a.type === "castSpell" && plan.start.some((s) => s.card === v.hand.find((h) => h.objectId === a.objectId)?.cardId);
+          if (castsStart || a.type === "pass" || !startOffered) { armedSeen = v.turn; if (castsStart) row.armedCast = (row.armedCast ?? 0) + 1; else if (startOffered) row.armedHeld = (row.armedHeld ?? 0) + 1; else if (a.type === "pass") row.armedNoMana = (row.armedNoMana ?? 0) + 1; else armedSeen = -1; }
+        }
         const id = (a as { objectId?: string }).objectId;
         const cid = id ? (v.hand.find((h) => h.objectId === id)?.cardId ?? v.battlefield.find((b) => b.id === id)?.cardId) : undefined;
         if (a.type === "castSpell" && cid) {
           row.cast[cid] = (row.cast[cid] ?? 0) + 1;
           if (fuelPending && !plan.fuel.includes(cid)) { row.fuelFor.push(cid); fuelPending = false; }
           if (plan.fuel.includes(cid) && pool.get(cid)!.types.includes("Instant")) fuelPending = true;
-          if (plan.setup.some((s) => s.card === cid)) { if (!row.firstSetup) row.firstSetup = Math.max(1, row.myTurns); watch = [...yard]; }
+          if (plan.setup.some((s) => s.card === cid)) { if (!row.firstSetup) { row.firstSetup = Math.max(1, row.myTurns); row.startAtSetup = plan.start.some((s) => hand.includes(s.card)); } watch = [...yard]; }
           if (plan.start.some((s) => s.card === cid && s.card !== plan.piece)) { const t = (a as { targets?: { id?: string }[] }).targets?.[0]?.id; row.startTargets.push([...v.graveyardObjects[0], ...v.graveyardObjects[1]].find((o) => o.objectId === t)?.cardId ?? "?"); }
         }
         if (a.type === "pass" && fuelPending && v.stack.length === 0) { row.fuelFor.push("(nothing)"); fuelPending = false; }
@@ -157,6 +167,14 @@ function report(): void {
   L.push(`- The start is aimed at: ${count(r.flatMap((x) => x.startTargets)).slice(0, 6).map(([k, v]) => `${k} ${v}`).join(", ") || "–"}.`);
   L.push(`- Casts a game: ${[...new Set(r.flatMap((x) => Object.keys(x.cast)))].map((c) => [c, r.reduce((k, x) => k + (x.cast[c] ?? 0), 0) / n] as const).sort((x, y) => y[1] - x[1]).slice(0, 12).map(([c, v]) => `${c} ${v.toFixed(2)}`).join(", ")}.`);
   L.push(`- Dig activations a game: ${(r.reduce((a, x) => a + x.digDraws, 0) / n).toFixed(2)}; none in ${pct(r.filter((x) => !x.digDraws).length, n)} of games.`);
+  const set = r.filter((x) => x.firstSetup > 0 && x.startAtSetup !== undefined);
+  if (set.length) {
+    const withS = set.filter((x) => x.startAtSetup), without = set.filter((x) => !x.startAtSetup), armed = r.filter((x) => x.armedTurn && x.firstSetup);
+    const gap = (xs: Row[], f: (x: Row) => number) => med(xs.map(f));
+    L.push(`- When the setup is first cast a start is in hand in ${pct(withS.length, set.length)} of games: then the loop fires in ${pct(withS.filter((x) => x.loopTurn).length, withS.length)}, ${gap(withS.filter((x) => x.loopTurn), (x) => x.loopTurn - x.firstSetup)} turns later (median); without one, in ${pct(without.filter((x) => x.loopTurn).length, without.length)}, ${gap(without.filter((x) => x.loopTurn), (x) => x.loopTurn - x.firstSetup)} turns later. Setup resolved and a start in hand ("armed") in ${pct(armed.length, n)} of games; from armed to the loop: ${hist(armed.filter((x) => x.loopTurn).map((x) => Math.max(0, x.loopTurn - x.armedTurn!)))} turns; armed and never looped: ${armed.filter((x) => !x.loopTurn).length}. Own turns spent armed before the loop (or the game's end): the start could not be paid for ${r.reduce((a, x) => a + (x.armedNoMana ?? 0), 0)}, was payable and not cast ${r.reduce((a, x) => a + (x.armedHeld ?? 0), 0)}, was cast ${r.reduce((a, x) => a + (x.armedCast ?? 0), 0)} (the loop followed that turn in ${armed.filter((x) => x.loopTurn).length} games).`);
+  }
+  const dug = r.filter((x) => x.digOn);
+  if (dug.length) L.push(`- A dig creature stood on our own turn in ${pct(dug.length, n)} of games, first on own turn ${med(dug.map((x) => x.digOn!))} (median), for ${(dug.reduce((a, x) => a + (x.digTurns ?? 0), 0) / dug.length).toFixed(1)} turns; in those games ${(dug.reduce((a, x) => a + x.digDraws, 0) / dug.length).toFixed(2)} activations a game, none in ${pct(dug.filter((x) => !x.digDraws).length, dug.length)}; the loop fired in ${pct(dug.filter((x) => x.loopTurn).length, dug.length)} of them (${pct(r.filter((x) => !x.digOn && x.loopTurn).length, n - dug.length)} without).`);
   L.push(`- The opponent's graveyard exile used in ${pct(r.filter((x) => x.oppExiles > 0).length, n)} of games; the list won ${pct(r.filter((x) => x.oppExiles > 0 && x.won).length, r.filter((x) => x.oppExiles > 0).length)} of those.`);
   L.push(`- Results: wins ${count(wins.map((x) => x.reason)).map(([k, v]) => `${k} ${v}`).join(", ")}; losses ${count(r.filter((x) => !x.won).map((x) => x.reason)).map(([k, v]) => `${k} ${v}`).join(", ")}.`);
   const text = L.join("\n");

@@ -5,7 +5,7 @@
  * Lab's `analysis/decks/open-*.json`; `open-lists.test.ts` pins the two together.
  */
 export type OpenDecklist = { cardId: string; count: number }[];
-export interface OpenList { key: string; name: string; title: string; archetype: "aggro" | "midrange" | "control" | "combo"; decklist: OpenDecklist; /** S55: a contributed list's registered fifteen */ sideboard?: OpenDecklist }
+export interface OpenList { key: string; name: string; title: string; archetype: "aggro" | "midrange" | "control" | "combo"; decklist: OpenDecklist; /** S55: a contributed list's registered fifteen */ sideboard?: OpenDecklist; /** S56 (ADR-164): kept in the data with its plan and its history; out of the field, the round-robin and the retire count */ archived?: true }
 
 /** The document's section title (before the em dash) → the list's key, its nickname and the AI's archetype. */
 export const OPEN_KEYS: Record<string, { key: string; archetype: "aggro" | "midrange" | "control" }> = {

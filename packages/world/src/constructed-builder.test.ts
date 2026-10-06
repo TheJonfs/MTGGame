@@ -6,7 +6,7 @@ import { loadCardPool } from "@shandalar/cards/loader";
 import { cardColors, manaValue, parseManaCost } from "@shandalar/cards";
 import { CONSTRUCTED_FORMATS, OPEN_FORMAT, PAUPER_FORMAT, BODIES_FORMAT, HALF_GROUND_FORMAT, NOTHING_DEAR_FORMAT, NOTHING_SMALL_FORMAT, NOTHING_SUDDEN_FORMAT } from "./formats.js";
 import { authoredLists } from "./authored-lists.js";
-import { buildConstructedDeck, cardLegal, copyCap, legalShare, OPEN_MEANS, tuneVariation, VARIATION_TERMS } from "./constructed-builder.js";
+import { buildConstructedDeck, cardLegal, copyCap, legalShare, OPEN_MEANS, selectCandidates, tuneVariation, VARIATION_TERMS } from "./constructed-builder.js";
 import { checkDeck } from "./legality.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
@@ -19,6 +19,16 @@ const d = (id: string) => cards.get(id)!;
 
 /** S52 (Part 1): Constructed by select-and-repair. */
 describe("the Constructed builder (S52)", () => {
+  it("S56 (ADR-164): an archived list stays in the data and is out of the field — the Loop is in the library with its flag, in no seat's candidates, in no strength table, and never a seat's list", () => {
+    const loop = library.find((l) => l.key === "open:loop")!;
+    expect(loop.archived).toBe(true);
+    expect(loop.decklist.reduce((n, e) => n + e.count, 0)).toBe(60); // kept whole
+    expect(OPEN_MEANS["open:loop"]).toBeUndefined();
+    expect(selectCandidates(OPEN_FORMAT, rating, library, cards).map((c) => c.l.key)).not.toContain("open:loop");
+    expect(library.filter((l) => l.archived).map((l) => l.key)).toEqual(["open:loop"]);
+    for (let i = 1; i <= 200; i++) expect(buildConstructedDeck(OPEN_FORMAT, rating, i, library, cards).from).not.toBe("open:loop");
+    expect(buildConstructedDeck(OPEN_FORMAT, rating, 1, library, cards, { from: "open:loop" }).from).toBe("open:loop"); // asked for by key (a study, a seat in an older save) it still builds
+  });
   it("the Open: every seed yields a legal sixty from one of the TWELVE Open lists; a seed is a deck; a quarter of the seats play their list as written, the rest tinker lightly or heavily", () => {
     const top = Object.keys(OPEN_MEANS);
     const builds = Array.from({ length: 120 }, (_, i) => buildConstructedDeck(OPEN_FORMAT, rating, i + 1, library, cards));

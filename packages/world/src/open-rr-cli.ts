@@ -8,6 +8,13 @@
  *                PLACE (the same slot, so the same shuffle — card-test's paired method). Run with --only key on the
  *                seed of a plain run and compare game by game.
  *   --vs k1,k2    with --only: only the pairings against those lists (a matchup study at more games).
+ *   --sideboarded-one   S56: in each game ONE seat plays its sideboarded sixty against the other's registered sixty
+ *                (the lists take turns, two games each) — beside a plain run on the same seed, a list's own
+ *                sideboarding is read from the games where it was the one (each game records `boarded`).
+ *   --shapes none|a,b   S56: with --sideboarded, only those of sideboard-ai's rules 5–8 run (sweepers, creatureCounters,
+ *                steal, blockers); `none` is the S55 sideboarding and the S55 fifteen. Default: all four.
+ *   --off rule[,rule] [--off-for k1,k2]   S56: the OLD pilot — those S56 rules ("counter") switched off, for every
+ *                seat or only for those lists. Run beside a plain run on the same seed: each game has its twin.
  *   --journeyman k1,k2   S54 (ADR-158's test): those lists are piloted by journeyman (every other seat master) — run
  *                with --only on the same seed as a master run, and every game is paired with its master twin.
  *
@@ -24,19 +31,20 @@ import { fileURLToPath } from "node:url";
 import { loadCardPool } from "@shandalar/cards/loader";
 import { runMatch, type Action, type ActionRequest, type Agent, type GameView, type MatchSpec } from "@shandalar/engine";
 import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
-import { OPEN_DECKS } from "@shandalar/sim/open-decks";
+import { OPEN_DECKS, OPEN_FIELD } from "@shandalar/sim/open-decks";
 import { OPEN_FORMAT } from "./formats.js";
 import { buildSideboard } from "./constructed-builder.js";
-import { AI_SIDEBOARD_CONSTRUCTED, aiSideboard, answersCreatures, answersRelics } from "./sideboard-ai.js";
+import { AI_SIDEBOARD_CONSTRUCTED, SIDEBOARD_SHAPES, aiSideboard, answersCreatures, answersRelics, type AiSideboardTerms } from "./sideboard-ai.js";
 import type { CardRatingTable } from "./rating.js";
 import type { Decklist } from "./state.js";
 
 const arg = (k: string, d: string) => { const i = process.argv.indexOf(`--${k}`); return i >= 0 ? process.argv[i + 1]! : d; };
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
-const KEYS = Object.keys(OPEN_DECKS);
+// S56 (ADR-164): the round-robin is the field's — an archived list is out of it (`--with-archived` brings it back for a look)
+const KEYS = Object.keys(process.argv.includes("--with-archived") ? OPEN_DECKS : OPEN_FIELD);
 
 type SeatLog = { cast: Record<string, number>; played: Record<string, number>; loopTurn?: number; altarActs?: number };
-type Game = { a: string; b: string; seatA: 0 | 1; winner: "a" | "b" | "draw"; reason: string; turns: number; logA: SeatLog; logB: SeatLog };
+type Game = { a: string; b: string; seatA: 0 | 1; winner: "a" | "b" | "draw"; reason: string; turns: number; logA: SeatLog; logB: SeatLog; boarded?: string };
 
 class Tracker implements Agent {
   log: SeatLog = { cast: {}, played: {} };
@@ -60,15 +68,19 @@ class Tracker implements Agent {
 async function run(): Promise<void> {
   const pool = loadCardPool(join(ROOT, "data/cards")).cards;
   const G = Number(arg("games", "100")), seed0 = Number(arg("seed", "46")), [si, sn] = arg("shard", "0/1").split("/").map(Number) as [number, number];
-  const sideboarded = process.argv.includes("--sideboarded") || process.argv.includes("--sideboarded-only");
+  const one = process.argv.includes("--sideboarded-one");
+  const sideboarded = one || process.argv.includes("--sideboarded") || process.argv.includes("--sideboarded-only");
   const rating = sideboarded ? (JSON.parse(readFileSync(join(ROOT, "data/convocation/card-rating.json"), "utf8")) as CardRatingTable) : null;
   const fifteen = new Map<string, Decklist>();
+  const shapesArg = arg("shapes", "all"), { shapes: _all, ...s55 } = AI_SIDEBOARD_CONSTRUCTED;
+  const terms: AiSideboardTerms = shapesArg === "all" ? AI_SIDEBOARD_CONSTRUCTED : shapesArg === "none" ? s55 : { ...s55, shapes: { perShape: SIDEBOARD_SHAPES.perShape, ...Object.fromEntries(shapesArg.split(",").map((k) => { if (!(k in SIDEBOARD_SHAPES) || k === "perShape") throw new Error(`open:rr --shapes: no shape ${k}`); return [k, SIDEBOARD_SHAPES[k as keyof typeof SIDEBOARD_SHAPES]]; })) } };
   // `--sideboarded-only k1,k2`: only those lists sideboard (one side's swaps against the other's registered sixty)
   const boardedOnly = new Set(arg("sideboarded-only", "").split(",").filter(Boolean));
   const boarded = (me: (typeof OPEN_DECKS)[string], them: (typeof OPEN_DECKS)[string]): Decklist => {
     if (!rating || (boardedOnly.size > 0 && !boardedOnly.has(me.key))) return me.decklist;
-    if (!fifteen.has(me.key)) fifteen.set(me.key, buildSideboard(me.decklist, OPEN_FORMAT, rating, pool, answersRelics, answersCreatures));
-    return aiSideboard(me.decklist, fifteen.get(me.key)!, them.decklist, pool, rating, AI_SIDEBOARD_CONSTRUCTED).deck;
+    // (S56: a list's own registered fifteen where it has one — the Pall's, the Kiln's — as the event plays it)
+    if (!fifteen.has(me.key)) fifteen.set(me.key, me.sideboard ? [...me.sideboard] : buildSideboard(me.decklist, OPEN_FORMAT, rating, pool, answersRelics, answersCreatures, !!terms.shapes));
+    return aiSideboard(me.decklist, fifteen.get(me.key)!, them.decklist, pool, rating, process.argv.includes("--counters-stay") ? { ...terms, countersStay: true } : process.argv.includes("--counters-leave") ? { ...terms, countersStay: false } : terms).deck;
   };
   const swapArg = arg("swap", "");
   const DECKS: typeof OPEN_DECKS = swapArg ? (() => {
@@ -85,6 +97,8 @@ async function run(): Promise<void> {
   })() : OPEN_DECKS;
   const vs = arg("vs", "").split(",").filter(Boolean);
   const only = arg("only", ""), journeyman = new Set(arg("journeyman", "").split(",").filter(Boolean));
+  const off = arg("off", "").split(",").filter(Boolean), offFor = new Set(arg("off-for", "").split(",").filter(Boolean));
+  const profile = (d: (typeof OPEN_DECKS)[string], o: (typeof OPEN_DECKS)[string]) => ({ ...difficultyProfile(pilot(d.key), d.archetype, [...o.decklist], [...d.decklist]), ...(off.length && (offFor.size === 0 || offFor.has(d.key)) ? { off } : {}) });
   const pilot = (key: string) => (journeyman.has(key) ? "journeyman" : "master");
   const pairs: [string, string][] = [];
   for (let i = 0; i < KEYS.length; i++) for (let j = i + 1; j < KEYS.length; j++) pairs.push([KEYS[i]!, KEYS[j]!]);
@@ -98,13 +112,14 @@ async function run(): Promise<void> {
     for (let g = 0; g < G; g++) {
       const seatA = (g % 2) as 0 | 1;
       const seed = seed0 + p * 1009 + g * 37;
-      const [d0, d1] = (seatA === 0 ? [A, B] : [B, A]).map((d, i, both) => ({ ...d, decklist: boarded(d, both[1 - i]!) })) as [typeof A, typeof B];
+      const turn = one ? ((g >> 1) % 2 === 0 ? ka : kb) : undefined;
+      const [d0, d1] = (seatA === 0 ? [A, B] : [B, A]).map((d, i, both) => ({ ...d, decklist: turn && d.key !== turn ? d.decklist : boarded(d, both[1 - i]!) })) as [typeof A, typeof B];
       const spec = { seed, players: [{ name: d0.key, decklist: [...d0.decklist], agent: "heuristic:master" }, { name: d1.key, decklist: [...d1.decklist], agent: "heuristic:master" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 }, modifiers: [] } as unknown as MatchSpec;
-      const t0 = new Tracker(new HeuristicAgent(seed * 2 + 1, pool, difficultyProfile(pilot(d0.key), d0.archetype, [...d1.decklist], [...d0.decklist])), d0.key === "loop");
-      const t1 = new Tracker(new HeuristicAgent(seed * 2 + 2, pool, difficultyProfile(pilot(d1.key), d1.archetype, [...d0.decklist], [...d1.decklist])), d1.key === "loop");
+      const t0 = new Tracker(new HeuristicAgent(seed * 2 + 1, pool, profile(d0, d1)), d0.key === "loop");
+      const t1 = new Tracker(new HeuristicAgent(seed * 2 + 2, pool, profile(d1, d0)), d1.key === "loop");
       const r = await runMatch(spec, pool, [t0, t1]);
       const tA = seatA === 0 ? t0 : t1, tB = seatA === 0 ? t1 : t0;
-      games.push({ a: ka, b: kb, seatA, winner: r.winner === null ? "draw" : r.winner === seatA ? "a" : "b", reason: r.reason, turns: r.turns, logA: tA.log, logB: tB.log });
+      games.push({ a: ka, b: kb, seatA, winner: r.winner === null ? "draw" : r.winner === seatA ? "a" : "b", reason: r.reason, turns: r.turns, logA: tA.log, logB: tB.log, ...(turn ? { boarded: turn } : {}) });
     }
     console.error(`shard ${si}/${sn}: ${ka} vs ${kb} done`);
   }

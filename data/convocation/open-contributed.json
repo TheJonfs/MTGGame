@@ -1,5 +1,8 @@
 {
  "_comment": "Post-S53 (Chris): Open lists contributed from play — each one a deck that did something in a Convocation, added to the Open's library beside the planner's twelve. pnpm open:gen validates (sixty, legal in the Open) and appends them; its strength is measured by pnpm open:rr before it can enter the field (OPEN_MEANS). Grows as Convocations are played. S55 (ADR-161): a list may declare archetype \"combo\" with a `plan` (setup / start / dig / fuel / answers — packages/agents/src/plans.ts has the shape) and its registered `sideboard`.",
+ "archived": {
+  "loop": "S56 (ADR-164): redundant with the Coin — 31 of its 37 nonland cards shared, matchup profiles r = 0.88, worse against eleven of the other twelve. Last measured 53 (pilot 106, sixteen lists)."
+ },
  "lists": [
   {
    "key": "sweep",

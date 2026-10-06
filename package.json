@@ -48,6 +48,8 @@
     "convocation-sim": "tsx packages/world/src/convocation-sim-cli.ts",
     "card-test": "tsx packages/world/src/card-test-cli.ts",
     "combo-probe": "tsx packages/world/src/combo-probe-cli.ts",
+    "counter-probe": "tsx packages/world/src/counter-probe-cli.ts",
+    "sideboard:show": "tsx packages/world/src/sideboard-show-cli.ts",
     "constructed:report": "tsx packages/world/src/constructed-report-cli.ts",
     "constructed:rr": "tsx packages/world/src/constructed-rr-cli.ts",
     "tinker": "tsx packages/world/src/tinker-cli.ts",

@@ -33,6 +33,9 @@ export interface AiProfile {
   /** S11 (ADR-060.3): evaluator constants. Default DEFAULT_CONSTANTS;
    * master carries the weight-search vector. */
   constants?: EvalConstants;
+  /** S56: rules switched OFF for this seat, by name ("counter") — the old pilot beside the new one, paired by
+   * seed, is how a rule is measured (open:rr --off, counter-probe --off). Never set in play. */
+  off?: string[];
 }
 
 /** S11 (ADR-060.3): every evaluator constant the weight search may move,

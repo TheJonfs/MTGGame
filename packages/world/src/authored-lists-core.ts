@@ -16,7 +16,7 @@ import { HEART_DECK, FOUNT_DECK } from "@shandalar/sim/heart-deck";
 import { OPEN_DECKS } from "@shandalar/sim/open-decks";
 
 export type Archetype = "aggro" | "midrange" | "control" | "combo";
-export interface AuthoredList { key: string; group: string; archetype: Archetype; decklist: { cardId: string; count: number }[]; /** S55: a contributed list's registered fifteen */ sideboard?: { cardId: string; count: number }[] }
+export interface AuthoredList { key: string; group: string; archetype: Archetype; decklist: { cardId: string; count: number }[]; /** S55: a contributed list's registered fifteen */ sideboard?: { cardId: string; count: number }[]; /** S56 (ADR-164): an archived Open list — in the table (its history, the rating's record), out of the Constructed field */ archived?: true }
 
 export type StarterRow = { id: string; archetype: Archetype; decklist: readonly { cardId: string; count: number }[] };
 export type FloodRow = { archetype: Archetype; decklist: readonly { cardId: string; count: number }[] };
@@ -42,6 +42,6 @@ export function authoredListsFrom(starters: readonly StarterRow[], floodDecks: R
   add("heart", "manafleur", HEART_DECK.archetype, HEART_DECK.decklist);
   add("heart", "fount", FOUNT_DECK.archetype, FOUNT_DECK.decklist);
   for (const [k, d] of Object.entries(floodDecks)) add("flood", k, d.archetype, d.decklist);
-  for (const [k, d] of Object.entries(OPEN_DECKS)) { add("open", k, d.archetype as Archetype, d.decklist); if (d.sideboard) out[out.length - 1]!.sideboard = d.sideboard.map((e) => ({ ...e })); }
+  for (const [k, d] of Object.entries(OPEN_DECKS)) { add("open", k, d.archetype as Archetype, d.decklist); if (d.sideboard) out[out.length - 1]!.sideboard = d.sideboard.map((e) => ({ ...e })); if (d.archived) out[out.length - 1]!.archived = true; }
   return out;
 }

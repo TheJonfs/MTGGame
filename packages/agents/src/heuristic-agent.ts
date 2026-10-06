@@ -6,6 +6,11 @@ import { DEFAULT_CONSTANTS, deterrence, evaluate, legendLoopWorth, LOOP_WORTH, m
 import { predictAction } from "./view-sim.js";
 import { viewAbilityAt } from "./granted-view.js";
 import { PlanPlay } from "./plan-play.js";
+import { reserveTaps, type ManaSource, type Tap } from "./reserve.js";
+/** S56 (book 108): what a held counter is worth on OUR turn, as a multiple of the S9 hold bonus — a control deck's
+ * plan is the counter (measured: the Locks +2 to +3 points and the Undertow +3 to +6 at 2–8, nothing for the Depths;
+ * a midrange list holding four gains nothing at any multiple, so it keeps the old weight). */
+const HOLD_ON_OUR_TURN = { control: 3, other: 1 } as const;
 import { simulateCombat, viewCreatures, type SimObject } from "./combat-sim.js";
 
 /**
@@ -274,7 +279,7 @@ export class HeuristicAgent implements Agent {
       // passing (kills same-host re-equip churn and no-benefit activations).
       return evaluate(view, this.profile, this.defs) - 0.25 - misaim;
     }
-    return evaluate(pred.view, this.profile, this.defs) + pred.adjustment - misaim + this.wheelSpendBonus(view, action) + this.lifegainPayoffBonus(view, action) + this.entersKillBonus(view, action) + this.planBonus(view, action) + this.againstPlanBonus(view, action) + this.loopCastBonus(view, action);
+    return evaluate(pred.view, this.profile, this.defs) + pred.adjustment - misaim + this.wheelSpendBonus(view, action) + this.lifegainPayoffBonus(view, action) + this.entersKillBonus(view, action) + this.planBonus(view, action) + this.againstPlanBonus(view, action) + this.loopCastBonus(view, action) + this.holdKeptBonus(view, action);
   }
 
   /** S46 (Vitalist — the brief's "a term, not a rule"): while we control a LIFE_GAINED payoff (the shape: a trigger on
@@ -828,6 +833,13 @@ export class HeuristicAgent implements Agent {
   }
 
   private priorityChoice(view: GameView, request: ActionRequest): Action {
+    // S56 (book 108): a payment begun by hand is finished before anything else is weighed — the next tap, then the cast
+    if (this.pendingPay) {
+      const { taps, then } = this.pendingPay, next = taps.shift();
+      const found = next ? this.tapAction(request, next) : request.actions.find((a) => JSON.stringify(a) === then);
+      if (!next || !found) this.pendingPay = null;
+      if (found) return found;
+    }
     const candidates = request.actions.filter((a) => a.type !== "tapForMana" && a.type !== "untapForMana"); // S25 r3: takebacks are human conveniences
     if (candidates.length === 1) return candidates[0]!;
     // S35 Part 3 (Chris: Oriel skipped her first land twice; measured 24.7% of apprentice first main phases
@@ -845,6 +857,8 @@ export class HeuristicAgent implements Agent {
     const scores = pool.map((a) => this.scorePriorityAction(view, a));
     this.offered = null;
     const pick = pool[this.softmaxPick(scores)]!;
+    const reserve = this.reservePayment(view, request, pick);
+    if (reserve) return reserve;
     // S27 r2: the Witch's per-turn budget — count each life-for-cards activation taken.
     if (pick.type === "activateAbility") {
       const ab = viewAbilityAt(view, this.defs, pick.objectId, pick.abilityIndex);
@@ -854,6 +868,58 @@ export class HeuristicAgent implements Agent {
       }
     }
     return pick;
+  }
+
+  private pendingPay: { taps: Tap[]; then: string } | null = null;
+  private tapAction(request: ActionRequest, t: Tap): Action | undefined {
+    const offers = request.actions.filter((a) => a.type === "tapForMana" && a.objectId === t.id) as { type: "tapForMana"; objectId: string; color?: string }[];
+    return (offers.find((a) => a.color === t.color) ?? (offers.length === 1 && offers[0]!.color === undefined ? offers[0] : undefined)) as Action | undefined;
+  }
+  /** Our untapped mana producers, each with the colours it can make (one mana a source; a sick creature makes none). */
+  manaSources(view: GameView): ManaSource[] {
+    const out: ManaSource[] = [];
+    for (const o of view.battlefield) {
+      if (o.controller !== view.you || o.tapped) continue;
+      const d = this.def(o.cardId); if (!d) continue;
+      const creature = d.types.includes("Creature");
+      if (creature && !this.canActNow(o)) continue;
+      const colors = new Set<string>();
+      for (const ab of d.abilities ?? []) {
+        if (!(ab.kind === "activated" && ab.cost.tap && !ab.cost.sacrifice && !ab.cost.mana && ab.effects.length > 0 && ab.effects.every((e) => e.type === "addMana" && !e.choice))) continue;
+        for (const e of ab.effects) if (e.type === "addMana") { const made = (e.mana ?? "").match(/[WUBRGC]/g) ?? []; if (made.length === 1) colors.add(made[0]!); }
+      }
+      if (colors.size > 0) out.push({ id: o.id, colors: [...colors], creature });
+    }
+    return out;
+  }
+  /** S56 (book 108, the counter rule): the counterspell this hand would hold — the cheapest, not the card being cast. */
+  private heldCounter(view: GameView, notId?: string): string | null {
+    const held = view.hand.filter((c) => c.objectId !== notId && this.def(c.cardId)?.spellEffect?.some((e) => e.type === "counter")).map((c) => this.def(c.cardId)!.manaCost).sort((a, b) => manaValue(parseManaCost(a)) - manaValue(parseManaCost(b)) || a.localeCompare(b));
+    return held[0] ?? null;
+  }
+  /** S56 (book 108): the mana cost the chosen action pays — a spell's (with X) or an activated ability's. */
+  private actionManaCost(view: GameView, action: Action): { cost: string; x: number } | null {
+    const x = (action as { x?: number }).x ?? 0;
+    if (action.type === "castSpell") { const d = this.def(view.hand.find((c) => c.objectId === action.objectId)?.cardId ?? ""); return d && !d.types.includes("Land") ? { cost: d.manaCost, x } : null; }
+    if (action.type === "activateAbility") { const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex); return ab && ab.kind === "activated" && ab.cost.mana ? { cost: ab.cost.mana, x } : null; }
+    return null;
+  }
+  /** S56 (book 108; the probe: half the pilot's lost counters were lost to COLOUR — the engine's payment tapped the
+   * Islands for a Vindicate and left two Swamps under an Absorb): with a counterspell held, the chosen cast is paid by
+   * hand — the lands the counter does not need — whenever some payment leaves the counter castable. Returns the first
+   * tap (the rest and the cast follow at the next requests), or null to let the engine pay. Exposed for the book. */
+  reservePayment(view: GameView, request: ActionRequest, pick: Action): Action | null {
+    if (this.profile.holdTricks === false || this.profile.off?.includes("counter")) return null;
+    const paying = this.actionManaCost(view, pick);
+    if (!paying || Object.values(view.manaPool).some((n) => n > 0)) return null;
+    const hold = this.heldCounter(view, pick.type === "castSpell" ? pick.objectId : undefined);
+    if (!hold) return null;
+    const taps = reserveTaps(this.manaSources(view), paying.cost, paying.x, hold);
+    if (!taps || taps.length === 0) return null;
+    const first = this.tapAction(request, taps[0]!);
+    if (!first) return null;
+    this.pendingPay = { taps: taps.slice(1), then: JSON.stringify(pick) };
+    return first;
   }
 
   /** ADR-060.2 posture switch (exposed for tests): hold tricks only when not
@@ -895,7 +961,20 @@ export class HeuristicAgent implements Agent {
       if (mv >= 3 && mv <= oppMana && !this.def(cardId)?.types.includes("Land")) threatCopies += count;
     }
     if (threatCopies === 0) return 0;
-    return Math.min(0.9, 0.3 + 0.06 * threatCopies);
+    const K = this.profile.off?.includes("counter") || view.activePlayer !== me ? 1 : this.profile.archetype === "control" ? HOLD_ON_OUR_TURN.control : HOLD_ON_OUR_TURN.other;
+    return K * Math.min(0.9, 0.3 + 0.06 * threatCopies);
+  }
+  /** S56 (book 108): the hold is kept by any play that leaves the counter payable — a land drop, a Mox, a spell paid
+   * from the lands the counter does not need. Before this only PASSING kept it, so a cheap play beside a held counter
+   * read as giving the counter up. Exposed for the book. */
+  holdKeptBonus(view: GameView, action: Action): number {
+    if (this.profile.off?.includes("counter") || view.activePlayer !== view.you || view.stack.length > 0) return 0;
+    const bonus = this.counterHoldBonus(view);
+    if (bonus === 0) return 0;
+    const paying = this.actionManaCost(view, action);
+    if (!paying) return action.type === "playLand" || action.type === "castSpell" ? bonus : 0;
+    const hold = this.heldCounter(view, action.type === "castSpell" ? action.objectId : undefined);
+    return hold && reserveTaps(this.manaSources(view), paying.cost, paying.x, hold) ? bonus : 0;
   }
 
   /** S9 Part 2b: an affordable flash creature is better cast at instant
