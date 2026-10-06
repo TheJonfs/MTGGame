@@ -1,0 +1,9431 @@
+{
+ "deck": [
+  {
+   "cardId": "time_walk",
+   "count": 1
+  },
+  {
+   "cardId": "counterspell",
+   "count": 4
+  },
+  {
+   "cardId": "arcane_collector",
+   "count": 3
+  },
+  {
+   "cardId": "tidewall",
+   "count": 4
+  },
+  {
+   "cardId": "aetherbolt",
+   "count": 4
+  },
+  {
+   "cardId": "experimental_overload",
+   "count": 2
+  },
+  {
+   "cardId": "odile_the_tallyflame",
+   "count": 3
+  },
+  {
+   "cardId": "lightning_bolt",
+   "count": 4
+  },
+  {
+   "cardId": "blaze",
+   "count": 2
+  },
+  {
+   "cardId": "the_ruby_tyrant",
+   "count": 3
+  },
+  {
+   "cardId": "guttersnipe",
+   "count": 4
+  },
+  {
+   "cardId": "young_pyromancer",
+   "count": 4
+  },
+  {
+   "cardId": "tallyflame_court",
+   "count": 1
+  },
+  {
+   "cardId": "black_lotus",
+   "count": 1
+  },
+  {
+   "cardId": "mox_sapphire",
+   "count": 1
+  },
+  {
+   "cardId": "mox_ruby",
+   "count": 1
+  },
+  {
+   "cardId": "volcanic_island",
+   "count": 4
+  },
+  {
+   "cardId": "steam_vents",
+   "count": 4
+  },
+  {
+   "cardId": "library_of_alexandria",
+   "count": 1
+  },
+  {
+   "cardId": "mountain",
+   "count": 5
+  },
+  {
+   "cardId": "island",
+   "count": 4
+  }
+ ],
+ "sideboard": [
+  {
+   "cardId": "boomerang",
+   "count": 4
+  },
+  {
+   "cardId": "control_magic",
+   "count": 2
+  },
+  {
+   "cardId": "the_sapphire_sage",
+   "count": 2
+  },
+  {
+   "cardId": "pyroclasm",
+   "count": 4
+  },
+  {
+   "cardId": "the_ruby_tyrant",
+   "count": 1
+  },
+  {
+   "cardId": "drakuseth_maw_of_flames",
+   "count": 2
+  }
+ ],
+ "result": {
+  "place": 1,
+  "record": "5–0",
+  "seed": 531727,
+  "format": "open",
+  "difficulty": "normal"
+ },
+ "event": {
+  "version": 2,
+  "seed": 531727,
+  "formatId": "open",
+  "rounds": 5,
+  "difficulty": "normal",
+  "phase": "over",
+  "round": 5,
+  "field": [
+   {
+    "name": "You",
+    "human": true,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "time_walk",
+      "count": 1
+     },
+     {
+      "cardId": "counterspell",
+      "count": 4
+     },
+     {
+      "cardId": "arcane_collector",
+      "count": 3
+     },
+     {
+      "cardId": "tidewall",
+      "count": 4
+     },
+     {
+      "cardId": "aetherbolt",
+      "count": 4
+     },
+     {
+      "cardId": "experimental_overload",
+      "count": 2
+     },
+     {
+      "cardId": "odile_the_tallyflame",
+      "count": 3
+     },
+     {
+      "cardId": "lightning_bolt",
+      "count": 4
+     },
+     {
+      "cardId": "blaze",
+      "count": 2
+     },
+     {
+      "cardId": "the_ruby_tyrant",
+      "count": 3
+     },
+     {
+      "cardId": "guttersnipe",
+      "count": 4
+     },
+     {
+      "cardId": "young_pyromancer",
+      "count": 4
+     },
+     {
+      "cardId": "tallyflame_court",
+      "count": 1
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "mox_sapphire",
+      "count": 1
+     },
+     {
+      "cardId": "mox_ruby",
+      "count": 1
+     },
+     {
+      "cardId": "volcanic_island",
+      "count": 4
+     },
+     {
+      "cardId": "steam_vents",
+      "count": 4
+     },
+     {
+      "cardId": "library_of_alexandria",
+      "count": 1
+     },
+     {
+      "cardId": "mountain",
+      "count": 5
+     },
+     {
+      "cardId": "island",
+      "count": 4
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "boomerang",
+      "count": 4
+     },
+     {
+      "cardId": "control_magic",
+      "count": 2
+     },
+     {
+      "cardId": "the_sapphire_sage",
+      "count": 2
+     },
+     {
+      "cardId": "pyroclasm",
+      "count": 4
+     },
+     {
+      "cardId": "the_ruby_tyrant",
+      "count": 1
+     },
+     {
+      "cardId": "drakuseth_maw_of_flames",
+      "count": 2
+     }
+    ],
+    "colors": "RU",
+    "archetype": "midrange"
+   },
+   {
+    "name": "Tamsin Vell",
+    "face": "portrait-mage-hask",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "forest",
+      "count": 19
+     },
+     {
+      "cardId": "tranquil_thicket",
+      "count": 2
+     },
+     {
+      "cardId": "baru_wurmspeaker",
+      "count": 3
+     },
+     {
+      "cardId": "birds_of_paradise",
+      "count": 4
+     },
+     {
+      "cardId": "gaean_wurm",
+      "count": 3
+     },
+     {
+      "cardId": "llanowar_elves",
+      "count": 4
+     },
+     {
+      "cardId": "pelakka_wurm",
+      "count": 2
+     },
+     {
+      "cardId": "rampaging_baloths",
+      "count": 3
+     },
+     {
+      "cardId": "seedborn_muse",
+      "count": 4
+     },
+     {
+      "cardId": "the_emerald_keeper",
+      "count": 2
+     },
+     {
+      "cardId": "treetop_snarespinner",
+      "count": 2
+     },
+     {
+      "cardId": "wood_elves",
+      "count": 4
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "mox_emerald",
+      "count": 1
+     },
+     {
+      "cardId": "prey_upon",
+      "count": 2
+     },
+     {
+      "cardId": "rampant_growth",
+      "count": 4
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "airship_crash",
+      "count": 4
+     },
+     {
+      "cardId": "baru_wurmspeaker",
+      "count": 1
+     },
+     {
+      "cardId": "mox_jet",
+      "count": 1
+     },
+     {
+      "cardId": "mox_pearl",
+      "count": 1
+     },
+     {
+      "cardId": "mox_sapphire",
+      "count": 1
+     },
+     {
+      "cardId": "pelakka_wurm",
+      "count": 2
+     },
+     {
+      "cardId": "rampaging_baloths",
+      "count": 1
+     },
+     {
+      "cardId": "the_emerald_keeper",
+      "count": 2
+     },
+     {
+      "cardId": "titania_protector_of_argoth",
+      "count": 2
+     }
+    ],
+    "list": "open:wurmspeaker",
+    "tinker": "light",
+    "colors": "G",
+    "archetype": "midrange",
+    "pilot": "master",
+    "builder": "light",
+    "noise": 0,
+    "lists": "any"
+   },
+   {
+    "name": "Rosalind Netherby",
+    "face": "beast-seedborn-muse",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "forest",
+      "count": 1
+     },
+     {
+      "cardId": "mountain",
+      "count": 2
+     },
+     {
+      "cardId": "plains",
+      "count": 2
+     },
+     {
+      "cardId": "plateau",
+      "count": 4
+     },
+     {
+      "cardId": "sacred_foundry",
+      "count": 4
+     },
+     {
+      "cardId": "savannah",
+      "count": 4
+     },
+     {
+      "cardId": "taiga",
+      "count": 4
+     },
+     {
+      "cardId": "temple_garden",
+      "count": 2
+     },
+     {
+      "cardId": "grazing_gladehart",
+      "count": 4
+     },
+     {
+      "cardId": "lumen_the_hearth_fire",
+      "count": 3
+     },
+     {
+      "cardId": "restoration_angel",
+      "count": 2
+     },
+     {
+      "cardId": "soul_warden",
+      "count": 4
+     },
+     {
+      "cardId": "the_fordkeeper",
+      "count": 4
+     },
+     {
+      "cardId": "vitalist",
+      "count": 4
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "hordeling_outburst",
+      "count": 1
+     },
+     {
+      "cardId": "lightning_bolt",
+      "count": 3
+     },
+     {
+      "cardId": "mox_emerald",
+      "count": 1
+     },
+     {
+      "cardId": "mox_pearl",
+      "count": 1
+     },
+     {
+      "cardId": "mox_ruby",
+      "count": 1
+     },
+     {
+      "cardId": "sacred_helix",
+      "count": 2
+     },
+     {
+      "cardId": "savage_twister",
+      "count": 2
+     },
+     {
+      "cardId": "spirit_link",
+      "count": 4
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "airship_crash",
+      "count": 2
+     },
+     {
+      "cardId": "disenchant",
+      "count": 2
+     },
+     {
+      "cardId": "emeria_angel",
+      "count": 2
+     },
+     {
+      "cardId": "lumen_the_hearth_fire",
+      "count": 1
+     },
+     {
+      "cardId": "sacred_helix",
+      "count": 2
+     },
+     {
+      "cardId": "savage_twister",
+      "count": 2
+     },
+     {
+      "cardId": "swords_to_plowshares",
+      "count": 3
+     },
+     {
+      "cardId": "the_emerald_keeper",
+      "count": 1
+     }
+    ],
+    "list": "open:ford",
+    "tinker": "light",
+    "colors": "WRG",
+    "archetype": "midrange",
+    "pilot": "master",
+    "builder": "light",
+    "noise": 0.4,
+    "lists": "any"
+   },
+   {
+    "name": "Nicander Birchall",
+    "face": "token-bear",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "forest",
+      "count": 19
+     },
+     {
+      "cardId": "tranquil_thicket",
+      "count": 2
+     },
+     {
+      "cardId": "baru_wurmspeaker",
+      "count": 3
+     },
+     {
+      "cardId": "birds_of_paradise",
+      "count": 4
+     },
+     {
+      "cardId": "gaean_wurm",
+      "count": 3
+     },
+     {
+      "cardId": "llanowar_elves",
+      "count": 4
+     },
+     {
+      "cardId": "pelakka_wurm",
+      "count": 2
+     },
+     {
+      "cardId": "rampaging_baloths",
+      "count": 2
+     },
+     {
+      "cardId": "seedborn_muse",
+      "count": 4
+     },
+     {
+      "cardId": "the_emerald_keeper",
+      "count": 2
+     },
+     {
+      "cardId": "titania_protector_of_argoth",
+      "count": 1
+     },
+     {
+      "cardId": "treetop_snarespinner",
+      "count": 2
+     },
+     {
+      "cardId": "wood_elves",
+      "count": 4
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "mox_emerald",
+      "count": 1
+     },
+     {
+      "cardId": "prey_upon",
+      "count": 2
+     },
+     {
+      "cardId": "rampant_growth",
+      "count": 4
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "airship_crash",
+      "count": 4
+     },
+     {
+      "cardId": "mox_jet",
+      "count": 1
+     },
+     {
+      "cardId": "mox_pearl",
+      "count": 1
+     },
+     {
+      "cardId": "mox_sapphire",
+      "count": 1
+     },
+     {
+      "cardId": "pelakka_wurm",
+      "count": 2
+     },
+     {
+      "cardId": "rampaging_baloths",
+      "count": 2
+     },
+     {
+      "cardId": "the_emerald_keeper",
+      "count": 2
+     },
+     {
+      "cardId": "titania_protector_of_argoth",
+      "count": 2
+     }
+    ],
+    "list": "open:wurmspeaker",
+    "tinker": "light",
+    "colors": "G",
+    "archetype": "midrange",
+    "pilot": "master",
+    "builder": "light",
+    "noise": 0.2,
+    "lists": "top"
+   },
+   {
+    "name": "Briar of the Low Road",
+    "face": "portrait-mage-brennor",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "bayou",
+      "count": 4
+     },
+     {
+      "cardId": "evolving_wilds",
+      "count": 1
+     },
+     {
+      "cardId": "forest",
+      "count": 1
+     },
+     {
+      "cardId": "godless_shrine",
+      "count": 2
+     },
+     {
+      "cardId": "overgrown_tomb",
+      "count": 4
+     },
+     {
+      "cardId": "plains",
+      "count": 1
+     },
+     {
+      "cardId": "scrubland",
+      "count": 4
+     },
+     {
+      "cardId": "swamp",
+      "count": 1
+     },
+     {
+      "cardId": "underground_sea",
+      "count": 2
+     },
+     {
+      "cardId": "watery_grave",
+      "count": 2
+     },
+     {
+      "cardId": "angel_of_the_ruins",
+      "count": 2
+     },
+     {
+      "cardId": "artisan_of_kozilek",
+      "count": 2
+     },
+     {
+      "cardId": "baru_wurmspeaker",
+      "count": 1
+     },
+     {
+      "cardId": "clio_lady_of_the_depths",
+      "count": 1
+     },
+     {
+      "cardId": "gaean_wurm",
+      "count": 1
+     },
+     {
+      "cardId": "pelakka_wurm",
+      "count": 2
+     },
+     {
+      "cardId": "the_reeve",
+      "count": 2
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "buried_alive",
+      "count": 4
+     },
+     {
+      "cardId": "dark_ritual",
+      "count": 4
+     },
+     {
+      "cardId": "demonic_tutor",
+      "count": 1
+     },
+     {
+      "cardId": "duress",
+      "count": 2
+     },
+     {
+      "cardId": "entomb",
+      "count": 4
+     },
+     {
+      "cardId": "graceful_restoration",
+      "count": 3
+     },
+     {
+      "cardId": "mind_stone",
+      "count": 1
+     },
+     {
+      "cardId": "mox_emerald",
+      "count": 1
+     },
+     {
+      "cardId": "mox_jet",
+      "count": 1
+     },
+     {
+      "cardId": "mox_pearl",
+      "count": 1
+     },
+     {
+      "cardId": "mox_sapphire",
+      "count": 1
+     },
+     {
+      "cardId": "zombify",
+      "count": 3
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "clio_lady_of_the_depths",
+      "count": 2
+     },
+     {
+      "cardId": "drana_kalastria_bloodchief",
+      "count": 2
+     },
+     {
+      "cardId": "putrefy",
+      "count": 4
+     },
+     {
+      "cardId": "swords_to_plowshares",
+      "count": 1
+     },
+     {
+      "cardId": "the_sower",
+      "count": 1
+     },
+     {
+      "cardId": "time_walk",
+      "count": 1
+     },
+     {
+      "cardId": "vindicate",
+      "count": 4
+     }
+    ],
+    "list": "open:larder",
+    "tinker": "light",
+    "colors": "BGWU",
+    "archetype": "midrange",
+    "pilot": "master",
+    "builder": "light",
+    "noise": 0,
+    "lists": "any"
+   },
+   {
+    "name": "Hesper Lune",
+    "face": "portrait-mage-pell",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "mountain",
+      "count": 4
+     },
+     {
+      "cardId": "plains",
+      "count": 9
+     },
+     {
+      "cardId": "plateau",
+      "count": 4
+     },
+     {
+      "cardId": "sacred_foundry",
+      "count": 4
+     },
+     {
+      "cardId": "secluded_steppe",
+      "count": 2
+     },
+     {
+      "cardId": "emeria_angel",
+      "count": 3
+     },
+     {
+      "cardId": "fencing_ace",
+      "count": 2
+     },
+     {
+      "cardId": "savannah_lions",
+      "count": 3
+     },
+     {
+      "cardId": "shocking_sharpshooter",
+      "count": 3
+     },
+     {
+      "cardId": "soul_warden",
+      "count": 3
+     },
+     {
+      "cardId": "suntail_hawk",
+      "count": 4
+     },
+     {
+      "cardId": "the_pearl_cleric",
+      "count": 1
+     },
+     {
+      "cardId": "vitalist",
+      "count": 2
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "glorious_anthem",
+      "count": 4
+     },
+     {
+      "cardId": "lightning_bolt",
+      "count": 4
+     },
+     {
+      "cardId": "mox_pearl",
+      "count": 1
+     },
+     {
+      "cardId": "mox_ruby",
+      "count": 1
+     },
+     {
+      "cardId": "pyroclasm",
+      "count": 1
+     },
+     {
+      "cardId": "raise_the_alarm",
+      "count": 2
+     },
+     {
+      "cardId": "swords_to_plowshares",
+      "count": 2
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "disenchant",
+      "count": 2
+     },
+     {
+      "cardId": "emeria_angel",
+      "count": 1
+     },
+     {
+      "cardId": "lumen_the_hearth_fire",
+      "count": 2
+     },
+     {
+      "cardId": "mox_jet",
+      "count": 1
+     },
+     {
+      "cardId": "mox_sapphire",
+      "count": 1
+     },
+     {
+      "cardId": "reya_dawnbringer",
+      "count": 2
+     },
+     {
+      "cardId": "sacred_helix",
+      "count": 4
+     },
+     {
+      "cardId": "swords_to_plowshares",
+      "count": 2
+     }
+    ],
+    "list": "open:muster",
+    "tinker": "heavy",
+    "colors": "WR",
+    "archetype": "aggro",
+    "pilot": "master",
+    "builder": "heavy",
+    "noise": 0,
+    "lists": "top"
+   },
+   {
+    "name": "Odalys Wintermere",
+    "face": "portrait-mage-edric",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "evolving_wilds",
+      "count": 4
+     },
+     {
+      "cardId": "godless_shrine",
+      "count": 4
+     },
+     {
+      "cardId": "obsidian_observatory",
+      "count": 1
+     },
+     {
+      "cardId": "plains",
+      "count": 6
+     },
+     {
+      "cardId": "scrubland",
+      "count": 4
+     },
+     {
+      "cardId": "swamp",
+      "count": 5
+     },
+     {
+      "cardId": "thawing_glaciers",
+      "count": 1
+     },
+     {
+      "cardId": "dread_presence",
+      "count": 4
+     },
+     {
+      "cardId": "emeria_angel",
+      "count": 4
+     },
+     {
+      "cardId": "isaura_the_levy",
+      "count": 1
+     },
+     {
+      "cardId": "serra_angel",
+      "count": 1
+     },
+     {
+      "cardId": "soul_warden",
+      "count": 4
+     },
+     {
+      "cardId": "vampire_nighthawk",
+      "count": 1
+     },
+     {
+      "cardId": "bitterblossom",
+      "count": 3
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "glorious_anthem",
+      "count": 2
+     },
+     {
+      "cardId": "mox_jet",
+      "count": 1
+     },
+     {
+      "cardId": "mox_pearl",
+      "count": 1
+     },
+     {
+      "cardId": "raise_the_alarm",
+      "count": 3
+     },
+     {
+      "cardId": "shadow_summoning",
+      "count": 2
+     },
+     {
+      "cardId": "swords_to_plowshares",
+      "count": 3
+     },
+     {
+      "cardId": "vindicate",
+      "count": 4
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "demonic_tutor",
+      "count": 1
+     },
+     {
+      "cardId": "disenchant",
+      "count": 2
+     },
+     {
+      "cardId": "doom_blade",
+      "count": 3
+     },
+     {
+      "cardId": "drana_kalastria_bloodchief",
+      "count": 2
+     },
+     {
+      "cardId": "isaura_the_levy",
+      "count": 2
+     },
+     {
+      "cardId": "mox_sapphire",
+      "count": 1
+     },
+     {
+      "cardId": "shadow_summoning",
+      "count": 2
+     },
+     {
+      "cardId": "swords_to_plowshares",
+      "count": 1
+     },
+     {
+      "cardId": "tendrils_of_corruption",
+      "count": 1
+     }
+    ],
+    "list": "open:levy",
+    "tinker": "light",
+    "colors": "WB",
+    "archetype": "midrange",
+    "pilot": "master",
+    "builder": "light",
+    "noise": 0.2,
+    "lists": "top"
+   },
+   {
+    "name": "Kester of the Weir",
+    "face": "token-faerie",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "bayou",
+      "count": 4
+     },
+     {
+      "cardId": "breeding_pool",
+      "count": 1
+     },
+     {
+      "cardId": "island",
+      "count": 1
+     },
+     {
+      "cardId": "library_of_alexandria",
+      "count": 1
+     },
+     {
+      "cardId": "tropical_island",
+      "count": 4
+     },
+     {
+      "cardId": "underground_sea",
+      "count": 4
+     },
+     {
+      "cardId": "watery_grave",
+      "count": 1
+     },
+     {
+      "cardId": "wrackroot",
+      "count": 1
+     },
+     {
+      "cardId": "arcane_collector",
+      "count": 1
+     },
+     {
+      "cardId": "arcanis_the_omnipotent",
+      "count": 1
+     },
+     {
+      "cardId": "birds_of_paradise",
+      "count": 4
+     },
+     {
+      "cardId": "clio_lady_of_the_depths",
+      "count": 4
+     },
+     {
+      "cardId": "drana_kalastria_bloodchief",
+      "count": 1
+     },
+     {
+      "cardId": "faerie_formation",
+      "count": 1
+     },
+     {
+      "cardId": "mystic_snake",
+      "count": 1
+     },
+     {
+      "cardId": "the_reeve",
+      "count": 1
+     },
+     {
+      "cardId": "tidewall",
+      "count": 4
+     },
+     {
+      "cardId": "traumatizer",
+      "count": 2
+     },
+     {
+      "cardId": "wall_of_blossoms",
+      "count": 1
+     },
+     {
+      "cardId": "zinnia_the_undertow",
+      "count": 1
+     },
+     {
+      "cardId": "aether_mutation",
+      "count": 1
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "brainstorm",
+      "count": 1
+     },
+     {
+      "cardId": "control_magic",
+      "count": 2
+     },
+     {
+      "cardId": "counterspell",
+      "count": 4
+     },
+     {
+      "cardId": "mox_emerald",
+      "count": 1
+     },
+     {
+      "cardId": "mox_jet",
+      "count": 1
+     },
+     {
+      "cardId": "mox_pearl",
+      "count": 1
+     },
+     {
+      "cardId": "mox_ruby",
+      "count": 1
+     },
+     {
+      "cardId": "mox_sapphire",
+      "count": 1
+     },
+     {
+      "cardId": "putrefy",
+      "count": 1
+     },
+     {
+      "cardId": "temporal_spring",
+      "count": 2
+     },
+     {
+      "cardId": "time_walk",
+      "count": 1
+     },
+     {
+      "cardId": "undermine",
+      "count": 2
+     },
+     {
+      "cardId": "zombify",
+      "count": 1
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "airship_crash",
+      "count": 2
+     },
+     {
+      "cardId": "control_magic",
+      "count": 2
+     },
+     {
+      "cardId": "doom_blade",
+      "count": 3
+     },
+     {
+      "cardId": "drana_kalastria_bloodchief",
+      "count": 2
+     },
+     {
+      "cardId": "putrefy",
+      "count": 3
+     },
+     {
+      "cardId": "seraphina_the_initiative",
+      "count": 2
+     },
+     {
+      "cardId": "tendrils_of_corruption",
+      "count": 1
+     }
+    ],
+    "list": "open:depths",
+    "tinker": "light",
+    "colors": "UBG",
+    "archetype": "control",
+    "pilot": "master",
+    "builder": "light",
+    "noise": 0.2,
+    "lists": "any"
+   },
+   {
+    "name": "Ilse Marrowgate",
+    "face": "portrait-mage-corvane",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "forest",
+      "count": 21
+     },
+     {
+      "cardId": "tranquil_thicket",
+      "count": 2
+     },
+     {
+      "cardId": "artisan_of_kozilek",
+      "count": 1
+     },
+     {
+      "cardId": "baru_wurmspeaker",
+      "count": 2
+     },
+     {
+      "cardId": "birds_of_paradise",
+      "count": 3
+     },
+     {
+      "cardId": "gaean_wurm",
+      "count": 4
+     },
+     {
+      "cardId": "llanowar_elves",
+      "count": 4
+     },
+     {
+      "cardId": "pelakka_wurm",
+      "count": 2
+     },
+     {
+      "cardId": "rampaging_baloths",
+      "count": 3
+     },
+     {
+      "cardId": "seedborn_muse",
+      "count": 3
+     },
+     {
+      "cardId": "the_emerald_keeper",
+      "count": 2
+     },
+     {
+      "cardId": "treetop_snarespinner",
+      "count": 2
+     },
+     {
+      "cardId": "wood_elves",
+      "count": 4
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "mox_emerald",
+      "count": 1
+     },
+     {
+      "cardId": "prey_upon",
+      "count": 2
+     },
+     {
+      "cardId": "rampant_growth",
+      "count": 3
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "airship_crash",
+      "count": 4
+     },
+     {
+      "cardId": "baru_wurmspeaker",
+      "count": 1
+     },
+     {
+      "cardId": "mox_jet",
+      "count": 1
+     },
+     {
+      "cardId": "mox_pearl",
+      "count": 1
+     },
+     {
+      "cardId": "mox_sapphire",
+      "count": 1
+     },
+     {
+      "cardId": "pelakka_wurm",
+      "count": 2
+     },
+     {
+      "cardId": "rampaging_baloths",
+      "count": 1
+     },
+     {
+      "cardId": "the_emerald_keeper",
+      "count": 2
+     },
+     {
+      "cardId": "titania_protector_of_argoth",
+      "count": 2
+     }
+    ],
+    "list": "open:wurmspeaker",
+    "tinker": "heavy",
+    "colors": "G",
+    "archetype": "midrange",
+    "pilot": "master",
+    "builder": "heavy",
+    "noise": 0,
+    "lists": "low"
+   },
+   {
+    "name": "Osric Fenn",
+    "face": "portrait-mage-maelin",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "evolving_wilds",
+      "count": 4
+     },
+     {
+      "cardId": "godless_shrine",
+      "count": 4
+     },
+     {
+      "cardId": "obsidian_observatory",
+      "count": 1
+     },
+     {
+      "cardId": "plains",
+      "count": 4
+     },
+     {
+      "cardId": "scrubland",
+      "count": 4
+     },
+     {
+      "cardId": "swamp",
+      "count": 5
+     },
+     {
+      "cardId": "thawing_glaciers",
+      "count": 1
+     },
+     {
+      "cardId": "drana_kalastria_bloodchief",
+      "count": 1
+     },
+     {
+      "cardId": "dread_presence",
+      "count": 4
+     },
+     {
+      "cardId": "emeria_angel",
+      "count": 3
+     },
+     {
+      "cardId": "isaura_the_levy",
+      "count": 2
+     },
+     {
+      "cardId": "reassembling_skeleton",
+      "count": 1
+     },
+     {
+      "cardId": "serra_angel",
+      "count": 1
+     },
+     {
+      "cardId": "soul_warden",
+      "count": 3
+     },
+     {
+      "cardId": "vampire_nighthawk",
+      "count": 1
+     },
+     {
+      "cardId": "bitterblossom",
+      "count": 2
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "glorious_anthem",
+      "count": 3
+     },
+     {
+      "cardId": "graceful_restoration",
+      "count": 1
+     },
+     {
+      "cardId": "mox_jet",
+      "count": 1
+     },
+     {
+      "cardId": "mox_pearl",
+      "count": 1
+     },
+     {
+      "cardId": "raise_the_alarm",
+      "count": 4
+     },
+     {
+      "cardId": "shadow_summoning",
+      "count": 2
+     },
+     {
+      "cardId": "swords_to_plowshares",
+      "count": 2
+     },
+     {
+      "cardId": "vindicate",
+      "count": 4
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "demonic_tutor",
+      "count": 1
+     },
+     {
+      "cardId": "disenchant",
+      "count": 2
+     },
+     {
+      "cardId": "doom_blade",
+      "count": 3
+     },
+     {
+      "cardId": "drana_kalastria_bloodchief",
+      "count": 2
+     },
+     {
+      "cardId": "emeria_angel",
+      "count": 1
+     },
+     {
+      "cardId": "isaura_the_levy",
+      "count": 2
+     },
+     {
+      "cardId": "shadow_summoning",
+      "count": 2
+     },
+     {
+      "cardId": "swords_to_plowshares",
+      "count": 2
+     }
+    ],
+    "list": "open:levy",
+    "tinker": "heavy",
+    "colors": "WB",
+    "archetype": "midrange",
+    "pilot": "master",
+    "builder": "heavy",
+    "noise": 0,
+    "lists": "any"
+   },
+   {
+    "name": "Caro Candlewick",
+    "face": "beast-cunning-tactician",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "badlands",
+      "count": 4
+     },
+     {
+      "cardId": "barren_moor",
+      "count": 4
+     },
+     {
+      "cardId": "blood_crypt",
+      "count": 4
+     },
+     {
+      "cardId": "cairnbrand",
+      "count": 1
+     },
+     {
+      "cardId": "godless_shrine",
+      "count": 4
+     },
+     {
+      "cardId": "scrubland",
+      "count": 4
+     },
+     {
+      "cardId": "blood_artist",
+      "count": 4
+     },
+     {
+      "cardId": "the_jet_witch",
+      "count": 4
+     },
+     {
+      "cardId": "the_usher",
+      "count": 4
+     },
+     {
+      "cardId": "typhoid_rats",
+      "count": 4
+     },
+     {
+      "cardId": "vampire_nighthawk",
+      "count": 4
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "buried_alive",
+      "count": 4
+     },
+     {
+      "cardId": "dark_ritual",
+      "count": 4
+     },
+     {
+      "cardId": "demonic_tutor",
+      "count": 1
+     },
+     {
+      "cardId": "mox_jet",
+      "count": 1
+     },
+     {
+      "cardId": "mox_pearl",
+      "count": 1
+     },
+     {
+      "cardId": "mox_ruby",
+      "count": 1
+     },
+     {
+      "cardId": "tendrils_of_corruption",
+      "count": 2
+     },
+     {
+      "cardId": "zombify",
+      "count": 4
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "tendrils_of_corruption",
+      "count": 2
+     },
+     {
+      "cardId": "drana_kalastria_bloodchief",
+      "count": 1
+     },
+     {
+      "cardId": "nekrataal",
+      "count": 1
+     },
+     {
+      "cardId": "hymn_to_tourach",
+      "count": 4
+     },
+     {
+      "cardId": "indulgent_aristocrat",
+      "count": 4
+     },
+     {
+      "cardId": "hypnotic_specter",
+      "count": 3
+     }
+    ],
+    "list": "open:pall",
+    "tinker": "stock",
+    "colors": "BRW",
+    "archetype": "combo",
+    "pilot": "master",
+    "builder": "stock",
+    "noise": 0.2,
+    "lists": "top"
+   },
+   {
+    "name": "Wyn Cordovan",
+    "face": "token-faerie-rogue",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "badlands",
+      "count": 4
+     },
+     {
+      "cardId": "barren_moor",
+      "count": 4
+     },
+     {
+      "cardId": "blood_crypt",
+      "count": 4
+     },
+     {
+      "cardId": "cairnbrand",
+      "count": 1
+     },
+     {
+      "cardId": "godless_shrine",
+      "count": 4
+     },
+     {
+      "cardId": "scrubland",
+      "count": 4
+     },
+     {
+      "cardId": "swamp",
+      "count": 1
+     },
+     {
+      "cardId": "blood_artist",
+      "count": 4
+     },
+     {
+      "cardId": "darksteel_myr",
+      "count": 1
+     },
+     {
+      "cardId": "the_jet_witch",
+      "count": 4
+     },
+     {
+      "cardId": "the_usher",
+      "count": 4
+     },
+     {
+      "cardId": "typhoid_rats",
+      "count": 3
+     },
+     {
+      "cardId": "vampire_nighthawk",
+      "count": 4
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "buried_alive",
+      "count": 3
+     },
+     {
+      "cardId": "dark_ritual",
+      "count": 4
+     },
+     {
+      "cardId": "demonic_tutor",
+      "count": 1
+     },
+     {
+      "cardId": "mox_jet",
+      "count": 1
+     },
+     {
+      "cardId": "mox_pearl",
+      "count": 1
+     },
+     {
+      "cardId": "mox_ruby",
+      "count": 1
+     },
+     {
+      "cardId": "tendrils_of_corruption",
+      "count": 2
+     },
+     {
+      "cardId": "zombify",
+      "count": 4
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "tendrils_of_corruption",
+      "count": 2
+     },
+     {
+      "cardId": "drana_kalastria_bloodchief",
+      "count": 1
+     },
+     {
+      "cardId": "nekrataal",
+      "count": 1
+     },
+     {
+      "cardId": "hymn_to_tourach",
+      "count": 4
+     },
+     {
+      "cardId": "indulgent_aristocrat",
+      "count": 4
+     },
+     {
+      "cardId": "hypnotic_specter",
+      "count": 3
+     }
+    ],
+    "list": "open:pall",
+    "tinker": "light",
+    "colors": "BRW",
+    "archetype": "combo",
+    "pilot": "master",
+    "builder": "light",
+    "noise": 0,
+    "lists": "any"
+   },
+   {
+    "name": "Ysolt Garrow",
+    "face": "portrait-mage-varro",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "badlands",
+      "count": 4
+     },
+     {
+      "cardId": "blood_crypt",
+      "count": 1
+     },
+     {
+      "cardId": "cairnbrand",
+      "count": 1
+     },
+     {
+      "cardId": "godless_shrine",
+      "count": 1
+     },
+     {
+      "cardId": "obsidian_observatory",
+      "count": 1
+     },
+     {
+      "cardId": "plateau",
+      "count": 4
+     },
+     {
+      "cardId": "sacred_foundry",
+      "count": 1
+     },
+     {
+      "cardId": "savannah",
+      "count": 1
+     },
+     {
+      "cardId": "scrubland",
+      "count": 4
+     },
+     {
+      "cardId": "shevelport",
+      "count": 1
+     },
+     {
+      "cardId": "tallyflame_court",
+      "count": 1
+     },
+     {
+      "cardId": "tundra",
+      "count": 1
+     },
+     {
+      "cardId": "drana_kalastria_bloodchief",
+      "count": 3
+     },
+     {
+      "cardId": "flametongue_kavu",
+      "count": 1
+     },
+     {
+      "cardId": "lumen_the_hearth_fire",
+      "count": 4
+     },
+     {
+      "cardId": "restoration_angel",
+      "count": 4
+     },
+     {
+      "cardId": "soul_warden",
+      "count": 2
+     },
+     {
+      "cardId": "the_jet_witch",
+      "count": 1
+     },
+     {
+      "cardId": "the_usher",
+      "count": 2
+     },
+     {
+      "cardId": "vampire_nighthawk",
+      "count": 1
+     },
+     {
+      "cardId": "altar_of_dementia",
+      "count": 3
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "demonic_tutor",
+      "count": 1
+     },
+     {
+      "cardId": "doom_blade",
+      "count": 1
+     },
+     {
+      "cardId": "glorious_anthem",
+      "count": 1
+     },
+     {
+      "cardId": "graceful_restoration",
+      "count": 1
+     },
+     {
+      "cardId": "mox_emerald",
+      "count": 1
+     },
+     {
+      "cardId": "mox_jet",
+      "count": 1
+     },
+     {
+      "cardId": "mox_pearl",
+      "count": 1
+     },
+     {
+      "cardId": "mox_ruby",
+      "count": 1
+     },
+     {
+      "cardId": "mox_sapphire",
+      "count": 1
+     },
+     {
+      "cardId": "powerstone_minefield",
+      "count": 1
+     },
+     {
+      "cardId": "sacred_helix",
+      "count": 2
+     },
+     {
+      "cardId": "swords_to_plowshares",
+      "count": 1
+     },
+     {
+      "cardId": "vindicate",
+      "count": 3
+     },
+     {
+      "cardId": "wrath_of_god",
+      "count": 1
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "disenchant",
+      "count": 2
+     },
+     {
+      "cardId": "drana_kalastria_bloodchief",
+      "count": 1
+     },
+     {
+      "cardId": "isaura_the_levy",
+      "count": 2
+     },
+     {
+      "cardId": "phyrexian_purge",
+      "count": 3
+     },
+     {
+      "cardId": "sacred_helix",
+      "count": 2
+     },
+     {
+      "cardId": "shadow_summoning",
+      "count": 2
+     },
+     {
+      "cardId": "the_usher",
+      "count": 2
+     },
+     {
+      "cardId": "vindicate",
+      "count": 1
+     }
+    ],
+    "list": "open:hearth",
+    "tinker": "heavy",
+    "colors": "WBR",
+    "archetype": "midrange",
+    "pilot": "master",
+    "builder": "heavy",
+    "noise": 0,
+    "lists": "any"
+   },
+   {
+    "name": "Verity Brackwater",
+    "face": "token-sphinx",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "forest",
+      "count": 6
+     },
+     {
+      "cardId": "plains",
+      "count": 6
+     },
+     {
+      "cardId": "savannah",
+      "count": 4
+     },
+     {
+      "cardId": "shevelport",
+      "count": 1
+     },
+     {
+      "cardId": "temple_garden",
+      "count": 4
+     },
+     {
+      "cardId": "blurred_mongoose",
+      "count": 4
+     },
+     {
+      "cardId": "gladecover_scout",
+      "count": 3
+     },
+     {
+      "cardId": "ovna_the_enchantress",
+      "count": 4
+     },
+     {
+      "cardId": "the_emerald_keeper",
+      "count": 3
+     },
+     {
+      "cardId": "timberland_guide",
+      "count": 3
+     },
+     {
+      "cardId": "angelic_destiny",
+      "count": 3
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "blanchwood_armor",
+      "count": 4
+     },
+     {
+      "cardId": "glare_of_subdual",
+      "count": 2
+     },
+     {
+      "cardId": "mox_emerald",
+      "count": 1
+     },
+     {
+      "cardId": "mox_pearl",
+      "count": 1
+     },
+     {
+      "cardId": "pacifism",
+      "count": 3
+     },
+     {
+      "cardId": "rancor",
+      "count": 4
+     },
+     {
+      "cardId": "spirit_link",
+      "count": 3
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "airship_crash",
+      "count": 4
+     },
+     {
+      "cardId": "disenchant",
+      "count": 2
+     },
+     {
+      "cardId": "emeria_angel",
+      "count": 2
+     },
+     {
+      "cardId": "mox_sapphire",
+      "count": 1
+     },
+     {
+      "cardId": "rampaging_baloths",
+      "count": 2
+     },
+     {
+      "cardId": "swords_to_plowshares",
+      "count": 3
+     },
+     {
+      "cardId": "the_emerald_keeper",
+      "count": 1
+     }
+    ],
+    "list": "open:enchantress",
+    "tinker": "light",
+    "colors": "GW",
+    "archetype": "aggro",
+    "pilot": "master",
+    "builder": "light",
+    "noise": 0.2,
+    "lists": "any"
+   },
+   {
+    "name": "Ignatius Reed",
+    "face": "token-soldier",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "bayou",
+      "count": 4
+     },
+     {
+      "cardId": "evolving_wilds",
+      "count": 1
+     },
+     {
+      "cardId": "forest",
+      "count": 1
+     },
+     {
+      "cardId": "godless_shrine",
+      "count": 2
+     },
+     {
+      "cardId": "overgrown_tomb",
+      "count": 4
+     },
+     {
+      "cardId": "plains",
+      "count": 1
+     },
+     {
+      "cardId": "scrubland",
+      "count": 4
+     },
+     {
+      "cardId": "swamp",
+      "count": 1
+     },
+     {
+      "cardId": "underground_sea",
+      "count": 2
+     },
+     {
+      "cardId": "watery_grave",
+      "count": 2
+     },
+     {
+      "cardId": "angel_of_the_ruins",
+      "count": 2
+     },
+     {
+      "cardId": "artisan_of_kozilek",
+      "count": 2
+     },
+     {
+      "cardId": "baru_wurmspeaker",
+      "count": 1
+     },
+     {
+      "cardId": "clio_lady_of_the_depths",
+      "count": 1
+     },
+     {
+      "cardId": "gaean_wurm",
+      "count": 1
+     },
+     {
+      "cardId": "pelakka_wurm",
+      "count": 2
+     },
+     {
+      "cardId": "serra_angel",
+      "count": 1
+     },
+     {
+      "cardId": "the_reeve",
+      "count": 1
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "buried_alive",
+      "count": 4
+     },
+     {
+      "cardId": "dark_ritual",
+      "count": 4
+     },
+     {
+      "cardId": "demonic_tutor",
+      "count": 1
+     },
+     {
+      "cardId": "duress",
+      "count": 2
+     },
+     {
+      "cardId": "entomb",
+      "count": 4
+     },
+     {
+      "cardId": "graceful_restoration",
+      "count": 3
+     },
+     {
+      "cardId": "mox_emerald",
+      "count": 1
+     },
+     {
+      "cardId": "mox_jet",
+      "count": 1
+     },
+     {
+      "cardId": "mox_pearl",
+      "count": 1
+     },
+     {
+      "cardId": "mox_sapphire",
+      "count": 1
+     },
+     {
+      "cardId": "zombify",
+      "count": 4
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "clio_lady_of_the_depths",
+      "count": 2
+     },
+     {
+      "cardId": "drana_kalastria_bloodchief",
+      "count": 2
+     },
+     {
+      "cardId": "putrefy",
+      "count": 4
+     },
+     {
+      "cardId": "swords_to_plowshares",
+      "count": 1
+     },
+     {
+      "cardId": "the_sower",
+      "count": 1
+     },
+     {
+      "cardId": "time_walk",
+      "count": 1
+     },
+     {
+      "cardId": "vindicate",
+      "count": 4
+     }
+    ],
+    "list": "open:larder",
+    "tinker": "light",
+    "colors": "BGWU",
+    "archetype": "midrange",
+    "pilot": "master",
+    "builder": "light",
+    "noise": 0.2,
+    "lists": "any"
+   },
+   {
+    "name": "Garran Oakhollow",
+    "face": "portrait-mage-sorrel",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "badlands",
+      "count": 4
+     },
+     {
+      "cardId": "barren_moor",
+      "count": 4
+     },
+     {
+      "cardId": "blood_crypt",
+      "count": 4
+     },
+     {
+      "cardId": "cairnbrand",
+      "count": 1
+     },
+     {
+      "cardId": "godless_shrine",
+      "count": 4
+     },
+     {
+      "cardId": "scrubland",
+      "count": 4
+     },
+     {
+      "cardId": "blood_artist",
+      "count": 4
+     },
+     {
+      "cardId": "emeria_angel",
+      "count": 1
+     },
+     {
+      "cardId": "the_jet_witch",
+      "count": 3
+     },
+     {
+      "cardId": "the_usher",
+      "count": 4
+     },
+     {
+      "cardId": "typhoid_rats",
+      "count": 4
+     },
+     {
+      "cardId": "vampire_nighthawk",
+      "count": 4
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "buried_alive",
+      "count": 4
+     },
+     {
+      "cardId": "dark_ritual",
+      "count": 4
+     },
+     {
+      "cardId": "demonic_tutor",
+      "count": 1
+     },
+     {
+      "cardId": "mox_jet",
+      "count": 1
+     },
+     {
+      "cardId": "mox_pearl",
+      "count": 1
+     },
+     {
+      "cardId": "mox_ruby",
+      "count": 1
+     },
+     {
+      "cardId": "tendrils_of_corruption",
+      "count": 2
+     },
+     {
+      "cardId": "zombify",
+      "count": 4
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "tendrils_of_corruption",
+      "count": 2
+     },
+     {
+      "cardId": "drana_kalastria_bloodchief",
+      "count": 1
+     },
+     {
+      "cardId": "nekrataal",
+      "count": 1
+     },
+     {
+      "cardId": "hymn_to_tourach",
+      "count": 4
+     },
+     {
+      "cardId": "indulgent_aristocrat",
+      "count": 4
+     },
+     {
+      "cardId": "hypnotic_specter",
+      "count": 3
+     }
+    ],
+    "list": "open:pall",
+    "tinker": "light",
+    "colors": "BWR",
+    "archetype": "combo",
+    "pilot": "master",
+    "builder": "light",
+    "noise": 0.2,
+    "lists": "top"
+   },
+   {
+    "name": "Nerys Fallow",
+    "face": "beast-living-gale",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "bayou",
+      "count": 4
+     },
+     {
+      "cardId": "evolving_wilds",
+      "count": 1
+     },
+     {
+      "cardId": "forest",
+      "count": 1
+     },
+     {
+      "cardId": "godless_shrine",
+      "count": 2
+     },
+     {
+      "cardId": "overgrown_tomb",
+      "count": 4
+     },
+     {
+      "cardId": "plains",
+      "count": 1
+     },
+     {
+      "cardId": "scrubland",
+      "count": 4
+     },
+     {
+      "cardId": "swamp",
+      "count": 3
+     },
+     {
+      "cardId": "underground_sea",
+      "count": 2
+     },
+     {
+      "cardId": "watery_grave",
+      "count": 2
+     },
+     {
+      "cardId": "angel_of_the_ruins",
+      "count": 2
+     },
+     {
+      "cardId": "artisan_of_kozilek",
+      "count": 2
+     },
+     {
+      "cardId": "pelakka_wurm",
+      "count": 2
+     },
+     {
+      "cardId": "the_reeve",
+      "count": 2
+     },
+     {
+      "cardId": "the_sapphire_sage",
+      "count": 1
+     },
+     {
+      "cardId": "traumatizer",
+      "count": 1
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "buried_alive",
+      "count": 3
+     },
+     {
+      "cardId": "dark_ritual",
+      "count": 4
+     },
+     {
+      "cardId": "demonic_tutor",
+      "count": 1
+     },
+     {
+      "cardId": "duress",
+      "count": 2
+     },
+     {
+      "cardId": "entomb",
+      "count": 4
+     },
+     {
+      "cardId": "graceful_restoration",
+      "count": 3
+     },
+     {
+      "cardId": "mox_emerald",
+      "count": 1
+     },
+     {
+      "cardId": "mox_jet",
+      "count": 1
+     },
+     {
+      "cardId": "mox_pearl",
+      "count": 1
+     },
+     {
+      "cardId": "mox_sapphire",
+      "count": 1
+     },
+     {
+      "cardId": "zombify",
+      "count": 4
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "clio_lady_of_the_depths",
+      "count": 2
+     },
+     {
+      "cardId": "drana_kalastria_bloodchief",
+      "count": 2
+     },
+     {
+      "cardId": "putrefy",
+      "count": 4
+     },
+     {
+      "cardId": "swords_to_plowshares",
+      "count": 1
+     },
+     {
+      "cardId": "the_sower",
+      "count": 1
+     },
+     {
+      "cardId": "time_walk",
+      "count": 1
+     },
+     {
+      "cardId": "vindicate",
+      "count": 4
+     }
+    ],
+    "list": "open:larder",
+    "tinker": "light",
+    "colors": "BGUW",
+    "archetype": "midrange",
+    "pilot": "master",
+    "builder": "light",
+    "noise": 0.2,
+    "lists": "low"
+   },
+   {
+    "name": "Corvin Hale",
+    "face": "beast-siege-gang",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "badlands",
+      "count": 4
+     },
+     {
+      "cardId": "bayou",
+      "count": 4
+     },
+     {
+      "cardId": "cairnbrand",
+      "count": 1
+     },
+     {
+      "cardId": "obsidian_observatory",
+      "count": 1
+     },
+     {
+      "cardId": "savannah",
+      "count": 1
+     },
+     {
+      "cardId": "shevelport",
+      "count": 1
+     },
+     {
+      "cardId": "swamp",
+      "count": 1
+     },
+     {
+      "cardId": "taiga",
+      "count": 4
+     },
+     {
+      "cardId": "tallyflame_court",
+      "count": 1
+     },
+     {
+      "cardId": "underground_sea",
+      "count": 1
+     },
+     {
+      "cardId": "artisan_of_kozilek",
+      "count": 1
+     },
+     {
+      "cardId": "birds_of_paradise",
+      "count": 4
+     },
+     {
+      "cardId": "blood_artist",
+      "count": 4
+     },
+     {
+      "cardId": "drakuseth_maw_of_flames",
+      "count": 1
+     },
+     {
+      "cardId": "meliyan_the_torment",
+      "count": 2
+     },
+     {
+      "cardId": "seasoned_pyromancer",
+      "count": 1
+     },
+     {
+      "cardId": "shocking_sharpshooter",
+      "count": 4
+     },
+     {
+      "cardId": "the_jet_witch",
+      "count": 1
+     },
+     {
+      "cardId": "the_reaper",
+      "count": 4
+     },
+     {
+      "cardId": "vampire_nighthawk",
+      "count": 2
+     },
+     {
+      "cardId": "voracious_cobra",
+      "count": 1
+     },
+     {
+      "cardId": "bitterblossom",
+      "count": 3
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "mox_emerald",
+      "count": 1
+     },
+     {
+      "cardId": "mox_jet",
+      "count": 1
+     },
+     {
+      "cardId": "mox_pearl",
+      "count": 1
+     },
+     {
+      "cardId": "mox_ruby",
+      "count": 1
+     },
+     {
+      "cardId": "mox_sapphire",
+      "count": 1
+     },
+     {
+      "cardId": "prey_upon",
+      "count": 1
+     },
+     {
+      "cardId": "putrefy",
+      "count": 3
+     },
+     {
+      "cardId": "rancor",
+      "count": 2
+     },
+     {
+      "cardId": "savage_twister",
+      "count": 1
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "airship_crash",
+      "count": 2
+     },
+     {
+      "cardId": "demonic_tutor",
+      "count": 1
+     },
+     {
+      "cardId": "doom_blade",
+      "count": 2
+     },
+     {
+      "cardId": "drana_kalastria_bloodchief",
+      "count": 2
+     },
+     {
+      "cardId": "phyrexian_purge",
+      "count": 3
+     },
+     {
+      "cardId": "putrefy",
+      "count": 1
+     },
+     {
+      "cardId": "savage_twister",
+      "count": 2
+     },
+     {
+      "cardId": "seraphina_the_initiative",
+      "count": 2
+     }
+    ],
+    "list": "open:sweep",
+    "tinker": "heavy",
+    "colors": "BGR",
+    "archetype": "midrange",
+    "pilot": "master",
+    "builder": "heavy",
+    "noise": 0,
+    "lists": "top"
+   },
+   {
+    "name": "Fenwick Dunmere",
+    "face": "token-wurm",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "bayou",
+      "count": 2
+     },
+     {
+      "cardId": "evolving_wilds",
+      "count": 4
+     },
+     {
+      "cardId": "forest",
+      "count": 2
+     },
+     {
+      "cardId": "island",
+      "count": 2
+     },
+     {
+      "cardId": "swamp",
+      "count": 1
+     },
+     {
+      "cardId": "thawing_glaciers",
+      "count": 1
+     },
+     {
+      "cardId": "tropical_island",
+      "count": 4
+     },
+     {
+      "cardId": "underground_sea",
+      "count": 4
+     },
+     {
+      "cardId": "wrackroot",
+      "count": 1
+     },
+     {
+      "cardId": "clio_lady_of_the_depths",
+      "count": 4
+     },
+     {
+      "cardId": "hedron_crab",
+      "count": 4
+     },
+     {
+      "cardId": "man_o_war",
+      "count": 2
+     },
+     {
+      "cardId": "tidewall",
+      "count": 4
+     },
+     {
+      "cardId": "traumatizer",
+      "count": 4
+     },
+     {
+      "cardId": "zinnia_the_undertow",
+      "count": 3
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "boomerang",
+      "count": 3
+     },
+     {
+      "cardId": "counterspell",
+      "count": 3
+     },
+     {
+      "cardId": "essence_scatter",
+      "count": 2
+     },
+     {
+      "cardId": "glimpse_the_unthinkable",
+      "count": 4
+     },
+     {
+      "cardId": "mox_emerald",
+      "count": 1
+     },
+     {
+      "cardId": "mox_jet",
+      "count": 1
+     },
+     {
+      "cardId": "mox_sapphire",
+      "count": 1
+     },
+     {
+      "cardId": "temporal_spring",
+      "count": 2
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "airship_crash",
+      "count": 2
+     },
+     {
+      "cardId": "control_magic",
+      "count": 2
+     },
+     {
+      "cardId": "doom_blade",
+      "count": 3
+     },
+     {
+      "cardId": "drana_kalastria_bloodchief",
+      "count": 2
+     },
+     {
+      "cardId": "putrefy",
+      "count": 4
+     },
+     {
+      "cardId": "seraphina_the_initiative",
+      "count": 1
+     },
+     {
+      "cardId": "time_walk",
+      "count": 1
+     }
+    ],
+    "list": "open:undertow",
+    "tinker": "stock",
+    "colors": "UBG",
+    "archetype": "control",
+    "pilot": "master",
+    "builder": "stock",
+    "noise": 0.4,
+    "lists": "any"
+   },
+   {
+    "name": "Perpetua Ash",
+    "face": "token-bird",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "mountain",
+      "count": 11
+     },
+     {
+      "cardId": "plains",
+      "count": 2
+     },
+     {
+      "cardId": "plateau",
+      "count": 4
+     },
+     {
+      "cardId": "sacred_foundry",
+      "count": 4
+     },
+     {
+      "cardId": "boggart_brute",
+      "count": 4
+     },
+     {
+      "cardId": "dragon_mage",
+      "count": 1
+     },
+     {
+      "cardId": "goblin_chieftain",
+      "count": 3
+     },
+     {
+      "cardId": "goblin_piker",
+      "count": 4
+     },
+     {
+      "cardId": "lumen_the_hearth_fire",
+      "count": 3
+     },
+     {
+      "cardId": "restoration_angel",
+      "count": 1
+     },
+     {
+      "cardId": "siege_gang_commander",
+      "count": 3
+     },
+     {
+      "cardId": "skirk_prospector",
+      "count": 4
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "goblin_grenade",
+      "count": 4
+     },
+     {
+      "cardId": "hordeling_outburst",
+      "count": 4
+     },
+     {
+      "cardId": "lightning_bolt",
+      "count": 4
+     },
+     {
+      "cardId": "mox_pearl",
+      "count": 1
+     },
+     {
+      "cardId": "mox_ruby",
+      "count": 1
+     },
+     {
+      "cardId": "sacred_helix",
+      "count": 1
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "disenchant",
+      "count": 2
+     },
+     {
+      "cardId": "drakuseth_maw_of_flames",
+      "count": 1
+     },
+     {
+      "cardId": "emeria_angel",
+      "count": 2
+     },
+     {
+      "cardId": "lumen_the_hearth_fire",
+      "count": 1
+     },
+     {
+      "cardId": "mox_jet",
+      "count": 1
+     },
+     {
+      "cardId": "mox_sapphire",
+      "count": 1
+     },
+     {
+      "cardId": "reya_dawnbringer",
+      "count": 2
+     },
+     {
+      "cardId": "sacred_helix",
+      "count": 3
+     },
+     {
+      "cardId": "swords_to_plowshares",
+      "count": 2
+     }
+    ],
+    "list": "open:warband",
+    "tinker": "light",
+    "colors": "RW",
+    "archetype": "aggro",
+    "pilot": "master",
+    "builder": "light",
+    "noise": 0.2,
+    "lists": "any"
+   },
+   {
+    "name": "Halla Larkspur",
+    "face": "token-weird",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "badlands",
+      "count": 4
+     },
+     {
+      "cardId": "bayou",
+      "count": 4
+     },
+     {
+      "cardId": "cairnbrand",
+      "count": 1
+     },
+     {
+      "cardId": "obsidian_observatory",
+      "count": 1
+     },
+     {
+      "cardId": "savannah",
+      "count": 1
+     },
+     {
+      "cardId": "shevelport",
+      "count": 1
+     },
+     {
+      "cardId": "taiga",
+      "count": 4
+     },
+     {
+      "cardId": "tallyflame_court",
+      "count": 1
+     },
+     {
+      "cardId": "underground_sea",
+      "count": 1
+     },
+     {
+      "cardId": "birds_of_paradise",
+      "count": 4
+     },
+     {
+      "cardId": "blood_artist",
+      "count": 4
+     },
+     {
+      "cardId": "meliyan_the_torment",
+      "count": 3
+     },
+     {
+      "cardId": "seasoned_pyromancer",
+      "count": 2
+     },
+     {
+      "cardId": "shocking_sharpshooter",
+      "count": 4
+     },
+     {
+      "cardId": "the_reaper",
+      "count": 4
+     },
+     {
+      "cardId": "vampire_nighthawk",
+      "count": 2
+     },
+     {
+      "cardId": "voracious_cobra",
+      "count": 2
+     },
+     {
+      "cardId": "bitterblossom",
+      "count": 4
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "lightning_bolt",
+      "count": 1
+     },
+     {
+      "cardId": "mox_emerald",
+      "count": 1
+     },
+     {
+      "cardId": "mox_jet",
+      "count": 1
+     },
+     {
+      "cardId": "mox_pearl",
+      "count": 1
+     },
+     {
+      "cardId": "mox_ruby",
+      "count": 1
+     },
+     {
+      "cardId": "mox_sapphire",
+      "count": 1
+     },
+     {
+      "cardId": "prey_upon",
+      "count": 1
+     },
+     {
+      "cardId": "putrefy",
+      "count": 3
+     },
+     {
+      "cardId": "rancor",
+      "count": 2
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "airship_crash",
+      "count": 2
+     },
+     {
+      "cardId": "demonic_tutor",
+      "count": 1
+     },
+     {
+      "cardId": "doom_blade",
+      "count": 2
+     },
+     {
+      "cardId": "drana_kalastria_bloodchief",
+      "count": 2
+     },
+     {
+      "cardId": "phyrexian_purge",
+      "count": 3
+     },
+     {
+      "cardId": "putrefy",
+      "count": 1
+     },
+     {
+      "cardId": "savage_twister",
+      "count": 2
+     },
+     {
+      "cardId": "seraphina_the_initiative",
+      "count": 2
+     }
+    ],
+    "list": "open:sweep",
+    "tinker": "stock",
+    "colors": "BGR",
+    "archetype": "midrange",
+    "pilot": "master",
+    "builder": "stock",
+    "noise": 0.4,
+    "lists": "top"
+   },
+   {
+    "name": "Mora Tideswell",
+    "face": "beast-grizzly-bear",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "forest",
+      "count": 21
+     },
+     {
+      "cardId": "tranquil_thicket",
+      "count": 2
+     },
+     {
+      "cardId": "baru_wurmspeaker",
+      "count": 3
+     },
+     {
+      "cardId": "birds_of_paradise",
+      "count": 4
+     },
+     {
+      "cardId": "gaean_wurm",
+      "count": 3
+     },
+     {
+      "cardId": "llanowar_elves",
+      "count": 4
+     },
+     {
+      "cardId": "pelakka_wurm",
+      "count": 3
+     },
+     {
+      "cardId": "rampaging_baloths",
+      "count": 1
+     },
+     {
+      "cardId": "seedborn_muse",
+      "count": 4
+     },
+     {
+      "cardId": "the_emerald_keeper",
+      "count": 2
+     },
+     {
+      "cardId": "treetop_snarespinner",
+      "count": 2
+     },
+     {
+      "cardId": "wood_elves",
+      "count": 4
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "mox_emerald",
+      "count": 1
+     },
+     {
+      "cardId": "prey_upon",
+      "count": 1
+     },
+     {
+      "cardId": "rampant_growth",
+      "count": 4
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "airship_crash",
+      "count": 4
+     },
+     {
+      "cardId": "baru_wurmspeaker",
+      "count": 1
+     },
+     {
+      "cardId": "mox_jet",
+      "count": 1
+     },
+     {
+      "cardId": "mox_pearl",
+      "count": 1
+     },
+     {
+      "cardId": "mox_sapphire",
+      "count": 1
+     },
+     {
+      "cardId": "pelakka_wurm",
+      "count": 1
+     },
+     {
+      "cardId": "rampaging_baloths",
+      "count": 2
+     },
+     {
+      "cardId": "the_emerald_keeper",
+      "count": 2
+     },
+     {
+      "cardId": "titania_protector_of_argoth",
+      "count": 2
+     }
+    ],
+    "list": "open:wurmspeaker",
+    "tinker": "light",
+    "colors": "G",
+    "archetype": "midrange",
+    "pilot": "master",
+    "builder": "light",
+    "noise": 0.2,
+    "lists": "any"
+   },
+   {
+    "name": "Aldous Ashgrove",
+    "face": "portrait-mage-ysolde",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "bayou",
+      "count": 4
+     },
+     {
+      "cardId": "evolving_wilds",
+      "count": 1
+     },
+     {
+      "cardId": "forest",
+      "count": 1
+     },
+     {
+      "cardId": "godless_shrine",
+      "count": 2
+     },
+     {
+      "cardId": "overgrown_tomb",
+      "count": 4
+     },
+     {
+      "cardId": "plains",
+      "count": 1
+     },
+     {
+      "cardId": "scrubland",
+      "count": 4
+     },
+     {
+      "cardId": "swamp",
+      "count": 2
+     },
+     {
+      "cardId": "underground_sea",
+      "count": 2
+     },
+     {
+      "cardId": "watery_grave",
+      "count": 2
+     },
+     {
+      "cardId": "angel_of_the_ruins",
+      "count": 2
+     },
+     {
+      "cardId": "artisan_of_kozilek",
+      "count": 2
+     },
+     {
+      "cardId": "baru_wurmspeaker",
+      "count": 1
+     },
+     {
+      "cardId": "gaean_wurm",
+      "count": 1
+     },
+     {
+      "cardId": "pelakka_wurm",
+      "count": 2
+     },
+     {
+      "cardId": "the_reeve",
+      "count": 2
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "buried_alive",
+      "count": 4
+     },
+     {
+      "cardId": "dark_ritual",
+      "count": 4
+     },
+     {
+      "cardId": "demonic_tutor",
+      "count": 1
+     },
+     {
+      "cardId": "duress",
+      "count": 2
+     },
+     {
+      "cardId": "entomb",
+      "count": 4
+     },
+     {
+      "cardId": "graceful_restoration",
+      "count": 3
+     },
+     {
+      "cardId": "mox_emerald",
+      "count": 1
+     },
+     {
+      "cardId": "mox_jet",
+      "count": 1
+     },
+     {
+      "cardId": "mox_pearl",
+      "count": 1
+     },
+     {
+      "cardId": "mox_sapphire",
+      "count": 1
+     },
+     {
+      "cardId": "zombify",
+      "count": 4
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "clio_lady_of_the_depths",
+      "count": 2
+     },
+     {
+      "cardId": "drana_kalastria_bloodchief",
+      "count": 2
+     },
+     {
+      "cardId": "putrefy",
+      "count": 4
+     },
+     {
+      "cardId": "swords_to_plowshares",
+      "count": 1
+     },
+     {
+      "cardId": "the_sower",
+      "count": 1
+     },
+     {
+      "cardId": "time_walk",
+      "count": 1
+     },
+     {
+      "cardId": "vindicate",
+      "count": 4
+     }
+    ],
+    "list": "open:larder",
+    "tinker": "stock",
+    "colors": "BGWU",
+    "archetype": "midrange",
+    "pilot": "master",
+    "builder": "stock",
+    "noise": 0.2,
+    "lists": "low"
+   },
+   {
+    "name": "Cassian Dray",
+    "face": "portrait-mage-vael",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "badlands",
+      "count": 4
+     },
+     {
+      "cardId": "barren_moor",
+      "count": 4
+     },
+     {
+      "cardId": "blood_crypt",
+      "count": 4
+     },
+     {
+      "cardId": "cairnbrand",
+      "count": 1
+     },
+     {
+      "cardId": "godless_shrine",
+      "count": 4
+     },
+     {
+      "cardId": "scrubland",
+      "count": 4
+     },
+     {
+      "cardId": "blood_artist",
+      "count": 4
+     },
+     {
+      "cardId": "the_jet_witch",
+      "count": 4
+     },
+     {
+      "cardId": "the_usher",
+      "count": 4
+     },
+     {
+      "cardId": "typhoid_rats",
+      "count": 4
+     },
+     {
+      "cardId": "vampire_nighthawk",
+      "count": 4
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "buried_alive",
+      "count": 4
+     },
+     {
+      "cardId": "dark_ritual",
+      "count": 4
+     },
+     {
+      "cardId": "demonic_tutor",
+      "count": 1
+     },
+     {
+      "cardId": "mox_jet",
+      "count": 1
+     },
+     {
+      "cardId": "mox_pearl",
+      "count": 1
+     },
+     {
+      "cardId": "mox_ruby",
+      "count": 1
+     },
+     {
+      "cardId": "tendrils_of_corruption",
+      "count": 2
+     },
+     {
+      "cardId": "zombify",
+      "count": 4
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "tendrils_of_corruption",
+      "count": 2
+     },
+     {
+      "cardId": "drana_kalastria_bloodchief",
+      "count": 1
+     },
+     {
+      "cardId": "nekrataal",
+      "count": 1
+     },
+     {
+      "cardId": "hymn_to_tourach",
+      "count": 4
+     },
+     {
+      "cardId": "indulgent_aristocrat",
+      "count": 4
+     },
+     {
+      "cardId": "hypnotic_specter",
+      "count": 3
+     }
+    ],
+    "list": "open:pall",
+    "tinker": "stock",
+    "colors": "BRW",
+    "archetype": "combo",
+    "pilot": "master",
+    "builder": "stock",
+    "noise": 0.4,
+    "lists": "top"
+   },
+   {
+    "name": "Lirael Stane",
+    "face": "beast-vampire-nighthawk",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "bayou",
+      "count": 2
+     },
+     {
+      "cardId": "evolving_wilds",
+      "count": 4
+     },
+     {
+      "cardId": "forest",
+      "count": 2
+     },
+     {
+      "cardId": "island",
+      "count": 3
+     },
+     {
+      "cardId": "swamp",
+      "count": 1
+     },
+     {
+      "cardId": "thawing_glaciers",
+      "count": 1
+     },
+     {
+      "cardId": "tropical_island",
+      "count": 4
+     },
+     {
+      "cardId": "underground_sea",
+      "count": 4
+     },
+     {
+      "cardId": "wrackroot",
+      "count": 1
+     },
+     {
+      "cardId": "clio_lady_of_the_depths",
+      "count": 4
+     },
+     {
+      "cardId": "hedron_crab",
+      "count": 4
+     },
+     {
+      "cardId": "hypnotic_specter",
+      "count": 1
+     },
+     {
+      "cardId": "man_o_war",
+      "count": 2
+     },
+     {
+      "cardId": "tidewall",
+      "count": 4
+     },
+     {
+      "cardId": "traumatizer",
+      "count": 4
+     },
+     {
+      "cardId": "zinnia_the_undertow",
+      "count": 2
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "boomerang",
+      "count": 1
+     },
+     {
+      "cardId": "buried_alive",
+      "count": 1
+     },
+     {
+      "cardId": "counterspell",
+      "count": 3
+     },
+     {
+      "cardId": "demonic_tutor",
+      "count": 1
+     },
+     {
+      "cardId": "essence_scatter",
+      "count": 2
+     },
+     {
+      "cardId": "glimpse_the_unthinkable",
+      "count": 4
+     },
+     {
+      "cardId": "mox_emerald",
+      "count": 1
+     },
+     {
+      "cardId": "mox_jet",
+      "count": 1
+     },
+     {
+      "cardId": "mox_sapphire",
+      "count": 1
+     },
+     {
+      "cardId": "undermine",
+      "count": 1
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "airship_crash",
+      "count": 2
+     },
+     {
+      "cardId": "control_magic",
+      "count": 2
+     },
+     {
+      "cardId": "doom_blade",
+      "count": 3
+     },
+     {
+      "cardId": "drana_kalastria_bloodchief",
+      "count": 2
+     },
+     {
+      "cardId": "putrefy",
+      "count": 4
+     },
+     {
+      "cardId": "seraphina_the_initiative",
+      "count": 1
+     },
+     {
+      "cardId": "time_walk",
+      "count": 1
+     }
+    ],
+    "list": "open:undertow",
+    "tinker": "heavy",
+    "colors": "UBG",
+    "archetype": "control",
+    "pilot": "master",
+    "builder": "heavy",
+    "noise": 0.2,
+    "lists": "any"
+   },
+   {
+    "name": "Cyprian Mossbank",
+    "face": "token-spirit-white",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "badlands",
+      "count": 4
+     },
+     {
+      "cardId": "blood_crypt",
+      "count": 1
+     },
+     {
+      "cardId": "cairnbrand",
+      "count": 1
+     },
+     {
+      "cardId": "godless_shrine",
+      "count": 1
+     },
+     {
+      "cardId": "obsidian_observatory",
+      "count": 1
+     },
+     {
+      "cardId": "plateau",
+      "count": 4
+     },
+     {
+      "cardId": "sacred_foundry",
+      "count": 1
+     },
+     {
+      "cardId": "savannah",
+      "count": 1
+     },
+     {
+      "cardId": "scrubland",
+      "count": 4
+     },
+     {
+      "cardId": "shevelport",
+      "count": 1
+     },
+     {
+      "cardId": "tallyflame_court",
+      "count": 1
+     },
+     {
+      "cardId": "tundra",
+      "count": 1
+     },
+     {
+      "cardId": "drana_kalastria_bloodchief",
+      "count": 2
+     },
+     {
+      "cardId": "lumen_the_hearth_fire",
+      "count": 4
+     },
+     {
+      "cardId": "restoration_angel",
+      "count": 4
+     },
+     {
+      "cardId": "soul_warden",
+      "count": 2
+     },
+     {
+      "cardId": "the_jet_witch",
+      "count": 1
+     },
+     {
+      "cardId": "the_usher",
+      "count": 3
+     },
+     {
+      "cardId": "vampire_nighthawk",
+      "count": 2
+     },
+     {
+      "cardId": "altar_of_dementia",
+      "count": 3
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "demonic_tutor",
+      "count": 1
+     },
+     {
+      "cardId": "diabolic_edict",
+      "count": 1
+     },
+     {
+      "cardId": "doom_blade",
+      "count": 2
+     },
+     {
+      "cardId": "graceful_restoration",
+      "count": 1
+     },
+     {
+      "cardId": "mox_emerald",
+      "count": 1
+     },
+     {
+      "cardId": "mox_jet",
+      "count": 1
+     },
+     {
+      "cardId": "mox_pearl",
+      "count": 1
+     },
+     {
+      "cardId": "mox_ruby",
+      "count": 1
+     },
+     {
+      "cardId": "mox_sapphire",
+      "count": 1
+     },
+     {
+      "cardId": "sacred_helix",
+      "count": 3
+     },
+     {
+      "cardId": "vindicate",
+      "count": 3
+     },
+     {
+      "cardId": "wrath_of_god",
+      "count": 1
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "disenchant",
+      "count": 2
+     },
+     {
+      "cardId": "drana_kalastria_bloodchief",
+      "count": 2
+     },
+     {
+      "cardId": "isaura_the_levy",
+      "count": 2
+     },
+     {
+      "cardId": "phyrexian_purge",
+      "count": 3
+     },
+     {
+      "cardId": "sacred_helix",
+      "count": 1
+     },
+     {
+      "cardId": "shadow_summoning",
+      "count": 2
+     },
+     {
+      "cardId": "swords_to_plowshares",
+      "count": 1
+     },
+     {
+      "cardId": "the_usher",
+      "count": 1
+     },
+     {
+      "cardId": "vindicate",
+      "count": 1
+     }
+    ],
+    "list": "open:hearth",
+    "tinker": "light",
+    "colors": "BWR",
+    "archetype": "midrange",
+    "pilot": "master",
+    "builder": "light",
+    "noise": 0.2,
+    "lists": "any"
+   },
+   {
+    "name": "Ulric Eldergate",
+    "face": "portrait-mage-quill",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "forest",
+      "count": 21
+     },
+     {
+      "cardId": "tranquil_thicket",
+      "count": 2
+     },
+     {
+      "cardId": "baru_wurmspeaker",
+      "count": 3
+     },
+     {
+      "cardId": "birds_of_paradise",
+      "count": 4
+     },
+     {
+      "cardId": "gaean_wurm",
+      "count": 3
+     },
+     {
+      "cardId": "llanowar_elves",
+      "count": 4
+     },
+     {
+      "cardId": "pelakka_wurm",
+      "count": 1
+     },
+     {
+      "cardId": "rampaging_baloths",
+      "count": 3
+     },
+     {
+      "cardId": "seedborn_muse",
+      "count": 4
+     },
+     {
+      "cardId": "the_emerald_keeper",
+      "count": 2
+     },
+     {
+      "cardId": "treetop_snarespinner",
+      "count": 2
+     },
+     {
+      "cardId": "wood_elves",
+      "count": 4
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "blanchwood_armor",
+      "count": 1
+     },
+     {
+      "cardId": "mox_emerald",
+      "count": 1
+     },
+     {
+      "cardId": "rampant_growth",
+      "count": 4
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "airship_crash",
+      "count": 4
+     },
+     {
+      "cardId": "baru_wurmspeaker",
+      "count": 1
+     },
+     {
+      "cardId": "mox_jet",
+      "count": 1
+     },
+     {
+      "cardId": "mox_pearl",
+      "count": 1
+     },
+     {
+      "cardId": "mox_sapphire",
+      "count": 1
+     },
+     {
+      "cardId": "pelakka_wurm",
+      "count": 2
+     },
+     {
+      "cardId": "rampaging_baloths",
+      "count": 1
+     },
+     {
+      "cardId": "the_emerald_keeper",
+      "count": 2
+     },
+     {
+      "cardId": "titania_protector_of_argoth",
+      "count": 2
+     }
+    ],
+    "list": "open:wurmspeaker",
+    "tinker": "light",
+    "colors": "G",
+    "archetype": "midrange",
+    "pilot": "master",
+    "builder": "light",
+    "noise": 0.2,
+    "lists": "any"
+   },
+   {
+    "name": "Dathan Mire",
+    "face": "beast-dread-presence",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "badlands",
+      "count": 4
+     },
+     {
+      "cardId": "barren_moor",
+      "count": 4
+     },
+     {
+      "cardId": "blood_crypt",
+      "count": 4
+     },
+     {
+      "cardId": "cairnbrand",
+      "count": 1
+     },
+     {
+      "cardId": "godless_shrine",
+      "count": 4
+     },
+     {
+      "cardId": "scrubland",
+      "count": 4
+     },
+     {
+      "cardId": "swamp",
+      "count": 1
+     },
+     {
+      "cardId": "blood_artist",
+      "count": 4
+     },
+     {
+      "cardId": "hypnotic_specter",
+      "count": 1
+     },
+     {
+      "cardId": "the_jet_witch",
+      "count": 4
+     },
+     {
+      "cardId": "the_usher",
+      "count": 4
+     },
+     {
+      "cardId": "typhoid_rats",
+      "count": 4
+     },
+     {
+      "cardId": "vampire_nighthawk",
+      "count": 3
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "buried_alive",
+      "count": 4
+     },
+     {
+      "cardId": "dark_ritual",
+      "count": 2
+     },
+     {
+      "cardId": "demonic_tutor",
+      "count": 1
+     },
+     {
+      "cardId": "mind_stone",
+      "count": 1
+     },
+     {
+      "cardId": "mox_jet",
+      "count": 1
+     },
+     {
+      "cardId": "mox_pearl",
+      "count": 1
+     },
+     {
+      "cardId": "mox_ruby",
+      "count": 1
+     },
+     {
+      "cardId": "raise_the_alarm",
+      "count": 1
+     },
+     {
+      "cardId": "tendrils_of_corruption",
+      "count": 2
+     },
+     {
+      "cardId": "zombify",
+      "count": 3
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "tendrils_of_corruption",
+      "count": 2
+     },
+     {
+      "cardId": "drana_kalastria_bloodchief",
+      "count": 1
+     },
+     {
+      "cardId": "nekrataal",
+      "count": 1
+     },
+     {
+      "cardId": "hymn_to_tourach",
+      "count": 4
+     },
+     {
+      "cardId": "indulgent_aristocrat",
+      "count": 4
+     },
+     {
+      "cardId": "hypnotic_specter",
+      "count": 3
+     }
+    ],
+    "list": "open:pall",
+    "tinker": "heavy",
+    "colors": "BWR",
+    "archetype": "combo",
+    "pilot": "master",
+    "builder": "heavy",
+    "noise": 0.4,
+    "lists": "any"
+   },
+   {
+    "name": "Orrin Blackquill",
+    "face": "beast-savannah-lion",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "bayou",
+      "count": 4
+     },
+     {
+      "cardId": "evolving_wilds",
+      "count": 1
+     },
+     {
+      "cardId": "forest",
+      "count": 1
+     },
+     {
+      "cardId": "godless_shrine",
+      "count": 2
+     },
+     {
+      "cardId": "overgrown_tomb",
+      "count": 4
+     },
+     {
+      "cardId": "plains",
+      "count": 1
+     },
+     {
+      "cardId": "scrubland",
+      "count": 4
+     },
+     {
+      "cardId": "swamp",
+      "count": 3
+     },
+     {
+      "cardId": "underground_sea",
+      "count": 2
+     },
+     {
+      "cardId": "watery_grave",
+      "count": 2
+     },
+     {
+      "cardId": "angel_of_the_ruins",
+      "count": 1
+     },
+     {
+      "cardId": "arcane_collector",
+      "count": 1
+     },
+     {
+      "cardId": "artisan_of_kozilek",
+      "count": 2
+     },
+     {
+      "cardId": "baru_wurmspeaker",
+      "count": 1
+     },
+     {
+      "cardId": "gaean_wurm",
+      "count": 1
+     },
+     {
+      "cardId": "pelakka_wurm",
+      "count": 1
+     },
+     {
+      "cardId": "reya_dawnbringer",
+      "count": 1
+     },
+     {
+      "cardId": "the_reeve",
+      "count": 2
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "buried_alive",
+      "count": 3
+     },
+     {
+      "cardId": "dark_ritual",
+      "count": 4
+     },
+     {
+      "cardId": "demonic_tutor",
+      "count": 1
+     },
+     {
+      "cardId": "duress",
+      "count": 2
+     },
+     {
+      "cardId": "entomb",
+      "count": 4
+     },
+     {
+      "cardId": "graceful_restoration",
+      "count": 3
+     },
+     {
+      "cardId": "mox_emerald",
+      "count": 1
+     },
+     {
+      "cardId": "mox_jet",
+      "count": 1
+     },
+     {
+      "cardId": "mox_pearl",
+      "count": 1
+     },
+     {
+      "cardId": "mox_sapphire",
+      "count": 1
+     },
+     {
+      "cardId": "zombify",
+      "count": 4
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "clio_lady_of_the_depths",
+      "count": 2
+     },
+     {
+      "cardId": "drana_kalastria_bloodchief",
+      "count": 2
+     },
+     {
+      "cardId": "putrefy",
+      "count": 4
+     },
+     {
+      "cardId": "swords_to_plowshares",
+      "count": 1
+     },
+     {
+      "cardId": "the_sower",
+      "count": 1
+     },
+     {
+      "cardId": "time_walk",
+      "count": 1
+     },
+     {
+      "cardId": "vindicate",
+      "count": 4
+     }
+    ],
+    "list": "open:larder",
+    "tinker": "light",
+    "colors": "BGWU",
+    "archetype": "midrange",
+    "pilot": "master",
+    "builder": "light",
+    "noise": 0,
+    "lists": "any"
+   },
+   {
+    "name": "Dorrit Yarrow",
+    "face": "token-elemental-red",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "forest",
+      "count": 1
+     },
+     {
+      "cardId": "mountain",
+      "count": 2
+     },
+     {
+      "cardId": "plains",
+      "count": 2
+     },
+     {
+      "cardId": "plateau",
+      "count": 4
+     },
+     {
+      "cardId": "sacred_foundry",
+      "count": 4
+     },
+     {
+      "cardId": "savannah",
+      "count": 4
+     },
+     {
+      "cardId": "taiga",
+      "count": 4
+     },
+     {
+      "cardId": "temple_garden",
+      "count": 2
+     },
+     {
+      "cardId": "grazing_gladehart",
+      "count": 2
+     },
+     {
+      "cardId": "lumen_the_hearth_fire",
+      "count": 3
+     },
+     {
+      "cardId": "master_decoy",
+      "count": 1
+     },
+     {
+      "cardId": "rage_cobra",
+      "count": 1
+     },
+     {
+      "cardId": "restoration_angel",
+      "count": 1
+     },
+     {
+      "cardId": "soul_warden",
+      "count": 4
+     },
+     {
+      "cardId": "the_fordkeeper",
+      "count": 4
+     },
+     {
+      "cardId": "treetop_snarespinner",
+      "count": 1
+     },
+     {
+      "cardId": "vitalist",
+      "count": 4
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "lightning_bolt",
+      "count": 4
+     },
+     {
+      "cardId": "mox_emerald",
+      "count": 1
+     },
+     {
+      "cardId": "mox_pearl",
+      "count": 1
+     },
+     {
+      "cardId": "mox_ruby",
+      "count": 1
+     },
+     {
+      "cardId": "sacred_helix",
+      "count": 2
+     },
+     {
+      "cardId": "savage_twister",
+      "count": 2
+     },
+     {
+      "cardId": "spirit_link",
+      "count": 4
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "airship_crash",
+      "count": 2
+     },
+     {
+      "cardId": "disenchant",
+      "count": 2
+     },
+     {
+      "cardId": "emeria_angel",
+      "count": 2
+     },
+     {
+      "cardId": "lumen_the_hearth_fire",
+      "count": 1
+     },
+     {
+      "cardId": "sacred_helix",
+      "count": 2
+     },
+     {
+      "cardId": "savage_twister",
+      "count": 2
+     },
+     {
+      "cardId": "swords_to_plowshares",
+      "count": 3
+     },
+     {
+      "cardId": "the_emerald_keeper",
+      "count": 1
+     }
+    ],
+    "list": "open:ford",
+    "tinker": "heavy",
+    "colors": "WRG",
+    "archetype": "midrange",
+    "pilot": "master",
+    "builder": "heavy",
+    "noise": 0,
+    "lists": "any"
+   },
+   {
+    "name": "Yorick Amberley",
+    "face": "beast-boggart-warband",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "badlands",
+      "count": 4
+     },
+     {
+      "cardId": "barren_moor",
+      "count": 4
+     },
+     {
+      "cardId": "blood_crypt",
+      "count": 4
+     },
+     {
+      "cardId": "cairnbrand",
+      "count": 1
+     },
+     {
+      "cardId": "godless_shrine",
+      "count": 4
+     },
+     {
+      "cardId": "scrubland",
+      "count": 4
+     },
+     {
+      "cardId": "blood_artist",
+      "count": 4
+     },
+     {
+      "cardId": "the_jet_witch",
+      "count": 4
+     },
+     {
+      "cardId": "the_usher",
+      "count": 4
+     },
+     {
+      "cardId": "typhoid_rats",
+      "count": 4
+     },
+     {
+      "cardId": "vampire_nighthawk",
+      "count": 4
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "buried_alive",
+      "count": 4
+     },
+     {
+      "cardId": "dark_ritual",
+      "count": 4
+     },
+     {
+      "cardId": "demonic_tutor",
+      "count": 1
+     },
+     {
+      "cardId": "mox_jet",
+      "count": 1
+     },
+     {
+      "cardId": "mox_pearl",
+      "count": 1
+     },
+     {
+      "cardId": "mox_ruby",
+      "count": 1
+     },
+     {
+      "cardId": "tendrils_of_corruption",
+      "count": 2
+     },
+     {
+      "cardId": "zombify",
+      "count": 4
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "tendrils_of_corruption",
+      "count": 2
+     },
+     {
+      "cardId": "drana_kalastria_bloodchief",
+      "count": 1
+     },
+     {
+      "cardId": "nekrataal",
+      "count": 1
+     },
+     {
+      "cardId": "hymn_to_tourach",
+      "count": 4
+     },
+     {
+      "cardId": "indulgent_aristocrat",
+      "count": 4
+     },
+     {
+      "cardId": "hypnotic_specter",
+      "count": 3
+     }
+    ],
+    "list": "open:pall",
+    "tinker": "stock",
+    "colors": "BRW",
+    "archetype": "combo",
+    "pilot": "master",
+    "builder": "stock",
+    "noise": 0.2,
+    "lists": "any"
+   },
+   {
+    "name": "Sabel Thorne",
+    "face": "beast-hypnotic-specter",
+    "human": false,
+    "pool": [],
+    "deck": [
+     {
+      "cardId": "badlands",
+      "count": 4
+     },
+     {
+      "cardId": "barren_moor",
+      "count": 4
+     },
+     {
+      "cardId": "blood_crypt",
+      "count": 4
+     },
+     {
+      "cardId": "cairnbrand",
+      "count": 1
+     },
+     {
+      "cardId": "godless_shrine",
+      "count": 4
+     },
+     {
+      "cardId": "scrubland",
+      "count": 4
+     },
+     {
+      "cardId": "swamp",
+      "count": 1
+     },
+     {
+      "cardId": "blood_artist",
+      "count": 3
+     },
+     {
+      "cardId": "drana_kalastria_bloodchief",
+      "count": 1
+     },
+     {
+      "cardId": "rage_cobra",
+      "count": 1
+     },
+     {
+      "cardId": "siege_gang_commander",
+      "count": 1
+     },
+     {
+      "cardId": "the_jet_witch",
+      "count": 4
+     },
+     {
+      "cardId": "the_usher",
+      "count": 3
+     },
+     {
+      "cardId": "typhoid_rats",
+      "count": 3
+     },
+     {
+      "cardId": "vampire_nighthawk",
+      "count": 4
+     },
+     {
+      "cardId": "black_lotus",
+      "count": 1
+     },
+     {
+      "cardId": "buried_alive",
+      "count": 3
+     },
+     {
+      "cardId": "dark_ritual",
+      "count": 3
+     },
+     {
+      "cardId": "mind_stone",
+      "count": 1
+     },
+     {
+      "cardId": "mox_jet",
+      "count": 1
+     },
+     {
+      "cardId": "mox_pearl",
+      "count": 1
+     },
+     {
+      "cardId": "mox_ruby",
+      "count": 1
+     },
+     {
+      "cardId": "sacred_helix",
+      "count": 1
+     },
+     {
+      "cardId": "tendrils_of_corruption",
+      "count": 2
+     },
+     {
+      "cardId": "zombify",
+      "count": 4
+     }
+    ],
+    "sideboard": [
+     {
+      "cardId": "tendrils_of_corruption",
+      "count": 2
+     },
+     {
+      "cardId": "drana_kalastria_bloodchief",
+      "count": 1
+     },
+     {
+      "cardId": "nekrataal",
+      "count": 1
+     },
+     {
+      "cardId": "hymn_to_tourach",
+      "count": 4
+     },
+     {
+      "cardId": "indulgent_aristocrat",
+      "count": 4
+     },
+     {
+      "cardId": "hypnotic_specter",
+      "count": 3
+     }
+    ],
+    "list": "open:pall",
+    "tinker": "heavy",
+    "colors": "BRW",
+    "archetype": "combo",
+    "pilot": "master",
+    "builder": "heavy",
+    "noise": 0.4,
+    "lists": "any"
+   }
+  ],
+  "pairings": [],
+  "results": [
+   {
+    "round": 1,
+    "a": 0,
+    "b": 21,
+    "series": {
+     "seed": 162047178,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1873447254,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 16
+      },
+      {
+       "index": 1,
+       "seed": 1541767237,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 13
+      },
+      {
+       "index": 2,
+       "seed": 856063627,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 19
+      }
+     ],
+     "wins": [
+      2,
+      1
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 1,
+    "a": 12,
+    "b": 18,
+    "series": {
+     "seed": 1374207904,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 175942852,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 15
+      },
+      {
+       "index": 1,
+       "seed": 579806652,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 16
+      }
+     ],
+     "wins": [
+      2,
+      0
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 1,
+    "a": 7,
+    "b": 8,
+    "series": {
+     "seed": 28296767,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1030298187,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 13
+      },
+      {
+       "index": 1,
+       "seed": 749363078,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "DECKED",
+       "turns": 21
+      }
+     ],
+     "wins": [
+      2,
+      0
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 1,
+    "a": 17,
+    "b": 16,
+    "series": {
+     "seed": 12147794,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1414710005,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 15
+      },
+      {
+       "index": 1,
+       "seed": 1880354935,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 18
+      }
+     ],
+     "wins": [
+      2,
+      0
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 1,
+    "a": 29,
+    "b": 15,
+    "series": {
+     "seed": 414402070,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1000727261,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 12
+      },
+      {
+       "index": 1,
+       "seed": 2073126904,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 14
+      }
+     ],
+     "wins": [
+      0,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 1,
+    "a": 19,
+    "b": 26,
+    "series": {
+     "seed": 1579202957,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 523920919,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 8
+      },
+      {
+       "index": 1,
+       "seed": 412768758,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 11
+      },
+      {
+       "index": 2,
+       "seed": 2038482592,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 14
+      }
+     ],
+     "wins": [
+      1,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 1,
+    "a": 14,
+    "b": 27,
+    "series": {
+     "seed": 1965003687,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 578360206,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 8
+      },
+      {
+       "index": 1,
+       "seed": 1406688530,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 12
+      }
+     ],
+     "wins": [
+      0,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 1,
+    "a": 11,
+    "b": 20,
+    "series": {
+     "seed": 1375409320,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1250629481,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 13
+      },
+      {
+       "index": 1,
+       "seed": 1978787954,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 21
+      },
+      {
+       "index": 2,
+       "seed": 1080786930,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 18
+      }
+     ],
+     "wins": [
+      1,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 1,
+    "a": 6,
+    "b": 28,
+    "series": {
+     "seed": 656579114,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1263717509,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 23
+      },
+      {
+       "index": 1,
+       "seed": 252605351,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 12
+      }
+     ],
+     "wins": [
+      2,
+      0
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 1,
+    "a": 30,
+    "b": 5,
+    "series": {
+     "seed": 238598666,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1286205978,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 8
+      },
+      {
+       "index": 1,
+       "seed": 1441429785,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 8
+      }
+     ],
+     "wins": [
+      2,
+      0
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 1,
+    "a": 4,
+    "b": 24,
+    "series": {
+     "seed": 1878062942,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1961556910,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 16
+      },
+      {
+       "index": 1,
+       "seed": 184346542,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 13
+      },
+      {
+       "index": 2,
+       "seed": 1123041254,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "DECKED",
+       "turns": 20
+      }
+     ],
+     "wins": [
+      1,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 1,
+    "a": 23,
+    "b": 10,
+    "series": {
+     "seed": 974270673,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 938427242,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 9
+      },
+      {
+       "index": 1,
+       "seed": 1365810598,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 12
+      }
+     ],
+     "wins": [
+      2,
+      0
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 1,
+    "a": 3,
+    "b": 2,
+    "series": {
+     "seed": 2039999769,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 258393594,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 15
+      },
+      {
+       "index": 1,
+       "seed": 1901158689,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 18
+      }
+     ],
+     "wins": [
+      2,
+      0
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 1,
+    "a": 9,
+    "b": 22,
+    "series": {
+     "seed": 1669276274,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 14455785,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 13
+      },
+      {
+       "index": 1,
+       "seed": 292848888,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 15
+      },
+      {
+       "index": 2,
+       "seed": 1455676082,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 15
+      }
+     ],
+     "wins": [
+      2,
+      1
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 1,
+    "a": 31,
+    "b": 13,
+    "series": {
+     "seed": 119283863,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1259422654,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 11
+      },
+      {
+       "index": 1,
+       "seed": 588308958,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 11
+      },
+      {
+       "index": 2,
+       "seed": 222522259,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 14
+      }
+     ],
+     "wins": [
+      1,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 1,
+    "a": 25,
+    "b": 1,
+    "series": {
+     "seed": 1988106627,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 707235696,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 15
+      },
+      {
+       "index": 1,
+       "seed": 1002225369,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 16
+      }
+     ],
+     "wins": [
+      2,
+      0
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 2,
+    "a": 0,
+    "b": 15,
+    "series": {
+     "seed": 2054805786,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 709718532,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 13
+      },
+      {
+       "index": 1,
+       "seed": 1166677838,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 21
+      },
+      {
+       "index": 2,
+       "seed": 1210524246,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 8
+      }
+     ],
+     "wins": [
+      2,
+      1
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 2,
+    "a": 9,
+    "b": 25,
+    "series": {
+     "seed": 1298144282,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 728431796,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 14
+      },
+      {
+       "index": 1,
+       "seed": 614018286,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 14
+      }
+     ],
+     "wins": [
+      2,
+      0
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 2,
+    "a": 20,
+    "b": 12,
+    "series": {
+     "seed": 1169909565,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1249509347,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 15
+      },
+      {
+       "index": 1,
+       "seed": 1454669295,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 18
+      },
+      {
+       "index": 2,
+       "seed": 452274479,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 18
+      }
+     ],
+     "wins": [
+      2,
+      1
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 2,
+    "a": 6,
+    "b": 17,
+    "series": {
+     "seed": 1109899330,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1268372412,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 18
+      },
+      {
+       "index": 1,
+       "seed": 1395310836,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 21
+      },
+      {
+       "index": 2,
+       "seed": 1665519354,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 15
+      }
+     ],
+     "wins": [
+      2,
+      1
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 2,
+    "a": 23,
+    "b": 24,
+    "series": {
+     "seed": 605467920,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 78217583,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 11
+      },
+      {
+       "index": 1,
+       "seed": 1893904186,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 8
+      }
+     ],
+     "wins": [
+      2,
+      0
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 2,
+    "a": 30,
+    "b": 3,
+    "series": {
+     "seed": 244276368,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1539179625,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 12
+      },
+      {
+       "index": 1,
+       "seed": 1341984265,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 14
+      }
+     ],
+     "wins": [
+      0,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 2,
+    "a": 27,
+    "b": 13,
+    "series": {
+     "seed": 1110862007,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1187001186,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 12
+      },
+      {
+       "index": 1,
+       "seed": 1760136831,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 15
+      },
+      {
+       "index": 2,
+       "seed": 605225240,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 7
+      }
+     ],
+     "wins": [
+      1,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 2,
+    "a": 7,
+    "b": 26,
+    "series": {
+     "seed": 1455228412,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1334905038,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 14
+      },
+      {
+       "index": 1,
+       "seed": 1245462149,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 13
+      }
+     ],
+     "wins": [
+      0,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 2,
+    "a": 10,
+    "b": 5,
+    "series": {
+     "seed": 1827225487,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1561954777,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 16
+      },
+      {
+       "index": 1,
+       "seed": 408542044,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 12
+      }
+     ],
+     "wins": [
+      2,
+      0
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 2,
+    "a": 22,
+    "b": 29,
+    "series": {
+     "seed": 608026159,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1625509885,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 17
+      },
+      {
+       "index": 1,
+       "seed": 1787151268,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 13
+      },
+      {
+       "index": 2,
+       "seed": 926181975,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 19
+      }
+     ],
+     "wins": [
+      2,
+      1
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 2,
+    "a": 8,
+    "b": 1,
+    "series": {
+     "seed": 846480558,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1792045528,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 14
+      },
+      {
+       "index": 1,
+       "seed": 32450070,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 11
+      },
+      {
+       "index": 2,
+       "seed": 524582229,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 12
+      }
+     ],
+     "wins": [
+      1,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 2,
+    "a": 18,
+    "b": 28,
+    "series": {
+     "seed": 1332737533,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 233832740,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 14
+      },
+      {
+       "index": 1,
+       "seed": 377692167,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 10
+      }
+     ],
+     "wins": [
+      0,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 2,
+    "a": 2,
+    "b": 11,
+    "series": {
+     "seed": 1728210075,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1206430100,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 28
+      },
+      {
+       "index": 1,
+       "seed": 1981079116,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 14
+      }
+     ],
+     "wins": [
+      0,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 2,
+    "a": 31,
+    "b": 16,
+    "series": {
+     "seed": 1517638931,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 2080072425,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 8
+      },
+      {
+       "index": 1,
+       "seed": 1849299988,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 12
+      }
+     ],
+     "wins": [
+      2,
+      0
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 2,
+    "a": 14,
+    "b": 21,
+    "series": {
+     "seed": 337238121,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1818741217,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 11
+      },
+      {
+       "index": 1,
+       "seed": 1368373172,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 19
+      },
+      {
+       "index": 2,
+       "seed": 1168655970,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 15
+      }
+     ],
+     "wins": [
+      1,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 2,
+    "a": 4,
+    "b": 19,
+    "series": {
+     "seed": 1671617670,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1711522171,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 9
+      },
+      {
+       "index": 1,
+       "seed": 1133975816,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 12
+      }
+     ],
+     "wins": [
+      0,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 3,
+    "a": 0,
+    "b": 26,
+    "series": {
+     "seed": 2141916915,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 566506045,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 12
+      },
+      {
+       "index": 1,
+       "seed": 548947136,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 22
+      }
+     ],
+     "wins": [
+      2,
+      0
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 3,
+    "a": 6,
+    "b": 9,
+    "series": {
+     "seed": 1525829624,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1052990608,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 20
+      },
+      {
+       "index": 1,
+       "seed": 1129405744,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 12
+      }
+     ],
+     "wins": [
+      0,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 3,
+    "a": 20,
+    "b": 3,
+    "series": {
+     "seed": 1038991266,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 252516956,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 15
+      },
+      {
+       "index": 1,
+       "seed": 281784299,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 15
+      },
+      {
+       "index": 2,
+       "seed": 1202439330,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 20
+      }
+     ],
+     "wins": [
+      1,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 3,
+    "a": 23,
+    "b": 13,
+    "series": {
+     "seed": 410908590,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1666662162,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 14
+      },
+      {
+       "index": 1,
+       "seed": 955377874,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 11
+      },
+      {
+       "index": 2,
+       "seed": 1209030523,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 10
+      }
+     ],
+     "wins": [
+      2,
+      1
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 3,
+    "a": 30,
+    "b": 15,
+    "series": {
+     "seed": 1300036810,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1356221554,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 12
+      },
+      {
+       "index": 1,
+       "seed": 1487316225,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 7
+      },
+      {
+       "index": 2,
+       "seed": 1899479001,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 7
+      }
+     ],
+     "wins": [
+      1,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 3,
+    "a": 27,
+    "b": 12,
+    "series": {
+     "seed": 454666672,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 49083905,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 10
+      },
+      {
+       "index": 1,
+       "seed": 4335555,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 9
+      },
+      {
+       "index": 2,
+       "seed": 1575028195,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 13
+      }
+     ],
+     "wins": [
+      2,
+      1
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 3,
+    "a": 25,
+    "b": 11,
+    "series": {
+     "seed": 1992321465,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1915963389,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 11
+      },
+      {
+       "index": 1,
+       "seed": 303911060,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 12
+      }
+     ],
+     "wins": [
+      0,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 3,
+    "a": 1,
+    "b": 24,
+    "series": {
+     "seed": 1951973992,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 726609974,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 26
+      },
+      {
+       "index": 1,
+       "seed": 1949683479,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 12
+      }
+     ],
+     "wins": [
+      2,
+      0
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 3,
+    "a": 19,
+    "b": 21,
+    "series": {
+     "seed": 373444352,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 780126546,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 11
+      },
+      {
+       "index": 1,
+       "seed": 135716567,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 13
+      },
+      {
+       "index": 2,
+       "seed": 513547729,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 11
+      }
+     ],
+     "wins": [
+      2,
+      1
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 3,
+    "a": 31,
+    "b": 22,
+    "series": {
+     "seed": 760433712,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1155563076,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 10
+      },
+      {
+       "index": 1,
+       "seed": 993323122,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 10
+      }
+     ],
+     "wins": [
+      2,
+      0
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 3,
+    "a": 28,
+    "b": 7,
+    "series": {
+     "seed": 813707856,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 2098220038,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 15
+      },
+      {
+       "index": 1,
+       "seed": 864558710,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 21
+      },
+      {
+       "index": 2,
+       "seed": 173738997,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 16
+      }
+     ],
+     "wins": [
+      1,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 3,
+    "a": 17,
+    "b": 10,
+    "series": {
+     "seed": 422404450,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 3799807,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 13
+      },
+      {
+       "index": 1,
+       "seed": 1077147537,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 10
+      }
+     ],
+     "wins": [
+      0,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 3,
+    "a": 8,
+    "b": 18,
+    "series": {
+     "seed": 1192209350,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 747196595,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "DECKED",
+       "turns": 26
+      },
+      {
+       "index": 1,
+       "seed": 1857176,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 16
+      },
+      {
+       "index": 2,
+       "seed": 94736360,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 16
+      }
+     ],
+     "wins": [
+      2,
+      1
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 3,
+    "a": 4,
+    "b": 16,
+    "series": {
+     "seed": 2092318245,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1678962890,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 17
+      },
+      {
+       "index": 1,
+       "seed": 914977282,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 12
+      }
+     ],
+     "wins": [
+      0,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 3,
+    "a": 2,
+    "b": 5,
+    "series": {
+     "seed": 1627534881,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 484517680,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 16
+      },
+      {
+       "index": 1,
+       "seed": 1408830664,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 11
+      },
+      {
+       "index": 2,
+       "seed": 2023441342,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 15
+      }
+     ],
+     "wins": [
+      2,
+      1
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 3,
+    "a": 29,
+    "b": 14,
+    "series": {
+     "seed": 1611173001,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 253714093,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 13
+      },
+      {
+       "index": 1,
+       "seed": 853186762,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 24
+      }
+     ],
+     "wins": [
+      2,
+      0
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 4,
+    "a": 0,
+    "b": 9,
+    "series": {
+     "seed": 1183193149,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 771750033,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 24
+      },
+      {
+       "index": 1,
+       "seed": 544396913,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 16
+      }
+     ],
+     "wins": [
+      2,
+      0
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 4,
+    "a": 3,
+    "b": 23,
+    "series": {
+     "seed": 1967579935,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1019451285,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 17
+      },
+      {
+       "index": 1,
+       "seed": 405441584,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 9
+      },
+      {
+       "index": 2,
+       "seed": 21971292,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 14
+      }
+     ],
+     "wins": [
+      1,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 4,
+    "a": 7,
+    "b": 13,
+    "series": {
+     "seed": 677922315,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1781581881,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 20
+      },
+      {
+       "index": 1,
+       "seed": 837623222,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 16
+      }
+     ],
+     "wins": [
+      2,
+      0
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 4,
+    "a": 20,
+    "b": 1,
+    "series": {
+     "seed": 442152649,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 2007663030,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 14
+      },
+      {
+       "index": 1,
+       "seed": 165671555,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 11
+      },
+      {
+       "index": 2,
+       "seed": 280640499,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 14
+      }
+     ],
+     "wins": [
+      2,
+      1
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 4,
+    "a": 26,
+    "b": 11,
+    "series": {
+     "seed": 1173308209,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1151495805,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 9
+      },
+      {
+       "index": 1,
+       "seed": 361261122,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 8
+      }
+     ],
+     "wins": [
+      0,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 4,
+    "a": 6,
+    "b": 31,
+    "series": {
+     "seed": 1954116894,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1558881479,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 12
+      },
+      {
+       "index": 1,
+       "seed": 844447910,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 14
+      }
+     ],
+     "wins": [
+      2,
+      0
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 4,
+    "a": 15,
+    "b": 19,
+    "series": {
+     "seed": 1843775818,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1771781414,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 10
+      },
+      {
+       "index": 1,
+       "seed": 1008837641,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 9
+      },
+      {
+       "index": 2,
+       "seed": 597307,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 8
+      }
+     ],
+     "wins": [
+      1,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 4,
+    "a": 27,
+    "b": 10,
+    "series": {
+     "seed": 1453813510,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 594091189,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 11
+      },
+      {
+       "index": 1,
+       "seed": 650468777,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 10
+      }
+     ],
+     "wins": [
+      2,
+      0
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 4,
+    "a": 30,
+    "b": 8,
+    "series": {
+     "seed": 2072941531,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1992797388,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 17
+      },
+      {
+       "index": 1,
+       "seed": 571572835,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 12
+      }
+     ],
+     "wins": [
+      2,
+      0
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 4,
+    "a": 17,
+    "b": 28,
+    "series": {
+     "seed": 1585374853,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 687882465,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 14
+      },
+      {
+       "index": 1,
+       "seed": 1660256019,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 17
+      }
+     ],
+     "wins": [
+      2,
+      0
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 4,
+    "a": 16,
+    "b": 25,
+    "series": {
+     "seed": 1963960946,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 947590419,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 20
+      },
+      {
+       "index": 1,
+       "seed": 1276660953,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 16
+      }
+     ],
+     "wins": [
+      0,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 4,
+    "a": 2,
+    "b": 24,
+    "series": {
+     "seed": 1779800777,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1543096676,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 17
+      },
+      {
+       "index": 1,
+       "seed": 277057095,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "DECKED",
+       "turns": 25
+      },
+      {
+       "index": 2,
+       "seed": 1925247395,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "DECKED",
+       "turns": 22
+      }
+     ],
+     "wins": [
+      1,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 4,
+    "a": 22,
+    "b": 21,
+    "series": {
+     "seed": 1802921395,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1846402904,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 13
+      },
+      {
+       "index": 1,
+       "seed": 463632074,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 11
+      },
+      {
+       "index": 2,
+       "seed": 450179159,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 21
+      }
+     ],
+     "wins": [
+      1,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 4,
+    "a": 29,
+    "b": 12,
+    "series": {
+     "seed": 357289476,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1313977639,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 20
+      },
+      {
+       "index": 1,
+       "seed": 1018360296,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 14
+      }
+     ],
+     "wins": [
+      0,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 4,
+    "a": 5,
+    "b": 4,
+    "series": {
+     "seed": 1614717770,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1831044083,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 8
+      },
+      {
+       "index": 1,
+       "seed": 89335360,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 17
+      },
+      {
+       "index": 2,
+       "seed": 164816953,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 9
+      }
+     ],
+     "wins": [
+      2,
+      1
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 4,
+    "a": 18,
+    "b": 14,
+    "series": {
+     "seed": 1780364269,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 2011840735,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 18
+      },
+      {
+       "index": 1,
+       "seed": 710600949,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 18
+      }
+     ],
+     "wins": [
+      0,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 5,
+    "a": 0,
+    "b": 23,
+    "series": {
+     "seed": 161197895,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 305412024,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 15
+      },
+      {
+       "index": 1,
+       "seed": 432071676,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 13
+      },
+      {
+       "index": 2,
+       "seed": 1560556281,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 20
+      }
+     ],
+     "wins": [
+      2,
+      1
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 5,
+    "a": 3,
+    "b": 27,
+    "series": {
+     "seed": 2112298476,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1985714043,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 11
+      },
+      {
+       "index": 1,
+       "seed": 131780528,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 11
+      },
+      {
+       "index": 2,
+       "seed": 2056617592,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 9
+      }
+     ],
+     "wins": [
+      1,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 5,
+    "a": 11,
+    "b": 6,
+    "series": {
+     "seed": 2124639988,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 142863256,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 17
+      },
+      {
+       "index": 1,
+       "seed": 55405240,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 16
+      }
+     ],
+     "wins": [
+      2,
+      0
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 5,
+    "a": 20,
+    "b": 19,
+    "series": {
+     "seed": 1243358443,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1985359913,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 11
+      },
+      {
+       "index": 1,
+       "seed": 319238347,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 11
+      },
+      {
+       "index": 2,
+       "seed": 902855989,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 11
+      }
+     ],
+     "wins": [
+      1,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 5,
+    "a": 9,
+    "b": 7,
+    "series": {
+     "seed": 1024437873,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 575521728,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 25
+      },
+      {
+       "index": 1,
+       "seed": 104267533,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 22
+      }
+     ],
+     "wins": [
+      2,
+      0
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 5,
+    "a": 25,
+    "b": 13,
+    "series": {
+     "seed": 365129146,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 949143642,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 12
+      },
+      {
+       "index": 1,
+       "seed": 298990063,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 12
+      }
+     ],
+     "wins": [
+      2,
+      0
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 5,
+    "a": 1,
+    "b": 12,
+    "series": {
+     "seed": 686745708,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1250850524,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 23
+      },
+      {
+       "index": 1,
+       "seed": 1446841352,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 13
+      },
+      {
+       "index": 2,
+       "seed": 426014592,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 16
+      }
+     ],
+     "wins": [
+      1,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 5,
+    "a": 24,
+    "b": 17,
+    "series": {
+     "seed": 308327925,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 58942960,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 14
+      },
+      {
+       "index": 1,
+       "seed": 1543199045,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "DECKED",
+       "turns": 39
+      },
+      {
+       "index": 2,
+       "seed": 1657070593,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 21
+      }
+     ],
+     "wins": [
+      1,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 5,
+    "a": 30,
+    "b": 26,
+    "series": {
+     "seed": 4509155,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1164282128,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 7
+      },
+      {
+       "index": 1,
+       "seed": 2026729902,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 14
+      }
+     ],
+     "wins": [
+      2,
+      0
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 5,
+    "a": 21,
+    "b": 15,
+    "series": {
+     "seed": 581130029,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 126811910,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 18
+      },
+      {
+       "index": 1,
+       "seed": 1538907087,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 12
+      }
+     ],
+     "wins": [
+      0,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 5,
+    "a": 10,
+    "b": 31,
+    "series": {
+     "seed": 1487556573,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 120905844,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 7
+      },
+      {
+       "index": 1,
+       "seed": 1797173297,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 12
+      }
+     ],
+     "wins": [
+      0,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 5,
+    "a": 14,
+    "b": 5,
+    "series": {
+     "seed": 42267950,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1317726443,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 12
+      },
+      {
+       "index": 1,
+       "seed": 352714568,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 12
+      }
+     ],
+     "wins": [
+      0,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 5,
+    "a": 8,
+    "b": 28,
+    "series": {
+     "seed": 1681108443,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1507136948,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 21
+      },
+      {
+       "index": 1,
+       "seed": 774280127,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 11
+      },
+      {
+       "index": 2,
+       "seed": 1650848411,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 12
+      }
+     ],
+     "wins": [
+      2,
+      1
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 0
+    }
+   },
+   {
+    "round": 5,
+    "a": 16,
+    "b": 29,
+    "series": {
+     "seed": 1020200173,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1242901622,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 14
+      },
+      {
+       "index": 1,
+       "seed": 1579152718,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 14
+      }
+     ],
+     "wins": [
+      0,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 5,
+    "a": 2,
+    "b": 22,
+    "series": {
+     "seed": 2054282964,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 1580104856,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 12
+      },
+      {
+       "index": 1,
+       "seed": 1273910668,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "LIFE",
+       "turns": 15
+      },
+      {
+       "index": 2,
+       "seed": 1328091505,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 13
+      }
+     ],
+     "wins": [
+      1,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   },
+   {
+    "round": 5,
+    "a": 18,
+    "b": 4,
+    "series": {
+     "seed": 1168213934,
+     "bestOf": 3,
+     "games": [
+      {
+       "index": 0,
+       "seed": 966302303,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 0,
+       "reason": "DECKED",
+       "turns": 38
+      },
+      {
+       "index": 1,
+       "seed": 1873564361,
+       "startingPlayer": 1,
+       "chooser": 1,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 13
+      },
+      {
+       "index": 2,
+       "seed": 268226038,
+       "startingPlayer": 0,
+       "chooser": 0,
+       "winner": 1,
+       "reason": "LIFE",
+       "turns": 20
+      }
+     ],
+     "wins": [
+      1,
+      2
+     ],
+     "draws": 0,
+     "done": true,
+     "winner": 1
+    }
+   }
+  ],
+  "top8": true,
+  "decklists": {
+   "open": [
+    {
+     "cardId": "time_walk",
+     "count": 1
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "arcane_collector",
+     "count": 3
+    },
+    {
+     "cardId": "tidewall",
+     "count": 4
+    },
+    {
+     "cardId": "aetherbolt",
+     "count": 4
+    },
+    {
+     "cardId": "experimental_overload",
+     "count": 2
+    },
+    {
+     "cardId": "odile_the_tallyflame",
+     "count": 3
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "blaze",
+     "count": 2
+    },
+    {
+     "cardId": "the_ruby_tyrant",
+     "count": 3
+    },
+    {
+     "cardId": "guttersnipe",
+     "count": 4
+    },
+    {
+     "cardId": "young_pyromancer",
+     "count": 4
+    },
+    {
+     "cardId": "tallyflame_court",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "volcanic_island",
+     "count": 4
+    },
+    {
+     "cardId": "steam_vents",
+     "count": 4
+    },
+    {
+     "cardId": "library_of_alexandria",
+     "count": 1
+    },
+    {
+     "cardId": "mountain",
+     "count": 5
+    },
+    {
+     "cardId": "island",
+     "count": 4
+    }
+   ]
+  },
+  "sideboards": {
+   "open": [
+    {
+     "cardId": "boomerang",
+     "count": 4
+    },
+    {
+     "cardId": "control_magic",
+     "count": 2
+    },
+    {
+     "cardId": "the_sapphire_sage",
+     "count": 2
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 4
+    },
+    {
+     "cardId": "the_ruby_tyrant",
+     "count": 1
+    },
+    {
+     "cardId": "drakuseth_maw_of_flames",
+     "count": 2
+    }
+   ]
+  },
+  "bracket": {
+   "seeds": [
+    0,
+    9,
+    23,
+    11,
+    27,
+    19,
+    20,
+    15
+   ],
+   "rounds": [
+    [
+     {
+      "a": 0,
+      "b": 15,
+      "series": {
+       "seed": 466468738,
+       "bestOf": 3,
+       "games": [
+        {
+         "index": 0,
+         "seed": 494637138,
+         "startingPlayer": 0,
+         "chooser": 0,
+         "winner": 0,
+         "reason": "LIFE",
+         "turns": 7
+        },
+        {
+         "index": 1,
+         "seed": 2086466583,
+         "startingPlayer": 1,
+         "chooser": 1,
+         "winner": 0,
+         "reason": "LIFE",
+         "turns": 11
+        }
+       ],
+       "wins": [
+        2,
+        0
+       ],
+       "draws": 0,
+       "done": true,
+       "winner": 0
+      },
+      "winner": 0
+     },
+     {
+      "a": 11,
+      "b": 27,
+      "series": {
+       "seed": 1918394169,
+       "bestOf": 3,
+       "games": [
+        {
+         "index": 0,
+         "seed": 1763349832,
+         "startingPlayer": 1,
+         "chooser": 1,
+         "winner": 0,
+         "reason": "LIFE",
+         "turns": 8
+        },
+        {
+         "index": 1,
+         "seed": 864994744,
+         "startingPlayer": 1,
+         "chooser": 1,
+         "winner": 1,
+         "reason": "LIFE",
+         "turns": 11
+        },
+        {
+         "index": 2,
+         "seed": 1700450843,
+         "startingPlayer": 0,
+         "chooser": 0,
+         "winner": 1,
+         "reason": "LIFE",
+         "turns": 16
+        }
+       ],
+       "wins": [
+        1,
+        2
+       ],
+       "draws": 0,
+       "done": true,
+       "winner": 1
+      },
+      "winner": 27
+     },
+     {
+      "a": 9,
+      "b": 20,
+      "series": {
+       "seed": 1186215406,
+       "bestOf": 3,
+       "games": [
+        {
+         "index": 0,
+         "seed": 875456362,
+         "startingPlayer": 1,
+         "chooser": 1,
+         "winner": 1,
+         "reason": "LIFE",
+         "turns": 17
+        },
+        {
+         "index": 1,
+         "seed": 1050309884,
+         "startingPlayer": 0,
+         "chooser": 0,
+         "winner": 1,
+         "reason": "LIFE",
+         "turns": 13
+        }
+       ],
+       "wins": [
+        0,
+        2
+       ],
+       "draws": 0,
+       "done": true,
+       "winner": 1
+      },
+      "winner": 20
+     },
+     {
+      "a": 23,
+      "b": 19,
+      "series": {
+       "seed": 73849147,
+       "bestOf": 3,
+       "games": [
+        {
+         "index": 0,
+         "seed": 128707077,
+         "startingPlayer": 0,
+         "chooser": 0,
+         "winner": 0,
+         "reason": "LIFE",
+         "turns": 7
+        },
+        {
+         "index": 1,
+         "seed": 1564407946,
+         "startingPlayer": 1,
+         "chooser": 1,
+         "winner": 1,
+         "reason": "LIFE",
+         "turns": 13
+        },
+        {
+         "index": 2,
+         "seed": 1184608273,
+         "startingPlayer": 0,
+         "chooser": 0,
+         "winner": 0,
+         "reason": "LIFE",
+         "turns": 12
+        }
+       ],
+       "wins": [
+        2,
+        1
+       ],
+       "draws": 0,
+       "done": true,
+       "winner": 0
+      },
+      "winner": 23
+     }
+    ],
+    [
+     {
+      "a": 0,
+      "b": 27,
+      "series": {
+       "seed": 866167036,
+       "bestOf": 3,
+       "games": [
+        {
+         "index": 0,
+         "seed": 1166446403,
+         "startingPlayer": 1,
+         "chooser": 1,
+         "winner": 0,
+         "reason": "LIFE",
+         "turns": 6
+        },
+        {
+         "index": 1,
+         "seed": 1358379929,
+         "startingPlayer": 1,
+         "chooser": 1,
+         "winner": 0,
+         "reason": "LIFE",
+         "turns": 15
+        }
+       ],
+       "wins": [
+        2,
+        0
+       ],
+       "draws": 0,
+       "done": true,
+       "winner": 0
+      },
+      "winner": 0
+     },
+     {
+      "a": 20,
+      "b": 23,
+      "series": {
+       "seed": 130302812,
+       "bestOf": 3,
+       "games": [
+        {
+         "index": 0,
+         "seed": 571918692,
+         "startingPlayer": 1,
+         "chooser": 1,
+         "winner": 0,
+         "reason": "LIFE",
+         "turns": 10
+        },
+        {
+         "index": 1,
+         "seed": 1383407074,
+         "startingPlayer": 1,
+         "chooser": 1,
+         "winner": 0,
+         "reason": "LIFE",
+         "turns": 8
+        }
+       ],
+       "wins": [
+        2,
+        0
+       ],
+       "draws": 0,
+       "done": true,
+       "winner": 0
+      },
+      "winner": 20
+     }
+    ],
+    [
+     {
+      "a": 0,
+      "b": 20,
+      "series": {
+       "seed": 1980400289,
+       "bestOf": 3,
+       "games": [
+        {
+         "index": 0,
+         "seed": 380872509,
+         "startingPlayer": 0,
+         "chooser": 0,
+         "winner": 0,
+         "reason": "LIFE",
+         "turns": 16
+        },
+        {
+         "index": 1,
+         "seed": 256324047,
+         "startingPlayer": 1,
+         "chooser": 1,
+         "winner": 0,
+         "reason": "LIFE",
+         "turns": 17
+        }
+       ],
+       "wins": [
+        2,
+        0
+       ],
+       "draws": 0,
+       "done": true,
+       "winner": 0
+      },
+      "winner": 0
+     }
+    ]
+   ]
+  },
+  "ledgered": true
+ },
+ "ledger": [
+  {
+   "when": "2026-10-01T23:39:26.710Z",
+   "formatId": "sealed-plane",
+   "seed": 773675,
+   "seats": 8,
+   "rounds": 3,
+   "difficulty": "standard",
+   "place": 1,
+   "record": "3–0",
+   "points": 9,
+   "field": [
+    {
+     "name": "You",
+     "place": 1,
+     "points": 9,
+     "colors": "BU"
+    },
+    {
+     "name": "Joss Tallow",
+     "place": 2,
+     "points": 6,
+     "colors": "WGU"
+    },
+    {
+     "name": "Edmar Vole",
+     "place": 3,
+     "points": 6,
+     "colors": "WG"
+    },
+    {
+     "name": "Fenna Reed",
+     "place": 4,
+     "points": 6,
+     "colors": "WBU"
+    },
+    {
+     "name": "Lysa Fenn",
+     "place": 5,
+     "points": 3,
+     "colors": "BGU"
+    },
+    {
+     "name": "Dessa Thorne",
+     "place": 6,
+     "points": 3,
+     "colors": "WB"
+    },
+    {
+     "name": "Hesper Lune",
+     "place": 7,
+     "points": 3,
+     "colors": "WU"
+    },
+    {
+     "name": "Kerrin Wade",
+     "place": 8,
+     "points": 0,
+     "colors": "WU"
+    }
+   ],
+   "deck": [
+    {
+     "cardId": "faerie_formation",
+     "count": 2
+    },
+    {
+     "cardId": "control_magic",
+     "count": 1
+    },
+    {
+     "cardId": "tidewall",
+     "count": 1
+    },
+    {
+     "cardId": "hedron_crab",
+     "count": 2
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 1
+    },
+    {
+     "cardId": "arcane_collector",
+     "count": 1
+    },
+    {
+     "cardId": "wall_of_air",
+     "count": 1
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 2
+    },
+    {
+     "cardId": "gallows_djinn",
+     "count": 1
+    },
+    {
+     "cardId": "dread_presence",
+     "count": 2
+    },
+    {
+     "cardId": "phyrexian_rager",
+     "count": 2
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 1
+    },
+    {
+     "cardId": "diabolic_edict",
+     "count": 1
+    },
+    {
+     "cardId": "bitterblossom",
+     "count": 1
+    },
+    {
+     "cardId": "watery_grave",
+     "count": 2
+    },
+    {
+     "cardId": "thawing_glaciers",
+     "count": 1
+    },
+    {
+     "cardId": "dark_ritual",
+     "count": 1
+    },
+    {
+     "cardId": "typhoid_rats",
+     "count": 2
+    },
+    {
+     "cardId": "waterfront_bouncer",
+     "count": 1
+    },
+    {
+     "cardId": "swamp",
+     "count": 8
+    },
+    {
+     "cardId": "island",
+     "count": 6
+    }
+   ],
+   "kept": "gallows_djinn"
+  },
+  {
+   "when": "2026-10-02T15:03:21.846Z",
+   "formatId": "sealed-plane",
+   "seed": 722769,
+   "seats": 16,
+   "rounds": 5,
+   "difficulty": "standard",
+   "place": 1,
+   "record": "5–0",
+   "points": 15,
+   "field": [
+    {
+     "name": "You",
+     "place": 1,
+     "points": 15,
+     "colors": "BW"
+    },
+    {
+     "name": "Ilse Marrowgate",
+     "place": 2,
+     "points": 9,
+     "colors": "UBG"
+    },
+    {
+     "name": "Ignatius Reed",
+     "place": 3,
+     "points": 9,
+     "colors": "BG"
+    },
+    {
+     "name": "Nerys Fallow",
+     "place": 4,
+     "points": 9,
+     "colors": "BG"
+    },
+    {
+     "name": "Corvin Hale",
+     "place": 5,
+     "points": 12,
+     "colors": "UB"
+    },
+    {
+     "name": "Hesper Lune",
+     "place": 6,
+     "points": 9,
+     "colors": "BG"
+    },
+    {
+     "name": "Orrin Blackquill",
+     "place": 7,
+     "points": 9,
+     "colors": "BG"
+    },
+    {
+     "name": "Mora Tideswell",
+     "place": 8,
+     "points": 9,
+     "colors": "WGU"
+    },
+    {
+     "name": "Sabel Thorne",
+     "place": 9,
+     "points": 9,
+     "colors": "BG"
+    },
+    {
+     "name": "Wyn Cordovan",
+     "place": 10,
+     "points": 6,
+     "colors": "UGB"
+    },
+    {
+     "name": "Osric Fenn",
+     "place": 11,
+     "points": 6,
+     "colors": "WBU"
+    },
+    {
+     "name": "Lirael Stane",
+     "place": 12,
+     "points": 6,
+     "colors": "WB"
+    },
+    {
+     "name": "Ysolt Garrow",
+     "place": 13,
+     "points": 6,
+     "colors": "WG"
+    },
+    {
+     "name": "Dathan Mire",
+     "place": 14,
+     "points": 3,
+     "colors": "RG"
+    },
+    {
+     "name": "Cassian Dray",
+     "place": 15,
+     "points": 3,
+     "colors": "RG"
+    },
+    {
+     "name": "Tamsin Vell",
+     "place": 16,
+     "points": 0,
+     "colors": "WB"
+    }
+   ],
+   "top8": true,
+   "deck": [
+    {
+     "cardId": "serra_angel",
+     "count": 1
+    },
+    {
+     "cardId": "zombify",
+     "count": 1
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 1
+    },
+    {
+     "cardId": "nekrataal",
+     "count": 1
+    },
+    {
+     "cardId": "gallows_djinn",
+     "count": 2
+    },
+    {
+     "cardId": "cunning_tactician",
+     "count": 1
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 1
+    },
+    {
+     "cardId": "phyrexian_rager",
+     "count": 1
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 2
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 1
+    },
+    {
+     "cardId": "blood_artist",
+     "count": 1
+    },
+    {
+     "cardId": "bitterblossom",
+     "count": 2
+    },
+    {
+     "cardId": "raise_the_alarm",
+     "count": 1
+    },
+    {
+     "cardId": "inspiring_overseer",
+     "count": 1
+    },
+    {
+     "cardId": "loxodon_warhammer",
+     "count": 1
+    },
+    {
+     "cardId": "master_decoy",
+     "count": 1
+    },
+    {
+     "cardId": "gravedigger",
+     "count": 1
+    },
+    {
+     "cardId": "reassembling_skeleton",
+     "count": 2
+    },
+    {
+     "cardId": "godless_shrine",
+     "count": 1
+    },
+    {
+     "cardId": "barren_moor",
+     "count": 1
+    },
+    {
+     "cardId": "swamp",
+     "count": 8
+    },
+    {
+     "cardId": "plains",
+     "count": 7
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 1
+    }
+   ],
+   "kept": "bitterblossom"
+  },
+  {
+   "when": "2026-10-02T19:38:12.917Z",
+   "formatId": "draft-plane",
+   "seed": 364678,
+   "seats": 32,
+   "rounds": 5,
+   "difficulty": "standard",
+   "place": 5,
+   "record": "4–1",
+   "points": 12,
+   "field": [
+    {
+     "name": "Ilse Marrowgate",
+     "place": 1,
+     "points": 15,
+     "colors": "RG"
+    },
+    {
+     "name": "Verity Brackwater",
+     "place": 2,
+     "points": 12,
+     "colors": "WR"
+    },
+    {
+     "name": "Aldous Ashgrove",
+     "place": 3,
+     "points": 12,
+     "colors": "WG"
+    },
+    {
+     "name": "Caro Candlewick",
+     "place": 4,
+     "points": 10,
+     "colors": "BR"
+    },
+    {
+     "name": "You",
+     "place": 5,
+     "points": 12,
+     "colors": "RB"
+    },
+    {
+     "name": "Odalys Wintermere",
+     "place": 6,
+     "points": 12,
+     "colors": "BR"
+    },
+    {
+     "name": "Cyprian Mossbank",
+     "place": 7,
+     "points": 10,
+     "colors": "UR"
+    },
+    {
+     "name": "Ulric Eldergate",
+     "place": 8,
+     "points": 9,
+     "colors": "WR"
+    },
+    {
+     "name": "Dorrit Yarrow",
+     "place": 9,
+     "points": 9,
+     "colors": "WR"
+    },
+    {
+     "name": "Halla Larkspur",
+     "place": 10,
+     "points": 9,
+     "colors": "UG"
+    },
+    {
+     "name": "Ysolt Garrow",
+     "place": 11,
+     "points": 9,
+     "colors": "WU"
+    },
+    {
+     "name": "Corvin Hale",
+     "place": 12,
+     "points": 9,
+     "colors": "UG"
+    },
+    {
+     "name": "Kester of the Weir",
+     "place": 13,
+     "points": 9,
+     "colors": "UB"
+    },
+    {
+     "name": "Briar of the Low Road",
+     "place": 14,
+     "points": 9,
+     "colors": "WG"
+    },
+    {
+     "name": "Tamsin Vell",
+     "place": 15,
+     "points": 9,
+     "colors": "WR"
+    },
+    {
+     "name": "Ignatius Reed",
+     "place": 16,
+     "points": 9,
+     "colors": "BR"
+    },
+    {
+     "name": "Sabel Thorne",
+     "place": 17,
+     "points": 6,
+     "colors": "UR"
+    },
+    {
+     "name": "Nerys Fallow",
+     "place": 18,
+     "points": 6,
+     "colors": "WG"
+    },
+    {
+     "name": "Osric Fenn",
+     "place": 19,
+     "points": 6,
+     "colors": "BR"
+    },
+    {
+     "name": "Orrin Blackquill",
+     "place": 20,
+     "points": 6,
+     "colors": "UB"
+    },
+    {
+     "name": "Fenwick Dunmere",
+     "place": 21,
+     "points": 6,
+     "colors": "BG"
+    },
+    {
+     "name": "Hesper Lune",
+     "place": 22,
+     "points": 6,
+     "colors": "BGW"
+    },
+    {
+     "name": "Dathan Mire",
+     "place": 23,
+     "points": 6,
+     "colors": "BG"
+    },
+    {
+     "name": "Nicander Birchall",
+     "place": 24,
+     "points": 6,
+     "colors": "WR"
+    },
+    {
+     "name": "Yorick Amberley",
+     "place": 25,
+     "points": 6,
+     "colors": "BG"
+    },
+    {
+     "name": "Wyn Cordovan",
+     "place": 26,
+     "points": 6,
+     "colors": "RG"
+    },
+    {
+     "name": "Perpetua Ash",
+     "place": 27,
+     "points": 3,
+     "colors": "BG"
+    },
+    {
+     "name": "Mora Tideswell",
+     "place": 28,
+     "points": 3,
+     "colors": "BR"
+    },
+    {
+     "name": "Lirael Stane",
+     "place": 29,
+     "points": 3,
+     "colors": "BG"
+    },
+    {
+     "name": "Rosalind Netherby",
+     "place": 30,
+     "points": 3,
+     "colors": "BG"
+    },
+    {
+     "name": "Cassian Dray",
+     "place": 31,
+     "points": 3,
+     "colors": "BR"
+    },
+    {
+     "name": "Garran Oakhollow",
+     "place": 32,
+     "points": 0,
+     "colors": "UB"
+    }
+   ],
+   "top8": true,
+   "deck": [
+    {
+     "cardId": "nekrataal",
+     "count": 2
+    },
+    {
+     "cardId": "furnace_whelp",
+     "count": 2
+    },
+    {
+     "cardId": "rage_cobra",
+     "count": 1
+    },
+    {
+     "cardId": "arc_mage",
+     "count": 2
+    },
+    {
+     "cardId": "young_pyromancer",
+     "count": 1
+    },
+    {
+     "cardId": "goblin_piker",
+     "count": 2
+    },
+    {
+     "cardId": "dragon_fodder",
+     "count": 2
+    },
+    {
+     "cardId": "bitterblossom",
+     "count": 1
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 1
+    },
+    {
+     "cardId": "reassembling_skeleton",
+     "count": 1
+    },
+    {
+     "cardId": "abrade",
+     "count": 1
+    },
+    {
+     "cardId": "blaze",
+     "count": 2
+    },
+    {
+     "cardId": "shock",
+     "count": 2
+    },
+    {
+     "cardId": "terror",
+     "count": 1
+    },
+    {
+     "cardId": "child_of_night",
+     "count": 1
+    },
+    {
+     "cardId": "typhoid_rats",
+     "count": 1
+    },
+    {
+     "cardId": "blood_crypt",
+     "count": 2
+    },
+    {
+     "cardId": "barren_moor",
+     "count": 1
+    },
+    {
+     "cardId": "evolving_wilds",
+     "count": 1
+    },
+    {
+     "cardId": "forgotten_cave",
+     "count": 2
+    },
+    {
+     "cardId": "mountain",
+     "count": 7
+    },
+    {
+     "cardId": "swamp",
+     "count": 4
+    }
+   ],
+   "kept": "arc_mage"
+  },
+  {
+   "when": "2026-10-05T15:17:09.760Z",
+   "formatId": "open",
+   "seed": 189758,
+   "seats": 32,
+   "rounds": 5,
+   "difficulty": "normal",
+   "place": 1,
+   "record": "5–0",
+   "points": 15,
+   "field": [
+    {
+     "name": "You",
+     "place": 1,
+     "points": 15,
+     "colors": "BRW"
+    },
+    {
+     "name": "Verity Brackwater",
+     "place": 2,
+     "points": 12,
+     "colors": "WB"
+    },
+    {
+     "name": "Odalys Wintermere",
+     "place": 3,
+     "points": 12,
+     "colors": "BWR"
+    },
+    {
+     "name": "Mora Tideswell",
+     "place": 4,
+     "points": 12,
+     "colors": "UWB"
+    },
+    {
+     "name": "Ysolt Garrow",
+     "place": 5,
+     "points": 12,
+     "colors": "GW"
+    },
+    {
+     "name": "Corvin Hale",
+     "place": 6,
+     "points": 12,
+     "colors": "WB"
+    },
+    {
+     "name": "Tamsin Vell",
+     "place": 7,
+     "points": 12,
+     "colors": "BRG"
+    },
+    {
+     "name": "Orrin Blackquill",
+     "place": 8,
+     "points": 9,
+     "colors": "UWB"
+    },
+    {
+     "name": "Nicander Birchall",
+     "place": 9,
+     "points": 9,
+     "colors": "WB"
+    },
+    {
+     "name": "Hesper Lune",
+     "place": 10,
+     "points": 9,
+     "colors": "GBR"
+    },
+    {
+     "name": "Garran Oakhollow",
+     "place": 11,
+     "points": 9,
+     "colors": "BWR"
+    },
+    {
+     "name": "Yorick Amberley",
+     "place": 12,
+     "points": 9,
+     "colors": "GW"
+    },
+    {
+     "name": "Cassian Dray",
+     "place": 13,
+     "points": 9,
+     "colors": "BGWU"
+    },
+    {
+     "name": "Lirael Stane",
+     "place": 14,
+     "points": 9,
+     "colors": "UWB"
+    },
+    {
+     "name": "Wyn Cordovan",
+     "place": 15,
+     "points": 9,
+     "colors": "WRG"
+    },
+    {
+     "name": "Fenwick Dunmere",
+     "place": 16,
+     "points": 9,
+     "colors": "BGR"
+    }
+   ],
+   "top8": true,
+   "deck": [
+    {
+     "cardId": "the_usher",
+     "count": 4
+    },
+    {
+     "cardId": "zombify",
+     "count": 4
+    },
+    {
+     "cardId": "the_jet_witch",
+     "count": 4
+    },
+    {
+     "cardId": "buried_alive",
+     "count": 4
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    },
+    {
+     "cardId": "dark_ritual",
+     "count": 4
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "badlands",
+     "count": 4
+    },
+    {
+     "cardId": "scrubland",
+     "count": 4
+    },
+    {
+     "cardId": "barren_moor",
+     "count": 4
+    },
+    {
+     "cardId": "blood_crypt",
+     "count": 4
+    },
+    {
+     "cardId": "godless_shrine",
+     "count": 4
+    },
+    {
+     "cardId": "blood_artist",
+     "count": 4
+    },
+    {
+     "cardId": "typhoid_rats",
+     "count": 4
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "tendrils_of_corruption",
+     "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "tendrils_of_corruption",
+     "count": 2
+    },
+    {
+     "cardId": "drana_kalastria_bloodchief",
+     "count": 1
+    },
+    {
+     "cardId": "nekrataal",
+     "count": 1
+    },
+    {
+     "cardId": "hymn_to_tourach",
+     "count": 4
+    },
+    {
+     "cardId": "indulgent_aristocrat",
+     "count": 4
+    },
+    {
+     "cardId": "hypnotic_specter",
+     "count": 3
+    }
+   ]
+  },
+  {
+   "when": "2026-10-06T02:51:50.644Z",
+   "formatId": "open",
+   "seed": 531727,
+   "seats": 32,
+   "rounds": 5,
+   "difficulty": "normal",
+   "place": 1,
+   "record": "5–0",
+   "points": 15,
+   "field": [
+    {
+     "name": "You",
+     "place": 1,
+     "points": 15,
+     "colors": "RU"
+    },
+    {
+     "name": "Halla Larkspur",
+     "place": 2,
+     "points": 9,
+     "colors": "BGR"
+    },
+    {
+     "name": "Cassian Dray",
+     "place": 3,
+     "points": 12,
+     "colors": "BRW"
+    },
+    {
+     "name": "Dathan Mire",
+     "place": 4,
+     "points": 12,
+     "colors": "BWR"
+    },
+    {
+     "name": "Osric Fenn",
+     "place": 5,
+     "points": 12,
+     "colors": "WB"
+    },
+    {
+     "name": "Wyn Cordovan",
+     "place": 6,
+     "points": 12,
+     "colors": "BRW"
+    },
+    {
+     "name": "Perpetua Ash",
+     "place": 7,
+     "points": 12,
+     "colors": "RW"
+    },
+    {
+     "name": "Garran Oakhollow",
+     "place": 8,
+     "points": 9,
+     "colors": "BWR"
+    },
+    {
+     "name": "Nicander Birchall",
+     "place": 9,
+     "points": 9,
+     "colors": "G"
+    },
+    {
+     "name": "Odalys Wintermere",
+     "place": 10,
+     "points": 9,
+     "colors": "WB"
+    },
+    {
+     "name": "Cyprian Mossbank",
+     "place": 11,
+     "points": 9,
+     "colors": "BWR"
+    },
+    {
+     "name": "Ysolt Garrow",
+     "place": 12,
+     "points": 9,
+     "colors": "WBR"
+    },
+    {
+     "name": "Yorick Amberley",
+     "place": 13,
+     "points": 9,
+     "colors": "BRW"
+    },
+    {
+     "name": "Kester of the Weir",
+     "place": 14,
+     "points": 9,
+     "colors": "UBG"
+    },
+    {
+     "name": "Sabel Thorne",
+     "place": 15,
+     "points": 9,
+     "colors": "BRW"
+    },
+    {
+     "name": "Corvin Hale",
+     "place": 16,
+     "points": 9,
+     "colors": "BGR"
+    }
+   ],
+   "top8": true,
+   "deck": [
+    {
+     "cardId": "time_walk",
+     "count": 1
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "arcane_collector",
+     "count": 3
+    },
+    {
+     "cardId": "tidewall",
+     "count": 4
+    },
+    {
+     "cardId": "aetherbolt",
+     "count": 4
+    },
+    {
+     "cardId": "experimental_overload",
+     "count": 2
+    },
+    {
+     "cardId": "odile_the_tallyflame",
+     "count": 3
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "blaze",
+     "count": 2
+    },
+    {
+     "cardId": "the_ruby_tyrant",
+     "count": 3
+    },
+    {
+     "cardId": "guttersnipe",
+     "count": 4
+    },
+    {
+     "cardId": "young_pyromancer",
+     "count": 4
+    },
+    {
+     "cardId": "tallyflame_court",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "volcanic_island",
+     "count": 4
+    },
+    {
+     "cardId": "steam_vents",
+     "count": 4
+    },
+    {
+     "cardId": "library_of_alexandria",
+     "count": 1
+    },
+    {
+     "cardId": "mountain",
+     "count": 5
+    },
+    {
+     "cardId": "island",
+     "count": 4
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "boomerang",
+     "count": 4
+    },
+    {
+     "cardId": "control_magic",
+     "count": 2
+    },
+    {
+     "cardId": "the_sapphire_sage",
+     "count": 2
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 4
+    },
+    {
+     "cardId": "the_ruby_tyrant",
+     "count": 1
+    },
+    {
+     "cardId": "drakuseth_maw_of_flames",
+     "count": 2
+    }
+   ]
+  }
+ ]
+}

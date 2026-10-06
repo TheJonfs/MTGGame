@@ -131,6 +131,26 @@ The Open now has a combo deck, the AI can pilot it and play against it, and the 
 - **Why it fails:** the Coin study said whoever lands the first Usher wins. Holding the setup gives up that race. The AI is better off arming both players and trying to be first.
 - The option, its test and its fuel rule stay in the module for a plan it suits. With it off, the Pall plays exactly as it did before (600 games byte-identical).
 
+## After the handoff — the Mardu grid and the Kiln (Chris, 2026-10-06)
+
+**Are the four Mardu lists redundant?** From the saved sixteen-list round-robin (game one, registered sixties, 100 games a cell):
+
+| row beats column | the Pall | the Hearth | the Coin | the Loop | against the other twelve |
+|---|---|---|---|---|---|
+| the Pall | — | 69 | 66 | 73 | 73.0% |
+| the Hearth | 31 | — | 42 | 53 | 67.3% |
+| the Coin | 34 | 58 | — | 52 | 61.9% |
+| the Loop | 27 | 47 | 48 | — | 55.6% |
+
+- **The Loop is the redundant one.** It shares 31 of its 37 nonland cards with the Coin; their matchup profiles correlate at r = 0.88; the Coin is level or better against eleven of the other twelve (the Loop is better only against the Tally) by six points on average. The Hearth is level or better than the Loop against all twelve.
+- **The other three are distinct.** No pair shares more than 16 nonland cards. The Coin beats the Hearth head to head (58%) while the Hearth does better against the field; the Pall leads all three in game one but loses *matches* to the Coin (41%).
+- **Recommendation for the planner: archive the Loop.** Not done: the Loop is a planner's seed list, and there is no archive mechanism yet (a flag on a list that keeps it in the data and out of the field would be enough).
+
+**The Kiln** (Chris's 5–0 Izzet list, `docs/debug_logs/convocation-open-5–0 UR.json`; a working name) is the fifth contributed list, with its fifteen.
+- Against the sixteen in the AI's hands: **46.8%** as midrange, 45.3% as control (paired difference −1.5 ± 1.6, so no real difference; registered as midrange).
+- Best: the Tally 84, the Locks 69, the Undertow 67. Worst: the Levy 22, the Pall 27, the Loop 28.
+- Chris expects to tune its sixty and fifteen; `combo-probe`'s in-place `--swap` and `open:rr --only` are the tools.
+
 ## Deviations from the brief
 1. **`loopDrawCap` is an engine rule field, not a world knob** (`GameRules.loopDrawCap`, default 100). A match's rules are built in a dozen places that do not read the knob table.
 2. **The loop draw does not apply CR 104.4b's exception for an optional action.** A player who repeats a position a hundred times in a turn by choice also draws. Recorded in R-103.

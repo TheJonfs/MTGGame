@@ -573,6 +573,125 @@
      "discardBeforeTurn": 3
     }
    }
+  },
+  {
+   "key": "kiln",
+   "name": "the Kiln",
+   "title": "Izzet Spells (U R)",
+   "archetype": "midrange",
+   "source": "Chris's Open, seed 531727, 2026-10-05 — 5–0 and the Umbel. Counterspells and burn behind Tidewalls, with Guttersnipe, Young Pyromancer and Odile paying for every spell; \"the Kiln\" is a working name until Chris names it.",
+   "decklist": [
+    {
+     "cardId": "time_walk",
+     "count": 1
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "arcane_collector",
+     "count": 3
+    },
+    {
+     "cardId": "tidewall",
+     "count": 4
+    },
+    {
+     "cardId": "aetherbolt",
+     "count": 4
+    },
+    {
+     "cardId": "experimental_overload",
+     "count": 2
+    },
+    {
+     "cardId": "odile_the_tallyflame",
+     "count": 3
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "blaze",
+     "count": 2
+    },
+    {
+     "cardId": "the_ruby_tyrant",
+     "count": 3
+    },
+    {
+     "cardId": "guttersnipe",
+     "count": 4
+    },
+    {
+     "cardId": "young_pyromancer",
+     "count": 4
+    },
+    {
+     "cardId": "tallyflame_court",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "volcanic_island",
+     "count": 4
+    },
+    {
+     "cardId": "steam_vents",
+     "count": 4
+    },
+    {
+     "cardId": "library_of_alexandria",
+     "count": 1
+    },
+    {
+     "cardId": "mountain",
+     "count": 5
+    },
+    {
+     "cardId": "island",
+     "count": 4
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "boomerang",
+     "count": 4
+    },
+    {
+     "cardId": "control_magic",
+     "count": 2
+    },
+    {
+     "cardId": "the_sapphire_sage",
+     "count": 2
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 4
+    },
+    {
+     "cardId": "the_ruby_tyrant",
+     "count": 1
+    },
+    {
+     "cardId": "drakuseth_maw_of_flames",
+     "count": 2
+    }
+   ]
   }
  ]
 }
