@@ -151,6 +151,20 @@ The Open now has a combo deck, the AI can pilot it and play against it, and the 
 - Best: the Tally 84, the Locks 69, the Undertow 67. Worst: the Levy 22, the Pall 27, the Loop 28.
 - Chris expects to tune its sixty and fifteen; `combo-probe`'s in-place `--swap` and `open:rr --only` are the tools.
 
+## After the handoff — tuning the Kiln against the Levy and the Pall (Chris, 2026-10-06; proposed, not applied)
+
+`open:rr` gained `--swap key:from:n:to[;…]` (cards replaced in place: the same shuffle, so paired by game) and `--vs k1,k2`.
+
+- **The AI does not sideboard the Kiln's fifteen** against either deck: its rules know targeted removal, counters and graveyard exile, not Pyroclasm or Boomerang. Sideboard plans were therefore tested as the sixty a person would present, swapped by hand.
+- **Main deck** (1,600 games a variant against the sixteen, the Kiln's baseline seeds). Baseline: the Levy 22%, the Pall 27%, the field 46.8%.
+  - −2 Experimental Overload +2 Control Magic: the field **+5.8 ± 1.5**.
+  - 4 Control Magic (also −2 Blaze) and −3 Arcane Collector +3 Flametongue Kavu: the field **57.8% (+11.0 ± 2.2)**, the Levy 44%, the Pall 31%.
+  - Cutting Young Pyromancer hurt against the field for every replacement but the Kavu (Chris found it weak in play; the AI gets value from it).
+- **Sideboard, on that main** (300 games a plan, the opponent sideboarded too):
+  - Against the Pall: 37% as is; −4 Tidewall +2 Crypt +2 Macabre **60%**; −4 Tidewall −3 Kavu +4 Crypt +3 Macabre **65%**. Here graveyard exile matters a great deal — unlike for the Mardu lists.
+  - Against the Levy: 52% as is; none of seven plans improved it (Pyroclasm ±0; cutting Counterspells for anything cost 3–8 points).
+- Chris to decide the seventy-five; nothing is changed in the list yet.
+
 ## Deviations from the brief
 1. **`loopDrawCap` is an engine rule field, not a world knob** (`GameRules.loopDrawCap`, default 100). A match's rules are built in a dozen places that do not read the knob table.
 2. **The loop draw does not apply CR 104.4b's exception for an optional action.** A player who repeats a position a hundred times in a turn by choice also draws. Recorded in R-103.

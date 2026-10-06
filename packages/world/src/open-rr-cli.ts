@@ -4,6 +4,10 @@
  *   --merge      a LATER file's games replace an earlier file's for the same pairing.
  *   --sideboarded   post-S54: every seat plays the sixty it would bring to games two and three against that opponent
  *                (its built fifteen, the field's three rules) — run beside a plain run on the same seed.
+ *   --swap key:from:n:to[;from:n:to…]   post-S55 (Chris: tuning a list): n copies of a card in list `key` replaced IN
+ *                PLACE (the same slot, so the same shuffle — card-test's paired method). Run with --only key on the
+ *                seed of a plain run and compare game by game.
+ *   --vs k1,k2    with --only: only the pairings against those lists (a matchup study at more games).
  *   --journeyman k1,k2   S54 (ADR-158's test): those lists are piloted by journeyman (every other seat master) — run
  *                with --only on the same seed as a master run, and every game is paired with its master twin.
  *
@@ -66,6 +70,20 @@ async function run(): Promise<void> {
     if (!fifteen.has(me.key)) fifteen.set(me.key, buildSideboard(me.decklist, OPEN_FORMAT, rating, pool, answersRelics, answersCreatures));
     return aiSideboard(me.decklist, fifteen.get(me.key)!, them.decklist, pool, rating, AI_SIDEBOARD_CONSTRUCTED).deck;
   };
+  const swapArg = arg("swap", "");
+  const DECKS: typeof OPEN_DECKS = swapArg ? (() => {
+    const [key, ...rest] = swapArg.split(":"), swaps = rest.join(":").split(";").map((x) => x.split(":") as [string, string, string]);
+    const base = OPEN_DECKS[key!]; if (!base) throw new Error(`open:rr --swap: no list ${key}`);
+    let list = base.decklist.map((e) => ({ ...e }));
+    for (const [from, n, to] of swaps) {
+      if (!pool.has(to)) throw new Error(`open:rr --swap: no card ${to}`);
+      const i = list.findIndex((e) => e.cardId === from); if (i < 0 || list[i]!.count < Number(n)) throw new Error(`open:rr --swap: ${key} does not hold ${n} ${from}`);
+      list = [...list.slice(0, i), ...[{ cardId: from, count: list[i]!.count - Number(n) }, { cardId: to, count: Number(n) }].filter((e) => e.count > 0), ...list.slice(i + 1)];
+    }
+    if (list.reduce((a, e) => a + e.count, 0) !== 60) throw new Error("open:rr --swap: the list is no longer sixty");
+    return { ...OPEN_DECKS, [key!]: { ...base, decklist: list } };
+  })() : OPEN_DECKS;
+  const vs = arg("vs", "").split(",").filter(Boolean);
   const only = arg("only", ""), journeyman = new Set(arg("journeyman", "").split(",").filter(Boolean));
   const pilot = (key: string) => (journeyman.has(key) ? "journeyman" : "master");
   const pairs: [string, string][] = [];
@@ -75,7 +93,8 @@ async function run(): Promise<void> {
     if (p % sn !== si) continue;
     const [ka, kb] = pairs[p]!;
     if (only && ka !== only && kb !== only) continue;
-    const A = OPEN_DECKS[ka]!, B = OPEN_DECKS[kb]!;
+    if (only && vs.length && !vs.includes(ka === only ? kb : ka)) continue;
+    const A = DECKS[ka]!, B = DECKS[kb]!;
     for (let g = 0; g < G; g++) {
       const seatA = (g % 2) as 0 | 1;
       const seed = seed0 + p * 1009 + g * 37;
