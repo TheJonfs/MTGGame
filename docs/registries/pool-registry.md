@@ -637,6 +637,12 @@ Pool 244 → **246**. Two answers to a graveyard loop that any deck can sideboar
 | tormods_crypt | Tormod's Crypt | tested | activated {T}, sacrifice self; target player: `exileGraveyard` who target (R-104 — the one new word) | DRK #112 (Christopher Rush). T2. {0} Artifact. As briefed. |
 | faerie_macabre | Faerie Macabre | tested | flying; activated from the HAND, cost `discardSelf` (cycling's cost, no mana): exile `targetSpec` 0 — up to two `cardInYourGraveyard` who any | SHM #66 (rk post). T2. **{1}{B}{B} Creature — Faerie Rogue 2/2 with flying** — the brief flagged its memory of the cost and body; these are Scryfall's. Zero new words: the hand-zone activation (A5), the up-to range (A8) and the fan-out exile (S36) existed; `exile` now reaches a card in a graveyard. |
 
+## Session 56 addition — Protocol (Chris's card, delivered 2026-10-06)
+
+| id | name | status | vocabulary | notes |
+|---|---|---|---|---|
+| protocol | Protocol | tested | static `modifyPT` −2/−0 on attached; static `gainControl` on attached with `condition: {value: {ref: "attachedPower"}, atMost: 0}` (R-105 — the one new word) | CUSTOM. {U}{U} Enchantment — Aura. **T2** (Chris allowed T2 or T3; measured below the T3 Control Magic in every slot tried — results/s56/protocol-grid.md). Card art and "as printed" face delivered by Chris; **the printed face shows a stray "2/2" in the power/toughness box** — an Aura has none. Pool 246 → 247. |
+
 ## Shop tiers (ADR-078, S19)
 
 The `shopTier` column (`1 | 2 | 3 | R`) is repo-canonical **on the card defs themselves** (`data/cards/*.json`, validated by the loader: every non-token, non-basic, non-prizeOnly card must carry one) rather than duplicated per row above; `docs/card-tier-audit-v2.md` is the curation source (planner-maintained), and `pnpm card-manifest` regenerates the human-readable price sheet. Distribution at adoption: **T1 ×53 · T2 ×31 · T3 ×10 · R ×2** (Demonic Tutor, Mystic Snake) + Lotus `prizeOnly` + 5 basics; Faerie Formation joins at T3 this session (→ T3 ×11). Availability: a town stocks `shopTier ≤ ring` (civilized 1 / approach 2 / wild 3); price × `shopTierMultiplier` (1.0/1.5/2.5 knobs); **R never stocks** — ante/quest/treasure circulation only.

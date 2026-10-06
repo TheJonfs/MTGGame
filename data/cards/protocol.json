@@ -1,0 +1,55 @@
+{
+  "id": "protocol",
+  "name": "Protocol",
+  "source": "custom",
+  "manaCost": "{U}{U}",
+  "types": [
+    "Enchantment"
+  ],
+  "subtypes": [
+    "Aura"
+  ],
+  "text": "Enchant creature\nEnchanted creature gets -2/-0.\nAs long as enchanted creature's power is 0 or less, you control enchanted creature.",
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "creature",
+      "zone": "battlefield"
+    }
+  ],
+  "abilities": [
+    {
+      "kind": "static",
+      "effects": [
+        {
+          "type": "modifyPT",
+          "power": -2,
+          "toughness": 0,
+          "scope": "attached",
+          "duration": "WHILE_SOURCE_ON_BATTLEFIELD"
+        }
+      ]
+    },
+    {
+      "kind": "static",
+      "condition": {
+        "value": {
+          "ref": "attachedPower"
+        },
+        "atMost": 0
+      },
+      "effects": [
+        {
+          "type": "gainControl",
+          "scope": "attached"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "asset": "/custom-art/protocol.png",
+    "fallback": "rendered"
+  },
+  "printedAsset": "protocol.jpg",
+  "shopTier": 2
+}

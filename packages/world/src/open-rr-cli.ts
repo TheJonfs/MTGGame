@@ -5,7 +5,8 @@
  *   --sideboarded   post-S54: every seat plays the sixty it would bring to games two and three against that opponent
  *                (its built fifteen, the field's three rules) — run beside a plain run on the same seed.
  *   --swap key:from:n:to[;from:n:to…]   post-S55 (Chris: tuning a list): n copies of a card in list `key` replaced IN
- *                PLACE (the same slot, so the same shuffle — card-test's paired method). Run with --only key on the
+ *                PLACE (the same slot, so the same shuffle — card-test's paired method). `to` may be a card-test variant
+ *                (`protocol~cost={1}{U}~shrink=3`: the card with fields overridden, for this run only). Run with --only key on the
  *                seed of a plain run and compare game by game.
  *   --vs k1,k2    with --only: only the pairings against those lists (a matchup study at more games).
  *   --sideboarded-one   S56: in each game ONE seat plays its sideboarded sixty against the other's registered sixty
@@ -33,6 +34,7 @@ import { runMatch, type Action, type ActionRequest, type Agent, type GameView, t
 import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
 import { OPEN_DECKS, OPEN_FIELD } from "@shandalar/sim/open-decks";
 import { OPEN_FORMAT } from "./formats.js";
+import { variantDef } from "./card-variants.js";
 import { buildSideboard } from "./constructed-builder.js";
 import { AI_SIDEBOARD_CONSTRUCTED, SIDEBOARD_SHAPES, aiSideboard, answersCreatures, answersRelics, type AiSideboardTerms } from "./sideboard-ai.js";
 import type { CardRatingTable } from "./rating.js";
@@ -88,7 +90,7 @@ async function run(): Promise<void> {
     const base = OPEN_DECKS[key!]; if (!base) throw new Error(`open:rr --swap: no list ${key}`);
     let list = base.decklist.map((e) => ({ ...e }));
     for (const [from, n, to] of swaps) {
-      if (!pool.has(to)) throw new Error(`open:rr --swap: no card ${to}`);
+      if (!pool.has(to)) pool.set(to, variantDef(to, pool)); // S56: a variant spec (card-test's: `protocol~cost={1}{U}~shrink=3`) is a card of this run
       const i = list.findIndex((e) => e.cardId === from); if (i < 0 || list[i]!.count < Number(n)) throw new Error(`open:rr --swap: ${key} does not hold ${n} ${from}`);
       list = [...list.slice(0, i), ...[{ cardId: from, count: list[i]!.count - Number(n) }, { cardId: to, count: Number(n) }].filter((e) => e.count > 0), ...list.slice(i + 1)];
     }

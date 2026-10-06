@@ -10,7 +10,7 @@
  *  - The host plays a fixed GAUNTLET of opponents (other Sealed decks, every colour), the same opponents and the same
  *    game seeds for every variant. Opponents are tagged by whether they gain life (a `gainLife` effect or lifelink).
  * A VARIANT is `id`, or `id~field=value~…` over an existing card — `cost={1}{R}`, `pt=2/2`, `kw=menace` (keywords
- * replaced; `kw=` clears them), or `~copy` (an identical card under a new id: the null). Variants live only in this
+ * replaced; `kw=` clears them), `shrink=N` (S56: an Aura's -N/-0 on the enchanted creature), or `~copy` (an identical card under a new id: the null). Variants live only in this
  * tool's card map, never in data/cards. The first variant is the baseline.
  * Per variant: the hosts' win rate; the PAIRED change against the baseline (per game, then per host — the standard
  * error is across hosts); the card's lift (the result when it was seen in hand, less its host's mean in that variant)
@@ -27,6 +27,8 @@ import { rollSealedPool, type ConvocationPackData, type PackColor } from "./pack
 import { buildLimitedDeck, pairScores } from "./limited-builder.js";
 import { cardRating, limitedView, type CardRatingTable } from "./rating.js";
 import type { Decklist } from "./state.js";
+import { variantDef } from "./card-variants.js";
+export { variantDef };
 
 const arg = (k: string, d: string) => { const i = process.argv.indexOf(`--${k}`); return i >= 0 ? process.argv[i + 1]! : d; };
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
@@ -37,22 +39,6 @@ const rating = limitedView(read("card-rating.json") as CardRatingTable);
 const set = data.sets.find((s) => s.id === arg("set", "plane"))!, recipe = data.recipes.find((r) => r.id === arg("recipe", set.recipe))!;
 const TAG = arg("tag", "card_test");
 
-/** A variant's card: an existing def with fields overridden, under the spec as its id. */
-export function variantDef(spec: string, cards: Map<string, CardDef>): CardDef {
-  const [id, ...mods] = spec.split("~");
-  const d = cards.get(id!); if (!d) throw new Error(`card-test: no card ${id}`);
-  if (!mods.length) return d;
-  const out: CardDef = { ...d, id: spec };
-  for (const m of mods) {
-    if (m === "copy") continue;
-    const [k, v = ""] = m.split("=");
-    if (k === "cost") out.manaCost = v;
-    else if (k === "pt") { const [p = 0, t = 0] = v.split("/").map(Number); (out as { power?: number }).power = p; (out as { toughness?: number }).toughness = t; }
-    else if (k === "kw") (out as { keywords?: string[] }).keywords = v ? v.split("+") : [];
-    else throw new Error(`card-test: unknown modifier ${m}`);
-  }
-  return out;
-}
 const gainsLife = (deck: Decklist, cards: Map<string, CardDef>) => deck.some((e) => { const d = cards.get(e.cardId)!; return (d.keywords ?? []).includes("lifelink") || JSON.stringify(d.abilities ?? []).includes('"gainLife"'); });
 
 /** The host's seat, watched: the test card seen and cast; and (S53, for the Rage Cobra) the opponent's life gained, in

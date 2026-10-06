@@ -871,6 +871,12 @@ export function evaluateValueRef(ctx: EngineCtx, ref: Exclude<ValueRef, StackOnl
     if (!src || src.zone !== "battlefield") return 0;
     return (src.counters[ref.kind] ?? 0) * (ref.times ?? 1);
   }
+  if (ref.ref === "attachedPower") {
+    // S56 (R-105, Protocol): the enchanted creature's power, live; zero when the Aura is attached to nothing.
+    const src = sourceId ? ctx.state.objects[sourceId] : undefined;
+    const host = src?.attachedTo ? ctx.state.objects[src.attachedTo] : undefined;
+    return host && host.zone === "battlefield" ? characteristics(ctx, host.id).power ?? 0 : 0;
+  }
   if (ref.ref === "graveyardCount") {
     const who = ref.who === "you" ? controller : opponentOf(controller);
     const yard = ctx.state.players[who].graveyard;

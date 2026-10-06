@@ -1,6 +1,7 @@
 import type { EngineCtx } from "./ctx.js";
 import { getObject } from "./state.js";
 import { isCreature } from "./characteristics.js";
+import { evaluateValueRef, isStackOnlyRef } from "./effect-context.js";
 
 /**
  * Control layer (ADR-003 slot, ADR-033). Effective control = baseController
@@ -29,7 +30,19 @@ export function syncControl(ctx: EngineCtx): boolean {
       for (const ability of ctx.defs.def(src.cardId).abilities ?? []) {
         if (ability.kind !== "static") continue;
         for (const e of ability.effects) {
-          if (e.type === "gainControl" && e.scope === "attached") effective = src.controller;
+          if (e.type !== "gainControl" || e.scope !== "attached") continue;
+          // S56 (R-105, Protocol — "as long as enchanted creature's power is 0 or less, you control it"): a
+          // conditional control static is read with the creature under the control it would have WITHOUT this
+          // Aura (the control so far), so the answer does not depend on itself — our own anthem on a creature we
+          // took does not hand it back, and no pair of effects can pass it to and fro within one check.
+          if (ability.condition) {
+            const c = ability.condition, held = obj.controller;
+            obj.controller = effective;
+            const n = isStackOnlyRef(c.value) ? 0 : evaluateValueRef(ctx, c.value, src.controller, srcId);
+            obj.controller = held;
+            if (!(c.atMost !== undefined ? n <= c.atMost : n >= (c.atLeast ?? 0))) continue;
+          }
+          effective = src.controller;
         }
       }
     }

@@ -99,13 +99,16 @@ export function baseKeywords(ctx: EngineCtx, objectId: string): Set<Keyword> {
 }
 
 /** A4: a conditional static (Werebear's threshold) applies only while its value condition holds. */
-export function staticActive(ctx: EngineCtx, sourceId: string, condition?: { value: ValueRef; atLeast: number }): boolean {
+export function staticActive(ctx: EngineCtx, sourceId: string, condition?: { value: ValueRef; atLeast?: number; atMost?: number }): boolean {
   if (!condition) return true;
   const src = ctx.state.objects[sourceId];
   if (!src) return false;
   const v = condition.value;
+  // S56 (R-105): a condition on the attached creature's power belongs to the control layer (control.ts reads it
+  // there); inside characteristics it would ask for the power it is in the middle of computing.
+  if (v.ref === "attachedPower") return false;
   const n = isStackOnlyRef(v) ? 0 : evaluateValueRef(ctx, v, src.controller as PlayerId, sourceId);
-  return n >= condition.atLeast;
+  return condition.atMost !== undefined ? n <= condition.atMost : n >= (condition.atLeast ?? 0);
 }
 
 /**

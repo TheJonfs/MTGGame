@@ -1626,4 +1626,15 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(c.holdKeptBonus(quiet, vind)).toBeCloseTo(3 * m.holdKeptBonus(quiet, vind), 5);
     expect(old.holdKeptBonus(quiet, vind)).toBe(0);
   });
+
+  it("book of shame 110 (S56 — Protocol, a steal conditional on the host's power): on a creature its shrink brings to 0 it is priced as a steal; on a bigger one as the share of power it takes; never worth casting on our own", () => {
+    const a = agent("control");
+    const v = mkView({ hand: [{ objectId: "h_p", cardId: "protocol" }], battlefield: [{ id: "i1", cardId: "island", controller: 0 }, { id: "i2", cardId: "island", controller: 0 }, { id: "b", cardId: "grizzly_bears", controller: 1 }, { id: "g", cardId: "hill_giant", controller: 1 }, { id: "w", cardId: "pelakka_wurm", controller: 1 }, { id: "m", cardId: "grizzly_bears", controller: 0 }] });
+    const at = (id: string) => a.scorePriorityAction(v, { type: "castSpell", objectId: "h_p", targets: [{ kind: "object", id }] });
+    const pass = a.scorePriorityAction(v, { type: "pass" });
+    expect(at("b")).toBeGreaterThan(at("g")); // the 2/2 is taken; the 3/3 only shrinks
+    expect(at("b")).toBeGreaterThan(pass + 1);
+    expect(at("b")).toBeGreaterThan(at("w"));
+    expect(at("m")).toBeLessThan(pass); // our own creature
+  });
 });

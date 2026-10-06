@@ -9,7 +9,7 @@ Session 56 was the pilot before the lists: three AI changes proposed, each measu
 - **The archive exists and the Loop is in it** (ADR-164). The Open's field is sixteen lists.
 - **The strength table is now one measurement**: sixteen lists, one pilot, 12,000 games.
 
-`pnpm typecheck`, `pnpm test` (958) and the ladder gate pass. **Nothing from this session is pushed.**
+`pnpm typecheck`, `pnpm test` (968) and the ladder gate pass. **Nothing from this session is pushed.** After the session proper Chris added a card, Protocol: its own section below.
 
 ## For the planner — the decisions waiting
 1. **Three places where I built something other than the brief's design** (Deviations 1–3). Each has its numbers; each needs a ruling.
@@ -103,6 +103,47 @@ Session 56 was the pilot before the lists: three AI changes proposed, each measu
 ### Part 5 — measured
 - **`convocation-sim --events 8`:** a seat's list against its finish r = **−0.55** (S55: −0.50). The Umbel's eight hold lists averaging 60.1; the field 49.1. "Top" seats reach the Umbel 9.6% of the time, "low" seats 0.7%. No rematch.
 
+## After the session — Protocol (Chris, 2026-10-06)
+
+Chris delivered a new custom card with its art and printed face:
+
+> **Protocol** — {U}{U} Enchantment — Aura. Enchant creature. Enchanted creature gets −2/−0. As long as enchanted creature's power is 0 or less, you control enchanted creature.
+
+- **In the pool** (246 → 247), **tier 2**. Chris allowed tier 2 or 3; it measures below the tier-3 Control Magic in every slot tried.
+- **One new word (R-105):** a control static conditional on the enchanted creature's power (`{ref: "attachedPower"}`, and `atMost` on a static condition).
+- **Fuzz first:** 768 full-tier games beside anthems, pump Auras, Control Magic, Lumen, bounce and Aura removal. No exception; replays byte-exact. Then 7 fixtures.
+- **The AI** prices it as a steal on a creature the shrink brings to 0 and as a partial shrink otherwise (book 110). It casts it 0.4–1.1 times a game.
+- **`open:rr --swap` now takes a variant** (`protocol~cost={1}{U}~shrink=3`), so a card's parameters can be tested in a real list.
+
+**The sensitivity grid.** Four costs × three shrink sizes, in five slots of four lists, each cell 1,500 games paired by seed with the round-robin of record (93,000 games; the full tables are in `results/s56/protocol-grid.md`, untracked). The change in the list's win rate, averaged over the five slots:
+
+| cost | −1/−0 | −2/−0 | −3/−0 |
+|---|---|---|---|
+| {U} | -1.7 | +2.5 | +5.0 |
+| {U}{U} | -3.5 | +0.2 | +2.3 |
+| {1}{U} | -2.4 | +1.9 | +4.2 |
+| {1}{U}{U} | -3.8 | -1.0 | +1.1 |
+
+The card as printed ({U}{U}, −2/−0), slot by slot:
+
+| slot | Protocol as printed | Control Magic in the same slot |
+|---|---|---|
+| the Kiln: in place of its 4 Control Magic | −6.2 ± 2.0 | (the baseline) |
+| the Depths: in place of its 2 Control Magic | −3.4 ± 1.6 | (the baseline) |
+| the Kiln: in place of 4 Tidewall, beside Control Magic | +4.5 ± 1.9 | not run |
+| the Locks: in place of 2 Tidewall + 2 Ponder | +2.2 ± 2.1 | +11.0 ± 2.2 |
+| the Undertow: in place of 3 Boomerang | +3.9 ± 1.7 | +8.9 ± 1.8 |
+
+What the grid says:
+- **As printed it is a fair card: an addition, not a replacement.** It improves a list when it takes a weak slot and costs the list when it replaces Control Magic.
+- **The shrink is the strong dial.** Each point of it is worth about 2 to 4 points of win rate. At −1/−0 the card is a liability; at −3/−0 it approaches Control Magic at half the cost.
+- **The second blue pip matters more than the mana.** {1}{U} measures about 1.5 points better than {U}{U} at the same mana value, and nearly as well as {U}. This is Concern 1 again (these lists are short of blue).
+- **Nothing in the grid is broken.** The strongest cell tried ({U}, −3/−0) is +5.0 on average and still below Control Magic where both were run.
+
+Two things for Chris and the planner:
+- **A rules choice I made (R-105).** The card's condition is a control effect that reads the creature's power, and a creature's power can depend on who controls it. The engine reads the power the creature would have *without* this Aura's control. So an opponent's Glorious Anthem keeps their 2/2 safe (3 − 2 = 1), and our own Anthem does not hand a taken 2/2 back. Under the printed rules the second case has no stable answer; the engine picks the stable one.
+- **The printed face shows a stray "2/2"** in the power/toughness box. It is wired as delivered; a corrected render is wanted.
+
 ## Deviations from the brief
 1. **The counter rule is not the brief's design.** The brief's two clauses (spend held mana at the opponent's end step; cast when the spell's worth exceeds the counter's held value) address what the probe found to be the small parts: the end-step case arises 0.2–0.4 times a game with nothing worth casting, and the pilot already passes only on cheap spells. I built the three things the probe pointed to instead. *The planner should rule on whether the brief's clauses are still wanted.*
 2. **"Dig harder" is not shipped.** It measured three to seven points worse in every form tried. *The planner should rule on whether book 109 is closed.*
@@ -126,19 +167,21 @@ Session 56 was the pilot before the lists: three AI changes proposed, each measu
 9. **The rating's feedback loop** (carried). The pilot is now book 108, so every rating run is stale again.
 
 ## Registry entries added/changed
-None. No rule of the game and no card changed this session.
+- **R-105** — a control static conditional on the enchanted creature's power (Protocol).
+- **Pool registry:** `protocol` (Session 56 section; 246 → 247).
 
 ## Test status
-`pnpm test`: 105 files passed, 1 skipped; **958 tests passed, 2 skipped** (the standing two). `pnpm typecheck` passes. `pnpm build:web` not run (nothing pushed).
+`pnpm test`: 107 files passed, 1 skipped; **968 tests passed, 2 skipped** (the standing two). `pnpm typecheck` passes. `pnpm build:web` not run (nothing pushed).
 
 New this session:
 - Book 108 in `agents/book-of-shame.test.ts` (the payment solver, the hand-tapped cast through `chooseAction`, the kept hold, the control multiple, the old pilot).
 - `world/sideboard-s56.test.ts` (5): the shapes read from card data; the fifteen's slots; each shape against the list it is for and not otherwise, across every pairing; the walls leaving first; Limited unchanged.
 - The archive test in `world/constructed-builder.test.ts`.
-- **Ladder mirror gate PASS** (pilot 108).
-- About 115,000 sim games this session raised no engine error. The hand-tapped payment is a new action path for the AI and ran through all of them.
+- `sim/s56-fuzz.test.ts` (2), `sim/s56-cards.test.ts` (7) and book 110 for Protocol; three pins moved for the new card (the pool count, the shop-tier tally, the generated reference).
+- **Ladder mirror gate PASS** (pilot 108). Book 110 was added after it: it changes only how an Aura with a conditional steal is priced, and no ladder deck holds one.
+- About 210,000 sim games this session raised no engine error. The hand-tapped payment is a new action path for the AI and ran through all of them.
 
-**Not verified:** the AI's hand-tapping seen in a browser (the AI now taps lands one at a time before some casts; the log will show it); the two S55 cards in a browser; the Pall played by a person against a boarding field; the tuned Kiln played by a person.
+**Not verified:** Protocol in a browser (its art, its face, a steal and a release seen on the board); the AI's hand-tapping seen in a browser (the AI now taps lands one at a time before some casts; the log will show it); the two S55 cards in a browser; the Pall played by a person against a boarding field; the tuned Kiln played by a person.
 
 ## Suggested next
 **The swap trials cheapest to run in S57.** Each is one `open:rr --only <list> --swap …` row beside the round-robin of record: 1,500 games, a minute or two, paired by seed.
@@ -166,6 +209,7 @@ pnpm open:rr --games 100 --seed 56 --shard i/10 --out analysis/runs/rr_$i.json  
 pnpm open:rr --games 100 --seed 56 --only locks --off counter --off-for locks --out x.json   # the old pilot's twin of the same games
 pnpm open:rr --games 60 --seed 56 --sideboarded-one [--shapes none|sweepers,steal] --out x.json   # one seat sideboards a game; pair with a plain run
 pnpm open:rr --games 100 --seed 56 --only kiln [--vs levy,pall] [--swap "kiln:mountain:2:island"] --out x.json   # a swap trial
+pnpm open:rr --games 100 --seed 56 --only locks --swap "locks:ponder:2:protocol~cost={1}{U}~shrink=3" --out x.json   # a card variant in a real list
 pnpm convocation-sim --events 8 --seed 56 --shard i/8 --out analysis/runs/convocation56_shard$i.json   # then --report
 pnpm ladder                                                    # the gate for any AI change (run alone; about twelve minutes)
 ```

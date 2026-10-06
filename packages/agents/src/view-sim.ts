@@ -211,7 +211,12 @@ export function predictAction(
       const hostObj = host?.kind === "object" ? view.battlefield.find((o) => o.id === host.id) : undefined;
       const effects = (d.abilities ?? []).flatMap((a) => ("effects" in a ? (a.effects as Effect[]) : []));
       const cls = classifyEffects(effects);
-      const steals = effects.some((e) => e.type === "gainControl");
+      // S56 (Protocol, R-105): a steal CONDITIONAL on the host's power ("as long as its power is 0 or less") is a steal
+      // only on a host the Aura's own shrink brings that low; on any other it is the shrink alone.
+      const condSteal = (d.abilities ?? []).find((a) => a.kind === "static" && a.condition?.value.ref === "attachedPower" && a.condition.atMost !== undefined && a.effects.some((e) => e.type === "gainControl"));
+      const shrink = effects.reduce((n, e) => n + (e.type === "modifyPT" && e.scope === "attached" && typeof e.power === "number" ? e.power : 0), 0);
+      const condHolds = !!condSteal && !!hostObj && hostObj.power !== null && hostObj.power + shrink <= (condSteal.kind === "static" ? condSteal.condition!.atMost! : 0);
+      const steals = condSteal ? condHolds : effects.some((e) => e.type === "gainControl");
       // ADR-056: the aura's standing value is ~0 in the evaluator now, so no
       // standing-value patch is needed — self-steal ordering follows from
       // accounting (book of shame verifies).
@@ -239,7 +244,9 @@ export function predictAction(
         else adjustment += theirBest > myBest && power === theirBest ? 0.35 * power + 0.3 : 0.05 * power;
       } else if (hostObj) {
         const hv = objectValue(defs, hostObj);
-        if (cls === "harmful" && hostObj.controller !== me) adjustment += steals ? 1.6 * hv : 0.7 * hv;
+        // (S56: a conditional steal takes a body with no power left — its abilities and its absence from their side,
+        // 1.3; where the condition fails the Aura is its shrink: the share of the host's power it takes, at 0.5)
+        if (cls === "harmful" && hostObj.controller !== me) adjustment += condSteal ? (steals ? 1.3 * hv : 0.5 * hv * Math.min(1, -shrink / Math.max(1, hostObj.power ?? 1))) : steals ? 1.6 * hv : 0.7 * hv;
         else if (cls === "helpful" && hostObj.controller === me) {
           adjustment += 1.0;
           // S29 (Part 4, the Wardener / Ysolde): an aura on a HEXPROOF or shroud body is safer than on

@@ -154,6 +154,10 @@ export type ValueRef =
    * last-known information captured as the cost is paid (CR 608.2h). Activated abilities with a
    * sacrifice cost only (validator-confined). */
   | { ref: "sacrificedPower" }
+  /** S56 (R-105, Protocol): the power of the creature this Aura is attached to, live — "as long as enchanted
+   * creature's power is 0 or less". The condition of a static whose only effect is `gainControl` on the attached
+   * creature (validator-confined: read by the control layer alone, never inside characteristics). */
+  | { ref: "attachedPower" }
   /** S23 (ADR-084, family member six): the triggering EVENT's damage amount, times a bounded
    * literal multiplier (the Traumatizer's "mills twice that many"). ADR-028's no-arithmetic
    * doctrine is reaffirmed around it — a fixed `times` param is not a calculator; general
@@ -548,7 +552,9 @@ export interface ActivatedAbilityDef {
 /** A4: a static may be conditional on a live value (Werebear's threshold: graveyardCount ≥ 7). */
 export interface StaticCondition {
   value: ValueRef;
-  atLeast: number;
+  /** Exactly one of the two. S56 (R-105, Protocol): `atMost` — "as long as … is N or less". */
+  atLeast?: number;
+  atMost?: number;
 }
 
 export interface StaticAbilityDef {

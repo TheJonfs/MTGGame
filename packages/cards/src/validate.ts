@@ -276,6 +276,7 @@ function isAnyValueRef(v: unknown): boolean {
   }
   // A10 (S22): the target's LKI mana value (Aether Mutation).
   if (v.ref === "targetManaValue") return Number.isInteger(v.target);
+  if (v.ref === "attachedPower") return true; // S56 (R-105): confined to a control static's condition, below
   // S23 (ADR-084, member six): the event's damage × a bounded literal multiplier (the Traumatizer).
   if (v.ref === "eventDamage") return v.times === undefined || (Number.isInteger(v.times) && (v.times as number) >= 1);
   // S25 (ADR-088, member seven): the announced X persisted on the permanent (the Emerald Keeper).
@@ -481,7 +482,9 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
       }
       if (a.condition !== undefined) {
         const c = a.condition;
-        if (!isRecord(c) || !isAnyValueRef(c.value) || !Number.isInteger(c.atLeast)) err(`static condition must be {value: <ref>, atLeast: n} (A4)`);
+        if (!isRecord(c) || !isAnyValueRef(c.value) || Number.isInteger(c.atLeast) === Number.isInteger(c.atMost)) err(`static condition must be {value: <ref>, atLeast: n} or {value: <ref>, atMost: n} (A4; S56)`);
+        // S56 (R-105, Protocol): the attached creature's power is read by the control layer alone
+        else if (isRecord(c.value) && c.value.ref === "attachedPower" && !(Array.isArray(a.effects) && a.effects.length > 0 && a.effects.every((e: unknown) => isRecord(e) && e.type === "gainControl" && e.scope === "attached"))) err(`a static conditioned on attachedPower may only gain control of the attached creature (S56)`);
       }
       break;
     }
