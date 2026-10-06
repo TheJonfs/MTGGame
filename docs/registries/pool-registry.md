@@ -641,7 +641,7 @@ Pool 244 → **246**. Two answers to a graveyard loop that any deck can sideboar
 
 | id | name | status | vocabulary | notes |
 |---|---|---|---|---|
-| protocol | Protocol | tested | static `modifyPT` −2/−0 on attached; static `gainControl` on attached with `condition: {value: {ref: "attachedPower"}, atMost: 0}` (R-105 — the one new word) | CUSTOM. {U}{U} Enchantment — Aura. **T2** (Chris allowed T2 or T3; measured below the T3 Control Magic in every slot tried — results/s56/protocol-grid.md). Card art and "as printed" face delivered by Chris; **the printed face shows a stray "2/2" in the power/toughness box** — an Aura has none. Pool 246 → 247. |
+| protocol | Protocol | tested | static `modifyPT` −2/−0 on attached; static `gainControl` on attached with `condition: {value: {ref: "attachedPower"}, atMost: 0}` (R-105 — the one new word) | CUSTOM. {U}{U} Enchantment — Aura. **T2** (Chris allowed T2 or T3; measured below the T3 Control Magic in every slot tried — results/s56/protocol-grid.md). Card art and "as printed" face delivered by Chris. **Reworded by Chris the same day** ("You control enchanted creature as long as its power would be 0 or less if you didn't control it") so the card states the reading the engine uses; the corrected face (no power/toughness box) is wired. Pool 246 → 247. |
 
 ## Shop tiers (ADR-078, S19)
 

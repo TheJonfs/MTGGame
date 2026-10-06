@@ -9,7 +9,7 @@ Session 56 was the pilot before the lists: three AI changes proposed, each measu
 - **The archive exists and the Loop is in it** (ADR-164). The Open's field is sixteen lists.
 - **The strength table is now one measurement**: sixteen lists, one pilot, 12,000 games.
 
-`pnpm typecheck`, `pnpm test` (968) and the ladder gate pass. **Nothing from this session is pushed.** After the session proper Chris added a card, Protocol: its own section below.
+`pnpm typecheck`, `pnpm test` (969) and the ladder gate pass. **Nothing from this session is pushed.** After the session proper Chris added a card, Protocol: its own section below.
 
 ## For the planner — the decisions waiting
 1. **Three places where I built something other than the brief's design** (Deviations 1–3). Each has its numbers; each needs a ruling.
@@ -107,11 +107,11 @@ Session 56 was the pilot before the lists: three AI changes proposed, each measu
 
 Chris delivered a new custom card with its art and printed face:
 
-> **Protocol** — {U}{U} Enchantment — Aura. Enchant creature. Enchanted creature gets −2/−0. As long as enchanted creature's power is 0 or less, you control enchanted creature.
+> **Protocol** — {U}{U} Enchantment — Aura. Enchant creature. Enchanted creature gets −2/−0. You control enchanted creature as long as its power would be 0 or less if you didn't control it.
 
 - **In the pool** (246 → 247), **tier 2**. Chris allowed tier 2 or 3; it measures below the tier-3 Control Magic in every slot tried.
 - **One new word (R-105):** a control static conditional on the enchanted creature's power (`{ref: "attachedPower"}`, and `atMost` on a static condition).
-- **Fuzz first:** 768 full-tier games beside anthems, pump Auras, Control Magic, Lumen, bounce and Aura removal. No exception; replays byte-exact. Then 7 fixtures.
+- **Fuzz first:** 768 full-tier games beside anthems, pump Auras, Control Magic, Lumen, bounce and Aura removal. No exception; replays byte-exact. Then 8 fixtures.
 - **The AI** prices it as a steal on a creature the shrink brings to 0 and as a partial shrink otherwise (book 110). It casts it 0.4–1.1 times a game.
 - **`open:rr --swap` now takes a variant** (`protocol~cost={1}{U}~shrink=3`), so a card's parameters can be tested in a real list.
 
@@ -140,9 +140,11 @@ What the grid says:
 - **The second blue pip matters more than the mana.** {1}{U} measures about 1.5 points better than {U}{U} at the same mana value, and nearly as well as {U}. This is Concern 1 again (these lists are short of blue).
 - **Nothing in the grid is broken.** The strongest cell tried ({U}, −3/−0) is +5.0 on average and still below Control Magic where both were run.
 
-Two things for Chris and the planner:
-- **A rules choice I made (R-105).** The card's condition is a control effect that reads the creature's power, and a creature's power can depend on who controls it. The engine reads the power the creature would have *without* this Aura's control. So an opponent's Glorious Anthem keeps their 2/2 safe (3 − 2 = 1), and our own Anthem does not hand a taken 2/2 back. Under the printed rules the second case has no stable answer; the engine picks the stable one.
-- **The printed face shows a stray "2/2"** in the power/toughness box. It is wired as delivered; a corrected render is wanted.
+**The wording was settled the same day (Chris).** The first face read "As long as enchanted creature's power is 0 or less, you control enchanted creature." A creature's power can depend on who controls it (an anthem, Clio), and that text has no stable answer then: taken, its power rises; released, it falls. The engine had been built to read the power the creature would have if we did not control it, and Chris reworded the card to say so. Nothing in the engine or the grid changed.
+- An opponent's Glorious Anthem keeps their 2/2 safe (3 − 2 = 1); our own Anthem does not hand a taken 2/2 back.
+- With our Clio, a 3/3 under Protocol is taken at her first depth counter and kept (a fixture pins it). This is the synergy the card was written for.
+- Chris considered a stronger version (the creature comes over at full power) and kept the shrink, so the card is not a two-mana Control Magic beside Clio.
+- The corrected face (no power/toughness box, the new text) is wired.
 
 ## Deviations from the brief
 1. **The counter rule is not the brief's design.** The brief's two clauses (spend held mana at the opponent's end step; cast when the spell's worth exceeds the counter's held value) address what the probe found to be the small parts: the end-step case arises 0.2–0.4 times a game with nothing worth casting, and the pilot already passes only on cheap spells. I built the three things the probe pointed to instead. *The planner should rule on whether the brief's clauses are still wanted.*
@@ -171,13 +173,13 @@ Two things for Chris and the planner:
 - **Pool registry:** `protocol` (Session 56 section; 246 → 247).
 
 ## Test status
-`pnpm test`: 107 files passed, 1 skipped; **968 tests passed, 2 skipped** (the standing two). `pnpm typecheck` passes. `pnpm build:web` not run (nothing pushed).
+`pnpm test`: 107 files passed, 1 skipped; **969 tests passed, 2 skipped** (the standing two). `pnpm typecheck` passes. `pnpm build:web` not run (nothing pushed).
 
 New this session:
 - Book 108 in `agents/book-of-shame.test.ts` (the payment solver, the hand-tapped cast through `chooseAction`, the kept hold, the control multiple, the old pilot).
 - `world/sideboard-s56.test.ts` (5): the shapes read from card data; the fifteen's slots; each shape against the list it is for and not otherwise, across every pairing; the walls leaving first; Limited unchanged.
 - The archive test in `world/constructed-builder.test.ts`.
-- `sim/s56-fuzz.test.ts` (2), `sim/s56-cards.test.ts` (7) and book 110 for Protocol; three pins moved for the new card (the pool count, the shop-tier tally, the generated reference).
+- `sim/s56-fuzz.test.ts` (2), `sim/s56-cards.test.ts` (8) and book 110 for Protocol; three pins moved for the new card (the pool count, the shop-tier tally, the generated reference).
 - **Ladder mirror gate PASS** (pilot 108). Book 110 was added after it: it changes only how an Aura with a conditional steal is priced, and no ladder deck holds one.
 - About 210,000 sim games this session raised no engine error. The hand-tapped payment is a new action path for the AI and ran through all of them.
 

@@ -35,7 +35,9 @@ async function play(opts: { host: string; mine?: string[]; theirs?: string[]; th
 
 /**
  * S56 — Protocol (Chris's card; R-105). {U}{U} Enchantment — Aura. "Enchant creature. Enchanted creature gets -2/-0.
- * As long as enchanted creature's power is 0 or less, you control enchanted creature."
+ * You control enchanted creature as long as its power would be 0 or less if you didn't control it." (Reworded by
+ * Chris the day it was delivered: the first face read "as long as enchanted creature's power is 0 or less", which has
+ * no stable answer when the creature's power differs by who controls it; the engine never changed.)
  * Rules: 303.4 (Auras), 613.1b / 613.4c (control is layer 2, power layer 7c — the condition reads a later layer's
  * result; R-105 records how), 302.6 (a creature that changed control is summoning-sick), 704.5m (an Aura attached to
  * nothing is put into the graveyard — not at issue: the Aura stays on the creature whoever controls it).
@@ -44,7 +46,7 @@ describe("S56 — Protocol (R-105)", () => {
   it("the card as written", () => {
     const p = cards.get("protocol")!;
     expect([p.manaCost, p.types, p.subtypes, p.source, p.shopTier]).toEqual(["{U}{U}", ["Enchantment"], ["Aura"], "custom", 2]);
-    expect(p.text).toBe("Enchant creature\nEnchanted creature gets -2/-0.\nAs long as enchanted creature's power is 0 or less, you control enchanted creature.");
+    expect(p.text).toBe("Enchant creature\nEnchanted creature gets -2/-0. You control enchanted creature as long as its power would be 0 or less if you didn't control it.");
   });
 
   it("on a 2/2 it takes the creature: power 0, ours, and summoning-sick as it arrives (302.6); the Aura stays on it", async () => {
@@ -72,12 +74,19 @@ describe("S56 — Protocol (R-105)", () => {
     expect(g.seen.get(3)).toMatchObject({ controller: 0, power: 0 }); // back with us once the growth ends
   });
 
-  it("an anthem counts where the creature would be WITHOUT the Aura's control (R-105): theirs keeps a 2/2 out of reach (3 − 2 = 1); ours does not hand a taken creature back (it is 1/3 under us and stays)", async () => {
+  it("an anthem counts where the creature would be if we did not control it (the card's own words; R-105): theirs keeps a 2/2 out of reach (3 − 2 = 1); ours does not hand a taken creature back (it is 1/3 under us and stays)", async () => {
     const theirs = await play({ host: "grizzly_bears", theirs: ["glorious_anthem"] });
     expect(theirs.seen.get(1)).toMatchObject({ controller: 1, power: 1 });
     const ours = await play({ host: "grizzly_bears", mine: ["glorious_anthem"] });
     expect(ours.seen.get(1)).toMatchObject({ controller: 0, power: 1 });
     expect(ours.seen.get(3)).toMatchObject({ controller: 0, power: 1 });
+  });
+
+  it("with our Clio (the synergy Chris wrote the card for): a 3/3 under Protocol is theirs at power 1; at our end step Clio's first depth counter makes it 0 under THEM, so it becomes ours — and stays ours, though under us Clio no longer taxes it (power 1)", async () => {
+    const g = await play({ host: "hill_giant", mine: ["clio_lady_of_the_depths"], turns: 3 });
+    expect(g.cast).toBe(true);
+    expect(g.seen.get(2)).toMatchObject({ controller: 0, power: 1 }); // read on their turn: taken at our end step, 3 − 2 under us
+    expect(g.seen.get(3)).toMatchObject({ controller: 0, power: 1 }); // two counters now: still read as theirs-would-be (−1), still ours
   });
 
   it("a second Protocol on a 3/3 takes it (3 − 2 − 2); with the Aura gone the creature goes home", async () => {

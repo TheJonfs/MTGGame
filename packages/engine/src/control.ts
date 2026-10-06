@@ -31,7 +31,7 @@ export function syncControl(ctx: EngineCtx): boolean {
         if (ability.kind !== "static") continue;
         for (const e of ability.effects) {
           if (e.type !== "gainControl" || e.scope !== "attached") continue;
-          // S56 (R-105, Protocol — "as long as enchanted creature's power is 0 or less, you control it"): a
+          // S56 (R-105, Protocol — "you control enchanted creature as long as its power would be 0 or less if you didn't control it"): a
           // conditional control static is read with the creature under the control it would have WITHOUT this
           // Aura (the control so far), so the answer does not depend on itself — our own anthem on a creature we
           // took does not hand it back, and no pair of effects can pass it to and fro within one check.

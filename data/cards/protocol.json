@@ -9,7 +9,7 @@
   "subtypes": [
     "Aura"
   ],
-  "text": "Enchant creature\nEnchanted creature gets -2/-0.\nAs long as enchanted creature's power is 0 or less, you control enchanted creature.",
+  "text": "Enchant creature\nEnchanted creature gets -2/-0. You control enchanted creature as long as its power would be 0 or less if you didn't control it.",
   "targets": [
     {
       "count": 1,

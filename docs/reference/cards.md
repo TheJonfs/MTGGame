@@ -188,7 +188,7 @@
 | Counterspell | U | Instant | {U}{U} | 2 |  |  | 2 | 18 |  | Counter target spell. |
 | Essence Scatter | U | Instant | {1}{U} | 2 |  |  | 1 | 12 |  | Counter target creature spell. |
 | Plumecreed Escort | U | Creature — Bird Scout | {1}{U} | 2 | 2/1 | flash, flying | 1 | 12 |  | Flash Flying When this creature enters, target creature you control gains hexproof until end of turn. |
-| Protocol | U | Enchantment — Aura | {U}{U} | 2 |  |  | 2 | 18 | custom | Enchant creature Enchanted creature gets -2/-0. As long as enchanted creature's power is 0 or less, you control enchanted creature. |
+| Protocol | U | Enchantment — Aura | {U}{U} | 2 |  |  | 2 | 18 | custom | Enchant creature Enchanted creature gets -2/-0. You control enchanted creature as long as its power would be 0 or less if you didn't control it. |
 | Time Walk | U | Sorcery | {1}{U} | 2 |  |  | — | 12 | prizeOnly | Take an extra turn after this one. |
 | Waterfront Bouncer | U | Creature — Merfolk Spellshaper | {1}{U} | 2 | 1/1 |  | 1 | 12 |  | {U}, {T}, Discard a card: Return target creature to its owner's hand. |
 | Aether Channeler | U | Creature — Human Wizard | {2}{U} | 3 | 2/1 |  | 2 | 24 |  | When this creature enters, choose one — • Create a 1/1 white Bird creature token with flying. • Return another target nonland permanent to its owner's hand. • Draw a card. |
