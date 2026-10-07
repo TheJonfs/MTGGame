@@ -432,8 +432,10 @@ describe("the Convocation controller (S48)", () => {
     const fifteen = c.draft.map((e) => ({ ...e }));
     // back to the sixty and forth: both pages keep their cards
     c.editorHost()!.close!(); expect(c.buildingSide()).toBe(false); expect(c.draft).toEqual(sixty); expect(c.sideboardCount()).toBe(15);
+    // post-S57 (Chris): back on the sixty, the save NEVER registers — it leads to the sideboard again; only the sideboard's page registers
+    expect(c.editorHost()!.saveLabel).toBe("Back to the sideboard (15/15)");
+    c.editorHost()!.save(); expect(c.screen.kind).toBe("build"); expect(c.buildingSide()).toBe(true); expect(c.draft).toEqual(fifteen);
     expect(c.editorHost()!.saveLabel).toBe("Register the deck and its sideboard of 15");
-    c.toSideboard(); expect(c.draft).toEqual(fifteen);
     c.editorHost()!.save();
     expect(c.screen.kind).toBe("pairings");
     expect(c.event!.field[0]!.deck).toEqual(sixty);

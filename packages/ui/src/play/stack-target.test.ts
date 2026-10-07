@@ -38,11 +38,11 @@ describe("a spell on the stack can be picked as a target", () => {
     if (c.phase.kind !== "targeting") return;
     expect([...c.phase.highlightObjects].sort()).toEqual([first!, second!].sort()); // what the stack panel now outlines
     c.clickStackTarget(first!); // the one underneath: not the default
-    expect(c.phase.kind).toBe("confirmCast");
-    if (c.phase.kind !== "confirmCast") return;
-    expect((c.phase.action as { targets: unknown[] }).targets).toEqual([{ kind: "stackItem", id: first }]);
+    const staged = c.phase as { kind: string; action?: { targets: unknown[] } };
+    expect(staged.kind).toBe("confirmCast");
+    expect(staged.action?.targets).toEqual([{ kind: "stackItem", id: first }]);
     c.confirmCast();
-    for (let g = 0; g < 50 && c.game.state.stack.length > 1; g++) { await tick(); if (c.phase.kind === "stackStop") c.continueFromStop(); else if (c.phase.kind === "priority") c.pass(); }
+    for (let g = 0; g < 50 && c.game.state.stack.length > 1; g++) { await tick(); const k = (c.phase as { kind: string }).kind; if (k === "stackStop") c.continueFromStop(); else if (k === "priority") c.pass(); }
     expect(c.game.state.players[1].life).toBe(18); // one Shock countered, one landed
   });
 });

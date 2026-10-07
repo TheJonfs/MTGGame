@@ -286,9 +286,11 @@ export class ConvocationController {
       add: (id: string) => edit(constructed && !sideboarding ? addCopy(collection, this.draft, id) : addCopy(collection, this.draft, id, Infinity)),
       remove: (id: string) => edit(removeCopy(this.draft, id)),
       reset: () => { this.draft = (side ? me.sideboard : me.deck).map((x) => ({ ...x })); this.notice = null; this.emit(); },
-      // a Constructed build's first save leads to the sideboard's page (a deck is not registered by accident without one)
-      save: () => (constructed && !sideboarding && !side && !this.sideVisited ? this.toSideboard() : void this.register()),
-      saveLabel: sideboarding ? "Keep this deck" : side ? "Register the deck and its sideboard" : constructed ? (this.sideVisited ? `Register the deck${sideN ? ` and its sideboard of ${sideN}` : " — no sideboard"}` : "Next: the sideboard") : "Register the deck",
+      // A Constructed build is registered from the SIDEBOARD's page only: the sixty's save always leads there.
+      // (Post-S57, Chris: back on the sixty after a look at the sideboard, the one prominent button registered the
+      // deck — with a half-built fifteen — and began the event. Post-S54 it led to the sideboard only the first time.)
+      save: () => (constructed && !sideboarding && !side ? this.toSideboard() : void this.register()),
+      saveLabel: sideboarding ? "Keep this deck" : side ? `Register the deck and its sideboard of ${this.draft.reduce((n, e) => n + e.count, 0)}` : constructed ? (this.sideVisited ? `Back to the sideboard (${sideN}/15)` : "Next: the sideboard") : "Register the deck",
       ...(sideboarding ? { close: () => { this.screen = { kind: "between" }; this.emit(); }, closeLabel: "Cancel" } : side ? { close: () => this.toMainDeck(), closeLabel: "Back to the sixty" } : {}),
       sparesLabel: sideboarding ? "Sideboard" : side ? "The format's pool — what the sixty leaves" : constructed ? "The format's pool" : "The pool",
     };

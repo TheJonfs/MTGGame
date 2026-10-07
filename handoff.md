@@ -139,10 +139,11 @@ pall 67 · hearth 58 · levy 57 · coin 56 · muster 53 · kiln 53 · sweep 52 �
 - The Undertow is at 41, over ADR-165's bar of 38.
 - The bottom three are the Cinder, and the Locks, the Tally and the Undertow level at 41.
 
-## After the session — three fixes from Chris's play (2026-10-07)
+## After the session — four fixes from Chris's play (2026-10-07)
 - **The viewer crashed with "process is not defined".** A measuring switch in `plan-play.ts` read `process.env`; the browser loads that file. Removed. Typecheck, the tests and `build:web` do not catch this (Node has `process`); only a loaded page does.
 - **The field played on the main thread after a dev-server restart until the page was reloaded.** A field pool that broke (its workers failed to start, or none was ready in twenty seconds) stayed broken for the life of the page. The controller now replaces a broken pool the next time the field asks for workers, so one bad start costs one round.
 - **A person could not target a spell on the stack** (no way into a counter war). The legal stack items were computed but the stack panel neither showed them nor took a click. It now outlines them and takes the click (`clickStackTarget`); a test casts a Counterspell at the lower of two spells. With one spell on the stack the cast was already staged at it, which is why this went unseen.
+- **A Constructed deck could be registered by accident with a half-built sideboard.** Back on the sixty after a look at the sideboard, the editor's main button registered the deck and began the event. The sixty's button now always leads to the sideboard; only the sideboard's page registers. Seen working in a browser.
 
 ## Deviations from the brief
 1. **The bar is read strictly:** the gain less its 95% error is at least two points. Four trials fall just short and are not adopted: the Tally's −2 Blaze +2 Control Magic (+3.2 ± 1.5, and +3.1 ± 1.5 stacked), the Enchantress's fourth Pacifism (+1.9 ± 0.7 pooled over two seeds), the Pall's Swamps (+2.1 ± 1.3), the Locks' two Islands on top of the Control Magics (+1.6 ± 1.4). *The planner should say whether the strict reading is the one meant.*
