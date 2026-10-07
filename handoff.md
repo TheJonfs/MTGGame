@@ -9,7 +9,7 @@ Session 57 was the revision round. Six lists were revised by measured swaps, the
 - **The better out-rule for sideboarding was built, measured and left off.** It bought nothing; one part of it cost a point.
 - **The new table is tighter:** thirteen of sixteen lists sit between 45 and 58.
 
-`pnpm typecheck` and `pnpm test` (971) pass. **Nothing from this session is pushed.** After the session proper Chris revised the Undertow again, archived the Larder and added a mono-red list: its own section below, with the table of record as it now stands.
+`pnpm typecheck` and `pnpm test` (971) pass. `pnpm build:web` passes. **Everything here is pushed.** After the session proper Chris revised the Undertow again, archived the Larder and added a mono-red list: its own section below, with the table of record as it now stands.
 
 ## For the planner — the decisions waiting
 1. **The Undertow and ADR-165's bar: settled after the session.** Chris revised it again; it stands at 41 (the section below).
@@ -165,7 +165,7 @@ pall 67 · hearth 58 · levy 57 · coin 56 · muster 53 · kiln 53 · sweep 52 �
 None. No rule of the game and no card changed this session.
 
 ## Test status
-`pnpm test`: 107 files passed, 1 skipped; **971 tests passed, 2 skipped** (the standing two). `pnpm typecheck` passes. `pnpm build:web` not run (nothing pushed).
+`pnpm test`: 107 files passed, 1 skipped; **971 tests passed, 2 skipped** (the standing two). `pnpm typecheck` passes. `pnpm build:web` passes.
 
 New this session:
 - Book 111 (the Larder's plan: `once`, the setup wanted and refused, the start's target, the opponent's Crypt, `fuelKeptForStart` on no plan).
