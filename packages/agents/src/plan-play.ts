@@ -28,8 +28,6 @@ export interface PlanHost {
   actionEffects(view: GameView, action: Action): Effect[] | null;
 }
 
-const FUEL_KEPT = process.env.FUEL_KEPT === "1"; // (the measuring switch for `fuelKeptForStart`; never set in play)
-
 export class PlanPlay {
   constructor(private readonly h: PlanHost) {}
 
@@ -220,7 +218,7 @@ export class PlanPlay {
       // spent only when it makes a wanted plan card castable that is not castable now — by colour as well as count
       const [yieldMana, spend] = isFuelSpell ? ["BBB", this.h.mv(src)] : ["***", 0];
       // S57 (the plan's `fuelKeptForStart`): a setup our lands will pay for next turn does not take the fuel a start in hand will need
-      const keptFor = (w: { cardId: string; mv: number }) => (p.fuelKeptForStart || FUEL_KEPT) && p.setup.some((x) => x.card === w.cardId) && (f.reanimInHand || f.pieceInHand) && this.landsNextTurn(view) >= w.mv;
+      const keptFor = (w: { cardId: string; mv: number }) => p.fuelKeptForStart && p.setup.some((x) => x.card === w.cardId) && (f.reanimInHand || f.pieceInHand) && this.landsNextTurn(view) >= w.mv;
       if (wants.some((w) => !keptFor(w) && !this.castOffered(view, w.cardId, now) && this.payableWith(view, w.cardId, yieldMana, spend))) return false;
       // book 107: a held setup is released by fuel that pays for the setup AND the start that follows it
       return !(this.setupHeld(view) && this.planStartReachable(view) && !this.setupHeld(view, yieldMana, spend));
