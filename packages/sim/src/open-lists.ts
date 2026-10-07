@@ -44,7 +44,11 @@ export const OPEN_AMENDMENTS: Record<string, Record<string, number>> = {
  * docs/decision-updates/s57.md). Applied after the S46 amendments, by card NAME → delta. */
 export const OPEN_REVISIONS_S57: Record<string, Record<string, number>> = {
   locks: { "Tidewall": -2, "Ponder": -2, "Control Magic": 4 }, // +11.0 ± 2.2
-  undertow: { "Boomerang": -3, "Control Magic": 3 }, // +8.9 ± 1.8 (ADR-165's bar of 38: 43.8)
+  // +8.9 ± 1.8 for the Control Magics. Then (Chris, 2026-10-07, after the round: "the 'and friends' part needs some help", and
+  // help against the graveyard decks) the Nighthawks for Zinnia with the Forests to Swamps, and two Faerie Macabres
+  // main for the Temporal Springs: +6.0 ± 2.3 on the S57 table (36.2 → 42.2; the Pall +13, the Larder +14, no matchup lost).
+  // The list no longer holds green — or its namesake.
+  undertow: { "Boomerang": -3, "Control Magic": 3, "Zinnia, the Undertow": -3, "Vampire Nighthawk": 3, "Temporal Spring": -2, "Faerie Macabre": 2, "Forest": -2, "Swamp": 2 },
   tally: { "Arc Mage": -2, "Abrade": -2, "Flametongue Kavu": 4 }, // +13.0 ± 2.0
   muster: { "Vitalist": -2, "Suntail Hawk": -2, "Flametongue Kavu": 4 }, // +10.0 ± 1.9
   ford: { "Savage Twister": -2, "Restoration Angel": -2, "Flametongue Kavu": 2, "Rage Cobra": 2 }, // +5.1 ± 1.8

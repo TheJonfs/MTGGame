@@ -25,7 +25,7 @@ describe("the Constructed builder (S52)", () => {
     expect(loop.decklist.reduce((n, e) => n + e.count, 0)).toBe(60); // kept whole
     expect(OPEN_MEANS["open:loop"]).toBeUndefined();
     expect(selectCandidates(OPEN_FORMAT, rating, library, cards).map((c) => c.l.key)).not.toContain("open:loop");
-    expect(library.filter((l) => l.archived).map((l) => l.key)).toEqual(["open:loop"]);
+    expect(library.filter((l) => l.archived).map((l) => l.key).sort()).toEqual(["open:larder", "open:loop"]); // post-S57: the Larder (ADR-165's exit)
     for (let i = 1; i <= 200; i++) expect(buildConstructedDeck(OPEN_FORMAT, rating, i, library, cards).from).not.toBe("open:loop");
     expect(buildConstructedDeck(OPEN_FORMAT, rating, 1, library, cards, { from: "open:loop" }).from).toBe("open:loop"); // asked for by key (a study, a seat in an older save) it still builds
   });

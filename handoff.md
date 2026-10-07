@@ -9,15 +9,17 @@ Session 57 was the revision round. Six lists were revised by measured swaps, the
 - **The better out-rule for sideboarding was built, measured and left off.** It bought nothing; one part of it cost a point.
 - **The new table is tighter:** thirteen of sixteen lists sit between 45 and 58.
 
-`pnpm typecheck` and `pnpm test` (971) pass. **Nothing from this session is pushed.**
+`pnpm typecheck` and `pnpm test` (971) pass. **Nothing from this session is pushed.** After the session proper Chris revised the Undertow again, archived the Larder and added a mono-red list: its own section below, with the table of record as it now stands.
 
 ## For the planner — the decisions waiting
-1. **The Undertow and ADR-165's bar.** Its swap read 43.8 against the old field and it stands at 36 in the new table. I did not archive it (Deviation 2).
+1. **The Undertow and ADR-165's bar: settled after the session.** Chris revised it again; it stands at 41 (the section below).
 2. **Four near-misses under a strict reading of the bar** (Deviation 1). If the bar is meant more loosely, these are the next to take: the Tally's Control Magics, the Enchantress's fourth Pacifism, the Pall's Swamps, the Locks' two Islands.
 3. **Flametongue Kavu is now in five lists** (Concern 1).
 4. **The Locks now lose seven points by sideboarding** (Concern 3).
 5. **The planner's document** needs the six revisions folded in; they live in code for now (`sim/open-lists.ts OPEN_REVISIONS_S57`).
 6. **Still owed by Chris:** the Sweep's registered fifteen; a hand read of the tuned Kiln; the Pall against a boarding field.
+7. **The Cinder is 8–0 in Chris's hands and last in the AI's** (40%). That gap is the next pilot question (the section below has the first probe).
+8. **The Undertow's title** ("Simic Mill (U G)") no longer describes it.
 
 ## Done this session
 
@@ -93,6 +95,49 @@ Sixteen lists, pilot 110, registered sixties, 12,000 games (`analysis/runs/rr16_
 - `OPEN_MEANS` is this table.
 - **The retire count:** the bottom three are the Larder (30.8), the Undertow (36.1) and the Locks (44.5). The Locks are under a point from three other lists.
 - **`convocation-sim --events 4`:** a seat's list against its finish r = −0.53; the Umbel's eight hold lists averaging 56.9, the field 49.6; two rematches in four events.
+
+## After the session — the Undertow again, the Larder archived, the Cinder (Chris, 2026-10-07)
+
+**The Undertow, revised a second time** (Chris: the "and friends" part needs help, and help against graveyard decks). Trials against the S57 table, 1,500 games each:
+
+| trial | change |
+|---|---|
+| +4 Faerie Macabre main (for the Man-o'-Wars and the Temporal Springs) | 0.0 ± 2.2 (the Pall +17, the Larder +15, the Wurmspeaker −18) |
+| +2 Gravitational Shift (for Essence Scatters, or for Crabs) | −0.8 ± 1.4, −1.3 ± 1.7 |
+| −3 Zinnia +3 Vampire Nighthawk, 2 Forest → 2 Swamp (the implementer's) | +5.8 ± 1.9 |
+| **the Nighthawks, and 2 Macabres for the Temporal Springs — ADOPTED** | **+6.0 ± 2.3** (no matchup lost; the Pall +13) |
+| the Nighthawks and all four Macabres | +5.1 ± 2.5 |
+| the Nighthawks, four Macabres, two Shifts | +4.7 ± 2.6 |
+
+- The list no longer holds green, or Zinnia, its namesake. Its title still reads "Simic Mill (U G)": the planner's to rename.
+- Not tested: four Crypts in its sideboard. A seed list cannot carry a registered fifteen yet.
+
+**The Larder is archived** (Chris; ADR-165's exit). What was tried first, against its 30.8:
+
+| trial | change |
+|---|---|
+| 6 mana creatures (for the Reeves, Baru, the Gaean Wurm, Duress) | −1.6 ± 1.7 |
+| the same with the blue lands out | −0.4 ± 1.8 |
+| 8 mana creatures | +0.4 ± 2.0 |
+| 4 Mind Stone | +0.6 ± 1.4 |
+| Rampant Growth and Birds | −2.2 ± 1.8 |
+| the Wurmspeaker with black, 4 Zombify, 4 Buried Alive (or Entomb), 2 Artisan | −7.0 ± 2.5, −5.2 ± 2.5 (against the Wurmspeaker's 46.8) |
+
+- When a piece lands on its turn 3 or earlier it wins 82%; turn 4, 59%; turn 5, 51%; nothing lands in 36% of games.
+- Acceleration bolted on does not buy that speed (9 of its 23 lands make green), and the rebuilt deck is worse than mono-green.
+- Its plan stays in the data as the second customer of the plan vocabulary. Book 111 still pins it.
+
+**The Cinder** (Chris's 8–0 mono-red list, `docs/debug_logs/convocation-8-0-red.json`; a working name) is the sixth contributed list, with its fifteen.
+- **In the AI's hands it is last: 40%.** Best: the Tally 57, the Locks 57, the Enchantress 55. Worst: the Levy 25, the Coin 29, the Ford 29, the Hearth 30.
+- **A first probe** (300 games): it empties its hand (1.1 cards left when it loses) and loses with the opponent at 11 life (median). It sends 2.4 burn spells a game at the face and 1.35 at creatures, and declares 4.2 attackers a game. So it is not holding burn back; it runs out of cards short of twenty damage. No rule has been written for it (ADR-167: this is the probe).
+
+**The table of record, again** (sixteen lists: the Larder out, the Cinder in; pilot 111; 12,000 games; `analysis/runs/rr16_s57b.json`):
+
+pall 67 · hearth 58 · levy 57 · coin 56 · muster 53 · kiln 53 · sweep 52 · warband 51 · ford 50 · depths 48 · wurmspeaker 47 · enchantress 42 · undertow 41 · tally 41 · locks 41 · cinder 40.
+
+- The pairings' seeds moved with the list order, so single cells are not comparable with the S57 table; the means are, to about a point and a half.
+- The Undertow is at 41, over ADR-165's bar of 38.
+- The bottom three are the Cinder, and the Locks, the Tally and the Undertow level at 41.
 
 ## Deviations from the brief
 1. **The bar is read strictly:** the gain less its 95% error is at least two points. Four trials fall just short and are not adopted: the Tally's −2 Blaze +2 Control Magic (+3.2 ± 1.5, and +3.1 ± 1.5 stacked), the Enchantress's fourth Pacifism (+1.9 ± 0.7 pooled over two seeds), the Pall's Swamps (+2.1 ± 1.3), the Locks' two Islands on top of the Control Magics (+1.6 ± 1.4). *The planner should say whether the strict reading is the one meant.*

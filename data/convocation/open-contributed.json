@@ -1,10 +1,79 @@
 {
  "_comment": "Post-S53 (Chris): Open lists contributed from play — each one a deck that did something in a Convocation, added to the Open's library beside the planner's twelve. pnpm open:gen validates (sixty, legal in the Open) and appends them; its strength is measured by pnpm open:rr before it can enter the field (OPEN_MEANS). Grows as Convocations are played. S55 (ADR-161): a list may declare archetype \"combo\" with a `plan` (setup / start / dig / fuel / answers — packages/agents/src/plans.ts has the shape) and its registered `sideboard`.",
  "archived": {
-  "loop": "S56 (ADR-164): redundant with the Coin — 31 of its 37 nonland cards shared, matchup profiles r = 0.88, worse against eleven of the other twelve. Last measured 53 (pilot 106, sixteen lists)."
+  "loop": "S56 (ADR-164): redundant with the Coin — 31 of its 37 nonland cards shared, matchup profiles r = 0.88, worse against eleven of the other twelve. Last measured 53 (pilot 106, sixteen lists).",
+  "larder": "Post-S57 (Chris, 2026-10-07; ADR-165's exit): last in five measures (31 on the S57 table with its plan). Acceleration, a green mana base and a mono-green-with-Zombify build all measured flat or worse (handoff). The Pall does its job a turn faster. Its plan (goal: once) stays as the vocabulary's second customer."
  },
  "plans": {
-  "larder": {"goal": "once", "piece": "artisan_of_kozilek", "pieces": ["artisan_of_kozilek", "angel_of_the_ruins"], "setup": [{"card": "entomb", "bury": [{"card": "artisan_of_kozilek", "count": 1}, {"card": "angel_of_the_ruins", "count": 1}]}, {"card": "buried_alive", "bury": [{"card": "artisan_of_kozilek", "count": 1}, {"card": "angel_of_the_ruins", "count": 1}, {"card": "pelakka_wurm", "count": 1}]}], "start": [{"card": "zombify", "on": "artisan_of_kozilek"}, {"card": "graceful_restoration", "on": "artisan_of_kozilek"}], "dig": ["demonic_tutor"], "fuel": ["dark_ritual", "black_lotus", "mox_jet", "mox_emerald", "mox_pearl", "mox_sapphire"], "answers": {"counter": ["zombify", "graceful_restoration"], "graveyardExile": true, "discardBeforeTurn": 3}}
+  "larder": {
+   "goal": "once",
+   "piece": "artisan_of_kozilek",
+   "pieces": [
+    "artisan_of_kozilek",
+    "angel_of_the_ruins"
+   ],
+   "setup": [
+    {
+     "card": "entomb",
+     "bury": [
+      {
+       "card": "artisan_of_kozilek",
+       "count": 1
+      },
+      {
+       "card": "angel_of_the_ruins",
+       "count": 1
+      }
+     ]
+    },
+    {
+     "card": "buried_alive",
+     "bury": [
+      {
+       "card": "artisan_of_kozilek",
+       "count": 1
+      },
+      {
+       "card": "angel_of_the_ruins",
+       "count": 1
+      },
+      {
+       "card": "pelakka_wurm",
+       "count": 1
+      }
+     ]
+    }
+   ],
+   "start": [
+    {
+     "card": "zombify",
+     "on": "artisan_of_kozilek"
+    },
+    {
+     "card": "graceful_restoration",
+     "on": "artisan_of_kozilek"
+    }
+   ],
+   "dig": [
+    "demonic_tutor"
+   ],
+   "fuel": [
+    "dark_ritual",
+    "black_lotus",
+    "mox_jet",
+    "mox_emerald",
+    "mox_pearl",
+    "mox_sapphire"
+   ],
+   "answers": {
+    "counter": [
+     "zombify",
+     "graceful_restoration"
+    ],
+    "graveyardExile": true,
+    "discardBeforeTurn": 3
+   }
+  }
  },
  "lists": [
   {
@@ -808,6 +877,113 @@
      }
     ]
    }
+  },
+  {
+   "key": "cinder",
+   "name": "the Cinder",
+   "title": "Mono-Red Burn (R)",
+   "archetype": "aggro",
+   "source": "Chris's Open, seed 35015, 2026-10-07 — 5–0 in the Swiss and 3–0 in the Umbel (8–0), Normal. A working name until Chris names it.",
+   "decklist": [
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "shock",
+     "count": 4
+    },
+    {
+     "cardId": "thundersnake",
+     "count": 4
+    },
+    {
+     "cardId": "char",
+     "count": 4
+    },
+    {
+     "cardId": "the_ruby_tyrant",
+     "count": 4
+    },
+    {
+     "cardId": "guttersnipe",
+     "count": 4
+    },
+    {
+     "cardId": "dragon_fodder",
+     "count": 4
+    },
+    {
+     "cardId": "goblin_grenade",
+     "count": 4
+    },
+    {
+     "cardId": "raging_goblin",
+     "count": 4
+    },
+    {
+     "cardId": "blaze",
+     "count": 2
+    },
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "badlands",
+     "count": 4
+    },
+    {
+     "cardId": "tallyflame_court",
+     "count": 1
+    },
+    {
+     "cardId": "volcanic_island",
+     "count": 4
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mountain",
+     "count": 8
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "abrade",
+     "count": 3
+    },
+    {
+     "cardId": "rage_cobra",
+     "count": 2
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 2
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 4
+    },
+    {
+     "cardId": "faerie_macabre",
+     "count": 4
+    }
+   ]
   }
  ]
 }
