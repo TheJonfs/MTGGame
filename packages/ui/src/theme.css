@@ -385,6 +385,7 @@ button.linkish { background: none; border: none; color: var(--brass); cursor: po
 /* r9: a producer that can be tapped for mana in a response window — a quieter glow than castable. */
 .tile.tappable { outline: 2px dashed var(--gold); cursor: pointer; }
 .tile.target { outline: 3px solid var(--danger); cursor: crosshair; }
+.stack-panel .item.target { outline: 3px solid var(--danger); outline-offset: 1px; cursor: crosshair; border-radius: 4px; }
 .tile.staged { outline: 3px solid var(--brass); transform: translateY(-6px); }
 .tile.pending { outline: 3px dashed var(--brass); }
 .tile.dim, .hand-card.dim .frame { filter: saturate(0.3) opacity(0.55); }

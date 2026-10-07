@@ -988,7 +988,7 @@ export function PlayMatch({
         >
           <StatusBlock ctx={ctx} player={opp} youSeat={c.humanSeat} emphasizeHand name={c.names[opp]} portraitSrc={c.portraits[opp]} onZoneClick={(player, zone) => setZoneOpen({ player, zone })} />
         </div>
-        <StackPanel ctx={ctx} />
+        <StackPanel ctx={ctx} {...(phase.kind === "targeting" ? { targets: phase.highlightObjects, onPick: (id: string) => c.clickStackTarget(id) } : {})} />
         {(ctx.state.players[0].ante.length > 0 || ctx.state.players[1].ante.length > 0) && (
           <div className="panel stakes-panel">
             <h3>Stakes</h3>

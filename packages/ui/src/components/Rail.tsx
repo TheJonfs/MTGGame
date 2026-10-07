@@ -106,7 +106,10 @@ export function StatusBlock({
   );
 }
 
-export function StackPanel({ ctx }: { ctx: EngineCtx }) {
+/** Post-S57 (Chris: no way into a counter war — a counterspell's targets are stack items, and nothing on the stack
+ * could be clicked): `targets` are the stack items that are legal picks right now; they wear the target outline and
+ * `onPick` takes the click. */
+export function StackPanel({ ctx, targets, onPick }: { ctx: EngineCtx; targets?: ReadonlySet<string>; onPick?: (stackItemId: string) => void }) {
   const { state } = ctx;
   if (state.stack.length === 0) {
     return (
@@ -123,7 +126,7 @@ export function StackPanel({ ctx }: { ctx: EngineCtx }) {
     <div className="panel stack-panel">
       <h3><IconChip src="/icons/zone-stack.svg" alt="" size={22} />Stack (top resolves first)</h3>
       {[...state.stack].reverse().map((item) => (
-        <div className="item" key={item.id}>
+        <div className={`item${targets?.has(item.id) ? " target" : ""}`} key={item.id} onClick={targets?.has(item.id) && onPick ? () => onPick(item.id) : undefined} title={targets?.has(item.id) ? "Click to target this" : undefined}>
           <div>
             {allDefs.get(item.sourceCardId)?.name ?? item.sourceCardId}
             <span style={{ color: "var(--ink-soft)" }}> · {item.kind}{item.x ? ` (X=${item.x})` : ""}</span>

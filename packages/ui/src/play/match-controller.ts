@@ -1491,6 +1491,12 @@ export class MatchController {
     this.clickTarget({ kind: "object", id: objectId });
   }
 
+  /** Post-S57 (Chris): a spell or ability on the stack picked as a target (a counterspell's) — from the stack panel. */
+  clickStackTarget(stackItemId: string): void {
+    if (this.phase.kind !== "targeting") return;
+    this.clickTarget({ kind: "stackItem", id: stackItemId });
+  }
+
   private clickTarget(target: ResolvedTarget): void {
     if (this.phase.kind !== "targeting") return;
     const chosen = [...this.phase.chosen, target];

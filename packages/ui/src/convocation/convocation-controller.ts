@@ -64,7 +64,15 @@ export class ConvocationController {
   fieldProgress: { done: number; of: number; /** S54: a draft stage's pods, not a round's matches */ pods?: boolean } | null = null;
   /** S53: the field's workers (a page with Workers); null in the tests — the main thread plays. */
   private fieldPool: FieldPool | null | undefined = undefined;
-  private workers(): FieldPool | null { if (this.fieldPool === undefined) this.fieldPool = makeFieldPool(); return this.fieldPool; }
+  /** Post-S57 (Chris: after a restart of the dev server the field played on the main thread until the page was
+   * reloaded): a pool that broke — its workers failed to start, or none was ready in time, as a cold dev server's
+   * first build of the worker can be — was broken for the life of the page. It is now replaced the next time the
+   * field asks for workers (once a round, once a draft), so one bad start costs one round on the main thread. */
+  private workers(): FieldPool | null {
+    if (this.fieldPool?.broken) { this.fieldPool.dispose(); this.fieldPool = undefined; }
+    if (this.fieldPool === undefined) this.fieldPool = makeFieldPool();
+    return this.fieldPool;
+  }
   /** The event's knobs — the defaults (the entrance flat); S54 (ADR-157): Hard's life is the event's own (hardLife), not a
    * campaign difficulty bundle. */
   get knobs(): KnobValues { return resolveKnobs({}); }

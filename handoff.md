@@ -9,7 +9,7 @@ Session 57 was the revision round. Six lists were revised by measured swaps, the
 - **The better out-rule for sideboarding was built, measured and left off.** It bought nothing; one part of it cost a point.
 - **The new table is tighter:** thirteen of sixteen lists sit between 45 and 58.
 
-`pnpm typecheck` and `pnpm test` (971) pass. `pnpm build:web` passes. **Everything here is pushed.** After the session proper Chris revised the Undertow again, archived the Larder and added a mono-red list: its own section below, with the table of record as it now stands.
+`pnpm typecheck` and `pnpm test` (972) pass. `pnpm build:web` passes. **Everything here is pushed.** After the session proper Chris revised the Undertow again, archived the Larder and added a mono-red list: its own section below, with the table of record as it now stands.
 
 ## For the planner — the decisions waiting
 1. **The Undertow and ADR-165's bar: settled after the session.** Chris revised it again; it stands at 41 (the section below).
@@ -139,6 +139,11 @@ pall 67 · hearth 58 · levy 57 · coin 56 · muster 53 · kiln 53 · sweep 52 �
 - The Undertow is at 41, over ADR-165's bar of 38.
 - The bottom three are the Cinder, and the Locks, the Tally and the Undertow level at 41.
 
+## After the session — three fixes from Chris's play (2026-10-07)
+- **The viewer crashed with "process is not defined".** A measuring switch in `plan-play.ts` read `process.env`; the browser loads that file. Removed. Typecheck, the tests and `build:web` do not catch this (Node has `process`); only a loaded page does.
+- **The field played on the main thread after a dev-server restart until the page was reloaded.** A field pool that broke (its workers failed to start, or none was ready in twenty seconds) stayed broken for the life of the page. The controller now replaces a broken pool the next time the field asks for workers, so one bad start costs one round.
+- **A person could not target a spell on the stack** (no way into a counter war). The legal stack items were computed but the stack panel neither showed them nor took a click. It now outlines them and takes the click (`clickStackTarget`); a test casts a Counterspell at the lower of two spells. With one spell on the stack the cast was already staged at it, which is why this went unseen.
+
 ## Deviations from the brief
 1. **The bar is read strictly:** the gain less its 95% error is at least two points. Four trials fall just short and are not adopted: the Tally's −2 Blaze +2 Control Magic (+3.2 ± 1.5, and +3.1 ± 1.5 stacked), the Enchantress's fourth Pacifism (+1.9 ± 0.7 pooled over two seeds), the Pall's Swamps (+2.1 ± 1.3), the Locks' two Islands on top of the Control Magics (+1.6 ± 1.4). *The planner should say whether the strict reading is the one meant.*
 2. **The Undertow is not archived.** By the trial it reached 43.8; in the new table it is 36. The brief's rule ("if no combination reaches 38: archive") does not say which measure. *The planner's to rule.*
@@ -165,7 +170,7 @@ pall 67 · hearth 58 · levy 57 · coin 56 · muster 53 · kiln 53 · sweep 52 �
 None. No rule of the game and no card changed this session.
 
 ## Test status
-`pnpm test`: 107 files passed, 1 skipped; **971 tests passed, 2 skipped** (the standing two). `pnpm typecheck` passes. `pnpm build:web` passes.
+`pnpm test`: 107 files passed, 1 skipped; **972 tests passed, 2 skipped** (the standing two). `pnpm typecheck` passes. `pnpm build:web` passes.
 
 New this session:
 - Book 111 (the Larder's plan: `once`, the setup wanted and refused, the start's target, the opponent's Crypt, `fuelKeptForStart` on no plan).
@@ -174,7 +179,7 @@ New this session:
 - **No ladder run.** The agent changes are confined to decks with a plan (`plan-play.ts`), and no ladder deck has one. For the Pall's `loop` plan they change nothing: its 560 probe games against the fourteen lists other than the Larder are identical to S56's, game for game.
 - About 150,000 sim games this session raised no engine error.
 
-**Not verified:** anything in a browser this session (no UI change). Carried: Protocol on the board; the AI's hand-tapping; the tuned Kiln and the Pall in a person's hands.
+**Not verified:** the stack panel's target outline and click seen in a browser (the controller path is tested); the retried field pool after a real dev-server restart. Carried: Protocol on the board; the AI's hand-tapping; the tuned Kiln and the Pall in a person's hands.
 
 ## Suggested next
 - **Rule on the four near-misses and the Undertow** (the decisions above).
