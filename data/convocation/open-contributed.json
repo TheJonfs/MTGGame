@@ -2,7 +2,8 @@
  "_comment": "Post-S53 (Chris): Open lists contributed from play — each one a deck that did something in a Convocation, added to the Open's library beside the planner's twelve. pnpm open:gen validates (sixty, legal in the Open) and appends them; its strength is measured by pnpm open:rr before it can enter the field (OPEN_MEANS). Grows as Convocations are played. S55 (ADR-161): a list may declare archetype \"combo\" with a `plan` (setup / start / dig / fuel / answers — packages/agents/src/plans.ts has the shape) and its registered `sideboard`.",
  "archived": {
   "loop": "S56 (ADR-164): redundant with the Coin — 31 of its 37 nonland cards shared, matchup profiles r = 0.88, worse against eleven of the other twelve. Last measured 53 (pilot 106, sixteen lists).",
-  "larder": "Post-S57 (Chris, 2026-10-07; ADR-165's exit): last in five measures (31 on the S57 table with its plan). Acceleration, a green mana base and a mono-green-with-Zombify build all measured flat or worse (handoff). The Pall does its job a turn faster. Its plan (goal: once) stays as the vocabulary's second customer."
+  "larder": "Post-S57 (Chris, 2026-10-07; ADR-165's exit): last in five measures (31 on the S57 table with its plan). Acceleration, a green mana base and a mono-green-with-Zombify build all measured flat or worse (handoff). The Pall does its job a turn faster. Its plan (goal: once) stays as the vocabulary's second customer.",
+  "undertow": "Post-S58 (Chris, 2026-10-08): replaced by the Writ, his 5–0 Dimir Control list (53.6% in the AI's hands against the Undertow's 40). Last measured 40 (pilot 111, S58's table)."
  },
  "plans": {
   "larder": {
@@ -1086,6 +1087,141 @@
     {
      "cardId": "faerie_macabre",
      "count": 4
+    }
+   ]
+  },
+  {
+   "key": "writ",
+   "name": "the Writ",
+   "title": "Dimir Control (U B)",
+   "archetype": "control",
+   "source": "Chris's Open, seed 350754, 2026-10-08 — 5–0 in the Swiss and the Umbel won, Normal. Offered as the replacement for the Undertow. A working name until Chris names it.",
+   "decklist": [
+    {
+     "cardId": "library_of_alexandria",
+     "count": 1
+    },
+    {
+     "cardId": "badlands",
+     "count": 1
+    },
+    {
+     "cardId": "bayou",
+     "count": 1
+    },
+    {
+     "cardId": "tallyflame_court",
+     "count": 1
+    },
+    {
+     "cardId": "wrackroot",
+     "count": 1
+    },
+    {
+     "cardId": "underground_sea",
+     "count": 4
+    },
+    {
+     "cardId": "watery_grave",
+     "count": 4
+    },
+    {
+     "cardId": "volcanic_island",
+     "count": 3
+    },
+    {
+     "cardId": "tropical_island",
+     "count": 3
+    },
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "arcane_collector",
+     "count": 3
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 3
+    },
+    {
+     "cardId": "protocol",
+     "count": 4
+    },
+    {
+     "cardId": "time_walk",
+     "count": 1
+    },
+    {
+     "cardId": "tidewall",
+     "count": 3
+    },
+    {
+     "cardId": "the_jet_witch",
+     "count": 3
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "undermine",
+     "count": 4
+    },
+    {
+     "cardId": "clio_lady_of_the_depths",
+     "count": 4
+    },
+    {
+     "cardId": "gravitational_shift",
+     "count": 1
+    },
+    {
+     "cardId": "faerie_formation",
+     "count": 1
+    },
+    {
+     "cardId": "drana_kalastria_bloodchief",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "tormods_crypt",
+     "count": 4
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 4
+    },
+    {
+     "cardId": "faerie_macabre",
+     "count": 4
+    },
+    {
+     "cardId": "control_magic",
+     "count": 3
     }
    ]
   }

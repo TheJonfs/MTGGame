@@ -9,7 +9,7 @@ Session 58 closed the revision round. The Open's lists now live entirely in code
 - **Part 2 (the Cinder diff) could not be run on the 8–0 file**: it holds results, not moves. The tool and the recording it needs are built instead.
 - **A new table of record**, sixteen lists.
 
-`pnpm typecheck`, `pnpm test` (975) and `pnpm build:web` pass. **Nothing from this session is pushed.**
+`pnpm typecheck`, `pnpm test` (975) and `pnpm build:web` pass. **Nothing from this session is pushed.** After the session proper Chris replaced the Undertow with a new list: its own section below, with the table of record as it now stands.
 
 ## For the planner — the decisions waiting
 1. **Two of the six in/out pairs in the Locks' guide measured wrong** and are out of it (Deviation 2). The planner may want to re-author them.
@@ -60,6 +60,21 @@ Session 58 closed the revision round. The Open's lists now live entirely in code
 | enchantress 43 | locks 41 | undertow 40 | cinder 40 |
 
 - **The retire count:** the bottom three are the Cinder (40.3), the Undertow (40.5) and the Locks (40.8).
+
+## After the session — the Writ replaces the Undertow (Chris, 2026-10-08)
+
+Chris's 5–0 and Umbel-winning Dimir Control list (`docs/debug_logs/convocation-open-5–0-ub.json`; a working name) is the seventh contributed list, with its fifteen, and **the Undertow is archived in its favour**.
+
+- **The list:** 4 Clio, 4 Vampire Nighthawk, 4 Protocol, 4 Counterspell, 4 Undermine, 3 Essence Scatter, 3 Tidewall, 3 Jet Witch, 3 Arcane Collector, a Gravitational Shift, a Faerie Formation, Drana; a fifteen of 4 Tormod's Crypt, 4 Faerie Macabre, 4 Doom Blade, 3 Control Magic. It is the first Open list to main Protocol.
+- **In the AI's hands, before the swap** (against the sixteen, the Undertow among them, 1,600 games): **53.6%**, where the Undertow stood at 40.
+- **The table of record, re-run** (sixteen lists: the Undertow out, the Writ in; pilot 111; 12,000 games; `analysis/runs/rr16_s58b.json`):
+
+pall 70 · hearth 56 · coin 54 · levy 53 · kiln 53 · muster 52 · writ 52 · warband 50 · sweep 50 · wurmspeaker 48 · depths 47 · ford 44 · enchantress 44 · tally 43 · locks 43 · cinder 39.
+
+- The Writ's best: the Wurmspeaker 71, the Cinder 65, the Ford 63. Its worst: the Pall 29, the Hearth 38, the Coin and the Levy 41.
+- **The retire count from this table:** the bottom three are the Cinder (39.4), the Tally (42.9) and the Locks (43.1).
+- The Undertow's two revisions (S57, post-S57) stay in the record on an archived list. The mill deck is out of the field; the planner may want that noted, since it was one of the original eleven.
+- The file is from before games were recorded, so it has no moves either.
 
 ## Deviations from the brief
 1. **Part 2's report is not delivered.** The 8–0 file records seeds and results; a person's decisions cannot be recovered from it. I built the tool, the engine piece and the recording, and checked them on a stand-in. *The report follows when Chris has played recorded games.*
