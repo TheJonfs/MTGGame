@@ -11,6 +11,10 @@ import { reserveTaps, type ManaSource, type Tap } from "./reserve.js";
  * plan is the counter (measured: the Locks +2 to +3 points and the Undertow +3 to +6 at 2–8, nothing for the Depths;
  * a midrange list holding four gains nothing at any multiple, so it keeps the old weight). */
 const HOLD_ON_OUR_TURN = { control: 3, other: 1 } as const;
+/** S58 (book 112): the life at which an aggro deck's burn goes at the face. */
+const AGGRO_REACH = 12;
+/** S58 (book 113): the life a deck keeps, paying life for cards, against a list with eight or more burn spells. */
+const BURN_FLOOR = 10;
 import { simulateCombat, viewCreatures, type SimObject } from "./combat-sim.js";
 
 /**
@@ -1896,14 +1900,15 @@ export class HeuristicAgent implements Agent {
    * closing), or the deck's plan is the race (the aggro archetype: its burn is reach, as before). A creature target,
    * a planeswalker-less board and our own face are other gates' business. Exposed for the book. */
   faceBurnHoldGated(view: GameView, action: Action): boolean {
-    // (S58, on trial — the play diff of Chris's Cinder: his burn went face at a median of 6 life, the pilot's at 17:
-    // `faceburn<N>` holds an AGGRO deck's burn too, until the opponent is at N or less)
-    const trial = this.profile.trial?.find((t) => t.startsWith("faceburn"));
-    if (action.type !== "castSpell" || (this.profile.archetype === "aggro" && !trial)) return false;
-    const reach = trial && this.profile.archetype === "aggro" ? parseInt(trial.slice(8), 10) || 8 : 8;
-    // (…and only against a list with creatures to spend it on: against ten or fewer the burn has no other use — the
-    // Tally lost twenty points to the Locks holding it)
-    if (trial && this.profile.archetype === "aggro" && trial.endsWith("c") && this.profile.opponentDecklist.reduce((n, e) => n + (this.def(e.cardId)?.types.includes("Creature") ? e.count : 0), 0) <= 10) return false;
+    if (action.type !== "castSpell") return false;
+    // S58 (book 112 — the play diff of Chris's Cinder: his burn went at the face with the opponent at a median of 6
+    // life, the pilot's at 17; 62 holds in thirteen games): an AGGRO deck holds its face burn too — until the opponent
+    // is at AGGRO_REACH or less — unless their list holds ten creatures or fewer (the burn then has no other use: held
+    // against the Locks it cost the Tally twenty points). Measured: the Cinder +6.0 ± 1.9, the Tally +5.2 ± 1.9, the
+    // Warband +3.6 ± 1.5, the Muster +3.2 ± 1.2 (eight and sixteen within a point of twelve).
+    const aggro = this.profile.archetype === "aggro";
+    if (aggro && (this.profile.off?.includes("faceburn") || this.profile.opponentDecklist.reduce((n, e) => n + (this.def(e.cardId)?.types.includes("Creature") ? e.count : 0), 0) <= 10)) return false;
+    const reach = aggro ? AGGRO_REACH : 8;
     const me = view.you, opp = (1 - me) as 0 | 1;
     const card = view.hand.find((c) => c.objectId === action.objectId);
     const d = card ? this.def(card.cardId) : undefined;
@@ -1978,6 +1983,12 @@ export class HeuristicAgent implements Agent {
     return d && d.types.includes("Creature") && legendLoopWorth(view, this.defs, d) > 0 ? LOOP_WORTH : 0;
   }
 
+  /** The opponent's list's burn: copies of instants and sorceries that deal a number of damage to any target. */
+  private burnAcrossMemo: number | null = null;
+  burnAcross(): number {
+    if (this.burnAcrossMemo === null) this.burnAcrossMemo = this.profile.opponentDecklist.reduce((n, e) => { const d = this.def(e.cardId); return n + (d && (d.types.includes("Instant") || d.types.includes("Sorcery")) && (d.spellEffect ?? []).some((x) => x.type === "damage" && typeof x.amount === "number") && ((d.targets ?? []) as { predicate?: string }[]).some((t) => t.predicate === "anyTarget") ? e.count : 0); }, 0);
+    return this.burnAcrossMemo;
+  }
   /** S27 r2 (Chris: the Jet Witch dumped as much life as it could into cards): life-for-cards is a
    * budgeted purchase, not a faucet. Pay only while the hand is thin (≤ 2 cards), only while the
    * life AFTER paying clears the opponent's untapped power on the board by a margin (3), and at most
@@ -1990,6 +2001,11 @@ export class HeuristicAgent implements Agent {
     if (!ab || ab.kind !== "activated" || !ab.cost.life) return false;
     if (!ab.effects.some((e) => e.type === "draw")) return false;
     const me = view.you;
+    // S58 (book 113 — Chris, after the Cinder's Open: "the Pall had a tendency to put itself in burn distance via the
+    // Jet Witch"): against a list with eight or more burn spells, life is not paid for cards below BURN_FLOOR. Measured
+    // for the Pall against the five lists with burn (2,000 games, paired): 62.3% → 65.0% (+2.7 ± 1.1; a floor of
+    // fourteen +1.2); the Writ and the Hearth, which draw less this way, unmoved.
+    if (!this.profile.off?.includes("burnfloor") && this.burnAcross() >= 8 && view.life[me] - ab.cost.life < BURN_FLOOR) return true;
     // S55 (book 102): a combo deck's dig answers to its plan (plan-play.ts)
     const dig = this.plans.digGated(view, action, ab.cost.life, this.lifeDrawsThisTurn.turn === view.turn ? this.lifeDrawsThisTurn.n : 0);
     if (dig !== null) return dig;

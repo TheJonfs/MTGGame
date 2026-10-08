@@ -9,11 +9,11 @@ Session 58 closed the revision round. The Open's lists now live entirely in code
 - **Part 2 (the Cinder diff) could not be run on the 8–0 file**: it holds results, not moves. The tool and the recording it needs are built instead.
 - **A new table of record**, sixteen lists.
 
-`pnpm typecheck`, `pnpm test` (975) and `pnpm build:web` pass. **Nothing from this session is pushed.** After the session proper Chris replaced the Undertow with a new list: its own section below, with the table of record as it now stands.
+`pnpm typecheck`, `pnpm test` (977) and `pnpm build:web` pass. **Nothing from this session is pushed.** After the session proper Chris replaced the Undertow with a new list: its own section below, with the table of record as it now stands.
 
 ## For the planner — the decisions waiting
 1. **Two of the six in/out pairs in the Locks' guide measured wrong** and are out of it (Deviation 2). The planner may want to re-author them.
-2. **Part 2 is delivered after all:** the recording works; the Writ's diff and the Cinder's are in (their own sections below). **The Cinder's produced a rule on trial worth +3 to +6 points for the four aggro lists — measured, not shipped; it needs a ruling.** The Writ's diff points at two pilot questions: Clio as a lock, and holding mana on its own turn.
+2. **Part 2 is delivered after all:** the recording works; the Writ's diff and the Cinder's are in (their own sections below). **The Cinder's produced two rules, both shipped at Chris's word (books 112 and 113, the section below): the planner should ratify or reverse them.** The Writ's diff points at two pilot questions: Clio as a lock, and holding mana on its own turn.
 3. **S59, the campaign linkage:** my read of how it would be built is at the end of this handoff. One question in it needs a ruling before any code: how an invitation is earned.
 4. **The Sweep's fifteen** is still open (Chris's).
 
@@ -137,8 +137,26 @@ Chris played the Cinder through a recorded Open (seed 227210): 3–2, tenth. By 
 
 - Thresholds of eight and sixteen measured within a point of twelve.
 - Without the creature-count condition the Tally lost twenty points to the Locks (burn held against a deck with nothing to aim it at).
-- **Not shipped:** it is a pilot change for four lists, and it has had no ladder run and no book entry. It is one line to turn on. *The planner's and Chris's call.*
+- It was then shipped at Chris's word (the next section).
 - **This is the first rule to come out of a person's recorded play.** The path was: record, diff, read the commonest difference, measure a candidate on the lists it is for.
+
+## After the session — books 112 and 113 shipped, and the table again (Chris, 2026-10-08)
+
+Chris asked for the burn rule to be tried in earnest, and added a second observation from his Cinder games.
+
+- **Book 112 — an aggro deck holds its face burn** until the opponent is at twelve life or less or the spell is lethal, unless their list holds ten creatures or fewer. On by default (`off: ["faceburn"]` is the old pilot). Its trial numbers are in the section above. **Ladder mirror gate PASS.**
+- **Book 113 — no life paid for cards within burn's reach** (Chris: "the Pall had a tendency to put itself in burn distance via the Jet Witch"). Against a list with eight or more burn spells, a life-for-cards draw is not taken below ten life. On by default (`off: ["burnfloor"]`).
+  - Measured for the Pall against the five lists with burn (2,000 games, paired): **62.3% → 65.0% (+2.7 ± 1.1)**; the Cinder 64 → 70, the Warband 62 → 66, the Tally 59 → 62, the Kiln 68 → 70, the Muster unmoved (it holds four burn spells: the rule does not fire).
+  - A floor of fourteen measured +1.2. The Writ and the Hearth, which draw less this way, did not move.
+  - No ladder run for this one: it can only fire for a life-for-cards ability, and no ladder deck has one.
+  - It makes the strongest list about a point stronger. Chris asked for it; ADR-163 (the Pall stands) is the planner's.
+- **The table of record** (sixteen lists, pilot 113, 12,000 games, `analysis/runs/rr16_s58c.json`; the change from the table before the two books):
+
+pall 71 (+1) · hearth 55 (−1) · coin 54 · muster 54 (+2) · warband 52 (+2) · kiln 52 (−1) · levy 51 (−2) · writ 50 (−2) · sweep 48 (−2) · wurmspeaker 47 (−1) · depths 47 · tally 46 (+3) · cinder 44 (+5) · locks 43 · ford 42 (−2) · enchantress 42 (−2).
+
+- The four aggro lists with burn rose; the lists they play fell a little.
+- **The retire count from this table:** the bottom three are the Ford (42.3), the Enchantress (42.4) and the Locks (43.1). The Cinder is fourth from the bottom at 43.9.
+- **Still not captured from Chris's play:** burn cast on the opponent's turn (four in ten of his; almost none of the pilot's).
 
 ## Deviations from the brief
 1. **Part 2's report is not delivered.** The 8–0 file records seeds and results; a person's decisions cannot be recovered from it. I built the tool, the engine piece and the recording, and checked them on a stand-in. *The report follows when Chris has played recorded games.*
@@ -163,13 +181,13 @@ Chris played the Cinder through a recorded Open (seed 227210): 3–2, tenth. By 
 None.
 
 ## Test status
-`pnpm test`: 109 files passed, 1 skipped; **975 tests passed, 2 skipped** (the standing two). `pnpm typecheck` and `pnpm build:web` pass.
+`pnpm test`: 109 files passed, 1 skipped; **977 tests passed, 2 skipped** (the standing two). `pnpm typecheck` and `pnpm build:web` pass.
 
 New this session:
 - `sim/s58-replay.test.ts` (`replayThenPlay`).
 - The guide's test and the reference's sync test (`world/sideboard-s56.test.ts`, `world/open-format.test.ts`).
 - The recording, in the controller's series test.
-- **No ladder run:** no agent code changed.
+- **Ladder mirror gate PASS** (pilot 112, after the session proper; book 113 cannot fire in a ladder deck).
 - About 45,000 sim games; no engine error.
 
 **Seen in a browser:** the "download my recorded games (n)" link on the door. **Not verified:** that a game recorded in a real browser session diffs cleanly (the stand-in was generated headless). Carried: Protocol on the board; the AI's hand-tapping; the counter-war click; the tuned Kiln and the Pall in a person's hands.

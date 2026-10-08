@@ -8,22 +8,22 @@ A list's mean win rate against the other active lists (registered sixties, maste
 
 | list | title | pilot | mean |
 |---|---|---|---|
-| the Pall | Usher Combo (B w r) | combo | 70 |
-| the Hearth | Mardu Aristocrats, the value build (W B R) | midrange | 56 |
+| the Pall | Usher Combo (B w r) | combo | 71 |
+| the Hearth | Mardu Aristocrats, the value build (W B R) | midrange | 55 |
 | the Usher's Coin | Mardu Aristocrats (W B R) | midrange | 54 |
-| the Kiln | Izzet Spells (U R) | midrange | 53 |
-| the Levy | Orzhov Landfall (W B) | midrange | 53 |
-| the Muster | Boros Weenie (W R) | aggro | 52 |
-| the Writ | Dimir Control (U B) | control | 52 |
-| the Sweep | Jund Aristocrats (B R G) | midrange | 50 |
-| the Warband (Chris's list to test against the Muster) | Boros Goblins (R w) | aggro | 50 |
-| the Wurmspeaker | Mono-Green Ramp | midrange | 48 |
+| the Muster | Boros Weenie (W R) | aggro | 54 |
+| the Kiln | Izzet Spells (U R) | midrange | 52 |
+| the Warband (Chris's list to test against the Muster) | Boros Goblins (R w) | aggro | 52 |
+| the Levy | Orzhov Landfall (W B) | midrange | 51 |
+| the Writ | Dimir Control (U B) | control | 50 |
+| the Sweep | Jund Aristocrats (B R G) | midrange | 48 |
 | the Depths | Sultai Control (U B G) | control | 47 |
-| the Enchantress | Selesnya Auras (G W) | aggro | 44 |
-| the Ford | Naya Lifegain (R W G) | midrange | 44 |
+| the Wurmspeaker | Mono-Green Ramp | midrange | 47 |
+| the Tally | Izzet Sparks (U R) | aggro | 46 |
+| the Cinder | Mono-Red Burn (R) | aggro | 44 |
 | the Locks | Esper Control (W U B) | control | 43 |
-| the Tally | Izzet Sparks (U R) | aggro | 43 |
-| the Cinder | Mono-Red Burn (R) | aggro | 39 |
+| the Enchantress | Selesnya Auras (G W) | aggro | 42 |
+| the Ford | Naya Lifegain (R W G) | midrange | 42 |
 
 Archived (kept in the data, out of the field): the Undertow, the Larder, the Loop.
 
@@ -77,7 +77,7 @@ The most played: Lightning Bolt 7 · Vampire Nighthawk 6 · Counterspell 5 · Fl
 
 ## the Muster — Boros Weenie (W R)
 
-`muster` · aggro · mean 52
+`muster` · aggro · mean 54
 
 - **Lands (22):** 4 Plateau · 4 Sacred Foundry · 8 Plains · 4 Mountain · 2 Secluded Steppe
 - **Creatures (21):** 4 Savannah Lions · 4 Soul Warden · 2 Suntail Hawk · 4 Fencing Ace · 3 Emeria Angel · 4 Flametongue Kavu
@@ -90,7 +90,7 @@ The most played: Lightning Bolt 7 · Vampire Nighthawk 6 · Counterspell 5 · Fl
 
 ## the Warband (Chris's list to test against the Muster) — Boros Goblins (R w)
 
-`warband` · aggro · mean 50
+`warband` · aggro · mean 52
 
 - **Lands (22):** 4 Plateau · 4 Sacred Foundry · 12 Mountain · 2 Plains
 - **Creatures (22):** 4 Skirk Prospector · 4 Goblin Piker · 4 Goblin Chieftain · 2 Boggart Brute · 3 Siege-Gang Commander · 3 Lumen, the Hearth Fire · 2 Flametongue Kavu
@@ -102,7 +102,7 @@ The most played: Lightning Bolt 7 · Vampire Nighthawk 6 · Counterspell 5 · Fl
 
 ## the Tally — Izzet Sparks (U R)
 
-`tally` · aggro · mean 43
+`tally` · aggro · mean 46
 
 - **Lands (22):** 4 Volcanic Island · 4 Steam Vents · 8 Mountain · 4 Island · 1 Tallyflame Court · 1 Forgotten Cave
 - **Creatures (12):** 4 Young Pyromancer · 4 Guttersnipe · 4 Flametongue Kavu
@@ -129,7 +129,7 @@ The most played: Lightning Bolt 7 · Vampire Nighthawk 6 · Counterspell 5 · Fl
 
 ## the Wurmspeaker — Mono-Green Ramp
 
-`wurmspeaker` · midrange · mean 48
+`wurmspeaker` · midrange · mean 47
 
 - **Lands (22):** 20 Forest · 2 Tranquil Thicket
 - **Creatures (30):** 4 Llanowar Elves · 4 Birds of Paradise · 4 Wood Elves · 4 Seedborn Muse · 3 Gaean Wurm · 2 Pelakka Wurm · 3 Baru, Wurmspeaker · 2 Treetop Snarespinner · 2 The Emerald Keeper · 2 Rampaging Baloths
@@ -141,7 +141,7 @@ The most played: Lightning Bolt 7 · Vampire Nighthawk 6 · Counterspell 5 · Fl
 
 ## the Ford — Naya Lifegain (R W G)
 
-`ford` · midrange · mean 44
+`ford` · midrange · mean 42
 
 - **Lands (24):** 4 Plateau · 4 Savannah · 4 Taiga · 4 Sacred Foundry · 2 Temple Garden · 2 Plains · 2 Mountain · 2 Forest
 - **Creatures (22):** 4 Soul Warden · 4 The Fordkeeper · 4 Grazing Gladehart · 2 Lumen, the Hearth Fire · 4 Vitalist · 2 Flametongue Kavu · 2 Rage Cobra
@@ -154,7 +154,7 @@ The most played: Lightning Bolt 7 · Vampire Nighthawk 6 · Counterspell 5 · Fl
 
 ## the Enchantress — Selesnya Auras (G W)
 
-`enchantress` · aggro · mean 44
+`enchantress` · aggro · mean 42
 
 - **Lands (22):** 4 Savannah · 4 Temple Garden · 7 Forest · 6 Plains · 1 Shevelport
 - **Creatures (16):** 4 Gladecover Scout · 4 Blurred Mongoose · 4 Ovna, the Enchantress · 2 Timberland Guide · 2 The Emerald Keeper
@@ -167,7 +167,7 @@ The most played: Lightning Bolt 7 · Vampire Nighthawk 6 · Counterspell 5 · Fl
 
 ## the Levy — Orzhov Landfall (W B)
 
-`levy` · midrange · mean 53
+`levy` · midrange · mean 51
 
 - **Lands (24):** 4 Scrubland · 4 Godless Shrine · 5 Plains · 5 Swamp · 4 Evolving Wilds · 1 Thawing Glaciers · 1 Obsidian Observatory
 - **Creatures (15):** 4 Emeria Angel · 4 Dread Presence · 4 Soul Warden · 1 Vampire Nighthawk · 2 Isaura, the Levy
@@ -191,7 +191,7 @@ The most played: Lightning Bolt 7 · Vampire Nighthawk 6 · Counterspell 5 · Fl
 
 ## the Sweep — Jund Aristocrats (B R G)
 
-`sweep` · midrange · mean 50
+`sweep` · midrange · mean 48
 
 - **Lands (18):** 1 Cairnbrand · 4 Badlands · 4 Bayou · 4 Taiga · 1 Tallyflame Court · 1 Obsidian Observatory · 1 Shevelport · 1 Underground Sea · 1 Savannah
 - **Creatures (25):** 4 The Reaper · 3 Meliyan, the Torment · 4 Blood Artist · 4 Birds of Paradise · 4 Shocking Sharpshooter · 2 Seasoned Pyromancer · 2 Vampire Nighthawk · 2 Voracious Cobra
@@ -213,7 +213,7 @@ The most played: Lightning Bolt 7 · Vampire Nighthawk 6 · Counterspell 5 · Fl
 
 ## the Hearth — Mardu Aristocrats, the value build (W B R)
 
-`hearth` · midrange · mean 56
+`hearth` · midrange · mean 55
 
 - **Lands (21):** 1 Cairnbrand · 1 Obsidian Observatory · 4 Badlands · 4 Plateau · 4 Scrubland · 1 Sacred Foundry · 1 Godless Shrine · 1 Shevelport · 1 Tallyflame Court · 1 Tundra · 1 Savannah · 1 Blood Crypt
 - **Creatures (18):** 4 Lumen, the Hearth Fire · 4 Restoration Angel · 3 The Usher · 2 Drana, Kalastria Bloodchief · 1 The Jet Witch · 2 Vampire Nighthawk · 2 Soul Warden
@@ -224,7 +224,7 @@ The most played: Lightning Bolt 7 · Vampire Nighthawk 6 · Counterspell 5 · Fl
 
 ## the Pall — Usher Combo (B w r)
 
-`pall` · combo · mean 70
+`pall` · combo · mean 71
 
 - **Lands (21):** 1 Cairnbrand · 4 Badlands · 4 Scrubland · 4 Swamp · 4 Blood Crypt · 4 Godless Shrine
 - **Creatures (20):** 4 The Usher · 4 The Jet Witch · 4 Blood Artist · 4 Typhoid Rats · 4 Vampire Nighthawk
@@ -237,7 +237,7 @@ The most played: Lightning Bolt 7 · Vampire Nighthawk 6 · Counterspell 5 · Fl
 
 ## the Kiln — Izzet Spells (U R)
 
-`kiln` · midrange · mean 53
+`kiln` · midrange · mean 52
 
 - **Lands (19):** 1 Tallyflame Court · 4 Volcanic Island · 4 Steam Vents · 1 Library of Alexandria · 5 Mountain · 4 Island
 - **Creatures (21):** 3 Flametongue Kavu · 4 Tidewall · 3 Odile, the Tallyflame · 3 The Ruby Tyrant · 4 Guttersnipe · 4 Young Pyromancer
@@ -249,7 +249,7 @@ The most played: Lightning Bolt 7 · Vampire Nighthawk 6 · Counterspell 5 · Fl
 
 ## the Cinder — Mono-Red Burn (R)
 
-`cinder` · aggro · mean 39
+`cinder` · aggro · mean 44
 
 - **Lands (18):** 1 Cairnbrand · 4 Badlands · 1 Tallyflame Court · 4 Volcanic Island · 8 Mountain
 - **Creatures (16):** 4 Thundersnake · 4 The Ruby Tyrant · 4 Guttersnipe · 4 Raging Goblin
@@ -260,7 +260,7 @@ The most played: Lightning Bolt 7 · Vampire Nighthawk 6 · Counterspell 5 · Fl
 
 ## the Writ — Dimir Control (U B)
 
-`writ` · control · mean 52
+`writ` · control · mean 50
 
 - **Lands (20):** 1 Library of Alexandria · 1 Badlands · 1 Bayou · 1 Tallyflame Court · 1 Wrackroot · 4 Underground Sea · 4 Watery Grave · 3 Volcanic Island · 3 Tropical Island · 1 Cairnbrand
 - **Creatures (19):** 3 Arcane Collector · 3 Tidewall · 3 The Jet Witch · 4 Vampire Nighthawk · 4 Clio, Lady of the Depths · 1 Faerie Formation · 1 Drana, Kalastria Bloodchief

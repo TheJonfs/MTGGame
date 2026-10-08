@@ -1667,4 +1667,32 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(hater.graveyardHateGated(yard(["pelakka_wurm"]), crypt)).toBe(true);
     expect(hater.graveyardHateGated(yard(["angel_of_the_ruins"]), crypt)).toBe(false);
   });
+
+  it("book of shame 112 (S58 — from Chris's recorded Cinder: his burn went face at a median of 6 life, the pilot's at 17): an aggro deck holds its face burn too, until the opponent is at twelve or less or the spell is lethal — unless their list holds ten creatures or fewer; at a creature it is as before", () => {
+    const creatures = [{ cardId: "grizzly_bears", count: 20 }, { cardId: "forest", count: 20 }], few = [{ cardId: "serra_angel", count: 6 }, { cardId: "island", count: 34 }];
+    const agg = (opp: { cardId: string; count: number }[], off?: string[]) => new HeuristicAgent(1, pool, { ...difficultyProfile("master", "aggro", opp), ...(off ? { off } : {}) });
+    const v = (life: number) => mkView({ hand: [{ objectId: "h_b", cardId: "lightning_bolt" }], battlefield: [{ id: "m1", cardId: "mountain", controller: 0 }, { id: "g", cardId: "grizzly_bears", controller: 1 }], life: [20, life] });
+    const face = { type: "castSpell" as const, objectId: "h_b", targets: [{ kind: "player" as const, player: 1 as const }] }, bear = { type: "castSpell" as const, objectId: "h_b", targets: [{ kind: "object" as const, id: "g" }] };
+    expect(agg(creatures).faceBurnHoldGated(v(20), face)).toBe(true); // a healthy face: held
+    expect(agg(creatures).faceBurnHoldGated(v(13), face)).toBe(true);
+    expect(agg(creatures).faceBurnHoldGated(v(12), face)).toBe(false); // within reach
+    expect(agg(creatures).faceBurnHoldGated(v(3), face)).toBe(false); // lethal
+    expect(agg(creatures).faceBurnHoldGated(v(20), bear)).toBe(false); // removal is removal
+    expect(agg(few).faceBurnHoldGated(v(20), face)).toBe(false); // nothing else to aim it at: the face
+    expect(agg(creatures, ["faceburn"]).faceBurnHoldGated(v(20), face)).toBe(false); // the old pilot
+    expect(agent("midrange").faceBurnHoldGated(v(9), face)).toBe(true); // the others' reach is still eight
+  });
+
+  it("book of shame 113 (S58 — Chris: the Pall put itself in burn distance with the Jet Witch): against a list with eight or more burn spells, life is not paid for cards below ten — a combo deck digging or not; against any other list the floors are as they were", () => {
+    const burn = [{ cardId: "lightning_bolt", count: 4 }, { cardId: "shock", count: 4 }, { cardId: "char", count: 4 }, { cardId: "mountain", count: 20 }], fair = [{ cardId: "lightning_bolt", count: 4 }, { cardId: "grizzly_bears", count: 20 }, { cardId: "forest", count: 20 }];
+    const draw = { type: "activateAbility" as const, objectId: "w", abilityIndex: 0, targets: [] };
+    const v = (life: number) => mkView({ hand: [{ objectId: "h0", cardId: "swamp" }], battlefield: [{ id: "w", cardId: "the_jet_witch", controller: 0 }], life: [life, 20] });
+    const mk = (opp: { cardId: string; count: number }[], off?: string[]) => new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", opp), ...(off ? { off } : {}) });
+    expect(mk(burn).burnAcross()).toBe(12);
+    expect(mk(fair).burnAcross()).toBe(4);
+    expect(mk(burn).lifeForCardsGated(v(14), draw)).toBe(false); // 12 after paying: above the floor
+    expect(mk(burn).lifeForCardsGated(v(11), draw)).toBe(true); // 9 after paying: within burn's reach
+    expect(mk(fair).lifeForCardsGated(v(11), draw)).toBe(false); // no burn deck across: the S27 discipline alone
+    expect(mk(burn, ["burnfloor"]).lifeForCardsGated(v(11), draw)).toBe(false); // the old pilot
+  });
 });
