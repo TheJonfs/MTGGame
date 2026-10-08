@@ -13,7 +13,7 @@ Session 58 closed the revision round. The Open's lists now live entirely in code
 
 ## For the planner — the decisions waiting
 1. **Two of the six in/out pairs in the Locks' guide measured wrong** and are out of it (Deviation 2). The planner may want to re-author them.
-2. **Part 2: the recording works, and the first real diff is in** (the Writ's Umbel, its own section below). The Cinder's is still to come. The Writ's diff points at two pilot questions: Clio as a lock, and holding mana on its own turn.
+2. **Part 2 is delivered after all:** the recording works; the Writ's diff and the Cinder's are in (their own sections below). **The Cinder's produced a rule on trial worth +3 to +6 points for the four aggro lists — measured, not shipped; it needs a ruling.** The Writ's diff points at two pilot questions: Clio as a lock, and holding mana on its own turn.
 3. **S59, the campaign linkage:** my read of how it would be built is at the end of this handoff. One question in it needs a ruling before any code: how an invitation is earned.
 4. **The Sweep's fifteen** is still open (Chris's).
 
@@ -96,6 +96,49 @@ pall 70 · hearth 56 · coin 54 · levy 53 · kiln 53 · muster 52 · writ 52 ·
 - **The playouts did not separate the lines.** Every kind reads within error of zero (six playouts a side; Chris won all six games, so most positions were already winning). The count and the kind are the finding here, not the value. Losses, or closer games, are where the playouts will say something.
 - **Two tool fixes made on this first real file:** the pilot's own hand-tapped payment is read through to its cast (it had shown as "the pilot tapForMana" 33 times); a counterspell's target is named. The opponent's archetype is read from the recorded list.
 - No rule is written from this (ADR-167: this is the probe). The Cinder's diff is still to come.
+
+## After the session — the Cinder's play diff, and a rule on trial from it (Chris, 2026-10-08)
+
+Chris played the Cinder through a recorded Open (seed 227210): 3–2, tenth. By the file his losses were to the Coin (1–2) and the Kiln (0–2); he beat the Pall twice (2–1 each) and the Muster. Thirteen games, 7–6. The report is `docs/debug_logs/recorded_games/play-diff-cinder.md`.
+
+**The diff:** 671 decisions with a choice; the pilot differs at 347 (52%). Four in five of those are one thing: **Chris passes with burn in hand where the pilot casts it at once** (276 priority windows; 62 distinct holds of a card on a turn).
+
+| card held | holds | the pilot's aim: face / creature | Chris played it later that turn | on the next turn | on a later turn | never |
+|---|---|---|---|---|---|---|
+| Lightning Bolt | 19 | 16 / 3 | 6 | 5 | 8 | 0 |
+| Char | 13 | 12 / 1 | 4 | 4 | 5 | 0 |
+| The Ruby Tyrant's ability | 9 | 6 / 3 | 3 | 2 | 1 | 3 |
+| Shock | 6 | 3 / 3 | 3 | 1 | 2 | 0 |
+
+**Where the burn went** (Chris's thirteen games; the pilot on the same decks against the same lists, 130 games):
+
+| | Chris | the pilot |
+|---|---|---|
+| burn spells a game | 2.2 | 3.1 |
+| the opponent's life when burn went at the face (median) | **6** | **17** |
+| …at ten life or less | 73% | 24% |
+| …above fifteen | 20% | 60% |
+| cast on its own turn | 62% | 99% |
+| attackers declared a turn | 0.52 | 0.57 |
+
+- **Chris's burn is removal first and reach last; the pilot's is thrown at a healthy face on the first turns.** That is what book 88 stopped for every archetype but aggro ("its burn is reach, as before"). The exemption is the difference.
+- Chris also casts four in ten of his burn spells on the opponent's turn; the pilot almost never does.
+- The attack rate is the same. The S57 probe's "attacks little" is not where the gap is.
+- The playouts again read within error of zero for every kind (ten a side). The counts and the table above are the finding.
+
+**A rule on trial from it — measured, NOT shipped** (`profile.trial: ["faceburn12c"]`; `open:rr --trial faceburn12c --trial-for <list>`): an aggro deck holds face burn until the opponent is at twelve life or less (or the spell is lethal), unless the opponent's list holds ten creatures or fewer. Each list 1,500 games, paired with the table of record:
+
+| list | as piloted | with the rule | change |
+|---|---|---|---|
+| the Cinder | 39.6% | 45.7% | **+6.0 ± 1.9** |
+| the Tally | 43.2% | 48.4% | **+5.2 ± 1.9** |
+| the Warband | 49.9% | 53.5% | **+3.6 ± 1.5** |
+| the Muster | 52.3% | 55.5% | **+3.2 ± 1.2** |
+
+- Thresholds of eight and sixteen measured within a point of twelve.
+- Without the creature-count condition the Tally lost twenty points to the Locks (burn held against a deck with nothing to aim it at).
+- **Not shipped:** it is a pilot change for four lists, and it has had no ladder run and no book entry. It is one line to turn on. *The planner's and Chris's call.*
+- **This is the first rule to come out of a person's recorded play.** The path was: record, diff, read the commonest difference, measure a candidate on the lists it is for.
 
 ## Deviations from the brief
 1. **Part 2's report is not delivered.** The 8–0 file records seeds and results; a person's decisions cannot be recovered from it. I built the tool, the engine piece and the recording, and checked them on a stand-in. *The report follows when Chris has played recorded games.*

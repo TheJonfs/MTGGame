@@ -31,7 +31,7 @@ const name = (id: string | undefined) => (id ? pool.get(id)?.name ?? id : "?");
 const sameList = (a: { cardId: string; count: number }[], b: { cardId: string; count: number }[]) => { const k = (l: typeof a) => l.map((e) => `${e.cardId}:${e.count}`).sort().join(); return k(a) === k(b); };
 const archetypeOf = (deck: { cardId: string; count: number }[], fallback: string) => (Object.values(OPEN_DECKS).find((l) => sameList(l.decklist, deck))?.archetype ?? fallback) as "aggro" | "midrange" | "control" | "combo";
 
-export interface Divergence { game: number; index: number; turn: number; step: string; kind: string; human: string; pilot: string; value?: number; playouts?: number }
+export interface Divergence { game: number; index: number; turn: number; step: string; kind: string; human: string; pilot: string; value?: number; playouts?: number; /** a card the pilot would have played now, that the human held: its name, whose turn it was, and when the human did play it */ held?: { card: string; object: string; ours: boolean; aim: string; later: "this turn" | "their next turn" | "a later turn" | "never" } }
 
 async function diffGame(g: Saved, gi: number, out: Divergence[], counts: { decisions: number }): Promise<void> {
   const spec = g.spec, seat = (process.argv.includes("--seat") ? Number(arg("seat", "0")) : Math.max(0, spec.players.findIndex((p) => p.agent === "human"))) as 0 | 1, opp = (1 - seat) as 0 | 1;
@@ -44,6 +44,9 @@ async function diffGame(g: Saved, gi: number, out: Divergence[], counts: { decis
     return seat === 0 ? [a, b] : [b, a];
   };
   const entries = g.log.filter((e) => e.t === "ACTION") as { player: number; action: Action }[];
+  // where each logged decision stood (one replay of the whole game)
+  const at: { turn: number; active: number }[] = [];
+  await replayThenPlay(pool, decks, g.log, entries.length, null, agents(1, true), 1, rules, spec.modifiers ?? [], undefined, (_req, view, _a, cursor) => { at[cursor] = { turn: view.turn, active: view.activePlayer }; });
   const isTap = (a: Action) => a.type === "tapForMana" || a.type === "untapForMana";
   const ATT = new Set(["declareAttacker", "doneDeclaringAttackers"]), BLK = new Set(["declareBlocker", "doneDeclaringBlockers"]);
   for (let i = 0; i < entries.length; ) {
@@ -96,6 +99,13 @@ async function diffGame(g: Saved, gi: number, out: Divergence[], counts: { decis
     }
     if (kind) {
       const d: Divergence = { game: gi, index: i, turn: v.turn, step: v.step, kind, human: h, pilot: p };
+      // a play the pilot wanted now and the human did not make: when did the human make it, if ever?
+      if (!group && human.type === "pass" && (pilot.type === "castSpell" || pilot.type === "activateAbility")) {
+        const obj = (pilot as { objectId: string }).objectId, t = ((pilot as { targets?: { kind: string; player?: number }[] }).targets ?? [])[0];
+        const later = entries.findIndex((e, k) => k >= j && e.player === seat && e.action.type === pilot.type && (e.action as { objectId?: string }).objectId === obj);
+        const when = later < 0 || !at[later] ? "never" : at[later]!.turn === v.turn ? "this turn" : at[later]!.turn === v.turn + 1 ? "their next turn" : "a later turn";
+        d.held = { card: name(cardAt(pilot)), object: `${gi}:${obj}:${v.turn}`, ours: v.activePlayer === seat, aim: !t ? "" : t.kind === "player" ? "face" : "creature", later: when as never };
+      }
       if (K > 0) {
         let hw = 0, pw = 0;
         for (let k = 0; k < K; k++) {
@@ -122,6 +132,9 @@ async function main(): Promise<void> {
     else if (j.spec && Array.isArray(j.log)) games.push(j);
     else console.error(`play-diff: ${f} holds no recorded game (a Convocation export from before S58 records results only)`);
   }
+  // `--event <seed>`: only the games of that Convocation (a recording holds the newest thirty games, whatever the event)
+  const only = arg("event", "");
+  if (only) for (let i = games.length - 1; i >= 0; i--) if (String((games[i] as { eventSeed?: number }).eventSeed) !== only) games.splice(i, 1);
   if (!games.length) { console.log("No recorded games to read."); return; }
   const out: Divergence[] = [], counts = { decisions: 0 };
   for (const [gi, g] of games.entries()) { await diffGame(g, gi, out, counts); console.error(`game ${gi + 1} of ${games.length}: ${out.filter((d) => d.game === gi).length} divergences`); }
@@ -132,11 +145,25 @@ async function main(): Promise<void> {
   L.push("| kind of difference | times | a game | the human's line less the pilot's (played out by the pilot) |", "|---|---|---|---|");
   for (const [k, ds] of rows) L.push(`| ${k} | ${ds.length} | ${(ds.length / games.length).toFixed(1)} | ${val(ds)} |`);
   L.push(`| **all** | ${out.length} | ${(out.length / games.length).toFixed(1)} | ${val(out)} |`, "");
+  // the same, split by how the game ended for the human (a seat is the spec's "human" player, or --seat)
+  const lostGame = (gi: number) => { const g = games[gi]!, seat = Math.max(0, g.spec.players.findIndex((p) => p.agent === "human")); return g.result ? g.result.winner !== seat : false; };
+  const inLost = out.filter((d) => lostGame(d.game)), inWon = out.filter((d) => !lostGame(d.game));
+  L.push(`In the ${games.filter((_, i) => lostGame(i)).length} games the human LOST: ${inLost.length} differences, ${val(inLost)}. In the ${games.filter((_, i) => !lostGame(i)).length} won: ${inWon.length}, ${val(inWon)}.`, "");
+  L.push("Per game: " + games.map((g, i) => `${i + 1}. ${(g as { opponent?: string }).opponent ?? "?"} (${((g as { list?: string }).list ?? "").replace("open:", "")}, game ${(((g as { game?: number }).game ?? 0) + 1)}) ${lostGame(i) ? "lost" : "won"} — ${out.filter((d) => d.game === i).length} differences, ${val(out.filter((d) => d.game === i))}`).join("; ") + ".", "");
   for (const [k, ds] of rows.slice(0, 3)) {
     L.push(`## ${k} (${ds.length})`, "");
     const pairs = new Map<string, number>(); for (const d of ds) { const key = `the human ${d.human}; the pilot ${d.pilot}`; pairs.set(key, (pairs.get(key) ?? 0) + 1); }
     for (const [key, n] of [...pairs].sort((a, b) => b[1] - a[1]).slice(0, 8)) L.push(`- ${n}× ${key}`);
     L.push(`- by turn: ${[...new Set(ds.map((d) => d.turn))].sort((a, b) => a - b).map((t) => `t${t}:${ds.filter((d) => d.turn === t).length}`).join(" ")}`, "");
+  }
+  // The holds: one row a card held on a turn (a card held through six priority windows of a turn is one hold)
+  const holds = new Map<string, NonNullable<Divergence["held"]>>(); for (const d of out) if (d.held && !holds.has(d.held.object)) holds.set(d.held.object, d.held);
+  if (holds.size) {
+    const hs = [...holds.values()], cnt = (f: (h: NonNullable<Divergence["held"]>) => boolean) => hs.filter(f).length;
+    L.push(`## What the human held that the pilot would have played at once (${hs.length} holds: a card on a turn, however many windows it was held through)`, "");
+    L.push("| card | holds | on our turn / theirs | the pilot's aim: face / creature | played later that turn | on the next turn | on a later turn | never |", "|---|---|---|---|---|---|---|---|");
+    for (const c of [...new Set(hs.map((h) => h.card))].sort((a, b) => cnt((h) => h.card === b) - cnt((h) => h.card === a))) { const x = (f: (h: NonNullable<Divergence["held"]>) => boolean) => cnt((h) => h.card === c && f(h)); L.push(`| ${c} | ${x(() => true)} | ${x((h) => h.ours)} / ${x((h) => !h.ours)} | ${x((h) => h.aim === "face")} / ${x((h) => h.aim === "creature")} | ${x((h) => h.later === "this turn")} | ${x((h) => h.later === "their next turn")} | ${x((h) => h.later === "a later turn")} | ${x((h) => h.later === "never")} |`); }
+    L.push("");
   }
   const text = L.join("\n");
   console.log(text);

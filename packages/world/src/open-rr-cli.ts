@@ -17,6 +17,7 @@
  *   --no-guide / --guide-drop c1,c2   S58: a guided fifteen sideboarded by the rules instead, or by its guide without the rows that bring those cards in.
  *   --built-fifteen k1,k2   S58: those lists sideboard from the field builder's fifteen instead of their registered one.
  *   --out-rule none|dead,four,rule9   S57 (Part 4): which of the out-rule's parts run (sideboard-ai SideboardOutRule).
+ *   --trial rule[,rule] [--trial-for k1,k2]   S58 (ADR-167): a candidate rule switched ON for every seat or those lists (profile.trial).
  *   --off rule[,rule] [--off-for k1,k2]   S56: the OLD pilot — those S56 rules ("counter") switched off, for every
  *                seat or only for those lists. Run beside a plain run on the same seed: each game has its twin.
  *   --journeyman k1,k2   S54 (ADR-158's test): those lists are piloted by journeyman (every other seat master) — run
@@ -107,8 +108,9 @@ async function run(): Promise<void> {
   })() : OPEN_DECKS;
   const vs = arg("vs", "").split(",").filter(Boolean);
   const only = arg("only", ""), journeyman = new Set(arg("journeyman", "").split(",").filter(Boolean));
+  const trial = arg("trial", "").split(",").filter(Boolean), trialFor = new Set(arg("trial-for", "").split(",").filter(Boolean)); // S58: a rule on trial for those lists
   const off = arg("off", "").split(",").filter(Boolean), offFor = new Set(arg("off-for", "").split(",").filter(Boolean));
-  const profile = (d: (typeof OPEN_DECKS)[string], o: (typeof OPEN_DECKS)[string]) => ({ ...difficultyProfile(pilot(d.key), d.archetype, [...o.decklist], [...d.decklist]), ...(off.length && (offFor.size === 0 || offFor.has(d.key)) ? { off } : {}) });
+  const profile = (d: (typeof OPEN_DECKS)[string], o: (typeof OPEN_DECKS)[string]) => ({ ...difficultyProfile(pilot(d.key), d.archetype, [...o.decklist], [...d.decklist]), ...(off.length && (offFor.size === 0 || offFor.has(d.key)) ? { off } : {}), ...(trial.length && (trialFor.size === 0 || trialFor.has(d.key)) ? { trial } : {}) });
   const pilot = (key: string) => (journeyman.has(key) ? "journeyman" : "master");
   const pairs: [string, string][] = [];
   for (let i = 0; i < KEYS.length; i++) for (let j = i + 1; j < KEYS.length; j++) pairs.push([KEYS[i]!, KEYS[j]!]);

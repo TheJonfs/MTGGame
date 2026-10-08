@@ -131,6 +131,8 @@ export async function replayThenPlay(
   rules: GameRules = DEFAULT_RULES,
   modifiers: Modifier[] = [],
   onDecision?: (req: ActionRequest, view: GameView, action: Action, n: number) => void,
+  /** Each REPLAYED decision (before `index`), with its place in the log. */
+  onReplayed?: (req: ActionRequest, view: GameView, action: Action, cursor: number) => void,
 ): Promise<{ winner: 0 | 1 | null; reason: string; turns: number; life: [number, number]; played: { player: 0 | 1; action: Action }[] }> {
   const actionEntries = log.filter((e) => e.t === "ACTION");
   const rngEntries = log.filter((e) => e.t === "RNG").map((e) => ({ purpose: e.purpose as RngPurpose, value: e.value }));
@@ -144,6 +146,7 @@ export async function replayThenPlay(
       const entry = actionEntries[cursor];
       if (!entry) throw new Error(`replayThenPlay: the log ends at decision ${cursor}, before ${index}`);
       if (entry.player !== req.player) throw new Error(`replayThenPlay: divergence at decision ${cursor}`);
+      onReplayed?.(req, view, entry.action, cursor);
       cursor++;
       return entry.action;
     }

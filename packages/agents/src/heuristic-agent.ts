@@ -1896,7 +1896,14 @@ export class HeuristicAgent implements Agent {
    * closing), or the deck's plan is the race (the aggro archetype: its burn is reach, as before). A creature target,
    * a planeswalker-less board and our own face are other gates' business. Exposed for the book. */
   faceBurnHoldGated(view: GameView, action: Action): boolean {
-    if (action.type !== "castSpell" || this.profile.archetype === "aggro") return false;
+    // (S58, on trial — the play diff of Chris's Cinder: his burn went face at a median of 6 life, the pilot's at 17:
+    // `faceburn<N>` holds an AGGRO deck's burn too, until the opponent is at N or less)
+    const trial = this.profile.trial?.find((t) => t.startsWith("faceburn"));
+    if (action.type !== "castSpell" || (this.profile.archetype === "aggro" && !trial)) return false;
+    const reach = trial && this.profile.archetype === "aggro" ? parseInt(trial.slice(8), 10) || 8 : 8;
+    // (…and only against a list with creatures to spend it on: against ten or fewer the burn has no other use — the
+    // Tally lost twenty points to the Locks holding it)
+    if (trial && this.profile.archetype === "aggro" && trial.endsWith("c") && this.profile.opponentDecklist.reduce((n, e) => n + (this.def(e.cardId)?.types.includes("Creature") ? e.count : 0), 0) <= 10) return false;
     const me = view.you, opp = (1 - me) as 0 | 1;
     const card = view.hand.find((c) => c.objectId === action.objectId);
     const d = card ? this.def(card.cardId) : undefined;
@@ -1906,7 +1913,7 @@ export class HeuristicAgent implements Agent {
     if (dmg <= 0 || !((d.targets ?? []) as { predicate?: string }[]).some((t) => t.predicate === "anyTarget")) return false;
     const targets = (action as { targets?: ResolvedTarget[] }).targets ?? [];
     if (!targets.some((t) => t.kind === "player" && t.player === opp)) return false;
-    return view.life[opp] > dmg && view.life[opp] > 8;
+    return view.life[opp] > dmg && view.life[opp] > reach;
   }
 
   /** Post-S43 (Chris: the Pearl Cleric and Faerie Formation "exhaust mana as soon as it untaps", before the draw and

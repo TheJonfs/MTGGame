@@ -36,6 +36,8 @@ export interface AiProfile {
   /** S56: rules switched OFF for this seat, by name ("counter") — the old pilot beside the new one, paired by
    * seed, is how a rule is measured (open:rr --off, counter-probe --off). Never set in play. */
   off?: string[];
+  /** S58 (ADR-167): rules ON TRIAL for this seat, by name — a candidate measured beside the pilot before it ships (open:rr --trial). Never set in play. */
+  trial?: string[];
 }
 
 /** S11 (ADR-060.3): every evaluator constant the weight search may move,
