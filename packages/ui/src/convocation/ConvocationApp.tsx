@@ -115,6 +115,11 @@ function Door({ c }: { c: ConvocationController }) {
           <a href="/" style={{ marginLeft: "auto", fontSize: 12 }}>⟵ the menu</a>
         </div>
       )}
+      {c.recordedGames().length > 0 && (
+        <div style={{ marginTop: 14, fontSize: 12.5 }}>
+          <button className="linkish" title="your last games in this browser — each one's decks and every move — as one file: what `pnpm play-diff` reads to compare your play with the AI's" onClick={() => { const games = c.recordedGames(), b = new Blob([JSON.stringify({ format: "shandalar-games-v1", games })], { type: "application/json" }), a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = `convocation-games-${games.length}.json`; a.click(); URL.revokeObjectURL(a.href); }}>download my recorded games ({c.recordedGames().length})</button>
+        </div>
+      )}
       {ledger.length > 0 && (
         <div style={{ marginTop: 18 }}>
           <div className="flyout-title">The ledger {ledger.some((l) => l.stages) && <button className="linkish" style={{ fontSize: 12, marginLeft: 8 }} onClick={() => c.toTrophies()}>the trophy room</button>}</div>

@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
 import { loadCatalog } from "@shandalar/world/loader";
-import { EVENT_SAVE_KEY, LEDGER_KEY, OPEN_MEANS, type ConvocationPackData } from "@shandalar/world";
+import { EVENT_SAVE_KEY, GAMES_KEY, LEDGER_KEY, OPEN_MEANS, type ConvocationPackData } from "@shandalar/world";
 import { ConvocationController } from "./convocation-controller.js";
 import { SAVE_KEY, WorldController } from "../world/world-controller.js";
 
@@ -80,6 +80,14 @@ describe("the Convocation controller (S48)", () => {
     c.match!.autoWin(); await tick(20);
     expect(c.screen.kind).toBe("between");
     expect(c.series!.wins).toEqual([1, 0]);
+    // S58 (Part 2): the game is RECORDED under its own key — its spec and its moves (actions and randomness only), with whom it was against
+    const rec = c.recordedGames();
+    expect(rec).toHaveLength(1);
+    expect(rec[0]).toMatchObject({ format: "shandalar-log-v1", eventSeed: 48, round: 1, game: 0 });
+    expect((rec[0]!.spec as { players: { agent: string }[] }).players[0]!.agent).toBe("human");
+    expect((rec[0]!.log as { t: string }[]).every((x) => x.t === "ACTION" || x.t === "RNG")).toBe(true);
+    expect(JSON.parse(s.getItem(GAMES_KEY)!)).toHaveLength(1);
+    expect(s.getItem(EVENT_SAVE_KEY)!.includes('"log"')).toBe(false); // never in the event's save
     // a reload: a new controller over the same storage stands between games, one game in
     const again = new ConvocationController(pool, packs, rating, catalog, s);
     expect(again.hasSave()).toBe(true);

@@ -7,7 +7,9 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadCardPool } from "@shandalar/cards/loader";
-import { buildLoop, parseOpenLists } from "@shandalar/sim/open-lists";
+import { buildLoop, seedLists, OPEN_AMENDMENTS, OPEN_REVISIONS, type OpenSeed } from "@shandalar/sim/open-lists";
+import { renderOpenListsReference } from "./open-reference.js";
+import { OPEN_MEANS } from "./constructed-builder.js";
 import { checkDeck } from "./legality.js";
 import { OPEN_FORMAT } from "./formats.js";
 import type { ComboPlan } from "@shandalar/agents";
@@ -15,14 +17,22 @@ import type { ComboPlan } from "@shandalar/agents";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const pool = loadCardPool(join(ROOT, "data/cards")).cards;
 const idOf = new Map([...pool.values()].map((d) => [d.name, d.id]));
-const lists = parseOpenLists(readFileSync(join(ROOT, "docs/convocation/convocation-open-lists-draft-2.md"), "utf8"), (n) => idOf.get(n));
+// S58 (ADR-169): the seeds are data; the planner's document they came from is history
+const lists = seedLists((JSON.parse(readFileSync(join(ROOT, "data/convocation/open-seeds.json"), "utf8")) as { seeds: OpenSeed[] }).seeds, (n) => idOf.get(n));
 if (lists.length !== 11) throw new Error(`open:gen — the document has ${lists.length} lists; the Open's seed is eleven`);
 lists.push(buildLoop(lists.find((l) => l.key === "coin")!, (n) => idOf.get(n)));
 // Post-S53 (Chris): the lists contributed from play (data/convocation/open-contributed.json), after the twelve
-const contributedFile = JSON.parse(readFileSync(join(ROOT, "data/convocation/open-contributed.json"), "utf8")) as { archived?: Record<string, string>; plans?: Record<string, Omit<ComboPlan, "key">> };
+const contributedFile = JSON.parse(readFileSync(join(ROOT, "data/convocation/open-contributed.json"), "utf8")) as { archived?: Record<string, string>; plans?: Record<string, Omit<ComboPlan, "key">>; sideboards?: Record<string, { cardId: string; count: number }[]>; guides?: Record<string, { in: string; n: number; out?: string[]; when: string[]; unless?: string[] }[]> };
 // S56 (ADR-164): the archive — a list by key (a seed list or a contributed one) with the reason; it stays in the data
 const archived = contributedFile.archived ?? {};
 const contributed = (JSON.parse(readFileSync(join(ROOT, "data/convocation/open-contributed.json"), "utf8")) as { lists: { key: string; name: string; title: string; archetype: "aggro" | "midrange" | "control" | "combo"; decklist: { cardId: string; count: number }[]; sideboard?: { cardId: string; count: number }[]; plan?: Omit<ComboPlan, "key"> }[] }).lists;
+/** A registered fifteen: fifteen cards at most, and within the copy cap over the seventy-five. Null when it passes. */
+function checkSideboardList(deck: { cardId: string; count: number }[], side: { cardId: string; count: number }[], rule: typeof OPEN_FORMAT.rule, cards: typeof pool): string | null {
+  const n = side.reduce((a, e) => a + e.count, 0); if (n > 15) return `${n} cards`;
+  const both = [...deck, ...side.filter((e) => !["plains", "island", "swamp", "mountain", "forest"].includes(e.cardId))];
+  const c = checkDeck(both, null, { ...rule, minCards: 0 } as typeof rule, cards);
+  return c.ok ? null : c.problems.join("; ");
+}
 const plans: ComboPlan[] = [];
 /** Every card a plan names is a card of the pool and of its list; a `once` plan names its pieces. */
 function checkPlan(key: string, plan: Omit<ComboPlan, "key">, decklist: { cardId: string; count: number }[]): void {
@@ -36,6 +46,12 @@ for (const [key, plan] of Object.entries(contributedFile.plans ?? {})) {
   checkPlan(key, plan, l.decklist);
   (l as { archetype: string }).archetype = "combo";
   plans.push({ key, ...plan });
+}
+// S58 (Part 1): a registered fifteen for a SEED list (the Locks)
+for (const [key, side] of Object.entries(contributedFile.sideboards ?? {})) {
+  const l = lists.find((x) => x.key === key); if (!l) throw new Error(`open:gen — a sideboard names the list ${key}, which is not a seed list`);
+  for (const e of side) if (!pool.has(e.cardId)) throw new Error(`open:gen — ${key}'s sideboard names ${e.cardId}, not in the pool`);
+  l.sideboard = side.map((e) => ({ ...e }));
 }
 for (const c of contributed) {
   if (lists.some((l) => l.key === c.key)) throw new Error(`open:gen — a contributed list reuses the key ${c.key}`);
@@ -53,6 +69,7 @@ for (const k of Object.keys(archived)) if (!lists.some((l) => l.key === k)) thro
 for (const l of lists) {
   const n = l.decklist.reduce((s, e) => s + e.count, 0);
   if (n !== 60) throw new Error(`open:gen — ${l.key} has ${n} cards`);
+  if (l.sideboard) { const sc = checkSideboardList(l.decklist, l.sideboard, OPEN_FORMAT.rule, pool); if (sc) throw new Error(`open:gen — ${l.key}'s fifteen: ${sc}`); }
   const c = checkDeck(l.decklist, null, OPEN_FORMAT.rule, pool);
   if (!c.ok) throw new Error(`open:gen — ${l.key} fails the Open: ${c.problems.join("; ")}`);
 }
@@ -63,7 +80,7 @@ import type { ComboPlan } from "./plans.js";
 /** S55 (ADR-161): the plans authored with the Open's combo lists. */
 export const PLANS: readonly ComboPlan[] = ${JSON.stringify(plans, null, 2)};
 `);
-writeFileSync(join(ROOT, "packages/sim/src/open-decks.ts"), `// GENERATED by \`pnpm open:gen\` from docs/convocation/convocation-open-lists-draft-2.md + the S46 amendments + data/convocation/open-contributed.json — do not edit by hand.
+writeFileSync(join(ROOT, "packages/sim/src/open-decks.ts"), `// GENERATED by \`pnpm open:gen\` from data/convocation/open-seeds.json + the revisions in open-lists.ts + data/convocation/open-contributed.json — do not edit by hand.
 import type { OpenList, OpenDecklist } from "./open-lists.js";
 
 const d = (pairs: [string, number][]): OpenDecklist => pairs.map(([cardId, count]) => ({ cardId, count }));
@@ -78,4 +95,23 @@ export const OPEN_FIELD: Record<string, OpenList> = Object.fromEntries(Object.en
 `);
 mkdirSync(join(ROOT, "analysis/decks"), { recursive: true });
 for (const l of lists) writeFileSync(join(ROOT, `analysis/decks/open-${l.key}.json`), JSON.stringify({ name: `open-${l.key} (${l.name})`, archetype: l.archetype, decklist: l.decklist, basedOn: "docs/convocation/convocation-open-lists-draft-2.md + S46", notes: l.title }, null, 2) + "\n");
+// S58 (Part 1): the guides authored beside a registered fifteen
+const SHAPES = ["creatureDeck", "fewLarge", "control", "plan", "counters", "graveyard", "relics"];
+const guides = Object.entries(contributedFile.guides ?? {}).map(([key, rows]) => {
+  const l = lists.find((x) => x.key === key); if (!l?.sideboard) throw new Error(`open:gen — a guide names ${key}, which has no registered fifteen`);
+  for (const r of rows) {
+    if (!l.sideboard.some((e) => e.cardId === r.in)) throw new Error(`open:gen — ${key}'s guide brings in ${r.in}, which its fifteen does not hold`);
+    for (const o of r.out ?? []) if (!l.decklist.some((e) => e.cardId === o)) throw new Error(`open:gen — ${key}'s guide takes out ${o}, which its sixty does not hold`);
+    for (const w of [...r.when, ...(r.unless ?? [])]) if (!SHAPES.includes(w)) throw new Error(`open:gen — ${key}'s guide: no shape ${w}`);
+  }
+  return { key, fifteen: l.sideboard, rows };
+});
+writeFileSync(join(ROOT, "packages/world/src/sideboard-guides.generated.ts"), `// GENERATED by \`pnpm open:gen\` from the guides in data/convocation/open-contributed.json — do not edit by hand.
+import type { SideboardGuide } from "./sideboard-ai.js";
+
+/** S58 (Part 1): the guides authored with the Open's registered fifteens. */
+export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = ${JSON.stringify(guides, null, 1)};
+`);
+for (const l of lists) if (archived[l.key]) (l as { archived?: true }).archived = true;
+writeFileSync(join(ROOT, "docs/reference/open-lists.md"), renderOpenListsReference({ lists, cards: pool, plans, archived, means: OPEN_MEANS, amendments: OPEN_AMENDMENTS, revisions: OPEN_REVISIONS, contributed: Object.fromEntries(contributed.map((c) => [c.key, c as { source?: string; revisions?: { session: string; note: string }[] }])) }, OPEN_FORMAT.rule.restricted ?? []) + "\n");
 console.log(`open:gen — ${lists.length} lists, each 60 and legal in the Open: ${lists.map((l) => l.key + (archived[l.key] ? " (archived)" : "")).join(", ")}`);

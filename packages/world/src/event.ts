@@ -779,6 +779,9 @@ export function ledgerEntry(event: ConvocationEvent, when: string): ConvocationL
 
 export const EVENT_SAVE_KEY = "shandalar-convocation";
 export const LEDGER_KEY = "shandalar-convocation-ledger";
+/** S58 (Part 2): the player's own recorded games — each game's spec and its moves, for `pnpm play-diff`. Its own key (never in the event save: localStorage is ~5 MB), capped at GAMES_KEPT. */
+export const GAMES_KEY = "shandalar-convocation-games";
+export const GAMES_KEPT = 30;
 /** S53: the save is `convocation-event-v2` (the stage list, the stage, the pods, the human's per-stage pools and
  * decks); a `convocation-event-v1` save loads as an event without stages. */
 export function serializeEvent(event: ConvocationEvent): string { return JSON.stringify({ format: "convocation-event-v2", event: { ...event, version: EVENT_SAVE_VERSION } }); }

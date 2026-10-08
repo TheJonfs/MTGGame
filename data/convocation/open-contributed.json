@@ -75,6 +75,98 @@
    }
   }
  },
+ "sideboards": {
+  "locks": [
+   {
+    "cardId": "essence_scatter",
+    "count": 3
+   },
+   {
+    "cardId": "protocol",
+    "count": 2
+   },
+   {
+    "cardId": "serra_angel",
+    "count": 2
+   },
+   {
+    "cardId": "duress",
+    "count": 2
+   },
+   {
+    "cardId": "tormods_crypt",
+    "count": 2
+   },
+   {
+    "cardId": "faerie_macabre",
+    "count": 2
+   },
+   {
+    "cardId": "disenchant",
+    "count": 2
+   }
+  ]
+ },
+ "guides": {
+  "locks": [
+   {
+    "in": "protocol",
+    "n": 2,
+    "out": [
+     "wrath_of_god"
+    ],
+    "when": [
+     "fewLarge"
+    ]
+   },
+   {
+    "in": "serra_angel",
+    "n": 2,
+    "out": [
+     "undermine",
+     "absorb",
+     "counterspell"
+    ],
+    "when": [
+     "control"
+    ]
+   },
+   {
+    "in": "duress",
+    "n": 2,
+    "out": [
+     "wrath_of_god",
+     "swords_to_plowshares"
+    ],
+    "when": [
+     "plan",
+     "control"
+    ]
+   },
+   {
+    "in": "tormods_crypt",
+    "n": 2,
+    "out": [
+     "serra_angel",
+     "vindicate"
+    ],
+    "when": [
+     "graveyard"
+    ]
+   },
+   {
+    "in": "faerie_macabre",
+    "n": 2,
+    "out": [
+     "serra_angel",
+     "vindicate"
+    ],
+    "when": [
+     "graveyard"
+    ]
+   }
+  ]
+ },
  "lists": [
   {
    "key": "sweep",
@@ -547,7 +639,7 @@
      "count": 4
     },
     {
-     "cardId": "barren_moor",
+     "cardId": "swamp",
      "count": 4
     },
     {
@@ -647,7 +739,13 @@
      "graveyardExile": true,
      "discardBeforeTurn": 3
     }
-   }
+   },
+   "revisions": [
+    {
+     "session": "S58",
+     "note": "4 Barren Moor → 4 Swamp (adopted under ADR-168: +2.1 ± 1.3 against the field; the list as Chris played it held the Moors)"
+    }
+   ]
   },
   {
    "key": "kiln",
@@ -876,7 +974,13 @@
       "count": 2
      }
     ]
-   }
+   },
+   "revisions": [
+    {
+     "session": "post-S55",
+     "note": "tuned for the AI's hands (Chris, 2026-10-06): −2 Experimental Overload −2 Blaze −3 Arcane Collector → +4 Control Magic +3 Flametongue Kavu (46.8% → 57.7% against the sixteen); the list as played is kept under `registered`"
+    }
+   ]
   },
   {
    "key": "cinder",
@@ -985,5 +1089,6 @@
     }
    ]
   }
- ]
+ ],
+ "_guides_note": "S58: a guide's rows are the author's swaps that MEASURED (open:rr --sideboarded-only <list> --guide-drop …). The Locks' planner's guide also had Essence Scatter for Absorb against creature decks (−17 against the Enchantress, −11 the Ford: Absorb's life and its reach beyond creatures were worth more) and Disenchant for the Serras (−12 the Muster and the Enchantress); both rows are out and the rules bring those cards in where they apply."
 }

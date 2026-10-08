@@ -6,7 +6,7 @@ import { loadCardPool } from "@shandalar/cards/loader";
 import { OPEN_DECKS, OPEN_FIELD } from "@shandalar/sim/open-decks";
 import { OPEN_FORMAT } from "./formats.js";
 import { buildSideboard, SIDEBOARD_SIZE } from "./constructed-builder.js";
-import { AI_SIDEBOARD, AI_SIDEBOARD_CONSTRUCTED, aiSideboard, answersCreatures, answersGraveyards, answersRelics, blocksFliers, isCounter, isCreatureCounter, isSweeper, isWall, stealsCreatures } from "./sideboard-ai.js";
+import { AI_SIDEBOARD, AI_SIDEBOARD_CONSTRUCTED, guideFor, aiSideboard, answersCreatures, answersGraveyards, answersRelics, blocksFliers, isCounter, isCreatureCounter, isSweeper, isWall, stealsCreatures } from "./sideboard-ai.js";
 import type { CardRatingTable } from "./rating.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
@@ -48,7 +48,8 @@ describe("broader sideboarding (S56)", () => {
 
   it("each shape comes in against the list it is for, and not otherwise", () => {
     // a steal against prizes (the Larder's fatties), none against the Tally
-    expect(ins("locks", "larder", "steal").map((s) => stealsCreatures(d(s.in)))).toEqual([true, true]); // (S57: the Locks main their Control Magics now; the fifteen's steal is Protocol)
+    expect(ins("depths", "larder", "steal").length).toBeGreaterThan(0); // (S58: the Locks have a guided fifteen now; the Depths' is the builder's)
+    expect(ins("depths", "larder", "steal").every((s) => stealsCreatures(d(s.in)))).toBe(true);
     expect(ins("locks", "tally", "steal")).toEqual([]);
     // creature counters against twenty creatures, for a general counter and never the reverse; not against the Tally
     for (const s of ins("locks", "muster", "creatureCounters")) { expect(isCreatureCounter(d(s.in))).toBe(true); expect(isCounter(d(s.out)) && !isCreatureCounter(d(s.out))).toBe(true); }
@@ -95,5 +96,25 @@ describe("broader sideboarding (S56)", () => {
     expect(run({ deadFirst: true })).toEqual(["doom_blade", "doom_blade"]); // four creatures across: the Doom Blades are dead
     expect(run()).not.toContain("doom_blade");
     expect(run({ keepFourOfs: true })).not.toContain("grizzly_bears");
+  });
+
+  it("S58 (Part 1) — a registered fifteen with a GUIDE: the Locks make their author's swaps first (the hate for the Serras and the Vindicates against the Pall, Duress for Wraths against a plan or a control deck, the Serras for counters against control), what the guide brought in does not leave, the rules then run on the rest; a seat with another fifteen is not guided", () => {
+    const locks = OPEN_DECKS.locks!;
+    expect(locks.sideboard).toBeDefined();
+    expect(guideFor(locks.sideboard!)?.key).toBe("locks");
+    expect(guideFor(buildSideboard(locks.decklist, OPEN_FORMAT, rating, cards, answersRelics, answersCreatures))).toBeUndefined();
+    const vs = (them: string, terms = AI_SIDEBOARD_CONSTRUCTED) => aiSideboard(locks.decklist, [...locks.sideboard!], OPEN_DECKS[them]!.decklist, cards, rating, terms);
+    const g = (them: string) => vs(them).swaps.filter((s) => s.rule === "guide").map((s) => `${s.in}<${s.out}`);
+    expect(g("pall")).toEqual(["duress<wrath_of_god", "duress<wrath_of_god", "tormods_crypt<serra_angel", "tormods_crypt<serra_angel", "faerie_macabre<vindicate", "faerie_macabre<vindicate"]);
+    expect(g("depths")).toEqual(["serra_angel<undermine", "serra_angel<undermine", "duress<wrath_of_god", "duress<wrath_of_god"]);
+    expect(g("muster")).toEqual([]); // a weenie deck: nothing of the guide's — the rules alone
+    for (const them of Object.keys(OPEN_FIELD)) {
+      if (them === "locks") continue;
+      const sb = vs(them), ins = new Set(sb.swaps.filter((s) => s.rule === "guide").map((s) => s.in));
+      expect(sb.deck.reduce((n, e) => n + e.count, 0), them).toBe(60);
+      expect(sb.sideboard.reduce((n, e) => n + e.count, 0), them).toBe(15);
+      for (const s of sb.swaps) if (s.rule !== "guide") expect(ins.has(s.out), `${them}: ${s.out} left again`).toBe(false);
+    }
+    expect(vs("pall", { ...AI_SIDEBOARD_CONSTRUCTED, noGuide: true }).swaps.some((s) => s.rule === "guide")).toBe(false);
   });
 });

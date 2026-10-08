@@ -1,26 +1,11 @@
 /**
- * S46 (ADR-142/143): the Open's seed lists — parsed from the planner's document (`docs/convocation/
- * convocation-open-lists-draft-2.md`, left untouched), with the S46 brief's amendments and the twelfth list (the Loop)
- * applied from the declared table below. `pnpm open:gen` writes `open-decks.ts` (the committed source of truth) and the
- * Lab's `analysis/decks/open-*.json`; `open-lists.test.ts` pins the two together.
+ * The Open's seed lists. S58 (ADR-169): THE LISTS LIVE IN CODE — the eleven as the planner first wrote them are data
+ * (`data/convocation/open-seeds.json`, by card name; the planner's document they came from is history), and every
+ * change since is a REVISION below, by session. `pnpm open:gen` builds `open-decks.ts` and the generated reference
+ * `docs/reference/open-lists.md`; tests pin both.
  */
 export type OpenDecklist = { cardId: string; count: number }[];
 export interface OpenList { key: string; name: string; title: string; archetype: "aggro" | "midrange" | "control" | "combo"; decklist: OpenDecklist; /** S55: a contributed list's registered fifteen */ sideboard?: OpenDecklist; /** S56 (ADR-164): kept in the data with its plan and its history; out of the field, the round-robin and the retire count */ archived?: true }
-
-/** The document's section title (before the em dash) → the list's key, its nickname and the AI's archetype. */
-export const OPEN_KEYS: Record<string, { key: string; archetype: "aggro" | "midrange" | "control" }> = {
-  "Mardu Aristocrats (W B R)": { key: "coin", archetype: "midrange" },
-  "Simic Mill (U G)": { key: "undertow", archetype: "control" },
-  "Four-Colour Reanimator (W U B G)": { key: "larder", archetype: "midrange" },
-  "Boros Weenie (W R)": { key: "muster", archetype: "aggro" },
-  "Boros Goblins (R w)": { key: "warband", archetype: "aggro" },
-  "Izzet Sparks (U R)": { key: "tally", archetype: "aggro" },
-  "Esper Control (W U B)": { key: "locks", archetype: "control" },
-  "Mono-Green Ramp": { key: "wurmspeaker", archetype: "midrange" },
-  "Naya Lifegain (R W G)": { key: "ford", archetype: "midrange" },
-  "Selesnya Auras (G W)": { key: "enchantress", archetype: "aggro" },
-  "Orzhov Landfall (W B)": { key: "levy", archetype: "midrange" },
-};
 
 /** The S46 brief's Part 2 amendments (by list key, card NAME → delta), then the Loop (Chris's kickoff: Mardu only). */
 export const OPEN_AMENDMENTS: Record<string, Record<string, number>> = {
@@ -39,51 +24,46 @@ export const OPEN_AMENDMENTS: Record<string, Record<string, number>> = {
   ford: { "Wood Elves": -2, "Char": -2, "Vitalist": 4 },
   muster: { "Sacred Helix": -2, "Vitalist": 2 },
 };
-/** S57 (the revision round): the swaps adopted against the round-robin of record (pilot 108) — each gained two
- * points clear of its error against the field, 1,500 games paired by seed (`open:rr --swap`; the numbers are in
- * docs/decision-updates/s57.md). Applied after the S46 amendments, by card NAME → delta. */
-export const OPEN_REVISIONS_S57: Record<string, Record<string, number>> = {
-  locks: { "Tidewall": -2, "Ponder": -2, "Control Magic": 4 }, // +11.0 ± 2.2
-  // +8.9 ± 1.8 for the Control Magics. Then (Chris, 2026-10-07, after the round: "the 'and friends' part needs some help", and
-  // help against the graveyard decks) the Nighthawks for Zinnia with the Forests to Swamps, and two Faerie Macabres
-  // main for the Temporal Springs: +6.0 ± 2.3 on the S57 table (36.2 → 42.2; the Pall +13, the Larder +14, no matchup lost).
-  // The list no longer holds green — or its namesake.
-  undertow: { "Boomerang": -3, "Control Magic": 3, "Zinnia, the Undertow": -3, "Vampire Nighthawk": 3, "Temporal Spring": -2, "Faerie Macabre": 2, "Forest": -2, "Swamp": 2 },
-  tally: { "Arc Mage": -2, "Abrade": -2, "Flametongue Kavu": 4 }, // +13.0 ± 2.0
-  muster: { "Vitalist": -2, "Suntail Hawk": -2, "Flametongue Kavu": 4 }, // +10.0 ± 1.9
-  ford: { "Savage Twister": -2, "Restoration Angel": -2, "Flametongue Kavu": 2, "Rage Cobra": 2 }, // +5.1 ± 1.8
-  warband: { "Boggart Brute": -2, "Restoration Angel": -1, "Flametongue Kavu": 2, "Lumen, the Hearth Fire": 1 }, // +3.9 ± 1.5
-};
+/** The revisions since S46, in order — each a session's adopted swaps by list key (card NAME → delta), with the
+ * measure that adopted it. S57's bar was the gain less its 95% error ≥ 2; from S58 (ADR-168) the estimate ≥ +2 with a
+ * positive lower bound. The numbers' detail is in docs/decision-updates/. */
+export interface OpenRevision { session: string; note: string; lists: Record<string, Record<string, number>>; why?: Record<string, string> }
+export const OPEN_REVISIONS: OpenRevision[] = [
+  { session: "S57", note: "the revision round: each swap gained two points clear of its error against the field (1,500 games, paired by seed)", lists: {
+  locks: { "Tidewall": -2, "Ponder": -2, "Control Magic": 4 },
+  undertow: { "Boomerang": -3, "Control Magic": 3 },
+  tally: { "Arc Mage": -2, "Abrade": -2, "Flametongue Kavu": 4 },
+  muster: { "Vitalist": -2, "Suntail Hawk": -2, "Flametongue Kavu": 4 },
+  ford: { "Savage Twister": -2, "Restoration Angel": -2, "Flametongue Kavu": 2, "Rage Cobra": 2 },
+  warband: { "Boggart Brute": -2, "Restoration Angel": -1, "Flametongue Kavu": 2, "Lumen, the Hearth Fire": 1 },
+  }, why: { locks: "+11.0 ± 2.2", undertow: "+8.9 ± 1.8", tally: "+13.0 ± 2.0", muster: "+10.0 ± 1.9", ford: "+5.1 ± 1.8", warband: "+3.9 ± 1.5" } },
+  // (Chris, 2026-10-07: "the 'and friends' part needs some help", and help against the graveyard decks. The list no
+  // longer holds green — or Zinnia, its namesake: S58 retitles it Dimir Mill.)
+  { session: "post-S57", note: "Chris, 2026-10-07: the Undertow's fliers and its answer to graveyards", lists: {
+    undertow: { "Zinnia, the Undertow": -3, "Vampire Nighthawk": 3, "Temporal Spring": -2, "Faerie Macabre": 2, "Forest": -2, "Swamp": 2 },
+  }, why: { undertow: "+6.0 ± 2.3 (the Pall +13, the Larder +14, no matchup lost)" } },
+  { session: "S58", note: "adopted under ADR-168 from S57's near-misses", lists: {
+    tally: { "Blaze": -2, "Control Magic": 2 },
+    enchantress: { "Glare of Subdual": -1, "Pacifism": 1 },
+  }, why: { tally: "+3.2 ± 1.5 (and +3.1 ± 1.5 on the Kavus)", enchantress: "+1.9 ± 0.7 pooled over two seeds (the brief's Giant Growth left in S46; the Glare is the slot measured)" } },
+];
+/** S58 (Part 0): a list's title where the planner's first one no longer describes it. */
+export const OPEN_TITLES: Record<string, string> = { undertow: "Dimir Mill (U B)" };
 /** The twelfth list (S46 brief; Chris: in Mardu's colours only) — the Usher's Coin −3 Vampire Nighthawk (the Coin runs
  * three) −2 Meliyan −1 Sacred Helix → +4 Restoration Angel +2 Altar of Dementia; the Coin's lands unchanged. */
 export const LOOP_FROM_COIN: Record<string, number> = { "Vampire Nighthawk": -3, "Meliyan, the Torment": -2, "Sacred Helix": -1, "Restoration Angel": 4, "Altar of Dementia": 2 };
 
-/** Parse the document's eleven fenced lists; resolve names through `idOf` (throws on an unknown name). */
-export function parseOpenLists(doc: string, idOf: (name: string) => string | undefined): OpenList[] {
-  const out: OpenList[] = [];
-  const re = /## \d+\. ([^\n]+)\n```\n([\s\S]*?)```/g;
-  for (let m = re.exec(doc); m; m = re.exec(doc)) {
-    const heading = m[1]!;
-    const [head, nick] = heading.split(" — ").map((x) => x.trim());
-    const meta = OPEN_KEYS[head!];
-    if (!meta) throw new Error(`open lists: no key for "${head}"`);
-    const byName = new Map<string, number>();
-    for (const line of m[2]!.split("\n")) {
-      const colon = line.indexOf(":");
-      if (colon < 0) continue;
-      for (const raw of line.slice(colon + 1).split("·")) {
-        const part = raw.replace("(r)", "").trim();
-        if (!part) continue;
-        const mm = /^(\d+)\s+(.*)$/.exec(part);
-        const [n, name] = mm ? [Number(mm[1]), mm[2]!.trim()] : [1, part];
-        byName.set(name, (byName.get(name) ?? 0) + n);
-      }
-    }
-    for (const [name, d] of Object.entries(OPEN_AMENDMENTS[meta.key] ?? {})) byName.set(name, (byName.get(name) ?? 0) + d);
-    for (const [name, d] of Object.entries(OPEN_REVISIONS_S57[meta.key] ?? {})) { const n = (byName.get(name) ?? 0) + d; if (n < 0) throw new Error(`open lists: the S57 revision cuts more ${name} than ${meta.key} runs`); byName.set(name, n); }
-    out.push(build(meta.key, nick?.replace(/"/g, "") ?? meta.key, head!, meta.archetype, byName, idOf));
-  }
-  return out;
+export interface OpenSeed { key: string; name: string; title: string; archetype: "aggro" | "midrange" | "control"; cards: Record<string, number> }
+/** The seed lists as they stand: each seed with the S46 amendments and every revision since applied, in order;
+ * names resolved through `idOf` (throws on an unknown name or a count that goes negative). */
+export function seedLists(seeds: readonly OpenSeed[], idOf: (name: string) => string | undefined): OpenList[] {
+  return seeds.map((seed) => {
+    const byName = new Map(Object.entries(seed.cards));
+    const apply = (delta: Record<string, number> | undefined, what: string) => { for (const [name, d] of Object.entries(delta ?? {})) { const n = (byName.get(name) ?? 0) + d; if (n < 0) throw new Error(`open lists: ${what} cuts more ${name} than ${seed.key} runs`); byName.set(name, n); } };
+    apply(OPEN_AMENDMENTS[seed.key], "the S46 amendment");
+    for (const r of OPEN_REVISIONS) apply(r.lists[seed.key], `the ${r.session} revision`);
+    return build(seed.key, seed.name, OPEN_TITLES[seed.key] ?? seed.title, seed.archetype, byName, idOf);
+  });
 }
 
 /** The Loop from the Coin's parsed list (by card id; `idOf` maps the amendment names). */

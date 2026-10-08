@@ -9,7 +9,7 @@ import type { CardDef } from "@shandalar/cards";
 import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
 import {
   CONSTRUCTED_FORMATS, CONVOCATION_SEATS, shortStages, stagePodDrafts, checkSideboard, suggestedSideboard, SIDEBOARD_SIZE, eventDifficulty, type ConvocationDifficulty, buildConstructedDeck, selectCandidates, type ConstructedFormat, currentStage, defaultStages, finishTitle, keepAllowance, lastLimitedPool, newConvocation, nextStage, registerDecklist, stageLastRound, type ConvocationStage, convocationNames, limitedView, DRAFT_PLANE, authoredListsFrom, cardLegal, copyCap, deserializeWorld, eventFormat, isBasic, newConstructedEvent, suggestedConstructedDeck, draftDirection, draftPack, draftStep, draftTotalPicks, newDraftEvent, suggestedPick, EVENT_SAVE_KEY, LEDGER_KEY, MatchSeries, SEALED_PLANE, addCopy, advanceBracket, advanceEvent, bracketRound, bracketRoundComplete, buildLimitedDeck, checkEventDeck, closeRound, deserializeEvent, finalPlaces, playBracketFieldRound, recordBracketSeries, resolveKnobs, seatForGame,
-  ledgerEntry, lifeModifiers, newSealedEvent, pairingOf, playFieldRound, poolCollection, recordSeries, registerDeck, removeCopy, resultOf, roundComplete, saveCurrentSeries,
+  GAMES_KEY, GAMES_KEPT, ledgerEntry, lifeModifiers, newSealedEvent, pairingOf, playFieldRound, poolCollection, recordSeries, registerDeck, removeCopy, resultOf, roundComplete, saveCurrentSeries,
   serializeEvent, seriesSeed, seriesSetup, standings, type CardRatingTable, type Catalog, type ConvocationEvent, type ConvocationLedgerEntry, type ConvocationPackData,
   type Decklist, type KnobValues, type SeatAgents, type Standing,
 } from "@shandalar/world";
@@ -366,9 +366,28 @@ export class ConvocationController {
     void m.start().then((result) => {
       if (this.match !== m) return; // abandoned
       s.record(game, result);
+      this.recordGame(m, { round: e.round, phase: e.phase, game: game.index, opponent: them.name, ...(them.list ? { list: them.list } : {}) });
       if (s.done) void this.finishSeries();
       else { this.set(saveCurrentSeries(this.event!, s.state())); this.screen = { kind: "between" }; this.emit(); }
     });
+  }
+
+  /** S58 (Part 2 — the play diff needs the human's MOVES, and an event's save keeps results only): each finished
+   * game's spec and its moves (the ACTION and RNG entries: what a replay reads) are kept under their own key, the
+   * newest GAMES_KEPT of them. A full store never breaks the game: the oldest half goes, then the write is skipped. */
+  private recordGame(m: MatchController, meta: Record<string, unknown>): void {
+    if (!this.storage || !m.result) return;
+    try {
+      const all = this.recordedGames();
+      all.push({ format: "shandalar-log-v1", when: new Date().toISOString(), eventSeed: this.event?.seed, formatId: this.event?.formatId, ...meta, spec: m.spec, result: { winner: m.result.winner, reason: m.result.reason, turns: m.result.turns }, log: m.result.log.filter((x) => x.t === "ACTION" || x.t === "RNG") });
+      let keep = all.slice(-GAMES_KEPT);
+      try { this.storage.setItem(GAMES_KEY, JSON.stringify(keep)); }
+      catch { keep = keep.slice(Math.ceil(keep.length / 2)); try { this.storage.setItem(GAMES_KEY, JSON.stringify(keep)); } catch { /* full: this game goes unrecorded */ } }
+    } catch { /* a recording never interrupts play */ }
+  }
+  /** The recorded games, oldest first (what "download my games" writes: `{ games }`, the file `pnpm play-diff` reads). */
+  recordedGames(): Record<string, unknown>[] {
+    try { const raw = this.storage?.getItem(GAMES_KEY); const xs = raw ? (JSON.parse(raw) as unknown) : []; return Array.isArray(xs) ? (xs as Record<string, unknown>[]) : []; } catch { return []; }
   }
 
   /** The human's series is done: record it, then the field's series (headless, here), then the standings. */

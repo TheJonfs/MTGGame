@@ -14,6 +14,8 @@
  *                sideboarding is read from the games where it was the one (each game records `boarded`).
  *   --shapes none|a,b   S56: with --sideboarded, only those of sideboard-ai's rules 5–8 run (sweepers, creatureCounters,
  *                steal, blockers); `none` is the S55 sideboarding and the S55 fifteen. Default: all four.
+ *   --no-guide / --guide-drop c1,c2   S58: a guided fifteen sideboarded by the rules instead, or by its guide without the rows that bring those cards in.
+ *   --built-fifteen k1,k2   S58: those lists sideboard from the field builder's fifteen instead of their registered one.
  *   --out-rule none|dead,four,rule9   S57 (Part 4): which of the out-rule's parts run (sideboard-ai SideboardOutRule).
  *   --off rule[,rule] [--off-for k1,k2]   S56: the OLD pilot — those S56 rules ("counter") switched off, for every
  *                seat or only for those lists. Run beside a plain run on the same seed: each game has its twin.
@@ -36,6 +38,7 @@ import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
 import { OPEN_DECKS, OPEN_FIELD } from "@shandalar/sim/open-decks";
 import { OPEN_FORMAT } from "./formats.js";
 import { variantDef } from "./card-variants.js";
+import { mostPlayed, staples } from "./open-reference.js";
 import { buildSideboard } from "./constructed-builder.js";
 import { AI_SIDEBOARD_CONSTRUCTED, SIDEBOARD_SHAPES, aiSideboard, answersCreatures, answersRelics, type AiSideboardTerms } from "./sideboard-ai.js";
 import type { CardRatingTable } from "./rating.js";
@@ -75,6 +78,7 @@ async function run(): Promise<void> {
   const sideboarded = one || process.argv.includes("--sideboarded") || process.argv.includes("--sideboarded-only");
   const rating = sideboarded ? (JSON.parse(readFileSync(join(ROOT, "data/convocation/card-rating.json"), "utf8")) as CardRatingTable) : null;
   const fifteen = new Map<string, Decklist>();
+  const builtFor = new Set(arg("built-fifteen", "").split(",").filter(Boolean)); // S58: those lists use the field builder's fifteen, not their registered one
   const outArg = process.argv.includes("--out-rule") ? arg("out-rule", "none") : null; // S57: none | dead,four,rule9 (any of)
   const shapesArg = arg("shapes", "all"), { shapes: _all, ...s55 } = AI_SIDEBOARD_CONSTRUCTED;
   const terms: AiSideboardTerms = shapesArg === "all" ? AI_SIDEBOARD_CONSTRUCTED : shapesArg === "none" ? s55 : { ...s55, shapes: { perShape: SIDEBOARD_SHAPES.perShape, ...Object.fromEntries(shapesArg.split(",").map((k) => { if (!(k in SIDEBOARD_SHAPES) || k === "perShape") throw new Error(`open:rr --shapes: no shape ${k}`); return [k, SIDEBOARD_SHAPES[k as keyof typeof SIDEBOARD_SHAPES]]; })) } };
@@ -83,8 +87,10 @@ async function run(): Promise<void> {
   const boarded = (me: (typeof OPEN_DECKS)[string], them: (typeof OPEN_DECKS)[string]): Decklist => {
     if (!rating || (boardedOnly.size > 0 && !boardedOnly.has(me.key))) return me.decklist;
     // (S56: a list's own registered fifteen where it has one — the Pall's, the Kiln's — as the event plays it)
-    if (!fifteen.has(me.key)) fifteen.set(me.key, me.sideboard ? [...me.sideboard] : buildSideboard(me.decklist, OPEN_FORMAT, rating, pool, answersRelics, answersCreatures, !!terms.shapes));
-    return aiSideboard(me.decklist, fifteen.get(me.key)!, them.decklist, pool, rating, outArg !== null ? (() => { const { outRule: _o, ...rest0 } = terms; const rest = process.argv.includes("--counters-stay") ? { ...rest0, countersStay: true } : rest0; return outArg === "none" ? rest : { ...rest, outRule: { deadFirst: outArg.includes("dead"), keepFourOfs: outArg.includes("four"), deadOut: outArg.includes("rule9") ? 3 : 0 } }; })() : terms).deck;
+    if (!fifteen.has(me.key)) fifteen.set(me.key, me.sideboard && !builtFor.has(me.key) ? [...me.sideboard] : buildSideboard(me.decklist, OPEN_FORMAT, rating, pool, answersRelics, answersCreatures, !!terms.shapes));
+    return aiSideboard(me.decklist, fifteen.get(me.key)!, them.decklist, pool, rating, (() => { const { outRule: keptOut, ...rest0 } = terms;
+      const out = outArg === null ? (keptOut ? { outRule: keptOut } : {}) : outArg === "none" ? {} : { outRule: { deadFirst: outArg.includes("dead"), keepFourOfs: outArg.includes("four"), deadOut: outArg.includes("rule9") ? 3 : 0 } };
+      return { ...rest0, ...out, ...(process.argv.includes("--counters-stay") ? { countersStay: true } : {}), ...(process.argv.includes("--no-guide") ? { noGuide: true } : {}), ...(arg("guide-drop", "") ? { guideDrop: arg("guide-drop", "").split(",") } : {}) }; })()).deck;
   };
   const swapArg = arg("swap", "");
   const DECKS: typeof OPEN_DECKS = swapArg ? (() => {
@@ -170,6 +176,10 @@ function merge(): void {
   lines.push(`Muster vs Warband: the Muster ${pct(mw[0], mw[1])}% (${mw[1]} games).`);
   const u = decked.undertow;
   if (u) lines.push(`The Undertow's wins by library: ${u.byLibrary} of ${u.wins} (${pct(u.byLibrary, u.wins)}%).`);
+  // S58 (ADR-170): staples are watched, not capped — a nonland card in more than half the field is named here
+  { const cardsAll = loadCardPool(join(ROOT, "data/cards")).cards, field = KEYS.map((k) => OPEN_DECKS[k]!), skip = OPEN_FORMAT.rule.restricted ?? [];
+    const st = staples(field, cardsAll, skip), nm = (id: string) => cardsAll.get(id)?.name ?? id;
+    lines.push(`\n## Staples (ADR-170)\n`, `In more than half of the ${field.length} lists: ${st.length ? st.map((x) => `${nm(x.cardId)} (${x.lists} lists, ${x.copies} copies)`).join("; ") : "none"}. The most played: ${mostPlayed(field, cardsAll, skip, 8).map((x) => `${nm(x.cardId)} ${x.lists}`).join(" · ")}.`); }
   lines.push(`\n## Restricted cards — % of the list's games in which it was cast (or, a land, played)\n`);
   const restricted = OPEN_FORMAT.rule.restricted!;
   for (const k of KEYS) {
