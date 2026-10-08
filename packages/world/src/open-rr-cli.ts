@@ -8,6 +8,7 @@
  *                PLACE (the same slot, so the same shuffle — card-test's paired method). `to` may be a card-test variant
  *                (`protocol~cost={1}{U}~shrink=3`: the card with fields overridden, for this run only). Run with --only key on the
  *                seed of a plain run and compare game by game.
+ *   --deck key:file.json[:archetype]   S58: a whole new sixty in that list's seat (a build under test); --swap then edits it.
  *   --vs k1,k2    with --only: only the pairings against those lists (a matchup study at more games).
  *   --sideboarded-one   S56: in each game ONE seat plays its sideboarded sixty against the other's registered sixty
  *                (the lists take turns, two games each) — beside a plain run on the same seed, a list's own
@@ -94,9 +95,20 @@ async function run(): Promise<void> {
       return { ...rest0, ...out, ...(process.argv.includes("--counters-stay") ? { countersStay: true } : {}), ...(process.argv.includes("--no-guide") ? { noGuide: true } : {}), ...(arg("guide-drop", "") ? { guideDrop: arg("guide-drop", "").split(",") } : {}) }; })()).deck;
   };
   const swapArg = arg("swap", "");
+  // S58 (a new build tried in a list's seat): `--deck key:file.json[:archetype]` — the file is a decklist ([{cardId, count}], sixty)
+  const deckArg = arg("deck", "");
+  const BASE: typeof OPEN_DECKS = deckArg ? (() => {
+    const [key, file, archetype] = deckArg.split(":") as [string, string, string | undefined];
+    const base = OPEN_DECKS[key]; if (!base) throw new Error(`open:rr --deck: no list ${key}`);
+    const list = JSON.parse(readFileSync(file, "utf8")) as Decklist;
+    for (const e of list) if (!pool.has(e.cardId)) throw new Error(`open:rr --deck: no card ${e.cardId}`);
+    if (list.reduce((a, e) => a + e.count, 0) !== 60) throw new Error(`open:rr --deck: ${file} is ${list.reduce((a, e) => a + e.count, 0)} cards`);
+    const { sideboard: _s, ...rest } = base;
+    return { ...OPEN_DECKS, [key]: { ...rest, decklist: list, ...(archetype ? { archetype: archetype as typeof base.archetype } : {}) } };
+  })() : OPEN_DECKS;
   const DECKS: typeof OPEN_DECKS = swapArg ? (() => {
     const [key, ...rest] = swapArg.split(":"), swaps = rest.join(":").split(";").map((x) => x.split(":") as [string, string, string]);
-    const base = OPEN_DECKS[key!]; if (!base) throw new Error(`open:rr --swap: no list ${key}`);
+    const base = BASE[key!]; if (!base) throw new Error(`open:rr --swap: no list ${key}`);
     let list = base.decklist.map((e) => ({ ...e }));
     for (const [from, n, to] of swaps) {
       if (!pool.has(to)) pool.set(to, variantDef(to, pool)); // S56: a variant spec (card-test's: `protocol~cost={1}{U}~shrink=3`) is a card of this run
@@ -104,8 +116,8 @@ async function run(): Promise<void> {
       list = [...list.slice(0, i), ...[{ cardId: from, count: list[i]!.count - Number(n) }, { cardId: to, count: Number(n) }].filter((e) => e.count > 0), ...list.slice(i + 1)];
     }
     if (list.reduce((a, e) => a + e.count, 0) !== 60) throw new Error("open:rr --swap: the list is no longer sixty");
-    return { ...OPEN_DECKS, [key!]: { ...base, decklist: list } };
-  })() : OPEN_DECKS;
+    return { ...BASE, [key!]: { ...base, decklist: list } };
+  })() : BASE;
   const vs = arg("vs", "").split(",").filter(Boolean);
   const only = arg("only", ""), journeyman = new Set(arg("journeyman", "").split(",").filter(Boolean));
   const trial = arg("trial", "").split(",").filter(Boolean), trialFor = new Set(arg("trial-for", "").split(",").filter(Boolean)); // S58: a rule on trial for those lists
