@@ -13,7 +13,7 @@ Session 58 closed the revision round. The Open's lists now live entirely in code
 
 ## For the planner — the decisions waiting
 1. **Two of the six in/out pairs in the Locks' guide measured wrong** and are out of it (Deviation 2). The planner may want to re-author them.
-2. **Part 2 needs Chris to play.** The door now offers "download my recorded games"; `pnpm play-diff` reads that file (Deviation 1).
+2. **Part 2: the recording works, and the first real diff is in** (the Writ's Umbel, its own section below). The Cinder's is still to come. The Writ's diff points at two pilot questions: Clio as a lock, and holding mana on its own turn.
 3. **S59, the campaign linkage:** my read of how it would be built is at the end of this handoff. One question in it needs a ruling before any code: how an invitation is earned.
 4. **The Sweep's fifteen** is still open (Chris's).
 
@@ -75,6 +75,27 @@ pall 70 · hearth 56 · coin 54 · levy 53 · kiln 53 · muster 52 · writ 52 ·
 - **The retire count from this table:** the bottom three are the Cinder (39.4), the Tally (42.9) and the Locks (43.1).
 - The Undertow's two revisions (S57, post-S57) stay in the record on an archived list. The mill deck is out of the field; the planner may want that noted, since it was one of the original eleven.
 - The file is from before games were recorded, so it has no moves either.
+
+## After the session — the first real play diff: the Writ's Umbel (Chris, 2026-10-08)
+
+**The recording works.** Chris's file (`docs/debug_logs/recorded_games/convocation-games-6.json`) holds the six games of the Umbel he won with the Writ: two against each of two Wurmspeakers and the Coin, all wins. Each replays cleanly. The full report is beside it (`play-diff-writ.md`).
+
+- **828 decisions with a choice; the pilot differs at 189 (23%)**, about 31 a game.
+
+| kind of difference | times | what it mostly is |
+|---|---|---|
+| Chris waits where the pilot acts | 52 | the pilot cashes Clio's depth counters (23); casts Drana, Tidewall or Protocol on a Llanowar Elves on its own turn where Chris holds his mana |
+| Chris acts where the pilot waits | 31 | Chris uses Arcane Collector (9), the Jet Witch (3), Clio (4) at moments the pilot's gates refuse; plays a Mox or a Crypt the pilot holds |
+| which spell first | 26 | mixed: which counter for which spell, which creature first |
+| attack: Chris sends fewer | 23 | the pilot attacks with Clio (a 2/4 whose static is the deck's lock) and the Collector; Chris keeps them home |
+| the order of the land and the spell | 21 | |
+| which land | 11 | |
+
+- **The clearest pattern: the pilot treats Clio as a creature and a card-draw engine; Chris treats her as a lock.** The pilot spends her counters 23 times where Chris keeps them, and attacks with her where Chris does not.
+- **The second: Chris holds mana on his own turn far more than the pilot does** (the "waits" row beyond Clio). This is the control posture book 108 began; the diff says the pilot is still well short of it.
+- **The playouts did not separate the lines.** Every kind reads within error of zero (six playouts a side; Chris won all six games, so most positions were already winning). The count and the kind are the finding here, not the value. Losses, or closer games, are where the playouts will say something.
+- **Two tool fixes made on this first real file:** the pilot's own hand-tapped payment is read through to its cast (it had shown as "the pilot tapForMana" 33 times); a counterspell's target is named. The opponent's archetype is read from the recorded list.
+- No rule is written from this (ADR-167: this is the probe). The Cinder's diff is still to come.
 
 ## Deviations from the brief
 1. **Part 2's report is not delivered.** The 8–0 file records seeds and results; a person's decisions cannot be recovered from it. I built the tool, the engine piece and the recording, and checked them on a stand-in. *The report follows when Chris has played recorded games.*

@@ -24,7 +24,7 @@ const arg = (k: string, d: string) => { const i = process.argv.indexOf(`--${k}`)
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const pool = loadCardPool(join(ROOT, "data/cards")).cards;
 const K = Number(arg("playouts", "8"));
-type Saved = { spec: MatchSpec; log: ActionLogEntry<Action>[]; note?: string; result?: { winner: number | null } };
+type Saved = { spec: MatchSpec; log: ActionLogEntry<Action>[]; note?: string; result?: { winner: number | null }; list?: string; opponent?: string };
 class Stop extends Error {}
 
 const name = (id: string | undefined) => (id ? pool.get(id)?.name ?? id : "?");
@@ -37,7 +37,7 @@ async function diffGame(g: Saved, gi: number, out: Divergence[], counts: { decis
   const spec = g.spec, seat = (process.argv.includes("--seat") ? Number(arg("seat", "0")) : Math.max(0, spec.players.findIndex((p) => p.agent === "human"))) as 0 | 1, opp = (1 - seat) as 0 | 1;
   const decks: [string[], string[]] = [expandDecklist(spec.players[0].decklist), expandDecklist(spec.players[1].decklist)];
   const rules = { startingLife: spec.rules.startingLife ?? 20, handSize: spec.rules.handSize ?? 7, maxTurns: spec.rules.maxTurns ?? 100, ante: spec.rules.ante ?? 0, ...(spec.rules.startingPlayer !== undefined ? { startingPlayer: spec.rules.startingPlayer } : {}) };
-  const myArch = arg("archetype", archetypeOf(spec.players[seat]!.decklist, "midrange")) as "aggro" | "midrange" | "control" | "combo", oppArch = archetypeOf(spec.players[opp]!.decklist, "midrange");
+  const myArch = arg("archetype", archetypeOf(spec.players[seat]!.decklist, "midrange")) as "aggro" | "midrange" | "control" | "combo", oppArch = (OPEN_DECKS[(g.list ?? "").replace(/^open:/, "")]?.archetype ?? archetypeOf(spec.players[opp]!.decklist, "midrange")) as "aggro" | "midrange" | "control" | "combo"; // a recorded game names the opponent's list (a tinkered sixty matches none by its cards)
   const agents = (seed: number, cold: boolean): [Agent, Agent] => {
     const mine = { ...difficultyProfile("master", myArch, [...spec.players[opp]!.decklist], [...spec.players[seat]!.decklist]), ...(cold ? { temperature: 0.01 } : {}) };
     const a = new HeuristicAgent(seed * 2 + 1, pool, mine), b = new HeuristicAgent(seed * 2 + 2, pool, difficultyProfile("master", oppArch, [...spec.players[seat]!.decklist], [...spec.players[opp]!.decklist]));
@@ -62,6 +62,8 @@ async function diffGame(g: Saved, gi: number, out: Divergence[], counts: { decis
         if (req.player !== seat) throw new Stop();
         if (!view0) { view0 = view; req0 = req; }
         mine.push(action);
+        // (the pilot pays by hand too when it holds a counterspell — book 108: its taps and the cast after them are one answer)
+        if (!group && isTap(action)) return;
         if (!group || action.type.startsWith("done") || !group.has(action.type)) throw new Stop();
       });
     } catch (e) { if (!(e instanceof Stop)) throw e; }
@@ -81,7 +83,7 @@ async function diffGame(g: Saved, gi: number, out: Divergence[], counts: { decis
       if (hs.join() !== ps.join()) { kind = hs.length > ps.length ? "block: the human blocks more" : hs.length < ps.length ? "block: the human blocks less" : "block: different blocks"; h = `${hs.length} block(s)`; p = `${ps.length} block(s)`; }
     } else if (JSON.stringify(human) !== JSON.stringify(pilot)) {
       const hc = cardAt(human), pc = cardAt(pilot), acts = (a: Action) => a.type === "castSpell" || a.type === "activateAbility" || a.type === "playLand";
-      const aim = (a: Action) => { const t = ((a as { targets?: { kind: string; player?: number; id?: string }[] }).targets ?? [])[0]; return !t ? "" : t.kind === "player" ? (t.player === seat ? " at its own face" : " at the face") : ` at ${name(v.battlefield.find((b) => b.id === t.id)?.cardId)}`; };
+      const aim = (a: Action) => { const t = ((a as { targets?: { kind: string; player?: number; id?: string }[] }).targets ?? [])[0]; return !t ? "" : t.kind === "player" ? (t.player === seat ? " at its own face" : " at the face") : ` at ${name(v.battlefield.find((b) => b.id === t.id)?.cardId ?? v.stack.find((x) => x.id === t.id)?.cardId ?? [...v.graveyardObjects[0], ...v.graveyardObjects[1]].find((x) => x.objectId === t.id)?.cardId)}`; };
       const say = (a: Action, c: string | undefined) => (a.type === "pass" ? "passes" : a.type === "playLand" ? `plays ${name(c)}` : a.type === "castSpell" ? `casts ${name(c)}${aim(a)}` : a.type === "activateAbility" ? `uses ${name(c)}${aim(a)}` : a.type);
       h = say(human, hc); p = say(pilot, pc);
       if (r.purpose !== "priority") kind = `${r.purpose}`;
