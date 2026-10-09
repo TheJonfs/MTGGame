@@ -58,6 +58,8 @@ export class ConvocationController {
   match: MatchController | null = null;
   /** The last field round's wall time, ms (S47 Concern 4: measured, shown in the dev line). */
   fieldMs: number | null = null;
+  /** Where the last field round was played: the workers, or the main thread (the dev line on the standings). */
+  fieldOn: "workers" | "main" | null = null;
   /** Post-S53: why the field fell back from the workers to the main thread (the field screen's second line). */
   fieldNote: string | null = null;
   /** S53: the field round's progress — series played of series to play (the field screen's line). */
@@ -403,14 +405,16 @@ export class ConvocationController {
     const t0 = typeof performance !== "undefined" ? performance.now() : 0;
     const pool = this.workers(), main = () => playFieldRound(this.event!, { cards: this.pool, knobs: this.knobs, rating: this.rating }, agents);
     let played: ConvocationEvent;
+    this.fieldOn = pool ? "workers" : "main";
     if (!pool) played = await main();
     else {
       // post-S53: workers that fail or stall never strand the round — it plays on the main thread (the same series,
       // a series being its seed's), and the page stops using them
       try { played = await this.fieldOnWorkers(this.event!, pool); }
       catch (err) {
-        pool.dispose(); this.fieldPool = null;
+        pool.dispose(); this.fieldPool = undefined; // a fresh pool is tried the next time (null stayed null until the page reloaded)
         this.fieldNote = `The other tables play here instead (${err instanceof Error ? err.message : String(err)}).`; this.fieldProgress = null; this.emit();
+        this.fieldOn = "main";
         await new Promise((r) => setTimeout(r, 30));
         played = await main();
       }
@@ -437,7 +441,7 @@ export class ConvocationController {
       const picks = await Promise.all(jobs.map((j) => pool.draft(j).then((p) => { this.fieldProgress = { done: (this.fieldProgress?.done ?? 0) + 1, of: jobs.length, pods: true }; this.emit(); return p; })));
       return new Map(jobs.map((j, i) => [j.pod, picks[i]!]));
     } catch (err) {
-      pool.dispose(); this.fieldPool = null;
+      pool.dispose(); this.fieldPool = undefined; // a fresh pool is tried the next time (null stayed null until the page reloaded)
       this.fieldNote = `The other pods draft here instead (${err instanceof Error ? err.message : String(err)}).`; this.emit();
       await new Promise((r) => setTimeout(r, 30));
       return undefined;

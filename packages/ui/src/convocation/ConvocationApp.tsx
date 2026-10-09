@@ -297,7 +297,7 @@ function Standings({ c }: { c: ConvocationController }) {
         {e.results.filter((r) => r.round === e.round).filter((r, i, xs) => xs.length <= 16 || i < 8 || r.a === 0 || r.b === 0).map((r, i) => <li key={i}>{e.field[r.a]!.name} {r.series.wins[0]} – {r.series.wins[1]} {e.field[r.b]!.name}{r.series.winner === "draw" ? " (drawn)" : ""}</li>)}
       </ul>
       <button className="primary" onClick={() => c.next()}>{c.isStaged() && e.round < e.rounds && e.round === stageEnd(c) ? "The day ends" : e.round < e.rounds ? `Round ${e.round + 1}` : e.top8 ? "To the Umbel" : "To the finish"}</button>
-      {dev && <span style={{ marginLeft: 12, fontSize: 11, color: "var(--ink-soft)" }}>dev: the field's series took {c.fieldMs} ms on the main thread</span>}
+      {dev && <span style={{ marginLeft: 12, fontSize: 11, color: "var(--ink-soft)" }}>dev: the field's series took {c.fieldMs} ms on {c.fieldOn === "workers" ? "the workers" : "the main thread"}</span>}
     </Page>
   );
 }
