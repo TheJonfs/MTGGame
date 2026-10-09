@@ -9,7 +9,7 @@ Session 58 closed the revision round. The Open's lists now live entirely in code
 - **Part 2 (the Cinder diff) could not be run on the 8–0 file**: it holds results, not moves. The tool and the recording it needs are built instead.
 - **A new table of record**, sixteen lists.
 
-`pnpm typecheck`, `pnpm test` (981) and `pnpm build:web` pass. **Everything is pushed except the last section (two interface changes).** After the session proper Chris replaced the Undertow with a new list: its own section below, with the table of record as it now stands.
+`pnpm typecheck`, `pnpm test` (981) and `pnpm build:web` pass. **Everything here is pushed.** After the session proper Chris replaced the Undertow with a new list: its own section below, with the table of record as it now stands.
 
 ## For the planner — the decisions waiting
 1. **Two of the six in/out pairs in the Locks' guide measured wrong** and are out of it (Deviation 2). The planner may want to re-author them.
