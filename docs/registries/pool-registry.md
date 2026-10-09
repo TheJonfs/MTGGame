@@ -647,7 +647,7 @@ Pool 244 → **246**. Two answers to a graveyard loop that any deck can sideboar
 
 | id | name | status | vocabulary | notes |
 |---|---|---|---|---|
-| reapers_forerunner | Reaper's Forerunner | tested | flash, deathtouch; modal ENTERS trigger: `fight` self at `creatureYouDontControl` (R-106 — the one new word) / `exileGraveyard` who target (R-104) / `createToken` snake_1_1_g ×2 | CUSTOM. {1}{G}{G} Creature — Snake 1/1 (the face reads "Summon Snake"). **T2, interim — Chris to rule** (the matrix, results/s58/forerunner-matrix.md: +5.3 and +2.8 to the two green shells at the printed rate; cost is the sensitive axis). Card art and "as printed" face delivered by Chris; the art's painted border trimmed (MANIFEST). In no Open list yet. Pool 247 → 248. |
+| reapers_forerunner | Reaper's Forerunner | tested | flash, deathtouch; modal ENTERS trigger: `fight` self at `creatureYouDontControl` (R-106 — the one new word) / `exileGraveyard` who target (R-104) / `createToken` snake_1_1_g ×2 | CUSTOM. {1}{G}{G} Creature — Snake 1/1 (the face reads "Summon Snake"). **T2 as printed (Chris's ruling, 2026-10-09)** (the matrix, results/s58/forerunner-matrix.md: +5.3 and +2.8 to the two green shells at the printed rate; cost is the sensitive axis). Card art and "as printed" face delivered by Chris; the art's painted border trimmed (MANIFEST). In no Open list yet. Pool 247 → 248. |
 
 ## Shop tiers (ADR-078, S19)
 

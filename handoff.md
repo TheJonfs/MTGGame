@@ -223,8 +223,8 @@ pall 68 · rabble 68 · coin 53 · writ 53 · muster 52 · hearth 52 · kiln 51 
   - The dev setup (the Matchup Lab's dials) is now a link from this screen in dev mode, not the default. The old dev-only "pilot a road deck against the Heart" option on the plain screen is gone; the dev setup covers it.
   - Walked in a browser: the menus, a deck built from the Coin and saved, and a match started with it.
 
-## After the session — Reaper's Forerunner, and its rates matrix (Chris, 2026-10-09) — NOT PUSHED
-Chris's custom card, from his printed face: **{1}{G}{G} Creature — Snake 1/1, flash, deathtouch. When it enters, choose one — it fights target creature you don't control; exile target player's graveyard; create two 1/1 green Snake tokens.** In the pool at T2 (interim), art and printed face wired, in no Open list.
+## After the session — Reaper's Forerunner, and its rates matrix (Chris, 2026-10-09)
+Chris's custom card, from his printed face: **{1}{G}{G} Creature — Snake 1/1, flash, deathtouch. When it enters, choose one — it fights target creature you don't control; exile target player's graveyard; create two 1/1 green Snake tokens.** In the pool at **T2 as printed (Chris's ruling)**, art and printed face wired, in no Open list.
 - **One new engine word** (R-106): `fight` with `self: true, target: N` — the ability's source fights the target; nothing happens if the source has left the battlefield. The other two modes are existing words.
 - **Fuzz before fixtures:** 768 games, no exceptions. Then eight fixtures (each mode, the snake killed in response, the fight not offered on an empty table, flashed in under a Zombify) and book 114 for the pilot.
 - **The pilot (book 114):** the graveyard when their plan's piece is in it or something is aimed at it; the fight for a creature worth 2.5 or more (anything it kills and survives); two tokens otherwise. Against a list a graveyard exile answers it is held until there is a graveyard to take (`off: ["yardhold"]`).
@@ -243,7 +243,7 @@ Chris's custom card, from his printed face: **{1}{G}{G} Creature — Snake 1/1, 
 
   - Cost is the sensitive axis: a mana either way is about three and a half points. Size is worth one or two. "Choose two" at three mana is worth as much as cutting a mana; at four mana it is about the printed card.
   - The exile mode is the Pall matchup and nothing else: taken every time against the Pall, once in 640 games against the rest.
-- **For the planner and Chris to rule:** the tier (T2 interim; it is the largest single gain found for the green-red shell); whether either green shell joins the Open with it.
+- **Ruled by Chris:** T2, as printed. Neither green shell joins the Open yet: Chris is building his own list across both (possibly a Jund list other than the aristocrats one).
 - **Concerns from this work:**
   1. **The Fight rule is 701.14 in the current Comprehensive Rules** (effective 2026-09-25). R-031 and two older code comments cite 701.12. R-106 cites the current number; R-031 is not edited.
   2. **The pilot exiles a graveyard only against a registered plan, or in response.** The Coin and the Kiln use their graveyards and were left alone. It also never flashes the snake in as a blocker. A person will get more from the card than the matrix shows.
