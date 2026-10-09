@@ -1549,6 +1549,32 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.scorePriorityAction(live, mac("t1"))).toBe(-Infinity); // and not leave the second Usher behind
   });
 
+  it("book of shame 114 (post-S58 — Reaper's Forerunner): the mode is the board's — the graveyard when their plan's piece lies in it or something is aimed at it, the fight for a creature worth the snake (anything it kills and survives), the two tokens otherwise; against a list a graveyard exile answers it is held until there is a graveyard to take, and then cast at once, on our turn or in response", () => {
+    const a = against(), fair = agent("midrange");
+    const labels = pool.get("reapers_forerunner")!.abilities!.flatMap((ab) => (ab.kind === "triggered" ? ab.modes ?? [] : [])).map((m) => m.label);
+    const req = (ms: number[]) => ({ player: 0, purpose: "chooseMode", actions: ms.map((m) => ({ type: "chooseMode" as const, mode: m, label: labels[m]! })), source: { cardId: "reapers_forerunner", effects: [] } }) as never;
+    const mode = (ag: HeuristicAgent, v: GameView, ms = [0, 1, 2]) => (ag.modeChoice(v, req(ms)) as { mode: number }).mode;
+    const board = (...theirs: string[]) => mkView({ battlefield: theirs.map((c, i) => ({ id: `o${i}`, cardId: c, controller: 1 as const })) });
+    expect(mode(fair, board("serra_angel"))).toBe(0); // a 4/4 flier for a 1/1: the fight
+    expect(mode(fair, board("llanowar_elves"))).toBe(2); // an Elf is not worth the snake: two tokens
+    expect(mode(fair, board("wall_of_blossoms"))).toBe(0); // it kills the 0/4 and lives
+    expect(mode(fair, board(), [1, 2])).toBe(2); // nothing to fight, nothing in a graveyard: tokens
+    expect(mode(a, withYards(board("serra_angel"), [], ["the_usher", "the_usher"]))).toBe(1); // the plan's piece is in their graveyard
+    const zomb = [{ id: "s1", kind: "spell", cardId: "zombify", controller: 1 as const, targets: [{ kind: "object" as const, id: "t0" }] }];
+    expect(mode(fair, withYards({ ...board("serra_angel"), stack: zomb as never }, [], ["serra_angel"]))).toBe(1); // no plan across, but a Zombify aimed at it
+    expect(mode(fair, withYards(board("llanowar_elves"), [], ["serra_angel"]))).toBe(2); // a graveyard nobody is using is left alone
+    // the cast
+    const F = L(3, "forest"), hand = [{ objectId: "h_f", cardId: "reapers_forerunner" }];
+    const at = (theirYard: string[], extra: Partial<GameView> = {}) => ({ ...withYards(mkView({ hand, battlefield: F, activePlayer: 0, step: "MAIN1" }), [], theirYard), ...extra });
+    expect(a.scorePriorityAction(at([]), castAt("h_f"))).toBe(-Infinity); // held: the answer, not a body
+    expect(a.scorePriorityAction(at(["vampire_nighthawk"]), castAt("h_f"))).toBe(-Infinity);
+    expect(a.scorePriorityAction(at(["the_usher", "the_usher"]), castAt("h_f"))).toBeGreaterThan(a.scorePriorityAction(at(["the_usher", "the_usher"]), { type: "pass" }) + 3); // the setup has resolved: now
+    expect(a.scorePriorityAction(at(["the_usher"], { activePlayer: 1, stack: zomb as never }), castAt("h_f"))).toBeGreaterThan(a.scorePriorityAction(at(["the_usher"], { activePlayer: 1, stack: zomb as never }), { type: "pass" }) + 20); // in response to the return
+    expect(new HeuristicAgent(1, pool, { ...difficultyProfile("master", "control", PALL, LOCKS), off: ["yardhold"] }).scorePriorityAction(at([]), castAt("h_f"))).toBeGreaterThan(-Infinity); // the switch
+    expect(fair.scorePriorityAction(at([]), castAt("h_f"))).toBeGreaterThan(-Infinity); // no plan across: a creature like any other
+    expect(fair.entersModesBonus({ ...at([]), battlefield: mkView({ battlefield: [...F, { id: "o0", cardId: "serra_angel", controller: 1 }] }).battlefield }, castAt("h_f"))).toBeGreaterThan(fair.entersModesBonus(at([]), castAt("h_f"))); // a kill is worth more than the tokens
+  });
+
   it("book of shame 106 (S55): against a plan, discard is worth most before the turn the plan names", () => {
     const a = against();
     const hymn = { type: "castSpell" as const, objectId: "h_h", targets: [{ kind: "player" as const, player: 1 }] };

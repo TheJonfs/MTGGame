@@ -643,6 +643,12 @@ Pool 244 → **246**. Two answers to a graveyard loop that any deck can sideboar
 |---|---|---|---|---|
 | protocol | Protocol | tested | static `modifyPT` −2/−0 on attached; static `gainControl` on attached with `condition: {value: {ref: "attachedPower"}, atMost: 0}` (R-105 — the one new word) | CUSTOM. {U}{U} Enchantment — Aura. **T2** (Chris allowed T2 or T3; measured below the T3 Control Magic in every slot tried — results/s56/protocol-grid.md). Card art and "as printed" face delivered by Chris. **Reworded by Chris the same day** ("You control enchanted creature as long as its power would be 0 or less if you didn't control it") so the card states the reading the engine uses; the corrected face (no power/toughness box) is wired. Pool 246 → 247. |
 
+## Post-Session 58 addition — Reaper's Forerunner (Chris's card, delivered 2026-10-09)
+
+| id | name | status | vocabulary | notes |
+|---|---|---|---|---|
+| reapers_forerunner | Reaper's Forerunner | tested | flash, deathtouch; modal ENTERS trigger: `fight` self at `creatureYouDontControl` (R-106 — the one new word) / `exileGraveyard` who target (R-104) / `createToken` snake_1_1_g ×2 | CUSTOM. {1}{G}{G} Creature — Snake 1/1 (the face reads "Summon Snake"). **T2, interim — Chris to rule** (the matrix, results/s58/forerunner-matrix.md: +5.3 and +2.8 to the two green shells at the printed rate; cost is the sensitive axis). Card art and "as printed" face delivered by Chris; the art's painted border trimmed (MANIFEST). In no Open list yet. Pool 247 → 248. |
+
 ## Shop tiers (ADR-078, S19)
 
 The `shopTier` column (`1 | 2 | 3 | R`) is repo-canonical **on the card defs themselves** (`data/cards/*.json`, validated by the loader: every non-token, non-basic, non-prizeOnly card must carry one) rather than duplicated per row above; `docs/card-tier-audit-v2.md` is the curation source (planner-maintained), and `pnpm card-manifest` regenerates the human-readable price sheet. Distribution at adoption: **T1 ×53 · T2 ×31 · T3 ×10 · R ×2** (Demonic Tutor, Mystic Snake) + Lotus `prizeOnly` + 5 basics; Faerie Formation joins at T3 this session (→ T3 ×11). Availability: a town stocks `shopTier ≤ ring` (civilized 1 / approach 2 / wild 3); price × `shopTierMultiplier` (1.0/1.5/2.5 knobs); **R never stocks** — ante/quest/treasure circulation only.

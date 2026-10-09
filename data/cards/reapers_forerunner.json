@@ -1,0 +1,82 @@
+{
+  "id": "reapers_forerunner",
+  "name": "Reaper's Forerunner",
+  "source": "custom",
+  "manaCost": "{1}{G}{G}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Snake"
+  ],
+  "power": 1,
+  "toughness": 1,
+  "keywords": [
+    "flash",
+    "deathtouch"
+  ],
+  "text": "Flash, deathtouch\nWhen Reaper's Forerunner enters, choose one —\n• Reaper's Forerunner fights target creature you don't control.\n• Exile target player's graveyard.\n• Create two 1/1 green Snake creature tokens.",
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "condition": {
+        "source": "self"
+      },
+      "effects": [],
+      "optional": false,
+      "modes": [
+        {
+          "label": "Reaper's Forerunner fights target creature you don't control",
+          "targets": [
+            {
+              "count": 1,
+              "predicate": "creatureYouDontControl",
+              "zone": "battlefield"
+            }
+          ],
+          "effects": [
+            {
+              "type": "fight",
+              "self": true,
+              "target": 0
+            }
+          ]
+        },
+        {
+          "label": "Exile target player's graveyard",
+          "targets": [
+            {
+              "count": 1,
+              "predicate": "player",
+              "zone": "any"
+            }
+          ],
+          "effects": [
+            {
+              "type": "exileGraveyard",
+              "who": "target"
+            }
+          ]
+        },
+        {
+          "label": "Create two 1/1 green Snake creature tokens",
+          "effects": [
+            {
+              "type": "createToken",
+              "tokenId": "snake_1_1_g",
+              "count": 2,
+              "who": "you"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "art": {
+    "asset": "/custom-art/reapers_forerunner.png",
+    "fallback": "rendered"
+  },
+  "printedAsset": "reapers_forerunner.jpg",
+  "shopTier": 2
+}

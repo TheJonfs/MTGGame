@@ -630,7 +630,8 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     }
   },
   fight: (e, err) => {
-    if (!Array.isArray(e.targets) || e.targets.length !== 2) err(`fight requires targets: [i, j]`);
+    const pair = Array.isArray(e.targets) && e.targets.length === 2, self = e.self === true && Number.isInteger(e.target);
+    if (pair === self) err(`fight requires targets: [i, j], or self: true with target: i (S58)`);
   },
   gainControl: (e, err) => {
     // ADR-033: the static form is scope "attached". S26 (Lumen): the resolved form is a target index

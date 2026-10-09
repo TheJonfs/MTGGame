@@ -752,6 +752,7 @@ function applyEffect(
       // S28 (ADR-096, Prey Upon in the sixty): a fight is removal when OUR fighter kills theirs and
       // survives; a trade when both die; a blunder when only ours dies. Priced through the live
       // numbers so the 7/7 flower fights a ≤7-toughness creature for its full value (book 35).
+      if (!e.targets) return 0; // (S58: the self form is an enters trigger's — priced by the agent, not here)
       const a = objAt(e.targets[0]), b = objAt(e.targets[1]);
       if (!a || !b || a.power === null || a.toughness === null || b.power === null || b.toughness === null) return 0;
       const aDies = b.power >= a.toughness - a.damage || b.keywords.includes("deathtouch");

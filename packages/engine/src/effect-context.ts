@@ -243,6 +243,11 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
       return item.eventContext?.player ?? null;
     },
 
+    fightSource(targetId: string): void {
+      const src = item.sourceId ? ctx.state.objects[item.sourceId] : undefined;
+      if (!src || src.zone !== "battlefield") return; // CR 701.14b: a creature no longer on the battlefield does not fight
+      this.fight(item.sourceId!, targetId);
+    },
     sacrificeSource(): void {
       // S23 (ADR-084): the resolving ability's own source pays with itself (the Thundersnake's
       // exit) — a SACRIFICE through the one zone-move primitive (DIES fires; indestructible is
@@ -792,6 +797,9 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
     },
     sacrificeSource(): void {
       throw new Error("initialization effects have no source to sacrifice");
+    },
+    fightSource(): void {
+      throw new Error("initialization effects have no source to fight with");
     },
     createLaw(): void {
       throw new Error("initialization effects cannot create laws");

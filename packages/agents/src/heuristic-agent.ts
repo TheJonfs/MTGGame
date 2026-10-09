@@ -15,6 +15,8 @@ const HOLD_ON_OUR_TURN = { control: 3, other: 1 } as const;
 const AGGRO_REACH = 12;
 /** S58 (book 113): the life a deck keeps, paying life for cards, against a list with eight or more burn spells. */
 const BURN_FLOOR = 10;
+/** Book 114: a self-fight mode that costs the fighter is taken for a creature worth at least this (two tokens' worth and the body). */
+const FIGHT_FLOOR = 2.5;
 import { simulateCombat, viewCreatures, type SimObject } from "./combat-sim.js";
 
 /**
@@ -243,6 +245,7 @@ export class HeuristicAgent implements Agent {
     if (this.tapperGated(view, action)) return -Infinity; // S26 r3: hold the tapper for the opponent's turn
     if (this.legendDuplicateGated(view, action)) return -Infinity; // S27 r2: never cast a second copy of a legend we control
     if (this.cantripTimingGated(view, action)) return -Infinity; // S28: Brainstorm at the opponent's end step or in response
+    if (this.entersModesHeld(view, action)) return -Infinity; // book 114: the graveyard answer on a body waits for the graveyard
     if (this.flashTimingGated(view, action)) return -Infinity; // S32: the Escort at the opponent's end step, in response, or when the mana is idle
     if (this.selfCounterGated(view, action)) return -Infinity; // post-S43: Mystic Snake with only our own spell to hit
     if (this.spellPayoffHoldGated(view, action)) return -Infinity; // S45: hold the cheap spell for the Guttersnipe / Pyromancer in hand
@@ -283,7 +286,7 @@ export class HeuristicAgent implements Agent {
       // passing (kills same-host re-equip churn and no-benefit activations).
       return evaluate(view, this.profile, this.defs) - 0.25 - misaim;
     }
-    return evaluate(pred.view, this.profile, this.defs) + pred.adjustment - misaim + this.wheelSpendBonus(view, action) + this.lifegainPayoffBonus(view, action) + this.entersKillBonus(view, action) + this.planBonus(view, action) + this.againstPlanBonus(view, action) + this.loopCastBonus(view, action) + this.holdKeptBonus(view, action);
+    return evaluate(pred.view, this.profile, this.defs) + pred.adjustment - misaim + this.wheelSpendBonus(view, action) + this.lifegainPayoffBonus(view, action) + this.entersKillBonus(view, action) + this.entersModesBonus(view, action) + this.planBonus(view, action) + this.againstPlanBonus(view, action) + this.loopCastBonus(view, action) + this.holdKeptBonus(view, action);
   }
 
   /** S46 (Vitalist — the brief's "a term, not a rule"): while we control a LIFE_GAINED payoff (the shape: a trigger on
@@ -744,8 +747,64 @@ export class HeuristicAgent implements Agent {
       if (killable || lethal || view.life[me] <= 5) return damage;
       return view.hand.length <= 3 ? draw : damage;
     }
+    // Book 114 (Reaper's Forerunner): a FIGHT mode, a graveyard EXILE mode, a token mode — see entersModes.
+    const fight = modes.find((m) => labelOf(m).includes("fights")), yard = modes.find((m) => labelOf(m).includes("exile") && labelOf(m).includes("graveyard"));
+    if (fight || yard) {
+      const r = this.entersModesRead(view, request.source?.cardId);
+      // one order for a mode and for a pair of them ("choose two" in the card's matrix): the graveyard when it is
+      // worth taking, then a fight worth having, then the tokens; a fight not worth having is the last resort
+      const worth = (m: (typeof modes)[number]) => { const l = labelOf(m); return (l.includes("graveyard") && r.yard > 0 ? 100 : 0) + (l.includes("fights") ? (r.fight > 0 ? 50 : -1) : 0) + (l.includes("token") ? 10 : 0); };
+      return [...modes].sort((x, y) => worth(y) - worth(x) || x.mode - y.mode)[0]!;
+    }
     if (draw) return draw;
     return token ?? modes[0]!;
+  }
+
+  /** Book 114 (Reaper's Forerunner): a creature whose ENTERS trigger is modal with a self-fight mode and/or a
+   * graveyard-exile mode. What each is worth on this board: `yard` — the plan module's read (an opposing stack item
+   * aimed at their graveyard, or their plan's piece lying in it); `fight` — the best opposing creature the fight
+   * kills (deathtouch kills anything; else our power against its toughness), counted only when it beats the other
+   * mode's two tokens: worth FIGHT_FLOOR when our creature dies in the fight, anything at all when it survives.
+   * Keyed on the trigger's shape, not the card. */
+  private entersModesRead(view: GameView, cardId: string | undefined): { yard: number; fight: number; modal: boolean; two: boolean } {
+    const d = cardId ? this.def(cardId) : undefined;
+    const ab = (d?.abilities ?? []).find((a) => a.kind === "triggered" && a.event === "ENTERS_BATTLEFIELD" && a.condition?.source === "self" && (a.modes ?? []).length > 0);
+    const modes = ab && ab.kind === "triggered" ? ab.modes ?? [] : [];
+    const hasYard = modes.some((m) => m.effects.some((e) => e.type === "exileGraveyard")), hasFight = modes.some((m) => m.effects.some((e) => e.type === "fight" && e.self));
+    if (!d || (!hasYard && !hasFight)) return { yard: 0, fight: 0, modal: false, two: false };
+    const yard = hasYard ? this.plans.yardExileWorth(view) : 0;
+    let fight = 0;
+    if (hasFight) {
+      const pow = d.power ?? 0, tough = d.toughness ?? 0, touch = (d.keywords ?? []).includes("deathtouch");
+      for (const o of view.battlefield) {
+        if (o.controller === view.you || o.power === null || o.toughness === null) continue;
+        if (!(touch ? pow > 0 : pow >= o.toughness - o.damage) || o.keywords.includes("indestructible")) continue;
+        const weDie = o.power >= tough || (o.power > 0 && o.keywords.includes("deathtouch"));
+        const v = objectValue(this.defs, o, this.C);
+        if (v >= (weDie ? FIGHT_FLOOR : 0.5)) fight = Math.max(fight, v);
+      }
+    }
+    return { yard, fight, modal: true, two: modes.every((m) => m.label.includes("; ")) };
+  }
+  /** Book 114: the cast of such a creature is worth what its trigger will do — the predictor does not resolve an
+   * enters trigger. The graveyard's worth in full (it answers a plan); half the fight's kill (as book 89); the two
+   * tokens otherwise. Exposed. */
+  entersModesBonus(view: GameView, action: Action): number {
+    if (action.type !== "castSpell") return 0;
+    const r = this.entersModesRead(view, view.hand.find((c) => c.objectId === action.objectId)?.cardId);
+    if (!r.modal) return 0;
+    const parts = [r.yard, 0.5 * r.fight, 1].sort((x, y) => y - x);
+    return r.two ? parts[0]! + parts[1]! : parts[0]!;
+  }
+  /** Book 114: against a list whose plan a graveyard exile answers, such a creature is HELD until the exile has
+   * something to take (as Faerie Macabre, book 105) — the snake is the answer, not a body. `off: ["yardhold"]`. Exposed. */
+  entersModesHeld(view: GameView, action: Action): boolean {
+    if (action.type !== "castSpell" || this.profile.off?.includes("yardhold")) return false;
+    const op = this.profile.opponentPlan;
+    if (!op || !op.answers.graveyardExile) return false;
+    const d = this.def(view.hand.find((c) => c.objectId === action.objectId)?.cardId ?? "");
+    const hasYard = (d?.abilities ?? []).some((a) => a.kind === "triggered" && a.event === "ENTERS_BATTLEFIELD" && (a.modes ?? []).some((m) => m.effects.some((e) => e.type === "exileGraveyard")));
+    return hasYard && this.plans.yardExileWorth(view) === 0;
   }
 
   /** S15 Part 3.1 — ranked tutor policy v1 (exposed for the book of shame).
@@ -1739,6 +1798,7 @@ export class HeuristicAgent implements Agent {
     const d = card ? this.def(card.cardId) : undefined;
     if (!d || !d.types.includes("Creature") || !(d.keywords ?? []).includes("flash")) return false;
     if (view.stack.some((it) => it.controller !== view.you)) return false; // in response to THEIRS: fine (S34, as the cantrip gate)
+    if (this.entersModesRead(view, card!.cardId).yard > 0) return false; // book 114: their graveyard is worth exiling now
     if (view.activePlayer !== view.you) return view.step !== "END";
     const me = view.you;
     const untapped = view.battlefield.filter((o) => o.controller === me && !o.tapped && this.def(o.cardId)?.types.includes("Land")).length;

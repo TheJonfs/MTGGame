@@ -294,7 +294,9 @@ export type EffectBase =
    * the Usher's entrance). A blinked guest is a NEW object and sheds both riders (the launder).
    * `withCounters` (S22): it enters with counters (Graceful Restoration's +1/+1 rider). */
   | { type: "returnFromGraveyard"; target?: number; targetSpec?: number; scope?: Scope; to: "battlefield" | "hand"; temporary?: true; withCounters?: { kind: "+1/+1"; count: number }; /** S30 (Reassembling Skeleton): enters tapped. */ tapped?: true }
-  | { type: "fight"; targets: [number, number] }
+  /** S58 (R-106, Reaper's Forerunner): `self` — the resolving ability's own SOURCE fights the target ("this creature
+   * fights target creature you don't control"); the two-target form is Prey Upon's. Exactly one of the two. */
+  | { type: "fight"; targets?: [number, number]; self?: true; target?: number }
   /** ADR-033: the static form (scope "attached" — Control Magic). S26 (Lumen, the Hearth Fire): the
    * RESOLVED form — `target` + `duration: "UNTIL_END_OF_TURN"` — the threaten class: a stored control
    * effect the control layer reads beside the statics; expires at cleanup (the creature stays tapped

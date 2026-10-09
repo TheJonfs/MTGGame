@@ -88,6 +88,8 @@ export interface EffectContext {
    * deathtouch/lifelink apply). Callers have already verified both are legal.
    */
   fight(idA: string, idB: string): void;
+  /** S58 (R-106): the resolving ability's own SOURCE fights `targetId`; nothing happens if the source has left the battlefield (CR 701.14b). */
+  fightSource(targetId: string): void;
   /** Exile (CR 700.4: not a death — no DIES trigger). S55: a permanent, or a card in a graveyard (Faerie Macabre). */
   exile(objectId: string): void;
   /** S23 (ADR-084): sacrifice the resolving ability's own SOURCE (the Thundersnake) — a sacrifice,
@@ -401,8 +403,13 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
     if (e.type !== "fight") throw new Error("resolver mismatch");
     // ADR-022: all-or-nothing. If either target is illegal at resolution,
     // neither creature deals or takes damage.
-    const a = ctx.target(e.targets[0]);
-    const b = ctx.target(e.targets[1]);
+    if (e.self) { // S58 (R-106): the source itself fights — no fight if it has left the battlefield (CR 701.14b)
+      const t = ctx.target(e.target!);
+      if (t && t.kind === "object") ctx.fightSource(t.id);
+      return;
+    }
+    const a = ctx.target(e.targets![0]);
+    const b = ctx.target(e.targets![1]);
     if (!a || !b || a.kind !== "object" || b.kind !== "object") return;
     ctx.fight(a.id, b.id);
   },

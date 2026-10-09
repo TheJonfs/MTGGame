@@ -26,6 +26,8 @@ export function isHarmful(e: Effect): boolean {
     (e.type === "loseLife" && e.who === "target") ||
     (e.type === "discard" && e.who === "target") ||
     (e.type === "mill" && e.who === "target") ||
+    (e.type === "exileGraveyard" && e.who === "target") || // book 114: a graveyard is exiled from under its owner
+    (e.type === "fight" && e.self === true) || // book 114: the source fights what it is pointed at
     (e.type === "sacrifice" && "who" in e && e.who === "target") || // S31: the edict
     (e.type === "addCounters" && e.kind === "-1/-1") ||
     // S40 (Static Sphere): a NAMED counter put on a TARGET is a mark — hostile in this pool (the accumulators

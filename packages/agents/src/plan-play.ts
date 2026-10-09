@@ -272,6 +272,14 @@ export class PlanPlay {
     }
     return null;
   }
+  /** Book 114: what exiling the OPPONENT's graveyard is worth right now — the game when an opposing stack item is aimed
+   * at a card in it, a good deal when it holds their plan's piece, nothing otherwise. */
+  yardExileWorth(view: GameView): number {
+    const opp = (1 - view.you) as 0 | 1, op = this.h.profile.opponentPlan;
+    const aimed = this.graveyardAimed(view);
+    if (aimed && view.graveyardObjects[opp].some((g) => g.objectId === aimed.targetId)) return LOOP_WORTH;
+    return op && view.graveyards[opp].some((c) => planPieces(op).includes(c)) ? 6 : 0;
+  }
   private isGraveyardExile(view: GameView, action: Action): { whole: boolean } | null {
     if (action.type !== "activateAbility") return null;
     const ab = viewAbilityAt(view, this.h.defs, action.objectId, action.abilityIndex);

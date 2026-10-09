@@ -686,3 +686,7 @@ See handoff Concerns for the authoritative list. Highlights: auto-pay greedy fea
 - **`profile.trial: ["name"]`** switches a CANDIDATE rule on for a seat (`open:rr --trial name --trial-for k1,k2`), the mirror of `profile.off`. A candidate lives behind it until it is ruled on; default play is unchanged, so no ladder run is owed until it ships.
 - **`play-diff` counts WINDOWS; a hold is a card on a turn.** A Bolt held through six priority windows of a turn is six "differences" and one hold: the report's holds table is the one to read. Beside it, a direct tally of the two players' use of the card (target, the opponent's life, whose turn) says more than the playouts did.
 - **`play-diff --event <seed>`** takes one Convocation's games from a recording (the file holds the newest thirty games, whatever the event).
+- **`fight` has two forms** (R-106): `targets: [a, b]` or `self: true, target: N`. The agent prices the self form itself (`entersModesRead`, book 114) — `view-sim` returns 0 for it.
+- **`~modes=2`** on a variant replaces a modal trigger's modes with every pair. A mode that reads `who: "target"` goes first in its pair, because `who: "target"` is always target 0.
+- **`open:rr --off rule --off-for key`**: the rule and the list are separate flags. `--off-for key:rule` is accepted and does nothing.
+- **Cite the Comprehensive Rules by the current number and say the date.** Keyword actions in 701 have been renumbered since the early registry rows (Fight was 701.12, is 701.14).
