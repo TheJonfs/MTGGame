@@ -15,7 +15,7 @@ import { runMatch, type Agent, type MatchSpec, type Modifier } from "@shandalar/
 import type { Decklist, Collection } from "./state.js";
 import { checkDeck, isBasic, type DeckCheck, type DeckRule } from "./legality.js";
 import { CONSTRUCTED_FORMATS, DRAFT_PLANE, LIMITED_FORMATS, OPEN_FORMAT, type ConstructedFormat, type Format, type LimitedFormat } from "./formats.js";
-import { SIDEBOARD_SIZE, buildConstructedDeck, buildSideboard, type LibraryList } from "./constructed-builder.js";
+import { SIDEBOARD_SIZE, buildConstructedDeck, buildSideboard, cappedLists, type LibraryList } from "./constructed-builder.js";
 import { draftPick, runDraftPacks } from "./drafter.js";
 import { rollPack, resolveSet, type ConvocationPackData } from "./packs.js";
 import { buildLimitedDeck } from "./limited-builder.js";
@@ -162,10 +162,12 @@ export function newConstructedEvent(opts: Omit<NewEventOptions, "format"> & { fo
   const names = [...opts.names]; for (let i = names.length - 1; i > 0; i--) { const j = rng.int(i + 1); [names[i], names[j]] = [names[j]!, names[i]!]; }
   const used = new Set<string>();
   const field: EventSeat[] = [];
+  const drawn = new Map<string, number>(); // post-S58: how many seats hold each list (the cap)
   for (let s = 0; s < seats; s++) {
     if (s === 0) { field.push({ name: opts.playerName ?? "You", human: true, pool: [], deck: [], sideboard: [], colors: "", archetype: "midrange" }); continue; }
     const strength = seatStrength(opts.seed, s);
-    const b = buildConstructedDeck(format, deps.rating, sub(opts.seed, 8, s), opts.library, deps.cards, { tinker: strength.builder, lists: strength.lists }); // S54: the seat's builder; S55: its list draw
+    const b = buildConstructedDeck(format, deps.rating, sub(opts.seed, 8, s), opts.library, deps.cards, { tinker: strength.builder, lists: strength.lists, exclude: cappedLists(drawn, seats) }); // S54: the seat's builder; S55: its list draw; post-S58: the cap
+    drawn.set(b.from, (drawn.get(b.from) ?? 0) + 1);
     const colors = deckColors(b.deck, deps.cards);
     const fits = opts.faces.filter((f) => !used.has(f.portrait) && [...f.colors].some((c) => colors.includes(c)));
     const open = fits.length ? fits : opts.faces.filter((f) => !used.has(f.portrait));
@@ -691,9 +693,11 @@ export function beginStage(event: ConvocationEvent, k: number, deps: EventDeps, 
     // second stage (and the Umbel) in the same format plays the same decks
     const first = at.stages!.findIndex((x) => x.formatId === st.formatId), deckSalt = stageSalt({ stages: at.stages!, stage: first });
     const mine = at.decklists?.[st.formatId];
+    const drawn = new Map<string, number>(); // post-S58: the cap — no list more than a tenth of the field (the seats draw in order)
     const field = at.field.map((seat, s) => {
       if (s === 0) return mine ? { ...bare(seat), deck: mine.map((e) => ({ ...e })), sideboard: (at.sideboards?.[st.formatId] ?? []).map((e) => ({ ...e })), colors: deckColors(mine, deps.cards) } : bare(seat);
-      const b = buildConstructedDeck(format, deps.rating, sub(at.seed, 8, s, ...deckSalt), library, deps.cards, seat.builder ? { tinker: seat.builder, ...(seat.lists ? { lists: seat.lists } : {}) } : {}); // S54: the seat's builder; S55: its list draw
+      const b = buildConstructedDeck(format, deps.rating, sub(at.seed, 8, s, ...deckSalt), library, deps.cards, { ...(seat.builder ? { tinker: seat.builder, ...(seat.lists ? { lists: seat.lists } : {}) } : {}), exclude: cappedLists(drawn, at.field.length) }); // S54: the seat's builder; S55: its list draw
+      drawn.set(b.from, (drawn.get(b.from) ?? 0) + 1);
       return { ...bare(seat), deck: b.deck, sideboard: seatSideboard(b.deck, format, deps, b.from, library), list: b.from, tinker: b.tinker, colors: deckColors(b.deck, deps.cards), archetype: b.archetype };
     });
     if (!mine) return { ...at, field };

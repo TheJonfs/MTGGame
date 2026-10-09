@@ -15,7 +15,7 @@ import {
 import type { ConvocationPackData } from "./packs.js";
 import { OPEN_DECKS } from "@shandalar/sim/open-decks";
 import { OPEN_FORMAT } from "./formats.js";
-import { buildSideboard } from "./constructed-builder.js";
+import { buildConstructedDeck, buildSideboard, cappedLists, listCap } from "./constructed-builder.js";
 import { AI_SIDEBOARD_CONSTRUCTED, aiSideboard, answersCreatures, answersRelics } from "./sideboard-ai.js";
 import { checkEventDeck, checkSideboard, newConstructedEvent, recordSeries, registerDeck, registerDecklist, seatForGame } from "./event.js";
 
@@ -85,7 +85,31 @@ describe("the Convocation after S54", () => {
     expect(line.field.length).toBeLessThanOrEqual(LEDGER_FIELD + 1);
     expect(line.field.some((r) => r.name === e.field[0]!.name)).toBe(true);
     expect(line.field.filter((r) => r.place <= LEDGER_FIELD).length).toBe(LEDGER_FIELD);
+    // post-S58 (the cap): the staged event's Constructed field too — no list in more than a tenth of its 32 seats
+    const held = new Map<string, number>(); for (const seat of e.field.slice(1)) held.set(seat.list!, (held.get(seat.list!) ?? 0) + 1);
+    expect(Math.max(...held.values())).toBeLessThanOrEqual(listCap(32));
   }, 120_000);
+
+  it("post-S58 (Chris: the Mardu decks 'feel overrepresented' — the Pall drew four seats of 31) — the cap: no list is more than a tenth of the field, whatever the seats' draws; the field is the same event for the same seed; without the cap the strongest list passes it", () => {
+    expect([listCap(8), listCap(16), listCap(32), listCap(128)]).toEqual([1, 1, 3, 12]);
+    expect([...cappedLists(new Map([["a", 3], ["b", 2]]), 32)]).toEqual(["a"]);
+    let most = 0, uncapped = 0;
+    for (let seed = 1; seed <= 12; seed++) {
+      const e = newConstructedEvent({ seed: 5800 + seed, names: convocationNames(31), faces: FACES, library, seats: 32 }, deps);
+      const held = new Map<string, number>(); for (const seat of e.field.slice(1)) held.set(seat.list!, (held.get(seat.list!) ?? 0) + 1);
+      most = Math.max(most, ...held.values());
+      expect(held.size).toBeGreaterThanOrEqual(11); // 31 seats at three a list: eleven lists or more
+      expect(newConstructedEvent({ seed: 5800 + seed, names: convocationNames(31), faces: FACES, library, seats: 32 }, deps).field.map((x) => x.list)).toEqual(e.field.map((x) => x.list));
+      // the same seats' draws with no cap: the strong seats crowd onto the top of the table
+      const free = new Map<string, number>(); for (let s = 1; s < 32; s++) { const b = buildConstructedDeck(OPEN_FORMAT, rating, 5800 * 31 + seed * 97 + s, library, cards, { lists: seatStrength(5800 + seed, s).lists }); free.set(b.from, (free.get(b.from) ?? 0) + 1); }
+      uncapped = Math.max(uncapped, ...free.values());
+    }
+    expect(most).toBe(3);
+    expect(uncapped).toBeGreaterThan(3);
+    const big = newConstructedEvent({ seed: 58, names: convocationNames(127), faces: FACES, library, seats: 128 }, deps);
+    const held = new Map<string, number>(); for (const seat of big.field.slice(1)) held.set(seat.list!, (held.get(seat.list!) ?? 0) + 1);
+    expect(Math.max(...held.values())).toBeLessThanOrEqual(12);
+  });
 
   // ---------- post-S54 (Chris): Constructed sideboards ----------
 

@@ -9,15 +9,15 @@ Session 58 closed the revision round. The Open's lists now live entirely in code
 - **Part 2 (the Cinder diff) could not be run on the 8–0 file**: it holds results, not moves. The tool and the recording it needs are built instead.
 - **A new table of record**, sixteen lists.
 
-`pnpm typecheck`, `pnpm test` (977) and `pnpm build:web` pass. **Nothing from this session is pushed.** After the session proper Chris replaced the Undertow with a new list: its own section below, with the table of record as it now stands.
+`pnpm typecheck`, `pnpm test` (978) and `pnpm build:web` pass. **Nothing from this session is pushed.** After the session proper Chris replaced the Undertow with a new list: its own section below, with the table of record as it now stands.
 
 ## For the planner — the decisions waiting
 1. **Two of the six in/out pairs in the Locks' guide measured wrong** and are out of it (Deviation 2). The planner may want to re-author them.
 2. **Part 2 is delivered after all:** the recording works; the Writ's diff and the Cinder's are in (their own sections below). **The Cinder's produced two rules, both shipped at Chris's word (books 112 and 113, the section below): the planner should ratify or reverse them.** The Writ's diff points at two pilot questions: Clio as a lock, and holding mana on its own turn.
 3. **S59, the campaign linkage:** my read of how it would be built is at the end of this handoff. One question in it needs a ruling before any code: how an invitation is earned.
 4. **The Sweep's fifteen** is still open (Chris's).
-5. **The field's list draw gives the Pall four seats in 31 and a third of the strong seats** (the last section before the deviations). It needs a ruling: a gentler scale, a cap, or rank weights.
-6. **A goblin list built in simulation measures 68.9%** and is not yet in the Open (the same section). Its Kavus are the staple ADR-170 watches.
+5. **The field's list draw gave the Pall four seats in 31; Chris ruled a cap** (no list more than a tenth of the field; the last section before the deviations). ADR-158 is amended at his word.
+6. **A goblin list built in simulation is in the Open as the Rabble, in the Cinder's place, and ties the Pall at 68.** Two lists are now fifteen points clear of the field. Its Kavus are the staple ADR-170 watches.
 
 ## Done this session
 
@@ -193,6 +193,29 @@ pall 71 (+1) · hearth 55 (−1) · coin 54 · muster 54 (+2) · warband 52 (+2)
 - **The cause is the exponential on one outlier.** When the rule was built the top list stood at 62–64; at 71 the same formula gives it a third of the strong seats.
 - Levers, none taken (ADR-158 is the planner's): a gentler scale (20 in place of 10 brings the Pall to about 18% of "top" seats and 2.5 seats of 31); a cap on any one list's share of the field (say three seats of 31); or weighting by rank instead of by mean. The cap is the one that guarantees variety whatever the table does.
 
+## After the session — the Rabble replaces the Cinder, and the field's cap (Chris, 2026-10-08)
+
+**The Rabble** (the goblin build, with Chris's Mox Sapphire for the Pearl; a working name) is the eighth contributed list, **in the Cinder's place** (the Cinder is archived). Its fifteen is the one Chris played, read from his recorded games: 4 Ruby Tyrant, 3 Abrade, 4 Tormod's Crypt, 4 Faerie Macabre.
+
+**The table of record** (sixteen lists, pilot 113, 12,000 games, `analysis/runs/rr16_s58d.json`):
+
+pall 68 · rabble 68 · coin 53 · writ 53 · muster 52 · hearth 52 · kiln 51 · warband 50 · levy 49 · sweep 46 · depths 46 · tally 45 · wurmspeaker 44 · enchantress 42 · ford 41 · locks 40.
+
+- **There are now two lists at 68**, fifteen points clear of the third. The Rabble beats every list (the Pall 53, the Coin 54 are its closest).
+- The retire count from this table: the bottom three are the Locks (40.5), the Ford (41.4) and the Enchantress (41.6).
+
+**The cap (Chris's ruling): no list is more than a tenth of the field.** `LIST_CAP = 0.1`; three seats of a 32-seat event, twelve of 128, one of sixteen. The seats draw in order and a list at the cap is closed to the seats after it. The list draw by strength (ADR-158) stands underneath: Chris wants the responsive metagame kept in the back pocket.
+
+| a field of 32 (300 events) | before the cap | with it |
+|---|---|---|
+| the Pall, seats on average | 4.0 | 2.6 |
+| the three Usher lists together | 7.6 | 6.2 |
+| the least-played list | 1.6 | 1.7 |
+
+- The Pall and the Rabble still reach the cap in two events of three; every other list in about one of three.
+- It applies to a new Constructed event and to each Constructed day of a Convocation. An event already in progress keeps the field it has.
+- *ADR-158 was the planner's; this amends it at Chris's word.*
+
 ## Deviations from the brief
 1. **Part 2's report is not delivered.** The 8–0 file records seeds and results; a person's decisions cannot be recovered from it. I built the tool, the engine piece and the recording, and checked them on a stand-in. *The report follows when Chris has played recorded games.*
 2. **The Locks' guide ships with four of the planner's six pairs.** Essence Scatter for Absorb against creature decks cost 17 points against the Enchantress, 11 against the Ford and 10 against the Cinder; Disenchant for the Serras cost 12 against the Muster and the Enchantress. Both rows are out; the rules still bring those cards in where their own tests pass.
@@ -216,7 +239,7 @@ pall 71 (+1) · hearth 55 (−1) · coin 54 · muster 54 (+2) · warband 52 (+2)
 None.
 
 ## Test status
-`pnpm test`: 109 files passed, 1 skipped; **977 tests passed, 2 skipped** (the standing two). `pnpm typecheck` and `pnpm build:web` pass.
+`pnpm test`: 109 files passed, 1 skipped; **978 tests passed, 2 skipped** (the standing two). `pnpm typecheck` and `pnpm build:web` pass.
 
 New this session:
 - `sim/s58-replay.test.ts` (`replayThenPlay`).

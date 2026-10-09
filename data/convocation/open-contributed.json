@@ -3,7 +3,8 @@
  "archived": {
   "loop": "S56 (ADR-164): redundant with the Coin — 31 of its 37 nonland cards shared, matchup profiles r = 0.88, worse against eleven of the other twelve. Last measured 53 (pilot 106, sixteen lists).",
   "larder": "Post-S57 (Chris, 2026-10-07; ADR-165's exit): last in five measures (31 on the S57 table with its plan). Acceleration, a green mana base and a mono-green-with-Zombify build all measured flat or worse (handoff). The Pall does its job a turn faster. Its plan (goal: once) stays as the vocabulary's second customer.",
-  "undertow": "Post-S58 (Chris, 2026-10-08): replaced by the Writ, his 5–0 Dimir Control list (53.6% in the AI's hands against the Undertow's 40). Last measured 40 (pilot 111, S58's table)."
+  "undertow": "Post-S58 (Chris, 2026-10-08): replaced by the Writ, his 5–0 Dimir Control list (53.6% in the AI's hands against the Undertow's 40). Last measured 40 (pilot 111, S58's table).",
+  "cinder": "Post-S58 (Chris, 2026-10-08): replaced by the Rabble, the goblin build of mono-red (68.9% in the AI's hands in the Cinder's seat, where the Cinder stood at 44). Last measured 44 (pilot 113)."
  },
  "plans": {
   "larder": {
@@ -1222,6 +1223,109 @@
     {
      "cardId": "control_magic",
      "count": 3
+    }
+   ]
+  },
+  {
+   "key": "rabble",
+   "name": "the Rabble",
+   "title": "Mono-Red Goblins (R)",
+   "archetype": "aggro",
+   "source": "Built in simulation by paired swaps (2026-10-08: about 45 trials in the Cinder's seat) and played by Chris in an Open, seed 577748 — 4–1 in the Swiss, a quarter-final won, a semi-final lost; with his Mox Sapphire for the Pearl and his fifteen as read from his recorded games. A working name until Chris names it.",
+   "decklist": [
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "badlands",
+     "count": 4
+    },
+    {
+     "cardId": "tallyflame_court",
+     "count": 1
+    },
+    {
+     "cardId": "volcanic_island",
+     "count": 4
+    },
+    {
+     "cardId": "mountain",
+     "count": 8
+    },
+    {
+     "cardId": "goblin_grenade",
+     "count": 4
+    },
+    {
+     "cardId": "raging_goblin",
+     "count": 4
+    },
+    {
+     "cardId": "dragon_fodder",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "char",
+     "count": 4
+    },
+    {
+     "cardId": "goblin_chieftain",
+     "count": 4
+    },
+    {
+     "cardId": "seasoned_pyromancer",
+     "count": 4
+    },
+    {
+     "cardId": "hordeling_outburst",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "siege_gang_commander",
+     "count": 2
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "the_ruby_tyrant",
+     "count": 4
+    },
+    {
+     "cardId": "abrade",
+     "count": 3
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 4
+    },
+    {
+     "cardId": "faerie_macabre",
+     "count": 4
     }
    ]
   }
