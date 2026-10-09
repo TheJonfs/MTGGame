@@ -249,7 +249,7 @@ Chris's custom card, from his printed face: **{1}{G}{G} Creature — Snake 1/1, 
   2. **The pilot exiles a graveyard only against a registered plan, or in response.** The Coin and the Kiln use their graveyards and were left alone. It also never flashes the snake in as a blocker. A person will get more from the card than the matrix shows.
   3. **`open:rr --off-for` takes list keys, not `key:rule`.** A wrong value is accepted silently and the run is the default pilot; my first hold-off run was the baseline again.
 
-## After the session — Countersnake joins the Open; books 115–117 from Chris's recorded run (2026-10-09) — NOT PUSHED
+## After the session — Countersnake joins the Open; books 115–117 from Chris's recorded run (2026-10-09)
 - **Countersnake is the seventeenth list** (Chris's four-colour flash-and-counterspell deck, his name): his sixty and his fifteen from the Open he won with it (seed 851238: 8–0 in matches, 16–2 in games). **Piloted as midrange** — the AI plays it better so (57.8% against 54.3% as control, 1,500 paired games).
 - **Three pilot rules from his recorded games** (the play diff: `docs/debug_logs/recorded_games/play-diff-countersnake.md`; 40% of decisions differed, three-quarters of them Chris waiting where the pilot acted). Each was probed behind a trial switch on every list it touches before shipping; no list got worse. **Ladder mirror gate PASS.**
   - **Book 115 — a flash creature is not cast on our own turn** (it waits for the opponent's end step, or answers something). `off: ["flashend"]`. The Hearth +1.6 ± 1.1, Countersnake +0.7 ± 1.3.
