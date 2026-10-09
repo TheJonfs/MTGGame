@@ -9,7 +9,7 @@ Session 58 closed the revision round. The Open's lists now live entirely in code
 - **Part 2 (the Cinder diff) could not be run on the 8–0 file**: it holds results, not moves. The tool and the recording it needs are built instead.
 - **A new table of record**, sixteen lists.
 
-`pnpm typecheck`, `pnpm test` (978) and `pnpm build:web` pass. **Everything here is pushed.** After the session proper Chris replaced the Undertow with a new list: its own section below, with the table of record as it now stands.
+`pnpm typecheck`, `pnpm test` (981) and `pnpm build:web` pass. **Everything is pushed except the last section (two interface changes).** After the session proper Chris replaced the Undertow with a new list: its own section below, with the table of record as it now stands.
 
 ## For the planner — the decisions waiting
 1. **Two of the six in/out pairs in the Locks' guide measured wrong** and are out of it (Deviation 2). The planner may want to re-author them.
@@ -216,6 +216,13 @@ pall 68 · rabble 68 · coin 53 · writ 53 · muster 52 · hearth 52 · kiln 51 
 - It applies to a new Constructed event and to each Constructed day of a Convocation. An event already in progress keeps the field it has.
 - *ADR-158 was the planner's; this amends it at Chris's word.*
 
+## After the session — two interface changes (Chris, 2026-10-09)
+- **The deck editor's filters narrow the pool only.** The colour/type filter and the search used to hide the deck's cards too; the deck is now always shown whole. (Every screen that uses the editor: the journey, the Convocation, the single match.)
+- **The single match has a new setup screen.** Each side picks a category (decks built here, the Open's lists, the journey's decks, the mages, the beasts, the bosses met) and then a deck in it. Either side's deck can be built in the deck editor, from an empty deck or from a copy of the one selected, over every card legal in the Open (forty cards or more); built decks are kept in the browser. The opponent's level, who plays first and the seed are three small menus.
+  - The Open's lists are offered in the single match for the first time.
+  - The dev setup (the Matchup Lab's dials) is now a link from this screen in dev mode, not the default. The old dev-only "pilot a road deck against the Heart" option on the plain screen is gone; the dev setup covers it.
+  - Walked in a browser: the menus, a deck built from the Coin and saved, and a match started with it.
+
 ## Deviations from the brief
 1. **Part 2's report is not delivered.** The 8–0 file records seeds and results; a person's decisions cannot be recovered from it. I built the tool, the engine piece and the recording, and checked them on a stand-in. *The report follows when Chris has played recorded games.*
 2. **The Locks' guide ships with four of the planner's six pairs.** Essence Scatter for Absorb against creature decks cost 17 points against the Enchantress, 11 against the Ford and 10 against the Cinder; Disenchant for the Serras cost 12 against the Muster and the Enchantress. Both rows are out; the rules still bring those cards in where their own tests pass.
@@ -239,7 +246,7 @@ pall 68 · rabble 68 · coin 53 · writ 53 · muster 52 · hearth 52 · kiln 51 
 None.
 
 ## Test status
-`pnpm test`: 109 files passed, 1 skipped; **978 tests passed, 2 skipped** (the standing two). `pnpm typecheck` and `pnpm build:web` pass.
+`pnpm test`: 109 files passed, 1 skipped; **981 tests passed, 2 skipped** (the standing two). `pnpm typecheck` and `pnpm build:web` pass.
 
 New this session:
 - `sim/s58-replay.test.ts` (`replayThenPlay`).

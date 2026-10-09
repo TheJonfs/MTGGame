@@ -40,7 +40,9 @@ export function DeckEditor({ host: h, pool, oracle }: { host: DeckEditorHost; po
     return mv(a) - mv(b) || da.name.localeCompare(db.name);
   };
   const spareIds = Object.keys(sp).filter(passes).sort(order);
-  const deckIds = draft.map((e) => e.cardId).filter(passes).sort(order);
+  // Post-S58 (Chris: "the filters filter both the pool and the decklist, which makes it hard to see what's in the deck"):
+  // the filter and the search narrow the POOL only — the deck is always shown whole (in the chosen order).
+  const deckIds = draft.map((e) => e.cardId).filter((id) => pool.has(id)).sort(order);
   const cell = (id: string, n: number, onClick: () => void, label: string) => (
     <div key={id} className="editor-card" onClick={onClick} onMouseEnter={() => setInspect(id)} title={label}>
       <div className="editor-slot"><CardFrame def={pool.get(id)!} oracle={oracle[id]} showPrinted={printed} /></div>
