@@ -767,7 +767,8 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.scorePriorityAction(v({ step: "MAIN1", activePlayer: 1 }), cast)).toBe(-Infinity); // their main phase, nothing to answer
     expect(a.scorePriorityAction(v({ step: "END", activePlayer: 1 }), cast)).toBeGreaterThan(-Infinity); // their end step
     expect(a.scorePriorityAction(v({ step: "MAIN1", activePlayer: 0, hand: [{ objectId: "h_crab", cardId: "hedron_crab" }] }), cast)).toBe(-Infinity); // our turn, the Crab wants the mana
-    expect(a.scorePriorityAction(v({ step: "MAIN1", activePlayer: 0 }), cast)).toBeGreaterThan(-Infinity); // our turn, idle mana
+    expect(a.scorePriorityAction(v({ step: "MAIN1", activePlayer: 0 }), cast)).toBe(-Infinity); // book 115: our turn, idle mana — it still waits for their end step
+    expect(new HeuristicAgent(1, pool, { ...difficultyProfile("master", "control", []), off: ["flashend"] }).scorePriorityAction(v({ step: "MAIN1", activePlayer: 0 }), cast)).toBeGreaterThan(-Infinity); // the rule as it was (S32)
     expect(a.scorePriorityAction(v({ step: "MAIN1", activePlayer: 0, hand: [{ objectId: "h_crab", cardId: "hedron_crab" }], stack: [{ id: "s0", kind: "spell", cardId: "hedron_crab", controller: 0 }] }), cast)).toBe(-Infinity); // S34: our own spell on the stack is not "in response"
     // The save: their Bolt at our Traumatizer — flash in (beats pass) and the ETB aims at the Traumatizer, not the untargeted Bears.
     const bolt = { id: "s1", kind: "spell", cardId: "lightning_bolt", controller: 1, targets: [{ kind: "object", id: "tr" }] };
@@ -980,9 +981,21 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
         ],
       });
     const burst = { type: "activateAbility" as const, objectId: "clio", abilityIndex: 2, targets: [] };
-    expect(a.scorePriorityAction(clio(3, 2), burst)).toBe(-Infinity); // hold: stocked hand, threatening board
-    expect(a.scorePriorityAction(clio(1, 2), burst)).toBeGreaterThan(-Infinity); // the hand ran low
-    expect(a.scorePriorityAction(clio(4, 1), burst)).toBeGreaterThan(-Infinity); // the board is thin
+    const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["cliohold"] }); // book 116 replaced this pin; it stands behind the switch
+    expect(old.scorePriorityAction(clio(3, 2), burst)).toBe(-Infinity); // hold: stocked hand, threatening board
+    expect(old.scorePriorityAction(clio(1, 2), burst)).toBeGreaterThan(-Infinity); // the hand ran low
+    expect(old.scorePriorityAction(clio(4, 1), burst)).toBeGreaterThan(-Infinity); // the board is thin
+    // Book 116 (post-S58 — Chris's Countersnake games): the spend is read against the board it leaves, and waits for their end step.
+    const end = (v: GameView) => ({ ...v, activePlayer: 1 as const, step: "END" as const });
+    const shrunk = (powers: number[], hand = 1) => { const v = clio(hand, powers.length); return { ...v, battlefield: v.battlefield.map((o) => (o.id.startsWith("b") ? { ...o, power: powers[Number(o.id.slice(1))]! } : o)) }; };
+    expect(a.scorePriorityAction(clio(1, 0), burst)).toBe(-Infinity); // our own turn: never (the counter comes back at our end step)
+    expect(a.scorePriorityAction(end(clio(1, 0)), burst)).toBeGreaterThan(-Infinity); // their end step, nothing across
+    expect(a.scorePriorityAction(end(shrunk([-4, -3])), burst)).toBeGreaterThan(-Infinity); // both stay at nothing with three fewer counters
+    expect(a.scorePriorityAction(end(shrunk([-1, -1], 3)), burst)).toBe(-Infinity); // two 2/2s come back: the counters are doing the work
+    expect(a.scorePriorityAction(end(shrunk([-1, -1], 1)), burst)).toBeGreaterThan(-Infinity); // …unless the hand is down to a card and four power is little against twenty life
+    expect(a.scorePriorityAction(end(shrunk([-1], 3)), burst)).toBeGreaterThan(-Infinity); // one creature gets two back: within the slack
+    const doomed = { ...shrunk([-1, -1]), stack: [{ id: "s1", kind: "spell", cardId: "terror", controller: 1 as const, targets: [{ kind: "object" as const, id: "clio" }] }] as never };
+    expect(a.scorePriorityAction(doomed, burst)).toBeGreaterThan(-Infinity); // she is about to die: take the cards
   });
 
   it("book of shame 25 (S25, the court's floors — the pin-17 family): the Witch stops at life 2, the Tyrant never pulls a lethal recoil, the Cleric never walks the library under 3", () => {
@@ -1570,9 +1583,24 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.scorePriorityAction(at(["vampire_nighthawk"]), castAt("h_f"))).toBe(-Infinity);
     expect(a.scorePriorityAction(at(["the_usher", "the_usher"]), castAt("h_f"))).toBeGreaterThan(a.scorePriorityAction(at(["the_usher", "the_usher"]), { type: "pass" }) + 3); // the setup has resolved: now
     expect(a.scorePriorityAction(at(["the_usher"], { activePlayer: 1, stack: zomb as never }), castAt("h_f"))).toBeGreaterThan(a.scorePriorityAction(at(["the_usher"], { activePlayer: 1, stack: zomb as never }), { type: "pass" }) + 20); // in response to the return
-    expect(new HeuristicAgent(1, pool, { ...difficultyProfile("master", "control", PALL, LOCKS), off: ["yardhold"] }).scorePriorityAction(at([]), castAt("h_f"))).toBeGreaterThan(-Infinity); // the switch
-    expect(fair.scorePriorityAction(at([]), castAt("h_f"))).toBeGreaterThan(-Infinity); // no plan across: a creature like any other
+    expect(new HeuristicAgent(1, pool, { ...difficultyProfile("master", "control", PALL, LOCKS), off: ["yardhold"] }).scorePriorityAction(at([], { activePlayer: 1, step: "END" as never }), castAt("h_f"))).toBeGreaterThan(-Infinity); // the switch
+    expect(fair.scorePriorityAction(at([], { activePlayer: 1, step: "END" as never }), castAt("h_f"))).toBeGreaterThan(-Infinity); // no plan across: a flash creature like any other (their end step, book 115)
+    expect(fair.scorePriorityAction(at([]), castAt("h_f"))).toBe(-Infinity); // book 115: not on our own turn
     expect(fair.entersModesBonus({ ...at([]), battlefield: mkView({ battlefield: [...F, { id: "o0", cardId: "serra_angel", controller: 1 }] }).battlefield }, castAt("h_f"))).toBeGreaterThan(fair.entersModesBonus(at([]), castAt("h_f"))); // a kill is worth more than the tokens
+  });
+
+  it("book of shame 117 (post-S58 — Chris held a Swords on 51 turns the pilot would have cast it): one-for-one creature removal waits for a creature worth it — not a token, not a one-drop — unless the opponent's list has nothing better, their board is half our life, or the hand is full", () => {
+    const big = [{ cardId: "serra_angel", count: 4 }, { cardId: "llanowar_elves", count: 16 }, { cardId: "plains", count: 20 }], small = [{ cardId: "llanowar_elves", count: 20 }, { cardId: "forest", count: 20 }];
+    const mk = (opp: { cardId: string; count: number }[], off?: string[]) => new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", opp), ...(off ? { off } : {}) });
+    const v = (theirs: string[], life = 20, hand = 1) => mkView({ life: [life, 20], hand: [{ objectId: "h_s", cardId: "swords_to_plowshares" }, ...Array.from({ length: hand - 1 }, (_, i) => ({ objectId: `h${i}`, cardId: "plains" }))], battlefield: [{ id: "p", cardId: "plains", controller: 0 }, ...theirs.map((c, i) => ({ id: `o${i}`, cardId: c, controller: 1 as const }))] });
+    const at = (id: string) => ({ type: "castSpell" as const, objectId: "h_s", targets: [{ kind: "object" as const, id }] });
+    expect(mk(big).removalHoldGated(v(["llanowar_elves"]), at("o0"))).toBe(true); // an Elf, with Serras to come: held
+    expect(mk(big).removalHoldGated(v(["grizzly_bears"]), at("o0"))).toBe(false); // a Bear is worth the floor (two): not held
+    expect(mk(big).removalHoldGated(v(["llanowar_elves", "serra_angel"]), at("o1"))).toBe(false); // the Serra: now
+    expect(mk(small).removalHoldGated(v(["llanowar_elves"]), at("o0"))).toBe(false); // nothing better in their list
+    expect(mk(big).removalHoldGated(v(["llanowar_elves", "serra_angel"], 8), at("o0"))).toBe(false); // five power at eight life
+    expect(mk(big).removalHoldGated(v(["llanowar_elves"], 20, 7), at("o0"))).toBe(false); // a full hand
+    expect(mk(big, ["removalhold"]).removalHoldGated(v(["llanowar_elves"]), at("o0"))).toBe(false); // the switch
   });
 
   it("book of shame 106 (S55): against a plan, discard is worth most before the turn the plan names", () => {

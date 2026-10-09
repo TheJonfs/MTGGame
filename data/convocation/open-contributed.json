@@ -1328,6 +1328,157 @@
      "count": 4
     }
    ]
+  },
+  {
+   "key": "countersnake",
+   "name": "Countersnake",
+   "title": "Four-Colour Countersnake (G U w b)",
+   "archetype": "midrange",
+   "source": "Chris's Open, seed 851238, 2026-10-09 — 5–0 in the Swiss and the Umbel won (8–0 in matches, 16–2 in games), Normal. Flash creatures and counterspells played at the opponent's end step: Reaper's Forerunner, Restoration Angel, Mystic Snake, the Sower, Clio. Chris's name for it. Piloted as midrange: the AI plays it better so (57.8% against 54.3% as control over 1,500 paired games).",
+   "decklist": [
+    {
+     "cardId": "bayou",
+     "count": 4
+    },
+    {
+     "cardId": "obsidian_observatory",
+     "count": 1
+    },
+    {
+     "cardId": "savannah",
+     "count": 4
+    },
+    {
+     "cardId": "tropical_island",
+     "count": 4
+    },
+    {
+     "cardId": "underground_sea",
+     "count": 4
+    },
+    {
+     "cardId": "wrackroot",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "shevelport",
+     "count": 1
+    },
+    {
+     "cardId": "birds_of_paradise",
+     "count": 4
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 4
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "deadly_recluse",
+     "count": 2
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    },
+    {
+     "cardId": "time_walk",
+     "count": 1
+    },
+    {
+     "cardId": "wall_of_blossoms",
+     "count": 2
+    },
+    {
+     "cardId": "absorb",
+     "count": 1
+    },
+    {
+     "cardId": "clio_lady_of_the_depths",
+     "count": 3
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 4
+    },
+    {
+     "cardId": "tidewall",
+     "count": 2
+    },
+    {
+     "cardId": "mystic_snake",
+     "count": 2
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 4
+    },
+    {
+     "cardId": "the_sower",
+     "count": 3
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "tormods_crypt",
+     "count": 2
+    },
+    {
+     "cardId": "faerie_macabre",
+     "count": 2
+    },
+    {
+     "cardId": "tidewall",
+     "count": 1
+    },
+    {
+     "cardId": "wall_of_blossoms",
+     "count": 1
+    },
+    {
+     "cardId": "deadly_recluse",
+     "count": 1
+    },
+    {
+     "cardId": "treetop_snarespinner",
+     "count": 1
+    },
+    {
+     "cardId": "drana_kalastria_bloodchief",
+     "count": 1
+    },
+    {
+     "cardId": "temporal_spring",
+     "count": 2
+    },
+    {
+     "cardId": "protocol",
+     "count": 2
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 2
+    }
+   ]
   }
  ],
  "_guides_note": "S58: a guide's rows are the author's swaps that MEASURED (open:rr --sideboarded-only <list> --guide-drop …). The Locks' planner's guide also had Essence Scatter for Absorb against creature decks (−17 against the Enchantress, −11 the Ford: Absorb's life and its reach beyond creatures were worth more) and Disenchant for the Serras (−12 the Muster and the Enchantress); both rows are out and the rules bring those cards in where they apply."

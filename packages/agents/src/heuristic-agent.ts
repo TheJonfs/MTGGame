@@ -17,6 +17,10 @@ const AGGRO_REACH = 12;
 const BURN_FLOOR = 10;
 /** Book 114: a self-fight mode that costs the fighter is taken for a creature worth at least this (two tokens' worth and the body). */
 const FIGHT_FLOOR = 2.5;
+/** Book 116: the opposing power a spend of depth counters may give back. */
+const CLIO_SLACK = 2;
+/** Book 117: one-for-one removal waits for a creature worth this. */
+const REMOVAL_FLOOR = 2;
 import { simulateCombat, viewCreatures, type SimObject } from "./combat-sim.js";
 
 /**
@@ -268,6 +272,7 @@ export class HeuristicAgent implements Agent {
     if (this.skeletonGated(view, action)) return -Infinity; // S30: the Skeleton returns with mana to spare, or as a blocker when behind
     if (this.yardReturnPending(view, action)) return -Infinity; // book 98: its return is already on the stack
     if (this.lifeForCardsGated(view, action)) return -Infinity; // S27 r2: the Witch's discipline
+    if (this.removalHoldGated(view, action)) return -Infinity; // book 117: one-for-one removal waits for a creature worth it
     if (this.accumulatorSpendGated(view, action)) return -Infinity; // S26: Clio holds the tax while the board threatens
     if (this.floodSinkGated(view, action)) return -Infinity; // S40 (books 58–63): the flood's repeatable sinks — timing, targets, spare lands
     // The misaim rule: a FINITE cliff (not -Infinity) so book-of-shame orderings among
@@ -1800,6 +1805,10 @@ export class HeuristicAgent implements Agent {
     if (view.stack.some((it) => it.controller !== view.you)) return false; // in response to THEIRS: fine (S34, as the cantrip gate)
     if (this.entersModesRead(view, card!.cardId).yard > 0) return false; // book 114: their graveyard is worth exiling now
     if (view.activePlayer !== view.you) return view.step !== "END";
+    // Book 115 (Chris's Countersnake games: 18 of his 26 Forerunners and every Angel at the opponent's end step or in
+    // response): a flash creature is not cast on our own turn at all — idle mana or not. `off: ["flashend"]` is the
+    // old rule (on our turn when nothing else in hand could use the mana).
+    if (!this.profile.off?.includes("flashend")) return true;
     const me = view.you;
     const untapped = view.battlefield.filter((o) => o.controller === me && !o.tapped && this.def(o.cardId)?.types.includes("Land")).length;
     return view.hand.some((c) => c.objectId !== action.objectId && !this.def(c.cardId)?.types.includes("Land") && !this.def(c.cardId)?.manaCost.includes("X") && this.mv(c.cardId) <= untapped);
@@ -2099,8 +2108,54 @@ export class HeuristicAgent implements Agent {
     const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
     if (!ab || ab.kind !== "activated" || !ab.cost.removeCounters) return false;
     const me = view.you;
+    if (!this.profile.off?.includes("cliohold")) {
+      // Book 116 (`off: ["cliohold"]` is the S26 rule below) — Chris kept the counters on 17 of 33 turns the pilot would have spent them, and drew at
+      // the opponent's end step): the spend is read against the board it would leave. `restored` is the power the
+      // opposing creatures get back when the counters go (a creature held at −2 gets one back from three counters).
+      // Spent only at the opponent's end step — the counter comes back at ours before they attack — or with the
+      // source about to die to something on the stack; and only when the board it leaves is one we can face:
+      // nothing restored to speak of, or a thin hand and little power across.
+      const doomed = view.stack.some((it) => it.controller !== me && (it.targets ?? []).some((t) => t.kind === "object" && t.id === action.objectId));
+      if (doomed) return false;
+      if (!(view.activePlayer !== me && view.step === "END" && view.stack.length === 0)) return true;
+      const n = ab.cost.removeCounters.count, theirs = view.battlefield.filter((o) => o.controller !== me && o.power !== null && !o.keywords.includes("defender"));
+      const restored = theirs.reduce((k, o) => k + Math.max(0, (o.power ?? 0) + n) - Math.max(0, o.power ?? 0), 0);
+      const after = theirs.reduce((k, o) => k + Math.max(0, (o.power ?? 0) + n), 0);
+      if (restored <= CLIO_SLACK) return false;
+      return !(view.hand.length <= 1 && after * 4 <= view.life[me]);
+    }
     const oppCreatures = view.battlefield.filter((o) => o.controller !== me && o.power !== null).length;
     return view.hand.length >= 3 && oppCreatures >= 2;
+  }
+
+  /** Book 117 (Chris's Countersnake games: 51 turns he held a Swords the pilot would have cast, at Faerie tokens, a
+   * Gladehart, a Valkyrie; `off: ["removalhold"]`): one-for-one creature removal (an instant or sorcery
+   * whose effect destroys or exiles its one target) is held for a creature worth REMOVAL_FLOOR or more. Not held when
+   * the opponent's list has nothing better to wait for, when we are under the gun (their power on the board is half
+   * our life or more, or the target attacks us at eight life or less), or when the hand is full. Exposed. */
+  removalHoldGated(view: GameView, action: Action): boolean {
+    if (action.type !== "castSpell" || this.profile.off?.includes("removalhold")) return false;
+    const me = view.you;
+    const d = this.def(view.hand.find((c) => c.objectId === action.objectId)?.cardId ?? "");
+    if (!d || !(d.types.includes("Instant") || d.types.includes("Sorcery")) || (d.targets ?? []).length !== 1) return false;
+    if (!(d.spellEffect ?? []).some((e) => (e.type === "destroy" || e.type === "exile") && "target" in e && e.target === 0)) return false;
+    const t = ((action as { targets?: ResolvedTarget[] }).targets ?? [])[0];
+    const o = t && t.kind === "object" ? view.battlefield.find((b) => b.id === t.id) : undefined;
+    if (!o || o.controller === me || o.power === null) return false;
+    if (objectValue(this.defs, o, this.C) >= REMOVAL_FLOOR) return false;
+    if (view.hand.length >= 7) return false;
+    const theirPower = view.battlefield.filter((b) => b.controller !== me && b.power !== null).reduce((n, b) => n + Math.max(0, b.power ?? 0), 0);
+    if (theirPower * 2 >= view.life[me]) return false;
+    if (view.life[me] <= 8 && (view.combat?.attackers ?? []).includes(o.id)) return false;
+    if (view.battlefield.some((b) => b.attachedTo === o.id && b.controller !== me)) return false; // it carries an Aura or Equipment: the pair is the threat
+    return this.worthWaitingFor() > 0;
+  }
+  /** The opponent's list's creatures worth a removal spell: copies with a printed body or cost that says so (mana
+   * value four or more, or power three or more). */
+  private worthWaitingMemo: number | null = null;
+  private worthWaitingFor(): number {
+    if (this.worthWaitingMemo === null) this.worthWaitingMemo = this.profile.opponentDecklist.reduce((n, e) => { const c = this.def(e.cardId); return n + (c && c.types.includes("Creature") && (manaValue(parseManaCost(c.manaCost)) >= 4 || (c.power ?? 0) >= 3) ? e.count : 0); }, 0);
+    return this.worthWaitingMemo;
   }
 
   /** S23 (fun batch — the Thundersnake discipline, the r3 gate family; Chris-ruled at kickoff):

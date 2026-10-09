@@ -690,3 +690,7 @@ See handoff Concerns for the authoritative list. Highlights: auto-pay greedy fea
 - **`~modes=2`** on a variant replaces a modal trigger's modes with every pair. A mode that reads `who: "target"` goes first in its pair, because `who: "target"` is always target 0.
 - **`open:rr --off rule --off-for key`**: the rule and the list are separate flags. `--off-for key:rule` is accepted and does nothing.
 - **Cite the Comprehensive Rules by the current number and say the date.** Keyword actions in 701 have been renumbered since the early registry rows (Fight was 701.12, is 701.14).
+- **A no-op `--swap` needs a card the list plays.** `list:swamp:0:swamp` fails on a list with no Swamp. `trials.py` does not need one: leave the swap field empty and put the flags in the fourth field.
+- **Check a card's restriction before testing more copies** (Wrackroot and the other High Grounds are one-ofs): `open:rr --swap` does not check legality, `open:gen` does.
+- **To read a recorded game move by move**, replay it with `replayThenPlay(…, index = the log's length, …, onReplayed)` and print each non-pass action with the view's turn, step, hand and stack. Twenty lines of script; it found in a minute what the play diff's table could not show.
+

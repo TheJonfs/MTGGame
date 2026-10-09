@@ -8,30 +8,31 @@ A list's mean win rate against the other active lists (registered sixties, maste
 
 | list | title | pilot | mean |
 |---|---|---|---|
-| the Pall | Usher Combo (B w r) | combo | 68 |
-| the Rabble | Mono-Red Goblins (R) | aggro | 68 |
+| the Pall | Usher Combo (B w r) | combo | 66 |
+| the Rabble | Mono-Red Goblins (R) | aggro | 66 |
+| Countersnake | Four-Colour Countersnake (G U w b) | midrange | 58 |
 | the Usher's Coin | Mardu Aristocrats (W B R) | midrange | 53 |
 | the Writ | Dimir Control (U B) | control | 53 |
 | the Hearth | Mardu Aristocrats, the value build (W B R) | midrange | 52 |
-| the Muster | Boros Weenie (W R) | aggro | 52 |
-| the Kiln | Izzet Spells (U R) | midrange | 51 |
+| the Levy | Orzhov Landfall (W B) | midrange | 51 |
+| the Muster | Boros Weenie (W R) | aggro | 51 |
 | the Warband (Chris's list to test against the Muster) | Boros Goblins (R w) | aggro | 50 |
-| the Levy | Orzhov Landfall (W B) | midrange | 49 |
-| the Depths | Sultai Control (U B G) | control | 46 |
-| the Sweep | Jund Aristocrats (B R G) | midrange | 46 |
-| the Tally | Izzet Sparks (U R) | aggro | 45 |
-| the Wurmspeaker | Mono-Green Ramp | midrange | 44 |
-| the Enchantress | Selesnya Auras (G W) | aggro | 42 |
+| the Depths | Sultai Control (U B G) | control | 49 |
+| the Kiln | Izzet Spells (U R) | midrange | 49 |
+| the Tally | Izzet Sparks (U R) | aggro | 46 |
+| the Sweep | Jund Aristocrats (B R G) | midrange | 45 |
+| the Wurmspeaker | Mono-Green Ramp | midrange | 43 |
 | the Ford | Naya Lifegain (R W G) | midrange | 41 |
-| the Locks | Esper Control (W U B) | control | 40 |
+| the Enchantress | Selesnya Auras (G W) | aggro | 39 |
+| the Locks | Esper Control (W U B) | control | 39 |
 
 Archived (kept in the data, out of the field): the Undertow, the Larder, the Loop, the Cinder.
 
 ## Staples (ADR-170)
 
-Nonland cards outside the restricted list that more than half of the 16 active lists play: none.
+Nonland cards outside the restricted list that more than half of the 17 active lists play: none.
 
-The most played: Lightning Bolt 7 · Flametongue Kavu 6 · Vampire Nighthawk 6 · Counterspell 5 · Swords to Plowshares 5 · Soul Warden 4 · Control Magic 4 · Vindicate 4.
+The most played: Lightning Bolt 7 · Counterspell 6 · Flametongue Kavu 6 · Vampire Nighthawk 6 · Swords to Plowshares 6 · Birds of Paradise 4 · Soul Warden 4 · Tidewall 4.
 
 ## the Usher's Coin — Mardu Aristocrats (W B R)
 
@@ -77,7 +78,7 @@ The most played: Lightning Bolt 7 · Flametongue Kavu 6 · Vampire Nighthawk 6 �
 
 ## the Muster — Boros Weenie (W R)
 
-`muster` · aggro · mean 52
+`muster` · aggro · mean 51
 
 - **Lands (22):** 4 Plateau · 4 Sacred Foundry · 8 Plains · 4 Mountain · 2 Secluded Steppe
 - **Creatures (21):** 4 Savannah Lions · 4 Soul Warden · 2 Suntail Hawk · 4 Fencing Ace · 3 Emeria Angel · 4 Flametongue Kavu
@@ -102,7 +103,7 @@ The most played: Lightning Bolt 7 · Flametongue Kavu 6 · Vampire Nighthawk 6 �
 
 ## the Tally — Izzet Sparks (U R)
 
-`tally` · aggro · mean 45
+`tally` · aggro · mean 46
 
 - **Lands (22):** 4 Volcanic Island · 4 Steam Vents · 8 Mountain · 4 Island · 1 Tallyflame Court · 1 Forgotten Cave
 - **Creatures (12):** 4 Young Pyromancer · 4 Guttersnipe · 4 Flametongue Kavu
@@ -116,7 +117,7 @@ The most played: Lightning Bolt 7 · Flametongue Kavu 6 · Vampire Nighthawk 6 �
 
 ## the Locks — Esper Control (W U B)
 
-`locks` · control · mean 40
+`locks` · control · mean 39
 
 - **Lands (24):** 4 Tundra · 4 Underground Sea · 4 Scrubland · 4 Hallowed Fountain · 2 Island · 2 Plains · 2 Swamp · 1 Obsidian Observatory · 1 Library of Alexandria
 - **Creatures (6):** 4 The Dredger · 2 Serra Angel
@@ -129,7 +130,7 @@ The most played: Lightning Bolt 7 · Flametongue Kavu 6 · Vampire Nighthawk 6 �
 
 ## the Wurmspeaker — Mono-Green Ramp
 
-`wurmspeaker` · midrange · mean 44
+`wurmspeaker` · midrange · mean 43
 
 - **Lands (22):** 20 Forest · 2 Tranquil Thicket
 - **Creatures (30):** 4 Llanowar Elves · 4 Birds of Paradise · 4 Wood Elves · 4 Seedborn Muse · 3 Gaean Wurm · 2 Pelakka Wurm · 3 Baru, Wurmspeaker · 2 Treetop Snarespinner · 2 The Emerald Keeper · 2 Rampaging Baloths
@@ -154,7 +155,7 @@ The most played: Lightning Bolt 7 · Flametongue Kavu 6 · Vampire Nighthawk 6 �
 
 ## the Enchantress — Selesnya Auras (G W)
 
-`enchantress` · aggro · mean 42
+`enchantress` · aggro · mean 39
 
 - **Lands (22):** 4 Savannah · 4 Temple Garden · 7 Forest · 6 Plains · 1 Shevelport
 - **Creatures (16):** 4 Gladecover Scout · 4 Blurred Mongoose · 4 Ovna, the Enchantress · 2 Timberland Guide · 2 The Emerald Keeper
@@ -167,7 +168,7 @@ The most played: Lightning Bolt 7 · Flametongue Kavu 6 · Vampire Nighthawk 6 �
 
 ## the Levy — Orzhov Landfall (W B)
 
-`levy` · midrange · mean 49
+`levy` · midrange · mean 51
 
 - **Lands (24):** 4 Scrubland · 4 Godless Shrine · 5 Plains · 5 Swamp · 4 Evolving Wilds · 1 Thawing Glaciers · 1 Obsidian Observatory
 - **Creatures (15):** 4 Emeria Angel · 4 Dread Presence · 4 Soul Warden · 1 Vampire Nighthawk · 2 Isaura, the Levy
@@ -191,7 +192,7 @@ The most played: Lightning Bolt 7 · Flametongue Kavu 6 · Vampire Nighthawk 6 �
 
 ## the Sweep — Jund Aristocrats (B R G)
 
-`sweep` · midrange · mean 46
+`sweep` · midrange · mean 45
 
 - **Lands (18):** 1 Cairnbrand · 4 Badlands · 4 Bayou · 4 Taiga · 1 Tallyflame Court · 1 Obsidian Observatory · 1 Shevelport · 1 Underground Sea · 1 Savannah
 - **Creatures (25):** 4 The Reaper · 3 Meliyan, the Torment · 4 Blood Artist · 4 Birds of Paradise · 4 Shocking Sharpshooter · 2 Seasoned Pyromancer · 2 Vampire Nighthawk · 2 Voracious Cobra
@@ -202,7 +203,7 @@ The most played: Lightning Bolt 7 · Flametongue Kavu 6 · Vampire Nighthawk 6 �
 
 ## the Depths — Sultai Control (U B G)
 
-`depths` · control · mean 46
+`depths` · control · mean 49
 
 - **Lands (16):** 1 Library of Alexandria · 1 Wrackroot · 4 Bayou · 4 Tropical Island · 4 Underground Sea · 1 Watery Grave · 1 Breeding Pool
 - **Creatures (22):** 4 Clio, Lady of the Depths · 4 Tidewall · 1 Seraphina, the Initiative · 1 The Reeve · 1 Faerie Formation · 2 Traumatizer · 1 Drana, Kalastria Bloodchief · 1 Mystic Snake · 1 Zinnia, the Undertow · 1 Wall of Blossoms · 4 Birds of Paradise · 1 Arcane Collector
@@ -224,7 +225,7 @@ The most played: Lightning Bolt 7 · Flametongue Kavu 6 · Vampire Nighthawk 6 �
 
 ## the Pall — Usher Combo (B w r)
 
-`pall` · combo · mean 68
+`pall` · combo · mean 66
 
 - **Lands (21):** 1 Cairnbrand · 4 Badlands · 4 Scrubland · 4 Swamp · 4 Blood Crypt · 4 Godless Shrine
 - **Creatures (20):** 4 The Usher · 4 The Jet Witch · 4 Blood Artist · 4 Typhoid Rats · 4 Vampire Nighthawk
@@ -237,7 +238,7 @@ The most played: Lightning Bolt 7 · Flametongue Kavu 6 · Vampire Nighthawk 6 �
 
 ## the Kiln — Izzet Spells (U R)
 
-`kiln` · midrange · mean 51
+`kiln` · midrange · mean 49
 
 - **Lands (19):** 1 Tallyflame Court · 4 Volcanic Island · 4 Steam Vents · 1 Library of Alexandria · 5 Mountain · 4 Island
 - **Creatures (21):** 3 Flametongue Kavu · 4 Tidewall · 3 Odile, the Tallyflame · 3 The Ruby Tyrant · 4 Guttersnipe · 4 Young Pyromancer
@@ -273,7 +274,7 @@ The most played: Lightning Bolt 7 · Flametongue Kavu 6 · Vampire Nighthawk 6 �
 
 ## the Rabble — Mono-Red Goblins (R)
 
-`rabble` · aggro · mean 68
+`rabble` · aggro · mean 66
 
 - **Lands (18):** 1 Cairnbrand · 4 Badlands · 1 Tallyflame Court · 4 Volcanic Island · 8 Mountain
 - **Creatures (18):** 4 Raging Goblin · 4 Goblin Chieftain · 4 Seasoned Pyromancer · 4 Flametongue Kavu · 2 Siege-Gang Commander
@@ -281,4 +282,15 @@ The most played: Lightning Bolt 7 · Flametongue Kavu 6 · Vampire Nighthawk 6 �
 - **Its fifteen (registered):** 4 The Ruby Tyrant · 3 Abrade · 4 Tormod's Crypt · 4 Faerie Macabre
 - **History:**
   - contributed — Built in simulation by paired swaps (2026-10-08: about 45 trials in the Cinder's seat) and played by Chris in an Open, seed 577748 — 4–1 in the Swiss, a quarter-final won, a semi-final lost; with his Mox Sapphire for the Pearl and his fifteen as read from his recorded games. A working name until Chris names it.
+
+## Countersnake — Four-Colour Countersnake (G U w b)
+
+`countersnake` · midrange · mean 58
+
+- **Lands (19):** 4 Bayou · 1 Obsidian Observatory · 4 Savannah · 4 Tropical Island · 4 Underground Sea · 1 Wrackroot · 1 Shevelport
+- **Creatures (26):** 4 Birds of Paradise · 2 Deadly Recluse · 2 Wall of Blossoms · 3 Clio, Lady of the Depths · 4 Reaper's Forerunner · 2 Tidewall · 2 Mystic Snake · 4 Restoration Angel · 3 The Sower
+- **Other (15):** 1 Black Lotus · 1 Mox Emerald · 1 Mox Pearl · 1 Mox Sapphire · 4 Swords to Plowshares · 4 Counterspell · 1 Demonic Tutor · 1 Time Walk · 1 Absorb
+- **Its fifteen (registered):** 2 Tormod's Crypt · 2 Faerie Macabre · 1 Tidewall · 1 Wall of Blossoms · 1 Deadly Recluse · 1 Treetop Snarespinner · 1 Drana, Kalastria Bloodchief · 2 Temporal Spring · 2 Protocol · 2 Essence Scatter
+- **History:**
+  - contributed — Chris's Open, seed 851238, 2026-10-09 — 5–0 in the Swiss and the Umbel won (8–0 in matches, 16–2 in games), Normal. Flash creatures and counterspells played at the opponent's end step: Reaper's Forerunner, Restoration Angel, Mystic Snake, the Sower, Clio. Chris's name for it. Piloted as midrange: the AI plays it better so (57.8% against 54.3% as control over 1,500 paired games).
 

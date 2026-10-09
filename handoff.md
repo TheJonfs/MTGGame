@@ -9,7 +9,7 @@ Session 58 closed the revision round. The Open's lists now live entirely in code
 - **Part 2 (the Cinder diff) could not be run on the 8–0 file**: it holds results, not moves. The tool and the recording it needs are built instead.
 - **A new table of record**, sixteen lists.
 
-`pnpm typecheck`, `pnpm test` (981; 992 with the Forerunner's) and `pnpm build:web` pass. **Everything here is pushed.** After the session proper Chris replaced the Undertow with a new list: its own section below, with the table of record as it now stands.
+`pnpm typecheck`, `pnpm test` (981; 993 with the Forerunner's and books 115–117) and `pnpm build:web` pass. **Everything here is pushed.** After the session proper Chris replaced the Undertow with a new list: its own section below, with the table of record as it now stands.
 
 ## For the planner — the decisions waiting
 1. **Two of the six in/out pairs in the Locks' guide measured wrong** and are out of it (Deviation 2). The planner may want to re-author them.
@@ -248,6 +248,35 @@ Chris's custom card, from his printed face: **{1}{G}{G} Creature — Snake 1/1, 
   1. **The Fight rule is 701.14 in the current Comprehensive Rules** (effective 2026-09-25). R-031 and two older code comments cite 701.12. R-106 cites the current number; R-031 is not edited.
   2. **The pilot exiles a graveyard only against a registered plan, or in response.** The Coin and the Kiln use their graveyards and were left alone. It also never flashes the snake in as a blocker. A person will get more from the card than the matrix shows.
   3. **`open:rr --off-for` takes list keys, not `key:rule`.** A wrong value is accepted silently and the run is the default pilot; my first hold-off run was the baseline again.
+
+## After the session — Countersnake joins the Open; books 115–117 from Chris's recorded run (2026-10-09) — NOT PUSHED
+- **Countersnake is the seventeenth list** (Chris's four-colour flash-and-counterspell deck, his name): his sixty and his fifteen from the Open he won with it (seed 851238: 8–0 in matches, 16–2 in games). **Piloted as midrange** — the AI plays it better so (57.8% against 54.3% as control, 1,500 paired games).
+- **Three pilot rules from his recorded games** (the play diff: `docs/debug_logs/recorded_games/play-diff-countersnake.md`; 40% of decisions differed, three-quarters of them Chris waiting where the pilot acted). Each was probed behind a trial switch on every list it touches before shipping; no list got worse. **Ladder mirror gate PASS.**
+  - **Book 115 — a flash creature is not cast on our own turn** (it waits for the opponent's end step, or answers something). `off: ["flashend"]`. The Hearth +1.6 ± 1.1, Countersnake +0.7 ± 1.3.
+  - **Book 116 — Clio's counters are spent against the board the spend leaves**: only at the opponent's end step (or when she is about to die), and only when the power handed back is two or less, or the hand is at a card and their power is a quarter of our life or less. `off: ["cliohold"]` is the S26 pin. The Writ +2.0 ± 1.2, the Depths +1.7 ± 1.2, Countersnake +0.7 ± 1.1.
+  - **Book 117 — one-for-one creature removal is held** for a creature worth two or more (in practice: not spent on tokens and one-drops), unless the opponent's list has nothing better, their board is half our life, the target attacks at eight life or less, or the hand is full. Every archetype. `off: ["removalhold"]`. Countersnake +1.2 ± 1.0; seven other lists +0.2 to +0.8, none significant alone.
+  - All three on Countersnake: +3.0 ± 1.8 and +1.3 ± 1.7 in two samples (control pilot); +2.6 ± 1.7 and +1.6 ± 1.7 (midrange).
+- **The table of record** (seventeen lists, pilot 117, 13,600 games, `analysis/runs/rr17_s58e.json`; `OPEN_MEANS` updated):
+
+| list | % | list | % | list | % |
+|---|---|---|---|---|---|
+| the Rabble | 66 | the Levy | 51 | the Sweep | 45 |
+| the Pall | 66 | the Muster | 51 | the Wurmspeaker | 43 |
+| **Countersnake** | **58** | the Warband | 50 | the Ford | 41 |
+| the Writ | 53 | the Kiln | 49 | the Enchantress | 39 |
+| the Coin | 53 | the Depths | 49 | the Locks | 39 |
+| the Hearth | 52 | the Tally | 46 | | |
+
+  - Countersnake beats the Pall 59–41 and loses to the Rabble 38–62; its other losing pairings are the Coin (46) and the Depths (48).
+- **Chris's misplay, for the record of what the pilot gets right:** quarter-final game 2 against the Pall, three Ushers in the graveyard, he tapped out for the Sower with the Forerunner in hand. Book 114 casts the Forerunner there.
+- **The field's workers:** the dev line on the standings always said "on the main thread" (it now says which); and a pool that failed once was set aside until the page reloaded (it is now retried the next round).
+- **Trade studies run on Chris's green lists** (scratch only; nothing adopted): his mono-green sixty measured 50.3%; Gaean Wurm for Seedborn Muse and Pelakka Wurm for Treetop Snarespinner +8.5 together; the Forerunner is worth 7 points to it. For Countersnake: Elvish Visionary or Wall of Blossoms for Deadly Recluse and for Tidewall about +5 each in full; nothing clearly beats the main-deck Absorb (a fourth Clio +1.6 ± 1.1, a third Mystic Snake +1.0 ± 1.0).
+- **Concerns:**
+  1. **The removal hold is narrower than Chris's.** The floor is a creature valued at two, which is its mana value in most cases: tokens and one-drops. Chris also held against a Gladehart and a Valkyrie. A floor of three is untested.
+  2. **Two older books now stand behind switches**: book 49's "on our own turn when the mana is idle" and book 26's Clio pin. The campaign's Clio (the Corolla boss) plays by book 116 now; the ladder passed but no boss-specific measure was run.
+  3. **I tested a second Wrackroot before learning it is restricted.** Those numbers are void; nothing shipped from them.
+  4. **The play diff still cannot value a hold** (both lines are played on by the pilot). The three rules were found by reading what Chris held, then measured by trial; the diff's ±0 on "the human waits" was no guide.
+  5. **Countersnake's fifteen has no guide**; it boards by the eight rules.
 
 ## Deviations from the brief
 1. **Part 2's report is not delivered.** The 8–0 file records seeds and results; a person's decisions cannot be recovered from it. I built the tool, the engine piece and the recording, and checked them on a stand-in. *The report follows when Chris has played recorded games.*
