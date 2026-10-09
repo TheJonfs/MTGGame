@@ -165,6 +165,12 @@ async function main(): Promise<void> {
     for (const c of [...new Set(hs.map((h) => h.card))].sort((a, b) => cnt((h) => h.card === b) - cnt((h) => h.card === a))) { const x = (f: (h: NonNullable<Divergence["held"]>) => boolean) => cnt((h) => h.card === c && f(h)); L.push(`| ${c} | ${x(() => true)} | ${x((h) => h.ours)} / ${x((h) => !h.ours)} | ${x((h) => h.aim === "face")} / ${x((h) => h.aim === "creature")} | ${x((h) => h.later === "this turn")} | ${x((h) => h.later === "their next turn")} | ${x((h) => h.later === "a later turn")} | ${x((h) => h.later === "never")} |`); }
     L.push("");
   }
+  // The single decisions the playouts separate most (a lead to read by hand, not a verdict: K playouts a side)
+  const swings = out.filter((d) => d.value !== undefined && Math.abs(d.value) >= 0.3).sort((a, b) => a.value! - b.value!);
+  if (swings.length) {
+    const row = (d: Divergence) => `- game ${d.game + 1} (${(games[d.game] as { opponent?: string }).opponent ?? "?"}, ${lostGame(d.game) ? "lost" : "won"}), turn ${d.turn} ${d.step}: the human ${d.human}; the pilot ${d.pilot} — the human's line ${d.value! >= 0 ? "+" : ""}${Math.round(100 * d.value!)} points over ${d.playouts} playouts a side`;
+    L.push("## Where the pilot's line played out better (the human's choice cost most)", "", ...swings.filter((d) => d.value! < 0).slice(0, 12).map(row), "", "## Where the human's line played out better", "", ...swings.filter((d) => d.value! > 0).reverse().slice(0, 12).map(row), "");
+  }
   const text = L.join("\n");
   console.log(text);
   const file = arg("out", ""); if (file) writeFileSync(file, text + "\n");

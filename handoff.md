@@ -16,6 +16,8 @@ Session 58 closed the revision round. The Open's lists now live entirely in code
 2. **Part 2 is delivered after all:** the recording works; the Writ's diff and the Cinder's are in (their own sections below). **The Cinder's produced two rules, both shipped at Chris's word (books 112 and 113, the section below): the planner should ratify or reverse them.** The Writ's diff points at two pilot questions: Clio as a lock, and holding mana on its own turn.
 3. **S59, the campaign linkage:** my read of how it would be built is at the end of this handoff. One question in it needs a ruling before any code: how an invitation is earned.
 4. **The Sweep's fifteen** is still open (Chris's).
+5. **The field's list draw gives the Pall four seats in 31 and a third of the strong seats** (the last section before the deviations). It needs a ruling: a gentler scale, a cap, or rank weights.
+6. **A goblin list built in simulation measures 68.9%** and is not yet in the Open (the same section). Its Kavus are the staple ADR-170 watches.
 
 ## Done this session
 
@@ -157,6 +159,39 @@ pall 71 (+1) · hearth 55 (−1) · coin 54 · muster 54 (+2) · warband 52 (+2)
 - The four aggro lists with burn rose; the lists they play fell a little.
 - **The retire count from this table:** the bottom three are the Ford (42.3), the Enchantress (42.4) and the Locks (43.1). The Cinder is fourth from the bottom at 43.9.
 - **Still not captured from Chris's play:** burn cast on the opponent's turn (four in ten of his; almost none of the pilot's).
+
+## After the session — a goblin list built in simulation, Chris's run with it, and the field's list draw (2026-10-08)
+
+**A mono-red goblin sixty, built by paired swaps** (Chris: the burn list lacks firepower; try a Chieftain curve before asking for a new card). About 45 trials in the Cinder's seat (`open:rr --deck`), 1,500 games each:
+- 4 Raging Goblin, 4 Lightning Bolt, 4 Goblin Grenade, 4 Dragon Fodder, 4 Goblin Chieftain, 4 Seasoned Pyromancer, 4 Hordeling Outburst, 4 Char, 4 Flametongue Kavu, 2 Siege-Gang Commander, on the Cinder's mana.
+- **68.9% against the field in the AI's hands** (the Cinder: 44; a plain goblin curve: 51.6). It beats every list; its worst are the Wurmspeaker 51 and the Pall 54.
+- The Chieftains are the centre (−5.4 without them); Seasoned Pyromancer was the best second "two-drop" (+5.2); Skirk Prospector the weakest card of the plain curve; the Ruby Tyrant and the Siege-Gang level; the Kavu +6.7 over Boggart Brute (without it, Shocking Sharpshooter in the slot: 64.6%).
+- **It is not in the Open.** It was measured in the Cinder's seat only.
+
+**Chris's run with it** (seed 577748, sixteen recorded games, `play-diff-goblins.md`): 4–1 in the Swiss, a quarter-final won against the Pall, a semi-final lost to the Hearth. 10–6 in games; **all four games against the Hearth lost**, 7–1 against the Pall.
+- 1,318 decisions with a choice; the pilot differs at 260 (20%: the Cinder's diff was 52%). With book 112 in, the pilot no longer throws burn at the face where Chris holds it.
+- **What is left is timing and holding answers:**
+  - *Lightning Bolt, 20 holds:* the pilot shoots a creature at its first chance (often in its own upkeep or draw step); Chris waits and casts it later the same turn (9) or on a later turn (9).
+  - *Tormod's Crypt, 7 holds, never used by Chris:* the pilot cracks it as soon as the Pall's graveyard holds an Usher; Chris keeps it for the response to the Zombify.
+  - *Char, 10 holds, 6 never cast:* cards Chris died holding or did not need.
+  - *The Black Lotus, 5 holds:* the pilot spends it at once; Chris keeps it.
+- **The playouts are close to one sample a line, not sixteen.** The library's order is fixed when the game starts and the pilot is near-deterministic, so the sixteen playouts of a line mostly repeat. A "−100 points" in the report means "with the cards that were actually coming, the pilot finishing from here won on one line and lost on the other". They are leads to read by hand, not measurements. *The tool should reshuffle the unseen cards for each playout; it does not yet.*
+- Leads from it, for Chris to judge: game 2 (the Cinder), turn 12 at four life, an attack that kept one Goblin token home where the pilot sent both; the semi-final's first game, a Bolt for a Vampire Nighthawk held through his upkeep.
+
+**The field's list draw over-represents the Pall, and the player meets it more than its share** (Chris: the Mardu decks "feel overrepresented"). They are. How a seat gets its list today (ADR-158 as amended in S55):
+- A quarter of seats draw "top", a half "any", a quarter "low". An "any" seat draws the sixteen lists evenly. A "top" seat weights each list by e^((mean − 50)/10); a "low" seat by the inverse.
+- The Pall's mean is 71, so its "top" weight is 8.2 where the next list's is 1.6: **37% of "top" seats play the Pall.**
+
+| list | a "top" seat | an "any" seat | a "low" seat | of 31 seats |
+|---|---|---|---|---|
+| the Pall | 37.3% | 6.9% | 1.0% | 4.0 |
+| the Hearth | 7.4% | 5.9% | 4.0% | 1.8 |
+| the Coin | 6.6% | 6.3% | 3.0% | 1.7 |
+| each other list | 2–6% | about 6% | 4–12% | 1.6–2.0 |
+
+- The three Usher lists hold 7.6 of 31 seats on average. They are also the seats that win, so a player who is winning is paired against them: Chris met the Pall in three of seven matches and the Hearth in two.
+- **The cause is the exponential on one outlier.** When the rule was built the top list stood at 62–64; at 71 the same formula gives it a third of the strong seats.
+- Levers, none taken (ADR-158 is the planner's): a gentler scale (20 in place of 10 brings the Pall to about 18% of "top" seats and 2.5 seats of 31); a cap on any one list's share of the field (say three seats of 31); or weighting by rank instead of by mean. The cap is the one that guarantees variety whatever the table does.
 
 ## Deviations from the brief
 1. **Part 2's report is not delivered.** The 8–0 file records seeds and results; a person's decisions cannot be recovered from it. I built the tool, the engine piece and the recording, and checked them on a stand-in. *The report follows when Chris has played recorded games.*
