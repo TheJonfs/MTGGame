@@ -42,7 +42,7 @@ The two games are joined. A journey's Convocation sits on a clock: every thousan
   5. **The pilot still does not chain several Snakes for one large turn except through an X spell or an ability**, and it never taps for a Rage Cobra on its own turn. The card is under-measured on that side.
   6. **The AI's sideboarding takes Walls of Blossoms out against aggro lists** (the "creatures" rule brings removal in for the lowest-rated card). Chris's list shows it; the Open's green lists may share it.
 
-## After the session — Reaper Control joins the Open; the tables with eighteen lists (Chris, 2026-10-10) — NOT PUSHED
+## After the session — Reaper Control joins the Open; the tables with eighteen lists (Chris, 2026-10-10; pushed)
 - **Reaper Control is the eighteenth list** (Chris's Jund Snake Control, his name): his sixty and fifteen from the Open of seed 611853 (5–0 in the Swiss, a quarter-final lost to the Kiln). Midrange pilot. 57 in game one, 60 in matches (fourth of eighteen). Against the Rabble: 50 in fifty matches on the table, 58 in a hundred beside it.
   - 27 single-slot swaps moved nothing more than two points; the list is left as he registered it.
 - **Guides, extended (data, attached to a list's fifteen as before):**
