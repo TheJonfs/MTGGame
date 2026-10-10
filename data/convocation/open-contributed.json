@@ -4,7 +4,8 @@
   "loop": "S56 (ADR-164): redundant with the Coin — 31 of its 37 nonland cards shared, matchup profiles r = 0.88, worse against eleven of the other twelve. Last measured 53 (pilot 106, sixteen lists).",
   "larder": "Post-S57 (Chris, 2026-10-07; ADR-165's exit): last in five measures (31 on the S57 table with its plan). Acceleration, a green mana base and a mono-green-with-Zombify build all measured flat or worse (handoff). The Pall does its job a turn faster. Its plan (goal: once) stays as the vocabulary's second customer.",
   "undertow": "Post-S58 (Chris, 2026-10-08): replaced by the Writ, his 5–0 Dimir Control list (53.6% in the AI's hands against the Undertow's 40). Last measured 40 (pilot 111, S58's table).",
-  "cinder": "Post-S58 (Chris, 2026-10-08): replaced by the Rabble, the goblin build of mono-red (68.9% in the AI's hands in the Cinder's seat, where the Cinder stood at 44). Last measured 44 (pilot 113)."
+  "cinder": "Post-S58 (Chris, 2026-10-08): replaced by the Rabble, the goblin build of mono-red (68.9% in the AI's hands in the Cinder's seat, where the Cinder stood at 44). Last measured 44 (pilot 113).",
+  "ford": "Post-S59 (Chris and the planner, 2026-10-10): replaced by its overhaul, the Tollgate (46.9 against the Ford's 38.3 in game one, paired; 44 against 37.5 in matches). Last measured 38 in game one and 37.5 in matches (eighteen lists, pilot 120)."
  },
  "plans": {
   "larder": {
@@ -206,6 +207,61 @@
     "n": 2,
     "out": [
      "lightning_bolt"
+    ],
+    "when": [
+     "control"
+    ]
+   }
+  ],
+  "tollgate": [
+   {
+    "in": "savage_twister",
+    "n": 2,
+    "out": [
+     "sacred_helix"
+    ],
+    "when": [
+     "small"
+    ]
+   },
+   {
+    "in": "tormods_crypt",
+    "n": 3,
+    "out": [
+     "powerstone_minefield"
+    ],
+    "when": [
+     "graveyard",
+     "someGraveyard"
+    ]
+   },
+   {
+    "in": "faerie_macabre",
+    "n": 2,
+    "out": [
+     "powerstone_minefield",
+     "pyroclasm"
+    ],
+    "when": [
+     "graveyard",
+     "someGraveyard"
+    ]
+   },
+   {
+    "in": "char",
+    "n": 2,
+    "out": [
+     "powerstone_minefield"
+    ],
+    "when": [
+     "control"
+    ]
+   },
+   {
+    "in": "reapers_forerunner",
+    "n": 2,
+    "out": [
+     "powerstone_minefield"
     ],
     "when": [
      "control"
@@ -1646,10 +1702,150 @@
      "count": 4
     }
    ]
+  },
+  {
+   "key": "tollgate",
+   "name": "the Tollgate",
+   "title": "Naya Minefield Control (R W G)",
+   "archetype": "control",
+   "source": "The planner's overhaul of the Ford (2026-10-10), promoted by Chris in its place: Powerstone Minefield and the Fordkeeper behind Walls, Kavus and sweepers, Sacred Helix to close. Measured in the Ford's seat before it was registered; mana creatures, tried at Chris's suggestion, measured worse. The planner's name.",
+   "decklist": [
+    {
+     "cardId": "plateau",
+     "count": 4
+    },
+    {
+     "cardId": "taiga",
+     "count": 4
+    },
+    {
+     "cardId": "savannah",
+     "count": 4
+    },
+    {
+     "cardId": "sacred_foundry",
+     "count": 2
+    },
+    {
+     "cardId": "stomping_ground",
+     "count": 2
+    },
+    {
+     "cardId": "temple_garden",
+     "count": 2
+    },
+    {
+     "cardId": "plains",
+     "count": 2
+    },
+    {
+     "cardId": "mountain",
+     "count": 2
+    },
+    {
+     "cardId": "forest",
+     "count": 1
+    },
+    {
+     "cardId": "shevelport",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "the_fordkeeper",
+     "count": 4
+    },
+    {
+     "cardId": "wall_of_blossoms",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 2
+    },
+    {
+     "cardId": "powerstone_minefield",
+     "count": 4
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 4
+    },
+    {
+     "cardId": "savage_twister",
+     "count": 2
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 2
+    },
+    {
+     "cardId": "sacred_helix",
+     "count": 2
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 2
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "tormods_crypt",
+     "count": 3
+    },
+    {
+     "cardId": "faerie_macabre",
+     "count": 2
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 2
+    },
+    {
+     "cardId": "char",
+     "count": 2
+    },
+    {
+     "cardId": "disenchant",
+     "count": 2
+    },
+    {
+     "cardId": "savage_twister",
+     "count": 2
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 2
+    }
+   ]
   }
  ],
  "_guides_note": "S58: a guide's rows are the author's swaps that MEASURED (open:rr --sideboarded-only <list> --guide-drop …). The Locks' planner's guide also had Essence Scatter for Absorb against creature decks (−17 against the Enchantress, −11 the Ford: Absorb's life and its reach beyond creatures were worth more) and Disenchant for the Serras (−12 the Muster and the Enchantress); both rows are out and the rules bring those cards in where they apply. Post-S59: `guidesOnly` names the guided lists whose guide is the whole plan (the rules do not run after it).",
  "guidesOnly": [
-  "reaper"
+  "reaper",
+  "tollgate"
  ]
 }

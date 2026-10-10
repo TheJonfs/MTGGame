@@ -171,5 +171,94 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
    }
   ],
   "only": true
+ },
+ {
+  "key": "tollgate",
+  "fifteen": [
+   {
+    "cardId": "tormods_crypt",
+    "count": 3
+   },
+   {
+    "cardId": "faerie_macabre",
+    "count": 2
+   },
+   {
+    "cardId": "reapers_forerunner",
+    "count": 2
+   },
+   {
+    "cardId": "char",
+    "count": 2
+   },
+   {
+    "cardId": "disenchant",
+    "count": 2
+   },
+   {
+    "cardId": "savage_twister",
+    "count": 2
+   },
+   {
+    "cardId": "swords_to_plowshares",
+    "count": 2
+   }
+  ],
+  "rows": [
+   {
+    "in": "savage_twister",
+    "n": 2,
+    "out": [
+     "sacred_helix"
+    ],
+    "when": [
+     "small"
+    ]
+   },
+   {
+    "in": "tormods_crypt",
+    "n": 3,
+    "out": [
+     "powerstone_minefield"
+    ],
+    "when": [
+     "graveyard",
+     "someGraveyard"
+    ]
+   },
+   {
+    "in": "faerie_macabre",
+    "n": 2,
+    "out": [
+     "powerstone_minefield",
+     "pyroclasm"
+    ],
+    "when": [
+     "graveyard",
+     "someGraveyard"
+    ]
+   },
+   {
+    "in": "char",
+    "n": 2,
+    "out": [
+     "powerstone_minefield"
+    ],
+    "when": [
+     "control"
+    ]
+   },
+   {
+    "in": "reapers_forerunner",
+    "n": 2,
+    "out": [
+     "powerstone_minefield"
+    ],
+    "when": [
+     "control"
+    ]
+   }
+  ],
+  "only": true
  }
 ];

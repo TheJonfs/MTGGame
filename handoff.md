@@ -88,7 +88,7 @@ The two games are joined. A journey's Convocation sits on a clock: every thousan
 - **`docs/reference/README.md`** is rewritten: what each file holds, its sources, and the commands that refresh the Open's tables.
 - The matches table is tracked data now: `data/convocation/open-matches.json`, written by `pnpm open:rr --matches-report … --record`.
 
-## After the session — the field by match rate; the Tollgate measured (Chris and the planner, 2026-10-10) — NOT PUSHED
+## After the session — the field by match rate; the Tollgate measured (Chris and the planner, 2026-10-10)
 - **The field's seat draw reads a list's MATCH win rate** (Chris), not its game-one mean: `openStrength` = the recorded matches table (`OPEN_MATCH_MEANS`, generated from `data/convocation/open-matches.json`) where a list has a figure, else `OPEN_MEANS`. Over 300 fields of 32: the Pall 2.09 seats → 1.54; the Rabble 2.28 → 2.55; the Hearth 1.60 → 1.82; Countersnake 1.77 → 1.43. The cap stands on top.
 - **The Tollgate (the planner's overhaul of the Ford), measured in the Ford's seat — NOT registered; Chris and the planner to rule:**
   - Game one 46.9 against the Ford's 38.3 (+8.6 ± 3.1, paired); matches 44 against the Ford's 37.5. Control and midrange pilots level.
@@ -97,6 +97,28 @@ The two games are joined. A journey's Convocation sits on a clock: every thousan
   - Chris's mana creatures: worse. Four Birds or Elves for two Bolts and two lands −2.5 ± 2.0; Manaba −4.1; Birds with no Pyroclasm −0.9; Birds for the Helixes and Bolts −9.9.
   - Sacred Helix and the Minefield carry it (Helix → Bolt −6.5; two Minefields → Bolts −2.9). Small and unproven: Forerunner to four +1.3 ± 1.6; Lumen for the Forerunners +1.9 ± 1.7.
 - **Tools**: `open:rr --deck-guide file.json` (a guide for a build under test's fifteen, without registering it).
+
+## After the session — the Tollgate replaces the Ford; the tables again (Chris, 2026-10-10) — NOT PUSHED
+- **The Tollgate is in the Open in the Ford's place** (Chris's ruling); the Ford is archived (38 in game one, 37.5 in matches at its last measure). The planner's sixty and fifteen as written; control pilot.
+- **Its guide, the whole plan**, with one change from the planner's at Chris's word: against graveyard decks (`graveyard` or `someGraveyard`: the Pall, the Coin, the Hearth) the three Crypts and two Macabres come in for the four **Minefields** and a Pyroclasm, not for the Pyroclasms and a Wrath. Measured: cutting Minefields was better against all three (the Pall 40 against 34 in matches; the Hearth 10 against 2).
+- **Graveyard hate does not fix the Coin and the Hearth**: with eleven pieces in the sixty from game one the Tollgate reached 19 and 23 against them (50 against the Pall). They cast the Usher from hand and win long games on Blood Artist, Altar and Angel engines that do not attack into a Minefield.
+- **The tables of record, again** (`analysis/runs/rr18_s59b.json`, `matches18_s59b.md`; `OPEN_MEANS` and `data/convocation/open-matches.json` updated; the field's seat draw reads the matches column):
+
+| list | matches | game one | | list | matches | game one |
+|---|---|---|---|---|---|---|
+| the Rabble | 69.4 | 63 | | the Muster | 47.0 | 48 |
+| the Hearth | 61.4 | 54 | | the Warband | 46.6 | 47 |
+| the Coin | 59.6 | 55 | | the Levy | 45.4 | 49 |
+| the Pall | 59.3 | 65 | | **the Tollgate** | **44.9** | **47** |
+| Countersnake | 56.5 | 58 | | the Wurmspeaker | 42.3 | 44 |
+| the Writ | 56.3 | 52 | | the Sweep | 42.1 | 47 |
+| Reaper Control | 55.6 | 54 | | the Tally | 39.1 | 43 |
+| the Depths | 52.6 | 48 | | the Enchantress | 38.1 | 40 |
+| the Kiln | 47.7 | 46 | | the Locks | 35.9 | 37 |
+
+  - Reaper Control fell from 60 to 56: the Tollgate beats it about four games in five (the Minefield against small Snakes).
+  - The Pall is 59 in this sample (55 in the last); the two are inside each other's intervals.
+- **Concern:** the Tollgate is polar by construction (90 against the Tally, under 10 against the Coin and the Hearth). A field with several of it or several Mardu lists will feel very different seat to seat.
 
 ## Deviations from the brief
 1. **The outbox is a key per entry, not one key.** The brief says "`convocation-outbox` (its own key)". One key holding a list is a read-modify-write on both pages, and the brief's own test (two tabs never lose an entry) cannot be guaranteed that way. Entries live at `convocation-outbox:<id>`. *Rule on the shape; the behaviour is the brief's.*

@@ -8,36 +8,36 @@
 
 | list | deck | pilot | matches | game one | after sideboarding | fifteen |
 |---|---|---|---|---|---|---|
-| the Rabble | Mono-Red Goblins (R) | aggro | 71.4 | 65 | +0.9 | registered |
-| the Writ | Dimir Control (U B) | control | 60.9 | 54 | +1.6 | registered |
-| the Hearth | Mardu Aristocrats, the value build (W B R) | midrange | 60.9 | 52 | +5.6 | built |
-| Reaper Control | Jund Snake Control (G R b) | midrange | 60.2 | 57 | +0.8 | registered, guided |
-| the Usher's Coin | Mardu Aristocrats (W B R) | midrange | 59.5 | 53 | +9.5 | built |
-| Countersnake | Four-Colour Countersnake (G U w b) | midrange | 56.1 | 59 | −1.3 | registered |
-| the Pall | Usher Combo (B w r) | combo | 55.1 | 64 | −15.3 | registered |
-| the Depths | Sultai Control (U B G) | control | 50.0 | 46 | +2.9 | built |
-| the Levy | Orzhov Landfall (W B) | midrange | 49.2 | 51 | −0.3 | built |
-| the Muster | Boros Weenie (W R) | aggro | 48.5 | 48 | −7.5 | built |
-| the Kiln | Izzet Spells (U R) | midrange | 47.6 | 48 | −1.3 | registered |
-| the Warband (Chris's list to test against the Muster) | Boros Goblins (R w) | aggro | 47.2 | 48 | +3.7 | built |
-| the Sweep | Jund Aristocrats (B R G) | midrange | 43.4 | 47 | −3.2 | built |
-| the Tally | Izzet Sparks (U R) | aggro | 42.2 | 47 | −3.0 | built |
-| the Wurmspeaker | Mono-Green Ramp | midrange | 37.9 | 42 | −1.0 | built |
-| the Ford | Naya Lifegain (R W G) | midrange | 37.5 | 38 | +4.1 | built |
-| the Locks | Esper Control (W U B) | control | 37.2 | 39 | +4.2 | registered, guided |
-| the Enchantress | Selesnya Auras (G W) | aggro | 35.3 | 39 | −0.3 | built |
+| the Rabble | Mono-Red Goblins (R) | aggro | 69.4 | 63 | +0.1 | registered |
+| the Hearth | Mardu Aristocrats, the value build (W B R) | midrange | 61.4 | 54 | +3.6 | built |
+| the Usher's Coin | Mardu Aristocrats (W B R) | midrange | 59.6 | 55 | +5.9 | built |
+| the Pall | Usher Combo (B w r) | combo | 59.3 | 65 | −14.8 | registered |
+| Countersnake | Four-Colour Countersnake (G U w b) | midrange | 56.5 | 58 | −3.8 | registered |
+| the Writ | Dimir Control (U B) | control | 56.3 | 52 | +3.1 | registered |
+| Reaper Control | Jund Snake Control (G R b) | midrange | 55.6 | 54 | +1.2 | registered, guided |
+| the Depths | Sultai Control (U B G) | control | 52.6 | 48 | +2.2 | built |
+| the Kiln | Izzet Spells (U R) | midrange | 47.7 | 46 | +1.7 | registered |
+| the Muster | Boros Weenie (W R) | aggro | 47.0 | 48 | −8.0 | built |
+| the Warband (Chris's list to test against the Muster) | Boros Goblins (R w) | aggro | 46.6 | 47 | +0.9 | built |
+| the Levy | Orzhov Landfall (W B) | midrange | 45.4 | 49 | +2.0 | built |
+| the Tollgate | Naya Minefield Control (R W G) | control | 44.9 | 47 | −2.0 | registered, guided |
+| the Wurmspeaker | Mono-Green Ramp | midrange | 42.3 | 44 | +4.6 | built |
+| the Sweep | Jund Aristocrats (B R G) | midrange | 42.1 | 47 | −1.0 | built |
+| the Tally | Izzet Sparks (U R) | aggro | 39.1 | 43 | −2.6 | built |
+| the Enchantress | Selesnya Auras (G W) | aggro | 38.1 | 40 | +5.9 | built |
+| the Locks | Esper Control (W U B) | control | 35.9 | 37 | +0.9 | registered, guided |
 
-Archived (kept in the data, out of the field): the Undertow, the Larder, the Loop, the Cinder.
+Archived (kept in the data, out of the field): the Undertow, the Larder, the Ford, the Loop, the Cinder.
 
 ## Staples (ADR-170)
 
 Nonland cards outside the restricted list that more than half of the 18 active lists play: none.
 
-The most played: Lightning Bolt 8 · Flametongue Kavu 7 · Counterspell 6 · Vampire Nighthawk 6 · Swords to Plowshares 6 · Birds of Paradise 4 · Soul Warden 4 · Tidewall 4.
+The most played: Lightning Bolt 8 · Flametongue Kavu 7 · Swords to Plowshares 7 · Counterspell 6 · Vampire Nighthawk 6 · Birds of Paradise 4 · Tidewall 4 · Control Magic 4.
 
 ## the Rabble — Mono-Red Goblins (R)
 
-`rabble` · aggro · game one 65 · matches 71.4
+`rabble` · aggro · game one 63 · matches 69.4
 
 - **Lands (18):** 1 Cairnbrand · 4 Badlands · 1 Tallyflame Court · 4 Volcanic Island · 8 Mountain
 - **Creatures (18):** 4 Raging Goblin · 4 Goblin Chieftain · 4 Seasoned Pyromancer · 4 Flametongue Kavu · 2 Siege-Gang Commander
@@ -47,9 +47,57 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 7 · Counterspell 6 · Vam
 - **History:**
   - contributed — Built in simulation by paired swaps (2026-10-08: about 45 trials in the Cinder's seat) and played by Chris in an Open, seed 577748 — 4–1 in the Swiss, a quarter-final won, a semi-final lost; with his Mox Sapphire for the Pearl and his fifteen as read from his recorded games. A working name until Chris names it.
 
+## the Hearth — Mardu Aristocrats, the value build (W B R)
+
+`hearth` · midrange · game one 54 · matches 61.4
+
+- **Lands (21):** 1 Cairnbrand · 1 Obsidian Observatory · 4 Badlands · 4 Plateau · 4 Scrubland · 1 Sacred Foundry · 1 Godless Shrine · 1 Shevelport · 1 Tallyflame Court · 1 Tundra · 1 Savannah · 1 Blood Crypt
+- **Creatures (18):** 4 Lumen, the Hearth Fire · 4 Restoration Angel · 3 The Usher · 2 Drana, Kalastria Bloodchief · 1 The Jet Witch · 2 Vampire Nighthawk · 2 Soul Warden
+- **Other (21):** 3 Sacred Helix · 3 Altar of Dementia · 1 Black Lotus · 1 Mox Emerald · 1 Mox Jet · 1 Mox Pearl · 1 Mox Ruby · 1 Mox Sapphire · 1 Graceful Restoration · 3 Vindicate · 2 Doom Blade · 1 Swords to Plowshares · 1 Wrath of God · 1 Demonic Tutor
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — Chris's Convocation, seed 798567, 2026-10-04 — 15–1 in the Swiss and the Umbel (18–1; the loss a misclick mid-loop), the Open on both Constructed days. A variation on the Mardu Aristocrats macro-archetype (the Loop's family): the Usher / Restoration Angel / Altar of Dementia finish in a removal-and-value shell.
+
+## the Usher's Coin — Mardu Aristocrats (W B R)
+
+`coin` · midrange · game one 55 · matches 59.6
+
+- **Lands (23):** 4 Badlands · 4 Scrubland · 4 Plateau · 3 Swamp · 3 Plains · 2 Mountain · 1 Barren Moor · 1 Cairnbrand · 1 Obsidian Observatory
+- **Creatures (22):** 4 Blood Artist · 4 Indulgent Aristocrat · 4 Reassembling Skeleton · 4 The Usher · 3 Meliyan, the Torment · 3 Vampire Nighthawk
+- **Other (15):** 1 Black Lotus · 1 Mox Jet · 1 Mox Ruby · 1 Mox Pearl · 4 Bitterblossom · 2 Shadow Summoning · 2 Vindicate · 2 Swords to Plowshares · 1 Sacred Helix
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - a planner's seed list (2026-09-30)
+
+## the Pall — Usher Combo (B w r)
+
+`pall` · combo · game one 65 · matches 59.3
+
+- **Lands (21):** 1 Cairnbrand · 4 Badlands · 4 Scrubland · 4 Swamp · 4 Blood Crypt · 4 Godless Shrine
+- **Creatures (20):** 4 The Usher · 4 The Jet Witch · 4 Blood Artist · 4 Typhoid Rats · 4 Vampire Nighthawk
+- **Other (19):** 4 Zombify · 4 Buried Alive · 1 Demonic Tutor · 4 Dark Ritual · 1 Mox Jet · 1 Black Lotus · 1 Mox Ruby · 1 Mox Pearl · 2 Tendrils of Corruption
+- **Its fifteen (registered):** 2 Tendrils of Corruption · 1 Drana, Kalastria Bloodchief · 1 Nekrataal · 4 Hymn to Tourach · 4 Indulgent Aristocrat · 3 Hypnotic Specter
+- **Its sideboard guide:** none — the general rules sideboard it.
+- **Its plan** (loop): The Usher; set up by Buried Alive; started by Zombify, The Usher, Cairnbrand; dig The Jet Witch, Demonic Tutor; fuel Dark Ritual, Black Lotus, Mox Jet, Mox Pearl, Mox Ruby.
+- **History:**
+  - contributed — Chris's Open, seed 189758, 2026-10-05 — 5–0 and the Umbel. Buried Alive into the Usher's loop, the Jet Witch as its engine; "the Pall" is the planner's placeholder name until Chris names it (S55).
+  - S58: 4 Barren Moor → 4 Swamp (adopted under ADR-168: +2.1 ± 1.3 against the field; the list as Chris played it held the Moors)
+
+## Countersnake — Four-Colour Countersnake (G U w b)
+
+`countersnake` · midrange · game one 58 · matches 56.5
+
+- **Lands (19):** 4 Bayou · 1 Obsidian Observatory · 4 Savannah · 4 Tropical Island · 4 Underground Sea · 1 Wrackroot · 1 Shevelport
+- **Creatures (26):** 4 Birds of Paradise · 2 Deadly Recluse · 2 Wall of Blossoms · 3 Clio, Lady of the Depths · 4 Reaper's Forerunner · 2 Tidewall · 2 Mystic Snake · 4 Restoration Angel · 3 The Sower
+- **Other (15):** 1 Black Lotus · 1 Mox Emerald · 1 Mox Pearl · 1 Mox Sapphire · 4 Swords to Plowshares · 4 Counterspell · 1 Demonic Tutor · 1 Time Walk · 1 Absorb
+- **Its fifteen (registered):** 2 Tormod's Crypt · 2 Faerie Macabre · 1 Tidewall · 1 Wall of Blossoms · 1 Deadly Recluse · 1 Treetop Snarespinner · 1 Drana, Kalastria Bloodchief · 2 Temporal Spring · 2 Protocol · 2 Essence Scatter
+- **Its sideboard guide:** none — the general rules sideboard it.
+- **History:**
+  - contributed — Chris's Open, seed 851238, 2026-10-09 — 5–0 in the Swiss and the Umbel won (8–0 in matches, 16–2 in games), Normal. Flash creatures and counterspells played at the opponent's end step: Reaper's Forerunner, Restoration Angel, Mystic Snake, the Sower, Clio. Chris's name for it. Piloted as midrange: the AI plays it better so (57.8% against 54.3% as control over 1,500 paired games).
+
 ## the Writ — Dimir Control (U B)
 
-`writ` · control · game one 54 · matches 60.9
+`writ` · control · game one 52 · matches 56.3
 
 - **Lands (20):** 1 Library of Alexandria · 1 Badlands · 1 Bayou · 1 Tallyflame Court · 1 Wrackroot · 4 Underground Sea · 4 Watery Grave · 3 Volcanic Island · 3 Tropical Island · 1 Cairnbrand
 - **Creatures (19):** 3 Arcane Collector · 3 Tidewall · 3 The Jet Witch · 4 Vampire Nighthawk · 4 Clio, Lady of the Depths · 1 Faerie Formation · 1 Drana, Kalastria Bloodchief
@@ -59,20 +107,9 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 7 · Counterspell 6 · Vam
 - **History:**
   - contributed — Chris's Open, seed 350754, 2026-10-08 — 5–0 in the Swiss and the Umbel won, Normal. Offered as the replacement for the Undertow. A working name until Chris names it.
 
-## the Hearth — Mardu Aristocrats, the value build (W B R)
-
-`hearth` · midrange · game one 52 · matches 60.9
-
-- **Lands (21):** 1 Cairnbrand · 1 Obsidian Observatory · 4 Badlands · 4 Plateau · 4 Scrubland · 1 Sacred Foundry · 1 Godless Shrine · 1 Shevelport · 1 Tallyflame Court · 1 Tundra · 1 Savannah · 1 Blood Crypt
-- **Creatures (18):** 4 Lumen, the Hearth Fire · 4 Restoration Angel · 3 The Usher · 2 Drana, Kalastria Bloodchief · 1 The Jet Witch · 2 Vampire Nighthawk · 2 Soul Warden
-- **Other (21):** 3 Sacred Helix · 3 Altar of Dementia · 1 Black Lotus · 1 Mox Emerald · 1 Mox Jet · 1 Mox Pearl · 1 Mox Ruby · 1 Mox Sapphire · 1 Graceful Restoration · 3 Vindicate · 2 Doom Blade · 1 Swords to Plowshares · 1 Wrath of God · 1 Demonic Tutor
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — Chris's Convocation, seed 798567, 2026-10-04 — 15–1 in the Swiss and the Umbel (18–1; the loss a misclick mid-loop), the Open on both Constructed days. A variation on the Mardu Aristocrats macro-archetype (the Loop's family): the Usher / Restoration Angel / Altar of Dementia finish in a removal-and-value shell.
-
 ## Reaper Control — Jund Snake Control (G R b)
 
-`reaper` · midrange · game one 57 · matches 60.2
+`reaper` · midrange · game one 54 · matches 55.6
 
 - **Lands (18):** 4 Taiga · 4 Stomping Ground · 1 Cairnbrand · 4 Bayou · 4 Badlands · 1 Wrackroot
 - **Creatures (31):** 4 Manaba · 3 Moss Viper · 4 Rage Cobra · 4 Wall of Blossoms · 3 Seasoned Pyromancer · 4 Reaper's Forerunner · 4 Flametongue Kavu · 2 Voracious Cobra · 3 The Reaper
@@ -86,46 +123,9 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 7 · Counterspell 6 · Vam
 - **History:**
   - contributed — Chris's Open, seed 611853, 2026-10-10 — 5–0 in the Swiss, a quarter-final lost to the Kiln. Deathtouch Snakes and Walls hold the ground for Flametongue Kavu, the sweepers and the Reaper; the Manaba and Rage Cobra beside them; four Reaper's Forerunners for the graveyard decks. Built over three runs against the Rabble (ADR-171: the Rabble at 71 in matches). Chris's name for it.
 
-## the Usher's Coin — Mardu Aristocrats (W B R)
-
-`coin` · midrange · game one 53 · matches 59.5
-
-- **Lands (23):** 4 Badlands · 4 Scrubland · 4 Plateau · 3 Swamp · 3 Plains · 2 Mountain · 1 Barren Moor · 1 Cairnbrand · 1 Obsidian Observatory
-- **Creatures (22):** 4 Blood Artist · 4 Indulgent Aristocrat · 4 Reassembling Skeleton · 4 The Usher · 3 Meliyan, the Torment · 3 Vampire Nighthawk
-- **Other (15):** 1 Black Lotus · 1 Mox Jet · 1 Mox Ruby · 1 Mox Pearl · 4 Bitterblossom · 2 Shadow Summoning · 2 Vindicate · 2 Swords to Plowshares · 1 Sacred Helix
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - a planner's seed list (2026-09-30)
-
-## Countersnake — Four-Colour Countersnake (G U w b)
-
-`countersnake` · midrange · game one 59 · matches 56.1
-
-- **Lands (19):** 4 Bayou · 1 Obsidian Observatory · 4 Savannah · 4 Tropical Island · 4 Underground Sea · 1 Wrackroot · 1 Shevelport
-- **Creatures (26):** 4 Birds of Paradise · 2 Deadly Recluse · 2 Wall of Blossoms · 3 Clio, Lady of the Depths · 4 Reaper's Forerunner · 2 Tidewall · 2 Mystic Snake · 4 Restoration Angel · 3 The Sower
-- **Other (15):** 1 Black Lotus · 1 Mox Emerald · 1 Mox Pearl · 1 Mox Sapphire · 4 Swords to Plowshares · 4 Counterspell · 1 Demonic Tutor · 1 Time Walk · 1 Absorb
-- **Its fifteen (registered):** 2 Tormod's Crypt · 2 Faerie Macabre · 1 Tidewall · 1 Wall of Blossoms · 1 Deadly Recluse · 1 Treetop Snarespinner · 1 Drana, Kalastria Bloodchief · 2 Temporal Spring · 2 Protocol · 2 Essence Scatter
-- **Its sideboard guide:** none — the general rules sideboard it.
-- **History:**
-  - contributed — Chris's Open, seed 851238, 2026-10-09 — 5–0 in the Swiss and the Umbel won (8–0 in matches, 16–2 in games), Normal. Flash creatures and counterspells played at the opponent's end step: Reaper's Forerunner, Restoration Angel, Mystic Snake, the Sower, Clio. Chris's name for it. Piloted as midrange: the AI plays it better so (57.8% against 54.3% as control over 1,500 paired games).
-
-## the Pall — Usher Combo (B w r)
-
-`pall` · combo · game one 64 · matches 55.1
-
-- **Lands (21):** 1 Cairnbrand · 4 Badlands · 4 Scrubland · 4 Swamp · 4 Blood Crypt · 4 Godless Shrine
-- **Creatures (20):** 4 The Usher · 4 The Jet Witch · 4 Blood Artist · 4 Typhoid Rats · 4 Vampire Nighthawk
-- **Other (19):** 4 Zombify · 4 Buried Alive · 1 Demonic Tutor · 4 Dark Ritual · 1 Mox Jet · 1 Black Lotus · 1 Mox Ruby · 1 Mox Pearl · 2 Tendrils of Corruption
-- **Its fifteen (registered):** 2 Tendrils of Corruption · 1 Drana, Kalastria Bloodchief · 1 Nekrataal · 4 Hymn to Tourach · 4 Indulgent Aristocrat · 3 Hypnotic Specter
-- **Its sideboard guide:** none — the general rules sideboard it.
-- **Its plan** (loop): The Usher; set up by Buried Alive; started by Zombify, The Usher, Cairnbrand; dig The Jet Witch, Demonic Tutor; fuel Dark Ritual, Black Lotus, Mox Jet, Mox Pearl, Mox Ruby.
-- **History:**
-  - contributed — Chris's Open, seed 189758, 2026-10-05 — 5–0 and the Umbel. Buried Alive into the Usher's loop, the Jet Witch as its engine; "the Pall" is the planner's placeholder name until Chris names it (S55).
-  - S58: 4 Barren Moor → 4 Swamp (adopted under ADR-168: +2.1 ± 1.3 against the field; the list as Chris played it held the Moors)
-
 ## the Depths — Sultai Control (U B G)
 
-`depths` · control · game one 46 · matches 50.0
+`depths` · control · game one 48 · matches 52.6
 
 - **Lands (16):** 1 Library of Alexandria · 1 Wrackroot · 4 Bayou · 4 Tropical Island · 4 Underground Sea · 1 Watery Grave · 1 Breeding Pool
 - **Creatures (22):** 4 Clio, Lady of the Depths · 4 Tidewall · 1 Seraphina, the Initiative · 1 The Reeve · 1 Faerie Formation · 2 Traumatizer · 1 Drana, Kalastria Bloodchief · 1 Mystic Snake · 1 Zinnia, the Undertow · 1 Wall of Blossoms · 4 Birds of Paradise · 1 Arcane Collector
@@ -134,33 +134,9 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 7 · Counterspell 6 · Vam
 - **History:**
   - contributed — Chris's Convocation, seed 186842, 2026-10-03 — 16–0 in the Swiss and the Umbel (19–0; 32–3 in Swiss games), the Open on both Constructed days
 
-## the Levy — Orzhov Landfall (W B)
-
-`levy` · midrange · game one 51 · matches 49.2
-
-- **Lands (24):** 4 Scrubland · 4 Godless Shrine · 5 Plains · 5 Swamp · 4 Evolving Wilds · 1 Thawing Glaciers · 1 Obsidian Observatory
-- **Creatures (15):** 4 Emeria Angel · 4 Dread Presence · 4 Soul Warden · 1 Vampire Nighthawk · 2 Isaura, the Levy
-- **Other (21):** 1 Black Lotus · 1 Mox Pearl · 1 Mox Jet · 4 Raise the Alarm · 2 Shadow Summoning · 3 Bitterblossom · 4 Vindicate · 3 Swords to Plowshares · 2 Glorious Anthem
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - a planner's seed list (2026-09-30)
-
-## the Muster — Boros Weenie (W R)
-
-`muster` · aggro · game one 48 · matches 48.5
-
-- **Lands (22):** 4 Plateau · 4 Sacred Foundry · 8 Plains · 4 Mountain · 2 Secluded Steppe
-- **Creatures (21):** 4 Savannah Lions · 4 Soul Warden · 2 Suntail Hawk · 4 Fencing Ace · 3 Emeria Angel · 4 Flametongue Kavu
-- **Other (17):** 1 Black Lotus · 1 Mox Pearl · 1 Mox Ruby · 4 Raise the Alarm · 4 Glorious Anthem · 4 Lightning Bolt · 2 Swords to Plowshares
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - a planner's seed list (2026-09-30)
-  - S46 and after: −2 Sacred Helix → +2 Vitalist
-  - S57: −2 Vitalist −2 Suntail Hawk → +4 Flametongue Kavu (+10.0 ± 1.9)
-
 ## the Kiln — Izzet Spells (U R)
 
-`kiln` · midrange · game one 48 · matches 47.6
+`kiln` · midrange · game one 46 · matches 47.7
 
 - **Lands (19):** 1 Tallyflame Court · 4 Volcanic Island · 4 Steam Vents · 1 Library of Alexandria · 5 Mountain · 4 Island
 - **Creatures (21):** 3 Flametongue Kavu · 4 Tidewall · 3 Odile, the Tallyflame · 3 The Ruby Tyrant · 4 Guttersnipe · 4 Young Pyromancer
@@ -171,9 +147,22 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 7 · Counterspell 6 · Vam
   - contributed — Chris's Open, seed 531727, 2026-10-05 — 5–0 and the Umbel. Counterspells and burn behind Tidewalls, with Guttersnipe, Young Pyromancer and Odile paying for every spell; "the Kiln" is a working name until Chris names it. Tuned 2026-10-06 for the AI's hands (Chris: "something better tuned to perform well when it becomes an AI-piloted deck"): −2 Experimental Overload −2 Blaze −3 Arcane Collector, +4 Control Magic +3 Flametongue Kavu (46.8% → 57.8% against the field over 1,600 paired games); the list as Chris played it is kept under `registered`.
   - post-S55: tuned for the AI's hands (Chris, 2026-10-06): −2 Experimental Overload −2 Blaze −3 Arcane Collector → +4 Control Magic +3 Flametongue Kavu (46.8% → 57.7% against the sixteen); the list as played is kept under `registered`
 
+## the Muster — Boros Weenie (W R)
+
+`muster` · aggro · game one 48 · matches 47.0
+
+- **Lands (22):** 4 Plateau · 4 Sacred Foundry · 8 Plains · 4 Mountain · 2 Secluded Steppe
+- **Creatures (21):** 4 Savannah Lions · 4 Soul Warden · 2 Suntail Hawk · 4 Fencing Ace · 3 Emeria Angel · 4 Flametongue Kavu
+- **Other (17):** 1 Black Lotus · 1 Mox Pearl · 1 Mox Ruby · 4 Raise the Alarm · 4 Glorious Anthem · 4 Lightning Bolt · 2 Swords to Plowshares
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - a planner's seed list (2026-09-30)
+  - S46 and after: −2 Sacred Helix → +2 Vitalist
+  - S57: −2 Vitalist −2 Suntail Hawk → +4 Flametongue Kavu (+10.0 ± 1.9)
+
 ## the Warband (Chris's list to test against the Muster) — Boros Goblins (R w)
 
-`warband` · aggro · game one 48 · matches 47.2
+`warband` · aggro · game one 47 · matches 46.6
 
 - **Lands (22):** 4 Plateau · 4 Sacred Foundry · 12 Mountain · 2 Plains
 - **Creatures (22):** 4 Skirk Prospector · 4 Goblin Piker · 4 Goblin Chieftain · 2 Boggart Brute · 3 Siege-Gang Commander · 3 Lumen, the Hearth Fire · 2 Flametongue Kavu
@@ -183,9 +172,49 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 7 · Counterspell 6 · Vam
   - a planner's seed list (2026-09-30)
   - S57: −2 Boggart Brute −1 Restoration Angel → +2 Flametongue Kavu +1 Lumen, the Hearth Fire (+3.9 ± 1.5)
 
+## the Levy — Orzhov Landfall (W B)
+
+`levy` · midrange · game one 49 · matches 45.4
+
+- **Lands (24):** 4 Scrubland · 4 Godless Shrine · 5 Plains · 5 Swamp · 4 Evolving Wilds · 1 Thawing Glaciers · 1 Obsidian Observatory
+- **Creatures (15):** 4 Emeria Angel · 4 Dread Presence · 4 Soul Warden · 1 Vampire Nighthawk · 2 Isaura, the Levy
+- **Other (21):** 1 Black Lotus · 1 Mox Pearl · 1 Mox Jet · 4 Raise the Alarm · 2 Shadow Summoning · 3 Bitterblossom · 4 Vindicate · 3 Swords to Plowshares · 2 Glorious Anthem
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - a planner's seed list (2026-09-30)
+
+## the Tollgate — Naya Minefield Control (R W G)
+
+`tollgate` · control · game one 47 · matches 44.9
+
+- **Lands (24):** 4 Plateau · 4 Taiga · 4 Savannah · 2 Sacred Foundry · 2 Stomping Ground · 2 Temple Garden · 2 Plains · 2 Mountain · 1 Forest · 1 Shevelport
+- **Creatures (14):** 4 The Fordkeeper · 4 Wall of Blossoms · 4 Flametongue Kavu · 2 Reaper's Forerunner
+- **Other (22):** 1 Black Lotus · 1 Mox Ruby · 1 Mox Pearl · 1 Mox Emerald · 4 Powerstone Minefield · 4 Pyroclasm · 2 Savage Twister · 2 Wrath of God · 2 Sacred Helix · 2 Swords to Plowshares · 2 Lightning Bolt
+- **Its fifteen (registered):** 3 Tormod's Crypt · 2 Faerie Macabre · 2 Reaper's Forerunner · 2 Char · 2 Disenchant · 2 Savage Twister · 2 Swords to Plowshares
+- **Its sideboard guide** (the whole plan: the general rules do not run after it):
+  - against many small creatures: 2 Savage Twister in for Sacred Helix
+  - against a graveyard deck or some graveyard use: 3 Tormod's Crypt in for Powerstone Minefield
+  - against a graveyard deck or some graveyard use: 2 Faerie Macabre in for Powerstone Minefield, then Pyroclasm
+  - against control: 2 Char in for Powerstone Minefield
+  - against control: 2 Reaper's Forerunner in for Powerstone Minefield
+- **History:**
+  - contributed — The planner's overhaul of the Ford (2026-10-10), promoted by Chris in its place: Powerstone Minefield and the Fordkeeper behind Walls, Kavus and sweepers, Sacred Helix to close. Measured in the Ford's seat before it was registered; mana creatures, tried at Chris's suggestion, measured worse. The planner's name.
+
+## the Wurmspeaker — Mono-Green Ramp
+
+`wurmspeaker` · midrange · game one 44 · matches 42.3
+
+- **Lands (22):** 20 Forest · 2 Tranquil Thicket
+- **Creatures (30):** 4 Llanowar Elves · 4 Birds of Paradise · 4 Wood Elves · 4 Seedborn Muse · 3 Gaean Wurm · 2 Pelakka Wurm · 3 Baru, Wurmspeaker · 2 Treetop Snarespinner · 2 The Emerald Keeper · 2 Rampaging Baloths
+- **Other (8):** 1 Black Lotus · 1 Mox Emerald · 4 Rampant Growth · 2 Prey Upon
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - a planner's seed list (2026-09-30)
+  - S46 and after: −1 Pelakka Wurm −1 Gaean Wurm → +2 Rampaging Baloths
+
 ## the Sweep — Jund Aristocrats (B R G)
 
-`sweep` · midrange · game one 47 · matches 43.4
+`sweep` · midrange · game one 47 · matches 42.1
 
 - **Lands (18):** 1 Cairnbrand · 4 Badlands · 4 Bayou · 4 Taiga · 1 Tallyflame Court · 1 Obsidian Observatory · 1 Shevelport · 1 Underground Sea · 1 Savannah
 - **Creatures (25):** 4 The Reaper · 3 Meliyan, the Torment · 4 Blood Artist · 4 Birds of Paradise · 4 Shocking Sharpshooter · 2 Seasoned Pyromancer · 2 Vampire Nighthawk · 2 Voracious Cobra
@@ -196,7 +225,7 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 7 · Counterspell 6 · Vam
 
 ## the Tally — Izzet Sparks (U R)
 
-`tally` · aggro · game one 47 · matches 42.2
+`tally` · aggro · game one 43 · matches 39.1
 
 - **Lands (22):** 4 Volcanic Island · 4 Steam Vents · 8 Mountain · 4 Island · 1 Tallyflame Court · 1 Forgotten Cave
 - **Creatures (12):** 4 Young Pyromancer · 4 Guttersnipe · 4 Flametongue Kavu
@@ -208,34 +237,22 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 7 · Counterspell 6 · Vam
   - S57: −2 Arc Mage −2 Abrade → +4 Flametongue Kavu (+13.0 ± 2.0)
   - S58: −2 Blaze → +2 Control Magic (+3.2 ± 1.5 (and +3.1 ± 1.5 on the Kavus))
 
-## the Wurmspeaker — Mono-Green Ramp
+## the Enchantress — Selesnya Auras (G W)
 
-`wurmspeaker` · midrange · game one 42 · matches 37.9
+`enchantress` · aggro · game one 40 · matches 38.1
 
-- **Lands (22):** 20 Forest · 2 Tranquil Thicket
-- **Creatures (30):** 4 Llanowar Elves · 4 Birds of Paradise · 4 Wood Elves · 4 Seedborn Muse · 3 Gaean Wurm · 2 Pelakka Wurm · 3 Baru, Wurmspeaker · 2 Treetop Snarespinner · 2 The Emerald Keeper · 2 Rampaging Baloths
-- **Other (8):** 1 Black Lotus · 1 Mox Emerald · 4 Rampant Growth · 2 Prey Upon
+- **Lands (22):** 4 Savannah · 4 Temple Garden · 7 Forest · 6 Plains · 1 Shevelport
+- **Creatures (16):** 4 Gladecover Scout · 4 Blurred Mongoose · 4 Ovna, the Enchantress · 2 Timberland Guide · 2 The Emerald Keeper
+- **Other (22):** 1 Black Lotus · 1 Mox Emerald · 1 Mox Pearl · 4 Rancor · 4 Blanchwood Armor · 3 Spirit Link · 4 Pacifism · 1 Glare of Subdual · 3 Angelic Destiny
 - **Its fifteen:** built by the field's builder for each seat (none registered).
 - **History:**
   - a planner's seed list (2026-09-30)
-  - S46 and after: −1 Pelakka Wurm −1 Gaean Wurm → +2 Rampaging Baloths
-
-## the Ford — Naya Lifegain (R W G)
-
-`ford` · midrange · game one 38 · matches 37.5
-
-- **Lands (24):** 4 Plateau · 4 Savannah · 4 Taiga · 4 Sacred Foundry · 2 Temple Garden · 2 Plains · 2 Mountain · 2 Forest
-- **Creatures (22):** 4 Soul Warden · 4 The Fordkeeper · 4 Grazing Gladehart · 2 Lumen, the Hearth Fire · 4 Vitalist · 2 Flametongue Kavu · 2 Rage Cobra
-- **Other (14):** 1 Black Lotus · 1 Mox Ruby · 1 Mox Pearl · 1 Mox Emerald · 4 Spirit Link · 4 Lightning Bolt · 2 Sacred Helix
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - a planner's seed list (2026-09-30)
-  - S46 and after: −2 Wood Elves −2 Char → +4 Vitalist
-  - S57: −2 Savage Twister −2 Restoration Angel → +2 Flametongue Kavu +2 Rage Cobra (+5.1 ± 1.8)
+  - S46 and after: −3 Giant Growth → +3 Angelic Destiny
+  - S58: −1 Glare of Subdual → +1 Pacifism (+1.9 ± 0.7 pooled over two seeds (the brief's Giant Growth left in S46; the Glare is the slot measured))
 
 ## the Locks — Esper Control (W U B)
 
-`locks` · control · game one 39 · matches 37.2
+`locks` · control · game one 37 · matches 35.9
 
 - **Lands (24):** 4 Tundra · 4 Underground Sea · 4 Scrubland · 4 Hallowed Fountain · 2 Island · 2 Plains · 2 Swamp · 1 Obsidian Observatory · 1 Library of Alexandria
 - **Creatures (6):** 4 The Dredger · 2 Serra Angel
@@ -251,19 +268,6 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 7 · Counterspell 6 · Vam
   - a planner's seed list (2026-09-30)
   - S46 and after: −2 Brainstorm → +2 Ponder
   - S57: −2 Tidewall −2 Ponder → +4 Control Magic (+11.0 ± 2.2)
-
-## the Enchantress — Selesnya Auras (G W)
-
-`enchantress` · aggro · game one 39 · matches 35.3
-
-- **Lands (22):** 4 Savannah · 4 Temple Garden · 7 Forest · 6 Plains · 1 Shevelport
-- **Creatures (16):** 4 Gladecover Scout · 4 Blurred Mongoose · 4 Ovna, the Enchantress · 2 Timberland Guide · 2 The Emerald Keeper
-- **Other (22):** 1 Black Lotus · 1 Mox Emerald · 1 Mox Pearl · 4 Rancor · 4 Blanchwood Armor · 3 Spirit Link · 4 Pacifism · 1 Glare of Subdual · 3 Angelic Destiny
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - a planner's seed list (2026-09-30)
-  - S46 and after: −3 Giant Growth → +3 Angelic Destiny
-  - S58: −1 Glare of Subdual → +1 Pacifism (+1.9 ± 0.7 pooled over two seeds (the brief's Giant Growth left in S46; the Glare is the slot measured))
 
 # Archived lists
 
@@ -299,6 +303,21 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 7 · Counterspell 6 · Vam
 - **History:**
   - a planner's seed list (2026-09-30)
   - S46 and after: −3 Thought Scour −1 Duress → +4 Entomb
+
+## the Ford — Naya Lifegain (R W G)
+
+`ford` · midrange · **archived**
+
+*Archived:* Post-S59 (Chris and the planner, 2026-10-10): replaced by its overhaul, the Tollgate (46.9 against the Ford's 38.3 in game one, paired; 44 against 37.5 in matches). Last measured 38 in game one and 37.5 in matches (eighteen lists, pilot 120).
+
+- **Lands (24):** 4 Plateau · 4 Savannah · 4 Taiga · 4 Sacred Foundry · 2 Temple Garden · 2 Plains · 2 Mountain · 2 Forest
+- **Creatures (22):** 4 Soul Warden · 4 The Fordkeeper · 4 Grazing Gladehart · 2 Lumen, the Hearth Fire · 4 Vitalist · 2 Flametongue Kavu · 2 Rage Cobra
+- **Other (14):** 1 Black Lotus · 1 Mox Ruby · 1 Mox Pearl · 1 Mox Emerald · 4 Spirit Link · 4 Lightning Bolt · 2 Sacred Helix
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - a planner's seed list (2026-09-30)
+  - S46 and after: −2 Wood Elves −2 Char → +4 Vitalist
+  - S57: −2 Savage Twister −2 Restoration Angel → +2 Flametongue Kavu +2 Rage Cobra (+5.1 ± 1.8)
 
 ## the Loop — Mardu Loop (W B R)
 
