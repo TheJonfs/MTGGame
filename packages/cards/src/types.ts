@@ -631,21 +631,26 @@ export interface CardDef {
   priceOverride?: number;
 }
 
-/** An activated ability is a mana ability iff every effect is addMana and it has no targets (CR 605 simplification). */
+/** An activated ability is a mana ability iff it has no targets and could add mana (CR 605.1a). Until the Manaba
+ * (post-S59) every one in the pool did nothing else, and the test was "every effect is addMana"; a mana ability may
+ * carry other effects ("Add one mana of any color. Each opponent gains 1 life."), which resolve with it at once. */
 export function isManaAbility(a: AbilityDef): boolean {
   return (
     a.kind === "activated" &&
     (a.targets ?? []).length === 0 &&
-    a.effects.length > 0 &&
-    a.effects.every((e) => e.type === "addMana")
+    a.effects.some((e) => e.type === "addMana")
   );
+}
+/** A mana ability's effects beyond its mana (post-S59): resolved immediately after the mana is added. */
+export function manaAbilityRiders(a: AbilityDef): Effect[] {
+  return a.kind === "activated" && isManaAbility(a) ? a.effects.filter((e) => e.type !== "addMana") : [];
 }
 
 /** ADR-068 Amendment 2: a mana ability that carries a colour choice (Lotus) or a
  * sacrifice cost is activated DELIBERATELY (one action per colour) — never by
  * auto-pay, never by the bare `tapForMana` path. */
 export function isChoiceManaAbility(a: AbilityDef): boolean {
-  return isManaAbility(a) && a.kind === "activated" && (a.effects.some((e) => e.type === "addMana" && !!e.choice) || !!a.cost.sacrifice);
+  return isManaAbility(a) && a.kind === "activated" && (a.effects.some((e) => e.type === "addMana" && !!e.choice) || !!a.cost.sacrifice || !!a.cost.tapCreature || a.effects.some((e) => e.type !== "addMana")); // post-S59: a cost that taps another creature, or an effect beyond the mana, is deliberate too
 }
 
 export const MANA_COLORS = ["W", "U", "B", "R", "G"] as const;

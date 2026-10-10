@@ -485,10 +485,19 @@ export class HeuristicAgent implements Agent {
       const o = view.battlefield.find((b) => b.id === action.objectId);
       const d = o ? this.def(o.cardId) : undefined;
       const ab = d?.abilities?.[action.abilityIndex];
-      if (!ab || ab.kind !== "activated" || !ab.cost.sacrifice || !ab.effects.every((e) => e.type === "addMana")) return null;
+      // Post-S59 (the Manaba): a mana ability paid by TAPPING a creature of a kind is a burst too — and a repeatable
+      // one: what it can make this step is one a creature of that kind still untapped, so a card two mana away is
+      // enabled by the first tap when a second snake stands ready. Its colour is chosen tap by tap, so no colour test.
+      const tapKind = ab && ab.kind === "activated" && ab.cost.tapCreature && !ab.cost.sacrifice && ab.effects.some((e) => e.type === "addMana") ? ab.cost.tapCreature : null;
+      if (!ab || ab.kind !== "activated" || !(ab.cost.sacrifice || tapKind) || !ab.effects.some((e) => e.type === "addMana") || (!tapKind && !ab.effects.every((e) => e.type === "addMana"))) return null;
       for (const e of ab.effects) if (e.type === "addMana" && e.mana) produced += (e.mana.match(/\{/g) ?? []).length;
       // S26: the Lotus — N of one chosen colour; the enabling card must WANT that colour (or none).
       for (const e of ab.effects) if (e.type === "addMana" && e.choice) { produced += e.choice.count; burstColor = action.color ?? null; }
+      if (tapKind) {
+        const sub = /^creature\.subtype:(.+)$/.exec(tapKind.predicate)?.[1];
+        const ready = view.battlefield.filter((b) => b.controller === me && !b.tapped && b.power !== null && (!sub || (this.def(b.cardId)?.subtypes ?? []).includes(sub))).length;
+        produced = Math.floor(ready / tapKind.count);
+      }
       // S28 (ADR-098, Orcish Lumberjack): a COMBINATION burst — its multiset must cover the enabled
       // card's pips in those colours; and the LAST Forest is never fed to it while a green card waits
       // in hand with no other green source (the Forest is worth more standing).

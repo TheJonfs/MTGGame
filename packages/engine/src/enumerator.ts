@@ -172,6 +172,7 @@ export function legalActions(ctx: EngineCtx, player: PlayerId): Action[] {
       if (isChoiceManaAbility(ability)) {
         if (ability.cost.tap && (obj.tapped || (obj.summoningSick && !characteristics(ctx, id).keywords.has("haste") && def.types.includes("Creature")))) return;
         if (ability.cost.sacrifice && sacrificeCandidates(ctx, player, id, ability.cost.sacrifice.predicate).length === 0) return;
+        if (ability.cost.tapCreature && tapCreatureCandidates(ctx, player, ability.cost.tapCreature.predicate).length < ability.cost.tapCreature.count) return; // post-S59 (the Manaba)
         const cost = ability.cost.mana ? parseManaCost(ability.cost.mana) : undefined;
         if (cost && !canPay(ctx, player, cost, 0, ability.cost.tap ? [id] : [])) return;
         // A colour CHOICE (Lotus) is one action per colour; a fixed-production sacrifice-cost

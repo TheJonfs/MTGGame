@@ -1,5 +1,5 @@
 import { EventBus, IdGen, type LogSink, type Rng } from "@shandalar/core";
-import { manaValue, parseManaCost, resolveEffect, type CardDef, type Effect, isChoiceManaAbility, parseManaProduction } from "@shandalar/cards";
+import { manaValue, parseManaCost, resolveEffect, type CardDef, type Effect, isChoiceManaAbility, manaAbilityRiders, parseManaProduction } from "@shandalar/cards";
 import { sameAction, type Action } from "./actions.js";
 import {
   assignCombatDamage,
@@ -13,7 +13,7 @@ import {
 } from "./combat.js";
 import type { EngineCtx } from "./ctx.js";
 import { characteristics, expireEndOfTurnEffects, untapsDuringOthersUntap } from "./characteristics.js";
-import { makeEffectContext, specOfFlatIndex } from "./effect-context.js";
+import { makeEffectContext, makeInitEffectContext, specOfFlatIndex } from "./effect-context.js";
 import { attackerChoices, blockerChoices, bottomChoices, discardChoices, effectiveAbilityCost, legalActions } from "./enumerator.js";
 import type { GameEventMap } from "./events.js";
 import { autoPay, canPay, emptyManaPools, tapForMana, untapForMana } from "./mana.js";
@@ -808,6 +808,9 @@ export class Game {
               for (const sym of parseManaProduction(e.mana)) pool[sym.symbol] += 1;
             }
           }
+          // post-S59 (the Manaba): a mana ability's other effects resolve with it, at once (CR 605.3b — no stack)
+          const riders = manaAbilityRiders(ability);
+          if (riders.length) { const ectx = makeInitEffectContext(this.ctx, player); for (const e of riders) resolveEffect(e, ectx); }
           break;
         }
         // S29 (R-092, Arc Mage): a modal ability stacks its chosen mode's targets and effects.

@@ -9,6 +9,7 @@
  *                (`protocol~cost={1}{U}~shrink=3`: the card with fields overridden, for this run only). Run with --only key on the
  *                seed of a plain run and compare game by game.
  *   --deck key:file.json[:archetype]   S58: a whole new sixty in that list's seat (a build under test); --swap then edits it.
+ *   --extra-cards dir   post-S59: card defs outside the pool (data/cards-proposed) added to this run — a card under consideration.
  *   --deck-side file.json   S59: that build's own fifteen (for --matches and --sideboarded); without it the field builder's.
  *   --vs k1,k2    with --only: only the pairings against those lists (a matchup study at more games).
  *   --sideboarded-one   S56: in each game ONE seat plays its sideboarded sixty against the other's registered sixty
@@ -37,7 +38,8 @@
  * together plus its Altar activations. `--shard` splits the pairings across processes; `--merge` joins the shards and
  * prints the table and the reads. A Lab run holds one pairing across a grid, so this writes its own shape.
  */
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, readdirSync, writeFileSync, mkdirSync } from "node:fs";
+import { validateCard, type CardDef } from "@shandalar/cards";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadCardPool } from "@shandalar/cards/loader";
@@ -58,7 +60,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 // S56 (ADR-164): the round-robin is the field's — an archived list is out of it (`--with-archived` brings it back for a look)
 const KEYS = Object.keys(process.argv.includes("--with-archived") ? OPEN_DECKS : OPEN_FIELD);
 
-type SeatLog = { cast: Record<string, number>; played: Record<string, number>; loopTurn?: number; altarActs?: number };
+type SeatLog = { cast: Record<string, number>; played: Record<string, number>; /** post-S59: abilities activated, by the source's card */ acts?: Record<string, number>; loopTurn?: number; altarActs?: number };
 type Game = { a: string; b: string; seatA: 0 | 1; winner: "a" | "b" | "draw"; reason: string; turns: number; logA: SeatLog; logB: SeatLog; boarded?: string ; /** S59 (--matches): the match's index in its pairing and the game's number in the match (0, 1, 2) */ match?: number; gameNo?: number };
 
 class Tracker implements Agent {
@@ -69,6 +71,7 @@ class Tracker implements Agent {
     const cardOf = (id: string) => view.hand.find((c) => c.objectId === id)?.cardId ?? view.battlefield.find((b) => b.id === id)?.cardId;
     if (a.type === "castSpell") { const c = cardOf(a.objectId); if (c) this.log.cast[c] = (this.log.cast[c] ?? 0) + 1; }
     if (a.type === "playLand") { const c = cardOf(a.objectId); if (c) this.log.played[c] = (this.log.played[c] ?? 0) + 1; }
+    if (a.type === "activateAbility") { const c = cardOf(a.objectId); if (c) (this.log.acts ??= {})[c] = (this.log.acts[c] ?? 0) + 1; }
     if (this.loop) {
       if (a.type === "activateAbility" && cardOf(a.objectId) === "altar_of_dementia") this.log.altarActs = (this.log.altarActs ?? 0) + 1;
       if (this.log.loopTurn === undefined) {
@@ -82,6 +85,9 @@ class Tracker implements Agent {
 
 async function run(): Promise<void> {
   const pool = loadCardPool(join(ROOT, "data/cards")).cards;
+  // post-S59 (a card under consideration, not yet in the pool): `--extra-cards dir` adds that directory's defs to this run's pool
+  const extra = arg("extra-cards", "");
+  if (extra) for (const f of readdirSync(extra).filter((x) => x.endsWith(".json")).sort()) { const d = JSON.parse(readFileSync(join(extra, f), "utf8")) as CardDef; const v = validateCard(d); if (v.errors.length) throw new Error(`open:rr --extra-cards: ${f}: ${v.errors.join("; ")}`); pool.set(d.id, d); }
   const G = Number(arg("games", "100")), seed0 = Number(arg("seed", "46")), [si, sn] = arg("shard", "0/1").split("/").map(Number) as [number, number];
   const one = process.argv.includes("--sideboarded-one");
   const M = Number(arg("matches", "0"));
