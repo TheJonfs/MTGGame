@@ -42,6 +42,46 @@ The two games are joined. A journey's Convocation sits on a clock: every thousan
   5. **The pilot still does not chain several Snakes for one large turn except through an X spell or an ability**, and it never taps for a Rage Cobra on its own turn. The card is under-measured on that side.
   6. **The AI's sideboarding takes Walls of Blossoms out against aggro lists** (the "creatures" rule brings removal in for the lowest-rated card). Chris's list shows it; the Open's green lists may share it.
 
+## After the session — Reaper Control joins the Open; the tables with eighteen lists (Chris, 2026-10-10) — NOT PUSHED
+- **Reaper Control is the eighteenth list** (Chris's Jund Snake Control, his name): his sixty and fifteen from the Open of seed 611853 (5–0 in the Swiss, a quarter-final lost to the Kiln). Midrange pilot. 57 in game one, 60 in matches (fourth of eighteen). Against the Rabble: 50 in fifty matches on the table, 58 in a hundred beside it.
+  - 27 single-slot swaps moved nothing more than two points; the list is left as he registered it.
+- **Guides, extended (data, attached to a list's fifteen as before):**
+  - Two new opponent shapes a row may name: `small` (fifteen or more creatures of toughness two or less) and `someGraveyard` (four or more graveyard cards — the Coin and the Hearth, where `graveyard` at eight reaches only the Pall).
+  - `guidesOnly` in `open-contributed.json`: a guide named there is the whole plan — the rules do not run after it.
+  - **Reaper Control's guide**, measured row by row at 200 matches a pairing: Crypts for Twisters against graveyard decks (37.7 with, 33.2 without: the Pall +10); Char, Recluse and Putrefy for Twisters and Bolts against control (56.6 with, 51.2 without). **A third row was measured and removed**: Pyroclasm for Bolts against small-creature decks (66.1 with, 71.1 without; nothing against the Rabble, worse against the Wurmspeaker and the Muster).
+  - Guide only, rules only, and guide then rules came out level against the field (60.4 / 59.6 / 60.2, ±2.3). The guide is kept as the whole plan: it is the best of the three against the Rabble (58 against 51).
+- **The Manaba for Birds of Paradise, tried and not adopted**: Countersnake −2.5 ± 1.8 (four), −1.0 ± 1.4 (two); the Sweep −2.5 ± 1.5, −1.6 ± 1.1.
+- **The tables of record, eighteen lists, pilot book 120** — game one (`analysis/runs/rr18_s59.json`, 15,300 games; `OPEN_MEANS` updated) and matches (`analysis/runs/matches18_s59.md`, 7,650 matches):
+
+| list | matches | game one (100 a pairing) | games two and three less game one |
+|---|---|---|---|
+| the Rabble | 71.4 | 65 | +0.9 |
+| the Hearth | 60.9 | 52 | +5.6 |
+| the Writ | 60.9 | 54 | +1.7 |
+| **Reaper Control** | **60.2** | **57** | +0.7 |
+| the Coin | 59.5 | 53 | +9.5 |
+| Countersnake | 56.1 | 59 | −1.3 |
+| the Pall | 55.1 | 64 | −15.3 |
+| the Depths | 50.0 | 46 | +2.9 |
+| the Levy | 49.2 | 51 | −0.3 |
+| the Muster | 48.5 | 48 | −7.5 |
+| the Kiln | 47.6 | 48 | −1.4 |
+| the Warband | 47.2 | 48 | +3.6 |
+| the Sweep | 43.4 | 47 | −3.2 |
+| the Tally | 42.2 | 47 | −3.1 |
+| the Wurmspeaker | 37.9 | 42 | −1.0 |
+| the Ford | 37.5 | 38 | +4.1 |
+| the Locks | 37.2 | 39 | +4.2 |
+| the Enchantress | 35.3 | 39 | −0.2 |
+
+  - The Rabble is still 71 in matches. Reaper Control is level with it, not ahead: the question ADR-171 put to the planner (a sweeper control list) is still open, with one list now at parity.
+  - A grid of every pairing was published for Chris as a private page (the match, game-one and post-sideboard figures by cell).
+- **Concerns:**
+  1. **Sweepers do not beat the Rabble in the pilot's hands.** The Pyroclasm row was neutral there and harmful elsewhere; the earlier fixed-sixty tests said the same. Either the pilot plays sweepers poorly or the Rabble rebuilds through them (twelve burn spells and token makers). Worth a probe before the planner's sweeper list is authored.
+  2. **The rules still take Walls of Blossoms out for removal** for every unguided green list. Reaper Control is shielded by its guide; the Wurmspeaker is not (37.9 in matches, 42 in game one).
+  3. **`small` reads toughness, the rules' sweeper shape reads power.** Two definitions of the same idea now exist.
+  4. **Reaper Control's quarter-final plan against the Kiln** (every Manaba and Rage Cobra out) is not in the guide: one game, unmeasured.
+
 ## Deviations from the brief
 1. **The outbox is a key per entry, not one key.** The brief says "`convocation-outbox` (its own key)". One key holding a list is a read-modify-write on both pages, and the brief's own test (two tabs never lose an entry) cannot be guaranteed that way. Entries live at `convocation-outbox:<id>`. *Rule on the shape; the behaviour is the brief's.*
 2. **The drain rides every autosave**, not only load and focus. It is also run on load and on focus. A drain is then always followed by the save that makes it durable.

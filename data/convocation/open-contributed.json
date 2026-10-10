@@ -167,6 +167,50 @@
      "graveyard"
     ]
    }
+  ],
+  "reaper": [
+   {
+    "in": "tormods_crypt",
+    "n": 3,
+    "out": [
+     "savage_twister",
+     "lightning_bolt"
+    ],
+    "when": [
+     "graveyard",
+     "someGraveyard"
+    ]
+   },
+   {
+    "in": "char",
+    "n": 2,
+    "out": [
+     "savage_twister"
+    ],
+    "when": [
+     "control"
+    ]
+   },
+   {
+    "in": "deadly_recluse",
+    "n": 1,
+    "out": [
+     "savage_twister"
+    ],
+    "when": [
+     "control"
+    ]
+   },
+   {
+    "in": "putrefy",
+    "n": 2,
+    "out": [
+     "lightning_bolt"
+    ],
+    "when": [
+     "control"
+    ]
+   }
   ]
  },
  "lists": [
@@ -1479,7 +1523,133 @@
      "count": 2
     }
    ]
+  },
+  {
+   "key": "reaper",
+   "name": "Reaper Control",
+   "title": "Jund Snake Control (G R b)",
+   "archetype": "midrange",
+   "source": "Chris's Open, seed 611853, 2026-10-10 — 5–0 in the Swiss, a quarter-final lost to the Kiln. Deathtouch Snakes and Walls hold the ground for Flametongue Kavu, the sweepers and the Reaper; the Manaba and Rage Cobra beside them; four Reaper's Forerunners for the graveyard decks. Built over three runs against the Rabble (ADR-171: the Rabble at 71 in matches). Chris's name for it.",
+   "decklist": [
+    {
+     "cardId": "manaba",
+     "count": 4
+    },
+    {
+     "cardId": "moss_viper",
+     "count": 3
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "rage_cobra",
+     "count": 4
+    },
+    {
+     "cardId": "wall_of_blossoms",
+     "count": 4
+    },
+    {
+     "cardId": "savage_twister",
+     "count": 3
+    },
+    {
+     "cardId": "seasoned_pyromancer",
+     "count": 3
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "voracious_cobra",
+     "count": 2
+    },
+    {
+     "cardId": "the_reaper",
+     "count": 3
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "taiga",
+     "count": 4
+    },
+    {
+     "cardId": "stomping_ground",
+     "count": 4
+    },
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "bayou",
+     "count": 4
+    },
+    {
+     "cardId": "badlands",
+     "count": 4
+    },
+    {
+     "cardId": "wrackroot",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "tormods_crypt",
+     "count": 3
+    },
+    {
+     "cardId": "moss_viper",
+     "count": 1
+    },
+    {
+     "cardId": "deadly_recluse",
+     "count": 1
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 3
+    },
+    {
+     "cardId": "savage_twister",
+     "count": 1
+    },
+    {
+     "cardId": "char",
+     "count": 2
+    },
+    {
+     "cardId": "putrefy",
+     "count": 4
+    }
+   ]
   }
  ],
- "_guides_note": "S58: a guide's rows are the author's swaps that MEASURED (open:rr --sideboarded-only <list> --guide-drop …). The Locks' planner's guide also had Essence Scatter for Absorb against creature decks (−17 against the Enchantress, −11 the Ford: Absorb's life and its reach beyond creatures were worth more) and Disenchant for the Serras (−12 the Muster and the Enchantress); both rows are out and the rules bring those cards in where they apply."
+ "_guides_note": "S58: a guide's rows are the author's swaps that MEASURED (open:rr --sideboarded-only <list> --guide-drop …). The Locks' planner's guide also had Essence Scatter for Absorb against creature decks (−17 against the Enchantress, −11 the Ford: Absorb's life and its reach beyond creatures were worth more) and Disenchant for the Serras (−12 the Muster and the Enchantress); both rows are out and the rules bring those cards in where they apply. Post-S59: `guidesOnly` names the guided lists whose guide is the whole plan (the rules do not run after it).",
+ "guidesOnly": [
+  "reaper"
+ ]
 }

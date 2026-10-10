@@ -705,4 +705,7 @@ See handoff Concerns for the authoritative list. Highlights: auto-pay greedy fea
 - **A card under consideration** lives outside `data/cards` and rides `open:rr --extra-cards <dir>`; nothing else in the game sees it. Move it into the pool only when Chris locks it (then the pins: the loader's count, the shop-tier tally, `pnpm reference`).
 - **A generated "png" from the image skill may be a JPEG inside.** Crop with `sips -s format png …` and check with `file`.
 - **Ask what the AI swaps before reading a sideboarded number.** `aiSideboard(deck, fifteen, theirDeck, …).swaps` for a build under test showed in one line why every version lost ten points after game one.
+- **A guide is data**: rows in `open-contributed.json` → `guides[key]`, shapes from `GuideShape`; `guidesOnly: [key]` stops the rules running after it. Measure a row with `open:rr --only <list> --matches 200 --vs <the lists it fires for>` beside the same run with `--guide-drop <its cards>`; `--no-guide` and `--guide-rules-too` are the two other ways to sideboard the same fifteen.
+- **A person's sideboard plan is not automatically a good guide row.** Reaper Control's Pyroclasm plan, taken from Chris's own games, cost five points in the pilot's hands. Measure every row.
+- **`pnpm open:rr --matches-report … --out x.md` also writes `x.json`** (`byList`, `byPair`): the data behind any grid or chart of the matchups.
 

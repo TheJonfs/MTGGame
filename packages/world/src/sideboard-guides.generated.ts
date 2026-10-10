@@ -93,5 +93,83 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
     ]
    }
   ]
+ },
+ {
+  "key": "reaper",
+  "fifteen": [
+   {
+    "cardId": "tormods_crypt",
+    "count": 3
+   },
+   {
+    "cardId": "moss_viper",
+    "count": 1
+   },
+   {
+    "cardId": "deadly_recluse",
+    "count": 1
+   },
+   {
+    "cardId": "pyroclasm",
+    "count": 3
+   },
+   {
+    "cardId": "savage_twister",
+    "count": 1
+   },
+   {
+    "cardId": "char",
+    "count": 2
+   },
+   {
+    "cardId": "putrefy",
+    "count": 4
+   }
+  ],
+  "rows": [
+   {
+    "in": "tormods_crypt",
+    "n": 3,
+    "out": [
+     "savage_twister",
+     "lightning_bolt"
+    ],
+    "when": [
+     "graveyard",
+     "someGraveyard"
+    ]
+   },
+   {
+    "in": "char",
+    "n": 2,
+    "out": [
+     "savage_twister"
+    ],
+    "when": [
+     "control"
+    ]
+   },
+   {
+    "in": "deadly_recluse",
+    "n": 1,
+    "out": [
+     "savage_twister"
+    ],
+    "when": [
+     "control"
+    ]
+   },
+   {
+    "in": "putrefy",
+    "n": 2,
+    "out": [
+     "lightning_bolt"
+    ],
+    "when": [
+     "control"
+    ]
+   }
+  ],
+  "only": true
  }
 ];
