@@ -1,19 +1,32 @@
 # docs/reference — the standing reference
 
-What is implemented **right now**, generated from the data and the code so a fresh read never trusts a stale hand-written table. Regenerate after any card, deck, life, or knob edit:
+What is implemented **right now**, generated from the data and the code so a fresh read never trusts a stale hand-written table. These are the files to carry between the implementer and the planner. Regenerate after any card, deck, list, life or knob edit:
 
 ```
-pnpm reference
+pnpm reference        # cards.md, starters.md, enemies.md, salvage.md
+pnpm open:gen         # open-lists.md (and the generated list, plan and guide code)
 ```
 
-A sync test (`packages/world/src/reference-docs.test.ts`) pins both files to their renderers, the `docs/knobs.md` precedent (principle 11) — a stale reference fails `pnpm test`.
+Sync tests pin the generated files to their renderers (`packages/world/src/reference-docs.test.ts`, the Open's reference test) — a stale reference fails `pnpm test`.
 
 | File | What it holds | Source of truth |
 |---|---|---|
-| `cards.md` | The card pool: every non-token def — colour, type, cost, mana value, P/T, keywords, shop tier, price, flags (prizeOnly / custom / law), rules text (the def's `text`, else the Scryfall oracle text). | `data/cards/**/*.json`, `data/art/real/oracle.json`, the shop pricing knobs |
+| `cards.md` | The card pool. First the custom cards gathered by colour with their tiers; then every non-token def — colour, type, cost, mana value, P/T, keywords, shop tier, price, flags (prizeOnly / custom / law), rules text; then the tokens and what makes them. | `data/cards/**/*.json`, `data/art/real/oracle.json`, the shop pricing knobs |
+| `open-lists.md` | The Convocation's Open. The table of record for the active lists (matches, game one, the change after sideboarding, and whether a list's fifteen is registered, guided or built); the staples; then every list — its sixty, its fifteen, its sideboard guide, its plan, its history by session — the active lists in the table's order, the archived lists after them. | `data/convocation/open-seeds.json`, `open-contributed.json` (lists, fifteens, guides, plans, the archive), `open-matches.json` (the matches table), `packages/sim/src/open-lists.ts` (revisions), `OPEN_MEANS` (game one) |
 | `starters.md` | The five starting decks (the player's roads): each decklist with its stats and curve, the refill basic, the easy/hard adjustments; the new-game constants (life, gold, spares, ante). | `data/world/starters.json`, `packages/world/src/knobs.ts` |
-| `enemies.md` | Every enemy the player can meet — roaming opponents (with the deck each plays and who shares it), the Mox court, the power-dungeon guardians, the stronghold lords, the petal courts, the Mirror, the Heart — each with how its STARTING LIFE is set (knobs by name, difficulty bundles in brackets) and its decklist with cards / lands / average mana value / colours; plus the player's five starters. | `data/world/*.json` (the catalog), the sim deck tables (`packages/sim/src/*-decks.ts`, `heart-deck.ts`), `packages/world/src/knobs.ts` |
+| `salvage.md` | The phase-two (flood) start: the salvage pack and its constants. | `data/world/*.json`, `packages/world/src/salvage.ts`, the knobs |
+| `enemies.md` | Every enemy the player can meet in the journey — roaming opponents, the Mox court, the power-dungeon guardians, the stronghold lords, the petal courts, the Mirror, the Heart — each with how its starting life is set and its decklist. | `data/world/*.json` (the catalog), the sim deck tables, `packages/world/src/knobs.ts` |
+| `world-ui.md` | The journey's screens and controls (hand-written, S23; not generated). | — |
 
-Companions that are NOT generated: `docs/knobs.md` (generated separately by `pnpm knobs:doc`), `docs/registries/pool-registry.md` (each card's status and vocabulary words — planner/implementer maintained), `docs/card-tier-audit-v2.md` (the tiering rationale), `docs/expansion-1-cards-and-decks.md`, `docs/stronghold-bosses.md`, `docs/mox-court.md`, `docs/the-bloom-gauntlet-v1.md` (the design records the decks came from).
+**To refresh the Open's tables** (about two hours for both on eight processes):
 
-History: `cards.md` succeeds `docs/card-price-manifest.md` (S18's price manifest with the tiering-audit column; the audit landed as `card-tier-audit-v2.md`).
+```
+pnpm open:rr --games 100 --seed 56 --shard i/8 --out analysis/runs/rr_$i.json      # game one; then --merge, and copy its means into OPEN_MEANS
+pnpm open:rr --matches 50 --seed 56 --shard i/8 --out analysis/runs/m_$i.json      # matches; then:
+pnpm open:rr --matches-report analysis/runs/m_*.json --record --out analysis/runs/matches.md   # --record writes data/convocation/open-matches.json
+pnpm open:gen
+```
+
+Companions that are NOT generated here: `handoff.md` (the state after the last session, and the work after it), `docs/decision-updates/sNN.md` (what was decided and measured, by session), `docs/knobs.md` (generated by `pnpm knobs:doc`), `docs/registries/pool-registry.md` (each card's status and vocabulary words) and `docs/registries/rules-registry.md` (R-numbered rules entries), `docs/card-tier-audit-v2.md` (the tiering rationale), and the design records the journey's decks came from (`docs/expansion-1-cards-and-decks.md`, `docs/stronghold-bosses.md`, `docs/mox-court.md`, `docs/the-bloom-gauntlet-v1.md`).
+
+History: `cards.md` succeeds `docs/card-price-manifest.md` (S18). `open-lists.md` is generated since S58 (ADR-169); its matches columns and guides since S59 (ADR-171).

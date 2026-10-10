@@ -82,6 +82,12 @@ The two games are joined. A journey's Convocation sits on a clock: every thousan
   3. **`small` reads toughness, the rules' sweeper shape reads power.** Two definitions of the same idea now exist.
   4. **Reaper Control's quarter-final plan against the Kiln** (every Manaba and Rage Cobra out) is not in the guide: one game, unmeasured.
 
+## After the session — the reference files, for the planner (Chris, 2026-10-10)
+- **`docs/reference/open-lists.md`** now carries the table of record with its matches columns (matches, game one, the change after sideboarding, and whether a list's fifteen is registered, guided or built), each list's sideboard guide in words, the active lists in the table's order and the archived lists after them.
+- **`docs/reference/cards.md`** opens with the custom cards gathered by colour and tier.
+- **`docs/reference/README.md`** is rewritten: what each file holds, its sources, and the commands that refresh the Open's tables.
+- The matches table is tracked data now: `data/convocation/open-matches.json`, written by `pnpm open:rr --matches-report … --record`.
+
 ## Deviations from the brief
 1. **The outbox is a key per entry, not one key.** The brief says "`convocation-outbox` (its own key)". One key holding a list is a read-modify-write on both pages, and the brief's own test (two tabs never lose an entry) cannot be guaranteed that way. Entries live at `convocation-outbox:<id>`. *Rule on the shape; the behaviour is the brief's.*
 2. **The drain rides every autosave**, not only load and focus. It is also run on load and on focus. A drain is then always followed by the save that makes it durable.

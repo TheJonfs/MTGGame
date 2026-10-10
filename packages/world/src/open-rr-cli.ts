@@ -209,6 +209,8 @@ function matchesReport(): void {
   lines.push("\n## The pairings that move most after sideboarding (the row list's side; each is its opponent's loss)\n", "| pairing | matches | game one | games two and three | delta |", "|---|---|---|---|---|");
   for (const { k, t, d } of pairs) lines.push(`| ${k.replace("|", " over ")} | ${r(t.mw, t.mn).toFixed(0)} (${t.mn}) | ${r(t.g1w, t.g1n).toFixed(0)} | ${r(t.lw, t.ln).toFixed(0)} (${t.ln}) | +${d.toFixed(0)} |`);
   const md = lines.join("\n") + "\n";
+  // S59: `--record` writes the table of record's three columns to the tracked data file the reference is generated from
+  if (process.argv.includes("--record")) { const one = (x: number) => Math.round(10 * x) / 10; writeFileSync(join(ROOT, "data/convocation/open-matches.json"), JSON.stringify({ _comment: "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.", when: new Date().toISOString().slice(0, 10), matchesAPairing: Math.round(matches.size / Math.max(1, (Object.keys(byList).length * (Object.keys(byList).length - 1)) / 2)), byList: Object.fromEntries(Object.keys(byList).sort().map((k) => { const t = byList[k]!; return [k, { matches: one(r(t.mw, t.mn)), gameOne: one(r(t.g1w, t.g1n)), later: one(r(t.lw, t.ln)), n: t.mn }]; })) }, null, 1) + "\n"); }
   const out = arg("out", ""); if (out) { mkdirSync(dirname(out), { recursive: true }); writeFileSync(out, md); writeFileSync(out.replace(/\.md$/, ".json"), JSON.stringify({ byList, byPair })); }
   console.log(md);
 }
