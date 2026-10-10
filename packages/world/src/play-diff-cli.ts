@@ -110,8 +110,8 @@ async function diffGame(g: Saved, gi: number, out: Divergence[], counts: { decis
         let hw = 0, pw = 0;
         for (let k = 0; k < K; k++) {
           const seed = 9000 + gi * 131 + i * 7 + k;
-          const a = await replayThenPlay(pool, decks, g.log, j, null, agents(seed, false), seed, rules, spec.modifiers ?? []);
-          const b = await replayThenPlay(pool, decks, g.log, i, null, agents(seed, false), seed, rules, spec.modifiers ?? []);
+          const a = await replayThenPlay(pool, decks, g.log, j, null, agents(seed, false), seed, rules, spec.modifiers ?? [], undefined, undefined, true); // S59: both libraries reshuffled from the seed — K playouts are K samples
+          const b = await replayThenPlay(pool, decks, g.log, i, null, agents(seed, false), seed, rules, spec.modifiers ?? [], undefined, undefined, true);
           hw += a.winner === seat ? 1 : 0; pw += b.winner === seat ? 1 : 0;
         }
         d.value = (hw - pw) / K; d.playouts = K;
@@ -142,6 +142,7 @@ async function main(): Promise<void> {
   const by = new Map<string, Divergence[]>(); for (const d of out) (by.get(d.kind) ?? by.set(d.kind, []).get(d.kind)!).push(d);
   const rows = [...by].sort((a, b) => b[1].length - a[1].length);
   const val = (ds: Divergence[]) => { const v = ds.filter((d) => d.value !== undefined); if (!v.length) return "–"; const m = v.reduce((a, d) => a + d.value!, 0) / v.length, n = v.reduce((a, d) => a + d.playouts!, 0), se = Math.sqrt(0.5 / Math.max(1, n)); return `${m >= 0 ? "+" : ""}${Math.round(100 * m)} ± ${Math.round(196 * se)} points`; };
+  L.push(`*Each difference is played out ${K} time(s) a side; from S59 both libraries are reshuffled for each playout (the hands are as they were), so ${K} playouts are ${K} samples of the draws to come. Both lines are played on by the pilot.*\n`);
   L.push("| kind of difference | times | a game | the human's line less the pilot's (played out by the pilot) |", "|---|---|---|---|");
   for (const [k, ds] of rows) L.push(`| ${k} | ${ds.length} | ${(ds.length / games.length).toFixed(1)} | ${val(ds)} |`);
   L.push(`| **all** | ${out.length} | ${(out.length / games.length).toFixed(1)} | ${val(out)} |`, "");

@@ -694,3 +694,11 @@ See handoff Concerns for the authoritative list. Highlights: auto-pay greedy fea
 - **Check a card's restriction before testing more copies** (Wrackroot and the other High Grounds are one-ofs): `open:rr --swap` does not check legality, `open:gen` does.
 - **To read a recorded game move by move**, replay it with `replayThenPlay(…, index = the log's length, …, onReplayed)` and print each non-pass action with the view's turn, step, hand and stack. Twenty lines of script; it found in a minute what the play diff's table could not show.
 
+## S59 — the bridge (2026-10-10)
+- **Two pages never share a list in storage.** The outbox is a key per entry (`convocation-outbox:<id>`): a post is one write, a delete one removal. Anything a second page appends to must have this shape.
+- **The journey's durable effects ride `autosave()`**: the clock and the outbox are applied in memory inside it and settled only after the write succeeds. Add a new cross-page effect there, not beside it.
+- **A world test store needs `removeItem`, `key` and `length`** for the outbox to be seen; without them the controller treats the outbox as absent (the older tests' bare stores still work).
+- **`open:rr --matches N`** plays the event's own series (`MatchSeries`); a game records `match` and `gameNo`. `--matches-report` reads the shards directly (no `--merge`).
+- **`replayThenPlay`'s last argument reshuffles the libraries** at the departure. Without it every playout of a decision draws the log's library.
+- **The dev server may not be on 5173** when Chris has his own running; the preview takes another port and its own (empty) localStorage, which is the safe place to test saves.
+

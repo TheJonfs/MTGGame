@@ -133,6 +133,10 @@ export async function replayThenPlay(
   onDecision?: (req: ActionRequest, view: GameView, action: Action, n: number) => void,
   /** Each REPLAYED decision (before `index`), with its place in the log. */
   onReplayed?: (req: ActionRequest, view: GameView, action: Action, cursor: number) => void,
+  /** S59 (Part 0): as the game departs from the log, both LIBRARIES are shuffled from `seed` — so two playouts of one
+   * decision on different seeds are two samples, not one (the log's library order was every playout's before). The
+   * hands are what they were. A shuffle, by the engine's own shuffle; nothing moves between zones. */
+  reshuffle = false,
 ): Promise<{ winner: 0 | 1 | null; reason: string; turns: number; life: [number, number]; played: { player: 0 | 1; action: Action }[] }> {
   const actionEntries = log.filter((e) => e.t === "ACTION");
   const rngEntries = log.filter((e) => e.t === "RNG").map((e) => ({ purpose: e.purpose as RngPurpose, value: e.value }));
@@ -150,6 +154,7 @@ export async function replayThenPlay(
       cursor++;
       return entry.action;
     }
+    if (!live && reshuffle) for (const p of game.state.players) p.library = fresh.shuffle(p.library, "shuffle");
     live = true;
     const action = cursor === index && forced ? forced : await agents[req.player].chooseAction(view, req);
     onDecision?.(req, view, action, cursor - index);

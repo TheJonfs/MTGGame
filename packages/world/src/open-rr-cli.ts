@@ -18,6 +18,11 @@
  *   --no-guide / --guide-drop c1,c2   S58: a guided fifteen sideboarded by the rules instead, or by its guide without the rows that bring those cards in.
  *   --built-fifteen k1,k2   S58: those lists sideboard from the field builder's fifteen instead of their registered one.
  *   --out-rule none|dead,four,rule9   S57 (Part 4): which of the out-rule's parts run (sideboard-ai SideboardOutRule).
+ *   --matches N   S59 (ADR-171): N best-of-three MATCHES a pairing instead of games — game one on the registered sixties,
+ *                games two and three sideboarded (each seat's fifteen, the event's own sideboarding), the coin and
+ *                the loser's choice of the play as the event plays a series (`MatchSeries`). Each game records its
+ *                match and its number. `--matches-report file…` prints the three columns: the match, game one,
+ *                games two and three, each with its 95% interval, and the game-one → later delta.
  *   --trial rule[,rule] [--trial-for k1,k2]   S58 (ADR-167): a candidate rule switched ON for every seat or those lists (profile.trial).
  *   --off rule[,rule] [--off-for k1,k2]   S56: the OLD pilot — those S56 rules ("counter") switched off, for every
  *                seat or only for those lists. Run beside a plain run on the same seed: each game has its twin.
@@ -40,6 +45,7 @@ import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
 import { OPEN_DECKS, OPEN_FIELD } from "@shandalar/sim/open-decks";
 import { OPEN_FORMAT } from "./formats.js";
 import { variantDef } from "./card-variants.js";
+import { MatchSeries } from "./series.js";
 import { mostPlayed, staples } from "./open-reference.js";
 import { buildSideboard } from "./constructed-builder.js";
 import { AI_SIDEBOARD_CONSTRUCTED, SIDEBOARD_SHAPES, aiSideboard, answersCreatures, answersRelics, type AiSideboardTerms } from "./sideboard-ai.js";
@@ -52,7 +58,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const KEYS = Object.keys(process.argv.includes("--with-archived") ? OPEN_DECKS : OPEN_FIELD);
 
 type SeatLog = { cast: Record<string, number>; played: Record<string, number>; loopTurn?: number; altarActs?: number };
-type Game = { a: string; b: string; seatA: 0 | 1; winner: "a" | "b" | "draw"; reason: string; turns: number; logA: SeatLog; logB: SeatLog; boarded?: string };
+type Game = { a: string; b: string; seatA: 0 | 1; winner: "a" | "b" | "draw"; reason: string; turns: number; logA: SeatLog; logB: SeatLog; boarded?: string ; /** S59 (--matches): the match's index in its pairing and the game's number in the match (0, 1, 2) */ match?: number; gameNo?: number };
 
 class Tracker implements Agent {
   log: SeatLog = { cast: {}, played: {} };
@@ -77,7 +83,8 @@ async function run(): Promise<void> {
   const pool = loadCardPool(join(ROOT, "data/cards")).cards;
   const G = Number(arg("games", "100")), seed0 = Number(arg("seed", "46")), [si, sn] = arg("shard", "0/1").split("/").map(Number) as [number, number];
   const one = process.argv.includes("--sideboarded-one");
-  const sideboarded = one || process.argv.includes("--sideboarded") || process.argv.includes("--sideboarded-only");
+  const M = Number(arg("matches", "0"));
+  const sideboarded = one || M > 0 || process.argv.includes("--sideboarded") || process.argv.includes("--sideboarded-only");
   const rating = sideboarded ? (JSON.parse(readFileSync(join(ROOT, "data/convocation/card-rating.json"), "utf8")) as CardRatingTable) : null;
   const fifteen = new Map<string, Decklist>();
   const builtFor = new Set(arg("built-fifteen", "").split(",").filter(Boolean)); // S58: those lists use the field builder's fifteen, not their registered one
@@ -133,7 +140,20 @@ async function run(): Promise<void> {
     if (only && ka !== only && kb !== only) continue;
     if (only && vs.length && !vs.includes(ka === only ? kb : ka)) continue;
     const A = DECKS[ka]!, B = DECKS[kb]!;
-    for (let g = 0; g < G; g++) {
+    // S59 (ADR-171): matches — the event's own series (the coin, the loser's choice, sideboarded from game two)
+    for (let m = 0; m < M; m++) {
+      const series = new MatchSeries({ seed: seed0 + p * 1009 + m * 37 });
+      const A1 = { ...A, decklist: boarded(A, B) }, B1 = { ...B, decklist: boarded(B, A) };
+      while (!series.done) {
+        const game = series.nextGame("play"), [d0, d1] = game.index === 0 ? [A, B] : [A1, B1];
+        const spec = { seed: game.seed, players: [{ name: d0.key, decklist: [...d0.decklist], agent: "heuristic:master" }, { name: d1.key, decklist: [...d1.decklist], agent: "heuristic:master" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100, startingPlayer: game.startingPlayer }, modifiers: [] } as unknown as MatchSpec;
+        const t0 = new Tracker(new HeuristicAgent(game.seed * 2 + 1, pool, profile(d0, d1)), false), t1 = new Tracker(new HeuristicAgent(game.seed * 2 + 2, pool, profile(d1, d0)), false);
+        const r = await runMatch(spec, pool, [t0, t1]);
+        series.record(game, r);
+        games.push({ a: ka, b: kb, seatA: 0, winner: r.winner === null ? "draw" : r.winner === 0 ? "a" : "b", reason: r.reason, turns: r.turns, logA: t0.log, logB: t1.log, match: m, gameNo: game.index });
+      }
+    }
+    for (let g = 0; g < (M > 0 ? 0 : G); g++) {
       const seatA = (g % 2) as 0 | 1;
       const seed = seed0 + p * 1009 + g * 37;
       const turn = one ? ((g >> 1) % 2 === 0 ? ka : kb) : undefined;
@@ -150,6 +170,37 @@ async function run(): Promise<void> {
   const out = arg("out", join(ROOT, `analysis/runs/open_rr_shard${si}.json`));
   mkdirSync(dirname(out), { recursive: true });
   writeFileSync(out, JSON.stringify({ games: G, seed: seed0, shard: `${si}/${sn}`, results: games }));
+}
+
+/** S59 (ADR-171): the three columns from `--matches` files — per list, and the pairings whose game-one → later delta is largest. */
+function matchesReport(): void {
+  const files = process.argv.slice(process.argv.indexOf("--matches-report") + 1).filter((f) => !f.startsWith("--") && f !== arg("out", ""));
+  const games = files.flatMap((f) => (JSON.parse(readFileSync(f, "utf8")) as { results: Game[] }).results).filter((g) => g.match !== undefined);
+  type T = { mw: number; mn: number; g1w: number; g1n: number; lw: number; ln: number };
+  const blank = (): T => ({ mw: 0, mn: 0, g1w: 0, g1n: 0, lw: 0, ln: 0 });
+  const byList: Record<string, T> = {}, byPair: Record<string, T> = {};
+  const matches = new Map<string, Game[]>();
+  for (const g of games) { const k = `${g.a}|${g.b}|${g.match}`; (matches.get(k) ?? matches.set(k, []).get(k)!).push(g); }
+  for (const gs of matches.values()) {
+    const { a, b } = gs[0]!, wa = gs.filter((g) => g.winner === "a").length, wb = gs.filter((g) => g.winner === "b").length;
+    for (const [me, them, side, mine, theirs] of [[a, b, "a", wa, wb], [b, a, "b", wb, wa]] as const) {
+      for (const t of [(byList[me] ??= blank()), (byPair[`${me}|${them}`] ??= blank())]) {
+        t.mn += 1; t.mw += mine > theirs ? 1 : mine === theirs ? 0.5 : 0;
+        for (const g of gs) { const w = g.winner === side ? 1 : g.winner === "draw" ? 0.5 : 0; if (g.gameNo === 0) { t.g1n += 1; t.g1w += w; } else { t.ln += 1; t.lw += w; } }
+      }
+    }
+  }
+  const r = (w: number, n: number) => (n ? (100 * w) / n : 0), ci = (w: number, n: number) => (n ? 196 * Math.sqrt(((w / n) * (1 - w / n)) / n) : 0);
+  const cell = (w: number, n: number) => `${r(w, n).toFixed(1)} ± ${ci(w, n).toFixed(1)}`;
+  const lines = [`# The Open in matches (ADR-171) — ${matches.size} best-of-three matches, ${games.length} games; game one on the registered sixties, games two and three sideboarded\n`,
+    "| list | matches | game one | games two and three | delta (later − game one) |", "|---|---|---|---|---|"];
+  for (const k of Object.keys(byList).sort((x, y) => r(byList[y]!.mw, byList[y]!.mn) - r(byList[x]!.mw, byList[x]!.mn))) { const t = byList[k]!; lines.push(`| **${k}** | ${cell(t.mw, t.mn)} | ${cell(t.g1w, t.g1n)} | ${cell(t.lw, t.ln)} | ${(r(t.lw, t.ln) - r(t.g1w, t.g1n) >= 0 ? "+" : "") + (r(t.lw, t.ln) - r(t.g1w, t.g1n)).toFixed(1)} |`); }
+  const pairs = Object.entries(byPair).map(([k, t]) => ({ k, t, d: r(t.lw, t.ln) - r(t.g1w, t.g1n) })).filter((x) => x.d > 0).sort((x, y) => y.d - x.d).slice(0, 20);
+  lines.push("\n## The pairings that move most after sideboarding (the row list's side; each is its opponent's loss)\n", "| pairing | matches | game one | games two and three | delta |", "|---|---|---|---|---|");
+  for (const { k, t, d } of pairs) lines.push(`| ${k.replace("|", " over ")} | ${r(t.mw, t.mn).toFixed(0)} (${t.mn}) | ${r(t.g1w, t.g1n).toFixed(0)} | ${r(t.lw, t.ln).toFixed(0)} (${t.ln}) | +${d.toFixed(0)} |`);
+  const md = lines.join("\n") + "\n";
+  const out = arg("out", ""); if (out) { mkdirSync(dirname(out), { recursive: true }); writeFileSync(out, md); writeFileSync(out.replace(/\.md$/, ".json"), JSON.stringify({ byList, byPair })); }
+  console.log(md);
 }
 
 function merge(): void {
@@ -221,5 +272,6 @@ function merge(): void {
   writeFileSync(out.replace(/\.json$/, ".md"), text + "\n");
 }
 
-if (process.argv.includes("--merge")) merge();
+if (process.argv.includes("--matches-report")) matchesReport();
+else if (process.argv.includes("--merge")) merge();
 else await run();

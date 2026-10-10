@@ -58,6 +58,7 @@ function popcount(words: number[]): number {
   }
   return n;
 }
+import { applyOutbox, ownsEntry, readOutbox, removeOutbox, shapeName, standingInvitation, tickConvocationClock, type Invitation, type OutboxStore } from "@shandalar/world";
 import { abandonQuest, acceptQuest, addToCollection, cardMatches, creditRenown, innRest, pendingRetrievalChoice, questsOnArrival, resolveRetrieval, retrievalOnDungeonClear, rumorState, rumorsOnArrival, tavernRumors, spares, townOffers, type ActiveQuest, type QuestOffer } from "@shandalar/world";
 import {
   applyInteriorDuel, clearDungeon, colorPrizeRoll, dungeonAdvance, dungeonAsWorldMap, dungeonDuelSpec, dungeonPath,
@@ -244,6 +245,41 @@ export class WorldController {
   ) {
     // Dev handle (like __mc) for console/driver use.
     (globalThis as { __wc?: WorldController }).__wc = this;
+    // S59 (ADR-172): the Convocation posts to an outbox from its own page; coming back to this one drains it
+    if (typeof window !== "undefined" && typeof window.addEventListener === "function") window.addEventListener("focus", () => this.syncConvocation());
+  }
+
+  // ---------- S59 (ADR-172): the bridge to the Convocation ----------
+  /** The outbox's storage: the page's, when it can list and remove keys (localStorage can; a bare test store cannot). */
+  private outboxStore(): OutboxStore | null {
+    const st = this.storage as Partial<OutboxStore> | null;
+    return st && typeof st.removeItem === "function" && typeof st.key === "function" && typeof st.length === "number" ? (st as OutboxStore) : null;
+  }
+  /** The invitation that stands (the rail and the map's notice read it). */
+  invitation(): Invitation | null { return this.world ? standingInvitation(this.world) : null; }
+  /** On load and on focus: if a sitting is due or the outbox holds something of ours, take it and save. */
+  syncConvocation(): void {
+    if (!this.world || this.world.gameOver) return;
+    const due = this.knobs.convocationInterval > 0 && Math.floor(this.world.player.stepsTaken / this.knobs.convocationInterval) > (this.world.convocation?.sitting ?? 0);
+    if (due || readOutbox(this.outboxStore()).some((e) => ownsEntry(this.world!, e))) this.autosave();
+  }
+  /** Inside every autosave, before the write: the clock, then the outbox applied in memory. The entries are deleted
+   * by `settleConvocation` only once the write has succeeded — until then they stay posted, and a reload that finds
+   * an id the save already holds only deletes it. */
+  private linkToDelete: string[] = [];
+  /** The link's last word (a sitting, a sitting missed, what came home) — shown on the map and in a town until dismissed. */
+  linkNote: string | null = null;
+  dismissLinkNote(): void { this.linkNote = null; this.emit(); }
+  private stepConvocation(): string | null {
+    const w = this.world!; const notes: string[] = [];
+    const tick = tickConvocationClock(w, this.knobs);
+    if (tick.missed) notes.push("The Convocation sat, and you were elsewhere.");
+    if (tick.sat) notes.push(`The Convocation sits. A letter under seal admits you — ${shapeName(tick.sat.shape)}. It stands until step ${tick.sat.until}.`);
+    const r = applyOutbox(w, readOutbox(this.outboxStore()), (id) => this.pool.has(id));
+    this.linkToDelete = [...r.applied.map((e) => e.id), ...r.stale];
+    const gold = r.applied.reduce((n, e) => n + (e.kind === "prize" ? e.gold ?? 0 : 0), 0), cards = r.applied.flatMap((e) => (e.kind === "spent" ? [] : e.cards ?? [])).filter((c) => this.pool.has(c));
+    if (gold > 0 || cards.length) notes.push(`From the Convocation: ${[gold > 0 ? `${gold} gold` : "", ...cards.map((c) => this.pool.get(c)!.name)].filter(Boolean).join(", ")}.`);
+    return notes.length ? notes.join(" ") : null;
   }
 
   onChange(fn: () => void): () => void {
@@ -480,6 +516,7 @@ export class WorldController {
         ? { kind: "town", town, stock: rollShopStock(this.world, town, this.pool, this.knobs), notice: `Loaded.${restoredNote}` }
         : { kind: "map", preview: null, previewTarget: null, walking: false, notice: `Loaded.${restoredNote}` };
     }
+    this.syncConvocation(); // S59: what the Convocation posted while this journey was closed
     this.emit();
   }
 
@@ -503,14 +540,17 @@ export class WorldController {
     if (!this.storage) return;
     this.syncFloodChronicle(); // S44: every fall autosaves — the profile's ledger follows
 
+    const linkNote = this.stepConvocation(); // S59: the clock and the outbox ride every save
+    const settle = (): void => { removeOutbox(this.outboxStore(), this.linkToDelete); this.linkToDelete = []; if (linkNote) { this.linkNote = linkNote; this.emit(); } };
     const attempt = (): boolean => {
       try { this.storage!.setItem(SAVE_KEY, serializeWorld(this.world!, { compact: true })); return true; } catch { return false; }
     };
-    if (attempt()) return;
+    if (attempt()) return settle();
     for (const keep of [1, 0]) {
       trimDuelLogs(this.world, keep);
-      if (attempt()) { this.notice(`Storage was full — the older duel replays were dropped to fit the save (${keep === 0 ? "no" : "the last"} replay kept).`); return; }
+      if (attempt()) { settle(); this.notice(`Storage was full — the older duel replays were dropped to fit the save (${keep === 0 ? "no" : "the last"} replay kept).`); return; }
     }
+    this.linkToDelete = []; // nothing was saved: the entries stay posted (their ids are in memory only)
     this.notice("Autosave failed: the browser's storage is full. Download your save from the rail to keep it.");
   }
 

@@ -40,7 +40,7 @@ export type Collection = Record<string, number>;
 
 /** S16 v3: where a copy came from (append-only; never pruned on loss/sell —
  * it is history, and "new since last visit" reads it by step). */
-export type ProvenanceSource = "starter" | "ante" | "shop" | "reward" | "salvage"; // S39: the flood's start
+export type ProvenanceSource = "starter" | "ante" | "shop" | "reward" | "salvage" | "convocation"; // S39: the flood's start
 
 /** S25 v7 (ADR-088): the powers save-shape lives HERE (save shapes are state.ts's home; powers.ts
  * carries the behavior and imports these — the one-cycle rule holds, journey↔siege stays alone). */
@@ -174,6 +174,11 @@ export interface WorldState {
     /** S27 (ADR-093): the Manafleur fell at least once — the run is finishable (postponement). */
     completed?: true;
   };
+  /** S59 (ADR-172; additive, no bump): the Convocation's invitations as this journey posted them — the one that
+   * stands, and the spent ones (an outbox entry names its invitation). */
+  invitations?: import("./convocation-link.js").Invitation[];
+  /** S59: the link's own record — the last sitting posted, and the outbox ids already applied. */
+  convocation?: import("./convocation-link.js").ConvocationLinkState;
 }
 
 /** S26: the five Moxen by id (dungeons.json prize.mox) — the Vault's lock counts them in the collection. */

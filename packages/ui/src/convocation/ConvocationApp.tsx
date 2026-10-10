@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CardDef } from "@shandalar/cards";
-import { BRACKET_ROUND_NAMES, CONSTRUCTED_FORMATS, keepAllowance, lastLimitedPool, type ConvocationDifficulty, type Standing } from "@shandalar/world";
+import { shapeName, BRACKET_ROUND_NAMES, CONSTRUCTED_FORMATS, keepAllowance, lastLimitedPool, type ConvocationDifficulty, type Standing } from "@shandalar/world";
 import { loadConvocationData, loadOracle, loadPool, loadWorldCatalog, type OracleEntry } from "../engine-bridge";
 import { DeckEditor } from "../components/DeckEditor";
 import { CardFrame } from "../components/CardFrame";
@@ -67,12 +67,20 @@ function Door({ c }: { c: ConvocationController }) {
   const [size, setSize] = useState<"convocation" | "short" | "draft" | "sixteen" | "eight" | "open">("convocation");
   const [day2, setDay2] = useState("open"), [day4, setDay4] = useState("open"); // S53: the two Constructed days
   const [difficulty, setDifficulty] = useState<ConvocationDifficulty>("normal");
-  const ledger = c.ledger();
+  const ledger = c.ledger(), inv = c.invitation();
   const seedOf = () => (seed.trim() && Number.isFinite(Number(seed)) ? Number(seed) : undefined);
   const start = () => size === "convocation" ? c.newConvocation(seedOf(), { difficulty, first: day2, second: day4 }) : size === "short" ? c.newConvocation(seedOf(), { difficulty, first: day2, short: true }) : c.newEvent(seed.trim() && Number.isFinite(Number(seed)) ? Number(seed) : undefined, size === "open" ? { constructed: "open", seats: 32, rounds: 5, top8: true, difficulty } : size === "draft" ? { draft: true, seats: 32, rounds: 5, top8: true, difficulty } : size === "sixteen" ? { seats: 32, rounds: 5, top8: true, difficulty } : { seats: 8, rounds: 3, difficulty });
   return (
     <Page>
       <h2 style={{ fontFamily: "var(--serif)", margin: "0 0 4px" }}>The Convocation</h2>
+      {/* S59 (ADR-172): the journey's letter — the one route in from a journey; the menu below is the same mode and sends nothing home */}
+      {inv && !(c.hasSave() && c.event!.phase !== "over") && (
+        <div style={{ border: "1px solid var(--brass)", borderRadius: 4, padding: "8px 12px", margin: "6px 0 12px", background: "rgba(176,141,87,0.08)" }}>
+          <p style={{ margin: "0 0 6px", fontFamily: "var(--serif)", fontSize: 15 }}>The Convocation sits. A letter under seal admits you — {shapeName(inv.shape)}. It stands until step {inv.until}.</p>
+          <p style={{ margin: "0 0 8px", fontSize: 12.5, color: "var(--ink-soft)" }}>{inv.shape === "single" ? "A draft: thirty-two seats in pods of eight, five rounds, the Umbel." : inv.shape === "short" ? `Two days: a draft and ${title(day2)}; the Umbel of Eight.` : `Four days: a draft, ${title(day2)}, a draft, ${title(day4)}; the Umbel of Eight.`} The purse and the cards you keep go home to your journey. The letter is spent as you enter. (The Constructed days and the difficulty are the menu's choices below.)</p>
+          <button className="primary" onClick={() => c.enterByInvitation({ difficulty, first: day2, second: day4, ...(seedOf() !== undefined ? { seed: seedOf()! } : {}) })}>Break the seal and enter</button>
+        </div>
+      )}
       <p style={{ margin: "0 0 10px" }}>{size === "convocation" ? `The Convocation — four days: a draft, ${title(day2)}, a draft, ${title(day4)}; the Umbel of Eight.` : size === "short" ? `A Convocation — two days: a draft and ${title(day2)}; the Umbel of Eight.` : size === "open" ? "A Convocation — the Open, thirty-two seats, five rounds, the Umbel." : size === "draft" ? "A Convocation — Draft, thirty-two seats in pods of eight: three packs, five rounds, the Umbel." : size === "sixteen" ? "A Convocation — Sealed, thirty-two seats, five rounds, and the Umbel: a final table of eight." : "A Convocation — Sealed, eight seats, three rounds."}</p>
       <p style={{ fontSize: 13, color: "var(--ink-soft)", margin: "0 0 12px" }}>{size === "short" ? "A hundred and twenty-eight seats and eight Swiss rounds: draft three rounds inside your pod, then five in a Constructed format with the deck you registered — and the eight best meet in the Umbel." : size === "convocation" ? "A hundred and twenty-eight seats and sixteen Swiss rounds: draft three rounds inside your pod, play five in a Constructed format, draft again with the seven nearest your record, five more rounds — and the eight best meet in the Umbel." : size === "open" ? "Constructed: bring sixty cards — any card the Open allows, the power restricted to one of each — and play rounds of best-of-three against a field of thirty-one." : size === "draft" ? "Pick one card from each pack as it comes round, build forty cards from your picks, and play rounds of best-of-three against the whole field — your pod and three others." : "Open six packs, build forty cards from them, and play rounds of best-of-three against the field."}</p>
       <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 14, fontSize: 13 }}>
@@ -346,7 +354,8 @@ function Prize({ c, pool, oracle }: { c: ConvocationController; pool: Map<string
   const rows = [...c.standings()].sort((x, y) => places.find((p) => p.seat === x.seat)!.place - places.find((p) => p.seat === y.seat)!.place).map((r) => ({ ...r, place: places.find((p) => p.seat === r.seat)!.place }));
   const me = rows.find((r) => r.seat === 0)!;
   const staged = !!e.stages, allowance = staged ? keepAllowance(e) : 1, kept = staged ? e.keptCards ?? [] : e.kept ? [e.kept] : [];
-  const ids = [...new Set(staged ? lastLimitedPool(e) : e.field[0]!.pool)].sort((a, b) => pool.get(a)!.name.localeCompare(pool.get(b)!.name));
+  const prize = c.prize();
+  const ids = [...new Set(staged ? lastLimitedPool(e) : e.field[0]!.pool)].filter((id) => c.keepable(id)).sort((a, b) => pool.get(a)!.name.localeCompare(pool.get(b)!.name));
   return (
     <Page wide>
       <h2 style={{ fontFamily: "var(--serif)", margin: "0 0 4px" }}>You finish {ORDINAL[place] ?? place} of {COUNT[e.field.length] ?? e.field.length}.</h2>
@@ -354,6 +363,7 @@ function Prize({ c, pool, oracle }: { c: ConvocationController; pool: Map<string
       {staged && place > 1 && <p style={{ margin: "0 0 8px", fontFamily: "var(--serif)", fontSize: 15 }}>{finishTitle(place, e.field.length).replace(/^./, (x) => x.toUpperCase())}.</p>}
       <p style={{ margin: "0 0 10px", fontSize: 13 }}>{me.wins}–{me.losses}{me.draws ? `–${me.draws}` : ""} · {me.points} points · entered in the ledger (seed {e.seed}).</p>
       <Table c={c} rows={rows} swiss={!!e.bracket} />
+      {prize && <p style={{ margin: "12px 0 0", fontFamily: "var(--serif)", fontSize: 15 }}>The purse and the cards go home with you. <span style={{ fontFamily: "inherit", fontSize: 13, color: "var(--ink-soft)" }}>{prize.gold} gold{prize.cards ? ` and the card${prize.cards > 1 ? "s" : ""} you keep` : ""} — waiting when you return to your journey.</span></p>}
       <div className="flyout-title" style={{ marginTop: 14 }}>{allowance === 0 ? "The eight keep a card from their last draft; you finished outside them." : kept.length ? `You keep ${kept.map((k) => pool.get(k)?.name ?? k).join(" and ")}.${kept.length < allowance ? " Choose one more." : ""}` : allowance === 2 ? "Keep two cards from your last draft" : staged ? "Keep one card from your last draft" : "Keep one card from your pool"}</div>
       {kept.length < allowance && (
         <div className="editor-grid" style={{ maxHeight: 300, overflowY: "auto", marginTop: 6 }}>

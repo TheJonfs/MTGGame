@@ -13,6 +13,7 @@ import {
   serializeEvent, seriesSeed, seriesSetup, standings, type CardRatingTable, type Catalog, type ConvocationEvent, type ConvocationLedgerEntry, type ConvocationPackData,
   type Decklist, type KnobValues, type SeatAgents, type Standing,
 } from "@shandalar/world";
+import { OUTBOX_PREFIX, keepable, postOutbox, prizeBand, prizeGold, standingInvitation, finalPlaces as linkPlaces, type Invitation, type PrizeBand } from "@shandalar/world";
 import { MatchController } from "../play/match-controller.js";
 import { makeFieldPool, type FieldPool } from "./field-pool.js";
 import { TOKEN_FACES } from "./token-faces.js";
@@ -96,7 +97,44 @@ export class ConvocationController {
   subscribe(fn: () => void): () => void { this.listeners.add(fn); return () => { this.listeners.delete(fn); }; }
   private emit(): void { for (const fn of this.listeners) fn(); }
   private save(): void { if (this.event) this.storage?.setItem(EVENT_SAVE_KEY, serializeEvent(this.event)); }
-  private set(event: ConvocationEvent): void { this.event = event; this.save(); }
+  /** S59 (ADR-172): an event is stamped with its origin as it is created — the door's menu, or a journey's letter. */
+  private startOrigin: { origin: "menu" | "journey"; invitationId?: string } | null = null;
+  private pendingOrigin: { origin: "journey"; invitationId: string } | null = null;
+  private set(event: ConvocationEvent): void {
+    if (this.startOrigin) { event = { ...event, ...this.startOrigin }; this.startOrigin = null; }
+    this.event = event; this.save();
+  }
+
+  // ---------- S59 (ADR-172): the bridge to the journey ----------
+  /** The letter the journey holds (read from its save, never written): the invitation that stands, unless this page
+   * has already spent it (the ledger or the event in progress names it). */
+  invitation(): Invitation | null {
+    try {
+      const raw = this.storage?.getItem("shandalar-world-save"); if (!raw) return null;
+      const inv = standingInvitation(deserializeWorld(raw));
+      if (!inv || this.event?.invitationId === inv.id || this.ledger().some((l) => l.invitationId === inv.id) || this.storage?.getItem(OUTBOX_PREFIX + `${inv.id}:spent`)) return null;
+      return inv;
+    } catch { return null; }
+  }
+  /** Enter by the letter: the event of the invitation's shape, its origin the journey; the spend is posted home. A
+   * single event is a draft (its kept card comes from a drafted pool). Refused while another event is in progress. */
+  enterByInvitation(opts: { difficulty?: ConvocationDifficulty; first?: string; second?: string; seed?: number } = {}): boolean {
+    const inv = this.invitation(); if (!inv || (this.event && this.event.phase !== "over")) return false;
+    if (!postOutbox(this.storage, { id: `${inv.id}:spent`, kind: "spent", invitationId: inv.id })) return false;
+    this.pendingOrigin = { origin: "journey", invitationId: inv.id };
+    const d = opts.difficulty ? { difficulty: opts.difficulty } : {};
+    if (inv.shape === "single") this.newEvent(opts.seed, { draft: true, seats: 32, rounds: 5, top8: true, ...d });
+    else this.newConvocation(opts.seed, { ...d, ...(opts.first ? { first: opts.first } : {}), ...(opts.second ? { second: opts.second } : {}), short: inv.shape === "short" });
+    return true;
+  }
+  /** What a journey event sends home at its finish: the band and its gold (null for a menu event). */
+  prize(): { band: PrizeBand; gold: number; cards: number } | null {
+    const e = this.event; if (!e || e.phase !== "over" || e.origin !== "journey" || !e.invitationId) return null;
+    const place = linkPlaces(e).find((p) => p.seat === 0)!.place, band = prizeBand(place, e.field.length, !!e.bracket);
+    return { band, gold: prizeGold(band, { hard: e.difficulty === "hard", single: !e.stages }, this.knobs), cards: band === "champion" ? (e.stages ? 2 : 1) : band === "eight" ? 1 : 0 };
+  }
+  /** The fence (a): a kept card is never one of the packs' power slot. */
+  keepable(cardId: string): boolean { return keepable(cardId, this.packs.power); }
 
   hasSave(): boolean { return !!this.event; }
   ledger(): ConvocationLedgerEntry[] {
@@ -107,6 +145,7 @@ export class ConvocationController {
 
   /** S49: the event's size — sixteen seats, five rounds and a Top 8 by default; the S48 event of eight stays offered. */
   newEvent(seed: number = Math.floor(Math.random() * 1_000_000), opts: { seats?: number; rounds?: number; top8?: boolean; difficulty?: ConvocationDifficulty; draft?: boolean; constructed?: string } = {}): void {
+    this.startOrigin = this.pendingOrigin ?? { origin: "menu" }; this.pendingOrigin = null;
     const faces = this.faces();
     if (opts.constructed) { // S52 (ADR-152): a Constructed event — the field by select-and-repair, the player's deck from the format's whole pool
       const format = CONSTRUCTED_FORMATS.find((f) => f.id === opts.constructed); if (!format) return;
@@ -127,6 +166,7 @@ export class ConvocationController {
   /** S53: the full Convocation — four days (a draft, a Constructed format, a draft, a Constructed format) and the
    * Umbel, at 128 seats (Chris). The two Constructed formats are the door's choice of the seven. */
   newConvocation(seed: number = Math.floor(Math.random() * 1_000_000), opts: { difficulty?: ConvocationDifficulty; first?: string; second?: string; seats?: number; /** S54: two days — a draft and the first Constructed format */ short?: boolean; /** the tests' short shape */ stages?: ConvocationStage[] } = {}): void {
+    this.startOrigin = this.pendingOrigin ?? { origin: "menu" }; this.pendingOrigin = null;
     const seats = opts.seats ?? CONVOCATION_SEATS;
     this.set(newConvocation({ seed, stages: opts.stages ?? (opts.short ? shortStages(opts.first ?? "open") : defaultStages(opts.second ?? "open", opts.first ?? "open")), seats, names: convocationNames(seats - 1), faces: this.faces(), library: this.library(), difficulty: opts.difficulty ?? "normal" }, this.deps()));
     this.series = null; this.match = null; this.passNote = null;
@@ -491,7 +531,10 @@ export class ConvocationController {
   /** The ledger's line, written once, when the event is over. */
   private finished(e: ConvocationEvent): ConvocationEvent {
     if (e.phase !== "over" || e.ledgered) return e;
-    this.writeLedger(e);
+    // S59: a journey event posts its purse home (once: the id is the invitation's); a menu event posts nothing
+    const was = this.event; this.event = e; const pz = this.prize(); this.event = was;
+    if (pz && pz.gold > 0) postOutbox(this.storage, { id: `${e.invitationId}:prize`, kind: "prize", invitationId: e.invitationId!, gold: pz.gold });
+    this.storage?.setItem(LEDGER_KEY, JSON.stringify([...this.ledger(), { ...ledgerEntry(e, this.now()), ...(pz ? { prizeGold: pz.gold } : {}) }]));
     return { ...e, ledgered: true };
   }
   /** From the bracket screen once the event is over: the prize. */
@@ -505,20 +548,23 @@ export class ConvocationController {
     this.screen = n.phase === "over" ? { kind: "prize" } : n.phase === "bracket" ? { kind: "bracket" } : n.phase === "interlude" ? { kind: "interlude" } : { kind: "pairings" };
     this.emit();
   }
-  private writeLedger(e: ConvocationEvent): void { this.storage?.setItem(LEDGER_KEY, JSON.stringify([...this.ledger(), ledgerEntry(e, this.now())])); }
   /** The prize placeholder (ADR-147): a card from the pool to keep — recorded on the event and its ledger line. */
   keep(cardId: string): void {
-    const e = this.event; if (!e || e.phase !== "over") return;
+    const e = this.event; if (!e || e.phase !== "over" || !this.keepable(cardId)) return; // S59: the fence
+    // S59: a journey event's kept card goes home with the purse — the champion's and the eight's, as the table has it
+    const home = (n: number) => { const pz = this.prize(); if (pz && n <= pz.cards) postOutbox(this.storage, { id: `${e.invitationId}:kept:${n}`, kind: "kept", invitationId: e.invitationId!, cards: [cardId] }); };
     if (e.stages) { // S53 (Part 2): the eight keep one, the champion two — from the last Limited stage's pool
       const kept = e.keptCards ?? [], pool = lastLimitedPool(e);
       if (kept.length >= keepAllowance(e) || !pool.includes(cardId) || kept.filter((x) => x === cardId).length >= pool.filter((x) => x === cardId).length) return;
       const next = [...kept, cardId];
+      home(next.length);
       this.set({ ...e, keptCards: next });
       const l = this.ledger(); const last = l[l.length - 1];
       if (last && last.seed === e.seed) { l[l.length - 1] = { ...last, keptCards: next }; this.storage?.setItem(LEDGER_KEY, JSON.stringify(l)); }
       return this.emit();
     }
     if (e.kept || !e.field[0]!.pool.includes(cardId)) return;
+    home(1);
     this.set({ ...e, kept: cardId });
     const l = this.ledger(); const last = l[l.length - 1];
     if (last && last.seed === e.seed) { l[l.length - 1] = { ...last, kept: cardId }; this.storage?.setItem(LEDGER_KEY, JSON.stringify(l)); }

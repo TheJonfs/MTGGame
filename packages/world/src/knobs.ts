@@ -155,6 +155,32 @@ export const KNOBS = {
     unit: "by bracket round (1 quarter-final, 2 semi-final, 3 final): life added to 20, and basics in play",
     description: "S49: the Top 8's ladder — what an AI seat brings against the HUMAN in the quarter-final, the semi-final and the final. Post-S52 (Chris): FLAT for now; ADR-148's provisional rows (Standard +4 / +6 / +8; Hard +6 / +8 / +10) are kept in `CONVOCATION_ENTRANCE_ADR148`. Read through `convocationSeat`.",
   }),
+  // ---- S59 (ADR-172): the bridge between the journey and the Convocation ----
+  convocationInterval: knob<number>({
+    default: 1000,
+    unit: "steps (0 = the Convocation never sits)",
+    description: "S59 (ADR-172; ⚠ proposed — 500 is the other value to read): the Convocation sits every this many steps of a journey. At a sitting the world posts an invitation that stands until the next one (a window, not a stock: an unspent invitation is gone when the next is posted). Journeys run 1,400–2,300 steps a phase, so one or two sittings a journey.",
+  }),
+  convocationShape: knob<Record<number, "single" | "short" | "full">>({
+    default: { 1: "short", 2: "full" },
+    unit: "by phase: single (one event) | short (two days) | full (four days)",
+    description: "S59 (ADR-172; ⚠ proposed): the shape an invitation admits, by the journey's phase — phase one the short Convocation, phase two the four days.",
+  }),
+  convocationPrizeGold: knob<Record<"champion" | "eight" | "quarter" | "rest", number>>({
+    default: { champion: 300, eight: 150, quarter: 75, rest: 25 },
+    unit: "gold, by place band",
+    description: "S59 (ADR-172; ⚠ provisional — the planner's placeholders against the phase-two purse, where 100 gold buys nine tier-1 cards): what a journey-origin Convocation pays home by band — the champion, the Umbel's eight, the top quarter, everyone else. The kept cards (the champion two, the eight one) ride beside it. A menu event pays nothing.",
+  }),
+  convocationPrizeHard: knob<number>({
+    default: 1.5,
+    unit: "× the band's gold",
+    description: "S59 (ADR-172; ⚠ provisional): the prize's multiplier for an event played on Hard.",
+  }),
+  convocationPrizeSingle: knob<number>({
+    default: 0.5,
+    unit: "× the band's gold",
+    description: "S59 (ADR-172; ⚠ provisional): a single event (an invitation of the `single` shape) pays this share of the band.",
+  }),
   heartLawsPersist: knob<boolean>({
     default: false,
     unit: "true | false",

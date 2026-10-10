@@ -2153,7 +2153,7 @@ export class HeuristicAgent implements Agent {
     const t = ((action as { targets?: ResolvedTarget[] }).targets ?? [])[0];
     const o = t && t.kind === "object" ? view.battlefield.find((b) => b.id === t.id) : undefined;
     if (!o || o.controller === me || o.power === null) return false;
-    if (objectValue(this.defs, o, this.C) >= REMOVAL_FLOOR) return false;
+    if (objectValue(this.defs, o, this.C) >= (this.profile.trial?.includes("removalfloor3") ? 3 : REMOVAL_FLOOR)) return false; // S59 (Part 0): a floor of three on trial
     if (view.hand.length >= 7) return false;
     const theirPower = view.battlefield.filter((b) => b.controller !== me && b.power !== null).reduce((n, b) => n + Math.max(0, b.power ?? 0), 0);
     if (theirPower * 2 >= view.life[me]) return false;

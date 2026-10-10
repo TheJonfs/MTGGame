@@ -100,6 +100,12 @@ export interface ConvocationEvent {
   bracket?: { seeds: number[]; rounds: { a: number; b: number; series?: SeriesState; winner?: number }[][] };
   /** Written once at the finish (ADR-147): the ledger has this event. */
   ledgered?: boolean;
+  /** S59 (ADR-172): where the event began — the door's menu, or a journey's invitation. A menu event is the same mode
+   * and posts nothing home; a journey event names its invitation and posts its finish to the outbox. */
+  origin?: "menu" | "journey";
+  invitationId?: string;
+  /** S59: a hook kept for later — what a menu finish may one day unlock for a journey. Nothing writes it. */
+  menuUnlocks?: string[];
   /** S48 placeholder for the linkage: a card from the pool the player kept at the prize screen. */
   kept?: string;
 }
@@ -740,7 +746,7 @@ export function nextStage(event: ConvocationEvent, deps: EventDeps, library: rea
 
 /** S54: how many of the field a ledger line keeps (and the player, wherever they finished). */
 export const LEDGER_FIELD = 16;
-export interface ConvocationLedgerEntry { when: string; formatId: string; seed: number; seats: number; rounds: number; difficulty: string; place: number; record: string; points: number; field: { name: string; place: number; points: number; colors: string }[]; deck: Decklist; kept?: string; top8?: true;
+export interface ConvocationLedgerEntry { /** S59: the event's origin, the invitation it spent and the gold it sent home */ origin?: "menu" | "journey"; invitationId?: string; prizeGold?: number; when: string; formatId: string; seed: number; seats: number; rounds: number; difficulty: string; place: number; record: string; points: number; field: { name: string; place: number; points: number; colors: string }[]; deck: Decklist; kept?: string; top8?: true;
   /** S53: a full Convocation — its stages, the title won, every deck the human registered, the cards kept. */
   stages?: ConvocationStage[]; title?: string; decks?: { stage: number; formatId: string; deck: Decklist; /** post-S54: a Constructed deck's registered fifteen */ sideboard?: Decklist }[]; keptCards?: string[];
   /** Post-S54: a single Constructed event's registered sideboard. */
@@ -772,6 +778,7 @@ export function ledgerEntry(event: ConvocationEvent, when: string): ConvocationL
     place: placeOf(0), record: `${me.wins}–${me.losses}${me.draws ? `–${me.draws}` : ""}`, points: me.points,
     // S54 (Concern 5): the field trimmed to the top sixteen and the player — a 128-seat line was ~12 KB
     field: [...table].sort((x, y) => placeOf(x.seat) - placeOf(y.seat)).filter((r) => placeOf(r.seat) <= LEDGER_FIELD || r.seat === 0).map((r) => ({ name: r.name, place: placeOf(r.seat), points: r.points, colors: event.field[r.seat]!.colors })),
+    ...(event.origin ? { origin: event.origin } : {}), ...(event.invitationId ? { invitationId: event.invitationId } : {}),
     ...(event.bracket ? { top8: true as const } : {}),
     deck: event.field[0]!.deck.map((e) => ({ ...e })), ...(event.kept ? { kept: event.kept } : {}),
     ...(event.sideboards?.[event.formatId]?.length ? { sideboard: event.sideboards[event.formatId]!.map((e) => ({ ...e })) } : {}),

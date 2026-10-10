@@ -30,5 +30,13 @@ describe("replayThenPlay (S58)", () => {
     const first = r.log.find((e) => e.t === "ACTION")! as { action: { type: string } };
     const f = await replayThenPlay(cards, decks, r.log, 0, first.action as never, mk(9), 3, rules, []);
     expect(f.played[0]!.action).toEqual(first.action);
+    // S59 (Part 0): with `reshuffle` the libraries are shuffled from the seed as the game departs — the same seed the
+    // same game, another seed another draw (without it every seed drew the log's library, and K playouts were one)
+    const R = (seed: number, shuffle: boolean) => replayThenPlay(cards, decks, r.log, half, null, mk(9), seed, rules, [], undefined, undefined, shuffle);
+    const r3 = await R(3, true), r3b = await R(3, true), plain4 = await R(4, false);
+    expect([r3.winner, r3.turns, r3.played]).toEqual([r3b.winner, r3b.turns, r3b.played]);
+    const draws = (g: Awaited<ReturnType<typeof R>>) => JSON.stringify(g.played.filter((p) => p.action.type === "playLand" || p.action.type === "castSpell").slice(0, 12));
+    expect(new Set([draws(r3), draws(await R(4, true)), draws(await R(5, true)), draws(await R(6, true))]).size).toBeGreaterThan(1);
+    expect(plain4.played.length).toBeGreaterThan(0);
   }, 120_000);
 });

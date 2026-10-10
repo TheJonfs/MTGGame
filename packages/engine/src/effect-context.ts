@@ -589,7 +589,7 @@ function sharedOps(ctx: EngineCtx, asController: PlayerId) {
       const a = ctx.state.objects[idA];
       const b = ctx.state.objects[idB];
       if (!a || !b || a.zone !== "battlefield" || b.zone !== "battlefield") return;
-      // Simultaneous (CR 701.12a): read both powers before dealing either side.
+      // Simultaneous (CR 701.14a): read both powers before dealing either side.
       const powerA = characteristics(ctx, idA).power;
       const powerB = characteristics(ctx, idB).power;
       if (powerA > 0) {

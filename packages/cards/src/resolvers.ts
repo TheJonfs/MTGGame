@@ -83,7 +83,7 @@ export interface EffectContext {
   /** Untap by effect (CR 701.21a): no-op if already untapped or gone. */
   untap(objectId: string): void;
   /**
-   * Two creatures fight (CR 701.12): each deals damage equal to its power to
+   * Two creatures fight (CR 701.14): each deals damage equal to its power to
    * the other, simultaneously, with the creatures as damage sources (so
    * deathtouch/lifelink apply). Callers have already verified both are legal.
    */

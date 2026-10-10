@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { CardDef } from "@shandalar/cards";
 import { cardColors } from "@shandalar/cards";
-import { opponentColors, parleyLines, describeDeckRule, strongholdContentFor, resolveMatchup, activeDeck, buyOffPrice, deckSize, deckStats, dungeonAsWorldMap, isBasic, isExplored, lordPronouns, SALVAGE_COLORS, pairName, PLAYER_PORTRAITS, type PlayerPortrait, maxWorldLife, sellPrice, spares, BASIC_LANDS, type DifficultyName, type Point, type ShopItem, type StarterId } from "@shandalar/world";
+import { shapeName, opponentColors, parleyLines, describeDeckRule, strongholdContentFor, resolveMatchup, activeDeck, buyOffPrice, deckSize, deckStats, dungeonAsWorldMap, isBasic, isExplored, lordPronouns, SALVAGE_COLORS, pairName, PLAYER_PORTRAITS, type PlayerPortrait, maxWorldLife, sellPrice, spares, BASIC_LANDS, type DifficultyName, type Point, type ShopItem, type StarterId } from "@shandalar/world";
 import { loadOracle, loadPool, loadWorldCatalog, type OracleEntry, type SavedGame } from "../engine-bridge";
 import { CardFrame } from "../components/CardFrame";
 import { PlayMatch, loadStops } from "../play/PlayMatch";
@@ -207,6 +207,8 @@ function Chrome({ c, onDownload, corolla }: { c: WorldController; onDownload: ()
       {corolla
         ? <><span className="stat" title="petals fallen" style={{ whiteSpace: "nowrap" }}>✿ {corolla.fallen}/5 petals</span><span className="stat" title="no clock runs in the flower — nothing outside moves" style={{ whiteSpace: "nowrap" }}>⟳ clock still</span></>
         : <span className="stat" title="steps (the clock)"><img className="stat-ink" src="/icons/stat-steps.png" alt="" /> {w.player.stepsTaken} steps</span>}
+      {/* S59 (ADR-172): the Convocation's sitting — the letter stands until the next one */}
+      {!corolla && c.invitation() && <a className="stat" href="/convocation" style={{ whiteSpace: "nowrap", color: "var(--brass)" }} title={`The Convocation sits. A letter under seal admits you — ${shapeName(c.invitation()!.shape)}. It stands until step ${c.invitation()!.until}. (Your journey is saved; the Convocation is its own page.)`}>✉ the Convocation sits</a>}
       <span style={{ flex: 1 }} />
       <button className="chrome-tab" title={c.canEdit().ok ? "edit your deck (clock-free)" : c.canEdit().reason} disabled={!c.canEdit().ok} onClick={() => c.openEditor()}>Deck</button>
       <button className="chrome-tab" onClick={() => c.openCollection()}>Collection</button>
@@ -1909,7 +1911,7 @@ export function WorldApp({ onWatchReplay, paused = false }: { onWatchReplay: (ga
         <div className="transport play-prompt">
           <span className="prompt-text">
             {screen.kind === "map"
-              ? screen.notice ?? (screen.walking ? `Walking… step ${w.player.stepsTaken}` : screen.preview ? `Path: ${screen.preview.length} steps — click the destination again to walk.` : "Click a destination to preview the path.")
+              ? (c.linkNote && !screen.walking ? <span title="dismiss" style={{ cursor: "pointer" }} onClick={() => c.dismissLinkNote()}>{c.linkNote} ✕</span> : null) ?? screen.notice ?? (screen.walking ? `Walking… step ${w.player.stepsTaken}` : screen.preview ? `Path: ${screen.preview.length} steps — click the destination again to walk.` : "Click a destination to preview the path.")
               : screen.kind === "encounter"
                 ? screen.encounter.contact === "reached"
                   ? `${screen.tmpl.name} catches up with you.`
