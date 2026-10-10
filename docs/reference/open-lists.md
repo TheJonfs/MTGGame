@@ -4,7 +4,7 @@
 
 ## The table of record
 
-18 active lists, the AI in both seats. **Game one** is a list's mean win rate against the other active lists on the registered sixties (100 games a pairing): the figure the field's seat draw reads (`OPEN_MEANS`). **Matches** is its best-of-three win rate (50 matches a pairing, measured 2026-10-10; ADR-171): game one on the registered sixties, games two and three sideboarded. **After sideboarding** is its games-two-and-three rate less its game-one rate inside those matches.
+18 active lists, the AI in both seats. **Game one** is a list's mean win rate against the other active lists on the registered sixties (100 games a pairing; `OPEN_MEANS`). **Matches** is its best-of-three win rate — the figure the field's seat draw reads since S59 (50 matches a pairing, measured 2026-10-10; ADR-171): game one on the registered sixties, games two and three sideboarded. **After sideboarding** is its games-two-and-three rate less its game-one rate inside those matches.
 
 | list | deck | pilot | matches | game one | after sideboarding | fifteen |
 |---|---|---|---|---|---|---|

@@ -16,6 +16,7 @@
  *          the lowest spell, or the reverse). A swap that breaks the rule is not made.
  * Deterministic for a seed.
  */
+import { OPEN_MATCH_MEANS } from "./open-matches.generated.js";
 import { cardColors, manaValue, parseManaCost, type CardDef } from "@shandalar/cards";
 import type { Decklist } from "./state.js";
 import { BASIC_LANDS, COPY_CAP, checkDeck, isBasic, type DeckCheck, type DeckRule } from "./legality.js";
@@ -49,6 +50,10 @@ export type ListDraw = "top" | "any" | "low";
 export const LIST_DRAW_SCALE = 10;
 /** Post-S53 (Chris: lists contributed from play grow the metagame): the candidates are at least the twelve, and every
  * list with a measured Open strength — a contributed list enters the field once `pnpm open:rr` has measured it. */
+/** S59 (Chris: "use match percentage rather than game one percentage to spec the field" — the Pall is 64 in game one
+ * and 55 in matches, and the seats were drawn on the 64): a list's STRENGTH is its match win rate on the table of record
+ * where one is recorded, else its game-one mean. The seat draw, the cap and the Umbel's correlation all read this. */
+export const openStrength = (key: string): number | undefined => OPEN_MATCH_MEANS[key] ?? OPEN_MEANS[key];
 export const candidateCount = (): number => Math.max(CONSTRUCTED_TERMS.candidates, Object.keys(OPEN_MEANS).length);
 /** Post-S52 (Chris: "the Larder and the Undertow repair badly" — the noise was blind to a list's plan). The PLAN rules,
  * keyed on data, never on a card's name: (1) a swap's incoming card must share an authored list with the card it
@@ -91,7 +96,7 @@ export function legalShare(list: Decklist, rule: DeckRule, cards: Map<string, Ca
 export function selectCandidates(format: ConstructedFormat, rating: CardRatingTable, library: readonly LibraryList[], cards: Map<string, CardDef>): { l: LibraryList; share: number; strength: number }[] {
   const rule = format.rule, role = (id: string) => (cards.get(id)!.types.includes("Land") ? "land" : "other");
   const size = (l: Decklist) => l.reduce((n, e) => n + e.count, 0);
-  const strength = (l: LibraryList) => OPEN_MEANS[l.key] !== undefined ? 1000 + OPEN_MEANS[l.key]! : (() => { const xs = l.decklist.filter((e) => role(e.cardId) !== "land"); const n = size(xs); return n ? xs.reduce((a, e) => a + cardRating(cards.get(e.cardId)!, rating) * e.count, 0) / n : 0; })();
+  const strength = (l: LibraryList) => openStrength(l.key) !== undefined ? 1000 + openStrength(l.key)! : (() => { const xs = l.decklist.filter((e) => role(e.cardId) !== "land"); const n = size(xs); return n ? xs.reduce((a, e) => a + cardRating(cards.get(e.cardId)!, rating) * e.count, 0) / n : 0; })();
   return library.filter((l) => !l.archived).map((l) => ({ l, share: legalShare(l.decklist, rule, cards), strength: strength(l) })).sort((a, b) => b.share - a.share || b.strength - a.strength || a.l.key.localeCompare(b.l.key)).slice(0, candidateCount());
 }
 

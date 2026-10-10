@@ -22,7 +22,7 @@ import { convocationNames } from "./convocation-names.js";
 import { stepHeadless } from "./convocation-run.js";
 import { CONVOCATION_SEATS, defaultStages, shortStages, eventFormat, finalPlaces, newConvocation, serializeEvent, type ConvocationEvent, type SeatAgents } from "./event.js";
 import { cardRating, limitedView, type CardRatingTable } from "./rating.js";
-import { OPEN_MEANS } from "./constructed-builder.js";
+import { openStrength } from "./constructed-builder.js";
 import type { ConvocationPackData } from "./packs.js";
 
 const arg = (k: string, d: string) => { const i = process.argv.indexOf(`--${k}`); return i >= 0 ? process.argv[i + 1]! : d; };
@@ -61,7 +61,7 @@ async function play(): Promise<void> {
       // every deck in: the build ends (a draft or Sealed stage) or the stage starts with registered decks (S54: a
       // Constructed day after the first skips the build — the snapshot was Day 1's, read again)
       if ((before.phase === "build" || before.phase === "interlude") && e.phase === "round") qual = e.field.map((_, s) => quality(e, s));
-      if (!listMeans.length && e.phase === "round" && eventFormat(e.formatId).kind === "constructed") listMeans = e.field.map((x) => OPEN_MEANS[x.list ?? ""] ?? 0);
+      if (!listMeans.length && e.phase === "round" && eventFormat(e.formatId).kind === "constructed") listMeans = e.field.map((x) => openStrength(x.list ?? "") ?? 0);
       if (e.phase === "round" && before.phase !== "round" && e.stages![e.stage!]!.kind === "draft") for (const p of e.pairings) if (!e.pods!.some((pod) => pod.includes(p.a) && pod.includes(p.b!))) podViolations += 1;
       if ((e.phase === "interlude" || (e.phase === "bracket" && before.phase === "standings")) && before.phase === "standings") {
         stages.push({ stage: before.stage!, formatId: before.formatId, ms: Date.now() - stageT, saveBytes: serializeEvent(e).length, quality: qual });

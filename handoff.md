@@ -88,6 +88,16 @@ The two games are joined. A journey's Convocation sits on a clock: every thousan
 - **`docs/reference/README.md`** is rewritten: what each file holds, its sources, and the commands that refresh the Open's tables.
 - The matches table is tracked data now: `data/convocation/open-matches.json`, written by `pnpm open:rr --matches-report … --record`.
 
+## After the session — the field by match rate; the Tollgate measured (Chris and the planner, 2026-10-10) — NOT PUSHED
+- **The field's seat draw reads a list's MATCH win rate** (Chris), not its game-one mean: `openStrength` = the recorded matches table (`OPEN_MATCH_MEANS`, generated from `data/convocation/open-matches.json`) where a list has a figure, else `OPEN_MEANS`. Over 300 fields of 32: the Pall 2.09 seats → 1.54; the Rabble 2.28 → 2.55; the Hearth 1.60 → 1.82; Countersnake 1.77 → 1.43. The cap stands on top.
+- **The Tollgate (the planner's overhaul of the Ford), measured in the Ford's seat — NOT registered; Chris and the planner to rule:**
+  - Game one 46.9 against the Ford's 38.3 (+8.6 ± 3.1, paired); matches 44 against the Ford's 37.5. Control and midrange pilots level.
+  - It is polar. It beats the Tally (82–90), Reaper Control (80), the Kiln (78 in matches) and the Muster (70+); it loses to the Hearth (4 in matches), the Coin (6), the Wurmspeaker (6) and, in game one, the Pall (15) and the Locks (17). The Rabble: 42–54.
+  - The guide as authored, the rules alone, both, and the graveyard row widened to the Coin and the Hearth: level (44.1 / 43.5 / 43.5 / 44.2, ±3.3).
+  - Chris's mana creatures: worse. Four Birds or Elves for two Bolts and two lands −2.5 ± 2.0; Manaba −4.1; Birds with no Pyroclasm −0.9; Birds for the Helixes and Bolts −9.9.
+  - Sacred Helix and the Minefield carry it (Helix → Bolt −6.5; two Minefields → Bolts −2.9). Small and unproven: Forerunner to four +1.3 ± 1.6; Lumen for the Forerunners +1.9 ± 1.7.
+- **Tools**: `open:rr --deck-guide file.json` (a guide for a build under test's fifteen, without registering it).
+
 ## Deviations from the brief
 1. **The outbox is a key per entry, not one key.** The brief says "`convocation-outbox` (its own key)". One key holding a list is a read-modify-write on both pages, and the brief's own test (two tabs never lose an entry) cannot be guaranteed that way. Entries live at `convocation-outbox:<id>`. *Rule on the shape; the behaviour is the brief's.*
 2. **The drain rides every autosave**, not only load and focus. It is also run on load and on focus. A drain is then always followed by the save that makes it durable.

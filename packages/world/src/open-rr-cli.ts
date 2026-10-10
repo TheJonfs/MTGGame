@@ -9,6 +9,7 @@
  *                (`protocol~cost={1}{U}~shrink=3`: the card with fields overridden, for this run only). Run with --only key on the
  *                seed of a plain run and compare game by game.
  *   --deck key:file.json[:archetype]   S58: a whole new sixty in that list's seat (a build under test); --swap then edits it.
+ *   --deck-guide file.json   S59: a sideboard guide ({rows, only?}) for that build's fifteen (needs --deck-side).
  *   --extra-cards dir   post-S59: card defs outside the pool (data/cards-proposed) added to this run — a card under consideration.
  *   --deck-side file.json   S59: that build's own fifteen (for --matches and --sideboarded); without it the field builder's.
  *   --vs k1,k2    with --only: only the pairings against those lists (a matchup study at more games).
@@ -51,7 +52,8 @@ import { variantDef } from "./card-variants.js";
 import { MatchSeries } from "./series.js";
 import { mostPlayed, staples } from "./open-reference.js";
 import { buildSideboard } from "./constructed-builder.js";
-import { AI_SIDEBOARD_CONSTRUCTED, SIDEBOARD_SHAPES, aiSideboard, answersCreatures, answersRelics, type AiSideboardTerms } from "./sideboard-ai.js";
+import { AI_SIDEBOARD_CONSTRUCTED, SIDEBOARD_SHAPES, aiSideboard, answersCreatures, answersRelics, type AiSideboardTerms, type SideboardGuide } from "./sideboard-ai.js";
+import { SIDEBOARD_GUIDES } from "./sideboard-guides.generated.js";
 import type { CardRatingTable } from "./rating.js";
 import type { Decklist } from "./state.js";
 
@@ -99,6 +101,8 @@ async function run(): Promise<void> {
   const shapesArg = arg("shapes", "all"), { shapes: _all, ...s55 } = AI_SIDEBOARD_CONSTRUCTED;
   const terms: AiSideboardTerms = shapesArg === "all" ? AI_SIDEBOARD_CONSTRUCTED : shapesArg === "none" ? s55 : { ...s55, shapes: { perShape: SIDEBOARD_SHAPES.perShape, ...Object.fromEntries(shapesArg.split(",").map((k) => { if (!(k in SIDEBOARD_SHAPES) || k === "perShape") throw new Error(`open:rr --shapes: no shape ${k}`); return [k, SIDEBOARD_SHAPES[k as keyof typeof SIDEBOARD_SHAPES]]; })) } };
   // `--sideboarded-only k1,k2`: only those lists sideboard (one side's swaps against the other's registered sixty)
+  // S59: `--deck-guide file.json` ({rows, only?}) — a guide for the build under test's fifteen (--deck-side), without registering it
+  const testGuide: SideboardGuide | null = arg("deck-guide", "") && arg("deck-side", "") ? { key: "test", fifteen: JSON.parse(readFileSync(arg("deck-side", ""), "utf8")) as Decklist, ...(JSON.parse(readFileSync(arg("deck-guide", ""), "utf8")) as { rows: SideboardGuide["rows"]; only?: true }) } : null;
   const boardedOnly = new Set(arg("sideboarded-only", "").split(",").filter(Boolean));
   const boarded = (me: (typeof OPEN_DECKS)[string], them: (typeof OPEN_DECKS)[string]): Decklist => {
     if (!rating || (boardedOnly.size > 0 && !boardedOnly.has(me.key))) return me.decklist;
@@ -106,7 +110,7 @@ async function run(): Promise<void> {
     if (!fifteen.has(me.key)) fifteen.set(me.key, me.sideboard && !builtFor.has(me.key) ? [...me.sideboard] : buildSideboard(me.decklist, OPEN_FORMAT, rating, pool, answersRelics, answersCreatures, !!terms.shapes));
     return aiSideboard(me.decklist, fifteen.get(me.key)!, them.decklist, pool, rating, (() => { const { outRule: keptOut, ...rest0 } = terms;
       const out = outArg === null ? (keptOut ? { outRule: keptOut } : {}) : outArg === "none" ? {} : { outRule: { deadFirst: outArg.includes("dead"), keepFourOfs: outArg.includes("four"), deadOut: outArg.includes("rule9") ? 3 : 0 } };
-      return { ...rest0, ...out, ...(process.argv.includes("--counters-stay") ? { countersStay: true } : {}), ...(process.argv.includes("--no-guide") ? { noGuide: true } : {}), ...(process.argv.includes("--guide-rules-too") ? { guideRulesToo: true } : {}), ...(arg("guide-drop", "") ? { guideDrop: arg("guide-drop", "").split(",") } : {}) }; })()).deck;
+      return { ...rest0, ...out, ...(process.argv.includes("--counters-stay") ? { countersStay: true } : {}), ...(process.argv.includes("--no-guide") ? { noGuide: true } : {}), ...(process.argv.includes("--guide-rules-too") ? { guideRulesToo: true } : {}), ...(testGuide ? { guides: [...SIDEBOARD_GUIDES, testGuide] } : {}), ...(arg("guide-drop", "") ? { guideDrop: arg("guide-drop", "").split(",") } : {}) }; })()).deck;
   };
   const swapArg = arg("swap", "");
   // S58 (a new build tried in a list's seat): `--deck key:file.json[:archetype]` — the file is a decklist ([{cardId, count}], sixty)
