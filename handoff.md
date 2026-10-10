@@ -1,7 +1,7 @@
 # Handoff — after Session 59 (2026-10-10)
 
 ## State of the world
-The two games are joined. A journey's Convocation sits on a clock: every thousand steps the world posts a letter that stands until the next sitting. The Convocation's door reads the letter; entering by it spends it, and the finish sends gold and the kept cards home through an outbox that the journey drains into its own save. A menu event is the same mode and sends nothing. The Open is now read three ways (matches, game one, games two and three); the Pall is a game-one deck (65 → 49 after sideboarding) and the Rabble is not (71 in matches). `pnpm typecheck`, `pnpm test` (1001) and `pnpm build:web` pass; the ladder mirror gate passes. **Nothing from this session is pushed.**
+The two games are joined. A journey's Convocation sits on a clock: every thousand steps the world posts a letter that stands until the next sitting. The Convocation's door reads the letter; entering by it spends it, and the finish sends gold and the kept cards home through an outbox that the journey drains into its own save. A menu event is the same mode and sends nothing. The Open is now read three ways (matches, game one, games two and three); the Pall is a game-one deck (65 → 49 after sideboarding) and the Rabble is not (71 in matches). `pnpm typecheck`, `pnpm test` (1001) and `pnpm build:web` pass; the ladder mirror gate passes. **Everything here is pushed.**
 
 ## Done this session
 - **Part 0 — the smalls.**
