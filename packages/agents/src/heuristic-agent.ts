@@ -473,6 +473,7 @@ export class HeuristicAgent implements Agent {
     let burstColors: string[] | null = null;
     let fixedColors: string[] = []; // post-S43: a Ritual's BBB — the enabled card's OTHER pips come from the lands
     let ownCost = 0;
+    let tapBurst: { ready: GameView["battlefield"]; gives: number } | null = null;
     if (action.type === "castSpell") {
       const card = view.hand.find((c) => c.objectId === action.objectId);
       const d = card ? this.def(card.cardId) : undefined;
@@ -497,6 +498,7 @@ export class HeuristicAgent implements Agent {
         const sub = /^creature\.subtype:(.+)$/.exec(tapKind.predicate)?.[1];
         const ready = view.battlefield.filter((b) => b.controller === me && !b.tapped && b.power !== null && (!sub || (this.def(b.cardId)?.subtypes ?? []).includes(sub))).length;
         produced = Math.floor(ready / tapKind.count);
+        tapBurst = { ready: view.battlefield.filter((b) => b.controller === me && !b.tapped && b.power !== null && (!sub || (this.def(b.cardId)?.subtypes ?? []).includes(sub))), gives: ab.effects.reduce((n, e) => n + (e.type === "gainLife" && e.who === "opponent" && typeof e.amount === "number" ? e.amount : 0), 0) };
       }
       // S28 (ADR-098, Orcish Lumberjack): a COMBINATION burst — its multiset must cover the enabled
       // card's pips in those colours; and the LAST Forest is never fed to it while a green card waits
@@ -511,6 +513,20 @@ export class HeuristicAgent implements Agent {
         }
       }
     } else return null;
+    // Book 119 (the Manaba's first measure: three taps a game and two of them wasted — tapped toward a flash creature
+    // the pilot then would not cast on its own turn, or toward an X spell; each a life to the opponent and a blocker
+    // turned sideways). A tap-a-creature burst is held to three tests the Lotus's is not:
+    //  · THE PAYOFF: at the opponent's end step, on an empty stack, a tap whose rider gives the opponent life is taken
+    //    for its own sake while we control a permanent that pays on their gaining it (the Rage Cobra's shape) — the
+    //    creatures untap in a moment, the mana is nothing, the trigger is the point.
+    //  · THE CARD: it enables only a card we would in fact cast now (our own scorer is asked), never an X spell.
+    //  · THE BLOCKERS: on our own turn the tapped creatures do not block on theirs — the taps are refused when the
+    //    attack they would let through takes us to five life or less.
+    if (tapBurst) {
+      const theirEnd = view.activePlayer !== me && view.step === "END" && view.stack.length === 0;
+      const payoff = tapBurst.gives > 0 && view.battlefield.some((o) => o.controller === me && (this.def(o.cardId)?.abilities ?? []).some((a) => a.kind === "triggered" && a.event === "LIFE_GAINED" && a.condition?.controller === "opponent"));
+      if (theirEnd && payoff && !this.profile.off?.includes("tapburst")) { const col = (action as { color?: string }).color; return { enables: col === undefined || col === "G" }; } // one colour's action, not five alike
+    }
     const pool = Object.values(view.manaPool).reduce((a, b) => a + b, 0);
     const producers = view.battlefield.filter((o) => {
       if (o.controller !== me || !this.canActNow(o)) return false; // S45: a sick mana creature is no mana this turn
@@ -535,8 +551,20 @@ export class HeuristicAgent implements Agent {
       if (this.targetsAbsent(view, d)) return false; // a Terror with nothing to kill enables nothing
       // An untargeted, unmoded, X-less card is its own cast action — ask our own scorer whether we would cast
       // it at all (Buried Alive without a reanimator, a second copy of a legend: the gates say no).
-      if (!d.targets?.length && !d.modes && !/\{X\}/.test(d.manaCost) && action.type === "castSpell") {
+      if (!d.targets?.length && !d.modes && !/\{X\}/.test(d.manaCost) && (action.type === "castSpell" || (tapBurst && !this.profile.off?.includes("tapburst")))) {
         if (this.scorePriorityAction(view, { type: "castSpell", objectId: c.objectId, targets: [] }) === -Infinity) return false;
+      }
+      if (tapBurst && !this.profile.off?.includes("tapburst")) {
+        if (/\{X\}/.test(d.manaCost)) return false;
+        if (view.activePlayer === me) {
+          // the creatures this cast would turn sideways (the least valuable first, as the cost is paid), and what
+          // the opponent's creatures then get through
+          const need = mv - available, left = [...tapBurst.ready].sort((x, y) => this.boardValue(view, x.id) - this.boardValue(view, y.id)).slice(need);
+          const blockers = view.battlefield.filter((o) => o.controller === me && !o.tapped && o.power !== null && !tapBurst!.ready.some((r) => r.id === o.id)).length + left.length;
+          const theirs = view.battlefield.filter((o) => o.controller !== me && o.power !== null && (o.power ?? 0) > 0 && !o.keywords.includes("defender")).map((o) => o.power ?? 0).sort((x, y) => y - x);
+          const through = theirs.slice(0, Math.max(0, theirs.length - blockers)).reduce((n, x) => n + x, 0);
+          if (through > 0 && view.life[me] - through <= 5) return false;
+        }
       }
       if (fixedColors.length > 0 && !this.burstPayable(view, spendsCard!, fixedColors, d.manaCost)) return false;
       // S26: a coloured burst must match a pip of the card it enables (a Lotus popped for red

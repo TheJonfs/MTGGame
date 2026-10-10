@@ -1290,6 +1290,41 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.entersHarmGated(mkView({ hand: [{ objectId: "h", cardId: "grizzly_bears" }], battlefield: L }), cast)).toBe(false); // any other creature: not the shape
   });
 
+  it("book of shame 119 (post-S59 — the Manaba's first measure: three taps a game, two of them wasted): a mana ability paid by tapping a creature is a burst held to three tests — it enables only a card the pilot would cast now, never an X spell; on our own turn it is refused when the attack the tapped blockers let through takes us to five or less; and at the opponent's end step it is taken for its own sake while a permanent of ours pays on their gaining life", () => {
+    pool.set("manaba", JSON.parse(readFileSync(join(CARDS_DIR, "../cards-proposed/manaba.json"), "utf8"))); // a card under consideration: in this test's pool only
+    const a = agent(), old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["tapburst"] });
+    const F = (n: number) => Array.from({ length: n }, (_, i) => ({ id: `f${i}`, cardId: "taiga", controller: 0 as const }));
+    const tap = (color: "R" | "G") => ({ type: "activateAbility" as const, objectId: "m", abilityIndex: 0, targets: [], color });
+    const M = { id: "m", cardId: "manaba", controller: 0 as const };
+    const v = (hand: string[], lands: number, extra: { id: string; cardId: string; controller: 0 | 1 }[] = [], o: { life?: [number, number]; step?: string; activePlayer?: 0 | 1 } = {}) => mkView({ hand: hand.map((c, i) => ({ objectId: `h${i}`, cardId: c })), battlefield: [...F(lands), M, ...extra], ...o });
+    // the card: one mana short of a Hill Giant — tapped for it; nothing to cast — not tapped
+    expect(a.manaBurst(v(["hill_giant"], 3), tap("R"))).toEqual({ enables: true });
+    expect(a.manaBurst(v(["forest"], 3), tap("R"))).toEqual({ enables: false });
+    expect(a.manaBurst(v(["hill_giant"], 4), tap("R"))).toEqual({ enables: false }); // already payable
+    // two short, and a second Snake ready: the first tap is taken
+    expect(a.manaBurst(v(["hill_giant"], 2), tap("R"))).toEqual({ enables: false });
+    expect(a.manaBurst(v(["hill_giant"], 2, [{ id: "mv", cardId: "moss_viper", controller: 0 }]), tap("R"))).toEqual({ enables: true });
+    // a flash creature the pilot will not cast on its own turn (book 115), and an X spell: no tap toward either — the old pilot tapped for both
+    expect(a.manaBurst(v(["reapers_forerunner"], 2), tap("G"))).toEqual({ enables: false });
+    expect(old.manaBurst(v(["reapers_forerunner"], 2), tap("G"))).toEqual({ enables: true });
+    expect(a.manaBurst(v(["savage_twister"], 1), tap("R"))).toEqual({ enables: false });
+    expect(old.manaBurst(v(["savage_twister"], 1), tap("R"))).toEqual({ enables: true });
+    // …but toward the flash creature at THEIR end step, where it is cast
+    expect(a.manaBurst(v(["reapers_forerunner"], 2, [], { activePlayer: 1, step: "END" }), tap("G"))).toEqual({ enables: true });
+    // the blockers: the Manaba is our only blocker, two 3/3s across, eight life — tapping it lets six through to two
+    const giants = [{ id: "g1", cardId: "hill_giant", controller: 1 as const }, { id: "g2", cardId: "hill_giant", controller: 1 as const }];
+    expect(a.manaBurst(v(["hill_giant"], 3, giants, { life: [8, 20] }), tap("R"))).toEqual({ enables: false });
+    expect(a.manaBurst(v(["hill_giant"], 3, giants, { life: [20, 20] }), tap("R"))).toEqual({ enables: true }); // at twenty it is a fair trade
+    expect(old.manaBurst(v(["hill_giant"], 3, giants, { life: [8, 20] }), tap("R"))).toEqual({ enables: true });
+    // the payoff: a Rage Cobra beside it, their end step, an empty stack — tapped with nothing to cast (once: the green action, not five alike)
+    const cobra = [{ id: "rc", cardId: "rage_cobra", controller: 0 as const }];
+    expect(a.manaBurst(v([], 3, cobra, { activePlayer: 1, step: "END" }), tap("G"))).toEqual({ enables: true });
+    expect(a.manaBurst(v([], 3, cobra, { activePlayer: 1, step: "END" }), tap("R"))).toEqual({ enables: false });
+    expect(a.manaBurst(v([], 3, [], { activePlayer: 1, step: "END" }), tap("G"))).toEqual({ enables: false }); // no Cobra: nothing to gain
+    expect(a.manaBurst(v([], 3, cobra), tap("G"))).toEqual({ enables: false }); // our own turn: the Snakes would not untap before their attack
+    pool.delete("manaba");
+  });
+
   it("book of shame 118 (post-S58 — Chris, a Limited match: a Nekrataal cast with only black creatures across the table destroyed its caster's own creature): a mandatory enters-destroy counts LEGAL targets — not cast when only our side has one; cast into an empty table (the body is worth the wasted trigger), and whenever theirs has one", () => {
     const a = agent();
     const L = Array.from({ length: 4 }, (_, i) => ({ id: `l${i}`, cardId: "swamp", controller: 0 as const }));
