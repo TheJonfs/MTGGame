@@ -21,7 +21,7 @@ The two games are joined. A journey's Convocation sits on a clock: every thousan
 - **Before the brief (Chris's playtest note) — book 118.** A mandatory enters-destroy counts legal targets, not creatures: a Nekrataal is not cast when only its caster's side has a creature it can destroy. It is still cast into an empty table.
 - Walked in a browser: a journey past step 1000 shows the letter; the door shows it; entering posts the spend; the journey, reopened, marks it spent and the outbox is empty.
 
-## After the session — a Rabble beater, the Manaba, and books 119–120 (Chris, 2026-10-10)
+## After the session — a Rabble beater, the Manaba, and books 119–120 (Chris, 2026-10-10; pushed)
 - **Chris's green-red control list** (his Open of seed 745905: 4–1 and a semi-final) measured 38% in matches against the Rabble in the pilot's hands. Trade studies in the Wurmspeaker's seat (scratch; the list is NOT in the Open):
   - Seasoned Pyromancer for Grazing Gladehart: 52.5 against the Rabble. With Pelakka Wurm for Treetop Snarespinner: 60.5, and 63 in matches against the field. With four main-deck Pyroclasm as well: 71 against the Rabble, 61 against the field.
   - Every version loses to the three Usher lists (24–36).
