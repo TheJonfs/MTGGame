@@ -411,3 +411,12 @@ S42a (ADR-131/132). Entry authored by the implementer from the brief's lore line
 ### the_cinquefont — candidate 1, the WBRUG variants (S42a; Chris: "I like #1 a lot — a tweaked version with all five colours in Cinquefoil order")
 
 Rendered as NAMED VARIANTS of `card-cinquefont-1` (conditioned on its canonical render, so the composition holds): the five braided currents recoloured and ordered from the crown DOWN to the water — white, black, red, blue, green — each band one clear colour. Three rolls (`wbrug-a/b/c`).
+
+## manaba — "Manaba" (G creature, custom: a Snake that taps Snakes for mana of any colour, and each opponent gains 1 life)
+
+Post-S59, written by the implementer at Chris's request (the Gaean Wurm precedent; adjust freely). The idea to carry: a small green snake whose bite gives instead of taking — five colours of mana come off it, and something across the way is the better for it.
+
+1. **Classical oil** — "Oil painting in the warm classical fantasy style of 1990s trading-card art: a slender emerald-green snake coiled on a mossy forest stone, head raised, five small motes of light — white, blue, black-violet, red and green — rising from its scales like dew burning off in morning sun; behind it, out of focus, a wounded stag lifts its head, visibly restored; deep forest greens with the five motes as the only bright accents."
+2. **Ink and gouache** — "High-contrast ink drawing with gouache highlights: a small green mamba striking upward in a tight S-curve, and where its fangs close on the air five droplets fly outward, each a different colour — white, blue, violet-black, red, green; strong diagonal composition, limited palette of black ink, leaf green and cream, the five droplets the only saturated colour."
+3. **Watercolor storybook** — "Muted watercolor: a little green snake draped along a low branch over a woodland pool, the tip of its tail dipping in the water, and the ripples spreading from it in five soft concentric bands of colour — white, blue, violet, red, green; on the far bank a hooded traveller cups the water to drink, at ease; soft dappled light, gentle generous mood."
+4. **Stained glass** — "A stained-glass window in the manner of a medieval bestiary panel: a green serpent wound in a figure-eight through five round glass medallions — white, blue, deep violet, red and green — each medallion lit as if from behind; heavy dark leading, jewel-toned glass, a border of leaves inside the picture area only; flat, luminous, heraldic."

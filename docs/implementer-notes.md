@@ -701,4 +701,8 @@ See handoff Concerns for the authoritative list. Highlights: auto-pay greedy fea
 - **`open:rr --matches N`** plays the event's own series (`MatchSeries`); a game records `match` and `gameNo`. `--matches-report` reads the shards directly (no `--merge`).
 - **`replayThenPlay`'s last argument reshuffles the libraries** at the departure. Without it every playout of a decision draws the log's library.
 - **The dev server may not be on 5173** when Chris has his own running; the preview takes another port and its own (empty) localStorage, which is the safe place to test saves.
+- **A rule that asks the scorer a question from inside the scorer needs a depth guard.** `manaBurst` asks "would I cast the card this enables?"; scoring that card can ask about the burst again. `burstAsking` allows one level. The unit tests did not meet it; a round-robin did, in its first minute.
+- **A card under consideration** lives outside `data/cards` and rides `open:rr --extra-cards <dir>`; nothing else in the game sees it. Move it into the pool only when Chris locks it (then the pins: the loader's count, the shop-tier tally, `pnpm reference`).
+- **A generated "png" from the image skill may be a JPEG inside.** Crop with `sips -s format png …` and check with `file`.
+- **Ask what the AI swaps before reading a sideboarded number.** `aiSideboard(deck, fifteen, theirDeck, …).swaps` for a build under test showed in one line why every version lost ten points after game one.
 

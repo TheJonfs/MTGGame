@@ -465,6 +465,8 @@ export class HeuristicAgent implements Agent {
    * mana ability)? If so, does the burst enable a cast from hand this step that we couldn't pay now?
    * Mana model: untapped lands + untapped rested creature producers + the floating pool vs. nonland
    * cards' mana values (colour-blind — v1). Returns null for non-burst actions. */
+  private sinkMemo = new WeakMap<GameView, boolean>();
+  private burstAsking = 0;
   manaBurst(view: GameView, action: Action): { enables: boolean } | null {
     const me = view.you;
     let produced = 0;
@@ -541,6 +543,67 @@ export class HeuristicAgent implements Agent {
     // AI's own upkeep or draw step): the burst's mana empties at the step's end, so the card it enables must be
     // castable in THIS step — a sorcery-speed card only in our main phase on an empty stack.
     const sorceryWindow = view.activePlayer === me && (view.step === "MAIN1" || view.step === "MAIN2") && view.stack.length === 0;
+    const tapRules = !!tapBurst && !this.profile.off?.includes("tapburst");
+    let found = false;
+    // Book 120 (Chris: "I have noticed the AI occasionally crack a Black Lotus and then not use the mana"): the card a
+    // burst enables must be one the pilot would in fact cast — asked of its own scorer — for the Lotus and the
+    // Prospector as for a Ritual (the question was only ever put for a burst that is itself a spell).
+    const asked = action.type === "castSpell" || tapRules || !this.profile.off?.includes("lotuscheck");
+    /** The creatures `need` taps would turn sideways (the least valuable first, as the cost is paid) — would the
+     * opponent's attack then take us to five or less? Our own turn only: at theirs the creatures untap first. */
+    const exposes = (need: number): boolean => {
+      if (!tapBurst || view.activePlayer !== me) return false;
+      const left = [...tapBurst.ready].sort((x, y) => this.boardValue(view, x.id) - this.boardValue(view, y.id)).slice(need);
+      const blockers = view.battlefield.filter((o) => o.controller === me && !o.tapped && o.power !== null && !tapBurst!.ready.some((r) => r.id === o.id)).length + left.length;
+      const theirs = view.battlefield.filter((o) => o.controller !== me && o.power !== null && (o.power ?? 0) > 0 && !o.keywords.includes("defender")).map((o) => o.power ?? 0).sort((x, y) => y - x);
+      const through = theirs.slice(0, Math.max(0, theirs.length - blockers)).reduce((n, x) => n + x, 0);
+      return through > 0 && view.life[me] - through <= 5;
+    };
+    // Book 120 (Chris: "being able to use several snakes to pump up an X spell feels like an obvious route"): a
+    // repeatable tap burst also pays into an X SPELL — when the spell at the X the taps reach scores above the same
+    // spell at the X the lands reach, and above passing — and into an ACTIVATED ABILITY of a permanent of ours that
+    // the lands alone cannot pay (a Snarespinner's counter, the Sower's Sphinx), when our scorer would take it.
+    if (tapRules && !this.profile.off?.includes("tapsink")) {
+      // (one answer a decision: every Snake's five colours ask the same question of the same board)
+      let sink = this.sinkMemo.get(view);
+      if (sink === undefined && this.burstAsking > 0) sink = false; // (inside another burst's question: not asked again)
+      else if (sink === undefined) {
+        this.burstAsking += 1;
+        try { sink = ((): boolean => {
+      const pass = this.scorePriorityAction(view, { type: "pass" });
+      for (const c of view.hand) {
+        const d = this.def(c.cardId);
+        if (!d || !/\{X\}/.test(d.manaCost) || d.modes) continue;
+        if (!sorceryWindow && !d.types.includes("Instant")) continue;
+        const base = manaValue(parseManaCost(d.manaCost)), x0 = available - base;
+        // the targets the engine offers for this card now (an X spell castable at X = 0 is offered with every target); untargeted: none needed
+        const offered = (this.offered ?? []).filter((x): x is Extract<Action, { type: "castSpell" }> => x.type === "castSpell" && x.objectId === c.objectId);
+        const targetSets = d.targets?.length ? [...new Map(offered.map((x) => [JSON.stringify(x.targets), x.targets])).values()] : [[]];
+        if (targetSets.length === 0) continue;
+        const at = (x: number) => (x < 0 ? -Infinity : Math.max(...targetSets.map((t) => this.scorePriorityAction(view, { type: "castSpell", objectId: c.objectId, targets: t, x }))));
+        const now = at(x0);
+        for (let k = 1; k <= produced; k++) { if (x0 + k < 1 || exposes(k)) continue; const sc = at(x0 + k); if (sc > Math.max(now, pass) + 0.25) return true; }
+      }
+      for (const o of view.battlefield) {
+        if (o.controller !== me) continue;
+        (this.def(o.cardId)?.abilities ?? []).forEach((ab, abilityIndex) => {
+          if (found || ab.kind !== "activated" || !ab.cost.mana || ab.effects.some((e) => e.type === "addMana") || ab.cost.tapCreature || ab.cost.sacrifice || (ab.cost.tap && (o.tapped || !this.canActNow(o)))) return;
+          if ((ab.timing === "sorcery" || ab.equip) && !sorceryWindow) return;
+          const cost = manaValue(parseManaCost(ab.cost.mana));
+          if (!(cost > available && cost <= available + produced) || exposes(cost - available)) return;
+          const spec = (ab.targets ?? [])[0] as { predicate?: string } | undefined;
+          if ((ab.targets ?? []).length > 1) return;
+          const pick = spec ? view.battlefield.filter((b) => b.power !== null && (spec.predicate === "creatureYouControl" ? b.controller === me : spec.predicate === "creatureYouDontControl" ? b.controller !== me : spec.predicate === "creature")).map((b) => [{ kind: "object" as const, id: b.id }]) : [[]];
+          for (const targets of pick) if (this.scorePriorityAction(view, { type: "activateAbility", objectId: o.id, abilityIndex, targets }) > pass + 0.25) { found = true; return; }
+        });
+        if (found) return true;
+      }
+          return false;
+        })(); } finally { this.burstAsking -= 1; }
+        this.sinkMemo.set(view, sink);
+      }
+      if (sink) return { enables: true };
+    }
     const enables = view.hand.some((c) => {
       if (c.objectId === spendsCard) return false;
       const d = this.def(c.cardId);
@@ -551,21 +614,25 @@ export class HeuristicAgent implements Agent {
       if (this.targetsAbsent(view, d)) return false; // a Terror with nothing to kill enables nothing
       // An untargeted, unmoded, X-less card is its own cast action — ask our own scorer whether we would cast
       // it at all (Buried Alive without a reanimator, a second copy of a legend: the gates say no).
-      if (!d.targets?.length && !d.modes && !/\{X\}/.test(d.manaCost) && (action.type === "castSpell" || (tapBurst && !this.profile.off?.includes("tapburst")))) {
-        if (this.scorePriorityAction(view, { type: "castSpell", objectId: c.objectId, targets: [] }) === -Infinity) return false;
+      // (never asked of a card that is itself a burst — a Ritual enabling a Ritual would ask the first again — nor
+      // from inside another burst's question: one level of asking)
+      const itselfBurst = !!d.spellEffect?.length && d.spellEffect.every((e) => e.type === "addMana");
+      if (!d.targets?.length && !d.modes && !/\{X\}/.test(d.manaCost) && asked && !itselfBurst && this.burstAsking === 0) {
+        this.burstAsking += 1;
+        try { if (this.scorePriorityAction(view, { type: "castSpell", objectId: c.objectId, targets: [] }) === -Infinity) return false; } finally { this.burstAsking -= 1; }
       }
-      if (tapBurst && !this.profile.off?.includes("tapburst")) {
-        if (/\{X\}/.test(d.manaCost)) return false;
-        if (view.activePlayer === me) {
-          // the creatures this cast would turn sideways (the least valuable first, as the cost is paid), and what
-          // the opponent's creatures then get through
-          const need = mv - available, left = [...tapBurst.ready].sort((x, y) => this.boardValue(view, x.id) - this.boardValue(view, y.id)).slice(need);
-          const blockers = view.battlefield.filter((o) => o.controller === me && !o.tapped && o.power !== null && !tapBurst!.ready.some((r) => r.id === o.id)).length + left.length;
-          const theirs = view.battlefield.filter((o) => o.controller !== me && o.power !== null && (o.power ?? 0) > 0 && !o.keywords.includes("defender")).map((o) => o.power ?? 0).sort((x, y) => y - x);
-          const through = theirs.slice(0, Math.max(0, theirs.length - blockers)).reduce((n, x) => n + x, 0);
-          if (through > 0 && view.life[me] - through <= 5) return false;
+      // an X spell is the sink's business above (a tap burst), and for any other burst it is enabled only at an X of
+      // one or more that the scorer would take (book 120: a Lotus cracked "for" a Savage Twister it then did not cast)
+      if (/\{X\}/.test(d.manaCost) && (tapRules || (asked && action.type !== "castSpell"))) {
+        if (tapRules) return false;
+        // (a targeted X spell — a Blaze — has no action to put to the scorer here: as it was)
+        const x = available + produced - mv;
+        if (!d.targets?.length && !d.modes && this.burstAsking === 0) {
+          this.burstAsking += 1;
+          try { if (x < 1 || this.scorePriorityAction(view, { type: "castSpell", objectId: c.objectId, targets: [], x }) <= this.scorePriorityAction(view, { type: "pass" })) return false; } finally { this.burstAsking -= 1; }
         }
       }
+      if (tapRules && exposes(mv - available)) return false;
       if (fixedColors.length > 0 && !this.burstPayable(view, spendsCard!, fixedColors, d.manaCost)) return false;
       // S26: a coloured burst must match a pip of the card it enables (a Lotus popped for red
       // enables nothing blue); colourless costs take any colour.

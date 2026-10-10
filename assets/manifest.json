@@ -1317,6 +1317,66 @@
         }
       }
     },
+    "card-manaba-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:f4587fda8a5298e7e5864247f41f87b664032c101b49e8f7c8ebe83abdfdbbca",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:f4587fda8a5298e7e5864247f41f87b664032c101b49e8f7c8ebe83abdfdbbca",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-manaba-1/canonical.png",
+          "rendered_at": "2026-10-10T15:58:58+00:00",
+          "thumb": "assets/thumbs/card-manaba-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-manaba-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:f81699efde4258977db2f74d4bdc262e9a4e165fb90785c1d429e68ff2b45c36",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:f81699efde4258977db2f74d4bdc262e9a4e165fb90785c1d429e68ff2b45c36",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-manaba-2/canonical.png",
+          "rendered_at": "2026-10-10T15:59:07+00:00",
+          "thumb": "assets/thumbs/card-manaba-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-manaba-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:a894450c0e659fcc0c46106e972e57fce751074bc7cdff7adb75e658cc173f2b",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:a894450c0e659fcc0c46106e972e57fce751074bc7cdff7adb75e658cc173f2b",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-manaba-3/canonical.png",
+          "rendered_at": "2026-10-10T15:59:16+00:00",
+          "thumb": "assets/thumbs/card-manaba-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-manaba-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:325bc4c69e5145a42b8b1cba38de218856f4760ce165a835d0849ac626a1455d",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:325bc4c69e5145a42b8b1cba38de218856f4760ce165a835d0849ac626a1455d",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-manaba-4/canonical.png",
+          "rendered_at": "2026-10-10T15:59:25+00:00",
+          "thumb": "assets/thumbs/card-manaba-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "card-manafleur-1": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:39f99259feab9ee73dd0a0c04900aa133e7803ac66ac51da961d479936aff957",

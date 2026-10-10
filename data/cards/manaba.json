@@ -1,0 +1,46 @@
+{
+  "id": "manaba",
+  "name": "Manaba",
+  "source": "custom",
+  "manaCost": "{G}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Snake"
+  ],
+  "power": 1,
+  "toughness": 1,
+  "text": "Tap an untapped Snake you control: Add one mana of any color. Each opponent gains 1 life.",
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "tapCreature": {
+          "predicate": "creature.subtype:Snake",
+          "count": 1
+        }
+      },
+      "effects": [
+        {
+          "type": "addMana",
+          "choice": {
+            "count": 1,
+            "anyOneColor": true
+          }
+        },
+        {
+          "type": "gainLife",
+          "amount": 1,
+          "who": "opponent"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "asset": "/custom-art/manaba.png",
+    "fallback": "rendered"
+  },
+  "printedAsset": "manaba.jpg",
+  "shopTier": 2
+}

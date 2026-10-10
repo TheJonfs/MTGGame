@@ -1,7 +1,7 @@
 # Handoff — after Session 59 (2026-10-10)
 
 ## State of the world
-The two games are joined. A journey's Convocation sits on a clock: every thousand steps the world posts a letter that stands until the next sitting. The Convocation's door reads the letter; entering by it spends it, and the finish sends gold and the kept cards home through an outbox that the journey drains into its own save. A menu event is the same mode and sends nothing. The Open is now read three ways (matches, game one, games two and three); the Pall is a game-one deck (65 → 49 after sideboarding) and the Rabble is not (71 in matches). `pnpm typecheck`, `pnpm test` (1001) and `pnpm build:web` pass; the ladder mirror gate passes. **Everything here is pushed.**
+The two games are joined. A journey's Convocation sits on a clock: every thousand steps the world posts a letter that stands until the next sitting. The Convocation's door reads the letter; entering by it spends it, and the finish sends gold and the kept cards home through an outbox that the journey drains into its own save. A menu event is the same mode and sends nothing. The Open is now read three ways (matches, game one, games two and three); the Pall is a game-one deck (65 → 49 after sideboarding) and the Rabble is not (71 in matches). `pnpm typecheck`, `pnpm test` (1001; 1007 with the work after the session) and `pnpm build:web` pass; the ladder mirror gate passes. **Everything here is pushed.**
 
 ## Done this session
 - **Part 0 — the smalls.**
@@ -20,6 +20,27 @@ The two games are joined. A journey's Convocation sits on a clock: every thousan
 - **Part 6 — the three-column read.** `open:rr --matches N` and `--matches-report`. 6,800 matches, 16,852 games: `analysis/runs/matches17_s59.md`, and the table in `docs/decision-updates/s59.md`.
 - **Before the brief (Chris's playtest note) — book 118.** A mandatory enters-destroy counts legal targets, not creatures: a Nekrataal is not cast when only its caster's side has a creature it can destroy. It is still cast into an empty table.
 - Walked in a browser: a journey past step 1000 shows the letter; the door shows it; entering posts the spend; the journey, reopened, marks it spent and the outbox is empty.
+
+## After the session — a Rabble beater, the Manaba, and books 119–120 (Chris, 2026-10-10)
+- **Chris's green-red control list** (his Open of seed 745905: 4–1 and a semi-final) measured 38% in matches against the Rabble in the pilot's hands. Trade studies in the Wurmspeaker's seat (scratch; the list is NOT in the Open):
+  - Seasoned Pyromancer for Grazing Gladehart: 52.5 against the Rabble. With Pelakka Wurm for Treetop Snarespinner: 60.5, and 63 in matches against the field. With four main-deck Pyroclasm as well: 71 against the Rabble, 61 against the field.
+  - Every version loses to the three Usher lists (24–36).
+  - **The pilot sideboards his fifteen badly**: against the Rabble its only swap is two Walls of Blossoms for two Chars, and the four Pyroclasms never come in. With its sideboarding off the list gains about eight points against the Rabble. A guide is the fix; it needs the list registered.
+- **The Manaba is in the pool** (Chris's card): {G} Creature — Snake 1/1, "Tap an untapped Snake you control: Add one mana of any color. Each opponent gains 1 life." T2 as an interim (Chris has not named a tier). Art: the watercolor of four generated candidates (Chris's verdict); his printed face wired.
+  - **R-107**: a mana ability may carry an effect beyond its mana and a tap-a-creature cost. It resolves at once; it is activated deliberately (as the Lotus). A creature that came in this turn can pay the cost.
+  - Tried at 0/1, at 1/1 for two life, at 1/1 for one. Chris took the last. In his list (with Rage Cobra and Pelakka Wurm) it measures 64.7 in game one against the field; Llanowar Elves in the same slots, 62.1.
+- **Book 119 — a mana ability paid by tapping a creature** is held to three tests: it enables only a card the pilot would cast now; on our own turn it is refused when the tapped blockers let through an attack that takes us to five or less; at the opponent's end step it is taken for its own sake while a permanent of ours pays on their gaining life. `off: ["tapburst"]`. Before it the pilot wasted two taps in three (+3 to +4 points for every Manaba build).
+- **Book 120**, two parts:
+  - **A tap burst pays into an X spell or an activated ability** the lands cannot reach, when the scorer would take it (`off: ["tapsink"]`). Measured neutral (0.0 ± 0.8, +0.5 ± 0.5, −0.3 ± 0.9 on three builds): on, at Chris's word.
+  - **A Lotus (or any burst) is cracked only toward a card the pilot would in fact cast** — the question a Ritual was already asked (`off: ["lotuscheck"]`). Twelve lists, on against off: 0.0 to +0.2, none worse. **Ladder mirror gate PASS.**
+- **Tools**: `pnpm narrate` (a recorded game move by move); `open:rr --deck-side` (a build's own fifteen), `--extra-cards dir` (defs outside the pool, for a card under consideration); ability activations are recorded in a run's logs.
+- **Concerns:**
+  1. **A deliberate mana ability cannot be activated in the middle of paying a cost** (605.3a allows it). The mana is made first and the spell cast after. R-107 records it.
+  2. **R-107's rule citations were not re-fetched this session** (605.1a, 605.3b, 302.6); they are long-stable, but principle 10 asks for the check.
+  3. **My first version of book 120 recursed without end** (a burst's question asking about the burst) and crashed most of a simulation batch; the suite had not met the case. Guarded, and book 120's test now covers a Lotus beside the card it asks about.
+  4. **Under random play the Manaba is tapped at every priority** and games run long: its fuzz runs two games a pairing by default (sixteen at FUZZ_FULL, 768 games, clean).
+  5. **The pilot still does not chain several Snakes for one large turn except through an X spell or an ability**, and it never taps for a Rage Cobra on its own turn. The card is under-measured on that side.
+  6. **The AI's sideboarding takes Walls of Blossoms out against aggro lists** (the "creatures" rule brings removal in for the lowest-rated card). Chris's list shows it; the Open's green lists may share it.
 
 ## Deviations from the brief
 1. **The outbox is a key per entry, not one key.** The brief says "`convocation-outbox` (its own key)". One key holding a list is a read-modify-write on both pages, and the brief's own test (two tabs never lose an entry) cannot be guaranteed that way. Entries live at `convocation-outbox:<id>`. *Rule on the shape; the behaviour is the brief's.*

@@ -1,29 +1,29 @@
 import { describe, expect, it } from "vitest";
-import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
-import { validateCard, isManaAbility, isChoiceManaAbility, type CardDef } from "@shandalar/cards";
+import { validateCard, isManaAbility, isChoiceManaAbility } from "@shandalar/cards";
 import { runMatch, type Action, type ActionRequest, type Agent, type GameView, type MatchSpec, type Modifier } from "@shandalar/engine";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const cards = loadCardPool(join(ROOT, "data/cards")).cards;
-const manaba = JSON.parse(readFileSync(join(ROOT, "data/cards-proposed/manaba.json"), "utf8")) as CardDef;
-cards.set(manaba.id, manaba);
+const manaba = cards.get("manaba")!;
 const perm = (player: 0 | 1, cardId: string): Modifier => ({ type: "permanentOnBattlefield", player, cardId });
 const D = (ids: Record<string, number>) => Object.entries(ids).map(([cardId, count]) => ({ cardId, count }));
 const cardOf = (v: GameView, id: string | undefined) => (id ? (v.hand.find((h) => h.objectId === id)?.cardId ?? v.battlefield.find((b) => b.id === id)?.cardId) : undefined);
 
 /**
- * Post-S59 — the Manaba, a card Chris is considering (data/cards-proposed; NOT in the pool). {G} Creature — Snake 0/1.
+ * Post-S59 — the Manaba (Chris's card; R-107). {G} Creature — Snake 1/1 (tried at 0/1 and at 1/1 giving two life; Chris took the 1/1 for one).
  * "Tap an untapped Snake you control: Add one mana of any color. Each opponent gains 1 life."
  * Rules: 605.1a (an activated ability with no target that could add mana is a mana ability, whatever else it does),
  * 605.3b (it resolves at once; no stack), 302.6 / 602.5a (summoning sickness stops only a cost with the {T} symbol —
  * a creature that came in this turn may be tapped for another kind of cost).
  */
-describe("the Manaba (proposed)", () => {
+describe("Post-S59 — the Manaba (R-107)", () => {
   it("the def is valid, and its ability is a mana ability activated deliberately", () => {
     expect(validateCard(manaba).errors).toEqual([]);
+    expect([manaba.manaCost, manaba.types, manaba.subtypes, manaba.power, manaba.toughness, manaba.source]).toEqual(["{G}", ["Creature"], ["Snake"], 1, 1, "custom"]);
+    expect(manaba.text).toBe("Tap an untapped Snake you control: Add one mana of any color. Each opponent gains 1 life.");
     expect([isManaAbility(manaba.abilities![0]!), isChoiceManaAbility(manaba.abilities![0]!)]).toEqual([true, true]);
   });
 
