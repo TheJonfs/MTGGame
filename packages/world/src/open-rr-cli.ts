@@ -9,6 +9,7 @@
  *                (`protocol~cost={1}{U}~shrink=3`: the card with fields overridden, for this run only). Run with --only key on the
  *                seed of a plain run and compare game by game.
  *   --deck key:file.json[:archetype]   S58: a whole new sixty in that list's seat (a build under test); --swap then edits it.
+ *   --deck-side file.json   S59: that build's own fifteen (for --matches and --sideboarded); without it the field builder's.
  *   --vs k1,k2    with --only: only the pairings against those lists (a matchup study at more games).
  *   --sideboarded-one   S56: in each game ONE seat plays its sideboarded sixty against the other's registered sixty
  *                (the lists take turns, two games each) — beside a plain run on the same seed, a list's own
@@ -111,7 +112,10 @@ async function run(): Promise<void> {
     for (const e of list) if (!pool.has(e.cardId)) throw new Error(`open:rr --deck: no card ${e.cardId}`);
     if (list.reduce((a, e) => a + e.count, 0) !== 60) throw new Error(`open:rr --deck: ${file} is ${list.reduce((a, e) => a + e.count, 0)} cards`);
     const { sideboard: _s, ...rest } = base;
-    return { ...OPEN_DECKS, [key]: { ...rest, decklist: list, ...(archetype ? { archetype: archetype as typeof base.archetype } : {}) } };
+    // S59 (a build with its own fifteen, for --matches): `--deck-side file.json` — else the field builder's fifteen
+    const sideFile = arg("deck-side", ""), side = sideFile ? (JSON.parse(readFileSync(sideFile, "utf8")) as Decklist) : null;
+    if (side) for (const e of side) if (!pool.has(e.cardId)) throw new Error(`open:rr --deck-side: no card ${e.cardId}`);
+    return { ...OPEN_DECKS, [key]: { ...rest, decklist: list, ...(side ? { sideboard: side } : {}), ...(archetype ? { archetype: archetype as typeof base.archetype } : {}) } };
   })() : OPEN_DECKS;
   const DECKS: typeof OPEN_DECKS = swapArg ? (() => {
     const [key, ...rest] = swapArg.split(":"), swaps = rest.join(":").split(";").map((x) => x.split(":") as [string, string, string]);
