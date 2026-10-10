@@ -1,5 +1,5 @@
 import { NullLog, SeededRng } from "@shandalar/core";
-import { parseManaCost, manaValue, type CardDef, type Effect, type ResolvedTarget } from "@shandalar/cards";
+import { parseManaCost, manaValue, cardColors, type CardDef, type Effect, type ResolvedTarget } from "@shandalar/cards";
 import type { Action, ActionRequest, Agent, GameView, PlayerId } from "@shandalar/engine";
 import { preferSide, targetSide, classifyEffects, effectsForAction, ptSign } from "./effect-classification.js";
 import { DEFAULT_CONSTANTS, deterrence, evaluate, legendLoopWorth, LOOP_WORTH, millPerDamage, millValue, objectValue, reanimationWorth, type AiProfile, type EvalConstants } from "./evaluator.js";
@@ -1863,11 +1863,22 @@ export class HeuristicAgent implements Agent {
     const ab = (d.abilities ?? []).find((a) => a.kind === "triggered" && a.event === "ENTERS_BATTLEFIELD" && a.condition?.source === "self" && a.optional !== true && (a.targets ?? []).length === 1 && a.effects.some((e) => (e.type === "damage" || e.type === "destroy" || e.type === "exile") && "target" in e && e.target === 0));
     if (!ab || ab.kind !== "triggered") return null;
     const pred = String((ab.targets![0] as { predicate?: string }).predicate ?? "");
-    if (!/creature$/i.test(pred)) return null;
+    if (!/creature(You(Dont)?Control)?$/i.test(pred)) return null;
     const dmg = ab.effects.reduce((n, e) => n + (e.type === "damage" && typeof e.amount === "number" ? e.amount : 0), 0);
     const hard = ab.effects.some((e) => e.type === "destroy" || e.type === "exile");
     const dies = (o: { toughness: number | null; damage: number }) => hard || (o.toughness !== null && dmg >= o.toughness - o.damage);
-    const creatures = view.battlefield.filter((o) => o.power !== null);
+    // Book 118 (Chris, a Limited match: a Nekrataal cast with only black creatures across the table destroyed its own
+    // side's creature): the sides are counted in LEGAL targets — "nonblack" and "nonartifact" read as the engine reads
+    // them, a side-bound predicate by its side — not in creatures.
+    const legal = (o: GameView["battlefield"][number]) => {
+      const od = this.def(o.cardId);
+      if (/nonblack/i.test(pred) && od && cardColors(od).includes("B")) return false;
+      if (/nonartifact/i.test(pred) && od?.types.includes("Artifact")) return false;
+      if (/YouDontControl$/.test(pred) && o.controller === view.you) return false;
+      if (/YouControl$/.test(pred) && o.controller !== view.you) return false;
+      return true;
+    };
+    const creatures = view.battlefield.filter((o) => o.power !== null && legal(o));
     const theirs = creatures.filter((o) => o.controller !== view.you), ours = creatures.filter((o) => o.controller === view.you);
     const killed = theirs.filter(dies);
     return {

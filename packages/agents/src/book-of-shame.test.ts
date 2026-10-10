@@ -1290,6 +1290,21 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.entersHarmGated(mkView({ hand: [{ objectId: "h", cardId: "grizzly_bears" }], battlefield: L }), cast)).toBe(false); // any other creature: not the shape
   });
 
+  it("book of shame 118 (post-S58 — Chris, a Limited match: a Nekrataal cast with only black creatures across the table destroyed its caster's own creature): a mandatory enters-destroy counts LEGAL targets — not cast when only our side has one; cast into an empty table (the body is worth the wasted trigger), and whenever theirs has one", () => {
+    const a = agent();
+    const L = Array.from({ length: 4 }, (_, i) => ({ id: `l${i}`, cardId: "swamp", controller: 0 as const }));
+    const cast = { type: "castSpell" as const, objectId: "h", targets: [] }, hand = [{ objectId: "h", cardId: "nekrataal" }];
+    const v = (...o: { id: string; cardId: string; controller: 0 | 1 }[]) => mkView({ hand, battlefield: [...L, ...o] });
+    expect(a.entersHarmGated(v({ id: "b", cardId: "grizzly_bears", controller: 0 }, { id: "n", cardId: "vampire_nighthawk", controller: 1 }), cast)).toBe(true); // theirs is black: only our Bears can be destroyed
+    expect(a.scorePriorityAction(v({ id: "b", cardId: "grizzly_bears", controller: 0 }, { id: "n", cardId: "vampire_nighthawk", controller: 1 }), cast)).toBe(-Infinity);
+    expect(a.entersHarmGated(v({ id: "b", cardId: "grizzly_bears", controller: 0 }), cast)).toBe(true); // no creature across at all: the same
+    expect(a.entersHarmGated(v(), cast)).toBe(false); // an empty table: nothing to destroy, a 2/1 first striker gained
+    expect(a.entersHarmGated(v({ id: "n", cardId: "vampire_nighthawk", controller: 1 }), cast)).toBe(false); // only black creatures anywhere: the trigger finds nothing
+    expect(a.entersHarmGated(v({ id: "n2", cardId: "vampire_nighthawk", controller: 0 }, { id: "n", cardId: "vampire_nighthawk", controller: 1 }), cast)).toBe(false); // ours is black too
+    expect(a.entersHarmGated(v({ id: "b", cardId: "grizzly_bears", controller: 0 }, { id: "g", cardId: "hill_giant", controller: 1 }), cast)).toBe(false); // theirs to destroy
+    expect(a.entersKillBonus(v({ id: "n", cardId: "vampire_nighthawk", controller: 1 }), cast)).toBe(0); // and no kill is credited for a creature it cannot target
+  });
+
   it("book of shame 90 (S50, Furnace Whelp — the pump scored +0.2 at any moment and drained the lands): a self-pump is combat damage on an unblocked attacker or a fight it then wins and survives; never idle, never into a fight that kills it anyway", () => {
     const a = agent();
     const L = Array.from({ length: 3 }, (_, i) => ({ id: `l${i}`, cardId: "mountain", controller: 0 as const }));
