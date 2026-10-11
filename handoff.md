@@ -146,12 +146,12 @@ The two games are joined. A journey's Convocation sits on a clock: every thousan
   2. **Reaper Clio loses 3.4 points after sideboarding**, and against the Rabble the rules take three Walls of Blossoms out for Putrefys — the same flaw as before. A guide from Chris's swaps is the next thing to measure.
   3. **The pilot may underplay the Reeve** (two activated abilities, one of them a reanimation from either graveyard): Chris's read of the card and the pilot's number disagree.
 
-## After the session — two interface changes (Chris, 2026-10-11) — NOT PUSHED
+## After the session — two interface changes (Chris, 2026-10-11; pushed)
 - **The deck editor's two panels scroll separately.** The editor no longer scrolls as one page: its header rows stay put, and the pool and the deck each scroll on their own, with their titles pinned. Every screen that uses the editor (the journey, the Convocation, the single match; in the Lab a panel is held to most of the window).
 - **Text links are buttons.** Every secondary action that was a text link (leave, back, close, replay, "our frame", the menu's minor links, the dev rows) is a small button of the same family as the rest. One style (`.linkish`) for buttons, anchors and the file label.
 - Walked in a browser: the pool scrolled with the deck and the page still; the Convocation's door and the menu.
 
-## After the session — book 122: deathtouch needs power (Chris's playtest, 2026-10-11) — NOT PUSHED
+## After the session — book 122: deathtouch needs power (Chris's playtest, 2026-10-11; pushed)
 - **Chris's report:** playing against a Clio list, his Deadly Recluse and Reaper's Forerunner sat at no power under her counters, and the AI's pumped Flametongue Kavu still would not attack into them until he tapped them himself.
 - **The cause:** every "does this creature kill that one" in the pilot read `power ≥ toughness OR deathtouch`, whatever the deathtoucher's power. A creature with no power deals no damage, and deathtouch is damage dealt (CR 702.2b).
 - **Book 122:** deathtouch counts only at one power or more — in the single block, the pair block, the attack's "an untapped deathtoucher" check, the evaluator's deterrence, the fight's price, and a creature's own value (no deathtouch bonus on a body that cannot use it). A powerless creature still chump-blocks, and is priced as a chump.
