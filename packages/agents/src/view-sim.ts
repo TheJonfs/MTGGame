@@ -755,8 +755,8 @@ function applyEffect(
       if (!e.targets) return 0; // (S58: the self form is an enters trigger's — priced by the agent, not here)
       const a = objAt(e.targets[0]), b = objAt(e.targets[1]);
       if (!a || !b || a.power === null || a.toughness === null || b.power === null || b.toughness === null) return 0;
-      const aDies = b.power >= a.toughness - a.damage || b.keywords.includes("deathtouch");
-      const bDies = a.power >= b.toughness - b.damage || a.keywords.includes("deathtouch");
+      const aDies = b.power >= a.toughness - a.damage || (b.power > 0 && b.keywords.includes("deathtouch")); // book 122: no power, no touch
+      const bDies = a.power >= b.toughness - b.damage || (a.power > 0 && a.keywords.includes("deathtouch"));
       let v = 0;
       if (bDies) { v += objectValue(defs, b, constants); removeObject(view, b.id); } else b.damage += a.power;
       if (aDies) { v -= objectValue(defs, a, constants); removeObject(view, a.id); } else a.damage += b.power;

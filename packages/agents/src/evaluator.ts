@@ -172,7 +172,7 @@ export function objectValue(
   // printed is material lost at the same rate — a debuffed creature is worth less, and lifting the debuff is worth
   // what it gives back. (Damage is not here: the view's toughness is the characteristic, not toughness less damage.)
   v -= 0.4 * Math.max(0, printed - (o.power + o.toughness));
-  for (const k of o.keywords) v += constants.keywordBonus[k] ?? 0;
+  for (const k of o.keywords) if (!(k === "deathtouch" && o.power <= 0)) v += constants.keywordBonus[k] ?? 0; // book 122: deathtouch without power is no keyword at all
   // A creature that can't do anything much (no power left, no keywords) is worth less — book 96: zero OR LESS.
   if (o.power <= 0) v *= 0.5;
   return Math.max(0.1, v);
@@ -197,9 +197,10 @@ export function deterrence(
   let best = 0;
   for (const a of oppCreatures) {
     if (a.power === null || a.toughness === null) continue;
-    const kills = blocker.keywords.includes("deathtouch") || blocker.power >= a.toughness;
-    const dies = a.keywords.includes("deathtouch") || a.power >= blocker.toughness;
-    const walls = blocker.toughness > a.power && !a.keywords.includes("deathtouch");
+    // (book 122: deathtouch needs damage dealt — a creature shrunk to no power trades with nothing)
+    const kills = (blocker.keywords.includes("deathtouch") && blocker.power > 0) || blocker.power >= a.toughness;
+    const dies = (a.keywords.includes("deathtouch") && a.power > 0) || a.power >= blocker.toughness;
+    const walls = blocker.toughness > a.power && !(a.keywords.includes("deathtouch") && a.power > 0);
     const v = kills
       ? Math.max(0, objectValue(defs, a, constants) - (dies ? bv : 0))
       : walls

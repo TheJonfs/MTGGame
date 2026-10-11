@@ -6,7 +6,7 @@ import type { GameView } from "@shandalar/engine";
 import { readFileSync } from "node:fs";
 import { HeuristicAgent } from "./heuristic-agent.js";
 import { payableBy, reserveTaps } from "./reserve.js";
-import { difficultyProfile } from "./evaluator.js";
+import { deterrence, difficultyProfile, objectValue } from "./evaluator.js";
 import { PLANS } from "./plans.generated.js";
 import { viewCreatures, type SimObject } from "./combat-sim.js";
 
@@ -1355,6 +1355,22 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(plan(a, ["hill_giant", "goblin_1_1"], "grizzly_bears")).toEqual(["b0"]); // the Giant does it alone
     expect(plan(a, ["goblin_1_1", "goblin_1_1", "goblin_1_1"], "rage_cobra")).toHaveLength(2); // a pair, not a crowd
     expect(plan(a, ["grizzly_bears", "grizzly_bears"], "fencing_ace")).toEqual(plan(old, ["grizzly_bears", "grizzly_bears"], "fencing_ace")); // double strike: as it was
+  });
+
+  it("book of shame 122 (post-S59 — Chris: under Clio's counters his Deadly Recluse and Reaper's Forerunner had no power, and the AI's pumped Kavu would not attack into them): deathtouch is damage dealt — a blocker with no power kills nothing, deters nothing, and is worth no more for the keyword; with a point of power it is the trade it always was", () => {
+    const a = agent();
+    const board = (reclusePower: number) => { const v = mkView({ activePlayer: 0, battlefield: [{ id: "k", cardId: "flametongue_kavu", controller: 0 }, { id: "r", cardId: "deadly_recluse", controller: 1 }] }); return { ...v, battlefield: v.battlefield.map((o) => (o.id === "r" ? { ...o, power: reclusePower } : o)) }; };
+    const sim = (v: GameView) => { const cs = viewCreatures(v); return { kavu: cs.find((c) => c.id === "k")!, recluse: cs.find((c) => c.id === "r")! }; };
+    // as the AI's model of THEIR block of our Kavu (the attack sim asks blockGain from the blocker's side)
+    const live = board(1), shrunk = board(0), under = board(-2);
+    expect(a.blockGain(live, sim(live).recluse, sim(live).kavu)).toBeGreaterThan(0); // a 1/2 deathtouch eats the Kavu: they block, we hold
+    const eats = a.blockGain(live, sim(live).recluse, sim(live).kavu);
+    expect(a.blockGain(shrunk, sim(shrunk).recluse, sim(shrunk).kavu)).toBeLessThan(eats - 1.5); // no power: a chump that kills nothing (the Kavu's value is not in it)
+    expect(a.blockGain(under, sim(under).recluse, sim(under).kavu)).toBeLessThan(eats - 1.5);
+    const recluseOf = (v: GameView) => v.battlefield.find((o) => o.id === "r")!, kavuOf = (v: GameView) => v.battlefield.filter((o) => o.id === "k");
+    expect(deterrence(pool, recluseOf(live), kavuOf(live))).toBeGreaterThan(0);
+    expect(deterrence(pool, recluseOf(shrunk), kavuOf(shrunk))).toBe(0); // it neither kills nor walls a 4/2
+    expect(objectValue(pool, recluseOf(live))).toBeGreaterThan(objectValue(pool, recluseOf(shrunk)) * 2); // and the keyword is not counted on a body that cannot use it
   });
 
   it("book of shame 118 (post-S58 — Chris, a Limited match: a Nekrataal cast with only black creatures across the table destroyed its caster's own creature): a mandatory enters-destroy counts LEGAL targets — not cast when only our side has one; cast into an empty table (the body is worth the wasted trigger), and whenever theirs has one", () => {

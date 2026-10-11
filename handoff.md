@@ -151,6 +151,12 @@ The two games are joined. A journey's Convocation sits on a clock: every thousan
 - **Text links are buttons.** Every secondary action that was a text link (leave, back, close, replay, "our frame", the menu's minor links, the dev rows) is a small button of the same family as the rest. One style (`.linkish`) for buttons, anchors and the file label.
 - Walked in a browser: the pool scrolled with the deck and the page still; the Convocation's door and the menu.
 
+## After the session — book 122: deathtouch needs power (Chris's playtest, 2026-10-11) — NOT PUSHED
+- **Chris's report:** playing against a Clio list, his Deadly Recluse and Reaper's Forerunner sat at no power under her counters, and the AI's pumped Flametongue Kavu still would not attack into them until he tapped them himself.
+- **The cause:** every "does this creature kill that one" in the pilot read `power ≥ toughness OR deathtouch`, whatever the deathtoucher's power. A creature with no power deals no damage, and deathtouch is damage dealt (CR 702.2b).
+- **Book 122:** deathtouch counts only at one power or more — in the single block, the pair block, the attack's "an untapped deathtoucher" check, the evaluator's deterrence, the fight's price, and a creature's own value (no deathtouch bonus on a body that cannot use it). A powerless creature still chump-blocks, and is priced as a chump.
+- **Ladder mirror gate PASS.** No field measure and no table re-run: the change matters where power is driven to zero (Clio's lists, Protocol), and Reaper Clio's and the Writ's pairings will have moved a little.
+
 ## Deviations from the brief
 1. **The outbox is a key per entry, not one key.** The brief says "`convocation-outbox` (its own key)". One key holding a list is a read-modify-write on both pages, and the brief's own test (two tabs never lose an entry) cannot be guaranteed that way. Entries live at `convocation-outbox:<id>`. *Rule on the shape; the behaviour is the brief's.*
 2. **The drain rides every autosave**, not only load and focus. It is also run on load and on focus. A drain is then always followed by the save that makes it durable.

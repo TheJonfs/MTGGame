@@ -1323,7 +1323,7 @@ export class HeuristicAgent implements Agent {
     const untappedOpp = oppCreatures.filter((o) => !o.tapped && !o.keywords.includes("defender")); // S30: a Wall is no race
     const oppPower = untappedOpp.reduce((n, o) => n + (o.power ?? 0), 0);
     const maxOppPower = untappedOpp.reduce((m, o) => Math.max(m, o.power ?? 0), 0);
-    const oppDeathtouch = untappedOpp.some((o) => o.keywords.includes("deathtouch") || this.destroysWhatItDamages(o.id, view)); // book 95
+    const oppDeathtouch = untappedOpp.some((o) => (o.power ?? 0) > 0 && (o.keywords.includes("deathtouch") || this.destroysWhatItDamages(o.id, view))); // book 95; book 122: only one that deals damage
     const raceRisk = Math.min(1, oppPower / Math.max(1, view.life[me] - 5));
     // S45 (Seedborn Muse): under an untap-in-their-untap-step static every attacker stands again to block — the
     // counter-swing costs nothing, as vigilance.
@@ -1353,8 +1353,11 @@ export class HeuristicAgent implements Agent {
     };
     const aFirst = attacker.keywords.includes("first strike") || attacker.keywords.includes("double strike");
     const bFirst = blocker.keywords.includes("first strike") || blocker.keywords.includes("double strike");
-    const aDeathtouch = attacker.keywords.includes("deathtouch");
-    const bDeathtouch = blocker.keywords.includes("deathtouch");
+    // Book 122 (Chris: under Clio's counters his deathtouch blockers had no power, and the AI's pumped Kavu still would
+    // not attack into them): deathtouch is about damage DEALT (CR 702.2b) — a creature with no power deals none, and
+    // kills nothing. Here, in the pair block, in the fight's price and in the evaluator's deterrence alike.
+    const aDeathtouch = attacker.keywords.includes("deathtouch") && attacker.power > 0;
+    const bDeathtouch = blocker.keywords.includes("deathtouch") && blocker.power > 0;
     let kills = blocker.power >= attacker.toughness - attacker.damage || bDeathtouch;
     let dies = attacker.power >= blocker.toughness || aDeathtouch;
     if (aFirst && !bFirst && dies) kills = false; // struck down before dealing
@@ -1402,8 +1405,8 @@ export class HeuristicAgent implements Agent {
       const o = view.battlefield.find((x) => x.id === id);
       return o ? objectValue(this.defs, o, this.C) : 1;
     };
-    const aDeathtouch = attacker.keywords.includes("deathtouch");
-    const kills = b1.power + b2.power >= attacker.toughness - attacker.damage || b1.keywords.includes("deathtouch") || b2.keywords.includes("deathtouch");
+    const aDeathtouch = attacker.keywords.includes("deathtouch") && attacker.power > 0;
+    const kills = b1.power + b2.power >= attacker.toughness - attacker.damage || (b1.power > 0 && b1.keywords.includes("deathtouch")) || (b2.power > 0 && b2.keywords.includes("deathtouch"));
     let remaining = attacker.power;
     let deadValue = 0;
     for (const b of [b1, b2].sort((x, y) => x.toughness - y.toughness)) {
