@@ -274,6 +274,7 @@ export class HeuristicAgent implements Agent {
     if (this.skeletonGated(view, action)) return -Infinity; // S30: the Skeleton returns with mana to spare, or as a blocker when behind
     if (this.yardReturnPending(view, action)) return -Infinity; // book 98: its return is already on the stack
     if (this.lifeForCardsGated(view, action)) return -Infinity; // S27 r2: the Witch's discipline
+    if (this.lockHoldGated(view, action)) return -Infinity; // on trial: a steal Aura kept for the opponent's lock creature
     if (this.removalHoldGated(view, action)) return -Infinity; // book 117: one-for-one removal waits for a creature worth it
     if (this.accumulatorSpendGated(view, action)) return -Infinity; // S26: Clio holds the tax while the board threatens
     if (this.floodSinkGated(view, action)) return -Infinity; // S40 (books 58–63): the flood's repeatable sinks — timing, targets, spare lands
@@ -293,7 +294,7 @@ export class HeuristicAgent implements Agent {
       // passing (kills same-host re-equip churn and no-benefit activations).
       return evaluate(view, this.profile, this.defs) - 0.25 - misaim;
     }
-    return evaluate(pred.view, this.profile, this.defs) + pred.adjustment - misaim + this.wheelSpendBonus(view, action) + this.lifegainPayoffBonus(view, action) + this.entersKillBonus(view, action) + this.entersModesBonus(view, action) + this.planBonus(view, action) + this.againstPlanBonus(view, action) + this.loopCastBonus(view, action) + this.holdKeptBonus(view, action);
+    return evaluate(pred.view, this.profile, this.defs) + pred.adjustment - misaim + this.wheelSpendBonus(view, action) + this.lifegainPayoffBonus(view, action) + this.entersKillBonus(view, action) + this.entersModesBonus(view, action) + this.lockStealBonus(view, action) + this.planBonus(view, action) + this.againstPlanBonus(view, action) + this.loopCastBonus(view, action) + this.holdKeptBonus(view, action);
   }
 
   /** S46 (Vitalist — the brief's "a term, not a rule"): while we control a LIFE_GAINED payoff (the shape: a trigger on
@@ -897,6 +898,63 @@ export class HeuristicAgent implements Agent {
     }
     return { yard, fight, modal: true, two: modes.every((m) => m.label.includes("; ")) };
   }
+  /** On trial ("locksteal" — Chris's theft idea against Reaper Clio; a probe had the pilot's Protocols on Walls and
+   * Birds, and Clio taken in half the games she appeared): a creature whose static shrinks every creature its
+   * controller does not control (Clio's shape: modifyPT on creaturesYouDontControl by its own counters) is worth more
+   * STOLEN than its body — our creatures get their power back and theirs lose as much. The swing: the points of
+   * power now in the lock, on every creature either side (hers excepted), at the P/T rate; and one more a creature
+   * for the counter she adds next turn. Credited to a steal Aura's cast at her (a conditional steal only where its
+   * condition holds). */
+  lockStealBonus(view: GameView, action: Action): number {
+    if (action.type !== "castSpell" || !this.profile.trial?.includes("locksteal")) return 0;
+    const me = view.you;
+    const d = this.def(view.hand.find((c) => c.objectId === action.objectId)?.cardId ?? "");
+    if (!d || !(d.subtypes ?? []).includes("Aura")) return 0;
+    const statics = (d.abilities ?? []).filter((a) => a.kind === "static");
+    const steal = statics.find((a) => a.effects.some((e) => e.type === "gainControl" && (e as { scope?: string }).scope === "attached"));
+    if (!steal || steal.kind !== "static") return 0;
+    const t = (action.targets ?? [])[0];
+    const host = t && t.kind === "object" ? view.battlefield.find((o) => o.id === t.id) : undefined;
+    if (!host || host.controller === me || host.power === null) return 0;
+    const shrink = statics.flatMap((a) => a.effects).reduce((n, e) => n + (e.type === "modifyPT" && (e as { scope?: string }).scope === "attached" && typeof e.power === "number" ? e.power : 0), 0);
+    if (steal.condition?.atMost !== undefined && host.power + shrink > steal.condition.atMost) return 0;
+    let perCreature = 0, grows = 0;
+    for (const a of this.def(host.cardId)?.abilities ?? []) {
+      if (a.kind !== "static") continue;
+      for (const e of a.effects) {
+        if (e.type !== "modifyPT" || (e as { scope?: string }).scope !== "creaturesYouDontControl") continue;
+        const r = e.power as unknown as { ref?: string; kind?: string; times?: number } | number;
+        const amt = typeof r === "number" ? r : r && r.ref === "countersOnSelf" ? (host.counters?.[r.kind!] ?? 0) * (r.times ?? 1) : 0;
+        if (amt < 0) perCreature += -amt;
+        if (typeof r !== "number" && r?.ref === "countersOnSelf" && (r.times ?? 1) < 0) grows += -(r.times ?? 1);
+      }
+    }
+    if (perCreature === 0 && grows === 0) return 0;
+    const covered = view.battlefield.filter((o) => o.power !== null && o.id !== host.id).length;
+    return 0.4 * (perCreature + grows) * Math.max(1, covered) + 1.5; // (+1.5: the lock itself changes sides, whatever stands today)
+  }
+
+  /** On trial ("lockhold"): against a list that plays three or more copies of a lock creature (lockStealBonus's
+   * shape), a steal Aura is kept for her — not cast at a creature worth less than three while none of hers is ours;
+   * and while one of hers stands across the table, cast at nothing else. */
+  lockHoldGated(view: GameView, action: Action): boolean {
+    if (action.type !== "castSpell" || !this.profile.trial?.includes("lockhold")) return false;
+    const me = view.you;
+    const d = this.def(view.hand.find((c) => c.objectId === action.objectId)?.cardId ?? "");
+    if (!d || !(d.subtypes ?? []).includes("Aura") || !(d.abilities ?? []).some((a) => a.kind === "static" && a.effects.some((e) => e.type === "gainControl" && (e as { scope?: string }).scope === "attached"))) return false;
+    const isLock = (cd: CardDef | undefined) => !!cd && (cd.abilities ?? []).some((a) => a.kind === "static" && a.effects.some((e) => e.type === "modifyPT" && (e as { scope?: string }).scope === "creaturesYouDontControl"));
+    if (this.lockCopiesMemo === null) this.lockCopiesMemo = this.profile.opponentDecklist.reduce((n, e) => n + (isLock(this.def(e.cardId)) ? e.count : 0), 0);
+    if (this.lockCopiesMemo < 3) return false;
+    const t = (action.targets ?? [])[0];
+    const host = t && t.kind === "object" ? view.battlefield.find((o) => o.id === t.id) : undefined;
+    if (!host || host.controller === me) return false;
+    if (isLock(this.def(host.cardId))) return false;
+    if (view.battlefield.some((o) => o.controller !== me && isLock(this.def(o.cardId)))) return true; // she is there: her, or nothing
+    if (view.battlefield.some((o) => o.controller === me && isLock(this.def(o.cardId)))) return false; // one is ours already
+    return objectValue(this.defs, host, this.C) < 3;
+  }
+  private lockCopiesMemo: number | null = null;
+
   /** Book 114: the cast of such a creature is worth what its trigger will do — the predictor does not resolve an
    * enters trigger. The graveyard's worth in full (it answers a plan); half the fight's kill (as book 89); the two
    * tokens otherwise. Exposed. */

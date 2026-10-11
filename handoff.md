@@ -31,6 +31,14 @@ The Open is fifteen lists. Reaper Clio (72 in matches) and the Rabble (68) are t
   - Reaper Clio's pairings in matches: the Pall 53, the Coin 57, the Rabble 58, the Tollgate 58, the Hearth 60; everything else 65 or more.
   - The matchup grid page (private to Chris) carries every pairing in all three columns.
 
+## After the session — a theft shell against Reaper Clio, explored (Chris's idea, 2026-10-11) — NOT PUSHED
+- **The idea (Chris):** if Clio is why Reaper Clio holds decks off, take her. A Jeskai core of four each of Protocol, Control Magic, Lumen and Restoration Angel. Eight shells tried around it (scratch; none registered).
+- **Game one against the three pillars, 300 games each:** every shell is under 40 against the Rabble and the Pall (16–33). Against Reaper Clio 26–38 as the pilot stood.
+- **Two rules on trial, off by default** (`trial: ["locksteal", "lockhold"]`): a steal Aura's cast at a creature whose static shrinks the other side's creatures is credited with the swing; and against a list with three or more such creatures the steal Auras are kept for her. With both, the pilot held Clio in 36 of the 47 games she appeared (23 of 45 before) and won 47% of those. Against Reaper Clio the shells rise to 35–44 (the fliers build and the Man-o'-War build 44).
+- **The read:** stealing Clio makes the pairing about even; the shell around the theft is the weakness (2 wins in 13 when she never appeared), and it has nothing for the Rabble or the Pall. Not a predator as built.
+- **Not measured:** Chris's line of Lumen's steal kept by a Restoration Angel's blink. The pilot never plays it (book 115 holds flash creatures for the opponent's end step; nothing values the blink of a borrowed creature).
+- **Neither trial rule has a ladder run or a field measure**; neither is shipped.
+
 ## Deviations from the brief
 1. **Reaper Clio has no guide.** The brief wanted one "if the rows beat the rules"; none did. Not adopted.
 2. **"Against the Rabble (the Walls stay)" has no source in Chris's play.** He took the Walls out nearly everywhere, and his one Rabble plan was a gamble he disowned. Both readings were measured; the Walls staying is six points better against the Rabble (one pairing).
