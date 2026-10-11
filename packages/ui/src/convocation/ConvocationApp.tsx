@@ -120,7 +120,7 @@ function Door({ c }: { c: ConvocationController }) {
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           <button className={c.hasSave() && c.event!.phase !== "over" ? "" : "primary"} onClick={() => (c.hasSave() && c.event!.phase !== "over" ? setConfirm(true) : start())}>Enter a new event</button>
           <input type="text" placeholder="seed (random)" value={seed} onChange={(e) => setSeed(e.target.value)} style={{ width: 110 }} />
-          <a href="/" style={{ marginLeft: "auto", fontSize: 12 }}>⟵ the menu</a>
+          <a className="linkish" href="/" style={{ marginLeft: "auto", fontSize: 12 }}>⟵ the menu</a>
         </div>
       )}
       {c.recordedGames().length > 0 && (
@@ -158,8 +158,8 @@ function Draft({ c, pool, oracle }: { c: ConvocationController; pool: Map<string
         <span>{c.passNote ?? (v.pick === 1 ? "Take one card; the rest goes round the table." : (v.pick - 1) % (v.total / v.packs) === 0 ? `Pack ${v.packRound} is opened.` : "")}</span>
         <span style={{ flex: 1 }} />
         <span style={{ opacity: 0.8 }}>click a card to take it — no take-backs</span>
-        <button className="linkish" style={{ color: "var(--parchment)" }} onClick={() => setPrinted(!printed)}>{printed ? "our frame" : "printed card"}</button>
-        <button className="linkish" style={{ color: "var(--parchment)" }} onClick={() => c.toDoor()}>leave for now</button>
+        <button className="linkish" onClick={() => setPrinted(!printed)}>{printed ? "our frame" : "printed card"}</button>
+        <button className="linkish" onClick={() => c.toDoor()}>leave for now</button>
       </div>
       <FloatingCardInspector def={inspect ? pool.get(inspect) ?? null : null} oracle={oracle} printed={printed} onTogglePrinted={() => setPrinted(!printed)} />
       <div className="gallery world-editor" style={{ flex: 1, minHeight: 0 }}>
@@ -418,7 +418,7 @@ export function ConvocationApp() {
             </select>
           )}
           {!c.screen.sideboarding && <button onClick={() => c.suggestDeck()} title={c.buildingSide() ? "the fifteen the field's own builder would register beside this sixty — answers to artifacts and enchantments, answers to creatures, the best of the rest" : "a deck built from this pool by the rating — a starting point you can change"}>{c.buildingSide() ? "Suggest a sideboard" : "Suggest a deck"}</button>}
-          {!c.screen.sideboarding && <button className="linkish" style={{ color: "var(--parchment)" }} onClick={() => c.toDoor()}>leave for now</button>}
+          {!c.screen.sideboarding && <button className="linkish" onClick={() => c.toDoor()}>leave for now</button>}
         </div>
         <div style={{ flex: 1, minHeight: 0 }}><DeckEditor host={host} pool={pool} oracle={oracle} /></div>
       </div>
@@ -435,7 +435,7 @@ export function ConvocationApp() {
           <SeriesLine c={c} />
           <span>{c.match.spec.rules.startingPlayer === 0 ? "you play first" : "you draw first"}</span>
           <span style={{ flex: 1 }} />
-          <button className="linkish" style={{ color: "var(--parchment)" }} title="download this game so far — the spec and every move — for a bug report or an AI decision to replay" onClick={() => { const e = c.event!, b = new Blob([c.match!.logSnapshot(`Convocation seed ${e.seed}, round ${e.round}${e.stages ? `, day ${(e.stage ?? 0) + 1}` : ""}`)], { type: "application/json" }), a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = `convocation-game-r${e.round}-t${c.match!.game.state.turn}.json`; a.click(); }}>save this game's log</button>
+          <button className="linkish" title="download this game so far — the spec and every move — for a bug report or an AI decision to replay" onClick={() => { const e = c.event!, b = new Blob([c.match!.logSnapshot(`Convocation seed ${e.seed}, round ${e.round}${e.stages ? `, day ${(e.stage ?? 0) + 1}` : ""}`)], { type: "application/json" }), a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = `convocation-game-r${e.round}-t${c.match!.game.state.turn}.json`; a.click(); }}>save this game's log</button>
         </div>
         <div style={{ flex: 1, minHeight: 0 }}><PlayMatch key={c.match.seed} c={c.match} pool={pool} oracle={oracle} onGameOver={() => { /* the controller's series takes over */ }} /></div>
       </div>

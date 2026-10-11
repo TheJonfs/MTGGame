@@ -304,7 +304,6 @@ body {
 
 .loader { display: grid; place-items: center; height: 100%; color: var(--parchment); font-family: var(--serif); }
 .loader .box { background: var(--parchment); color: var(--ink); border: 2px solid var(--ink); border-radius: 8px; padding: 28px 36px; text-align: center; }
-button.linkish { background: none; border: none; color: var(--brass); cursor: pointer; text-decoration: underline; font-size: 11px; }
 .toggle-row { display: flex; gap: 10px; font-size: 11px; align-items: center; }
 
 /* Gallery (ADR-046) */
@@ -318,7 +317,6 @@ button.linkish { background: none; border: none; color: var(--brass); cursor: po
   font-family: var(--sans); font-size: 11px; background: var(--parchment); color: var(--ink);
   border: 1.2px solid var(--ink); border-radius: 4px; padding: 3px 5px;
 }
-.gallery-header a.linkish { color: var(--brass); font-size: 11px; }
 .gallery-grid { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; }
 .gallery-cell { cursor: pointer; }
 .gallery-cell .frame:hover { outline: 2.5px solid var(--brass); }
@@ -527,8 +525,15 @@ button.primary { background: var(--brass); color: var(--parchment); border: 1.5p
 .curve-bar { display: inline-flex; flex-direction: column; align-items: center; width: 14px; }
 .curve-bar i { display: block; width: 10px; background: var(--brass); border: 1px solid var(--ink); border-radius: 2px 2px 0 0; }
 .curve-bar small { font-size: 8px; line-height: 1; margin-top: 1px; }
-.editor-panes { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.editor-pane { background: rgba(255,252,240,0.45); border: 1.5px solid var(--ink); border-radius: 6px; padding: 8px; min-height: 300px; }
+/* Post-S59 (Chris: "scrolling scrolls both the available cards and the deck, and the deck often scrolls off screen"):
+   the editor no longer scrolls as one page — its header rows stay put, and the pool and the deck are two panes that
+   scroll each on its own. Where the editor has no bounded height (the Lab), a pane is held to most of the window. */
+.world-editor { display: flex; flex-direction: column; overflow: hidden; }
+.world-editor > * { flex: 0 0 auto; }
+.world-editor > .editor-panes { flex: 1 1 auto; min-height: 0; }
+.editor-panes { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: minmax(0, 1fr); gap: 14px; }
+.editor-pane { background: rgba(255,252,240,0.45); border: 1.5px solid var(--ink); border-radius: 6px; padding: 8px; min-height: 200px; max-height: 84vh; overflow-y: auto; overscroll-behavior: contain; }
+.editor-pane > .flyout-title:first-child { position: sticky; top: -8px; z-index: 2; margin: -8px -8px 6px; padding: 8px 8px 4px; background: #f6efdc; border-bottom: 1px solid var(--ink-soft); }
 .editor-grid { display: flex; flex-wrap: wrap; gap: 8px; }
 .editor-card { position: relative; cursor: pointer; }
 .editor-card:hover .frame { outline: 2.5px solid var(--brass); }
@@ -642,8 +647,7 @@ button.primary { background: var(--brass); color: var(--parchment); border: 1.5p
 .main-menu a span { display: block; font-size: 11px; color: var(--ink-soft); padding: 0 12px 10px; }
 /* Post-S48: the minor destinations — the replay viewer and (dev) the lab — as a quiet row under the doors. */
 .main-menu-minor { display: flex; gap: 18px; justify-content: center; margin-top: 14px; font-size: 12px; }
-.main-menu-minor a { color: var(--ink-soft); text-decoration: underline; text-underline-offset: 2px; }
-.main-menu-minor a:hover { color: var(--ink); }
+.main-menu-minor a.linkish { font-size: 12px; padding: 4px 12px; }
 
 /* S19: quest board + rail */
 .quest-board { display: flex; flex-direction: column; gap: 6px; text-align: left; }
@@ -677,10 +681,18 @@ button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 1.5px 2.5
 button:active:not(:disabled) { transform: translateY(0); box-shadow: 0.5px 1px 0 rgba(43,37,32,0.25); }
 button:disabled { opacity: 0.45; cursor: default; }
 
-/* Linkish: an inline affordance with a brass fleuron, not a bare underline. */
-button.linkish { background: none; border: none; box-shadow: none; color: var(--brass); cursor: pointer; text-decoration: none; font-size: 11px; font-variant: small-caps; letter-spacing: 0.4px; padding: 0 2px; }
-button.linkish::before { content: "❧ "; opacity: 0.7; }
-button.linkish:hover:not(:disabled) { transform: none; box-shadow: none; text-decoration: underline; text-underline-offset: 2px; }
+/* Linkish (post-S59, Chris: "plain hyperlinked text for a go back option; remake those as buttons"): the quiet
+   button — every secondary action that was a text link (leave, back, close, replay, the dev rows) is a small button
+   of the same family as the others, lighter than a primary one. Buttons, anchors and the file label alike. */
+button.linkish, a.linkish, label.linkish {
+  display: inline-block; font-family: var(--sans); font-size: 11px; font-variant: normal; letter-spacing: 0; line-height: 1.35;
+  background: var(--parchment); color: var(--ink); text-decoration: none; cursor: pointer;
+  border: 1.5px solid var(--ink-soft); border-radius: 5px; padding: 2px 8px; box-shadow: 1px 1.5px 0 rgba(43,37,32,0.18);
+  transition: transform 0.06s ease, box-shadow 0.06s ease;
+}
+button.linkish:hover:not(:disabled), a.linkish:hover, label.linkish:hover { transform: translateY(-1px); box-shadow: 1.5px 2.5px 4px rgba(43,37,32,0.28); border-color: var(--ink); text-decoration: none; }
+button.linkish:active:not(:disabled), a.linkish:active { transform: translateY(0); box-shadow: 0.5px 1px 0 rgba(43,37,32,0.2); }
+button.linkish:focus-visible, a.linkish:focus-visible { outline: 2px solid var(--brass); outline-offset: 1px; }
 
 /* S23 audio: the front page's prominent toggle (ADR-082/084). */
 .audio-toggle button {

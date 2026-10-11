@@ -146,6 +146,11 @@ The two games are joined. A journey's Convocation sits on a clock: every thousan
   2. **Reaper Clio loses 3.4 points after sideboarding**, and against the Rabble the rules take three Walls of Blossoms out for Putrefys — the same flaw as before. A guide from Chris's swaps is the next thing to measure.
   3. **The pilot may underplay the Reeve** (two activated abilities, one of them a reanimation from either graveyard): Chris's read of the card and the pilot's number disagree.
 
+## After the session — two interface changes (Chris, 2026-10-11) — NOT PUSHED
+- **The deck editor's two panels scroll separately.** The editor no longer scrolls as one page: its header rows stay put, and the pool and the deck each scroll on their own, with their titles pinned. Every screen that uses the editor (the journey, the Convocation, the single match; in the Lab a panel is held to most of the window).
+- **Text links are buttons.** Every secondary action that was a text link (leave, back, close, replay, "our frame", the menu's minor links, the dev rows) is a small button of the same family as the rest. One style (`.linkish`) for buttons, anchors and the file label.
+- Walked in a browser: the pool scrolled with the deck and the page still; the Convocation's door and the menu.
+
 ## Deviations from the brief
 1. **The outbox is a key per entry, not one key.** The brief says "`convocation-outbox` (its own key)". One key holding a list is a read-modify-write on both pages, and the brief's own test (two tabs never lose an entry) cannot be guaranteed that way. Entries live at `convocation-outbox:<id>`. *Rule on the shape; the behaviour is the brief's.*
 2. **The drain rides every autosave**, not only load and focus. It is also run on load and on focus. A drain is then always followed by the save that makes it durable.

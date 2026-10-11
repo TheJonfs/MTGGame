@@ -214,8 +214,8 @@ function MainMenu() {
           <a href="/gallery"><img src="/menu-gallery.png" alt="" /><b>The card gallery</b><span>every card in the pool, both frames</span></a>
         </div>
         <div className="main-menu-minor">
-          <a href="/viewer" title="watch any saved game, decision by decision">The replay viewer</a>
-          {devMenuEnabled() && <a href="/lab" title="dev: any pairing under any conditions, simulated live">The matchup lab</a>}
+          <a className="linkish" href="/viewer" title="watch any saved game, decision by decision">The replay viewer</a>
+          {devMenuEnabled() && <a className="linkish" href="/lab" title="dev: any pairing under any conditions, simulated live">The matchup lab</a>}
         </div>
       </div>
     </div>
