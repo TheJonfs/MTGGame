@@ -5,7 +5,8 @@
   "larder": "Post-S57 (Chris, 2026-10-07; ADR-165's exit): last in five measures (31 on the S57 table with its plan). Acceleration, a green mana base and a mono-green-with-Zombify build all measured flat or worse (handoff). The Pall does its job a turn faster. Its plan (goal: once) stays as the vocabulary's second customer.",
   "undertow": "Post-S58 (Chris, 2026-10-08): replaced by the Writ, his 5–0 Dimir Control list (53.6% in the AI's hands against the Undertow's 40). Last measured 40 (pilot 111, S58's table).",
   "cinder": "Post-S58 (Chris, 2026-10-08): replaced by the Rabble, the goblin build of mono-red (68.9% in the AI's hands in the Cinder's seat, where the Cinder stood at 44). Last measured 44 (pilot 113).",
-  "ford": "Post-S59 (Chris and the planner, 2026-10-10): replaced by its overhaul, the Tollgate (46.9 against the Ford's 38.3 in game one, paired; 44 against 37.5 in matches). Last measured 38 in game one and 37.5 in matches (eighteen lists, pilot 120)."
+  "ford": "Post-S59 (Chris and the planner, 2026-10-10): replaced by its overhaul, the Tollgate (46.9 against the Ford's 38.3 in game one, paired; 44 against 37.5 in matches). Last measured 38 in game one and 37.5 in matches (eighteen lists, pilot 120).",
+  "reaper": "Post-S59 (Chris, 2026-10-10): superseded by Reaper Clio, the four-colour build of the same deck, which beat it nine matches in ten (74 against 56 in matches against the field). Last measured 54 in game one and 55.6 in matches (eighteen lists, pilot 120)."
  },
  "plans": {
   "larder": {
@@ -166,50 +167,6 @@
     ],
     "when": [
      "graveyard"
-    ]
-   }
-  ],
-  "reaper": [
-   {
-    "in": "tormods_crypt",
-    "n": 3,
-    "out": [
-     "savage_twister",
-     "lightning_bolt"
-    ],
-    "when": [
-     "graveyard",
-     "someGraveyard"
-    ]
-   },
-   {
-    "in": "char",
-    "n": 2,
-    "out": [
-     "savage_twister"
-    ],
-    "when": [
-     "control"
-    ]
-   },
-   {
-    "in": "deadly_recluse",
-    "n": 1,
-    "out": [
-     "savage_twister"
-    ],
-    "when": [
-     "control"
-    ]
-   },
-   {
-    "in": "putrefy",
-    "n": 2,
-    "out": [
-     "lightning_bolt"
-    ],
-    "when": [
-     "control"
     ]
    }
   ],
@@ -1841,11 +1798,149 @@
      "count": 2
     }
    ]
+  },
+  {
+   "key": "reaperclio",
+   "name": "Reaper Clio",
+   "title": "Four-Colour Snake Control (G B u r)",
+   "archetype": "midrange",
+   "source": "Chris's full Convocation, seed 858052, 2026-10-10 — 10–0 in the Constructed Swiss (5–1 in the drafts), a quarter-final won, a semi-final lost to the Rabble. Reaper Control with blue for Clio, Mystic Snake and the Reeve: the Snakes and Walls hold the ground, Clio shrinks what comes, the Manaba and Birds cast it all. Brought in by Chris as the field's new top target (74 in matches before it joined: over ADR-171's line, knowingly). Chris's name for it.",
+   "decklist": [
+    {
+     "cardId": "reapers_forerunner",
+     "count": 4
+    },
+    {
+     "cardId": "manaba",
+     "count": 4
+    },
+    {
+     "cardId": "rage_cobra",
+     "count": 4
+    },
+    {
+     "cardId": "the_reaper",
+     "count": 3
+    },
+    {
+     "cardId": "clio_lady_of_the_depths",
+     "count": 4
+    },
+    {
+     "cardId": "birds_of_paradise",
+     "count": 4
+    },
+    {
+     "cardId": "time_walk",
+     "count": 1
+    },
+    {
+     "cardId": "wall_of_blossoms",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "mystic_snake",
+     "count": 3
+    },
+    {
+     "cardId": "the_reeve",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "taiga",
+     "count": 4
+    },
+    {
+     "cardId": "bayou",
+     "count": 4
+    },
+    {
+     "cardId": "tropical_island",
+     "count": 4
+    },
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "tallyflame_court",
+     "count": 1
+    },
+    {
+     "cardId": "wrackroot",
+     "count": 1
+    },
+    {
+     "cardId": "badlands",
+     "count": 1
+    },
+    {
+     "cardId": "volcanic_island",
+     "count": 2
+    },
+    {
+     "cardId": "underground_sea",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "tormods_crypt",
+     "count": 3
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 3
+    },
+    {
+     "cardId": "savage_twister",
+     "count": 3
+    },
+    {
+     "cardId": "putrefy",
+     "count": 3
+    },
+    {
+     "cardId": "drana_kalastria_bloodchief",
+     "count": 1
+    },
+    {
+     "cardId": "faerie_formation",
+     "count": 1
+    },
+    {
+     "cardId": "seraphina_the_initiative",
+     "count": 1
+    }
+   ]
   }
  ],
  "_guides_note": "S58: a guide's rows are the author's swaps that MEASURED (open:rr --sideboarded-only <list> --guide-drop …). The Locks' planner's guide also had Essence Scatter for Absorb against creature decks (−17 against the Enchantress, −11 the Ford: Absorb's life and its reach beyond creatures were worth more) and Disenchant for the Serras (−12 the Muster and the Enchantress); both rows are out and the rules bring those cards in where they apply. Post-S59: `guidesOnly` names the guided lists whose guide is the whole plan (the rules do not run after it).",
  "guidesOnly": [
-  "reaper",
   "tollgate"
  ]
 }

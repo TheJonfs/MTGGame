@@ -17,6 +17,8 @@ const AGGRO_REACH = 12;
 const BURN_FLOOR = 10;
 /** Book 114: a self-fight mode that costs the fighter is taken for a creature worth at least this (two tokens' worth and the body). */
 const FIGHT_FLOOR = 2.5;
+/** Book 121: a two-on-one block is taken when the exchange is worth at least this (a pair costs two blockers' other uses). */
+const GANG_MARGIN = 0.5;
 /** Book 116: the opposing power a spend of depth counters may give back. */
 const CLIO_SLACK = 2;
 /** Book 117: one-for-one removal waits for a creature worth this. */
@@ -1478,6 +1480,26 @@ export class HeuristicAgent implements Agent {
         blocks.push({ blocker: best.pair[0].id, attacker: a.id });
         blocks.push({ blocker: best.pair[1].id, attacker: a.id });
         blocked.add(a.id);
+      }
+    }
+
+    // Book 121 (Chris: the AI "turns down the opportunity to trade two 1/1 tokens for a 2/2 with abilities" — it had
+    // no two-on-one block at all outside menace: each attacker was offered ONE blocker, and a lone 1/1 into a 2/2 is a
+    // loss): an attacker no single blocker would take is offered a PAIR, priced as the menace pair is — it dies when
+    // their power together is lethal, and takes with it what its own power can kill, the smaller first. Taken when
+    // the exchange is worth GANG_MARGIN or more; the dearest attacker first. Not against first strike (the pair's
+    // damage is not all dealt). Used by our blocks and by the attack sim's model of theirs. `off: ["gangblock"]`.
+    if (!this.profile.off?.includes("gangblock")) {
+      const worth = (a: SimObject) => { const o = view.battlefield.find((x) => x.id === a.id); return o ? objectValue(this.defs, o, this.C) : 1; };
+      for (const a of [...attackerObjs].sort((x, y) => worth(y) - worth(x))) {
+        if (blocked.has(a.id) || a.keywords.includes("menace") || a.keywords.includes("first strike") || a.keywords.includes("double strike")) continue;
+        const candidates = free().filter((b) => canBlock(b, a) && b.power > 0);
+        let best: { pair: [SimObject, SimObject]; gain: number } | null = null;
+        for (let i = 0; i < candidates.length; i++) for (let j = i + 1; j < candidates.length; j++) {
+          const gain = this.pairBlockGain(view, candidates[i]!, candidates[j]!, a);
+          if (best === null || gain > best.gain) best = { pair: [candidates[i]!, candidates[j]!], gain };
+        }
+        if (best && best.gain >= GANG_MARGIN) { blocks.push({ blocker: best.pair[0].id, attacker: a.id }, { blocker: best.pair[1].id, attacker: a.id }); blocked.add(a.id); }
       }
     }
 

@@ -1343,6 +1343,20 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.manaBurst(mkView({ hand: [{ objectId: "h0", cardId: "savage_twister" }], battlefield: [...F, ...snakes] }), tap)).toEqual({ enables: false }); // nothing across: no X is worth the Snakes
   });
 
+  it("book of shame 121 (post-S59 — Chris: the AI turns down two 1/1 tokens for a 2/2 with abilities; it had no two-on-one block outside menace): an attacker no single blocker would take is offered a pair — two 1/1 tokens kill a Rage Cobra, two Bears kill a Hill Giant and lose one; not when the pair cannot kill it, not when one blocker does it alone, not against first strike; the old pilot blocks none of these", () => {
+    const a = agent(), old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["gangblock"] });
+    const v = (mine: string[], attacker: string) => mkView({ activePlayer: 1, step: "DECLARE_BLOCKERS", battlefield: [...mine.map((c, i) => ({ id: `b${i}`, cardId: c, controller: 0 as const })), { id: "x", cardId: attacker, controller: 1 as const, tapped: true }], combat: { attackers: ["x"], blocks: [] } });
+    const plan = (ag: HeuristicAgent, mine: string[], attacker: string) => ag.planBlocks(v(mine, attacker), ["x"]).map((b) => b.blocker).sort();
+    expect(plan(a, ["goblin_1_1", "goblin_1_1"], "rage_cobra")).toEqual(["b0", "b1"]); // two 1/1s for the 2/2
+    expect(plan(old, ["goblin_1_1", "goblin_1_1"], "rage_cobra")).toEqual([]);
+    expect(plan(a, ["grizzly_bears", "grizzly_bears"], "hill_giant")).toEqual(["b0", "b1"]); // four power into a 3/3; it kills one Bear
+    expect(plan(old, ["grizzly_bears", "grizzly_bears"], "hill_giant").length).toBeLessThan(2); // never the pair
+    expect(plan(a, ["goblin_1_1", "goblin_1_1"], "hill_giant").length).toBeLessThan(2); // two power does not kill a 3/3: no pair (one token may still chump, as before)
+    expect(plan(a, ["hill_giant", "goblin_1_1"], "grizzly_bears")).toEqual(["b0"]); // the Giant does it alone
+    expect(plan(a, ["goblin_1_1", "goblin_1_1", "goblin_1_1"], "rage_cobra")).toHaveLength(2); // a pair, not a crowd
+    expect(plan(a, ["grizzly_bears", "grizzly_bears"], "fencing_ace")).toEqual(plan(old, ["grizzly_bears", "grizzly_bears"], "fencing_ace")); // double strike: as it was
+  });
+
   it("book of shame 118 (post-S58 — Chris, a Limited match: a Nekrataal cast with only black creatures across the table destroyed its caster's own creature): a mandatory enters-destroy counts LEGAL targets — not cast when only our side has one; cast into an empty table (the body is worth the wasted trigger), and whenever theirs has one", () => {
     const a = agent();
     const L = Array.from({ length: 4 }, (_, i) => ({ id: `l${i}`, cardId: "swamp", controller: 0 as const }));

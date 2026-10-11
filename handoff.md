@@ -98,7 +98,7 @@ The two games are joined. A journey's Convocation sits on a clock: every thousan
   - Sacred Helix and the Minefield carry it (Helix → Bolt −6.5; two Minefields → Bolts −2.9). Small and unproven: Forerunner to four +1.3 ± 1.6; Lumen for the Forerunners +1.9 ± 1.7.
 - **Tools**: `open:rr --deck-guide file.json` (a guide for a build under test's fifteen, without registering it).
 
-## After the session — the Tollgate replaces the Ford; the tables again (Chris, 2026-10-10) — NOT PUSHED
+## After the session — the Tollgate replaces the Ford; the tables again (Chris, 2026-10-10)
 - **The Tollgate is in the Open in the Ford's place** (Chris's ruling); the Ford is archived (38 in game one, 37.5 in matches at its last measure). The planner's sixty and fifteen as written; control pilot.
 - **Its guide, the whole plan**, with one change from the planner's at Chris's word: against graveyard decks (`graveyard` or `someGraveyard`: the Pall, the Coin, the Hearth) the three Crypts and two Macabres come in for the four **Minefields** and a Pyroclasm, not for the Pyroclasms and a Wrath. Measured: cutting Minefields was better against all three (the Pall 40 against 34 in matches; the Hearth 10 against 2).
 - **Graveyard hate does not fix the Coin and the Hearth**: with eleven pieces in the sixty from game one the Tollgate reached 19 and 23 against them (50 against the Pall). They cast the Usher from hand and win long games on Blood Artist, Altar and Angel engines that do not attack into a Minefield.
@@ -119,6 +119,32 @@ The two games are joined. A journey's Convocation sits on a clock: every thousan
   - Reaper Control fell from 60 to 56: the Tollgate beats it about four games in five (the Minefield against small Snakes).
   - The Pall is 59 in this sample (55 in the last); the two are inside each other's intervals.
 - **Concern:** the Tollgate is polar by construction (90 against the Tally, under 10 against the Coin and the Hearth). A field with several of it or several Mardu lists will feel very different seat to seat.
+
+## After the session — Reaper Clio replaces Reaper Control; book 121; the tables again (Chris, 2026-10-11) — NOT PUSHED
+- **Reaper Clio is in the Open in Reaper Control's place** (Chris's ruling); Reaper Control is archived (54 in game one, 55.6 in matches at its last measure; its guide left with it). His sixty and fifteen from the full Convocation of seed 858052 (10–0 in the Constructed Swiss, a semi-final lost to the Rabble). Midrange pilot. No guide: the rules sideboard it.
+- **It is the best list in the field by a distance, and Chris brought it in knowing so** — "a new pillar/top target; figuring out how to take it down will be a fun deckbuilding challenge." **75.1 in matches, 70 in game one. Over ADR-171's 65 line: for the planner.** Its worst pairings in matches: the Coin 50, the Tollgate 54; the Rabble 78.
+  - Clio carries it (−7.4 in game one without her). A second Reeve, which Chris wants, measured neutral in the pilot's hands (+0.6 for a Reaper; −1.1 for Time Walk). Elvish Visionary for Wall of Blossoms +2.1 ± 1.5. The list is as he registered it.
+- **Book 121 — two-on-one blocks** (Chris: the AI "turns down the opportunity to trade two 1/1 tokens for a 2/2 with abilities"). The pilot had no pair block outside menace; an attacker no single blocker would take is now offered a pair, priced as the menace pair is, taken at a margin of 0.5, never against first strike. Our blocks and the attack sim's model of theirs. `off: ["gangblock"]`.
+  - Off, on fourteen lists (1,700 games each): the Wurmspeaker −1.7 ± 0.8, the Coin −0.8 ± 0.6, the rest within ±0.5. **Ladder mirror gate PASS.**
+  - In Chris's 162 recorded games the exact case (two idle blockers that kill an attacker neither takes alone, at a profit) arose in one combat of 516. The gap was real; it was rare.
+- **The tables of record, again** (`analysis/runs/rr18_s59c.json`, `matches18_s59c.md`; `OPEN_MEANS` and `open-matches.json` updated):
+
+| list | matches | game one | | list | matches | game one |
+|---|---|---|---|---|---|---|
+| **Reaper Clio** | **75.1** | **70** | | the Warband | 45.6 | 47 |
+| the Rabble | 68.9 | 62 | | the Muster | 45.4 | 47 |
+| the Hearth | 60.6 | 53 | | the Levy | 44.6 | 49 |
+| the Coin | 60.4 | 54 | | the Sweep | 42.9 | 47 |
+| the Pall | 57.9 | 65 | | the Tollgate | 41.6 | 44 |
+| the Writ | 55.4 | 52 | | the Wurmspeaker | 40.5 | 41 |
+| Countersnake | 55.2 | 55 | | the Tally | 38.9 | 43 |
+| the Depths | 50.0 | 48 | | the Enchantress | 36.1 | 39 |
+| the Kiln | 46.2 | 45 | | the Locks | 34.8 | 36 |
+
+- **Concerns:**
+  1. **Two lists are now over 65 in matches** (Reaper Clio 75, the Rabble 69). The cap holds each to a tenth of a field; the seat draw leans to both.
+  2. **Reaper Clio loses 3.4 points after sideboarding**, and against the Rabble the rules take three Walls of Blossoms out for Putrefys — the same flaw as before. A guide from Chris's swaps is the next thing to measure.
+  3. **The pilot may underplay the Reeve** (two activated abilities, one of them a reanimation from either graveyard): Chris's read of the card and the pilot's number disagree.
 
 ## Deviations from the brief
 1. **The outbox is a key per entry, not one key.** The brief says "`convocation-outbox` (its own key)". One key holding a list is a read-modify-write on both pages, and the brief's own test (two tabs never lose an entry) cannot be guaranteed that way. Entries live at `convocation-outbox:<id>`. *Rule on the shape; the behaviour is the brief's.*
