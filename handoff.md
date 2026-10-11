@@ -120,7 +120,7 @@ The two games are joined. A journey's Convocation sits on a clock: every thousan
   - The Pall is 59 in this sample (55 in the last); the two are inside each other's intervals.
 - **Concern:** the Tollgate is polar by construction (90 against the Tally, under 10 against the Coin and the Hearth). A field with several of it or several Mardu lists will feel very different seat to seat.
 
-## After the session — Reaper Clio replaces Reaper Control; book 121; the tables again (Chris, 2026-10-11) — NOT PUSHED
+## After the session — Reaper Clio replaces Reaper Control; book 121; the tables again (Chris, 2026-10-11); pushed
 - **Reaper Clio is in the Open in Reaper Control's place** (Chris's ruling); Reaper Control is archived (54 in game one, 55.6 in matches at its last measure; its guide left with it). His sixty and fifteen from the full Convocation of seed 858052 (10–0 in the Constructed Swiss, a semi-final lost to the Rabble). Midrange pilot. No guide: the rules sideboard it.
 - **It is the best list in the field by a distance, and Chris brought it in knowing so** — "a new pillar/top target; figuring out how to take it down will be a fun deckbuilding challenge." **75.1 in matches, 70 in game one. Over ADR-171's 65 line: for the planner.** Its worst pairings in matches: the Coin 50, the Tollgate 54; the Rabble 78.
   - Clio carries it (−7.4 in game one without her). A second Reeve, which Chris wants, measured neutral in the pilot's hands (+0.6 for a Reaper; −1.1 for Time Walk). Elvish Visionary for Wall of Blossoms +2.1 ± 1.5. The list is as he registered it.
