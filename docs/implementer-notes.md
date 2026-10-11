@@ -709,3 +709,10 @@ See handoff Concerns for the authoritative list. Highlights: auto-pay greedy fea
 - **A person's sideboard plan is not automatically a good guide row.** Reaper Control's Pyroclasm plan, taken from Chris's own games, cost five points in the pilot's hands. Measure every row.
 - **`pnpm open:rr --matches-report … --out x.md` also writes `x.json`** (`byList`, `byPair`): the data behind any grid or chart of the matchups.
 
+## S60 — the metagame cycle (2026-10-11)
+- **`/tmp` scratch files are cleaned after about three days.** A launcher script vanished mid-session and a two-hour run did nothing, silently (the shell only printed "can't open input file"). Check that a long run has written its first shard before walking away; keep tools that outlive a session in the repo.
+- **Read a person's swaps from the recorded games before authoring a guide from them**: each game's `spec.players[0].decklist` against game one's. Chris's were the opposite of what the brief and I assumed (the Walls out, not in).
+- **"No sideboarding" is a measurable plan**: `--deck-guide` with `{"rows": [], "only": true}`. Run it beside the rules for any list before writing rows; for the Levy it was most of the gain.
+- **A brief's card counts for a list are checked against the list** like any other card fact (the Enchantress's were off in three places).
+- **Archiving a list**: `archived[key]` in `open-contributed.json`, remove its key from `OPEN_MEANS` and `open-matches.json`, move the archived-lists pin in `constructed-builder.test.ts`, `pnpm open:gen`.
+

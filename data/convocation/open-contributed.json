@@ -6,7 +6,10 @@
   "undertow": "Post-S58 (Chris, 2026-10-08): replaced by the Writ, his 5–0 Dimir Control list (53.6% in the AI's hands against the Undertow's 40). Last measured 40 (pilot 111, S58's table).",
   "cinder": "Post-S58 (Chris, 2026-10-08): replaced by the Rabble, the goblin build of mono-red (68.9% in the AI's hands in the Cinder's seat, where the Cinder stood at 44). Last measured 44 (pilot 113).",
   "ford": "Post-S59 (Chris and the planner, 2026-10-10): replaced by its overhaul, the Tollgate (46.9 against the Ford's 38.3 in game one, paired; 44 against 37.5 in matches). Last measured 38 in game one and 37.5 in matches (eighteen lists, pilot 120).",
-  "reaper": "Post-S59 (Chris, 2026-10-10): superseded by Reaper Clio, the four-colour build of the same deck, which beat it nine matches in ten (74 against 56 in matches against the field). Last measured 54 in game one and 55.6 in matches (eighteen lists, pilot 120)."
+  "reaper": "Post-S59 (Chris, 2026-10-10): superseded by Reaper Clio, the four-colour build of the same deck, which beat it nine matches in ten (74 against 56 in matches against the field). Last measured 54 in game one and 55.6 in matches (eighteen lists, pilot 120).",
+  "locks": "S60 (ADR-174): a planner seed in the bottom three on three tables, with no revision from play — Esper control has no role the Writ and Countersnake do not fill. Last measured 36 in game one and 34.8 in matches (eighteen lists, pilot 121). Its fifteen and its guide are kept with it.",
+  "tally": "S60 (ADR-174): a planner seed in the bottom three on three tables — two Izzet lists in the field, this one at 39 in matches. Last measured 43 in game one and 38.9 in matches (eighteen lists, pilot 121).",
+  "enchantress": "S60 (ADR-174): the one overhaul attempt reached 38.5 in matches (33.4 as it stood: four Reaper's Forerunners for the Guides and two Mongooses, a Vitalist for the Glare, a fourth Destiny and a second Vitalist for the Keepers), under the 45 the ruling asked. Last measured 39 in game one and 36.1 in matches (eighteen lists, pilot 121)."
  },
  "plans": {
   "larder": {
@@ -108,6 +111,44 @@
    {
     "cardId": "disenchant",
     "count": 2
+   }
+  ],
+  "levy": [
+   {
+    "cardId": "swords_to_plowshares",
+    "count": 1
+   },
+   {
+    "cardId": "doom_blade",
+    "count": 2
+   },
+   {
+    "cardId": "drana_kalastria_bloodchief",
+    "count": 2
+   },
+   {
+    "cardId": "faerie_macabre",
+    "count": 2
+   },
+   {
+    "cardId": "disenchant",
+    "count": 2
+   },
+   {
+    "cardId": "tormods_crypt",
+    "count": 2
+   },
+   {
+    "cardId": "wrath_of_god",
+    "count": 2
+   },
+   {
+    "cardId": "youthful_valkyrie",
+    "count": 1
+   },
+   {
+    "cardId": "shadow_summoning",
+    "count": 1
    }
   ]
  },
@@ -222,6 +263,38 @@
     ],
     "when": [
      "control"
+    ]
+   }
+  ],
+  "levy": [
+   {
+    "in": "swords_to_plowshares",
+    "n": 1,
+    "out": [
+     "shadow_summoning"
+    ],
+    "when": [
+     "small"
+    ]
+   },
+   {
+    "in": "tormods_crypt",
+    "n": 2,
+    "out": [
+     "raise_the_alarm"
+    ],
+    "when": [
+     "graveyard"
+    ]
+   },
+   {
+    "in": "faerie_macabre",
+    "n": 2,
+    "out": [
+     "raise_the_alarm"
+    ],
+    "when": [
+     "graveyard"
     ]
    }
   ]
@@ -1941,6 +2014,7 @@
  ],
  "_guides_note": "S58: a guide's rows are the author's swaps that MEASURED (open:rr --sideboarded-only <list> --guide-drop …). The Locks' planner's guide also had Essence Scatter for Absorb against creature decks (−17 against the Enchantress, −11 the Ford: Absorb's life and its reach beyond creatures were worth more) and Disenchant for the Serras (−12 the Muster and the Enchantress); both rows are out and the rules bring those cards in where they apply. Post-S59: `guidesOnly` names the guided lists whose guide is the whole plan (the rules do not run after it).",
  "guidesOnly": [
+  "levy",
   "tollgate"
  ]
 }

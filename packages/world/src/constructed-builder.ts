@@ -32,8 +32,9 @@ export interface LibraryList { key: string; archetype: "aggro" | "midrange" | "c
  * Post-S58 (2026-10-09) — THE TABLE OF RECORD AGAIN: Countersnake joins (58, third) and the pilot is book 117 (flash creatures at the end step, Clio's counters, held removal): seventeen lists, 13,600 games, analysis/runs/rr17_s58e.json.
  * Post-S59 (2026-10-10) — AGAIN: Reaper Control joins (57, fourth); pilot book 120; eighteen lists, 15,300 games, analysis/runs/rr18_s59.json. The matches table beside it: analysis/runs/matches18_s59.md.
  * Post-S59 (2026-10-10, later) — AGAIN: the Tollgate in the Ford's place (the Ford archived at 38); analysis/runs/rr18_s59b.json and matches18_s59b.md.
- * Post-S59 (2026-10-11) — AGAIN: Reaper Clio in Reaper Control's place (archived at 54); pilot book 121 (two-on-one blocks); analysis/runs/rr18_s59c.json and matches18_s59c.md. */
-export const OPEN_MEANS: Record<string, number> = { "open:reaperclio": 70, "open:pall": 65, "open:rabble": 62, "open:countersnake": 55, "open:coin": 54, "open:hearth": 53, "open:writ": 52, "open:levy": 49, "open:depths": 48, "open:muster": 47, "open:warband": 47, "open:sweep": 47, "open:kiln": 45, "open:tollgate": 44, "open:tally": 43, "open:wurmspeaker": 41, "open:enchantress": 39, "open:locks": 36 };
+ * Post-S59 (2026-10-11) — AGAIN: Reaper Clio in Reaper Control's place (archived at 54); pilot book 121 (two-on-one blocks); analysis/runs/rr18_s59c.json and matches18_s59c.md.
+ * S60 (2026-10-11) — AGAIN: fifteen lists (the Locks, the Tally and the Enchantress archived, ADR-174); pilot book 122; the Levy guided; analysis/runs/rr15_s60.json and matches15_s60.md. */
+export const OPEN_MEANS: Record<string, number> = { "open:reaperclio": 67, "open:pall": 63, "open:rabble": 57, "open:countersnake": 57, "open:hearth": 53, "open:coin": 51, "open:writ": 51, "open:levy": 46, "open:sweep": 46, "open:kiln": 45, "open:muster": 44, "open:depths": 44, "open:warband": 43, "open:tollgate": 41, "open:wurmspeaker": 40 };
 /** Post-S52 (Chris): the candidates are the TWELVE best-fitting lists (the Open's whole library, not its top five),
  * and the noise has a noise of its own — a seat is STOCK (the list as written), a LIGHT tinkerer (one or two swaps),
  * or a HEAVY one (four to six); the light and the heavy also move a land. The shares are a quarter, a half, a quarter. */

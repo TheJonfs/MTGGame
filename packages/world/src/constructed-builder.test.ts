@@ -25,7 +25,7 @@ describe("the Constructed builder (S52)", () => {
     expect(loop.decklist.reduce((n, e) => n + e.count, 0)).toBe(60); // kept whole
     expect(OPEN_MEANS["open:loop"]).toBeUndefined();
     expect(selectCandidates(OPEN_FORMAT, rating, library, cards).map((c) => c.l.key)).not.toContain("open:loop");
-    expect(library.filter((l) => l.archived).map((l) => l.key).sort()).toEqual(["open:cinder", "open:ford", "open:larder", "open:loop", "open:reaper", "open:undertow"]); // post-S59: the Ford (replaced by the Tollgate) and Reaper Control (by Reaper Clio); post-S57: the Larder (ADR-165's exit)
+    expect(library.filter((l) => l.archived).map((l) => l.key).sort()).toEqual(["open:cinder", "open:enchantress", "open:ford", "open:larder", "open:locks", "open:loop", "open:reaper", "open:tally", "open:undertow"]); // S60 (ADR-174): the Locks, the Tally and the Enchantress; // post-S59: the Ford (replaced by the Tollgate) and Reaper Control (by Reaper Clio); post-S57: the Larder (ADR-165's exit)
     for (let i = 1; i <= 200; i++) expect(buildConstructedDeck(OPEN_FORMAT, rating, i, library, cards).from).not.toBe("open:loop");
     expect(buildConstructedDeck(OPEN_FORMAT, rating, 1, library, cards, { from: "open:loop" }).from).toBe("open:loop"); // asked for by key (a study, a seat in an older save) it still builds
   });
@@ -110,7 +110,7 @@ describe("the Constructed builder (S52)", () => {
   });
 
   it("the repair cuts what a rule forbids and fills role for role: a list with instants under Nothing Sudden, a list with big spells under Nothing Dear, the extras of a restricted card", () => {
-    const tally = library.find((l) => l.key === "open:tally")!; // an instants-and-sorceries deck
+    const tally = library.find((l) => l.key === "open:kiln")!; // an instants-and-sorceries deck (S60: the Tally is archived; the Kiln stands in)
     const b = buildConstructedDeck(NOTHING_SUDDEN_FORMAT, rating, 1, [tally], cards);
     expect(b.cut.every((c) => d(c.cardId).types.includes("Instant") || b.swaps.some((s) => s.out === c.cardId))).toBe(true);
     expect(size(b.cut)).toBeGreaterThan(4);

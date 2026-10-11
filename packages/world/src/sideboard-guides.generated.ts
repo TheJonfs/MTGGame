@@ -182,5 +182,79 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
    }
   ],
   "only": true
+ },
+ {
+  "key": "levy",
+  "fifteen": [
+   {
+    "cardId": "swords_to_plowshares",
+    "count": 1
+   },
+   {
+    "cardId": "doom_blade",
+    "count": 2
+   },
+   {
+    "cardId": "drana_kalastria_bloodchief",
+    "count": 2
+   },
+   {
+    "cardId": "faerie_macabre",
+    "count": 2
+   },
+   {
+    "cardId": "disenchant",
+    "count": 2
+   },
+   {
+    "cardId": "tormods_crypt",
+    "count": 2
+   },
+   {
+    "cardId": "wrath_of_god",
+    "count": 2
+   },
+   {
+    "cardId": "youthful_valkyrie",
+    "count": 1
+   },
+   {
+    "cardId": "shadow_summoning",
+    "count": 1
+   }
+  ],
+  "rows": [
+   {
+    "in": "swords_to_plowshares",
+    "n": 1,
+    "out": [
+     "shadow_summoning"
+    ],
+    "when": [
+     "small"
+    ]
+   },
+   {
+    "in": "tormods_crypt",
+    "n": 2,
+    "out": [
+     "raise_the_alarm"
+    ],
+    "when": [
+     "graveyard"
+    ]
+   },
+   {
+    "in": "faerie_macabre",
+    "n": 2,
+    "out": [
+     "raise_the_alarm"
+    ],
+    "when": [
+     "graveyard"
+    ]
+   }
+  ],
+  "only": true
  }
 ];
