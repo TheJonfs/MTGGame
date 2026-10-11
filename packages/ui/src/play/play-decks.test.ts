@@ -11,14 +11,14 @@ function memStorage() { const m = new Map<string, string>(); return { getItem: (
 
 /** Post-S58 (Chris): the single match's setup — a category and a deck in it, and decks built for either side. */
 describe("the single match's decks (post-S58)", () => {
-  it("the choices come by category: the Open's active lists (every one, revealed), the mages and the beasts; a fresh browser hides the lists that hold a prize card it has not met", () => {
+  it("the choices come by category: the Open's active lists (every one, revealed), the mages and the beasts; a fresh browser is offered every list of the Open too (post-S60: the Open's builder shows every card)", () => {
     const all = playChoices(pool, { storage: memStorage(), revealAll: true });
     expect(all.filter((c) => c.group === "open").map((c) => c.key).sort()).toEqual(Object.keys(OPEN_FIELD).map((k) => `open:${k}`).sort());
     expect(all.filter((c) => c.group === "mages")).toHaveLength(15);
     expect(new Set(all.map((c) => c.group)).size).toBeGreaterThanOrEqual(4);
     for (const c of all) expect(PLAY_CATEGORIES.some((g) => g.group === c.group), c.key).toBe(true);
     const fresh = playChoices(pool, { storage: memStorage() });
-    expect(fresh.filter((c) => c.group === "open").every((c) => c.decklist.every((e) => !pool.get(e.cardId)?.prizeOnly))).toBe(true);
+    expect(fresh.filter((c) => c.group === "open").map((c) => c.key).sort()).toEqual(Object.keys(OPEN_FIELD).map((k) => `open:${k}`).sort());
     expect(fresh.filter((c) => c.group === "mages")).toHaveLength(15);
   });
 

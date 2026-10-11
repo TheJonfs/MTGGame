@@ -44,8 +44,9 @@ const colours = (deck: Decklist, pool: Map<string, CardDef>) => { const seen = n
 export const deckSummary = (deck: Decklist, pool: Map<string, CardDef>) => `${deck.reduce((n, e) => n + e.count, 0)} cards · ${colours(deck, pool)}`;
 
 /** Every deck the setup offers, by category: the built decks, the Open's active lists, and the S37 roster (the
- * journey's saved decks, the mages, the beasts, the bosses met). The unlock rule (S37) holds for the Open's lists as
- * for the rest: a deck with a prize card the player has not met is not offered, unless `revealAll`. */
+ * journey's saved decks, the mages, the beasts, the bosses met). The unlock rule (S37) holds for the roster: a deck
+ * with a prize card the player has not met is not offered, unless `revealAll`. Post-S60 (Chris): not for the Open's
+ * lists — the Open's deck builder already shows every card, so its lists are all offered. */
 export function playChoices(pool: Map<string, CardDef>, opts: { revealAll?: boolean; storage?: Store | null } = {}): PlayChoice[] {
   const storage = opts.storage === undefined ? (typeof localStorage !== "undefined" ? localStorage : null) : opts.storage;
   const unlocked = readUnlocked(storage);
@@ -55,7 +56,7 @@ export function playChoices(pool: Map<string, CardDef>, opts: { revealAll?: bool
     const e = deserializeEvent(storage?.getItem(EVENT_SAVE_KEY) ?? ""), deck = e?.decklists?.[e.formatId] ?? (e && e.field[0]?.sideboard?.length ? e.field[0]!.deck : undefined), side = e?.sideboards?.[e.formatId] ?? e?.field[0]?.sideboard;
     if (e && deck?.length && deck.every((x) => pool.has(x.cardId))) built.push({ key: "built:~convocation", group: "built", name: "Your Convocation deck", label: "Your Convocation deck (as registered)", archetype: "midrange", decklist: deck.map((x) => ({ ...x })), ...(side?.length ? { sideboard: side.map((x) => ({ ...x })) } : {}) });
   } catch { /* no event, or one this build cannot read */ }
-  const open: PlayChoice[] = Object.values(OPEN_FIELD).filter((l) => opts.revealAll || deckUnlocked(l.decklist, pool, unlocked)).map((l) => ({ key: `open:${l.key}`, group: "open", name: l.name, label: `${l.name} — ${l.title}`, archetype: l.archetype, decklist: l.decklist.map((e) => ({ ...e })), ...(l.sideboard?.length ? { sideboard: l.sideboard.map((e) => ({ ...e })) } : {}) }));
+  const open: PlayChoice[] = Object.values(OPEN_FIELD).map((l) => ({ key: `open:${l.key}`, group: "open", name: l.name, label: `${l.name} — ${l.title}`, archetype: l.archetype, decklist: l.decklist.map((e) => ({ ...e })), ...(l.sideboard?.length ? { sideboard: l.sideboard.map((e) => ({ ...e })) } : {}) }));
   const rest: PlayChoice[] = playRoster(pool, { ...opts, storage }).map((d: LabDeck) => ({ key: d.key, group: d.group, name: d.name, label: d.label, archetype: d.archetype, decklist: d.decklist.map((e) => ({ ...e })), ...(d.portrait ? { portrait: d.portrait } : {}) }));
   return [...built, ...open, ...rest];
 }
