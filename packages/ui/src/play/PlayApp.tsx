@@ -2,7 +2,9 @@ import { useMemo, useState } from "react";
 import { devMenuEnabled } from "../dev";
 import { DevSetup, type DevMatch } from "./DevSetup";
 import { SetupScreen, type PlaySetup } from "./SetupScreen";
-import { loadOracle, loadPool, type OracleEntry, type SavedGame } from "../engine-bridge";
+import { loadConvocationData, loadOracle, loadPool, type OracleEntry, type SavedGame } from "../engine-bridge";
+import { AI_SIDEBOARD_CONSTRUCTED, MatchSeries, OPEN_FORMAT, addCopy, aiSideboard, fieldSideboard, removeCopy, type Collection, type DeckCheck, type Decklist } from "@shandalar/world";
+import { DeckEditor, type DeckEditorHost } from "../components/DeckEditor";
 import { MatchController } from "./match-controller";
 import { PlayMatch, loadStops } from "./PlayMatch";
 import { cardName } from "../labels";
@@ -13,18 +15,32 @@ import { cardName } from "../labels";
  * same seed, and download of the saved game.
  */
 
+/** Post-S60 (Chris: "can we expand our single game tester to have a toggle for playing matches?"): the match in
+ * progress — the event's series (best of three; the loser of a game chooses play or draw; the AI always plays first),
+ * the deck as registered and its sideboard, the deck as it stands after sideboarding, and the opponent's fifteen (its
+ * registered one, else the field builder's). The AI sideboards from game two as it does in the Open: its guide where
+ * it has one, the general rules otherwise, against the human's REGISTERED sixty. The human is the series' seat 0. */
+interface MatchRun { series: MatchSeries; setup: PlaySetup; main: Decklist; side: Decklist; deck: Decklist; enemySide: Decklist; game: ReturnType<MatchSeries["nextGame"]> | null; recorded: boolean }
+const count = (l: Decklist) => l.reduce((n, e) => n + e.count, 0);
+
 function EndScreen({
   c,
   pool,
   onRematch,
   onNew,
   onWatch,
+  run,
+  onNext,
+  onSideboard,
 }: {
   c: MatchController;
   pool: Map<string, import("@shandalar/cards").CardDef>;
   onRematch: () => void;
   onNew: () => void;
   onWatch: () => void;
+  run?: MatchRun | null;
+  onNext?: (choice: "play" | "draw") => void;
+  onSideboard?: () => void;
 }) {
   const r = c.result!;
   const you = c.humanSeat;
@@ -45,8 +61,13 @@ function EndScreen({
     <div className="loader">
       <div className="box play-setup">
         <h2 style={{ fontFamily: "var(--serif)", marginTop: 0 }}>
-          {r.winner === null ? "Draw" : won ? "Victory" : "Defeat"}
+          {run ? `Game ${run.series.games.length}: ` : ""}{r.winner === null ? "Draw" : won ? "Victory" : "Defeat"}
         </h2>
+        {run && (
+          <p style={{ fontFamily: "var(--serif)", fontSize: 15, margin: "0 0 6px" }}>
+            {run.series.done ? (run.series.winner === 0 ? "You win the match" : run.series.winner === 1 ? "You lose the match" : "The match is drawn") : "The match stands"} {run.series.wins[0]}–{run.series.wins[1]}{run.series.draws ? ` (${run.series.draws} drawn)` : ""} against {run.setup.enemy.name}
+          </p>
+        )}
         <p style={{ fontSize: 12 }}>
           {r.reason === "CONCEDE" ? "By concession" : r.reason === "LIFE" ? "By damage" : r.reason.toLowerCase()} ·{" "}
           turn {r.turns} · life {r.finalLife[you]}–{r.finalLife[you === 0 ? 1 : 0]} · seed {c.seed}
@@ -64,9 +85,17 @@ function EndScreen({
             ))}
           </tbody>
         </table>
+        {run && !run.series.done && (
+          <p>
+            {run.series.nextChooser() === 0
+              ? <><button className="primary" onClick={() => onNext?.("play")}>Next game — play first</button>{" "}<button onClick={() => onNext?.("draw")}>Next game — draw first</button></>
+              : <button className="primary" onClick={() => onNext?.("play")}>Next game (they play first)</button>}{" "}
+            {count(run.side) > 0 && <button onClick={onSideboard} title="change your deck from your seventy-five before the next game">Sideboard ({count(run.deck)} in the deck)</button>}
+          </p>
+        )}
         <p>
-          <button className="primary" onClick={onWatch}>Watch replay</button>{" "}
-          <button onClick={onRematch}>Rematch (same seed)</button>{" "}
+          <button className={run && !run.series.done ? "" : "primary"} onClick={onWatch}>Watch replay</button>{" "}
+          {(!run || run.series.done) && <button onClick={onRematch}>{run ? "Play the match again" : "Rematch (same seed)"}</button>}{" "}
           <button onClick={onNew}>New match</button>{" "}
           <button className="linkish" onClick={download}>download log</button>
         </p>
@@ -97,12 +126,41 @@ export function PlayApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =>
       aiDelayMs: Number(localStorage.getItem("shandalar-ai-delay") ?? 400),
     });
     c.stops = loadStops();
-    setLastDev(m); setLastSetup(null);
+    setLastDev(m); setLastSetup(null); setRun(null);
     setController(c);
     setScreen("match");
     void c.start();
   };
+  const [run, setRun] = useState<MatchRun | null>(null);
+  const [boarding, setBoarding] = useState<null | { draft: Decklist; notice: string | null }>(null);
+  const rating = useMemo(() => loadConvocationData().rating, []);
+  /** The next game of the match: the series' seed and starting player; the AI's deck sideboarded from game two. */
+  const nextGame = (r: MatchRun, choice: "play" | "draw") => {
+    const game = r.series.nextGame(r.series.nextChooser() === 0 ? choice : "play"), { human, enemy } = r.setup;
+    const theirs = game.index === 0 ? enemy.decklist : aiSideboard(enemy.decklist, r.enemySide, r.main, pool, rating, AI_SIDEBOARD_CONSTRUCTED).deck;
+    const c = new MatchController(pool, {
+      humanSeat: 0,
+      custom: { human: { name: `You · ${human.name}`, decklist: r.deck.map((e) => ({ ...e })) }, enemy: { name: enemy.name, decklist: theirs.map((e) => ({ ...e })), difficulty: r.setup.difficulty, archetype: enemy.archetype, ...(enemy.portrait ? { portrait: enemy.portrait } : {}) }, rules: { startingLife: 20, ante: 0, startingPlayer: game.startingPlayer }, modifiers: [] },
+      seed: game.seed,
+      aiDelayMs: Number(localStorage.getItem("shandalar-ai-delay") ?? 400),
+    });
+    c.stops = loadStops();
+    setRun({ ...r, game, recorded: false }); setBoarding(null);
+    setLastSetup(r.setup); setLastDev(null);
+    setController(c);
+    setScreen("match");
+    void c.start();
+  };
+  const beginMatch = (setup: PlaySetup) => {
+    const seed = setup.seed.trim() !== "" && Number.isFinite(Number(setup.seed)) ? Number(setup.seed) : Math.floor(Math.random() * 1_000_000);
+    const main = setup.human.decklist.map((e) => ({ ...e })), side = setup.human.sideboard?.length ? setup.human.sideboard.map((e) => ({ ...e })) : fieldSideboard(main, OPEN_FORMAT, { cards: pool, rating }); // a deck without one: the field builder's fifteen
+    const enemySide = setup.enemy.sideboard?.length ? setup.enemy.sideboard.map((e) => ({ ...e })) : fieldSideboard(setup.enemy.decklist, OPEN_FORMAT, { cards: pool, rating });
+    // game one's call is the setup's ("in game one you play first / second"); after it, the loser's
+    nextGame({ series: new MatchSeries({ seed, firstChooser: 0 }), setup, main, side, deck: main, enemySide, game: null, recorded: false }, setup.humanSeat === 0 ? "play" : "draw");
+  };
   const begin = (setup: PlaySetup, seedOverride?: number) => {
+    if (setup.match) return beginMatch(setup);
+    setRun(null);
     const seed = seedOverride ?? (setup.seed.trim() !== "" ? Number(setup.seed) : undefined);
     const { human, enemy } = setup;
     const c = new MatchController(pool, {
@@ -126,16 +184,43 @@ export function PlayApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =>
         c={controller}
         pool={pool}
         oracle={oracle}
-        onGameOver={() => setScreen("end")}
+        onGameOver={() => {
+          // the match: the game is recorded once, as it ends (the human is the series' seat 0)
+          if (run?.game && !run.recorded && controller.result) { run.series.record(run.game, controller.result); setRun({ ...run, recorded: true }); }
+          setScreen("end");
+        }}
       />
     );
+  }
+  if (boarding && run) {
+    // between games: the deck from the registered seventy-five — as many cards as were registered, or more
+    const all: Collection = {}; for (const e of [...run.main, ...run.side]) all[e.cardId] = (all[e.cardId] ?? 0) + e.count;
+    const floor = Math.min(60, count(run.main)), n = count(boarding.draft);
+    const change = (r: ReturnType<typeof addCopy>) => setBoarding(r.ok ? { draft: r.deck, notice: null } : { ...boarding, notice: r.reason });
+    const host: DeckEditorHost = {
+      title: `Sideboard — your seventy-five, before game ${run.series.games.length + 1}`,
+      draft: boarding.draft, name: run.setup.human.name, notice: boarding.notice,
+      source: { collection: all, savedDeck: run.deck, activeDeckName: run.setup.human.name },
+      legality: () => ({ ok: n >= floor, problems: n >= floor ? [] : [`the deck has ${n} cards; it needs ${floor}`] }) as DeckCheck,
+      add: (id) => change(addCopy(all, boarding.draft, id, Infinity)),
+      remove: (id) => change(removeCopy(boarding.draft, id)),
+      reset: () => setBoarding({ draft: run.main.map((e) => ({ ...e })), notice: null }),
+      save: () => { if (n < floor) return setBoarding({ ...boarding, notice: `the deck has ${n} cards; it needs ${floor}` }); setRun({ ...run, deck: boarding.draft }); setBoarding(null); },
+      saveLabel: "Keep this deck",
+      close: () => setBoarding(null), closeLabel: "Cancel",
+      sparesLabel: "Sideboard",
+    };
+    return <div style={{ height: "100%" }}><DeckEditor host={host} pool={pool} oracle={oracle} /></div>;
   }
   return (
     <EndScreen
       c={controller}
       pool={pool}
-      onRematch={() => (lastDev ? beginDev(lastDev, controller.seed) : lastSetup && begin(lastSetup, controller.seed))}
-      onNew={() => setScreen("setup")}
+      run={run}
+      onNext={(choice) => run && nextGame(run, choice)}
+      onSideboard={() => run && setBoarding({ draft: run.deck.map((e) => ({ ...e })), notice: null })}
+      onRematch={() => (run ? beginMatch(run.setup) : lastDev ? beginDev(lastDev, controller.seed) : lastSetup && begin(lastSetup, controller.seed))}
+      onNew={() => { setRun(null); setScreen("setup"); }}
       onWatch={() => onWatchReplay(JSON.parse(controller.savedGame()) as SavedGame)}
     />
   );

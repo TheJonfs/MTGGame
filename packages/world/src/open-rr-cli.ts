@@ -65,11 +65,15 @@ const KEYS = Object.keys(process.argv.includes("--with-archived") ? OPEN_DECKS :
 type SeatLog = { cast: Record<string, number>; played: Record<string, number>; /** post-S59: abilities activated, by the source's card */ acts?: Record<string, number>; loopTurn?: number; altarActs?: number };
 type Game = { a: string; b: string; seatA: 0 | 1; winner: "a" | "b" | "draw"; reason: string; turns: number; logA: SeatLog; logB: SeatLog; boarded?: string ; /** S59 (--matches): the match's index in its pairing and the game's number in the match (0, 1, 2) */ match?: number; gameNo?: number };
 
+const TRACE_AFTER = process.argv.includes("--trace-after") ? Number(process.argv[process.argv.indexOf("--trace-after") + 1]) : 0;
 class Tracker implements Agent {
   log: SeatLog = { cast: {}, played: {} };
+  private n = 0;
   constructor(private inner: Agent, private loop: boolean) {}
   async chooseAction(view: GameView, req: ActionRequest): Promise<Action> {
     const a = await this.inner.chooseAction(view, req);
+    // `--trace-after N`: past N decisions in one game, each is printed (a game that never ends shows its loop)
+    if (TRACE_AFTER > 0 && ++this.n > TRACE_AFTER && this.n < TRACE_AFTER + 60) console.error(`  [${this.n}] T${view.turn} ${view.step} p${view.you} life ${view.life} ${req.purpose} of ${req.actions.length} -> ${JSON.stringify(a)} stack ${view.stack.map((x) => x.cardId ?? "?").join("<")}`);
     const cardOf = (id: string) => view.hand.find((c) => c.objectId === id)?.cardId ?? view.battlefield.find((b) => b.id === id)?.cardId;
     if (a.type === "castSpell") { const c = cardOf(a.objectId); if (c) this.log.cast[c] = (this.log.cast[c] ?? 0) + 1; }
     if (a.type === "playLand") { const c = cardOf(a.objectId); if (c) this.log.played[c] = (this.log.played[c] ?? 0) + 1; }
@@ -156,12 +160,14 @@ async function run(): Promise<void> {
     const A = DECKS[ka]!, B = DECKS[kb]!;
     // S59 (ADR-171): matches — the event's own series (the coin, the loser's choice, sideboarded from game two)
     for (let m = 0; m < M; m++) {
+      if (process.argv.includes("--match-only") && m !== Number(arg("match-only", "0"))) continue;
       const series = new MatchSeries({ seed: seed0 + p * 1009 + m * 37 });
       const A1 = { ...A, decklist: boarded(A, B) }, B1 = { ...B, decklist: boarded(B, A) };
       while (!series.done) {
         const game = series.nextGame("play"), [d0, d1] = game.index === 0 ? [A, B] : [A1, B1];
         const spec = { seed: game.seed, players: [{ name: d0.key, decklist: [...d0.decklist], agent: "heuristic:master" }, { name: d1.key, decklist: [...d1.decklist], agent: "heuristic:master" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100, startingPlayer: game.startingPlayer }, modifiers: [] } as unknown as MatchSpec;
         const t0 = new Tracker(new HeuristicAgent(game.seed * 2 + 1, pool, profile(d0, d1)), false), t1 = new Tracker(new HeuristicAgent(game.seed * 2 + 2, pool, profile(d1, d0)), false);
+        if (process.argv.includes("--progress")) console.error(`match ${m} game ${game.index} seed ${game.seed} start ${game.startingPlayer}`); // a game that never ends is the last line printed
         const r = await runMatch(spec, pool, [t0, t1]);
         series.record(game, r);
         games.push({ a: ka, b: kb, seatA: 0, winner: r.winner === null ? "draw" : r.winner === 0 ? "a" : "b", reason: r.reason, turns: r.turns, logA: t0.log, logB: t1.log, match: m, gameNo: game.index });

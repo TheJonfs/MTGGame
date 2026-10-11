@@ -244,6 +244,10 @@ export class HeuristicAgent implements Agent {
     // Boomerang at its own Island, Mind Rot at its own head, Rancor on Chris's creature):
     // spending a card on provably nothing is never a play, at any temperature (the X=0 family).
     if (this.discardWasteGated(view, action)) return -Infinity; // Duress/Mind Rot into an empty hand
+    // book 123: a spell whose targets are picked AFTER the cast (any number — the Purge) is priced as the cast it will be:
+    // the picks the request loop would make, and the life they cost; with nothing worth picking it is not cast
+    const later = this.laterPicks(view, action);
+    if (later) return later.picks.length === 0 ? -Infinity : this.scorePriorityAction({ ...view, life: view.life.map((x, i) => (i === view.you ? x - later.life : x)) as [number, number] }, { ...action, targets: later.picks } as Action);
     if (this.emptyTargetsWasteGated(view, action)) return -Infinity; // post-S43: an "up to" spell cast at nothing (Graceful Restoration's second mode)
     if (this.pumpWasteGated(view, action)) return -Infinity; // Giant Growth outside combat, empty stack
     if (this.fleetingWasteGated(view, action)) return -Infinity; // S23: the Thundersnake outside its window
@@ -1697,6 +1701,25 @@ export class HeuristicAgent implements Agent {
   /** S22 (A10 word 4) — Purge discipline, the pin-17 family: take opponent creatures best-first,
    * never our own, and never a pick whose cumulative life cost drops us below the floor (4 — the
    * shock-clause floor; book of shame 17's "never pay at ≤ 2" is strictly inside it). */
+  /** Book 123 (post-S60 — Chris's Mardu list: four Phyrexian Purges, and in 5,490 simulated games the pilot cast none).
+   * The cast of an any-number spell carries no targets — they are asked for after it — and the post-S43 rule against a
+   * targeted spell cast at nothing read every such cast as waste. The picks the loop below would make, in its order
+   * and by its floors, and the life they cost; null for any other action. Off: "laterpicks" (the cast is never made). */
+  laterPicks(view: GameView, action: Action): { picks: { kind: "object"; id: string }[]; life: number } | null {
+    if (action.type !== "castSpell" || (action.targets?.length ?? 0) > 0) return null;
+    const card = view.hand.find((c) => c.objectId === action.objectId), d = card ? this.def(card.cardId) : undefined;
+    if (!d || d.modes || !d.targets?.length || !d.targets.every((t) => t.count === "any")) return null;
+    if (this.profile.off?.includes("laterpicks")) return null;
+    const PAY_FLOOR = 4, lifePer = d.additionalCost?.perTarget ? (d.additionalCost.life ?? 0) : 0;
+    const ranked = view.battlefield.filter((o) => o.controller !== view.you && !!this.def(o.cardId)?.types.includes("Creature")).map((o) => ({ id: o.id, v: this.boardValue(view, o.id) })).sort((x, y) => y.v - x.v);
+    const picks: { kind: "object"; id: string }[] = [];
+    for (const o of ranked) {
+      if (lifePer > 0 && (view.life[view.you] - lifePer * (picks.length + 1) < PAY_FLOOR || o.v < lifePer / 2)) break;
+      picks.push({ kind: "object", id: o.id });
+    }
+    return { picks, life: lifePer * picks.length };
+  }
+
   private variableTargetChoice(view: GameView, request: ActionRequest): Action {
     const done = request.actions.find((a) => a.type === "doneChoosingTargets") ?? request.actions[0]!;
     const picks = request.actions.filter((a) => a.type === "chooseVariableTarget") as Extract<Action, { type: "chooseVariableTarget" }>[];

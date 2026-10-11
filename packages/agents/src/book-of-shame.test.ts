@@ -1847,4 +1847,19 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(mk(fair).lifeForCardsGated(v(11), draw)).toBe(false); // no burn deck across: the S27 discipline alone
     expect(mk(burn, ["burnfloor"]).lifeForCardsGated(v(11), draw)).toBe(false); // the old pilot
   });
+
+  it("book of shame 123 (post-S60 — Chris's Mardu list: four Phyrexian Purges, none cast in 5,490 simulated games): a spell whose targets are picked after the cast is priced as the cast it will be — the picks the loop would make and the life they cost — and is not cast when nothing is worth a pick", () => {
+    const a = agent("midrange"), lands = ["badlands", "badlands", "swamp", "mountain"].map((c, i) => ({ id: "l" + i, cardId: c, controller: 0 as const }));
+    const cast = { type: "castSpell" as const, objectId: "p", targets: [] };
+    const v = (theirs: string[], life: number) => mkView({ hand: [{ objectId: "p", cardId: "phyrexian_purge" }], battlefield: [...lands, ...theirs.map((c, i) => ({ id: "t" + i, cardId: c, controller: 1 as const }))], life: [life, 20] });
+    const two = v(["serra_angel", "grizzly_bears"], 20);
+    expect(a.laterPicks(two, cast)).toEqual({ picks: [{ kind: "object", id: "t0" }, { kind: "object", id: "t1" }], life: 6 }); // the Angel first
+    expect(a.scorePriorityAction(two, cast)).toBeGreaterThan(a.scorePriorityAction(two, { type: "pass" }));
+    expect(a.laterPicks(v(["serra_angel", "grizzly_bears"], 9), cast)!.picks).toHaveLength(1); // the floor of four: one pick at nine life
+    expect(a.scorePriorityAction(v([], 20), cast)).toBe(-Infinity); // nothing across: not cast
+    expect(a.scorePriorityAction(v(["serra_angel"], 6), cast)).toBe(-Infinity); // no pick leaves us at four
+    expect(a.laterPicks(mkView({ hand: [{ objectId: "p", cardId: "vindicate" }], battlefield: lands }), cast)).toBeNull(); // a spell aimed at the cast is not this
+    const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["laterpicks"] });
+    expect(old.scorePriorityAction(two, cast)).toBe(-Infinity); // the old pilot
+  });
 });

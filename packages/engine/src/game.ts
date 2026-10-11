@@ -120,6 +120,11 @@ export interface GameRules {
 /** S55 (R-103): the mandatory-loop draw's cap — a hundred stack items resolved in one turn, each leaving the game in
  * a position it has already been in this turn. */
 export const LOOP_DRAW_CAP = 100;
+/** Post-S60 (R-103, the second count): a thousand stack items resolved in one turn with no player's life and no
+ *  library reaching a new low for the turn — a loop that drifts (so no position repeats) yet brings nobody nearer
+ *  to losing. Two drains of unequal size on each death, the Usher returning the Usher: one player's life climbs
+ *  forever and the other's oscillates. */
+export const LOOP_STALL_CAP = 1000;
 
 export const DEFAULT_RULES: GameRules = { startingLife: 20, handSize: 7, maxTurns: 100, ante: 0 };
 
@@ -550,6 +555,8 @@ export class Game {
   private loopTurn = -1;
   private loopSeen = new Set<string>();
   private loopRepeats = 0;
+  private loopLows: number[] = [];
+  private loopStall = 0;
   /**
    * CR 104.4b / 732.4: a game that enters a loop of mandatory actions with no way to stop is a draw. The engine
    * cannot prove "no way to stop"; it counts. After each stack item resolves (state-based actions and triggers done),
@@ -568,7 +575,16 @@ export class Game {
    */
   private checkLoopDraw(): void {
     const s = this.state;
-    if (s.turn !== this.loopTurn) { this.loopTurn = s.turn; this.loopSeen.clear(); this.loopRepeats = 0; }
+    if (s.turn !== this.loopTurn) { this.loopTurn = s.turn; this.loopSeen.clear(); this.loopRepeats = 0; this.loopLows = []; this.loopStall = 0; }
+    // the second count: progress is a life total or a library at a new low for the turn; without it for a thousand
+    // resolutions the game is going nowhere, whatever else drifts
+    const lows = s.players.flatMap((p) => [p.life, p.library.length]);
+    if (this.loopLows.length === 0 || lows.some((x, i) => x < this.loopLows[i]!)) { this.loopLows = lows.map((x, i) => Math.min(x, this.loopLows[i] ?? x)); this.loopStall = 0; }
+    else if (++this.loopStall >= LOOP_STALL_CAP) {
+      this.ctx.log.append({ t: "EVENT", name: "LOOP_DRAW", payload: { turn: s.turn, repeats: this.loopStall, stall: true } });
+      s.result = { winner: null, reason: "DRAW" };
+      return;
+    }
     const zone = (ids: readonly string[]) => ids.map((id) => s.objects[id]!.cardId).sort().join(",");
     const field = s.battlefield.map((id) => { const o = s.objects[id]!; const c = Object.entries(o.counters).filter(([, n]) => n !== 0).sort(([a], [b]) => (a < b ? -1 : 1)).map(([k, n]) => k + n).join("+"); return `${o.cardId}:${o.controller}:${o.tapped ? 1 : 0}:${o.damage}:${c}:${o.attachedTo ? s.objects[o.attachedTo]?.cardId : ""}`; }).sort().join(",");
     const pos = `${s.step}|${s.players.map((p) => `${p.life}/${Object.values(p.manaPool).join(".")}/${zone(p.hand)}/${zone(p.library)}/${zone(p.graveyard)}/${zone(p.exile)}`).join("|")}|${field}|${s.stack.map((x) => x.sourceCardId).join(",")}`;

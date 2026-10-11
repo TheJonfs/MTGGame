@@ -1,6 +1,6 @@
 import type { CardDef } from "@shandalar/cards";
 import { OPEN_FIELD } from "@shandalar/sim/open-decks";
-import { OPEN_FORMAT, cardLegal, copyCap, isBasic, type Collection, type Decklist } from "@shandalar/world";
+import { EVENT_SAVE_KEY, OPEN_FORMAT, cardLegal, copyCap, deserializeEvent, isBasic, type Collection, type Decklist } from "@shandalar/world";
 import type { LabDeck } from "../lab/lab-decks.js";
 import { playRoster } from "./play-roster.js";
 import { deckUnlocked, readUnlocked } from "../seen.js";
@@ -11,7 +11,8 @@ import { deckUnlocked, readUnlocked } from "../seen.js";
  * the categories in their order, the Open's lists as one of them, and the built decks kept in the browser.
  */
 export type PlayArchetype = "aggro" | "midrange" | "control" | "combo";
-export interface PlayChoice { key: string; group: string; name: string; label: string; archetype: PlayArchetype; decklist: Decklist; portrait?: string }
+/** `sideboard` (post-S60, the match): a built deck's own, an Open list's registered fifteen, the Convocation deck's. */
+export interface PlayChoice { key: string; group: string; name: string; label: string; archetype: PlayArchetype; decklist: Decklist; sideboard?: Decklist; portrait?: string }
 export const PLAY_CATEGORIES: { group: string; title: string }[] = [
   { group: "built", title: "Decks built here" },
   { group: "open", title: "The Open's lists" },
@@ -22,7 +23,7 @@ export const PLAY_CATEGORIES: { group: string; title: string }[] = [
 ];
 
 export const BUILT_DECKS_KEY = "shandalar-play-decks";
-export interface BuiltDeck { name: string; archetype: PlayArchetype; decklist: Decklist }
+export interface BuiltDeck { name: string; archetype: PlayArchetype; decklist: Decklist; sideboard?: Decklist }
 type Store = Pick<Storage, "getItem" | "setItem">;
 export function readBuiltDecks(storage: Store | null): BuiltDeck[] {
   try { const xs = JSON.parse(storage?.getItem(BUILT_DECKS_KEY) ?? "[]") as unknown; return Array.isArray(xs) ? (xs as BuiltDeck[]).filter((d) => d && typeof d.name === "string" && Array.isArray(d.decklist)) : []; } catch { return []; }
@@ -48,8 +49,13 @@ export const deckSummary = (deck: Decklist, pool: Map<string, CardDef>) => `${de
 export function playChoices(pool: Map<string, CardDef>, opts: { revealAll?: boolean; storage?: Store | null } = {}): PlayChoice[] {
   const storage = opts.storage === undefined ? (typeof localStorage !== "undefined" ? localStorage : null) : opts.storage;
   const unlocked = readUnlocked(storage);
-  const built: PlayChoice[] = readBuiltDecks(storage).map((d) => ({ key: `built:${d.name}`, group: "built", name: d.name, label: d.name, archetype: d.archetype, decklist: d.decklist }));
-  const open: PlayChoice[] = Object.values(OPEN_FIELD).filter((l) => opts.revealAll || deckUnlocked(l.decklist, pool, unlocked)).map((l) => ({ key: `open:${l.key}`, group: "open", name: l.name, label: `${l.name} — ${l.title}`, archetype: l.archetype, decklist: l.decklist.map((e) => ({ ...e })) }));
+  const built: PlayChoice[] = readBuiltDecks(storage).map((d) => ({ key: `built:${d.name}`, group: "built", name: d.name, label: d.name, archetype: d.archetype, decklist: d.decklist, ...(d.sideboard?.length ? { sideboard: d.sideboard } : {}) }));
+  // post-S60 (Chris: a match against one list, with the deck he registered): the Convocation's saved event, read and never written
+  try {
+    const e = deserializeEvent(storage?.getItem(EVENT_SAVE_KEY) ?? ""), deck = e?.decklists?.[e.formatId] ?? (e && e.field[0]?.sideboard?.length ? e.field[0]!.deck : undefined), side = e?.sideboards?.[e.formatId] ?? e?.field[0]?.sideboard;
+    if (e && deck?.length && deck.every((x) => pool.has(x.cardId))) built.push({ key: "built:~convocation", group: "built", name: "Your Convocation deck", label: "Your Convocation deck (as registered)", archetype: "midrange", decklist: deck.map((x) => ({ ...x })), ...(side?.length ? { sideboard: side.map((x) => ({ ...x })) } : {}) });
+  } catch { /* no event, or one this build cannot read */ }
+  const open: PlayChoice[] = Object.values(OPEN_FIELD).filter((l) => opts.revealAll || deckUnlocked(l.decklist, pool, unlocked)).map((l) => ({ key: `open:${l.key}`, group: "open", name: l.name, label: `${l.name} — ${l.title}`, archetype: l.archetype, decklist: l.decklist.map((e) => ({ ...e })), ...(l.sideboard?.length ? { sideboard: l.sideboard.map((e) => ({ ...e })) } : {}) }));
   const rest: PlayChoice[] = playRoster(pool, { ...opts, storage }).map((d: LabDeck) => ({ key: d.key, group: d.group, name: d.name, label: d.label, archetype: d.archetype, decklist: d.decklist.map((e) => ({ ...e })), ...(d.portrait ? { portrait: d.portrait } : {}) }));
   return [...built, ...open, ...rest];
 }

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
-import { LOOP_DRAW_CAP, runMatch, type Action, type ActionRequest, type Agent, type GameView, type MatchSpec, type Modifier } from "@shandalar/engine";
+import { LOOP_DRAW_CAP, LOOP_STALL_CAP, runMatch, type Action, type ActionRequest, type Agent, type GameView, type MatchSpec, type Modifier } from "@shandalar/engine";
 
 const cards = loadCardPool(join(dirname(fileURLToPath(import.meta.url)), "../../../data/cards")).cards;
 const perm = (player: 0 | 1, cardId: string): Modifier => ({ type: "permanentOnBattlefield", player, cardId });
@@ -40,6 +40,20 @@ describe("S55 — the mandatory-loop draw (R-103)", () => {
     expect(ev.payload!.repeats).toBe(LOOP_DRAW_CAP);
     expect(Math.abs(r.finalLife[0] - 20)).toBeLessThanOrEqual(4); // the totals went nowhere
     expect(Math.abs(r.finalLife[1] - 20)).toBeLessThanOrEqual(4);
+  });
+
+  it("post-S60 — a loop that drifts: three opposing Blood Artists and an Usher take five a death, our two Ushers four, and a Soul Warden gives the one back — our life goes nowhere, theirs climbs, no position repeats; a thousand resolutions with nobody at a new low is a draw", async () => {
+    const drainUs = scripted((_v, r) => (r.actions.some((a) => a.type === "chooseTriggerTargets") ? r.actions.find((a) => tgt(a)?.kind === "player" && tgt(a)?.player === 0) : r.actions[0]));
+    const spec = usherSpec(["the_usher", "blood_artist", "blood_artist", "blood_artist"]);
+    const r = await runMatch({ ...spec, modifiers: [...spec.modifiers!, perm(0, "soul_warden")] }, cards, [usherPilot, drainUs]);
+    expect(r.winner).toBeNull();
+    expect(r.reason).toBe("DRAW");
+    expect(r.turns).toBe(1);
+    const ev = (r.log as { t: string; name?: string; payload?: { repeats: number; stall?: boolean } }[]).find((e) => e.name === "LOOP_DRAW")!;
+    expect(ev.payload!.stall).toBe(true);
+    expect(ev.payload!.repeats).toBe(LOOP_STALL_CAP);
+    expect(r.finalLife[0]).toBeGreaterThan(0);
+    expect(r.finalLife[1]).toBeGreaterThan(60); // theirs climbed all the while
   });
 
   it("the Usher's own loop moves a life total every pass: it never trips the rule, and wins — as it does against one opposing Usher (four a death against two)", async () => {
