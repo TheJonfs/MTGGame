@@ -3,7 +3,7 @@ import { devMenuEnabled } from "../dev";
 import { DevSetup, type DevMatch } from "./DevSetup";
 import { SetupScreen, type PlaySetup } from "./SetupScreen";
 import { loadConvocationData, loadOracle, loadPool, type OracleEntry, type SavedGame } from "../engine-bridge";
-import { AI_SIDEBOARD_CONSTRUCTED, MatchSeries, OPEN_FORMAT, addCopy, aiSideboard, fieldSideboard, removeCopy, type Collection, type DeckCheck, type Decklist } from "@shandalar/world";
+import { AI_SIDEBOARD_CONSTRUCTED, GAMES_KEPT, GAMES_KEY, MatchSeries, OPEN_FORMAT, addCopy, aiSideboard, fieldSideboard, removeCopy, type Collection, type DeckCheck, type Decklist } from "@shandalar/world";
 import { DeckEditor, type DeckEditorHost } from "../components/DeckEditor";
 import { MatchController } from "./match-controller";
 import { PlayMatch, loadStops } from "./PlayMatch";
@@ -22,6 +22,19 @@ import { cardName } from "../labels";
  * it has one, the general rules otherwise, against the human's REGISTERED sixty. The human is the series' seat 0. */
 interface MatchRun { series: MatchSeries; setup: PlaySetup; main: Decklist; side: Decklist; deck: Decklist; enemySide: Decklist; game: ReturnType<MatchSeries["nextGame"]> | null; recorded: boolean }
 const count = (l: Decklist) => l.reduce((n, e) => n + e.count, 0);
+/** Post-S60 (Chris: his match's game ones were not in the one log he could download): a finished game of the single
+ * match is kept with the Convocation's recorded games — the same key, the same shape, the newest GAMES_KEPT — so the
+ * Convocation's "download my games" carries it and `pnpm narrate` / `pnpm play-diff` read it. Never interrupts play. */
+function recordGame(c: MatchController, meta: Record<string, unknown>): void {
+  if (!c.result || typeof localStorage === "undefined") return;
+  try {
+    const raw = localStorage.getItem(GAMES_KEY), xs = raw ? (JSON.parse(raw) as unknown) : [], all = Array.isArray(xs) ? (xs as Record<string, unknown>[]) : [];
+    all.push({ format: "shandalar-log-v1", when: new Date().toISOString(), formatId: "open", ...meta, spec: c.spec, result: { winner: c.result.winner, reason: c.result.reason, turns: c.result.turns }, log: c.result.log.filter((x) => x.t === "ACTION" || x.t === "RNG") });
+    let keep = all.slice(-GAMES_KEPT);
+    try { localStorage.setItem(GAMES_KEY, JSON.stringify(keep)); }
+    catch { keep = keep.slice(Math.ceil(keep.length / 2)); try { localStorage.setItem(GAMES_KEY, JSON.stringify(keep)); } catch { /* full: this game goes unrecorded */ } }
+  } catch { /* a recording never interrupts play */ }
+}
 
 function EndScreen({
   c,
@@ -186,7 +199,10 @@ export function PlayApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =>
         oracle={oracle}
         onGameOver={() => {
           // the match: the game is recorded once, as it ends (the human is the series' seat 0)
-          if (run?.game && !run.recorded && controller.result) { run.series.record(run.game, controller.result); setRun({ ...run, recorded: true }); }
+          if (run?.game && !run.recorded && controller.result) {
+            run.series.record(run.game, controller.result); setRun({ ...run, recorded: true });
+            if (controller.humanSeat === 0) recordGame(controller, { eventSeed: run.series.seed, phase: "match", round: 1, game: run.game.index, opponent: run.setup.enemy.name, ...(run.setup.enemy.group === "open" ? { list: run.setup.enemy.key } : {}) });
+          } else if (!run && lastSetup && controller.result && controller.humanSeat === 0) recordGame(controller, { eventSeed: controller.seed, phase: "single", round: 1, game: 0, opponent: lastSetup.enemy.name, ...(lastSetup.enemy.group === "open" ? { list: lastSetup.enemy.key } : {}) });
           setScreen("end");
         }}
       />
