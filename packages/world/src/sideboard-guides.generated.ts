@@ -256,5 +256,145 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
    }
   ],
   "only": true
+ },
+ {
+  "key": "marducontrol",
+  "fifteen": [
+   {
+    "cardId": "wrath_of_god",
+    "count": 3
+   },
+   {
+    "cardId": "faerie_macabre",
+    "count": 3
+   },
+   {
+    "cardId": "pyroclasm",
+    "count": 3
+   },
+   {
+    "cardId": "tormods_crypt",
+    "count": 3
+   },
+   {
+    "cardId": "sacred_helix",
+    "count": 1
+   },
+   {
+    "cardId": "flametongue_kavu",
+    "count": 2
+   }
+  ],
+  "rows": [
+   {
+    "in": "tormods_crypt",
+    "n": 3,
+    "out": [
+     "swords_to_plowshares",
+     "vindicate"
+    ],
+    "when": [
+     "graveyard"
+    ]
+   },
+   {
+    "in": "faerie_macabre",
+    "n": 2,
+    "out": [
+     "the_usher"
+    ],
+    "when": [
+     "graveyard"
+    ]
+   },
+   {
+    "in": "faerie_macabre",
+    "n": 1,
+    "out": [
+     "vindicate"
+    ],
+    "when": [
+     "graveyard"
+    ]
+   },
+   {
+    "in": "pyroclasm",
+    "n": 3,
+    "out": [
+     "soul_warden",
+     "blood_artist"
+    ],
+    "when": [
+     "small"
+    ]
+   },
+   {
+    "in": "flametongue_kavu",
+    "n": 2,
+    "out": [
+     "swords_to_plowshares",
+     "vindicate"
+    ],
+    "when": [
+     "small"
+    ]
+   },
+   {
+    "in": "wrath_of_god",
+    "n": 3,
+    "out": [
+     "swords_to_plowshares",
+     "vindicate"
+    ],
+    "when": [
+     "large"
+    ],
+    "unless": [
+     "small"
+    ]
+   },
+   {
+    "in": "sacred_helix",
+    "n": 1,
+    "out": [
+     "vindicate"
+    ],
+    "when": [
+     "large"
+    ],
+    "unless": [
+     "small"
+    ]
+   },
+   {
+    "in": "wrath_of_god",
+    "n": 3,
+    "out": [
+     "vindicate",
+     "swords_to_plowshares"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "large"
+    ]
+   },
+   {
+    "in": "sacred_helix",
+    "n": 1,
+    "out": [
+     "vindicate",
+     "soul_warden"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "large"
+    ]
+   }
+  ],
+  "only": true
  }
 ];

@@ -9,7 +9,9 @@
   "reaper": "Post-S59 (Chris, 2026-10-10): superseded by Reaper Clio, the four-colour build of the same deck, which beat it nine matches in ten (74 against 56 in matches against the field). Last measured 54 in game one and 55.6 in matches (eighteen lists, pilot 120).",
   "locks": "S60 (ADR-174): a planner seed in the bottom three on three tables, with no revision from play — Esper control has no role the Writ and Countersnake do not fill. Last measured 36 in game one and 34.8 in matches (eighteen lists, pilot 121). Its fifteen and its guide are kept with it.",
   "tally": "S60 (ADR-174): a planner seed in the bottom three on three tables — two Izzet lists in the field, this one at 39 in matches. Last measured 43 in game one and 38.9 in matches (eighteen lists, pilot 121).",
-  "enchantress": "S60 (ADR-174): the one overhaul attempt reached 38.5 in matches (33.4 as it stood: four Reaper's Forerunners for the Guides and two Mongooses, a Vitalist for the Glare, a fourth Destiny and a second Vitalist for the Keepers), under the 45 the ruling asked. Last measured 39 in game one and 36.1 in matches (eighteen lists, pilot 121)."
+  "enchantress": "S60 (ADR-174): the one overhaul attempt reached 38.5 in matches (33.4 as it stood: four Reaper's Forerunners for the Guides and two Mongooses, a Vitalist for the Glare, a fourth Destiny and a second Vitalist for the Keepers), under the 45 the ruling asked. Last measured 39 in game one and 36.1 in matches (eighteen lists, pilot 121).",
+  "coin": "Post-S60 (Chris, 2026-10-11): replaced, with the Hearth, by Mardu Control — the same Usher, Blood Artist and Warden cards in a controlling build that measured 63 in matches against the field where the Coin stood at 60, and better than the Coin against eleven of thirteen shared opponents (the Pall and the Writ the exceptions). Two Usher decks stay: the Pall's combo and this. Last measured 51 in game one and 59.9 in matches (fifteen lists, pilot 122).",
+  "hearth": "Post-S60 (Chris, 2026-10-11): replaced, with the Coin, by Mardu Control (63 in matches against the field where the Hearth stood at 60). The Hearth was the better of the two against the Pall (62 against Mardu Control's 43), Countersnake and the Writ; Mardu Control the better against the Rabble (48 against 23), Reaper Clio, the Sweep, the Kiln and the Coin. Last measured 53 in game one and 59.9 in matches (fifteen lists, pilot 122)."
  },
  "plans": {
   "larder": {
@@ -295,6 +297,116 @@
     ],
     "when": [
      "graveyard"
+    ]
+   }
+  ],
+  "marducontrol": [
+   {
+    "in": "tormods_crypt",
+    "n": 3,
+    "out": [
+     "swords_to_plowshares",
+     "vindicate"
+    ],
+    "when": [
+     "graveyard"
+    ]
+   },
+   {
+    "in": "faerie_macabre",
+    "n": 2,
+    "out": [
+     "the_usher"
+    ],
+    "when": [
+     "graveyard"
+    ]
+   },
+   {
+    "in": "faerie_macabre",
+    "n": 1,
+    "out": [
+     "vindicate"
+    ],
+    "when": [
+     "graveyard"
+    ]
+   },
+   {
+    "in": "pyroclasm",
+    "n": 3,
+    "out": [
+     "soul_warden",
+     "blood_artist"
+    ],
+    "when": [
+     "small"
+    ]
+   },
+   {
+    "in": "flametongue_kavu",
+    "n": 2,
+    "out": [
+     "swords_to_plowshares",
+     "vindicate"
+    ],
+    "when": [
+     "small"
+    ]
+   },
+   {
+    "in": "wrath_of_god",
+    "n": 3,
+    "out": [
+     "swords_to_plowshares",
+     "vindicate"
+    ],
+    "when": [
+     "large"
+    ],
+    "unless": [
+     "small"
+    ]
+   },
+   {
+    "in": "sacred_helix",
+    "n": 1,
+    "out": [
+     "vindicate"
+    ],
+    "when": [
+     "large"
+    ],
+    "unless": [
+     "small"
+    ]
+   },
+   {
+    "in": "wrath_of_god",
+    "n": 3,
+    "out": [
+     "vindicate",
+     "swords_to_plowshares"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "large"
+    ]
+   },
+   {
+    "in": "sacred_helix",
+    "n": 1,
+    "out": [
+     "vindicate",
+     "soul_warden"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "large"
     ]
    }
   ]
@@ -2010,11 +2122,143 @@
      "count": 1
     }
    ]
+  },
+  {
+   "key": "marducontrol",
+   "name": "Mardu Control",
+   "title": "Usher Control (W B R)",
+   "archetype": "midrange",
+   "source": "Chris's Convocation, seed 230126, 2026-10-11 — 8–0 in matches (one game lost), then 5–0 in matches against Reaper Clio in the single match. Removal for every size of creature (Vindicate, the Purge, Swords, a Helix), the Jet Witch paid for by Soul Wardens, Nighthawks and Lumen's lifelink, and a second Usher returning the first to end the game. As registered here the three Ushers are in the sixty (his revision after the run: −1 Lumen, −1 Restoration Angel, −1 Jet Witch) and the fifteen holds a Helix and two Kavus in their place. 63 in matches in the AI's hands before it joined. Chris's name for it.",
+   "decklist": [
+    {
+     "cardId": "lumen_the_hearth_fire",
+     "count": 3
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 3
+    },
+    {
+     "cardId": "phyrexian_purge",
+     "count": 4
+    },
+    {
+     "cardId": "vindicate",
+     "count": 4
+    },
+    {
+     "cardId": "the_jet_witch",
+     "count": 3
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "blood_artist",
+     "count": 4
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 2
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "badlands",
+     "count": 4
+    },
+    {
+     "cardId": "scrubland",
+     "count": 4
+    },
+    {
+     "cardId": "plateau",
+     "count": 4
+    },
+    {
+     "cardId": "godless_shrine",
+     "count": 4
+    },
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "obsidian_observatory",
+     "count": 1
+    },
+    {
+     "cardId": "blood_crypt",
+     "count": 1
+    },
+    {
+     "cardId": "sacred_foundry",
+     "count": 1
+    },
+    {
+     "cardId": "sacred_helix",
+     "count": 1
+    },
+    {
+     "cardId": "the_usher",
+     "count": 3
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "wrath_of_god",
+     "count": 3
+    },
+    {
+     "cardId": "faerie_macabre",
+     "count": 3
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 3
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 3
+    },
+    {
+     "cardId": "sacred_helix",
+     "count": 1
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 2
+    }
+   ]
   }
  ],
  "_guides_note": "S58: a guide's rows are the author's swaps that MEASURED (open:rr --sideboarded-only <list> --guide-drop …). The Locks' planner's guide also had Essence Scatter for Absorb against creature decks (−17 against the Enchantress, −11 the Ford: Absorb's life and its reach beyond creatures were worth more) and Disenchant for the Serras (−12 the Muster and the Enchantress); both rows are out and the rules bring those cards in where they apply. Post-S59: `guidesOnly` names the guided lists whose guide is the whole plan (the rules do not run after it).",
  "guidesOnly": [
   "levy",
-  "tollgate"
+  "tollgate",
+  "marducontrol"
  ]
 }

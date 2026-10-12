@@ -716,3 +716,10 @@ See handoff Concerns for the authoritative list. Highlights: auto-pay greedy fea
 - **A brief's card counts for a list are checked against the list** like any other card fact (the Enchantress's were off in three places).
 - **Archiving a list**: `archived[key]` in `open-contributed.json`, remove its key from `OPEN_MEANS` and `open-matches.json`, move the archived-lists pin in `constructed-builder.test.ts`, `pnpm open:gen`.
 
+## Post-S60 notes (2026-10-11)
+
+- **A sim that hangs is a game that never ends** — `open:rr --progress` prints each match game's seed as it starts (the last line is the stuck game), `--match-only N` replays that match, `--trace-after N` prints the decisions past N. That is how the drifting Usher loop was found (R-103's second count).
+- **macOS has no `timeout`**: `perl -e 'alarm 240; exec @ARGV' pnpm …` — and the node child outlives the alarm; `pkill -f open-rr` after.
+- **zsh aborts a chain on a glob with no match** (`rm -f x_*.json && …` ran nothing). Check a long run's first output before walking away.
+- **A card nobody plays hides a pilot bug**: the Purge was uncastable for seventeen sessions because no field list held it. A new list's first table should include its cast counts per card (`logA.cast` in the shard files).
+- **A guide's `out` list takes its first card until none is left** — to take exactly two of a card, give that row `n: 2`; two rows may share an `in`.
