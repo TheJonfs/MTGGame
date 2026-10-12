@@ -1,10 +1,12 @@
-# Penny (tiers 1 and 2) — first experiments (2026-10-12, after Session 61)
+# The tier-two format (working name "Penny") — first experiments (2026-10-12, after Session 61)
+
+*The name is Chris's working one and may change. It appears in this file's name and in `data/convocation/experiments/penny-field*.json` only — no code, test or generated file carries it. The tools take a tier ceiling (`--max-tier 2`), not a name.*
 
 For the planner. Chris proposed Penny — tier 1 and tier 2 cards — in place of Pauper's tier 1 alone; these are a census
 and two game-one round-robins of first-draft lists, to say what the format looks like before seeds are drafted.
 **Everything here is the AI piloting first drafts in game one; nothing is sideboarded and nothing is tuned.**
 
-Reproduce: `pnpm format:census --max-tier 2`; `pnpm format:rr --field data/convocation/experiments/penny-field2.json --max-tier 2 --games 200 --seed 63`.
+Reproduce: `pnpm format:census --max-tier 2`; `pnpm format:rr --field data/convocation/experiments/penny-field2.json --max-tier 2 --games 200 --seed 63`. Round 3: `penny-field3.json`, `--seed 64`.
 
 ## The pool
 
@@ -48,7 +50,48 @@ so the Wurm deck Chris sketched is Gaean Wurm and Rumbling Baloth only.
 | **Naya Flash Snakes** | 29 | 48 | 50 | 56 | — | 63 | **49.3** | 20.7 |
 | **UG Block and Mill** | 16 | 25 | 23 | 26 | 37 | — | **25.4** | 18.1 |
 
-## What the numbers say
+## Round-robin 3 — the top five, and what was tried against them (200 games a pairing, ± 7)
+
+Three questions: does a tuned Skies beat the aggro decks; is BR Removal one list or a family; what else lines up against it.
+
+| | BR Removal | BR Removal, Djinn and Char | Mono-Black Removal | RG Stompy | Rabble (port) | RW Tokens | Muster (port) | UW Skies | UW Skies, walls for counters | UW Anthem Skies | GW Hexproof Auras | **mean** | turns |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| **BR Removal** | — | 46 | 56 | 68 | 58 | 55 | 56 | 50 | 52 | 52 | 81 | **57.1** | 24.1 |
+| **BR Removal, Djinn and Char** | 54 | — | 62 | 65 | 51 | 54 | 58 | 48 | 54 | 55 | 70 | **57.0** | 23.3 |
+| **Mono-Black Removal** | 44 | 38 | — | 72 | 63 | 56 | 55 | 40 | 41 | 47 | 87 | **54.1** | 25.4 |
+| **RG Stompy** | 33 | 35 | 29 | — | 53 | 59 | 61 | 65 | 55 | 61 | 71 | **52.0** | 17.1 |
+| **Rabble (port)** | 42 | 49 | 37 | 47 | — | 48 | 52 | 60 | 63 | 61 | 62 | **51.9** | 17.4 |
+| **RW Tokens** | 46 | 46 | 45 | 41 | 53 | — | 53 | 60 | 58 | 62 | 57 | **51.8** | 17.0 |
+| **Muster (port)** | 44 | 42 | 46 | 39 | 49 | 48 | — | 57 | 53 | 63 | 57 | **49.5** | 17.6 |
+| **UW Skies** | 51 | 52 | 61 | 35 | 40 | 40 | 43 | — | 65 | 54 | 48 | **48.8** | 18.8 |
+| **UW Skies, walls for counters** | 48 | 47 | 59 | 45 | 37 | 42 | 48 | 36 | — | 57 | 67 | **48.5** | 20.4 |
+| **UW Anthem Skies** | 49 | 46 | 53 | 40 | 40 | 39 | 38 | 46 | 43 | — | 51 | **44.1** | 17.5 |
+| **GW Hexproof Auras** | 20 | 30 | 13 | 29 | 38 | 43 | 44 | 52 | 33 | 50 | — | **35.0** | 16.9 |
+
+84 games drawn, 71 of them at the hundred-turn limit between a black-red list and the mono-black one (18% of those two pairings): two decks of deathtouch blockers and lifelink that will not attack into each other. A sideboarded table will carry these as half-wins.
+
+- **BR Removal is a family, not a list.** The Djinn-and-Char build is level with the first (57 each in this field; 54–46 head to head). Mono-black without the red (no Kavu, no Bolt) still beats the aggro decks — Stompy 72, the Rabble 63 — but loses to both black-red builds and to Skies (40): **the red is what makes it the best deck, and black alone is what beats aggro.**
+- **Skies stays even with BR Removal (50–52) and could not be tuned to beat aggro.** Walls of Air and Pacifisms for the Counterspells and Air Elementals moved Stompy from 35 to 45 and the Muster from 43 to 48, the Rabble not at all (40, 37), and lost the mirror. An Anthem build was worse everywhere. Skies is a 49 in this field: the format's check on BR Removal, and prey for everything fast.
+- **Go-wide tokens (RW, Young Pyromancer and the Anthem) is a 52 and the closest aggro deck to BR Removal (46)** — spot removal trades one for one with half a card.
+- **Hexproof auras did not work (35)**: one hexproof creature in the pool (Gladecover Scout) is not a deck.
+- In a field this top-heavy (three black lists, three Skies) every mean is pulled to 50; the first table's 67 for BR Removal is the fairer figure against a spread of decks.
+
+## What the pool is missing (for the next session's cards; the implementer's read)
+
+Each is a gap the tables showed, with what kind of card would fill it. The engine has no protection and no regeneration (manifest: hexproof, shroud and indestructible stand in), so the suggestions stay inside that.
+
+1. **Nothing goes over the top.** No creature costs more than five; the largest are a 5/5 with a drawback (Gallows Djinn) and two 4/4s. Green has eleven ways to make mana (Llanowar, Birds, Manaba, Wood Elves, Rampant Growth, Werebear) and nothing to spend it on, and the reanimation package (Buried Alive, Entomb, Zombify, Unearth, Dark Ritual) has nothing to return. **One or two real finishers at tier 2** would create the ramp deck and the reanimator deck at once. The pool already holds candidates one tier up: Rampaging Baloths, Pelakka Wurm, Baru (Chris's Wurm list), Faerie Formation, Serra Angel.
+2. **Control has no sweeper that matters and no way to pull ahead.** Pyroclasm is the only sweeper and did not turn the Rabble matchup (28) — the format's best creatures have toughness two with a Chieftain behind them or are a Kavu. Card advantage is Divination and Brainstorm. **A sweeper that kills toughness three or four** (or Wrath of God at tier 2) **and one real card-advantage spell** are the two cards a control deck is waiting for; without them the format has two speeds, aggro and midrange.
+3. **Nothing punishes removal on bodies.** Flametongue Kavu, Nekrataal, Reaper's Forerunner and Typhoid Rats are why BR Removal is the best deck, and the answers to them are thin: one hexproof creature, one shroud creature (Blurred Mongoose), one indestructible (Darksteel Myr, 0/1), two recursive ones (Reassembling Skeleton, Gravedigger). **Sturdy threats** — hexproof or shroud on a body worth protecting, a creature that leaves something behind when it dies, a creature that returns — would give aggro and midrange a way to fight it that is not "be Skies". If the Kavu or the Nekrataal is to be the format's lever instead, both are tier 2 and one step up removes them.
+4. **Blockers stop at toughness four.** "Big enough butts" is Wall of Air (1/5), Wall of Blossoms, Traumatizer, Treetop Snarespinner (x/4) and Youthful Valkyrie (1/3). A Kavu kills every one of them but the Wall of Air. A defensive deck wants **a blocker with toughness five or more that does something** at three or four mana.
+5. **White is the thin colour** (17 cards; one removal spell and Pacifism; no card advantage; nothing above four mana). Its decks are the Muster and half of Skies. A white four- or five-drop worth playing (Serra Angel is tier 3) and a second white answer would make it a colour and not a splash.
+6. **Mill is two cards short.** Hedron Crab, Altar of Dementia and the Traumatizer are all legal and the deck was last by thirty points: the Crab is slow without fetches (Evolving Wilds only), the Altar has nothing large to eat, and the Traumatizer needs evasion. It wants a second engine (a repeatable mill permanent) — or it is simply not a tier-two deck.
+7. **No combination deck at all.** That may be the format's character, deliberately: the Open is where the Usher lives. Flagged so that it is a choice.
+8. **A stall risk to design against:** black mirrors drew one game in five at the turn limit. Any card that breaks a ground stall (evasion in black, a repeatable drain, a pinger) helps the format finish its games; the Tollgate has the same problem in the Open.
+
+**Cards that would matter to the Open too**, if they came in at tier 1 or 2: a sturdy threat (item 3) is what the Open's non-pillar aggro decks lack against Reaper Clio and Mardu Control; a five-toughness blocker (item 4) is what the Tollgate and the Sweep would play at once; a mid-range sweeper (item 2) changes Mardu Control's and the Writ's sideboards.
+
+## What the numbers say (rounds 1 and 2)
 
 - **The deck to beat is not the Rabble; it is black-red removal on bodies** — Typhoid Rats, Child of Night, Nighthawk,
   Nekrataal, Flametongue Kavu, Blood Artist, with Doom Blade and Bolt. 67 against the field of eleven, 61 over the
@@ -84,6 +127,7 @@ so the Wurm deck Chris sketched is Gaean Wurm and Rumbling Baloth only.
 
 ## The lists
 
+
 - **Rabble (port)** (`rabble`, piloted as aggro): 20 Mountain, 4 Raging Goblin, 4 Dragon Fodder, 4 Hordeling Outburst, 4 Goblin Chieftain, 4 Goblin Grenade, 4 Lightning Bolt, 4 Char, 4 Flametongue Kavu, 4 Goblin Matron, 2 Boggart Brute, 2 Goblin Piker
 - **Muster (port)** (`muster`, piloted as aggro): 4 Sacred Foundry, 11 Plains, 6 Mountain, 2 Secluded Steppe, 4 Savannah Lions, 4 Soul Warden, 4 Suntail Hawk, 4 Fencing Ace, 3 Restoration Angel, 4 Raise the Alarm, 4 Glorious Anthem, 4 Lightning Bolt, 2 Swords to Plowshares, 4 Flametongue Kavu
 - **UW Skies** (`skies`, piloted as midrange): 4 Hallowed Fountain, 10 Plains, 10 Island, 4 Youthful Valkyrie, 4 Inspiring Overseer, 4 Plumecreed Escort, 3 Cloudkin Seer, 4 Restoration Angel, 4 Traumatizer, 2 Air Elemental, 4 Swords to Plowshares, 4 Counterspell, 3 Pacifism
@@ -95,3 +139,9 @@ so the Wurm deck Chris sketched is Gaean Wurm and Rumbling Baloth only.
 - **BW Aristocrats** (`bwlife`, piloted as midrange): 4 Godless Shrine, 9 Plains, 10 Swamp, 4 Soul Warden, 4 Blood Artist, 4 Child of Night, 4 Vampire Nighthawk, 4 Nekrataal, 4 Restoration Angel, 3 Vitalist, 2 Typhoid Rats, 4 Swords to Plowshares, 4 Doom Blade
 - **RG Stompy** (`stompy`, piloted as aggro): 4 Stomping Ground, 13 Forest, 4 Mountain, 4 Llanowar Elves, 2 Birds of Paradise, 4 Grizzly Bears, 3 Mother Bear, 4 Centaur Courser, 4 Rumbling Baloth, 3 Gaean Wurm, 4 Rancor, 4 Flametongue Kavu, 4 Lightning Bolt, 3 Reaper's Forerunner
 - **Warband (port)** (`warband`, piloted as aggro): 4 Sacred Foundry, 15 Mountain, 2 Plains, 4 Skirk Prospector, 4 Goblin Piker, 4 Goblin Chieftain, 4 Boggart Brute, 3 Goblin Matron, 4 Hordeling Outburst, 4 Goblin Grenade, 4 Lightning Bolt, 4 Flametongue Kavu, 2 Swords to Plowshares, 2 Raging Goblin
+- **UW Skies, walls for counters** (`skies_wall`, piloted as midrange; round 3): 4 Hallowed Fountain, 10 Plains, 10 Island, 4 Youthful Valkyrie, 4 Inspiring Overseer, 4 Plumecreed Escort, 2 Cloudkin Seer, 4 Restoration Angel, 4 Traumatizer, 4 Wall of Air, 4 Swords to Plowshares, 4 Pacifism, 2 Soul Warden
+- **UW Anthem Skies** (`skies_anthem`, piloted as aggro; round 3): 4 Hallowed Fountain, 13 Plains, 6 Island, 4 Suntail Hawk, 4 Youthful Valkyrie, 4 Inspiring Overseer, 4 Plumecreed Escort, 4 Restoration Angel, 4 Glorious Anthem, 4 Swords to Plowshares, 3 Pacifism, 3 Traumatizer, 3 Cloudkin Seer
+- **BR Removal, Djinn and Char** (`br_djinn`, piloted as midrange; round 3): 4 Blood Crypt, 12 Swamp, 7 Mountain, 4 Typhoid Rats, 4 Blood Artist, 4 Child of Night, 4 Vampire Nighthawk, 4 Nekrataal, 4 Flametongue Kavu, 3 Gallows Djinn, 4 Doom Blade, 4 Lightning Bolt, 2 Char
+- **Mono-Black Removal** (`mbc`, piloted as midrange; round 3): 23 Swamp, 4 Typhoid Rats, 4 Child of Night, 4 Vampire Nighthawk, 4 Nekrataal, 3 Gallows Djinn, 3 Gravedigger, 3 Blood Artist, 3 Phyrexian Rager, 4 Doom Blade, 3 Terror, 2 Tendrils of Corruption
+- **GW Hexproof Auras** (`hexproof`, piloted as aggro; round 3): 4 Temple Garden, 12 Forest, 5 Plains, 4 Gladecover Scout, 4 Llanowar Elves, 4 Grizzly Bears, 4 Centaur Courser, 3 Rumbling Baloth, 4 Rancor, 4 Blanchwood Armor, 3 Spirit Link, 2 Giant Growth, 3 Swords to Plowshares, 4 Reaper's Forerunner
+- **RW Tokens** (`tokens`, piloted as aggro; round 3): 4 Sacred Foundry, 9 Plains, 9 Mountain, 4 Soul Warden, 4 Young Pyromancer, 4 Raise the Alarm, 4 Dragon Fodder, 4 Hordeling Outburst, 4 Glorious Anthem, 2 Goblin Chieftain, 4 Lightning Bolt, 2 Goblin Grenade, 3 Flametongue Kavu, 3 Restoration Angel
