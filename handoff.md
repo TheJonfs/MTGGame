@@ -76,6 +76,39 @@ Chris: "register it and re-run the tables of record. Then we really will have th
 - **The three pillars against each other (matches, 60 a pairing):** Mardu Control over the Rabble 60, over Reaper Clio 52; Reaper Clio over the Rabble 75. (At 900 matches: Mardu Control 56 over Reaper Clio, 57 over the Rabble.) Mardu Control's worst: the Pall 48.
 - **A correction to yesterday's game-one table:** the merge for `rr14_s61.json` took in two stale shard files from 8 October that shared its scratch tag (and so did today's first merge). Both are re-merged from their own eight shards (9,100 games); no figure moved by more than a point, and the match tables were never affected. Scratch tags are now checked for leftovers before a merge.
 
+### The three pillars as registered (2026-10-12)
+
+**Reaper Clio** — Four-Colour Snake Control (G B u r); `reaperclio`. 71.5 in matches. Sideboarded by the general rules (five guides were measured in S60; none beat them).
+- Spells (41): 4 Birds of Paradise, 4 Clio, Lady of the Depths, 4 Flametongue Kavu, 4 Manaba, 4 Rage Cobra, 4 Reaper's Forerunner, 4 Wall of Blossoms, 3 Mystic Snake, 3 The Reaper, 1 Black Lotus, 1 Mox Emerald, 1 Mox Jet, 1 Mox Ruby, 1 Mox Sapphire, 1 The Reeve, 1 Time Walk
+- Lands (19): 4 Bayou, 4 Taiga, 4 Tropical Island, 2 Volcanic Island, 1 Badlands, 1 Cairnbrand, 1 Tallyflame Court, 1 Underground Sea, 1 Wrackroot
+- Sideboard (15): 3 Tormod's Crypt, 3 Essence Scatter, 3 Savage Twister, 3 Putrefy, 1 Drana, Kalastria Bloodchief, 1 Faerie Formation, 1 Seraphina, the Initiative
+
+**Mardu Control** — Usher Control (W B R); `marducontrol`. 69.7 in matches. Sideboarded by its guide alone (Chris's plan).
+- Spells (40): 4 Blood Artist, 4 Soul Warden, 4 Vampire Nighthawk, 4 Vindicate, 3 Lumen, the Hearth Fire, 3 Restoration Angel, 3 The Jet Witch, 3 The Usher, 2 Phyrexian Purge, 2 Swords to Plowshares, 2 Wrath of God, 1 Black Lotus, 1 Demonic Tutor, 1 Mox Jet, 1 Mox Pearl, 1 Mox Ruby, 1 Sacred Helix
+- Lands (20): 4 Badlands, 4 Godless Shrine, 4 Plateau, 4 Scrubland, 1 Blood Crypt, 1 Cairnbrand, 1 Obsidian Observatory, 1 Sacred Foundry
+- Sideboard (15): 3 Tormod's Crypt, 3 Faerie Macabre, 3 Pyroclasm, 2 Flametongue Kavu, 1 Phyrexian Purge, 1 Sacred Helix, 2 Wrath of God
+- Guide: against many small creatures and few large (the Rabble, the Muster, the Warband) — 3 Pyroclasm, 2 Kavu, 2 Wrath, 1 Helix for 2 Swords, 4 Vindicate, 2 Purge. Against small and large together (Reaper Clio, the Wurmspeaker) — the same eight for the 4 Soul Wardens and 4 Blood Artists. Against large creatures only — 2 Wrath and the Helix for 2 Swords and a Vindicate. Against a graveyard plan (the Pall) — 3 Crypt, 3 Macabre for 2 Swords, 2 Ushers, 2 Vindicate (and the Wraths and the Helix come in too: the Pall reads as large).
+
+**the Rabble** — Mono-Red Goblins (R); `rabble`. 64.9 in matches. Sideboarded by the general rules.
+- Spells (42): 4 Char, 4 Dragon Fodder, 4 Flametongue Kavu, 4 Goblin Chieftain, 4 Goblin Grenade, 4 Hordeling Outburst, 4 Lightning Bolt, 4 Raging Goblin, 4 Seasoned Pyromancer, 2 Siege-Gang Commander, 1 Black Lotus, 1 Mox Jet, 1 Mox Ruby, 1 Mox Sapphire
+- Lands (18): 8 Mountain, 4 Badlands, 4 Volcanic Island, 1 Cairnbrand, 1 Tallyflame Court
+- Sideboard (15): 4 The Ruby Tyrant, 3 Abrade, 4 Tormod's Crypt, 4 Faerie Macabre
+
+### The top eight against each other (matches, 60 a pairing; the row's rate against the other seven)
+
+| | vs the seven | Reaper Clio | Mardu Control | Rabble | Pall | Writ | Countersnake | Depths | Sweep |
+|---|---|---|---|---|---|---|---|---|---|
+| **Reaper Clio** | 65.1 | — | 48 | 75 | 62 | 63 | 71 | 68 | 68 |
+| **Mardu Control** | 63.3 | 52 | — | 60 | 48 | 58 | 75 | 82 | 68 |
+| **Rabble** | 60.0 | 25 | 40 | — | 57 | 77 | 58 | 85 | 78 |
+| **Pall** | 51.4 | 38 | 52 | 43 | — | 50 | 43 | 62 | 72 |
+| **Writ** | 43.3 | 37 | 42 | 23 | 50 | — | 55 | 43 | 53 |
+| **Countersnake** | 44.6 | 29 | 25 | 42 | 57 | 45 | — | 62 | 53 |
+| **Depths** | 33.3 | 32 | 18 | 15 | 38 | 57 | 38 | — | 35 |
+| **Sweep** | 38.8 | 32 | 32 | 22 | 28 | 47 | 47 | 65 | — |
+
+The three pillars stand at 65, 63 and 60 against the rest of the top eight; the Pall is level (51); the other four are under 45. The matchup grid (https://claude.ai/artifact/DYsJLcx54Fd5pWJGMvTacA, private to Chris) shows the same fourteen lists.
+
 ### The revision as measured before it was registered
 
 His revision after playing the Rabble: **two Wraths for two Purges in the sixty**; the fifteen 3 Crypt, 3 Macabre, 3 Pyroclasm, 2 Kavu, 2 Wrath, 1 Purge, 1 Helix. Against the Rabble: every spot removal out (2 Swords, 4 Vindicate, 2 Purge) for 3 Pyroclasm, 2 Kavu, 2 Wrath, 1 Helix — the Warden/Artist package stays. Against Reaper Clio (his guess): the package out for the same eight. Scratch: `gx/mardu4.json`, `mardu4_side.json`, `mardu4_gC1.json`.
@@ -116,7 +149,6 @@ His revision after playing the Rabble: **two Wraths for two Purges in the sixty*
 - **Chris's next deck-building experiment:** a Clio/Usher hybrid that beats the two green Clio decks and/or the Rabble (two untested starts: the Writ with Ushers; Mardu Control with blue for Clio — she shrinks only the opponent's creatures, so the Warden/Artist package can stay). After it, **an initial metagame for another Constructed format**.
 - **A pilot rule for the Usher loop that helps only the opponent** (the AI chose it; the drifting-loop draw now ends it as a draw, which is still a game thrown away).
 - **The journey's Purge** (book 123): the lord decks and the Heart's deck now cast it — not measured.
-- **Stale views:** the matchup grid artifact and the top-eight sub-table still show the fifteen-list field.
 - **The deployment's size** (about 400 MB of art and audio a deployment) if Vercel's storage cap keeps biting: host the assets outside the deployment. Not scoped.
 - **ADR-173's Clio measure** (one copy against four) is no longer forced: a list reaches 55 against Reaper Clio. The planner's call whether it is still wanted.
 - Still owed from before: the sideboarding rules' "creatures" rule probe; the scratch tools into the repo; a journey played through a sitting (S59); a unit test for the single match's series and recording (checked by hand in the preview only).
