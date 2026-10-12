@@ -336,6 +336,93 @@
     "in": "pyroclasm",
     "n": 3,
     "out": [
+     "swords_to_plowshares",
+     "vindicate",
+     "phyrexian_purge"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "large"
+    ]
+   },
+   {
+    "in": "flametongue_kavu",
+    "n": 2,
+    "out": [
+     "swords_to_plowshares",
+     "vindicate",
+     "phyrexian_purge"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "large"
+    ]
+   },
+   {
+    "in": "wrath_of_god",
+    "n": 2,
+    "out": [
+     "swords_to_plowshares",
+     "vindicate",
+     "phyrexian_purge"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "large"
+    ]
+   },
+   {
+    "in": "sacred_helix",
+    "n": 1,
+    "out": [
+     "swords_to_plowshares",
+     "vindicate",
+     "phyrexian_purge"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "large"
+    ]
+   },
+   {
+    "in": "wrath_of_god",
+    "n": 2,
+    "out": [
+     "swords_to_plowshares",
+     "vindicate"
+    ],
+    "when": [
+     "large"
+    ],
+    "unless": [
+     "small"
+    ]
+   },
+   {
+    "in": "sacred_helix",
+    "n": 1,
+    "out": [
+     "vindicate"
+    ],
+    "when": [
+     "large"
+    ],
+    "unless": [
+     "small"
+    ]
+   },
+   {
+    "in": "pyroclasm",
+    "n": 3,
+    "out": [
      "soul_warden",
      "blood_artist"
     ],
@@ -347,8 +434,8 @@
     "in": "flametongue_kavu",
     "n": 2,
     "out": [
-     "swords_to_plowshares",
-     "vindicate"
+     "soul_warden",
+     "blood_artist"
     ],
     "when": [
      "small"
@@ -356,15 +443,12 @@
    },
    {
     "in": "wrath_of_god",
-    "n": 3,
+    "n": 2,
     "out": [
-     "swords_to_plowshares",
-     "vindicate"
+     "soul_warden",
+     "blood_artist"
     ],
     "when": [
-     "large"
-    ],
-    "unless": [
      "small"
     ]
    },
@@ -372,41 +456,11 @@
     "in": "sacred_helix",
     "n": 1,
     "out": [
-     "vindicate"
-    ],
-    "when": [
-     "large"
-    ],
-    "unless": [
-     "small"
-    ]
-   },
-   {
-    "in": "wrath_of_god",
-    "n": 3,
-    "out": [
-     "vindicate",
-     "swords_to_plowshares"
+     "soul_warden",
+     "blood_artist"
     ],
     "when": [
      "small"
-    ],
-    "unless": [
-     "large"
-    ]
-   },
-   {
-    "in": "sacred_helix",
-    "n": 1,
-    "out": [
-     "vindicate",
-     "soul_warden"
-    ],
-    "when": [
-     "small"
-    ],
-    "unless": [
-     "large"
     ]
    }
   ]
@@ -2128,7 +2182,7 @@
    "name": "Mardu Control",
    "title": "Usher Control (W B R)",
    "archetype": "midrange",
-   "source": "Chris's Convocation, seed 230126, 2026-10-11 — 8–0 in matches (one game lost), then 5–0 in matches against Reaper Clio in the single match. Removal for every size of creature (Vindicate, the Purge, Swords, a Helix), the Jet Witch paid for by Soul Wardens, Nighthawks and Lumen's lifelink, and a second Usher returning the first to end the game. As registered here the three Ushers are in the sixty (his revision after the run: −1 Lumen, −1 Restoration Angel, −1 Jet Witch) and the fifteen holds a Helix and two Kavus in their place. 63 in matches in the AI's hands before it joined. Chris's name for it.",
+   "source": "Chris's Convocation, seed 230126, 2026-10-11 — 8–0 in matches (one game lost), then 5–0 in matches against Reaper Clio in the single match. Removal for every size of creature (Vindicate, the Purge, Swords, a Helix), the Jet Witch paid for by Soul Wardens, Nighthawks and Lumen's lifelink, and a second Usher returning the first to end the game. As registered here the three Ushers are in the sixty (his revision after the run: −1 Lumen, −1 Restoration Angel, −1 Jet Witch) and the fifteen holds a Helix and two Kavus in their place. 63 in matches in the AI's hands before it joined. Revised 2026-10-12 (Chris, after playing the Rabble): two Wraths for two Purges in the sixty, the fifteen and its guide rewritten — against small creatures every spot removal leaves for the sweepers and the Kavus; against a deck of small and large creatures (Reaper Clio) the Warden and Artist package leaves instead. 70 in matches in the AI's hands in its own seat (61 before); 56 against Reaper Clio and 57 against the Rabble at 900 matches each. Chris's name for it.",
    "decklist": [
     {
      "cardId": "lumen_the_hearth_fire",
@@ -2140,7 +2194,7 @@
     },
     {
      "cardId": "phyrexian_purge",
-     "count": 4
+     "count": 2
     },
     {
      "cardId": "vindicate",
@@ -2225,11 +2279,15 @@
     {
      "cardId": "the_usher",
      "count": 3
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 2
     }
    ],
    "sideboard": [
     {
-     "cardId": "wrath_of_god",
+     "cardId": "tormods_crypt",
      "count": 3
     },
     {
@@ -2241,15 +2299,19 @@
      "count": 3
     },
     {
-     "cardId": "tormods_crypt",
-     "count": 3
+     "cardId": "flametongue_kavu",
+     "count": 2
+    },
+    {
+     "cardId": "phyrexian_purge",
+     "count": 1
     },
     {
      "cardId": "sacred_helix",
      "count": 1
     },
     {
-     "cardId": "flametongue_kavu",
+     "cardId": "wrath_of_god",
      "count": 2
     }
    ]

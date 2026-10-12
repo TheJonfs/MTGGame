@@ -64,7 +64,15 @@ Chris went 8–0 in matches (one game lost) in a Convocation with a Mardu list: 
 - **Chris's rulings on the field (2026-10-11):** the Usher returning the Usher stays, deliberately, for now. The Open's three things to do: go fast (the Rabble, backed by the Kavu), play Clio (Reaper Clio; Countersnake and the Writ are lesser Clio decks), loop Ushers (the Pall as combo, Mardu Control as a control deck's finisher). He reads it as a good field. **His next deck-building experiment:** a Clio/Usher hybrid that beats the two green Clio decks and/or the Rabble; after it, an initial metagame for another Constructed format.
 - Not done: the top-eight sub-table; the matchup grid artifact (still fifteen lists); a ladder run (no rule changed here).
 
-## After the session — Mardu Control, Chris's revision (2026-10-12): measured, NOT registered
+## After the session — the revised Mardu Control registered; the tables of record (2026-10-12) — NOT PUSHED
+
+Chris: "register it and re-run the tables of record. Then we really will have three pillars in the format of Mardu Control, Reaper Clio, and Rabble." The sixty, the fifteen and the guide below are `marducontrol` now (`open-contributed.json`).
+
+- **The tables of record, fourteen lists** (`analysis/runs/rr14_s62.json`, `matches14_s62.md/.json`; 100 games and 60 matches a pairing; `open-matches.json`, `OPEN_MEANS`, the reference regenerated). Matches / game one: **Reaper Clio 71.5 / 69, Mardu Control 69.7 / 61, the Rabble 64.9 / 59**, the Pall 56.5 / 65, the Writ 54.9 / 49, Countersnake 54.0 / 51, the Depths 44.5 / 45, the Sweep 44.2 / 43, the Levy 42.9 / 42, the Muster 42.9 / 44, the Kiln 40.6 / 43, the Tollgate 40.1 / 44, the Warband 39.0 / 41, the Wurmspeaker 34.1 / 40.
+- **The three pillars against each other (matches, 60 a pairing):** Mardu Control over the Rabble 60, over Reaper Clio 52; Reaper Clio over the Rabble 75. (At 900 matches: Mardu Control 56 over Reaper Clio, 57 over the Rabble.) Mardu Control's worst: the Pall 48.
+- **A correction to yesterday's game-one table:** the merge for `rr14_s61.json` took in two stale shard files from 8 October that shared its scratch tag (and so did today's first merge). Both are re-merged from their own eight shards (9,100 games); no figure moved by more than a point, and the match tables were never affected. Scratch tags are now checked for leftovers before a merge.
+
+### The revision as measured before it was registered
 
 His revision after playing the Rabble: **two Wraths for two Purges in the sixty**; the fifteen 3 Crypt, 3 Macabre, 3 Pyroclasm, 2 Kavu, 2 Wrath, 1 Purge, 1 Helix. Against the Rabble: every spot removal out (2 Swords, 4 Vindicate, 2 Purge) for 3 Pyroclasm, 2 Kavu, 2 Wrath, 1 Helix — the Warden/Artist package stays. Against Reaper Clio (his guess): the package out for the same eight. Scratch: `gx/mardu4.json`, `mardu4_side.json`, `mardu4_gC1.json`.
 

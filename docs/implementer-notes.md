@@ -723,3 +723,4 @@ See handoff Concerns for the authoritative list. Highlights: auto-pay greedy fea
 - **zsh aborts a chain on a glob with no match** (`rm -f x_*.json && …` ran nothing). Check a long run's first output before walking away.
 - **A card nobody plays hides a pilot bug**: the Purge was uncastable for seventeen sessions because no field list held it. A new list's first table should include its cast counts per card (`logA.cast` in the shard files).
 - **A guide's `out` list takes its first card until none is left** — to take exactly two of a card, give that row `n: 2`; two rows may share an `in`.
+- **A scratch tag reused is a contaminated merge**: `rec61_8/9.json` from an old ten-shard run sat beside a new eight-shard `rec61_0..7` and `--merge rec61_*` took them all (the `games` count said 10,500 where 9,100 was right — check it). Use a fresh tag, or list the directory first.

@@ -4,21 +4,21 @@
  "matchesAPairing": 60,
  "byList": {
   "countersnake": {
-   "matches": 55.7,
-   "gameOne": 54,
-   "later": 54.1,
+   "matches": 54,
+   "gameOne": 53.6,
+   "later": 52.8,
    "n": 780
   },
   "depths": {
    "matches": 44.5,
-   "gameOne": 43,
-   "later": 47.9,
+   "gameOne": 43.1,
+   "later": 48.1,
    "n": 780
   },
   "kiln": {
-   "matches": 41.7,
-   "gameOne": 44.2,
-   "later": 44.7,
+   "matches": 40.6,
+   "gameOne": 43.8,
+   "later": 43.6,
    "n": 780
   },
   "levy": {
@@ -28,63 +28,63 @@
    "n": 780
   },
   "marducontrol": {
-   "matches": 62.3,
-   "gameOne": 57.6,
-   "later": 60,
+   "matches": 69.7,
+   "gameOne": 59.1,
+   "later": 66.5,
    "n": 780
   },
   "muster": {
-   "matches": 43.7,
-   "gameOne": 44.9,
-   "later": 46.7,
+   "matches": 42.9,
+   "gameOne": 44.8,
+   "later": 46.1,
    "n": 780
   },
   "pall": {
-   "matches": 56.7,
-   "gameOne": 62.6,
-   "later": 50,
+   "matches": 56.5,
+   "gameOne": 62.3,
+   "later": 49.9,
    "n": 780
   },
   "rabble": {
-   "matches": 66.3,
-   "gameOne": 57.2,
-   "later": 63.2,
+   "matches": 64.9,
+   "gameOne": 57.6,
+   "later": 61.6,
    "n": 780
   },
   "reaperclio": {
-   "matches": 72.2,
-   "gameOne": 67.9,
-   "later": 64.2,
+   "matches": 71.5,
+   "gameOne": 67.8,
+   "later": 63.8,
    "n": 780
   },
   "sweep": {
-   "matches": 44,
-   "gameOne": 47,
-   "later": 45.5,
+   "matches": 44.2,
+   "gameOne": 47.4,
+   "later": 45.7,
    "n": 780
   },
   "tollgate": {
-   "matches": 40.4,
-   "gameOne": 47,
-   "later": 40.7,
+   "matches": 40.1,
+   "gameOne": 46.9,
+   "later": 40.8,
    "n": 780
   },
   "warband": {
-   "matches": 40.1,
-   "gameOne": 44.6,
-   "later": 43.5,
+   "matches": 39,
+   "gameOne": 43.7,
+   "later": 42.4,
    "n": 780
   },
   "writ": {
-   "matches": 55,
-   "gameOne": 49.6,
-   "later": 55,
+   "matches": 54.9,
+   "gameOne": 49.9,
+   "later": 54.9,
    "n": 780
   },
   "wurmspeaker": {
-   "matches": 34.5,
-   "gameOne": 38.2,
-   "later": 39.1,
+   "matches": 34.1,
+   "gameOne": 37.8,
+   "later": 38.6,
    "n": 780
   }
  }

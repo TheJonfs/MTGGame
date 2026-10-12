@@ -261,7 +261,7 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
   "key": "marducontrol",
   "fifteen": [
    {
-    "cardId": "wrath_of_god",
+    "cardId": "tormods_crypt",
     "count": 3
    },
    {
@@ -273,15 +273,19 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
     "count": 3
    },
    {
-    "cardId": "tormods_crypt",
-    "count": 3
+    "cardId": "flametongue_kavu",
+    "count": 2
+   },
+   {
+    "cardId": "phyrexian_purge",
+    "count": 1
    },
    {
     "cardId": "sacred_helix",
     "count": 1
    },
    {
-    "cardId": "flametongue_kavu",
+    "cardId": "wrath_of_god",
     "count": 2
    }
   ],
@@ -321,6 +325,93 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
     "in": "pyroclasm",
     "n": 3,
     "out": [
+     "swords_to_plowshares",
+     "vindicate",
+     "phyrexian_purge"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "large"
+    ]
+   },
+   {
+    "in": "flametongue_kavu",
+    "n": 2,
+    "out": [
+     "swords_to_plowshares",
+     "vindicate",
+     "phyrexian_purge"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "large"
+    ]
+   },
+   {
+    "in": "wrath_of_god",
+    "n": 2,
+    "out": [
+     "swords_to_plowshares",
+     "vindicate",
+     "phyrexian_purge"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "large"
+    ]
+   },
+   {
+    "in": "sacred_helix",
+    "n": 1,
+    "out": [
+     "swords_to_plowshares",
+     "vindicate",
+     "phyrexian_purge"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "large"
+    ]
+   },
+   {
+    "in": "wrath_of_god",
+    "n": 2,
+    "out": [
+     "swords_to_plowshares",
+     "vindicate"
+    ],
+    "when": [
+     "large"
+    ],
+    "unless": [
+     "small"
+    ]
+   },
+   {
+    "in": "sacred_helix",
+    "n": 1,
+    "out": [
+     "vindicate"
+    ],
+    "when": [
+     "large"
+    ],
+    "unless": [
+     "small"
+    ]
+   },
+   {
+    "in": "pyroclasm",
+    "n": 3,
+    "out": [
      "soul_warden",
      "blood_artist"
     ],
@@ -332,8 +423,8 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
     "in": "flametongue_kavu",
     "n": 2,
     "out": [
-     "swords_to_plowshares",
-     "vindicate"
+     "soul_warden",
+     "blood_artist"
     ],
     "when": [
      "small"
@@ -341,15 +432,12 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
    },
    {
     "in": "wrath_of_god",
-    "n": 3,
+    "n": 2,
     "out": [
-     "swords_to_plowshares",
-     "vindicate"
+     "soul_warden",
+     "blood_artist"
     ],
     "when": [
-     "large"
-    ],
-    "unless": [
      "small"
     ]
    },
@@ -357,41 +445,11 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
     "in": "sacred_helix",
     "n": 1,
     "out": [
-     "vindicate"
-    ],
-    "when": [
-     "large"
-    ],
-    "unless": [
-     "small"
-    ]
-   },
-   {
-    "in": "wrath_of_god",
-    "n": 3,
-    "out": [
-     "vindicate",
-     "swords_to_plowshares"
+     "soul_warden",
+     "blood_artist"
     ],
     "when": [
      "small"
-    ],
-    "unless": [
-     "large"
-    ]
-   },
-   {
-    "in": "sacred_helix",
-    "n": 1,
-    "out": [
-     "vindicate",
-     "soul_warden"
-    ],
-    "when": [
-     "small"
-    ],
-    "unless": [
-     "large"
     ]
    }
   ],
