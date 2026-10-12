@@ -53,6 +53,7 @@
     "play-diff": "tsx packages/world/src/play-diff-cli.ts",
     "sideboard:show": "tsx packages/world/src/sideboard-show-cli.ts",
     "format:census": "tsx packages/world/src/format-census-cli.ts",
+    "format:rr": "tsx packages/world/src/format-rr-cli.ts",
     "constructed:report": "tsx packages/world/src/constructed-report-cli.ts",
     "constructed:rr": "tsx packages/world/src/constructed-rr-cli.ts",
     "tinker": "tsx packages/world/src/tinker-cli.ts",

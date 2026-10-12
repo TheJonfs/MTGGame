@@ -1,0 +1,680 @@
+{
+ "rabble": {
+  "name": "Rabble (port)",
+  "archetype": "aggro",
+  "decklist": [
+   {
+    "cardId": "mountain",
+    "count": 20
+   },
+   {
+    "cardId": "raging_goblin",
+    "count": 4
+   },
+   {
+    "cardId": "dragon_fodder",
+    "count": 4
+   },
+   {
+    "cardId": "hordeling_outburst",
+    "count": 4
+   },
+   {
+    "cardId": "goblin_chieftain",
+    "count": 4
+   },
+   {
+    "cardId": "goblin_grenade",
+    "count": 4
+   },
+   {
+    "cardId": "lightning_bolt",
+    "count": 4
+   },
+   {
+    "cardId": "char",
+    "count": 4
+   },
+   {
+    "cardId": "flametongue_kavu",
+    "count": 4
+   },
+   {
+    "cardId": "goblin_matron",
+    "count": 4
+   },
+   {
+    "cardId": "boggart_brute",
+    "count": 2
+   },
+   {
+    "cardId": "goblin_piker",
+    "count": 2
+   }
+  ]
+ },
+ "muster": {
+  "name": "Muster (port)",
+  "archetype": "aggro",
+  "decklist": [
+   {
+    "cardId": "sacred_foundry",
+    "count": 4
+   },
+   {
+    "cardId": "plains",
+    "count": 11
+   },
+   {
+    "cardId": "mountain",
+    "count": 6
+   },
+   {
+    "cardId": "secluded_steppe",
+    "count": 2
+   },
+   {
+    "cardId": "savannah_lions",
+    "count": 4
+   },
+   {
+    "cardId": "soul_warden",
+    "count": 4
+   },
+   {
+    "cardId": "suntail_hawk",
+    "count": 4
+   },
+   {
+    "cardId": "fencing_ace",
+    "count": 4
+   },
+   {
+    "cardId": "restoration_angel",
+    "count": 3
+   },
+   {
+    "cardId": "raise_the_alarm",
+    "count": 4
+   },
+   {
+    "cardId": "glorious_anthem",
+    "count": 4
+   },
+   {
+    "cardId": "lightning_bolt",
+    "count": 4
+   },
+   {
+    "cardId": "swords_to_plowshares",
+    "count": 2
+   },
+   {
+    "cardId": "flametongue_kavu",
+    "count": 4
+   }
+  ]
+ },
+ "skies": {
+  "name": "UW Skies",
+  "archetype": "midrange",
+  "decklist": [
+   {
+    "cardId": "hallowed_fountain",
+    "count": 4
+   },
+   {
+    "cardId": "plains",
+    "count": 10
+   },
+   {
+    "cardId": "island",
+    "count": 10
+   },
+   {
+    "cardId": "youthful_valkyrie",
+    "count": 4
+   },
+   {
+    "cardId": "inspiring_overseer",
+    "count": 4
+   },
+   {
+    "cardId": "plumecreed_escort",
+    "count": 4
+   },
+   {
+    "cardId": "cloudkin_seer",
+    "count": 3
+   },
+   {
+    "cardId": "restoration_angel",
+    "count": 4
+   },
+   {
+    "cardId": "traumatizer",
+    "count": 4
+   },
+   {
+    "cardId": "air_elemental",
+    "count": 2
+   },
+   {
+    "cardId": "swords_to_plowshares",
+    "count": 4
+   },
+   {
+    "cardId": "counterspell",
+    "count": 4
+   },
+   {
+    "cardId": "pacifism",
+    "count": 3
+   }
+  ]
+ },
+ "brmid": {
+  "name": "BR Removal",
+  "archetype": "midrange",
+  "decklist": [
+   {
+    "cardId": "blood_crypt",
+    "count": 4
+   },
+   {
+    "cardId": "swamp",
+    "count": 12
+   },
+   {
+    "cardId": "mountain",
+    "count": 7
+   },
+   {
+    "cardId": "typhoid_rats",
+    "count": 4
+   },
+   {
+    "cardId": "blood_artist",
+    "count": 4
+   },
+   {
+    "cardId": "child_of_night",
+    "count": 4
+   },
+   {
+    "cardId": "vampire_nighthawk",
+    "count": 4
+   },
+   {
+    "cardId": "nekrataal",
+    "count": 4
+   },
+   {
+    "cardId": "flametongue_kavu",
+    "count": 4
+   },
+   {
+    "cardId": "reassembling_skeleton",
+    "count": 2
+   },
+   {
+    "cardId": "gravedigger",
+    "count": 2
+   },
+   {
+    "cardId": "doom_blade",
+    "count": 4
+   },
+   {
+    "cardId": "terror",
+    "count": 1
+   },
+   {
+    "cardId": "lightning_bolt",
+    "count": 4
+   }
+  ]
+ },
+ "mill": {
+  "name": "UG Block and Mill",
+  "archetype": "midrange",
+  "decklist": [
+   {
+    "cardId": "breeding_pool",
+    "count": 4
+   },
+   {
+    "cardId": "evolving_wilds",
+    "count": 4
+   },
+   {
+    "cardId": "forest",
+    "count": 9
+   },
+   {
+    "cardId": "island",
+    "count": 5
+   },
+   {
+    "cardId": "hedron_crab",
+    "count": 4
+   },
+   {
+    "cardId": "birds_of_paradise",
+    "count": 4
+   },
+   {
+    "cardId": "wall_of_blossoms",
+    "count": 4
+   },
+   {
+    "cardId": "deadly_recluse",
+    "count": 4
+   },
+   {
+    "cardId": "traumatizer",
+    "count": 4
+   },
+   {
+    "cardId": "gaean_wurm",
+    "count": 4
+   },
+   {
+    "cardId": "rumbling_baloth",
+    "count": 3
+   },
+   {
+    "cardId": "altar_of_dementia",
+    "count": 3
+   },
+   {
+    "cardId": "cloudkin_seer",
+    "count": 3
+   },
+   {
+    "cardId": "counterspell",
+    "count": 3
+   },
+   {
+    "cardId": "rampant_growth",
+    "count": 2
+   }
+  ]
+ },
+ "naya": {
+  "name": "Naya Flash Snakes",
+  "archetype": "midrange",
+  "decklist": [
+   {
+    "cardId": "stomping_ground",
+    "count": 4
+   },
+   {
+    "cardId": "temple_garden",
+    "count": 4
+   },
+   {
+    "cardId": "sacred_foundry",
+    "count": 4
+   },
+   {
+    "cardId": "forest",
+    "count": 6
+   },
+   {
+    "cardId": "mountain",
+    "count": 1
+   },
+   {
+    "cardId": "plains",
+    "count": 1
+   },
+   {
+    "cardId": "manaba",
+    "count": 4
+   },
+   {
+    "cardId": "birds_of_paradise",
+    "count": 4
+   },
+   {
+    "cardId": "llanowar_elves",
+    "count": 2
+   },
+   {
+    "cardId": "rage_cobra",
+    "count": 4
+   },
+   {
+    "cardId": "reapers_forerunner",
+    "count": 4
+   },
+   {
+    "cardId": "little_bear",
+    "count": 3
+   },
+   {
+    "cardId": "restoration_angel",
+    "count": 4
+   },
+   {
+    "cardId": "flametongue_kavu",
+    "count": 4
+   },
+   {
+    "cardId": "wall_of_blossoms",
+    "count": 4
+   },
+   {
+    "cardId": "lightning_bolt",
+    "count": 4
+   },
+   {
+    "cardId": "swords_to_plowshares",
+    "count": 3
+   }
+  ]
+ },
+ "urctl": {
+  "name": "UR Pyroclasm Control",
+  "archetype": "control",
+  "decklist": [
+   {
+    "cardId": "steam_vents",
+    "count": 4
+   },
+   {
+    "cardId": "island",
+    "count": 11
+   },
+   {
+    "cardId": "mountain",
+    "count": 9
+   },
+   {
+    "cardId": "pyroclasm",
+    "count": 4
+   },
+   {
+    "cardId": "lightning_bolt",
+    "count": 4
+   },
+   {
+    "cardId": "counterspell",
+    "count": 4
+   },
+   {
+    "cardId": "essence_scatter",
+    "count": 2
+   },
+   {
+    "cardId": "flametongue_kavu",
+    "count": 4
+   },
+   {
+    "cardId": "wall_of_air",
+    "count": 4
+   },
+   {
+    "cardId": "traumatizer",
+    "count": 4
+   },
+   {
+    "cardId": "air_elemental",
+    "count": 3
+   },
+   {
+    "cardId": "brainstorm",
+    "count": 4
+   },
+   {
+    "cardId": "char",
+    "count": 3
+   }
+  ]
+ },
+ "ubctl": {
+  "name": "UB Control",
+  "archetype": "control",
+  "decklist": [
+   {
+    "cardId": "watery_grave",
+    "count": 4
+   },
+   {
+    "cardId": "island",
+    "count": 10
+   },
+   {
+    "cardId": "swamp",
+    "count": 10
+   },
+   {
+    "cardId": "counterspell",
+    "count": 4
+   },
+   {
+    "cardId": "essence_scatter",
+    "count": 2
+   },
+   {
+    "cardId": "doom_blade",
+    "count": 4
+   },
+   {
+    "cardId": "terror",
+    "count": 2
+   },
+   {
+    "cardId": "protocol",
+    "count": 3
+   },
+   {
+    "cardId": "vampire_nighthawk",
+    "count": 4
+   },
+   {
+    "cardId": "nekrataal",
+    "count": 4
+   },
+   {
+    "cardId": "traumatizer",
+    "count": 4
+   },
+   {
+    "cardId": "air_elemental",
+    "count": 3
+   },
+   {
+    "cardId": "typhoid_rats",
+    "count": 4
+   },
+   {
+    "cardId": "brainstorm",
+    "count": 2
+   }
+  ]
+ },
+ "bwlife": {
+  "name": "BW Aristocrats",
+  "archetype": "midrange",
+  "decklist": [
+   {
+    "cardId": "godless_shrine",
+    "count": 4
+   },
+   {
+    "cardId": "plains",
+    "count": 9
+   },
+   {
+    "cardId": "swamp",
+    "count": 10
+   },
+   {
+    "cardId": "soul_warden",
+    "count": 4
+   },
+   {
+    "cardId": "blood_artist",
+    "count": 4
+   },
+   {
+    "cardId": "child_of_night",
+    "count": 4
+   },
+   {
+    "cardId": "vampire_nighthawk",
+    "count": 4
+   },
+   {
+    "cardId": "nekrataal",
+    "count": 4
+   },
+   {
+    "cardId": "restoration_angel",
+    "count": 4
+   },
+   {
+    "cardId": "vitalist",
+    "count": 3
+   },
+   {
+    "cardId": "typhoid_rats",
+    "count": 2
+   },
+   {
+    "cardId": "swords_to_plowshares",
+    "count": 4
+   },
+   {
+    "cardId": "doom_blade",
+    "count": 4
+   }
+  ]
+ },
+ "stompy": {
+  "name": "RG Stompy",
+  "archetype": "aggro",
+  "decklist": [
+   {
+    "cardId": "stomping_ground",
+    "count": 4
+   },
+   {
+    "cardId": "forest",
+    "count": 13
+   },
+   {
+    "cardId": "mountain",
+    "count": 4
+   },
+   {
+    "cardId": "llanowar_elves",
+    "count": 4
+   },
+   {
+    "cardId": "birds_of_paradise",
+    "count": 2
+   },
+   {
+    "cardId": "grizzly_bears",
+    "count": 4
+   },
+   {
+    "cardId": "mother_bear",
+    "count": 3
+   },
+   {
+    "cardId": "centaur_courser",
+    "count": 4
+   },
+   {
+    "cardId": "rumbling_baloth",
+    "count": 4
+   },
+   {
+    "cardId": "gaean_wurm",
+    "count": 3
+   },
+   {
+    "cardId": "rancor",
+    "count": 4
+   },
+   {
+    "cardId": "flametongue_kavu",
+    "count": 4
+   },
+   {
+    "cardId": "lightning_bolt",
+    "count": 4
+   },
+   {
+    "cardId": "reapers_forerunner",
+    "count": 3
+   }
+  ]
+ },
+ "warband": {
+  "name": "Warband (port)",
+  "archetype": "aggro",
+  "decklist": [
+   {
+    "cardId": "sacred_foundry",
+    "count": 4
+   },
+   {
+    "cardId": "mountain",
+    "count": 15
+   },
+   {
+    "cardId": "plains",
+    "count": 2
+   },
+   {
+    "cardId": "skirk_prospector",
+    "count": 4
+   },
+   {
+    "cardId": "goblin_piker",
+    "count": 4
+   },
+   {
+    "cardId": "goblin_chieftain",
+    "count": 4
+   },
+   {
+    "cardId": "boggart_brute",
+    "count": 4
+   },
+   {
+    "cardId": "goblin_matron",
+    "count": 3
+   },
+   {
+    "cardId": "hordeling_outburst",
+    "count": 4
+   },
+   {
+    "cardId": "goblin_grenade",
+    "count": 4
+   },
+   {
+    "cardId": "lightning_bolt",
+    "count": 4
+   },
+   {
+    "cardId": "flametongue_kavu",
+    "count": 4
+   },
+   {
+    "cardId": "swords_to_plowshares",
+    "count": 2
+   },
+   {
+    "cardId": "raging_goblin",
+    "count": 2
+   }
+  ]
+ }
+}
