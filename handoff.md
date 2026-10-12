@@ -64,6 +64,15 @@ Chris went 8–0 in matches (one game lost) in a Convocation with a Mardu list: 
 - **Chris's rulings on the field (2026-10-11):** the Usher returning the Usher stays, deliberately, for now. The Open's three things to do: go fast (the Rabble, backed by the Kavu), play Clio (Reaper Clio; Countersnake and the Writ are lesser Clio decks), loop Ushers (the Pall as combo, Mardu Control as a control deck's finisher). He reads it as a good field. **His next deck-building experiment:** a Clio/Usher hybrid that beats the two green Clio decks and/or the Rabble; after it, an initial metagame for another Constructed format.
 - Not done: the top-eight sub-table; the matchup grid artifact (still fifteen lists); a ladder run (no rule changed here).
 
+## After the session — Mardu Control, Chris's revision (2026-10-12): measured, NOT registered
+
+His revision after playing the Rabble: **two Wraths for two Purges in the sixty**; the fifteen 3 Crypt, 3 Macabre, 3 Pyroclasm, 2 Kavu, 2 Wrath, 1 Purge, 1 Helix. Against the Rabble: every spot removal out (2 Swords, 4 Vindicate, 2 Purge) for 3 Pyroclasm, 2 Kavu, 2 Wrath, 1 Helix — the Warden/Artist package stays. Against Reaper Clio (his guess): the package out for the same eight. Scratch: `gx/mardu4.json`, `mardu4_side.json`, `mardu4_gC1.json`.
+
+- In its own seat, 160 matches against each of the thirteen others, paired with the registered list: **61.3 → 70.3 ± 2.0 in matches** (game one 57.4 → 60.2; games two and three 58.5 → 66.6). Better against twelve of thirteen (the Pall 46 → 44).
+- **Confirmed at 900 matches each: Reaper Clio 55.8 ± 3.2, the Rabble 57.1 ± 3.2** (the 160-match run had read 58 and 66). The first list measured at 55 against Reaper Clio (ADR-173's line), and ahead of both top lists.
+- The Clio plan three ways: the package out for the eight (58 at 160 matches) > Pyroclasms for Wardens and Kavus for spot removal, the registered way (53) > the package out and the third Purge for a Swords (49; that row also fired against the Rabble, and cost seven points there).
+- At 70 in matches it would stand with Reaper Clio (72) at the top of the table; if registered the table of record must be re-run.
+
 ## Deviations from the brief
 1. **Reaper Clio has no guide.** The brief wanted one "if the rows beat the rules"; none did. Not adopted.
 2. **"Against the Rabble (the Walls stay)" has no source in Chris's play.** He took the Walls out nearly everywhere, and his one Rabble plan was a gamble he disowned. Both readings were measured; the Walls staying is six points better against the Rabble (one pairing).
