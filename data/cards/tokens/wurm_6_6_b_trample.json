@@ -1,0 +1,25 @@
+{
+  "id": "wurm_6_6_b_trample",
+  "name": "Wurm Token",
+  "source": "custom",
+  "isTokenDef": true,
+  "manaCost": "",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Wurm"
+  ],
+  "colors": [
+    "B"
+  ],
+  "power": 6,
+  "toughness": 6,
+  "keywords": [
+    "trample"
+  ],
+  "text": "",
+  "art": {
+    "fallback": "rendered"
+  }
+}

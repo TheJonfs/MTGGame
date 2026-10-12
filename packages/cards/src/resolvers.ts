@@ -88,6 +88,9 @@ export interface EffectContext {
    * deathtouch/lifelink apply). Callers have already verified both are legal.
    */
   fight(idA: string, idB: string): void;
+  /** S62 (R-108, Wave of Reckoning): each of these objects deals damage to itself equal to its power — the object is
+   * the source (deathtouch, lifelink), every power read before any damage is dealt. */
+  eachDamagesItself(ids: string[]): void;
   /** S58 (R-106): the resolving ability's own SOURCE fights `targetId`; nothing happens if the source has left the battlefield (CR 701.14b). */
   fightSource(targetId: string): void;
   /** Exile (CR 700.4: not a death — no DIES trigger). S55: a permanent, or a card in a graveyard (Faerie Macabre). */
@@ -395,8 +398,10 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
 
   damageAll: (e, ctx) => {
     if (e.type !== "damageAll") throw new Error("resolver mismatch");
+    const ids = ctx.objectsInScope(e.scope, e.tapped ? { tapped: true } : {});
+    if (e.amount === "ownPower") return ctx.eachDamagesItself(ids); // S62 (R-108)
     const amount = ctx.amount(e.amount);
-    for (const id of ctx.objectsInScope(e.scope, e.tapped ? { tapped: true } : {})) ctx.dealDamage({ kind: "object", id }, amount);
+    for (const id of ids) ctx.dealDamage({ kind: "object", id }, amount);
   },
 
   fight: (e, ctx) => {

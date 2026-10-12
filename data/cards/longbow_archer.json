@@ -1,0 +1,24 @@
+{
+  "id": "longbow_archer",
+  "name": "Longbow Archer",
+  "source": "real",
+  "manaCost": "{W}{W}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Human",
+    "Soldier",
+    "Archer"
+  ],
+  "power": 2,
+  "toughness": 2,
+  "keywords": [
+    "first strike",
+    "reach"
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 1
+}

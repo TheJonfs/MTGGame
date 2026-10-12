@@ -1,0 +1,39 @@
+{
+  "id": "dawnwing_marshal",
+  "name": "Dawnwing Marshal",
+  "source": "real",
+  "manaCost": "{1}{W}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Cat",
+    "Soldier"
+  ],
+  "power": 2,
+  "toughness": 2,
+  "keywords": [
+    "flying"
+  ],
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "mana": "{4}{W}"
+      },
+      "effects": [
+        {
+          "type": "modifyPT",
+          "power": 1,
+          "toughness": 1,
+          "scope": "creaturesYouControl",
+          "duration": "UNTIL_END_OF_TURN"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2
+}

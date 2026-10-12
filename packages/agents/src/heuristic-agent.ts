@@ -1900,10 +1900,11 @@ export class HeuristicAgent implements Agent {
       // Post-S43: a SWEEPER on the stack dooms it too — damage to all creatures reaching its toughness, or destroy-all.
       const effects = this.def(it.cardId)?.spellEffect ?? [];
       return effects.some((e) => {
-        const eff = e as { type: string; scope?: string; amount?: number };
+        const eff = e as { type: string; scope?: string; amount?: number | "ownPower" };
         if (eff.scope !== "allCreatures") return false;
         if (eff.type === "destroyAll") return !o.keywords.includes("indestructible");
-        if (eff.type === "damageAll") return (eff.amount ?? 0) + o.damage >= (o.toughness ?? 99);
+        if (eff.type === "damageAll" && eff.amount === "ownPower") return (o.power ?? 0) > 0 && ((o.power ?? 0) + o.damage >= (o.toughness ?? 99) || o.keywords.includes("deathtouch")); // S62 (R-108)
+        if (eff.type === "damageAll") return ((eff.amount as number | undefined) ?? 0) + o.damage >= (o.toughness ?? 99);
         return false;
       });
     });

@@ -144,7 +144,9 @@ export function buildLimitedDeck(poolIds: readonly string[], rating: CardRatingT
       const used = new Map<string, number>(); for (const id of picked) used.set(id, (used.get(id) ?? 0) + 1);
       const spare: string[] = []; const seen = new Map<string, number>();
       for (const id of candidates) { const k = (seen.get(id) ?? 0) + 1; seen.set(id, k); if (k > (used.get(id) ?? 0)) spare.push(id); }
-      const add = spare.filter(want).sort(byRating)[0];
+      // (S62: the six-drop cap holds here too — a pool with Penumbra Wurm and Captain of the Watch mended its creature count with a fourth)
+      const sixFull = picked.filter((id) => mv(id) >= 6).length >= LIMITED_TARGETS.sixPlusCap;
+      const add = spare.filter((id) => want(id) && !(sixFull && mv(id) >= 6)).sort(byRating)[0];
       // never drop a card of the wanted kind, a splash card, or one a satisfied earlier target still needs
       const droppable = picked.filter((id) => !want(id) && !(splash && pips(id, splash) > 0) && keep.every((k) => !k(id) || picked.filter(k).length > (k === keep[0] ? LIMITED_TARGETS.twoDrops : k === keep[1] ? LIMITED_TARGETS.threeDrops : LIMITED_TARGETS.creatures)));
       const drop = droppable.sort((a, b) => rate(a) - rate(b) || b.localeCompare(a))[0];

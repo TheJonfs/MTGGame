@@ -508,7 +508,7 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     if (!Number.isInteger(e.target) && !Number.isInteger(e.targetSpec) && e.to === undefined) err(`"damage" needs "target", "targetSpec", or a "to" address`);
   },
   damageAll: (e, err) => {
-    needAmount(e, err);
+    if (e.amount !== "ownPower") needAmount(e, err) /* S62 (R-108): "ownPower" — each object by its own power */;
     needScope(e, err);
     if (e.tapped !== undefined && e.tapped !== true) err(`damageAll.tapped must be true when present (S40)`);
   },

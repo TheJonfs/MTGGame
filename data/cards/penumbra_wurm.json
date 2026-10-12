@@ -1,0 +1,39 @@
+{
+  "id": "penumbra_wurm",
+  "name": "Penumbra Wurm",
+  "source": "real",
+  "manaCost": "{5}{G}{G}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Wurm"
+  ],
+  "power": 6,
+  "toughness": 6,
+  "keywords": [
+    "trample"
+  ],
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "DIES",
+      "condition": {
+        "self": true
+      },
+      "effects": [
+        {
+          "type": "createToken",
+          "tokenId": "wurm_6_6_b_trample",
+          "count": 1,
+          "who": "you"
+        }
+      ],
+      "optional": false
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2
+}

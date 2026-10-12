@@ -1,0 +1,27 @@
+{
+  "id": "tome_scour",
+  "name": "Tome Scour",
+  "source": "real",
+  "manaCost": "{U}",
+  "types": [
+    "Sorcery"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "player",
+      "zone": "any"
+    }
+  ],
+  "spellEffect": [
+    {
+      "type": "mill",
+      "count": 5,
+      "who": "target"
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 1
+}

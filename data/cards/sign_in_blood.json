@@ -1,0 +1,32 @@
+{
+  "id": "sign_in_blood",
+  "name": "Sign in Blood",
+  "source": "real",
+  "manaCost": "{B}{B}",
+  "types": [
+    "Sorcery"
+  ],
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "player",
+      "zone": "any"
+    }
+  ],
+  "spellEffect": [
+    {
+      "type": "draw",
+      "count": 2,
+      "who": "target"
+    },
+    {
+      "type": "loseLife",
+      "amount": 2,
+      "who": "target"
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 1
+}

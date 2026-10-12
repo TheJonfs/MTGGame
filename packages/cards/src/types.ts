@@ -218,7 +218,9 @@ export type EffectBase =
    * from the resolving source (the attacker or blocker); a no-op if it left the battlefield. */
   | { type: "damage"; amount: Amount; target?: number; targetSpec?: number; to?: "eventPlayer" | "you" | "eventObject" | "opponent"; from?: "eventObject" } // S45 (R-099): to "opponent" — each opponent (Guttersnipe)
   /** S40 (R-097, Odile): `tapped` narrows the scope to tapped objects. */
-  | { type: "damageAll"; amount: Amount; scope: Scope; tapped?: true }
+  /** S62 (R-108, Wave of Reckoning): `amount: "ownPower"` — each object in scope deals damage to ITSELF equal to its
+   * power, the object as the source (its deathtouch and lifelink apply), all read before any is dealt. */
+  | { type: "damageAll"; amount: Amount | "ownPower"; scope: Scope; tapped?: true }
   /** A10 (S22): `targetSpec` fans out over a spec's still-legal chosen targets (Purge's any-number). */
   /** S40 (R-097, Voracious Cobra): `eventObject` — destroy the triggering event's object (the creature it damaged). */
   | { type: "destroy"; target?: number; targetSpec?: number; eventObject?: true }

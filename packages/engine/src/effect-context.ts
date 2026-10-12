@@ -585,6 +585,12 @@ function sharedOps(ctx: EngineCtx, asController: PlayerId) {
       }
     },
 
+    eachDamagesItself(ids: string[]): void {
+      // S62 (R-108): simultaneous — every power is read first; a creature of power 0 or less deals nothing
+      const hits = ids.map((id) => ({ id, o: ctx.state.objects[id], power: ctx.state.objects[id]?.zone === "battlefield" ? characteristics(ctx, id).power : 0 })).filter((h) => h.o && h.o.zone === "battlefield" && h.power > 0);
+      for (const h of hits) dealDamage(ctx, { id: h.id, cardId: h.o!.cardId, controller: h.o!.controller }, { kind: "object", id: h.id }, h.power, false);
+    },
+
     fight(idA: string, idB: string): void {
       const a = ctx.state.objects[idA];
       const b = ctx.state.objects[idB];

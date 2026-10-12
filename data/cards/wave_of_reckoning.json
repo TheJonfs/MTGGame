@@ -1,0 +1,20 @@
+{
+  "id": "wave_of_reckoning",
+  "name": "Wave of Reckoning",
+  "source": "real",
+  "manaCost": "{4}{W}",
+  "types": [
+    "Sorcery"
+  ],
+  "spellEffect": [
+    {
+      "type": "damageAll",
+      "amount": "ownPower",
+      "scope": "allCreatures"
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2
+}

@@ -1,0 +1,23 @@
+{
+  "id": "moaning_wall",
+  "name": "Moaning Wall",
+  "source": "real",
+  "manaCost": "{2}{B}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Zombie",
+    "Wall"
+  ],
+  "power": 0,
+  "toughness": 5,
+  "keywords": [
+    "defender"
+  ],
+  "cycling": "{2}",
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 1
+}

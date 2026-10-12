@@ -1,0 +1,62 @@
+{
+  "id": "captain_of_the_watch",
+  "name": "Captain of the Watch",
+  "source": "real",
+  "manaCost": "{4}{W}{W}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Human",
+    "Soldier"
+  ],
+  "power": 3,
+  "toughness": 3,
+  "keywords": [
+    "vigilance"
+  ],
+  "abilities": [
+    {
+      "kind": "static",
+      "effects": [
+        {
+          "type": "modifyPT",
+          "power": 1,
+          "toughness": 1,
+          "scope": "creaturesYouControl",
+          "subtype": "Soldier",
+          "other": true,
+          "duration": "WHILE_SOURCE_ON_BATTLEFIELD"
+        },
+        {
+          "type": "grantKeyword",
+          "keyword": "vigilance",
+          "scope": "creaturesYouControl",
+          "subtype": "Soldier",
+          "other": true,
+          "duration": "WHILE_SOURCE_ON_BATTLEFIELD"
+        }
+      ]
+    },
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "condition": {
+        "self": true
+      },
+      "effects": [
+        {
+          "type": "createToken",
+          "tokenId": "soldier_1_1",
+          "count": 3,
+          "who": "you"
+        }
+      ],
+      "optional": false
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2
+}

@@ -478,11 +478,21 @@ function applyEffect(
     }
     case "damageAll": {
       const gainPer = opts.creatureSource ? 0 : noncreatureDamageGain(view, defs, me); // S40: once per creature hit
+      if (e.amount === "ownPower") { // S62 (R-108, Wave of Reckoning): each by its own power — its own deathtouch kills it, its lifelink pays its controller
+        for (const o of [...view.battlefield]) {
+          const pw = o.power ?? 0;
+          if (o.toughness === null || pw <= 0) continue;
+          if (o.keywords.includes("lifelink")) view.life[o.controller] += pw;
+          if (pw + o.damage >= o.toughness || o.keywords.includes("deathtouch")) removeObject(view, o.id);
+        }
+        return 0;
+      }
+      const n = amt(e.amount);
       for (const o of [...view.battlefield]) {
         if (o.toughness === null) continue;
         if (e.tapped && !o.tapped) continue; // S40 (Odile's shape)
-        view.life[me] += gainPer * amt(e.amount);
-        if (amt(e.amount) + o.damage >= o.toughness) removeObject(view, o.id);
+        view.life[me] += gainPer * n;
+        if (n + o.damage >= o.toughness) removeObject(view, o.id);
       }
       return 0;
     }

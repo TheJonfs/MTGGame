@@ -274,6 +274,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | breeding_pool | rvr | 399 | Rob Alexander | f920e32c-8a4b-4152-be3a-02810f3e5f13 |
 | brute_force | plc | 116 | Wayne Reynolds | 82d43220-1e4e-4b61-9844-51c8bb5dde35 |
 | buried_alive | wth | 63 | Brian Horton | 56b92eb5-72b0-46b4-8b16-8a7a7ac80f56 |
+| captain_of_the_watch | m10 | 6 | Greg Staples | e6c26b98-790e-403b-b94b-261a4c92e721 |
 | cathartic_adept | ala | 34 | Carl Critchlow | 8e63626d-f55c-4155-9712-511f591c0614 |
 | centaur_courser | m10 | 172 | Vance Kovacs | 03354b67-7df2-4b4b-a996-a37550e58561 |
 | char | rav | 117 | Adam Rex | ff3a24af-e995-4d05-ac2c-e9676048675d |
@@ -284,6 +285,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | curiosity | exo | 29 | Val Mayerik | fee17ef5-7e1a-42ae-b680-df81204df7dd |
 | dark_ritual | lea | 98 | Sandra Everingham | ebb6664d-23ca-456e-9916-afcd6f26aa7f |
 | darksteel_myr | som | 151 | Randis Albion | 0f5712cf-c6a9-4a2e-90db-8ca17c621724 |
+| dawnwing_marshal | fdn | 570 | Aldo Domínguez | 807db84f-addb-4ef0-b9ba-32b3e1bced3d |
 | deadly_recluse | m10 | 175 | Warren Mahy | 6ab810f1-21d6-4a98-b77a-e455370aa6cc |
 | demonic_tutor | lea | 104 | Douglas Shuler | 711d4d54-5520-4de8-9b93-79902ed8e562 |
 | diabolic_edict | tmp | 128 | Ron Spencer | a2ecf2ee-1e2d-4ab2-8b2c-717c794b09b2 |
@@ -295,6 +297,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | drakuseth_maw_of_flames | cmm | 535 | Grzegorz Rutkowski | c34ec655-4210-4237-92e4-c9adf207e2e0 |
 | drana_kalastria_bloodchief | roe | 107 | Mike Bierek | aca8d295-e8e9-4213-bc9b-f1acf57fb520 |
 | dread_presence | m20 | 96 | Anthony Palumbo | 0430db1a-5cad-4444-ba93-57fb32e65606 |
+| dungrove_elder | m12 | 171 | Matt Stewart | b8b4ebbf-1613-42a0-97ff-2f36dc8d984a |
 | duress | usg | 132 | Lawrence Snelly | ca367f49-0f4a-4b7f-8104-851893fbcd8a |
 | elvish_visionary | ala | 130 | D. Alexander Gregory | faccfa5f-4d89-4a86-92d7-36cb5a16c5c9 |
 | emeria_angel | zen | 11 | Jim Murray | 8b386d39-ba41-42f8-ba05-f9ed602ee23f |
@@ -328,6 +331,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | grizzly_bears | lea | 199 | Jeff A. Menges | ce2d603a-3231-4a8c-bf39-1617586ea870 |
 | guttersnipe | rvr | 332 | Steve Prescott | 937e6fd7-ff20-46cd-8107-1f5339267a6f |
 | hallowed_fountain | rvr | 404 | Rob Alexander | 438fb324-2c51-4763-a32a-6e315e9f769c |
+| harmonize | plc | 149 | Rob Alexander | 4b90dbd0-4672-4c0b-92eb-262ddd11cd32 |
 | hedron_crab | zen | 47 | Jesper Ejsing | f0fa1946-4f97-4c52-b5f2-b80571230616 |
 | hill_giant | lea | 157 | Dan Frazier | 0ddb98e8-13fe-4786-83f7-b72c56db135a |
 | hordeling_outburst | ktk | 111 | Zoltan Boros | a5c1bf52-2737-423a-b340-07448afcaea6 |
@@ -341,12 +345,14 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | little_bear | hob | 128 | Tomas Duchek | 8a50858a-33b5-4c45-9c31-5956ae5a33a6 |
 | llanowar_elves | lea | 210 | Anson Maddocks | d4f1cc9e-4f99-4c26-ac1b-8ef069fa8ceb |
 | lonely_sandbar | ons | 320 | Heather Hudson | d8ddab06-aff7-4c40-bcaa-10cbfe899dd9 |
+| longbow_archer | vis | 12 | Eric Peterson | e2ee185d-f5ae-4b1d-90a4-840182f87ab8 |
 | loxodon_warhammer | mrd | 201 | Jeremy Jarvis | a1a6e375-5c47-4447-9453-adf0038693e3 |
 | man_o_war | vis | 37 | Jon J Muth | 4dbf9bf9-75cd-4b25-a3a1-43b7e029700b |
 | master_decoy | tmp | 29 | Phil Foglio | f3e11097-1ace-4ae8-a9e8-d00b9f709e54 |
 | mind_rot | por | 101 | Steve Luke | b91d355d-8409-4f0b-87ce-7590a8b9ebc0 |
 | mind_stone | wth | 153 | Adam Rex | 162e81d3-6cd4-4cb8-8ed8-cfbd8d34ca71 |
 | mist_raven | avr | 67 | John Avon | 0d98f0c4-021a-407a-8b0c-5500d804f959 |
+| moaning_wall | hou | 72 | Piotr Jabłoński | ef494f81-638a-4e5d-b987-0dde7f2a135c |
 | moss_viper | thb | 179 | Mike Bierek | a4d35ec4-0e0d-4611-8ad9-39d2c8a2ad6e |
 | mother_bear | mh1 | 171 | Winona Nelson | efae4d84-8134-461a-a352-a5bdff7259a7 |
 | mountain | leb | 297 | Douglas Shuler | 7af9c715-8d72-4eae-b412-fc89138ff588 |
@@ -361,6 +367,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | overgrown_tomb | rvr | 407 | Rob Alexander | 15c1114f-5f7c-4ecf-8aac-e48853df008b |
 | pacifism | mir | 32 | Robert Bliss | c891df1b-bae6-4d6d-85ee-42901c149f98 |
 | pelakka_wurm | roe | 204 | Daniel Ljunggren | 8e732593-0bdc-4dd4-9b07-9aa1a780e6e8 |
+| penumbra_wurm | apc | 84 | Jeff Easley | ae3dffe7-ecaf-4cf0-a43e-8e2746282992 |
 | phyrexian_purge | mir | 273 | Robert Bliss | 312bbc1b-4c2a-44c1-8e62-c0f94fd2ba8e |
 | phyrexian_rager | apc | 49 | Mark Tedin | 3addf34c-ea54-42a3-bccd-b73453d964d2 |
 | plains | leb | 288 | Jesper Myrfors | b7331b03-be66-419c-94bc-ed494c042ea3 |
@@ -394,6 +401,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | shadow_summoning | ltr | 226 | Campbell White | ec0984b2-bed6-41b1-9087-2cfd16749037 |
 | shock | sth | 98 | Randy Gallegos | f9b2ff2a-6dfe-4635-8da2-22d525e82b94 |
 | siege_gang_commander | scg | 103 | Christopher Moeller | 92e78cec-aaf9-4fe8-887b-b7e356d63315 |
+| sign_in_blood | m10 | 112 | Howard Lyon | 1975ed97-acb8-4bb6-804a-e5da725d876e |
 | skirk_prospector | ons | 230 | Doug Chaffee | eb545dcd-3a7a-46a7-9c35-d28faebc6d17 |
 | soul_warden | exo | 21 | Randy Gallegos | d5ee24ee-4d28-4634-bd43-90eff15c16dd |
 | spirit_link | leg | 37 | Kaja Foglio | 5e2d35f8-3cf6-4843-9030-0e9a885d836c |
@@ -412,6 +420,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | timberland_guide | avr | 197 | Zoltan Boros | ae80fefb-af78-4f98-8058-71b61e91842f |
 | time_walk | lea | 83 | Amy Weber | e0139f60-d48e-46fb-9f5a-1e3d7558c834 |
 | titania_protector_of_argoth | mh2 | 416 | Magali Villeneuve | bab161d9-45d7-48b7-af47-21e3dbae4d85 |
+| tome_scour | m10 | 76 | Steven Belledin | fdbdf96b-e7c5-42e5-9a16-03daafde40af |
 | tormods_crypt | drk | 112 | Christopher Rush | 0f9668ba-d26d-4484-b4b8-6fb91fbfb617 |
 | tranquil_thicket | ons | 326 | Heather Hudson | afcb7cef-8aeb-4c84-88e9-6df17768e292 |
 | treetop_snarespinner | fdn | 114 | Steve Ellis | 88e68fa3-159d-49a6-8ac6-afc9bd6f1718 |
@@ -430,6 +439,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | waste_not | m15 | 122 | Matt Stewart | 241d8f7d-3981-47c1-b7b8-748277fa452f |
 | waterfront_bouncer | mmq | 114 | Paolo Parente | 8dbdce9e-94fa-4ed5-9b97-d2026cffe7cb |
 | watery_grave | rvr | 415 | Rob Alexander | ef7f4762-4283-4368-948b-e60a29e78a0c |
+| wave_of_reckoning | mmq | 56 | Bradley Williams | 0b101b5e-d478-4686-b3cf-bdc545f089e5 |
 | werebear | ody | 282 | Carl Critchlow | 964cf7e3-932d-432f-8ad4-9bd651aada96 |
 | wind_drake | por | 77 | Zina Saunders | 5486d2dc-9a5d-4f58-a5ec-d94de54b852f |
 | wood_elves | por | 195 | Rebecca Guay | b7f1fb90-5c85-46a5-802d-248cc0250921 |
@@ -648,6 +658,23 @@ Pool 244 → **246**. Two answers to a graveyard loop that any deck can sideboar
 | id | name | status | vocabulary | notes |
 |---|---|---|---|---|
 | reapers_forerunner | Reaper's Forerunner | tested | flash, deathtouch; modal ENTERS trigger: `fight` self at `creatureYouDontControl` (R-106 — the one new word) / `exileGraveyard` who target (R-104) / `createToken` snake_1_1_g ×2 | CUSTOM. {1}{G}{G} Creature — Snake 1/1 (the face reads "Summon Snake"). **T2 as printed (Chris's ruling, 2026-10-09)** (the matrix, results/s58/forerunner-matrix.md: +5.3 and +2.8 to the two green shells at the printed rate; cost is the sensitive axis). Card art and "as printed" face delivered by Chris; the art's painted border trimmed (MANIFEST). In no Open list yet. Pool 247 → 248. |
+
+## Session 62 additions — ten for Peasant (ADR-177, 2026-10-13)
+
+All real, re-verified against Scryfall by exact name on 2026-10-13. **Mismatches with the brief:** Penumbra Wurm costs {5}{G}{G} (the brief: {4}{G}{G}{G}); Moaning Wall is a Zombie Wall whose first printing is Hour of Devastation (the brief: Urza's Saga); Dungrove Elder's is Magic 2012 (the brief: Innistrad); Sign in Blood resolved to Magic 2010 under the oldest-highres rule (the brief: Shards of Alara); Longbow Archer and Captain of the Watch are Human Soldiers. Dawnwing Marshal is Foundations, as Chris had it.
+
+| id | card | status | vocabulary | notes |
+|---|---|---|---|---|
+| penumbra_wurm | Penumbra Wurm | tested | triggered DIES self: `createToken` wurm_6_6_b_trample (a new token def) | APC #84 (Jeff Easley). T2. {5}{G}{G} 6/6 Wurm, trample. |
+| wave_of_reckoning | Wave of Reckoning | tested | `damageAll` `amount: "ownPower"` scope allCreatures (R-108 — the one new word) | MMQ #56 (Bradley Williams). T2. {4}{W} Sorcery. |
+| harmonize | Harmonize | tested | `draw` 3 | PLC #149 (Rob Alexander). T2. {2}{G}{G} Sorcery. |
+| sign_in_blood | Sign in Blood | tested | target player: `draw` 2 who target + `loseLife` 2 who target | M10 #112 (Howard Lyon). T1. {B}{B} Sorcery. |
+| dungrove_elder | Dungrove Elder | tested | hexproof; static `modifyPT` by a count of Forests, scope self, on a printed 0/0 | M12 #171 (Matt Stewart). T2. {2}{G} Treefolk */*. **Simplification:** the printed characteristic-defining ability (layer 7a) is a +N/+N on 0/0 (layer 7c) — the same on the battlefield (with no Forest it dies, as printed); in other zones it reads 0/0, and an effect that SETS power and toughness would differ. No card in the pool sets them. |
+| moaning_wall | Moaning Wall | tested | defender; `cycling` {2} | HOU #72 (Piotr Jabłoński). T1. {2}{B} Zombie Wall 0/5. |
+| dawnwing_marshal | Dawnwing Marshal | tested | flying; activated {4}{W}: `modifyPT` +1/+1 scope creaturesYouControl until end of turn | FDN #570 (Aldo Domínguez). T2. {1}{W} Cat Soldier 2/2. |
+| longbow_archer | Longbow Archer | tested | first strike, reach | VIS #12 (Eric Peterson). T1. {W}{W} Human Soldier Archer 2/2. |
+| captain_of_the_watch | Captain of the Watch | tested | vigilance; static `modifyPT` +1/+1 and `grantKeyword` vigilance, creaturesYouControl subtype Soldier, other; triggered ENTERS self: `createToken` soldier_1_1 ×3 | M10 #6 (Greg Staples). T2 (the brief: may rise to 3). {4}{W}{W} Human Soldier 3/3. |
+| tome_scour | Tome Scour | tested | target player: `mill` 5 | M10 #76 (Steven Belledin). T1. {U} Sorcery. |
 
 ## Post-Session 59 addition — the Manaba (Chris's card, 2026-10-10)
 
