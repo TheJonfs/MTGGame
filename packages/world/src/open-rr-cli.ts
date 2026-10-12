@@ -62,8 +62,8 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 // S56 (ADR-164): the round-robin is the field's — an archived list is out of it (`--with-archived` brings it back for a look)
 const KEYS = Object.keys(process.argv.includes("--with-archived") ? OPEN_DECKS : OPEN_FIELD);
 
-type SeatLog = { cast: Record<string, number>; played: Record<string, number>; /** post-S59: abilities activated, by the source's card */ acts?: Record<string, number>; loopTurn?: number; altarActs?: number };
-type Game = { a: string; b: string; seatA: 0 | 1; winner: "a" | "b" | "draw"; reason: string; turns: number; logA: SeatLog; logB: SeatLog; boarded?: string ; /** S59 (--matches): the match's index in its pairing and the game's number in the match (0, 1, 2) */ match?: number; gameNo?: number };
+type SeatLog = { cast: Record<string, number>; played: Record<string, number>; /** post-S59: abilities activated, by the source's card */ acts?: Record<string, number>; loopTurn?: number; altarActs?: number; /** S61: the loops this seat ran — see Tracker */ loops?: { turn: number; card: string; passes: number; life: [number, number][]; options: number; mine: boolean; last?: [number, number] }[] };
+type Game = { a: string; b: string; seatA: 0 | 1; winner: "a" | "b" | "draw"; reason: string; turns: number; logA: SeatLog; logB: SeatLog; /** S61: the final life totals by SEAT (seat 0 is `a` unless seatA is 1) */ life?: [number, number]; boarded?: string ; /** S59 (--matches): the match's index in its pairing and the game's number in the match (0, 1, 2) */ match?: number; gameNo?: number };
 
 const TRACE_AFTER = process.argv.includes("--trace-after") ? Number(process.argv[process.argv.indexOf("--trace-after") + 1]) : 0;
 class Tracker implements Agent {
@@ -78,6 +78,18 @@ class Tracker implements Agent {
     if (a.type === "castSpell") { const c = cardOf(a.objectId); if (c) this.log.cast[c] = (this.log.cast[c] ?? 0) + 1; }
     if (a.type === "playLand") { const c = cardOf(a.objectId); if (c) this.log.played[c] = (this.log.played[c] ?? 0) + 1; }
     if (a.type === "activateAbility") { const c = cardOf(a.objectId); if (c) (this.log.acts ??= {})[c] = (this.log.acts[c] ?? 0) + 1; }
+    // S61 (Part 1, the probe): a LOOP's pass — an enter trigger of card X aimed at a copy of X in a graveyard. Per turn
+    // it happens in: the passes, the life totals [ours, theirs] at the first three (the net per pass for each side),
+    // and whether the first aim was forced (one legal target).
+    if (a.type === "chooseTriggerTargets" && req.source) {
+      const t = a.targets[0], src = req.source.cardId, yard = t?.kind === "object" ? [...view.graveyardObjects[0], ...view.graveyardObjects[1]].find((g) => g.objectId === t.id) : undefined;
+      if (yard && yard.cardId === src) {
+        const loops = (this.log.loops ??= []); let l = loops.find((x) => x.turn === view.turn && x.card === src);
+        if (!l) { l = { turn: view.turn, card: src, passes: 0, life: [], options: req.actions.length, mine: view.activePlayer === view.you }; loops.push(l); }
+        l.passes += 1; if (l.life.length < 3) l.life.push([view.life[view.you], view.life[1 - view.you]!]);
+        l.last = [view.life[view.you], view.life[1 - view.you]!];
+      }
+    }
     if (this.loop) {
       if (a.type === "activateAbility" && cardOf(a.objectId) === "altar_of_dementia") this.log.altarActs = (this.log.altarActs ?? 0) + 1;
       if (this.log.loopTurn === undefined) {
@@ -107,6 +119,8 @@ async function run(): Promise<void> {
   // `--sideboarded-only k1,k2`: only those lists sideboard (one side's swaps against the other's registered sixty)
   // S59: `--deck-guide file.json` ({rows, only?}) — a guide for the build under test's fifteen (--deck-side), without registering it
   const testGuide: SideboardGuide | null = arg("deck-guide", "") && arg("deck-side", "") ? { key: "test", fifteen: JSON.parse(readFileSync(arg("deck-side", ""), "utf8")) as Decklist, ...(JSON.parse(readFileSync(arg("deck-guide", ""), "utf8")) as { rows: SideboardGuide["rows"]; only?: true }) } : null;
+  // S61 (Part 2): `--out61 small,graveyard [--out61-for k1,k2]` — the out-rule on trial (for those lists only)
+  const out61 = arg("out61", "").split(",").filter(Boolean), out61For = new Set(arg("out61-for", "").split(",").filter(Boolean));
   const boardedOnly = new Set(arg("sideboarded-only", "").split(",").filter(Boolean));
   const boarded = (me: (typeof OPEN_DECKS)[string], them: (typeof OPEN_DECKS)[string]): Decklist => {
     if (!rating || (boardedOnly.size > 0 && !boardedOnly.has(me.key))) return me.decklist;
@@ -114,7 +128,7 @@ async function run(): Promise<void> {
     if (!fifteen.has(me.key)) fifteen.set(me.key, me.sideboard && !builtFor.has(me.key) ? [...me.sideboard] : buildSideboard(me.decklist, OPEN_FORMAT, rating, pool, answersRelics, answersCreatures, !!terms.shapes));
     return aiSideboard(me.decklist, fifteen.get(me.key)!, them.decklist, pool, rating, (() => { const { outRule: keptOut, ...rest0 } = terms;
       const out = outArg === null ? (keptOut ? { outRule: keptOut } : {}) : outArg === "none" ? {} : { outRule: { deadFirst: outArg.includes("dead"), keepFourOfs: outArg.includes("four"), deadOut: outArg.includes("rule9") ? 3 : 0 } };
-      return { ...rest0, ...out, ...(process.argv.includes("--counters-stay") ? { countersStay: true } : {}), ...(process.argv.includes("--no-guide") ? { noGuide: true } : {}), ...(process.argv.includes("--guide-rules-too") ? { guideRulesToo: true } : {}), ...(testGuide ? { guides: [...SIDEBOARD_GUIDES, testGuide] } : {}), ...(arg("guide-drop", "") ? { guideDrop: arg("guide-drop", "").split(",") } : {}) }; })()).deck;
+      return { ...rest0, ...out, ...(process.argv.includes("--counters-stay") ? { countersStay: true } : {}), ...(process.argv.includes("--no-guide") ? { noGuide: true } : {}), ...(process.argv.includes("--no-out-rules") ? { noOutRules: true } : {}), ...(process.argv.includes("--guide-rules-too") ? { guideRulesToo: true } : {}), ...(testGuide ? { guides: [...SIDEBOARD_GUIDES, testGuide] } : {}), ...(arg("guide-drop", "") ? { guideDrop: arg("guide-drop", "").split(",") } : {}), ...(out61.length && (out61For.size === 0 || out61For.has(me.key)) ? { out61: { small: out61.includes("small"), spells: out61.includes("spells"), graveyard: out61.includes("graveyard") } } : {}) }; })()).deck;
   };
   const swapArg = arg("swap", "");
   // S58 (a new build tried in a list's seat): `--deck key:file.json[:archetype]` — the file is a decklist ([{cardId, count}], sixty)
@@ -170,7 +184,7 @@ async function run(): Promise<void> {
         if (process.argv.includes("--progress")) console.error(`match ${m} game ${game.index} seed ${game.seed} start ${game.startingPlayer}`); // a game that never ends is the last line printed
         const r = await runMatch(spec, pool, [t0, t1]);
         series.record(game, r);
-        games.push({ a: ka, b: kb, seatA: 0, winner: r.winner === null ? "draw" : r.winner === 0 ? "a" : "b", reason: r.reason, turns: r.turns, logA: t0.log, logB: t1.log, match: m, gameNo: game.index });
+        games.push({ a: ka, b: kb, seatA: 0, winner: r.winner === null ? "draw" : r.winner === 0 ? "a" : "b", reason: r.reason, turns: r.turns, life: r.finalLife as [number, number], logA: t0.log, logB: t1.log, match: m, gameNo: game.index });
       }
     }
     for (let g = 0; g < (M > 0 ? 0 : G); g++) {
@@ -183,7 +197,7 @@ async function run(): Promise<void> {
       const t1 = new Tracker(new HeuristicAgent(seed * 2 + 2, pool, profile(d1, d0)), d1.key === "loop");
       const r = await runMatch(spec, pool, [t0, t1]);
       const tA = seatA === 0 ? t0 : t1, tB = seatA === 0 ? t1 : t0;
-      games.push({ a: ka, b: kb, seatA, winner: r.winner === null ? "draw" : r.winner === seatA ? "a" : "b", reason: r.reason, turns: r.turns, logA: tA.log, logB: tB.log, ...(turn ? { boarded: turn } : {}) });
+      games.push({ a: ka, b: kb, seatA, winner: r.winner === null ? "draw" : r.winner === seatA ? "a" : "b", reason: r.reason, turns: r.turns, life: r.finalLife as [number, number], logA: tA.log, logB: tB.log, ...(turn ? { boarded: turn } : {}) });
     }
     console.error(`shard ${si}/${sn}: ${ka} vs ${kb} done`);
   }

@@ -40,6 +40,7 @@ const refLife = Number(arg("life", "16"));
 const lives = arg("lives", "35,40,45").split(",").map(Number);
 const landCounts = arg("lands", "20,18").split(",").map(Number);
 const refFilter = arg("refs", "all");
+const offRules = arg("off", "").split(",").filter(Boolean); // S61: `--off laterpicks` — the heart's pilot without a rule, on the same seeds
 const persistArg = arg("persist", "0");
 // S42a (ADR-131/132): `--tide 1` runs the CINQUEFONT (the fount's sixty, the tide mode in U G W B R) alone; `--tide both` beside
 // whatever `--persist` selected, on the same seeds. `--refs flood` = chris-road-B + the two salvage+legends references.
@@ -95,7 +96,7 @@ for (const lands of landCounts) {
   const sixty = sixtyAt(lands);
   for (const life of lives) {
     for (const ref of references) {
-      let wins = 0, total = 0, t1 = 0, turns = 0, removed = 0, lawsSum = 0, lawsMax = 0;
+      let wins = 0, total = 0, t1 = 0, turns = 0, removed = 0, lawsSum = 0, lawsMax = 0, purges = 0;
       const died: Record<string, number> = { Intake: 0, Tithe: 0, Toll: 0, Season: 0, Barrage: 0, none: 0 };
       const by: Record<string, number> = {};
       for (let i = 0; i < games; i++) {
@@ -119,12 +120,13 @@ for (const lands of landCounts) {
           ],
         };
         const a0: Agent = new HeuristicAgent(seed * 2 + 1, pool, difficultyProfile(ref.profile, ref.archetype, [...sixty]));
-        const a1: Agent = new HeuristicAgent(seed * 2 + 2, pool, difficultyProfile("master", HEART_DECK.archetype, [...ref.decklist]));
+        const a1: Agent = new HeuristicAgent(seed * 2 + 2, pool, { ...difficultyProfile("master", HEART_DECK.archetype, [...ref.decklist]), ...(offRules.length ? { off: offRules } : {}) });
         try {
           const r = await runMatch(spec, pool, [a0, a1]);
           total += 1;
           turns += r.turns;
           if (r.winner === 1) wins += 1;
+          purges += r.facts.spellsCast.phyrexian_purge?.[1] ?? 0; // S61: book 123 — the heart casts its Purge
           const log = r.log as LogEntry[];
           const actions = log.filter((e) => e.t === "ACTION");
           const turnOf = (e: LogEntry): number => (e.afterAction !== undefined && actions[e.afterAction] ? (actions[e.afterAction]!.turn ?? 0) : 0);
@@ -154,7 +156,7 @@ for (const lands of landCounts) {
       }
       const pct = (n: number) => `${((100 * n) / Math.max(1, total)).toFixed(0)}%`;
       const byTxt = Object.entries(by).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k, v]) => `${k} ×${v}`).join(", ");
-      console.log(`| ${ring} | ${roots} | ${lands} | ${life} | ${ref.name} | ${pct(wins)} | ${pct(t1)} | ${(turns / Math.max(1, total)).toFixed(1)} | ${["Intake", "Tithe", "Toll", "Season", "Barrage", "none"].map((k) => died[k]).join("/")} | ${wins ? (lawsSum / wins).toFixed(1) : "—"}; ${lawsMax} | ${removed}${byTxt ? `; ${byTxt}` : ""} |`);
+      console.log(`| ${ring} | ${roots} | ${lands} | ${life} | ${ref.name} | ${pct(wins)} | ${pct(t1)} | ${(turns / Math.max(1, total)).toFixed(1)} | ${["Intake", "Tithe", "Toll", "Season", "Barrage", "none"].map((k) => died[k]).join("/")} | ${wins ? (lawsSum / wins).toFixed(1) : "—"}; ${lawsMax} | ${removed}${byTxt ? `; ${byTxt}` : ""} | Purges ${(purges / Math.max(1, total)).toFixed(2)}/game`);
       const key = `${ring}|${roots}|${lands}|${life}|${ref.name === "chris-road-B" ? "road" : "stock"}`;
       const t = totals.get(key) ?? { wins: 0, total: 0, t1: 0, turns: 0, died: { Intake: 0, Tithe: 0, Toll: 0, Season: 0, Barrage: 0, none: 0 }, removed: 0, by: {}, laws: 0, lawsMax: 0 };
       t.wins += wins; t.total += total; t.t1 += t1; t.turns += turns; t.removed += removed; t.laws += lawsSum; t.lawsMax = Math.max(t.lawsMax, lawsMax);

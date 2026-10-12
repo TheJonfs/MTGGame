@@ -269,19 +269,64 @@ const deathDrain = (d: CardDef | undefined): number =>
  * each death, so ours counts twice (measured: 4 life a pass with the Usher; 2 net against an opposing Usher).
  * `exceptId` is the candidate itself. */
 export const LOOP_WORTH = 50;
-export function legendLoopWorth(view: GameView, defs: Map<string, CardDef>, d: CardDef | undefined, exceptId?: string): number {
-  if (!d || !d.types.includes("Creature") || !d.supertypes?.includes("Legendary")) return 0;
+/** S61 (book 124): a loop that gains us life and does not hurt them is worth a few passes, not the game. */
+export const LOOP_GAIN_WORTH = 25;
+type LifeEffect = { type: string; amount?: number | string; who?: string };
+const lifeOf = (effects: readonly unknown[], type: "loseLife" | "gainLife") => (effects as LifeEffect[]).reduce((n, e) => n + (e.type === type && typeof e.amount === "number" ? e.amount : 0), 0);
+/** S61 (book 124; the Hearth game that never ended — an Usher returning the Usher into three opposing Blood Artists,
+ * a Soul Warden giving the difference back). What ONE PASS of a legend's loop does to each life total: a creature
+ * dies (the legend rule) and a creature enters (the copy returned). Every permanent's "whenever a creature dies" and
+ * "whenever another creature enters" is read — the life it takes from the other side and the life it gives its own —
+ * on both sides; the legend itself counts twice on ours (both copies stand at each death). Null when `d` does not
+ * loop or no second copy is in reach. `exceptId` is the candidate itself. */
+export function legendLoopNet(view: GameView, defs: Map<string, CardDef>, d: CardDef | undefined, exceptId?: string): { us: number; them: number } | null {
+  if (!d || !d.types.includes("Creature") || !d.supertypes?.includes("Legendary")) return null;
   const etb = (d.abilities ?? []).find((a) => a.kind === "triggered" && a.event === "ENTERS_BATTLEFIELD" && a.effects.some((e) => e.type === "returnFromGraveyard" && e.to === "battlefield" && e.target !== undefined));
-  const drain = deathDrain(d);
-  if (!etb || etb.kind !== "triggered" || drain <= 0) return 0;
+  if (!etb || etb.kind !== "triggered" || deathDrain(d) <= 0) return null;
   const me = view.you, opp = (1 - me) as 0 | 1;
   const yards = etb.targets?.[0]?.who === "any" ? [me, opp] : [me];
   const second = view.battlefield.some((o) => o.controller === me && o.cardId === d.id && o.id !== exceptId)
     || yards.some((p) => view.graveyardObjects[p as 0 | 1].some((g) => g.cardId === d.id && g.objectId !== exceptId));
-  if (!second) return 0;
-  const ours = 2 * drain + view.battlefield.reduce((n, o) => n + (o.controller === me && o.cardId !== d.id ? deathDrain(defs.get(o.cardId)) : 0), 0);
+  if (!second) return null;
+  const life: [number, number] = [0, 0]; // by player: the change a pass makes
+  const read = (x: CardDef | undefined, controller: 0 | 1, times: number) => {
+    for (const a of x?.abilities ?? []) {
+      if (a.kind !== "triggered") continue;
+      const c = a.condition as { source?: string; controller?: string } | undefined;
+      // the legend is OUR creature: it dies on our side and its copy enters on our side
+      const sees = c?.controller === undefined || c.controller === "any" || (c.controller === "you" ? controller === me : c.controller === "opponent" ? controller !== me : false);
+      const dies = a.event === "DIES" && (c?.source === "any" || c?.source === "other") && sees;
+      const enters = a.event === "ENTERS_BATTLEFIELD" && c?.source === "other" && sees;
+      if (!dies && !enters) continue;
+      life[controller] = life[controller]! + times * lifeOf(a.effects, "gainLife");
+      life[1 - controller] = life[1 - controller]! - times * lifeOf(a.effects, "loseLife");
+    }
+  };
+  read(d, me, 2); // both copies at each death; the copy's own enter trigger is the return, not a life change
+  for (const o of view.battlefield) if (!(o.controller === me && o.cardId === d.id)) read(defs.get(o.cardId), o.controller, 1);
+  return { us: life[me]!, them: life[opp]! };
+}
+/** Book 99 as it stood before S61 (the switch "loopnet" off): our drain a death against theirs, lifegain unread. */
+export function legendLoopWorth99(view: GameView, defs: Map<string, CardDef>, d: CardDef | undefined, exceptId?: string): number {
+  if (!legendLoopNet(view, defs, d, exceptId) || !d) return 0;
+  const me = view.you, opp = (1 - me) as 0 | 1;
+  const ours = 2 * deathDrain(d) + view.battlefield.reduce((n, o) => n + (o.controller === me && o.cardId !== d.id ? deathDrain(defs.get(o.cardId)) : 0), 0);
   const theirs = view.battlefield.reduce((n, o) => n + (o.controller === opp ? deathDrain(defs.get(o.cardId)) : 0), 0);
   return ours > theirs ? LOOP_WORTH : -LOOP_WORTH;
+}
+/** What a legend's loop is worth (book 99, re-read in S61 as book 124): the game when each pass takes life from them
+ * and we outlast it; a few passes' worth when it only gains us more than it gains them (it never ends — the agent
+ * stops it); a loss when it helps them more than us, or kills us first. */
+export function legendLoopWorth(view: GameView, defs: Map<string, CardDef>, d: CardDef | undefined, exceptId?: string): number {
+  const net = legendLoopNet(view, defs, d, exceptId);
+  if (!net) return 0;
+  const me = view.you, opp = (1 - me) as 0 | 1;
+  if (net.them < 0) {
+    if (net.us >= 0) return LOOP_WORTH;
+    const theirPasses = Math.ceil(view.life[opp] / -net.them), ourPasses = Math.ceil(view.life[me] / -net.us);
+    return theirPasses < ourPasses ? LOOP_WORTH : -LOOP_WORTH; // both bleed: they must die first
+  }
+  return net.us > net.them ? LOOP_GAIN_WORTH : -LOOP_WORTH;
 }
 
 export function evaluate(view: GameView, profile: AiProfile, defs: Map<string, CardDef>): number {

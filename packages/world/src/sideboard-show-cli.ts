@@ -16,7 +16,9 @@ const arg = (k: string, d: string) => { const i = process.argv.indexOf(`--${k}`)
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const pool = loadCardPool(join(ROOT, "data/cards")).cards;
 const rating = JSON.parse(readFileSync(join(ROOT, "data/convocation/card-rating.json"), "utf8")) as CardRatingTable;
-const { shapes: _s, ...s55 } = AI_SIDEBOARD_CONSTRUCTED, terms: AiSideboardTerms = arg("shapes", "all") === "none" ? s55 : AI_SIDEBOARD_CONSTRUCTED;
+const { shapes: _s, ...s55 } = AI_SIDEBOARD_CONSTRUCTED, terms0: AiSideboardTerms = arg("shapes", "all") === "none" ? s55 : AI_SIDEBOARD_CONSTRUCTED;
+// S61: `--out61 small,graveyard` — the out-rule on trial
+const out61 = arg("out61", "").split(",").filter(Boolean), terms: AiSideboardTerms = out61.length ? { ...terms0, out61: { small: out61.includes("small"), spells: out61.includes("spells"), graveyard: out61.includes("graveyard") } } : terms0;
 const vs = arg("vs", "").split(",").filter(Boolean);
 for (const key of arg("list", Object.keys(OPEN_FIELD).join(",")).split(",")) {
   const me = OPEN_DECKS[key]; if (!me) throw new Error(`sideboard:show: no list ${key}`);

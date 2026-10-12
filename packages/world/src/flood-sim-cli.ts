@@ -25,6 +25,8 @@ const arg = (name: string, fallback: string): string => { const i = process.argv
 const games = Number(arg("games", "10"));
 const seed0 = Number(arg("seed", "1"));
 const only = arg("only", "");
+const offRules = arg("off", "").split(",").filter(Boolean); // S61: `--off laterpicks` — the seat's pilot without a rule, on the same seeds (a paired read)
+const PURGE = "phyrexian_purge";
 const grid = arg("grid", "0") === "1";
 const lordsOnly = arg("lords", "0") === "1";
 const gridLives = arg("gridLives", "30,34").split(",").map(Number);
@@ -117,7 +119,7 @@ for (const [key, deck] of Object.entries(FLOOD_DECKS)) {
     const cut = court?.deckRule ? legalCut(y0, court.deckRule) : { decklist: y0.decklist, changes: [] };
     if (cut.changes.length) cutNotes.push(`- ${court!.name} × ${y0.name}: ${cut.changes.join(", ")}`);
     const y = { ...y0, decklist: cut.decklist };
-    let wins = 0, total = 0, turns = 0, casts = 0, acts = 0, side = 0;
+    let wins = 0, total = 0, turns = 0, casts = 0, acts = 0, side = 0, purges = 0;
     for (const seat of [0, 1] as const) {
       const ySeat = (1 - seat) as 0 | 1;
       for (let i = 0; i < games; i++) {
@@ -135,13 +137,14 @@ for (const [key, deck] of Object.entries(FLOOD_DECKS)) {
         const me = { name: deck.name, decklist: [...deck.decklist], agent: "heuristic" as const };
         const them = { name: y.name, decklist: [...y.decklist], agent: "heuristic" as const };
         const spec: MatchSpec = { seed, players: seat === 0 ? [me, them] : [them, me], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 }, modifiers };
-        const mine = new Counting(new HeuristicAgent(seed * 2 + 1, pool, difficultyProfile("master", ARCHETYPE[key]!, [...y.decklist])), legendId, deck.ground);
+        const mine = new Counting(new HeuristicAgent(seed * 2 + 1, pool, { ...difficultyProfile("master", ARCHETYPE[key]!, [...y.decklist]), ...(offRules.length ? { off: offRules } : {}) }), legendId, deck.ground);
         const theirs: Agent = new HeuristicAgent(seed * 2 + 2, pool, difficultyProfile("journeyman", y.archetype, [...deck.decklist]));
         try {
           const r = await runMatch(spec, pool, seat === 0 ? [mine, theirs] : [theirs, mine]);
           if (r.winner === seat) wins += 1;
           total += 1; turns += r.turns;
           casts += r.facts.spellsCast[legendId]?.[seat] ?? 0;
+          purges += r.facts.spellsCast[PURGE]?.[seat] ?? 0;
           acts += mine.legend; side += mine.ground + mine.granted;
         } catch (e) {
           console.log(`ERROR ${key} vs ${y.name} seat ${seat} seed ${seed}: ${(e as Error).message}`);
@@ -149,7 +152,7 @@ for (const [key, deck] of Object.entries(FLOOD_DECKS)) {
       }
     }
     const per = (n: number) => (n / Math.max(1, total)).toFixed(2);
-    console.log(`| ${deck.seat}${grid && site ? ` @ ${cell.life} + ${cell.basics} basics` : ""} | ${deck.name} | ${y.name} | ${((100 * wins) / Math.max(1, total)).toFixed(0)}% | ${per(turns)} | ${per(casts)} | ${per(acts)} | ${per(side)} |`);
+    console.log(`| ${deck.seat}${grid && site ? ` @ ${cell.life} + ${cell.basics} basics` : ""} | ${deck.name} | ${y.name} | ${((100 * wins) / Math.max(1, total)).toFixed(0)}% | ${per(turns)} | ${per(casts)} | ${per(acts)} | ${per(side)} |${deck.decklist.some((e) => e.cardId === PURGE) ? ` Purges cast/game ${per(purges)}` : ""}`);
   }
   }
 }

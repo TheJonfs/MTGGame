@@ -30,13 +30,13 @@ import type { Decklist } from "./state.js";
 import { isBasic } from "./legality.js";
 import { cardRating, type CardRatingTable } from "./rating.js";
 import { PLANS, matchPlan, planPieces } from "@shandalar/agents";
-import { SIDEBOARD_GUIDES } from "./sideboard-guides.generated.js";
+import { SIDEBOARD_GUIDES, SIDEBOARD_OUT_RULES } from "./sideboard-guides.generated.js";
 
 export const AI_SIDEBOARD = { relicsSeen: 3, creaturesSeen: 15, perRule: 2 } as const;
 /** `betterOnly`: an answer comes in only for a card it out-rates. A Limited deck's last cards are filler, and any
  * answer beats them; a tuned sixty's lowest-rated card is often what the deck runs on (measured: without it the
  * Levy, the Sweep, the Wurmspeaker and the Warband each lost about three points by sideboarding). */
-export type AiSideboardTerms = { relicsSeen: number; creaturesSeen: number; perRule: number; betterOnly?: boolean; /** S55, rule 4: the opponent's copies of graveyard cards that bring it on, and how many answers come in */ graveyardSeen?: number; graveyardIn?: number; /** S56: rule 3 off, and rules 1–2 never take a counterspell out (measured for Constructed) */ countersStay?: boolean; /** S56, rules 5–8: each present only where the rule runs */ shapes?: SideboardShapes; /** S57 (Part 4): WHAT LEAVES */ outRule?: SideboardOutRule; /** S58: sideboard by the rules even where the fifteen has a guide (the measure beside it) */ noGuide?: boolean; /** S58 (measuring): the guide without the rows that bring these cards in */ guideDrop?: string[]; /** post-S59 (measuring): a whole-plan guide followed by the rules after all */ guideRulesToo?: boolean; /** S59 (a build under test with its own guide): the guides to match a fifteen against, in place of the generated ones */ guides?: readonly SideboardGuide[]; };
+export type AiSideboardTerms = { relicsSeen: number; creaturesSeen: number; perRule: number; betterOnly?: boolean; /** S55, rule 4: the opponent's copies of graveyard cards that bring it on, and how many answers come in */ graveyardSeen?: number; graveyardIn?: number; /** S56: rule 3 off, and rules 1–2 never take a counterspell out (measured for Constructed) */ countersStay?: boolean; /** S56, rules 5–8: each present only where the rule runs */ shapes?: SideboardShapes; /** S57 (Part 4): WHAT LEAVES */ outRule?: SideboardOutRule; /** S58: sideboard by the rules even where the fifteen has a guide (the measure beside it) */ noGuide?: boolean; /** S58 (measuring): the guide without the rows that bring these cards in */ guideDrop?: string[]; /** post-S59 (measuring): a whole-plan guide followed by the rules after all */ guideRulesToo?: boolean; /** S59 (a build under test with its own guide): the guides to match a fifteen against, in place of the generated ones */ guides?: readonly SideboardGuide[]; /** S61 (Part 2): what leaves, by the opponent's shape — `small`: against fifteen or more creatures of toughness two or less, a defensive card (a creature with more toughness than power; anything that makes tokens) never leaves, and a spell leaves before a creature; `graveyard`: against a graveyard deck, rule 4's answers come in for spot removal before anything else */ /** S61 (measuring): the adopted out-rules off */ noOutRules?: boolean; out61?: { small?: boolean; /** with `small`: a spell leaves before a creature (the brief's second half; measured apart) */ spells?: boolean; graveyard?: boolean }; };
 /** S57 (Part 4 — "what moved a matchup seventeen points was which card left"): `deadFirst` — a card that is dead
  * against this opponent leaves before the lowest-rated one (removal that hits only creatures, sweepers, creature
  * counters, a steal and walls against a list with fewer than `fewCreatures` creatures; walls against any plan);
@@ -105,6 +105,8 @@ export interface AiSideboarding { deck: Decklist; sideboard: Decklist; swaps: { 
 export function aiSideboard(deck: Decklist, sideboard: Decklist, opponentDeck: Decklist, cards: Map<string, CardDef>, rating: CardRatingTable, terms: AiSideboardTerms = AI_SIDEBOARD): AiSideboarding {
   const def = (id: string) => cards.get(id)!;
   const rate = (id: string) => cardRating(def(id), rating);
+  // S61 (Part 2): a list that adopted the out-rule brings it by its sixty (`noOutRules`: the measure beside it)
+  if (!terms.out61 && !terms.noOutRules) { const adopted = SIDEBOARD_OUT_RULES.find((r) => sameCards(r.sixty, deck)); if (adopted) terms = { ...terms, out61: adopted.out61 }; }
   const expand = (l: Decklist) => l.flatMap((e) => Array.from({ length: e.count }, () => e.cardId));
   const main = expand(deck), side = expand(sideboard).filter((id) => !isBasic(id));
   const colors = new Set(main.filter((id) => !def(id).types.includes("Land")).flatMap((id) => cardColors(def(id))));
@@ -129,12 +131,17 @@ export function aiSideboard(deck: Decklist, sideboard: Decklist, opponentDeck: D
   const creatureOnly = (d: CardDef) => !d.types.includes("Creature") && removes(d) && predicates(d).length > 0 && predicates(d).every((p) => /creature$/i.test(p));
   const dead = (d: CardDef) => !!o?.deadFirst && ((fewCreatures && (creatureOnly(d) || isSweeper(d) || isCreatureCounter(d) || stealsCreatures(d) || isWall(d))) || (!!theirPlan && isWall(d)));
   const kept = (id: string) => !!o?.keepFourOfs && fourOf.has(id) && !dead(def(id));
+  // S61 (Part 2; the probe: against the Rabble, the Muster and the Warband the rules took out Walls of Blossoms, Typhoid
+  // Rats and Sharpshooters for removal — the cards those matchups are held with)
+  const smallOpp = !!terms.out61?.small && opp.filter((d) => d.types.includes("Creature") && (d.toughness ?? 0) <= 2).length >= 15;
+  const makesTokens = (d: CardDef) => everyEffect(d).some((e) => e.type === "createToken");
+  const defensive = (d: CardDef) => makesTokens(d) || (d.types.includes("Creature") && (d.toughness ?? 0) > (d.power ?? 0));
   /** The card that leaves: a dead one first, then the lowest-rated of those the rule lets go (never a kept four-of, unless the rule names its own). */
   // (S58: what a guide brought in does not leave again, and what it took out sits on the bench, out of the rules' reach)
   const guideIn = new Set<string>(), bench: string[] = [];
   const pickOut = (mayLeave: (d: CardDef) => boolean, opts: { own?: boolean; wallsFirst?: boolean } = {}): string | undefined =>
-    main.filter((id) => !def(id).types.includes("Land") && !planCards.has(id) && !guideIn.has(id) && !manaOnly(def(id)) && !answersGraveyards(def(id)) && (dead(def(id)) || (mayLeave(def(id)) && (opts.own || !kept(id)))))
-      .sort((a, b) => Number(dead(def(b))) - Number(dead(def(a))) || (opts.wallsFirst ? Number(isWall(def(b))) - Number(isWall(def(a))) : 0) || rate(a) - rate(b) || b.localeCompare(a))[0];
+    main.filter((id) => !def(id).types.includes("Land") && !planCards.has(id) && !guideIn.has(id) && !manaOnly(def(id)) && !answersGraveyards(def(id)) && (dead(def(id)) || (mayLeave(def(id)) && (opts.own || !kept(id)) && !(smallOpp && defensive(def(id))))))
+      .sort((a, b) => Number(dead(def(b))) - Number(dead(def(a))) || (smallOpp && terms.out61?.spells ? Number(def(a).types.includes("Creature")) - Number(def(b).types.includes("Creature")) : 0) || (opts.wallsFirst ? Number(isWall(def(b))) - Number(isWall(def(a))) : 0) || rate(a) - rate(b) || b.localeCompare(a))[0];
   // S58 (Part 1): an authored fifteen is sideboarded by its author's guide, not by the rules
   const guide = terms.noGuide ? undefined : guideFor(sideboard, terms.guides ?? SIDEBOARD_GUIDES);
   if (guide) {
@@ -167,6 +174,7 @@ export function aiSideboard(deck: Decklist, sideboard: Decklist, opponentDeck: D
     // +2.3 ± 2.4, the guide and then the rules +3.7 ± 2.4)    // (post-S59: unless the guide is marked the whole plan)
     if (guide.only && !terms.guideRulesToo) { const packed = (ids: string[]): Decklist => { const out: Decklist = []; for (const id of ids) { const e = out.find((x) => x.cardId === id); if (e) e.count += 1; else out.push({ cardId: id, count: 1 }); } return out; }; return { deck: packed(main), sideboard: [...packed([...side, ...bench]), ...sideboard.filter((e) => isBasic(e.cardId))], swaps }; }
   }
+  const gyOut = new Set<string>();
   // S55 (rule 4), first: its answers come in whatever the deck's colours, for the lowest-rated cards that answer nothing
   if (terms.graveyardSeen !== undefined && oppGraveyard >= terms.graveyardSeen) {
     // S56 (the Kiln's hand-tested plan against the Pall: 37% → 60% with four for its Tidewalls; the rule's four for
@@ -177,7 +185,10 @@ export function aiSideboard(deck: Decklist, sideboard: Decklist, opponentDeck: D
     for (let n = 0; n < (terms.graveyardIn ?? terms.perRule); n++) {
       const ins = side.filter((id) => answersGraveyards(def(id)) && (usableByAnyDeck(def(id)) || castable(id))).sort((a, b) => a.localeCompare(b));
       const inId = n % 2 === 0 ? ins[0] : ins[ins.length - 1]; // one of each kind in turn (the Crypt on the board, the Macabre in hand)
-      const outId = pickOut((d) => !answersCreatures(d) && !answersRelics(d) && !isCounter(d), { wallsFirst: vsPlan });
+      // S61 (Part 2, `graveyard`): spot removal first — a combination is not answered one creature at a time
+      const spot = terms.out61?.graveyard ? main.filter((id) => !planCards.has(id) && !def(id).types.includes("Creature") && answersCreatures(def(id)) && !isSweeper(def(id)) && !answersGraveyards(def(id))).sort((a, b) => rate(a) - rate(b) || b.localeCompare(a))[0] : undefined;
+      const outId = spot ?? pickOut((d) => !answersCreatures(d) && !answersRelics(d) && !isCounter(d), { wallsFirst: vsPlan });
+      if (spot && outId === spot) gyOut.add(spot); // (what left for the hate is not what the creature rule brings back)
       if (!inId || !outId) break;
       main.splice(main.indexOf(outId), 1, inId); side.splice(side.indexOf(inId), 1, outId);
       swaps.push({ out: outId, in: inId, rule: "graveyards" });
@@ -185,7 +196,7 @@ export function aiSideboard(deck: Decklist, sideboard: Decklist, opponentDeck: D
   }
   const swap = (rule: "relics" | "creatures" | "counters", wantIn: (d: CardDef) => boolean, mayLeave: (d: CardDef) => boolean, onlyIfBetter = false, own = false) => {
     for (let n = 0; n < terms.perRule; n++) {
-      const inId = side.filter((id) => castable(id) && wantIn(def(id))).sort((a, b) => rate(b) - rate(a) || a.localeCompare(b))[0];
+      const inId = side.filter((id) => castable(id) && wantIn(def(id)) && !gyOut.has(id)).sort((a, b) => rate(b) - rate(a) || a.localeCompare(b))[0];
       // (post-S55: never a graveyard answer rule 4 has just brought in — unrated, they read as the deck's worst cards,
       // and the black lists' creature answers were swapping three of the four straight back out)
       const outId = pickOut((d) => mayLeave(d) && !wantIn(d), { own });

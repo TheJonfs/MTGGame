@@ -6,13 +6,13 @@ export const OPEN_MATCH_MEANS: Record<string, number> = {
  "open:kiln": 40.6,
  "open:levy": 42.9,
  "open:marducontrol": 69.7,
- "open:muster": 42.9,
- "open:pall": 56.5,
- "open:rabble": 64.9,
- "open:reaperclio": 71.5,
- "open:sweep": 44.2,
+ "open:muster": 42,
+ "open:pall": 55.5,
+ "open:rabble": 64.4,
+ "open:reaperclio": 72.2,
+ "open:sweep": 47,
  "open:tollgate": 40.1,
  "open:warband": 39,
  "open:writ": 54.9,
- "open:wurmspeaker": 34.1
+ "open:wurmspeaker": 33.2
 };

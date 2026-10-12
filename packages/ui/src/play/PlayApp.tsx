@@ -3,7 +3,8 @@ import { devMenuEnabled } from "../dev";
 import { DevSetup, type DevMatch } from "./DevSetup";
 import { SetupScreen, type PlaySetup } from "./SetupScreen";
 import { loadConvocationData, loadOracle, loadPool, type OracleEntry, type SavedGame } from "../engine-bridge";
-import { AI_SIDEBOARD_CONSTRUCTED, GAMES_KEPT, GAMES_KEY, MatchSeries, OPEN_FORMAT, addCopy, aiSideboard, fieldSideboard, removeCopy, type Collection, type DeckCheck, type Decklist } from "@shandalar/world";
+import { addCopy, removeCopy, type DeckCheck, type Decklist } from "@shandalar/world";
+import { boardingPool, count, firstCall, keepBoardedDeck, newMatchRun, nextMatchGame, playedGameMeta, recordMatchGame, recordPlayedGame, type MatchRun as Run } from "./match-run";
 import { DeckEditor, type DeckEditorHost } from "../components/DeckEditor";
 import { MatchController } from "./match-controller";
 import { PlayMatch, loadStops } from "./PlayMatch";
@@ -15,26 +16,9 @@ import { cardName } from "../labels";
  * same seed, and download of the saved game.
  */
 
-/** Post-S60 (Chris: "can we expand our single game tester to have a toggle for playing matches?"): the match in
- * progress — the event's series (best of three; the loser of a game chooses play or draw; the AI always plays first),
- * the deck as registered and its sideboard, the deck as it stands after sideboarding, and the opponent's fifteen (its
- * registered one, else the field builder's). The AI sideboards from game two as it does in the Open: its guide where
- * it has one, the general rules otherwise, against the human's REGISTERED sixty. The human is the series' seat 0. */
-interface MatchRun { series: MatchSeries; setup: PlaySetup; main: Decklist; side: Decklist; deck: Decklist; enemySide: Decklist; game: ReturnType<MatchSeries["nextGame"]> | null; recorded: boolean }
-const count = (l: Decklist) => l.reduce((n, e) => n + e.count, 0);
-/** Post-S60 (Chris: his match's game ones were not in the one log he could download): a finished game of the single
- * match is kept with the Convocation's recorded games — the same key, the same shape, the newest GAMES_KEPT — so the
- * Convocation's "download my games" carries it and `pnpm narrate` / `pnpm play-diff` read it. Never interrupts play. */
-function recordGame(c: MatchController, meta: Record<string, unknown>): void {
-  if (!c.result || typeof localStorage === "undefined") return;
-  try {
-    const raw = localStorage.getItem(GAMES_KEY), xs = raw ? (JSON.parse(raw) as unknown) : [], all = Array.isArray(xs) ? (xs as Record<string, unknown>[]) : [];
-    all.push({ format: "shandalar-log-v1", when: new Date().toISOString(), formatId: "open", ...meta, spec: c.spec, result: { winner: c.result.winner, reason: c.result.reason, turns: c.result.turns }, log: c.result.log.filter((x) => x.t === "ACTION" || x.t === "RNG") });
-    let keep = all.slice(-GAMES_KEPT);
-    try { localStorage.setItem(GAMES_KEY, JSON.stringify(keep)); }
-    catch { keep = keep.slice(Math.ceil(keep.length / 2)); try { localStorage.setItem(GAMES_KEY, JSON.stringify(keep)); } catch { /* full: this game goes unrecorded */ } }
-  } catch { /* a recording never interrupts play */ }
-}
+/** The match in progress (see match-run.ts). */
+type MatchRun = Run<PlaySetup>;
+const store = () => (typeof localStorage !== "undefined" ? localStorage : null);
 
 function EndScreen({
   c,
@@ -149,28 +133,21 @@ export function PlayApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =>
   const rating = useMemo(() => loadConvocationData().rating, []);
   /** The next game of the match: the series' seed and starting player; the AI's deck sideboarded from game two. */
   const nextGame = (r: MatchRun, choice: "play" | "draw") => {
-    const game = r.series.nextGame(r.series.nextChooser() === 0 ? choice : "play"), { human, enemy } = r.setup;
-    const theirs = game.index === 0 ? enemy.decklist : aiSideboard(enemy.decklist, r.enemySide, r.main, pool, rating, AI_SIDEBOARD_CONSTRUCTED).deck;
+    const next = nextMatchGame(r, choice, pool, rating), { human, enemy } = r.setup;
     const c = new MatchController(pool, {
       humanSeat: 0,
-      custom: { human: { name: `You · ${human.name}`, decklist: r.deck.map((e) => ({ ...e })) }, enemy: { name: enemy.name, decklist: theirs.map((e) => ({ ...e })), difficulty: r.setup.difficulty, archetype: enemy.archetype, ...(enemy.portrait ? { portrait: enemy.portrait } : {}) }, rules: { startingLife: 20, ante: 0, startingPlayer: game.startingPlayer }, modifiers: [] },
-      seed: game.seed,
+      custom: { human: { name: `You · ${human.name}`, decklist: next.human }, enemy: { name: enemy.name, decklist: next.enemy, difficulty: r.setup.difficulty, archetype: enemy.archetype, ...(enemy.portrait ? { portrait: enemy.portrait } : {}) }, rules: { startingLife: 20, ante: 0, startingPlayer: next.game.startingPlayer }, modifiers: [] },
+      seed: next.game.seed,
       aiDelayMs: Number(localStorage.getItem("shandalar-ai-delay") ?? 400),
     });
     c.stops = loadStops();
-    setRun({ ...r, game, recorded: false }); setBoarding(null);
+    setRun(next.run); setBoarding(null);
     setLastSetup(r.setup); setLastDev(null);
     setController(c);
     setScreen("match");
     void c.start();
   };
-  const beginMatch = (setup: PlaySetup) => {
-    const seed = setup.seed.trim() !== "" && Number.isFinite(Number(setup.seed)) ? Number(setup.seed) : Math.floor(Math.random() * 1_000_000);
-    const main = setup.human.decklist.map((e) => ({ ...e })), side = setup.human.sideboard?.length ? setup.human.sideboard.map((e) => ({ ...e })) : fieldSideboard(main, OPEN_FORMAT, { cards: pool, rating }); // a deck without one: the field builder's fifteen
-    const enemySide = setup.enemy.sideboard?.length ? setup.enemy.sideboard.map((e) => ({ ...e })) : fieldSideboard(setup.enemy.decklist, OPEN_FORMAT, { cards: pool, rating });
-    // game one's call is the setup's ("in game one you play first / second"); after it, the loser's
-    nextGame({ series: new MatchSeries({ seed, firstChooser: 0 }), setup, main, side, deck: main, enemySide, game: null, recorded: false }, setup.humanSeat === 0 ? "play" : "draw");
-  };
+  const beginMatch = (setup: PlaySetup) => nextGame(newMatchRun(setup, pool, rating), firstCall(setup));
   const begin = (setup: PlaySetup, seedOverride?: number) => {
     if (setup.match) return beginMatch(setup);
     setRun(null);
@@ -200,9 +177,9 @@ export function PlayApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =>
         onGameOver={() => {
           // the match: the game is recorded once, as it ends (the human is the series' seat 0)
           if (run?.game && !run.recorded && controller.result) {
-            run.series.record(run.game, controller.result); setRun({ ...run, recorded: true });
-            if (controller.humanSeat === 0) recordGame(controller, { eventSeed: run.series.seed, phase: "match", round: 1, game: run.game.index, opponent: run.setup.enemy.name, ...(run.setup.enemy.group === "open" ? { list: run.setup.enemy.key } : {}) });
-          } else if (!run && lastSetup && controller.result && controller.humanSeat === 0) recordGame(controller, { eventSeed: controller.seed, phase: "single", round: 1, game: 0, opponent: lastSetup.enemy.name, ...(lastSetup.enemy.group === "open" ? { list: lastSetup.enemy.key } : {}) });
+            setRun(recordMatchGame(run, controller.result));
+            recordPlayedGame(store(), controller, playedGameMeta(run.setup.enemy, run.series.seed, "match", run.game.index));
+          } else if (!run && lastSetup && controller.humanSeat === 0) recordPlayedGame(store(), controller, playedGameMeta(lastSetup.enemy, controller.seed, "single", 0));
           setScreen("end");
         }}
       />
@@ -210,8 +187,7 @@ export function PlayApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =>
   }
   if (boarding && run) {
     // between games: the deck from the registered seventy-five — as many cards as were registered, or more
-    const all: Collection = {}; for (const e of [...run.main, ...run.side]) all[e.cardId] = (all[e.cardId] ?? 0) + e.count;
-    const floor = Math.min(60, count(run.main)), n = count(boarding.draft);
+    const { all, floor } = boardingPool(run), n = count(boarding.draft);
     const change = (r: ReturnType<typeof addCopy>) => setBoarding(r.ok ? { draft: r.deck, notice: null } : { ...boarding, notice: r.reason });
     const host: DeckEditorHost = {
       title: `Sideboard — your seventy-five, before game ${run.series.games.length + 1}`,
@@ -221,7 +197,7 @@ export function PlayApp({ onWatchReplay }: { onWatchReplay: (game: SavedGame) =>
       add: (id) => change(addCopy(all, boarding.draft, id, Infinity)),
       remove: (id) => change(removeCopy(boarding.draft, id)),
       reset: () => setBoarding({ draft: run.main.map((e) => ({ ...e })), notice: null }),
-      save: () => { if (n < floor) return setBoarding({ ...boarding, notice: `the deck has ${n} cards; it needs ${floor}` }); setRun({ ...run, deck: boarding.draft }); setBoarding(null); },
+      save: () => { const kept = keepBoardedDeck(run, boarding.draft); if (!kept.ok) return setBoarding({ ...boarding, notice: kept.reason }); setRun(kept.run); setBoarding(null); },
       saveLabel: "Keep this deck",
       close: () => setBoarding(null), closeLabel: "Cancel",
       sparesLabel: "Sideboard",

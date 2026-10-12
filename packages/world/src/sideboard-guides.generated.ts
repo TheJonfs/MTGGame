@@ -456,3 +456,318 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
   "only": true
  }
 ];
+
+/** S61 (Part 2): the out-rule adopted per list (matched by its sixty), where it measured a gain. */
+export const SIDEBOARD_OUT_RULES: readonly { key: string; sixty: { cardId: string; count: number }[]; out61: { small?: boolean; spells?: boolean; graveyard?: boolean } }[] = [
+ {
+  "key": "reaperclio",
+  "sixty": [
+   {
+    "cardId": "reapers_forerunner",
+    "count": 4
+   },
+   {
+    "cardId": "manaba",
+    "count": 4
+   },
+   {
+    "cardId": "rage_cobra",
+    "count": 4
+   },
+   {
+    "cardId": "the_reaper",
+    "count": 3
+   },
+   {
+    "cardId": "clio_lady_of_the_depths",
+    "count": 4
+   },
+   {
+    "cardId": "birds_of_paradise",
+    "count": 4
+   },
+   {
+    "cardId": "time_walk",
+    "count": 1
+   },
+   {
+    "cardId": "wall_of_blossoms",
+    "count": 4
+   },
+   {
+    "cardId": "flametongue_kavu",
+    "count": 4
+   },
+   {
+    "cardId": "mystic_snake",
+    "count": 3
+   },
+   {
+    "cardId": "the_reeve",
+    "count": 1
+   },
+   {
+    "cardId": "black_lotus",
+    "count": 1
+   },
+   {
+    "cardId": "mox_emerald",
+    "count": 1
+   },
+   {
+    "cardId": "mox_jet",
+    "count": 1
+   },
+   {
+    "cardId": "mox_ruby",
+    "count": 1
+   },
+   {
+    "cardId": "mox_sapphire",
+    "count": 1
+   },
+   {
+    "cardId": "taiga",
+    "count": 4
+   },
+   {
+    "cardId": "bayou",
+    "count": 4
+   },
+   {
+    "cardId": "tropical_island",
+    "count": 4
+   },
+   {
+    "cardId": "cairnbrand",
+    "count": 1
+   },
+   {
+    "cardId": "tallyflame_court",
+    "count": 1
+   },
+   {
+    "cardId": "wrackroot",
+    "count": 1
+   },
+   {
+    "cardId": "badlands",
+    "count": 1
+   },
+   {
+    "cardId": "volcanic_island",
+    "count": 2
+   },
+   {
+    "cardId": "underground_sea",
+    "count": 1
+   }
+  ],
+  "out61": {
+   "small": true,
+   "spells": true
+  }
+ },
+ {
+  "key": "sweep",
+  "sixty": [
+   {
+    "cardId": "the_reaper",
+    "count": 4
+   },
+   {
+    "cardId": "meliyan_the_torment",
+    "count": 3
+   },
+   {
+    "cardId": "blood_artist",
+    "count": 4
+   },
+   {
+    "cardId": "bitterblossom",
+    "count": 4
+   },
+   {
+    "cardId": "birds_of_paradise",
+    "count": 4
+   },
+   {
+    "cardId": "black_lotus",
+    "count": 1
+   },
+   {
+    "cardId": "mox_emerald",
+    "count": 1
+   },
+   {
+    "cardId": "mox_jet",
+    "count": 1
+   },
+   {
+    "cardId": "mox_ruby",
+    "count": 1
+   },
+   {
+    "cardId": "shocking_sharpshooter",
+    "count": 4
+   },
+   {
+    "cardId": "putrefy",
+    "count": 3
+   },
+   {
+    "cardId": "seasoned_pyromancer",
+    "count": 2
+   },
+   {
+    "cardId": "vampire_nighthawk",
+    "count": 2
+   },
+   {
+    "cardId": "voracious_cobra",
+    "count": 2
+   },
+   {
+    "cardId": "rancor",
+    "count": 2
+   },
+   {
+    "cardId": "prey_upon",
+    "count": 1
+   },
+   {
+    "cardId": "lightning_bolt",
+    "count": 1
+   },
+   {
+    "cardId": "cairnbrand",
+    "count": 1
+   },
+   {
+    "cardId": "badlands",
+    "count": 4
+   },
+   {
+    "cardId": "bayou",
+    "count": 4
+   },
+   {
+    "cardId": "taiga",
+    "count": 4
+   },
+   {
+    "cardId": "tallyflame_court",
+    "count": 1
+   },
+   {
+    "cardId": "obsidian_observatory",
+    "count": 1
+   },
+   {
+    "cardId": "shevelport",
+    "count": 1
+   },
+   {
+    "cardId": "mox_sapphire",
+    "count": 1
+   },
+   {
+    "cardId": "mox_pearl",
+    "count": 1
+   },
+   {
+    "cardId": "underground_sea",
+    "count": 1
+   },
+   {
+    "cardId": "savannah",
+    "count": 1
+   }
+  ],
+  "out61": {
+   "small": true,
+   "spells": true,
+   "graveyard": true
+  }
+ },
+ {
+  "key": "warband",
+  "sixty": [
+   {
+    "cardId": "plateau",
+    "count": 4
+   },
+   {
+    "cardId": "sacred_foundry",
+    "count": 4
+   },
+   {
+    "cardId": "mountain",
+    "count": 12
+   },
+   {
+    "cardId": "plains",
+    "count": 2
+   },
+   {
+    "cardId": "black_lotus",
+    "count": 1
+   },
+   {
+    "cardId": "mox_ruby",
+    "count": 1
+   },
+   {
+    "cardId": "mox_pearl",
+    "count": 1
+   },
+   {
+    "cardId": "skirk_prospector",
+    "count": 4
+   },
+   {
+    "cardId": "goblin_piker",
+    "count": 4
+   },
+   {
+    "cardId": "goblin_chieftain",
+    "count": 4
+   },
+   {
+    "cardId": "boggart_brute",
+    "count": 2
+   },
+   {
+    "cardId": "siege_gang_commander",
+    "count": 3
+   },
+   {
+    "cardId": "lumen_the_hearth_fire",
+    "count": 3
+   },
+   {
+    "cardId": "hordeling_outburst",
+    "count": 4
+   },
+   {
+    "cardId": "goblin_grenade",
+    "count": 4
+   },
+   {
+    "cardId": "lightning_bolt",
+    "count": 4
+   },
+   {
+    "cardId": "sacred_helix",
+    "count": 1
+   },
+   {
+    "cardId": "flametongue_kavu",
+    "count": 2
+   }
+  ],
+  "out61": {
+   "graveyard": true
+  }
+ }
+];

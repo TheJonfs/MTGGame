@@ -2,7 +2,7 @@ import { NullLog, SeededRng } from "@shandalar/core";
 import { parseManaCost, manaValue, cardColors, type CardDef, type Effect, type ResolvedTarget } from "@shandalar/cards";
 import type { Action, ActionRequest, Agent, GameView, PlayerId } from "@shandalar/engine";
 import { preferSide, targetSide, classifyEffects, effectsForAction, ptSign } from "./effect-classification.js";
-import { DEFAULT_CONSTANTS, deterrence, evaluate, legendLoopWorth, LOOP_WORTH, millPerDamage, millValue, objectValue, reanimationWorth, type AiProfile, type EvalConstants } from "./evaluator.js";
+import { DEFAULT_CONSTANTS, deterrence, evaluate, legendLoopWorth, legendLoopWorth99, LOOP_GAIN_WORTH, LOOP_WORTH, millPerDamage, millValue, objectValue, reanimationWorth, type AiProfile, type EvalConstants } from "./evaluator.js";
 import { predictAction } from "./view-sim.js";
 import { viewAbilityAt } from "./granted-view.js";
 import { PlanPlay } from "./plan-play.js";
@@ -66,7 +66,29 @@ export class HeuristicAgent implements Agent {
     this.plans = new PlanPlay({ profile, defs, def: (id) => this.def(id), mv: (id) => this.mv(id), offered: () => this.offered, actionEffects: (v, a) => this.actionEffects(v, a) });
   }
 
+  /** S61 (book 124): the passes of a legend's loop this turn — an enter trigger of card X aimed at a copy of X in a graveyard. */
+  private loopTurn = -1;
+  private loopPasses = 0;
+  /** How many passes a loop that only gains us life is run for (the engine draws a turn of a thousand resolutions that hurt nobody). */
+  static readonly LOOP_GAIN_PASSES = 10;
+  /** Book 124 (S61; the probe: of some 2,900 loops in 24,000 games all but a handful killed — and eight ran to the
+   * engine's draw, each gaining us life a pass and costing them none). A legend's loop is priced by what a pass does to
+   * BOTH life totals, lifegain read (evaluator.legendLoopWorth); and a loop that only gains is stopped after
+   * LOOP_GAIN_PASSES — the return is aimed elsewhere, where there is an elsewhere. Off ("loopnet"): book 99's read. */
+  loopWorth(view: GameView, d: CardDef | undefined, exceptId?: string): number {
+    if (this.profile.off?.includes("loopnet")) return legendLoopWorth99(view, this.defs, d, exceptId);
+    const w = legendLoopWorth(view, this.defs, d, exceptId);
+    return w === LOOP_GAIN_WORTH && view.turn === this.loopTurn && this.loopPasses >= HeuristicAgent.LOOP_GAIN_PASSES ? -LOOP_WORTH : w;
+  }
   async chooseAction(view: GameView, request: ActionRequest): Promise<Action> {
+    const a = await this.decide(view, request);
+    if (a.type === "chooseTriggerTargets" && request.source) {
+      const t = a.targets[0], yard = t?.kind === "object" ? [...view.graveyardObjects[0], ...view.graveyardObjects[1]].find((g) => g.objectId === t.id) : undefined;
+      if (yard && yard.cardId === request.source.cardId) { if (view.turn !== this.loopTurn) { this.loopTurn = view.turn; this.loopPasses = 0; } this.loopPasses += 1; }
+    }
+    return a;
+  }
+  private async decide(view: GameView, request: ActionRequest): Promise<Action> {
     if (request.purpose !== "chooseVariableTarget") this.variablePicks = 0; // the loop ended (or never started)
     switch (request.purpose) {
       case "mulligan":
@@ -1026,7 +1048,7 @@ export class HeuristicAgent implements Agent {
     if (toGraveyard && nonlands.length > 0) {
       // book 99: the loop's second copy goes to the graveyard when the first is in hand or on our battlefield
       const holds = (cardId: string) => view.hand.some((c) => c.cardId === cardId) || view.battlefield.some((o) => o.controller === view.you && o.cardId === cardId);
-      const worth = (cardId: string): number => reanimationWorth(this.def(cardId)) + (holds(cardId) && legendLoopWorth({ ...view, graveyardObjects: view.graveyardObjects.map((g, p) => (p === view.you ? [...g, { objectId: "pred_buried", cardId }] : g)) as GameView["graveyardObjects"] }, this.defs, this.def(cardId), view.hand.some((c) => c.cardId === cardId) ? undefined : "pred_buried") > 0 ? LOOP_WORTH : 0);
+      const worth = (cardId: string): number => reanimationWorth(this.def(cardId)) + (holds(cardId) && this.loopWorth({ ...view, graveyardObjects: view.graveyardObjects.map((g, p) => (p === view.you ? [...g, { objectId: "pred_buried", cardId }] : g)) as GameView["graveyardObjects"] }, this.def(cardId), view.hand.some((c) => c.cardId === cardId) ? undefined : "pred_buried") > 0 ? LOOP_WORTH : 0);
       return [...nonlands].sort((a, b) => worth(cardOf.get(b.objectId) ?? "") - worth(cardOf.get(a.objectId) ?? "") || (cardOf.get(a.objectId) ?? "").localeCompare(cardOf.get(b.objectId) ?? ""))[0]!;
     }
     // S30 (Wood Elves — Pell, Quill): a land is scored by the BEST need over every colour it produces,
@@ -2261,8 +2283,18 @@ export class HeuristicAgent implements Agent {
     if (!d || !(d.supertypes ?? []).includes("Legendary")) return false;
     // S55 (book 100, book 99's other door): a legend that LOOPS with its own copy is the exception — the second
     // Usher cast beside the first is the loop itself (the legend rule supplies the death; the newcomer returns it)
-    if (legendLoopWorth(view, this.defs, d) > 0) return false;
+    const loop = this.loopWorth(view, d);
+    if (loop > 0) return false;
+    // S61 (book 124, the Hearth game): a cast whose enter trigger would have NOTHING to return but its own copy starts a
+    // loop nobody can stop — when that loop is a bad one, the card stays in hand
+    if (loop < 0 && !this.profile.off?.includes("loopnet") && this.loopForced(view, d)) return true;
     return view.battlefield.some((o) => o.controller === view.you && o.cardId === d.id);
+  }
+  /** Would `d`'s enter trigger have only copies of `d` to return? (The yards its trigger reaches hold no other creature card.) */
+  private loopForced(view: GameView, d: CardDef): boolean {
+    const etb = (d.abilities ?? []).find((a) => a.kind === "triggered" && a.event === "ENTERS_BATTLEFIELD" && a.effects.some((e) => e.type === "returnFromGraveyard"));
+    const yards = etb?.kind === "triggered" && etb.targets?.[0]?.who === "any" ? [0, 1] : [view.you];
+    return !yards.some((p) => view.graveyardObjects[p as 0 | 1].some((g) => g.cardId !== d.id && !!this.def(g.cardId)?.types.includes("Creature")));
   }
   /** S55 (book 100): casting a legend whose entering starts its loop — a second copy stands on our battlefield or
    * lies in a graveyard its trigger reaches — is worth the game, plan or no plan (book 99 priced the return; this is
@@ -2270,7 +2302,8 @@ export class HeuristicAgent implements Agent {
   loopCastBonus(view: GameView, action: Action): number {
     if (action.type !== "castSpell") return 0;
     const d = this.def(view.hand.find((c) => c.objectId === action.objectId)?.cardId ?? "");
-    return d && d.types.includes("Creature") && legendLoopWorth(view, this.defs, d) > 0 ? LOOP_WORTH : 0;
+    const w = d && d.types.includes("Creature") ? this.loopWorth(view, d) : 0;
+    return w > 0 ? w : 0; // (book 124: a loop that only gains is worth its passes, not the game)
   }
 
   /** The opponent's list's burn: copies of instants and sorceries that deal a number of damage to any target. */
@@ -2586,7 +2619,7 @@ export class HeuristicAgent implements Agent {
     // Reanimation with a creature as the cost (the pyre), or free (the Reeve): the best card only, and worth the body.
     if (e0.type === "returnFromGraveyard" && e0.to === "battlefield" && e0.target !== undefined) {
       const spec = ab.targets?.[0];
-      const best = yardBest(spec?.who === "any" ? [me, opp] : [me], (d) => d.types.includes("Creature"), reanimationWorth, (d, id) => legendLoopWorth(view, this.defs, d, id)); // book 99: the loop
+      const best = yardBest(spec?.who === "any" ? [me, opp] : [me], (d) => d.types.includes("Creature"), reanimationWorth, (d, id) => this.loopWorth(view, d, id)); // book 99: the loop
       if (tId !== best) return true;
       if (ab.cost.sacrifice) {
         const cheapest = Math.min(...myCreatures.map((o) => objectValue(this.defs, o, this.C)));
@@ -2698,7 +2731,7 @@ export class HeuristicAgent implements Agent {
           const gd = g ? this.def(g.cardId) : undefined;
           // S45 (the Tidewall): a SPELL back to hand is worth its mana value, a counter half again — the dearest comes back.
           if (gd && (gd.types.includes("Instant") || gd.types.includes("Sorcery"))) s += manaValue(parseManaCost(gd.manaCost)) + (gd.spellEffect?.some((e) => e.type === "counter") ? 0.5 : 0);
-          else s += reanimationWorth(gd) + (returnsToBattlefield ? legendLoopWorth(view, this.defs, gd, t.id) : 0); // S31: the one valuation (evaluator.reanimationWorth); book 99: the loop
+          else s += reanimationWorth(gd) + (returnsToBattlefield ? this.loopWorth(view, gd, t.id) : 0); // S31: the one valuation (evaluator.reanimationWorth); book 99: the loop
         }
         if (t.kind === "player") s += 2; // face is worth a couple of mana units
         const side = targetSide(view, t as never);

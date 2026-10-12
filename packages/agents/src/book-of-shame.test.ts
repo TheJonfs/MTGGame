@@ -6,7 +6,7 @@ import type { GameView } from "@shandalar/engine";
 import { readFileSync } from "node:fs";
 import { HeuristicAgent } from "./heuristic-agent.js";
 import { payableBy, reserveTaps } from "./reserve.js";
-import { deterrence, difficultyProfile, objectValue } from "./evaluator.js";
+import { deterrence, difficultyProfile, legendLoopNet, LOOP_GAIN_WORTH, LOOP_WORTH, objectValue } from "./evaluator.js";
 import { PLANS } from "./plans.generated.js";
 import { viewCreatures, type SimObject } from "./combat-sim.js";
 
@@ -1861,5 +1861,39 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.laterPicks(mkView({ hand: [{ objectId: "p", cardId: "vindicate" }], battlefield: lands }), cast)).toBeNull(); // a spell aimed at the cast is not this
     const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["laterpicks"] });
     expect(old.scorePriorityAction(two, cast)).toBe(-Infinity); // the old pilot
+  });
+
+  it("book of shame 124 (S61 — the Hearth game that never ended, and the probe: eight loops in 24,000 games ran to the engine's draw): a legend's loop is priced by what a pass does to both life totals, lifegain read; a loop that only gains is stopped after ten passes; a cast that would start a bad loop with nothing else to return is held", () => {
+    const a = agent("midrange"), usher = pool.get("the_usher")!;
+    const v = (mine: string[], theirs: string[], yard: string[] = ["the_usher"], life: [number, number] = [20, 20], hand: string[] = []): GameView => ({ ...mkView({ life, hand: hand.map((c, i) => ({ objectId: "h" + i, cardId: c })),
+      battlefield: [...mine.map((c, i) => ({ id: "m" + i, cardId: c, controller: 0 as const })), ...theirs.map((c, i) => ({ id: "t" + i, cardId: c, controller: 1 as const }))] }), graveyardObjects: [yard.map((c, i) => ({ objectId: "g" + i, cardId: c })), []] as GameView["graveyardObjects"] });
+    expect(legendLoopNet(v(["the_usher"], []), pool, usher)).toEqual({ us: 4, them: -4 }); // both copies at each death
+    expect(a.loopWorth(v(["the_usher"], []), usher)).toBe(LOOP_WORTH);
+    expect(legendLoopNet(v(["the_usher"], ["the_usher"]), pool, usher)).toEqual({ us: 2, them: -2 }); // an opposing Usher halves it
+    // the Hearth game: their Usher and three Blood Artists take five a death, our Soul Warden gives one back — we go nowhere, they climb
+    const hearth = v(["the_usher", "soul_warden"], ["the_usher", "blood_artist", "blood_artist", "blood_artist"]);
+    expect(legendLoopNet(hearth, pool, usher)).toEqual({ us: 0, them: 1 });
+    expect(a.loopWorth(hearth, usher)).toBe(-LOOP_WORTH);
+    // their Soul Wardens give back what our drain takes (each copy returned is a creature entering): it only gains
+    const gains = v(["the_usher"], ["soul_warden", "soul_warden", "soul_warden", "soul_warden"]);
+    expect(legendLoopNet(gains, pool, usher)).toEqual({ us: 4, them: 0 });
+    expect(a.loopWorth(gains, usher)).toBe(LOOP_GAIN_WORTH);
+    const ten = agent("midrange"); Object.assign(ten as unknown as { loopTurn: number; loopPasses: number }, { loopTurn: gains.turn, loopPasses: 10 });
+    expect(ten.loopWorth(gains, usher)).toBe(-LOOP_WORTH); // ten passes in: enough — the return is aimed elsewhere
+    expect(ten.loopWorth(v(["the_usher"], []), usher)).toBe(LOOP_WORTH); // a loop that kills is never stopped
+    // both bleed: the one who dies first decides it
+    const race = v(["the_usher"], ["blood_artist", "blood_artist", "blood_artist", "blood_artist", "blood_artist", "blood_artist"]);
+    expect(legendLoopNet(race, pool, usher)).toEqual({ us: -2, them: 2 });
+    expect(a.loopWorth(race, usher)).toBe(-LOOP_WORTH);
+    expect(a.loopWorth(v([], [], []), usher)).toBe(0); // no second copy: no loop
+    // the old read ("loopnet" off) saw only the drains: four against four Wardens' none — the game
+    const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["loopnet"] });
+    expect(old.loopWorth(gains, usher)).toBe(LOOP_WORTH);
+    // the cast that would start the Hearth loop with nothing else in a graveyard: held; with another creature card there, the return has somewhere to go
+    const cast = { type: "castSpell" as const, objectId: "h0", targets: [] };
+    const held = v(["soul_warden"], ["the_usher", "blood_artist", "blood_artist", "blood_artist"], ["the_usher"], [20, 20], ["the_usher"]);
+    expect(a.legendDuplicateGated(held, cast)).toBe(true);
+    expect(a.legendDuplicateGated(v(["soul_warden"], ["the_usher", "blood_artist", "blood_artist", "blood_artist"], ["the_usher", "grizzly_bears"], [20, 20], ["the_usher"]), cast)).toBe(false);
+    expect(old.legendDuplicateGated(held, cast)).toBe(false); // the old pilot cast it
   });
 });

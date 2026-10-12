@@ -34,33 +34,33 @@
    "n": 780
   },
   "muster": {
-   "matches": 42.9,
+   "matches": 42,
    "gameOne": 44.8,
-   "later": 46.1,
+   "later": 45,
    "n": 780
   },
   "pall": {
-   "matches": 56.5,
+   "matches": 55.5,
    "gameOne": 62.3,
-   "later": 49.9,
+   "later": 48.9,
    "n": 780
   },
   "rabble": {
-   "matches": 64.9,
+   "matches": 64.4,
    "gameOne": 57.6,
-   "later": 61.6,
+   "later": 61.1,
    "n": 780
   },
   "reaperclio": {
-   "matches": 71.5,
+   "matches": 72.2,
    "gameOne": 67.8,
-   "later": 63.8,
+   "later": 64.1,
    "n": 780
   },
   "sweep": {
-   "matches": 44.2,
+   "matches": 47,
    "gameOne": 47.4,
-   "later": 45.7,
+   "later": 48.4,
    "n": 780
   },
   "tollgate": {
@@ -82,9 +82,9 @@
    "n": 780
   },
   "wurmspeaker": {
-   "matches": 34.1,
+   "matches": 33.2,
    "gameOne": 37.8,
-   "later": 38.6,
+   "later": 38,
    "n": 780
   }
  }

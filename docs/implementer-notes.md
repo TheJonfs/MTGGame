@@ -724,3 +724,13 @@ See handoff Concerns for the authoritative list. Highlights: auto-pay greedy fea
 - **A card nobody plays hides a pilot bug**: the Purge was uncastable for seventeen sessions because no field list held it. A new list's first table should include its cast counts per card (`logA.cast` in the shard files).
 - **A guide's `out` list takes its first card until none is left** — to take exactly two of a card, give that row `n: 2`; two rows may share an `in`.
 - **A scratch tag reused is a contaminated merge**: `rec61_8/9.json` from an old ten-shard run sat beside a new eight-shard `rec61_0..7` and `--merge rec61_*` took them all (the `games` count said 10,500 where 9,100 was right — check it). Use a fresh tag, or list the directory first.
+
+## S61 notes (2026-10-12)
+
+- **`open:rr` reads the FIRST occurrence of a flag.** A wrapper that passes its defaults before `"$@"` silently overrides the caller. `scripts/open/rr.sh` passes `"$@"` first.
+- **zsh does not word-split an unquoted variable**: `R="pnpm -s open:rr …"; $R --only x` runs nothing (a command not found, swallowed by `>/dev/null`). Use `${=R}`, and look for the output file before waiting on it.
+- **A paired trial that touches only some pairings should be run on those pairings** (`--vs`), at more matches: the rest are identical by construction and only dilute the interval. The pairing index, and so the seed, does not change with `--vs`.
+- **The loop log** (`logA.loops` in a shard file): turn, card, passes, the life totals at the first three passes, the legal targets at the first aim. A loop of thirty passes or more that is not killing is the thing to look for.
+- **A generated file that its own generator imports** (`sideboard-guides.generated.ts` through `sideboard-ai.ts`) cannot gain an export in one step: add the empty export by hand, then run `pnpm open:gen`.
+- **`pnpm ladder` printed nothing for ten minutes when run after a batch** and finished in 233 s once alone — the machine was still busy. Check `ps` before starting it.
+

@@ -8,20 +8,20 @@
 
 | list | deck | pilot | matches | game one | after sideboarding | fifteen |
 |---|---|---|---|---|---|---|
-| Reaper Clio | Four-Colour Snake Control (G B u r) | midrange | 71.5 | 69 | −4.0 | registered |
+| Reaper Clio | Four-Colour Snake Control (G B u r) | midrange | 72.2 | 69 | −3.7 | registered |
 | Mardu Control | Usher Control (W B R) | midrange | 69.7 | 61 | +7.4 | registered, guided |
-| the Rabble | Mono-Red Goblins (R) | aggro | 64.9 | 59 | +4.0 | registered |
-| the Pall | Usher Combo (B w r) | combo | 56.5 | 65 | −12.4 | registered |
+| the Rabble | Mono-Red Goblins (R) | aggro | 64.4 | 59 | +3.5 | registered |
+| the Pall | Usher Combo (B w r) | combo | 55.5 | 65 | −13.4 | registered |
 | the Writ | Dimir Control (U B) | control | 54.9 | 49 | +5.0 | registered |
 | Countersnake | Four-Colour Countersnake (G U w b) | midrange | 54.0 | 51 | −0.8 | registered |
+| the Sweep | Jund Aristocrats (B R G) | midrange | 47.0 | 43 | +1.0 | built |
 | the Depths | Sultai Control (U B G) | control | 44.5 | 45 | +5.0 | built |
-| the Sweep | Jund Aristocrats (B R G) | midrange | 44.2 | 43 | −1.7 | built |
-| the Muster | Boros Weenie (W R) | aggro | 42.9 | 44 | +1.3 | built |
 | the Levy | Orzhov Landfall (W B) | midrange | 42.9 | 42 | +3.5 | registered, guided |
+| the Muster | Boros Weenie (W R) | aggro | 42.0 | 44 | +0.2 | built |
 | the Kiln | Izzet Spells (U R) | midrange | 40.6 | 43 | −0.2 | registered |
 | the Tollgate | Naya Minefield Control (R W G) | control | 40.1 | 44 | −6.1 | registered, guided |
 | the Warband (Chris's list to test against the Muster) | Boros Goblins (R w) | aggro | 39.0 | 41 | −1.3 | built |
-| the Wurmspeaker | Mono-Green Ramp | midrange | 34.1 | 40 | +0.8 | built |
+| the Wurmspeaker | Mono-Green Ramp | midrange | 33.2 | 40 | +0.2 | built |
 
 Archived (kept in the data, out of the field): the Usher's Coin, the Undertow, the Larder, the Tally, the Locks, the Ford, the Enchantress, the Loop, the Hearth, the Cinder, Reaper Control.
 
@@ -33,7 +33,7 @@ The most played: Flametongue Kavu 6 · Lightning Bolt 6 · Birds of Paradise 5 �
 
 ## Reaper Clio — Four-Colour Snake Control (G B u r)
 
-`reaperclio` · midrange · game one 69 · matches 71.5
+`reaperclio` · midrange · game one 69 · matches 72.2
 
 - **Lands (19):** 4 Taiga · 4 Bayou · 4 Tropical Island · 1 Cairnbrand · 1 Tallyflame Court · 1 Wrackroot · 1 Badlands · 2 Volcanic Island · 1 Underground Sea
 - **Creatures (35):** 4 Reaper's Forerunner · 4 Manaba · 4 Rage Cobra · 3 The Reaper · 4 Clio, Lady of the Depths · 4 Birds of Paradise · 4 Wall of Blossoms · 4 Flametongue Kavu · 3 Mystic Snake · 1 The Reeve
@@ -70,7 +70,7 @@ The most played: Flametongue Kavu 6 · Lightning Bolt 6 · Birds of Paradise 5 �
 
 ## the Rabble — Mono-Red Goblins (R)
 
-`rabble` · aggro · game one 59 · matches 64.9
+`rabble` · aggro · game one 59 · matches 64.4
 
 - **Lands (18):** 1 Cairnbrand · 4 Badlands · 1 Tallyflame Court · 4 Volcanic Island · 8 Mountain
 - **Creatures (18):** 4 Raging Goblin · 4 Goblin Chieftain · 4 Seasoned Pyromancer · 4 Flametongue Kavu · 2 Siege-Gang Commander
@@ -82,7 +82,7 @@ The most played: Flametongue Kavu 6 · Lightning Bolt 6 · Birds of Paradise 5 �
 
 ## the Pall — Usher Combo (B w r)
 
-`pall` · combo · game one 65 · matches 56.5
+`pall` · combo · game one 65 · matches 55.5
 
 - **Lands (21):** 1 Cairnbrand · 4 Badlands · 4 Scrubland · 4 Swamp · 4 Blood Crypt · 4 Godless Shrine
 - **Creatures (20):** 4 The Usher · 4 The Jet Witch · 4 Blood Artist · 4 Typhoid Rats · 4 Vampire Nighthawk
@@ -118,6 +118,17 @@ The most played: Flametongue Kavu 6 · Lightning Bolt 6 · Birds of Paradise 5 �
 - **History:**
   - contributed — Chris's Open, seed 851238, 2026-10-09 — 5–0 in the Swiss and the Umbel won (8–0 in matches, 16–2 in games), Normal. Flash creatures and counterspells played at the opponent's end step: Reaper's Forerunner, Restoration Angel, Mystic Snake, the Sower, Clio. Chris's name for it. Piloted as midrange: the AI plays it better so (57.8% against 54.3% as control over 1,500 paired games).
 
+## the Sweep — Jund Aristocrats (B R G)
+
+`sweep` · midrange · game one 43 · matches 47.0
+
+- **Lands (18):** 1 Cairnbrand · 4 Badlands · 4 Bayou · 4 Taiga · 1 Tallyflame Court · 1 Obsidian Observatory · 1 Shevelport · 1 Underground Sea · 1 Savannah
+- **Creatures (25):** 4 The Reaper · 3 Meliyan, the Torment · 4 Blood Artist · 4 Birds of Paradise · 4 Shocking Sharpshooter · 2 Seasoned Pyromancer · 2 Vampire Nighthawk · 2 Voracious Cobra
+- **Other (17):** 4 Bitterblossom · 1 Black Lotus · 1 Mox Emerald · 1 Mox Jet · 1 Mox Ruby · 3 Putrefy · 2 Rancor · 1 Prey Upon · 1 Lightning Bolt · 1 Mox Sapphire · 1 Mox Pearl
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — Chris's Convocation, seed 418014, 2026-10-03 — 16–0 in the Swiss and the Umbel (19–0), the Open on both Constructed days
+
 ## the Depths — Sultai Control (U B G)
 
 `depths` · control · game one 45 · matches 44.5
@@ -128,30 +139,6 @@ The most played: Flametongue Kavu 6 · Lightning Bolt 6 · Birds of Paradise 5 �
 - **Its fifteen:** built by the field's builder for each seat (none registered).
 - **History:**
   - contributed — Chris's Convocation, seed 186842, 2026-10-03 — 16–0 in the Swiss and the Umbel (19–0; 32–3 in Swiss games), the Open on both Constructed days
-
-## the Sweep — Jund Aristocrats (B R G)
-
-`sweep` · midrange · game one 43 · matches 44.2
-
-- **Lands (18):** 1 Cairnbrand · 4 Badlands · 4 Bayou · 4 Taiga · 1 Tallyflame Court · 1 Obsidian Observatory · 1 Shevelport · 1 Underground Sea · 1 Savannah
-- **Creatures (25):** 4 The Reaper · 3 Meliyan, the Torment · 4 Blood Artist · 4 Birds of Paradise · 4 Shocking Sharpshooter · 2 Seasoned Pyromancer · 2 Vampire Nighthawk · 2 Voracious Cobra
-- **Other (17):** 4 Bitterblossom · 1 Black Lotus · 1 Mox Emerald · 1 Mox Jet · 1 Mox Ruby · 3 Putrefy · 2 Rancor · 1 Prey Upon · 1 Lightning Bolt · 1 Mox Sapphire · 1 Mox Pearl
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — Chris's Convocation, seed 418014, 2026-10-03 — 16–0 in the Swiss and the Umbel (19–0), the Open on both Constructed days
-
-## the Muster — Boros Weenie (W R)
-
-`muster` · aggro · game one 44 · matches 42.9
-
-- **Lands (22):** 4 Plateau · 4 Sacred Foundry · 8 Plains · 4 Mountain · 2 Secluded Steppe
-- **Creatures (21):** 4 Savannah Lions · 4 Soul Warden · 2 Suntail Hawk · 4 Fencing Ace · 3 Emeria Angel · 4 Flametongue Kavu
-- **Other (17):** 1 Black Lotus · 1 Mox Pearl · 1 Mox Ruby · 4 Raise the Alarm · 4 Glorious Anthem · 4 Lightning Bolt · 2 Swords to Plowshares
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - a planner's seed list (2026-09-30)
-  - S46 and after: −2 Sacred Helix → +2 Vitalist
-  - S57: −2 Vitalist −2 Suntail Hawk → +4 Flametongue Kavu (+10.0 ± 1.9)
 
 ## the Levy — Orzhov Landfall (W B)
 
@@ -167,6 +154,19 @@ The most played: Flametongue Kavu 6 · Lightning Bolt 6 · Birds of Paradise 5 �
   - against a graveyard deck: 2 Faerie Macabre in for Raise the Alarm
 - **History:**
   - a planner's seed list (2026-09-30)
+
+## the Muster — Boros Weenie (W R)
+
+`muster` · aggro · game one 44 · matches 42.0
+
+- **Lands (22):** 4 Plateau · 4 Sacred Foundry · 8 Plains · 4 Mountain · 2 Secluded Steppe
+- **Creatures (21):** 4 Savannah Lions · 4 Soul Warden · 2 Suntail Hawk · 4 Fencing Ace · 3 Emeria Angel · 4 Flametongue Kavu
+- **Other (17):** 1 Black Lotus · 1 Mox Pearl · 1 Mox Ruby · 4 Raise the Alarm · 4 Glorious Anthem · 4 Lightning Bolt · 2 Swords to Plowshares
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - a planner's seed list (2026-09-30)
+  - S46 and after: −2 Sacred Helix → +2 Vitalist
+  - S57: −2 Vitalist −2 Suntail Hawk → +4 Flametongue Kavu (+10.0 ± 1.9)
 
 ## the Kiln — Izzet Spells (U R)
 
@@ -212,7 +212,7 @@ The most played: Flametongue Kavu 6 · Lightning Bolt 6 · Birds of Paradise 5 �
 
 ## the Wurmspeaker — Mono-Green Ramp
 
-`wurmspeaker` · midrange · game one 40 · matches 34.1
+`wurmspeaker` · midrange · game one 40 · matches 33.2
 
 - **Lands (22):** 20 Forest · 2 Tranquil Thicket
 - **Creatures (30):** 4 Llanowar Elves · 4 Birds of Paradise · 4 Wood Elves · 4 Seedborn Muse · 3 Gaean Wurm · 2 Pelakka Wurm · 3 Baru, Wurmspeaker · 2 Treetop Snarespinner · 2 The Emerald Keeper · 2 Rampaging Baloths

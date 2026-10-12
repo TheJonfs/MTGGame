@@ -2322,5 +2322,20 @@
   "levy",
   "tollgate",
   "marducontrol"
- ]
+ ],
+ "_outRules_note": "S61 (Part 2): the rules' OUT-rule, adopted per list where it measured a gain (150 matches a pairing, paired, the pairings the rule touches). `small`: against fifteen or more creatures of toughness two or less a defensive card (more toughness than power; a token-maker) never leaves; `spells`: and a spell leaves before a creature; `graveyard`: against a graveyard deck the hate comes in for spot removal first. Reaper Clio small+spells +3.0 ± 2.4; the Sweep small +5.1 ± 2.7 and graveyard +7.3 ± 6.2; the Warband graveyard +14.0 ± 8.1. NOT adopted: graveyard for the Kiln (−14.0 ± 7.7) and Countersnake (−8.0 ± 8.0); small for Countersnake (−2.3 ± 2.8) and the Depths (−1.0 ± 2.4); the rest unmoved (the rule changes none of their swaps). Matched by the list's sixty: a tinkered copy sideboards by the plain rules.",
+ "outRules": {
+  "reaperclio": [
+   "small",
+   "spells"
+  ],
+  "sweep": [
+   "small",
+   "spells",
+   "graveyard"
+  ],
+  "warband": [
+   "graveyard"
+  ]
+ }
 }
