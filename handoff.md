@@ -1,7 +1,11 @@
 # Handoff — after Session 60 (2026-10-11)
 
 ## State of the world
-The Open is fifteen lists. Reaper Clio (72 in matches) and the Rabble (68) are the two targets; against the other top-eight lists they are 66 and 63. No list reaches 55 against Reaper Clio. Three planner seeds are archived this session (the Locks, the Tally, the Enchantress). The Levy has a sideboard guide; nothing else earned one. `pnpm typecheck`, `pnpm test` (1009) and `pnpm build:web` pass. **Nothing from this session is pushed.** The linkage (S59) is unchanged and still wants a journey played through a sitting.
+*(Brought up to date 2026-10-12; the sections "After the session" below carry the detail, newest last.)*
+
+The Open is **fourteen lists with three pillars**: Reaper Clio (71.5 in matches), **Mardu Control** (69.7 — Chris's Usher control list, joined 2026-10-11 and revised 2026-10-12; the Coin and the Hearth are archived as the lists it replaces) and the Rabble (64.9). Then the Pall (56.5), the Writ (54.9) and Countersnake (54.0); the other eight stand between 34 and 45. Mardu Control is the first list at 55 against Reaper Clio (56 at 900 matches; 57 against the Rabble). Chris's ruling: the Usher returning the Usher stays, deliberately — the format's three things to do are go fast, play Clio, loop Ushers. Since Session 60: the engine's loop draw has a second count (R-103: a drifting loop), the pilot has book 123 (a spell whose targets are picked after the cast — the Purge had never been cast), the single match can be a best-of-three with sideboards and offers every list of the Open, and its games are recorded with the Convocation's. `pnpm typecheck`, `pnpm test` (1011) and `pnpm build:web` pass.
+
+**Pushed through `05ab495` (2026-10-11). Everything after it is local and waiting** (`281cf95`, `fd90fe8` and the handoff commit after them): Chris is holding pushes for one larger push, until Vercel's deployment storage clears (each deployment of this project is about 400 MB; the Hobby plan keeps three). **Do not push until he asks.**
 
 ## Done this session
 - **Part 0.** The Locks and the Tally archived (ADR-174).
@@ -64,7 +68,7 @@ Chris went 8–0 in matches (one game lost) in a Convocation with a Mardu list: 
 - **Chris's rulings on the field (2026-10-11):** the Usher returning the Usher stays, deliberately, for now. The Open's three things to do: go fast (the Rabble, backed by the Kavu), play Clio (Reaper Clio; Countersnake and the Writ are lesser Clio decks), loop Ushers (the Pall as combo, Mardu Control as a control deck's finisher). He reads it as a good field. **His next deck-building experiment:** a Clio/Usher hybrid that beats the two green Clio decks and/or the Rabble; after it, an initial metagame for another Constructed format.
 - Not done: the top-eight sub-table; the matchup grid artifact (still fifteen lists); a ladder run (no rule changed here).
 
-## After the session — the revised Mardu Control registered; the tables of record (2026-10-12) — NOT PUSHED
+## After the session — the revised Mardu Control registered; the tables of record (2026-10-12) — NOT PUSHED (held for one larger push)
 
 Chris: "register it and re-run the tables of record. Then we really will have three pillars in the format of Mardu Control, Reaper Clio, and Rabble." The sixty, the fifteen and the guide below are `marducontrol` now (`open-contributed.json`).
 
@@ -109,11 +113,13 @@ His revision after playing the Rabble: **two Wraths for two Purges in the sixty*
 - No AI change this session; no ladder run.
 
 ## Suggested next
-- **Chris's predator for Reaper Clio**, when it comes: the Rabble-style instrument (400 matches against Reaper Clio, then the field in matches).
-- **The Clio measure ADR-173 names** (one copy against four, in Reaper Clio and the Writ), if no predator reaches 55.
-- **The sideboarding rules' "creatures" rule** (Concern 1): a probe across every list of rules against none.
-- **The scratch tools into the repo** (Concern 6).
-- **A journey played through a sitting** (S59, still owed).
+- **Chris's next deck-building experiment:** a Clio/Usher hybrid that beats the two green Clio decks and/or the Rabble (two untested starts: the Writ with Ushers; Mardu Control with blue for Clio — she shrinks only the opponent's creatures, so the Warden/Artist package can stay). After it, **an initial metagame for another Constructed format**.
+- **A pilot rule for the Usher loop that helps only the opponent** (the AI chose it; the drifting-loop draw now ends it as a draw, which is still a game thrown away).
+- **The journey's Purge** (book 123): the lord decks and the Heart's deck now cast it — not measured.
+- **Stale views:** the matchup grid artifact and the top-eight sub-table still show the fifteen-list field.
+- **The deployment's size** (about 400 MB of art and audio a deployment) if Vercel's storage cap keeps biting: host the assets outside the deployment. Not scoped.
+- **ADR-173's Clio measure** (one copy against four) is no longer forced: a list reaches 55 against Reaper Clio. The planner's call whether it is still wanted.
+- Still owed from before: the sideboarding rules' "creatures" rule probe; the scratch tools into the repo; a journey played through a sitting (S59); a unit test for the single match's series and recording (checked by hand in the preview only).
 
 ## How to run
 ```
