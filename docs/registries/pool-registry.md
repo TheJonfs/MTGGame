@@ -680,12 +680,12 @@ All real, re-verified against Scryfall by exact name on 2026-10-13. **Mismatches
 
 ## Post-Session 62 additions — two for the Elder round (Chris, 2026-10-13)
 
-Real, verified against Scryfall by exact name on 2026-10-13. **Both are tier 2, interim — Chris has not named a tier** (Dazzling Angel is a common, Wall of Reverence a rare; tier 2 keeps both in Peasant, which is what they were added for). Wall of Reverence's first printing is Conflux (Chris had Shards of Alara, its block).
+Real, verified against Scryfall by exact name on 2026-10-13. **Tiers are Chris's (2026-10-13): Dazzling Angel tier 1, Wall of Reverence tier 2.** Wall of Reverence's first printing is Conflux (Chris had Shards of Alara, its block).
 
 | id | card | status | vocabulary | notes |
 |---|---|---|---|---|
-| dazzling_angel | Dazzling Angel | tested | flying; triggered ENTERS, source other, controller you, type Creature: `gainLife` 1 (Soul Warden's trigger narrowed to our own creatures) | FDN #9 (Daneen Wilkerson). T2 interim. {2}{W} Angel 2/3. |
-| wall_of_reverence | Wall of Reverence | tested | defender, flying; triggered END_STEP controller you, optional, target creatureYouControl: `gainLife` amount `targetPower` | CON #20 (Wayne Reynolds). T2 interim. {3}{W} Spirit Wall 1/6. Zero words. |
+| dazzling_angel | Dazzling Angel | tested | flying; triggered ENTERS, source other, controller you, type Creature: `gainLife` 1 (Soul Warden's trigger narrowed to our own creatures) | FDN #9 (Daneen Wilkerson). T1. {2}{W} Angel 2/3. |
+| wall_of_reverence | Wall of Reverence | tested | defender, flying; triggered END_STEP controller you, optional, target creatureYouControl: `gainLife` amount `targetPower` | CON #20 (Wayne Reynolds). T2. {3}{W} Spirit Wall 1/6. Zero words. |
 
 ## Post-Session 59 addition — the Manaba (Chris's card, 2026-10-10)
 

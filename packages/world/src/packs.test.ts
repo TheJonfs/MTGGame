@@ -32,7 +32,7 @@ describe("the Convocation's packs (S47 Part 3)", () => {
     expect(bad({ ...data, sets: [{ id: "x", name: "x", recipe: "classic", filter: { exclude: ["no_such_card"] } }] })).toBe(true);
     expect(bad({ ...data, sets: [{ id: "x", name: "x", recipe: "classic", filter: { exclude: ["black_lotus_token", "plains"] } }] })).toBe(true);
     expect(fillErrors(set("pauper"), recipe("classic"), pool, data.power)).toEqual([]); // S48: every slot rolls down to tier 1
-    expect(fillErrors(set("pauper"), { id: "x", name: "x", slots: [{ count: 80, weights: { "1": 1 } }] }, pool, data.power).length).toBeGreaterThan(0); // 73 cards, 80 slots
+    expect(fillErrors(set("pauper"), { id: "x", name: "x", slots: [{ count: 90, weights: { "1": 1 } }] }, pool, data.power).length).toBeGreaterThan(0); // 80 tier-1 cards since S62's five, 90 slots
   });
 
   it("no set holds a basic, a token, a law or the power; the legends are in at tier R; the pair sets stay in their colours; Pauper is tier 1", () => {

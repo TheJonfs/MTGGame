@@ -162,6 +162,7 @@ describe("S62 — the ten cards (ADR-177)", () => {
    * your end step, you may gain life equal to the power of target creature you control." */
   it("Dazzling Angel: a creature of ours entering gains us 1 — each of two tokens does; the Angel's own entering does not, and an opponent's creature does not (the Soul Warden's does)", async () => {
     for (const id of ["dazzling_angel", "wall_of_reverence"]) expect(validateCard(cards.get(id)!).errors, id).toEqual([]);
+    expect([cards.get("dazzling_angel")!.shopTier, cards.get("wall_of_reverence")!.shopTier]).toEqual([1, 2]); // Chris's tiers
     expect(cards.get("dazzling_angel")).toMatchObject({ manaCost: "{2}{W}", power: 2, toughness: 3, keywords: ["flying"], subtypes: ["Angel"], source: "real" });
     expect(cards.get("wall_of_reverence")).toMatchObject({ manaCost: "{3}{W}", power: 1, toughness: 6, keywords: ["defender", "flying"], subtypes: ["Spirit", "Wall"], source: "real" });
     const lands = Array.from({ length: 3 }, () => perm(0, "plains"));

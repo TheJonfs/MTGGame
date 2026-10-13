@@ -274,7 +274,7 @@
 | Pacifism | W | Enchantment — Aura | {1}{W} | 2 |  |  | 1 | 12 |  | Enchant creature Enchanted creature can't attack or block. |
 | Raise the Alarm | W | Instant | {1}{W} | 2 |  |  | 1 | 12 |  | Create two 1/1 white Soldier creature tokens. |
 | Youthful Valkyrie | W | Creature — Angel | {1}{W} | 2 | 1/3 | flying | 1 | 12 |  | Flying Whenever another Angel you control enters, put a +1/+1 counter on this creature. |
-| Dazzling Angel | W | Creature — Angel | {2}{W} | 3 | 2/3 | flying | 2 | 24 |  | Flying Whenever another creature you control enters, you gain 1 life. |
+| Dazzling Angel | W | Creature — Angel | {2}{W} | 3 | 2/3 | flying | 1 | 16 |  | Flying Whenever another creature you control enters, you gain 1 life. |
 | Glorious Anthem | W | Enchantment | {1}{W}{W} | 3 |  |  | 2 | 24 |  | Creatures you control get +1/+1. |
 | Inspiring Overseer | W | Creature — Angel Cleric | {2}{W} | 3 | 2/1 | flying | 1 | 16 |  | Flying When this creature enters, you gain 1 life and draw a card. |
 | Scepter of Dominance | W | Artifact | {1}{W}{W} | 3 |  |  | 2 | 24 |  | {W}, {T}: Tap target permanent. |
