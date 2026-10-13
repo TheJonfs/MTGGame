@@ -2868,5 +2868,33 @@
     "art_crop": "https://cards.scryfall.io/art_crop/front/0/b/0b101b5e-d478-4686-b3cf-bdc545f089e5.jpg?1783945972",
     "normal": "https://cards.scryfall.io/normal/front/0/b/0b101b5e-d478-4686-b3cf-bdc545f089e5.jpg?1783945972",
     "via": "default oldest-highres"
+  },
+  "dazzling_angel": {
+    "scryfallId": "027dc444-e544-4693-8653-3dcdda530162",
+    "set": "fdn",
+    "set_name": "Foundations",
+    "collector_number": "9",
+    "artist": "Daneen Wilkerson",
+    "name": "Dazzling Angel",
+    "mana_cost": "{2}{W}",
+    "type_line": "Creature — Angel",
+    "oracle_text": "Flying\nWhenever another creature you control enters, you gain 1 life.",
+    "art_crop": "https://cards.scryfall.io/art_crop/front/0/2/027dc444-e544-4693-8653-3dcdda530162.jpg?1783909128",
+    "normal": "https://cards.scryfall.io/normal/front/0/2/027dc444-e544-4693-8653-3dcdda530162.jpg?1783909128",
+    "via": "default oldest-highres"
+  },
+  "wall_of_reverence": {
+    "scryfallId": "2fa3fc82-fc5a-4f60-bcd6-363c2deb769d",
+    "set": "con",
+    "set_name": "Conflux",
+    "collector_number": "20",
+    "artist": "Wayne Reynolds",
+    "name": "Wall of Reverence",
+    "mana_cost": "{3}{W}",
+    "type_line": "Creature — Spirit Wall",
+    "oracle_text": "Defender, flying\nAt the beginning of your end step, you may gain life equal to the power of target creature you control.",
+    "art_crop": "https://cards.scryfall.io/art_crop/front/2/f/2fa3fc82-fc5a-4f60-bcd6-363c2deb769d.jpg?1783942490",
+    "normal": "https://cards.scryfall.io/normal/front/2/f/2fa3fc82-fc5a-4f60-bcd6-363c2deb769d.jpg?1783942490",
+    "via": "default oldest-highres"
   }
 }

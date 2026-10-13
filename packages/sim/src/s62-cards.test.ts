@@ -155,4 +155,38 @@ describe("S62 — the ten cards (ADR-177)", () => {
     expect(cycled).toBe(true);
     expect(wall.players[0]!.graveyard.map((id) => wall.objects[id]!.cardId)).toContain("moaning_wall");
   });
+
+  /** Post-S62 (Chris, for the Elder round) — verified against Scryfall 2026-10-13. Dazzling Angel: Foundations, {2}{W}
+   * Angel 2/3, flying, "Whenever another creature you control enters, you gain 1 life." Wall of Reverence: first printed
+   * in Conflux (Chris had Shards of Alara, its block), {3}{W} Spirit Wall 1/6, defender, flying, "At the beginning of
+   * your end step, you may gain life equal to the power of target creature you control." */
+  it("Dazzling Angel: a creature of ours entering gains us 1 — each of two tokens does; the Angel's own entering does not, and an opponent's creature does not (the Soul Warden's does)", async () => {
+    for (const id of ["dazzling_angel", "wall_of_reverence"]) expect(validateCard(cards.get(id)!).errors, id).toEqual([]);
+    expect(cards.get("dazzling_angel")).toMatchObject({ manaCost: "{2}{W}", power: 2, toughness: 3, keywords: ["flying"], subtypes: ["Angel"], source: "real" });
+    expect(cards.get("wall_of_reverence")).toMatchObject({ manaCost: "{3}{W}", power: 1, toughness: 6, keywords: ["defender", "flying"], subtypes: ["Spirit", "Wall"], source: "real" });
+    const lands = Array.from({ length: 3 }, () => perm(0, "plains"));
+    const tokens = fin(await runMatch(spec({ raise_the_alarm: 40, plains: 20 }, [...lands, perm(0, "dazzling_angel")]), cards, [caster("raise_the_alarm"), passer]));
+    expect(tokens.players[0]!.life).toBe(22);
+    const itself = fin(await runMatch(spec({ dazzling_angel: 40, plains: 20 }, lands), cards, [caster("dazzling_angel"), passer]));
+    expect(itself.players[0]!.life).toBe(20);
+    // the opponent's Bears enter on their turn: our Angel says nothing, their Soul Warden would have
+    let cast = false;
+    const them: Agent = { chooseAction: async (v, r) => { const a = r.purpose === "priority" && v.activePlayer === 1 && v.step === "MAIN1" && v.stack.length === 0 ? r.actions.find((x) => x.type === "castSpell") : undefined; if (a) { cast = true; return a; } return r.purpose === "priority" ? pass(r) : r.actions[0]!; } };
+    const theirs = fin(await runMatch(spec({ plains: 60 }, [perm(0, "dazzling_angel"), perm(1, "soul_warden"), perm(1, "forest"), perm(1, "forest")], { grizzly_bears: 60 }, 2), cards, [passer, them]));
+    expect(cast).toBe(true);
+    expect(theirs.players[0]!.life).toBe(20); // their Bears: nothing for our Angel
+    expect(theirs.players[1]!.life).toBe(21); // …and one for their Soul Warden
+  });
+
+  it("Wall of Reverence: at the beginning of our end step we may gain life equal to the power of a creature we control — four from a Serra Angel, the Wall's own one if we choose it", async () => {
+    const pick = (cardId: string): Agent => ({ chooseAction: async (v, r) => {
+      const yes = r.actions.find((a) => a.type === "acceptOptional"); if (yes) return yes;
+      const aim = r.actions.find((a) => a.type === "chooseTriggerTargets" && cardOf(v, (a as { targets: { id?: string }[] }).targets[0]?.id) === cardId); if (aim) return aim;
+      return pass(r);
+    } });
+    const mods = [perm(0, "wall_of_reverence"), perm(0, "serra_angel")];
+    expect(fin(await runMatch(spec({ plains: 60 }, mods), cards, [pick("serra_angel"), passer])).players[0]!.life).toBe(24);
+    expect(fin(await runMatch(spec({ plains: 60 }, mods), cards, [pick("wall_of_reverence"), passer])).players[0]!.life).toBe(21);
+    expect(fin(await runMatch(spec({ plains: 60 }, mods), cards, [passer, passer])).players[0]!.life).toBeGreaterThanOrEqual(20); // "may": declining is legal
+  });
 });

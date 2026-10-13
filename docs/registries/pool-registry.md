@@ -286,6 +286,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | dark_ritual | lea | 98 | Sandra Everingham | ebb6664d-23ca-456e-9916-afcd6f26aa7f |
 | darksteel_myr | som | 151 | Randis Albion | 0f5712cf-c6a9-4a2e-90db-8ca17c621724 |
 | dawnwing_marshal | fdn | 570 | Aldo Domínguez | 807db84f-addb-4ef0-b9ba-32b3e1bced3d |
+| dazzling_angel | fdn | 9 | Daneen Wilkerson | 027dc444-e544-4693-8653-3dcdda530162 |
 | deadly_recluse | m10 | 175 | Warren Mahy | 6ab810f1-21d6-4a98-b77a-e455370aa6cc |
 | demonic_tutor | lea | 104 | Douglas Shuler | 711d4d54-5520-4de8-9b93-79902ed8e562 |
 | diabolic_edict | tmp | 128 | Ron Spencer | a2ecf2ee-1e2d-4ab2-8b2c-717c794b09b2 |
@@ -436,6 +437,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | voracious_cobra | inv | 288 | Terese Nielsen | 9d8c5669-11a9-4d95-8431-7065037f1fb6 |
 | wall_of_air | lea | 89 | Richard Thomas | da56fdf3-6a8f-4833-a5c3-197650cc4889 |
 | wall_of_blossoms | sth | 125 | Heather Hudson | 7eb4a1a3-efcf-4c9a-ad1f-0a3f8f2b456f |
+| wall_of_reverence | con | 20 | Wayne Reynolds | 2fa3fc82-fc5a-4f60-bcd6-363c2deb769d |
 | waste_not | m15 | 122 | Matt Stewart | 241d8f7d-3981-47c1-b7b8-748277fa452f |
 | waterfront_bouncer | mmq | 114 | Paolo Parente | 8dbdce9e-94fa-4ed5-9b97-d2026cffe7cb |
 | watery_grave | rvr | 415 | Rob Alexander | ef7f4762-4283-4368-948b-e60a29e78a0c |
@@ -675,6 +677,15 @@ All real, re-verified against Scryfall by exact name on 2026-10-13. **Mismatches
 | longbow_archer | Longbow Archer | tested | first strike, reach | VIS #12 (Eric Peterson). T1. {W}{W} Human Soldier Archer 2/2. |
 | captain_of_the_watch | Captain of the Watch | tested | vigilance; static `modifyPT` +1/+1 and `grantKeyword` vigilance, creaturesYouControl subtype Soldier, other; triggered ENTERS self: `createToken` soldier_1_1 ×3 | M10 #6 (Greg Staples). T2 (the brief: may rise to 3). {4}{W}{W} Human Soldier 3/3. |
 | tome_scour | Tome Scour | tested | target player: `mill` 5 | M10 #76 (Steven Belledin). T1. {U} Sorcery. |
+
+## Post-Session 62 additions — two for the Elder round (Chris, 2026-10-13)
+
+Real, verified against Scryfall by exact name on 2026-10-13. **Both are tier 2, interim — Chris has not named a tier** (Dazzling Angel is a common, Wall of Reverence a rare; tier 2 keeps both in Peasant, which is what they were added for). Wall of Reverence's first printing is Conflux (Chris had Shards of Alara, its block).
+
+| id | card | status | vocabulary | notes |
+|---|---|---|---|---|
+| dazzling_angel | Dazzling Angel | tested | flying; triggered ENTERS, source other, controller you, type Creature: `gainLife` 1 (Soul Warden's trigger narrowed to our own creatures) | FDN #9 (Daneen Wilkerson). T2 interim. {2}{W} Angel 2/3. |
+| wall_of_reverence | Wall of Reverence | tested | defender, flying; triggered END_STEP controller you, optional, target creatureYouControl: `gainLife` amount `targetPower` | CON #20 (Wayne Reynolds). T2 interim. {3}{W} Spirit Wall 1/6. Zero words. |
 
 ## Post-Session 59 addition — the Manaba (Chris's card, 2026-10-10)
 

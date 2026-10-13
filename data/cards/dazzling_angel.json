@@ -1,0 +1,42 @@
+{
+  "id": "dazzling_angel",
+  "name": "Dazzling Angel",
+  "source": "real",
+  "manaCost": "{2}{W}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Angel"
+  ],
+  "power": 2,
+  "toughness": 3,
+  "keywords": [
+    "flying"
+  ],
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "condition": {
+        "source": "other",
+        "controller": "you",
+        "type": [
+          "Creature"
+        ]
+      },
+      "effects": [
+        {
+          "type": "gainLife",
+          "amount": 1,
+          "who": "you"
+        }
+      ],
+      "optional": false
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2
+}

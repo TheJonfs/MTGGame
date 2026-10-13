@@ -1,0 +1,50 @@
+{
+  "id": "wall_of_reverence",
+  "name": "Wall of Reverence",
+  "source": "real",
+  "manaCost": "{3}{W}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Spirit",
+    "Wall"
+  ],
+  "power": 1,
+  "toughness": 6,
+  "keywords": [
+    "defender",
+    "flying"
+  ],
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "END_STEP",
+      "condition": {
+        "controller": "you"
+      },
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "creatureYouControl",
+          "zone": "battlefield"
+        }
+      ],
+      "effects": [
+        {
+          "type": "gainLife",
+          "amount": {
+            "ref": "targetPower",
+            "target": 0
+          },
+          "who": "you"
+        }
+      ],
+      "optional": true
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2
+}
