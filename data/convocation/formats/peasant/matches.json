@@ -4,82 +4,88 @@
  "matchesAPairing": 60,
  "byList": {
   "br": {
-   "matches": 62.8,
-   "gameOne": 59.4,
-   "later": 58.6,
-   "n": 720
+   "matches": 64,
+   "gameOne": 58.5,
+   "later": 59.2,
+   "n": 780
   },
   "brdjinn": {
-   "matches": 61.4,
-   "gameOne": 59.7,
-   "later": 57.2,
-   "n": 720
+   "matches": 59,
+   "gameOne": 57.7,
+   "later": 55.2,
+   "n": 780
   },
   "bw": {
-   "matches": 49.4,
-   "gameOne": 50.6,
-   "later": 48.5,
-   "n": 720
+   "matches": 50.7,
+   "gameOne": 52.4,
+   "later": 48.7,
+   "n": 780
   },
   "elder": {
-   "matches": 76.7,
-   "gameOne": 65.7,
-   "later": 69.8,
-   "n": 720
+   "matches": 76,
+   "gameOne": 66.3,
+   "later": 69.3,
+   "n": 780
   },
   "mbc": {
-   "matches": 54.7,
-   "gameOne": 53.9,
-   "later": 53,
-   "n": 720
+   "matches": 51.8,
+   "gameOne": 49.7,
+   "later": 52.5,
+   "n": 780
   },
   "muster": {
-   "matches": 41.7,
-   "gameOne": 47.6,
-   "later": 42.7,
-   "n": 720
+   "matches": 38.8,
+   "gameOne": 43.7,
+   "later": 42.3,
+   "n": 780
   },
   "naya": {
-   "matches": 41.4,
-   "gameOne": 45.6,
-   "later": 43.1,
-   "n": 720
+   "matches": 35.6,
+   "gameOne": 44.9,
+   "later": 38.7,
+   "n": 780
   },
   "rabble": {
-   "matches": 50.6,
-   "gameOne": 48.4,
-   "later": 51.1,
-   "n": 720
+   "matches": 51.3,
+   "gameOne": 48.8,
+   "later": 51.4,
+   "n": 780
   },
   "skies": {
-   "matches": 41.9,
-   "gameOne": 39.6,
-   "later": 46.2,
-   "n": 720
+   "matches": 44.7,
+   "gameOne": 44.4,
+   "later": 47.8,
+   "n": 780
   },
   "skieswall": {
-   "matches": 41,
-   "gameOne": 43.1,
-   "later": 45.4,
-   "n": 720
+   "matches": 35.9,
+   "gameOne": 39.4,
+   "later": 41,
+   "n": 780
   },
   "stompy": {
-   "matches": 46.2,
-   "gameOne": 49.1,
-   "later": 46.7,
-   "n": 720
+   "matches": 48.7,
+   "gameOne": 50.3,
+   "later": 49,
+   "n": 780
   },
   "tokens": {
-   "matches": 54.7,
-   "gameOne": 53.9,
-   "later": 52.5,
-   "n": 720
+   "matches": 52.5,
+   "gameOne": 51.4,
+   "later": 51.7,
+   "n": 780
   },
   "urcontrol": {
-   "matches": 27.5,
-   "gameOne": 33.4,
-   "later": 34.9,
-   "n": 720
+   "matches": 37.3,
+   "gameOne": 35.8,
+   "later": 42.7,
+   "n": 780
+  },
+  "wskies": {
+   "matches": 53.5,
+   "gameOne": 56.7,
+   "later": 50.6,
+   "n": 780
   }
  }
 }

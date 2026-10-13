@@ -62,9 +62,9 @@ describe("Peasant at the door (S62, ADR-176)", () => {
     expect(formatView(rating, "open")).toBe(rating); // no column of that name: the table itself
     expect(p.cards.black_lotus).toBe(rating.cards.black_lotus); // not a Peasant card: its row is untouched
     const legal = [...cards.values()].filter((d) => !d.types.includes("Land") && cardLegal(d, PEASANT_FORMAT.rule) && !["plains", "island", "swamp", "mountain", "forest"].includes(d.id));
-    // every card legal when the score was built has one; a card added since (Dazzling Angel, Wall of Reverence) reads its tier's prior until the next `pnpm rating:format`
+    // every legal card has a score as of the last `pnpm rating:format --write` (a card added after it reads its tier's prior until the next: name it here)
     const unscored = legal.filter((d) => typeof (rating.cards[d.id] as { peasant?: number } | undefined)?.peasant !== "number").map((d) => d.id).sort();
-    expect(unscored).toEqual(["dazzling_angel", "wall_of_reverence"]);
+    expect(unscored).toEqual([]);
     const xs = legal.filter((d) => !unscored.includes(d.id)).map((d) => p.cards[d.id]!.rating).sort((a, b) => a - b);
     expect(xs[Math.floor(0.9 * xs.length)]! - xs[Math.floor(0.1 * xs.length)]!).toBeGreaterThan(1.2); // a real spread (the Limited score sat inside half a point on this shelf)
   });
