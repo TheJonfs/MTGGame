@@ -99,7 +99,7 @@ export async function runSeries(opts: RunSeriesOptions, cards: Map<string, CardD
     const spec: MatchSpec = {
       seed: game.seed,
       players: [{ name: "seat 0", decklist: lists[0], agent: "series" }, { name: "seat 1", decklist: lists[1], agent: "series" }],
-      rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100, ...opts.rules, startingPlayer: game.startingPlayer },
+      rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 120, ...opts.rules, startingPlayer: game.startingPlayer },
       modifiers: opts.modifiers ?? [],
     };
     series.record(game, await runMatch(spec, cards, opts.agents(game, lists)));

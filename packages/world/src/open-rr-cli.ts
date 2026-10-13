@@ -117,8 +117,8 @@ function stallOf(r: { reason: string; finalStateSerialized: string }): { stall: 
   return { stall: { board, hand: [f.players[0]!.hand.length, f.players[1]!.hand.length], library: [f.players[0]!.library.length, f.players[1]!.library.length] } };
 }
 const POOL = loadCardPool(join(ROOT, "data/cards")).cards;
-// S62 (Part 5): `--max-turns N` — the turn limit (default the engine's 100: fifty turns a side, a few short of a sixty-card library)
-const MAX_TURNS = process.argv.includes("--max-turns") ? Number(process.argv[process.argv.indexOf("--max-turns") + 1]) : 100;
+// S62 (Part 5): `--max-turns N` — the turn limit (default the engine's — 120 since S62; it was 100: fifty turns a side, a few short of a sixty-card library)
+const MAX_TURNS = process.argv.includes("--max-turns") ? Number(process.argv[process.argv.indexOf("--max-turns") + 1]) : 120;
 async function run(): Promise<void> {
   const pool = loadCardPool(join(ROOT, "data/cards")).cards;
   // post-S59 (a card under consideration, not yet in the pool): `--extra-cards dir` adds that directory's defs to this run's pool

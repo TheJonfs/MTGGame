@@ -649,7 +649,7 @@ export function prepareDuel(world: WorldState, catalog: Catalog, enc: Encounter,
       { name: world.player.name, decklist: activeDeck(world).map((e) => ({ ...e })), agent: "human" },
       { name: tmpl.name, decklist: enemyDeck(catalog, tmpl.deck, world.phase).decklist, agent: `heuristic:${matchup.profile}` },
     ],
-    rules: { startingLife: world.player.worldLife, handSize: 7, mulligan: "london", maxTurns: 100, ante: matchup.ante, startingPlayer },
+    rules: { startingLife: world.player.worldLife, handSize: 7, mulligan: "london", maxTurns: 120, ante: matchup.ante, startingPlayer },
     modifiers,
   };
   return { encounter: enc, seed, spec, enemy: { name: tmpl.name, difficulty: matchup.profile, deck: tmpl.deck, archetype: enemyDeck(catalog, tmpl.deck, world.phase).archetype, portrait: tmpl.portrait, worldLife: enemyLife, tier: tmpl.tier, entrance: matchup.entrance } };

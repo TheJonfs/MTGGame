@@ -71,7 +71,7 @@ async function run(): Promise<void> {
       for (let g = 0; g < G; g++) {
         const mySeat = (g % 2) as 0 | 1, seed = seed0 + k * 1009 + g * 37;
         const [d0, d1] = mySeat === 0 ? [me, them] : [them, me];
-        const spec = { seed, players: [{ name: d0.key, decklist: [...d0.decklist], agent: "heuristic:master" }, { name: d1.key, decklist: [...d1.decklist], agent: "heuristic:master" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 }, modifiers: [] } as unknown as MatchSpec;
+        const spec = { seed, players: [{ name: d0.key, decklist: [...d0.decklist], agent: "heuristic:master" }, { name: d1.key, decklist: [...d1.decklist], agent: "heuristic:master" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 120 }, modifiers: [] } as unknown as MatchSpec;
         const mk = (d: typeof me, o: typeof me, n: number, mine: boolean) => new HeuristicAgent(seed * 2 + n, pool, { ...difficultyProfile("master", d.archetype, [...o.decklist], [...d.decklist]), ...(mine && off.length ? { off } : {}) });
         const probe = new Probe(mySeat === 0 ? mk(d0, d1, 1, true) : mk(d1, d0, 2, true), pool);
         const other = mySeat === 0 ? mk(d1, d0, 2, false) : mk(d0, d1, 1, false);

@@ -59,7 +59,7 @@ if (process.argv.includes("--pick-order")) {
     for (let i = 0; i < 8; i++) for (let j = i + 1; j < 8; j++) for (let g = 0; g < G; g++) {
       const seatA = g % 2, seed = seed0 + p * 100003 + i * 1009 + j * 37 + g;
       const [d0, d1] = seatA === 0 ? [builds[i]!.deck, builds[j]!.deck] : [builds[j]!.deck, builds[i]!.deck];
-      const spec = { seed, players: [{ name: "a", decklist: d0, agent: "h" }, { name: "b", decklist: d1, agent: "h" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 }, modifiers: [] } as unknown as MatchSpec;
+      const spec = { seed, players: [{ name: "a", decklist: d0, agent: "h" }, { name: "b", decklist: d1, agent: "h" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 120 }, modifiers: [] } as unknown as MatchSpec;
       const r = await runMatch(spec, cards, [new HeuristicAgent(seed * 2 + 1, cards, difficultyProfile("master", "midrange", d1)), new HeuristicAgent(seed * 2 + 2, cards, difficultyProfile("master", "midrange", d0))]);
       const a = r.winner === null ? 0.5 : r.winner === seatA ? 1 : 0;
       w[i]! += a; w[j]! += 1 - a; n[i]! += 1; n[j]! += 1; games += 1;
@@ -70,7 +70,7 @@ if (process.argv.includes("--pick-order")) {
       for (let i = 0; i < 8; i++) for (let k = 0; k < 4; k++) for (let g = 0; g < 2; g++) {
         const j = (i + k) % 8, seatA = g % 2, seed = seed0 + p * 100003 + i * 2003 + k * 59 + g + 7;
         const [d0, d1] = seatA === 0 ? [builds[i]!.deck, sealed[j]!.deck] : [sealed[j]!.deck, builds[i]!.deck];
-        const spec = { seed, players: [{ name: "a", decklist: d0, agent: "h" }, { name: "b", decklist: d1, agent: "h" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 }, modifiers: [] } as unknown as MatchSpec;
+        const spec = { seed, players: [{ name: "a", decklist: d0, agent: "h" }, { name: "b", decklist: d1, agent: "h" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 120 }, modifiers: [] } as unknown as MatchSpec;
         const r = await runMatch(spec, cards, [new HeuristicAgent(seed * 2 + 1, cards, difficultyProfile("master", "midrange", d1)), new HeuristicAgent(seed * 2 + 2, cards, difficultyProfile("master", "midrange", d0))]);
         vsN += 1; vsW += r.winner === null ? 0.5 : r.winner === seatA ? 1 : 0;
       }

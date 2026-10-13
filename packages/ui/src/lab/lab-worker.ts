@@ -23,7 +23,7 @@ async function run(job: LabJob): Promise<void> {
     const spec: MatchSpec = {
       seed,
       players: [{ name: p0.name, decklist: p0.decklist.map((e) => ({ ...e })), agent: "heuristic" }, { name: p1.name, decklist: p1.decklist.map((e) => ({ ...e })), agent: "heuristic" }],
-      rules: { startingLife: p0.life, handSize: 7, mulligan: "london", maxTurns: 100 },
+      rules: { startingLife: p0.life, handSize: 7, mulligan: "london", maxTurns: 120 },
       modifiers,
     };
     const agents: [Agent, Agent] = [

@@ -335,7 +335,7 @@ export function petalDuelSpec(
       { name: enemy.name, decklist: enemy.decklist.map((e) => ({ ...e })), agent: "heuristic:master" },
     ],
     // World-kind: the fight starts at your WORLD life (no interior track) and antes as the world does.
-    rules: { startingLife: world.player.worldLife, handSize: 7, mulligan: "london", maxTurns: 100, ante: knobs.anteCount, startingPlayer: rng.chance(0.5) ? 0 : 1 },
+    rules: { startingLife: world.player.worldLife, handSize: 7, mulligan: "london", maxTurns: 120, ante: knobs.anteCount, startingPlayer: rng.chance(0.5) ? 0 : 1 },
     modifiers: [
       { type: "startingLife", player: 1, value: enemyLife },
       ...(law ? [law] : []),
@@ -433,7 +433,7 @@ export function mirrorDuelSpec(world: WorldState, knobs: KnobValues, pool: Map<s
       { name: "Your reflection", decklist: reflection, agent: "heuristic:master" },
     ],
     // Ante OFF both ways: a reflection has nothing to lose, and mirror-ante would mint duplicates.
-    rules: { startingLife: world.player.worldLife, handSize: 7, mulligan: "london", maxTurns: 100, ante: 0, startingPlayer: rng.chance(0.5) ? 0 : 1 },
+    rules: { startingLife: world.player.worldLife, handSize: 7, mulligan: "london", maxTurns: 120, ante: 0, startingPlayer: rng.chance(0.5) ? 0 : 1 },
     modifiers: [
       { type: "startingLife", player: 1, value: enemyLife },
       // The reflection brought your manalinks too (they are yours; it is you).
@@ -592,7 +592,7 @@ export function heartDuelSpec(world: WorldState, catalog: Catalog, knobs: KnobVa
       { name: world.player.name, decklist: activeDeck(world).map((e) => ({ ...e })), agent: "human" },
       { name: enemy.name, decklist: enemy.decklist.map((e) => ({ ...e })), agent: "heuristic:master" },
     ],
-    rules: { startingLife: world.player.worldLife, handSize: 7, mulligan: "london", maxTurns: 100, ante: 0, startingPlayer: rng.chance(0.5) ? 0 : 1 },
+    rules: { startingLife: world.player.worldLife, handSize: 7, mulligan: "london", maxTurns: 120, ante: 0, startingPlayer: rng.chance(0.5) ? 0 : 1 },
     modifiers: [
       { type: "startingLife", player: 1, value: enemyLife },
       { type: "signatureToHand", player: 1, cardId: heart.boss.cardId },

@@ -47,7 +47,7 @@ class Seen implements Agent {
 }
 async function play(A: Deck, B: Deck, seed: number, seatA: 0 | 1): Promise<RatingGameLike> {
   const [d0, d1] = seatA === 0 ? [A, B] : [B, A];
-  const spec = { seed, players: [{ name: d0.id, decklist: [...d0.decklist], agent: "heuristic:master" }, { name: d1.id, decklist: [...d1.decklist], agent: "heuristic:master" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 }, modifiers: [] } as unknown as MatchSpec;
+  const spec = { seed, players: [{ name: d0.id, decklist: [...d0.decklist], agent: "heuristic:master" }, { name: d1.id, decklist: [...d1.decklist], agent: "heuristic:master" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 120 }, modifiers: [] } as unknown as MatchSpec;
   const t0 = new Seen(new HeuristicAgent(seed * 2 + 1, pool, difficultyProfile("master", d0.archetype, [...d1.decklist], [...d0.decklist]))), t1 = new Seen(new HeuristicAgent(seed * 2 + 2, pool, difficultyProfile("master", d1.archetype, [...d0.decklist], [...d1.decklist])));
   const r = await runMatch(spec, pool, [t0, t1]);
   const [tA, tB] = seatA === 0 ? [t0, t1] : [t1, t0];

@@ -47,7 +47,7 @@ for (const ref of reference) {
           { name: ref.name, decklist: [...ref.decklist], agent: "heuristic" },
           { name: "reflection", decklist: reflection, agent: "heuristic" },
         ],
-        rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 },
+        rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 120 },
         modifiers: [],
       };
       const a0: Agent = new HeuristicAgent(seed * 2 + 1, pool, difficultyProfile("journeyman", ref.archetype, reflection));

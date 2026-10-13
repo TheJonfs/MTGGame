@@ -512,7 +512,7 @@ export async function playSeriesHeadless(event: ConvocationEvent, a: number, b: 
     const game = series.nextGame("play");
     // S49: from game two an AI seat plays its sideboarded deck (keyed on the opponent's registered list)
     const [A, B] = game.index === 0 ? [event.field[a]!, event.field[b]!] : [seatForGame(event, a, b, deps), seatForGame(event, b, a, deps)];
-    const spec = { seed: game.seed, players: [{ name: A.name, decklist: A.deck, agent: "event" }, { name: B.name, decklist: B.deck, agent: "event" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100, startingPlayer: game.startingPlayer }, modifiers: [...setup.modifiers, ...lifeModifiers(setup.life)] } as MatchSpec;
+    const spec = { seed: game.seed, players: [{ name: A.name, decklist: A.deck, agent: "event" }, { name: B.name, decklist: B.deck, agent: "event" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 120, startingPlayer: game.startingPlayer }, modifiers: [...setup.modifiers, ...lifeModifiers(setup.life)] } as MatchSpec;
     series.record(game, await runMatch(spec, deps.cards, [agents(A, B, game.seed, 0), agents(B, A, game.seed, 1)]));
   }
   return series.state();

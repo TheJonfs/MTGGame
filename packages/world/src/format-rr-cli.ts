@@ -51,7 +51,7 @@ for (let i = 0; i < KEYS.length; i++) for (let j = i + 1; j < KEYS.length; j++) 
   const A = field[ka]!, B = field[kb]!;
   for (let g = 0; g < G; g++) {
     const seatA = (g % 2) as 0 | 1, seed = seed0 + p * 1009 + g * 37, [d0, d1, k0, k1] = seatA === 0 ? [A, B, ka, kb] : [B, A, kb, ka];
-    const spec = { seed, players: [{ name: k0, decklist: [...d0.decklist], agent: "heuristic:master" }, { name: k1, decklist: [...d1.decklist], agent: "heuristic:master" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 }, modifiers: [] } as unknown as MatchSpec;
+    const spec = { seed, players: [{ name: k0, decklist: [...d0.decklist], agent: "heuristic:master" }, { name: k1, decklist: [...d1.decklist], agent: "heuristic:master" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 120 }, modifiers: [] } as unknown as MatchSpec;
     const t0 = new Counting(new HeuristicAgent(seed * 2 + 1, pool, difficultyProfile("master", d0.archetype, [...d1.decklist], [...d0.decklist]))), t1 = new Counting(new HeuristicAgent(seed * 2 + 2, pool, difficultyProfile("master", d1.archetype, [...d0.decklist], [...d1.decklist])));
     const r = await runMatch(spec, pool, [t0, t1]);
     const w = r.winner === null ? "draw" : r.winner === seatA ? "a" : "b";

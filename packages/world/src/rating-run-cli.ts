@@ -46,7 +46,7 @@ for (let p = 0; p < pairs.length; p++) {
   for (let g = 0; g < G; g++) {
     const seatA = g % 2, seed = seed0 + p * 1009 + g * 37;
     const [d0, d1] = seatA === 0 ? [A, B] : [B, A];
-    const spec = { seed, players: [{ name: d0.key, decklist: d0.decklist, agent: "heuristic:master" }, { name: d1.key, decklist: d1.decklist, agent: "heuristic:master" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 }, modifiers: [] } as unknown as MatchSpec;
+    const spec = { seed, players: [{ name: d0.key, decklist: d0.decklist, agent: "heuristic:master" }, { name: d1.key, decklist: d1.decklist, agent: "heuristic:master" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 120 }, modifiers: [] } as unknown as MatchSpec;
     const t0 = new Tracker(new HeuristicAgent(seed * 2 + 1, pool, difficultyProfile("master", d0.archetype, d1.decklist)));
     const t1 = new Tracker(new HeuristicAgent(seed * 2 + 2, pool, difficultyProfile("master", d1.archetype, d0.decklist)));
     const r = await runMatch(spec, pool, [t0, t1]);

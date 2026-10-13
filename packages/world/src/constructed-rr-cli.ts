@@ -29,7 +29,7 @@ const w = field.map(() => 0), n = field.map(() => 0); let games = 0;
 for (let i = 0; i < field.length; i++) for (let j = i + 1; j < field.length; j++) for (let g = 0; g < G; g++) {
   const seatA = g % 2, seed = seed0 + i * 1009 + j * 37 + g, A = field[i]!, B = field[j]!;
   const [d0, d1] = seatA === 0 ? [A, B] : [B, A];
-  const spec = { seed, players: [{ name: d0.name, decklist: d0.deck, agent: "h" }, { name: d1.name, decklist: d1.deck, agent: "h" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 }, modifiers: [] } as unknown as MatchSpec;
+  const spec = { seed, players: [{ name: d0.name, decklist: d0.deck, agent: "h" }, { name: d1.name, decklist: d1.deck, agent: "h" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 120 }, modifiers: [] } as unknown as MatchSpec;
   const r = await runMatch(spec, cards, [new HeuristicAgent(seed * 2 + 1, cards, difficultyProfile("master", d0.archetype, d1.deck)), new HeuristicAgent(seed * 2 + 2, cards, difficultyProfile("master", d1.archetype, d0.deck))]);
   const a = r.winner === null ? 0.5 : r.winner === seatA ? 1 : 0;
   w[i]! += a; w[j]! += 1 - a; n[i]! += 1; n[j]! += 1; games += 1;

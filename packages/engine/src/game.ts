@@ -126,7 +126,8 @@ export const LOOP_DRAW_CAP = 100;
  *  forever and the other's oscillates. */
 export const LOOP_STALL_CAP = 1000;
 
-export const DEFAULT_RULES: GameRules = { startingLife: 20, handSize: 7, maxTurns: 100, ante: 0 };
+/** S62 (Chris's ruling on the probe): the turn limit is 120 — at 100 (fifty draws a side) a game was called a draw a few turns before a sixty-card library ran out; every such game on the tables ended inside 120. */
+export const DEFAULT_RULES: GameRules = { startingLife: 20, handSize: 7, maxTurns: 120, ante: 0 };
 
 export class Game {
   readonly ctx: EngineCtx;

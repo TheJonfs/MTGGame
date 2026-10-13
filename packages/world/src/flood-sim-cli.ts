@@ -136,7 +136,7 @@ for (const [key, deck] of Object.entries(FLOOD_DECKS)) {
         ];
         const me = { name: deck.name, decklist: [...deck.decklist], agent: "heuristic" as const };
         const them = { name: y.name, decklist: [...y.decklist], agent: "heuristic" as const };
-        const spec: MatchSpec = { seed, players: seat === 0 ? [me, them] : [them, me], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 }, modifiers };
+        const spec: MatchSpec = { seed, players: seat === 0 ? [me, them] : [them, me], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 120 }, modifiers };
         const mine = new Counting(new HeuristicAgent(seed * 2 + 1, pool, { ...difficultyProfile("master", ARCHETYPE[key]!, [...y.decklist]), ...(offRules.length ? { off: offRules } : {}) }), legendId, deck.ground);
         const theirs: Agent = new HeuristicAgent(seed * 2 + 2, pool, difficultyProfile("journeyman", y.archetype, [...deck.decklist]));
         try {

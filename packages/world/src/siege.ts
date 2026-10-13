@@ -245,7 +245,7 @@ export function siegeDuelSpec(
       { name: world.player.name, decklist: activeDeck(world).map((e) => ({ ...e })), agent: "human" },
       { name: tmpl.name, decklist: enemyDeck(catalog, tmpl.deck, world.phase).decklist, agent: `heuristic:${matchup.profile}` },
     ],
-    rules: { startingLife: eng.life, handSize: 7, mulligan: "london", maxTurns: 100, ante: matchup.ante, startingPlayer: rng.chance(0.5) ? 0 : 1 }, // S22 r2: the coin flip
+    rules: { startingLife: eng.life, handSize: 7, mulligan: "london", maxTurns: 120, ante: matchup.ante, startingPlayer: rng.chance(0.5) ? 0 : 1 }, // S22 r2: the coin flip
     modifiers,
   };
   return { spec, tmpl, remainingAfter: eng.remaining.length - 1 };

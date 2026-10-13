@@ -57,7 +57,7 @@ for (const color of PETAL_ORDER) {
             { name: ref.name, decklist: [...ref.decklist], agent: "heuristic" },
             { name: boss.name, decklist: [...boss.decklist], agent: "heuristic" },
           ],
-          rules: { startingLife: refLife, handSize: 7, mulligan: "london", maxTurns: 100 },
+          rules: { startingLife: refLife, handSize: 7, mulligan: "london", maxTurns: 120 },
           modifiers: [{ type: "startingLife", player: 1, value: bossLife }, ...variant.mods],
         };
         const a0: Agent = new HeuristicAgent(seed * 2 + 1, pool, difficultyProfile("journeyman", ref.archetype, [...boss.decklist]));

@@ -46,7 +46,7 @@ for (const [a, b] of pairings) {
     const spec: MatchSpec = {
       seed,
       players: [{ name: a.name, decklist: [...a.decklist], agent: agentKind }, { name: b.name, decklist: [...b.decklist], agent: agentKind }],
-      rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 },
+      rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 120 },
       modifiers: [],
     };
     try {

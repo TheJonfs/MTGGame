@@ -75,7 +75,7 @@ async function run(): Promise<void> {
     for (let g = 0; g < G; g++) {
       const seatA = g % 2, seed = seed0 + p * 1009 + g * 37;
       const [d0, d1] = seatA === 0 ? [A, B] : [B, A];
-      const spec = { seed, players: [{ name: "a", decklist: d0, agent: "heuristic:master" }, { name: "b", decklist: d1, agent: "heuristic:master" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 }, modifiers: [] } as unknown as MatchSpec;
+      const spec = { seed, players: [{ name: "a", decklist: d0, agent: "heuristic:master" }, { name: "b", decklist: d1, agent: "heuristic:master" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 120 }, modifiers: [] } as unknown as MatchSpec;
       const t0 = new Tracker(new HeuristicAgent(seed * 2 + 1, cards, difficultyProfile("master", "midrange", d1))), t1 = new Tracker(new HeuristicAgent(seed * 2 + 2, cards, difficultyProfile("master", "midrange", d0)));
       const r = await runMatch(spec, cards, [t0, t1]);
       const tA = seatA === 0 ? t0 : t1, tB = seatA === 0 ? t1 : t0;
@@ -122,7 +122,7 @@ async function runForced(): Promise<void> {
       for (let g = 0; g < G; g++) {
         const seatA = g % 2, seed = seed0 + d * 7919 + o * 104729 + g * 37; // the same seeds for forced and chosen
         const [d0, d1] = seatA === 0 ? [A, Bd] : [Bd, A];
-        const spec = { seed, players: [{ name: "a", decklist: d0, agent: "h" }, { name: "b", decklist: d1, agent: "h" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 }, modifiers: [] } as unknown as MatchSpec;
+        const spec = { seed, players: [{ name: "a", decklist: d0, agent: "h" }, { name: "b", decklist: d1, agent: "h" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 120 }, modifiers: [] } as unknown as MatchSpec;
         const r = await runMatch(spec, cards, [new HeuristicAgent(seed * 2 + 1, cards, difficultyProfile("master", "midrange", d1)), new HeuristicAgent(seed * 2 + 2, cards, difficultyProfile("master", "midrange", d0))]);
         games.push({ deck: d, kind, opp, win: r.winner === null ? 0.5 : r.winner === seatA ? 1 : 0 });
       }

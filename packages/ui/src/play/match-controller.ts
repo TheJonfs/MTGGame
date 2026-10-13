@@ -328,7 +328,7 @@ export class MatchController {
     this.spec = {
       seed: this.seed,
       players: opts.humanSeat === 0 ? [humanPlayer, aiPlayer] : [aiPlayer, humanPlayer],
-      rules: { startingLife, handSize: 7, mulligan: "london", maxTurns: 100, ante, ...(startingPlayer !== undefined ? { startingPlayer } : {}) },
+      rules: { startingLife, handSize: 7, mulligan: "london", maxTurns: 120, ante, ...(startingPlayer !== undefined ? { startingPlayer } : {}) },
       modifiers: custom ? custom.modifiers.map((m) => ({ ...m })) : [],
     };
     for (const p of this.spec.players) validateDecklist(pool, p.decklist);

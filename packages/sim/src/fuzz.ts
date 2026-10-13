@@ -65,7 +65,7 @@ export function matchSpec(seed: number, a: DeckKey, b: DeckKey, agents: AgentPai
       { name: DECKS[a].name, decklist: [...DECKS[a].decklist], agent: agents[0] },
       { name: DECKS[b].name, decklist: [...DECKS[b].decklist], agent: agents[1] },
     ],
-    rules: { startingLife, handSize: 7, mulligan: "london", maxTurns: 100 },
+    rules: { startingLife, handSize: 7, mulligan: "london", maxTurns: 120 },
     modifiers: [],
   };
 }

@@ -199,7 +199,7 @@ export function courtDuelSpec(world: WorldState, catalog: Catalog, knobs: KnobVa
       { name: world.player.name, decklist: activeDeck(world).map((e) => ({ ...e })), agent: "human" },
       { name: court.minister.name, decklist: deck.decklist, agent: "heuristic:master" },
     ],
-    rules: { startingLife: world.player.worldLife, handSize: 7, mulligan: "london", maxTurns: 100, ante: knobs.anteCount, startingPlayer: rng.chance(0.5) ? 0 : 1 },
+    rules: { startingLife: world.player.worldLife, handSize: 7, mulligan: "london", maxTurns: 120, ante: knobs.anteCount, startingPlayer: rng.chance(0.5) ? 0 : 1 },
     modifiers: [{ type: "startingLife", player: 1, value: enemyLife }, ...courtModifiers(court), ...manalinkModifiers(world)],
   };
   return { spec, enemyName: court.minister.name, enemyLife };
@@ -263,7 +263,7 @@ export function fountDuelSpec(world: WorldState, knobs: KnobValues, rng: WorldRn
       { name: world.player.name, decklist: activeDeck(world).map((e) => ({ ...e })), agent: "human" },
       { name: FOUNT_DECK.name, decklist: FOUNT_DECK.decklist.map((e) => ({ ...e })), agent: "heuristic:master" },
     ],
-    rules: { startingLife: world.player.worldLife, handSize: 7, mulligan: "london", maxTurns: 100, ante: 0, startingPlayer: rng.chance(0.5) ? 0 : 1 },
+    rules: { startingLife: world.player.worldLife, handSize: 7, mulligan: "london", maxTurns: 120, ante: 0, startingPlayer: rng.chance(0.5) ? 0 : 1 },
     modifiers: [
       { type: "startingLife", player: 1, value: enemyLife },
       { type: "signatureToHand", player: 1, cardId: FOUNT_CARD },

@@ -78,7 +78,7 @@ for (const mox of SITES) {
             { name: ref.name, decklist: [...ref.decklist], agent: "heuristic" },
             { name: mox.guardian.name, decklist: [...g.decklist], agent: "heuristic" },
           ],
-          rules: { startingLife: 10, handSize: 7, mulligan: "london", maxTurns: 100 },
+          rules: { startingLife: 10, handSize: 7, mulligan: "london", maxTurns: 120 },
           modifiers: [{ type: "startingLife", player: 1, value: mox.guardian.life + lifeBonus }, ...lawMods(0), ...lawMods(1), ...empMods],
         };
         const a0: Agent = new HeuristicAgent(seed * 2 + 1, pool, difficultyProfile("journeyman", ref.archetype, [...g.decklist]));

@@ -44,7 +44,7 @@ async function meet(A: Seat, B: Seat, seed0: number): Promise<number> {
   for (let g = 0; g < G; g++) {
     const bFirst = g % 2, seed = seed0 + g * 37;
     const [d0, d1] = bFirst === 0 ? [B.deck, A.deck] : [A.deck, B.deck];
-    const spec = { seed, players: [{ name: "a", decklist: d0, agent: "h" }, { name: "b", decklist: d1, agent: "h" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 }, modifiers: [] } as unknown as MatchSpec;
+    const spec = { seed, players: [{ name: "a", decklist: d0, agent: "h" }, { name: "b", decklist: d1, agent: "h" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 120 }, modifiers: [] } as unknown as MatchSpec;
     const r = await runMatch(spec, cards, [new HeuristicAgent(seed * 2 + 1, cards, difficultyProfile("master", "midrange", d1)), new HeuristicAgent(seed * 2 + 2, cards, difficultyProfile("master", "midrange", d0))]);
     b += r.winner === null ? 0.5 : r.winner === bFirst ? 1 : 0;
   }

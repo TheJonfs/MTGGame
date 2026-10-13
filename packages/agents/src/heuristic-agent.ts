@@ -283,6 +283,7 @@ export class HeuristicAgent implements Agent {
     if (this.spellPayoffHoldGated(view, action)) return -Infinity; // S45: hold the cheap spell for the Guttersnipe / Pyromancer in hand
     if (this.faceBurnHoldGated(view, action)) return -Infinity; // post-S49 (book 88): removal is not thrown at a healthy face
     if (this.counterWarGated(view, action)) return -Infinity; // post-S52 (book 94): one counter answers one spell
+    if (this.attackAuraOnNonAttackerGated(view, action)) return -Infinity; // S62 (book 127): Rancor is not for a Wall
     if (this.entersHarmGated(view, action)) return -Infinity; // S50 (book 89): the Kavu is not cast into a board where its four can only hit us
     if (this.selfPumpGated(view, action)) return -Infinity; // S50 (book 90): the Whelp's pump is combat damage or a won fight, never idle
     if (this.graveyardTokensGated(view, action)) return -Infinity; // S50 (book 91): the Pyromancer's second life spends only idle mana
@@ -2121,6 +2122,9 @@ export class HeuristicAgent implements Agent {
       if (/nonartifact/i.test(pred) && od?.types.includes("Artifact")) return false;
       if (/YouDontControl$/.test(pred) && o.controller === view.you) return false;
       if (/YouControl$/.test(pred) && o.controller !== view.you) return false;
+      // Book 126 (S62, Chris's Peasant games: a Kavu cast when the one creature across the table was a Dungrove Elder
+      // shot itself): a creature we cannot target is not a target — an opponent's hexproof, anyone's shroud.
+      if (!this.profile.off?.includes("untargetable") && (o.keywords.includes("shroud") || (o.keywords.includes("hexproof") && o.controller !== view.you))) return false;
       return true;
     };
     const creatures = view.battlefield.filter((o) => o.power !== null && legal(o));
@@ -2131,6 +2135,20 @@ export class HeuristicAgent implements Agent {
       safeOurs: ours.some((o) => !dies(o)),
       selfLegal: pred === "creature" && (hard || dmg >= (d.toughness ?? 0)), // the entering creature is itself a legal target, and would die
     };
+  }
+  /** Book 127 (S62, Chris's Peasant games: Rancor cast on a Wall of Blossoms, beside a 4/4 Baloth). An Aura that gives
+   * its creature POWER and no toughness is for a creature that attacks: it is never put on one of ours that cannot
+   * (a defender, a creature that cannot attack). With nothing else to put it on, it waits. Off: "attackaura". Exposed. */
+  attackAuraOnNonAttackerGated(view: GameView, action: Action): boolean {
+    if (action.type !== "castSpell" || this.profile.off?.includes("attackaura")) return false;
+    const d = this.def(view.hand.find((c) => c.objectId === action.objectId)?.cardId ?? "");
+    if (!d || !(d.subtypes ?? []).includes("Aura")) return false;
+    const pt = (d.abilities ?? []).flatMap((a) => (a.kind === "static" ? a.effects : [])).filter((e) => e.type === "modifyPT" && (e as { scope?: string }).scope === "attached") as { power?: unknown; toughness?: unknown }[];
+    const adds = (x: unknown) => (typeof x === "number" ? x > 0 : x !== undefined && x !== 0); // a number above zero, or a count
+    if (!pt.some((e) => adds(e.power)) || pt.some((e) => adds(e.toughness))) return false;
+    const t = (action.targets ?? [])[0];
+    const o = t?.kind === "object" ? view.battlefield.find((b) => b.id === t.id) : undefined;
+    return !!o && o.controller === view.you && (o.keywords.includes("defender") || !!o.cantAttack);
   }
   /** S50 (book 89): with no creature across the table the mandatory trigger turns on us — on our own creature, or on
    * the entering one (CR 603.3d: a target is chosen if one can be). The cast waits unless one of ours would survive

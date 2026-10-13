@@ -70,7 +70,7 @@ async function play(): Promise<void> {
         for (let g = 0; g < 3 && wins < 2 && losses < 2; g++) {
           const boardedGame = g > 0, mineD = boardedGame ? mine2 : me.decklist, theirsD = boardedGame ? theirs2 : opp.decklist;
           const seed = seed0 + k * 1009 + m * 31 + g * 7;
-          const spec = { seed, players: [{ name: key, decklist: mineD, agent: "x" }, { name: opp.key, decklist: theirsD, agent: "x" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100, startingPlayer: first }, modifiers: [] } as unknown as MatchSpec;
+          const spec = { seed, players: [{ name: key, decklist: mineD, agent: "x" }, { name: opp.key, decklist: theirsD, agent: "x" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 120, startingPlayer: first }, modifiers: [] } as unknown as MatchSpec;
           let turnStart = 20, lastTurn = -1, loop = false, exile = false;
           const pi = new HeuristicAgent(seed * 2 + 1, pool, difficultyProfile("master", me.archetype, [...theirsD], [...mineD]));
           const pilot: Agent = { chooseAction: async (v, r) => { if (v.turn !== lastTurn) { lastTurn = v.turn; turnStart = v.life[1]; } if (turnStart - v.life[1] >= 12) loop = true; return pi.chooseAction(v, r); } };
@@ -98,7 +98,7 @@ async function play(): Promise<void> {
     for (let g = 0; g < G; g++) {
       const seat = (g % 2) as 0 | 1, seed = seed0 + k * 131 + g * 17;
       const pm = { name: key, decklist: mine, agent: "x" }, pt = { name: opp.key, decklist: theirs, agent: "x" };
-      const spec = { seed, players: seat === 0 ? [pm, pt] : [pt, pm], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 }, modifiers: [] } as unknown as MatchSpec;
+      const spec = { seed, players: seat === 0 ? [pm, pt] : [pt, pm], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 120 }, modifiers: [] } as unknown as MatchSpec;
       const row: Row = { opp: opp.key, won: false, reason: "", myTurns: 0, loopTurn: 0, readyTurn: 0, firstSetup: 0, buried: [], fuelFor: [], startTargets: [], digDraws: 0, cast: {}, oppCast: {}, oppExiles: 0 };
       let lastTurn = -1, digTurnSeen = -1, armedSeen = -1, fuelPending = false, turnStartOpp = 20, watch: string[] | null = null;
       const inner = new HeuristicAgent(seed * 2 + 1 + seat, pool, { ...difficultyProfile("master", noPlan ? "midrange" : me.archetype, [...theirs], noPlan ? undefined : [...mine]), ...(off.length ? { off } : {}) });

@@ -1911,4 +1911,30 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["drawforlife"] });
     expect(old.misaimPenalty(v([20, 20]), me)).toBe(100); // the old pilot
   });
+
+  it("book of shame 126 (S62 — Chris's Peasant games: a Flametongue Kavu cast when the one creature across the table was a hexproof Dungrove Elder shot itself): a creature we cannot target is not a target for a mandatory enters trigger — an opponent's hexproof, anyone's shroud", () => {
+    const a = agent("midrange"), lands = ["mountain", "mountain", "mountain", "mountain"].map((c, i) => ({ id: "l" + i, cardId: c, controller: 0 as const }));
+    const cast = { type: "castSpell" as const, objectId: "k", targets: [] };
+    const v = (theirs: { cardId: string }[], mine: string[] = []) => mkView({ hand: [{ objectId: "k", cardId: "flametongue_kavu" }], battlefield: [...lands, ...theirs.map((c, i) => ({ id: "t" + i, cardId: c.cardId, controller: 1 as const })), ...mine.map((c, i) => ({ id: "m" + i, cardId: c, controller: 0 as const }))] });
+    expect(a.entersHarmGated(v([{ cardId: "dungrove_elder"}]), cast)).toBe(true); // only the Kavu itself could be shot
+    expect(a.entersHarmGated(v([{ cardId: "blurred_mongoose"}]), cast)).toBe(true);
+    expect(a.entersHarmGated(v([{ cardId: "dungrove_elder"}, { cardId: "grizzly_bears" }]), cast)).toBe(false); // a target across the table
+    expect(a.entersKillBonus(v([{ cardId: "dungrove_elder"}, { cardId: "grizzly_bears" }]), cast)).toBeGreaterThan(0);
+    expect(a.entersHarmGated(v([{ cardId: "grizzly_bears" }]), cast)).toBe(false);
+    const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["untargetable"] });
+    expect(old.entersHarmGated(v([{ cardId: "dungrove_elder"}]), cast)).toBe(false); // the old pilot cast it
+  });
+
+  it("book of shame 127 (S62 — Chris's Peasant games: Rancor on a Wall of Blossoms beside a Rumbling Baloth): an Aura that adds power and no toughness is never put on a creature of ours that cannot attack; an Aura that adds toughness too may be", () => {
+    const a = agent("aggro"), lands = ["forest", "forest", "forest"].map((c, i) => ({ id: "l" + i, cardId: c, controller: 0 as const }));
+    const v = (card: string) => mkView({ hand: [{ objectId: "r", cardId: card }], battlefield: [...lands, { id: "w", cardId: "wall_of_blossoms", controller: 0 }, { id: "b", cardId: "rumbling_baloth", controller: 0 }] });
+    const on = (id: string) => ({ type: "castSpell" as const, objectId: "r", targets: [{ kind: "object" as const, id }] });
+    expect(a.attackAuraOnNonAttackerGated(v("rancor"), on("w"))).toBe(true);
+    expect(a.attackAuraOnNonAttackerGated(v("rancor"), on("b"))).toBe(false);
+    expect(a.scorePriorityAction(v("rancor"), on("w"))).toBe(-Infinity);
+    expect(a.scorePriorityAction(v("rancor"), on("b"))).toBeGreaterThan(a.scorePriorityAction(v("rancor"), { type: "pass" }));
+    expect(a.attackAuraOnNonAttackerGated(v("blanchwood_armor"), on("w"))).toBe(false); // it adds toughness: a bigger wall is a use
+    const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "aggro", []), off: ["attackaura"] });
+    expect(old.attackAuraOnNonAttackerGated(v("rancor"), on("w"))).toBe(false);
+  });
 });

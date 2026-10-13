@@ -90,7 +90,7 @@ async function play(): Promise<void> {
         for (let v = 0; v < variants.length; v++) {
           const mine = deck.map((e, i) => (i === slot.i ? { cardId: variants[v]!, count: 1 } : { ...e }));
           const [d0, d1] = seat === 0 ? [mine, opp] : [opp, mine];
-          const spec = { seed, players: [{ name: "host", decklist: d0, agent: "h" }, { name: "opp", decklist: d1, agent: "h" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 }, modifiers: [] } as unknown as MatchSpec;
+          const spec = { seed, players: [{ name: "host", decklist: d0, agent: "h" }, { name: "opp", decklist: d1, agent: "h" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 120 }, modifiers: [] } as unknown as MatchSpec;
           const a0 = new HeuristicAgent(seed * 2 + 1, cards, difficultyProfile("master", "midrange", d1, d0)), a1 = new HeuristicAgent(seed * 2 + 2, cards, difficultyProfile("master", "midrange", d0, d1)); // S55: each its own list (a combo host's plan)
           const w = new Watch(seat === 0 ? a0 : a1, variants[v]!);
           const r = await runMatch(spec, cards, seat === 0 ? [w, a1] : [a0, w]);

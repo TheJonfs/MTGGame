@@ -110,7 +110,7 @@ for (const lands of landCounts) {
             { name: ref.name, decklist: [...ref.decklist], agent: "heuristic" },
             { name: ring === "tide" ? FOUNT_DECK.name : HEART_DECK.name, decklist: bossDeck, agent: "heuristic" },
           ],
-          rules: { startingLife: ref.life, handSize: 7, mulligan: "london", maxTurns: 100 },
+          rules: { startingLife: ref.life, handSize: 7, mulligan: "london", maxTurns: 120 },
           modifiers: [
             { type: "startingLife", player: 1, value: life },
             ...(inHand ? [{ type: "signatureToHand" as const, player: 1 as const, cardId: boss }] : []),

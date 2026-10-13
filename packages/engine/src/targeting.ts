@@ -8,6 +8,9 @@ import type { PlayerId } from "./state.js";
 function canBeTargeted(ctx: EngineCtx, objectId: string, by: PlayerId): boolean {
   const obj = ctx.state.objects[objectId];
   if (!obj) return false;
+  // S62 (CR 702.11b, 702.18a: hexproof and shroud are abilities of a PERMANENT — "this permanent can't be the target
+  // of…"): a card in a graveyard, a hand or exile has neither. (An opponent's Usher could not return a hexproof card.)
+  if (obj.zone !== "battlefield") return true;
   const chars = characteristics(ctx, objectId);
   if (chars.keywords.has("shroud")) return false;
   if (chars.keywords.has("hexproof") && obj.controller !== by) return false;

@@ -136,7 +136,7 @@ async function pairing(a: Side, b: Side, label: string): Promise<{ aPct: number;
     const spec: MatchSpec = {
       seed,
       players: [{ name: p0.name, decklist: [...p0.decklist], agent: "heuristic" }, { name: p1.name, decklist: [...p1.decklist], agent: "heuristic" }],
-      rules: { startingLife: p0.life, handSize: 7, mulligan: "london", maxTurns: 100 },
+      rules: { startingLife: p0.life, handSize: 7, mulligan: "london", maxTurns: 120 },
       modifiers: [
         { type: "startingLife", player: 1, value: p1.life },
         // S32: a mid-road reference's manalink basic(s) in play at duel start (the heart-sim pattern).

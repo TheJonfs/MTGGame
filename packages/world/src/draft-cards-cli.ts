@@ -58,7 +58,7 @@ async function play(): Promise<void> {
     for (let i = 0; i < 8; i++) for (let j = i + 1; j < 8; j++) for (let g = 0; g < G; g++) {
       const seatA = g % 2, seed = seed0 + p * 100003 + i * 1009 + j * 37 + g;
       const [d0, d1] = seatA === 0 ? [builds[i]!.deck, builds[j]!.deck] : [builds[j]!.deck, builds[i]!.deck];
-      const spec = { seed, players: [{ name: "a", decklist: d0, agent: "h" }, { name: "b", decklist: d1, agent: "h" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 }, modifiers: [] } as unknown as MatchSpec;
+      const spec = { seed, players: [{ name: "a", decklist: d0, agent: "h" }, { name: "b", decklist: d1, agent: "h" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 120 }, modifiers: [] } as unknown as MatchSpec;
       const t0 = new Tracker(new HeuristicAgent(seed * 2 + 1, cards, difficultyProfile("master", "midrange", d1))), t1 = new Tracker(new HeuristicAgent(seed * 2 + 2, cards, difficultyProfile("master", "midrange", d0)));
       const r = await runMatch(spec, cards, [t0, t1]);
       const tA = seatA === 0 ? t0 : t1, tB = seatA === 0 ? t1 : t0;
