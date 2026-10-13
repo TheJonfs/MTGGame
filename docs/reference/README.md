@@ -12,7 +12,7 @@ Sync tests pin the generated files to their renderers (`packages/world/src/refer
 | File | What it holds | Source of truth |
 |---|---|---|
 | `cards.md` | The card pool. First the custom cards gathered by colour with their tiers; then every non-token def — colour, type, cost, mana value, P/T, keywords, shop tier, price, flags (prizeOnly / custom / law), rules text; then the tokens and what makes them. | `data/cards/**/*.json`, `data/art/real/oracle.json`, the shop pricing knobs |
-| `open-lists.md` | The Convocation's Open. The table of record for the active lists (matches, game one, the change after sideboarding, and whether a list's fifteen is registered, guided or built); the staples; then every list — its sixty, its fifteen, its sideboard guide, its plan, its history by session — the active lists in the table's order, the archived lists after them. | `data/convocation/open-seeds.json`, `open-contributed.json` (lists, fifteens, guides, plans, the archive), `open-matches.json` (the matches table), `packages/sim/src/open-lists.ts` (revisions), `OPEN_MEANS` (game one) |
+| `open-lists.md` | The Convocation's Open. The table of record for the active lists (matches, game one, the change after sideboarding, and whether a list's fifteen is registered, guided or built); the staples; then every list — its sixty, its fifteen, its sideboard guide, its plan, its history by session — the active lists in the table's order, the archived lists after them. | `data/convocation/formats/open/seeds.json`, `formats/open/contributed.json` (lists, fifteens, guides, plans, the archive), `formats/open/matches.json` (the matches table), `packages/sim/src/open-lists.ts` (revisions), `OPEN_MEANS` (game one) |
 | `starters.md` | The five starting decks (the player's roads): each decklist with its stats and curve, the refill basic, the easy/hard adjustments; the new-game constants (life, gold, spares, ante). | `data/world/starters.json`, `packages/world/src/knobs.ts` |
 | `salvage.md` | The phase-two (flood) start: the salvage pack and its constants. | `data/world/*.json`, `packages/world/src/salvage.ts`, the knobs |
 | `enemies.md` | Every enemy the player can meet in the journey — roaming opponents, the Mox court, the power-dungeon guardians, the stronghold lords, the petal courts, the Mirror, the Heart — each with how its starting life is set and its decklist. | `data/world/*.json` (the catalog), the sim deck tables, `packages/world/src/knobs.ts` |
@@ -23,7 +23,7 @@ Sync tests pin the generated files to their renderers (`packages/world/src/refer
 ```
 pnpm open:rr --games 100 --seed 56 --shard i/8 --out analysis/runs/rr_$i.json      # game one; then --merge, and copy its means into OPEN_MEANS
 pnpm open:rr --matches 50 --seed 56 --shard i/8 --out analysis/runs/m_$i.json      # matches; then:
-pnpm open:rr --matches-report analysis/runs/m_*.json --record --out analysis/runs/matches.md   # --record writes data/convocation/open-matches.json
+pnpm open:rr --matches-report analysis/runs/m_*.json --record --out analysis/runs/matches.md   # --record writes data/convocation/formats/open/matches.json
 pnpm open:gen
 ```
 

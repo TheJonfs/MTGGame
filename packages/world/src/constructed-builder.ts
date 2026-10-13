@@ -21,7 +21,7 @@ import { cardColors, manaValue, parseManaCost, type CardDef } from "@shandalar/c
 import type { Decklist } from "./state.js";
 import { BASIC_LANDS, COPY_CAP, checkDeck, isBasic, type DeckCheck, type DeckRule } from "./legality.js";
 import type { ConstructedFormat } from "./formats.js";
-import { LAW_IDS } from "./formats.js";
+import { FIELD_FORMAT_IDS, LAW_IDS } from "./formats.js";
 import { cardRating, type CardRatingTable } from "./rating.js";
 import { WorldRng } from "./rng.js";
 import { answersGraveyards, blocksFliers, isCreatureCounter, isSweeper, isWall, stealsCreatures, usableByAnyDeck } from "./sideboard-ai.js";
@@ -34,7 +34,7 @@ export interface LibraryList { key: string; archetype: "aggro" | "midrange" | "c
  * Post-S59 (2026-10-10, later) — AGAIN: the Tollgate in the Ford's place (the Ford archived at 38); analysis/runs/rr18_s59b.json and matches18_s59b.md.
  * Post-S59 (2026-10-11) — AGAIN: Reaper Clio in Reaper Control's place (archived at 54); pilot book 121 (two-on-one blocks); analysis/runs/rr18_s59c.json and matches18_s59c.md.
  * S60 (2026-10-11) — AGAIN: fifteen lists (the Locks, the Tally and the Enchantress archived, ADR-174); pilot book 122; the Levy guided; analysis/runs/rr15_s60.json and matches15_s60.md. */
-export const OPEN_MEANS: Record<string, number> = { "open:reaperclio": 69, "open:pall": 65, "open:marducontrol": 61, "open:rabble": 59, "open:countersnake": 51, "open:writ": 49, "open:depths": 45, "open:muster": 44, "open:tollgate": 44, "open:sweep": 43, "open:kiln": 43, "open:levy": 42, "open:warband": 41, "open:wurmspeaker": 40 };
+export const OPEN_MEANS: Record<string, number> = { "open:reaperclio": 69, "open:pall": 65, "open:marducontrol": 61, "open:rabble": 59, "open:countersnake": 51, "open:writ": 49, "open:depths": 45, "open:muster": 44, "open:tollgate": 44, "open:sweep": 43, "open:kiln": 43, "open:levy": 42, "open:warband": 41, "open:wurmspeaker": 40, "peasant:brdjinn": 60, "peasant:br": 59, "peasant:elder": 59, "peasant:bw": 57, "peasant:tokens": 54, "peasant:mbc": 52, "peasant:rabble": 47, "peasant:stompy": 47, "peasant:muster": 47, "peasant:skies": 44, "peasant:naya": 44, "peasant:skieswall": 43, "peasant:urcontrol": 35 };
 /** Post-S52 (Chris): the candidates are the TWELVE best-fitting lists (the Open's whole library, not its top five),
  * and the noise has a noise of its own — a seat is STOCK (the list as written), a LIGHT tinkerer (one or two swaps),
  * or a HEAVY one (four to six); the light and the heavy also move a land. The shares are a quarter, a half, a quarter. */
@@ -57,7 +57,11 @@ export const LIST_DRAW_SCALE = 10;
  * and 55 in matches, and the seats were drawn on the 64): a list's STRENGTH is its match win rate on the table of record
  * where one is recorded, else its game-one mean. The seat draw, the cap and the Umbel's correlation all read this. */
 export const openStrength = (key: string): number | undefined => OPEN_MATCH_MEANS[key] ?? OPEN_MEANS[key];
-export const candidateCount = (): number => Math.max(CONSTRUCTED_TERMS.candidates, Object.keys(OPEN_MEANS).length);
+/** S62 (ADR-176): the formats whose lists are a field of their own — a list of one is never a candidate in another. A
+ * format without a field (Pauper, the gates) draws on the Open's. */
+const FIELD_GROUPS: readonly string[] = FIELD_FORMAT_IDS;
+export const fieldGroupOf = (formatId: string): string => (FIELD_GROUPS.includes(formatId) ? formatId : "open");
+export const candidateCount = (formatId = "open"): number => Math.max(CONSTRUCTED_TERMS.candidates, Object.keys(OPEN_MEANS).filter((k) => k.startsWith(`${fieldGroupOf(formatId)}:`)).length);
 /** Post-S52 (Chris: "the Larder and the Undertow repair badly" — the noise was blind to a list's plan). The PLAN rules,
  * keyed on data, never on a card's name: (1) a swap's incoming card must share an authored list with the card it
  * replaces (the library's lists are the record of what goes together); (2) a card the source list plays four of is its
@@ -100,7 +104,8 @@ export function selectCandidates(format: ConstructedFormat, rating: CardRatingTa
   const rule = format.rule, role = (id: string) => (cards.get(id)!.types.includes("Land") ? "land" : "other");
   const size = (l: Decklist) => l.reduce((n, e) => n + e.count, 0);
   const strength = (l: LibraryList) => openStrength(l.key) !== undefined ? 1000 + openStrength(l.key)! : (() => { const xs = l.decklist.filter((e) => role(e.cardId) !== "land"); const n = size(xs); return n ? xs.reduce((a, e) => a + cardRating(cards.get(e.cardId)!, rating) * e.count, 0) / n : 0; })();
-  return library.filter((l) => !l.archived).map((l) => ({ l, share: legalShare(l.decklist, rule, cards), strength: strength(l) })).sort((a, b) => b.share - a.share || b.strength - a.strength || a.l.key.localeCompare(b.l.key)).slice(0, candidateCount());
+  const mine = fieldGroupOf(format.id), groupOf = (key: string) => key.slice(0, key.indexOf(":"));
+  return library.filter((l) => !l.archived && !(FIELD_GROUPS.includes(groupOf(l.key)) && groupOf(l.key) !== mine)).map((l) => ({ l, share: legalShare(l.decklist, rule, cards), strength: strength(l) })).sort((a, b) => b.share - a.share || b.strength - a.strength || a.l.key.localeCompare(b.l.key)).slice(0, candidateCount(format.id));
 }
 
 export function buildConstructedDeck(format: ConstructedFormat, rating: CardRatingTable, seed: number, library: readonly LibraryList[], cards: Map<string, CardDef>, opts: { /** Force the tinker level (the tinker study); default: rolled from the seed. */ tinker?: Tinker; /** Force the source list. */ from?: string; /** S55 (ADR-158 amended): the seat's list draw — `top` leans to the lists that measure strong, `low` to those that measure weak. */ lists?: ListDraw; /** Post-S58 (the cap): lists this seat may not draw — those already at the field's cap. */ exclude?: ReadonlySet<string> } = {}): ConstructedBuild {

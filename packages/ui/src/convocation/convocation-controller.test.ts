@@ -367,7 +367,7 @@ describe("the Convocation controller (S48)", () => {
     expect(c.registration()).toEqual({ formatName: "The Open", days: [2], left: 2 });
     // S53 (Part 3): "start from a list" — the twelve the field is drawn from, repaired to the format
     const lists = c.startingLists();
-    expect(lists).toHaveLength(Math.max(12, Object.keys(OPEN_MEANS).length)); // the twelve, and every measured contribution
+    expect(lists).toHaveLength(Math.max(12, Object.keys(OPEN_MEANS).filter((k) => k.startsWith("open:")).length)); // the twelve, and every measured contribution
     expect(lists.map((l) => l.key)).toContain("open:levy");
     expect(lists.find((l) => l.key === "open:levy")!.label).toBe("the Levy");
     c.startFromList("open:levy"); expect(c.editorLegality().ok).toBe(true); expect(size(c.draft)).toBe(60);

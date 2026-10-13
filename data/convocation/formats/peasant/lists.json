@@ -1,0 +1,943 @@
+{
+ "_comment": "Peasant's lists (S62, ADR-176): the seeds and every list contributed since, in the Open's contributed-list shape (data/convocation/formats/open/contributed.json). pnpm open:gen validates each against Peasant (sixty, tier two and below, four of a card) and generates the code and docs/reference/peasant-lists.md.",
+ "archived": {
+  "ubmill": "S62: the planner's UB mill seed (Tome Scour, Hedron Crab, Thought Scour as the second engine) measured 14.6 in matches and 19 in game one on the first Peasant table — it beats only the other archived seed. Every mill card was cast (Tome Scour 1.2 a game). Kept as data.",
+  "wbcontrol": "S62: the planner's WB control seed (Wave of Reckoning, Moaning Walls, Penumbra Wurm by Entomb and Zombify) measured 12.9 in matches and 17 in game one. Whether the list or the pilot (it has never been taught to bury a creature it cannot cast) is not separated. Kept as data."
+ },
+ "guides": {},
+ "guidesOnly": [],
+ "outRules": {},
+ "lists": [
+  {
+   "key": "br",
+   "name": "BR Removal",
+   "title": "Rakdos Removal (B R)",
+   "archetype": "midrange",
+   "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. Unchanged from the experiments: the yardstick.",
+   "decklist": [
+    {
+     "cardId": "blood_crypt",
+     "count": 4
+    },
+    {
+     "cardId": "swamp",
+     "count": 12
+    },
+    {
+     "cardId": "mountain",
+     "count": 7
+    },
+    {
+     "cardId": "typhoid_rats",
+     "count": 4
+    },
+    {
+     "cardId": "blood_artist",
+     "count": 4
+    },
+    {
+     "cardId": "child_of_night",
+     "count": 4
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "nekrataal",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "reassembling_skeleton",
+     "count": 2
+    },
+    {
+     "cardId": "gravedigger",
+     "count": 2
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 4
+    },
+    {
+     "cardId": "terror",
+     "count": 1
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "key": "brdjinn",
+   "name": "BR Djinn",
+   "title": "Rakdos Removal, Djinn and Char (B R)",
+   "archetype": "midrange",
+   "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. Unchanged: the second build.",
+   "decklist": [
+    {
+     "cardId": "blood_crypt",
+     "count": 4
+    },
+    {
+     "cardId": "swamp",
+     "count": 12
+    },
+    {
+     "cardId": "mountain",
+     "count": 7
+    },
+    {
+     "cardId": "typhoid_rats",
+     "count": 4
+    },
+    {
+     "cardId": "blood_artist",
+     "count": 4
+    },
+    {
+     "cardId": "child_of_night",
+     "count": 4
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "nekrataal",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "gallows_djinn",
+     "count": 3
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "char",
+     "count": 2
+    }
+   ]
+  },
+  {
+   "key": "mbc",
+   "name": "Mono-Black Removal",
+   "title": "Mono-Black Removal (B)",
+   "archetype": "midrange",
+   "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. +4 Sign in Blood for the Ragers and a Blood Artist.",
+   "decklist": [
+    {
+     "cardId": "swamp",
+     "count": 23
+    },
+    {
+     "cardId": "typhoid_rats",
+     "count": 4
+    },
+    {
+     "cardId": "child_of_night",
+     "count": 4
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "nekrataal",
+     "count": 4
+    },
+    {
+     "cardId": "gallows_djinn",
+     "count": 3
+    },
+    {
+     "cardId": "gravedigger",
+     "count": 3
+    },
+    {
+     "cardId": "blood_artist",
+     "count": 2
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 4
+    },
+    {
+     "cardId": "terror",
+     "count": 3
+    },
+    {
+     "cardId": "tendrils_of_corruption",
+     "count": 2
+    },
+    {
+     "cardId": "sign_in_blood",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "key": "rabble",
+   "name": "the Rabble (Peasant)",
+   "title": "Mono-Red Goblins (R)",
+   "archetype": "aggro",
+   "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. The Open list's port.",
+   "decklist": [
+    {
+     "cardId": "mountain",
+     "count": 20
+    },
+    {
+     "cardId": "raging_goblin",
+     "count": 4
+    },
+    {
+     "cardId": "dragon_fodder",
+     "count": 4
+    },
+    {
+     "cardId": "hordeling_outburst",
+     "count": 4
+    },
+    {
+     "cardId": "goblin_chieftain",
+     "count": 4
+    },
+    {
+     "cardId": "goblin_grenade",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "char",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "goblin_matron",
+     "count": 4
+    },
+    {
+     "cardId": "boggart_brute",
+     "count": 2
+    },
+    {
+     "cardId": "goblin_piker",
+     "count": 2
+    }
+   ]
+  },
+  {
+   "key": "stompy",
+   "name": "RG Stompy",
+   "title": "Gruul Stompy (R G)",
+   "archetype": "aggro",
+   "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle.",
+   "decklist": [
+    {
+     "cardId": "stomping_ground",
+     "count": 4
+    },
+    {
+     "cardId": "forest",
+     "count": 13
+    },
+    {
+     "cardId": "mountain",
+     "count": 4
+    },
+    {
+     "cardId": "llanowar_elves",
+     "count": 4
+    },
+    {
+     "cardId": "birds_of_paradise",
+     "count": 2
+    },
+    {
+     "cardId": "grizzly_bears",
+     "count": 4
+    },
+    {
+     "cardId": "mother_bear",
+     "count": 3
+    },
+    {
+     "cardId": "centaur_courser",
+     "count": 4
+    },
+    {
+     "cardId": "rumbling_baloth",
+     "count": 4
+    },
+    {
+     "cardId": "gaean_wurm",
+     "count": 3
+    },
+    {
+     "cardId": "rancor",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 3
+    }
+   ]
+  },
+  {
+   "key": "muster",
+   "name": "the Muster (Peasant)",
+   "title": "Boros Weenie (W R)",
+   "archetype": "aggro",
+   "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. The Open list's port; Longbow Archer for the Suntail Hawks.",
+   "decklist": [
+    {
+     "cardId": "sacred_foundry",
+     "count": 4
+    },
+    {
+     "cardId": "plains",
+     "count": 11
+    },
+    {
+     "cardId": "mountain",
+     "count": 6
+    },
+    {
+     "cardId": "secluded_steppe",
+     "count": 2
+    },
+    {
+     "cardId": "savannah_lions",
+     "count": 4
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "longbow_archer",
+     "count": 4
+    },
+    {
+     "cardId": "fencing_ace",
+     "count": 4
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 3
+    },
+    {
+     "cardId": "raise_the_alarm",
+     "count": 4
+    },
+    {
+     "cardId": "glorious_anthem",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 2
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "key": "tokens",
+   "name": "RW Tokens",
+   "title": "Boros Tokens (W R)",
+   "archetype": "aggro",
+   "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. +4 Dawnwing Marshal, +2 Captain of the Watch and a land for the Angels, the Chieftains and the Grenades.",
+   "decklist": [
+    {
+     "cardId": "sacred_foundry",
+     "count": 4
+    },
+    {
+     "cardId": "plains",
+     "count": 10
+    },
+    {
+     "cardId": "mountain",
+     "count": 9
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "young_pyromancer",
+     "count": 4
+    },
+    {
+     "cardId": "raise_the_alarm",
+     "count": 4
+    },
+    {
+     "cardId": "dragon_fodder",
+     "count": 4
+    },
+    {
+     "cardId": "hordeling_outburst",
+     "count": 4
+    },
+    {
+     "cardId": "glorious_anthem",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 3
+    },
+    {
+     "cardId": "dawnwing_marshal",
+     "count": 4
+    },
+    {
+     "cardId": "captain_of_the_watch",
+     "count": 2
+    }
+   ]
+  },
+  {
+   "key": "skies",
+   "name": "UW Skies",
+   "title": "Azorius Skies (W U)",
+   "archetype": "midrange",
+   "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. +4 Dawnwing Marshal, +2 Wave of Reckoning for the Seers, the Air Elementals and a Pacifism.",
+   "decklist": [
+    {
+     "cardId": "hallowed_fountain",
+     "count": 4
+    },
+    {
+     "cardId": "plains",
+     "count": 10
+    },
+    {
+     "cardId": "island",
+     "count": 10
+    },
+    {
+     "cardId": "youthful_valkyrie",
+     "count": 4
+    },
+    {
+     "cardId": "inspiring_overseer",
+     "count": 4
+    },
+    {
+     "cardId": "plumecreed_escort",
+     "count": 4
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 4
+    },
+    {
+     "cardId": "traumatizer",
+     "count": 4
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 4
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "pacifism",
+     "count": 2
+    },
+    {
+     "cardId": "dawnwing_marshal",
+     "count": 4
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 2
+    }
+   ]
+  },
+  {
+   "key": "skieswall",
+   "name": "UW Skies, walls",
+   "title": "Azorius Skies with walls (W U)",
+   "archetype": "midrange",
+   "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. The walls build: the Wave leaves its walls standing.",
+   "decklist": [
+    {
+     "cardId": "hallowed_fountain",
+     "count": 4
+    },
+    {
+     "cardId": "plains",
+     "count": 10
+    },
+    {
+     "cardId": "island",
+     "count": 10
+    },
+    {
+     "cardId": "youthful_valkyrie",
+     "count": 4
+    },
+    {
+     "cardId": "inspiring_overseer",
+     "count": 4
+    },
+    {
+     "cardId": "plumecreed_escort",
+     "count": 4
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 4
+    },
+    {
+     "cardId": "traumatizer",
+     "count": 4
+    },
+    {
+     "cardId": "wall_of_air",
+     "count": 4
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 4
+    },
+    {
+     "cardId": "pacifism",
+     "count": 2
+    },
+    {
+     "cardId": "dawnwing_marshal",
+     "count": 4
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 2
+    }
+   ]
+  },
+  {
+   "key": "bw",
+   "name": "BW Aristocrats",
+   "title": "Orzhov Aristocrats (W B)",
+   "archetype": "midrange",
+   "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. +2 Captain of the Watch for the Typhoid Rats.",
+   "decklist": [
+    {
+     "cardId": "godless_shrine",
+     "count": 4
+    },
+    {
+     "cardId": "plains",
+     "count": 9
+    },
+    {
+     "cardId": "swamp",
+     "count": 10
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "blood_artist",
+     "count": 4
+    },
+    {
+     "cardId": "child_of_night",
+     "count": 4
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "nekrataal",
+     "count": 4
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 4
+    },
+    {
+     "cardId": "vitalist",
+     "count": 3
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 4
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 4
+    },
+    {
+     "cardId": "captain_of_the_watch",
+     "count": 2
+    }
+   ]
+  },
+  {
+   "key": "ubmill",
+   "name": "UB Mill",
+   "title": "Dimir Mill (U B)",
+   "archetype": "control",
+   "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. The UB control draft as a mill build: Tome Scour, Hedron Crab and Thought Scour as the second engine.",
+   "decklist": [
+    {
+     "cardId": "watery_grave",
+     "count": 4
+    },
+    {
+     "cardId": "island",
+     "count": 9
+    },
+    {
+     "cardId": "swamp",
+     "count": 9
+    },
+    {
+     "cardId": "tome_scour",
+     "count": 4
+    },
+    {
+     "cardId": "hedron_crab",
+     "count": 4
+    },
+    {
+     "cardId": "thought_scour",
+     "count": 4
+    },
+    {
+     "cardId": "traumatizer",
+     "count": 4
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 2
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 4
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "typhoid_rats",
+     "count": 4
+    },
+    {
+     "cardId": "moaning_wall",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "key": "urcontrol",
+   "name": "UR Pyroclasm Control",
+   "title": "Izzet Control (U R)",
+   "archetype": "control",
+   "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. Unchanged.",
+   "decklist": [
+    {
+     "cardId": "steam_vents",
+     "count": 4
+    },
+    {
+     "cardId": "island",
+     "count": 11
+    },
+    {
+     "cardId": "mountain",
+     "count": 9
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 2
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "wall_of_air",
+     "count": 4
+    },
+    {
+     "cardId": "traumatizer",
+     "count": 4
+    },
+    {
+     "cardId": "air_elemental",
+     "count": 3
+    },
+    {
+     "cardId": "brainstorm",
+     "count": 4
+    },
+    {
+     "cardId": "char",
+     "count": 3
+    }
+   ]
+  },
+  {
+   "key": "wbcontrol",
+   "name": "WB Wave Control",
+   "title": "Orzhov Control with reanimation (W B)",
+   "archetype": "control",
+   "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. New: the Wave, walls, and Penumbra Wurm brought back by Entomb and Zombify (it cannot be cast in these colours).",
+   "decklist": [
+    {
+     "cardId": "godless_shrine",
+     "count": 4
+    },
+    {
+     "cardId": "plains",
+     "count": 9
+    },
+    {
+     "cardId": "swamp",
+     "count": 10
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 3
+    },
+    {
+     "cardId": "moaning_wall",
+     "count": 4
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 4
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 4
+    },
+    {
+     "cardId": "sign_in_blood",
+     "count": 4
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "typhoid_rats",
+     "count": 4
+    },
+    {
+     "cardId": "entomb",
+     "count": 3
+    },
+    {
+     "cardId": "zombify",
+     "count": 4
+    },
+    {
+     "cardId": "penumbra_wurm",
+     "count": 3
+    }
+   ]
+  },
+  {
+   "key": "elder",
+   "name": "Dungrove Auras",
+   "title": "Mono-Green Auras (G)",
+   "archetype": "midrange",
+   "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. New: the Enchantress's tier-two cousin.",
+   "decklist": [
+    {
+     "cardId": "forest",
+     "count": 22
+    },
+    {
+     "cardId": "dungrove_elder",
+     "count": 4
+    },
+    {
+     "cardId": "harmonize",
+     "count": 3
+    },
+    {
+     "cardId": "penumbra_wurm",
+     "count": 2
+    },
+    {
+     "cardId": "rancor",
+     "count": 4
+    },
+    {
+     "cardId": "blanchwood_armor",
+     "count": 4
+    },
+    {
+     "cardId": "llanowar_elves",
+     "count": 4
+    },
+    {
+     "cardId": "gladecover_scout",
+     "count": 4
+    },
+    {
+     "cardId": "wall_of_blossoms",
+     "count": 4
+    },
+    {
+     "cardId": "rumbling_baloth",
+     "count": 4
+    },
+    {
+     "cardId": "centaur_courser",
+     "count": 2
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 3
+    }
+   ]
+  },
+  {
+   "key": "naya",
+   "name": "Naya Flash Snakes",
+   "title": "Naya Flash (R G W)",
+   "archetype": "midrange",
+   "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. As drafted.",
+   "decklist": [
+    {
+     "cardId": "stomping_ground",
+     "count": 4
+    },
+    {
+     "cardId": "temple_garden",
+     "count": 4
+    },
+    {
+     "cardId": "sacred_foundry",
+     "count": 4
+    },
+    {
+     "cardId": "forest",
+     "count": 6
+    },
+    {
+     "cardId": "mountain",
+     "count": 1
+    },
+    {
+     "cardId": "plains",
+     "count": 1
+    },
+    {
+     "cardId": "manaba",
+     "count": 4
+    },
+    {
+     "cardId": "birds_of_paradise",
+     "count": 4
+    },
+    {
+     "cardId": "llanowar_elves",
+     "count": 2
+    },
+    {
+     "cardId": "rage_cobra",
+     "count": 4
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 4
+    },
+    {
+     "cardId": "little_bear",
+     "count": 3
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "wall_of_blossoms",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 3
+    }
+   ]
+  }
+ ]
+}

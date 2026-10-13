@@ -30,13 +30,13 @@ import type { Decklist } from "./state.js";
 import { isBasic } from "./legality.js";
 import { cardRating, type CardRatingTable } from "./rating.js";
 import { PLANS, matchPlan, planPieces } from "@shandalar/agents";
-import { SIDEBOARD_GUIDES, SIDEBOARD_OUT_RULES } from "./sideboard-guides.generated.js";
+import { SHAPE_SCALES, SIDEBOARD_GUIDES, SIDEBOARD_OUT_RULES } from "./sideboard-guides.generated.js";
 
 export const AI_SIDEBOARD = { relicsSeen: 3, creaturesSeen: 15, perRule: 2 } as const;
 /** `betterOnly`: an answer comes in only for a card it out-rates. A Limited deck's last cards are filler, and any
  * answer beats them; a tuned sixty's lowest-rated card is often what the deck runs on (measured: without it the
  * Levy, the Sweep, the Wurmspeaker and the Warband each lost about three points by sideboarding). */
-export type AiSideboardTerms = { relicsSeen: number; creaturesSeen: number; perRule: number; betterOnly?: boolean; /** S55, rule 4: the opponent's copies of graveyard cards that bring it on, and how many answers come in */ graveyardSeen?: number; graveyardIn?: number; /** S56: rule 3 off, and rules 1–2 never take a counterspell out (measured for Constructed) */ countersStay?: boolean; /** S56, rules 5–8: each present only where the rule runs */ shapes?: SideboardShapes; /** S57 (Part 4): WHAT LEAVES */ outRule?: SideboardOutRule; /** S58: sideboard by the rules even where the fifteen has a guide (the measure beside it) */ noGuide?: boolean; /** S58 (measuring): the guide without the rows that bring these cards in */ guideDrop?: string[]; /** post-S59 (measuring): a whole-plan guide followed by the rules after all */ guideRulesToo?: boolean; /** S59 (a build under test with its own guide): the guides to match a fifteen against, in place of the generated ones */ guides?: readonly SideboardGuide[]; /** S61 (Part 2): what leaves, by the opponent's shape — `small`: against fifteen or more creatures of toughness two or less, a defensive card (a creature with more toughness than power; anything that makes tokens) never leaves, and a spell leaves before a creature; `graveyard`: against a graveyard deck, rule 4's answers come in for spot removal before anything else */ /** S61 (measuring): the adopted out-rules off */ noOutRules?: boolean; out61?: { small?: boolean; /** with `small`: a spell leaves before a creature (the brief's second half; measured apart) */ spells?: boolean; graveyard?: boolean }; };
+export type AiSideboardTerms = { relicsSeen: number; creaturesSeen: number; perRule: number; betterOnly?: boolean; /** S55, rule 4: the opponent's copies of graveyard cards that bring it on, and how many answers come in */ graveyardSeen?: number; graveyardIn?: number; /** S56: rule 3 off, and rules 1–2 never take a counterspell out (measured for Constructed) */ countersStay?: boolean; /** S56, rules 5–8: each present only where the rule runs */ shapes?: SideboardShapes; /** S57 (Part 4): WHAT LEAVES */ outRule?: SideboardOutRule; /** S58: sideboard by the rules even where the fifteen has a guide (the measure beside it) */ noGuide?: boolean; /** S58 (measuring): the guide without the rows that bring these cards in */ guideDrop?: string[]; /** post-S59 (measuring): a whole-plan guide followed by the rules after all */ guideRulesToo?: boolean; /** S59 (a build under test with its own guide): the guides to match a fifteen against, in place of the generated ones */ guides?: readonly SideboardGuide[]; /** S61 (Part 2): what leaves, by the opponent's shape — `small`: against fifteen or more creatures of toughness two or less, a defensive card (a creature with more toughness than power; anything that makes tokens) never leaves, and a spell leaves before a creature; `graveyard`: against a graveyard deck, rule 4's answers come in for spot removal before anything else */ /** S62 (ADR-176): the `small` and `large` shapes' thresholds, a format's own (sideboardTermsFor); absent: the Open's */ scale?: { small: number; large: number }; /** S61 (measuring): the adopted out-rules off */ noOutRules?: boolean; out61?: { small?: boolean; /** with `small`: a spell leaves before a creature (the brief's second half; measured apart) */ spells?: boolean; graveyard?: boolean }; };
 /** S57 (Part 4 — "what moved a matchup seventeen points was which card left"): `deadFirst` — a card that is dead
  * against this opponent leaves before the lowest-rated one (removal that hits only creatures, sweepers, creature
  * counters, a steal and walls against a list with fewer than `fewCreatures` creatures; walls against any plan);
@@ -57,6 +57,15 @@ export const SIDEBOARD_SHAPES: SideboardShapes = { sweepers: { wide: 15, power: 
 // (post-S55, the Kiln's tuning: graveyardSeen was 4, which brought the exile in against the Coin, the Loop and the
 // Hearth — four or five Ushers each, but fair decks that do not need their graveyards; there it cost the Kiln two to
 // ten points. Eight separates the decks built on the graveyard — the Pall 13, the Larder 16 — from those.)
+/** S62 (ADR-176): the `small` and `large` shapes are RELATIVE to a format's field. The Open's thresholds are the ones
+ * every measure since S59 was taken at — fifteen creatures of toughness two or less, eight of toughness three or more —
+ * which in its field are the 5th-highest count of 14 and the 11th: the top 36% and the top 79%. Another format's are
+ * the counts at those same ranks in ITS field (`pnpm open:gen` writes them to SHAPE_SCALES), so `small` is not true
+ * of every Peasant deck. */
+export const OPEN_SHAPE_SCALE = { small: 15, large: 8 } as const;
+export const SHAPE_RANKS = { small: 0.36, large: 0.79 } as const;
+/** A Constructed format's sideboarding terms: the Open's rules at that format's scale. */
+export const sideboardTermsFor = (formatId: string): AiSideboardTerms => ({ ...AI_SIDEBOARD_CONSTRUCTED, scale: SHAPE_SCALES[formatId] ?? OPEN_SHAPE_SCALE });
 export const AI_SIDEBOARD_CONSTRUCTED: AiSideboardTerms = { relicsSeen: 4, creaturesSeen: 16, perRule: 3, betterOnly: true, graveyardSeen: 8, graveyardIn: 4, shapes: SIDEBOARD_SHAPES };
 type Spec = { predicate?: string; anyOf?: { predicate?: string }[] };
 /** What a spell may target: a slot's `anyOf` kinds when it has them (Disenchant: artifact or enchantment), else its predicate. */
@@ -90,7 +99,7 @@ export const usableByAnyDeck = (d: CardDef) => d.manaCost === "{0}" || (d.abilit
  * comes in, how many, for which cards (in that order; none named, or none left: the lowest-rated card the rules would
  * let go), against which shape of opponent. A seat whose registered fifteen is a guided list's fifteen makes the
  * guide's swaps FIRST; the rules then run on what is left. Authored beside the fifteen in
- * data/convocation/open-contributed.json; generated by `pnpm open:gen`. */
+ * data/convocation/formats/open/contributed.json; generated by `pnpm open:gen`. */
 /** Post-S59 (Reaper Control's guide): `small` — fifteen or more creatures of toughness two or less (what a Pyroclasm
  * answers; the rules' own sweeper shape counts power); `someGraveyard` — four or more cards that work from a graveyard
  * (the Coin and the Hearth, which `graveyard` at eight does not reach). */
@@ -133,7 +142,7 @@ export function aiSideboard(deck: Decklist, sideboard: Decklist, opponentDeck: D
   const kept = (id: string) => !!o?.keepFourOfs && fourOf.has(id) && !dead(def(id));
   // S61 (Part 2; the probe: against the Rabble, the Muster and the Warband the rules took out Walls of Blossoms, Typhoid
   // Rats and Sharpshooters for removal — the cards those matchups are held with)
-  const smallOpp = !!terms.out61?.small && opp.filter((d) => d.types.includes("Creature") && (d.toughness ?? 0) <= 2).length >= 15;
+  const smallOpp = !!terms.out61?.small && opp.filter((d) => d.types.includes("Creature") && (d.toughness ?? 0) <= 2).length >= (terms.scale?.small ?? OPEN_SHAPE_SCALE.small);
   const makesTokens = (d: CardDef) => everyEffect(d).some((e) => e.type === "createToken");
   const defensive = (d: CardDef) => makesTokens(d) || (d.types.includes("Creature") && (d.toughness ?? 0) > (d.power ?? 0));
   /** The card that leaves: a dead one first, then the lowest-rated of those the rule lets go (never a kept four-of, unless the rule names its own). */
@@ -154,9 +163,9 @@ export function aiSideboard(deck: Decklist, sideboard: Decklist, opponentDeck: D
       counters: oppCounters >= 4,
       graveyard: terms.graveyardSeen !== undefined && oppGraveyard >= terms.graveyardSeen,
       relics: oppRelics >= terms.relicsSeen,
-      small: oppCr.filter((d) => (d.toughness ?? 0) <= 2).length >= 15,
+      small: oppCr.filter((d) => (d.toughness ?? 0) <= 2).length >= (terms.scale?.small ?? OPEN_SHAPE_SCALE.small),
       someGraveyard: oppGraveyard >= 4,
-      large: oppCr.filter((d) => (d.toughness ?? 0) >= 3).length >= 8,
+      large: oppCr.filter((d) => (d.toughness ?? 0) >= 3).length >= (terms.scale?.large ?? OPEN_SHAPE_SCALE.large),
     };
     for (const row of guide.rows) {
       if (terms.guideDrop?.includes(row.in)) continue;

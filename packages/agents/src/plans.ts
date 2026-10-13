@@ -1,6 +1,6 @@
 /**
  * S55 (ADR-161): a combo list's PLAN — what the deck is trying to do, carried as data on the list (authored with it:
- * `data/convocation/open-contributed.json`; `pnpm open:gen` writes `plans.generated.ts`). The `combo` archetype reads
+ * `data/convocation/formats/open/contributed.json`; `pnpm open:gen` writes `plans.generated.ts`). The `combo` archetype reads
  * its own plan to pilot the deck; every agent reads its OPPONENT's plan, as it reads the opponent's list (ADR-051), to
  * play against it. A plan is matched to a decklist by its cards, so a player's own build of the deck is recognised
  * too. The heuristic agent's own loop recognition (book 99) stands beside it: a plan is a shortcut, not the only route.

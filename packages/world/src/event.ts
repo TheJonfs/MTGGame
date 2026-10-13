@@ -22,7 +22,7 @@ import { buildLimitedDeck } from "./limited-builder.js";
 import { limitedView, type CardRatingTable } from "./rating.js";
 import { MatchSeries, SERIES_POINTS, type Seat, type SeriesState } from "./series.js";
 import { convocationSeat } from "./matchup.js";
-import { AI_SIDEBOARD, AI_SIDEBOARD_CONSTRUCTED, aiSideboard, answersCreatures, answersRelics } from "./sideboard-ai.js";
+import { AI_SIDEBOARD, AI_SIDEBOARD_CONSTRUCTED, aiSideboard, answersCreatures, answersRelics, sideboardTermsFor } from "./sideboard-ai.js";
 import type { KnobValues } from "./knobs.js";
 import { WorldRng } from "./rng.js";
 
@@ -523,7 +523,7 @@ export function seatForGame(event: ConvocationEvent, seat: number, opp: number, 
   const s = event.field[seat]!;
   if (s.human || !deps.rating) return s;
   const rating = eventFormat(event.formatId).kind === "limited" ? limitedView(deps.rating) : deps.rating; // post-S52: each format its own score
-  const sb = aiSideboard(s.deck, s.sideboard, event.field[opp]!.deck, deps.cards, rating, eventFormat(event.formatId).kind === "limited" ? AI_SIDEBOARD : AI_SIDEBOARD_CONSTRUCTED);
+  const sb = aiSideboard(s.deck, s.sideboard, event.field[opp]!.deck, deps.cards, rating, eventFormat(event.formatId).kind === "limited" ? AI_SIDEBOARD : sideboardTermsFor(event.formatId));
   return sb.swaps.length ? { ...s, deck: sb.deck, sideboard: sb.sideboard } : s;
 }
 

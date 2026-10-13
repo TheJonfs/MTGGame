@@ -1,5 +1,5 @@
 import type { CardDef } from "@shandalar/cards";
-import { OPEN_FIELD } from "@shandalar/sim/open-decks";
+import { FORMAT_FIELD, OPEN_FIELD } from "@shandalar/sim/open-decks";
 import { EVENT_SAVE_KEY, OPEN_FORMAT, cardLegal, copyCap, deserializeEvent, isBasic, type Collection, type Decklist } from "@shandalar/world";
 import type { LabDeck } from "../lab/lab-decks.js";
 import { playRoster } from "./play-roster.js";
@@ -16,6 +16,7 @@ export interface PlayChoice { key: string; group: string; name: string; label: s
 export const PLAY_CATEGORIES: { group: string; title: string }[] = [
   { group: "built", title: "Decks built here" },
   { group: "open", title: "The Open's lists" },
+  { group: "peasant", title: "Peasant's lists" }, // S62 (ADR-176)
   { group: "saved", title: "Your journey's decks" },
   { group: "mages", title: "The mages" },
   { group: "beasts", title: "The beasts" },
@@ -58,7 +59,9 @@ export function playChoices(pool: Map<string, CardDef>, opts: { revealAll?: bool
   } catch { /* no event, or one this build cannot read */ }
   const open: PlayChoice[] = Object.values(OPEN_FIELD).map((l) => ({ key: `open:${l.key}`, group: "open", name: l.name, label: `${l.name} — ${l.title}`, archetype: l.archetype, decklist: l.decklist.map((e) => ({ ...e })), ...(l.sideboard?.length ? { sideboard: l.sideboard.map((e) => ({ ...e })) } : {}) }));
   const rest: PlayChoice[] = playRoster(pool, { ...opts, storage }).map((d: LabDeck) => ({ key: d.key, group: d.group, name: d.name, label: d.label, archetype: d.archetype, decklist: d.decklist.map((e) => ({ ...e })), ...(d.portrait ? { portrait: d.portrait } : {}) }));
-  return [...built, ...open, ...rest];
+  // S62 (ADR-176): the other formats' fields (Peasant) — every list (no prize card is tier two or below)
+  const fields: PlayChoice[] = Object.entries(FORMAT_FIELD).filter(([f]) => f !== "open").flatMap(([f, ls]) => Object.values(ls).map((l) => ({ key: `${f}:${l.key}`, group: f, name: l.name, label: `${l.name} — ${l.title}`, archetype: l.archetype, decklist: l.decklist.map((e) => ({ ...e })), ...(l.sideboard?.length ? { sideboard: l.sideboard.map((e) => ({ ...e })) } : {}) })));
+  return [...built, ...open, ...fields, ...rest];
 }
 
 /** What a built deck may hold: every card legal in the Open at its copy cap there (the power at one), basics free. */

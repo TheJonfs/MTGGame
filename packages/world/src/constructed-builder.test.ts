@@ -4,10 +4,12 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadCardPool } from "@shandalar/cards/loader";
 import { cardColors, manaValue, parseManaCost } from "@shandalar/cards";
-import { CONSTRUCTED_FORMATS, OPEN_FORMAT, PAUPER_FORMAT, BODIES_FORMAT, HALF_GROUND_FORMAT, NOTHING_DEAR_FORMAT, NOTHING_SMALL_FORMAT, NOTHING_SUDDEN_FORMAT } from "./formats.js";
+import { CONSTRUCTED_FORMATS, OPEN_FORMAT, PEASANT_FORMAT, PAUPER_FORMAT, BODIES_FORMAT, HALF_GROUND_FORMAT, NOTHING_DEAR_FORMAT, NOTHING_SMALL_FORMAT, NOTHING_SUDDEN_FORMAT } from "./formats.js";
 import { authoredLists } from "./authored-lists.js";
 import { buildConstructedDeck, cardLegal, copyCap, legalShare, OPEN_MEANS, selectCandidates, tuneVariation, VARIATION_TERMS } from "./constructed-builder.js";
 import { checkDeck } from "./legality.js";
+import { OPEN_SHAPE_SCALE, sideboardTermsFor } from "./sideboard-ai.js";
+import { FORMAT_FIELD } from "@shandalar/sim/open-decks";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const cards = loadCardPool(join(ROOT, "data/cards")).cards;
@@ -25,12 +27,12 @@ describe("the Constructed builder (S52)", () => {
     expect(loop.decklist.reduce((n, e) => n + e.count, 0)).toBe(60); // kept whole
     expect(OPEN_MEANS["open:loop"]).toBeUndefined();
     expect(selectCandidates(OPEN_FORMAT, rating, library, cards).map((c) => c.l.key)).not.toContain("open:loop");
-    expect(library.filter((l) => l.archived).map((l) => l.key).sort()).toEqual(["open:cinder", "open:coin", "open:enchantress", "open:ford", "open:hearth", "open:larder", "open:locks", "open:loop", "open:reaper", "open:tally", "open:undertow"]); // post-S60: the Coin and the Hearth (replaced by Mardu Control); S60 (ADR-174): the Locks, the Tally and the Enchantress; // post-S59: the Ford (replaced by the Tollgate) and Reaper Control (by Reaper Clio); post-S57: the Larder (ADR-165's exit)
+    expect(library.filter((l) => l.archived && l.key.startsWith("open:")).map((l) => l.key).sort()).toEqual(["open:cinder", "open:coin", "open:enchantress", "open:ford", "open:hearth", "open:larder", "open:locks", "open:loop", "open:reaper", "open:tally", "open:undertow"]); // post-S60: the Coin and the Hearth (replaced by Mardu Control); S60 (ADR-174): the Locks, the Tally and the Enchantress; // post-S59: the Ford (replaced by the Tollgate) and Reaper Control (by Reaper Clio); post-S57: the Larder (ADR-165's exit)
     for (let i = 1; i <= 200; i++) expect(buildConstructedDeck(OPEN_FORMAT, rating, i, library, cards).from).not.toBe("open:loop");
     expect(buildConstructedDeck(OPEN_FORMAT, rating, 1, library, cards, { from: "open:loop" }).from).toBe("open:loop"); // asked for by key (a study, a seat in an older save) it still builds
   });
   it("the Open: every seed yields a legal sixty from one of the TWELVE Open lists; a seed is a deck; a quarter of the seats play their list as written, the rest tinker lightly or heavily", () => {
-    const top = Object.keys(OPEN_MEANS);
+    const top = Object.keys(OPEN_MEANS).filter((k) => k.startsWith("open:")); // (S62: the table holds Peasant's lists too, under "peasant:")
     const builds = Array.from({ length: 120 }, (_, i) => buildConstructedDeck(OPEN_FORMAT, rating, i + 1, library, cards));
     for (const b of builds) {
       expect(b.check.problems, b.from).toEqual([]);
@@ -42,7 +44,7 @@ describe("the Constructed builder (S52)", () => {
       if (b.tinker === "light") expect(moved).toBeLessThanOrEqual(3);
       if (b.tinker === "heavy") expect(b.swaps.length).toBeGreaterThanOrEqual(3);
     }
-    expect(new Set(builds.map((b) => b.from)).size).toBe(Object.keys(OPEN_MEANS).length); // every measured Open list is in the field (twelve, and post-S53 the contributed)
+    expect(new Set(builds.map((b) => b.from)).size).toBe(Object.keys(OPEN_MEANS).filter((k) => k.startsWith("open:")).length); // every measured Open list is in the field (twelve, and post-S53 the contributed)
     const share = (t: string) => builds.filter((b) => b.tinker === t).length / builds.length;
     expect(share("stock")).toBeGreaterThan(0.12); expect(share("stock")).toBeLessThan(0.4);
     expect(share("light")).toBeGreaterThan(0.35); expect(share("heavy")).toBeGreaterThan(0.12);
@@ -128,3 +130,35 @@ describe("the Constructed builder (S52)", () => {
     expect(legalShare([{ cardId: "savannah_lions", count: 4 }, { cardId: "plains", count: 4 }], PAUPER_FORMAT.rule, cards)).toBe(1);
   });
 });
+
+/** S62 (ADR-176): a format's lists are a parameter — Peasant has a field of its own. */
+describe("Peasant (S62, ADR-176): a second format with its own field", () => {
+  it("every seat of a Peasant field plays a Peasant list, legal in Peasant; no seat of the Open ever plays one; Pauper (no field of its own) still draws on the Open's", () => {
+    const peasantKeys = new Set(Object.keys(FORMAT_FIELD.peasant!).map((k) => `peasant:${k}`));
+    expect(peasantKeys.size).toBeGreaterThanOrEqual(12);
+    const builds = Array.from({ length: 150 }, (_, i) => buildConstructedDeck(PEASANT_FORMAT, rating, i + 1, library, cards));
+    for (const b of builds) {
+      expect(peasantKeys.has(b.from), b.from).toBe(true);
+      expect(b.check.problems, b.from).toEqual([]);
+      for (const e of b.deck) { const d = cards.get(e.cardId)!; expect(cardLegal(d, PEASANT_FORMAT.rule), e.cardId).toBe(true); }
+    }
+    expect(new Set(builds.map((b) => b.from)).size).toBe(peasantKeys.size); // every active Peasant list is drawn
+    expect(selectCandidates(PEASANT_FORMAT, rating, library, cards).every((c) => !c.l.key.startsWith("open:"))).toBe(true);
+    for (const b of Array.from({ length: 150 }, (_, i) => buildConstructedDeck(OPEN_FORMAT, rating, i + 1, library, cards))) expect(b.from.startsWith("open:"), b.from).toBe(true);
+    expect(selectCandidates(PAUPER_FORMAT, rating, library, cards).every((c) => !c.l.key.startsWith("peasant:"))).toBe(true);
+    expect(library.filter((l) => l.archived && l.key.startsWith("peasant:")).map((l) => l.key).sort()).toEqual(["peasant:ubmill", "peasant:wbcontrol"]);
+  });
+  it("the small and large shapes are scaled to the format's field: the Open's thresholds are the ones its guides were measured at; Peasant's are its own field's counts at the same ranks", () => {
+    expect(sideboardTermsFor("open").scale).toEqual(OPEN_SHAPE_SCALE);
+    expect(OPEN_SHAPE_SCALE).toEqual({ small: 15, large: 8 });
+    const p = sideboardTermsFor("peasant").scale!;
+    expect(p.small).toBeGreaterThan(OPEN_SHAPE_SCALE.small); // Peasant's decks are made of small creatures: "small" asks for more of them
+    expect(p.large).toBeLessThan(OPEN_SHAPE_SCALE.large);
+    const count = (k: string, f: (t: number) => boolean) => FORMAT_FIELD.peasant![k]!.decklist.reduce((n, e) => { const d = cards.get(e.cardId)!; return n + (d.types.includes("Creature") && f(d.toughness ?? 0) ? e.count : 0); }, 0);
+    const small = Object.keys(FORMAT_FIELD.peasant!).filter((k) => count(k, (t) => t <= 2) >= p.small).length, n = Object.keys(FORMAT_FIELD.peasant!).length;
+    expect(small).toBeGreaterThanOrEqual(3);
+    expect(small).toBeLessThan(n); // not every Peasant deck is "small"
+    expect(sideboardTermsFor("nothing-dear").scale).toEqual(OPEN_SHAPE_SCALE); // a format without a field: the Open's
+  });
+});
+

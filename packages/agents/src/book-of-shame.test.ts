@@ -1545,7 +1545,7 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
 
   // ---------- S55 (ADR-161): the combo archetype — books 100–106 ----------
   // (the agents package does not import the sim: the Pall straight from the lists' data; plain sixties across)
-  const PALL = (JSON.parse(readFileSync(join(CARDS_DIR, "../convocation/open-contributed.json"), "utf8")) as { lists: { key: string; decklist: { cardId: string; count: number }[] }[] }).lists.find((l) => l.key === "pall")!.decklist;
+  const PALL = (JSON.parse(readFileSync(join(CARDS_DIR, "../convocation/formats/open/contributed.json"), "utf8")) as { lists: { key: string; decklist: { cardId: string; count: number }[] }[] }).lists.find((l) => l.key === "pall")!.decklist;
   const MUSTER = [{ cardId: "savannah_lions", count: 4 }, { cardId: "grizzly_bears", count: 32 }, { cardId: "plains", count: 24 }];
   const LOCKS = [{ cardId: "counterspell", count: 4 }, { cardId: "serra_angel", count: 32 }, { cardId: "island", count: 24 }];
   const combo = () => new HeuristicAgent(1, pool, difficultyProfile("master", "combo", MUSTER, PALL));
@@ -1895,5 +1895,20 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.legendDuplicateGated(held, cast)).toBe(true);
     expect(a.legendDuplicateGated(v(["soul_warden"], ["the_usher", "blood_artist", "blood_artist", "blood_artist"], ["the_usher", "grizzly_bears"], [20, 20], ["the_usher"]), cast)).toBe(false);
     expect(old.legendDuplicateGated(held, cast)).toBe(false); // the old pilot cast it
+  });
+
+  it("book of shame 125 (S62 — Sign in Blood was aimed at the opponent: its life loss read as harm, and mono-black was sixteen points better without the card): a spell that makes its target draw and lose life is cards bought with life — taken ourselves while it leaves us at four or more, and aimed at an opponent only for the last of their life", () => {
+    const a = agent("midrange"), lands = [{ id: "l1", cardId: "swamp", controller: 0 as const }, { id: "l2", cardId: "swamp", controller: 0 as const }];
+    const v = (life: [number, number]) => mkView({ hand: [{ objectId: "s", cardId: "sign_in_blood" }], battlefield: lands, life });
+    const me = { type: "castSpell" as const, objectId: "s", targets: [{ kind: "player" as const, player: 0 as const }] }, them = { type: "castSpell" as const, objectId: "s", targets: [{ kind: "player" as const, player: 1 as const }] };
+    expect(a.misaimPenalty(v([20, 20]), me)).toBe(0);
+    expect(a.misaimPenalty(v([20, 20]), them)).toBe(100); // two cards for the opponent is not burn
+    expect(a.scorePriorityAction(v([20, 20]), me)).toBeGreaterThan(a.scorePriorityAction(v([20, 20]), { type: "pass" }));
+    expect(a.scorePriorityAction(v([20, 20]), me)).toBeGreaterThan(a.scorePriorityAction(v([20, 20]), them));
+    expect(a.misaimPenalty(v([5, 20]), me)).toBe(100); // it would leave us at three
+    expect(a.misaimPenalty(v([20, 2]), them)).toBe(0); // the last two of theirs
+    expect(a.scorePriorityAction(v([20, 2]), them)).toBeGreaterThan(a.scorePriorityAction(v([20, 2]), me));
+    const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["drawforlife"] });
+    expect(old.misaimPenalty(v([20, 20]), me)).toBe(100); // the old pilot
   });
 });

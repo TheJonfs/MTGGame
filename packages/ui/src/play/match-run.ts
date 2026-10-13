@@ -1,6 +1,6 @@
 import type { CardDef } from "@shandalar/cards";
 import type { MatchResult, MatchSpec } from "@shandalar/engine";
-import { AI_SIDEBOARD_CONSTRUCTED, GAMES_KEPT, GAMES_KEY, MatchSeries, OPEN_FORMAT, aiSideboard, fieldSideboard, type CardRatingTable, type Collection, type Decklist } from "@shandalar/world";
+import { CONSTRUCTED_FORMATS, GAMES_KEPT, GAMES_KEY, MatchSeries, OPEN_FORMAT, aiSideboard, fieldSideboard, sideboardTermsFor, type CardRatingTable, type Collection, type Decklist } from "@shandalar/world";
 import type { PlayChoice } from "./play-decks.js";
 
 /**
@@ -13,6 +13,9 @@ import type { PlayChoice } from "./play-decks.js";
  */
 export interface MatchRunSetup { human: PlayChoice; enemy: PlayChoice; humanSeat: 0 | 1; seed: string }
 export interface MatchRun<S extends MatchRunSetup = MatchRunSetup> { series: MatchSeries; setup: S; main: Decklist; side: Decklist; deck: Decklist; enemySide: Decklist; game: ReturnType<MatchSeries["nextGame"]> | null; recorded: boolean }
+/** S62 (ADR-176): the format a chosen deck belongs to — a format's own list (the Open's, Peasant's) by its category;
+ * anything else is read as the Open's. Its fifteen, where the field builder makes one, and its sideboarding scale follow. */
+const formatOf = (c: PlayChoice) => CONSTRUCTED_FORMATS.find((f) => f.id === c.group) ?? OPEN_FORMAT;
 export const count = (l: Decklist) => l.reduce((n, e) => n + e.count, 0);
 const copy = (l: Decklist): Decklist => l.map((e) => ({ ...e }));
 
@@ -20,8 +23,8 @@ const copy = (l: Decklist): Decklist => l.map((e) => ({ ...e }));
 export function newMatchRun<S extends MatchRunSetup>(setup: S, pool: Map<string, CardDef>, rating: CardRatingTable, random: () => number = Math.random): MatchRun<S> {
   const seed = setup.seed.trim() !== "" && Number.isFinite(Number(setup.seed)) ? Number(setup.seed) : Math.floor(random() * 1_000_000);
   const main = copy(setup.human.decklist);
-  const side = setup.human.sideboard?.length ? copy(setup.human.sideboard) : fieldSideboard(main, OPEN_FORMAT, { cards: pool, rating });
-  const enemySide = setup.enemy.sideboard?.length ? copy(setup.enemy.sideboard) : fieldSideboard(setup.enemy.decklist, OPEN_FORMAT, { cards: pool, rating });
+  const side = setup.human.sideboard?.length ? copy(setup.human.sideboard) : fieldSideboard(main, formatOf(setup.human), { cards: pool, rating });
+  const enemySide = setup.enemy.sideboard?.length ? copy(setup.enemy.sideboard) : fieldSideboard(setup.enemy.decklist, formatOf(setup.enemy), { cards: pool, rating });
   return { series: new MatchSeries({ seed, firstChooser: 0 }), setup, main, side, deck: main, enemySide, game: null, recorded: false };
 }
 /** Game one's call is the setup's ("in game one you play first / second"). */
@@ -31,7 +34,7 @@ export const firstCall = (setup: MatchRunSetup): "play" | "draw" => (setup.human
  * the AI always plays first), the human's deck as it stands, the AI's deck sideboarded from game two. */
 export function nextMatchGame<S extends MatchRunSetup>(r: MatchRun<S>, choice: "play" | "draw", pool: Map<string, CardDef>, rating: CardRatingTable): { run: MatchRun<S>; game: ReturnType<MatchSeries["nextGame"]>; human: Decklist; enemy: Decklist } {
   const game = r.series.nextGame(r.series.nextChooser() === 0 ? choice : "play");
-  const enemy = game.index === 0 ? copy(r.setup.enemy.decklist) : aiSideboard(r.setup.enemy.decklist, r.enemySide, r.main, pool, rating, AI_SIDEBOARD_CONSTRUCTED).deck;
+  const enemy = game.index === 0 ? copy(r.setup.enemy.decklist) : aiSideboard(r.setup.enemy.decklist, r.enemySide, r.main, pool, rating, sideboardTermsFor(formatOf(r.setup.enemy).id)).deck;
   return { run: { ...r, game, recorded: false }, game, human: copy(r.deck), enemy };
 }
 /** A finished game goes into the series once (the human is seat 0, so the result's winner is the series' seat). */

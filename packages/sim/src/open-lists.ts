@@ -1,6 +1,6 @@
 /**
  * The Open's seed lists. S58 (ADR-169): THE LISTS LIVE IN CODE — the eleven as the planner first wrote them are data
- * (`data/convocation/open-seeds.json`, by card name; the planner's document they came from is history), and every
+ * (`data/convocation/formats/open/seeds.json`, by card name; the planner's document they came from is history), and every
  * change since is a REVISION below, by session. `pnpm open:gen` builds `open-decks.ts` and the generated reference
  * `docs/reference/open-lists.md`; tests pin both.
  */

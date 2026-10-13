@@ -571,7 +571,8 @@ function applyEffect(
       return 0.1;
     }
     case "draw": {
-      for (const p of e.who === "you" ? [me] : e.who === "opponent" ? [opp] : [me, opp]) {
+      // (book 125, S62: `who: "target"` is the TARGET player — it read as both players, so Sign in Blood at either head scored alike)
+      for (const p of e.who === "you" ? [me] : e.who === "opponent" ? [opp] : e.who === "target" ? targets.flatMap((t) => (t.kind === "player" ? [t.player] : [])) : [me, opp]) {
         if (p === me) for (let i = 0; i < e.count; i++) view.hand.push({ objectId: `pred_${predSeq++}`, cardId: "" });
         else view.opponentHandCount += e.count;
       }

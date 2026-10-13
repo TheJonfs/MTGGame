@@ -51,6 +51,12 @@ export const OPEN_FORMAT: ConstructedFormat = {
  * (its pool, its restricted list) with the court's rule on top; sixty cards. */
 const OPEN_BASE = { minCards: 60, restricted: OPEN_FORMAT.rule.restricted!, banned: OPEN_FORMAT.rule.banned! };
 const constructed = (id: string, name: string, note: string, rule: Omit<DeckRule, "label">): ConstructedFormat => ({ id, name, kind: "constructed", note, rule: { label: name.replace(/^The /, "the "), ...rule } });
+/** S62 (ADR-176): Peasant — the second Constructed format with a field of its own. Tier two and below; no restricted
+ * list (nothing restrictable is in it); the laws banned as everywhere. (Pauper, tier one alone, stays as data: 75
+ * cards, no dual land, one counterspell — too small a pool to build a field in.) */
+export const PEASANT_FORMAT = constructed("peasant", "Peasant", "tier two and below — no power, no legends; sixty cards, four of a kind", { minCards: 60, maxTier: 2, banned: OPEN_FORMAT.rule.banned! });
+/** The formats that have a field of their own lists (data/convocation/formats/<id>/), a table of record and a door. */
+export const FIELD_FORMAT_IDS = ["open", "peasant"] as const;
 export const PAUPER_FORMAT = constructed("pauper", "Pauper", "tier 1 only — honest creatures and spells", { minCards: 60, maxTier: 1, banned: OPEN_FORMAT.rule.banned! });
 export const BODIES_FORMAT = constructed("bodies", "Bodies", "Odile's gate: twenty-four creatures in sixty", { ...OPEN_BASE, minCreatures: 24 });
 export const NOTHING_SMALL_FORMAT = constructed("nothing-small", "Nothing Small", "Zinnia's gate: every creature's power two or more", { ...OPEN_BASE, minCreaturePower: 2 });
@@ -58,7 +64,7 @@ export const NOTHING_SUDDEN_FORMAT = constructed("nothing-sudden", "Nothing Sudd
 export const HALF_GROUND_FORMAT = constructed("half-ground", "Half Ground", "Isaura's gate: half the deck is land", { ...OPEN_BASE, minLandFraction: 0.5 });
 export const NOTHING_DEAR_FORMAT = constructed("nothing-dear", "Nothing Dear", "Meliyan's gate: nothing above mana value four", { ...OPEN_BASE, maxManaValue: 4 });
 /** Every Constructed format the builder passes its tests for (S52); the door offers the Open, the rest are data. */
-export const CONSTRUCTED_FORMATS: readonly ConstructedFormat[] = [OPEN_FORMAT, PAUPER_FORMAT, BODIES_FORMAT, NOTHING_SMALL_FORMAT, NOTHING_SUDDEN_FORMAT, HALF_GROUND_FORMAT, NOTHING_DEAR_FORMAT];
+export const CONSTRUCTED_FORMATS: readonly ConstructedFormat[] = [OPEN_FORMAT, PEASANT_FORMAT, PAUPER_FORMAT, BODIES_FORMAT, NOTHING_SMALL_FORMAT, NOTHING_SUDDEN_FORMAT, HALF_GROUND_FORMAT, NOTHING_DEAR_FORMAT];
 
 /** Sealed from the Plane: six Classic packs, forty cards (formats doc §2.3). */
 export const SEALED_PLANE: LimitedFormat = {

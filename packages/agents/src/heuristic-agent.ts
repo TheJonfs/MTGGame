@@ -385,6 +385,18 @@ export class HeuristicAgent implements Agent {
     if (targets.length === 0) return 0;
     const effects = this.actionEffects(view, action);
     if (!effects) return 0;
+    // Book 125 (S62 — Sign in Blood: "target player draws two cards and loses 2 life" read as HARMFUL for its life loss,
+    // so the pilot aimed it at the opponent: mono-black was sixteen points better with Phyrexian Ragers in its place).
+    // A spell that makes its target DRAW and lose life is cards bought with life: ours to take while the life keeps us
+    // at four or more (the pay floor), and aimed at an opponent only when the life it takes is the last of theirs.
+    const drawN = effects.reduce((n, e) => n + (e.type === "draw" && e.who === "target" && typeof e.count === "number" ? e.count : 0), 0);
+    const lifeN = effects.reduce((n, e) => n + (e.type === "loseLife" && e.who === "target" && typeof e.amount === "number" ? e.amount : 0), 0);
+    if (drawN > 0 && lifeN > 0 && !this.profile.off?.includes("drawforlife")) {
+      const t = targets.find((x) => x.kind === "player");
+      if (!t || t.kind !== "player") return 0;
+      if (t.player === view.you) return view.life[view.you] - lifeN >= 4 ? 0 : MISAIM;
+      return (view.life[t.player] ?? 99) <= lifeN ? 0 : MISAIM;
+    }
     const cls = classifyEffects(effects);
     if (cls === "neutral") return 0;
     const me = view.you;

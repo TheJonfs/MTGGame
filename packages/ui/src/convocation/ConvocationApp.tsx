@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CardDef } from "@shandalar/cards";
-import { shapeName, BRACKET_ROUND_NAMES, CONSTRUCTED_FORMATS, keepAllowance, lastLimitedPool, type ConvocationDifficulty, type Standing } from "@shandalar/world";
+import { shapeName, BRACKET_ROUND_NAMES, CONSTRUCTED_FORMATS, FIELD_FORMAT_IDS, keepAllowance, lastLimitedPool, type ConvocationDifficulty, type Standing } from "@shandalar/world";
 import { loadConvocationData, loadOracle, loadPool, loadWorldCatalog, type OracleEntry } from "../engine-bridge";
 import { DeckEditor } from "../components/DeckEditor";
 import { CardFrame } from "../components/CardFrame";
@@ -66,10 +66,14 @@ function Door({ c }: { c: ConvocationController }) {
   const [confirm, setConfirm] = useState(false);
   const [size, setSize] = useState<"convocation" | "short" | "draft" | "sixteen" | "eight" | "open">("convocation");
   const [day2, setDay2] = useState("open"), [day4, setDay4] = useState("open"); // S53: the two Constructed days
+  const [five, setFive] = useState("open"); // S62 (ADR-176): the five-round Constructed event's format — the Open or Peasant
+  /** S62: a format's name and its one line, wherever one is chosen. */
+  const explain = (id: string) => { const f = CONSTRUCTED_FORMATS.find((x) => x.id === id); return f ? `${f.name} — ${f.note}.` : ""; };
+  const fieldFormats = CONSTRUCTED_FORMATS.filter((f) => (FIELD_FORMAT_IDS as readonly string[]).includes(f.id));
   const [difficulty, setDifficulty] = useState<ConvocationDifficulty>("normal");
   const ledger = c.ledger(), inv = c.invitation();
   const seedOf = () => (seed.trim() && Number.isFinite(Number(seed)) ? Number(seed) : undefined);
-  const start = () => size === "convocation" ? c.newConvocation(seedOf(), { difficulty, first: day2, second: day4 }) : size === "short" ? c.newConvocation(seedOf(), { difficulty, first: day2, short: true }) : c.newEvent(seed.trim() && Number.isFinite(Number(seed)) ? Number(seed) : undefined, size === "open" ? { constructed: "open", seats: 32, rounds: 5, top8: true, difficulty } : size === "draft" ? { draft: true, seats: 32, rounds: 5, top8: true, difficulty } : size === "sixteen" ? { seats: 32, rounds: 5, top8: true, difficulty } : { seats: 8, rounds: 3, difficulty });
+  const start = () => size === "convocation" ? c.newConvocation(seedOf(), { difficulty, first: day2, second: day4 }) : size === "short" ? c.newConvocation(seedOf(), { difficulty, first: day2, short: true }) : c.newEvent(seed.trim() && Number.isFinite(Number(seed)) ? Number(seed) : undefined, size === "open" ? { constructed: five, seats: 32, rounds: 5, top8: true, difficulty } : size === "draft" ? { draft: true, seats: 32, rounds: 5, top8: true, difficulty } : size === "sixteen" ? { seats: 32, rounds: 5, top8: true, difficulty } : { seats: 8, rounds: 3, difficulty });
   return (
     <Page>
       <h2 style={{ fontFamily: "var(--serif)", margin: "0 0 4px" }}>The Convocation</h2>
@@ -81,7 +85,7 @@ function Door({ c }: { c: ConvocationController }) {
           <button className="primary" onClick={() => c.enterByInvitation({ difficulty, first: day2, second: day4, ...(seedOf() !== undefined ? { seed: seedOf()! } : {}) })}>Break the seal and enter</button>
         </div>
       )}
-      <p style={{ margin: "0 0 10px" }}>{size === "convocation" ? `The Convocation — four days: a draft, ${title(day2)}, a draft, ${title(day4)}; the Umbel of Eight.` : size === "short" ? `A Convocation — two days: a draft and ${title(day2)}; the Umbel of Eight.` : size === "open" ? "A Convocation — the Open, thirty-two seats, five rounds, the Umbel." : size === "draft" ? "A Convocation — Draft, thirty-two seats in pods of eight: three packs, five rounds, the Umbel." : size === "sixteen" ? "A Convocation — Sealed, thirty-two seats, five rounds, and the Umbel: a final table of eight." : "A Convocation — Sealed, eight seats, three rounds."}</p>
+      <p style={{ margin: "0 0 10px" }}>{size === "convocation" ? `The Convocation — four days: a draft, ${title(day2)}, a draft, ${title(day4)}; the Umbel of Eight.` : size === "short" ? `A Convocation — two days: a draft and ${title(day2)}; the Umbel of Eight.` : size === "open" ? `A Convocation — ${title(five)}, thirty-two seats, five rounds, the Umbel.` : size === "draft" ? "A Convocation — Draft, thirty-two seats in pods of eight: three packs, five rounds, the Umbel." : size === "sixteen" ? "A Convocation — Sealed, thirty-two seats, five rounds, and the Umbel: a final table of eight." : "A Convocation — Sealed, eight seats, three rounds."}</p>
       <p style={{ fontSize: 13, color: "var(--ink-soft)", margin: "0 0 12px" }}>{size === "short" ? "A hundred and twenty-eight seats and eight Swiss rounds: draft three rounds inside your pod, then five in a Constructed format with the deck you registered — and the eight best meet in the Umbel." : size === "convocation" ? "A hundred and twenty-eight seats and sixteen Swiss rounds: draft three rounds inside your pod, play five in a Constructed format, draft again with the seven nearest your record, five more rounds — and the eight best meet in the Umbel." : size === "open" ? "Constructed: bring sixty cards — any card the Open allows, the power restricted to one of each — and play rounds of best-of-three against a field of thirty-one." : size === "draft" ? "Pick one card from each pack as it comes round, build forty cards from your picks, and play rounds of best-of-three against the whole field — your pod and three others." : "Open six packs, build forty cards from them, and play rounds of best-of-three against the field."}</p>
       <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 14, fontSize: 13 }}>
         <label className={size === "convocation" ? "picked" : ""}><input type="radio" checked={size === "convocation"} onChange={() => setSize("convocation")} /> The Convocation — four days, 128 seats, sixteen rounds, the Umbel</label>
@@ -91,11 +95,20 @@ function Door({ c }: { c: ConvocationController }) {
             {size === "convocation" && <label>Day four <select value={day4} onChange={(e) => setDay4(e.target.value)}>{CONSTRUCTED_FORMATS.map((f) => <option key={f.id} value={f.id}>{f.name}</option>)}</select></label>}
           </div>
         )}
+        {(size === "convocation" || size === "short") && (
+          <div style={{ paddingLeft: 22, fontSize: 12, color: "var(--ink-soft)" }}>{explain(day2)}{size === "convocation" && day4 !== day2 ? ` ${explain(day4)}` : ""}</div>
+        )}
         <label className={size === "short" ? "picked" : ""}><input type="radio" checked={size === "short"} onChange={() => setSize("short")} /> A short Convocation — two days, 128 seats, eight rounds, the Umbel</label>
         <label className={size === "draft" ? "picked" : ""}><input type="radio" checked={size === "draft"} onChange={() => setSize("draft")} /> Draft — thirty-two seats in pods of eight, five rounds, the Umbel</label>
         <label className={size === "sixteen" ? "picked" : ""}><input type="radio" checked={size === "sixteen"} onChange={() => setSize("sixteen")} /> Sealed — thirty-two seats, five rounds, the Umbel</label>
         <label className={size === "eight" ? "picked" : ""}><input type="radio" checked={size === "eight"} onChange={() => setSize("eight")} /> Sealed — eight seats, three rounds</label>
-        <label className={size === "open" ? "picked" : ""}><input type="radio" checked={size === "open"} onChange={() => setSize("open")} /> The Open (Constructed) — thirty-two seats, five rounds, the Umbel</label>
+        <label className={size === "open" ? "picked" : ""}><input type="radio" checked={size === "open"} onChange={() => setSize("open")} /> Constructed — thirty-two seats, five rounds, the Umbel</label>
+        {size === "open" && (
+          <div style={{ display: "flex", gap: 10, paddingLeft: 22, fontSize: 12.5, alignItems: "baseline", flexWrap: "wrap" }}>
+            <label>Format <select aria-label="Constructed format" value={five} onChange={(e) => setFive(e.target.value)}>{fieldFormats.map((f) => <option key={f.id} value={f.id}>{f.name}</option>)}</select></label>
+            <span style={{ fontSize: 12, color: "var(--ink-soft)" }}>{explain(five)}</span>
+          </div>
+        )}
         <div style={{ display: "flex", gap: 10, alignItems: "baseline", marginTop: 6 }}>
           <select value={difficulty} onChange={(e) => setDifficulty(e.target.value as ConvocationDifficulty)} style={{ alignSelf: "flex-start" }}>
             <option value="normal">Normal</option><option value="hard">Hard</option>

@@ -46,13 +46,18 @@ import { fileURLToPath } from "node:url";
 import { loadCardPool } from "@shandalar/cards/loader";
 import { runMatch, type Action, type ActionRequest, type Agent, type GameView, type MatchSpec } from "@shandalar/engine";
 import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
-import { OPEN_DECKS, OPEN_FIELD } from "@shandalar/sim/open-decks";
-import { OPEN_FORMAT } from "./formats.js";
+import { FORMAT_DECKS, FORMAT_FIELD } from "@shandalar/sim/open-decks";
+import { CONSTRUCTED_FORMATS } from "./formats.js";
+// S62 (ADR-176): `--format <id>` (default open) — the lists, the rule a built fifteen obeys, the shapes' scale and the
+// recorded matches table are that format's. The names below are the Open's from when it was the only one.
+const FORMAT_ID = process.argv.includes("--format") ? process.argv[process.argv.indexOf("--format") + 1]! : "open";
+if (!FORMAT_DECKS[FORMAT_ID]) throw new Error(`open:rr --format: no format ${FORMAT_ID} (${Object.keys(FORMAT_DECKS).join(", ")})`);
+const OPEN_FORMAT = CONSTRUCTED_FORMATS.find((f) => f.id === FORMAT_ID)!, OPEN_DECKS = FORMAT_DECKS[FORMAT_ID]!, OPEN_FIELD = FORMAT_FIELD[FORMAT_ID]!;
 import { variantDef } from "./card-variants.js";
 import { MatchSeries } from "./series.js";
 import { mostPlayed, staples } from "./open-reference.js";
 import { buildSideboard } from "./constructed-builder.js";
-import { AI_SIDEBOARD_CONSTRUCTED, SIDEBOARD_SHAPES, aiSideboard, answersCreatures, answersRelics, type AiSideboardTerms, type SideboardGuide } from "./sideboard-ai.js";
+import { SIDEBOARD_SHAPES, sideboardTermsFor, aiSideboard, answersCreatures, answersRelics, type AiSideboardTerms, type SideboardGuide } from "./sideboard-ai.js";
 import { SIDEBOARD_GUIDES } from "./sideboard-guides.generated.js";
 import type { CardRatingTable } from "./rating.js";
 import type { Decklist } from "./state.js";
@@ -114,8 +119,8 @@ async function run(): Promise<void> {
   const fifteen = new Map<string, Decklist>();
   const builtFor = new Set(arg("built-fifteen", "").split(",").filter(Boolean)); // S58: those lists use the field builder's fifteen, not their registered one
   const outArg = process.argv.includes("--out-rule") ? arg("out-rule", "none") : null; // S57: none | dead,four,rule9 (any of)
-  const shapesArg = arg("shapes", "all"), { shapes: _all, ...s55 } = AI_SIDEBOARD_CONSTRUCTED;
-  const terms: AiSideboardTerms = shapesArg === "all" ? AI_SIDEBOARD_CONSTRUCTED : shapesArg === "none" ? s55 : { ...s55, shapes: { perShape: SIDEBOARD_SHAPES.perShape, ...Object.fromEntries(shapesArg.split(",").map((k) => { if (!(k in SIDEBOARD_SHAPES) || k === "perShape") throw new Error(`open:rr --shapes: no shape ${k}`); return [k, SIDEBOARD_SHAPES[k as keyof typeof SIDEBOARD_SHAPES]]; })) } };
+  const FORMAT_TERMS = sideboardTermsFor(FORMAT_ID), shapesArg = arg("shapes", "all"), { shapes: _all, ...s55 } = FORMAT_TERMS;
+  const terms: AiSideboardTerms = shapesArg === "all" ? FORMAT_TERMS : shapesArg === "none" ? s55 : { ...s55, shapes: { perShape: SIDEBOARD_SHAPES.perShape, ...Object.fromEntries(shapesArg.split(",").map((k) => { if (!(k in SIDEBOARD_SHAPES) || k === "perShape") throw new Error(`open:rr --shapes: no shape ${k}`); return [k, SIDEBOARD_SHAPES[k as keyof typeof SIDEBOARD_SHAPES]]; })) } };
   // `--sideboarded-only k1,k2`: only those lists sideboard (one side's swaps against the other's registered sixty)
   // S59: `--deck-guide file.json` ({rows, only?}) — a guide for the build under test's fifteen (--deck-side), without registering it
   const testGuide: SideboardGuide | null = arg("deck-guide", "") && arg("deck-side", "") ? { key: "test", fifteen: JSON.parse(readFileSync(arg("deck-side", ""), "utf8")) as Decklist, ...(JSON.parse(readFileSync(arg("deck-guide", ""), "utf8")) as { rows: SideboardGuide["rows"]; only?: true }) } : null;
@@ -234,7 +239,7 @@ function matchesReport(): void {
   for (const { k, t, d } of pairs) lines.push(`| ${k.replace("|", " over ")} | ${r(t.mw, t.mn).toFixed(0)} (${t.mn}) | ${r(t.g1w, t.g1n).toFixed(0)} | ${r(t.lw, t.ln).toFixed(0)} (${t.ln}) | +${d.toFixed(0)} |`);
   const md = lines.join("\n") + "\n";
   // S59: `--record` writes the table of record's three columns to the tracked data file the reference is generated from
-  if (process.argv.includes("--record")) { const one = (x: number) => Math.round(10 * x) / 10; writeFileSync(join(ROOT, "data/convocation/open-matches.json"), JSON.stringify({ _comment: "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.", when: new Date().toISOString().slice(0, 10), matchesAPairing: Math.round(matches.size / Math.max(1, (Object.keys(byList).length * (Object.keys(byList).length - 1)) / 2)), byList: Object.fromEntries(Object.keys(byList).sort().map((k) => { const t = byList[k]!; return [k, { matches: one(r(t.mw, t.mn)), gameOne: one(r(t.g1w, t.g1n)), later: one(r(t.lw, t.ln)), n: t.mn }]; })) }, null, 1) + "\n"); }
+  if (process.argv.includes("--record")) { const one = (x: number) => Math.round(10 * x) / 10; writeFileSync(join(ROOT, `data/convocation/formats/${FORMAT_ID}/matches.json`), JSON.stringify({ _comment: "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.", when: new Date().toISOString().slice(0, 10), matchesAPairing: Math.round(matches.size / Math.max(1, (Object.keys(byList).length * (Object.keys(byList).length - 1)) / 2)), byList: Object.fromEntries(Object.keys(byList).sort().map((k) => { const t = byList[k]!; return [k, { matches: one(r(t.mw, t.mn)), gameOne: one(r(t.g1w, t.g1n)), later: one(r(t.lw, t.ln)), n: t.mn }]; })) }, null, 1) + "\n"); }
   const out = arg("out", ""); if (out) { mkdirSync(dirname(out), { recursive: true }); writeFileSync(out, md); writeFileSync(out.replace(/\.md$/, ".json"), JSON.stringify({ byList, byPair })); }
   console.log(md);
 }
@@ -282,7 +287,7 @@ function merge(): void {
     const st = staples(field, cardsAll, skip), nm = (id: string) => cardsAll.get(id)?.name ?? id;
     lines.push(`\n## Staples (ADR-170)\n`, `In more than half of the ${field.length} lists: ${st.length ? st.map((x) => `${nm(x.cardId)} (${x.lists} lists, ${x.copies} copies)`).join("; ") : "none"}. The most played: ${mostPlayed(field, cardsAll, skip, 8).map((x) => `${nm(x.cardId)} ${x.lists}`).join(" · ")}.`); }
   lines.push(`\n## Restricted cards — % of the list's games in which it was cast (or, a land, played)\n`);
-  const restricted = OPEN_FORMAT.rule.restricted!;
+  const restricted = OPEN_FORMAT.rule.restricted ?? [];
   for (const k of KEYS) {
     const has = OPEN_DECKS[k]!.decklist.filter((e) => restricted.includes(e.cardId)).map((e) => e.cardId);
     if (!has.length) continue;
