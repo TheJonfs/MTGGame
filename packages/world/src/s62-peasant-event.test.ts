@@ -65,7 +65,7 @@ describe("Peasant at the door (S62, ADR-176)", () => {
     // every card legal when the score was built has one; a card added since (Dazzling Angel, Wall of Reverence) reads its tier's prior until the next `pnpm rating:format`
     const unscored = legal.filter((d) => typeof (rating.cards[d.id] as { peasant?: number } | undefined)?.peasant !== "number").map((d) => d.id).sort();
     expect(unscored).toEqual(["dazzling_angel", "wall_of_reverence"]);
-    const xs = legal.map((d) => p.cards[d.id]!.rating).sort((a, b) => a - b);
+    const xs = legal.filter((d) => !unscored.includes(d.id)).map((d) => p.cards[d.id]!.rating).sort((a, b) => a - b);
     expect(xs[Math.floor(0.9 * xs.length)]! - xs[Math.floor(0.1 * xs.length)]!).toBeGreaterThan(1.2); // a real spread (the Limited score sat inside half a point on this shelf)
   });
 });
