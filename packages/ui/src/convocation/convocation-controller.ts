@@ -13,6 +13,7 @@ import {
   serializeEvent, seriesSeed, seriesSetup, standings, type CardRatingTable, type Catalog, type ConvocationEvent, type ConvocationLedgerEntry, type ConvocationPackData,
   type Decklist, type KnobValues, type SeatAgents, type Standing,
 } from "@shandalar/world";
+import { FORMAT_DECKS } from "@shandalar/sim/open-decks";
 import { OUTBOX_PREFIX, keepable, postOutbox, prizeBand, prizeGold, standingInvitation, finalPlaces as linkPlaces, type Invitation, type PrizeBand } from "@shandalar/world";
 import { MatchController } from "../play/match-controller.js";
 import { makeFieldPool, type FieldPool } from "./field-pool.js";
@@ -42,7 +43,9 @@ export const FIELD_STALL_MS = 60_000;
 /** A library list's name for the picker: the Open's by their name ("the Levy"), the rest with their group. */
 export function listLabel(key: string): string {
   const [group, name = ""] = key.split(":"), nice = name.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^./, (x) => x.toUpperCase());
-  return group === "open" ? `the ${nice}` : `${nice} (${group})`;
+  // S62 (ADR-176): another format's own list by the name it carries ("Dungrove Auras", "the Rabble (Peasant)")
+  const own = group !== "open" ? FORMAT_DECKS[group!]?.[name]?.name : undefined;
+  return own ?? (group === "open" ? `the ${nice}` : `${nice} (${group})`);
 }
 /** A stage's name in the screens' text: "a draft", "Sealed", or the Constructed format's ("the Open"). */
 export function stageName(st: ConvocationStage): string { return st.kind === "draft" ? "a draft" : st.kind === "sealed" ? "Sealed" : formatTitle(st.formatId); }

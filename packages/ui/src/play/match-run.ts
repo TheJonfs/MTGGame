@@ -1,6 +1,6 @@
 import type { CardDef } from "@shandalar/cards";
 import type { MatchResult, MatchSpec } from "@shandalar/engine";
-import { CONSTRUCTED_FORMATS, GAMES_KEPT, GAMES_KEY, MatchSeries, OPEN_FORMAT, aiSideboard, fieldSideboard, sideboardTermsFor, type CardRatingTable, type Collection, type Decklist } from "@shandalar/world";
+import { CONSTRUCTED_FORMATS, GAMES_KEPT, GAMES_KEY, MatchSeries, OPEN_FORMAT, aiSideboard, fieldSideboard, formatView, sideboardTermsFor, type CardRatingTable, type Collection, type Decklist } from "@shandalar/world";
 import type { PlayChoice } from "./play-decks.js";
 
 /**
@@ -34,7 +34,7 @@ export const firstCall = (setup: MatchRunSetup): "play" | "draw" => (setup.human
  * the AI always plays first), the human's deck as it stands, the AI's deck sideboarded from game two. */
 export function nextMatchGame<S extends MatchRunSetup>(r: MatchRun<S>, choice: "play" | "draw", pool: Map<string, CardDef>, rating: CardRatingTable): { run: MatchRun<S>; game: ReturnType<MatchSeries["nextGame"]>; human: Decklist; enemy: Decklist } {
   const game = r.series.nextGame(r.series.nextChooser() === 0 ? choice : "play");
-  const enemy = game.index === 0 ? copy(r.setup.enemy.decklist) : aiSideboard(r.setup.enemy.decklist, r.enemySide, r.main, pool, rating, sideboardTermsFor(formatOf(r.setup.enemy).id)).deck;
+  const enemy = game.index === 0 ? copy(r.setup.enemy.decklist) : aiSideboard(r.setup.enemy.decklist, r.enemySide, r.main, pool, formatView(rating, formatOf(r.setup.enemy).id), sideboardTermsFor(formatOf(r.setup.enemy).id)).deck;
   return { run: { ...r, game, recorded: false }, game, human: copy(r.deck), enemy };
 }
 /** A finished game goes into the series once (the human is seat 0, so the result's winner is the series' seat). */

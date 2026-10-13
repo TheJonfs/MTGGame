@@ -4,81 +4,81 @@
  "matchesAPairing": 60,
  "byList": {
   "br": {
-   "matches": 59.7,
+   "matches": 62.4,
    "gameOne": 59.3,
-   "later": 55.9,
+   "later": 58.4,
    "n": 720
   },
   "brdjinn": {
-   "matches": 64.2,
+   "matches": 61.3,
    "gameOne": 60.8,
-   "later": 59.4,
+   "later": 56.4,
    "n": 720
   },
   "bw": {
-   "matches": 47.5,
+   "matches": 49.7,
    "gameOne": 51.1,
-   "later": 47.2,
+   "later": 48.4,
    "n": 720
   },
   "elder": {
-   "matches": 67.8,
+   "matches": 70.5,
    "gameOne": 60.8,
-   "later": 64,
+   "later": 65,
    "n": 720
   },
   "mbc": {
-   "matches": 55.3,
+   "matches": 55.8,
    "gameOne": 53.8,
-   "later": 53.3,
+   "later": 54.2,
    "n": 720
   },
   "muster": {
-   "matches": 45.4,
+   "matches": 41.7,
    "gameOne": 47.8,
-   "later": 45.6,
+   "later": 43.1,
    "n": 720
   },
   "naya": {
-   "matches": 42.7,
+   "matches": 42.2,
    "gameOne": 46,
-   "later": 44.4,
+   "later": 43.6,
    "n": 720
   },
   "rabble": {
-   "matches": 56.7,
+   "matches": 51,
    "gameOne": 49,
-   "later": 57,
+   "later": 51.4,
    "n": 720
   },
   "skies": {
-   "matches": 43,
+   "matches": 42.8,
    "gameOne": 39.9,
-   "later": 47.8,
+   "later": 46.8,
    "n": 720
   },
   "skieswall": {
-   "matches": 41.7,
+   "matches": 42.3,
    "gameOne": 43.6,
-   "later": 45.4,
+   "later": 46.4,
    "n": 720
   },
   "stompy": {
-   "matches": 42.5,
+   "matches": 47.1,
    "gameOne": 49.7,
-   "later": 42.1,
+   "later": 47.4,
    "n": 720
   },
   "tokens": {
-   "matches": 59.9,
+   "matches": 55.3,
    "gameOne": 54.6,
-   "later": 57.2,
+   "later": 52.9,
    "n": 720
   },
   "urcontrol": {
-   "matches": 23.6,
+   "matches": 27.8,
    "gameOne": 33.7,
-   "later": 29.7,
+   "later": 35.5,
    "n": 720
   }
  }

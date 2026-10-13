@@ -10,14 +10,14 @@ import { FORMAT_DECKS, FORMAT_FIELD } from "@shandalar/sim/open-decks";
 import { CONSTRUCTED_FORMATS } from "./formats.js";
 import { buildSideboard } from "./constructed-builder.js";
 import { aiSideboard, answersCreatures, answersRelics, sideboardTermsFor, type AiSideboardTerms } from "./sideboard-ai.js";
-import type { CardRatingTable } from "./rating.js";
+import { formatView, type CardRatingTable } from "./rating.js";
 
 const arg = (k: string, d: string) => { const i = process.argv.indexOf(`--${k}`); return i >= 0 ? process.argv[i + 1]! : d; };
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const pool = loadCardPool(join(ROOT, "data/cards")).cards;
-const rating = JSON.parse(readFileSync(join(ROOT, "data/convocation/card-rating.json"), "utf8")) as CardRatingTable;
+const rating0 = JSON.parse(readFileSync(join(ROOT, "data/convocation/card-rating.json"), "utf8")) as CardRatingTable;
 // S62 (ADR-176): `--format <id>` — that format's lists, rule and shape scale (default: the Open)
-const FORMAT_ID = arg("format", "open"), OPEN_FORMAT = CONSTRUCTED_FORMATS.find((f) => f.id === FORMAT_ID)!, OPEN_DECKS = FORMAT_DECKS[FORMAT_ID]!, OPEN_FIELD = FORMAT_FIELD[FORMAT_ID]!;
+const FORMAT_ID = arg("format", "open"), rating = formatView(rating0, arg("format", "open")), OPEN_FORMAT = CONSTRUCTED_FORMATS.find((f) => f.id === FORMAT_ID)!, OPEN_DECKS = FORMAT_DECKS[FORMAT_ID]!, OPEN_FIELD = FORMAT_FIELD[FORMAT_ID]!;
 if (!OPEN_DECKS) throw new Error(`sideboard:show --format: no format ${FORMAT_ID}`);
 const FORMAT_TERMS = sideboardTermsFor(FORMAT_ID), { shapes: _s, ...s55 } = FORMAT_TERMS, terms0: AiSideboardTerms = arg("shapes", "all") === "none" ? s55 : FORMAT_TERMS;
 // S61: `--out61 small,graveyard` — the out-rule on trial

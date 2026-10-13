@@ -734,3 +734,13 @@ See handoff Concerns for the authoritative list. Highlights: auto-pay greedy fea
 - **A generated file that its own generator imports** (`sideboard-guides.generated.ts` through `sideboard-ai.ts`) cannot gain an export in one step: add the empty export by hand, then run `pnpm open:gen`.
 - **`pnpm ladder` printed nothing for ten minutes when run after a batch** and finished in 233 s once alone — the machine was still busy. Check `ps` before starting it.
 
+## S62 notes (2026-10-13)
+
+- **A new card with a shop tier is in the journey's shops and in every Sealed and draft set at once** (the sets filter by tier). The pins that move: the loader count, the tier tally in `world.test.ts`, `docs/reference/cards.md` (`pnpm reference`) — and whatever the new card's shape exposes (S62: a seven-drop found the Limited builder's six-drop cap unenforced in `mend`).
+- **A real card's `text` field is refused by the loader** (ADR-053: oracle text comes from `oracle.json`); `pnpm art:fetch` writes it. A new `amount` word needs `validate.ts` as well as `types.ts`.
+- **`git checkout <file>` after a probe reverts everything in that file since the last commit** — a path fix made earlier in the session went with the probe. Put probes in their own file.
+- **A "who: target" effect needs each reader's `target` branch**: `view-sim`'s `draw` fell through to "both players". When a new card is the first with a shape, read every `case` for that effect type.
+- **A list that plays a card badly looks like a bad card.** Before dropping a planner's card for its number, swap it for a plain body in a paired run (`--swap list:card:n:other`): Sign in Blood cost sixteen points, all of it the pilot.
+- **Per-format anything**: `sideboardTermsFor(formatId)`, `formatView(rating, formatId)`, `fieldGroupOf(formatId)`, `candidateCount(formatId)`; a CLI takes `--format` and keeps the Open's old names for its locals.
+- **The preview's port changes each start** (`autoPort`); read it from the tool's result.
+

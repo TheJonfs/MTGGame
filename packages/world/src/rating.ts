@@ -22,6 +22,15 @@ export function cardRating(def: CardDef, table: CardRatingTable): number {
 /** Post-S52 (Chris: Limited and Constructed rated apart) — the table as a Limited reader sees it: each row's `rating`
  * is its Limited score where the table has one. The drafter, the Limited builder, Sealed and draft events and their
  * sims read this view; the Constructed builder, the Open and the tinker read the table itself. */
+/** S62 (ADR-153's table grows a column per Constructed format; ADR-176): the table as a FORMAT's reader sees it —
+ * each row's `rating` is that format's own score (`pnpm rating:format`) where the row has one. A format with no
+ * column (the Open, whose score is `rating` itself) gets the table as it is. The Constructed builder, the field's
+ * fifteen and the sideboarding rules read through this. */
+export function formatView(table: CardRatingTable, formatId: string): CardRatingTable {
+  let any = false; const cards: Record<string, CardRatingRow> = {};
+  for (const [id, r] of Object.entries(table.cards)) { const v = (r as unknown as Record<string, unknown>)[formatId]; if (typeof v === "number") { any = true; cards[id] = { ...r, rating: v }; } else cards[id] = r; }
+  return any ? { ...table, cards } : table;
+}
 export function limitedView(table: CardRatingTable): CardRatingTable {
   const cards: Record<string, CardRatingRow> = {};
   for (const [id, r] of Object.entries(table.cards)) cards[id] = r.limited !== undefined ? { ...r, rating: r.limited } : r;

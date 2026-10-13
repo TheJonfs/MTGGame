@@ -1,5 +1,7 @@
 # The tier-two format (working name "Penny") — first experiments (2026-10-12, after Session 61)
 
+**The format is Peasant (ADR-176, Session 62); "Penny" is retired.** This file keeps its name because the Session 62 brief cites it. The lists here were the drafts; the seeds, the ten cards added since and the tables of record are in `handoff.md` and `data/convocation/formats/peasant/`.
+
 *The name is Chris's working one and may change. It appears in this file's name and in `data/convocation/experiments/penny-field*.json` only — no code, test or generated file carries it. The tools take a tier ceiling (`--max-tier 2`), not a name.*
 
 For the planner. Chris proposed Penny — tier 1 and tier 2 cards — in place of Pauper's tier 1 alone; these are a census

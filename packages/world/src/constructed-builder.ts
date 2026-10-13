@@ -22,7 +22,7 @@ import type { Decklist } from "./state.js";
 import { BASIC_LANDS, COPY_CAP, checkDeck, isBasic, type DeckCheck, type DeckRule } from "./legality.js";
 import type { ConstructedFormat } from "./formats.js";
 import { FIELD_FORMAT_IDS, LAW_IDS } from "./formats.js";
-import { cardRating, type CardRatingTable } from "./rating.js";
+import { cardRating, formatView, type CardRatingTable } from "./rating.js";
 import { WorldRng } from "./rng.js";
 import { answersGraveyards, blocksFliers, isCreatureCounter, isSweeper, isWall, stealsCreatures, usableByAnyDeck } from "./sideboard-ai.js";
 
@@ -101,6 +101,7 @@ export function legalShare(list: Decklist, rule: DeckRule, cards: Map<string, Ca
  * round-robin mean where known, else its nonland cards' mean rating); the top twelve. S53: also the player's
  * "start from a list" picker. */
 export function selectCandidates(format: ConstructedFormat, rating: CardRatingTable, library: readonly LibraryList[], cards: Map<string, CardDef>): { l: LibraryList; share: number; strength: number }[] {
+  rating = formatView(rating, format.id); // S62
   const rule = format.rule, role = (id: string) => (cards.get(id)!.types.includes("Land") ? "land" : "other");
   const size = (l: Decklist) => l.reduce((n, e) => n + e.count, 0);
   const strength = (l: LibraryList) => openStrength(l.key) !== undefined ? 1000 + openStrength(l.key)! : (() => { const xs = l.decklist.filter((e) => role(e.cardId) !== "land"); const n = size(xs); return n ? xs.reduce((a, e) => a + cardRating(cards.get(e.cardId)!, rating) * e.count, 0) / n : 0; })();
@@ -109,6 +110,7 @@ export function selectCandidates(format: ConstructedFormat, rating: CardRatingTa
 }
 
 export function buildConstructedDeck(format: ConstructedFormat, rating: CardRatingTable, seed: number, library: readonly LibraryList[], cards: Map<string, CardDef>, opts: { /** Force the tinker level (the tinker study); default: rolled from the seed. */ tinker?: Tinker; /** Force the source list. */ from?: string; /** S55 (ADR-158 amended): the seat's list draw — `top` leans to the lists that measure strong, `low` to those that measure weak. */ lists?: ListDraw; /** Post-S58 (the cap): lists this seat may not draw — those already at the field's cap. */ exclude?: ReadonlySet<string> } = {}): ConstructedBuild {
+  rating = formatView(rating, format.id); // S62: the format's own score where it has one
   const rule = format.rule, rng = new WorldRng(seed);
   const def = (id: string) => { const d = cards.get(id); if (!d) throw new Error(`buildConstructedDeck: ${id} is not in the card pool`); return d; };
   const rate = (id: string) => cardRating(def(id), rating);
@@ -221,6 +223,7 @@ export const SIDEBOARD_SHAPE = { relics: 4, creatures: 5, graveyards: 4 } as con
  * above; a deck whose colours hold none of a kind leaves that slot to the best of the rest. */
 export const SIDEBOARD_SHAPE_S56 = { relics: 3, creatures: 3, graveyards: 4, sweepers: 2, creatureCounters: 2, steal: 2, blockers: 2 } as const;
 export function buildSideboard(deck: Decklist, format: ConstructedFormat, rating: CardRatingTable, cards: Map<string, CardDef>, isRelicAnswer: (d: CardDef) => boolean, isCreatureAnswer: (d: CardDef) => boolean, /** S56: reserve the four shapes' slots (the field does; `false` is the S55 fifteen) */ shapes = true): Decklist {
+  rating = formatView(rating, format.id); // S62
   const rule = format.rule;
   const inDeck = new Map(deck.map((e) => [e.cardId, e.count]));
   const colors = new Set(deck.flatMap((e) => { const d = cards.get(e.cardId); return d && !d.types.includes("Land") ? cardColors(d) : []; }));

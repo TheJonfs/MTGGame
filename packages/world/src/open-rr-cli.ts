@@ -59,7 +59,7 @@ import { mostPlayed, staples } from "./open-reference.js";
 import { buildSideboard } from "./constructed-builder.js";
 import { SIDEBOARD_SHAPES, sideboardTermsFor, aiSideboard, answersCreatures, answersRelics, type AiSideboardTerms, type SideboardGuide } from "./sideboard-ai.js";
 import { SIDEBOARD_GUIDES } from "./sideboard-guides.generated.js";
-import type { CardRatingTable } from "./rating.js";
+import { formatView, type CardRatingTable } from "./rating.js";
 import type { Decklist } from "./state.js";
 
 const arg = (k: string, d: string) => { const i = process.argv.indexOf(`--${k}`); return i >= 0 ? process.argv[i + 1]! : d; };
@@ -67,8 +67,8 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 // S56 (ADR-164): the round-robin is the field's — an archived list is out of it (`--with-archived` brings it back for a look)
 const KEYS = Object.keys(process.argv.includes("--with-archived") ? OPEN_DECKS : OPEN_FIELD);
 
-type SeatLog = { cast: Record<string, number>; played: Record<string, number>; /** post-S59: abilities activated, by the source's card */ acts?: Record<string, number>; loopTurn?: number; altarActs?: number; /** S61: the loops this seat ran — see Tracker */ loops?: { turn: number; card: string; passes: number; life: [number, number][]; options: number; mine: boolean; last?: [number, number] }[] };
-type Game = { a: string; b: string; seatA: 0 | 1; winner: "a" | "b" | "draw"; reason: string; turns: number; logA: SeatLog; logB: SeatLog; /** S61: the final life totals by SEAT (seat 0 is `a` unless seatA is 1) */ life?: [number, number]; boarded?: string ; /** S59 (--matches): the match's index in its pairing and the game's number in the match (0, 1, 2) */ match?: number; gameNo?: number };
+type SeatLog = { cast: Record<string, number>; played: Record<string, number>; /** post-S59: abilities activated, by the source's card */ acts?: Record<string, number>; loopTurn?: number; altarActs?: number; /** S62 (the stalemate probe): the last turn this seat declared an attacker, and on how many turns it did */ lastAttack?: number; attackTurns?: number; /** S61: the loops this seat ran — see Tracker */ loops?: { turn: number; card: string; passes: number; life: [number, number][]; options: number; mine: boolean; last?: [number, number] }[] };
+type Game = { a: string; b: string; seatA: 0 | 1; winner: "a" | "b" | "draw"; reason: string; turns: number; logA: SeatLog; logB: SeatLog; /** S61: the final life totals by SEAT (seat 0 is `a` unless seatA is 1) */ life?: [number, number]; /** S62 (the stalemate probe): a game drawn at the turn limit — by SEAT: the creatures standing (card:power/toughness:keywords), cards in hand and in the library */ stall?: { board: [string[], string[]]; hand: [number, number]; library: [number, number] }; boarded?: string ; /** S59 (--matches): the match's index in its pairing and the game's number in the match (0, 1, 2) */ match?: number; gameNo?: number };
 
 const TRACE_AFTER = process.argv.includes("--trace-after") ? Number(process.argv[process.argv.indexOf("--trace-after") + 1]) : 0;
 class Tracker implements Agent {
@@ -83,6 +83,8 @@ class Tracker implements Agent {
     if (a.type === "castSpell") { const c = cardOf(a.objectId); if (c) this.log.cast[c] = (this.log.cast[c] ?? 0) + 1; }
     if (a.type === "playLand") { const c = cardOf(a.objectId); if (c) this.log.played[c] = (this.log.played[c] ?? 0) + 1; }
     if (a.type === "activateAbility") { const c = cardOf(a.objectId); if (c) (this.log.acts ??= {})[c] = (this.log.acts[c] ?? 0) + 1; }
+    // S62 (Part 5, the stalemate probe): the turns this seat attacked on — the last one, and how many
+    if (a.type === "declareAttacker" && this.log.lastAttack !== view.turn) { this.log.lastAttack = view.turn; this.log.attackTurns = (this.log.attackTurns ?? 0) + 1; }
     // S61 (Part 1, the probe): a LOOP's pass — an enter trigger of card X aimed at a copy of X in a graveyard. Per turn
     // it happens in: the passes, the life totals [ours, theirs] at the first three (the net per pass for each side),
     // and whether the first aim was forced (one legal target).
@@ -106,6 +108,17 @@ class Tracker implements Agent {
   }
 }
 
+/** S62 (Part 5): what a turn-limit draw looked like at the end, read from the final state. */
+function stallOf(r: { reason: string; finalStateSerialized: string }): { stall: NonNullable<Game["stall"]> } | Record<string, never> {
+  if (r.reason !== "MAX_TURNS") return {};
+  const f = JSON.parse(r.finalStateSerialized) as { players: { hand: string[]; library: string[] }[]; battlefield: string[]; objects: Record<string, { cardId: string; controller: number; power?: number; toughness?: number }> };
+  const board: [string[], string[]] = [[], []];
+  for (const id of f.battlefield) { const o = f.objects[id]!, d = POOL.get(o.cardId); if (d?.types.includes("Creature")) board[o.controller as 0 | 1].push(`${o.cardId}:${d.power}/${d.toughness}:${(d.keywords ?? []).join("+")}`); }
+  return { stall: { board, hand: [f.players[0]!.hand.length, f.players[1]!.hand.length], library: [f.players[0]!.library.length, f.players[1]!.library.length] } };
+}
+const POOL = loadCardPool(join(ROOT, "data/cards")).cards;
+// S62 (Part 5): `--max-turns N` — the turn limit (default the engine's 100: fifty turns a side, a few short of a sixty-card library)
+const MAX_TURNS = process.argv.includes("--max-turns") ? Number(process.argv[process.argv.indexOf("--max-turns") + 1]) : 100;
 async function run(): Promise<void> {
   const pool = loadCardPool(join(ROOT, "data/cards")).cards;
   // post-S59 (a card under consideration, not yet in the pool): `--extra-cards dir` adds that directory's defs to this run's pool
@@ -115,7 +128,7 @@ async function run(): Promise<void> {
   const one = process.argv.includes("--sideboarded-one");
   const M = Number(arg("matches", "0"));
   const sideboarded = one || M > 0 || process.argv.includes("--sideboarded") || process.argv.includes("--sideboarded-only");
-  const rating = sideboarded ? (JSON.parse(readFileSync(join(ROOT, "data/convocation/card-rating.json"), "utf8")) as CardRatingTable) : null;
+  const rating = sideboarded ? formatView(JSON.parse(readFileSync(join(ROOT, "data/convocation/card-rating.json"), "utf8")) as CardRatingTable, FORMAT_ID) : null;
   const fifteen = new Map<string, Decklist>();
   const builtFor = new Set(arg("built-fifteen", "").split(",").filter(Boolean)); // S58: those lists use the field builder's fifteen, not their registered one
   const outArg = process.argv.includes("--out-rule") ? arg("out-rule", "none") : null; // S57: none | dead,four,rule9 (any of)
@@ -184,12 +197,12 @@ async function run(): Promise<void> {
       const A1 = { ...A, decklist: boarded(A, B) }, B1 = { ...B, decklist: boarded(B, A) };
       while (!series.done) {
         const game = series.nextGame("play"), [d0, d1] = game.index === 0 ? [A, B] : [A1, B1];
-        const spec = { seed: game.seed, players: [{ name: d0.key, decklist: [...d0.decklist], agent: "heuristic:master" }, { name: d1.key, decklist: [...d1.decklist], agent: "heuristic:master" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100, startingPlayer: game.startingPlayer }, modifiers: [] } as unknown as MatchSpec;
+        const spec = { seed: game.seed, players: [{ name: d0.key, decklist: [...d0.decklist], agent: "heuristic:master" }, { name: d1.key, decklist: [...d1.decklist], agent: "heuristic:master" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: MAX_TURNS, startingPlayer: game.startingPlayer }, modifiers: [] } as unknown as MatchSpec;
         const t0 = new Tracker(new HeuristicAgent(game.seed * 2 + 1, pool, profile(d0, d1)), false), t1 = new Tracker(new HeuristicAgent(game.seed * 2 + 2, pool, profile(d1, d0)), false);
         if (process.argv.includes("--progress")) console.error(`match ${m} game ${game.index} seed ${game.seed} start ${game.startingPlayer}`); // a game that never ends is the last line printed
         const r = await runMatch(spec, pool, [t0, t1]);
         series.record(game, r);
-        games.push({ a: ka, b: kb, seatA: 0, winner: r.winner === null ? "draw" : r.winner === 0 ? "a" : "b", reason: r.reason, turns: r.turns, life: r.finalLife as [number, number], logA: t0.log, logB: t1.log, match: m, gameNo: game.index });
+        games.push({ a: ka, b: kb, seatA: 0, winner: r.winner === null ? "draw" : r.winner === 0 ? "a" : "b", reason: r.reason, turns: r.turns, life: r.finalLife as [number, number], ...stallOf(r), logA: t0.log, logB: t1.log, match: m, gameNo: game.index });
       }
     }
     for (let g = 0; g < (M > 0 ? 0 : G); g++) {
@@ -197,12 +210,12 @@ async function run(): Promise<void> {
       const seed = seed0 + p * 1009 + g * 37;
       const turn = one ? ((g >> 1) % 2 === 0 ? ka : kb) : undefined;
       const [d0, d1] = (seatA === 0 ? [A, B] : [B, A]).map((d, i, both) => ({ ...d, decklist: turn && d.key !== turn ? d.decklist : boarded(d, both[1 - i]!) })) as [typeof A, typeof B];
-      const spec = { seed, players: [{ name: d0.key, decklist: [...d0.decklist], agent: "heuristic:master" }, { name: d1.key, decklist: [...d1.decklist], agent: "heuristic:master" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 100 }, modifiers: [] } as unknown as MatchSpec;
+      const spec = { seed, players: [{ name: d0.key, decklist: [...d0.decklist], agent: "heuristic:master" }, { name: d1.key, decklist: [...d1.decklist], agent: "heuristic:master" }], rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: MAX_TURNS }, modifiers: [] } as unknown as MatchSpec;
       const t0 = new Tracker(new HeuristicAgent(seed * 2 + 1, pool, profile(d0, d1)), d0.key === "loop");
       const t1 = new Tracker(new HeuristicAgent(seed * 2 + 2, pool, profile(d1, d0)), d1.key === "loop");
       const r = await runMatch(spec, pool, [t0, t1]);
       const tA = seatA === 0 ? t0 : t1, tB = seatA === 0 ? t1 : t0;
-      games.push({ a: ka, b: kb, seatA, winner: r.winner === null ? "draw" : r.winner === seatA ? "a" : "b", reason: r.reason, turns: r.turns, life: r.finalLife as [number, number], logA: tA.log, logB: tB.log, ...(turn ? { boarded: turn } : {}) });
+      games.push({ a: ka, b: kb, seatA, winner: r.winner === null ? "draw" : r.winner === seatA ? "a" : "b", reason: r.reason, turns: r.turns, life: r.finalLife as [number, number], ...stallOf(r), logA: tA.log, logB: tB.log, ...(turn ? { boarded: turn } : {}) });
     }
     console.error(`shard ${si}/${sn}: ${ka} vs ${kb} done`);
   }

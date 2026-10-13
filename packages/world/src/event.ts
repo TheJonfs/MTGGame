@@ -19,7 +19,7 @@ import { SIDEBOARD_SIZE, buildConstructedDeck, buildSideboard, cappedLists, type
 import { draftPick, runDraftPacks } from "./drafter.js";
 import { rollPack, resolveSet, type ConvocationPackData } from "./packs.js";
 import { buildLimitedDeck } from "./limited-builder.js";
-import { limitedView, type CardRatingTable } from "./rating.js";
+import { formatView, limitedView, type CardRatingTable } from "./rating.js";
 import { MatchSeries, SERIES_POINTS, type Seat, type SeriesState } from "./series.js";
 import { convocationSeat } from "./matchup.js";
 import { AI_SIDEBOARD, AI_SIDEBOARD_CONSTRUCTED, aiSideboard, answersCreatures, answersRelics, sideboardTermsFor } from "./sideboard-ai.js";
@@ -522,7 +522,7 @@ export async function playSeriesHeadless(event: ConvocationEvent, a: number, b: 
 export function seatForGame(event: ConvocationEvent, seat: number, opp: number, deps: Pick<SeriesDeps, "cards" | "rating">): EventSeat {
   const s = event.field[seat]!;
   if (s.human || !deps.rating) return s;
-  const rating = eventFormat(event.formatId).kind === "limited" ? limitedView(deps.rating) : deps.rating; // post-S52: each format its own score
+  const rating = eventFormat(event.formatId).kind === "limited" ? limitedView(deps.rating) : formatView(deps.rating, event.formatId); // post-S52: each format its own score (S62: a Constructed format's column)
   const sb = aiSideboard(s.deck, s.sideboard, event.field[opp]!.deck, deps.cards, rating, eventFormat(event.formatId).kind === "limited" ? AI_SIDEBOARD : sideboardTermsFor(event.formatId));
   return sb.swaps.length ? { ...s, deck: sb.deck, sideboard: sb.sideboard } : s;
 }
