@@ -810,7 +810,7 @@
    "name": "Dungrove Auras",
    "title": "Mono-Green Auras (G)",
    "archetype": "midrange",
-   "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. New: the Enchantress's tier-two cousin.",
+   "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. New: the Enchantress's tier-two cousin. Revised 2026-10-13 (Chris): four Gaean Wurms for the four Rumbling Baloths — as large or larger with twenty-two Forests, and trample. +9.3 ± 1.5 in matches against the other twelve, paired (66.8 to 76.1), better against every one. Committed knowing it is over ADR-171's line: it is the next round's target.",
    "decklist": [
     {
      "cardId": "forest",
@@ -849,7 +849,7 @@
      "count": 4
     },
     {
-     "cardId": "rumbling_baloth",
+     "cardId": "gaean_wurm",
      "count": 4
     },
     {
