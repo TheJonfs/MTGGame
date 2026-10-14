@@ -692,13 +692,13 @@ Real, verified against Scryfall by exact name on 2026-10-13. **Tiers are Chris's
 
 ## Post-Session 62 additions — Basilisk Collar, Wall of Razors and Retribution of the Meek (Chris, 2026-10-13 and 14)
 
-Real, verified against Scryfall by exact name on 2026-10-13. Chris's idea for the Elder round: deathtouch and lifelink on Peasant's first strikers (Longbow Archer, Nekrataal, Fencing Ace). **Tier 2 is interim — the tier is Chris's to set.** A rare in every printing.
+Real, verified against Scryfall by exact name on 2026-10-13. Chris's idea for the Elder round: deathtouch and lifelink on Peasant's first strikers (Longbow Archer, Nekrataal, Fencing Ace). **Tier 2 (Chris, 2026-10-14).** A rare in every printing.
 
 | id | card | status | vocabulary | notes |
 |---|---|---|---|---|
-| retribution_of_the_meek | Retribution of the Meek | tested | `destroyAll` allCreatures, `powerAtLeast` 4 (R-109) | VIS (first printing). T2 interim — Chris's to set. {2}{W} Sorcery. One word. A rare. "Can't be regenerated" is moot: nothing in the pool regenerates (as for Wrath of God). Chris's second white sweeper (verified 2026-10-14): the Wave spares toughness over power, this spares the small. |
-| wall_of_razors | Wall of Razors | tested | defender, first strike | STH (its only printing). T2 interim — Chris's to set. {1}{R} Creature — Wall 4/1. Zero words. Chris's idea for the Elder round beside the Collar (verified 2026-10-14). |
-| basilisk_collar | Basilisk Collar | tested | static `grantKeyword` deathtouch and lifelink, scope attached; equip {2} | WWK (first printing). T2 interim. {1} Artifact — Equipment. Zero words (the Warhammer's shape). |
+| retribution_of_the_meek | Retribution of the Meek | tested | `destroyAll` allCreatures, `powerAtLeast` 4 (R-109) | VIS (first printing). T2 (Chris, 2026-10-14). {2}{W} Sorcery. One word. A rare. "Can't be regenerated" is moot: nothing in the pool regenerates (as for Wrath of God). Chris's second white sweeper (verified 2026-10-14): the Wave spares toughness over power, this spares the small. |
+| wall_of_razors | Wall of Razors | tested | defender, first strike | STH (its only printing). T2 (Chris, 2026-10-14). {1}{R} Creature — Wall 4/1. Zero words. Chris's idea for the Elder round beside the Collar (verified 2026-10-14). |
+| basilisk_collar | Basilisk Collar | tested | static `grantKeyword` deathtouch and lifelink, scope attached; equip {2} | WWK (first printing). T2 (Chris, 2026-10-14). {1} Artifact — Equipment. Zero words (the Warhammer's shape). |
 
 ## Post-Session 59 addition — the Manaba (Chris's card, 2026-10-10)
 

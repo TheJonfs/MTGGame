@@ -454,6 +454,270 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
    }
   ],
   "only": true
+ },
+ {
+  "key": "peasant:muster",
+  "fifteen": [
+   {
+    "cardId": "blaze",
+    "count": 1
+   },
+   {
+    "cardId": "disenchant",
+    "count": 2
+   },
+   {
+    "cardId": "inspiring_overseer",
+    "count": 2
+   },
+   {
+    "cardId": "swords_to_plowshares",
+    "count": 2
+   },
+   {
+    "cardId": "tormods_crypt",
+    "count": 1
+   },
+   {
+    "cardId": "wall_of_reverence",
+    "count": 1
+   },
+   {
+    "cardId": "wave_of_reckoning",
+    "count": 2
+   },
+   {
+    "cardId": "youthful_valkyrie",
+    "count": 1
+   },
+   {
+    "cardId": "retribution_of_the_meek",
+    "count": 3
+   }
+  ],
+  "rows": [
+   {
+    "in": "retribution_of_the_meek",
+    "n": 3,
+    "out": [
+     "swords_to_plowshares",
+     "raise_the_alarm"
+    ],
+    "when": [
+     "hexproof"
+    ]
+   }
+  ]
+ },
+ {
+  "key": "peasant:skies",
+  "fifteen": [
+   {
+    "cardId": "arcane_collector",
+    "count": 1
+   },
+   {
+    "cardId": "disenchant",
+    "count": 2
+   },
+   {
+    "cardId": "essence_scatter",
+    "count": 2
+   },
+   {
+    "cardId": "protocol",
+    "count": 2
+   },
+   {
+    "cardId": "tormods_crypt",
+    "count": 1
+   },
+   {
+    "cardId": "wall_of_air",
+    "count": 1
+   },
+   {
+    "cardId": "wall_of_reverence",
+    "count": 1
+   },
+   {
+    "cardId": "wave_of_reckoning",
+    "count": 2
+   },
+   {
+    "cardId": "retribution_of_the_meek",
+    "count": 3
+   }
+  ],
+  "rows": [
+   {
+    "in": "retribution_of_the_meek",
+    "n": 3,
+    "out": [
+     "pacifism",
+     "swords_to_plowshares"
+    ],
+    "when": [
+     "hexproof"
+    ]
+   }
+  ]
+ },
+ {
+  "key": "peasant:skieswall",
+  "fifteen": [
+   {
+    "cardId": "counterspell",
+    "count": 1
+   },
+   {
+    "cardId": "disenchant",
+    "count": 2
+   },
+   {
+    "cardId": "essence_scatter",
+    "count": 2
+   },
+   {
+    "cardId": "longbow_archer",
+    "count": 1
+   },
+   {
+    "cardId": "protocol",
+    "count": 2
+   },
+   {
+    "cardId": "tormods_crypt",
+    "count": 1
+   },
+   {
+    "cardId": "wall_of_reverence",
+    "count": 1
+   },
+   {
+    "cardId": "wave_of_reckoning",
+    "count": 2
+   },
+   {
+    "cardId": "retribution_of_the_meek",
+    "count": 3
+   }
+  ],
+  "rows": [
+   {
+    "in": "retribution_of_the_meek",
+    "n": 3,
+    "out": [
+     "pacifism",
+     "swords_to_plowshares"
+    ],
+    "when": [
+     "hexproof"
+    ]
+   }
+  ]
+ },
+ {
+  "key": "peasant:bw",
+  "fifteen": [
+   {
+    "cardId": "disenchant",
+    "count": 2
+   },
+   {
+    "cardId": "inspiring_overseer",
+    "count": 2
+   },
+   {
+    "cardId": "tendrils_of_corruption",
+    "count": 3
+   },
+   {
+    "cardId": "tormods_crypt",
+    "count": 1
+   },
+   {
+    "cardId": "wall_of_reverence",
+    "count": 1
+   },
+   {
+    "cardId": "wave_of_reckoning",
+    "count": 2
+   },
+   {
+    "cardId": "youthful_valkyrie",
+    "count": 1
+   },
+   {
+    "cardId": "retribution_of_the_meek",
+    "count": 3
+   }
+  ],
+  "rows": [
+   {
+    "in": "retribution_of_the_meek",
+    "n": 3,
+    "out": [
+     "doom_blade"
+    ],
+    "when": [
+     "hexproof"
+    ]
+   }
+  ]
+ },
+ {
+  "key": "peasant:wskies",
+  "fifteen": [
+   {
+    "cardId": "captain_of_the_watch",
+    "count": 2
+   },
+   {
+    "cardId": "disenchant",
+    "count": 2
+   },
+   {
+    "cardId": "glorious_anthem",
+    "count": 2
+   },
+   {
+    "cardId": "longbow_archer",
+    "count": 1
+   },
+   {
+    "cardId": "pacifism",
+    "count": 2
+   },
+   {
+    "cardId": "savannah_lions",
+    "count": 1
+   },
+   {
+    "cardId": "tormods_crypt",
+    "count": 1
+   },
+   {
+    "cardId": "wave_of_reckoning",
+    "count": 1
+   },
+   {
+    "cardId": "retribution_of_the_meek",
+    "count": 3
+   }
+  ],
+  "rows": [
+   {
+    "in": "retribution_of_the_meek",
+    "n": 3,
+    "out": [
+     "swords_to_plowshares"
+    ],
+    "when": [
+     "hexproof"
+    ]
+   }
+  ]
  }
 ];
 

@@ -4,7 +4,71 @@
   "ubmill": "S62: the planner's UB mill seed (Tome Scour, Hedron Crab, Thought Scour as the second engine) measured 14.6 in matches and 19 in game one on the first Peasant table — it beats only the other archived seed. Every mill card was cast (Tome Scour 1.2 a game). Kept as data.",
   "wbcontrol": "S62: the planner's WB control seed (Wave of Reckoning, Moaning Walls, Penumbra Wurm by Entomb and Zombify) measured 12.9 in matches and 17 in game one. Whether the list or the pilot (it has never been taught to bury a creature it cannot cast) is not separated. Kept as data."
  },
- "guides": {},
+ "guides": {
+  "muster": [
+   {
+    "in": "retribution_of_the_meek",
+    "n": 3,
+    "out": [
+     "swords_to_plowshares",
+     "raise_the_alarm"
+    ],
+    "when": [
+     "hexproof"
+    ]
+   }
+  ],
+  "skies": [
+   {
+    "in": "retribution_of_the_meek",
+    "n": 3,
+    "out": [
+     "pacifism",
+     "swords_to_plowshares"
+    ],
+    "when": [
+     "hexproof"
+    ]
+   }
+  ],
+  "skieswall": [
+   {
+    "in": "retribution_of_the_meek",
+    "n": 3,
+    "out": [
+     "pacifism",
+     "swords_to_plowshares"
+    ],
+    "when": [
+     "hexproof"
+    ]
+   }
+  ],
+  "bw": [
+   {
+    "in": "retribution_of_the_meek",
+    "n": 3,
+    "out": [
+     "doom_blade"
+    ],
+    "when": [
+     "hexproof"
+    ]
+   }
+  ],
+  "wskies": [
+   {
+    "in": "retribution_of_the_meek",
+    "n": 3,
+    "out": [
+     "swords_to_plowshares"
+    ],
+    "when": [
+     "hexproof"
+    ]
+   }
+  ]
+ },
  "guidesOnly": [],
  "outRules": {},
  "lists": [
@@ -376,6 +440,44 @@
      "cardId": "flametongue_kavu",
      "count": 4
     }
+   ],
+   "sideboard": [
+    {
+     "cardId": "blaze",
+     "count": 1
+    },
+    {
+     "cardId": "disenchant",
+     "count": 2
+    },
+    {
+     "cardId": "inspiring_overseer",
+     "count": 2
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 2
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 1
+    },
+    {
+     "cardId": "wall_of_reverence",
+     "count": 1
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 2
+    },
+    {
+     "cardId": "youthful_valkyrie",
+     "count": 1
+    },
+    {
+     "cardId": "retribution_of_the_meek",
+     "count": 3
+    }
    ]
   },
   {
@@ -498,6 +600,44 @@
      "cardId": "wave_of_reckoning",
      "count": 2
     }
+   ],
+   "sideboard": [
+    {
+     "cardId": "arcane_collector",
+     "count": 1
+    },
+    {
+     "cardId": "disenchant",
+     "count": 2
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 2
+    },
+    {
+     "cardId": "protocol",
+     "count": 2
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 1
+    },
+    {
+     "cardId": "wall_of_air",
+     "count": 1
+    },
+    {
+     "cardId": "wall_of_reverence",
+     "count": 1
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 2
+    },
+    {
+     "cardId": "retribution_of_the_meek",
+     "count": 3
+    }
    ]
   },
   {
@@ -559,6 +699,44 @@
      "cardId": "wave_of_reckoning",
      "count": 2
     }
+   ],
+   "sideboard": [
+    {
+     "cardId": "counterspell",
+     "count": 1
+    },
+    {
+     "cardId": "disenchant",
+     "count": 2
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 2
+    },
+    {
+     "cardId": "longbow_archer",
+     "count": 1
+    },
+    {
+     "cardId": "protocol",
+     "count": 2
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 1
+    },
+    {
+     "cardId": "wall_of_reverence",
+     "count": 1
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 2
+    },
+    {
+     "cardId": "retribution_of_the_meek",
+     "count": 3
+    }
    ]
   },
   {
@@ -619,6 +797,40 @@
     {
      "cardId": "captain_of_the_watch",
      "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "disenchant",
+     "count": 2
+    },
+    {
+     "cardId": "inspiring_overseer",
+     "count": 2
+    },
+    {
+     "cardId": "tendrils_of_corruption",
+     "count": 3
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 1
+    },
+    {
+     "cardId": "wall_of_reverence",
+     "count": 1
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 2
+    },
+    {
+     "cardId": "youthful_valkyrie",
+     "count": 1
+    },
+    {
+     "cardId": "retribution_of_the_meek",
+     "count": 3
     }
    ]
   },
@@ -990,7 +1202,46 @@
      "cardId": "vitalist",
      "count": 4
     }
+   ],
+   "sideboard": [
+    {
+     "cardId": "captain_of_the_watch",
+     "count": 2
+    },
+    {
+     "cardId": "disenchant",
+     "count": 2
+    },
+    {
+     "cardId": "glorious_anthem",
+     "count": 2
+    },
+    {
+     "cardId": "longbow_archer",
+     "count": 1
+    },
+    {
+     "cardId": "pacifism",
+     "count": 2
+    },
+    {
+     "cardId": "savannah_lions",
+     "count": 1
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 1
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 1
+    },
+    {
+     "cardId": "retribution_of_the_meek",
+     "count": 3
+    }
    ]
   }
- ]
+ ],
+ "_guides_note": "Post-S62 (Chris, 2026-10-14; S63 Part 1): five white lists hold three Retribution of the Meek in a registered fifteen (the field builder's, its graveyard hate trimmed) and bring them in against the hexproof shape only. Measured against Dungrove Auras, 400 matches on seed 91 beside each base: UW Skies (walls) +12.8, BW +11.0, UW Skies +10.3, White Skies +8.5, the Muster +6.2 (RW Tokens +1.3, not registered). The rules run after the guide."
 }
