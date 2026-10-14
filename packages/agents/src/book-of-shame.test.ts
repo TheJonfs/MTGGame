@@ -1948,4 +1948,18 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["equiphost"] });
     expect(old.scorePriorityAction(v, eq("arch"))).toBe(old.scorePriorityAction(v, eq("moan"))); // the old pilot: any host alike
   });
+
+  it("S63 (Part 0, ADR-167's note — the \"target player\" family audited once): every spell and ability in the pool whose target is a player scores higher at the head it is for — harm (discard, mill, an edict) at the opponent, Sign in Blood (cards for life) at ourselves", () => {
+    const a = agent("midrange");
+    const lands = (c: string) => Array.from({ length: 5 }, (_, i) => ({ id: "l" + i, cardId: c, controller: 0 as const }));
+    const bodies = [{ id: "m1", cardId: "grizzly_bears", controller: 0 as const }, { id: "t1", cardId: "grizzly_bears", controller: 1 as const }, { id: "t2", cardId: "serra_angel", controller: 1 as const }];
+    const at = (v: GameView, act: { type: "castSpell" | "activateAbility"; objectId: string; abilityIndex?: number }, p: 0 | 1) => a.scorePriorityAction(v, { ...act, targets: [{ kind: "player", player: p }] } as never);
+    const spells: [string, string, 0 | 1][] = [["diabolic_edict", "swamp", 1], ["glimpse_the_unthinkable", "island", 1], ["hymn_to_tourach", "swamp", 1], ["mind_rot", "swamp", 1], ["sign_in_blood", "swamp", 0], ["thought_scour", "island", 1], ["tome_scour", "island", 1]];
+    for (const [c, l, want] of spells) {
+      const v = mkView({ hand: [{ objectId: "h", cardId: c }], battlefield: [...lands(l), ...bodies] });
+      expect(at(v, { type: "castSpell", objectId: "h" }, want), c).toBeGreaterThan(at(v, { type: "castSpell", objectId: "h" }, (1 - want) as 0 | 1));
+    }
+    const v = mkView({ battlefield: [...lands("island"), ...bodies, { id: "p", cardId: "cathartic_adept", controller: 0 }] });
+    expect(at(v, { type: "activateAbility", objectId: "p", abilityIndex: 0 }, 1)).toBeGreaterThan(at(v, { type: "activateAbility", objectId: "p", abilityIndex: 0 }, 0));
+  });
 });

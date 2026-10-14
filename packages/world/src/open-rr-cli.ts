@@ -324,6 +324,9 @@ function merge(): void {
   const out = arg("out", join(ROOT, "analysis/runs/open_rr_1.json"));
   writeFileSync(out, JSON.stringify({ name: "open_rr_1", when: new Date().toISOString(), games: games.length, table: wins, means, report: text }, null, 1));
   writeFileSync(out.replace(/\.json$/, ".md"), text + "\n");
+  // S63 (Part 2): `--record` makes this the format's round-robin of record — its game-one means, as the match report's
+  // --record does for matches. `pnpm open:gen` reads it into OPEN_MEANS / FORMAT_STRENGTH.
+  if (process.argv.includes("--record")) writeFileSync(join(ROOT, `data/convocation/formats/${FORMAT_ID}/means.json`), JSON.stringify({ _comment: "A format's game-one means (S46): each list's win rate against the other active lists on the registered sixties. Written by `pnpm open:rr --format <id> --merge <shards> --record` — do not edit by hand. `pnpm open:gen` reads it with matches.json into the field's strength table (S63 Part 2).", when: new Date().toISOString().slice(0, 10), source: `${games.length} games, ${Math.round(games.length / Math.max(1, (KEYS.length * (KEYS.length - 1)) / 2))} a pairing`, byList: Object.fromEntries(KEYS.slice().sort().map((k) => [k, means[k]!])) }, null, 1) + "\n");
 }
 
 if (process.argv.includes("--matches-report")) matchesReport();

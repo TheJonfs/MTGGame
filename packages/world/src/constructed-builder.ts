@@ -16,7 +16,9 @@
  *          the lowest spell, or the reverse). A swap that breaks the rule is not made.
  * Deterministic for a seed.
  */
-import { OPEN_MATCH_MEANS } from "./open-matches.generated.js";
+import { FORMAT_STRENGTH, OPEN_MEANS } from "./open-matches.generated.js";
+/** S63 (Part 2): the game-one means are generated from data/convocation/formats/<id>/means.json (`open:rr --merge … --record`). */
+export { OPEN_MEANS };
 import { cardColors, manaValue, parseManaCost, type CardDef } from "@shandalar/cards";
 import type { Decklist } from "./state.js";
 import { BASIC_LANDS, COPY_CAP, checkDeck, isBasic, type DeckCheck, type DeckRule } from "./legality.js";
@@ -34,7 +36,6 @@ export interface LibraryList { key: string; archetype: "aggro" | "midrange" | "c
  * Post-S59 (2026-10-10, later) — AGAIN: the Tollgate in the Ford's place (the Ford archived at 38); analysis/runs/rr18_s59b.json and matches18_s59b.md.
  * Post-S59 (2026-10-11) — AGAIN: Reaper Clio in Reaper Control's place (archived at 54); pilot book 121 (two-on-one blocks); analysis/runs/rr18_s59c.json and matches18_s59c.md.
  * S60 (2026-10-11) — AGAIN: fifteen lists (the Locks, the Tally and the Enchantress archived, ADR-174); pilot book 122; the Levy guided; analysis/runs/rr15_s60.json and matches15_s60.md. */
-export const OPEN_MEANS: Record<string, number> = { "open:reaperclio": 69, "open:pall": 65, "open:marducontrol": 61, "open:rabble": 59, "open:countersnake": 51, "open:writ": 49, "open:depths": 45, "open:muster": 44, "open:tollgate": 44, "open:sweep": 43, "open:kiln": 43, "open:levy": 42, "open:warband": 41, "open:wurmspeaker": 40, "peasant:elder": 67, "peasant:wskies": 60, "peasant:br": 58, "peasant:brdjinn": 58, "peasant:bw": 53, "peasant:tokens": 51, "peasant:mbc": 50, "peasant:muster": 47, "peasant:skies": 46, "peasant:stompy": 45, "peasant:rabble": 44, "peasant:naya": 44, "peasant:skieswall": 42, "peasant:urcontrol": 35 };
 /** Post-S52 (Chris): the candidates are the TWELVE best-fitting lists (the Open's whole library, not its top five),
  * and the noise has a noise of its own — a seat is STOCK (the list as written), a LIGHT tinkerer (one or two swaps),
  * or a HEAVY one (four to six); the light and the heavy also move a land. The shares are a quarter, a half, a quarter. */
@@ -56,7 +57,7 @@ export const LIST_DRAW_SCALE = 10;
 /** S59 (Chris: "use match percentage rather than game one percentage to spec the field" — the Pall is 64 in game one
  * and 55 in matches, and the seats were drawn on the 64): a list's STRENGTH is its match win rate on the table of record
  * where one is recorded, else its game-one mean. The seat draw, the cap and the Umbel's correlation all read this. */
-export const openStrength = (key: string): number | undefined => OPEN_MATCH_MEANS[key] ?? OPEN_MEANS[key];
+export const openStrength = (key: string): number | undefined => FORMAT_STRENGTH[key];
 /** S62 (ADR-176): the formats whose lists are a field of their own — a list of one is never a candidate in another. A
  * format without a field (Pauper, the gates) draws on the Open's. */
 const FIELD_GROUPS: readonly string[] = FIELD_FORMAT_IDS;

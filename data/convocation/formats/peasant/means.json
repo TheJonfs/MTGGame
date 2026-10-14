@@ -1,0 +1,21 @@
+{
+ "_comment": "A format's game-one means (S46): each list's win rate against the other active lists on the registered sixties. Written by `pnpm open:rr --format <id> --merge <shards> --record` \u2014 do not edit by hand. `pnpm open:gen` reads it with matches.json into the field's strength table (S63 Part 2).",
+ "when": "2026-10-13",
+ "source": "the third Peasant round-robin of 2026-10-13 (the 120-turn limit), as hand-recorded in constructed-builder.ts until S63",
+ "byList": {
+  "br": 58,
+  "brdjinn": 58,
+  "bw": 53,
+  "elder": 67,
+  "mbc": 50,
+  "muster": 47,
+  "naya": 44,
+  "rabble": 44,
+  "skies": 46,
+  "skieswall": 42,
+  "stompy": 45,
+  "tokens": 51,
+  "urcontrol": 35,
+  "wskies": 60
+ }
+}

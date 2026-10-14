@@ -30,3 +30,36 @@ export const OPEN_MATCH_MEANS: Record<string, number> = {
  "peasant:urcontrol": 32.8,
  "peasant:wskies": 56.9
 };
+/** S63 (Part 2): a list's game-one mean on its format's round-robin of record (measured: open 2026-10-12; peasant 2026-10-13). Keys "<format>:<list>". */
+export const OPEN_MEANS: Record<string, number> = {
+ "open:countersnake": 51,
+ "open:depths": 45,
+ "open:kiln": 43,
+ "open:levy": 42,
+ "open:marducontrol": 61,
+ "open:muster": 44,
+ "open:pall": 65,
+ "open:rabble": 59,
+ "open:reaperclio": 69,
+ "open:sweep": 43,
+ "open:tollgate": 44,
+ "open:warband": 41,
+ "open:writ": 49,
+ "open:wurmspeaker": 40,
+ "peasant:br": 58,
+ "peasant:brdjinn": 58,
+ "peasant:bw": 53,
+ "peasant:elder": 67,
+ "peasant:mbc": 50,
+ "peasant:muster": 47,
+ "peasant:naya": 44,
+ "peasant:rabble": 44,
+ "peasant:skies": 46,
+ "peasant:skieswall": 42,
+ "peasant:stompy": 45,
+ "peasant:tokens": 51,
+ "peasant:urcontrol": 35,
+ "peasant:wskies": 60
+};
+/** S59/S63: a list's STRENGTH — its match win rate where one is recorded, else its game-one mean. */
+export const FORMAT_STRENGTH: Record<string, number> = { ...OPEN_MEANS, ...OPEN_MATCH_MEANS };

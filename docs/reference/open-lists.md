@@ -4,7 +4,7 @@
 
 ## The table of record
 
-14 active lists, the AI in both seats. **Game one** is a list's mean win rate against the other active lists on the registered sixties (100 games a pairing; `OPEN_MEANS`). **Matches** is its best-of-three win rate — the figure the field's seat draw reads since S59 (60 matches a pairing, measured 2026-10-12; ADR-171): game one on the registered sixties, games two and three sideboarded. **After sideboarding** is its games-two-and-three rate less its game-one rate inside those matches.
+14 active lists, the AI in both seats. **Game one** is a list's mean win rate against the other active lists on the registered sixties (the round-robin of record, `formats/open/means.json`). **Matches** is its best-of-three win rate — the figure the field's seat draw reads since S59 (60 matches a pairing, measured 2026-10-12; ADR-171): game one on the registered sixties, games two and three sideboarded. **After sideboarding** is its games-two-and-three rate less its game-one rate inside those matches.
 
 | list | deck | pilot | matches | game one | after sideboarding | fifteen |
 |---|---|---|---|---|---|---|
@@ -55,12 +55,12 @@ The most played: Flametongue Kavu 6 · Lightning Bolt 6 · Birds of Paradise 5 �
   - against a graveyard deck: 3 Tormod's Crypt in for Swords to Plowshares, then Vindicate
   - against a graveyard deck: 2 Faerie Macabre in for The Usher
   - against a graveyard deck: 1 Faerie Macabre in for Vindicate
-  - against many small creatures (not large): 3 Pyroclasm in for Swords to Plowshares, then Vindicate, then Phyrexian Purge
-  - against many small creatures (not large): 2 Flametongue Kavu in for Swords to Plowshares, then Vindicate, then Phyrexian Purge
-  - against many small creatures (not large): 2 Wrath of God in for Swords to Plowshares, then Vindicate, then Phyrexian Purge
-  - against many small creatures (not large): 1 Sacred Helix in for Swords to Plowshares, then Vindicate, then Phyrexian Purge
-  - against large (not many small creatures): 2 Wrath of God in for Swords to Plowshares, then Vindicate
-  - against large (not many small creatures): 1 Sacred Helix in for Vindicate
+  - against many small creatures (not many creatures of toughness three or more): 3 Pyroclasm in for Swords to Plowshares, then Vindicate, then Phyrexian Purge
+  - against many small creatures (not many creatures of toughness three or more): 2 Flametongue Kavu in for Swords to Plowshares, then Vindicate, then Phyrexian Purge
+  - against many small creatures (not many creatures of toughness three or more): 2 Wrath of God in for Swords to Plowshares, then Vindicate, then Phyrexian Purge
+  - against many small creatures (not many creatures of toughness three or more): 1 Sacred Helix in for Swords to Plowshares, then Vindicate, then Phyrexian Purge
+  - against many creatures of toughness three or more (not many small creatures): 2 Wrath of God in for Swords to Plowshares, then Vindicate
+  - against many creatures of toughness three or more (not many small creatures): 1 Sacred Helix in for Vindicate
   - against many small creatures: 3 Pyroclasm in for Soul Warden, then Blood Artist
   - against many small creatures: 2 Flametongue Kavu in for Soul Warden, then Blood Artist
   - against many small creatures: 2 Wrath of God in for Soul Warden, then Blood Artist

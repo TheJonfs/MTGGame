@@ -595,7 +595,9 @@ function applyEffect(
       return 0;
     }
     case "gainLife": {
-      for (const p of e.who === "you" ? [me] : e.who === "opponent" ? [opp] : [me, opp]) {
+      // S63 (Part 0, the "target player" audit): `who: "target"` is the target player, as for draw (book 125) — no card
+      // in the pool has the shape yet; it read as both players
+      for (const p of e.who === "you" ? [me] : e.who === "opponent" ? [opp] : e.who === "target" ? targets.flatMap((t) => (t.kind === "player" ? [t.player] : [])) : [me, opp]) {
         view.life[p as 0 | 1] += typeof e.amount === "number" ? e.amount : 0;
       }
       return 0;
