@@ -103,7 +103,7 @@ export const usableByAnyDeck = (d: CardDef) => d.manaCost === "{0}" || (d.abilit
 /** Post-S59 (Reaper Control's guide): `small` — fifteen or more creatures of toughness two or less (what a Pyroclasm
  * answers; the rules' own sweeper shape counts power); `someGraveyard` — four or more cards that work from a graveyard
  * (the Coin and the Hearth, which `graveyard` at eight does not reach). */
-export type GuideShape = "creatureDeck" | "fewLarge" | "control" | "plan" | "counters" | "graveyard" | "relics" | "small" | "someGraveyard" | /** post-S60: eight or more creatures of toughness three or more — a sweeper's deck, not a Pyroclasm's */ "large";
+export type GuideShape = "creatureDeck" | "fewLarge" | "control" | "plan" | "counters" | "graveyard" | "relics" | "small" | "someGraveyard" | /** post-S60: eight or more creatures of toughness three or more — a sweeper's deck, not a Pyroclasm's */ "large" | /** S63: four or more hexproof or shroud creatures that are threats — printed power two or more, or a size the card sets for itself (Dungrove Elder's `*`) */ "hexproof";
 export interface GuideRow { in: string; n: number; out?: string[]; when: GuideShape[]; /** not against these, whatever `when` says */ unless?: GuideShape[] }
 export interface SideboardGuide { key: string; fifteen: Decklist; rows: GuideRow[]; /** post-S59: the guide is the whole plan — the rules do not run after it (they took Reaper Control's Walls out for removal in every matchup) */ only?: true }
 const sameCards = (a: Decklist, b: Decklist) => { const k = (l: Decklist) => l.filter((e) => !isBasic(e.cardId) && e.count > 0).map((e) => `${e.cardId}:${e.count}`).sort().join(","); return k(a) === k(b); };
@@ -166,6 +166,7 @@ export function aiSideboard(deck: Decklist, sideboard: Decklist, opponentDeck: D
       small: oppCr.filter((d) => (d.toughness ?? 0) <= 2).length >= (terms.scale?.small ?? OPEN_SHAPE_SCALE.small),
       someGraveyard: oppGraveyard >= 4,
       large: oppCr.filter((d) => (d.toughness ?? 0) >= 3).length >= (terms.scale?.large ?? OPEN_SHAPE_SCALE.large),
+      hexproof: oppCr.filter((d) => ((d.keywords ?? []).includes("hexproof") || (d.keywords ?? []).includes("shroud")) && ((d.power ?? 0) >= 2 || (d.abilities ?? []).some((a) => a.kind === "static" && a.effects.some((e) => e.type === "modifyPT" && e.scope === "self" && typeof e.power === "object")))).length >= 4,
     };
     for (const row of guide.rows) {
       if (terms.guideDrop?.includes(row.in)) continue;

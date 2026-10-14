@@ -321,7 +321,8 @@ export class HeuristicAgent implements Agent {
       // passing (kills same-host re-equip churn and no-benefit activations).
       return evaluate(view, this.profile, this.defs) - 0.25 - misaim;
     }
-    return evaluate(pred.view, this.profile, this.defs) + pred.adjustment - misaim + this.wheelSpendBonus(view, action) + this.lifegainPayoffBonus(view, action) + this.entersKillBonus(view, action) + this.entersModesBonus(view, action) + this.lockStealBonus(view, action) + this.planBonus(view, action) + this.againstPlanBonus(view, action) + this.loopCastBonus(view, action) + this.holdKeptBonus(view, action);
+    const hosted = this.equipOnHost(view, action, pred.view);
+    return evaluate(pred.view, this.profile, this.defs) + pred.adjustment - (hosted ? 0.25 : 0) - misaim + this.wheelSpendBonus(view, action) + this.lifegainPayoffBonus(view, action) + this.entersKillBonus(view, action) + this.entersModesBonus(view, action) + this.lockStealBonus(view, action) + this.planBonus(view, action) + this.againstPlanBonus(view, action) + this.loopCastBonus(view, action) + this.holdKeptBonus(view, action);
   }
 
   /** S46 (Vitalist — the brief's "a term, not a rule"): while we control a LIFE_GAINED payoff (the shape: a trigger on
@@ -1431,7 +1432,7 @@ export class HeuristicAgent implements Agent {
       // Only a SAFE attacker (no single block can kill it) trades its deterrence for race risk; a
       // fragile trader (the deathtouch 1/1 of book-of-shame's deterrence pin) keeps the full deduction.
       const safe = (o.toughness ?? 0) > maxOppPower && !oppDeathtouch;
-      score -= deterrence(this.defs, o, oppCreatures, this.C) * (safe ? raceRisk : 1);
+      score -= deterrence(this.defs, o, oppCreatures, this.C, !this.profile.off?.includes("equiphost")) * (safe ? raceRisk : 1);
     }
     // S23 (the Gallows Djinn): each attacker's own attack tax is priced at the archetype's
     // own-life rate — the 5/5's swing is honest, not free.
@@ -2136,6 +2137,29 @@ export class HeuristicAgent implements Agent {
       selfLegal: pred === "creature" && (hard || dmg >= (d.toughness ?? 0)), // the entering creature is itself a legal target, and would die
     };
   }
+  /**
+   * Book 128 (Chris's Basilisk Collar, post-S62: in 40 games against Dungrove Auras the pilot attached 29 of some 55
+   * Collars, four of them to a Wall of Reverence): the predictor prices every equip at a flat 0.4 — "statics will land
+   * on the host next time the real view arrives" — so what the equipment grants and who carries it are not read. Here
+   * the equipment's attached statics (power, toughness, keywords) are put on the host in the predicted view, so the
+   * evaluator prices this host with them (deathtouch on a creature with no power is nothing; on a first striker it
+   * holds off anything), and the flat worth drops to 0.15. Returns whether it did. Off: "equiphost". Exposed.
+   */
+  equipOnHost(view: GameView, action: Action, next: GameView): boolean {
+    if (action.type !== "activateAbility" || this.profile.off?.includes("equiphost")) return false;
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+    if (!ab || ab.kind !== "activated" || !ab.equip) return false;
+    const t = action.targets[0], host = t?.kind === "object" ? next.battlefield.find((o) => o.id === t.id) : undefined;
+    const eq = view.battlefield.find((o) => o.id === action.objectId), def = eq ? this.defs.get(eq.cardId) : undefined;
+    if (!host || host.power === null || host.toughness === null || !def) return false;
+    let any = false;
+    for (const a of def.abilities ?? []) if (a.kind === "static") for (const e of a.effects) {
+      if (e.type === "modifyPT" && e.scope === "attached" && typeof e.power === "number" && typeof e.toughness === "number") { host.power += e.power; host.toughness += e.toughness; any = true; }
+      if (e.type === "grantKeyword" && e.scope === "attached") { if (!host.keywords.includes(e.keyword)) host.keywords = [...host.keywords, e.keyword]; any = true; }
+    }
+    return any;
+  }
+
   /** Book 127 (S62, Chris's Peasant games: Rancor cast on a Wall of Blossoms, beside a 4/4 Baloth). An Aura that gives
    * its creature POWER and no toughness is for a creature that attacks: it is never put on one of ours that cannot
    * (a defender, a creature that cannot attack). With nothing else to put it on, it waits. Off: "attackaura". Exposed. */

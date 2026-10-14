@@ -1937,4 +1937,15 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "aggro", []), off: ["attackaura"] });
     expect(old.attackAuraOnNonAttackerGated(v("rancor"), on("w"))).toBe(false);
   });
+
+  it("book of shame 128 (post-S62 — Chris's Basilisk Collar: 29 of some 55 Collars attached in 40 games, four to a Wall of Reverence): an equip is priced with the equipment's keywords and size on THIS host — a Collar on a first striker over a Wall with one power, never better on a creature with no power than on one with some", () => {
+    const a = agent("midrange"), lands = ["plains", "plains"].map((c, i) => ({ id: "l" + i, cardId: c, controller: 0 as const }));
+    const v = mkView({ battlefield: [...lands, { id: "c", cardId: "basilisk_collar", controller: 0 }, { id: "arch", cardId: "longbow_archer", controller: 0 }, { id: "wall", cardId: "wall_of_reverence", controller: 0 }, { id: "moan", cardId: "moaning_wall", controller: 0 }, { id: "e", cardId: "penumbra_wurm", controller: 1 }] });
+    const eq = (id: string) => ({ type: "activateAbility" as const, objectId: "c", abilityIndex: 1, targets: [{ kind: "object" as const, id }] });
+    expect(a.scorePriorityAction(v, eq("arch"))).toBeGreaterThan(a.scorePriorityAction(v, eq("wall"))); // a 6/6 across the table: the first striker kills it and lives (CR 510.4), the 1/6 Wall trades
+    expect(a.scorePriorityAction(v, eq("wall"))).toBeGreaterThan(a.scorePriorityAction(v, eq("moan"))); // deathtouch without power is nothing
+    expect(a.scorePriorityAction(v, eq("arch"))).toBeGreaterThan(a.scorePriorityAction(v, { type: "pass" }));
+    const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["equiphost"] });
+    expect(old.scorePriorityAction(v, eq("arch"))).toBe(old.scorePriorityAction(v, eq("moan"))); // the old pilot: any host alike
+  });
 });

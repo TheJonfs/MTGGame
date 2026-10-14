@@ -191,15 +191,18 @@ export function deterrence(
   blocker: GameView["battlefield"][number],
   oppCreatures: GameView["battlefield"][number][],
   constants: EvalConstants = DEFAULT_CONSTANTS,
+  firstStrike = true,
 ): number {
   if (blocker.power === null || blocker.toughness === null) return 0;
+  const first = (o: GameView["battlefield"][number]) => o.keywords.includes("first strike") || o.keywords.includes("double strike");
   const bv = objectValue(defs, blocker, constants);
   let best = 0;
   for (const a of oppCreatures) {
     if (a.power === null || a.toughness === null) continue;
     // (book 122: deathtouch needs damage dealt — a creature shrunk to no power trades with nothing)
     const kills = (blocker.keywords.includes("deathtouch") && blocker.power > 0) || blocker.power >= a.toughness;
-    const dies = (a.keywords.includes("deathtouch") && a.power > 0) || a.power >= blocker.toughness;
+    // Book 128: a first striker that kills is not struck back (CR 510.4) — a Collared Archer holds off an Elder whole.
+    const dies = ((a.keywords.includes("deathtouch") && a.power > 0) || a.power >= blocker.toughness) && !(firstStrike && kills && first(blocker) && !first(a));
     const walls = blocker.toughness > a.power && !(a.keywords.includes("deathtouch") && a.power > 0);
     const v = kills
       ? Math.max(0, objectValue(defs, a, constants) - (dies ? bv : 0))
@@ -355,7 +358,7 @@ export function evaluate(view: GameView, profile: AiProfile, defs: Map<string, C
   const oppCreatures = theirs.filter((o) => o.power !== null && !o.keywords.includes("defender")); // S30: a Wall threatens no attack
   let deter = 0;
   if (oppCreatures.length > 0) {
-    for (const o of mine) if (!o.tapped) deter += deterrence(defs, o, oppCreatures, C);
+    for (const o of mine) if (!o.tapped) deter += deterrence(defs, o, oppCreatures, C, !profile.off?.includes("equiphost"));
   }
 
   // S31 (R-094, the Traumatizer): a controller-wide mill engine is worth the mill its side's

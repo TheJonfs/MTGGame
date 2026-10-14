@@ -1,0 +1,51 @@
+{
+  "id": "basilisk_collar",
+  "name": "Basilisk Collar",
+  "source": "real",
+  "manaCost": "{1}",
+  "types": [
+    "Artifact"
+  ],
+  "subtypes": [
+    "Equipment"
+  ],
+  "abilities": [
+    {
+      "kind": "static",
+      "effects": [
+        {
+          "type": "grantKeyword",
+          "scope": "attached",
+          "duration": "WHILE_SOURCE_ON_BATTLEFIELD",
+          "keyword": "deathtouch"
+        },
+        {
+          "type": "grantKeyword",
+          "scope": "attached",
+          "duration": "WHILE_SOURCE_ON_BATTLEFIELD",
+          "keyword": "lifelink"
+        }
+      ]
+    },
+    {
+      "kind": "activated",
+      "equip": true,
+      "cost": {
+        "mana": "{2}"
+      },
+      "timing": "sorcery",
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "creatureYouControl",
+          "zone": "battlefield"
+        }
+      ],
+      "effects": []
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2
+}

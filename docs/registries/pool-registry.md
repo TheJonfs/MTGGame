@@ -258,6 +258,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | badlands | olgc | 2016NA | Filip Burburan | 644aba21-1fa7-4483-b9bf-56c5fe4d8975 |
 | barren_moor | ons | 312 | Heather Hudson | 45be3811-a223-4c45-9b24-0317f2d53c60 |
 | baru_wurmspeaker | dmc | 26 | Andrew Mar | 2cae4149-d8ef-4772-9db4-cb576bef61b5 |
+| basilisk_collar | wwk | 122 | Howard Lyon | 55cdba1b-7a80-435f-9cff-b9365f62e311 |
 | bayou | olgc | 2019A | Raoul Vitale | 771ab45c-1a14-4ea1-b35a-1cb00a0fc5ff |
 | birds_of_paradise | lea | 186 | Mark Poole | 55fe6449-1f23-43dc-adee-d144cd505b5c |
 | bitterblossom | mor | 58 | Rebecca Guay | 8145fed6-6b51-420a-84cf-4ea5e0aa1883 |
@@ -686,6 +687,14 @@ Real, verified against Scryfall by exact name on 2026-10-13. **Tiers are Chris's
 |---|---|---|---|---|
 | dazzling_angel | Dazzling Angel | tested | flying; triggered ENTERS, source other, controller you, type Creature: `gainLife` 1 (Soul Warden's trigger narrowed to our own creatures) | FDN #9 (Daneen Wilkerson). T1. {2}{W} Angel 2/3. |
 | wall_of_reverence | Wall of Reverence | tested | defender, flying; triggered END_STEP controller you, optional, target creatureYouControl: `gainLife` amount `targetPower` | CON #20 (Wayne Reynolds). T2. {3}{W} Spirit Wall 1/6. Zero words. |
+
+## Post-Session 62 addition — Basilisk Collar (Chris, 2026-10-13)
+
+Real, verified against Scryfall by exact name on 2026-10-13. Chris's idea for the Elder round: deathtouch and lifelink on Peasant's first strikers (Longbow Archer, Nekrataal, Fencing Ace). **Tier 2 is interim — the tier is Chris's to set.** A rare in every printing.
+
+| id | card | status | vocabulary | notes |
+|---|---|---|---|---|
+| basilisk_collar | Basilisk Collar | tested | static `grantKeyword` deathtouch and lifelink, scope attached; equip {2} | WWK (first printing). T2 interim. {1} Artifact — Equipment. Zero words (the Warhammer's shape). |
 
 ## Post-Session 59 addition — the Manaba (Chris's card, 2026-10-10)
 
