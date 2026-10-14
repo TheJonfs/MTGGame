@@ -10,6 +10,7 @@ const cards = loadCardPool(join(ROOT, "data/cards")).cards;
 const perm = (player: 0 | 1, cardId: string): Modifier => ({ type: "permanentOnBattlefield", player, cardId });
 const D = (ids: Record<string, number>) => Object.entries(ids).map(([cardId, count]) => ({ cardId, count }));
 const pass = (r: ActionRequest) => r.actions.find((a) => a.type === "pass") ?? r.actions[0]!;
+const passer: Agent = { chooseAction: async (_v, r) => pass(r) };
 const idOf = (v: GameView, cardId: string, controller: 0 | 1) => v.battlefield.find((o) => o.cardId === cardId && o.controller === controller)?.id;
 type Final = { players: { life: number; graveyard: string[] }[]; battlefield: string[]; objects: Record<string, { cardId: string; zone: string; controller: number }> };
 const fin = (r: { finalStateSerialized: string }) => JSON.parse(r.finalStateSerialized) as Final;
@@ -92,5 +93,25 @@ describe("Basilisk Collar", () => {
     expect(equipped).toBe(true);
     expect([onField(f, "gallows_djinn"), onField(f, "wall_of_razors")]).toEqual([0, 1]);
     expect(f.players[0]!.life).toBe(24); // lifelink: the Wall's 4
+  });
+
+  /** Post-S62 (Chris): Retribution of the Meek — verified against Scryfall 2026-10-14: Visions, {2}{W} Sorcery,
+   * "Destroy all creatures with power 4 or greater. They can't be regenerated." (Nothing in the pool regenerates, as
+   * for Wrath of God.) R-109: power read as the spell resolves (CR 608.2h) — a Dungrove Elder is as big as its Forests. */
+  it("Retribution of the Meek: every creature of power four or more dies, either side; three or less lives; an Elder by its Forests", async () => {
+    const d = cards.get("retribution_of_the_meek")!;
+    expect(validateCard(d).errors).toEqual([]);
+    expect(d).toMatchObject({ manaCost: "{2}{W}", types: ["Sorcery"], source: "real" });
+    let cast = false;
+    const caster: Agent = { chooseAction: async (v, r) => { if (!cast && r.purpose === "priority" && v.step === "MAIN1" && v.stack.length === 0) { const a = r.actions.find((x) => x.type === "castSpell" && v.hand.find((h) => h.objectId === x.objectId)?.cardId === "retribution_of_the_meek"); if (a) { cast = true; return a; } } return pass(r); } };
+    const forests = (n: number) => Array.from({ length: n }, () => perm(1, "forest"));
+    const board = [perm(0, "plains"), perm(0, "plains"), perm(0, "plains"), perm(0, "serra_angel"), perm(0, "grizzly_bears"), perm(1, "gallows_djinn"), perm(1, "centaur_courser"), perm(1, "dungrove_elder")];
+    const run = async (n: number) => fin(await runMatch({ ...spec([...board, ...forests(n)]), players: [{ name: "a", decklist: D({ retribution_of_the_meek: 60 }), agent: "x" }, { name: "b", decklist: D({ forest: 60 }), agent: "x" }] }, cards, [caster, passer]));
+    const big = await run(4);
+    expect(cast).toBe(true);
+    expect(["serra_angel", "grizzly_bears", "gallows_djinn", "centaur_courser", "dungrove_elder"].map((c) => onField(big, c))).toEqual([0, 1, 0, 1, 0]);
+    cast = false;
+    const small = await run(3); // a 3/3 Elder
+    expect(onField(small, "dungrove_elder")).toBe(1);
   });
 });

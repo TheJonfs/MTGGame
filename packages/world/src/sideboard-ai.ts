@@ -77,7 +77,7 @@ export const answersRelics = (d: CardDef) => (d.spellEffect ?? []).some((e) => e
 export const answersCreatures = (d: CardDef) => removes(d) && predicates(d).some((p) => /creature$/i.test(p) || p === "anyTarget" || p === "permanent");
 export const isCounter = (d: CardDef) => (d.spellEffect ?? []).some((e) => e.type === "counter");
 /** S56 (rule 5): mass damage or destruction of creatures (Pyroclasm, Savage Twister, Wrath of God). */
-export const isSweeper = (d: CardDef) => !d.types.includes("Creature") && ((d.spellEffect ?? []) as { type: string; scope?: string }[]).some((e) => (e.type === "damageAll" || e.type === "destroyAll") && e.scope === "allCreatures");
+export const isSweeper = (d: CardDef) => !d.types.includes("Creature") && ((d.spellEffect ?? []) as { type: string; scope?: string; powerAtLeast?: number }[]).some((e) => (e.type === "damageAll" || e.type === "destroyAll") && e.scope === "allCreatures" && e.powerAtLeast === undefined); // R-109: a sweeper of the large (Retribution of the Meek) is no answer to the wide
 /** S56 (rule 6): a counter that can hit only a creature spell (Essence Scatter). */
 export const isCreatureCounter = (d: CardDef) => isCounter(d) && predicates(d).length > 0 && predicates(d).every((p) => p === "creatureSpell");
 /** S56 (rule 7): a noncreature permanent that takes control of what it is attached to (Control Magic). */

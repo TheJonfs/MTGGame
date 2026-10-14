@@ -2924,5 +2924,19 @@
     "art_crop": "https://cards.scryfall.io/art_crop/front/0/b/0bb37bcd-0bbd-4f3f-9623-803885750344.jpg?1783946552",
     "normal": "https://cards.scryfall.io/normal/front/0/b/0bb37bcd-0bbd-4f3f-9623-803885750344.jpg?1783946552",
     "via": "default oldest-highres"
+  },
+  "retribution_of_the_meek": {
+    "scryfallId": "860b8633-1bfc-426a-8666-5e6a584d4525",
+    "set": "vis",
+    "set_name": "Visions",
+    "collector_number": "19",
+    "artist": "Nathalie Hertz",
+    "name": "Retribution of the Meek",
+    "mana_cost": "{2}{W}",
+    "type_line": "Sorcery",
+    "oracle_text": "Destroy all creatures with power 4 or greater. They can't be regenerated.",
+    "art_crop": "https://cards.scryfall.io/art_crop/front/8/6/860b8633-1bfc-426a-8666-5e6a584d4525.jpg?1783947003",
+    "normal": "https://cards.scryfall.io/normal/front/8/6/860b8633-1bfc-426a-8666-5e6a584d4525.jpg?1783947003",
+    "via": "default oldest-highres"
   }
 }

@@ -64,7 +64,7 @@ describe("Peasant at the door (S62, ADR-176)", () => {
     const legal = [...cards.values()].filter((d) => !d.types.includes("Land") && cardLegal(d, PEASANT_FORMAT.rule) && !["plains", "island", "swamp", "mountain", "forest"].includes(d.id));
     // every legal card has a score as of the last `pnpm rating:format --write` (a card added after it reads its tier's prior until the next: name it here)
     const unscored = legal.filter((d) => typeof (rating.cards[d.id] as { peasant?: number } | undefined)?.peasant !== "number").map((d) => d.id).sort();
-    expect(unscored).toEqual(["basilisk_collar", "wall_of_razors"]); // post-S62: the Collar and the Wall are newer than the score (tier interim; in no list) — rebuilt when the seeds change
+    expect(unscored).toEqual(["basilisk_collar", "retribution_of_the_meek", "wall_of_razors"]); // post-S62: the Collar, the Wall and the Retribution are newer than the score (tier interim; in no list) — rebuilt when the seeds change
     const xs = legal.filter((d) => !unscored.includes(d.id)).map((d) => p.cards[d.id]!.rating).sort((a, b) => a - b);
     expect(xs[Math.floor(0.9 * xs.length)]! - xs[Math.floor(0.1 * xs.length)]!).toBeGreaterThan(1.2); // a real spread (the Limited score sat inside half a point on this shelf)
   });

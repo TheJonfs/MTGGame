@@ -1,0 +1,20 @@
+{
+  "id": "retribution_of_the_meek",
+  "name": "Retribution of the Meek",
+  "source": "real",
+  "manaCost": "{2}{W}",
+  "types": [
+    "Sorcery"
+  ],
+  "spellEffect": [
+    {
+      "type": "destroyAll",
+      "scope": "allCreatures",
+      "powerAtLeast": 4
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2
+}

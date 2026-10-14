@@ -34,7 +34,7 @@ export interface EffectContext {
   /** Players selected by a `who` param. */
   players(who: Who): number[];
   /** Object ids selected by a scope, evaluated now (ADR-020 params: subtype/cardType/other). */
-  objectsInScope(scope: Scope, params?: { subtype?: string; cardType?: string; other?: boolean; tapped?: boolean; withCounter?: CounterKind }): string[];
+  objectsInScope(scope: Scope, params?: { subtype?: string; cardType?: string; other?: boolean; tapped?: boolean; withCounter?: CounterKind; powerAtLeast?: number }): string[];
   /** S40 (R-097): the triggering event's OBJECT, if it is still on the battlefield (the Minefield's attacker, the Cobra's victim). */
   eventObject(): string | null;
   /** ADR-076: does the target at index i currently match these characteristics? (Little Bear's "if it's a Bear".) */
@@ -393,7 +393,7 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
 
   destroyAll: (e, ctx) => {
     if (e.type !== "destroyAll") throw new Error("resolver mismatch");
-    ctx.destroyMany(ctx.objectsInScope(e.scope));
+    ctx.destroyMany(ctx.objectsInScope(e.scope, e.powerAtLeast !== undefined ? { powerAtLeast: e.powerAtLeast } : {}));
   },
 
   damageAll: (e, ctx) => {

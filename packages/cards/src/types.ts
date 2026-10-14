@@ -224,7 +224,8 @@ export type EffectBase =
   /** A10 (S22): `targetSpec` fans out over a spec's still-legal chosen targets (Purge's any-number). */
   /** S40 (R-097, Voracious Cobra): `eventObject` — destroy the triggering event's object (the creature it damaged). */
   | { type: "destroy"; target?: number; targetSpec?: number; eventObject?: true }
-  | { type: "destroyAll"; scope: Scope }
+  /** Post-S62 (R-109, Retribution of the Meek): `powerAtLeast` — only creatures whose power, as the spell resolves, is N or more (CR 608.2h: the effect reads the board as it resolves). */
+  | { type: "destroyAll"; scope: Scope; powerAtLeast?: number }
   /** S27 (the Manafleur): `scope` — exile-by-predicate on the Wrath-class scope machinery ("exile all laws").
    * A `laws` scope is a no-op under the `accumulate` law-sequence mode (the reserved all-five climax). */
   /** S36: `targetSpec` fans out over a range spec (the Angel of the Ruins' "up to two"), as tapTarget's does. */

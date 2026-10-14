@@ -388,6 +388,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | rancor | ulg | 110 | Kev Walker | 59e256c2-38df-4012-9308-ce17dd889e5f |
 | reassembling_skeleton | arc | 22 | Austin Hsu | 655f983e-3b23-48ee-89d5-d01d469d5a6f |
 | restoration_angel | avr | 32 | Johannes Voss | c2ad8639-e586-47f4-baca-2a1af5aa281b |
+| retribution_of_the_meek | vis | 19 | Nathalie Hertz | 860b8633-1bfc-426a-8666-5e6a584d4525 |
 | reya_dawnbringer | inv | 33 | Matthew D. Wilson | e1e0e72b-e65e-4578-b610-9f529daa32d7 |
 | rumbling_baloth | m14 | 193 | Jesper Ejsing | d8610ff1-064b-4c75-a8df-d3b076370d1e |
 | sacred_foundry | rvr | 409 | Rob Alexander | a9eb59ea-bddd-4d5f-96e8-0c1f0ce84c11 |
@@ -689,12 +690,13 @@ Real, verified against Scryfall by exact name on 2026-10-13. **Tiers are Chris's
 | dazzling_angel | Dazzling Angel | tested | flying; triggered ENTERS, source other, controller you, type Creature: `gainLife` 1 (Soul Warden's trigger narrowed to our own creatures) | FDN #9 (Daneen Wilkerson). T1. {2}{W} Angel 2/3. |
 | wall_of_reverence | Wall of Reverence | tested | defender, flying; triggered END_STEP controller you, optional, target creatureYouControl: `gainLife` amount `targetPower` | CON #20 (Wayne Reynolds). T2. {3}{W} Spirit Wall 1/6. Zero words. |
 
-## Post-Session 62 additions — Basilisk Collar and Wall of Razors (Chris, 2026-10-13 and 14)
+## Post-Session 62 additions — Basilisk Collar, Wall of Razors and Retribution of the Meek (Chris, 2026-10-13 and 14)
 
 Real, verified against Scryfall by exact name on 2026-10-13. Chris's idea for the Elder round: deathtouch and lifelink on Peasant's first strikers (Longbow Archer, Nekrataal, Fencing Ace). **Tier 2 is interim — the tier is Chris's to set.** A rare in every printing.
 
 | id | card | status | vocabulary | notes |
 |---|---|---|---|---|
+| retribution_of_the_meek | Retribution of the Meek | tested | `destroyAll` allCreatures, `powerAtLeast` 4 (R-109) | VIS (first printing). T2 interim — Chris's to set. {2}{W} Sorcery. One word. A rare. "Can't be regenerated" is moot: nothing in the pool regenerates (as for Wrath of God). Chris's second white sweeper (verified 2026-10-14): the Wave spares toughness over power, this spares the small. |
 | wall_of_razors | Wall of Razors | tested | defender, first strike | STH (its only printing). T2 interim — Chris's to set. {1}{R} Creature — Wall 4/1. Zero words. Chris's idea for the Elder round beside the Collar (verified 2026-10-14). |
 | basilisk_collar | Basilisk Collar | tested | static `grantKeyword` deathtouch and lifelink, scope attached; equip {2} | WWK (first printing). T2 interim. {1} Artifact — Equipment. Zero words (the Warhammer's shape). |
 

@@ -143,7 +143,7 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
       }
     },
 
-    objectsInScope(scope: Scope, params: { subtype?: string; cardType?: string; other?: boolean; tapped?: boolean; withCounter?: CounterKind } = {}): string[] {
+    objectsInScope(scope: Scope, params: { subtype?: string; cardType?: string; other?: boolean; tapped?: boolean; withCounter?: CounterKind; powerAtLeast?: number } = {}): string[] {
       // ADR-020 params on resolved effects (S17: Aristocrat's "each Vampire you control").
       const sourceId = item.sourceId ?? item.objectId;
       const narrow = (ids: string[]) =>
@@ -155,6 +155,8 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
           // S40 (R-097): status filters — tapped objects (Odile), objects holding a counter of a kind (Static Sphere).
           if (params.tapped && !getObject(ctx.state, id).tapped) return false;
           if (params.withCounter && (getObject(ctx.state, id).counters[params.withCounter] ?? 0) <= 0) return false;
+          // Post-S62 (R-109, Retribution of the Meek): live power as the effect resolves
+          if (params.powerAtLeast !== undefined && characteristics(ctx, id).power < params.powerAtLeast) return false;
           return true;
         });
       switch (scope) {

@@ -515,7 +515,7 @@ function applyEffect(
       // S29 (Part 4, Vael's Wrath): a creature we control that drains on ANY creature's death (Blood
       // Artist, the Usher) is counted — every body the Wrath kills is a ping, ours included (the
       // observer sees the batch it dies in). Book 38.
-      const dying = view.battlefield.filter((o) => o.power !== null && !o.keywords.includes("indestructible"));
+      const dying = view.battlefield.filter((o) => o.power !== null && !o.keywords.includes("indestructible") && (e.powerAtLeast === undefined || o.power >= e.powerAtLeast)); // R-109
       let drain = 0;
       for (const o of dying) {
         if (o.controller !== me) continue;

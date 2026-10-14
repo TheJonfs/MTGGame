@@ -516,7 +516,7 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     // A10 (S22): destroy addresses a target index OR a spec index (Purge's fan-out).
     if (!Number.isInteger(e.target) && !Number.isInteger(e.targetSpec) && e.eventObject !== true) err(`"destroy" needs "target", "targetSpec" or eventObject (S40)`);
   },
-  destroyAll: needScope,
+  destroyAll: (e, err) => { needScope(e, err); const n = (e as { powerAtLeast?: unknown }).powerAtLeast; if (n !== undefined && !(Number.isInteger(n) && (n as number) > 0)) err(`destroyAll.powerAtLeast must be a positive integer (R-109)`); },
   exile: (e, err) => {
     // S27: target OR scope (the Manafleur's "exile all laws"); S36: OR a range spec's index (the Angel of the Ruins' "up to two").
     if (Number.isInteger(e.targetSpec)) return;
