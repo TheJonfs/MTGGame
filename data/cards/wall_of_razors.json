@@ -1,0 +1,22 @@
+{
+  "id": "wall_of_razors",
+  "name": "Wall of Razors",
+  "source": "real",
+  "manaCost": "{1}{R}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Wall"
+  ],
+  "power": 4,
+  "toughness": 1,
+  "keywords": [
+    "defender",
+    "first strike"
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2
+}

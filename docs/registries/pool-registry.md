@@ -438,6 +438,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | voracious_cobra | inv | 288 | Terese Nielsen | 9d8c5669-11a9-4d95-8431-7065037f1fb6 |
 | wall_of_air | lea | 89 | Richard Thomas | da56fdf3-6a8f-4833-a5c3-197650cc4889 |
 | wall_of_blossoms | sth | 125 | Heather Hudson | 7eb4a1a3-efcf-4c9a-ad1f-0a3f8f2b456f |
+| wall_of_razors | sth | 100 | Michael Sutfin | 0bb37bcd-0bbd-4f3f-9623-803885750344 |
 | wall_of_reverence | con | 20 | Wayne Reynolds | 2fa3fc82-fc5a-4f60-bcd6-363c2deb769d |
 | waste_not | m15 | 122 | Matt Stewart | 241d8f7d-3981-47c1-b7b8-748277fa452f |
 | waterfront_bouncer | mmq | 114 | Paolo Parente | 8dbdce9e-94fa-4ed5-9b97-d2026cffe7cb |
@@ -688,12 +689,13 @@ Real, verified against Scryfall by exact name on 2026-10-13. **Tiers are Chris's
 | dazzling_angel | Dazzling Angel | tested | flying; triggered ENTERS, source other, controller you, type Creature: `gainLife` 1 (Soul Warden's trigger narrowed to our own creatures) | FDN #9 (Daneen Wilkerson). T1. {2}{W} Angel 2/3. |
 | wall_of_reverence | Wall of Reverence | tested | defender, flying; triggered END_STEP controller you, optional, target creatureYouControl: `gainLife` amount `targetPower` | CON #20 (Wayne Reynolds). T2. {3}{W} Spirit Wall 1/6. Zero words. |
 
-## Post-Session 62 addition — Basilisk Collar (Chris, 2026-10-13)
+## Post-Session 62 additions — Basilisk Collar and Wall of Razors (Chris, 2026-10-13 and 14)
 
 Real, verified against Scryfall by exact name on 2026-10-13. Chris's idea for the Elder round: deathtouch and lifelink on Peasant's first strikers (Longbow Archer, Nekrataal, Fencing Ace). **Tier 2 is interim — the tier is Chris's to set.** A rare in every printing.
 
 | id | card | status | vocabulary | notes |
 |---|---|---|---|---|
+| wall_of_razors | Wall of Razors | tested | defender, first strike | STH (its only printing). T2 interim — Chris's to set. {1}{R} Creature — Wall 4/1. Zero words. Chris's idea for the Elder round beside the Collar (verified 2026-10-14). |
 | basilisk_collar | Basilisk Collar | tested | static `grantKeyword` deathtouch and lifelink, scope attached; equip {2} | WWK (first printing). T2 interim. {1} Artifact — Equipment. Zero words (the Warhammer's shape). |
 
 ## Post-Session 59 addition — the Manaba (Chris's card, 2026-10-10)

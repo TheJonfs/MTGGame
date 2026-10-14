@@ -62,4 +62,35 @@ describe("Basilisk Collar", () => {
     const f = fin(await runMatch(spec([...lands, perm(0, "basilisk_collar"), perm(0, "fencing_ace")]), cards, [equipAndAttack("fencing_ace"), blockWith("none")]));
     expect([f.players[0]!.life, f.players[1]!.life]).toEqual([22, 18]);
   });
+
+  /** Post-S62 (Chris): Wall of Razors — verified against Scryfall 2026-10-14: Stronghold (its only printing), {1}{R}
+   * Creature — Wall 4/1, defender, first strike. No new words. CR 702.3b (defender: can't attack); 702.7b and 510.4
+   * (first-strike damage first, and a creature it destroys deals no regular damage). */
+  it("Wall of Razors: valid as printed; it kills a blocked 4/4 before the 4/4 deals damage, and dies to a 5/5 it cannot kill", async () => {
+    const d = cards.get("wall_of_razors")!;
+    expect(validateCard(d).errors).toEqual([]);
+    expect(d).toMatchObject({ manaCost: "{1}{R}", types: ["Creature"], subtypes: ["Wall"], power: 4, toughness: 1, keywords: ["defender", "first strike"], source: "real" });
+    // seat 1 attacks into our Wall (seat 1 is active: startingPlayer 1)
+    const attacker = (cardId: string): Agent => ({ chooseAction: async (v, r) => r.actions.find((a) => a.type === "declareAttacker" && v.battlefield.find((o) => o.id === a.objectId)?.cardId === cardId) ?? r.actions.find((a) => a.type === "doneDeclaringAttackers") ?? pass(r) });
+    const blocker: Agent = { chooseAction: async (v, r) => r.actions.find((a) => a.type === "declareBlocker" && v.battlefield.find((o) => o.id === a.blocker)?.cardId === "wall_of_razors") ?? r.actions.find((a) => a.type === "doneDeclaringBlockers") ?? pass(r) };
+    const run = async (big: string) => fin(await runMatch({ ...spec([perm(0, "wall_of_razors"), perm(1, big)]), rules: { ...spec([]).rules, startingPlayer: 1 } }, cards, [blocker, attacker(big)]));
+    const four = await run("rumbling_baloth");
+    expect([onField(four, "rumbling_baloth"), onField(four, "wall_of_razors")]).toEqual([0, 1]);
+    const five = await run("gallows_djinn");
+    expect([onField(five, "gallows_djinn"), onField(five, "wall_of_razors")]).toEqual([1, 0]);
+  });
+  it("Wall of Razors with the Collar: a first-strike deathtoucher — the 5/5 dies and the Wall lives", async () => {
+    const attacker: Agent = { chooseAction: async (v, r) => r.actions.find((a) => a.type === "declareAttacker") ?? r.actions.find((a) => a.type === "doneDeclaringAttackers") ?? pass(r) };
+    const blocker: Agent = { chooseAction: async (v, r) => r.actions.find((a) => a.type === "declareBlocker" && v.battlefield.find((o) => o.id === a.blocker)?.cardId === "wall_of_razors") ?? r.actions.find((a) => a.type === "doneDeclaringBlockers") ?? pass(r) };
+    // the Collar starts attached: equip on our turn, then pass the turn to the attacker
+    let equipped = false;
+    const ours: Agent = { chooseAction: async (v, r) => {
+      if (!equipped && r.purpose === "priority" && v.activePlayer === 0 && v.step === "MAIN1" && v.stack.length === 0) { const eq = r.actions.find((a) => a.type === "activateAbility" && v.battlefield.find((o) => o.id === a.objectId)?.cardId === "basilisk_collar"); if (eq) { equipped = true; return eq; } }
+      return blocker.chooseAction(v, r);
+    } };
+    const f = fin(await runMatch({ ...spec([...lands, perm(0, "basilisk_collar"), perm(0, "wall_of_razors"), perm(1, "gallows_djinn")]), rules: { ...spec([]).rules, maxTurns: 2 } }, cards, [ours, attacker]));
+    expect(equipped).toBe(true);
+    expect([onField(f, "gallows_djinn"), onField(f, "wall_of_razors")]).toEqual([0, 1]);
+    expect(f.players[0]!.life).toBe(24); // lifelink: the Wall's 4
+  });
 });

@@ -2910,5 +2910,19 @@
     "art_crop": "https://cards.scryfall.io/art_crop/front/5/5/55cdba1b-7a80-435f-9cff-b9365f62e311.jpg?1783942040",
     "normal": "https://cards.scryfall.io/normal/front/5/5/55cdba1b-7a80-435f-9cff-b9365f62e311.jpg?1783942040",
     "via": "default oldest-highres"
+  },
+  "wall_of_razors": {
+    "scryfallId": "0bb37bcd-0bbd-4f3f-9623-803885750344",
+    "set": "sth",
+    "set_name": "Stronghold",
+    "collector_number": "100",
+    "artist": "Michael Sutfin",
+    "name": "Wall of Razors",
+    "mana_cost": "{1}{R}",
+    "type_line": "Creature — Wall",
+    "oracle_text": "Defender (This creature can't attack.)\nFirst strike",
+    "art_crop": "https://cards.scryfall.io/art_crop/front/0/b/0bb37bcd-0bbd-4f3f-9623-803885750344.jpg?1783946552",
+    "normal": "https://cards.scryfall.io/normal/front/0/b/0bb37bcd-0bbd-4f3f-9623-803885750344.jpg?1783946552",
+    "via": "default oldest-highres"
   }
 }

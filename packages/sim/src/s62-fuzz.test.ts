@@ -29,12 +29,15 @@ export const S62_LISTS = (): { name: string; decklist: { cardId: string; count: 
   { name: "sisters", decklist: D({ dazzling_angel: 4, wall_of_reverence: 4, soul_warden: 4, youthful_valkyrie: 4, vitalist: 3, raise_the_alarm: 4, restoration_angel: 3, blood_artist: 3, reassembling_skeleton: 3, child_of_night: 3, swords_to_plowshares: 2, godless_shrine: 4, plains: 11, swamp: 8 }) },
   // post-S62 (Chris's Basilisk Collar): deathtouch and lifelink moved between first strikers, a double striker, tokens
   // and a Wall; the bearer dying, blinked or sacrificed with the Collar on it; beside the Warhammer and a Bonesplitter
+  // post-S62 (Chris's Wall of Razors): a first-strike defender beside the Collar and the Warhammer, under Pyroclasm,
+  // the Wave (it dies to its own four), a Kavu and blinks
+  { name: "razors", decklist: D({ wall_of_razors: 4, basilisk_collar: 4, longbow_archer: 4, fencing_ace: 4, lightning_bolt: 4, pyroclasm: 2, wave_of_reckoning: 2, restoration_angel: 3, dazzling_angel: 3, flametongue_kavu: 2, loxodon_warhammer: 2, sacred_foundry: 4, plains: 12, mountain: 10 }) },
   { name: "collar", decklist: D({ basilisk_collar: 4, fencing_ace: 4, longbow_archer: 4, nekrataal: 4, vampire_nighthawk: 3, restoration_angel: 3, raise_the_alarm: 3, moaning_wall: 2, loxodon_warhammer: 2, bonesplitter: 2, blood_artist: 2, swords_to_plowshares: 3, godless_shrine: 4, plains: 11, swamp: 9 }) },
 ];
 
 describe("S62 fuzz — the ten cards of ADR-177 and the two after (fuzz-before-fixtures)", () => {
   const games = process.env.FUZZ_FULL ? 20 : 4;
-  it(`${games} games × every pair of the six lists (mirrors included) × 2 seats, random; heuristic at a half: zero exceptions, every game terminates`, async () => {
+  it(`${games} games × every pair of the seven lists (mirrors included) × 2 seats, random; heuristic at a half: zero exceptions, every game terminates`, async () => {
     const cards = loadCardPool(CARDS_DIR).cards, lists = S62_LISTS();
     for (const l of lists) expect(l.decklist.reduce((n, e) => n + e.count, 0), l.name).toBe(60);
     let n = 0;
