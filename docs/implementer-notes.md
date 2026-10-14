@@ -744,3 +744,10 @@ See handoff Concerns for the authoritative list. Highlights: auto-pay greedy fea
 - **Per-format anything**: `sideboardTermsFor(formatId)`, `formatView(rating, formatId)`, `fieldGroupOf(formatId)`, `candidateCount(formatId)`; a CLI takes `--format` and keeps the Open's old names for its locals.
 - **The preview's port changes each start** (`autoPort`); read it from the tool's result.
 
+
+## Session 63 (Parts 0–1)
+- **`--deck-side` and `--deck-guide` are read only with `--deck`.** To try a fifteen for a registered list, pass its own sixty as `--deck key:file:archetype` too, or the run is the base (a sweep was started that way and caught).
+- **A guide trial is cheapest against the one opponent it fires on** (`--vs elder --matches 400`, paired with a base on the same seed): game one is identical, so the difference is all games two and three.
+- **Single pairings swing with the seed** (White Skies against Auras: 54 on 56, 64 on 91). Compare paired runs, not a run with an old table.
+- **A pilot that cannot use a card makes the card look bad.** Probe the decisions (the equip host, the cast when a target exists) before reading a card's number; `scripts/open/seat.py` gives the casts.
+- **Chris's recorded runs are the best evidence of a pilot gap**: `pnpm play-diff <file> --event <seed>` names the decisions by kind.
