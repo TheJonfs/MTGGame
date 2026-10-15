@@ -465,6 +465,9 @@ export interface TriggerCondition {
   /** S40 (R-097, Voracious Cobra): DEALS_DAMAGE only — combat damage only / damage dealt to a creature only. */
   combat?: true;
   recipient?: "creature";
+  /** S64 (R-110, Mentor of the Meek): ENTERS_BATTLEFIELD only — the entering creature's power, as it is on the
+   * battlefield immediately after it enters (an Anthem counts), is at most N (CR 603.2, 603.6a). */
+  powerAtMost?: number;
 }
 
 /** ADR-075 A6: one mode of a modal spell/trigger ("choose one —"). */

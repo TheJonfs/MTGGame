@@ -2938,5 +2938,19 @@
     "art_crop": "https://cards.scryfall.io/art_crop/front/8/6/860b8633-1bfc-426a-8666-5e6a584d4525.jpg?1783947003",
     "normal": "https://cards.scryfall.io/normal/front/8/6/860b8633-1bfc-426a-8666-5e6a584d4525.jpg?1783947003",
     "via": "default oldest-highres"
+  },
+  "mentor_of_the_meek": {
+    "scryfallId": "bd8f179a-f6ab-4d4c-8195-ed077a7770d3",
+    "set": "isd",
+    "set_name": "Innistrad",
+    "collector_number": "21",
+    "artist": "Jana Schirmer & Johannes Voss",
+    "name": "Mentor of the Meek",
+    "mana_cost": "{2}{W}",
+    "type_line": "Creature — Human Soldier",
+    "oracle_text": "Whenever another creature you control with power 2 or less enters, you may pay {1}. If you do, draw a card.",
+    "art_crop": "https://cards.scryfall.io/art_crop/front/b/d/bd8f179a-f6ab-4d4c-8195-ed077a7770d3.jpg?1783940991",
+    "normal": "https://cards.scryfall.io/normal/front/b/d/bd8f179a-f6ab-4d4c-8195-ed077a7770d3.jpg?1783940991",
+    "via": "default oldest-highres"
   }
 }

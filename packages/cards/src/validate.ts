@@ -331,6 +331,10 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
         const lawTrigger = a.event === "END_STEP";
         // S40 (R-097): eventPower reads the leaving creature's LKI power — observed DIES / LEAVES_BATTLEFIELD only.
         const leaveTrigger = (a.event === "DIES" || a.event === "LEAVES_BATTLEFIELD") && isRecord(a.condition) && (a.condition.source === "other" || a.condition.source === "any");
+        if (isRecord(a.condition) && a.condition.powerAtMost !== undefined) {
+          if (a.event !== "ENTERS_BATTLEFIELD") err(`condition powerAtMost lives only on ENTERS_BATTLEFIELD triggers (S64, R-110)`);
+          if (!Number.isInteger(a.condition.powerAtMost) || (a.condition.powerAtMost as number) < 0) err(`condition powerAtMost must be a whole number (S64)`);
+        }
         if (isRecord(a.condition) && (a.condition.combat !== undefined || a.condition.recipient !== undefined)) {
           if (a.event !== "DEALS_DAMAGE") err(`condition combat/recipient live only on DEALS_DAMAGE triggers (S40)`);
           if (a.condition.combat !== undefined && a.condition.combat !== true) err(`condition combat must be true when present (S40)`);

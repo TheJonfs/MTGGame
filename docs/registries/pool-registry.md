@@ -351,6 +351,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | loxodon_warhammer | mrd | 201 | Jeremy Jarvis | a1a6e375-5c47-4447-9453-adf0038693e3 |
 | man_o_war | vis | 37 | Jon J Muth | 4dbf9bf9-75cd-4b25-a3a1-43b7e029700b |
 | master_decoy | tmp | 29 | Phil Foglio | f3e11097-1ace-4ae8-a9e8-d00b9f709e54 |
+| mentor_of_the_meek | isd | 21 | Jana Schirmer & Johannes Voss | bd8f179a-f6ab-4d4c-8195-ed077a7770d3 |
 | mind_rot | por | 101 | Steve Luke | b91d355d-8409-4f0b-87ce-7590a8b9ebc0 |
 | mind_stone | wth | 153 | Adam Rex | 162e81d3-6cd4-4cb8-8ed8-cfbd8d34ca71 |
 | mist_raven | avr | 67 | John Avon | 0d98f0c4-021a-407a-8b0c-5500d804f959 |
@@ -689,6 +690,14 @@ Real, verified against Scryfall by exact name on 2026-10-13. **Tiers are Chris's
 |---|---|---|---|---|
 | dazzling_angel | Dazzling Angel | tested | flying; triggered ENTERS, source other, controller you, type Creature: `gainLife` 1 (Soul Warden's trigger narrowed to our own creatures) | FDN #9 (Daneen Wilkerson). T1. {2}{W} Angel 2/3. |
 | wall_of_reverence | Wall of Reverence | tested | defender, flying; triggered END_STEP controller you, optional, target creatureYouControl: `gainLife` amount `targetPower` | CON #20 (Wayne Reynolds). T2. {3}{W} Spirit Wall 1/6. Zero words. |
+
+## Session 64 addition — Mentor of the Meek (ADR-180)
+
+Real, verified against Scryfall by exact name on 2026-10-15. **First printed in Innistrad** (the brief had M12). Tier 2 (ADR-180).
+
+| id | card | status | vocabulary | notes |
+|---|---|---|---|---|
+| mentor_of_the_meek | Mentor of the Meek | tested | triggered ENTERS source other, controller you, type Creature, `powerAtMost` 2 (R-110); optional with `optionalCost` {1} (the Phoenix's rider): `draw` 1 | ISD (Jana Schirmer & Johannes Voss). T2. {2}{W} Human Soldier 2/2. Half a word. The pilot pays only with idle mana (book 132). |
 
 ## Post-Session 62 additions — Basilisk Collar, Wall of Razors and Retribution of the Meek (Chris, 2026-10-13 and 14)
 

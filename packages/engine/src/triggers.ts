@@ -2,6 +2,7 @@ import type { EngineCtx } from "./ctx.js";
 import type { Action } from "./actions.js";
 import { targetCombinations } from "./targeting.js";
 import { nextTimestamp, type PendingTrigger, type PlayerId, type StackItem } from "./state.js";
+import { characteristics } from "./characteristics.js";
 
 /**
  * Triggered abilities (R-016). Triggers are collected from ZONE_CHANGE events
@@ -114,6 +115,8 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
         if (cond.type && !cond.type.some((t) => movedDef.types.includes(t as never))) return;
         if (cond.notType && cond.notType.some((t) => movedDef.types.includes(t as never))) return;
         if (cond.subtype && !cond.subtype.some((t) => (movedDef.subtypes ?? []).includes(t))) return;
+        // S64 (R-110, Mentor of the Meek): the entering creature's power as it is on the battlefield (CR 603.6a)
+        if (cond.powerAtMost !== undefined && (observedEvent !== "ENTERS_BATTLEFIELD" || !ctx.state.objects[movedId] || characteristics(ctx, movedId).power > cond.powerAtMost)) return;
         // The observer's trigger source: its current identity (graveyard card if it already left; the moved object's new id).
         const sourceId = ctx.state.objects[obs.id] ? obs.id : obs.id === movedId ? (ev.newId || ev.oldId) : (ctx.lookback?.get(obs.id)?.currentId ?? obs.id);
         pend(sourceId, obs.cardId, obs.controller, i, eventContext);
