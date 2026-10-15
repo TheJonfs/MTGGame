@@ -35,6 +35,10 @@ export const S62_LISTS = (): { name: string; decklist: { cardId: string; count: 
   // the Anthem and Giant Growth pushing across it, a Restoration Angel blinking, Elders by their Forests, the Wave beside it
   // S64 (ADR-180, Mentor of the Meek, R-110): a paid draw on small creatures entering — tokens in twos, a blinked
   // Angel (power three: none), the Anthem pushing a 2/1 past the line, the Mentor among the lifegain fliers
+  // S64 (Chris's Karmic Mentor): a return on entering of a non-Aura permanent of mana value two or less — creatures,
+  // lands, the Altar and the Crypt; Unearth on the Mentor itself, a blinked Mentor, the Wave and Pyroclasm killing it,
+  // Thundersnakes coming back, an Altar to sacrifice into
+  { name: "karmic", decklist: D({ karmic_mentor: 4, unearth: 4, soul_warden: 4, blood_artist: 4, thundersnake: 4, typhoid_rats: 4, child_of_night: 4, wave_of_reckoning: 2, restoration_angel: 2, altar_of_dementia: 2, pacifism: 2, tormods_crypt: 2, godless_shrine: 4, blood_crypt: 4, plains: 5, swamp: 5, mountain: 4 }) },
   { name: "mentor", decklist: D({ mentor_of_the_meek: 4, raise_the_alarm: 4, soul_warden: 4, dazzling_angel: 4, youthful_valkyrie: 4, dawnwing_marshal: 4, glorious_anthem: 3, restoration_angel: 3, captain_of_the_watch: 2, savannah_lions: 4, wave_of_reckoning: 2, plains: 22 }) },
   { name: "meek", decklist: D({ retribution_of_the_meek: 4, wave_of_reckoning: 2, vampire_nighthawk: 4, typhoid_rats: 4, dazzling_angel: 4, longbow_archer: 4, wall_of_reverence: 3, gallows_djinn: 2, nekrataal: 3, restoration_angel: 3, glorious_anthem: 3, godless_shrine: 4, plains: 11, swamp: 9 }) },
   { name: "razors", decklist: D({ wall_of_razors: 4, basilisk_collar: 4, longbow_archer: 4, fencing_ace: 4, lightning_bolt: 4, pyroclasm: 2, wave_of_reckoning: 2, restoration_angel: 3, dazzling_angel: 3, flametongue_kavu: 2, loxodon_warhammer: 2, sacred_foundry: 4, plains: 12, mountain: 10 }) },
@@ -43,7 +47,7 @@ export const S62_LISTS = (): { name: string; decklist: { cardId: string; count: 
 
 describe("S62 fuzz — the ten cards of ADR-177 and the two after (fuzz-before-fixtures)", () => {
   const games = process.env.FUZZ_FULL ? 20 : 4;
-  it(`${games} games × every pair of the nine lists (mirrors included) × 2 seats, random; heuristic at a half: zero exceptions, every game terminates`, async () => {
+  it(`${games} games × every pair of the ten lists (mirrors included) × 2 seats, random; heuristic at a half: zero exceptions, every game terminates`, async () => {
     const cards = loadCardPool(CARDS_DIR).cards, lists = S62_LISTS();
     for (const l of lists) expect(l.decklist.reduce((n, e) => n + e.count, 0), l.name).toBe(60);
     let n = 0;

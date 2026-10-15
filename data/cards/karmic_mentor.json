@@ -1,0 +1,49 @@
+{
+  "id": "karmic_mentor",
+  "name": "Karmic Mentor",
+  "source": "custom",
+  "manaCost": "{1}{W}{W}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Angel"
+  ],
+  "power": 2,
+  "toughness": 2,
+  "keywords": [
+    "flying"
+  ],
+  "text": "Flying\nWhen Karmic Mentor enters, return target non-Aura permanent card with mana value 2 or less from your graveyard to the battlefield.",
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "condition": {
+        "source": "self"
+      },
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "nonAuraPermanentCardInYourGraveyard",
+          "zone": "graveyard",
+          "manaValueAtMost": 2
+        }
+      ],
+      "effects": [
+        {
+          "type": "returnFromGraveyard",
+          "target": 0,
+          "to": "battlefield"
+        }
+      ],
+      "optional": false
+    }
+  ],
+  "art": {
+    "asset": "/custom-art/karmic_mentor.png",
+    "fallback": "rendered"
+  },
+  "shopTier": 2,
+  "printedAsset": "karmic_mentor.jpg"
+}

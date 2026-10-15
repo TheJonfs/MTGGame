@@ -691,6 +691,14 @@ Real, verified against Scryfall by exact name on 2026-10-13. **Tiers are Chris's
 | dazzling_angel | Dazzling Angel | tested | flying; triggered ENTERS, source other, controller you, type Creature: `gainLife` 1 (Soul Warden's trigger narrowed to our own creatures) | FDN #9 (Daneen Wilkerson). T1. {2}{W} Angel 2/3. |
 | wall_of_reverence | Wall of Reverence | tested | defender, flying; triggered END_STEP controller you, optional, target creatureYouControl: `gainLife` amount `targetPower` | CON #20 (Wayne Reynolds). T2. {3}{W} Spirit Wall 1/6. Zero words. |
 
+## Session 64 addition — Karmic Mentor (Chris's card, 2026-10-15)
+
+Custom, Chris's design after a single-factor study in White Skies (cost, trigger, cap and body; the decision record is in the handoff): the 1WW cap-2 2/2 — it cannot return itself or a sibling (mana value three), so no Altar loop; it dies to Pyroclasm and to its own deck's Wave. Tier 2 (Chris). Art: Chris's mosaic (`assets/generated/card-art/karmic_mentor.png`) and printed face.
+
+| id | card | status | vocabulary | notes |
+|---|---|---|---|---|
+| karmic_mentor | Karmic Mentor | tested | flying; triggered ENTERS self: target `nonAuraPermanentCardInYourGraveyard` (S64, new) `manaValueAtMost` 2 → `returnFromGraveyard` to battlefield | custom. T2. {1}{W}{W} Angel 2/2. Half a word: the non-Aura permanent target (an Aura entering unattached is not supported — CR 303.4f). |
+
 ## Session 64 addition — Mentor of the Meek (ADR-180)
 
 Real, verified against Scryfall by exact name on 2026-10-15. **First printed in Innistrad** (the brief had M12). Tier 2 (ADR-180).

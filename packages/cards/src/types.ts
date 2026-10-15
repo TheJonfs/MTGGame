@@ -87,6 +87,9 @@ export const TARGET_PREDICATES = [
   "instantOrSorceryCardInYourGraveyard",
   // S40 (R-097, Shevelport): "artifact, enchantment, or land card" — the typed graveyard-to-hand family's third member.
   "artifactEnchantmentOrLandCardInYourGraveyard",
+  // S64 (Chris's Karmic Mentor): "non-Aura permanent card" — artifact, creature, enchantment (not an Aura) or land.
+  // An Aura put onto the battlefield must be attached as it enters (CR 303.4f); the engine has no such return.
+  "nonAuraPermanentCardInYourGraveyard",
   // S25 (the Sapphire Sage): controller-scoped permanent predicates — the creatureYouControl
   // pattern widened to permanents ("for each player, choose target permanent that player controls").
   "permanentYouControl",

@@ -554,7 +554,6 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
     "in": "retribution_of_the_meek",
     "n": 3,
     "out": [
-     "pacifism",
      "swords_to_plowshares"
     ],
     "when": [

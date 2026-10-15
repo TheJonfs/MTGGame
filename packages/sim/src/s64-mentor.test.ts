@@ -57,3 +57,30 @@ describe("Mentor of the Meek", () => {
     expect(drawn(bare)).toBe(1); // without the Anthem the Lions are a 2/1: paid, drawn
   });
 });
+
+/**
+ * S64 (Chris's custom card, his design of 2026-10-15 after a single-factor study): Karmic Mentor — {1}{W}{W} Creature —
+ * Angel 2/2, flying, "When Karmic Mentor enters, return target non-Aura permanent card with mana value 2 or less from
+ * your graveyard to the battlefield." The target word `nonAuraPermanentCardInYourGraveyard` (an Aura put onto the
+ * battlefield must be attached as it enters — CR 303.4f — which no return does here). Mana value 3: it cannot return
+ * itself or a sibling (no Altar loop).
+ */
+describe("Karmic Mentor", () => {
+  // the Mentor is fetched to hand first (the signature modifier takes a library copy), then three of the rest are milled
+  const withYard = (yard: string) => spec({ [yard]: 59, karmic_mentor: 1 }, [...plains(3), { type: "signatureToHand", player: 0, cardId: "karmic_mentor" } as Modifier, { type: "effectAtStart", player: 0, effects: [{ type: "mill", count: 3, who: "you" }] } as Modifier]);
+  type Board = { battlefield: string[]; objects: Record<string, { cardId: string; controller: number }> };
+  const count = (r: { finalStateSerialized: string }, cardId: string) => { const f = JSON.parse(r.finalStateSerialized) as Board; return f.battlefield.filter((id) => f.objects[id]!.cardId === cardId).length; };
+  it("is valid as designed", () => {
+    const d = cards.get("karmic_mentor")!;
+    expect(validateCard(d).errors).toEqual([]);
+    expect(d).toMatchObject({ manaCost: "{1}{W}{W}", power: 2, toughness: 2, keywords: ["flying"], subtypes: ["Angel"], source: "custom", shopTier: 2 });
+  });
+  it("returns a creature of mana value two or less (a Soul Warden) and a land (mana value nought)", async () => {
+    expect(count(await runMatch(withYard("soul_warden"), cards, [caster("karmic_mentor"), passer]), "soul_warden")).toBe(1);
+    expect(count(await runMatch(withYard("forest"), cards, [caster("karmic_mentor"), passer]), "forest")).toBe(1);
+  });
+  it("returns nothing of mana value three or more (a Restoration Angel), and no Aura (a Pacifism)", async () => {
+    expect(count(await runMatch(withYard("restoration_angel"), cards, [caster("karmic_mentor"), passer]), "restoration_angel")).toBe(0);
+    expect(count(await runMatch(withYard("pacifism"), cards, [caster("karmic_mentor"), passer]), "pacifism")).toBe(0);
+  });
+});

@@ -69,13 +69,13 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 8 · Restoration Angel 6 �
 `wskies` · midrange · game one 60 · matches 56.9
 
 - **Lands (23):** 23 Plains
-- **Creatures (30):** 4 Dazzling Angel · 4 Youthful Valkyrie · 4 Inspiring Overseer · 4 Wall of Reverence · 4 Soul Warden · 4 Restoration Angel · 2 Dawnwing Marshal · 4 Vitalist
+- **Creatures (30):** 4 Dazzling Angel · 4 Youthful Valkyrie · 4 Inspiring Overseer · 4 Wall of Reverence · 4 Soul Warden · 4 Restoration Angel · 4 Vitalist · 2 Karmic Mentor
 - **Other (7):** 3 Wave of Reckoning · 4 Swords to Plowshares
 - **Its fifteen (registered):** 2 Captain of the Watch · 2 Disenchant · 2 Glorious Anthem · 1 Longbow Archer · 2 Pacifism · 1 Savannah Lions · 1 Tormod's Crypt · 1 Wave of Reckoning · 3 Retribution of the Meek
 - **Its sideboard guide** (then the general rules run on what is left):
   - against four or more hexproof or shroud threats: 3 Retribution of the Meek in for Swords to Plowshares
 - **History:**
-  - contributed — Post-S62 (Chris, 2026-10-13): built for the round against Dungrove Auras from his two additions, Dazzling Angel and Wall of Reverence — lifegain, fliers, and Wave of Reckoning as the reset (its Walls and most of its fliers survive it). His revision of the first draft: four Vitalists for the two Pacifisms and two of the Dawnwing Marshals (+4.6 ± 2.4 in matches, paired; Vitalists for the Restoration Angels had been −3.7 ± 2.1). 58.7 in matches against the twelve others and 61 against Dungrove Auras before it joined. A working name.
+  - contributed — Post-S62 (Chris, 2026-10-13): built for the round against Dungrove Auras from his two additions, Dazzling Angel and Wall of Reverence — lifegain, fliers, and Wave of Reckoning as the reset (its Walls and most of its fliers survive it). His revision of the first draft: four Vitalists for the two Pacifisms and two of the Dawnwing Marshals (+4.6 ± 2.4 in matches, paired; Vitalists for the Restoration Angels had been −3.7 ± 2.1). 58.7 in matches against the twelve others and 61 against Dungrove Auras before it joined. A working name. S64 (Chris): 2 Karmic Mentor for the 2 Dawnwing Marshals (his card; in its table White Skies 58.3 -> 62.0, BR Removal 45 -> 50).
 
 ## RW Tokens — Boros Tokens (W R)
 
@@ -139,13 +139,13 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 8 · Restoration Angel 6 �
 `skies` · midrange · game one 46 · matches 47.4
 
 - **Lands (24):** 4 Hallowed Fountain · 10 Plains · 10 Island
-- **Creatures (24):** 4 Youthful Valkyrie · 4 Inspiring Overseer · 4 Plumecreed Escort · 4 Restoration Angel · 4 Traumatizer · 4 Dawnwing Marshal
-- **Other (12):** 4 Swords to Plowshares · 4 Counterspell · 2 Pacifism · 2 Wave of Reckoning
+- **Creatures (26):** 4 Youthful Valkyrie · 4 Inspiring Overseer · 4 Plumecreed Escort · 4 Restoration Angel · 4 Traumatizer · 4 Dawnwing Marshal · 2 Karmic Mentor
+- **Other (10):** 4 Swords to Plowshares · 4 Counterspell · 2 Wave of Reckoning
 - **Its fifteen (registered):** 1 Arcane Collector · 2 Disenchant · 2 Essence Scatter · 2 Protocol · 1 Tormod's Crypt · 1 Wall of Air · 1 Wall of Reverence · 2 Wave of Reckoning · 3 Retribution of the Meek
 - **Its sideboard guide** (then the general rules run on what is left):
-  - against four or more hexproof or shroud threats: 3 Retribution of the Meek in for Pacifism, then Swords to Plowshares
+  - against four or more hexproof or shroud threats: 3 Retribution of the Meek in for Swords to Plowshares
 - **History:**
-  - contributed — S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. +4 Dawnwing Marshal, +2 Wave of Reckoning for the Seers, the Air Elementals and a Pacifism.
+  - contributed — S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. +4 Dawnwing Marshal, +2 Wave of Reckoning for the Seers, the Air Elementals and a Pacifism. S64 (Chris): 2 Karmic Mentor for the 2 Pacifisms (UW Skies 46.9 -> 53.1 in the card's table).
 
 ## the Muster (Peasant) — Boros Weenie (W R)
 

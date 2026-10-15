@@ -4,7 +4,7 @@
  *   --merge      a LATER file's games replace an earlier file's for the same pairing.
  *   --sideboarded   post-S54: every seat plays the sixty it would bring to games two and three against that opponent
  *                (its built fifteen, the field's three rules) — run beside a plain run on the same seed.
- *   --swap key:from:n:to[;from:n:to…]   post-S55 (Chris: tuning a list): n copies of a card in list `key` replaced IN
+ *   --swap key:from:n:to[;from:n:to…][|key2:…]   post-S55 (S64: several lists, joined by |) (Chris: tuning a list): n copies of a card in list `key` replaced IN
  *                PLACE (the same slot, so the same shuffle — card-test's paired method). `to` may be a card-test variant
  *                (`protocol~cost={1}{U}~shrink=3`: the card with fields overridden, for this run only). Run with --only key on the
  *                seed of a plain run and compare game by game.
@@ -163,17 +163,22 @@ async function run(): Promise<void> {
     if (side) for (const e of side) if (!pool.has(e.cardId)) throw new Error(`open:rr --deck-side: no card ${e.cardId}`);
     return { ...OPEN_DECKS, [key]: { ...rest, decklist: list, ...(side ? { sideboard: side } : {}), ...(archetype ? { archetype: archetype as typeof base.archetype } : {}) } };
   })() : OPEN_DECKS;
+  // S64: several lists at once — "key:from:n:to[;from:n:to…]|key2:from:n:to…" (Chris: a card flowing into more than one list)
   const DECKS: typeof OPEN_DECKS = swapArg ? (() => {
-    const [key, ...rest] = swapArg.split(":"), swaps = rest.join(":").split(";").map((x) => x.split(":") as [string, string, string]);
-    const base = BASE[key!]; if (!base) throw new Error(`open:rr --swap: no list ${key}`);
+    const out = { ...BASE };
+    for (const one of swapArg.split("|")) {
+    const [key, ...rest] = one.split(":"), swaps = rest.join(":").split(";").map((x) => x.split(":") as [string, string, string]);
+    const base = out[key!]; if (!base) throw new Error(`open:rr --swap: no list ${key}`);
     let list = base.decklist.map((e) => ({ ...e }));
     for (const [from, n, to] of swaps) {
       if (!pool.has(to)) pool.set(to, variantDef(to, pool)); // S56: a variant spec (card-test's: `protocol~cost={1}{U}~shrink=3`) is a card of this run
       const i = list.findIndex((e) => e.cardId === from); if (i < 0 || list[i]!.count < Number(n)) throw new Error(`open:rr --swap: ${key} does not hold ${n} ${from}`);
       list = [...list.slice(0, i), ...[{ cardId: from, count: list[i]!.count - Number(n) }, { cardId: to, count: Number(n) }].filter((e) => e.count > 0), ...list.slice(i + 1)];
     }
-    if (list.reduce((a, e) => a + e.count, 0) !== 60) throw new Error("open:rr --swap: the list is no longer sixty");
-    return { ...BASE, [key!]: { ...base, decklist: list } };
+    if (list.reduce((a, e) => a + e.count, 0) !== 60) throw new Error(`open:rr --swap: ${key} is no longer sixty`);
+    out[key!] = { ...base, decklist: list };
+    }
+    return out;
   })() : BASE;
   const vs = arg("vs", "").split(",").filter(Boolean);
   const only = arg("only", ""), journeyman = new Set(arg("journeyman", "").split(",").filter(Boolean));

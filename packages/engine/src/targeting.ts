@@ -153,6 +153,12 @@ function basePredicate(ctx: EngineCtx, spec0: TargetSpec, target: ResolvedTarget
       const d = ctx.defs.def(state.objects[(target as { id: string }).id]!.cardId);
       return target.kind === "object" && (d.types.includes("Artifact") || d.types.includes("Enchantment") || d.types.includes("Land"));
     }
+    // S64 (Karmic Mentor): a non-Aura permanent card — artifact, creature, enchantment or land, no Aura.
+    case "nonAuraPermanentCardInYourGraveyard": {
+      if (!isLegalTarget(ctx, { ...spec, predicate: "cardInYourGraveyard" }, target, by)) return false;
+      const d = ctx.defs.def(state.objects[(target as { id: string }).id]!.cardId);
+      return target.kind === "object" && ["Artifact", "Creature", "Enchantment", "Land"].some((t) => d.types.includes(t as never)) && !(d.subtypes ?? []).includes("Aura");
+    }
     // A10 (S22): Experimental Overload's regrowth.
     case "instantOrSorceryCardInYourGraveyard": {
       if (!isLegalTarget(ctx, { ...spec, predicate: "cardInYourGraveyard" }, target, by)) return false;
@@ -178,7 +184,7 @@ export function targetCandidates(ctx: EngineCtx, spec: TargetSpec, by: PlayerId,
     const t: ResolvedTarget = { kind: "player", player };
     if (isLegalTarget(ctx, spec, t, by, sourceId)) out.push(t);
   }
-  const graveyardy = (sp: TargetSpec): boolean => sp.predicate === "cardInYourGraveyard" || sp.predicate === "creatureCardInYourGraveyard" || sp.predicate === "landCardInYourGraveyard" || sp.predicate === "instantOrSorceryCardInYourGraveyard" || sp.predicate === "artifactEnchantmentOrLandCardInYourGraveyard" || (sp.anyOf ?? []).some(graveyardy);
+  const graveyardy = (sp: TargetSpec): boolean => sp.predicate === "cardInYourGraveyard" || sp.predicate === "nonAuraPermanentCardInYourGraveyard" || sp.predicate === "creatureCardInYourGraveyard" || sp.predicate === "landCardInYourGraveyard" || sp.predicate === "instantOrSorceryCardInYourGraveyard" || sp.predicate === "artifactEnchantmentOrLandCardInYourGraveyard" || (sp.anyOf ?? []).some(graveyardy);
   const anyYard = (sp: TargetSpec): boolean => sp.who === "any" || (sp.anyOf ?? []).some(anyYard);
   if (graveyardy(spec)) {
     // A10/ADR-038: who "any" scans BOTH graveyards (own first — deterministic order); default scans yours.
