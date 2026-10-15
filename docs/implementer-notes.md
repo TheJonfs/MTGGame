@@ -751,3 +751,10 @@ See handoff Concerns for the authoritative list. Highlights: auto-pay greedy fea
 - **Single pairings swing with the seed** (White Skies against Auras: 54 on 56, 64 on 91). Compare paired runs, not a run with an old table.
 - **A pilot that cannot use a card makes the card look bad.** Probe the decisions (the equip host, the cast when a target exists) before reading a card's number; `scripts/open/seat.py` gives the casts.
 - **Chris's recorded runs are the best evidence of a pilot gap**: `pnpm play-diff <file> --event <seed>` names the decisions by kind.
+
+## Session 64 (Parts 0–2)
+- **A resolving item has left the stack the view shows.** A rule that reads "the trigger on top of the stack" during its own resolution reads the next item down, or nothing. Name it by the request's `source` (book 132; book 57 still reads the stack).
+- **An unrated card is a weak card to the sideboarding rules**: it falls to its tier's prior, and a rule will swap it out (the 2/3 Mentor went out for a Wave). Give an experimental card a provisional rating, marked, and rebuild the score when it is adopted.
+- **Experimental variants live at the top of `data/cards/`** (the loader reads only `tokens/` and `laws/` below it); the card-count pins fail while they are there — run no tests, and remove them before committing. `open:rr --swap "a:x:2:card|b:y:2:card"` puts a card into several lists for one table.
+- **The pilot cannot be the measure of a loop**: count readiness by shuffling (pieces and mana by turn) when a card might enable one.
+- **`scripts/open/seat.py`** reads a seat's matches, games and casts across every shard of a tag; casts split by game one and later show sideboarding at work.
