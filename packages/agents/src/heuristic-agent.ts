@@ -287,6 +287,7 @@ export class HeuristicAgent implements Agent {
     if (this.attackAuraOnNonAttackerGated(view, action)) return -Infinity; // S62 (book 127): Rancor is not for a Wall
     if (this.entersHarmGated(view, action)) return -Infinity; // S50 (book 89): the Kavu is not cast into a board where its four can only hit us
     if (this.selfPumpGated(view, action)) return -Infinity; // S50 (book 90): the Whelp's pump is combat damage or a won fight, never idle
+    if (this.teamPumpGated(view, action)) return -Infinity; // S64 (book 131): the Marshal's team pump only after blocks or in answer
     if (this.graveyardTokensGated(view, action)) return -Infinity; // S50 (book 91): the Pyromancer's second life spends only idle mana
     if (this.idleSinkGated(view, action)) return -Infinity; // post-S43: the Cleric / Faerie Formation spend only mana that would idle
     if (this.glaciersDropGated(view, action)) return -Infinity; // S36 (book 52): the Glaciers as the land drop only for a reason; otherwise the real land
@@ -2050,9 +2051,9 @@ export class HeuristicAgent implements Agent {
     const card = view.hand.find((c) => c.objectId === action.objectId);
     const d = card ? this.def(card.cardId) : undefined;
     if (!d || !d.types.includes("Creature") || !(d.keywords ?? []).includes("flash")) return false;
-    if (view.stack.some((it) => it.controller !== view.you)) return false; // in response to THEIRS: fine (S34, as the cantrip gate)
+    if (view.stack.some((it) => it.controller !== view.you)) return this.protectionHeld(view, card!.cardId) && !view.battlefield.some((o) => o.controller === view.you && o.power !== null && this.creatureIsDoomed(view, o.id)); // in response to THEIRS: fine (S34, as the cantrip gate); book 130: a held protector answers only a threat to one of ours
     if (this.entersModesRead(view, card!.cardId).yard > 0) return false; // book 114: their graveyard is worth exiling now
-    if (view.activePlayer !== view.you) return view.step !== "END";
+    if (view.activePlayer !== view.you) return view.step !== "END" || this.protectionHeld(view, card!.cardId);
     // Book 115 (Chris's Countersnake games: 18 of his 26 Forerunners and every Angel at the opponent's end step or in
     // response): a flash creature is not cast on our own turn at all — idle mana or not. `off: ["flashend"]` is the
     // old rule (on our turn when nothing else in hand could use the mana).
@@ -2060,6 +2061,49 @@ export class HeuristicAgent implements Agent {
     const me = view.you;
     const untapped = view.battlefield.filter((o) => o.controller === me && !o.tapped && this.def(o.cardId)?.types.includes("Land")).length;
     return view.hand.some((c) => c.objectId !== action.objectId && !this.def(c.cardId)?.types.includes("Land") && !this.def(c.cardId)?.manaCost.includes("X") && this.mv(c.cardId) <= untapped);
+  }
+
+  /**
+   * Book 130 (S64 Part 1, from Chris's UW Skies run: he held Plumecreed Escort 23 times, mostly on the opponent's turn,
+   * to protect his best creature): a flash creature whose entering PROTECTS one of ours — hexproof granted, or a blink —
+   * is held as protection rather than cast at the opponent's end step, while (1) we control a creature worth more than
+   * the flash creature's own body and (2) the opponent's list holds four or more one-for-one answers to a creature
+   * (removal spells and enters-kill creatures). Held, it answers only an opponent's stack item that dooms one of ours.
+   * Book 115's end-step rule stands for every other flash creature. Off: "flashguard". Exposed.
+   */
+  protectionHeld(view: GameView, cardId: string): boolean {
+    if (this.profile.off?.includes("flashguard")) return false;
+    const d = this.def(cardId);
+    const protects = (d?.abilities ?? []).some((a) => a.kind === "triggered" && a.event === "ENTERS_BATTLEFIELD" && (a.targets ?? []).some((t) => t.predicate === "creatureYouControl") && a.effects.some((e) => (e.type === "grantKeyword" && (e.keyword === "hexproof" || e.keyword === "shroud" || e.keyword === "indestructible")) || e.type === "exileThenReturn"));
+    if (!d || !protects || this.oppAnswers() < 4) return false;
+    const own = objectValue(this.defs, { id: "self", cardId, controller: view.you, tapped: false, damage: 0, attachedTo: null, power: d.power ?? 0, toughness: d.toughness ?? 0, keywords: [...(d.keywords ?? [])] } as never, this.C);
+    return view.battlefield.some((o) => o.controller === view.you && o.power !== null && objectValue(this.defs, o, this.C) > own);
+  }
+  /** Book 130: the opponent's list's one-for-one answers to a creature — targeted destroy, exile or damage at a creature
+   * (instants, sorceries, Auras that pacify) and creatures that kill on entering. */
+  private oppAnswersMemo: number | null = null;
+  private oppAnswers(): number {
+    if (this.oppAnswersMemo !== null) return this.oppAnswersMemo;
+    const kills = (targets: { predicate: string }[] | undefined, effects: { type: string; target?: number }[]) => (targets ?? []).some((t) => /creature|anyTarget/i.test(t.predicate)) && effects.some((e) => (e.type === "destroy" || e.type === "exile" || e.type === "damage") && e.target !== undefined);
+    return (this.oppAnswersMemo = this.profile.opponentDecklist.reduce((n, e) => {
+      const c = this.def(e.cardId); if (!c) return n;
+      const ans = this.oneForOne(c) || ((c.types.includes("Instant") || c.types.includes("Sorcery")) && (kills(c.targets as never, (c.spellEffect ?? []) as never) || (c.modes ?? []).some((m) => kills(m.targets as never, m.effects as never)))) || (c.abilities ?? []).some((a) => a.kind === "triggered" && a.event === "ENTERS_BATTLEFIELD" && kills(a.targets as never, a.effects as never));
+      return n + (ans ? e.count : 0);
+    }, 0));
+  }
+  /**
+   * Book 131 (S64 Part 1, from Chris's runs: he passed on Dawnwing Marshal's pump 51 times where the pilot used it): a
+   * TEAM pump (an activated ability whose effects are until-end-of-turn +N/+N to the creatures we control) is spent only
+   * to win a combat — after blocks, with an attack live — or in answer to an opponent's stack item; otherwise it is
+   * mana thrown away at cleanup. The one-creature tricks are book 22's and book 90's. Off: "pumpwin". Exposed.
+   */
+  teamPumpGated(view: GameView, action: Action): boolean {
+    if (action.type !== "activateAbility" || this.profile.off?.includes("pumpwin")) return false;
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+    if (!ab || ab.kind !== "activated" || ab.equip || ab.modes || ab.effects.length === 0) return false;
+    if (!ab.effects.every((e) => e.type === "modifyPT" && e.scope === "creaturesYouControl" && e.duration === "UNTIL_END_OF_TURN" && ptSign(e.power) + ptSign(e.toughness) > 0)) return false;
+    const blocksFinal = view.combat.attackers.length > 0 && (view.step === "DECLARE_BLOCKERS" || view.step === "FIRST_STRIKE_DAMAGE" || view.step === "COMBAT_DAMAGE");
+    return !blocksFinal && !view.stack.some((s) => s.controller !== view.you);
   }
 
   /** Post-S43 (Chris, the Cinquefont fight: the Ruby Tyrant cast, then Mystic Snake in response — its mandatory

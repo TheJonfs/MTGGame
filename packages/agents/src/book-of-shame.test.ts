@@ -1995,4 +1995,30 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", auras, ours), off: ["removalmatchup"] });
     expect(old.removalHoldGated(v("swords_to_plowshares", "centaur_courser"), cast)).toBe(false); // book 117's floor of two: a Courser earned it
   });
+
+  it("book of shame 130 (S64 Part 1 — Chris held Plumecreed Escort 23 times to protect his best creature): a flash creature whose entering protects one of ours is held past the opponent's end step while we have a creature worth more than its body and their list holds four or more answers; held, it answers only a threat to one of ours", () => {
+    const D = (ids: Record<string, number>) => Object.entries(ids).map(([cardId, count]) => ({ cardId, count }));
+    const removal = D({ doom_blade: 4, terror: 4, nekrataal: 4, swamp: 20 }), none = D({ grizzly_bears: 20, forest: 20 });
+    const pilot = (opp: typeof none, off?: string[]) => new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", opp), ...(off ? { off } : {}) });
+    const lands = ["island", "island", "plains"].map((c, i) => ({ id: "l" + i, cardId: c, controller: 0 as const }));
+    const v = (stack: { id: string; kind: string; cardId: string; controller: 0 | 1; targets?: unknown[] }[] = []) => ({ ...mkView({ step: "END", activePlayer: 1, hand: [{ objectId: "e", cardId: "plumecreed_escort" }], battlefield: [...lands, { id: "big", cardId: "serra_angel", controller: 0 }] }), stack } as GameView);
+    const cast = { type: "castSpell" as const, objectId: "e", targets: [] };
+    expect(pilot(removal).flashTimingGated(v(), cast)).toBe(true); // held as protection
+    expect(pilot(none).flashTimingGated(v(), cast)).toBe(false); // nothing in their list to protect against: book 115's end step
+    expect(pilot(removal, ["flashguard"]).flashTimingGated(v(), cast)).toBe(false); // the old pilot
+    expect(pilot(removal).flashTimingGated(v([{ id: "s", kind: "spell", cardId: "grizzly_bears", controller: 1 }]), cast)).toBe(true); // their creature spell: not a threat to ours
+    expect(pilot(removal).flashTimingGated(v([{ id: "s", kind: "spell", cardId: "doom_blade", controller: 1, targets: [{ kind: "object", id: "big" }] }]), cast)).toBe(false); // their Doom Blade at our Serra: now
+  });
+
+  it("book of shame 131 (S64 Part 1 — Chris passed on Dawnwing Marshal's pump 51 times where the pilot spent it): a team pump is activated only after blocks with an attack live, or in answer to an opponent's stack item", () => {
+    const a = agent("midrange");
+    const bf = [...["plains", "plains", "plains", "plains", "plains"].map((c, i) => ({ id: "l" + i, cardId: c, controller: 0 as const })), { id: "m", cardId: "dawnwing_marshal", controller: 0 as const }];
+    const pump = { type: "activateAbility" as const, objectId: "m", abilityIndex: 0, targets: [] };
+    expect(a.teamPumpGated(mkView({ step: "MAIN1", battlefield: bf }), pump)).toBe(true);
+    expect(a.teamPumpGated(mkView({ step: "END", activePlayer: 1, battlefield: bf }), pump)).toBe(true);
+    expect(a.teamPumpGated(mkView({ step: "DECLARE_BLOCKERS", battlefield: bf, combat: { attackers: ["m"], blocks: [] } }), pump)).toBe(false);
+    expect(a.teamPumpGated({ ...mkView({ step: "MAIN1", activePlayer: 1, battlefield: bf }), stack: [{ id: "s", kind: "spell", cardId: "pyroclasm", controller: 1 }] } as GameView, pump)).toBe(false);
+    const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["pumpwin"] });
+    expect(old.teamPumpGated(mkView({ step: "MAIN1", battlefield: bf }), pump)).toBe(false);
+  });
 });
