@@ -108,7 +108,16 @@ export function selectCandidates(format: ConstructedFormat, rating: CardRatingTa
   const size = (l: Decklist) => l.reduce((n, e) => n + e.count, 0);
   const strength = (l: LibraryList) => openStrength(l.key) !== undefined ? 1000 + openStrength(l.key)! : (() => { const xs = l.decklist.filter((e) => role(e.cardId) !== "land"); const n = size(xs); return n ? xs.reduce((a, e) => a + cardRating(cards.get(e.cardId)!, rating) * e.count, 0) / n : 0; })();
   const mine = fieldGroupOf(format.id), groupOf = (key: string) => key.slice(0, key.indexOf(":"));
-  return library.filter((l) => !l.archived && !(FIELD_GROUPS.includes(groupOf(l.key)) && groupOf(l.key) !== mine)).map((l) => ({ l, share: legalShare(l.decklist, rule, cards), strength: strength(l) })).sort((a, b) => b.share - a.share || b.strength - a.strength || a.l.key.localeCompare(b.l.key)).slice(0, candidateCount(format.id));
+  const rank = (xs: LibraryList[]) => xs.map((l) => ({ l, share: legalShare(l.decklist, rule, cards), strength: strength(l) })).sort((a, b) => b.share - a.share || b.strength - a.strength || a.l.key.localeCompare(b.l.key));
+  // S65 (ADR-184): a format with a field of its own (Peasant, the triads) seats its own registered lists only — no
+  // campaign deck (the Fordkeeper's stronghold list sat in Naya); one with fewer than eight borrows the Open's lists
+  // wholly legal in it, by strength, until it has eight.
+  if (mine !== "open" && FIELD_GROUPS.includes(mine)) {
+    const own = rank(library.filter((l) => !l.archived && groupOf(l.key) === mine));
+    if (own.length >= 8) return own;
+    return [...own, ...rank(library.filter((l) => !l.archived && groupOf(l.key) === "open")).filter((x) => x.share === 1).sort((a, b) => b.strength - a.strength).slice(0, 8 - own.length)];
+  }
+  return rank(library.filter((l) => !l.archived && !(FIELD_GROUPS.includes(groupOf(l.key)) && groupOf(l.key) !== mine))).slice(0, candidateCount(format.id));
 }
 
 export function buildConstructedDeck(format: ConstructedFormat, rating: CardRatingTable, seed: number, library: readonly LibraryList[], cards: Map<string, CardDef>, opts: { /** Force the tinker level (the tinker study); default: rolled from the seed. */ tinker?: Tinker; /** Force the source list. */ from?: string; /** S55 (ADR-158 amended): the seat's list draw — `top` leans to the lists that measure strong, `low` to those that measure weak. */ lists?: ListDraw; /** Post-S58 (the cap): lists this seat may not draw — those already at the field's cap. */ exclude?: ReadonlySet<string> } = {}): ConstructedBuild {

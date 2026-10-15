@@ -8,20 +8,20 @@
 
 | list | deck | pilot | matches | game one | after sideboarding | fifteen |
 |---|---|---|---|---|---|---|
-| Dungrove Auras | Mono-Green Auras (G) | midrange | 72.3 | 67 | +0.1 | built |
-| White Skies | Mono-White Lifegain Skies (W) | midrange | 61.0 | 60 | −4.1 | registered, guided |
-| BR Removal | Rakdos Removal (B R) | midrange | 60.9 | 58 | −0.8 | built |
-| BR Djinn | Rakdos Removal, Djinn and Char (B R) | midrange | 59.0 | 58 | +0.4 | built |
-| RW Tokens | Boros Tokens (W R) | aggro | 57.0 | 51 | +2.0 | built |
-| UW Skies | Azorius Skies (W U) | midrange | 51.4 | 46 | +4.9 | registered, guided |
-| BW Aristocrats | Orzhov Aristocrats (W B) | midrange | 50.5 | 53 | +0.0 | registered, guided |
-| Mono-Black Removal | Mono-Black Removal (B) | midrange | 49.5 | 50 | +6.1 | built |
-| the Rabble (Peasant) | Mono-Red Goblins (R) | aggro | 48.1 | 44 | −0.4 | built |
-| RG Stompy | Gruul Stompy (R G) | aggro | 45.4 | 45 | −5.3 | built |
-| the Muster (Peasant) | Boros Weenie (W R) | aggro | 41.3 | 47 | −1.1 | registered, guided |
-| Naya Flash Snakes | Naya Flash (R G W) | midrange | 37.9 | 44 | −7.7 | built |
-| UW Skies, walls | Azorius Skies with walls (W U) | midrange | 37.6 | 42 | +2.8 | registered, guided |
-| UR Pyroclasm Control | Izzet Control (U R) | control | 28.0 | 35 | +2.7 | built |
+| Dungrove Auras | Mono-Green Auras (G) | midrange | 71.9 | 67 | −0.1 | built |
+| RW Tokens | Boros Tokens (W R) | aggro | 59.3 | 51 | +3.9 | built |
+| BR Removal | Rakdos Removal (B R) | midrange | 59.0 | 58 | −0.8 | built |
+| White Skies | Mono-White Lifegain Skies (W) | midrange | 58.1 | 60 | −3.6 | registered, guided |
+| BR Djinn | Rakdos Removal, Djinn and Char (B R) | midrange | 57.9 | 58 | +0.4 | built |
+| UW Skies | Azorius Skies (W U) | midrange | 57.9 | 46 | +6.2 | registered, guided |
+| BW Aristocrats | Orzhov Aristocrats (W B) | midrange | 49.4 | 53 | −0.4 | registered, guided |
+| the Rabble (Peasant) | Mono-Red Goblins (R) | aggro | 47.8 | 44 | −0.4 | built |
+| Mono-Black Removal | Mono-Black Removal (B) | midrange | 47.4 | 50 | +6.0 | built |
+| RG Stompy | Gruul Stompy (R G) | aggro | 45.1 | 45 | −5.9 | built |
+| UW Skies, walls | Azorius Skies with walls (W U) | midrange | 41.5 | 42 | −0.3 | registered, guided |
+| the Muster (Peasant) | Boros Weenie (W R) | aggro | 40.3 | 47 | −1.1 | registered, guided |
+| Naya Flash Snakes | Naya Flash (R G W) | midrange | 38.1 | 44 | −7.4 | built |
+| UR Pyroclasm Control | Izzet Control (U R) | control | 26.2 | 35 | +3.1 | built |
 
 Archived (kept in the data, out of the field): UB Mill, WB Wave Control.
 
@@ -33,7 +33,7 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 8 · Restoration Angel 6 �
 
 ## Dungrove Auras — Mono-Green Auras (G)
 
-`elder` · midrange · game one 67 · matches 72.3
+`elder` · midrange · game one 67 · matches 71.9
 
 - **Lands (22):** 22 Forest
 - **Creatures (27):** 4 Dungrove Elder · 2 Penumbra Wurm · 4 Llanowar Elves · 4 Gladecover Scout · 4 Wall of Blossoms · 4 Gaean Wurm · 2 Centaur Courser · 3 Reaper's Forerunner
@@ -42,9 +42,31 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 8 · Restoration Angel 6 �
 - **History:**
   - contributed — S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. New: the Enchantress's tier-two cousin. Revised 2026-10-13 (Chris): four Gaean Wurms for the four Rumbling Baloths — as large or larger with twenty-two Forests, and trample. +9.3 ± 1.5 in matches against the other twelve, paired (66.8 to 76.1), better against every one. Committed knowing it is over ADR-171's line: it is the next round's target.
 
+## RW Tokens — Boros Tokens (W R)
+
+`tokens` · aggro · game one 51 · matches 59.3
+
+- **Lands (23):** 4 Sacred Foundry · 10 Plains · 9 Mountain
+- **Creatures (17):** 4 Soul Warden · 4 Young Pyromancer · 3 Flametongue Kavu · 4 Dawnwing Marshal · 2 Captain of the Watch
+- **Other (20):** 4 Raise the Alarm · 4 Dragon Fodder · 4 Hordeling Outburst · 4 Glorious Anthem · 4 Lightning Bolt
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. +4 Dawnwing Marshal, +2 Captain of the Watch and a land for the Angels, the Chieftains and the Grenades.
+
+## BR Removal — Rakdos Removal (B R)
+
+`br` · midrange · game one 58 · matches 59.0
+
+- **Lands (23):** 4 Blood Crypt · 12 Swamp · 7 Mountain
+- **Creatures (28):** 4 Typhoid Rats · 4 Blood Artist · 4 Child of Night · 4 Vampire Nighthawk · 4 Nekrataal · 4 Flametongue Kavu · 2 Reassembling Skeleton · 2 Gravedigger
+- **Other (9):** 4 Doom Blade · 1 Terror · 4 Lightning Bolt
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. Unchanged from the experiments: the yardstick.
+
 ## White Skies — Mono-White Lifegain Skies (W)
 
-`wskies` · midrange · game one 60 · matches 61.0
+`wskies` · midrange · game one 60 · matches 58.1
 
 - **Lands (23):** 23 Plains
 - **Creatures (30):** 4 Dazzling Angel · 4 Youthful Valkyrie · 4 Inspiring Overseer · 4 Wall of Reverence · 4 Soul Warden · 4 Restoration Angel · 4 Vitalist · 2 Karmic Mentor
@@ -55,20 +77,9 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 8 · Restoration Angel 6 �
 - **History:**
   - contributed — Post-S62 (Chris, 2026-10-13): built for the round against Dungrove Auras from his two additions, Dazzling Angel and Wall of Reverence — lifegain, fliers, and Wave of Reckoning as the reset (its Walls and most of its fliers survive it). His revision of the first draft: four Vitalists for the two Pacifisms and two of the Dawnwing Marshals (+4.6 ± 2.4 in matches, paired; Vitalists for the Restoration Angels had been −3.7 ± 2.1). 58.7 in matches against the twelve others and 61 against Dungrove Auras before it joined. A working name. S64 (Chris): 2 Karmic Mentor for the 2 Dawnwing Marshals (his card; in its table White Skies 58.3 -> 62.0, BR Removal 45 -> 50).
 
-## BR Removal — Rakdos Removal (B R)
-
-`br` · midrange · game one 58 · matches 60.9
-
-- **Lands (23):** 4 Blood Crypt · 12 Swamp · 7 Mountain
-- **Creatures (28):** 4 Typhoid Rats · 4 Blood Artist · 4 Child of Night · 4 Vampire Nighthawk · 4 Nekrataal · 4 Flametongue Kavu · 2 Reassembling Skeleton · 2 Gravedigger
-- **Other (9):** 4 Doom Blade · 1 Terror · 4 Lightning Bolt
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. Unchanged from the experiments: the yardstick.
-
 ## BR Djinn — Rakdos Removal, Djinn and Char (B R)
 
-`brdjinn` · midrange · game one 58 · matches 59.0
+`brdjinn` · midrange · game one 58 · matches 57.9
 
 - **Lands (23):** 4 Blood Crypt · 12 Swamp · 7 Mountain
 - **Creatures (27):** 4 Typhoid Rats · 4 Blood Artist · 4 Child of Night · 4 Vampire Nighthawk · 4 Nekrataal · 4 Flametongue Kavu · 3 Gallows Djinn
@@ -77,20 +88,9 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 8 · Restoration Angel 6 �
 - **History:**
   - contributed — S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. Unchanged: the second build.
 
-## RW Tokens — Boros Tokens (W R)
-
-`tokens` · aggro · game one 51 · matches 57.0
-
-- **Lands (23):** 4 Sacred Foundry · 10 Plains · 9 Mountain
-- **Creatures (17):** 4 Soul Warden · 4 Young Pyromancer · 3 Flametongue Kavu · 4 Dawnwing Marshal · 2 Captain of the Watch
-- **Other (20):** 4 Raise the Alarm · 4 Dragon Fodder · 4 Hordeling Outburst · 4 Glorious Anthem · 4 Lightning Bolt
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. +4 Dawnwing Marshal, +2 Captain of the Watch and a land for the Angels, the Chieftains and the Grenades.
-
 ## UW Skies — Azorius Skies (W U)
 
-`skies` · midrange · game one 46 · matches 51.4
+`skies` · midrange · game one 46 · matches 57.9
 
 - **Lands (24):** 4 Hallowed Fountain · 10 Plains · 10 Island
 - **Creatures (26):** 4 Youthful Valkyrie · 4 Inspiring Overseer · 4 Plumecreed Escort · 4 Restoration Angel · 4 Traumatizer · 4 Dawnwing Marshal · 2 Karmic Mentor
@@ -103,7 +103,7 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 8 · Restoration Angel 6 �
 
 ## BW Aristocrats — Orzhov Aristocrats (W B)
 
-`bw` · midrange · game one 53 · matches 50.5
+`bw` · midrange · game one 53 · matches 49.4
 
 - **Lands (23):** 4 Godless Shrine · 9 Plains · 10 Swamp
 - **Creatures (29):** 4 Soul Warden · 4 Blood Artist · 4 Child of Night · 4 Vampire Nighthawk · 4 Nekrataal · 4 Restoration Angel · 3 Vitalist · 2 Captain of the Watch
@@ -114,20 +114,9 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 8 · Restoration Angel 6 �
 - **History:**
   - contributed — S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. +2 Captain of the Watch for the Typhoid Rats.
 
-## Mono-Black Removal — Mono-Black Removal (B)
-
-`mbc` · midrange · game one 50 · matches 49.5
-
-- **Lands (23):** 23 Swamp
-- **Creatures (24):** 4 Typhoid Rats · 4 Child of Night · 4 Vampire Nighthawk · 4 Nekrataal · 3 Gallows Djinn · 3 Gravedigger · 2 Blood Artist
-- **Other (13):** 4 Doom Blade · 3 Terror · 2 Tendrils of Corruption · 4 Sign in Blood
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. +4 Sign in Blood for the Ragers and a Blood Artist.
-
 ## the Rabble (Peasant) — Mono-Red Goblins (R)
 
-`rabble` · aggro · game one 44 · matches 48.1
+`rabble` · aggro · game one 44 · matches 47.8
 
 - **Lands (20):** 20 Mountain
 - **Creatures (20):** 4 Raging Goblin · 4 Goblin Chieftain · 4 Flametongue Kavu · 4 Goblin Matron · 2 Boggart Brute · 2 Goblin Piker
@@ -136,9 +125,20 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 8 · Restoration Angel 6 �
 - **History:**
   - contributed — S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. The Open list's port.
 
+## Mono-Black Removal — Mono-Black Removal (B)
+
+`mbc` · midrange · game one 50 · matches 47.4
+
+- **Lands (23):** 23 Swamp
+- **Creatures (24):** 4 Typhoid Rats · 4 Child of Night · 4 Vampire Nighthawk · 4 Nekrataal · 3 Gallows Djinn · 3 Gravedigger · 2 Blood Artist
+- **Other (13):** 4 Doom Blade · 3 Terror · 2 Tendrils of Corruption · 4 Sign in Blood
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. +4 Sign in Blood for the Ragers and a Blood Artist.
+
 ## RG Stompy — Gruul Stompy (R G)
 
-`stompy` · aggro · game one 45 · matches 45.4
+`stompy` · aggro · game one 45 · matches 45.1
 
 - **Lands (21):** 4 Stomping Ground · 13 Forest · 4 Mountain
 - **Creatures (31):** 4 Llanowar Elves · 2 Birds of Paradise · 4 Grizzly Bears · 3 Mother Bear · 4 Centaur Courser · 4 Rumbling Baloth · 3 Gaean Wurm · 4 Flametongue Kavu · 3 Reaper's Forerunner
@@ -147,9 +147,22 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 8 · Restoration Angel 6 �
 - **History:**
   - contributed — S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle.
 
+## UW Skies, walls — Azorius Skies with walls (W U)
+
+`skieswall` · midrange · game one 42 · matches 41.5
+
+- **Lands (24):** 4 Hallowed Fountain · 10 Plains · 10 Island
+- **Creatures (28):** 4 Youthful Valkyrie · 4 Inspiring Overseer · 4 Plumecreed Escort · 4 Restoration Angel · 4 Traumatizer · 4 Wall of Air · 4 Dawnwing Marshal
+- **Other (8):** 4 Swords to Plowshares · 2 Pacifism · 2 Wave of Reckoning
+- **Its fifteen (registered):** 1 Counterspell · 2 Disenchant · 2 Essence Scatter · 1 Longbow Archer · 2 Protocol · 1 Tormod's Crypt · 1 Wall of Reverence · 2 Wave of Reckoning · 3 Retribution of the Meek
+- **Its sideboard guide** (then the general rules run on what is left):
+  - against four or more hexproof or shroud threats: 3 Retribution of the Meek in for Pacifism, then Swords to Plowshares
+- **History:**
+  - contributed — S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. The walls build: the Wave leaves its walls standing.
+
 ## the Muster (Peasant) — Boros Weenie (W R)
 
-`muster` · aggro · game one 47 · matches 41.3
+`muster` · aggro · game one 47 · matches 40.3
 
 - **Lands (23):** 4 Sacred Foundry · 11 Plains · 6 Mountain · 2 Secluded Steppe
 - **Creatures (23):** 4 Savannah Lions · 4 Soul Warden · 4 Longbow Archer · 4 Fencing Ace · 3 Restoration Angel · 4 Flametongue Kavu
@@ -162,7 +175,7 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 8 · Restoration Angel 6 �
 
 ## Naya Flash Snakes — Naya Flash (R G W)
 
-`naya` · midrange · game one 44 · matches 37.9
+`naya` · midrange · game one 44 · matches 38.1
 
 - **Lands (20):** 4 Stomping Ground · 4 Temple Garden · 4 Sacred Foundry · 6 Forest · 1 Mountain · 1 Plains
 - **Creatures (33):** 4 Manaba · 4 Birds of Paradise · 2 Llanowar Elves · 4 Rage Cobra · 4 Reaper's Forerunner · 3 Little Bear · 4 Restoration Angel · 4 Flametongue Kavu · 4 Wall of Blossoms
@@ -171,22 +184,9 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 8 · Restoration Angel 6 �
 - **History:**
   - contributed — S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. As drafted.
 
-## UW Skies, walls — Azorius Skies with walls (W U)
-
-`skieswall` · midrange · game one 42 · matches 37.6
-
-- **Lands (24):** 4 Hallowed Fountain · 10 Plains · 10 Island
-- **Creatures (28):** 4 Youthful Valkyrie · 4 Inspiring Overseer · 4 Plumecreed Escort · 4 Restoration Angel · 4 Traumatizer · 4 Wall of Air · 4 Dawnwing Marshal
-- **Other (8):** 4 Swords to Plowshares · 2 Pacifism · 2 Wave of Reckoning
-- **Its fifteen (registered):** 1 Counterspell · 2 Disenchant · 2 Essence Scatter · 1 Longbow Archer · 2 Protocol · 1 Tormod's Crypt · 1 Wall of Reverence · 2 Wave of Reckoning · 3 Retribution of the Meek
-- **Its sideboard guide** (then the general rules run on what is left):
-  - against four or more hexproof or shroud threats: 3 Retribution of the Meek in for Pacifism, then Swords to Plowshares
-- **History:**
-  - contributed — S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. The walls build: the Wave leaves its walls standing.
-
 ## UR Pyroclasm Control — Izzet Control (U R)
 
-`urcontrol` · control · game one 35 · matches 28.0
+`urcontrol` · control · game one 35 · matches 26.2
 
 - **Lands (24):** 4 Steam Vents · 11 Island · 9 Mountain
 - **Creatures (15):** 4 Flametongue Kavu · 4 Wall of Air · 4 Traumatizer · 3 Air Elemental

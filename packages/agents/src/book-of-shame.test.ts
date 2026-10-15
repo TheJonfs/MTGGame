@@ -2021,4 +2021,14 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["pumpwin"] });
     expect(old.teamPumpGated(mkView({ step: "MAIN1", battlefield: bf }), pump)).toBe(false);
   });
+
+  it("book of shame 57, fixed (S65 — as book 132 was): the optional trigger asking is read from the REQUEST, not the stack's top — a resolving trigger has left the stack the view shows; a harmful \"may\" aimed only at ours is declined, one aimed at theirs is not", () => {
+    const a = agent("midrange");
+    const v = mkView({ battlefield: [{ id: "mine", cardId: "grizzly_bears", controller: 0 }, { id: "theirs", cardId: "grizzly_bears", controller: 1 }] }); // the stack is empty: the trigger is resolving
+    const bounce = [{ type: "bounce" as const, target: 0 }];
+    expect(a.optionalHarmsOnlyUs(v, { cardId: "x", effects: bounce, targets: [{ kind: "object", id: "mine" }] })).toBe(true);
+    expect(a.optionalHarmsOnlyUs(v, { cardId: "x", effects: bounce, targets: [{ kind: "object", id: "theirs" }] })).toBe(false);
+    const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["optionalsource"] });
+    expect(old.optionalHarmsOnlyUs(v, { cardId: "x", effects: bounce, targets: [{ kind: "object", id: "mine" }] })).toBe(false); // the old read: an empty stack, nothing seen
+  });
 });

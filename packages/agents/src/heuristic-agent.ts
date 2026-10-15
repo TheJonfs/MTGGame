@@ -112,7 +112,7 @@ export class HeuristicAgent implements Agent {
       case "optionalTrigger":
         // S40 (the Bailiff, book 57): a "may" whose harm points only at OUR side is declined — the self-bounce
         // of an ETB creature is a line the evaluator cannot price, so it is never taken.
-        if (this.optionalHarmsOnlyUs(view)) return request.actions.find((a) => a.type === "declineOptional") ?? request.actions[0]!;
+        if (this.optionalHarmsOnlyUs(view, request.source)) return request.actions.find((a) => a.type === "declineOptional") ?? request.actions[0]!;
         if (request.source && this.paidDrawBlocksCast(view, request.source.cardId)) return request.actions.find((a) => a.type === "declineOptional") ?? request.actions[0]!;
         return request.actions.find((a) => a.type === "acceptOptional") ?? request.actions[0]!;
       case "searchLibrary":
@@ -2707,8 +2707,14 @@ export class HeuristicAgent implements Agent {
     }
     return false;
   }
-  /** Book 57: the optional trigger on top of the stack is ours, harmful, and every object it targets is ours. */
-  optionalHarmsOnlyUs(view: GameView): boolean {
+  /** Book 57: the optional trigger asking is ours, harmful, and every object it targets is ours. S65: the trigger is the
+   * REQUEST's source (its effects and targets) — a resolving item has left the stack the view shows, so the old read of
+   * the stack's top saw the next item down, or nothing (book 132's lesson). Off: "optionalsource" (the old read). */
+  optionalHarmsOnlyUs(view: GameView, source?: { cardId: string; effects: readonly import("@shandalar/cards").Effect[]; targets?: readonly ResolvedTarget[] }): boolean {
+    if (source && !this.profile.off?.includes("optionalsource")) {
+      const objs = (source.targets ?? []).filter((t) => t.kind === "object");
+      return classifyEffects([...source.effects]) === "harmful" && objs.length > 0 && objs.every((t) => targetSide(view, t) === view.you);
+    }
     const top = view.stack[view.stack.length - 1];
     if (!top || top.controller !== view.you) return false;
     const harmful = (this.def(top.cardId)?.abilities ?? []).some((a) => a.kind === "triggered" && a.optional === true && classifyEffects(a.effects) === "harmful");

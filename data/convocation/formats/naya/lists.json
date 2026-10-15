@@ -207,10 +207,10 @@
   },
   {
    "key": "snakes",
-   "name": "Naya Flash Snakes (Open)",
+   "name": "the Brood",
    "title": "Naya Snakes (R G W)",
    "archetype": "midrange",
-   "source": "S64 seed (the planner's, built by the implementer): Peasant's Naya Flash Snakes at the Open's tier — dual lands and the Naya power, Baru at the top and two Fordkeepers (the planner's candidate lord), for the Little Bears and two Walls of Blossoms.",
+   "source": "S64 seed (the planner's, built by the implementer): Peasant's Naya Flash Snakes at the Open's tier — dual lands and the Naya power, Baru at the top and two Fordkeepers (the planner's candidate lord), for the Little Bears and two Walls of Blossoms. Named the Brood in the plane's register (S65; it was Naya Flash Snakes (Open)).",
    "decklist": [
     {
      "cardId": "taiga",
@@ -462,10 +462,10 @@
   },
   {
    "key": "tokens",
-   "name": "RW Tokens (Naya)",
+   "name": "the Watch",
    "title": "Boros Tokens (W R)",
    "archetype": "aggro",
-   "source": "S64 seed (the planner's, built by the implementer): Peasant's RW Tokens promoted — four Captains of the Watch, two Emeria Angels and Lumen for two Marshals and two Kavus; Plateaus and the Naya power for basics.",
+   "source": "S64 seed (the planner's, built by the implementer): Peasant's RW Tokens promoted — four Captains of the Watch, two Emeria Angels and Lumen for two Marshals and two Kavus; Plateaus and the Naya power for basics. Named the Watch in the plane's register (S65; it was RW Tokens (Naya)).",
    "decklist": [
     {
      "cardId": "sacred_foundry",
@@ -547,10 +547,10 @@
   },
   {
    "key": "auras",
-   "name": "GW Auras reborn",
+   "name": "the Thicket",
    "title": "Selesnya Auras (G W)",
    "archetype": "aggro",
-   "source": "S64 seed (the planner's, built by the implementer): the archived Enchantress with Dungrove Elder (Peasant's pillar) — four Elders and a fourth Angelic Destiny for the Timberland Guides, the Glare and two Spirit Links; a Plains for a Forest (the Elder counts Forests).",
+   "source": "S64 seed (the planner's, built by the implementer): the archived Enchantress with Dungrove Elder (Peasant's pillar) — four Elders and a fourth Angelic Destiny for the Timberland Guides, the Glare and two Spirit Links; a Plains for a Forest (the Elder counts Forests). Named the Thicket in the plane's register (S65; it was GW Auras reborn).",
    "decklist": [
     {
      "cardId": "savannah",
@@ -701,10 +701,10 @@
   },
   {
    "key": "lifegain",
-   "name": "Naya Lifegain",
+   "name": "the Chantry",
    "title": "Naya Lifegain (R G W)",
    "archetype": "midrange",
-   "source": "S64 seed (the planner's, built by the implementer): the archived Ford's shape — Vitalist ×4, the Fordkeeper, Soul Warden, Sacred Helix, Bolt and Char (Lightning Helix is not in the pool) — with Peasant's new white: two Karmic Mentors (they return Wardens and Gladeharts) and two Dazzling Angels, for the Rage Cobras, two Spirit Links and two lands.",
+   "source": "S64 seed (the planner's, built by the implementer): the archived Ford's shape — Vitalist ×4, the Fordkeeper, Soul Warden, Sacred Helix, Bolt and Char (Lightning Helix is not in the pool) — with Peasant's new white: two Karmic Mentors (they return Wardens and Gladeharts) and two Dazzling Angels, for the Rage Cobras, two Spirit Links and two lands. Named the Chantry in the plane's register (S65; it was Naya Lifegain).",
    "decklist": [
     {
      "cardId": "plateau",
@@ -806,10 +806,10 @@
   },
   {
    "key": "stompy",
-   "name": "Gruul Stompy (Naya)",
+   "name": "the Stampede",
    "title": "Gruul Stompy (R G)",
    "archetype": "aggro",
-   "source": "S64 seed (the planner's, built by the implementer): Peasant's Stompy promoted — Dungrove Elder for the Grizzly Bears, two Baru at the top (the Reaper is Jund and not legal here; the Fordkeeper is tried in his place), Taigas and the Naya power.",
+   "source": "S64 seed (the planner's, built by the implementer): Peasant's Stompy promoted — Dungrove Elder for the Grizzly Bears, two Baru at the top (the Reaper is Jund and not legal here; the Fordkeeper is tried in his place), Taigas and the Naya power. Named the Stampede in the plane's register (S65; it was Gruul Stompy (Naya)).",
    "decklist": [
     {
      "cardId": "stomping_ground",

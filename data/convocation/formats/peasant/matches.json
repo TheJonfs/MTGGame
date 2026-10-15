@@ -4,87 +4,87 @@
  "matchesAPairing": 60,
  "byList": {
   "br": {
-   "matches": 60.9,
-   "gameOne": 57.7,
-   "later": 56.9,
+   "matches": 59,
+   "gameOne": 56.3,
+   "later": 55.5,
    "n": 780
   },
   "brdjinn": {
-   "matches": 59,
-   "gameOne": 55.8,
-   "later": 56.2,
+   "matches": 57.9,
+   "gameOne": 55.3,
+   "later": 55.7,
    "n": 780
   },
   "bw": {
-   "matches": 50.5,
-   "gameOne": 50.5,
-   "later": 50.5,
+   "matches": 49.4,
+   "gameOne": 50.3,
+   "later": 49.9,
    "n": 780
   },
   "elder": {
-   "matches": 72.3,
+   "matches": 71.9,
    "gameOne": 65.4,
-   "later": 65.5,
+   "later": 65.3,
    "n": 780
   },
   "mbc": {
-   "matches": 49.5,
-   "gameOne": 46,
-   "later": 52.1,
+   "matches": 47.4,
+   "gameOne": 44.6,
+   "later": 50.6,
    "n": 780
   },
   "muster": {
-   "matches": 41.3,
-   "gameOne": 44.9,
-   "later": 43.8,
+   "matches": 40.3,
+   "gameOne": 44.2,
+   "later": 43.1,
    "n": 780
   },
   "naya": {
-   "matches": 37.9,
-   "gameOne": 46.6,
+   "matches": 38.1,
+   "gameOne": 46.3,
    "later": 38.9,
    "n": 780
   },
   "rabble": {
-   "matches": 48.1,
-   "gameOne": 49,
-   "later": 48.6,
+   "matches": 47.8,
+   "gameOne": 48.7,
+   "later": 48.3,
    "n": 780
   },
   "skies": {
-   "matches": 51.4,
-   "gameOne": 47.9,
-   "later": 52.8,
+   "matches": 57.9,
+   "gameOne": 50.6,
+   "later": 56.8,
    "n": 780
   },
   "skieswall": {
-   "matches": 37.6,
-   "gameOne": 39.9,
-   "later": 42.7,
+   "matches": 41.5,
+   "gameOne": 44.7,
+   "later": 44.4,
    "n": 780
   },
   "stompy": {
-   "matches": 45.4,
-   "gameOne": 50.2,
-   "later": 44.9,
+   "matches": 45.1,
+   "gameOne": 50.4,
+   "later": 44.5,
    "n": 780
   },
   "tokens": {
-   "matches": 57,
-   "gameOne": 52.9,
-   "later": 54.9,
+   "matches": 59.3,
+   "gameOne": 53.3,
+   "later": 57.2,
    "n": 780
   },
   "urcontrol": {
-   "matches": 28,
-   "gameOne": 33,
-   "later": 35.7,
+   "matches": 26.2,
+   "gameOne": 31.7,
+   "later": 34.8,
    "n": 780
   },
   "wskies": {
-   "matches": 61,
-   "gameOne": 60.1,
-   "later": 56,
+   "matches": 58.1,
+   "gameOne": 58.1,
+   "later": 54.5,
    "n": 780
   }
  }

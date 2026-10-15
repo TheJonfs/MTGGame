@@ -31,7 +31,7 @@ describe("Naya at the door (S64, ADR-181)", () => {
     const c = checkDeck([{ cardId: "mountain", count: 56 }, { cardId: "mox_jet", count: 1 }, { cardId: "badlands", count: 3 }], null, NAYA_FORMAT.rule, cards);
     expect(c.problems.join(" ")).toMatch(/make mana outside Naya's colours/);
   });
-  it("a Constructed event in Naya: every seat legal in Naya, most of them its own lists; played to a champion", async () => {
+  it("a Constructed event in Naya: every seat one of its own lists (ADR-184), legal; played to a champion", async () => {
     const start = newConstructedEvent({ seed: 6401, format: NAYA_FORMAT, names: convocationNames(15), faces: FACES, library: deps.library, seats: 16, rounds: 2, top8: false }, deps);
     expect(start.formatId).toBe("naya");
     const e = await runHeadless(start, deps, agents);
@@ -39,8 +39,8 @@ describe("Naya at the door (S64, ADR-181)", () => {
     for (const s of e.field) {
       for (const x of [...s.deck, ...s.sideboard]) expect(legal(x.cardId), `${s.name}: ${x.cardId}`).toBe(true);
     }
-    // most seats are Naya's own lists; a legal list from the authored library may sit too (the Fordkeeper's stronghold deck is Naya-legal)
-    expect(e.field.filter((s) => s.list?.startsWith("naya:")).length).toBeGreaterThan(e.field.length / 2);
+    // S65 (ADR-184): a triad's field is its own registered lists — no campaign deck (the Fordkeeper's stronghold list is Naya-legal and once sat)
+    for (const s of e.field) if (s.list) expect(s.list.startsWith("naya:"), s.list).toBe(true);
     expect(e.results.length).toBeGreaterThan(0);
   }, 240_000);
 });

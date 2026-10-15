@@ -82,6 +82,8 @@ export type RequestPurpose =
 export interface RequestSource {
   cardId: string;
   effects: Effect[];
+  /** S65 (book 57 fixed as book 132 was): an optional trigger's own targets — the resolving item has left the stack the view shows. */
+  targets?: readonly import("@shandalar/cards").ResolvedTarget[];
 }
 
 export interface ActionRequest {
@@ -900,7 +902,7 @@ export class Game {
       const chosen =
         options.length === 1
           ? options[0]!
-          : await this.request(item.controller, "optionalTrigger", options, undefined, { cardId: item.sourceCardId, effects: item.effects });
+          : await this.request(item.controller, "optionalTrigger", options, undefined, { cardId: item.sourceCardId, effects: item.effects, targets: item.targets });
       if (chosen.type === "declineOptional") return;
       if (item.optionalCost) autoPay(this.ctx, item.controller, parseManaCost(item.optionalCost.mana), 0);
     }
