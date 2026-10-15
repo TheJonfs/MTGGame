@@ -71,6 +71,12 @@ type Spec = { predicate?: string; anyOf?: { predicate?: string }[] };
 /** What a spell may target: a slot's `anyOf` kinds when it has them (Disenchant: artifact or enchantment), else its predicate. */
 const predicates = (d: CardDef): string[] => ((d.targets ?? []) as Spec[]).flatMap((t) => (t.anyOf?.length ? t.anyOf.map((x) => x.predicate ?? "") : [t.predicate ?? ""]));
 const removes = (d: CardDef) => (d.spellEffect ?? []).some((e) => e.type === "destroy" || e.type === "exile" || e.type === "damage");
+/** S64 (the `killers` shape): a card that destroys or exiles a target creature — as a spell or a mode, or by an enters trigger (Nekrataal). Damage is not counted. */
+export const killsCreatures = (d: CardDef): boolean => {
+  const kills = (targets: { predicate: string }[] | undefined, effects: { type: string; target?: number }[]) => (targets ?? []).some((t) => /creature/i.test(t.predicate)) && effects.some((e) => (e.type === "destroy" || e.type === "exile") && e.target !== undefined);
+  if (kills(d.targets as never, (d.spellEffect ?? []) as never) || (d.modes ?? []).some((m) => kills(m.targets as never, m.effects as never))) return true;
+  return (d.abilities ?? []).some((a) => a.kind === "triggered" && a.event === "ENTERS_BATTLEFIELD" && kills(a.targets as never, a.effects as never));
+};
 /** Removal that can hit an artifact or an enchantment (Disenchant's shape; a destroy-any-permanent counts). */
 export const answersRelics = (d: CardDef) => (d.spellEffect ?? []).some((e) => e.type === "destroy" || e.type === "exile") && predicates(d).some((p) => /^(artifact|enchantment|permanent|nonlandPermanent|artifactOrEnchantment)$/.test(p));
 /** Removal that can hit a creature (destroy, exile or damage at a creature or at any target). */
@@ -103,7 +109,7 @@ export const usableByAnyDeck = (d: CardDef) => d.manaCost === "{0}" || (d.abilit
 /** Post-S59 (Reaper Control's guide): `small` — fifteen or more creatures of toughness two or less (what a Pyroclasm
  * answers; the rules' own sweeper shape counts power); `someGraveyard` — four or more cards that work from a graveyard
  * (the Coin and the Hearth, which `graveyard` at eight does not reach). */
-export type GuideShape = "creatureDeck" | "fewLarge" | "control" | "plan" | "counters" | "graveyard" | "relics" | "small" | "someGraveyard" | /** post-S60: eight or more creatures of toughness three or more — a sweeper's deck, not a Pyroclasm's */ "large" | /** S63: four or more hexproof or shroud creatures that are threats — printed power two or more, or a size the card sets for itself (Dungrove Elder's `*`) */ "hexproof";
+export type GuideShape = "creatureDeck" | "fewLarge" | "control" | "plan" | "counters" | "graveyard" | "relics" | "small" | "someGraveyard" | /** post-S60: eight or more creatures of toughness three or more — a sweeper's deck, not a Pyroclasm's */ "large" | /** S63: four or more hexproof or shroud creatures that are threats — printed power two or more, or a size the card sets for itself (Dungrove Elder's `*`) */ "hexproof" | /** S64 (Chris: the Mentor against the black lists): eight or more cards that destroy or exile a creature — spells and enters triggers aimed at a creature (the kill decks, not the burn decks) */ "killers";
 export interface GuideRow { in: string; n: number; out?: string[]; when: GuideShape[]; /** not against these, whatever `when` says */ unless?: GuideShape[] }
 export interface SideboardGuide { key: string; fifteen: Decklist; rows: GuideRow[]; /** post-S59: the guide is the whole plan — the rules do not run after it (they took Reaper Control's Walls out for removal in every matchup) */ only?: true }
 const sameCards = (a: Decklist, b: Decklist) => { const k = (l: Decklist) => l.filter((e) => !isBasic(e.cardId) && e.count > 0).map((e) => `${e.cardId}:${e.count}`).sort().join(","); return k(a) === k(b); };
@@ -166,6 +172,7 @@ export function aiSideboard(deck: Decklist, sideboard: Decklist, opponentDeck: D
       small: oppCr.filter((d) => (d.toughness ?? 0) <= 2).length >= (terms.scale?.small ?? OPEN_SHAPE_SCALE.small),
       someGraveyard: oppGraveyard >= 4,
       large: oppCr.filter((d) => (d.toughness ?? 0) >= 3).length >= (terms.scale?.large ?? OPEN_SHAPE_SCALE.large),
+      killers: opp.filter(killsCreatures).length >= 8,
       hexproof: oppCr.filter((d) => ((d.keywords ?? []).includes("hexproof") || (d.keywords ?? []).includes("shroud")) && ((d.power ?? 0) >= 2 || (d.abilities ?? []).some((a) => a.kind === "static" && a.effects.some((e) => e.type === "modifyPT" && e.scope === "self" && typeof e.power === "object")))).length >= 4,
     };
     for (const row of guide.rows) {
