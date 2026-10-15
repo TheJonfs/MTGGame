@@ -2445,21 +2445,58 @@ export class HeuristicAgent implements Agent {
    * our life or more, or the target attacks us at eight life or less), or when the hand is full. Exposed. */
   removalHoldGated(view: GameView, action: Action): boolean {
     if (action.type !== "castSpell" || this.profile.off?.includes("removalhold")) return false;
-    const me = view.you;
+    const me = view.you, matchup = !this.profile.off?.includes("removalmatchup");
     const d = this.def(view.hand.find((c) => c.objectId === action.objectId)?.cardId ?? "");
-    if (!d || !(d.types.includes("Instant") || d.types.includes("Sorcery")) || (d.targets ?? []).length !== 1) return false;
-    if (!(d.spellEffect ?? []).some((e) => (e.type === "destroy" || e.type === "exile") && "target" in e && e.target === 0)) return false;
+    if (!d || !(matchup ? this.oneForOne(d) : this.killSpell(d))) return false;
     const t = ((action as { targets?: ResolvedTarget[] }).targets ?? [])[0];
     const o = t && t.kind === "object" ? view.battlefield.find((b) => b.id === t.id) : undefined;
     if (!o || o.controller === me || o.power === null) return false;
-    if (objectValue(this.defs, o, this.C) >= (this.profile.trial?.includes("removalfloor3") ? 3 : REMOVAL_FLOOR)) return false; // S59 (Part 0): a floor of three on trial
+    if (objectValue(this.defs, o, this.C) >= (matchup ? this.matchupFloor() : this.profile.trial?.includes("removalfloor3") ? 3 : REMOVAL_FLOOR)) return false; // S59 (Part 0): a floor of three on trial; book 129: the opponent's list sets it
     if (view.hand.length >= 7) return false;
     const theirPower = view.battlefield.filter((b) => b.controller !== me && b.power !== null).reduce((n, b) => n + Math.max(0, b.power ?? 0), 0);
     if (theirPower * 2 >= view.life[me]) return false;
     if (view.life[me] <= 8 && (view.combat?.attackers ?? []).includes(o.id)) return false;
     if (view.battlefield.some((b) => b.attachedTo === o.id && b.controller !== me)) return false; // it carries an Aura or Equipment: the pair is the threat
-    return this.worthWaitingFor() > 0;
+    return matchup ? this.listBest() > objectValue(this.defs, o, this.C) : this.worthWaitingFor() > 0; // book 129: nothing better in their list — no wait
   }
+  /** Book 117's shape: an instant or sorcery that destroys or exiles its one target. */
+  private killSpell(d: CardDef): boolean {
+    return (d.types.includes("Instant") || d.types.includes("Sorcery")) && (d.targets ?? []).length === 1 && (d.spellEffect ?? []).some((e) => (e.type === "destroy" || e.type === "exile") && "target" in e && e.target === 0);
+  }
+  /** Book 129: a one-for-one answer to a creature — book 117's kill spell, or an Aura that stops its creature attacking
+   * and blocking (Pacifism). */
+  oneForOne(d: CardDef): boolean {
+    if (this.killSpell(d)) return true;
+    return (d.subtypes ?? []).includes("Aura") && (d.targets ?? []).some((t) => t.predicate === "creature") && (d.abilities ?? []).some((a) => a.kind === "static" && a.effects.some((e) => e.type === "restrict" && e.scope === "attached"));
+  }
+  /**
+   * Book 129 (S64 Part 1, from Chris's White Skies and UW Skies runs — he held Swords against Auras' Coursers and
+   * spent them on a Goblin token while racing the Rabble): removal is MATCHUP-RELATIVE. A one-for-one answer waits for
+   * a creature worth three quarters of the opponent's LIST'S Nth-best creature we could answer (hexproof and shroud
+   * left out), N being our own one-for-one answers (four when our list is unknown) — never below book 117's floor.
+   * Against Dungrove Auras that is 3.3 (the Wurms earn a Swords; a Courser does not); against the Rabble 3.0 (a
+   * Chieftain does, a Raging Goblin does not). Book 117's escapes (under the gun, a full hand, a carried Aura) stand.
+   * Off: "removalmatchup" (book 117 as it was). Exposed.
+   */
+  private matchupFloorMemo: number | null = null;
+  matchupFloor(): number {
+    if (this.matchupFloorMemo !== null) return this.matchupFloorMemo;
+    const ours = (this.profile.decklist ?? []).reduce((n, e) => { const c = this.def(e.cardId); return n + (c && this.oneForOne(c) ? e.count : 0); }, 0) || 4;
+    const vals: number[] = [];
+    for (const e of this.profile.opponentDecklist) {
+      const c = this.def(e.cardId);
+      if (!c || !c.types.includes("Creature") || (c.keywords ?? []).some((k) => k === "hexproof" || k === "shroud")) continue;
+      const v = objectValue(this.defs, { id: "list", cardId: c.id, controller: 1, tapped: false, damage: 0, attachedTo: null, power: c.power ?? 0, toughness: c.toughness ?? 0, keywords: [...(c.keywords ?? [])] } as never, this.C);
+      for (let i = 0; i < e.count; i++) vals.push(v);
+    }
+    vals.sort((a, b) => b - a);
+    this.listBestMemo = vals[0] ?? 0;
+    const nth = vals[Math.min(ours, vals.length) - 1] ?? 0;
+    return (this.matchupFloorMemo = Math.max(REMOVAL_FLOOR, 0.75 * nth));
+  }
+  /** Book 129: the best answerable creature the opponent's list holds (by its printed body). */
+  private listBestMemo: number | null = null;
+  private listBest(): number { if (this.listBestMemo === null) this.matchupFloor(); return this.listBestMemo!; }
   /** The opponent's list's creatures worth a removal spell: copies with a printed body or cost that says so (mana
    * value four or more, or power three or more). */
   private worthWaitingMemo: number | null = null;

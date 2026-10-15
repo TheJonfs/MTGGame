@@ -1693,7 +1693,8 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const v = (theirs: string[], life = 20, hand = 1) => mkView({ life: [life, 20], hand: [{ objectId: "h_s", cardId: "swords_to_plowshares" }, ...Array.from({ length: hand - 1 }, (_, i) => ({ objectId: `h${i}`, cardId: "plains" }))], battlefield: [{ id: "p", cardId: "plains", controller: 0 }, ...theirs.map((c, i) => ({ id: `o${i}`, cardId: c, controller: 1 as const }))] });
     const at = (id: string) => ({ type: "castSpell" as const, objectId: "h_s", targets: [{ kind: "object" as const, id }] });
     expect(mk(big).removalHoldGated(v(["llanowar_elves"]), at("o0"))).toBe(true); // an Elf, with Serras to come: held
-    expect(mk(big).removalHoldGated(v(["grizzly_bears"]), at("o0"))).toBe(false); // a Bear is worth the floor (two): not held
+    expect(mk(big, ["removalmatchup"]).removalHoldGated(v(["grizzly_bears"]), at("o0"))).toBe(false); // a Bear is worth the floor (two): not held (book 117 alone)
+    expect(mk(big).removalHoldGated(v(["grizzly_bears"]), at("o0"))).toBe(true); // book 129: with four Serras in their list, a Bear waits
     expect(mk(big).removalHoldGated(v(["llanowar_elves", "serra_angel"]), at("o1"))).toBe(false); // the Serra: now
     expect(mk(small).removalHoldGated(v(["llanowar_elves"]), at("o0"))).toBe(false); // nothing better in their list
     expect(mk(big).removalHoldGated(v(["llanowar_elves", "serra_angel"], 8), at("o0"))).toBe(false); // five power at eight life
@@ -1974,5 +1975,24 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.paidDrawBlocksCast(v(1, ["swords_to_plowshares"], "END", 1), "mentor_of_the_meek")).toBe(true); // the only mana is the Swords'
     const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["optionalpay"] });
     expect(old.paidDrawBlocksCast(v(3, ["dazzling_angel"]), "mentor_of_the_meek")).toBe(false);
+  });
+
+  it("book of shame 129 (S64 Part 1 — Chris held his Swords against Auras' Coursers and spent one on a Goblin token racing the Rabble): one-for-one removal waits for a creature worth three quarters of the opponent's LIST'S Nth-best answerable creature — the Wurms against Dungrove Auras, a Chieftain against the Rabble; Pacifism the same", () => {
+    const D = (ids: Record<string, number>) => Object.entries(ids).map(([cardId, count]) => ({ cardId, count }));
+    const auras = D({ dungrove_elder: 4, gladecover_scout: 4, llanowar_elves: 4, wall_of_blossoms: 4, reapers_forerunner: 3, centaur_courser: 2, gaean_wurm: 4, penumbra_wurm: 2, rancor: 4, forest: 22 });
+    const rabble = D({ raging_goblin: 4, goblin_piker: 2, goblin_matron: 4, goblin_chieftain: 4, boggart_brute: 2, flametongue_kavu: 4, mountain: 20 });
+    const ours = D({ swords_to_plowshares: 4, plains: 23 });
+    const pilot = (opp: typeof auras) => new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", opp, ours) });
+    const v = (card: string, target: string) => mkView({ hand: [{ objectId: "h", cardId: card }], life: [20, 20], battlefield: [{ id: "p1", cardId: "plains", controller: 0 }, { id: "p2", cardId: "plains", controller: 0 }, { id: "t", cardId: target, controller: 1 }] });
+    const cast = { type: "castSpell" as const, objectId: "h", targets: [{ kind: "object" as const, id: "t" }] };
+    const a = pilot(auras), r = pilot(rabble);
+    expect(a.matchupFloor()).toBeGreaterThan(3); expect(r.matchupFloor()).toBeLessThanOrEqual(3.3);
+    expect(a.removalHoldGated(v("swords_to_plowshares", "centaur_courser"), cast)).toBe(true);
+    expect(a.removalHoldGated(v("swords_to_plowshares", "gaean_wurm"), cast)).toBe(false);
+    expect(a.removalHoldGated(v("pacifism", "centaur_courser"), cast)).toBe(true);
+    expect(r.removalHoldGated(v("swords_to_plowshares", "goblin_chieftain"), cast)).toBe(false);
+    expect(r.removalHoldGated(v("swords_to_plowshares", "raging_goblin"), cast)).toBe(true);
+    const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", auras, ours), off: ["removalmatchup"] });
+    expect(old.removalHoldGated(v("swords_to_plowshares", "centaur_courser"), cast)).toBe(false); // book 117's floor of two: a Courser earned it
   });
 });
