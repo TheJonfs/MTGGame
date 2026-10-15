@@ -113,7 +113,7 @@ export class HeuristicAgent implements Agent {
         // S40 (the Bailiff, book 57): a "may" whose harm points only at OUR side is declined — the self-bounce
         // of an ETB creature is a line the evaluator cannot price, so it is never taken.
         if (this.optionalHarmsOnlyUs(view)) return request.actions.find((a) => a.type === "declineOptional") ?? request.actions[0]!;
-        if (this.paidDrawBlocksCast(view)) return request.actions.find((a) => a.type === "declineOptional") ?? request.actions[0]!;
+        if (request.source && this.paidDrawBlocksCast(view, request.source.cardId)) return request.actions.find((a) => a.type === "declineOptional") ?? request.actions[0]!;
         return request.actions.find((a) => a.type === "acceptOptional") ?? request.actions[0]!;
       case "searchLibrary":
         return this.searchChoice(view, request);
@@ -2609,13 +2609,12 @@ export class HeuristicAgent implements Agent {
    * Book 132 (S64, Mentor of the Meek — the brief's "small rule"): a trigger whose "yes" PAYS mana for a card draw is
    * paid only with mana that is idle — when paying leaves every spell in hand that we could cast now still castable
    * (a sorcery-speed card counts only in our own main phase). Only for an optional cost whose effects are all draws:
-   * the Phoenix's return is not this rule's. Off: "optionalpay". Exposed.
+   * the Phoenix's return is not this rule's. The trigger is named by the REQUEST's source: a resolving item has left
+   * the stack the view shows (the top is the next trigger down, or nothing). Off: "optionalpay". Exposed.
    */
-  paidDrawBlocksCast(view: GameView): boolean {
+  paidDrawBlocksCast(view: GameView, sourceCardId: string): boolean {
     if (this.profile.off?.includes("optionalpay")) return false;
-    const top = view.stack[view.stack.length - 1];
-    if (!top || top.controller !== view.you) return false;
-    const ab = (this.def(top.cardId)?.abilities ?? []).find((a) => a.kind === "triggered" && a.optional === true && a.optionalCost && a.effects.length > 0 && a.effects.every((e) => e.type === "draw"));
+    const ab = (this.def(sourceCardId)?.abilities ?? []).find((a) => a.kind === "triggered" && a.optional === true && a.optionalCost && a.effects.length > 0 && a.effects.every((e) => e.type === "draw"));
     if (!ab || ab.kind !== "triggered" || !ab.optionalCost) return false;
     const sources = this.manaSources(view), extra = ab.optionalCost.mana;
     const ourMain = view.activePlayer === view.you && (view.step === "MAIN1" || view.step === "MAIN2");

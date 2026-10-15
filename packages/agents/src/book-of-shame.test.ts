@@ -1965,14 +1965,14 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
 
   it("book of shame 132 (S64, ADR-180 — Mentor of the Meek's {1}): a paid draw is paid with idle mana only — declined when the {1} would leave a spell in hand we could cast now uncastable; paid when nothing waits for it; a sorcery-speed card waits only in our main phase", () => {
     const a = agent("midrange");
-    const v = (lands: number, hand: string[], step = "MAIN1", active: 0 | 1 = 0) => mkView({ step, activePlayer: active, hand: hand.map((c, i) => ({ objectId: "h" + i, cardId: c })), stack: [{ id: "s", kind: "trigger", cardId: "mentor_of_the_meek", controller: 0 }], battlefield: [...Array.from({ length: lands }, (_, i) => ({ id: "l" + i, cardId: "plains", controller: 0 as const })), { id: "m", cardId: "mentor_of_the_meek", controller: 0 }] });
-    expect(a.paidDrawBlocksCast(v(3, ["dazzling_angel"]))).toBe(true); // three open: the Angel or the card
-    expect(a.paidDrawBlocksCast(v(4, ["dazzling_angel"]))).toBe(false); // four: both
-    expect(a.paidDrawBlocksCast(v(2, ["wall_of_reverence"]))).toBe(false); // the Wall could not be cast anyway
-    expect(a.paidDrawBlocksCast(v(3, ["dazzling_angel"], "END", 1))).toBe(false); // their turn: a creature waits for ours
-    expect(a.paidDrawBlocksCast(v(2, ["swords_to_plowshares"], "END", 1))).toBe(false); // {W} still open after the {1}
-    expect(a.paidDrawBlocksCast(v(1, ["swords_to_plowshares"], "END", 1))).toBe(true); // the only mana is the Swords'
+    const v = (lands: number, hand: string[], step = "MAIN1", active: 0 | 1 = 0) => mkView({ step, activePlayer: active, hand: hand.map((c, i) => ({ objectId: "h" + i, cardId: c })), battlefield: [...Array.from({ length: lands }, (_, i) => ({ id: "l" + i, cardId: "plains", controller: 0 as const })), { id: "m", cardId: "mentor_of_the_meek", controller: 0 }] });
+    expect(a.paidDrawBlocksCast(v(3, ["dazzling_angel"]), "mentor_of_the_meek")).toBe(true); // three open: the Angel or the card
+    expect(a.paidDrawBlocksCast(v(4, ["dazzling_angel"]), "mentor_of_the_meek")).toBe(false); // four: both
+    expect(a.paidDrawBlocksCast(v(2, ["wall_of_reverence"]), "mentor_of_the_meek")).toBe(false); // the Wall could not be cast anyway
+    expect(a.paidDrawBlocksCast(v(3, ["dazzling_angel"], "END", 1), "mentor_of_the_meek")).toBe(false); // their turn: a creature waits for ours
+    expect(a.paidDrawBlocksCast(v(2, ["swords_to_plowshares"], "END", 1), "mentor_of_the_meek")).toBe(false); // {W} still open after the {1}
+    expect(a.paidDrawBlocksCast(v(1, ["swords_to_plowshares"], "END", 1), "mentor_of_the_meek")).toBe(true); // the only mana is the Swords'
     const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["optionalpay"] });
-    expect(old.paidDrawBlocksCast(v(3, ["dazzling_angel"]))).toBe(false);
+    expect(old.paidDrawBlocksCast(v(3, ["dazzling_angel"]), "mentor_of_the_meek")).toBe(false);
   });
 });
