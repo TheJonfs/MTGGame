@@ -120,5 +120,74 @@ export const PLANS: readonly ComboPlan[] = [
       "graveyardExile": true,
       "discardBeforeTurn": 3
     }
+  },
+  {
+    "key": "esper:reanimator",
+    "goal": "once",
+    "piece": "artisan_of_kozilek",
+    "pieces": [
+      "artisan_of_kozilek",
+      "angel_of_the_ruins"
+    ],
+    "setup": [
+      {
+        "card": "entomb",
+        "bury": [
+          {
+            "card": "artisan_of_kozilek",
+            "count": 1
+          },
+          {
+            "card": "angel_of_the_ruins",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "card": "buried_alive",
+        "bury": [
+          {
+            "card": "artisan_of_kozilek",
+            "count": 1
+          },
+          {
+            "card": "angel_of_the_ruins",
+            "count": 1
+          },
+          {
+            "card": "the_dredger",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "start": [
+      {
+        "card": "zombify",
+        "on": "artisan_of_kozilek"
+      },
+      {
+        "card": "graceful_restoration",
+        "on": "artisan_of_kozilek"
+      }
+    ],
+    "dig": [
+      "demonic_tutor"
+    ],
+    "fuel": [
+      "dark_ritual",
+      "black_lotus",
+      "mox_jet",
+      "mox_pearl",
+      "mox_sapphire"
+    ],
+    "answers": {
+      "counter": [
+        "zombify",
+        "graceful_restoration"
+      ],
+      "graveyardExile": true,
+      "discardBeforeTurn": 3
+    }
   }
 ];

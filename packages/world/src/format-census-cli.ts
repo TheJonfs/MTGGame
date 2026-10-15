@@ -63,6 +63,14 @@ if (triads) {
     const lack = GAPS.filter((g) => by(g) === 0);
     if (lack.length) console.log(`|  | lacks: ${lack.join(", ")} | | | | | | | | |`);
   }
+  // S65 (the brief: a legend's colours decide its triads — the census's first line): each triad's legends (its lords and ministers)
+  console.log(`\n## Each triad's legends (a legend's colours decide where it may play)\n`);
+  for (const t of TRIADS) {
+    const r: DeckRule = { label: t, ...base, colorsWithin: [...t] as DeckColor[], manaWithin: true };
+    const legends = openCards.filter((d) => d.types.includes("Creature") && d.supertypes?.includes("Legendary") && cardLegal(d, r));
+    const gold = legends.filter((d) => cardColors(d).length >= 2).map((d) => `${d.name} (${cardColors(d).join("")})`), mono = legends.filter((d) => cardColors(d).length < 2).length;
+    console.log(`- **${t}**: ${gold.join(", ") || "no gold legend"}${mono ? `; and ${mono} mono-coloured or colourless` : ""}`);
+  }
   rows.sort((a, b) => b.n - a.n);
   console.log(`\nDeepest: ${rows[0]!.t} (${rows[0]!.n}); shallowest: ${rows[rows.length - 1]!.t} (${rows[rows.length - 1]!.n}).`);
   process.exit(0);

@@ -1,0 +1,1073 @@
+{
+ "_comment": "Esper (S65): the second triad — white, blue and black; the land rule (ADR-181: a land or a mana artifact makes only those colours); the Open's restricted list; sixty cards, four of a kind. The planner's ten seeds, built to sixty by the implementer (working names). `pnpm open:gen` validates each against Esper and generates the code and docs/reference/esper-lists.md.",
+ "archived": {},
+ "guides": {},
+ "guidesOnly": [],
+ "outRules": {},
+ "lists": [
+  {
+   "key": "mbc",
+   "name": "Mono-Black Control",
+   "title": "Mono-Black Control (B)",
+   "archetype": "control",
+   "source": "S65 seed (the planner's, built by the implementer): the Pall's shell without its engine — the Usher is Mardu's and legal only there, so no loop in Esper. The Jet Witch's draw, Drana, Nighthawk, Hypnotic Specter, Nekrataal; Doom Blade, Edict, the Tutor.",
+   "decklist": [
+    {
+     "cardId": "swamp",
+     "count": 22
+    },
+    {
+     "cardId": "barren_moor",
+     "count": 2
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "the_jet_witch",
+     "count": 4
+    },
+    {
+     "cardId": "drana_kalastria_bloodchief",
+     "count": 2
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "hypnotic_specter",
+     "count": 4
+    },
+    {
+     "cardId": "nekrataal",
+     "count": 4
+    },
+    {
+     "cardId": "gravedigger",
+     "count": 2
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 4
+    },
+    {
+     "cardId": "diabolic_edict",
+     "count": 3
+    },
+    {
+     "cardId": "tendrils_of_corruption",
+     "count": 2
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    },
+    {
+     "cardId": "duress",
+     "count": 2
+    },
+    {
+     "cardId": "sign_in_blood",
+     "count": 2
+    }
+   ]
+  },
+  {
+   "key": "writ",
+   "name": "the Writ",
+   "title": "Dimir Control (U B)",
+   "archetype": "control",
+   "source": "S65 seed (the planner's): the Open's Writ whole but for its mana — Badlands, Bayou, the Tallyflame Court, Wrackroot, the Volcanic and Tropical Islands and Cairnbrand (eleven lands making red or green) out under ADR-181, six Islands and five Swamps in.",
+   "decklist": [
+    {
+     "cardId": "library_of_alexandria",
+     "count": 1
+    },
+    {
+     "cardId": "underground_sea",
+     "count": 4
+    },
+    {
+     "cardId": "watery_grave",
+     "count": 4
+    },
+    {
+     "cardId": "island",
+     "count": 6
+    },
+    {
+     "cardId": "swamp",
+     "count": 5
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "arcane_collector",
+     "count": 3
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 3
+    },
+    {
+     "cardId": "protocol",
+     "count": 4
+    },
+    {
+     "cardId": "time_walk",
+     "count": 1
+    },
+    {
+     "cardId": "tidewall",
+     "count": 3
+    },
+    {
+     "cardId": "the_jet_witch",
+     "count": 3
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "undermine",
+     "count": 4
+    },
+    {
+     "cardId": "clio_lady_of_the_depths",
+     "count": 4
+    },
+    {
+     "cardId": "gravitational_shift",
+     "count": 1
+    },
+    {
+     "cardId": "faerie_formation",
+     "count": 1
+    },
+    {
+     "cardId": "drana_kalastria_bloodchief",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "tormods_crypt",
+     "count": 4
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 4
+    },
+    {
+     "cardId": "faerie_macabre",
+     "count": 4
+    },
+    {
+     "cardId": "control_magic",
+     "count": 3
+    }
+   ]
+  },
+  {
+   "key": "levy",
+   "name": "the Levy",
+   "title": "Orzhov Landfall (W B)",
+   "archetype": "midrange",
+   "source": "S65 seed (the planner's): the Open's Levy whole (Esper-legal as it stands).",
+   "decklist": [
+    {
+     "cardId": "scrubland",
+     "count": 4
+    },
+    {
+     "cardId": "godless_shrine",
+     "count": 4
+    },
+    {
+     "cardId": "plains",
+     "count": 5
+    },
+    {
+     "cardId": "swamp",
+     "count": 5
+    },
+    {
+     "cardId": "evolving_wilds",
+     "count": 4
+    },
+    {
+     "cardId": "thawing_glaciers",
+     "count": 1
+    },
+    {
+     "cardId": "obsidian_observatory",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "emeria_angel",
+     "count": 4
+    },
+    {
+     "cardId": "dread_presence",
+     "count": 4
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 1
+    },
+    {
+     "cardId": "isaura_the_levy",
+     "count": 2
+    },
+    {
+     "cardId": "raise_the_alarm",
+     "count": 4
+    },
+    {
+     "cardId": "shadow_summoning",
+     "count": 2
+    },
+    {
+     "cardId": "bitterblossom",
+     "count": 3
+    },
+    {
+     "cardId": "vindicate",
+     "count": 4
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 3
+    },
+    {
+     "cardId": "glorious_anthem",
+     "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 1
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 2
+    },
+    {
+     "cardId": "drana_kalastria_bloodchief",
+     "count": 2
+    },
+    {
+     "cardId": "faerie_macabre",
+     "count": 2
+    },
+    {
+     "cardId": "disenchant",
+     "count": 2
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 2
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 2
+    },
+    {
+     "cardId": "youthful_valkyrie",
+     "count": 1
+    },
+    {
+     "cardId": "shadow_summoning",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "key": "locks",
+   "name": "the Locks",
+   "title": "Esper Control (W U B)",
+   "archetype": "control",
+   "source": "S65 seed (the planner's): the archived Locks revived with its S57/S58 revisions (the four Control Magics), plus two Protocols, two Karmic Mentors and a Wave of Reckoning beside its Wraths — for two Undermines, two Swords and a Vindicate.",
+   "decklist": [
+    {
+     "cardId": "tundra",
+     "count": 4
+    },
+    {
+     "cardId": "underground_sea",
+     "count": 4
+    },
+    {
+     "cardId": "scrubland",
+     "count": 4
+    },
+    {
+     "cardId": "hallowed_fountain",
+     "count": 4
+    },
+    {
+     "cardId": "island",
+     "count": 2
+    },
+    {
+     "cardId": "plains",
+     "count": 2
+    },
+    {
+     "cardId": "swamp",
+     "count": 2
+    },
+    {
+     "cardId": "obsidian_observatory",
+     "count": 1
+    },
+    {
+     "cardId": "library_of_alexandria",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "the_dredger",
+     "count": 4
+    },
+    {
+     "cardId": "serra_angel",
+     "count": 2
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "undermine",
+     "count": 2
+    },
+    {
+     "cardId": "absorb",
+     "count": 4
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 1
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 3
+    },
+    {
+     "cardId": "vindicate",
+     "count": 1
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    },
+    {
+     "cardId": "time_walk",
+     "count": 1
+    },
+    {
+     "cardId": "control_magic",
+     "count": 4
+    },
+    {
+     "cardId": "protocol",
+     "count": 2
+    },
+    {
+     "cardId": "karmic_mentor",
+     "count": 2
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "essence_scatter",
+     "count": 3
+    },
+    {
+     "cardId": "protocol",
+     "count": 2
+    },
+    {
+     "cardId": "serra_angel",
+     "count": 2
+    },
+    {
+     "cardId": "duress",
+     "count": 2
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 2
+    },
+    {
+     "cardId": "faerie_macabre",
+     "count": 2
+    },
+    {
+     "cardId": "disenchant",
+     "count": 2
+    }
+   ]
+  },
+  {
+   "key": "undertow",
+   "name": "the Undertow",
+   "title": "Dimir Mill (U B)",
+   "archetype": "control",
+   "source": "S65 seed (the planner's): the archived Undertow revived — its Tropical Islands, Bayous, Wrackroot and Mox Emerald (green) out for Watery Graves and Islands; four Tome Scours for the two Man-o'-Wars and the two Faerie Macabres; Tidewall, Glimpse and Clio kept.",
+   "decklist": [
+    {
+     "cardId": "underground_sea",
+     "count": 4
+    },
+    {
+     "cardId": "watery_grave",
+     "count": 4
+    },
+    {
+     "cardId": "island",
+     "count": 6
+    },
+    {
+     "cardId": "swamp",
+     "count": 3
+    },
+    {
+     "cardId": "evolving_wilds",
+     "count": 4
+    },
+    {
+     "cardId": "thawing_glaciers",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "hedron_crab",
+     "count": 4
+    },
+    {
+     "cardId": "traumatizer",
+     "count": 4
+    },
+    {
+     "cardId": "tome_scour",
+     "count": 4
+    },
+    {
+     "cardId": "counterspell",
+     "count": 3
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 2
+    },
+    {
+     "cardId": "glimpse_the_unthinkable",
+     "count": 4
+    },
+    {
+     "cardId": "tidewall",
+     "count": 4
+    },
+    {
+     "cardId": "clio_lady_of_the_depths",
+     "count": 4
+    },
+    {
+     "cardId": "control_magic",
+     "count": 3
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 3
+    }
+   ]
+  },
+  {
+   "key": "wbcontrol",
+   "name": "WB Control",
+   "title": "Orzhov Control (W B)",
+   "archetype": "midrange",
+   "source": "S65 seed (the planner's, built by the implementer; Chris expects a WB control list here): Mardu Control's shape without the Ushers (Mardu's) and without red — Karmic Mentor, Restoration Angel, Vindicate, the Jet Witch, Wrath, Isaura, Swords, Emeria Angel at the top; Blood Artist and Soul Warden as the lifegain floor.",
+   "decklist": [
+    {
+     "cardId": "scrubland",
+     "count": 4
+    },
+    {
+     "cardId": "godless_shrine",
+     "count": 4
+    },
+    {
+     "cardId": "obsidian_observatory",
+     "count": 1
+    },
+    {
+     "cardId": "plains",
+     "count": 5
+    },
+    {
+     "cardId": "swamp",
+     "count": 5
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "karmic_mentor",
+     "count": 4
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 3
+    },
+    {
+     "cardId": "vindicate",
+     "count": 4
+    },
+    {
+     "cardId": "the_jet_witch",
+     "count": 3
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 3
+    },
+    {
+     "cardId": "isaura_the_levy",
+     "count": 2
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 3
+    },
+    {
+     "cardId": "emeria_angel",
+     "count": 3
+    },
+    {
+     "cardId": "blood_artist",
+     "count": 4
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "key": "skies",
+   "name": "UW Skies (Esper)",
+   "title": "Azorius Skies (W U)",
+   "archetype": "midrange",
+   "source": "S65 seed (the planner's, built by the implementer): Peasant's UW Skies promoted — two Serra Angels, two Emeria Angels, a Faerie Formation and two Control Magics for the four Marshals, two Traumatizers and a Swords; Tundras, the Obsidian Observatory and the power for basics.",
+   "decklist": [
+    {
+     "cardId": "hallowed_fountain",
+     "count": 4
+    },
+    {
+     "cardId": "tundra",
+     "count": 4
+    },
+    {
+     "cardId": "obsidian_observatory",
+     "count": 1
+    },
+    {
+     "cardId": "plains",
+     "count": 4
+    },
+    {
+     "cardId": "island",
+     "count": 8
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "youthful_valkyrie",
+     "count": 4
+    },
+    {
+     "cardId": "inspiring_overseer",
+     "count": 4
+    },
+    {
+     "cardId": "plumecreed_escort",
+     "count": 4
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 4
+    },
+    {
+     "cardId": "traumatizer",
+     "count": 2
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 3
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 2
+    },
+    {
+     "cardId": "karmic_mentor",
+     "count": 2
+    },
+    {
+     "cardId": "serra_angel",
+     "count": 2
+    },
+    {
+     "cardId": "emeria_angel",
+     "count": 2
+    },
+    {
+     "cardId": "faerie_formation",
+     "count": 1
+    },
+    {
+     "cardId": "control_magic",
+     "count": 2
+    }
+   ]
+  },
+  {
+   "key": "bwtokens",
+   "name": "BW Tokens",
+   "title": "Orzhov Tokens (W B)",
+   "archetype": "aggro",
+   "source": "S65 seed (the planner's, built by the implementer): Shadow Summoning, Bitterblossom, Raise the Alarm, Captain of the Watch, Isaura, Emeria Angel, Glorious Anthem, Vindicate — with Soul Warden and two Karmic Mentors (they return Wardens and Bitterblossoms).",
+   "decklist": [
+    {
+     "cardId": "scrubland",
+     "count": 4
+    },
+    {
+     "cardId": "godless_shrine",
+     "count": 4
+    },
+    {
+     "cardId": "obsidian_observatory",
+     "count": 1
+    },
+    {
+     "cardId": "plains",
+     "count": 6
+    },
+    {
+     "cardId": "swamp",
+     "count": 6
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "raise_the_alarm",
+     "count": 4
+    },
+    {
+     "cardId": "bitterblossom",
+     "count": 4
+    },
+    {
+     "cardId": "shadow_summoning",
+     "count": 3
+    },
+    {
+     "cardId": "captain_of_the_watch",
+     "count": 3
+    },
+    {
+     "cardId": "isaura_the_levy",
+     "count": 2
+    },
+    {
+     "cardId": "emeria_angel",
+     "count": 3
+    },
+    {
+     "cardId": "glorious_anthem",
+     "count": 4
+    },
+    {
+     "cardId": "vindicate",
+     "count": 4
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "karmic_mentor",
+     "count": 2
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 3
+    }
+   ]
+  },
+  {
+   "key": "tempo",
+   "name": "Dimir Tempo",
+   "title": "Blue Tempo, splash Clio (U b)",
+   "archetype": "midrange",
+   "source": "S65 seed (the planner's 'Mono-Blue Tempo', built by the implementer): Tidewall, Man-o'-War, Plumecreed Escort, Aether Channeler, Control Magic, Counterspell, Boomerang — and Clio, so black is splashed (Chris).",
+   "decklist": [
+    {
+     "cardId": "underground_sea",
+     "count": 4
+    },
+    {
+     "cardId": "watery_grave",
+     "count": 4
+    },
+    {
+     "cardId": "island",
+     "count": 16
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "man_o_war",
+     "count": 4
+    },
+    {
+     "cardId": "aether_channeler",
+     "count": 4
+    },
+    {
+     "cardId": "plumecreed_escort",
+     "count": 4
+    },
+    {
+     "cardId": "tidewall",
+     "count": 3
+    },
+    {
+     "cardId": "control_magic",
+     "count": 3
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "boomerang",
+     "count": 3
+    },
+    {
+     "cardId": "clio_lady_of_the_depths",
+     "count": 3
+    },
+    {
+     "cardId": "traumatizer",
+     "count": 4
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 2
+    }
+   ]
+  },
+  {
+   "key": "reanimator",
+   "name": "Esper Reanimator",
+   "title": "Esper Reanimator (W U B)",
+   "archetype": "combo",
+   "source": "S65 seed (the planner's, built by the implementer): Entomb, Buried Alive, Zombify, Graceful Restoration; Angel of the Ruins and Artisan of Kozilek as the pieces, the Dredger and Drana; the Jet Witch to dig. A plan in the Larder's vocabulary (goal: once).",
+   "decklist": [
+    {
+     "cardId": "scrubland",
+     "count": 4
+    },
+    {
+     "cardId": "underground_sea",
+     "count": 4
+    },
+    {
+     "cardId": "godless_shrine",
+     "count": 2
+    },
+    {
+     "cardId": "watery_grave",
+     "count": 2
+    },
+    {
+     "cardId": "tundra",
+     "count": 2
+    },
+    {
+     "cardId": "obsidian_observatory",
+     "count": 1
+    },
+    {
+     "cardId": "swamp",
+     "count": 5
+    },
+    {
+     "cardId": "plains",
+     "count": 2
+    },
+    {
+     "cardId": "island",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "artisan_of_kozilek",
+     "count": 2
+    },
+    {
+     "cardId": "angel_of_the_ruins",
+     "count": 3
+    },
+    {
+     "cardId": "the_dredger",
+     "count": 2
+    },
+    {
+     "cardId": "drana_kalastria_bloodchief",
+     "count": 1
+    },
+    {
+     "cardId": "entomb",
+     "count": 4
+    },
+    {
+     "cardId": "buried_alive",
+     "count": 4
+    },
+    {
+     "cardId": "zombify",
+     "count": 4
+    },
+    {
+     "cardId": "graceful_restoration",
+     "count": 3
+    },
+    {
+     "cardId": "dark_ritual",
+     "count": 4
+    },
+    {
+     "cardId": "duress",
+     "count": 2
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    },
+    {
+     "cardId": "the_jet_witch",
+     "count": 3
+    }
+   ],
+   "plan": {
+    "goal": "once",
+    "piece": "artisan_of_kozilek",
+    "pieces": [
+     "artisan_of_kozilek",
+     "angel_of_the_ruins"
+    ],
+    "setup": [
+     {
+      "card": "entomb",
+      "bury": [
+       {
+        "card": "artisan_of_kozilek",
+        "count": 1
+       },
+       {
+        "card": "angel_of_the_ruins",
+        "count": 1
+       }
+      ]
+     },
+     {
+      "card": "buried_alive",
+      "bury": [
+       {
+        "card": "artisan_of_kozilek",
+        "count": 1
+       },
+       {
+        "card": "angel_of_the_ruins",
+        "count": 1
+       },
+       {
+        "card": "the_dredger",
+        "count": 1
+       }
+      ]
+     }
+    ],
+    "start": [
+     {
+      "card": "zombify",
+      "on": "artisan_of_kozilek"
+     },
+     {
+      "card": "graceful_restoration",
+      "on": "artisan_of_kozilek"
+     }
+    ],
+    "dig": [
+     "demonic_tutor"
+    ],
+    "fuel": [
+     "dark_ritual",
+     "black_lotus",
+     "mox_jet",
+     "mox_pearl",
+     "mox_sapphire"
+    ],
+    "answers": {
+     "counter": [
+      "zombify",
+      "graceful_restoration"
+     ],
+     "graveyardExile": true,
+     "discardBeforeTurn": 3
+    }
+   }
+  }
+ ]
+}

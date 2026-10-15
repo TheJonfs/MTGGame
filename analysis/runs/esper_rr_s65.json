@@ -1,0 +1,400 @@
+{
+ "name": "open_rr_1",
+ "when": "2026-10-15T20:51:16.864Z",
+ "games": 4500,
+ "table": {
+  "mbc": {
+   "writ": [
+    32,
+    100
+   ],
+   "reanimator": [
+    79,
+    100
+   ],
+   "levy": [
+    34,
+    100
+   ],
+   "locks": [
+    39,
+    100
+   ],
+   "undertow": [
+    58,
+    100
+   ],
+   "wbcontrol": [
+    37,
+    100
+   ],
+   "skies": [
+    40,
+    100
+   ],
+   "bwtokens": [
+    24,
+    100
+   ],
+   "tempo": [
+    41,
+    100
+   ]
+  },
+  "writ": {
+   "mbc": [
+    68,
+    100
+   ],
+   "reanimator": [
+    49,
+    100
+   ],
+   "levy": [
+    53,
+    100
+   ],
+   "locks": [
+    52,
+    100
+   ],
+   "undertow": [
+    60,
+    100
+   ],
+   "wbcontrol": [
+    57,
+    100
+   ],
+   "skies": [
+    60,
+    100
+   ],
+   "bwtokens": [
+    46,
+    100
+   ],
+   "tempo": [
+    60,
+    100
+   ]
+  },
+  "reanimator": {
+   "mbc": [
+    21,
+    100
+   ],
+   "writ": [
+    51,
+    100
+   ],
+   "skies": [
+    17,
+    100
+   ],
+   "undertow": [
+    56,
+    100
+   ],
+   "bwtokens": [
+    19,
+    100
+   ],
+   "tempo": [
+    20,
+    100
+   ],
+   "locks": [
+    22,
+    100
+   ],
+   "wbcontrol": [
+    15,
+    100
+   ],
+   "levy": [
+    20,
+    100
+   ]
+  },
+  "locks": {
+   "undertow": [
+    49,
+    100
+   ],
+   "levy": [
+    42,
+    100
+   ],
+   "wbcontrol": [
+    52,
+    100
+   ],
+   "mbc": [
+    61,
+    100
+   ],
+   "writ": [
+    48,
+    100
+   ],
+   "skies": [
+    39,
+    100
+   ],
+   "bwtokens": [
+    31,
+    100
+   ],
+   "tempo": [
+    53,
+    100
+   ],
+   "reanimator": [
+    78,
+    100
+   ]
+  },
+  "undertow": {
+   "locks": [
+    51,
+    100
+   ],
+   "bwtokens": [
+    49,
+    100
+   ],
+   "tempo": [
+    26,
+    100
+   ],
+   "levy": [
+    53,
+    100
+   ],
+   "reanimator": [
+    44,
+    100
+   ],
+   "mbc": [
+    42,
+    100
+   ],
+   "writ": [
+    40,
+    100
+   ],
+   "wbcontrol": [
+    50,
+    100
+   ],
+   "skies": [
+    43,
+    100
+   ]
+  },
+  "bwtokens": {
+   "undertow": [
+    51,
+    100
+   ],
+   "tempo": [
+    63,
+    100
+   ],
+   "locks": [
+    69,
+    100
+   ],
+   "reanimator": [
+    81,
+    100
+   ],
+   "wbcontrol": [
+    51,
+    100
+   ],
+   "levy": [
+    49,
+    100
+   ],
+   "mbc": [
+    76,
+    100
+   ],
+   "writ": [
+    54,
+    100
+   ],
+   "skies": [
+    47,
+    100
+   ]
+  },
+  "skies": {
+   "tempo": [
+    52,
+    100
+   ],
+   "reanimator": [
+    83,
+    100
+   ],
+   "locks": [
+    61,
+    100
+   ],
+   "wbcontrol": [
+    52,
+    100
+   ],
+   "levy": [
+    48,
+    100
+   ],
+   "mbc": [
+    60,
+    100
+   ],
+   "writ": [
+    40,
+    100
+   ],
+   "undertow": [
+    57,
+    100
+   ],
+   "bwtokens": [
+    53,
+    100
+   ]
+  },
+  "tempo": {
+   "skies": [
+    48,
+    100
+   ],
+   "undertow": [
+    74,
+    100
+   ],
+   "bwtokens": [
+    37,
+    100
+   ],
+   "locks": [
+    47,
+    100
+   ],
+   "reanimator": [
+    80,
+    100
+   ],
+   "wbcontrol": [
+    29,
+    100
+   ],
+   "levy": [
+    56,
+    100
+   ],
+   "mbc": [
+    59,
+    100
+   ],
+   "writ": [
+    40,
+    100
+   ]
+  },
+  "levy": {
+   "mbc": [
+    66,
+    100
+   ],
+   "writ": [
+    47,
+    100
+   ],
+   "locks": [
+    58,
+    100
+   ],
+   "undertow": [
+    47,
+    100
+   ],
+   "wbcontrol": [
+    41,
+    100
+   ],
+   "skies": [
+    52,
+    100
+   ],
+   "bwtokens": [
+    51,
+    100
+   ],
+   "tempo": [
+    44,
+    100
+   ],
+   "reanimator": [
+    80,
+    100
+   ]
+  },
+  "wbcontrol": {
+   "locks": [
+    48,
+    100
+   ],
+   "levy": [
+    59,
+    100
+   ],
+   "skies": [
+    48,
+    100
+   ],
+   "mbc": [
+    63,
+    100
+   ],
+   "writ": [
+    43,
+    100
+   ],
+   "bwtokens": [
+    49,
+    100
+   ],
+   "tempo": [
+    71,
+    100
+   ],
+   "undertow": [
+    50,
+    100
+   ],
+   "reanimator": [
+    85,
+    100
+   ]
+  }
+ },
+ "means": {
+  "mbc": 43,
+  "writ": 56,
+  "levy": 54,
+  "locks": 50,
+  "undertow": 44,
+  "wbcontrol": 57,
+  "skies": 56,
+  "bwtokens": 60,
+  "tempo": 52,
+  "reanimator": 27
+ },
+ "report": "# The Open's round-robin (S46) — 4500 games, master both, 20 life, no entrances; the ROW's win rate\n\n| | mbc | writ | levy | locks | undertow | wbcontrol | skies | bwtokens | tempo | reanimator | **mean** |\n|---|---|---|---|---|---|---|---|---|---|---|---|\n| **mbc** | — | 32 | 34 | 39 | 58 | 37 | 40 | 24 | 41 | 79 | **43** |\n| **writ** | 68 | — | 53 | 52 | 60 | 57 | 60 | 46 | 60 | 49 | **56** |\n| **levy** | 66 | 47 | — | 58 | 47 | 41 | 52 | 51 | 44 | 80 | **54** |\n| **locks** | 61 | 48 | 42 | — | 49 | 52 | 39 | 31 | 53 | 78 | **50** |\n| **undertow** | 42 | 40 | 53 | 51 | — | 50 | 43 | 49 | 26 | 44 | **44** |\n| **wbcontrol** | 63 | 43 | 59 | 48 | 50 | — | 48 | 49 | 71 | 85 | **57** |\n| **skies** | 60 | 40 | 48 | 61 | 57 | 52 | — | 53 | 52 | 83 | **56** |\n| **bwtokens** | 76 | 54 | 49 | 69 | 51 | 51 | 47 | — | 63 | 81 | **60** |\n| **tempo** | 59 | 40 | 56 | 47 | 74 | 29 | 48 | 37 | — | 80 | **52** |\n| **reanimator** | 21 | 51 | 20 | 22 | 56 | 15 | 17 | 19 | 20 | — | **27** |\n\nSolvable (a list over 65% against the field): none. Under 35%: reanimator.\nMuster vs Warband: the Muster 0% (0 games).\nThe Undertow's wins by library: 323 of 398 (81%).\n\n## Staples (ADR-170)\n\nIn more than half of the 10 lists: none. The most played: Counterspell 5 · Vampire Nighthawk 5 · Swords to Plowshares 5 · The Jet Witch 4 · Vindicate 4 · Control Magic 4 · Emeria Angel 4 · Karmic Mentor 4.\n\n## Restricted cards — % of the list's games in which it was cast (or, a land, played)\n\n- **mbc**: black_lotus 30% · mox_jet 29% · demonic_tutor 28%\n- **writ**: library_of_alexandria 42% · black_lotus 32% · mox_jet 33% · mox_sapphire 33% · demonic_tutor 32% · time_walk 38%\n- **levy**: obsidian_observatory 24% · black_lotus 26% · mox_pearl 27% · mox_jet 25%\n- **locks**: obsidian_observatory 40% · library_of_alexandria 39% · black_lotus 34% · mox_sapphire 34% · mox_pearl 32% · mox_jet 33% · demonic_tutor 34% · time_walk 32%\n- **undertow**: mox_sapphire 26% · mox_jet 23% · black_lotus 28%\n- **wbcontrol**: obsidian_observatory 39% · black_lotus 32% · mox_jet 35% · mox_pearl 35% · demonic_tutor 30%\n- **skies**: obsidian_observatory 29% · black_lotus 32% · mox_pearl 31% · mox_sapphire 31%\n- **bwtokens**: obsidian_observatory 27% · black_lotus 24% · mox_pearl 25% · mox_jet 24%\n- **tempo**: black_lotus 32% · mox_sapphire 33%\n- **reanimator**: obsidian_observatory 25% · black_lotus 25% · mox_jet 23% · mox_pearl 24% · mox_sapphire 25% · demonic_tutor 22%\n\n## Key pieces — % of the list's games in which each was cast (a weak pilot reads apart from a weak list)\n\n- **mbc**: \n- **writ**: \n- **levy**: emeria_angel 66% · dread_presence 61% · isaura_the_levy 42%\n- **locks**: the_dredger 75% · counterspell 65% · wrath_of_god 47%\n- **undertow**: hedron_crab 73% · zinnia_the_undertow 0% · traumatizer 61%\n- **wbcontrol**: \n- **skies**: \n- **bwtokens**: \n- **tempo**: \n- **reanimator**: \n\n## The Loop — the Usher + an Altar on the battlefield with a Restoration Angel in hand or play\n\nAssembled by turn ten in 0 of 0 games (0%); ever: 0. Altar activations per game: 0.00."
+}
