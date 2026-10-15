@@ -20,5 +20,6 @@ export const TOKEN_FACES: readonly { portrait: string; colors: string }[] = [
   { portrait: "token-spirit-white", colors: "W" }, // Spirit Token (spirit_1_1_w_flying)
   { portrait: "token-weird", colors: "UR" }, // Weird Token (weird_x_x_ur)
   { portrait: "token-wurm", colors: "G" }, // Wurm Token (wurm_4_4)
+  { portrait: "token-wurm-black", colors: "B" }, // Wurm Token (wurm_6_6_b_trample; S64)
   { portrait: "token-zombie", colors: "B" }, // Zombie Token (zombie_2_2)
 ];

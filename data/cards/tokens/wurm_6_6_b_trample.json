@@ -20,6 +20,7 @@
   ],
   "text": "",
   "art": {
+    "asset": "/custom-art/wurm_6_6_b_trample.png",
     "fallback": "rendered"
   }
 }

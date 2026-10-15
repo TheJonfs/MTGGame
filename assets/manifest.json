@@ -6237,6 +6237,21 @@
         }
       }
     },
+    "token-wurm-black": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:4c02dde5186cfb723240bc6a9f3b435b898203bab2bee0bd1f7ce4ce3e07c2f8",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:4c02dde5186cfb723240bc6a9f3b435b898203bab2bee0bd1f7ce4ce3e07c2f8",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/token-wurm-black/canonical.png",
+          "rendered_at": "2026-10-15T18:30:11+00:00",
+          "thumb": "assets/thumbs/token-wurm-black/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "token-zombie": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:01fb6fc23962604d5f1aa8998d1b4144ed9f09bb3cd76b4011288c81bc02a147",
