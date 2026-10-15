@@ -1,0 +1,889 @@
+{
+ "_comment": "Naya (S64, ADR-181): the first triad — red, green and white; the land rule (a land or a mana artifact makes only those colours); the Open's restricted list; sixty cards, four of a kind. The planner's ten seeds, built to sixty by the implementer (working names). `pnpm open:gen` validates each against Naya and generates the code and docs/reference/naya-lists.md.",
+ "archived": {},
+ "guides": {},
+ "guidesOnly": [],
+ "outRules": {},
+ "lists": [
+  {
+   "key": "rabble",
+   "name": "the Rabble (Naya)",
+   "title": "Mono-Red Goblins (R)",
+   "archetype": "aggro",
+   "source": "S64 seed (the planner's): the Open's Rabble whole but for its mana — its Badlands, Volcanic Islands, Cairnbrand and Tallyflame Court (black and blue lands) and its Mox Jet and Mox Sapphire out under ADR-181 (Chris: mana artifacts follow the land rule), twelve Mountains in.",
+   "decklist": [
+    {
+     "cardId": "mountain",
+     "count": 20
+    },
+    {
+     "cardId": "goblin_grenade",
+     "count": 4
+    },
+    {
+     "cardId": "raging_goblin",
+     "count": 4
+    },
+    {
+     "cardId": "dragon_fodder",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "char",
+     "count": 4
+    },
+    {
+     "cardId": "goblin_chieftain",
+     "count": 4
+    },
+    {
+     "cardId": "seasoned_pyromancer",
+     "count": 4
+    },
+    {
+     "cardId": "hordeling_outburst",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "siege_gang_commander",
+     "count": 2
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "key": "tollgate",
+   "name": "the Tollgate",
+   "title": "Naya Control (R G W)",
+   "archetype": "control",
+   "source": "S64 seed (the planner's): the Open's Tollgate whole (Naya-legal as it stands). Its fifteen loses the two Faerie Macabres (black): a fourth Tormod's Crypt and a Retribution of the Meek.",
+   "decklist": [
+    {
+     "cardId": "plateau",
+     "count": 4
+    },
+    {
+     "cardId": "taiga",
+     "count": 4
+    },
+    {
+     "cardId": "savannah",
+     "count": 4
+    },
+    {
+     "cardId": "sacred_foundry",
+     "count": 2
+    },
+    {
+     "cardId": "stomping_ground",
+     "count": 2
+    },
+    {
+     "cardId": "temple_garden",
+     "count": 2
+    },
+    {
+     "cardId": "plains",
+     "count": 2
+    },
+    {
+     "cardId": "mountain",
+     "count": 2
+    },
+    {
+     "cardId": "forest",
+     "count": 1
+    },
+    {
+     "cardId": "shevelport",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "the_fordkeeper",
+     "count": 4
+    },
+    {
+     "cardId": "wall_of_blossoms",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 2
+    },
+    {
+     "cardId": "powerstone_minefield",
+     "count": 4
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 4
+    },
+    {
+     "cardId": "savage_twister",
+     "count": 2
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 2
+    },
+    {
+     "cardId": "sacred_helix",
+     "count": 2
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 2
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "tormods_crypt",
+     "count": 4
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 2
+    },
+    {
+     "cardId": "char",
+     "count": 2
+    },
+    {
+     "cardId": "disenchant",
+     "count": 2
+    },
+    {
+     "cardId": "savage_twister",
+     "count": 2
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 2
+    },
+    {
+     "cardId": "retribution_of_the_meek",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "key": "snakes",
+   "name": "Naya Flash Snakes (Open)",
+   "title": "Naya Snakes (R G W)",
+   "archetype": "midrange",
+   "source": "S64 seed (the planner's, built by the implementer): Peasant's Naya Flash Snakes at the Open's tier — dual lands and the Naya power, Baru at the top and two Fordkeepers (the planner's candidate lord), for the Little Bears and two Walls of Blossoms.",
+   "decklist": [
+    {
+     "cardId": "taiga",
+     "count": 4
+    },
+    {
+     "cardId": "savannah",
+     "count": 2
+    },
+    {
+     "cardId": "plateau",
+     "count": 2
+    },
+    {
+     "cardId": "stomping_ground",
+     "count": 4
+    },
+    {
+     "cardId": "temple_garden",
+     "count": 2
+    },
+    {
+     "cardId": "sacred_foundry",
+     "count": 2
+    },
+    {
+     "cardId": "forest",
+     "count": 2
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "manaba",
+     "count": 4
+    },
+    {
+     "cardId": "birds_of_paradise",
+     "count": 4
+    },
+    {
+     "cardId": "llanowar_elves",
+     "count": 2
+    },
+    {
+     "cardId": "rage_cobra",
+     "count": 4
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 4
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "wall_of_blossoms",
+     "count": 2
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 3
+    },
+    {
+     "cardId": "baru_wurmspeaker",
+     "count": 3
+    },
+    {
+     "cardId": "the_fordkeeper",
+     "count": 2
+    }
+   ]
+  },
+  {
+   "key": "muster",
+   "name": "the Muster",
+   "title": "Boros Weenie (W R)",
+   "archetype": "aggro",
+   "source": "S64 seed (the planner's): the Open's Muster whole.",
+   "decklist": [
+    {
+     "cardId": "plateau",
+     "count": 4
+    },
+    {
+     "cardId": "sacred_foundry",
+     "count": 4
+    },
+    {
+     "cardId": "plains",
+     "count": 8
+    },
+    {
+     "cardId": "mountain",
+     "count": 4
+    },
+    {
+     "cardId": "secluded_steppe",
+     "count": 2
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "savannah_lions",
+     "count": 4
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "suntail_hawk",
+     "count": 2
+    },
+    {
+     "cardId": "fencing_ace",
+     "count": 4
+    },
+    {
+     "cardId": "emeria_angel",
+     "count": 3
+    },
+    {
+     "cardId": "raise_the_alarm",
+     "count": 4
+    },
+    {
+     "cardId": "glorious_anthem",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 2
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "key": "warband",
+   "name": "the Warband",
+   "title": "Boros Goblins (R w)",
+   "archetype": "aggro",
+   "source": "S64 seed (the planner's): the Open's Warband whole.",
+   "decklist": [
+    {
+     "cardId": "plateau",
+     "count": 4
+    },
+    {
+     "cardId": "sacred_foundry",
+     "count": 4
+    },
+    {
+     "cardId": "mountain",
+     "count": 12
+    },
+    {
+     "cardId": "plains",
+     "count": 2
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "skirk_prospector",
+     "count": 4
+    },
+    {
+     "cardId": "goblin_piker",
+     "count": 4
+    },
+    {
+     "cardId": "goblin_chieftain",
+     "count": 4
+    },
+    {
+     "cardId": "boggart_brute",
+     "count": 2
+    },
+    {
+     "cardId": "siege_gang_commander",
+     "count": 3
+    },
+    {
+     "cardId": "lumen_the_hearth_fire",
+     "count": 3
+    },
+    {
+     "cardId": "hordeling_outburst",
+     "count": 4
+    },
+    {
+     "cardId": "goblin_grenade",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "sacred_helix",
+     "count": 1
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 2
+    }
+   ]
+  },
+  {
+   "key": "tokens",
+   "name": "RW Tokens (Naya)",
+   "title": "Boros Tokens (W R)",
+   "archetype": "aggro",
+   "source": "S64 seed (the planner's, built by the implementer): Peasant's RW Tokens promoted — four Captains of the Watch, two Emeria Angels and Lumen for two Marshals and two Kavus; Plateaus and the Naya power for basics.",
+   "decklist": [
+    {
+     "cardId": "sacred_foundry",
+     "count": 4
+    },
+    {
+     "cardId": "plateau",
+     "count": 4
+    },
+    {
+     "cardId": "plains",
+     "count": 5
+    },
+    {
+     "cardId": "mountain",
+     "count": 6
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "young_pyromancer",
+     "count": 4
+    },
+    {
+     "cardId": "raise_the_alarm",
+     "count": 4
+    },
+    {
+     "cardId": "dragon_fodder",
+     "count": 4
+    },
+    {
+     "cardId": "hordeling_outburst",
+     "count": 4
+    },
+    {
+     "cardId": "glorious_anthem",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 1
+    },
+    {
+     "cardId": "dawnwing_marshal",
+     "count": 2
+    },
+    {
+     "cardId": "captain_of_the_watch",
+     "count": 4
+    },
+    {
+     "cardId": "emeria_angel",
+     "count": 2
+    },
+    {
+     "cardId": "lumen_the_hearth_fire",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "key": "auras",
+   "name": "GW Auras reborn",
+   "title": "Selesnya Auras (G W)",
+   "archetype": "aggro",
+   "source": "S64 seed (the planner's, built by the implementer): the archived Enchantress with Dungrove Elder (Peasant's pillar) — four Elders and a fourth Angelic Destiny for the Timberland Guides, the Glare and two Spirit Links; a Plains for a Forest (the Elder counts Forests).",
+   "decklist": [
+    {
+     "cardId": "savannah",
+     "count": 4
+    },
+    {
+     "cardId": "temple_garden",
+     "count": 4
+    },
+    {
+     "cardId": "forest",
+     "count": 8
+    },
+    {
+     "cardId": "plains",
+     "count": 5
+    },
+    {
+     "cardId": "shevelport",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "gladecover_scout",
+     "count": 4
+    },
+    {
+     "cardId": "blurred_mongoose",
+     "count": 4
+    },
+    {
+     "cardId": "ovna_the_enchantress",
+     "count": 4
+    },
+    {
+     "cardId": "dungrove_elder",
+     "count": 4
+    },
+    {
+     "cardId": "the_emerald_keeper",
+     "count": 2
+    },
+    {
+     "cardId": "rancor",
+     "count": 4
+    },
+    {
+     "cardId": "blanchwood_armor",
+     "count": 4
+    },
+    {
+     "cardId": "spirit_link",
+     "count": 1
+    },
+    {
+     "cardId": "pacifism",
+     "count": 4
+    },
+    {
+     "cardId": "angelic_destiny",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "key": "wurms",
+   "name": "Mono-Green Wurms",
+   "title": "Mono-Green Ramp (G)",
+   "archetype": "midrange",
+   "source": "S64 seed (the planner's): the Open's Wurmspeaker whole.",
+   "decklist": [
+    {
+     "cardId": "forest",
+     "count": 20
+    },
+    {
+     "cardId": "tranquil_thicket",
+     "count": 2
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "llanowar_elves",
+     "count": 4
+    },
+    {
+     "cardId": "birds_of_paradise",
+     "count": 4
+    },
+    {
+     "cardId": "wood_elves",
+     "count": 4
+    },
+    {
+     "cardId": "seedborn_muse",
+     "count": 4
+    },
+    {
+     "cardId": "gaean_wurm",
+     "count": 3
+    },
+    {
+     "cardId": "pelakka_wurm",
+     "count": 2
+    },
+    {
+     "cardId": "baru_wurmspeaker",
+     "count": 3
+    },
+    {
+     "cardId": "treetop_snarespinner",
+     "count": 2
+    },
+    {
+     "cardId": "the_emerald_keeper",
+     "count": 2
+    },
+    {
+     "cardId": "rampant_growth",
+     "count": 4
+    },
+    {
+     "cardId": "prey_upon",
+     "count": 2
+    },
+    {
+     "cardId": "rampaging_baloths",
+     "count": 2
+    }
+   ]
+  },
+  {
+   "key": "lifegain",
+   "name": "Naya Lifegain",
+   "title": "Naya Lifegain (R G W)",
+   "archetype": "midrange",
+   "source": "S64 seed (the planner's, built by the implementer): the archived Ford's shape — Vitalist ×4, the Fordkeeper, Soul Warden, Sacred Helix, Bolt and Char (Lightning Helix is not in the pool) — with Peasant's new white: two Karmic Mentors (they return Wardens and Gladeharts) and two Dazzling Angels, for the Rage Cobras, two Spirit Links and two lands.",
+   "decklist": [
+    {
+     "cardId": "plateau",
+     "count": 4
+    },
+    {
+     "cardId": "savannah",
+     "count": 4
+    },
+    {
+     "cardId": "taiga",
+     "count": 4
+    },
+    {
+     "cardId": "sacred_foundry",
+     "count": 4
+    },
+    {
+     "cardId": "temple_garden",
+     "count": 2
+    },
+    {
+     "cardId": "plains",
+     "count": 2
+    },
+    {
+     "cardId": "mountain",
+     "count": 1
+    },
+    {
+     "cardId": "forest",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "the_fordkeeper",
+     "count": 4
+    },
+    {
+     "cardId": "grazing_gladehart",
+     "count": 4
+    },
+    {
+     "cardId": "lumen_the_hearth_fire",
+     "count": 2
+    },
+    {
+     "cardId": "spirit_link",
+     "count": 2
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "char",
+     "count": 2
+    },
+    {
+     "cardId": "sacred_helix",
+     "count": 2
+    },
+    {
+     "cardId": "vitalist",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 2
+    },
+    {
+     "cardId": "karmic_mentor",
+     "count": 2
+    },
+    {
+     "cardId": "dazzling_angel",
+     "count": 2
+    }
+   ]
+  },
+  {
+   "key": "stompy",
+   "name": "Gruul Stompy (Naya)",
+   "title": "Gruul Stompy (R G)",
+   "archetype": "aggro",
+   "source": "S64 seed (the planner's, built by the implementer): Peasant's Stompy promoted — Dungrove Elder for the Grizzly Bears, two Baru at the top (the Reaper is Jund and not legal here; the Fordkeeper is tried in his place), Taigas and the Naya power.",
+   "decklist": [
+    {
+     "cardId": "stomping_ground",
+     "count": 4
+    },
+    {
+     "cardId": "taiga",
+     "count": 4
+    },
+    {
+     "cardId": "forest",
+     "count": 9
+    },
+    {
+     "cardId": "mountain",
+     "count": 2
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "llanowar_elves",
+     "count": 4
+    },
+    {
+     "cardId": "birds_of_paradise",
+     "count": 2
+    },
+    {
+     "cardId": "dungrove_elder",
+     "count": 4
+    },
+    {
+     "cardId": "centaur_courser",
+     "count": 4
+    },
+    {
+     "cardId": "rumbling_baloth",
+     "count": 4
+    },
+    {
+     "cardId": "gaean_wurm",
+     "count": 3
+    },
+    {
+     "cardId": "rancor",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 3
+    },
+    {
+     "cardId": "baru_wurmspeaker",
+     "count": 2
+    }
+   ]
+  }
+ ]
+}

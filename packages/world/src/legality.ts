@@ -22,6 +22,10 @@ export type DeckColor = "W" | "U" | "B" | "R" | "G";
 export interface DeckRule {
   /** The stronghold gate: every card's colours ⊆ this set (colourless always ok). */
   colorsWithin?: DeckColor[];
+  /** S64 (ADR-181, the triads' lands; Chris: mana artifacts follow the land rule): with `colorsWithin`, a land or an
+   * artifact may produce only those colours — an off-colour basic, dual or Mox is out; an "any one colour" producer
+   * (Black Lotus) stays, as Birds of Paradise does. */
+  manaWithin?: boolean;
   minCreatures?: number;
   maxLands?: number;
   maxManaValue?: number;
@@ -46,7 +50,7 @@ export interface DeckRule {
   /** "the Jeskai gate" — shown by the editor and the parley. */
   label: string;
 }
-export const DECK_RULE_FIELDS = ["colorsWithin", "minCreatures", "maxLands", "maxManaValue", "singleton", "minCards", "minCreaturePower", "minLandFraction", "bannedTypes", "restricted", "banned", "maxTier", "poolIsCap", "label"] as const;
+export const DECK_RULE_FIELDS = ["colorsWithin", "manaWithin", "minCreatures", "maxLands", "maxManaValue", "singleton", "minCards", "minCreaturePower", "minLandFraction", "bannedTypes", "restricted", "banned", "maxTier", "poolIsCap", "label"] as const;
 const RULE_CARD_TYPES: readonly CardType[] = ["Land", "Creature", "Instant", "Sorcery", "Enchantment", "Artifact"];
 
 /** `failed` (S40): the rule fields that produced a problem, in check order — the door picks its voice by the first. */
@@ -91,6 +95,11 @@ export function checkDeck(list: Decklist, collection?: Collection | null, rule?:
       const out = list.filter((e) => { const d = def(e.cardId); return d ? cardColors(d).some((c) => !allowed.has(c)) : false; });
       const k = out.reduce((m, e) => m + e.count, 0);
       if (k > 0) problems.push(`${plural(k, "card is", "cards are")} outside ${rule.label}'s colours (${rule.colorsWithin.join("")}): ${listOf(out)}`);
+    }
+    if (rule.colorsWithin && rule.manaWithin) {
+      const out = list.filter((e) => { const d = def(e.cardId); return d ? offColourMana(d, rule.colorsWithin!).length > 0 : false; });
+      const k = out.reduce((m, e) => m + e.count, 0);
+      if (k > 0) problems.push(`${plural(k, "card makes", "cards make")} mana outside ${rule.label}'s colours (${rule.colorsWithin.join("")}): ${listOf(out)}`);
     }
     mark("colorsWithin", at); at = before();
     if (rule.minCreatures !== undefined) {
@@ -162,7 +171,7 @@ export function checkDeck(list: Decklist, collection?: Collection | null, rule?:
 /** The rule in one line, for the editor's panel and enemies.md: "colours within WUR; ≥ 15 creatures; ≤ 12 lands". */
 export function describeDeckRule(rule: DeckRule): string {
   const parts: string[] = [];
-  if (rule.colorsWithin) parts.push(`colours within ${rule.colorsWithin.join("")}`);
+  if (rule.colorsWithin) parts.push(`colours within ${rule.colorsWithin.join("")}${rule.manaWithin ? " (lands and mana artifacts too)" : ""}`);
   if (rule.minCreatures !== undefined) parts.push(`≥ ${rule.minCreatures} creatures`);
   if (rule.maxLands !== undefined) parts.push(`≤ ${rule.maxLands} lands`);
   if (rule.maxManaValue !== undefined) parts.push(`mana value ≤ ${rule.maxManaValue}`);
@@ -188,6 +197,7 @@ export function validateDeckRule(rule: unknown, where: string): string[] {
   if (r.colorsWithin !== undefined) {
     if (!Array.isArray(r.colorsWithin) || r.colorsWithin.length === 0 || r.colorsWithin.some((c) => !["W", "U", "B", "R", "G"].includes(c as string)) || new Set(r.colorsWithin).size !== r.colorsWithin.length) errors.push(`${where}: deckRule.colorsWithin must be a non-empty array of distinct WUBRG letters`);
   }
+  if (r.manaWithin !== undefined && (typeof r.manaWithin !== "boolean" || r.colorsWithin === undefined)) errors.push(`${where}: deckRule.manaWithin must be a boolean, beside colorsWithin`);
   for (const k of ["minCreatures", "maxLands", "maxManaValue", "minCards", "minCreaturePower"] as const) {
     if (r[k] !== undefined && (!Number.isInteger(r[k]) || (r[k] as number) < 0)) errors.push(`${where}: deckRule.${k} must be a non-negative integer`);
   }
@@ -196,4 +206,20 @@ export function validateDeckRule(rule: unknown, where: string): string[] {
   for (const k of ["restricted", "banned"] as const) if (r[k] !== undefined && (!Array.isArray(r[k]) || (r[k] as unknown[]).length === 0 || (r[k] as unknown[]).some((x) => typeof x !== "string"))) errors.push(`${where}: deckRule.${k} must be a non-empty array of card ids`);
   if (r.bannedTypes !== undefined && (!Array.isArray(r.bannedTypes) || r.bannedTypes.length === 0 || r.bannedTypes.some((t) => !RULE_CARD_TYPES.includes(t as CardType)) || new Set(r.bannedTypes).size !== r.bannedTypes.length)) errors.push(`${where}: deckRule.bannedTypes must be a non-empty array of distinct card types`);
   return errors;
+}
+
+/** S64 (ADR-181): the colours a land or an artifact can make that `allowed` does not hold — fixed mana and "any
+ * combination of" choices count; an "any one colour" choice does not (Black Lotus). Other cards: none. */
+export function offColourMana(d: CardDef, allowed: readonly DeckColor[]): DeckColor[] {
+  if (!d.types.includes("Land") && !d.types.includes("Artifact")) return [];
+  const out = new Set<DeckColor>();
+  for (const a of d.abilities ?? []) {
+    if (a.kind !== "activated") continue;
+    for (const e of a.effects) {
+      if (e.type !== "addMana") continue;
+      for (const c of (e.mana ?? "").match(/[WUBRG]/g) ?? []) if (!allowed.includes(c as DeckColor)) out.add(c as DeckColor);
+      if (e.choice && "anyCombinationOf" in e.choice) for (const c of e.choice.anyCombinationOf) if (!allowed.includes(c)) out.add(c);
+    }
+  }
+  return [...out];
 }

@@ -21,7 +21,7 @@ import { FORMAT_STRENGTH, OPEN_MEANS } from "./open-matches.generated.js";
 export { OPEN_MEANS };
 import { cardColors, manaValue, parseManaCost, type CardDef } from "@shandalar/cards";
 import type { Decklist } from "./state.js";
-import { BASIC_LANDS, COPY_CAP, checkDeck, isBasic, type DeckCheck, type DeckRule } from "./legality.js";
+import { BASIC_LANDS, COPY_CAP, checkDeck, isBasic, offColourMana, type DeckCheck, type DeckRule } from "./legality.js";
 import type { ConstructedFormat } from "./formats.js";
 import { FIELD_FORMAT_IDS, LAW_IDS } from "./formats.js";
 import { cardRating, formatView, type CardRatingTable } from "./rating.js";
@@ -79,10 +79,11 @@ export interface ConstructedBuild { deck: Decklist; from: string; /** How far th
 /** May one copy of this card be in a deck of this format at all? (The per-card half of the rule.) */
 export function cardLegal(d: CardDef, rule: DeckRule): boolean {
   if (d.isTokenDef || (LAW_IDS as readonly string[]).includes(d.id)) return false;
-  if (isBasic(d.id)) return !(rule.banned ?? []).includes(d.id) && !(rule.bannedTypes ?? []).includes("Land");
+  if (isBasic(d.id)) return !(rule.banned ?? []).includes(d.id) && !(rule.bannedTypes ?? []).includes("Land") && !(rule.manaWithin && rule.colorsWithin && offColourMana(d, rule.colorsWithin).length > 0);
   if ((rule.banned ?? []).includes(d.id)) return false;
   if (rule.maxTier !== undefined && !(typeof d.shopTier === "number" && d.shopTier <= rule.maxTier)) return false;
   if (rule.colorsWithin && cardColors(d).some((c) => !rule.colorsWithin!.includes(c))) return false;
+  if (rule.manaWithin && rule.colorsWithin && offColourMana(d, rule.colorsWithin).length > 0) return false; // S64 (ADR-181)
   if (rule.bannedTypes && rule.bannedTypes.some((t) => d.types.includes(t))) return false;
   if (rule.maxManaValue !== undefined && !d.types.includes("Land") && manaValue(parseManaCost(d.manaCost)) > rule.maxManaValue) return false;
   if (rule.minCreaturePower !== undefined && d.types.includes("Creature") && (d.power ?? 0) < rule.minCreaturePower) return false;

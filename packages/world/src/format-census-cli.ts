@@ -4,6 +4,7 @@
  * S63 (Part 3): `--colors` narrows the shelf to cards within those colours (\`colorsWithin\`, the triads' rule; colourless
  * and lands pass) — with or without a tier ceiling; the Open's lists are then ranked by legal share. `--triads` prints
  * the ten three-colour shelves side by side: their size by role and tier, and what each lacks of the gaps list's shape.
+ * S64 (ADR-181): both apply the land rule — a land or a mana artifact makes only the shelf's colours.
  *
  * S61 (the Pauper read; then Chris's "Penny" — tiers 1 and 2): what a tier ceiling leaves of the Open's pool. Counts by
  * colour and role, the creature curves, the lands, the answers by name, the card rating's spread on that shelf, and
@@ -31,7 +32,7 @@ const tierGiven = process.argv.includes("--max-tier");
 const maxTier = Number(arg("max-tier", colorsArg || triads ? "3" : "1")) as 1 | 2 | 3;
 const ceiling = tierGiven || !(colorsArg || triads);
 const colours = colorsArg ? ([...colorsArg] as DeckColor[]) : undefined;
-const rule: DeckRule = { label: `${ceiling ? `tier ${maxTier} and below` : "the Open's shelf"}${colours ? `, within ${colorsArg}` : ""}`, minCards: 60, ...(ceiling ? { maxTier } : {}), ...(colours ? { colorsWithin: colours } : {}), banned: OPEN_FORMAT.rule.banned! };
+const rule: DeckRule = { label: `${ceiling ? `tier ${maxTier} and below` : "the Open's shelf"}${colours ? `, within ${colorsArg}` : ""}`, minCards: 60, ...(ceiling ? { maxTier } : {}), ...(colours ? { colorsWithin: colours, manaWithin: true } : {}), banned: OPEN_FORMAT.rule.banned! };
 const openCards = [...pool.values()].filter((d) => !isBasic(d.id) && cardLegal(d, OPEN_FORMAT.rule));
 const legal = openCards.filter((d) => cardLegal(d, rule));
 const below = ceiling && maxTier > 1 ? new Set(openCards.filter((d) => cardLegal(d, { ...rule, maxTier: (maxTier - 1) as 1 | 2 })).map((d) => d.id)) : new Set<string>();
@@ -53,7 +54,7 @@ if (triads) {
   console.log(`| triad | nonland | creatures | removal/burn | sweeper | counter | draw | power ≥ 4 creatures | tier 1/2/3/R/prize | best Open lists (legal share; ties by colours used) |\n|---|---|---|---|---|---|---|---|---|---|`);
   const rows: { t: string; n: number }[] = [];
   for (const t of TRIADS) {
-    const r: DeckRule = { label: t, ...base, colorsWithin: [...t] as DeckColor[] };
+    const r: DeckRule = { label: t, ...base, colorsWithin: [...t] as DeckColor[], manaWithin: true }; // S64: ADR-181 — lands and mana artifacts too
     const xs = openCards.filter((d) => !d.types.includes("Land") && cardLegal(d, r));
     const by = (k: string) => xs.filter((d) => role(d) === k).length;
     const share = Object.values(OPEN_FIELD).map((l) => { const nb = l.decklist.filter((e) => !isBasic(e.cardId)); const n = (ys: typeof nb) => ys.reduce((a, e) => a + e.count, 0); const used = new Set(l.decklist.flatMap((e) => cardColors(pool.get(e.cardId)!))); return { l, s: n(nb.filter((e) => cardLegal(pool.get(e.cardId)!, r))) / Math.max(1, n(nb)), u: [...t].filter((c) => used.has(c as never)).length }; }).sort((a, b) => b.s - a.s || b.u - a.u); // a tie broken by how many of the three colours the list uses
