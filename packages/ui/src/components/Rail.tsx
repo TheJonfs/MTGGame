@@ -1,5 +1,6 @@
 import { MANA_SYMBOLS } from "@shandalar/cards";
 import { characteristics, getObject, type EngineCtx, type PlayerId } from "@shandalar/engine";
+import { inPlayLines } from "./in-play";
 import type { DecisionPoint } from "@shandalar/engine";
 import { actionLabel, cardName, targetLabel } from "../labels";
 import type { OracleEntry } from "../engine-bridge";
@@ -176,6 +177,17 @@ function DecisionPanel({ ctx, point, poolMap }: { ctx: EngineCtx; point: Decisio
   );
 }
 
+function InPlayNote({ ctx, objectId }: { ctx: EngineCtx; objectId: string }) {
+  const lines = inPlayLines(ctx, objectId);
+  if (lines.length === 0) return null;
+  return (
+    <div className="in-play" aria-label="In play">
+      <div className="in-play-head">In play</div>
+      <ul>{lines.map((l, i) => <li key={i} className={l.tone}>{l.text}</li>)}</ul>
+    </div>
+  );
+}
+
 export function Inspector({
   ctx,
   objectId,
@@ -216,7 +228,9 @@ export function Inspector({
             }
           />
         </div>
-      ) : fallbackDef ? (
+      ) : null}
+      {obj && obj.zone === "battlefield" ? <InPlayNote ctx={ctx} objectId={obj.id} /> : null}
+      {obj ? null : fallbackDef ? (
         <div style={{ display: "flex", justifyContent: "center" }}>
           <CardFrame def={fallbackDef} oracle={oracle[fallbackDef.id]} showPrinted={printed} />
         </div>

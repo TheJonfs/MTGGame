@@ -1,4 +1,5 @@
 import { characteristics, type EngineCtx, type GameObject } from "@shandalar/engine";
+import { inPlayLines } from "./in-play";
 
 /** Battlefield presentation (art-direction §3): art crop, name strip, live P/T badge. */
 export function CardTile({
@@ -49,7 +50,7 @@ export function CardTile({
       className={classes}
       onMouseEnter={() => onHover?.(obj.id)}
       onClick={() => onClick?.(obj.id)}
-      title={def.name}
+      title={[def.name, ...inPlayLines(ctx, obj.id).map((l) => l.text)].join("\n")} // S65: the changes against the printed card, under the name
     >
       {def.source === "real" && !def.art?.asset ? (
         // Tile-size derivative (art-tiles.py): prefiltered downscale kills the

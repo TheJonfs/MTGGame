@@ -117,7 +117,7 @@ export function staticActive(ctx: EngineCtx, sourceId: string, condition?: { val
  * static P/T → EOT P/T (timestamp order) → counters → keyword grants/restrictions.
  * Restrictions are consulted by the enumerator and combat, never stored on objects.
  */
-export function characteristics(ctx: EngineCtx, objectId: string): Characteristics {
+export function characteristics(ctx: EngineCtx, objectId: string, trace?: CharacteristicsContribution[]): Characteristics {
   const state = ctx.state;
   const obj = getObject(state, objectId);
   const def = ctx.defs.def(obj.cardId);
@@ -142,13 +142,15 @@ export function characteristics(ctx: EngineCtx, objectId: string): Characteristi
         typeof v === "number" ? v : typeof v === "object" && !isStackOnlyRef(v) ? evaluateValueRef(ctx, v, src.controller, srcId) : 0;
       result.power += val(e.power);
       result.toughness += val(e.toughness);
+      trace?.push({ what: "pt", sourceId: srcId, sourceCardId: getObject(state, srcId).cardId, power: val(e.power), toughness: val(e.toughness), duration: "static" });
     }
-    if (phase === "grants" && e.type === "grantKeyword") result.keywords.add(e.keyword);
+    if (phase === "grants" && e.type === "grantKeyword") { result.keywords.add(e.keyword); trace?.push({ what: "keyword", sourceId: srcId, sourceCardId: getObject(state, srcId).cardId, keyword: e.keyword, duration: "static" }); }
     // S46 (R-100, Angelic Destiny): "is an Angel in addition to its other types".
     if (phase === "grants" && e.type === "grantSubtype") for (const st of e.subtypes) if (!result.subtypes.includes(st)) result.subtypes.push(st);
     if (phase === "grants" && e.type === "restrict") {
       if (e.what === "attack" || e.what === "both") result.cantAttack = true;
       if (e.what === "block" || e.what === "both") result.cantBlock = true;
+      trace?.push({ what: "restrict", sourceId: srcId, sourceCardId: getObject(state, srcId).cardId, restrict: e.what, duration: "static" });
     }
   };
 
@@ -180,10 +182,12 @@ export function characteristics(ctx: EngineCtx, objectId: string): Characteristi
   const stored = state.continuousEffects
     .filter((ce) => ce.objectId === objectId)
     .sort((a, b) => a.timestamp - b.timestamp);
+  const eot = (ce: (typeof stored)[number]): CharacteristicsContribution["duration"] => (ce.duration === "UNTIL_END_OF_TURN" ? "untilEndOfTurn" : "untilSourceLeaves");
   for (const ce of stored) {
     if (ce.kind === "modifyPT") {
       result.power += ce.power ?? 0;
       result.toughness += ce.toughness ?? 0;
+      trace?.push({ what: "pt", ...(ce.sourceCardId ? { sourceCardId: ce.sourceCardId } : {}), power: ce.power ?? 0, toughness: ce.toughness ?? 0, duration: eot(ce) });
     }
   }
 
@@ -192,18 +196,44 @@ export function characteristics(ctx: EngineCtx, objectId: string): Characteristi
   const minus = obj.counters["-1/-1"] ?? 0;
   result.power += plus - minus;
   result.toughness += plus - minus;
+  if (plus || minus) trace?.push({ what: "counters", power: plus - minus, toughness: plus - minus, duration: "counters" });
 
   // Keyword grants and restrictions, statics then stored.
   for (const h of staticHits) applyEffect(h.e, "grants", h.srcId);
   for (const ce of stored) {
-    if (ce.kind === "grantKeyword" && ce.keyword) result.keywords.add(ce.keyword);
+    if (ce.kind === "grantKeyword" && ce.keyword) { result.keywords.add(ce.keyword); trace?.push({ what: "keyword", ...(ce.sourceCardId ? { sourceCardId: ce.sourceCardId } : {}), keyword: ce.keyword, duration: eot(ce) }); }
     if (ce.kind === "restrict") {
       if (ce.what === "attack" || ce.what === "both") result.cantAttack = true;
       if (ce.what === "block" || ce.what === "both") result.cantBlock = true;
+      trace?.push({ what: "restrict", ...(ce.sourceCardId ? { sourceCardId: ce.sourceCardId } : {}), ...(ce.what ? { restrict: ce.what } : {}), duration: eot(ce) });
     }
+    if (ce.kind === "gainControl") trace?.push({ what: "control", ...(ce.sourceCardId ? { sourceCardId: ce.sourceCardId } : {}), duration: eot(ce) });
   }
 
   return result;
+}
+
+/** S65 (the play screen's "in play" note): one contribution to a permanent's live characteristics — what changed, by
+ * how much, from which card, and for how long. Presentation only: the rules read `characteristics` alone. */
+export interface CharacteristicsContribution {
+  what: "pt" | "keyword" | "restrict" | "counters" | "control";
+  sourceId?: string;
+  sourceCardId?: string;
+  power?: number;
+  toughness?: number;
+  keyword?: Keyword;
+  restrict?: "attack" | "block" | "both";
+  duration: "static" | "untilEndOfTurn" | "untilSourceLeaves" | "counters";
+}
+
+/** S65: a permanent's live characteristics with every contribution beside them, and the keywords it has gained and
+ * lost against its printed card. */
+export function characteristicsTrace(ctx: EngineCtx, objectId: string): Characteristics & { contributions: CharacteristicsContribution[]; printed: { power: number; toughness: number; keywords: Keyword[] }; gained: Keyword[]; lost: Keyword[] } {
+  const contributions: CharacteristicsContribution[] = [];
+  const c = characteristics(ctx, objectId, contributions);
+  const obj = getObject(ctx.state, objectId), def = ctx.defs.def(obj.cardId);
+  const printedKw = [...(def.keywords ?? [])] as Keyword[];
+  return { ...c, contributions, printed: { power: obj.basePT?.power ?? def.power ?? 0, toughness: obj.basePT?.toughness ?? def.toughness ?? 0, keywords: printedKw }, gained: [...c.keywords].filter((k) => !printedKw.includes(k)), lost: printedKw.filter((k) => !c.keywords.has(k)) };
 }
 
 /** S22b law-word (the Risen Tide): lands a player may play per turn — 1 plus every active

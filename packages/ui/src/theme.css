@@ -728,3 +728,10 @@ button.chrome-tab:hover:not(:disabled) { background: #f4ecd8; }
 
 /* S53: a big field's table skips rows between the top sixteen and the player's place */
 .convocation-table tr.gap-above td { border-top: 3px double var(--ink-soft); }
+
+/* S65: the inspector's "in play" note — changes against the printed card, with their sources */
+.in-play { margin: 6px 4px 0; padding: 5px 8px; border-top: 1px solid var(--ink-soft); font-size: 11.5px; line-height: 1.45; color: var(--ink); }
+.in-play-head { font-family: var(--serif); font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 2px; }
+.in-play ul { list-style: none; margin: 0; padding: 0; }
+.in-play li.boost { color: var(--boost); }
+.in-play li.reduce { color: var(--danger); }

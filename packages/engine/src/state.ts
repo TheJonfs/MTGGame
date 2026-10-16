@@ -123,6 +123,8 @@ export interface StoredContinuousEffect {
   what?: "attack" | "block" | "both";
   duration: "UNTIL_END_OF_TURN" | "UNTIL_SOURCE_LEAVES" | "WHILE_SOURCE_ON_BATTLEFIELD";
   sourceStackItemId: string;
+  /** S65 (the play screen's "in play" note): the card whose spell or ability made this effect — presentation only. */
+  sourceCardId?: string;
   timestamp: number;
 }
 

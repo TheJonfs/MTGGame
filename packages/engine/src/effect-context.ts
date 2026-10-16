@@ -390,6 +390,7 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
         ...(effect.controller !== undefined && { controller: effect.controller as PlayerId }),
         duration: effect.duration,
         sourceStackItemId: item.id,
+        ...(item.sourceCardId ? { sourceCardId: item.sourceCardId } : {}),
         timestamp: nextTimestamp(ctx.state),
       });
     },
