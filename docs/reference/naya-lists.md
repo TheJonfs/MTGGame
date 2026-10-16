@@ -4,20 +4,20 @@
 
 ## The table of record
 
-10 active lists, the AI in both seats. **Game one** is a list's mean win rate against the other active lists on the registered sixties (the round-robin of record, `formats/naya/means.json`). **Matches** is its best-of-three win rate — the figure the field's seat draw reads since S59 (60 matches a pairing, measured 2026-10-15; ADR-171): game one on the registered sixties, games two and three sideboarded. **After sideboarding** is its games-two-and-three rate less its game-one rate inside those matches.
+10 active lists, the AI in both seats. **Game one** is a list's mean win rate against the other active lists on the registered sixties (the round-robin of record, `formats/naya/means.json`). **Matches** is its best-of-three win rate — the figure the field's seat draw reads since S59 (60 matches a pairing, measured 2026-10-16; ADR-171): game one on the registered sixties, games two and three sideboarded. **After sideboarding** is its games-two-and-three rate less its game-one rate inside those matches.
 
 | list | deck | pilot | matches | game one | after sideboarding | fifteen |
 |---|---|---|---|---|---|---|
-| the Rabble (Naya) | Mono-Red Goblins (R) | aggro | 59.2 | 56 | +0.1 | built |
-| the Watch | Boros Tokens (W R) | aggro | 56.3 | 54 | +3.6 | built |
-| the Stampede | Gruul Stompy (R G) | aggro | 53.3 | 59 | −4.5 | built |
-| Mono-Green Wurms | Mono-Green Ramp (G) | midrange | 51.6 | 50 | +6.9 | built |
-| the Brood | Naya Snakes and Angels (R G W) | midrange | 50.0 | 51 | −3.0 | registered, guided |
-| the Tollgate | Naya Control (R G W) | control | 49.8 | 48 | −4.4 | registered |
-| the Thicket | Selesnya Auras (G W) | aggro | 48.1 | 49 | +2.2 | built |
-| the Muster | Boros Weenie (W R) | aggro | 44.8 | 43 | +0.2 | built |
-| the Chantry | Naya Lifegain (R G W) | midrange | 44.1 | 47 | +1.5 | built |
-| the Warband | Boros Goblins (R w) | aggro | 42.8 | 44 | −2.7 | built |
+| the Rabble (Naya) | Mono-Red Goblins (R) | aggro | 58.9 | 56 | −0.2 | built |
+| the Watch | Boros Tokens (W R) | aggro | 58.0 | 54 | +1.8 | built |
+| the Brood | Naya Snakes and Angels (R G W) | midrange | 56.9 | 51 | −1.8 | registered, guided |
+| Mono-Green Wurms | Mono-Green Ramp (G) | midrange | 52.1 | 50 | +9.3 | built |
+| the Stampede | Gruul Stompy (R G) | aggro | 52.0 | 59 | −5.6 | built |
+| the Muster | Boros Weenie (W R) | aggro | 45.6 | 43 | −0.7 | built |
+| the Warband | Boros Goblins (R w) | aggro | 44.4 | 44 | −3.1 | built |
+| the Tollgate | Naya Control (R G W) | control | 44.3 | 48 | −4.5 | registered |
+| the Chantry | Naya Lifegain (R G W) | midrange | 44.1 | 47 | +1.1 | built |
+| the Thicket | Selesnya Auras (G W) | aggro | 43.7 | 49 | +3.5 | built |
 
 Archived (kept in the data, out of the field): none.
 
@@ -29,7 +29,7 @@ The most played: Lightning Bolt 7 · Flametongue Kavu 7 · Lumen, the Hearth Fir
 
 ## the Rabble (Naya) — Mono-Red Goblins (R)
 
-`rabble` · aggro · game one 56 · matches 59.2
+`rabble` · aggro · game one 56 · matches 58.9
 
 - **Lands (20):** 20 Mountain
 - **Creatures (18):** 4 Raging Goblin · 4 Goblin Chieftain · 4 Seasoned Pyromancer · 4 Flametongue Kavu · 2 Siege-Gang Commander
@@ -40,7 +40,7 @@ The most played: Lightning Bolt 7 · Flametongue Kavu 7 · Lumen, the Hearth Fir
 
 ## the Watch — Boros Tokens (W R)
 
-`tokens` · aggro · game one 54 · matches 56.3
+`tokens` · aggro · game one 54 · matches 58.0
 
 - **Lands (19):** 4 Sacred Foundry · 4 Plateau · 5 Plains · 6 Mountain
 - **Creatures (18):** 4 Soul Warden · 4 Young Pyromancer · 1 Flametongue Kavu · 2 Dawnwing Marshal · 4 Captain of the Watch · 2 Emeria Angel · 1 Lumen, the Hearth Fire
@@ -49,31 +49,9 @@ The most played: Lightning Bolt 7 · Flametongue Kavu 7 · Lumen, the Hearth Fir
 - **History:**
   - contributed — S64 seed (the planner's, built by the implementer): Peasant's RW Tokens promoted — four Captains of the Watch, two Emeria Angels and Lumen for two Marshals and two Kavus; Plateaus and the Naya power for basics. Named the Watch in the plane's register (S65; it was RW Tokens (Naya)).
 
-## the Stampede — Gruul Stompy (R G)
-
-`stompy` · aggro · game one 59 · matches 53.3
-
-- **Lands (19):** 4 Stomping Ground · 4 Taiga · 9 Forest · 2 Mountain
-- **Creatures (30):** 4 Llanowar Elves · 2 Birds of Paradise · 4 Dungrove Elder · 4 Centaur Courser · 4 Rumbling Baloth · 3 Gaean Wurm · 4 Flametongue Kavu · 3 Reaper's Forerunner · 2 Baru, Wurmspeaker
-- **Other (11):** 1 Black Lotus · 1 Mox Emerald · 1 Mox Ruby · 4 Rancor · 4 Lightning Bolt
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S64 seed (the planner's, built by the implementer): Peasant's Stompy promoted — Dungrove Elder for the Grizzly Bears, two Baru at the top (the Reaper is Jund and not legal here; the Fordkeeper is tried in his place), Taigas and the Naya power. Named the Stampede in the plane's register (S65; it was Gruul Stompy (Naya)).
-
-## Mono-Green Wurms — Mono-Green Ramp (G)
-
-`wurms` · midrange · game one 50 · matches 51.6
-
-- **Lands (22):** 20 Forest · 2 Tranquil Thicket
-- **Creatures (30):** 4 Llanowar Elves · 4 Birds of Paradise · 4 Wood Elves · 4 Seedborn Muse · 3 Gaean Wurm · 2 Pelakka Wurm · 3 Baru, Wurmspeaker · 2 Treetop Snarespinner · 2 The Emerald Keeper · 2 Rampaging Baloths
-- **Other (8):** 1 Black Lotus · 1 Mox Emerald · 4 Rampant Growth · 2 Prey Upon
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S64 seed (the planner's): the Open's Wurmspeaker whole.
-
 ## the Brood — Naya Snakes and Angels (R G W)
 
-`snakes` · midrange · game one 51 · matches 50.0
+`snakes` · midrange · game one 51 · matches 56.9
 
 - **Lands (21):** 4 Savannah · 4 Taiga · 4 Plateau · 1 Shevelport · 1 Stomping Ground · 1 Temple Garden · 1 Sacred Foundry · 2 Tranquil Thicket · 1 Plains · 1 Mountain · 1 Forest
 - **Creatures (33):** 4 Lumen, the Hearth Fire · 4 Restoration Angel · 4 Reaper's Forerunner · 4 Rage Cobra · 4 Manaba · 4 Birds of Paradise · 4 The Emerald Keeper · 3 Shocking Sharpshooter · 2 Karmic Mentor
@@ -93,9 +71,53 @@ The most played: Lightning Bolt 7 · Flametongue Kavu 7 · Lumen, the Hearth Fir
 - **History:**
   - contributed — S65 (Chris, 2026-10-16): his list, champion of his first Naya-and-Esper Convocation (7-1 on Days 3 and 4; 4-1 in the Swiss) — Manaba, Rage Cobra, Reaper's Forerunner, Birds, Restoration Angel, Lumen, the Emerald Keeper, Shocking Sharpshooters, Karmic Mentors, Sacred Helix; his fifteen with two Airship Crashes for the Seasoned Pyromancers (for the Thicket's Auras and the Tollgate's Minefields). It replaces the planner's seed (Naya Flash Snakes at the Open's tier), which it beat 54.0 to 49.2 in the same seat (the Tollgate 28 -> 69, the Thicket 51 -> 62).
 
+## Mono-Green Wurms — Mono-Green Ramp (G)
+
+`wurms` · midrange · game one 50 · matches 52.1
+
+- **Lands (22):** 20 Forest · 2 Tranquil Thicket
+- **Creatures (30):** 4 Llanowar Elves · 4 Birds of Paradise · 4 Wood Elves · 4 Seedborn Muse · 3 Gaean Wurm · 2 Pelakka Wurm · 3 Baru, Wurmspeaker · 2 Treetop Snarespinner · 2 The Emerald Keeper · 2 Rampaging Baloths
+- **Other (8):** 1 Black Lotus · 1 Mox Emerald · 4 Rampant Growth · 2 Prey Upon
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — S64 seed (the planner's): the Open's Wurmspeaker whole.
+
+## the Stampede — Gruul Stompy (R G)
+
+`stompy` · aggro · game one 59 · matches 52.0
+
+- **Lands (19):** 4 Stomping Ground · 4 Taiga · 9 Forest · 2 Mountain
+- **Creatures (30):** 4 Llanowar Elves · 2 Birds of Paradise · 4 Dungrove Elder · 4 Centaur Courser · 4 Rumbling Baloth · 3 Gaean Wurm · 4 Flametongue Kavu · 3 Reaper's Forerunner · 2 Baru, Wurmspeaker
+- **Other (11):** 1 Black Lotus · 1 Mox Emerald · 1 Mox Ruby · 4 Rancor · 4 Lightning Bolt
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — S64 seed (the planner's, built by the implementer): Peasant's Stompy promoted — Dungrove Elder for the Grizzly Bears, two Baru at the top (the Reaper is Jund and not legal here; the Fordkeeper is tried in his place), Taigas and the Naya power. Named the Stampede in the plane's register (S65; it was Gruul Stompy (Naya)).
+
+## the Muster — Boros Weenie (W R)
+
+`muster` · aggro · game one 43 · matches 45.6
+
+- **Lands (22):** 4 Plateau · 4 Sacred Foundry · 8 Plains · 4 Mountain · 2 Secluded Steppe
+- **Creatures (21):** 4 Savannah Lions · 4 Soul Warden · 2 Suntail Hawk · 4 Fencing Ace · 3 Emeria Angel · 4 Flametongue Kavu
+- **Other (17):** 1 Black Lotus · 1 Mox Pearl · 1 Mox Ruby · 4 Raise the Alarm · 4 Glorious Anthem · 4 Lightning Bolt · 2 Swords to Plowshares
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — S64 seed (the planner's): the Open's Muster whole.
+
+## the Warband — Boros Goblins (R w)
+
+`warband` · aggro · game one 44 · matches 44.4
+
+- **Lands (22):** 4 Plateau · 4 Sacred Foundry · 12 Mountain · 2 Plains
+- **Creatures (22):** 4 Skirk Prospector · 4 Goblin Piker · 4 Goblin Chieftain · 2 Boggart Brute · 3 Siege-Gang Commander · 3 Lumen, the Hearth Fire · 2 Flametongue Kavu
+- **Other (16):** 1 Black Lotus · 1 Mox Ruby · 1 Mox Pearl · 4 Hordeling Outburst · 4 Goblin Grenade · 4 Lightning Bolt · 1 Sacred Helix
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — S64 seed (the planner's): the Open's Warband whole.
+
 ## the Tollgate — Naya Control (R G W)
 
-`tollgate` · control · game one 48 · matches 49.8
+`tollgate` · control · game one 48 · matches 44.3
 
 - **Lands (24):** 4 Plateau · 4 Taiga · 4 Savannah · 2 Sacred Foundry · 2 Stomping Ground · 2 Temple Garden · 2 Plains · 2 Mountain · 1 Forest · 1 Shevelport
 - **Creatures (14):** 4 The Fordkeeper · 4 Wall of Blossoms · 4 Flametongue Kavu · 2 Reaper's Forerunner
@@ -104,28 +126,6 @@ The most played: Lightning Bolt 7 · Flametongue Kavu 7 · Lumen, the Hearth Fir
 - **Its sideboard guide:** none — the general rules sideboard it.
 - **History:**
   - contributed — S64 seed (the planner's): the Open's Tollgate whole (Naya-legal as it stands). Its fifteen loses the two Faerie Macabres (black): a fourth Tormod's Crypt and a Retribution of the Meek.
-
-## the Thicket — Selesnya Auras (G W)
-
-`auras` · aggro · game one 49 · matches 48.1
-
-- **Lands (22):** 4 Savannah · 4 Temple Garden · 8 Forest · 5 Plains · 1 Shevelport
-- **Creatures (18):** 4 Gladecover Scout · 4 Blurred Mongoose · 4 Ovna, the Enchantress · 4 Dungrove Elder · 2 The Emerald Keeper
-- **Other (20):** 1 Black Lotus · 1 Mox Emerald · 1 Mox Pearl · 4 Rancor · 4 Blanchwood Armor · 1 Spirit Link · 4 Pacifism · 4 Angelic Destiny
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S64 seed (the planner's, built by the implementer): the archived Enchantress with Dungrove Elder (Peasant's pillar) — four Elders and a fourth Angelic Destiny for the Timberland Guides, the Glare and two Spirit Links; a Plains for a Forest (the Elder counts Forests). Named the Thicket in the plane's register (S65; it was GW Auras reborn).
-
-## the Muster — Boros Weenie (W R)
-
-`muster` · aggro · game one 43 · matches 44.8
-
-- **Lands (22):** 4 Plateau · 4 Sacred Foundry · 8 Plains · 4 Mountain · 2 Secluded Steppe
-- **Creatures (21):** 4 Savannah Lions · 4 Soul Warden · 2 Suntail Hawk · 4 Fencing Ace · 3 Emeria Angel · 4 Flametongue Kavu
-- **Other (17):** 1 Black Lotus · 1 Mox Pearl · 1 Mox Ruby · 4 Raise the Alarm · 4 Glorious Anthem · 4 Lightning Bolt · 2 Swords to Plowshares
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S64 seed (the planner's): the Open's Muster whole.
 
 ## the Chantry — Naya Lifegain (R G W)
 
@@ -138,14 +138,14 @@ The most played: Lightning Bolt 7 · Flametongue Kavu 7 · Lumen, the Hearth Fir
 - **History:**
   - contributed — S64 seed (the planner's, built by the implementer): the archived Ford's shape — Vitalist ×4, the Fordkeeper, Soul Warden, Sacred Helix, Bolt and Char (Lightning Helix is not in the pool) — with Peasant's new white: two Karmic Mentors (they return Wardens and Gladeharts) and two Dazzling Angels, for the Rage Cobras, two Spirit Links and two lands. Named the Chantry in the plane's register (S65; it was Naya Lifegain).
 
-## the Warband — Boros Goblins (R w)
+## the Thicket — Selesnya Auras (G W)
 
-`warband` · aggro · game one 44 · matches 42.8
+`auras` · aggro · game one 49 · matches 43.7
 
-- **Lands (22):** 4 Plateau · 4 Sacred Foundry · 12 Mountain · 2 Plains
-- **Creatures (22):** 4 Skirk Prospector · 4 Goblin Piker · 4 Goblin Chieftain · 2 Boggart Brute · 3 Siege-Gang Commander · 3 Lumen, the Hearth Fire · 2 Flametongue Kavu
-- **Other (16):** 1 Black Lotus · 1 Mox Ruby · 1 Mox Pearl · 4 Hordeling Outburst · 4 Goblin Grenade · 4 Lightning Bolt · 1 Sacred Helix
+- **Lands (22):** 4 Savannah · 4 Temple Garden · 8 Forest · 5 Plains · 1 Shevelport
+- **Creatures (18):** 4 Gladecover Scout · 4 Blurred Mongoose · 4 Ovna, the Enchantress · 4 Dungrove Elder · 2 The Emerald Keeper
+- **Other (20):** 1 Black Lotus · 1 Mox Emerald · 1 Mox Pearl · 4 Rancor · 4 Blanchwood Armor · 1 Spirit Link · 4 Pacifism · 4 Angelic Destiny
 - **Its fifteen:** built by the field's builder for each seat (none registered).
 - **History:**
-  - contributed — S64 seed (the planner's): the Open's Warband whole.
+  - contributed — S64 seed (the planner's, built by the implementer): the archived Enchantress with Dungrove Elder (Peasant's pillar) — four Elders and a fourth Angelic Destiny for the Timberland Guides, the Glare and two Spirit Links; a Plains for a Forest (the Elder counts Forests). Named the Thicket in the plane's register (S65; it was GW Auras reborn).
 
