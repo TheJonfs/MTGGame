@@ -851,6 +851,27 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(old.scorePriorityAction(empty, act(0, [{ kind: "player", player: 1 }]))).toBeGreaterThan(-Infinity);
   });
 
+  it("book of shame 136 (post-S65, Chris's Naya quarterfinal — his Helix's life became their Mentor's counters): a life-gained payoff is read by whose gain it watches; our gain is a cost while THEIR Cobra watches it", () => {
+    const a = agent();
+    const lands = ["mountain", "mountain", "plains", "plains", "forest", "forest"].map((cardId, i) => ({ id: `l${i}`, cardId, controller: 0 as const }));
+    const v = (extra: { id: string; cardId: string; controller: 0 | 1 }[]) => mkView({ hand: [{ objectId: "hx", cardId: "sacred_helix" }, { objectId: "lu", cardId: "lumen_the_hearth_fire" }, { objectId: "sw", cardId: "soul_warden" }], battlefield: [...lands, { id: "ob", cardId: "grizzly_bears", controller: 1 }, ...extra] });
+    const helix = { type: "castSpell" as const, objectId: "hx", targets: [{ kind: "object" as const, id: "ob" }], x: 2 };
+    const lumen = { type: "castSpell" as const, objectId: "lu", targets: [] };
+    const theirCobra = v([{ id: "rc", cardId: "rage_cobra", controller: 1 }]);
+    expect(a.lifegainPayoffBonus(theirCobra, helix)).toBeCloseTo(-0.4 * 6); // the mana spent: {X}{R}{R}{W}{W} with X = 2
+    expect(a.lifegainPayoffBonus(theirCobra, lumen)).toBeCloseTo(-0.6);
+    expect(a.scorePriorityAction(theirCobra, helix)).toBeLessThan(a.scorePriorityAction(v([]), helix));
+    // Our own Cobra watches THEIR gain: our Lumen is no longer paid for it; Vitalist (ours, on our gain) still pays.
+    expect(a.lifegainPayoffBonus(v([{ id: "rc", cardId: "rage_cobra", controller: 0 }]), lumen)).toBe(0);
+    expect(a.lifegainPayoffBonus(v([{ id: "vt", cardId: "vitalist", controller: 0 }]), helix)).toBeCloseTo(0.4 * 6);
+    expect(a.lifegainPayoffBonus(v([{ id: "vt", cardId: "vitalist", controller: 1 }]), helix)).toBe(0); // their Vitalist watches their own gain
+    // Both sides' payoffs: they cancel. The old pilot: our Cobra paid our Lumen; their Cobra cost nothing.
+    expect(a.lifegainPayoffBonus(v([{ id: "vt", cardId: "vitalist", controller: 0 }, { id: "rc", cardId: "rage_cobra", controller: 1 }]), lumen)).toBe(0);
+    const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["cobrafeed"] });
+    expect(old.lifegainPayoffBonus(v([{ id: "rc", cardId: "rage_cobra", controller: 0 }]), lumen)).toBeCloseTo(0.6);
+    expect(old.lifegainPayoffBonus(theirCobra, helix)).toBe(0);
+  });
+
   it("book of shame 35 (S28, Spirit Link — the neutralizer fork): on our best evasive creature by default; on THEIR biggest when it out-powers ours", () => {
     const a = agent();
     const view = (ours: { id: string; cardId: string }[], theirs: { id: string; cardId: string }[]) =>

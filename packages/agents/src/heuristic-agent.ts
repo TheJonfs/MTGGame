@@ -331,18 +331,30 @@ export class HeuristicAgent implements Agent {
 
   /** S46 (Vitalist — the brief's "a term, not a rule"): while we control a LIFE_GAINED payoff (the shape: a trigger on
    * our life gain), a play that gains life is worth more — the gain becomes counters. A spell/ability's own gainLife
-   * (0.4 per life), a creature with lifelink or its own gainLife trigger (0.6). Exposed for the book. */
+   * (0.4 per life), a creature with lifelink or its own gainLife trigger (0.6). Exposed for the book.
+   * Book 136 (post-S65, Chris's Naya quarterfinal: his Helix's six life became six counters on their Karmic Mentor): the
+   * payoff is read by WHOSE gain it watches — ours only when its `condition.controller` is "you" (Rage Cobra on our side
+   * watches the opponent's gain and paid our own Lumen); and the mirror: while the OPPONENT controls one that watches
+   * its opponent's gain (their Cobra), the same plays cost what they would have paid. Sacred Helix's gain is the mana
+   * spent (the printed cost with the announced X, as the predictor reads it). Off: "cobrafeed". */
   lifegainPayoffBonus(view: GameView, action: Action): number {
     if (action.type !== "castSpell" && action.type !== "activateAbility") return 0;
-    const payoff = view.battlefield.some((o) => o.controller === view.you && (this.def(o.cardId)?.abilities ?? []).some((a) => a.kind === "triggered" && a.event === "LIFE_GAINED"));
-    if (!payoff) return 0;
+    const old = !!this.profile.off?.includes("cobrafeed");
+    const watches = (o: { controller: number; cardId: string }, gainer: "controller" | "opponent") => (this.def(o.cardId)?.abilities ?? []).some((a) => a.kind === "triggered" && a.event === "LIFE_GAINED" && (old || (a.condition?.controller ?? "you") === (gainer === "controller" ? "you" : "opponent")));
+    const ours = view.battlefield.some((o) => o.controller === view.you && watches(o, "controller"));
+    const theirs = !old && view.battlefield.some((o) => o.controller !== view.you && watches(o, "opponent"));
+    const sign = ours && !theirs ? 1 : theirs && !ours ? -1 : 0;
+    if (sign === 0) return 0;
     const effects = this.actionEffects(view, action) ?? [];
-    let bonus = effects.reduce((n, e) => n + (e.type === "gainLife" && e.who === "you" && typeof e.amount === "number" ? 0.4 * e.amount : 0), 0);
+    let spent = 0;
+    if (action.type === "castSpell" && !old) { const d = this.def(view.hand.find((c) => c.objectId === action.objectId)?.cardId ?? ""); if (d) spent = manaValue(parseManaCost(d.manaCost)) + (action.x ?? 0) * (d.manaCost.match(/\{X\}/g)?.length ?? 0); }
+    const amount = (e: { amount?: unknown }) => (typeof e.amount === "number" ? e.amount : (e.amount as { ref?: string } | undefined)?.ref === "manaSpent" ? spent : 0);
+    let bonus = effects.reduce((n, e) => n + (e.type === "gainLife" && e.who === "you" ? 0.4 * amount(e) : 0), 0);
     if (action.type === "castSpell") {
       const d = this.def(view.hand.find((c) => c.objectId === action.objectId)?.cardId ?? "");
       if (d?.types.includes("Creature") && ((d.keywords ?? []).includes("lifelink") || (d.abilities ?? []).some((a) => a.kind === "triggered" && a.effects.some((e) => e.type === "gainLife" && e.who === "you")))) bonus += 0.6;
     }
-    return bonus;
+    return sign * bonus;
   }
 
   /** S45 (the Dragon Mage — the planner's restated line: SPEND BEFORE THE WHEEL): in our first main phase, with a
