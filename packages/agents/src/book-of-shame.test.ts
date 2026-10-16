@@ -874,25 +874,25 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(old.lifegainPayoffBonus(theirCobra, helix)).toBe(0);
   });
 
-  it("post-S65 (Foxglove Dose, R-112; book 137): the predictor reads the kill after the pump; their three-power creature is the target; their two-power one is refused, our own big one is not pumped", () => {
+  it("post-S65 (Foxglove Dose, R-112; book 137): the predictor reads the kill after the pump; their three-power creature is the target; their one-power one is refused (1 + 3 = 4), our own Courser is not pumped", () => {
     const a = agent();
-    const v = (extra: Parameters<typeof mkView>[0] = {}) => mkView({ hand: [{ objectId: "fd", cardId: "foxglove_dose" }], battlefield: [{ id: "m1", cardId: "mountain", controller: 0 }, { id: "m2", cardId: "mountain", controller: 0 }, { id: "oc", cardId: "centaur_courser", controller: 1 }, { id: "ob", cardId: "grizzly_bears", controller: 1 }, { id: "mc", cardId: "centaur_courser", controller: 0 }, { id: "mb", cardId: "grizzly_bears", controller: 0 }], ...extra });
+    const v = (extra: Parameters<typeof mkView>[0] = {}) => mkView({ hand: [{ objectId: "fd", cardId: "foxglove_dose" }], battlefield: [{ id: "m1", cardId: "mountain", controller: 0 }, { id: "m2", cardId: "mountain", controller: 0 }, { id: "oc", cardId: "centaur_courser", controller: 1 }, { id: "ob", cardId: "llanowar_elves", controller: 1 }, { id: "mc", cardId: "centaur_courser", controller: 0 }, { id: "mb", cardId: "llanowar_elves", controller: 0 }], ...extra });
     const at = (id: string) => ({ type: "castSpell" as const, objectId: "fd", targets: [{ kind: "object" as const, id }] });
     const base = v();
     expect(a.scorePriorityAction(base, at("oc"))).toBeGreaterThan(a.scorePriorityAction(base, { type: "pass" })); // removal
     expect(a.scorePriorityAction(base, at("oc"))).toBeGreaterThan(a.scorePriorityAction(base, at("ob")));
-    // Book 137: +2 power to their Bears and nothing else — refused outright (it sat under passing, but a held instant
+    // Book 137: +3 power to their Elves and nothing else — refused outright (it sat under passing, but a held instant
     // meets many windows); the old pilot only scored it lower.
     expect(a.scorePriorityAction(base, at("ob"))).toBe(-Infinity);
     expect(a.scorePriorityAction({ ...base, step: "UPKEEP" }, at("ob"))).toBe(-Infinity);
     const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["misfire"] });
     expect(old.scorePriorityAction(base, at("ob"))).toBeGreaterThan(-Infinity);
     expect(old.scorePriorityAction(base, at("ob"))).toBeLessThan(old.scorePriorityAction(base, { type: "pass" }));
-    // In combat, our attacking Courser would die to its own pump; our attacking Bears are pumped and live.
+    // In combat, our attacking Courser would die to its own pump; our attacking Elves are pumped and live.
     const combat = v({ step: "DECLARE_BLOCKERS", combat: { attackers: ["mc", "mb"], blocks: [] } });
-    // The trick (book 137's aim, on trial): in combat on our two-power attacker; never past the line, never idle.
+    // The trick (book 137's aim, on trial): in combat on our one-power attacker; never past the line, never idle.
     const t = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), trial: ["conditionaim"] });
-    expect(t.scorePriorityAction(combat, at("mc"))).toBe(-Infinity); // 3 + 2: our own Courser would die
+    expect(t.scorePriorityAction(combat, at("mc"))).toBe(-Infinity); // 3 + 3: our own Courser would die
     expect(t.scorePriorityAction(combat, at("mb"))).toBeGreaterThan(t.scorePriorityAction(combat, { type: "pass" }) - 50); // the trick: no misaim cliff
     expect(t.scorePriorityAction(base, at("mb"))).toBe(-Infinity); // outside combat the pump evaporates
     expect(a.scorePriorityAction(combat, at("mb"))).toBeLessThan(a.scorePriorityAction(combat, { type: "pass" }) - 50); // by default: the misaim cliff

@@ -33,8 +33,9 @@ const lands = [perm(0, "mountain"), perm(0, "mountain")];
 const run = async (target: string, who: 0 | 1, mods: Modifier[]) => onField(await runMatch(spec([...lands, ...mods]), cards, [doseAt(target, who), passer]));
 
 /**
- * Post-S65 — Foxglove Dose (Chris's card, the study's centroid): {1}{R} Instant, "Target creature gets +2/+0 until end
- * of turn. Then if its power is 5 or greater, destroy it." R-112: the `if` clause's `powerAtLeast`, read live after the
+ * Post-S65 — Foxglove Dose (Chris's card; his choice after the study: the pump at +3, the threshold held at 5 — the kill
+ * line at printed power 2): {1}{R} Instant, "Target creature gets +3/+0 until end of turn. Then if its power is 5 or
+ * greater, destroy it." R-112: the `if` clause's `powerAtLeast`, read live after the
  * pump in the same resolution (CR 608.2c — a spell's instructions are followed in order; 613 — the pump is a
  * continuous effect already applied when the check is made).
  */
@@ -43,17 +44,20 @@ describe("Foxglove Dose", () => {
     const d = cards.get("foxglove_dose")!;
     expect(validateCard(d).errors).toEqual([]);
     expect(d).toMatchObject({ manaCost: "{1}{R}", types: ["Instant"], source: "custom", shopTier: 2 });
+    expect(d.spellEffect).toEqual([{ type: "modifyPT", power: 3, toughness: 0, target: 0, duration: "UNTIL_END_OF_TURN" }, { type: "destroy", target: 0, if: { target: 0, powerAtLeast: 5 } }]);
   });
-  it("kills a creature of power three (3 + 2 = 5): a Centaur Courser", async () => {
+  it("kills a creature of power two (2 + 3 = 5): Grizzly Bears; and of power three: a Centaur Courser", async () => {
+    expect(await run("grizzly_bears", 1, [perm(1, "grizzly_bears")])).not.toContain("1:grizzly_bears");
     expect(await run("centaur_courser", 1, [perm(1, "centaur_courser")])).not.toContain("1:centaur_courser");
   });
-  it("leaves a creature of power two (2 + 2 = 4), pumped: Grizzly Bears", async () => {
-    expect(await run("grizzly_bears", 1, [perm(1, "grizzly_bears")])).toContain("1:grizzly_bears");
+  it("leaves a creature of power one (1 + 3 = 4), pumped: Llanowar Elves", async () => {
+    expect(await run("llanowar_elves", 1, [perm(1, "llanowar_elves")])).toContain("1:llanowar_elves");
   });
-  it("reads the live power: Bears under a Glorious Anthem are 3/3, so 5 — destroyed", async () => {
-    expect(await run("grizzly_bears", 1, [perm(1, "grizzly_bears"), perm(1, "glorious_anthem")])).not.toContain("1:grizzly_bears");
+  it("reads the live power: Elves under a Glorious Anthem are 2/2, so 5 — destroyed", async () => {
+    expect(await run("llanowar_elves", 1, [perm(1, "llanowar_elves"), perm(1, "glorious_anthem")])).not.toContain("1:llanowar_elves");
   });
-  it("on our own two-power creature it is a pump, not a kill", async () => {
-    expect(await run("grizzly_bears", 0, [perm(0, "grizzly_bears")])).toContain("0:grizzly_bears");
+  it("on our own one-power creature it is a pump, not a kill; on our two-power one, a kill", async () => {
+    expect(await run("llanowar_elves", 0, [perm(0, "llanowar_elves")])).toContain("0:llanowar_elves");
+    expect(await run("grizzly_bears", 0, [perm(0, "grizzly_bears")])).not.toContain("0:grizzly_bears");
   });
 });

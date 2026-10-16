@@ -705,7 +705,7 @@ Custom, Chris's design: a pump that kills what it makes too big. The study is a 
 
 | id | card | status | vocabulary | notes |
 |---|---|---|---|---|
-| foxglove_dose | Foxglove Dose | implemented | Instant; target creature: `modifyPT` +2/+0 until end of turn, then `destroy` with `if: {target, powerAtLeast: 5}` (R-112, new) | custom. {1}{R}. "Target creature gets +2/+0 until end of turn. Then if its power is 5 or greater, destroy it." Under study, so outside the pool: `data/cards-proposed/foxglove_dose.json` (tests load it from there; `--extra-cards data/cards-proposed`); the variants in `analysis/runs/scratch/foxglove/`. |
+| foxglove_dose | Foxglove Dose | implemented | Instant; target creature: `modifyPT` +3/+0 until end of turn, then `destroy` with `if: {target, powerAtLeast: 5}` (R-112, new) | custom. {1}{R}. "Target creature gets +3/+0 until end of turn. Then if its power is 5 or greater, destroy it." Chris's choice after the study (2026-10-16): the pump at +3 with the threshold held at 5 — the kill line at printed power 2. Under study, so outside the pool: `data/cards-proposed/foxglove_dose.json` (tests load it from there; `--extra-cards data/cards-proposed`); the variants in `analysis/runs/scratch/foxglove/`. |
 
 ## Session 64 addition — Mentor of the Meek (ADR-180)
 
