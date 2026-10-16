@@ -844,7 +844,11 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const two = view([{ id: "r1", cardId: "typhoid_rats" }, { id: "g1", cardId: "raging_goblin" }]);
     expect(a.scorePriorityAction(two, act(1, [{ kind: "object", id: "r1" }, { kind: "object", id: "g1" }]))).toBeGreaterThan(a.scorePriorityAction(two, act(0, [{ kind: "object", id: "r1" }])));
     const empty = view([]);
-    expect(a.scorePriorityAction(empty, act(0, [{ kind: "player", player: 1 }]))).toBeGreaterThan(-Infinity);
+    // S65 (book 135): with no creature to kill, the face waits for the opponent's end step (the Mage untaps for our turn)
+    expect(a.scorePriorityAction(empty, act(0, [{ kind: "player", player: 1 }]))).toBe(-Infinity);
+    expect(a.scorePriorityAction({ ...empty, step: "END", activePlayer: 1 }, act(0, [{ kind: "player", player: 1 }]))).toBeGreaterThan(-Infinity);
+    const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["pingtiming"] });
+    expect(old.scorePriorityAction(empty, act(0, [{ kind: "player", player: 1 }]))).toBeGreaterThan(-Infinity);
   });
 
   it("book of shame 35 (S28, Spirit Link — the neutralizer fork): on our best evasive creature by default; on THEIR biggest when it out-powers ours", () => {
@@ -2030,5 +2034,38 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.optionalHarmsOnlyUs(v, { cardId: "x", effects: bounce, targets: [{ kind: "object", id: "theirs" }] })).toBe(false);
     const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["optionalsource"] });
     expect(old.optionalHarmsOnlyUs(v, { cardId: "x", effects: bounce, targets: [{ kind: "object", id: "mine" }] })).toBe(false); // the old read: an empty stack, nothing seen
+  });
+
+  it("book of shame 133 (S65 — Chris's Esper games: two Doom Blades at one Dawnwing Marshal): no second answer at a creature our own pending spell already kills; one at another creature is fine", () => {
+    const a = agent("midrange");
+    const v = { ...mkView({ hand: [{ objectId: "h", cardId: "doom_blade" }], battlefield: [{ id: "s1", cardId: "swamp", controller: 0 }, { id: "s2", cardId: "swamp", controller: 0 }, { id: "m", cardId: "dawnwing_marshal", controller: 1 }, { id: "b", cardId: "grizzly_bears", controller: 1 }] }), stack: [{ id: "st", kind: "spell", cardId: "doom_blade", controller: 0, targets: [{ kind: "object", id: "m" }] }] } as GameView;
+    const at = (id: string) => ({ type: "castSpell" as const, objectId: "h", targets: [{ kind: "object" as const, id }] });
+    expect(a.secondAnswerGated(v, at("m"))).toBe(true);
+    expect(a.secondAnswerGated(v, at("b"))).toBe(false);
+    const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["oneanswer"] });
+    expect(old.secondAnswerGated(v, at("m"))).toBe(false);
+  });
+
+  it("book of shame 134 (S65 — two Tidewalls' triggers returned the same Doom Blade): a trigger's target already chosen by one of our pending items is taken last", async () => {
+    const a = agent("midrange");
+    const yard = [{ objectId: "g1", cardId: "doom_blade" }, { objectId: "g2", cardId: "counterspell" }];
+    const v = { ...mkView({ battlefield: [{ id: "t1", cardId: "tidewall", controller: 0 }, { id: "t2", cardId: "tidewall", controller: 0 }] }), graveyards: [yard.map((y) => y.cardId), []], graveyardObjects: [yard, []], stack: [{ id: "st", kind: "trigger", cardId: "tidewall", controller: 0, targets: [{ kind: "object", id: "g1" }] }] } as unknown as GameView;
+    const pick = (id: string) => ({ type: "chooseTriggerTargets" as const, targets: [{ kind: "object" as const, id }] });
+    const req = { player: 0, purpose: "chooseTarget", actions: [pick("g1"), pick("g2")], source: { cardId: "tidewall", effects: [{ type: "returnFromGraveyard", target: 0, to: "hand" }] } } as never;
+    const chosen = await a.chooseAction(v, req) as { targets: { id: string }[] };
+    expect(chosen.targets[0]!.id).toBe("g2");
+  });
+
+  it("book of shame 135 (S65 — Chris's draft games: Arc Mage's damage split between itself and him, in its own upkeep): a modal activation is read by its mode, so damage at our own creature is a misaim; a tap-and-discard pinger waits for the main phase, and at a player for the opponent's end step", () => {
+    const a = agent("midrange");
+    const bf = [...["mountain", "mountain", "mountain"].map((c, i) => ({ id: "l" + i, cardId: c, controller: 0 as const })), { id: "am", cardId: "arc_mage", controller: 0 as const }, { id: "b", cardId: "grizzly_bears", controller: 1 as const }];
+    const split = { type: "activateAbility" as const, objectId: "am", abilityIndex: 0, mode: 1, targets: [{ kind: "object" as const, id: "am" }, { kind: "player" as const, player: 1 as const }] };
+    expect(a.misaimPenalty(mkView({ hand: [{ objectId: "x", cardId: "mountain" }], battlefield: bf }), split)).toBe(100);
+    const face = { type: "activateAbility" as const, objectId: "am", abilityIndex: 0, mode: 0, targets: [{ kind: "player" as const, player: 1 as const }] };
+    const bear = { type: "activateAbility" as const, objectId: "am", abilityIndex: 0, mode: 0, targets: [{ kind: "object" as const, id: "b" }] };
+    expect(a.pingTimingGated(mkView({ step: "UPKEEP", battlefield: bf }), bear)).toBe(true);
+    expect(a.pingTimingGated(mkView({ step: "MAIN1", battlefield: bf }), face)).toBe(true);
+    expect(a.pingTimingGated(mkView({ step: "MAIN1", battlefield: bf }), bear)).toBe(false);
+    expect(a.pingTimingGated(mkView({ step: "END", activePlayer: 1, battlefield: bf }), face)).toBe(false);
   });
 });

@@ -288,6 +288,8 @@ export class HeuristicAgent implements Agent {
     if (this.entersHarmGated(view, action)) return -Infinity; // S50 (book 89): the Kavu is not cast into a board where its four can only hit us
     if (this.selfPumpGated(view, action)) return -Infinity; // S50 (book 90): the Whelp's pump is combat damage or a won fight, never idle
     if (this.teamPumpGated(view, action)) return -Infinity; // S64 (book 131): the Marshal's team pump only after blocks or in answer
+    if (this.secondAnswerGated(view, action)) return -Infinity; // S65 (book 133): no second answer at a creature our own already kills
+    if (this.pingTimingGated(view, action)) return -Infinity; // S65 (book 135): a tap-and-discard pinger waits for the main phase; face only at their end step
     if (this.graveyardTokensGated(view, action)) return -Infinity; // S50 (book 91): the Pyromancer's second life spends only idle mana
     if (this.idleSinkGated(view, action)) return -Infinity; // post-S43: the Cleric / Faerie Formation spend only mana that would idle
     if (this.glaciersDropGated(view, action)) return -Infinity; // S36 (book 52): the Glaciers as the land drop only for a reason; otherwise the real land
@@ -370,6 +372,9 @@ export class HeuristicAgent implements Agent {
     }
     if (action.type === "activateAbility") {
       const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+      // Book 135 (S65, Chris: Arc Mage split its damage between itself and him): a MODAL activation's effects are its chosen
+      // mode's — they were read as the ability's own (empty), so the misaim rule never saw the point aimed at our own creature.
+      if (ab && ab.kind === "activated" && ab.modes && action.mode !== undefined && !this.profile.off?.includes("pingtiming")) return ab.modes[action.mode]?.effects ?? [];
       if (ab && ab.kind === "activated" && ab.effects.length > 0) return ab.effects;
       const o = view.battlefield.find((b) => b.id === action.objectId);
       const d = o ? this.def(o.cardId) : undefined;
@@ -2064,6 +2069,51 @@ export class HeuristicAgent implements Agent {
   }
 
   /**
+   * Book 133 (S65, Chris's Esper games: two Doom Blades at one Dawnwing Marshal in an upkeep, two Shocks at one Overseer,
+   * a Bolt in response to our own Swords): a harmful targeted spell or ability is not aimed at an opponent's creature that
+   * one of OUR pending stack items already kills — a destroy or exile at it, or damage that reaches its toughness. The
+   * second answer is held (it is there if the first is countered). Off: "oneanswer". Exposed.
+   */
+  secondAnswerGated(view: GameView, action: Action): boolean {
+    if ((action.type !== "castSpell" && action.type !== "activateAbility") || this.profile.off?.includes("oneanswer")) return false;
+    const objs = ((action as { targets?: ResolvedTarget[] }).targets ?? []).filter((t) => t.kind === "object");
+    if (objs.length === 0) return false;
+    const eff = this.actionEffects(view, action); if (!eff || classifyEffects(eff) !== "harmful") return false;
+    const ours = view.stack.filter((it) => it.controller === view.you);
+    if (ours.length === 0) return false;
+    return objs.every((t) => {
+      const o = view.battlefield.find((b) => b.id === (t as { id: string }).id);
+      if (!o || o.controller === view.you || o.toughness === null) return false;
+      let dmg = 0;
+      for (const it of ours) {
+        if (!(((it as { targets?: ResolvedTarget[] }).targets ?? []).some((x) => x.kind === "object" && x.id === o.id))) continue;
+        const d = this.def(it.cardId); const fx = (it.kind === "spell" ? d?.spellEffect : undefined) ?? [];
+        if (fx.some((e) => e.type === "destroy" || e.type === "exile")) return true;
+        dmg += fx.reduce((n, e) => n + (e.type === "damage" && typeof e.amount === "number" ? e.amount : 0), 0);
+      }
+      return dmg > 0 && dmg + o.damage >= o.toughness;
+    });
+  }
+  /**
+   * Book 135 (S65, Chris's draft games: Arc Mage used in its controller's upkeep and draw step): an activated ability that
+   * taps its creature and discards a card to deal damage waits for our main phase (the draw seen, the discard chosen) or the
+   * opponent's turn; aimed only at players, it waits for the opponent's end step (the creature untaps for our turn). Off:
+   * "pingtiming". Exposed.
+   */
+  pingTimingGated(view: GameView, action: Action): boolean {
+    if (action.type !== "activateAbility" || this.profile.off?.includes("pingtiming")) return false;
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+    if (!ab || ab.kind !== "activated" || !ab.cost.tap || !ab.cost.discard) return false;
+    const fx = this.actionEffects(view, action) ?? [];
+    if (!fx.some((e) => e.type === "damage")) return false;
+    const ours = view.activePlayer === view.you;
+    if (ours && (view.step === "UPKEEP" || view.step === "DRAW")) return true;
+    const ts = (action as { targets?: ResolvedTarget[] }).targets ?? [];
+    const faceOnly = ts.length > 0 && ts.every((t) => t.kind === "player");
+    return faceOnly && !(!ours && view.step === "END") && view.stack.length === 0;
+  }
+
+  /**
    * Book 130 (S64 Part 1, from Chris's UW Skies run: he held Plumecreed Escort 23 times, mostly on the opponent's turn,
    * to protect his best creature): a flash creature whose entering PROTECTS one of ours — hexproof granted, or a blink —
    * is held as protection rather than cast at the opponent's end step, while (1) we control a creature worth more than
@@ -2867,9 +2917,13 @@ export class HeuristicAgent implements Agent {
       const loss = (a: Action) => ((a as { targets?: { id?: string }[] }).targets ?? []).reduce((n, t) => n + (t.id && diesTo(t.id) ? this.boardValue(view, t.id) : 0), 0);
       return [...variants].sort((a, b) => loss(a) - loss(b))[0]!;
     }
+    // Book 134 (S65, Chris: two Tidewalls' triggers both returned the same Doom Blade — the second fizzled): a target one of
+    // OUR own pending items already points at is a second shot at the same thing — a return or a harm — taken last. Off: "distinctreturn".
+    const taken = this.profile.off?.includes("distinctreturn") || !(returnsFromYard || cls === "harmful") ? new Set<string>() : new Set(view.stack.filter((it) => it.controller === view.you).flatMap((it) => ((it as { targets?: { kind: string; id?: string }[] }).targets ?? []).filter((t) => t.kind === "object" && t.id).map((t) => t.id!)));
     const score = (a: Action): number => {
       const ts = (a as { targets?: { kind: string; id?: string }[] }).targets ?? [];
       let s = 0;
+      for (const t of ts) if (t.kind === "object" && t.id && taken.has(t.id)) s -= 1000;
       for (const t of ts) {
         if (t.kind === "object" && t.id) s += this.boardValue(view, t.id);
         if (t.kind === "object" && t.id && cls === "harmful" && dmgAmount > 0 && diesTo(t.id)) s += 100; // a kill before a wound
