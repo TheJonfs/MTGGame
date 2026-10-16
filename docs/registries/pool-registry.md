@@ -699,6 +699,14 @@ Custom, Chris's design after a single-factor study in White Skies (cost, trigger
 |---|---|---|---|---|
 | karmic_mentor | Karmic Mentor | tested | flying; triggered ENTERS self: target `nonAuraPermanentCardInYourGraveyard` (S64, new) `manaValueAtMost` 2 → `returnFromGraveyard` to battlefield | custom. T2. {1}{W}{W} Angel 2/2. Half a word: the non-Aura permanent target (an Aura entering unattached is not supported — CR 303.4f). |
 
+## Post-S65 addition — Tidal Shackle (Chris's card, 2026-10-16; tier 1)
+
+Custom, Chris's design: a one-mana artifact that is a pre-paid tap-down — sacrificed for free, it taps a creature and stuns it (the next untap is lost). Tested in UB Mill (Peasant) and the Writ (the Open).
+
+| id | card | status | vocabulary | notes |
+|---|---|---|---|---|
+| tidal_shackle | Tidal Shackle | implemented | Artifact; activated, cost `sacrifice: self`, target creature: `tapTarget`, `addCounters` "stun" 1 (R-113, new: the stun replacement) | custom. T1. {U}. "Sacrifice Tidal Shackle: Tap target creature and put a stun counter on it." Art and printed face Chris's. The pilot's timing: book 138. |
+
 ## Post-S65 addition — Foxglove Dose (Chris's card, 2026-10-16; tier 2)
 
 Custom, Chris's design: a pump that kills what it makes too big. The study is a single-factor grid around the centroid (cost R / 1R / 2R; pump +2 / +3; the kill line — the printed power that dies — 2 / 3 / 4) in the Rabble's Char slot, in Peasant and the Open. Expected tier 2.

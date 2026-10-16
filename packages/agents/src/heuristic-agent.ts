@@ -290,6 +290,7 @@ export class HeuristicAgent implements Agent {
     if (this.teamPumpGated(view, action)) return -Infinity; // S64 (book 131): the Marshal's team pump only after blocks or in answer
     if (this.secondAnswerGated(view, action)) return -Infinity; // S65 (book 133): no second answer at a creature our own already kills
     if (this.pingTimingGated(view, action)) return -Infinity; // S65 (book 135): a tap-and-discard pinger waits for the main phase; face only at their end step
+    if (this.stunTimingGated(view, action)) return -Infinity; // post-S65 (book 138): the Shackle stuns an attacker before attacks, or a blocker before ours
     if (this.graveyardTokensGated(view, action)) return -Infinity; // S50 (book 91): the Pyromancer's second life spends only idle mana
     if (this.idleSinkGated(view, action)) return -Infinity; // post-S43: the Cleric / Faerie Formation spend only mana that would idle
     if (this.glaciersDropGated(view, action)) return -Infinity; // S36 (book 52): the Glaciers as the land drop only for a reason; otherwise the real land
@@ -2595,6 +2596,44 @@ export class HeuristicAgent implements Agent {
     // on OUR creature it is the trick: in combat, and only where it lives (an idle pump evaporates; past the line it kills ours)
     if (before.controller === view.you) return !now || !(view.combat.attackers.includes(before.id) || view.combat.blocks.some((b) => b.blocker === before.id));
     return !!now && now.power !== null && now.toughness !== null && now.power >= before.power && now.toughness >= before.toughness;
+  }
+  /** Book 138 (post-S65, Tidal Shackle — Chris's card: "Sacrifice: tap target creature and put a stun counter on it").
+   * A free activation meets every priority window, so the shape (a sacrifice-self ability whose effects tap a target and
+   * put a stun counter on it, R-113) is REFUSED except where it is worth two turns of a creature:
+   *  · THEIR turn, before attackers are declared (upkeep to the beginning of combat): at a creature of theirs, untapped,
+   *    that could attack — it misses this attack and, the counter eating its next untap, the next;
+   *  · OUR turn, before attackers (the first main phase, the beginning of combat): at an untapped creature of theirs
+   *    that could block, while we have a creature ready to attack;
+   *  · in answer: an item of theirs on the stack targets the Shackle itself (it is spent rather than lost).
+   * A tapped attacker stays attacking (CR 506.4), so a stun after attacks only buys a block; it is refused with the rest.
+   * Exposed for the book. Off: "stuntiming". */
+  stunTimingGated(view: GameView, action: Action): boolean {
+    if (action.type !== "activateAbility" || this.profile.off?.includes("stuntiming")) return false;
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+    if (!ab || ab.kind !== "activated" || ab.cost.sacrifice?.predicate !== "self") return false;
+    if (!ab.effects.some((e) => e.type === "addCounters" && e.kind === "stun") || !ab.effects.some((e) => e.type === "tapTarget")) return false;
+    const me = view.you;
+    if (view.stack.some((s) => s.controller !== me && ((s as { targets?: ResolvedTarget[] }).targets ?? []).some((t) => t.kind === "object" && t.id === action.objectId))) return false; // in answer
+    const t = action.targets?.[0];
+    const o = t?.kind === "object" ? view.battlefield.find((b) => b.id === t.id) : undefined;
+    if (!o || o.controller === me || o.tapped || o.power === null) return true;
+    const early = ["UPKEEP", "DRAW", "MAIN1", "COMBAT_BEGIN"].includes(view.step);
+    if (!early) return true;
+    // Amended (the UW Skies probe: Shackles spent on Goblin tokens and Soul Wardens beside bigger creatures, and on
+    // ground blockers in front of an attack that was all fliers): the target is the BEST of the creatures that fill
+    // the role — highest power, two or more — and on our turn it must be able to block one of ours.
+    const kw = (b: { keywords?: string[] }) => b.keywords ?? [];
+    const theirs = view.battlefield.filter((b) => b.controller !== me && !b.tapped && b.power !== null);
+    let role: typeof theirs;
+    if (view.activePlayer !== me) role = theirs.filter((b) => !b.cantAttack && (b.power ?? 0) > 0 && !kw(b).includes("defender"));
+    else {
+      const ours = view.battlefield.filter((b) => b.controller === me && this.canActNow(b) && b.power !== null && b.power > 0 && !b.cantAttack);
+      if (ours.length === 0) return true;
+      const canBlockOne = (b: (typeof theirs)[number]) => !b.cantBlock && ours.some((x) => !kw(x).includes("flying") || kw(b).includes("flying") || kw(b).includes("reach"));
+      role = theirs.filter(canBlockOne);
+    }
+    if (!role.some((b) => b.id === o.id) || (o.power ?? 0) < 2) return true;
+    return role.some((b) => (b.power ?? 0) > (o.power ?? 0));
   }
   /** Book 117's shape: an instant or sorcery that destroys or exiles its one target. */
   private killSpell(d: CardDef): boolean {

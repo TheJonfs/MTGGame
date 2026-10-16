@@ -1,0 +1,45 @@
+{
+  "id": "tidal_shackle",
+  "name": "Tidal Shackle",
+  "source": "custom",
+  "manaCost": "{U}",
+  "types": [
+    "Artifact"
+  ],
+  "text": "Sacrifice Tidal Shackle: Tap target creature and put a stun counter on it.",
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "sacrifice": {
+          "predicate": "self"
+        }
+      },
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "creature",
+          "zone": "battlefield"
+        }
+      ],
+      "effects": [
+        {
+          "type": "tapTarget",
+          "target": 0
+        },
+        {
+          "type": "addCounters",
+          "kind": "stun",
+          "count": 1,
+          "target": 0
+        }
+      ]
+    }
+  ],
+  "art": {
+    "asset": "/custom-art/tidal_shackle.png",
+    "fallback": "rendered"
+  },
+  "shopTier": 1,
+  "printedAsset": "tidal_shackle.jpg"
+}

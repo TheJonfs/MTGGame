@@ -17,6 +17,7 @@ import { makeEffectContext, makeInitEffectContext, specOfFlatIndex } from "./eff
 import { attackerChoices, blockerChoices, bottomChoices, discardChoices, effectiveAbilityCost, legalActions } from "./enumerator.js";
 import type { GameEventMap } from "./events.js";
 import { autoPay, canPay, emptyManaPools, tapForMana, untapForMana } from "./mana.js";
+import { untapPermanent } from "./untap.js";
 import { applyModifiers, type Modifier } from "./modifiers.js";
 import { loseLife, discardCard, drawCard } from "./ops.js";
 import { runSBAs } from "./sba.js";
@@ -342,18 +343,15 @@ export class Game {
         for (const id of state.battlefield) {
           const obj = getObject(state, id);
           if (others.includes(obj.controller)) {
-            const wasTapped = obj.tapped;
-            obj.tapped = false;
-            if (wasTapped) bus.emit("UNTAPPED", { objectId: id });
+            untapPermanent(this.ctx, id); // post-S65 (R-113): a stun counter is removed instead (CR 122.1d)
             continue;
           }
           if (obj.controller === active) {
-            const wasTapped = obj.tapped;
-            obj.tapped = false;
             obj.summoningSick = false;
             // A10 word 5 (S22): the untap announces itself; triggers collected here wait for the
-            // upkeep's priority (CR 502.4/503.1a — no priority during untap).
-            if (wasTapped) bus.emit("UNTAPPED", { objectId: id });
+            // upkeep's priority (CR 502.4/503.1a — no priority during untap). Post-S65 (R-113): through the one
+            // untap, which removes a stun counter instead (CR 122.1d) and then announces nothing.
+            untapPermanent(this.ctx, id);
           }
         }
         break; // no priority (CR 502.4)

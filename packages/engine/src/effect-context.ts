@@ -15,6 +15,7 @@ import { resolveEffect, type TargetSpec,
   type Who,
 } from "@shandalar/cards";
 import type { Action } from "./actions.js";
+import { untapPermanent } from "./untap.js";
 import type { EngineCtx } from "./ctx.js";
 import { isLegalTarget } from "./targeting.js";
 import { dealDamage, discardCard, drawCard, gainLife, loseLife } from "./ops.js";
@@ -547,10 +548,7 @@ function sharedOps(ctx: EngineCtx, asController: PlayerId) {
     },
 
     untap(objectId: string): void {
-      const obj = ctx.state.objects[objectId];
-      if (!obj || obj.zone !== "battlefield" || !obj.tapped) return;
-      obj.tapped = false;
-      ctx.bus.emit("UNTAPPED", { objectId });
+      untapPermanent(ctx, objectId); // post-S65 (R-113): a stun counter is removed instead (CR 122.1d)
     },
 
     exile(objectId: string): void {

@@ -896,6 +896,31 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.scorePriorityAction(combat, at("mb"))).toBeLessThan(a.scorePriorityAction(combat, { type: "pass" }) - 50); // by default: the misaim cliff
   });
 
+  it("book of shame 138 (post-S65, Tidal Shackle): the stun is spent on their attacker before attacks, on their blocker before ours, or in answer — no other window", () => {
+    const a = agent();
+    const v = (o: Parameters<typeof mkView>[0] = {}, extra: Obj[] = []) => mkView({ battlefield: [{ id: "sh", cardId: "tidal_shackle", controller: 0 }, { id: "oc", cardId: "centaur_courser", controller: 1 }, ...extra], ...o });
+    const act = { type: "activateAbility" as const, objectId: "sh", abilityIndex: 0, targets: [{ kind: "object" as const, id: "oc" }] };
+    const ok = (x: GameView) => a.scorePriorityAction(x, act) > -Infinity;
+    expect(ok(v({ activePlayer: 1, step: "UPKEEP" }))).toBe(true); // their turn, before attacks
+    expect(ok(v({ activePlayer: 1, step: "COMBAT_BEGIN" }))).toBe(true);
+    expect(ok(v({ activePlayer: 1, step: "DECLARE_BLOCKERS" }))).toBe(false); // it is attacking already (CR 506.4)
+    expect(ok(v({ activePlayer: 1, step: "END" }))).toBe(false);
+    const bear: Obj = { id: "mb", cardId: "grizzly_bears", controller: 0 };
+    expect(ok(v({ activePlayer: 0, step: "MAIN1" }, [bear]))).toBe(true); // our turn: their blocker, our attacker ready
+    expect(ok(v({ activePlayer: 0, step: "MAIN1" }))).toBe(false); // no attacker of ours
+    expect(ok(v({ activePlayer: 0, step: "MAIN2" }, [bear]))).toBe(false);
+    expect(ok(mkView({ activePlayer: 1, step: "UPKEEP", battlefield: [{ id: "sh", cardId: "tidal_shackle", controller: 0 }, { id: "oc", cardId: "centaur_courser", controller: 1, tapped: true }] }))).toBe(false); // already tapped
+    // Amended: the best of the role, power two or more; on our turn, a creature that can block one of ours.
+    expect(ok(v({ activePlayer: 1, step: "UPKEEP" }, [{ id: "ow", cardId: "pelakka_wurm", controller: 1 }]))).toBe(false); // the Wurm is the attacker to stop
+    expect(ok(mkView({ activePlayer: 1, step: "UPKEEP", battlefield: [{ id: "sh", cardId: "tidal_shackle", controller: 0 }, { id: "oc", cardId: "llanowar_elves", controller: 1 }] }))).toBe(false); // a 1/1 is not worth the card
+    const hawk: Obj = { id: "mh", cardId: "wind_drake", controller: 0 };
+    expect(ok(v({ activePlayer: 0, step: "MAIN1" }, [hawk]))).toBe(false); // our attack flies; their Courser cannot block it
+    const answered = v({ activePlayer: 1, step: "END", stack: [{ id: "s1", kind: "spell", cardId: "abrade", controller: 1, targets: [{ kind: "object", id: "sh" }] }] as never });
+    expect(ok(answered)).toBe(true); // in answer to their removal of the Shackle
+    const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["stuntiming"] });
+    expect(old.scorePriorityAction(v({ activePlayer: 1, step: "END" }), act)).toBeGreaterThan(-Infinity);
+  });
+
   it("book of shame 35 (S28, Spirit Link — the neutralizer fork): on our best evasive creature by default; on THEIR biggest when it out-powers ours", () => {
     const a = agent();
     const view = (ours: { id: string; cardId: string }[], theirs: { id: string; cardId: string }[]) =>
