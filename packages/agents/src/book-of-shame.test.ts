@@ -12,6 +12,8 @@ import { viewCreatures, type SimObject } from "./combat-sim.js";
 
 const CARDS_DIR = join(dirname(fileURLToPath(import.meta.url)), "../../../data/cards");
 const pool = loadCardPool(CARDS_DIR).cards;
+// Post-S65: a card under study lives outside the pool (data/cards-proposed) until Chris adopts it — its pins add it here.
+for (const id of ["foxglove_dose"]) pool.set(id, JSON.parse(readFileSync(join(CARDS_DIR, `../cards-proposed/${id}.json`), "utf8")));
 
 /**
  * The book of shame (ADR-049): known-dumb moves pinned as score-ordering
@@ -870,6 +872,30 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["cobrafeed"] });
     expect(old.lifegainPayoffBonus(v([{ id: "rc", cardId: "rage_cobra", controller: 0 }]), lumen)).toBeCloseTo(0.6);
     expect(old.lifegainPayoffBonus(theirCobra, helix)).toBe(0);
+  });
+
+  it("post-S65 (Foxglove Dose, R-112; book 137): the predictor reads the kill after the pump; their three-power creature is the target; their two-power one is refused, our own big one is not pumped", () => {
+    const a = agent();
+    const v = (extra: Parameters<typeof mkView>[0] = {}) => mkView({ hand: [{ objectId: "fd", cardId: "foxglove_dose" }], battlefield: [{ id: "m1", cardId: "mountain", controller: 0 }, { id: "m2", cardId: "mountain", controller: 0 }, { id: "oc", cardId: "centaur_courser", controller: 1 }, { id: "ob", cardId: "grizzly_bears", controller: 1 }, { id: "mc", cardId: "centaur_courser", controller: 0 }, { id: "mb", cardId: "grizzly_bears", controller: 0 }], ...extra });
+    const at = (id: string) => ({ type: "castSpell" as const, objectId: "fd", targets: [{ kind: "object" as const, id }] });
+    const base = v();
+    expect(a.scorePriorityAction(base, at("oc"))).toBeGreaterThan(a.scorePriorityAction(base, { type: "pass" })); // removal
+    expect(a.scorePriorityAction(base, at("oc"))).toBeGreaterThan(a.scorePriorityAction(base, at("ob")));
+    // Book 137: +2 power to their Bears and nothing else — refused outright (it sat under passing, but a held instant
+    // meets many windows); the old pilot only scored it lower.
+    expect(a.scorePriorityAction(base, at("ob"))).toBe(-Infinity);
+    expect(a.scorePriorityAction({ ...base, step: "UPKEEP" }, at("ob"))).toBe(-Infinity);
+    const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["misfire"] });
+    expect(old.scorePriorityAction(base, at("ob"))).toBeGreaterThan(-Infinity);
+    expect(old.scorePriorityAction(base, at("ob"))).toBeLessThan(old.scorePriorityAction(base, { type: "pass" }));
+    // In combat, our attacking Courser would die to its own pump; our attacking Bears are pumped and live.
+    const combat = v({ step: "DECLARE_BLOCKERS", combat: { attackers: ["mc", "mb"], blocks: [] } });
+    // The trick (book 137's aim, on trial): in combat on our two-power attacker; never past the line, never idle.
+    const t = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), trial: ["conditionaim"] });
+    expect(t.scorePriorityAction(combat, at("mc"))).toBe(-Infinity); // 3 + 2: our own Courser would die
+    expect(t.scorePriorityAction(combat, at("mb"))).toBeGreaterThan(t.scorePriorityAction(combat, { type: "pass" }) - 50); // the trick: no misaim cliff
+    expect(t.scorePriorityAction(base, at("mb"))).toBe(-Infinity); // outside combat the pump evaporates
+    expect(a.scorePriorityAction(combat, at("mb"))).toBeLessThan(a.scorePriorityAction(combat, { type: "pass" }) - 50); // by default: the misaim cliff
   });
 
   it("book of shame 35 (S28, Spirit Link — the neutralizer fork): on our best evasive creature by default; on THEIR biggest when it out-powers ours", () => {

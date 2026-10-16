@@ -800,7 +800,8 @@ function validateEffects(
     if (e.if !== undefined) {
       const c = e.if;
       if (!isRecord(c) || !Number.isInteger(c.target) || (c.target as number) < 0 || (c.target as number) >= nTargets) err(`effect "if" needs a valid target index`);
-      else if (c.subtype === undefined && c.cardType === undefined) err(`effect "if" needs subtype or cardType`);
+      else if (c.subtype === undefined && c.cardType === undefined && c.powerAtLeast === undefined) err(`effect "if" needs subtype, cardType or powerAtLeast`);
+      else if (c.powerAtLeast !== undefined && !Number.isInteger(c.powerAtLeast)) err(`effect "if": powerAtLeast must be an integer`); // R-112
       else if (c.cardType !== undefined && !CARD_TYPES.includes(c.cardType as CardType)) err(`effect "if": unknown cardType ${c.cardType}`);
     }
     if (!opts.isStatic && !IMPLEMENTED_EFFECT_TYPES.has(type)) {

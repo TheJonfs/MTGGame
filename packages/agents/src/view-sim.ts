@@ -401,6 +401,12 @@ function applyEffect(
 ): number {
   const me = view.you;
   const opp = me === 0 ? 1 : 0;
+  // Post-S65 (R-112, Foxglove Dose): a clause conditioned on its target's power reads the PREDICTED power — after the
+  // effects before it in the copy (the pump), as the engine reads it live. (The subtype/cardType `if` stays unread here.)
+  if (e.if?.powerAtLeast !== undefined) {
+    const t = targets[e.if.target], o = t?.kind === "object" ? view.battlefield.find((b) => b.id === t.id) : undefined;
+    if (!o || o.power === null || o.power < e.if.powerAtLeast) return 0;
+  }
   // S31 (R-094): damage to the opponent by OUR creature also mills under our Traumatizers.
   const traumaMill = (amount: number): number => {
     if (!opts.creatureSource || amount <= 0) return 0;

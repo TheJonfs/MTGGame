@@ -325,6 +325,7 @@ export class HeuristicAgent implements Agent {
       // passing (kills same-host re-equip churn and no-benefit activations).
       return evaluate(view, this.profile, this.defs) - 0.25 - misaim;
     }
+    if (this.misfireGated(view, action, pred.view)) return -Infinity; // post-S65 (book 137): a spell that leaves its target of theirs alive and no worse is not cast
     const hosted = this.equipOnHost(view, action, pred.view);
     return evaluate(pred.view, this.profile, this.defs) + pred.adjustment - (hosted ? 0.25 : 0) - misaim + this.wheelSpendBonus(view, action) + this.lifegainPayoffBonus(view, action) + this.entersKillBonus(view, action) + this.entersModesBonus(view, action) + this.lockStealBonus(view, action) + this.planBonus(view, action) + this.againstPlanBonus(view, action) + this.loopCastBonus(view, action) + this.holdKeptBonus(view, action);
   }
@@ -418,6 +419,13 @@ export class HeuristicAgent implements Agent {
       if (t.player === view.you) return view.life[view.you] - lifeN >= 4 ? 0 : MISAIM;
       return (view.life[t.player] ?? 99) <= lifeN ? 0 : MISAIM;
     }
+    // Book 137 (post-S65, Foxglove Dose): harm under a power condition (R-112) is not harm by its word — the pump on
+    // our own small attacker is the card's trick, the kill on their big one its removal; the predictor reads the
+    // condition after the pump and book 137's gate refuses the cast that only pumps theirs. The aim is theirs to judge.
+    // ON TRIAL only ("conditionaim"): measured paired in the Rabble's Char slot (160 a pairing), the trick it opens cost
+    // the Dose about two points in both formats — the pump spent on a goblin is the kill not kept for their big one, and
+    // the pilot has no term for that trade. Without it the word "destroy" keeps the Dose off our own creatures.
+    if (effects.some((e) => e.if?.powerAtLeast !== undefined) && this.profile.trial?.includes("conditionaim")) return 0;
     const cls = classifyEffects(effects);
     if (cls === "neutral") return 0;
     const me = view.you;
@@ -2564,6 +2572,29 @@ export class HeuristicAgent implements Agent {
     if (view.life[me] <= 8 && (view.combat?.attackers ?? []).includes(o.id)) return false;
     if (view.battlefield.some((b) => b.attachedTo === o.id && b.controller !== me)) return false; // it carries an Aura or Equipment: the pair is the threat
     return matchup ? this.listBest() > objectValue(this.defs, o, this.C) : this.worthWaitingFor() > 0; // book 129: nothing better in their list — no wait
+  }
+  /** Book 137 (post-S65, the Foxglove Dose study: 112 of 414 casts pumped a creature of theirs that lived — a Forerunner
+   * 1/1 made a 3/1, in an upkeep). An instant or sorcery whose every effect is aimed at its one target, a creature the
+   * opponent controls — a pump, and harm only under a condition — is REFUSED when the predictor says that creature is still there afterwards with neither its power
+   * nor its toughness lowered: the kill's condition failed and only the pump landed. The score already sat under
+   * passing, but a held instant meets many windows and the softmax takes a point-under move one window in several (book
+   * 93's lesson). On OUR creature the same shape is the trick: refused outside combat (the pump evaporates) and where
+   * the predictor says ours dies (the line crossed). Exposed for the book. Off: "misfire". */
+  misfireGated(view: GameView, action: Action, after: GameView): boolean {
+    if (action.type !== "castSpell" || this.profile.off?.includes("misfire")) return false;
+    const d = this.def(view.hand.find((c) => c.objectId === action.objectId)?.cardId ?? "");
+    if (!d || !(d.types.includes("Instant") || d.types.includes("Sorcery")) || action.targets.length !== 1 || d.modes) return false;
+    const fx = d.spellEffect ?? [];
+    // the shape: a pump on the target and harm only under a condition (R-112's `if`) — a tap, a steal or a Shock that
+    // does not kill changes things the P/T does not show, and is not read here
+    if (fx.length === 0 || !fx.every((e) => "target" in e && e.target === 0 && (e.type === "modifyPT" || e.if !== undefined)) || !fx.some((e) => e.if !== undefined)) return false;
+    const t = action.targets[0]!;
+    const before = t.kind === "object" ? view.battlefield.find((b) => b.id === t.id) : undefined;
+    if (!before || before.power === null || before.toughness === null) return false;
+    const now = after.battlefield.find((b) => b.id === before.id);
+    // on OUR creature it is the trick: in combat, and only where it lives (an idle pump evaporates; past the line it kills ours)
+    if (before.controller === view.you) return !now || !(view.combat.attackers.includes(before.id) || view.combat.blocks.some((b) => b.blocker === before.id));
+    return !!now && now.power !== null && now.toughness !== null && now.power >= before.power && now.toughness >= before.toughness;
   }
   /** Book 117's shape: an instant or sorcery that destroys or exiles its one target. */
   private killSpell(d: CardDef): boolean {

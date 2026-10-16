@@ -1,0 +1,38 @@
+{
+  "id": "foxglove_dose",
+  "name": "Foxglove Dose",
+  "source": "custom",
+  "manaCost": "{1}{R}",
+  "types": [
+    "Instant"
+  ],
+  "text": "Target creature gets +2/+0 until end of turn. Then if its power is 5 or greater, destroy it.",
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "creature",
+      "zone": "battlefield"
+    }
+  ],
+  "spellEffect": [
+    {
+      "type": "modifyPT",
+      "power": 2,
+      "toughness": 0,
+      "target": 0,
+      "duration": "UNTIL_END_OF_TURN"
+    },
+    {
+      "type": "destroy",
+      "target": 0,
+      "if": {
+        "target": 0,
+        "powerAtLeast": 5
+      }
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2
+}

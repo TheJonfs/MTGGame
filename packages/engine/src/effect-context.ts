@@ -261,7 +261,7 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
       moveObject(ctx, item.sourceId!, "graveyard");
     },
 
-    targetMatches(cond: { target: number; subtype?: string; cardType?: string }): boolean {
+    targetMatches(cond: { target: number; subtype?: string; cardType?: string; powerAtLeast?: number }): boolean {
       const t = item.targets[cond.target];
       if (!t || t.kind !== "object") return false;
       const obj = ctx.state.objects[t.id];
@@ -269,6 +269,7 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
       const ch = characteristics(ctx, t.id);
       if (cond.subtype && !ch.subtypes.includes(cond.subtype)) return false;
       if (cond.cardType && !ch.types.includes(cond.cardType)) return false;
+      if (cond.powerAtLeast !== undefined && (ch.power ?? 0) < cond.powerAtLeast) return false; // R-112: live, after the pump before it
       return true;
     },
 

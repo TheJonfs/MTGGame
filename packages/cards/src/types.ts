@@ -206,6 +206,9 @@ export interface EffectCondition {
   target: number;
   subtype?: string;
   cardType?: CardType;
+  /** Post-S65 (R-112, Foxglove Dose): the target's power, read live when the clause resolves — after the effects
+   * before it in the same resolution (CR 608.2c: the instructions are followed in order). */
+  powerAtLeast?: number;
 }
 
 /** Effect vocabulary v1 (data-model §3). Reserved words are commented at the bottom.

@@ -37,6 +37,20 @@
   - **The in-play note and the keyword glyphs** (Chris: Baru's Wurm token read as a vanilla 6/6). The engine's `characteristicsTrace` names each contribution to a permanent's live P/T, keywords and restrictions with its source card; the inspector lists every change from the printed card under the frame; a battlefield tile shows only the keywords gained (green ring) or lost (red ring, struck) against the printed card, each glyph's tooltip naming its source. Fourteen glyphs from the image skill, Chris's picks (`assets/generated/MANIFEST.md`).
   - **His experimental Naya list** (Snakes with Ruby Tyrants; `convocation-games-30-anothernaya.json`, read only, not studied): 5–0 in the Swiss, 0–2 in the quarterfinal to the Brood. Game one turned on his Sacred Helix's six life becoming six counters on their Karmic Mentor through their Rage Cobra; game two on one red source in five lands. Chris's read: Rage Cobra with a Manaba is one of Naya's pillars — fine, a 2/2 that folds to much removal.
   - **Book 136** (the probe: the Brood against every Naya list, 200 games — the life an opponent's Cobra was fed, by the action before it; the gainer's Helix was cast into a Cobra 8 times, mostly at low life, and even aimed at the Cobra it feeds, the Cobra seeing the gain before it dies, CR 603.2): `lifegainPayoffBonus` read any LIFE_GAINED trigger of ours as a payoff for OUR gain — our own Cobra, which watches the opponent's, paid our Lumen. Now the payoff is read by whose gain it watches, and the mirror: while the opponent controls one that watches ours, our life-gain plays cost what they would have paid (0.4 a life, 0.6 a lifelink or life-trigger creature; Helix's gain is the mana spent). Off `cobrafeed`. Ladder PASS; paired in Naya (the Brood's nine pairings, 160 a pairing): 53.1 → 53.3, 9 of 1,440 games changed (level — a correction, kept). The mirror pairing (the Brood against itself) is not in an `--only` run.
+  - **Foxglove Dose — Chris's card, under study** (`data/cards-proposed/`, outside the pool until adopted): {1}{R} Instant, "Target creature gets +2/+0 until end of turn. Then if its power is 5 or greater, destroy it." Vocabulary: **R-112**, the `if` clause's `powerAtLeast`, read live after the pump (CR 608.2c, 613.4c — verified). Fuzz first (432 games, random and heuristic, replays identical), then fixtures. A single-factor grid in the Rabble's Char slot, both formats, 160 a pairing, paired on Char (Peasant 45.5, the Open 58.7), on the kill line (the printed power that dies: threshold less pump):
+
+    | variant | Peasant Δ | Open Δ |
+    |---|---|---|
+    | 1R, +2, kill line 3 (the centroid) | +1.8 | −0.2 |
+    | R | +3.3 | +1.1 |
+    | 2R | +0.2 | −0.6 |
+    | +3, kill line 3 | +1.8 | −0.2 (the same games: with the trick off the pump only sets the line) |
+    | kill line 2 (dies at 4) | **+5.3** | +1.7 |
+    | kill line 4 (dies at 6) | 0.0 | −2.3 |
+
+    (each ±1.5.) The read: **the kill line is the card**; cost is a point or two a step; the trick is not measured (below). By opponent it is Char's opposite — toughness-blind removal gains against the big bodies Char's four cannot kill (the Elder's Wurms +11, Stompy +9, the Tollgate +9, the Wurmspeaker +8) and loses where Char goes face (the Writ −15, the Depths −4, Mono-Black −6). Per cast at the centroid (520 games a format): Peasant 349 cast, 337 kills; the Open 332 cast, 317 kills; in hand at the end 0.3 a game against Char's 0.1.
+  - **Book 137** (the study's first probe: 112 of 414 Doses pumped a creature of theirs that lived — a Forerunner 1/1 made a 3/1 in an upkeep; the cast sat 0.6 under passing, but a held instant meets many windows): an instant or sorcery that only pumps its target and harms it under a condition is **refused** when the predictor says the target is still there no worse (theirs), or — on ours — outside combat or where ours would die. Off `misfire`. Its other half — the misaim rule standing aside for a conditioned harm, which lets the Dose be the trick on our own attacker — is **on trial only** (`conditionaim`): measured paired, the trick cost about two points in both formats (the pump spent on a goblin is the kill not kept), and the pilot has no term for that trade. So the grid above is the Dose as removal. Ladder PASS.
+  - **For Chris**: the tier and the numbers (expected T2); whether the trick should be a design intent the pilot must learn, or the card is removal that happens to pump.
 
 ## The formats' lists
 - **The Open**: `docs/reference/open-lists.md`; its pillars below.
@@ -115,7 +129,7 @@
 - Plans: `esper:reanimator` (generated).
 
 ## Test status
-`pnpm test`: 127 files, **1,070 passed**, 2 skipped (post-S65: the trace, the in-play lines, book 136). New: `world/s65-esper-event.test.ts` (2: the colours and the land rule; an Esper event to a champion), books 57 and 133–135 pinned (S29's Arc Mage case amended); the Naya event test now requires its own lists only. Ladder (book 57; books 133–135): mirror gate PASS.
+`pnpm test`: 129 files, **1,078 passed**, 2 skipped (post-S65: the trace, the in-play lines, books 136–137, Foxglove Dose's fixtures and fuzz). New: `world/s65-esper-event.test.ts` (2: the colours and the land rule; an Esper event to a champion), books 57 and 133–135 pinned (S29's Arc Mage case amended); the Naya event test now requires its own lists only. Ladder (book 57; books 133–135): mirror gate PASS.
 
 ## Suggested next
 - **The third triad, by what the two say the family lacks**: both triads lack the Open's engines — **RWB (Mardu)** holds the Usher (the loop) and Mardu Control's shell, and would test whether a triad *with* an engine produces the Open's shape; **URW (Jeskai)**, the census's most balanced, is the steadier choice. The implementer's read: **Mardu**, for the question the brief asks.
