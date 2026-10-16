@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
@@ -8,8 +7,6 @@ import { runMatch, type ActionRequest, type Agent, type GameView, type MatchSpec
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const cards = loadCardPool(join(ROOT, "data/cards")).cards;
-// A card under study lives outside the pool (data/cards-proposed) until Chris adopts it.
-cards.set("foxglove_dose", JSON.parse(readFileSync(join(ROOT, "data/cards-proposed/foxglove_dose.json"), "utf8")));
 const perm = (player: 0 | 1, cardId: string): Modifier => ({ type: "permanentOnBattlefield", player, cardId });
 const D = (ids: Record<string, number>) => Object.entries(ids).map(([cardId, count]) => ({ cardId, count }));
 const pass = (r: ActionRequest) => r.actions.find((a) => a.type === "pass") ?? r.actions[0]!;

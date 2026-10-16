@@ -12,8 +12,6 @@ import { viewCreatures, type SimObject } from "./combat-sim.js";
 
 const CARDS_DIR = join(dirname(fileURLToPath(import.meta.url)), "../../../data/cards");
 const pool = loadCardPool(CARDS_DIR).cards;
-// Post-S65: a card under study lives outside the pool (data/cards-proposed) until Chris adopts it — its pins add it here.
-for (const id of ["foxglove_dose"]) pool.set(id, JSON.parse(readFileSync(join(CARDS_DIR, `../cards-proposed/${id}.json`), "utf8")));
 
 /**
  * The book of shame (ADR-049): known-dumb moves pinned as score-ordering

@@ -32,7 +32,9 @@
     }
   ],
   "art": {
+    "asset": "/custom-art/foxglove_dose.png",
     "fallback": "rendered"
   },
-  "shopTier": 2
+  "shopTier": 2,
+  "printedAsset": "foxglove_dose.jpg"
 }

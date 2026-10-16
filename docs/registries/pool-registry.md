@@ -699,13 +699,13 @@ Custom, Chris's design after a single-factor study in White Skies (cost, trigger
 |---|---|---|---|---|
 | karmic_mentor | Karmic Mentor | tested | flying; triggered ENTERS self: target `nonAuraPermanentCardInYourGraveyard` (S64, new) `manaValueAtMost` 2 → `returnFromGraveyard` to battlefield | custom. T2. {1}{W}{W} Angel 2/2. Half a word: the non-Aura permanent target (an Aura entering unattached is not supported — CR 303.4f). |
 
-## Post-S65 addition — Foxglove Dose (Chris's card, 2026-10-16; under study)
+## Post-S65 addition — Foxglove Dose (Chris's card, 2026-10-16; tier 2)
 
 Custom, Chris's design: a pump that kills what it makes too big. The study is a single-factor grid around the centroid (cost R / 1R / 2R; pump +2 / +3; the kill line — the printed power that dies — 2 / 3 / 4) in the Rabble's Char slot, in Peasant and the Open. Expected tier 2.
 
 | id | card | status | vocabulary | notes |
 |---|---|---|---|---|
-| foxglove_dose | Foxglove Dose | implemented | Instant; target creature: `modifyPT` +3/+0 until end of turn, then `destroy` with `if: {target, powerAtLeast: 5}` (R-112, new) | custom. {1}{R}. "Target creature gets +3/+0 until end of turn. Then if its power is 5 or greater, destroy it." Chris's choice after the study (2026-10-16): the pump at +3 with the threshold held at 5 — the kill line at printed power 2. Under study, so outside the pool: `data/cards-proposed/foxglove_dose.json` (tests load it from there; `--extra-cards data/cards-proposed`); the variants in `analysis/runs/scratch/foxglove/`. |
+| foxglove_dose | Foxglove Dose | tested | Instant; target creature: `modifyPT` +3/+0 until end of turn, then `destroy` with `if: {target, powerAtLeast: 5}` (R-112, new) | custom. {1}{R}. "Target creature gets +3/+0 until end of turn. Then if its power is 5 or greater, destroy it." Chris's choice after the study (2026-10-16): the pump at +3 with the threshold held at 5 — the kill line at printed power 2. **Adopted at tier 2 (Chris, 2026-10-16)**; art and printed face Chris's; the Peasant score 1.80 (Char 1.08). The study's variants stay in `analysis/runs/scratch/foxglove/`. |
 
 ## Session 64 addition — Mentor of the Meek (ADR-180)
 

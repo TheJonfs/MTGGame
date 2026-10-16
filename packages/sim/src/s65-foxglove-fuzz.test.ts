@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
@@ -7,8 +6,6 @@ import { replayGame, runMatch, type MatchSpec } from "@shandalar/engine";
 import { HeuristicAgent, RandomAgent, difficultyProfile } from "@shandalar/agents";
 
 const CARDS_DIR = join(dirname(fileURLToPath(import.meta.url)), "../../../data/cards");
-/** A card under study lives outside the pool (data/cards-proposed) until Chris adopts it. */
-const withDose = <T extends Map<string, unknown>>(m: T): T => { m.set("foxglove_dose", JSON.parse(readFileSync(join(CARDS_DIR, "../cards-proposed/foxglove_dose.json"), "utf8"))); return m; };
 const RULES = { startingLife: 20, handSize: 7, mulligan: "london" as const, maxTurns: 100 };
 const expand = (d: { cardId: string; count: number }[]) => d.flatMap((e) => Array(e.count).fill(e.cardId) as string[]);
 const D = (ids: Record<string, number>) => Object.entries(ids).map(([cardId, count]) => ({ cardId, count }));
@@ -29,7 +26,7 @@ export const S65F_LISTS = (): { name: string; decklist: { cardId: string; count:
 describe("Post-S65 fuzz — Foxglove Dose (fuzz-before-fixtures)", () => {
   const games = process.env.FUZZ_FULL ? 16 : 4;
   it(`${games} games × every pair of the three lists (mirrors included) × 2 seats, random; heuristic at a half: zero exceptions, every game terminates`, async () => {
-    const cards = withDose(loadCardPool(CARDS_DIR).cards), lists = S65F_LISTS();
+    const cards = loadCardPool(CARDS_DIR).cards, lists = S65F_LISTS();
     for (const l of lists) expect(l.decklist.reduce((n, e) => n + e.count, 0), l.name).toBe(60);
     let n = 0;
     for (const a of lists) for (const b of lists) for (let seed = 1; seed <= games; seed++) for (const seat of [0, 1] as const) {
@@ -48,7 +45,7 @@ describe("Post-S65 fuzz — Foxglove Dose (fuzz-before-fixtures)", () => {
   }, 1_800_000);
 
   it("replay determinism — the Foxglove lists replay byte-identical", async () => {
-    const cards = withDose(loadCardPool(CARDS_DIR).cards), lists = S65F_LISTS();
+    const cards = loadCardPool(CARDS_DIR).cards, lists = S65F_LISTS();
     for (const [i, a] of lists.entries()) for (const seed of [56, 57, 58]) {
       const b = lists[(i + 1) % lists.length]!;
       const spec: MatchSpec = { seed: seed + i, players: [{ name: a.name, decklist: a.decklist, agent: "x" }, { name: b.name, decklist: b.decklist, agent: "x" }], rules: RULES, modifiers: [] };
