@@ -1,7 +1,7 @@
 # Handoff — after Session 65 (2026-10-16)
 
 ## State of the world
-**Four** Constructed formats with fields of their own: **the Open** (unchanged — Reaper Clio 72.2, Mardu Control 69.7, the Rabble 64.4), **Peasant** (tier two and below; re-run with books 130–132), and two triads — **Naya** (RGW, S64) and **Esper** (WUB, this session). Each triad is a rule (`colorsWithin` and the land rule `manaWithin`, ADR-181), a `formats/<id>/lists.json` of ten seeds, recorded tables, a reference page (`docs/reference/<id>-lists.md`) and a door; **its field is its own registered lists** (ADR-184). Book 57 reads the optional trigger from the request (as book 132 does). Peasant's table: Dungrove Auras 71.9, RW Tokens 59.3, BR Removal 59.0, White Skies 58.1, **UW Skies 57.9** (books 130–131), BR Djinn 57.9. Esper's: **BW Tokens 65.6**, the Writ 63.5, Dimir Tempo 57.8, UW Skies 57.0 … the Reanimator 17.6. Everything is pushed.
+**Four** Constructed formats with fields of their own: **the Open** (unchanged — Reaper Clio 72.2, Mardu Control 69.7, the Rabble 64.4), **Peasant** (tier two and below; re-run with books 130–132), and two triads — **Naya** (RGW, S64) and **Esper** (WUB, this session). Each triad is a rule (`colorsWithin` and the land rule `manaWithin`, ADR-181), a `formats/<id>/lists.json` of ten seeds, recorded tables, a reference page (`docs/reference/<id>-lists.md`) and a door; **its field is its own registered lists** (ADR-184). Book 57 reads the optional trigger from the request (as book 132 does); books 133–135 (from Chris's Convocation) are in. Peasant's table: Dungrove Auras 71.9, RW Tokens 59.3, BR Removal 59.0, White Skies 58.1, **UW Skies 57.9** (books 130–131), BR Djinn 57.9. Esper's: **BW Tokens 65.6**, the Writ 63.5, Dimir Tempo 57.8, UW Skies 57.0 … the Reanimator 17.6. Naya's (re-run): the Rabble 58.9, the Watch 58.0, **the Brood 56.9 — now Chris's list**. Everything is pushed.
 
 ## Done this session
 - **Part 0.** S64's deviations ratified; **ADR-182** (a custom card's study), **ADR-183** (habits become rules), **ADR-184** (a triad's field is its own lists) recorded.
@@ -29,24 +29,27 @@
 
   - **The Dredger** (Esper's lord; 160 matches a pairing): the Locks 49.0 with four, 50.0 with four other fliers (two Serras, two Faerie Formations) — level; the Reanimator 17.4 with two, 17.5 with four. **Neither must-play nor wanted** in these lists (cast 1.15 a game in the Locks; his graveyard-recursion activation is a control card's, and the Locks win without him).
 - **Part 2 — the read across the triads.** **Naya is even** (42.8–59.2; none over 65 in game one or matches). **Esper is wider** (40.6–65.6, and the Reanimator at 17.6), and its top is **BW Tokens** (over ADR-171's 65 in matches, 60 in game one) beside **the Writ** (Clio's counter-control, 63.5) — an aggro deck and a control deck, with tempo and fliers (Dimir Tempo, UW Skies) at 57–58. Esper's three things to do, from the top of its table: go wide (BW Tokens, the Levy), counter and draw (the Writ, Tempo), fly (UW Skies). **The Clio lists** after book 122: the Writ 63.5, Tempo 57.8, the Undertow 45.7. Neither triad has a working combo deck: the Reanimator is the Larder again (the Open archived it at 31), Esper's Usher-less Mono-Black is 40.6. **Neither triad reproduces the Open's shape in a smaller box** — the Open's pillars are an engine (Clio's snakes), a loop (the Usher) and a race (the Rabble); Naya has the race, Esper the counters, and the engines live in the colours each lacks.
-- **Part 3 — for Chris**: his four-colour Karmic Mentor brew (3–2, outside the eight) recorded, not registered.
+- **Part 3 — for Chris**: his four-colour Karmic Mentor brew (3–2, outside the eight) recorded, not registered. **He then won a Naya-and-Esper Convocation** (`docs/debug_logs/recorded_games/convocation-games-day1-esper.json`, `…-30-naya-snakes.json`, `docs/debug_logs/convocation-17-2-naya-snakes.json`): Esper 4–1 with an Esper Clio list (Clio, Protocol, Vindicate, Restoration Angel, the Jet Witch, Counterspell, Wall of Reverence, Dawnwing Marshal, Gravitational Shift; Specters, Nighthawks and Graceful Restoration in), and Naya 7–1 with his Naya Snakes and Angels (4–1 in the Swiss, then the eight: the Rabble 2–1, the Warband 2–0, the Thicket 2–0).
+  - **His Esper Clio list under the pilot** (160 matches a pairing, Mono-Black's seat): **55.6 with the builder's fifteen** (Swords, Control Magic, Wrath against the creature decks), **44.0 with his plan** as a guide (Specters and Nighthawks in against every list) — the plan does not travel to the pilot. Not registered.
+  - **His Naya list**: 47.5 with the builder's fifteen, **53.3 with his** (+5.8 — the plan travels here: Kavus, Wraths and burn against the go-wide decks, sweepers against the Thicket). With **two Airship Crashes for the Seasoned Pyromancers** (Chris: for the Thicket's Auras and Pacifisms and the Tollgate's Minefields) and in the Brood's own seat it **beat the planner's seed 54.0 to 49.2** (the Tollgate 28 → 69, the Thicket 51 → 62, the Rabble 35 → 43; the Muster 59 → 50, Wurms 59 → 52). **Registered as the Brood** (Chris), with its fifteen and his plan as its guide; the Crash row fires against the hexproof shape and against artifacts-and-enchantments decks that are not small — the Thicket, the Tollgate, and (by their shapes) the Stampede (its Elders) and the Watch (its Anthems). **Naya's table re-run**: the Rabble 58.9, the Watch 58.0, the Brood 56.9, Wurms 52.1, the Stampede 52.0, the Muster 45.6, the Warband 44.4, the Tollgate 44.3, the Chantry 44.1, the Thicket 43.7.
+  - **Books 133–135, from his games** (each seen in the replays): **133** — no second answer at a creature our own pending spell already kills (two Doom Blades at one Marshal, two Shocks at one Overseer, a Bolt after our own Swords; off `oneanswer`); **134** — a trigger's target already chosen by our own pending item is taken last (two Tidewalls returned one Doom Blade; off `distinctreturn`); **135** — a modal activation is read by its chosen mode (Arc Mage's split onto itself was invisible to the misaim rule — `actionEffects` read the ability's own empty effects), and a tap-and-discard pinger waits for the main phase, at a player for the opponent's end step (off `pingtiming`; S29's Arc Mage pin amended). Ladder PASS; paired in Esper: the Writ 62.6 → 62.2, Tempo 57.8 → 56.9 (level — corrections, kept).
 
 ## The formats' lists
 - **The Open**: `docs/reference/open-lists.md`; its pillars below.
-- **Naya** (`docs/reference/naya-lists.md`; the table of 2026-10-15):
+- **Naya** (`docs/reference/naya-lists.md`; the table of 2026-10-16, with Chris's Brood):
 
 | list | matches | game one | after sideboarding |
 |---|---|---|---|
-| the Rabble (Naya) | 59.2 | 57 | +0.1 |
-| the Watch | 56.3 | 52 | +3.6 |
-| the Stampede | 53.3 | 55 | -4.5 |
-| Mono-Green Wurms | 51.6 | 47 | +6.9 |
-| the Brood | 50 | 52 | -3.0 |
-| the Tollgate | 49.8 | 52 | -4.4 |
-| the Thicket | 48.1 | 48 | +2.2 |
-| the Muster | 44.8 | 46 | +0.2 |
-| the Chantry | 44.1 | 45 | +1.5 |
-| the Warband | 42.8 | 47 | -2.7 |
+| the Rabble (Naya) | 58.9 | 56 | -0.2 |
+| the Watch | 58 | 54 | +1.8 |
+| the Brood | 56.9 | 56 | -1.8 |
+| Mono-Green Wurms | 52.1 | 46 | +9.3 |
+| the Stampede | 52 | 55 | -5.6 |
+| the Muster | 45.6 | 47 | -0.7 |
+| the Warband | 44.4 | 48 | -3.1 |
+| the Tollgate | 44.3 | 49 | -4.5 |
+| the Chantry | 44.1 | 45 | +1.1 |
+| the Thicket | 43.7 | 44 | +3.5 |
 
 - **Esper**: `docs/reference/esper-lists.md` (table above).
 - **Peasant** (`formats/peasant/lists.json`; the table of 2026-10-16):
@@ -95,17 +98,20 @@
 3. **Mono-Black Control without the Usher is weak** (40.6): the Pall's shell was the loop's.
 4. **Each triad's lord is optional so far**: the Fordkeeper is wanted by some Naya lists, the Dredger by none in Esper. Faldor (WU) is unseeded.
 5. **The triad tables are single-seed** and the seeds untuned.
-6. Carried: the triangle in Peasant holds by small margins; the red-white aggro decks have no answer to Auras; guides and out-rules are matched by cards across formats.
+6. **A person's sideboard plan travels to the pilot only sometimes**: Chris's Naya plan +5.8, his Esper plan −11.6 against the builder's. Registered guides should be measured, as ADR-168 says, not copied from a winning run.
+7. **The Thicket and the Tollgate fall with the new Brood** (−4.4, −5.5): enchantment answers (Disenchant, Airship Crash) are now in the format's best lists.
+8. Carried: the triangle in Peasant holds by small margins; the red-white aggro decks have no answer to Auras; guides and out-rules are matched by cards across formats.
 
 ## Registry entries added/changed
 - Formats: **Esper** (`ESPER_FORMAT`, `formats/esper/` — lists, means, matches; `docs/reference/esper-lists.md`); Naya's five names.
 - Engine: `RequestSource.targets` (an optional trigger's targets on its request).
-- Books: **57** amended (`optionalsource`).
+- Books: **57** amended (`optionalsource`); **133** (`oneanswer`), **134** (`distinctreturn`), **135** (`pingtiming`).
+- Naya: the Brood replaced by Chris's list (its fifteen and guide); the table re-recorded.
 - World: `selectCandidates` (ADR-184); the census's legends line.
 - Plans: `esper:reanimator` (generated).
 
 ## Test status
-`pnpm test`: 126 files, **1,064 passed**, 2 skipped. New: `world/s65-esper-event.test.ts` (2: the colours and the land rule; an Esper event to a champion), book 57's pin; the Naya event test now requires its own lists only. Ladder (book 57): mirror gate PASS.
+`pnpm test`: 126 files, **1,064 passed**, 2 skipped. New: `world/s65-esper-event.test.ts` (2: the colours and the land rule; an Esper event to a champion), books 57 and 133–135 pinned (S29's Arc Mage case amended); the Naya event test now requires its own lists only. Ladder (book 57; books 133–135): mirror gate PASS.
 
 ## Suggested next
 - **The third triad, by what the two say the family lacks**: both triads lack the Open's engines — **RWB (Mardu)** holds the Usher (the loop) and Mardu Control's shell, and would test whether a triad *with* an engine produces the Open's shape; **URW (Jeskai)**, the census's most balanced, is the steadier choice. The implementer's read: **Mardu**, for the question the brief asks.
