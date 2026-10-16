@@ -717,6 +717,159 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
     ]
    }
   ]
+ },
+ {
+  "key": "naya:snakes",
+  "fifteen": [
+   {
+    "cardId": "flametongue_kavu",
+    "count": 4
+   },
+   {
+    "cardId": "wrath_of_god",
+    "count": 4
+   },
+   {
+    "cardId": "char",
+    "count": 2
+   },
+   {
+    "cardId": "pyroclasm",
+    "count": 1
+   },
+   {
+    "cardId": "wave_of_reckoning",
+    "count": 1
+   },
+   {
+    "cardId": "sacred_helix",
+    "count": 1
+   },
+   {
+    "cardId": "airship_crash",
+    "count": 2
+   }
+  ],
+  "rows": [
+   {
+    "in": "flametongue_kavu",
+    "n": 4,
+    "out": [
+     "rage_cobra"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "hexproof"
+    ]
+   },
+   {
+    "in": "wrath_of_god",
+    "n": 4,
+    "out": [
+     "manaba"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "hexproof"
+    ]
+   },
+   {
+    "in": "char",
+    "n": 2,
+    "out": [
+     "birds_of_paradise"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "hexproof"
+    ]
+   },
+   {
+    "in": "pyroclasm",
+    "n": 1,
+    "out": [
+     "birds_of_paradise"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "hexproof"
+    ]
+   },
+   {
+    "in": "wrath_of_god",
+    "n": 4,
+    "out": [
+     "rage_cobra"
+    ],
+    "when": [
+     "hexproof"
+    ]
+   },
+   {
+    "in": "wave_of_reckoning",
+    "n": 1,
+    "out": [
+     "manaba"
+    ],
+    "when": [
+     "hexproof"
+    ]
+   },
+   {
+    "in": "pyroclasm",
+    "n": 1,
+    "out": [
+     "manaba"
+    ],
+    "when": [
+     "hexproof"
+    ]
+   },
+   {
+    "in": "char",
+    "n": 2,
+    "out": [
+     "rage_cobra"
+    ],
+    "when": [
+     "control"
+    ]
+   },
+   {
+    "in": "airship_crash",
+    "n": 2,
+    "out": [
+     "manaba",
+     "karmic_mentor"
+    ],
+    "when": [
+     "hexproof"
+    ]
+   },
+   {
+    "in": "airship_crash",
+    "n": 2,
+    "out": [
+     "manaba",
+     "karmic_mentor"
+    ],
+    "when": [
+     "relics"
+    ],
+    "unless": [
+     "small",
+     "hexproof"
+    ]
+   }
+  ]
  }
 ];
 

@@ -1,66 +1,66 @@
 {
  "_comment": "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.",
- "when": "2026-10-15",
+ "when": "2026-10-16",
  "matchesAPairing": 60,
  "byList": {
   "auras": {
-   "matches": 48.1,
-   "gameOne": 48,
-   "later": 50.2,
+   "matches": 43.7,
+   "gameOne": 44.4,
+   "later": 47.9,
    "n": 540
   },
   "lifegain": {
    "matches": 44.1,
    "gameOne": 45,
-   "later": 46.5,
-   "n": 540
-  },
-  "muster": {
-   "matches": 44.8,
-   "gameOne": 45.9,
    "later": 46.1,
    "n": 540
   },
+  "muster": {
+   "matches": 45.6,
+   "gameOne": 46.9,
+   "later": 46.2,
+   "n": 540
+  },
   "rabble": {
-   "matches": 59.2,
-   "gameOne": 56.7,
-   "later": 56.8,
+   "matches": 58.9,
+   "gameOne": 56.4,
+   "later": 56.2,
    "n": 540
   },
   "snakes": {
-   "matches": 50,
-   "gameOne": 51.7,
-   "later": 48.7,
+   "matches": 56.9,
+   "gameOne": 56.2,
+   "later": 54.4,
    "n": 540
   },
   "stompy": {
-   "matches": 53.3,
+   "matches": 52,
    "gameOne": 54.8,
-   "later": 50.3,
+   "later": 49.2,
    "n": 540
   },
   "tokens": {
-   "matches": 56.3,
-   "gameOne": 51.7,
-   "later": 55.3,
+   "matches": 58,
+   "gameOne": 53.7,
+   "later": 55.5,
    "n": 540
   },
   "tollgate": {
-   "matches": 49.8,
-   "gameOne": 52.4,
-   "later": 48,
+   "matches": 44.3,
+   "gameOne": 48.7,
+   "later": 44.2,
    "n": 540
   },
   "warband": {
-   "matches": 42.8,
-   "gameOne": 47,
-   "later": 44.3,
+   "matches": 44.4,
+   "gameOne": 48.3,
+   "later": 45.2,
    "n": 540
   },
   "wurms": {
-   "matches": 51.6,
-   "gameOne": 46.9,
-   "later": 53.8,
+   "matches": 52.1,
+   "gameOne": 45.6,
+   "later": 54.9,
    "n": 540
   }
  }

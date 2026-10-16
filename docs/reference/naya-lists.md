@@ -12,7 +12,7 @@
 | the Watch | Boros Tokens (W R) | aggro | 56.3 | 54 | +3.6 | built |
 | the Stampede | Gruul Stompy (R G) | aggro | 53.3 | 59 | −4.5 | built |
 | Mono-Green Wurms | Mono-Green Ramp (G) | midrange | 51.6 | 50 | +6.9 | built |
-| the Brood | Naya Snakes (R G W) | midrange | 50.0 | 51 | −3.0 | built |
+| the Brood | Naya Snakes and Angels (R G W) | midrange | 50.0 | 51 | −3.0 | registered, guided |
 | the Tollgate | Naya Control (R G W) | control | 49.8 | 48 | −4.4 | registered |
 | the Thicket | Selesnya Auras (G W) | aggro | 48.1 | 49 | +2.2 | built |
 | the Muster | Boros Weenie (W R) | aggro | 44.8 | 43 | +0.2 | built |
@@ -23,9 +23,9 @@ Archived (kept in the data, out of the field): none.
 
 ## Staples (ADR-170)
 
-Nonland cards outside the restricted list that more than half of the 10 active lists play: Lightning Bolt (8 lists, 30 copies); Flametongue Kavu (8 lists, 25 copies).
+Nonland cards outside the restricted list that more than half of the 10 active lists play: Lightning Bolt (7 lists, 26 copies); Flametongue Kavu (7 lists, 21 copies).
 
-The most played: Lightning Bolt 8 · Flametongue Kavu 8 · Hordeling Outburst 3 · Soul Warden 3 · Birds of Paradise 3 · Llanowar Elves 3 · The Fordkeeper 3 · Reaper's Forerunner 3.
+The most played: Lightning Bolt 7 · Flametongue Kavu 7 · Lumen, the Hearth Fire 4 · Sacred Helix 4 · Hordeling Outburst 3 · Soul Warden 3 · Birds of Paradise 3 · Reaper's Forerunner 3.
 
 ## the Rabble (Naya) — Mono-Red Goblins (R)
 
@@ -71,16 +71,27 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 8 · Hordeling Outburst 3 
 - **History:**
   - contributed — S64 seed (the planner's): the Open's Wurmspeaker whole.
 
-## the Brood — Naya Snakes (R G W)
+## the Brood — Naya Snakes and Angels (R G W)
 
 `snakes` · midrange · game one 51 · matches 50.0
 
-- **Lands (18):** 4 Taiga · 2 Savannah · 2 Plateau · 4 Stomping Ground · 2 Temple Garden · 2 Sacred Foundry · 2 Forest
-- **Creatures (33):** 4 Manaba · 4 Birds of Paradise · 2 Llanowar Elves · 4 Rage Cobra · 4 Reaper's Forerunner · 4 Restoration Angel · 4 Flametongue Kavu · 2 Wall of Blossoms · 3 Baru, Wurmspeaker · 2 The Fordkeeper
-- **Other (9):** 1 Black Lotus · 1 Mox Emerald · 4 Lightning Bolt · 3 Swords to Plowshares
-- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **Lands (21):** 4 Savannah · 4 Taiga · 4 Plateau · 1 Shevelport · 1 Stomping Ground · 1 Temple Garden · 1 Sacred Foundry · 2 Tranquil Thicket · 1 Plains · 1 Mountain · 1 Forest
+- **Creatures (33):** 4 Lumen, the Hearth Fire · 4 Restoration Angel · 4 Reaper's Forerunner · 4 Rage Cobra · 4 Manaba · 4 Birds of Paradise · 4 The Emerald Keeper · 3 Shocking Sharpshooter · 2 Karmic Mentor
+- **Other (6):** 1 Black Lotus · 1 Mox Pearl · 1 Mox Ruby · 1 Mox Emerald · 2 Sacred Helix
+- **Its fifteen (registered):** 4 Flametongue Kavu · 4 Wrath of God · 2 Char · 1 Pyroclasm · 1 Wave of Reckoning · 1 Sacred Helix · 2 Airship Crash
+- **Its sideboard guide** (then the general rules run on what is left):
+  - against many small creatures (not four or more hexproof or shroud threats): 4 Flametongue Kavu in for Rage Cobra
+  - against many small creatures (not four or more hexproof or shroud threats): 4 Wrath of God in for Manaba
+  - against many small creatures (not four or more hexproof or shroud threats): 2 Char in for Birds of Paradise
+  - against many small creatures (not four or more hexproof or shroud threats): 1 Pyroclasm in for Birds of Paradise
+  - against four or more hexproof or shroud threats: 4 Wrath of God in for Rage Cobra
+  - against four or more hexproof or shroud threats: 1 Wave of Reckoning in for Manaba
+  - against four or more hexproof or shroud threats: 1 Pyroclasm in for Manaba
+  - against control: 2 Char in for Rage Cobra
+  - against four or more hexproof or shroud threats: 2 Airship Crash in for Manaba, then Karmic Mentor
+  - against artifacts and enchantments (not many small creatures or four or more hexproof or shroud threats): 2 Airship Crash in for Manaba, then Karmic Mentor
 - **History:**
-  - contributed — S64 seed (the planner's, built by the implementer): Peasant's Naya Flash Snakes at the Open's tier — dual lands and the Naya power, Baru at the top and two Fordkeepers (the planner's candidate lord), for the Little Bears and two Walls of Blossoms. Named the Brood in the plane's register (S65; it was Naya Flash Snakes (Open)).
+  - contributed — S65 (Chris, 2026-10-16): his list, champion of his first Naya-and-Esper Convocation (7-1 on Days 3 and 4; 4-1 in the Swiss) — Manaba, Rage Cobra, Reaper's Forerunner, Birds, Restoration Angel, Lumen, the Emerald Keeper, Shocking Sharpshooters, Karmic Mentors, Sacred Helix; his fifteen with two Airship Crashes for the Seasoned Pyromancers (for the Thicket's Auras and the Tollgate's Minefields). It replaces the planner's seed (Naya Flash Snakes at the Open's tier), which it beat 54.0 to 49.2 in the same seat (the Tollgate 28 -> 69, the Thicket 51 -> 62).
 
 ## the Tollgate — Naya Control (R G W)
 

@@ -1,7 +1,128 @@
 {
  "_comment": "Naya (S64, ADR-181): the first triad — red, green and white; the land rule (a land or a mana artifact makes only those colours); the Open's restricted list; sixty cards, four of a kind. The planner's ten seeds, built to sixty by the implementer (working names). `pnpm open:gen` validates each against Naya and generates the code and docs/reference/naya-lists.md.",
  "archived": {},
- "guides": {},
+ "guides": {
+  "snakes": [
+   {
+    "in": "flametongue_kavu",
+    "n": 4,
+    "out": [
+     "rage_cobra"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "hexproof"
+    ]
+   },
+   {
+    "in": "wrath_of_god",
+    "n": 4,
+    "out": [
+     "manaba"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "hexproof"
+    ]
+   },
+   {
+    "in": "char",
+    "n": 2,
+    "out": [
+     "birds_of_paradise"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "hexproof"
+    ]
+   },
+   {
+    "in": "pyroclasm",
+    "n": 1,
+    "out": [
+     "birds_of_paradise"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "hexproof"
+    ]
+   },
+   {
+    "in": "wrath_of_god",
+    "n": 4,
+    "out": [
+     "rage_cobra"
+    ],
+    "when": [
+     "hexproof"
+    ]
+   },
+   {
+    "in": "wave_of_reckoning",
+    "n": 1,
+    "out": [
+     "manaba"
+    ],
+    "when": [
+     "hexproof"
+    ]
+   },
+   {
+    "in": "pyroclasm",
+    "n": 1,
+    "out": [
+     "manaba"
+    ],
+    "when": [
+     "hexproof"
+    ]
+   },
+   {
+    "in": "char",
+    "n": 2,
+    "out": [
+     "rage_cobra"
+    ],
+    "when": [
+     "control"
+    ]
+   },
+   {
+    "in": "airship_crash",
+    "n": 2,
+    "out": [
+     "manaba",
+     "karmic_mentor"
+    ],
+    "when": [
+     "hexproof"
+    ]
+   },
+   {
+    "in": "airship_crash",
+    "n": 2,
+    "out": [
+     "manaba",
+     "karmic_mentor"
+    ],
+    "when": [
+     "relics"
+    ],
+    "unless": [
+     "small",
+     "hexproof"
+    ]
+   }
+  ]
+ },
  "guidesOnly": [],
  "outRules": {},
  "lists": [
@@ -208,45 +329,45 @@
   {
    "key": "snakes",
    "name": "the Brood",
-   "title": "Naya Snakes (R G W)",
+   "title": "Naya Snakes and Angels (R G W)",
    "archetype": "midrange",
-   "source": "S64 seed (the planner's, built by the implementer): Peasant's Naya Flash Snakes at the Open's tier — dual lands and the Naya power, Baru at the top and two Fordkeepers (the planner's candidate lord), for the Little Bears and two Walls of Blossoms. Named the Brood in the plane's register (S65; it was Naya Flash Snakes (Open)).",
+   "source": "S65 (Chris, 2026-10-16): his list, champion of his first Naya-and-Esper Convocation (7-1 on Days 3 and 4; 4-1 in the Swiss) — Manaba, Rage Cobra, Reaper's Forerunner, Birds, Restoration Angel, Lumen, the Emerald Keeper, Shocking Sharpshooters, Karmic Mentors, Sacred Helix; his fifteen with two Airship Crashes for the Seasoned Pyromancers (for the Thicket's Auras and the Tollgate's Minefields). It replaces the planner's seed (Naya Flash Snakes at the Open's tier), which it beat 54.0 to 49.2 in the same seat (the Tollgate 28 -> 69, the Thicket 51 -> 62).",
    "decklist": [
-    {
-     "cardId": "taiga",
-     "count": 4
-    },
-    {
-     "cardId": "savannah",
-     "count": 2
-    },
-    {
-     "cardId": "plateau",
-     "count": 2
-    },
-    {
-     "cardId": "stomping_ground",
-     "count": 4
-    },
-    {
-     "cardId": "temple_garden",
-     "count": 2
-    },
-    {
-     "cardId": "sacred_foundry",
-     "count": 2
-    },
-    {
-     "cardId": "forest",
-     "count": 2
-    },
     {
      "cardId": "black_lotus",
      "count": 1
     },
     {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
      "cardId": "mox_emerald",
      "count": 1
+    },
+    {
+     "cardId": "lumen_the_hearth_fire",
+     "count": 4
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 4
+    },
+    {
+     "cardId": "sacred_helix",
+     "count": 2
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 4
+    },
+    {
+     "cardId": "rage_cobra",
+     "count": 4
     },
     {
      "cardId": "manaba",
@@ -257,43 +378,89 @@
      "count": 4
     },
     {
-     "cardId": "llanowar_elves",
+     "cardId": "the_emerald_keeper",
+     "count": 4
+    },
+    {
+     "cardId": "shocking_sharpshooter",
+     "count": 3
+    },
+    {
+     "cardId": "karmic_mentor",
      "count": 2
     },
     {
-     "cardId": "rage_cobra",
+     "cardId": "savannah",
      "count": 4
     },
     {
-     "cardId": "reapers_forerunner",
+     "cardId": "taiga",
      "count": 4
     },
     {
-     "cardId": "restoration_angel",
+     "cardId": "plateau",
      "count": 4
     },
+    {
+     "cardId": "shevelport",
+     "count": 1
+    },
+    {
+     "cardId": "stomping_ground",
+     "count": 1
+    },
+    {
+     "cardId": "temple_garden",
+     "count": 1
+    },
+    {
+     "cardId": "sacred_foundry",
+     "count": 1
+    },
+    {
+     "cardId": "tranquil_thicket",
+     "count": 2
+    },
+    {
+     "cardId": "plains",
+     "count": 1
+    },
+    {
+     "cardId": "mountain",
+     "count": 1
+    },
+    {
+     "cardId": "forest",
+     "count": 1
+    }
+   ],
+   "sideboard": [
     {
      "cardId": "flametongue_kavu",
      "count": 4
     },
     {
-     "cardId": "wall_of_blossoms",
-     "count": 2
-    },
-    {
-     "cardId": "lightning_bolt",
+     "cardId": "wrath_of_god",
      "count": 4
     },
     {
-     "cardId": "swords_to_plowshares",
-     "count": 3
+     "cardId": "char",
+     "count": 2
     },
     {
-     "cardId": "baru_wurmspeaker",
-     "count": 3
+     "cardId": "pyroclasm",
+     "count": 1
     },
     {
-     "cardId": "the_fordkeeper",
+     "cardId": "wave_of_reckoning",
+     "count": 1
+    },
+    {
+     "cardId": "sacred_helix",
+     "count": 1
+    },
+    {
+     "cardId": "airship_crash",
      "count": 2
     }
    ]
