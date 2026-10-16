@@ -1,4 +1,4 @@
-import { characteristics, type EngineCtx, type GameObject } from "@shandalar/engine";
+import { characteristics, characteristicsTrace, type EngineCtx, type GameObject } from "@shandalar/engine";
 import { inPlayLines } from "./in-play";
 
 /** Battlefield presentation (art-direction §3): art crop, name strip, live P/T badge. */
@@ -42,6 +42,11 @@ export function CardTile({
     .filter(Boolean)
     .join(" ");
 
+  // S65 (Chris: a gained keyword showed nowhere): the keywords gained and lost against the printed card, as glyphs —
+  // green gained, red lost (the P/T badge's colours); the printed ones stay off the tile.
+  const kwTrace = obj.zone === "battlefield" ? characteristicsTrace(ctx, obj.id) : null;
+  const kwSource = (k: string) => { const c = kwTrace?.contributions.find((x) => x.what === "keyword" && x.keyword === k); return c?.sourceCardId ? ` (${ctx.defs.def(c.sourceCardId).name})` : ""; };
+  const kwFile = (k: string) => `/icons/kw-${k.replace(/ /g, "-")}.svg`;
   const plus = obj.counters["+1/+1"] ?? 0;
   const minus = obj.counters["-1/-1"] ?? 0;
 
@@ -79,6 +84,8 @@ export function CardTile({
             // S26: named counters (Clio's depth) — a text pip; the kind is the word on the card.
             <span key={k} className="counter-pip" title={`${k} counter x${n}`}>{k} {n}</span>
           ))}
+        {kwTrace?.gained.map((k) => <img key={`g-${k}`} className="kw gained" src={kwFile(k)} alt={`gained ${k}`} title={`Gained: ${k}${kwSource(k)}`} />)}
+        {kwTrace?.lost.map((k) => <span key={`l-${k}`} className="kw-lost" title={`Lost: ${k}`}><img className="kw lost" src={kwFile(k)} alt={`lost ${k}`} /></span>)}
       </div>
       <div className="name">{def.name}</div>
       {chars && (

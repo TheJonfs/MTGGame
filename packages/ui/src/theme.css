@@ -735,3 +735,9 @@ button.chrome-tab:hover:not(:disabled) { background: #f4ecd8; }
 .in-play ul { list-style: none; margin: 0; padding: 0; }
 .in-play li.boost { color: var(--boost); }
 .in-play li.reduce { color: var(--danger); }
+
+/* S65: keyword glyphs on the tile — gained (green ring) and lost (red ring, struck through); printed keywords stay off */
+.tile .badges img.kw.gained { box-shadow: 0 0 0 1px var(--boost); }
+.tile .badges .kw-lost { position: relative; display: inline-block; width: 13px; height: 13px; }
+.tile .badges .kw-lost img.kw { box-shadow: 0 0 0 1px var(--danger); opacity: 0.8; }
+.tile .badges .kw-lost::after { content: ""; position: absolute; left: -1px; right: -1px; top: 50%; height: 1.5px; background: var(--danger); transform: rotate(-35deg); }
