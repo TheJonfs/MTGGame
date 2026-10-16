@@ -230,7 +230,7 @@
 | Hedron Crab | U | Creature — Crab | {U} | 1 | 0/2 |  | 1 | 8 |  | Landfall — Whenever a land you control enters, target player mills three cards. (They put the top three cards of their library into their graveyard.) |
 | Ponder | U | Sorcery | {U} | 1 |  |  | 1 | 8 |  | Look at the top three cards of your library, then put them back in any order. You may shuffle. Draw a card. |
 | Thought Scour | U | Instant | {U} | 1 |  |  | 1 | 8 |  | Target player mills two cards. Draw a card. |
-| Tidal Shackle | U | Artifact | {U} | 1 |  |  | 1 | 8 | custom | Sacrifice Tidal Shackle: Tap target creature and put a stun counter on it. |
+| Tidal Shackle | U | Artifact | {U} | 1 |  |  | 1 | 8 | custom | Sacrifice Tidal Shackle: Tap target creature and put a stun counter on it. Draw a card. |
 | Tome Scour | U | Sorcery | {U} | 1 |  |  | 1 | 8 |  | Target player mills five cards. |
 | Boomerang | U | Instant | {U}{U} | 2 |  |  | 1 | 12 |  | Return target permanent to its owner's hand. |
 | Counterspell | U | Instant | {U}{U} | 2 |  |  | 2 | 18 |  | Counter target spell. |

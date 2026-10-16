@@ -705,7 +705,7 @@ Custom, Chris's design: a one-mana artifact that is a pre-paid tap-down — sacr
 
 | id | card | status | vocabulary | notes |
 |---|---|---|---|---|
-| tidal_shackle | Tidal Shackle | implemented | Artifact; activated, cost `sacrifice: self`, target creature: `tapTarget`, `addCounters` "stun" 1 (R-113, new: the stun replacement) | custom. T1. {U}. "Sacrifice Tidal Shackle: Tap target creature and put a stun counter on it." Art and printed face Chris's. The pilot's timing: book 138. |
+| tidal_shackle | Tidal Shackle | tested | Artifact; activated, cost `sacrifice: self`, target creature: `tapTarget`, `addCounters` "stun" 1 (R-113, new: the stun replacement), `draw` 1 | custom. T1. {U}. "Sacrifice Tidal Shackle: Tap target creature and put a stun counter on it. Draw a card." Chris's choice after the study (the printed one-stun card read as a blank in UW Skies; the draw beat a second stun counter in every slot). Art and printed face Chris's. The pilot's timing: book 138. |
 
 ## Post-S65 addition — Foxglove Dose (Chris's card, 2026-10-16; tier 2)
 

@@ -6,7 +6,7 @@
   "types": [
     "Artifact"
   ],
-  "text": "Sacrifice Tidal Shackle: Tap target creature and put a stun counter on it.",
+  "text": "Sacrifice Tidal Shackle: Tap target creature and put a stun counter on it. Draw a card.",
   "abilities": [
     {
       "kind": "activated",
@@ -32,6 +32,11 @@
           "kind": "stun",
           "count": 1,
           "target": 0
+        },
+        {
+          "type": "draw",
+          "count": 1,
+          "who": "you"
         }
       ]
     }
