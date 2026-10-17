@@ -1,0 +1,52 @@
+{
+  "id": "sexton23_sac",
+  "name": "Sexton of the Vale (sac)",
+  "source": "custom",
+  "manaCost": "{W}{W}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Human",
+    "Cleric"
+  ],
+  "power": 2,
+  "toughness": 3,
+  "text": "Sacrifice Sexton of the Vale: Put target card from a graveyard on the bottom of its owner's library. You gain life equal to its mana value.",
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "sacrifice": {
+          "predicate": "self"
+        }
+      },
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "cardInYourGraveyard",
+          "zone": "graveyard",
+          "who": "any"
+        }
+      ],
+      "effects": [
+        {
+          "type": "putOnBottom",
+          "target": 0
+        },
+        {
+          "type": "gainLife",
+          "amount": {
+            "ref": "targetManaValue",
+            "target": 0
+          },
+          "who": "you"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2
+}

@@ -1,0 +1,87 @@
+{
+  "id": "pyre_rites_split",
+  "name": "Pyre Rites (split)",
+  "source": "custom",
+  "manaCost": "{1}{R}",
+  "types": [
+    "Instant"
+  ],
+  "text": "Choose one \u2014 \u2022 Pyre Rites deals 2 damage to any target. \u2022 Pyre Rites deals 1 damage to each of two targets. Put up to one target card from a graveyard on the bottom of its owner's library.",
+  "modes": [
+    {
+      "label": "2 damage to one target",
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "anyTarget",
+          "zone": "any"
+        },
+        {
+          "count": {
+            "min": 0,
+            "max": 1
+          },
+          "predicate": "cardInYourGraveyard",
+          "zone": "graveyard",
+          "who": "any"
+        }
+      ],
+      "effects": [
+        {
+          "type": "damage",
+          "amount": 2,
+          "target": 0
+        },
+        {
+          "type": "putOnBottom",
+          "targetSpec": 1
+        }
+      ]
+    },
+    {
+      "label": "1 damage to each of two targets",
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "anyTarget",
+          "zone": "any"
+        },
+        {
+          "count": 1,
+          "predicate": "anyTarget",
+          "zone": "any",
+          "distinctFromPrior": true
+        },
+        {
+          "count": {
+            "min": 0,
+            "max": 1
+          },
+          "predicate": "cardInYourGraveyard",
+          "zone": "graveyard",
+          "who": "any"
+        }
+      ],
+      "effects": [
+        {
+          "type": "damage",
+          "amount": 1,
+          "target": 0
+        },
+        {
+          "type": "damage",
+          "amount": 1,
+          "target": 1
+        },
+        {
+          "type": "putOnBottom",
+          "targetSpec": 2
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2
+}

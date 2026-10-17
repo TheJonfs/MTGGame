@@ -49,6 +49,20 @@ describe("R-115 — a graveyard card to the bottom of its owner's library", () =
     expect(f.players[0]!.life).toBe(25);
     expect(f.players[1]!.graveyard.length).toBe(1);
   });
+  it("Pyre Rites: 2 damage to a creature and its rider on a graveyard card; castable with every graveyard empty (the rider is up to one)", async () => {
+    const shock = (aim: string | null): Agent => { let done = false; return { chooseAction: async (v: GameView, r) => {
+      if (!done && r.purpose === "priority" && v.step === "MAIN1" && v.stack.length === 0) {
+        const a = r.actions.find((x) => x.type === "castSpell" && v.hand.find((h) => h.objectId === x.objectId)?.cardId === "pyre_rites" && x.targets.some((t) => t.kind === "object" && v.battlefield.some((b) => b.id === t.id && b.cardId === "grizzly_bears")) && (aim ? x.targets.some((t) => t.kind === "object" && yardCard(v, t.id!) === aim) : x.targets.length === 1));
+        if (a) { done = true; return a; }
+      }
+      return pass(r);
+    } }; };
+    const withYard = fin(await runMatch(spec({ pyre_rites: 60 }, { the_usher: 60 }, [perm(0, "mountain"), perm(0, "mountain"), perm(1, "grizzly_bears"), mill(1, 2)]), cards, [shock("the_usher"), passer]));
+    expect(withYard.battlefield.some((id) => withYard.objects[id]!.cardId === "grizzly_bears")).toBe(false);
+    expect(withYard.players[1]!.graveyard.filter((id) => withYard.objects[id]!.cardId === "the_usher").length).toBe(1);
+    const empty = fin(await runMatch(spec({ pyre_rites: 60 }, { forest: 60 }, [perm(0, "mountain"), perm(0, "mountain"), perm(1, "grizzly_bears")]), cards, [shock(null), passer]));
+    expect(empty.battlefield.some((id) => empty.objects[id]!.cardId === "grizzly_bears")).toBe(false); // the Shock alone
+  });
   it("in answer to a Zombify, the Rites fizzle it: its only target has left the graveyard (CR 608.2b)", async () => {
     // seat 0 raises a Bear with Zombify; seat 1 answers with the Rites on that Bear while the Zombify is on the stack
     let zombified = false;

@@ -2690,6 +2690,9 @@ export class HeuristicAgent implements Agent {
     if (action.type === "castSpell") { const d = this.def(view.hand.find((c) => c.objectId === action.objectId)?.cardId ?? ""); effects = d?.spellEffect ?? []; spell = true; }
     else { const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex); if (!ab || ab.kind !== "activated") return false; effects = ab.effects; repeatable = !!ab.cost.tap && !ab.cost.sacrifice; }
     if (!effects.some((e) => e.type === "putOnBottom")) return false;
+    // (a RIDER — the bottoming beside damage, as Pyre Rites': the gate stands aside; the damage decides the cast and the
+    // rider's target is scored as ever, with book 140's answer bonus when it is aimed)
+    if (effects.some((e) => e.type === "damage")) return false;
     const yard = (id: string) => [...view.graveyardObjects[0], ...view.graveyardObjects[1]].find((g) => g.objectId === id);
     const t = (action as { targets?: ResolvedTarget[] }).targets?.[0];
     const aimed = view.stack.filter((s) => s.controller !== me).flatMap((s) => (s.targets ?? []).filter((x) => x.kind === "object" && !!yard(x.id)).map((x) => (x as { id: string }).id));

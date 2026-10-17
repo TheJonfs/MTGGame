@@ -1,0 +1,41 @@
+{
+  "id": "pyre_rites_r",
+  "name": "Pyre Rites (r)",
+  "source": "custom",
+  "manaCost": "{R}",
+  "types": [
+    "Instant"
+  ],
+  "text": "Pyre Rites deals 2 damage to any target. Put up to one target card from a graveyard on the bottom of its owner's library.",
+  "targets": [
+    {
+      "count": 1,
+      "predicate": "anyTarget",
+      "zone": "any"
+    },
+    {
+      "count": {
+        "min": 0,
+        "max": 1
+      },
+      "predicate": "cardInYourGraveyard",
+      "zone": "graveyard",
+      "who": "any"
+    }
+  ],
+  "spellEffect": [
+    {
+      "type": "damage",
+      "amount": 2,
+      "target": 0
+    },
+    {
+      "type": "putOnBottom",
+      "targetSpec": 1
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2
+}
