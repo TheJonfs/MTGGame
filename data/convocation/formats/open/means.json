@@ -1,21 +1,22 @@
 {
- "_comment": "A format's game-one means (S46): each list's win rate against the other active lists on the registered sixties. Written by `pnpm open:rr --format <id> --merge <shards> --record` \u2014 do not edit by hand. `pnpm open:gen` reads it with matches.json into the field's strength table (S63 Part 2).",
- "when": "2026-10-12",
- "source": "the S61 round-robin of record (seed 56, 100 games a pairing), as hand-recorded in constructed-builder.ts until S63",
+ "_comment": "A format's game-one means (S46): each list's win rate against the other active lists on the registered sixties. Written by `pnpm open:rr --format <id> --merge <shards> --record` — do not edit by hand. `pnpm open:gen` reads it with matches.json into the field's strength table (S63 Part 2).",
+ "when": "2026-10-17",
+ "source": "10500 games, 100 a pairing",
  "byList": {
   "countersnake": 51,
-  "depths": 45,
+  "depths": 46,
+  "emeraldsnakes": 60,
   "kiln": 43,
-  "levy": 42,
-  "marducontrol": 61,
-  "muster": 44,
-  "pall": 65,
-  "rabble": 59,
-  "reaperclio": 69,
-  "sweep": 43,
-  "tollgate": 44,
+  "levy": 44,
+  "marducontrol": 60,
+  "muster": 43,
+  "pall": 59,
+  "rabble": 58,
+  "reaperclio": 70,
+  "sweep": 41,
+  "tollgate": 45,
   "warband": 41,
-  "writ": 49,
-  "wurmspeaker": 40
+  "writ": 52,
+  "wurmspeaker": 37
  }
 }
