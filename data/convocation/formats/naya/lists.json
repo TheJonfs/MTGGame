@@ -1,5 +1,10 @@
 {
  "_comment": "Naya (S64, ADR-181): the first triad — red, green and white; the land rule (a land or a mana artifact makes only those colours); the Open's restricted list; sixty cards, four of a kind. The planner's ten seeds, built to sixty by the implementer (working names). `pnpm open:gen` validates each against Naya and generates the code and docs/reference/naya-lists.md.",
+ "_shapeScale_note": "Post-S65 (Chris, 2026-10-17): the `small` and `large` thresholds frozen at the values this field's tables and guides were measured with (small 18, large 3) — Emerald Snakes, the eleventh list, moved the derived large threshold to 0 (the 79th-percentile list has no large creatures), which would make `large` true of every list.",
+ "shapeScale": {
+  "small": 18,
+  "large": 3
+ },
  "archived": {},
  "guides": {
   "snakes": [
@@ -1048,6 +1053,125 @@
     },
     {
      "cardId": "baru_wurmspeaker",
+     "count": 2
+    }
+   ]
+  },
+  {
+   "key": "emeraldsnakes",
+   "name": "Emerald Snakes",
+   "title": "Snake Keeper (G R)",
+   "archetype": "midrange",
+   "source": "Chris's Emerald Snakes (the Open) ported to Naya (post-S65, Chris's choice of the two ports measured): its ten off-colour lands (Bayous, Tropical Islands, Volcanic, Wrackroot, Cairnbrand, Tallyflame Court) for four Savannahs, four Temple Gardens and two Forests (all Forests, for Gaean Wurm); Mox Sapphire, Mox Jet and Time Walk out for a third Harmonize and two more Forests. 67.1 in matches against the ten lists before it joined (the Elves port, three Llanowar Elves in those slots, 62.4; 160 matches a pairing). Its fifteen as the Open's. Chris's name for it.",
+   "decklist": [
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "birds_of_paradise",
+     "count": 4
+    },
+    {
+     "cardId": "manaba",
+     "count": 4
+    },
+    {
+     "cardId": "rage_cobra",
+     "count": 4
+    },
+    {
+     "cardId": "the_emerald_keeper",
+     "count": 4
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "gaean_wurm",
+     "count": 4
+    },
+    {
+     "cardId": "elvish_visionary",
+     "count": 4
+    },
+    {
+     "cardId": "harmonize",
+     "count": 3
+    },
+    {
+     "cardId": "taiga",
+     "count": 4
+    },
+    {
+     "cardId": "stomping_ground",
+     "count": 4
+    },
+    {
+     "cardId": "shevelport",
+     "count": 1
+    },
+    {
+     "cardId": "savannah",
+     "count": 4
+    },
+    {
+     "cardId": "temple_garden",
+     "count": 4
+    },
+    {
+     "cardId": "forest",
+     "count": 4
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "airship_crash",
+     "count": 2
+    },
+    {
+     "cardId": "foxglove_dose",
+     "count": 2
+    },
+    {
+     "cardId": "savage_twister",
+     "count": 2
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 2
+    },
+    {
+     "cardId": "pelakka_wurm",
+     "count": 2
+    },
+    {
+     "cardId": "penumbra_wurm",
+     "count": 2
+    },
+    {
+     "cardId": "baru_wurmspeaker",
+     "count": 1
+    },
+    {
+     "cardId": "wall_of_razors",
      "count": 2
     }
    ]
