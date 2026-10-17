@@ -81,6 +81,9 @@ export const killsCreatures = (d: CardDef): boolean => {
 export const answersRelics = (d: CardDef) => (d.spellEffect ?? []).some((e) => e.type === "destroy" || e.type === "exile") && predicates(d).some((p) => /^(artifact|enchantment|permanent|nonlandPermanent|artifactOrEnchantment)$/.test(p));
 /** Removal that can hit a creature (destroy, exile or damage at a creature or at any target). */
 export const answersCreatures = (d: CardDef) => removes(d) && predicates(d).some((p) => /creature$/i.test(p) || p === "anyTarget" || p === "permanent");
+/** Post-S65 (the `shrinks` shape): a static that lowers the power of the creatures its controller's opponents control
+ * (Clio: -1/-0 per depth counter) — a negative number, or a ref with a negative multiplier. */
+export const shrinksTheirs = (d: CardDef) => (d.abilities ?? []).some((a) => a.kind === "static" && a.effects.some((e) => e.type === "modifyPT" && (e as { scope?: string }).scope === "creaturesYouDontControl" && (typeof e.power === "number" ? e.power < 0 : typeof e.power === "object" && ((e.power as { times?: number }).times ?? 1) < 0)));
 export const isCounter = (d: CardDef) => (d.spellEffect ?? []).some((e) => e.type === "counter");
 /** S56 (rule 5): mass damage or destruction of creatures (Pyroclasm, Savage Twister, Wrath of God). */
 export const isSweeper = (d: CardDef) => !d.types.includes("Creature") && ((d.spellEffect ?? []) as { type: string; scope?: string; powerAtLeast?: number }[]).some((e) => (e.type === "damageAll" || e.type === "destroyAll") && e.scope === "allCreatures" && e.powerAtLeast === undefined); // R-109: a sweeper of the large (Retribution of the Meek) is no answer to the wide
@@ -109,7 +112,7 @@ export const usableByAnyDeck = (d: CardDef) => d.manaCost === "{0}" || (d.abilit
 /** Post-S59 (Reaper Control's guide): `small` — fifteen or more creatures of toughness two or less (what a Pyroclasm
  * answers; the rules' own sweeper shape counts power); `someGraveyard` — four or more cards that work from a graveyard
  * (the Coin and the Hearth, which `graveyard` at eight does not reach). */
-export type GuideShape = "creatureDeck" | "fewLarge" | "control" | "plan" | "counters" | "graveyard" | "relics" | "small" | "someGraveyard" | /** post-S60: eight or more creatures of toughness three or more — a sweeper's deck, not a Pyroclasm's */ "large" | /** S63: four or more hexproof or shroud creatures that are threats — printed power two or more, or a size the card sets for itself (Dungrove Elder's `*`) */ "hexproof" | /** S64 (Chris: the Mentor against the black lists): eight or more cards that destroy or exile a creature — spells and enters triggers aimed at a creature (the kill decks, not the burn decks) */ "killers";
+export type GuideShape = "creatureDeck" | "fewLarge" | "control" | "plan" | "counters" | "graveyard" | "relics" | "small" | "someGraveyard" | /** post-S60: eight or more creatures of toughness three or more — a sweeper's deck, not a Pyroclasm's */ "large" | /** S63: four or more hexproof or shroud creatures that are threats — printed power two or more, or a size the card sets for itself (Dungrove Elder's `*`) */ "hexproof" | /** S64 (Chris: the Mentor against the black lists): eight or more cards that destroy or exile a creature — spells and enters triggers aimed at a creature (the kill decks, not the burn decks) */ "killers" | /** post-S65 (Chris, the Snake Keeper's guide): two or more board sweepers (`isSweeper`: Wrath, Pyroclasm, Savage Twister — not Retribution's large-only) */ "sweepers" | /** post-S65 (the same): two or more cards with a static that lowers the power of creatures their opponent controls (Clio's depth) */ "shrinks";
 export interface GuideRow { in: string; n: number; out?: string[]; when: GuideShape[]; /** not against these, whatever `when` says */ unless?: GuideShape[] }
 export interface SideboardGuide { key: string; fifteen: Decklist; rows: GuideRow[]; /** post-S59: the guide is the whole plan — the rules do not run after it (they took Reaper Control's Walls out for removal in every matchup) */ only?: true }
 const sameCards = (a: Decklist, b: Decklist) => { const k = (l: Decklist) => l.filter((e) => !isBasic(e.cardId) && e.count > 0).map((e) => `${e.cardId}:${e.count}`).sort().join(","); return k(a) === k(b); };
@@ -173,6 +176,8 @@ export function aiSideboard(deck: Decklist, sideboard: Decklist, opponentDeck: D
       someGraveyard: oppGraveyard >= 4,
       large: oppCr.filter((d) => (d.toughness ?? 0) >= 3).length >= (terms.scale?.large ?? OPEN_SHAPE_SCALE.large),
       killers: opp.filter(killsCreatures).length >= 8,
+      sweepers: opp.filter(isSweeper).length >= 2,
+      shrinks: opp.filter(shrinksTheirs).length >= 2,
       hexproof: oppCr.filter((d) => ((d.keywords ?? []).includes("hexproof") || (d.keywords ?? []).includes("shroud")) && ((d.power ?? 0) >= 2 || (d.abilities ?? []).some((a) => a.kind === "static" && a.effects.some((e) => e.type === "modifyPT" && e.scope === "self" && typeof e.power === "object")))).length >= 4,
     };
     for (const row of guide.rows) {

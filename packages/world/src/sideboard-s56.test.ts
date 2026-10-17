@@ -118,3 +118,26 @@ describe("broader sideboarding (S56)", () => {
     expect(vs("pall", { ...AI_SIDEBOARD_CONSTRUCTED, noGuide: true }).swaps.some((s) => s.rule === "guide")).toBe(false);
   });
 });
+
+/** Post-S65 (Chris, the Snake Keeper's guide): two guide shapes — `sweepers` (two or more board sweepers) and `shrinks`
+ * (two or more cards whose static lowers the power of the creatures their opponent controls: Clio's depth). */
+describe("guide shapes: sweepers and shrinks", () => {
+  it("the cards: Wrath and Savage Twister sweep, Retribution of the Meek does not; Clio shrinks, an Anthem does not", async () => {
+    const { shrinksTheirs } = await import("./sideboard-ai.js");
+    expect(isSweeper(d("wrath_of_god"))).toBe(true);
+    expect(isSweeper(d("savage_twister"))).toBe(true);
+    expect(isSweeper(d("retribution_of_the_meek"))).toBe(false);
+    expect(shrinksTheirs(d("clio_lady_of_the_depths"))).toBe(true);
+    expect(shrinksTheirs(d("glorious_anthem"))).toBe(false);
+  });
+  it("a guide row on each fires where it should: sweepers against Mardu Control (and not the Rabble), shrinks against Reaper Clio (and not the Muster)", () => {
+    const fifteen = [{ cardId: "pelakka_wurm", count: 1 }, { cardId: "dungrove_elder", count: 4 }, { cardId: "forest", count: 10 }];
+    const guide = { key: "test", fifteen, rows: [{ in: "pelakka_wurm", n: 1, out: ["grizzly_bears"], when: ["sweepers" as const] }, { in: "dungrove_elder", n: 1, out: ["grizzly_bears"], when: ["shrinks" as const] }] };
+    const main = [{ cardId: "grizzly_bears", count: 4 }, { cardId: "forest", count: 56 }];
+    const guided = (them: string) => aiSideboard(main, fifteen, OPEN_DECKS[them]!.decklist, cards, rating, { ...AI_SIDEBOARD_CONSTRUCTED, guides: [guide] }).swaps.filter((s) => s.rule === "guide").map((s) => s.in);
+    expect(guided("marducontrol")).toEqual(["pelakka_wurm"]);
+    expect(guided("rabble")).toEqual([]);
+    expect(guided("reaperclio")).toEqual(["dungrove_elder"]);
+    expect(guided("muster")).toEqual([]);
+  });
+});
