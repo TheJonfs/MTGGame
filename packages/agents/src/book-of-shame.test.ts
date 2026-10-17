@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
 import type { GameView } from "@shandalar/engine";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { HeuristicAgent } from "./heuristic-agent.js";
 import { payableBy, reserveTaps } from "./reserve.js";
 import { deterrence, difficultyProfile, legendLoopNet, LOOP_GAIN_WORTH, LOOP_WORTH, objectValue } from "./evaluator.js";
@@ -12,6 +12,8 @@ import { viewCreatures, type SimObject } from "./combat-sim.js";
 
 const CARDS_DIR = join(dirname(fileURLToPath(import.meta.url)), "../../../data/cards");
 const pool = loadCardPool(CARDS_DIR).cards;
+// S66: the cards under study (data/cards-proposed — Hallowed Rites and the Sextons) for book 140's pin
+for (const f of readdirSync(join(CARDS_DIR, "../cards-proposed")).filter((x) => x.endsWith(".json"))) { const d = JSON.parse(readFileSync(join(CARDS_DIR, "../cards-proposed", f), "utf8")); pool.set(d.id, d); }
 
 /**
  * The book of shame (ADR-049): known-dumb moves pinned as score-ordering
@@ -961,6 +963,33 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     };
     expect(await pick([{ id: "mb", cardId: "grizzly_bears", controller: 0 }, { id: "ow", cardId: "pelakka_wurm", controller: 1 }])).toBe("gp");
     expect(await pick([{ id: "mb", cardId: "grizzly_bears", controller: 0 }])).toBe("gl");
+  });
+
+  it("book of shame 140 (S66, R-115 — Hallowed Rites and the Sexton): a hallowing answers a return on its target; a tap Sexton is spent at their end step; a one-shot is kept against a list that reanimates", () => {
+    const reanimating = new HeuristicAgent(1, pool, difficultyProfile("master", "midrange", [{ cardId: "zombify", count: 4 }, { cardId: "swamp", count: 56 }]));
+    const fair = new HeuristicAgent(2, pool, difficultyProfile("master", "midrange", [{ cardId: "grizzly_bears", count: 4 }, { cardId: "forest", count: 56 }]));
+    const lands = [{ id: "p1", cardId: "plains", controller: 0 as const }, { id: "p2", cardId: "plains", controller: 0 as const }];
+    const yard = (v: GameView): GameView => ({ ...v, graveyardObjects: [[], [{ objectId: "gw", cardId: "pelakka_wurm" }, { objectId: "gb", cardId: "grizzly_bears" }]], graveyards: [[], ["pelakka_wurm", "grizzly_bears"]] });
+    const rites = (id: string) => ({ type: "castSpell" as const, objectId: "hr", targets: [{ kind: "object" as const, id }] });
+    const tap = (id: string) => ({ type: "activateAbility" as const, objectId: "sx", abilityIndex: 0, targets: [{ kind: "object" as const, id }] });
+    // their Zombify aimed at the Wurm: the Rites on the Wurm, never the Bear; the answer is worth the Wurm
+    const zomb = yard(mkView({ step: "MAIN1", activePlayer: 1, hand: [{ objectId: "hr", cardId: "hallowed_rites" }], battlefield: lands, stack: [{ id: "z", kind: "spell", cardId: "zombify", controller: 1, targets: [{ kind: "object", id: "gw" }] }] as never }));
+    expect(reanimating.hallowGated(zomb, rites("gw"))).toBe(false);
+    expect(reanimating.hallowGated(zomb, rites("gb"))).toBe(true);
+    expect(reanimating.hallowAnswerBonus(zomb, rites("gw"))).toBeGreaterThan(0);
+    expect(reanimating.scorePriorityAction(zomb, rites("gw"))).toBeGreaterThan(reanimating.scorePriorityAction(zomb, { type: "pass" }));
+    // nothing aimed: the Rites are kept against a reanimator; cast at their end step for the Spirit against a fair list
+    const quiet = (step: string, active: 0 | 1) => yard(mkView({ step, activePlayer: active, hand: [{ objectId: "hr", cardId: "hallowed_rites" }], battlefield: lands }));
+    expect(reanimating.hallowGated(quiet("END", 1), rites("gw"))).toBe(true);
+    expect(fair.hallowGated(quiet("END", 1), rites("gw"))).toBe(false);
+    expect(fair.hallowGated(quiet("MAIN1", 0), rites("gw"))).toBe(true);
+    // the tap Sexton: at their end step on their best creature card (the Wurm), not the Bear, and not in our main
+    const sx = (step: string, active: 0 | 1) => yard(mkView({ step, activePlayer: active, battlefield: [...lands, { id: "sx", cardId: "sexton_tap", controller: 0 }] }));
+    expect(reanimating.hallowGated(sx("END", 1), tap("gw"))).toBe(false);
+    expect(reanimating.hallowGated(sx("END", 1), tap("gb"))).toBe(true);
+    expect(reanimating.hallowGated(sx("MAIN1", 0), tap("gw"))).toBe(true);
+    const off = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["hallow"] });
+    expect(off.hallowGated(sx("MAIN1", 0), tap("gb"))).toBe(false);
   });
 
   it("book of shame 35 (S28, Spirit Link — the neutralizer fork): on our best evasive creature by default; on THEIR biggest when it out-powers ours", () => {

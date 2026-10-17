@@ -80,7 +80,11 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
   const lki: (TargetLki | null)[] = item.targets.map((t) => {
     if (t.kind !== "object") return null;
     const obj = ctx.state.objects[t.id];
-    if (!obj || obj.zone !== "battlefield") return null;
+    if (!obj) return null;
+    // S66 (R-115, the Sexton's "life equal to its mana value"): a graveyard target is snapshotted too — its printed
+    // power and mana value (no characteristics apply off the battlefield, CR 611.3c) — so a hallowed card still counts.
+    if (obj.zone === "graveyard") { const d = ctx.defs.def(obj.cardId); return { power: d.power ?? 0, controller: obj.owner, manaValue: manaValue(parseManaCost(d.manaCost ?? "")) }; }
+    if (obj.zone !== "battlefield") return null;
     return { power: characteristics(ctx, t.id).power, controller: obj.controller, manaValue: manaValue(parseManaCost(ctx.defs.def(obj.cardId).manaCost)) };
   });
 
@@ -556,6 +560,13 @@ function sharedOps(ctx: EngineCtx, asController: PlayerId, requester?: EffectReq
       const obj = ctx.state.objects[objectId];
       if (!obj || (obj.zone !== "battlefield" && obj.zone !== "graveyard")) return; // S55: a graveyard card too (Faerie Macabre)
       moveObject(ctx, objectId, "exile"); // not a death: no DIES trigger fires (700.4)
+    },
+
+    putOnBottom(objectId: string): void {
+      // S66 (R-115): from a graveyard only — to the bottom of its OWNER's library (zone arrays are owner-keyed).
+      const obj = ctx.state.objects[objectId];
+      if (!obj || obj.zone !== "graveyard") return;
+      moveObject(ctx, objectId, "library", { position: "bottom" });
     },
 
     async returnFromGraveyard(objectId: string, to: "battlefield" | "hand", opts?: { temporary?: boolean; withCounters?: { kind: "+1/+1"; count: number }; tapped?: boolean }): Promise<void> {

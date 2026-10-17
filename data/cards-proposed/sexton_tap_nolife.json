@@ -1,0 +1,42 @@
+{
+  "id": "sexton_tap_nolife",
+  "name": "Sexton of the Vale (tap_nolife)",
+  "source": "custom",
+  "manaCost": "{W}{W}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Human",
+    "Cleric"
+  ],
+  "power": 2,
+  "toughness": 2,
+  "text": "{T}: Put target card from a graveyard on the bottom of its owner's library.",
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "tap": true
+      },
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "cardInYourGraveyard",
+          "zone": "graveyard",
+          "who": "any"
+        }
+      ],
+      "effects": [
+        {
+          "type": "putOnBottom",
+          "target": 0
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2
+}

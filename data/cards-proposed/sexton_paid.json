@@ -1,0 +1,51 @@
+{
+  "id": "sexton_paid",
+  "name": "Sexton of the Vale (paid)",
+  "source": "custom",
+  "manaCost": "{W}{W}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Human",
+    "Cleric"
+  ],
+  "power": 2,
+  "toughness": 2,
+  "text": "{1}, {T}: Put target card from a graveyard on the bottom of its owner's library. You gain life equal to its mana value.",
+  "abilities": [
+    {
+      "kind": "activated",
+      "cost": {
+        "mana": "{1}",
+        "tap": true
+      },
+      "targets": [
+        {
+          "count": 1,
+          "predicate": "cardInYourGraveyard",
+          "zone": "graveyard",
+          "who": "any"
+        }
+      ],
+      "effects": [
+        {
+          "type": "putOnBottom",
+          "target": 0
+        },
+        {
+          "type": "gainLife",
+          "amount": {
+            "ref": "targetManaValue",
+            "target": 0
+          },
+          "who": "you"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2
+}

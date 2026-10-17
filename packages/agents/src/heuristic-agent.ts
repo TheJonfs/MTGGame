@@ -305,6 +305,7 @@ export class HeuristicAgent implements Agent {
     if (this.buriedGated(view, action)) return -Infinity; // S30: Buried Alive only with a reanimator in hand
     if (this.planGated(view, action)) return -Infinity; // S55 (books 100–103): the combo plan's discipline
     if (this.graveyardHateGated(view, action)) return -Infinity; // S55 (book 105): graveyard exile is held for the moment it answers
+    if (this.hallowGated(view, action)) return -Infinity; // S66 (book 140): a hallowing (R-115) answers a return, or is spent at their end step
     if (this.skeletonGated(view, action)) return -Infinity; // S30: the Skeleton returns with mana to spare, or as a blocker when behind
     if (this.yardReturnPending(view, action)) return -Infinity; // book 98: its return is already on the stack
     if (this.lifeForCardsGated(view, action)) return -Infinity; // S27 r2: the Witch's discipline
@@ -330,7 +331,7 @@ export class HeuristicAgent implements Agent {
     }
     if (this.misfireGated(view, action, pred.view)) return -Infinity; // post-S65 (book 137): a spell that leaves its target of theirs alive and no worse is not cast
     const hosted = this.equipOnHost(view, action, pred.view);
-    return evaluate(pred.view, this.profile, this.defs) + pred.adjustment - (hosted ? 0.25 : 0) - misaim + this.wheelSpendBonus(view, action) + this.lifegainPayoffBonus(view, action) + this.entersKillBonus(view, action) + this.entersModesBonus(view, action) + this.lockStealBonus(view, action) + this.planBonus(view, action) + this.againstPlanBonus(view, action) + this.loopCastBonus(view, action) + this.holdKeptBonus(view, action);
+    return evaluate(pred.view, this.profile, this.defs) + pred.adjustment - (hosted ? 0.25 : 0) - misaim + this.wheelSpendBonus(view, action) + this.lifegainPayoffBonus(view, action) + this.hallowAnswerBonus(view, action) + this.entersKillBonus(view, action) + this.entersModesBonus(view, action) + this.lockStealBonus(view, action) + this.planBonus(view, action) + this.againstPlanBonus(view, action) + this.loopCastBonus(view, action) + this.holdKeptBonus(view, action);
   }
 
   /** S46 (Vitalist — the brief's "a term, not a rule"): while we control a LIFE_GAINED payoff (the shape: a trigger on
@@ -2671,6 +2672,49 @@ export class HeuristicAgent implements Agent {
     }
     if (!role.some((b) => b.id === o.id) || (o.power ?? 0) < 2) return true;
     return role.some((b) => (b.power ?? 0) > (o.power ?? 0));
+  }
+  /** Book 140 (S66, R-115 — Hallowed Rites and the Sexton, Chris's white answer to the Usher's loop): an action that puts
+   * a graveyard card on the bottom of its owner's library is held for the moment it answers, book 105's discipline:
+   *  · an opposing spell, ability or trigger on the stack aimed at a card in a graveyard — the Usher's return, a
+   *    Zombify: then it is used only on THAT card (the return fizzles);
+   *  · otherwise a REPEATABLE one (a tap ability, no sacrifice) is spent at the opponent's end step on their best
+   *    creature card (it untaps for the next), and nothing else;
+   *  · otherwise a one-shot (a spell, or a sacrifice ability) is kept against a list that returns cards from a
+   *    graveyard to the battlefield; against one that does not, a SPELL is cast at their end step for what else it
+   *    does (the Spirit), a sacrifice never.
+   * Exposed for the book. Off: "hallow". */
+  hallowGated(view: GameView, action: Action): boolean {
+    if ((action.type !== "castSpell" && action.type !== "activateAbility") || this.profile.off?.includes("hallow")) return false;
+    const me = view.you, opp = (1 - me) as 0 | 1;
+    let effects: Effect[] = [], repeatable = false, spell = false;
+    if (action.type === "castSpell") { const d = this.def(view.hand.find((c) => c.objectId === action.objectId)?.cardId ?? ""); effects = d?.spellEffect ?? []; spell = true; }
+    else { const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex); if (!ab || ab.kind !== "activated") return false; effects = ab.effects; repeatable = !!ab.cost.tap && !ab.cost.sacrifice; }
+    if (!effects.some((e) => e.type === "putOnBottom")) return false;
+    const yard = (id: string) => [...view.graveyardObjects[0], ...view.graveyardObjects[1]].find((g) => g.objectId === id);
+    const t = (action as { targets?: ResolvedTarget[] }).targets?.[0];
+    const aimed = view.stack.filter((s) => s.controller !== me).flatMap((s) => (s.targets ?? []).filter((x) => x.kind === "object" && !!yard(x.id)).map((x) => (x as { id: string }).id));
+    if (aimed.length) return !(t?.kind === "object" && aimed.includes(t.id));
+    const theirEnd = view.activePlayer !== me && view.step === "END" && view.stack.length === 0;
+    const best = [...view.graveyardObjects[opp]].filter((g) => this.def(g.cardId)?.types.includes("Creature")).sort((a, b) => reanimationWorth(this.def(b.cardId)) - reanimationWorth(this.def(a.cardId)))[0];
+    if (repeatable) return !(theirEnd && !!best && t?.kind === "object" && t.id === best.objectId);
+    const theyReturn = this.profile.opponentDecklist.some((e) => { const d = this.def(e.cardId); return !!d && [...(d.spellEffect ?? []), ...(d.abilities ?? []).flatMap((a) => ("effects" in a ? (a.effects as Effect[]) : []))].some((x) => x.type === "returnFromGraveyard" && x.to === "battlefield"); });
+    if (theyReturn || !spell) return true;
+    return !(theirEnd && t?.kind === "object");
+  }
+  /** Book 140: a hallowing that passes its gate in ANSWER (aimed at the card an opposing return targets) is worth what
+   * it stops — the card's reanimation worth, and the loop's when the card is one (the Usher returning the Usher); the
+   * predictor cannot see the return fizzle. Exposed. */
+  hallowAnswerBonus(view: GameView, action: Action): number {
+    if ((action.type !== "castSpell" && action.type !== "activateAbility") || this.profile.off?.includes("hallow")) return 0;
+    const t = (action as { targets?: ResolvedTarget[] }).targets?.[0];
+    if (t?.kind !== "object") return 0;
+    const effects = action.type === "castSpell" ? (this.def(view.hand.find((c) => c.objectId === action.objectId)?.cardId ?? "")?.spellEffect ?? []) : ((viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex) as { effects?: Effect[] } | undefined)?.effects ?? []);
+    if (!effects.some((e) => e.type === "putOnBottom")) return 0;
+    const aimedBy = view.stack.find((s) => s.controller !== view.you && (s.targets ?? []).some((x) => x.kind === "object" && x.id === t.id));
+    if (!aimedBy) return 0;
+    const g = [...view.graveyardObjects[0], ...view.graveyardObjects[1]].find((x) => x.objectId === t.id);
+    const d = g ? this.def(g.cardId) : undefined;
+    return reanimationWorth(d) + (g && aimedBy.cardId === g.cardId ? LOOP_WORTH : 0);
   }
   /** Book 117's shape: an instant or sorcery that destroys or exiles its one target. */
   private killSpell(d: CardDef): boolean {

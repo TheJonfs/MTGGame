@@ -95,6 +95,8 @@ export interface EffectContext {
   fightSource(targetId: string): void;
   /** Exile (CR 700.4: not a death — no DIES trigger). S55: a permanent, or a card in a graveyard (Faerie Macabre). */
   exile(objectId: string): void;
+  /** S66 (R-115): a graveyard card to the bottom of its owner's library. */
+  putOnBottom(objectId: string): void;
   /** S23 (ADR-084): sacrifice the resolving ability's own SOURCE (the Thundersnake) — a sacrifice,
    * not a destruction (no indestructible shield); DIES fires; no-op if the source left already. */
   sacrificeSource(): void;
@@ -348,6 +350,11 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
     }
     // A10: targetSpec fans out (Purge destroys every still-legal pick; per-target fizzle).
     for (const t of targeted(e, ctx)) if (t.kind === "object") ctx.destroy(t.id);
+  },
+
+  putOnBottom: (e, ctx) => {
+    if (e.type !== "putOnBottom") throw new Error("resolver mismatch");
+    for (const t of targeted(e, ctx)) if (t.kind === "object") ctx.putOnBottom(t.id);
   },
 
   exile: (e, ctx) => {

@@ -542,6 +542,20 @@ function applyEffect(
       if (o) removeObject(view, o.id);
       return 0;
     }
+    case "putOnBottom": {
+      // S66 (R-115): a graveyard card hallowed to the bottom of its owner's library — out of the predicted graveyard;
+      // a small credit for one of theirs (its timing — the answer to a return — is book 140's, not the predictor's).
+      const t = e.target !== undefined ? targets[e.target] : undefined;
+      if (t?.kind !== "object") return 0;
+      for (const p of [0, 1] as const) {
+        const i = view.graveyardObjects[p].findIndex((g) => g.objectId === t.id);
+        if (i < 0) continue;
+        const [g] = view.graveyardObjects[p].splice(i, 1);
+        const j = view.graveyards[p].indexOf(g!.cardId); if (j >= 0) view.graveyards[p].splice(j, 1);
+        return p === me ? -0.05 : 0.1;
+      }
+      return 0;
+    }
     case "bounce": {
       if (e.target === undefined) return 0; // scope-form bounce (Arcanis self-return): neutral in view-sim
       const o = objAt(e.target);

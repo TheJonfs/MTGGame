@@ -241,6 +241,9 @@ export type EffectBase =
   /** S42a (R-098, the Cinquefont): `ifLawsAtLeast` — the scope-laws exile happens only while that many laws stand on the
    * battlefield, BOTH sides counted (a stolen law is still a law); otherwise the clause does nothing. */
   | { type: "exile"; target?: number; targetSpec?: number; scope?: Scope; ifLawsAtLeast?: number }
+  /** S66 (R-115, Chris's white graveyard answer — Hallowed Rites, the Sexton): a card in a graveyard is put on the bottom
+   * of its owner's library (a hallowing, not an exile: the card may come again). A no-op if it has left the graveyard. */
+  | { type: "putOnBottom"; target?: number; targetSpec?: number }
   /** S36 (R-096 word 1, Thawing Glaciers): return this permanent to its owner's hand at the beginning of the NEXT
    * cleanup step — a self-contained package rule beside the temporary guest's end-step exit (CR 514.1a's
    * "beginning of the cleanup step" is a trigger point the engine keeps as a due list, not a stack trigger:
@@ -401,6 +404,7 @@ export const EFFECT_TYPES: readonly EffectType[] = [
   "putOnTop",
   "extraTurn",
   "exileGraveyard",
+  "putOnBottom", // S66 (R-115)
 ];
 
 export type TriggerEvent =

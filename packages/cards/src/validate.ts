@@ -526,6 +526,9 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     if (Number.isInteger(e.targetSpec)) return;
     needTargetOrScope(e, err);
   },
+  putOnBottom: (e, err) => { // S66 (R-115)
+    if (!Number.isInteger(e.target) && !Number.isInteger(e.targetSpec)) err(`"putOnBottom" needs "target" or "targetSpec"`);
+  },
   bounce: (e, err) => {
     needTargetOrScope(e, err); // S20: Arcanis returns itself via scope "self"
     if (e.to !== undefined && e.to !== "hand" && e.to !== "libraryTop") err(`bounce "to" must be hand|libraryTop (A10 — Temporal Spring)`);
