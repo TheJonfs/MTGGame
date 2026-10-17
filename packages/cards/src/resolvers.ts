@@ -105,7 +105,7 @@ export interface EffectContext {
   /** Move a card from a graveyard to the battlefield or its owner's hand (Zombify, Gravedigger, Rancor's self-return).
    * A10 (S22): `temporary` — the package rule (haste; sacrificed at the beginning of the next end
    * step); `withCounters` — it enters with counters (Graceful Restoration). */
-  returnFromGraveyard(objectId: string, to: "battlefield" | "hand", opts?: { temporary?: boolean; withCounters?: { kind: "+1/+1"; count: number }; tapped?: boolean }): void;
+  returnFromGraveyard(objectId: string, to: "battlefield" | "hand", opts?: { temporary?: boolean; withCounters?: { kind: "+1/+1"; count: number }; tapped?: boolean }): Promise<void> | void;
   loseLife(player: number, amount: number): void;
   /**
    * Discard N from a player's hand per ADR-029. Chooser interaction makes
@@ -384,10 +384,10 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
     for (const p of ctx.players(e.who)) await ctx.discard(p, e.count, e.mode, e.filter);
   },
 
-  returnFromGraveyard: (e, ctx) => {
+  returnFromGraveyard: async (e, ctx) => {
     if (e.type !== "returnFromGraveyard") throw new Error("resolver mismatch");
     for (const t of targeted(e, ctx)) {
-      if (t.kind === "object") ctx.returnFromGraveyard(t.id, e.to, { ...(e.temporary ? { temporary: true } : {}), ...(e.withCounters ? { withCounters: e.withCounters } : {}), ...(e.tapped ? { tapped: true } : {}) });
+      if (t.kind === "object") await ctx.returnFromGraveyard(t.id, e.to, { ...(e.temporary ? { temporary: true } : {}), ...(e.withCounters ? { withCounters: e.withCounters } : {}), ...(e.tapped ? { tapped: true } : {}) });
     }
   },
 

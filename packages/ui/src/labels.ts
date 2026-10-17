@@ -66,6 +66,7 @@ export function actionLabel(state: GameState, pool: Map<string, CardDef>, a: Act
     case "tapCreature": return `Tap ${name(a.objectId)} (cost)`;
     case "chooseVariableTarget": return `Add target: ${targetLabel(state, pool, a.target, you, idNames)}`;
     case "doneChoosingTargets": return "Done choosing targets";
+    case "chooseAttachHost": return `Attach to ${name(a.objectId)}`; // post-S65 (R-114)
   }
 }
 

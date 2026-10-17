@@ -90,6 +90,9 @@ export const TARGET_PREDICATES = [
   // S64 (Chris's Karmic Mentor): "non-Aura permanent card" — artifact, creature, enchantment (not an Aura) or land.
   // An Aura put onto the battlefield must be attached as it enters (CR 303.4f); the engine has no such return.
   "nonAuraPermanentCardInYourGraveyard",
+  // Post-S65 (R-114: an Aura entering is attached to a host chosen as it enters): any permanent card — artifact,
+  // creature, enchantment (an Aura included) or land.
+  "permanentCardInYourGraveyard",
   // S25 (the Sapphire Sage): controller-scoped permanent predicates — the creatureYouControl
   // pattern widened to permanents ("for each player, choose target permanent that player controls").
   "permanentYouControl",

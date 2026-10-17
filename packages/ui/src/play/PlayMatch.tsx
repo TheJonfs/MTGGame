@@ -367,6 +367,7 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption, printed }: { c: Ma
     optionalTrigger: "Use this ability?",
     chooseTarget: "Choose targets",
     searchLibrary: "Search your library",
+    chooseAttachHost: "Choose what it enchants as it enters", // post-S65 (R-114, CR 303.4f)
   };
   // S15 (ADR-068 Amendment 1): the search dialog — the matching cards as a
   // grid (chooser only; the request's candidates), with Decline apart.

@@ -50,6 +50,8 @@ export type Action =
   | { type: "returnToHand"; objectId: string }
   /** A10 word 6 (S22): the untapped creature tapped to pay a tapCreature activation cost (Glare). */
   | { type: "tapCreature"; objectId: string }
+  /** Post-S65 (R-114): the permanent an Aura entering without being cast is attached to (CR 303.4f) — one action per legal host. */
+  | { type: "chooseAttachHost"; objectId: string }
   /** A10 word 4 (S22): one pick of the any-number cast loop (Phyrexian Purge)… */
   | { type: "chooseVariableTarget"; target: ResolvedTarget }
   /** …or stop picking (always offered first — the safe default). */

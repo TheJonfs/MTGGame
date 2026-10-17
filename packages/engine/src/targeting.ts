@@ -4,10 +4,14 @@ import { characteristics, isCreature } from "./characteristics.js";
 import type { EngineCtx } from "./ctx.js";
 import type { PlayerId } from "./state.js";
 
+/** Post-S65 (R-114): set only inside `isLegalAttachment` — an Aura entering attached does not target (CR 303.4f). */
+let untargeted = false;
+
 /** Hexproof/shroud live in the predicate layer (engine-design §10). */
 function canBeTargeted(ctx: EngineCtx, objectId: string, by: PlayerId): boolean {
   const obj = ctx.state.objects[objectId];
   if (!obj) return false;
+  if (untargeted) return true; // R-114: an entering Aura chooses, it does not target — hexproof and shroud do not stop it
   // S62 (CR 702.11b, 702.18a: hexproof and shroud are abilities of a PERMANENT — "this permanent can't be the target
   // of…"): a card in a graveyard, a hand or exile has neither. (An opponent's Usher could not return a hexproof card.)
   if (obj.zone !== "battlefield") return true;
@@ -15,6 +19,14 @@ function canBeTargeted(ctx: EngineCtx, objectId: string, by: PlayerId): boolean 
   if (chars.keywords.has("shroud")) return false;
   if (chars.keywords.has("hexproof") && obj.controller !== by) return false;
   return true;
+}
+
+/** Post-S65 (R-114, CR 303.4f): could an Aura whose enchant restriction is `spec` be attached to `objectId` as it enters
+ * the battlefield without being cast, chosen by `by`? The restriction's predicate and filters, without targeting —
+ * hexproof and shroud do not apply (the choice is not a target). */
+export function isLegalAttachment(ctx: EngineCtx, spec: TargetSpec, objectId: string, by: PlayerId): boolean {
+  untargeted = true;
+  try { return isLegalTarget(ctx, spec, { kind: "object", id: objectId }, by); } finally { untargeted = false; }
 }
 
 /** Is `target` legal for `spec` right now, targeted by `by`? Used at cast and re-checked at resolution (CR 608.2b).
@@ -159,6 +171,12 @@ function basePredicate(ctx: EngineCtx, spec0: TargetSpec, target: ResolvedTarget
       const d = ctx.defs.def(state.objects[(target as { id: string }).id]!.cardId);
       return target.kind === "object" && ["Artifact", "Creature", "Enchantment", "Land"].some((t) => d.types.includes(t as never)) && !(d.subtypes ?? []).includes("Aura");
     }
+    // Post-S65 (R-114): any permanent card, Auras included (an Aura returned to the battlefield is attached as it enters).
+    case "permanentCardInYourGraveyard": {
+      if (!isLegalTarget(ctx, { ...spec, predicate: "cardInYourGraveyard" }, target, by)) return false;
+      const d = ctx.defs.def(state.objects[(target as { id: string }).id]!.cardId);
+      return target.kind === "object" && ["Artifact", "Creature", "Enchantment", "Land"].some((t) => d.types.includes(t as never));
+    }
     // A10 (S22): Experimental Overload's regrowth.
     case "instantOrSorceryCardInYourGraveyard": {
       if (!isLegalTarget(ctx, { ...spec, predicate: "cardInYourGraveyard" }, target, by)) return false;
@@ -184,7 +202,7 @@ export function targetCandidates(ctx: EngineCtx, spec: TargetSpec, by: PlayerId,
     const t: ResolvedTarget = { kind: "player", player };
     if (isLegalTarget(ctx, spec, t, by, sourceId)) out.push(t);
   }
-  const graveyardy = (sp: TargetSpec): boolean => sp.predicate === "cardInYourGraveyard" || sp.predicate === "nonAuraPermanentCardInYourGraveyard" || sp.predicate === "creatureCardInYourGraveyard" || sp.predicate === "landCardInYourGraveyard" || sp.predicate === "instantOrSorceryCardInYourGraveyard" || sp.predicate === "artifactEnchantmentOrLandCardInYourGraveyard" || (sp.anyOf ?? []).some(graveyardy);
+  const graveyardy = (sp: TargetSpec): boolean => sp.predicate === "cardInYourGraveyard" || sp.predicate === "nonAuraPermanentCardInYourGraveyard" || sp.predicate === "permanentCardInYourGraveyard" || sp.predicate === "creatureCardInYourGraveyard" || sp.predicate === "landCardInYourGraveyard" || sp.predicate === "instantOrSorceryCardInYourGraveyard" || sp.predicate === "artifactEnchantmentOrLandCardInYourGraveyard" || (sp.anyOf ?? []).some(graveyardy);
   const anyYard = (sp: TargetSpec): boolean => sp.who === "any" || (sp.anyOf ?? []).some(anyYard);
   if (graveyardy(spec)) {
     // A10/ADR-038: who "any" scans BOTH graveyards (own first — deterministic order); default scans yours.

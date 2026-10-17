@@ -117,6 +117,8 @@ export class HeuristicAgent implements Agent {
         return request.actions.find((a) => a.type === "acceptOptional") ?? request.actions[0]!;
       case "searchLibrary":
         return this.searchChoice(view, request);
+      case "chooseAttachHost": // post-S65 (R-114): an Aura entering without being cast
+        return this.attachHostChoice(view, request);
       case "chooseMode":
         return this.modeChoice(view, request);
       case "discardCost":
@@ -3006,6 +3008,30 @@ export class HeuristicAgent implements Agent {
     }
   }
 
+  /** Post-S65 (R-114): the host an entering Aura is attached to — the one its CAST would be best on, read by the same
+   * predictor (Pacifism on their best attacker, Rancor on our best, Spirit Link by book 35's fork, Protocol where its
+   * shrink steals). The Aura is not cast; the predictor is asked as if it were, from a stand-in card in hand. */
+  attachHostChoice(view: GameView, request: ActionRequest): Action {
+    const cardId = request.source?.cardId;
+    if (!cardId) return request.actions[0]!;
+    const scored = request.actions.map((a) => ({ a, s: a.type === "chooseAttachHost" ? this.auraOnHost(view, cardId, a.objectId) : -Infinity }));
+    return scored.sort((x, y) => y.s - x.s)[0]!.a;
+  }
+  /** What the Aura `cardId` is worth attached to `hostId` (the predictor's adjustment; a redundant one, -50). Exposed. */
+  auraOnHost(view: GameView, cardId: string, hostId: string): number {
+    const stand: GameView = { ...view, hand: [...view.hand, { objectId: "__aura", cardId }] };
+    const pred = predictAction(stand, { type: "castSpell", objectId: "__aura", targets: [{ kind: "object", id: hostId }] }, this.defs, this.C);
+    return pred.unchanged ? -50 : pred.adjustment;
+  }
+  /** Post-S65 (R-114): an Aura card returned to the battlefield is worth its best host — or nothing without one (it would
+   * stay in the graveyard, CR 303.4g). The hosts are the view's creatures (every Aura in the pool enchants a creature). */
+  auraReturnWorth(view: GameView, cardId: string): number {
+    const spec = this.def(cardId)?.targets?.[0];
+    const hosts = view.battlefield.filter((o) => o.power !== null && (spec?.predicate !== "creatureYouControl" || o.controller === view.you));
+    if (hosts.length === 0) return -50;
+    return Math.max(...hosts.map((h) => this.auraOnHost(view, cardId, h.id)));
+  }
+
   private boardValue(view: GameView, objectId: string): number {
     const o = view.battlefield.find((b) => b.id === objectId);
     return o ? objectValue(this.defs, o, this.C) : 0;
@@ -3066,6 +3092,8 @@ export class HeuristicAgent implements Agent {
           const gd = g ? this.def(g.cardId) : undefined;
           // S45 (the Tidewall): a SPELL back to hand is worth its mana value, a counter half again — the dearest comes back.
           if (gd && (gd.types.includes("Instant") || gd.types.includes("Sorcery"))) s += manaValue(parseManaCost(gd.manaCost)) + (gd.spellEffect?.some((e) => e.type === "counter") ? 0.5 : 0);
+          // Post-S65 (R-114): an Aura back to the battlefield is worth its best host (nothing, without one).
+          else if (gd && returnsToBattlefield && (gd.subtypes ?? []).includes("Aura")) s += this.auraReturnWorth(view, gd.id);
           else s += reanimationWorth(gd) + (returnsToBattlefield ? this.loopWorth(view, gd, t.id) : 0); // S31: the one valuation (evaluator.reanimationWorth); book 99: the loop
         }
         if (t.kind === "player") s += 2; // face is worth a couple of mana units

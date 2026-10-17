@@ -945,6 +945,24 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.crackbackLethal(air, [], null)).toBe(true); // two Drakes over a Bear: four — dead either way, so no penalty
   });
 
+  it("post-S65 (R-114, an Aura entering attached — pinned as it stands): Pacifism's host is their best creature, Rancor's ours; an Aura with no host is worth nothing to return, Pacifism before a small body when they have a threat", async () => {
+    const a = agent();
+    const board = mkView({ battlefield: [{ id: "mb", cardId: "grizzly_bears", controller: 0 }, { id: "ow", cardId: "pelakka_wurm", controller: 1 }, { id: "ob", cardId: "grizzly_bears", controller: 1 }] });
+    const req = (cardId: string) => ({ player: 0 as const, purpose: "chooseAttachHost" as const, source: { cardId, effects: [] }, actions: ["mb", "ow", "ob"].map((objectId) => ({ type: "chooseAttachHost" as const, objectId })) });
+    expect((a.attachHostChoice(board, req("pacifism") as never) as { objectId: string }).objectId).toBe("ow");
+    expect((a.attachHostChoice(board, req("rancor") as never) as { objectId: string }).objectId).toBe("mb");
+    expect(a.auraReturnWorth(mkView({ battlefield: [] }), "pacifism")).toBeLessThan(0);
+    expect(a.auraReturnWorth(board, "pacifism")).toBeGreaterThan(a.auraReturnWorth(mkView({ battlefield: [{ id: "mb", cardId: "grizzly_bears", controller: 0 }, { id: "ob", cardId: "grizzly_bears", controller: 1 }] }), "pacifism"));
+    // The Mentor's pick from the graveyard: Pacifism over a Savannah Lions while their Wurm stands; the Lions with no creature of theirs.
+    const pick = async (bf: Obj[]) => {
+      const v = { ...mkView({ battlefield: bf }), graveyardObjects: [[{ objectId: "gp", cardId: "pacifism" }, { objectId: "gl", cardId: "savannah_lions" }], []] } as unknown as GameView;
+      const r = { player: 0 as const, purpose: "chooseTarget" as const, source: { cardId: "karmic_mentor", effects: [{ type: "returnFromGraveyard" as const, target: 0, to: "battlefield" as const }] }, actions: ["gp", "gl"].map((id) => ({ type: "chooseTriggerTargets" as const, targets: [{ kind: "object" as const, id }] })) };
+      return ((await a.chooseAction(v, r as never)) as { targets: { id: string }[] }).targets[0]!.id;
+    };
+    expect(await pick([{ id: "mb", cardId: "grizzly_bears", controller: 0 }, { id: "ow", cardId: "pelakka_wurm", controller: 1 }])).toBe("gp");
+    expect(await pick([{ id: "mb", cardId: "grizzly_bears", controller: 0 }])).toBe("gl");
+  });
+
   it("book of shame 35 (S28, Spirit Link — the neutralizer fork): on our best evasive creature by default; on THEIR biggest when it out-powers ours", () => {
     const a = agent();
     const view = (ours: { id: string; cardId: string }[], theirs: { id: string; cardId: string }[]) =>

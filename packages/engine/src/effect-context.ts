@@ -15,6 +15,7 @@ import { resolveEffect, type TargetSpec,
   type Who,
 } from "@shandalar/cards";
 import type { Action } from "./actions.js";
+import { chooseAuraHost } from "./attach.js";
 import { untapPermanent } from "./untap.js";
 import type { EngineCtx } from "./ctx.js";
 import { isLegalTarget } from "./targeting.js";
@@ -29,7 +30,7 @@ import { characteristics, isCreature } from "./characteristics.js";
  */
 export type EffectRequester = (
   player: PlayerId,
-  purpose: "discard" | "searchLibrary" | "putOnTop" | "chooseSacrifice" | "chooseName" | "orderTop" | "mayShuffle",
+  purpose: "discard" | "searchLibrary" | "putOnTop" | "chooseSacrifice" | "chooseName" | "orderTop" | "mayShuffle" | "chooseAttachHost",
   actions: Action[],
   revealed?: { objectId: string; cardId: string }[],
   source?: { cardId: string; effects: Effect[] },
@@ -426,7 +427,7 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
       moveBatchToGraveyard(ctx, chosen);
     },
 
-    ...sharedOps(ctx, controller),
+    ...sharedOps(ctx, controller, requester),
     ...discardOp(ctx, controller, requester, (cardId) => { if (!ctx.defs.def(cardId).types.includes("Land")) discardedNonland += 1; }),
     ...searchOp(ctx, requester, { cardId: item.sourceCardId, effects: item.effects }),
   };
@@ -488,7 +489,7 @@ function searchOp(ctx: EngineCtx, requester?: EffectRequester, source?: { cardId
  * effect's controller — battlefield returns enter under THEIR control (CR 611.2-family: the player
  * instructed to put it there controls it). Own-graveyard customers never noticed (owner == effect
  * controller); the ADR-038 who:"any" amendment makes it load-bearing (the Usher claims the guest). */
-function sharedOps(ctx: EngineCtx, asController: PlayerId) {
+function sharedOps(ctx: EngineCtx, asController: PlayerId, requester?: EffectRequester) {
   return {
     createToken(player: number, tokenId: string, count: number, pt?: { power: number; toughness: number }, tapped?: boolean): void {
       for (let i = 0; i < count; i++) {
@@ -557,13 +558,21 @@ function sharedOps(ctx: EngineCtx, asController: PlayerId) {
       moveObject(ctx, objectId, "exile"); // not a death: no DIES trigger fires (700.4)
     },
 
-    returnFromGraveyard(objectId: string, to: "battlefield" | "hand", opts?: { temporary?: boolean; withCounters?: { kind: "+1/+1"; count: number }; tapped?: boolean }): void {
+    async returnFromGraveyard(objectId: string, to: "battlefield" | "hand", opts?: { temporary?: boolean; withCounters?: { kind: "+1/+1"; count: number }; tapped?: boolean }): Promise<void> {
       const obj = ctx.state.objects[objectId];
       if (!obj || obj.zone !== "graveyard") return; // raced away: nothing to return
+      // Post-S65 (R-114, CR 303.4f-g): an Aura put onto the battlefield without being cast is attached to a host its
+      // controller chooses as it enters (not targeted); with no legal host it stays in the graveyard.
+      let attachedTo: string | undefined;
+      if (to === "battlefield" && (ctx.defs.def(obj.cardId).subtypes ?? []).includes("Aura")) {
+        const host = await chooseAuraHost(ctx, obj.cardId, asController, requester);
+        if (!host) return;
+        attachedTo = host;
+      }
       // Battlefield returns enter under the effect controller's control (the Usher's guest is
       // HERS); hand returns go to the owner's hand as ever (zone arrays are owner-keyed).
       // S30 (the Skeleton): `tapped` — it returns tapped.
-      const newId = moveObject(ctx, objectId, to, to === "battlefield" ? { controller: asController, ...(opts?.tapped ? { tapped: true } : {}) } : {}); // to battlefield fires ETB triggers normally
+      const newId = moveObject(ctx, objectId, to, to === "battlefield" ? { controller: asController, ...(opts?.tapped ? { tapped: true } : {}), ...(attachedTo ? { attachedTo } : {}) } : {}); // to battlefield fires ETB triggers normally
       if (!newId || to !== "battlefield" || !ctx.state.objects[newId]) return;
       // A10 (S22): Graceful Restoration's rider — it enters with counters.
       if (opts?.withCounters) {

@@ -55,6 +55,7 @@ export type RequestPurpose =
   | "discard"
   /** ADR-068 Amendment 1: pick a matching library card (request carries the candidates as `revealed`) or decline. */
   | "searchLibrary"
+  | "chooseAttachHost"
   /** ADR-075 A6: pick a mode for a modal trigger as it goes on the stack (spells pick at cast — one castSpell action per mode). */
   | "chooseMode"
   /** ADR-076: pick the card(s) to discard as an activation cost (Waterfront Bouncer). */
