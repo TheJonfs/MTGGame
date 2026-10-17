@@ -281,7 +281,7 @@
 | Dazzling Angel | W | Creature — Angel | {2}{W} | 3 | 2/3 | flying | 1 | 16 |  | Flying Whenever another creature you control enters, you gain 1 life. |
 | Glorious Anthem | W | Enchantment | {1}{W}{W} | 3 |  |  | 2 | 24 |  | Creatures you control get +1/+1. |
 | Inspiring Overseer | W | Creature — Angel Cleric | {2}{W} | 3 | 2/1 | flying | 1 | 16 |  | Flying When this creature enters, you gain 1 life and draw a card. |
-| Karmic Mentor | W | Creature — Angel | {1}{W}{W} | 3 | 2/2 | flying | 2 | 24 | custom | Flying When Karmic Mentor enters, return target non-Aura permanent card with mana value 2 or less from your graveyard to the battlefield. |
+| Karmic Mentor | W | Creature — Angel | {1}{W}{W} | 3 | 2/2 | flying | 2 | 24 | custom | Flying When Karmic Mentor enters, return target permanent card with mana value 2 or less from your graveyard to the battlefield. |
 | Mentor of the Meek | W | Creature — Human Soldier | {2}{W} | 3 | 2/2 |  | 2 | 24 |  | Whenever another creature you control with power 2 or less enters, you may pay {1}. If you do, draw a card. |
 | Retribution of the Meek | W | Sorcery | {2}{W} | 3 |  |  | 2 | 24 |  | Destroy all creatures with power 4 or greater. They can't be regenerated. |
 | Scepter of Dominance | W | Artifact | {1}{W}{W} | 3 |  |  | 2 | 24 |  | {W}, {T}: Tap target permanent. |

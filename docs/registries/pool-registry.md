@@ -697,7 +697,7 @@ Custom, Chris's design after a single-factor study in White Skies (cost, trigger
 
 | id | card | status | vocabulary | notes |
 |---|---|---|---|---|
-| karmic_mentor | Karmic Mentor | tested | flying; triggered ENTERS self: target `nonAuraPermanentCardInYourGraveyard` (S64, new) `manaValueAtMost` 2 → `returnFromGraveyard` to battlefield | custom. T2. {1}{W}{W} Angel 2/2. Half a word: the non-Aura permanent target (an Aura entering unattached is not supported — CR 303.4f). |
+| karmic_mentor | Karmic Mentor | tested | flying; triggered ENTERS self: target `permanentCardInYourGraveyard` (post-S65; S64 it was `nonAuraPermanentCardInYourGraveyard`) `manaValueAtMost` 2 → `returnFromGraveyard` to battlefield (an Aura is attached as it enters — R-114) | custom. T2. {1}{W}{W} Angel 2/2. "…return target permanent card with mana value 2 or less from your graveyard to the battlefield." Post-S65 (Chris): the Auras adopted after a study (the Aura-capable Mentor beside the registered one, Pacifisms added, paired: White Skies +0.4 and +0.8 with two and four of each, UW Skies with walls +0.2 — a Pacifism is seldom in the graveyard); his second face. |
 
 ## Post-S65 addition — Tidal Shackle (Chris's card, 2026-10-16; tier 1)
 

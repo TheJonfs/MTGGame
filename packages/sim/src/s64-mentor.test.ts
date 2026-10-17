@@ -60,10 +60,10 @@ describe("Mentor of the Meek", () => {
 
 /**
  * S64 (Chris's custom card, his design of 2026-10-15 after a single-factor study): Karmic Mentor — {1}{W}{W} Creature —
- * Angel 2/2, flying, "When Karmic Mentor enters, return target non-Aura permanent card with mana value 2 or less from
- * your graveyard to the battlefield." The target word `nonAuraPermanentCardInYourGraveyard` (an Aura put onto the
- * battlefield must be attached as it enters — CR 303.4f — which no return does here). Mana value 3: it cannot return
- * itself or a sibling (no Altar loop).
+ * Angel 2/2, flying, "When Karmic Mentor enters, return target permanent card with mana value 2 or less from your
+ * graveyard to the battlefield." (S64 it read "non-Aura"; post-S65 Chris adopted the Auras, R-114 — an Aura returned is
+ * attached to a host its controller chooses as it enters, CR 303.4f.) Mana value 3: it cannot return itself or a sibling
+ * (no Altar loop).
  */
 describe("Karmic Mentor", () => {
   // the Mentor is fetched to hand first (the signature modifier takes a library copy), then three of the rest are milled
@@ -79,8 +79,8 @@ describe("Karmic Mentor", () => {
     expect(count(await runMatch(withYard("soul_warden"), cards, [caster("karmic_mentor"), passer]), "soul_warden")).toBe(1);
     expect(count(await runMatch(withYard("forest"), cards, [caster("karmic_mentor"), passer]), "forest")).toBe(1);
   });
-  it("returns nothing of mana value three or more (a Restoration Angel), and no Aura (a Pacifism)", async () => {
+  it("returns nothing of mana value three or more (a Restoration Angel); an Aura now returns (post-S65, R-114) — a Pacifism, onto the only creature there is, the Mentor itself", async () => {
     expect(count(await runMatch(withYard("restoration_angel"), cards, [caster("karmic_mentor"), passer]), "restoration_angel")).toBe(0);
-    expect(count(await runMatch(withYard("pacifism"), cards, [caster("karmic_mentor"), passer]), "pacifism")).toBe(0);
+    expect(count(await runMatch(withYard("pacifism"), cards, [caster("karmic_mentor"), passer]), "pacifism")).toBe(1);
   });
 });

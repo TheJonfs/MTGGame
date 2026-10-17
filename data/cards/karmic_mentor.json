@@ -14,7 +14,7 @@
   "keywords": [
     "flying"
   ],
-  "text": "Flying\nWhen Karmic Mentor enters, return target non-Aura permanent card with mana value 2 or less from your graveyard to the battlefield.",
+  "text": "Flying\nWhen Karmic Mentor enters, return target permanent card with mana value 2 or less from your graveyard to the battlefield.",
   "abilities": [
     {
       "kind": "triggered",
@@ -25,7 +25,7 @@
       "targets": [
         {
           "count": 1,
-          "predicate": "nonAuraPermanentCardInYourGraveyard",
+          "predicate": "permanentCardInYourGraveyard",
           "zone": "graveyard",
           "manaValueAtMost": 2
         }
