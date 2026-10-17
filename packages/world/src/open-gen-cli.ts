@@ -131,7 +131,7 @@ export const FORMAT_FIELD: Record<string, Record<string, OpenList>> = Object.fro
 mkdirSync(join(ROOT, "analysis/decks"), { recursive: true });
 for (const l of lists) writeFileSync(join(ROOT, `analysis/decks/open-${l.key}.json`), JSON.stringify({ name: `open-${l.key} (${l.name})`, archetype: l.archetype, decklist: l.decklist, basedOn: "docs/convocation/convocation-open-lists-draft-2.md + S46", notes: l.title }, null, 2) + "\n");
 // S58 (Part 1): the guides authored beside a registered fifteen
-const SHAPES = ["creatureDeck", "fewLarge", "control", "plan", "counters", "graveyard", "relics", "small", "someGraveyard", "large", "hexproof", "killers"];
+const SHAPES = ["creatureDeck", "fewLarge", "control", "plan", "counters", "graveyard", "relics", "small", "someGraveyard", "large", "hexproof", "killers", "sweepers", "shrinks", "wide"]; // post-S65: sweepers, shrinks; S66: wide (a registered guide may name them)
 const guides = Object.entries(contributedFile.guides ?? {}).map(([key, rows]) => {
   const l = lists.find((x) => x.key === key); if (!l?.sideboard) throw new Error(`open:gen — a guide names ${key}, which has no registered fifteen`);
   for (const r of rows) {

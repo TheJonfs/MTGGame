@@ -140,4 +140,13 @@ describe("guide shapes: sweepers and shrinks", () => {
     expect(guided("reaperclio")).toEqual(["dungrove_elder"]);
     expect(guided("muster")).toEqual([]);
   });
+  it("S66: `wide` — eight or more cards that make tokens: the Levy and the Rabble go wide, the Writ does not", () => {
+    const fifteen = [{ cardId: "wrath_of_god", count: 1 }, { cardId: "forest", count: 14 }];
+    const guide = { key: "test", fifteen, rows: [{ in: "wrath_of_god", n: 1, out: ["grizzly_bears"], when: ["wide" as const] }] };
+    const main = [{ cardId: "grizzly_bears", count: 4 }, { cardId: "forest", count: 56 }];
+    const guided = (them: string) => aiSideboard(main, fifteen, OPEN_DECKS[them]!.decklist, cards, rating, { ...AI_SIDEBOARD_CONSTRUCTED, guides: [guide] }).swaps.filter((s) => s.rule === "guide").map((s) => s.in);
+    expect(guided("levy")).toEqual(["wrath_of_god"]);
+    expect(guided("rabble")).toEqual(["wrath_of_god"]);
+    expect(guided("writ")).toEqual([]);
+  });
 });

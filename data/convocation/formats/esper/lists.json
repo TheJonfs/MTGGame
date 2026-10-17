@@ -5,8 +5,106 @@
   "small": 10,
   "large": 8
  },
- "archived": {},
- "guides": {},
+ "archived": {
+  "reanimator": "S66 (Part 2, ADR-167's probe; Chris): the Ossuary archived. 24.7% against Esper's field (360 games). Its reanimation aims right (489 of 506 casts raised a piece) but the pieces land late — 9% by turn six, 40% never — and half the losses had a piece answered (Swords 27, Control Magic 22, Vindicate 12, Doom Blade 8, Wrath 6; Edicts 2). For the planner: a timing rule would lift it only into the second failure — Esper's removal meets the pieces. Last measured 17.6 in matches (S65's table)."
+ },
+ "guides": {
+  "locks": [
+   {
+    "in": "protocol",
+    "n": 2,
+    "out": [
+     "wrath_of_god"
+    ],
+    "when": [
+     "fewLarge"
+    ]
+   },
+   {
+    "in": "serra_angel",
+    "n": 2,
+    "out": [
+     "undermine",
+     "absorb",
+     "counterspell"
+    ],
+    "when": [
+     "control"
+    ]
+   },
+   {
+    "in": "duress",
+    "n": 2,
+    "out": [
+     "wrath_of_god",
+     "swords_to_plowshares"
+    ],
+    "when": [
+     "plan",
+     "control"
+    ]
+   },
+   {
+    "in": "tormods_crypt",
+    "n": 2,
+    "out": [
+     "serra_angel",
+     "vindicate"
+    ],
+    "when": [
+     "graveyard"
+    ]
+   },
+   {
+    "in": "wrath_of_god",
+    "n": 1,
+    "out": [
+     "vindicate",
+     "swords_to_plowshares"
+    ],
+    "when": [
+     "wide"
+    ]
+   },
+   {
+    "in": "wave_of_reckoning",
+    "n": 1,
+    "out": [
+     "vindicate",
+     "swords_to_plowshares"
+    ],
+    "when": [
+     "wide"
+    ]
+   }
+  ],
+  "wbcontrol": [
+   {
+    "in": "wrath_of_god",
+    "n": 1,
+    "out": [
+     "vindicate",
+     "swords_to_plowshares"
+    ],
+    "when": [
+     "wide"
+    ]
+   }
+  ],
+  "skies": [
+   {
+    "in": "wrath_of_god",
+    "n": 2,
+    "out": [
+     "swords_to_plowshares",
+     "plumecreed_escort"
+    ],
+    "when": [
+     "wide"
+    ]
+   }
+  ]
+ },
  "guidesOnly": [],
  "outRules": {},
  "lists": [
@@ -334,7 +432,7 @@
    "name": "the Locks",
    "title": "Esper Control (W U B)",
    "archetype": "control",
-   "source": "S65 seed (the planner's): the archived Locks revived with its S57/S58 revisions (the four Control Magics), plus two Protocols, two Karmic Mentors and a Wave of Reckoning beside its Wraths — for two Undermines, two Swords and a Vindicate.",
+   "source": "S65 seed (the planner's): the archived Locks revived with its S57/S58 revisions (the four Control Magics), plus two Protocols, two Karmic Mentors and a Wave of Reckoning beside its Wraths — for two Undermines, two Swords and a Vindicate. S66 (Part 2, the sweeper round): its fifteen with a fourth Wrath, a second Wave and a Retribution for the two Faerie Macabres and a Disenchant; its guide the Open's rows plus Wrath and the Wave in for Vindicate and Swords against `wide` (the Roll, the Levy) — +9.7 ± 5.1 there, 160 matches a pairing (Retribution measured −1.6 and left out).",
    "decklist": [
     {
      "cardId": "tundra",
@@ -467,12 +565,20 @@
      "count": 2
     },
     {
-     "cardId": "faerie_macabre",
-     "count": 2
+     "cardId": "disenchant",
+     "count": 1
     },
     {
-     "cardId": "disenchant",
-     "count": 2
+     "cardId": "wrath_of_god",
+     "count": 1
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 1
+    },
+    {
+     "cardId": "retribution_of_the_meek",
+     "count": 1
     }
    ]
   },
@@ -566,7 +672,7 @@
    "name": "the Chancel",
    "title": "Orzhov Control (W B)",
    "archetype": "midrange",
-   "source": "S65 seed (the planner's, built by the implementer; Chris expects a WB control list here): Mardu Control's shape without the Ushers (Mardu's) and without red — Karmic Mentor, Restoration Angel, Vindicate, the Jet Witch, Wrath, Isaura, Swords, Emeria Angel at the top; Blood Artist and Soul Warden as the lifegain floor.",
+   "source": "S65 seed (the planner's, built by the implementer; Chris expects a WB control list here): Mardu Control's shape without the Ushers (Mardu's) and without red — Karmic Mentor, Restoration Angel, Vindicate, the Jet Witch, Wrath, Isaura, Swords, Emeria Angel at the top; Blood Artist and Soul Warden as the lifegain floor. S66 (Part 2, the sweeper round): a fifteen registered (the builder's, with a fourth Wrath, two Waves and a Retribution); its guide Wrath in for Vindicate and Swords against `wide` (the Roll, the Levy) — +5.0 ± 5.6 there (the Wave −1.2, Retribution −1.2, left as fifteen cards only).",
    "decklist": [
     {
      "cardId": "scrubland",
@@ -648,6 +754,48 @@
      "cardId": "demonic_tutor",
      "count": 1
     }
+   ],
+   "sideboard": [
+    {
+     "cardId": "disenchant",
+     "count": 2
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 2
+    },
+    {
+     "cardId": "faerie_macabre",
+     "count": 2
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 2
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 1
+    },
+    {
+     "cardId": "wall_of_reverence",
+     "count": 1
+    },
+    {
+     "cardId": "youthful_valkyrie",
+     "count": 1
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 1
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 2
+    },
+    {
+     "cardId": "retribution_of_the_meek",
+     "count": 1
+    }
    ]
   },
   {
@@ -655,7 +803,7 @@
    "name": "the Aerie",
    "title": "Azorius Skies (W U)",
    "archetype": "midrange",
-   "source": "S65 seed (the planner's, built by the implementer): Peasant's UW Skies promoted — two Serra Angels, two Emeria Angels, a Faerie Formation and two Control Magics for the four Marshals, two Traumatizers and a Swords; Tundras, the Obsidian Observatory and the power for basics.",
+   "source": "S65 seed (the planner's, built by the implementer): Peasant's UW Skies promoted — two Serra Angels, two Emeria Angels, a Faerie Formation and two Control Magics for the four Marshals, two Traumatizers and a Swords; Tundras, the Obsidian Observatory and the power for basics. S66 (Part 2, the sweeper round): a fifteen registered (the builder's, two Waves and a Retribution for Tidewall, Traumatizer and a Faerie Macabre); its guide Wrath in for Swords and Plumecreed Escort against `wide` — +3.4 ± 3.5 there. Faldor (two for two Valkyries) measured −6.3 ± 2.1 against the field and not adopted.",
    "decklist": [
     {
      "cardId": "hallowed_fountain",
@@ -740,6 +888,44 @@
     {
      "cardId": "control_magic",
      "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "control_magic",
+     "count": 2
+    },
+    {
+     "cardId": "disenchant",
+     "count": 2
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 2
+    },
+    {
+     "cardId": "faerie_macabre",
+     "count": 1
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 1
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 2
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 2
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 2
+    },
+    {
+     "cardId": "retribution_of_the_meek",
+     "count": 1
     }
    ]
   },

@@ -870,6 +870,228 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
     ]
    }
   ]
+ },
+ {
+  "key": "esper:locks",
+  "fifteen": [
+   {
+    "cardId": "essence_scatter",
+    "count": 3
+   },
+   {
+    "cardId": "protocol",
+    "count": 2
+   },
+   {
+    "cardId": "serra_angel",
+    "count": 2
+   },
+   {
+    "cardId": "duress",
+    "count": 2
+   },
+   {
+    "cardId": "tormods_crypt",
+    "count": 2
+   },
+   {
+    "cardId": "disenchant",
+    "count": 1
+   },
+   {
+    "cardId": "wrath_of_god",
+    "count": 1
+   },
+   {
+    "cardId": "wave_of_reckoning",
+    "count": 1
+   },
+   {
+    "cardId": "retribution_of_the_meek",
+    "count": 1
+   }
+  ],
+  "rows": [
+   {
+    "in": "protocol",
+    "n": 2,
+    "out": [
+     "wrath_of_god"
+    ],
+    "when": [
+     "fewLarge"
+    ]
+   },
+   {
+    "in": "serra_angel",
+    "n": 2,
+    "out": [
+     "undermine",
+     "absorb",
+     "counterspell"
+    ],
+    "when": [
+     "control"
+    ]
+   },
+   {
+    "in": "duress",
+    "n": 2,
+    "out": [
+     "wrath_of_god",
+     "swords_to_plowshares"
+    ],
+    "when": [
+     "plan",
+     "control"
+    ]
+   },
+   {
+    "in": "tormods_crypt",
+    "n": 2,
+    "out": [
+     "serra_angel",
+     "vindicate"
+    ],
+    "when": [
+     "graveyard"
+    ]
+   },
+   {
+    "in": "wrath_of_god",
+    "n": 1,
+    "out": [
+     "vindicate",
+     "swords_to_plowshares"
+    ],
+    "when": [
+     "wide"
+    ]
+   },
+   {
+    "in": "wave_of_reckoning",
+    "n": 1,
+    "out": [
+     "vindicate",
+     "swords_to_plowshares"
+    ],
+    "when": [
+     "wide"
+    ]
+   }
+  ]
+ },
+ {
+  "key": "esper:wbcontrol",
+  "fifteen": [
+   {
+    "cardId": "disenchant",
+    "count": 2
+   },
+   {
+    "cardId": "doom_blade",
+    "count": 2
+   },
+   {
+    "cardId": "faerie_macabre",
+    "count": 2
+   },
+   {
+    "cardId": "tormods_crypt",
+    "count": 2
+   },
+   {
+    "cardId": "swords_to_plowshares",
+    "count": 1
+   },
+   {
+    "cardId": "wall_of_reverence",
+    "count": 1
+   },
+   {
+    "cardId": "youthful_valkyrie",
+    "count": 1
+   },
+   {
+    "cardId": "wrath_of_god",
+    "count": 1
+   },
+   {
+    "cardId": "wave_of_reckoning",
+    "count": 2
+   },
+   {
+    "cardId": "retribution_of_the_meek",
+    "count": 1
+   }
+  ],
+  "rows": [
+   {
+    "in": "wrath_of_god",
+    "n": 1,
+    "out": [
+     "vindicate",
+     "swords_to_plowshares"
+    ],
+    "when": [
+     "wide"
+    ]
+   }
+  ]
+ },
+ {
+  "key": "esper:skies",
+  "fifteen": [
+   {
+    "cardId": "control_magic",
+    "count": 2
+   },
+   {
+    "cardId": "disenchant",
+    "count": 2
+   },
+   {
+    "cardId": "essence_scatter",
+    "count": 2
+   },
+   {
+    "cardId": "faerie_macabre",
+    "count": 1
+   },
+   {
+    "cardId": "swords_to_plowshares",
+    "count": 1
+   },
+   {
+    "cardId": "tormods_crypt",
+    "count": 2
+   },
+   {
+    "cardId": "wrath_of_god",
+    "count": 2
+   },
+   {
+    "cardId": "wave_of_reckoning",
+    "count": 2
+   },
+   {
+    "cardId": "retribution_of_the_meek",
+    "count": 1
+   }
+  ],
+  "rows": [
+   {
+    "in": "wrath_of_god",
+    "n": 2,
+    "out": [
+     "swords_to_plowshares",
+     "plumecreed_escort"
+    ],
+    "when": [
+     "wide"
+    ]
+   }
+  ]
  }
 ];
 
