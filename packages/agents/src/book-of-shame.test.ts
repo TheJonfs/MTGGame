@@ -921,6 +921,30 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(old.scorePriorityAction(v({ activePlayer: 1, step: "END" }), act)).toBeGreaterThan(-Infinity);
   });
 
+  it("book of shame 139 (post-S65, Chris's Open run): no swing that hands them a lethal crackback — the Nighthawk stays home before a 13/13, the 1/1 before exactly seven", async () => {
+    const a = agent();
+    const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["crackback"] });
+    // Game 12: the pilot at 10 with its only creature, a Nighthawk; Chris's Rage Cobra 13/13 (counters).
+    const g12 = mkView({ step: "DECLARE_ATTACKERS", activePlayer: 0, life: [10, 14], battlefield: [{ id: "nh", cardId: "vampire_nighthawk", controller: 0 }, { id: "rc", cardId: "rage_cobra", controller: 1, counters: { "+1/+1": 11 } }] });
+    for (const o of g12.battlefield) if (o.id === "rc") { o.power = 13; o.toughness = 13; }
+    expect(a.crackbackLethal(g12, ["nh"], { dead: new Set(), playerDamage: [-2, 2] })).toBe(true); // 10 + 2 lifelink = 12 against 13
+    expect(a.crackbackLethal(g12, [], null)).toBe(false); // home, the Nighthawk chumps the Cobra
+    expect(await a.scoreAttackSet(g12, viewCreatures(g12), 0, ["nh"])).toBeLessThan(0);
+    expect(await old.scoreAttackSet(g12, viewCreatures(g12), 0, ["nh"])).toBeGreaterThan(await a.scoreAttackSet(g12, viewCreatures(g12), 0, ["nh"]));
+    // Game 17: at 7 with a 1/1; Manaba 1/1, Rage Cobra 3/3 and Elvish Visionary 3/3 across — exactly seven.
+    const g17 = mkView({ step: "DECLARE_ATTACKERS", activePlayer: 0, life: [7, 14], battlefield: [{ id: "ac", cardId: "arcane_collector", controller: 0 }, { id: "mn", cardId: "manaba", controller: 1 }, { id: "rc", cardId: "rage_cobra", controller: 1 }, { id: "ev", cardId: "elvish_visionary", controller: 1 }] });
+    for (const o of g17.battlefield) if (o.id === "rc" || o.id === "ev") { o.power = 3; o.toughness = 3; }
+    expect(a.crackbackLethal(g17, ["ac"], { dead: new Set(), playerDamage: [0, 1] })).toBe(true);
+    expect(a.crackbackLethal(g17, [], null)).toBe(false);
+    // Not a refusal of every attack: at 20 the same swing is free; and a swing that wins is taken whatever comes back.
+    expect(a.crackbackLethal({ ...g17, life: [20, 14] }, ["ac"], { dead: new Set(), playerDamage: [0, 1] })).toBe(false);
+    const wins = { ...g17, life: [7, 1] as [number, number], battlefield: g17.battlefield.map((o) => (o.controller === 1 ? { ...o, tapped: true } : o)) };
+    expect(await a.scoreAttackSet(wins, viewCreatures(wins), 0, ["ac"])).toBeGreaterThan(500); // they untap to a lethal swing — but they are dead first
+    // A flier their ground board cannot block does not count as a blocker we keep — and a ground blocker cannot stop their flier.
+    const air = mkView({ step: "DECLARE_ATTACKERS", activePlayer: 0, life: [4, 20], battlefield: [{ id: "gb", cardId: "grizzly_bears", controller: 0 }, { id: "wd", cardId: "wind_drake", controller: 1 }, { id: "w2", cardId: "wind_drake", controller: 1 }] });
+    expect(a.crackbackLethal(air, [], null)).toBe(true); // two Drakes over a Bear: four — dead either way, so no penalty
+  });
+
   it("book of shame 35 (S28, Spirit Link — the neutralizer fork): on our best evasive creature by default; on THEIR biggest when it out-powers ours", () => {
     const a = agent();
     const view = (ours: { id: string; cardId: string }[], theirs: { id: string; cardId: string }[]) =>

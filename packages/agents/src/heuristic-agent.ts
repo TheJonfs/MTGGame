@@ -1467,8 +1467,43 @@ export class HeuristicAgent implements Agent {
     for (const id of attackers) score -= this.selfTax(view, id, "ATTACKS") * this.C.weights[this.profile.archetype].ownLife;
     score -= handedBack;
     if (view.life[opp] - outcome.playerDamage[opp] <= 0) score += 1000;
+    // Book 139 (post-S65, Chris's Open run with the Snake Keeper list: the Mardu pilot at 12 sent its only creature, a
+    // Nighthawk, into his 13/13 Cobra; the Writ's at 7 its only 1/1 into exactly seven power): an attack that does
+    // not win, after which the opponent's swing back through what we keep home is lethal — where staying home was not
+    // — is all but refused. Deterrence (ADR-060.1) prices blocking value; it cannot see the last chump. Off: "crackback".
+    else if (!this.profile.off?.includes("crackback") && this.crackbackLethal(view, attackers, outcome) && !this.crackbackLethal(view, [], null)) score -= 500;
     this.simMemo.set(memoKey, score);
     return score;
+  }
+
+  /** Book 139: after this attack (its simulated `outcome`, or none), is the opponent's next swing lethal through the
+   * blockers we would have? Their creatures all untap for it (a stunned tapped one does not); ours that block are those
+   * that did not attack (or have vigilance, or stand again under our Seedborn) and survived. Each of their attackers,
+   * biggest first, is met by our smallest blocker that can block it (flying needs flying or reach; menace two); a
+   * trampler pushes its excess. Their tricks, burn and hasty creatures are not counted — the floor of the swing.
+   * Exposed for the book. */
+  crackbackLethal(view: GameView, attackers: string[], outcome: { dead: Set<string>; playerDamage: [number, number] } | null): boolean {
+    const me = view.you, dead = outcome?.dead ?? new Set<string>();
+    const life = view.life[me] - (outcome ? outcome.playerDamage[me] : 0);
+    if (life <= 0) return true;
+    const kw = (o: { keywords?: string[] }) => o.keywords ?? [];
+    const seedborn = view.battlefield.some((b) => b.controller === me && (this.def(b.cardId)?.abilities ?? []).some((a) => a.kind === "static" && a.effects.some((e) => e.type === "untapDuringOthersUntap")));
+    const swing = view.battlefield
+      .filter((o) => o.controller !== me && o.power !== null && o.power > 0 && !o.cantAttack && !kw(o).includes("defender") && !dead.has(o.id) && !(o.tapped && (o.counters?.["stun"] ?? 0) > 0))
+      .sort((a, b) => (b.power ?? 0) - (a.power ?? 0));
+    const blockers = view.battlefield
+      .filter((o) => o.controller === me && o.power !== null && !o.cantBlock && !dead.has(o.id) && (attackers.includes(o.id) ? kw(o).includes("vigilance") || seedborn : !o.tapped || seedborn))
+      .sort((a, b) => (a.toughness ?? 0) - (b.toughness ?? 0));
+    let total = 0;
+    for (const a of swing) {
+      const can = (b: (typeof blockers)[number]) => !kw(a).includes("flying") || kw(b).includes("flying") || kw(b).includes("reach");
+      const need = kw(a).includes("menace") ? 2 : 1;
+      const picks = blockers.filter(can).slice(0, need);
+      if (picks.length < need) { total += a.power ?? 0; continue; }
+      for (const p of picks) blockers.splice(blockers.indexOf(p), 1);
+      if (kw(a).includes("trample")) total += Math.max(0, (a.power ?? 0) - picks.reduce((n, p) => n + Math.max(0, (p.toughness ?? 0)), 0));
+    }
+    return total >= life;
   }
 
   /** Exposed for the book-of-shame suite: gain of one block, in mana units. */
