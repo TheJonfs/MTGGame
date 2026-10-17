@@ -925,7 +925,7 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const a = agent();
     const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["crackback"] });
     // Game 12: the pilot at 10 with its only creature, a Nighthawk; Chris's Rage Cobra 13/13 (counters).
-    const g12 = mkView({ step: "DECLARE_ATTACKERS", activePlayer: 0, life: [10, 14], battlefield: [{ id: "nh", cardId: "vampire_nighthawk", controller: 0 }, { id: "rc", cardId: "rage_cobra", controller: 1, counters: { "+1/+1": 11 } }] });
+    const g12 = mkView({ step: "DECLARE_ATTACKERS", activePlayer: 0, life: [10, 14], battlefield: [{ id: "nh", cardId: "vampire_nighthawk", controller: 0 }, { id: "rc", cardId: "rage_cobra", controller: 1 }] });
     for (const o of g12.battlefield) if (o.id === "rc") { o.power = 13; o.toughness = 13; }
     expect(a.crackbackLethal(g12, ["nh"], { dead: new Set(), playerDamage: [-2, 2] })).toBe(true); // 10 + 2 lifelink = 12 against 13
     expect(a.crackbackLethal(g12, [], null)).toBe(false); // home, the Nighthawk chumps the Cobra
