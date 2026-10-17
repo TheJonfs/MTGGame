@@ -8,17 +8,17 @@
 
 | list | deck | pilot | matches | game one | after sideboarding | fifteen |
 |---|---|---|---|---|---|---|
-| Mardu Control | Usher Control (W B R) | midrange | 68.0 | 57 | +13.4 | registered |
-| the Rabble (Mardu) | Mono-Red Goblins (R) | aggro | 63.4 | 61 | +3.1 | registered |
-| the Pall | Usher Combo (B w r) | combo | 62.2 | 65 | −13.2 | registered |
-| the Watch (Mardu) | Boros Tokens (W R) | aggro | 52.8 | 54 | −4.0 | built |
-| the Roll (Mardu) | Orzhov Tokens (W B) | aggro | 52.8 | 48 | −4.0 | built |
-| BR Removal (Mardu) | Rakdos Removal (B R) | midrange | 46.0 | 48 | −1.2 | built |
-| the Muster (Mardu) | Boros Weenie (W R) | aggro | 43.5 | 46 | +1.9 | built |
-| the Chancel (Mardu) | Orzhov Control (W B) | midrange | 42.3 | 46 | −4.5 | built |
-| the Levy | Orzhov Landfall (W B) | midrange | 42.0 | 44 | −1.7 | registered |
-| the Warband (Mardu) | Boros Goblins (R w) | aggro | 39.8 | 41 | +9.3 | built |
-| Mono-Red Burn | Mono-Red Spells (R) | aggro | 37.2 | 40 | +1.1 | built |
+| Mardu Control | Usher Control (W B R) | midrange | 67.7 | 56 | +13.7 | registered |
+| the Rabble (Mardu) | Mono-Red Goblins (R) | aggro | 62.9 | 60 | +4.1 | registered |
+| the Pall | Usher Combo (B w r) | combo | 61.8 | 65 | −13.0 | registered |
+| the Watch (Mardu) | Boros Tokens (W R) | aggro | 52.7 | 53 | −3.0 | built |
+| the Roll (Mardu) | Orzhov Tokens (W B) | aggro | 51.3 | 48 | −2.2 | built |
+| the Chancel (Mardu) | Orzhov Control (W B) | midrange | 49.1 | 51 | −7.1 | built |
+| BR Removal (Mardu) | Rakdos Removal (B R) | midrange | 43.9 | 48 | −1.8 | built |
+| the Muster (Mardu) | Boros Weenie (W R) | aggro | 43.5 | 45 | +0.9 | built |
+| the Levy | Orzhov Landfall (W B) | midrange | 40.7 | 44 | −1.1 | registered |
+| the Warband (Mardu) | Boros Goblins (R w) | aggro | 40.2 | 40 | +9.6 | built |
+| Mono-Red Burn | Mono-Red Spells (R) | aggro | 36.3 | 39 | +0.4 | built |
 
 Archived (kept in the data, out of the field): none.
 
@@ -26,11 +26,11 @@ Archived (kept in the data, out of the field): none.
 
 Nonland cards outside the restricted list that more than half of the 11 active lists play: Lightning Bolt (6 lists, 24 copies); Soul Warden (6 lists, 24 copies).
 
-The most played: Lightning Bolt 6 · Soul Warden 6 · Vampire Nighthawk 5 · Emeria Angel 5 · Flametongue Kavu 5 · Swords to Plowshares 5 · Blood Artist 4 · Raise the Alarm 4.
+The most played: Lightning Bolt 6 · Soul Warden 6 · Vampire Nighthawk 5 · Flametongue Kavu 5 · Emeria Angel 5 · Swords to Plowshares 5 · Blood Artist 4 · Raise the Alarm 4.
 
 ## Mardu Control — Usher Control (W B R)
 
-`marducontrol` · midrange · game one 57 · matches 68.0
+`marducontrol` · midrange · game one 56 · matches 67.7
 
 - **Lands (20):** 4 Badlands · 4 Scrubland · 4 Plateau · 4 Godless Shrine · 1 Cairnbrand · 1 Obsidian Observatory · 1 Blood Crypt · 1 Sacred Foundry
 - **Creatures (24):** 3 Lumen, the Hearth Fire · 3 Restoration Angel · 3 The Jet Witch · 4 Vampire Nighthawk · 4 Blood Artist · 4 Soul Warden · 3 The Usher
@@ -42,7 +42,7 @@ The most played: Lightning Bolt 6 · Soul Warden 6 · Vampire Nighthawk 5 · Eme
 
 ## the Rabble (Mardu) — Mono-Red Goblins (R)
 
-`rabble` · aggro · game one 61 · matches 63.4
+`rabble` · aggro · game one 60 · matches 62.9
 
 - **Lands (19):** 1 Cairnbrand · 4 Badlands · 14 Mountain
 - **Creatures (18):** 4 Raging Goblin · 4 Goblin Chieftain · 4 Seasoned Pyromancer · 4 Flametongue Kavu · 2 Siege-Gang Commander
@@ -54,7 +54,7 @@ The most played: Lightning Bolt 6 · Soul Warden 6 · Vampire Nighthawk 5 · Eme
 
 ## the Pall — Usher Combo (B w r)
 
-`pall` · combo · game one 65 · matches 62.2
+`pall` · combo · game one 65 · matches 61.8
 
 - **Lands (21):** 1 Cairnbrand · 4 Badlands · 4 Scrubland · 4 Swamp · 4 Blood Crypt · 4 Godless Shrine
 - **Creatures (20):** 4 The Usher · 4 The Jet Witch · 4 Blood Artist · 4 Typhoid Rats · 4 Vampire Nighthawk
@@ -67,7 +67,7 @@ The most played: Lightning Bolt 6 · Soul Warden 6 · Vampire Nighthawk 5 · Eme
 
 ## the Watch (Mardu) — Boros Tokens (W R)
 
-`watch` · aggro · game one 54 · matches 52.8
+`watch` · aggro · game one 53 · matches 52.7
 
 - **Lands (19):** 4 Sacred Foundry · 4 Plateau · 5 Plains · 6 Mountain
 - **Creatures (18):** 4 Soul Warden · 4 Young Pyromancer · 1 Flametongue Kavu · 2 Dawnwing Marshal · 4 Captain of the Watch · 2 Emeria Angel · 1 Lumen, the Hearth Fire
@@ -78,7 +78,7 @@ The most played: Lightning Bolt 6 · Soul Warden 6 · Vampire Nighthawk 5 · Eme
 
 ## the Roll (Mardu) — Orzhov Tokens (W B)
 
-`roll` · aggro · game one 48 · matches 52.8
+`roll` · aggro · game one 48 · matches 51.3
 
 - **Lands (21):** 4 Scrubland · 4 Godless Shrine · 1 Obsidian Observatory · 6 Plains · 6 Swamp
 - **Creatures (14):** 3 Captain of the Watch · 2 Isaura, the Levy · 3 Emeria Angel · 4 Soul Warden · 2 Karmic Mentor
@@ -87,9 +87,20 @@ The most played: Lightning Bolt 6 · Soul Warden 6 · Vampire Nighthawk 5 · Eme
 - **History:**
   - contributed — S66 seed (the planner's): Esper's Roll (BW Tokens) whole (Mardu-legal as it stands).
 
+## the Chancel (Mardu) — Orzhov Control (W B)
+
+`chancel` · midrange · game one 51 · matches 49.1
+
+- **Lands (19):** 4 Scrubland · 4 Godless Shrine · 1 Obsidian Observatory · 3 Plains · 3 Swamp · 2 Plateau · 2 Badlands
+- **Creatures (27):** 4 Karmic Mentor · 3 Restoration Angel · 3 The Jet Witch · 2 Isaura, the Levy · 1 Emeria Angel · 4 Blood Artist · 4 Soul Warden · 4 Vampire Nighthawk · 2 The Usher
+- **Other (14):** 1 Black Lotus · 1 Mox Jet · 1 Mox Pearl · 4 Vindicate · 3 Wrath of God · 3 Swords to Plowshares · 1 Demonic Tutor
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — S66 seed (the planner's): Esper's Chancel (WB Control) whole (Mardu-legal as it stands). Revised S66 (Chris): two Ushers, Mardu's lord, for two Emeria Angels, with two Plateaus and two Badlands for two Plains and two Swamps to cast her — paired, 160 matches a pairing: 43.2 → 50.5 in matches (+7.3 ± 2.4; the mana alone −0.3 ± 0.9, the Ushers +7.6 ± 2.4).
+
 ## BR Removal (Mardu) — Rakdos Removal (B R)
 
-`brremoval` · midrange · game one 48 · matches 46.0
+`brremoval` · midrange · game one 48 · matches 43.9
 
 - **Lands (17):** 4 Blood Crypt · 4 Badlands · 1 Cairnbrand · 6 Swamp · 2 Mountain
 - **Creatures (27):** 4 Typhoid Rats · 4 Blood Artist · 4 Hypnotic Specter · 4 Vampire Nighthawk · 4 Nekrataal · 4 Flametongue Kavu · 2 Dread Presence · 1 Drana, Kalastria Bloodchief
@@ -100,7 +111,7 @@ The most played: Lightning Bolt 6 · Soul Warden 6 · Vampire Nighthawk 5 · Eme
 
 ## the Muster (Mardu) — Boros Weenie (W R)
 
-`muster` · aggro · game one 46 · matches 43.5
+`muster` · aggro · game one 45 · matches 43.5
 
 - **Lands (22):** 4 Plateau · 4 Sacred Foundry · 8 Plains · 4 Mountain · 2 Secluded Steppe
 - **Creatures (21):** 4 Savannah Lions · 4 Soul Warden · 2 Suntail Hawk · 4 Fencing Ace · 3 Emeria Angel · 4 Flametongue Kavu
@@ -109,20 +120,9 @@ The most played: Lightning Bolt 6 · Soul Warden 6 · Vampire Nighthawk 5 · Eme
 - **History:**
   - contributed — S66 seed (the planner's): the Open's Muster whole (Mardu-legal as it stands).
 
-## the Chancel (Mardu) — Orzhov Control (W B)
-
-`chancel` · midrange · game one 46 · matches 42.3
-
-- **Lands (19):** 4 Scrubland · 4 Godless Shrine · 1 Obsidian Observatory · 5 Plains · 5 Swamp
-- **Creatures (27):** 4 Karmic Mentor · 3 Restoration Angel · 3 The Jet Witch · 2 Isaura, the Levy · 3 Emeria Angel · 4 Blood Artist · 4 Soul Warden · 4 Vampire Nighthawk
-- **Other (14):** 1 Black Lotus · 1 Mox Jet · 1 Mox Pearl · 4 Vindicate · 3 Wrath of God · 3 Swords to Plowshares · 1 Demonic Tutor
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S66 seed (the planner's): Esper's Chancel (WB Control) whole (Mardu-legal as it stands).
-
 ## the Levy — Orzhov Landfall (W B)
 
-`levy` · midrange · game one 44 · matches 42.0
+`levy` · midrange · game one 44 · matches 40.7
 
 - **Lands (24):** 4 Scrubland · 4 Godless Shrine · 5 Plains · 5 Swamp · 4 Evolving Wilds · 1 Thawing Glaciers · 1 Obsidian Observatory
 - **Creatures (15):** 4 Emeria Angel · 4 Dread Presence · 4 Soul Warden · 1 Vampire Nighthawk · 2 Isaura, the Levy
@@ -134,7 +134,7 @@ The most played: Lightning Bolt 6 · Soul Warden 6 · Vampire Nighthawk 5 · Eme
 
 ## the Warband (Mardu) — Boros Goblins (R w)
 
-`warband` · aggro · game one 41 · matches 39.8
+`warband` · aggro · game one 40 · matches 40.2
 
 - **Lands (22):** 4 Plateau · 4 Sacred Foundry · 12 Mountain · 2 Plains
 - **Creatures (22):** 4 Skirk Prospector · 4 Goblin Piker · 4 Goblin Chieftain · 2 Boggart Brute · 3 Siege-Gang Commander · 3 Lumen, the Hearth Fire · 2 Flametongue Kavu
@@ -145,7 +145,7 @@ The most played: Lightning Bolt 6 · Soul Warden 6 · Vampire Nighthawk 5 · Eme
 
 ## Mono-Red Burn — Mono-Red Spells (R)
 
-`burn` · aggro · game one 40 · matches 37.2
+`burn` · aggro · game one 39 · matches 36.3
 
 - **Lands (21):** 21 Mountain
 - **Creatures (16):** 4 Guttersnipe · 4 Young Pyromancer · 3 Seasoned Pyromancer · 2 Arc Mage · 1 The Ruby Tyrant · 2 Furnace Whelp

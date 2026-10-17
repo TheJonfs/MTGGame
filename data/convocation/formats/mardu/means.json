@@ -4,15 +4,15 @@
  "source": "5500 games, 100 a pairing",
  "byList": {
   "brremoval": 48,
-  "burn": 40,
-  "chancel": 46,
+  "burn": 39,
+  "chancel": 51,
   "levy": 44,
-  "marducontrol": 57,
-  "muster": 46,
+  "marducontrol": 56,
+  "muster": 45,
   "pall": 65,
-  "rabble": 61,
+  "rabble": 60,
   "roll": 48,
-  "warband": 41,
-  "watch": 54
+  "warband": 40,
+  "watch": 53
  }
 }

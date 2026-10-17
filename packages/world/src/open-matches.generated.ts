@@ -51,17 +51,17 @@ export const OPEN_MATCH_MEANS: Record<string, number> = {
  "esper:undertow": 45.7,
  "esper:wbcontrol": 50.4,
  "esper:writ": 63.5,
- "mardu:brremoval": 46,
- "mardu:burn": 37.2,
- "mardu:chancel": 42.3,
- "mardu:levy": 42,
- "mardu:marducontrol": 68,
+ "mardu:brremoval": 43.9,
+ "mardu:burn": 36.3,
+ "mardu:chancel": 49.1,
+ "mardu:levy": 40.7,
+ "mardu:marducontrol": 67.7,
  "mardu:muster": 43.5,
- "mardu:pall": 62.2,
- "mardu:rabble": 63.4,
- "mardu:roll": 52.8,
- "mardu:warband": 39.8,
- "mardu:watch": 52.8
+ "mardu:pall": 61.8,
+ "mardu:rabble": 62.9,
+ "mardu:roll": 51.3,
+ "mardu:warband": 40.2,
+ "mardu:watch": 52.7
 };
 /** S63 (Part 2): a list's game-one mean on its format's round-robin of record (measured: open 2026-10-17; peasant 2026-10-13; naya 2026-10-17; esper 2026-10-15; mardu 2026-10-17). Keys "<format>:<list>". */
 export const OPEN_MEANS: Record<string, number> = {
@@ -116,16 +116,16 @@ export const OPEN_MEANS: Record<string, number> = {
  "esper:wbcontrol": 57,
  "esper:writ": 56,
  "mardu:brremoval": 48,
- "mardu:burn": 40,
- "mardu:chancel": 46,
+ "mardu:burn": 39,
+ "mardu:chancel": 51,
  "mardu:levy": 44,
- "mardu:marducontrol": 57,
- "mardu:muster": 46,
+ "mardu:marducontrol": 56,
+ "mardu:muster": 45,
  "mardu:pall": 65,
- "mardu:rabble": 61,
+ "mardu:rabble": 60,
  "mardu:roll": 48,
- "mardu:warband": 41,
- "mardu:watch": 54
+ "mardu:warband": 40,
+ "mardu:watch": 53
 };
 /** S59/S63: a list's STRENGTH — its match win rate where one is recorded, else its game-one mean. */
 export const FORMAT_STRENGTH: Record<string, number> = { ...OPEN_MEANS, ...OPEN_MATCH_MEANS };

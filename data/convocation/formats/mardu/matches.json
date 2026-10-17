@@ -4,69 +4,69 @@
  "matchesAPairing": 60,
  "byList": {
   "brremoval": {
-   "matches": 46,
-   "gameOne": 48.3,
-   "later": 47.1,
+   "matches": 43.9,
+   "gameOne": 47.3,
+   "later": 45.5,
    "n": 600
   },
   "burn": {
-   "matches": 37.2,
-   "gameOne": 40.6,
-   "later": 41.7,
+   "matches": 36.3,
+   "gameOne": 40.8,
+   "later": 41.2,
    "n": 600
   },
   "chancel": {
-   "matches": 42.3,
-   "gameOne": 48.4,
-   "later": 43.9,
+   "matches": 49.1,
+   "gameOne": 53.8,
+   "later": 46.7,
    "n": 600
   },
   "levy": {
-   "matches": 42,
-   "gameOne": 46,
-   "later": 44.3,
+   "matches": 40.7,
+   "gameOne": 45,
+   "later": 43.9,
    "n": 600
   },
   "marducontrol": {
-   "matches": 68,
-   "gameOne": 53.2,
-   "later": 66.6,
+   "matches": 67.7,
+   "gameOne": 52.3,
+   "later": 66,
    "n": 600
   },
   "muster": {
    "matches": 43.5,
-   "gameOne": 44.9,
-   "later": 46.8,
+   "gameOne": 45.4,
+   "later": 46.3,
    "n": 600
   },
   "pall": {
-   "matches": 62.2,
-   "gameOne": 66.2,
+   "matches": 61.8,
+   "gameOne": 66,
    "later": 53,
    "n": 600
   },
   "rabble": {
-   "matches": 63.4,
-   "gameOne": 56.7,
-   "later": 59.8,
+   "matches": 62.9,
+   "gameOne": 55.8,
+   "later": 59.9,
    "n": 600
   },
   "roll": {
-   "matches": 52.8,
-   "gameOne": 54.3,
-   "later": 50.3,
+   "matches": 51.3,
+   "gameOne": 52.3,
+   "later": 50.1,
    "n": 600
   },
   "warband": {
-   "matches": 39.8,
-   "gameOne": 37.2,
-   "later": 46.5,
+   "matches": 40.2,
+   "gameOne": 37.3,
+   "later": 46.9,
    "n": 600
   },
   "watch": {
-   "matches": 52.8,
-   "gameOne": 54.3,
-   "later": 50.3,
+   "matches": 52.7,
+   "gameOne": 53.9,
+   "later": 50.9,
    "n": 600
   }
  }

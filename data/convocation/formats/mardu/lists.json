@@ -785,7 +785,7 @@
    "name": "the Chancel (Mardu)",
    "title": "Orzhov Control (W B)",
    "archetype": "midrange",
-   "source": "S66 seed (the planner's): Esper's Chancel (WB Control) whole (Mardu-legal as it stands).",
+   "source": "S66 seed (the planner's): Esper's Chancel (WB Control) whole (Mardu-legal as it stands). Revised S66 (Chris): two Ushers, Mardu's lord, for two Emeria Angels, with two Plateaus and two Badlands for two Plains and two Swamps to cast her — paired, 160 matches a pairing: 43.2 → 50.5 in matches (+7.3 ± 2.4; the mana alone −0.3 ± 0.9, the Ushers +7.6 ± 2.4).",
    "decklist": [
     {
      "cardId": "scrubland",
@@ -801,11 +801,11 @@
     },
     {
      "cardId": "plains",
-     "count": 5
+     "count": 3
     },
     {
      "cardId": "swamp",
-     "count": 5
+     "count": 3
     },
     {
      "cardId": "black_lotus",
@@ -849,7 +849,7 @@
     },
     {
      "cardId": "emeria_angel",
-     "count": 3
+     "count": 1
     },
     {
      "cardId": "blood_artist",
@@ -866,6 +866,18 @@
     {
      "cardId": "demonic_tutor",
      "count": 1
+    },
+    {
+     "cardId": "the_usher",
+     "count": 2
+    },
+    {
+     "cardId": "plateau",
+     "count": 2
+    },
+    {
+     "cardId": "badlands",
+     "count": 2
     }
    ]
   },
