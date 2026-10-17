@@ -2698,7 +2698,13 @@ export class HeuristicAgent implements Agent {
     const best = [...view.graveyardObjects[opp]].filter((g) => this.def(g.cardId)?.types.includes("Creature")).sort((a, b) => reanimationWorth(this.def(b.cardId)) - reanimationWorth(this.def(a.cardId)))[0];
     if (repeatable) return !(theirEnd && !!best && t?.kind === "object" && t.id === best.objectId);
     const theyReturn = this.profile.opponentDecklist.some((e) => { const d = this.def(e.cardId); return !!d && [...(d.spellEffect ?? []), ...(d.abilities ?? []).flatMap((a) => ("effects" in a ? (a.effects as Effect[]) : []))].some((x) => x.type === "returnFromGraveyard" && x.to === "battlefield"); });
-    if (theyReturn || !spell) return true;
+    // Amended (the grid: the Rites held all game against every Mardu list, 0.28 cast a game): against a list that
+    // reanimates, a one-shot may also be spent at their end step on a card of theirs worth denying — a loop piece (a
+    // legend whose return brings its own copy: the Usher) or a body worth four or more — book 105's pre-emptive Crypt.
+    const g = t?.kind === "object" ? view.graveyardObjects[opp].find((x) => x.objectId === t.id) : undefined;
+    const deny = !!g && (legendLoopWorth(view, this.defs, this.def(g.cardId)) > 0 || reanimationWorth(this.def(g.cardId)) >= 4);
+    if (theyReturn) return !(theirEnd && deny);
+    if (!spell) return true;
     return !(theirEnd && t?.kind === "object");
   }
   /** Book 140: a hallowing that passes its gate in ANSWER (aimed at the card an opposing return targets) is worth what
@@ -2711,10 +2717,14 @@ export class HeuristicAgent implements Agent {
     const effects = action.type === "castSpell" ? (this.def(view.hand.find((c) => c.objectId === action.objectId)?.cardId ?? "")?.spellEffect ?? []) : ((viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex) as { effects?: Effect[] } | undefined)?.effects ?? []);
     if (!effects.some((e) => e.type === "putOnBottom")) return 0;
     const aimedBy = view.stack.find((s) => s.controller !== view.you && (s.targets ?? []).some((x) => x.kind === "object" && x.id === t.id));
-    if (!aimedBy) return 0;
     const g = [...view.graveyardObjects[0], ...view.graveyardObjects[1]].find((x) => x.objectId === t.id);
     const d = g ? this.def(g.cardId) : undefined;
-    return reanimationWorth(d) + (g && aimedBy.cardId === g.cardId ? LOOP_WORTH : 0);
+    // Amended: outside an answer (a use the gate let through — the tap Sexton at their end step, the pre-emptive
+    // denial) the card denied is worth a share of its return, and the life its mana value gives (the predictor reads a
+    // ref'd gain as nothing): the activation sat 0.05 under passing, and was taken 0.01 times a game.
+    const lifeGain = effects.some((e) => e.type === "gainLife" && typeof e.amount === "object" && (e.amount as { ref?: string }).ref === "targetManaValue") && d ? manaValue(parseManaCost(d.manaCost ?? "")) * 0.15 : 0;
+    if (!aimedBy) return g && view.graveyardObjects[(1 - view.you) as 0 | 1].some((x) => x.objectId === t.id) ? 0.3 * reanimationWorth(d) + lifeGain + 0.2 : lifeGain;
+    return reanimationWorth(d) + (g && aimedBy.cardId === g.cardId ? LOOP_WORTH : 0) + lifeGain;
   }
   /** Book 117's shape: an instant or sorcery that destroys or exiles its one target. */
   private killSpell(d: CardDef): boolean {

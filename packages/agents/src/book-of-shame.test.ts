@@ -980,7 +980,9 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(reanimating.scorePriorityAction(zomb, rites("gw"))).toBeGreaterThan(reanimating.scorePriorityAction(zomb, { type: "pass" }));
     // nothing aimed: the Rites are kept against a reanimator; cast at their end step for the Spirit against a fair list
     const quiet = (step: string, active: 0 | 1) => yard(mkView({ step, activePlayer: active, hand: [{ objectId: "hr", cardId: "hallowed_rites" }], battlefield: lands }));
-    expect(reanimating.hallowGated(quiet("END", 1), rites("gw"))).toBe(true);
+    expect(reanimating.hallowGated(quiet("END", 1), rites("gb"))).toBe(true); // a Bear is not worth the answer
+    expect(reanimating.hallowGated(quiet("END", 1), rites("gw"))).toBe(false); // amended: the Wurm is (worth four or more)
+    expect(reanimating.hallowGated(quiet("MAIN1", 0), rites("gw"))).toBe(true); // and only at their end step
     expect(fair.hallowGated(quiet("END", 1), rites("gw"))).toBe(false);
     expect(fair.hallowGated(quiet("MAIN1", 0), rites("gw"))).toBe(true);
     // the tap Sexton: at their end step on their best creature card (the Wurm), not the Bear, and not in our main
@@ -988,6 +990,7 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(reanimating.hallowGated(sx("END", 1), tap("gw"))).toBe(false);
     expect(reanimating.hallowGated(sx("END", 1), tap("gb"))).toBe(true);
     expect(reanimating.hallowGated(sx("MAIN1", 0), tap("gw"))).toBe(true);
+    expect(reanimating.scorePriorityAction(sx("END", 1), tap("gw"))).toBeGreaterThan(reanimating.scorePriorityAction(sx("END", 1), { type: "pass" })); // amended: the denial and the life are counted
     const off = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["hallow"] });
     expect(off.hallowGated(sx("MAIN1", 0), tap("gb"))).toBe(false);
   });
