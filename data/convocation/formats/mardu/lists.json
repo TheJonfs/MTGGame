@@ -1,0 +1,1124 @@
+{
+ "_comment": "Mardu (S66): the third triad — red, white and black; the land rule (ADR-181); the Open's restricted list where it applies; the laws banned; sixty cards, four of a kind. The planner's eleven seeds — nine whole from the Open, Esper and Naya, the Rabble with its blue mana swapped, BR Removal promoted from Peasant and Mono-Red Burn built (working names). `pnpm open:gen` validates each against Mardu and generates the code and docs/reference/mardu-lists.md.",
+ "_shapeScale_note": "S66 (ADR-186): frozen at the values derived from Mardu's first field — its eleven seeds (the brief's \"first eight\": the seeds have no order to take eight by): small 18, large 3.",
+ "shapeScale": {
+  "small": 18,
+  "large": 3
+ },
+ "archived": {},
+ "guides": {},
+ "guidesOnly": [],
+ "outRules": {},
+ "lists": [
+  {
+   "key": "pall",
+   "name": "the Pall",
+   "title": "Usher Combo (B w r)",
+   "archetype": "combo",
+   "source": "S66 seed (the planner's): the Open's Pall whole — Buried Alive into the Usher's loop, the Jet Witch as its engine; Mardu-legal as it stands (the brief's \"mono-black\": the Pall is black with the Usher's white and red, its Moxen and its duals, all within RWB). The loop in a triad for the first time; its plan as the Open's.",
+   "decklist": [
+    {
+     "cardId": "the_usher",
+     "count": 4
+    },
+    {
+     "cardId": "zombify",
+     "count": 4
+    },
+    {
+     "cardId": "the_jet_witch",
+     "count": 4
+    },
+    {
+     "cardId": "buried_alive",
+     "count": 4
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    },
+    {
+     "cardId": "dark_ritual",
+     "count": 4
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "badlands",
+     "count": 4
+    },
+    {
+     "cardId": "scrubland",
+     "count": 4
+    },
+    {
+     "cardId": "swamp",
+     "count": 4
+    },
+    {
+     "cardId": "blood_crypt",
+     "count": 4
+    },
+    {
+     "cardId": "godless_shrine",
+     "count": 4
+    },
+    {
+     "cardId": "blood_artist",
+     "count": 4
+    },
+    {
+     "cardId": "typhoid_rats",
+     "count": 4
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "tendrils_of_corruption",
+     "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "tendrils_of_corruption",
+     "count": 2
+    },
+    {
+     "cardId": "drana_kalastria_bloodchief",
+     "count": 1
+    },
+    {
+     "cardId": "nekrataal",
+     "count": 1
+    },
+    {
+     "cardId": "hymn_to_tourach",
+     "count": 4
+    },
+    {
+     "cardId": "indulgent_aristocrat",
+     "count": 4
+    },
+    {
+     "cardId": "hypnotic_specter",
+     "count": 3
+    }
+   ],
+   "plan": {
+    "piece": "the_usher",
+    "setup": [
+     {
+      "card": "buried_alive",
+      "bury": [
+       {
+        "card": "the_usher",
+        "count": 3
+       }
+      ]
+     }
+    ],
+    "start": [
+     {
+      "card": "zombify",
+      "on": "the_usher"
+     },
+     {
+      "card": "the_usher",
+      "on": "the_usher"
+     },
+     {
+      "card": "cairnbrand",
+      "on": "the_usher"
+     }
+    ],
+    "dig": [
+     "the_jet_witch",
+     "demonic_tutor"
+    ],
+    "fuel": [
+     "dark_ritual",
+     "black_lotus",
+     "mox_jet",
+     "mox_pearl",
+     "mox_ruby"
+    ],
+    "answers": {
+     "counter": [
+      "buried_alive",
+      "zombify"
+     ],
+     "graveyardExile": true,
+     "discardBeforeTurn": 3
+    }
+   }
+  },
+  {
+   "key": "marducontrol",
+   "name": "Mardu Control",
+   "title": "Usher Control (W B R)",
+   "archetype": "midrange",
+   "source": "S66 seed (the planner's): Chris's Mardu Control whole, its fifteen with it — Mardu-legal as it stands.",
+   "decklist": [
+    {
+     "cardId": "lumen_the_hearth_fire",
+     "count": 3
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 3
+    },
+    {
+     "cardId": "phyrexian_purge",
+     "count": 2
+    },
+    {
+     "cardId": "vindicate",
+     "count": 4
+    },
+    {
+     "cardId": "the_jet_witch",
+     "count": 3
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "blood_artist",
+     "count": 4
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 2
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "badlands",
+     "count": 4
+    },
+    {
+     "cardId": "scrubland",
+     "count": 4
+    },
+    {
+     "cardId": "plateau",
+     "count": 4
+    },
+    {
+     "cardId": "godless_shrine",
+     "count": 4
+    },
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "obsidian_observatory",
+     "count": 1
+    },
+    {
+     "cardId": "blood_crypt",
+     "count": 1
+    },
+    {
+     "cardId": "sacred_foundry",
+     "count": 1
+    },
+    {
+     "cardId": "sacred_helix",
+     "count": 1
+    },
+    {
+     "cardId": "the_usher",
+     "count": 3
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "tormods_crypt",
+     "count": 3
+    },
+    {
+     "cardId": "faerie_macabre",
+     "count": 3
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 3
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 2
+    },
+    {
+     "cardId": "phyrexian_purge",
+     "count": 1
+    },
+    {
+     "cardId": "sacred_helix",
+     "count": 1
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 2
+    }
+   ]
+  },
+  {
+   "key": "rabble",
+   "name": "the Rabble (Mardu)",
+   "title": "Mono-Red Goblins (R)",
+   "archetype": "aggro",
+   "source": "S66 seed (the planner's): the Open's Rabble whole but for its blue mana — its four Volcanic Islands, the Tallyflame Court and Mox Sapphire out under ADR-181, six Mountains in (Badlands, Cairnbrand and Mox Jet stay: black is Mardu's).",
+   "decklist": [
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "badlands",
+     "count": 4
+    },
+    {
+     "cardId": "mountain",
+     "count": 14
+    },
+    {
+     "cardId": "goblin_grenade",
+     "count": 4
+    },
+    {
+     "cardId": "raging_goblin",
+     "count": 4
+    },
+    {
+     "cardId": "dragon_fodder",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "char",
+     "count": 4
+    },
+    {
+     "cardId": "goblin_chieftain",
+     "count": 4
+    },
+    {
+     "cardId": "seasoned_pyromancer",
+     "count": 4
+    },
+    {
+     "cardId": "hordeling_outburst",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "siege_gang_commander",
+     "count": 2
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "the_ruby_tyrant",
+     "count": 4
+    },
+    {
+     "cardId": "abrade",
+     "count": 3
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 4
+    },
+    {
+     "cardId": "faerie_macabre",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "key": "muster",
+   "name": "the Muster (Mardu)",
+   "title": "Boros Weenie (W R)",
+   "archetype": "aggro",
+   "source": "S66 seed (the planner's): the Open's Muster whole (Mardu-legal as it stands).",
+   "decklist": [
+    {
+     "cardId": "plateau",
+     "count": 4
+    },
+    {
+     "cardId": "sacred_foundry",
+     "count": 4
+    },
+    {
+     "cardId": "plains",
+     "count": 8
+    },
+    {
+     "cardId": "mountain",
+     "count": 4
+    },
+    {
+     "cardId": "secluded_steppe",
+     "count": 2
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "savannah_lions",
+     "count": 4
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "suntail_hawk",
+     "count": 2
+    },
+    {
+     "cardId": "fencing_ace",
+     "count": 4
+    },
+    {
+     "cardId": "emeria_angel",
+     "count": 3
+    },
+    {
+     "cardId": "raise_the_alarm",
+     "count": 4
+    },
+    {
+     "cardId": "glorious_anthem",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 2
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "key": "warband",
+   "name": "the Warband (Mardu)",
+   "title": "Boros Goblins (R w)",
+   "archetype": "aggro",
+   "source": "S66 seed (the planner's): the Open's Warband whole (Mardu-legal as it stands).",
+   "decklist": [
+    {
+     "cardId": "plateau",
+     "count": 4
+    },
+    {
+     "cardId": "sacred_foundry",
+     "count": 4
+    },
+    {
+     "cardId": "mountain",
+     "count": 12
+    },
+    {
+     "cardId": "plains",
+     "count": 2
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "skirk_prospector",
+     "count": 4
+    },
+    {
+     "cardId": "goblin_piker",
+     "count": 4
+    },
+    {
+     "cardId": "goblin_chieftain",
+     "count": 4
+    },
+    {
+     "cardId": "boggart_brute",
+     "count": 2
+    },
+    {
+     "cardId": "siege_gang_commander",
+     "count": 3
+    },
+    {
+     "cardId": "lumen_the_hearth_fire",
+     "count": 3
+    },
+    {
+     "cardId": "hordeling_outburst",
+     "count": 4
+    },
+    {
+     "cardId": "goblin_grenade",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "sacred_helix",
+     "count": 1
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 2
+    }
+   ]
+  },
+  {
+   "key": "roll",
+   "name": "the Roll (Mardu)",
+   "title": "Orzhov Tokens (W B)",
+   "archetype": "aggro",
+   "source": "S66 seed (the planner's): Esper's Roll (BW Tokens) whole (Mardu-legal as it stands).",
+   "decklist": [
+    {
+     "cardId": "scrubland",
+     "count": 4
+    },
+    {
+     "cardId": "godless_shrine",
+     "count": 4
+    },
+    {
+     "cardId": "obsidian_observatory",
+     "count": 1
+    },
+    {
+     "cardId": "plains",
+     "count": 6
+    },
+    {
+     "cardId": "swamp",
+     "count": 6
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "raise_the_alarm",
+     "count": 4
+    },
+    {
+     "cardId": "bitterblossom",
+     "count": 4
+    },
+    {
+     "cardId": "shadow_summoning",
+     "count": 3
+    },
+    {
+     "cardId": "captain_of_the_watch",
+     "count": 3
+    },
+    {
+     "cardId": "isaura_the_levy",
+     "count": 2
+    },
+    {
+     "cardId": "emeria_angel",
+     "count": 3
+    },
+    {
+     "cardId": "glorious_anthem",
+     "count": 4
+    },
+    {
+     "cardId": "vindicate",
+     "count": 4
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "karmic_mentor",
+     "count": 2
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 3
+    }
+   ]
+  },
+  {
+   "key": "levy",
+   "name": "the Levy",
+   "title": "Orzhov Landfall (W B)",
+   "archetype": "midrange",
+   "source": "S66 seed (the planner's): the Open's Levy whole, its fifteen with it (Mardu-legal as it stands).",
+   "decklist": [
+    {
+     "cardId": "scrubland",
+     "count": 4
+    },
+    {
+     "cardId": "godless_shrine",
+     "count": 4
+    },
+    {
+     "cardId": "plains",
+     "count": 5
+    },
+    {
+     "cardId": "swamp",
+     "count": 5
+    },
+    {
+     "cardId": "evolving_wilds",
+     "count": 4
+    },
+    {
+     "cardId": "thawing_glaciers",
+     "count": 1
+    },
+    {
+     "cardId": "obsidian_observatory",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "emeria_angel",
+     "count": 4
+    },
+    {
+     "cardId": "dread_presence",
+     "count": 4
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 1
+    },
+    {
+     "cardId": "isaura_the_levy",
+     "count": 2
+    },
+    {
+     "cardId": "raise_the_alarm",
+     "count": 4
+    },
+    {
+     "cardId": "shadow_summoning",
+     "count": 2
+    },
+    {
+     "cardId": "bitterblossom",
+     "count": 3
+    },
+    {
+     "cardId": "vindicate",
+     "count": 4
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 3
+    },
+    {
+     "cardId": "glorious_anthem",
+     "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 1
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 2
+    },
+    {
+     "cardId": "drana_kalastria_bloodchief",
+     "count": 2
+    },
+    {
+     "cardId": "faerie_macabre",
+     "count": 2
+    },
+    {
+     "cardId": "disenchant",
+     "count": 2
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 2
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 2
+    },
+    {
+     "cardId": "youthful_valkyrie",
+     "count": 1
+    },
+    {
+     "cardId": "shadow_summoning",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "key": "chancel",
+   "name": "the Chancel (Mardu)",
+   "title": "Orzhov Control (W B)",
+   "archetype": "midrange",
+   "source": "S66 seed (the planner's): Esper's Chancel (WB Control) whole (Mardu-legal as it stands).",
+   "decklist": [
+    {
+     "cardId": "scrubland",
+     "count": 4
+    },
+    {
+     "cardId": "godless_shrine",
+     "count": 4
+    },
+    {
+     "cardId": "obsidian_observatory",
+     "count": 1
+    },
+    {
+     "cardId": "plains",
+     "count": 5
+    },
+    {
+     "cardId": "swamp",
+     "count": 5
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "karmic_mentor",
+     "count": 4
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 3
+    },
+    {
+     "cardId": "vindicate",
+     "count": 4
+    },
+    {
+     "cardId": "the_jet_witch",
+     "count": 3
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 3
+    },
+    {
+     "cardId": "isaura_the_levy",
+     "count": 2
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 3
+    },
+    {
+     "cardId": "emeria_angel",
+     "count": 3
+    },
+    {
+     "cardId": "blood_artist",
+     "count": 4
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "key": "watch",
+   "name": "the Watch (Mardu)",
+   "title": "Boros Tokens (W R)",
+   "archetype": "aggro",
+   "source": "S66 seed (the planner's): Naya's Watch (RW Tokens) whole (Mardu-legal as it stands).",
+   "decklist": [
+    {
+     "cardId": "sacred_foundry",
+     "count": 4
+    },
+    {
+     "cardId": "plateau",
+     "count": 4
+    },
+    {
+     "cardId": "plains",
+     "count": 5
+    },
+    {
+     "cardId": "mountain",
+     "count": 6
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "young_pyromancer",
+     "count": 4
+    },
+    {
+     "cardId": "raise_the_alarm",
+     "count": 4
+    },
+    {
+     "cardId": "dragon_fodder",
+     "count": 4
+    },
+    {
+     "cardId": "hordeling_outburst",
+     "count": 4
+    },
+    {
+     "cardId": "glorious_anthem",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 1
+    },
+    {
+     "cardId": "dawnwing_marshal",
+     "count": 2
+    },
+    {
+     "cardId": "captain_of_the_watch",
+     "count": 4
+    },
+    {
+     "cardId": "emeria_angel",
+     "count": 2
+    },
+    {
+     "cardId": "lumen_the_hearth_fire",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "key": "brremoval",
+   "name": "BR Removal (Mardu)",
+   "title": "Rakdos Removal (B R)",
+   "archetype": "midrange",
+   "source": "S66 seed (Chris: start from Peasant's BR Removal and look at the higher tiers; the brief's line was unfinished — \"the Specter's cousins\"): Peasant's list promoted — Hypnotic Specter for Child of Night; Hymn to Tourach, Demonic Tutor, Dread Presence and Drana for the Skeletons, Gravediggers and a Terror (the cousins: the cards that punish a hand); two Chars; Badlands, Cairnbrand, Mox Jet, Mox Ruby and the Lotus in the mana. Built by the implementer; a working name.",
+   "decklist": [
+    {
+     "cardId": "blood_crypt",
+     "count": 4
+    },
+    {
+     "cardId": "badlands",
+     "count": 4
+    },
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "swamp",
+     "count": 6
+    },
+    {
+     "cardId": "mountain",
+     "count": 2
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "typhoid_rats",
+     "count": 4
+    },
+    {
+     "cardId": "blood_artist",
+     "count": 4
+    },
+    {
+     "cardId": "hypnotic_specter",
+     "count": 4
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "nekrataal",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "dread_presence",
+     "count": 2
+    },
+    {
+     "cardId": "drana_kalastria_bloodchief",
+     "count": 1
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "hymn_to_tourach",
+     "count": 2
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    },
+    {
+     "cardId": "char",
+     "count": 2
+    }
+   ]
+  },
+  {
+   "key": "burn",
+   "name": "Mono-Red Burn",
+   "title": "Mono-Red Spells (R)",
+   "archetype": "aggro",
+   "source": "S66 seed (the planner's 'Mono-Red Burn': the Tally's shape without blue), built by the implementer: Guttersnipe, Young and Seasoned Pyromancer and Arc Mage paid by every spell; Bolt, Shock, Char, Blaze, Abrade and Pyroclasm; the Tyrant at the top; Hordeling Outburst. A working name.",
+   "decklist": [
+    {
+     "cardId": "mountain",
+     "count": 21
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "guttersnipe",
+     "count": 4
+    },
+    {
+     "cardId": "young_pyromancer",
+     "count": 4
+    },
+    {
+     "cardId": "seasoned_pyromancer",
+     "count": 3
+    },
+    {
+     "cardId": "arc_mage",
+     "count": 2
+    },
+    {
+     "cardId": "the_ruby_tyrant",
+     "count": 1
+    },
+    {
+     "cardId": "furnace_whelp",
+     "count": 2
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "shock",
+     "count": 4
+    },
+    {
+     "cardId": "char",
+     "count": 4
+    },
+    {
+     "cardId": "blaze",
+     "count": 3
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 2
+    },
+    {
+     "cardId": "abrade",
+     "count": 2
+    },
+    {
+     "cardId": "hordeling_outburst",
+     "count": 2
+    }
+   ]
+  }
+ ]
+}

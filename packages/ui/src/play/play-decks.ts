@@ -19,6 +19,7 @@ export const PLAY_CATEGORIES: { group: string; title: string }[] = [
   { group: "peasant", title: "Peasant's lists" }, // S62 (ADR-176)
   { group: "naya", title: "Naya's lists" }, // S64 (ADR-181, the first triad)
   { group: "esper", title: "Esper's lists" }, // S65 (the second triad)
+  { group: "mardu", title: "Mardu's lists" }, // S66 (the third triad)
   { group: "saved", title: "Your journey's decks" },
   { group: "mages", title: "The mages" },
   { group: "beasts", title: "The beasts" },

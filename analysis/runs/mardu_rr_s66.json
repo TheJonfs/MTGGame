@@ -1,0 +1,483 @@
+{
+ "name": "open_rr_1",
+ "when": "2026-10-17T18:37:19.198Z",
+ "games": 5500,
+ "table": {
+  "pall": {
+   "marducontrol": [
+    56,
+    100
+   ],
+   "brremoval": [
+    69,
+    100
+   ],
+   "rabble": [
+    56,
+    100
+   ],
+   "burn": [
+    69,
+    100
+   ],
+   "muster": [
+    61,
+    100
+   ],
+   "warband": [
+    59,
+    100
+   ],
+   "roll": [
+    63,
+    100
+   ],
+   "levy": [
+    73,
+    100
+   ],
+   "chancel": [
+    80,
+    100
+   ],
+   "watch": [
+    64,
+    100
+   ]
+  },
+  "marducontrol": {
+   "pall": [
+    44,
+    100
+   ],
+   "watch": [
+    49,
+    100
+   ],
+   "brremoval": [
+    63,
+    100
+   ],
+   "rabble": [
+    53,
+    100
+   ],
+   "burn": [
+    57,
+    100
+   ],
+   "muster": [
+    62,
+    100
+   ],
+   "warband": [
+    52,
+    100
+   ],
+   "roll": [
+    56,
+    100
+   ],
+   "levy": [
+    62,
+    100
+   ],
+   "chancel": [
+    72,
+    100
+   ]
+  },
+  "brremoval": {
+   "pall": [
+    31,
+    100
+   ],
+   "muster": [
+    60,
+    100
+   ],
+   "marducontrol": [
+    37,
+    100
+   ],
+   "rabble": [
+    38,
+    100
+   ],
+   "chancel": [
+    57,
+    100
+   ],
+   "roll": [
+    43,
+    100
+   ],
+   "watch": [
+    51,
+    100
+   ],
+   "warband": [
+    65,
+    100
+   ],
+   "burn": [
+    54,
+    100
+   ],
+   "levy": [
+    47,
+    100
+   ]
+  },
+  "watch": {
+   "marducontrol": [
+    51,
+    100
+   ],
+   "rabble": [
+    57,
+    100
+   ],
+   "chancel": [
+    53,
+    100
+   ],
+   "roll": [
+    59,
+    100
+   ],
+   "brremoval": [
+    49,
+    100
+   ],
+   "warband": [
+    67,
+    100
+   ],
+   "burn": [
+    71,
+    100
+   ],
+   "levy": [
+    48,
+    100
+   ],
+   "pall": [
+    36,
+    100
+   ],
+   "muster": [
+    45,
+    100
+   ]
+  },
+  "rabble": {
+   "watch": [
+    42,
+    100
+   ],
+   "pall": [
+    44,
+    100
+   ],
+   "brremoval": [
+    62,
+    100
+   ],
+   "marducontrol": [
+    47,
+    100
+   ],
+   "burn": [
+    74,
+    100
+   ],
+   "muster": [
+    70,
+    100
+   ],
+   "warband": [
+    73,
+    100
+   ],
+   "roll": [
+    69,
+    100
+   ],
+   "levy": [
+    63,
+    100
+   ],
+   "chancel": [
+    61,
+    100
+   ]
+  },
+  "muster": {
+   "brremoval": [
+    39,
+    100
+   ],
+   "burn": [
+    49,
+    100
+   ],
+   "pall": [
+    39,
+    100
+   ],
+   "marducontrol": [
+    38,
+    100
+   ],
+   "rabble": [
+    30,
+    100
+   ],
+   "warband": [
+    57,
+    100
+   ],
+   "roll": [
+    57,
+    100
+   ],
+   "levy": [
+    52,
+    100
+   ],
+   "chancel": [
+    42,
+    100
+   ],
+   "watch": [
+    55,
+    100
+   ]
+  },
+  "roll": {
+   "levy": [
+    52,
+    100
+   ],
+   "chancel": [
+    49,
+    100
+   ],
+   "warband": [
+    66,
+    100
+   ],
+   "watch": [
+    41,
+    100
+   ],
+   "brremoval": [
+    56,
+    100
+   ],
+   "pall": [
+    37,
+    100
+   ],
+   "muster": [
+    43,
+    100
+   ],
+   "burn": [
+    66,
+    100
+   ],
+   "marducontrol": [
+    44,
+    100
+   ],
+   "rabble": [
+    30,
+    100
+   ]
+  },
+  "levy": {
+   "roll": [
+    48,
+    100
+   ],
+   "burn": [
+    54,
+    100
+   ],
+   "warband": [
+    46,
+    100
+   ],
+   "pall": [
+    27,
+    100
+   ],
+   "muster": [
+    48,
+    100
+   ],
+   "chancel": [
+    36,
+    100
+   ],
+   "marducontrol": [
+    38,
+    100
+   ],
+   "rabble": [
+    37,
+    100
+   ],
+   "watch": [
+    52,
+    100
+   ],
+   "brremoval": [
+    53,
+    100
+   ]
+  },
+  "burn": {
+   "levy": [
+    45,
+    100
+   ],
+   "pall": [
+    31,
+    100
+   ],
+   "muster": [
+    50,
+    100
+   ],
+   "marducontrol": [
+    43,
+    100
+   ],
+   "rabble": [
+    26,
+    100
+   ],
+   "chancel": [
+    41,
+    100
+   ],
+   "roll": [
+    34,
+    100
+   ],
+   "watch": [
+    29,
+    100
+   ],
+   "brremoval": [
+    46,
+    100
+   ],
+   "warband": [
+    58,
+    100
+   ]
+  },
+  "chancel": {
+   "roll": [
+    51,
+    100
+   ],
+   "watch": [
+    47,
+    100
+   ],
+   "brremoval": [
+    43,
+    100
+   ],
+   "burn": [
+    58,
+    100
+   ],
+   "warband": [
+    50,
+    100
+   ],
+   "levy": [
+    64,
+    100
+   ],
+   "pall": [
+    19,
+    100
+   ],
+   "muster": [
+    58,
+    100
+   ],
+   "marducontrol": [
+    28,
+    100
+   ],
+   "rabble": [
+    39,
+    100
+   ]
+  },
+  "warband": {
+   "roll": [
+    34,
+    100
+   ],
+   "pall": [
+    41,
+    100
+   ],
+   "muster": [
+    43,
+    100
+   ],
+   "levy": [
+    54,
+    100
+   ],
+   "marducontrol": [
+    48,
+    100
+   ],
+   "rabble": [
+    27,
+    100
+   ],
+   "chancel": [
+    50,
+    100
+   ],
+   "watch": [
+    33,
+    100
+   ],
+   "brremoval": [
+    35,
+    100
+   ],
+   "burn": [
+    40,
+    100
+   ]
+  }
+ },
+ "means": {
+  "pall": 65,
+  "marducontrol": 57,
+  "rabble": 61,
+  "muster": 46,
+  "warband": 41,
+  "roll": 48,
+  "levy": 44,
+  "chancel": 46,
+  "watch": 54,
+  "brremoval": 48,
+  "burn": 40
+ },
+ "report": "# The Open's round-robin (S46) — 5500 games, master both, 20 life, no entrances; the ROW's win rate\n\n| | pall | marducontrol | rabble | muster | warband | roll | levy | chancel | watch | brremoval | burn | **mean** |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| **pall** | — | 56 | 56 | 61 | 59 | 63 | 73 | 80 | 64 | 69 | 69 | **65** |\n| **marducontrol** | 44 | — | 53 | 62 | 52 | 56 | 62 | 72 | 49 | 63 | 57 | **57** |\n| **rabble** | 44 | 47 | — | 70 | 73 | 69 | 63 | 61 | 42 | 62 | 74 | **61** |\n| **muster** | 39 | 38 | 30 | — | 57 | 57 | 52 | 42 | 55 | 39 | 49 | **46** |\n| **warband** | 41 | 48 | 27 | 43 | — | 34 | 54 | 50 | 33 | 35 | 40 | **41** |\n| **roll** | 37 | 44 | 30 | 43 | 66 | — | 52 | 49 | 41 | 56 | 66 | **48** |\n| **levy** | 27 | 38 | 37 | 48 | 46 | 48 | — | 36 | 52 | 53 | 54 | **44** |\n| **chancel** | 19 | 28 | 39 | 58 | 50 | 51 | 64 | — | 47 | 43 | 58 | **46** |\n| **watch** | 36 | 51 | 57 | 45 | 67 | 59 | 48 | 53 | — | 49 | 71 | **54** |\n| **brremoval** | 31 | 37 | 38 | 60 | 65 | 43 | 47 | 57 | 51 | — | 54 | **48** |\n| **burn** | 31 | 43 | 26 | 50 | 58 | 34 | 45 | 41 | 29 | 46 | — | **40** |\n\nSolvable (a list over 65% against the field): none. Under 35%: none.\nMuster vs Warband: the Muster 57% (100 games).\n\n## Staples (ADR-170)\n\nIn more than half of the 11 lists: Lightning Bolt (6 lists, 24 copies); Soul Warden (6 lists, 24 copies). The most played: Lightning Bolt 6 · Soul Warden 6 · Vampire Nighthawk 5 · Emeria Angel 5 · Flametongue Kavu 5 · Swords to Plowshares 5 · Blood Artist 4 · Raise the Alarm 4.\n\n## Restricted cards — % of the list's games in which it was cast (or, a land, played)\n\n- **pall**: demonic_tutor 19% · mox_jet 20% · black_lotus 22% · mox_ruby 24% · mox_pearl 22% · cairnbrand 19%\n- **marducontrol**: demonic_tutor 24% · mox_jet 26% · mox_pearl 26% · mox_ruby 27% · black_lotus 28% · cairnbrand 32% · obsidian_observatory 30%\n- **rabble**: cairnbrand 29% · mox_ruby 27% · mox_jet 24% · black_lotus 24%\n- **muster**: black_lotus 25% · mox_pearl 24% · mox_ruby 26%\n- **warband**: black_lotus 23% · mox_ruby 23% · mox_pearl 24%\n- **roll**: obsidian_observatory 25% · black_lotus 24% · mox_pearl 22% · mox_jet 22%\n- **levy**: obsidian_observatory 26% · black_lotus 25% · mox_pearl 26% · mox_jet 27%\n- **chancel**: obsidian_observatory 35% · black_lotus 25% · mox_jet 28% · mox_pearl 28% · demonic_tutor 25%\n- **watch**: black_lotus 24% · mox_ruby 25% · mox_pearl 23%\n- **brremoval**: cairnbrand 33% · mox_jet 26% · mox_ruby 26% · black_lotus 26% · demonic_tutor 23%\n- **burn**: mox_ruby 26% · black_lotus 26%\n\n## Key pieces — % of the list's games in which each was cast (a weak pilot reads apart from a weak list)\n\n- **pall**: \n- **marducontrol**: \n- **rabble**: \n- **muster**: glorious_anthem 61% · vitalist 0% · emeria_angel 45%\n- **warband**: siege_gang_commander 37% · goblin_chieftain 64% · goblin_grenade 49%\n- **roll**: \n- **levy**: emeria_angel 60% · dread_presence 53% · isaura_the_levy 33%\n- **chancel**: \n- **watch**: \n- **brremoval**: \n- **burn**: \n\n## The Loop — the Usher + an Altar on the battlefield with a Restoration Angel in hand or play\n\nAssembled by turn ten in 0 of 0 games (0%); ever: 0. Altar activations per game: 0.00."
+}

@@ -1,0 +1,73 @@
+{
+ "_comment": "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.",
+ "when": "2026-10-17",
+ "matchesAPairing": 60,
+ "byList": {
+  "brremoval": {
+   "matches": 46,
+   "gameOne": 48.3,
+   "later": 47.1,
+   "n": 600
+  },
+  "burn": {
+   "matches": 37.2,
+   "gameOne": 40.6,
+   "later": 41.7,
+   "n": 600
+  },
+  "chancel": {
+   "matches": 42.3,
+   "gameOne": 48.4,
+   "later": 43.9,
+   "n": 600
+  },
+  "levy": {
+   "matches": 42,
+   "gameOne": 46,
+   "later": 44.3,
+   "n": 600
+  },
+  "marducontrol": {
+   "matches": 68,
+   "gameOne": 53.2,
+   "later": 66.6,
+   "n": 600
+  },
+  "muster": {
+   "matches": 43.5,
+   "gameOne": 44.9,
+   "later": 46.8,
+   "n": 600
+  },
+  "pall": {
+   "matches": 62.2,
+   "gameOne": 66.2,
+   "later": 53,
+   "n": 600
+  },
+  "rabble": {
+   "matches": 63.4,
+   "gameOne": 56.7,
+   "later": 59.8,
+   "n": 600
+  },
+  "roll": {
+   "matches": 52.8,
+   "gameOne": 54.3,
+   "later": 50.3,
+   "n": 600
+  },
+  "warband": {
+   "matches": 39.8,
+   "gameOne": 37.2,
+   "later": 46.5,
+   "n": 600
+  },
+  "watch": {
+   "matches": 52.8,
+   "gameOne": 54.3,
+   "later": 50.3,
+   "n": 600
+  }
+ }
+}

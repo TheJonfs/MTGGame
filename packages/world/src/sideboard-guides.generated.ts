@@ -875,7 +875,7 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
 
 /** S62 (ADR-176): the `small` and `large` shapes' thresholds by format — the Open's as measured since S59; another
  * format's the counts at the same ranks of its own field (sideboard-ai.SHAPE_RANKS). */
-export const SHAPE_SCALES: Record<string, { small: number; large: number }> = {"open":{"small":15,"large":8},"peasant":{"small":20,"large":4},"naya":{"small":18,"large":3},"esper":{"small":10,"large":8}};
+export const SHAPE_SCALES: Record<string, { small: number; large: number }> = {"open":{"small":15,"large":8},"peasant":{"small":20,"large":4},"naya":{"small":18,"large":3},"esper":{"small":10,"large":8},"mardu":{"small":18,"large":3}};
 
 /** S61 (Part 2): the out-rule adopted per list (matched by its sixty), where it measured a gain. */
 export const SIDEBOARD_OUT_RULES: readonly { key: string; sixty: { cardId: string; count: number }[]; out61: { small?: boolean; spells?: boolean; graveyard?: boolean } }[] = [

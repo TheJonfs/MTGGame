@@ -189,5 +189,53 @@ export const PLANS: readonly ComboPlan[] = [
       "graveyardExile": true,
       "discardBeforeTurn": 3
     }
+  },
+  {
+    "key": "mardu:pall",
+    "piece": "the_usher",
+    "setup": [
+      {
+        "card": "buried_alive",
+        "bury": [
+          {
+            "card": "the_usher",
+            "count": 3
+          }
+        ]
+      }
+    ],
+    "start": [
+      {
+        "card": "zombify",
+        "on": "the_usher"
+      },
+      {
+        "card": "the_usher",
+        "on": "the_usher"
+      },
+      {
+        "card": "cairnbrand",
+        "on": "the_usher"
+      }
+    ],
+    "dig": [
+      "the_jet_witch",
+      "demonic_tutor"
+    ],
+    "fuel": [
+      "dark_ritual",
+      "black_lotus",
+      "mox_jet",
+      "mox_pearl",
+      "mox_ruby"
+    ],
+    "answers": {
+      "counter": [
+        "buried_alive",
+        "zombify"
+      ],
+      "graveyardExile": true,
+      "discardBeforeTurn": 3
+    }
   }
 ];
