@@ -27,7 +27,7 @@ interface BoardProps {
 /** Engine combat + local staging, merged (attackers in declaration order, staged after). */
 function combatView(props: BoardProps): { attackers: string[]; blockersOf: (attackerId: string) => string[] } {
   const state = props.ctx.state;
-  const attackers = [...state.combat.attackers];
+  const attackers = state.combat.attackers.filter((id) => state.objects[id]?.zone === "battlefield"); // post-S65: not one that left (a sacrificed token's object is gone)
   for (const id of props.stagedAttackers ?? []) if (!attackers.includes(id) && state.objects[id]) attackers.push(id);
   const blockersOf = (attackerId: string) => {
     const ordered = state.combat.blockOrder[attackerId];

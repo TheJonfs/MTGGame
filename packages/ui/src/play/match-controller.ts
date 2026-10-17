@@ -891,7 +891,11 @@ export class MatchController {
   private pendingCombatMoment(): { key: string; text: string } | null {
     if (!this.stopOnCombat) return null;
     const st = this.game.state;
-    if (st.combat.attackers.length === 0) return null;
+    // Post-S65 (Chris's hang: two attacking Goblin tokens sacrificed to Siege-Gang in the declare-attackers step): the
+    // engine leaves a creature that left the battlefield in `combat.attackers` (its id stale; a token's object is gone),
+    // so everything here reads only the attackers still on the battlefield.
+    const attackers = st.combat.attackers.filter((a) => st.objects[a]?.zone === "battlefield");
+    if (attackers.length === 0) return null;
     const iAttack = st.activePlayer === this.humanSeat;
     const name = (id: string) => {
       const o = st.objects[id];
@@ -906,7 +910,7 @@ export class MatchController {
       // Post-S42b: the pause names the live keywords and, when no block will be offered, why (the engine's own read).
       const kw = (id: string) => { const live = [...characteristics(this.game.ctx, id).keywords].filter((k) => ["flying", "menace", "reach", "first strike", "double strike", "deathtouch", "trample"].includes(k)); return live.length ? ` (${live.join(", ")})` : ""; };
       const why = blockerChoices(this.game.ctx).length === 1 ? this.whyNoBlock() : null;
-      return { key, text: `Opponent attacks with ${st.combat.attackers.map((a) => name(a) + kw(a)).join(", ")}.${why ? ` No legal block: ${why}` : ""}` };
+      return { key, text: `Opponent attacks with ${attackers.map((a) => name(a) + kw(a)).join(", ")}.${why ? ` No legal block: ${why}` : ""}` };
     }
     if (iAttack && st.step === "DECLARE_BLOCKERS") {
       const key = `${st.turn}:blocks`;
@@ -1621,7 +1625,7 @@ export class MatchController {
     const standing = st.battlefield.filter((id) => { const o = st.objects[id]; return !!o && o.controller === this.humanSeat && !o.tapped && this.pool.get(o.cardId)?.types.includes("Creature"); });
     if (standing.length === 0) return null;
     const name = (id: string) => this.pool.get(st.objects[id]?.cardId ?? "")?.name ?? id;
-    const reasons = st.combat.attackers.map((a) => {
+    const reasons = st.combat.attackers.filter((a) => st.objects[a]?.zone === "battlefield").map((a) => { // post-S65: not a creature that left (a sacrificed token)
       const ch = characteristics(ctx, a);
       const able = free.filter((b) => canBlock(ctx, b, a));
       if (able.length === 0) return `${name(a)} ${ch.keywords.has("flying") ? "has flying and none of your creatures can reach it" : "cannot be blocked by your creatures"}`;
