@@ -8,16 +8,16 @@
 
 | list | deck | pilot | matches | game one | after sideboarding | fifteen |
 |---|---|---|---|---|---|---|
-| BW Tokens | Orzhov Tokens (W B) | aggro | 65.6 | 60 | +1.8 | built |
+| the Roll | Orzhov Tokens (W B) | aggro | 65.6 | 60 | +1.8 | built |
 | the Writ | Dimir Control (U B) | control | 63.5 | 56 | +4.7 | registered |
-| Dimir Tempo | Blue Tempo, splash Clio (U b) | midrange | 57.8 | 52 | +4.3 | built |
-| UW Skies (Esper) | Azorius Skies (W U) | midrange | 57.0 | 56 | +3.7 | built |
+| the Eddy | Blue Tempo, splash Clio (U b) | midrange | 57.8 | 52 | +4.3 | built |
+| the Aerie | Azorius Skies (W U) | midrange | 57.0 | 56 | +3.7 | built |
 | the Levy | Orzhov Landfall (W B) | midrange | 53.3 | 54 | −7.0 | registered |
-| WB Control | Orzhov Control (W B) | midrange | 50.4 | 57 | −7.9 | built |
+| the Chancel | Orzhov Control (W B) | midrange | 50.4 | 57 | −7.9 | built |
 | the Locks | Esper Control (W U B) | control | 48.5 | 50 | −1.7 | registered |
 | the Undertow | Dimir Mill (U B) | control | 45.7 | 44 | −2.7 | built |
-| Mono-Black Control | Mono-Black Control (B) | control | 40.6 | 43 | +4.1 | built |
-| Esper Reanimator | Esper Reanimator (W U B) | combo | 17.6 | 27 | −1.1 | built |
+| the Barrow | Mono-Black Control (B) | control | 40.6 | 43 | +4.1 | built |
+| the Ossuary | Esper Reanimator (W U B) | combo | 17.6 | 27 | −1.1 | built |
 
 Archived (kept in the data, out of the field): none.
 
@@ -27,7 +27,7 @@ Nonland cards outside the restricted list that more than half of the 10 active l
 
 The most played: Counterspell 5 · Vampire Nighthawk 5 · Swords to Plowshares 5 · The Jet Witch 4 · Vindicate 4 · Control Magic 4 · Emeria Angel 4 · Karmic Mentor 4.
 
-## BW Tokens — Orzhov Tokens (W B)
+## the Roll — Orzhov Tokens (W B)
 
 `bwtokens` · aggro · game one 60 · matches 65.6
 
@@ -50,7 +50,7 @@ The most played: Counterspell 5 · Vampire Nighthawk 5 · Swords to Plowshares 5
 - **History:**
   - contributed — S65 seed (the planner's): the Open's Writ whole but for its mana — Badlands, Bayou, the Tallyflame Court, Wrackroot, the Volcanic and Tropical Islands and Cairnbrand (eleven lands making red or green) out under ADR-181, six Islands and five Swamps in.
 
-## Dimir Tempo — Blue Tempo, splash Clio (U b)
+## the Eddy — Blue Tempo, splash Clio (U b)
 
 `tempo` · midrange · game one 52 · matches 57.8
 
@@ -61,7 +61,7 @@ The most played: Counterspell 5 · Vampire Nighthawk 5 · Swords to Plowshares 5
 - **History:**
   - contributed — S65 seed (the planner's 'Mono-Blue Tempo', built by the implementer): Tidewall, Man-o'-War, Plumecreed Escort, Aether Channeler, Control Magic, Counterspell, Boomerang — and Clio, so black is splashed (Chris).
 
-## UW Skies (Esper) — Azorius Skies (W U)
+## the Aerie — Azorius Skies (W U)
 
 `skies` · midrange · game one 56 · matches 57.0
 
@@ -84,7 +84,7 @@ The most played: Counterspell 5 · Vampire Nighthawk 5 · Swords to Plowshares 5
 - **History:**
   - contributed — S65 seed (the planner's): the Open's Levy whole (Esper-legal as it stands).
 
-## WB Control — Orzhov Control (W B)
+## the Chancel — Orzhov Control (W B)
 
 `wbcontrol` · midrange · game one 57 · matches 50.4
 
@@ -118,7 +118,7 @@ The most played: Counterspell 5 · Vampire Nighthawk 5 · Swords to Plowshares 5
 - **History:**
   - contributed — S65 seed (the planner's): the archived Undertow revived — its Tropical Islands, Bayous, Wrackroot and Mox Emerald (green) out for Watery Graves and Islands; four Tome Scours for the two Man-o'-Wars and the two Faerie Macabres; Tidewall, Glimpse and Clio kept.
 
-## Mono-Black Control — Mono-Black Control (B)
+## the Barrow — Mono-Black Control (B)
 
 `mbc` · control · game one 43 · matches 40.6
 
@@ -129,7 +129,7 @@ The most played: Counterspell 5 · Vampire Nighthawk 5 · Swords to Plowshares 5
 - **History:**
   - contributed — S65 seed (the planner's, built by the implementer): the Pall's shell without its engine — the Usher is Mardu's and legal only there, so no loop in Esper. The Jet Witch's draw, Drana, Nighthawk, Hypnotic Specter, Nekrataal; Doom Blade, Edict, the Tutor.
 
-## Esper Reanimator — Esper Reanimator (W U B)
+## the Ossuary — Esper Reanimator (W U B)
 
 `reanimator` · combo · game one 27 · matches 17.6
 

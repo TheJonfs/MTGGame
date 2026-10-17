@@ -1,5 +1,10 @@
 {
  "_comment": "Esper (S65): the second triad — white, blue and black; the land rule (ADR-181: a land or a mana artifact makes only those colours); the Open's restricted list; sixty cards, four of a kind. The planner's ten seeds, built to sixty by the implementer (working names). `pnpm open:gen` validates each against Esper and generates the code and docs/reference/esper-lists.md.",
+ "_shapeScale_note": "S66 (ADR-186): the `small` and `large` thresholds frozen at the values derived from Esper's first field (ten lists): small 10, large 8.",
+ "shapeScale": {
+  "small": 10,
+  "large": 8
+ },
  "archived": {},
  "guides": {},
  "guidesOnly": [],
@@ -7,7 +12,7 @@
  "lists": [
   {
    "key": "mbc",
-   "name": "Mono-Black Control",
+   "name": "the Barrow",
    "title": "Mono-Black Control (B)",
    "archetype": "control",
    "source": "S65 seed (the planner's, built by the implementer): the Pall's shell without its engine — the Usher is Mardu's and legal only there, so no loop in Esper. The Jet Witch's draw, Drana, Nighthawk, Hypnotic Specter, Nekrataal; Doom Blade, Edict, the Tutor.",
@@ -558,7 +563,7 @@
   },
   {
    "key": "wbcontrol",
-   "name": "WB Control",
+   "name": "the Chancel",
    "title": "Orzhov Control (W B)",
    "archetype": "midrange",
    "source": "S65 seed (the planner's, built by the implementer; Chris expects a WB control list here): Mardu Control's shape without the Ushers (Mardu's) and without red — Karmic Mentor, Restoration Angel, Vindicate, the Jet Witch, Wrath, Isaura, Swords, Emeria Angel at the top; Blood Artist and Soul Warden as the lifegain floor.",
@@ -647,7 +652,7 @@
   },
   {
    "key": "skies",
-   "name": "UW Skies (Esper)",
+   "name": "the Aerie",
    "title": "Azorius Skies (W U)",
    "archetype": "midrange",
    "source": "S65 seed (the planner's, built by the implementer): Peasant's UW Skies promoted — two Serra Angels, two Emeria Angels, a Faerie Formation and two Control Magics for the four Marshals, two Traumatizers and a Swords; Tundras, the Obsidian Observatory and the power for basics.",
@@ -740,7 +745,7 @@
   },
   {
    "key": "bwtokens",
-   "name": "BW Tokens",
+   "name": "the Roll",
    "title": "Orzhov Tokens (W B)",
    "archetype": "aggro",
    "source": "S65 seed (the planner's, built by the implementer): Shadow Summoning, Bitterblossom, Raise the Alarm, Captain of the Watch, Isaura, Emeria Angel, Glorious Anthem, Vindicate — with Soul Warden and two Karmic Mentors (they return Wardens and Bitterblossoms).",
@@ -825,7 +830,7 @@
   },
   {
    "key": "tempo",
-   "name": "Dimir Tempo",
+   "name": "the Eddy",
    "title": "Blue Tempo, splash Clio (U b)",
    "archetype": "midrange",
    "source": "S65 seed (the planner's 'Mono-Blue Tempo', built by the implementer): Tidewall, Man-o'-War, Plumecreed Escort, Aether Channeler, Control Magic, Counterspell, Boomerang — and Clio, so black is splashed (Chris).",
@@ -894,7 +899,7 @@
   },
   {
    "key": "reanimator",
-   "name": "Esper Reanimator",
+   "name": "the Ossuary",
    "title": "Esper Reanimator (W U B)",
    "archetype": "combo",
    "source": "S65 seed (the planner's, built by the implementer): Entomb, Buried Alive, Zombify, Graceful Restoration; Angel of the Ruins and Artisan of Kozilek as the pieces, the Dredger and Drana; the Jet Witch to dig. A plan in the Larder's vocabulary (goal: once).",

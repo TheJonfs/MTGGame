@@ -1,5 +1,10 @@
 {
  "_comment": "Peasant's lists (S62, ADR-176): the seeds and every list contributed since, in the Open's contributed-list shape (data/convocation/formats/open/contributed.json). pnpm open:gen validates each against Peasant (sixty, tier two and below, four of a card) and generates the code and docs/reference/peasant-lists.md.",
+ "_shapeScale_note": "S66 (ADR-186: a format of eight lists or more freezes its thresholds): frozen at the values derived from Peasant's field as it stood (small 20, large 4).",
+ "shapeScale": {
+  "small": 20,
+  "large": 4
+ },
  "archived": {
   "ubmill": "S62: the planner's UB mill seed (Tome Scour, Hedron Crab, Thought Scour as the second engine) measured 14.6 in matches and 19 in game one on the first Peasant table — it beats only the other archived seed. Every mill card was cast (Tome Scour 1.2 a game). Kept as data.",
   "wbcontrol": "S62: the planner's WB control seed (Wave of Reckoning, Moaning Walls, Penumbra Wurm by Entomb and Zombify) measured 12.9 in matches and 17 in game one. Whether the list or the pilot (it has never been taught to bury a creature it cannot cast) is not separated. Kept as data."
