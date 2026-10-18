@@ -1097,7 +1097,7 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
   "key": "mardu:witch",
   "fifteen": [
    {
-    "cardId": "drana_kalastria_bloodchief",
+    "cardId": "flametongue_kavu",
     "count": 3
    },
    {
@@ -1140,20 +1140,6 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
     ]
    },
    {
-    "in": "drana_kalastria_bloodchief",
-    "n": 3,
-    "out": [
-     "gallows_djinn"
-    ],
-    "when": [
-     "creatureDeck",
-     "wide"
-    ],
-    "unless": [
-     "someGraveyard"
-    ]
-   },
-   {
     "in": "wave_of_reckoning",
     "n": 3,
     "out": [
@@ -1175,6 +1161,20 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
     ],
     "when": [
      "small"
+    ],
+    "unless": [
+     "someGraveyard"
+    ]
+   },
+   {
+    "in": "flametongue_kavu",
+    "n": 3,
+    "out": [
+     "dark_ritual"
+    ],
+    "when": [
+     "creatureDeck",
+     "wide"
     ],
     "unless": [
      "someGraveyard"

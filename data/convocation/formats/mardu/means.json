@@ -3,17 +3,17 @@
  "when": "2026-10-18",
  "source": "6600 games, 100 a pairing",
  "byList": {
-  "brremoval": 48,
+  "brremoval": 49,
   "burn": 39,
-  "chancel": 49,
+  "chancel": 48,
   "levy": 46,
-  "marducontrol": 54,
-  "muster": 46,
-  "pall": 63,
+  "marducontrol": 53,
+  "muster": 45,
+  "pall": 64,
   "rabble": 63,
-  "roll": 54,
-  "warband": 42,
+  "roll": 52,
+  "warband": 41,
   "watch": 56,
-  "witch": 38
+  "witch": 45
  }
 }
