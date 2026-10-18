@@ -2922,6 +2922,66 @@
         }
       }
     },
+    "card-vigil-keeper-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:f5281e87b5d59cec48acddda973bdc8b4388eb483dce30161587009341a33822",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:f5281e87b5d59cec48acddda973bdc8b4388eb483dce30161587009341a33822",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-vigil-keeper-1/canonical.png",
+          "rendered_at": "2026-10-18T00:53:02+00:00",
+          "thumb": "assets/thumbs/card-vigil-keeper-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-vigil-keeper-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:031af1fb41cd18662894596b0ba099620e3cf6d1352addaf9a7e1357fe0c04b4",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:031af1fb41cd18662894596b0ba099620e3cf6d1352addaf9a7e1357fe0c04b4",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-vigil-keeper-2/canonical.png",
+          "rendered_at": "2026-10-18T00:53:11+00:00",
+          "thumb": "assets/thumbs/card-vigil-keeper-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-vigil-keeper-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:fc04bcd09e4e33bac6bf47299d8d4268ce49dbf690dc29c0bd41c5f919e14775",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:fc04bcd09e4e33bac6bf47299d8d4268ce49dbf690dc29c0bd41c5f919e14775",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-vigil-keeper-3/canonical.png",
+          "rendered_at": "2026-10-18T00:53:20+00:00",
+          "thumb": "assets/thumbs/card-vigil-keeper-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-vigil-keeper-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:53bb5a0d4126c580bbf0549af9186a88b632c721a083930bfce2e063d87c26a6",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:53bb5a0d4126c580bbf0549af9186a88b632c721a083930bfce2e063d87c26a6",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-vigil-keeper-4/canonical.png",
+          "rendered_at": "2026-10-18T00:53:29+00:00",
+          "thumb": "assets/thumbs/card-vigil-keeper-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "card-vitalist-4": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:cadfdcd11c3e9e11f16613730737e53783d6ef7aaaf2ccc86a76bc65d01a87d9",
