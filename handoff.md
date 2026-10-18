@@ -1,87 +1,84 @@
-# Handoff — after Session 66 (2026-10-17; post-S66 addendum 2026-10-18)
+# Handoff — after Session 67 (2026-10-19)
 
 ## State of the world
-Five Constructed formats have fields of their own — the Open, Peasant and three triads: Naya, Esper and now **Mardu** (RWB, eleven lists, tables recorded). Esper has its second table (the sweeper round in, the Ossuary archived). Since S65 the pool has two custom cards (Foxglove Dose T2, Tidal Shackle T1), Karmic Mentor returns any permanent (R-114: an Aura enters attached), and Emerald Snakes is registered in the Open and Naya. Shape thresholds are frozen per format (ADR-186, enforced by `open:gen`). The pilot carries books to 139. Run with `pnpm viewer`; `pnpm test` for the suite (1,100: 1,098 passed, 2 skipped).
+Eight formats now have fields of their own: the Open (fifteen lists), Peasant, Naya, Esper, Mardu (twelve), and this session's deep batch — **Grixis, Jund and Jeskai**, eleven seeds each, with tables of record, frozen thresholds, reference pages, door lines, the play screen's groups and door tests. Guides now belong to their list in the measuring tools (ADR-188): `open:rr` keeps a list's guide when its fifteen is varied and warns about rows the fifteen can't feed. `open:gen` writes nothing until every check passes, and the guide shapes are one list. Vigil Keeper is in the Open's Muster. `pnpm pilot-probe` reads three of the pilot's gaps against Chris's recorded play. Tests: `pnpm test` (1,119 passed). Tables: `scripts/open/rr.sh <tag> 100 [--matches 60] --format <id>`, then `open:rr --merge/--matches-report … --record`, then `open:gen`.
 
 ## Done this session
-- **Part 0**: rulings and ADRs 185, 186 (built: `open:gen` refuses a field of eight or more without a frozen `shapeScale`; Esper 10/8, Peasant 20/4, Naya 18/3, Mardu 18/3), 168 for guides — `docs/decision-updates/s66.md`. Esper's names: the Roll, the Eddy, the Aerie, the Chancel, the Barrow, the Ossuary.
-- **Part 1 — Mardu** (`formats/mardu/`, `MARDU_FORMAT`, the door's line "red, white and black. The Usher's loop lives here, and the race that beats it"). Eleven seeds: nine whole (the Pall with its plan, Mardu Control, the Muster, the Warband, the Levy; the Roll and the Chancel from Esper; the Watch from Naya), the Rabble with its blue mana swapped, **BR Removal** promoted from Peasant (Chris: Hypnotic Specter, Hymn, Dread Presence, Demonic Tutor, Drana, Char, the power in the mana) and **Mono-Red Burn** built. Event test `s66-mardu-event.test.ts`.
-  - **Table of record** (seed 56, 100 games and 60 matches a pairing), in matches: **Mardu Control 67.7**, the Rabble 62.9, **the Pall 61.8**, the Watch 52.7, the Roll 51.3, the Chancel 49.1, BR Removal 43.9, the Muster 43.5, the Levy 40.7, the Warband 40.2, Burn 36.3.
-  - **The read the triad is for: yes, the Open's shape holds** — the loop on top (Mardu Control; the Pall, which beats it 55–45 head to head among the top eight), the race next (the Rabble, the Watch, the Roll), the between below (the Chancel, the Levy). Mardu Control loses nothing for having no Clio to prey on (Open 70.2); it is a sideboard deck (52.3 in game one, +13.7 after). **The Pall rises** (Open 51.4, seventh → Mardu 61.8, third): the best game one (66.0), its loop assembled in 60% of its games (52% in the Open) and every one of those won; it loses 13 points after game one to the Crypts. Chris: the Usher is the format's best card, and beating her is most of the game (no Reaper's Forerunner in Mardu).
-  - **The lord**: by the census's convention Mardu's lord is the Usher (its only three-colour legend; ministers Lumen, Isaura, Meliyan). Two Ushers in the Chancel (with two Plateaus and two Badlands to cast her) **+7.6 ± 2.4** over the same mana — adopted (Chris); Meliyan in BR Removal −2.5 ± 1.1, not.
-- **Part 2 — Esper's second table**:
-  - **The sweeper round**: a guide shape **`wide`** (Chris: `small` counts creature cards and misses decks that go wide through token makers; `wide` = eight or more token-making cards — in Esper the Roll and the Levy). Rows measured one at a time, 160 matches a pairing: **Wrath** for the Locks +3.1, the Chancel +5.0, the Aerie +3.4; the **Wave** for the Locks +7.5; Retribution −1.6 to +0.3 (out). Adopted together: the Locks +9.7 ± 5.1. Fifteens registered for the Chancel and the Aerie. The Writ (UB) sits out: no sweeper in the pool it can cast.
-  - **The out-rule's `small` word**: adopted for no Esper list (eight unchanged, the Undertow level, the Roll −5.3).
-  - **Faldor** (two for two Valkyries in the Aerie): −6.3 ± 2.1, cast 0.56 a game — not adopted.
-  - **The Ossuary's probe → archived** (Chris): 24.7% against the field. Its reanimation aims right (489 of 506 casts raised a piece) but the pieces land late (9% by turn six, 40% never) and half its losses had a piece answered (Swords 27, Control Magic 22, Vindicate 12, Doom Blade 8, Wrath 6; Edicts 2). The brief's rule split evenly; a timing rule would only reach the second failure.
-  - **The Barrow** at 31.9 (was 40.6): its retire count is one.
-  - **Table re-run** (nine lists), in matches: the Roll 63.1, the Writ 59.6, the Aerie 53.1, the Undertow 51.3, the Eddy 50.6, the Levy 48.1, the Locks 47.5, the Chancel 44.8, the Barrow 31.9.
-- **Part 3 — the read across three triads**: **Naya has an engine** (Emerald Snakes 67.5 — Manaba and the Cobra, the Keeper as the payoff) over a race (the Rabble, Stompy) and no lock (no counterspell). **Esper has a race over a lock** — the Roll's tokens on top, the Writ's counters second, its engine gone (the Ossuary archived). **Mardu has an engine and a race at once** — the Usher's loop in two shells over the Rabble. A fourth by contrast: **Sultai (BGU)** is the one triad with no sweeper in the pool (every sweeper is white or red) and the shallowest reuse but one (seven lists whole, two more with a mana swap) — it would test a format the creature decks own; **Jeskai** has both counters and sweepers and deep reuse (thirteen whole, two with a mana swap).
-- **The estimate for the remaining seven** (lists already registered that are legal whole, of 48 distinct across the five fields; many are Peasant lists or Rabble variants, so the distinct families are fewer): Grixis 15 (+1 with a mana swap), Jund 13 (+3), Jeskai 13 (+2), Abzan 10, Temur 9 (+4), Sultai 7 (+2), Bant 6. A triad of ten seeds needs two to four built lists for Grixis, Jund and Jeskai; five or six for Sultai and Bant. Built as a batch: the seeding and the tables are mechanical (a triad's field takes about thirty minutes of machine time to record); the building and a census read per triad is the work — roughly a session for the three deep triads and one for the four shallow.
-- **Post-S65 work** (before this brief, pushed): Foxglove Dose and Tidal Shackle; books 136–139; R-112–R-114; the guide shapes `sweepers` and `shrinks`; Emerald Snakes in the Open (63.6, third) and Naya (67.5, first); the stale-attacker fix; Naya's thresholds frozen.
-
-### Post-S66 (2026-10-17/18): Chris's answer to the Usher's loop
-**Mardu as a format: settled (Chris, 2026-10-18).** The Usher's loop is beatable without an Usher — by a skilfully piloted Witch deck (Chris's 16–4 Umbel) — and the pilot's gap there is the pilot's (the Witch's life; Concern below), not the format's. Mardu's lists stand as registered: twelve, the Watch with Vigil Keepers, the Witch with Dranas.
-
-- **The bottoming (R-115, `putOnBottom`)**, studied and set aside: Hallowed Rites, the Sexton of the Vale at five costs and bodies, Pyre Rites at four (book 140 for the pilot). In the Watch and Mardu Control every variant measured level or negative against the slot it took; the rider on a Shock was worth about nothing (−0.4 ± 0.7). The loop beats a defender holding nothing; a one-shot answer is rarely held at the right time. The cards stay in `data/cards-proposed`.
-- **The replacement (R-116, `exileOpponentsDying`)**: "If a creature an opponent controls would die, exile it instead" — the loop's legend-rule step becomes an exile, and no drain fires. Hallowed Warder ({1}{W}) at 1/4 and 2/3, Vigil Keeper ({2}{W}, draw a card) at 2/2 and 1/3: the Keeper strongest, +6 to +13 against the Usher decks. **Vigil Keeper adopted at 1/3** (Chris), T2 interim, with its art (art nouveau, of four) and Chris's printed face; Peasant score 2.43 (rebuilt).
-- **Its slot** (160 matches a pairing, paired, fresh baselines): in Mardu Control three Keepers for the three Restoration Angels +4.2 ± 1.0 (Jet Witch +3.1; Soul Warden −0.2; in the fifteen for the Macabres +1.2), **not adopted** (Chris). **In the Watch, two Emeria Angels and a Dawnwing Marshal out for three Keepers, +4.8 ± 1.0 — adopted**; Mardu's tables re-run (`analysis/runs/mardu_*_post66.*`): the Watch 52.7 → 57.1 in matches, nothing else moved more than 1.4.
-- **Chris's next**: winning a Mardu Umbel with no Usher in the 75 — **done** (2026-10-18): Chris's nearly mono-black Witch list (the Jet Witch, Dread Presence, Hymn, Specter, Nighthawk, Gallows Djinn, Tendrils) went 5–0 and won the bracket over BR Removal, the Roll and the Pall, 16–4 in games. **Registered in Mardu as `witch` (the Witch)** with Chris's fifteen and a guide read from Chris's swaps (whole plan). The pilot plays it at 39.5 in matches (11th of 12); Mardu's tables re-run with twelve lists (`analysis/runs/mardu_*_witch.*`).
-- **The Witch's Dranas** (Chris: the Djinn rarely beats a Drana), 160 matches a pairing, paired against the Umbel 75: three Dranas and one card for the four Djinns +4.3 to +5.9 (± 1.4; Vindicate and Nekrataal best, +12 to +15 against the Usher decks); with Nekrataal in, the three freed sideboard slots as Flametongue Kavus in for the Dark Rituals against creature decks a further +4.9 ± 0.7 — +10.7 ± 1.4 together (Vigil Keeper against the Usher decks +0.3; Nekrataal for Hymns +0.7). **Registered** (Chris): the Witch is now 3 Drana + 1 Nekrataal for the Djinns, Kavus in the fifteen for the Dranas, the Kavu row in for the Rituals. Mardu's tables re-run (`analysis/runs/mardu_*_witch.*`), in matches: the Rabble 64.6, Mardu Control 62.0, the Pall 59.7, the Watch 59.2, the Roll 50.3, the Chancel 49.8, **the Witch 49.0** (was 39.5), the Muster 44.9, the Warband 42.3, the Levy 41.5, BR Removal 39.8, Burn 36.7.
-- **Concern (pilot)**: the Witch's life. The pilot played Chris's 16–4 list at 39.5 (49.0 after the Dranas); in the final the Pall's pilot paid itself from 18 to 6 with the Witch into an untapped Nighthawk. The pilot has no sense of when the Witch's cost is safe (no burn, no attackers) and when it is not.
-- **Fixed (tooling)**: `open:rr --deck-guide` — a registered guide with the same fifteen as the test was found first, and the test rows were ignored (the first Drana grid read +8 to +10 from it: the registered row brought three more Dranas — six in all — for whatever rated lowest). The test guide now comes first.
-- Tests after: **1,110 passed**, 2 skipped (new: `sim/s66-hallow.test.ts`, `sim/s66-warder.test.ts`, the hallow fuzz). Ladder PASS for books 140 and its amendments; none for R-116 (no ladder card carries it) or the Watch's list change.
-- **Concern (tooling)**: a guided list's fifteen cannot be varied by `--deck-side` alone — the guide is matched by the exact fifteen, so one changed card drops the whole guide silently and the rules sideboard instead (Mardu Control read −7 from it). Carry the guide's rows with `--deck-guide`; a control with the unchanged guide reproduces the baseline exactly. For the planner: a guide could be keyed by list rather than by fifteen, or `open:rr` could warn when a fifteen under test matches no guide that its list had.
+- **Part 0**:
+  - Rulings and ADR-187 and 188 are in `docs/decision-updates/s67.md`, with Chris's five kickoff rulings (the brief read against the data).
+  - ADR-188 built: `LIST_GUIDES` (`<format>:<key>` → guide); `guideOfList`; `aiSideboard`'s explicit `guide`; `open:rr`'s guide by key, test guide and warning. `open:gen` queues every write until all checks pass (a planted bad shape wrote nothing). `GUIDE_SHAPES` is typed exhaustive. Equivalence: 1,638 Mardu Control games re-run identical.
+  - Mardu's names: BR Removal (Mardu) is now **the Ashen**, Mono-Red Burn **the Kindling**.
+- **Part 1 — Vigil Keeper in the Open**:
+  - **The Muster**: three for the Fencing Aces, +2.9 ± 0.9 (the Pall +12.5). **Adopted.**
+  - **Emerald Snakes**: two Keepers on a Savannah swap, +0.3. Not adopted.
+  - **Countersnake's fifteen**: +0.0. Not adopted.
+  - **Reaper Clio**: dropped (Chris's ruling).
+  - The Open's tables re-run: the Muster 41.5 → 43.9, the Pall 51.4 → 49.7.
+- **Part 2 — the batch.** Seeds whole where legal, with every land swap logged in the list's source:
+  - **Grixis**: the Kiln, the Rabble, the Writ, the Eddy, the Undertow, the Barrow, the Tally (revived), the Ashen, the Kindling, Peasant's BR Removal; built: Grixis Clio.
+  - **Jund**: the Sweep (land swap), the Ashen, the Rabble, the Stampede, Dungrove Auras, Emerald Snakes (land swap), the Wurmspeaker, the Kindling, the Reaper (revived, land swap), **Black Forest Ham** (Chris's); built: Jund Coin.
+  - **Jeskai**: the Kiln (fifteen swap), the Tally, the Aerie (land and fifteen swaps, Esper's guide carried), the Watch, the Muster, the Warband, Naya's Rabble, UR Pyroclasm Control; built: Jeskai Sweepers, Jeskai Theft, Jeskai Locks.
+  - **The lords**:
+    - The Stoker: −1.6 and −4.2. Not adopted.
+    - **The Bailiff in the Theft: +4.6 ± 1.0. Adopted** (Jeskai re-run: the Theft 43.3 → 49.7); in the Sweepers +0.5.
+    - The Reaper: −3.4 into Emerald Snakes; +2.1 ± 1.3 for two out of the Sweep, under the bar.
+- **Part 3 — the probes** (`pnpm pilot-probe --witch | --manaba | --racing`); the results are in Concerns 1 to 3.
+- **Part 4 — the read** (decision updates):
+  - **Tables in matches:**
+    - **Grixis**: the Rabble 82.6, Clio 61.8, the Writ 57.3 … the Undertow 26.7.
+    - **Jund**: Emerald Snakes 67.9, Dungrove Auras 64.8, the Rabble 61.6 … Jund Coin 28.7.
+    - **Jeskai**: the Rabble 74.7, the Watch 67.0, the Locks 57.5 … the Sweepers 30.8, UR Pyroclasm Control 30.5.
+  - **Six triads**: Naya and Jund an engine over a race; Esper and Jeskai a race over a lock; Mardu an engine and a race at once; Grixis a race over everything. The red race tops three of the six.
 
 ## Deviations from the brief
-1. **The Pall is not mono-black**: it is black with the Usher's white and red, Mox Ruby and Pearl and the RWB duals — all within RWB, so it seeds whole.
-2. **BR Removal's line was unfinished** ("the Specter's cousins, Vindicate? — no, WB"): built from Peasant's list with Chris's direction (above).
-3. **The lord**: the brief called the Usher Mardu's minister and asked the implementer to name a three-colour lord; by the census's convention she is the lord (the only three-colour legend in RWB). The trial became the Usher in the Chancel and Meliyan (the unseeded minister) in BR Removal.
-4. **ADR-186 "frozen at their first eight"**: Mardu's eleven seeds have no order to take eight by — frozen at the whole first field's 18/3. Peasant frozen too (20/4) though the ADR names only Esper and Mardu: the rule is general — **for the planner to confirm**.
-5. **The sweeper round keyed on `wide`, not `small`** (Chris): `small` does not fire on the Roll or the Levy in Esper.
-6. **The Writ took no part** in the sweeper round (UB; no castable sweeper).
+1. **No Grixis reanimator** (interim, logged). The brief's condition: the Ossuary died to Swords, Control Magic and Vindicate. Grixis keeps Control Magic (the Kiln's four, the Tally's two, two fifteens) and every list's graveyard hate. Planner: build it next session, or accept the read.
+2. **Jund Coin built although the Sweep is already Jund Aristocrats** (Reaper, Meliyan, Blood Artist, Bitterblossom). The Coin is the brief's no-white Coin shape. It measured last (28.7). Planner: keep it, or retire it on its first count.
+3. **ADR-188 in events and the play screen**: they still match a guide by fifteen. A seat there holds its list's authored fifteen or a built one, so the two readings agree and event behaviour is unchanged. Planner: confirm the reading.
+4. **The Kiln's three Macabres became Pyroclasms in Jeskai.** The Kiln makes no white mana, so it has no castable graveyard answer but the Crypt, and it already holds four. The Aerie's Macabre became a third Crypt.
+5. **The lord read for Jund** is the Reaper added to one list and taken out of another, since two seeds already carry it.
 
 ## Concerns
-1. **`small` and `wide` measure different things, and the brief's guides had assumed `small` saw tokens.** Every shape counting creature cards misses token makers; any future guide aimed at a go-wide deck should name `wide`.
-2. **The out-rule's `small` word does nothing in Esper** for eight lists — their sideboarding never reaches the defensive card it protects. Its value was the Open's lists (S61); it may not be worth trialling per triad.
-3. **The Ossuary's split result**: a reanimator shape in a format with Swords, Control Magic and Vindicate faces two failures at once; the next reanimator seed (Grixis, Sultai) should be read against the removal its field holds before it is built.
-4. **The lords are mixed**: the Fordkeeper wanted by some, the Dredger by none, Faldor by none, and the Usher strongly wanted (+7.6) — she is the only lord whose card is also a combo piece. The planner's "texture" reading holds for the others.
-5. **Open:gen's shape list had fallen behind** the guide shapes (S63's list; `sweepers`, `shrinks`, `wide` added this session) — a guide naming a shape it did not know failed generation after the decks file had already been rewritten, and one Esper re-run played without its guides (re-run, recorded correctly). Generation should validate before it writes.
-6. **The pilot under-plays the Manaba engine** (Chris's Emerald Snakes: 8–0 and 13–1 by hand, 48–66 in the pilot's) and races (6–0 against Mardu Control by hand, the pilot 43) — the tables rank archetypes as the pilot plays them.
+1. **The Witch probe contradicts the brief's premise.**
+   - **The pilot doesn't overpay; it draws later and less.** It activates 4.8 times a game, the first on turn 10.2. Chris activates 7.0 times, the first on turn 6.6, and pays into an untapped racer more often (31% against 18%).
+   - **The candidate rule would change little.** It forbids 61 of 329 pilot activations, and those games went no worse.
+   - **For S68:** the useful term is "use the Witch early while it's safe", not "stop paying". Book 113's shape, extended to the board, is the wrong lever.
+2. **The Manaba probe can't see the pilot's taps.** The pilot pays through the solver, so its Manaba taps aren't agent actions. The end-step board is the reliable reading, and it shows no mana wasted. The 13–1 versus 60 gap is likely elsewhere (sequencing, the Forerunner's timing: Chris holds it at 19.6% of end steps).
+3. **Racing isn't the attack declaration.** The pilot would have held on only 5 of Chris's 64 attacking turns, and only one of those positions decides a game. A next probe should read blocks and the turn order of casts.
+4. **The red race dominates Grixis (82.6) and Jeskai (74.7).**
+   - In Grixis nothing white answers it; in Jeskai the counters-and-sweepers contrast didn't produce a deck that beats it in the pilot's hands.
+   - The built Jeskai Sweepers is last but one (30.8). That may be the build, or the pilot's Wrath timing; it's worth one probe before a list is blamed.
+5. **Frozen `large` thresholds of 1 in Grixis and Jund** (ADR-186). This is S65's fragile low-rank case again: `large` fires against nearly every list there. Planner: ratify, or set by hand.
+6. **The Keeper answers the Pall, not Mardu Control**: +12.5, +8.1 and +4.4 against the Pall, but +0.6, +1.9 and −1.2 against Mardu Control. Mardu Control's loop is one engine among several. No fifth shape joins the Open's four.
+7. **The fifteen-matched guide lookup** still lives in events, the UI and `combo-probe`/`sideboard:show`. Those were left as they were; only `open:rr` is key-based. `sideboard:show` would be a small follow-up.
 
 ## Registry entries added/changed
-- No new R-entries this session (R-112–R-114 post-S65). Pool registry unchanged this session (Karmic Mentor's row amended post-S65).
-- Guide shape `wide` (sideboard-ai; `open:gen` validates it with `sweepers` and `shrinks`).
+- No R-entries; no pool changes (Vigil Keeper is now in the Open's Muster, and the Watch has it in Mardu and Jeskai).
+- New formats: `grixis`, `jund`, `jeskai`, each with `lists.json`, `means.json`, `matches.json` and `docs/reference/<id>-lists.md`. Open revision S67: the Muster (`open-lists.ts`).
 
 ## Test status
-`pnpm test`: **1,098 passed**, 2 skipped (1,100). New: `world/s66-mardu-event.test.ts` (the colours and the land rule; an event to a champion); `wide` pinned in `sideboard-s56.test.ts`. Ladder last run for book 139 (PASS); no AI change this session.
+**1,119 passed**, 2 skipped (1,121). New: `world/s67-guides.test.ts` (ADR-188: every list mapped, a varied fifteen keeps its guide by key, one shape list) and `world/s67-triads-event.test.ts` (each triad's colours and land rule, an event to a champion). No ladder: no AI decision changed (the probe tool only reads); the sideboarding is identical for every registered list (the equivalence run).
 
 ## Suggested next
-- **The four remaining deep and shallow triads as a batch** (the estimate above), Jeskai or Sultai first as the fourth by contrast.
-- **Mardu by hand — done**: Chris's no-Usher Umbel (the Witch). Mardu settled; what remains there is the pilot's (next).
-- **A pilot term for the Jet Witch's life**: when paying is safe (no burn seen, no untapped attacker that races it) and when it is not — the gap between Chris's 16–4 and the pilot's 49.0, and the Pall's own pilot paying itself to 6 into a Nighthawk. A ladder gate when built.
-- **The Barrow**: one retire count; a second table at the bottom retires it.
-- **The Dose's trick** (its own probe, book 129's shape on a conditional harm), and a pilot term for spending Manaba mana on a wide board (Concern 6).
-- Still owed: a journey played through a sitting.
+- **S68's pilot rules** from the probes: the Witch used early when safe (Concern 1), with a ladder gate; a block and sequencing probe for the racing gap (Concern 3); the Manaba read through the solver's payments (Concern 2).
+- **The shallow batch**: Sultai first by contrast (no sweeper), then Abzan, Temur, Bant. This batch's cost holds: one session for three, about 2.5 hours of machine time.
+- A Grixis reanimator (Deviation 1); the Jeskai Sweepers' Wrath timing probe (Concern 4).
 
 ## How to run
 ```
 pnpm install && pnpm typecheck && pnpm test          # FUZZ_FULL=1 pnpm test for the full fuzz
 pnpm viewer                                          # the app (dev); pnpm build:web before any push
 pnpm ladder                                          # the AI gate — alone, ~13 min (two baselines)
-scripts/open/rr.sh rec 100 [--format peasant]        # game one, every pairing, 8 shards → analysis/runs/scratch/rr/
-scripts/open/rr.sh m 100 --matches 60 [--format peasant]
-pnpm open:rr [--format peasant] --merge analysis/runs/scratch/rr/rec_?.json --record --out analysis/runs/rr.json   # --record writes formats/<id>/means.json; then open:gen
-pnpm open:rr [--format peasant] --matches-report analysis/runs/scratch/rr/m_?.json --record --out analysis/runs/matches.md
-pnpm open:gen && pnpm reference                      # after any change under data/convocation/formats/
-pnpm sideboard:show --format peasant --list br --vs elder,rabble
+scripts/open/rr.sh rec 100 [--format grixis]         # game one, every pairing, 8 shards → analysis/runs/scratch/rr/
+scripts/open/rr.sh m 100 --matches 60 [--format grixis]
+pnpm open:rr [--format grixis] --merge analysis/runs/scratch/rr/rec_?.json --record --out analysis/runs/rr.json   # --record writes formats/<id>/means.json; then open:gen
+pnpm open:rr [--format grixis] --matches-report analysis/runs/scratch/rr/m_?.json --record --out analysis/runs/matches.md
+pnpm open:gen && pnpm reference                      # after any change under data/convocation/formats/ (writes nothing if any check fails)
+pnpm sideboard:show --format mardu --list witch --vs pall,rabble
 pnpm rating:format --format peasant [--write]        # the format's own card score
-pnpm format:census --max-tier 2 ; pnpm format:rr --field <file> --max-tier 2    # a pool and a field that are not yet a format
-pnpm format:census --colors RWB [--max-tier 2] ; pnpm format:census --triads   # a triad's shelf (the land rule applied); the ten side by side
-scripts/open/rr.sh nm 100 --format naya --matches 60   # Naya's tables, as Peasant's (--format naya everywhere --format peasant goes)
-pnpm open:rr … --max-turns 140                       # the turn limit on trial
-pnpm open:rr … --off removalmatchup                 # book 129 off (also optionalpay, equiphost, drawforlife, loopnet, laterpicks, and every earlier switch)
+pnpm format:census --colors UBR [--max-tier 2] ; pnpm format:census --triads   # a triad's shelf (the land rule applied); the ten side by side
+pnpm pilot-probe --witch --format mardu --lists witch,pall,marducontrol --games 6 --recorded <file>   # S67: the Witch's activations, the pilot and the human
+pnpm pilot-probe --manaba --format open --lists emeraldsnakes --games 6 --recorded <file>
+pnpm pilot-probe --racing --format open --recorded <file> --playouts 6
 python3 scripts/open/seat.py <list> <tag>…           # a trial in one seat: matches, games, by opponent, casts
-scripts/open/rr.sh t 160 --matches 160 --format open --with-archived --only larder --vs <field> --deck larder:<file>:midrange --deck-side <file>   # a new list in an archived seat, against the field
-scripts/open/rr.sh t 160 --matches 160 --format esper --only locks --vs bwtokens,levy --deck locks:<main> --deck-side <side> --deck-guide <guide>   # a guide row measured
+scripts/open/rr.sh t 160 --matches 160 --format esper --only locks --deck locks:<main> --deck-side <side> [--deck-guide <guide>]   # a fifteen varied keeps the list's guide (ADR-188); --deck-guide replaces its rows
 ```

@@ -8,17 +8,17 @@
 
 | list | deck | pilot | matches | game one | after sideboarding | fifteen |
 |---|---|---|---|---|---|---|
-| the Rabble (Naya) | Mono-Red Goblins (R) | aggro | 74.7 | 66 | +4.6 | built |
-| the Watch (Mardu) | Boros Tokens (W R) | aggro | 68.7 | 63 | −1.6 | built |
-| Jeskai Locks (working name) | Azorius Control (W U) | control | 58.5 | 58 | −5.0 | registered |
-| the Aerie | Azorius Skies (W U) | midrange | 54.3 | 55 | −4.1 | registered, guided |
-| the Kiln | Izzet Spells (U R) | midrange | 51.9 | 56 | −6.6 | registered |
-| the Warband (Chris's list to test against the Muster) | Boros Goblins (R w) | aggro | 49.4 | 50 | +4.4 | built |
-| the Muster | Boros Weenie (W R) | aggro | 44.8 | 48 | −4.1 | built |
-| Jeskai Theft (working name) | Jeskai Theft (W R u) | midrange | 43.3 | 45 | −1.2 | registered |
-| the Tally | Izzet Sparks (U R) | aggro | 40.9 | 40 | +3.1 | built |
-| UR Pyroclasm Control | Izzet Control (U R) | control | 32.8 | 38 | +0.1 | built |
-| Jeskai Sweepers (working name) | Jeskai Control (U W r) | control | 30.7 | 30 | +10.0 | registered |
+| the Rabble (Naya) | Mono-Red Goblins (R) | aggro | 74.7 | 66 | +5.4 | built |
+| the Watch (Mardu) | Boros Tokens (W R) | aggro | 67.0 | 63 | −2.6 | built |
+| Jeskai Locks (working name) | Azorius Control (W U) | control | 57.5 | 58 | −4.7 | registered |
+| the Aerie | Azorius Skies (W U) | midrange | 54.3 | 54 | −4.2 | registered, guided |
+| the Kiln | Izzet Spells (U R) | midrange | 53.3 | 56 | −4.9 | registered |
+| Jeskai Theft (working name) | Jeskai Theft (W R u) | midrange | 49.7 | 48 | −0.1 | registered |
+| the Warband (Chris's list to test against the Muster) | Boros Goblins (R w) | aggro | 48.8 | 50 | +4.0 | built |
+| the Muster | Boros Weenie (W R) | aggro | 43.3 | 47 | −4.0 | built |
+| the Tally | Izzet Sparks (U R) | aggro | 40.3 | 39 | +1.9 | built |
+| Jeskai Sweepers (working name) | Jeskai Control (U W r) | control | 30.8 | 31 | +9.5 | registered |
+| UR Pyroclasm Control | Izzet Control (U R) | control | 30.5 | 38 | −0.6 | built |
 
 Archived (kept in the data, out of the field): none.
 
@@ -41,7 +41,7 @@ The most played: Lightning Bolt 9 · Flametongue Kavu 9 · Counterspell 7 · Con
 
 ## the Watch (Mardu) — Boros Tokens (W R)
 
-`watch` · aggro · game one 63 · matches 68.7
+`watch` · aggro · game one 63 · matches 67.0
 
 - **Lands (19):** 4 Sacred Foundry · 4 Plateau · 5 Plains · 6 Mountain
 - **Creatures (18):** 4 Soul Warden · 4 Young Pyromancer · 1 Flametongue Kavu · 1 Dawnwing Marshal · 3 Vigil Keeper · 4 Captain of the Watch · 1 Lumen, the Hearth Fire
@@ -52,7 +52,7 @@ The most played: Lightning Bolt 9 · Flametongue Kavu 9 · Counterspell 7 · Con
 
 ## Jeskai Locks (working name) — Azorius Control (W U)
 
-`locks` · control · game one 58 · matches 58.5
+`locks` · control · game one 58 · matches 57.5
 
 - **Lands (22):** 4 Tundra · 4 Hallowed Fountain · 7 Island · 6 Plains · 1 Library of Alexandria
 - **Creatures (9):** 4 Serra Angel · 1 Arcanis the Omnipotent · 2 Karmic Mentor · 2 Faerie Formation
@@ -64,7 +64,7 @@ The most played: Lightning Bolt 9 · Flametongue Kavu 9 · Counterspell 7 · Con
 
 ## the Aerie — Azorius Skies (W U)
 
-`skies` · midrange · game one 55 · matches 54.3
+`skies` · midrange · game one 54 · matches 54.3
 
 - **Lands (21):** 4 Hallowed Fountain · 4 Tundra · 5 Plains · 8 Island
 - **Creatures (25):** 4 Youthful Valkyrie · 4 Inspiring Overseer · 4 Plumecreed Escort · 4 Restoration Angel · 2 Traumatizer · 2 Karmic Mentor · 2 Serra Angel · 2 Emeria Angel · 1 Faerie Formation
@@ -77,7 +77,7 @@ The most played: Lightning Bolt 9 · Flametongue Kavu 9 · Counterspell 7 · Con
 
 ## the Kiln — Izzet Spells (U R)
 
-`kiln` · midrange · game one 56 · matches 51.9
+`kiln` · midrange · game one 56 · matches 53.3
 
 - **Lands (19):** 1 Tallyflame Court · 4 Volcanic Island · 4 Steam Vents · 1 Library of Alexandria · 5 Mountain · 4 Island
 - **Creatures (21):** 3 Flametongue Kavu · 4 Tidewall · 3 Odile, the Tallyflame · 3 The Ruby Tyrant · 4 Guttersnipe · 4 Young Pyromancer
@@ -87,9 +87,21 @@ The most played: Lightning Bolt 9 · Flametongue Kavu 9 · Counterspell 7 · Con
 - **History:**
   - contributed — S67 seed (the planner's): the Open's Kiln, its fifteen's three Faerie Macabres (black) for three Pyroclasms — the Kiln makes no white mana, so no castable graveyard answer but the Crypt (which it holds four of).
 
+## Jeskai Theft (working name) — Jeskai Theft (W R u)
+
+`theft` · midrange · game one 48 · matches 49.7
+
+- **Lands (22):** 4 Plateau · 3 Tundra · 3 Volcanic Island · 2 Sacred Foundry · 2 Hallowed Fountain · 1 Steam Vents · 1 Tallyflame Court · 3 Plains · 2 Island · 1 Mountain
+- **Creatures (12):** 3 Lumen, the Hearth Fire · 4 Restoration Angel · 3 Flametongue Kavu · 2 The Bailiff
+- **Other (26):** 1 Black Lotus · 1 Mox Pearl · 1 Mox Sapphire · 1 Mox Ruby · 1 Time Walk · 4 Protocol · 4 Control Magic · 2 Altar of Dementia · 4 Swords to Plowshares · 3 Lightning Bolt · 2 Counterspell · 2 Wrath of God
+- **Its fifteen (registered):** 3 Pyroclasm · 3 Tormod's Crypt · 3 Vigil Keeper · 2 Essence Scatter · 2 Disenchant · 2 Wrath of God
+- **Its sideboard guide:** none — the general rules sideboard it.
+- **History:**
+  - contributed — S67 seed (the planner's): built by the implementer — the S60 theft shell with a sweeper behind it (the brief): Lumen, Restoration Angel, Protocol and Control Magic; the Altar to spend what is borrowed; Wrath. S67 (the lord read, ADR-168): two Man-o'-Wars for two Bailiffs (+4.6 ± 1.0).
+
 ## the Warband (Chris's list to test against the Muster) — Boros Goblins (R w)
 
-`warband` · aggro · game one 50 · matches 49.4
+`warband` · aggro · game one 50 · matches 48.8
 
 - **Lands (22):** 4 Plateau · 4 Sacred Foundry · 12 Mountain · 2 Plains
 - **Creatures (22):** 4 Skirk Prospector · 4 Goblin Piker · 4 Goblin Chieftain · 2 Boggart Brute · 3 Siege-Gang Commander · 3 Lumen, the Hearth Fire · 2 Flametongue Kavu
@@ -100,7 +112,7 @@ The most played: Lightning Bolt 9 · Flametongue Kavu 9 · Counterspell 7 · Con
 
 ## the Muster — Boros Weenie (W R)
 
-`muster` · aggro · game one 48 · matches 44.8
+`muster` · aggro · game one 47 · matches 43.3
 
 - **Lands (22):** 4 Plateau · 4 Sacred Foundry · 8 Plains · 4 Mountain · 2 Secluded Steppe
 - **Creatures (21):** 4 Savannah Lions · 4 Soul Warden · 2 Suntail Hawk · 1 Fencing Ace · 3 Vigil Keeper · 3 Emeria Angel · 4 Flametongue Kavu
@@ -109,21 +121,9 @@ The most played: Lightning Bolt 9 · Flametongue Kavu 9 · Counterspell 7 · Con
 - **History:**
   - contributed — S67 seed (the planner's): the Open's Muster whole, with S67's three Vigil Keepers for three Fencing Aces (Part 1).
 
-## Jeskai Theft (working name) — Jeskai Theft (W R u)
-
-`theft` · midrange · game one 45 · matches 43.3
-
-- **Lands (22):** 4 Plateau · 3 Tundra · 3 Volcanic Island · 2 Sacred Foundry · 2 Hallowed Fountain · 1 Steam Vents · 1 Tallyflame Court · 3 Plains · 2 Island · 1 Mountain
-- **Creatures (12):** 3 Lumen, the Hearth Fire · 4 Restoration Angel · 3 Flametongue Kavu · 2 Man-o'-War
-- **Other (26):** 1 Black Lotus · 1 Mox Pearl · 1 Mox Sapphire · 1 Mox Ruby · 1 Time Walk · 4 Protocol · 4 Control Magic · 2 Altar of Dementia · 4 Swords to Plowshares · 3 Lightning Bolt · 2 Counterspell · 2 Wrath of God
-- **Its fifteen (registered):** 3 Pyroclasm · 3 Tormod's Crypt · 3 Vigil Keeper · 2 Essence Scatter · 2 Disenchant · 2 Wrath of God
-- **Its sideboard guide:** none — the general rules sideboard it.
-- **History:**
-  - contributed — S67 seed (the planner's): built by the implementer — the S60 theft shell with a sweeper behind it (the brief): Lumen, Restoration Angel, Protocol and Control Magic; the Altar to spend what is borrowed; Wrath.
-
 ## the Tally — Izzet Sparks (U R)
 
-`tally` · aggro · game one 40 · matches 40.9
+`tally` · aggro · game one 39 · matches 40.3
 
 - **Lands (22):** 4 Volcanic Island · 4 Steam Vents · 8 Mountain · 4 Island · 1 Tallyflame Court · 1 Forgotten Cave
 - **Creatures (12):** 4 Young Pyromancer · 4 Guttersnipe · 4 Flametongue Kavu
@@ -132,20 +132,9 @@ The most played: Lightning Bolt 9 · Flametongue Kavu 9 · Counterspell 7 · Con
 - **History:**
   - contributed — S67 seed (the planner's): the Open's Tally, archived there, revived here whole.
 
-## UR Pyroclasm Control — Izzet Control (U R)
-
-`urcontrol` · control · game one 38 · matches 32.8
-
-- **Lands (24):** 4 Steam Vents · 11 Island · 9 Mountain
-- **Creatures (15):** 4 Flametongue Kavu · 4 Wall of Air · 4 Traumatizer · 3 Air Elemental
-- **Other (21):** 4 Pyroclasm · 4 Lightning Bolt · 4 Counterspell · 2 Essence Scatter · 4 Brainstorm · 3 Char
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S67 seed (the planner's): Peasant's UR Pyroclasm Control whole.
-
 ## Jeskai Sweepers (working name) — Jeskai Control (U W r)
 
-`sweepers` · control · game one 30 · matches 30.7
+`sweepers` · control · game one 31 · matches 30.8
 
 - **Lands (24):** 1 Library of Alexandria · 1 Tallyflame Court · 4 Tundra · 3 Volcanic Island · 3 Plateau · 2 Hallowed Fountain · 1 Steam Vents · 1 Sacred Foundry · 4 Island · 4 Plains
 - **Creatures (6):** 3 Flametongue Kavu · 3 Serra Angel
@@ -154,4 +143,15 @@ The most played: Lightning Bolt 9 · Flametongue Kavu 9 · Counterspell 7 · Con
 - **Its sideboard guide:** none — the general rules sideboard it.
 - **History:**
   - contributed — S67 seed (the planner's): built by the implementer — the sweeper control the Open never got: Wrath, Pyroclasm and the Wave behind Counterspell, Absorb and Swords; Control Magic and the Kavu; Serra Angels to finish.
+
+## UR Pyroclasm Control — Izzet Control (U R)
+
+`urcontrol` · control · game one 38 · matches 30.5
+
+- **Lands (24):** 4 Steam Vents · 11 Island · 9 Mountain
+- **Creatures (15):** 4 Flametongue Kavu · 4 Wall of Air · 4 Traumatizer · 3 Air Elemental
+- **Other (21):** 4 Pyroclasm · 4 Lightning Bolt · 4 Counterspell · 2 Essence Scatter · 4 Brainstorm · 3 Char
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — S67 seed (the planner's): Peasant's UR Pyroclasm Control whole.
 

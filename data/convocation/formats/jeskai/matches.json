@@ -4,69 +4,69 @@
  "matchesAPairing": 60,
  "byList": {
   "kiln": {
-   "matches": 51.9,
-   "gameOne": 56.2,
-   "later": 49.6,
+   "matches": 53.3,
+   "gameOne": 56,
+   "later": 51.1,
    "n": 600
   },
   "locks": {
-   "matches": 58.5,
-   "gameOne": 59.5,
-   "later": 54.5,
+   "matches": 57.5,
+   "gameOne": 58.7,
+   "later": 54,
    "n": 600
   },
   "muster": {
-   "matches": 44.8,
-   "gameOne": 48.8,
-   "later": 44.7,
+   "matches": 43.3,
+   "gameOne": 47.6,
+   "later": 43.6,
    "n": 600
   },
   "rabble": {
    "matches": 74.7,
-   "gameOne": 64.3,
-   "later": 68.9,
+   "gameOne": 63.7,
+   "later": 69.1,
    "n": 600
   },
   "skies": {
    "matches": 54.3,
-   "gameOne": 55.6,
-   "later": 51.5,
+   "gameOne": 55.8,
+   "later": 51.6,
    "n": 600
   },
   "sweepers": {
-   "matches": 30.7,
-   "gameOne": 29.6,
+   "matches": 30.8,
+   "gameOne": 30.1,
    "later": 39.6,
    "n": 600
   },
   "tally": {
-   "matches": 40.9,
-   "gameOne": 41.8,
-   "later": 44.9,
+   "matches": 40.3,
+   "gameOne": 42,
+   "later": 43.9,
    "n": 600
   },
   "theft": {
-   "matches": 43.3,
-   "gameOne": 46.2,
-   "later": 45,
+   "matches": 49.7,
+   "gameOne": 50,
+   "later": 49.9,
    "n": 600
   },
   "urcontrol": {
-   "matches": 32.8,
-   "gameOne": 38,
-   "later": 38.1,
+   "matches": 30.5,
+   "gameOne": 36.7,
+   "later": 36.1,
    "n": 600
   },
   "warband": {
-   "matches": 49.4,
-   "gameOne": 46.9,
-   "later": 51.3,
+   "matches": 48.8,
+   "gameOne": 46.6,
+   "later": 50.6,
    "n": 600
   },
   "watch": {
-   "matches": 68.7,
-   "gameOne": 63.3,
-   "later": 61.7,
+   "matches": 67,
+   "gameOne": 63,
+   "later": 60.4,
    "n": 600
   }
  }

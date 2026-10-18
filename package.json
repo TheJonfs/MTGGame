@@ -16,6 +16,7 @@
     "agent-stats": "tsx packages/sim/src/agent-stats-cli.ts",
     "ladder": "tsx packages/sim/src/ladder-cli.ts",
     "narrate": "tsx packages/world/src/narrate-cli.ts",
+    "pilot-probe": "tsx packages/world/src/pilot-probe-cli.ts",
     "weight-search": "tsx packages/sim/src/weight-search-cli.ts",
     "viewer": "vite packages/ui",
     "gallery": "vite packages/ui --open /gallery",

@@ -868,7 +868,7 @@
    "name": "Jeskai Theft (working name)",
    "title": "Jeskai Theft (W R u)",
    "archetype": "midrange",
-   "source": "S67 seed (the planner's): built by the implementer — the S60 theft shell with a sweeper behind it (the brief): Lumen, Restoration Angel, Protocol and Control Magic; the Altar to spend what is borrowed; Wrath.",
+   "source": "S67 seed (the planner's): built by the implementer — the S60 theft shell with a sweeper behind it (the brief): Lumen, Restoration Angel, Protocol and Control Magic; the Altar to spend what is borrowed; Wrath. S67 (the lord read, ADR-168): two Man-o'-Wars for two Bailiffs (+4.6 ± 1.0).",
    "decklist": [
     {
      "cardId": "black_lotus",
@@ -903,7 +903,7 @@
      "count": 3
     },
     {
-     "cardId": "man_o_war",
+     "cardId": "the_bailiff",
      "count": 2
     },
     {
