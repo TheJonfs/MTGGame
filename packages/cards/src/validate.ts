@@ -455,8 +455,8 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
       if (Array.isArray(a.effects)) {
         for (const e of a.effects) {
           if (isRecord(e) && e.type === "gainControl" && e.scope === undefined) err(`a static gainControl needs scope "attached" (ADR-033); the targeted form is a resolved effect (S26)`);
-          if (isRecord(e) && !["modifyPT", "grantKeyword", "restrict", "gainControl", "grantAbility", "extraLandDrops", "untapDuringOthersUntap", "grantSubtype", "imposeEntersTapped"].includes(e.type as string)) {
-            err(`static ability cannot carry effect "${e.type}" (only modifyPT/grantKeyword/restrict/gainControl/grantAbility/extraLandDrops/untapDuringOthersUntap/grantSubtype/imposeEntersTapped)`);
+          if (isRecord(e) && !["modifyPT", "grantKeyword", "restrict", "gainControl", "grantAbility", "extraLandDrops", "untapDuringOthersUntap", "grantSubtype", "imposeEntersTapped", "exileOpponentsDying"].includes(e.type as string)) {
+            err(`static ability cannot carry effect "${e.type}" (only modifyPT/grantKeyword/restrict/gainControl/grantAbility/extraLandDrops/untapDuringOthersUntap/grantSubtype/imposeEntersTapped/exileOpponentsDying)`);
           }
           // A10 word 8 (S22): the granted ability is itself validated as an activated ability of
           // the target zone (a hand grant must be cycling-shaped; a battlefield grant needs a scope).
@@ -678,6 +678,9 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
   untapDuringOthersUntap: () => {
     // S45 (R-099, Seedborn Muse): static-only, no params.
   },
+  exileOpponentsDying: () => {
+    // S66 (R-116): static-only, no params.
+  },
   grantSubtype: (e, err) => {
     // S46 (R-100, Angelic Destiny): static-only; a non-empty subtype list and a scope.
     if (!Array.isArray(e.subtypes) || e.subtypes.length === 0 || (e.subtypes as unknown[]).some((x) => typeof x !== "string")) err(`grantSubtype.subtypes must be a non-empty string array (S46)`);
@@ -774,7 +777,7 @@ function validateEffects(
     if (type === "gainControl" && !opts.isStatic && e.scope !== undefined) err(`gainControl with a scope is static-only (ADR-033); use target + duration for the resolved form (S26)`);
     // S27: createLaw belongs to the Manafleur's own END_STEP trigger and nowhere else.
     if (type === "createLaw" && !(opts.lawTrigger && LAW_MAKERS.includes(cardId))) err(`createLaw is confined to the law-makers' end-step triggers — the Manafleur, the Cinquefont (S27/S42a)`);
-    if ((type === "grantAbility" || type === "extraLandDrops" || type === "untapDuringOthersUntap" || type === "grantSubtype" || type === "imposeEntersTapped") && !opts.isStatic) {
+    if ((type === "grantAbility" || type === "extraLandDrops" || type === "untapDuringOthersUntap" || type === "grantSubtype" || type === "imposeEntersTapped" || type === "exileOpponentsDying") && !opts.isStatic) {
       err(`${type} is static-only (A10 — interpreted live, never resolved)`);
       continue;
     }

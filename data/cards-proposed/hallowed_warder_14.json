@@ -1,0 +1,30 @@
+{
+  "id": "hallowed_warder_14",
+  "name": "Hallowed Warder (1/4)",
+  "source": "custom",
+  "manaCost": "{1}{W}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Human",
+    "Cleric"
+  ],
+  "power": 1,
+  "toughness": 4,
+  "text": "If a creature an opponent controls would die, exile it instead.",
+  "abilities": [
+    {
+      "kind": "static",
+      "effects": [
+        {
+          "type": "exileOpponentsDying"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2
+}

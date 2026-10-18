@@ -9,7 +9,7 @@ const expand = (d: { cardId: string; count: number }[]) => d.flatMap((e) => Arra
 /** S66 fuzz-before-fixtures — R-115; the lists and the cards under study live in s66-hallow-lists.ts. */
 describe("S66 fuzz — R-115, a graveyard card to the bottom of its library (fuzz-before-fixtures)", () => {
   const games = process.env.FUZZ_FULL ? 16 : 4;
-  it(`${games} games × every pair of the four lists (mirrors included) × 2 seats, random; heuristic at a half: zero exceptions, every game terminates`, async () => {
+  it(`${games} games × every pair of the five lists (mirrors included) × 2 seats, random; heuristic at a half: zero exceptions, every game terminates`, async () => {
     const cards = poolWithProposed(), lists = S66H_LISTS();
     for (const l of lists) expect(l.decklist.reduce((n, e) => n + e.count, 0), l.name).toBe(60);
     let n = 0;

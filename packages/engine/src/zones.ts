@@ -14,6 +14,20 @@ export interface MoveOptions {
   /** S25 (ADR-088): stamp the announced X onto the entering permanent (spell resolution passes
    * the stack item's x when the card's cost carries {X} symbols — the Emerald Keeper). */
   xPaid?: number;
+  /** S66 (R-116): the batch already decided whether this death is replaced (simultaneous deaths see the same statics). */
+  replacementDecided?: true;
+}
+
+/** S66 (R-116, CR 614.1a): would this creature's death be replaced by exile — an opponent of its controller controls a
+ * permanent with the `exileOpponentsDying` static? Read before the move (the static's source may die in the same event). */
+export function diesIntoExile(ctx: EngineCtx, objectId: string): boolean {
+  const obj = ctx.state.objects[objectId];
+  if (!obj || obj.zone !== "battlefield" || !characteristics(ctx, objectId).types.includes("Creature")) return false;
+  return ctx.state.battlefield.some((id) => {
+    const p = ctx.state.objects[id];
+    if (!p || id === objectId || p.controller === obj.controller) return false;
+    return (ctx.defs.def(p.cardId).abilities ?? []).some((a) => a.kind === "static" && a.effects.some((e) => e.type === "exileOpponentsDying"));
+  });
 }
 
 function zoneArray(ctx: EngineCtx, zone: ZoneName, owner: PlayerId): string[] | null {
@@ -52,9 +66,12 @@ export function moveBatchToGraveyard(ctx: EngineCtx, ids: string[]): void {
   const prev = ctx.lookback;
   ctx.lookback = new Map(batch.map((id) => [id, { cardId: ctx.state.objects[id]!.cardId, controller: ctx.state.objects[id]!.controller }]));
   try {
+    // S66 (R-116): the replacement is decided for the whole batch before anything moves — a Warder destroyed by the same
+    // Wrath still exiles the opponents' creatures that die beside it (it is on the battlefield as the event happens).
+    const exiled = new Set(batch.filter((id) => diesIntoExile(ctx, id)));
     for (const id of batch) {
       if (!ctx.state.objects[id]) continue;
-      const newId = moveObject(ctx, id, "graveyard");
+      const newId = moveObject(ctx, id, exiled.has(id) ? "exile" : "graveyard", { replacementDecided: true });
       const entry = ctx.lookback.get(id);
       if (entry && newId) entry.currentId = newId;
     }
@@ -67,12 +84,14 @@ export function moveBatchToGraveyard(ctx: EngineCtx, ids: string[]): void {
 export function moveObject(
   ctx: EngineCtx,
   objectId: string,
-  to: ZoneName,
+  to0: ZoneName,
   options: MoveOptions = {},
 ): string | null {
   const state = ctx.state;
   const obj = getObject(state, objectId);
   const from = obj.zone;
+  // S66 (R-116): a creature dying under an opponent's exile-instead static goes to exile — it never dies.
+  const to: ZoneName = to0 === "graveyard" && from === "battlefield" && !options.replacementDecided && diesIntoExile(ctx, objectId) ? "exile" : to0;
   // S40 (R-097): a creature's last-known power as it leaves the battlefield (CR 603.10a) — read BEFORE anything
   // detaches or the object is deleted; rides the ZONE_CHANGE payload for the leave observers (Zinnia, Meliyan).
   const powerBefore = from === "battlefield" && ctx.defs.def(obj.cardId).types.includes("Creature") ? characteristics(ctx, objectId).power : undefined;

@@ -1,0 +1,45 @@
+{
+  "id": "vigil_keeper_22",
+  "name": "Vigil Keeper (2/2)",
+  "source": "custom",
+  "manaCost": "{2}{W}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Human",
+    "Cleric"
+  ],
+  "power": 2,
+  "toughness": 2,
+  "text": "When Vigil Keeper enters, draw a card.\nIf a creature an opponent controls would die, exile it instead.",
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "condition": {
+        "source": "self"
+      },
+      "effects": [
+        {
+          "type": "draw",
+          "count": 1,
+          "who": "you"
+        }
+      ],
+      "optional": false
+    },
+    {
+      "kind": "static",
+      "effects": [
+        {
+          "type": "exileOpponentsDying"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2
+}

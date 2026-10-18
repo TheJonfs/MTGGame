@@ -81,7 +81,7 @@ describe("validateCard rejections", () => {
   });
 
   it("every vocabulary word has a resolver as of S17 (untapTarget was the last — Little Bear); the no-resolver warning path stays for future words", () => {
-    const staticOnly = new Set(["grantKeyword", "gainControl", "grantAbility", "extraLandDrops", "untapDuringOthersUntap", "grantSubtype", "imposeEntersTapped"]); // S46: + the type grant // S45: + the Seedborn untap (read by the untap step) // interpreted live by characteristics()/abilitiesOf()/maxLandDrops()/imposedEntersTapped(); no resolver by design
+    const staticOnly = new Set(["grantKeyword", "gainControl", "grantAbility", "extraLandDrops", "untapDuringOthersUntap", "grantSubtype", "imposeEntersTapped", "exileOpponentsDying"]); // S66: + the exile-instead replacement (read by the zone move) // S46: + the type grant // S45: + the Seedborn untap (read by the untap step) // interpreted live by characteristics()/abilitiesOf()/maxLandDrops()/imposedEntersTapped(); no resolver by design
     for (const t of EFFECT_TYPES) if (!staticOnly.has(t)) expect(IMPLEMENTED_EFFECT_TYPES.has(t), t).toBe(true);
     const { errors, warnings } = validateCard({
       ...base,

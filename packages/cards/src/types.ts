@@ -337,6 +337,10 @@ export type EffectBase =
   | { type: "extraLandDrops"; count: number }
   /** S45 (R-099, Seedborn Muse): static — the controller untaps all their permanents during each OTHER player's untap step (CR 502.3). */
   | { type: "untapDuringOthersUntap" }
+  /** S66 (R-116, the Hallowed Warder / Vigil Keeper): static — if a creature an OPPONENT of this permanent's controller
+   * controls would die, it is exiled instead (a replacement, CR 614.1a): it never reaches the graveyard, and it does
+   * not die (no "dies" trigger — the Usher's drain, Blood Artist — sees it). */
+  | { type: "exileOpponentsDying" }
   /** S46 (R-100, Angelic Destiny): static — the scoped object has these subtypes in addition to its own (a characteristic:
    * Restoration Angel's "non-Angel" reads it). `subtypes` (plural) so it is never read as a scope filter. */
   | { type: "grantSubtype"; subtypes: string[]; scope: Scope }
@@ -397,6 +401,7 @@ export const EFFECT_TYPES: readonly EffectType[] = [
   "grantAbility",
   "extraLandDrops",
   "untapDuringOthersUntap",
+  "exileOpponentsDying", // S66 (R-116)
   "grantSubtype",
   "reorderTop",
   "imposeEntersTapped",
