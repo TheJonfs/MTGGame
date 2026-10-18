@@ -6,8 +6,75 @@
   "large": 3
  },
  "archived": {},
- "guides": {},
- "guidesOnly": [],
+ "guides": {
+  "witch": [
+   {
+    "in": "tormods_crypt",
+    "n": 3,
+    "out": [
+     "hymn_to_tourach"
+    ],
+    "when": [
+     "someGraveyard"
+    ]
+   },
+   {
+    "in": "faerie_macabre",
+    "n": 3,
+    "out": [
+     "hymn_to_tourach",
+     "hypnotic_specter"
+    ],
+    "when": [
+     "someGraveyard"
+    ]
+   },
+   {
+    "in": "drana_kalastria_bloodchief",
+    "n": 3,
+    "out": [
+     "gallows_djinn"
+    ],
+    "when": [
+     "creatureDeck",
+     "wide"
+    ],
+    "unless": [
+     "someGraveyard"
+    ]
+   },
+   {
+    "in": "wave_of_reckoning",
+    "n": 3,
+    "out": [
+     "hymn_to_tourach"
+    ],
+    "when": [
+     "small",
+     "wide"
+    ],
+    "unless": [
+     "someGraveyard"
+    ]
+   },
+   {
+    "in": "doom_blade",
+    "n": 3,
+    "out": [
+     "hypnotic_specter"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "someGraveyard"
+    ]
+   }
+  ]
+ },
+ "guidesOnly": [
+  "witch"
+ ],
  "outRules": {},
  "lists": [
   {
@@ -1129,6 +1196,125 @@
     {
      "cardId": "hordeling_outburst",
      "count": 2
+    }
+   ]
+  },
+  {
+   "key": "witch",
+   "name": "the Witch",
+   "title": "Witch Presence (B w r)",
+   "archetype": "midrange",
+   "source": "Post-S66 (Chris's, 2026-10-18): won a Mardu Umbel with no Usher in the 75 (event 198333: 5–0 in the Swiss, then BR Removal 2–1, the Roll 2–0, the Pall 2–0; 16–4 in games). Nearly mono-black: the Jet Witch, Dread Presence, Hymn, Specter, Nighthawk, Gallows Djinn, Tendrils, with Rituals and the power; Vindicate the only gold. The fifteen and the guide read from his swaps (working name).",
+   "decklist": [
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    },
+    {
+     "cardId": "dark_ritual",
+     "count": 4
+    },
+    {
+     "cardId": "hymn_to_tourach",
+     "count": 4
+    },
+    {
+     "cardId": "hypnotic_specter",
+     "count": 4
+    },
+    {
+     "cardId": "dread_presence",
+     "count": 4
+    },
+    {
+     "cardId": "gallows_djinn",
+     "count": 4
+    },
+    {
+     "cardId": "tendrils_of_corruption",
+     "count": 4
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "the_jet_witch",
+     "count": 3
+    },
+    {
+     "cardId": "vindicate",
+     "count": 2
+    },
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "obsidian_observatory",
+     "count": 1
+    },
+    {
+     "cardId": "library_of_alexandria",
+     "count": 1
+    },
+    {
+     "cardId": "badlands",
+     "count": 4
+    },
+    {
+     "cardId": "scrubland",
+     "count": 4
+    },
+    {
+     "cardId": "blood_crypt",
+     "count": 4
+    },
+    {
+     "cardId": "godless_shrine",
+     "count": 4
+    },
+    {
+     "cardId": "swamp",
+     "count": 3
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "drana_kalastria_bloodchief",
+     "count": 3
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 3
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 3
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 3
+    },
+    {
+     "cardId": "faerie_macabre",
+     "count": 3
     }
    ]
   }

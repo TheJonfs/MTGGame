@@ -1092,6 +1092,96 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
     ]
    }
   ]
+ },
+ {
+  "key": "mardu:witch",
+  "fifteen": [
+   {
+    "cardId": "drana_kalastria_bloodchief",
+    "count": 3
+   },
+   {
+    "cardId": "doom_blade",
+    "count": 3
+   },
+   {
+    "cardId": "wave_of_reckoning",
+    "count": 3
+   },
+   {
+    "cardId": "tormods_crypt",
+    "count": 3
+   },
+   {
+    "cardId": "faerie_macabre",
+    "count": 3
+   }
+  ],
+  "rows": [
+   {
+    "in": "tormods_crypt",
+    "n": 3,
+    "out": [
+     "hymn_to_tourach"
+    ],
+    "when": [
+     "someGraveyard"
+    ]
+   },
+   {
+    "in": "faerie_macabre",
+    "n": 3,
+    "out": [
+     "hymn_to_tourach",
+     "hypnotic_specter"
+    ],
+    "when": [
+     "someGraveyard"
+    ]
+   },
+   {
+    "in": "drana_kalastria_bloodchief",
+    "n": 3,
+    "out": [
+     "gallows_djinn"
+    ],
+    "when": [
+     "creatureDeck",
+     "wide"
+    ],
+    "unless": [
+     "someGraveyard"
+    ]
+   },
+   {
+    "in": "wave_of_reckoning",
+    "n": 3,
+    "out": [
+     "hymn_to_tourach"
+    ],
+    "when": [
+     "small",
+     "wide"
+    ],
+    "unless": [
+     "someGraveyard"
+    ]
+   },
+   {
+    "in": "doom_blade",
+    "n": 3,
+    "out": [
+     "hypnotic_specter"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "someGraveyard"
+    ]
+   }
+  ],
+  "only": true
  }
 ];
 
