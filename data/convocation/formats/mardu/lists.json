@@ -1035,7 +1035,7 @@
   },
   {
    "key": "brremoval",
-   "name": "BR Removal (Mardu)",
+   "name": "the Ashen",
    "title": "Rakdos Removal (B R)",
    "archetype": "midrange",
    "source": "S66 seed (Chris: start from Peasant's BR Removal and look at the higher tiers; the brief's line was unfinished — \"the Specter's cousins\"): Peasant's list promoted — Hypnotic Specter for Child of Night; Hymn to Tourach, Demonic Tutor, Dread Presence and Drana for the Skeletons, Gravediggers and a Terror (the cousins: the cards that punish a hand); two Chars; Badlands, Cairnbrand, Mox Jet, Mox Ruby and the Lotus in the mana. Built by the implementer; a working name.",
@@ -1128,7 +1128,7 @@
   },
   {
    "key": "burn",
-   "name": "Mono-Red Burn",
+   "name": "the Kindling",
    "title": "Mono-Red Spells (R)",
    "archetype": "aggro",
    "source": "S66 seed (the planner's 'Mono-Red Burn': the Tally's shape without blue), built by the implementer: Guttersnipe, Young and Seasoned Pyromancer and Arc Mage paid by every spell; Bolt, Shock, Char, Blaze, Abrade and Pyroclasm; the Tyrant at the top; Hordeling Outburst. A working name.",

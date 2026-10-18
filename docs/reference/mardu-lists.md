@@ -18,8 +18,8 @@
 | the Muster (Mardu) | Boros Weenie (W R) | aggro | 44.9 | 45 | −4.8 | built |
 | the Warband (Mardu) | Boros Goblins (R w) | aggro | 42.3 | 41 | +4.2 | built |
 | the Levy | Orzhov Landfall (W B) | midrange | 41.5 | 46 | +1.8 | registered |
-| BR Removal (Mardu) | Rakdos Removal (B R) | midrange | 39.8 | 49 | −1.9 | built |
-| Mono-Red Burn | Mono-Red Spells (R) | aggro | 36.7 | 39 | −0.3 | built |
+| the Ashen | Rakdos Removal (B R) | midrange | 39.8 | 49 | −1.9 | built |
+| the Kindling | Mono-Red Spells (R) | aggro | 36.7 | 39 | −0.3 | built |
 
 Archived (kept in the data, out of the field): none.
 
@@ -150,7 +150,7 @@ The most played: Lightning Bolt 6 · Soul Warden 6 · Vampire Nighthawk 6 · Vin
 - **History:**
   - contributed — S66 seed (the planner's): the Open's Levy whole, its fifteen with it (Mardu-legal as it stands).
 
-## BR Removal (Mardu) — Rakdos Removal (B R)
+## the Ashen — Rakdos Removal (B R)
 
 `brremoval` · midrange · game one 49 · matches 39.8
 
@@ -161,7 +161,7 @@ The most played: Lightning Bolt 6 · Soul Warden 6 · Vampire Nighthawk 6 · Vin
 - **History:**
   - contributed — S66 seed (Chris: start from Peasant's BR Removal and look at the higher tiers; the brief's line was unfinished — "the Specter's cousins"): Peasant's list promoted — Hypnotic Specter for Child of Night; Hymn to Tourach, Demonic Tutor, Dread Presence and Drana for the Skeletons, Gravediggers and a Terror (the cousins: the cards that punish a hand); two Chars; Badlands, Cairnbrand, Mox Jet, Mox Ruby and the Lotus in the mana. Built by the implementer; a working name.
 
-## Mono-Red Burn — Mono-Red Spells (R)
+## the Kindling — Mono-Red Spells (R)
 
 `burn` · aggro · game one 39 · matches 36.7
 

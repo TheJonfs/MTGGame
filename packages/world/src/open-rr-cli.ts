@@ -57,7 +57,7 @@ import { variantDef } from "./card-variants.js";
 import { MatchSeries } from "./series.js";
 import { mostPlayed, staples } from "./open-reference.js";
 import { buildSideboard } from "./constructed-builder.js";
-import { SIDEBOARD_SHAPES, sideboardTermsFor, aiSideboard, answersCreatures, answersRelics, type AiSideboardTerms, type SideboardGuide } from "./sideboard-ai.js";
+import { SIDEBOARD_SHAPES, sideboardTermsFor, aiSideboard, guideOfList, answersCreatures, answersRelics, type AiSideboardTerms, type SideboardGuide } from "./sideboard-ai.js";
 import { SIDEBOARD_GUIDES } from "./sideboard-guides.generated.js";
 import { formatView, type CardRatingTable } from "./rating.js";
 import type { Decklist } from "./state.js";
@@ -141,13 +141,22 @@ async function run(): Promise<void> {
   // S61 (Part 2): `--out61 small,graveyard [--out61-for k1,k2]` — the out-rule on trial (for those lists only)
   const out61 = arg("out61", "").split(",").filter(Boolean), out61For = new Set(arg("out61-for", "").split(",").filter(Boolean));
   const boardedOnly = new Set(arg("sideboarded-only", "").split(",").filter(Boolean));
+  // S67 (ADR-188): a list's guide is its LIST's (by key), so a fifteen varied by --deck-side keeps it; the test guide
+  // (--deck-guide) is the --deck list's; a list sideboarding from a built fifteen (--built-fifteen) has none
+  const deckKey = arg("deck", "").split(":")[0] ?? "";
+  const guideOf = (key: string): SideboardGuide | null => (testGuide && key === deckKey ? testGuide : builtFor.has(key) ? null : guideOfList(`${FORMAT_ID}:${key}`) ?? null);
+  if (deckKey && arg("deck-side", "") && !testGuide) {
+    const g = guideOfList(`${FORMAT_ID}:${deckKey}`), side = JSON.parse(readFileSync(arg("deck-side", ""), "utf8")) as Decklist;
+    const dead = (g?.rows ?? []).filter((r) => !side.some((e) => e.cardId === r.in)).map((r) => r.in);
+    if (g) console.error(`open:rr — ${deckKey}'s guide (${g.key}) sideboards the fifteen under test${dead.length ? `; it holds none of ${[...new Set(dead)].join(", ")}, so those rows do nothing (pass --deck-guide to change the rows)` : ""}`);
+  }
   const boarded = (me: (typeof OPEN_DECKS)[string], them: (typeof OPEN_DECKS)[string]): Decklist => {
     if (!rating || (boardedOnly.size > 0 && !boardedOnly.has(me.key))) return me.decklist;
     // (S56: a list's own registered fifteen where it has one — the Pall's, the Kiln's — as the event plays it)
     if (!fifteen.has(me.key)) fifteen.set(me.key, me.sideboard && !builtFor.has(me.key) ? [...me.sideboard] : buildSideboard(me.decklist, OPEN_FORMAT, rating, pool, answersRelics, answersCreatures, !!terms.shapes));
     return aiSideboard(me.decklist, fifteen.get(me.key)!, them.decklist, pool, rating, (() => { const { outRule: keptOut, ...rest0 } = terms;
       const out = outArg === null ? (keptOut ? { outRule: keptOut } : {}) : outArg === "none" ? {} : { outRule: { deadFirst: outArg.includes("dead"), keepFourOfs: outArg.includes("four"), deadOut: outArg.includes("rule9") ? 3 : 0 } };
-      return { ...rest0, ...out, ...(process.argv.includes("--counters-stay") ? { countersStay: true } : {}), ...(process.argv.includes("--no-guide") ? { noGuide: true } : {}), ...(process.argv.includes("--no-out-rules") ? { noOutRules: true } : {}), ...(process.argv.includes("--guide-rules-too") ? { guideRulesToo: true } : {}), ...(testGuide ? { guides: [testGuide, ...SIDEBOARD_GUIDES] } : {}), ...(arg("guide-drop", "") ? { guideDrop: arg("guide-drop", "").split(",") } : {}), ...(out61.length && (out61For.size === 0 || out61For.has(me.key)) ? { out61: { small: out61.includes("small"), spells: out61.includes("spells"), graveyard: out61.includes("graveyard") } } : {}) }; })()).deck;
+      return { ...rest0, ...out, ...(process.argv.includes("--counters-stay") ? { countersStay: true } : {}), ...(process.argv.includes("--no-guide") ? { noGuide: true } : {}), ...(process.argv.includes("--no-out-rules") ? { noOutRules: true } : {}), ...(process.argv.includes("--guide-rules-too") ? { guideRulesToo: true } : {}), ...({ guide: guideOf(me.key) }), ...(arg("guide-drop", "") ? { guideDrop: arg("guide-drop", "").split(",") } : {}), ...(out61.length && (out61For.size === 0 || out61For.has(me.key)) ? { out61: { small: out61.includes("small"), spells: out61.includes("spells"), graveyard: out61.includes("graveyard") } } : {}) }; })()).deck;
   };
   const swapArg = arg("swap", "");
   // S58 (a new build tried in a list's seat): `--deck key:file.json[:archetype]` — the file is a decklist ([{cardId, count}], sixty)

@@ -1503,3 +1503,24 @@ export const SIDEBOARD_OUT_RULES: readonly { key: string; sixty: { cardId: strin
   }
  }
 ];
+
+/** S67 (ADR-188): each format's list (`<format>:<key>`) → the guide its registered fifteen has — a guide belongs to its list. */
+export const LIST_GUIDES: Record<string, string> = {
+ "open:locks": "locks",
+ "open:levy": "levy",
+ "open:tollgate": "tollgate",
+ "open:marducontrol": "marducontrol",
+ "peasant:muster": "peasant:muster",
+ "peasant:skies": "peasant:skies",
+ "peasant:skieswall": "peasant:skieswall",
+ "peasant:bw": "peasant:bw",
+ "peasant:wskies": "peasant:wskies",
+ "naya:snakes": "naya:snakes",
+ "esper:levy": "levy",
+ "esper:locks": "esper:locks",
+ "esper:wbcontrol": "esper:wbcontrol",
+ "esper:skies": "esper:skies",
+ "mardu:marducontrol": "marducontrol",
+ "mardu:levy": "levy",
+ "mardu:witch": "mardu:witch"
+};
