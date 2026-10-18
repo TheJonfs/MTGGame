@@ -886,7 +886,7 @@
    "name": "the Watch (Mardu)",
    "title": "Boros Tokens (W R)",
    "archetype": "aggro",
-   "source": "S66 seed (the planner's): Naya's Watch (RW Tokens) whole (Mardu-legal as it stands).",
+   "source": "S66 seed (the planner's): Naya's Watch (RW Tokens) whole (Mardu-legal as it stands). Post-S66 (Chris, 2026-10-18): two Emeria Angels and a Dawnwing Marshal out for three Vigil Keepers (+4.8 ± 1.0 in matches, paired; +7.5 against the Usher decks, +3.2 against the rest).",
    "decklist": [
     {
      "cardId": "sacred_foundry",
@@ -950,15 +950,15 @@
     },
     {
      "cardId": "dawnwing_marshal",
-     "count": 2
+     "count": 1
+    },
+    {
+     "cardId": "vigil_keeper",
+     "count": 3
     },
     {
      "cardId": "captain_of_the_watch",
      "count": 4
-    },
-    {
-     "cardId": "emeria_angel",
-     "count": 2
     },
     {
      "cardId": "lumen_the_hearth_fire",
