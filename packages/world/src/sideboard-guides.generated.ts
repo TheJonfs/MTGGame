@@ -1182,12 +1182,62 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
    }
   ],
   "only": true
+ },
+ {
+  "key": "jeskai:skies",
+  "fifteen": [
+   {
+    "cardId": "control_magic",
+    "count": 2
+   },
+   {
+    "cardId": "disenchant",
+    "count": 2
+   },
+   {
+    "cardId": "essence_scatter",
+    "count": 2
+   },
+   {
+    "cardId": "tormods_crypt",
+    "count": 3
+   },
+   {
+    "cardId": "swords_to_plowshares",
+    "count": 1
+   },
+   {
+    "cardId": "wrath_of_god",
+    "count": 2
+   },
+   {
+    "cardId": "wave_of_reckoning",
+    "count": 2
+   },
+   {
+    "cardId": "retribution_of_the_meek",
+    "count": 1
+   }
+  ],
+  "rows": [
+   {
+    "in": "wrath_of_god",
+    "n": 2,
+    "out": [
+     "swords_to_plowshares",
+     "plumecreed_escort"
+    ],
+    "when": [
+     "wide"
+    ]
+   }
+  ]
  }
 ];
 
 /** S62 (ADR-176): the `small` and `large` shapes' thresholds by format — the Open's as measured since S59; another
  * format's the counts at the same ranks of its own field (sideboard-ai.SHAPE_RANKS). */
-export const SHAPE_SCALES: Record<string, { small: number; large: number }> = {"open":{"small":15,"large":8},"peasant":{"small":20,"large":4},"naya":{"small":18,"large":3},"esper":{"small":10,"large":8},"mardu":{"small":18,"large":3}};
+export const SHAPE_SCALES: Record<string, { small: number; large: number }> = {"open":{"small":15,"large":8},"peasant":{"small":20,"large":4},"naya":{"small":18,"large":3},"esper":{"small":10,"large":8},"mardu":{"small":18,"large":3},"grixis":{"small":15,"large":1},"jund":{"small":20,"large":1},"jeskai":{"small":12,"large":3}};
 
 /** S61 (Part 2): the out-rule adopted per list (matched by its sixty), where it measured a gain. */
 export const SIDEBOARD_OUT_RULES: readonly { key: string; sixty: { cardId: string; count: number }[]; out61: { small?: boolean; spells?: boolean; graveyard?: boolean } }[] = [
@@ -1522,5 +1572,6 @@ export const LIST_GUIDES: Record<string, string> = {
  "esper:skies": "esper:skies",
  "mardu:marducontrol": "marducontrol",
  "mardu:levy": "levy",
- "mardu:witch": "mardu:witch"
+ "mardu:witch": "mardu:witch",
+ "jeskai:skies": "jeskai:skies"
 };

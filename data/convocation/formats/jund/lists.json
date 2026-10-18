@@ -1,0 +1,1035 @@
+{
+ "_comment": "Jund (S67): black, red and green — the land rule (ADR-181); the Open's restricted list where it applies; the laws banned; sixty cards, four of a kind. Seeds from the registered lists whole where legal, with the land swaps logged in each source, and the builds the census says the field lacks (working names). `pnpm open:gen` validates each against Jund and generates the code and docs/reference/jund-lists.md.",
+ "_shapeScale_note": "S67 (ADR-186): frozen at the values derived from Jund's first field — its eleven seeds: small 20, large 1.",
+ "shapeScale": {
+  "small": 20,
+  "large": 1
+ },
+ "archived": {},
+ "guides": {},
+ "guidesOnly": [],
+ "outRules": {},
+ "lists": [
+  {
+   "key": "sweep",
+   "name": "the Sweep",
+   "title": "Jund Aristocrats (B R G)",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "the_reaper",
+     "count": 4
+    },
+    {
+     "cardId": "meliyan_the_torment",
+     "count": 3
+    },
+    {
+     "cardId": "blood_artist",
+     "count": 4
+    },
+    {
+     "cardId": "bitterblossom",
+     "count": 4
+    },
+    {
+     "cardId": "birds_of_paradise",
+     "count": 4
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "shocking_sharpshooter",
+     "count": 4
+    },
+    {
+     "cardId": "putrefy",
+     "count": 3
+    },
+    {
+     "cardId": "seasoned_pyromancer",
+     "count": 2
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 2
+    },
+    {
+     "cardId": "voracious_cobra",
+     "count": 2
+    },
+    {
+     "cardId": "rancor",
+     "count": 2
+    },
+    {
+     "cardId": "prey_upon",
+     "count": 1
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 1
+    },
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "badlands",
+     "count": 4
+    },
+    {
+     "cardId": "bayou",
+     "count": 4
+    },
+    {
+     "cardId": "taiga",
+     "count": 4
+    },
+    {
+     "cardId": "blood_crypt",
+     "count": 2
+    },
+    {
+     "cardId": "overgrown_tomb",
+     "count": 2
+    },
+    {
+     "cardId": "forest",
+     "count": 2
+    },
+    {
+     "cardId": "stomping_ground",
+     "count": 1
+    }
+   ],
+   "source": "S67 seed (the planner's): the Open's Sweep, its off-colour mana swapped: Tallyflame Court, the Observatory, Shevelport, Underground Sea and Savannah for two Blood Crypts, two Overgrown Tombs and a Stomping Ground; Mox Sapphire and Mox Pearl for two Forests."
+  },
+  {
+   "key": "ashen",
+   "name": "the Ashen",
+   "title": "Rakdos Removal (B R)",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "blood_crypt",
+     "count": 4
+    },
+    {
+     "cardId": "badlands",
+     "count": 4
+    },
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "swamp",
+     "count": 6
+    },
+    {
+     "cardId": "mountain",
+     "count": 2
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "typhoid_rats",
+     "count": 4
+    },
+    {
+     "cardId": "blood_artist",
+     "count": 4
+    },
+    {
+     "cardId": "hypnotic_specter",
+     "count": 4
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "nekrataal",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "dread_presence",
+     "count": 2
+    },
+    {
+     "cardId": "drana_kalastria_bloodchief",
+     "count": 1
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "hymn_to_tourach",
+     "count": 2
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    },
+    {
+     "cardId": "char",
+     "count": 2
+    }
+   ],
+   "source": "S67 seed (the planner's): Mardu's Ashen whole."
+  },
+  {
+   "key": "rabble",
+   "name": "the Rabble (Mardu)",
+   "title": "Mono-Red Goblins (R)",
+   "archetype": "aggro",
+   "decklist": [
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "badlands",
+     "count": 4
+    },
+    {
+     "cardId": "mountain",
+     "count": 14
+    },
+    {
+     "cardId": "goblin_grenade",
+     "count": 4
+    },
+    {
+     "cardId": "raging_goblin",
+     "count": 4
+    },
+    {
+     "cardId": "dragon_fodder",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "char",
+     "count": 4
+    },
+    {
+     "cardId": "goblin_chieftain",
+     "count": 4
+    },
+    {
+     "cardId": "seasoned_pyromancer",
+     "count": 4
+    },
+    {
+     "cardId": "hordeling_outburst",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "siege_gang_commander",
+     "count": 2
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "the_ruby_tyrant",
+     "count": 4
+    },
+    {
+     "cardId": "abrade",
+     "count": 3
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 4
+    },
+    {
+     "cardId": "faerie_macabre",
+     "count": 4
+    }
+   ],
+   "source": "S67 seed (the planner's): Mardu's Rabble whole (the Open's with its blue mana swapped)."
+  },
+  {
+   "key": "stompy",
+   "name": "the Stampede",
+   "title": "Gruul Stompy (R G)",
+   "archetype": "aggro",
+   "decklist": [
+    {
+     "cardId": "stomping_ground",
+     "count": 4
+    },
+    {
+     "cardId": "taiga",
+     "count": 4
+    },
+    {
+     "cardId": "forest",
+     "count": 9
+    },
+    {
+     "cardId": "mountain",
+     "count": 2
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "llanowar_elves",
+     "count": 4
+    },
+    {
+     "cardId": "birds_of_paradise",
+     "count": 2
+    },
+    {
+     "cardId": "dungrove_elder",
+     "count": 4
+    },
+    {
+     "cardId": "centaur_courser",
+     "count": 4
+    },
+    {
+     "cardId": "rumbling_baloth",
+     "count": 4
+    },
+    {
+     "cardId": "gaean_wurm",
+     "count": 3
+    },
+    {
+     "cardId": "rancor",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 3
+    },
+    {
+     "cardId": "baru_wurmspeaker",
+     "count": 2
+    }
+   ],
+   "source": "S67 seed (the planner's): Naya's Stampede whole."
+  },
+  {
+   "key": "auras",
+   "name": "Dungrove Auras",
+   "title": "Mono-Green Auras (G)",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "forest",
+     "count": 22
+    },
+    {
+     "cardId": "dungrove_elder",
+     "count": 4
+    },
+    {
+     "cardId": "harmonize",
+     "count": 3
+    },
+    {
+     "cardId": "penumbra_wurm",
+     "count": 2
+    },
+    {
+     "cardId": "rancor",
+     "count": 4
+    },
+    {
+     "cardId": "blanchwood_armor",
+     "count": 4
+    },
+    {
+     "cardId": "llanowar_elves",
+     "count": 4
+    },
+    {
+     "cardId": "gladecover_scout",
+     "count": 4
+    },
+    {
+     "cardId": "wall_of_blossoms",
+     "count": 4
+    },
+    {
+     "cardId": "gaean_wurm",
+     "count": 4
+    },
+    {
+     "cardId": "centaur_courser",
+     "count": 2
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 3
+    }
+   ],
+   "source": "S67 seed (the planner's): Peasant's Dungrove Auras for the Thicket (Chris's ruling: the Thicket is white)."
+  },
+  {
+   "key": "emeraldsnakes",
+   "name": "Emerald Snakes",
+   "title": "Snake Keeper (G R)",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "birds_of_paradise",
+     "count": 4
+    },
+    {
+     "cardId": "manaba",
+     "count": 4
+    },
+    {
+     "cardId": "rage_cobra",
+     "count": 4
+    },
+    {
+     "cardId": "the_emerald_keeper",
+     "count": 4
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "gaean_wurm",
+     "count": 4
+    },
+    {
+     "cardId": "elvish_visionary",
+     "count": 4
+    },
+    {
+     "cardId": "harmonize",
+     "count": 3
+    },
+    {
+     "cardId": "taiga",
+     "count": 4
+    },
+    {
+     "cardId": "stomping_ground",
+     "count": 4
+    },
+    {
+     "cardId": "bayou",
+     "count": 4
+    },
+    {
+     "cardId": "forest",
+     "count": 9
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "airship_crash",
+     "count": 2
+    },
+    {
+     "cardId": "foxglove_dose",
+     "count": 2
+    },
+    {
+     "cardId": "savage_twister",
+     "count": 2
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 2
+    },
+    {
+     "cardId": "pelakka_wurm",
+     "count": 2
+    },
+    {
+     "cardId": "penumbra_wurm",
+     "count": 2
+    },
+    {
+     "cardId": "baru_wurmspeaker",
+     "count": 1
+    },
+    {
+     "cardId": "wall_of_razors",
+     "count": 2
+    }
+   ],
+   "source": "S67 seed (the planner's): Naya's Emerald Snakes (Chris's), its white mana swapped: Mox Pearl for Mox Jet, Shevelport and four Temple Gardens for five Forests, four Savannahs for four Bayous."
+  },
+  {
+   "key": "wurmspeaker",
+   "name": "the Wurmspeaker",
+   "title": "Mono-Green Ramp",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "forest",
+     "count": 20
+    },
+    {
+     "cardId": "tranquil_thicket",
+     "count": 2
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "llanowar_elves",
+     "count": 4
+    },
+    {
+     "cardId": "birds_of_paradise",
+     "count": 4
+    },
+    {
+     "cardId": "wood_elves",
+     "count": 4
+    },
+    {
+     "cardId": "seedborn_muse",
+     "count": 4
+    },
+    {
+     "cardId": "gaean_wurm",
+     "count": 3
+    },
+    {
+     "cardId": "pelakka_wurm",
+     "count": 2
+    },
+    {
+     "cardId": "baru_wurmspeaker",
+     "count": 3
+    },
+    {
+     "cardId": "treetop_snarespinner",
+     "count": 2
+    },
+    {
+     "cardId": "the_emerald_keeper",
+     "count": 2
+    },
+    {
+     "cardId": "rampant_growth",
+     "count": 4
+    },
+    {
+     "cardId": "prey_upon",
+     "count": 2
+    },
+    {
+     "cardId": "rampaging_baloths",
+     "count": 2
+    }
+   ],
+   "source": "S67 seed (the planner's): the Open's Wurmspeaker whole."
+  },
+  {
+   "key": "kindling",
+   "name": "the Kindling",
+   "title": "Mono-Red Spells (R)",
+   "archetype": "aggro",
+   "decklist": [
+    {
+     "cardId": "mountain",
+     "count": 21
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "guttersnipe",
+     "count": 4
+    },
+    {
+     "cardId": "young_pyromancer",
+     "count": 4
+    },
+    {
+     "cardId": "seasoned_pyromancer",
+     "count": 3
+    },
+    {
+     "cardId": "arc_mage",
+     "count": 2
+    },
+    {
+     "cardId": "the_ruby_tyrant",
+     "count": 1
+    },
+    {
+     "cardId": "furnace_whelp",
+     "count": 2
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "shock",
+     "count": 4
+    },
+    {
+     "cardId": "char",
+     "count": 4
+    },
+    {
+     "cardId": "blaze",
+     "count": 3
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 2
+    },
+    {
+     "cardId": "abrade",
+     "count": 2
+    },
+    {
+     "cardId": "hordeling_outburst",
+     "count": 2
+    }
+   ],
+   "source": "S67 seed (the planner's): Mardu's Kindling whole."
+  },
+  {
+   "key": "reaper",
+   "name": "Reaper Control",
+   "title": "Jund Snake Control (G R b)",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "manaba",
+     "count": 4
+    },
+    {
+     "cardId": "moss_viper",
+     "count": 3
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "rage_cobra",
+     "count": 4
+    },
+    {
+     "cardId": "wall_of_blossoms",
+     "count": 4
+    },
+    {
+     "cardId": "savage_twister",
+     "count": 3
+    },
+    {
+     "cardId": "seasoned_pyromancer",
+     "count": 3
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "voracious_cobra",
+     "count": 2
+    },
+    {
+     "cardId": "the_reaper",
+     "count": 3
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "taiga",
+     "count": 4
+    },
+    {
+     "cardId": "stomping_ground",
+     "count": 4
+    },
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "bayou",
+     "count": 4
+    },
+    {
+     "cardId": "badlands",
+     "count": 4
+    },
+    {
+     "cardId": "forest",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "tormods_crypt",
+     "count": 3
+    },
+    {
+     "cardId": "moss_viper",
+     "count": 1
+    },
+    {
+     "cardId": "deadly_recluse",
+     "count": 1
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 3
+    },
+    {
+     "cardId": "savage_twister",
+     "count": 1
+    },
+    {
+     "cardId": "char",
+     "count": 2
+    },
+    {
+     "cardId": "putrefy",
+     "count": 4
+    }
+   ],
+   "source": "S67 seed (the planner's): the Open's Reaper Control, archived there, revived here (Chris's ruling) — its Wrackroot for a Forest. The Reaper is Jund's lord."
+  },
+  {
+   "key": "bfh",
+   "name": "Black Forest Ham",
+   "title": "Golgari Auras (B G)",
+   "archetype": "midrange",
+   "source": "Chris's (S67, his Peasant list, registered in Jund at his ruling): Rancor and Blanchwood Armor on Dungrove Elder, Gaean Wurm and the Forerunner; Unearth to bring them back. His fifteen as he registered it in Peasant.",
+   "decklist": [
+    {
+     "cardId": "rancor",
+     "count": 4
+    },
+    {
+     "cardId": "unearth",
+     "count": 4
+    },
+    {
+     "cardId": "blanchwood_armor",
+     "count": 4
+    },
+    {
+     "cardId": "dungrove_elder",
+     "count": 4
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 4
+    },
+    {
+     "cardId": "gaean_wurm",
+     "count": 4
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 2
+    },
+    {
+     "cardId": "deadly_recluse",
+     "count": 2
+    },
+    {
+     "cardId": "diabolic_edict",
+     "count": 2
+    },
+    {
+     "cardId": "elvish_visionary",
+     "count": 4
+    },
+    {
+     "cardId": "overgrown_tomb",
+     "count": 4
+    },
+    {
+     "cardId": "evolving_wilds",
+     "count": 4
+    },
+    {
+     "cardId": "forest",
+     "count": 9
+    },
+    {
+     "cardId": "swamp",
+     "count": 5
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "doom_blade",
+     "count": 2
+    },
+    {
+     "cardId": "deadly_recluse",
+     "count": 2
+    },
+    {
+     "cardId": "diabolic_edict",
+     "count": 2
+    },
+    {
+     "cardId": "prey_upon",
+     "count": 2
+    },
+    {
+     "cardId": "typhoid_rats",
+     "count": 2
+    },
+    {
+     "cardId": "gladecover_scout",
+     "count": 4
+    },
+    {
+     "cardId": "giant_growth",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "key": "coin",
+   "name": "Jund Coin (working name)",
+   "title": "Rakdos Aristocrats (B R g)",
+   "archetype": "midrange",
+   "source": "S67 seed (the planner's): built by the implementer — the Coin's shape without white (the brief): Blood Artist, Indulgent Aristocrat, Reassembling Skeleton and Meliyan, Bitterblossom and the Fodder for bodies, Nighthawks; no Usher. The Sweep is Jund's other aristocrats list (the Reaper's).",
+   "decklist": [
+    {
+     "cardId": "badlands",
+     "count": 4
+    },
+    {
+     "cardId": "blood_crypt",
+     "count": 3
+    },
+    {
+     "cardId": "swamp",
+     "count": 8
+    },
+    {
+     "cardId": "mountain",
+     "count": 4
+    },
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "blood_artist",
+     "count": 4
+    },
+    {
+     "cardId": "indulgent_aristocrat",
+     "count": 4
+    },
+    {
+     "cardId": "reassembling_skeleton",
+     "count": 4
+    },
+    {
+     "cardId": "meliyan_the_torment",
+     "count": 3
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "bitterblossom",
+     "count": 4
+    },
+    {
+     "cardId": "dragon_fodder",
+     "count": 4
+    },
+    {
+     "cardId": "altar_of_dementia",
+     "count": 2
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 2
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    },
+    {
+     "cardId": "hymn_to_tourach",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "tormods_crypt",
+     "count": 3
+    },
+    {
+     "cardId": "faerie_macabre",
+     "count": 3
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 3
+    },
+    {
+     "cardId": "diabolic_edict",
+     "count": 3
+    },
+    {
+     "cardId": "nekrataal",
+     "count": 3
+    }
+   ]
+  }
+ ]
+}

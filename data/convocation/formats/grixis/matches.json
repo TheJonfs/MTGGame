@@ -1,0 +1,73 @@
+{
+ "_comment": "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.",
+ "when": "2026-10-18",
+ "matchesAPairing": 60,
+ "byList": {
+  "ashen": {
+   "matches": 51.8,
+   "gameOne": 50.5,
+   "later": 52.2,
+   "n": 600
+  },
+  "br": {
+   "matches": 46.9,
+   "gameOne": 50.3,
+   "later": 45.6,
+   "n": 600
+  },
+  "clio": {
+   "matches": 61.8,
+   "gameOne": 56.8,
+   "later": 59,
+   "n": 600
+  },
+  "kiln": {
+   "matches": 51.8,
+   "gameOne": 51.9,
+   "later": 51.2,
+   "n": 600
+  },
+  "kindling": {
+   "matches": 44,
+   "gameOne": 48.4,
+   "later": 45.5,
+   "n": 600
+  },
+  "mbc": {
+   "matches": 32.8,
+   "gameOne": 37.7,
+   "later": 37.7,
+   "n": 600
+  },
+  "rabble": {
+   "matches": 82.6,
+   "gameOne": 72.2,
+   "later": 75.5,
+   "n": 600
+  },
+  "tally": {
+   "matches": 43.8,
+   "gameOne": 45.3,
+   "later": 45.9,
+   "n": 600
+  },
+  "tempo": {
+   "matches": 50.5,
+   "gameOne": 49.9,
+   "later": 50,
+   "n": 600
+  },
+  "undertow": {
+   "matches": 26.7,
+   "gameOne": 34.7,
+   "later": 32.6,
+   "n": 600
+  },
+  "writ": {
+   "matches": 57.3,
+   "gameOne": 52.3,
+   "later": 55.5,
+   "n": 600
+  }
+ }
+}

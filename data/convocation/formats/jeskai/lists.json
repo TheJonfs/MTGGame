@@ -1,0 +1,1141 @@
+{
+ "_comment": "Jeskai (S67): blue, red and white — the land rule (ADR-181); the Open's restricted list where it applies; the laws banned; sixty cards, four of a kind. Seeds from the registered lists whole where legal, with the land swaps logged in each source, and the builds the census says the field lacks (working names). `pnpm open:gen` validates each against Jeskai and generates the code and docs/reference/jeskai-lists.md.",
+ "_shapeScale_note": "S67 (ADR-186): frozen at the values derived from Jeskai's first field — its eleven seeds: small 12, large 3.",
+ "shapeScale": {
+  "small": 12,
+  "large": 3
+ },
+ "archived": {},
+ "guides": {
+  "skies": [
+   {
+    "in": "wrath_of_god",
+    "n": 2,
+    "out": [
+     "swords_to_plowshares",
+     "plumecreed_escort"
+    ],
+    "when": [
+     "wide"
+    ]
+   }
+  ]
+ },
+ "guidesOnly": [],
+ "outRules": {},
+ "lists": [
+  {
+   "key": "kiln",
+   "name": "the Kiln",
+   "title": "Izzet Spells (U R)",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "time_walk",
+     "count": 1
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 3
+    },
+    {
+     "cardId": "tidewall",
+     "count": 4
+    },
+    {
+     "cardId": "aetherbolt",
+     "count": 4
+    },
+    {
+     "cardId": "control_magic",
+     "count": 4
+    },
+    {
+     "cardId": "odile_the_tallyflame",
+     "count": 3
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "the_ruby_tyrant",
+     "count": 3
+    },
+    {
+     "cardId": "guttersnipe",
+     "count": 4
+    },
+    {
+     "cardId": "young_pyromancer",
+     "count": 4
+    },
+    {
+     "cardId": "tallyflame_court",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "volcanic_island",
+     "count": 4
+    },
+    {
+     "cardId": "steam_vents",
+     "count": 4
+    },
+    {
+     "cardId": "library_of_alexandria",
+     "count": 1
+    },
+    {
+     "cardId": "mountain",
+     "count": 5
+    },
+    {
+     "cardId": "island",
+     "count": 4
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "tormods_crypt",
+     "count": 4
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 3
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 4
+    },
+    {
+     "cardId": "blaze",
+     "count": 2
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 1
+    },
+    {
+     "cardId": "the_ruby_tyrant",
+     "count": 1
+    }
+   ],
+   "source": "S67 seed (the planner's): the Open's Kiln, its fifteen's three Faerie Macabres (black) for three Pyroclasms — the Kiln makes no white mana, so no castable graveyard answer but the Crypt (which it holds four of)."
+  },
+  {
+   "key": "tally",
+   "name": "the Tally",
+   "title": "Izzet Sparks (U R)",
+   "archetype": "aggro",
+   "decklist": [
+    {
+     "cardId": "volcanic_island",
+     "count": 4
+    },
+    {
+     "cardId": "steam_vents",
+     "count": 4
+    },
+    {
+     "cardId": "mountain",
+     "count": 8
+    },
+    {
+     "cardId": "island",
+     "count": 4
+    },
+    {
+     "cardId": "tallyflame_court",
+     "count": 1
+    },
+    {
+     "cardId": "forgotten_cave",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "young_pyromancer",
+     "count": 4
+    },
+    {
+     "cardId": "guttersnipe",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "shock",
+     "count": 4
+    },
+    {
+     "cardId": "char",
+     "count": 4
+    },
+    {
+     "cardId": "brainstorm",
+     "count": 4
+    },
+    {
+     "cardId": "counterspell",
+     "count": 2
+    },
+    {
+     "cardId": "ponder",
+     "count": 3
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "control_magic",
+     "count": 2
+    }
+   ],
+   "source": "S67 seed (the planner's): the Open's Tally, archived there, revived here whole."
+  },
+  {
+   "key": "skies",
+   "name": "the Aerie",
+   "title": "Azorius Skies (W U)",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "hallowed_fountain",
+     "count": 4
+    },
+    {
+     "cardId": "tundra",
+     "count": 4
+    },
+    {
+     "cardId": "plains",
+     "count": 5
+    },
+    {
+     "cardId": "island",
+     "count": 8
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "youthful_valkyrie",
+     "count": 4
+    },
+    {
+     "cardId": "inspiring_overseer",
+     "count": 4
+    },
+    {
+     "cardId": "plumecreed_escort",
+     "count": 4
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 4
+    },
+    {
+     "cardId": "traumatizer",
+     "count": 2
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 3
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 2
+    },
+    {
+     "cardId": "karmic_mentor",
+     "count": 2
+    },
+    {
+     "cardId": "serra_angel",
+     "count": 2
+    },
+    {
+     "cardId": "emeria_angel",
+     "count": 2
+    },
+    {
+     "cardId": "faerie_formation",
+     "count": 1
+    },
+    {
+     "cardId": "control_magic",
+     "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "control_magic",
+     "count": 2
+    },
+    {
+     "cardId": "disenchant",
+     "count": 2
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 2
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 3
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 1
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 2
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 2
+    },
+    {
+     "cardId": "retribution_of_the_meek",
+     "count": 1
+    }
+   ],
+   "source": "S67 seed (the planner's): Esper's Aerie, the Observatory for a Plains; its fifteen's Faerie Macabre (black) for a third Tormod's Crypt. Esper's guide (Wrath against `wide`) carried."
+  },
+  {
+   "key": "watch",
+   "name": "the Watch (Mardu)",
+   "title": "Boros Tokens (W R)",
+   "archetype": "aggro",
+   "decklist": [
+    {
+     "cardId": "sacred_foundry",
+     "count": 4
+    },
+    {
+     "cardId": "plateau",
+     "count": 4
+    },
+    {
+     "cardId": "plains",
+     "count": 5
+    },
+    {
+     "cardId": "mountain",
+     "count": 6
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "young_pyromancer",
+     "count": 4
+    },
+    {
+     "cardId": "raise_the_alarm",
+     "count": 4
+    },
+    {
+     "cardId": "dragon_fodder",
+     "count": 4
+    },
+    {
+     "cardId": "hordeling_outburst",
+     "count": 4
+    },
+    {
+     "cardId": "glorious_anthem",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 1
+    },
+    {
+     "cardId": "dawnwing_marshal",
+     "count": 1
+    },
+    {
+     "cardId": "vigil_keeper",
+     "count": 3
+    },
+    {
+     "cardId": "captain_of_the_watch",
+     "count": 4
+    },
+    {
+     "cardId": "lumen_the_hearth_fire",
+     "count": 1
+    }
+   ],
+   "source": "S67 seed (the planner's): Mardu's Watch whole (with its Vigil Keepers)."
+  },
+  {
+   "key": "muster",
+   "name": "the Muster",
+   "title": "Boros Weenie (W R)",
+   "archetype": "aggro",
+   "decklist": [
+    {
+     "cardId": "plateau",
+     "count": 4
+    },
+    {
+     "cardId": "sacred_foundry",
+     "count": 4
+    },
+    {
+     "cardId": "plains",
+     "count": 8
+    },
+    {
+     "cardId": "mountain",
+     "count": 4
+    },
+    {
+     "cardId": "secluded_steppe",
+     "count": 2
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "savannah_lions",
+     "count": 4
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "suntail_hawk",
+     "count": 2
+    },
+    {
+     "cardId": "fencing_ace",
+     "count": 1
+    },
+    {
+     "cardId": "vigil_keeper",
+     "count": 3
+    },
+    {
+     "cardId": "emeria_angel",
+     "count": 3
+    },
+    {
+     "cardId": "raise_the_alarm",
+     "count": 4
+    },
+    {
+     "cardId": "glorious_anthem",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 2
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    }
+   ],
+   "source": "S67 seed (the planner's): the Open's Muster whole, with S67's three Vigil Keepers for three Fencing Aces (Part 1)."
+  },
+  {
+   "key": "warband",
+   "name": "the Warband (Chris's list to test against the Muster)",
+   "title": "Boros Goblins (R w)",
+   "archetype": "aggro",
+   "decklist": [
+    {
+     "cardId": "plateau",
+     "count": 4
+    },
+    {
+     "cardId": "sacred_foundry",
+     "count": 4
+    },
+    {
+     "cardId": "mountain",
+     "count": 12
+    },
+    {
+     "cardId": "plains",
+     "count": 2
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "skirk_prospector",
+     "count": 4
+    },
+    {
+     "cardId": "goblin_piker",
+     "count": 4
+    },
+    {
+     "cardId": "goblin_chieftain",
+     "count": 4
+    },
+    {
+     "cardId": "boggart_brute",
+     "count": 2
+    },
+    {
+     "cardId": "siege_gang_commander",
+     "count": 3
+    },
+    {
+     "cardId": "lumen_the_hearth_fire",
+     "count": 3
+    },
+    {
+     "cardId": "hordeling_outburst",
+     "count": 4
+    },
+    {
+     "cardId": "goblin_grenade",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "sacred_helix",
+     "count": 1
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 2
+    }
+   ],
+   "source": "S67 seed (the planner's): the Open's Warband whole."
+  },
+  {
+   "key": "rabble",
+   "name": "the Rabble (Naya)",
+   "title": "Mono-Red Goblins (R)",
+   "archetype": "aggro",
+   "decklist": [
+    {
+     "cardId": "mountain",
+     "count": 20
+    },
+    {
+     "cardId": "goblin_grenade",
+     "count": 4
+    },
+    {
+     "cardId": "raging_goblin",
+     "count": 4
+    },
+    {
+     "cardId": "dragon_fodder",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "char",
+     "count": 4
+    },
+    {
+     "cardId": "goblin_chieftain",
+     "count": 4
+    },
+    {
+     "cardId": "seasoned_pyromancer",
+     "count": 4
+    },
+    {
+     "cardId": "hordeling_outburst",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "siege_gang_commander",
+     "count": 2
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    }
+   ],
+   "source": "S67 seed (the planner's): Naya's Rabble whole (Chris's ruling: the Open's and Mardu's hold Badlands)."
+  },
+  {
+   "key": "urcontrol",
+   "name": "UR Pyroclasm Control",
+   "title": "Izzet Control (U R)",
+   "archetype": "control",
+   "decklist": [
+    {
+     "cardId": "steam_vents",
+     "count": 4
+    },
+    {
+     "cardId": "island",
+     "count": 11
+    },
+    {
+     "cardId": "mountain",
+     "count": 9
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 2
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "wall_of_air",
+     "count": 4
+    },
+    {
+     "cardId": "traumatizer",
+     "count": 4
+    },
+    {
+     "cardId": "air_elemental",
+     "count": 3
+    },
+    {
+     "cardId": "brainstorm",
+     "count": 4
+    },
+    {
+     "cardId": "char",
+     "count": 3
+    }
+   ],
+   "source": "S67 seed (the planner's): Peasant's UR Pyroclasm Control whole."
+  },
+  {
+   "key": "sweepers",
+   "name": "Jeskai Sweepers (working name)",
+   "title": "Jeskai Control (U W r)",
+   "archetype": "control",
+   "source": "S67 seed (the planner's): built by the implementer — the sweeper control the Open never got: Wrath, Pyroclasm and the Wave behind Counterspell, Absorb and Swords; Control Magic and the Kavu; Serra Angels to finish.",
+   "decklist": [
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "time_walk",
+     "count": 1
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "absorb",
+     "count": 2
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 3
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 4
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 2
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 1
+    },
+    {
+     "cardId": "control_magic",
+     "count": 3
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 3
+    },
+    {
+     "cardId": "serra_angel",
+     "count": 3
+    },
+    {
+     "cardId": "divination",
+     "count": 2
+    },
+    {
+     "cardId": "library_of_alexandria",
+     "count": 1
+    },
+    {
+     "cardId": "tallyflame_court",
+     "count": 1
+    },
+    {
+     "cardId": "tundra",
+     "count": 4
+    },
+    {
+     "cardId": "volcanic_island",
+     "count": 3
+    },
+    {
+     "cardId": "plateau",
+     "count": 3
+    },
+    {
+     "cardId": "hallowed_fountain",
+     "count": 2
+    },
+    {
+     "cardId": "steam_vents",
+     "count": 1
+    },
+    {
+     "cardId": "sacred_foundry",
+     "count": 1
+    },
+    {
+     "cardId": "island",
+     "count": 4
+    },
+    {
+     "cardId": "plains",
+     "count": 4
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "tormods_crypt",
+     "count": 3
+    },
+    {
+     "cardId": "disenchant",
+     "count": 2
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 3
+    },
+    {
+     "cardId": "vigil_keeper",
+     "count": 3
+    },
+    {
+     "cardId": "wall_of_reverence",
+     "count": 2
+    },
+    {
+     "cardId": "sacred_helix",
+     "count": 1
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "key": "theft",
+   "name": "Jeskai Theft (working name)",
+   "title": "Jeskai Theft (W R u)",
+   "archetype": "midrange",
+   "source": "S67 seed (the planner's): built by the implementer — the S60 theft shell with a sweeper behind it (the brief): Lumen, Restoration Angel, Protocol and Control Magic; the Altar to spend what is borrowed; Wrath.",
+   "decklist": [
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "time_walk",
+     "count": 1
+    },
+    {
+     "cardId": "lumen_the_hearth_fire",
+     "count": 3
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 3
+    },
+    {
+     "cardId": "man_o_war",
+     "count": 2
+    },
+    {
+     "cardId": "protocol",
+     "count": 4
+    },
+    {
+     "cardId": "control_magic",
+     "count": 4
+    },
+    {
+     "cardId": "altar_of_dementia",
+     "count": 2
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 3
+    },
+    {
+     "cardId": "counterspell",
+     "count": 2
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 2
+    },
+    {
+     "cardId": "plateau",
+     "count": 4
+    },
+    {
+     "cardId": "tundra",
+     "count": 3
+    },
+    {
+     "cardId": "volcanic_island",
+     "count": 3
+    },
+    {
+     "cardId": "sacred_foundry",
+     "count": 2
+    },
+    {
+     "cardId": "hallowed_fountain",
+     "count": 2
+    },
+    {
+     "cardId": "steam_vents",
+     "count": 1
+    },
+    {
+     "cardId": "tallyflame_court",
+     "count": 1
+    },
+    {
+     "cardId": "plains",
+     "count": 3
+    },
+    {
+     "cardId": "island",
+     "count": 2
+    },
+    {
+     "cardId": "mountain",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "pyroclasm",
+     "count": 3
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 3
+    },
+    {
+     "cardId": "vigil_keeper",
+     "count": 3
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 2
+    },
+    {
+     "cardId": "disenchant",
+     "count": 2
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 2
+    }
+   ]
+  },
+  {
+   "key": "locks",
+   "name": "Jeskai Locks (working name)",
+   "title": "Azorius Control (W U)",
+   "archetype": "control",
+   "source": "S67 seed (the planner's): built by the implementer — the Locks without black (the brief): the Dredgers and Undermines for Serra Angels, Arcanis and Essence Scatters; Vindicate and Demonic Tutor for Swords and a Divination; its black lands for Tundras, Plains and Islands.",
+   "decklist": [
+    {
+     "cardId": "tundra",
+     "count": 4
+    },
+    {
+     "cardId": "hallowed_fountain",
+     "count": 4
+    },
+    {
+     "cardId": "island",
+     "count": 7
+    },
+    {
+     "cardId": "plains",
+     "count": 6
+    },
+    {
+     "cardId": "library_of_alexandria",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "serra_angel",
+     "count": 4
+    },
+    {
+     "cardId": "arcanis_the_omnipotent",
+     "count": 1
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 2
+    },
+    {
+     "cardId": "absorb",
+     "count": 4
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 3
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 3
+    },
+    {
+     "cardId": "divination",
+     "count": 1
+    },
+    {
+     "cardId": "time_walk",
+     "count": 1
+    },
+    {
+     "cardId": "control_magic",
+     "count": 4
+    },
+    {
+     "cardId": "protocol",
+     "count": 2
+    },
+    {
+     "cardId": "karmic_mentor",
+     "count": 2
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 1
+    },
+    {
+     "cardId": "faerie_formation",
+     "count": 2
+    },
+    {
+     "cardId": "brainstorm",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "essence_scatter",
+     "count": 2
+    },
+    {
+     "cardId": "protocol",
+     "count": 2
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 3
+    },
+    {
+     "cardId": "vigil_keeper",
+     "count": 3
+    },
+    {
+     "cardId": "disenchant",
+     "count": 2
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 1
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 1
+    },
+    {
+     "cardId": "retribution_of_the_meek",
+     "count": 1
+    }
+   ]
+  }
+ ]
+}

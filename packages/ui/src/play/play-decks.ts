@@ -20,6 +20,9 @@ export const PLAY_CATEGORIES: { group: string; title: string }[] = [
   { group: "naya", title: "Naya's lists" }, // S64 (ADR-181, the first triad)
   { group: "esper", title: "Esper's lists" }, // S65 (the second triad)
   { group: "mardu", title: "Mardu's lists" }, // S66 (the third triad)
+  { group: "grixis", title: "Grixis's lists" }, // S67 (the deep batch)
+  { group: "jund", title: "Jund's lists" },
+  { group: "jeskai", title: "Jeskai's lists" },
   { group: "saved", title: "Your journey's decks" },
   { group: "mages", title: "The mages" },
   { group: "beasts", title: "The beasts" },

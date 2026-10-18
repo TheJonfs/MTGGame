@@ -46,6 +46,9 @@ export const OPEN_REVISIONS: OpenRevision[] = [
     tally: { "Blaze": -2, "Control Magic": 2 },
     enchantress: { "Glare of Subdual": -1, "Pacifism": 1 },
   }, why: { tally: "+3.2 ± 1.5 (and +3.1 ± 1.5 on the Kavus)", enchantress: "+1.9 ± 0.7 pooled over two seeds (the brief's Giant Growth left in S46; the Glare is the slot measured)" } },
+  { session: "S67", note: "Part 1: Vigil Keeper in the Open (R-116 — the exile answers the Usher's loop), adopted under ADR-168", lists: {
+    muster: { "Fencing Ace": -3, "Vigil Keeper": 3 },
+  }, why: { muster: "+2.9 ± 0.9 (the Pall +12.5, Mardu Control +0.6); Emerald Snakes' two for Rage Cobras on a Savannah swap +0.3 and Countersnake's fifteen +0.0 not adopted" } },
 ];
 /** S58 (Part 0): a list's title where the planner's first one no longer describes it. */
 export const OPEN_TITLES: Record<string, string> = { undertow: "Dimir Mill (U B)" };

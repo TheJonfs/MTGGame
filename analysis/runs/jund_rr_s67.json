@@ -1,0 +1,483 @@
+{
+ "name": "open_rr_1",
+ "when": "2026-10-18T17:31:47.271Z",
+ "games": 5500,
+ "table": {
+  "sweep": {
+   "ashen": [
+    43,
+    100
+   ],
+   "bfh": [
+    60,
+    100
+   ],
+   "rabble": [
+    38,
+    100
+   ],
+   "coin": [
+    53,
+    100
+   ],
+   "stompy": [
+    43,
+    100
+   ],
+   "auras": [
+    42,
+    100
+   ],
+   "emeraldsnakes": [
+    37,
+    100
+   ],
+   "wurmspeaker": [
+    54,
+    100
+   ],
+   "kindling": [
+    57,
+    100
+   ],
+   "reaper": [
+    50,
+    100
+   ]
+  },
+  "ashen": {
+   "sweep": [
+    57,
+    100
+   ],
+   "reaper": [
+    43,
+    100
+   ],
+   "bfh": [
+    66,
+    100
+   ],
+   "rabble": [
+    42,
+    100
+   ],
+   "coin": [
+    64,
+    100
+   ],
+   "stompy": [
+    57,
+    100
+   ],
+   "auras": [
+    54,
+    100
+   ],
+   "emeraldsnakes": [
+    47,
+    100
+   ],
+   "wurmspeaker": [
+    78,
+    100
+   ],
+   "kindling": [
+    59,
+    100
+   ]
+  },
+  "bfh": {
+   "sweep": [
+    40,
+    100
+   ],
+   "stompy": [
+    45,
+    100
+   ],
+   "ashen": [
+    34,
+    100
+   ],
+   "rabble": [
+    33,
+    100
+   ],
+   "kindling": [
+    56,
+    100
+   ],
+   "emeraldsnakes": [
+    27,
+    100
+   ],
+   "reaper": [
+    51,
+    100
+   ],
+   "auras": [
+    38,
+    100
+   ],
+   "coin": [
+    58,
+    100
+   ],
+   "wurmspeaker": [
+    46,
+    100
+   ]
+  },
+  "reaper": {
+   "ashen": [
+    57,
+    100
+   ],
+   "rabble": [
+    51,
+    100
+   ],
+   "kindling": [
+    72,
+    100
+   ],
+   "emeraldsnakes": [
+    45,
+    100
+   ],
+   "bfh": [
+    49,
+    100
+   ],
+   "auras": [
+    33,
+    100
+   ],
+   "coin": [
+    65,
+    100
+   ],
+   "wurmspeaker": [
+    74,
+    100
+   ],
+   "sweep": [
+    50,
+    100
+   ],
+   "stompy": [
+    60,
+    100
+   ]
+  },
+  "rabble": {
+   "reaper": [
+    49,
+    100
+   ],
+   "sweep": [
+    62,
+    100
+   ],
+   "bfh": [
+    67,
+    100
+   ],
+   "ashen": [
+    58,
+    100
+   ],
+   "coin": [
+    72,
+    100
+   ],
+   "stompy": [
+    53,
+    100
+   ],
+   "auras": [
+    55,
+    100
+   ],
+   "emeraldsnakes": [
+    43,
+    100
+   ],
+   "wurmspeaker": [
+    54,
+    100
+   ],
+   "kindling": [
+    75,
+    100
+   ]
+  },
+  "stompy": {
+   "bfh": [
+    55,
+    100
+   ],
+   "coin": [
+    78,
+    100
+   ],
+   "sweep": [
+    57,
+    100
+   ],
+   "ashen": [
+    42,
+    100
+   ],
+   "rabble": [
+    46,
+    100
+   ],
+   "auras": [
+    46,
+    100
+   ],
+   "emeraldsnakes": [
+    39,
+    100
+   ],
+   "wurmspeaker": [
+    53,
+    100
+   ],
+   "kindling": [
+    70,
+    100
+   ],
+   "reaper": [
+    40,
+    100
+   ]
+  },
+  "emeraldsnakes": {
+   "wurmspeaker": [
+    71,
+    100
+   ],
+   "kindling": [
+    77,
+    100
+   ],
+   "auras": [
+    63,
+    100
+   ],
+   "reaper": [
+    55,
+    100
+   ],
+   "bfh": [
+    73,
+    100
+   ],
+   "sweep": [
+    63,
+    100
+   ],
+   "stompy": [
+    61,
+    100
+   ],
+   "coin": [
+    84,
+    100
+   ],
+   "ashen": [
+    53,
+    100
+   ],
+   "rabble": [
+    57,
+    100
+   ]
+  },
+  "wurmspeaker": {
+   "emeraldsnakes": [
+    29,
+    100
+   ],
+   "coin": [
+    66,
+    100
+   ],
+   "auras": [
+    56,
+    100
+   ],
+   "sweep": [
+    46,
+    100
+   ],
+   "stompy": [
+    47,
+    100
+   ],
+   "kindling": [
+    60,
+    100
+   ],
+   "ashen": [
+    21,
+    100
+   ],
+   "rabble": [
+    46,
+    100
+   ],
+   "reaper": [
+    26,
+    100
+   ],
+   "bfh": [
+    54,
+    100
+   ]
+  },
+  "coin": {
+   "wurmspeaker": [
+    34,
+    100
+   ],
+   "sweep": [
+    47,
+    100
+   ],
+   "stompy": [
+    22,
+    100
+   ],
+   "ashen": [
+    36,
+    100
+   ],
+   "rabble": [
+    28,
+    100
+   ],
+   "kindling": [
+    44,
+    100
+   ],
+   "emeraldsnakes": [
+    16,
+    100
+   ],
+   "reaper": [
+    35,
+    100
+   ],
+   "bfh": [
+    42,
+    100
+   ],
+   "auras": [
+    28,
+    100
+   ]
+  },
+  "kindling": {
+   "emeraldsnakes": [
+    23,
+    100
+   ],
+   "reaper": [
+    28,
+    100
+   ],
+   "bfh": [
+    43,
+    100
+   ],
+   "coin": [
+    56,
+    100
+   ],
+   "auras": [
+    20,
+    100
+   ],
+   "wurmspeaker": [
+    40,
+    100
+   ],
+   "sweep": [
+    43,
+    100
+   ],
+   "stompy": [
+    29,
+    100
+   ],
+   "ashen": [
+    40,
+    100
+   ],
+   "rabble": [
+    25,
+    100
+   ]
+  },
+  "auras": {
+   "emeraldsnakes": [
+    37,
+    100
+   ],
+   "sweep": [
+    58,
+    100
+   ],
+   "stompy": [
+    54,
+    100
+   ],
+   "wurmspeaker": [
+    44,
+    100
+   ],
+   "ashen": [
+    46,
+    100
+   ],
+   "rabble": [
+    45,
+    100
+   ],
+   "kindling": [
+    80,
+    100
+   ],
+   "reaper": [
+    67,
+    100
+   ],
+   "bfh": [
+    62,
+    100
+   ],
+   "coin": [
+    72,
+    100
+   ]
+  }
+ },
+ "means": {
+  "sweep": 48,
+  "ashen": 57,
+  "rabble": 59,
+  "stompy": 53,
+  "auras": 57,
+  "emeraldsnakes": 66,
+  "wurmspeaker": 45,
+  "kindling": 35,
+  "reaper": 56,
+  "bfh": 43,
+  "coin": 33
+ },
+ "report": "# The Open's round-robin (S46) — 5500 games, master both, 20 life, no entrances; the ROW's win rate\n\n| | sweep | ashen | rabble | stompy | auras | emeraldsnakes | wurmspeaker | kindling | reaper | bfh | coin | **mean** |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| **sweep** | — | 43 | 38 | 43 | 42 | 37 | 54 | 57 | 50 | 60 | 53 | **48** |\n| **ashen** | 57 | — | 42 | 57 | 54 | 47 | 78 | 59 | 43 | 66 | 64 | **57** |\n| **rabble** | 62 | 58 | — | 53 | 55 | 43 | 54 | 75 | 49 | 67 | 72 | **59** |\n| **stompy** | 57 | 42 | 46 | — | 46 | 39 | 53 | 70 | 40 | 55 | 78 | **53** |\n| **auras** | 58 | 46 | 45 | 54 | — | 37 | 44 | 80 | 67 | 62 | 72 | **57** |\n| **emeraldsnakes** | 63 | 53 | 57 | 61 | 63 | — | 71 | 77 | 55 | 73 | 84 | **66** |\n| **wurmspeaker** | 46 | 21 | 46 | 47 | 56 | 29 | — | 60 | 26 | 54 | 66 | **45** |\n| **kindling** | 43 | 40 | 25 | 29 | 20 | 23 | 40 | — | 28 | 43 | 56 | **35** |\n| **reaper** | 50 | 57 | 51 | 60 | 33 | 45 | 74 | 72 | — | 49 | 65 | **56** |\n| **bfh** | 40 | 34 | 33 | 45 | 38 | 27 | 46 | 56 | 51 | — | 58 | **43** |\n| **coin** | 47 | 36 | 28 | 22 | 28 | 16 | 34 | 44 | 35 | 42 | — | **33** |\n\nSolvable (a list over 65% against the field): emeraldsnakes. Under 35%: coin.\nMuster vs Warband: the Muster 0% (0 games).\n\n## Staples (ADR-170)\n\nIn more than half of the 11 lists: Lightning Bolt (7 lists, 25 copies). The most played: Lightning Bolt 7 · Flametongue Kavu 5 · Gaean Wurm 5 · Reaper's Forerunner 5 · Birds of Paradise 4 · Rancor 4 · Vampire Nighthawk 4 · Seasoned Pyromancer 4.\n\n## Restricted cards — % of the list's games in which it was cast (or, a land, played)\n\n- **sweep**: black_lotus 22% · mox_emerald 24% · mox_jet 23% · mox_ruby 22% · cairnbrand 27%\n- **ashen**: cairnbrand 32% · mox_jet 26% · mox_ruby 27% · black_lotus 28% · demonic_tutor 24%\n- **rabble**: cairnbrand 28% · mox_ruby 27% · mox_jet 23% · black_lotus 24%\n- **stompy**: black_lotus 23% · mox_emerald 23% · mox_ruby 22%\n- **emeraldsnakes**: black_lotus 28% · mox_emerald 27% · mox_jet 26% · mox_ruby 30%\n- **wurmspeaker**: black_lotus 25% · mox_emerald 24%\n- **kindling**: mox_ruby 26% · black_lotus 25%\n- **reaper**: black_lotus 33% · mox_emerald 32% · mox_jet 34% · mox_ruby 32% · cairnbrand 36%\n- **coin**: cairnbrand 27% · black_lotus 23% · mox_jet 24% · mox_ruby 26% · demonic_tutor 18%\n\n## Key pieces — % of the list's games in which each was cast (a weak pilot reads apart from a weak list)\n\n- **sweep**: \n- **ashen**: \n- **rabble**: \n- **stompy**: \n- **auras**: \n- **emeraldsnakes**: \n- **wurmspeaker**: seedborn_muse 60% · rampaging_baloths 33% · gaean_wurm 52%\n- **kindling**: \n- **reaper**: \n- **bfh**: \n- **coin**: the_usher 0% · blood_artist 60% · bitterblossom 62%\n\n## The Loop — the Usher + an Altar on the battlefield with a Restoration Angel in hand or play\n\nAssembled by turn ten in 0 of 0 games (0%); ever: 0. Altar activations per game: 0.00."
+}

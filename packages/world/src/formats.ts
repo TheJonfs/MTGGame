@@ -65,8 +65,13 @@ export const ESPER_FORMAT = constructed("esper", "Esper", "white, blue and black
  * applies (the Lotus; Mox Pearl, Ruby and Jet; the Observatory and Cairnbrand; Demonic Tutor; the Library); the laws
  * banned. The Usher's home: the loop lives here. */
 export const MARDU_FORMAT = constructed("mardu", "Mardu", "red, white and black. The Usher's loop lives here, and the race that beats it", { ...OPEN_BASE, colorsWithin: ["R", "W", "B"], manaWithin: true });
+/** S67: the deep triads as a batch — each the land rule (ADR-181), the Open's restricted list where it applies, the
+ * laws banned. Grixis: no Swords and no Vindicate; Jund: no counterspell; Jeskai: counters and sweepers both. */
+export const GRIXIS_FORMAT = constructed("grixis", "Grixis", "blue, black and red. Counters, burn and the dead — and nothing white to undo them", { ...OPEN_BASE, colorsWithin: ["U", "B", "R"], manaWithin: true });
+export const JUND_FORMAT = constructed("jund", "Jund", "black, red and green. The Reaper sows a snake each dawn, and nothing here can counter it", { ...OPEN_BASE, colorsWithin: ["B", "R", "G"], manaWithin: true });
+export const JESKAI_FORMAT = constructed("jeskai", "Jeskai", "blue, red and white. Counters and sweepers both — every answer, and the Bailiff to serve them", { ...OPEN_BASE, colorsWithin: ["U", "R", "W"], manaWithin: true });
 /** The formats that have a field of their own lists (data/convocation/formats/<id>/), a table of record and a door. */
-export const FIELD_FORMAT_IDS = ["open", "peasant", "naya", "esper", "mardu"] as const;
+export const FIELD_FORMAT_IDS = ["open", "peasant", "naya", "esper", "mardu", "grixis", "jund", "jeskai"] as const;
 export const PAUPER_FORMAT = constructed("pauper", "Pauper", "tier 1 only — honest creatures and spells", { minCards: 60, maxTier: 1, banned: OPEN_FORMAT.rule.banned! });
 export const BODIES_FORMAT = constructed("bodies", "Bodies", "Odile's gate: twenty-four creatures in sixty", { ...OPEN_BASE, minCreatures: 24 });
 export const NOTHING_SMALL_FORMAT = constructed("nothing-small", "Nothing Small", "Zinnia's gate: every creature's power two or more", { ...OPEN_BASE, minCreaturePower: 2 });
@@ -74,7 +79,7 @@ export const NOTHING_SUDDEN_FORMAT = constructed("nothing-sudden", "Nothing Sudd
 export const HALF_GROUND_FORMAT = constructed("half-ground", "Half Ground", "Isaura's gate: half the deck is land", { ...OPEN_BASE, minLandFraction: 0.5 });
 export const NOTHING_DEAR_FORMAT = constructed("nothing-dear", "Nothing Dear", "Meliyan's gate: nothing above mana value four", { ...OPEN_BASE, maxManaValue: 4 });
 /** Every Constructed format the builder passes its tests for (S52); the door offers the Open, the rest are data. */
-export const CONSTRUCTED_FORMATS: readonly ConstructedFormat[] = [OPEN_FORMAT, PEASANT_FORMAT, NAYA_FORMAT, ESPER_FORMAT, MARDU_FORMAT, PAUPER_FORMAT, BODIES_FORMAT, NOTHING_SMALL_FORMAT, NOTHING_SUDDEN_FORMAT, HALF_GROUND_FORMAT, NOTHING_DEAR_FORMAT];
+export const CONSTRUCTED_FORMATS: readonly ConstructedFormat[] = [OPEN_FORMAT, PEASANT_FORMAT, NAYA_FORMAT, ESPER_FORMAT, MARDU_FORMAT, GRIXIS_FORMAT, JUND_FORMAT, JESKAI_FORMAT, PAUPER_FORMAT, BODIES_FORMAT, NOTHING_SMALL_FORMAT, NOTHING_SUDDEN_FORMAT, HALF_GROUND_FORMAT, NOTHING_DEAR_FORMAT];
 
 /** Sealed from the Plane: six Classic packs, forty cards (formats doc §2.3). */
 export const SEALED_PLANE: LimitedFormat = {
