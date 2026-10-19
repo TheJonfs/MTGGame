@@ -1184,6 +1184,93 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
   "only": true
  },
  {
+  "key": "grixis:mbclio",
+  "fifteen": [
+   {
+    "cardId": "pyroclasm",
+    "count": 3
+   },
+   {
+    "cardId": "flametongue_kavu",
+    "count": 3
+   },
+   {
+    "cardId": "control_magic",
+    "count": 3
+   },
+   {
+    "cardId": "protocol",
+    "count": 3
+   },
+   {
+    "cardId": "unearth",
+    "count": 3
+   }
+  ],
+  "rows": [
+   {
+    "in": "pyroclasm",
+    "n": 3,
+    "out": [
+     "hymn_to_tourach"
+    ],
+    "when": [
+     "small"
+    ]
+   },
+   {
+    "in": "flametongue_kavu",
+    "n": 3,
+    "out": [
+     "hymn_to_tourach",
+     "hypnotic_specter"
+    ],
+    "when": [
+     "small",
+     "counters"
+    ]
+   },
+   {
+    "in": "control_magic",
+    "n": 3,
+    "out": [
+     "hypnotic_specter"
+    ],
+    "when": [
+     "small",
+     "counters"
+    ]
+   },
+   {
+    "in": "protocol",
+    "n": 3,
+    "out": [
+     "hypnotic_specter",
+     "dark_ritual"
+    ],
+    "when": [
+     "counters",
+     "shrinks"
+    ]
+   },
+   {
+    "in": "unearth",
+    "n": 3,
+    "out": [
+     "hypnotic_specter"
+    ],
+    "when": [
+     "killers"
+    ],
+    "unless": [
+     "small",
+     "counters"
+    ]
+   }
+  ],
+  "only": true
+ },
+ {
   "key": "jeskai:skies",
   "fifteen": [
    {
@@ -1573,5 +1660,6 @@ export const LIST_GUIDES: Record<string, string> = {
  "mardu:marducontrol": "marducontrol",
  "mardu:levy": "levy",
  "mardu:witch": "mardu:witch",
+ "grixis:mbclio": "grixis:mbclio",
  "jeskai:skies": "jeskai:skies"
 };

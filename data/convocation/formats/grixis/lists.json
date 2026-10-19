@@ -6,8 +6,72 @@
   "large": 1
  },
  "archived": {},
- "guides": {},
- "guidesOnly": [],
+ "guides": {
+  "mbclio": [
+   {
+    "in": "pyroclasm",
+    "n": 3,
+    "out": [
+     "hymn_to_tourach"
+    ],
+    "when": [
+     "small"
+    ]
+   },
+   {
+    "in": "flametongue_kavu",
+    "n": 3,
+    "out": [
+     "hymn_to_tourach",
+     "hypnotic_specter"
+    ],
+    "when": [
+     "small",
+     "counters"
+    ]
+   },
+   {
+    "in": "control_magic",
+    "n": 3,
+    "out": [
+     "hypnotic_specter"
+    ],
+    "when": [
+     "small",
+     "counters"
+    ]
+   },
+   {
+    "in": "protocol",
+    "n": 3,
+    "out": [
+     "hypnotic_specter",
+     "dark_ritual"
+    ],
+    "when": [
+     "counters",
+     "shrinks"
+    ]
+   },
+   {
+    "in": "unearth",
+    "n": 3,
+    "out": [
+     "hypnotic_specter"
+    ],
+    "when": [
+     "killers"
+    ],
+    "unless": [
+     "small",
+     "counters"
+    ]
+   }
+  ]
+ },
+ "guidesOnly": [
+  "mbclio"
+ ],
  "outRules": {},
  "lists": [
   {
@@ -1005,6 +1069,125 @@
     },
     {
      "cardId": "control_magic",
+     "count": 3
+    }
+   ]
+  },
+  {
+   "key": "mbclio",
+   "name": "Mono-Black Clio",
+   "title": "Mono-Black Clio (B u r)",
+   "archetype": "midrange",
+   "source": "Post-S67 (Chris's, 2026-10-19): 8–0 in a Grixis Convocation (event 233306; 16–1 in games — the Ashen, Grixis Clio, the Writ, the Kindling and the Rabble in the Swiss, then the Kindling, the Tally and the Rabble). The Witch's black core (Witch, Specter, Dread Presence, Nighthawk, Drana, Hymn, Rituals) with four Clios on blue duals; Pyroclasm, Kavu, Control Magic and Protocol in the fifteen. The fifteen and the guide read from Chris's swaps.",
+   "decklist": [
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    },
+    {
+     "cardId": "time_walk",
+     "count": 1
+    },
+    {
+     "cardId": "drana_kalastria_bloodchief",
+     "count": 3
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "the_jet_witch",
+     "count": 4
+    },
+    {
+     "cardId": "hypnotic_specter",
+     "count": 4
+    },
+    {
+     "cardId": "clio_lady_of_the_depths",
+     "count": 4
+    },
+    {
+     "cardId": "dark_ritual",
+     "count": 4
+    },
+    {
+     "cardId": "dread_presence",
+     "count": 4
+    },
+    {
+     "cardId": "hymn_to_tourach",
+     "count": 4
+    },
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "tallyflame_court",
+     "count": 1
+    },
+    {
+     "cardId": "badlands",
+     "count": 4
+    },
+    {
+     "cardId": "blood_crypt",
+     "count": 4
+    },
+    {
+     "cardId": "underground_sea",
+     "count": 4
+    },
+    {
+     "cardId": "watery_grave",
+     "count": 4
+    },
+    {
+     "cardId": "library_of_alexandria",
+     "count": 1
+    },
+    {
+     "cardId": "swamp",
+     "count": 4
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "pyroclasm",
+     "count": 3
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 3
+    },
+    {
+     "cardId": "control_magic",
+     "count": 3
+    },
+    {
+     "cardId": "protocol",
+     "count": 3
+    },
+    {
+     "cardId": "unearth",
      "count": 3
     }
    ]

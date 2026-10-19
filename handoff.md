@@ -50,6 +50,10 @@ Eight formats now have fields of their own: the Open (fifteen lists), Peasant, N
 5. **Frozen `large` thresholds of 1 in Grixis and Jund** (ADR-186). This is S65's fragile low-rank case again: `large` fires against nearly every list there. Planner: ratify, or set by hand.
 6. **The Keeper answers the Pall, not Mardu Control**: +12.5, +8.1 and +4.4 against the Pall, but +0.6, +1.9 and −1.2 against Mardu Control. Mardu Control's loop is one engine among several. No fifth shape joins the Open's four.
 7. **The fifteen-matched guide lookup** still lives in events, the UI and `combo-probe`/`sideboard:show`. Those were left as they were; only `open:rr` is key-based. `sideboard:show` would be a small follow-up.
+8. **Post-S67 (Chris's Grixis run, Mono-Black Clio 8–0): the pilot's damage targeting.**
+   - **Burn spells:** of 23 AI burn spells at Chris's creatures, 9 were not lethal on their own, and 6 left the creature alive (Shocks on Nighthawk, Dread Presence and Drana; a Bolt on Drana). No gate found for burn *spells* aimed at a creature.
+   - **The Ruby Tyrant** (Chris's observation, confirmed in the Rabble's game two): two pings at a Witch with 2 toughness left, where one was lethal; ten turns beside Chris's Clio without once aiming two pings at her. The activated-ability gate (`heuristic-agent.ts`, the `damage` case near "repeatable") refuses any single ping that does not kill — so it can never stack two on a 4-toughness creature — and its `kills()` reads marked damage but not pings already on the stack, so it doubles up.
+   - **For S68's pilot rules, beside the Witch term:** a burn spell aims at a creature only when it kills, alone or with what is already committed (combat, the stack); repeatable damage plans a kill across activations and counts its own pending pings. Ladder-gated.
 
 ## Registry entries added/changed
 - No R-entries; no pool changes (Vigil Keeper is now in the Open's Muster, and the Watch has it in Mardu and Jeskai).
