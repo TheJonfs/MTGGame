@@ -2212,4 +2212,25 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.pingTimingGated(mkView({ step: "MAIN1", battlefield: bf }), bear)).toBe(false);
     expect(a.pingTimingGated(mkView({ step: "END", activePlayer: 1, battlefield: bf }), face)).toBe(false);
   });
+
+  it("book of shame 141 (S68 — Chris's Jeskai runs: 210 of 260 attackers the pilot sent into his Powerstone Minefield died to its trigger before blocks): an attacker the defender's ATTACKS triggers kill as it is declared deals nothing and is lost; one that survives them still swings; off: triggercharge", async () => {
+    const a = agent("aggro");
+    const v = mkView({ battlefield: [{ id: "b", cardId: "grizzly_bears", controller: 0 }, { id: "c", cardId: "centaur_courser", controller: 0 }, { id: "mf", cardId: "powerstone_minefield", controller: 1 }] });
+    expect(a.declarationCharge(v, "b", "ATTACKS")).toBe(2);
+    expect(await a.scoreAttackSet(v, viewCreatures(v), 0, ["b"])).toBeLessThan(0); // the 2/2 dies on the way in
+    expect(await a.scoreAttackSet(v, viewCreatures(v), 0, ["c"])).toBeGreaterThan(0); // the 3/3 takes 2 and connects
+    const old = new HeuristicAgent(1, pool, { archetype: "aggro", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, off: ["triggercharge"] });
+    expect(await old.scoreAttackSet(v, viewCreatures(v), 0, ["b"])).toBeGreaterThan(0);
+  });
+
+  it("book of shame 142 (S68 — the brief's death triggers): our creature dying in combat costs us what the opponent's death triggers drain (Blood Artist 1, the Usher 2); ours do not count; off: deathcharge", async () => {
+    const a = agent("midrange");
+    // (the attacker dies for certain: their Minefield's 2 on the way in)
+    const v = mkView({ battlefield: [{ id: "b", cardId: "grizzly_bears", controller: 0 }, { id: "mf", cardId: "powerstone_minefield", controller: 1 }, { id: "ba", cardId: "blood_artist", controller: 1 }, { id: "u", cardId: "the_usher", controller: 1 }, { id: "mine", cardId: "blood_artist", controller: 0 }] });
+    expect(a.deathCharge(v, 0)).toBe(3);
+    const bare = mkView({ battlefield: [{ id: "b", cardId: "grizzly_bears", controller: 0 }, { id: "mf", cardId: "powerstone_minefield", controller: 1 }, { id: "mine", cardId: "blood_artist", controller: 0 }] });
+    expect(a.deathCharge(bare, 0)).toBe(0);
+    // (a fresh agent for each: the attack sim memoises by attack set within a turn)
+    expect(await a.scoreAttackSet(v, viewCreatures(v), 0, ["b"])).toBeLessThan(await agent("midrange").scoreAttackSet(bare, viewCreatures(bare), 0, ["b"]));
+  });
 });

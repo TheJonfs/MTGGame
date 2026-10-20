@@ -184,5 +184,29 @@ async function racing(): Promise<void> {
   for (const h of holds) console.log(`  game ${h.game} T${h.turn}: life ${h.life[0]}–${h.life[1]}, power ${h.mine}–${h.theirs}: attack ${(100 * h.asHuman).toFixed(0)}%, hold ${(100 * h.asPilot).toFixed(0)}%`);
 }
 
-if (process.argv.includes("--racing")) await racing();
-else await field(process.argv.includes("--manaba") ? "manaba" : "witch");
+/** --mines (S68 Part 1's measure): each list in --lists against --vs (a Minefield list), game one, both seats; per game, the
+ * attackers the list declared while a Minefield was out, and how many its trigger alone killed. `--off rule` pilots both. */
+async function mines(): Promise<void> {
+  const fmt = arg("format", "jeskai"), F = (FORMAT_FIELD as unknown as Record<string, Record<string, List>>)[fmt]!;
+  const keys = arg("lists", "rabble").split(","), vs = F[arg("vs", "minefield")]!, G = Number(arg("games", "20")), off = arg("off", "").split(",").filter(Boolean);
+  for (const key of keys) {
+    const me = F[key]!; let games = 0, declared = 0, killed = 0, won = 0;
+    for (let g = 0; g < G; g++) {
+      const seed = 6800 + g * 37, seat = (g % 2) as 0 | 1, decks = seat === 0 ? [me, vs] : [vs, me];
+      const spec = { seed, players: decks.map((d) => ({ name: d.key, decklist: [...d.decklist], agent: "heuristic:master" })), rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 120 }, modifiers: [] } as unknown as MatchSpec;
+      const ag = decks.map((d, i) => new HeuristicAgent(seed * 2 + 1 + i, pool, { ...difficultyProfile("master", d.archetype as never, [...decks[1 - i]!.decklist], [...d.decklist]), ...(off.length ? { off } : {}) })) as unknown as [Agent, Agent];
+      const inner = ag[seat];
+      ag[seat] = { chooseAction: async (v: GameView, r: ActionRequest) => {
+        const a = await inner.chooseAction(v, r);
+        if (a.type === "declareAttacker") { const n = v.battlefield.filter((b) => b.cardId === "powerstone_minefield").length; const b = v.battlefield.find((x) => x.id === a.objectId);
+          if (n && b && b.toughness !== null) { declared++; if (b.toughness - b.damage <= 2 * n) killed++; } }
+        return a; } };
+      const r = await runMatch(spec, pool, ag); games++; if (r.winner === seat) won++;
+    }
+    console.log(`${fmt}:${key} vs ${vs.key}${off.length ? ` (off: ${off.join(",")})` : ""}: ${games} games, won ${((100 * won) / games).toFixed(1)}%; attackers into a Minefield ${(declared / games).toFixed(2)} a game, killed by its trigger ${(killed / games).toFixed(2)} a game (${declared ? ((100 * killed) / declared).toFixed(0) : 0}%)`);
+  }
+}
+
+if (process.argv.includes("--mines")) await mines();
+else if (process.argv.includes("--racing")) await racing();
+else if (!process.argv.includes("--mines")) await field(process.argv.includes("--manaba") ? "manaba" : "witch");

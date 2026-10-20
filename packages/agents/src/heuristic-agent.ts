@@ -1397,8 +1397,12 @@ export class HeuristicAgent implements Agent {
     const hit = this.simMemo.get(memoKey);
     if (hit !== undefined) return hit;
     const opp = (me === 0 ? 1 : 0) as PlayerId;
-    const blocks = this.greedyBlocks(view, creatures, attackers, opp, /*lethalChumps*/ false);
-    const outcome = await simulateCombat(creatures, me, attackers, blocks, [view.life[0], view.life[1]]);
+    // S68 (Part 1): the defender's ATTACKS triggers hit each attacker as it is declared; one they kill deals nothing
+    const atk = this.charged(view, creatures, attackers, "ATTACKS"), live = attackers.filter((id) => !atk.dead.has(id));
+    const blocks = this.greedyBlocks(view, atk.creatures, live, opp, /*lethalChumps*/ false);
+    const blk = this.charged(view, atk.creatures, blocks.map((b) => b.blocker), "BLOCKS");
+    const outcome = await simulateCombat(blk.creatures, me, live, blocks, [view.life[0], view.life[1]]);
+    for (const id of [...atk.dead, ...blk.dead]) outcome.dead.add(id);
     // S45 (the Tidewall): an attack its block trigger meets costs us the card it hands back.
     const handedBack = blocks.reduce((n, b) => n + this.blockReturnValue(view, b.blocker), 0);
     const valueOf = (id: string) => {
@@ -1419,7 +1423,7 @@ export class HeuristicAgent implements Agent {
     for (const id of outcome.dead) {
       const c = creatures.find((s) => s.id === id);
       if (!c) continue;
-      score += c.controller === me ? -ownLossWeight * valueOf(id) : valueOf(id);
+      score += c.controller === me ? -ownLossWeight * valueOf(id) - this.deathCharge(view, me) * this.C.weights[this.profile.archetype].ownLife : valueOf(id);
     }
     score += outcome.playerDamage[opp] * dmgWeight;
     // S31 (R-094, the Traumatizer — ADR-107): every point of combat damage our creatures deal the
@@ -1493,6 +1497,8 @@ export class HeuristicAgent implements Agent {
     const seedborn = view.battlefield.some((b) => b.controller === me && (this.def(b.cardId)?.abilities ?? []).some((a) => a.kind === "static" && a.effects.some((e) => e.type === "untapDuringOthersUntap")));
     const swing = view.battlefield
       .filter((o) => o.controller !== me && o.power !== null && o.power > 0 && !o.cantAttack && !kw(o).includes("defender") && !dead.has(o.id) && !(o.tapped && (o.counters?.["stun"] ?? 0) > 0))
+      // S68 (Part 1): their attacker our ATTACKS triggers kill as it is declared is no part of the swing
+      .filter((o) => (o.toughness ?? 0) - o.damage > this.declarationCharge(view, o.id, "ATTACKS"))
       .sort((a, b) => (b.power ?? 0) - (a.power ?? 0));
     const blockers = view.battlefield
       .filter((o) => o.controller === me && o.power !== null && !o.cantBlock && !dead.has(o.id) && (attackers.includes(o.id) ? kw(o).includes("vigilance") || seedborn : !o.tapped || seedborn))
@@ -1607,6 +1613,11 @@ export class HeuristicAgent implements Agent {
     const attackerObjs = attackers
       .map((id) => creatures.find((c) => c.id === id))
       .filter((c): c is SimObject => !!c);
+    // S68 (Part 1): each blocker is weighed as it will stand once the battlefield's BLOCKS triggers hit it
+    if (!this.profile.off?.includes("triggercharge")) {
+      const ch = this.charged(view, available, available.map((c) => c.id), "BLOCKS").creatures;
+      available.splice(0, available.length, ...ch);
+    }
     const blocks: { blocker: string; attacker: string }[] = [];
     const blocked = new Set<string>();
 
@@ -2816,6 +2827,62 @@ export class HeuristicAgent implements Agent {
       }
     }
     return gain;
+  }
+
+  /** S68 (Part 1; `off: ["triggercharge"]` — Chris's Jeskai runs: 210 of 260 attackers the pilot sent into his Powerstone
+   * Minefield died to its trigger before blocks): the damage the battlefield's OTHER permanents' ATTACKS / BLOCKS
+   * triggers deal a creature as it is declared — each Minefield's 2. (A creature's own tax is `selfTax`'s.) Exposed. */
+  declarationCharge(view: GameView, objectId: string, event: "ATTACKS" | "BLOCKS"): number {
+    if (this.profile.off?.includes("triggercharge")) return 0;
+    const o = view.battlefield.find((b) => b.id === objectId); if (!o) return 0;
+    let n = 0;
+    for (const p of view.battlefield) {
+      if (p.id === objectId) continue;
+      for (const a of this.def(p.cardId)?.abilities ?? []) {
+        if (a.kind !== "triggered" || a.event !== event) continue;
+        const c = (a.condition ?? {}) as { source?: string; controller?: string };
+        if (c.source === "self") continue;
+        if (c.controller === "you" && o.controller !== p.controller) continue;
+        if (c.controller === "opponent" && o.controller === p.controller) continue;
+        for (const e of a.effects) if (e.type === "damage" && (e as { to?: string }).to === "eventObject" && typeof e.amount === "number") n += e.amount;
+      }
+    }
+    return n;
+  }
+  /** S68 (Part 1): the creatures with the declaration charge applied to `ids` — and the ones it kills before combat
+   * (they deal no damage: power 0, already lethal). */
+  private charged(view: GameView, creatures: SimObject[], ids: readonly string[], event: "ATTACKS" | "BLOCKS"): { creatures: SimObject[]; dead: Set<string> } {
+    const dead = new Set<string>();
+    if (this.profile.off?.includes("triggercharge")) return { creatures, dead };
+    const out = creatures.map((c) => {
+      if (!ids.includes(c.id)) return c;
+      const ch = this.declarationCharge(view, c.id, event); if (ch <= 0) return c;
+      const hit = { ...c, damage: c.damage + ch };
+      if (hit.toughness - hit.damage <= 0) { dead.add(c.id); return { ...hit, power: 0 }; }
+      return hit;
+    });
+    return { creatures: out, dead };
+  }
+  /** S68 (Part 1; `off: ["deathcharge"]`): the life a creature of ours dying costs us through the OPPONENT's death
+   * triggers (Blood Artist's 1, the Usher's 2, Poison-Tip Archer's 1). Exposed. */
+  deathCharge(view: GameView, dyingController: PlayerId): number {
+    if (this.profile.off?.includes("deathcharge")) return 0;
+    let n = 0;
+    for (const p of view.battlefield) {
+      if (p.controller === dyingController) continue;
+      for (const a of this.def(p.cardId)?.abilities ?? []) {
+        if (a.kind !== "triggered" || a.event !== "DIES") continue;
+        const c = (a.condition ?? {}) as { source?: string; controller?: string; type?: string[] };
+        if (!(c.source === "any" || c.source === "other")) continue;
+        if (c.controller === "you") continue; // its own creatures only (Meliyan)
+        if (c.type && !c.type.includes("Creature")) continue;
+        for (const e of a.effects) {
+          const x = e as { type: string; amount?: unknown; who?: string };
+          if (x.type === "loseLife" && typeof x.amount === "number" && (x.who === "target" || x.who === "opponent")) n += x.amount;
+        }
+      }
+    }
+    return n;
   }
 
   private selfTax(view: GameView, objectId: string, event: "ATTACKS" | "BLOCKS"): number {
