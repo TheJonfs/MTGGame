@@ -124,7 +124,7 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
       hand: [{ objectId: "h_bolt", cardId: "lightning_bolt" }],
       battlefield: [
         { id: "mine", cardId: "grizzly_bears", controller: 0 },
-        { id: "theirs", cardId: "serra_angel", controller: 1 },
+        { id: "theirs", cardId: "centaur_courser", controller: 1 }, // S68 (burnkills): a creature the Bolt kills — a 4/4 is no longer a use of it
       ],
     });
     const bolt = (target: { kind: "object"; id: string } | { kind: "player"; player: number }) =>
@@ -2232,5 +2232,31 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.deathCharge(bare, 0)).toBe(0);
     // (a fresh agent for each: the attack sim memoises by attack set within a turn)
     expect(await a.scoreAttackSet(v, viewCreatures(v), 0, ["b"])).toBeLessThan(await agent("midrange").scoreAttackSet(bare, viewCreatures(bare), 0, ["b"]));
+  });
+
+  it("book of shame 143 (S68 — Chris's Grixis run: 9 of 23 burn spells at his creatures did not kill alone): a burn spell aims at a creature only when it kills, alone or with combat damage already committed; off: burnkills", () => {
+    const a = agent("aggro");
+    const hand = [{ objectId: "s", cardId: "shock" }, { objectId: "lb", cardId: "lightning_bolt" }];
+    const v = mkView({ hand, battlefield: [{ id: "n", cardId: "vampire_nighthawk", controller: 1 }, { id: "g", cardId: "grizzly_bears", controller: 0 }] });
+    const at = (o: string, id: string) => ({ type: "castSpell" as const, objectId: o, targets: [{ kind: "object" as const, id }] });
+    expect(a.burnKillsGated(v, at("s", "n"))).toBe(true); // 2 into a 2/3
+    expect(a.burnKillsGated(v, at("lb", "n"))).toBe(false); // 3 kills it
+    const blocked = { ...mkView({ hand, step: "DECLARE_BLOCKERS", activePlayer: 1, battlefield: [{ id: "n", cardId: "vampire_nighthawk", controller: 1 }, { id: "g", cardId: "grizzly_bears", controller: 0 }], combat: { attackers: ["n"], blocks: [{ blocker: "g", attacker: "n" }] } }) };
+    expect(a.burnKillsGated(blocked, at("s", "n"))).toBe(false); // the Bears' 2 and the Shock's 2 kill it
+    const old = new HeuristicAgent(1, pool, { archetype: "aggro", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, off: ["burnkills"] });
+    expect(old.burnKillsGated(v, at("s", "n"))).toBe(false);
+  });
+
+  it("book of shame 144 (S68 — Chris's Grixis run: the Ruby Tyrant pinged a 2-toughness Witch twice, and never stacked two on his Clio): a ping counts our pings already on the stack, and one short of a kill is spent only when the mana at hand pays for the rest of it; off: pingplan", () => {
+    const a = agent("midrange");
+    const lands = (n: number) => Array.from({ length: n }, (_, i) => ({ id: "m" + i, cardId: "mountain", controller: 0 as const }));
+    const ping = (id: string) => ({ type: "activateAbility" as const, objectId: "t", abilityIndex: 0, targets: [{ kind: "object" as const, id }] });
+    const bf = (n: number) => [{ id: "t", cardId: "the_ruby_tyrant", controller: 0 as const }, { id: "c", cardId: "centaur_courser", controller: 1 as const }, { id: "b", cardId: "grizzly_bears", controller: 1 as const }, ...lands(n)];
+    expect(a.floodSinkGated(mkView({ battlefield: bf(6) }), ping("c"))).toBe(false); // two pings' mana: the 3/3 dies
+    expect(a.floodSinkGated(mkView({ battlefield: bf(3) }), ping("c"))).toBe(true); // one ping's mana: it lives
+    const stacked = { ...mkView({ battlefield: bf(6) }), stack: [{ id: "p1", kind: "ability", cardId: "the_ruby_tyrant", controller: 0 as const, targets: [{ kind: "object" as const, id: "b" }] }] };
+    expect(a.floodSinkGated(stacked as never, ping("b"))).toBe(true); // the first ping already kills the Bears
+    const old = new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, off: ["pingplan"] });
+    expect(old.floodSinkGated(stacked as never, ping("b"))).toBe(false);
   });
 });

@@ -285,6 +285,7 @@ export class HeuristicAgent implements Agent {
     if (this.selfCounterGated(view, action)) return -Infinity; // post-S43: Mystic Snake with only our own spell to hit
     if (this.spellPayoffHoldGated(view, action)) return -Infinity; // S45: hold the cheap spell for the Guttersnipe / Pyromancer in hand
     if (this.faceBurnHoldGated(view, action)) return -Infinity; // post-S49 (book 88): removal is not thrown at a healthy face
+    if (this.burnKillsGated(view, action)) return -Infinity; // S68 (Part 2): a burn spell at a creature only when it kills
     if (this.counterWarGated(view, action)) return -Infinity; // post-S52 (book 94): one counter answers one spell
     if (this.attackAuraOnNonAttackerGated(view, action)) return -Infinity; // S62 (book 127): Rancor is not for a Wall
     if (this.entersHarmGated(view, action)) return -Infinity; // S50 (book 89): the Kavu is not cast into a board where its four can only hit us
@@ -2829,6 +2830,64 @@ export class HeuristicAgent implements Agent {
     return gain;
   }
 
+  /** S68 (Part 2, `off: ["pingplan"]` — Chris's Grixis run: the Tyrant pinged a Witch twice where once killed, and sat
+   * ten turns beside his Clio without stacking two on her): a repeatable ping at an opposing creature counts the pings
+   * already on the stack at it; a target they already kill is not pinged again; a ping short of a kill is spent only
+   * when the mana and life at hand pay for the rest of it this turn. Null: not a ping at an opposing creature. */
+  pingPlanGated(view: GameView, ab: { cost: { mana?: string }; effects: readonly { type: string }[] }, objT: GameView["battlefield"][number] | undefined): boolean | null {
+    if (this.profile.off?.includes("pingplan")) return null;
+    const me = view.you, e0 = ab.effects[0] as { type: string; amount?: unknown };
+    if (!objT || objT.controller === me || objT.toughness === null || e0.type !== "damage" || typeof e0.amount !== "number") return null;
+    const n = e0.amount, left = objT.toughness - objT.damage - this.pendingDamageAt(view, objT.id, me);
+    if (left <= 0) return true;
+    if (n >= left) return false;
+    const per = manaValue(parseManaCost(ab.cost.mana ?? "")) || 1, selfHit = (ab.effects.find((e) => e.type === "damage" && (e as { to?: string }).to === "you") as { amount?: number } | undefined)?.amount ?? 0;
+    const pool = Object.values(view.manaPool).reduce((a, b) => a + b, 0);
+    const sources = view.battlefield.filter((o) => o.controller === me && !o.tapped && (this.def(o.cardId)?.types.includes("Land") || (this.def(o.cardId)?.abilities ?? []).some((a) => a.kind === "activated" && a.effects.every((x) => x.type === "addMana") && !a.cost.sacrifice))).length;
+    let k = Math.floor((sources + pool) / per);
+    if (selfHit > 0) k = Math.min(k, Math.max(0, Math.floor((view.life[me] - 2) / selfHit)));
+    return !(k * n >= left);
+  }
+  /** S68 (Part 2): the damage our own pending stack items (spells and abilities) will deal the object. */
+  pendingDamageAt(view: GameView, objectId: string, me: PlayerId): number {
+    let n = 0;
+    for (const it of view.stack) {
+      if (it.controller !== me || !(it.targets ?? []).some((t) => t.kind === "object" && t.id === objectId)) continue;
+      const d = this.def(it.cardId); if (!d) continue;
+      const effs = it.kind === "spell" ? d.spellEffect ?? [] : (d.abilities ?? []).flatMap((a) => (a.kind === "activated" || a.kind === "triggered" ? a.effects : []));
+      const dmg = effs.find((e) => e.type === "damage" && typeof e.amount === "number") as { amount: number } | undefined;
+      if (dmg) n += dmg.amount;
+    }
+    return n;
+  }
+  /** S68 (Part 2): the combat damage already committed to the object once blocks are declared — our blockers on their
+   * attacker, our attackers it blocks. */
+  committedCombatAt(view: GameView, objectId: string, me: PlayerId): number {
+    if (view.step !== "DECLARE_BLOCKERS") return 0;
+    const pw = (id: string) => { const o = view.battlefield.find((b) => b.id === id); return o && o.controller === me ? Math.max(0, o.power ?? 0) : 0; };
+    if (view.combat.attackers.includes(objectId)) return view.combat.blocks.filter((b) => b.attacker === objectId).reduce((a, b) => a + pw(b.blocker), 0);
+    return view.combat.blocks.filter((b) => b.blocker === objectId).reduce((a, b) => a + pw(b.attacker), 0);
+  }
+  /** S68 (Part 2, `off: ["burnkills"]` — Chris's Grixis run: 9 of 23 burn spells at his creatures did not kill alone,
+   * 6 left them alive — Shocks on Nighthawk and Drana, a Bolt on Drana): a burn spell is aimed at an opposing
+   * creature only when it kills — alone, or with what is already committed (combat damage once blocks are declared,
+   * our pings and spells on the stack). The face, or holding, is scored as ever. Exposed. */
+  burnKillsGated(view: GameView, action: Action): boolean {
+    if (action.type !== "castSpell" || this.profile.off?.includes("burnkills")) return false;
+    const card = view.hand.find((h) => h.objectId === action.objectId)?.cardId, d = card ? this.def(card) : undefined;
+    if (!d || !(d.types.includes("Instant") || d.types.includes("Sorcery"))) return false;
+    const dmg = (d.spellEffect ?? []).find((e) => e.type === "damage") as { amount?: unknown; target?: number } | undefined;
+    if (!dmg) return false;
+    // (an X spell: Blaze's X; Sacred Helix's mana spent — X and the rest of its cost)
+    const x = (action as { x?: number }).x, ref = (dmg.amount as { ref?: string } | undefined)?.ref;
+    const n = typeof dmg.amount === "number" ? dmg.amount : typeof x !== "number" ? null : ref === "x" || dmg.amount === "X" ? x : ref === "manaSpent" ? x + manaValue(parseManaCost(d.manaCost ?? "")) : null;
+    if (n === null) return false;
+    const t = action.targets[dmg.target ?? 0];
+    if (!t || t.kind !== "object") return false;
+    const me = view.you, o = view.battlefield.find((b) => b.id === t.id);
+    if (!o || o.controller === me || o.toughness === null || o.power === null) return false;
+    return n < o.toughness - o.damage - this.pendingDamageAt(view, o.id, me) - this.committedCombatAt(view, o.id, me);
+  }
   /** S68 (Part 1; `off: ["triggercharge"]` — Chris's Jeskai runs: 210 of 260 attackers the pilot sent into his Powerstone
    * Minefield died to its trigger before blocks): the damage the battlefield's OTHER permanents' ATTACKS / BLOCKS
    * triggers deal a creature as it is declared — each Minefield's 2. (A creature's own tax is `selfTax`'s.) Exposed. */
@@ -3099,6 +3158,8 @@ export class HeuristicAgent implements Agent {
     const kills = (n: number) => !!objT && objT.controller === opp && objT.toughness !== null && objT.toughness - objT.damage <= n;
     // A creature's sinks are the shrink, the mill and the team counters only — every other creature ability keeps
     // its pre-S40 scoring (the Tyrant's gun, the Sower's Sphinx).
+    // S68 (Part 2): a creature's repeatable ping at an opposing creature plans its kill (the Tyrant)
+    if (!onLand && e0.type === "damage") { const g = this.pingPlanGated(view, ab, objT); if (g !== null) return g; }
     if (!onLand && e0.type !== "modifyPT" && e0.type !== "mill" && e0.type !== "addCounters") return false;
     switch (e0.type) {
       case "draw":
@@ -3108,6 +3169,11 @@ export class HeuristicAgent implements Agent {
       case "damage": {
         const n = typeof e0.amount === "number" ? e0.amount : 1;
         if (targets[0]?.kind === "player") return !(targets[0].player === opp && (view.life[opp] <= n || (theirEnd && !view.battlefield.some((o) => o.controller === opp && o.toughness !== null && o.toughness - o.damage <= n))));
+        // S68 (Part 2, `off: ["pingplan"]` — Chris's Grixis run: the Tyrant pinged a Witch twice where once killed, and
+        // sat ten turns beside his Clio without stacking two on her): the pings already on the stack at the target
+        // count; a target they already kill is not pinged again; a ping short of a kill is spent only when the mana
+        // and life at hand pay for the rest of the kill this turn.
+        { const g = this.pingPlanGated(view, ab, objT); if (g !== null) return g; }
         return !kills(n);
       }
       case "modifyPT": {
