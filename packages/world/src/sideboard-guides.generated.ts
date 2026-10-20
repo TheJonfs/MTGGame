@@ -1271,6 +1271,82 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
   "only": true
  },
  {
+  "key": "jund:dragons",
+  "fifteen": [
+   {
+    "cardId": "savage_twister",
+    "count": 4
+   },
+   {
+    "cardId": "voracious_cobra",
+    "count": 4
+   },
+   {
+    "cardId": "pyroclasm",
+    "count": 4
+   },
+   {
+    "cardId": "seraphina_the_initiative",
+    "count": 3
+   }
+  ],
+  "rows": [
+   {
+    "in": "pyroclasm",
+    "n": 4,
+    "out": [
+     "shocking_sharpshooter",
+     "the_jet_witch"
+    ],
+    "when": [
+     "wide"
+    ]
+   },
+   {
+    "in": "savage_twister",
+    "n": 4,
+    "out": [
+     "the_jet_witch",
+     "the_ruby_tyrant",
+     "shocking_sharpshooter"
+    ],
+    "when": [
+     "creatureDeck",
+     "wide"
+    ]
+   },
+   {
+    "in": "voracious_cobra",
+    "n": 4,
+    "out": [
+     "shocking_sharpshooter",
+     "the_ruby_tyrant"
+    ],
+    "when": [
+     "creatureDeck"
+    ],
+    "unless": [
+     "wide"
+    ]
+   },
+   {
+    "in": "seraphina_the_initiative",
+    "n": 3,
+    "out": [
+     "shocking_sharpshooter",
+     "the_jet_witch"
+    ],
+    "when": [
+     "creatureDeck"
+    ],
+    "unless": [
+     "wide"
+    ]
+   }
+  ],
+  "only": true
+ },
+ {
   "key": "jeskai:skies",
   "fifteen": [
    {
@@ -1405,7 +1481,7 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
 
 /** S62 (ADR-176): the `small` and `large` shapes' thresholds by format — the Open's as measured since S59; another
  * format's the counts at the same ranks of its own field (sideboard-ai.SHAPE_RANKS). */
-export const SHAPE_SCALES: Record<string, { small: number; large: number }> = {"open":{"small":15,"large":8},"peasant":{"small":20,"large":4},"naya":{"small":18,"large":3},"esper":{"small":10,"large":8},"mardu":{"small":18,"large":3},"grixis":{"small":15,"large":1},"jund":{"small":20,"large":1},"jeskai":{"small":12,"large":3}};
+export const SHAPE_SCALES: Record<string, { small: number; large: number }> = {"open":{"small":15,"large":8},"peasant":{"small":20,"large":4},"naya":{"small":18,"large":3},"esper":{"small":10,"large":8},"mardu":{"small":18,"large":3},"grixis":{"small":15,"large":3},"jund":{"small":20,"large":3},"jeskai":{"small":12,"large":3}};
 
 /** S61 (Part 2): the out-rule adopted per list (matched by its sixty), where it measured a gain. */
 export const SIDEBOARD_OUT_RULES: readonly { key: string; sixty: { cardId: string; count: number }[]; out61: { small?: boolean; spells?: boolean; graveyard?: boolean } }[] = [
@@ -1742,6 +1818,7 @@ export const LIST_GUIDES: Record<string, string> = {
  "mardu:levy": "levy",
  "mardu:witch": "mardu:witch",
  "grixis:mbclio": "grixis:mbclio",
+ "jund:dragons": "jund:dragons",
  "jeskai:skies": "jeskai:skies",
  "jeskai:minefield": "jeskai:minefield"
 };

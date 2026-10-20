@@ -1,9 +1,9 @@
 {
  "_comment": "Grixis (S67): blue, black and red — the land rule (ADR-181); the Open's restricted list where it applies; the laws banned; sixty cards, four of a kind. Seeds from the registered lists whole where legal, with the land swaps logged in each source, and the builds the census says the field lacks (working names). `pnpm open:gen` validates each against Grixis and generates the code and docs/reference/grixis-lists.md.",
- "_shapeScale_note": "S67 (ADR-186): frozen at the values derived from Grixis's first field — its eleven seeds: small 15, large 1.",
+ "_shapeScale_note": "S67 (ADR-186): frozen at the values derived from Grixis's first field — its eleven seeds: small 15, large 1. S68 (the planner): `large` set by hand to 3 (the low-rank tie; ADR-186 — a frozen threshold is never below 2).",
  "shapeScale": {
   "small": 15,
-  "large": 1
+  "large": 3
  },
  "archived": {},
  "guides": {

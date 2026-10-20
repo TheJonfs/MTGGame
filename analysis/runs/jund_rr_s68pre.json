@@ -1,0 +1,483 @@
+{
+ "name": "open_rr_1",
+ "when": "2026-10-20T20:02:26.848Z",
+ "games": 5500,
+ "table": {
+  "sweep": {
+   "ashen": [
+    43,
+    100
+   ],
+   "bfh": [
+    60,
+    100
+   ],
+   "rabble": [
+    38,
+    100
+   ],
+   "dragons": [
+    41,
+    100
+   ],
+   "stompy": [
+    43,
+    100
+   ],
+   "auras": [
+    42,
+    100
+   ],
+   "emeraldsnakes": [
+    37,
+    100
+   ],
+   "wurmspeaker": [
+    54,
+    100
+   ],
+   "kindling": [
+    57,
+    100
+   ],
+   "reaper": [
+    50,
+    100
+   ]
+  },
+  "ashen": {
+   "sweep": [
+    57,
+    100
+   ],
+   "reaper": [
+    43,
+    100
+   ],
+   "bfh": [
+    66,
+    100
+   ],
+   "rabble": [
+    42,
+    100
+   ],
+   "dragons": [
+    65,
+    100
+   ],
+   "stompy": [
+    57,
+    100
+   ],
+   "auras": [
+    54,
+    100
+   ],
+   "emeraldsnakes": [
+    47,
+    100
+   ],
+   "wurmspeaker": [
+    78,
+    100
+   ],
+   "kindling": [
+    59,
+    100
+   ]
+  },
+  "bfh": {
+   "sweep": [
+    40,
+    100
+   ],
+   "stompy": [
+    45,
+    100
+   ],
+   "ashen": [
+    34,
+    100
+   ],
+   "rabble": [
+    33,
+    100
+   ],
+   "kindling": [
+    56,
+    100
+   ],
+   "emeraldsnakes": [
+    27,
+    100
+   ],
+   "reaper": [
+    51,
+    100
+   ],
+   "auras": [
+    38,
+    100
+   ],
+   "dragons": [
+    46,
+    100
+   ],
+   "wurmspeaker": [
+    46,
+    100
+   ]
+  },
+  "reaper": {
+   "ashen": [
+    57,
+    100
+   ],
+   "rabble": [
+    51,
+    100
+   ],
+   "kindling": [
+    72,
+    100
+   ],
+   "emeraldsnakes": [
+    45,
+    100
+   ],
+   "bfh": [
+    49,
+    100
+   ],
+   "auras": [
+    33,
+    100
+   ],
+   "dragons": [
+    58,
+    100
+   ],
+   "wurmspeaker": [
+    74,
+    100
+   ],
+   "sweep": [
+    50,
+    100
+   ],
+   "stompy": [
+    60,
+    100
+   ]
+  },
+  "rabble": {
+   "reaper": [
+    49,
+    100
+   ],
+   "sweep": [
+    62,
+    100
+   ],
+   "bfh": [
+    67,
+    100
+   ],
+   "ashen": [
+    58,
+    100
+   ],
+   "dragons": [
+    60,
+    100
+   ],
+   "stompy": [
+    53,
+    100
+   ],
+   "auras": [
+    55,
+    100
+   ],
+   "emeraldsnakes": [
+    43,
+    100
+   ],
+   "wurmspeaker": [
+    54,
+    100
+   ],
+   "kindling": [
+    75,
+    100
+   ]
+  },
+  "stompy": {
+   "bfh": [
+    55,
+    100
+   ],
+   "dragons": [
+    63,
+    100
+   ],
+   "sweep": [
+    57,
+    100
+   ],
+   "ashen": [
+    42,
+    100
+   ],
+   "rabble": [
+    46,
+    100
+   ],
+   "auras": [
+    46,
+    100
+   ],
+   "emeraldsnakes": [
+    39,
+    100
+   ],
+   "wurmspeaker": [
+    53,
+    100
+   ],
+   "kindling": [
+    70,
+    100
+   ],
+   "reaper": [
+    40,
+    100
+   ]
+  },
+  "emeraldsnakes": {
+   "wurmspeaker": [
+    71,
+    100
+   ],
+   "kindling": [
+    77,
+    100
+   ],
+   "auras": [
+    63,
+    100
+   ],
+   "reaper": [
+    55,
+    100
+   ],
+   "bfh": [
+    73,
+    100
+   ],
+   "sweep": [
+    63,
+    100
+   ],
+   "stompy": [
+    61,
+    100
+   ],
+   "dragons": [
+    63,
+    100
+   ],
+   "ashen": [
+    53,
+    100
+   ],
+   "rabble": [
+    57,
+    100
+   ]
+  },
+  "wurmspeaker": {
+   "emeraldsnakes": [
+    29,
+    100
+   ],
+   "dragons": [
+    53,
+    100
+   ],
+   "auras": [
+    56,
+    100
+   ],
+   "sweep": [
+    46,
+    100
+   ],
+   "stompy": [
+    47,
+    100
+   ],
+   "kindling": [
+    60,
+    100
+   ],
+   "ashen": [
+    21,
+    100
+   ],
+   "rabble": [
+    46,
+    100
+   ],
+   "reaper": [
+    26,
+    100
+   ],
+   "bfh": [
+    54,
+    100
+   ]
+  },
+  "dragons": {
+   "wurmspeaker": [
+    47,
+    100
+   ],
+   "sweep": [
+    59,
+    100
+   ],
+   "stompy": [
+    37,
+    100
+   ],
+   "ashen": [
+    35,
+    100
+   ],
+   "rabble": [
+    40,
+    100
+   ],
+   "kindling": [
+    58,
+    100
+   ],
+   "emeraldsnakes": [
+    37,
+    100
+   ],
+   "reaper": [
+    42,
+    100
+   ],
+   "bfh": [
+    54,
+    100
+   ],
+   "auras": [
+    47,
+    100
+   ]
+  },
+  "kindling": {
+   "emeraldsnakes": [
+    23,
+    100
+   ],
+   "reaper": [
+    28,
+    100
+   ],
+   "bfh": [
+    43,
+    100
+   ],
+   "dragons": [
+    42,
+    100
+   ],
+   "auras": [
+    20,
+    100
+   ],
+   "wurmspeaker": [
+    40,
+    100
+   ],
+   "sweep": [
+    43,
+    100
+   ],
+   "stompy": [
+    29,
+    100
+   ],
+   "ashen": [
+    40,
+    100
+   ],
+   "rabble": [
+    25,
+    100
+   ]
+  },
+  "auras": {
+   "emeraldsnakes": [
+    37,
+    100
+   ],
+   "sweep": [
+    58,
+    100
+   ],
+   "stompy": [
+    54,
+    100
+   ],
+   "wurmspeaker": [
+    44,
+    100
+   ],
+   "ashen": [
+    46,
+    100
+   ],
+   "rabble": [
+    45,
+    100
+   ],
+   "kindling": [
+    80,
+    100
+   ],
+   "reaper": [
+    67,
+    100
+   ],
+   "bfh": [
+    62,
+    100
+   ],
+   "dragons": [
+    53,
+    100
+   ]
+  }
+ },
+ "means": {
+  "sweep": 47,
+  "ashen": 57,
+  "rabble": 58,
+  "stompy": 51,
+  "auras": 55,
+  "emeraldsnakes": 64,
+  "wurmspeaker": 44,
+  "kindling": 33,
+  "reaper": 55,
+  "bfh": 42,
+  "dragons": 46
+ },
+ "report": "# The Open's round-robin (S46) — 5500 games, master both, 20 life, no entrances; the ROW's win rate\n\n| | sweep | ashen | rabble | stompy | auras | emeraldsnakes | wurmspeaker | kindling | reaper | bfh | dragons | **mean** |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| **sweep** | — | 43 | 38 | 43 | 42 | 37 | 54 | 57 | 50 | 60 | 41 | **47** |\n| **ashen** | 57 | — | 42 | 57 | 54 | 47 | 78 | 59 | 43 | 66 | 65 | **57** |\n| **rabble** | 62 | 58 | — | 53 | 55 | 43 | 54 | 75 | 49 | 67 | 60 | **58** |\n| **stompy** | 57 | 42 | 46 | — | 46 | 39 | 53 | 70 | 40 | 55 | 63 | **51** |\n| **auras** | 58 | 46 | 45 | 54 | — | 37 | 44 | 80 | 67 | 62 | 53 | **55** |\n| **emeraldsnakes** | 63 | 53 | 57 | 61 | 63 | — | 71 | 77 | 55 | 73 | 63 | **64** |\n| **wurmspeaker** | 46 | 21 | 46 | 47 | 56 | 29 | — | 60 | 26 | 54 | 53 | **44** |\n| **kindling** | 43 | 40 | 25 | 29 | 20 | 23 | 40 | — | 28 | 43 | 42 | **33** |\n| **reaper** | 50 | 57 | 51 | 60 | 33 | 45 | 74 | 72 | — | 49 | 58 | **55** |\n| **bfh** | 40 | 34 | 33 | 45 | 38 | 27 | 46 | 56 | 51 | — | 46 | **42** |\n| **dragons** | 59 | 35 | 40 | 37 | 47 | 37 | 47 | 58 | 42 | 54 | — | **46** |\n\nSolvable (a list over 65% against the field): none. Under 35%: kindling.\nMuster vs Warband: the Muster 0% (0 games).\n\n## Staples (ADR-170)\n\nIn more than half of the 11 lists: Flametongue Kavu (6 lists, 24 copies); Reaper's Forerunner (6 lists, 22 copies); Lightning Bolt (6 lists, 21 copies). The most played: Flametongue Kavu 6 · Reaper's Forerunner 6 · Lightning Bolt 6 · Birds of Paradise 5 · Gaean Wurm 5 · Rancor 4 · Vampire Nighthawk 4 · Seasoned Pyromancer 4.\n\n## Restricted cards — % of the list's games in which it was cast (or, a land, played)\n\n- **sweep**: black_lotus 22% · mox_emerald 24% · mox_jet 23% · mox_ruby 22% · cairnbrand 27%\n- **ashen**: cairnbrand 32% · mox_jet 26% · mox_ruby 26% · black_lotus 27% · demonic_tutor 23%\n- **rabble**: cairnbrand 28% · mox_ruby 27% · mox_jet 23% · black_lotus 23%\n- **stompy**: black_lotus 23% · mox_emerald 23% · mox_ruby 22%\n- **emeraldsnakes**: black_lotus 29% · mox_emerald 28% · mox_jet 26% · mox_ruby 30%\n- **wurmspeaker**: black_lotus 25% · mox_emerald 24%\n- **kindling**: mox_ruby 26% · black_lotus 25%\n- **reaper**: black_lotus 34% · mox_emerald 32% · mox_jet 33% · mox_ruby 32% · cairnbrand 36%\n- **dragons**: black_lotus 27% · mox_emerald 25% · mox_jet 25% · mox_ruby 26% · demonic_tutor 25% · cairnbrand 28% · library_of_alexandria 28%\n\n## Key pieces — % of the list's games in which each was cast (a weak pilot reads apart from a weak list)\n\n- **sweep**: \n- **ashen**: \n- **rabble**: \n- **stompy**: \n- **auras**: \n- **emeraldsnakes**: \n- **wurmspeaker**: seedborn_muse 60% · rampaging_baloths 33% · gaean_wurm 51%\n- **kindling**: \n- **reaper**: \n- **bfh**: \n- **dragons**: \n\n## The Loop — the Usher + an Altar on the battlefield with a Restoration Angel in hand or play\n\nAssembled by turn ten in 0 of 0 games (0%); ever: 0. Altar activations per game: 0.00."
+}

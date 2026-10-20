@@ -176,6 +176,8 @@ for (const x of extras) {
   // Post-S65 (Chris: Naya's eleventh list moved the 79th-percentile rank onto a list with no large creatures — `large` 3 → 0,
   // true of every list): a format may freeze its thresholds in its own file, as the Open's were frozen (S63 Part 0).
   const frozen = (x.file as { shapeScale?: { small: number; large: number } }).shapeScale;
+  // S68 (ADR-186 amended): a frozen threshold is never below 2 — a rank that falls on a tie at 0 or 1 fires against nearly every list
+  if (frozen && (frozen.small < 2 || frozen.large < 2)) throw new Error(`open:gen — ${x.id}'s frozen shapeScale ${JSON.stringify(frozen)}: ADR-186 — a frozen threshold is never below 2`);
   if (frozen) shapeScales[x.id] = { small: frozen.small, large: frozen.large };
   // S66 (ADR-186): a field of eight lists or more has frozen thresholds — re-derived only on the planner's call.
   else if (field.length >= 8) throw new Error(`open:gen — ${x.id} has ${field.length} lists: ADR-186 freezes its shape thresholds; add "shapeScale": ${JSON.stringify(shapeScales[x.id])} to its lists.json (the values derived now) or the planner's`);

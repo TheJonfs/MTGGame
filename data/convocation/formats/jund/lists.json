@@ -1,13 +1,72 @@
 {
  "_comment": "Jund (S67): black, red and green — the land rule (ADR-181); the Open's restricted list where it applies; the laws banned; sixty cards, four of a kind. Seeds from the registered lists whole where legal, with the land swaps logged in each source, and the builds the census says the field lacks (working names). `pnpm open:gen` validates each against Jund and generates the code and docs/reference/jund-lists.md.",
- "_shapeScale_note": "S67 (ADR-186): frozen at the values derived from Jund's first field — its eleven seeds: small 20, large 1.",
+ "_shapeScale_note": "S67 (ADR-186): frozen at the values derived from Jund's first field — its eleven seeds: small 20, large 1. S68 (the planner): `large` set by hand to 3 (the low-rank tie; ADR-186 — a frozen threshold is never below 2).",
  "shapeScale": {
   "small": 20,
-  "large": 1
+  "large": 3
  },
- "archived": {},
- "guides": {},
- "guidesOnly": [],
+ "archived": {
+  "coin": "S68 (the brief: Jund Coin retires on its first count — the Sweep is Jund's aristocrats list): last in Jund's first table, 28.7 in matches."
+ },
+ "guides": {
+  "dragons": [
+   {
+    "in": "pyroclasm",
+    "n": 4,
+    "out": [
+     "shocking_sharpshooter",
+     "the_jet_witch"
+    ],
+    "when": [
+     "wide"
+    ]
+   },
+   {
+    "in": "savage_twister",
+    "n": 4,
+    "out": [
+     "the_jet_witch",
+     "the_ruby_tyrant",
+     "shocking_sharpshooter"
+    ],
+    "when": [
+     "creatureDeck",
+     "wide"
+    ]
+   },
+   {
+    "in": "voracious_cobra",
+    "n": 4,
+    "out": [
+     "shocking_sharpshooter",
+     "the_ruby_tyrant"
+    ],
+    "when": [
+     "creatureDeck"
+    ],
+    "unless": [
+     "wide"
+    ]
+   },
+   {
+    "in": "seraphina_the_initiative",
+    "n": 3,
+    "out": [
+     "shocking_sharpshooter",
+     "the_jet_witch"
+    ],
+    "when": [
+     "creatureDeck"
+    ],
+    "unless": [
+     "wide"
+    ]
+   }
+  ]
+ },
+ "guidesOnly": [
+  "dragons"
+ ],
  "outRules": {},
  "lists": [
   {
@@ -1027,6 +1086,121 @@
     },
     {
      "cardId": "nekrataal",
+     "count": 3
+    }
+   ]
+  },
+  {
+   "key": "dragons",
+   "name": "Jund Dragons",
+   "title": "Jund Dragons (R g b)",
+   "archetype": "midrange",
+   "source": "Post-S67 (Chris's, 2026-10-20): event 778824 — 5–0 and 10–0 in the Swiss (the Ashen, the Kindling, the Rabble, Emerald Snakes twice), then the Stampede 1–2 in the quarter-final. Going bigger than the Emerald Keeper: Drakuseth and the Ruby Tyrant on Birds, Manaba and the power; Kavu, Forerunner, Nighthawk and Shocking Sharpshooter around them; the Witch to dig. Registered at Chris's flip (S68): three Drakuseth and two Tyrants (played: two and three). The fifteen and the guide read from Chris's swaps.",
+   "decklist": [
+    {
+     "cardId": "drakuseth_maw_of_flames",
+     "count": 3
+    },
+    {
+     "cardId": "the_ruby_tyrant",
+     "count": 2
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 4
+    },
+    {
+     "cardId": "the_jet_witch",
+     "count": 3
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "shocking_sharpshooter",
+     "count": 4
+    },
+    {
+     "cardId": "manaba",
+     "count": 4
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "birds_of_paradise",
+     "count": 4
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    },
+    {
+     "cardId": "badlands",
+     "count": 4
+    },
+    {
+     "cardId": "bayou",
+     "count": 4
+    },
+    {
+     "cardId": "taiga",
+     "count": 4
+    },
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "library_of_alexandria",
+     "count": 1
+    },
+    {
+     "cardId": "stomping_ground",
+     "count": 4
+    },
+    {
+     "cardId": "overgrown_tomb",
+     "count": 4
+    },
+    {
+     "cardId": "blood_crypt",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "savage_twister",
+     "count": 4
+    },
+    {
+     "cardId": "voracious_cobra",
+     "count": 4
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 4
+    },
+    {
+     "cardId": "seraphina_the_initiative",
      "count": 3
     }
    ]
