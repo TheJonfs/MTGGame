@@ -19,9 +19,58 @@
      "wide"
     ]
    }
+  ],
+  "minefield": [
+   {
+    "in": "wall_of_reverence",
+    "n": 3,
+    "out": [
+     "ponder"
+    ],
+    "when": [
+     "small",
+     "creatureDeck"
+    ]
+   },
+   {
+    "in": "wrath_of_god",
+    "n": 2,
+    "out": [
+     "ponder",
+     "counterspell"
+    ],
+    "when": [
+     "small"
+    ]
+   },
+   {
+    "in": "pyroclasm",
+    "n": 1,
+    "out": [
+     "counterspell"
+    ],
+    "when": [
+     "small",
+     "wide"
+    ]
+   },
+   {
+    "in": "wave_of_reckoning",
+    "n": 1,
+    "out": [
+     "mind_stone"
+    ],
+    "when": [
+     "small",
+     "wide",
+     "creatureDeck"
+    ]
+   }
   ]
  },
- "guidesOnly": [],
+ "guidesOnly": [
+  "minefield"
+ ],
  "outRules": {},
  "lists": [
   {
@@ -1134,6 +1183,137 @@
     {
      "cardId": "retribution_of_the_meek",
      "count": 1
+    }
+   ]
+  },
+  {
+   "key": "minefield",
+   "name": "Sacred Minefield",
+   "title": "Jeskai Minefield Control (U R W)",
+   "archetype": "control",
+   "source": "Post-S67 (Chris's, 2026-10-19): 8–0 in a Jeskai Convocation (event 347987; 16–3 in games — UR Pyroclasm Control, the Rabble, UR Pyroclasm Control, the Rabble and the Watch in the Swiss, then the Aerie, the Rabble and the Rabble). Nearly creatureless control: Powerstone Minefield behind Tidewalls, Waves and Pyroclasms; Sacred Helix to finish, Experimental Overload to bring it back; Mind Stone and Ponder to get there. The fifteen as registered; the guide read from Chris's swaps. NOTE (handoff Concern 9): the pilot attacks into the Minefield (81% of its attackers died to the trigger in Chris's games) — this list's table overstates it until S68's fix.",
+   "decklist": [
+    {
+     "cardId": "ponder",
+     "count": 4
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 2
+    },
+    {
+     "cardId": "time_walk",
+     "count": 1
+    },
+    {
+     "cardId": "mind_stone",
+     "count": 4
+    },
+    {
+     "cardId": "experimental_overload",
+     "count": 4
+    },
+    {
+     "cardId": "powerstone_minefield",
+     "count": 4
+    },
+    {
+     "cardId": "sacred_helix",
+     "count": 4
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 3
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 1
+    },
+    {
+     "cardId": "tidewall",
+     "count": 4
+    },
+    {
+     "cardId": "counterspell",
+     "count": 2
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "tallyflame_court",
+     "count": 1
+    },
+    {
+     "cardId": "library_of_alexandria",
+     "count": 1
+    },
+    {
+     "cardId": "steam_vents",
+     "count": 4
+    },
+    {
+     "cardId": "volcanic_island",
+     "count": 4
+    },
+    {
+     "cardId": "tundra",
+     "count": 4
+    },
+    {
+     "cardId": "plateau",
+     "count": 4
+    },
+    {
+     "cardId": "hallowed_fountain",
+     "count": 3
+    },
+    {
+     "cardId": "sacred_foundry",
+     "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "pyroclasm",
+     "count": 1
+    },
+    {
+     "cardId": "counterspell",
+     "count": 2
+    },
+    {
+     "cardId": "wall_of_reverence",
+     "count": 3
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 2
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 1
+    },
+    {
+     "cardId": "absorb",
+     "count": 3
+    },
+    {
+     "cardId": "disenchant",
+     "count": 3
     }
    ]
   }

@@ -1319,6 +1319,87 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
     ]
    }
   ]
+ },
+ {
+  "key": "jeskai:minefield",
+  "fifteen": [
+   {
+    "cardId": "pyroclasm",
+    "count": 1
+   },
+   {
+    "cardId": "counterspell",
+    "count": 2
+   },
+   {
+    "cardId": "wall_of_reverence",
+    "count": 3
+   },
+   {
+    "cardId": "wrath_of_god",
+    "count": 2
+   },
+   {
+    "cardId": "wave_of_reckoning",
+    "count": 1
+   },
+   {
+    "cardId": "absorb",
+    "count": 3
+   },
+   {
+    "cardId": "disenchant",
+    "count": 3
+   }
+  ],
+  "rows": [
+   {
+    "in": "wall_of_reverence",
+    "n": 3,
+    "out": [
+     "ponder"
+    ],
+    "when": [
+     "small",
+     "creatureDeck"
+    ]
+   },
+   {
+    "in": "wrath_of_god",
+    "n": 2,
+    "out": [
+     "ponder",
+     "counterspell"
+    ],
+    "when": [
+     "small"
+    ]
+   },
+   {
+    "in": "pyroclasm",
+    "n": 1,
+    "out": [
+     "counterspell"
+    ],
+    "when": [
+     "small",
+     "wide"
+    ]
+   },
+   {
+    "in": "wave_of_reckoning",
+    "n": 1,
+    "out": [
+     "mind_stone"
+    ],
+    "when": [
+     "small",
+     "wide",
+     "creatureDeck"
+    ]
+   }
+  ],
+  "only": true
  }
 ];
 
@@ -1661,5 +1742,6 @@ export const LIST_GUIDES: Record<string, string> = {
  "mardu:levy": "levy",
  "mardu:witch": "mardu:witch",
  "grixis:mbclio": "grixis:mbclio",
- "jeskai:skies": "jeskai:skies"
+ "jeskai:skies": "jeskai:skies",
+ "jeskai:minefield": "jeskai:minefield"
 };

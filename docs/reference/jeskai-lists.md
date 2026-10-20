@@ -4,33 +4,34 @@
 
 ## The table of record
 
-11 active lists, the AI in both seats. **Game one** is a list's mean win rate against the other active lists on the registered sixties (the round-robin of record, `formats/jeskai/means.json`). **Matches** is its best-of-three win rate — the figure the field's seat draw reads since S59 (60 matches a pairing, measured 2026-10-18; ADR-171): game one on the registered sixties, games two and three sideboarded. **After sideboarding** is its games-two-and-three rate less its game-one rate inside those matches.
+12 active lists, the AI in both seats. **Game one** is a list's mean win rate against the other active lists on the registered sixties (the round-robin of record, `formats/jeskai/means.json`). **Matches** is its best-of-three win rate — the figure the field's seat draw reads since S59 (60 matches a pairing, measured 2026-10-20; ADR-171): game one on the registered sixties, games two and three sideboarded. **After sideboarding** is its games-two-and-three rate less its game-one rate inside those matches.
 
 | list | deck | pilot | matches | game one | after sideboarding | fifteen |
 |---|---|---|---|---|---|---|
-| the Rabble (Naya) | Mono-Red Goblins (R) | aggro | 74.7 | 66 | +5.4 | built |
-| the Watch (Mardu) | Boros Tokens (W R) | aggro | 67.0 | 63 | −2.6 | built |
-| Jeskai Locks (working name) | Azorius Control (W U) | control | 57.5 | 58 | −4.7 | registered |
-| the Aerie | Azorius Skies (W U) | midrange | 54.3 | 54 | −4.2 | registered, guided |
-| the Kiln | Izzet Spells (U R) | midrange | 53.3 | 56 | −4.9 | registered |
-| Jeskai Theft (working name) | Jeskai Theft (W R u) | midrange | 49.7 | 48 | −0.1 | registered |
-| the Warband (Chris's list to test against the Muster) | Boros Goblins (R w) | aggro | 48.8 | 50 | +4.0 | built |
-| the Muster | Boros Weenie (W R) | aggro | 43.3 | 47 | −4.0 | built |
-| the Tally | Izzet Sparks (U R) | aggro | 40.3 | 39 | +1.9 | built |
-| Jeskai Sweepers (working name) | Jeskai Control (U W r) | control | 30.8 | 31 | +9.5 | registered |
-| UR Pyroclasm Control | Izzet Control (U R) | control | 30.5 | 38 | −0.6 | built |
+| the Rabble (Naya) | Mono-Red Goblins (R) | aggro | 76.9 | 69 | −1.0 | built |
+| the Watch (Mardu) | Boros Tokens (W R) | aggro | 64.5 | 61 | −0.7 | built |
+| Sacred Minefield | Jeskai Minefield Control (U R W) | control | 64.5 | 56 | +3.8 | registered, guided |
+| the Aerie | Azorius Skies (W U) | midrange | 55.4 | 57 | −1.2 | registered, guided |
+| Jeskai Locks (working name) | Azorius Control (W U) | control | 52.9 | 56 | −2.3 | registered |
+| the Kiln | Izzet Spells (U R) | midrange | 51.7 | 55 | −3.2 | registered |
+| Jeskai Theft (working name) | Jeskai Theft (W R u) | midrange | 48.0 | 51 | −0.6 | registered |
+| the Warband (Chris's list to test against the Muster) | Boros Goblins (R w) | aggro | 45.3 | 48 | +4.4 | built |
+| the Muster | Boros Weenie (W R) | aggro | 43.6 | 46 | −4.5 | built |
+| the Tally | Izzet Sparks (U R) | aggro | 37.0 | 40 | +0.7 | built |
+| UR Pyroclasm Control | Izzet Control (U R) | control | 32.8 | 35 | +1.3 | built |
+| Jeskai Sweepers (working name) | Jeskai Control (U W r) | control | 27.3 | 27 | +4.0 | registered |
 
 Archived (kept in the data, out of the field): none.
 
 ## Staples (ADR-170)
 
-Nonland cards outside the restricted list that more than half of the 11 active lists play: Lightning Bolt (9 lists, 34 copies); Flametongue Kavu (9 lists, 28 copies); Counterspell (7 lists, 24 copies); Control Magic (6 lists, 19 copies).
+Nonland cards outside the restricted list that more than half of the 12 active lists play: Lightning Bolt (9 lists, 34 copies); Flametongue Kavu (9 lists, 28 copies); Counterspell (8 lists, 26 copies).
 
-The most played: Lightning Bolt 9 · Flametongue Kavu 9 · Counterspell 7 · Control Magic 6 · Swords to Plowshares 5 · Hordeling Outburst 3 · Young Pyromancer 3 · Char 3.
+The most played: Lightning Bolt 9 · Flametongue Kavu 9 · Counterspell 8 · Control Magic 6 · Swords to Plowshares 5 · Wrath of God 4 · Wave of Reckoning 4 · Hordeling Outburst 3.
 
 ## the Rabble (Naya) — Mono-Red Goblins (R)
 
-`rabble` · aggro · game one 66 · matches 74.7
+`rabble` · aggro · game one 69 · matches 76.9
 
 - **Lands (20):** 20 Mountain
 - **Creatures (18):** 4 Raging Goblin · 4 Goblin Chieftain · 4 Seasoned Pyromancer · 4 Flametongue Kavu · 2 Siege-Gang Commander
@@ -41,7 +42,7 @@ The most played: Lightning Bolt 9 · Flametongue Kavu 9 · Counterspell 7 · Con
 
 ## the Watch (Mardu) — Boros Tokens (W R)
 
-`watch` · aggro · game one 63 · matches 67.0
+`watch` · aggro · game one 61 · matches 64.5
 
 - **Lands (19):** 4 Sacred Foundry · 4 Plateau · 5 Plains · 6 Mountain
 - **Creatures (18):** 4 Soul Warden · 4 Young Pyromancer · 1 Flametongue Kavu · 1 Dawnwing Marshal · 3 Vigil Keeper · 4 Captain of the Watch · 1 Lumen, the Hearth Fire
@@ -50,21 +51,25 @@ The most played: Lightning Bolt 9 · Flametongue Kavu 9 · Counterspell 7 · Con
 - **History:**
   - contributed — S67 seed (the planner's): Mardu's Watch whole (with its Vigil Keepers).
 
-## Jeskai Locks (working name) — Azorius Control (W U)
+## Sacred Minefield — Jeskai Minefield Control (U R W)
 
-`locks` · control · game one 58 · matches 57.5
+`minefield` · control · game one 56 · matches 64.5
 
-- **Lands (22):** 4 Tundra · 4 Hallowed Fountain · 7 Island · 6 Plains · 1 Library of Alexandria
-- **Creatures (9):** 4 Serra Angel · 1 Arcanis the Omnipotent · 2 Karmic Mentor · 2 Faerie Formation
-- **Other (29):** 1 Black Lotus · 1 Mox Sapphire · 1 Mox Pearl · 4 Counterspell · 2 Essence Scatter · 4 Absorb · 3 Swords to Plowshares · 3 Wrath of God · 1 Divination · 1 Time Walk · 4 Control Magic · 2 Protocol · 1 Wave of Reckoning · 1 Brainstorm
-- **Its fifteen (registered):** 2 Essence Scatter · 2 Protocol · 3 Tormod's Crypt · 3 Vigil Keeper · 2 Disenchant · 1 Wrath of God · 1 Wave of Reckoning · 1 Retribution of the Meek
-- **Its sideboard guide:** none — the general rules sideboard it.
+- **Lands (23):** 1 Tallyflame Court · 1 Library of Alexandria · 4 Steam Vents · 4 Volcanic Island · 4 Tundra · 4 Plateau · 3 Hallowed Fountain · 2 Sacred Foundry
+- **Creatures (4):** 4 Tidewall
+- **Other (33):** 4 Ponder · 2 Pyroclasm · 1 Time Walk · 4 Mind Stone · 4 Experimental Overload · 4 Powerstone Minefield · 4 Sacred Helix · 3 Wave of Reckoning · 1 Wrath of God · 2 Counterspell · 1 Black Lotus · 1 Mox Pearl · 1 Mox Ruby · 1 Mox Sapphire
+- **Its fifteen (registered):** 1 Pyroclasm · 2 Counterspell · 3 Wall of Reverence · 2 Wrath of God · 1 Wave of Reckoning · 3 Absorb · 3 Disenchant
+- **Its sideboard guide** (the whole plan: the general rules do not run after it):
+  - against many small creatures or a creature deck: 3 Wall of Reverence in for Ponder
+  - against many small creatures: 2 Wrath of God in for Ponder, then Counterspell
+  - against many small creatures or wide: 1 Pyroclasm in for Counterspell
+  - against many small creatures or wide or a creature deck: 1 Wave of Reckoning in for Mind Stone
 - **History:**
-  - contributed — S67 seed (the planner's): built by the implementer — the Locks without black (the brief): the Dredgers and Undermines for Serra Angels, Arcanis and Essence Scatters; Vindicate and Demonic Tutor for Swords and a Divination; its black lands for Tundras, Plains and Islands.
+  - contributed — Post-S67 (Chris's, 2026-10-19): 8–0 in a Jeskai Convocation (event 347987; 16–3 in games — UR Pyroclasm Control, the Rabble, UR Pyroclasm Control, the Rabble and the Watch in the Swiss, then the Aerie, the Rabble and the Rabble). Nearly creatureless control: Powerstone Minefield behind Tidewalls, Waves and Pyroclasms; Sacred Helix to finish, Experimental Overload to bring it back; Mind Stone and Ponder to get there. The fifteen as registered; the guide read from Chris's swaps. NOTE (handoff Concern 9): the pilot attacks into the Minefield (81% of its attackers died to the trigger in Chris's games) — this list's table overstates it until S68's fix.
 
 ## the Aerie — Azorius Skies (W U)
 
-`skies` · midrange · game one 54 · matches 54.3
+`skies` · midrange · game one 57 · matches 55.4
 
 - **Lands (21):** 4 Hallowed Fountain · 4 Tundra · 5 Plains · 8 Island
 - **Creatures (25):** 4 Youthful Valkyrie · 4 Inspiring Overseer · 4 Plumecreed Escort · 4 Restoration Angel · 2 Traumatizer · 2 Karmic Mentor · 2 Serra Angel · 2 Emeria Angel · 1 Faerie Formation
@@ -75,9 +80,21 @@ The most played: Lightning Bolt 9 · Flametongue Kavu 9 · Counterspell 7 · Con
 - **History:**
   - contributed — S67 seed (the planner's): Esper's Aerie, the Observatory for a Plains; its fifteen's Faerie Macabre (black) for a third Tormod's Crypt. Esper's guide (Wrath against `wide`) carried.
 
+## Jeskai Locks (working name) — Azorius Control (W U)
+
+`locks` · control · game one 56 · matches 52.9
+
+- **Lands (22):** 4 Tundra · 4 Hallowed Fountain · 7 Island · 6 Plains · 1 Library of Alexandria
+- **Creatures (9):** 4 Serra Angel · 1 Arcanis the Omnipotent · 2 Karmic Mentor · 2 Faerie Formation
+- **Other (29):** 1 Black Lotus · 1 Mox Sapphire · 1 Mox Pearl · 4 Counterspell · 2 Essence Scatter · 4 Absorb · 3 Swords to Plowshares · 3 Wrath of God · 1 Divination · 1 Time Walk · 4 Control Magic · 2 Protocol · 1 Wave of Reckoning · 1 Brainstorm
+- **Its fifteen (registered):** 2 Essence Scatter · 2 Protocol · 3 Tormod's Crypt · 3 Vigil Keeper · 2 Disenchant · 1 Wrath of God · 1 Wave of Reckoning · 1 Retribution of the Meek
+- **Its sideboard guide:** none — the general rules sideboard it.
+- **History:**
+  - contributed — S67 seed (the planner's): built by the implementer — the Locks without black (the brief): the Dredgers and Undermines for Serra Angels, Arcanis and Essence Scatters; Vindicate and Demonic Tutor for Swords and a Divination; its black lands for Tundras, Plains and Islands.
+
 ## the Kiln — Izzet Spells (U R)
 
-`kiln` · midrange · game one 56 · matches 53.3
+`kiln` · midrange · game one 55 · matches 51.7
 
 - **Lands (19):** 1 Tallyflame Court · 4 Volcanic Island · 4 Steam Vents · 1 Library of Alexandria · 5 Mountain · 4 Island
 - **Creatures (21):** 3 Flametongue Kavu · 4 Tidewall · 3 Odile, the Tallyflame · 3 The Ruby Tyrant · 4 Guttersnipe · 4 Young Pyromancer
@@ -89,7 +106,7 @@ The most played: Lightning Bolt 9 · Flametongue Kavu 9 · Counterspell 7 · Con
 
 ## Jeskai Theft (working name) — Jeskai Theft (W R u)
 
-`theft` · midrange · game one 48 · matches 49.7
+`theft` · midrange · game one 51 · matches 48.0
 
 - **Lands (22):** 4 Plateau · 3 Tundra · 3 Volcanic Island · 2 Sacred Foundry · 2 Hallowed Fountain · 1 Steam Vents · 1 Tallyflame Court · 3 Plains · 2 Island · 1 Mountain
 - **Creatures (12):** 3 Lumen, the Hearth Fire · 4 Restoration Angel · 3 Flametongue Kavu · 2 The Bailiff
@@ -101,7 +118,7 @@ The most played: Lightning Bolt 9 · Flametongue Kavu 9 · Counterspell 7 · Con
 
 ## the Warband (Chris's list to test against the Muster) — Boros Goblins (R w)
 
-`warband` · aggro · game one 50 · matches 48.8
+`warband` · aggro · game one 48 · matches 45.3
 
 - **Lands (22):** 4 Plateau · 4 Sacred Foundry · 12 Mountain · 2 Plains
 - **Creatures (22):** 4 Skirk Prospector · 4 Goblin Piker · 4 Goblin Chieftain · 2 Boggart Brute · 3 Siege-Gang Commander · 3 Lumen, the Hearth Fire · 2 Flametongue Kavu
@@ -112,7 +129,7 @@ The most played: Lightning Bolt 9 · Flametongue Kavu 9 · Counterspell 7 · Con
 
 ## the Muster — Boros Weenie (W R)
 
-`muster` · aggro · game one 47 · matches 43.3
+`muster` · aggro · game one 46 · matches 43.6
 
 - **Lands (22):** 4 Plateau · 4 Sacred Foundry · 8 Plains · 4 Mountain · 2 Secluded Steppe
 - **Creatures (21):** 4 Savannah Lions · 4 Soul Warden · 2 Suntail Hawk · 1 Fencing Ace · 3 Vigil Keeper · 3 Emeria Angel · 4 Flametongue Kavu
@@ -123,7 +140,7 @@ The most played: Lightning Bolt 9 · Flametongue Kavu 9 · Counterspell 7 · Con
 
 ## the Tally — Izzet Sparks (U R)
 
-`tally` · aggro · game one 39 · matches 40.3
+`tally` · aggro · game one 40 · matches 37.0
 
 - **Lands (22):** 4 Volcanic Island · 4 Steam Vents · 8 Mountain · 4 Island · 1 Tallyflame Court · 1 Forgotten Cave
 - **Creatures (12):** 4 Young Pyromancer · 4 Guttersnipe · 4 Flametongue Kavu
@@ -132,9 +149,20 @@ The most played: Lightning Bolt 9 · Flametongue Kavu 9 · Counterspell 7 · Con
 - **History:**
   - contributed — S67 seed (the planner's): the Open's Tally, archived there, revived here whole.
 
+## UR Pyroclasm Control — Izzet Control (U R)
+
+`urcontrol` · control · game one 35 · matches 32.8
+
+- **Lands (24):** 4 Steam Vents · 11 Island · 9 Mountain
+- **Creatures (15):** 4 Flametongue Kavu · 4 Wall of Air · 4 Traumatizer · 3 Air Elemental
+- **Other (21):** 4 Pyroclasm · 4 Lightning Bolt · 4 Counterspell · 2 Essence Scatter · 4 Brainstorm · 3 Char
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — S67 seed (the planner's): Peasant's UR Pyroclasm Control whole.
+
 ## Jeskai Sweepers (working name) — Jeskai Control (U W r)
 
-`sweepers` · control · game one 31 · matches 30.8
+`sweepers` · control · game one 27 · matches 27.3
 
 - **Lands (24):** 1 Library of Alexandria · 1 Tallyflame Court · 4 Tundra · 3 Volcanic Island · 3 Plateau · 2 Hallowed Fountain · 1 Steam Vents · 1 Sacred Foundry · 4 Island · 4 Plains
 - **Creatures (6):** 3 Flametongue Kavu · 3 Serra Angel
@@ -143,15 +171,4 @@ The most played: Lightning Bolt 9 · Flametongue Kavu 9 · Counterspell 7 · Con
 - **Its sideboard guide:** none — the general rules sideboard it.
 - **History:**
   - contributed — S67 seed (the planner's): built by the implementer — the sweeper control the Open never got: Wrath, Pyroclasm and the Wave behind Counterspell, Absorb and Swords; Control Magic and the Kavu; Serra Angels to finish.
-
-## UR Pyroclasm Control — Izzet Control (U R)
-
-`urcontrol` · control · game one 38 · matches 30.5
-
-- **Lands (24):** 4 Steam Vents · 11 Island · 9 Mountain
-- **Creatures (15):** 4 Flametongue Kavu · 4 Wall of Air · 4 Traumatizer · 3 Air Elemental
-- **Other (21):** 4 Pyroclasm · 4 Lightning Bolt · 4 Counterspell · 2 Essence Scatter · 4 Brainstorm · 3 Char
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S67 seed (the planner's): Peasant's UR Pyroclasm Control whole.
 

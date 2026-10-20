@@ -1,0 +1,574 @@
+{
+ "name": "open_rr_1",
+ "when": "2026-10-20T00:58:34.085Z",
+ "games": 6600,
+ "table": {
+  "kiln": {
+   "tally": [
+    71,
+    100
+   ],
+   "theft": [
+    49,
+    100
+   ],
+   "skies": [
+    41,
+    100
+   ],
+   "locks": [
+    62,
+    100
+   ],
+   "watch": [
+    40,
+    100
+   ],
+   "minefield": [
+    47,
+    100
+   ],
+   "muster": [
+    59,
+    100
+   ],
+   "warband": [
+    51,
+    100
+   ],
+   "rabble": [
+    24,
+    100
+   ],
+   "urcontrol": [
+    76,
+    100
+   ],
+   "sweepers": [
+    84,
+    100
+   ]
+  },
+  "tally": {
+   "kiln": [
+    29,
+    100
+   ],
+   "urcontrol": [
+    41,
+    100
+   ],
+   "sweepers": [
+    85,
+    100
+   ],
+   "theft": [
+    36,
+    100
+   ],
+   "skies": [
+    42,
+    100
+   ],
+   "locks": [
+    45,
+    100
+   ],
+   "watch": [
+    20,
+    100
+   ],
+   "minefield": [
+    32,
+    100
+   ],
+   "muster": [
+    39,
+    100
+   ],
+   "warband": [
+    48,
+    100
+   ],
+   "rabble": [
+    19,
+    100
+   ]
+  },
+  "theft": {
+   "kiln": [
+    51,
+    100
+   ],
+   "warband": [
+    51,
+    100
+   ],
+   "minefield": [
+    44,
+    100
+   ],
+   "urcontrol": [
+    89,
+    100
+   ],
+   "tally": [
+    64,
+    100
+   ],
+   "muster": [
+    56,
+    100
+   ],
+   "skies": [
+    54,
+    100
+   ],
+   "watch": [
+    29,
+    100
+   ],
+   "sweepers": [
+    65,
+    100
+   ],
+   "rabble": [
+    18,
+    100
+   ],
+   "locks": [
+    35,
+    100
+   ]
+  },
+  "urcontrol": {
+   "tally": [
+    57,
+    100
+   ],
+   "muster": [
+    49,
+    100
+   ],
+   "sweepers": [
+    73,
+    100
+   ],
+   "skies": [
+    18,
+    100
+   ],
+   "watch": [
+    36,
+    100
+   ],
+   "theft": [
+    11,
+    100
+   ],
+   "locks": [
+    23,
+    100
+   ],
+   "rabble": [
+    20,
+    100
+   ],
+   "minefield": [
+    23,
+    100
+   ],
+   "kiln": [
+    24,
+    100
+   ],
+   "warband": [
+    48,
+    100
+   ]
+  },
+  "skies": {
+   "rabble": [
+    41,
+    100
+   ],
+   "kiln": [
+    59,
+    100
+   ],
+   "urcontrol": [
+    82,
+    100
+   ],
+   "sweepers": [
+    61,
+    100
+   ],
+   "tally": [
+    58,
+    100
+   ],
+   "theft": [
+    46,
+    100
+   ],
+   "locks": [
+    55,
+    100
+   ],
+   "watch": [
+    44,
+    100
+   ],
+   "minefield": [
+    73,
+    100
+   ],
+   "muster": [
+    59,
+    100
+   ],
+   "warband": [
+    49,
+    100
+   ]
+  },
+  "rabble": {
+   "skies": [
+    59,
+    100
+   ],
+   "watch": [
+    39,
+    100
+   ],
+   "urcontrol": [
+    79,
+    100
+   ],
+   "sweepers": [
+    76,
+    100
+   ],
+   "kiln": [
+    76,
+    100
+   ],
+   "warband": [
+    73,
+    100
+   ],
+   "theft": [
+    82,
+    100
+   ],
+   "locks": [
+    68,
+    100
+   ],
+   "tally": [
+    80,
+    100
+   ],
+   "muster": [
+    67,
+    100
+   ],
+   "minefield": [
+    58,
+    100
+   ]
+  },
+  "watch": {
+   "rabble": [
+    61,
+    100
+   ],
+   "urcontrol": [
+    64,
+    100
+   ],
+   "kiln": [
+    60,
+    100
+   ],
+   "sweepers": [
+    63,
+    100
+   ],
+   "theft": [
+    71,
+    100
+   ],
+   "tally": [
+    79,
+    100
+   ],
+   "locks": [
+    53,
+    100
+   ],
+   "skies": [
+    56,
+    100
+   ],
+   "minefield": [
+    51,
+    100
+   ],
+   "muster": [
+    46,
+    100
+   ],
+   "warband": [
+    63,
+    100
+   ]
+  },
+  "muster": {
+   "urcontrol": [
+    48,
+    100
+   ],
+   "sweepers": [
+    41,
+    100
+   ],
+   "theft": [
+    44,
+    100
+   ],
+   "kiln": [
+    41,
+    100
+   ],
+   "locks": [
+    45,
+    100
+   ],
+   "minefield": [
+    37,
+    100
+   ],
+   "tally": [
+    61,
+    100
+   ],
+   "skies": [
+    41,
+    100
+   ],
+   "watch": [
+    54,
+    100
+   ],
+   "warband": [
+    59,
+    100
+   ],
+   "rabble": [
+    32,
+    100
+   ]
+  },
+  "warband": {
+   "theft": [
+    49,
+    100
+   ],
+   "locks": [
+    49,
+    100
+   ],
+   "minefield": [
+    51,
+    100
+   ],
+   "kiln": [
+    49,
+    100
+   ],
+   "rabble": [
+    27,
+    100
+   ],
+   "tally": [
+    52,
+    100
+   ],
+   "muster": [
+    41,
+    100
+   ],
+   "urcontrol": [
+    52,
+    100
+   ],
+   "skies": [
+    51,
+    100
+   ],
+   "watch": [
+    37,
+    100
+   ],
+   "sweepers": [
+    66,
+    100
+   ]
+  },
+  "sweepers": {
+   "urcontrol": [
+    27,
+    100
+   ],
+   "tally": [
+    15,
+    100
+   ],
+   "muster": [
+    59,
+    100
+   ],
+   "skies": [
+    39,
+    100
+   ],
+   "watch": [
+    37,
+    100
+   ],
+   "rabble": [
+    24,
+    100
+   ],
+   "theft": [
+    35,
+    100
+   ],
+   "locks": [
+    2,
+    100
+   ],
+   "minefield": [
+    13,
+    100
+   ],
+   "kiln": [
+    16,
+    100
+   ],
+   "warband": [
+    34,
+    100
+   ]
+  },
+  "minefield": {
+   "theft": [
+    56,
+    100
+   ],
+   "locks": [
+    47,
+    100
+   ],
+   "kiln": [
+    53,
+    100
+   ],
+   "warband": [
+    49,
+    100
+   ],
+   "urcontrol": [
+    77,
+    100
+   ],
+   "tally": [
+    66,
+    100
+   ],
+   "muster": [
+    63,
+    100
+   ],
+   "skies": [
+    27,
+    100
+   ],
+   "watch": [
+    49,
+    100
+   ],
+   "sweepers": [
+    87,
+    100
+   ],
+   "rabble": [
+    42,
+    100
+   ]
+  },
+  "locks": {
+   "kiln": [
+    38,
+    100
+   ],
+   "warband": [
+    51,
+    100
+   ],
+   "minefield": [
+    53,
+    100
+   ],
+   "urcontrol": [
+    77,
+    100
+   ],
+   "tally": [
+    55,
+    100
+   ],
+   "muster": [
+    55,
+    100
+   ],
+   "skies": [
+    45,
+    100
+   ],
+   "watch": [
+    47,
+    100
+   ],
+   "sweepers": [
+    98,
+    100
+   ],
+   "rabble": [
+    32,
+    100
+   ],
+   "theft": [
+    65,
+    100
+   ]
+  }
+ },
+ "means": {
+  "kiln": 55,
+  "tally": 40,
+  "skies": 57,
+  "watch": 61,
+  "muster": 46,
+  "warband": 48,
+  "rabble": 69,
+  "urcontrol": 35,
+  "sweepers": 27,
+  "theft": 51,
+  "locks": 56,
+  "minefield": 56
+ },
+ "report": "# The Open's round-robin (S46) — 6600 games, master both, 20 life, no entrances; the ROW's win rate\n\n| | kiln | tally | skies | watch | muster | warband | rabble | urcontrol | sweepers | theft | locks | minefield | **mean** |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| **kiln** | — | 71 | 41 | 40 | 59 | 51 | 24 | 76 | 84 | 49 | 62 | 47 | **55** |\n| **tally** | 29 | — | 42 | 20 | 39 | 48 | 19 | 41 | 85 | 36 | 45 | 32 | **40** |\n| **skies** | 59 | 58 | — | 44 | 59 | 49 | 41 | 82 | 61 | 46 | 55 | 73 | **57** |\n| **watch** | 60 | 79 | 56 | — | 46 | 63 | 61 | 64 | 63 | 71 | 53 | 51 | **61** |\n| **muster** | 41 | 61 | 41 | 54 | — | 59 | 32 | 48 | 41 | 44 | 45 | 37 | **46** |\n| **warband** | 49 | 52 | 51 | 37 | 41 | — | 27 | 52 | 66 | 49 | 49 | 51 | **48** |\n| **rabble** | 76 | 80 | 59 | 39 | 67 | 73 | — | 79 | 76 | 82 | 68 | 58 | **69** |\n| **urcontrol** | 24 | 57 | 18 | 36 | 49 | 48 | 20 | — | 73 | 11 | 23 | 23 | **35** |\n| **sweepers** | 16 | 15 | 39 | 37 | 59 | 34 | 24 | 27 | — | 35 | 2 | 13 | **27** |\n| **theft** | 51 | 64 | 54 | 29 | 56 | 51 | 18 | 89 | 65 | — | 35 | 44 | **51** |\n| **locks** | 38 | 55 | 45 | 47 | 55 | 51 | 32 | 77 | 98 | 65 | — | 53 | **56** |\n| **minefield** | 53 | 66 | 27 | 49 | 63 | 49 | 42 | 77 | 87 | 56 | 47 | — | **56** |\n\nSolvable (a list over 65% against the field): rabble. Under 35%: sweepers.\nMuster vs Warband: the Muster 59% (100 games).\n\n## Staples (ADR-170)\n\nIn more than half of the 12 lists: Lightning Bolt (9 lists, 34 copies); Flametongue Kavu (9 lists, 28 copies); Counterspell (8 lists, 26 copies). The most played: Lightning Bolt 9 · Flametongue Kavu 9 · Counterspell 8 · Control Magic 6 · Swords to Plowshares 5 · Wrath of God 4 · Wave of Reckoning 4 · Hordeling Outburst 3.\n\n## Restricted cards — % of the list's games in which it was cast (or, a land, played)\n\n- **kiln**: time_walk 35% · tallyflame_court 37% · black_lotus 37% · mox_sapphire 36% · mox_ruby 34% · library_of_alexandria 37%\n- **tally**: tallyflame_court 40% · black_lotus 43% · mox_ruby 41% · mox_sapphire 40%\n- **skies**: black_lotus 30% · mox_pearl 30% · mox_sapphire 31%\n- **watch**: black_lotus 25% · mox_ruby 25% · mox_pearl 26%\n- **muster**: black_lotus 30% · mox_pearl 30% · mox_ruby 31%\n- **warband**: black_lotus 27% · mox_ruby 24% · mox_pearl 28%\n- **rabble**: mox_ruby 30% · black_lotus 26%\n- **sweepers**: black_lotus 55% · mox_pearl 56% · mox_sapphire 57% · mox_ruby 56% · time_walk 58% · library_of_alexandria 58% · tallyflame_court 55%\n- **theft**: black_lotus 42% · mox_pearl 43% · mox_sapphire 44% · mox_ruby 41% · time_walk 42% · tallyflame_court 39%\n- **locks**: library_of_alexandria 48% · black_lotus 43% · mox_sapphire 43% · mox_pearl 44% · time_walk 47%\n- **minefield**: time_walk 48% · black_lotus 48% · mox_pearl 46% · mox_ruby 46% · mox_sapphire 47% · tallyflame_court 49% · library_of_alexandria 52%\n\n## Key pieces — % of the list's games in which each was cast (a weak pilot reads apart from a weak list)\n\n- **kiln**: \n- **tally**: young_pyromancer 83% · guttersnipe 82% · ponder 72%\n- **skies**: \n- **watch**: \n- **muster**: glorious_anthem 70% · vitalist 0% · emeria_angel 59%\n- **warband**: siege_gang_commander 46% · goblin_chieftain 66% · goblin_grenade 59%\n- **rabble**: \n- **urcontrol**: \n- **sweepers**: \n- **theft**: \n- **locks**: the_dredger 0% · counterspell 73% · wrath_of_god 43%\n- **minefield**: \n\n## The Loop — the Usher + an Altar on the battlefield with a Restoration Angel in hand or play\n\nAssembled by turn ten in 0 of 0 games (0%); ever: 0. Altar activations per game: 0.00."
+}
