@@ -1,72 +1,72 @@
 {
  "_comment": "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.",
- "when": "2026-10-20",
+ "when": "2026-10-21",
  "matchesAPairing": 60,
  "byList": {
   "ashen": {
    "matches": 54.3,
-   "gameOne": 57.8,
-   "later": 50.8,
-   "n": 600
-  },
-  "auras": {
-   "matches": 62.4,
-   "gameOne": 57.4,
-   "later": 58.9,
-   "n": 600
-  },
-  "bfh": {
-   "matches": 43.4,
-   "gameOne": 42.5,
-   "later": 47.3,
-   "n": 600
-  },
-  "dragons": {
-   "matches": 40.2,
-   "gameOne": 45.7,
-   "later": 42.2,
-   "n": 600
-  },
-  "emeraldsnakes": {
-   "matches": 67.1,
-   "gameOne": 63.4,
-   "later": 60,
-   "n": 600
-  },
-  "kindling": {
-   "matches": 33.7,
-   "gameOne": 35.6,
-   "later": 40.2,
-   "n": 600
-  },
-  "rabble": {
-   "matches": 58.9,
-   "gameOne": 55.9,
-   "later": 56.7,
-   "n": 600
-  },
-  "reaper": {
-   "matches": 52.3,
-   "gameOne": 51.2,
+   "gameOne": 57.3,
    "later": 51.2,
    "n": 600
   },
+  "auras": {
+   "matches": 63,
+   "gameOne": 57.4,
+   "later": 59.4,
+   "n": 600
+  },
+  "bfh": {
+   "matches": 42.8,
+   "gameOne": 41.7,
+   "later": 47.2,
+   "n": 600
+  },
+  "dragons": {
+   "matches": 40.5,
+   "gameOne": 46.2,
+   "later": 42.4,
+   "n": 600
+  },
+  "emeraldsnakes": {
+   "matches": 66.8,
+   "gameOne": 63.7,
+   "later": 59.6,
+   "n": 600
+  },
+  "kindling": {
+   "matches": 35.1,
+   "gameOne": 36.6,
+   "later": 40.8,
+   "n": 600
+  },
+  "rabble": {
+   "matches": 58.8,
+   "gameOne": 55.8,
+   "later": 56.6,
+   "n": 600
+  },
+  "reaper": {
+   "matches": 51.7,
+   "gameOne": 51.5,
+   "later": 50.5,
+   "n": 600
+  },
   "stompy": {
-   "matches": 58.2,
-   "gameOne": 51.7,
-   "later": 57,
+   "matches": 57.8,
+   "gameOne": 52.1,
+   "later": 56.4,
    "n": 600
   },
   "sweep": {
-   "matches": 43,
-   "gameOne": 45.7,
-   "later": 45,
+   "matches": 43.2,
+   "gameOne": 45.3,
+   "later": 45.2,
    "n": 600
   },
   "wurmspeaker": {
-   "matches": 36.6,
-   "gameOne": 43.3,
-   "later": 40.2,
+   "matches": 36.1,
+   "gameOne": 42.6,
+   "later": 40.3,
    "n": 600
   }
  }

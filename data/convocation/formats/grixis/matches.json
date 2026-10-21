@@ -1,78 +1,78 @@
 {
  "_comment": "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.",
- "when": "2026-10-19",
+ "when": "2026-10-21",
  "matchesAPairing": 60,
  "byList": {
   "ashen": {
-   "matches": 50.2,
-   "gameOne": 52,
-   "later": 49.4,
+   "matches": 49.2,
+   "gameOne": 52.4,
+   "later": 48,
    "n": 660
   },
   "br": {
-   "matches": 41.5,
-   "gameOne": 45.7,
-   "later": 43.5,
+   "matches": 41.8,
+   "gameOne": 45.8,
+   "later": 43.9,
    "n": 660
   },
   "clio": {
-   "matches": 58.7,
-   "gameOne": 54.5,
-   "later": 56.6,
+   "matches": 56.4,
+   "gameOne": 54.7,
+   "later": 54.3,
    "n": 660
   },
   "kiln": {
-   "matches": 50.6,
-   "gameOne": 51.6,
-   "later": 49.9,
+   "matches": 52.2,
+   "gameOne": 51.1,
+   "later": 51.4,
    "n": 660
   },
   "kindling": {
-   "matches": 44,
-   "gameOne": 47.3,
+   "matches": 44.2,
+   "gameOne": 47.9,
    "later": 44.7,
    "n": 660
   },
   "mbc": {
-   "matches": 33.3,
-   "gameOne": 38.6,
-   "later": 36.9,
+   "matches": 36.6,
+   "gameOne": 39.2,
+   "later": 39.4,
    "n": 660
   },
   "mbclio": {
-   "matches": 68.2,
-   "gameOne": 59.8,
-   "later": 64.4,
+   "matches": 70.9,
+   "gameOne": 62.4,
+   "later": 66.3,
    "n": 660
   },
   "rabble": {
-   "matches": 79.4,
-   "gameOne": 68.2,
-   "later": 72.9,
+   "matches": 79.7,
+   "gameOne": 68.9,
+   "later": 73,
    "n": 660
   },
   "tally": {
-   "matches": 49,
-   "gameOne": 51.1,
-   "later": 47.9,
+   "matches": 47.4,
+   "gameOne": 50.2,
+   "later": 46.5,
    "n": 660
   },
   "tempo": {
-   "matches": 44.4,
-   "gameOne": 48.5,
-   "later": 45.9,
+   "matches": 44.5,
+   "gameOne": 47.3,
+   "later": 46.5,
    "n": 660
   },
   "undertow": {
-   "matches": 28,
-   "gameOne": 34.6,
-   "later": 34.7,
+   "matches": 26.4,
+   "gameOne": 33,
+   "later": 34.1,
    "n": 660
   },
   "writ": {
-   "matches": 52.7,
-   "gameOne": 48.2,
-   "later": 53.7,
+   "matches": 50.7,
+   "gameOne": 47.3,
+   "later": 52.3,
    "n": 660
   }
  }

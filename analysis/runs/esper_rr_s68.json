@@ -1,0 +1,325 @@
+{
+ "name": "open_rr_1",
+ "when": "2026-10-21T00:44:22.159Z",
+ "games": 3600,
+ "table": {
+  "mbc": {
+   "writ": [
+    27,
+    100
+   ],
+   "levy": [
+    33,
+    100
+   ],
+   "locks": [
+    41,
+    100
+   ],
+   "undertow": [
+    58,
+    100
+   ],
+   "wbcontrol": [
+    37,
+    100
+   ],
+   "skies": [
+    44,
+    100
+   ],
+   "bwtokens": [
+    26,
+    100
+   ],
+   "tempo": [
+    44,
+    100
+   ]
+  },
+  "writ": {
+   "mbc": [
+    73,
+    100
+   ],
+   "levy": [
+    56,
+    100
+   ],
+   "locks": [
+    45,
+    100
+   ],
+   "undertow": [
+    53,
+    100
+   ],
+   "wbcontrol": [
+    48,
+    100
+   ],
+   "skies": [
+    60,
+    100
+   ],
+   "bwtokens": [
+    44,
+    100
+   ],
+   "tempo": [
+    54,
+    100
+   ]
+  },
+  "levy": {
+   "writ": [
+    44,
+    100
+   ],
+   "undertow": [
+    43,
+    100
+   ],
+   "mbc": [
+    67,
+    100
+   ],
+   "wbcontrol": [
+    37,
+    100
+   ],
+   "skies": [
+    37,
+    100
+   ],
+   "bwtokens": [
+    44,
+    100
+   ],
+   "tempo": [
+    53,
+    100
+   ],
+   "locks": [
+    57,
+    100
+   ]
+  },
+  "undertow": {
+   "levy": [
+    57,
+    100
+   ],
+   "writ": [
+    47,
+    100
+   ],
+   "wbcontrol": [
+    50,
+    100
+   ],
+   "mbc": [
+    42,
+    100
+   ],
+   "skies": [
+    53,
+    100
+   ],
+   "bwtokens": [
+    56,
+    100
+   ],
+   "locks": [
+    49,
+    100
+   ],
+   "tempo": [
+    42,
+    100
+   ]
+  },
+  "locks": {
+   "bwtokens": [
+    39,
+    100
+   ],
+   "writ": [
+    55,
+    100
+   ],
+   "tempo": [
+    49,
+    100
+   ],
+   "mbc": [
+    59,
+    100
+   ],
+   "undertow": [
+    51,
+    100
+   ],
+   "wbcontrol": [
+    55,
+    100
+   ],
+   "levy": [
+    43,
+    100
+   ],
+   "skies": [
+    34,
+    100
+   ]
+  },
+  "bwtokens": {
+   "locks": [
+    61,
+    100
+   ],
+   "skies": [
+    55,
+    100
+   ],
+   "levy": [
+    56,
+    100
+   ],
+   "tempo": [
+    50,
+    100
+   ],
+   "undertow": [
+    44,
+    100
+   ],
+   "writ": [
+    56,
+    100
+   ],
+   "mbc": [
+    74,
+    100
+   ],
+   "wbcontrol": [
+    48,
+    100
+   ]
+  },
+  "wbcontrol": {
+   "tempo": [
+    62,
+    100
+   ],
+   "levy": [
+    63,
+    100
+   ],
+   "undertow": [
+    50,
+    100
+   ],
+   "writ": [
+    52,
+    100
+   ],
+   "mbc": [
+    63,
+    100
+   ],
+   "locks": [
+    45,
+    100
+   ],
+   "skies": [
+    38,
+    100
+   ],
+   "bwtokens": [
+    52,
+    100
+   ]
+  },
+  "tempo": {
+   "wbcontrol": [
+    38,
+    100
+   ],
+   "locks": [
+    51,
+    100
+   ],
+   "skies": [
+    43,
+    100
+   ],
+   "bwtokens": [
+    50,
+    100
+   ],
+   "levy": [
+    47,
+    100
+   ],
+   "undertow": [
+    58,
+    100
+   ],
+   "writ": [
+    46,
+    100
+   ],
+   "mbc": [
+    56,
+    100
+   ]
+  },
+  "skies": {
+   "bwtokens": [
+    45,
+    100
+   ],
+   "levy": [
+    63,
+    100
+   ],
+   "tempo": [
+    57,
+    100
+   ],
+   "undertow": [
+    47,
+    100
+   ],
+   "writ": [
+    40,
+    100
+   ],
+   "mbc": [
+    56,
+    100
+   ],
+   "wbcontrol": [
+    62,
+    100
+   ],
+   "locks": [
+    66,
+    100
+   ]
+  }
+ },
+ "means": {
+  "mbc": 39,
+  "writ": 54,
+  "levy": 48,
+  "locks": 48,
+  "undertow": 50,
+  "wbcontrol": 53,
+  "skies": 55,
+  "bwtokens": 56,
+  "tempo": 49
+ },
+ "report": "# The Open's round-robin (S46) — 3600 games, master both, 20 life, no entrances; the ROW's win rate\n\n| | mbc | writ | levy | locks | undertow | wbcontrol | skies | bwtokens | tempo | **mean** |\n|---|---|---|---|---|---|---|---|---|---|---|\n| **mbc** | — | 27 | 33 | 41 | 58 | 37 | 44 | 26 | 44 | **39** |\n| **writ** | 73 | — | 56 | 45 | 53 | 48 | 60 | 44 | 54 | **54** |\n| **levy** | 67 | 44 | — | 57 | 43 | 37 | 37 | 44 | 53 | **48** |\n| **locks** | 59 | 55 | 43 | — | 51 | 55 | 34 | 39 | 49 | **48** |\n| **undertow** | 42 | 47 | 57 | 49 | — | 50 | 53 | 56 | 42 | **50** |\n| **wbcontrol** | 63 | 52 | 63 | 45 | 50 | — | 38 | 52 | 62 | **53** |\n| **skies** | 56 | 40 | 63 | 66 | 47 | 62 | — | 45 | 57 | **55** |\n| **bwtokens** | 74 | 56 | 56 | 61 | 44 | 48 | 55 | — | 50 | **56** |\n| **tempo** | 56 | 46 | 47 | 51 | 58 | 38 | 43 | 50 | — | **49** |\n\nSolvable (a list over 65% against the field): none. Under 35%: none.\nMuster vs Warband: the Muster 0% (0 games).\nThe Undertow's wins by library: 351 of 396 (89%).\n\n## Staples (ADR-170)\n\nIn more than half of the 9 lists: Counterspell (5 lists, 19 copies); Vampire Nighthawk (5 lists, 16 copies); Swords to Plowshares (5 lists, 13 copies). The most played: Counterspell 5 · Vampire Nighthawk 5 · Swords to Plowshares 5 · Vindicate 4 · Control Magic 4 · Emeria Angel 4 · Karmic Mentor 4 · Soul Warden 3.\n\n## Restricted cards — % of the list's games in which it was cast (or, a land, played)\n\n- **mbc**: black_lotus 35% · mox_jet 31% · demonic_tutor 27%\n- **writ**: library_of_alexandria 38% · black_lotus 32% · mox_jet 32% · mox_sapphire 32% · demonic_tutor 34% · time_walk 41%\n- **levy**: obsidian_observatory 29% · black_lotus 28% · mox_pearl 25% · mox_jet 28%\n- **locks**: obsidian_observatory 37% · library_of_alexandria 36% · black_lotus 35% · mox_sapphire 36% · mox_pearl 31% · mox_jet 35% · demonic_tutor 33% · time_walk 33%\n- **undertow**: mox_sapphire 27% · mox_jet 29% · black_lotus 31%\n- **wbcontrol**: obsidian_observatory 39% · black_lotus 37% · mox_jet 34% · mox_pearl 33% · demonic_tutor 30%\n- **skies**: obsidian_observatory 34% · black_lotus 31% · mox_pearl 30% · mox_sapphire 32%\n- **bwtokens**: obsidian_observatory 30% · black_lotus 27% · mox_pearl 25% · mox_jet 25%\n- **tempo**: black_lotus 34% · mox_sapphire 35%\n\n## Key pieces — % of the list's games in which each was cast (a weak pilot reads apart from a weak list)\n\n- **mbc**: \n- **writ**: \n- **levy**: emeria_angel 67% · dread_presence 63% · isaura_the_levy 45%\n- **locks**: the_dredger 73% · counterspell 68% · wrath_of_god 52%\n- **undertow**: hedron_crab 77% · zinnia_the_undertow 0% · traumatizer 67%\n- **wbcontrol**: \n- **skies**: \n- **bwtokens**: \n- **tempo**: \n\n## The Loop — the Usher + an Altar on the battlefield with a Restoration Angel in hand or play\n\nAssembled by turn ten in 0 of 0 games (0%); ever: 0. Altar activations per game: 0.00."
+}

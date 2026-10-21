@@ -1,72 +1,41 @@
-# Handoff — after Session 67 (2026-10-19)
+# Handoff — after Session 68 (2026-10-20)
 
 ## State of the world
-Eight formats now have fields of their own: the Open (fifteen lists), Peasant, Naya, Esper, Mardu (twelve), and this session's deep batch — **Grixis, Jund and Jeskai**, eleven seeds each, with tables of record, frozen thresholds, reference pages, door lines, the play screen's groups and door tests. Guides now belong to their list in the measuring tools (ADR-188): `open:rr` keeps a list's guide when its fifteen is varied and warns about rows the fifteen can't feed. `open:gen` writes nothing until every check passes, and the guide shapes are one list. Vigil Keeper is in the Open's Muster. `pnpm pilot-probe` reads three of the pilot's gaps against Chris's recorded play. Tests: `pnpm test` (1,119 passed). Tables: `scripts/open/rr.sh <tag> 100 [--matches 60] --format <id>`, then `open:rr --merge/--matches-report … --record`, then `open:gen`.
+The pilot now reads the defender's combat triggers, aims burn only to kill, plans a repeatable ping, and draws with the Witch once it is safe (books 141–145, each with an `off` switch). The ladder passes after each. Every Constructed field's table was re-run after the three rules (the Open, Naya, Esper, Mardu, Grixis, Jund, Jeskai). Jund Dragons (Chris's) is registered in Jund; Jund Coin is archived. `pnpm pilot-probe` has four new modes (`--mines`, `--diffs`, `--manaba2`, `--sweeps`). Tests: `pnpm test` (1,124 passed).
 
 ## Done this session
-- **Part 0**:
-  - Rulings and ADR-187 and 188 are in `docs/decision-updates/s67.md`, with Chris's five kickoff rulings (the brief read against the data).
-  - ADR-188 built: `LIST_GUIDES` (`<format>:<key>` → guide); `guideOfList`; `aiSideboard`'s explicit `guide`; `open:rr`'s guide by key, test guide and warning. `open:gen` queues every write until all checks pass (a planted bad shape wrote nothing). `GUIDE_SHAPES` is typed exhaustive. Equivalence: 1,638 Mardu Control games re-run identical.
-  - Mardu's names: BR Removal (Mardu) is now **the Ashen**, Mono-Red Burn **the Kindling**.
-- **Part 1 — Vigil Keeper in the Open**:
-  - **The Muster**: three for the Fencing Aces, +2.9 ± 0.9 (the Pall +12.5). **Adopted.**
-  - **Emerald Snakes**: two Keepers on a Savannah swap, +0.3. Not adopted.
-  - **Countersnake's fifteen**: +0.0. Not adopted.
-  - **Reaper Clio**: dropped (Chris's ruling).
-  - The Open's tables re-run: the Muster 41.5 → 43.9, the Pall 51.4 → 49.7.
-- **Part 2 — the batch.** Seeds whole where legal, with every land swap logged in the list's source:
-  - **Grixis**: the Kiln, the Rabble, the Writ, the Eddy, the Undertow, the Barrow, the Tally (revived), the Ashen, the Kindling, Peasant's BR Removal; built: Grixis Clio.
-  - **Jund**: the Sweep (land swap), the Ashen, the Rabble, the Stampede, Dungrove Auras, Emerald Snakes (land swap), the Wurmspeaker, the Kindling, the Reaper (revived, land swap), **Black Forest Ham** (Chris's); built: Jund Coin.
-  - **Jeskai**: the Kiln (fifteen swap), the Tally, the Aerie (land and fifteen swaps, Esper's guide carried), the Watch, the Muster, the Warband, Naya's Rabble, UR Pyroclasm Control; built: Jeskai Sweepers, Jeskai Theft, Jeskai Locks.
-  - **The lords**:
-    - The Stoker: −1.6 and −4.2. Not adopted.
-    - **The Bailiff in the Theft: +4.6 ± 1.0. Adopted** (Jeskai re-run: the Theft 43.3 → 49.7); in the Sweepers +0.5.
-    - The Reaper: −3.4 into Emerald Snakes; +2.1 ± 1.3 for two out of the Sweep, under the bar.
-- **Part 3 — the probes** (`pnpm pilot-probe --witch | --manaba | --racing`); the results are in Concerns 1 to 3.
-- **Part 4 — the read** (decision updates):
-  - **Tables in matches:**
-    - **Grixis**: the Rabble 82.6, Clio 61.8, the Writ 57.3 … the Undertow 26.7.
-    - **Jund**: Emerald Snakes 67.9, Dungrove Auras 64.8, the Rabble 61.6 … Jund Coin 28.7.
-    - **Jeskai**: the Rabble 74.7, the Watch 67.0, the Locks 57.5 … the Sweepers 30.8, UR Pyroclasm Control 30.5.
-  - **Six triads**: Naya and Jund an engine over a race; Esper and Jeskai a race over a lock; Mardu an engine and a race at once; Grixis a race over everything. The red race tops three of the six.
+- **Part 0**: S67's deviations ratified; ADR-189 (the six-triad read); ADR-186 amended and built (`open:gen` refuses a frozen threshold below 2; Grixis's and Jund's `large` set to 3); Jund Coin archived; **Jund Dragons** registered (Chris's 11-game run; at his flip — three Drakuseth, two Ruby Tyrants) with his fifteen and a guide from his swaps; Jund's table before the rules (Jund Dragons 40.2).
+- **Part 1 — combat reads the defender's triggers** (`triggercharge`, book 141; `deathcharge`, book 142): attackers charged the battlefield's ATTACKS triggers as declared, blockers weighed after BLOCKS triggers, the crack-back read without their trigger-killed attackers; an own combat death costs the opponent's death-trigger drain. Attackers killed by a Minefield's trigger alone: 2.5–6.9 a game → 0 in all eight pairings measured. Sacred Minefield −7.2 ± 0.8; the Tollgate +6.6 ± 1.1. Ladder PASS.
+- **Part 2 — damage targeting** (`burnkills`, book 143; `pingplan`, book 144): a burn spell at a creature only when it kills (with committed combat and stack damage); a repeatable ping counts its pending pings and spends a short one only when the mana and life at hand finish the kill. The Rabble +0.6, the Kindling +1.1, the Tally +1.2, the Kiln +0.5 (+6.9 against the Clio lists). Ladder PASS.
+- **Part 3 — the Witch early** (`witchearly`, book 145): life for cards from the turn it is safe — above the board's reach, three a burn spell seen and **a cushion of six** — not at a hand of two. Without the cushion it lost (the Witch −2.3); with it the Witch +2.3, the Barrow +4.1, Mono-Black Clio +2.1, Mardu Control +1.0, the Pall −0.9. Draws 4.8 → 6.4 a game, from turn 10.2 → 9.1. Ladder PASS.
+- **Part 4 — the probes** (no rules): the pilot's extra blocks are its costliest racing difference (7 positions: Chris's choice 32.1%, the pilot's 3.6%; cast order neutral at 54); the pilot makes half the Manaba mana Chris does (0.45 Snakes tapped a turn against 0.86); the Jeskai Sweepers Wrath a board of one or none 64% of the time (Chris 13%), on turn 28 against 17.
+- **Part 5 — the tables** (decision updates): the six-triad read stands — the red race unmoved (Grixis 79.7, Jeskai 77.5, Mardu 63.5); the Witch lists up (the Chancel +7.7, the Barrow +5.6, Mono-Black Clio +2.7); Sacred Minefield 55.5 (−9.0).
 
 ## Deviations from the brief
-1. **No Grixis reanimator** (interim, logged). The brief's condition: the Ossuary died to Swords, Control Magic and Vindicate. Grixis keeps Control Magic (the Kiln's four, the Tally's two, two fifteens) and every list's graveyard hate. Planner: build it next session, or accept the read.
-2. **Jund Coin built although the Sweep is already Jund Aristocrats** (Reaper, Meliyan, Blood Artist, Bitterblossom). The Coin is the brief's no-white Coin shape. It measured last (28.7). Planner: keep it, or retire it on its first count.
-3. **ADR-188 in events and the play screen**: they still match a guide by fifteen. A seat there holds its list's authored fifteen or a built one, so the two readings agree and event behaviour is unchanged. Planner: confirm the reading.
-4. **The Kiln's three Macabres became Pyroclasms in Jeskai.** The Kiln makes no white mana, so it has no castable graveyard answer but the Crypt, and it already holds four. The Aerie's Macabre became a third Crypt.
-5. **The lord read for Jund** is the Reaper added to one list and taken out of another, since two seeds already carry it.
+1. **Part 1's scope** (Chris's ruling at the kickoff): only the Minefield is an ATTACKS/BLOCKS trigger in the pool (the Observatory and Isaura are activated abilities, Soul Warden an enters trigger, Meliyan its own controller's death trigger); the defender's death triggers became `deathcharge`, measured apart (it moved nothing in Jeskai; in Mardu it rides the table).
+2. **The Witch rule carries a cushion of six** the brief did not have — the brief's rule measured negative (−2.3 on the Witch); the cushion was tried as a trial and adopted on its measure.
+3. **Peasant's Mono-Black** has no Witch (she is prize-only); Mono-Black Clio measured in its place.
+4. **The Manaba probe reads the board, not the solver**: Snakes tapped on our turn and not attacking. No engine change; the pilot and the human read the same way.
+5. **Book 102's old Witch pin** runs with `witchearly` off; the old "burn at own face" pin aims at a 3/3 the Bolt kills (a non-lethal Bolt is no longer a use).
 
 ## Concerns
-1. **The Witch probe contradicts the brief's premise.**
-   - **The pilot doesn't overpay; it draws later and less.** It activates 4.8 times a game, the first on turn 10.2. Chris activates 7.0 times, the first on turn 6.6, and pays into an untapped racer more often (31% against 18%).
-   - **The candidate rule would change little.** It forbids 61 of 329 pilot activations, and those games went no worse.
-   - **For S68:** the useful term is "use the Witch early while it's safe", not "stop paying". Book 113's shape, extended to the board, is the wrong lever.
-2. **The Manaba probe can't see the pilot's taps.** The pilot pays through the solver, so its Manaba taps aren't agent actions. The end-step board is the reliable reading, and it shows no mana wasted. The 13–1 versus 60 gap is likely elsewhere (sequencing, the Forerunner's timing: Chris holds it at 19.6% of end steps).
-3. **Racing isn't the attack declaration.** The pilot would have held on only 5 of Chris's 64 attacking turns, and only one of those positions decides a game. A next probe should read blocks and the turn order of casts.
-4. **The red race dominates Grixis (82.6) and Jeskai (74.7).**
-   - In Grixis nothing white answers it; in Jeskai the counters-and-sweepers contrast didn't produce a deck that beats it in the pilot's hands.
-   - The built Jeskai Sweepers is last but one (30.8). That may be the build, or the pilot's Wrath timing; it's worth one probe before a list is blamed.
-5. **Frozen `large` thresholds of 1 in Grixis and Jund** (ADR-186). This is S65's fragile low-rank case again: `large` fires against nearly every list there. Planner: ratify, or set by hand.
-6. **The Keeper answers the Pall, not Mardu Control**: +12.5, +8.1 and +4.4 against the Pall, but +0.6, +1.9 and −1.2 against Mardu Control. Mardu Control's loop is one engine among several. No fifth shape joins the Open's four.
-7. **The fifteen-matched guide lookup** still lives in events, the UI and `combo-probe`/`sideboard:show`. Those were left as they were; only `open:rr` is key-based. `sideboard:show` would be a small follow-up.
-8. **Post-S67 (Chris's Grixis run, Mono-Black Clio 8–0): the pilot's damage targeting.**
-   - **Burn spells:** of 23 AI burn spells at Chris's creatures, 9 were not lethal on their own, and 6 left the creature alive (Shocks on Nighthawk, Dread Presence and Drana; a Bolt on Drana). No gate found for burn *spells* aimed at a creature.
-   - **The Ruby Tyrant** (Chris's observation, confirmed in the Rabble's game two): two pings at a Witch with 2 toughness left, where one was lethal; ten turns beside Chris's Clio without once aiming two pings at her. The activated-ability gate (`heuristic-agent.ts`, the `damage` case near "repeatable") refuses any single ping that does not kill — so it can never stack two on a 4-toughness creature — and its `kills()` reads marked damage but not pings already on the stack, so it doubles up.
-   - **For S68's pilot rules, beside the Witch term:** a burn spell aims at a creature only when it kills, alone or with what is already committed (combat, the stack); repeatable damage plans a kill across activations and counts its own pending pings. Ladder-gated.
-9. **Post-S67 (Chris's Jeskai runs, Jeskai Control 3–3 then Sacred Minefield 8–0, 16–3 in games): the pilot attacks into the opponent's triggers.** With Chris's Powerstone Minefield out (2 damage to each attacking or blocking creature, on its trigger — before blocks), **210 of 260 attackers the pilot declared (81%) died to the trigger alone**, dealing nothing: the Rabble 127 of 127 (every attacking turn), the Muster and UR Pyroclasm Control 86%, the Aerie and the Watch 57%. The attack evaluator does not read the defender's permanents' ATTACKS/BLOCKS triggers. **For S68, with the damage targeting (Concern 8)**: a combat read that charges each attacker (and blocker) what the battlefield's triggers will do to it on declaration — the Minefield first; the same question for any opposing static or trigger an attack or block sets off. Until then, a Minefield list's tables overstate it: the pilot feeds it creatures. Sacred Minefield is registered in Jeskai (64.5 in matches, second); re-run Jeskai's table after the fix. Chris's next idea: the Minefield in Mardu with Blood Artists, after the fix.
+1. **The red race is not a pilot problem these rules touch.** The Rabble tops Grixis and Jeskai by 10–20 points with none of this session's rules moving it. Two shapes the probes point at: the pilot's blocks (its extra blocks were its worst racing choices — the defence against the race is the side that blocks badly) and the sweeper timing (Concern 2). Both are S69-able rules.
+2. **The sweeper pilot Wraths one creature at a time** (64% into a board of one or none, against Chris's 13%). A rule shaped like book 117's removal hold — a sweeper waits for a board worth it unless the race forces it — would be measured on the Jeskai Sweepers, the Locks, the Chancel and Mardu Control.
+3. **A non-lethal burn was a score, not a gate** — the softmax cast what scored a quarter-point under passing. The same "friction, not a gate" shape is still elsewhere (the comment at the predictor's unchanged branch says so); other near-pass misplays may live there.
+4. **The Tyrant had no gate at all** (the brief assumed "refused as now"): creature abilities outside the shrink/mill/counters sinks skip `floodSinkGated`. `pingPlanGated` now covers the creature ping; any other creature ability with a target (a creature that taps, bounces) is still ungated.
+5. **The pilot makes half Chris's Manaba mana**; whether that is the solver's tap order or the pilot's spending is the next read — the solver's choices are not agent decisions, so a rule there is an engine-side change (ADR-worthy).
+6. **The Pall dipped under `witchearly`** (−0.9 ± 0.4) though its own dig is untouched — its opponents' Witches draw better. Worth a look if the Pall's numbers matter.
 
 ## Registry entries added/changed
-- No R-entries; no pool changes (Vigil Keeper is now in the Open's Muster, and the Watch has it in Mardu and Jeskai).
-- New formats: `grixis`, `jund`, `jeskai`, each with `lists.json`, `means.json`, `matches.json` and `docs/reference/<id>-lists.md`. Open revision S67: the Muster (`open-lists.ts`).
+- No R-entries. Books 141–145 (agents). Jund: `dragons` registered, `coin` archived; Grixis and Jund `shapeScale.large` 3.
 
 ## Test status
-**1,119 passed**, 2 skipped (1,121). New: `world/s67-guides.test.ts` (ADR-188: every list mapped, a varied fifteen keeps its guide by key, one shape list) and `world/s67-triads-event.test.ts` (each triad's colours and land rule, an event to a champion). No ladder: no AI decision changed (the probe tool only reads); the sideboarding is identical for every registered list (the equivalence run).
+**1,124 passed**, 2 skipped (1,126). Books 141–145 new; book 102's second line and the "burn at own face" pin re-baselined (Deviation 5). Ladder gate/mirror PASS after Parts 1, 2 and 3.
 
 ## Suggested next
-- **S68's pilot rules** from the probes: the Witch used early when safe (Concern 1), with a ladder gate; a block and sequencing probe for the racing gap (Concern 3); the Manaba read through the solver's payments (Concern 2).
-- **The shallow batch**: Sultai first by contrast (no sweeper), then Abzan, Temur, Bant. This batch's cost holds: one session for three, about 2.5 hours of machine time.
-- A Grixis reanimator (Deviation 1); the Jeskai Sweepers' Wrath timing probe (Concern 4).
+- **The shallow batch (S69)**: Sultai first by contrast (no sweeper), then Abzan, Temur, Bant — the batch pattern of S67.
+- **Two pilot rules the probes earned**: the block that loses (the pilot's extra blocks) and the sweeper that waits for a board (Concerns 1–2), each measured and ladder-gated.
+- **Jund Dragons' alternative builds** (Chris: "more room to explore once the AI fixes are in place") and the Minefield in Mardu.
 
 ## How to run
 ```
@@ -81,9 +50,12 @@ pnpm open:gen && pnpm reference                      # after any change under da
 pnpm sideboard:show --format mardu --list witch --vs pall,rabble
 pnpm rating:format --format peasant [--write]        # the format's own card score
 pnpm format:census --colors UBR [--max-tier 2] ; pnpm format:census --triads   # a triad's shelf (the land rule applied); the ten side by side
-pnpm pilot-probe --witch --format mardu --lists witch,pall,marducontrol --games 6 --recorded <file>   # S67: the Witch's activations, the pilot and the human
-pnpm pilot-probe --manaba --format open --lists emeraldsnakes --games 6 --recorded <file>
-pnpm pilot-probe --racing --format open --recorded <file> --playouts 6
 python3 scripts/open/seat.py <list> <tag>…           # a trial in one seat: matches, games, by opponent, casts
 scripts/open/rr.sh t 160 --matches 160 --format esper --only locks --deck locks:<main> --deck-side <side> [--deck-guide <guide>]   # a fifteen varied keeps the list's guide (ADR-188); --deck-guide replaces its rows
+pnpm pilot-probe --witch|--manaba|--racing …            # S67 probes (see decision-updates/s67.md)
+pnpm pilot-probe --mines --format jeskai --lists rabble,watch --vs minefield --games 20 [--off triggercharge]   # S68: attackers lost to a Minefield's trigger
+pnpm pilot-probe --diffs --format open --recorded <file> --playouts 4     # S68: the human's blocks and casts against the pilot's, with playouts
+pnpm pilot-probe --manaba2 --format open --lists emeraldsnakes --games 4 --recorded <file>   # S68: Manaba mana from the board
+pnpm pilot-probe --sweeps --format jeskai --lists sweepers --games 4 --recorded <file>[,<file>]   # S68: each sweeper and the board it met
+pnpm open:rr … --off triggercharge,deathcharge,burnkills,pingplan,witchearly   # S68's rules off (books 141–145)
 ```

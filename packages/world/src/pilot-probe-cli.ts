@@ -207,6 +207,117 @@ async function mines(): Promise<void> {
   }
 }
 
-if (process.argv.includes("--mines")) await mines();
+const SWEEPERS = new Set(["wrath_of_god", "pyroclasm", "wave_of_reckoning", "savage_twister", "retribution_of_the_meek"]);
+const boardOf = (v: GameView, p: number) => { const cs = v.battlefield.filter((b) => b.controller === p && b.power !== null); return { n: cs.length, power: cs.reduce((a, b) => a + Math.max(0, b.power ?? 0), 0) }; };
+type RecFile = { games: { eventSeed: number; list: string; formatId?: string; result: { winner: number | null; turns: number }; spec: MatchSpec & { rules: Record<string, number> }; log: { t: string }[] }[] };
+const rulesOf = (g: RecFile["games"][number]) => ({ startingLife: g.spec.rules.startingLife ?? 20, handSize: g.spec.rules.handSize ?? 7, maxTurns: g.spec.rules.maxTurns ?? 120, ante: 0, ...(g.spec.rules.startingPlayer !== undefined ? { startingPlayer: g.spec.rules.startingPlayer } : {}) }) as never;
+const decksOf = (g: RecFile["games"][number]): [string[], string[]] => [expandDecklist(g.spec.players[0]!.decklist), expandDecklist(g.spec.players[1]!.decklist)];
+
+/** --diffs (S68 Part 4): the human's blocks and casts against the pilot's at the same decision; the playouts from each difference. */
+async function diffs(): Promise<void> {
+  const file = JSON.parse(readFileSync(arg("recorded", ""), "utf8")) as RecFile, K = Number(arg("playouts", "4"));
+  const kinds = new Map<string, { n: number; human: number; pilot: number }>();
+  for (const [gi, g] of file.games.entries()) {
+    if (g.formatId && arg("format", "") && g.formatId !== arg("format", "")) continue;
+    const decks = decksOf(g), rules = rulesOf(g);
+    const prof = (i: 0 | 1) => difficultyProfile("master", "midrange", g.spec.players[1 - i]!.decklist as never, g.spec.players[i]!.decklist as never);
+    const pilot = new HeuristicAgent(99, pool, prof(0));
+    const pts: { cursor: number; v: GameView; req: ActionRequest; a: Action }[] = []; let blockTurn = -1;
+    const n = g.log.filter((e) => e.t === "ACTION").length;
+    await replayThenPlay(pool, decks, g.log as never, n, null, [new RandomAgent(1), new RandomAgent(2)], 1, rules, g.spec.modifiers ?? [], undefined, (req, v, a, cursor) => {
+      if (req.player !== 0) return;
+      if (req.purpose === "declareBlocker" && v.turn !== blockTurn) { blockTurn = v.turn; pts.push({ cursor, v: structuredClone(v), req: structuredClone(req), a }); }
+      else if (req.purpose === "priority" && v.activePlayer === 0 && (v.step === "MAIN1" || v.step === "MAIN2") && v.stack.length === 0 && a.type === "castSpell") pts.push({ cursor, v: structuredClone(v), req: structuredClone(req), a });
+    });
+    for (const p of pts) {
+      const mine = await pilot.chooseAction(p.v, p.req);
+      const cardOf = (x: Action) => (x.type === "castSpell" ? p.v.hand.find((h) => h.objectId === x.objectId)?.cardId : undefined);
+      let kind: string | null = null;
+      if (p.req.purpose === "declareBlocker") {
+        const hb = p.a.type === "declareBlocker", pb = mine.type === "declareBlocker";
+        kind = hb && !pb ? "block: the human blocked, the pilot did not" : !hb && pb ? "block: the pilot blocked, the human did not" : hb && pb && JSON.stringify(p.a) !== JSON.stringify(mine) ? "block: a different block" : null;
+      } else {
+        kind = mine.type === "pass" ? "cast: the human cast, the pilot held" : mine.type === "castSpell" && cardOf(mine) !== cardOf(p.a) ? "cast: a different spell first" : mine.type !== "castSpell" ? "cast: the pilot did something else" : null;
+      }
+      if (!kind) continue;
+      const play = async (forced: Action, sd: number) => (await replayThenPlay(pool, decks, g.log as never, p.cursor, forced, [new HeuristicAgent(sd * 2 + 1, pool, prof(0)), new HeuristicAgent(sd * 2 + 2, pool, prof(1))], sd, rules, g.spec.modifiers ?? [])).winner === 0 ? 1 : 0;
+      let h = 0, q = 0; for (let k = 0; k < K; k++) { h += await play(p.a, 700 + k); q += await play(mine, 700 + k); }
+      const r = kinds.get(kind) ?? { n: 0, human: 0, pilot: 0 }; r.n++; r.human += h / K; r.pilot += q / K; kinds.set(kind, r);
+    }
+    console.error(`pilot-probe: game ${gi} (${g.list}) — ${pts.length} decisions read`);
+  }
+  console.log(`\n## Blocks and casts — where the pilot would have chosen otherwise (${K} playouts each way, master both seats)`);
+  for (const [k, r] of [...kinds].sort((a, b) => b[1].n - a[1].n)) console.log(`- ${k}: ${r.n} — the human's choice won ${((100 * r.human) / r.n).toFixed(1)}%, the pilot's ${((100 * r.pilot) / r.n).toFixed(1)}%`);
+}
+
+/** --manaba2 (S68 Part 4): Manaba's mana read from the board — Snakes tapped on our turn that are not attacking. Per turn of
+ * ours with a Manaba out: the Snakes tapped for mana, the Snakes left untapped at the end, and a card left in hand the
+ * Snakes' mana alone would have cast. The pilot in the field and the human from a recorded file, the same read. */
+function manabaWatcher() {
+  const st = { turns: 0, taps: 0, left: 0, wasted: 0, lastTapped: new Set<string>(), turn: -1, endSeen: -1 };
+  const see = (v: GameView) => {
+    if (v.activePlayer !== v.you || !v.battlefield.some((b) => b.controller === v.you && b.cardId === "manaba")) return;
+    const snakes = v.battlefield.filter((b) => b.controller === v.you && b.power !== null && isSnake(b.cardId));
+    if (v.turn !== st.turn) { st.turn = v.turn; st.turns++; st.lastTapped = new Set(snakes.filter((b) => b.tapped).map((b) => b.id)); }
+    for (const b of snakes) if (b.tapped && !st.lastTapped.has(b.id)) { st.lastTapped.add(b.id); if (!v.combat.attackers.includes(b.id)) st.taps++; }
+    if (v.step === "END" && st.endSeen !== v.turn) {
+      st.endSeen = v.turn;
+      const up = snakes.filter((b) => !b.tapped && !b.summoningSick).length, lands = v.battlefield.filter((b) => b.controller === v.you && !b.tapped && isLand(b.cardId)).length;
+      st.left += up; if (v.hand.some((h) => !isLand(h.cardId) && mv(h.cardId) > lands && mv(h.cardId) <= lands + up)) st.wasted++;
+    }
+  };
+  return { st, see };
+}
+async function manaba2(): Promise<void> {
+  const fmt = arg("format", "open"), F = (FORMAT_FIELD as unknown as Record<string, Record<string, List>>)[fmt]!, me = F[arg("lists", "emeraldsnakes")]!, G = Number(arg("games", "4"));
+  const w = manabaWatcher();
+  for (const [ok, o] of Object.entries(F)) { if (ok === me.key) continue; for (let g = 0; g < G; g++) {
+    const seed = 6900 + g * 37 + ok.length * 1009, seat = (g % 2) as 0 | 1, decks = seat === 0 ? [me, o] : [o, me];
+    const spec = { seed, players: decks.map((d) => ({ name: d.key, decklist: [...d.decklist], agent: "heuristic:master" })), rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 120 }, modifiers: [] } as unknown as MatchSpec;
+    const ag = decks.map((d, i) => new HeuristicAgent(seed * 2 + 1 + i, pool, difficultyProfile("master", d.archetype as never, [...decks[1 - i]!.decklist], [...d.decklist]))) as unknown as [Agent, Agent];
+    const inner = ag[seat]; ag[seat] = { chooseAction: async (v: GameView, r: ActionRequest) => { w.see(v); return inner.chooseAction(v, r); } };
+    await runMatch(spec, pool, ag); w.st.turn = -1;
+  } }
+  const h = manabaWatcher();
+  if (arg("recorded", "")) for (const g of (JSON.parse(readFileSync(arg("recorded", ""), "utf8")) as RecFile).games) {
+    if (!g.spec.players[0]!.decklist.some((e) => e.cardId === "manaba") || (g.formatId && g.formatId !== fmt)) continue;
+    const n = g.log.filter((e) => e.t === "ACTION").length;
+    await replayThenPlay(pool, decksOf(g), g.log as never, n, null, [new RandomAgent(1), new RandomAgent(2)], 1, rulesOf(g), g.spec.modifiers ?? [], undefined, (req, v) => { if (req.player === 0) h.see(v); });
+    h.st.turn = -1;
+  }
+  for (const [who, x] of [["pilot", w.st], ["Chris", h.st]] as const) if (x.turns) console.log(`- ${who}: ${x.turns} turns with a Manaba out — Snakes tapped for mana ${(x.taps / x.turns).toFixed(2)} a turn, left untapped at the end ${(x.left / x.turns).toFixed(2)}, a card in hand their mana alone would have cast ${((100 * x.wasted) / x.turns).toFixed(1)}% of turns`);
+}
+
+/** --sweeps (S68 Part 4): each sweeper cast — the turn, the board each side (creatures, power), our life — the pilot's
+ * Jeskai Sweepers in its field against the human's recorded games. */
+async function sweeps(): Promise<void> {
+  type Row = { turn: number; mine: { n: number; power: number }; theirs: { n: number; power: number }; life: number; card: string };
+  const rows: { pilot: Row[]; human: Row[] } = { pilot: [], human: [] };
+  const take = (into: Row[]) => (v: GameView, a: Action) => { if (a.type !== "castSpell") return; const c = v.hand.find((h) => h.objectId === a.objectId)?.cardId; if (c && SWEEPERS.has(c)) into.push({ turn: v.turn, mine: boardOf(v, v.you), theirs: boardOf(v, 1 - v.you), life: v.life[v.you], card: c }); };
+  const fmt = arg("format", "jeskai"), F = (FORMAT_FIELD as unknown as Record<string, Record<string, List>>)[fmt]!, me = F[arg("lists", "sweepers")]!, G = Number(arg("games", "4"));
+  for (const [ok, o] of Object.entries(F)) { if (ok === me.key) continue; for (let g = 0; g < G; g++) {
+    const seed = 7000 + g * 37 + ok.length * 1009, seat = (g % 2) as 0 | 1, decks = seat === 0 ? [me, o] : [o, me];
+    const spec = { seed, players: decks.map((d) => ({ name: d.key, decklist: [...d.decklist], agent: "heuristic:master" })), rules: { startingLife: 20, handSize: 7, mulligan: "london", maxTurns: 120 }, modifiers: [] } as unknown as MatchSpec;
+    const ag = decks.map((d, i) => new HeuristicAgent(seed * 2 + 1 + i, pool, difficultyProfile("master", d.archetype as never, [...decks[1 - i]!.decklist], [...d.decklist]))) as unknown as [Agent, Agent];
+    const inner = ag[seat], t = take(rows.pilot); ag[seat] = { chooseAction: async (v: GameView, r: ActionRequest) => { const a = await inner.chooseAction(v, r); t(v, a); return a; } };
+    await runMatch(spec, pool, ag);
+  } }
+  for (const f of arg("recorded", "").split(",").filter(Boolean)) for (const g of (JSON.parse(readFileSync(f, "utf8")) as RecFile).games) {
+    if (g.formatId && g.formatId !== fmt) continue;
+    const n = g.log.filter((e) => e.t === "ACTION").length, t = take(rows.human);
+    await replayThenPlay(pool, decksOf(g), g.log as never, n, null, [new RandomAgent(1), new RandomAgent(2)], 1, rulesOf(g), g.spec.modifiers ?? [], undefined, (req, v, a) => { if (req.player === 0) t(v, a); });
+  }
+  for (const [who, rs] of [["pilot (Jeskai Sweepers)", rows.pilot], ["Chris", rows.human]] as const) {
+    if (!rs.length) continue;
+    const m = (f: (r: Row) => number) => (rs.reduce((a, r) => a + f(r), 0) / rs.length).toFixed(1);
+    const by = new Map<string, number>(); for (const r of rs) by.set(r.card, (by.get(r.card) ?? 0) + 1);
+    console.log(`- ${who}: ${rs.length} sweepers (${[...by].map(([c, n]) => `${c} ${n}`).join(", ")}) — on turn ${m((r) => r.turn)}; their board ${m((r) => r.theirs.n)} creatures, ${m((r) => r.theirs.power)} power; ours ${m((r) => r.mine.n)} creatures, ${m((r) => r.mine.power)} power; our life ${m((r) => r.life)}; into a board of one creature or none ${((100 * rs.filter((r) => r.theirs.n <= 1).length) / rs.length).toFixed(0)}%; taking more of ours than theirs ${((100 * rs.filter((r) => r.mine.n > r.theirs.n).length) / rs.length).toFixed(0)}%`);
+  }
+}
+
+if (process.argv.includes("--diffs")) await diffs();
+else if (process.argv.includes("--manaba2")) await manaba2();
+else if (process.argv.includes("--sweeps")) await sweeps();
+else if (process.argv.includes("--mines")) await mines();
 else if (process.argv.includes("--racing")) await racing();
 else if (!process.argv.includes("--mines")) await field(process.argv.includes("--manaba") ? "manaba" : "witch");

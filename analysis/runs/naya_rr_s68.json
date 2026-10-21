@@ -1,0 +1,483 @@
+{
+ "name": "open_rr_1",
+ "when": "2026-10-21T00:44:21.203Z",
+ "games": 5500,
+ "table": {
+  "rabble": {
+   "tollgate": [
+    29,
+    100
+   ],
+   "stompy": [
+    52,
+    100
+   ],
+   "snakes": [
+    62,
+    100
+   ],
+   "emeraldsnakes": [
+    41,
+    100
+   ],
+   "muster": [
+    62,
+    100
+   ],
+   "warband": [
+    76,
+    100
+   ],
+   "tokens": [
+    43,
+    100
+   ],
+   "auras": [
+    53,
+    100
+   ],
+   "wurms": [
+    62,
+    100
+   ],
+   "lifegain": [
+    64,
+    100
+   ]
+  },
+  "tollgate": {
+   "rabble": [
+    71,
+    100
+   ],
+   "lifegain": [
+    50,
+    100
+   ],
+   "stompy": [
+    31,
+    100
+   ],
+   "snakes": [
+    41,
+    100
+   ],
+   "emeraldsnakes": [
+    19,
+    100
+   ],
+   "muster": [
+    76,
+    100
+   ],
+   "warband": [
+    66,
+    100
+   ],
+   "tokens": [
+    37,
+    100
+   ],
+   "auras": [
+    22,
+    100
+   ],
+   "wurms": [
+    26,
+    100
+   ]
+  },
+  "stompy": {
+   "rabble": [
+    48,
+    100
+   ],
+   "muster": [
+    60,
+    100
+   ],
+   "tollgate": [
+    69,
+    100
+   ],
+   "snakes": [
+    50,
+    100
+   ],
+   "wurms": [
+    65,
+    100
+   ],
+   "tokens": [
+    60,
+    100
+   ],
+   "lifegain": [
+    48,
+    100
+   ],
+   "warband": [
+    53,
+    100
+   ],
+   "emeraldsnakes": [
+    55,
+    100
+   ],
+   "auras": [
+    59,
+    100
+   ]
+  },
+  "lifegain": {
+   "tollgate": [
+    50,
+    100
+   ],
+   "snakes": [
+    35,
+    100
+   ],
+   "wurms": [
+    51,
+    100
+   ],
+   "tokens": [
+    45,
+    100
+   ],
+   "stompy": [
+    52,
+    100
+   ],
+   "warband": [
+    41,
+    100
+   ],
+   "emeraldsnakes": [
+    33,
+    100
+   ],
+   "auras": [
+    50,
+    100
+   ],
+   "rabble": [
+    35,
+    100
+   ],
+   "muster": [
+    46,
+    100
+   ]
+  },
+  "snakes": {
+   "lifegain": [
+    65,
+    100
+   ],
+   "rabble": [
+    38,
+    100
+   ],
+   "stompy": [
+    50,
+    100
+   ],
+   "tollgate": [
+    59,
+    100
+   ],
+   "emeraldsnakes": [
+    41,
+    100
+   ],
+   "muster": [
+    51,
+    100
+   ],
+   "warband": [
+    53,
+    100
+   ],
+   "tokens": [
+    45,
+    100
+   ],
+   "auras": [
+    62,
+    100
+   ],
+   "wurms": [
+    44,
+    100
+   ]
+  },
+  "muster": {
+   "stompy": [
+    40,
+    100
+   ],
+   "emeraldsnakes": [
+    39,
+    100
+   ],
+   "rabble": [
+    38,
+    100
+   ],
+   "tollgate": [
+    24,
+    100
+   ],
+   "snakes": [
+    49,
+    100
+   ],
+   "warband": [
+    57,
+    100
+   ],
+   "tokens": [
+    59,
+    100
+   ],
+   "auras": [
+    61,
+    100
+   ],
+   "wurms": [
+    48,
+    100
+   ],
+   "lifegain": [
+    54,
+    100
+   ]
+  },
+  "tokens": {
+   "auras": [
+    64,
+    100
+   ],
+   "wurms": [
+    50,
+    100
+   ],
+   "warband": [
+    72,
+    100
+   ],
+   "lifegain": [
+    55,
+    100
+   ],
+   "stompy": [
+    40,
+    100
+   ],
+   "rabble": [
+    57,
+    100
+   ],
+   "muster": [
+    41,
+    100
+   ],
+   "emeraldsnakes": [
+    37,
+    100
+   ],
+   "tollgate": [
+    63,
+    100
+   ],
+   "snakes": [
+    55,
+    100
+   ]
+  },
+  "auras": {
+   "tokens": [
+    36,
+    100
+   ],
+   "emeraldsnakes": [
+    34,
+    100
+   ],
+   "warband": [
+    41,
+    100
+   ],
+   "rabble": [
+    47,
+    100
+   ],
+   "muster": [
+    39,
+    100
+   ],
+   "wurms": [
+    42,
+    100
+   ],
+   "tollgate": [
+    78,
+    100
+   ],
+   "snakes": [
+    38,
+    100
+   ],
+   "lifegain": [
+    50,
+    100
+   ],
+   "stompy": [
+    41,
+    100
+   ]
+  },
+  "emeraldsnakes": {
+   "auras": [
+    66,
+    100
+   ],
+   "rabble": [
+    58,
+    100
+   ],
+   "muster": [
+    61,
+    100
+   ],
+   "tollgate": [
+    81,
+    100
+   ],
+   "snakes": [
+    59,
+    100
+   ],
+   "wurms": [
+    65,
+    100
+   ],
+   "tokens": [
+    63,
+    100
+   ],
+   "lifegain": [
+    67,
+    100
+   ],
+   "stompy": [
+    45,
+    100
+   ],
+   "warband": [
+    64,
+    100
+   ]
+  },
+  "wurms": {
+   "tokens": [
+    50,
+    100
+   ],
+   "lifegain": [
+    49,
+    100
+   ],
+   "stompy": [
+    35,
+    100
+   ],
+   "emeraldsnakes": [
+    35,
+    100
+   ],
+   "warband": [
+    44,
+    100
+   ],
+   "auras": [
+    58,
+    100
+   ],
+   "rabble": [
+    38,
+    100
+   ],
+   "muster": [
+    52,
+    100
+   ],
+   "tollgate": [
+    74,
+    100
+   ],
+   "snakes": [
+    56,
+    100
+   ]
+  },
+  "warband": {
+   "tokens": [
+    28,
+    100
+   ],
+   "rabble": [
+    24,
+    100
+   ],
+   "muster": [
+    43,
+    100
+   ],
+   "auras": [
+    59,
+    100
+   ],
+   "tollgate": [
+    34,
+    100
+   ],
+   "snakes": [
+    47,
+    100
+   ],
+   "wurms": [
+    56,
+    100
+   ],
+   "lifegain": [
+    59,
+    100
+   ],
+   "stompy": [
+    47,
+    100
+   ],
+   "emeraldsnakes": [
+    36,
+    100
+   ]
+  }
+ },
+ "means": {
+  "rabble": 54,
+  "tollgate": 44,
+  "snakes": 51,
+  "muster": 47,
+  "warband": 43,
+  "tokens": 53,
+  "auras": 45,
+  "wurms": 49,
+  "lifegain": 44,
+  "stompy": 57,
+  "emeraldsnakes": 63
+ },
+ "report": "# The Open's round-robin (S46) — 5500 games, master both, 20 life, no entrances; the ROW's win rate\n\n| | rabble | tollgate | snakes | muster | warband | tokens | auras | wurms | lifegain | stompy | emeraldsnakes | **mean** |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| **rabble** | — | 29 | 62 | 62 | 76 | 43 | 53 | 62 | 64 | 52 | 41 | **54** |\n| **tollgate** | 71 | — | 41 | 76 | 66 | 37 | 22 | 26 | 50 | 31 | 19 | **44** |\n| **snakes** | 38 | 59 | — | 51 | 53 | 45 | 62 | 44 | 65 | 50 | 41 | **51** |\n| **muster** | 38 | 24 | 49 | — | 57 | 59 | 61 | 48 | 54 | 40 | 39 | **47** |\n| **warband** | 24 | 34 | 47 | 43 | — | 28 | 59 | 56 | 59 | 47 | 36 | **43** |\n| **tokens** | 57 | 63 | 55 | 41 | 72 | — | 64 | 50 | 55 | 40 | 37 | **53** |\n| **auras** | 47 | 78 | 38 | 39 | 41 | 36 | — | 42 | 50 | 41 | 34 | **45** |\n| **wurms** | 38 | 74 | 56 | 52 | 44 | 50 | 58 | — | 49 | 35 | 35 | **49** |\n| **lifegain** | 35 | 50 | 35 | 46 | 41 | 45 | 50 | 51 | — | 52 | 33 | **44** |\n| **stompy** | 48 | 69 | 50 | 60 | 53 | 60 | 59 | 65 | 48 | — | 55 | **57** |\n| **emeraldsnakes** | 58 | 81 | 59 | 61 | 64 | 63 | 66 | 65 | 67 | 45 | — | **63** |\n\nSolvable (a list over 65% against the field): none. Under 35%: none.\nMuster vs Warband: the Muster 57% (100 games).\n\n## Staples (ADR-170)\n\nIn more than half of the 11 lists: Flametongue Kavu (8 lists, 25 copies); Lightning Bolt (7 lists, 26 copies). The most played: Flametongue Kavu 8 · Lightning Bolt 7 · Birds of Paradise 4 · Reaper's Forerunner 4 · The Emerald Keeper 4 · Lumen, the Hearth Fire 4 · Sacred Helix 4 · Hordeling Outburst 3.\n\n## Restricted cards — % of the list's games in which it was cast (or, a land, played)\n\n- **rabble**: mox_ruby 27% · black_lotus 30%\n- **tollgate**: shevelport 45% · black_lotus 43% · mox_ruby 40% · mox_pearl 41% · mox_emerald 42%\n- **snakes**: black_lotus 23% · mox_pearl 24% · mox_ruby 25% · mox_emerald 25% · shevelport 28%\n- **muster**: black_lotus 26% · mox_pearl 25% · mox_ruby 28%\n- **warband**: black_lotus 25% · mox_ruby 24% · mox_pearl 25%\n- **tokens**: black_lotus 26% · mox_ruby 23% · mox_pearl 26%\n- **auras**: shevelport 26% · black_lotus 24% · mox_emerald 23% · mox_pearl 21%\n- **wurms**: black_lotus 23% · mox_emerald 24%\n- **lifegain**: black_lotus 27% · mox_ruby 27% · mox_pearl 26% · mox_emerald 27%\n- **stompy**: black_lotus 23% · mox_emerald 23% · mox_ruby 22%\n- **emeraldsnakes**: black_lotus 25% · mox_emerald 28% · mox_pearl 27% · mox_ruby 23% · shevelport 27%\n\n## Key pieces — % of the list's games in which each was cast (a weak pilot reads apart from a weak list)\n\n- **rabble**: \n- **tollgate**: \n- **snakes**: \n- **muster**: glorious_anthem 61% · vitalist 0% · emeria_angel 47%\n- **warband**: siege_gang_commander 41% · goblin_chieftain 63% · goblin_grenade 51%\n- **tokens**: \n- **auras**: \n- **wurms**: \n- **lifegain**: \n- **stompy**: \n- **emeraldsnakes**: \n\n## The Loop — the Usher + an Altar on the battlefield with a Restoration Angel in hand or play\n\nAssembled by turn ten in 0 of 0 games (0%); ever: 0. Altar activations per game: 0.00."
+}

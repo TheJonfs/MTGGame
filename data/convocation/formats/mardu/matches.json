@@ -1,77 +1,77 @@
 {
  "_comment": "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.",
- "when": "2026-10-18",
+ "when": "2026-10-21",
  "matchesAPairing": 60,
  "byList": {
   "brremoval": {
-   "matches": 39.8,
-   "gameOne": 43.9,
-   "later": 42,
+   "matches": 38.8,
+   "gameOne": 43.6,
+   "later": 41.1,
    "n": 660
   },
   "burn": {
-   "matches": 36.7,
-   "gameOne": 40,
-   "later": 39.7,
+   "matches": 35.9,
+   "gameOne": 40.7,
+   "later": 38.8,
    "n": 660
   },
   "chancel": {
-   "matches": 49.8,
-   "gameOne": 51.5,
-   "later": 49.5,
+   "matches": 52.5,
+   "gameOne": 53,
+   "later": 51.3,
    "n": 660
   },
   "levy": {
-   "matches": 41.5,
-   "gameOne": 43,
-   "later": 44.8,
+   "matches": 40.5,
+   "gameOne": 41.8,
+   "later": 44.5,
    "n": 660
   },
   "marducontrol": {
-   "matches": 62,
-   "gameOne": 52.3,
-   "later": 62.4,
+   "matches": 64.6,
+   "gameOne": 55,
+   "later": 63.6,
    "n": 660
   },
   "muster": {
-   "matches": 44.9,
-   "gameOne": 50,
-   "later": 45.2,
+   "matches": 44.8,
+   "gameOne": 48.8,
+   "later": 45.3,
    "n": 660
   },
   "pall": {
-   "matches": 59.7,
-   "gameOne": 63.5,
-   "later": 52.1,
+   "matches": 58.6,
+   "gameOne": 63.2,
+   "later": 51.3,
    "n": 660
   },
   "rabble": {
-   "matches": 64.6,
-   "gameOne": 59.5,
-   "later": 61.3,
+   "matches": 63.5,
+   "gameOne": 58.1,
+   "later": 61,
    "n": 660
   },
   "roll": {
-   "matches": 50.3,
-   "gameOne": 50.3,
-   "later": 51.1,
+   "matches": 48.8,
+   "gameOne": 49.1,
+   "later": 50.2,
    "n": 660
   },
   "warband": {
-   "matches": 42.3,
-   "gameOne": 41.4,
-   "later": 45.6,
+   "matches": 43.2,
+   "gameOne": 40.3,
+   "later": 47.1,
    "n": 660
   },
   "watch": {
    "matches": 59.2,
-   "gameOne": 55.6,
-   "later": 56.9,
+   "gameOne": 55.5,
+   "later": 56.6,
    "n": 660
   },
   "witch": {
-   "matches": 49,
-   "gameOne": 49.1,
+   "matches": 49.7,
+   "gameOne": 51,
    "later": 49.1,
    "n": 660
   }
