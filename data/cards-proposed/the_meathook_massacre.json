@@ -1,0 +1,77 @@
+{
+  "id": "the_meathook_massacre",
+  "name": "The Meathook Massacre",
+  "source": "real",
+  "scryfallId": "09dbe391-a817-4347-986f-13849746db56",
+  "manaCost": "{X}{B}{B}",
+  "types": [
+    "Enchantment"
+  ],
+  "supertypes": [
+    "Legendary"
+  ],
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "condition": {
+        "source": "self"
+      },
+      "effects": [
+        {
+          "type": "modifyPT",
+          "power": {
+            "ref": "xPaid",
+            "times": -1
+          },
+          "toughness": {
+            "ref": "xPaid",
+            "times": -1
+          },
+          "scope": "allCreatures",
+          "duration": "UNTIL_END_OF_TURN"
+        }
+      ]
+    },
+    {
+      "kind": "triggered",
+      "event": "DIES",
+      "condition": {
+        "source": "any",
+        "controller": "you",
+        "type": [
+          "Creature"
+        ]
+      },
+      "effects": [
+        {
+          "type": "loseLife",
+          "amount": 1,
+          "who": "opponent"
+        }
+      ]
+    },
+    {
+      "kind": "triggered",
+      "event": "DIES",
+      "condition": {
+        "source": "any",
+        "controller": "opponent",
+        "type": [
+          "Creature"
+        ]
+      },
+      "effects": [
+        {
+          "type": "gainLife",
+          "amount": 1,
+          "who": "you"
+        }
+      ]
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 3
+}

@@ -177,7 +177,8 @@ export type ValueRef =
    * persisted onto the object at battlefield entry and carried into its ETB trigger's event
    * context (LKI by construction — the Emerald Keeper's pump survives the Keeper's death in
    * response, CR 603.3). ETB-trigger effects on X-cost permanents only (validator-confined). */
-  | { ref: "xPaid" }
+  | { ref: "xPaid"; /** post-S68 (R-117, The Meathook Massacre: "each creature gets −X/−X"): a bounded literal multiplier, as
+   * `countersOnSelf`'s — −1 only (ADR-028: not a calculator). */ times?: -1 }
   /** S40 (R-097, Sacred Helix): the total mana spent to cast the resolving SPELL (X included), captured on
    * the stack item as the cost is paid (CR 601.2h). Spell effects only (validator-confined). */
   | { ref: "manaSpent" }

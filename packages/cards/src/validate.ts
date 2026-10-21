@@ -280,7 +280,8 @@ function isAnyValueRef(v: unknown): boolean {
   // S23 (ADR-084, member six): the event's damage × a bounded literal multiplier (the Traumatizer).
   if (v.ref === "eventDamage") return v.times === undefined || (Number.isInteger(v.times) && (v.times as number) >= 1);
   // S25 (ADR-088, member seven): the announced X persisted on the permanent (the Emerald Keeper).
-  if (v.ref === "xPaid") return true;
+  if (v.ref === "xPaid") return v.times === undefined || v.times === -1; // post-S68 (R-117): −1 only
+
   // S29 (R-092): the power of the creature sacrificed to pay the ability's cost (Altar of Dementia).
   if (v.ref === "sacrificedPower") return true;
   // S40 (R-097): the spell's mana spent (Sacred Helix), the source's power (Odile), the leaving creature's LKI power (Zinnia, Meliyan).

@@ -1,0 +1,20 @@
+{
+  "id": "fiery_cannonade",
+  "name": "Fiery Cannonade",
+  "source": "real",
+  "manaCost": "{2}{R}",
+  "types": [
+    "Instant"
+  ],
+  "spellEffect": [
+    {
+      "type": "damageAll",
+      "amount": 2,
+      "scope": "allCreatures"
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2
+}

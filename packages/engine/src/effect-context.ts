@@ -234,7 +234,7 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
         // context at collection (LKI — the Keeper's death in response does not blank the pump).
         // Fallback to the live object for belt-and-braces; zero when neither speaks.
         const live = item.sourceId ? ctx.state.objects[item.sourceId]?.xPaid : undefined;
-        return item.eventContext?.amount ?? live ?? 0;
+        return (item.eventContext?.amount ?? live ?? 0) * (a.times ?? 1); // post-S68 (R-117): times −1 for "−X/−X"
       }
       // A4 counting refs: evaluated NOW, from the controller's point of view (608.2h: Tendrils' X at resolution).
       return evaluateValueRef(ctx, a, controller, item.sourceId ?? item.objectId);

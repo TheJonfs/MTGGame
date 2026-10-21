@@ -1,0 +1,22 @@
+{
+  "id": "infest",
+  "name": "Infest",
+  "source": "real",
+  "manaCost": "{1}{B}{B}",
+  "types": [
+    "Sorcery"
+  ],
+  "spellEffect": [
+    {
+      "type": "modifyPT",
+      "power": -2,
+      "toughness": -2,
+      "scope": "allCreatures",
+      "duration": "UNTIL_END_OF_TURN"
+    }
+  ],
+  "art": {
+    "fallback": "rendered"
+  },
+  "shopTier": 2
+}
