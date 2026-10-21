@@ -1748,7 +1748,7 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const draw = { type: "activateAbility" as const, objectId: "w", abilityIndex: 0, targets: [] };
     const board = (o: { life?: [number, number]; hand?: { objectId: string; cardId: string }[]; yard?: string[]; theirs?: Obj[] } = {}) => withYards(mkView({ step: "MAIN2", hand: o.hand ?? Array.from({ length: 5 }, (_, i) => ({ objectId: `h${i}`, cardId: "badlands" })), battlefield: [...L(3), { id: "w", cardId: "the_jet_witch", controller: 0 }, ...(o.theirs ?? [])], life: o.life ?? [20, 20] }), o.yard ?? []);
     expect(a.lifeForCardsGated(board(), draw)).toBe(false); // five cards in hand, nothing assembled: dig
-    expect(agent().lifeForCardsGated(board(), draw)).toBe(true); // the S27 discipline, for a deck with no plan
+    expect(new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, off: ["witchearly"] }).lifeForCardsGated(board(), draw)).toBe(true); // the S27 discipline, for a deck with no plan (S68: book 145's witchearly replaces it)
     expect(a.lifeForCardsGated(board({ life: [6, 20] }), draw)).toBe(true); // never under five
     expect(a.lifeForCardsGated(board({ life: [12, 20], theirs: [{ id: "g1", cardId: "hill_giant", controller: 1 }, { id: "g2", cardId: "hill_giant", controller: 1 }, { id: "g3", cardId: "hill_giant", controller: 1 }] }), draw)).toBe(true); // nine power across: the floor is thirteen
     expect(a.lifeForCardsGated(board({ yard: ["the_usher", "the_usher"], hand: [{ objectId: "h_z", cardId: "zombify" }] }), draw)).toBe(true); // assembled: stop paying
@@ -2258,5 +2258,19 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.floodSinkGated(stacked as never, ping("b"))).toBe(true); // the first ping already kills the Bears
     const old = new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, off: ["pingplan"] });
     expect(old.floodSinkGated(stacked as never, ping("b"))).toBe(false);
+  });
+
+  it("book of shame 145 (S68 — the Witch probe: the pilot's first draw on turn 10.2 against Chris's 6.6): the Witch draws from the turn it is safe, not when the hand runs out — not into a racer it cannot block, not with a full hand; off: witchearly", () => {
+    const a = agent("midrange");
+    const hand = ["swamp", "swamp", "dark_ritual", "hymn_to_tourach", "doom_blade"].map((c, i) => ({ objectId: "h" + i, cardId: c }));
+    const draw = { type: "activateAbility" as const, objectId: "w", abilityIndex: 0, targets: [] };
+    const empty = mkView({ hand, battlefield: [{ id: "w", cardId: "the_jet_witch", controller: 0 }] });
+    expect(a.lifeForCardsGated(empty, draw)).toBe(false); // twenty life, nothing across: draw
+    const racer = mkView({ hand, battlefield: [{ id: "w", cardId: "the_jet_witch", controller: 0 }, { id: "s", cardId: "serra_angel", controller: 1 }] });
+    expect(a.lifeForCardsGated(racer, draw)).toBe(true); // a 4/4 flier we cannot block: hold (the old rule's hand of two)
+    const full = mkView({ hand: [...hand, { objectId: "h5", cardId: "swamp" }, { objectId: "h6", cardId: "swamp" }], battlefield: [{ id: "w", cardId: "the_jet_witch", controller: 0 }] });
+    expect(a.lifeForCardsGated(full, draw)).toBe(true);
+    const old = new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, off: ["witchearly"] });
+    expect(old.lifeForCardsGated(empty, draw)).toBe(true);
   });
 });

@@ -13,6 +13,8 @@ import { payableBy, reserveTaps, type ManaSource, type Tap } from "./reserve.js"
 const HOLD_ON_OUR_TURN = { control: 3, other: 1 } as const;
 /** S58 (book 112): the life at which an aggro deck's burn goes at the face. */
 const AGGRO_REACH = 12;
+/** S68 (Part 3, book 145): the life the Witch keeps above the board's reach and the burn seen when it draws early. */
+const WITCH_CUSHION = 6;
 /** S58 (book 113): the life a deck keeps, paying life for cards, against a list with eight or more burn spells. */
 const BURN_FLOOR = 10;
 /** Book 114: a self-fight mode that costs the fighter is taken for a creature worth at least this (two tokens' worth and the body). */
@@ -2553,6 +2555,14 @@ export class HeuristicAgent implements Agent {
     // S55 (book 102): a combo deck's dig answers to its plan (plan-play.ts)
     const dig = this.plans.digGated(view, action, ab.cost.life, this.lifeDrawsThisTurn.turn === view.turn ? this.lifeDrawsThisTurn.n : 0);
     if (dig !== null) return dig;
+    // S68 (Part 3, `off: ["witchearly"]` — the probe: the pilot's first Witch draw on turn 10.2 against Chris's 6.6, 4.8 a
+    // game against 7.0; the rule below held every draw for a hand of two): life is paid for cards from the turn it is
+    // SAFE — the life left above the opponent's board reach plus three a burn spell seen, and no untapped racer we
+    // cannot block — not when the hand runs out. Book 113's floor (above) stays the stop; a full hand does not draw.
+    if (!this.profile.off?.includes("witchearly")) {
+      if (view.hand.length >= 7) return true;
+      if (this.lifePaySafe(view, ab.cost.life)) return false;
+    }
     if (view.hand.length > 2) return true;
     const oppPower = view.battlefield.filter((o) => o.controller !== me && !o.tapped && o.power !== null && !o.keywords.includes("defender")).reduce((n, o) => n + (o.power ?? 0), 0);
     if (view.life[me] - ab.cost.life < oppPower + 3) return true;
@@ -2847,6 +2857,20 @@ export class HeuristicAgent implements Agent {
     let k = Math.floor((sources + pool) / per);
     if (selfHit > 0) k = Math.min(k, Math.max(0, Math.floor((view.life[me] - 2) / selfHit)));
     return !(k * n >= left);
+  }
+  /** S68 (Part 3): is paying `life` safe — what is left above their board's reach (every creature that can attack us,
+   * untapped next turn) plus three a burn spell in their graveyard, with no racer of theirs (power two or more) that
+   * none of our creatures can block and survive? Exposed. */
+  lifePaySafe(view: GameView, life: number): boolean {
+    const me = view.you;
+    const theirs = view.battlefield.filter((o) => o.controller !== me && o.power !== null && !o.cantAttack && !o.keywords.includes("defender"));
+    const reach = theirs.reduce((n, o) => n + Math.max(0, o.power ?? 0), 0);
+    const burn = view.graveyards[(1 - me) as 0 | 1].filter((id) => { const d = this.def(id); return !!d && (d.types.includes("Instant") || d.types.includes("Sorcery")) && (d.spellEffect ?? []).some((e) => e.type === "damage"); }).length;
+    const ours = view.battlefield.filter((o) => o.controller === me && o.power !== null && !o.cantBlock);
+    const racer = theirs.some((o) => (o.power ?? 0) >= 2 && !ours.some((b) => (b.toughness ?? 0) > (o.power ?? 0) && (!o.keywords.includes("flying") || b.keywords.includes("flying") || b.keywords.includes("reach"))));
+    // (a cushion of WITCH_CUSHION over the line: measured on the Witch, without it −2.3 ± 0.8 — the earlier draws spent
+    // the life the later turns needed; with it +2.3 ± 0.6)
+    return view.life[me] - life > reach + 3 * burn + WITCH_CUSHION && !racer;
   }
   /** S68 (Part 2): the damage our own pending stack items (spells and abilities) will deal the object. */
   pendingDamageAt(view: GameView, objectId: string, me: PlayerId): number {
