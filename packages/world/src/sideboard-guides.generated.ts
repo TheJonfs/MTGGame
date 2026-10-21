@@ -1271,6 +1271,72 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
   "only": true
  },
  {
+  "key": "grixis:massacrats",
+  "fifteen": [
+   {
+    "cardId": "flametongue_kavu",
+    "count": 4
+   },
+   {
+    "cardId": "protocol",
+    "count": 4
+   },
+   {
+    "cardId": "pyroclasm",
+    "count": 4
+   },
+   {
+    "cardId": "faerie_formation",
+    "count": 3
+   }
+  ],
+  "rows": [
+   {
+    "in": "pyroclasm",
+    "n": 4,
+    "out": [
+     "indulgent_aristocrat",
+     "child_of_night"
+    ],
+    "when": [
+     "wide"
+    ]
+   },
+   {
+    "in": "flametongue_kavu",
+    "n": 4,
+    "out": [
+     "child_of_night",
+     "unearth",
+     "indulgent_aristocrat",
+     "meliyan_the_torment"
+    ],
+    "when": [
+     "creatureDeck",
+     "counters",
+     "shrinks",
+     "wide"
+    ]
+   },
+   {
+    "in": "protocol",
+    "n": 4,
+    "out": [
+     "indulgent_aristocrat",
+     "child_of_night",
+     "unearth",
+     "the_jet_witch"
+    ],
+    "when": [
+     "shrinks",
+     "counters",
+     "wide"
+    ]
+   }
+  ],
+  "only": true
+ },
+ {
   "key": "jund:dragons",
   "fifteen": [
    {
@@ -1818,6 +1884,7 @@ export const LIST_GUIDES: Record<string, string> = {
  "mardu:levy": "levy",
  "mardu:witch": "mardu:witch",
  "grixis:mbclio": "grixis:mbclio",
+ "grixis:massacrats": "grixis:massacrats",
  "jund:dragons": "jund:dragons",
  "jeskai:skies": "jeskai:skies",
  "jeskai:minefield": "jeskai:minefield"

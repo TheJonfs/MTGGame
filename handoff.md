@@ -25,6 +25,7 @@ The pilot now reads the defender's combat triggers, aims burn only to kill, plan
 4. **The Tyrant had no gate at all** (the brief assumed "refused as now"): creature abilities outside the shrink/mill/counters sinks skip `floodSinkGated`. `pingPlanGated` now covers the creature ping; any other creature ability with a target (a creature that taps, bounces) is still ungated.
 5. **The pilot makes half Chris's Manaba mana**; whether that is the solver's tap order or the pilot's spending is the next read — the solver's choices are not agent decisions, so a rule there is an engine-side change (ADR-worthy).
 6. **The Pall dipped under `witchearly`** (−0.9 ± 0.4) though its own dig is untouched — its opponents' Witches draw better. Worth a look if the Pall's numbers matter.
+7. **Post-S68 (Chris's Massacrats run, the Grixis Umbel final): the pilot sacrifices into the opponent's death payoffs.** The Rabble recurred Flametongue Kavus through Cairnbrand — sacrificing a creature each time — while Chris's Meathook Massacre and Blood Artist were out: each sacrifice gained him 1 and drained it 1 (game 17: 24-14 → 31-1 over eight turns). Book 142's `deathcharge` prices only combat deaths; a sacrifice cost, an Edict on its own side, a chump into a Massacre board are unpriced. The same `deathCharge` term belongs on a sacrifice choice and on any activation whose cost kills our own creature.
 
 ## Registry entries added/changed
 - No R-entries. Books 141–145 (agents). Jund: `dragons` registered, `coin` archived; Grixis and Jund `shapeScale.large` 3.

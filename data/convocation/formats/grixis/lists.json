@@ -67,10 +67,55 @@
      "counters"
     ]
    }
+  ],
+  "massacrats": [
+   {
+    "in": "pyroclasm",
+    "n": 4,
+    "out": [
+     "indulgent_aristocrat",
+     "child_of_night"
+    ],
+    "when": [
+     "wide"
+    ]
+   },
+   {
+    "in": "flametongue_kavu",
+    "n": 4,
+    "out": [
+     "child_of_night",
+     "unearth",
+     "indulgent_aristocrat",
+     "meliyan_the_torment"
+    ],
+    "when": [
+     "creatureDeck",
+     "counters",
+     "shrinks",
+     "wide"
+    ]
+   },
+   {
+    "in": "protocol",
+    "n": 4,
+    "out": [
+     "indulgent_aristocrat",
+     "child_of_night",
+     "unearth",
+     "the_jet_witch"
+    ],
+    "when": [
+     "shrinks",
+     "counters",
+     "wide"
+    ]
+   }
   ]
  },
  "guidesOnly": [
-  "mbclio"
+  "mbclio",
+  "massacrats"
  ],
  "outRules": {},
  "lists": [
@@ -1188,6 +1233,129 @@
     },
     {
      "cardId": "unearth",
+     "count": 3
+    }
+   ]
+  },
+  {
+   "key": "massacrats",
+   "name": "Massacrats",
+   "title": "Massacre Aristocrats (B u r)",
+   "archetype": "midrange",
+   "source": "Post-S68 (Chris's, 2026-10-21): won a Grixis Umbel, 7–1 (event 975263; 15–2 in games — BR Removal, the Writ, the Eddy and the Barrow 2–0, Mono-Black Clio 1–2 in the Swiss; then Grixis Clio, the Ashen and the Rabble 2–0). The Meathook Massacre over Blood Artist, Indulgent Aristocrat and Meliyan, with Clio, Nighthawks, the Witch and Drana; a second Massacre re-sweeps under the legend rule. The fifteen as Chris named it (the three Faerie Formations never came in); the guide read from his swaps. Chris: the main-deck Unearth and the Children of Night are open slots.",
+   "decklist": [
+    {
+     "cardId": "the_meathook_massacre",
+     "count": 4
+    },
+    {
+     "cardId": "blood_artist",
+     "count": 4
+    },
+    {
+     "cardId": "clio_lady_of_the_depths",
+     "count": 4
+    },
+    {
+     "cardId": "the_jet_witch",
+     "count": 3
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "meliyan_the_torment",
+     "count": 4
+    },
+    {
+     "cardId": "drana_kalastria_bloodchief",
+     "count": 2
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    },
+    {
+     "cardId": "indulgent_aristocrat",
+     "count": 4
+    },
+    {
+     "cardId": "child_of_night",
+     "count": 2
+    },
+    {
+     "cardId": "unearth",
+     "count": 1
+    },
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "tallyflame_court",
+     "count": 1
+    },
+    {
+     "cardId": "library_of_alexandria",
+     "count": 1
+    },
+    {
+     "cardId": "badlands",
+     "count": 4
+    },
+    {
+     "cardId": "blood_crypt",
+     "count": 4
+    },
+    {
+     "cardId": "underground_sea",
+     "count": 4
+    },
+    {
+     "cardId": "watery_grave",
+     "count": 4
+    },
+    {
+     "cardId": "swamp",
+     "count": 3
+    },
+    {
+     "cardId": "time_walk",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "protocol",
+     "count": 4
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 4
+    },
+    {
+     "cardId": "faerie_formation",
      "count": 3
     }
    ]

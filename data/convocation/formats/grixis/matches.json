@@ -4,76 +4,82 @@
  "matchesAPairing": 60,
  "byList": {
   "ashen": {
-   "matches": 49.2,
-   "gameOne": 52.4,
-   "later": 48,
-   "n": 660
+   "matches": 51.5,
+   "gameOne": 51.7,
+   "later": 50.6,
+   "n": 720
   },
   "br": {
-   "matches": 41.8,
-   "gameOne": 45.8,
-   "later": 43.9,
-   "n": 660
+   "matches": 38.9,
+   "gameOne": 40.9,
+   "later": 43.2,
+   "n": 720
   },
   "clio": {
-   "matches": 56.4,
-   "gameOne": 54.7,
-   "later": 54.3,
-   "n": 660
+   "matches": 57.3,
+   "gameOne": 58.3,
+   "later": 53.1,
+   "n": 720
   },
   "kiln": {
-   "matches": 52.2,
-   "gameOne": 51.1,
-   "later": 51.4,
-   "n": 660
+   "matches": 52.6,
+   "gameOne": 51.5,
+   "later": 51.9,
+   "n": 720
   },
   "kindling": {
-   "matches": 44.2,
-   "gameOne": 47.9,
-   "later": 44.7,
-   "n": 660
+   "matches": 42.5,
+   "gameOne": 41.9,
+   "later": 46,
+   "n": 720
+  },
+  "massacrats": {
+   "matches": 55.8,
+   "gameOne": 48.2,
+   "later": 56.4,
+   "n": 720
   },
   "mbc": {
-   "matches": 36.6,
-   "gameOne": 39.2,
-   "later": 39.4,
-   "n": 660
+   "matches": 32.8,
+   "gameOne": 38.5,
+   "later": 38,
+   "n": 720
   },
   "mbclio": {
-   "matches": 70.9,
-   "gameOne": 62.4,
-   "later": 66.3,
-   "n": 660
+   "matches": 67.9,
+   "gameOne": 63.5,
+   "later": 62.9,
+   "n": 720
   },
   "rabble": {
-   "matches": 79.7,
-   "gameOne": 68.9,
-   "later": 73,
-   "n": 660
+   "matches": 75.9,
+   "gameOne": 68.5,
+   "later": 69.5,
+   "n": 720
   },
   "tally": {
-   "matches": 47.4,
-   "gameOne": 50.2,
-   "later": 46.5,
-   "n": 660
+   "matches": 51.2,
+   "gameOne": 52.5,
+   "later": 49,
+   "n": 720
   },
   "tempo": {
-   "matches": 44.5,
-   "gameOne": 47.3,
-   "later": 46.5,
-   "n": 660
+   "matches": 44.3,
+   "gameOne": 47.2,
+   "later": 46,
+   "n": 720
   },
   "undertow": {
-   "matches": 26.4,
-   "gameOne": 33,
-   "later": 34.1,
-   "n": 660
+   "matches": 26,
+   "gameOne": 35.8,
+   "later": 31.3,
+   "n": 720
   },
   "writ": {
-   "matches": 50.7,
-   "gameOne": 47.3,
-   "later": 52.3,
-   "n": 660
+   "matches": 53.5,
+   "gameOne": 51.4,
+   "later": 52.5,
+   "n": 720
   }
  }
 }
