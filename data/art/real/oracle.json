@@ -2952,5 +2952,19 @@
     "art_crop": "https://cards.scryfall.io/art_crop/front/b/d/bd8f179a-f6ab-4d4c-8195-ed077a7770d3.jpg?1783940991",
     "normal": "https://cards.scryfall.io/normal/front/b/d/bd8f179a-f6ab-4d4c-8195-ed077a7770d3.jpg?1783940991",
     "via": "default oldest-highres"
+  },
+  "the_meathook_massacre": {
+    "scryfallId": "09dbe391-a817-4347-986f-13849746db56",
+    "set": "inr",
+    "set_name": "Innistrad Remastered",
+    "collector_number": "387",
+    "artist": "Chris Seaman",
+    "name": "The Meathook Massacre",
+    "mana_cost": "{X}{B}{B}",
+    "type_line": "Legendary Enchantment",
+    "oracle_text": "When The Meathook Massacre enters, each creature gets -X/-X until end of turn.\nWhenever a creature you control dies, each opponent loses 1 life.\nWhenever a creature an opponent controls dies, you gain 1 life.",
+    "art_crop": "https://cards.scryfall.io/art_crop/front/0/9/09dbe391-a817-4347-986f-13849746db56.jpg?1783908011",
+    "normal": "https://cards.scryfall.io/normal/front/0/9/09dbe391-a817-4347-986f-13849746db56.jpg?1783908011",
+    "via": "override inr #387"
   }
 }

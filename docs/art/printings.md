@@ -13,6 +13,7 @@ Only where the default would pick something we don't want, or where a card has m
 | card | override set | reason / artist to confirm |
 |---|---|---|
 | Hymn to Tourach | fem, collector 38b | Fallen Empires has four arts; 38b is the Liz Danforth — planner's pick; ratify |
+| The Meathook Massacre | inr, collector 387 | post-S68 (Chris): Innistrad Remastered — the retro (1997) frame |
 | Basic lands (Mountain, Plains, Island, Swamp, Forest) | leb, first collector number of each type | one consistent classic cycle, black-bordered (S8 feedback round: Chris moved these from Revised to Beta to match the frame's black border) |
 | Mind Rot | por, collector 101 | S22 playtest r2 (Chris): the 7ED scan is WHITE-bordered — Portal is Steve Luke's black-bordered original (the 7ED★ foil keeps the Rex art black-bordered if taste prefers it; flag) |
 | Pyroclasm | default (ice) | planner has not seen the Ice Age art recently — implementer: flag if it reads poorly at art_crop |

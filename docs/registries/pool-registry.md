@@ -420,6 +420,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | tendrils_of_corruption | tsp | 136 | Mike Dringenberg | 7f61db9e-ef88-4dc8-b90c-1f8b2d7e9bb9 |
 | terror | lea | 130 | Ron Spencer | 21004958-2c7e-4a55-bc80-411c4d780106 |
 | thawing_glaciers | all | 144 | Jeff A. Menges | 6411a8c6-010f-4863-a0fa-bbebe09d5c34 |
+| the_meathook_massacre | inr | 387 | Chris Seaman | 09dbe391-a817-4347-986f-13849746db56 |
 | thought_scour | dka | 52 | David Rapoza | 88bf1ebb-9d85-4b9b-a614-c7f965c0893d |
 | timberland_guide | avr | 197 | Zoltan Boros | ae80fefb-af78-4f98-8058-71b61e91842f |
 | time_walk | lea | 83 | Amy Weber | e0139f60-d48e-46fb-9f5a-1e3d7558c834 |
@@ -744,6 +745,12 @@ Real, verified against Scryfall by exact name on 2026-10-13. Chris's idea for th
 | id | name | status | vocabulary | notes |
 |---|---|---|---|---|
 | vigil_keeper | Vigil Keeper | tested | triggered ENTERS_BATTLEFIELD self: `draw` 1; static `exileOpponentsDying` (R-116 — the one new word) | CUSTOM. {2}{W} Creature — Human Cleric 1/3. "When Vigil Keeper enters, draw a card. / If a creature an opponent controls would die, exile it instead." Chris's answer to the Usher's loop (the bottoming study, R-115, came first and measured negative). Tried in three copies in the Watch's Young Pyromancer slot and Mardu Control's Soul Warden slot (160 matches a pairing, paired): at 2/2 +3.7 / +0.4 overall, at 1/3 +2.0 / −0.2, both +6 to +13 against the Usher decks; Hallowed Warder ({1}{W}, the static alone) at 1/4 and 2/3 behind it. Chris took the 1/3. **T2, interim — Chris has not named a tier.** Card art: candidate 4 of 4 (art nouveau), generated, cropped top-anchored; "as printed" face delivered by Chris (read word for word). Peasant score 2.43 (rebuilt, 10,360 games; Soul Warden 2.60). Pool 285 → 286. In no list yet (Chris: the slots tested may not be the right ones). The study variants stay in `data/cards-proposed`. |
+
+## Post-Session 68 addition — The Meathook Massacre (Chris, 2026-10-21)
+
+| id | name | status | vocabulary | notes |
+|---|---|---|---|---|
+| the_meathook_massacre | The Meathook Massacre | tested | Legendary Enchantment {X}{B}{B}; triggered ENTERS self: `modifyPT` −X/−X (`xPaid` with `times: −1` — R-117, the one new word) scope allCreatures until end of turn; DIES (a creature you control): `loseLife` 1 each opponent; DIES (a creature an opponent controls): `gainLife` 1 you | REAL. Innistrad Remastered #387 (Chris Seaman; the retro frame). **T3 (Chris)** — "it hits hard"; a dialled-back custom may follow. Studied in Mono-Black Clio's fifteen: +0.8 ± 0.5 overall, +5.0 ± 2.9 against the Rabble, +3.3 ± 1.3 against the swarm lists (Fiery Cannonade +0.6 / +5.0 / +2.1); two in the main −1.6 (−5.9 against the Clio lists). In no list yet (Chris's next Grixis build). Pool 286 → 287. |
 
 ## Shop tiers (ADR-078, S19)
 
