@@ -23,6 +23,10 @@ export const PLAY_CATEGORIES: { group: string; title: string }[] = [
   { group: "grixis", title: "Grixis's lists" }, // S67 (the deep batch)
   { group: "jund", title: "Jund's lists" },
   { group: "jeskai", title: "Jeskai's lists" },
+  { group: "sultai", title: "Sultai's lists" }, // S69 (the shallow batch)
+  { group: "abzan", title: "Abzan's lists" },
+  { group: "temur", title: "Temur's lists" },
+  { group: "bant", title: "Bant's lists" },
   { group: "saved", title: "Your journey's decks" },
   { group: "mages", title: "The mages" },
   { group: "beasts", title: "The beasts" },

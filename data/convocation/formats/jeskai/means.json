@@ -1,19 +1,19 @@
 {
  "_comment": "A format's game-one means (S46): each list's win rate against the other active lists on the registered sixties. Written by `pnpm open:rr --format <id> --merge <shards> --record` — do not edit by hand. `pnpm open:gen` reads it with matches.json into the field's strength table (S63 Part 2).",
- "when": "2026-10-21",
+ "when": "2026-10-22",
  "source": "6600 games, 100 a pairing",
  "byList": {
   "kiln": 56,
   "locks": 56,
-  "minefield": 51,
+  "minefield": 52,
   "muster": 47,
   "rabble": 69,
   "skies": 57,
   "sweepers": 28,
-  "tally": 42,
-  "theft": 51,
+  "tally": 41,
+  "theft": 52,
   "urcontrol": 33,
-  "warband": 48,
+  "warband": 47,
   "watch": 62
  }
 }

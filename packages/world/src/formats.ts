@@ -70,8 +70,14 @@ export const MARDU_FORMAT = constructed("mardu", "Mardu", "red, white and black.
 export const GRIXIS_FORMAT = constructed("grixis", "Grixis", "blue, black and red. Counters, burn and the dead — and nothing white to undo them", { ...OPEN_BASE, colorsWithin: ["U", "B", "R"], manaWithin: true });
 export const JUND_FORMAT = constructed("jund", "Jund", "black, red and green. The Reaper sows a snake each dawn, and nothing here can counter it", { ...OPEN_BASE, colorsWithin: ["B", "R", "G"], manaWithin: true });
 export const JESKAI_FORMAT = constructed("jeskai", "Jeskai", "blue, red and white. Counters and sweepers both — every answer, and the Bailiff to serve them", { ...OPEN_BASE, colorsWithin: ["U", "R", "W"], manaWithin: true });
+/** S69: the shallow batch — the land rule (ADR-181), the Open's restricted list, the laws banned. Sultai has no sweeper
+ * in the pool (every sweeper is white or red); Sultai, Abzan and Bant have no Rabble. */
+export const SULTAI_FORMAT = constructed("sultai", "Sultai", "black, green and blue. No sweeper reaches here — the creatures own it, or the counters hold it", { ...OPEN_BASE, colorsWithin: ["B", "G", "U"], manaWithin: true });
+export const ABZAN_FORMAT = constructed("abzan", "Abzan", "white, black and green. The Warden keeps the gate, and life is the coin", { ...OPEN_BASE, colorsWithin: ["W", "B", "G"], manaWithin: true });
+export const TEMUR_FORMAT = constructed("temur", "Temur", "green, blue and red. Great bodies, bounce and burn — the Unwinder sends it all home", { ...OPEN_BASE, colorsWithin: ["G", "U", "R"], manaWithin: true });
+export const BANT_FORMAT = constructed("bant", "Bant", "green, white and blue. Angels and auras, and the Sower plants a forest for every land", { ...OPEN_BASE, colorsWithin: ["G", "W", "U"], manaWithin: true });
 /** The formats that have a field of their own lists (data/convocation/formats/<id>/), a table of record and a door. */
-export const FIELD_FORMAT_IDS = ["open", "peasant", "naya", "esper", "mardu", "grixis", "jund", "jeskai"] as const;
+export const FIELD_FORMAT_IDS = ["open", "peasant", "naya", "esper", "mardu", "grixis", "jund", "jeskai", "sultai", "abzan", "temur", "bant"] as const;
 export const PAUPER_FORMAT = constructed("pauper", "Pauper", "tier 1 only — honest creatures and spells", { minCards: 60, maxTier: 1, banned: OPEN_FORMAT.rule.banned! });
 export const BODIES_FORMAT = constructed("bodies", "Bodies", "Odile's gate: twenty-four creatures in sixty", { ...OPEN_BASE, minCreatures: 24 });
 export const NOTHING_SMALL_FORMAT = constructed("nothing-small", "Nothing Small", "Zinnia's gate: every creature's power two or more", { ...OPEN_BASE, minCreaturePower: 2 });
@@ -79,7 +85,7 @@ export const NOTHING_SUDDEN_FORMAT = constructed("nothing-sudden", "Nothing Sudd
 export const HALF_GROUND_FORMAT = constructed("half-ground", "Half Ground", "Isaura's gate: half the deck is land", { ...OPEN_BASE, minLandFraction: 0.5 });
 export const NOTHING_DEAR_FORMAT = constructed("nothing-dear", "Nothing Dear", "Meliyan's gate: nothing above mana value four", { ...OPEN_BASE, maxManaValue: 4 });
 /** Every Constructed format the builder passes its tests for (S52); the door offers the Open, the rest are data. */
-export const CONSTRUCTED_FORMATS: readonly ConstructedFormat[] = [OPEN_FORMAT, PEASANT_FORMAT, NAYA_FORMAT, ESPER_FORMAT, MARDU_FORMAT, GRIXIS_FORMAT, JUND_FORMAT, JESKAI_FORMAT, PAUPER_FORMAT, BODIES_FORMAT, NOTHING_SMALL_FORMAT, NOTHING_SUDDEN_FORMAT, HALF_GROUND_FORMAT, NOTHING_DEAR_FORMAT];
+export const CONSTRUCTED_FORMATS: readonly ConstructedFormat[] = [OPEN_FORMAT, PEASANT_FORMAT, NAYA_FORMAT, ESPER_FORMAT, MARDU_FORMAT, GRIXIS_FORMAT, JUND_FORMAT, JESKAI_FORMAT, SULTAI_FORMAT, ABZAN_FORMAT, TEMUR_FORMAT, BANT_FORMAT, PAUPER_FORMAT, BODIES_FORMAT, NOTHING_SMALL_FORMAT, NOTHING_SUDDEN_FORMAT, HALF_GROUND_FORMAT, NOTHING_DEAR_FORMAT];
 
 /** Sealed from the Plane: six Classic packs, forty cards (formats doc §2.3). */
 export const SEALED_PLANE: LimitedFormat = {

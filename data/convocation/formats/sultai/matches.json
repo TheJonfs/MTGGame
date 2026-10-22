@@ -1,0 +1,67 @@
+{
+ "_comment": "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.",
+ "when": "2026-10-22",
+ "matchesAPairing": 60,
+ "byList": {
+  "auras": {
+   "matches": 60.9,
+   "gameOne": 58.9,
+   "later": 56.1,
+   "n": 540
+  },
+  "bfh": {
+   "matches": 36.9,
+   "gameOne": 40.9,
+   "later": 41,
+   "n": 540
+  },
+  "depths": {
+   "matches": 56.1,
+   "gameOne": 57.1,
+   "later": 53.5,
+   "n": 540
+  },
+  "mbc": {
+   "matches": 47,
+   "gameOne": 48,
+   "later": 48.3,
+   "n": 540
+  },
+  "mill": {
+   "matches": 35.7,
+   "gameOne": 36.7,
+   "later": 40.4,
+   "n": 540
+  },
+  "reeve": {
+   "matches": 73.9,
+   "gameOne": 66.9,
+   "later": 66.6,
+   "n": 540
+  },
+  "tempo": {
+   "matches": 54.8,
+   "gameOne": 53.5,
+   "later": 54.5,
+   "n": 540
+  },
+  "undertow": {
+   "matches": 42,
+   "gameOne": 43.9,
+   "later": 44.4,
+   "n": 540
+  },
+  "writ": {
+   "matches": 66.1,
+   "gameOne": 57,
+   "later": 63.6,
+   "n": 540
+  },
+  "wurmspeaker": {
+   "matches": 26.5,
+   "gameOne": 37,
+   "later": 31.2,
+   "n": 540
+  }
+ }
+}

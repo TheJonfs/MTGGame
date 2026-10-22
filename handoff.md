@@ -1,42 +1,38 @@
-# Handoff — after Session 68 (2026-10-20)
+# Handoff — after Session 69 (2026-10-21)
 
 ## State of the world
-The pilot now reads the defender's combat triggers, aims burn only to kill, plans a repeatable ping, and draws with the Witch once it is safe (books 141–145, each with an `off` switch). The ladder passes after each. Every Constructed field's table was re-run after the three rules (the Open, Naya, Esper, Mardu, Grixis, Jund, Jeskai). Jund Dragons (Chris's) is registered in Jund; Jund Coin is archived. `pnpm pilot-probe` has four new modes (`--mines`, `--diffs`, `--manaba2`, `--sweeps`). Tests: `pnpm test` (1,124 passed).
+Twelve Constructed fields now: the Open, Peasant, and the ten triads — this session's shallow batch (**Sultai, Abzan, Temur, Bant**, ten seeds each, tables, frozen thresholds, reference pages, doors, the play screen, door tests). The defence rules are in: `sweepwait` (book 147) and `payoffcost` (book 148) adopted; `blockloss` (book 146) on trial only. Grixis's and Jeskai's tables re-run after them. The ladder passes. Tests: `pnpm test` (1,136 passed).
 
 ## Done this session
-- **Part 0**: S67's deviations ratified; ADR-189 (the six-triad read); ADR-186 amended and built (`open:gen` refuses a frozen threshold below 2; Grixis's and Jund's `large` set to 3); Jund Coin archived; **Jund Dragons** registered (Chris's 11-game run; at his flip — three Drakuseth, two Ruby Tyrants) with his fifteen and a guide from his swaps; Jund's table before the rules (Jund Dragons 40.2).
-- **Part 1 — combat reads the defender's triggers** (`triggercharge`, book 141; `deathcharge`, book 142): attackers charged the battlefield's ATTACKS triggers as declared, blockers weighed after BLOCKS triggers, the crack-back read without their trigger-killed attackers; an own combat death costs the opponent's death-trigger drain. Attackers killed by a Minefield's trigger alone: 2.5–6.9 a game → 0 in all eight pairings measured. Sacred Minefield −7.2 ± 0.8; the Tollgate +6.6 ± 1.1. Ladder PASS.
-- **Part 2 — damage targeting** (`burnkills`, book 143; `pingplan`, book 144): a burn spell at a creature only when it kills (with committed combat and stack damage); a repeatable ping counts its pending pings and spends a short one only when the mana and life at hand finish the kill. The Rabble +0.6, the Kindling +1.1, the Tally +1.2, the Kiln +0.5 (+6.9 against the Clio lists). Ladder PASS.
-- **Part 3 — the Witch early** (`witchearly`, book 145): life for cards from the turn it is safe — above the board's reach, three a burn spell seen and **a cushion of six** — not at a hand of two. Without the cushion it lost (the Witch −2.3); with it the Witch +2.3, the Barrow +4.1, Mono-Black Clio +2.1, Mardu Control +1.0, the Pall −0.9. Draws 4.8 → 6.4 a game, from turn 10.2 → 9.1. Ladder PASS.
-- **Part 4 — the probes** (no rules): the pilot's extra blocks are its costliest racing difference (7 positions: Chris's choice 32.1%, the pilot's 3.6%; cast order neutral at 54); the pilot makes half the Manaba mana Chris does (0.45 Snakes tapped a turn against 0.86); the Jeskai Sweepers Wrath a board of one or none 64% of the time (Chris 13%), on turn 28 against 17.
-- **Part 5 — the tables** (decision updates): the six-triad read stands — the red race unmoved (Grixis 79.7, Jeskai 77.5, Mardu 63.5); the Witch lists up (the Chancel +7.7, the Barrow +5.6, Mono-Black Clio +2.7); Sacred Minefield 55.5 (−9.0).
+- **Part 0**: S68's deviations ratified; ADR-190 (the red race a defence problem — re-stated in Part 3); Chris's four kickoff rulings (Sultai: Reaper Clio and Emerald Snakes out, the Depths in; Temur: Grixis Clio and Reaper Clio out, Reaper Control revived with Emerald Keepers; Bant: Countersnake's Clios for Serra Angels; Abzan as written).
+- **Part 1 — the batch**: four formats, forty lists (thirty-two seeds whole or with logged swaps, eight builds), tables in three columns. Leaders: **Sultai Reeve 73.9**, **the Chancel 66.3** (Abzan), **Temur Ramp 67.2**, **Bant Sower 71.7**. The lords: only the Sower in Bant Sower earned its place (+2.6 ± 1.2, adopted); the Unwinder in Emerald Snakes −11.5.
+- **Part 2 — the defence**: `sweepwait` at half the card's mana value (the Jeskai Sweepers +1.0, Mardu Control +2.6; sweeps into one or none 64% → 54%); `payoffcost` (Chris's game 17 the fixture; rare in the tables); `blockloss` measured −0.6 to −3.1 against the Rabble — trial only. Ladder PASS.
+- **Part 3 — the read**: the red race unmoved (Grixis 75.8, Jeskai 77.8); the ten-triad read (decision updates): the race tops two of ten; Sultai, Abzan and Bant have none; Temur's big bodies sit over it.
 
 ## Deviations from the brief
-1. **Part 1's scope** (Chris's ruling at the kickoff): only the Minefield is an ATTACKS/BLOCKS trigger in the pool (the Observatory and Isaura are activated abilities, Soul Warden an enters trigger, Meliyan its own controller's death trigger); the defender's death triggers became `deathcharge`, measured apart (it moved nothing in Jeskai; in Mardu it rides the table).
-2. **The Witch rule carries a cushion of six** the brief did not have — the brief's rule measured negative (−2.3 on the Witch); the cushion was tried as a trial and adopted on its measure.
-3. **Peasant's Mono-Black** has no Witch (she is prize-only); Mono-Black Clio measured in its place.
-4. **The Manaba probe reads the board, not the solver**: Snakes tapped on our turn and not attacking. No engine change; the pilot and the human read the same way.
-5. **Book 102's old Witch pin** runs with `witchearly` off; the old "burn at own face" pin aims at a 3/3 the Bolt kills (a non-lethal Bolt is no longer a use).
+1. **`blockloss` not adopted** — the brief's rule measured negative against the Rabble; kept as `trial: ["blockloss"]`. The racing probe's extra blocks were the Snakes matchups', not the swarm's.
+2. **`sweepwait`'s bar is half the card's mana value**, and "the race forces it" reads three turns — at the brief's full bar the Sweepers lost 4.1 against the red lists (four Goblin tokens are 2.0 of value).
+3. **"Losing the race" reads only the opponent's clock** (their board kills us within N turns) — the brief's comparison of clocks marked every low-power control deck as losing every race, and nothing fired.
+4. **Bant Sower without Clio** (black); **Bant Auras with Pacifism for Protocol** (its mana has too little blue).
+5. Temur's derived `large` threshold was 0 — set to 2 by the amended ADR-186.
 
 ## Concerns
-1. **The red race is not a pilot problem these rules touch.** The Rabble tops Grixis and Jeskai by 10–20 points with none of this session's rules moving it. Two shapes the probes point at: the pilot's blocks (its extra blocks were its worst racing choices — the defence against the race is the side that blocks badly) and the sweeper timing (Concern 2). Both are S69-able rules.
-2. **The sweeper pilot Wraths one creature at a time** (64% into a board of one or none, against Chris's 13%). A rule shaped like book 117's removal hold — a sweeper waits for a board worth it unless the race forces it — would be measured on the Jeskai Sweepers, the Locks, the Chancel and Mardu Control.
-3. **A non-lethal burn was a score, not a gate** — the softmax cast what scored a quarter-point under passing. The same "friction, not a gate" shape is still elsewhere (the comment at the predictor's unchanged branch says so); other near-pass misplays may live there.
-4. **The Tyrant had no gate at all** (the brief assumed "refused as now"): creature abilities outside the shrink/mill/counters sinks skip `floodSinkGated`. `pingPlanGated` now covers the creature ping; any other creature ability with a target (a creature that taps, bounces) is still ungated.
-5. **The pilot makes half Chris's Manaba mana**; whether that is the solver's tap order or the pilot's spending is the next read — the solver's choices are not agent decisions, so a rule there is an engine-side change (ADR-worthy).
-6. **The Pall dipped under `witchearly`** (−0.9 ± 0.4) though its own dig is untouched — its opponents' Witches draw better. Worth a look if the Pall's numbers matter.
-7. **Post-S68 (Chris's Massacrats run, the Grixis Umbel final; re-read with Chris): removal that kills the opponent's creature while the opponent's "your creature dies, you lose" payoff is out.** Game 17's turns 17–25: the Rabble's Cairnbrand recursion (a token sacrificed, a Kavu back) took Clio and two Blood Artists — sound at 11–14 life, Chris agrees: the threats would have killed it faster than the drains. The miss is at the end: at 2 life its Kavu killed Chris's Kavu (2 → 1, the Massacre's "a creature you control dies, each opponent loses 1"); at 1 life it Grenaded Meliyan and the Massacre's trigger killed it. The pilot does not price that a kill of OUR creature costs IT life under our Massacre / Blood Artist / the Usher — trivial at high life, suicide at 1. Dead on board either way here; the rule (the `deathCharge` read applied to the controller of a removal spell's target) is S69-able, with a ladder.
+1. **The red race is a field question.** Three defence rules and five pilot rules have not moved the Rabble in Grixis or Jeskai. In both, one or two lists answer it — Mono-Black Clio and Massacrats; the Watch and Sacred Minefield — and every other seed was built for a different field. More answers in the seeds (or a card), not more pilot.
+2. **Built lists top three of the four new triads** (Sultai Reeve 73.9, Temur Ramp 67.2, Bant Sower 71.7). The seeds there are mostly other formats' lists ported, not native designs; the builds were made for the colours. Read the tables as "the seeds are weak here" as much as "the builds are strong" — Chris's breaks will tell.
+3. **The Unwinder is a trap in Emerald Snakes** (−11.5): a five-mana lord in a deck whose curve is mana creatures and the Keeper.
+4. **`payoffcost` moved nothing measurable** — the position (one life, their payoff out) is rare; it stays as a correctness rule.
+5. The guides of Massacrats and Mono-Black Clio still miss the Tally (no shape reads a burn-spells deck with twelve creatures).
 
 ## Registry entries added/changed
-- No R-entries. Books 141–145 (agents). Jund: `dragons` registered, `coin` archived; Grixis and Jund `shapeScale.large` 3.
+- No R-entries; books 146–148 (agents). New formats: `sultai`, `abzan`, `temur`, `bant` (`lists.json`, `means.json`, `matches.json`, reference pages). Bant Sower takes four Sowers.
 
 ## Test status
-**1,124 passed**, 2 skipped (1,126). Books 141–145 new; book 102's second line and the "burn at own face" pin re-baselined (Deviation 5). Ladder gate/mirror PASS after Parts 1, 2 and 3.
+**1,136 passed**, 2 skipped (1,138). New: books 146–148; `world/s69-triads-event.test.ts`. Book 147's pin moved from a lone Bears to a lone Raging Goblin (the half bar). Ladder gate/mirror PASS.
 
 ## Suggested next
-- **The shallow batch (S69)**: Sultai first by contrast (no sweeper), then Abzan, Temur, Bant — the batch pattern of S67.
-- **Two pilot rules the probes earned**: the block that loses (the pilot's extra blocks) and the sweeper that waits for a board (Concerns 1–2), each measured and ladder-gated.
-- **Jund Dragons' alternative builds** (Chris: "more room to explore once the AI fixes are in place") and the Minefield in Mardu.
+- **The family's state**: ten triads, two tier formats (Peasant; Pauper as data), one Open — twelve Constructed fields with tables. The next design conversation, per the brief: **the Convocation's prizes now that nine-plus formats exist**, **the still-pair High Grounds on the shelf**, and **phase three**.
+- **Chris's breaks**: a Sultai Snake deck with Mystic Snake, a Temur control list, Bant and Abzan open — each registered and measured as the Witch, Massacrats and Sacred Minefield were.
+- **The red race's answers**: a seed or a card per red triad that answers it (Concern 1); the "friction, not a gate" audit when a session has a half-day.
 
 ## How to run
 ```

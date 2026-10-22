@@ -1,0 +1,982 @@
+{
+ "_comment": "Temur (S69): green, blue and red — the land rule (ADR-181); the Open's restricted list where it applies; the laws banned; sixty cards, four of a kind. Seeds from the registered lists whole where legal, every swap in its source; the builds the brief names (working names). `pnpm open:gen` validates each against Temur and generates the code and docs/reference/temur-lists.md.",
+ "_shapeScale_note": "S69 (ADR-186): frozen at the values derived from Temur's first field — its ten seeds: small 18, large 2. `large` derived 0, set to 2 (ADR-186: never below 2).",
+ "shapeScale": {
+  "small": 18,
+  "large": 2
+ },
+ "archived": {},
+ "guides": {},
+ "guidesOnly": [],
+ "outRules": {},
+ "lists": [
+  {
+   "key": "kiln",
+   "name": "the Kiln",
+   "title": "Izzet Spells (U R)",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "time_walk",
+     "count": 1
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 3
+    },
+    {
+     "cardId": "tidewall",
+     "count": 4
+    },
+    {
+     "cardId": "aetherbolt",
+     "count": 4
+    },
+    {
+     "cardId": "control_magic",
+     "count": 4
+    },
+    {
+     "cardId": "odile_the_tallyflame",
+     "count": 3
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "the_ruby_tyrant",
+     "count": 3
+    },
+    {
+     "cardId": "guttersnipe",
+     "count": 4
+    },
+    {
+     "cardId": "young_pyromancer",
+     "count": 4
+    },
+    {
+     "cardId": "tallyflame_court",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "volcanic_island",
+     "count": 4
+    },
+    {
+     "cardId": "steam_vents",
+     "count": 4
+    },
+    {
+     "cardId": "library_of_alexandria",
+     "count": 1
+    },
+    {
+     "cardId": "mountain",
+     "count": 5
+    },
+    {
+     "cardId": "island",
+     "count": 4
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "tormods_crypt",
+     "count": 4
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 3
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 4
+    },
+    {
+     "cardId": "blaze",
+     "count": 2
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 1
+    },
+    {
+     "cardId": "the_ruby_tyrant",
+     "count": 1
+    }
+   ],
+   "source": "S69 seed (the planner's): the Kiln (Jeskai's fifteen, its Pyroclasms for the Macabres)."
+  },
+  {
+   "key": "tally",
+   "name": "the Tally",
+   "title": "Izzet Sparks (U R)",
+   "archetype": "aggro",
+   "decklist": [
+    {
+     "cardId": "volcanic_island",
+     "count": 4
+    },
+    {
+     "cardId": "steam_vents",
+     "count": 4
+    },
+    {
+     "cardId": "mountain",
+     "count": 8
+    },
+    {
+     "cardId": "island",
+     "count": 4
+    },
+    {
+     "cardId": "tallyflame_court",
+     "count": 1
+    },
+    {
+     "cardId": "forgotten_cave",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "young_pyromancer",
+     "count": 4
+    },
+    {
+     "cardId": "guttersnipe",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "shock",
+     "count": 4
+    },
+    {
+     "cardId": "char",
+     "count": 4
+    },
+    {
+     "cardId": "brainstorm",
+     "count": 4
+    },
+    {
+     "cardId": "counterspell",
+     "count": 2
+    },
+    {
+     "cardId": "ponder",
+     "count": 3
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "control_magic",
+     "count": 2
+    }
+   ],
+   "source": "S69 seed (the planner's): the Open's Tally (archived there) whole."
+  },
+  {
+   "key": "stompy",
+   "name": "the Stampede",
+   "title": "Gruul Stompy (R G)",
+   "archetype": "aggro",
+   "decklist": [
+    {
+     "cardId": "stomping_ground",
+     "count": 4
+    },
+    {
+     "cardId": "taiga",
+     "count": 4
+    },
+    {
+     "cardId": "forest",
+     "count": 9
+    },
+    {
+     "cardId": "mountain",
+     "count": 2
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "llanowar_elves",
+     "count": 4
+    },
+    {
+     "cardId": "birds_of_paradise",
+     "count": 2
+    },
+    {
+     "cardId": "dungrove_elder",
+     "count": 4
+    },
+    {
+     "cardId": "centaur_courser",
+     "count": 4
+    },
+    {
+     "cardId": "rumbling_baloth",
+     "count": 4
+    },
+    {
+     "cardId": "gaean_wurm",
+     "count": 3
+    },
+    {
+     "cardId": "rancor",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 3
+    },
+    {
+     "cardId": "baru_wurmspeaker",
+     "count": 2
+    }
+   ],
+   "source": "S69 seed (the planner's): Naya's Stampede whole."
+  },
+  {
+   "key": "emeraldsnakes",
+   "name": "Emerald Snakes",
+   "title": "Snake Keeper (G R)",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "birds_of_paradise",
+     "count": 4
+    },
+    {
+     "cardId": "manaba",
+     "count": 4
+    },
+    {
+     "cardId": "rage_cobra",
+     "count": 4
+    },
+    {
+     "cardId": "the_emerald_keeper",
+     "count": 4
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "gaean_wurm",
+     "count": 4
+    },
+    {
+     "cardId": "elvish_visionary",
+     "count": 4
+    },
+    {
+     "cardId": "harmonize",
+     "count": 3
+    },
+    {
+     "cardId": "taiga",
+     "count": 4
+    },
+    {
+     "cardId": "stomping_ground",
+     "count": 4
+    },
+    {
+     "cardId": "tropical_island",
+     "count": 4
+    },
+    {
+     "cardId": "forest",
+     "count": 9
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "airship_crash",
+     "count": 2
+    },
+    {
+     "cardId": "foxglove_dose",
+     "count": 2
+    },
+    {
+     "cardId": "savage_twister",
+     "count": 2
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 2
+    },
+    {
+     "cardId": "pelakka_wurm",
+     "count": 2
+    },
+    {
+     "cardId": "penumbra_wurm",
+     "count": 2
+    },
+    {
+     "cardId": "baru_wurmspeaker",
+     "count": 1
+    },
+    {
+     "cardId": "wall_of_razors",
+     "count": 2
+    }
+   ],
+   "source": "S69 seed (the planner's): Emerald Snakes (Chris's, Jund's mana), its Mox Jet for Mox Sapphire and four Bayous for four Tropical Islands."
+  },
+  {
+   "key": "wurmspeaker",
+   "name": "the Wurmspeaker",
+   "title": "Mono-Green Ramp",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "forest",
+     "count": 20
+    },
+    {
+     "cardId": "tranquil_thicket",
+     "count": 2
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "llanowar_elves",
+     "count": 4
+    },
+    {
+     "cardId": "birds_of_paradise",
+     "count": 4
+    },
+    {
+     "cardId": "wood_elves",
+     "count": 4
+    },
+    {
+     "cardId": "seedborn_muse",
+     "count": 4
+    },
+    {
+     "cardId": "gaean_wurm",
+     "count": 3
+    },
+    {
+     "cardId": "pelakka_wurm",
+     "count": 2
+    },
+    {
+     "cardId": "baru_wurmspeaker",
+     "count": 3
+    },
+    {
+     "cardId": "treetop_snarespinner",
+     "count": 2
+    },
+    {
+     "cardId": "the_emerald_keeper",
+     "count": 2
+    },
+    {
+     "cardId": "rampant_growth",
+     "count": 4
+    },
+    {
+     "cardId": "prey_upon",
+     "count": 2
+    },
+    {
+     "cardId": "rampaging_baloths",
+     "count": 2
+    }
+   ],
+   "source": "S69 seed (the planner's): the Open's Wurmspeaker whole."
+  },
+  {
+   "key": "rabble",
+   "name": "the Rabble (Naya)",
+   "title": "Mono-Red Goblins (R)",
+   "archetype": "aggro",
+   "decklist": [
+    {
+     "cardId": "mountain",
+     "count": 20
+    },
+    {
+     "cardId": "goblin_grenade",
+     "count": 4
+    },
+    {
+     "cardId": "raging_goblin",
+     "count": 4
+    },
+    {
+     "cardId": "dragon_fodder",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "char",
+     "count": 4
+    },
+    {
+     "cardId": "goblin_chieftain",
+     "count": 4
+    },
+    {
+     "cardId": "seasoned_pyromancer",
+     "count": 4
+    },
+    {
+     "cardId": "hordeling_outburst",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "siege_gang_commander",
+     "count": 2
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    }
+   ],
+   "source": "S69 seed (the planner's): Naya's Rabble whole."
+  },
+  {
+   "key": "reaper",
+   "name": "Reaper Control",
+   "title": "Jund Snake Control (G R b)",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "manaba",
+     "count": 4
+    },
+    {
+     "cardId": "moss_viper",
+     "count": 3
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "rage_cobra",
+     "count": 4
+    },
+    {
+     "cardId": "wall_of_blossoms",
+     "count": 4
+    },
+    {
+     "cardId": "savage_twister",
+     "count": 3
+    },
+    {
+     "cardId": "seasoned_pyromancer",
+     "count": 3
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "voracious_cobra",
+     "count": 2
+    },
+    {
+     "cardId": "the_emerald_keeper",
+     "count": 3
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "taiga",
+     "count": 4
+    },
+    {
+     "cardId": "stomping_ground",
+     "count": 4
+    },
+    {
+     "cardId": "tallyflame_court",
+     "count": 1
+    },
+    {
+     "cardId": "tropical_island",
+     "count": 4
+    },
+    {
+     "cardId": "volcanic_island",
+     "count": 4
+    },
+    {
+     "cardId": "wrackroot",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "tormods_crypt",
+     "count": 3
+    },
+    {
+     "cardId": "moss_viper",
+     "count": 1
+    },
+    {
+     "cardId": "deadly_recluse",
+     "count": 1
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 3
+    },
+    {
+     "cardId": "savage_twister",
+     "count": 1
+    },
+    {
+     "cardId": "char",
+     "count": 2
+    },
+    {
+     "cardId": "abrade",
+     "count": 4
+    }
+   ],
+   "source": "S69 seed (the planner's) (Chris's ruling): the Open's Reaper Control revived — its three Reapers (Jund's lord) for three Emerald Keepers; Mox Jet for Mox Sapphire, Cairnbrand for the Tallyflame Court, four Bayous and four Badlands for four Tropical and four Volcanic Islands; its fifteen's four Putrefies (black) for four Abrades."
+  },
+  {
+   "key": "kindling",
+   "name": "the Kindling",
+   "title": "Mono-Red Spells (R)",
+   "archetype": "aggro",
+   "decklist": [
+    {
+     "cardId": "mountain",
+     "count": 21
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "guttersnipe",
+     "count": 4
+    },
+    {
+     "cardId": "young_pyromancer",
+     "count": 4
+    },
+    {
+     "cardId": "seasoned_pyromancer",
+     "count": 3
+    },
+    {
+     "cardId": "arc_mage",
+     "count": 2
+    },
+    {
+     "cardId": "the_ruby_tyrant",
+     "count": 1
+    },
+    {
+     "cardId": "furnace_whelp",
+     "count": 2
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "shock",
+     "count": 4
+    },
+    {
+     "cardId": "char",
+     "count": 4
+    },
+    {
+     "cardId": "blaze",
+     "count": 3
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 2
+    },
+    {
+     "cardId": "abrade",
+     "count": 2
+    },
+    {
+     "cardId": "hordeling_outburst",
+     "count": 2
+    }
+   ],
+   "source": "S69 seed (the planner's): the Kindling whole."
+  },
+  {
+   "key": "unwinder",
+   "name": "Temur Unwinder (working name)",
+   "title": "Temur Tempo (U R g)",
+   "archetype": "midrange",
+   "source": "S69 seed (the planner's): built by the implementer — the Unwinder (Temur's lord) with bounce (Man-o'-War, Aether Channeler, Boomerang), the Forerunner, Kavu and Control Magic (the brief); counters and Bolts.",
+   "decklist": [
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "time_walk",
+     "count": 1
+    },
+    {
+     "cardId": "the_unwinder",
+     "count": 2
+    },
+    {
+     "cardId": "man_o_war",
+     "count": 4
+    },
+    {
+     "cardId": "aether_channeler",
+     "count": 4
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "boomerang",
+     "count": 3
+    },
+    {
+     "cardId": "control_magic",
+     "count": 3
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "brainstorm",
+     "count": 1
+    },
+    {
+     "cardId": "volcanic_island",
+     "count": 4
+    },
+    {
+     "cardId": "tropical_island",
+     "count": 4
+    },
+    {
+     "cardId": "taiga",
+     "count": 4
+    },
+    {
+     "cardId": "steam_vents",
+     "count": 2
+    },
+    {
+     "cardId": "stomping_ground",
+     "count": 2
+    },
+    {
+     "cardId": "tallyflame_court",
+     "count": 1
+    },
+    {
+     "cardId": "wrackroot",
+     "count": 1
+    },
+    {
+     "cardId": "island",
+     "count": 2
+    },
+    {
+     "cardId": "mountain",
+     "count": 1
+    },
+    {
+     "cardId": "forest",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "pyroclasm",
+     "count": 3
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 3
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 3
+    },
+    {
+     "cardId": "savage_twister",
+     "count": 3
+    },
+    {
+     "cardId": "abrade",
+     "count": 3
+    }
+   ]
+  },
+  {
+   "key": "ramp",
+   "name": "Temur Ramp (working name)",
+   "title": "Temur Ramp (G r u)",
+   "archetype": "midrange",
+   "source": "S69 seed (the planner's): built by the implementer — Elves, Birds and Walls into Rampaging Baloths, Penumbra Wurm and Gaean Wurm, Harmonize to refuel, Pyroclasm and the Kavu to clear the way (the brief); counters for the top.",
+   "decklist": [
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "llanowar_elves",
+     "count": 4
+    },
+    {
+     "cardId": "birds_of_paradise",
+     "count": 4
+    },
+    {
+     "cardId": "wall_of_blossoms",
+     "count": 4
+    },
+    {
+     "cardId": "rampaging_baloths",
+     "count": 4
+    },
+    {
+     "cardId": "penumbra_wurm",
+     "count": 3
+    },
+    {
+     "cardId": "gaean_wurm",
+     "count": 2
+    },
+    {
+     "cardId": "harmonize",
+     "count": 4
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "counterspell",
+     "count": 3
+    },
+    {
+     "cardId": "taiga",
+     "count": 4
+    },
+    {
+     "cardId": "tropical_island",
+     "count": 4
+    },
+    {
+     "cardId": "volcanic_island",
+     "count": 2
+    },
+    {
+     "cardId": "stomping_ground",
+     "count": 2
+    },
+    {
+     "cardId": "breeding_pool",
+     "count": 1
+    },
+    {
+     "cardId": "wrackroot",
+     "count": 1
+    },
+    {
+     "cardId": "forest",
+     "count": 6
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "savage_twister",
+     "count": 3
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 3
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 3
+    },
+    {
+     "cardId": "abrade",
+     "count": 3
+    },
+    {
+     "cardId": "mystic_snake",
+     "count": 3
+    }
+   ]
+  }
+ ]
+}

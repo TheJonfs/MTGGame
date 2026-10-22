@@ -1,0 +1,400 @@
+{
+ "name": "open_rr_1",
+ "when": "2026-10-22T01:07:29.214Z",
+ "games": 4500,
+ "table": {
+  "levy": {
+   "roll": [
+    47,
+    100
+   ],
+   "abzantokens": [
+    51,
+    100
+   ],
+   "chancel": [
+    37,
+    100
+   ],
+   "thicket": [
+    67,
+    100
+   ],
+   "auras": [
+    51,
+    100
+   ],
+   "bfh": [
+    56,
+    100
+   ],
+   "bw": [
+    57,
+    100
+   ],
+   "wskies": [
+    40,
+    100
+   ],
+   "warden": [
+    74,
+    100
+   ]
+  },
+  "roll": {
+   "levy": [
+    53,
+    100
+   ],
+   "abzantokens": [
+    59,
+    100
+   ],
+   "chancel": [
+    49,
+    100
+   ],
+   "thicket": [
+    58,
+    100
+   ],
+   "auras": [
+    40,
+    100
+   ],
+   "bfh": [
+    64,
+    100
+   ],
+   "bw": [
+    70,
+    100
+   ],
+   "wskies": [
+    43,
+    100
+   ],
+   "warden": [
+    65,
+    100
+   ]
+  },
+  "abzantokens": {
+   "levy": [
+    49,
+    100
+   ],
+   "roll": [
+    41,
+    100
+   ],
+   "bw": [
+    55,
+    100
+   ],
+   "auras": [
+    54,
+    100
+   ],
+   "wskies": [
+    41,
+    100
+   ],
+   "warden": [
+    47,
+    100
+   ],
+   "thicket": [
+    55,
+    100
+   ],
+   "bfh": [
+    63,
+    100
+   ],
+   "chancel": [
+    47,
+    100
+   ]
+  },
+  "thicket": {
+   "auras": [
+    43,
+    100
+   ],
+   "chancel": [
+    50,
+    100
+   ],
+   "bfh": [
+    48,
+    100
+   ],
+   "levy": [
+    33,
+    100
+   ],
+   "roll": [
+    42,
+    100
+   ],
+   "bw": [
+    62,
+    100
+   ],
+   "wskies": [
+    34,
+    100
+   ],
+   "warden": [
+    57,
+    100
+   ],
+   "abzantokens": [
+    45,
+    100
+   ]
+  },
+  "auras": {
+   "thicket": [
+    57,
+    100
+   ],
+   "wskies": [
+    39,
+    100
+   ],
+   "warden": [
+    40,
+    100
+   ],
+   "chancel": [
+    49,
+    100
+   ],
+   "abzantokens": [
+    46,
+    100
+   ],
+   "levy": [
+    49,
+    100
+   ],
+   "roll": [
+    60,
+    100
+   ],
+   "bfh": [
+    57,
+    100
+   ],
+   "bw": [
+    55,
+    100
+   ]
+  },
+  "wskies": {
+   "auras": [
+    61,
+    100
+   ],
+   "warden": [
+    41,
+    100
+   ],
+   "thicket": [
+    66,
+    100
+   ],
+   "abzantokens": [
+    59,
+    100
+   ],
+   "bfh": [
+    56,
+    100
+   ],
+   "chancel": [
+    31,
+    100
+   ],
+   "levy": [
+    60,
+    100
+   ],
+   "roll": [
+    57,
+    100
+   ],
+   "bw": [
+    52,
+    100
+   ]
+  },
+  "bw": {
+   "warden": [
+    39,
+    100
+   ],
+   "abzantokens": [
+    45,
+    100
+   ],
+   "thicket": [
+    38,
+    100
+   ],
+   "bfh": [
+    52,
+    100
+   ],
+   "chancel": [
+    26,
+    100
+   ],
+   "levy": [
+    43,
+    100
+   ],
+   "roll": [
+    30,
+    100
+   ],
+   "auras": [
+    45,
+    100
+   ],
+   "wskies": [
+    48,
+    100
+   ]
+  },
+  "warden": {
+   "bw": [
+    61,
+    100
+   ],
+   "auras": [
+    60,
+    100
+   ],
+   "wskies": [
+    59,
+    100
+   ],
+   "thicket": [
+    43,
+    100
+   ],
+   "abzantokens": [
+    53,
+    100
+   ],
+   "bfh": [
+    39,
+    100
+   ],
+   "chancel": [
+    21,
+    100
+   ],
+   "levy": [
+    26,
+    100
+   ],
+   "roll": [
+    35,
+    100
+   ]
+  },
+  "chancel": {
+   "levy": [
+    63,
+    100
+   ],
+   "roll": [
+    51,
+    100
+   ],
+   "thicket": [
+    50,
+    100
+   ],
+   "auras": [
+    51,
+    100
+   ],
+   "bfh": [
+    63,
+    100
+   ],
+   "bw": [
+    74,
+    100
+   ],
+   "wskies": [
+    69,
+    100
+   ],
+   "warden": [
+    79,
+    100
+   ],
+   "abzantokens": [
+    53,
+    100
+   ]
+  },
+  "bfh": {
+   "thicket": [
+    52,
+    100
+   ],
+   "chancel": [
+    37,
+    100
+   ],
+   "bw": [
+    48,
+    100
+   ],
+   "levy": [
+    44,
+    100
+   ],
+   "roll": [
+    36,
+    100
+   ],
+   "wskies": [
+    44,
+    100
+   ],
+   "warden": [
+    61,
+    100
+   ],
+   "auras": [
+    43,
+    100
+   ],
+   "abzantokens": [
+    37,
+    100
+   ]
+  }
+ },
+ "means": {
+  "levy": 53,
+  "roll": 56,
+  "chancel": 61,
+  "thicket": 46,
+  "auras": 50,
+  "bfh": 45,
+  "bw": 41,
+  "wskies": 54,
+  "warden": 44,
+  "abzantokens": 50
+ },
+ "report": "# The Open's round-robin (S46) — 4500 games, master both, 20 life, no entrances; the ROW's win rate\n\n| | levy | roll | chancel | thicket | auras | bfh | bw | wskies | warden | abzantokens | **mean** |\n|---|---|---|---|---|---|---|---|---|---|---|---|\n| **levy** | — | 47 | 37 | 67 | 51 | 56 | 57 | 40 | 74 | 51 | **53** |\n| **roll** | 53 | — | 49 | 58 | 40 | 64 | 70 | 43 | 65 | 59 | **56** |\n| **chancel** | 63 | 51 | — | 50 | 51 | 63 | 74 | 69 | 79 | 53 | **61** |\n| **thicket** | 33 | 42 | 50 | — | 43 | 48 | 62 | 34 | 57 | 45 | **46** |\n| **auras** | 49 | 60 | 49 | 57 | — | 57 | 55 | 39 | 40 | 46 | **50** |\n| **bfh** | 44 | 36 | 37 | 52 | 43 | — | 48 | 44 | 61 | 37 | **45** |\n| **bw** | 43 | 30 | 26 | 38 | 45 | 52 | — | 48 | 39 | 45 | **41** |\n| **wskies** | 60 | 57 | 31 | 66 | 61 | 56 | 52 | — | 41 | 59 | **54** |\n| **warden** | 26 | 35 | 21 | 43 | 60 | 39 | 61 | 59 | — | 53 | **44** |\n| **abzantokens** | 49 | 41 | 47 | 55 | 54 | 63 | 55 | 41 | 47 | — | **50** |\n\nSolvable (a list over 65% against the field): none. Under 35%: none.\nMuster vs Warband: the Muster 0% (0 games).\n\n## Staples (ADR-170)\n\nIn more than half of the 10 lists: Soul Warden (7 lists, 28 copies); Swords to Plowshares (7 lists, 24 copies). The most played: Soul Warden 7 · Swords to Plowshares 7 · Vampire Nighthawk 5 · Karmic Mentor 5 · Emeria Angel 4 · Isaura, the Levy 4 · Blanchwood Armor 3 · Dungrove Elder 3.\n\n## Restricted cards — % of the list's games in which it was cast (or, a land, played)\n\n- **levy**: obsidian_observatory 29% · black_lotus 25% · mox_pearl 24% · mox_jet 27%\n- **roll**: obsidian_observatory 27% · black_lotus 24% · mox_pearl 27% · mox_jet 25%\n- **chancel**: obsidian_observatory 37% · black_lotus 33% · mox_jet 36% · mox_pearl 35% · demonic_tutor 27%\n- **thicket**: shevelport 26% · black_lotus 25% · mox_emerald 26% · mox_pearl 27%\n- **warden**: black_lotus 32% · mox_pearl 30% · mox_jet 31% · mox_emerald 29%\n- **abzantokens**: obsidian_observatory 27% · black_lotus 24% · mox_pearl 27% · mox_emerald 28%\n\n## Key pieces — % of the list's games in which each was cast (a weak pilot reads apart from a weak list)\n\n- **levy**: emeria_angel 62% · dread_presence 57% · isaura_the_levy 40%\n- **roll**: \n- **chancel**: \n- **thicket**: \n- **auras**: \n- **bfh**: \n- **bw**: \n- **wskies**: \n- **warden**: \n- **abzantokens**: \n\n## The Loop — the Usher + an Altar on the battlefield with a Restoration Angel in hand or play\n\nAssembled by turn ten in 0 of 0 games (0%); ever: 0. Altar activations per game: 0.00."
+}

@@ -1,0 +1,1008 @@
+{
+ "_comment": "Abzan (S69): white, black and green — the land rule (ADR-181); the Open's restricted list where it applies; the laws banned; sixty cards, four of a kind. Seeds from the registered lists whole where legal, every swap in its source; the builds the brief names (working names). `pnpm open:gen` validates each against Abzan and generates the code and docs/reference/abzan-lists.md.",
+ "_shapeScale_note": "S69 (ADR-186): frozen at the values derived from Abzan's first field — its ten seeds: small 18, large 8.",
+ "shapeScale": {
+  "small": 18,
+  "large": 8
+ },
+ "archived": {},
+ "guides": {},
+ "guidesOnly": [],
+ "outRules": {},
+ "lists": [
+  {
+   "key": "levy",
+   "name": "the Levy",
+   "title": "Orzhov Landfall (W B)",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "scrubland",
+     "count": 4
+    },
+    {
+     "cardId": "godless_shrine",
+     "count": 4
+    },
+    {
+     "cardId": "plains",
+     "count": 5
+    },
+    {
+     "cardId": "swamp",
+     "count": 5
+    },
+    {
+     "cardId": "evolving_wilds",
+     "count": 4
+    },
+    {
+     "cardId": "thawing_glaciers",
+     "count": 1
+    },
+    {
+     "cardId": "obsidian_observatory",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "emeria_angel",
+     "count": 4
+    },
+    {
+     "cardId": "dread_presence",
+     "count": 4
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 1
+    },
+    {
+     "cardId": "isaura_the_levy",
+     "count": 2
+    },
+    {
+     "cardId": "raise_the_alarm",
+     "count": 4
+    },
+    {
+     "cardId": "shadow_summoning",
+     "count": 2
+    },
+    {
+     "cardId": "bitterblossom",
+     "count": 3
+    },
+    {
+     "cardId": "vindicate",
+     "count": 4
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 3
+    },
+    {
+     "cardId": "glorious_anthem",
+     "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 1
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 2
+    },
+    {
+     "cardId": "drana_kalastria_bloodchief",
+     "count": 2
+    },
+    {
+     "cardId": "faerie_macabre",
+     "count": 2
+    },
+    {
+     "cardId": "disenchant",
+     "count": 2
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 2
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 2
+    },
+    {
+     "cardId": "youthful_valkyrie",
+     "count": 1
+    },
+    {
+     "cardId": "shadow_summoning",
+     "count": 1
+    }
+   ],
+   "source": "S69 seed (the planner's): the Open's Levy whole."
+  },
+  {
+   "key": "roll",
+   "name": "the Roll",
+   "title": "Orzhov Tokens (W B)",
+   "archetype": "aggro",
+   "decklist": [
+    {
+     "cardId": "scrubland",
+     "count": 4
+    },
+    {
+     "cardId": "godless_shrine",
+     "count": 4
+    },
+    {
+     "cardId": "obsidian_observatory",
+     "count": 1
+    },
+    {
+     "cardId": "plains",
+     "count": 6
+    },
+    {
+     "cardId": "swamp",
+     "count": 6
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "raise_the_alarm",
+     "count": 4
+    },
+    {
+     "cardId": "bitterblossom",
+     "count": 4
+    },
+    {
+     "cardId": "shadow_summoning",
+     "count": 3
+    },
+    {
+     "cardId": "captain_of_the_watch",
+     "count": 3
+    },
+    {
+     "cardId": "isaura_the_levy",
+     "count": 2
+    },
+    {
+     "cardId": "emeria_angel",
+     "count": 3
+    },
+    {
+     "cardId": "glorious_anthem",
+     "count": 4
+    },
+    {
+     "cardId": "vindicate",
+     "count": 4
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "karmic_mentor",
+     "count": 2
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 3
+    }
+   ],
+   "source": "S69 seed (the planner's): Esper's Roll whole."
+  },
+  {
+   "key": "chancel",
+   "name": "the Chancel",
+   "title": "Orzhov Control (W B)",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "scrubland",
+     "count": 4
+    },
+    {
+     "cardId": "godless_shrine",
+     "count": 4
+    },
+    {
+     "cardId": "obsidian_observatory",
+     "count": 1
+    },
+    {
+     "cardId": "plains",
+     "count": 5
+    },
+    {
+     "cardId": "swamp",
+     "count": 5
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "karmic_mentor",
+     "count": 4
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 3
+    },
+    {
+     "cardId": "vindicate",
+     "count": 4
+    },
+    {
+     "cardId": "the_jet_witch",
+     "count": 3
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 3
+    },
+    {
+     "cardId": "isaura_the_levy",
+     "count": 2
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 3
+    },
+    {
+     "cardId": "emeria_angel",
+     "count": 3
+    },
+    {
+     "cardId": "blood_artist",
+     "count": 4
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "disenchant",
+     "count": 2
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 2
+    },
+    {
+     "cardId": "faerie_macabre",
+     "count": 2
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 2
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 1
+    },
+    {
+     "cardId": "wall_of_reverence",
+     "count": 1
+    },
+    {
+     "cardId": "youthful_valkyrie",
+     "count": 1
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 1
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 2
+    },
+    {
+     "cardId": "retribution_of_the_meek",
+     "count": 1
+    }
+   ],
+   "source": "S69 seed (the planner's): Esper's Chancel whole (Mardu's holds Ushers)."
+  },
+  {
+   "key": "thicket",
+   "name": "the Thicket",
+   "title": "Selesnya Auras (G W)",
+   "archetype": "aggro",
+   "decklist": [
+    {
+     "cardId": "savannah",
+     "count": 4
+    },
+    {
+     "cardId": "temple_garden",
+     "count": 4
+    },
+    {
+     "cardId": "forest",
+     "count": 8
+    },
+    {
+     "cardId": "plains",
+     "count": 5
+    },
+    {
+     "cardId": "shevelport",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "gladecover_scout",
+     "count": 4
+    },
+    {
+     "cardId": "blurred_mongoose",
+     "count": 4
+    },
+    {
+     "cardId": "ovna_the_enchantress",
+     "count": 4
+    },
+    {
+     "cardId": "dungrove_elder",
+     "count": 4
+    },
+    {
+     "cardId": "the_emerald_keeper",
+     "count": 2
+    },
+    {
+     "cardId": "rancor",
+     "count": 4
+    },
+    {
+     "cardId": "blanchwood_armor",
+     "count": 4
+    },
+    {
+     "cardId": "spirit_link",
+     "count": 1
+    },
+    {
+     "cardId": "pacifism",
+     "count": 4
+    },
+    {
+     "cardId": "angelic_destiny",
+     "count": 4
+    }
+   ],
+   "source": "S69 seed (the planner's): Naya's Thicket whole."
+  },
+  {
+   "key": "auras",
+   "name": "Dungrove Auras",
+   "title": "Mono-Green Auras (G)",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "forest",
+     "count": 22
+    },
+    {
+     "cardId": "dungrove_elder",
+     "count": 4
+    },
+    {
+     "cardId": "harmonize",
+     "count": 3
+    },
+    {
+     "cardId": "penumbra_wurm",
+     "count": 2
+    },
+    {
+     "cardId": "rancor",
+     "count": 4
+    },
+    {
+     "cardId": "blanchwood_armor",
+     "count": 4
+    },
+    {
+     "cardId": "llanowar_elves",
+     "count": 4
+    },
+    {
+     "cardId": "gladecover_scout",
+     "count": 4
+    },
+    {
+     "cardId": "wall_of_blossoms",
+     "count": 4
+    },
+    {
+     "cardId": "gaean_wurm",
+     "count": 4
+    },
+    {
+     "cardId": "centaur_courser",
+     "count": 2
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 3
+    }
+   ],
+   "source": "S69 seed (the planner's): Peasant's Dungrove Auras whole."
+  },
+  {
+   "key": "bfh",
+   "name": "Black Forest Ham",
+   "title": "Golgari Auras (B G)",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "rancor",
+     "count": 4
+    },
+    {
+     "cardId": "unearth",
+     "count": 4
+    },
+    {
+     "cardId": "blanchwood_armor",
+     "count": 4
+    },
+    {
+     "cardId": "dungrove_elder",
+     "count": 4
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 4
+    },
+    {
+     "cardId": "gaean_wurm",
+     "count": 4
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 2
+    },
+    {
+     "cardId": "deadly_recluse",
+     "count": 2
+    },
+    {
+     "cardId": "diabolic_edict",
+     "count": 2
+    },
+    {
+     "cardId": "elvish_visionary",
+     "count": 4
+    },
+    {
+     "cardId": "overgrown_tomb",
+     "count": 4
+    },
+    {
+     "cardId": "evolving_wilds",
+     "count": 4
+    },
+    {
+     "cardId": "forest",
+     "count": 9
+    },
+    {
+     "cardId": "swamp",
+     "count": 5
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "doom_blade",
+     "count": 2
+    },
+    {
+     "cardId": "deadly_recluse",
+     "count": 2
+    },
+    {
+     "cardId": "diabolic_edict",
+     "count": 2
+    },
+    {
+     "cardId": "prey_upon",
+     "count": 2
+    },
+    {
+     "cardId": "typhoid_rats",
+     "count": 2
+    },
+    {
+     "cardId": "gladecover_scout",
+     "count": 4
+    },
+    {
+     "cardId": "giant_growth",
+     "count": 1
+    }
+   ],
+   "source": "S69 seed (the planner's): Black Forest Ham (Chris's) whole."
+  },
+  {
+   "key": "bw",
+   "name": "BW Aristocrats",
+   "title": "Orzhov Aristocrats (W B)",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "godless_shrine",
+     "count": 4
+    },
+    {
+     "cardId": "plains",
+     "count": 9
+    },
+    {
+     "cardId": "swamp",
+     "count": 10
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "blood_artist",
+     "count": 4
+    },
+    {
+     "cardId": "child_of_night",
+     "count": 4
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "nekrataal",
+     "count": 4
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 4
+    },
+    {
+     "cardId": "vitalist",
+     "count": 3
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 4
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 4
+    },
+    {
+     "cardId": "captain_of_the_watch",
+     "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "disenchant",
+     "count": 2
+    },
+    {
+     "cardId": "inspiring_overseer",
+     "count": 2
+    },
+    {
+     "cardId": "tendrils_of_corruption",
+     "count": 3
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 1
+    },
+    {
+     "cardId": "wall_of_reverence",
+     "count": 1
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 2
+    },
+    {
+     "cardId": "youthful_valkyrie",
+     "count": 1
+    },
+    {
+     "cardId": "retribution_of_the_meek",
+     "count": 3
+    }
+   ],
+   "source": "S69 seed (the planner's): Peasant's BW Aristocrats, promoted whole."
+  },
+  {
+   "key": "wskies",
+   "name": "White Skies",
+   "title": "Mono-White Lifegain Skies (W)",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "plains",
+     "count": 23
+    },
+    {
+     "cardId": "dazzling_angel",
+     "count": 4
+    },
+    {
+     "cardId": "youthful_valkyrie",
+     "count": 4
+    },
+    {
+     "cardId": "inspiring_overseer",
+     "count": 4
+    },
+    {
+     "cardId": "wall_of_reverence",
+     "count": 4
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 4
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 3
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 4
+    },
+    {
+     "cardId": "vitalist",
+     "count": 4
+    },
+    {
+     "cardId": "karmic_mentor",
+     "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "captain_of_the_watch",
+     "count": 2
+    },
+    {
+     "cardId": "disenchant",
+     "count": 2
+    },
+    {
+     "cardId": "glorious_anthem",
+     "count": 2
+    },
+    {
+     "cardId": "longbow_archer",
+     "count": 1
+    },
+    {
+     "cardId": "pacifism",
+     "count": 2
+    },
+    {
+     "cardId": "savannah_lions",
+     "count": 1
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 1
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 1
+    },
+    {
+     "cardId": "retribution_of_the_meek",
+     "count": 3
+    }
+   ],
+   "source": "S69 seed (the planner's): Peasant's White Skies, promoted whole."
+  },
+  {
+   "key": "warden",
+   "name": "Abzan Warden (working name)",
+   "title": "Abzan Lifegain (W b g)",
+   "archetype": "midrange",
+   "source": "S69 seed (the planner's): built by the implementer — the Warden (Abzan's lord) over Soul Warden, Dazzling Angel, Vitalist, Karmic Mentor and the Forerunner (the brief); Nighthawks, Swords and Putrefy.",
+   "decklist": [
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "the_warden",
+     "count": 2
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "vitalist",
+     "count": 4
+    },
+    {
+     "cardId": "karmic_mentor",
+     "count": 4
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 4
+    },
+    {
+     "cardId": "dazzling_angel",
+     "count": 4
+    },
+    {
+     "cardId": "wall_of_reverence",
+     "count": 2
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 4
+    },
+    {
+     "cardId": "putrefy",
+     "count": 2
+    },
+    {
+     "cardId": "scrubland",
+     "count": 4
+    },
+    {
+     "cardId": "savannah",
+     "count": 4
+    },
+    {
+     "cardId": "bayou",
+     "count": 4
+    },
+    {
+     "cardId": "godless_shrine",
+     "count": 2
+    },
+    {
+     "cardId": "temple_garden",
+     "count": 2
+    },
+    {
+     "cardId": "overgrown_tomb",
+     "count": 2
+    },
+    {
+     "cardId": "plains",
+     "count": 3
+    },
+    {
+     "cardId": "forest",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "wrath_of_god",
+     "count": 2
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 3
+    },
+    {
+     "cardId": "duress",
+     "count": 2
+    },
+    {
+     "cardId": "disenchant",
+     "count": 2
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 3
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 3
+    }
+   ]
+  },
+  {
+   "key": "abzantokens",
+   "name": "Abzan Tokens (working name)",
+   "title": "Abzan Tokens (W b g)",
+   "archetype": "aggro",
+   "decklist": [
+    {
+     "cardId": "scrubland",
+     "count": 4
+    },
+    {
+     "cardId": "godless_shrine",
+     "count": 4
+    },
+    {
+     "cardId": "obsidian_observatory",
+     "count": 1
+    },
+    {
+     "cardId": "plains",
+     "count": 4
+    },
+    {
+     "cardId": "temple_garden",
+     "count": 2
+    },
+    {
+     "cardId": "swamp",
+     "count": 2
+    },
+    {
+     "cardId": "bayou",
+     "count": 2
+    },
+    {
+     "cardId": "savannah",
+     "count": 2
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "raise_the_alarm",
+     "count": 4
+    },
+    {
+     "cardId": "bitterblossom",
+     "count": 4
+    },
+    {
+     "cardId": "shadow_summoning",
+     "count": 3
+    },
+    {
+     "cardId": "captain_of_the_watch",
+     "count": 3
+    },
+    {
+     "cardId": "isaura_the_levy",
+     "count": 2
+    },
+    {
+     "cardId": "emeria_angel",
+     "count": 3
+    },
+    {
+     "cardId": "glorious_anthem",
+     "count": 4
+    },
+    {
+     "cardId": "harmonize",
+     "count": 2
+    },
+    {
+     "cardId": "rampaging_baloths",
+     "count": 2
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "karmic_mentor",
+     "count": 2
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 3
+    }
+   ],
+   "source": "S69 seed (the planner's): built by the implementer from Esper's Roll — Abzan tokens (the brief: the Roll with Rampaging Baloths and Harmonize): its four Vindicates for two Baloths and two Harmonizes; four Swamps for two Savannahs and two Bayous, two Plains for two Temple Gardens, Mox Jet for Mox Emerald."
+  }
+ ]
+}

@@ -1,0 +1,1066 @@
+{
+ "_comment": "Bant (S69): green, white and blue — the land rule (ADR-181); the Open's restricted list where it applies; the laws banned; sixty cards, four of a kind. Seeds from the registered lists whole where legal, every swap in its source; the builds the brief names (working names). `pnpm open:gen` validates each against Bant and generates the code and docs/reference/bant-lists.md.",
+ "_shapeScale_note": "S69 (ADR-186): frozen at the values derived from Bant's first field — its ten seeds: small 16, large 7.",
+ "shapeScale": {
+  "small": 16,
+  "large": 7
+ },
+ "archived": {},
+ "guides": {},
+ "guidesOnly": [],
+ "outRules": {},
+ "lists": [
+  {
+   "key": "skies",
+   "name": "the Aerie",
+   "title": "Azorius Skies (W U)",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "hallowed_fountain",
+     "count": 4
+    },
+    {
+     "cardId": "tundra",
+     "count": 4
+    },
+    {
+     "cardId": "plains",
+     "count": 5
+    },
+    {
+     "cardId": "island",
+     "count": 8
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "youthful_valkyrie",
+     "count": 4
+    },
+    {
+     "cardId": "inspiring_overseer",
+     "count": 4
+    },
+    {
+     "cardId": "plumecreed_escort",
+     "count": 4
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 4
+    },
+    {
+     "cardId": "traumatizer",
+     "count": 2
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 3
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 2
+    },
+    {
+     "cardId": "karmic_mentor",
+     "count": 2
+    },
+    {
+     "cardId": "serra_angel",
+     "count": 2
+    },
+    {
+     "cardId": "emeria_angel",
+     "count": 2
+    },
+    {
+     "cardId": "faerie_formation",
+     "count": 1
+    },
+    {
+     "cardId": "control_magic",
+     "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "control_magic",
+     "count": 2
+    },
+    {
+     "cardId": "disenchant",
+     "count": 2
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 2
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 3
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 1
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 2
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 2
+    },
+    {
+     "cardId": "retribution_of_the_meek",
+     "count": 1
+    }
+   ],
+   "source": "S69 seed (the planner's): the Aerie (Jeskai's: the Observatory for a Plains, the Macabre for a third Crypt)."
+  },
+  {
+   "key": "thicket",
+   "name": "the Thicket",
+   "title": "Selesnya Auras (G W)",
+   "archetype": "aggro",
+   "decklist": [
+    {
+     "cardId": "savannah",
+     "count": 4
+    },
+    {
+     "cardId": "temple_garden",
+     "count": 4
+    },
+    {
+     "cardId": "forest",
+     "count": 8
+    },
+    {
+     "cardId": "plains",
+     "count": 5
+    },
+    {
+     "cardId": "shevelport",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "gladecover_scout",
+     "count": 4
+    },
+    {
+     "cardId": "blurred_mongoose",
+     "count": 4
+    },
+    {
+     "cardId": "ovna_the_enchantress",
+     "count": 4
+    },
+    {
+     "cardId": "dungrove_elder",
+     "count": 4
+    },
+    {
+     "cardId": "the_emerald_keeper",
+     "count": 2
+    },
+    {
+     "cardId": "rancor",
+     "count": 4
+    },
+    {
+     "cardId": "blanchwood_armor",
+     "count": 4
+    },
+    {
+     "cardId": "spirit_link",
+     "count": 1
+    },
+    {
+     "cardId": "pacifism",
+     "count": 4
+    },
+    {
+     "cardId": "angelic_destiny",
+     "count": 4
+    }
+   ],
+   "source": "S69 seed (the planner's): Naya's Thicket whole."
+  },
+  {
+   "key": "uwskies",
+   "name": "UW Skies",
+   "title": "Azorius Skies (W U)",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "hallowed_fountain",
+     "count": 4
+    },
+    {
+     "cardId": "plains",
+     "count": 10
+    },
+    {
+     "cardId": "island",
+     "count": 10
+    },
+    {
+     "cardId": "youthful_valkyrie",
+     "count": 4
+    },
+    {
+     "cardId": "inspiring_overseer",
+     "count": 4
+    },
+    {
+     "cardId": "plumecreed_escort",
+     "count": 4
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 4
+    },
+    {
+     "cardId": "traumatizer",
+     "count": 4
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 4
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "dawnwing_marshal",
+     "count": 4
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 2
+    },
+    {
+     "cardId": "karmic_mentor",
+     "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "arcane_collector",
+     "count": 1
+    },
+    {
+     "cardId": "disenchant",
+     "count": 2
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 2
+    },
+    {
+     "cardId": "protocol",
+     "count": 2
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 1
+    },
+    {
+     "cardId": "wall_of_air",
+     "count": 1
+    },
+    {
+     "cardId": "wall_of_reverence",
+     "count": 1
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 2
+    },
+    {
+     "cardId": "retribution_of_the_meek",
+     "count": 3
+    }
+   ],
+   "source": "S69 seed (the planner's): Peasant's UW Skies, promoted whole."
+  },
+  {
+   "key": "countersnake",
+   "name": "Countersnake",
+   "title": "Four-Colour Countersnake (G U w b)",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "forest",
+     "count": 2
+    },
+    {
+     "cardId": "temple_garden",
+     "count": 2
+    },
+    {
+     "cardId": "plains",
+     "count": 1
+    },
+    {
+     "cardId": "savannah",
+     "count": 4
+    },
+    {
+     "cardId": "tropical_island",
+     "count": 4
+    },
+    {
+     "cardId": "tundra",
+     "count": 4
+    },
+    {
+     "cardId": "wrackroot",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "shevelport",
+     "count": 1
+    },
+    {
+     "cardId": "birds_of_paradise",
+     "count": 4
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 4
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "deadly_recluse",
+     "count": 2
+    },
+    {
+     "cardId": "time_walk",
+     "count": 1
+    },
+    {
+     "cardId": "wall_of_blossoms",
+     "count": 2
+    },
+    {
+     "cardId": "absorb",
+     "count": 2
+    },
+    {
+     "cardId": "serra_angel",
+     "count": 3
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 4
+    },
+    {
+     "cardId": "tidewall",
+     "count": 2
+    },
+    {
+     "cardId": "mystic_snake",
+     "count": 2
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 4
+    },
+    {
+     "cardId": "the_sower",
+     "count": 3
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "tormods_crypt",
+     "count": 4
+    },
+    {
+     "cardId": "tidewall",
+     "count": 1
+    },
+    {
+     "cardId": "wall_of_blossoms",
+     "count": 1
+    },
+    {
+     "cardId": "deadly_recluse",
+     "count": 1
+    },
+    {
+     "cardId": "treetop_snarespinner",
+     "count": 1
+    },
+    {
+     "cardId": "wall_of_reverence",
+     "count": 1
+    },
+    {
+     "cardId": "temporal_spring",
+     "count": 2
+    },
+    {
+     "cardId": "protocol",
+     "count": 2
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 2
+    }
+   ],
+   "source": "S69 seed (the planner's) (Chris's ruling): the Open's Countersnake — its three Clios (black) for three Serra Angels, Demonic Tutor for an Absorb; four Underground Seas for four Tundras, four Bayous for two Temple Gardens and two Forests, the Observatory for a Plains; its fifteen's two Macabres for two Tormod's Crypts and its Drana for a Wall of Reverence."
+  },
+  {
+   "key": "auras",
+   "name": "Dungrove Auras",
+   "title": "Mono-Green Auras (G)",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "forest",
+     "count": 22
+    },
+    {
+     "cardId": "dungrove_elder",
+     "count": 4
+    },
+    {
+     "cardId": "harmonize",
+     "count": 3
+    },
+    {
+     "cardId": "penumbra_wurm",
+     "count": 2
+    },
+    {
+     "cardId": "rancor",
+     "count": 4
+    },
+    {
+     "cardId": "blanchwood_armor",
+     "count": 4
+    },
+    {
+     "cardId": "llanowar_elves",
+     "count": 4
+    },
+    {
+     "cardId": "gladecover_scout",
+     "count": 4
+    },
+    {
+     "cardId": "wall_of_blossoms",
+     "count": 4
+    },
+    {
+     "cardId": "gaean_wurm",
+     "count": 4
+    },
+    {
+     "cardId": "centaur_courser",
+     "count": 2
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 3
+    }
+   ],
+   "source": "S69 seed (the planner's): Peasant's Dungrove Auras whole."
+  },
+  {
+   "key": "wurmspeaker",
+   "name": "the Wurmspeaker",
+   "title": "Mono-Green Ramp",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "forest",
+     "count": 20
+    },
+    {
+     "cardId": "tranquil_thicket",
+     "count": 2
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "llanowar_elves",
+     "count": 4
+    },
+    {
+     "cardId": "birds_of_paradise",
+     "count": 4
+    },
+    {
+     "cardId": "wood_elves",
+     "count": 4
+    },
+    {
+     "cardId": "seedborn_muse",
+     "count": 4
+    },
+    {
+     "cardId": "gaean_wurm",
+     "count": 3
+    },
+    {
+     "cardId": "pelakka_wurm",
+     "count": 2
+    },
+    {
+     "cardId": "baru_wurmspeaker",
+     "count": 3
+    },
+    {
+     "cardId": "treetop_snarespinner",
+     "count": 2
+    },
+    {
+     "cardId": "the_emerald_keeper",
+     "count": 2
+    },
+    {
+     "cardId": "rampant_growth",
+     "count": 4
+    },
+    {
+     "cardId": "prey_upon",
+     "count": 2
+    },
+    {
+     "cardId": "rampaging_baloths",
+     "count": 2
+    }
+   ],
+   "source": "S69 seed (the planner's): the Open's Wurmspeaker whole."
+  },
+  {
+   "key": "wskies",
+   "name": "White Skies",
+   "title": "Mono-White Lifegain Skies (W)",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "plains",
+     "count": 23
+    },
+    {
+     "cardId": "dazzling_angel",
+     "count": 4
+    },
+    {
+     "cardId": "youthful_valkyrie",
+     "count": 4
+    },
+    {
+     "cardId": "inspiring_overseer",
+     "count": 4
+    },
+    {
+     "cardId": "wall_of_reverence",
+     "count": 4
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 4
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 3
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 4
+    },
+    {
+     "cardId": "vitalist",
+     "count": 4
+    },
+    {
+     "cardId": "karmic_mentor",
+     "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "captain_of_the_watch",
+     "count": 2
+    },
+    {
+     "cardId": "disenchant",
+     "count": 2
+    },
+    {
+     "cardId": "glorious_anthem",
+     "count": 2
+    },
+    {
+     "cardId": "longbow_archer",
+     "count": 1
+    },
+    {
+     "cardId": "pacifism",
+     "count": 2
+    },
+    {
+     "cardId": "savannah_lions",
+     "count": 1
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 1
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 1
+    },
+    {
+     "cardId": "retribution_of_the_meek",
+     "count": 3
+    }
+   ],
+   "source": "S69 seed (the planner's): Peasant's White Skies, promoted whole."
+  },
+  {
+   "key": "locks",
+   "name": "Jeskai Locks (working name)",
+   "title": "Azorius Control (W U)",
+   "archetype": "control",
+   "decklist": [
+    {
+     "cardId": "tundra",
+     "count": 4
+    },
+    {
+     "cardId": "hallowed_fountain",
+     "count": 4
+    },
+    {
+     "cardId": "island",
+     "count": 7
+    },
+    {
+     "cardId": "plains",
+     "count": 6
+    },
+    {
+     "cardId": "library_of_alexandria",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "serra_angel",
+     "count": 4
+    },
+    {
+     "cardId": "arcanis_the_omnipotent",
+     "count": 1
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 2
+    },
+    {
+     "cardId": "absorb",
+     "count": 4
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 3
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 3
+    },
+    {
+     "cardId": "divination",
+     "count": 1
+    },
+    {
+     "cardId": "time_walk",
+     "count": 1
+    },
+    {
+     "cardId": "control_magic",
+     "count": 4
+    },
+    {
+     "cardId": "protocol",
+     "count": 2
+    },
+    {
+     "cardId": "karmic_mentor",
+     "count": 2
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 1
+    },
+    {
+     "cardId": "faerie_formation",
+     "count": 2
+    },
+    {
+     "cardId": "brainstorm",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "essence_scatter",
+     "count": 2
+    },
+    {
+     "cardId": "protocol",
+     "count": 2
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 3
+    },
+    {
+     "cardId": "vigil_keeper",
+     "count": 3
+    },
+    {
+     "cardId": "disenchant",
+     "count": 2
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 1
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 1
+    },
+    {
+     "cardId": "retribution_of_the_meek",
+     "count": 1
+    }
+   ],
+   "source": "S69 seed (the planner's): Jeskai Locks (UW) whole."
+  },
+  {
+   "key": "sower",
+   "name": "Bant Sower (working name)",
+   "title": "Bant Midrange (G W u)",
+   "archetype": "midrange",
+   "source": "S69 seed (the planner's): built by the implementer — the Sower (Bant's lord) over the Forerunner, Restoration Angel, Control Magic and the Wave (the brief; its Clio is black — left out); Walls and Birds to reach her. S69 (the lord read, ADR-168): two Serra Angels for two more Sowers (+2.6 ± 1.2).",
+   "decklist": [
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "time_walk",
+     "count": 1
+    },
+    {
+     "cardId": "the_sower",
+     "count": 4
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 4
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 4
+    },
+    {
+     "cardId": "wall_of_blossoms",
+     "count": 4
+    },
+    {
+     "cardId": "birds_of_paradise",
+     "count": 4
+    },
+    {
+     "cardId": "control_magic",
+     "count": 3
+    },
+    {
+     "cardId": "wave_of_reckoning",
+     "count": 2
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 4
+    },
+    {
+     "cardId": "counterspell",
+     "count": 3
+    },
+    {
+     "cardId": "savannah",
+     "count": 4
+    },
+    {
+     "cardId": "tropical_island",
+     "count": 4
+    },
+    {
+     "cardId": "tundra",
+     "count": 4
+    },
+    {
+     "cardId": "temple_garden",
+     "count": 2
+    },
+    {
+     "cardId": "hallowed_fountain",
+     "count": 2
+    },
+    {
+     "cardId": "shevelport",
+     "count": 1
+    },
+    {
+     "cardId": "wrackroot",
+     "count": 1
+    },
+    {
+     "cardId": "forest",
+     "count": 2
+    },
+    {
+     "cardId": "plains",
+     "count": 2
+    },
+    {
+     "cardId": "island",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "wrath_of_god",
+     "count": 3
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 3
+    },
+    {
+     "cardId": "disenchant",
+     "count": 2
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 3
+    },
+    {
+     "cardId": "absorb",
+     "count": 2
+    },
+    {
+     "cardId": "retribution_of_the_meek",
+     "count": 2
+    }
+   ]
+  },
+  {
+   "key": "hexaura",
+   "name": "Bant Auras (working name)",
+   "title": "Bant Hexproof Auras (G w u)",
+   "archetype": "aggro",
+   "source": "S69 seed (the planner's): built by the implementer — Dungrove Elder and Gladecover Scout under Rancor, Blanchwood Armor and Angelic Destiny, Ovna drawing off them (the brief; Protocol needs more blue than this mana has — Pacifism in its slot).",
+   "decklist": [
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "dungrove_elder",
+     "count": 4
+    },
+    {
+     "cardId": "gladecover_scout",
+     "count": 4
+    },
+    {
+     "cardId": "ovna_the_enchantress",
+     "count": 2
+    },
+    {
+     "cardId": "angelic_destiny",
+     "count": 3
+    },
+    {
+     "cardId": "rancor",
+     "count": 4
+    },
+    {
+     "cardId": "blanchwood_armor",
+     "count": 4
+    },
+    {
+     "cardId": "pacifism",
+     "count": 2
+    },
+    {
+     "cardId": "llanowar_elves",
+     "count": 4
+    },
+    {
+     "cardId": "birds_of_paradise",
+     "count": 2
+    },
+    {
+     "cardId": "harmonize",
+     "count": 2
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 4
+    },
+    {
+     "cardId": "forest",
+     "count": 10
+    },
+    {
+     "cardId": "savannah",
+     "count": 4
+    },
+    {
+     "cardId": "temple_garden",
+     "count": 2
+    },
+    {
+     "cardId": "tropical_island",
+     "count": 2
+    },
+    {
+     "cardId": "plains",
+     "count": 2
+    },
+    {
+     "cardId": "island",
+     "count": 1
+    },
+    {
+     "cardId": "shevelport",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "tormods_crypt",
+     "count": 3
+    },
+    {
+     "cardId": "disenchant",
+     "count": 3
+    },
+    {
+     "cardId": "wall_of_blossoms",
+     "count": 3
+    },
+    {
+     "cardId": "penumbra_wurm",
+     "count": 3
+    },
+    {
+     "cardId": "retribution_of_the_meek",
+     "count": 3
+    }
+   ]
+  }
+ ]
+}

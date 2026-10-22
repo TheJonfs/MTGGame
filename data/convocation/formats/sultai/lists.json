@@ -1,0 +1,962 @@
+{
+ "_comment": "Sultai (S69): black, green and blue — the land rule (ADR-181); the Open's restricted list where it applies; the laws banned; sixty cards, four of a kind. Seeds from the registered lists whole where legal, every swap in its source; the builds the brief names (working names). `pnpm open:gen` validates each against Sultai and generates the code and docs/reference/sultai-lists.md.",
+ "_shapeScale_note": "S69 (ADR-186): frozen at the values derived from Sultai's first field — its ten seeds: small 14, large 8.",
+ "shapeScale": {
+  "small": 14,
+  "large": 8
+ },
+ "archived": {},
+ "guides": {},
+ "guidesOnly": [],
+ "outRules": {},
+ "lists": [
+  {
+   "key": "writ",
+   "name": "the Writ",
+   "title": "Dimir Control (U B)",
+   "archetype": "control",
+   "decklist": [
+    {
+     "cardId": "library_of_alexandria",
+     "count": 1
+    },
+    {
+     "cardId": "underground_sea",
+     "count": 4
+    },
+    {
+     "cardId": "watery_grave",
+     "count": 4
+    },
+    {
+     "cardId": "island",
+     "count": 6
+    },
+    {
+     "cardId": "swamp",
+     "count": 5
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "arcane_collector",
+     "count": 3
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 3
+    },
+    {
+     "cardId": "protocol",
+     "count": 4
+    },
+    {
+     "cardId": "time_walk",
+     "count": 1
+    },
+    {
+     "cardId": "tidewall",
+     "count": 3
+    },
+    {
+     "cardId": "the_jet_witch",
+     "count": 3
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "undermine",
+     "count": 4
+    },
+    {
+     "cardId": "clio_lady_of_the_depths",
+     "count": 4
+    },
+    {
+     "cardId": "gravitational_shift",
+     "count": 1
+    },
+    {
+     "cardId": "faerie_formation",
+     "count": 1
+    },
+    {
+     "cardId": "drana_kalastria_bloodchief",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "tormods_crypt",
+     "count": 4
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 4
+    },
+    {
+     "cardId": "faerie_macabre",
+     "count": 4
+    },
+    {
+     "cardId": "control_magic",
+     "count": 3
+    }
+   ],
+   "source": "S69 seed (the planner's): Esper's Writ whole."
+  },
+  {
+   "key": "tempo",
+   "name": "the Eddy",
+   "title": "Blue Tempo, splash Clio (U b)",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "underground_sea",
+     "count": 4
+    },
+    {
+     "cardId": "watery_grave",
+     "count": 4
+    },
+    {
+     "cardId": "island",
+     "count": 16
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "man_o_war",
+     "count": 4
+    },
+    {
+     "cardId": "aether_channeler",
+     "count": 4
+    },
+    {
+     "cardId": "plumecreed_escort",
+     "count": 4
+    },
+    {
+     "cardId": "tidewall",
+     "count": 3
+    },
+    {
+     "cardId": "control_magic",
+     "count": 3
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "boomerang",
+     "count": 3
+    },
+    {
+     "cardId": "clio_lady_of_the_depths",
+     "count": 3
+    },
+    {
+     "cardId": "traumatizer",
+     "count": 4
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 2
+    }
+   ],
+   "source": "S69 seed (the planner's): Esper's Eddy whole."
+  },
+  {
+   "key": "undertow",
+   "name": "the Undertow",
+   "title": "Dimir Mill (U B)",
+   "archetype": "control",
+   "decklist": [
+    {
+     "cardId": "underground_sea",
+     "count": 4
+    },
+    {
+     "cardId": "watery_grave",
+     "count": 4
+    },
+    {
+     "cardId": "island",
+     "count": 6
+    },
+    {
+     "cardId": "swamp",
+     "count": 3
+    },
+    {
+     "cardId": "evolving_wilds",
+     "count": 4
+    },
+    {
+     "cardId": "thawing_glaciers",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "hedron_crab",
+     "count": 4
+    },
+    {
+     "cardId": "traumatizer",
+     "count": 4
+    },
+    {
+     "cardId": "tome_scour",
+     "count": 4
+    },
+    {
+     "cardId": "counterspell",
+     "count": 3
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 2
+    },
+    {
+     "cardId": "glimpse_the_unthinkable",
+     "count": 4
+    },
+    {
+     "cardId": "tidewall",
+     "count": 4
+    },
+    {
+     "cardId": "clio_lady_of_the_depths",
+     "count": 4
+    },
+    {
+     "cardId": "control_magic",
+     "count": 3
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 3
+    }
+   ],
+   "source": "S69 seed (the planner's): Esper's Undertow whole."
+  },
+  {
+   "key": "depths",
+   "name": "the Depths",
+   "title": "Sultai Control (U B G)",
+   "archetype": "control",
+   "decklist": [
+    {
+     "cardId": "clio_lady_of_the_depths",
+     "count": 4
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "undermine",
+     "count": 2
+    },
+    {
+     "cardId": "tidewall",
+     "count": 4
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    },
+    {
+     "cardId": "boomerang",
+     "count": 1
+    },
+    {
+     "cardId": "control_magic",
+     "count": 2
+    },
+    {
+     "cardId": "seraphina_the_initiative",
+     "count": 1
+    },
+    {
+     "cardId": "temporal_spring",
+     "count": 2
+    },
+    {
+     "cardId": "putrefy",
+     "count": 1
+    },
+    {
+     "cardId": "the_reeve",
+     "count": 1
+    },
+    {
+     "cardId": "faerie_formation",
+     "count": 1
+    },
+    {
+     "cardId": "traumatizer",
+     "count": 2
+    },
+    {
+     "cardId": "drana_kalastria_bloodchief",
+     "count": 1
+    },
+    {
+     "cardId": "zombify",
+     "count": 1
+    },
+    {
+     "cardId": "mystic_snake",
+     "count": 1
+    },
+    {
+     "cardId": "zinnia_the_undertow",
+     "count": 1
+    },
+    {
+     "cardId": "time_walk",
+     "count": 1
+    },
+    {
+     "cardId": "wall_of_blossoms",
+     "count": 1
+    },
+    {
+     "cardId": "birds_of_paradise",
+     "count": 4
+    },
+    {
+     "cardId": "arcane_collector",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "library_of_alexandria",
+     "count": 1
+    },
+    {
+     "cardId": "wrackroot",
+     "count": 1
+    },
+    {
+     "cardId": "bayou",
+     "count": 4
+    },
+    {
+     "cardId": "tropical_island",
+     "count": 4
+    },
+    {
+     "cardId": "underground_sea",
+     "count": 4
+    },
+    {
+     "cardId": "island",
+     "count": 1
+    },
+    {
+     "cardId": "swamp",
+     "count": 1
+    },
+    {
+     "cardId": "brainstorm",
+     "count": 1
+    },
+    {
+     "cardId": "watery_grave",
+     "count": 1
+    },
+    {
+     "cardId": "breeding_pool",
+     "count": 1
+    }
+   ],
+   "source": "S69 seed (the planner's) (Chris's ruling): the Open's Depths — Sultai already; its Mox Pearl and Mox Ruby for an Island and a Swamp."
+  },
+  {
+   "key": "auras",
+   "name": "Dungrove Auras",
+   "title": "Mono-Green Auras (G)",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "forest",
+     "count": 22
+    },
+    {
+     "cardId": "dungrove_elder",
+     "count": 4
+    },
+    {
+     "cardId": "harmonize",
+     "count": 3
+    },
+    {
+     "cardId": "penumbra_wurm",
+     "count": 2
+    },
+    {
+     "cardId": "rancor",
+     "count": 4
+    },
+    {
+     "cardId": "blanchwood_armor",
+     "count": 4
+    },
+    {
+     "cardId": "llanowar_elves",
+     "count": 4
+    },
+    {
+     "cardId": "gladecover_scout",
+     "count": 4
+    },
+    {
+     "cardId": "wall_of_blossoms",
+     "count": 4
+    },
+    {
+     "cardId": "gaean_wurm",
+     "count": 4
+    },
+    {
+     "cardId": "centaur_courser",
+     "count": 2
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 3
+    }
+   ],
+   "source": "S69 seed (the planner's): Peasant's Dungrove Auras whole."
+  },
+  {
+   "key": "wurmspeaker",
+   "name": "the Wurmspeaker",
+   "title": "Mono-Green Ramp",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "forest",
+     "count": 20
+    },
+    {
+     "cardId": "tranquil_thicket",
+     "count": 2
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "llanowar_elves",
+     "count": 4
+    },
+    {
+     "cardId": "birds_of_paradise",
+     "count": 4
+    },
+    {
+     "cardId": "wood_elves",
+     "count": 4
+    },
+    {
+     "cardId": "seedborn_muse",
+     "count": 4
+    },
+    {
+     "cardId": "gaean_wurm",
+     "count": 3
+    },
+    {
+     "cardId": "pelakka_wurm",
+     "count": 2
+    },
+    {
+     "cardId": "baru_wurmspeaker",
+     "count": 3
+    },
+    {
+     "cardId": "treetop_snarespinner",
+     "count": 2
+    },
+    {
+     "cardId": "the_emerald_keeper",
+     "count": 2
+    },
+    {
+     "cardId": "rampant_growth",
+     "count": 4
+    },
+    {
+     "cardId": "prey_upon",
+     "count": 2
+    },
+    {
+     "cardId": "rampaging_baloths",
+     "count": 2
+    }
+   ],
+   "source": "S69 seed (the planner's): the Open's Wurmspeaker whole."
+  },
+  {
+   "key": "bfh",
+   "name": "Black Forest Ham",
+   "title": "Golgari Auras (B G)",
+   "archetype": "midrange",
+   "decklist": [
+    {
+     "cardId": "rancor",
+     "count": 4
+    },
+    {
+     "cardId": "unearth",
+     "count": 4
+    },
+    {
+     "cardId": "blanchwood_armor",
+     "count": 4
+    },
+    {
+     "cardId": "dungrove_elder",
+     "count": 4
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 4
+    },
+    {
+     "cardId": "gaean_wurm",
+     "count": 4
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 2
+    },
+    {
+     "cardId": "deadly_recluse",
+     "count": 2
+    },
+    {
+     "cardId": "diabolic_edict",
+     "count": 2
+    },
+    {
+     "cardId": "elvish_visionary",
+     "count": 4
+    },
+    {
+     "cardId": "overgrown_tomb",
+     "count": 4
+    },
+    {
+     "cardId": "evolving_wilds",
+     "count": 4
+    },
+    {
+     "cardId": "forest",
+     "count": 9
+    },
+    {
+     "cardId": "swamp",
+     "count": 5
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "doom_blade",
+     "count": 2
+    },
+    {
+     "cardId": "deadly_recluse",
+     "count": 2
+    },
+    {
+     "cardId": "diabolic_edict",
+     "count": 2
+    },
+    {
+     "cardId": "prey_upon",
+     "count": 2
+    },
+    {
+     "cardId": "typhoid_rats",
+     "count": 2
+    },
+    {
+     "cardId": "gladecover_scout",
+     "count": 4
+    },
+    {
+     "cardId": "giant_growth",
+     "count": 1
+    }
+   ],
+   "source": "S69 seed (the planner's): Black Forest Ham (Chris's) whole."
+  },
+  {
+   "key": "mbc",
+   "name": "the Barrow",
+   "title": "Mono-Black Control (B)",
+   "archetype": "control",
+   "decklist": [
+    {
+     "cardId": "swamp",
+     "count": 22
+    },
+    {
+     "cardId": "barren_moor",
+     "count": 2
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "the_jet_witch",
+     "count": 4
+    },
+    {
+     "cardId": "drana_kalastria_bloodchief",
+     "count": 2
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "hypnotic_specter",
+     "count": 4
+    },
+    {
+     "cardId": "nekrataal",
+     "count": 4
+    },
+    {
+     "cardId": "gravedigger",
+     "count": 2
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 4
+    },
+    {
+     "cardId": "diabolic_edict",
+     "count": 3
+    },
+    {
+     "cardId": "tendrils_of_corruption",
+     "count": 2
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    },
+    {
+     "cardId": "duress",
+     "count": 2
+    },
+    {
+     "cardId": "sign_in_blood",
+     "count": 2
+    }
+   ],
+   "source": "S69 seed (the planner's): Esper's Barrow whole (the pure-black shape)."
+  },
+  {
+   "key": "reeve",
+   "name": "Sultai Reeve (working name)",
+   "title": "Sultai Control (U B g)",
+   "archetype": "control",
+   "source": "S69 seed (the planner's): built by the implementer — the Reeve over Clio, Protocol, Control Magic, Putrefy and the Forerunner (the brief); Walls of Blossoms and counters to reach her.",
+   "decklist": [
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "time_walk",
+     "count": 1
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    },
+    {
+     "cardId": "the_reeve",
+     "count": 2
+    },
+    {
+     "cardId": "clio_lady_of_the_depths",
+     "count": 4
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 4
+    },
+    {
+     "cardId": "seraphina_the_initiative",
+     "count": 2
+    },
+    {
+     "cardId": "wall_of_blossoms",
+     "count": 4
+    },
+    {
+     "cardId": "protocol",
+     "count": 3
+    },
+    {
+     "cardId": "control_magic",
+     "count": 3
+    },
+    {
+     "cardId": "putrefy",
+     "count": 4
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "undermine",
+     "count": 1
+    },
+    {
+     "cardId": "harmonize",
+     "count": 1
+    },
+    {
+     "cardId": "underground_sea",
+     "count": 4
+    },
+    {
+     "cardId": "bayou",
+     "count": 4
+    },
+    {
+     "cardId": "tropical_island",
+     "count": 4
+    },
+    {
+     "cardId": "watery_grave",
+     "count": 2
+    },
+    {
+     "cardId": "overgrown_tomb",
+     "count": 2
+    },
+    {
+     "cardId": "wrackroot",
+     "count": 1
+    },
+    {
+     "cardId": "library_of_alexandria",
+     "count": 1
+    },
+    {
+     "cardId": "island",
+     "count": 2
+    },
+    {
+     "cardId": "swamp",
+     "count": 1
+    },
+    {
+     "cardId": "forest",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "tormods_crypt",
+     "count": 3
+    },
+    {
+     "cardId": "faerie_macabre",
+     "count": 3
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 3
+    },
+    {
+     "cardId": "duress",
+     "count": 3
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 3
+    }
+   ]
+  },
+  {
+   "key": "mill",
+   "name": "Sultai Mill (working name)",
+   "title": "Sultai Mill (U B g)",
+   "archetype": "control",
+   "decklist": [
+    {
+     "cardId": "underground_sea",
+     "count": 4
+    },
+    {
+     "cardId": "watery_grave",
+     "count": 4
+    },
+    {
+     "cardId": "island",
+     "count": 6
+    },
+    {
+     "cardId": "swamp",
+     "count": 3
+    },
+    {
+     "cardId": "tropical_island",
+     "count": 2
+    },
+    {
+     "cardId": "bayou",
+     "count": 2
+    },
+    {
+     "cardId": "thawing_glaciers",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "hedron_crab",
+     "count": 4
+    },
+    {
+     "cardId": "traumatizer",
+     "count": 4
+    },
+    {
+     "cardId": "tome_scour",
+     "count": 4
+    },
+    {
+     "cardId": "counterspell",
+     "count": 3
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 2
+    },
+    {
+     "cardId": "glimpse_the_unthinkable",
+     "count": 4
+    },
+    {
+     "cardId": "tidewall",
+     "count": 4
+    },
+    {
+     "cardId": "clio_lady_of_the_depths",
+     "count": 4
+    },
+    {
+     "cardId": "control_magic",
+     "count": 3
+    },
+    {
+     "cardId": "zinnia_the_undertow",
+     "count": 3
+    }
+   ],
+   "source": "S69 seed (the planner's): built by the implementer from Esper's Undertow — Sultai mill (the brief: the Undertow with Tome Scour and Clio, both already in it): its three Nighthawks for three Zinnias (a creature of theirs leaving mills its power), its four Evolving Wilds for two Bayous and two Tropical Islands."
+  }
+ ]
+}

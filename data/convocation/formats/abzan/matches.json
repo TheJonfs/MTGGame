@@ -1,0 +1,67 @@
+{
+ "_comment": "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.",
+ "when": "2026-10-22",
+ "matchesAPairing": 60,
+ "byList": {
+  "abzantokens": {
+   "matches": 50.6,
+   "gameOne": 48.7,
+   "later": 52.3,
+   "n": 540
+  },
+  "auras": {
+   "matches": 57,
+   "gameOne": 52.8,
+   "later": 55.1,
+   "n": 540
+  },
+  "bfh": {
+   "matches": 39.8,
+   "gameOne": 42.4,
+   "later": 42.9,
+   "n": 540
+  },
+  "bw": {
+   "matches": 47.2,
+   "gameOne": 44.4,
+   "later": 49.7,
+   "n": 540
+  },
+  "chancel": {
+   "matches": 66.3,
+   "gameOne": 58.9,
+   "later": 62.7,
+   "n": 540
+  },
+  "levy": {
+   "matches": 53.1,
+   "gameOne": 54.4,
+   "later": 51.4,
+   "n": 540
+  },
+  "roll": {
+   "matches": 57,
+   "gameOne": 59.1,
+   "later": 52.8,
+   "n": 540
+  },
+  "thicket": {
+   "matches": 42.6,
+   "gameOne": 43.9,
+   "later": 44.9,
+   "n": 540
+  },
+  "warden": {
+   "matches": 38,
+   "gameOne": 44.1,
+   "later": 40,
+   "n": 540
+  },
+  "wskies": {
+   "matches": 48.3,
+   "gameOne": 51.3,
+   "later": 47.9,
+   "n": 540
+  }
+ }
+}

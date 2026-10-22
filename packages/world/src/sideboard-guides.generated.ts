@@ -1547,7 +1547,7 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
 
 /** S62 (ADR-176): the `small` and `large` shapes' thresholds by format — the Open's as measured since S59; another
  * format's the counts at the same ranks of its own field (sideboard-ai.SHAPE_RANKS). */
-export const SHAPE_SCALES: Record<string, { small: number; large: number }> = {"open":{"small":15,"large":8},"peasant":{"small":20,"large":4},"naya":{"small":18,"large":3},"esper":{"small":10,"large":8},"mardu":{"small":18,"large":3},"grixis":{"small":15,"large":3},"jund":{"small":20,"large":3},"jeskai":{"small":12,"large":3}};
+export const SHAPE_SCALES: Record<string, { small: number; large: number }> = {"open":{"small":15,"large":8},"peasant":{"small":20,"large":4},"naya":{"small":18,"large":3},"esper":{"small":10,"large":8},"mardu":{"small":18,"large":3},"grixis":{"small":15,"large":3},"jund":{"small":20,"large":3},"jeskai":{"small":12,"large":3},"sultai":{"small":14,"large":8},"abzan":{"small":18,"large":8},"temur":{"small":18,"large":2},"bant":{"small":16,"large":7}};
 
 /** S61 (Part 2): the out-rule adopted per list (matched by its sixty), where it measured a gain. */
 export const SIDEBOARD_OUT_RULES: readonly { key: string; sixty: { cardId: string; count: number }[]; out61: { small?: boolean; spells?: boolean; graveyard?: boolean } }[] = [
@@ -1887,5 +1887,12 @@ export const LIST_GUIDES: Record<string, string> = {
  "grixis:massacrats": "grixis:massacrats",
  "jund:dragons": "jund:dragons",
  "jeskai:skies": "jeskai:skies",
- "jeskai:minefield": "jeskai:minefield"
+ "jeskai:minefield": "jeskai:minefield",
+ "abzan:levy": "levy",
+ "abzan:chancel": "esper:wbcontrol",
+ "abzan:bw": "peasant:bw",
+ "abzan:wskies": "peasant:wskies",
+ "bant:skies": "jeskai:skies",
+ "bant:uwskies": "peasant:skies",
+ "bant:wskies": "peasant:wskies"
 };

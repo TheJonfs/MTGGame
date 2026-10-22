@@ -1,78 +1,78 @@
 {
  "_comment": "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.",
- "when": "2026-10-21",
+ "when": "2026-10-22",
  "matchesAPairing": 60,
  "byList": {
   "ashen": {
-   "matches": 51.5,
-   "gameOne": 51.7,
+   "matches": 51.3,
+   "gameOne": 51.5,
    "later": 50.6,
    "n": 720
   },
   "br": {
-   "matches": 38.9,
-   "gameOne": 40.9,
-   "later": 43.2,
+   "matches": 38.5,
+   "gameOne": 40.6,
+   "later": 42.9,
    "n": 720
   },
   "clio": {
-   "matches": 57.3,
-   "gameOne": 58.3,
-   "later": 53.1,
+   "matches": 57.2,
+   "gameOne": 58.1,
+   "later": 53,
    "n": 720
   },
   "kiln": {
-   "matches": 52.6,
-   "gameOne": 51.5,
-   "later": 51.9,
+   "matches": 52.9,
+   "gameOne": 51.7,
+   "later": 52.1,
    "n": 720
   },
   "kindling": {
-   "matches": 42.5,
-   "gameOne": 41.9,
-   "later": 46,
+   "matches": 43.8,
+   "gameOne": 42.7,
+   "later": 47,
    "n": 720
   },
   "massacrats": {
    "matches": 55.8,
-   "gameOne": 48.2,
+   "gameOne": 48.1,
    "later": 56.4,
    "n": 720
   },
   "mbc": {
-   "matches": 32.8,
-   "gameOne": 38.5,
+   "matches": 32.6,
+   "gameOne": 38.4,
    "later": 38,
    "n": 720
   },
   "mbclio": {
-   "matches": 67.9,
+   "matches": 67.6,
    "gameOne": 63.5,
-   "later": 62.9,
+   "later": 62.6,
    "n": 720
   },
   "rabble": {
-   "matches": 75.9,
-   "gameOne": 68.5,
-   "later": 69.5,
+   "matches": 75.8,
+   "gameOne": 68.6,
+   "later": 69.4,
    "n": 720
   },
   "tally": {
-   "matches": 51.2,
+   "matches": 50.9,
    "gameOne": 52.5,
-   "later": 49,
+   "later": 48.8,
    "n": 720
   },
   "tempo": {
    "matches": 44.3,
-   "gameOne": 47.2,
+   "gameOne": 47.1,
    "later": 46,
    "n": 720
   },
   "undertow": {
-   "matches": 26,
+   "matches": 25.8,
    "gameOne": 35.8,
-   "later": 31.3,
+   "later": 31.2,
    "n": 720
   },
   "writ": {
