@@ -9,7 +9,7 @@
 | list | deck | pilot | matches | game one | after sideboarding | fifteen |
 |---|---|---|---|---|---|---|
 | Temur Ramp (working name) | Temur Ramp (G r u) | midrange | 67.2 | 62 | −0.8 | registered |
-| Reaper Control | Jund Snake Control (G R b) | midrange | 62.4 | 58 | −1.1 | registered |
+| Temur Snakes | Temur Snakes (G r u) | midrange | 62.4 | 58 | −1.1 | registered |
 | Emerald Snakes | Snake Keeper (G R) | midrange | 61.4 | 62 | −4.5 | registered |
 | the Rabble (Naya) | Mono-Red Goblins (R) | aggro | 60.8 | 58 | +2.1 | built |
 | the Stampede | Gruul Stompy (R G) | aggro | 56.4 | 53 | +3.6 | built |
@@ -39,7 +39,7 @@ The most played: Flametongue Kavu 8 · Lightning Bolt 7 · Reaper's Forerunner 4
 - **History:**
   - contributed — S69 seed (the planner's): built by the implementer — Elves, Birds and Walls into Rampaging Baloths, Penumbra Wurm and Gaean Wurm, Harmonize to refuel, Pyroclasm and the Kavu to clear the way (the brief); counters for the top.
 
-## Reaper Control — Jund Snake Control (G R b)
+## Temur Snakes — Temur Snakes (G r u)
 
 `reaper` · midrange · game one 58 · matches 62.4
 
@@ -49,7 +49,7 @@ The most played: Flametongue Kavu 8 · Lightning Bolt 7 · Reaper's Forerunner 4
 - **Its fifteen (registered):** 3 Tormod's Crypt · 1 Moss Viper · 1 Deadly Recluse · 3 Pyroclasm · 1 Savage Twister · 2 Char · 4 Abrade
 - **Its sideboard guide:** none — the general rules sideboard it.
 - **History:**
-  - contributed — S69 seed (the planner's) (Chris's ruling): the Open's Reaper Control revived — its three Reapers (Jund's lord) for three Emerald Keepers; Mox Jet for Mox Sapphire, Cairnbrand for the Tallyflame Court, four Bayous and four Badlands for four Tropical and four Volcanic Islands; its fifteen's four Putrefies (black) for four Abrades.
+  - contributed — S69 seed (the planner's) (Chris's ruling): the Open's Reaper Control revived — its three Reapers (Jund's lord) for three Emerald Keepers; Mox Jet for Mox Sapphire, Cairnbrand for the Tallyflame Court, four Bayous and four Badlands for four Tropical and four Volcanic Islands; its fifteen's four Putrefies (black) for four Abrades. Renamed Temur Snakes (Chris, 2026-10-22; the key stays `reaper`).
 
 ## Emerald Snakes — Snake Keeper (G R)
 

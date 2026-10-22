@@ -538,8 +538,8 @@
   },
   {
    "key": "reaper",
-   "name": "Reaper Control",
-   "title": "Jund Snake Control (G R b)",
+   "name": "Temur Snakes",
+   "title": "Temur Snakes (G r u)",
    "archetype": "midrange",
    "decklist": [
     {
@@ -657,7 +657,7 @@
      "count": 4
     }
    ],
-   "source": "S69 seed (the planner's) (Chris's ruling): the Open's Reaper Control revived — its three Reapers (Jund's lord) for three Emerald Keepers; Mox Jet for Mox Sapphire, Cairnbrand for the Tallyflame Court, four Bayous and four Badlands for four Tropical and four Volcanic Islands; its fifteen's four Putrefies (black) for four Abrades."
+   "source": "S69 seed (the planner's) (Chris's ruling): the Open's Reaper Control revived — its three Reapers (Jund's lord) for three Emerald Keepers; Mox Jet for Mox Sapphire, Cairnbrand for the Tallyflame Court, four Bayous and four Badlands for four Tropical and four Volcanic Islands; its fifteen's four Putrefies (black) for four Abrades. Renamed Temur Snakes (Chris, 2026-10-22; the key stays `reaper`)."
   },
   {
    "key": "kindling",
