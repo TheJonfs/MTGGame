@@ -2273,4 +2273,40 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const old = new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, off: ["witchearly"] });
     expect(old.lifeForCardsGated(empty, draw)).toBe(true);
   });
+
+  it("book of shame 146 (S69 — the racing probe: the pilot's extra blocks won 3.6% to Chris's 32.1% for holding back): a block that spends the blocker for no dearer attacker waits while the race does not ask for it; it stands when we are dying — ON TRIAL (measured −0.6 to −3.1 against the Rabble; trial: blockloss)", () => {
+    const a = new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, trial: ["blockloss"] });
+    const sim = (v: GameView) => viewCreatures(v);
+    const board = (life: [number, number]) => mkView({ life, battlefield: [{ id: "b", cardId: "grizzly_bears", controller: 0 }, { id: "x", cardId: "grizzly_bears", controller: 1 }, { id: "y", cardId: "hill_giant", controller: 1 }] });
+    const gain = (v: GameView) => a.blockGain(v, sim(v).find((c) => c.id === "b")!, sim(v).find((c) => c.id === "x")!);
+    expect(gain(board([20, 20]))).toBe(-1); // an even trade at twenty: keep the body
+    expect(gain(board([4, 20]))).toBeGreaterThan(-1); // five power across at four life: the race asks for it
+    const old = agent("midrange"); // the trial off: the default pilot
+    expect(old.blockGain(board([20, 20]), sim(board([20, 20])).find((c) => c.id === "b")!, sim(board([20, 20])).find((c) => c.id === "x")!)).toBeGreaterThan(-1);
+  });
+
+  it("book of shame 147 (S69 — the sweeps probe: the pilot's Jeskai Sweepers swept a board of one creature or none 64% of the time): a sweeper waits for a board worth half its card unless the race forces it (three turns); off: sweepwait", () => {
+    const a = agent("control");
+    const hand = [{ objectId: "w", cardId: "wrath_of_god" }];
+    const wrath = { type: "castSpell" as const, objectId: "w", targets: [] };
+    expect(a.sweepWaitGated(mkView({ hand, battlefield: [{ id: "x", cardId: "raging_goblin", controller: 1 }] }), wrath)).toBe(true);
+    expect(a.sweepWaitGated(mkView({ hand, battlefield: [1, 2, 3].map((i) => ({ id: "g" + i, cardId: "hill_giant", controller: 1 as const })) }), wrath)).toBe(false);
+    expect(a.sweepWaitGated(mkView({ hand, life: [3, 20], battlefield: [{ id: "x", cardId: "raging_goblin", controller: 1 }] }), wrath)).toBe(false); // dying: sweep now
+    const old = new HeuristicAgent(1, pool, { archetype: "control", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, off: ["sweepwait"] });
+    expect(old.sweepWaitGated(mkView({ hand, battlefield: [{ id: "x", cardId: "raging_goblin", controller: 1 }] }), wrath)).toBe(false);
+  });
+
+  it("book of shame 148 (S69 — Chris's Massacrats final: at 1 life the Rabble Grenaded his Meliyan under his Meathook Massacre and died to the drain): a kill of theirs under their death payoff, or a sacrifice of ours under it, is refused when the drain is the game; off: payoffcost", () => {
+    const a = agent("aggro");
+    const hand = [{ objectId: "lb", cardId: "lightning_bolt" }, { objectId: "gg", cardId: "goblin_grenade" }];
+    const bf = [{ id: "m", cardId: "meliyan_the_torment", controller: 1 as const }, { id: "mm", cardId: "the_meathook_massacre", controller: 1 as const }, { id: "ba", cardId: "blood_artist", controller: 1 as const }, { id: "g", cardId: "raging_goblin", controller: 0 as const }];
+    const bolt = { type: "castSpell" as const, objectId: "lb", targets: [{ kind: "object" as const, id: "m" }] };
+    const grenade = { type: "castSpell" as const, objectId: "gg", targets: [{ kind: "player" as const, player: 1 as const }] };
+    expect(a.payoffDrain(mkView({ battlefield: bf }), 1)).toBe(2); // the Massacre's 1 and Blood Artist's 1
+    expect(a.payoffCostGated(mkView({ life: [1, 20], hand, battlefield: bf }), bolt)).toBe(true);
+    expect(a.payoffCostGated(mkView({ life: [5, 20], hand, battlefield: bf }), bolt)).toBe(false);
+    expect(a.payoffCostGated(mkView({ life: [1, 20], hand, battlefield: bf }), grenade)).toBe(true); // our Goblin sacrificed: their Blood Artist drains the last point
+    const old = new HeuristicAgent(1, pool, { archetype: "aggro", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, off: ["payoffcost"] });
+    expect(old.payoffCostGated(mkView({ life: [1, 20], hand, battlefield: bf }), bolt)).toBe(false);
+  });
 });

@@ -288,6 +288,8 @@ export class HeuristicAgent implements Agent {
     if (this.spellPayoffHoldGated(view, action)) return -Infinity; // S45: hold the cheap spell for the Guttersnipe / Pyromancer in hand
     if (this.faceBurnHoldGated(view, action)) return -Infinity; // post-S49 (book 88): removal is not thrown at a healthy face
     if (this.burnKillsGated(view, action)) return -Infinity; // S68 (Part 2): a burn spell at a creature only when it kills
+    if (this.sweepWaitGated(view, action)) return -Infinity; // S69 (book 147): a sweeper waits for a board worth it
+    if (this.payoffCostGated(view, action)) return -Infinity; // S69 (book 148): no kill that their death payoff makes our last
     if (this.counterWarGated(view, action)) return -Infinity; // post-S52 (book 94): one counter answers one spell
     if (this.attackAuraOnNonAttackerGated(view, action)) return -Infinity; // S62 (book 127): Rancor is not for a Wall
     if (this.entersHarmGated(view, action)) return -Infinity; // S50 (book 89): the Kavu is not cast into a board where its four can only hit us
@@ -1553,7 +1555,15 @@ export class HeuristicAgent implements Agent {
     const deathBurn = dies ? this.deathBurnObservers(view, blocker.id) * blocker.power * 0.35 : 0;
     // S45 (the Tidewall): a block that hands back a spell is worth that card — the 0/4 wall blocks whenever it is safe.
     const trigger = dies ? 0 : this.blockReturnValue(view, blocker.id);
-    return (kills ? valueOf(attacker.id) : 0) - (dies ? valueOf(blocker.id) : 0) + prevented * w + lifelinkDenied - blockTax + deathBurn + trigger;
+    // S69 (Part 2, book 146, `off: ["blockloss"]` — the racing probe: the pilot's extra blocks won 3.6% of their
+    // playouts to Chris's 32.1% for holding back): a block that spends the blocker is refused while the race does not
+    // ask for it — not losing the race (the clock), and the attacker no dearer than the blocker. The life such a block
+    // saves is life we can afford; the body is the race. Chump and even blocks stand when the clock says we are dying.
+    // (Not a body with no power left — book 97's locked tokens cost nothing to throw in — nor a death that pays, book 63.)
+    const gain = (kills ? valueOf(attacker.id) : 0) - (dies ? valueOf(blocker.id) : 0) + prevented * w + lifelinkDenied - blockTax + deathBurn + trigger;
+    // (a refused block scores no better than −1 — never above a block it would have been worse than)
+    if (dies && blocker.power > 0 && deathBurn <= 0 && this.profile.trial?.includes("blockloss") && !this.losingRace(view, blocker.controller) && !(kills && valueOf(attacker.id) > valueOf(blocker.id) + 0.25)) return Math.min(gain, -1);
+    return gain;
   }
 
   /** S45 (the Tidewall): what a blocker's "whenever this blocks, return target instant or sorcery card from your
@@ -2840,6 +2850,80 @@ export class HeuristicAgent implements Agent {
     return gain;
   }
 
+  /** S69 (Part 2): is `p` the one dying — the opponent's board (the power that can attack) kills p within two turns.
+   * (A comparison of the two clocks was tried first: a control deck with little power is "losing" every race by it,
+   * and the rules never fired against a racer.) Exposed. */
+  losingRace(view: GameView, p: PlayerId, turns = 2): boolean {
+    const q = (1 - p) as PlayerId;
+    const theirs = view.battlefield.filter((o) => o.controller === q && o.power !== null && !o.cantAttack && !o.keywords.includes("defender")).reduce((a, o) => a + Math.max(0, o.power ?? 0), 0);
+    return theirs > 0 && Math.ceil(view.life[p] / theirs) <= turns;
+  }
+  /** S69 (Part 2, book 147, `off: ["sweepwait"]` — the sweeps probe: the pilot's Jeskai Sweepers swept a board of one
+   * creature or none 64% of the time, Chris 13%): a board sweeper (each creature: damage, destruction, the Wave) waits
+   * for a board worth the card — the value of their creatures it kills less ours, at or above its mana value — unless
+   * we are losing the race. Exposed. */
+  sweepWaitGated(view: GameView, action: Action): boolean {
+    if (action.type !== "castSpell" || this.profile.off?.includes("sweepwait")) return false;
+    const card = view.hand.find((h) => h.objectId === action.objectId)?.cardId, d = card ? this.def(card) : undefined;
+    if (!d) return false;
+    const e = (d.spellEffect ?? []).find((x) => (x.type === "damageAll" || x.type === "destroyAll") && (x as { scope?: string }).scope === "allCreatures") as { type: string; amount?: unknown; powerAtLeast?: number } | undefined;
+    if (!e) return false;
+    const x = (action as { x?: number }).x;
+    const dies = (o: GameView["battlefield"][number]) => {
+      if (o.power === null || o.toughness === null || o.keywords.includes("indestructible")) return false;
+      if (e.type === "destroyAll") return e.powerAtLeast === undefined || (o.power ?? 0) >= e.powerAtLeast;
+      const n = e.amount === "ownPower" ? Math.max(0, o.power) : typeof e.amount === "number" ? e.amount : e.amount === "X" && typeof x === "number" ? x : 0;
+      return n >= o.toughness - o.damage;
+    };
+    const me = view.you;
+    const worth = (o: GameView["battlefield"][number]) => objectValue(this.defs, o, this.C);
+    const net = view.battlefield.filter((o) => dies(o)).reduce((a, o) => a + (o.controller === me ? -worth(o) : worth(o)), 0);
+    // (the bar: HALF the card's mana value — at its full value four Goblin tokens (2.0) did not earn a Wrath, and the
+    // Jeskai Sweepers held it into the Rabble's swarm: −4.1 against the red lists; "dying" read over three turns here)
+    if (net >= Math.max(1, manaValue(parseManaCost(d.manaCost)) / 2)) return false;
+    return !this.losingRace(view, me, 3);
+  }
+  /** S69 (Part 2, book 148, `off: ["payoffcost"]` — Chris's Massacrats final: at 1 life the Rabble Grenaded his Meliyan
+   * under his Meathook Massacre, and the Massacre's drain killed it): a spell or ability that kills a creature of the
+   * opponent's while THEIR death payoff is out (a Massacre's "a creature you control dies", Blood Artist, the Usher), or
+   * sacrifices one of ours while their payoff for OUR deaths is out, is charged the life those payoffs take from us —
+   * and refused when that life is the game. Exposed. */
+  payoffCostGated(view: GameView, action: Action): boolean {
+    if ((action.type !== "castSpell" && action.type !== "activateAbility") || this.profile.off?.includes("payoffcost")) return false;
+    const me = view.you, opp = (1 - me) as PlayerId;
+    let effects: readonly { type: string; amount?: unknown; target?: number }[] = [], sacrifice = false;
+    if (action.type === "castSpell") { const c = view.hand.find((h) => h.objectId === action.objectId)?.cardId; const d = c ? this.def(c) : undefined; effects = (d?.spellEffect ?? []) as never; sacrifice = !!(d as { additionalCost?: { sacrifice?: unknown } } | undefined)?.additionalCost?.sacrifice; }
+    else { const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex); if (ab && ab.kind === "activated") { effects = ab.effects as never; sacrifice = !!ab.cost.sacrifice && (ab.cost.sacrifice as { predicate?: string }).predicate !== "land" && (ab.cost.sacrifice as { predicate?: string }).predicate !== "self"; } }
+    let drain = 0;
+    for (const e of effects) {
+      const t = (action as { targets?: ResolvedTarget[] }).targets?.[e.target ?? 0];
+      if (!t || t.kind !== "object") continue;
+      const o = view.battlefield.find((b) => b.id === t.id);
+      if (!o || o.controller !== opp || o.toughness === null) continue;
+      const kills = e.type === "destroy" || (e.type === "damage" && typeof e.amount === "number" && e.amount >= o.toughness - o.damage);
+      if (kills) drain += this.payoffDrain(view, opp);
+    }
+    if (sacrifice) drain += this.deathCharge(view, me);
+    return drain > 0 && view.life[me] - drain <= 0;
+  }
+  /** S69: the life OUR side loses when a creature of `dyingController`'s dies under `dyingController`'s own death
+   * payoffs (the Massacre's "a creature you control dies, each opponent loses 1"; Blood Artist's and the Usher's "a
+   * creature dies"). */
+  payoffDrain(view: GameView, dyingController: PlayerId): number {
+    let n = 0;
+    for (const p of view.battlefield) {
+      if (p.controller !== dyingController) continue;
+      for (const a of this.def(p.cardId)?.abilities ?? []) {
+        if (a.kind !== "triggered" || a.event !== "DIES") continue;
+        const c = (a.condition ?? {}) as { source?: string; controller?: string; type?: string[] };
+        if (!(c.source === "any" || c.source === "other")) continue;
+        if (c.controller === "opponent") continue;
+        if (c.type && !c.type.includes("Creature")) continue;
+        for (const e of a.effects) { const x = e as { type: string; amount?: unknown; who?: string }; if (x.type === "loseLife" && typeof x.amount === "number" && (x.who === "target" || x.who === "opponent")) n += x.amount; }
+      }
+    }
+    return n;
+  }
   /** S68 (Part 2, `off: ["pingplan"]` — Chris's Grixis run: the Tyrant pinged a Witch twice where once killed, and sat
    * ten turns beside his Clio without stacking two on her): a repeatable ping at an opposing creature counts the pings
    * already on the stack at it; a target they already kill is not pinged again; a ping short of a kill is spent only
