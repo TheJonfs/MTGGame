@@ -1,67 +1,73 @@
 {
  "_comment": "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.",
- "when": "2026-10-22",
+ "when": "2026-10-25",
  "matchesAPairing": 60,
  "byList": {
   "auras": {
-   "matches": 60.9,
-   "gameOne": 58.9,
-   "later": 56.1,
-   "n": 540
+   "matches": 57.5,
+   "gameOne": 54.8,
+   "later": 55.8,
+   "n": 600
   },
   "bfh": {
-   "matches": 36.9,
-   "gameOne": 40.9,
-   "later": 41,
-   "n": 540
+   "matches": 35.8,
+   "gameOne": 42.8,
+   "later": 39.6,
+   "n": 600
   },
   "depths": {
-   "matches": 56.1,
-   "gameOne": 57.1,
-   "later": 53.5,
-   "n": 540
+   "matches": 60.9,
+   "gameOne": 56.8,
+   "later": 57.3,
+   "n": 600
+  },
+  "massocrafts": {
+   "matches": 48.8,
+   "gameOne": 49,
+   "later": 48.8,
+   "n": 600
   },
   "mbc": {
-   "matches": 47,
-   "gameOne": 48,
-   "later": 48.3,
-   "n": 540
+   "matches": 45.3,
+   "gameOne": 45.7,
+   "later": 47.1,
+   "n": 600
   },
   "mill": {
-   "matches": 35.7,
-   "gameOne": 36.7,
-   "later": 40.4,
-   "n": 540
+   "matches": 37.2,
+   "gameOne": 38.8,
+   "later": 41.6,
+   "n": 600
   },
   "reeve": {
-   "matches": 73.9,
-   "gameOne": 66.9,
-   "later": 66.6,
-   "n": 540
+   "matches": 68.9,
+   "gameOne": 66.5,
+   "later": 62,
+   "n": 600
   },
   "tempo": {
-   "matches": 54.8,
-   "gameOne": 53.5,
-   "later": 54.5,
-   "n": 540
+   "matches": 58,
+   "gameOne": 54,
+   "later": 56.3,
+   "n": 600
   },
   "undertow": {
-   "matches": 42,
-   "gameOne": 43.9,
-   "later": 44.4,
-   "n": 540
+   "matches": 45.7,
+   "gameOne": 46.5,
+   "later": 47.2,
+   "n": 600
   },
   "writ": {
-   "matches": 66.1,
-   "gameOne": 57,
-   "later": 63.6,
-   "n": 540
+   "matches": 66,
+   "gameOne": 57.3,
+   "later": 63.2,
+   "n": 600
   },
   "wurmspeaker": {
-   "matches": 26.5,
-   "gameOne": 37,
-   "later": 31.2,
-   "n": 540
+   "matches": 25.8,
+   "gameOne": 37.7,
+   "later": 31.1,
+   "n": 600
   }
  }
 }

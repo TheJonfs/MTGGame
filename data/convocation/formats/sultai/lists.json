@@ -6,8 +6,35 @@
   "large": 8
  },
  "archived": {},
- "guides": {},
- "guidesOnly": [],
+ "guides": {
+  "massocrafts": [
+   {
+    "in": "protocol",
+    "n": 4,
+    "out": [
+     "birds_of_paradise",
+     "manaba"
+    ],
+    "when": [
+     "shrinks"
+    ]
+   },
+   {
+    "in": "the_meathook_massacre",
+    "n": 2,
+    "out": [
+     "the_jet_witch",
+     "the_emerald_keeper"
+    ],
+    "when": [
+     "shrinks"
+    ]
+   }
+  ]
+ },
+ "guidesOnly": [
+  "massocrafts"
+ ],
  "outRules": {},
  "lists": [
   {
@@ -957,6 +984,133 @@
     }
    ],
    "source": "S69 seed (the planner's): built by the implementer from Esper's Undertow — Sultai mill (the brief: the Undertow with Tome Scour and Clio, both already in it): its three Nighthawks for three Zinnias (a creature of theirs leaving mills its power), its four Evolving Wilds for two Bayous and two Tropical Islands."
+  },
+  {
+   "key": "massocrafts",
+   "name": "Massocrafts",
+   "title": "Sultai Massacre Snakes (G B u)",
+   "archetype": "midrange",
+   "source": "Post-S69 (Chris's, 2026-10-25): 8–0 in a Sultai Convocation (event 879534; 16–2 in games — the Writ, Sultai Reeve, the Undertow, the Depths and Sultai Reeve again in the Swiss; Sultai Mill, Sultai Reeve (an 81-turn game one) and the Undertow in the bracket). Go wide on Birds, Manaba and Blood Artist into either the Emerald Keeper or The Meathook Massacre; Clio and Nighthawks; the Forerunner. The fifteen as Chris registered it; the guide read from his swaps (Chris: the plan felt haphazard — the main is tight; Protocol and Drana for the Clio wars). Guide (measured, ADR-168): against the Clio lists the Protocols come in for Birds and Manaba, the two Massacres for the Witch and a Keeper (+4.6 ± 0.9 over the guide read from Chris's swaps; +7.7 against the six Clio lists).",
+   "decklist": [
+    {
+     "cardId": "birds_of_paradise",
+     "count": 4
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "manaba",
+     "count": 4
+    },
+    {
+     "cardId": "blood_artist",
+     "count": 4
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    },
+    {
+     "cardId": "time_walk",
+     "count": 1
+    },
+    {
+     "cardId": "clio_lady_of_the_depths",
+     "count": 4
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 4
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "the_emerald_keeper",
+     "count": 4
+    },
+    {
+     "cardId": "the_meathook_massacre",
+     "count": 2
+    },
+    {
+     "cardId": "the_jet_witch",
+     "count": 1
+    },
+    {
+     "cardId": "bayou",
+     "count": 4
+    },
+    {
+     "cardId": "overgrown_tomb",
+     "count": 4
+    },
+    {
+     "cardId": "underground_sea",
+     "count": 4
+    },
+    {
+     "cardId": "tropical_island",
+     "count": 4
+    },
+    {
+     "cardId": "library_of_alexandria",
+     "count": 1
+    },
+    {
+     "cardId": "wrackroot",
+     "count": 1
+    },
+    {
+     "cardId": "breeding_pool",
+     "count": 3
+    },
+    {
+     "cardId": "watery_grave",
+     "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "the_meathook_massacre",
+     "count": 2
+    },
+    {
+     "cardId": "protocol",
+     "count": 4
+    },
+    {
+     "cardId": "mystic_snake",
+     "count": 4
+    },
+    {
+     "cardId": "seraphina_the_initiative",
+     "count": 2
+    },
+    {
+     "cardId": "the_jet_witch",
+     "count": 2
+    },
+    {
+     "cardId": "drana_kalastria_bloodchief",
+     "count": 1
+    }
+   ]
   }
  ]
 }

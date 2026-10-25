@@ -1542,6 +1542,60 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
    }
   ],
   "only": true
+ },
+ {
+  "key": "sultai:massocrafts",
+  "fifteen": [
+   {
+    "cardId": "the_meathook_massacre",
+    "count": 2
+   },
+   {
+    "cardId": "protocol",
+    "count": 4
+   },
+   {
+    "cardId": "mystic_snake",
+    "count": 4
+   },
+   {
+    "cardId": "seraphina_the_initiative",
+    "count": 2
+   },
+   {
+    "cardId": "the_jet_witch",
+    "count": 2
+   },
+   {
+    "cardId": "drana_kalastria_bloodchief",
+    "count": 1
+   }
+  ],
+  "rows": [
+   {
+    "in": "protocol",
+    "n": 4,
+    "out": [
+     "birds_of_paradise",
+     "manaba"
+    ],
+    "when": [
+     "shrinks"
+    ]
+   },
+   {
+    "in": "the_meathook_massacre",
+    "n": 2,
+    "out": [
+     "the_jet_witch",
+     "the_emerald_keeper"
+    ],
+    "when": [
+     "shrinks"
+    ]
+   }
+  ],
+  "only": true
  }
 ];
 
@@ -1888,6 +1942,7 @@ export const LIST_GUIDES: Record<string, string> = {
  "jund:dragons": "jund:dragons",
  "jeskai:skies": "jeskai:skies",
  "jeskai:minefield": "jeskai:minefield",
+ "sultai:massocrafts": "sultai:massocrafts",
  "abzan:levy": "levy",
  "abzan:chancel": "esper:wbcontrol",
  "abzan:bw": "peasant:bw",

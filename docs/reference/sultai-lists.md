@@ -4,32 +4,33 @@
 
 ## The table of record
 
-10 active lists, the AI in both seats. **Game one** is a list's mean win rate against the other active lists on the registered sixties (the round-robin of record, `formats/sultai/means.json`). **Matches** is its best-of-three win rate — the figure the field's seat draw reads since S59 (60 matches a pairing, measured 2026-10-22; ADR-171): game one on the registered sixties, games two and three sideboarded. **After sideboarding** is its games-two-and-three rate less its game-one rate inside those matches.
+11 active lists, the AI in both seats. **Game one** is a list's mean win rate against the other active lists on the registered sixties (the round-robin of record, `formats/sultai/means.json`). **Matches** is its best-of-three win rate — the figure the field's seat draw reads since S59 (60 matches a pairing, measured 2026-10-25; ADR-171): game one on the registered sixties, games two and three sideboarded. **After sideboarding** is its games-two-and-three rate less its game-one rate inside those matches.
 
 | list | deck | pilot | matches | game one | after sideboarding | fifteen |
 |---|---|---|---|---|---|---|
-| Sultai Reeve (working name) | Sultai Control (U B g) | control | 73.9 | 68 | −0.3 | registered |
-| the Writ | Dimir Control (U B) | control | 66.1 | 58 | +6.6 | registered |
-| Dungrove Auras | Mono-Green Auras (G) | midrange | 60.9 | 53 | −2.8 | built |
-| the Depths | Sultai Control (U B G) | control | 56.1 | 57 | −3.6 | built |
-| the Eddy | Blue Tempo, splash Clio (U b) | midrange | 54.8 | 53 | +1.0 | built |
-| the Barrow | Mono-Black Control (B) | control | 47.0 | 46 | +0.3 | built |
-| the Undertow | Dimir Mill (U B) | control | 42.0 | 45 | +0.5 | built |
-| Black Forest Ham | Golgari Auras (B G) | midrange | 36.9 | 43 | +0.1 | registered |
-| Sultai Mill (working name) | Sultai Mill (U B g) | control | 35.7 | 39 | +3.7 | built |
-| the Wurmspeaker | Mono-Green Ramp | midrange | 26.5 | 37 | −5.8 | built |
+| Sultai Reeve (working name) | Sultai Control (U B g) | control | 68.9 | 69 | −4.5 | registered |
+| the Writ | Dimir Control (U B) | control | 66.0 | 59 | +5.9 | registered |
+| the Depths | Sultai Control (U B G) | control | 60.9 | 58 | +0.5 | built |
+| the Eddy | Blue Tempo, splash Clio (U b) | midrange | 58.0 | 51 | +2.3 | built |
+| Dungrove Auras | Mono-Green Auras (G) | midrange | 57.5 | 54 | +1.0 | built |
+| Massocrafts | Sultai Massacre Snakes (G B u) | midrange | 48.8 | 49 | −0.2 | registered, guided |
+| the Undertow | Dimir Mill (U B) | control | 45.7 | 46 | +0.7 | built |
+| the Barrow | Mono-Black Control (B) | control | 45.3 | 45 | +1.4 | built |
+| Sultai Mill (working name) | Sultai Mill (U B g) | control | 37.2 | 40 | +2.8 | built |
+| Black Forest Ham | Golgari Auras (B G) | midrange | 35.8 | 43 | −3.2 | registered |
+| the Wurmspeaker | Mono-Green Ramp | midrange | 25.8 | 37 | −6.6 | built |
 
 Archived (kept in the data, out of the field): none.
 
 ## Staples (ADR-170)
 
-Nonland cards outside the restricted list that more than half of the 10 active lists play: Clio, Lady of the Depths (6 lists, 23 copies); Counterspell (6 lists, 22 copies).
+Nonland cards outside the restricted list that more than half of the 11 active lists play: Clio, Lady of the Depths (7 lists, 27 copies); Counterspell (6 lists, 22 copies).
 
-The most played: Clio, Lady of the Depths 6 · Counterspell 6 · Tidewall 5 · Control Magic 5 · Vampire Nighthawk 4 · Traumatizer 4 · Essence Scatter 4 · Gaean Wurm 3.
+The most played: Clio, Lady of the Depths 7 · Counterspell 6 · Vampire Nighthawk 5 · Tidewall 5 · Control Magic 5 · Reaper's Forerunner 4 · Traumatizer 4 · Essence Scatter 4.
 
 ## Sultai Reeve (working name) — Sultai Control (U B g)
 
-`reeve` · control · game one 68 · matches 73.9
+`reeve` · control · game one 69 · matches 68.9
 
 - **Lands (22):** 4 Underground Sea · 4 Bayou · 4 Tropical Island · 2 Watery Grave · 2 Overgrown Tomb · 1 Wrackroot · 1 Library of Alexandria · 2 Island · 1 Swamp · 1 Forest
 - **Creatures (16):** 2 The Reeve · 4 Clio, Lady of the Depths · 4 Reaper's Forerunner · 2 Seraphina, the Initiative · 4 Wall of Blossoms
@@ -41,7 +42,7 @@ The most played: Clio, Lady of the Depths 6 · Counterspell 6 · Tidewall 5 · C
 
 ## the Writ — Dimir Control (U B)
 
-`writ` · control · game one 58 · matches 66.1
+`writ` · control · game one 59 · matches 66.0
 
 - **Lands (20):** 1 Library of Alexandria · 4 Underground Sea · 4 Watery Grave · 6 Island · 5 Swamp
 - **Creatures (19):** 3 Arcane Collector · 3 Tidewall · 3 The Jet Witch · 4 Vampire Nighthawk · 4 Clio, Lady of the Depths · 1 Faerie Formation · 1 Drana, Kalastria Bloodchief
@@ -51,20 +52,9 @@ The most played: Clio, Lady of the Depths 6 · Counterspell 6 · Tidewall 5 · C
 - **History:**
   - contributed — S69 seed (the planner's): Esper's Writ whole.
 
-## Dungrove Auras — Mono-Green Auras (G)
-
-`auras` · midrange · game one 53 · matches 60.9
-
-- **Lands (22):** 22 Forest
-- **Creatures (27):** 4 Dungrove Elder · 2 Penumbra Wurm · 4 Llanowar Elves · 4 Gladecover Scout · 4 Wall of Blossoms · 4 Gaean Wurm · 2 Centaur Courser · 3 Reaper's Forerunner
-- **Other (11):** 3 Harmonize · 4 Rancor · 4 Blanchwood Armor
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S69 seed (the planner's): Peasant's Dungrove Auras whole.
-
 ## the Depths — Sultai Control (U B G)
 
-`depths` · control · game one 57 · matches 56.1
+`depths` · control · game one 58 · matches 60.9
 
 - **Lands (18):** 1 Library of Alexandria · 1 Wrackroot · 4 Bayou · 4 Tropical Island · 4 Underground Sea · 1 Island · 1 Swamp · 1 Watery Grave · 1 Breeding Pool
 - **Creatures (22):** 4 Clio, Lady of the Depths · 4 Tidewall · 1 Seraphina, the Initiative · 1 The Reeve · 1 Faerie Formation · 2 Traumatizer · 1 Drana, Kalastria Bloodchief · 1 Mystic Snake · 1 Zinnia, the Undertow · 1 Wall of Blossoms · 4 Birds of Paradise · 1 Arcane Collector
@@ -75,7 +65,7 @@ The most played: Clio, Lady of the Depths 6 · Counterspell 6 · Tidewall 5 · C
 
 ## the Eddy — Blue Tempo, splash Clio (U b)
 
-`tempo` · midrange · game one 53 · matches 54.8
+`tempo` · midrange · game one 51 · matches 58.0
 
 - **Lands (24):** 4 Underground Sea · 4 Watery Grave · 16 Island
 - **Creatures (22):** 4 Man-o'-War · 4 Aether Channeler · 4 Plumecreed Escort · 3 Tidewall · 3 Clio, Lady of the Depths · 4 Traumatizer
@@ -84,20 +74,34 @@ The most played: Clio, Lady of the Depths 6 · Counterspell 6 · Tidewall 5 · C
 - **History:**
   - contributed — S69 seed (the planner's): Esper's Eddy whole.
 
-## the Barrow — Mono-Black Control (B)
+## Dungrove Auras — Mono-Green Auras (G)
 
-`mbc` · control · game one 46 · matches 47.0
+`auras` · midrange · game one 54 · matches 57.5
 
-- **Lands (24):** 22 Swamp · 2 Barren Moor
-- **Creatures (20):** 4 The Jet Witch · 2 Drana, Kalastria Bloodchief · 4 Vampire Nighthawk · 4 Hypnotic Specter · 4 Nekrataal · 2 Gravedigger
-- **Other (16):** 1 Black Lotus · 1 Mox Jet · 4 Doom Blade · 3 Diabolic Edict · 2 Tendrils of Corruption · 1 Demonic Tutor · 2 Duress · 2 Sign in Blood
+- **Lands (22):** 22 Forest
+- **Creatures (27):** 4 Dungrove Elder · 2 Penumbra Wurm · 4 Llanowar Elves · 4 Gladecover Scout · 4 Wall of Blossoms · 4 Gaean Wurm · 2 Centaur Courser · 3 Reaper's Forerunner
+- **Other (11):** 3 Harmonize · 4 Rancor · 4 Blanchwood Armor
 - **Its fifteen:** built by the field's builder for each seat (none registered).
 - **History:**
-  - contributed — S69 seed (the planner's): Esper's Barrow whole (the pure-black shape).
+  - contributed — S69 seed (the planner's): Peasant's Dungrove Auras whole.
+
+## Massocrafts — Sultai Massacre Snakes (G B u)
+
+`massocrafts` · midrange · game one 49 · matches 48.8
+
+- **Lands (23):** 4 Bayou · 4 Overgrown Tomb · 4 Underground Sea · 4 Tropical Island · 1 Library of Alexandria · 1 Wrackroot · 3 Breeding Pool · 2 Watery Grave
+- **Creatures (29):** 4 Birds of Paradise · 4 Manaba · 4 Blood Artist · 4 Clio, Lady of the Depths · 4 Reaper's Forerunner · 4 Vampire Nighthawk · 4 The Emerald Keeper · 1 The Jet Witch
+- **Other (8):** 1 Black Lotus · 1 Mox Emerald · 1 Mox Jet · 1 Mox Sapphire · 1 Demonic Tutor · 1 Time Walk · 2 The Meathook Massacre
+- **Its fifteen (registered):** 2 The Meathook Massacre · 4 Protocol · 4 Mystic Snake · 2 Seraphina, the Initiative · 2 The Jet Witch · 1 Drana, Kalastria Bloodchief
+- **Its sideboard guide** (the whole plan: the general rules do not run after it):
+  - against shrinks: 4 Protocol in for Birds of Paradise, then Manaba
+  - against shrinks: 2 The Meathook Massacre in for The Jet Witch, then The Emerald Keeper
+- **History:**
+  - contributed — Post-S69 (Chris's, 2026-10-25): 8–0 in a Sultai Convocation (event 879534; 16–2 in games — the Writ, Sultai Reeve, the Undertow, the Depths and Sultai Reeve again in the Swiss; Sultai Mill, Sultai Reeve (an 81-turn game one) and the Undertow in the bracket). Go wide on Birds, Manaba and Blood Artist into either the Emerald Keeper or The Meathook Massacre; Clio and Nighthawks; the Forerunner. The fifteen as Chris registered it; the guide read from his swaps (Chris: the plan felt haphazard — the main is tight; Protocol and Drana for the Clio wars). Guide (measured, ADR-168): against the Clio lists the Protocols come in for Birds and Manaba, the two Massacres for the Witch and a Keeper (+4.6 ± 0.9 over the guide read from Chris's swaps; +7.7 against the six Clio lists).
 
 ## the Undertow — Dimir Mill (U B)
 
-`undertow` · control · game one 45 · matches 42.0
+`undertow` · control · game one 46 · matches 45.7
 
 - **Lands (22):** 4 Underground Sea · 4 Watery Grave · 6 Island · 3 Swamp · 4 Evolving Wilds · 1 Thawing Glaciers
 - **Creatures (19):** 4 Hedron Crab · 4 Traumatizer · 4 Tidewall · 4 Clio, Lady of the Depths · 3 Vampire Nighthawk
@@ -106,9 +110,31 @@ The most played: Clio, Lady of the Depths 6 · Counterspell 6 · Tidewall 5 · C
 - **History:**
   - contributed — S69 seed (the planner's): Esper's Undertow whole.
 
+## the Barrow — Mono-Black Control (B)
+
+`mbc` · control · game one 45 · matches 45.3
+
+- **Lands (24):** 22 Swamp · 2 Barren Moor
+- **Creatures (20):** 4 The Jet Witch · 2 Drana, Kalastria Bloodchief · 4 Vampire Nighthawk · 4 Hypnotic Specter · 4 Nekrataal · 2 Gravedigger
+- **Other (16):** 1 Black Lotus · 1 Mox Jet · 4 Doom Blade · 3 Diabolic Edict · 2 Tendrils of Corruption · 1 Demonic Tutor · 2 Duress · 2 Sign in Blood
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — S69 seed (the planner's): Esper's Barrow whole (the pure-black shape).
+
+## Sultai Mill (working name) — Sultai Mill (U B g)
+
+`mill` · control · game one 40 · matches 37.2
+
+- **Lands (22):** 4 Underground Sea · 4 Watery Grave · 6 Island · 3 Swamp · 2 Tropical Island · 2 Bayou · 1 Thawing Glaciers
+- **Creatures (19):** 4 Hedron Crab · 4 Traumatizer · 4 Tidewall · 4 Clio, Lady of the Depths · 3 Zinnia, the Undertow
+- **Other (19):** 1 Mox Sapphire · 1 Mox Jet · 1 Black Lotus · 4 Tome Scour · 3 Counterspell · 2 Essence Scatter · 4 Glimpse the Unthinkable · 3 Control Magic
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — S69 seed (the planner's): built by the implementer from Esper's Undertow — Sultai mill (the brief: the Undertow with Tome Scour and Clio, both already in it): its three Nighthawks for three Zinnias (a creature of theirs leaving mills its power), its four Evolving Wilds for two Bayous and two Tropical Islands.
+
 ## Black Forest Ham — Golgari Auras (B G)
 
-`bfh` · midrange · game one 43 · matches 36.9
+`bfh` · midrange · game one 43 · matches 35.8
 
 - **Lands (22):** 4 Overgrown Tomb · 4 Evolving Wilds · 9 Forest · 5 Swamp
 - **Creatures (22):** 4 Dungrove Elder · 4 Vampire Nighthawk · 4 Reaper's Forerunner · 4 Gaean Wurm · 2 Deadly Recluse · 4 Elvish Visionary
@@ -118,20 +144,9 @@ The most played: Clio, Lady of the Depths 6 · Counterspell 6 · Tidewall 5 · C
 - **History:**
   - contributed — S69 seed (the planner's): Black Forest Ham (Chris's) whole.
 
-## Sultai Mill (working name) — Sultai Mill (U B g)
-
-`mill` · control · game one 39 · matches 35.7
-
-- **Lands (22):** 4 Underground Sea · 4 Watery Grave · 6 Island · 3 Swamp · 2 Tropical Island · 2 Bayou · 1 Thawing Glaciers
-- **Creatures (19):** 4 Hedron Crab · 4 Traumatizer · 4 Tidewall · 4 Clio, Lady of the Depths · 3 Zinnia, the Undertow
-- **Other (19):** 1 Mox Sapphire · 1 Mox Jet · 1 Black Lotus · 4 Tome Scour · 3 Counterspell · 2 Essence Scatter · 4 Glimpse the Unthinkable · 3 Control Magic
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S69 seed (the planner's): built by the implementer from Esper's Undertow — Sultai mill (the brief: the Undertow with Tome Scour and Clio, both already in it): its three Nighthawks for three Zinnias (a creature of theirs leaving mills its power), its four Evolving Wilds for two Bayous and two Tropical Islands.
-
 ## the Wurmspeaker — Mono-Green Ramp
 
-`wurmspeaker` · midrange · game one 37 · matches 26.5
+`wurmspeaker` · midrange · game one 37 · matches 25.8
 
 - **Lands (22):** 20 Forest · 2 Tranquil Thicket
 - **Creatures (30):** 4 Llanowar Elves · 4 Birds of Paradise · 4 Wood Elves · 4 Seedborn Muse · 3 Gaean Wurm · 2 Pelakka Wurm · 3 Baru, Wurmspeaker · 2 Treetop Snarespinner · 2 The Emerald Keeper · 2 Rampaging Baloths
