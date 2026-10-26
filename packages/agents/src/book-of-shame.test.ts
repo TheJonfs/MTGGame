@@ -2309,4 +2309,31 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const old = new HeuristicAgent(1, pool, { archetype: "aggro", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, off: ["payoffcost"] });
     expect(old.payoffCostGated(mkView({ life: [1, 20], hand, battlefield: bf }), bolt)).toBe(false);
   });
+
+  it("book of shame 149 (post-S69 — Chris's Abzan run: a lone Isaura sat eight turns beside seven untapped lands and never bought a counter): a team +1/+1 counter is bought with the mana left at their end step, for a team of any size; off: teamcounters", () => {
+    const a = agent("midrange");
+    const lands = Array.from({ length: 4 }, (_, i) => ({ id: "p" + i, cardId: "plains", controller: 1 as const }));
+    const bf = [{ id: "i", cardId: "isaura_the_levy", controller: 1 as const }, ...lands];
+    const counter = { type: "activateAbility" as const, objectId: "i", abilityIndex: 1, targets: [] };
+    const theirEnd = mkView({ battlefield: bf, step: "END", activePlayer: 0 });
+    // the agent is seat 1 here: its view is the mirror
+    const view = { ...theirEnd, you: 1 as const };
+    expect(a.floodSinkGated(view, counter)).toBe(false);
+    expect(a.scorePriorityAction(view, counter)).toBeGreaterThan(a.scorePriorityAction(view, { type: "pass" }));
+    expect(a.floodSinkGated({ ...view, step: "MAIN1", activePlayer: 1 }, counter)).toBe(true); // our main with one creature: the mana may yet cast something
+    const old = new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, off: ["teamcounters"] });
+    expect(old.floodSinkGated(view, counter)).toBe(true);
+  });
+
+  it("book of shame 150 (post-S69 — Chris's Abzan run: Isaura shrank his 1/1 Soul Warden twice, the second in response to the first): a shrink counts our shrinks already on the stack at the target; off: shrinkplan", () => {
+    const a = agent("midrange");
+    const bf = [{ id: "i", cardId: "isaura_the_levy", controller: 1 as const }, { id: "sw", cardId: "soul_warden", controller: 0 as const }, ...Array.from({ length: 4 }, (_, i) => ({ id: "s" + i, cardId: "swamp", controller: 1 as const }))];
+    const shrink = { type: "activateAbility" as const, objectId: "i", abilityIndex: 0, targets: [{ kind: "object" as const, id: "sw" }] };
+    const view = { ...mkView({ battlefield: bf, step: "END", activePlayer: 0 }), you: 1 as const };
+    expect(a.floodSinkGated(view, shrink)).toBe(false); // the first shrink kills the 1/1
+    const stacked = { ...view, stack: [{ id: "x1", kind: "ability", cardId: "isaura_the_levy", controller: 1 as const, targets: [{ kind: "object" as const, id: "sw" }] }] };
+    expect(a.floodSinkGated(stacked as never, shrink)).toBe(true); // the one on the stack already does
+    const old = new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, off: ["shrinkplan"] });
+    expect(old.floodSinkGated(stacked as never, shrink)).toBe(false);
+  });
 });

@@ -86,7 +86,7 @@ describe("the book of shame, S40 — the flood's legends and grounds", () => {
     expect(obs(3)).toBeGreaterThan(-Infinity);
   });
 
-  it("book 61 (Isaura): −1/−1 only where it kills, at their end step or in combat; the team counters on our own main phase with three or more creatures", () => {
+  it("book 61 (Isaura): −1/−1 only where it kills, at their end step or in combat; the team counters on our own main phase with three or more creatures (post-S69: or at their end step, any team)", () => {
     const a = agent();
     const base = (step: string, active: 0 | 1, extra: Obj[] = [], combat: GameView["combat"] = { attackers: [], blocks: [] }) => mkView({ step, active, combat, bf: [{ id: "isa", cardId: "isaura_the_levy", controller: 0 }, ...lands(4, "swamp"), { id: "lion", cardId: "savannah_lions", controller: 1 }, { id: "giant", cardId: "hill_giant", controller: 1 }, ...extra] });
     expect(a.scorePriorityAction(base("END", 1), act("isa", 0, [obj("lion")] as never))).toBeGreaterThan(-Infinity);
@@ -97,7 +97,10 @@ describe("the book of shame, S40 — the flood's legends and grounds", () => {
     const three: Obj[] = [...two, { id: "b2", cardId: "grizzly_bears", controller: 0 }];
     expect(a.scorePriorityAction(base("MAIN1", 0, two), act("isa", 1))).toBe(-Infinity);
     expect(a.scorePriorityAction(base("MAIN1", 0, three), act("isa", 1))).toBeGreaterThan(-Infinity);
-    expect(a.scorePriorityAction(base("END", 1, three), act("isa", 1))).toBe(-Infinity);
+    // post-S69 (book 149): the counter is permanent — their end step's spare mana buys it (S40's refusal under off: teamcounters)
+    expect(a.scorePriorityAction(base("END", 1, three), act("isa", 1))).toBeGreaterThan(-Infinity);
+    const old = new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, off: ["teamcounters"] });
+    expect(old.scorePriorityAction(base("END", 1, three), act("isa", 1))).toBe(-Infinity);
   });
 
   it("book 62 (the Reaper): the harvest only for a lethal or near-lethal alpha, before combat; the pick is the body that makes the team biggest, never the Reaper; never down to the last body while behind", async () => {

@@ -2968,6 +2968,18 @@ export class HeuristicAgent implements Agent {
     }
     return n;
   }
+  /** Post-S69 (book 150): the toughness our own pending stack items will take from the object (−X/−X shrinks). */
+  pendingShrinkAt(view: GameView, objectId: string, me: PlayerId): number {
+    let n = 0;
+    for (const it of view.stack) {
+      if (it.controller !== me || !(it.targets ?? []).some((t) => t.kind === "object" && t.id === objectId)) continue;
+      const d = this.def(it.cardId); if (!d) continue;
+      const effs = it.kind === "spell" ? d.spellEffect ?? [] : (d.abilities ?? []).flatMap((a) => (a.kind === "activated" || a.kind === "triggered" ? a.effects : []));
+      const pt = effs.find((e) => e.type === "modifyPT" && typeof e.toughness === "number" && e.toughness < 0 && (e as { target?: number }).target !== undefined) as { toughness: number } | undefined;
+      if (pt) n += -pt.toughness;
+    }
+    return n;
+  }
   /** S68 (Part 2): the combat damage already committed to the object once blocks are declared — our blockers on their
    * attacker, our attackers it blocks. */
   committedCombatAt(view: GameView, objectId: string, me: PlayerId): number {
@@ -3286,6 +3298,13 @@ export class HeuristicAgent implements Agent {
       }
       case "modifyPT": {
         if (e0.target === undefined || typeof e0.toughness !== "number" || e0.toughness >= 0) return false;
+        // Post-S69 (book 150, `off: ["shrinkplan"]` — Chris's Abzan run: Isaura shrank his 1/1 Soul Warden twice, the
+        // second in response to the first): our shrinks already on the stack at the target count, as pings do (book 144).
+        if (!this.profile.off?.includes("shrinkplan") && objT && objT.toughness !== null) {
+          const left = objT.toughness - objT.damage - this.pendingShrinkAt(view, objT.id, me);
+          if (left <= 0) return true;
+          return !(-e0.toughness >= left && (theirEnd || inCombat(objT.id)));
+        }
         return !(kills(-e0.toughness) && (theirEnd || (!!objT && inCombat(objT.id))));
       }
       case "mill":
@@ -3300,6 +3319,9 @@ export class HeuristicAgent implements Agent {
         return !(preCombat && myCreatures.filter((o) => this.canActNow(o) && !o.cantAttack).length >= 3); // S45: ready attackers only
       case "addCounters":
         if (e0.scope !== "creaturesYouControl") return false;
+        // Post-S69 (book 149, `off: ["teamcounters"]` — Chris's Abzan run: a lone Isaura sat eight turns beside seven
+        // untapped lands): a +1/+1 counter is permanent, so the mana left at their end step buys one for any team.
+        if (!this.profile.off?.includes("teamcounters") && e0.kind === "+1/+1" && theirEnd && view.stack.length === 0 && myCreatures.length >= 1) return false;
         return !(ourMain && myCreatures.length >= 3);
       default:
         return false;
