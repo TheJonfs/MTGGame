@@ -22,6 +22,15 @@ const DELAY_KEY = "shandalar-ai-delay";
 const OPP_SPELL_STOP_KEY = "shandalar-stop-opp-spells"; // S11 (note 2)
 const BLOCKERS_PAUSE_KEY = "shandalar-pause-blockers-untapped"; // S12 rider
 const COMBAT_STOP_KEY = "shandalar-stop-combat"; // S13
+const AUTO_AIM_KEY = "shandalar-auto-aim-drains"; // post-S69
+
+export function loadAutoAimDrains(): boolean {
+  try {
+    return localStorage.getItem(AUTO_AIM_KEY) !== "0";
+  } catch {
+    return true;
+  }
+}
 
 export function loadStopOnCombat(): boolean {
   try {
@@ -264,6 +273,19 @@ function StopsFlyout({ c }: { c: MatchController }) {
               }}
             />{" "}
             blockers, even with no legal block
+          </label>
+          <div className="flyout-title" style={{ marginTop: 6 }}>Triggers</div>
+          <label title="A trigger that only makes its target player lose life or take damage (Blood Artist) targets the opponent without asking. Untick to choose every target yourself.">
+            <input
+              type="checkbox"
+              checked={c.autoAimDrains}
+              onChange={(e) => {
+                c.autoAimDrains = e.target.checked;
+                localStorage.setItem(AUTO_AIM_KEY, e.target.checked ? "1" : "0");
+                force((n) => n + 1);
+              }}
+            />{" "}
+            aim drains at the opponent
           </label>
           <div className="flyout-title" style={{ marginTop: 6 }}>AI pacing</div>
           <label>
@@ -885,6 +907,7 @@ export function PlayMatch({
     c.stopOnOpponentSpells = loadStopOnOpponentSpells();
     c.pauseBlockersWithUntapped = loadPauseBlockersWithUntapped();
     c.stopOnCombat = loadStopOnCombat();
+    c.autoAimDrains = loadAutoAimDrains();
   }, [c]);
   useEffect(() => {
     if (c.phase.kind === "gameOver") onGameOver();

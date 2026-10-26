@@ -34,6 +34,7 @@ import {
   viewAbilityAt,
   type Difficulty,
 } from "@shandalar/agents";
+import { autoAimAction } from "./auto-aim.js";
 import { DECKS, DECK_ARCHETYPES, type DeckKey } from "@shandalar/sim/decks";
 
 /**
@@ -231,6 +232,9 @@ export class MatchController {
    * declared against you, and once when blocks are declared against your
    * attack, even with nothing to do, so the lane is seen. Default on. */
   stopOnCombat = true;
+  /** Post-S69 (Chris): a trigger that only hurts its target player (Blood Artist) is aimed at the opponent without
+   * asking (play/auto-aim.ts). Default on; menu toggle, persisted by the UI. */
+  autoAimDrains = true;
   private combatSeen = new Set<string>();
   /** Why the current pause happened, for the prompt ("Opponent cast X"). */
   stopReason: string | null = null;
@@ -674,6 +678,14 @@ export class MatchController {
           const ts = (a as { targets?: ResolvedTarget[] }).targets;
           return Array.isArray(ts) && ts.every((t) => t.kind === "player" || (t.kind === "object" && this.game.state.objects[t.id]?.zone === "battlefield"));
         });
+        const aimed = this.autoAimDrains ? autoAimAction(request, (1 - this.humanSeat) as PlayerId) : null;
+        if (aimed) {
+          this.showNotice(`${this.pool.get(request.source!.cardId)?.name ?? request.source!.cardId} → opponent`);
+          this.phase = { kind: "waiting" };
+          this.answer(aimed);
+          this.emit();
+          return;
+        }
         if (boardOnly) { this.enterTargeting("", request.actions, true, request.source); return; }
         this.phase = { kind: "dialog", request, view, selected: null };
         this.emit();
