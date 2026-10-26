@@ -1596,6 +1596,93 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
    }
   ],
   "only": true
+ },
+ {
+  "key": "abzan:bwmassacrats",
+  "fifteen": [
+   {
+    "cardId": "wrath_of_god",
+    "count": 3
+   },
+   {
+    "cardId": "drana_kalastria_bloodchief",
+    "count": 3
+   },
+   {
+    "cardId": "sign_in_blood",
+    "count": 3
+   },
+   {
+    "cardId": "diabolic_edict",
+    "count": 3
+   },
+   {
+    "cardId": "vigil_keeper",
+    "count": 3
+   }
+  ],
+  "rows": [
+   {
+    "in": "diabolic_edict",
+    "n": 3,
+    "out": [
+     "vindicate"
+    ],
+    "when": [
+     "hexproof"
+    ]
+   },
+   {
+    "in": "wrath_of_god",
+    "n": 3,
+    "out": [
+     "vindicate"
+    ],
+    "when": [
+     "wide",
+     "large",
+     "small"
+    ]
+   },
+   {
+    "in": "drana_kalastria_bloodchief",
+    "n": 3,
+    "out": [
+     "retribution_of_the_meek"
+    ],
+    "when": [
+     "wide",
+     "someGraveyard"
+    ]
+   },
+   {
+    "in": "drana_kalastria_bloodchief",
+    "n": 3,
+    "out": [
+     "dazzling_angel"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "large"
+    ]
+   },
+   {
+    "in": "diabolic_edict",
+    "n": 2,
+    "out": [
+     "the_jet_witch"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "large"
+    ]
+   }
+  ],
+  "only": true
  }
 ];
 
@@ -1947,6 +2034,7 @@ export const LIST_GUIDES: Record<string, string> = {
  "abzan:chancel": "esper:wbcontrol",
  "abzan:bw": "peasant:bw",
  "abzan:wskies": "peasant:wskies",
+ "abzan:bwmassacrats": "abzan:bwmassacrats",
  "bant:skies": "jeskai:skies",
  "bant:uwskies": "peasant:skies",
  "bant:wskies": "peasant:wskies"

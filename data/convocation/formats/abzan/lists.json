@@ -6,8 +6,72 @@
   "large": 8
  },
  "archived": {},
- "guides": {},
- "guidesOnly": [],
+ "guides": {
+  "bwmassacrats": [
+   {
+    "in": "diabolic_edict",
+    "n": 3,
+    "out": [
+     "vindicate"
+    ],
+    "when": [
+     "hexproof"
+    ]
+   },
+   {
+    "in": "wrath_of_god",
+    "n": 3,
+    "out": [
+     "vindicate"
+    ],
+    "when": [
+     "wide",
+     "large",
+     "small"
+    ]
+   },
+   {
+    "in": "drana_kalastria_bloodchief",
+    "n": 3,
+    "out": [
+     "retribution_of_the_meek"
+    ],
+    "when": [
+     "wide",
+     "someGraveyard"
+    ]
+   },
+   {
+    "in": "drana_kalastria_bloodchief",
+    "n": 3,
+    "out": [
+     "dazzling_angel"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "large"
+    ]
+   },
+   {
+    "in": "diabolic_edict",
+    "n": 2,
+    "out": [
+     "the_jet_witch"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "large"
+    ]
+   }
+  ]
+ },
+ "guidesOnly": [
+  "bwmassacrats"
+ ],
  "outRules": {},
  "lists": [
   {
@@ -1003,6 +1067,129 @@
     }
    ],
    "source": "S69 seed (the planner's): built by the implementer from Esper's Roll — Abzan tokens (the brief: the Roll with Rampaging Baloths and Harmonize): its four Vindicates for two Baloths and two Harmonizes; four Swamps for two Savannahs and two Bayous, two Plains for two Temple Gardens, Mox Jet for Mox Emerald."
+  },
+  {
+   "key": "bwmassacrats",
+   "name": "BW Massacrats",
+   "title": "Orzhov Massacrats (W B)",
+   "archetype": "midrange",
+   "source": "Post-S69 (Chris's, 2026-10-26): 8–0 in an Abzan Convocation (event 19887; 16–2 in games — Dungrove Auras, Abzan Warden, the Roll, Abzan Warden and Abzan Tokens in the Swiss; the Roll, the Thicket and the Levy in the bracket). Grixis's Massacrats in Orzhov colours: Soul Warden, Blood Artist and Bitterblossom into The Meathook Massacre; Nighthawks, Dazzling Angels and the Witch; Vindicate and Retribution of the Meek. The Massacre loops on Shevelport (the legend rule keeps the new one; round 5, game 2). The fifteen as Chris registered it; the guide read from his swaps.",
+   "decklist": [
+    {
+     "cardId": "the_meathook_massacre",
+     "count": 4
+    },
+    {
+     "cardId": "retribution_of_the_meek",
+     "count": 3
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "bitterblossom",
+     "count": 4
+    },
+    {
+     "cardId": "blood_artist",
+     "count": 4
+    },
+    {
+     "cardId": "dazzling_angel",
+     "count": 3
+    },
+    {
+     "cardId": "the_jet_witch",
+     "count": 3
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "vindicate",
+     "count": 3
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "shevelport",
+     "count": 1
+    },
+    {
+     "cardId": "library_of_alexandria",
+     "count": 1
+    },
+    {
+     "cardId": "obsidian_observatory",
+     "count": 1
+    },
+    {
+     "cardId": "scrubland",
+     "count": 4
+    },
+    {
+     "cardId": "godless_shrine",
+     "count": 4
+    },
+    {
+     "cardId": "bayou",
+     "count": 4
+    },
+    {
+     "cardId": "savannah",
+     "count": 4
+    },
+    {
+     "cardId": "swamp",
+     "count": 3
+    },
+    {
+     "cardId": "plains",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "wrath_of_god",
+     "count": 3
+    },
+    {
+     "cardId": "drana_kalastria_bloodchief",
+     "count": 3
+    },
+    {
+     "cardId": "sign_in_blood",
+     "count": 3
+    },
+    {
+     "cardId": "diabolic_edict",
+     "count": 3
+    },
+    {
+     "cardId": "vigil_keeper",
+     "count": 3
+    }
+   ]
   }
  ]
 }
