@@ -1,72 +1,72 @@
 {
  "_comment": "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.",
- "when": "2026-10-25",
+ "when": "2026-10-27",
  "matchesAPairing": 60,
  "byList": {
   "auras": {
-   "matches": 57.5,
-   "gameOne": 54.8,
+   "matches": 57.2,
+   "gameOne": 54,
    "later": 55.8,
    "n": 600
   },
   "bfh": {
-   "matches": 35.8,
-   "gameOne": 42.8,
+   "matches": 35.7,
+   "gameOne": 42.7,
    "later": 39.6,
    "n": 600
   },
   "depths": {
-   "matches": 60.9,
-   "gameOne": 56.8,
-   "later": 57.3,
+   "matches": 60.1,
+   "gameOne": 56.5,
+   "later": 56.7,
    "n": 600
   },
   "massocrafts": {
-   "matches": 48.8,
-   "gameOne": 49,
-   "later": 48.8,
+   "matches": 55.7,
+   "gameOne": 53.3,
+   "later": 52.9,
    "n": 600
   },
   "mbc": {
-   "matches": 45.3,
-   "gameOne": 45.7,
-   "later": 47.1,
+   "matches": 44.5,
+   "gameOne": 45.5,
+   "later": 46.4,
    "n": 600
   },
   "mill": {
-   "matches": 37.2,
-   "gameOne": 38.8,
-   "later": 41.6,
+   "matches": 35.8,
+   "gameOne": 38,
+   "later": 40.6,
    "n": 600
   },
   "reeve": {
-   "matches": 68.9,
-   "gameOne": 66.5,
-   "later": 62,
+   "matches": 69.1,
+   "gameOne": 66.4,
+   "later": 62.3,
    "n": 600
   },
   "tempo": {
-   "matches": 58,
-   "gameOne": 54,
-   "later": 56.3,
+   "matches": 57,
+   "gameOne": 53.5,
+   "later": 55.6,
    "n": 600
   },
   "undertow": {
-   "matches": 45.7,
-   "gameOne": 46.5,
-   "later": 47.2,
+   "matches": 44.3,
+   "gameOne": 45.8,
+   "later": 46.5,
    "n": 600
   },
   "writ": {
-   "matches": 66,
-   "gameOne": 57.3,
-   "later": 63.2,
+   "matches": 65.3,
+   "gameOne": 57.2,
+   "later": 62.8,
    "n": 600
   },
   "wurmspeaker": {
-   "matches": 25.8,
-   "gameOne": 37.7,
-   "later": 31.1,
+   "matches": 25.3,
+   "gameOne": 37.2,
+   "later": 30.7,
    "n": 600
   }
  }

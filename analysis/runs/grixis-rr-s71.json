@@ -1,0 +1,673 @@
+{
+ "name": "open_rr_1",
+ "when": "2026-10-27T01:21:39.348Z",
+ "games": 7800,
+ "table": {
+  "kiln": {
+   "rabble": [
+    31,
+    100
+   ],
+   "br": [
+    44,
+    100
+   ],
+   "writ": [
+    46,
+    100
+   ],
+   "clio": [
+    50,
+    100
+   ],
+   "tempo": [
+    61,
+    100
+   ],
+   "mbclio": [
+    45,
+    100
+   ],
+   "undertow": [
+    66,
+    100
+   ],
+   "massacrats": [
+    53,
+    100
+   ],
+   "mbc": [
+    63,
+    100
+   ],
+   "tally": [
+    61,
+    100
+   ],
+   "ashen": [
+    55,
+    100
+   ],
+   "kindling": [
+    48,
+    100
+   ]
+  },
+  "rabble": {
+   "kiln": [
+    69,
+    100
+   ],
+   "tally": [
+    78,
+    100
+   ],
+   "ashen": [
+    67,
+    100
+   ],
+   "kindling": [
+    77,
+    100
+   ],
+   "br": [
+    56,
+    100
+   ],
+   "writ": [
+    68,
+    100
+   ],
+   "clio": [
+    72,
+    100
+   ],
+   "tempo": [
+    69,
+    100
+   ],
+   "mbclio": [
+    54,
+    100
+   ],
+   "undertow": [
+    89,
+    100
+   ],
+   "massacrats": [
+    54,
+    100
+   ],
+   "mbc": [
+    81,
+    100
+   ]
+  },
+  "br": {
+   "kiln": [
+    56,
+    100
+   ],
+   "ashen": [
+    34,
+    100
+   ],
+   "clio": [
+    25,
+    100
+   ],
+   "mbclio": [
+    11,
+    100
+   ],
+   "massacrats": [
+    20,
+    100
+   ],
+   "rabble": [
+    44,
+    100
+   ],
+   "tally": [
+    69,
+    100
+   ],
+   "kindling": [
+    67,
+    100
+   ],
+   "writ": [
+    28,
+    100
+   ],
+   "mbc": [
+    55,
+    100
+   ],
+   "tempo": [
+    39,
+    100
+   ],
+   "undertow": [
+    51,
+    100
+   ]
+  },
+  "tally": {
+   "rabble": [
+    21,
+    100
+   ],
+   "ashen": [
+    50,
+    100
+   ],
+   "writ": [
+    60,
+    100
+   ],
+   "mbc": [
+    58,
+    100
+   ],
+   "kindling": [
+    27,
+    100
+   ],
+   "tempo": [
+    67,
+    100
+   ],
+   "undertow": [
+    84,
+    100
+   ],
+   "br": [
+    30,
+    100
+   ],
+   "clio": [
+    62,
+    100
+   ],
+   "kiln": [
+    39,
+    100
+   ],
+   "mbclio": [
+    47,
+    100
+   ],
+   "massacrats": [
+    55,
+    100
+   ]
+  },
+  "writ": {
+   "undertow": [
+    47,
+    100
+   ],
+   "massacrats": [
+    56,
+    100
+   ],
+   "kiln": [
+    54,
+    100
+   ],
+   "mbc": [
+    69,
+    100
+   ],
+   "tally": [
+    40,
+    100
+   ],
+   "ashen": [
+    55,
+    100
+   ],
+   "rabble": [
+    32,
+    100
+   ],
+   "kindling": [
+    61,
+    100
+   ],
+   "br": [
+    72,
+    100
+   ],
+   "clio": [
+    36,
+    100
+   ],
+   "tempo": [
+    60,
+    100
+   ],
+   "mbclio": [
+    29,
+    100
+   ]
+  },
+  "undertow": {
+   "writ": [
+    53,
+    100
+   ],
+   "mbclio": [
+    26,
+    100
+   ],
+   "tempo": [
+    45,
+    100
+   ],
+   "massacrats": [
+    50,
+    100
+   ],
+   "mbc": [
+    40,
+    100
+   ],
+   "kiln": [
+    34,
+    100
+   ],
+   "tally": [
+    16,
+    100
+   ],
+   "ashen": [
+    39,
+    100
+   ],
+   "kindling": [
+    31,
+    100
+   ],
+   "rabble": [
+    11,
+    100
+   ],
+   "br": [
+    49,
+    100
+   ],
+   "clio": [
+    25,
+    100
+   ]
+  },
+  "massacrats": {
+   "writ": [
+    44,
+    100
+   ],
+   "mbc": [
+    77,
+    100
+   ],
+   "tempo": [
+    41,
+    100
+   ],
+   "undertow": [
+    50,
+    100
+   ],
+   "br": [
+    80,
+    100
+   ],
+   "kiln": [
+    47,
+    100
+   ],
+   "ashen": [
+    62,
+    100
+   ],
+   "clio": [
+    31,
+    100
+   ],
+   "mbclio": [
+    39,
+    100
+   ],
+   "rabble": [
+    46,
+    100
+   ],
+   "tally": [
+    45,
+    100
+   ],
+   "kindling": [
+    72,
+    100
+   ]
+  },
+  "tempo": {
+   "mbclio": [
+    30,
+    100
+   ],
+   "undertow": [
+    55,
+    100
+   ],
+   "massacrats": [
+    59,
+    100
+   ],
+   "kiln": [
+    39,
+    100
+   ],
+   "mbc": [
+    57,
+    100
+   ],
+   "tally": [
+    33,
+    100
+   ],
+   "ashen": [
+    59,
+    100
+   ],
+   "rabble": [
+    31,
+    100
+   ],
+   "kindling": [
+    54,
+    100
+   ],
+   "br": [
+    61,
+    100
+   ],
+   "writ": [
+    40,
+    100
+   ],
+   "clio": [
+    41,
+    100
+   ]
+  },
+  "mbclio": {
+   "tempo": [
+    70,
+    100
+   ],
+   "undertow": [
+    74,
+    100
+   ],
+   "br": [
+    89,
+    100
+   ],
+   "kiln": [
+    55,
+    100
+   ],
+   "ashen": [
+    71,
+    100
+   ],
+   "clio": [
+    54,
+    100
+   ],
+   "rabble": [
+    45,
+    100
+   ],
+   "tally": [
+    53,
+    100
+   ],
+   "massacrats": [
+    61,
+    100
+   ],
+   "kindling": [
+    54,
+    100
+   ],
+   "writ": [
+    71,
+    100
+   ],
+   "mbc": [
+    76,
+    100
+   ]
+  },
+  "mbc": {
+   "massacrats": [
+    23,
+    100
+   ],
+   "writ": [
+    31,
+    100
+   ],
+   "tempo": [
+    43,
+    100
+   ],
+   "undertow": [
+    60,
+    100
+   ],
+   "tally": [
+    42,
+    100
+   ],
+   "ashen": [
+    35,
+    100
+   ],
+   "kiln": [
+    37,
+    100
+   ],
+   "kindling": [
+    40,
+    100
+   ],
+   "br": [
+    45,
+    100
+   ],
+   "clio": [
+    21,
+    100
+   ],
+   "rabble": [
+    19,
+    100
+   ],
+   "mbclio": [
+    24,
+    100
+   ]
+  },
+  "ashen": {
+   "br": [
+    66,
+    100
+   ],
+   "rabble": [
+    33,
+    100
+   ],
+   "tally": [
+    50,
+    100
+   ],
+   "clio": [
+    44,
+    100
+   ],
+   "mbclio": [
+    29,
+    100
+   ],
+   "writ": [
+    45,
+    100
+   ],
+   "mbc": [
+    65,
+    100
+   ],
+   "massacrats": [
+    38,
+    100
+   ],
+   "tempo": [
+    41,
+    100
+   ],
+   "undertow": [
+    61,
+    100
+   ],
+   "kiln": [
+    45,
+    100
+   ],
+   "kindling": [
+    68,
+    100
+   ]
+  },
+  "clio": {
+   "br": [
+    75,
+    100
+   ],
+   "kiln": [
+    50,
+    100
+   ],
+   "ashen": [
+    56,
+    100
+   ],
+   "mbclio": [
+    46,
+    100
+   ],
+   "rabble": [
+    28,
+    100
+   ],
+   "tally": [
+    38,
+    100
+   ],
+   "massacrats": [
+    67,
+    100
+   ],
+   "kindling": [
+    63,
+    100
+   ],
+   "writ": [
+    62,
+    100
+   ],
+   "mbc": [
+    77,
+    100
+   ],
+   "tempo": [
+    59,
+    100
+   ],
+   "undertow": [
+    74,
+    100
+   ]
+  },
+  "kindling": {
+   "rabble": [
+    23,
+    100
+   ],
+   "tally": [
+    68,
+    100
+   ],
+   "writ": [
+    39,
+    100
+   ],
+   "mbc": [
+    60,
+    100
+   ],
+   "br": [
+    33,
+    100
+   ],
+   "tempo": [
+    45,
+    100
+   ],
+   "undertow": [
+    69,
+    100
+   ],
+   "clio": [
+    37,
+    100
+   ],
+   "mbclio": [
+    46,
+    100
+   ],
+   "kiln": [
+    52,
+    100
+   ],
+   "ashen": [
+    32,
+    100
+   ],
+   "massacrats": [
+    28,
+    100
+   ]
+  }
+ },
+ "means": {
+  "kiln": 52,
+  "rabble": 70,
+  "writ": 51,
+  "tempo": 47,
+  "undertow": 35,
+  "mbc": 35,
+  "tally": 50,
+  "ashen": 49,
+  "kindling": 44,
+  "br": 42,
+  "clio": 58,
+  "mbclio": 64,
+  "massacrats": 53
+ },
+ "report": "# The Open's round-robin (S46) — 7800 games, master both, 20 life, no entrances; the ROW's win rate\n\n| | kiln | rabble | writ | tempo | undertow | mbc | tally | ashen | kindling | br | clio | mbclio | massacrats | **mean** |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| **kiln** | — | 31 | 46 | 61 | 66 | 63 | 61 | 55 | 48 | 44 | 50 | 45 | 53 | **52** |\n| **rabble** | 69 | — | 68 | 69 | 89 | 81 | 78 | 67 | 77 | 56 | 72 | 54 | 54 | **70** |\n| **writ** | 54 | 32 | — | 60 | 47 | 69 | 40 | 55 | 61 | 72 | 36 | 29 | 56 | **51** |\n| **tempo** | 39 | 31 | 40 | — | 55 | 57 | 33 | 59 | 54 | 61 | 41 | 30 | 59 | **47** |\n| **undertow** | 34 | 11 | 53 | 45 | — | 40 | 16 | 39 | 31 | 49 | 25 | 26 | 50 | **35** |\n| **mbc** | 37 | 19 | 31 | 43 | 60 | — | 42 | 35 | 40 | 45 | 21 | 24 | 23 | **35** |\n| **tally** | 39 | 21 | 60 | 67 | 84 | 58 | — | 50 | 27 | 30 | 62 | 47 | 55 | **50** |\n| **ashen** | 45 | 33 | 45 | 41 | 61 | 65 | 50 | — | 68 | 66 | 44 | 29 | 38 | **49** |\n| **kindling** | 52 | 23 | 39 | 45 | 69 | 60 | 68 | 32 | — | 33 | 37 | 46 | 28 | **44** |\n| **br** | 56 | 44 | 28 | 39 | 51 | 55 | 69 | 34 | 67 | — | 25 | 11 | 20 | **42** |\n| **clio** | 50 | 28 | 62 | 59 | 74 | 77 | 38 | 56 | 63 | 75 | — | 46 | 67 | **58** |\n| **mbclio** | 55 | 45 | 71 | 70 | 74 | 76 | 53 | 71 | 54 | 89 | 54 | — | 61 | **64** |\n| **massacrats** | 47 | 46 | 44 | 41 | 50 | 77 | 45 | 62 | 72 | 80 | 31 | 39 | — | **53** |\n\nSolvable (a list over 65% against the field): rabble. Under 35%: none.\nMuster vs Warband: the Muster 0% (0 games).\nThe Undertow's wins by library: 331 of 419 (79%).\n\n## Staples (ADR-170)\n\nIn more than half of the 13 lists: Vampire Nighthawk (8 lists, 31 copies). The most played: Vampire Nighthawk 8 · Lightning Bolt 6 · Clio, Lady of the Depths 6 · Flametongue Kavu 6 · Counterspell 6 · Drana, Kalastria Bloodchief 6 · Char 5 · The Jet Witch 5.\n\n## Restricted cards — % of the list's games in which it was cast (or, a land, played)\n\n- **kiln**: time_walk 28% · tallyflame_court 33% · black_lotus 30% · mox_sapphire 30% · mox_ruby 28% · library_of_alexandria 30%\n- **rabble**: cairnbrand 29% · tallyflame_court 30% · mox_sapphire 26% · mox_ruby 28% · mox_jet 27% · black_lotus 27%\n- **writ**: library_of_alexandria 37% · black_lotus 28% · mox_jet 28% · mox_sapphire 29% · demonic_tutor 30% · time_walk 34%\n- **tempo**: black_lotus 33% · mox_sapphire 32%\n- **undertow**: mox_sapphire 25% · mox_jet 24% · black_lotus 25%\n- **mbc**: black_lotus 32% · mox_jet 29% · demonic_tutor 25%\n- **tally**: tallyflame_court 32% · black_lotus 35% · mox_ruby 31% · mox_sapphire 35%\n- **ashen**: cairnbrand 34% · mox_jet 28% · mox_ruby 29% · black_lotus 28% · demonic_tutor 25%\n- **kindling**: mox_ruby 27% · black_lotus 30%\n- **clio**: library_of_alexandria 33% · cairnbrand 37% · black_lotus 27% · mox_jet 28% · mox_sapphire 28% · mox_ruby 28% · demonic_tutor 27% · time_walk 33%\n- **mbclio**: black_lotus 32% · mox_jet 31% · mox_ruby 33% · mox_sapphire 33% · demonic_tutor 23% · time_walk 26% · cairnbrand 31% · tallyflame_court 34% · library_of_alexandria 30%\n- **massacrats**: black_lotus 32% · mox_jet 33% · mox_ruby 30% · mox_sapphire 28% · demonic_tutor 25% · cairnbrand 31% · tallyflame_court 30% · library_of_alexandria 30% · time_walk 28%\n\n## Key pieces — % of the list's games in which each was cast (a weak pilot reads apart from a weak list)\n\n- **kiln**: \n- **rabble**: \n- **writ**: \n- **tempo**: \n- **undertow**: hedron_crab 70% · zinnia_the_undertow 0% · traumatizer 58%\n- **mbc**: \n- **tally**: young_pyromancer 82% · guttersnipe 80% · ponder 63%\n- **ashen**: \n- **kindling**: \n- **br**: \n- **clio**: \n- **mbclio**: \n- **massacrats**: \n\n## The Loop — the Usher + an Altar on the battlefield with a Restoration Angel in hand or play\n\nAssembled by turn ten in 0 of 0 games (0%); ever: 0. Altar activations per game: 0.00."
+}

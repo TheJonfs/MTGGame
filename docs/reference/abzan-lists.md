@@ -4,21 +4,21 @@
 
 ## The table of record
 
-11 active lists, the AI in both seats. **Game one** is a list's mean win rate against the other active lists on the registered sixties (the round-robin of record, `formats/abzan/means.json`). **Matches** is its best-of-three win rate — the figure the field's seat draw reads since S59 (60 matches a pairing, measured 2026-10-26; ADR-171): game one on the registered sixties, games two and three sideboarded. **After sideboarding** is its games-two-and-three rate less its game-one rate inside those matches.
+11 active lists, the AI in both seats. **Game one** is a list's mean win rate against the other active lists on the registered sixties (the round-robin of record, `formats/abzan/means.json`). **Matches** is its best-of-three win rate — the figure the field's seat draw reads since S59 (60 matches a pairing, measured 2026-10-27; ADR-171): game one on the registered sixties, games two and three sideboarded. **After sideboarding** is its games-two-and-three rate less its game-one rate inside those matches.
 
 | list | deck | pilot | matches | game one | after sideboarding | fifteen |
 |---|---|---|---|---|---|---|
-| the Chancel | Orzhov Control (W B) | midrange | 69.5 | 63 | −1.2 | registered |
-| the Roll | Orzhov Tokens (W B) | aggro | 56.8 | 57 | −4.8 | built |
-| Dungrove Auras | Mono-Green Auras (G) | midrange | 56.2 | 52 | +2.9 | built |
-| the Levy | Orzhov Landfall (W B) | midrange | 52.3 | 54 | −3.6 | registered |
-| Abzan Tokens (working name) | Abzan Tokens (W b g) | aggro | 50.7 | 48 | +6.5 | built |
-| White Skies | Mono-White Lifegain Skies (W) | midrange | 49.5 | 53 | −0.9 | registered |
-| BW Aristocrats | Orzhov Aristocrats (W B) | midrange | 49.3 | 48 | +7.7 | registered |
-| the Thicket | Selesnya Auras (G W) | aggro | 44.7 | 45 | +6.0 | built |
-| BW Massacrats | Orzhov Massacrats (W B) | midrange | 41.2 | 41 | +4.8 | registered, guided |
-| Black Forest Ham | Golgari Auras (B G) | midrange | 40.3 | 45 | −6.4 | registered |
-| Abzan Warden (working name) | Abzan Lifegain (W b g) | midrange | 39.5 | 44 | −11.1 | registered |
+| the Chancel | Orzhov Control (W B) | midrange | 69.2 | 63 | −1.7 | registered |
+| the Roll | Orzhov Tokens (W B) | aggro | 56.2 | 57 | −4.8 | built |
+| Dungrove Auras | Mono-Green Auras (G) | midrange | 55.3 | 51 | +3.3 | built |
+| the Levy | Orzhov Landfall (W B) | midrange | 51.7 | 54 | −3.6 | registered |
+| Abzan Tokens (working name) | Abzan Tokens (W b g) | aggro | 50.7 | 48 | +7.0 | built |
+| BW Massacrats | Orzhov Massacrats (W B) | midrange | 49.0 | 47 | +3.0 | registered, guided |
+| White Skies | Mono-White Lifegain Skies (W) | midrange | 48.3 | 52 | +0.6 | registered |
+| BW Aristocrats | Orzhov Aristocrats (W B) | midrange | 47.2 | 47 | +7.5 | registered |
+| the Thicket | Selesnya Auras (G W) | aggro | 44.2 | 44 | +5.2 | built |
+| Black Forest Ham | Golgari Auras (B G) | midrange | 39.3 | 43 | −5.9 | registered |
+| Abzan Warden (working name) | Abzan Lifegain (W b g) | midrange | 39.0 | 44 | −10.7 | registered |
 
 Archived (kept in the data, out of the field): none.
 
@@ -30,7 +30,7 @@ The most played: Soul Warden 8 · Swords to Plowshares 7 · Vampire Nighthawk 6 
 
 ## the Chancel — Orzhov Control (W B)
 
-`chancel` · midrange · game one 63 · matches 69.5
+`chancel` · midrange · game one 63 · matches 69.2
 
 - **Lands (19):** 4 Scrubland · 4 Godless Shrine · 1 Obsidian Observatory · 5 Plains · 5 Swamp
 - **Creatures (27):** 4 Karmic Mentor · 3 Restoration Angel · 3 The Jet Witch · 2 Isaura, the Levy · 3 Emeria Angel · 4 Blood Artist · 4 Soul Warden · 4 Vampire Nighthawk
@@ -42,7 +42,7 @@ The most played: Soul Warden 8 · Swords to Plowshares 7 · Vampire Nighthawk 6 
 
 ## the Roll — Orzhov Tokens (W B)
 
-`roll` · aggro · game one 57 · matches 56.8
+`roll` · aggro · game one 57 · matches 56.2
 
 - **Lands (21):** 4 Scrubland · 4 Godless Shrine · 1 Obsidian Observatory · 6 Plains · 6 Swamp
 - **Creatures (14):** 3 Captain of the Watch · 2 Isaura, the Levy · 3 Emeria Angel · 4 Soul Warden · 2 Karmic Mentor
@@ -53,7 +53,7 @@ The most played: Soul Warden 8 · Swords to Plowshares 7 · Vampire Nighthawk 6 
 
 ## Dungrove Auras — Mono-Green Auras (G)
 
-`auras` · midrange · game one 52 · matches 56.2
+`auras` · midrange · game one 51 · matches 55.3
 
 - **Lands (22):** 22 Forest
 - **Creatures (27):** 4 Dungrove Elder · 2 Penumbra Wurm · 4 Llanowar Elves · 4 Gladecover Scout · 4 Wall of Blossoms · 4 Gaean Wurm · 2 Centaur Courser · 3 Reaper's Forerunner
@@ -64,7 +64,7 @@ The most played: Soul Warden 8 · Swords to Plowshares 7 · Vampire Nighthawk 6 
 
 ## the Levy — Orzhov Landfall (W B)
 
-`levy` · midrange · game one 54 · matches 52.3
+`levy` · midrange · game one 54 · matches 51.7
 
 - **Lands (24):** 4 Scrubland · 4 Godless Shrine · 5 Plains · 5 Swamp · 4 Evolving Wilds · 1 Thawing Glaciers · 1 Obsidian Observatory
 - **Creatures (15):** 4 Emeria Angel · 4 Dread Presence · 4 Soul Warden · 1 Vampire Nighthawk · 2 Isaura, the Levy
@@ -85,44 +85,9 @@ The most played: Soul Warden 8 · Swords to Plowshares 7 · Vampire Nighthawk 6 
 - **History:**
   - contributed — S69 seed (the planner's): built by the implementer from Esper's Roll — Abzan tokens (the brief: the Roll with Rampaging Baloths and Harmonize): its four Vindicates for two Baloths and two Harmonizes; four Swamps for two Savannahs and two Bayous, two Plains for two Temple Gardens, Mox Jet for Mox Emerald.
 
-## White Skies — Mono-White Lifegain Skies (W)
-
-`wskies` · midrange · game one 53 · matches 49.5
-
-- **Lands (23):** 23 Plains
-- **Creatures (30):** 4 Dazzling Angel · 4 Youthful Valkyrie · 4 Inspiring Overseer · 4 Wall of Reverence · 4 Soul Warden · 4 Restoration Angel · 4 Vitalist · 2 Karmic Mentor
-- **Other (7):** 3 Wave of Reckoning · 4 Swords to Plowshares
-- **Its fifteen (registered):** 2 Captain of the Watch · 2 Disenchant · 2 Glorious Anthem · 1 Longbow Archer · 2 Pacifism · 1 Savannah Lions · 1 Tormod's Crypt · 1 Wave of Reckoning · 3 Retribution of the Meek
-- **Its sideboard guide:** none — the general rules sideboard it.
-- **History:**
-  - contributed — S69 seed (the planner's): Peasant's White Skies, promoted whole.
-
-## BW Aristocrats — Orzhov Aristocrats (W B)
-
-`bw` · midrange · game one 48 · matches 49.3
-
-- **Lands (23):** 4 Godless Shrine · 9 Plains · 10 Swamp
-- **Creatures (29):** 4 Soul Warden · 4 Blood Artist · 4 Child of Night · 4 Vampire Nighthawk · 4 Nekrataal · 4 Restoration Angel · 3 Vitalist · 2 Captain of the Watch
-- **Other (8):** 4 Swords to Plowshares · 4 Doom Blade
-- **Its fifteen (registered):** 2 Disenchant · 2 Inspiring Overseer · 3 Tendrils of Corruption · 1 Tormod's Crypt · 1 Wall of Reverence · 2 Wave of Reckoning · 1 Youthful Valkyrie · 3 Retribution of the Meek
-- **Its sideboard guide:** none — the general rules sideboard it.
-- **History:**
-  - contributed — S69 seed (the planner's): Peasant's BW Aristocrats, promoted whole.
-
-## the Thicket — Selesnya Auras (G W)
-
-`thicket` · aggro · game one 45 · matches 44.7
-
-- **Lands (22):** 4 Savannah · 4 Temple Garden · 8 Forest · 5 Plains · 1 Shevelport
-- **Creatures (18):** 4 Gladecover Scout · 4 Blurred Mongoose · 4 Ovna, the Enchantress · 4 Dungrove Elder · 2 The Emerald Keeper
-- **Other (20):** 1 Black Lotus · 1 Mox Emerald · 1 Mox Pearl · 4 Rancor · 4 Blanchwood Armor · 1 Spirit Link · 4 Pacifism · 4 Angelic Destiny
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S69 seed (the planner's): Naya's Thicket whole.
-
 ## BW Massacrats — Orzhov Massacrats (W B)
 
-`bwmassacrats` · midrange · game one 41 · matches 41.2
+`bwmassacrats` · midrange · game one 47 · matches 49.0
 
 - **Lands (23):** 1 Shevelport · 1 Library of Alexandria · 1 Obsidian Observatory · 4 Scrubland · 4 Godless Shrine · 4 Bayou · 4 Savannah · 3 Swamp · 1 Plains
 - **Creatures (18):** 4 Soul Warden · 4 Blood Artist · 3 Dazzling Angel · 3 The Jet Witch · 4 Vampire Nighthawk
@@ -137,9 +102,44 @@ The most played: Soul Warden 8 · Swords to Plowshares 7 · Vampire Nighthawk 6 
 - **History:**
   - contributed — Post-S69 (Chris's, 2026-10-26): 8–0 in an Abzan Convocation (event 19887; 16–2 in games — Dungrove Auras, Abzan Warden, the Roll, Abzan Warden and Abzan Tokens in the Swiss; the Roll, the Thicket and the Levy in the bracket). Grixis's Massacrats in Orzhov colours: Soul Warden, Blood Artist and Bitterblossom into The Meathook Massacre; Nighthawks, Dazzling Angels and the Witch; Vindicate and Retribution of the Meek. The Massacre loops on Shevelport (the legend rule keeps the new one; round 5, game 2). The fifteen as Chris registered it; the guide read from his swaps.
 
+## White Skies — Mono-White Lifegain Skies (W)
+
+`wskies` · midrange · game one 52 · matches 48.3
+
+- **Lands (23):** 23 Plains
+- **Creatures (30):** 4 Dazzling Angel · 4 Youthful Valkyrie · 4 Inspiring Overseer · 4 Wall of Reverence · 4 Soul Warden · 4 Restoration Angel · 4 Vitalist · 2 Karmic Mentor
+- **Other (7):** 3 Wave of Reckoning · 4 Swords to Plowshares
+- **Its fifteen (registered):** 2 Captain of the Watch · 2 Disenchant · 2 Glorious Anthem · 1 Longbow Archer · 2 Pacifism · 1 Savannah Lions · 1 Tormod's Crypt · 1 Wave of Reckoning · 3 Retribution of the Meek
+- **Its sideboard guide:** none — the general rules sideboard it.
+- **History:**
+  - contributed — S69 seed (the planner's): Peasant's White Skies, promoted whole.
+
+## BW Aristocrats — Orzhov Aristocrats (W B)
+
+`bw` · midrange · game one 47 · matches 47.2
+
+- **Lands (23):** 4 Godless Shrine · 9 Plains · 10 Swamp
+- **Creatures (29):** 4 Soul Warden · 4 Blood Artist · 4 Child of Night · 4 Vampire Nighthawk · 4 Nekrataal · 4 Restoration Angel · 3 Vitalist · 2 Captain of the Watch
+- **Other (8):** 4 Swords to Plowshares · 4 Doom Blade
+- **Its fifteen (registered):** 2 Disenchant · 2 Inspiring Overseer · 3 Tendrils of Corruption · 1 Tormod's Crypt · 1 Wall of Reverence · 2 Wave of Reckoning · 1 Youthful Valkyrie · 3 Retribution of the Meek
+- **Its sideboard guide:** none — the general rules sideboard it.
+- **History:**
+  - contributed — S69 seed (the planner's): Peasant's BW Aristocrats, promoted whole.
+
+## the Thicket — Selesnya Auras (G W)
+
+`thicket` · aggro · game one 44 · matches 44.2
+
+- **Lands (22):** 4 Savannah · 4 Temple Garden · 8 Forest · 5 Plains · 1 Shevelport
+- **Creatures (18):** 4 Gladecover Scout · 4 Blurred Mongoose · 4 Ovna, the Enchantress · 4 Dungrove Elder · 2 The Emerald Keeper
+- **Other (20):** 1 Black Lotus · 1 Mox Emerald · 1 Mox Pearl · 4 Rancor · 4 Blanchwood Armor · 1 Spirit Link · 4 Pacifism · 4 Angelic Destiny
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — S69 seed (the planner's): Naya's Thicket whole.
+
 ## Black Forest Ham — Golgari Auras (B G)
 
-`bfh` · midrange · game one 45 · matches 40.3
+`bfh` · midrange · game one 43 · matches 39.3
 
 - **Lands (22):** 4 Overgrown Tomb · 4 Evolving Wilds · 9 Forest · 5 Swamp
 - **Creatures (22):** 4 Dungrove Elder · 4 Vampire Nighthawk · 4 Reaper's Forerunner · 4 Gaean Wurm · 2 Deadly Recluse · 4 Elvish Visionary
@@ -151,7 +151,7 @@ The most played: Soul Warden 8 · Swords to Plowshares 7 · Vampire Nighthawk 6 
 
 ## Abzan Warden (working name) — Abzan Lifegain (W b g)
 
-`warden` · midrange · game one 44 · matches 39.5
+`warden` · midrange · game one 44 · matches 39.0
 
 - **Lands (22):** 4 Scrubland · 4 Savannah · 4 Bayou · 2 Godless Shrine · 2 Temple Garden · 2 Overgrown Tomb · 3 Plains · 1 Forest
 - **Creatures (28):** 2 The Warden · 4 Soul Warden · 4 Vitalist · 4 Karmic Mentor · 4 Reaper's Forerunner · 4 Dazzling Angel · 2 Wall of Reverence · 4 Vampire Nighthawk
