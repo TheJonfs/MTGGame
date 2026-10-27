@@ -47,6 +47,36 @@ function removeObject(view: GameView, id: string): void {
   view.battlefield = view.battlefield.filter((o) => o.id !== id);
   if (gone && simDefs) revertStatics(view, gone, simDefs);
 }
+/**
+ * Post-S69 (Chris: the pilot's Massacres killed 26 of its own creatures to 15 of theirs): the life the deaths of a
+ * batch move through the death payoffs on the battlefield — both sides', the dying ones' included (they see the batch
+ * they die in, CR 603.10a). A DIES trigger of `source: "any"` (or "self", for a payoff that is itself dying) on a
+ * creature of the side its `controller` names: `loseLife` at a target or each opponent drains its controller's
+ * opponent; `gainLife` for you gains its controller. Read before the dying leave. Exposed for the books.
+ */
+export function deathPayoffs(view: GameView, dying: readonly GameView["battlefield"][number][], defs: Map<string, CardDef>): void {
+  const ids = new Set(dying.map((o) => o.id));
+  for (const src of view.battlefield) {
+    for (const a of defs.get(src.cardId)?.abilities ?? []) {
+      if (a.kind !== "triggered" || a.event !== "DIES") continue;
+      const c = (a.condition ?? {}) as { source?: string; controller?: string; type?: string[] };
+      const n = dying.filter((o) => {
+        if ((c.source ?? "self") === "self") return o.id === src.id;
+        if (c.type && !c.type.includes("Creature")) return false;
+        if (o.power === null) return false;
+        return c.controller === "you" ? o.controller === src.controller : c.controller === "opponent" ? o.controller !== src.controller : true;
+      }).length;
+      if (n === 0 || ((c.source ?? "self") === "self" && !ids.has(src.id))) continue;
+      const foe = (1 - src.controller) as 0 | 1;
+      for (const e of a.effects) {
+        const x = e as { type: string; amount?: unknown; who?: string };
+        if (typeof x.amount !== "number") continue;
+        if (x.type === "loseLife" && (x.who === "target" || x.who === "opponent")) view.life[foe] -= n * x.amount;
+        if (x.type === "gainLife" && x.who === "you") view.life[src.controller] += n * x.amount;
+      }
+    }
+  }
+}
 /** The defs of the prediction in progress (set by predictAction) — removeObject reads the removed permanent's statics. */
 let simDefs: Map<string, CardDef> | null = null;
 /** Book 96: the credit a removal earns beyond the board it leaves — a GROWING lock's next step (see revertStatics),
@@ -188,6 +218,12 @@ export function predictAction(
         toughness: d.types.includes("Creature") ? (d.toughness ?? 0) : null,
         keywords: [...(d.keywords ?? [])],
       });
+      // Post-S69 (the Massacre): an enters trigger that shrinks every creature in a scope (−X/−X, X the announced one)
+      // is the sweep it is — the deaths and their payoffs, the entering permanent's own among them.
+      for (const a of d.abilities ?? []) {
+        if (a.kind !== "triggered" || a.event !== "ENTERS_BATTLEFIELD" || a.optional || (a.condition && "source" in a.condition && a.condition.source !== "self")) continue;
+        for (const e of a.effects) if (e.type === "modifyPT" && e.target === undefined) adjustment += sweepPT(next, e, x, defs) ?? 0;
+      }
       // S9 Part 2b: an ETB trigger that counters a spell (Mystic Snake) is
       // worth the countered spell's mana when an opponent spell is on the
       // stack right now — the flash cast IS the counterspell.
@@ -389,6 +425,26 @@ function removeCheapestMatching(view: GameView, me: number, predicate: string, d
 }
 
 /** Apply one effect to the view copy; returns the unpredictable-part adjustment. */
+/**
+ * Post-S69 (Chris's Abzan run; the Massacre's −X/−X and Infest's −2/−2 were a flat 0.2, so X was chosen blind): a
+ * shrink of every creature in a scope — `allCreatures`, `creaturesYouControl`, `creaturesYouDontControl` — kills what
+ * its toughness reaches (damage counted), through the death payoffs; the survivors are left as they stand (the shrink
+ * ends with the turn). Null: not a shrink (a pump, or an amount not read) — the caller's flat credit stands.
+ */
+function sweepPT(view: GameView, e: Effect, x: number, defs: Map<string, CardDef>): number | null {
+  if (e.type !== "modifyPT" || e.target !== undefined) return null;
+  const scope = (e as { scope?: string }).scope;
+  if (scope !== "allCreatures" && scope !== "creaturesYouControl" && scope !== "creaturesYouDontControl") return null;
+  const v = (a: unknown): number | null => typeof a === "number" ? a : a === "X" ? x : a === "-X" ? -x : a && typeof a === "object" && (a as { ref?: string }).ref === "xPaid" ? x * ((a as { times?: number }).times ?? 1) : null;
+  const tv = v(e.toughness);
+  if (tv === null || tv >= 0) return null;
+  const me = view.you;
+  const dying = view.battlefield.filter((o) => o.toughness !== null && (scope === "allCreatures" || (scope === "creaturesYouControl") === (o.controller === me)) && o.toughness + tv - o.damage <= 0); // indestructible does not save it (CR 704.5f)
+  deathPayoffs(view, dying, defs);
+  for (const o of dying) removeObject(view, o.id);
+  return 0;
+}
+
 function applyEffect(
   view: GameView,
   e: Effect,
@@ -522,17 +578,9 @@ function applyEffect(
       // Artist, the Usher) is counted — every body the Wrath kills is a ping, ours included (the
       // observer sees the batch it dies in). Book 38.
       const dying = view.battlefield.filter((o) => o.power !== null && !o.keywords.includes("indestructible") && (e.powerAtLeast === undefined || o.power >= e.powerAtLeast)); // R-109
-      let drain = 0;
-      for (const o of dying) {
-        if (o.controller !== me) continue;
-        for (const a of defs.get(o.cardId)?.abilities ?? []) {
-          if (a.kind !== "triggered" || a.event !== "DIES" || (a.condition?.source ?? "self") === "self") continue;
-          const lose = a.effects.find((x) => x.type === "loseLife" && (x.who === "target" || x.who === "opponent"));
-          if (lose && lose.type === "loseLife" && typeof lose.amount === "number") drain += lose.amount * dying.length;
-        }
-      }
+      // (post-S69: every payoff on the battlefield, both sides', through deathPayoffs — was: ours on the dying only)
+      deathPayoffs(view, dying, defs);
       for (const o of dying) removeObject(view, o.id);
-      if (drain > 0) { view.life[opp] -= drain; view.life[me] += drain; }
       return 0;
     }
     case "exile": {
@@ -722,7 +770,7 @@ function applyEffect(
       // Targeted pump/shrink: apply to the live numbers so lethal -X/-X
       // (Drana) reads as removal and saves read as survival. Scope'd or
       // static pumps stay a small flat bonus (combat context not modeled).
-      if (e.target === undefined) return e.duration === "UNTIL_END_OF_TURN" ? 0.2 : 0.3;
+      if (e.target === undefined) { const sw = sweepPT(view, e, x, defs); return sw ?? (e.duration === "UNTIL_END_OF_TURN" ? 0.2 : 0.3); }
       const o = objAt(e.target);
       if (!o || o.power === null || o.toughness === null) return 0.1;
       const pv = e.power === "X" ? x : e.power === "-X" ? -x : typeof e.power === "number" ? e.power : 1;

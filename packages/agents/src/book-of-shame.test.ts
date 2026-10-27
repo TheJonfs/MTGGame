@@ -2336,4 +2336,19 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const old = new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, off: ["shrinkplan"] });
     expect(old.floodSinkGated(stacked as never, shrink)).toBe(false);
   });
+
+  it("book of shame 151 (post-S69 — Chris's Abzan run: the pilot's Massacres killed 26 of its own creatures to 15 of theirs, one at X=1 into an empty board): a −X/−X sweep is predicted — the deaths, and the payoffs they drain", () => {
+    const a = agent("midrange");
+    const hand = [{ objectId: "mm", cardId: "the_meathook_massacre" }];
+    const cast = (x: number) => ({ type: "castSpell" as const, objectId: "mm", targets: [], x });
+    const sc = (v: GameView) => [0, 1, 2, 3, 4].map((x) => a.scorePriorityAction(v, cast(x)));
+    const wardens = mkView({ hand, battlefield: [{ id: "n", cardId: "vampire_nighthawk", controller: 0 }, ...["w1", "w2", "w3"].map((id) => ({ id, cardId: "soul_warden", controller: 1 as const }))] });
+    const tokens = (life: number) => mkView({ hand, life: [20, life], battlefield: [{ id: "ba", cardId: "blood_artist", controller: 0 }, ...["t1", "t2", "t3"].map((id) => ({ id, cardId: "soul_warden", controller: 0 as const }))] });
+    const [w0, w1, , w3] = sc(wardens);
+    expect(w1).toBeGreaterThan(w0!); // X=1 kills their three Wardens
+    expect(w1).toBeGreaterThan(w3!); // X=3 takes our Nighthawk with them
+    const [e0, e1] = sc(tokens(20));
+    expect(e0).toBeGreaterThan(e1!); // nothing of theirs to kill: the engine without the sweep (X=0 no longer refused)
+    expect(sc(tokens(8))[1]).toBeGreaterThan(100); // at 8 the four deaths drain 8 (the Massacre's own and Blood Artist's): lethal
+  });
 });

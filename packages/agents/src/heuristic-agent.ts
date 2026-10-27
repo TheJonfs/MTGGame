@@ -237,7 +237,9 @@ export class HeuristicAgent implements Agent {
     // X-cost spell or ability at X=0 spends the card/mana for nothing in this
     // pool — never a play, at any temperature (softmax noise had been
     // coin-flipping a 0.25-point gap at apprentice's 1.2).
-    if ((action as { x?: number }).x === 0 && this.hasXCost(view, action)) return -Infinity;
+    // (Post-S69, book 151: not a noncreature permanent with an ability that does not read X — the Massacre at X=0 is
+    // its drain engine, cast without the sweep.)
+    if ((action as { x?: number }).x === 0 && this.hasXCost(view, action) && !this.xFreePermanent(view, action)) return -Infinity;
     // S15 v1: a choice-bearing mana ability (Lotus) is never activated
     // proactively — the view-sim can't price floating mana, and popping the
     // Lotus for nothing is the classic blunder. (Lotus is prize-only; a human
@@ -2967,6 +2969,13 @@ export class HeuristicAgent implements Agent {
       if (dmg) n += dmg.amount;
     }
     return n;
+  }
+  /** Post-S69 (book 151): a cast of a noncreature permanent with an ability that does not read the announced X. */
+  xFreePermanent(view: GameView, action: Action): boolean {
+    if (action.type !== "castSpell") return false;
+    const d = this.def(view.hand.find((c) => c.objectId === action.objectId)?.cardId ?? "");
+    if (!d || d.types.includes("Creature") || !d.types.some((t) => t === "Artifact" || t === "Enchantment")) return false;
+    return (d.abilities ?? []).some((ab) => !JSON.stringify(ab).includes('"xPaid"'));
   }
   /** Post-S69 (book 150): the toughness our own pending stack items will take from the object (−X/−X shrinks). */
   pendingShrinkAt(view: GameView, objectId: string, me: PlayerId): number {
