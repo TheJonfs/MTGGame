@@ -1683,6 +1683,135 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
    }
   ],
   "only": true
+ },
+ {
+  "key": "temur:temurcontrol",
+  "fifteen": [
+   {
+    "cardId": "pyroclasm",
+    "count": 4
+   },
+   {
+    "cardId": "tidewall",
+    "count": 4
+   },
+   {
+    "cardId": "the_ruby_tyrant",
+    "count": 4
+   },
+   {
+    "cardId": "flametongue_kavu",
+    "count": 3
+   }
+  ],
+  "rows": [
+   {
+    "in": "pyroclasm",
+    "n": 4,
+    "out": [
+     "counterspell"
+    ],
+    "when": [
+     "wide"
+    ],
+    "unless": [
+     "large"
+    ]
+   },
+   {
+    "in": "tidewall",
+    "n": 4,
+    "out": [
+     "mystic_snake"
+    ],
+    "when": [
+     "wide"
+    ],
+    "unless": [
+     "large"
+    ]
+   },
+   {
+    "in": "flametongue_kavu",
+    "n": 3,
+    "out": [
+     "char",
+     "foxglove_dose",
+     "mystic_snake"
+    ],
+    "when": [
+     "small"
+    ]
+   },
+   {
+    "in": "tidewall",
+    "n": 4,
+    "out": [
+     "wall_of_razors"
+    ],
+    "when": [
+     "large"
+    ],
+    "unless": [
+     "small"
+    ]
+   }
+  ],
+  "only": true
+ },
+ {
+  "key": "bant:sourworms",
+  "fifteen": [
+   {
+    "cardId": "treetop_snarespinner",
+    "count": 4
+   },
+   {
+    "cardId": "deadly_recluse",
+    "count": 4
+   },
+   {
+    "cardId": "control_magic",
+    "count": 4
+   },
+   {
+    "cardId": "protocol",
+    "count": 3
+   }
+  ],
+  "rows": [
+   {
+    "in": "control_magic",
+    "n": 1,
+    "out": [
+     "pelakka_wurm"
+    ],
+    "when": [
+     "control"
+    ]
+   },
+   {
+    "in": "control_magic",
+    "n": 1,
+    "out": [
+     "gaean_wurm"
+    ],
+    "when": [
+     "control"
+    ]
+   },
+   {
+    "in": "control_magic",
+    "n": 2,
+    "out": [
+     "baru_wurmspeaker"
+    ],
+    "when": [
+     "control"
+    ]
+   }
+  ],
+  "only": true
  }
 ];
 
@@ -2035,7 +2164,9 @@ export const LIST_GUIDES: Record<string, string> = {
  "abzan:bw": "peasant:bw",
  "abzan:wskies": "peasant:wskies",
  "abzan:bwmassacrats": "abzan:bwmassacrats",
+ "temur:temurcontrol": "temur:temurcontrol",
  "bant:skies": "jeskai:skies",
  "bant:uwskies": "peasant:skies",
- "bant:wskies": "peasant:wskies"
+ "bant:wskies": "peasant:wskies",
+ "bant:sourworms": "bant:sourworms"
 };

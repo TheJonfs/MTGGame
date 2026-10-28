@@ -6,8 +6,64 @@
   "large": 2
  },
  "archived": {},
- "guides": {},
- "guidesOnly": [],
+ "guides": {
+  "temurcontrol": [
+   {
+    "in": "pyroclasm",
+    "n": 4,
+    "out": [
+     "counterspell"
+    ],
+    "when": [
+     "wide"
+    ],
+    "unless": [
+     "large"
+    ]
+   },
+   {
+    "in": "tidewall",
+    "n": 4,
+    "out": [
+     "mystic_snake"
+    ],
+    "when": [
+     "wide"
+    ],
+    "unless": [
+     "large"
+    ]
+   },
+   {
+    "in": "flametongue_kavu",
+    "n": 3,
+    "out": [
+     "char",
+     "foxglove_dose",
+     "mystic_snake"
+    ],
+    "when": [
+     "small"
+    ]
+   },
+   {
+    "in": "tidewall",
+    "n": 4,
+    "out": [
+     "wall_of_razors"
+    ],
+    "when": [
+     "large"
+    ],
+    "unless": [
+     "small"
+    ]
+   }
+  ]
+ },
+ "guidesOnly": [
+  "temurcontrol"
+ ],
  "outRules": {},
  "lists": [
   {
@@ -974,6 +1030,129 @@
     },
     {
      "cardId": "mystic_snake",
+     "count": 3
+    }
+   ]
+  },
+  {
+   "key": "temurcontrol",
+   "name": "Temur Control",
+   "title": "Temur Control (U R G)",
+   "archetype": "control",
+   "source": "Post-S69 (Chris's, 2026-10-28): 8–0 in a Temur Convocation (event 507677; 16–2 in games — Emerald Snakes, the Unwinder, the Rabble, Temur Snakes twice in the Swiss; Temur Ramp, the Rabble (33, 47 and 37 turns) and Temur Ramp in the bracket). Counterspells, Mystic Snakes and Control Magic over Walls of Razors, Voracious Cobras and Reaper's Forerunners; Bolts, Foxglove Dose and Char; Drakuseth as the finisher. The fifteen as Chris registered it; the guide read from his swaps.",
+   "decklist": [
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "time_walk",
+     "count": 1
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 4
+    },
+    {
+     "cardId": "control_magic",
+     "count": 4
+    },
+    {
+     "cardId": "voracious_cobra",
+     "count": 4
+    },
+    {
+     "cardId": "mystic_snake",
+     "count": 4
+    },
+    {
+     "cardId": "wall_of_razors",
+     "count": 4
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "drakuseth_maw_of_flames",
+     "count": 2
+    },
+    {
+     "cardId": "foxglove_dose",
+     "count": 2
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 3
+    },
+    {
+     "cardId": "char",
+     "count": 1
+    },
+    {
+     "cardId": "library_of_alexandria",
+     "count": 1
+    },
+    {
+     "cardId": "tallyflame_court",
+     "count": 1
+    },
+    {
+     "cardId": "wrackroot",
+     "count": 1
+    },
+    {
+     "cardId": "taiga",
+     "count": 4
+    },
+    {
+     "cardId": "tropical_island",
+     "count": 4
+    },
+    {
+     "cardId": "volcanic_island",
+     "count": 4
+    },
+    {
+     "cardId": "steam_vents",
+     "count": 4
+    },
+    {
+     "cardId": "stomping_ground",
+     "count": 3
+    },
+    {
+     "cardId": "breeding_pool",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "pyroclasm",
+     "count": 4
+    },
+    {
+     "cardId": "tidewall",
+     "count": 4
+    },
+    {
+     "cardId": "the_ruby_tyrant",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
      "count": 3
     }
    ]

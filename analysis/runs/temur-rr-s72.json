@@ -1,0 +1,483 @@
+{
+ "name": "open_rr_1",
+ "when": "2026-10-28T22:52:13.553Z",
+ "games": 5500,
+ "table": {
+  "kiln": {
+   "tally": [
+    67,
+    100
+   ],
+   "ramp": [
+    41,
+    100
+   ],
+   "stompy": [
+    27,
+    100
+   ],
+   "temurcontrol": [
+    46,
+    100
+   ],
+   "emeraldsnakes": [
+    33,
+    100
+   ],
+   "wurmspeaker": [
+    49,
+    100
+   ],
+   "rabble": [
+    31,
+    100
+   ],
+   "reaper": [
+    42,
+    100
+   ],
+   "kindling": [
+    57,
+    100
+   ],
+   "unwinder": [
+    34,
+    100
+   ]
+  },
+  "tally": {
+   "kiln": [
+    32,
+    100
+   ],
+   "unwinder": [
+    24,
+    100
+   ],
+   "ramp": [
+    18,
+    100
+   ],
+   "stompy": [
+    31,
+    100
+   ],
+   "temurcontrol": [
+    44,
+    100
+   ],
+   "emeraldsnakes": [
+    34,
+    100
+   ],
+   "wurmspeaker": [
+    58,
+    100
+   ],
+   "rabble": [
+    16,
+    100
+   ],
+   "reaper": [
+    13,
+    100
+   ],
+   "kindling": [
+    38,
+    100
+   ]
+  },
+  "ramp": {
+   "kiln": [
+    59,
+    100
+   ],
+   "emeraldsnakes": [
+    52,
+    100
+   ],
+   "tally": [
+    82,
+    100
+   ],
+   "stompy": [
+    56,
+    100
+   ],
+   "kindling": [
+    76,
+    100
+   ],
+   "rabble": [
+    66,
+    100
+   ],
+   "unwinder": [
+    48,
+    100
+   ],
+   "wurmspeaker": [
+    42,
+    100
+   ],
+   "temurcontrol": [
+    61,
+    100
+   ],
+   "reaper": [
+    74,
+    100
+   ]
+  },
+  "unwinder": {
+   "tally": [
+    76,
+    100
+   ],
+   "stompy": [
+    53,
+    100
+   ],
+   "kindling": [
+    63,
+    100
+   ],
+   "rabble": [
+    27,
+    100
+   ],
+   "ramp": [
+    52,
+    100
+   ],
+   "wurmspeaker": [
+    65,
+    100
+   ],
+   "temurcontrol": [
+    62,
+    100
+   ],
+   "reaper": [
+    33,
+    100
+   ],
+   "kiln": [
+    66,
+    100
+   ],
+   "emeraldsnakes": [
+    40,
+    100
+   ]
+  },
+  "stompy": {
+   "unwinder": [
+    47,
+    100
+   ],
+   "kiln": [
+    73,
+    100
+   ],
+   "ramp": [
+    44,
+    100
+   ],
+   "tally": [
+    69,
+    100
+   ],
+   "temurcontrol": [
+    46,
+    100
+   ],
+   "emeraldsnakes": [
+    36,
+    100
+   ],
+   "wurmspeaker": [
+    66,
+    100
+   ],
+   "rabble": [
+    47,
+    100
+   ],
+   "reaper": [
+    41,
+    100
+   ],
+   "kindling": [
+    67,
+    100
+   ]
+  },
+  "emeraldsnakes": {
+   "ramp": [
+    48,
+    100
+   ],
+   "temurcontrol": [
+    48,
+    100
+   ],
+   "kiln": [
+    67,
+    100
+   ],
+   "tally": [
+    65,
+    100
+   ],
+   "stompy": [
+    64,
+    100
+   ],
+   "wurmspeaker": [
+    62,
+    100
+   ],
+   "rabble": [
+    61,
+    100
+   ],
+   "reaper": [
+    55,
+    100
+   ],
+   "kindling": [
+    79,
+    100
+   ],
+   "unwinder": [
+    60,
+    100
+   ]
+  },
+  "rabble": {
+   "reaper": [
+    40,
+    100
+   ],
+   "kindling": [
+    70,
+    100
+   ],
+   "wurmspeaker": [
+    56,
+    100
+   ],
+   "unwinder": [
+    73,
+    100
+   ],
+   "ramp": [
+    33,
+    100
+   ],
+   "kiln": [
+    69,
+    100
+   ],
+   "emeraldsnakes": [
+    38,
+    100
+   ],
+   "temurcontrol": [
+    71,
+    100
+   ],
+   "tally": [
+    84,
+    100
+   ],
+   "stompy": [
+    53,
+    100
+   ]
+  },
+  "reaper": {
+   "rabble": [
+    59,
+    100
+   ],
+   "temurcontrol": [
+    63,
+    100
+   ],
+   "wurmspeaker": [
+    66,
+    100
+   ],
+   "kiln": [
+    58,
+    100
+   ],
+   "emeraldsnakes": [
+    45,
+    100
+   ],
+   "kindling": [
+    70,
+    100
+   ],
+   "tally": [
+    84,
+    100
+   ],
+   "stompy": [
+    59,
+    100
+   ],
+   "unwinder": [
+    65,
+    100
+   ],
+   "ramp": [
+    26,
+    100
+   ]
+  },
+  "temurcontrol": {
+   "reaper": [
+    37,
+    100
+   ],
+   "kiln": [
+    54,
+    100
+   ],
+   "emeraldsnakes": [
+    52,
+    100
+   ],
+   "tally": [
+    56,
+    100
+   ],
+   "stompy": [
+    54,
+    100
+   ],
+   "kindling": [
+    48,
+    100
+   ],
+   "rabble": [
+    29,
+    100
+   ],
+   "unwinder": [
+    37,
+    100
+   ],
+   "ramp": [
+    38,
+    100
+   ],
+   "wurmspeaker": [
+    82,
+    100
+   ]
+  },
+  "kindling": {
+   "rabble": [
+    29,
+    100
+   ],
+   "unwinder": [
+    37,
+    100
+   ],
+   "ramp": [
+    24,
+    100
+   ],
+   "temurcontrol": [
+    49,
+    100
+   ],
+   "wurmspeaker": [
+    39,
+    100
+   ],
+   "reaper": [
+    30,
+    100
+   ],
+   "kiln": [
+    43,
+    100
+   ],
+   "emeraldsnakes": [
+    21,
+    100
+   ],
+   "tally": [
+    62,
+    100
+   ],
+   "stompy": [
+    31,
+    100
+   ]
+  },
+  "wurmspeaker": {
+   "rabble": [
+    44,
+    100
+   ],
+   "kiln": [
+    51,
+    100
+   ],
+   "emeraldsnakes": [
+    38,
+    100
+   ],
+   "reaper": [
+    34,
+    100
+   ],
+   "tally": [
+    40,
+    100
+   ],
+   "stompy": [
+    34,
+    100
+   ],
+   "kindling": [
+    61,
+    100
+   ],
+   "unwinder": [
+    35,
+    100
+   ],
+   "ramp": [
+    58,
+    100
+   ],
+   "temurcontrol": [
+    18,
+    100
+   ]
+  }
+ },
+ "means": {
+  "kiln": 43,
+  "tally": 31,
+  "stompy": 54,
+  "emeraldsnakes": 61,
+  "wurmspeaker": 41,
+  "rabble": 59,
+  "reaper": 60,
+  "kindling": 37,
+  "unwinder": 54,
+  "ramp": 62,
+  "temurcontrol": 49
+ },
+ "report": "# The Open's round-robin (S46) — 5500 games, master both, 20 life, no entrances; the ROW's win rate\n\n| | kiln | tally | stompy | emeraldsnakes | wurmspeaker | rabble | reaper | kindling | unwinder | ramp | temurcontrol | **mean** |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| **kiln** | — | 67 | 27 | 33 | 49 | 31 | 42 | 57 | 34 | 41 | 46 | **43** |\n| **tally** | 32 | — | 31 | 34 | 58 | 16 | 13 | 38 | 24 | 18 | 44 | **31** |\n| **stompy** | 73 | 69 | — | 36 | 66 | 47 | 41 | 67 | 47 | 44 | 46 | **54** |\n| **emeraldsnakes** | 67 | 65 | 64 | — | 62 | 61 | 55 | 79 | 60 | 48 | 48 | **61** |\n| **wurmspeaker** | 51 | 40 | 34 | 38 | — | 44 | 34 | 61 | 35 | 58 | 18 | **41** |\n| **rabble** | 69 | 84 | 53 | 38 | 56 | — | 40 | 70 | 73 | 33 | 71 | **59** |\n| **reaper** | 58 | 84 | 59 | 45 | 66 | 59 | — | 70 | 65 | 26 | 63 | **60** |\n| **kindling** | 43 | 62 | 31 | 21 | 39 | 29 | 30 | — | 37 | 24 | 49 | **37** |\n| **unwinder** | 66 | 76 | 53 | 40 | 65 | 27 | 33 | 63 | — | 52 | 62 | **54** |\n| **ramp** | 59 | 82 | 56 | 52 | 42 | 66 | 74 | 76 | 48 | — | 61 | **62** |\n| **temurcontrol** | 54 | 56 | 54 | 52 | 82 | 29 | 37 | 48 | 37 | 38 | — | **49** |\n\nSolvable (a list over 65% against the field): none. Under 35%: tally.\nMuster vs Warband: the Muster 0% (0 games).\n\n## Staples (ADR-170)\n\nIn more than half of the 11 lists: Flametongue Kavu (8 lists, 31 copies); Lightning Bolt (8 lists, 31 copies). The most played: Flametongue Kavu 8 · Lightning Bolt 8 · Reaper's Forerunner 5 · Counterspell 5 · Birds of Paradise 4 · Char 4 · Control Magic 4 · Gaean Wurm 4.\n\n## Restricted cards — % of the list's games in which it was cast (or, a land, played)\n\n- **kiln**: time_walk 26% · tallyflame_court 31% · black_lotus 30% · mox_sapphire 29% · mox_ruby 27% · library_of_alexandria 31%\n- **tally**: tallyflame_court 31% · black_lotus 36% · mox_ruby 36% · mox_sapphire 34%\n- **stompy**: black_lotus 22% · mox_emerald 24% · mox_ruby 25%\n- **emeraldsnakes**: black_lotus 27% · mox_emerald 28% · mox_sapphire 28% · mox_ruby 29%\n- **wurmspeaker**: black_lotus 23% · mox_emerald 25%\n- **rabble**: mox_ruby 26% · black_lotus 26%\n- **reaper**: black_lotus 35% · mox_emerald 35% · mox_sapphire 33% · mox_ruby 32% · tallyflame_court 37% · wrackroot 37%\n- **kindling**: mox_ruby 29% · black_lotus 27%\n- **unwinder**: black_lotus 33% · mox_sapphire 31% · mox_ruby 32% · mox_emerald 31% · time_walk 33% · tallyflame_court 33% · wrackroot 36%\n- **ramp**: black_lotus 31% · mox_emerald 31% · mox_sapphire 33% · mox_ruby 31% · wrackroot 37%\n- **temurcontrol**: black_lotus 29% · mox_emerald 32% · mox_ruby 28% · mox_sapphire 26% · time_walk 31% · library_of_alexandria 30% · tallyflame_court 31% · wrackroot 31%\n\n## Key pieces — % of the list's games in which each was cast (a weak pilot reads apart from a weak list)\n\n- **kiln**: \n- **tally**: young_pyromancer 78% · guttersnipe 76% · ponder 64%\n- **stompy**: \n- **emeraldsnakes**: \n- **wurmspeaker**: seedborn_muse 60% · rampaging_baloths 33% · gaean_wurm 51%\n- **rabble**: \n- **reaper**: \n- **kindling**: \n- **unwinder**: \n- **ramp**: \n- **temurcontrol**: \n\n## The Loop — the Usher + an Altar on the battlefield with a Restoration Angel in hand or play\n\nAssembled by turn ten in 0 of 0 games (0%); ever: 0. Altar activations per game: 0.00."
+}

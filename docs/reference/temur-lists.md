@@ -4,44 +4,33 @@
 
 ## The table of record
 
-10 active lists, the AI in both seats. **Game one** is a list's mean win rate against the other active lists on the registered sixties (the round-robin of record, `formats/temur/means.json`). **Matches** is its best-of-three win rate — the figure the field's seat draw reads since S59 (60 matches a pairing, measured 2026-10-22; ADR-171): game one on the registered sixties, games two and three sideboarded. **After sideboarding** is its games-two-and-three rate less its game-one rate inside those matches.
+11 active lists, the AI in both seats. **Game one** is a list's mean win rate against the other active lists on the registered sixties (the round-robin of record, `formats/temur/means.json`). **Matches** is its best-of-three win rate — the figure the field's seat draw reads since S59 (60 matches a pairing, measured 2026-10-28; ADR-171): game one on the registered sixties, games two and three sideboarded. **After sideboarding** is its games-two-and-three rate less its game-one rate inside those matches.
 
 | list | deck | pilot | matches | game one | after sideboarding | fifteen |
 |---|---|---|---|---|---|---|
-| Temur Ramp (working name) | Temur Ramp (G r u) | midrange | 67.2 | 62 | −0.8 | registered |
-| Temur Snakes | Temur Snakes (G r u) | midrange | 62.4 | 58 | −1.1 | registered |
-| Emerald Snakes | Snake Keeper (G R) | midrange | 61.4 | 62 | −4.5 | registered |
-| the Rabble (Naya) | Mono-Red Goblins (R) | aggro | 60.8 | 58 | +2.1 | built |
-| the Stampede | Gruul Stompy (R G) | aggro | 56.4 | 53 | +3.6 | built |
-| Temur Unwinder (working name) | Temur Tempo (U R g) | midrange | 51.9 | 48 | −1.0 | registered |
-| the Kiln | Izzet Spells (U R) | midrange | 39.9 | 42 | −0.5 | registered |
-| the Wurmspeaker | Mono-Green Ramp | midrange | 39.0 | 44 | −1.2 | built |
-| the Kindling | Mono-Red Spells (R) | aggro | 34.4 | 38 | +1.7 | built |
-| the Tally | Izzet Sparks (U R) | aggro | 26.5 | 34 | +0.8 | built |
+| Temur Snakes | Temur Snakes (G r u) | midrange | 62.9 | 60 | −4.8 | registered |
+| Temur Ramp (working name) | Temur Ramp (G r u) | midrange | 61.3 | 62 | +1.7 | registered |
+| the Rabble (Naya) | Mono-Red Goblins (R) | aggro | 60.6 | 59 | +0.5 | built |
+| Emerald Snakes | Snake Keeper (G R) | midrange | 60.5 | 61 | −6.9 | registered |
+| Temur Unwinder (working name) | Temur Tempo (U R g) | midrange | 57.8 | 54 | +3.7 | registered |
+| Temur Control | Temur Control (U R G) | control | 53.9 | 49 | −1.7 | registered, guided |
+| the Stampede | Gruul Stompy (R G) | aggro | 53.1 | 54 | +3.0 | built |
+| the Kiln | Izzet Spells (U R) | midrange | 41.6 | 43 | +0.3 | registered |
+| the Kindling | Mono-Red Spells (R) | aggro | 37.6 | 37 | +1.0 | built |
+| the Wurmspeaker | Mono-Green Ramp | midrange | 33.8 | 41 | −1.5 | built |
+| the Tally | Izzet Sparks (U R) | aggro | 26.9 | 31 | +4.4 | built |
 
 Archived (kept in the data, out of the field): none.
 
 ## Staples (ADR-170)
 
-Nonland cards outside the restricted list that more than half of the 10 active lists play: Flametongue Kavu (8 lists, 31 copies); Lightning Bolt (7 lists, 28 copies).
+Nonland cards outside the restricted list that more than half of the 11 active lists play: Flametongue Kavu (8 lists, 31 copies); Lightning Bolt (8 lists, 31 copies).
 
-The most played: Flametongue Kavu 8 · Lightning Bolt 7 · Reaper's Forerunner 4 · Birds of Paradise 4 · Counterspell 4 · Gaean Wurm 4 · Char 3 · Guttersnipe 3.
-
-## Temur Ramp (working name) — Temur Ramp (G r u)
-
-`ramp` · midrange · game one 62 · matches 67.2
-
-- **Lands (20):** 4 Taiga · 4 Tropical Island · 2 Volcanic Island · 2 Stomping Ground · 1 Breeding Pool · 1 Wrackroot · 6 Forest
-- **Creatures (25):** 4 Llanowar Elves · 4 Birds of Paradise · 4 Wall of Blossoms · 4 Rampaging Baloths · 3 Penumbra Wurm · 2 Gaean Wurm · 4 Flametongue Kavu
-- **Other (15):** 1 Black Lotus · 1 Mox Emerald · 1 Mox Sapphire · 1 Mox Ruby · 4 Harmonize · 4 Pyroclasm · 3 Counterspell
-- **Its fifteen (registered):** 3 Savage Twister · 3 Essence Scatter · 3 Tormod's Crypt · 3 Abrade · 3 Mystic Snake
-- **Its sideboard guide:** none — the general rules sideboard it.
-- **History:**
-  - contributed — S69 seed (the planner's): built by the implementer — Elves, Birds and Walls into Rampaging Baloths, Penumbra Wurm and Gaean Wurm, Harmonize to refuel, Pyroclasm and the Kavu to clear the way (the brief); counters for the top.
+The most played: Flametongue Kavu 8 · Lightning Bolt 8 · Reaper's Forerunner 5 · Counterspell 5 · Birds of Paradise 4 · Char 4 · Control Magic 4 · Gaean Wurm 4.
 
 ## Temur Snakes — Temur Snakes (G r u)
 
-`reaper` · midrange · game one 58 · matches 62.4
+`reaper` · midrange · game one 60 · matches 62.9
 
 - **Lands (18):** 4 Taiga · 4 Stomping Ground · 1 Tallyflame Court · 4 Tropical Island · 4 Volcanic Island · 1 Wrackroot
 - **Creatures (31):** 4 Manaba · 3 Moss Viper · 4 Rage Cobra · 4 Wall of Blossoms · 3 Seasoned Pyromancer · 4 Reaper's Forerunner · 4 Flametongue Kavu · 2 Voracious Cobra · 3 The Emerald Keeper
@@ -51,9 +40,32 @@ The most played: Flametongue Kavu 8 · Lightning Bolt 7 · Reaper's Forerunner 4
 - **History:**
   - contributed — S69 seed (the planner's) (Chris's ruling): the Open's Reaper Control revived — its three Reapers (Jund's lord) for three Emerald Keepers; Mox Jet for Mox Sapphire, Cairnbrand for the Tallyflame Court, four Bayous and four Badlands for four Tropical and four Volcanic Islands; its fifteen's four Putrefies (black) for four Abrades. Renamed Temur Snakes (Chris, 2026-10-22; the key stays `reaper`).
 
+## Temur Ramp (working name) — Temur Ramp (G r u)
+
+`ramp` · midrange · game one 62 · matches 61.3
+
+- **Lands (20):** 4 Taiga · 4 Tropical Island · 2 Volcanic Island · 2 Stomping Ground · 1 Breeding Pool · 1 Wrackroot · 6 Forest
+- **Creatures (25):** 4 Llanowar Elves · 4 Birds of Paradise · 4 Wall of Blossoms · 4 Rampaging Baloths · 3 Penumbra Wurm · 2 Gaean Wurm · 4 Flametongue Kavu
+- **Other (15):** 1 Black Lotus · 1 Mox Emerald · 1 Mox Sapphire · 1 Mox Ruby · 4 Harmonize · 4 Pyroclasm · 3 Counterspell
+- **Its fifteen (registered):** 3 Savage Twister · 3 Essence Scatter · 3 Tormod's Crypt · 3 Abrade · 3 Mystic Snake
+- **Its sideboard guide:** none — the general rules sideboard it.
+- **History:**
+  - contributed — S69 seed (the planner's): built by the implementer — Elves, Birds and Walls into Rampaging Baloths, Penumbra Wurm and Gaean Wurm, Harmonize to refuel, Pyroclasm and the Kavu to clear the way (the brief); counters for the top.
+
+## the Rabble (Naya) — Mono-Red Goblins (R)
+
+`rabble` · aggro · game one 59 · matches 60.6
+
+- **Lands (20):** 20 Mountain
+- **Creatures (18):** 4 Raging Goblin · 4 Goblin Chieftain · 4 Seasoned Pyromancer · 4 Flametongue Kavu · 2 Siege-Gang Commander
+- **Other (22):** 4 Goblin Grenade · 4 Dragon Fodder · 4 Lightning Bolt · 4 Char · 4 Hordeling Outburst · 1 Mox Ruby · 1 Black Lotus
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — S69 seed (the planner's): Naya's Rabble whole.
+
 ## Emerald Snakes — Snake Keeper (G R)
 
-`emeraldsnakes` · midrange · game one 62 · matches 61.4
+`emeraldsnakes` · midrange · game one 61 · matches 60.5
 
 - **Lands (21):** 4 Taiga · 4 Stomping Ground · 4 Tropical Island · 9 Forest
 - **Creatures (32):** 4 Birds of Paradise · 4 Manaba · 4 Rage Cobra · 4 The Emerald Keeper · 4 Reaper's Forerunner · 4 Flametongue Kavu · 4 Gaean Wurm · 4 Elvish Visionary
@@ -63,31 +75,9 @@ The most played: Flametongue Kavu 8 · Lightning Bolt 7 · Reaper's Forerunner 4
 - **History:**
   - contributed — S69 seed (the planner's): Emerald Snakes (Chris's, Jund's mana), its Mox Jet for Mox Sapphire and four Bayous for four Tropical Islands.
 
-## the Rabble (Naya) — Mono-Red Goblins (R)
-
-`rabble` · aggro · game one 58 · matches 60.8
-
-- **Lands (20):** 20 Mountain
-- **Creatures (18):** 4 Raging Goblin · 4 Goblin Chieftain · 4 Seasoned Pyromancer · 4 Flametongue Kavu · 2 Siege-Gang Commander
-- **Other (22):** 4 Goblin Grenade · 4 Dragon Fodder · 4 Lightning Bolt · 4 Char · 4 Hordeling Outburst · 1 Mox Ruby · 1 Black Lotus
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S69 seed (the planner's): Naya's Rabble whole.
-
-## the Stampede — Gruul Stompy (R G)
-
-`stompy` · aggro · game one 53 · matches 56.4
-
-- **Lands (19):** 4 Stomping Ground · 4 Taiga · 9 Forest · 2 Mountain
-- **Creatures (30):** 4 Llanowar Elves · 2 Birds of Paradise · 4 Dungrove Elder · 4 Centaur Courser · 4 Rumbling Baloth · 3 Gaean Wurm · 4 Flametongue Kavu · 3 Reaper's Forerunner · 2 Baru, Wurmspeaker
-- **Other (11):** 1 Black Lotus · 1 Mox Emerald · 1 Mox Ruby · 4 Rancor · 4 Lightning Bolt
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S69 seed (the planner's): Naya's Stampede whole.
-
 ## Temur Unwinder (working name) — Temur Tempo (U R g)
 
-`unwinder` · midrange · game one 48 · matches 51.9
+`unwinder` · midrange · game one 54 · matches 57.8
 
 - **Lands (22):** 4 Volcanic Island · 4 Tropical Island · 4 Taiga · 2 Steam Vents · 2 Stomping Ground · 1 Tallyflame Court · 1 Wrackroot · 2 Island · 1 Mountain · 1 Forest
 - **Creatures (18):** 2 The Unwinder · 4 Man-o'-War · 4 Aether Channeler · 4 Reaper's Forerunner · 4 Flametongue Kavu
@@ -97,9 +87,36 @@ The most played: Flametongue Kavu 8 · Lightning Bolt 7 · Reaper's Forerunner 4
 - **History:**
   - contributed — S69 seed (the planner's): built by the implementer — the Unwinder (Temur's lord) with bounce (Man-o'-War, Aether Channeler, Boomerang), the Forerunner, Kavu and Control Magic (the brief); counters and Bolts.
 
+## Temur Control — Temur Control (U R G)
+
+`temurcontrol` · control · game one 49 · matches 53.9
+
+- **Lands (23):** 1 Library of Alexandria · 1 Tallyflame Court · 1 Wrackroot · 4 Taiga · 4 Tropical Island · 4 Volcanic Island · 4 Steam Vents · 3 Stomping Ground · 1 Breeding Pool
+- **Creatures (18):** 4 Reaper's Forerunner · 4 Voracious Cobra · 4 Mystic Snake · 4 Wall of Razors · 2 Drakuseth, Maw of Flames
+- **Other (19):** 1 Black Lotus · 1 Mox Emerald · 1 Mox Ruby · 1 Mox Sapphire · 1 Time Walk · 4 Control Magic · 4 Counterspell · 2 Foxglove Dose · 3 Lightning Bolt · 1 Char
+- **Its fifteen (registered):** 4 Pyroclasm · 4 Tidewall · 4 The Ruby Tyrant · 3 Flametongue Kavu
+- **Its sideboard guide** (the whole plan: the general rules do not run after it):
+  - against wide (not many creatures of toughness three or more): 4 Pyroclasm in for Counterspell
+  - against wide (not many creatures of toughness three or more): 4 Tidewall in for Mystic Snake
+  - against many small creatures: 3 Flametongue Kavu in for Char, then Foxglove Dose, then Mystic Snake
+  - against many creatures of toughness three or more (not many small creatures): 4 Tidewall in for Wall of Razors
+- **History:**
+  - contributed — Post-S69 (Chris's, 2026-10-28): 8–0 in a Temur Convocation (event 507677; 16–2 in games — Emerald Snakes, the Unwinder, the Rabble, Temur Snakes twice in the Swiss; Temur Ramp, the Rabble (33, 47 and 37 turns) and Temur Ramp in the bracket). Counterspells, Mystic Snakes and Control Magic over Walls of Razors, Voracious Cobras and Reaper's Forerunners; Bolts, Foxglove Dose and Char; Drakuseth as the finisher. The fifteen as Chris registered it; the guide read from his swaps.
+
+## the Stampede — Gruul Stompy (R G)
+
+`stompy` · aggro · game one 54 · matches 53.1
+
+- **Lands (19):** 4 Stomping Ground · 4 Taiga · 9 Forest · 2 Mountain
+- **Creatures (30):** 4 Llanowar Elves · 2 Birds of Paradise · 4 Dungrove Elder · 4 Centaur Courser · 4 Rumbling Baloth · 3 Gaean Wurm · 4 Flametongue Kavu · 3 Reaper's Forerunner · 2 Baru, Wurmspeaker
+- **Other (11):** 1 Black Lotus · 1 Mox Emerald · 1 Mox Ruby · 4 Rancor · 4 Lightning Bolt
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — S69 seed (the planner's): Naya's Stampede whole.
+
 ## the Kiln — Izzet Spells (U R)
 
-`kiln` · midrange · game one 42 · matches 39.9
+`kiln` · midrange · game one 43 · matches 41.6
 
 - **Lands (19):** 1 Tallyflame Court · 4 Volcanic Island · 4 Steam Vents · 1 Library of Alexandria · 5 Mountain · 4 Island
 - **Creatures (21):** 3 Flametongue Kavu · 4 Tidewall · 3 Odile, the Tallyflame · 3 The Ruby Tyrant · 4 Guttersnipe · 4 Young Pyromancer
@@ -109,20 +126,9 @@ The most played: Flametongue Kavu 8 · Lightning Bolt 7 · Reaper's Forerunner 4
 - **History:**
   - contributed — S69 seed (the planner's): the Kiln (Jeskai's fifteen, its Pyroclasms for the Macabres).
 
-## the Wurmspeaker — Mono-Green Ramp
-
-`wurmspeaker` · midrange · game one 44 · matches 39.0
-
-- **Lands (22):** 20 Forest · 2 Tranquil Thicket
-- **Creatures (30):** 4 Llanowar Elves · 4 Birds of Paradise · 4 Wood Elves · 4 Seedborn Muse · 3 Gaean Wurm · 2 Pelakka Wurm · 3 Baru, Wurmspeaker · 2 Treetop Snarespinner · 2 The Emerald Keeper · 2 Rampaging Baloths
-- **Other (8):** 1 Black Lotus · 1 Mox Emerald · 4 Rampant Growth · 2 Prey Upon
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S69 seed (the planner's): the Open's Wurmspeaker whole.
-
 ## the Kindling — Mono-Red Spells (R)
 
-`kindling` · aggro · game one 38 · matches 34.4
+`kindling` · aggro · game one 37 · matches 37.6
 
 - **Lands (21):** 21 Mountain
 - **Creatures (16):** 4 Guttersnipe · 4 Young Pyromancer · 3 Seasoned Pyromancer · 2 Arc Mage · 1 The Ruby Tyrant · 2 Furnace Whelp
@@ -131,9 +137,20 @@ The most played: Flametongue Kavu 8 · Lightning Bolt 7 · Reaper's Forerunner 4
 - **History:**
   - contributed — S69 seed (the planner's): the Kindling whole.
 
+## the Wurmspeaker — Mono-Green Ramp
+
+`wurmspeaker` · midrange · game one 41 · matches 33.8
+
+- **Lands (22):** 20 Forest · 2 Tranquil Thicket
+- **Creatures (30):** 4 Llanowar Elves · 4 Birds of Paradise · 4 Wood Elves · 4 Seedborn Muse · 3 Gaean Wurm · 2 Pelakka Wurm · 3 Baru, Wurmspeaker · 2 Treetop Snarespinner · 2 The Emerald Keeper · 2 Rampaging Baloths
+- **Other (8):** 1 Black Lotus · 1 Mox Emerald · 4 Rampant Growth · 2 Prey Upon
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — S69 seed (the planner's): the Open's Wurmspeaker whole.
+
 ## the Tally — Izzet Sparks (U R)
 
-`tally` · aggro · game one 34 · matches 26.5
+`tally` · aggro · game one 31 · matches 26.9
 
 - **Lands (22):** 4 Volcanic Island · 4 Steam Vents · 8 Mountain · 4 Island · 1 Tallyflame Court · 1 Forgotten Cave
 - **Creatures (12):** 4 Young Pyromancer · 4 Guttersnipe · 4 Flametongue Kavu

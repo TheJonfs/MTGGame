@@ -1,0 +1,483 @@
+{
+ "name": "open_rr_1",
+ "when": "2026-10-28T22:52:14.024Z",
+ "games": 5500,
+ "table": {
+  "skies": {
+   "thicket": [
+    64,
+    100
+   ],
+   "hexaura": [
+    53,
+    100
+   ],
+   "uwskies": [
+    62,
+    100
+   ],
+   "sourworms": [
+    49,
+    100
+   ],
+   "countersnake": [
+    42,
+    100
+   ],
+   "auras": [
+    60,
+    100
+   ],
+   "wurmspeaker": [
+    67,
+    100
+   ],
+   "wskies": [
+    58,
+    100
+   ],
+   "locks": [
+    57,
+    100
+   ],
+   "sower": [
+    51,
+    100
+   ]
+  },
+  "thicket": {
+   "skies": [
+    36,
+    100
+   ],
+   "sower": [
+    38,
+    100
+   ],
+   "hexaura": [
+    40,
+    100
+   ],
+   "uwskies": [
+    43,
+    100
+   ],
+   "sourworms": [
+    34,
+    100
+   ],
+   "countersnake": [
+    35,
+    100
+   ],
+   "auras": [
+    40,
+    100
+   ],
+   "wurmspeaker": [
+    40,
+    100
+   ],
+   "wskies": [
+    42,
+    100
+   ],
+   "locks": [
+    69,
+    100
+   ]
+  },
+  "hexaura": {
+   "skies": [
+    47,
+    100
+   ],
+   "countersnake": [
+    52,
+    100
+   ],
+   "thicket": [
+    60,
+    100
+   ],
+   "uwskies": [
+    55,
+    100
+   ],
+   "locks": [
+    51,
+    100
+   ],
+   "wurmspeaker": [
+    54,
+    100
+   ],
+   "sower": [
+    47,
+    100
+   ],
+   "auras": [
+    42,
+    100
+   ],
+   "sourworms": [
+    50,
+    100
+   ],
+   "wskies": [
+    45,
+    100
+   ]
+  },
+  "sower": {
+   "thicket": [
+    62,
+    100
+   ],
+   "uwskies": [
+    52,
+    100
+   ],
+   "locks": [
+    64,
+    100
+   ],
+   "wurmspeaker": [
+    70,
+    100
+   ],
+   "hexaura": [
+    53,
+    100
+   ],
+   "auras": [
+    58,
+    100
+   ],
+   "sourworms": [
+    54,
+    100
+   ],
+   "wskies": [
+    74,
+    100
+   ],
+   "skies": [
+    49,
+    100
+   ],
+   "countersnake": [
+    59,
+    100
+   ]
+  },
+  "uwskies": {
+   "sower": [
+    48,
+    100
+   ],
+   "skies": [
+    38,
+    100
+   ],
+   "hexaura": [
+    45,
+    100
+   ],
+   "thicket": [
+    57,
+    100
+   ],
+   "sourworms": [
+    50,
+    100
+   ],
+   "countersnake": [
+    39,
+    100
+   ],
+   "auras": [
+    46,
+    100
+   ],
+   "wurmspeaker": [
+    57,
+    100
+   ],
+   "wskies": [
+    46,
+    100
+   ],
+   "locks": [
+    33,
+    100
+   ]
+  },
+  "countersnake": {
+   "hexaura": [
+    48,
+    100
+   ],
+   "sourworms": [
+    49,
+    100
+   ],
+   "skies": [
+    58,
+    100
+   ],
+   "thicket": [
+    65,
+    100
+   ],
+   "uwskies": [
+    61,
+    100
+   ],
+   "auras": [
+    56,
+    100
+   ],
+   "wurmspeaker": [
+    70,
+    100
+   ],
+   "wskies": [
+    71,
+    100
+   ],
+   "locks": [
+    64,
+    100
+   ],
+   "sower": [
+    41,
+    100
+   ]
+  },
+  "wurmspeaker": {
+   "wskies": [
+    37,
+    100
+   ],
+   "locks": [
+    21,
+    100
+   ],
+   "auras": [
+    56,
+    100
+   ],
+   "sower": [
+    30,
+    100
+   ],
+   "hexaura": [
+    46,
+    100
+   ],
+   "skies": [
+    33,
+    100
+   ],
+   "countersnake": [
+    30,
+    100
+   ],
+   "sourworms": [
+    38,
+    100
+   ],
+   "thicket": [
+    60,
+    100
+   ],
+   "uwskies": [
+    43,
+    100
+   ]
+  },
+  "wskies": {
+   "wurmspeaker": [
+    63,
+    100
+   ],
+   "sourworms": [
+    55,
+    100
+   ],
+   "auras": [
+    65,
+    100
+   ],
+   "skies": [
+    42,
+    100
+   ],
+   "countersnake": [
+    29,
+    100
+   ],
+   "locks": [
+    27,
+    100
+   ],
+   "thicket": [
+    58,
+    100
+   ],
+   "uwskies": [
+    54,
+    100
+   ],
+   "sower": [
+    26,
+    100
+   ],
+   "hexaura": [
+    55,
+    100
+   ]
+  },
+  "sourworms": {
+   "wskies": [
+    45,
+    100
+   ],
+   "skies": [
+    51,
+    100
+   ],
+   "countersnake": [
+    50,
+    100
+   ],
+   "thicket": [
+    66,
+    100
+   ],
+   "uwskies": [
+    50,
+    100
+   ],
+   "locks": [
+    48,
+    100
+   ],
+   "wurmspeaker": [
+    62,
+    100
+   ],
+   "sower": [
+    46,
+    100
+   ],
+   "hexaura": [
+    50,
+    100
+   ],
+   "auras": [
+    60,
+    100
+   ]
+  },
+  "locks": {
+   "wurmspeaker": [
+    79,
+    100
+   ],
+   "sower": [
+    36,
+    100
+   ],
+   "hexaura": [
+    49,
+    100
+   ],
+   "sourworms": [
+    52,
+    100
+   ],
+   "auras": [
+    32,
+    100
+   ],
+   "wskies": [
+    73,
+    100
+   ],
+   "skies": [
+    43,
+    100
+   ],
+   "countersnake": [
+    36,
+    100
+   ],
+   "thicket": [
+    31,
+    100
+   ],
+   "uwskies": [
+    67,
+    100
+   ]
+  },
+  "auras": {
+   "wurmspeaker": [
+    44,
+    100
+   ],
+   "skies": [
+    40,
+    100
+   ],
+   "countersnake": [
+    44,
+    100
+   ],
+   "wskies": [
+    35,
+    100
+   ],
+   "thicket": [
+    60,
+    100
+   ],
+   "uwskies": [
+    54,
+    100
+   ],
+   "locks": [
+    68,
+    100
+   ],
+   "sower": [
+    42,
+    100
+   ],
+   "hexaura": [
+    58,
+    100
+   ],
+   "sourworms": [
+    40,
+    100
+   ]
+  }
+ },
+ "means": {
+  "skies": 56,
+  "thicket": 42,
+  "uwskies": 46,
+  "countersnake": 58,
+  "auras": 49,
+  "wurmspeaker": 39,
+  "wskies": 47,
+  "locks": 50,
+  "sower": 60,
+  "hexaura": 50,
+  "sourworms": 53
+ },
+ "report": "# The Open's round-robin (S46) — 5500 games, master both, 20 life, no entrances; the ROW's win rate\n\n| | skies | thicket | uwskies | countersnake | auras | wurmspeaker | wskies | locks | sower | hexaura | sourworms | **mean** |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| **skies** | — | 64 | 62 | 42 | 60 | 67 | 58 | 57 | 51 | 53 | 49 | **56** |\n| **thicket** | 36 | — | 43 | 35 | 40 | 40 | 42 | 69 | 38 | 40 | 34 | **42** |\n| **uwskies** | 38 | 57 | — | 39 | 46 | 57 | 46 | 33 | 48 | 45 | 50 | **46** |\n| **countersnake** | 58 | 65 | 61 | — | 56 | 70 | 71 | 64 | 41 | 48 | 49 | **58** |\n| **auras** | 40 | 60 | 54 | 44 | — | 44 | 35 | 68 | 42 | 58 | 40 | **49** |\n| **wurmspeaker** | 33 | 60 | 43 | 30 | 56 | — | 37 | 21 | 30 | 46 | 38 | **39** |\n| **wskies** | 42 | 58 | 54 | 29 | 65 | 63 | — | 27 | 26 | 55 | 55 | **47** |\n| **locks** | 43 | 31 | 67 | 36 | 32 | 79 | 73 | — | 36 | 49 | 52 | **50** |\n| **sower** | 49 | 62 | 52 | 59 | 58 | 70 | 74 | 64 | — | 53 | 54 | **60** |\n| **hexaura** | 47 | 60 | 55 | 52 | 42 | 54 | 45 | 51 | 47 | — | 50 | **50** |\n| **sourworms** | 51 | 66 | 50 | 50 | 60 | 62 | 45 | 48 | 46 | 50 | — | **53** |\n\nSolvable (a list over 65% against the field): none. Under 35%: none.\nMuster vs Warband: the Muster 0% (0 games).\n\n## Staples (ADR-170)\n\nIn more than half of the 11 lists: Swords to Plowshares (7 lists, 26 copies). The most played: Swords to Plowshares 7 · Restoration Angel 5 · Counterspell 5 · Birds of Paradise 5 · Wave of Reckoning 5 · Reaper's Forerunner 4 · Karmic Mentor 4 · Blanchwood Armor 3.\n\n## Restricted cards — % of the list's games in which it was cast (or, a land, played)\n\n- **skies**: black_lotus 29% · mox_pearl 27% · mox_sapphire 30%\n- **thicket**: shevelport 27% · black_lotus 25% · mox_emerald 26% · mox_pearl 25%\n- **countersnake**: wrackroot 36% · black_lotus 35% · mox_emerald 32% · mox_pearl 33% · mox_sapphire 31% · shevelport 36% · time_walk 34%\n- **wurmspeaker**: black_lotus 25% · mox_emerald 25%\n- **locks**: library_of_alexandria 41% · black_lotus 36% · mox_sapphire 36% · mox_pearl 38% · time_walk 38%\n- **sower**: black_lotus 33% · mox_pearl 33% · mox_sapphire 33% · mox_emerald 32% · time_walk 34% · shevelport 35% · wrackroot 34%\n- **hexaura**: black_lotus 25% · mox_emerald 25% · mox_pearl 27% · shevelport 27%\n- **sourworms**: black_lotus 25% · mox_emerald 28% · mox_pearl 27% · mox_sapphire 23% · time_walk 24% · library_of_alexandria 30% · shevelport 25% · wrackroot 25%\n\n## Key pieces — % of the list's games in which each was cast (a weak pilot reads apart from a weak list)\n\n- **skies**: \n- **thicket**: \n- **uwskies**: \n- **countersnake**: \n- **auras**: \n- **wurmspeaker**: seedborn_muse 62% · rampaging_baloths 36% · gaean_wurm 54%\n- **wskies**: \n- **locks**: the_dredger 0% · counterspell 69% · wrath_of_god 49%\n- **sower**: \n- **hexaura**: \n- **sourworms**: \n\n## The Loop — the Usher + an Altar on the battlefield with a Restoration Angel in hand or play\n\nAssembled by turn ten in 0 of 0 games (0%); ever: 0. Altar activations per game: 0.00."
+}

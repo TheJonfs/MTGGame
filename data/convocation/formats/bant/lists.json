@@ -6,8 +6,43 @@
   "large": 7
  },
  "archived": {},
- "guides": {},
- "guidesOnly": [],
+ "guides": {
+  "sourworms": [
+   {
+    "in": "control_magic",
+    "n": 1,
+    "out": [
+     "pelakka_wurm"
+    ],
+    "when": [
+     "control"
+    ]
+   },
+   {
+    "in": "control_magic",
+    "n": 1,
+    "out": [
+     "gaean_wurm"
+    ],
+    "when": [
+     "control"
+    ]
+   },
+   {
+    "in": "control_magic",
+    "n": 2,
+    "out": [
+     "baru_wurmspeaker"
+    ],
+    "when": [
+     "control"
+    ]
+   }
+  ]
+ },
+ "guidesOnly": [
+  "sourworms"
+ ],
  "outRules": {},
  "lists": [
   {
@@ -1058,6 +1093,121 @@
     },
     {
      "cardId": "retribution_of_the_meek",
+     "count": 3
+    }
+   ]
+  },
+  {
+   "key": "sourworms",
+   "name": "Sour Worms",
+   "title": "Bant Wurm Ramp (G w u)",
+   "archetype": "midrange",
+   "source": "Post-S69 (Chris's, 2026-10-28): 8–0 in a Bant Convocation (event 221140; 16–2 in games — Jeskai Locks, Countersnake, White Skies and Bant Sower twice in the Swiss; Dungrove Auras, Bant Auras and Bant Sower in the bracket). Birds, Manaba and Elvish Visionary into Gaean Wurms, Baru, Pelakka, the Emerald Keeper and the Sower (the name's pun); Reaper's Forerunner. The fifteen as Chris registered it; the guide read from his swaps (Chris: the boarding was haphazard — the coherent plan was the deathtouchers in against the Aura decks).",
+   "decklist": [
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "birds_of_paradise",
+     "count": 4
+    },
+    {
+     "cardId": "manaba",
+     "count": 4
+    },
+    {
+     "cardId": "elvish_visionary",
+     "count": 4
+    },
+    {
+     "cardId": "the_emerald_keeper",
+     "count": 4
+    },
+    {
+     "cardId": "time_walk",
+     "count": 1
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 4
+    },
+    {
+     "cardId": "gaean_wurm",
+     "count": 4
+    },
+    {
+     "cardId": "baru_wurmspeaker",
+     "count": 3
+    },
+    {
+     "cardId": "the_sower",
+     "count": 3
+    },
+    {
+     "cardId": "pelakka_wurm",
+     "count": 1
+    },
+    {
+     "cardId": "library_of_alexandria",
+     "count": 1
+    },
+    {
+     "cardId": "shevelport",
+     "count": 1
+    },
+    {
+     "cardId": "wrackroot",
+     "count": 1
+    },
+    {
+     "cardId": "tropical_island",
+     "count": 4
+    },
+    {
+     "cardId": "savannah",
+     "count": 4
+    },
+    {
+     "cardId": "breeding_pool",
+     "count": 4
+    },
+    {
+     "cardId": "temple_garden",
+     "count": 4
+    },
+    {
+     "cardId": "forest",
+     "count": 5
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "treetop_snarespinner",
+     "count": 4
+    },
+    {
+     "cardId": "deadly_recluse",
+     "count": 4
+    },
+    {
+     "cardId": "control_magic",
+     "count": 4
+    },
+    {
+     "cardId": "protocol",
      "count": 3
     }
    ]
