@@ -778,3 +778,10 @@ See handoff Concerns for the authoritative list. Highlights: auto-pay greedy fea
 - **Creature abilities skip `floodSinkGated`** outside the shrink, mill and team-counter sinks — the Tyrant's ping had no gate until `pingPlanGated` (S68). A new creature ability with a target needs its own gate, or the softmax decides.
 - **The attack sim memoises by attack set within a turn** (`simMemo`): a book pin that scores the same set on two views with one agent reads the first view twice — use a fresh agent per view.
 - **An X spell's damage**: Blaze writes `"amount": "X"`, Sacred Helix `{ ref: "manaSpent" }` (X plus the rest of its cost). Read both before comparing damage to toughness.
+
+## Post-S69 (2026-10-25 → 28)
+- **Don't pass open:rr flags through a zsh variable**: `R="--matches 160"; rr.sh … $R` hands open:rr ONE argument (zsh does not word-split), which it ignores — six runs played game ones and `paired.py` failed on the missing `match` key. Write the flags out.
+- **Calibrate a `--deck` test with a same-path run** of the registered 75 before reading it: Temur Control's was exact; Sour Worms' through `--deck-guide` drifted −9.7 against the counter decks (its test guide's `control` rows did not fire). Read a `--deck-guide` result against `control` lists as suspect until that is chased.
+- **A paired baseline across a code change**: a `git worktree` at the commit before (`pnpm install --offline` there) runs the same seeds on the old pilot; `OPEN_SCRATCH=<main scratch>` puts its shards beside the new ones (book 151's three decks).
+- **The view-sim's scoped effects were flat credits** until book 151 (a −X/−X sweep: 0.2). Before reading a card's pilot number, check that `applyEffect` models its effect at all — a flat credit makes every X and every board look the same.
+- **A background run needs `run_in_background`**: a `… &` inside a foreground command keeps running but never notifies; a small waiter loop (run in background) that greps for the last `done <tag>` covers it.
