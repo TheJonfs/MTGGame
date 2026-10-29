@@ -1,6 +1,6 @@
 {
- "id": "burnfallow_sac",
- "name": "Burnfallow (b)",
+ "id": "burnfallow_ping",
+ "name": "Burnfallow (a)",
  "source": "custom",
  "manaCost": "",
  "types": [
@@ -9,7 +9,7 @@
  "supertypes": [
   "Legendary"
  ],
- "text": "{T}: Add {R} or {G}.\n{1}{G}{R}, {T}, Sacrifice another land: Search your library for up to two basic land cards, put them onto the battlefield tapped, then shuffle.",
+ "text": "{T}: Add {R} or {G}.\n{2}{G}{R}, {T}: Search your library for a basic land card, put it onto the battlefield tapped, then shuffle. Burnfallow deals 1 damage to any target.",
  "abilities": [
   {
    "kind": "activated",
@@ -38,26 +38,34 @@
   {
    "kind": "activated",
    "cost": {
-    "mana": "{1}{G}{R}",
-    "tap": true,
-    "sacrifice": {
-     "predicate": "otherLand"
-    }
+    "mana": "{2}{G}{R}",
+    "tap": true
    },
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "anyTarget",
+     "zone": "any"
+    }
+   ],
    "effects": [
     {
      "type": "searchLibrary",
      "predicate": "basicLand",
      "to": "battlefield",
-     "entersTapped": true,
-     "count": 2
+     "entersTapped": true
+    },
+    {
+     "type": "damage",
+     "amount": 1,
+     "target": 0
     }
    ]
   }
  ],
- "prizeOnly": true,
  "art": {
   "asset": "/custom-art/burnfallow.png",
   "fallback": "rendered"
- }
+ },
+ "prizeOnly": true
 }

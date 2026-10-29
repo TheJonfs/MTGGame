@@ -2351,4 +2351,37 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(e0).toBeGreaterThan(e1!); // nothing of theirs to kill: the engine without the sweep (X=0 no longer refused)
     expect(sc(tokens(8))[1]).toBeGreaterThan(100); // at 8 the four deaths drain 8 (the Massacre's own and Blood Artist's): lethal
   });
+
+  it("book of shame 152 (S70 — the still-pair High Grounds: Burnfallow fired in its own upkeep 98 times in 114, the turn's mana spent before its main phase; Chris: their end step unless it must die sooner): a land's kill, search or copy waits for the opponent's end step; an attacker dies now, a blocker before our attack; off: groundtiming", () => {
+    const a = agent("midrange");
+    const lands = (pre: string, n: number, cardId: string, c: 0 | 1) => Array.from({ length: n }, (_, i) => ({ id: pre + i, cardId, controller: c }));
+    // Hearthspire at their Bears: our upkeep no; their end step yes; while the Bears attack, yes
+    const bf = [{ id: "hs", cardId: "hearthspire", controller: 0 as const }, ...lands("m", 2, "mountain", 0), ...lands("p", 2, "plains", 0), { id: "gb", cardId: "grizzly_bears", controller: 1 as const }];
+    const shot = { type: "activateAbility" as const, objectId: "hs", abilityIndex: 2, targets: [{ kind: "object" as const, id: "gb" }] };
+    expect(a.floodSinkGated(mkView({ battlefield: bf, step: "UPKEEP", activePlayer: 0 }), shot)).toBe(true);
+    expect(a.floodSinkGated(mkView({ battlefield: bf, step: "END", activePlayer: 1 }), shot)).toBe(false);
+    expect(a.floodSinkGated(mkView({ battlefield: bf, step: "DECLARE_BLOCKERS", activePlayer: 1, combat: { attackers: ["gb"], blocks: [] } }), shot)).toBe(false);
+    // before our attack: the untapped Bears could block our ready Lion — yes; with no attacker of ours, no
+    const withLion = [...bf, { id: "sl", cardId: "savannah_lions", controller: 0 as const }];
+    expect(a.floodSinkGated(mkView({ battlefield: withLion, step: "MAIN1", activePlayer: 0 }), shot)).toBe(false);
+    expect(a.floodSinkGated(mkView({ battlefield: bf, step: "MAIN1", activePlayer: 0 }), shot)).toBe(true);
+    // Nightbower at a noncreature (a Mox): their end step only
+    const nb = [{ id: "nb", cardId: "nightbower", controller: 0 as const }, ...lands("s", 2, "swamp", 0), ...lands("f", 2, "forest", 0), { id: "mx", cardId: "mox_ruby", controller: 1 as const }];
+    const kill = { type: "activateAbility" as const, objectId: "nb", abilityIndex: 2, targets: [{ kind: "object" as const, id: "mx" }], x: 0 };
+    expect(a.floodSinkGated(mkView({ battlefield: nb, step: "MAIN1", activePlayer: 0 }), kill)).toBe(true);
+    expect(a.floodSinkGated(mkView({ battlefield: nb, step: "END", activePlayer: 1 }), kill)).toBe(false);
+    expect(a.scorePriorityAction(mkView({ battlefield: nb, step: "END", activePlayer: 1 }), kill)).toBeGreaterThan(-Infinity); // X=0 at a Mox is a real kill (R-119)
+    // Burnfallow (b): their end step, never with its land a colour's last, never with no basic left in the library
+    const bfw = [{ id: "bf", cardId: "burnfallow", controller: 0 as const }, ...lands("f", 3, "forest", 0), ...lands("m", 2, "mountain", 0)];
+    const ramp = { type: "activateAbility" as const, objectId: "bf", abilityIndex: 2, targets: [] };
+    const deckOf = (basics: number) => new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, decklist: [{ cardId: "forest", count: basics }, { cardId: "grizzly_bears", count: 60 - basics }] } as never);
+    expect(deckOf(16).floodSinkGated(mkView({ battlefield: bfw, step: "UPKEEP", activePlayer: 0 }), ramp)).toBe(true);
+    expect(deckOf(16).floodSinkGated(mkView({ battlefield: bfw, step: "END", activePlayer: 1 }), ramp)).toBe(false);
+    expect(deckOf(3).floodSinkGated(mkView({ battlefield: bfw, step: "END", activePlayer: 1 }), ramp)).toBe(true); // the three Forests are all on the battlefield
+    expect(deckOf(16).spareLandToSacrifice(mkView({ battlefield: bfw }), "bf")).toMatch(/^f/); // a Forest — the colour we hold most of
+    expect(deckOf(16).spareLandToSacrifice(mkView({ battlefield: [{ id: "bf", cardId: "burnfallow", controller: 0 as const }, { id: "f0", cardId: "forest", controller: 0 as const }, { id: "m0", cardId: "mountain", controller: 0 as const }] }), "bf")).toBeUndefined(); // each the last of its colour
+    // the old reading: the shot any time it kills
+    const old = new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, off: ["groundtiming"] });
+    expect(old.floodSinkGated(mkView({ battlefield: bf, step: "UPKEEP", activePlayer: 0 }), shot)).toBe(false);
+  });
 });

@@ -9,7 +9,7 @@
  "supertypes": [
   "Legendary"
  ],
- "text": "{T}: Add {B} or {G}.\n{X}{1}{B}{G}, {T}: Destroy target nonland permanent with mana value X or less.",
+ "text": "{T}: Add {B} or {G}.\n{X}{B}{G}, {T}: Destroy target nonland permanent with mana value X or less.",
  "abilities": [
   {
    "kind": "activated",
@@ -38,7 +38,7 @@
   {
    "kind": "activated",
    "cost": {
-    "mana": "{X}{1}{B}{G}",
+    "mana": "{X}{B}{G}",
     "tap": true
    },
    "targets": [

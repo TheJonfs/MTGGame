@@ -1,0 +1,38 @@
+# S70 Part 1, the Open stage, second run — book 152 (groundtiming) in; Chris's nominals: Nightbower {X}{B}{G}, Burnfallow card (b). Fresh baselines (the rule times the Fordkeeper's land pings too).
+# Hearthspire: 2 at {2}{R}{W} / 3 at {3}{R}{W}; the untyped-dual control
+s70d_hs_muster            41.4 →  47.4   +6.1 ± 1.3  acts/g 1.44  worst: sweep +1, wurmspeaker +1 | best: kiln +11, tollgate +31
+s70d_hs3_muster           41.4 →  49.1   +7.7 ± 1.4  acts/g 1.25  worst: wurmspeaker +1, marducontrol +2 | best: kiln +14, tollgate +37
+s70d_hs_marducontrol      61.5 →  64.3   +2.8 ± 1.0  acts/g 0.52  worst: pall -1, emeraldsnakes +1 | best: countersnake +5, kiln +5
+s70d_hs3_marducontrol     61.5 →  65.1   +3.6 ± 1.1  acts/g 0.43  worst: warband +0, wurmspeaker +0 | best: kiln +6, countersnake +7
+s70d_hs_tollgate          44.6 →  54.2   +9.6 ± 1.7  acts/g 3.47  worst: marducontrol +1, pall +1 | best: warband +17, kiln +21
+s70d_hs3_tollgate         44.6 →  56.6  +12.1 ± 1.7  acts/g 2.89  worst: pall +1, marducontrol +6 | best: warband +18, kiln +24
+s70d_hsx_muster           41.4 →  41.4   +0.1 ± 0.2  acts/g 0.04  worst: countersnake +0, depths +0 | best: wurmspeaker +0, tollgate +1
+# Volmaw: 6 / 4 at {2}{U}{B}; 8 at {3}{U}{B}
+s70d_vm_writ              51.4 →  52.7   +1.3 ± 1.1  acts/g 0.46  worst: pall -1, rabble -1 | best: countersnake +4, tollgate +9
+s70d_vm4_writ             51.4 →  52.7   +1.3 ± 0.9  acts/g 0.43  worst: warband -2, levy -1 | best: countersnake +4, tollgate +9
+s70d_vm8_writ             51.4 →  52.5   +1.1 ± 1.0  acts/g 0.37  worst: marducontrol -2, emeraldsnakes -1 | best: depths +3, tollgate +14
+s70d_vm_depths            45.4 →  48.2   +2.9 ± 1.3  acts/g 0.58  worst: rabble -2, warband -2 | best: wurmspeaker +4, tollgate +29
+s70d_vm4_depths           45.4 →  48.1   +2.8 ± 1.2  acts/g 0.60  worst: muster -1, pall -1 | best: writ +3, tollgate +28
+s70d_vm8_depths           45.4 →  48.7   +3.4 ± 1.2  acts/g 0.49  worst: marducontrol -2, sweep -2 | best: wurmspeaker +4, tollgate +31
+# Nightbower: {X}{B}{G} (nominal) / {X}{1}{B}{G}
+s70d_nb_reaperclio        70.9 →  74.2   +3.4 ± 1.1  acts/g 0.76  worst: warband -1, pall +0 | best: writ +7, kiln +8
+s70d_nb1_reaperclio       70.9 →  73.2   +2.4 ± 1.0  acts/g 0.72  worst: pall -1, emeraldsnakes +0 | best: tollgate +6, writ +7
+s70d_nb_sweep             40.4 →  44.3   +3.9 ± 1.2  acts/g 0.62  worst: warband +0, depths +1 | best: writ +8, tollgate +13
+s70d_nb1_sweep            40.4 →  43.2   +2.8 ± 1.0  acts/g 0.51  worst: warband -1, depths +0 | best: muster +6, tollgate +10
+# Ranksmere: one at {1}{W}{U} / two at {2}{W}{U} (for an Underground Sea)
+s70d_rm_countersnake      49.8 →  50.4   +0.6 ± 0.9  acts/g 0.22  worst: warband -2, tollgate -1 | best: reaperclio +2, sweep +3
+s70d_rm2_countersnake     49.8 →  50.4   +0.6 ± 0.9  acts/g 0.20  worst: warband -2, emeraldsnakes +0 | best: reaperclio +2, sweep +2
+# Burnfallow: (b) the nominal at {1}{G}{R} / {2}{G}{R}; (a) burnfallow_ping at ping 1 / 2; the untyped-dual control
+s70d_bf_emeraldsnakes     60.6 →  59.8   -0.8 ± 0.6  acts/g 0.00  worst: tollgate -3, kiln -2 | best: wurmspeaker +0, countersnake +3
+s70d_bf2_emeraldsnakes    60.6 →  59.6   -1.0 ± 0.6  acts/g 0.00  worst: tollgate -3, kiln -2 | best: wurmspeaker +0, countersnake +2
+s70d_bfa_emeraldsnakes    60.6 →  60.0   -0.6 ± 0.9  acts/g 0.43  worst: levy -3, tollgate -3 | best: sweep +2, countersnake +3
+s70d_bfa2_emeraldsnakes   60.6 →  60.8   +0.2 ± 0.9  acts/g 0.42  worst: levy -2, depths -1 | best: sweep +2, countersnake +3
+s70d_bf_wurmspeaker       36.1 →  35.8   -0.4 ± 0.7  acts/g 0.01  worst: depths -1, emeraldsnakes -1 | best: writ +0, countersnake +2
+s70d_bf2_wurmspeaker      36.1 →  35.8   -0.4 ± 0.7  acts/g 0.01  worst: depths -1, emeraldsnakes -1 | best: writ +0, countersnake +2
+s70d_bfa_wurmspeaker      36.1 →  36.9   +0.7 ± 0.8  acts/g 0.16  worst: depths -1, warband -1 | best: kiln +2, countersnake +5
+s70d_bfa2_wurmspeaker     36.1 →  37.6   +1.4 ± 0.9  acts/g 0.16  worst: warband -1, emeraldsnakes +0 | best: kiln +4, countersnake +5
+s70d_bf_tollgate          44.6 →  45.6   +1.1 ± 1.4  acts/g 0.79  worst: rabble -6, depths -5 | best: muster +7, warband +8
+s70d_bf2_tollgate         44.6 →  45.5   +0.9 ± 1.3  acts/g 0.74  worst: depths -5, rabble -3 | best: muster +6, warband +8
+s70d_bfa_tollgate         44.6 →  48.6   +4.0 ± 1.3  acts/g 3.18  worst: depths +1, pall +1 | best: reaperclio +8, writ +9
+s70d_bfa2_tollgate        44.6 →  51.1   +6.5 ± 1.5  acts/g 2.75  worst: pall +1, wurmspeaker +2 | best: muster +12, reaperclio +12
+s70d_bfx_emeraldsnakes    60.6 →  59.8   -0.8 ± 0.6  acts/g 0.00  worst: kiln -3, muster -2 | best: wurmspeaker +1, countersnake +2

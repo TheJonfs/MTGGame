@@ -1,0 +1,325 @@
+$ tsx packages/sim/src/ladder-cli.ts
+  A-B seat0: 250/1000
+  A-B seat0: 500/1000
+  A-B seat0: 750/1000
+  A-B seat0: 1000/1000
+  A-B seat1: 250/1000
+  A-B seat1: 500/1000
+  A-B seat1: 750/1000
+  A-B seat1: 1000/1000
+  A-C seat0: 250/1000
+  A-C seat0: 500/1000
+  A-C seat0: 750/1000
+  A-C seat0: 1000/1000
+  A-C seat1: 250/1000
+  A-C seat1: 500/1000
+  A-C seat1: 750/1000
+  A-C seat1: 1000/1000
+  A-D seat0: 250/1000
+  A-D seat0: 500/1000
+  A-D seat0: 750/1000
+  A-D seat0: 1000/1000
+  A-D seat1: 250/1000
+  A-D seat1: 500/1000
+  A-D seat1: 750/1000
+  A-D seat1: 1000/1000
+  A-E seat0: 250/1000
+  A-E seat0: 500/1000
+  A-E seat0: 750/1000
+  A-E seat0: 1000/1000
+  A-E seat1: 250/1000
+  A-E seat1: 500/1000
+  A-E seat1: 750/1000
+  A-E seat1: 1000/1000
+  B-C seat0: 250/1000
+  B-C seat0: 500/1000
+  B-C seat0: 750/1000
+  B-C seat0: 1000/1000
+  B-C seat1: 250/1000
+  B-C seat1: 500/1000
+  B-C seat1: 750/1000
+  B-C seat1: 1000/1000
+  B-D seat0: 250/1000
+  B-D seat0: 500/1000
+  B-D seat0: 750/1000
+  B-D seat0: 1000/1000
+  B-D seat1: 250/1000
+  B-D seat1: 500/1000
+  B-D seat1: 750/1000
+  B-D seat1: 1000/1000
+  B-E seat0: 250/1000
+  B-E seat0: 500/1000
+  B-E seat0: 750/1000
+  B-E seat0: 1000/1000
+  B-E seat1: 250/1000
+  B-E seat1: 500/1000
+  B-E seat1: 750/1000
+  B-E seat1: 1000/1000
+  C-D seat0: 250/1000
+  C-D seat0: 500/1000
+  C-D seat0: 750/1000
+  C-D seat0: 1000/1000
+  C-D seat1: 250/1000
+  C-D seat1: 500/1000
+  C-D seat1: 750/1000
+  C-D seat1: 1000/1000
+  C-E seat0: 250/1000
+  C-E seat0: 500/1000
+  C-E seat0: 750/1000
+  C-E seat0: 1000/1000
+  C-E seat1: 250/1000
+  C-E seat1: 500/1000
+  C-E seat1: 750/1000
+  C-E seat1: 1000/1000
+  D-E seat0: 250/1000
+  D-E seat0: 500/1000
+  D-E seat0: 750/1000
+  D-E seat0: 1000/1000
+  D-E seat1: 250/1000
+  D-E seat1: 500/1000
+  D-E seat1: 750/1000
+  D-E seat1: 1000/1000
+  A-A seat0: 250/1000
+  A-A seat0: 500/1000
+  A-A seat0: 750/1000
+  A-A seat0: 1000/1000
+  A-A seat1: 250/1000
+  A-A seat1: 500/1000
+  A-A seat1: 750/1000
+  A-A seat1: 1000/1000
+  B-B seat0: 250/1000
+  B-B seat0: 500/1000
+  B-B seat0: 750/1000
+  B-B seat0: 1000/1000
+  B-B seat1: 250/1000
+  B-B seat1: 500/1000
+  B-B seat1: 750/1000
+  B-B seat1: 1000/1000
+  C-C seat0: 250/1000
+  C-C seat0: 500/1000
+  C-C seat0: 750/1000
+  C-C seat0: 1000/1000
+  C-C seat1: 250/1000
+  C-C seat1: 500/1000
+  C-C seat1: 750/1000
+  C-C seat1: 1000/1000
+  D-D seat0: 250/1000
+  D-D seat0: 500/1000
+  D-D seat0: 750/1000
+  D-D seat0: 1000/1000
+  D-D seat1: 250/1000
+  D-D seat1: 500/1000
+  D-D seat1: 750/1000
+  D-D seat1: 1000/1000
+  E-E seat0: 250/1000
+  E-E seat0: 500/1000
+  E-E seat0: 750/1000
+  E-E seat0: 1000/1000
+  E-E seat1: 250/1000
+  E-E seat1: 500/1000
+  E-E seat1: 750/1000
+  E-E seat1: 1000/1000
+ladder: heuristic vs sane
+  A-B seat0 (heuristic plays A): 789/1000 (78.9%), mean turns 17.7
+  A-B seat1 (heuristic plays B): 794/1000 (79.4%), mean turns 18.6
+  A-C seat0 (heuristic plays A): 802/1000 (80.2%), mean turns 13.7
+  A-C seat1 (heuristic plays C): 861/1000 (86.1%), mean turns 15.8
+  A-D seat0 (heuristic plays A): 422/1000 (42.2%), mean turns 19.0
+  A-D seat1 (heuristic plays D): 966/1000 (96.6%), mean turns 17.1
+  A-E seat0 (heuristic plays A): 920/1000 (92.0%), mean turns 15.6
+  A-E seat1 (heuristic plays E): 746/1000 (74.6%), mean turns 19.1
+  B-C seat0 (heuristic plays B): 841/1000 (84.1%), mean turns 19.2
+  B-C seat1 (heuristic plays C): 819/1000 (81.9%), mean turns 20.4
+  B-D seat0 (heuristic plays B): 520/1000 (52.0%), mean turns 25.2
+  B-D seat1 (heuristic plays D): 956/1000 (95.6%), mean turns 20.8
+  B-E seat0 (heuristic plays B): 911/1000 (91.1%), mean turns 20.3
+  B-E seat1 (heuristic plays E): 765/1000 (76.5%), mean turns 23.2
+  C-D seat0 (heuristic plays C): 373/1000 (37.3%), mean turns 20.1
+  C-D seat1 (heuristic plays D): 977/1000 (97.7%), mean turns 16.9
+  C-E seat0 (heuristic plays C): 945/1000 (94.5%), mean turns 16.2
+  C-E seat1 (heuristic plays E): 721/1000 (72.1%), mean turns 18.2
+  D-E seat0 (heuristic plays D): 996/1000 (99.6%), mean turns 17.8
+  D-E seat1 (heuristic plays E): 218/1000 (21.8%), mean turns 20.7
+  mirrors (same deck both sides — deck-neutral skill):
+    A-A seat0: 810/1000 (81.0%), mean turns 15.7
+    A-A seat1: 872/1000 (87.2%), mean turns 15.4
+    B-B seat0: 911/1000 (91.1%), mean turns 26.1
+    B-B seat1: 894/1000 (89.4%), mean turns 26.0
+    C-C seat0: 837/1000 (83.7%), mean turns 16.0
+    C-C seat1: 814/1000 (81.4%), mean turns 17.3
+    D-D seat0: 775/1000 (77.5%), mean turns 21.5
+    D-D seat1: 818/1000 (81.8%), mean turns 20.8
+    E-E seat0: 865/1000 (86.5%), mean turns 21.8
+    E-E seat1: 820/1000 (82.0%), mean turns 23.0
+  per-deck over pairing cells (heuristic's hands):
+    A: 2933/4000 (73.3%)
+    B: 3066/4000 (76.7%)
+    C: 2998/4000 (75.0%)
+    D: 3895/4000 (97.4%)
+    E: 2450/4000 (61.3%)
+  info/per-deck (majority in every deck's hands over pairings — deck-imbalance measure, NOT a gate; ADR-061): yes
+  gate/mirror (majority in every mirror, both seatings): PASS
+  (499.9s)
+
+  A-B seat0: 250/1000
+  A-B seat0: 500/1000
+  A-B seat0: 750/1000
+  A-B seat0: 1000/1000
+  A-B seat1: 250/1000
+  A-B seat1: 500/1000
+  A-B seat1: 750/1000
+  A-B seat1: 1000/1000
+  A-C seat0: 250/1000
+  A-C seat0: 500/1000
+  A-C seat0: 750/1000
+  A-C seat0: 1000/1000
+  A-C seat1: 250/1000
+  A-C seat1: 500/1000
+  A-C seat1: 750/1000
+  A-C seat1: 1000/1000
+  A-D seat0: 250/1000
+  A-D seat0: 500/1000
+  A-D seat0: 750/1000
+  A-D seat0: 1000/1000
+  A-D seat1: 250/1000
+  A-D seat1: 500/1000
+  A-D seat1: 750/1000
+  A-D seat1: 1000/1000
+  A-E seat0: 250/1000
+  A-E seat0: 500/1000
+  A-E seat0: 750/1000
+  A-E seat0: 1000/1000
+  A-E seat1: 250/1000
+  A-E seat1: 500/1000
+  A-E seat1: 750/1000
+  A-E seat1: 1000/1000
+  B-C seat0: 250/1000
+  B-C seat0: 500/1000
+  B-C seat0: 750/1000
+  B-C seat0: 1000/1000
+  B-C seat1: 250/1000
+  B-C seat1: 500/1000
+  B-C seat1: 750/1000
+  B-C seat1: 1000/1000
+  B-D seat0: 250/1000
+  B-D seat0: 500/1000
+  B-D seat0: 750/1000
+  B-D seat0: 1000/1000
+  B-D seat1: 250/1000
+  B-D seat1: 500/1000
+  B-D seat1: 750/1000
+  B-D seat1: 1000/1000
+  B-E seat0: 250/1000
+  B-E seat0: 500/1000
+  B-E seat0: 750/1000
+  B-E seat0: 1000/1000
+  B-E seat1: 250/1000
+  B-E seat1: 500/1000
+  B-E seat1: 750/1000
+  B-E seat1: 1000/1000
+  C-D seat0: 250/1000
+  C-D seat0: 500/1000
+  C-D seat0: 750/1000
+  C-D seat0: 1000/1000
+  C-D seat1: 250/1000
+  C-D seat1: 500/1000
+  C-D seat1: 750/1000
+  C-D seat1: 1000/1000
+  C-E seat0: 250/1000
+  C-E seat0: 500/1000
+  C-E seat0: 750/1000
+  C-E seat0: 1000/1000
+  C-E seat1: 250/1000
+  C-E seat1: 500/1000
+  C-E seat1: 750/1000
+  C-E seat1: 1000/1000
+  D-E seat0: 250/1000
+  D-E seat0: 500/1000
+  D-E seat0: 750/1000
+  D-E seat0: 1000/1000
+  D-E seat1: 250/1000
+  D-E seat1: 500/1000
+  D-E seat1: 750/1000
+  D-E seat1: 1000/1000
+  A-A seat0: 250/1000
+  A-A seat0: 500/1000
+  A-A seat0: 750/1000
+  A-A seat0: 1000/1000
+  A-A seat1: 250/1000
+  A-A seat1: 500/1000
+  A-A seat1: 750/1000
+  A-A seat1: 1000/1000
+  B-B seat0: 250/1000
+  B-B seat0: 500/1000
+  B-B seat0: 750/1000
+  B-B seat0: 1000/1000
+  B-B seat1: 250/1000
+  B-B seat1: 500/1000
+  B-B seat1: 750/1000
+  B-B seat1: 1000/1000
+  C-C seat0: 250/1000
+  C-C seat0: 500/1000
+  C-C seat0: 750/1000
+  C-C seat0: 1000/1000
+  C-C seat1: 250/1000
+  C-C seat1: 500/1000
+  C-C seat1: 750/1000
+  C-C seat1: 1000/1000
+  D-D seat0: 250/1000
+  D-D seat0: 500/1000
+  D-D seat0: 750/1000
+  D-D seat0: 1000/1000
+  D-D seat1: 250/1000
+  D-D seat1: 500/1000
+  D-D seat1: 750/1000
+  D-D seat1: 1000/1000
+  E-E seat0: 250/1000
+  E-E seat0: 500/1000
+  E-E seat0: 750/1000
+  E-E seat0: 1000/1000
+  E-E seat1: 250/1000
+  E-E seat1: 500/1000
+  E-E seat1: 750/1000
+  E-E seat1: 1000/1000
+ladder: heuristic vs random
+  A-B seat0 (heuristic plays A): 1000/1000 (100.0%), mean turns 11.8
+  A-B seat1 (heuristic plays B): 998/1000 (99.8%), mean turns 17.7
+  A-C seat0 (heuristic plays A): 1000/1000 (100.0%), mean turns 10.5
+  A-C seat1 (heuristic plays C): 1000/1000 (100.0%), mean turns 13.1
+  A-D seat0 (heuristic plays A): 1000/1000 (100.0%), mean turns 12.0
+  A-D seat1 (heuristic plays D): 1000/1000 (100.0%), mean turns 14.8
+  A-E seat0 (heuristic plays A): 1000/1000 (100.0%), mean turns 10.9
+  A-E seat1 (heuristic plays E): 1000/1000 (100.0%), mean turns 16.5
+  B-C seat0 (heuristic plays B): 1000/1000 (100.0%), mean turns 16.8
+  B-C seat1 (heuristic plays C): 1000/1000 (100.0%), mean turns 13.5
+  B-D seat0 (heuristic plays B): 1000/1000 (100.0%), mean turns 19.0
+  B-D seat1 (heuristic plays D): 1000/1000 (100.0%), mean turns 15.3
+  B-E seat0 (heuristic plays B): 1000/1000 (100.0%), mean turns 17.1
+  B-E seat1 (heuristic plays E): 999/1000 (99.9%), mean turns 17.1
+  C-D seat0 (heuristic plays C): 999/1000 (99.9%), mean turns 14.0
+  C-D seat1 (heuristic plays D): 1000/1000 (100.0%), mean turns 14.2
+  C-E seat0 (heuristic plays C): 1000/1000 (100.0%), mean turns 12.4
+  C-E seat1 (heuristic plays E): 1000/1000 (100.0%), mean turns 15.6
+  D-E seat0 (heuristic plays D): 1000/1000 (100.0%), mean turns 13.9
+  D-E seat1 (heuristic plays E): 999/1000 (99.9%), mean turns 17.6
+  mirrors (same deck both sides — deck-neutral skill):
+    A-A seat0: 1000/1000 (100.0%), mean turns 11.4
+    A-A seat1: 1000/1000 (100.0%), mean turns 11.8
+    B-B seat0: 1000/1000 (100.0%), mean turns 19.0
+    B-B seat1: 1000/1000 (100.0%), mean turns 19.1
+    C-C seat0: 1000/1000 (100.0%), mean turns 11.9
+    C-C seat1: 998/1000 (99.8%), mean turns 12.7
+    D-D seat0: 1000/1000 (100.0%), mean turns 14.4
+    D-D seat1: 999/1000 (99.9%), mean turns 15.0
+    E-E seat0: 1000/1000 (100.0%), mean turns 15.8
+    E-E seat1: 1000/1000 (100.0%), mean turns 16.3
+  per-deck over pairing cells (heuristic's hands):
+    A: 4000/4000 (100.0%)
+    B: 3998/4000 (100.0%)
+    C: 3999/4000 (100.0%)
+    D: 4000/4000 (100.0%)
+    E: 3998/4000 (100.0%)
+  info/per-deck (majority in every deck's hands over pairings — deck-imbalance measure, NOT a gate; ADR-061): yes
+  gate/mirror (majority in every mirror, both seatings): PASS
+  (258.9s)
+

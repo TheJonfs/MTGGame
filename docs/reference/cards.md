@@ -87,7 +87,7 @@
 | Black Lotus | C | Artifact | {0} | 0 |  |  | — | 4 | prizeOnly | {T}, Sacrifice this artifact: Add three mana of any one color. |
 | Blood Crypt | C | Land — Swamp Mountain | — | 0 |  |  | 2 | 45 |  | ({T}: Add {B} or {R}.) As this land enters, you may pay 2 life. If you don't, it enters tapped. |
 | Breeding Pool | C | Land — Forest Island | — | 0 |  |  | 2 | 45 |  | ({T}: Add {G} or {U}.) As this land enters, you may pay 2 life. If you don't, it enters tapped. |
-| Burnfallow | C | Legendary Land | — | 0 |  |  | — | 4 | prizeOnly, custom | {T}: Add {R} or {G}. {2}{G}{R}, {T}: Search your library for a basic land card, put it onto the battlefield tapped, then shuffle. Burnfallow deals 1 damage to any target. |
+| Burnfallow | C | Legendary Land | — | 0 |  |  | — | 4 | prizeOnly, custom | {T}: Add {R} or {G}. {1}{G}{R}, {T}, Sacrifice another land: Search your library for up to two basic land cards, put them onto the battlefield tapped, then shuffle. |
 | Cairnbrand | C | Legendary Land | — | 0 |  |  | — | 4 | prizeOnly, custom | {T}: Add {B} or {R}. {4}{B}{R}, {T}, Sacrifice a creature: Return target creature card from your graveyard to the battlefield. |
 | Evolving Wilds | C | Land | — | 0 |  |  | 1 | 12 |  | {T}, Sacrifice this land: Search your library for a basic land card, put it onto the battlefield tapped, then shuffle. |
 | Forest | C | Basic Land — Forest | — | 0 |  |  | 1 | free |  | ({T}: Add {G}.) |
@@ -104,7 +104,7 @@
 | Mox Pearl | C | Artifact | {0} | 0 |  |  | — | 4 | prizeOnly | {T}: Add {W}. |
 | Mox Ruby | C | Artifact | {0} | 0 |  |  | — | 4 | prizeOnly | {T}: Add {R}. |
 | Mox Sapphire | C | Artifact | {0} | 0 |  |  | — | 4 | prizeOnly | {T}: Add {U}. |
-| Nightbower | C | Legendary Land | — | 0 |  |  | — | 4 | prizeOnly, custom | {T}: Add {B} or {G}. {X}{1}{B}{G}, {T}: Destroy target nonland permanent with mana value X or less. |
+| Nightbower | C | Legendary Land | — | 0 |  |  | — | 4 | prizeOnly, custom | {T}: Add {B} or {G}. {X}{B}{G}, {T}: Destroy target nonland permanent with mana value X or less. |
 | Obsidian Observatory | C | Legendary Land | — | 0 |  |  | — | 4 | prizeOnly, custom | {T}: Add {W} or {B}. {2}{W}{B}, {T}: Creatures you control gain vigilance and menace until end of turn. |
 | Overgrown Tomb | C | Land — Swamp Forest | — | 0 |  |  | 2 | 45 |  | ({T}: Add {B} or {G}.) As this land enters, you may pay 2 life. If you don't, it enters tapped. |
 | Plains | C | Basic Land — Plains | — | 0 |  |  | 1 | free |  | ({T}: Add {W}.) |

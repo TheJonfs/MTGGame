@@ -13,10 +13,10 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const studyDef = (id: string): CardDef => { const d = JSON.parse(readFileSync(join(ROOT, `data/cards-study/${id}.json`), "utf8")) as CardDef; const v = validateCard(d); if (v.errors.length) throw new Error(v.errors.join("; ")); return d; };
 const RULES = { startingLife: 20, handSize: 7, mulligan: "london" as const, maxTurns: 100 };
 
-/** The pool plus the study defs (Burnfallow (b) — data/cards-study, never in the pool). */
+/** The pool plus the study defs (Burnfallow (a) — data/cards-study, never in the pool). */
 function cardsWithStudy(): Map<string, CardDef> {
   const cards = new Map(loadCardPool(join(ROOT, "data/cards")).cards);
-  cards.set("burnfallow_sac", studyDef("burnfallow_sac"));
+  cards.set("burnfallow_ping", studyDef("burnfallow_ping"));
   return cards;
 }
 
@@ -28,7 +28,7 @@ const SEATS: Record<string, [string, string][]> = {
   nightbower: [["open", "reaperclio"], ["open", "sweep"], ["jund", "bfh"], ["sultai", "massocrafts"]],
   ranksmere: [["open", "depths"], ["open", "countersnake"], ["bant", "skies"], ["peasant", "skies"]],
   burnfallow: [["open", "emeraldsnakes"], ["naya", "stompy"], ["open", "wurmspeaker"], ["open", "reaperclio"]],
-  burnfallow_sac: [["open", "emeraldsnakes"], ["naya", "stompy"], ["open", "wurmspeaker"], ["open", "reaperclio"]],
+  burnfallow_ping: [["open", "emeraldsnakes"], ["naya", "stompy"], ["open", "wurmspeaker"], ["open", "reaperclio"]],
 };
 const deckOf = (f: string, k: string) => { const l = FORMAT_FIELD[f]?.[k]; if (!l) throw new Error(`no list ${f}:${k}`); return l; };
 

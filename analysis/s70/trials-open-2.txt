@@ -1,0 +1,48 @@
+# S70 Part 1, the Open stage, second run — book 152 (groundtiming) in; Chris's nominals: Nightbower {X}{B}{G}, Burnfallow card (b). Fresh baselines (the rule times the Fordkeeper's land pings too).
+# Hearthspire: 2 at {2}{R}{W} / 3 at {3}{R}{W}; the untyped-dual control
+s70c_muster|muster||--extra-cards data/cards-study
+s70d_hs_muster|muster|muster:plateau:1:hearthspire|--extra-cards data/cards-study|s70c_muster
+s70d_hs3_muster|muster|muster:plateau:1:hearthspire~acost={3}{R}{W}~n=3|--extra-cards data/cards-study|s70c_muster
+s70c_marducontrol|marducontrol||--extra-cards data/cards-study
+s70d_hs_marducontrol|marducontrol|marducontrol:plateau:1:hearthspire|--extra-cards data/cards-study|s70c_marducontrol
+s70d_hs3_marducontrol|marducontrol|marducontrol:plateau:1:hearthspire~acost={3}{R}{W}~n=3|--extra-cards data/cards-study|s70c_marducontrol
+s70c_tollgate|tollgate||--extra-cards data/cards-study
+s70d_hs_tollgate|tollgate|tollgate:plateau:1:hearthspire|--extra-cards data/cards-study|s70c_tollgate
+s70d_hs3_tollgate|tollgate|tollgate:plateau:1:hearthspire~acost={3}{R}{W}~n=3|--extra-cards data/cards-study|s70c_tollgate
+s70d_hsx_muster|muster|muster:plateau:1:hearthspire~acost={20}|--extra-cards data/cards-study|s70c_muster
+# Volmaw: 6 / 4 at {2}{U}{B}; 8 at {3}{U}{B}
+s70c_writ|writ||--extra-cards data/cards-study
+s70d_vm_writ|writ|writ:underground_sea:1:volmaw|--extra-cards data/cards-study|s70c_writ
+s70d_vm4_writ|writ|writ:underground_sea:1:volmaw~n=4|--extra-cards data/cards-study|s70c_writ
+s70d_vm8_writ|writ|writ:underground_sea:1:volmaw~acost={3}{U}{B}~n=8|--extra-cards data/cards-study|s70c_writ
+s70c_depths|depths||--extra-cards data/cards-study
+s70d_vm_depths|depths|depths:underground_sea:1:volmaw|--extra-cards data/cards-study|s70c_depths
+s70d_vm4_depths|depths|depths:underground_sea:1:volmaw~n=4|--extra-cards data/cards-study|s70c_depths
+s70d_vm8_depths|depths|depths:underground_sea:1:volmaw~acost={3}{U}{B}~n=8|--extra-cards data/cards-study|s70c_depths
+# Nightbower: {X}{B}{G} (nominal) / {X}{1}{B}{G}
+s70c_reaperclio|reaperclio||--extra-cards data/cards-study
+s70d_nb_reaperclio|reaperclio|reaperclio:bayou:1:nightbower|--extra-cards data/cards-study|s70c_reaperclio
+s70d_nb1_reaperclio|reaperclio|reaperclio:bayou:1:nightbower~acost={X}{1}{B}{G}|--extra-cards data/cards-study|s70c_reaperclio
+s70c_sweep|sweep||--extra-cards data/cards-study
+s70d_nb_sweep|sweep|sweep:bayou:1:nightbower|--extra-cards data/cards-study|s70c_sweep
+s70d_nb1_sweep|sweep|sweep:bayou:1:nightbower~acost={X}{1}{B}{G}|--extra-cards data/cards-study|s70c_sweep
+# Ranksmere: one at {1}{W}{U} / two at {2}{W}{U} (for an Underground Sea)
+s70c_countersnake|countersnake||--extra-cards data/cards-study
+s70d_rm_countersnake|countersnake|countersnake:underground_sea:1:ranksmere|--extra-cards data/cards-study|s70c_countersnake
+s70d_rm2_countersnake|countersnake|countersnake:underground_sea:1:ranksmere~acost={2}{W}{U}~n=2|--extra-cards data/cards-study|s70c_countersnake
+# Burnfallow: (b) the nominal at {1}{G}{R} / {2}{G}{R}; (a) burnfallow_ping at ping 1 / 2; the untyped-dual control
+s70c_emeraldsnakes|emeraldsnakes||--extra-cards data/cards-study
+s70d_bf_emeraldsnakes|emeraldsnakes|emeraldsnakes:taiga:1:burnfallow|--extra-cards data/cards-study|s70c_emeraldsnakes
+s70d_bf2_emeraldsnakes|emeraldsnakes|emeraldsnakes:taiga:1:burnfallow~acost={2}{G}{R}|--extra-cards data/cards-study|s70c_emeraldsnakes
+s70d_bfa_emeraldsnakes|emeraldsnakes|emeraldsnakes:taiga:1:burnfallow_ping|--extra-cards data/cards-study|s70c_emeraldsnakes
+s70d_bfa2_emeraldsnakes|emeraldsnakes|emeraldsnakes:taiga:1:burnfallow_ping~ping=2|--extra-cards data/cards-study|s70c_emeraldsnakes
+s70c_wurmspeaker|wurmspeaker||--extra-cards data/cards-study
+s70d_bf_wurmspeaker|wurmspeaker|wurmspeaker:forest:1:burnfallow|--extra-cards data/cards-study|s70c_wurmspeaker
+s70d_bf2_wurmspeaker|wurmspeaker|wurmspeaker:forest:1:burnfallow~acost={2}{G}{R}|--extra-cards data/cards-study|s70c_wurmspeaker
+s70d_bfa_wurmspeaker|wurmspeaker|wurmspeaker:forest:1:burnfallow_ping|--extra-cards data/cards-study|s70c_wurmspeaker
+s70d_bfa2_wurmspeaker|wurmspeaker|wurmspeaker:forest:1:burnfallow_ping~ping=2|--extra-cards data/cards-study|s70c_wurmspeaker
+s70d_bf_tollgate|tollgate|tollgate:taiga:1:burnfallow|--extra-cards data/cards-study|s70c_tollgate
+s70d_bf2_tollgate|tollgate|tollgate:taiga:1:burnfallow~acost={2}{G}{R}|--extra-cards data/cards-study|s70c_tollgate
+s70d_bfa_tollgate|tollgate|tollgate:taiga:1:burnfallow_ping|--extra-cards data/cards-study|s70c_tollgate
+s70d_bfa2_tollgate|tollgate|tollgate:taiga:1:burnfallow_ping~ping=2|--extra-cards data/cards-study|s70c_tollgate
+s70d_bfx_emeraldsnakes|emeraldsnakes|emeraldsnakes:taiga:1:burnfallow~acost={20}|--extra-cards data/cards-study|s70c_emeraldsnakes

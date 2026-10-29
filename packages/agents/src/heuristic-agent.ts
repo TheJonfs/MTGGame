@@ -239,7 +239,7 @@ export class HeuristicAgent implements Agent {
     // coin-flipping a 0.25-point gap at apprentice's 1.2).
     // (Post-S69, book 151: not a noncreature permanent with an ability that does not read X — the Massacre at X=0 is
     // its drain engine, cast without the sweep.)
-    if ((action as { x?: number }).x === 0 && this.hasXCost(view, action) && !this.xFreePermanent(view, action)) return -Infinity;
+    if ((action as { x?: number }).x === 0 && this.hasXCost(view, action) && !this.xFreePermanent(view, action) && !this.xCeilingTarget(view, action)) return -Infinity;
     // S15 v1: a choice-bearing mana ability (Lotus) is never activated
     // proactively — the view-sim can't price floating mana, and popping the
     // Lotus for nothing is the classic blunder. (Lotus is prize-only; a human
@@ -2970,6 +2970,64 @@ export class HeuristicAgent implements Agent {
     }
     return n;
   }
+  /** S70 (book 152, `off: ["groundtiming"]` — the still-pair High Grounds: Burnfallow fired in its own upkeep 98 times in 114,
+   * the turn's mana spent before its main phase; Hearthspire and Nightbower the same at a creature): a land's ability
+   * that kills, destroys, searches, copies or mills waits for the opponent's end step — the mana untaps at once — unless
+   * what it kills must die sooner: a creature attacking or blocking now, or, before our attack, an untapped creature
+   * that could block a creature of ours ready to swing (Chris, 2026-10-29). Damage at a player keeps the S40 rule (a
+   * lethal shot at any time). Burnfallow (b)'s sacrifice: never with no basic left to find, never a land's last colour.
+   * true = refuse, false = allow, null = the S40 rules decide. */
+  groundTimingGated(view: GameView, ab: { cost: { sacrifice?: { predicate: string } }; effects: readonly Effect[] }, action: Action, objT: GameView["battlefield"][number] | undefined): boolean | null {
+    const me = view.you, opp = (1 - me) as 0 | 1;
+    const kinds = new Set(ab.effects.map((e) => e.type));
+    if (![...kinds].some((k) => k === "damage" || k === "destroy" || k === "searchLibrary" || k === "copyToken" || k === "mill")) return null;
+    const theirEnd = view.activePlayer !== me && view.step === "END";
+    const preCombat = view.activePlayer === me && (view.step === "MAIN1" || view.step === "COMBAT_BEGIN");
+    const targets = (action as { targets?: ResolvedTarget[] }).targets ?? [];
+    if (kinds.has("damage") && !kinds.has("searchLibrary") && targets[0]?.kind === "player") return null;
+    if (ab.cost.sacrifice?.predicate === "otherLand") {
+      if (this.basicsLeft(view) < 1) return true;
+      if (!this.spareLandToSacrifice(view, action.type === "activateAbility" ? action.objectId : "")) return true;
+    }
+    const removal = (kinds.has("destroy") || (kinds.has("damage") && !kinds.has("searchLibrary"))) && !!objT && objT.controller === opp;
+    if (removal && objT!.power !== null) {
+      if (theirEnd) return null;
+      if (view.combat.attackers.includes(objT!.id) || view.combat.blocks.some((b) => b.blocker === objT!.id)) return null;
+      const ready = view.battlefield.some((o) => o.controller === me && o.power !== null && (o.power ?? 0) > 0 && this.canActNow(o) && !o.cantAttack && !o.tapped);
+      if (preCombat && view.stack.length === 0 && !objT!.tapped && ready) return null;
+      return true;
+    }
+    return theirEnd ? null : true;
+  }
+  /** S70: the basic lands still in our library, by the decklist less those seen (hand, battlefield we own, graveyard). */
+  basicsLeft(view: GameView): number {
+    const isBasic = (id: string) => !!this.def(id)?.supertypes?.includes("Basic") && !!this.def(id)?.types.includes("Land");
+    const deck = (this.profile as { decklist?: { cardId: string; count: number }[] }).decklist;
+    if (!deck) return 99;
+    const total = deck.reduce((n, e) => n + (isBasic(e.cardId) ? e.count : 0), 0);
+    const seen = view.hand.filter((c) => isBasic(c.cardId)).length + view.battlefield.filter((o) => o.controller === view.you && isBasic(o.cardId)).length + view.graveyardObjects[view.you].filter((g) => isBasic(g.cardId)).length;
+    return Math.max(0, total - seen);
+  }
+  /** S70: the land a land-for-basics sacrifice gives up — a basic whose colour we hold most of, then a plain dual; never
+   * the source, a land with an ability beyond mana (a High Ground, the Library), or the last land of a colour. */
+  spareLandToSacrifice(view: GameView, sourceId: string): string | undefined {
+    const me = view.you;
+    const lands = view.battlefield.filter((o) => o.controller === me && o.id !== sourceId && this.def(o.cardId)?.types.includes("Land"));
+    const colours = (id: string) => [...new Set((this.def(id)?.abilities ?? []).flatMap((a) => (a.kind === "activated" ? a.effects : [])).flatMap((e) => (e.type === "addMana" && e.mana ? (e.mana.match(/[WUBRG]/g) ?? []) : [])))];
+    const plain = (id: string) => (this.def(id)?.abilities ?? []).every((a) => a.kind !== "activated" || a.effects.every((e) => e.type === "addMana"));
+    const count: Record<string, number> = {};
+    for (const o of lands) for (const c of colours(o.cardId)) count[c] = (count[c] ?? 0) + 1;
+    const ok = lands.filter((o) => plain(o.cardId) && colours(o.cardId).every((c) => (count[c] ?? 0) >= 2));
+    const basic = (id: string) => !!this.def(id)?.supertypes?.includes("Basic");
+    const score = (o: (typeof lands)[number]) => (basic(o.cardId) ? 100 : 0) + Math.min(...colours(o.cardId).map((c) => count[c] ?? 0), 99);
+    return [...ok].sort((a, b) => score(b) - score(a))[0]?.id;
+  }
+  /** S70 (R-119, Nightbower): an activation whose target's mana-value ceiling is X — X=0 takes a token or a Mox. */
+  xCeilingTarget(view: GameView, action: Action): boolean {
+    if (action.type !== "activateAbility") return false;
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+    return !!ab && ab.kind === "activated" && (ab.targets ?? []).some((t) => t.manaValueAtMostX);
+  }
   /** Post-S69 (book 151): a cast of a noncreature permanent with an ability that does not read the announced X. */
   xFreePermanent(view: GameView, action: Action): boolean {
     if (action.type !== "castSpell") return false;
@@ -3106,6 +3164,12 @@ export class HeuristicAgent implements Agent {
     }
     const candidates = request.actions.filter((a) => a.type === "sacrifice") as { type: string; objectId: string }[];
     if (candidates.length === 0) return request.actions[0]!;
+    // S70 (Burnfallow (b)): a land given up for basics is the spare one (groundTimingGated's pick).
+    if (!this.profile.off?.includes("groundtiming") && (request.source?.effects ?? []).some((e) => e.type === "searchLibrary" && e.predicate === "basicLand")) {
+      const spare = this.spareLandToSacrifice(view, view.battlefield.find((o) => o.controller === view.you && o.cardId === request.source?.cardId)?.id ?? "");
+      const act = spare ? candidates.find((a) => a.objectId === spare) : undefined;
+      if (act) return act as Action;
+    }
     // S31 (R-094 word 1 — the edict, book 46): when an opponent's annihilator (or an Edict) makes US
     // choose, tokens go first and lands go LAST (the brief's rule); the rest by board value.
     const edict = (request.source?.effects ?? []).some((e) => e.type === "sacrifice" && "who" in e);
@@ -3290,6 +3354,7 @@ export class HeuristicAgent implements Agent {
     // S68 (Part 2): a creature's repeatable ping at an opposing creature plans its kill (the Tyrant)
     if (!onLand && e0.type === "damage") { const g = this.pingPlanGated(view, ab, objT); if (g !== null) return g; }
     if (!onLand && e0.type !== "modifyPT" && e0.type !== "mill" && e0.type !== "addCounters") return false;
+    if (onLand && !this.profile.off?.includes("groundtiming")) { const g = this.groundTimingGated(view, ab, action, objT); if (g !== null) return g; }
     switch (e0.type) {
       case "draw":
         return !theirEnd;

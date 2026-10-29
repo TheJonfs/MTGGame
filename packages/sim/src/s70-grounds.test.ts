@@ -10,7 +10,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 /** A study def (data/cards-study — never in the pool), validated as the loader would. */
 const studyDef = (id: string): CardDef => { const d = JSON.parse(readFileSync(join(ROOT, `data/cards-study/${id}.json`), "utf8")) as CardDef; const v = validateCard(d); if (v.errors.length) throw new Error(v.errors.join("; ")); return d; };
 const cards = new Map(loadCardPool(join(ROOT, "data/cards")).cards);
-cards.set("burnfallow_sac", studyDef("burnfallow_sac"));
+cards.set("burnfallow_ping", studyDef("burnfallow_ping"));
 const perm = (player: 0 | 1, cardId: string): Modifier => ({ type: "permanentOnBattlefield", player, cardId });
 const D = (ids: Record<string, number>) => Object.entries(ids).map(([cardId, count]) => ({ cardId, count }));
 const pass = (r: ActionRequest) => r.actions.find((a) => a.type === "pass") ?? r.actions[0]!;
@@ -60,7 +60,7 @@ describe("S70 — the still-pair High Grounds", () => {
     expect(f.players[1]!.library).toHaveLength(60 - 7 - 6);
   });
 
-  it("Nightbower: the ceiling is the X announced — the Bears (mana value 2) are a target at X=2 and not at X=1; a land never is", async () => {
+  it("Nightbower ({X}{B}{G}): the ceiling is the X announced — the Bears (mana value 2) are a target at X=2 and not at X=1; a land never is", async () => {
     const mods = [...["swamp", "swamp", "forest", "forest", "forest"].map((c) => perm(0, c)), perm(0, "nightbower"), perm(1, "grizzly_bears"), perm(1, "forest")];
     const seen: ActionRequest[] = [];
     let offered: { x: number | undefined; bears: boolean; land: boolean }[] = [];
@@ -71,7 +71,7 @@ describe("S70 — the still-pair High Grounds", () => {
     expect(offered.some((o) => o.x === 1 && o.bears)).toBe(false);
     expect(offered.some((o) => o.x === 2 && o.bears)).toBe(true);
     expect(offered.some((o) => o.land)).toBe(false);
-    expect(Math.max(...offered.map((o) => o.x ?? 0))).toBe(2); // five lands: {1}{B}{G} and X up to 2
+    expect(Math.max(...offered.map((o) => o.x ?? 0))).toBe(3); // five lands: {B}{G} and X up to 3
     expect(names(f, f.players[1]!.graveyard)).toContain("grizzly_bears");
   });
 
@@ -88,24 +88,24 @@ describe("S70 — the still-pair High Grounds", () => {
     expect(bearsOffered).toBe(false);
   });
 
-  it("Burnfallow: {2}{G}{R}, {T}: a basic onto the battlefield tapped, then 1 damage to any target", async () => {
-    const mods = [...["mountain", "mountain", "forest", "forest"].map((c) => perm(0, c)), perm(0, "burnfallow")];
-    const f = fin(await runMatch(spec(mods, { mountain: 60 }), cards, [actor([(v, r) => r.actions.find((a) => a.type === "activateAbility" && a.objectId === groundId(v, "burnfallow") && a.abilityIndex === 2 && a.targets.some((t) => t.kind === "player" && t.player === 1))]), passer]));
+  it("Burnfallow (a), the study card: {2}{G}{R}, {T}: a basic onto the battlefield tapped, then 1 damage to any target", async () => {
+    const mods = [...["mountain", "mountain", "forest", "forest"].map((c) => perm(0, c)), perm(0, "burnfallow_ping")];
+    const f = fin(await runMatch(spec(mods, { mountain: 60 }), cards, [actor([(v, r) => r.actions.find((a) => a.type === "activateAbility" && a.objectId === groundId(v, "burnfallow_ping") && a.abilityIndex === 2 && a.targets.some((t) => t.kind === "player" && t.player === 1))]), passer]));
     const mountains = f.battlefield.filter((id) => f.objects[id]!.cardId === "mountain" && f.objects[id]!.controller === 0);
     expect(mountains).toHaveLength(3);
     expect(f.players[1]!.life).toBe(19);
   });
 
-  it("Burnfallow (b): {1}{G}{R}, {T}, sacrifice ANOTHER land: two basics onto the battlefield tapped — never itself as the cost", async () => {
-    const mods = [...["mountain", "forest", "forest"].map((c) => perm(0, c)), perm(0, "burnfallow_sac")];
+  it("Burnfallow (the nominal, card (b)): {1}{G}{R}, {T}, sacrifice ANOTHER land: two basics onto the battlefield tapped — never itself as the cost", async () => {
+    const mods = [...["mountain", "forest", "forest"].map((c) => perm(0, c)), perm(0, "burnfallow")];
     const seen: ActionRequest[] = [];
     let ground: string | undefined;
-    const f = fin(await runMatch(spec(mods, { mountain: 60 }), cards, [actor([(v, r) => { ground = groundId(v, "burnfallow_sac"); return r.actions.find((a) => a.type === "activateAbility" && a.objectId === ground && a.abilityIndex === 2); }], seen), passer]));
+    const f = fin(await runMatch(spec(mods, { mountain: 60 }), cards, [actor([(v, r) => { ground = groundId(v, "burnfallow"); return r.actions.find((a) => a.type === "activateAbility" && a.objectId === ground && a.abilityIndex === 2); }], seen), passer]));
     const sac = seen.find((r) => r.purpose === "chooseSacrifice");
     expect(sac).toBeTruthy();
     expect(sac!.actions).toHaveLength(3); // the three other lands
     expect(sac!.actions.some((a) => a.type === "sacrifice" && a.objectId === ground)).toBe(false);
-    expect(f.battlefield.map((id) => f.objects[id]!.cardId)).toContain("burnfallow_sac");
+    expect(f.battlefield.map((id) => f.objects[id]!.cardId)).toContain("burnfallow");
     expect(f.battlefield.filter((id) => f.objects[id]!.cardId === "mountain" && f.objects[id]!.controller === 0).length + f.battlefield.filter((id) => f.objects[id]!.cardId === "forest").length).toBe(4); // three lands − one sacrificed + two found
     expect(f.players[0]!.graveyard).toHaveLength(1);
   });
