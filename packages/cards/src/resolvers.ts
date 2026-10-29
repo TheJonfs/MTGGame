@@ -72,6 +72,8 @@ export interface EffectContext {
   revealRandomIfNamed(onHit: Effect[]): Promise<void>;
   /** A10 (S22): `pt` sets the tokens' base P/T, locked at creation (Overload's Weird). */
   createToken(player: number, tokenId: string, count: number, pt?: { power: number; toughness: number }, tapped?: boolean): void;
+  /** S70 (R-118): a token copy of the battlefield token `objectId` under the effect's controller (CR 707.2; populate 701.36a). */
+  createTokenCopy(objectId: string, count: number): void;
   addCounters(objectId: string, kind: CounterKind, count: number): void;
   gainLife(player: number, amount: number): void;
   /** Destruction by effect (CR 701.7); honors indestructible. Death itself is still the SBA's call. */
@@ -285,6 +287,12 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
     const count = ctx.amount(e.count);
     const pt = e.pt ? { power: ctx.amount(e.pt), toughness: ctx.amount(e.pt) } : undefined;
     for (const p of ctx.players(e.who)) ctx.createToken(p, e.tokenId, count, pt, e.tapped === true);
+  },
+
+  copyToken: (e, ctx) => {
+    if (e.type !== "copyToken") throw new Error("resolver mismatch");
+    const t = ctx.target(e.target); // re-checked: a token gone or no longer ours fizzles the copy (CR 608.2b)
+    if (t?.kind === "object") ctx.createTokenCopy(t.id, e.count ?? 1);
   },
 
   addCounters: (e, ctx) => {

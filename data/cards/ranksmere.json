@@ -1,0 +1,64 @@
+{
+ "id": "ranksmere",
+ "name": "Ranksmere",
+ "source": "custom",
+ "manaCost": "",
+ "types": [
+  "Land"
+ ],
+ "supertypes": [
+  "Legendary"
+ ],
+ "text": "{T}: Add {W} or {U}.\n{1}{W}{U}, {T}: Create a token that's a copy of target creature token you control.",
+ "abilities": [
+  {
+   "kind": "activated",
+   "cost": {
+    "tap": true
+   },
+   "effects": [
+    {
+     "type": "addMana",
+     "mana": "{W}"
+    }
+   ]
+  },
+  {
+   "kind": "activated",
+   "cost": {
+    "tap": true
+   },
+   "effects": [
+    {
+     "type": "addMana",
+     "mana": "{U}"
+    }
+   ]
+  },
+  {
+   "kind": "activated",
+   "cost": {
+    "mana": "{1}{W}{U}",
+    "tap": true
+   },
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "creatureTokenYouControl",
+     "zone": "battlefield"
+    }
+   ],
+   "effects": [
+    {
+     "type": "copyToken",
+     "target": 0
+    }
+   ]
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/ranksmere.png",
+  "fallback": "rendered"
+ },
+ "prizeOnly": true
+}

@@ -502,6 +502,14 @@ function sharedOps(ctx: EngineCtx, asController: PlayerId, requester?: EffectReq
       }
     },
 
+    // S70 (R-118, Ranksmere): a token copy — the original's def and the base P/T its creating effect locked (the
+    // copiable values, CR 707.2 / 111.3); no counters, damage, tapped status or continuous effects come with it.
+    createTokenCopy(objectId: string, count: number): void {
+      const src = ctx.state.objects[objectId];
+      if (!src || src.zone !== "battlefield" || !src.isToken) return;
+      for (let i = 0; i < count; i++) createObject(ctx, src.cardId, asController, "battlefield", { isToken: true, ...(src.basePT ? { basePT: { ...src.basePT } } : {}) });
+    },
+
     addCounters(objectId: string, kind: CounterKind, count: number): void {
       // S26: named kinds (Clio's depth) share the record with the P/T pair — inert to characteristics().
       const obj = ctx.state.objects[objectId];

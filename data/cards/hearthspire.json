@@ -1,0 +1,70 @@
+{
+ "id": "hearthspire",
+ "name": "Hearthspire",
+ "source": "custom",
+ "manaCost": "",
+ "types": [
+  "Land"
+ ],
+ "supertypes": [
+  "Legendary"
+ ],
+ "text": "{T}: Add {R} or {W}.\n{2}{R}{W}, {T}: Hearthspire deals 2 damage to any target. You gain 2 life.",
+ "abilities": [
+  {
+   "kind": "activated",
+   "cost": {
+    "tap": true
+   },
+   "effects": [
+    {
+     "type": "addMana",
+     "mana": "{R}"
+    }
+   ]
+  },
+  {
+   "kind": "activated",
+   "cost": {
+    "tap": true
+   },
+   "effects": [
+    {
+     "type": "addMana",
+     "mana": "{W}"
+    }
+   ]
+  },
+  {
+   "kind": "activated",
+   "cost": {
+    "mana": "{2}{R}{W}",
+    "tap": true
+   },
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "anyTarget",
+     "zone": "any"
+    }
+   ],
+   "effects": [
+    {
+     "type": "damage",
+     "amount": 2,
+     "target": 0
+    },
+    {
+     "type": "gainLife",
+     "amount": 2,
+     "who": "you"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/hearthspire.png",
+  "fallback": "rendered"
+ },
+ "prizeOnly": true
+}

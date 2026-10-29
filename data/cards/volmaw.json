@@ -1,0 +1,65 @@
+{
+ "id": "volmaw",
+ "name": "Volmaw",
+ "source": "custom",
+ "manaCost": "",
+ "types": [
+  "Land"
+ ],
+ "supertypes": [
+  "Legendary"
+ ],
+ "text": "{T}: Add {U} or {B}.\n{2}{U}{B}, {T}: Target player mills six cards.",
+ "abilities": [
+  {
+   "kind": "activated",
+   "cost": {
+    "tap": true
+   },
+   "effects": [
+    {
+     "type": "addMana",
+     "mana": "{U}"
+    }
+   ]
+  },
+  {
+   "kind": "activated",
+   "cost": {
+    "tap": true
+   },
+   "effects": [
+    {
+     "type": "addMana",
+     "mana": "{B}"
+    }
+   ]
+  },
+  {
+   "kind": "activated",
+   "cost": {
+    "mana": "{2}{U}{B}",
+    "tap": true
+   },
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "player",
+     "zone": "any"
+    }
+   ],
+   "effects": [
+    {
+     "type": "mill",
+     "count": 6,
+     "who": "target"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/volmaw.png",
+  "fallback": "rendered"
+ },
+ "prizeOnly": true
+}

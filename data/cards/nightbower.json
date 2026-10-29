@@ -1,0 +1,65 @@
+{
+ "id": "nightbower",
+ "name": "Nightbower",
+ "source": "custom",
+ "manaCost": "",
+ "types": [
+  "Land"
+ ],
+ "supertypes": [
+  "Legendary"
+ ],
+ "text": "{T}: Add {B} or {G}.\n{X}{1}{B}{G}, {T}: Destroy target nonland permanent with mana value X or less.",
+ "abilities": [
+  {
+   "kind": "activated",
+   "cost": {
+    "tap": true
+   },
+   "effects": [
+    {
+     "type": "addMana",
+     "mana": "{B}"
+    }
+   ]
+  },
+  {
+   "kind": "activated",
+   "cost": {
+    "tap": true
+   },
+   "effects": [
+    {
+     "type": "addMana",
+     "mana": "{G}"
+    }
+   ]
+  },
+  {
+   "kind": "activated",
+   "cost": {
+    "mana": "{X}{1}{B}{G}",
+    "tap": true
+   },
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "nonlandPermanent",
+     "zone": "battlefield",
+     "manaValueAtMostX": true
+    }
+   ],
+   "effects": [
+    {
+     "type": "destroy",
+     "target": 0
+    }
+   ]
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/nightbower.png",
+  "fallback": "rendered"
+ },
+ "prizeOnly": true
+}

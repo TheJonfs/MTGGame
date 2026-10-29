@@ -8,7 +8,7 @@ import { abilitiesOf } from "./granted.js";
 import type { EngineCtx } from "./ctx.js";
 import { canPay, producibleSymbols } from "./mana.js";
 import { getObject, type PlayerId } from "./state.js";
-import { targetCombinations } from "./targeting.js";
+import { specsReadX, specsWithX, targetCombinations } from "./targeting.js";
 
 /**
  * Legal-action enumerator (engine-design §11). Everything the engine accepts
@@ -83,7 +83,7 @@ export function legalActions(ctx: EngineCtx, player: PlayerId): Action[] {
       } else {
         // One action per affordable X (ADR-017). canPay is monotonic in x.
         for (let x = 0; canPay(ctx, player, cost, x); x++) {
-          for (const targets of combos) actions.push({ type: "castSpell", objectId, targets, x, ...modeField });
+          for (const targets of specsReadX(ms.targets) ? targetCombinations(ctx, specsWithX(ms.targets, x), player, objectId) : combos) actions.push({ type: "castSpell", objectId, targets, x, ...modeField });
         }
       }
     }
@@ -227,15 +227,18 @@ export function legalActions(ctx: EngineCtx, player: PlayerId): Action[] {
         ? ability.modes.map((m, i) => ({ mode: i, targets: m.targets ?? [] }))
         : [{ targets: ability.targets ?? [] }];
       for (const ms of modeSpecs) {
-        const combos = targetCombinations(ctx, ms.targets, player, id);
-        if (ms.targets.length > 0 && combos.length === 0) continue;
+        // S70 (Nightbower): a spec whose ceiling is X has its candidates read at each X below; with no X paid yet the
+        // widest X is not known, so the gate here is skipped for it.
+        const readsX = specsReadX(ms.targets);
+        const combos = targetCombinations(ctx, readsX ? [] : ms.targets, player, id);
+        if (ms.targets.length > 0 && !readsX && combos.length === 0) continue;
         const modeField = ms.mode !== undefined ? { mode: ms.mode } : {};
         if (!cost || cost.xCount === 0) {
           if (cost && !canPay(ctx, player, cost, 0, exclude)) continue;
           for (const targets of combos) actions.push({ type: "activateAbility", objectId: id, abilityIndex, targets, ...modeField });
         } else {
           for (let x = 0; canPay(ctx, player, cost, x, exclude); x++) {
-            for (const targets of combos) actions.push({ type: "activateAbility", objectId: id, abilityIndex, targets, x, ...modeField });
+            for (const targets of readsX ? targetCombinations(ctx, specsWithX(ms.targets, x), player, id) : combos) actions.push({ type: "activateAbility", objectId: id, abilityIndex, targets, x, ...modeField });
           }
         }
       }

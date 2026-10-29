@@ -74,10 +74,10 @@ describe("S59 — the Convocation's link to the journey (ADR-172)", () => {
     expect(applyOutbox(other, readOutbox(s), isCard).applied.map((e) => e.id)).toEqual(["42-p2-s1:prize"]);
   });
 
-  it("the fence (a): the packs' power slot is the fourteen, and none of them is keepable", () => {
+  it("the fence (a): the packs' power slot is the nineteen (S70: +5 grounds), and none of them is keepable", () => {
     const power = (JSON.parse(readFileSync(join(ROOT, "data/convocation/sets.json"), "utf8")) as { power: string[] }).power;
     expect([...POWER_SLOT].sort()).toEqual([...power].sort());
-    expect(power).toHaveLength(14);
+    expect(power).toHaveLength(19);
     for (const id of power) expect(keepable(id, power), id).toBe(false);
     expect(keepable("black_lotus", [])).toBe(false); // the world's own list, whatever the packs say
     expect(keepable("serra_angel", power)).toBe(true);

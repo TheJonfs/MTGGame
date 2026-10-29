@@ -1,0 +1,1 @@
+Study defs (S70): cards under test that are not in the pool — `loadCardPool` never reads this directory; `open:rr --extra-cards data/cards-study` adds them to a run's card map, where `--swap` can name them (and their `~` variants). Burnfallow (b) is the RG ground's second candidate (the brief's trade space); the ruling moves one into `data/cards/`.

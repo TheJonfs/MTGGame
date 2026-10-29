@@ -3,8 +3,8 @@ import { getObject, type PlayerId } from "./state.js";
 import { isCreature } from "./characteristics.js";
 
 /**
- * Sacrifice-as-cost (R-023). Predicates: "self", "creature", or
- * "creature.subtype:<Subtype>". Sacrifice is not destruction and not
+ * Sacrifice-as-cost (R-023). Predicates: "self", "creature", "creature.subtype:<Subtype>", "land",
+ * "land.subtype:<Subtype>", or "otherLand" (S70). Sacrifice is not destruction and not
  * targeting — indestructible and shroud don't protect (CR 701.17c).
  */
 export function matchesSacrificePredicate(
@@ -21,6 +21,8 @@ export function matchesSacrificePredicate(
   if (!obj || obj.zone !== "battlefield") return false;
   // S40 (the Dredger): "sacrifice a land" — the Lumberjack's word without the subtype.
   if (predicate === "land") return ctx.defs.def(obj.cardId).types.includes("Land");
+  // S70 (Burnfallow b): "sacrifice another land" — never the ability's own source.
+  if (predicate === "otherLand") return objectId !== sourceId && ctx.defs.def(obj.cardId).types.includes("Land");
   if (!predicate.startsWith("creature")) return false;
   if (!isCreature(ctx, objectId)) return false;
   const sub = predicate.match(/^creature\.subtype:(.+)$/);

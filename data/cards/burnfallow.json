@@ -1,0 +1,71 @@
+{
+ "id": "burnfallow",
+ "name": "Burnfallow",
+ "source": "custom",
+ "manaCost": "",
+ "types": [
+  "Land"
+ ],
+ "supertypes": [
+  "Legendary"
+ ],
+ "text": "{T}: Add {R} or {G}.\n{2}{G}{R}, {T}: Search your library for a basic land card, put it onto the battlefield tapped, then shuffle. Burnfallow deals 1 damage to any target.",
+ "abilities": [
+  {
+   "kind": "activated",
+   "cost": {
+    "tap": true
+   },
+   "effects": [
+    {
+     "type": "addMana",
+     "mana": "{R}"
+    }
+   ]
+  },
+  {
+   "kind": "activated",
+   "cost": {
+    "tap": true
+   },
+   "effects": [
+    {
+     "type": "addMana",
+     "mana": "{G}"
+    }
+   ]
+  },
+  {
+   "kind": "activated",
+   "cost": {
+    "mana": "{2}{G}{R}",
+    "tap": true
+   },
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "anyTarget",
+     "zone": "any"
+    }
+   ],
+   "effects": [
+    {
+     "type": "searchLibrary",
+     "predicate": "basicLand",
+     "to": "battlefield",
+     "entersTapped": true
+    },
+    {
+     "type": "damage",
+     "amount": 1,
+     "target": 0
+    }
+   ]
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/burnfallow.png",
+  "fallback": "rendered"
+ },
+ "prizeOnly": true
+}

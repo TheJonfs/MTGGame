@@ -29,8 +29,9 @@ export interface LimitedFormat {
 }
 export type Format = ConstructedFormat | LimitedFormat;
 
-/** The five High Grounds — legendary lands, restricted for consistency (formats doc §1.1). */
-export const HIGH_GROUNDS = ["tallyflame_court", "wrackroot", "shevelport", "obsidian_observatory", "cairnbrand"] as const;
+/** The High Grounds — legendary lands, restricted for consistency (formats doc §1.1). S70 (ADR-192): the still pairs'
+ * five join the flowing pairs' five — the restricted list's first growth. */
+export const HIGH_GROUNDS = ["tallyflame_court", "wrackroot", "shevelport", "obsidian_observatory", "cairnbrand", "hearthspire", "volmaw", "nightbower", "ranksmere", "burnfallow"] as const;
 /** The five laws — not player cards until phase three; banned in every Convocation format. */
 export const LAW_IDS = ["law_intake", "law_tithe", "law_toll", "law_risen_tide", "law_season"] as const;
 

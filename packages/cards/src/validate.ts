@@ -222,6 +222,7 @@ function validateTargetSpec(t: unknown, err: (m: string) => void): void {
   // A10/ADR-038: whose graveyard; A10: the power ceiling (Graceful Restoration).
   if (t.who !== undefined && t.who !== "you" && t.who !== "any") err(`target who must be "you" | "any" (ADR-038 amendment)`);
   if (t.powerAtMost !== undefined && (!Number.isInteger(t.powerAtMost) || (t.powerAtMost as number) < 0)) err(`target powerAtMost must be a non-negative integer (A10)`);
+  if (t.manaValueAtMostX !== undefined && t.manaValueAtMostX !== true) err(`target manaValueAtMostX must be true (S70)`);
   if (t.manaValueAtMost !== undefined && (!Number.isInteger(t.manaValueAtMost) || (t.manaValueAtMost as number) < 0)) err(`target manaValueAtMost must be a non-negative integer (S28)`);
   if (!(TARGET_PREDICATES as readonly string[]).includes(t.predicate as string)) {
     err(`unknown target predicate "${t.predicate}"`);
@@ -385,9 +386,9 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
         }
         if (a.cost.sacrifice !== undefined) {
           const pred = isRecord(a.cost.sacrifice) ? a.cost.sacrifice.predicate : undefined;
-          // S28 (ADR-098, Orcish Lumberjack): "land.subtype:<Subtype>" — sacrifice a typed land.
-          if (typeof pred !== "string" || !/^(self|creature(\.subtype:[A-Za-z]+)?|land(\.subtype:[A-Za-z]+)?)$/.test(pred)) {
-            err(`sacrifice predicate must be "self", "creature", "creature.subtype:<Subtype>", "land", or "land.subtype:<Subtype>"`);
+          // S28 (ADR-098, Orcish Lumberjack): "land.subtype:<Subtype>" — sacrifice a typed land. S70: "otherLand" (Burnfallow b).
+          if (typeof pred !== "string" || !/^(self|otherLand|creature(\.subtype:[A-Za-z]+)?|land(\.subtype:[A-Za-z]+)?)$/.test(pred)) {
+            err(`sacrifice predicate must be "self", "creature", "creature.subtype:<Subtype>", "land", "land.subtype:<Subtype>", or "otherLand"`);
           }
         }
         // ADR-076 / A5 cost words.
@@ -589,6 +590,10 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     if (e.what !== "attack" && e.what !== "block" && e.what !== "both") err(`restrict "what" must be attack|block|both`);
     needTargetOrScope(e, err);
     needDuration(e, err);
+  },
+  copyToken: (e, err) => {
+    if (!Number.isInteger(e.target)) err(`copyToken needs "target" (S70)`);
+    if (e.count !== undefined && (!Number.isInteger(e.count) || (e.count as number) < 1)) err(`copyToken count must be a positive integer (S70)`);
   },
   createToken: (e, err) => {
     if (typeof e.tokenId !== "string") err(`createToken missing tokenId`);

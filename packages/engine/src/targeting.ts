@@ -32,6 +32,18 @@ export function isLegalAttachment(ctx: EngineCtx, spec: TargetSpec, objectId: st
 /** Is `target` legal for `spec` right now, targeted by `by`? Used at cast and re-checked at resolution (CR 608.2b).
  * ADR-076 (S17): the base predicate is composed with filters — `anyOf` (or), `withKeyword`/`withoutKeyword`,
  * `notSubtype`, and `other` (never the ability's own `sourceId`). */
+/** S70 (R-119, Nightbower): the specs with an X-bound mana-value ceiling resolved at the announced X (CR 601.2b–c: X is
+ * announced before targets are chosen). Specs without one are returned as they are. */
+export function specsWithX(specs: readonly TargetSpec[], x: number): TargetSpec[] {
+  const at = (s: TargetSpec): TargetSpec => {
+    if (!s.manaValueAtMostX && !s.anyOf) return s;
+    const { manaValueAtMostX, ...rest } = s;
+    return { ...rest, ...(manaValueAtMostX ? { manaValueAtMost: x } : {}), ...(s.anyOf ? { anyOf: s.anyOf.map(at) } : {}) };
+  };
+  return specs.map(at);
+}
+export const specsReadX = (specs: readonly TargetSpec[]): boolean => specs.some((s) => !!s.manaValueAtMostX || (s.anyOf ?? []).some((a) => !!a.manaValueAtMostX));
+
 export function isLegalTarget(ctx: EngineCtx, spec: TargetSpec, target: ResolvedTarget, by: PlayerId, sourceId?: string): boolean {
   if (spec.anyOf && spec.anyOf.length > 0) {
     if (!spec.anyOf.some((alt) => isLegalTarget(ctx, alt, target, by, sourceId))) return false;
@@ -93,6 +105,10 @@ function basePredicate(ctx: EngineCtx, spec0: TargetSpec, target: ResolvedTarget
     case "creatureYouControl": {
       if (!isLegalTarget(ctx, { ...spec, predicate: "creature" }, target, by)) return false;
       return target.kind === "object" && state.objects[target.id]!.controller === by;
+    }
+    case "creatureTokenYouControl": { // S70 (R-118, Ranksmere)
+      if (!isLegalTarget(ctx, { ...spec, predicate: "creatureYouControl" }, target, by)) return false;
+      return target.kind === "object" && state.objects[target.id]!.isToken === true;
     }
     case "creatureYouDontControl": {
       if (!isLegalTarget(ctx, { ...spec, predicate: "creature" }, target, by)) return false;

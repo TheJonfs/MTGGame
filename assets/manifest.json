@@ -510,6 +510,36 @@
         }
       }
     },
+    "card-burnfallow-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:cae76ce435b5a3def6cfe65be15d47b75b87f329ea14d719f9bd817188dd1a49",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:cae76ce435b5a3def6cfe65be15d47b75b87f329ea14d719f9bd817188dd1a49",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-burnfallow-2/canonical.png",
+          "rendered_at": "2026-10-29T11:52:56+00:00",
+          "thumb": "assets/thumbs/card-burnfallow-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-burnfallow-r2-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:70c87a7049b6a78f757aac65aed0aef733c5e6b950f03fbf8b8391fdd1bb5c93",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:70c87a7049b6a78f757aac65aed0aef733c5e6b950f03fbf8b8391fdd1bb5c93",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-burnfallow-r2-1/canonical.png",
+          "rendered_at": "2026-10-29T11:59:40+00:00",
+          "thumb": "assets/thumbs/card-burnfallow-r2-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "card-cairnbrand-1": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:8db5d1ed8abd4b42a1e8655526ad46cdc6782b15565328bea59589f6229fee7a",
@@ -1133,6 +1163,36 @@
           "path": "assets/images/card-gallows-djinn-r2-4/canonical.png",
           "rendered_at": "2026-08-28T03:15:12+00:00",
           "thumb": "assets/thumbs/card-gallows-djinn-r2-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-hearthspire-r3-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:0f3da2b287b3ecfadaa2e496be9c625835bf96d7b34914e22e537a0f14797a6f",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:0f3da2b287b3ecfadaa2e496be9c625835bf96d7b34914e22e537a0f14797a6f",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-hearthspire-r3-4/canonical.png",
+          "rendered_at": "2026-10-29T12:03:09+00:00",
+          "thumb": "assets/thumbs/card-hearthspire-r3-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-hearthspire-r4-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:8435af1547967ccec96107cf6f2e385e40aa334b08a19709843c2cfb10ea96ae",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:8435af1547967ccec96107cf6f2e385e40aa334b08a19709843c2cfb10ea96ae",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-hearthspire-r4-4/canonical.png",
+          "rendered_at": "2026-10-29T12:04:33+00:00",
+          "thumb": "assets/thumbs/card-hearthspire-r4-4/canonical.png",
           "variant_prompt": null
         }
       }
@@ -2993,6 +3053,21 @@
           "path": "assets/images/card-vitalist-4/canonical.png",
           "rendered_at": "2026-09-30T19:27:54+00:00",
           "thumb": "assets/thumbs/card-vitalist-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-volmaw-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:05d377f461cc7a3a593f205fd8791367d81befdd535c7f3f99f2cf0acf8ad371",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:05d377f461cc7a3a593f205fd8791367d81befdd535c7f3f99f2cf0acf8ad371",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-volmaw-4/canonical.png",
+          "rendered_at": "2026-10-29T11:53:22+00:00",
+          "thumb": "assets/thumbs/card-volmaw-4/canonical.png",
           "variant_prompt": null
         }
       }

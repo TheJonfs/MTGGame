@@ -97,9 +97,9 @@ export function applyOutbox(world: WorldState, entries: OutboxEntry[], isCard: (
   return { applied, stale };
 }
 
-/** The fence (ADR-172, (a)): the packs' power slot — never a kept card. The packs' data names the fourteen
+/** The fence (ADR-172, (a)): the packs' power slot — never a kept card. The packs' data names the nineteen
  * (`sets.json` → power); this is the same list for the world's side, which does not load the packs. */
-export const POWER_SLOT: ReadonlySet<string> = new Set(["black_lotus", "mox_pearl", "mox_sapphire", "mox_jet", "mox_ruby", "mox_emerald", "time_walk", "tallyflame_court", "wrackroot", "shevelport", "obsidian_observatory", "cairnbrand", "the_manafleur", "the_cinquefont"]);
+export const POWER_SLOT: ReadonlySet<string> = new Set(["black_lotus", "mox_pearl", "mox_sapphire", "mox_jet", "mox_ruby", "mox_emerald", "time_walk", "tallyflame_court", "wrackroot", "shevelport", "obsidian_observatory", "cairnbrand", "hearthspire", "volmaw", "nightbower", "ranksmere", "burnfallow", "the_manafleur", "the_cinquefont"]); // S70 (ADR-192): the still-pair grounds join the slot
 export const keepable = (cardId: string, power: readonly string[]): boolean => !power.includes(cardId) && !POWER_SLOT.has(cardId);
 
 /** The prize table: the band a finish falls in, and what it pays. */

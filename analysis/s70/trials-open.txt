@@ -1,0 +1,46 @@
+# S70 Part 1, the Open stage (game one, 100 games a pairing, seed 56): each list plain (its own dual), then the ground for that dual — nominal and corners.
+# Hearthspire (RW): 2 at {2}{R}{W} / 3 at {3}{R}{W} — for a Plateau
+s70b_muster|muster||--extra-cards data/cards-study
+s70_hs_muster|muster|muster:plateau:1:hearthspire|--extra-cards data/cards-study|s70b_muster
+s70_hs3_muster|muster|muster:plateau:1:hearthspire~acost={3}{R}{W}~n=3|--extra-cards data/cards-study|s70b_muster
+s70b_marducontrol|marducontrol||--extra-cards data/cards-study
+s70_hs_marducontrol|marducontrol|marducontrol:plateau:1:hearthspire|--extra-cards data/cards-study|s70b_marducontrol
+s70_hs3_marducontrol|marducontrol|marducontrol:plateau:1:hearthspire~acost={3}{R}{W}~n=3|--extra-cards data/cards-study|s70b_marducontrol
+s70b_tollgate|tollgate||--extra-cards data/cards-study
+s70_hs_tollgate|tollgate|tollgate:plateau:1:hearthspire|--extra-cards data/cards-study|s70b_tollgate
+s70_hs3_tollgate|tollgate|tollgate:plateau:1:hearthspire~acost={3}{R}{W}~n=3|--extra-cards data/cards-study|s70b_tollgate
+# Volmaw (UB): 4 / 6 at {2}{U}{B}; 8 at {3}{U}{B} — for an Underground Sea
+s70b_writ|writ||--extra-cards data/cards-study
+s70_vm_writ|writ|writ:underground_sea:1:volmaw|--extra-cards data/cards-study|s70b_writ
+s70_vm4_writ|writ|writ:underground_sea:1:volmaw~n=4|--extra-cards data/cards-study|s70b_writ
+s70_vm8_writ|writ|writ:underground_sea:1:volmaw~acost={3}{U}{B}~n=8|--extra-cards data/cards-study|s70b_writ
+s70b_depths|depths||--extra-cards data/cards-study
+s70_vm_depths|depths|depths:underground_sea:1:volmaw|--extra-cards data/cards-study|s70b_depths
+s70_vm4_depths|depths|depths:underground_sea:1:volmaw~n=4|--extra-cards data/cards-study|s70b_depths
+s70_vm8_depths|depths|depths:underground_sea:1:volmaw~acost={3}{U}{B}~n=8|--extra-cards data/cards-study|s70b_depths
+# Nightbower (BG): {X}{1}{B}{G} / {X}{B}{G} — for a Bayou
+s70b_reaperclio|reaperclio||--extra-cards data/cards-study
+s70_nb_reaperclio|reaperclio|reaperclio:bayou:1:nightbower|--extra-cards data/cards-study|s70b_reaperclio
+s70_nb0_reaperclio|reaperclio|reaperclio:bayou:1:nightbower~acost={X}{B}{G}|--extra-cards data/cards-study|s70b_reaperclio
+s70b_sweep|sweep||--extra-cards data/cards-study
+s70_nb_sweep|sweep|sweep:bayou:1:nightbower|--extra-cards data/cards-study|s70b_sweep
+s70_nb0_sweep|sweep|sweep:bayou:1:nightbower~acost={X}{B}{G}|--extra-cards data/cards-study|s70b_sweep
+# Ranksmere (UW): one copy at {1}{W}{U} / two at {2}{W}{U} — no Open list holds a WU dual: for an Underground Sea (Countersnake loses a black source)
+s70b_countersnake|countersnake||--extra-cards data/cards-study
+s70_rm_countersnake|countersnake|countersnake:underground_sea:1:ranksmere|--extra-cards data/cards-study|s70b_countersnake
+s70_rm2_countersnake|countersnake|countersnake:underground_sea:1:ranksmere~acost={2}{W}{U}~n=2|--extra-cards data/cards-study|s70b_countersnake
+# Burnfallow (RG): (a) ping 1 / 2; (b) {1}{G}{R} / {2}{G}{R} — for a Taiga (Emerald Snakes, the Tollgate) or a Forest (the Wurmspeaker)
+s70b_emeraldsnakes|emeraldsnakes||--extra-cards data/cards-study
+s70_bfa_emeraldsnakes|emeraldsnakes|emeraldsnakes:taiga:1:burnfallow|--extra-cards data/cards-study|s70b_emeraldsnakes
+s70_bfa2_emeraldsnakes|emeraldsnakes|emeraldsnakes:taiga:1:burnfallow~ping=2|--extra-cards data/cards-study|s70b_emeraldsnakes
+s70_bfb_emeraldsnakes|emeraldsnakes|emeraldsnakes:taiga:1:burnfallow_sac|--extra-cards data/cards-study|s70b_emeraldsnakes
+s70_bfb2_emeraldsnakes|emeraldsnakes|emeraldsnakes:taiga:1:burnfallow_sac~acost={2}{G}{R}|--extra-cards data/cards-study|s70b_emeraldsnakes
+s70b_wurmspeaker|wurmspeaker||--extra-cards data/cards-study
+s70_bfa_wurmspeaker|wurmspeaker|wurmspeaker:forest:1:burnfallow|--extra-cards data/cards-study|s70b_wurmspeaker
+s70_bfa2_wurmspeaker|wurmspeaker|wurmspeaker:forest:1:burnfallow~ping=2|--extra-cards data/cards-study|s70b_wurmspeaker
+s70_bfb_wurmspeaker|wurmspeaker|wurmspeaker:forest:1:burnfallow_sac|--extra-cards data/cards-study|s70b_wurmspeaker
+s70_bfb2_wurmspeaker|wurmspeaker|wurmspeaker:forest:1:burnfallow_sac~acost={2}{G}{R}|--extra-cards data/cards-study|s70b_wurmspeaker
+s70_bfa_tollgate|tollgate|tollgate:taiga:1:burnfallow|--extra-cards data/cards-study|s70b_tollgate
+s70_bfa2_tollgate|tollgate|tollgate:taiga:1:burnfallow~ping=2|--extra-cards data/cards-study|s70b_tollgate
+s70_bfb_tollgate|tollgate|tollgate:taiga:1:burnfallow_sac|--extra-cards data/cards-study|s70b_tollgate
+s70_bfb2_tollgate|tollgate|tollgate:taiga:1:burnfallow_sac~acost={2}{G}{R}|--extra-cards data/cards-study|s70b_tollgate

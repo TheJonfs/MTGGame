@@ -35,7 +35,7 @@ import {
   type StackItem,
   type Step,
 } from "./state.js";
-import { isLegalTarget, targetCandidates } from "./targeting.js";
+import { isLegalTarget, specsWithX, targetCandidates } from "./targeting.js";
 import { placePendingTriggers, wireTriggerCollection } from "./triggers.js";
 import { buildView, type GameView } from "./view.js";
 import { createObject, moveObject } from "./zones.js";
@@ -627,7 +627,7 @@ export class Game {
         // A6: a modal spell's mode was chosen at cast (one action per mode); its targets/effects are the mode's.
         const mode = def.modes ? def.modes[action.mode ?? -1] : undefined;
         if (def.modes && !mode) throw new Error("modal spell cast without a legal mode");
-        const specs = mode ? (mode.targets ?? []) : (def.targets ?? []);
+        const specs = specsWithX(mode ? (mode.targets ?? []) : (def.targets ?? []), action.x ?? 0); // S70: an X-bound ceiling resolved at the announced X
         const effects = mode ? mode.effects : (def.spellEffect ?? []);
         // A10 word 4 (S22): any-number targeting — the cast enters a logged choose-target/done loop
         // (the chooseMode/ADR-013 precedents fused) instead of enumerated combinations. Picks are
@@ -840,7 +840,7 @@ export class Game {
           sourceId,
           sourceCardId: obj.cardId,
           controller: player,
-          targetSpecs: abilityMode?.targets ?? ability.targets ?? [],
+          targetSpecs: specsWithX(abilityMode?.targets ?? ability.targets ?? [], action.x ?? 0), // S70: an X-bound ceiling resolved at the announced X
           targets: action.targets,
           effects: abilityMode?.effects ?? ability.effects,
           x: action.x ?? 0,

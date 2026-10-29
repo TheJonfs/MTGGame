@@ -26,6 +26,27 @@ export function variantDef(spec: string, cards: Map<string, CardDef>): CardDef {
       }));
       return { ...a, modes: pairs.map((m) => (m.targets.length ? m : { label: m.label, effects: m.effects })) } as typeof a;
     });
+    // S70 (the High Grounds' corners, ADR-182): the STUDY ability — the last activated ability with an effect beyond
+    // mana — at another cost (`acost={3}{R}{W}`), or another size (`n=3`: its damage and life gained, its mill, its
+    // copies; a search's count is not touched, nor a damage that rides a search — Burnfallow's ping is `ping=2`).
+    else if (k === "acost" || k === "n" || k === "ping") {
+      const abil = [...(out.abilities ?? d.abilities ?? [])];
+      const at = abil.map((a, i) => (a.kind === "activated" && a.effects.some((e) => e.type !== "addMana") ? i : -1)).filter((i) => i >= 0).pop();
+      if (at === undefined) throw new Error(`card-test: ${id} has no study ability for ${k}`);
+      const a = abil[at] as Extract<(typeof abil)[number], { kind: "activated" }>;
+      const searches = a.effects.some((e) => e.type === "searchLibrary");
+      if (k === "acost") abil[at] = { ...a, cost: { ...a.cost, mana: v } };
+      else abil[at] = { ...a, effects: a.effects.map((e) => {
+        const n = Number(v);
+        if (k === "ping") return e.type === "damage" ? { ...e, amount: n } : e;
+        if (e.type === "damage" && !searches) return { ...e, amount: n };
+        if (e.type === "gainLife" && typeof e.amount === "number") return { ...e, amount: n };
+        if (e.type === "mill" && typeof e.count === "number") return { ...e, count: n };
+        if (e.type === "copyToken") return { ...e, count: n };
+        return e;
+      }) };
+      out.abilities = abil;
+    }
     else throw new Error(`card-test: unknown modifier ${m}`);
   }
   return out;

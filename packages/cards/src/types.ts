@@ -100,6 +100,8 @@ export const TARGET_PREDICATES = [
   // S26 (Seraphina, the Initiative): the status-predicate door — a creature that is tapped.
   // Re-checked at resolution like every predicate: an untap in response fizzles the kill (CR 608.2b).
   "tappedCreature",
+  // S70 (R-118, Ranksmere): "target creature token you control" — the token-copy word's target.
+  "creatureTokenYouControl",
 ] as const;
 export type TargetPredicate = (typeof TARGET_PREDICATES)[number];
 
@@ -120,6 +122,9 @@ export interface TargetSpec {
   /** S28 (ADR-098): mana-value ceiling on the candidate (Unearth's "mana value 3 or less"); printed
    * cost — a token or a costless card reads 0 (CR 202.3). */
   manaValueAtMost?: number;
+  /** S70 (R-119, Nightbower: "with mana value X or less"): the ceiling is the X announced for this spell or ability — X is
+   * announced before targets are chosen (CR 601.2b–c, through 602.2b for abilities), so a candidate's legality reads it. */
+  manaValueAtMostX?: true;
   /** Or-predicate: legal if ANY of these alternative specs accepts the target (Airship Crash, Disenchant). */
   anyOf?: TargetSpec[];
   /** Keyword filters ("creature with flying" / "without flying"). */
@@ -245,6 +250,11 @@ export type EffectBase =
   /** S66 (R-115, Chris's white graveyard answer — Hallowed Rites, the Sexton): a card in a graveyard is put on the bottom
    * of its owner's library (a hallowing, not an exile: the card may come again). A no-op if it has left the graveyard. */
   | { type: "putOnBottom"; target?: number; targetSpec?: number }
+  /** S70 (R-118, Ranksmere): "create a token that's a copy of target creature token" — a new token of the target's
+   * def under the effect's controller, with the base P/T its creating effect locked (CR 707.2: the copiable values are
+   * the token's as created, CR 111.3); counters, damage, tapped status and other effects are not copied. `count`
+   * defaults to one. */
+  | { type: "copyToken"; target: number; count?: number }
   /** S36 (R-096 word 1, Thawing Glaciers): return this permanent to its owner's hand at the beginning of the NEXT
    * cleanup step — a self-contained package rule beside the temporary guest's end-step exit (CR 514.1a's
    * "beginning of the cleanup step" is a trigger point the engine keeps as a due list, not a stack trigger:
@@ -411,6 +421,7 @@ export const EFFECT_TYPES: readonly EffectType[] = [
   "extraTurn",
   "exileGraveyard",
   "putOnBottom", // S66 (R-115)
+  "copyToken", // S70 (R-118)
 ];
 
 export type TriggerEvent =

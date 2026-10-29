@@ -7,7 +7,7 @@ for tag in sys.argv[2:]:
     gs=[g for f in sorted(glob.glob(f'{S}{tag}_[0-9]*.json')) for g in json.load(open(f))['results']]
     ms={}
     for g in gs: ms.setdefault((g['a'],g['b'],g['match']),[]).append(g)
-    per={};g1=[];lt=[];casts=collections.Counter()
+    per={};g1=[];lt=[];casts=collections.Counter();acts=collections.Counter()
     for (a,b,_),L in ms.items():
         if me not in (a,b): continue
         s='a' if a==me else 'b'; o=b if s=='a' else a
@@ -16,7 +16,9 @@ for tag in sys.argv[2:]:
         for x in L:
             (g1 if x['gameNo']==0 else lt).append(x['winner']==s)
             for c,n in (x['logA'] if s=='a' else x['logB'])['cast'].items(): casts[c]+=n
+            for c,n in ((x['logA'] if s=='a' else x['logB']).get('acts') or {}).items(): acts[c]+=n  # S70: activations by source card
     al=[x for v in per.values() for x in v]; n=len(al); p=sum(al)/n
     print(f"{tag:12} {len(gs)} games, {n} matches: {100*p:.1f} ± {196*math.sqrt(p*(1-p)/n):.1f} | g1 {100*sum(g1)/len(g1):.1f} later {100*sum(lt)/len(lt):.1f}")
     print('   '+' '.join(f"{o} {round(100*sum(v)/len(v))}" for o,v in sorted(per.items(),key=lambda x:-sum(x[1])/len(x[1]))))
     ng=len(g1)+len(lt); print('   casts a game: '+' '.join(f"{c} {n/ng:.2f}" for c,n in casts.most_common(14)))
+    if acts: print('   activations a game: '+' '.join(f"{c} {n/ng:.2f}" for c,n in acts.most_common(8)))
