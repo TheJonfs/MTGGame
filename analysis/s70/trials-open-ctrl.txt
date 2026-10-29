@@ -1,0 +1,4 @@
+# Controls: Burnfallow as an untyped R/G dual (its ability never affordable) — the Forest a Taiga is, lost (Gaean Wurm), apart from the ability
+s70_bfx_emeraldsnakes|emeraldsnakes|emeraldsnakes:taiga:1:burnfallow~acost={20}|--extra-cards data/cards-study|s70b_emeraldsnakes
+s70_bfx_tollgate|tollgate|tollgate:taiga:1:burnfallow~acost={20}|--extra-cards data/cards-study|s70b_tollgate
+s70_hsx_muster|muster|muster:plateau:1:hearthspire~acost={20}|--extra-cards data/cards-study|s70b_muster

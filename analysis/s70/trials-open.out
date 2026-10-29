@@ -1,0 +1,40 @@
+# S70 Part 1, the Open stage (game one, 100 games a pairing, seed 56): each list plain (its own dual), then the ground for that dual — nominal and corners.
+# Hearthspire (RW): 2 at {2}{R}{W} / 3 at {3}{R}{W} — for a Plateau
+s70_hs_muster           41.5 →  47.0   +5.5 ± 1.3  worst: sweep -2, depths +1 | best: rabble +10, tollgate +29
+s70_hs3_muster          41.5 →  48.1   +6.6 ± 1.3  worst: sweep +0, wurmspeaker +1 | best: kiln +12, tollgate +33
+s70_hs_marducontrol     61.7 →  63.2   +1.5 ± 1.3  worst: pall -3, wurmspeaker -1 | best: tollgate +4, kiln +9
+s70_hs3_marducontrol    61.7 →  65.2   +3.5 ± 1.2  worst: pall +0, reaperclio +0 | best: depths +7, kiln +8
+s70_hs_tollgate         41.3 →  49.0   +7.7 ± 1.7  worst: sweep +0, countersnake +1 | best: muster +14, kiln +18
+s70_hs3_tollgate        41.3 →  50.8   +9.5 ± 1.7  worst: countersnake +1, pall +2 | best: muster +18, kiln +22
+# Volmaw (UB): 4 / 6 at {2}{U}{B}; 8 at {3}{U}{B} — for an Underground Sea
+s70_vm_writ             51.6 →  53.0   +1.4 ± 1.1  worst: levy -1, pall -1 | best: countersnake +4, tollgate +11
+s70_vm4_writ            51.6 →  52.9   +1.2 ± 1.0  worst: warband -2, levy -1 | best: countersnake +4, tollgate +8
+s70_vm8_writ            51.6 →  52.7   +1.1 ± 1.0  worst: marducontrol -2, emeraldsnakes -1 | best: depths +3, tollgate +14
+s70_vm_depths           45.6 →  48.4   +2.8 ± 1.3  worst: rabble -2, warband -2 | best: wurmspeaker +4, tollgate +27
+s70_vm4_depths          45.6 →  48.2   +2.6 ± 1.2  worst: muster -1, pall -1 | best: writ +3, tollgate +25
+s70_vm8_depths          45.6 →  48.6   +3.0 ± 1.2  worst: marducontrol -2, sweep -2 | best: wurmspeaker +4, tollgate +26
+# Nightbower (BG): {X}{1}{B}{G} / {X}{B}{G} — for a Bayou
+s70_nb_reaperclio       71.0 →  72.8   +1.8 ± 1.2  worst: emeraldsnakes -3, muster -2 | best: writ +6, tollgate +8
+s70_nb0_reaperclio      71.0 →  73.8   +2.8 ± 1.3  worst: rabble -3, sweep -3 | best: countersnake +9, writ +10
+s70_nb_sweep            41.4 →  42.6   +1.3 ± 1.3  worst: warband -4, pall -2 | best: reaperclio +4, writ +8
+s70_nb0_sweep           41.4 →  44.1   +2.7 ± 1.3  worst: warband -4, emeraldsnakes +1 | best: tollgate +9, writ +11
+# Ranksmere (UW): one copy at {1}{W}{U} / two at {2}{W}{U} — no Open list holds a WU dual: for an Underground Sea (Countersnake loses a black source)
+s70_rm_countersnake     49.8 →  49.9   +0.1 ± 1.1  worst: warband -3, reaperclio -2 | best: depths +3, marducontrol +3
+s70_rm2_countersnake    49.8 →  50.2   +0.4 ± 1.1  worst: kiln -2, warband -2 | best: reaperclio +2, sweep +2
+# Burnfallow (RG): (a) ping 1 / 2; (b) {1}{G}{R} / {2}{G}{R} — for a Taiga (Emerald Snakes, the Tollgate) or a Forest (the Wurmspeaker)
+s70_bfa_emeraldsnakes   60.6 →  54.9   -5.8 ± 1.4  worst: tollgate -16, muster -9 | best: marducontrol -3, pall +0
+s70_bfa2_emeraldsnakes  60.6 →  58.1   -2.5 ± 1.3  worst: sweep -5, kiln -4 | best: warband +0, pall +1
+s70_bfb_emeraldsnakes   60.6 →  57.4   -3.2 ± 1.1  worst: tollgate -17, depths -5 | best: wurmspeaker +0, countersnake +1
+s70_bfb2_emeraldsnakes  60.6 →  57.5   -3.1 ± 1.0  worst: tollgate -17, writ -6 | best: warband +0, wurmspeaker +0
+s70_bfa_wurmspeaker     36.9 →  38.0   +1.1 ± 0.9  worst: emeraldsnakes -1, levy -1 | best: tollgate +3, countersnake +4
+s70_bfa2_wurmspeaker    36.9 →  38.9   +2.0 ± 1.0  worst: emeraldsnakes +0, levy +0 | best: countersnake +5, kiln +5
+s70_bfb_wurmspeaker     36.9 →  36.6   -0.2 ± 0.7  worst: tollgate -2, emeraldsnakes -1 | best: depths +1, countersnake +2
+s70_bfb2_wurmspeaker    36.9 →  36.6   -0.3 ± 0.7  worst: tollgate -2, emeraldsnakes -1 | best: depths +1, countersnake +2
+s70_bfa_tollgate        41.3 →  44.8   +3.5 ± 1.7  worst: pall +0, rabble +0 | best: kiln +7, levy +12
+s70_bfa2_tollgate       41.3 →  48.7   +7.4 ± 1.7  worst: pall +0, rabble +4 | best: muster +11, depths +13
+s70_bfb_tollgate        41.3 →  35.6   -5.7 ± 1.5  worst: rabble -14, muster -13 | best: pall +0, emeraldsnakes +1
+s70_bfb2_tollgate       41.3 →  36.4   -4.9 ± 1.5  worst: muster -13, rabble -11 | best: pall +0, wurmspeaker +1
+# Controls: Burnfallow as an untyped R/G dual (its ability never affordable) — the Forest a Taiga is, lost (Gaean Wurm), apart from the ability
+s70_bfx_emeraldsnakes   60.6 →  59.8   -0.8 ± 0.7  worst: kiln -3, muster -2 | best: wurmspeaker +1, countersnake +2
+s70_bfx_tollgate        41.3 →  40.4   -0.9 ± 0.7  worst: warband -4, muster -3 | best: writ +0, wurmspeaker +0
+s70_hsx_muster          41.5 →  41.6   +0.1 ± 0.3  worst: countersnake +0, depths +0 | best: wurmspeaker +0, tollgate +2
