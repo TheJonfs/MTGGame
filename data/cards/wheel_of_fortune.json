@@ -1,0 +1,26 @@
+{
+ "id": "wheel_of_fortune",
+ "name": "Wheel of Fortune",
+ "source": "real",
+ "manaCost": "{2}{R}",
+ "types": [
+  "Sorcery"
+ ],
+ "spellEffect": [
+  {
+   "type": "discard",
+   "count": "all",
+   "who": "eachPlayer",
+   "mode": "ownerChooses"
+  },
+  {
+   "type": "draw",
+   "count": 7,
+   "who": "eachPlayer"
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": "R"
+}

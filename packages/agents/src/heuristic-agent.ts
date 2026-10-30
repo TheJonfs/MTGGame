@@ -2845,7 +2845,7 @@ export class HeuristicAgent implements Agent {
         const cands = view.battlefield
           .filter((b) => b.controller === opp && (e.predicate === "permanent" || b.power !== null))
           .sort((x, y) => objectValue(this.defs, x, this.C) - objectValue(this.defs, y, this.C))
-          .slice(0, e.count);
+          .slice(0, typeof e.count === "number" ? e.count : 0); // an annihilator's count is a number (Balance is not an ATTACKS trigger)
         for (const b of cands) gain += objectValue(this.defs, b, this.C) + 0.5;
       }
     }

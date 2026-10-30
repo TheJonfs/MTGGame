@@ -43,7 +43,7 @@ export const OPEN_FORMAT: ConstructedFormat = {
   rule: {
     label: "the Open",
     minCards: 60,
-    restricted: ["black_lotus", "mox_pearl", "mox_sapphire", "mox_jet", "mox_ruby", "mox_emerald", "time_walk", ...HIGH_GROUNDS, "demonic_tutor", "library_of_alexandria"],
+    restricted: ["black_lotus", "mox_pearl", "mox_sapphire", "mox_jet", "mox_ruby", "mox_emerald", "time_walk", ...HIGH_GROUNDS, "demonic_tutor", "library_of_alexandria", "balance", "wheel_of_fortune"], // post-S70 (Chris): Balance and Wheel of Fortune, restricted as in Vintage
     banned: [...LAW_IDS],
   },
 };

@@ -66,6 +66,8 @@ const OVERRIDES: Record<string, { set: string; collector?: string }> = {
   seedborn_muse: { set: "lgn", collector: "138" }, // S45 (Chris): the first printing, old frame
   emeria_angel: { set: "zen", collector: "11" }, // S45: modern frame only — the first printing
   dread_presence: { set: "m20", collector: "96" }, // S45: modern frame only — the first printing
+  balance: { set: "leb", collector: "3" }, // post-S70 (Chris): the Beta printings — Mark Poole
+  wheel_of_fortune: { set: "leb", collector: "184" }, // post-S70 (Chris): the Beta printing — Daniel Gelon
   mountain: { set: "leb" },
   plains: { set: "leb" },
   island: { set: "leb" },

@@ -256,6 +256,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | artisan_of_kozilek | roe | 2 | Jason Felix | 3ac80eb8-321d-476a-87e7-d25bdac6a91c |
 | aven_fisher | ody | 63 | Christopher Moeller | 5b27130d-2296-4076-9829-15ab63081896 |
 | badlands | olgc | 2016NA | Filip Burburan | 644aba21-1fa7-4483-b9bf-56c5fe4d8975 |
+| balance | leb | 3 | Mark Poole | 0f2c32a0-ee97-4239-94e3-aabab91dab83 |
 | barren_moor | ons | 312 | Heather Hudson | 45be3811-a223-4c45-9b24-0317f2d53c60 |
 | baru_wurmspeaker | dmc | 26 | Andrew Mar | 2cae4149-d8ef-4772-9db4-cb576bef61b5 |
 | basilisk_collar | wwk | 122 | Howard Lyon | 55cdba1b-7a80-435f-9cff-b9365f62e311 |
@@ -449,6 +450,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | watery_grave | rvr | 415 | Rob Alexander | ef7f4762-4283-4368-948b-e60a29e78a0c |
 | wave_of_reckoning | mmq | 56 | Bradley Williams | 0b101b5e-d478-4686-b3cf-bdc545f089e5 |
 | werebear | ody | 282 | Carl Critchlow | 964cf7e3-932d-432f-8ad4-9bd651aada96 |
+| wheel_of_fortune | leb | 184 | Daniel Gelon | 9052369f-840f-438e-b86d-e2f8d6339585 |
 | wind_drake | por | 77 | Zina Saunders | 5486d2dc-9a5d-4f58-a5ec-d94de54b852f |
 | wood_elves | por | 195 | Rebecca Guay | b7f1fb90-5c85-46a5-802d-248cc0250921 |
 | wrath_of_god | lea | 45 | Quinton Hoover | a2788d69-6a3a-42f0-8736-cc6b57755ecd |
@@ -777,6 +779,15 @@ Names Chris's (2026-10-29: the planner's placeholders the Hearthway, the Drownin
 | id | name | status | vocabulary | notes |
 |---|---|---|---|---|
 | valakut_the_molten_pinnacle | Valakut, the Molten Pinnacle | tested | Land, `entersTapped`; triggered LAND_ENTERS_UNDER_YOUR_CONTROL, condition subtype Mountain, `interveningIf` (R-120 — the one new word: at least five OTHER Mountains you control) optional: `damage` 3 anyTarget; {T}: {R} | REAL (Scryfall ZEN #228, oracle verified 2026-10-29). Tier 2 (Chris). The payoff for Burnfallow: its two basics enter together and each sees the other (two triggers). Art: Chris's custom painting for the old frame; printed face Chris-delivered. Fixture `sim/s70-valakut.test.ts`; fuzz `s70-valakut-fuzz.test.ts`. |
+
+## Post-Session 70 addition — Balance and Wheel of Fortune (Chris, 2026-10-29)
+
+The restricted cycle's other colours beside Demonic Tutor (B) and Time Walk (U): Wheel of Fortune (R) and Balance (W), both restricted in Vintage today (Scryfall, 2026-10-29). Green's slot is open (a custom card under discussion). Both at tier R and on the Open's restricted list — interim, for Chris's ruling (Balance may belong in the power slot with Time Walk).
+
+| id | name | status | vocabulary | notes |
+|---|---|---|---|---|
+| balance | Balance | tested | Sorcery {1}{W}; `sacrifice` eachPlayer count `overFewest` land, predicate `land` (new for the edict); `discard` eachPlayer count `overFewest` hand; `sacrifice` eachPlayer count `overFewest` creature (R-121 — the one new word) | REAL (LEB #3, Mark Poole — the Beta printing, Chris). Three steps, each counted as it happens (the 2016 Scryfall ruling). Simplification: each player's choices are taken in seat order, not active player first (the choosers know earlier picks either way; the sacrifices are simultaneous per player). Fixture `sim/s70-balance-wheel.test.ts`; book 154. |
+| wheel_of_fortune | Wheel of Fortune | tested | Sorcery {2}{R}; `discard` all eachPlayer; `draw` 7 eachPlayer — no new word (the Dragon Mage's wheel) | REAL (LEB #184, Daniel Gelon — the Beta printing, Chris). Fixture; book 154. |
 
 ## Shop tiers (ADR-078, S19)
 

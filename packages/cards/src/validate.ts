@@ -215,6 +215,11 @@ export function validateCard(raw: unknown): ValidationResult {
   return { errors, warnings };
 }
 
+/** Post-S70 (R-121): Balance's per-player count. */
+function isFewestCount(c: unknown): boolean {
+  return isRecord(c) && c.ref === "overFewest" && (c.what === "land" || c.what === "hand" || c.what === "creature");
+}
+
 function validateTargetSpec(t: unknown, err: (m: string) => void): void {
   if (!isRecord(t)) return err(`target spec is not an object`);
   const cnt = t.count as unknown;
@@ -552,7 +557,7 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     needCount(e, err); // S28: Brainstorm's put-back
   },
   discard: (e, err) => {
-    if (e.count !== "all") needCount(e, err); // S45 (R-099): "all" — the whole hand
+    if (e.count !== "all" && !isFewestCount(e.count)) needCount(e, err); // S45 (R-099): "all" — the whole hand; post-S70 (R-121): a per-player count
     needWho(e, err);
     if (e.mode !== "ownerChooses" && e.mode !== "random" && e.mode !== "casterChooses") {
       err(`discard mode must be ownerChooses|random|casterChooses (ADR-029)`);
@@ -572,8 +577,8 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
       return;
     }
     needWho(e, err);
-    needCount(e, err);
-    if (e.predicate !== "permanent" && e.predicate !== "creature") err(`sacrifice predicate must be "permanent" or "creature" (S31 — the edict word)`);
+    if (!isFewestCount(e.count)) needCount(e, err);
+    if (e.predicate !== "permanent" && e.predicate !== "creature" && e.predicate !== "land") err(`sacrifice predicate must be "permanent", "creature" or "land" (S31 — the edict word; post-S70 land, Balance)`);
   },
   gainLife: (e, err) => {
     needAmount(e, err);

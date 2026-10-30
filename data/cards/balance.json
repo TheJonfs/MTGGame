@@ -1,0 +1,42 @@
+{
+ "id": "balance",
+ "name": "Balance",
+ "source": "real",
+ "manaCost": "{1}{W}",
+ "types": [
+  "Sorcery"
+ ],
+ "spellEffect": [
+  {
+   "type": "sacrifice",
+   "who": "eachPlayer",
+   "count": {
+    "ref": "overFewest",
+    "what": "land"
+   },
+   "predicate": "land"
+  },
+  {
+   "type": "discard",
+   "count": {
+    "ref": "overFewest",
+    "what": "hand"
+   },
+   "who": "eachPlayer",
+   "mode": "ownerChooses"
+  },
+  {
+   "type": "sacrifice",
+   "who": "eachPlayer",
+   "count": {
+    "ref": "overFewest",
+    "what": "creature"
+   },
+   "predicate": "creature"
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": "R"
+}

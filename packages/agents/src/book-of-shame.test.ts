@@ -2396,4 +2396,20 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const empty = { ...view, opponentHandCount: 0 };
     expect(a.scorePriorityAction(empty, atThem)).toBeLessThan(a.scorePriorityAction(empty, { type: "pass" })); // an empty hand: nothing to pick, and they draw
   });
+
+  it("book of shame 154 (post-S70 — Balance and Wheel of Fortune, LEB): the predictor reads Balance's three counts (R-121) and Wheel's two hands — Balance from behind, never from ahead; the Wheel empty-handed, never with a full hand into an empty one", () => {
+    const a = agent("midrange");
+    const lands = (pre: string, k: number, cardId: string, c: 0 | 1) => Array.from({ length: k }, (_, i) => ({ id: pre + i, cardId, controller: c }));
+    const bears = (pre: string, k: number, c: 0 | 1) => Array.from({ length: k }, (_, i) => ({ id: pre + i, cardId: "grizzly_bears", controller: c }));
+    const bal = { type: "castSpell" as const, objectId: "bal", targets: [] };
+    const behind = mkView({ hand: [{ objectId: "bal", cardId: "balance" }], battlefield: [...lands("p", 3, "plains", 0), ...lands("f", 3, "forest", 1), ...bears("b", 3, 1)], opponentHandCount: 3 });
+    expect(a.scorePriorityAction(behind, bal)).toBeGreaterThan(a.scorePriorityAction(behind, { type: "pass" }));
+    const ahead = mkView({ hand: [{ objectId: "bal", cardId: "balance" }], battlefield: [...lands("p", 3, "plains", 0), ...bears("b", 3, 0), ...lands("f", 3, "forest", 1)], opponentHandCount: 3 });
+    expect(a.scorePriorityAction(ahead, bal)).toBeLessThan(a.scorePriorityAction(ahead, { type: "pass" }));
+    const wheel = { type: "castSpell" as const, objectId: "wh", targets: [] };
+    const empty = mkView({ hand: [{ objectId: "wh", cardId: "wheel_of_fortune" }], battlefield: lands("m", 3, "mountain", 0), opponentHandCount: 5 });
+    expect(a.scorePriorityAction(empty, wheel)).toBeGreaterThan(a.scorePriorityAction(empty, { type: "pass" }));
+    const full = mkView({ hand: [{ objectId: "wh", cardId: "wheel_of_fortune" }, ...Array.from({ length: 6 }, (_, i) => ({ objectId: "h" + i, cardId: "lightning_bolt" }))], battlefield: lands("m", 3, "mountain", 0), opponentHandCount: 0 });
+    expect(a.scorePriorityAction(full, wheel)).toBeLessThan(a.scorePriorityAction(full, { type: "pass" }));
+  });
 });

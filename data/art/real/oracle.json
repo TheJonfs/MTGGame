@@ -2980,5 +2980,33 @@
     "art_crop": "https://cards.scryfall.io/art_crop/front/3/7/37bce60d-2cb0-4772-9f5c-122a7ed426a0.jpg?1783942120",
     "normal": "https://cards.scryfall.io/normal/front/3/7/37bce60d-2cb0-4772-9f5c-122a7ed426a0.jpg?1783942120",
     "via": "default oldest-highres"
+  },
+  "balance": {
+    "scryfallId": "0f2c32a0-ee97-4239-94e3-aabab91dab83",
+    "set": "leb",
+    "set_name": "Limited Edition Beta",
+    "collector_number": "3",
+    "artist": "Mark Poole",
+    "name": "Balance",
+    "mana_cost": "{1}{W}",
+    "type_line": "Sorcery",
+    "oracle_text": "Each player chooses a number of lands they control equal to the number of lands controlled by the player who controls the fewest, then sacrifices the rest. Players discard cards and sacrifice creatures the same way.",
+    "art_crop": "https://cards.scryfall.io/art_crop/front/0/f/0f2c32a0-ee97-4239-94e3-aabab91dab83.jpg?1783948656",
+    "normal": "https://cards.scryfall.io/normal/front/0/f/0f2c32a0-ee97-4239-94e3-aabab91dab83.jpg?1783948656",
+    "via": "override leb #3"
+  },
+  "wheel_of_fortune": {
+    "scryfallId": "9052369f-840f-438e-b86d-e2f8d6339585",
+    "set": "leb",
+    "set_name": "Limited Edition Beta",
+    "collector_number": "184",
+    "artist": "Daniel Gelon",
+    "name": "Wheel of Fortune",
+    "mana_cost": "{2}{R}",
+    "type_line": "Sorcery",
+    "oracle_text": "Each player discards their hand, then draws seven cards.",
+    "art_crop": "https://cards.scryfall.io/art_crop/front/9/0/9052369f-840f-438e-b86d-e2f8d6339585.jpg?1783948618",
+    "normal": "https://cards.scryfall.io/normal/front/9/0/9052369f-840f-438e-b86d-e2f8d6339585.jpg?1783948618",
+    "via": "override leb #184"
   }
 }

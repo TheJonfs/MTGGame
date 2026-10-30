@@ -407,7 +407,7 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
       for (const sym of parseManaProduction(mana)) pool[sym.symbol] += 1;
     },
 
-    async sacrificeChoose(playerNum: number, count: number, predicate: "permanent" | "creature"): Promise<void> {
+    async sacrificeChoose(playerNum: number, count: number, predicate: "permanent" | "creature" | "land"): Promise<void> {
       // S31 (R-094 word 1 — annihilator / the edict shape): the stated player picks one permanent at a
       // time from what they still control (a lone candidate is forced, ADR-014; the request carries
       // the resolving ability as its source so the chooser sees WHAT is asking), then the picks leave
@@ -416,7 +416,7 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
       const player = playerNum as PlayerId;
       const chosen: string[] = [];
       for (let n = 0; n < count; n++) {
-        const cands = ctx.state.battlefield.filter((id) => !chosen.includes(id) && getObject(ctx.state, id).controller === player && (predicate === "permanent" || isCreature(ctx, id)));
+        const cands = ctx.state.battlefield.filter((id) => !chosen.includes(id) && getObject(ctx.state, id).controller === player && (predicate === "permanent" || (predicate === "land" ? ctx.defs.def(getObject(ctx.state, id).cardId).types.includes("Land") : isCreature(ctx, id))));
         if (cands.length === 0) break;
         const actions: Action[] = cands.map((objectId) => ({ type: "sacrifice" as const, objectId }));
         let pick: Action = actions[0]!;
@@ -495,6 +495,13 @@ function searchOp(ctx: EngineCtx, requester?: EffectRequester, source?: { cardId
  * controller); the ADR-038 who:"any" amendment makes it load-bearing (the Usher claims the guest). */
 function sharedOps(ctx: EngineCtx, asController: PlayerId, requester?: EffectRequester) {
   return {
+    // Post-S70 (R-121, Balance): how many of `what` the player has above the fewest any player has, read now.
+    overFewest(player: number, what: "land" | "hand" | "creature"): number {
+      const n = (p: PlayerId) => what === "hand" ? ctx.state.players[p].hand.length
+        : ctx.state.battlefield.filter((id) => getObject(ctx.state, id).controller === p && (what === "land" ? ctx.defs.def(getObject(ctx.state, id).cardId).types.includes("Land") : isCreature(ctx, id))).length;
+      return Math.max(0, n(player as PlayerId) - Math.min(n(0), n(1)));
+    },
+
     createToken(player: number, tokenId: string, count: number, pt?: { power: number; toughness: number }, tapped?: boolean): void {
       for (let i = 0; i < count; i++) {
         // A10 (S22): pt locks the token's base P/T at creation (Overload's X/X Weird). S40: `tapped` (Shadow Summoning).

@@ -140,6 +140,11 @@ export interface TargetSpec {
 }
 
 /** ADR-075 A4: a battlefield-permanent predicate for counting / max-power refs. */
+/** Post-S70 (R-121, Balance: "a number … equal to the number … controlled by the player who controls the fewest, then
+ * sacrifices the rest"): a count read for EACH player as the effect resolves — how many of `what` that player has above
+ * the fewest any player has. Counted at its own step (Balance's lands, then hands, then creatures — the 2016 ruling). */
+export interface FewestCount { ref: "overFewest"; what: "land" | "hand" | "creature" }
+
 /** Post-S70 (R-120): an intervening-if count condition (CR 603.4). */
 export interface InterveningIf { count: CountPredicate; atLeast: number; otherThanEvent?: true }
 
@@ -277,7 +282,7 @@ export type EffectBase =
    * order — a logged pick per card (ADR-013's incremental shape); the FIRST pick ends on top. With
    * fewer than N cards in hand, what is there goes back. */
   | { type: "putOnTop"; count: number }
-  | { type: "discard"; count: number | "all"; who: Who; mode: DiscardMode; filter?: DiscardFilter } // S45 (R-099): "all" — the whole hand (Dragon Mage)
+  | { type: "discard"; count: number | "all" | FewestCount; who: Who; mode: DiscardMode; filter?: DiscardFilter } // S45 (R-099): "all" — the whole hand (Dragon Mage)
   /** ADR-070 Amendment 3: top N of the library to its owner's graveyard via moveObject; NOT a draw (no empty-draw loss).
    * S23: count may be a value ref (the Traumatizer's eventDamage). */
   | { type: "mill"; count: number | ValueRef; who: Who }
@@ -317,7 +322,7 @@ export type EffectBase =
    * choice matching `predicate` ("permanent" | "creature"), simultaneously (CR 701.17). Annihilator N
    * is an ATTACKS trigger carrying it at who:"opponent" (the defending player of a two-player game);
    * Diabolic Edict would be the same word at who:"target", count 1, creature. */
-  | { type: "sacrifice"; who: Who; count: number; predicate: "permanent" | "creature" }
+  | { type: "sacrifice"; who: Who; count: number | FewestCount; predicate: "permanent" | "creature" | "land" }
   /** A10 word 3 (S22): `temporary: true` — the reanimated object gains haste and is sacrificed at the
    * beginning of the next end step (a self-contained package rule, not a delayed-trigger subsystem;
    * the Usher's entrance). A blinked guest is a NEW object and sheds both riders (the launder).

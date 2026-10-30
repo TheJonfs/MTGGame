@@ -105,7 +105,9 @@ export interface EffectContext {
   /** S31 (R-094 word 1 — the edict): `player` chooses `count` of their permanents matching the predicate
    * (one logged pick each — ADR-013's incremental shape; a lone candidate is forced), then all leave
    * together (CR 701.17; DIES triggers pend). Fewer candidates than count: every one goes. */
-  sacrificeChoose(player: number, count: number, predicate: "permanent" | "creature"): Promise<void>;
+  sacrificeChoose(player: number, count: number, predicate: "permanent" | "creature" | "land"): Promise<void>;
+  /** Post-S70 (R-121): how many of `what` the player has above the fewest any player has (Balance). */
+  overFewest(player: number, what: "land" | "hand" | "creature"): number;
   /** Move a card from a graveyard to the battlefield or its owner's hand (Zombify, Gravedigger, Rancor's self-return).
    * A10 (S22): `temporary` — the package rule (haste; sacrificed at the beginning of the next end
    * step); `withCounters` — it enters with counters (Graceful Restoration). */
@@ -218,7 +220,10 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
     // S23 (ADR-084): the self form — the Thundersnake's exit. No-op if the source raced away.
     if ("scope" in e) { ctx.sacrificeSource(); return; }
     // S31 (R-094 word 1): the edict — each stated player chooses and sacrifices.
-    for (const p of ctx.players(e.who)) await ctx.sacrificeChoose(p, e.count, e.predicate);
+    // Post-S70 (R-121): a count read per player — every player's read before anyone sacrifices (Balance's sacrifices are
+    // simultaneous; down to the fewest never moves the fewest, so the order of the picks cannot change a count).
+    const ps = ctx.players(e.who), counts = ps.map((p) => (typeof e.count === "number" ? e.count : ctx.overFewest(p, e.count.what)));
+    for (let i = 0; i < ps.length; i++) await ctx.sacrificeChoose(ps[i]!, counts[i]!, e.predicate);
   },
 
   modifyPT: (e, ctx) => {
@@ -396,7 +401,8 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
 
   discard: async (e, ctx) => {
     if (e.type !== "discard") throw new Error("resolver mismatch");
-    for (const p of ctx.players(e.who)) await ctx.discard(p, e.count, e.mode, e.filter);
+    const ps = ctx.players(e.who), counts = ps.map((p) => (typeof e.count === "object" ? ctx.overFewest(p, e.count.what) : e.count)); // post-S70 (R-121)
+    for (let i = 0; i < ps.length; i++) { const n = counts[i]!; if (n === 0) continue; await ctx.discard(ps[i]!, n, e.mode, e.filter); }
   },
 
   returnFromGraveyard: async (e, ctx) => {

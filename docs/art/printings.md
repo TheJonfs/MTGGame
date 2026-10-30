@@ -27,6 +27,7 @@ Only where the default would pick something we don't want, or where a card has m
 | Guttersnipe | rvr, collector 332 | S45 (Chris): Ravnica Remastered — the retro (1997) frame; the first printing (RTR) is modern-framed |
 | Dragon Mage, Seedborn Muse | scg 87, lgn 138 | S45 (Chris): the first printings, old frame |
 | Emeria Angel, Dread Presence | zen 11, m20 96 | S45: modern frame only — the first printings |
+| Balance, Wheel of Fortune | leb 3, leb 184 | post-S70 (Chris): the Beta printings — Mark Poole, Daniel Gelon (verified on Scryfall 2026-10-29) |
 | Everything else | default | |
 
 ## Rendering note

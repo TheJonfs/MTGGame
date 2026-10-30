@@ -445,6 +445,14 @@ function sweepPT(view: GameView, e: Effect, x: number, defs: Map<string, CardDef
   return 0;
 }
 
+/** Post-S70 (R-121, Balance): the view's reading of "how many of `what` this player has above the fewest" — our hand
+ * by its cards, theirs by its count; lands by type, creatures by a power. */
+export function viewOverFewest(view: GameView, p: 0 | 1, what: "land" | "hand" | "creature", defs: Map<string, CardDef>): number {
+  const n = (q: 0 | 1) => what === "hand" ? (q === view.you ? view.hand.length : view.opponentHandCount)
+    : view.battlefield.filter((o) => o.controller === q && (what === "land" ? !!defs.get(o.cardId)?.types.includes("Land") : o.power !== null)).length;
+  return Math.max(0, n(p) - Math.min(n(0), n(1)));
+}
+
 /** Post-S70 (book 153): what the caster's choice of their best spell adds over a random discard (evaluator units; a card
  * in hand weighs 0.18–0.55 by archetype). Their best spell for a random card — about two in five a land — is worth more
  * than the card spent at midrange (0.4), so the replacing discard is cast. */
@@ -664,12 +672,14 @@ function applyEffect(
       // nothing): the CASTER's pick from their hand takes their best spell, not a random card — worth more than the count
       // says (Duress gains it too). Their hand only; a pick from our own hand is ours to lose.
       let pick = 0;
-      for (const p of ps) {
-        if (p !== me && e.mode === "casterChooses" && e.count !== "all" && view.opponentHandCount > 0) pick += CASTER_PICK_WORTH;
+      const counts = ps.map((p) => (typeof e.count === "object" ? viewOverFewest(view, p as 0 | 1, e.count.what, defs) : e.count)); // post-S70 (R-121): Balance's hands
+      ps.forEach((p, i) => {
+        const n = counts[i]!;
+        if (p !== me && e.mode === "casterChooses" && n !== "all" && view.opponentHandCount > 0) pick += CASTER_PICK_WORTH;
         // S45: "all" — the whole hand (Dragon Mage's wheel discards before it draws).
-        if (p === me) view.hand.length = e.count === "all" ? 0 : Math.max(0, view.hand.length - e.count);
-        else view.opponentHandCount = e.count === "all" ? 0 : Math.max(0, view.opponentHandCount - e.count);
-      }
+        if (p === me) view.hand.length = n === "all" ? 0 : Math.max(0, view.hand.length - n);
+        else view.opponentHandCount = n === "all" ? 0 : Math.max(0, view.opponentHandCount - n);
+      });
       return pick;
     }
     case "gainLife": {
@@ -890,11 +900,12 @@ function applyEffect(
         : e.who === "eachPlayer" ? [me, opp]
         : targets.flatMap((t) => (t.kind === "player" ? [t.player as 0 | 1] : []));
       let v = 0;
-      for (const p of ps) {
+      const counts = ps.map((p) => (typeof e.count === "number" ? e.count : viewOverFewest(view, p as 0 | 1, e.count.what, defs))); // post-S70 (R-121): Balance
+      for (const [i, p] of ps.entries()) {
         const cands = view.battlefield
-          .filter((o) => o.controller === p && (e.predicate === "permanent" || o.power !== null))
+          .filter((o) => o.controller === p && (e.predicate === "permanent" || (e.predicate === "land" ? !!defs.get(o.cardId)?.types.includes("Land") : o.power !== null)))
           .sort((a, b) => objectValue(defs, a, constants) - objectValue(defs, b, constants))
-          .slice(0, e.count);
+          .slice(0, counts[i]!);
         for (const o of cands) {
           v += (p === me ? -1 : 1) * objectValue(defs, o, constants) + (p === me ? 0 : 0.5);
           removeObject(view, o.id);
