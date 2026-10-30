@@ -612,18 +612,22 @@ export function finalPlaces(event: ConvocationEvent): { seat: number; place: num
 
 // ---------- S53: the full Convocation — a list of stages ----------
 
+/** Post-S70 (Chris): a Limited day of any format in LIMITED_FORMATS — the format's shape is the stage's kind, so a new
+ * Limited format added there is a stage (and an option at the door) with no change here. */
+export const limitedStage = (formatId: string): ConvocationStage => ({ kind: formatOf(formatId).shape, formatId, rounds: 3 });
+
 /** The Pro Tour's shape (S53 brief, Part 1): a draft, the Open, a draft, a second Constructed format; the Umbel in the last. */
-export function defaultStages(secondConstructed: string = "open", firstConstructed: string = "open"): ConvocationStage[] {
+export function defaultStages(secondConstructed: string = "open", firstConstructed: string = "open", limited: readonly [string, string] = [DRAFT_PLANE.id, DRAFT_PLANE.id]): ConvocationStage[] {
   return [
-    { kind: "draft", formatId: DRAFT_PLANE.id, rounds: 3 },
+    limitedStage(limited[0]),
     { kind: "constructed", formatId: firstConstructed, rounds: 5 },
-    { kind: "draft", formatId: DRAFT_PLANE.id, rounds: 3 },
+    limitedStage(limited[1]),
     { kind: "constructed", formatId: secondConstructed, rounds: 5 },
   ];
 }
 /** S54: the short Convocation — two days, a draft and a Constructed format; the Umbel in the second. */
-export function shortStages(constructed: string = "open"): ConvocationStage[] {
-  return [{ kind: "draft", formatId: DRAFT_PLANE.id, rounds: 3 }, { kind: "constructed", formatId: constructed, rounds: 5 }];
+export function shortStages(constructed: string = "open", limited: string = DRAFT_PLANE.id): ConvocationStage[] {
+  return [limitedStage(limited), { kind: "constructed", formatId: constructed, rounds: 5 }];
 }
 /** The full Convocation seats 128 (Chris, S53: sixteen pods; a sixteen-round Swiss without rematches). */
 export const CONVOCATION_SEATS = 128;

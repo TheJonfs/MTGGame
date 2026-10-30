@@ -168,12 +168,13 @@ export class ConvocationController {
   }
   /** S53: the full Convocation — four days (a draft, a Constructed format, a draft, a Constructed format) and the
    * Umbel, at 128 seats (Chris). The two Constructed formats are the door's choice of the seven. */
-  newConvocation(seed: number = Math.floor(Math.random() * 1_000_000), opts: { difficulty?: ConvocationDifficulty; first?: string; second?: string; seats?: number; /** S54: two days — a draft and the first Constructed format */ short?: boolean; /** the tests' short shape */ stages?: ConvocationStage[] } = {}): void {
+  newConvocation(seed: number = Math.floor(Math.random() * 1_000_000), opts: { difficulty?: ConvocationDifficulty; first?: string; second?: string; /** post-S70 (Chris): the Limited days' formats — a draft unless chosen */ limited?: readonly [string, string]; seats?: number; /** S54: two days — a draft and the first Constructed format */ short?: boolean; /** the tests' short shape */ stages?: ConvocationStage[] } = {}): void {
     this.startOrigin = this.pendingOrigin ?? { origin: "menu" }; this.pendingOrigin = null;
     const seats = opts.seats ?? CONVOCATION_SEATS;
-    this.set(newConvocation({ seed, stages: opts.stages ?? (opts.short ? shortStages(opts.first ?? "open") : defaultStages(opts.second ?? "open", opts.first ?? "open")), seats, names: convocationNames(seats - 1), faces: this.faces(), library: this.library(), difficulty: opts.difficulty ?? "normal" }, this.deps()));
+    this.set(newConvocation({ seed, stages: opts.stages ?? (opts.short ? shortStages(opts.first ?? "open", opts.limited?.[0]) : defaultStages(opts.second ?? "open", opts.first ?? "open", opts.limited)), seats, names: convocationNames(seats - 1), faces: this.faces(), library: this.library(), difficulty: opts.difficulty ?? "normal" }, this.deps()));
     this.series = null; this.match = null; this.passNote = null;
     if (this.event!.registering?.length) return this.openBuild(false); // the decklists first
+    if (this.event!.phase === "build") return this.openBuild(false); // post-S70: a Sealed first day, no decklist to register
     this.screen = { kind: "draft" }; this.emit();
   }
   /** S53 (Chris): before Day 1, the decklists — the format being registered, and the days it will play. */
