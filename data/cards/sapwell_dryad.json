@@ -34,7 +34,9 @@
   }
  ],
  "art": {
+  "asset": "/custom-art/sapwell_dryad.png",
   "fallback": "rendered"
  },
- "shopTier": 2
+ "shopTier": 2,
+ "printedAsset": "sapwell_dryad.jpg"
 }

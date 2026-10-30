@@ -35,7 +35,9 @@
   }
  ],
  "art": {
+  "asset": "/custom-art/burnfallow_exuberant.png",
   "fallback": "rendered"
  },
- "shopTier": 2
+ "shopTier": 2,
+ "printedAsset": "burnfallow_exuberant.jpg"
 }

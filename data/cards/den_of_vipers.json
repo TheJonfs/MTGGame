@@ -35,7 +35,9 @@
   }
  ],
  "art": {
+  "asset": "/custom-art/den_of_vipers.png",
   "fallback": "rendered"
  },
- "shopTier": 2
+ "shopTier": 2,
+ "printedAsset": "den_of_vipers.jpg"
 }

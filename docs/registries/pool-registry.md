@@ -797,7 +797,7 @@ The restricted cycle's other colours beside Demonic Tutor (B) and Time Walk (U):
 
 ## Post-Session 70 addition — five tier-2 creatures (Chris, 2026-10-30)
 
-For underrepresented archetypes. All custom, tier 2. Fuzz `sim/s70-tier2-five-fuzz.test.ts` (320 games); fixtures `sim/s70-tier2-five.test.ts`. Art: 20 candidates pending Chris's picks.
+For underrepresented archetypes. All custom, tier 2. Fuzz `sim/s70-tier2-five-fuzz.test.ts` (320 games); fixtures `sim/s70-tier2-five.test.ts`. Art: Chris's picks — the Quartermaster and the Dryad in classical oil, the Exuberant and the Flayer in stained glass, the Den in ink-and-gouache; his printed faces installed.
 
 | id | name | status | vocabulary | notes |
 |---|---|---|---|---|
