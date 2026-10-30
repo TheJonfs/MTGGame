@@ -445,7 +445,7 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
  * (CR 701.19) through the logged game RNG, so replay reproduces it. */
 function searchOp(ctx: EngineCtx, requester?: EffectRequester, source?: { cardId: string; effects: Effect[] }) {
   return {
-    async searchLibrary(playerNum: number, predicate: "basicLand" | "anyCard" | "creatureCard" | `subtype:${string}`, to: "hand" | "battlefield" | "graveyard", entersTapped: boolean, count = 1): Promise<void> {
+    async searchLibrary(playerNum: number, predicate: "basicLand" | "landCard" | "anyCard" | "creatureCard" | `subtype:${string}`, to: "hand" | "battlefield" | "graveyard", entersTapped: boolean, count = 1): Promise<void> {
       const player = playerNum as PlayerId;
       const p = ctx.state.players[player];
       // S30 (R-093, Buried Alive): "up to N" — one logged pick per card (the picked card leaves the
@@ -455,6 +455,7 @@ function searchOp(ctx: EngineCtx, requester?: EffectRequester, source?: { cardId
           const def = ctx.defs.def(getObject(ctx.state, id).cardId);
           if (predicate === "anyCard") return true;
           if (predicate === "creatureCard") return def.types.includes("Creature");
+          if (predicate === "landCard") return def.types.includes("Land"); // post-S70 (the green restricted card under study): any land card
           if (predicate.startsWith("subtype:")) return (def.subtypes ?? []).includes(predicate.slice("subtype:".length)); // ADR-076: Goblin Matron
           return def.types.includes("Land") && (def.supertypes ?? []).includes("Basic");
         });

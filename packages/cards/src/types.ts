@@ -340,7 +340,7 @@ export type EffectBase =
    * ADR-076: predicate may be `subtype:<Subtype>` (Goblin Matron). */
   /** S30 (R-093, Buried Alive): `to: "graveyard"` and `count` ("up to N" — one logged pick per card, decline
    * ends it); `creatureCard` beside the land/any/subtype predicates. */
-  | { type: "searchLibrary"; predicate: "basicLand" | "anyCard" | "creatureCard" | `subtype:${string}`; to: "hand" | "battlefield" | "graveyard"; entersTapped?: boolean; count?: number }
+  | { type: "searchLibrary"; predicate: "basicLand" | "landCard" | "anyCard" | "creatureCard" | `subtype:${string}`; to: "hand" | "battlefield" | "graveyard"; entersTapped?: boolean; count?: number }
   /** ADR-075 A8: blink — exile the target and return it to the battlefield under your control as a new object (ETBs fire). */
   | { type: "exileThenReturn"; target: number; under: "yourControl" }
   /** ADR-068 Amendment 2: `mana` (fixed production) OR `choice` (Lotus: N mana of any one colour — a five-option choice at activation, no stack). */

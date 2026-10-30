@@ -681,7 +681,7 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     if (e.order !== undefined && (!Array.isArray(e.order) || e.order.length === 0 || (e.order as unknown[]).some((x) => typeof x !== "string"))) err(`createLaw.order must be a non-empty array of law card ids (S42a)`);
   },
   searchLibrary: (e, err) => {
-    if (typeof e.predicate !== "string" || !(SEARCH_PREDICATE.test(e.predicate) || e.predicate === "creatureCard")) err(`searchLibrary predicate must be basicLand|anyCard|creatureCard|subtype:<Subtype> (ADR-068/076; S30)`);
+    if (typeof e.predicate !== "string" || !(SEARCH_PREDICATE.test(e.predicate) || e.predicate === "creatureCard" || e.predicate === "landCard")) err(`searchLibrary predicate must be basicLand|landCard|anyCard|creatureCard|subtype:<Subtype> (ADR-068/076; S30; post-S70 landCard)`);
     if (e.to !== "hand" && e.to !== "battlefield" && e.to !== "graveyard") err(`searchLibrary "to" must be hand|battlefield|graveyard (S30)`);
     if (e.entersTapped !== undefined && e.to !== "battlefield") err(`searchLibrary entersTapped only applies to battlefield destination`);
     if (e.count !== undefined && (!Number.isInteger(e.count) || (e.count as number) < 1)) err(`searchLibrary count must be a positive integer (S30: "up to N")`);

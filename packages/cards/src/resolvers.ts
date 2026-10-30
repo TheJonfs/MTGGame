@@ -63,7 +63,7 @@ export interface EffectContext {
    * asked) or decline; the library is ALWAYS shuffled after (CR 701.19),
    * through the logged game RNG. Async: it is a DecisionRequest.
    */
-  searchLibrary(player: number, predicate: "basicLand" | "anyCard" | "creatureCard" | `subtype:${string}`, to: "hand" | "battlefield" | "graveyard", entersTapped: boolean, count?: number): Promise<void>;
+  searchLibrary(player: number, predicate: "basicLand" | "landCard" | "anyCard" | "creatureCard" | `subtype:${string}`, to: "hand" | "battlefield" | "graveyard", entersTapped: boolean, count?: number): Promise<void>;
   /** ADR-075 A8: exile the object and return it to the battlefield under the effect controller's control as a new object (ETBs fire). */
   exileThenReturn(objectId: string): void;
   /** S36 (R-096 word 1): schedule the resolving ability's SOURCE to return to its owner's hand at the beginning of the next cleanup step. */

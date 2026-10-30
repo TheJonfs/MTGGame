@@ -1,0 +1,12 @@
+# Post-S70: the green land tutor (working name green_harvest — up to two land cards onto the battlefield tapped) in Temur, at {1}{G} and {2}{G}; one copy (restricted), for a Forest or for a Harmonize. Game one, 200 a pairing, seed 56, paired.
+s70g_1_forest_emeraldsnakes   60.5 →  60.5   -0.0 ± 1.2  cast/g 0.25  worst: kiln -2, kindling -2 | best: ramp +2, temurcontrol +2
+s70g_2_forest_emeraldsnakes   60.5 →  59.3   -1.2 ± 1.2  cast/g 0.23  worst: kindling -4, rabble -3 | best: tally +0, temurcontrol +1
+s70g_1_harmonize_emeraldsnakes  60.5 →  60.1   -0.4 ± 1.0  cast/g 0.26  worst: temurcontrol -2, unwinder -2 | best: reaper +1, wurmspeaker +4
+s70g_2_harmonize_emeraldsnakes  60.5 →  58.9   -1.7 ± 1.0  cast/g 0.23  worst: tally -3, rabble -3 | best: ramp -1, wurmspeaker +2
+s70g_1_forest_ramp            61.1 →  62.1   +1.0 ± 1.1  cast/g 0.27  worst: rabble -2, tally -0 | best: wurmspeaker +2, reaper +3
+s70g_2_forest_ramp            61.1 →  61.2   +0.0 ± 1.2  cast/g 0.24  worst: rabble -3, unwinder -2 | best: wurmspeaker +2, reaper +4
+s70g_1_harmonize_ramp         61.1 →  62.7   +1.6 ± 1.1  cast/g 0.28  worst: rabble -1, kiln +0 | best: unwinder +3, emeraldsnakes +5
+s70g_2_harmonize_ramp         61.1 →  61.7   +0.6 ± 1.1  cast/g 0.25  worst: rabble -1, reaper -0 | best: wurmspeaker +2, emeraldsnakes +4
+# Calibration: one Time Walk for a Harmonize
+s70g_tw_emeraldsnakes        60.5 →  61.1   +0.6 ± 1.0
+s70g_tw_ramp                 61.1 →  61.9   +0.8 ± 1.1

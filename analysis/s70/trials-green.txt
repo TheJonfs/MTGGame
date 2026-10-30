@@ -1,0 +1,11 @@
+# Post-S70: the green land tutor (working name green_harvest — up to two land cards onto the battlefield tapped) in Temur, at {1}{G} and {2}{G}; one copy (restricted), for a Forest or for a Harmonize. Game one, 200 a pairing, seed 56, paired.
+s70g_b_emeraldsnakes|emeraldsnakes||--format temur --games 200 --extra-cards data/cards-study
+s70g_1_forest_emeraldsnakes|emeraldsnakes|emeraldsnakes:forest:1:green_harvest|--format temur --games 200 --extra-cards data/cards-study|s70g_b_emeraldsnakes
+s70g_2_forest_emeraldsnakes|emeraldsnakes|emeraldsnakes:forest:1:green_harvest~cost={2}{G}|--format temur --games 200 --extra-cards data/cards-study|s70g_b_emeraldsnakes
+s70g_1_harmonize_emeraldsnakes|emeraldsnakes|emeraldsnakes:harmonize:1:green_harvest|--format temur --games 200 --extra-cards data/cards-study|s70g_b_emeraldsnakes
+s70g_2_harmonize_emeraldsnakes|emeraldsnakes|emeraldsnakes:harmonize:1:green_harvest~cost={2}{G}|--format temur --games 200 --extra-cards data/cards-study|s70g_b_emeraldsnakes
+s70g_b_ramp|ramp||--format temur --games 200 --extra-cards data/cards-study
+s70g_1_forest_ramp|ramp|ramp:forest:1:green_harvest|--format temur --games 200 --extra-cards data/cards-study|s70g_b_ramp
+s70g_2_forest_ramp|ramp|ramp:forest:1:green_harvest~cost={2}{G}|--format temur --games 200 --extra-cards data/cards-study|s70g_b_ramp
+s70g_1_harmonize_ramp|ramp|ramp:harmonize:1:green_harvest|--format temur --games 200 --extra-cards data/cards-study|s70g_b_ramp
+s70g_2_harmonize_ramp|ramp|ramp:harmonize:1:green_harvest~cost={2}{G}|--format temur --games 200 --extra-cards data/cards-study|s70g_b_ramp

@@ -1,0 +1,23 @@
+{
+ "id": "green_harvest",
+ "name": "Green Harvest (working name)",
+ "source": "custom",
+ "manaCost": "{1}{G}",
+ "types": [
+  "Sorcery"
+ ],
+ "text": "Search your library for up to two land cards, put them onto the battlefield tapped, then shuffle.",
+ "spellEffect": [
+  {
+   "type": "searchLibrary",
+   "predicate": "landCard",
+   "to": "battlefield",
+   "entersTapped": true,
+   "count": 2
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": "R"
+}
