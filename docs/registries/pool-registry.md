@@ -795,6 +795,18 @@ The restricted cycle's other colours beside Demonic Tutor (B) and Time Walk (U):
 |---|---|---|---|---|
 | earthrise | Earthrise | tested | Sorcery {1}{G}; `searchLibrary` landCard (the one new word — any land card) ×2 → battlefield tapped | CUSTOM — the restricted cycle's green (Chris: Primeval Titan's trigger as a spell; {1}{G} over {2}{G} on the Temur study — Temur Ramp +1.6 for a Harmonize, level with one Time Walk's +0.8). Interim tier R; restricted in the Open. Name Chris's (2026-10-29). Art: round two's fourth classical oil (the stone shoulder and the shepherd), Chris's pick; printed face Chris's. Fuzz and fixture `sim/s70-earthrise.test.ts`. |
 
+## Post-Session 70 addition — five tier-2 creatures (Chris, 2026-10-30)
+
+For underrepresented archetypes. All custom, tier 2. Fuzz `sim/s70-tier2-five-fuzz.test.ts` (320 games); fixtures `sim/s70-tier2-five.test.ts`. Art: 20 candidates pending Chris's picks.
+
+| id | name | status | vocabulary | notes |
+|---|---|---|---|---|
+| shevelport_quartermaster | Shevelport Quartermaster | tested | Creature — Human Soldier Artificer 1/1 {W}{W}; first strike; optional ENTERS `searchLibrary` subtype:Equipment → hand | The Equipment enabler. Three Equipment in the pool; Chris plans another enabler or payoff round. |
+| burnfallow_exuberant | Burnfallow Exuberant | tested | Creature — Satyr Druid 1/1 {R}{R}; haste; ENTERS `searchLibrary` subtype:Mountain → battlefield tapped | A dual with the Mountain type counts; the entry triggers Valakut. Satyr, not Goblin, to stay out of the Rabble's tribal cards (Chris). |
+| notion_flayer | Notion Flayer | tested | Creature — Nightmare 2/1 {U}{U}; ATTACKS self: `mill` `sourcePower`, who opponent | If it has left the battlefield the mill is 0, not its last-known power (the registered `sourcePower` simplification). AI book 155. |
+| den_of_vipers | Den of Vipers | tested | Creature — Snake 1/1 {B}{B}; deathtouch; ENTERS `addCounters` +1/+1, creaturesYouControl subtype Snake | Counts itself (Chris): a 2/2 deathtouch. Wants a turn after the Forerunner's tokens, and double black beside double green. |
+| sapwell_dryad | Sapwell Dryad | tested | Creature — Dryad 1/3 {G}{G}; {T}: `untapTarget` target `land` (new predicate) | 1/3 over 1/1 (Chris), against the real Voyaging Satyr ({1}{G} 1/2). It targets, so it is not a mana ability. AI book 156. |
+
 ## Shop tiers (ADR-078, S19)
 
 The `shopTier` column (`1 | 2 | 3 | R`) is repo-canonical **on the card defs themselves** (`data/cards/*.json`, validated by the loader: every non-token, non-basic, non-prizeOnly card must carry one) rather than duplicated per row above; `docs/card-tier-audit-v2.md` is the curation source (planner-maintained), and `pnpm card-manifest` regenerates the human-readable price sheet. Distribution at adoption: **T1 ×53 · T2 ×31 · T3 ×10 · R ×2** (Demonic Tutor, Mystic Snake) + Lotus `prizeOnly` + 5 basics; Faerie Formation joins at T3 this session (→ T3 ×11). Availability: a town stocks `shopTier ≤ ring` (civilized 1 / approach 2 / wild 3); price × `shopTierMultiplier` (1.0/1.5/2.5 knobs); **R never stocks** — ante/quest/treasure circulation only.

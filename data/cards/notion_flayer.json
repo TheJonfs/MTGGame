@@ -1,0 +1,38 @@
+{
+ "id": "notion_flayer",
+ "name": "Notion Flayer",
+ "source": "custom",
+ "manaCost": "{U}{U}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Nightmare"
+ ],
+ "power": 2,
+ "toughness": 1,
+ "text": "Whenever Notion Flayer attacks, defending player mills cards equal to its power.",
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "ATTACKS",
+   "condition": {
+    "source": "self"
+   },
+   "effects": [
+    {
+     "type": "mill",
+     "count": {
+      "ref": "sourcePower"
+     },
+     "who": "opponent"
+    }
+   ],
+   "optional": false
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": 2
+}

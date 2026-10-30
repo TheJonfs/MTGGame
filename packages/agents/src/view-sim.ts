@@ -783,8 +783,9 @@ function applyEffect(
     }
     case "untapTarget": {
       const o = objAt(e.target);
+      const land = !!o && o.tapped && !!defs.get(o.cardId)?.types.includes("Land"); // post-S70 (book 156): the land is another use this turn
       if (o) o.tapped = false;
-      return 0;
+      return land ? 0.5 : 0;
     }
     case "modifyPT": {
       // Targeted pump/shrink: apply to the live numbers so lethal -X/-X

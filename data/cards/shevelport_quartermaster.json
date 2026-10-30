@@ -1,0 +1,41 @@
+{
+ "id": "shevelport_quartermaster",
+ "name": "Shevelport Quartermaster",
+ "source": "custom",
+ "manaCost": "{W}{W}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Human",
+  "Soldier",
+  "Artificer"
+ ],
+ "power": 1,
+ "toughness": 1,
+ "text": "First strike\nWhen Shevelport Quartermaster enters, you may search your library for an Equipment card, reveal it, put it into your hand, then shuffle.",
+ "keywords": [
+  "first strike"
+ ],
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "ENTERS_BATTLEFIELD",
+   "condition": {
+    "self": true
+   },
+   "effects": [
+    {
+     "type": "searchLibrary",
+     "predicate": "subtype:Equipment",
+     "to": "hand"
+    }
+   ],
+   "optional": true
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": 2
+}

@@ -320,6 +320,7 @@ export class HeuristicAgent implements Agent {
     if (this.removalHoldGated(view, action)) return -Infinity; // book 117: one-for-one removal waits for a creature worth it
     if (this.accumulatorSpendGated(view, action)) return -Infinity; // S26: Clio holds the tax while the board threatens
     if (this.floodSinkGated(view, action)) return -Infinity; // S40 (books 58–63): the flood's repeatable sinks — timing, targets, spare lands
+    if (this.landUntapGated(view, action)) return -Infinity; // post-S70 (book 156): a land is untapped when it pays now
     // The misaim rule: a FINITE cliff (not -Infinity) so book-of-shame orderings among
     // bad aims survive — at any softmax temperature exp(-MISAIM/t) is 0, so a misaimed
     // variant is never picked while any legitimate action (pass included) exists.
@@ -1446,6 +1447,8 @@ export class HeuristicAgent implements Agent {
     // defender sacrifice is worth what their cheapest permanents cost them, plus a tempo half-point
     // each — the annihilator swings every turn it is safe to.
     for (const id of attackers) score += this.edictGainOnAttack(view, id, opp);
+    // Post-S70 (book 155, `off: ["attackmill"]` — Chris's Notion Flayer): a mill on the attack is paid blocked or not.
+    if (!this.profile.off?.includes("attackmill")) for (const id of attackers) score += this.millOnAttack(view, id);
     // S9 Part 1.1: our lifelink attackers' gains show up as negative own
     // damage in the sim — credit them. (Opponent lifelink blockers already
     // debit through negative playerDamage[opp].)
@@ -2832,6 +2835,38 @@ export class HeuristicAgent implements Agent {
 
   /** S23 (fun batch — the Gallows Djinn's tax): the summed self-damage a creature's own ATTACKS or
    * BLOCKS triggers charge its controller (damage addressed to eventPlayer). */
+  /** Post-S70 (book 155): what an attacker's own mill-on-attack takes from their library, on the S29 curve. */
+  millOnAttack(view: GameView, objectId: string): number {
+    const o = view.battlefield.find((b) => b.id === objectId);
+    const lib = view.librarySizes[(1 - view.you) as 0 | 1] ?? 0;
+    let v = 0;
+    for (const a of (o ? this.def(o.cardId)?.abilities : undefined) ?? []) {
+      if (a.kind !== "triggered" || a.event !== "ATTACKS" || a.condition?.source !== "self") continue;
+      for (const e of a.effects) {
+        if (e.type !== "mill" || e.who !== "opponent") continue;
+        const n = typeof e.count === "number" ? e.count : e.count.ref === "sourcePower" ? Math.max(0, o!.power ?? 0) : 0;
+        v += millValue(n, lib) + (lib > 0 && n >= lib ? 200 : 0);
+      }
+    }
+    return v;
+  }
+  /** Post-S70 (book 156, `off: ["landuntap"]` — Chris's Sapwell Dryad): untapping a land is refused unless it pays now —
+   * our own tapped land, and in our main phase the one mana makes a spell in hand castable, or the land has an ability
+   * of its own and the mana for it is here (at their end step too: a High Ground used twice, the Library). */
+  landUntapGated(view: GameView, action: Action): boolean {
+    if (action.type !== "activateAbility" || this.profile.off?.includes("landuntap")) return false;
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+    if (!ab || ab.kind !== "activated" || !ab.effects.some((e) => e.type === "untapTarget") || ab.targets?.[0]?.predicate !== "land") return false;
+    const t = action.targets[0], land = t?.kind === "object" ? view.battlefield.find((o) => o.id === t.id) : undefined;
+    if (!land || land.controller !== view.you || !land.tapped || view.stack.length > 0) return true;
+    const ourMain = view.activePlayer === view.you && (view.step === "MAIN1" || view.step === "MAIN2");
+    const theirEnd = view.activePlayer !== view.you && view.step === "END";
+    if (!ourMain && !theirEnd) return true;
+    const open = view.battlefield.filter((o) => o.controller === view.you && !o.tapped && this.def(o.cardId)?.types.includes("Land")).length;
+    const own = (this.def(land.cardId)?.abilities ?? []).find((a) => a.kind === "activated" && !!a.cost.tap && a.effects.some((e) => e.type !== "addMana"));
+    if (own?.kind === "activated" && open >= manaValue(parseManaCost((own.cost.mana ?? "").replace("{X}", "")))) return false;
+    return !(ourMain && view.hand.some((c) => { const d = this.def(c.cardId); return !!d && !d.types.includes("Land") && this.mv(c.cardId) === open + 1; }));
+  }
   /** S31: the value an attacker's edict-on-attack (annihilator) takes from `opp` — their `count`
    * least-valued permanents of the predicate (the chooser's rule), plus a half-point of tempo each. */
   private edictGainOnAttack(view: GameView, objectId: string, opp: PlayerId): number {

@@ -525,6 +525,21 @@
         }
       }
     },
+    "card-burnfallow-exuberant-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:053b8e8ad0537a880d525dbf21bea38c06f48d0580da8e15e8ba5e065fed782b",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:053b8e8ad0537a880d525dbf21bea38c06f48d0580da8e15e8ba5e065fed782b",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-burnfallow-exuberant-3/canonical.png",
+          "rendered_at": "2026-10-30T21:12:03+00:00",
+          "thumb": "assets/thumbs/card-burnfallow-exuberant-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "card-burnfallow-r2-1": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:70c87a7049b6a78f757aac65aed0aef733c5e6b950f03fbf8b8391fdd1bb5c93",
@@ -743,6 +758,21 @@
           "path": "assets/images/card-cunning-tactician-4/canonical.png",
           "rendered_at": "2026-08-20T19:48:47+00:00",
           "thumb": "assets/thumbs/card-cunning-tactician-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-den-of-vipers-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:a86b0d983a46fa01115769ea221e1a8f02a7a74f1c6d62bf0099bc5174f82074",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:a86b0d983a46fa01115769ea221e1a8f02a7a74f1c6d62bf0099bc5174f82074",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-den-of-vipers-4/canonical.png",
+          "rendered_at": "2026-10-30T21:12:21+00:00",
+          "thumb": "assets/thumbs/card-den-of-vipers-4/canonical.png",
           "variant_prompt": null
         }
       }
@@ -1527,6 +1557,21 @@
         }
       }
     },
+    "card-notion-flayer-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:f0d3583fdad09345e89010846bd123ff279fb164632911e23b1dcba49f913862",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:f0d3583fdad09345e89010846bd123ff279fb164632911e23b1dcba49f913862",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-notion-flayer-4/canonical.png",
+          "rendered_at": "2026-10-30T21:12:12+00:00",
+          "thumb": "assets/thumbs/card-notion-flayer-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "card-obsidian-observatory-1": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:808c502fb4395abd4576ae89dfa343a61677f4710e2b4c2be249e8b698dee6c9",
@@ -2217,6 +2262,21 @@
         }
       }
     },
+    "card-sapwell-dryad-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:d1b62e3011f19238afa7ed69a00b5afab29a1d98d216b18e893c5024204b7276",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:d1b62e3011f19238afa7ed69a00b5afab29a1d98d216b18e893c5024204b7276",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-sapwell-dryad-2/canonical.png",
+          "rendered_at": "2026-10-30T21:12:30+00:00",
+          "thumb": "assets/thumbs/card-sapwell-dryad-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "card-shevelport-1": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:0613f2fdc8038673acfee8143bdb9365dedcd10e80cc726404ab32177426d845",
@@ -2273,6 +2333,21 @@
           "path": "assets/images/card-shevelport-4/canonical.png",
           "rendered_at": "2026-09-19T21:50:18+00:00",
           "thumb": "assets/thumbs/card-shevelport-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-shevelport-quartermaster-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:ca882422207f0309aef4fe9390d6510f999a46817343fc6d26a9665d7f8435a8",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:ca882422207f0309aef4fe9390d6510f999a46817343fc6d26a9665d7f8435a8",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-shevelport-quartermaster-2/canonical.png",
+          "rendered_at": "2026-10-30T21:11:53+00:00",
+          "thumb": "assets/thumbs/card-shevelport-quartermaster-2/canonical.png",
           "variant_prompt": null
         }
       }

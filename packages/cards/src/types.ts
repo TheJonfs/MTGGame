@@ -102,6 +102,8 @@ export const TARGET_PREDICATES = [
   "tappedCreature",
   // S70 (R-118, Ranksmere): "target creature token you control" — the token-copy word's target.
   "creatureTokenYouControl",
+  // Post-S70 (Chris's Sapwell Dryad): "target land".
+  "land",
 ] as const;
 export type TargetPredicate = (typeof TARGET_PREDICATES)[number];
 

@@ -2412,4 +2412,31 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const full = mkView({ hand: [{ objectId: "wh", cardId: "wheel_of_fortune" }, ...Array.from({ length: 6 }, (_, i) => ({ objectId: "h" + i, cardId: "lightning_bolt" }))], battlefield: lands("m", 3, "mountain", 0), opponentHandCount: 0 });
     expect(a.scorePriorityAction(full, wheel)).toBeLessThan(a.scorePriorityAction(full, { type: "pass" }));
   });
+
+  it("book of shame 155 (post-S70 — Chris's Notion Flayer): a mill on the attack is paid blocked or not, so it counts in the attack's score; off: attackmill", () => {
+    const a = agent("midrange");
+    const bf = [{ id: "nf", cardId: "notion_flayer", controller: 0 as const }];
+    const view = mkView({ battlefield: bf, step: "DECLARE_ATTACKERS", librarySizes: [40, 30] });
+    expect(a.millOnAttack(view, "nf")).toBeGreaterThan(0.6); // two cards on the S29 curve
+    expect(a.millOnAttack(mkView({ battlefield: bf, step: "DECLARE_ATTACKERS", librarySizes: [40, 2] }), "nf")).toBeGreaterThan(200); // it empties them
+    expect(a.millOnAttack(mkView({ battlefield: [{ id: "gb", cardId: "grizzly_bears", controller: 0 as const }] }), "gb")).toBe(0);
+  });
+
+  it("book of shame 156 (post-S70 — Chris's Sapwell Dryad): a land is untapped when it pays now — our own tapped land, for a spell the one mana makes castable, or for the land's own ability; off: landuntap", () => {
+    const a = agent("midrange");
+    const dryad = { id: "sd", cardId: "sapwell_dryad", controller: 0 as const };
+    const lands = [{ id: "f0", cardId: "forest", controller: 0 as const, tapped: true }, { id: "f1", cardId: "forest", controller: 0 as const }, { id: "f2", cardId: "forest", controller: 0 as const }];
+    const untap = (id: string) => ({ type: "activateAbility" as const, objectId: "sd", abilityIndex: 0, targets: [{ kind: "object" as const, id }] });
+    const three = [{ objectId: "h", cardId: "centaur_courser" }]; // mana value three: two open lands, one short
+    expect(a.landUntapGated(mkView({ hand: three, battlefield: [dryad, ...lands] }), untap("f0"))).toBe(false);
+    expect(a.scorePriorityAction(mkView({ hand: three, battlefield: [dryad, ...lands] }), untap("f0"))).toBeGreaterThan(a.scorePriorityAction(mkView({ hand: three, battlefield: [dryad, ...lands] }), { type: "pass" }));
+    expect(a.landUntapGated(mkView({ hand: [], battlefield: [dryad, ...lands] }), untap("f0"))).toBe(true); // nothing to spend it on
+    expect(a.landUntapGated(mkView({ hand: three, battlefield: [dryad, ...lands] }), untap("f1"))).toBe(true); // already untapped
+    expect(a.landUntapGated(mkView({ hand: three, battlefield: [dryad, ...lands], step: "UPKEEP" }), untap("f0"))).toBe(true); // not our main
+    // a High Ground used twice: Hearthspire tapped, four lands open for its second shot, at their end step
+    const hs = [dryad, { id: "hs", cardId: "hearthspire", controller: 0 as const, tapped: true }, ...["m0", "m1", "p0", "p1"].map((id, i) => ({ id, cardId: i < 2 ? "mountain" : "plains", controller: 0 as const }))];
+    expect(a.landUntapGated(mkView({ battlefield: hs, step: "END", activePlayer: 1 }), untap("hs"))).toBe(false);
+    const old = new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, off: ["landuntap"] });
+    expect(old.landUntapGated(mkView({ hand: [], battlefield: [dryad, ...lands] }), untap("f0"))).toBe(false);
+  });
 });

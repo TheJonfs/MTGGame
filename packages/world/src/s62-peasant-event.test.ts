@@ -64,7 +64,7 @@ describe("Peasant at the door (S62, ADR-176)", () => {
     const legal = [...cards.values()].filter((d) => !d.types.includes("Land") && cardLegal(d, PEASANT_FORMAT.rule) && !["plains", "island", "swamp", "mountain", "forest"].includes(d.id));
     // every legal card has a score as of the last `pnpm rating:format --write` (a card added after it reads its tier's prior until the next: name it here)
     const unscored = legal.filter((d) => typeof (rating.cards[d.id] as { peasant?: number } | undefined)?.peasant !== "number").map((d) => d.id).sort();
-    expect(unscored).toEqual(["thought_replacement"]); // post-S70: Chris's Thought Replacement reads its tier's prior until the next `pnpm rating:format --write`; S64: the score rebuilt with the five new cards (10,360 games)
+    expect(unscored).toEqual([]); // post-S70: rebuilt with Thought Replacement and the five tier-2 creatures; S64: the score rebuilt with the five new cards (10,360 games)
     const xs = legal.filter((d) => !unscored.includes(d.id)).map((d) => p.cards[d.id]!.rating).sort((a, b) => a - b);
     expect(xs[Math.floor(0.9 * xs.length)]! - xs[Math.floor(0.1 * xs.length)]!).toBeGreaterThan(1.2); // a real spread (the Limited score sat inside half a point on this shelf)
   });

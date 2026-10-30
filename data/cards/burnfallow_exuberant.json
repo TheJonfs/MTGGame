@@ -1,0 +1,41 @@
+{
+ "id": "burnfallow_exuberant",
+ "name": "Burnfallow Exuberant",
+ "source": "custom",
+ "manaCost": "{R}{R}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Satyr",
+  "Druid"
+ ],
+ "power": 1,
+ "toughness": 1,
+ "text": "Haste\nWhen Burnfallow Exuberant enters, search your library for a Mountain card, put it onto the battlefield tapped, then shuffle.",
+ "keywords": [
+  "haste"
+ ],
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "ENTERS_BATTLEFIELD",
+   "condition": {
+    "self": true
+   },
+   "effects": [
+    {
+     "type": "searchLibrary",
+     "predicate": "subtype:Mountain",
+     "to": "battlefield",
+     "entersTapped": true
+    }
+   ],
+   "optional": false
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": 2
+}

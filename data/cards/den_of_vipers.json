@@ -1,0 +1,41 @@
+{
+ "id": "den_of_vipers",
+ "name": "Den of Vipers",
+ "source": "custom",
+ "manaCost": "{B}{B}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Snake"
+ ],
+ "power": 1,
+ "toughness": 1,
+ "text": "Deathtouch\nWhen Den of Vipers enters, put a +1/+1 counter on each Snake you control.",
+ "keywords": [
+  "deathtouch"
+ ],
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "ENTERS_BATTLEFIELD",
+   "condition": {
+    "self": true
+   },
+   "effects": [
+    {
+     "type": "addCounters",
+     "kind": "+1/+1",
+     "count": 1,
+     "scope": "creaturesYouControl",
+     "subtype": "Snake"
+    }
+   ],
+   "optional": false
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": 2
+}

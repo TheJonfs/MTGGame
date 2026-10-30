@@ -106,6 +106,11 @@ function basePredicate(ctx: EngineCtx, spec0: TargetSpec, target: ResolvedTarget
       if (!isLegalTarget(ctx, { ...spec, predicate: "creature" }, target, by)) return false;
       return target.kind === "object" && state.objects[target.id]!.controller === by;
     }
+    case "land": { // post-S70 (Sapwell Dryad)
+      if (target.kind !== "object") return false;
+      const obj = state.objects[target.id];
+      return !!obj && obj.zone === "battlefield" && ctx.defs.def(obj.cardId).types.includes("Land");
+    }
     case "creatureTokenYouControl": { // S70 (R-118, Ranksmere)
       if (!isLegalTarget(ctx, { ...spec, predicate: "creatureYouControl" }, target, by)) return false;
       return target.kind === "object" && state.objects[target.id]!.isToken === true;

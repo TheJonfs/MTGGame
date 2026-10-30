@@ -1,0 +1,40 @@
+{
+ "id": "sapwell_dryad",
+ "name": "Sapwell Dryad",
+ "source": "custom",
+ "manaCost": "{G}{G}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Dryad"
+ ],
+ "power": 1,
+ "toughness": 3,
+ "text": "{T}: Untap target land.",
+ "abilities": [
+  {
+   "kind": "activated",
+   "cost": {
+    "tap": true
+   },
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "land",
+     "zone": "battlefield"
+    }
+   ],
+   "effects": [
+    {
+     "type": "untapTarget",
+     "target": 0
+    }
+   ]
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": 2
+}
