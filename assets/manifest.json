@@ -807,6 +807,21 @@
         }
       }
     },
+    "card-earthwake-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:fa22029dceb9a861159a3d1a567365fe67e2c3cc78f5577192520c87c450753a",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:fa22029dceb9a861159a3d1a567365fe67e2c3cc78f5577192520c87c450753a",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-earthwake-1/canonical.png",
+          "rendered_at": "2026-10-30T01:27:07+00:00",
+          "thumb": "assets/thumbs/card-earthwake-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "card-emerald-keeper-1": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:a9abab3a24415c56b4325ce291e0f2d2a09438332a147a82752f167bca56916e",
