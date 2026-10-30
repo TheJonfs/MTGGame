@@ -793,7 +793,7 @@ The restricted cycle's other colours beside Demonic Tutor (B) and Time Walk (U):
 
 | id | name | status | vocabulary | notes |
 |---|---|---|---|---|
-| earthrise | Earthrise | tested | Sorcery {1}{G}; `searchLibrary` landCard (the one new word — any land card) ×2 → battlefield tapped | CUSTOM — the restricted cycle's green (Chris: Primeval Titan's trigger as a spell; {1}{G} over {2}{G} on the Temur study — Temur Ramp +1.6 for a Harmonize, level with one Time Walk's +0.8). Interim tier R; restricted in the Open. Name Chris's (2026-10-29). Art: four candidates pending; printed face Chris's to come. Fuzz and fixture `sim/s70-earthrise.test.ts`. |
+| earthrise | Earthrise | tested | Sorcery {1}{G}; `searchLibrary` landCard (the one new word — any land card) ×2 → battlefield tapped | CUSTOM — the restricted cycle's green (Chris: Primeval Titan's trigger as a spell; {1}{G} over {2}{G} on the Temur study — Temur Ramp +1.6 for a Harmonize, level with one Time Walk's +0.8). Interim tier R; restricted in the Open. Name Chris's (2026-10-29). Art: round two's fourth classical oil (the stone shoulder and the shepherd), Chris's pick; printed face Chris's. Fuzz and fixture `sim/s70-earthrise.test.ts`. |
 
 ## Shop tiers (ADR-078, S19)
 

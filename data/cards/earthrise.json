@@ -17,7 +17,9 @@
   }
  ],
  "art": {
+  "asset": "/custom-art/earthrise.png",
   "fallback": "rendered"
  },
- "shopTier": "R"
+ "shopTier": "R",
+ "printedAsset": "earthrise.jpg"
 }
