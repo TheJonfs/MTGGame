@@ -12,7 +12,7 @@
 - **BUG:** The Reeve [prize]
 - **BWR:** The Usher [prize]
 - **C:** Burnfallow [prize] · Cairnbrand [prize] · Hearthspire [prize] · Nightbower [prize] · Obsidian Observatory [prize] · Ranksmere [prize] · Shevelport [prize] · Tallyflame Court [prize] · The Intake [prize] · The Risen Tide [prize] · The Season [prize] · The Tithe [prize] · The Toll [prize] · Volmaw [prize] · Wrackroot [prize]
-- **G:** Earthwake [R] · Gaean Wurm [2] · Manaba [2] · Reaper's Forerunner [2] · The Emerald Keeper [prize]
+- **G:** Earthrise [R] · Gaean Wurm [2] · Manaba [2] · Reaper's Forerunner [2] · The Emerald Keeper [prize]
 - **GBR:** The Reaper [prize]
 - **GW:** Ovna, the Enchantress [prize]
 - **GWU:** The Sower [prize]
@@ -155,7 +155,7 @@
 | Rancor | G | Enchantment — Aura | {G} | 1 |  |  | 2 | 12 |  | Enchant creature Enchanted creature gets +2/+0 and has trample. When this Aura is put into a graveyard from the battlefield, return it to its owner's hand. |
 | Blurred Mongoose | G | Creature — Mongoose | {1}{G} | 2 | 2/1 | shroud, cant be countered | 1 | 12 |  | This spell can't be countered. Shroud (This creature can't be the target of spells or abilities.) |
 | Deadly Recluse | G | Creature — Spider | {1}{G} | 2 | 1/2 | reach, deathtouch | 1 | 12 |  | Reach (This creature can block creatures with flying.) Deathtouch (Any amount of damage this deals to a creature is enough to destroy it.) |
-| Earthwake | G | Sorcery | {1}{G} | 2 |  |  | R | 30 | custom | Search your library for up to two land cards, put them onto the battlefield tapped, then shuffle. |
+| Earthrise | G | Sorcery | {1}{G} | 2 |  |  | R | 30 | custom | Search your library for up to two land cards, put them onto the battlefield tapped, then shuffle. |
 | Elvish Visionary | G | Creature — Elf Shaman | {1}{G} | 2 | 1/1 |  | 1 | 12 |  | When this creature enters, draw a card. |
 | Grizzly Bears | G | Creature — Bear | {1}{G} | 2 | 2/2 |  | 1 | 12 |  |  |
 | Mother Bear | G | Creature — Bear | {1}{G} | 2 | 2/2 |  | 2 | 18 |  | {3}{G}{G}, Exile this card from your graveyard: Create two 2/2 green Bear creature tokens. Activate only as a sorcery. |

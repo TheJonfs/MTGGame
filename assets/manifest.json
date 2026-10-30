@@ -807,6 +807,21 @@
         }
       }
     },
+    "card-earthrise-r2-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:52e6421e65078125c20c8853be99a1d0a68aec5a2e964139041baccafa111fa9",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:52e6421e65078125c20c8853be99a1d0a68aec5a2e964139041baccafa111fa9",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-earthrise-r2-1/canonical.png",
+          "rendered_at": "2026-10-30T01:35:11+00:00",
+          "thumb": "assets/thumbs/card-earthrise-r2-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "card-earthwake-1": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:fa22029dceb9a861159a3d1a567365fe67e2c3cc78f5577192520c87c450753a",

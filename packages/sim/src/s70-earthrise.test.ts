@@ -8,17 +8,17 @@ import { FORMAT_FIELD } from "./open-decks.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const cards = new Map(loadCardPool(join(ROOT, "data/cards")).cards);
-const study = cards.get("earthwake")!; // post-S70: the study def became Earthwake (Chris)
+const study = cards.get("earthrise")!; // post-S70: the study def became Earthrise (Chris)
 const RULES = { startingLife: 20, handSize: 7, mulligan: "london" as const, maxTurns: 100 };
 const D = (ids: Record<string, number>) => Object.entries(ids).map(([cardId, count]) => ({ cardId, count }));
 const pass = (r: ActionRequest) => r.actions.find((a) => a.type === "pass") ?? r.actions[0]!;
 
 /**
  * Post-S70 — the green restricted card under study (Chris: Primeval Titan's trigger as a spell — "Search your library
- * for up to two land cards, put them onto the battlefield tapped, then shuffle" — Earthwake, {1}{G}, Chris's ruling).
+ * for up to two land cards, put them onto the battlefield tapped, then shuffle" — Earthrise, {1}{G}, Chris's ruling).
  * The one new word: the search's `landCard` (any land card, not only a basic). Fuzz first, then the fixture.
  */
-describe("Post-S70 — Earthwake (the green restricted card)", () => {
+describe("Post-S70 — Earthrise (the green restricted card)", () => {
   it(`fuzz: four copies in Emerald Snakes and Temur Ramp (Temur's), random play, both seats — zero exceptions, cast`, async () => {
     const games = process.env.FUZZ_FULL ? 8 : 1;
     let casts = 0;
@@ -35,7 +35,7 @@ describe("Post-S70 — Earthwake (the green restricted card)", () => {
         expect(r.reason).toBeTruthy();
       }
     }
-    if (process.env.FUZZ_FULL) console.log(`earthwake: ${casts} casts in ${lists.length * games * 2} games`);
+    if (process.env.FUZZ_FULL) console.log(`earthrise: ${casts} casts in ${lists.length * games * 2} games`);
     expect(casts).toBeGreaterThan(0);
   }, 900_000);
 
@@ -46,7 +46,7 @@ describe("Post-S70 — Earthwake (the green restricted card)", () => {
       if (r.purpose === "searchLibrary") { const seen = new Set(v.battlefield.map((o) => o.cardId)); return r.actions.find((a) => a.type === "searchPick" && !seen.has((r.revealed ?? []).find((x) => x.objectId === a.objectId)?.cardId ?? "")) ?? r.actions.find((a) => a.type === "searchPick") ?? r.actions[0]!; }
       return pass(r);
     } };
-    const spec = { seed: 74, players: [{ name: "a", decklist: D({ earthwake: 30, taiga: 15, forest: 15 }), agent: "x" }, { name: "b", decklist: D({ forest: 60 }), agent: "x" }], rules: { ...RULES, maxTurns: 1, startingPlayer: 0 }, modifiers: [{ type: "permanentOnBattlefield", player: 0, cardId: "forest" }, { type: "permanentOnBattlefield", player: 0, cardId: "forest" }] } as MatchSpec;
+    const spec = { seed: 74, players: [{ name: "a", decklist: D({ earthrise: 30, taiga: 15, forest: 15 }), agent: "x" }, { name: "b", decklist: D({ forest: 60 }), agent: "x" }], rules: { ...RULES, maxTurns: 1, startingPlayer: 0 }, modifiers: [{ type: "permanentOnBattlefield", player: 0, cardId: "forest" }, { type: "permanentOnBattlefield", player: 0, cardId: "forest" }] } as MatchSpec;
     const f = JSON.parse((await runMatch(spec, cards, [caster, { chooseAction: async (_v, r) => pass(r) }])).finalStateSerialized) as { battlefield: string[]; objects: Record<string, { cardId: string; controller: number; tapped?: boolean }> };
     const mine = f.battlefield.map((id) => f.objects[id]!).filter((o) => o.controller === 0);
     expect(mine.filter((o) => o.cardId === "taiga")).toHaveLength(1);

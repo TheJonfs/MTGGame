@@ -789,11 +789,11 @@ The restricted cycle's other colours beside Demonic Tutor (B) and Time Walk (U):
 | balance | Balance | tested | Sorcery {1}{W}; `sacrifice` eachPlayer count `overFewest` land, predicate `land` (new for the edict); `discard` eachPlayer count `overFewest` hand; `sacrifice` eachPlayer count `overFewest` creature (R-121 — the one new word) | REAL (LEB #3, Mark Poole — the Beta printing, Chris). Three steps, each counted as it happens (the 2016 Scryfall ruling). Simplification: each player's choices are taken in seat order, not active player first (the choosers know earlier picks either way; the sacrifices are simultaneous per player). Fixture `sim/s70-balance-wheel.test.ts`; book 154. |
 | wheel_of_fortune | Wheel of Fortune | tested | Sorcery {2}{R}; `discard` all eachPlayer; `draw` 7 eachPlayer — no new word (the Dragon Mage's wheel) | REAL (LEB #184, Daniel Gelon — the Beta printing, Chris). Fixture; book 154. |
 
-## Post-Session 70 addition — Earthwake (Chris, 2026-10-29)
+## Post-Session 70 addition — Earthrise (Chris, 2026-10-29)
 
 | id | name | status | vocabulary | notes |
 |---|---|---|---|---|
-| earthwake | Earthwake | tested | Sorcery {1}{G}; `searchLibrary` landCard (the one new word — any land card) ×2 → battlefield tapped | CUSTOM — the restricted cycle's green (Chris: Primeval Titan's trigger as a spell; {1}{G} over {2}{G} on the Temur study — Temur Ramp +1.6 for a Harmonize, level with one Time Walk's +0.8). Interim tier R; restricted in the Open. Name Chris's (2026-10-29). Art: four candidates pending; printed face Chris's to come. Fuzz and fixture `sim/s70-earthwake.test.ts`. |
+| earthrise | Earthrise | tested | Sorcery {1}{G}; `searchLibrary` landCard (the one new word — any land card) ×2 → battlefield tapped | CUSTOM — the restricted cycle's green (Chris: Primeval Titan's trigger as a spell; {1}{G} over {2}{G} on the Temur study — Temur Ramp +1.6 for a Harmonize, level with one Time Walk's +0.8). Interim tier R; restricted in the Open. Name Chris's (2026-10-29). Art: four candidates pending; printed face Chris's to come. Fuzz and fixture `sim/s70-earthrise.test.ts`. |
 
 ## Shop tiers (ADR-078, S19)
 
