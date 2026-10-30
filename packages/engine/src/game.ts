@@ -36,7 +36,7 @@ import {
   type Step,
 } from "./state.js";
 import { isLegalTarget, specsWithX, targetCandidates } from "./targeting.js";
-import { placePendingTriggers, wireTriggerCollection } from "./triggers.js";
+import { interveningHolds, placePendingTriggers, wireTriggerCollection } from "./triggers.js";
 import { buildView, type GameView } from "./view.js";
 import { createObject, moveObject } from "./zones.js";
 
@@ -886,6 +886,12 @@ export class Game {
         equipment.attachedTo = host.id;
         this.ctx.bus.emit("ATTACHED", { objectId: equipment.id, previousHost, newHost: host.id, cause: "equip" });
       }
+      return;
+    }
+
+    // Post-S70 (R-120): an intervening "if" is checked again on resolution; false, the ability does nothing (CR 603.4).
+    if (item.interveningIf && !interveningHolds(this.ctx, item.interveningIf, item.controller, item.eventContext?.objectId)) {
+      this.ctx.log.append({ t: "EVENT", name: "INTERVENING_IF_FALSE", payload: { cardId: item.sourceCardId } });
       return;
     }
 

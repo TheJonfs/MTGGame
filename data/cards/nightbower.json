@@ -61,5 +61,6 @@
   "asset": "/custom-art/nightbower.png",
   "fallback": "rendered"
  },
- "prizeOnly": true
+ "prizeOnly": true,
+ "printedAsset": "nightbower.jpg"
 }

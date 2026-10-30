@@ -66,5 +66,6 @@
   "asset": "/custom-art/hearthspire.png",
   "fallback": "rendered"
  },
- "prizeOnly": true
+ "prizeOnly": true,
+ "printedAsset": "hearthspire.jpg"
 }

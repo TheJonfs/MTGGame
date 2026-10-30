@@ -1,6 +1,7 @@
 import { parseManaCost, parseManaProduction } from "./mana.js";
 import { IMPLEMENTED_EFFECT_TYPES } from "./resolvers.js";
 import {
+  DISCARD_FILTERS,
   EFFECT_TYPES,
   KEYWORDS,
   SCOPES,
@@ -353,6 +354,13 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
         // S31 (R-094): a stack-zone trigger is "when you cast this spell" — SPELL_CAST, source self.
         if (a.zone === "stack" && (a.event !== "SPELL_CAST" || (isRecord(a.condition) && a.condition.source !== undefined && a.condition.source !== "self"))) err(`stack-zone triggers are SPELL_CAST with source self — "when you cast this spell" (S31)`);
       }
+      // Post-S70 (R-120): the intervening if — a count and a floor.
+      if (a.interveningIf !== undefined) {
+        const iff = a.interveningIf as { count?: unknown; atLeast?: unknown; otherThanEvent?: unknown };
+        if (!isRecord(iff.count)) err(`interveningIf needs a "count" predicate (R-120)`);
+        if (!Number.isInteger(iff.atLeast) || (iff.atLeast as number) < 1) err(`interveningIf atLeast must be a positive integer (R-120)`);
+        if (iff.otherThanEvent !== undefined && iff.otherThanEvent !== true) err(`interveningIf otherThanEvent must be true (R-120)`);
+      }
       // A10 word 9 rider: optionalCost — a "you may pay" whose yes pays; requires optional.
       if (a.optionalCost !== undefined) {
         if (a.optional !== true) err(`optionalCost requires optional: true (ADR-027 + A10)`);
@@ -549,7 +557,7 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     if (e.mode !== "ownerChooses" && e.mode !== "random" && e.mode !== "casterChooses") {
       err(`discard mode must be ownerChooses|random|casterChooses (ADR-029)`);
     }
-    if (e.filter !== undefined && e.filter !== "noncreatureNonland") err(`unknown discard filter "${e.filter}"`);
+    if (e.filter !== undefined && !(DISCARD_FILTERS as readonly string[]).includes(e.filter as string)) err(`unknown discard filter "${e.filter}"`);
   },
   mill: (e, err) => {
     // S23: count widened to value refs (the Traumatizer's eventDamage ×2).

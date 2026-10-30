@@ -643,6 +643,7 @@ function discardOp(ctx: EngineCtx, caster: PlayerId, requester?: EffectRequester
   const matchesFilter = (cardId: string, filter?: DiscardFilter): boolean => {
     if (!filter) return true;
     const def = ctx.defs.def(cardId);
+    if (filter === "nonland") return !def.types.includes("Land"); // post-S70 (Thought Replacement)
     return !def.types.includes("Creature") && !def.types.includes("Land"); // noncreatureNonland
   };
 

@@ -58,7 +58,7 @@ export type Scope = (typeof SCOPES)[number];
 export type Who = "you" | "opponent" | "eachPlayer" | "target" | "controllerOfTarget" | "eventPlayer";
 /** ADR-029 discard modes. */
 export type DiscardMode = "ownerChooses" | "random" | "casterChooses";
-export const DISCARD_FILTERS = ["noncreatureNonland"] as const;
+export const DISCARD_FILTERS = ["noncreatureNonland", "nonland"] as const; // "nonland": post-S70 (Chris's Thought Replacement)
 export type DiscardFilter = (typeof DISCARD_FILTERS)[number];
 
 /** Targeting predicates known to the engine (engine-design §10). */
@@ -140,6 +140,9 @@ export interface TargetSpec {
 }
 
 /** ADR-075 A4: a battlefield-permanent predicate for counting / max-power refs. */
+/** Post-S70 (R-120): an intervening-if count condition (CR 603.4). */
+export interface InterveningIf { count: CountPredicate; atLeast: number; otherThanEvent?: true }
+
 export interface CountPredicate {
   cardType?: CardType;
   subtype?: string;
@@ -524,6 +527,11 @@ export interface TriggeredAbilityDef {
   /** A10 word 9 rider (S22): an ADR-027 optional trigger whose "yes" PAYS — the accept option is
    * offered only when the cost is payable; auto-pays on accept (Tainted Phoenix's {B}). Requires `optional`. */
   optionalCost?: { mana: string };
+  /** Post-S70 (R-120, Valakut, the Molten Pinnacle: "if you control at least five other Mountains"): an intervening
+   * "if" — checked when the event happens (the trigger is not collected otherwise) and again on resolution (it does
+   * nothing if false then), CR 603.4. A count of permanents the controller's predicate matches; `otherThanEvent`
+   * leaves out the event's own object (the Mountain that entered). */
+  interveningIf?: InterveningIf;
   /** A10 word 7 (S22) — the punisher package: on resolution the stated player (the event's player,
    * else the controller's opponent) chooses to pay or let `effects` happen. Pay = lose that much life;
    * offered only at life STRICTLY above the cost (the ruled auto-resolve at life ≤ cost — ADR-014

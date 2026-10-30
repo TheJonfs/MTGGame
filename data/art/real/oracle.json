@@ -2966,5 +2966,19 @@
     "art_crop": "https://cards.scryfall.io/art_crop/front/0/9/09dbe391-a817-4347-986f-13849746db56.jpg?1783908011",
     "normal": "https://cards.scryfall.io/normal/front/0/9/09dbe391-a817-4347-986f-13849746db56.jpg?1783908011",
     "via": "override inr #387"
+  },
+  "valakut_the_molten_pinnacle": {
+    "scryfallId": "37bce60d-2cb0-4772-9f5c-122a7ed426a0",
+    "set": "zen",
+    "set_name": "Zendikar",
+    "collector_number": "228",
+    "artist": "Kieran Yanner",
+    "name": "Valakut, the Molten Pinnacle",
+    "mana_cost": "",
+    "type_line": "Land",
+    "oracle_text": "This land enters tapped.\nWhenever a Mountain you control enters, if you control at least five other Mountains, you may have this land deal 3 damage to any target.\n{T}: Add {R}.",
+    "art_crop": "https://cards.scryfall.io/art_crop/front/3/7/37bce60d-2cb0-4772-9f5c-122a7ed426a0.jpg?1783942120",
+    "normal": "https://cards.scryfall.io/normal/front/3/7/37bce60d-2cb0-4772-9f5c-122a7ed426a0.jpg?1783942120",
+    "via": "default oldest-highres"
   }
 }

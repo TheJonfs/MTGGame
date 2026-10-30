@@ -60,5 +60,6 @@
   "asset": "/custom-art/ranksmere.png",
   "fallback": "rendered"
  },
- "prizeOnly": true
+ "prizeOnly": true,
+ "printedAsset": "ranksmere.jpg"
 }

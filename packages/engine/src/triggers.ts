@@ -2,6 +2,7 @@ import type { EngineCtx } from "./ctx.js";
 import type { Action } from "./actions.js";
 import { targetCombinations } from "./targeting.js";
 import { nextTimestamp, type PendingTrigger, type PlayerId, type StackItem } from "./state.js";
+import type { InterveningIf } from "@shandalar/cards";
 import { characteristics } from "./characteristics.js";
 
 /**
@@ -14,6 +15,25 @@ import { characteristics } from "./characteristics.js";
  * DIES/LEAVES_BATTLEFIELD triggers belong to the object's pre-move
  * controller, read from the ZONE_CHANGE payload (ADR-016).
  */
+/** Post-S70 (R-120): does an intervening "if" hold now — the permanents matching its count, for this controller, less
+ * the event's own object when it says "other" (CR 603.4)? */
+export function interveningHolds(ctx: EngineCtx, iff: InterveningIf, controller: PlayerId, eventObjectId?: string): boolean {
+  const p = iff.count;
+  const n = ctx.state.battlefield.filter((id) => {
+    const o = ctx.state.objects[id];
+    if (!o) return false;
+    const want = p.controller ?? "you";
+    if (want === "you" && o.controller !== controller) return false;
+    if (want === "opponent" && o.controller === controller) return false;
+    if (iff.otherThanEvent && id === eventObjectId) return false;
+    const def = ctx.defs.def(o.cardId);
+    if (p.cardType && !def.types.includes(p.cardType)) return false;
+    if (p.subtype && !(def.subtypes ?? []).includes(p.subtype)) return false;
+    return true;
+  }).length;
+  return n >= iff.atLeast;
+}
+
 export function wireTriggerCollection(ctx: EngineCtx): void {
   const pend = (
     sourceId: string,
@@ -497,8 +517,15 @@ export async function placePendingTriggers(ctx: EngineCtx, request: ActionReques
   const state = ctx.state;
   if (state.pendingTriggers.length === 0) return false;
 
-  const pending = state.pendingTriggers;
+  // Post-S70 (R-120): an intervening "if" is read here, once the event's whole batch has happened — two basics put onto
+  // the battlefield together each see the other (CR 603.4 with 603.2: one event, both entered) though the engine moves
+  // them one at a time. False here, the ability never goes on the stack; it is read again on resolution.
+  const pending = state.pendingTriggers.filter((t) => {
+    const ab = ctx.defs.def(t.sourceCardId).abilities?.[t.abilityIndex];
+    return !(ab?.kind === "triggered" && ab.interveningIf && !interveningHolds(ctx, ab.interveningIf, t.controller, t.eventContext?.objectId));
+  });
   state.pendingTriggers = [];
+  if (pending.length === 0) return false;
 
   const active = state.activePlayer;
   let placed = false;
@@ -607,5 +634,6 @@ async function buildTriggerItem(
     ...(trigger.eventContext ? { eventContext: trigger.eventContext } : {}),
     ...(ability.unlessPay ? { unlessPay: ability.unlessPay } : {}),
     ...(ability.optionalCost ? { optionalCost: ability.optionalCost } : {}),
+    ...(ability.interveningIf ? { interveningIf: ability.interveningIf } : {}),
   };
 }

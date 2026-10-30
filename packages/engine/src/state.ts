@@ -108,6 +108,8 @@ export interface StackItem {
   unlessPay?: { life: number };
   /** A10 word 9 rider (S22): an optional trigger whose "yes" pays this mana at resolution. */
   optionalCost?: { mana: string };
+  /** Post-S70 (R-120): an intervening "if", re-checked on resolution (CR 603.4). */
+  interveningIf?: import("@shandalar/cards").InterveningIf;
 }
 
 /** A continuous effect created by a resolved spell/ability. Statics are computed live, not stored. */

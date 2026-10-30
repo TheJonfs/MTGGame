@@ -61,5 +61,6 @@
   "asset": "/custom-art/volmaw.png",
   "fallback": "rendered"
  },
- "prizeOnly": true
+ "prizeOnly": true,
+ "printedAsset": "volmaw.jpg"
 }

@@ -2384,4 +2384,16 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const old = new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, off: ["groundtiming"] });
     expect(old.floodSinkGated(mkView({ battlefield: bf, step: "UPKEEP", activePlayer: 0 }), shot)).toBe(false);
   });
+
+  it("book of shame 153 (post-S70 — Chris's Thought Replacement: the discard is replaced by a draw, so the hand counts net to nothing and the cast read as a card thrown away): the caster's pick from their hand is worth more than a random discard — cast at the opponent, never at our own head", () => {
+    const a = agent("midrange");
+    const bf = [{ id: "s0", cardId: "swamp", controller: 0 as const }];
+    const view = mkView({ hand: [{ objectId: "tr", cardId: "thought_replacement" }], battlefield: bf, opponentHandCount: 4 });
+    const atThem = { type: "castSpell" as const, objectId: "tr", targets: [{ kind: "player" as const, player: 1 as const }] };
+    const atUs = { type: "castSpell" as const, objectId: "tr", targets: [{ kind: "player" as const, player: 0 as const }] };
+    expect(a.scorePriorityAction(view, atThem)).toBeGreaterThan(a.scorePriorityAction(view, atUs));
+    expect(a.scorePriorityAction(view, atThem)).toBeGreaterThan(a.scorePriorityAction(view, { type: "pass" }));
+    const empty = { ...view, opponentHandCount: 0 };
+    expect(a.scorePriorityAction(empty, atThem)).toBeLessThan(a.scorePriorityAction(empty, { type: "pass" })); // an empty hand: nothing to pick, and they draw
+  });
 });

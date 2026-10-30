@@ -445,6 +445,11 @@ function sweepPT(view: GameView, e: Effect, x: number, defs: Map<string, CardDef
   return 0;
 }
 
+/** Post-S70 (book 153): what the caster's choice of their best spell adds over a random discard (evaluator units; a card
+ * in hand weighs 0.18–0.55 by archetype). Their best spell for a random card — about two in five a land — is worth more
+ * than the card spent at midrange (0.4), so the replacing discard is cast. */
+export const CASTER_PICK_WORTH = 0.6;
+
 function applyEffect(
   view: GameView,
   e: Effect,
@@ -655,12 +660,17 @@ function applyEffect(
         : e.who === "opponent" ? [opp]
         : e.who === "eachPlayer" ? [me, opp]
         : targets.flatMap((t) => (t.kind === "player" ? [t.player] : []));
+      // Post-S70 (book 153, Chris's Thought Replacement — the discard is replaced by a draw, so the hand counts net to
+      // nothing): the CASTER's pick from their hand takes their best spell, not a random card — worth more than the count
+      // says (Duress gains it too). Their hand only; a pick from our own hand is ours to lose.
+      let pick = 0;
       for (const p of ps) {
+        if (p !== me && e.mode === "casterChooses" && e.count !== "all" && view.opponentHandCount > 0) pick += CASTER_PICK_WORTH;
         // S45: "all" — the whole hand (Dragon Mage's wheel discards before it draws).
         if (p === me) view.hand.length = e.count === "all" ? 0 : Math.max(0, view.hand.length - e.count);
         else view.opponentHandCount = e.count === "all" ? 0 : Math.max(0, view.opponentHandCount - e.count);
       }
-      return 0;
+      return pick;
     }
     case "gainLife": {
       // S63 (Part 0, the "target player" audit): `who: "target"` is the target player, as for draw (book 125) — no card

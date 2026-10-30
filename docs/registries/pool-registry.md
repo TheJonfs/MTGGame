@@ -435,6 +435,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | underground_sea | olgc | 2016EU | Filip Burburan | 962719f7-ff8e-480b-985e-bd53a111793b |
 | undermine | inv | 282 | Massimiliano Frezzato | 2334bc71-5f85-47ff-b393-601a1e746a4e |
 | unearth | ulg | 72 | Don Hazeltine | b6cb2549-e485-44d6-9d65-7605c568909e |
+| valakut_the_molten_pinnacle | zen | 228 | Kieran Yanner | 37bce60d-2cb0-4772-9f5c-122a7ed426a0 |
 | vampire_nighthawk | zen | 116 | Jason Chan | 44f19fe3-7a17-4c45-adfa-590f73dfebfa |
 | vindicate | apc | 126 | Brian Snõddy | 2a1bfefd-dae8-49e9-9d56-cc852e3dc93b |
 | volcanic_island | olgc | 2018NA | Mark Poole | 154ce456-38d2-4195-93b7-302e11c006e2 |
@@ -762,8 +763,20 @@ Names Chris's (2026-10-29: the planner's placeholders the Hearthway, the Drownin
 | volmaw | Volmaw | implemented | custom Legendary Land; {T}: {U} / {T}: {B}; {2}{U}{B},{T}: `mill` 6, target player | Clio's (UB). "Volition Maw". Fixture. |
 | nightbower | Nightbower | implemented | custom Legendary Land; {T}: {B} / {T}: {G}; {X}{B}{G},{T}: `destroy` target nonlandPermanent with `manaValueAtMostX` (R-119 — new) | Seraphina's (BG). The ceiling is the X announced (CR 601.2b–c via 602.2b); a token reads 0. **Chris (2026-10-29): {X}{B}{G}, not the brief's {X}{1}{B}{G}** (the Open stage: +1.0 and +1.4 over the +1). Fixture (X=1 refuses the Bears, X=2 takes them; a land never). |
 | ranksmere | Ranksmere | implemented | custom Legendary Land; {T}: {W} / {T}: {U}; {1}{W}{U},{T}: `copyToken` (R-118 — new) target creatureTokenYouControl (new predicate) | Faldor's (UW). The copy is the target's def and locked base P/T, nothing else (no counters, damage, tapped status). Fixture (Dragon Fodder's Goblin copied; the Bears never a target). |
-| burnfallow | Burnfallow | implemented | custom Legendary Land; {T}: {R} / {T}: {G}; {1}{G}{R},{T}, sacrifice `otherLand` (new cost predicate): `searchLibrary` basicLand ×2 → battlefield tapped | Yuloke's (RG). **Chris (2026-10-29): card (b), the land sacrifice, is the nominal**; card (a) is the study def `burnfallow_ping`. The pilot never sacrifices with no basic left or a land's last colour (book 152). Fixture (the cost never offers itself). |
+| burnfallow | Burnfallow | implemented | custom Legendary Land; {T}: {R} / {T}: {G}; {1}{R}{G},{T}, sacrifice `otherLand` (new cost predicate): `searchLibrary` basicLand ×2 → battlefield tapped | Yuloke's (RG). **Chris (2026-10-29): card (b), the land sacrifice, is the nominal**; card (a) is the study def `burnfallow_ping`. The pilot never sacrifices with no basic left or a land's last colour (book 152). Fixture (the cost never offers itself). |
 | burnfallow_ping | Burnfallow (a) | study | custom Legendary Land; {T}: {R} / {T}: {G}; {2}{G}{R},{T}: `searchLibrary` basicLand → battlefield tapped, then `damage` 1 anyTarget | The brief's card (a), in `data/cards-study/` (not the pool). The ping is the ability's only target: if it becomes illegal the whole ability does nothing (CR 608.2b). Fixture. |
+
+## Post-Session 70 addition — Thought Replacement (Chris, 2026-10-29)
+
+| id | name | status | vocabulary | notes |
+|---|---|---|---|---|
+| thought_replacement | Thought Replacement | tested | Sorcery {B}; target player: `discard` 1 casterChooses filter `nonland` (the one new word — a discard filter beside Duress's `noncreatureNonland`), then `draw` 1 who target | CUSTOM, tier 2 (Chris). "Target player reveals their hand. You choose a nonland card from it. That player discards that card. Then that player draws a card." A hand with no nonland card is revealed, nothing is discarded, and the player still draws. Art and printed face Chris-delivered. AI book 153: the caster's pick is worth more than the hand counts say (`CASTER_PICK_WORTH`, Duress too). Fixture `sim/s70-thought-replacement.test.ts`; fuzz `s70-thought-replacement-fuzz.test.ts` (64 games, 123 casts). |
+
+## Post-Session 70 addition — Valakut, the Molten Pinnacle (Chris, 2026-10-29)
+
+| id | name | status | vocabulary | notes |
+|---|---|---|---|---|
+| valakut_the_molten_pinnacle | Valakut, the Molten Pinnacle | tested | Land, `entersTapped`; triggered LAND_ENTERS_UNDER_YOUR_CONTROL, condition subtype Mountain, `interveningIf` (R-120 — the one new word: at least five OTHER Mountains you control) optional: `damage` 3 anyTarget; {T}: {R} | REAL (Scryfall ZEN #228, oracle verified 2026-10-29). Tier 2 (Chris). The payoff for Burnfallow: its two basics enter together and each sees the other (two triggers). Art: Chris's custom painting for the old frame; printed face Chris-delivered. Fixture `sim/s70-valakut.test.ts`; fuzz `s70-valakut-fuzz.test.ts`. |
 
 ## Shop tiers (ADR-078, S19)
 

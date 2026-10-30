@@ -1,0 +1,63 @@
+{
+ "id": "valakut_the_molten_pinnacle",
+ "name": "Valakut, the Molten Pinnacle",
+ "source": "real",
+ "scryfallId": "37bce60d-2cb0-4772-9f5c-122a7ed426a0",
+ "manaCost": "",
+ "types": [
+  "Land"
+ ],
+ "entersTapped": true,
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "LAND_ENTERS_UNDER_YOUR_CONTROL",
+   "condition": {
+    "subtype": [
+     "Mountain"
+    ]
+   },
+   "interveningIf": {
+    "count": {
+     "subtype": "Mountain",
+     "controller": "you"
+    },
+    "atLeast": 5,
+    "otherThanEvent": true
+   },
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "anyTarget",
+     "zone": "any"
+    }
+   ],
+   "effects": [
+    {
+     "type": "damage",
+     "amount": 3,
+     "target": 0
+    }
+   ],
+   "optional": true
+  },
+  {
+   "kind": "activated",
+   "cost": {
+    "tap": true
+   },
+   "effects": [
+    {
+     "type": "addMana",
+     "mana": "{R}"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/valakut_the_molten_pinnacle.png",
+  "fallback": "rendered"
+ },
+ "shopTier": 2,
+ "printedAsset": "valakut_the_molten_pinnacle.jpg"
+}

@@ -1,0 +1,37 @@
+{
+ "id": "thought_replacement",
+ "name": "Thought Replacement",
+ "source": "custom",
+ "manaCost": "{B}",
+ "types": [
+  "Sorcery"
+ ],
+ "text": "Target player reveals their hand. You choose a nonland card from it. That player discards that card. Then that player draws a card.",
+ "targets": [
+  {
+   "count": 1,
+   "predicate": "player",
+   "zone": "any"
+  }
+ ],
+ "spellEffect": [
+  {
+   "type": "discard",
+   "count": 1,
+   "who": "target",
+   "mode": "casterChooses",
+   "filter": "nonland"
+  },
+  {
+   "type": "draw",
+   "count": 1,
+   "who": "target"
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/thought_replacement.png",
+  "fallback": "rendered"
+ },
+ "shopTier": 2,
+ "printedAsset": "thought_replacement.jpg"
+}
