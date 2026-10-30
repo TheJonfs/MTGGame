@@ -56,7 +56,7 @@ describe("the Convocation's packs (S47 Part 3)", () => {
     const plane = resolveSet(set("plane"), pool);
     expect(plane.R).toEqual(expect.arrayContaining(["clio_lady_of_the_depths", "the_fordkeeper", "the_usher"]));
     for (const id of ["black_lotus", "mox_jet", "time_walk", "wrackroot", "tallyflame_court"]) expect(plane.R).not.toContain(id);
-    expect(data.power).toHaveLength(19); // ADR-146: the Manafleur and the Cinquefont never draft; S70 (ADR-192): the still-pair grounds, +5
+    expect(data.power).toHaveLength(20); // post-S70: Balance (prize-only, Chris); ADR-146: the Manafleur and the Cinquefont never draft; S70 (ADR-192): the still-pair grounds, +5
     expect(plane.R).not.toContain("the_manafleur");
     expect(fillErrors(set("first_bloom"), recipe("flat"), pool, data.power)).toEqual([]); // S48: a spent tier rolls down
     expect(resolveSet(set("pair_ub"), pool).R).toContain("clio_lady_of_the_depths");

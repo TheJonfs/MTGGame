@@ -280,7 +280,7 @@
 | Spirit Link | W | Enchantment — Aura | {W} | 1 |  |  | 1 | 8 |  | Enchant creature (Target a creature as you cast this. This card enters attached to that creature.) Whenever enchanted creature deals damage, you gain that much life. |
 | Suntail Hawk | W | Creature — Bird | {W} | 1 | 1/1 | flying | 1 | 8 |  | Flying |
 | Swords to Plowshares | W | Instant | {W} | 1 |  |  | 2 | 12 |  | Exile target creature. Its controller gains life equal to its power. |
-| Balance | W | Sorcery | {1}{W} | 2 |  |  | R | 30 |  | Each player chooses a number of lands they control equal to the number of lands controlled by the player who controls the fewest, then sacrifices the rest. Players discard cards and sacrifice creatures the same way. |
+| Balance | W | Sorcery | {1}{W} | 2 |  |  | — | 12 | prizeOnly | Each player chooses a number of lands they control equal to the number of lands controlled by the player who controls the fewest, then sacrifices the rest. Players discard cards and sacrifice creatures the same way. |
 | Dawnwing Marshal | W | Creature — Cat Soldier | {1}{W} | 2 | 2/2 | flying | 2 | 18 |  | Flying {4}{W}: Creatures you control get +1/+1 until end of turn. |
 | Disenchant | W | Instant | {1}{W} | 2 |  |  | 1 | 12 |  | Destroy target artifact or enchantment. |
 | Fencing Ace | W | Creature — Human Soldier | {1}{W} | 2 | 1/1 | double strike | 1 | 12 |  | Double strike (This creature deals both first-strike and regular combat damage.) |

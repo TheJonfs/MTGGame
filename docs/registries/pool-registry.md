@@ -782,7 +782,7 @@ Names Chris's (2026-10-29: the planner's placeholders the Hearthway, the Drownin
 
 ## Post-Session 70 addition — Balance and Wheel of Fortune (Chris, 2026-10-29)
 
-The restricted cycle's other colours beside Demonic Tutor (B) and Time Walk (U): Wheel of Fortune (R) and Balance (W), both restricted in Vintage today (Scryfall, 2026-10-29). Green's slot is open (a custom card under discussion). Both at tier R and on the Open's restricted list — interim, for Chris's ruling (Balance may belong in the power slot with Time Walk).
+The restricted cycle's other colours beside Demonic Tutor (B) and Time Walk (U): Wheel of Fortune (R) and Balance (W), both restricted in Vintage today (Scryfall, 2026-10-29). Green's slot is open (a custom card under discussion). Wheel at tier R; **Balance prize-only and in the power slot with Time Walk (Chris, 2026-10-29)**; both on the Open's restricted list.
 
 | id | name | status | vocabulary | notes |
 |---|---|---|---|---|

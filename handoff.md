@@ -1,69 +1,55 @@
-# Handoff — after Session 69, with the post-S69 work (2026-10-28)
+# Handoff — after Session 70 (2026-10-29)
 
 ## State of the world
-Twelve Constructed fields with tables: the Open, Peasant, and the ten triads — and Chris has now played (and contributed a list to) **all ten triads**. Since S69: five lists of his registered with measured guides (Massocrafts in Sultai, BW Massacrats in Abzan, Temur Control in Temur, Sour Worms in Bant; Mono-Black Clio, Massacrats and Sacred Minefield before), three pilot books (149–151), and a play-screen shortcut (drains auto-aim at the opponent). The pilot now predicts a −X/−X sweep and the life its deaths move (book 151). Tests: `pnpm test` (1,142 passed). Ladder PASS after books 149–150 and after book 151.
+The still-pair High Grounds are in the pool, named, drawn and tuned: **Hearthspire** (RW), **Volmaw** (UB), **Nightbower** (BG), **Ranksmere** (UW), **Burnfallow** (RG) — custom legendary lands, prize-only, restricted in the Open (and so every triad), in the power slot. Beside them, five cards of Chris's: **Thought Replacement** (custom, T2), **Valakut, the Molten Pinnacle** (real, T2 — Burnfallow's payoff), and the restricted cycle's other three colours — **Wheel of Fortune** (LEB, R), **Balance** (LEB, prize-only in the power slot) and **Earthrise** (custom {1}{G}, R). The pilot times a land's ability for the opponent's end step (book 152) and prices the caster's discard pick (book 153). Pool 297. Tests: `pnpm test` (1,172 passed). Ladder PASS after books 152 and 153.
 
 ## Done this session
-S69 itself (pushed 2026-10-21) — the brief's four parts:
-- **Part 0**: S68's deviations ratified; ADR-190; Chris's four kickoff rulings.
-- **Part 1 — the batch**: Sultai, Abzan, Temur, Bant — forty lists, tables, frozen thresholds, doors. Only the Sower in Bant Sower adopted among the lords.
-- **Part 2 — the defence**: `sweepwait` (book 147) and `payoffcost` (book 148) adopted; `blockloss` (book 146) trial only.
-- **Part 3 — the read**: the red race unmoved; the ten-triad read.
-
-Post-S69 (Chris's runs; `docs/decision-updates/s69.md` has every number):
-- **Temur Snakes** (the `reaper` key renamed); top-four matrices per new format.
-- **Massocrafts** (Sultai, 8–0): guide measured four ways; Protocols for Birds/Manaba and the Massacres for the Witch and a Keeper against the Clio lists (+4.6).
-- **Play screen — drains aim at the opponent**: a trigger whose targets are all players and whose every effect on the target is life loss or damage goes on the stack at the opponent (Blood Artist); anything else asks (Hedron Crab's mill); menu toggle, default on (`play/auto-aim.ts`).
-- **Books 149–150**: `teamcounters` (a team +1/+1 counter bought at their end step, any team — the lone Isaura; S40's book 61 pin reversed, old reading under `off`); `shrinkplan` (a shrink counts our shrinks on the stack).
-- **BW Massacrats** (Abzan, 8–0): guide +5.2 over the rules. Pilot measure 41.2 before book 151, 49.0 after; BW Aristocrats 47.2. **Chris's ruling: both stay** (Massacrats better against the field 50.7–45.0, Aristocrats better head to head 67–33); hybrids later.
-- **Book 151 — the −X/−X sweep predicted**: `sweepPT` and `deathPayoffs` in `view-sim.ts` (every DIES payoff, both sides, the dying included; Wrath's prediction reads it too); X=0 allowed for a noncreature permanent with an ability that does not read X. Paired: BW Massacrats +7.9, Massacrats +4.1, Massocrafts +6.1. Abzan, Grixis, Sultai tables re-run.
-- **Temur Control** (Temur, 8–0): guide +3.6 over the rules; Chris's main stands (two Pyroclasms for the Doses −1.9; a third Kavu for the Char +2.2 ± 1.5, under the bar). Temur table: 53.9, sixth.
-- **Sour Worms** (Bant, 8–0): guide trimmed to its Control Magic rows (+2.2 over the read guide; the deathtouchers against the Aura decks cost ~10 there); Swords for Protocols a wash. Bant table: 58.0, third.
+- **Part 5 first — names** (Chris): Hearthspire, Volmaw (Volition Maw), Nightbower, Ranksmere, Burnfallow for the planner's five.
+- **Art**: four styles across all five (oil, ink-and-gouache, copperplate, woodblock); Chris chose **the woodblock row** (Hearthspire after four rounds — its second, the most successful tower and the plains-and-mountains motif). Chris's printed faces for all five, read against the defs and installed.
+- **Part 1 — the cards and the words**: nominal defs; R-118 the token copy; R-119 a mana-value ceiling that reads X; `otherLand`; restricted in the Open and in the power slot. Fuzz (384 games) then fixtures.
+- **The Open stage** (Part 1/4): two runs of paired trials. The first found the pilot spending its turn in its upkeep; Part 2's rule fixed it and the stage was re-run.
+- **Part 2 — book 152 `groundtiming`** (Chris's rule: the opponent's end step unless something must die sooner) — ladder PASS.
+- **Chris's tuning rulings**: the nominals stand — Hearthspire 2 damage, Nightbower {X}{B}{G}, Volmaw mill six, Ranksmere one copy, **Burnfallow card (b)** ({1}{R}{G}, sacrifice another land: two basics tapped). The triad stage was not run.
+- **Post-brief, Chris's cards**: Thought Replacement (the `nonland` discard filter; book 153 — ladder PASS); Valakut (R-120, the intervening if); Balance (R-121, the per-player count) and Wheel of Fortune (no new word; book 154 pins the predictor); Earthrise (the search's `landCard`; studied in Temur at {1}{G} and {2}{G}, calibrated against one Time Walk; Chris's name and art pick).
+- Part 3 (Cloudshift and Chris's archetype cards) was replaced by Chris's own cards. The prize flow's build read is below.
 
 ## Deviations from the brief
-1. **`blockloss` not adopted** (S69 Part 2): measured negative against the Rabble; `trial: ["blockloss"]`.
-2. **`sweepwait`'s bar is half the card's mana value**, and "the race forces it" reads three turns.
-3. **"Losing the race" reads only the opponent's clock.**
-4. **Bant Sower without Clio; Bant Auras with Pacifism for Protocol.**
-5. Temur's derived `large` threshold set to 2 (ADR-186 amended).
-6. Post-S69, unbriefed and Chris-directed: books 149–151 and the auto-aim — each with its paired read and the ladder.
+1. **The copy word is R-118, not R-117** — R-117 is the Meathook Massacre's `xPaid × −1` (post-S68).
+2. **Names and art were done before the studies** (Chris), and the style ceremony was four styles across the five, not four candidates per card.
+3. **The triad stage was not run** (Chris: enough for the main tuning pass). Volmaw, Ranksmere and Burnfallow have no real Open seat (no mill list, no WU dual, the Open's RG lists are dual-land decks) — their triad reads are owed.
+4. **Nightbower's nominal is {X}{B}{G}** and **Burnfallow's is card (b)** (Chris), not the brief's {X}{1}{B}{G} and card (a). Card (a) stays a study def (`data/cards-study/burnfallow_ping.json`).
+5. **Cloudshift and the brief's archetype slots were not done**; Chris's five cards took the session's second half (Thought Replacement, Valakut, Wheel, Balance, Earthrise).
+6. Valakut's fixtures were written before its fuzz (the order reversed; noted).
 
 ## Concerns
-1. **The pilot's consequence model is shallow** (Chris, on book 151: "a broader theme"). Book 151 covers one shape — a scoped shrink and its drain/gain payoffs. Still flat or absent in `view-sim`: damage payoffs beyond drain/gain (a DIES trigger that deals damage, makes a token, draws), the life a sacrifice outlet's payoff moves, triggers off a spell's own resolution chain. Each Massacre-type gap sat unseen until a human list measured far below its human record — **a list whose pilot number is far below Chris's record is the probe to run first.**
-2. **Sacrifice-cost pings skip the ping plan**: the Rabble's Siege-Gang shot a 4/1 Wall twice (two Goblins) in Chris's Temur semi-final — `pingPlanGated` covers repeatable abilities without a sacrifice only.
-3. **`--deck-guide` drift against `control` lists**: Sour Worms' same-path check lost 9.7 against the two counter decks (its test guide's Control Magic rows did not fire); not chased. Adopted guides were confirmed on the registered path.
-4. **The red race is a field question** (S69 Concern 1, unchanged): more answers in the seeds, not more pilot.
-5. **Chris's lists rank well below his records in the pilot's hands** (Temur Control 53.9 to his 16–2; Sour Worms 58.0; BW Massacrats 49.0): the pilot underplays control and engines. The tables measure the pilot as much as the lists.
-6. The Massacrats and Mono-Black Clio guides still miss the Tally (S69 Concern 5).
+1. **One restricted copy moves this pilot about a point** (Time Walk +0.6/+0.8 in Temur) — so every restricted card's study reads near the noise at 100–200 games a pairing. The High Grounds' Open numbers (+1 to +10) and Earthrise's (+1.6) should be read against that scale, not against a four-of's.
+2. **Hearthspire is the strongest of the five** (+6.1, +2.8, +9.6 in the Open at the nominal; the 3-at-five corner a point stronger) — Chris kept 2 damage.
+3. **Burnfallow (b) has had no fair seat yet**: the Open's RG lists are dual-land decks with no basics (the pilot rightly never sacrifices for nothing) or lack red. Its read is a Valakut or landfall list's.
+4. **The intervening if is read at trigger placement, not at the event** (R-120's named simplification); Balance's players choose in seat order, not active player first (R-121's).
+5. **The predictor prices a land search flat (0.5)** whatever it fetches — Earthrise's two lands and a Wilds' one alike; a ramp list's value of two lands is under-read.
+6. **The `--deck-guide` drift** (S69 Concern 3) and the consequence model (ADR-191) are unchanged.
 
 ## Registry entries added/changed
-- No R-entries. Books 149–151 (agents). Lists registered: `sultai:massocrafts`, `abzan:bwmassacrats`, `temur:temurcontrol`, `bant:sourworms` (each with its guide in `guidesOnly`); `temur:reaper` renamed Temur Snakes. Tables of record re-run: Sultai, Abzan, Grixis, Temur, Bant.
+- **Rules**: R-118 (copyToken), R-119 (manaValueAtMostX), R-120 (interveningIf), R-121 (overFewest; the edict's `land`); `otherLand` (no number). Discard filter `nonland`; search `landCard`.
+- **Pool**: hearthspire, volmaw, nightbower, ranksmere, burnfallow (prize-only, restricted, power slot); thought_replacement (T2); valakut_the_molten_pinnacle (T2, real ZEN #228); wheel_of_fortune (R, LEB #184); balance (prize-only, LEB #3, power slot); earthrise (R); burnfallow_ping (study). The Open's restricted list: + the five grounds, Balance, Wheel, Earthrise. The power slot 14 → 20.
 
 ## Test status
-**1,142 passed**, 2 skipped (1,144). New: books 149–151 (`book-of-shame.test.ts`), `play/auto-aim.test.ts`; S40's book 61 pin reversed for `teamcounters` (the old reading kept under `off`). Ladder gate/mirror PASS after 149–150 and after 151.
+**1,172 passed**, 2 skipped. New: `sim/s70-grounds(-fuzz)`, `s70-thought-replacement(-fuzz)`, `s70-valakut(-fuzz)`, `s70-balance-wheel(-fuzz)`, `s70-earthrise`; books 152–154. Re-pinned: pool count, the shop tally, the power slot (20), the Peasant score's unscored list (Thought Replacement, until the next `rating:format --write`). The vitest "onTaskUpdate" errors are pre-existing load errors; `world.test.ts` can time out under the full suite's load and passes alone.
 
 ## Suggested next
-- **With every triad played**: the design conversation the S69 handoff named — the Convocation's prizes across nine-plus formats, the still-pair High Grounds on the shelf, phase three.
-- **The consequence model** (Concern 1): a session on downstream triggers in the predictor — death payoffs of every kind, sacrifice outlets, tokens — measured on the engine lists (the Massacre decks, the Usher, Mardu Control, the Reaper).
-- **Small pilot fixes**: sacrifice-cost pings into the ping plan (Concern 2); chase the `--deck-guide` drift (Concern 3).
-- **Chris's open threads**: hybrid BW Massacrats/Aristocrats builds; Massocrafts' six open sideboard slots; a third Kavu in Temur Control (+2.2, under the bar).
+- **The prize flow** (the brief's last item): the outbox already carries cards, and the power slot is the fence's list — a High Ground (or Balance) as a champion's prize is one row in the prize table and one line in the fence. The design conversation (which Convocation pays which ground) is the planner's.
+- **The triad reads owed**: Volmaw in the Undertow and Sultai Mill; Ranksmere in the Aerie and the Roll; Burnfallow (b) and Valakut in a Valakut list — **a Valakut archetype list** is the natural next build (Chris's "future archetype").
+- **The Peasant score** for Thought Replacement (`pnpm rating:format --write`).
+- The consequence model (ADR-191) remains the next pilot work.
 
 ## How to run
 ```
 pnpm install && pnpm typecheck && pnpm test          # FUZZ_FULL=1 pnpm test for the full fuzz
 pnpm viewer                                          # the app (dev); pnpm build:web before any push
-pnpm ladder                                          # the AI gate — alone, ~13 min (two baselines)
-scripts/open/rr.sh rec 100 [--format grixis]         # game one, every pairing, 8 shards → analysis/runs/scratch/rr/
-scripts/open/rr.sh m 100 --matches 60 [--format grixis]
-pnpm open:rr [--format grixis] --merge analysis/runs/scratch/rr/rec_?.json --record --out analysis/runs/rr.json   # --record writes formats/<id>/means.json; then open:gen
-pnpm open:rr [--format grixis] --matches-report analysis/runs/scratch/rr/m_?.json --record --out analysis/runs/matches.md
-pnpm open:gen && pnpm reference                      # after any change under data/convocation/formats/ (writes nothing if any check fails)
-scripts/open/rr.sh t 160 --matches 160 --format temur --only temurcontrol [--no-guide]   # a list against its field, 160 matches a pairing (flags written out, not through a variable)
-scripts/open/rr.sh t 160 --matches 160 --format bant --only sourworms --deck sourworms:<main> --deck-side <side> [--deck-guide <guide>]   # a build under test — calibrate with a same-path run of the 75 first
-pnpm sideboard:show --format bant --list sourworms --vs auras,locks
-pnpm narrate <recorded-games.json> --event <seed> [--match bracket5.1]   # a recorded game move by move
-python3 scripts/open/seat.py <list> <tag>…           # a trial in one seat: matches, games, by opponent, casts
-pnpm format:census --colors GWU                      # a triad's shelf
-pnpm pilot-probe --witch|--manaba|--racing|--mines|--diffs|--manaba2|--sweeps …   # S67–S68 probes (see decision-updates)
-pnpm open:rr … --off teamcounters,shrinkplan,payoffcost,sweepwait    # rules off for a paired read (book 151's view-sim change has no switch — use a worktree at 69293e2, the commit before it, for its baseline)
+pnpm ladder                                          # the AI gate — alone, ~5 min
+python3 scripts/open/trials.py analysis/s70/trials-open-2.txt   # paired game-one trials (tag|list|swap|flags|baseline)
+pnpm open:rr --only <list> --swap "<list>:<from>:1:<card>~acost=…~n=…" --extra-cards data/cards-study   # a card's corner in a list
+pnpm art:fetch                                       # after adding a real card (oracle text + scan; OVERRIDES pin a printing)
+python3 .claude/skills/gemini-image/render.py --entity-file docs/art/subjects/<file>.md --no-style   # a card-art candidate
+pnpm open:rr --off groundtiming,teamcounters,shrinkplan,payoffcost,sweepwait   # rules off for a paired read
 ```

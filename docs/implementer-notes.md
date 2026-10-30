@@ -785,3 +785,14 @@ See handoff Concerns for the authoritative list. Highlights: auto-pay greedy fea
 - **A paired baseline across a code change**: a `git worktree` at the commit before (`pnpm install --offline` there) runs the same seeds on the old pilot; `OPEN_SCRATCH=<main scratch>` puts its shards beside the new ones (book 151's three decks).
 - **The view-sim's scoped effects were flat credits** until book 151 (a −X/−X sweep: 0.2). Before reading a card's pilot number, check that `applyEffect` models its effect at all — a flat credit makes every X and every board look the same.
 - **A background run needs `run_in_background`**: a `… &` inside a foreground command keeps running but never notifies; a small waiter loop (run in background) that greps for the last `done <tag>` covers it.
+
+## S70 (2026-10-29)
+- **`trials.py` crashes on its baseline lines** when there is no round-robin of record (`rec_*`) in the scratch dir — the games are all written; report from the shard files yourself, pairing each trial with its own baseline tag (the script in `analysis/s70/trials-*.out`'s commit, or pass a baseline tag as the second argument).
+- **A probe of WHEN the pilot uses an ability** (an agent wrapper logging turn, step, target, untapped lands, hand) found in forty games what no win rate showed: 98 of Burnfallow's 114 activations were in its own upkeep. Run one before reading a corner — the corners were confounded by it.
+- **A control for a land under test**: the same land with its ability made unaffordable (`~acost={20}`) — an untyped dual — separates the land's mana (the Taiga's Forest for the Gaean Wurm, −0.8) from its ability.
+- **Calibrate a restricted card with a known one in the same seats**: one Time Walk moves this pilot about a point in game one (+0.6/+0.8 in Temur), because one copy is in hand a quarter of the time. Without it a +1.6 reads as small.
+- **Study defs live in `data/cards-study/`** (not loaded by `loadCardPool`; `open:rr --extra-cards data/cards-study`; tests validate them with `validateCard`). Promote by moving the file into `data/cards/` and fixing the pins.
+- **Real cards take their text from `data/art/real/oracle.json`** (ADR-053 — a `text` field on a real def is a load error): run `pnpm art:fetch` after adding one; pin a printing in its `OVERRIDES` (and `docs/art/printings.md`) before the fetch.
+- **Batch entries and an intervening if**: the engine moves "two lands onto the battlefield" one at a time, so a condition read as each enters sees them apart. R-120 reads it at trigger placement, after the batch.
+- **View objects carry `id`, not `objectId`** — a counter keyed on `o.objectId` silently counts nothing (the first fuzz said Hearthspire never fired).
+- **The vitest "Timeout calling onTaskUpdate" errors** are pre-existing load errors (same at the commit before S70); a file that times out at 30 s in the suite (`world.test.ts`) passes alone in 16 s.
