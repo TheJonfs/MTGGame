@@ -1257,6 +1257,21 @@
         }
       }
     },
+    "card-highland-ritual-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:2db1ea2a8ecde5c7fb10b120e5ae8985c4aa2f146167c5579c7f16eaccefdaf2",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:2db1ea2a8ecde5c7fb10b120e5ae8985c4aa2f146167c5579c7f16eaccefdaf2",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-highland-ritual-4/canonical.png",
+          "rendered_at": "2026-10-31T12:46:07+00:00",
+          "thumb": "assets/thumbs/card-highland-ritual-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "card-isaura-1": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:b679bb1be8f45d36954bf9265540a3da99654c0aab8ded943d7bbbb99290f259",
