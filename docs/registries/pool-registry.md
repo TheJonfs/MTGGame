@@ -805,6 +805,7 @@ For underrepresented archetypes. All custom, tier 2. Fuzz `sim/s70-tier2-five-fu
 | burnfallow_exuberant | Burnfallow Exuberant | tested | Creature — Satyr Druid 1/1 {R}{R}; haste; ENTERS `searchLibrary` subtype:Mountain → battlefield tapped | A dual with the Mountain type counts; the entry triggers Valakut. Satyr, not Goblin, to stay out of the Rabble's tribal cards (Chris). |
 | notion_flayer | Notion Flayer | tested | Creature — Nightmare 2/1 {U}{U}; ATTACKS self: `mill` `sourcePower`, who opponent | If it has left the battlefield the mill is 0, not its last-known power (the registered `sourcePower` simplification). AI book 155. |
 | den_of_vipers | Den of Vipers | tested | Creature — Snake 1/1 {B}{B}; deathtouch; ENTERS `addCounters` +1/+1, creaturesYouControl subtype Snake | Counts itself (Chris): a 2/2 deathtouch. Wants a turn after the Forerunner's tokens, and double black beside double green. |
+| highland_ritual | Highland Ritual | tested | Sorcery {1}{R}, tier 1; `addMana` {R} `times` count subtype Mountain (R-122); `cycling` {2} + `cyclingSearch` subtype:Mountain (R-096) | Custom. Price study in decision-updates/s70 |
 | sapwell_dryad | Sapwell Dryad | tested | Creature — Dryad 1/3 {G}{G}; {T}: `untapTarget` target `land` (new predicate) | 1/3 over 1/1 (Chris), against the real Voyaging Satyr ({1}{G} 1/2). It targets, so it is not a mana ability. AI book 156. |
 
 ## Shop tiers (ADR-078, S19)

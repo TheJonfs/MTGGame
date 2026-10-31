@@ -235,6 +235,10 @@ export class MatchController {
   /** Post-S69 (Chris): a trigger that only hurts its target player (Blood Artist) is aimed at the opponent without
    * asking (play/auto-aim.ts). Default on; menu toggle, persisted by the UI. */
   autoAimDrains = true;
+  /** Post-S70 (Chris: Sapwell Dryad — tap a land, float, untap it, then cast): every producer can be tapped for mana
+   * whenever you hold priority, not only in a response window. Off at the start of each match, so a stray click on a
+   * land can't tap it; while on, a click on a producer taps it for mana even if it also has an activated ability. */
+  tapForManaAnytime = false;
   private combatSeen = new Set<string>();
   /** Why the current pause happened, for the prompt ("Opponent cast X"). */
   stopReason: string | null = null;
@@ -1138,14 +1142,10 @@ export class MatchController {
     const castable = new Map<string, Action[]>();
     const lands = new Map<string, Action>();
     const activatable = new Map<string, Action[]>();
-    const manaTappable = new Map<string, Action[]>();
     for (const a of request.actions) {
       if (a.type === "castSpell") castable.set(a.objectId, [...(castable.get(a.objectId) ?? []), a]);
       else if (a.type === "playLand") lands.set(a.objectId, a);
       else if (a.type === "activateAbility") activatable.set(a.objectId, [...(activatable.get(a.objectId) ?? []), a]);
-      // r9: in a RESPONSE window (something on the stack) a producer can be tapped on its own — a Birds
-      // answered before the spell resolves floats its mana for whatever the player casts in reply.
-      else if (a.type === "tapForMana" && view.stack.length > 0) manaTappable.set(a.objectId, [...(manaTappable.get(a.objectId) ?? []), a]);
     }
     // R-029 dedups hand actions by cardId, so only one copy of a duplicate
     // carries the action. Alias every copy in hand to the enumerated one:
@@ -1207,7 +1207,25 @@ export class MatchController {
       this.combatSeen.add(combatMoment.key);
       this.stopReason = combatMoment.text;
     }
-    this.phase = { kind: "priority", castable, lands, activatable, manaTappable, canPass: request.actions.some((a) => a.type === "pass") };
+    this.phase = { kind: "priority", castable, lands, activatable, manaTappable: this.manaTaps(request, view), canPass: request.actions.some((a) => a.type === "pass") };
+    this.emit();
+  }
+
+  /** The producers a click taps for mana in this window. r9: in a RESPONSE window (something on the stack) a producer
+   * can be tapped on its own — a Birds answered before the spell resolves floats its mana for whatever the player casts
+   * in reply. Post-S70: at any priority with the toggle on. */
+  private manaTaps(request: ActionRequest, view: GameView): Map<string, Action[]> {
+    const taps = new Map<string, Action[]>();
+    if (view.stack.length === 0 && !this.tapForManaAnytime) return taps;
+    for (const a of request.actions) if (a.type === "tapForMana") taps.set(a.objectId, [...(taps.get(a.objectId) ?? []), a]);
+    return taps;
+  }
+
+  /** Post-S70: the rail's "tap for mana" toggle; the open window re-reads what a click on a land does. */
+  setTapForManaAnytime(on: boolean): void {
+    this.tapForManaAnytime = on;
+    const cur = this.human.current();
+    if (this.phase.kind === "priority" && cur) this.phase = { ...this.phase, manaTappable: this.manaTaps(cur.request, cur.view) };
     this.emit();
   }
 
@@ -1297,13 +1315,13 @@ export class MatchController {
     }
     if (this.phase.kind !== "priority") return;
     const variants = this.phase.activatable.get(objectId);
-    if (variants && variants.length > 0) {
+    const taps = this.phase.manaTappable.get(objectId);
+    if (variants && variants.length > 0 && !(this.tapForManaAnytime && taps && taps.length > 0)) {
       this.beginCast(objectId, variants);
       return;
     }
     // r9: a response-window tap for mana (the Birds in reply to the spell aimed at it); a many-coloured
     // producer asks which colour, then the tap goes and priority returns with the mana floating.
-    const taps = this.phase.manaTappable.get(objectId);
     if (taps && taps.length > 0) {
       if (taps.length > 1) {
         this.phase = { kind: "chooseTapColor", objectId, options: taps as Extract<Action, { type: "tapForMana" }>[], back: this.phase };

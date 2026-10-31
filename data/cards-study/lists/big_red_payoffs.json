@@ -1,0 +1,54 @@
+[
+ {
+  "cardId": "mountain",
+  "count": 25
+ },
+ {
+  "cardId": "black_lotus",
+  "count": 1
+ },
+ {
+  "cardId": "mox_ruby",
+  "count": 1
+ },
+ {
+  "cardId": "hill_giant",
+  "count": 4
+ },
+ {
+  "cardId": "lightning_bolt",
+  "count": 4
+ },
+ {
+  "cardId": "pyroclasm",
+  "count": 4
+ },
+ {
+  "cardId": "shocking_sharpshooter",
+  "count": 3
+ },
+ {
+  "cardId": "flametongue_kavu",
+  "count": 3
+ },
+ {
+  "cardId": "siege_gang_commander",
+  "count": 4
+ },
+ {
+  "cardId": "the_ruby_tyrant",
+  "count": 3
+ },
+ {
+  "cardId": "dragon_mage",
+  "count": 2
+ },
+ {
+  "cardId": "drakuseth_maw_of_flames",
+  "count": 3
+ },
+ {
+  "cardId": "blaze",
+  "count": 3
+ }
+]

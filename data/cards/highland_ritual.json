@@ -1,0 +1,31 @@
+{
+ "id": "highland_ritual",
+ "name": "Highland Ritual",
+ "source": "custom",
+ "manaCost": "{1}{R}",
+ "types": [
+  "Sorcery"
+ ],
+ "text": "Add {R} for each Mountain you control.\nMountaincycling {2}",
+ "spellEffect": [
+  {
+   "type": "addMana",
+   "mana": "{R}",
+   "times": {
+    "ref": "count",
+    "predicate": {
+     "subtype": "Mountain",
+     "controller": "you"
+    }
+   }
+  }
+ ],
+ "cycling": "{2}",
+ "cyclingSearch": "subtype:Mountain",
+ "art": {
+  "asset": "/custom-art/highland_ritual.png",
+  "fallback": "rendered"
+ },
+ "shopTier": 1,
+ "printedAsset": "highland_ritual.jpg"
+}

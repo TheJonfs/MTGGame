@@ -346,7 +346,8 @@ export type EffectBase =
   /** ADR-075 A8: blink — exile the target and return it to the battlefield under your control as a new object (ETBs fire). */
   | { type: "exileThenReturn"; target: number; under: "yourControl" }
   /** ADR-068 Amendment 2: `mana` (fixed production) OR `choice` (Lotus: N mana of any one colour — a five-option choice at activation, no stack). */
-  | { type: "addMana"; mana?: string; choice?: { count: number; anyOneColor: true } | { count: number; anyCombinationOf: ("W" | "U" | "B" | "R" | "G")[] } }
+  /** Post-S70 (R-122, Koth's "Add {R} for each Mountain you control"): `times` repeats `mana`, counted as it resolves. */
+  | { type: "addMana"; mana?: string; times?: ValueRef; choice?: { count: number; anyOneColor: true } | { count: number; anyCombinationOf: ("W" | "U" | "B" | "R" | "G")[] } }
   /** A10 word 8 (S22): STATIC-ONLY — a battlefield permanent confers an activated ability on cards in
    * a zone and scope. `zone: "hand"` grants to every card in the static's controller's hand (the
    * Stoker's cycling — enumeration-time grant on A5's machinery, no ADR-003 layer contact);

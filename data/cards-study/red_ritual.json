@@ -1,0 +1,27 @@
+{
+ "id": "red_ritual",
+ "name": "Red Ritual (study)",
+ "source": "custom",
+ "manaCost": "{1}{R}",
+ "types": [
+  "Sorcery"
+ ],
+ "text": "Add {R} for each Mountain you control.",
+ "spellEffect": [
+  {
+   "type": "addMana",
+   "mana": "{R}",
+   "times": {
+    "ref": "count",
+    "predicate": {
+     "subtype": "Mountain",
+     "controller": "you"
+    }
+   }
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": 2
+}

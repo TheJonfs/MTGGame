@@ -260,7 +260,8 @@ export class HeuristicAgent implements Agent {
     // no legal use on this board (Airship Crash with nothing to crash); never while it could be cast.
     // S22: the Stoker's GRANTED cycling rides this unchanged (viewAbilityAt resolves it), and lands
     // join cardIsDead's vocabulary (flooded draws are fuel — the blessed wrinkle).
-    if (this.isCycling(view, action)) return this.cardIsDead(view, action) ? evaluate(view, this.profile, this.defs) + 0.3 : -Infinity;
+    // (Post-S70: typed cycling answers to its own gate too — book 53's rule stood below this line and was never reached.)
+    if (this.isCycling(view, action)) return this.cardIsDead(view, action) || this.burstCyclesForLand(view, action) || this.typedCyclingWanted(view, action) ? evaluate(view, this.profile, this.defs) + 0.3 : -Infinity;
     // S22 (A10 word 2 — the Unwinder's activation-discipline pin, per the boss doc's sketch):
     // a bounce-cost activation only with a land in hand to replay, or with lands beyond next
     // turn's planned cast; never one that drops development below the curve.
@@ -290,6 +291,7 @@ export class HeuristicAgent implements Agent {
     if (this.spellPayoffHoldGated(view, action)) return -Infinity; // S45: hold the cheap spell for the Guttersnipe / Pyromancer in hand
     if (this.faceBurnHoldGated(view, action)) return -Infinity; // post-S49 (book 88): removal is not thrown at a healthy face
     if (this.burnKillsGated(view, action)) return -Infinity; // S68 (Part 2): a burn spell at a creature only when it kills
+    if (this.burnHoldGated(view, action)) return -Infinity; // book 160: no burn spell at a 1/1 with nothing left to give
     if (this.sweepWaitGated(view, action)) return -Infinity; // S69 (book 147): a sweeper waits for a board worth it
     if (this.payoffCostGated(view, action)) return -Infinity; // S69 (book 148): no kill that their death payoff makes our last
     if (this.counterWarGated(view, action)) return -Infinity; // post-S52 (book 94): one counter answers one spell
@@ -562,7 +564,7 @@ export class HeuristicAgent implements Agent {
       const card = view.hand.find((c) => c.objectId === action.objectId);
       const d = card ? this.def(card.cardId) : undefined;
       if (!d || !d.spellEffect || d.spellEffect.length === 0 || !d.spellEffect.every((e) => e.type === "addMana")) return null;
-      for (const e of d.spellEffect) if (e.type === "addMana" && e.mana) { produced += (e.mana.match(/\{/g) ?? []).length; fixedColors.push(...(e.mana.match(/[WUBRG]/g) ?? [])); }
+      for (const e of d.spellEffect) if (e.type === "addMana" && e.mana) for (let i = this.burstTimes(view, e); i > 0; i--) { produced += (e.mana.match(/\{/g) ?? []).length; fixedColors.push(...(e.mana.match(/[WUBRG]/g) ?? [])); }
       ownCost = Math.max(1, manaValue(parseManaCost(d.manaCost)));
       produced -= ownCost; // net of its own cost
       spendsCard = card!.objectId;
@@ -686,6 +688,25 @@ export class HeuristicAgent implements Agent {
       }
       if (sink) return { enables: true };
     }
+    // Book 157 (the Mountain ritual): a spell burst also pays into an X spell already castable — a Blaze is never "out
+    // of reach" at its mana value, so the test above could not see it — when the spell at the X the burst reaches
+    // scores above the same spell at the X the lands reach, and above passing.
+    if (spendsCard && sorceryWindow && produced > 0 && this.burstAsking === 0 && !this.profile.off?.includes("burstx")) {
+      this.burstAsking += 1;
+      try {
+        const pass = this.scorePriorityAction(view, { type: "pass" });
+        for (const c of view.hand) {
+          const d = this.def(c.cardId);
+          if (c.objectId === spendsCard || !d || !/\{X\}/.test(d.manaCost) || d.modes) continue;
+          const offered = (this.offered ?? []).filter((x): x is Extract<Action, { type: "castSpell" }> => x.type === "castSpell" && x.objectId === c.objectId);
+          const targetSets = d.targets?.length ? [...new Map(offered.map((x) => [JSON.stringify(x.targets), x.targets])).values()] : [[]];
+          if (targetSets.length === 0 || (fixedColors.length > 0 && !this.burstPayable(view, spendsCard, fixedColors, d.manaCost))) continue;
+          const at = (x: number) => (x < 0 ? -Infinity : Math.max(...targetSets.map((t) => this.scorePriorityAction(view, { type: "castSpell", objectId: c.objectId, targets: t, x }))));
+          const x0 = available - manaValue(parseManaCost(d.manaCost));
+          if (x0 + produced >= 1 && at(x0 + produced) > Math.max(at(x0), pass) + 0.25) return { enables: true };
+        }
+      } finally { this.burstAsking -= 1; }
+    }
     const enables = view.hand.some((c) => {
       if (c.objectId === spendsCard) return false;
       const d = this.def(c.cardId);
@@ -751,6 +772,16 @@ export class HeuristicAgent implements Agent {
     if (specs.length === 0) return false; // untargeted: its effects need no targets
     const effects = d.modes && action.mode !== undefined ? d.modes[action.mode]?.effects ?? [] : d.spellEffect ?? [];
     return effects.length > 0 && effects.every((e) => "target" in e || "targetSpec" in e);
+  }
+
+  /** Post-S70 (R-122): how many times a spell's `addMana` repeats on this board — a count of our permanents. */
+  private burstTimes(view: GameView, e: Extract<Effect, { type: "addMana" }>): number {
+    if (e.times?.ref !== "count") return 1;
+    const { subtype, cardType } = e.times.predicate;
+    return view.battlefield.filter((o) => {
+      const d = o.controller === view.you ? this.def(o.cardId) : undefined;
+      return !!d && (!subtype || (d.subtypes ?? []).includes(subtype)) && (!cardType || d.types.includes(cardType));
+    }).length;
   }
 
   /** Post-S43: can the Ritual be cast AND the card it enables be paid after it resolves — by colour? The
@@ -839,6 +870,31 @@ export class HeuristicAgent implements Agent {
     const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
     // S55: cycling REPLACES the card (a draw, or its search) — Faerie Macabre's discard is an answer, not a cantrip
     return !!ab && ab.kind === "activated" && ab.zone === "hand" && ab.cost.discardSelf === true && ab.effects.some((e) => e.type === "draw" || e.type === "searchLibrary");
+  }
+
+  /** Book 53's gate, for a typed-cycling card that is not a burst spell (those have book 158). */
+  private typedCyclingWanted(view: GameView, action: Action): boolean {
+    if (action.type !== "activateAbility" || this.profile.off?.includes("typedcycle")) return false;
+    const d = this.def(view.hand.find((c) => c.objectId === action.objectId)?.cardId ?? "");
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+    if (d?.spellEffect?.length && d.spellEffect.every((e) => e.type === "addMana")) return false;
+    return !!ab && ab.kind === "activated" && ab.effects.some((e) => e.type === "searchLibrary") && !this.plainscyclingGated(view, action);
+  }
+
+  /** Book 158 (the Mountain ritual's Mountaincycling): an untargeted burst spell is never "dead", so its land cycling
+   * has its own test: no land in hand and fewer than six in play. At the opponent's end step, when the mana is spare;
+   * on our own turn before the land drop only while under four lands. */
+  private burstCyclesForLand(view: GameView, action: Action): boolean {
+    if (action.type !== "activateAbility" || this.profile.off?.includes("burstcycle")) return false;
+    const d = this.def(view.hand.find((c) => c.objectId === action.objectId)?.cardId ?? "");
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+    if (!d?.spellEffect?.length || !d.spellEffect.every((e) => e.type === "addMana")) return false;
+    if (!ab || ab.kind !== "activated" || !ab.effects.some((e) => e.type === "searchLibrary")) return false;
+    if (view.hand.some((c) => this.def(c.cardId)?.types.includes("Land"))) return false;
+    const lands = view.battlefield.filter((o) => o.controller === view.you && this.def(o.cardId)?.types.includes("Land")).length;
+    if (lands >= 6) return false;
+    if (view.activePlayer !== view.you) return view.step === "END" && view.stack.length === 0;
+    return view.step === "MAIN1" && view.stack.length === 0 && lands < 4;
   }
 
   /** S22 (A10 word 2): the Unwinder-discipline gate — true blocks the activation. */
@@ -2575,7 +2631,7 @@ export class HeuristicAgent implements Agent {
     // SAFE — the life left above the opponent's board reach plus three a burn spell seen, and no untapped racer we
     // cannot block — not when the hand runs out. Book 113's floor (above) stays the stop; a full hand does not draw.
     if (!this.profile.off?.includes("witchearly")) {
-      if (view.hand.length >= 7) return true;
+      if (view.hand.length + this.pendingLifeDraws(view) >= 7) return true;
       if (this.lifePaySafe(view, ab.cost.life)) return false;
     }
     if (view.hand.length > 2) return true;
@@ -2583,6 +2639,14 @@ export class HeuristicAgent implements Agent {
     if (view.life[me] - ab.cost.life < oppPower + 3) return true;
     if (this.lifeDrawsThisTurn.turn === view.turn && this.lifeDrawsThisTurn.n >= 2) return true;
     return false;
+  }
+
+  /** Book 159 (post-S70, Chris's Valakut run: a Witch at six cards paid eight life for four draws held on the stack, in
+   * answer to his Char, and threw two away at cleanup): the cards our life-for-cards activations on the stack will draw
+   * count toward a full hand. Off: "pendingdraw". Exposed. */
+  pendingLifeDraws(view: GameView): number {
+    if (this.profile.off?.includes("pendingdraw")) return 0;
+    return view.stack.filter((i) => i.controller === view.you && i.kind !== "spell" && (this.def(i.cardId)?.abilities ?? []).some((a) => a.kind === "activated" && !!a.cost.life && a.effects.some((e) => e.type === "draw"))).length;
   }
 
   /** S26 (Lumen, the Hearth Fire — the sequencing pin, the Thundersnake's gate family): a resolved
@@ -3109,6 +3173,28 @@ export class HeuristicAgent implements Agent {
     const me = view.you, o = view.battlefield.find((b) => b.id === t.id);
     if (!o || o.controller === me || o.toughness === null || o.power === null) return false;
     return n < o.toughness - o.damage - this.pendingDamageAt(view, o.id, me) - this.committedCombatAt(view, o.id, me);
+  }
+  /** Book 160 (post-S70, Chris's Valakut run: six Bolts in three games at Burnfallow Exuberants and an Elemental token,
+   * the Exuberants' fetch already on the stack): a burn spell is not aimed at a creature that is only a 1/1 body — power
+   * one or less, nothing printed but haste and an enters trigger, which has already done its work. Book 117's escapes
+   * stand (a full hand, under the gun, an attacker at eight life or less, a carried Aura), and book 129's: nothing
+   * better in their list. Off: "burnhold". Exposed. */
+  burnHoldGated(view: GameView, action: Action): boolean {
+    if (action.type !== "castSpell" || this.profile.off?.includes("burnhold")) return false;
+    const d = this.def(view.hand.find((h) => h.objectId === action.objectId)?.cardId ?? "");
+    if (!d || !(d.types.includes("Instant") || d.types.includes("Sorcery"))) return false;
+    const dmg = (d.spellEffect ?? []).find((e) => e.type === "damage") as { target?: number } | undefined;
+    if (!dmg) return false;
+    const t = action.targets[dmg.target ?? 0], me = view.you;
+    const o = t && t.kind === "object" ? view.battlefield.find((b) => b.id === t.id) : undefined;
+    if (!o || o.controller === me || o.power === null || o.power > 1) return false;
+    if (o.keywords.some((k) => k !== "haste") || (this.def(o.cardId)?.abilities ?? []).some((a) => { const c = a.kind === "triggered" ? (a.condition as { self?: boolean; source?: string } | undefined) : undefined; return !(a.kind === "triggered" && a.event === "ENTERS_BATTLEFIELD" && (c?.self === true || c?.source === "self")); })) return false;
+    if (view.hand.length >= 7) return false;
+    const theirPower = view.battlefield.filter((b) => b.controller !== me && b.power !== null).reduce((n, b) => n + Math.max(0, b.power ?? 0), 0);
+    if (theirPower * 2 >= view.life[me]) return false;
+    if (view.life[me] <= 8 && (view.combat?.attackers ?? []).includes(o.id)) return false;
+    if (view.battlefield.some((b) => b.attachedTo === o.id && b.controller !== me)) return false;
+    return this.listBest() > objectValue(this.defs, o, this.C);
   }
   /** S68 (Part 1; `off: ["triggercharge"]` — Chris's Jeskai runs: 210 of 260 attackers the pilot sent into his Powerstone
    * Minefield died to its trigger before blocks): the damage the battlefield's OTHER permanents' ATTACKS / BLOCKS

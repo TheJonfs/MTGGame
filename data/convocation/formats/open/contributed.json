@@ -2458,6 +2458,157 @@
      "count": 2
     }
    ]
+  },
+  {
+   "key": "pinnacle",
+   "name": "the Pinnacle",
+   "title": "Valakut Ramp (R g, Moxen)",
+   "archetype": "midrange",
+   "source": "Chris's Convocation, 2026-10-31 — 8–0 in matches, 16–3 in games, the Swiss swept and three three-game matches in the Top Eight against the Warband and two Mardu Controls: Burnfallow Exuberant, Highland Ritual's Mountaincycling, Earthrise and the Moxen into Valakut and Drakuseth. As registered (his cuts from the 16–3): Arc Mage and Furnace Whelp for two Foxglove Doses, a Blaze for the fourth Kavu (chosen by trial, 150 matches a pairing: Kavu 63.0 ± 2.1 in matches in the AI's hands, Siege-Gang 60.1, Bolt 59.5, Char 59.2, Rage Cobra 58.8; the list as played 55.6). The fifteen: his, two Doses gone to the main for two Rage Cobras against lifegain. His swaps read as a guide measured 57.8 against the rules' 63.0, so it sideboards by the rules.",
+   "decklist": [
+    {
+     "cardId": "burnfallow",
+     "count": 1
+    },
+    {
+     "cardId": "hearthspire",
+     "count": 1
+    },
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "tallyflame_court",
+     "count": 1
+    },
+    {
+     "cardId": "taiga",
+     "count": 4
+    },
+    {
+     "cardId": "valakut_the_molten_pinnacle",
+     "count": 4
+    },
+    {
+     "cardId": "stomping_ground",
+     "count": 4
+    },
+    {
+     "cardId": "volcanic_island",
+     "count": 1
+    },
+    {
+     "cardId": "badlands",
+     "count": 1
+    },
+    {
+     "cardId": "plateau",
+     "count": 1
+    },
+    {
+     "cardId": "mountain",
+     "count": 5
+    },
+    {
+     "cardId": "drakuseth_maw_of_flames",
+     "count": 2
+    },
+    {
+     "cardId": "the_ruby_tyrant",
+     "count": 2
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "wheel_of_fortune",
+     "count": 1
+    },
+    {
+     "cardId": "seasoned_pyromancer",
+     "count": 4
+    },
+    {
+     "cardId": "char",
+     "count": 3
+    },
+    {
+     "cardId": "highland_ritual",
+     "count": 4
+    },
+    {
+     "cardId": "earthrise",
+     "count": 1
+    },
+    {
+     "cardId": "burnfallow_exuberant",
+     "count": 4
+    },
+    {
+     "cardId": "blaze",
+     "count": 2
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "yuloke_the_animus",
+     "count": 1
+    },
+    {
+     "cardId": "foxglove_dose",
+     "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "tormods_crypt",
+     "count": 3
+    },
+    {
+     "cardId": "foxglove_dose",
+     "count": 1
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 3
+    },
+    {
+     "cardId": "savage_twister",
+     "count": 3
+    },
+    {
+     "cardId": "faerie_macabre",
+     "count": 3
+    },
+    {
+     "cardId": "rage_cobra",
+     "count": 2
+    }
+   ]
   }
  ],
  "_guides_note": "S58: a guide's rows are the author's swaps that MEASURED (open:rr --sideboarded-only <list> --guide-drop …). The Locks' planner's guide also had Essence Scatter for Absorb against creature decks (−17 against the Enchantress, −11 the Ford: Absorb's life and its reach beyond creatures were worth more) and Disenchant for the Serras (−12 the Muster and the Enchantress); both rows are out and the rules bring those cards in where they apply. Post-S59: `guidesOnly` names the guided lists whose guide is the whole plan (the rules do not run after it).",

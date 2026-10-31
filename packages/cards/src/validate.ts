@@ -732,6 +732,7 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
       return;
     }
     if (typeof e.mana !== "string") return err(`addMana missing mana`);
+    if (e.times !== undefined && !isAnyValueRef(e.times)) return err(`addMana times must be a value ref`);
     try {
       parseManaProduction(e.mana);
     } catch (ex) {

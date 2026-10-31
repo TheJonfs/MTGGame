@@ -1,0 +1,42 @@
+[
+ {
+  "cardId": "mountain",
+  "count": 24
+ },
+ {
+  "cardId": "hill_giant",
+  "count": 4
+ },
+ {
+  "cardId": "blaze",
+  "count": 4
+ },
+ {
+  "cardId": "lightning_bolt",
+  "count": 4
+ },
+ {
+  "cardId": "char",
+  "count": 4
+ },
+ {
+  "cardId": "flametongue_kavu",
+  "count": 4
+ },
+ {
+  "cardId": "pyroclasm",
+  "count": 4
+ },
+ {
+  "cardId": "shocking_sharpshooter",
+  "count": 4
+ },
+ {
+  "cardId": "furnace_whelp",
+  "count": 4
+ },
+ {
+  "cardId": "arc_mage",
+  "count": 4
+ }
+]

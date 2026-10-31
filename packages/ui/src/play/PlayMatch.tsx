@@ -131,6 +131,9 @@ function PromptBar({ c, phase, confirmLabel }: { c: MatchController; phase: UiPh
           >
             ⏭ my turn
           </button>
+          <label className="hold-toggle" title="While this is on, clicking a land or other mana source taps it for mana whenever you have priority, and that takes the place of any other ability it has. Mana left floating empties at the end of the step. Clicking the tapped land takes it back while the mana is unspent.">
+            <input type="checkbox" checked={c.tapForManaAnytime} onChange={(e) => c.setTapForManaAnytime(e.target.checked)} /> tap for mana
+          </label>
         </>
       )}
       {phase.kind === "stackStop" && (
@@ -952,6 +955,7 @@ export function PlayMatch({
       if (dialogHover?.includes(id)) return "target";
       switch (phase.kind) {
         case "priority":
+          if (c.tapForManaAnytime && phase.manaTappable.has(id)) return "tappable"; // post-S70: the click taps it, over any activation
           if (phase.castable.has(id) || phase.lands.has(id)) return "castable";
           if (phase.activatable.has(id)) return "castable";
           if (phase.manaTappable.has(id)) return "tappable"; // r9: a response-window tap

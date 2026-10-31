@@ -278,7 +278,8 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
     // Choice-bearing production (Lotus) is resolved at activation, not here:
     // the engine adds the chosen colour directly (CR 605: no stack). A
     // fixed-production ability that somehow reaches the stack still works.
-    if (e.mana) for (const p of ctx.players("you")) ctx.addMana(p, e.mana);
+    const times = e.times === undefined ? 1 : ctx.amount(e.times);
+    if (e.mana) for (const p of ctx.players("you")) for (let i = 0; i < times; i++) ctx.addMana(p, e.mana);
   },
 
   searchLibrary: async (e, ctx) => {

@@ -738,6 +738,10 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.plainscyclingGated(v([{ objectId: "h_u", cardId: "unearth" }, { objectId: "h_z", cardId: "zombify" }], 6, 6), cyc)).toBe(false); // the Zombify beside it can
     expect(a.plainscyclingGated(v([], 2, 2), cyc)).toBe(false); // two lands on turn two: cycle
     expect(a.plainscyclingGated(v([], 6, 6), cyc)).toBe(true); // six lands, no reanimator: hold the Angel
+    // The gate reaches the scorer: the cycling rule above it (S17) used to answer first, and only a dead Angel cycled.
+    expect(a.scorePriorityAction(v([{ objectId: "h_z", cardId: "zombify" }], 4, 5), cyc)).toBeGreaterThan(-Infinity);
+    expect(a.scorePriorityAction(v([], 2, 2), cyc)).toBeGreaterThan(-Infinity);
+    expect(a.scorePriorityAction(v([], 6, 6), cyc)).toBe(-Infinity);
     // The ETB's target choice.
     const board = mkView({ step: "MAIN1", activePlayer: 0, battlefield: [
       { id: "ours", cardId: "serra_angel", controller: 0 }, { id: "cm", cardId: "control_magic", controller: 1, attachedTo: "ours" },
@@ -2438,5 +2442,63 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(a.landUntapGated(mkView({ battlefield: hs, step: "END", activePlayer: 1 }), untap("hs"))).toBe(false);
     const old = new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, off: ["landuntap"] });
     expect(old.landUntapGated(mkView({ hand: [], battlefield: [dryad, ...lands] }), untap("f0"))).toBe(false);
+  });
+  it("book of shame 157 (post-S70, Highland Ritual — R-122): the burst reads the Mountains on the board: it pays for a seven-drop on five, not on three, nor in a Forest deck; and it pays into a Blaze for a lethal X that the lands alone do not reach", () => {
+    const a = agent();
+    const land = (id: string, n: number) => Array.from({ length: n }, (_, i) => ({ id: `${id}${i}`, cardId: id, controller: 0 as const }));
+    const rit = { type: "castSpell" as const, objectId: "rit", targets: [] };
+    const seven = [{ objectId: "rit", cardId: "highland_ritual" }, { objectId: "dm", cardId: "dragon_mage" }];
+    expect(a.scorePriorityAction(mkView({ hand: seven, battlefield: land("mountain", 5) }), rit)).toBeGreaterThan(-Infinity);
+    expect(a.scorePriorityAction(mkView({ hand: seven, battlefield: land("mountain", 3) }), rit)).toBe(-Infinity);
+    expect(a.scorePriorityAction(mkView({ hand: seven, battlefield: [...land("forest", 4), ...land("mountain", 1)] }), rit)).toBe(-Infinity);
+
+    const blaze = [{ objectId: "rit", cardId: "highland_ritual" }, { objectId: "bz", cardId: "blaze" }];
+    const face = { type: "castSpell" as const, objectId: "bz", targets: [{ kind: "player" as const, player: 1 as const }] };
+    const lethal = mkView({ hand: blaze, battlefield: land("mountain", 5), life: [20, 7] });
+    (a as unknown as { offered: unknown[] }).offered = [face];
+    expect(a.scorePriorityAction(lethal, rit)).toBeGreaterThan(-Infinity);
+    (a as unknown as { profile: { off: string[] } }).profile.off = ["burstx"];
+    expect(a.scorePriorityAction(lethal, rit)).toBe(-Infinity);
+  });
+  it("book of shame 158 (post-S70, Highland Ritual's Mountaincycling): a burst spell cycles for a land with none in hand and under six in play — at their end step, or in our first main under four lands; never with a land in hand, and never at six", () => {
+    const a = agent();
+    const land = (n: number) => Array.from({ length: n }, (_, i) => ({ id: `m${i}`, cardId: "mountain", controller: 0 as const }));
+    const cyc = { type: "activateAbility" as const, objectId: "rit", abilityIndex: 0, targets: [] };
+    const hand = [{ objectId: "rit", cardId: "highland_ritual" }];
+    expect(a.scorePriorityAction(mkView({ hand, battlefield: land(3) }), cyc)).toBeGreaterThan(-Infinity);
+    expect(a.scorePriorityAction(mkView({ hand, battlefield: land(5), activePlayer: 1, step: "END" }), cyc)).toBeGreaterThan(-Infinity);
+    expect(a.scorePriorityAction(mkView({ hand, battlefield: land(5) }), cyc)).toBe(-Infinity);
+    expect(a.scorePriorityAction(mkView({ hand, battlefield: land(6), activePlayer: 1, step: "END" }), cyc)).toBe(-Infinity);
+    expect(a.scorePriorityAction(mkView({ hand: [...hand, { objectId: "l", cardId: "mountain" }], battlefield: land(3) }), cyc)).toBe(-Infinity);
+  });
+  it("book of shame 159 (post-S70, Chris's Valakut run): the Witch's draws on the stack count toward a full hand — at six cards with one waiting, no more; a spell of ours on the stack does not count", () => {
+    const hand = Array.from({ length: 6 }, (_, i) => ({ objectId: `h${i}`, cardId: "swamp" }));
+    const witch = { id: "w", cardId: "the_jet_witch", controller: 0 as const };
+    const draw = { type: "activateAbility" as const, objectId: "w", abilityIndex: 0, targets: [] };
+    const held = { id: "s1", kind: "ability", cardId: "the_jet_witch", controller: 0 as const };
+    const v = (stack: { id: string; kind: string; cardId: string; controller: 0 | 1 }[]) => mkView({ hand, battlefield: [witch], stack });
+    const a = agent();
+    expect(a.lifeForCardsGated(v([]), draw)).toBe(false);
+    expect(a.lifeForCardsGated(v([held]), draw)).toBe(true);
+    expect(a.lifeForCardsGated(v([{ id: "s2", kind: "spell", cardId: "the_jet_witch", controller: 0 }]), draw)).toBe(false);
+    const old = new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, off: ["pendingdraw"] });
+    expect(old.lifeForCardsGated(v([held]), draw)).toBe(false);
+  });
+  it("book of shame 160 (post-S70, Chris's Valakut run): no burn at a 1/1 body with its enters trigger spent — a Prospector's ability, a Soul Warden, a Piker's two power are still worth it; a list with nothing better, a full hand or being under the gun lets it go", () => {
+    const list = [{ cardId: "burnfallow_exuberant", count: 4 }, { cardId: "drakuseth_maw_of_flames", count: 2 }];
+    const a = new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: list, temperature: 0.35 });
+    const bolt = { type: "castSpell" as const, objectId: "b", targets: [{ kind: "object" as const, id: "t" }] };
+    const hand = [{ objectId: "b", cardId: "lightning_bolt" }];
+    const at = (cardId: string, o: { hand?: { objectId: string; cardId: string }[]; life?: [number, number]; extra?: Obj[] } = {}) => mkView({ hand: o.hand ?? hand, life: o.life ?? [20, 20], battlefield: [{ id: "t", cardId, controller: 1 }, ...(o.extra ?? [])] });
+    expect(a.burnHoldGated(at("burnfallow_exuberant"), bolt)).toBe(true);
+    expect(a.burnHoldGated(at("skirk_prospector"), bolt)).toBe(false);
+    expect(a.burnHoldGated(at("soul_warden"), bolt)).toBe(false);
+    expect(a.burnHoldGated(at("goblin_piker"), bolt)).toBe(false);
+    expect(a.burnHoldGated(at("burnfallow_exuberant", { hand: [...hand, ...Array.from({ length: 6 }, (_, i) => ({ objectId: `x${i}`, cardId: "swamp" }))] }), bolt)).toBe(false);
+    expect(a.burnHoldGated(at("burnfallow_exuberant", { life: [6, 20], extra: [{ id: "g", cardId: "hill_giant", controller: 1 }] }), bolt)).toBe(false);
+    const none = new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: [{ cardId: "burnfallow_exuberant", count: 4 }], temperature: 0.35 });
+    expect(none.burnHoldGated(at("burnfallow_exuberant"), bolt)).toBe(false);
+    const old = new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: list, temperature: 0.35, off: ["burnhold"] });
+    expect(old.burnHoldGated(at("burnfallow_exuberant"), bolt)).toBe(false);
   });
 });

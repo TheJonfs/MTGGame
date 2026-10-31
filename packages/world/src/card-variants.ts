@@ -11,6 +11,8 @@ export function variantDef(spec: string, cards: Map<string, CardDef>): CardDef {
     if (m === "copy") continue;
     const [k, v = ""] = m.split("=");
     if (k === "cost") out.manaCost = v;
+    // Post-S70 (the Mountain ritual's rider): Mountaincycling at that cost, compiled as the loader compiles typed cycling
+    else if (k === "mcycle") out.abilities = [...(out.abilities ?? d.abilities ?? []), { kind: "activated", zone: "hand", cost: { mana: v, discardSelf: true }, effects: [{ type: "searchLibrary", predicate: "subtype:Mountain", to: "hand" }] }];
     else if (k === "pt") { const [p = 0, t = 0] = v.split("/").map(Number); (out as { power?: number }).power = p; (out as { toughness?: number }).toughness = t; }
     else if (k === "kw") (out as { keywords?: string[] }).keywords = v ? v.split("+") : [];
     // S56 (Protocol's sensitivity): the power an Aura takes from the enchanted creature
