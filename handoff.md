@@ -37,7 +37,7 @@ Post-session decisions that were the implementer's, for ruling: **the fourth Kav
 9. **The intervening if is read at trigger placement, not at the event** (R-120's named simplification); Balance's players choose in seat order, not active player first (R-121's).
 10. **The predictor prices a land search flat (0.5)** whatever it fetches, so a ramp list's two lands are under-read. The Pinnacle plays through this.
 11. **The consequence model (ADR-191)** is unchanged.
-6. **The AI cannot pilot WB Basilisk**: 29.5 in matches, last of fifteen, against Chris's 11-3 (5-11 against the two UW Skies lists, 0-1 against White Skies, where he beat UW Skies, walls 2-0). Registered knowingly, to be found and tweaked (Chris). It is an active list, so AI seats can draw it. The moving of a Collar to an untapped first striker is the line to read first. Three builds at 1,300 matches: as played 21.8, 2/2 29.9, 3/1 31.6 (±2.5).
+12. **The AI cannot pilot WB Basilisk**: 29.5 in matches, last of fifteen, against Chris's 11-3 (5-11 against the two UW Skies lists, 0-1 against White Skies, where he beat UW Skies, walls 2-0). Registered knowingly, to be found and tweaked (Chris). It is an active list, so AI seats can draw it. The moving of a Collar to an untapped first striker is the line to read first. Three builds at 1,300 matches: as played 21.8, 2/2 29.9, 3/1 31.6 (±2.5).
 
 ## Registry entries added/changed
 - **Rules**: R-118 to R-121 (S70); R-122 `addMana.times`. `otherLand`, `nonland`, `landCard`; target predicate `land`.
