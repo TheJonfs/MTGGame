@@ -4,36 +4,37 @@
 
 ## The table of record
 
-14 active lists, the AI in both seats. **Game one** is a list's mean win rate against the other active lists on the registered sixties (the round-robin of record, `formats/peasant/means.json`). **Matches** is its best-of-three win rate — the figure the field's seat draw reads since S59 (60 matches a pairing, measured 2026-10-15; ADR-171): game one on the registered sixties, games two and three sideboarded. **After sideboarding** is its games-two-and-three rate less its game-one rate inside those matches.
+15 active lists, the AI in both seats. **Game one** is a list's mean win rate against the other active lists on the registered sixties (the round-robin of record, `formats/peasant/means.json`). **Matches** is its best-of-three win rate — the figure the field's seat draw reads since S59 (60 matches a pairing, measured 2026-11-01; ADR-171): game one on the registered sixties, games two and three sideboarded. **After sideboarding** is its games-two-and-three rate less its game-one rate inside those matches.
 
 | list | deck | pilot | matches | game one | after sideboarding | fifteen |
 |---|---|---|---|---|---|---|
-| Dungrove Auras | Mono-Green Auras (G) | midrange | 71.9 | 67 | −0.1 | built |
-| RW Tokens | Boros Tokens (W R) | aggro | 59.3 | 51 | +3.9 | built |
-| BR Removal | Rakdos Removal (B R) | midrange | 59.0 | 58 | −0.8 | built |
-| White Skies | Mono-White Lifegain Skies (W) | midrange | 58.1 | 60 | −3.6 | registered, guided |
-| BR Djinn | Rakdos Removal, Djinn and Char (B R) | midrange | 57.9 | 58 | +0.4 | built |
-| UW Skies | Azorius Skies (W U) | midrange | 57.9 | 46 | +6.2 | registered, guided |
-| BW Aristocrats | Orzhov Aristocrats (W B) | midrange | 49.4 | 53 | −0.4 | registered, guided |
-| the Rabble (Peasant) | Mono-Red Goblins (R) | aggro | 47.8 | 44 | −0.4 | built |
-| Mono-Black Removal | Mono-Black Removal (B) | midrange | 47.4 | 50 | +6.0 | built |
-| RG Stompy | Gruul Stompy (R G) | aggro | 45.1 | 45 | −5.9 | built |
-| UW Skies, walls | Azorius Skies with walls (W U) | midrange | 41.5 | 42 | −0.3 | registered, guided |
-| the Muster (Peasant) | Boros Weenie (W R) | aggro | 40.3 | 47 | −1.1 | registered, guided |
-| Naya Flash Snakes | Naya Flash (R G W) | midrange | 38.1 | 44 | −7.4 | built |
-| UR Pyroclasm Control | Izzet Control (U R) | control | 26.2 | 35 | +3.1 | built |
+| Dungrove Auras | Mono-Green Auras (G) | midrange | 68.3 | 61 | +1.9 | built |
+| BR Removal | Rakdos Removal (B R) | midrange | 61.4 | 58 | −0.1 | built |
+| White Skies | Mono-White Lifegain Skies (W) | midrange | 61.0 | 64 | −7.6 | registered, guided |
+| BR Djinn | Rakdos Removal, Djinn and Char (B R) | midrange | 60.8 | 59 | +2.3 | built |
+| UW Skies | Azorius Skies (W U) | midrange | 56.8 | 56 | +2.0 | registered, guided |
+| BW Aristocrats | Orzhov Aristocrats (W B) | midrange | 55.4 | 56 | −4.1 | registered, guided |
+| the Rabble (Peasant) | Mono-Red Goblins (R) | aggro | 50.7 | 48 | +0.0 | built |
+| RW Tokens | Boros Tokens (W R) | aggro | 50.4 | 51 | −1.2 | built |
+| RG Stompy | Gruul Stompy (R G) | aggro | 49.3 | 44 | +5.9 | built |
+| Mono-Black Removal | Mono-Black Removal (B) | midrange | 48.0 | 46 | +1.6 | built |
+| UW Skies, walls | Azorius Skies with walls (W U) | midrange | 46.3 | 48 | −3.5 | registered, guided |
+| the Muster (Peasant) | Boros Weenie (W R) | aggro | 41.4 | 44 | +0.9 | registered, guided |
+| Naya Flash Snakes | Naya Flash (R G W) | midrange | 39.9 | 42 | −2.8 | built |
+| UR Pyroclasm Control | Izzet Control (U R) | control | 31.0 | 35 | +8.5 | built |
+| WB Basilisk | Orzhov Basilisk (W B) | midrange | 29.5 | 37 | −4.1 | registered |
 
 Archived (kept in the data, out of the field): UB Mill, WB Wave Control.
 
 ## Staples (ADR-170)
 
-Nonland cards outside the restricted list that more than half of the 14 active lists play: Lightning Bolt (8 lists, 32 copies); Flametongue Kavu (8 lists, 31 copies).
+Nonland cards outside the restricted list that more than half of the 15 active lists play: Lightning Bolt (8 lists, 32 copies); Flametongue Kavu (8 lists, 31 copies).
 
-The most played: Lightning Bolt 8 · Flametongue Kavu 8 · Restoration Angel 6 · Swords to Plowshares 6 · Child of Night 4 · Doom Blade 4 · Nekrataal 4 · Soul Warden 4.
+The most played: Lightning Bolt 8 · Flametongue Kavu 8 · Restoration Angel 6 · Swords to Plowshares 6 · Soul Warden 5 · Vampire Nighthawk 5 · Blood Artist 5 · Child of Night 4.
 
 ## Dungrove Auras — Mono-Green Auras (G)
 
-`elder` · midrange · game one 67 · matches 71.9
+`elder` · midrange · game one 61 · matches 68.3
 
 - **Lands (22):** 22 Forest
 - **Creatures (27):** 4 Dungrove Elder · 2 Penumbra Wurm · 4 Llanowar Elves · 4 Gladecover Scout · 4 Wall of Blossoms · 4 Gaean Wurm · 2 Centaur Courser · 3 Reaper's Forerunner
@@ -42,20 +43,9 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 8 · Restoration Angel 6 �
 - **History:**
   - contributed — S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. New: the Enchantress's tier-two cousin. Revised 2026-10-13 (Chris): four Gaean Wurms for the four Rumbling Baloths — as large or larger with twenty-two Forests, and trample. +9.3 ± 1.5 in matches against the other twelve, paired (66.8 to 76.1), better against every one. Committed knowing it is over ADR-171's line: it is the next round's target.
 
-## RW Tokens — Boros Tokens (W R)
-
-`tokens` · aggro · game one 51 · matches 59.3
-
-- **Lands (23):** 4 Sacred Foundry · 10 Plains · 9 Mountain
-- **Creatures (17):** 4 Soul Warden · 4 Young Pyromancer · 3 Flametongue Kavu · 4 Dawnwing Marshal · 2 Captain of the Watch
-- **Other (20):** 4 Raise the Alarm · 4 Dragon Fodder · 4 Hordeling Outburst · 4 Glorious Anthem · 4 Lightning Bolt
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. +4 Dawnwing Marshal, +2 Captain of the Watch and a land for the Angels, the Chieftains and the Grenades.
-
 ## BR Removal — Rakdos Removal (B R)
 
-`br` · midrange · game one 58 · matches 59.0
+`br` · midrange · game one 58 · matches 61.4
 
 - **Lands (23):** 4 Blood Crypt · 12 Swamp · 7 Mountain
 - **Creatures (28):** 4 Typhoid Rats · 4 Blood Artist · 4 Child of Night · 4 Vampire Nighthawk · 4 Nekrataal · 4 Flametongue Kavu · 2 Reassembling Skeleton · 2 Gravedigger
@@ -66,7 +56,7 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 8 · Restoration Angel 6 �
 
 ## White Skies — Mono-White Lifegain Skies (W)
 
-`wskies` · midrange · game one 60 · matches 58.1
+`wskies` · midrange · game one 64 · matches 61.0
 
 - **Lands (23):** 23 Plains
 - **Creatures (30):** 4 Dazzling Angel · 4 Youthful Valkyrie · 4 Inspiring Overseer · 4 Wall of Reverence · 4 Soul Warden · 4 Restoration Angel · 4 Vitalist · 2 Karmic Mentor
@@ -79,7 +69,7 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 8 · Restoration Angel 6 �
 
 ## BR Djinn — Rakdos Removal, Djinn and Char (B R)
 
-`brdjinn` · midrange · game one 58 · matches 57.9
+`brdjinn` · midrange · game one 59 · matches 60.8
 
 - **Lands (23):** 4 Blood Crypt · 12 Swamp · 7 Mountain
 - **Creatures (27):** 4 Typhoid Rats · 4 Blood Artist · 4 Child of Night · 4 Vampire Nighthawk · 4 Nekrataal · 4 Flametongue Kavu · 3 Gallows Djinn
@@ -90,7 +80,7 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 8 · Restoration Angel 6 �
 
 ## UW Skies — Azorius Skies (W U)
 
-`skies` · midrange · game one 46 · matches 57.9
+`skies` · midrange · game one 56 · matches 56.8
 
 - **Lands (24):** 4 Hallowed Fountain · 10 Plains · 10 Island
 - **Creatures (26):** 4 Youthful Valkyrie · 4 Inspiring Overseer · 4 Plumecreed Escort · 4 Restoration Angel · 4 Traumatizer · 4 Dawnwing Marshal · 2 Karmic Mentor
@@ -103,7 +93,7 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 8 · Restoration Angel 6 �
 
 ## BW Aristocrats — Orzhov Aristocrats (W B)
 
-`bw` · midrange · game one 53 · matches 49.4
+`bw` · midrange · game one 56 · matches 55.4
 
 - **Lands (23):** 4 Godless Shrine · 9 Plains · 10 Swamp
 - **Creatures (29):** 4 Soul Warden · 4 Blood Artist · 4 Child of Night · 4 Vampire Nighthawk · 4 Nekrataal · 4 Restoration Angel · 3 Vitalist · 2 Captain of the Watch
@@ -116,7 +106,7 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 8 · Restoration Angel 6 �
 
 ## the Rabble (Peasant) — Mono-Red Goblins (R)
 
-`rabble` · aggro · game one 44 · matches 47.8
+`rabble` · aggro · game one 48 · matches 50.7
 
 - **Lands (20):** 20 Mountain
 - **Creatures (20):** 4 Raging Goblin · 4 Goblin Chieftain · 4 Flametongue Kavu · 4 Goblin Matron · 2 Boggart Brute · 2 Goblin Piker
@@ -125,20 +115,20 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 8 · Restoration Angel 6 �
 - **History:**
   - contributed — S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. The Open list's port.
 
-## Mono-Black Removal — Mono-Black Removal (B)
+## RW Tokens — Boros Tokens (W R)
 
-`mbc` · midrange · game one 50 · matches 47.4
+`tokens` · aggro · game one 51 · matches 50.4
 
-- **Lands (23):** 23 Swamp
-- **Creatures (24):** 4 Typhoid Rats · 4 Child of Night · 4 Vampire Nighthawk · 4 Nekrataal · 3 Gallows Djinn · 3 Gravedigger · 2 Blood Artist
-- **Other (13):** 4 Doom Blade · 3 Terror · 2 Tendrils of Corruption · 4 Sign in Blood
+- **Lands (23):** 4 Sacred Foundry · 10 Plains · 9 Mountain
+- **Creatures (17):** 4 Soul Warden · 4 Young Pyromancer · 3 Flametongue Kavu · 4 Dawnwing Marshal · 2 Captain of the Watch
+- **Other (20):** 4 Raise the Alarm · 4 Dragon Fodder · 4 Hordeling Outburst · 4 Glorious Anthem · 4 Lightning Bolt
 - **Its fifteen:** built by the field's builder for each seat (none registered).
 - **History:**
-  - contributed — S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. +4 Sign in Blood for the Ragers and a Blood Artist.
+  - contributed — S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. +4 Dawnwing Marshal, +2 Captain of the Watch and a land for the Angels, the Chieftains and the Grenades.
 
 ## RG Stompy — Gruul Stompy (R G)
 
-`stompy` · aggro · game one 45 · matches 45.1
+`stompy` · aggro · game one 44 · matches 49.3
 
 - **Lands (21):** 4 Stomping Ground · 13 Forest · 4 Mountain
 - **Creatures (31):** 4 Llanowar Elves · 2 Birds of Paradise · 4 Grizzly Bears · 3 Mother Bear · 4 Centaur Courser · 4 Rumbling Baloth · 3 Gaean Wurm · 4 Flametongue Kavu · 3 Reaper's Forerunner
@@ -147,9 +137,20 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 8 · Restoration Angel 6 �
 - **History:**
   - contributed — S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle.
 
+## Mono-Black Removal — Mono-Black Removal (B)
+
+`mbc` · midrange · game one 46 · matches 48.0
+
+- **Lands (23):** 23 Swamp
+- **Creatures (24):** 4 Typhoid Rats · 4 Child of Night · 4 Vampire Nighthawk · 4 Nekrataal · 3 Gallows Djinn · 3 Gravedigger · 2 Blood Artist
+- **Other (13):** 4 Doom Blade · 3 Terror · 2 Tendrils of Corruption · 4 Sign in Blood
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. +4 Sign in Blood for the Ragers and a Blood Artist.
+
 ## UW Skies, walls — Azorius Skies with walls (W U)
 
-`skieswall` · midrange · game one 42 · matches 41.5
+`skieswall` · midrange · game one 48 · matches 46.3
 
 - **Lands (24):** 4 Hallowed Fountain · 10 Plains · 10 Island
 - **Creatures (28):** 4 Youthful Valkyrie · 4 Inspiring Overseer · 4 Plumecreed Escort · 4 Restoration Angel · 4 Traumatizer · 4 Wall of Air · 4 Dawnwing Marshal
@@ -162,7 +163,7 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 8 · Restoration Angel 6 �
 
 ## the Muster (Peasant) — Boros Weenie (W R)
 
-`muster` · aggro · game one 47 · matches 40.3
+`muster` · aggro · game one 44 · matches 41.4
 
 - **Lands (23):** 4 Sacred Foundry · 11 Plains · 6 Mountain · 2 Secluded Steppe
 - **Creatures (23):** 4 Savannah Lions · 4 Soul Warden · 4 Longbow Archer · 4 Fencing Ace · 3 Restoration Angel · 4 Flametongue Kavu
@@ -175,7 +176,7 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 8 · Restoration Angel 6 �
 
 ## Naya Flash Snakes — Naya Flash (R G W)
 
-`naya` · midrange · game one 44 · matches 38.1
+`naya` · midrange · game one 42 · matches 39.9
 
 - **Lands (20):** 4 Stomping Ground · 4 Temple Garden · 4 Sacred Foundry · 6 Forest · 1 Mountain · 1 Plains
 - **Creatures (33):** 4 Manaba · 4 Birds of Paradise · 2 Llanowar Elves · 4 Rage Cobra · 4 Reaper's Forerunner · 3 Little Bear · 4 Restoration Angel · 4 Flametongue Kavu · 4 Wall of Blossoms
@@ -186,7 +187,7 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 8 · Restoration Angel 6 �
 
 ## UR Pyroclasm Control — Izzet Control (U R)
 
-`urcontrol` · control · game one 35 · matches 26.2
+`urcontrol` · control · game one 35 · matches 31.0
 
 - **Lands (24):** 4 Steam Vents · 11 Island · 9 Mountain
 - **Creatures (15):** 4 Flametongue Kavu · 4 Wall of Air · 4 Traumatizer · 3 Air Elemental
@@ -194,6 +195,18 @@ The most played: Lightning Bolt 8 · Flametongue Kavu 8 · Restoration Angel 6 �
 - **Its fifteen:** built by the field's builder for each seat (none registered).
 - **History:**
   - contributed — S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. Unchanged.
+
+## WB Basilisk — Orzhov Basilisk (W B)
+
+`wbbasilisk` · midrange · game one 37 · matches 29.5
+
+- **Lands (24):** 4 Godless Shrine · 4 Evolving Wilds · 2 Barren Moor · 2 Secluded Steppe · 7 Plains · 5 Swamp
+- **Creatures (28):** 4 Blood Artist · 4 Soul Warden · 4 Fencing Ace · 4 Longbow Archer · 4 Shevelport Quartermaster · 4 Vampire Nighthawk · 4 Karmic Mentor
+- **Other (8):** 3 Basilisk Collar · 4 Unearth · 1 Loxodon Warhammer
+- **Its fifteen (registered):** 4 Nekrataal · 4 Retribution of the Meek · 4 Glorious Anthem · 3 Dazzling Angel
+- **Its sideboard guide:** none — the general rules sideboard it.
+- **History:**
+  - contributed — Post-S70 (Chris, 2026-11-01): built around Shevelport Quartermaster and Basilisk Collar on Fencing Ace and Longbow Archer, with one Loxodon Warhammer to fetch; a run at 20 lands and 4 Thought Replacement went 5-0 in the Swiss and out in the quarterfinals, 11-3 in games. Registered with 3 Plains and 1 Swamp for the Replacements. Registered knowing the AI pilots it poorly (21.8 -> 31.6 in matches on the land change, ±2.5, against his 11-3): kept here to be found and tweaked. A working name. No guide.
 
 # Archived lists
 

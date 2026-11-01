@@ -1,4 +1,4 @@
-# Handoff — after Session 70 and its post-session work (2026-10-31)
+# Handoff — after Session 70 and its post-session work (2026-11-01)
 
 ## State of the world
 Session 70's High Grounds and Chris's cards are in, and post-session work has gone on top: Convocation days can be Sealed as well as Draft; five tier-2 creatures; the rail's "tap for mana" toggle (any priority, so the Sapwell Dryad accelerates); **Highland Ritual** in the pool (303 cards); and **the Pinnacle**, Chris's Valakut list, sixteenth list in the Open at 61.3 in matches, fifth. Valakut, Burnfallow and Earthrise finally have a real seat. `docs/decision-updates/s70.md` is the full record, section by section. Run with `pnpm viewer`; tests with `pnpm test`.
@@ -12,6 +12,7 @@ Session 70's High Grounds and Chris's cards are in, and post-session work has go
 - **Angel of the Ruins' plainscycling** had been unreachable since S36 (general rule answered first). `typedcycle` fixes it: ladder PASS, win rate unchanged within noise (+0.1 ± 1.9, +0.3 ± 1.4; seated without their plans).
 - **Chris's Valakut run read** (8–0, 16–3 on Normal) by `pnpm narrate`. Book 159 `pendingdraw` (the Witch's stacked draws count toward a full hand); book 160 `burnhold` (no burn at a spent 1/1 body). Ladder PASS; 21,000 paired games level, every list −0.3 to +0.6.
 - **The Pinnacle registered**: his 60 less Arc Mage, Whelp and a Blaze, plus two Doses and the fourth Kavu; fifteen less two Doses plus two Rage Cobras. 63.0 against 55.6 as played (AI's hands, 2,100 matches). Open tables of record re-run with sixteen lists.
+- **WB Basilisk registered in Peasant** (2026-11-01, `wbbasilisk`): Chris's run went 5-0 in the Swiss and out in the quarterfinals, 11-3 in games. His list with 3 Plains and 1 Swamp for the 4 Thought Replacement; his fifteen; no guide. Peasant's tables re-run with fifteen lists: Dungrove Auras 68.3, BR Removal 61.4, White Skies 61.0, BR Djinn 60.8.
 
 ## Deviations from the brief
 Post-session work had no brief; Chris directed it. Session 70's stand:
@@ -36,11 +37,13 @@ Post-session decisions that were the implementer's, for ruling: **the fourth Kav
 9. **The intervening if is read at trigger placement, not at the event** (R-120's named simplification); Balance's players choose in seat order, not active player first (R-121's).
 10. **The predictor prices a land search flat (0.5)** whatever it fetches, so a ramp list's two lands are under-read. The Pinnacle plays through this.
 11. **The consequence model (ADR-191)** is unchanged.
+6. **The AI cannot pilot WB Basilisk**: 29.5 in matches, last of fifteen, against Chris's 11-3 (5-11 against the two UW Skies lists, 0-1 against White Skies, where he beat UW Skies, walls 2-0). Registered knowingly, to be found and tweaked (Chris). It is an active list, so AI seats can draw it. The moving of a Collar to an untapped first striker is the line to read first. Three builds at 1,300 matches: as played 21.8, 2/2 29.9, 3/1 31.6 (±2.5).
 
 ## Registry entries added/changed
 - **Rules**: R-118 to R-121 (S70); R-122 `addMana.times`. `otherLand`, `nonland`, `landCard`; target predicate `land`.
 - **Pool**: the S70 cards as before; five tier-2 creatures (shevelport_quartermaster, burnfallow_exuberant, notion_flayer, den_of_vipers, sapwell_dryad); highland_ritual (T1). `red_ritual` stays a study def for the harnesses.
 - **The Open**: `pinnacle` in `contributed.json`.
+- **Peasant**: `wbbasilisk` in `formats/peasant/lists.json`.
 
 ## Test status
 **1,198 passed**, 2 skipped; typecheck clean. New since S70: `sim/s70-highland-ritual(-fuzz)`, `ui/play/tap-for-mana`, `s70-tier2-five(-fuzz)`; books 155–160. Re-pinned: the pool count (303), the shop tally. `pnpm test` still exits non-zero on five vitest "onTaskUpdate" errors, the known load errors (no assertion fails); `s62-fuzz` is the slowest file at 230 s.
@@ -49,6 +52,7 @@ Post-session decisions that were the implementer's, for ruling: **the fourth Kav
 - **The prize flow**: a High Ground or Balance as a champion's prize is one row in the prize table and one line in the fence. Which Convocation pays which ground is the planner's.
 - **The triad reads owed**: Volmaw in the Undertow and Sultai Mill; Ranksmere in the Aerie and the Roll. Burnfallow's now has the Pinnacle as a seat.
 - **The Pinnacle against Mardu Control and the Rabble** (37 and 35 in trial): Chris's own lost games were to the Usher. The Rage Cobra slots are unproven; Chris should play the list as registered.
+- **WB Basilisk as registered**: Chris has not played the 24 lands. Whether to archive it from the field is his call if it reads badly as an opponent.
 - **Chris on Hard**: the 16–3 was on Normal.
 - The consequence model (ADR-191) remains the next pilot work.
 

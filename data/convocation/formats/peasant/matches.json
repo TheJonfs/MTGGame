@@ -1,91 +1,97 @@
 {
  "_comment": "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.",
- "when": "2026-10-15",
+ "when": "2026-11-01",
  "matchesAPairing": 60,
  "byList": {
   "br": {
-   "matches": 59,
-   "gameOne": 56.3,
-   "later": 55.5,
-   "n": 780
+   "matches": 61.4,
+   "gameOne": 58.1,
+   "later": 58,
+   "n": 840
   },
   "brdjinn": {
-   "matches": 57.9,
-   "gameOne": 55.3,
-   "later": 55.7,
-   "n": 780
+   "matches": 60.8,
+   "gameOne": 55.8,
+   "later": 58.1,
+   "n": 840
   },
   "bw": {
-   "matches": 49.4,
-   "gameOne": 50.3,
-   "later": 49.9,
-   "n": 780
+   "matches": 55.4,
+   "gameOne": 57,
+   "later": 52.9,
+   "n": 840
   },
   "elder": {
-   "matches": 71.9,
-   "gameOne": 65.4,
-   "later": 65.3,
-   "n": 780
+   "matches": 68.3,
+   "gameOne": 61.8,
+   "later": 63.7,
+   "n": 840
   },
   "mbc": {
-   "matches": 47.4,
-   "gameOne": 44.6,
-   "later": 50.6,
-   "n": 780
+   "matches": 48,
+   "gameOne": 47.5,
+   "later": 49.1,
+   "n": 840
   },
   "muster": {
-   "matches": 40.3,
-   "gameOne": 44.2,
-   "later": 43.1,
-   "n": 780
+   "matches": 41.4,
+   "gameOne": 44.1,
+   "later": 45,
+   "n": 840
   },
   "naya": {
-   "matches": 38.1,
-   "gameOne": 46.3,
-   "later": 38.9,
-   "n": 780
+   "matches": 39.9,
+   "gameOne": 44.7,
+   "later": 41.9,
+   "n": 840
   },
   "rabble": {
-   "matches": 47.8,
-   "gameOne": 48.7,
-   "later": 48.3,
-   "n": 780
+   "matches": 50.7,
+   "gameOne": 50.2,
+   "later": 50.2,
+   "n": 840
   },
   "skies": {
-   "matches": 57.9,
-   "gameOne": 50.6,
-   "later": 56.8,
-   "n": 780
+   "matches": 56.8,
+   "gameOne": 52.9,
+   "later": 54.9,
+   "n": 840
   },
   "skieswall": {
-   "matches": 41.5,
-   "gameOne": 44.7,
-   "later": 44.4,
-   "n": 780
+   "matches": 46.3,
+   "gameOne": 50.1,
+   "later": 46.6,
+   "n": 840
   },
   "stompy": {
-   "matches": 45.1,
-   "gameOne": 50.4,
-   "later": 44.5,
-   "n": 780
+   "matches": 49.3,
+   "gameOne": 45.4,
+   "later": 51.3,
+   "n": 840
   },
   "tokens": {
-   "matches": 59.3,
-   "gameOne": 53.3,
-   "later": 57.2,
-   "n": 780
+   "matches": 50.4,
+   "gameOne": 50.7,
+   "later": 49.5,
+   "n": 840
   },
   "urcontrol": {
-   "matches": 26.2,
-   "gameOne": 31.7,
-   "later": 34.8,
-   "n": 780
+   "matches": 31,
+   "gameOne": 31,
+   "later": 39.5,
+   "n": 840
+  },
+  "wbbasilisk": {
+   "matches": 29.5,
+   "gameOne": 37.6,
+   "later": 33.5,
+   "n": 840
   },
   "wskies": {
-   "matches": 58.1,
-   "gameOne": 58.1,
-   "later": 54.5,
-   "n": 780
+   "matches": 61,
+   "gameOne": 63.1,
+   "later": 55.5,
+   "n": 840
   }
  }
 }
