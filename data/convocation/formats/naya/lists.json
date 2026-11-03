@@ -1175,6 +1175,145 @@
      "count": 2
     }
    ]
+  },
+  {
+   "key": "minefield",
+   "name": "the Minefield",
+   "title": "Naya Valakut (R W G, Moxen)",
+   "archetype": "control",
+   "source": "Post-S70 (Chris, 2026-11-03): his Open list (15-1, Champion of the Umbel; see the Open's entry), the first Valakut list in Naya. The 60 as played; the fifteen without the Open's graveyard answers (2 Faerie Macabre, 4 Tormod's Crypt — no graveyard deck in Naya; the Macabres are not Naya's colours), its six slots 2 Drakuseth, 2 Lightning Bolt, 2 Char (Chris's top end and burn). By trial (150 matches a pairing, paired): the AI's rules bring Swords to Plowshares in for three Walls of Blossoms (−2.6 ± 1.4 in matches); Bolt, Char, Disenchant and Drakuseth never come in, so this fifteen plays as the bare nine for the pilot and is Chris's to use. A working name.",
+   "decklist": [
+    {
+     "cardId": "powerstone_minefield",
+     "count": 4
+    },
+    {
+     "cardId": "sacred_helix",
+     "count": 4
+    },
+    {
+     "cardId": "burnfallow_exuberant",
+     "count": 4
+    },
+    {
+     "cardId": "earthrise",
+     "count": 1
+    },
+    {
+     "cardId": "highland_ritual",
+     "count": 4
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "balance",
+     "count": 1
+    },
+    {
+     "cardId": "wheel_of_fortune",
+     "count": 1
+    },
+    {
+     "cardId": "wood_elves",
+     "count": 4
+    },
+    {
+     "cardId": "savage_twister",
+     "count": 3
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 3
+    },
+    {
+     "cardId": "wall_of_blossoms",
+     "count": 4
+    },
+    {
+     "cardId": "library_of_alexandria",
+     "count": 1
+    },
+    {
+     "cardId": "burnfallow",
+     "count": 1
+    },
+    {
+     "cardId": "hearthspire",
+     "count": 1
+    },
+    {
+     "cardId": "shevelport",
+     "count": 1
+    },
+    {
+     "cardId": "taiga",
+     "count": 4
+    },
+    {
+     "cardId": "plateau",
+     "count": 4
+    },
+    {
+     "cardId": "sacred_foundry",
+     "count": 1
+    },
+    {
+     "cardId": "stomping_ground",
+     "count": 1
+    },
+    {
+     "cardId": "valakut_the_molten_pinnacle",
+     "count": 4
+    },
+    {
+     "cardId": "savannah",
+     "count": 1
+    },
+    {
+     "cardId": "mountain",
+     "count": 4
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "foxglove_dose",
+     "count": 4
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 1
+    },
+    {
+     "cardId": "drakuseth_maw_of_flames",
+     "count": 2
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 2
+    },
+    {
+     "cardId": "char",
+     "count": 2
+    }
+   ]
   }
  ]
 }

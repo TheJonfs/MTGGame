@@ -28,6 +28,7 @@ Only where the default would pick something we don't want, or where a card has m
 | Dragon Mage, Seedborn Muse | scg 87, lgn 138 | S45 (Chris): the first printings, old frame |
 | Emeria Angel, Dread Presence | zen 11, m20 96 | S45: modern frame only — the first printings |
 | Balance, Wheel of Fortune | leb 3, leb 184 | post-S70 (Chris): the Beta printings — Mark Poole, Daniel Gelon (verified on Scryfall 2026-10-29) |
+| Molten Rain | tsr, collector 348 | post-S70 (Chris): Time Spiral Remastered — the old-frame bonus sheet, the 1997 frame (Hugh Jamieson; verified on Scryfall 2026-11-03) |
 | Everything else | default | |
 
 ## Rendering note

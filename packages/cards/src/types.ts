@@ -228,6 +228,9 @@ export interface EffectCondition {
   /** Post-S65 (R-112, Foxglove Dose): the target's power, read live when the clause resolves — after the effects
    * before it in the same resolution (CR 608.2c: the instructions are followed in order). */
   powerAtLeast?: number;
+  /** Post-S70 (R-123, Molten Rain: "if that land was nonbasic"): the target as it LAST existed had no Basic supertype —
+   * read from the snapshot taken as the spell began to resolve (CR 608.2h), so it holds after an earlier clause destroyed it. */
+  nonbasic?: true;
 }
 
 /** Effect vocabulary v1 (data-model §3). Reserved words are commented at the bottom.
@@ -241,7 +244,7 @@ export type EffectBase =
    * Ruby Tyrant's recoil; the Djinn's event addressing can't reach activated abilities). */
   /** S40 (R-097, Powerstone Minefield): `to: "eventObject"` — the triggering event's OBJECT takes the damage
    * from the resolving source (the attacker or blocker); a no-op if it left the battlefield. */
-  | { type: "damage"; amount: Amount; target?: number; targetSpec?: number; to?: "eventPlayer" | "you" | "eventObject" | "opponent"; from?: "eventObject" } // S45 (R-099): to "opponent" — each opponent (Guttersnipe)
+  | { type: "damage"; amount: Amount; target?: number; targetSpec?: number; to?: "eventPlayer" | "you" | "eventObject" | "opponent" | "controllerOfTarget"; from?: "eventObject" } // S45 (R-099): to "opponent" — each opponent (Guttersnipe). Post-S70 (R-123, Molten Rain): to "controllerOfTarget" — the controller of the first object target as it last existed
   /** S40 (R-097, Odile): `tapped` narrows the scope to tapped objects. */
   /** S62 (R-108, Wave of Reckoning): `amount: "ownPower"` — each object in scope deals damage to ITSELF equal to its
    * power, the object as the source (its deathtouch and lifelink apply), all read before any is dealt. */

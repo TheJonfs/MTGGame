@@ -357,6 +357,7 @@ Resolved per `docs/art/printings.md`; regenerate with `pnpm art:fetch`. Flagged 
 | mind_stone | wth | 153 | Adam Rex | 162e81d3-6cd4-4cb8-8ed8-cfbd8d34ca71 |
 | mist_raven | avr | 67 | John Avon | 0d98f0c4-021a-407a-8b0c-5500d804f959 |
 | moaning_wall | hou | 72 | Piotr Jabłoński | ef494f81-638a-4e5d-b987-0dde7f2a135c |
+| molten_rain | tsr | 348 | Hugh Jamieson | f0f29ab4-79f8-4bcf-ab0e-c21d3c40d63e |
 | moss_viper | thb | 179 | Mike Bierek | a4d35ec4-0e0d-4611-8ad9-39d2c8a2ad6e |
 | mother_bear | mh1 | 171 | Winona Nelson | efae4d84-8134-461a-a352-a5bdff7259a7 |
 | mountain | leb | 297 | Douglas Shuler | 7af9c715-8d72-4eae-b412-fc89138ff588 |
@@ -811,3 +812,9 @@ For underrepresented archetypes. All custom, tier 2. Fuzz `sim/s70-tier2-five-fu
 ## Shop tiers (ADR-078, S19)
 
 The `shopTier` column (`1 | 2 | 3 | R`) is repo-canonical **on the card defs themselves** (`data/cards/*.json`, validated by the loader: every non-token, non-basic, non-prizeOnly card must carry one) rather than duplicated per row above; `docs/card-tier-audit-v2.md` is the curation source (planner-maintained), and `pnpm card-manifest` regenerates the human-readable price sheet. Distribution at adoption: **T1 ×53 · T2 ×31 · T3 ×10 · R ×2** (Demonic Tutor, Mystic Snake) + Lotus `prizeOnly` + 5 basics; Faerie Formation joins at T3 this session (→ T3 ×11). Availability: a town stocks `shopTier ≤ ring` (civilized 1 / approach 2 / wild 3); price × `shopTierMultiplier` (1.0/1.5/2.5 knobs); **R never stocks** — ante/quest/treasure circulation only.
+
+## Post-Session 70 addition — Molten Rain (Chris, 2026-11-03)
+
+| id | name | status | vocabulary | notes |
+|---|---|---|---|---|
+| molten_rain | Molten Rain | tested | Sorcery {1}{R}{R}, tier 2; target `land`; `destroy`; `damage` 2 `to: controllerOfTarget` with `if: {target: 0, nonbasic: true}` (R-123) | REAL (Scryfall TSR #348, the old-frame bonus sheet, Hugh Jamieson; oracle verified 2026-11-03). Red counterplay to Valakut and the High Grounds (Chris). Chosen by the land destruction study (decision-updates/s70) over Implode and Lay Waste. In no list yet. Pilot: book 162 (`landhit`) aims it at utility lands. |

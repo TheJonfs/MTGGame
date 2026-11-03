@@ -1,0 +1,27 @@
+{
+ "id": "lay_waste",
+ "name": "Lay Waste",
+ "source": "real",
+ "manaCost": "{3}{R}",
+ "types": [
+  "Sorcery"
+ ],
+ "targets": [
+  {
+   "count": 1,
+   "predicate": "land",
+   "zone": "battlefield"
+  }
+ ],
+ "spellEffect": [
+  {
+   "type": "destroy",
+   "target": 0
+  }
+ ],
+ "cycling": "{2}",
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": 2
+}

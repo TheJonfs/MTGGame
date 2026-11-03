@@ -44,7 +44,7 @@ Triggered `event` values: `ENTERS_BATTLEFIELD`, `DIES` (battlefield→graveyard,
 
 | type | params | notes |
 |---|---|---|
-| `damage` | `amount` (number or `"X"`), `target` ref | any target / creature / player |
+| `damage` | `amount` (number or `"X"`), `target` ref | any target / creature / player. Post-S70 (R-123, Molten Rain): `to: "controllerOfTarget"` — the first object target's last known controller; with `if: { target, nonbasic: true }` — the target as it last existed had no Basic supertype (CR 608.2h) |
 | `damageAll` | `amount`, `scope` | Pyroclasm |
 | `destroy` | `target` ref | |
 | `destroyAll` | `scope` | Wrath |

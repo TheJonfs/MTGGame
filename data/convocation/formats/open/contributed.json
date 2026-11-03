@@ -2609,6 +2609,141 @@
      "count": 2
     }
    ]
+  },
+  {
+   "key": "minefield",
+   "name": "the Minefield",
+   "title": "Naya Valakut (R W G, Moxen)",
+   "archetype": "control",
+   "source": "Post-S70 (Chris, 2026-11-03): built from his Convocation (Sealed/Open/Sealed/Open, Normal) — 15-1 and Champion of the Umbel. Powerstone Minefields and Walls of Blossoms hold the ground, Wrath of God and Savage Twister reset it, Valakut and Sacred Helix win; Wood Elves, Burnfallow Exuberant, Earthrise and Highland Ritual find the Mountains. His 75 as played. A working name. No guide.",
+   "decklist": [
+    {
+     "cardId": "powerstone_minefield",
+     "count": 4
+    },
+    {
+     "cardId": "sacred_helix",
+     "count": 4
+    },
+    {
+     "cardId": "burnfallow_exuberant",
+     "count": 4
+    },
+    {
+     "cardId": "earthrise",
+     "count": 1
+    },
+    {
+     "cardId": "highland_ritual",
+     "count": 4
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "balance",
+     "count": 1
+    },
+    {
+     "cardId": "wheel_of_fortune",
+     "count": 1
+    },
+    {
+     "cardId": "wood_elves",
+     "count": 4
+    },
+    {
+     "cardId": "savage_twister",
+     "count": 3
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 3
+    },
+    {
+     "cardId": "wall_of_blossoms",
+     "count": 4
+    },
+    {
+     "cardId": "library_of_alexandria",
+     "count": 1
+    },
+    {
+     "cardId": "burnfallow",
+     "count": 1
+    },
+    {
+     "cardId": "hearthspire",
+     "count": 1
+    },
+    {
+     "cardId": "shevelport",
+     "count": 1
+    },
+    {
+     "cardId": "taiga",
+     "count": 4
+    },
+    {
+     "cardId": "plateau",
+     "count": 4
+    },
+    {
+     "cardId": "sacred_foundry",
+     "count": 1
+    },
+    {
+     "cardId": "stomping_ground",
+     "count": 1
+    },
+    {
+     "cardId": "valakut_the_molten_pinnacle",
+     "count": 4
+    },
+    {
+     "cardId": "savannah",
+     "count": 1
+    },
+    {
+     "cardId": "mountain",
+     "count": 4
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "foxglove_dose",
+     "count": 4
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 4
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 4
+    },
+    {
+     "cardId": "faerie_macabre",
+     "count": 2
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 1
+    }
+   ]
   }
  ],
  "_guides_note": "S58: a guide's rows are the author's swaps that MEASURED (open:rr --sideboarded-only <list> --guide-drop …). The Locks' planner's guide also had Essence Scatter for Absorb against creature decks (−17 against the Enchantress, −11 the Ford: Absorb's life and its reach beyond creatures were worth more) and Disenchant for the Serras (−12 the Muster and the Enchantress); both rows are out and the rules bring those cards in where they apply. Post-S59: `guidesOnly` names the guided lists whose guide is the whole plan (the rules do not run after it).",

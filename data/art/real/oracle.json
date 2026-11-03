@@ -3008,5 +3008,19 @@
     "art_crop": "https://cards.scryfall.io/art_crop/front/9/0/9052369f-840f-438e-b86d-e2f8d6339585.jpg?1783948618",
     "normal": "https://cards.scryfall.io/normal/front/9/0/9052369f-840f-438e-b86d-e2f8d6339585.jpg?1783948618",
     "via": "override leb #184"
+  },
+  "molten_rain": {
+    "scryfallId": "f0f29ab4-79f8-4bcf-ab0e-c21d3c40d63e",
+    "set": "tsr",
+    "set_name": "Time Spiral Remastered",
+    "collector_number": "348",
+    "artist": "Hugh Jamieson",
+    "name": "Molten Rain",
+    "mana_cost": "{1}{R}{R}",
+    "type_line": "Sorcery",
+    "oracle_text": "Destroy target land. If that land was nonbasic, Molten Rain deals 2 damage to the land's controller.",
+    "art_crop": "https://cards.scryfall.io/art_crop/front/f/0/f0f29ab4-79f8-4bcf-ab0e-c21d3c40d63e.jpg?1787740888",
+    "normal": "https://cards.scryfall.io/normal/front/f/0/f0f29ab4-79f8-4bcf-ab0e-c21d3c40d63e.jpg?1787740888",
+    "via": "override tsr #348"
   }
 }

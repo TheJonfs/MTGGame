@@ -1118,7 +1118,7 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
   it("book of shame 26 (S26, the Corolla's pins): Lumen steals only on her own MAIN1 (the swing must cash); Clio holds the burst while the hand is stocked and the board threatens, spends when either runs thin", () => {
     const a = agent();
     const lumen = (step: string, activePlayer: 0 | 1 = 0) =>
-      mkView({ step, activePlayer, battlefield: [{ id: "lumen", cardId: "lumen_the_hearth_fire", controller: 0 }, { id: "bear", cardId: "grizzly_bears", controller: 1 }] });
+      mkView({ step, activePlayer, battlefield: [{ id: "lumen", cardId: "lumen_the_hearth_fire", controller: 0 }, { id: "bear", cardId: "hill_giant", controller: 1 }] }); // book 161: a body as big as Lumen (a Bear she out-hits)
     const steal = { type: "activateAbility" as const, objectId: "lumen", abilityIndex: 0, targets: [{ kind: "object" as const, id: "bear" }] };
     expect(a.scorePriorityAction(lumen("MAIN1"), steal)).toBeGreaterThan(-Infinity);
     expect(a.scorePriorityAction(lumen("MAIN2"), steal)).toBe(-Infinity);
@@ -2500,5 +2500,44 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(none.burnHoldGated(at("burnfallow_exuberant"), bolt)).toBe(false);
     const old = new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: list, temperature: 0.35, off: ["burnhold"] });
     expect(old.burnHoldGated(at("burnfallow_exuberant"), bolt)).toBe(false);
+  });
+
+  it("book of shame 161 (post-S70, Chris's Naya Valakut run): Lumen steals a body that swings at least as hard as she does — never a Wall, never a smaller body while she can attack herself, unless it is the blocker between our other attackers and lethal", () => {
+    const a = agent();
+    const at = (target: string, o: { life?: [number, number]; extra?: Obj[] } = {}) =>
+      mkView({ life: o.life ?? [20, 20], battlefield: [{ id: "lumen", cardId: "lumen_the_hearth_fire", controller: 0 }, { id: "t", cardId: target, controller: 1 }, ...(o.extra ?? [])] });
+    const steal = { type: "activateAbility" as const, objectId: "lumen", abilityIndex: 0, targets: [{ kind: "object" as const, id: "t" }] };
+    expect(a.threatenGated(at("wall_of_blossoms"), steal)).toBe(true); // a defender: no swing
+    expect(a.threatenGated(at("grizzly_bears"), steal)).toBe(true); // 2 < Lumen's 3: she attacks instead
+    expect(a.threatenGated(at("hill_giant"), steal)).toBe(false); // as hard as she hits: the steal also takes their blocker
+    expect(a.threatenGated(at("rumbling_baloth"), steal)).toBe(false);
+    // The Wall as the last blocker between two ready Hill Giants and their 6 life.
+    const giants: Obj[] = [{ id: "g1", cardId: "hill_giant", controller: 0 }, { id: "g2", cardId: "hill_giant", controller: 0 }];
+    expect(a.threatenGated(at("wall_of_blossoms", { life: [20, 6], extra: giants }), steal)).toBe(false);
+    expect(a.threatenGated(at("wall_of_blossoms", { life: [20, 7], extra: giants }), steal)).toBe(true);
+    // Book 26 stands: MAIN2 is still no steal.
+    expect(a.threatenGated(mkView({ step: "MAIN2", battlefield: [{ id: "lumen", cardId: "lumen_the_hearth_fire", controller: 0 }, { id: "t", cardId: "rumbling_baloth", controller: 1 }] }), steal)).toBe(true);
+    const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["threatswing"] });
+    expect(old.threatenGated(at("wall_of_blossoms"), steal)).toBe(false);
+  });
+
+  it("book of shame 162 (post-S70, the land destruction study): a land destroyed is worth what it does — Valakut, a High Ground or Library over a basic; any land while they hold three or fewer is tempo; never our own", () => {
+    const a = agent();
+    const lands = (ids: string[], who: 0 | 1 = 1): Obj[] => ids.map((cardId, i) => ({ id: `l${who}${i}`, cardId, controller: who }));
+    const v = (theirs: string[]) => mkView({ hand: [{ objectId: "v", cardId: "vindicate" }], battlefield: [...lands(theirs), ...lands(["plains", "swamp", "mountain"], 0)] });
+    const at = (id: string) => ({ type: "castSpell" as const, objectId: "v", targets: [{ kind: "object" as const, id }] });
+    const four = ["valakut_the_molten_pinnacle", "mountain", "hearthspire", "library_of_alexandria"];
+    expect(a.landHitBonus(v(four), at("l10"))).toBeCloseTo(1.5); // Valakut's trigger
+    expect(a.landHitBonus(v(four), at("l11"))).toBe(0); // a basic among four: no more than its 0.5
+    expect(a.landHitBonus(v(four), at("l12"))).toBeCloseTo(1.5); // the High Ground's ping
+    expect(a.landHitBonus(v(four), at("l13"))).toBeCloseTo(1.5); // Library's draw
+    expect(a.landHitBonus(v(["taiga", "mountain", "forest"]), at("l10"))).toBeCloseTo(0.4); // a dual's two colours are mana only; three lands: tempo
+    expect(a.landHitBonus(v(four), at("l00"))).toBe(0); // our own
+    const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["landhit"] });
+    expect(old.landHitBonus(v(four), at("l10"))).toBe(0);
+    // Molten Rain (R-123): the predictor reads the 2 off the land the destroy took — at Valakut, not at a Mountain.
+    const rain = (theirs: string[]) => mkView({ hand: [{ objectId: "v", cardId: "molten_rain" }], battlefield: [...lands(theirs), ...lands(["mountain", "mountain", "mountain"], 0)] });
+    expect(old.scorePriorityAction(rain(four), at("l10")) - old.scorePriorityAction(rain(four), at("l11"))).toBeGreaterThan(0.2);
+    expect(Math.abs(old.scorePriorityAction(v(four), at("l10")) - old.scorePriorityAction(v(four), at("l11")))).toBeLessThan(0.2); // Vindicate: no rider, no difference
   });
 });

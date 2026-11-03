@@ -522,7 +522,7 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     // A8 (S20): damage addresses a target index OR a range-spec index (targetSpec fans out).
     // A10 (S22): OR the triggering event's player (the Warden's law).
     // S25: to:"you" — the controller's own recoil (the Ruby Tyrant); no event context needed.
-    if (e.to !== undefined && e.to !== "eventPlayer" && e.to !== "you" && e.to !== "eventObject" && e.to !== "opponent") err(`damage "to" must be "eventPlayer", "you", "eventObject" or "opponent" (A10/S25/S40/S45)`);
+    if (e.to !== undefined && e.to !== "eventPlayer" && e.to !== "you" && e.to !== "eventObject" && e.to !== "opponent" && e.to !== "controllerOfTarget") err(`damage "to" must be "eventPlayer", "you", "eventObject", "opponent" or "controllerOfTarget" (A10/S25/S40/S45/R-123)`);
     if (e.from !== undefined && e.from !== "eventObject") err(`damage "from" must be "eventObject" (A10)`);
     if (!Number.isInteger(e.target) && !Number.isInteger(e.targetSpec) && e.to === undefined) err(`"damage" needs "target", "targetSpec", or a "to" address`);
   },
@@ -826,7 +826,8 @@ function validateEffects(
     if (e.if !== undefined) {
       const c = e.if;
       if (!isRecord(c) || !Number.isInteger(c.target) || (c.target as number) < 0 || (c.target as number) >= nTargets) err(`effect "if" needs a valid target index`);
-      else if (c.subtype === undefined && c.cardType === undefined && c.powerAtLeast === undefined) err(`effect "if" needs subtype, cardType or powerAtLeast`);
+      else if (c.subtype === undefined && c.cardType === undefined && c.powerAtLeast === undefined && c.nonbasic === undefined) err(`effect "if" needs subtype, cardType, powerAtLeast or nonbasic`);
+      else if (c.nonbasic !== undefined && c.nonbasic !== true) err(`effect "if": nonbasic must be true when present (R-123)`);
       else if (c.powerAtLeast !== undefined && !Number.isInteger(c.powerAtLeast)) err(`effect "if": powerAtLeast must be an integer`); // R-112
       else if (c.cardType !== undefined && !CARD_TYPES.includes(c.cardType as CardType)) err(`effect "if": unknown cardType ${c.cardType}`);
     }

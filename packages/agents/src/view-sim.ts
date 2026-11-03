@@ -42,8 +42,13 @@ function clone(view: GameView): GameView {
   };
 }
 
+/** Post-S70 (R-123, Molten Rain): what a removal took — its card and controller — so a later clause of the same
+ * resolution reads the object as it last existed (CR 608.2h). Object ids are never reused, so the map is safe across
+ * copies; it is cleared past a bound. */
+const lastKnown = new Map<string, { cardId: string; controller: 0 | 1 }>();
 function removeObject(view: GameView, id: string): void {
   const gone = view.battlefield.find((o) => o.id === id);
+  if (gone) { if (lastKnown.size > 4096) lastKnown.clear(); lastKnown.set(id, { cardId: gone.cardId, controller: gone.controller as 0 | 1 }); }
   view.battlefield = view.battlefield.filter((o) => o.id !== id);
   if (gone && simDefs) revertStatics(view, gone, simDefs);
 }
@@ -476,6 +481,9 @@ function applyEffect(
     const t = targets[e.if.target], o = t?.kind === "object" ? view.battlefield.find((b) => b.id === t.id) : undefined;
     if (!o || o.power === null || o.power < e.if.powerAtLeast) return 0;
   }
+  // R-123 (Molten Rain): the target as it last existed — on the battlefield still, or what the removal before took.
+  const lastOf = (i: number) => { const t = targets[i]; if (t?.kind !== "object") return undefined; const o = view.battlefield.find((b) => b.id === t.id); return o ? { cardId: o.cardId, controller: o.controller as 0 | 1 } : lastKnown.get(t.id); };
+  if (e.if?.nonbasic) { const l = lastOf(e.if.target); if (!l || (defs.get(l.cardId)?.supertypes ?? []).includes("Basic")) return 0; }
   // S31 (R-094): damage to the opponent by OUR creature also mills under our Traumatizers.
   const traumaMill = (amount: number): number => {
     if (!opts.creatureSource || amount <= 0) return 0;
@@ -524,6 +532,12 @@ function applyEffect(
       if (e.to === "opponent") { // S45 (Guttersnipe): each opponent, no target
         view.life[opp as 0 | 1] -= amt(e.amount);
         return traumaMill(amt(e.amount));
+      }
+      if (e.to === "controllerOfTarget") { // R-123 (Molten Rain): the first object target's last known controller
+        const i = targets.findIndex((t) => t?.kind === "object"), l = i >= 0 ? lastOf(i) : undefined;
+        if (!l) return 0;
+        view.life[l.controller] -= amt(e.amount);
+        return l.controller === me ? -0.8 * amt(e.amount) : traumaMill(amt(e.amount));
       }
       if (e.target === undefined) {
         // A8 range fan-out (Drakuseth): value every chosen target from the remainder of the list.

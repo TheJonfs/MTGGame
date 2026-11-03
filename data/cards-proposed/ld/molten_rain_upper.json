@@ -1,0 +1,32 @@
+{
+ "id": "molten_rain_upper",
+ "name": "Molten Rain (study: 2 always)",
+ "source": "custom",
+ "text": "Destroy target land. Its controller loses 2 life. (A study bound on Molten Rain, whose 2 is damage and only for a nonbasic land.)",
+ "manaCost": "{1}{R}{R}",
+ "types": [
+  "Sorcery"
+ ],
+ "targets": [
+  {
+   "count": 1,
+   "predicate": "land",
+   "zone": "battlefield"
+  }
+ ],
+ "spellEffect": [
+  {
+   "type": "destroy",
+   "target": 0
+  },
+  {
+   "type": "loseLife",
+   "amount": 2,
+   "who": "controllerOfTarget"
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": 2
+}

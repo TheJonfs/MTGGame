@@ -185,6 +185,11 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
       for (const p of ctx.players("opponent")) ctx.dealDamage({ kind: "player", player: p }, ctx.amount(e.amount));
       return;
     }
+    // Post-S70 (R-123, Molten Rain): the destroyed land's controller — its last known controller (CR 608.2h).
+    if (e.to === "controllerOfTarget") {
+      for (const p of ctx.players("controllerOfTarget")) ctx.dealDamage({ kind: "player", player: p }, ctx.amount(e.amount));
+      return;
+    }
     for (const t of targeted(e, ctx)) ctx.dealDamage(t, ctx.amount(e.amount), e.from); // A8: targetSpec fans out
   },
 

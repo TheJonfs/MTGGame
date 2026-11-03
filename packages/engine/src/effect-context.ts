@@ -43,6 +43,8 @@ interface TargetLki {
   power: number;
   controller: PlayerId;
   manaValue: number;
+  /** Post-S70 (R-123, Molten Rain): it had the Basic supertype. */
+  basic?: boolean;
 }
 
 /** Engine implementation of the cards package's EffectContext seam. */
@@ -85,7 +87,7 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
     // power and mana value (no characteristics apply off the battlefield, CR 611.3c) — so a hallowed card still counts.
     if (obj.zone === "graveyard") { const d = ctx.defs.def(obj.cardId); return { power: d.power ?? 0, controller: obj.owner, manaValue: manaValue(parseManaCost(d.manaCost ?? "")) }; }
     if (obj.zone !== "battlefield") return null;
-    return { power: characteristics(ctx, t.id).power, controller: obj.controller, manaValue: manaValue(parseManaCost(ctx.defs.def(obj.cardId).manaCost)) };
+    return { power: characteristics(ctx, t.id).power, controller: obj.controller, manaValue: manaValue(parseManaCost(ctx.defs.def(obj.cardId).manaCost)), basic: (ctx.defs.def(obj.cardId).supertypes ?? []).includes("Basic") };
   });
 
   // S40 (Undermine): the controllers of targeted stack items, snapshotted with the rest of the LKI.
@@ -267,9 +269,12 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
       moveObject(ctx, item.sourceId!, "graveyard");
     },
 
-    targetMatches(cond: { target: number; subtype?: string; cardType?: string; powerAtLeast?: number }): boolean {
+    targetMatches(cond: { target: number; subtype?: string; cardType?: string; powerAtLeast?: number; nonbasic?: true }): boolean {
       const t = item.targets[cond.target];
       if (!t || t.kind !== "object") return false;
+      // R-123 (Molten Rain): "if that land was nonbasic" — the snapshot, wherever the object is now (CR 608.2h)
+      if (cond.nonbasic) { const snap = lki[cond.target]; if (!snap || snap.basic) return false; }
+      if (cond.nonbasic && cond.subtype === undefined && cond.cardType === undefined && cond.powerAtLeast === undefined) return true;
       const obj = ctx.state.objects[t.id];
       if (!obj || obj.zone !== "battlefield") return false;
       const ch = characteristics(ctx, t.id);

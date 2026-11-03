@@ -1,0 +1,35 @@
+{
+ "id": "molten_rain",
+ "name": "Molten Rain",
+ "source": "real",
+ "manaCost": "{1}{R}{R}",
+ "types": [
+  "Sorcery"
+ ],
+ "targets": [
+  {
+   "count": 1,
+   "predicate": "land",
+   "zone": "battlefield"
+  }
+ ],
+ "spellEffect": [
+  {
+   "type": "destroy",
+   "target": 0
+  },
+  {
+   "type": "damage",
+   "amount": 2,
+   "to": "controllerOfTarget",
+   "if": {
+    "target": 0,
+    "nonbasic": true
+   }
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": 2
+}

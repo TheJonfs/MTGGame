@@ -4,7 +4,7 @@
 
 ## The table of record
 
-11 active lists, the AI in both seats. **Game one** is a list's mean win rate against the other active lists on the registered sixties (the round-robin of record, `formats/naya/means.json`). **Matches** is its best-of-three win rate — the figure the field's seat draw reads since S59 (60 matches a pairing, measured 2026-10-21; ADR-171): game one on the registered sixties, games two and three sideboarded. **After sideboarding** is its games-two-and-three rate less its game-one rate inside those matches.
+12 active lists, the AI in both seats. **Game one** is a list's mean win rate against the other active lists on the registered sixties (the round-robin of record, `formats/naya/means.json`). **Matches** is its best-of-three win rate — the figure the field's seat draw reads since S59 (60 matches a pairing, measured 2026-10-21; ADR-171): game one on the registered sixties, games two and three sideboarded. **After sideboarding** is its games-two-and-three rate less its game-one rate inside those matches.
 
 | list | deck | pilot | matches | game one | after sideboarding | fifteen |
 |---|---|---|---|---|---|---|
@@ -19,14 +19,15 @@
 | the Muster | Boros Weenie (W R) | aggro | 40.9 | 47 | +0.6 | built |
 | the Tollgate | Naya Control (R G W) | control | 40.5 | 44 | −3.0 | registered |
 | the Chantry | Naya Lifegain (R G W) | midrange | 39.7 | 44 | +3.3 | built |
+| the Minefield | Naya Valakut (R W G, Moxen) | control | — | not yet measured | — | registered |
 
 Archived (kept in the data, out of the field): none.
 
 ## Staples (ADR-170)
 
-Nonland cards outside the restricted list that more than half of the 11 active lists play: Flametongue Kavu (8 lists, 25 copies); Lightning Bolt (7 lists, 26 copies).
+Nonland cards outside the restricted list that more than half of the 12 active lists play: Flametongue Kavu (8 lists, 25 copies); Lightning Bolt (7 lists, 26 copies).
 
-The most played: Flametongue Kavu 8 · Lightning Bolt 7 · Birds of Paradise 4 · Reaper's Forerunner 4 · The Emerald Keeper 4 · Lumen, the Hearth Fire 4 · Sacred Helix 4 · Hordeling Outburst 3.
+The most played: Flametongue Kavu 8 · Lightning Bolt 7 · Sacred Helix 5 · Birds of Paradise 4 · Reaper's Forerunner 4 · The Emerald Keeper 4 · Lumen, the Hearth Fire 4 · Hordeling Outburst 3.
 
 ## Emerald Snakes — Snake Keeper (G R)
 
@@ -161,4 +162,16 @@ The most played: Flametongue Kavu 8 · Lightning Bolt 7 · Birds of Paradise 4 �
 - **Its fifteen:** built by the field's builder for each seat (none registered).
 - **History:**
   - contributed — S64 seed (the planner's, built by the implementer): the archived Ford's shape — Vitalist ×4, the Fordkeeper, Soul Warden, Sacred Helix, Bolt and Char (Lightning Helix is not in the pool) — with Peasant's new white: two Karmic Mentors (they return Wardens and Gladeharts) and two Dazzling Angels, for the Rage Cobras, two Spirit Links and two lands. Named the Chantry in the plane's register (S65; it was Naya Lifegain).
+
+## the Minefield — Naya Valakut (R W G, Moxen)
+
+`minefield` · control · game one not yet measured
+
+- **Lands (23):** 1 Library of Alexandria · 1 Burnfallow · 1 Hearthspire · 1 Shevelport · 4 Taiga · 4 Plateau · 1 Sacred Foundry · 1 Stomping Ground · 4 Valakut, the Molten Pinnacle · 1 Savannah · 4 Mountain
+- **Creatures (12):** 4 Burnfallow Exuberant · 4 Wood Elves · 4 Wall of Blossoms
+- **Other (25):** 4 Powerstone Minefield · 4 Sacred Helix · 1 Earthrise · 4 Highland Ritual · 1 Black Lotus · 1 Mox Emerald · 1 Mox Pearl · 1 Mox Ruby · 1 Balance · 1 Wheel of Fortune · 3 Savage Twister · 3 Wrath of God
+- **Its fifteen (registered):** 4 Foxglove Dose · 4 Pyroclasm · 1 Flametongue Kavu · 2 Drakuseth, Maw of Flames · 2 Lightning Bolt · 2 Char
+- **Its sideboard guide:** none — the general rules sideboard it.
+- **History:**
+  - contributed — Post-S70 (Chris, 2026-11-03): his Open list (15-1, Champion of the Umbel; see the Open's entry), the first Valakut list in Naya. The 60 as played; the fifteen without the Open's graveyard answers (2 Faerie Macabre, 4 Tormod's Crypt — no graveyard deck in Naya; the Macabres are not Naya's colours), its six slots 2 Drakuseth, 2 Lightning Bolt, 2 Char (Chris's top end and burn). By trial (150 matches a pairing, paired): the AI's rules bring Swords to Plowshares in for three Walls of Blossoms (−2.6 ± 1.4 in matches); Bolt, Char, Disenchant and Drakuseth never come in, so this fifteen plays as the bare nine for the pilot and is Chris's to use. A working name.
 

@@ -1,0 +1,31 @@
+{
+ "id": "implode",
+ "name": "Implode",
+ "source": "real",
+ "manaCost": "{4}{R}",
+ "types": [
+  "Sorcery"
+ ],
+ "targets": [
+  {
+   "count": 1,
+   "predicate": "land",
+   "zone": "battlefield"
+  }
+ ],
+ "spellEffect": [
+  {
+   "type": "destroy",
+   "target": 0
+  },
+  {
+   "type": "draw",
+   "count": 1,
+   "who": "you"
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": 2
+}

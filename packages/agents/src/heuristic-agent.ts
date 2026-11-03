@@ -341,7 +341,7 @@ export class HeuristicAgent implements Agent {
     }
     if (this.misfireGated(view, action, pred.view)) return -Infinity; // post-S65 (book 137): a spell that leaves its target of theirs alive and no worse is not cast
     const hosted = this.equipOnHost(view, action, pred.view);
-    return evaluate(pred.view, this.profile, this.defs) + pred.adjustment - (hosted ? 0.25 : 0) - misaim + this.wheelSpendBonus(view, action) + this.lifegainPayoffBonus(view, action) + this.hallowAnswerBonus(view, action) + this.entersKillBonus(view, action) + this.entersModesBonus(view, action) + this.lockStealBonus(view, action) + this.planBonus(view, action) + this.againstPlanBonus(view, action) + this.loopCastBonus(view, action) + this.holdKeptBonus(view, action);
+    return evaluate(pred.view, this.profile, this.defs) + pred.adjustment - (hosted ? 0.25 : 0) - misaim + this.wheelSpendBonus(view, action) + this.lifegainPayoffBonus(view, action) + this.hallowAnswerBonus(view, action) + this.entersKillBonus(view, action) + this.entersModesBonus(view, action) + this.lockStealBonus(view, action) + this.planBonus(view, action) + this.againstPlanBonus(view, action) + this.loopCastBonus(view, action) + this.holdKeptBonus(view, action) + this.landHitBonus(view, action);
   }
 
   /** S46 (Vitalist — the brief's "a term, not a rule"): while we control a LIFE_GAINED payoff (the shape: a trigger on
@@ -2649,6 +2649,30 @@ export class HeuristicAgent implements Agent {
     return view.stack.filter((i) => i.controller === view.you && i.kind !== "spell" && (this.def(i.cardId)?.abilities ?? []).some((a) => a.kind === "activated" && !!a.cost.life && a.effects.some((e) => e.type === "draw"))).length;
   }
 
+  /** Post-S70 book 162 (`landhit` — the land destruction study, Chris: counterplay to Valakut and the High Grounds): the
+   * evaluator prices every land at 0.5, so a land destroyed was a land destroyed, and Implode at a basic scored as Implode
+   * at Valakut. An opposing land that does more than make mana — a trigger, or an activated ability that is not a mana
+   * ability — is worth what it does; any land while the opponent holds three or fewer is tempo. Exposed for the book. */
+  landHitBonus(view: GameView, action: Action): number {
+    if (this.profile.off?.includes("landhit")) return 0;
+    let effects: readonly { type: string; target?: number }[] = [];
+    if (action.type === "castSpell") effects = (this.def(view.hand.find((h) => h.objectId === action.objectId)?.cardId ?? "")?.spellEffect ?? []) as { type: string; target?: number }[];
+    else if (action.type === "activateAbility") { const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex); effects = ab?.kind === "activated" ? ab.effects : []; }
+    else return 0;
+    let bonus = 0;
+    for (const e of effects) {
+      if (e.type !== "destroy" || e.target === undefined) continue;
+      const t = action.targets[e.target];
+      const o = t?.kind === "object" ? view.battlefield.find((x) => x.id === t.id) : undefined;
+      const d = o ? this.def(o.cardId) : undefined;
+      if (!o || !d || o.controller === view.you || !d.types.includes("Land")) continue;
+      const utility = (d.abilities ?? []).some((a) => a.kind === "triggered" || (a.kind === "activated" && !a.effects.every((x) => x.type === "addMana")));
+      const theirLands = view.battlefield.filter((x) => x.controller === o.controller && this.def(x.cardId)?.types.includes("Land")).length;
+      bonus += (utility ? 1.5 : 0) + (theirLands <= 3 ? 0.4 : 0);
+    }
+    return bonus;
+  }
+
   /** S26 (Lumen, the Hearth Fire — the sequencing pin, the Thundersnake's gate family): a resolved
    * gainControl (the threaten class) is worth its swing and nothing else — activate only on our
    * own MAIN1 (the attack search cashes the hasted steal; MAIN2 hands the creature back untouched),
@@ -2659,7 +2683,21 @@ export class HeuristicAgent implements Agent {
     const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
     if (!ab || ab.kind !== "activated") return false;
     if (!ab.effects.some((e) => e.type === "gainControl" && e.target !== undefined)) return false;
-    return !(view.activePlayer === view.you && view.step === "MAIN1");
+    if (!(view.activePlayer === view.you && view.step === "MAIN1")) return true;
+    // Post-S70 book 161 (Chris's Naya Valakut run: Lumen took a Wall of Blossoms fifteen times and attacked with none):
+    // the swing is the stolen body's attack, and the steal taps the source. No swing (a defender, no power) is no steal,
+    // and a ready source that hits harder itself attacks instead — unless the creature is the blocker between our
+    // other ready attackers and lethal.
+    if (this.profile.off?.includes("threatswing")) return false;
+    const t = action.targets[0];
+    const o = t?.kind === "object" ? view.battlefield.find((x) => x.id === t.id) : undefined;
+    if (!o || o.controller === view.you) return false;
+    const others = view.battlefield.filter((x) => x.controller === view.you && x.id !== action.objectId && x.power !== null && !x.keywords.includes("defender") && this.canActNow(x));
+    if (others.reduce((n, x) => n + Math.max(0, x.power ?? 0), 0) >= view.life[1 - view.you]!) return false;
+    const swing = o.power ?? 0;
+    if (swing <= 0 || o.keywords.includes("defender")) return true;
+    const src = view.battlefield.find((x) => x.id === action.objectId);
+    return !!src && src.power !== null && !src.keywords.includes("defender") && this.canActNow(src) && (src.power ?? 0) > swing;
   }
 
   /** S26 (Clio, Lady of the Depths — the hold-vs-spend pin, the boss doc's sketch): the burst
