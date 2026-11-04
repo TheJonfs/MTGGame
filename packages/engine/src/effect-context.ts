@@ -45,6 +45,8 @@ interface TargetLki {
   manaValue: number;
   /** Post-S70 (R-123, Molten Rain): it had the Basic supertype. */
   basic?: boolean;
+  /** Post-S70 (R-124): its toughness. */
+  toughness?: number;
 }
 
 /** Engine implementation of the cards package's EffectContext seam. */
@@ -87,7 +89,7 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
     // power and mana value (no characteristics apply off the battlefield, CR 611.3c) — so a hallowed card still counts.
     if (obj.zone === "graveyard") { const d = ctx.defs.def(obj.cardId); return { power: d.power ?? 0, controller: obj.owner, manaValue: manaValue(parseManaCost(d.manaCost ?? "")) }; }
     if (obj.zone !== "battlefield") return null;
-    return { power: characteristics(ctx, t.id).power, controller: obj.controller, manaValue: manaValue(parseManaCost(ctx.defs.def(obj.cardId).manaCost)), basic: (ctx.defs.def(obj.cardId).supertypes ?? []).includes("Basic") };
+    return { power: characteristics(ctx, t.id).power, toughness: characteristics(ctx, t.id).toughness, controller: obj.controller, manaValue: manaValue(parseManaCost(ctx.defs.def(obj.cardId).manaCost)), basic: (ctx.defs.def(obj.cardId).supertypes ?? []).includes("Basic") };
   });
 
   // S40 (Undermine): the controllers of targeted stack items, snapshotted with the rest of the LKI.
@@ -207,6 +209,7 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
         const snap = lki[a.target];
         return snap ? snap.power : 0;
       }
+      if (a.ref === "targetToughness") return lki[a.target]?.toughness ?? 0; // R-124: the snapshot's toughness
       if (a.ref === "targetManaValue") {
         // A10 (S22): LKI mana value — the bounced creature still feeds the Saproling count.
         const snap = lki[a.target];
@@ -915,8 +918,8 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
  * (Tendrils), statics (Gaean Wurm, Werebear's threshold) and cost reduction (Baru). */
 /** Refs that only a resolving stack item can answer (its targets, its event, its payment) — statics and cost
  * reductions read them as zero. S40: one guard for the three live-evaluation sites. */
-export type StackOnlyRef = Extract<ValueRef, { ref: "targetPower" | "targetManaValue" | "eventDamage" | "xPaid" | "sacrificedPower" | "manaSpent" | "sourcePower" | "eventPower" | "eventLife" | "discardedNonland" }>;
-const STACK_ONLY = new Set(["targetPower", "targetManaValue", "eventDamage", "xPaid", "sacrificedPower", "manaSpent", "sourcePower", "eventPower", "eventLife", "discardedNonland"]);
+export type StackOnlyRef = Extract<ValueRef, { ref: "targetPower" | "targetToughness" | "targetManaValue" | "eventDamage" | "xPaid" | "sacrificedPower" | "manaSpent" | "sourcePower" | "eventPower" | "eventLife" | "discardedNonland" }>;
+const STACK_ONLY = new Set(["targetPower", "targetToughness", "targetManaValue", "eventDamage", "xPaid", "sacrificedPower", "manaSpent", "sourcePower", "eventPower", "eventLife", "discardedNonland"]);
 export function isStackOnlyRef(v: ValueRef): v is StackOnlyRef {
   return STACK_ONLY.has(v.ref);
 }

@@ -1,0 +1,40 @@
+{
+ "id": "greatest_1bb",
+ "name": "NAME 1BB",
+ "source": "custom",
+ "text": "You lose life equal to the power of target creature with the greatest power among creatures your opponents control, then draw cards equal to its toughness. (If two or more creatures are tied for greatest power, target any one of them.)",
+ "manaCost": "{1}{B}{B}",
+ "types": [
+  "Sorcery"
+ ],
+ "targets": [
+  {
+   "count": 1,
+   "predicate": "creatureYouDontControl",
+   "zone": "battlefield",
+   "greatestPower": "opponents"
+  }
+ ],
+ "spellEffect": [
+  {
+   "type": "loseLife",
+   "amount": {
+    "ref": "targetPower",
+    "target": 0
+   },
+   "who": "you"
+  },
+  {
+   "type": "draw",
+   "count": {
+    "ref": "targetToughness",
+    "target": 0
+   },
+   "who": "you"
+  }
+ ],
+ "art": {
+  "fallback": "rendered"
+ },
+ "shopTier": 2
+}

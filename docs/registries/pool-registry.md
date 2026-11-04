@@ -818,3 +818,9 @@ The `shopTier` column (`1 | 2 | 3 | R`) is repo-canonical **on the card defs the
 | id | name | status | vocabulary | notes |
 |---|---|---|---|---|
 | molten_rain | Molten Rain | tested | Sorcery {1}{R}{R}, tier 2; target `land`; `destroy`; `damage` 2 `to: controllerOfTarget` with `if: {target: 0, nonbasic: true}` (R-123) | REAL (Scryfall TSR #348, the old-frame bonus sheet, Hugh Jamieson; oracle verified 2026-11-03). Red counterplay to Valakut and the High Grounds (Chris). Chosen by the land destruction study (decision-updates/s70) over Implode and Lay Waste. In no list yet. Pilot: book 162 (`landhit`) aims it at utility lands. |
+
+## Post-Session 70 addition — Confession (Chris, 2026-11-03)
+
+| id | name | status | vocabulary | notes |
+|---|---|---|---|---|
+| confession | Confession | tested | Sorcery {1}{B}, tier 2; target `creatureYouDontControl` `greatestPower: "opponents"` (R-124); `loseLife` you `targetPower`; `draw` you `targetToughness` (R-124) | Custom (Chris). Priced by trial against Sign in Blood (decision-updates/s71: every cost level; Chris took {1}{B}, to errata if play finds it strong). Art and printed face Chris-delivered. In no list yet. |

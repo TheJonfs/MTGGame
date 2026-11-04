@@ -206,7 +206,7 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
 
   draw: (e, ctx) => {
     if (e.type !== "draw") throw new Error("resolver mismatch");
-    for (const p of ctx.players(e.who)) ctx.draw(p, e.count);
+    for (const p of ctx.players(e.who)) ctx.draw(p, ctx.amount(e.count)); // R-124: the count may be a value ref
   },
 
   reorderTop: async (e, ctx) => {

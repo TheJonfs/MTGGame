@@ -2541,3 +2541,17 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     expect(Math.abs(old.scorePriorityAction(v(four), at("l10")) - old.scorePriorityAction(v(four), at("l11")))).toBeLessThan(0.2); // Vindicate: no rider, no difference
   });
 });
+
+describe("book of shame 163 (post-S70, Chris's greatest-power draw)", () => {
+  it("a target only READ — its power and toughness feed our own life and draw, no effect acts on it — is no misaim; Sign in Blood's aim stands", () => {
+    const study = pool.get("confession")!;
+    const a = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "control", []) });
+    const old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "control", []), off: ["readtarget"] });
+    const view = mkView({ hand: [{ objectId: "g", cardId: study.id }], battlefield: [{ id: "w", cardId: "wall_of_blossoms", controller: 1 }] });
+    const cast = { type: "castSpell" as const, objectId: "g", targets: [{ kind: "object" as const, id: "w" }] };
+    expect(a.misaimPenalty(view, cast)).toBe(0);
+    expect(old.misaimPenalty(view, cast)).toBe(100); // the old pilot: a draw is "helpful", aimed at their Wall
+    const sib = mkView({ hand: [{ objectId: "s", cardId: "sign_in_blood" }] });
+    expect(a.misaimPenalty(sib, { type: "castSpell", objectId: "s", targets: [{ kind: "player", player: 1 }] })).toBe(100); // book 125 stands
+  });
+});

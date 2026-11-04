@@ -41,7 +41,7 @@
    }
   },
   "peasant": {
-   "when": "2026-11-03",
+   "when": "2026-11-04",
    "games": 11400,
    "seeds": 15,
    "variants": 90,
@@ -50,10 +50,10 @@
     "1": 0.002,
     "2": 0.01
    },
-   "tau": 0.017,
+   "tau": 0.015,
    "scale": {
-    "a": 1.442,
-    "b": 79.417
+    "a": 1.398,
+    "b": 84.522
    }
   }
  },
@@ -73,8 +73,8 @@
    "limitedLift": 0.004,
    "limitedSe": 0.004,
    "limitedPost": 0.004,
-   "peasant": 2.016,
-   "peasantSeen": 459
+   "peasant": 1.517,
+   "peasantSeen": 426
   },
   "absorb": {
    "rating": 2.73,
@@ -107,8 +107,8 @@
    "limitedLift": 0.016,
    "limitedSe": 0.003,
    "limitedPost": 0.016,
-   "peasant": 2.482,
-   "peasantSeen": 103
+   "peasant": 2.507,
+   "peasantSeen": 102
   },
   "aether_mutation": {
    "rating": 2.717,
@@ -157,8 +157,8 @@
    "limitedLift": 0.014,
    "limitedSe": 0.003,
    "limitedPost": 0.014,
-   "peasant": 3.644,
-   "peasantSeen": 1149
+   "peasant": 3.514,
+   "peasantSeen": 1144
   },
   "airship_crash": {
    "rating": 0.857,
@@ -175,8 +175,8 @@
    "limitedLift": -0.003,
    "limitedSe": 0.005,
    "limitedPost": -0.003,
-   "peasant": 1.682,
-   "peasantSeen": 159
+   "peasant": 1.707,
+   "peasantSeen": 161
   },
   "altar_of_dementia": {
    "rating": 0.861,
@@ -193,8 +193,8 @@
    "limitedLift": -0.037,
    "limitedSe": 0.011,
    "limitedPost": -0.024,
-   "peasant": 0.263,
-   "peasantSeen": 718
+   "peasant": 0.401,
+   "peasantSeen": 713
   },
   "angel_of_the_ruins": {
    "rating": 1.772,
@@ -243,8 +243,8 @@
    "limitedLift": -0.035,
    "limitedSe": 0.013,
    "limitedPost": -0.019,
-   "peasant": 1.319,
-   "peasantSeen": 91
+   "peasant": 1.729,
+   "peasantSeen": 84
   },
   "arcane_collector": {
    "rating": 1.57,
@@ -261,8 +261,8 @@
    "limitedLift": 0.01,
    "limitedSe": 0.003,
    "limitedPost": 0.01,
-   "peasant": 2.595,
-   "peasantSeen": 240
+   "peasant": 2.56,
+   "peasantSeen": 242
   },
   "arcanis_the_omnipotent": {
    "rating": 2.594,
@@ -311,8 +311,8 @@
    "limitedLift": 0,
    "limitedSe": 0.004,
    "limitedPost": 0,
-   "peasant": 1.434,
-   "peasantSeen": 44
+   "peasant": 1.465,
+   "peasantSeen": 45
   },
   "badlands": {
    "rating": 2.994,
@@ -345,8 +345,8 @@
    "limitedLift": null,
    "limitedSe": null,
    "limitedPost": 0.005,
-   "peasant": 0.931,
-   "peasantSeen": 883
+   "peasant": 1.265,
+   "peasantSeen": 885
   },
   "baru_wurmspeaker": {
    "rating": 2.512,
@@ -395,8 +395,8 @@
    "limitedLift": 0.016,
    "limitedSe": 0.003,
    "limitedPost": 0.016,
-   "peasant": 1.514,
-   "peasantSeen": 2085
+   "peasant": 1.286,
+   "peasantSeen": 2084
   },
   "bitterblossom": {
    "rating": 2.699,
@@ -445,8 +445,8 @@
    "limitedLift": 0.005,
    "limitedSe": 0.003,
    "limitedPost": 0.005,
-   "peasant": 1.24,
-   "peasantSeen": 1285
+   "peasant": 1.095,
+   "peasantSeen": 1284
   },
   "blaze": {
    "rating": 0.861,
@@ -463,8 +463,8 @@
    "limitedLift": 0.004,
    "limitedSe": 0.007,
    "limitedPost": 0.004,
-   "peasant": 2.099,
-   "peasantSeen": 328
+   "peasant": 2.273,
+   "peasantSeen": 318
   },
   "blood_artist": {
    "rating": 1.973,
@@ -481,8 +481,8 @@
    "limitedLift": 0.019,
    "limitedSe": 0.003,
    "limitedPost": 0.019,
-   "peasant": 2.624,
-   "peasantSeen": 5477
+   "peasant": 2.329,
+   "peasantSeen": 5476
   },
   "blood_crypt": {
    "rating": 1.31,
@@ -499,8 +499,8 @@
    "limitedLift": 0.005,
    "limitedSe": 0.004,
    "limitedPost": 0.006,
-   "peasant": 1.936,
-   "peasantSeen": 2570
+   "peasant": 1.87,
+   "peasantSeen": 2557
   },
   "blurred_mongoose": {
    "rating": 0.888,
@@ -517,8 +517,8 @@
    "limitedLift": -0.011,
    "limitedSe": 0.007,
    "limitedPost": -0.009,
-   "peasant": 1.247,
-   "peasantSeen": 104
+   "peasant": 1.395,
+   "peasantSeen": 103
   },
   "boggart_brute": {
    "rating": 1.651,
@@ -535,8 +535,8 @@
    "limitedLift": 0.007,
    "limitedSe": 0.003,
    "limitedPost": 0.007,
-   "peasant": 0.853,
-   "peasantSeen": 1492
+   "peasant": 0.596,
+   "peasantSeen": 1514
   },
   "bonesplitter": {
    "rating": 1.162,
@@ -553,8 +553,8 @@
    "limitedLift": -0.002,
    "limitedSe": 0.003,
    "limitedPost": -0.002,
-   "peasant": 0.844,
-   "peasantSeen": 787
+   "peasant": 1.254,
+   "peasantSeen": 778
   },
   "boomerang": {
    "rating": 0.666,
@@ -571,7 +571,7 @@
    "limitedLift": -0.013,
    "limitedSe": 0.004,
    "limitedPost": -0.012,
-   "peasant": 1.609,
+   "peasant": 1.584,
    "peasantSeen": 0
   },
   "brainstorm": {
@@ -589,8 +589,8 @@
    "limitedLift": -0.001,
    "limitedSe": 0.003,
    "limitedPost": -0.001,
-   "peasant": 2.348,
-   "peasantSeen": 1152
+   "peasant": 2.333,
+   "peasantSeen": 1157
   },
   "breeding_pool": {
    "rating": 1.691,
@@ -607,7 +607,7 @@
    "limitedLift": 0.014,
    "limitedSe": 0.004,
    "limitedPost": 0.014,
-   "peasant": 2.222,
+   "peasant": 2.212,
    "peasantSeen": 0
   },
   "brute_force": {
@@ -625,7 +625,7 @@
    "limitedLift": -0.01,
    "limitedSe": 0.004,
    "limitedPost": -0.009,
-   "peasant": 0.685,
+   "peasant": 0.692,
    "peasantSeen": 233
   },
   "buried_alive": {
@@ -643,8 +643,8 @@
    "limitedLift": -0.04,
    "limitedSe": 0.007,
    "limitedPost": -0.032,
-   "peasant": 1.044,
-   "peasantSeen": 309
+   "peasant": 0.8,
+   "peasantSeen": 298
   },
   "cairnbrand": {
    "rating": 3.174,
@@ -677,7 +677,7 @@
    "limitedLift": -0.011,
    "limitedSe": 0.006,
    "limitedPost": -0.009,
-   "peasant": 1.602,
+   "peasant": 1.455,
    "peasantSeen": 138
   },
   "centaur_courser": {
@@ -695,8 +695,8 @@
    "limitedLift": -0.001,
    "limitedSe": 0.004,
    "limitedPost": 0,
-   "peasant": 0.295,
-   "peasantSeen": 2048
+   "peasant": 0.194,
+   "peasantSeen": 2052
   },
   "char": {
    "rating": 1.189,
@@ -713,8 +713,8 @@
    "limitedLift": 0.001,
    "limitedSe": 0.004,
    "limitedPost": 0.001,
-   "peasant": 1.139,
-   "peasantSeen": 3217
+   "peasant": 0.77,
+   "peasantSeen": 3192
   },
   "child_of_night": {
    "rating": 1.468,
@@ -731,7 +731,7 @@
    "limitedLift": 0.01,
    "limitedSe": 0.003,
    "limitedPost": 0.01,
-   "peasant": 2.146,
+   "peasant": 2.01,
    "peasantSeen": 4677
   },
   "clio_lady_of_the_depths": {
@@ -765,7 +765,7 @@
    "limitedLift": 0.022,
    "limitedSe": 0.002,
    "limitedPost": 0.022,
-   "peasant": 2.069,
+   "peasant": 1.862,
    "peasantSeen": 72
   },
   "control_magic": {
@@ -799,8 +799,8 @@
    "limitedLift": -0.002,
    "limitedSe": 0.004,
    "limitedPost": -0.001,
-   "peasant": 2.772,
-   "peasantSeen": 2307
+   "peasant": 3.034,
+   "peasantSeen": 2311
   },
   "cunning_tactician": {
    "rating": 1.012,
@@ -817,8 +817,8 @@
    "limitedLift": -0.02,
    "limitedSe": 0.007,
    "limitedPost": -0.016,
-   "peasant": 2.113,
-   "peasantSeen": 346
+   "peasant": 2.168,
+   "peasantSeen": 287
   },
   "curiosity": {
    "rating": 0.809,
@@ -835,7 +835,7 @@
    "limitedLift": -0.016,
    "limitedSe": 0.008,
    "limitedPost": -0.013,
-   "peasant": 1.718,
+   "peasant": 1.616,
    "peasantSeen": 138
   },
   "dark_ritual": {
@@ -853,8 +853,8 @@
    "limitedLift": -0.008,
    "limitedSe": 0.01,
    "limitedPost": -0.004,
-   "peasant": 1.043,
-   "peasantSeen": 198
+   "peasant": 1.438,
+   "peasantSeen": 227
   },
   "darksteel_myr": {
    "rating": 0.675,
@@ -871,8 +871,8 @@
    "limitedLift": -0.016,
    "limitedSe": 0.007,
    "limitedPost": -0.013,
-   "peasant": 1.832,
-   "peasantSeen": 787
+   "peasant": 1.699,
+   "peasantSeen": 756
   },
   "deadly_recluse": {
    "rating": 0.98,
@@ -889,7 +889,7 @@
    "limitedLift": 0.011,
    "limitedSe": 0.003,
    "limitedPost": 0.011,
-   "peasant": 2.023,
+   "peasant": 2.014,
    "peasantSeen": 96
   },
   "demonic_tutor": {
@@ -923,8 +923,8 @@
    "limitedLift": 0.005,
    "limitedSe": 0.003,
    "limitedPost": 0.005,
-   "peasant": 2.311,
-   "peasantSeen": 220
+   "peasant": 2.888,
+   "peasantSeen": 225
   },
   "disenchant": {
    "rating": 0.394,
@@ -941,8 +941,8 @@
    "limitedLift": -0.017,
    "limitedSe": 0.004,
    "limitedPost": -0.016,
-   "peasant": 1.376,
-   "peasantSeen": 165
+   "peasant": 1.393,
+   "peasantSeen": 282
   },
   "divination": {
    "rating": 1.219,
@@ -959,7 +959,7 @@
    "limitedLift": -0.003,
    "limitedSe": 0.003,
    "limitedPost": -0.003,
-   "peasant": 1.609,
+   "peasant": 1.584,
    "peasantSeen": 0
   },
   "doom_blade": {
@@ -977,8 +977,8 @@
    "limitedLift": 0.012,
    "limitedSe": 0.003,
    "limitedPost": 0.012,
-   "peasant": 1.894,
-   "peasantSeen": 4608
+   "peasant": 2.063,
+   "peasantSeen": 4618
   },
   "dragon_fodder": {
    "rating": 0.872,
@@ -995,8 +995,8 @@
    "limitedLift": 0.001,
    "limitedSe": 0.004,
    "limitedPost": 0.001,
-   "peasant": 0.571,
-   "peasantSeen": 2291
+   "peasant": 0.68,
+   "peasantSeen": 2296
   },
   "dragon_mage": {
    "rating": 1.679,
@@ -1077,8 +1077,8 @@
    "limitedLift": -0.023,
    "limitedSe": 0.008,
    "limitedPost": -0.018,
-   "peasant": 2.114,
-   "peasantSeen": 387
+   "peasant": 1.665,
+   "peasantSeen": 261
   },
   "elvish_visionary": {
    "rating": 1.091,
@@ -1095,8 +1095,8 @@
    "limitedLift": 0.007,
    "limitedSe": 0.003,
    "limitedPost": 0.007,
-   "peasant": 1.768,
-   "peasantSeen": 74
+   "peasant": 1.661,
+   "peasantSeen": 72
   },
   "emeria_angel": {
    "rating": 2.941,
@@ -1129,8 +1129,8 @@
    "limitedLift": -0.033,
    "limitedSe": 0.004,
    "limitedPost": -0.031,
-   "peasant": 1.783,
-   "peasantSeen": 187
+   "peasant": 1.845,
+   "peasantSeen": 221
   },
   "essence_scatter": {
    "rating": 1.161,
@@ -1147,8 +1147,8 @@
    "limitedLift": 0.009,
    "limitedSe": 0.003,
    "limitedPost": 0.009,
-   "peasant": 2.651,
-   "peasantSeen": 853
+   "peasant": 2.803,
+   "peasantSeen": 850
   },
   "evolving_wilds": {
    "rating": 1.121,
@@ -1165,8 +1165,8 @@
    "limitedLift": 0.002,
    "limitedSe": 0.003,
    "limitedPost": 0.002,
-   "peasant": 1.847,
-   "peasantSeen": 1193
+   "peasant": 1.907,
+   "peasantSeen": 1197
   },
   "experimental_overload": {
    "rating": 2.678,
@@ -1231,8 +1231,8 @@
    "limitedLift": 0.012,
    "limitedSe": 0.003,
    "limitedPost": 0.012,
-   "peasant": 1.729,
-   "peasantSeen": 2517
+   "peasant": 1.732,
+   "peasantSeen": 2548
   },
   "flametongue_kavu": {
    "rating": 2.407,
@@ -1249,8 +1249,8 @@
    "limitedLift": 0.05,
    "limitedSe": 0.002,
    "limitedPost": 0.049,
-   "peasant": 3.2,
-   "peasantSeen": 8846
+   "peasant": 3.169,
+   "peasantSeen": 8839
   },
   "forgotten_cave": {
    "rating": 0.202,
@@ -1267,7 +1267,7 @@
    "limitedLift": null,
    "limitedSe": null,
    "limitedPost": 0.005,
-   "peasant": 1.609,
+   "peasant": 1.584,
    "peasantSeen": 0
   },
   "frondland_felidar": {
@@ -1301,8 +1301,8 @@
    "limitedLift": -0.006,
    "limitedSe": 0.004,
    "limitedPost": -0.005,
-   "peasant": 0.743,
-   "peasantSeen": 297
+   "peasant": 1.099,
+   "peasantSeen": 381
   },
   "gaean_wurm": {
    "rating": 2.117,
@@ -1319,8 +1319,8 @@
    "limitedLift": 0.023,
    "limitedSe": 0.003,
    "limitedPost": 0.022,
-   "peasant": 2.559,
-   "peasantSeen": 2145
+   "peasant": 2.463,
+   "peasantSeen": 2146
   },
   "gallows_djinn": {
    "rating": 1.366,
@@ -1337,8 +1337,8 @@
    "limitedLift": 0.009,
    "limitedSe": 0.003,
    "limitedPost": 0.009,
-   "peasant": 2.636,
-   "peasantSeen": 2369
+   "peasant": 2.682,
+   "peasantSeen": 2389
   },
   "giant_growth": {
    "rating": 0.638,
@@ -1355,7 +1355,7 @@
    "limitedLift": -0.035,
    "limitedSe": 0.012,
    "limitedPost": -0.022,
-   "peasant": 1.509,
+   "peasant": 1.494,
    "peasantSeen": 69
   },
   "gladecover_scout": {
@@ -1373,8 +1373,8 @@
    "limitedLift": -0.015,
    "limitedSe": 0.004,
    "limitedPost": -0.014,
-   "peasant": 0.873,
-   "peasantSeen": 1456
+   "peasant": 0.737,
+   "peasantSeen": 1450
   },
   "glare_of_subdual": {
    "rating": 2.203,
@@ -1423,8 +1423,8 @@
    "limitedLift": 0.013,
    "limitedSe": 0.003,
    "limitedPost": 0.013,
-   "peasant": 3.034,
-   "peasantSeen": 2433
+   "peasant": 3.32,
+   "peasantSeen": 2408
   },
   "goblin_chieftain": {
    "rating": 1.913,
@@ -1441,8 +1441,8 @@
    "limitedLift": 0.005,
    "limitedSe": 0.003,
    "limitedPost": 0.005,
-   "peasant": 2.219,
-   "peasantSeen": 1267
+   "peasant": 2.369,
+   "peasantSeen": 1271
   },
   "goblin_grenade": {
    "rating": 1.311,
@@ -1459,8 +1459,8 @@
    "limitedLift": -0.001,
    "limitedSe": 0.011,
    "limitedPost": 0.002,
-   "peasant": 0.417,
-   "peasantSeen": 1160
+   "peasant": 0.366,
+   "peasantSeen": 1227
   },
   "goblin_matron": {
    "rating": 1.674,
@@ -1477,8 +1477,8 @@
    "limitedLift": -0.001,
    "limitedSe": 0.004,
    "limitedPost": 0,
-   "peasant": 1.049,
-   "peasantSeen": 1473
+   "peasant": 1.106,
+   "peasantSeen": 1514
   },
   "goblin_piker": {
    "rating": 0.663,
@@ -1495,8 +1495,8 @@
    "limitedLift": -0.011,
    "limitedSe": 0.008,
    "limitedPost": -0.009,
-   "peasant": -0.229,
-   "peasantSeen": 957
+   "peasant": 0.232,
+   "peasantSeen": 810
   },
   "godless_shrine": {
    "rating": 1.721,
@@ -1513,8 +1513,8 @@
    "limitedLift": 0.01,
    "limitedSe": 0.004,
    "limitedPost": 0.01,
-   "peasant": 2.629,
-   "peasantSeen": 2336
+   "peasant": 2.756,
+   "peasantSeen": 2360
   },
   "graceful_restoration": {
    "rating": 2.601,
@@ -1547,8 +1547,8 @@
    "limitedLift": -0.002,
    "limitedSe": 0.005,
    "limitedPost": -0.001,
-   "peasant": 2.431,
-   "peasantSeen": 2145
+   "peasant": 2.397,
+   "peasantSeen": 2121
   },
   "gravitational_shift": {
    "rating": 1.418,
@@ -1565,8 +1565,8 @@
    "limitedLift": -0.01,
    "limitedSe": 0.005,
    "limitedPost": -0.009,
-   "peasant": 2.627,
-   "peasantSeen": 165
+   "peasant": 2.53,
+   "peasantSeen": 166
   },
   "gray_ogre": {
    "rating": 0.294,
@@ -1583,8 +1583,8 @@
    "limitedLift": -0.017,
    "limitedSe": 0.004,
    "limitedPost": -0.016,
-   "peasant": 1.725,
-   "peasantSeen": 418
+   "peasant": 1.816,
+   "peasantSeen": 420
   },
   "grazing_gladehart": {
    "rating": 1.161,
@@ -1601,8 +1601,8 @@
    "limitedLift": 0.002,
    "limitedSe": 0.004,
    "limitedPost": 0.002,
-   "peasant": 0.752,
-   "peasantSeen": 89
+   "peasant": 0.873,
+   "peasantSeen": 88
   },
   "grizzly_bears": {
    "rating": 0.816,
@@ -1619,8 +1619,8 @@
    "limitedLift": 0,
    "limitedSe": 0.004,
    "limitedPost": 0,
-   "peasant": 0.432,
-   "peasantSeen": 1081
+   "peasant": 0.396,
+   "peasantSeen": 1088
   },
   "guttersnipe": {
    "rating": 1.677,
@@ -1653,8 +1653,8 @@
    "limitedLift": 0.009,
    "limitedSe": 0.004,
    "limitedPost": 0.009,
-   "peasant": 2.258,
-   "peasantSeen": 2433
+   "peasant": 2.214,
+   "peasantSeen": 2432
   },
   "hedron_crab": {
    "rating": 1.113,
@@ -1671,8 +1671,8 @@
    "limitedLift": 0.008,
    "limitedSe": 0.003,
    "limitedPost": 0.008,
-   "peasant": 1.358,
-   "peasantSeen": 123
+   "peasant": 1.54,
+   "peasantSeen": 122
   },
   "hill_giant": {
    "rating": 0.588,
@@ -1689,8 +1689,8 @@
    "limitedLift": -0.016,
    "limitedSe": 0.004,
    "limitedPost": -0.015,
-   "peasant": 1.607,
-   "peasantSeen": 383
+   "peasant": 1.769,
+   "peasantSeen": 491
   },
   "hordeling_outburst": {
    "rating": 1.245,
@@ -1707,8 +1707,8 @@
    "limitedLift": 0.003,
    "limitedSe": 0.003,
    "limitedPost": 0.003,
-   "peasant": 1.386,
-   "peasantSeen": 2356
+   "peasant": 1.106,
+   "peasantSeen": 2251
   },
   "hymn_to_tourach": {
    "rating": 2.176,
@@ -1757,8 +1757,8 @@
    "limitedLift": 0.001,
    "limitedSe": 0.003,
    "limitedPost": 0.001,
-   "peasant": 1.478,
-   "peasantSeen": 244
+   "peasant": 1.545,
+   "peasantSeen": 162
   },
   "inspiring_overseer": {
    "rating": 1.82,
@@ -1775,8 +1775,8 @@
    "limitedLift": 0.032,
    "limitedSe": 0.002,
    "limitedPost": 0.032,
-   "peasant": 3.145,
-   "peasantSeen": 3420
+   "peasant": 3.071,
+   "peasantSeen": 3468
   },
   "isaura_the_levy": {
    "rating": 2.95,
@@ -1825,8 +1825,8 @@
    "limitedLift": 0.017,
    "limitedSe": 0.003,
    "limitedPost": 0.016,
-   "peasant": 1.882,
-   "peasantSeen": 8673
+   "peasant": 1.724,
+   "peasantSeen": 8699
   },
   "little_bear": {
    "rating": 1.287,
@@ -1843,8 +1843,8 @@
    "limitedLift": -0.005,
    "limitedSe": 0.004,
    "limitedPost": -0.004,
-   "peasant": 0.771,
-   "peasantSeen": 1020
+   "peasant": 0.638,
+   "peasantSeen": 1023
   },
   "llanowar_elves": {
    "rating": 1.275,
@@ -1861,8 +1861,8 @@
    "limitedLift": 0.002,
    "limitedSe": 0.003,
    "limitedPost": 0.002,
-   "peasant": 0.752,
-   "peasantSeen": 2943
+   "peasant": 0.547,
+   "peasantSeen": 2949
   },
   "lonely_sandbar": {
    "rating": 0.616,
@@ -1879,7 +1879,7 @@
    "limitedLift": null,
    "limitedSe": null,
    "limitedPost": 0.005,
-   "peasant": 1.609,
+   "peasant": 1.584,
    "peasantSeen": 0
   },
   "loxodon_warhammer": {
@@ -1897,8 +1897,8 @@
    "limitedLift": 0.021,
    "limitedSe": 0.002,
    "limitedPost": 0.02,
-   "peasant": 4.136,
-   "peasantSeen": 1604
+   "peasant": 4.126,
+   "peasantSeen": 1658
   },
   "lumen_the_hearth_fire": {
    "rating": 3.334,
@@ -1931,8 +1931,8 @@
    "limitedLift": 0.015,
    "limitedSe": 0.003,
    "limitedPost": 0.015,
-   "peasant": 1.829,
-   "peasantSeen": 95
+   "peasant": 1.908,
+   "peasantSeen": 93
   },
   "master_decoy": {
    "rating": 0.775,
@@ -1949,8 +1949,8 @@
    "limitedLift": -0.014,
    "limitedSe": 0.004,
    "limitedPost": -0.013,
-   "peasant": 0.943,
-   "peasantSeen": 340
+   "peasant": 1.358,
+   "peasantSeen": 346
   },
   "meliyan_the_torment": {
    "rating": 2.73,
@@ -1983,8 +1983,8 @@
    "limitedLift": -0.002,
    "limitedSe": 0.004,
    "limitedPost": -0.002,
-   "peasant": 1.355,
-   "peasantSeen": 114
+   "peasant": 2.246,
+   "peasantSeen": 295
   },
   "mind_stone": {
    "rating": 1.097,
@@ -2001,8 +2001,8 @@
    "limitedLift": -0.015,
    "limitedSe": 0.005,
    "limitedPost": -0.014,
-   "peasant": 0.989,
-   "peasantSeen": 619
+   "peasant": 0.993,
+   "peasantSeen": 332
   },
   "mist_raven": {
    "rating": 1.594,
@@ -2019,8 +2019,8 @@
    "limitedLift": 0.013,
    "limitedSe": 0.003,
    "limitedPost": 0.012,
-   "peasant": 1.594,
-   "peasantSeen": 129
+   "peasant": 1.757,
+   "peasantSeen": 133
   },
   "moss_viper": {
    "rating": 1.052,
@@ -2037,8 +2037,8 @@
    "limitedLift": -0.001,
    "limitedSe": 0.005,
    "limitedPost": -0.001,
-   "peasant": 1.32,
-   "peasantSeen": 159
+   "peasant": 1.019,
+   "peasantSeen": 160
   },
   "mother_bear": {
    "rating": 1.42,
@@ -2055,8 +2055,8 @@
    "limitedLift": 0.004,
    "limitedSe": 0.003,
    "limitedPost": 0.004,
-   "peasant": 0.701,
-   "peasantSeen": 1092
+   "peasant": 0.936,
+   "peasantSeen": 1095
   },
   "mox_emerald": {
    "rating": 2.644,
@@ -2169,8 +2169,8 @@
    "limitedLift": 0.033,
    "limitedSe": 0.003,
    "limitedPost": 0.032,
-   "peasant": 3.208,
-   "peasantSeen": 4536
+   "peasant": 3.437,
+   "peasantSeen": 4576
   },
   "obsidian_observatory": {
    "rating": 3.384,
@@ -2219,8 +2219,8 @@
    "limitedLift": -0.022,
    "limitedSe": 0.004,
    "limitedPost": -0.02,
-   "peasant": 1.768,
-   "peasantSeen": 218
+   "peasant": 1.434,
+   "peasantSeen": 213
   },
   "overgrown_tomb": {
    "rating": 1.388,
@@ -2237,7 +2237,7 @@
    "limitedLift": 0.011,
    "limitedSe": 0.005,
    "limitedPost": 0.011,
-   "peasant": 2.222,
+   "peasant": 2.212,
    "peasantSeen": 0
   },
   "ovna_the_enchantress": {
@@ -2271,8 +2271,8 @@
    "limitedLift": 0.005,
    "limitedSe": 0.003,
    "limitedPost": 0.005,
-   "peasant": 2.74,
-   "peasantSeen": 855
+   "peasant": 2.801,
+   "peasantSeen": 853
   },
   "pelakka_wurm": {
    "rating": 2.797,
@@ -2321,8 +2321,8 @@
    "limitedLift": 0.008,
    "limitedSe": 0.003,
    "limitedPost": 0.008,
-   "peasant": 2.785,
-   "peasantSeen": 119
+   "peasant": 2.234,
+   "peasantSeen": 127
   },
   "plateau": {
    "rating": 3.039,
@@ -2355,8 +2355,8 @@
    "limitedLift": 0.018,
    "limitedSe": 0.002,
    "limitedPost": 0.018,
-   "peasant": 2.21,
-   "peasantSeen": 2162
+   "peasant": 2.106,
+   "peasantSeen": 2157
   },
   "poison_tip_archer": {
    "rating": 2.633,
@@ -2389,8 +2389,8 @@
    "limitedLift": -0.001,
    "limitedSe": 0.003,
    "limitedPost": -0.001,
-   "peasant": 1.672,
-   "peasantSeen": 102
+   "peasant": 1.466,
+   "peasantSeen": 101
   },
   "powerstone_minefield": {
    "rating": 2.335,
@@ -2423,8 +2423,8 @@
    "limitedLift": -0.013,
    "limitedSe": 0.008,
    "limitedPost": -0.01,
-   "peasant": 1.498,
-   "peasantSeen": 126
+   "peasant": 1.546,
+   "peasantSeen": 127
   },
   "putrefy": {
    "rating": 2.408,
@@ -2457,8 +2457,8 @@
    "limitedLift": -0.007,
    "limitedSe": 0.004,
    "limitedPost": -0.006,
-   "peasant": 2.587,
-   "peasantSeen": 1323
+   "peasant": 2.391,
+   "peasantSeen": 1313
   },
   "rage_cobra": {
    "rating": 1.336,
@@ -2474,8 +2474,8 @@
    "limitedSeen": 0,
    "limitedLift": null,
    "limitedSe": null,
-   "peasant": 2.569,
-   "peasantSeen": 1327
+   "peasant": 2.479,
+   "peasantSeen": 1461
   },
   "raging_goblin": {
    "rating": 0.752,
@@ -2492,8 +2492,8 @@
    "limitedLift": -0.014,
    "limitedSe": 0.008,
    "limitedPost": -0.011,
-   "peasant": 0.9,
-   "peasantSeen": 1234
+   "peasant": 1.017,
+   "peasantSeen": 1095
   },
   "raise_the_alarm": {
    "rating": 1.335,
@@ -2510,8 +2510,8 @@
    "limitedLift": -0.001,
    "limitedSe": 0.004,
    "limitedPost": -0.001,
-   "peasant": 1.418,
-   "peasantSeen": 2224
+   "peasant": 1.226,
+   "peasantSeen": 2273
   },
   "rampaging_baloths": {
    "rating": 2.913,
@@ -2544,8 +2544,8 @@
    "limitedLift": -0.005,
    "limitedSe": 0.004,
    "limitedPost": -0.004,
-   "peasant": 1.718,
-   "peasantSeen": 167
+   "peasant": 1.445,
+   "peasantSeen": 168
   },
   "rancor": {
    "rating": 1.728,
@@ -2562,8 +2562,8 @@
    "limitedLift": 0.014,
    "limitedSe": 0.003,
    "limitedPost": 0.014,
-   "peasant": 2.444,
-   "peasantSeen": 2236
+   "peasant": 2.342,
+   "peasantSeen": 2241
   },
   "reassembling_skeleton": {
    "rating": 1.08,
@@ -2580,8 +2580,8 @@
    "limitedLift": -0.014,
    "limitedSe": 0.005,
    "limitedPost": -0.013,
-   "peasant": 1.442,
-   "peasantSeen": 1261
+   "peasant": 1.577,
+   "peasantSeen": 1135
   },
   "restoration_angel": {
    "rating": 1.968,
@@ -2598,8 +2598,8 @@
    "limitedLift": 0.009,
    "limitedSe": 0.003,
    "limitedPost": 0.009,
-   "peasant": 2.469,
-   "peasantSeen": 6588
+   "peasant": 2.484,
+   "peasantSeen": 6596
   },
   "reya_dawnbringer": {
    "rating": 2.729,
@@ -2632,8 +2632,8 @@
    "limitedLift": -0.005,
    "limitedSe": 0.004,
    "limitedPost": -0.004,
-   "peasant": 1.102,
-   "peasantSeen": 1148
+   "peasant": 1.158,
+   "peasantSeen": 1151
   },
   "sacred_foundry": {
    "rating": 1.817,
@@ -2650,8 +2650,8 @@
    "limitedLift": 0.003,
    "limitedSe": 0.004,
    "limitedPost": 0.003,
-   "peasant": 1.523,
-   "peasantSeen": 3503
+   "peasant": 1.697,
+   "peasantSeen": 3499
   },
   "sacred_helix": {
    "rating": 2.782,
@@ -2716,8 +2716,8 @@
    "limitedLift": 0,
    "limitedSe": 0.003,
    "limitedPost": 0,
-   "peasant": 0.633,
-   "peasantSeen": 1348
+   "peasant": 0.653,
+   "peasantSeen": 1340
   },
   "scepter_of_dominance": {
    "rating": 0.676,
@@ -2734,8 +2734,8 @@
    "limitedLift": -0.037,
    "limitedSe": 0.009,
    "limitedPost": -0.027,
-   "peasant": 1.157,
-   "peasantSeen": 139
+   "peasant": 0.898,
+   "peasantSeen": 239
   },
   "scrubland": {
    "rating": 3.114,
@@ -2784,8 +2784,8 @@
    "limitedLift": null,
    "limitedSe": null,
    "limitedPost": 0.005,
-   "peasant": 0.252,
-   "peasantSeen": 1591
+   "peasant": 0.279,
+   "peasantSeen": 1586
   },
   "seedborn_muse": {
    "rating": 2.455,
@@ -2882,7 +2882,7 @@
    "limitedLift": 0.003,
    "limitedSe": 0.004,
    "limitedPost": 0.003,
-   "peasant": 2.681,
+   "peasant": 2.702,
    "peasantSeen": 337
   },
   "shocking_sharpshooter": {
@@ -2900,8 +2900,8 @@
    "limitedLift": 0.026,
    "limitedSe": 0.002,
    "limitedPost": 0.025,
-   "peasant": 2.061,
-   "peasantSeen": 193
+   "peasant": 1.905,
+   "peasantSeen": 192
   },
   "siege_gang_commander": {
    "rating": 2.278,
@@ -2934,8 +2934,8 @@
    "limitedLift": -0.015,
    "limitedSe": 0.007,
    "limitedPost": -0.012,
-   "peasant": 0.791,
-   "peasantSeen": 265
+   "peasant": 0.714,
+   "peasantSeen": 259
   },
   "soul_warden": {
    "rating": 1.546,
@@ -2952,8 +2952,8 @@
    "limitedLift": 0.02,
    "limitedSe": 0.002,
    "limitedPost": 0.02,
-   "peasant": 2.456,
-   "peasantSeen": 5295
+   "peasant": 2.565,
+   "peasantSeen": 5284
   },
   "spirit_link": {
    "rating": 0.975,
@@ -2970,8 +2970,8 @@
    "limitedLift": -0.012,
    "limitedSe": 0.006,
    "limitedPost": -0.01,
-   "peasant": 1.527,
-   "peasantSeen": 457
+   "peasant": 1.111,
+   "peasantSeen": 456
   },
   "static_sphere": {
    "rating": 1.976,
@@ -3004,8 +3004,8 @@
    "limitedLift": 0.013,
    "limitedSe": 0.004,
    "limitedPost": 0.013,
-   "peasant": 2.45,
-   "peasantSeen": 1213
+   "peasant": 2.426,
+   "peasantSeen": 1207
   },
   "stomping_ground": {
    "rating": 1.27,
@@ -3022,8 +3022,8 @@
    "limitedLift": 0.007,
    "limitedSe": 0.005,
    "limitedPost": 0.008,
-   "peasant": 1.882,
-   "peasantSeen": 2459
+   "peasant": 1.857,
+   "peasantSeen": 2462
   },
   "suntail_hawk": {
    "rating": 1.112,
@@ -3040,8 +3040,8 @@
    "limitedLift": 0,
    "limitedSe": 0.003,
    "limitedPost": 0.001,
-   "peasant": 1.496,
-   "peasantSeen": 278
+   "peasant": 1.478,
+   "peasantSeen": 271
   },
   "swords_to_plowshares": {
    "rating": 1.972,
@@ -3058,8 +3058,8 @@
    "limitedLift": 0.012,
    "limitedSe": 0.003,
    "limitedPost": 0.012,
-   "peasant": 1.991,
-   "peasantSeen": 6065
+   "peasant": 2.025,
+   "peasantSeen": 6086
   },
   "taiga": {
    "rating": 2.629,
@@ -3124,8 +3124,8 @@
    "limitedLift": 0.01,
    "limitedSe": 0.005,
    "limitedPost": 0.01,
-   "peasant": 1.214,
-   "peasantSeen": 1244
+   "peasant": 1.229,
+   "peasantSeen": 1243
   },
   "temporal_spring": {
    "rating": 2.756,
@@ -3158,8 +3158,8 @@
    "limitedLift": 0.006,
    "limitedSe": 0.003,
    "limitedPost": 0.006,
-   "peasant": 2.607,
-   "peasantSeen": 956
+   "peasant": 2.828,
+   "peasantSeen": 942
   },
   "terror": {
    "rating": 1.266,
@@ -3176,8 +3176,8 @@
    "limitedLift": 0.012,
    "limitedSe": 0.003,
    "limitedPost": 0.012,
-   "peasant": 1.587,
-   "peasantSeen": 1766
+   "peasant": 1.523,
+   "peasantSeen": 1745
   },
   "thawing_glaciers": {
    "rating": 1.736,
@@ -3194,7 +3194,7 @@
    "limitedLift": -0.001,
    "limitedSe": 0.003,
    "limitedPost": -0.001,
-   "peasant": 2.222,
+   "peasant": 2.212,
    "peasantSeen": 0
   },
   "the_bailiff": {
@@ -3484,7 +3484,7 @@
    "limitedLift": -0.001,
    "limitedSe": 0.004,
    "limitedPost": -0.001,
-   "peasant": 1.643,
+   "peasant": 1.651,
    "peasantSeen": 47
   },
   "thundersnake": {
@@ -3502,8 +3502,8 @@
    "limitedLift": -0.014,
    "limitedSe": 0.006,
    "limitedPost": -0.012,
-   "peasant": 1.124,
-   "peasantSeen": 123
+   "peasant": 1.211,
+   "peasantSeen": 126
   },
   "tidewall": {
    "rating": 2.066,
@@ -3536,8 +3536,8 @@
    "limitedLift": -0.011,
    "limitedSe": 0.009,
    "limitedPost": -0.008,
-   "peasant": 0.872,
-   "peasantSeen": 322
+   "peasant": 0.609,
+   "peasantSeen": 323
   },
   "time_walk": {
    "rating": 3.143,
@@ -3586,7 +3586,7 @@
    "limitedLift": null,
    "limitedSe": null,
    "limitedPost": 0.005,
-   "peasant": 1.609,
+   "peasant": 1.584,
    "peasantSeen": 0
   },
   "traumatizer": {
@@ -3604,8 +3604,8 @@
    "limitedLift": 0.052,
    "limitedSe": 0.003,
    "limitedPost": 0.051,
-   "peasant": 3.202,
-   "peasantSeen": 3392
+   "peasant": 3.367,
+   "peasantSeen": 3388
   },
   "treetop_snarespinner": {
    "rating": 1.229,
@@ -3622,7 +3622,7 @@
    "limitedLift": 0.013,
    "limitedSe": 0.003,
    "limitedPost": 0.012,
-   "peasant": 1.573,
+   "peasant": 1.747,
    "peasantSeen": 45
   },
   "tropical_island": {
@@ -3672,8 +3672,8 @@
    "limitedLift": 0.006,
    "limitedSe": 0.003,
    "limitedPost": 0.006,
-   "peasant": 1.587,
-   "peasantSeen": 3546
+   "peasant": 1.589,
+   "peasantSeen": 3528
   },
   "underground_sea": {
    "rating": 3.061,
@@ -3722,8 +3722,8 @@
    "limitedLift": -0.006,
    "limitedSe": 0.004,
    "limitedPost": -0.005,
-   "peasant": 2.106,
-   "peasantSeen": 1500
+   "peasant": 2.479,
+   "peasantSeen": 1486
   },
   "vampire_nighthawk": {
    "rating": 2.586,
@@ -3740,8 +3740,8 @@
    "limitedLift": 0.037,
    "limitedSe": 0.003,
    "limitedPost": 0.036,
-   "peasant": 4.088,
-   "peasantSeen": 5631
+   "peasant": 4.382,
+   "peasantSeen": 5654
   },
   "vindicate": {
    "rating": 3.038,
@@ -3774,7 +3774,7 @@
    "limitedLift": -0.011,
    "limitedSe": 0.004,
    "limitedPost": -0.01,
-   "peasant": 2.24,
+   "peasant": 2.076,
    "peasantSeen": 2411
   },
   "volcanic_island": {
@@ -3824,8 +3824,8 @@
    "limitedLift": -0.007,
    "limitedSe": 0.005,
    "limitedPost": -0.006,
-   "peasant": 2.445,
-   "peasantSeen": 2318
+   "peasant": 2.211,
+   "peasantSeen": 2311
   },
   "wall_of_blossoms": {
    "rating": 0.933,
@@ -3842,8 +3842,8 @@
    "limitedLift": 0.003,
    "limitedSe": 0.004,
    "limitedPost": 0.003,
-   "peasant": 1.172,
-   "peasantSeen": 2273
+   "peasant": 1.055,
+   "peasantSeen": 2272
   },
   "waste_not": {
    "rating": 1.292,
@@ -3860,8 +3860,8 @@
    "limitedLift": -0.032,
    "limitedSe": 0.004,
    "limitedPost": -0.03,
-   "peasant": 2.521,
-   "peasantSeen": 116
+   "peasant": 2.47,
+   "peasantSeen": 117
   },
   "waterfront_bouncer": {
    "rating": 0.506,
@@ -3878,8 +3878,8 @@
    "limitedLift": -0.045,
    "limitedSe": 0.009,
    "limitedPost": -0.036,
-   "peasant": 1.583,
-   "peasantSeen": 166
+   "peasant": 1.585,
+   "peasantSeen": 167
   },
   "watery_grave": {
    "rating": 1.682,
@@ -3896,7 +3896,7 @@
    "limitedLift": 0.016,
    "limitedSe": 0.004,
    "limitedPost": 0.016,
-   "peasant": 2.222,
+   "peasant": 2.212,
    "peasantSeen": 0
   },
   "werebear": {
@@ -3914,8 +3914,8 @@
    "limitedLift": -0.001,
    "limitedSe": 0.003,
    "limitedPost": -0.001,
-   "peasant": 1.059,
-   "peasantSeen": 234
+   "peasant": 1.057,
+   "peasantSeen": 232
   },
   "wind_drake": {
    "rating": 0.934,
@@ -3932,7 +3932,7 @@
    "limitedLift": -0.002,
    "limitedSe": 0.003,
    "limitedPost": -0.002,
-   "peasant": 2.05,
+   "peasant": 1.904,
    "peasantSeen": 82
   },
   "wood_elves": {
@@ -3950,8 +3950,8 @@
    "limitedLift": 0.012,
    "limitedSe": 0.003,
    "limitedPost": 0.011,
-   "peasant": 1.392,
-   "peasantSeen": 92
+   "peasant": 1.529,
+   "peasantSeen": 91
   },
   "wrackroot": {
    "rating": 3.203,
@@ -4000,8 +4000,8 @@
    "limitedLift": 0.003,
    "limitedSe": 0.004,
    "limitedPost": 0.003,
-   "peasant": 1.68,
-   "peasantSeen": 1350
+   "peasant": 1.613,
+   "peasantSeen": 1341
   },
   "youthful_valkyrie": {
    "rating": 1.23,
@@ -4018,8 +4018,8 @@
    "limitedLift": 0.009,
    "limitedSe": 0.003,
    "limitedPost": 0.008,
-   "peasant": 3.561,
-   "peasantSeen": 3525
+   "peasant": 3.563,
+   "peasantSeen": 3536
   },
   "yuloke_the_animus": {
    "rating": 2.713,
@@ -4068,8 +4068,8 @@
    "limitedLift": 0,
    "limitedSe": 0.003,
    "limitedPost": 0,
-   "peasant": 1.718,
-   "peasantSeen": 54
+   "peasant": 1.897,
+   "peasantSeen": 53
   },
   "captain_of_the_watch": {
    "rating": 1.5,
@@ -4079,8 +4079,8 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 3.564,
-   "peasantSeen": 1703
+   "peasant": 3.387,
+   "peasantSeen": 1711
   },
   "dawnwing_marshal": {
    "rating": 1.5,
@@ -4091,7 +4091,7 @@
    "lift": null,
    "castWhenDrawn": null,
    "peasant": 2.051,
-   "peasantSeen": 3358
+   "peasantSeen": 3353
   },
   "dungrove_elder": {
    "rating": 1.5,
@@ -4101,8 +4101,8 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 3.234,
-   "peasantSeen": 1299
+   "peasant": 3.377,
+   "peasantSeen": 1297
   },
   "faerie_macabre": {
    "rating": 1.5,
@@ -4112,8 +4112,8 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 1.955,
-   "peasantSeen": 121
+   "peasant": 1.849,
+   "peasantSeen": 195
   },
   "harmonize": {
    "rating": 1.5,
@@ -4123,8 +4123,8 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 1.287,
-   "peasantSeen": 998
+   "peasant": 1.302,
+   "peasantSeen": 1000
   },
   "longbow_archer": {
    "rating": 1,
@@ -4134,8 +4134,8 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 1.618,
-   "peasantSeen": 2276
+   "peasant": 1.492,
+   "peasantSeen": 2227
   },
   "manaba": {
    "rating": 1.5,
@@ -4145,8 +4145,8 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 1.395,
-   "peasantSeen": 1286
+   "peasant": 1.312,
+   "peasantSeen": 1284
   },
   "moaning_wall": {
    "rating": 1,
@@ -4156,8 +4156,8 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 1.419,
-   "peasantSeen": 42
+   "peasant": 1.25,
+   "peasantSeen": 122
   },
   "penumbra_wurm": {
    "rating": 1.5,
@@ -4167,8 +4167,8 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 1.157,
-   "peasantSeen": 775
+   "peasant": 1.134,
+   "peasantSeen": 776
   },
   "protocol": {
    "rating": 1.5,
@@ -4178,8 +4178,8 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 3.03,
-   "peasantSeen": 137
+   "peasant": 2.662,
+   "peasantSeen": 141
   },
   "reapers_forerunner": {
    "rating": 1.5,
@@ -4189,7 +4189,7 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 1.522,
+   "peasant": 1.491,
    "peasantSeen": 3217
   },
   "sign_in_blood": {
@@ -4200,7 +4200,7 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 1.514,
+   "peasant": 1.674,
    "peasantSeen": 1131
   },
   "tome_scour": {
@@ -4211,8 +4211,8 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 1.77,
-   "peasantSeen": 88
+   "peasant": 2.022,
+   "peasantSeen": 87
   },
   "tormods_crypt": {
    "rating": 1.5,
@@ -4222,8 +4222,8 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": -0.108,
-   "peasantSeen": 654
+   "peasant": 0.176,
+   "peasantSeen": 641
   },
   "wave_of_reckoning": {
    "rating": 1.5,
@@ -4233,8 +4233,8 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 1.787,
-   "peasantSeen": 2703
+   "peasant": 1.714,
+   "peasantSeen": 2693
   },
   "dazzling_angel": {
    "rating": 1,
@@ -4244,8 +4244,8 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 1.894,
-   "peasantSeen": 1239
+   "peasant": 1.816,
+   "peasantSeen": 1237
   },
   "wall_of_reverence": {
    "rating": 1.5,
@@ -4255,8 +4255,8 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 2.346,
-   "peasantSeen": 1242
+   "peasant": 2.491,
+   "peasantSeen": 1246
   },
   "basilisk_collar": {
    "rating": 1.5,
@@ -4266,8 +4266,8 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 1.82,
-   "peasantSeen": 1735
+   "peasant": 1.805,
+   "peasantSeen": 1714
   },
   "karmic_mentor": {
    "rating": 1.5,
@@ -4277,8 +4277,8 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 3.039,
-   "peasantSeen": 3052
+   "peasant": 3.117,
+   "peasantSeen": 3044
   },
   "mentor_of_the_meek": {
    "rating": 1.5,
@@ -4288,8 +4288,8 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 2.153,
-   "peasantSeen": 249
+   "peasant": 1.789,
+   "peasantSeen": 292
   },
   "retribution_of_the_meek": {
    "rating": 1.5,
@@ -4299,8 +4299,8 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 2.127,
-   "peasantSeen": 533
+   "peasant": 1.192,
+   "peasantSeen": 515
   },
   "wall_of_razors": {
    "rating": 1.5,
@@ -4310,8 +4310,8 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 1.643,
-   "peasantSeen": 137
+   "peasant": 1.519,
+   "peasantSeen": 138
   },
   "foxglove_dose": {
    "rating": 1.5,
@@ -4321,8 +4321,8 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 1.967,
-   "peasantSeen": 230
+   "peasant": 1.728,
+   "peasantSeen": 105
   },
   "tidal_shackle": {
    "rating": 1,
@@ -4332,8 +4332,8 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 1.597,
-   "peasantSeen": 98
+   "peasant": 1.592,
+   "peasantSeen": 97
   },
   "vigil_keeper": {
    "rating": 1.5,
@@ -4343,8 +4343,8 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 2.722,
-   "peasantSeen": 278
+   "peasant": 2.491,
+   "peasantSeen": 277
   },
   "burnfallow_exuberant": {
    "rating": 1.5,
@@ -4354,8 +4354,8 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 2.401,
-   "peasantSeen": 122
+   "peasant": 2.334,
+   "peasantSeen": 120
   },
   "den_of_vipers": {
    "rating": 1.5,
@@ -4365,8 +4365,8 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 1.385,
-   "peasantSeen": 205
+   "peasant": 2.427,
+   "peasantSeen": 122
   },
   "notion_flayer": {
    "rating": 1.5,
@@ -4376,7 +4376,7 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 2.589,
+   "peasant": 2.841,
    "peasantSeen": 118
   },
   "sapwell_dryad": {
@@ -4387,8 +4387,8 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 2.235,
-   "peasantSeen": 62
+   "peasant": 2.159,
+   "peasantSeen": 61
   },
   "shevelport_quartermaster": {
    "rating": 1.5,
@@ -4398,8 +4398,8 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 3.196,
-   "peasantSeen": 1302
+   "peasant": 2.712,
+   "peasantSeen": 1257
   },
   "thought_replacement": {
    "rating": 1.5,
@@ -4409,8 +4409,8 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 2.077,
-   "peasantSeen": 302
+   "peasant": 2.464,
+   "peasantSeen": 289
   },
   "valakut_the_molten_pinnacle": {
    "rating": 1.5,
@@ -4420,7 +4420,7 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 2.222,
+   "peasant": 2.212,
    "peasantSeen": 0
   },
   "highland_ritual": {
@@ -4431,8 +4431,8 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": -0.677,
-   "peasantSeen": 384
+   "peasant": -0.655,
+   "peasantSeen": 330
   },
   "molten_rain": {
    "rating": 1.5,
@@ -4442,8 +4442,19 @@
    "presence": null,
    "lift": null,
    "castWhenDrawn": null,
-   "peasant": 1.176,
-   "peasantSeen": 203
+   "peasant": 1.433,
+   "peasantSeen": 205
+  },
+  "confession": {
+   "rating": 1.5,
+   "prior": 1.5,
+   "lists": 0,
+   "seen": 0,
+   "presence": null,
+   "lift": null,
+   "castWhenDrawn": null,
+   "peasant": 2.055,
+   "peasantSeen": 254
   }
  }
 }

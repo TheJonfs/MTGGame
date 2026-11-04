@@ -67,6 +67,21 @@ export function isLegalTarget(ctx: EngineCtx, spec: TargetSpec, target: Resolved
     const power = obj.zone === "battlefield" ? characteristics(ctx, target.id).power : (ctx.defs.def(obj.cardId).power ?? 0);
     if (power > spec.powerAtMost) return false;
   }
+  // R-124 (Topple's template, among the creatures the caster's opponents control): the greatest power, or tied for it —
+  // live, so a pump or a new creature in response makes the target illegal on resolution (Topple's 2004-10-04 ruling).
+  if (spec.greatestPower && target.kind === "object") {
+    const obj = ctx.state.objects[target.id];
+    if (!obj || obj.zone !== "battlefield" || obj.controller === by) return false;
+    const p = characteristics(ctx, target.id).power;
+    for (const id of ctx.state.battlefield) {
+      const o = ctx.state.objects[id]!;
+      if (o.controller === by || id === target.id) continue;
+      const ch = characteristics(ctx, id); if (!ch.types.includes("Creature")) continue;
+      if (ch.power > p) return false;
+      continue;
+      if (characteristics(ctx, id).power > p) return false;
+    }
+  }
   // S28 (ADR-098, Unearth): mana-value ceiling — the printed cost (CR 202.3; tokens and costless cards 0).
   if (spec.manaValueAtMost !== undefined && target.kind === "object") {
     const obj = ctx.state.objects[target.id];

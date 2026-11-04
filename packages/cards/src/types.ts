@@ -129,6 +129,10 @@ export interface TargetSpec {
   manaValueAtMostX?: true;
   /** Or-predicate: legal if ANY of these alternative specs accepts the target (Airship Crash, Disenchant). */
   anyOf?: TargetSpec[];
+  /** Post-S70 (R-124; Topple's "with the greatest power among creatures …"): the candidate's power is the greatest, or
+   * tied for it, among the creatures the caster's opponents control — read on announcement and again on resolution
+   * (Topple's 2004-10-04 ruling: no longer the greatest, the target is illegal). */
+  greatestPower?: "opponents";
   /** Keyword filters ("creature with flying" / "without flying"). */
   withKeyword?: Keyword;
   withoutKeyword?: Keyword;
@@ -164,6 +168,8 @@ export interface CountPredicate {
  * and the greatest power among matching permanents (Baru's reduction input). */
 export type ValueRef =
   | { ref: "targetPower"; target: number }
+  /** Post-S70 (R-124, Chris's greatest-power draw): the target's toughness, from the resolution snapshot. */
+  | { ref: "targetToughness"; target: number }
   | { ref: "count"; predicate: CountPredicate }
   /** A10 (S22): `types` narrows the count to cards with any of these types (Overload's instant/sorcery). */
   | { ref: "graveyardCount"; who: "you" | "opponent"; types?: CardType[] }
@@ -282,7 +288,7 @@ export type EffectBase =
    * fires RETURNED_TO_HAND (the Spring unwinds too far for the tide to taste — ratified). */
   | { type: "bounce"; target?: number; scope?: Scope; to?: "hand" | "libraryTop" }
   | { type: "counter"; target: number }
-  | { type: "draw"; count: number; who: Who }
+  | { type: "draw"; count: Amount; who: Who } // post-S70 (R-124): a count may be a value ref (the target's toughness)
   /** S28 (ADR-098, Brainstorm): the controller puts N cards from hand on top of the library in any
    * order — a logged pick per card (ADR-013's incremental shape); the FIRST pick ends on top. With
    * fewer than N cards in hand, what is there goes back. */

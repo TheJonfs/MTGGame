@@ -228,6 +228,7 @@ function validateTargetSpec(t: unknown, err: (m: string) => void): void {
   // A10/ADR-038: whose graveyard; A10: the power ceiling (Graceful Restoration).
   if (t.who !== undefined && t.who !== "you" && t.who !== "any") err(`target who must be "you" | "any" (ADR-038 amendment)`);
   if (t.powerAtMost !== undefined && (!Number.isInteger(t.powerAtMost) || (t.powerAtMost as number) < 0)) err(`target powerAtMost must be a non-negative integer (A10)`);
+  if (t.greatestPower !== undefined && t.greatestPower !== "opponents") err(`target greatestPower must be "opponents" (R-124)`);
   if (t.manaValueAtMostX !== undefined && t.manaValueAtMostX !== true) err(`target manaValueAtMostX must be true (S70)`);
   if (t.manaValueAtMost !== undefined && (!Number.isInteger(t.manaValueAtMost) || (t.manaValueAtMost as number) < 0)) err(`target manaValueAtMost must be a non-negative integer (S28)`);
   if (!(TARGET_PREDICATES as readonly string[]).includes(t.predicate as string)) {
@@ -273,7 +274,7 @@ function validCounterKind(k: unknown): boolean {
 /** ADR-028 + A4 value refs. */
 function isAnyValueRef(v: unknown): boolean {
   if (!isRecord(v)) return false;
-  if (v.ref === "targetPower") return Number.isInteger(v.target);
+  if (v.ref === "targetPower" || v.ref === "targetToughness") return Number.isInteger(v.target); // R-124: toughness beside power
   if (v.ref === "count" || v.ref === "maxPower") return validCountPredicate(v.predicate);
   if (v.ref === "graveyardCount") {
     if (v.who !== "you" && v.who !== "opponent") return false;
@@ -550,7 +551,7 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
   },
   counter: needTargetIndex,
   draw: (e, err) => {
-    needCount(e, err);
+    if (isRecord(e.count)) { if (!isAnyValueRef(e.count)) err(`draw count: a number or a value ref (R-124)`); } else needCount(e, err);
     needWho(e, err);
   },
   putOnTop: (e, err) => {

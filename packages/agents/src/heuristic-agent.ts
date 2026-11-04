@@ -440,6 +440,13 @@ export class HeuristicAgent implements Agent {
     // the Dose about two points in both formats — the pump spent on a goblin is the kill not kept for their big one, and
     // the pilot has no term for that trade. Without it the word "destroy" keeps the Dose off our own creatures.
     if (effects.some((e) => e.if?.powerAtLeast !== undefined) && this.profile.trial?.includes("conditionaim")) return 0;
+    // Book 163 (post-S70, Chris's greatest-power draw): a target only READ — its power and toughness feed our own life loss
+    // and draw, and no effect acts on it — is no aim at either side. (A draw is "helpful" by its word for the draw auras.)
+    if (action.type === "castSpell" && !this.profile.off?.includes("readtarget")) {
+      const d = this.def(view.hand.find((h) => h.objectId === action.objectId)?.cardId ?? "");
+      const touches = effects.some((e) => (e as { target?: number }).target !== undefined || (e as { targetSpec?: number }).targetSpec !== undefined || (e as { targets?: number[] }).targets !== undefined || ["target", "controllerOfTarget"].includes((e as { who?: string }).who ?? "") || (e as { to?: string }).to === "controllerOfTarget");
+      if (d && !(d.subtypes ?? []).includes("Aura") && !touches) return 0;
+    }
     const cls = classifyEffects(effects);
     if (cls === "neutral") return 0;
     const me = view.you;

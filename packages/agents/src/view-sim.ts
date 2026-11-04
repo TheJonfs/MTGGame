@@ -515,7 +515,9 @@ function applyEffect(
       return !!d && (!p?.cardType || d.types.includes(p.cardType as never)) && (!p?.subtype || (d.subtypes ?? []).includes(p.subtype));
     }).length;
   const amt = (a: number | "X" | { ref: string; who?: string; types?: string[]; predicate?: { cardType?: string; subtype?: string; controller?: string } }): number =>
-    typeof a === "number" ? a : a === "X" ? x : a.ref === "xPaid" ? x : a.ref === "graveyardCount" ? gyCount(a) : a.ref === "count" ? countRef(a.predicate) : 0;
+    typeof a === "number" ? a : a === "X" ? x : a.ref === "xPaid" ? x : a.ref === "graveyardCount" ? gyCount(a) : a.ref === "count" ? countRef(a.predicate)
+    // R-124: the target's power and toughness, as it stands before the effects (the engine's snapshot) — read from the target or, gone, nothing
+    : a.ref === "targetPower" || a.ref === "targetToughness" ? ((o) => (o ? ((a.ref === "targetPower" ? o.power : o.toughness) ?? 0) : 0))(((t) => (t?.kind === "object" ? view.battlefield.find((b) => b.id === t.id) : undefined))(targets[(a as { target?: number }).target ?? 0])) : 0;
   const objAt = (i: number) => {
     const t = targets[i];
     return t?.kind === "object" ? view.battlefield.find((o) => o.id === t.id) : undefined;
@@ -668,8 +670,9 @@ function applyEffect(
     case "draw": {
       // (book 125, S62: `who: "target"` is the TARGET player — it read as both players, so Sign in Blood at either head scored alike)
       for (const p of e.who === "you" ? [me] : e.who === "opponent" ? [opp] : e.who === "target" ? targets.flatMap((t) => (t.kind === "player" ? [t.player] : [])) : [me, opp]) {
-        if (p === me) for (let i = 0; i < e.count; i++) view.hand.push({ objectId: `pred_${predSeq++}`, cardId: "" });
-        else view.opponentHandCount += e.count;
+        const n = amt(e.count as Parameters<typeof amt>[0]);
+        if (p === me) for (let i = 0; i < n; i++) view.hand.push({ objectId: `pred_${predSeq++}`, cardId: "" });
+        else view.opponentHandCount += n;
       }
       return 0;
     }
@@ -846,7 +849,7 @@ function applyEffect(
       for (const c of view.hand) counts.set(c.cardId, (counts.get(c.cardId) ?? 0) + 1);
       const best = Math.max(0, ...counts.values());
       const p = view.hand.length ? best / view.hand.length : 0;
-      const worth = e.onHit.reduce((n, x) => n + (x.type === "draw" ? 0.9 * x.count : 0.5), 0);
+      const worth = e.onHit.reduce((n, x) => n + (x.type === "draw" ? 0.9 * (typeof x.count === "number" ? x.count : 1) : 0.5), 0);
       return p * worth;
     }
     case "addMana":
