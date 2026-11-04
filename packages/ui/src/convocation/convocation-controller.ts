@@ -14,7 +14,7 @@ import {
   type Decklist, type KnobValues, type SeatAgents, type Standing,
 } from "@shandalar/world";
 import { FORMAT_DECKS } from "@shandalar/sim/open-decks";
-import { OUTBOX_PREFIX, keepable, postOutbox, prizeBand, prizeGold, standingInvitation, finalPlaces as linkPlaces, type Invitation, type PrizeBand } from "@shandalar/world";
+import { OUTBOX_PREFIX, groundPrize, keepable, ownsEntry, postOutbox, prizeBand, prizeGold, readOutbox, standingInvitation, finalPlaces as linkPlaces, type Invitation, type OutboxStore, type PrizeBand } from "@shandalar/world";
 import { MatchController } from "../play/match-controller.js";
 import { makeFieldPool, type FieldPool } from "./field-pool.js";
 import { TOKEN_FACES } from "./token-faces.js";
@@ -135,6 +135,31 @@ export class ConvocationController {
     const e = this.event; if (!e || e.phase !== "over" || e.origin !== "journey" || !e.invitationId) return null;
     const place = linkPlaces(e).find((p) => p.seat === 0)!.place, band = prizeBand(place, e.field.length, !!e.bracket);
     return { band, gold: prizeGold(band, { hard: e.difficulty === "hard", single: !e.stages }, this.knobs), cards: band === "champion" ? (e.stages ? 2 : 1) : band === "eight" ? 1 : 0 };
+  }
+  /** S71 (ADR-194): the champion's High Ground — the choices and how many to take (none for a single event or a menu
+   * event). The grounds this journey has been paid are read from its save and from its outbox entries not yet drained. */
+  groundPrize(): { choices: string[]; count: number; chosen: string[] } | null {
+    const e = this.event, pz = this.prize(); if (!e || !pz || pz.band !== "champion" || !e.stages) return null;
+    const won = new Set<string>();
+    try {
+      const raw = this.storage?.getItem("shandalar-world-save");
+      if (raw) {
+        const w = deserializeWorld(raw);
+        for (const g of w.convocation?.grounds ?? []) won.add(g);
+        for (const o of readOutbox(this.storage as OutboxStore | null)) if (o.kind === "ground" && o.invitationId !== e.invitationId && ownsEntry(w, o)) for (const g of o.cards ?? []) won.add(g);
+      }
+    } catch { /* no journey save: nothing won before */ }
+    const chosen = e.groundsChosen ?? [];
+    const g = groundPrize(e.stages.length >= 4 ? "full" : "short", e.difficulty === "hard", [...won]);
+    return { choices: g.choices.filter((x) => !chosen.includes(x)), count: g.count, chosen };
+  }
+  /** S71 (ADR-194): choose a ground — sent home at once as its own outbox entry. */
+  chooseGround(cardId: string): void {
+    const e = this.event, g = this.groundPrize(); if (!e || !g || g.chosen.length >= g.count || !g.choices.includes(cardId)) return;
+    const n = g.chosen.length + 1;
+    if (!postOutbox(this.storage, { id: `${e.invitationId}:ground:${n}`, kind: "ground", invitationId: e.invitationId!, cards: [cardId] })) return;
+    this.set({ ...e, groundsChosen: [...g.chosen, cardId] });
+    this.emit();
   }
   /** The fence (a): a kept card is never one of the packs' power slot. */
   keepable(cardId: string): boolean { return keepable(cardId, this.packs.power); }

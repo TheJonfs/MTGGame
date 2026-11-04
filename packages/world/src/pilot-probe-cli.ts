@@ -13,8 +13,14 @@
  *  --racing  in a recorded game, each of the human's turns where they attacked: what the pilot (master, the human's
  *            sixty) would have declared; where it holds, the board, and `--playouts` games from that point both ways.
  * Game one, registered sixties, master pilots on both sides, the format's field. A probe: it changes nothing.
+ *
+ * S71 (Part 1's option 3 — the opponents' side; Chris): `--opponents --recorded file.json --event <seed> [--games 8]
+ * [--archetype midrange]`. For each game of Chris's run: the pilot (master) in his seat with his deck as recorded,
+ * against the opponent's deck AS RECORDED (the field's seat, built from its list) and against that list's REGISTERED
+ * deck, under the recorded rules and modifiers — `--games` each, the same seeds, the start alternating. Beside his own
+ * result. If the pilot wins as he did against the recorded decks, the gap is the field's; if as in the tables, his play.
  */
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadCardPool } from "@shandalar/cards/loader";
@@ -315,7 +321,48 @@ async function sweeps(): Promise<void> {
   }
 }
 
-if (process.argv.includes("--diffs")) await diffs();
+/** S71: the opponents' side (see the header). */
+async function opponents(): Promise<void> {
+  const ev = arg("event", ""), K = Number(arg("games", "8")), myArch = arg("archetype", "midrange") as "aggro" | "midrange" | "control" | "combo";
+  type G = { eventSeed?: number; list?: string; opponent?: string; game?: number; spec: MatchSpec; result?: { winner: number | null } };
+  const games = (JSON.parse(readFileSync(arg("recorded", ""), "utf8")) as { games: G[] }).games.filter((g) => g?.spec && (!ev || String(g.eventSeed) === ev));
+  const key = (l: Dl) => new Map(l.map((e) => [e.cardId, e.count]));
+  const apart = (a: Dl, b: Dl) => { const x = key(a), y = key(b); let n = 0; for (const id of new Set([...x.keys(), ...y.keys()])) n += Math.abs((x.get(id) ?? 0) - (y.get(id) ?? 0)); return n / 2; };
+  const rows = new Map<string, { games: number; human: number; rec: number; reg: number; n: number; nReg: number; apart: number[] }>();
+  for (const g of games) {
+    const hs = Math.max(0, g.spec.players.findIndex((p) => p.agent === "human")), os = (1 - hs) as 0 | 1;
+    const [fmt, lk] = (g.list ?? ":").split(":") as [string, string];
+    const reg = FORMAT_FIELD[fmt]?.[lk] as List | undefined;
+    const mine = g.spec.players[hs]!.decklist as Dl, theirs = g.spec.players[os]!.decklist as Dl;
+    const oppArch = (reg?.archetype ?? "midrange") as typeof myArch;
+    const row = rows.get(g.list ?? "?") ?? { games: 0, human: 0, rec: 0, reg: 0, n: 0, nReg: 0, apart: [] }; rows.set(g.list ?? "?", row);
+    row.games++; if (g.result?.winner === hs) row.human++;
+    if (reg) row.apart.push(apart(theirs, reg.decklist));
+    const play = async (their: Dl, k: number): Promise<boolean> => {
+      const seed = (g.spec.seed ?? 1) * 7 + 1000 * k + 13;
+      const me = new HeuristicAgent(seed * 2 + 1, pool, difficultyProfile("master", myArch, [...their], [...mine])), them = new HeuristicAgent(seed * 2 + 2, pool, difficultyProfile("master", oppArch, [...mine], [...their]));
+      const players = [{ name: "pilot", decklist: mine, agent: "heuristic" }, { name: "field", decklist: their, agent: "heuristic" }];
+      const spec = { seed, players: hs === 0 ? players : [players[1], players[0]], rules: { ...g.spec.rules, startingPlayer: k % 2 }, modifiers: g.spec.modifiers ?? [] } as MatchSpec;
+      const r = await runMatch(spec, pool, hs === 0 ? [me, them] : [them, me]);
+      return r.winner === hs;
+    };
+    for (let k = 0; k < K; k++) {
+      if (await play(theirs, k)) row.rec++;
+      row.n++;
+      if (reg) { if (await play(reg.decklist, k)) row.reg++; row.nReg++; }
+    }
+    console.error(`${g.list} game ${(g.game ?? 0) + 1}: ${row.rec}/${row.n} against the recorded deck, ${row.reg}/${row.nReg} against the registered`);
+  }
+  const pct = (a: number, b: number) => (b ? `${Math.round((100 * a) / b)}%` : "–");
+  const all = [...rows.values()].reduce((t, r) => ({ games: t.games + r.games, human: t.human + r.human, rec: t.rec + r.rec, reg: t.reg + r.reg, n: t.n + r.n, nReg: t.nReg + r.nReg, apart: [...t.apart, ...r.apart] }), { games: 0, human: 0, rec: 0, reg: 0, n: 0, nReg: 0, apart: [] as number[] });
+  const L = [`# The opponents' side — ${games.length} games of event ${ev || "(all)"}, ${K} pilot games each way`, "", "| opponent's list | games | Chris won | the pilot against the deck as recorded | the pilot against the registered list | cards apart (recorded from registered, mean) |", "|---|---|---|---|---|---|"];
+  for (const [l, r] of [...rows].sort((a, b) => b[1].games - a[1].games)) L.push(`| ${l} | ${r.games} | ${pct(r.human, r.games)} | ${pct(r.rec, r.n)} (${r.n}) | ${pct(r.reg, r.nReg)} (${r.nReg}) | ${r.apart.length ? (r.apart.reduce((a, b) => a + b, 0) / r.apart.length).toFixed(1) : "–"} |`);
+  L.push(`| **all** | ${all.games} | ${pct(all.human, all.games)} | ${pct(all.rec, all.n)} (${all.n}) | ${pct(all.reg, all.nReg)} (${all.nReg}) | ${all.apart.length ? (all.apart.reduce((a, b) => a + b, 0) / all.apart.length).toFixed(1) : "–"} |`);
+  const text = L.join("\n"); console.log(text); const out = arg("out", ""); if (out) writeFileSync(out, text + "\n");
+}
+
+if (process.argv.includes("--opponents")) await opponents();
+else if (process.argv.includes("--diffs")) await diffs();
 else if (process.argv.includes("--manaba2")) await manaba2();
 else if (process.argv.includes("--sweeps")) await sweeps();
 else if (process.argv.includes("--mines")) await mines();

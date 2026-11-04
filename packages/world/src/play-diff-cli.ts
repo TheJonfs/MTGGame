@@ -10,8 +10,13 @@
  * A file is a saved game (`shandalar-log-v1`: the play screen's download, mid-match or finished) or a Convocation
  * export that carries `games` (recorded from S58 on). A decision is a UNIT: a hand-tapped payment and its cast are
  * one; an attack is its whole set of attackers; a block its whole set of blocks.
+ *
+ * S71 (Part 1, ADR-191 — the consequence probe): `--consequences` keeps only the differences after which, within two
+ * turns of the actual game, a trigger, a sacrifice, a token or a death fired — and names that window's SHAPE (a death
+ * payoff, a sacrifice, a token, an enters trigger, another trigger), with what the pilot's predictor scored each line
+ * (priority decisions) and what happened (the life both sides moved). The report groups the differences by shape.
  */
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadCardPool } from "@shandalar/cards/loader";
@@ -26,12 +31,20 @@ const pool = loadCardPool(join(ROOT, "data/cards")).cards;
 const K = Number(arg("playouts", "8"));
 type Saved = { spec: MatchSpec; log: ActionLogEntry<Action>[]; note?: string; result?: { winner: number | null }; list?: string; opponent?: string };
 class Stop extends Error {}
+const CONS = process.argv.includes("--consequences");
+/** S71: the window's shape names what fired; a trigger is classed by its source card's triggered abilities. */
+const TOKENS = new Set(readdirSync(join(ROOT, "data/cards/tokens")).filter((f) => f.endsWith(".json")).map((f) => f.replace(/\.json$/, "")));
+const triggerClass = (cardId: string): string => {
+  const evs = new Set((pool.get(cardId)?.abilities ?? []).filter((a) => a.kind === "triggered").map((a) => (a as { event: string }).event));
+  return evs.has("DIES") ? "death payoff" : evs.has("ENTERS_BATTLEFIELD") ? "enters trigger" : evs.size ? "other trigger" : "other trigger";
+};
+type Snap = { turn: number; bf: Map<string, { cardId: string; creature: boolean }>; trig: Map<string, string>; life: [number, number] };
 
 const name = (id: string | undefined) => (id ? pool.get(id)?.name ?? id : "?");
 const sameList = (a: { cardId: string; count: number }[], b: { cardId: string; count: number }[]) => { const k = (l: typeof a) => l.map((e) => `${e.cardId}:${e.count}`).sort().join(); return k(a) === k(b); };
 const archetypeOf = (deck: { cardId: string; count: number }[], fallback: string) => (Object.values(OPEN_DECKS).find((l) => sameList(l.decklist, deck))?.archetype ?? fallback) as "aggro" | "midrange" | "control" | "combo";
 
-export interface Divergence { game: number; index: number; turn: number; step: string; kind: string; human: string; pilot: string; value?: number; playouts?: number; /** a card the pilot would have played now, that the human held: its name, whose turn it was, and when the human did play it */ held?: { card: string; object: string; ours: boolean; aim: string; later: "this turn" | "their next turn" | "a later turn" | "never" } }
+export interface Divergence { game: number; index: number; turn: number; step: string; kind: string; human: string; pilot: string; value?: number; playouts?: number; /** S71: the consequence window */ shape?: string[]; scoreHuman?: number; scorePilot?: number; lifeMoved?: [number, number]; /** a card the pilot would have played now, that the human held: its name, whose turn it was, and when the human did play it */ held?: { card: string; object: string; ours: boolean; aim: string; later: "this turn" | "their next turn" | "a later turn" | "never" } }
 
 async function diffGame(g: Saved, gi: number, out: Divergence[], counts: { decisions: number }): Promise<void> {
   const spec = g.spec, seat = (process.argv.includes("--seat") ? Number(arg("seat", "0")) : Math.max(0, spec.players.findIndex((p) => p.agent === "human"))) as 0 | 1, opp = (1 - seat) as 0 | 1;
@@ -46,7 +59,27 @@ async function diffGame(g: Saved, gi: number, out: Divergence[], counts: { decis
   const entries = g.log.filter((e) => e.t === "ACTION") as { player: number; action: Action }[];
   // where each logged decision stood (one replay of the whole game)
   const at: { turn: number; active: number }[] = [];
-  await replayThenPlay(pool, decks, g.log, entries.length, null, agents(1, true), 1, rules, spec.modifiers ?? [], undefined, (_req, view, _a, cursor) => { at[cursor] = { turn: view.turn, active: view.activePlayer }; });
+  const snaps: Snap[] = []; // S71: the board and the stack's triggers at each logged decision (the seat's view)
+  await replayThenPlay(pool, decks, g.log, entries.length, null, agents(1, true), 1, rules, spec.modifiers ?? [], undefined, (_req, view, _a, cursor) => {
+    at[cursor] = { turn: view.turn, active: view.activePlayer };
+    if (CONS) snaps[cursor] = { turn: view.turn, bf: new Map(view.battlefield.map((o) => [o.id, { cardId: o.cardId, creature: o.power !== null }])), trig: new Map(view.stack.filter((x) => x.kind === "trigger").map((x) => [x.id, x.cardId])), life: [...view.life] as [number, number] };
+  });
+  /** S71: what fired from cursor i to the end of the turn two after (the actual game). */
+  const windowOf = (i: number, turn: number): { shape: string[]; lifeMoved: [number, number] } | null => {
+    const shape = new Set<string>(); let last = i;
+    for (let c = i; c < entries.length && snaps[c] && snaps[c]!.turn <= turn + 2; c++) {
+      last = c;
+      for (const [, cardId] of snaps[c]!.trig) shape.add(triggerClass(cardId));
+      if (entries[c]!.action.type === "sacrifice") shape.add("sacrifice");
+      const next = snaps[c + 1]; if (!next) continue;
+      for (const [id, o] of next.bf) if (!snaps[c]!.bf.has(id) && TOKENS.has(o.cardId)) shape.add("token");
+      for (const [id, o] of snaps[c]!.bf) if (!next.bf.has(id) && o.creature) shape.add("a death");
+    }
+    if (!shape.size || !snaps[i] || !snaps[last]) return null;
+    const a = snaps[i]!.life, b = snaps[last]!.life;
+    return { shape: [...shape].sort(), lifeMoved: [b[seat]! - a[seat]!, b[opp]! - a[opp]!] };
+  };
+  const scorer = CONS ? new HeuristicAgent(3, pool, { ...difficultyProfile("master", myArch, [...spec.players[opp]!.decklist], [...spec.players[seat]!.decklist]), temperature: 0.01 }) : null;
   const isTap = (a: Action) => a.type === "tapForMana" || a.type === "untapForMana";
   const ATT = new Set(["declareAttacker", "doneDeclaringAttackers"]), BLK = new Set(["declareBlocker", "doneDeclaringBlockers"]);
   for (let i = 0; i < entries.length; ) {
@@ -77,6 +110,7 @@ async function diffGame(g: Saved, gi: number, out: Divergence[], counts: { decis
     const cardAt = (a: Action) => { const id = (a as { objectId?: string }).objectId; return id ? v.hand.find((h) => h.objectId === id)?.cardId ?? v.battlefield.find((b) => b.id === id)?.cardId : undefined; };
     const pilot = mine[mine.length - 1]!;
     let kind = "", h = "", p = "";
+    const pending: Partial<Divergence> = {};
     if (group === ATT) {
       const hs = unit.filter((a) => a.type === "declareAttacker").map((a) => (a as { objectId: string }).objectId).sort(), ps = mine.filter((a) => a.type === "declareAttacker").map((a) => (a as { objectId: string }).objectId).sort();
       if (hs.join() !== ps.join()) { kind = hs.length > ps.length ? "attack: the human sends more" : hs.length < ps.length ? "attack: the human sends fewer" : "attack: different attackers"; const nm = (ids: string[]) => ids.map((id) => name(v.battlefield.find((b) => b.id === id)?.cardId)).join(", ") || "nobody"; h = nm(hs); p = nm(ps); }
@@ -97,8 +131,14 @@ async function diffGame(g: Saved, gi: number, out: Divergence[], counts: { decis
       else if (human.type === "playLand" || pilot.type === "playLand") kind = "the order of the land and the spell";
       else kind = "which spell first";
     }
+    if (kind && CONS) {
+      const w = windowOf(i, v.turn);
+      if (!w) { i = j; continue; }
+      pending.shape = w.shape; pending.lifeMoved = w.lifeMoved;
+      if (r.purpose === "priority" && scorer) { try { pending.scoreHuman = scorer.scorePriorityAction(v, human); pending.scorePilot = scorer.scorePriorityAction(v, pilot); } catch { /* an action the scorer does not price */ } }
+    }
     if (kind) {
-      const d: Divergence = { game: gi, index: i, turn: v.turn, step: v.step, kind, human: h, pilot: p };
+      const d: Divergence = { game: gi, index: i, turn: v.turn, step: v.step, kind, human: h, pilot: p, ...pending };
       // a play the pilot wanted now and the human did not make: when did the human make it, if ever?
       if (!group && human.type === "pass" && (pilot.type === "castSpell" || pilot.type === "activateAbility")) {
         const obj = (pilot as { objectId: string }).objectId, t = ((pilot as { targets?: { kind: string; player?: number }[] }).targets ?? [])[0];
@@ -123,7 +163,7 @@ async function diffGame(g: Saved, gi: number, out: Divergence[], counts: { decis
 }
 
 async function main(): Promise<void> {
-  const files = process.argv.slice(2).filter((a) => a.endsWith(".json") && a !== arg("out", ""));
+  const files = process.argv.slice(2).filter((a) => a.endsWith(".json") && a !== arg("out", "") && a !== arg("json", ""));
   if (!files.length) throw new Error("play-diff: give one or more saved games (.json)");
   const games: Saved[] = [];
   for (const f of files) {
@@ -172,8 +212,28 @@ async function main(): Promise<void> {
     const row = (d: Divergence) => `- game ${d.game + 1} (${(games[d.game] as { opponent?: string }).opponent ?? "?"}, ${lostGame(d.game) ? "lost" : "won"}), turn ${d.turn} ${d.step}: the human ${d.human}; the pilot ${d.pilot} — the human's line ${d.value! >= 0 ? "+" : ""}${Math.round(100 * d.value!)} points over ${d.playouts} playouts a side`;
     L.push("## Where the pilot's line played out better (the human's choice cost most)", "", ...swings.filter((d) => d.value! < 0).slice(0, 12).map(row), "", "## Where the human's line played out better", "", ...swings.filter((d) => d.value! > 0).reverse().slice(0, 12).map(row), "");
   }
+  // S71 (--consequences): the differences by the shape of what fired after them — the probe's report
+  if (CONS) {
+    const shapes = new Map<string, Divergence[]>();
+    for (const d of out) for (const sh of d.shape ?? []) (shapes.get(sh) ?? shapes.set(sh, []).get(sh)!).push(d);
+    const mean = (xs: number[]) => (xs.length ? (xs.reduce((a, b) => a + b, 0) / xs.length).toFixed(2) : "–");
+    const median = (xs: number[]) => { if (!xs.length) return "–"; const y = [...xs].sort((a, b) => a - b), m = y.length >> 1; return (y.length % 2 ? y[m]! : (y[m - 1]! + y[m]!) / 2).toFixed(2); };
+    L.push("## The consequence windows — what fired within two turns of a difference (a difference may show several)", "");
+    L.push("| what fired | differences | in lost games | the predictor: the pilot's line less the human's, median (mean; scored) | life moved, ours / theirs (mean) | the human's line less the pilot's (played out) |", "|---|---|---|---|---|---|");
+    for (const [sh, ds] of [...shapes].sort((a, b) => b[1].length - a[1].length)) {
+      const scored = ds.filter((d) => d.scoreHuman !== undefined && d.scorePilot !== undefined && Number.isFinite(d.scoreHuman) && Number.isFinite(d.scorePilot));
+      L.push(`| ${sh} | ${ds.length} | ${ds.filter((d) => lostGame(d.game)).length} | ${median(scored.map((d) => d.scorePilot! - d.scoreHuman!))} (${mean(scored.map((d) => d.scorePilot! - d.scoreHuman!))}; ${scored.length}) | ${mean(ds.map((d) => d.lifeMoved![0]))} / ${mean(ds.map((d) => d.lifeMoved![1]))} | ${val(ds)} |`);
+    }
+    L.push("");
+    for (const [sh, ds] of [...shapes].sort((a, b) => b[1].length - a[1].length).slice(0, 6)) {
+      const pairs = new Map<string, number>(); for (const d of ds) { const key = `${d.kind}: the human ${d.human}; the pilot ${d.pilot}`; pairs.set(key, (pairs.get(key) ?? 0) + 1); }
+      const big = ds.filter((d) => d.scoreHuman !== undefined && d.scorePilot !== undefined && Number.isFinite(d.scorePilot - d.scoreHuman)).sort((a, b) => b.scorePilot! - b.scoreHuman! - (a.scorePilot! - a.scoreHuman!)).slice(0, 5);
+      L.push(`### ${sh} (${ds.length})`, "", ...[...pairs].sort((a, b) => b[1] - a[1]).slice(0, 8).map(([k, n]) => `- ${n}× ${k}`), "", "The largest gaps the predictor saw:", ...big.map((d) => `- game ${d.game + 1}, turn ${d.turn} ${d.step}: the human ${d.human}; the pilot ${d.pilot} — ${(d.scorePilot! - d.scoreHuman!).toFixed(1)} for the pilot's; played out ${d.value === undefined ? "–" : (d.value > 0 ? "+" : "") + d.value.toFixed(2)}; life moved ${d.lifeMoved!.join(" / ")}`), "");
+    }
+  }
   const text = L.join("\n");
   console.log(text);
   const file = arg("out", ""); if (file) writeFileSync(file, text + "\n");
+  const js = arg("json", ""); if (js) writeFileSync(js, JSON.stringify(out) + "\n"); // S71: the rows, to re-read without a re-run
 }
 await main();

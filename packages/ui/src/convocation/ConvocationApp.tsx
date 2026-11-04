@@ -376,6 +376,7 @@ function Prize({ c, pool, oracle }: { c: ConvocationController; pool: Map<string
   const me = rows.find((r) => r.seat === 0)!;
   const staged = !!e.stages, allowance = staged ? keepAllowance(e) : 1, kept = staged ? e.keptCards ?? [] : e.kept ? [e.kept] : [];
   const prize = c.prize();
+  const ground = c.groundPrize();
   const ids = [...new Set(staged ? lastLimitedPool(e) : e.field[0]!.pool)].filter((id) => c.keepable(id)).sort((a, b) => pool.get(a)!.name.localeCompare(pool.get(b)!.name));
   return (
     <Page wide>
@@ -385,6 +386,16 @@ function Prize({ c, pool, oracle }: { c: ConvocationController; pool: Map<string
       <p style={{ margin: "0 0 10px", fontSize: 13 }}>{me.wins}–{me.losses}{me.draws ? `–${me.draws}` : ""} · {me.points} points · entered in the ledger (seed {e.seed}).</p>
       <Table c={c} rows={rows} swiss={!!e.bracket} />
       {prize && <p style={{ margin: "12px 0 0", fontFamily: "var(--serif)", fontSize: 15 }}>The purse and the cards go home with you. <span style={{ fontFamily: "inherit", fontSize: 13, color: "var(--ink-soft)" }}>{prize.gold} gold{prize.cards ? ` and the card${prize.cards > 1 ? "s" : ""} you keep` : ""} — waiting when you return to your journey.</span></p>}
+      {ground && (ground.chosen.length > 0 || ground.choices.length > 0) && (
+        <>
+          <div className="flyout-title" style={{ marginTop: 14 }}>{ground.chosen.length >= ground.count ? `The High Ground${ground.chosen.length > 1 ? "s" : ""} ${ground.chosen.map((g) => pool.get(g)?.name ?? g).join(" and ")} go${ground.chosen.length > 1 ? "" : "es"} home with you.` : `The champion's prize: choose ${ground.count - ground.chosen.length === 1 ? (ground.count > 1 ? "a second" : "a") : "two"} High Ground${ground.count - ground.chosen.length > 1 ? "s" : ""}.${ground.chosen.length ? ` You have chosen ${ground.chosen.map((g) => pool.get(g)?.name ?? g).join(" and ")}.` : ""}`}</div>
+          {ground.chosen.length < ground.count && (
+            <div className="editor-grid" style={{ marginTop: 6 }}>
+              {ground.choices.map((id) => <div key={id} className="editor-card" title={`choose ${pool.get(id)!.name}`} onClick={() => c.chooseGround(id)}><div className="editor-slot"><CardFrame def={pool.get(id)!} oracle={oracle[id]} showPrinted /></div></div>)}
+            </div>
+          )}
+        </>
+      )}
       <div className="flyout-title" style={{ marginTop: 14 }}>{allowance === 0 ? "The eight keep a card from their last Limited pool; you finished outside them." : kept.length ? `You keep ${kept.map((k) => pool.get(k)?.name ?? k).join(" and ")}.${kept.length < allowance ? " Choose one more." : ""}` : allowance === 2 ? "Keep two cards from your last draft" : staged ? "Keep one card from your last draft" : "Keep one card from your pool"}</div>
       {kept.length < allowance && (
         <div className="editor-grid" style={{ maxHeight: 300, overflowY: "auto", marginTop: 6 }}>

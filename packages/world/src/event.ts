@@ -86,6 +86,8 @@ export interface ConvocationEvent {
   history?: { stage: number; formatId: string; pool: string[]; deck: Decklist }[];
   /** S53 (Part 2): the cards the human kept at the finish (the eight one, the champion two). */
   keptCards?: string[];
+  /** S71 (ADR-194): the High Grounds the champion chose (sent home as `ground` entries). */
+  groundsChosen?: string[];
   /** S53 (Chris): the Pro Tour's decklists — the human registers one deck per Constructed format before the first
    * stage, and plays it every round of that format and in the Umbel. `registering` is the formats still to register. */
   decklists?: Record<string, Decklist>;

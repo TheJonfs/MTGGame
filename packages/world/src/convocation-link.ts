@@ -16,12 +16,16 @@
  *    town board, a courier or a boss's grant can post one later; only the clock does today.
  *  - The fence: a kept card is never one of the packs' power slot.
  *  - The prize table: gold by place band, as knobs.
+ *  - S71 (ADR-194): the champion's High Ground — of the ten after the full Convocation, of the five still-pair grounds
+ *    after the short; Hard pays the choice of a second. A prize passes the fence (a kept card never does); each ground
+ *    at most once per journey (the world keeps the ones it has paid).
  */
 import type { KnobValues } from "./knobs.js";
 import type { WorldState } from "./state.js";
+import { HIGH_GROUNDS } from "./formats.js";
 
 export const OUTBOX_PREFIX = "convocation-outbox:";
-export type OutboxKind = "kept" | "prize" | "spent";
+export type OutboxKind = "kept" | "prize" | "spent" | /** S71 (ADR-194) */ "ground";
 export interface OutboxEntry { id: string; kind: OutboxKind; invitationId: string; cards?: string[]; gold?: number }
 /** What the outbox needs of a storage (localStorage has all four). */
 export interface OutboxStore { getItem(key: string): string | null; setItem(key: string, value: string): void; removeItem(key: string): void; readonly length: number; key(index: number): string | null }
@@ -30,7 +34,7 @@ export type InvitationSource = "clock" | "board" | "quest" | "grant";
 export type InvitationShape = "single" | "short" | "full";
 export interface Invitation { id: string; source: InvitationSource; shape: InvitationShape; /** the step it was posted at, and the step the next sitting replaces it at */ postedAt: number; until: number; spent?: true }
 /** The world's own record of the link (additive: a save from before S59 has none). */
-export interface ConvocationLinkState { /** the number of the last sitting posted (steps ÷ the interval) */ sitting: number; /** outbox ids already applied */ applied: string[] }
+export interface ConvocationLinkState { /** the number of the last sitting posted (steps ÷ the interval) */ sitting: number; /** outbox ids already applied */ applied: string[]; /** S71 (ADR-194): the High Grounds this journey has been paid */ grounds?: string[] }
 
 /** Post an entry: one write of a key of its own. Posting the same id again changes nothing. */
 export function postOutbox(store: Pick<OutboxStore, "getItem" | "setItem"> | null, entry: OutboxEntry): boolean {
@@ -88,7 +92,10 @@ export function applyOutbox(world: WorldState, entries: OutboxEntry[], isCard: (
     if (!ownsEntry(world, e)) continue;
     if (l.applied.includes(e.id)) { stale.push(e.id); continue; }
     if (e.kind === "spent") { const inv = (world.invitations ?? []).find((i) => i.id === e.invitationId); if (inv) inv.spent = true; }
-    else {
+    else if (e.kind === "ground") {
+      // S71 (ADR-194): a prize passes the fence; a ground is paid once a journey
+      for (const c of e.cards ?? []) { if (!isCard(c) || !(HIGH_GROUNDS as readonly string[]).includes(c) || (l.grounds ??= []).includes(c)) continue; l.grounds.push(c); world.player.collection[c] = (world.player.collection[c] ?? 0) + 1; world.provenance.push({ cardId: c, source: "convocation", step: world.player.stepsTaken }); }
+    } else {
       for (const c of e.cards ?? []) { if (!isCard(c) || POWER_SLOT.has(c)) continue; world.player.collection[c] = (world.player.collection[c] ?? 0) + 1; world.provenance.push({ cardId: c, source: "convocation", step: world.player.stepsTaken }); }
       if (e.gold && e.gold > 0) world.player.gold += Math.floor(e.gold);
     }
@@ -101,6 +108,14 @@ export function applyOutbox(world: WorldState, entries: OutboxEntry[], isCard: (
  * (`sets.json` → power); this is the same list for the world's side, which does not load the packs. */
 export const POWER_SLOT: ReadonlySet<string> = new Set(["black_lotus", "mox_pearl", "mox_sapphire", "mox_jet", "mox_ruby", "mox_emerald", "time_walk", "balance", "tallyflame_court", "wrackroot", "shevelport", "obsidian_observatory", "cairnbrand", "hearthspire", "volmaw", "nightbower", "ranksmere", "burnfallow", "the_manafleur", "the_cinquefont"]); // S70 (ADR-192): the still-pair grounds join the slot; post-S70: Balance (Chris: prize-only, with Time Walk)
 export const keepable = (cardId: string, power: readonly string[]): boolean => !power.includes(cardId) && !POWER_SLOT.has(cardId);
+
+/** S71 (ADR-194): the still pairs' five, the short Convocation's prize. */
+export const STILL_GROUNDS: readonly string[] = ["hearthspire", "volmaw", "nightbower", "ranksmere", "burnfallow"];
+/** The champion's ground: the choices (less those this journey has been paid) and how many to take. */
+export function groundPrize(shape: "short" | "full", hard: boolean, won: readonly string[]): { choices: string[]; count: number } {
+  const choices = (shape === "full" ? [...HIGH_GROUNDS] : [...STILL_GROUNDS]).filter((g) => !won.includes(g));
+  return { choices, count: Math.min(choices.length, hard ? 2 : 1) };
+}
 
 /** The prize table: the band a finish falls in, and what it pays. */
 export type PrizeBand = "champion" | "eight" | "quarter" | "rest";
