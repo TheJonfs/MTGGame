@@ -9,6 +9,7 @@ import { actionLabel, cardName, eventLabel, stepLabel, targetLabel } from "../la
 import type { OracleEntry } from "../engine-bridge";
 import type { MatchController, UiPhase } from "./match-controller";
 import { audio } from "../audio/audio";
+import { optionFacts, TAG_LABEL, type OptionTag } from "./option-facts";
 import { viewAbilityAt } from "@shandalar/agents"; // S26: the S25 r4 chooser referenced it unimported — a runtime ReferenceError the typecheck never saw (tsx is outside tsc's project; the parse gate parses, it does not bind)
 
 /**
@@ -438,7 +439,7 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption, printed }: { c: Ma
   const asCards = isSearch || req.actions.every((a) => cardOf(a) !== null);
   // S18 director round (Chris's note 2): colour-code whose permanent an option refers to — the
   // Man-o'-War trigger's target list was a wall of same-named tiles with no owner.
-  const ctlTag = (a: (typeof req.actions)[number]): "you" | "them" | null => {
+  const ctlTag = (a: (typeof req.actions)[number]): OptionTag | null => {
     const ids: string[] = [];
     if ("objectId" in a && typeof a.objectId === "string") ids.push(a.objectId);
     if ("targets" in a && Array.isArray(a.targets)) for (const t of a.targets as { kind: string; id?: string }[]) if (t.kind === "object" && t.id) ids.push(t.id);
@@ -447,9 +448,19 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption, printed }: { c: Ma
       const pt = ("targets" in a && Array.isArray(a.targets) ? (a.targets as { kind: string; player?: number }[]).find((t) => t.kind === "player") : null);
       return pt ? (pt.player === c.humanSeat ? "you" : "them") : null;
     }
-    return bf.controller === c.humanSeat ? "you" : "them";
+    return optionFacts(c.game.ctx, bf.id, c.humanSeat)!.tag; // post-S71: owner as well as controller — a stolen creature is not "yours"
   };
-  const tagEl = (a: (typeof req.actions)[number]) => { const t = ctlTag(a); return t ? <span className={`ctl-tag ${t}`}>{t === "you" ? "yours" : "theirs"}</span> : null; };
+  const tagEl = (a: (typeof req.actions)[number]) => { const t = ctlTag(a); return t ? <span className={`ctl-tag ${t}`}>{TAG_LABEL[t]}</span> : null; };
+  // Post-S71 (Chris: two Lumens, or a stolen creature beside my own, read the same in the picker): under each
+  // option naming one permanent, what tells it from its namesakes — live P/T, tapped, sick, counters, attachments.
+  const factsEl = (a: (typeof req.actions)[number]) => {
+    const ids = boardIdsOf(a);
+    if (ids.length !== 1) return null;
+    const f = optionFacts(c.game.ctx, ids[0]!, c.humanSeat);
+    return f && f.facts.length ? <div className="option-facts">{f.facts.join(" · ")}</div> : null;
+  };
+  // Hovering an option clears the dim so the board permanent it names shows its highlight (S10's link, which the backdrop hid).
+  const [peek, setPeek] = useState(false);
   // S10 playtest: hovering an option highlights the board permanent(s) it
   // refers to — vital when two options share a card name.
   const boardIdsOf = (a: (typeof req.actions)[number]): string[] => {
@@ -465,7 +476,7 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption, printed }: { c: Ma
     return ids;
   };
   return (
-    <div className="gallery-modal">
+    <div className={`gallery-modal${peek ? " peek" : ""}`}>
       <div className="gallery-modal-box play-dialog">
         <h3 style={{ marginTop: 0, fontFamily: "var(--serif)" }}>
           {dedicatedTitle ?? titles[req.purpose] ?? req.purpose}
@@ -541,13 +552,13 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption, printed }: { c: Ma
                 key={i}
                 className={`dialog-option ${selected ? "selected" : ""}`}
                 onClick={() => c.selectDialog(i)}
-                onMouseEnter={() => onHoverOption(boardIdsOf(a))}
-                onMouseLeave={() => onHoverOption(null)}
+                onMouseEnter={() => { const ids = boardIdsOf(a); onHoverOption(ids); setPeek(ids.length > 0); }}
+                onMouseLeave={() => { onHoverOption(null); setPeek(false); }}
               >
                 {asCards && cid ? (
                   <CardFrame def={pool.get(cid)!} oracle={oracle[cid]} mini showPrinted={printed} />
                 ) : (
-                  <span>{tagEl(a)}{actionLabel(state, pool, a, c.idNames, c.humanSeat)}</span>
+                  <span>{tagEl(a)}{actionLabel(state, pool, a, c.idNames, c.humanSeat)}{factsEl(a)}</span>
                 )}
                 {asCards && <div className="dialog-caption">{tagEl(a)}{actionLabel(state, pool, a, c.idNames, c.humanSeat)}{(() => {
                   // Deploy playtest r1 (Chris: the bottom/discard dialogs collapse duplicates — say how
@@ -558,7 +569,7 @@ function DialogModal({ c, phase, pool, oracle, onHoverOption, printed }: { c: Ma
                   if (owner === undefined) return null;
                   const n = state.players[owner].hand.filter((id) => state.objects[id]?.cardId === cid).length;
                   return n > 1 ? <b style={{ color: "var(--brass)" }}> ×{n}</b> : null;
-                })()}</div>}
+                })()}{factsEl(a)}</div>}
               </div>
             );
           })}
@@ -952,7 +963,7 @@ export function PlayMatch({
 
   const classFor = useMemo(() => {
     const base = (id: string): string => {
-      if (dialogHover?.includes(id)) return "target";
+      if (dialogHover?.includes(id)) return "target hover-pick"; // post-S71: unfiltered, so a sick or tapped tile still shows it
       switch (phase.kind) {
         case "priority":
           if (c.tapForManaAnytime && phase.manaTappable.has(id)) return "tappable"; // post-S70: the click taps it, over any activation
@@ -979,7 +990,7 @@ export function PlayMatch({
     };
     return (id: string): string => {
       const cls = base(id);
-      if (!stackTargets.objs.has(id) || cls === "target") return cls;
+      if (!stackTargets.objs.has(id) || cls.startsWith("target")) return cls;
       // The ring outranks the dim (a spell's victim should never fade) and rides along with
       // anything else (a castable card can be under the gun at the same time).
       return cls && cls !== "dim" ? `${cls} spell-target` : "spell-target";
