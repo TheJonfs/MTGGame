@@ -90,12 +90,12 @@ The most played: Counterspell 5 · Vampire Nighthawk 5 · Swords to Plowshares 5
 
 `undertow` · control · game one 50 · matches 47.5
 
-- **Lands (22):** 4 Underground Sea · 4 Watery Grave · 6 Island · 3 Swamp · 4 Evolving Wilds · 1 Thawing Glaciers
+- **Lands (22):** 3 Underground Sea · 1 Volmaw · 4 Watery Grave · 6 Island · 3 Swamp · 4 Evolving Wilds · 1 Thawing Glaciers
 - **Creatures (19):** 4 Hedron Crab · 4 Traumatizer · 4 Tidewall · 4 Clio, Lady of the Depths · 3 Vampire Nighthawk
 - **Other (19):** 1 Mox Sapphire · 1 Mox Jet · 1 Black Lotus · 4 Tome Scour · 3 Counterspell · 2 Essence Scatter · 4 Glimpse the Unthinkable · 3 Control Magic
 - **Its fifteen:** built by the field's builder for each seat (none registered).
 - **History:**
-  - contributed — S65 seed (the planner's): the archived Undertow revived — its Tropical Islands, Bayous, Wrackroot and Mox Emerald (green) out for Watery Graves and Islands; four Tome Scours for the two Man-o'-Wars and the two Faerie Macabres; Tidewall, Glimpse and Clio kept.
+  - contributed — S65 seed (the planner's): the archived Undertow revived — its Tropical Islands, Bayous, Wrackroot and Mox Emerald (green) out for Watery Graves and Islands; four Tome Scours for the two Man-o'-Wars and the two Faerie Macabres; Tidewall, Glimpse and Clio kept. Post-S71 (Part 3, the triad read; ADR-168): Volmaw for an Underground Sea — +3.8 ± 1.3 in matches (160 a pairing, paired).
 
 ## the Levy — Orzhov Landfall (W B)
 

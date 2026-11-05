@@ -529,7 +529,11 @@
    "decklist": [
     {
      "cardId": "underground_sea",
-     "count": 4
+     "count": 3
+    },
+    {
+     "cardId": "volmaw",
+     "count": 1
     },
     {
      "cardId": "watery_grave",
@@ -604,7 +608,7 @@
      "count": 3
     }
    ],
-   "source": "S67 seed (the planner's): Esper's Undertow whole."
+   "source": "S67 seed (the planner's): Esper's Undertow whole. Post-S71 (Part 3, the triad read; ADR-168): Volmaw for an Underground Sea — +3.0 ± 1.0 in matches (160 a pairing, paired)."
   },
   {
    "key": "mbc",

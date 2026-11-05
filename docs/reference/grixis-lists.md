@@ -180,10 +180,10 @@ The most played: Vampire Nighthawk 8 · Lightning Bolt 6 · Clio, Lady of the De
 
 `undertow` · control · game one 35 · matches 25.3
 
-- **Lands (22):** 4 Underground Sea · 4 Watery Grave · 6 Island · 3 Swamp · 4 Evolving Wilds · 1 Thawing Glaciers
+- **Lands (22):** 3 Underground Sea · 1 Volmaw · 4 Watery Grave · 6 Island · 3 Swamp · 4 Evolving Wilds · 1 Thawing Glaciers
 - **Creatures (19):** 4 Hedron Crab · 4 Traumatizer · 4 Tidewall · 4 Clio, Lady of the Depths · 3 Vampire Nighthawk
 - **Other (19):** 1 Mox Sapphire · 1 Mox Jet · 1 Black Lotus · 4 Tome Scour · 3 Counterspell · 2 Essence Scatter · 4 Glimpse the Unthinkable · 3 Control Magic
 - **Its fifteen:** built by the field's builder for each seat (none registered).
 - **History:**
-  - contributed — S67 seed (the planner's): Esper's Undertow whole.
+  - contributed — S67 seed (the planner's): Esper's Undertow whole. Post-S71 (Part 3, the triad read; ADR-168): Volmaw for an Underground Sea — +3.0 ± 1.0 in matches (160 a pairing, paired).
 

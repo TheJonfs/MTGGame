@@ -587,11 +587,15 @@
    "name": "the Undertow",
    "title": "Dimir Mill (U B)",
    "archetype": "control",
-   "source": "S65 seed (the planner's): the archived Undertow revived — its Tropical Islands, Bayous, Wrackroot and Mox Emerald (green) out for Watery Graves and Islands; four Tome Scours for the two Man-o'-Wars and the two Faerie Macabres; Tidewall, Glimpse and Clio kept.",
+   "source": "S65 seed (the planner's): the archived Undertow revived — its Tropical Islands, Bayous, Wrackroot and Mox Emerald (green) out for Watery Graves and Islands; four Tome Scours for the two Man-o'-Wars and the two Faerie Macabres; Tidewall, Glimpse and Clio kept. Post-S71 (Part 3, the triad read; ADR-168): Volmaw for an Underground Sea — +3.8 ± 1.3 in matches (160 a pairing, paired).",
    "decklist": [
     {
      "cardId": "underground_sea",
-     "count": 4
+     "count": 3
+    },
+    {
+     "cardId": "volmaw",
+     "count": 1
     },
     {
      "cardId": "watery_grave",
