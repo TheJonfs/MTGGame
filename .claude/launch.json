@@ -9,6 +9,21 @@
       ],
       "port": 5173,
       "autoPort": true
+    },
+    {
+      "name": "dist",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--filter",
+        "@shandalar/ui",
+        "exec",
+        "vite",
+        "preview",
+        "--port",
+        "4173",
+        "--strictPort"
+      ],
+      "port": 4173
     }
   ]
 }

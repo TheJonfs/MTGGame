@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { LayoutPicker } from "./components/LayoutPicker";
+import { OfflinePanel } from "./components/OfflinePanel";
 import type { DecisionPoint } from "@shandalar/engine";
 import { loadOracle, loadPool, viewCtx, ReplaySession, type OracleEntry, type SavedGame } from "./engine-bridge";
 import { Board } from "./components/Board";
@@ -219,6 +220,7 @@ function MainMenu() {
           {devMenuEnabled() && <a className="linkish" href="/lab" title="dev: any pairing under any conditions, simulated live">The matchup lab</a>}
         </div>
         <div className="main-menu-layout"><LayoutPicker className="layout-picker" /></div>
+        <OfflinePanel />
       </div>
     </div>
   );

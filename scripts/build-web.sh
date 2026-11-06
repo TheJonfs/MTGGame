@@ -14,4 +14,6 @@ cp -R assets/audio/. packages/ui/public/audio/
 # vite is the UI workspace's devDependency — run it THROUGH pnpm so its bin resolves on Vercel
 # (the root's PATH only carries the root's .bin; locally the hoist hid this).
 pnpm --filter @shandalar/ui exec vite build
+# Post-S71: the offline copy — the file list and the service worker (scripts/pwa-build.mjs).
+node scripts/pwa-build.mjs
 echo "build-web: $(ls packages/ui/dist/real-art | wc -l | tr -d ' ') real-art files, $(find packages/ui/dist/audio -type f | wc -l | tr -d ' ') audio files; dist at packages/ui/dist"
