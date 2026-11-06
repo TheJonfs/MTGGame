@@ -4,6 +4,7 @@ import type { CardDef, ResolvedTarget } from "@shandalar/cards";
 import { STEPS, getObject, type PlayerId, type Step } from "@shandalar/engine";
 import { Board } from "../components/Board";
 import { Inspector, StackPanel, StatusBlock } from "../components/Rail";
+import { LayoutPicker } from "../components/LayoutPicker";
 import { CardFrame } from "../components/CardFrame";
 import { actionLabel, cardName, eventLabel, stepLabel, targetLabel } from "../labels";
 import type { OracleEntry } from "../engine-bridge";
@@ -291,6 +292,8 @@ function StopsFlyout({ c }: { c: MatchController }) {
             />{" "}
             aim drains at the opponent
           </label>
+          <div className="flyout-title" style={{ marginTop: 6 }}>Screen</div>
+          <LayoutPicker />
           <div className="flyout-title" style={{ marginTop: 6 }}>AI pacing</div>
           <label>
             delay{" "}

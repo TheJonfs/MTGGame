@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { LayoutPicker } from "./components/LayoutPicker";
 import type { DecisionPoint } from "@shandalar/engine";
 import { loadOracle, loadPool, viewCtx, ReplaySession, type OracleEntry, type SavedGame } from "./engine-bridge";
 import { Board } from "./components/Board";
@@ -217,6 +218,7 @@ function MainMenu() {
           <a className="linkish" href="/viewer" title="watch any saved game, decision by decision">The replay viewer</a>
           {devMenuEnabled() && <a className="linkish" href="/lab" title="dev: any pairing under any conditions, simulated live">The matchup lab</a>}
         </div>
+        <div className="main-menu-layout"><LayoutPicker className="layout-picker" /></div>
       </div>
     </div>
   );

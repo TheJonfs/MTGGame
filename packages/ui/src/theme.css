@@ -748,3 +748,51 @@ button.chrome-tab:hover:not(:disabled) { background: #f4ecd8; }
 .tile .badges .kw-lost { position: relative; display: inline-block; width: 13px; height: 13px; }
 .tile .badges .kw-lost img.kw { box-shadow: 0 0 0 1px var(--danger); opacity: 0.8; }
 .tile .badges .kw-lost::after { content: ""; position: absolute; left: -1px; right: -1px; top: 50%; height: 1.5px; background: var(--danger); transform: rotate(-35deg); }
+
+/* ---------- Compact layout (post-S71, Chris: the iPhone Duo) ----------
+   html.layout-compact is set by layout-mode.ts: auto below 640 tall or 1000 wide, or forced from a menu.
+   Everything here is scoped under it; the full layout is untouched. */
+.layout-picker select { font-size: 11px; }
+.main-menu-layout { display: flex; justify-content: center; margin-top: 8px; font-size: 11px; color: var(--ink-soft); }
+/* The match: a slim rail (status without portraits, the stack, the log) so the board gets the width. */
+.layout-compact .play-app { grid-template-columns: minmax(0, 1fr) 188px; }
+.layout-compact .play-app .rail { padding: 6px; gap: 6px; }
+.layout-compact .play-app .rail .panel { padding: 5px 6px; }
+.layout-compact .status-block { gap: 4px; }
+.layout-compact .status-block img.portrait { display: none; }
+.layout-compact .status-block .status-main { margin-left: 0; gap: 1px; }
+.layout-compact .status-block .who { font-size: 13px; }
+.layout-compact .status-block .life { font-size: 22px; gap: 3px; }
+.layout-compact .status-block .hand-line, .layout-compact .status-block .hand-line.emph { font-size: 16px; gap: 3px; }
+.layout-compact .status-block .status-zones { gap: 2px; }
+.layout-compact .status-block .status-zones .zone { font-size: 14px; gap: 4px; }
+.layout-compact .status-block .icon-chip { width: 22px !important; height: 22px !important; }
+.layout-compact .play-log-lines { font-size: 11px; min-height: 60px; }
+.layout-compact .play-app .stack-panel .item { font-size: 11.5px; padding: 3px 5px; }
+/* The ribbon and the prompt bar: tighter, and the phase strip fits the board's width. */
+.layout-compact .play-ribbon { gap: 8px; padding: 4px 10px; }
+.layout-compact .play-ribbon .turn { min-width: 0; font-size: 14px; white-space: nowrap; }
+.layout-compact .phase-strip { gap: 1px; }
+.layout-compact .phase-chip { width: 26px; height: 28px; font-size: 16px; }
+.layout-compact .play-app .play-ribbon .seed { display: none; }
+.layout-compact .transport { padding: 4px 10px; }
+/* The board: empty rows and an empty combat zone hold no height; labels and gaps shrink. */
+.layout-compact .board { padding: 4px 10px; gap: 3px; }
+.layout-compact .row-label { font-size: 10.5px; margin: 0; line-height: 13px; }
+.layout-compact .zone-row:empty { min-height: 0; }
+/* Spare height goes above and below the combat zone (auto margins), so your side stays at the bottom. */
+.layout-compact .combat-lane { margin: auto 0; }
+.layout-compact .combat-lane.empty { min-height: 0; padding: 1px 8px; }
+.layout-compact .combat-lane.empty .lane-title { font-size: 10px; margin: 0; }
+/* The hand: one row that scrolls sideways, cards a little smaller (room kept for the castable glow). */
+.layout-compact .hand-row { flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; padding: 6px 4px 6px; margin: -4px -4px 0; flex: none; }
+.layout-compact .hand-row > .hand-card { flex: none; zoom: 0.85; }
+/* The journey: the chrome's tabs wrap instead of running off the edge; smaller trackers. */
+.layout-compact .world-chrome { flex-wrap: wrap; row-gap: 4px; padding: 4px 10px; }
+.layout-compact .world-chrome .turn { min-width: 0; font-size: 14px; }
+.layout-compact .world-chrome .stat { font-size: 13px; }
+.layout-compact .world-chrome .stat img, .layout-compact .world-chrome .stat-ink { width: 24px; height: 24px; vertical-align: -7px; }
+.layout-compact .world-chrome .seed { display: none; }
+.layout-compact .world-map-wrap { padding: 4px 8px; }
+/* The floating inspector: narrower over the smaller board (its card scales with it). */
+.layout-compact .floating-inspector { width: 208px; }
