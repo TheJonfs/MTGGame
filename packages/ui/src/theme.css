@@ -412,6 +412,8 @@ body {
   background: var(--parchment); border: 1.5px solid var(--ink); border-radius: 6px;
   padding: 8px; display: flex; flex-direction: column; gap: 3px; font-size: 11px;
   box-shadow: 2px 3px 8px rgba(0,0,0,0.35);
+  /* Post-S71 (the Duo): a short screen could not reach the bottom of the menu */
+  max-height: calc(100vh - 70px); max-height: calc(100dvh - 70px); overflow-y: auto; overscroll-behavior: contain;
 }
 .flyout-title { font-family: var(--serif); font-weight: 700; font-size: 11px; border-bottom: 1px solid var(--ink-soft); margin-bottom: 3px; }
 
@@ -786,7 +788,7 @@ button.chrome-tab:hover:not(:disabled) { background: #f4ecd8; }
 .layout-compact .combat-lane.empty .lane-title { font-size: 10px; margin: 0; }
 /* The hand: one row that scrolls sideways, cards a little smaller (room kept for the castable glow). */
 .layout-compact .hand-row { flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; padding: 6px 4px 6px; margin: -4px -4px 0; flex: none; }
-.layout-compact .hand-row > .hand-card { flex: none; zoom: 0.85; }
+.layout-compact .hand-row > .hand-card { flex: none; zoom: var(--hand-zoom, 0.85); }
 /* The journey: the chrome's tabs wrap instead of running off the edge; smaller trackers. */
 .layout-compact .world-chrome { flex-wrap: wrap; row-gap: 4px; padding: 4px 10px; }
 .layout-compact .world-chrome .turn { min-width: 0; font-size: 14px; }
@@ -803,3 +805,9 @@ button.chrome-tab:hover:not(:disabled) { background: #f4ecd8; }
 .offline-panel progress { width: 140px; height: 8px; }
 .offline-error { color: var(--brass); }
 .update-banner { position: fixed; left: 50%; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 1000; display: flex; align-items: center; gap: 10px; padding: 6px 12px; font-size: 12px; background: var(--parchment-deep); color: var(--ink); border: 1.5px solid var(--ink); border-radius: 6px; box-shadow: 0 2px 10px rgba(43,37,32,0.3); }
+
+/* Post-S71 (the Duo, installed): the page draws edge to edge (viewport-fit=cover) and keeps its content
+ * inside the screen's safe area itself — the wood runs under the margins instead of a flat letterbox. */
+body { padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px); }
+.screen-readout { font-size: 10px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.safe-probe { position: fixed; visibility: hidden; pointer-events: none; padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px); }

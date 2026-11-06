@@ -4,7 +4,7 @@ import type { CardDef, ResolvedTarget } from "@shandalar/cards";
 import { STEPS, getObject, type PlayerId, type Step } from "@shandalar/engine";
 import { Board } from "../components/Board";
 import { Inspector, StackPanel, StatusBlock } from "../components/Rail";
-import { LayoutPicker } from "../components/LayoutPicker";
+import { LayoutPicker, ScreenReadout } from "../components/LayoutPicker";
 import { CardFrame } from "../components/CardFrame";
 import { actionLabel, cardName, eventLabel, stepLabel, targetLabel } from "../labels";
 import type { OracleEntry } from "../engine-bridge";
@@ -225,6 +225,7 @@ function Shortcuts({ c, phase }: { c: MatchController; phase: UiPhase }) {
 function StopsFlyout({ c }: { c: MatchController }) {
   const [open, setOpen] = useState(false);
   const [confirmingConcede, setConfirmingConcede] = useState(false);
+  const [leaving, setLeaving] = useState<null | "reload" | "menu">(null);
   const [, force] = useState(0);
   const toggle = (s: Step) => {
     if (c.stops.has(s)) c.stops.delete(s);
@@ -294,6 +295,7 @@ function StopsFlyout({ c }: { c: MatchController }) {
           </label>
           <div className="flyout-title" style={{ marginTop: 6 }}>Screen</div>
           <LayoutPicker />
+          <ScreenReadout />
           <div className="flyout-title" style={{ marginTop: 6 }}>AI pacing</div>
           <label>
             delay{" "}
@@ -321,6 +323,22 @@ function StopsFlyout({ c }: { c: MatchController }) {
             </div>
           ) : (
             <button onClick={() => setConfirmingConcede(true)}>Concede…</button>
+          )}
+          {/* Post-S71 (the Duo, installed): a Home Screen app has no browser buttons — these stand in for
+              refresh and back, and do exactly what they did (the match in progress is not kept). */}
+          {leaving ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+              <span>{leaving === "reload" ? "Reload the page?" : "Leave for the main menu?"} This match is not kept.</span>
+              <div style={{ display: "flex", gap: 4 }}>
+                <button className="danger" onClick={() => { if (leaving === "reload") window.location.reload(); else window.location.href = "/"; }}>{leaving === "reload" ? "Reload" : "Leave"}</button>
+                <button onClick={() => setLeaving(null)}>Keep playing</button>
+              </div>
+            </div>
+          ) : (
+            <div style={{ display: "flex", gap: 4 }}>
+              <button onClick={() => setLeaving("reload")}>Reload…</button>
+              <button onClick={() => setLeaving("menu")}>Main menu…</button>
+            </div>
           )}
         </div>
       )}

@@ -1,4 +1,4 @@
-import type { ReactElement } from "react";
+import { useLayoutEffect, useRef, type ReactElement } from "react";
 import { getObject, type EngineCtx, type PlayerId } from "@shandalar/engine";
 import { CardTile } from "./CardTile";
 import { CardFrame } from "./CardFrame";
@@ -178,8 +178,9 @@ function HandRow({ ctx, player, faceDown, oracle, onHover, onClick, classFor }: 
       </div>
     );
   }
+  const row = useHandFit(hand.length);
   return (
-    <div className="hand-row">
+    <div className="hand-row" ref={row}>
       {hand.map((id) => {
         const obj = getObject(ctx.state, id);
         return (
@@ -214,4 +215,26 @@ export function Board(props: BoardProps) {
       <HandRow {...props} player={bottom} faceDown={false} />
     </div>
   );
+}
+
+/** Post-S71 (Chris, the Duo: the mulligan showed six of seven cards). Sets --hand-zoom on the hand row so
+ * the whole hand fits its width — 0.85 at most, 0.6 at least (below that the row scrolls). Only the compact
+ * layout reads the variable (theme.css); the full layout wraps the hand as before. */
+const HAND_CARD_W = 124, HAND_GAP = 8, HAND_PAD = 8;
+function useHandFit(n: number) {
+  const ref = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const fit = () => {
+      const w = el.clientWidth - HAND_PAD - HAND_GAP * Math.max(0, n - 1);
+      const z = n ? Math.max(0.6, Math.min(0.85, w / (n * HAND_CARD_W))) : 0.85;
+      el.style.setProperty("--hand-zoom", z.toFixed(3));
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [n]);
+  return ref;
 }

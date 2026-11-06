@@ -216,6 +216,8 @@ function Chrome({ c, onDownload, corolla }: { c: WorldController; onDownload: ()
       <button className="chrome-tab" onClick={onDownload}>Download</button>
       {!corolla && devMenuEnabled() && <DevTab c={c} />}
       <AudioTab />
+      {/* Post-S71 (the Duo, installed: no browser back button) — save, then the main menu. */}
+      <button className="chrome-tab" title="save the journey and return to the main menu" onClick={() => { c.save(); window.location.href = "/"; }}>Menu</button>
       <span className="seed">seed {w.seed} · {w.difficulty}</span>
     </div>
   );
