@@ -811,3 +811,8 @@ button.chrome-tab:hover:not(:disabled) { background: #f4ecd8; }
 body { padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px); }
 .screen-readout { font-size: 10px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
 .safe-probe { position: fixed; visibility: hidden; pointer-events: none; padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px); }
+/* Post-S71 (the Duo, installed): taps in the top centre of the screen never reach the page (the camera
+ * housing; iOS reports no safe-area inset for it). Under compact the journey's buttons start a second row
+ * at the left, where taps land; the first row keeps the name and the trackers. */
+.world-chrome > .chrome-spacer { flex: 1; }
+.layout-compact .world-chrome > .chrome-spacer { flex: 0 0 100%; height: 0; }

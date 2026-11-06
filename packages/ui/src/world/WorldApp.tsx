@@ -209,7 +209,7 @@ function Chrome({ c, onDownload, corolla }: { c: WorldController; onDownload: ()
         : <span className="stat" title="steps (the clock)"><img className="stat-ink" src="/icons/stat-steps.png" alt="" /> {w.player.stepsTaken} steps</span>}
       {/* S59 (ADR-172): the Convocation's sitting — the letter stands until the next one */}
       {!corolla && c.invitation() && <a className="stat" href="/convocation" style={{ whiteSpace: "nowrap", color: "var(--brass)" }} title={`The Convocation sits. A letter under seal admits you — ${shapeName(c.invitation()!.shape)}. It stands until step ${c.invitation()!.until}. (Your journey is saved; the Convocation is its own page.)`}>✉ the Convocation sits</a>}
-      <span style={{ flex: 1 }} />
+      <span className="chrome-spacer" />
       <button className="chrome-tab" title={c.canEdit().ok ? "edit your deck (clock-free)" : c.canEdit().reason} disabled={!c.canEdit().ok} onClick={() => c.openEditor()}>Deck</button>
       <button className="chrome-tab" onClick={() => c.openCollection()}>Collection</button>
       <button className="chrome-tab" onClick={() => c.save()}>Save</button>
