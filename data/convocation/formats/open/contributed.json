@@ -2744,6 +2744,173 @@
      "count": 1
     }
    ]
+  },
+  {
+   "key": "lumenclio",
+   "name": "Lumen Clio",
+   "title": "Four-Colour Clio (W U B r, Moxen)",
+   "archetype": "control",
+   "source": "Post-S71 (Chris, 2026-11-05): built from his Open (5–0, then the Top 8 won; 16–2 in games). Clio, Lumen and the Restoration Angels hold the board; Confession and the Jet Witch draw; Vindicate, Protocol and the Meathook Massacre answer; Wrath and Pyroclasm from the fifteen. A four-colour deck without green. The quarter-final's second game: Confession at a 9/10 Rage Cobra from 11 life, ten cards, the Wrath — won from 2. His 75 as played. A working name. No guide.",
+   "decklist": [
+    {
+     "cardId": "protocol",
+     "count": 4
+    },
+    {
+     "cardId": "confession",
+     "count": 4
+    },
+    {
+     "cardId": "clio_lady_of_the_depths",
+     "count": 4
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 4
+    },
+    {
+     "cardId": "lumen_the_hearth_fire",
+     "count": 4
+    },
+    {
+     "cardId": "drana_kalastria_bloodchief",
+     "count": 2
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "time_walk",
+     "count": 1
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    },
+    {
+     "cardId": "arcane_collector",
+     "count": 2
+    },
+    {
+     "cardId": "the_jet_witch",
+     "count": 3
+    },
+    {
+     "cardId": "vindicate",
+     "count": 2
+    },
+    {
+     "cardId": "the_meathook_massacre",
+     "count": 1
+    },
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "hearthspire",
+     "count": 1
+    },
+    {
+     "cardId": "library_of_alexandria",
+     "count": 1
+    },
+    {
+     "cardId": "obsidian_observatory",
+     "count": 1
+    },
+    {
+     "cardId": "tallyflame_court",
+     "count": 1
+    },
+    {
+     "cardId": "volmaw",
+     "count": 1
+    },
+    {
+     "cardId": "underground_sea",
+     "count": 4
+    },
+    {
+     "cardId": "scrubland",
+     "count": 4
+    },
+    {
+     "cardId": "badlands",
+     "count": 2
+    },
+    {
+     "cardId": "tundra",
+     "count": 2
+    },
+    {
+     "cardId": "volcanic_island",
+     "count": 1
+    },
+    {
+     "cardId": "plateau",
+     "count": 1
+    },
+    {
+     "cardId": "ranksmere",
+     "count": 1
+    },
+    {
+     "cardId": "godless_shrine",
+     "count": 1
+    },
+    {
+     "cardId": "watery_grave",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "tormods_crypt",
+     "count": 3
+    },
+    {
+     "cardId": "vigil_keeper",
+     "count": 3
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 3
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 3
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 1
+    },
+    {
+     "cardId": "control_magic",
+     "count": 1
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 1
+    }
+   ]
   }
  ],
  "_guides_note": "S58: a guide's rows are the author's swaps that MEASURED (open:rr --sideboarded-only <list> --guide-drop …). The Locks' planner's guide also had Essence Scatter for Absorb against creature decks (−17 against the Enchantress, −11 the Ford: Absorb's life and its reach beyond creatures were worth more) and Disenchant for the Serras (−12 the Muster and the Enchantress); both rows are out and the rules bring those cards in where they apply. Post-S59: `guidesOnly` names the guided lists whose guide is the whole plan (the rules do not run after it).",
