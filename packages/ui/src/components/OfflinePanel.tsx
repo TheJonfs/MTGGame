@@ -44,10 +44,11 @@ export function OfflinePanel() {
  * reloaded without the player choosing it). */
 export function UpdateBanner() {
   const ready = useSyncExternalStore(subscribeOffline, isUpdateReady, () => false);
+  const [updating, setUpdating] = useState(false);
   if (!ready) return null;
   return (
     <div className="update-banner" role="status">
-      A new version of Cinquefoil is ready. <button type="button" onClick={applyUpdate}>Reload</button>
+      {updating ? "Updating Cinquefoil…" : <>A new version of Cinquefoil is ready. <button type="button" onClick={() => { setUpdating(true); applyUpdate(); }}>Reload</button></>}
     </div>
   );
 }

@@ -29,9 +29,12 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil((async () => {
     for (const k of await caches.keys()) if (k.startsWith("cinq-shell-") && k !== SHELL_CACHE) await caches.delete(k);
-    await pruneFiles();
     await self.clients.claim();
   })());
+  // Not awaited: with the whole art cache stored the sweep takes a while, and the page's reload waits on
+  // activation (Chris, desktop: the banner stood for a minute after Reload). A stale file is also caught
+  // when it is read (file(), below), so a sweep cut short loses nothing.
+  pruneFiles().catch(() => {});
 });
 
 self.addEventListener("message", (event) => {
@@ -82,7 +85,13 @@ async function file(req, url) {
   const range = req.headers.get("range");
   const key = url.origin + url.pathname; // query strings never vary a static file
   let hit = await (await caches.open(SHELL_CACHE)).match(key);
-  if (!hit) hit = await (await caches.open(FILES_CACHE)).match(key);
+  if (!hit) {
+    const files = await caches.open(FILES_CACHE);
+    hit = await files.match(key);
+    // A stored file from an older build whose content has since changed: drop it and fetch it fresh.
+    const want = hit && (await listing())?.hash.get(url.pathname);
+    if (hit && want && hit.headers.get("x-cinq-hash") !== want) { await files.delete(key); hit = undefined; }
+  }
   if (!hit) {
     let res;
     try {
