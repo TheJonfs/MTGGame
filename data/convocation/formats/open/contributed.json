@@ -2911,6 +2911,177 @@
      "count": 1
     }
    ]
+  },
+  {
+   "key": "earthrise",
+   "name": "5C Earthrise",
+   "title": "Five-Colour Earthrise (W U B R G, Moxen)",
+   "archetype": "control",
+   "source": "Post-S71 (Chris, 2026-11-06): built from his Open (4–1 in the Swiss, losing round 5 to Mardu Control; then the Top 8 won over the Pinnacle, the Rabble and the Pall; 15–4 in games). The first five-colour list. The Minefield's Powerstone Minefield + Sacred Helix + Experimental Overload win; Earthrise fetches two High Grounds (Nightbower, Cairnbrand, Hearthspire, Wrackroot, Volmaw, Tallyflame Court, Shevelport) and Cairnbrand loops Reaper's Forerunner; Overload returns Time Walk and Sacred Helix. Pre-boarded against the Usher loops (Reaper's Forerunner, Vigil Keeper) with Savage Twister and the Meathook Massacre to sweep beside the Minefields. In his hands: Sacred Helix cast 22 times, Hearthspire activated 23, Nightbower 14. His 75 as played. A working name. No guide.",
+   "decklist": [
+    {
+     "cardId": "badlands",
+     "count": 1
+    },
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "hearthspire",
+     "count": 1
+    },
+    {
+     "cardId": "library_of_alexandria",
+     "count": 1
+    },
+    {
+     "cardId": "nightbower",
+     "count": 1
+    },
+    {
+     "cardId": "obsidian_observatory",
+     "count": 1
+    },
+    {
+     "cardId": "plateau",
+     "count": 4
+    },
+    {
+     "cardId": "savannah",
+     "count": 3
+    },
+    {
+     "cardId": "scrubland",
+     "count": 1
+    },
+    {
+     "cardId": "shevelport",
+     "count": 1
+    },
+    {
+     "cardId": "taiga",
+     "count": 3
+    },
+    {
+     "cardId": "tallyflame_court",
+     "count": 1
+    },
+    {
+     "cardId": "volcanic_island",
+     "count": 1
+    },
+    {
+     "cardId": "volmaw",
+     "count": 1
+    },
+    {
+     "cardId": "wrackroot",
+     "count": 1
+    },
+    {
+     "cardId": "tundra",
+     "count": 1
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    },
+    {
+     "cardId": "earthrise",
+     "count": 1
+    },
+    {
+     "cardId": "confession",
+     "count": 3
+    },
+    {
+     "cardId": "savage_twister",
+     "count": 3
+    },
+    {
+     "cardId": "the_meathook_massacre",
+     "count": 3
+    },
+    {
+     "cardId": "time_walk",
+     "count": 1
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 4
+    },
+    {
+     "cardId": "vigil_keeper",
+     "count": 3
+    },
+    {
+     "cardId": "experimental_overload",
+     "count": 4
+    },
+    {
+     "cardId": "powerstone_minefield",
+     "count": 4
+    },
+    {
+     "cardId": "sacred_helix",
+     "count": 4
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "foxglove_dose",
+     "count": 3
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 3
+    },
+    {
+     "cardId": "voracious_cobra",
+     "count": 3
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 3
+    },
+    {
+     "cardId": "confession",
+     "count": 1
+    },
+    {
+     "cardId": "vigil_keeper",
+     "count": 1
+    },
+    {
+     "cardId": "the_jet_witch",
+     "count": 1
+    }
+   ]
   }
  ],
  "_guides_note": "S58: a guide's rows are the author's swaps that MEASURED (open:rr --sideboarded-only <list> --guide-drop …). The Locks' planner's guide also had Essence Scatter for Absorb against creature decks (−17 against the Enchantress, −11 the Ford: Absorb's life and its reach beyond creatures were worth more) and Disenchant for the Serras (−12 the Muster and the Enchantress); both rows are out and the rules bring those cards in where they apply. Post-S59: `guidesOnly` names the guided lists whose guide is the whole plan (the rules do not run after it).",

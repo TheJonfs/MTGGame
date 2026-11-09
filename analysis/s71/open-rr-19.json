@@ -1,0 +1,1435 @@
+{
+ "name": "open_rr_1",
+ "when": "2026-11-07T01:59:50.677Z",
+ "games": 17100,
+ "table": {
+  "muster": {
+   "warband": [
+    65,
+    100
+   ],
+   "tollgate": [
+    36,
+    100
+   ],
+   "wurmspeaker": [
+    50,
+    100
+   ],
+   "reaperclio": [
+    13,
+    100
+   ],
+   "levy": [
+    45,
+    100
+   ],
+   "marducontrol": [
+    37,
+    100
+   ],
+   "sweep": [
+    69,
+    100
+   ],
+   "emeraldsnakes": [
+    23,
+    100
+   ],
+   "depths": [
+    45,
+    100
+   ],
+   "pinnacle": [
+    53,
+    100
+   ],
+   "pall": [
+    41,
+    100
+   ],
+   "minefield": [
+    25,
+    100
+   ],
+   "kiln": [
+    38,
+    100
+   ],
+   "lumenclio": [
+    41,
+    100
+   ],
+   "writ": [
+    37,
+    100
+   ],
+   "earthrise": [
+    26,
+    100
+   ],
+   "rabble": [
+    40,
+    100
+   ],
+   "countersnake": [
+    31,
+    100
+   ]
+  },
+  "warband": {
+   "muster": [
+    35,
+    100
+   ],
+   "sweep": [
+    55,
+    100
+   ],
+   "emeraldsnakes": [
+    34,
+    100
+   ],
+   "depths": [
+    50,
+    100
+   ],
+   "pinnacle": [
+    46,
+    100
+   ],
+   "pall": [
+    39,
+    100
+   ],
+   "minefield": [
+    35,
+    100
+   ],
+   "kiln": [
+    56,
+    100
+   ],
+   "lumenclio": [
+    45,
+    100
+   ],
+   "writ": [
+    41,
+    100
+   ],
+   "earthrise": [
+    30,
+    100
+   ],
+   "rabble": [
+    30,
+    100
+   ],
+   "countersnake": [
+    32,
+    100
+   ],
+   "tollgate": [
+    32,
+    100
+   ],
+   "wurmspeaker": [
+    55,
+    100
+   ],
+   "reaperclio": [
+    22,
+    100
+   ],
+   "levy": [
+    52,
+    100
+   ],
+   "marducontrol": [
+    50,
+    100
+   ]
+  },
+  "tollgate": {
+   "muster": [
+    64,
+    100
+   ],
+   "sweep": [
+    49,
+    100
+   ],
+   "wurmspeaker": [
+    39,
+    100
+   ],
+   "reaperclio": [
+    33,
+    100
+   ],
+   "marducontrol": [
+    10,
+    100
+   ],
+   "depths": [
+    36,
+    100
+   ],
+   "countersnake": [
+    51,
+    100
+   ],
+   "emeraldsnakes": [
+    22,
+    100
+   ],
+   "pinnacle": [
+    19,
+    100
+   ],
+   "warband": [
+    68,
+    100
+   ],
+   "pall": [
+    26,
+    100
+   ],
+   "rabble": [
+    63,
+    100
+   ],
+   "minefield": [
+    7,
+    100
+   ],
+   "levy": [
+    52,
+    100
+   ],
+   "kiln": [
+    39,
+    100
+   ],
+   "writ": [
+    42,
+    100
+   ],
+   "lumenclio": [
+    31,
+    100
+   ],
+   "earthrise": [
+    8,
+    100
+   ]
+  },
+  "sweep": {
+   "warband": [
+    45,
+    100
+   ],
+   "rabble": [
+    45,
+    100
+   ],
+   "levy": [
+    42,
+    100
+   ],
+   "countersnake": [
+    36,
+    100
+   ],
+   "tollgate": [
+    51,
+    100
+   ],
+   "muster": [
+    31,
+    100
+   ],
+   "reaperclio": [
+    19,
+    100
+   ],
+   "marducontrol": [
+    24,
+    100
+   ],
+   "emeraldsnakes": [
+    33,
+    100
+   ],
+   "wurmspeaker": [
+    51,
+    100
+   ],
+   "depths": [
+    59,
+    100
+   ],
+   "pinnacle": [
+    56,
+    100
+   ],
+   "pall": [
+    30,
+    100
+   ],
+   "minefield": [
+    58,
+    100
+   ],
+   "kiln": [
+    47,
+    100
+   ],
+   "lumenclio": [
+    29,
+    100
+   ],
+   "writ": [
+    32,
+    100
+   ],
+   "earthrise": [
+    38,
+    100
+   ]
+  },
+  "emeraldsnakes": {
+   "warband": [
+    66,
+    100
+   ],
+   "pall": [
+    67,
+    100
+   ],
+   "rabble": [
+    49,
+    100
+   ],
+   "levy": [
+    77,
+    100
+   ],
+   "kiln": [
+    72,
+    100
+   ],
+   "writ": [
+    52,
+    100
+   ],
+   "reaperclio": [
+    37,
+    100
+   ],
+   "pinnacle": [
+    62,
+    100
+   ],
+   "minefield": [
+    67,
+    100
+   ],
+   "muster": [
+    77,
+    100
+   ],
+   "lumenclio": [
+    58,
+    100
+   ],
+   "earthrise": [
+    65,
+    100
+   ],
+   "sweep": [
+    67,
+    100
+   ],
+   "tollgate": [
+    78,
+    100
+   ],
+   "wurmspeaker": [
+    72,
+    100
+   ],
+   "marducontrol": [
+    47,
+    100
+   ],
+   "depths": [
+    63,
+    100
+   ],
+   "countersnake": [
+    60,
+    100
+   ]
+  },
+  "wurmspeaker": {
+   "writ": [
+    22,
+    100
+   ],
+   "earthrise": [
+    66,
+    100
+   ],
+   "muster": [
+    50,
+    100
+   ],
+   "rabble": [
+    47,
+    100
+   ],
+   "countersnake": [
+    26,
+    100
+   ],
+   "tollgate": [
+    61,
+    100
+   ],
+   "reaperclio": [
+    14,
+    100
+   ],
+   "levy": [
+    47,
+    100
+   ],
+   "marducontrol": [
+    21,
+    100
+   ],
+   "sweep": [
+    49,
+    100
+   ],
+   "emeraldsnakes": [
+    28,
+    100
+   ],
+   "depths": [
+    29,
+    100
+   ],
+   "pinnacle": [
+    54,
+    100
+   ],
+   "warband": [
+    45,
+    100
+   ],
+   "pall": [
+    23,
+    100
+   ],
+   "minefield": [
+    79,
+    100
+   ],
+   "kiln": [
+    44,
+    100
+   ],
+   "lumenclio": [
+    38,
+    100
+   ]
+  },
+  "writ": {
+   "wurmspeaker": [
+    78,
+    100
+   ],
+   "marducontrol": [
+    49,
+    100
+   ],
+   "emeraldsnakes": [
+    48,
+    100
+   ],
+   "depths": [
+    49,
+    100
+   ],
+   "pinnacle": [
+    33,
+    100
+   ],
+   "minefield": [
+    34,
+    100
+   ],
+   "warband": [
+    59,
+    100
+   ],
+   "pall": [
+    42,
+    100
+   ],
+   "lumenclio": [
+    36,
+    100
+   ],
+   "levy": [
+    42,
+    100
+   ],
+   "kiln": [
+    58,
+    100
+   ],
+   "earthrise": [
+    30,
+    100
+   ],
+   "rabble": [
+    33,
+    100
+   ],
+   "muster": [
+    63,
+    100
+   ],
+   "countersnake": [
+    50,
+    100
+   ],
+   "tollgate": [
+    58,
+    100
+   ],
+   "sweep": [
+    68,
+    100
+   ],
+   "reaperclio": [
+    47,
+    100
+   ]
+  },
+  "earthrise": {
+   "wurmspeaker": [
+    34,
+    100
+   ],
+   "marducontrol": [
+    19,
+    100
+   ],
+   "lumenclio": [
+    40,
+    100
+   ],
+   "depths": [
+    71,
+    100
+   ],
+   "countersnake": [
+    76,
+    100
+   ],
+   "warband": [
+    70,
+    100
+   ],
+   "pall": [
+    47,
+    100
+   ],
+   "rabble": [
+    65,
+    100
+   ],
+   "emeraldsnakes": [
+    35,
+    100
+   ],
+   "levy": [
+    62,
+    100
+   ],
+   "kiln": [
+    76,
+    100
+   ],
+   "writ": [
+    70,
+    100
+   ],
+   "reaperclio": [
+    45,
+    100
+   ],
+   "muster": [
+    74,
+    100
+   ],
+   "pinnacle": [
+    34,
+    100
+   ],
+   "sweep": [
+    62,
+    100
+   ],
+   "tollgate": [
+    92,
+    100
+   ],
+   "minefield": [
+    48,
+    100
+   ]
+  },
+  "levy": {
+   "marducontrol": [
+    32,
+    100
+   ],
+   "sweep": [
+    58,
+    100
+   ],
+   "emeraldsnakes": [
+    23,
+    100
+   ],
+   "muster": [
+    55,
+    100
+   ],
+   "depths": [
+    57,
+    100
+   ],
+   "pinnacle": [
+    47,
+    100
+   ],
+   "pall": [
+    25,
+    100
+   ],
+   "minefield": [
+    50,
+    100
+   ],
+   "kiln": [
+    55,
+    100
+   ],
+   "lumenclio": [
+    27,
+    100
+   ],
+   "wurmspeaker": [
+    53,
+    100
+   ],
+   "writ": [
+    58,
+    100
+   ],
+   "earthrise": [
+    38,
+    100
+   ],
+   "rabble": [
+    28,
+    100
+   ],
+   "countersnake": [
+    31,
+    100
+   ],
+   "tollgate": [
+    48,
+    100
+   ],
+   "warband": [
+    48,
+    100
+   ],
+   "reaperclio": [
+    18,
+    100
+   ]
+  },
+  "marducontrol": {
+   "levy": [
+    68,
+    100
+   ],
+   "kiln": [
+    63,
+    100
+   ],
+   "writ": [
+    51,
+    100
+   ],
+   "reaperclio": [
+    55,
+    100
+   ],
+   "earthrise": [
+    81,
+    100
+   ],
+   "muster": [
+    63,
+    100
+   ],
+   "sweep": [
+    76,
+    100
+   ],
+   "tollgate": [
+    90,
+    100
+   ],
+   "wurmspeaker": [
+    79,
+    100
+   ],
+   "emeraldsnakes": [
+    53,
+    100
+   ],
+   "depths": [
+    85,
+    100
+   ],
+   "countersnake": [
+    58,
+    100
+   ],
+   "pinnacle": [
+    68,
+    100
+   ],
+   "minefield": [
+    79,
+    100
+   ],
+   "warband": [
+    50,
+    100
+   ],
+   "pall": [
+    34,
+    100
+   ],
+   "rabble": [
+    56,
+    100
+   ],
+   "lumenclio": [
+    54,
+    100
+   ]
+  },
+  "rabble": {
+   "sweep": [
+    55,
+    100
+   ],
+   "emeraldsnakes": [
+    51,
+    100
+   ],
+   "wurmspeaker": [
+    53,
+    100
+   ],
+   "pinnacle": [
+    62,
+    100
+   ],
+   "minefield": [
+    42,
+    100
+   ],
+   "depths": [
+    68,
+    100
+   ],
+   "lumenclio": [
+    56,
+    100
+   ],
+   "earthrise": [
+    35,
+    100
+   ],
+   "warband": [
+    70,
+    100
+   ],
+   "pall": [
+    42,
+    100
+   ],
+   "levy": [
+    72,
+    100
+   ],
+   "kiln": [
+    79,
+    100
+   ],
+   "writ": [
+    67,
+    100
+   ],
+   "countersnake": [
+    59,
+    100
+   ],
+   "tollgate": [
+    37,
+    100
+   ],
+   "muster": [
+    60,
+    100
+   ],
+   "reaperclio": [
+    36,
+    100
+   ],
+   "marducontrol": [
+    44,
+    100
+   ]
+  },
+  "depths": {
+   "pall": [
+    36,
+    100
+   ],
+   "minefield": [
+    36,
+    100
+   ],
+   "warband": [
+    50,
+    100
+   ],
+   "kiln": [
+    35,
+    100
+   ],
+   "lumenclio": [
+    40,
+    100
+   ],
+   "levy": [
+    43,
+    100
+   ],
+   "writ": [
+    51,
+    100
+   ],
+   "earthrise": [
+    29,
+    100
+   ],
+   "rabble": [
+    32,
+    100
+   ],
+   "muster": [
+    55,
+    100
+   ],
+   "countersnake": [
+    43,
+    100
+   ],
+   "tollgate": [
+    64,
+    100
+   ],
+   "sweep": [
+    41,
+    100
+   ],
+   "reaperclio": [
+    39,
+    100
+   ],
+   "wurmspeaker": [
+    71,
+    100
+   ],
+   "marducontrol": [
+    15,
+    100
+   ],
+   "emeraldsnakes": [
+    37,
+    100
+   ],
+   "pinnacle": [
+    30,
+    100
+   ]
+  },
+  "pall": {
+   "depths": [
+    64,
+    100
+   ],
+   "emeraldsnakes": [
+    33,
+    100
+   ],
+   "pinnacle": [
+    66,
+    100
+   ],
+   "warband": [
+    61,
+    100
+   ],
+   "minefield": [
+    85,
+    100
+   ],
+   "levy": [
+    75,
+    100
+   ],
+   "kiln": [
+    68,
+    100
+   ],
+   "lumenclio": [
+    75,
+    100
+   ],
+   "writ": [
+    58,
+    100
+   ],
+   "earthrise": [
+    53,
+    100
+   ],
+   "muster": [
+    59,
+    100
+   ],
+   "rabble": [
+    58,
+    100
+   ],
+   "countersnake": [
+    55,
+    100
+   ],
+   "sweep": [
+    70,
+    100
+   ],
+   "tollgate": [
+    74,
+    100
+   ],
+   "wurmspeaker": [
+    77,
+    100
+   ],
+   "reaperclio": [
+    47,
+    100
+   ],
+   "marducontrol": [
+    66,
+    100
+   ]
+  },
+  "minefield": {
+   "depths": [
+    64,
+    100
+   ],
+   "countersnake": [
+    64,
+    100
+   ],
+   "warband": [
+    65,
+    100
+   ],
+   "pall": [
+    15,
+    100
+   ],
+   "rabble": [
+    58,
+    100
+   ],
+   "emeraldsnakes": [
+    33,
+    100
+   ],
+   "levy": [
+    50,
+    100
+   ],
+   "kiln": [
+    83,
+    100
+   ],
+   "writ": [
+    66,
+    100
+   ],
+   "reaperclio": [
+    49,
+    100
+   ],
+   "muster": [
+    75,
+    100
+   ],
+   "pinnacle": [
+    29,
+    100
+   ],
+   "sweep": [
+    42,
+    100
+   ],
+   "tollgate": [
+    93,
+    100
+   ],
+   "wurmspeaker": [
+    21,
+    100
+   ],
+   "marducontrol": [
+    21,
+    100
+   ],
+   "lumenclio": [
+    34,
+    100
+   ],
+   "earthrise": [
+    52,
+    100
+   ]
+  },
+  "kiln": {
+   "marducontrol": [
+    37,
+    100
+   ],
+   "depths": [
+    65,
+    100
+   ],
+   "emeraldsnakes": [
+    28,
+    100
+   ],
+   "pinnacle": [
+    29,
+    100
+   ],
+   "warband": [
+    44,
+    100
+   ],
+   "pall": [
+    32,
+    100
+   ],
+   "minefield": [
+    17,
+    100
+   ],
+   "levy": [
+    45,
+    100
+   ],
+   "lumenclio": [
+    36,
+    100
+   ],
+   "writ": [
+    42,
+    100
+   ],
+   "earthrise": [
+    24,
+    100
+   ],
+   "muster": [
+    62,
+    100
+   ],
+   "rabble": [
+    20,
+    100
+   ],
+   "countersnake": [
+    39,
+    100
+   ],
+   "sweep": [
+    53,
+    100
+   ],
+   "tollgate": [
+    61,
+    100
+   ],
+   "wurmspeaker": [
+    56,
+    100
+   ],
+   "reaperclio": [
+    23,
+    100
+   ]
+  },
+  "countersnake": {
+   "minefield": [
+    36,
+    100
+   ],
+   "sweep": [
+    64,
+    100
+   ],
+   "lumenclio": [
+    30,
+    100
+   ],
+   "wurmspeaker": [
+    74,
+    100
+   ],
+   "earthrise": [
+    24,
+    100
+   ],
+   "depths": [
+    56,
+    100
+   ],
+   "tollgate": [
+    49,
+    100
+   ],
+   "warband": [
+    68,
+    100
+   ],
+   "pall": [
+    45,
+    100
+   ],
+   "rabble": [
+    41,
+    100
+   ],
+   "reaperclio": [
+    30,
+    100
+   ],
+   "levy": [
+    69,
+    100
+   ],
+   "kiln": [
+    61,
+    100
+   ],
+   "writ": [
+    50,
+    100
+   ],
+   "marducontrol": [
+    42,
+    100
+   ],
+   "emeraldsnakes": [
+    39,
+    100
+   ],
+   "muster": [
+    69,
+    100
+   ],
+   "pinnacle": [
+    37,
+    100
+   ]
+  },
+  "reaperclio": {
+   "marducontrol": [
+    45,
+    100
+   ],
+   "muster": [
+    87,
+    100
+   ],
+   "emeraldsnakes": [
+    63,
+    100
+   ],
+   "pinnacle": [
+    74,
+    100
+   ],
+   "sweep": [
+    81,
+    100
+   ],
+   "tollgate": [
+    67,
+    100
+   ],
+   "minefield": [
+    51,
+    100
+   ],
+   "wurmspeaker": [
+    86,
+    100
+   ],
+   "lumenclio": [
+    59,
+    100
+   ],
+   "earthrise": [
+    55,
+    100
+   ],
+   "depths": [
+    61,
+    100
+   ],
+   "countersnake": [
+    70,
+    100
+   ],
+   "warband": [
+    78,
+    100
+   ],
+   "pall": [
+    53,
+    100
+   ],
+   "rabble": [
+    64,
+    100
+   ],
+   "levy": [
+    82,
+    100
+   ],
+   "kiln": [
+    77,
+    100
+   ],
+   "writ": [
+    53,
+    100
+   ]
+  },
+  "lumenclio": {
+   "earthrise": [
+    60,
+    100
+   ],
+   "depths": [
+    60,
+    100
+   ],
+   "countersnake": [
+    70,
+    100
+   ],
+   "warband": [
+    55,
+    100
+   ],
+   "pall": [
+    25,
+    100
+   ],
+   "rabble": [
+    44,
+    100
+   ],
+   "emeraldsnakes": [
+    42,
+    100
+   ],
+   "levy": [
+    73,
+    100
+   ],
+   "kiln": [
+    64,
+    100
+   ],
+   "writ": [
+    64,
+    100
+   ],
+   "reaperclio": [
+    41,
+    100
+   ],
+   "muster": [
+    59,
+    100
+   ],
+   "pinnacle": [
+    40,
+    100
+   ],
+   "sweep": [
+    71,
+    100
+   ],
+   "tollgate": [
+    69,
+    100
+   ],
+   "minefield": [
+    66,
+    100
+   ],
+   "wurmspeaker": [
+    62,
+    100
+   ],
+   "marducontrol": [
+    46,
+    100
+   ]
+  },
+  "pinnacle": {
+   "warband": [
+    54,
+    100
+   ],
+   "pall": [
+    34,
+    100
+   ],
+   "rabble": [
+    38,
+    100
+   ],
+   "emeraldsnakes": [
+    36,
+    100
+   ],
+   "levy": [
+    53,
+    100
+   ],
+   "kiln": [
+    71,
+    100
+   ],
+   "writ": [
+    67,
+    100
+   ],
+   "reaperclio": [
+    26,
+    100
+   ],
+   "muster": [
+    46,
+    100
+   ],
+   "minefield": [
+    71,
+    100
+   ],
+   "sweep": [
+    44,
+    100
+   ],
+   "tollgate": [
+    81,
+    100
+   ],
+   "lumenclio": [
+    60,
+    100
+   ],
+   "wurmspeaker": [
+    45,
+    100
+   ],
+   "marducontrol": [
+    32,
+    100
+   ],
+   "earthrise": [
+    66,
+    100
+   ],
+   "depths": [
+    69,
+    100
+   ],
+   "countersnake": [
+    62,
+    100
+   ]
+  }
+ },
+ "means": {
+  "muster": 40,
+  "warband": 41,
+  "wurmspeaker": 41,
+  "levy": 42,
+  "sweep": 40,
+  "depths": 42,
+  "pall": 64,
+  "kiln": 40,
+  "writ": 49,
+  "rabble": 55,
+  "countersnake": 49,
+  "tollgate": 37,
+  "reaperclio": 67,
+  "marducontrol": 65,
+  "emeraldsnakes": 63,
+  "pinnacle": 53,
+  "minefield": 51,
+  "lumenclio": 56,
+  "earthrise": 57
+ },
+ "report": "# The Open's round-robin (S46) — 17100 games, master both, 20 life, no entrances; the ROW's win rate\n\n| | muster | warband | wurmspeaker | levy | sweep | depths | pall | kiln | writ | rabble | countersnake | tollgate | reaperclio | marducontrol | emeraldsnakes | pinnacle | minefield | lumenclio | earthrise | **mean** |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| **muster** | — | 65 | 50 | 45 | 69 | 45 | 41 | 38 | 37 | 40 | 31 | 36 | 13 | 37 | 23 | 53 | 25 | 41 | 26 | **40** |\n| **warband** | 35 | — | 55 | 52 | 55 | 50 | 39 | 56 | 41 | 30 | 32 | 32 | 22 | 50 | 34 | 46 | 35 | 45 | 30 | **41** |\n| **wurmspeaker** | 50 | 45 | — | 47 | 49 | 29 | 23 | 44 | 22 | 47 | 26 | 61 | 14 | 21 | 28 | 54 | 79 | 38 | 66 | **41** |\n| **levy** | 55 | 48 | 53 | — | 58 | 57 | 25 | 55 | 58 | 28 | 31 | 48 | 18 | 32 | 23 | 47 | 50 | 27 | 38 | **42** |\n| **sweep** | 31 | 45 | 51 | 42 | — | 59 | 30 | 47 | 32 | 45 | 36 | 51 | 19 | 24 | 33 | 56 | 58 | 29 | 38 | **40** |\n| **depths** | 55 | 50 | 71 | 43 | 41 | — | 36 | 35 | 51 | 32 | 43 | 64 | 39 | 15 | 37 | 30 | 36 | 40 | 29 | **42** |\n| **pall** | 59 | 61 | 77 | 75 | 70 | 64 | — | 68 | 58 | 58 | 55 | 74 | 47 | 66 | 33 | 66 | 85 | 75 | 53 | **64** |\n| **kiln** | 62 | 44 | 56 | 45 | 53 | 65 | 32 | — | 42 | 20 | 39 | 61 | 23 | 37 | 28 | 29 | 17 | 36 | 24 | **40** |\n| **writ** | 63 | 59 | 78 | 42 | 68 | 49 | 42 | 58 | — | 33 | 50 | 58 | 47 | 49 | 48 | 33 | 34 | 36 | 30 | **49** |\n| **rabble** | 60 | 70 | 53 | 72 | 55 | 68 | 42 | 79 | 67 | — | 59 | 37 | 36 | 44 | 51 | 62 | 42 | 56 | 35 | **55** |\n| **countersnake** | 69 | 68 | 74 | 69 | 64 | 56 | 45 | 61 | 50 | 41 | — | 49 | 30 | 42 | 39 | 37 | 36 | 30 | 24 | **49** |\n| **tollgate** | 64 | 68 | 39 | 52 | 49 | 36 | 26 | 39 | 42 | 63 | 51 | — | 33 | 10 | 22 | 19 | 7 | 31 | 8 | **37** |\n| **reaperclio** | 87 | 78 | 86 | 82 | 81 | 61 | 53 | 77 | 53 | 64 | 70 | 67 | — | 45 | 63 | 74 | 51 | 59 | 55 | **67** |\n| **marducontrol** | 63 | 50 | 79 | 68 | 76 | 85 | 34 | 63 | 51 | 56 | 58 | 90 | 55 | — | 53 | 68 | 79 | 54 | 81 | **65** |\n| **emeraldsnakes** | 77 | 66 | 72 | 77 | 67 | 63 | 67 | 72 | 52 | 49 | 60 | 78 | 37 | 47 | — | 62 | 67 | 58 | 65 | **63** |\n| **pinnacle** | 46 | 54 | 45 | 53 | 44 | 69 | 34 | 71 | 67 | 38 | 62 | 81 | 26 | 32 | 36 | — | 71 | 60 | 66 | **53** |\n| **minefield** | 75 | 65 | 21 | 50 | 42 | 64 | 15 | 83 | 66 | 58 | 64 | 93 | 49 | 21 | 33 | 29 | — | 34 | 52 | **51** |\n| **lumenclio** | 59 | 55 | 62 | 73 | 71 | 60 | 25 | 64 | 64 | 44 | 70 | 69 | 41 | 46 | 42 | 40 | 66 | — | 60 | **56** |\n| **earthrise** | 74 | 70 | 34 | 62 | 62 | 71 | 47 | 76 | 70 | 65 | 76 | 92 | 45 | 19 | 35 | 34 | 48 | 40 | — | **57** |\n\nSolvable (a list over 65% against the field): reaperclio. Under 35%: none.\nMuster vs Warband: the Muster 65% (100 games).\n\n## Staples (ADR-170)\n\nIn more than half of the 19 lists: none. The most played: Flametongue Kavu 8 · Birds of Paradise 6 · Lightning Bolt 6 · Clio, Lady of the Depths 5 · Reaper's Forerunner 5 · Vampire Nighthawk 5 · Wall of Blossoms 5 · Swords to Plowshares 5.\n\n## Restricted cards — % of the list's games in which it was cast (or, a land, played)\n\n- **muster**: black_lotus 29% · mox_pearl 30% · mox_ruby 28%\n- **warband**: black_lotus 27% · mox_ruby 27% · mox_pearl 27%\n- **wurmspeaker**: black_lotus 26% · mox_emerald 24%\n- **levy**: obsidian_observatory 29% · black_lotus 29% · mox_pearl 28% · mox_jet 28%\n- **sweep**: black_lotus 25% · mox_emerald 28% · mox_jet 27% · mox_ruby 26% · cairnbrand 30% · tallyflame_court 29% · obsidian_observatory 29% · shevelport 28% · mox_sapphire 26% · mox_pearl 26%\n- **depths**: demonic_tutor 28% · time_walk 32% · black_lotus 32% · mox_emerald 35% · mox_sapphire 33% · mox_jet 33% · library_of_alexandria 39% · wrackroot 37% · mox_pearl 31% · mox_ruby 30%\n- **pall**: demonic_tutor 25% · mox_jet 25% · black_lotus 26% · mox_ruby 26% · mox_pearl 24% · cairnbrand 24%\n- **kiln**: time_walk 28% · tallyflame_court 31% · black_lotus 28% · mox_sapphire 29% · mox_ruby 29% · library_of_alexandria 30%\n- **writ**: library_of_alexandria 38% · tallyflame_court 41% · wrackroot 39% · cairnbrand 41% · black_lotus 30% · mox_jet 30% · mox_sapphire 32% · demonic_tutor 31% · time_walk 37%\n- **rabble**: cairnbrand 29% · tallyflame_court 28% · mox_sapphire 28% · mox_ruby 25% · mox_jet 29% · black_lotus 28%\n- **countersnake**: obsidian_observatory 41% · wrackroot 40% · black_lotus 34% · mox_emerald 33% · mox_pearl 33% · mox_sapphire 34% · shevelport 41% · demonic_tutor 33% · time_walk 35%\n- **tollgate**: shevelport 41% · black_lotus 40% · mox_ruby 40% · mox_pearl 41% · mox_emerald 38%\n- **reaperclio**: time_walk 32% · black_lotus 32% · mox_emerald 34% · mox_jet 33% · mox_ruby 33% · mox_sapphire 32% · cairnbrand 35% · tallyflame_court 36% · wrackroot 35%\n- **marducontrol**: demonic_tutor 25% · mox_jet 31% · mox_pearl 29% · mox_ruby 29% · black_lotus 31% · cairnbrand 32% · obsidian_observatory 31%\n- **emeraldsnakes**: black_lotus 29% · mox_emerald 29% · mox_jet 28% · mox_pearl 27% · mox_ruby 27% · mox_sapphire 28% · time_walk 29% · tallyflame_court 31% · wrackroot 30% · shevelport 31% · cairnbrand 33%\n- **pinnacle**: burnfallow 28% · hearthspire 27% · cairnbrand 28% · tallyflame_court 29% · wheel_of_fortune 16% · earthrise 24% · black_lotus 29% · mox_emerald 30% · mox_jet 32% · mox_pearl 31% · mox_ruby 30% · mox_sapphire 28%\n- **minefield**: earthrise 35% · black_lotus 39% · mox_emerald 38% · mox_pearl 38% · mox_ruby 38% · balance 32% · wheel_of_fortune 25% · library_of_alexandria 39% · burnfallow 39% · hearthspire 39% · shevelport 36%\n- **lumenclio**: black_lotus 37% · mox_jet 35% · mox_pearl 34% · mox_ruby 34% · mox_sapphire 36% · time_walk 34% · demonic_tutor 26% · cairnbrand 35% · hearthspire 33% · library_of_alexandria 32% · obsidian_observatory 35% · tallyflame_court 36% · volmaw 35% · ranksmere 32%\n- **earthrise**: cairnbrand 42% · hearthspire 39% · library_of_alexandria 42% · nightbower 42% · obsidian_observatory 42% · shevelport 39% · tallyflame_court 42% · volmaw 41% · wrackroot 41% · black_lotus 39% · mox_emerald 42% · mox_jet 38% · mox_pearl 40% · mox_ruby 39% · mox_sapphire 40% · demonic_tutor 32% · earthrise 36% · time_walk 39%\n\n## Key pieces — % of the list's games in which each was cast (a weak pilot reads apart from a weak list)\n\n- **muster**: glorious_anthem 69% · vitalist 0% · emeria_angel 55%\n- **warband**: siege_gang_commander 40% · goblin_chieftain 66% · goblin_grenade 57%\n- **wurmspeaker**: seedborn_muse 61% · rampaging_baloths 33% · gaean_wurm 56%\n- **levy**: emeria_angel 66% · dread_presence 59% · isaura_the_levy 40%\n- **sweep**: \n- **depths**: \n- **pall**: \n- **kiln**: \n- **writ**: \n- **rabble**: \n- **countersnake**: \n- **tollgate**: \n- **reaperclio**: \n- **marducontrol**: \n- **emeraldsnakes**: \n- **pinnacle**: \n- **minefield**: \n- **lumenclio**: \n- **earthrise**: \n\n## The Loop — the Usher + an Altar on the battlefield with a Restoration Angel in hand or play\n\nAssembled by turn ten in 0 of 0 games (0%); ever: 0. Altar activations per game: 0.00."
+}

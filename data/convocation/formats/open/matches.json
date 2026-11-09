@@ -1,115 +1,121 @@
 {
  "_comment": "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.",
- "when": "2026-11-06",
+ "when": "2026-11-07",
  "matchesAPairing": 60,
  "byList": {
   "countersnake": {
-   "matches": 44,
-   "gameOne": 49.4,
-   "later": 44.5,
-   "n": 1020
+   "matches": 45.1,
+   "gameOne": 47.2,
+   "later": 46.3,
+   "n": 1080
   },
   "depths": {
-   "matches": 40.4,
-   "gameOne": 43.9,
-   "later": 42.4,
-   "n": 1020
+   "matches": 41.7,
+   "gameOne": 43,
+   "later": 44.1,
+   "n": 1080
+  },
+  "earthrise": {
+   "matches": 60.1,
+   "gameOne": 56.1,
+   "later": 57.9,
+   "n": 1080
   },
   "emeraldsnakes": {
-   "matches": 67.2,
-   "gameOne": 62.2,
-   "later": 61,
-   "n": 1020
+   "matches": 64,
+   "gameOne": 62.9,
+   "later": 57.8,
+   "n": 1080
   },
   "kiln": {
-   "matches": 39.8,
-   "gameOne": 41.1,
-   "later": 43.5,
-   "n": 1020
+   "matches": 37.5,
+   "gameOne": 41.4,
+   "later": 41.6,
+   "n": 1080
   },
   "levy": {
-   "matches": 40.7,
-   "gameOne": 43.5,
-   "later": 43.1,
-   "n": 1020
+   "matches": 40.1,
+   "gameOne": 41.6,
+   "later": 44.6,
+   "n": 1080
   },
   "lumenclio": {
-   "matches": 61.5,
-   "gameOne": 55.2,
-   "later": 58.8,
-   "n": 1020
+   "matches": 58,
+   "gameOne": 55.1,
+   "later": 55.3,
+   "n": 1080
   },
   "marducontrol": {
-   "matches": 75.7,
-   "gameOne": 67.6,
-   "later": 68.4,
-   "n": 1020
+   "matches": 73.6,
+   "gameOne": 63.9,
+   "later": 68.1,
+   "n": 1080
   },
   "minefield": {
-   "matches": 54.5,
-   "gameOne": 51.6,
-   "later": 54.1,
-   "n": 1020
+   "matches": 54.6,
+   "gameOne": 50,
+   "later": 55.3,
+   "n": 1080
   },
   "muster": {
-   "matches": 37.9,
-   "gameOne": 41.3,
-   "later": 42.5,
-   "n": 1020
+   "matches": 36.8,
+   "gameOne": 40.6,
+   "later": 41.8,
+   "n": 1080
   },
   "pall": {
-   "matches": 52.7,
-   "gameOne": 60.5,
+   "matches": 54,
+   "gameOne": 64.2,
    "later": 47.2,
-   "n": 1020
+   "n": 1080
   },
   "pinnacle": {
-   "matches": 61.3,
-   "gameOne": 52.4,
-   "later": 61,
-   "n": 1020
+   "matches": 62.6,
+   "gameOne": 54.5,
+   "later": 60.4,
+   "n": 1080
   },
   "rabble": {
-   "matches": 59.9,
-   "gameOne": 56.6,
-   "later": 57.3,
-   "n": 1020
+   "matches": 60.4,
+   "gameOne": 54.9,
+   "later": 58.6,
+   "n": 1080
   },
   "reaperclio": {
-   "matches": 67.2,
-   "gameOne": 64.9,
-   "later": 60.9,
-   "n": 1020
+   "matches": 63.8,
+   "gameOne": 64,
+   "later": 57.3,
+   "n": 1080
   },
   "sweep": {
-   "matches": 41,
-   "gameOne": 43.9,
-   "later": 43.5,
-   "n": 1020
+   "matches": 42.7,
+   "gameOne": 43.4,
+   "later": 45.5,
+   "n": 1080
   },
   "tollgate": {
-   "matches": 32.5,
-   "gameOne": 40,
-   "later": 36.4,
-   "n": 1020
+   "matches": 29.5,
+   "gameOne": 38.1,
+   "later": 33.3,
+   "n": 1080
   },
   "warband": {
-   "matches": 38.7,
-   "gameOne": 40.3,
-   "later": 43.2,
-   "n": 1020
+   "matches": 39.1,
+   "gameOne": 39.6,
+   "later": 44.5,
+   "n": 1080
   },
   "writ": {
-   "matches": 51.8,
-   "gameOne": 47.1,
-   "later": 54,
-   "n": 1020
+   "matches": 50.6,
+   "gameOne": 48.5,
+   "later": 50.2,
+   "n": 1080
   },
   "wurmspeaker": {
-   "matches": 33.2,
-   "gameOne": 38.6,
-   "later": 38.4,
-   "n": 1020
+   "matches": 35.6,
+   "gameOne": 40.8,
+   "later": 40.3,
+   "n": 1080
   }
  }
 }

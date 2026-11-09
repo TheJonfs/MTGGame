@@ -1,0 +1,72 @@
+10260 matches, 19 lists (post-S71, with 5C Earthrise)
+
+The whole field:
+   1 marducontrol     73.6
+   2 emeraldsnakes    64.0   (gap 9.5)
+   3 reaperclio       63.8   (gap 0.2)
+   4 pinnacle         62.6   (gap 1.2)
+   5 rabble           60.4   (gap 2.2)
+   6 earthrise        60.1   (gap 0.3)
+   7 lumenclio        58.0   (gap 2.2)
+   8 minefield        54.6   (gap 3.3)
+   9 pall             54.0   (gap 0.6)
+  10 writ             50.6   (gap 3.4)
+  11 countersnake     45.1   (gap 5.5)
+  12 sweep            42.7   (gap 2.4)
+  13 depths           41.7   (gap 1.0)
+  14 levy             40.1   (gap 1.6)
+  15 warband          39.1   (gap 1.0)
+  16 kiln             37.5   (gap 1.7)
+  17 muster           36.8   (gap 0.6)
+  18 wurmspeaker      35.6   (gap 1.2)
+  19 tollgate         29.5   (gap 6.1)
+
+Among the 10 (above 50):
+   1 marducontrol     69.0 ± 3.9   (field 73.6, was #1, -4.6)
+   2 pinnacle         54.8 ± 4.2   (field 62.6, was #4, -7.8)
+   3 emeraldsnakes    53.2 ± 4.2   (field 64.0, was #2, -10.8)
+   4 pall             53.2 ± 4.2   (field 54.0, was #9, -0.8)
+   5 reaperclio       51.1 ± 4.2   (field 63.8, was #3, -12.7)
+   6 rabble           51.1 ± 4.2   (field 60.4, was #5, -9.3)
+   7 lumenclio        47.0 ± 4.2   (field 58.0, was #7, -10.9)
+   8 earthrise        46.2 ± 4.2   (field 60.1, was #6, -13.9)
+   9 minefield        39.6 ± 4.1   (field 54.6, was #8, -15.0)
+  10 writ             34.6 ± 4.0   (field 50.6, was #10, -16.0)
+  head to head:
+                marduc pinnac emeral   pall reaper rabble lumenc earthr minefi   writ
+  marducontrol         —     65     62     54     72     68     63     90     93     53
+  pinnacle            35      —     43     37     47     35     75     77     68     77
+  emeraldsnakes       38     57      —     73     32     46     55     58     57     63
+  pall                46     63     27      —     28     42     62     77     82     53
+  reaperclio          28     53     68     72      —     62     50     38     38     50
+  rabble              32     65     54     58     38      —     65     34     48     65
+  lumenclio           37     25     45     38     50     35      —     65     68     60
+  earthrise           10     23     42     23     62     66     35      —     63     92
+  minefield            7     32     43     18     62     52     32     37      —     75
+  writ                47     23     37     47     50     35     40      8     25      —
+
+Among the 6 (top 6):
+   1 marducontrol     71.3 ± 5.1   (field 73.6, was #1, -2.2)
+   2 reaperclio       50.0 ± 5.7   (field 63.8, was #3, -13.8)
+   3 pinnacle         47.3 ± 5.6   (field 62.6, was #4, -15.3)
+   4 emeraldsnakes    46.2 ± 5.6   (field 64.0, was #2, -17.9)
+   5 rabble           44.7 ± 5.6   (field 60.4, was #5, -15.8)
+   6 earthrise        40.5 ± 5.6   (field 60.1, was #6, -19.6)
+  head to head:
+                marduc reaper pinnac emeral rabble earthr
+  marducontrol         —     72     65     62     68     90
+  reaperclio          28      —     53     68     62     38
+  pinnacle            35     47      —     43     35     77
+  emeraldsnakes       38     32     57      —     46     58
+  rabble              32     38     65     54      —     34
+  earthrise           10     62     23     42     66      —
+
+Among the 3 (top 3):
+   1 marducontrol     66.7 ± 8.4   (field 73.6, was #1, -6.9)
+   2 reaperclio       48.3 ± 8.9   (field 63.8, was #3, -15.5)
+   3 emeraldsnakes    35.0 ± 8.5   (field 64.0, was #2, -29.0)
+  head to head:
+                marduc reaper emeral
+  marducontrol         —     72     62
+  reaperclio          28      —     68
+  emeraldsnakes       38     32      —
