@@ -1,85 +1,711 @@
 {
  "_comment": "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.",
- "when": "2026-10-27",
+ "when": "2026-11-09",
  "matchesAPairing": 60,
  "byList": {
   "ashen": {
-   "matches": 50.5,
-   "gameOne": 51.1,
-   "later": 50,
+   "matches": 46.8,
+   "gameOne": 50.4,
+   "later": 47.2,
    "n": 720
   },
   "br": {
-   "matches": 37.9,
-   "gameOne": 40.2,
-   "later": 42.5,
+   "matches": 38.8,
+   "gameOne": 42.6,
+   "later": 40.9,
    "n": 720
   },
   "clio": {
-   "matches": 57,
-   "gameOne": 57.4,
-   "later": 53.1,
+   "matches": 58,
+   "gameOne": 57.8,
+   "later": 54.7,
    "n": 720
   },
   "kiln": {
-   "matches": 52.5,
-   "gameOne": 50.6,
-   "later": 52.2,
+   "matches": 51.5,
+   "gameOne": 51.5,
+   "later": 50.5,
    "n": 720
   },
   "kindling": {
-   "matches": 43.8,
-   "gameOne": 42.7,
-   "later": 46.7,
+   "matches": 42.6,
+   "gameOne": 44.4,
+   "later": 44.1,
    "n": 720
   },
   "massacrats": {
-   "matches": 58.8,
-   "gameOne": 52.4,
-   "later": 58,
+   "matches": 58.1,
+   "gameOne": 50.8,
+   "later": 57.8,
    "n": 720
   },
   "mbc": {
-   "matches": 31.9,
-   "gameOne": 38,
-   "later": 37.3,
+   "matches": 34.2,
+   "gameOne": 38.3,
+   "later": 39.4,
    "n": 720
   },
   "mbclio": {
-   "matches": 67.1,
-   "gameOne": 63,
-   "later": 62,
+   "matches": 69.4,
+   "gameOne": 63.5,
+   "later": 64.1,
    "n": 720
   },
   "rabble": {
-   "matches": 76.3,
-   "gameOne": 68.5,
-   "later": 70,
+   "matches": 78.1,
+   "gameOne": 69.3,
+   "later": 70.2,
    "n": 720
   },
   "tally": {
-   "matches": 50.5,
-   "gameOne": 51.9,
-   "later": 48.6,
+   "matches": 45.8,
+   "gameOne": 46.8,
+   "later": 46.9,
    "n": 720
   },
   "tempo": {
-   "matches": 44.3,
-   "gameOne": 47.5,
-   "later": 46,
+   "matches": 44.5,
+   "gameOne": 50.5,
+   "later": 45.8,
    "n": 720
   },
   "undertow": {
-   "matches": 25.3,
-   "gameOne": 35.4,
-   "later": 31.3,
+   "matches": 28.3,
+   "gameOne": 34.1,
+   "later": 34.8,
    "n": 720
   },
   "writ": {
-   "matches": 54,
-   "gameOne": 51.4,
-   "later": 52.9,
+   "matches": 53.9,
+   "gameOne": 50,
+   "later": 54.3,
    "n": 720
+  }
+ },
+ "byPair": {
+  "ashen|br": {
+   "w": 47,
+   "n": 60
+  },
+  "ashen|clio": {
+   "w": 20.5,
+   "n": 60
+  },
+  "ashen|kiln": {
+   "w": 24,
+   "n": 60
+  },
+  "ashen|kindling": {
+   "w": 34.5,
+   "n": 60
+  },
+  "ashen|massacrats": {
+   "w": 20,
+   "n": 60
+  },
+  "ashen|mbc": {
+   "w": 39,
+   "n": 60
+  },
+  "ashen|mbclio": {
+   "w": 14,
+   "n": 60
+  },
+  "ashen|rabble": {
+   "w": 7,
+   "n": 60
+  },
+  "ashen|tally": {
+   "w": 36,
+   "n": 60
+  },
+  "ashen|tempo": {
+   "w": 35,
+   "n": 60
+  },
+  "ashen|undertow": {
+   "w": 36,
+   "n": 60
+  },
+  "ashen|writ": {
+   "w": 24,
+   "n": 60
+  },
+  "br|ashen": {
+   "w": 13,
+   "n": 60
+  },
+  "br|clio": {
+   "w": 11,
+   "n": 60
+  },
+  "br|kiln": {
+   "w": 33,
+   "n": 60
+  },
+  "br|kindling": {
+   "w": 43,
+   "n": 60
+  },
+  "br|massacrats": {
+   "w": 8,
+   "n": 60
+  },
+  "br|mbc": {
+   "w": 28,
+   "n": 60
+  },
+  "br|mbclio": {
+   "w": 4,
+   "n": 60
+  },
+  "br|rabble": {
+   "w": 16,
+   "n": 60
+  },
+  "br|tally": {
+   "w": 44,
+   "n": 60
+  },
+  "br|tempo": {
+   "w": 26,
+   "n": 60
+  },
+  "br|undertow": {
+   "w": 38,
+   "n": 60
+  },
+  "br|writ": {
+   "w": 15,
+   "n": 60
+  },
+  "clio|ashen": {
+   "w": 39.5,
+   "n": 60
+  },
+  "clio|br": {
+   "w": 49,
+   "n": 60
+  },
+  "clio|kiln": {
+   "w": 34,
+   "n": 60
+  },
+  "clio|kindling": {
+   "w": 36,
+   "n": 60
+  },
+  "clio|massacrats": {
+   "w": 29,
+   "n": 60
+  },
+  "clio|mbc": {
+   "w": 49.5,
+   "n": 60
+  },
+  "clio|mbclio": {
+   "w": 17,
+   "n": 60
+  },
+  "clio|rabble": {
+   "w": 9.5,
+   "n": 60
+  },
+  "clio|tally": {
+   "w": 24.5,
+   "n": 60
+  },
+  "clio|tempo": {
+   "w": 45,
+   "n": 60
+  },
+  "clio|undertow": {
+   "w": 47.5,
+   "n": 60
+  },
+  "clio|writ": {
+   "w": 37,
+   "n": 60
+  },
+  "kiln|ashen": {
+   "w": 36,
+   "n": 60
+  },
+  "kiln|br": {
+   "w": 27,
+   "n": 60
+  },
+  "kiln|clio": {
+   "w": 26,
+   "n": 60
+  },
+  "kiln|kindling": {
+   "w": 28,
+   "n": 60
+  },
+  "kiln|massacrats": {
+   "w": 34,
+   "n": 60
+  },
+  "kiln|mbc": {
+   "w": 37,
+   "n": 60
+  },
+  "kiln|mbclio": {
+   "w": 26,
+   "n": 60
+  },
+  "kiln|rabble": {
+   "w": 10,
+   "n": 60
+  },
+  "kiln|tally": {
+   "w": 39.5,
+   "n": 60
+  },
+  "kiln|tempo": {
+   "w": 33,
+   "n": 60
+  },
+  "kiln|undertow": {
+   "w": 44,
+   "n": 60
+  },
+  "kiln|writ": {
+   "w": 30,
+   "n": 60
+  },
+  "kindling|ashen": {
+   "w": 25.5,
+   "n": 60
+  },
+  "kindling|br": {
+   "w": 17,
+   "n": 60
+  },
+  "kindling|clio": {
+   "w": 24,
+   "n": 60
+  },
+  "kindling|kiln": {
+   "w": 32,
+   "n": 60
+  },
+  "kindling|massacrats": {
+   "w": 14,
+   "n": 60
+  },
+  "kindling|mbc": {
+   "w": 28,
+   "n": 60
+  },
+  "kindling|mbclio": {
+   "w": 16,
+   "n": 60
+  },
+  "kindling|rabble": {
+   "w": 14.5,
+   "n": 60
+  },
+  "kindling|tally": {
+   "w": 51,
+   "n": 60
+  },
+  "kindling|tempo": {
+   "w": 26.5,
+   "n": 60
+  },
+  "kindling|undertow": {
+   "w": 42,
+   "n": 60
+  },
+  "kindling|writ": {
+   "w": 16.5,
+   "n": 60
+  },
+  "massacrats|ashen": {
+   "w": 40,
+   "n": 60
+  },
+  "massacrats|br": {
+   "w": 52,
+   "n": 60
+  },
+  "massacrats|clio": {
+   "w": 31,
+   "n": 60
+  },
+  "massacrats|kiln": {
+   "w": 26,
+   "n": 60
+  },
+  "massacrats|kindling": {
+   "w": 46,
+   "n": 60
+  },
+  "massacrats|mbc": {
+   "w": 50,
+   "n": 60
+  },
+  "massacrats|mbclio": {
+   "w": 24,
+   "n": 60
+  },
+  "massacrats|rabble": {
+   "w": 25,
+   "n": 60
+  },
+  "massacrats|tally": {
+   "w": 25,
+   "n": 60
+  },
+  "massacrats|tempo": {
+   "w": 35,
+   "n": 60
+  },
+  "massacrats|undertow": {
+   "w": 34,
+   "n": 60
+  },
+  "massacrats|writ": {
+   "w": 30,
+   "n": 60
+  },
+  "mbclio|ashen": {
+   "w": 46,
+   "n": 60
+  },
+  "mbclio|br": {
+   "w": 56,
+   "n": 60
+  },
+  "mbclio|clio": {
+   "w": 43,
+   "n": 60
+  },
+  "mbclio|kiln": {
+   "w": 34,
+   "n": 60
+  },
+  "mbclio|kindling": {
+   "w": 44,
+   "n": 60
+  },
+  "mbclio|massacrats": {
+   "w": 36,
+   "n": 60
+  },
+  "mbclio|mbc": {
+   "w": 55,
+   "n": 60
+  },
+  "mbclio|rabble": {
+   "w": 32,
+   "n": 60
+  },
+  "mbclio|tally": {
+   "w": 26,
+   "n": 60
+  },
+  "mbclio|tempo": {
+   "w": 41,
+   "n": 60
+  },
+  "mbclio|undertow": {
+   "w": 48,
+   "n": 60
+  },
+  "mbclio|writ": {
+   "w": 39,
+   "n": 60
+  },
+  "mbc|ashen": {
+   "w": 21,
+   "n": 60
+  },
+  "mbc|br": {
+   "w": 32,
+   "n": 60
+  },
+  "mbc|clio": {
+   "w": 10.5,
+   "n": 60
+  },
+  "mbc|kiln": {
+   "w": 23,
+   "n": 60
+  },
+  "mbc|kindling": {
+   "w": 32,
+   "n": 60
+  },
+  "mbc|massacrats": {
+   "w": 10,
+   "n": 60
+  },
+  "mbc|mbclio": {
+   "w": 5,
+   "n": 60
+  },
+  "mbc|rabble": {
+   "w": 6,
+   "n": 60
+  },
+  "mbc|tally": {
+   "w": 24,
+   "n": 60
+  },
+  "mbc|tempo": {
+   "w": 20,
+   "n": 60
+  },
+  "mbc|undertow": {
+   "w": 46,
+   "n": 60
+  },
+  "mbc|writ": {
+   "w": 17,
+   "n": 60
+  },
+  "rabble|ashen": {
+   "w": 53,
+   "n": 60
+  },
+  "rabble|br": {
+   "w": 44,
+   "n": 60
+  },
+  "rabble|clio": {
+   "w": 50.5,
+   "n": 60
+  },
+  "rabble|kiln": {
+   "w": 50,
+   "n": 60
+  },
+  "rabble|kindling": {
+   "w": 45.5,
+   "n": 60
+  },
+  "rabble|massacrats": {
+   "w": 35,
+   "n": 60
+  },
+  "rabble|mbc": {
+   "w": 54,
+   "n": 60
+  },
+  "rabble|mbclio": {
+   "w": 28,
+   "n": 60
+  },
+  "rabble|tally": {
+   "w": 58,
+   "n": 60
+  },
+  "rabble|tempo": {
+   "w": 47,
+   "n": 60
+  },
+  "rabble|undertow": {
+   "w": 57,
+   "n": 60
+  },
+  "rabble|writ": {
+   "w": 40,
+   "n": 60
+  },
+  "tally|ashen": {
+   "w": 24,
+   "n": 60
+  },
+  "tally|br": {
+   "w": 16,
+   "n": 60
+  },
+  "tally|clio": {
+   "w": 35.5,
+   "n": 60
+  },
+  "tally|kiln": {
+   "w": 20.5,
+   "n": 60
+  },
+  "tally|kindling": {
+   "w": 9,
+   "n": 60
+  },
+  "tally|massacrats": {
+   "w": 35,
+   "n": 60
+  },
+  "tally|mbc": {
+   "w": 36,
+   "n": 60
+  },
+  "tally|mbclio": {
+   "w": 34,
+   "n": 60
+  },
+  "tally|rabble": {
+   "w": 2,
+   "n": 60
+  },
+  "tally|tempo": {
+   "w": 37,
+   "n": 60
+  },
+  "tally|undertow": {
+   "w": 50.5,
+   "n": 60
+  },
+  "tally|writ": {
+   "w": 30.5,
+   "n": 60
+  },
+  "tempo|ashen": {
+   "w": 25,
+   "n": 60
+  },
+  "tempo|br": {
+   "w": 34,
+   "n": 60
+  },
+  "tempo|clio": {
+   "w": 15,
+   "n": 60
+  },
+  "tempo|kiln": {
+   "w": 27,
+   "n": 60
+  },
+  "tempo|kindling": {
+   "w": 33.5,
+   "n": 60
+  },
+  "tempo|massacrats": {
+   "w": 25,
+   "n": 60
+  },
+  "tempo|mbc": {
+   "w": 40,
+   "n": 60
+  },
+  "tempo|mbclio": {
+   "w": 19,
+   "n": 60
+  },
+  "tempo|rabble": {
+   "w": 13,
+   "n": 60
+  },
+  "tempo|tally": {
+   "w": 23,
+   "n": 60
+  },
+  "tempo|undertow": {
+   "w": 38,
+   "n": 60
+  },
+  "tempo|writ": {
+   "w": 28,
+   "n": 60
+  },
+  "undertow|ashen": {
+   "w": 24,
+   "n": 60
+  },
+  "undertow|br": {
+   "w": 22,
+   "n": 60
+  },
+  "undertow|clio": {
+   "w": 12.5,
+   "n": 60
+  },
+  "undertow|kiln": {
+   "w": 16,
+   "n": 60
+  },
+  "undertow|kindling": {
+   "w": 18,
+   "n": 60
+  },
+  "undertow|massacrats": {
+   "w": 26,
+   "n": 60
+  },
+  "undertow|mbc": {
+   "w": 14,
+   "n": 60
+  },
+  "undertow|mbclio": {
+   "w": 12,
+   "n": 60
+  },
+  "undertow|rabble": {
+   "w": 3,
+   "n": 60
+  },
+  "undertow|tally": {
+   "w": 9.5,
+   "n": 60
+  },
+  "undertow|tempo": {
+   "w": 22,
+   "n": 60
+  },
+  "undertow|writ": {
+   "w": 25,
+   "n": 60
+  },
+  "writ|ashen": {
+   "w": 36,
+   "n": 60
+  },
+  "writ|br": {
+   "w": 45,
+   "n": 60
+  },
+  "writ|clio": {
+   "w": 23,
+   "n": 60
+  },
+  "writ|kiln": {
+   "w": 30,
+   "n": 60
+  },
+  "writ|kindling": {
+   "w": 43.5,
+   "n": 60
+  },
+  "writ|massacrats": {
+   "w": 30,
+   "n": 60
+  },
+  "writ|mbc": {
+   "w": 43,
+   "n": 60
+  },
+  "writ|mbclio": {
+   "w": 21,
+   "n": 60
+  },
+  "writ|rabble": {
+   "w": 20,
+   "n": 60
+  },
+  "writ|tally": {
+   "w": 29.5,
+   "n": 60
+  },
+  "writ|tempo": {
+   "w": 32,
+   "n": 60
+  },
+  "writ|undertow": {
+   "w": 35,
+   "n": 60
   }
  }
 }

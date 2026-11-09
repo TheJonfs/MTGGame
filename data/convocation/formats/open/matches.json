@@ -117,5 +117,1375 @@
    "later": 40.3,
    "n": 1080
   }
+ },
+ "byPair": {
+  "countersnake|depths": {
+   "w": 19,
+   "n": 60
+  },
+  "countersnake|earthrise": {
+   "w": 12,
+   "n": 60
+  },
+  "countersnake|emeraldsnakes": {
+   "w": 21,
+   "n": 60
+  },
+  "countersnake|kiln": {
+   "w": 35,
+   "n": 60
+  },
+  "countersnake|levy": {
+   "w": 49,
+   "n": 60
+  },
+  "countersnake|lumenclio": {
+   "w": 25,
+   "n": 60
+  },
+  "countersnake|marducontrol": {
+   "w": 19,
+   "n": 60
+  },
+  "countersnake|minefield": {
+   "w": 18,
+   "n": 60
+  },
+  "countersnake|muster": {
+   "w": 41,
+   "n": 60
+  },
+  "countersnake|pall": {
+   "w": 36,
+   "n": 60
+  },
+  "countersnake|pinnacle": {
+   "w": 10,
+   "n": 60
+  },
+  "countersnake|rabble": {
+   "w": 21,
+   "n": 60
+  },
+  "countersnake|reaperclio": {
+   "w": 21.5,
+   "n": 60
+  },
+  "countersnake|sweep": {
+   "w": 37,
+   "n": 60
+  },
+  "countersnake|tollgate": {
+   "w": 14,
+   "n": 60
+  },
+  "countersnake|warband": {
+   "w": 34,
+   "n": 60
+  },
+  "countersnake|writ": {
+   "w": 24,
+   "n": 60
+  },
+  "countersnake|wurmspeaker": {
+   "w": 51,
+   "n": 60
+  },
+  "depths|countersnake": {
+   "w": 41,
+   "n": 60
+  },
+  "depths|earthrise": {
+   "w": 8,
+   "n": 60
+  },
+  "depths|emeraldsnakes": {
+   "w": 26,
+   "n": 60
+  },
+  "depths|kiln": {
+   "w": 23,
+   "n": 60
+  },
+  "depths|levy": {
+   "w": 30,
+   "n": 60
+  },
+  "depths|lumenclio": {
+   "w": 19,
+   "n": 60
+  },
+  "depths|marducontrol": {
+   "w": 14,
+   "n": 60
+  },
+  "depths|minefield": {
+   "w": 14,
+   "n": 60
+  },
+  "depths|muster": {
+   "w": 37,
+   "n": 60
+  },
+  "depths|pall": {
+   "w": 30,
+   "n": 60
+  },
+  "depths|pinnacle": {
+   "w": 11.5,
+   "n": 60
+  },
+  "depths|rabble": {
+   "w": 10,
+   "n": 60
+  },
+  "depths|reaperclio": {
+   "w": 22,
+   "n": 60
+  },
+  "depths|sweep": {
+   "w": 19,
+   "n": 60
+  },
+  "depths|tollgate": {
+   "w": 36,
+   "n": 60
+  },
+  "depths|warband": {
+   "w": 29,
+   "n": 60
+  },
+  "depths|writ": {
+   "w": 31,
+   "n": 60
+  },
+  "depths|wurmspeaker": {
+   "w": 50,
+   "n": 60
+  },
+  "earthrise|countersnake": {
+   "w": 48,
+   "n": 60
+  },
+  "earthrise|depths": {
+   "w": 52,
+   "n": 60
+  },
+  "earthrise|emeraldsnakes": {
+   "w": 25,
+   "n": 60
+  },
+  "earthrise|kiln": {
+   "w": 53,
+   "n": 60
+  },
+  "earthrise|levy": {
+   "w": 40,
+   "n": 60
+  },
+  "earthrise|lumenclio": {
+   "w": 21,
+   "n": 60
+  },
+  "earthrise|marducontrol": {
+   "w": 6,
+   "n": 60
+  },
+  "earthrise|minefield": {
+   "w": 38,
+   "n": 60
+  },
+  "earthrise|muster": {
+   "w": 49,
+   "n": 60
+  },
+  "earthrise|pall": {
+   "w": 14,
+   "n": 60
+  },
+  "earthrise|pinnacle": {
+   "w": 14,
+   "n": 60
+  },
+  "earthrise|rabble": {
+   "w": 39.5,
+   "n": 60
+  },
+  "earthrise|reaperclio": {
+   "w": 37,
+   "n": 60
+  },
+  "earthrise|sweep": {
+   "w": 34,
+   "n": 60
+  },
+  "earthrise|tollgate": {
+   "w": 60,
+   "n": 60
+  },
+  "earthrise|warband": {
+   "w": 39,
+   "n": 60
+  },
+  "earthrise|writ": {
+   "w": 55,
+   "n": 60
+  },
+  "earthrise|wurmspeaker": {
+   "w": 25,
+   "n": 60
+  },
+  "emeraldsnakes|countersnake": {
+   "w": 39,
+   "n": 60
+  },
+  "emeraldsnakes|depths": {
+   "w": 34,
+   "n": 60
+  },
+  "emeraldsnakes|earthrise": {
+   "w": 35,
+   "n": 60
+  },
+  "emeraldsnakes|kiln": {
+   "w": 49,
+   "n": 60
+  },
+  "emeraldsnakes|levy": {
+   "w": 47,
+   "n": 60
+  },
+  "emeraldsnakes|lumenclio": {
+   "w": 33,
+   "n": 60
+  },
+  "emeraldsnakes|marducontrol": {
+   "w": 23,
+   "n": 60
+  },
+  "emeraldsnakes|minefield": {
+   "w": 34,
+   "n": 60
+  },
+  "emeraldsnakes|muster": {
+   "w": 44,
+   "n": 60
+  },
+  "emeraldsnakes|pall": {
+   "w": 44,
+   "n": 60
+  },
+  "emeraldsnakes|pinnacle": {
+   "w": 34,
+   "n": 60
+  },
+  "emeraldsnakes|rabble": {
+   "w": 27.5,
+   "n": 60
+  },
+  "emeraldsnakes|reaperclio": {
+   "w": 19,
+   "n": 60
+  },
+  "emeraldsnakes|sweep": {
+   "w": 43,
+   "n": 60
+  },
+  "emeraldsnakes|tollgate": {
+   "w": 53,
+   "n": 60
+  },
+  "emeraldsnakes|warband": {
+   "w": 41,
+   "n": 60
+  },
+  "emeraldsnakes|writ": {
+   "w": 38,
+   "n": 60
+  },
+  "emeraldsnakes|wurmspeaker": {
+   "w": 54,
+   "n": 60
+  },
+  "kiln|countersnake": {
+   "w": 25,
+   "n": 60
+  },
+  "kiln|depths": {
+   "w": 37,
+   "n": 60
+  },
+  "kiln|earthrise": {
+   "w": 7,
+   "n": 60
+  },
+  "kiln|emeraldsnakes": {
+   "w": 11,
+   "n": 60
+  },
+  "kiln|levy": {
+   "w": 28,
+   "n": 60
+  },
+  "kiln|lumenclio": {
+   "w": 22,
+   "n": 60
+  },
+  "kiln|marducontrol": {
+   "w": 16,
+   "n": 60
+  },
+  "kiln|minefield": {
+   "w": 5,
+   "n": 60
+  },
+  "kiln|muster": {
+   "w": 33,
+   "n": 60
+  },
+  "kiln|pall": {
+   "w": 29,
+   "n": 60
+  },
+  "kiln|pinnacle": {
+   "w": 12,
+   "n": 60
+  },
+  "kiln|rabble": {
+   "w": 8,
+   "n": 60
+  },
+  "kiln|reaperclio": {
+   "w": 17,
+   "n": 60
+  },
+  "kiln|sweep": {
+   "w": 29,
+   "n": 60
+  },
+  "kiln|tollgate": {
+   "w": 43,
+   "n": 60
+  },
+  "kiln|warband": {
+   "w": 22.5,
+   "n": 60
+  },
+  "kiln|writ": {
+   "w": 29,
+   "n": 60
+  },
+  "kiln|wurmspeaker": {
+   "w": 31,
+   "n": 60
+  },
+  "levy|countersnake": {
+   "w": 11,
+   "n": 60
+  },
+  "levy|depths": {
+   "w": 30,
+   "n": 60
+  },
+  "levy|earthrise": {
+   "w": 20,
+   "n": 60
+  },
+  "levy|emeraldsnakes": {
+   "w": 13,
+   "n": 60
+  },
+  "levy|kiln": {
+   "w": 32,
+   "n": 60
+  },
+  "levy|lumenclio": {
+   "w": 18,
+   "n": 60
+  },
+  "levy|marducontrol": {
+   "w": 15,
+   "n": 60
+  },
+  "levy|minefield": {
+   "w": 25,
+   "n": 60
+  },
+  "levy|muster": {
+   "w": 30,
+   "n": 60
+  },
+  "levy|pall": {
+   "w": 29,
+   "n": 60
+  },
+  "levy|pinnacle": {
+   "w": 25,
+   "n": 60
+  },
+  "levy|rabble": {
+   "w": 15,
+   "n": 60
+  },
+  "levy|reaperclio": {
+   "w": 11,
+   "n": 60
+  },
+  "levy|sweep": {
+   "w": 29,
+   "n": 60
+  },
+  "levy|tollgate": {
+   "w": 36,
+   "n": 60
+  },
+  "levy|warband": {
+   "w": 32,
+   "n": 60
+  },
+  "levy|writ": {
+   "w": 22,
+   "n": 60
+  },
+  "levy|wurmspeaker": {
+   "w": 40,
+   "n": 60
+  },
+  "lumenclio|countersnake": {
+   "w": 35,
+   "n": 60
+  },
+  "lumenclio|depths": {
+   "w": 41,
+   "n": 60
+  },
+  "lumenclio|earthrise": {
+   "w": 39,
+   "n": 60
+  },
+  "lumenclio|emeraldsnakes": {
+   "w": 27,
+   "n": 60
+  },
+  "lumenclio|kiln": {
+   "w": 38,
+   "n": 60
+  },
+  "lumenclio|levy": {
+   "w": 42,
+   "n": 60
+  },
+  "lumenclio|marducontrol": {
+   "w": 22,
+   "n": 60
+  },
+  "lumenclio|minefield": {
+   "w": 41,
+   "n": 60
+  },
+  "lumenclio|muster": {
+   "w": 37,
+   "n": 60
+  },
+  "lumenclio|pall": {
+   "w": 23,
+   "n": 60
+  },
+  "lumenclio|pinnacle": {
+   "w": 15,
+   "n": 60
+  },
+  "lumenclio|rabble": {
+   "w": 21,
+   "n": 60
+  },
+  "lumenclio|reaperclio": {
+   "w": 30,
+   "n": 60
+  },
+  "lumenclio|sweep": {
+   "w": 45,
+   "n": 60
+  },
+  "lumenclio|tollgate": {
+   "w": 55,
+   "n": 60
+  },
+  "lumenclio|warband": {
+   "w": 35,
+   "n": 60
+  },
+  "lumenclio|writ": {
+   "w": 36,
+   "n": 60
+  },
+  "lumenclio|wurmspeaker": {
+   "w": 44,
+   "n": 60
+  },
+  "marducontrol|countersnake": {
+   "w": 41,
+   "n": 60
+  },
+  "marducontrol|depths": {
+   "w": 46,
+   "n": 60
+  },
+  "marducontrol|earthrise": {
+   "w": 54,
+   "n": 60
+  },
+  "marducontrol|emeraldsnakes": {
+   "w": 37,
+   "n": 60
+  },
+  "marducontrol|kiln": {
+   "w": 44,
+   "n": 60
+  },
+  "marducontrol|levy": {
+   "w": 45,
+   "n": 60
+  },
+  "marducontrol|lumenclio": {
+   "w": 38,
+   "n": 60
+  },
+  "marducontrol|minefield": {
+   "w": 56,
+   "n": 60
+  },
+  "marducontrol|muster": {
+   "w": 42,
+   "n": 60
+  },
+  "marducontrol|pall": {
+   "w": 32.5,
+   "n": 60
+  },
+  "marducontrol|pinnacle": {
+   "w": 39,
+   "n": 60
+  },
+  "marducontrol|rabble": {
+   "w": 41,
+   "n": 60
+  },
+  "marducontrol|reaperclio": {
+   "w": 43,
+   "n": 60
+  },
+  "marducontrol|sweep": {
+   "w": 44,
+   "n": 60
+  },
+  "marducontrol|tollgate": {
+   "w": 60,
+   "n": 60
+  },
+  "marducontrol|warband": {
+   "w": 44,
+   "n": 60
+  },
+  "marducontrol|writ": {
+   "w": 32,
+   "n": 60
+  },
+  "marducontrol|wurmspeaker": {
+   "w": 56,
+   "n": 60
+  },
+  "minefield|countersnake": {
+   "w": 42,
+   "n": 60
+  },
+  "minefield|depths": {
+   "w": 46,
+   "n": 60
+  },
+  "minefield|earthrise": {
+   "w": 22,
+   "n": 60
+  },
+  "minefield|emeraldsnakes": {
+   "w": 26,
+   "n": 60
+  },
+  "minefield|kiln": {
+   "w": 55,
+   "n": 60
+  },
+  "minefield|levy": {
+   "w": 35,
+   "n": 60
+  },
+  "minefield|lumenclio": {
+   "w": 19,
+   "n": 60
+  },
+  "minefield|marducontrol": {
+   "w": 4,
+   "n": 60
+  },
+  "minefield|muster": {
+   "w": 52,
+   "n": 60
+  },
+  "minefield|pall": {
+   "w": 11,
+   "n": 60
+  },
+  "minefield|pinnacle": {
+   "w": 19,
+   "n": 60
+  },
+  "minefield|rabble": {
+   "w": 31,
+   "n": 60
+  },
+  "minefield|reaperclio": {
+   "w": 37,
+   "n": 60
+  },
+  "minefield|sweep": {
+   "w": 33,
+   "n": 60
+  },
+  "minefield|tollgate": {
+   "w": 59,
+   "n": 60
+  },
+  "minefield|warband": {
+   "w": 45,
+   "n": 60
+  },
+  "minefield|writ": {
+   "w": 45,
+   "n": 60
+  },
+  "minefield|wurmspeaker": {
+   "w": 9,
+   "n": 60
+  },
+  "muster|countersnake": {
+   "w": 19,
+   "n": 60
+  },
+  "muster|depths": {
+   "w": 23,
+   "n": 60
+  },
+  "muster|earthrise": {
+   "w": 11,
+   "n": 60
+  },
+  "muster|emeraldsnakes": {
+   "w": 16,
+   "n": 60
+  },
+  "muster|kiln": {
+   "w": 27,
+   "n": 60
+  },
+  "muster|levy": {
+   "w": 30,
+   "n": 60
+  },
+  "muster|lumenclio": {
+   "w": 23,
+   "n": 60
+  },
+  "muster|marducontrol": {
+   "w": 18,
+   "n": 60
+  },
+  "muster|minefield": {
+   "w": 8,
+   "n": 60
+  },
+  "muster|pall": {
+   "w": 38,
+   "n": 60
+  },
+  "muster|pinnacle": {
+   "w": 24,
+   "n": 60
+  },
+  "muster|rabble": {
+   "w": 18.5,
+   "n": 60
+  },
+  "muster|reaperclio": {
+   "w": 9,
+   "n": 60
+  },
+  "muster|sweep": {
+   "w": 35,
+   "n": 60
+  },
+  "muster|tollgate": {
+   "w": 18,
+   "n": 60
+  },
+  "muster|warband": {
+   "w": 35,
+   "n": 60
+  },
+  "muster|writ": {
+   "w": 18,
+   "n": 60
+  },
+  "muster|wurmspeaker": {
+   "w": 27,
+   "n": 60
+  },
+  "pall|countersnake": {
+   "w": 24,
+   "n": 60
+  },
+  "pall|depths": {
+   "w": 30,
+   "n": 60
+  },
+  "pall|earthrise": {
+   "w": 46,
+   "n": 60
+  },
+  "pall|emeraldsnakes": {
+   "w": 16,
+   "n": 60
+  },
+  "pall|kiln": {
+   "w": 31,
+   "n": 60
+  },
+  "pall|levy": {
+   "w": 31,
+   "n": 60
+  },
+  "pall|lumenclio": {
+   "w": 37,
+   "n": 60
+  },
+  "pall|marducontrol": {
+   "w": 27.5,
+   "n": 60
+  },
+  "pall|minefield": {
+   "w": 49,
+   "n": 60
+  },
+  "pall|muster": {
+   "w": 22,
+   "n": 60
+  },
+  "pall|pinnacle": {
+   "w": 38,
+   "n": 60
+  },
+  "pall|rabble": {
+   "w": 25,
+   "n": 60
+  },
+  "pall|reaperclio": {
+   "w": 17,
+   "n": 60
+  },
+  "pall|sweep": {
+   "w": 38,
+   "n": 60
+  },
+  "pall|tollgate": {
+   "w": 44,
+   "n": 60
+  },
+  "pall|warband": {
+   "w": 34,
+   "n": 60
+  },
+  "pall|writ": {
+   "w": 32,
+   "n": 60
+  },
+  "pall|wurmspeaker": {
+   "w": 42,
+   "n": 60
+  },
+  "pinnacle|countersnake": {
+   "w": 50,
+   "n": 60
+  },
+  "pinnacle|depths": {
+   "w": 48.5,
+   "n": 60
+  },
+  "pinnacle|earthrise": {
+   "w": 46,
+   "n": 60
+  },
+  "pinnacle|emeraldsnakes": {
+   "w": 26,
+   "n": 60
+  },
+  "pinnacle|kiln": {
+   "w": 48,
+   "n": 60
+  },
+  "pinnacle|levy": {
+   "w": 35,
+   "n": 60
+  },
+  "pinnacle|lumenclio": {
+   "w": 45,
+   "n": 60
+  },
+  "pinnacle|marducontrol": {
+   "w": 21,
+   "n": 60
+  },
+  "pinnacle|minefield": {
+   "w": 41,
+   "n": 60
+  },
+  "pinnacle|muster": {
+   "w": 36,
+   "n": 60
+  },
+  "pinnacle|pall": {
+   "w": 22,
+   "n": 60
+  },
+  "pinnacle|rabble": {
+   "w": 21,
+   "n": 60
+  },
+  "pinnacle|reaperclio": {
+   "w": 28,
+   "n": 60
+  },
+  "pinnacle|sweep": {
+   "w": 30,
+   "n": 60
+  },
+  "pinnacle|tollgate": {
+   "w": 54.5,
+   "n": 60
+  },
+  "pinnacle|warband": {
+   "w": 37.5,
+   "n": 60
+  },
+  "pinnacle|writ": {
+   "w": 46,
+   "n": 60
+  },
+  "pinnacle|wurmspeaker": {
+   "w": 41,
+   "n": 60
+  },
+  "rabble|countersnake": {
+   "w": 39,
+   "n": 60
+  },
+  "rabble|depths": {
+   "w": 50,
+   "n": 60
+  },
+  "rabble|earthrise": {
+   "w": 20.5,
+   "n": 60
+  },
+  "rabble|emeraldsnakes": {
+   "w": 32.5,
+   "n": 60
+  },
+  "rabble|kiln": {
+   "w": 52,
+   "n": 60
+  },
+  "rabble|levy": {
+   "w": 45,
+   "n": 60
+  },
+  "rabble|lumenclio": {
+   "w": 39,
+   "n": 60
+  },
+  "rabble|marducontrol": {
+   "w": 19,
+   "n": 60
+  },
+  "rabble|minefield": {
+   "w": 29,
+   "n": 60
+  },
+  "rabble|muster": {
+   "w": 41.5,
+   "n": 60
+  },
+  "rabble|pall": {
+   "w": 35,
+   "n": 60
+  },
+  "rabble|pinnacle": {
+   "w": 39,
+   "n": 60
+  },
+  "rabble|reaperclio": {
+   "w": 23,
+   "n": 60
+  },
+  "rabble|sweep": {
+   "w": 42.5,
+   "n": 60
+  },
+  "rabble|tollgate": {
+   "w": 27,
+   "n": 60
+  },
+  "rabble|warband": {
+   "w": 45.5,
+   "n": 60
+  },
+  "rabble|writ": {
+   "w": 39,
+   "n": 60
+  },
+  "rabble|wurmspeaker": {
+   "w": 34,
+   "n": 60
+  },
+  "reaperclio|countersnake": {
+   "w": 38.5,
+   "n": 60
+  },
+  "reaperclio|depths": {
+   "w": 38,
+   "n": 60
+  },
+  "reaperclio|earthrise": {
+   "w": 23,
+   "n": 60
+  },
+  "reaperclio|emeraldsnakes": {
+   "w": 41,
+   "n": 60
+  },
+  "reaperclio|kiln": {
+   "w": 43,
+   "n": 60
+  },
+  "reaperclio|levy": {
+   "w": 49,
+   "n": 60
+  },
+  "reaperclio|lumenclio": {
+   "w": 30,
+   "n": 60
+  },
+  "reaperclio|marducontrol": {
+   "w": 17,
+   "n": 60
+  },
+  "reaperclio|minefield": {
+   "w": 23,
+   "n": 60
+  },
+  "reaperclio|muster": {
+   "w": 51,
+   "n": 60
+  },
+  "reaperclio|pall": {
+   "w": 43,
+   "n": 60
+  },
+  "reaperclio|pinnacle": {
+   "w": 32,
+   "n": 60
+  },
+  "reaperclio|rabble": {
+   "w": 37,
+   "n": 60
+  },
+  "reaperclio|sweep": {
+   "w": 39,
+   "n": 60
+  },
+  "reaperclio|tollgate": {
+   "w": 48,
+   "n": 60
+  },
+  "reaperclio|warband": {
+   "w": 55,
+   "n": 60
+  },
+  "reaperclio|writ": {
+   "w": 30,
+   "n": 60
+  },
+  "reaperclio|wurmspeaker": {
+   "w": 52,
+   "n": 60
+  },
+  "sweep|countersnake": {
+   "w": 23,
+   "n": 60
+  },
+  "sweep|depths": {
+   "w": 41,
+   "n": 60
+  },
+  "sweep|earthrise": {
+   "w": 26,
+   "n": 60
+  },
+  "sweep|emeraldsnakes": {
+   "w": 17,
+   "n": 60
+  },
+  "sweep|kiln": {
+   "w": 31,
+   "n": 60
+  },
+  "sweep|levy": {
+   "w": 31,
+   "n": 60
+  },
+  "sweep|lumenclio": {
+   "w": 15,
+   "n": 60
+  },
+  "sweep|marducontrol": {
+   "w": 16,
+   "n": 60
+  },
+  "sweep|minefield": {
+   "w": 27,
+   "n": 60
+  },
+  "sweep|muster": {
+   "w": 25,
+   "n": 60
+  },
+  "sweep|pall": {
+   "w": 22,
+   "n": 60
+  },
+  "sweep|pinnacle": {
+   "w": 30,
+   "n": 60
+  },
+  "sweep|rabble": {
+   "w": 17.5,
+   "n": 60
+  },
+  "sweep|reaperclio": {
+   "w": 21,
+   "n": 60
+  },
+  "sweep|tollgate": {
+   "w": 35,
+   "n": 60
+  },
+  "sweep|warband": {
+   "w": 33,
+   "n": 60
+  },
+  "sweep|writ": {
+   "w": 14,
+   "n": 60
+  },
+  "sweep|wurmspeaker": {
+   "w": 37,
+   "n": 60
+  },
+  "tollgate|countersnake": {
+   "w": 46,
+   "n": 60
+  },
+  "tollgate|depths": {
+   "w": 24,
+   "n": 60
+  },
+  "tollgate|earthrise": {
+   "w": 0,
+   "n": 60
+  },
+  "tollgate|emeraldsnakes": {
+   "w": 7,
+   "n": 60
+  },
+  "tollgate|kiln": {
+   "w": 17,
+   "n": 60
+  },
+  "tollgate|levy": {
+   "w": 24,
+   "n": 60
+  },
+  "tollgate|lumenclio": {
+   "w": 5,
+   "n": 60
+  },
+  "tollgate|marducontrol": {
+   "w": 0,
+   "n": 60
+  },
+  "tollgate|minefield": {
+   "w": 1,
+   "n": 60
+  },
+  "tollgate|muster": {
+   "w": 42,
+   "n": 60
+  },
+  "tollgate|pall": {
+   "w": 16,
+   "n": 60
+  },
+  "tollgate|pinnacle": {
+   "w": 5.5,
+   "n": 60
+  },
+  "tollgate|rabble": {
+   "w": 33,
+   "n": 60
+  },
+  "tollgate|reaperclio": {
+   "w": 12,
+   "n": 60
+  },
+  "tollgate|sweep": {
+   "w": 25,
+   "n": 60
+  },
+  "tollgate|warband": {
+   "w": 33,
+   "n": 60
+  },
+  "tollgate|writ": {
+   "w": 15,
+   "n": 60
+  },
+  "tollgate|wurmspeaker": {
+   "w": 13,
+   "n": 60
+  },
+  "warband|countersnake": {
+   "w": 26,
+   "n": 60
+  },
+  "warband|depths": {
+   "w": 31,
+   "n": 60
+  },
+  "warband|earthrise": {
+   "w": 21,
+   "n": 60
+  },
+  "warband|emeraldsnakes": {
+   "w": 19,
+   "n": 60
+  },
+  "warband|kiln": {
+   "w": 37.5,
+   "n": 60
+  },
+  "warband|levy": {
+   "w": 28,
+   "n": 60
+  },
+  "warband|lumenclio": {
+   "w": 25,
+   "n": 60
+  },
+  "warband|marducontrol": {
+   "w": 16,
+   "n": 60
+  },
+  "warband|minefield": {
+   "w": 15,
+   "n": 60
+  },
+  "warband|muster": {
+   "w": 25,
+   "n": 60
+  },
+  "warband|pall": {
+   "w": 26,
+   "n": 60
+  },
+  "warband|pinnacle": {
+   "w": 22.5,
+   "n": 60
+  },
+  "warband|rabble": {
+   "w": 14.5,
+   "n": 60
+  },
+  "warband|reaperclio": {
+   "w": 5,
+   "n": 60
+  },
+  "warband|sweep": {
+   "w": 27,
+   "n": 60
+  },
+  "warband|tollgate": {
+   "w": 27,
+   "n": 60
+  },
+  "warband|writ": {
+   "w": 21,
+   "n": 60
+  },
+  "warband|wurmspeaker": {
+   "w": 36,
+   "n": 60
+  },
+  "writ|countersnake": {
+   "w": 36,
+   "n": 60
+  },
+  "writ|depths": {
+   "w": 29,
+   "n": 60
+  },
+  "writ|earthrise": {
+   "w": 5,
+   "n": 60
+  },
+  "writ|emeraldsnakes": {
+   "w": 22,
+   "n": 60
+  },
+  "writ|kiln": {
+   "w": 31,
+   "n": 60
+  },
+  "writ|levy": {
+   "w": 38,
+   "n": 60
+  },
+  "writ|lumenclio": {
+   "w": 24,
+   "n": 60
+  },
+  "writ|marducontrol": {
+   "w": 28,
+   "n": 60
+  },
+  "writ|minefield": {
+   "w": 15,
+   "n": 60
+  },
+  "writ|muster": {
+   "w": 42,
+   "n": 60
+  },
+  "writ|pall": {
+   "w": 28,
+   "n": 60
+  },
+  "writ|pinnacle": {
+   "w": 14,
+   "n": 60
+  },
+  "writ|rabble": {
+   "w": 21,
+   "n": 60
+  },
+  "writ|reaperclio": {
+   "w": 30,
+   "n": 60
+  },
+  "writ|sweep": {
+   "w": 46,
+   "n": 60
+  },
+  "writ|tollgate": {
+   "w": 45,
+   "n": 60
+  },
+  "writ|warband": {
+   "w": 39,
+   "n": 60
+  },
+  "writ|wurmspeaker": {
+   "w": 54,
+   "n": 60
+  },
+  "wurmspeaker|countersnake": {
+   "w": 9,
+   "n": 60
+  },
+  "wurmspeaker|depths": {
+   "w": 10,
+   "n": 60
+  },
+  "wurmspeaker|earthrise": {
+   "w": 35,
+   "n": 60
+  },
+  "wurmspeaker|emeraldsnakes": {
+   "w": 6,
+   "n": 60
+  },
+  "wurmspeaker|kiln": {
+   "w": 29,
+   "n": 60
+  },
+  "wurmspeaker|levy": {
+   "w": 20,
+   "n": 60
+  },
+  "wurmspeaker|lumenclio": {
+   "w": 16,
+   "n": 60
+  },
+  "wurmspeaker|marducontrol": {
+   "w": 4,
+   "n": 60
+  },
+  "wurmspeaker|minefield": {
+   "w": 51,
+   "n": 60
+  },
+  "wurmspeaker|muster": {
+   "w": 33,
+   "n": 60
+  },
+  "wurmspeaker|pall": {
+   "w": 18,
+   "n": 60
+  },
+  "wurmspeaker|pinnacle": {
+   "w": 19,
+   "n": 60
+  },
+  "wurmspeaker|rabble": {
+   "w": 26,
+   "n": 60
+  },
+  "wurmspeaker|reaperclio": {
+   "w": 8,
+   "n": 60
+  },
+  "wurmspeaker|sweep": {
+   "w": 23,
+   "n": 60
+  },
+  "wurmspeaker|tollgate": {
+   "w": 47,
+   "n": 60
+  },
+  "wurmspeaker|warband": {
+   "w": 24,
+   "n": 60
+  },
+  "wurmspeaker|writ": {
+   "w": 6,
+   "n": 60
+  }
  }
 }

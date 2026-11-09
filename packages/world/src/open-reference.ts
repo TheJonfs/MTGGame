@@ -19,7 +19,7 @@ export interface OpenReferenceInput {
   /** A contributed list's source line and its revision notes. */
   contributed: Record<string, { source?: string; revisions?: { session: string; note: string }[] }>;
   /** S59 (ADR-171): the matches table by list (data/convocation/formats/open/matches.json), when one has been recorded. */
-  matches?: { when: string; matchesAPairing: number; byList: Record<string, { matches: number; gameOne: number; later: number; n: number }> };
+  matches?: { when: string; matchesAPairing: number; byList: Record<string, { matches: number; gameOne: number; later: number; n: number }>; /** S71a: "a|b" → a's match wins against b (a draw a half) of n */ byPair?: Record<string, { w: number; n: number }> };
   /** S59: the sideboard guides, by list key. */
   guides?: readonly { key: string; rows: { in: string; n: number; out?: string[]; when: string[]; unless?: string[] }[]; only?: true }[];
   /** S63 (Part 2): the format this page is for (default the Open). A list's means and guide are keyed "<id>:<key>" outside the Open's guides. */
@@ -62,6 +62,8 @@ export function renderOpenListsReference(input: OpenReferenceInput, restricted: 
   const fifteenOf = (l: OpenList) => (l.sideboard ? (guides?.some((g) => g.key === gk(l.key)) ? "registered, guided" : "registered") : "built");
   for (const l of order) { const x = mt(l.key), g1 = means[mk(l.key)] ?? "not yet measured"; L.push(matches ? `| ${l.name} | ${l.title} | ${l.archetype} | ${x ? x.matches.toFixed(1) : "—"} | ${g1} | ${x ? signed(x.later - x.gameOne) : "—"} | ${fifteenOf(l)} |` : `| ${l.name} | ${l.title} | ${l.archetype} | ${g1} |`); }
   L.push("", `Archived (kept in the data, out of the field): ${lists.filter((l) => l.archived).map((l) => l.name).join(", ") || "none"}.`, "");
+  // S71a (the planner: the sub-table is a reporting lens, not a draw): the lists above 50 in matches, counted against one another only
+  if (matches?.byPair) L.push(...subTable(order, matches as Required<NonNullable<OpenReferenceInput["matches"]>>));
   const st = staples(lists, cards, restricted);
   L.push("## Staples (ADR-170)", "", `Nonland cards outside the restricted list that more than half of the ${active.length} active lists play: ${st.length ? st.map((s) => `${name(s.cardId)} (${s.lists} lists, ${s.copies} copies)`).join("; ") : "none"}.`, "", `The most played: ${mostPlayed(lists, cards, restricted, 8).map((s) => `${name(s.cardId)} ${s.lists}`).join(" · ")}.`, "");
   // the active lists in the table's order; then the archive
@@ -92,4 +94,20 @@ export function renderOpenListsReference(input: OpenReferenceInput, restricted: 
     L.push("- **History:**", ...hist.map((h) => `  - ${h}`), "");
   }
   return L.join("\n");
+}
+
+/** S71a: the top of a table read against itself — the active lists above 50 in matches, each one's match rate against
+ * the others above 50 only (± 1.96 standard errors), beside its rate against the whole field; then the head-to-head. */
+export function subTable(order: readonly OpenList[], matches: Required<NonNullable<OpenReferenceInput["matches"]>>): string[] {
+  const top = order.filter((l) => (matches.byList[l.key]?.matches ?? 0) > 50);
+  if (top.length < 3) return [];
+  const among = (k: string) => { let w = 0, n = 0; for (const o of top) { if (o.key === k) continue; const p = matches.byPair[`${k}|${o.key}`]; if (p) { w += p.w; n += p.n; } } return { r: n ? (100 * w) / n : 0, e: n ? 196 * Math.sqrt(((w / n) * (1 - w / n)) / n) : 0 }; };
+  const rows = top.map((l) => ({ l, ...among(l.key), field: matches.byList[l.key]!.matches })).sort((a, b) => b.r - a.r);
+  const L = ["## Among the lists above 50 (S71a — a reading lens, not the draw)", "", `The ${top.length} lists above 50 in matches, counted against one another only. A list that gains most of its record from the bottom of the field falls here; the field's seat draw still reads the whole table.`, "",
+    "| | list | among them | the whole field | change |", "|---|---|---|---|---|"];
+  rows.forEach((x, i) => L.push(`| ${i + 1} | ${x.l.name} | ${x.r.toFixed(1)} ± ${x.e.toFixed(1)} | ${x.field.toFixed(1)} | ${x.r - x.field >= 0 ? "+" : "−"}${Math.abs(x.r - x.field).toFixed(1)} |`));
+  L.push("", "Head to head (the row list's matches won, %):", "", `| | ${rows.map((x) => x.l.key).join(" | ")} |`, `|---|${rows.map(() => "---").join("|")}|`);
+  for (const a of rows) L.push(`| **${a.l.key}** | ${rows.map((b) => { if (a === b) return "—"; const p = matches.byPair[`${a.l.key}|${b.l.key}`]; return p && p.n ? String(Math.round((100 * p.w) / p.n)) : "·"; }).join(" | ")} |`);
+  L.push("");
+  return L;
 }

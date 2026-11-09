@@ -2610,8 +2610,23 @@ export class HeuristicAgent implements Agent {
   /** The opponent's list's burn: copies of instants and sorceries that deal a number of damage to any target. */
   private burnAcrossMemo: number | null = null;
   burnAcross(): number {
-    if (this.burnAcrossMemo === null) this.burnAcrossMemo = this.profile.opponentDecklist.reduce((n, e) => { const d = this.def(e.cardId); return n + (d && (d.types.includes("Instant") || d.types.includes("Sorcery")) && (d.spellEffect ?? []).some((x) => x.type === "damage" && typeof x.amount === "number") && ((d.targets ?? []) as { predicate?: string }[]).some((t) => t.predicate === "anyTarget") ? e.count : 0); }, 0);
+    if (this.burnAcrossMemo === null) this.burnAcrossMemo = this.profile.opponentDecklist.reduce((n, e) => { const d = this.def(e.cardId); return n + (d && (d.types.includes("Instant") || d.types.includes("Sorcery")) && ((d.targets ?? []) as { predicate?: string }[]).some((t) => t.predicate === "anyTarget") ? e.count * this.burnWeight(d) : 0); }, 0);
     return this.burnAcrossMemo;
+  }
+  /** Book 164 (S71a, `digburn` — Chris's Earthrise final: the Pall paid 14 life into four Sacred Helixes, which read as
+   * no burn): a burn spell's weight in book 113's count. A fixed amount counts one, as before. An X amount counts its
+   * typical damage in Bolts (3): X at four — the probe: the Helix lists cast a mean X of 4.0 and 4.5, Blaze 3.5; the
+   * mana in play overstates it by about one — and `manaSpent` (Sacred Helix) is that X plus the rest of its cost. So
+   * Blaze 4/3, the Helix 8/3: four Helixes clear the threshold of eight. Off, an X spell counts nothing (the old read). */
+  private burnWeight(d: CardDef): number {
+    const dmg = (d.spellEffect ?? []).find((x) => x.type === "damage") as { amount?: unknown } | undefined;
+    if (!dmg) return 0;
+    if (typeof dmg.amount === "number") return 1;
+    if (this.profile.off?.includes("digburn")) return 0;
+    const X_TYPICAL = 4;
+    if (dmg.amount === "X") return X_TYPICAL / 3;
+    if ((dmg.amount as { ref?: string } | undefined)?.ref === "manaSpent") return (X_TYPICAL + manaValue(parseManaCost(d.manaCost))) / 3;
+    return 0;
   }
   /** S27 r2 (Chris: the Jet Witch dumped as much life as it could into cards): life-for-cards is a
    * budgeted purchase, not a faucet. Pay only while the hand is thin (≤ 2 cards), only while the
@@ -2632,7 +2647,9 @@ export class HeuristicAgent implements Agent {
     if (!this.profile.off?.includes("burnfloor") && this.burnAcross() >= 8 && view.life[me] - ab.cost.life < BURN_FLOOR) return true;
     // S55 (book 102): a combo deck's dig answers to its plan (plan-play.ts)
     const dig = this.plans.digGated(view, action, ab.cost.life, this.lifeDrawsThisTurn.turn === view.turn ? this.lifeDrawsThisTurn.n : 0);
-    if (dig !== null) return dig;
+    // Book 164 (`digburn`): a plan's dig stops at a full hand too — book 159's count, the draws on the stack included
+    // (the Pall drew six into a hand of four and threw three away at cleanup).
+    if (dig !== null) return (!this.profile.off?.includes("digburn") && view.hand.length + this.pendingLifeDraws(view) >= 7) || dig;
     // S68 (Part 3, `off: ["witchearly"]` — the probe: the pilot's first Witch draw on turn 10.2 against Chris's 6.6, 4.8 a
     // game against 7.0; the rule below held every draw for a hand of two): life is paid for cards from the turn it is
     // SAFE — the life left above the opponent's board reach plus three a burn spell seen, and no untapped racer we

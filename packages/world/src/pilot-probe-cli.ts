@@ -2,6 +2,7 @@
  * pnpm pilot-probe --witch   [--format mardu] [--lists witch,pall] [--games 4] [--recorded file.json]
  * pnpm pilot-probe --manaba  [--format naya] [--lists emeraldsnakes] [--games 4] [--recorded file.json]
  * pnpm pilot-probe --racing  --recorded file.json [--playouts 6]
+ * pnpm pilot-probe --turns   --recorded file.json --event <seed> [--archetype control] [--playouts 6] [--shard i/n] [--json out.json]  (S71a; see turns())
  *
  * S67 (Part 3; ADR-167 — probes this session, rules the next): three of the pilot's gaps, read against Chris's play.
  *  --witch   every Jet Witch activation: our life before it, the opponent's board power, our untapped blockers, the burn
@@ -361,7 +362,116 @@ async function opponents(): Promise<void> {
   const text = L.join("\n"); console.log(text); const out = arg("out", ""); if (out) writeFileSync(out, text + "\n");
 }
 
-if (process.argv.includes("--opponents")) await opponents();
+/** S71a (Part 2 — the whole-turn probe; ADR-195's last probe at a coarser grain): `--turns --recorded file.json --event <seed>
+ * [--archetype a] [--playouts 6] [--shard i/n] [--json out.json]`, then `--turns-report a.json b.json … [--out x.md]`.
+ * Each turn of the human's (turn 0 is the mulligan) where the pilot, asked at every one of his decisions in that turn
+ * from the branch on, would have answered otherwise at any of them (mana taps aside). The branch is his first decision
+ * of the turn after the draw (the draw is his and the pilot's alike). Two playouts from it, `--playouts` each, the same
+ * seeds, both libraries reshuffled where each leaves the log: (a) his whole turn as recorded, then the pilot (master,
+ * both seats) from the next turn; (b) the pilot from the branch. The row: (a) − (b) in wins, and what differed. */
+type TurnRow = { run: string; game: number; list: string; turn: number; life: [number, number]; human: number; pilot: number; diffs: { kind: string; human: string; pilot: string }[] };
+const IGNORED = new Set(["tapForMana", "untapForMana"]);
+async function turns(): Promise<void> {
+  const file = JSON.parse(readFileSync(arg("recorded", ""), "utf8")) as RecFile, ev = arg("event", ""), K = Number(arg("playouts", "6"));
+  const myArch = arg("archetype", "midrange") as "aggro" | "midrange" | "control" | "combo";
+  const [si, sn] = arg("shard", "0/1").split("/").map(Number) as [number, number];
+  const run = arg("run", ev || "run");
+  const games = file.games.filter((g) => g?.spec && (!ev || String(g.eventSeed) === ev));
+  const rows: TurnRow[] = [];
+  let humanTurns = 0;
+  for (const [gi, g] of games.entries()) {
+    if (gi % sn !== si) continue;
+    const hs = Math.max(0, g.spec.players.findIndex((p) => (p as { agent?: string }).agent === "human")) as 0 | 1, os = (1 - hs) as 0 | 1;
+    const [fmt, lk] = (g.list ?? ":").split(":") as [string, string];
+    const oppArch = ((FORMAT_FIELD as unknown as Record<string, Record<string, List>>)[fmt]?.[lk]?.archetype ?? "midrange") as typeof myArch;
+    const decks = decksOf(g), rules = rulesOf(g), mods = g.spec.modifiers ?? [];
+    const dl = (i: 0 | 1) => g.spec.players[i]!.decklist as never;
+    const prof = (i: 0 | 1) => difficultyProfile("master", i === hs ? myArch : oppArch, dl((1 - i) as 0 | 1), dl(i));
+    const pilot = new HeuristicAgent(99, pool, prof(hs));
+    const pts: { cursor: number; v: GameView; req: ActionRequest; a: Action }[] = [];
+    const n = g.log.filter((e) => e.t === "ACTION").length;
+    await replayThenPlay(pool, decks, g.log as never, n, null, [new RandomAgent(1), new RandomAgent(2)], 1, rules, mods, undefined, (req, v, a, cursor) => { pts.push({ cursor, v: structuredClone(v), req: structuredClone(req), a }); });
+    const humanTurnSet = [...new Set(pts.filter((p) => p.req.player === hs && (p.v.turn === 0 || p.v.activePlayer === hs)).map((p) => p.v.turn))];
+    for (const t of humanTurnSet) {
+      const inTurn = pts.filter((p) => p.v.turn === t);
+      const mine = inTurn.filter((p) => p.req.player === hs && (t === 0 || p.v.activePlayer === hs));
+      const branch = (t === 0 ? mine[0] : mine.find((p) => p.v.step !== "UNTAP" && p.v.step !== "UPKEEP")) ?? mine[0];
+      if (!branch) continue;
+      humanTurns++;
+      const next = pts.find((p) => p.v.turn > t);
+      const end = next ? next.cursor : n; // the game ended this turn: (a) is the game as recorded
+      const nm = (v: GameView, a: Action) => describe(v, a);
+      const diffs: TurnRow["diffs"] = [];
+      for (const p of mine) {
+        if (p.cursor < branch.cursor || IGNORED.has(p.a.type)) continue;
+        const q = await pilot.chooseAction(p.v, p.req);
+        if (IGNORED.has(q.type) || JSON.stringify(q) === JSON.stringify(p.a)) continue;
+        diffs.push({ kind: kindOf(p.req, p.a, q), human: nm(p.v, p.a), pilot: nm(p.v, q) });
+      }
+      if (!diffs.length) continue;
+      const play = async (index: number, s: number) => (await replayThenPlay(pool, decks, g.log as never, index, null, [new HeuristicAgent(s * 2 + 1, pool, prof(0)), new HeuristicAgent(s * 2 + 2, pool, prof(1))], s, rules, mods, undefined, undefined, true)).winner === hs ? 1 : 0;
+      let h = 0, q = 0;
+      for (let k = 0; k < K; k++) { const s = 900 + k + 101 * t; h += await play(end, s); q += await play(branch.cursor, s); }
+      rows.push({ run, game: gi, list: g.list ?? "?", turn: t, life: [branch.v.life[hs], branch.v.life[os]], human: h / K, pilot: q / K, diffs });
+    }
+    console.error(`pilot-probe --turns: game ${gi} (${g.list}) — ${rows.filter((r) => r.game === gi).length} divergent turns`);
+  }
+  const out = { run, humanTurns, playouts: K, rows };
+  if (arg("json", "")) writeFileSync(arg("json", ""), JSON.stringify(out));
+  else turnsReport([out]);
+}
+function describe(v: GameView, a: Action): string {
+  const card = (id?: string) => { if (!id) return "?"; const c = v.hand.find((h) => h.objectId === id)?.cardId ?? v.battlefield.find((b) => b.id === id)?.cardId ?? [...v.graveyardObjects[0], ...v.graveyardObjects[1]].find((y) => y.objectId === id)?.cardId; return c ? (def(c)?.name ?? c) : id; };
+  const o = a as { objectId?: string; attacker?: string; blocker?: string; label?: string; targets?: { kind: string; id?: string; player?: number }[] };
+  const tg = (o.targets ?? []).map((t) => (t.kind === "player" ? (t.player === v.you ? "self" : "them") : card(t.id))).join(", ");
+  const base = a.type === "castSpell" ? `cast ${card(o.objectId)}` : a.type === "playLand" ? `land ${card(o.objectId)}` : a.type === "activateAbility" ? `activate ${card(o.objectId)}` : a.type === "declareAttacker" ? `attack ${card(o.objectId)}` : a.type === "declareBlocker" ? `block ${card(o.attacker)} with ${card(o.blocker)}` : a.type === "chooseMode" ? `mode ${(o.label ?? "").slice(0, 32)}` : a.type;
+  return tg ? `${base} → ${tg}` : base;
+}
+function kindOf(req: ActionRequest, h: Action, p: Action): string {
+  const t = (x: Action) => x.type;
+  if (["keepHand", "mulligan", "bottomCard"].includes(t(h)) || ["keepHand", "mulligan", "bottomCard"].includes(t(p))) return "the mulligan";
+  if (req.purpose === "declareAttacker") return "the attack";
+  if (req.purpose === "declareBlocker") return "the block";
+  if (t(h) === "castSpell" && t(p) === "castSpell") return (h as { objectId: string }).objectId === (p as { objectId: string }).objectId ? "the same spell, another target or X" : "another spell first";
+  if (t(h) === "castSpell" && t(p) === "pass") return "he cast, the pilot held";
+  if (t(h) === "pass" && t(p) === "castSpell") return "the pilot cast, he held";
+  if (t(h) === "playLand" || t(p) === "playLand") return t(h) === t(p) ? "another land" : "a land against something else";
+  if (t(h) === "activateAbility" || t(p) === "activateAbility") return t(h) === t(p) ? "another activation or target" : "an activation against something else";
+  return `other (${req.purpose})`;
+}
+function turnsReport(outs: { run: string; humanTurns: number; playouts: number; rows: TurnRow[] }[]): string {
+  const L: string[] = [];
+  const runs = [...new Set(outs.map((o) => o.run))];
+  const stat = (xs: number[]) => { const n = xs.length, m = xs.reduce((a, b) => a + b, 0) / Math.max(1, n), sd = Math.sqrt(xs.reduce((a, b) => a + (b - m) ** 2, 0) / Math.max(1, n - 1)); return { n, m, e: n > 1 ? (1.96 * sd) / Math.sqrt(n) : 0 }; };
+  const pt = (x: number) => (100 * x).toFixed(1);
+  L.push(`| run | his turns | divergent | his turn, then the pilot | the pilot's turn | (a) − (b) |`, `|---|---|---|---|---|---|`);
+  for (const r of runs) {
+    const os = outs.filter((o) => o.run === r), rows = os.flatMap((o) => o.rows), ht = os.reduce((a, o) => a + o.humanTurns, 0), s = stat(rows.map((x) => x.human - x.pilot));
+    L.push(`| ${r} | ${ht} | ${rows.length} | ${pt(stat(rows.map((x) => x.human)).m)} | ${pt(stat(rows.map((x) => x.pilot)).m)} | **${s.m >= 0 ? "+" : ""}${pt(s.m)} ± ${pt(s.e)}** |`);
+  }
+  for (const r of runs) {
+    const rows = outs.filter((o) => o.run === r).flatMap((o) => o.rows);
+    L.push("", `## ${r}`, "", "By what differed (a turn counts under each kind it holds):", "", "| what differed | turns | (a) − (b) |", "|---|---|---|");
+    const kinds = new Map<string, number[]>();
+    for (const x of rows) for (const k of new Set(x.diffs.map((d) => d.kind))) kinds.set(k, [...(kinds.get(k) ?? []), x.human - x.pilot]);
+    for (const [k, xs] of [...kinds].sort((a, b) => b[1].length - a[1].length)) { const s = stat(xs); L.push(`| ${k} | ${s.n} | ${s.m >= 0 ? "+" : ""}${pt(s.m)} ± ${pt(s.e)} |`); }
+    const by = [...rows].sort((a, b) => b.human - b.pilot - (a.human - a.pilot));
+    const line = (x: TurnRow) => `- game ${x.game + 1} (${x.list}) T${x.turn}, life ${x.life[0]}–${x.life[1]}: ${pt(x.human)} against ${pt(x.pilot)} (${x.human - x.pilot >= 0 ? "+" : ""}${pt(x.human - x.pilot)}) — ${x.diffs.slice(0, 4).map((d) => `he: ${d.human} / the pilot: ${d.pilot}`).join("; ")}${x.diffs.length > 4 ? ` (+${x.diffs.length - 4})` : ""}`;
+    L.push("", "His turns worth most over the pilot's:", "", ...by.slice(0, 8).map(line), "", "The pilot's turns worth most over his:", "", ...by.slice(-4).reverse().map(line));
+  }
+  const text = L.join("\n");
+  console.log(text);
+  if (arg("out", "")) writeFileSync(arg("out", ""), text + "\n");
+  return text;
+}
+async function turnsReportCli(): Promise<void> {
+  const files = process.argv.slice(process.argv.indexOf("--turns-report") + 1).filter((x) => x.endsWith(".json"));
+  turnsReport(files.map((f) => JSON.parse(readFileSync(f, "utf8"))));
+}
+
+if (process.argv.includes("--turns-report")) await turnsReportCli();
+else if (process.argv.includes("--turns")) await turns();
+else if (process.argv.includes("--opponents")) await opponents();
 else if (process.argv.includes("--diffs")) await diffs();
 else if (process.argv.includes("--manaba2")) await manaba2();
 else if (process.argv.includes("--sweeps")) await sweeps();

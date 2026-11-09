@@ -2555,3 +2555,34 @@ describe("book of shame 163 (post-S70, Chris's greatest-power draw)", () => {
     expect(a.misaimPenalty(sib, { type: "castSpell", objectId: "s", targets: [{ kind: "player", player: 1 }] })).toBe(100); // book 125 stands
   });
 });
+
+describe("book of shame 164 (S71a, Chris's Earthrise final: the Pall's Witch paid fourteen life into four Sacred Helixes)", () => {
+  const OPEN = (JSON.parse(readFileSync(join(CARDS_DIR, "../convocation/formats/open/contributed.json"), "utf8")) as { lists: { key: string; decklist: { cardId: string; count: number }[] }[] }).lists;
+  const list = (k: string) => OPEN.find((l) => l.key === k)!.decklist;
+  const pall = (opp: string, off: string[] = []) => new HeuristicAgent(1, pool, { ...difficultyProfile("master", "combo", list(opp), list("pall")), ...(off.length ? { off } : {}) });
+  const witch = { id: "w", cardId: "the_jet_witch", controller: 0 as const };
+  const draw = { type: "activateAbility" as const, objectId: "w", abilityIndex: 0, targets: [] };
+  const hand = (n: number) => Array.from({ length: n }, (_, i) => ({ objectId: `h${i}`, cardId: "swamp" }));
+
+  it("an X burn spell counts in Bolts at X four: four Helixes clear book 113's eight (they read as none before); Blaze counts 4/3; a list without X burn reads as it did", () => {
+    expect((pall("earthrise") as unknown as { profile: { plan?: unknown } }).profile.plan).toBeDefined(); // the Pall plays its plan
+    expect(pall("earthrise").burnAcross()).toBeCloseTo(32 / 3, 5); // four Helixes at (4 + 4) / 3
+    expect(pall("earthrise", ["digburn"]).burnAcross()).toBe(0);
+    const pin = list("pinnacle"), char = pin.find((e) => e.cardId === "char")!.count, blaze = pin.find((e) => e.cardId === "blaze")!.count;
+    expect(pall("pinnacle").burnAcross()).toBeCloseTo(char + (blaze * 4) / 3, 5);
+    expect(pall("rabble").burnAcross()).toBe(pall("rabble", ["digburn"]).burnAcross());
+  });
+
+  it("the plan's dig: against the Helix list it stops at the burn floor (the old pilot dug to five); and at a full hand, draws on the stack counted, whatever the list", () => {
+    const at = (life: number, n: number, stack: { id: string; kind: string; cardId: string; controller: 0 | 1 }[] = []) => mkView({ hand: hand(n), battlefield: [witch], life: [life, 20], stack });
+    // eleven life, two to pay: nine is under the floor of ten — the Helix list's reach
+    expect(pall("earthrise").lifeForCardsGated(at(11, 2), draw)).toBe(true);
+    expect(pall("earthrise", ["digburn"]).lifeForCardsGated(at(11, 2), draw)).toBe(false);
+    // a hand of six with a draw waiting: full
+    const held = { id: "s1", kind: "ability", cardId: "the_jet_witch", controller: 0 as const };
+    expect(pall("rabble").lifeForCardsGated(at(18, 6, [held]), draw)).toBe(true);
+    expect(pall("rabble", ["digburn"]).lifeForCardsGated(at(18, 6, [held]), draw)).toBe(false);
+    // a thin hand, high life: the dig goes on, as the plan says
+    expect(pall("earthrise").lifeForCardsGated(at(18, 3), draw)).toBe(false);
+  });
+});

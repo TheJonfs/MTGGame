@@ -1,0 +1,14 @@
+# Book 164 (S71a) — the X probe and the paired reads
+
+## X spells cast (open:rr --only <k> --games 40 --seed 56; the xs record)
+earthrise  savage_twister         casts   769  X mean 3.63 median 3  turn median 14  mana sources mean 7.8
+earthrise  the_meathook_massacre  casts   470  X mean 3.21 median 3.0  turn median 15.0  mana sources mean 8.0
+earthrise  sacred_helix           casts  1312  X mean 3.99 median 3.0  turn median 17.0  mana sources mean 9.1
+minefield  sacred_helix           casts   960  X mean 4.48 median 3.0  turn median 15.0  mana sources mean 9.3
+minefield  savage_twister         casts   716  X mean 4.67 median 4.0  turn median 15.0  mana sources mean 9.0
+pinnacle   blaze                  casts   378  X mean 3.52 median 3.0  turn median 9.0  mana sources mean 6.1
+
+## Paired, 160 matches a pairing vs earthrise, minefield, pinnacle, rabble (seed 91; off: digburn the twin)
+pall    matches  64.7 →  68.9  +4.2 ± 2.4 (n=640) | earthrise 74→81 minefield 81→89 pinnacle 62→65 rabble 41→41
+witch   matches  35.2 →  35.3  +0.2 ± 1.5 (n=640) | earthrise 45→45 minefield 35→36 pinnacle 34→34 rabble 26→26
+mbclio  matches  49.8 →  48.6  -1.2 ± 2.0 (n=640) | earthrise 52→49 minefield 55→53 pinnacle 38→38 rabble 54→54

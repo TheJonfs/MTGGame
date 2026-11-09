@@ -1,61 +1,351 @@
 {
  "_comment": "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.",
- "when": "2026-10-21",
+ "when": "2026-11-09",
  "matchesAPairing": 60,
  "byList": {
   "bwtokens": {
-   "matches": 60.2,
-   "gameOne": 54.6,
-   "later": 57.8,
+   "matches": 58.5,
+   "gameOne": 55.4,
+   "later": 56.4,
    "n": 480
   },
   "levy": {
-   "matches": 45.8,
-   "gameOne": 50.4,
-   "later": 45.7,
+   "matches": 46.9,
+   "gameOne": 47.1,
+   "later": 48.4,
    "n": 480
   },
   "locks": {
-   "matches": 44.8,
-   "gameOne": 45.4,
-   "later": 47.7,
+   "matches": 45.4,
+   "gameOne": 48.3,
+   "later": 45.2,
    "n": 480
   },
   "mbc": {
-   "matches": 37.5,
-   "gameOne": 40.4,
-   "later": 41.5,
+   "matches": 36,
+   "gameOne": 39.6,
+   "later": 43.1,
    "n": 480
   },
   "skies": {
-   "matches": 50.2,
-   "gameOne": 49.4,
-   "later": 50.7,
+   "matches": 52.9,
+   "gameOne": 49.6,
+   "later": 53,
    "n": 480
   },
   "tempo": {
-   "matches": 50,
-   "gameOne": 47.7,
-   "later": 51.5,
+   "matches": 51,
+   "gameOne": 52.3,
+   "later": 49.3,
    "n": 480
   },
   "undertow": {
-   "matches": 47.5,
-   "gameOne": 50.2,
-   "later": 47.2,
+   "matches": 49.4,
+   "gameOne": 51.3,
+   "later": 48.8,
    "n": 480
   },
   "wbcontrol": {
-   "matches": 52.5,
-   "gameOne": 55.2,
-   "later": 50.9,
+   "matches": 50,
+   "gameOne": 51.9,
+   "later": 49.3,
    "n": 480
   },
   "writ": {
-   "matches": 61.5,
-   "gameOne": 56.7,
-   "later": 57.4,
+   "matches": 59.8,
+   "gameOne": 54.6,
+   "later": 56.8,
    "n": 480
+  }
+ },
+ "byPair": {
+  "bwtokens|levy": {
+   "w": 31,
+   "n": 60
+  },
+  "bwtokens|locks": {
+   "w": 44,
+   "n": 60
+  },
+  "bwtokens|mbc": {
+   "w": 45,
+   "n": 60
+  },
+  "bwtokens|skies": {
+   "w": 31,
+   "n": 60
+  },
+  "bwtokens|tempo": {
+   "w": 33,
+   "n": 60
+  },
+  "bwtokens|undertow": {
+   "w": 40,
+   "n": 60
+  },
+  "bwtokens|wbcontrol": {
+   "w": 30,
+   "n": 60
+  },
+  "bwtokens|writ": {
+   "w": 27,
+   "n": 60
+  },
+  "levy|bwtokens": {
+   "w": 29,
+   "n": 60
+  },
+  "levy|locks": {
+   "w": 31,
+   "n": 60
+  },
+  "levy|mbc": {
+   "w": 41,
+   "n": 60
+  },
+  "levy|skies": {
+   "w": 23,
+   "n": 60
+  },
+  "levy|tempo": {
+   "w": 33,
+   "n": 60
+  },
+  "levy|undertow": {
+   "w": 23,
+   "n": 60
+  },
+  "levy|wbcontrol": {
+   "w": 23,
+   "n": 60
+  },
+  "levy|writ": {
+   "w": 22,
+   "n": 60
+  },
+  "locks|bwtokens": {
+   "w": 16,
+   "n": 60
+  },
+  "locks|levy": {
+   "w": 29,
+   "n": 60
+  },
+  "locks|mbc": {
+   "w": 45,
+   "n": 60
+  },
+  "locks|skies": {
+   "w": 17,
+   "n": 60
+  },
+  "locks|tempo": {
+   "w": 31,
+   "n": 60
+  },
+  "locks|undertow": {
+   "w": 20,
+   "n": 60
+  },
+  "locks|wbcontrol": {
+   "w": 30,
+   "n": 60
+  },
+  "locks|writ": {
+   "w": 30,
+   "n": 60
+  },
+  "mbc|bwtokens": {
+   "w": 15,
+   "n": 60
+  },
+  "mbc|levy": {
+   "w": 19,
+   "n": 60
+  },
+  "mbc|locks": {
+   "w": 15,
+   "n": 60
+  },
+  "mbc|skies": {
+   "w": 26,
+   "n": 60
+  },
+  "mbc|tempo": {
+   "w": 25,
+   "n": 60
+  },
+  "mbc|undertow": {
+   "w": 36,
+   "n": 60
+  },
+  "mbc|wbcontrol": {
+   "w": 25,
+   "n": 60
+  },
+  "mbc|writ": {
+   "w": 12,
+   "n": 60
+  },
+  "skies|bwtokens": {
+   "w": 29,
+   "n": 60
+  },
+  "skies|levy": {
+   "w": 37,
+   "n": 60
+  },
+  "skies|locks": {
+   "w": 43,
+   "n": 60
+  },
+  "skies|mbc": {
+   "w": 34,
+   "n": 60
+  },
+  "skies|tempo": {
+   "w": 32,
+   "n": 60
+  },
+  "skies|undertow": {
+   "w": 21,
+   "n": 60
+  },
+  "skies|wbcontrol": {
+   "w": 35,
+   "n": 60
+  },
+  "skies|writ": {
+   "w": 23,
+   "n": 60
+  },
+  "tempo|bwtokens": {
+   "w": 27,
+   "n": 60
+  },
+  "tempo|levy": {
+   "w": 27,
+   "n": 60
+  },
+  "tempo|locks": {
+   "w": 29,
+   "n": 60
+  },
+  "tempo|mbc": {
+   "w": 35,
+   "n": 60
+  },
+  "tempo|skies": {
+   "w": 28,
+   "n": 60
+  },
+  "tempo|undertow": {
+   "w": 38,
+   "n": 60
+  },
+  "tempo|wbcontrol": {
+   "w": 30,
+   "n": 60
+  },
+  "tempo|writ": {
+   "w": 31,
+   "n": 60
+  },
+  "undertow|bwtokens": {
+   "w": 20,
+   "n": 60
+  },
+  "undertow|levy": {
+   "w": 37,
+   "n": 60
+  },
+  "undertow|locks": {
+   "w": 40,
+   "n": 60
+  },
+  "undertow|mbc": {
+   "w": 24,
+   "n": 60
+  },
+  "undertow|skies": {
+   "w": 39,
+   "n": 60
+  },
+  "undertow|tempo": {
+   "w": 22,
+   "n": 60
+  },
+  "undertow|wbcontrol": {
+   "w": 31,
+   "n": 60
+  },
+  "undertow|writ": {
+   "w": 24,
+   "n": 60
+  },
+  "wbcontrol|bwtokens": {
+   "w": 30,
+   "n": 60
+  },
+  "wbcontrol|levy": {
+   "w": 37,
+   "n": 60
+  },
+  "wbcontrol|locks": {
+   "w": 30,
+   "n": 60
+  },
+  "wbcontrol|mbc": {
+   "w": 35,
+   "n": 60
+  },
+  "wbcontrol|skies": {
+   "w": 25,
+   "n": 60
+  },
+  "wbcontrol|tempo": {
+   "w": 30,
+   "n": 60
+  },
+  "wbcontrol|undertow": {
+   "w": 29,
+   "n": 60
+  },
+  "wbcontrol|writ": {
+   "w": 24,
+   "n": 60
+  },
+  "writ|bwtokens": {
+   "w": 33,
+   "n": 60
+  },
+  "writ|levy": {
+   "w": 38,
+   "n": 60
+  },
+  "writ|locks": {
+   "w": 30,
+   "n": 60
+  },
+  "writ|mbc": {
+   "w": 48,
+   "n": 60
+  },
+  "writ|skies": {
+   "w": 37,
+   "n": 60
+  },
+  "writ|tempo": {
+   "w": 29,
+   "n": 60
+  },
+  "writ|undertow": {
+   "w": 36,
+   "n": 60
+  },
+  "writ|wbcontrol": {
+   "w": 36,
+   "n": 60
   }
  }
 }

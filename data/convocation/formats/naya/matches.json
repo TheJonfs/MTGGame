@@ -1,73 +1,609 @@
 {
  "_comment": "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.",
- "when": "2026-10-21",
+ "when": "2026-11-09",
  "matchesAPairing": 60,
  "byList": {
   "auras": {
-   "matches": 43.3,
-   "gameOne": 43.8,
-   "later": 45.7,
-   "n": 600
+   "matches": 49.4,
+   "gameOne": 43.5,
+   "later": 52.5,
+   "n": 660
   },
   "emeraldsnakes": {
-   "matches": 67.7,
-   "gameOne": 62.7,
-   "later": 61.6,
-   "n": 600
+   "matches": 64,
+   "gameOne": 64.5,
+   "later": 57.5,
+   "n": 660
   },
   "lifegain": {
-   "matches": 39.7,
-   "gameOne": 40.5,
-   "later": 43.8,
-   "n": 600
+   "matches": 40.7,
+   "gameOne": 43.5,
+   "later": 43.7,
+   "n": 660
+  },
+  "minefield": {
+   "matches": 53.5,
+   "gameOne": 52.7,
+   "later": 52.1,
+   "n": 660
   },
   "muster": {
-   "matches": 40.9,
-   "gameOne": 43.2,
-   "later": 43.8,
-   "n": 600
+   "matches": 36.1,
+   "gameOne": 42.3,
+   "later": 39.6,
+   "n": 660
   },
   "rabble": {
-   "matches": 60.6,
-   "gameOne": 56.7,
-   "later": 58.3,
-   "n": 600
+   "matches": 57.1,
+   "gameOne": 52.3,
+   "later": 55.6,
+   "n": 660
   },
   "snakes": {
-   "matches": 53,
-   "gameOne": 50.6,
-   "later": 52,
-   "n": 600
+   "matches": 55.5,
+   "gameOne": 53,
+   "later": 54.4,
+   "n": 660
   },
   "stompy": {
-   "matches": 57.8,
-   "gameOne": 54.3,
-   "later": 57.1,
-   "n": 600
+   "matches": 64.2,
+   "gameOne": 60.5,
+   "later": 58.5,
+   "n": 660
   },
   "tokens": {
-   "matches": 57.7,
-   "gameOne": 57.8,
-   "later": 53.5,
-   "n": 600
+   "matches": 47.4,
+   "gameOne": 45.5,
+   "later": 49.8,
+   "n": 660
   },
   "tollgate": {
-   "matches": 40.5,
-   "gameOne": 45.8,
-   "later": 42.8,
-   "n": 600
+   "matches": 42.9,
+   "gameOne": 45.6,
+   "later": 44.5,
+   "n": 660
   },
   "warband": {
-   "matches": 41.3,
-   "gameOne": 44.8,
-   "later": 43.9,
-   "n": 600
+   "matches": 41.2,
+   "gameOne": 43.6,
+   "later": 44.2,
+   "n": 660
   },
   "wurms": {
-   "matches": 47.6,
-   "gameOne": 49.8,
-   "later": 47.4,
-   "n": 600
+   "matches": 47.9,
+   "gameOne": 53,
+   "later": 47,
+   "n": 660
+  }
+ },
+ "byPair": {
+  "auras|emeraldsnakes": {
+   "w": 20,
+   "n": 60
+  },
+  "auras|lifegain": {
+   "w": 32,
+   "n": 60
+  },
+  "auras|minefield": {
+   "w": 40,
+   "n": 60
+  },
+  "auras|muster": {
+   "w": 40,
+   "n": 60
+  },
+  "auras|rabble": {
+   "w": 18,
+   "n": 60
+  },
+  "auras|snakes": {
+   "w": 26,
+   "n": 60
+  },
+  "auras|stompy": {
+   "w": 20,
+   "n": 60
+  },
+  "auras|tokens": {
+   "w": 19,
+   "n": 60
+  },
+  "auras|tollgate": {
+   "w": 50,
+   "n": 60
+  },
+  "auras|warband": {
+   "w": 23,
+   "n": 60
+  },
+  "auras|wurms": {
+   "w": 38,
+   "n": 60
+  },
+  "emeraldsnakes|auras": {
+   "w": 40,
+   "n": 60
+  },
+  "emeraldsnakes|lifegain": {
+   "w": 45,
+   "n": 60
+  },
+  "emeraldsnakes|minefield": {
+   "w": 39,
+   "n": 60
+  },
+  "emeraldsnakes|muster": {
+   "w": 36,
+   "n": 60
+  },
+  "emeraldsnakes|rabble": {
+   "w": 29,
+   "n": 60
+  },
+  "emeraldsnakes|snakes": {
+   "w": 31.5,
+   "n": 60
+  },
+  "emeraldsnakes|stompy": {
+   "w": 33,
+   "n": 60
+  },
+  "emeraldsnakes|tokens": {
+   "w": 41,
+   "n": 60
+  },
+  "emeraldsnakes|tollgate": {
+   "w": 43,
+   "n": 60
+  },
+  "emeraldsnakes|warband": {
+   "w": 44,
+   "n": 60
+  },
+  "emeraldsnakes|wurms": {
+   "w": 41,
+   "n": 60
+  },
+  "lifegain|auras": {
+   "w": 28,
+   "n": 60
+  },
+  "lifegain|emeraldsnakes": {
+   "w": 15,
+   "n": 60
+  },
+  "lifegain|minefield": {
+   "w": 15,
+   "n": 60
+  },
+  "lifegain|muster": {
+   "w": 39,
+   "n": 60
+  },
+  "lifegain|rabble": {
+   "w": 16,
+   "n": 60
+  },
+  "lifegain|snakes": {
+   "w": 21.5,
+   "n": 60
+  },
+  "lifegain|stompy": {
+   "w": 18,
+   "n": 60
+  },
+  "lifegain|tokens": {
+   "w": 31,
+   "n": 60
+  },
+  "lifegain|tollgate": {
+   "w": 23,
+   "n": 60
+  },
+  "lifegain|warband": {
+   "w": 26,
+   "n": 60
+  },
+  "lifegain|wurms": {
+   "w": 36,
+   "n": 60
+  },
+  "minefield|auras": {
+   "w": 20,
+   "n": 60
+  },
+  "minefield|emeraldsnakes": {
+   "w": 21,
+   "n": 60
+  },
+  "minefield|lifegain": {
+   "w": 45,
+   "n": 60
+  },
+  "minefield|muster": {
+   "w": 48,
+   "n": 60
+  },
+  "minefield|rabble": {
+   "w": 34,
+   "n": 60
+  },
+  "minefield|snakes": {
+   "w": 22,
+   "n": 60
+  },
+  "minefield|stompy": {
+   "w": 18,
+   "n": 60
+  },
+  "minefield|tokens": {
+   "w": 34,
+   "n": 60
+  },
+  "minefield|tollgate": {
+   "w": 60,
+   "n": 60
+  },
+  "minefield|warband": {
+   "w": 39,
+   "n": 60
+  },
+  "minefield|wurms": {
+   "w": 12,
+   "n": 60
+  },
+  "muster|auras": {
+   "w": 20,
+   "n": 60
+  },
+  "muster|emeraldsnakes": {
+   "w": 24,
+   "n": 60
+  },
+  "muster|lifegain": {
+   "w": 21,
+   "n": 60
+  },
+  "muster|minefield": {
+   "w": 12,
+   "n": 60
+  },
+  "muster|rabble": {
+   "w": 14.5,
+   "n": 60
+  },
+  "muster|snakes": {
+   "w": 22,
+   "n": 60
+  },
+  "muster|stompy": {
+   "w": 18,
+   "n": 60
+  },
+  "muster|tokens": {
+   "w": 30,
+   "n": 60
+  },
+  "muster|tollgate": {
+   "w": 10,
+   "n": 60
+  },
+  "muster|warband": {
+   "w": 30,
+   "n": 60
+  },
+  "muster|wurms": {
+   "w": 37,
+   "n": 60
+  },
+  "rabble|auras": {
+   "w": 42,
+   "n": 60
+  },
+  "rabble|emeraldsnakes": {
+   "w": 31,
+   "n": 60
+  },
+  "rabble|lifegain": {
+   "w": 44,
+   "n": 60
+  },
+  "rabble|minefield": {
+   "w": 26,
+   "n": 60
+  },
+  "rabble|muster": {
+   "w": 45.5,
+   "n": 60
+  },
+  "rabble|snakes": {
+   "w": 30,
+   "n": 60
+  },
+  "rabble|stompy": {
+   "w": 36,
+   "n": 60
+  },
+  "rabble|tokens": {
+   "w": 29,
+   "n": 60
+  },
+  "rabble|tollgate": {
+   "w": 15,
+   "n": 60
+  },
+  "rabble|warband": {
+   "w": 48.5,
+   "n": 60
+  },
+  "rabble|wurms": {
+   "w": 30,
+   "n": 60
+  },
+  "snakes|auras": {
+   "w": 34,
+   "n": 60
+  },
+  "snakes|emeraldsnakes": {
+   "w": 28.5,
+   "n": 60
+  },
+  "snakes|lifegain": {
+   "w": 38.5,
+   "n": 60
+  },
+  "snakes|minefield": {
+   "w": 38,
+   "n": 60
+  },
+  "snakes|muster": {
+   "w": 38,
+   "n": 60
+  },
+  "snakes|rabble": {
+   "w": 30,
+   "n": 60
+  },
+  "snakes|stompy": {
+   "w": 18,
+   "n": 60
+  },
+  "snakes|tokens": {
+   "w": 34,
+   "n": 60
+  },
+  "snakes|tollgate": {
+   "w": 35,
+   "n": 60
+  },
+  "snakes|warband": {
+   "w": 34.5,
+   "n": 60
+  },
+  "snakes|wurms": {
+   "w": 38,
+   "n": 60
+  },
+  "stompy|auras": {
+   "w": 40,
+   "n": 60
+  },
+  "stompy|emeraldsnakes": {
+   "w": 27,
+   "n": 60
+  },
+  "stompy|lifegain": {
+   "w": 42,
+   "n": 60
+  },
+  "stompy|minefield": {
+   "w": 42,
+   "n": 60
+  },
+  "stompy|muster": {
+   "w": 42,
+   "n": 60
+  },
+  "stompy|rabble": {
+   "w": 24,
+   "n": 60
+  },
+  "stompy|snakes": {
+   "w": 42,
+   "n": 60
+  },
+  "stompy|tokens": {
+   "w": 43,
+   "n": 60
+  },
+  "stompy|tollgate": {
+   "w": 48,
+   "n": 60
+  },
+  "stompy|warband": {
+   "w": 39,
+   "n": 60
+  },
+  "stompy|wurms": {
+   "w": 35,
+   "n": 60
+  },
+  "tokens|auras": {
+   "w": 41,
+   "n": 60
+  },
+  "tokens|emeraldsnakes": {
+   "w": 19,
+   "n": 60
+  },
+  "tokens|lifegain": {
+   "w": 29,
+   "n": 60
+  },
+  "tokens|minefield": {
+   "w": 26,
+   "n": 60
+  },
+  "tokens|muster": {
+   "w": 30,
+   "n": 60
+  },
+  "tokens|rabble": {
+   "w": 31,
+   "n": 60
+  },
+  "tokens|snakes": {
+   "w": 26,
+   "n": 60
+  },
+  "tokens|stompy": {
+   "w": 17,
+   "n": 60
+  },
+  "tokens|tollgate": {
+   "w": 29,
+   "n": 60
+  },
+  "tokens|warband": {
+   "w": 38,
+   "n": 60
+  },
+  "tokens|wurms": {
+   "w": 27,
+   "n": 60
+  },
+  "tollgate|auras": {
+   "w": 10,
+   "n": 60
+  },
+  "tollgate|emeraldsnakes": {
+   "w": 17,
+   "n": 60
+  },
+  "tollgate|lifegain": {
+   "w": 37,
+   "n": 60
+  },
+  "tollgate|minefield": {
+   "w": 0,
+   "n": 60
+  },
+  "tollgate|muster": {
+   "w": 50,
+   "n": 60
+  },
+  "tollgate|rabble": {
+   "w": 45,
+   "n": 60
+  },
+  "tollgate|snakes": {
+   "w": 25,
+   "n": 60
+  },
+  "tollgate|stompy": {
+   "w": 12,
+   "n": 60
+  },
+  "tollgate|tokens": {
+   "w": 31,
+   "n": 60
+  },
+  "tollgate|warband": {
+   "w": 43,
+   "n": 60
+  },
+  "tollgate|wurms": {
+   "w": 13,
+   "n": 60
+  },
+  "warband|auras": {
+   "w": 37,
+   "n": 60
+  },
+  "warband|emeraldsnakes": {
+   "w": 16,
+   "n": 60
+  },
+  "warband|lifegain": {
+   "w": 34,
+   "n": 60
+  },
+  "warband|minefield": {
+   "w": 21,
+   "n": 60
+  },
+  "warband|muster": {
+   "w": 30,
+   "n": 60
+  },
+  "warband|rabble": {
+   "w": 11.5,
+   "n": 60
+  },
+  "warband|snakes": {
+   "w": 25.5,
+   "n": 60
+  },
+  "warband|stompy": {
+   "w": 21,
+   "n": 60
+  },
+  "warband|tokens": {
+   "w": 22,
+   "n": 60
+  },
+  "warband|tollgate": {
+   "w": 17,
+   "n": 60
+  },
+  "warband|wurms": {
+   "w": 37,
+   "n": 60
+  },
+  "wurms|auras": {
+   "w": 22,
+   "n": 60
+  },
+  "wurms|emeraldsnakes": {
+   "w": 19,
+   "n": 60
+  },
+  "wurms|lifegain": {
+   "w": 24,
+   "n": 60
+  },
+  "wurms|minefield": {
+   "w": 48,
+   "n": 60
+  },
+  "wurms|muster": {
+   "w": 23,
+   "n": 60
+  },
+  "wurms|rabble": {
+   "w": 30,
+   "n": 60
+  },
+  "wurms|snakes": {
+   "w": 22,
+   "n": 60
+  },
+  "wurms|stompy": {
+   "w": 25,
+   "n": 60
+  },
+  "wurms|tokens": {
+   "w": 33,
+   "n": 60
+  },
+  "wurms|tollgate": {
+   "w": 47,
+   "n": 60
+  },
+  "wurms|warband": {
+   "w": 23,
+   "n": 60
   }
  }
 }

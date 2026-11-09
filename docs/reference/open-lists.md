@@ -30,6 +30,38 @@
 
 Archived (kept in the data, out of the field): the Usher's Coin, the Undertow, the Larder, the Tally, the Locks, the Ford, the Enchantress, the Loop, the Hearth, the Cinder, Reaper Control.
 
+## Among the lists above 50 (S71a — a reading lens, not the draw)
+
+The 10 lists above 50 in matches, counted against one another only. A list that gains most of its record from the bottom of the field falls here; the field's seat draw still reads the whole table.
+
+| | list | among them | the whole field | change |
+|---|---|---|---|---|
+| 1 | Mardu Control | 69.0 ± 3.9 | 73.6 | −4.6 |
+| 2 | the Pinnacle | 54.8 ± 4.2 | 62.6 | −7.8 |
+| 3 | Emerald Snakes | 53.2 ± 4.2 | 64.0 | −10.8 |
+| 4 | the Pall | 53.2 ± 4.2 | 54.0 | −0.8 |
+| 5 | Reaper Clio | 51.1 ± 4.2 | 63.8 | −12.7 |
+| 6 | the Rabble | 51.1 ± 4.2 | 60.4 | −9.3 |
+| 7 | Lumen Clio | 47.0 ± 4.2 | 58.0 | −11.0 |
+| 8 | 5C Earthrise | 46.2 ± 4.2 | 60.1 | −13.9 |
+| 9 | the Minefield | 39.6 ± 4.1 | 54.6 | −15.0 |
+| 10 | the Writ | 34.6 ± 4.0 | 50.6 | −16.0 |
+
+Head to head (the row list's matches won, %):
+
+| | marducontrol | pinnacle | emeraldsnakes | pall | reaperclio | rabble | lumenclio | earthrise | minefield | writ |
+|---|---|---|---|---|---|---|---|---|---|---|
+| **marducontrol** | — | 65 | 62 | 54 | 72 | 68 | 63 | 90 | 93 | 53 |
+| **pinnacle** | 35 | — | 43 | 37 | 47 | 35 | 75 | 77 | 68 | 77 |
+| **emeraldsnakes** | 38 | 57 | — | 73 | 32 | 46 | 55 | 58 | 57 | 63 |
+| **pall** | 46 | 63 | 27 | — | 28 | 42 | 62 | 77 | 82 | 53 |
+| **reaperclio** | 28 | 53 | 68 | 72 | — | 62 | 50 | 38 | 38 | 50 |
+| **rabble** | 32 | 65 | 54 | 58 | 38 | — | 65 | 34 | 48 | 65 |
+| **lumenclio** | 37 | 25 | 45 | 38 | 50 | 35 | — | 65 | 68 | 60 |
+| **earthrise** | 10 | 23 | 42 | 23 | 62 | 66 | 35 | — | 63 | 92 |
+| **minefield** | 7 | 32 | 43 | 18 | 62 | 52 | 32 | 37 | — | 75 |
+| **writ** | 47 | 23 | 37 | 47 | 50 | 35 | 40 | 8 | 25 | — |
+
 ## Staples (ADR-170)
 
 Nonland cards outside the restricted list that more than half of the 19 active lists play: none.

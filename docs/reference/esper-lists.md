@@ -4,21 +4,41 @@
 
 ## The table of record
 
-9 active lists, the AI in both seats. **Game one** is a list's mean win rate against the other active lists on the registered sixties (the round-robin of record, `formats/esper/means.json`). **Matches** is its best-of-three win rate — the figure the field's seat draw reads since S59 (60 matches a pairing, measured 2026-10-21; ADR-171): game one on the registered sixties, games two and three sideboarded. **After sideboarding** is its games-two-and-three rate less its game-one rate inside those matches.
+9 active lists, the AI in both seats. **Game one** is a list's mean win rate against the other active lists on the registered sixties (the round-robin of record, `formats/esper/means.json`). **Matches** is its best-of-three win rate — the figure the field's seat draw reads since S59 (60 matches a pairing, measured 2026-11-09; ADR-171): game one on the registered sixties, games two and three sideboarded. **After sideboarding** is its games-two-and-three rate less its game-one rate inside those matches.
 
 | list | deck | pilot | matches | game one | after sideboarding | fifteen |
 |---|---|---|---|---|---|---|
-| the Writ | Dimir Control (U B) | control | 61.5 | 54 | +0.7 | registered |
-| the Roll | Orzhov Tokens (W B) | aggro | 60.2 | 56 | +3.2 | built |
-| the Chancel | Orzhov Control (W B) | midrange | 52.5 | 53 | −4.3 | registered, guided |
-| the Aerie | Azorius Skies (W U) | midrange | 50.2 | 55 | +1.3 | registered, guided |
-| the Eddy | Blue Tempo, splash Clio (U b) | midrange | 50.0 | 49 | +3.8 | built |
-| the Undertow | Dimir Mill (U B) | control | 47.5 | 50 | −3.0 | built |
-| the Levy | Orzhov Landfall (W B) | midrange | 45.8 | 48 | −4.7 | registered |
-| the Locks | Esper Control (W U B) | control | 44.8 | 48 | +2.3 | registered, guided |
-| the Barrow | Mono-Black Control (B) | control | 37.5 | 39 | +1.1 | built |
+| the Writ | Dimir Control (U B) | control | 59.8 | 54 | +2.2 | registered |
+| the Roll | Orzhov Tokens (W B) | aggro | 58.5 | 56 | +1.0 | built |
+| the Aerie | Azorius Skies (W U) | midrange | 52.9 | 54 | +3.4 | registered, guided |
+| the Eddy | Blue Tempo, splash Clio (U b) | midrange | 51.0 | 49 | −3.0 | built |
+| the Chancel | Orzhov Control (W B) | midrange | 50.0 | 51 | −2.6 | registered, guided |
+| the Undertow | Dimir Mill (U B) | control | 49.4 | 52 | −2.5 | built |
+| the Levy | Orzhov Landfall (W B) | midrange | 46.9 | 48 | +1.3 | registered |
+| the Locks | Esper Control (W U B) | control | 45.4 | 46 | −3.1 | registered, guided |
+| the Barrow | Mono-Black Control (B) | control | 36.0 | 41 | +3.5 | built |
 
 Archived (kept in the data, out of the field): the Ossuary.
+
+## Among the lists above 50 (S71a — a reading lens, not the draw)
+
+The 4 lists above 50 in matches, counted against one another only. A list that gains most of its record from the bottom of the field falls here; the field's seat draw still reads the whole table.
+
+| | list | among them | the whole field | change |
+|---|---|---|---|---|
+| 1 | the Writ | 55.0 ± 7.3 | 59.8 | −4.8 |
+| 2 | the Roll | 50.6 ± 7.3 | 58.5 | −7.9 |
+| 3 | the Eddy | 47.8 ± 7.3 | 51.0 | −3.2 |
+| 4 | the Aerie | 46.7 ± 7.3 | 52.9 | −6.2 |
+
+Head to head (the row list's matches won, %):
+
+| | writ | bwtokens | tempo | skies |
+|---|---|---|---|---|
+| **writ** | — | 55 | 48 | 62 |
+| **bwtokens** | 45 | — | 55 | 52 |
+| **tempo** | 52 | 45 | — | 47 |
+| **skies** | 38 | 48 | 53 | — |
 
 ## Staples (ADR-170)
 
@@ -28,7 +48,7 @@ The most played: Counterspell 5 · Vampire Nighthawk 5 · Swords to Plowshares 5
 
 ## the Writ — Dimir Control (U B)
 
-`writ` · control · game one 54 · matches 61.5
+`writ` · control · game one 54 · matches 59.8
 
 - **Lands (20):** 1 Library of Alexandria · 4 Underground Sea · 4 Watery Grave · 6 Island · 5 Swamp
 - **Creatures (19):** 3 Arcane Collector · 3 Tidewall · 3 The Jet Witch · 4 Vampire Nighthawk · 4 Clio, Lady of the Depths · 1 Faerie Formation · 1 Drana, Kalastria Bloodchief
@@ -40,7 +60,7 @@ The most played: Counterspell 5 · Vampire Nighthawk 5 · Swords to Plowshares 5
 
 ## the Roll — Orzhov Tokens (W B)
 
-`bwtokens` · aggro · game one 56 · matches 60.2
+`bwtokens` · aggro · game one 56 · matches 58.5
 
 - **Lands (21):** 4 Scrubland · 4 Godless Shrine · 1 Obsidian Observatory · 6 Plains · 6 Swamp
 - **Creatures (14):** 3 Captain of the Watch · 2 Isaura, the Levy · 3 Emeria Angel · 4 Soul Warden · 2 Karmic Mentor
@@ -49,22 +69,9 @@ The most played: Counterspell 5 · Vampire Nighthawk 5 · Swords to Plowshares 5
 - **History:**
   - contributed — S65 seed (the planner's, built by the implementer): Shadow Summoning, Bitterblossom, Raise the Alarm, Captain of the Watch, Isaura, Emeria Angel, Glorious Anthem, Vindicate — with Soul Warden and two Karmic Mentors (they return Wardens and Bitterblossoms).
 
-## the Chancel — Orzhov Control (W B)
-
-`wbcontrol` · midrange · game one 53 · matches 52.5
-
-- **Lands (19):** 4 Scrubland · 4 Godless Shrine · 1 Obsidian Observatory · 5 Plains · 5 Swamp
-- **Creatures (27):** 4 Karmic Mentor · 3 Restoration Angel · 3 The Jet Witch · 2 Isaura, the Levy · 3 Emeria Angel · 4 Blood Artist · 4 Soul Warden · 4 Vampire Nighthawk
-- **Other (14):** 1 Black Lotus · 1 Mox Jet · 1 Mox Pearl · 4 Vindicate · 3 Wrath of God · 3 Swords to Plowshares · 1 Demonic Tutor
-- **Its fifteen (registered):** 2 Disenchant · 2 Doom Blade · 2 Faerie Macabre · 2 Tormod's Crypt · 1 Swords to Plowshares · 1 Wall of Reverence · 1 Youthful Valkyrie · 1 Wrath of God · 2 Wave of Reckoning · 1 Retribution of the Meek
-- **Its sideboard guide** (then the general rules run on what is left):
-  - against wide: 1 Wrath of God in for Vindicate, then Swords to Plowshares
-- **History:**
-  - contributed — S65 seed (the planner's, built by the implementer; Chris expects a WB control list here): Mardu Control's shape without the Ushers (Mardu's) and without red — Karmic Mentor, Restoration Angel, Vindicate, the Jet Witch, Wrath, Isaura, Swords, Emeria Angel at the top; Blood Artist and Soul Warden as the lifegain floor. S66 (Part 2, the sweeper round): a fifteen registered (the builder's, with a fourth Wrath, two Waves and a Retribution); its guide Wrath in for Vindicate and Swords against `wide` (the Roll, the Levy) — +5.0 ± 5.6 there (the Wave −1.2, Retribution −1.2, left as fifteen cards only).
-
 ## the Aerie — Azorius Skies (W U)
 
-`skies` · midrange · game one 55 · matches 50.2
+`skies` · midrange · game one 54 · matches 52.9
 
 - **Lands (21):** 4 Hallowed Fountain · 4 Tundra · 1 Obsidian Observatory · 4 Plains · 8 Island
 - **Creatures (25):** 4 Youthful Valkyrie · 4 Inspiring Overseer · 4 Plumecreed Escort · 4 Restoration Angel · 2 Traumatizer · 2 Karmic Mentor · 2 Serra Angel · 2 Emeria Angel · 1 Faerie Formation
@@ -77,7 +84,7 @@ The most played: Counterspell 5 · Vampire Nighthawk 5 · Swords to Plowshares 5
 
 ## the Eddy — Blue Tempo, splash Clio (U b)
 
-`tempo` · midrange · game one 49 · matches 50.0
+`tempo` · midrange · game one 49 · matches 51.0
 
 - **Lands (24):** 4 Underground Sea · 4 Watery Grave · 16 Island
 - **Creatures (22):** 4 Man-o'-War · 4 Aether Channeler · 4 Plumecreed Escort · 3 Tidewall · 3 Clio, Lady of the Depths · 4 Traumatizer
@@ -86,9 +93,22 @@ The most played: Counterspell 5 · Vampire Nighthawk 5 · Swords to Plowshares 5
 - **History:**
   - contributed — S65 seed (the planner's 'Mono-Blue Tempo', built by the implementer): Tidewall, Man-o'-War, Plumecreed Escort, Aether Channeler, Control Magic, Counterspell, Boomerang — and Clio, so black is splashed (Chris).
 
+## the Chancel — Orzhov Control (W B)
+
+`wbcontrol` · midrange · game one 51 · matches 50.0
+
+- **Lands (19):** 4 Scrubland · 4 Godless Shrine · 1 Obsidian Observatory · 5 Plains · 5 Swamp
+- **Creatures (27):** 4 Karmic Mentor · 3 Restoration Angel · 3 The Jet Witch · 2 Isaura, the Levy · 3 Emeria Angel · 4 Blood Artist · 4 Soul Warden · 4 Vampire Nighthawk
+- **Other (14):** 1 Black Lotus · 1 Mox Jet · 1 Mox Pearl · 4 Vindicate · 3 Wrath of God · 3 Swords to Plowshares · 1 Demonic Tutor
+- **Its fifteen (registered):** 2 Disenchant · 2 Doom Blade · 2 Faerie Macabre · 2 Tormod's Crypt · 1 Swords to Plowshares · 1 Wall of Reverence · 1 Youthful Valkyrie · 1 Wrath of God · 2 Wave of Reckoning · 1 Retribution of the Meek
+- **Its sideboard guide** (then the general rules run on what is left):
+  - against wide: 1 Wrath of God in for Vindicate, then Swords to Plowshares
+- **History:**
+  - contributed — S65 seed (the planner's, built by the implementer; Chris expects a WB control list here): Mardu Control's shape without the Ushers (Mardu's) and without red — Karmic Mentor, Restoration Angel, Vindicate, the Jet Witch, Wrath, Isaura, Swords, Emeria Angel at the top; Blood Artist and Soul Warden as the lifegain floor. S66 (Part 2, the sweeper round): a fifteen registered (the builder's, with a fourth Wrath, two Waves and a Retribution); its guide Wrath in for Vindicate and Swords against `wide` (the Roll, the Levy) — +5.0 ± 5.6 there (the Wave −1.2, Retribution −1.2, left as fifteen cards only).
+
 ## the Undertow — Dimir Mill (U B)
 
-`undertow` · control · game one 50 · matches 47.5
+`undertow` · control · game one 52 · matches 49.4
 
 - **Lands (22):** 3 Underground Sea · 1 Volmaw · 4 Watery Grave · 6 Island · 3 Swamp · 4 Evolving Wilds · 1 Thawing Glaciers
 - **Creatures (19):** 4 Hedron Crab · 4 Traumatizer · 4 Tidewall · 4 Clio, Lady of the Depths · 3 Vampire Nighthawk
@@ -99,7 +119,7 @@ The most played: Counterspell 5 · Vampire Nighthawk 5 · Swords to Plowshares 5
 
 ## the Levy — Orzhov Landfall (W B)
 
-`levy` · midrange · game one 48 · matches 45.8
+`levy` · midrange · game one 48 · matches 46.9
 
 - **Lands (24):** 4 Scrubland · 4 Godless Shrine · 5 Plains · 5 Swamp · 4 Evolving Wilds · 1 Thawing Glaciers · 1 Obsidian Observatory
 - **Creatures (15):** 4 Emeria Angel · 4 Dread Presence · 4 Soul Warden · 1 Vampire Nighthawk · 2 Isaura, the Levy
@@ -111,7 +131,7 @@ The most played: Counterspell 5 · Vampire Nighthawk 5 · Swords to Plowshares 5
 
 ## the Locks — Esper Control (W U B)
 
-`locks` · control · game one 48 · matches 44.8
+`locks` · control · game one 46 · matches 45.4
 
 - **Lands (24):** 4 Tundra · 4 Underground Sea · 4 Scrubland · 4 Hallowed Fountain · 2 Island · 2 Plains · 2 Swamp · 1 Obsidian Observatory · 1 Library of Alexandria
 - **Creatures (8):** 4 The Dredger · 2 Serra Angel · 2 Karmic Mentor
@@ -129,7 +149,7 @@ The most played: Counterspell 5 · Vampire Nighthawk 5 · Swords to Plowshares 5
 
 ## the Barrow — Mono-Black Control (B)
 
-`mbc` · control · game one 39 · matches 37.5
+`mbc` · control · game one 41 · matches 36.0
 
 - **Lands (24):** 22 Swamp · 2 Barren Moor
 - **Creatures (20):** 4 The Jet Witch · 2 Drana, Kalastria Bloodchief · 4 Vampire Nighthawk · 4 Hypnotic Specter · 4 Nekrataal · 2 Gravedigger

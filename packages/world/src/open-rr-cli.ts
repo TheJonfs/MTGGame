@@ -67,9 +67,11 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 // S56 (ADR-164): the round-robin is the field's — an archived list is out of it (`--with-archived` brings it back for a look)
 const KEYS = Object.keys(process.argv.includes("--with-archived") ? OPEN_DECKS : OPEN_FIELD);
 
-type SeatLog = { cast: Record<string, number>; played: Record<string, number>; /** post-S59: abilities activated, by the source's card */ acts?: Record<string, number>; loopTurn?: number; altarActs?: number; /** S62 (the stalemate probe): the last turn this seat declared an attacker, and on how many turns it did */ lastAttack?: number; attackTurns?: number; /** S61: the loops this seat ran — see Tracker */ loops?: { turn: number; card: string; passes: number; life: [number, number][]; options: number; mine: boolean; last?: [number, number] }[] };
+type SeatLog = { cast: Record<string, number>; played: Record<string, number>; /** post-S59: abilities activated, by the source's card */ acts?: Record<string, number>; loopTurn?: number; altarActs?: number; /** S62 (the stalemate probe): the last turn this seat declared an attacker, and on how many turns it did */ lastAttack?: number; attackTurns?: number; /** S71a (book 164's probe): each X spell cast — [card, turn, X, mana sources in play (lands, Moxen, Lotus)] */ xs?: [string, number, number, number][]; /** S61: the loops this seat ran — see Tracker */ loops?: { turn: number; card: string; passes: number; life: [number, number][]; options: number; mine: boolean; last?: [number, number] }[] };
 type Game = { a: string; b: string; seatA: 0 | 1; winner: "a" | "b" | "draw"; reason: string; turns: number; logA: SeatLog; logB: SeatLog; /** S61: the final life totals by SEAT (seat 0 is `a` unless seatA is 1) */ life?: [number, number]; /** S62 (the stalemate probe): a game drawn at the turn limit — by SEAT: the creatures standing (card:power/toughness:keywords), cards in hand and in the library */ stall?: { board: [string[], string[]]; hand: [number, number]; library: [number, number] }; boarded?: string ; /** S59 (--matches): the match's index in its pairing and the game's number in the match (0, 1, 2) */ match?: number; gameNo?: number };
 
+/** S71a: a mana source in play (set once the pool is loaded) — for the X record */
+let MANA_SOURCE: (cardId: string) => boolean = () => false;
 const TRACE_AFTER = process.argv.includes("--trace-after") ? Number(process.argv[process.argv.indexOf("--trace-after") + 1]) : 0;
 class Tracker implements Agent {
   log: SeatLog = { cast: {}, played: {} };
@@ -81,6 +83,7 @@ class Tracker implements Agent {
     if (TRACE_AFTER > 0 && ++this.n > TRACE_AFTER && this.n < TRACE_AFTER + 60) console.error(`  [${this.n}] T${view.turn} ${view.step} p${view.you} life ${view.life} ${req.purpose} of ${req.actions.length} -> ${JSON.stringify(a)} stack ${view.stack.map((x) => x.cardId ?? "?").join("<")}`);
     const cardOf = (id: string) => view.hand.find((c) => c.objectId === id)?.cardId ?? view.battlefield.find((b) => b.id === id)?.cardId;
     if (a.type === "castSpell") { const c = cardOf(a.objectId); if (c) this.log.cast[c] = (this.log.cast[c] ?? 0) + 1; }
+    if (a.type === "castSpell" && typeof (a as { x?: number }).x === "number") { const c = cardOf(a.objectId); if (c) (this.log.xs ??= []).push([c, view.turn, (a as { x: number }).x, view.battlefield.filter((o) => o.controller === view.you && MANA_SOURCE(o.cardId)).length]); }
     if (a.type === "playLand") { const c = cardOf(a.objectId); if (c) this.log.played[c] = (this.log.played[c] ?? 0) + 1; }
     if (a.type === "activateAbility") { const c = cardOf(a.objectId); if (c) (this.log.acts ??= {})[c] = (this.log.acts[c] ?? 0) + 1; }
     // S62 (Part 5, the stalemate probe): the turns this seat attacked on — the last one, and how many
@@ -121,6 +124,7 @@ const POOL = loadCardPool(join(ROOT, "data/cards")).cards;
 const MAX_TURNS = process.argv.includes("--max-turns") ? Number(process.argv[process.argv.indexOf("--max-turns") + 1]) : 120;
 async function run(): Promise<void> {
   const pool = loadCardPool(join(ROOT, "data/cards")).cards;
+  MANA_SOURCE = (id) => { const d = pool.get(id); return !!d && (d.types.includes("Land") || (d.types.includes("Artifact") && (d.abilities ?? []).some((ab) => ab.kind === "activated" && ab.effects.some((e) => e.type === "addMana")))); };
   // post-S59 (a card under consideration, not yet in the pool): `--extra-cards dir` adds that directory's defs to this run's pool
   const extra = arg("extra-cards", "");
   if (extra) for (const f of readdirSync(extra).filter((x) => x.endsWith(".json")).sort()) { const d = JSON.parse(readFileSync(join(extra, f), "utf8")) as CardDef; const v = validateCard(d); if (v.errors.length) throw new Error(`open:rr --extra-cards: ${f}: ${v.errors.join("; ")}`); pool.set(d.id, d); }
@@ -267,7 +271,7 @@ function matchesReport(): void {
   for (const { k, t, d } of pairs) lines.push(`| ${k.replace("|", " over ")} | ${r(t.mw, t.mn).toFixed(0)} (${t.mn}) | ${r(t.g1w, t.g1n).toFixed(0)} | ${r(t.lw, t.ln).toFixed(0)} (${t.ln}) | +${d.toFixed(0)} |`);
   const md = lines.join("\n") + "\n";
   // S59: `--record` writes the table of record's three columns to the tracked data file the reference is generated from
-  if (process.argv.includes("--record")) { const one = (x: number) => Math.round(10 * x) / 10; writeFileSync(join(ROOT, `data/convocation/formats/${FORMAT_ID}/matches.json`), JSON.stringify({ _comment: "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.", when: new Date().toISOString().slice(0, 10), matchesAPairing: Math.round(matches.size / Math.max(1, (Object.keys(byList).length * (Object.keys(byList).length - 1)) / 2)), byList: Object.fromEntries(Object.keys(byList).sort().map((k) => { const t = byList[k]!; return [k, { matches: one(r(t.mw, t.mn)), gameOne: one(r(t.g1w, t.g1n)), later: one(r(t.lw, t.ln)), n: t.mn }]; })) }, null, 1) + "\n"); }
+  if (process.argv.includes("--record")) { const one = (x: number) => Math.round(10 * x) / 10; writeFileSync(join(ROOT, `data/convocation/formats/${FORMAT_ID}/matches.json`), JSON.stringify({ _comment: "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.", when: new Date().toISOString().slice(0, 10), matchesAPairing: Math.round(matches.size / Math.max(1, (Object.keys(byList).length * (Object.keys(byList).length - 1)) / 2)), byList: Object.fromEntries(Object.keys(byList).sort().map((k) => { const t = byList[k]!; return [k, { matches: one(r(t.mw, t.mn)), gameOne: one(r(t.g1w, t.g1n)), later: one(r(t.lw, t.ln)), n: t.mn }]; })), /* S71a: each pairing's match record (the row list's wins, a drawn match a half) — the reference pages' sub-table */ byPair: Object.fromEntries(Object.keys(byPair).sort().map((k) => [k, { w: byPair[k]!.mw, n: byPair[k]!.mn }])) }, null, 1) + "\n"); }
   const out = arg("out", ""); if (out) { mkdirSync(dirname(out), { recursive: true }); writeFileSync(out, md); writeFileSync(out.replace(/\.md$/, ".json"), JSON.stringify({ byList, byPair })); }
   console.log(md);
 }

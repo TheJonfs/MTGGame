@@ -1,73 +1,515 @@
 {
  "_comment": "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.",
- "when": "2026-10-27",
+ "when": "2026-11-09",
  "matchesAPairing": 60,
  "byList": {
   "auras": {
-   "matches": 57.2,
-   "gameOne": 54,
-   "later": 55.8,
-   "n": 600
-  },
-  "bfh": {
-   "matches": 35.7,
-   "gameOne": 42.7,
-   "later": 39.6,
-   "n": 600
-  },
-  "depths": {
-   "matches": 60.1,
-   "gameOne": 56.5,
+   "matches": 59.3,
+   "gameOne": 53.8,
    "later": 56.7,
    "n": 600
   },
+  "bfh": {
+   "matches": 33.5,
+   "gameOne": 40.5,
+   "later": 38.7,
+   "n": 600
+  },
+  "depths": {
+   "matches": 59.7,
+   "gameOne": 57.4,
+   "later": 57.6,
+   "n": 600
+  },
   "massocrafts": {
-   "matches": 55.7,
-   "gameOne": 53.3,
-   "later": 52.9,
+   "matches": 55.8,
+   "gameOne": 56.2,
+   "later": 52.5,
    "n": 600
   },
   "mbc": {
-   "matches": 44.5,
-   "gameOne": 45.5,
-   "later": 46.4,
+   "matches": 43.8,
+   "gameOne": 45.8,
+   "later": 45.8,
    "n": 600
   },
   "mill": {
-   "matches": 35.8,
-   "gameOne": 38,
-   "later": 40.6,
+   "matches": 41.8,
+   "gameOne": 43.3,
+   "later": 44.8,
    "n": 600
   },
   "reeve": {
-   "matches": 69.1,
-   "gameOne": 66.4,
-   "later": 62.3,
+   "matches": 71.3,
+   "gameOne": 68.4,
+   "later": 63,
    "n": 600
   },
   "tempo": {
-   "matches": 57,
-   "gameOne": 53.5,
-   "later": 55.6,
+   "matches": 52,
+   "gameOne": 50.2,
+   "later": 52.1,
    "n": 600
   },
   "undertow": {
-   "matches": 44.3,
-   "gameOne": 45.8,
-   "later": 46.5,
+   "matches": 46.8,
+   "gameOne": 45.2,
+   "later": 49.2,
    "n": 600
   },
   "writ": {
-   "matches": 65.3,
-   "gameOne": 57.2,
-   "later": 62.8,
+   "matches": 62.7,
+   "gameOne": 54.2,
+   "later": 60.9,
    "n": 600
   },
   "wurmspeaker": {
-   "matches": 25.3,
-   "gameOne": 37.2,
-   "later": 30.7,
+   "matches": 23.2,
+   "gameOne": 35,
+   "later": 27.9,
    "n": 600
+  }
+ },
+ "byPair": {
+  "auras|bfh": {
+   "w": 47,
+   "n": 60
+  },
+  "auras|depths": {
+   "w": 33,
+   "n": 60
+  },
+  "auras|massocrafts": {
+   "w": 23,
+   "n": 60
+  },
+  "auras|mbc": {
+   "w": 40,
+   "n": 60
+  },
+  "auras|mill": {
+   "w": 45,
+   "n": 60
+  },
+  "auras|reeve": {
+   "w": 29,
+   "n": 60
+  },
+  "auras|tempo": {
+   "w": 37,
+   "n": 60
+  },
+  "auras|undertow": {
+   "w": 40,
+   "n": 60
+  },
+  "auras|writ": {
+   "w": 31,
+   "n": 60
+  },
+  "auras|wurmspeaker": {
+   "w": 31,
+   "n": 60
+  },
+  "bfh|auras": {
+   "w": 13,
+   "n": 60
+  },
+  "bfh|depths": {
+   "w": 15,
+   "n": 60
+  },
+  "bfh|massocrafts": {
+   "w": 8,
+   "n": 60
+  },
+  "bfh|mbc": {
+   "w": 25,
+   "n": 60
+  },
+  "bfh|mill": {
+   "w": 33,
+   "n": 60
+  },
+  "bfh|reeve": {
+   "w": 17,
+   "n": 60
+  },
+  "bfh|tempo": {
+   "w": 29,
+   "n": 60
+  },
+  "bfh|undertow": {
+   "w": 20,
+   "n": 60
+  },
+  "bfh|writ": {
+   "w": 6,
+   "n": 60
+  },
+  "bfh|wurmspeaker": {
+   "w": 35,
+   "n": 60
+  },
+  "depths|auras": {
+   "w": 27,
+   "n": 60
+  },
+  "depths|bfh": {
+   "w": 45,
+   "n": 60
+  },
+  "depths|massocrafts": {
+   "w": 30.5,
+   "n": 60
+  },
+  "depths|mbc": {
+   "w": 38,
+   "n": 60
+  },
+  "depths|mill": {
+   "w": 35,
+   "n": 60
+  },
+  "depths|reeve": {
+   "w": 19.5,
+   "n": 60
+  },
+  "depths|tempo": {
+   "w": 38,
+   "n": 60
+  },
+  "depths|undertow": {
+   "w": 42,
+   "n": 60
+  },
+  "depths|writ": {
+   "w": 29,
+   "n": 60
+  },
+  "depths|wurmspeaker": {
+   "w": 54,
+   "n": 60
+  },
+  "massocrafts|auras": {
+   "w": 37,
+   "n": 60
+  },
+  "massocrafts|bfh": {
+   "w": 52,
+   "n": 60
+  },
+  "massocrafts|depths": {
+   "w": 29.5,
+   "n": 60
+  },
+  "massocrafts|mbc": {
+   "w": 48,
+   "n": 60
+  },
+  "massocrafts|mill": {
+   "w": 27,
+   "n": 60
+  },
+  "massocrafts|reeve": {
+   "w": 19.5,
+   "n": 60
+  },
+  "massocrafts|tempo": {
+   "w": 28,
+   "n": 60
+  },
+  "massocrafts|undertow": {
+   "w": 24,
+   "n": 60
+  },
+  "massocrafts|writ": {
+   "w": 21,
+   "n": 60
+  },
+  "massocrafts|wurmspeaker": {
+   "w": 49,
+   "n": 60
+  },
+  "mbc|auras": {
+   "w": 20,
+   "n": 60
+  },
+  "mbc|bfh": {
+   "w": 35,
+   "n": 60
+  },
+  "mbc|depths": {
+   "w": 22,
+   "n": 60
+  },
+  "mbc|massocrafts": {
+   "w": 12,
+   "n": 60
+  },
+  "mbc|mill": {
+   "w": 43,
+   "n": 60
+  },
+  "mbc|reeve": {
+   "w": 10,
+   "n": 60
+  },
+  "mbc|tempo": {
+   "w": 24,
+   "n": 60
+  },
+  "mbc|undertow": {
+   "w": 42,
+   "n": 60
+  },
+  "mbc|writ": {
+   "w": 13,
+   "n": 60
+  },
+  "mbc|wurmspeaker": {
+   "w": 42,
+   "n": 60
+  },
+  "mill|auras": {
+   "w": 15,
+   "n": 60
+  },
+  "mill|bfh": {
+   "w": 27,
+   "n": 60
+  },
+  "mill|depths": {
+   "w": 25,
+   "n": 60
+  },
+  "mill|massocrafts": {
+   "w": 33,
+   "n": 60
+  },
+  "mill|mbc": {
+   "w": 17,
+   "n": 60
+  },
+  "mill|reeve": {
+   "w": 15,
+   "n": 60
+  },
+  "mill|tempo": {
+   "w": 29,
+   "n": 60
+  },
+  "mill|undertow": {
+   "w": 30,
+   "n": 60
+  },
+  "mill|writ": {
+   "w": 21,
+   "n": 60
+  },
+  "mill|wurmspeaker": {
+   "w": 39,
+   "n": 60
+  },
+  "reeve|auras": {
+   "w": 31,
+   "n": 60
+  },
+  "reeve|bfh": {
+   "w": 43,
+   "n": 60
+  },
+  "reeve|depths": {
+   "w": 40.5,
+   "n": 60
+  },
+  "reeve|massocrafts": {
+   "w": 40.5,
+   "n": 60
+  },
+  "reeve|mbc": {
+   "w": 50,
+   "n": 60
+  },
+  "reeve|mill": {
+   "w": 45,
+   "n": 60
+  },
+  "reeve|tempo": {
+   "w": 38,
+   "n": 60
+  },
+  "reeve|undertow": {
+   "w": 45,
+   "n": 60
+  },
+  "reeve|writ": {
+   "w": 37,
+   "n": 60
+  },
+  "reeve|wurmspeaker": {
+   "w": 58,
+   "n": 60
+  },
+  "tempo|auras": {
+   "w": 23,
+   "n": 60
+  },
+  "tempo|bfh": {
+   "w": 31,
+   "n": 60
+  },
+  "tempo|depths": {
+   "w": 22,
+   "n": 60
+  },
+  "tempo|massocrafts": {
+   "w": 32,
+   "n": 60
+  },
+  "tempo|mbc": {
+   "w": 36,
+   "n": 60
+  },
+  "tempo|mill": {
+   "w": 31,
+   "n": 60
+  },
+  "tempo|reeve": {
+   "w": 22,
+   "n": 60
+  },
+  "tempo|undertow": {
+   "w": 37,
+   "n": 60
+  },
+  "tempo|writ": {
+   "w": 30,
+   "n": 60
+  },
+  "tempo|wurmspeaker": {
+   "w": 48,
+   "n": 60
+  },
+  "undertow|auras": {
+   "w": 20,
+   "n": 60
+  },
+  "undertow|bfh": {
+   "w": 40,
+   "n": 60
+  },
+  "undertow|depths": {
+   "w": 18,
+   "n": 60
+  },
+  "undertow|massocrafts": {
+   "w": 36,
+   "n": 60
+  },
+  "undertow|mbc": {
+   "w": 18,
+   "n": 60
+  },
+  "undertow|mill": {
+   "w": 30,
+   "n": 60
+  },
+  "undertow|reeve": {
+   "w": 15,
+   "n": 60
+  },
+  "undertow|tempo": {
+   "w": 23,
+   "n": 60
+  },
+  "undertow|writ": {
+   "w": 33,
+   "n": 60
+  },
+  "undertow|wurmspeaker": {
+   "w": 48,
+   "n": 60
+  },
+  "writ|auras": {
+   "w": 29,
+   "n": 60
+  },
+  "writ|bfh": {
+   "w": 54,
+   "n": 60
+  },
+  "writ|depths": {
+   "w": 31,
+   "n": 60
+  },
+  "writ|massocrafts": {
+   "w": 39,
+   "n": 60
+  },
+  "writ|mbc": {
+   "w": 47,
+   "n": 60
+  },
+  "writ|mill": {
+   "w": 39,
+   "n": 60
+  },
+  "writ|reeve": {
+   "w": 23,
+   "n": 60
+  },
+  "writ|tempo": {
+   "w": 30,
+   "n": 60
+  },
+  "writ|undertow": {
+   "w": 27,
+   "n": 60
+  },
+  "writ|wurmspeaker": {
+   "w": 57,
+   "n": 60
+  },
+  "wurmspeaker|auras": {
+   "w": 29,
+   "n": 60
+  },
+  "wurmspeaker|bfh": {
+   "w": 25,
+   "n": 60
+  },
+  "wurmspeaker|depths": {
+   "w": 6,
+   "n": 60
+  },
+  "wurmspeaker|massocrafts": {
+   "w": 11,
+   "n": 60
+  },
+  "wurmspeaker|mbc": {
+   "w": 18,
+   "n": 60
+  },
+  "wurmspeaker|mill": {
+   "w": 21,
+   "n": 60
+  },
+  "wurmspeaker|reeve": {
+   "w": 2,
+   "n": 60
+  },
+  "wurmspeaker|tempo": {
+   "w": 12,
+   "n": 60
+  },
+  "wurmspeaker|undertow": {
+   "w": 12,
+   "n": 60
+  },
+  "wurmspeaker|writ": {
+   "w": 3,
+   "n": 60
   }
  }
 }
