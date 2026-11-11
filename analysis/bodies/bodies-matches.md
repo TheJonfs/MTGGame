@@ -1,40 +1,40 @@
-# The Open in matches (ADR-171) — 3300 best-of-three matches, 8217 games; game one on the registered sixties, games two and three sideboarded
+# The Open in matches (ADR-171) — 3300 best-of-three matches, 8183 games; game one on the registered sixties, games two and three sideboarded
 
 | list | matches | game one | games two and three | delta (later − game one) |
 |---|---|---|---|---|
-| **marducontrol** | 72.5 ± 3.6 | 63.2 ± 3.9 | 65.2 ± 3.1 | +2.0 |
-| **reaperclio** | 68.5 ± 3.7 | 66.5 ± 3.8 | 60.7 ± 3.2 | -5.8 |
-| **emeraldsnakes** | 61.8 ± 3.9 | 62.5 ± 3.9 | 55.3 ± 3.3 | -7.2 |
-| **mbclio** | 60.2 ± 3.9 | 58.5 ± 3.9 | 55.5 ± 3.2 | -3.0 |
-| **countersnake** | 49.5 ± 4.0 | 51.7 ± 4.0 | 49.4 ± 3.3 | -2.3 |
-| **stampede** | 47.8 ± 4.0 | 44.7 ± 4.0 | 51.1 ± 3.2 | +6.4 |
-| **dragons** | 43.2 ± 4.0 | 44.3 ± 4.0 | 45.7 ± 3.3 | +1.4 |
-| **muster** | 42.1 ± 4.0 | 38.6 ± 3.9 | 47.2 ± 3.3 | +8.6 |
-| **aerie** | 39.8 ± 3.9 | 42.2 ± 4.0 | 43.4 ± 3.2 | +1.2 |
-| **rabble** | 38.4 ± 3.9 | 42.8 ± 4.0 | 42.6 ± 3.2 | -0.2 |
-| **wurmspeaker** | 26.2 ± 3.5 | 35.1 ± 3.8 | 33.7 ± 3.1 | -1.4 |
+| **marducontrol** | 68.1 ± 3.7 | 59.8 ± 3.9 | 63.1 ± 3.2 | +3.4 |
+| **reaperclio** | 66.1 ± 3.8 | 63.0 ± 3.9 | 59.9 ± 3.3 | -3.1 |
+| **mbclio** | 62.1 ± 3.9 | 61.5 ± 3.9 | 56.5 ± 3.2 | -5.0 |
+| **emeraldsnakes** | 59.2 ± 3.9 | 61.3 ± 3.9 | 53.6 ± 3.2 | -7.7 |
+| **bantsnake** | 57.8 ± 4.0 | 52.3 ± 4.0 | 56.3 ± 3.2 | +4.0 |
+| **stampede** | 48.0 ± 4.0 | 44.9 ± 4.0 | 51.4 ± 3.3 | +6.4 |
+| **aerie** | 42.3 ± 4.0 | 44.5 ± 4.0 | 44.4 ± 3.3 | -0.1 |
+| **rabble** | 39.6 ± 3.9 | 41.8 ± 3.9 | 44.1 ± 3.2 | +2.3 |
+| **dragons** | 38.9 ± 3.9 | 41.7 ± 3.9 | 42.9 ± 3.2 | +1.2 |
+| **muster** | 38.7 ± 3.9 | 43.2 ± 4.0 | 42.3 ± 3.3 | -0.9 |
+| **wurmspeaker** | 29.3 ± 3.6 | 36.2 ± 3.8 | 34.9 ± 3.2 | -1.3 |
 
 ## The pairings that move most after sideboarding (the row list's side; each is its opponent's loss)
 
 | pairing | matches | game one | games two and three | delta |
 |---|---|---|---|---|
-| muster over countersnake | 38 (60) | 23 | 51 (85) | +27 |
-| mbclio over reaperclio | 48 (60) | 33 | 53 (88) | +20 |
+| marducontrol over bantsnake | 52 (60) | 32 | 60 (100) | +28 |
+| bantsnake over muster | 63 (60) | 42 | 65 (94) | +23 |
+| rabble over mbclio | 39 (60) | 28 | 51 (90) | +22 |
+| bantsnake over stampede | 65 (60) | 48 | 67 (96) | +18 |
 | marducontrol over emeraldsnakes | 62 (60) | 47 | 65 (94) | +18 |
-| rabble over mbclio | 43 (60) | 35 | 51 (88) | +16 |
-| marducontrol over mbclio | 67 (60) | 48 | 64 (98) | +16 |
-| muster over wurmspeaker | 58 (60) | 43 | 59 (93) | +16 |
-| countersnake over emeraldsnakes | 43 (60) | 37 | 52 (85) | +15 |
-| muster over reaperclio | 20 (60) | 18 | 33 (78) | +15 |
-| stampede over rabble | 65 (60) | 48 | 63 (98) | +14 |
-| stampede over emeraldsnakes | 37 (60) | 33 | 47 (89) | +14 |
-| wurmspeaker over reaperclio | 13 (60) | 15 | 29 (77) | +14 |
-| stampede over countersnake | 40 (60) | 33 | 47 (88) | +13 |
-| dragons over mbclio | 42 (60) | 37 | 49 (95) | +13 |
-| wurmspeaker over rabble | 53 (60) | 44 | 57 (95) | +13 |
-| stampede over wurmspeaker | 65 (60) | 52 | 64 (88) | +12 |
-| dragons over emeraldsnakes | 32 (60) | 30 | 42 (91) | +12 |
-| muster over aerie | 62 (60) | 50 | 62 (94) | +12 |
-| dragons over reaperclio | 25 (60) | 28 | 40 (91) | +11 |
-| rabble over countersnake | 45 (60) | 38 | 49 (85) | +11 |
-| stampede over reaperclio | 23 (60) | 25 | 36 (87) | +11 |
+| dragons over wurmspeaker | 58 (60) | 43 | 59 (95) | +16 |
+| stampede over emeraldsnakes | 38 (60) | 30 | 45 (86) | +15 |
+| dragons over rabble | 48 (60) | 40 | 54 (89) | +14 |
+| aerie over muster | 45 (60) | 37 | 51 (87) | +14 |
+| muster over mbclio | 23 (60) | 25 | 39 (88) | +14 |
+| stampede over aerie | 52 (60) | 45 | 58 (86) | +13 |
+| muster over dragons | 52 (60) | 43 | 56 (90) | +12 |
+| stampede over mbclio | 50 (60) | 43 | 55 (87) | +12 |
+| stampede over wurmspeaker | 65 (60) | 52 | 63 (94) | +11 |
+| rabble over aerie | 53 (60) | 45 | 56 (91) | +11 |
+| bantsnake over aerie | 70 (60) | 57 | 67 (89) | +11 |
+| marducontrol over aerie | 68 (60) | 55 | 65 (89) | +10 |
+| reaperclio over emeraldsnakes | 57 (60) | 48 | 58 (93) | +10 |
+| stampede over reaperclio | 18 (60) | 23 | 33 (88) | +10 |
+| aerie over emeraldsnakes | 25 (60) | 30 | 39 (94) | +9 |

@@ -4,53 +4,55 @@
 
 ## The table of record
 
-11 active lists, the AI in both seats. **Game one** is a list's mean win rate against the other active lists on the registered sixties (the round-robin of record, `formats/bodies/means.json`). **Matches** is its best-of-three win rate — the figure the field's seat draw reads since S59 (60 matches a pairing, measured 2026-11-09; ADR-171): game one on the registered sixties, games two and three sideboarded. **After sideboarding** is its games-two-and-three rate less its game-one rate inside those matches.
+11 active lists, the AI in both seats. **Game one** is a list's mean win rate against the other active lists on the registered sixties (the round-robin of record, `formats/bodies/means.json`). **Matches** is its best-of-three win rate — the figure the field's seat draw reads since S59 (60 matches a pairing, measured 2026-11-11; ADR-171): game one on the registered sixties, games two and three sideboarded. **After sideboarding** is its games-two-and-three rate less its game-one rate inside those matches.
 
 | list | deck | pilot | matches | game one | after sideboarding | fifteen |
 |---|---|---|---|---|---|---|
-| Mardu Control | Usher Midrange (W B R) | midrange | 72.5 | 64 | +2.0 | registered, guided |
-| Reaper Clio | Snakes and Clio (G B u r) | midrange | 68.5 | 64 | −5.8 | registered |
-| Emerald Snakes | Snake Keeper (G R) | midrange | 61.8 | 59 | −7.2 | registered |
-| Mono-Black Clio | Vampires and Clio (B u r) | midrange | 60.2 | 60 | −3.0 | registered, guided |
-| Countersnake | Flash and Counters (G W U b) | midrange | 49.5 | 52 | −2.3 | registered |
-| the Stampede | Gruul Stompy (G R) | aggro | 47.8 | 45 | +6.4 | built |
-| Jund Dragons | Dragons (B R G) | midrange | 43.2 | 45 | +1.4 | registered |
-| the Muster | Boros Weenie (W r) | aggro | 42.1 | 42 | +8.6 | built |
-| the Aerie | Azorius Skies (W U) | midrange | 39.8 | 44 | +1.2 | registered, guided |
-| the Rabble | Goblins (R u b) | aggro | 38.4 | 41 | −0.2 | registered |
-| the Wurmspeaker | Wurm Ramp (G) | midrange | 26.2 | 34 | −1.4 | built |
+| Mardu Control | Usher Midrange (W B R) | midrange | 68.1 | 61 | +3.3 | registered, guided |
+| Reaper Clio | Snakes and Clio (G B u r) | midrange | 66.1 | 63 | −3.1 | registered |
+| Mono-Black Clio | Vampires and Clio (B u r) | midrange | 62.1 | 59 | −5.0 | registered, guided |
+| Emerald Snakes | Snake Keeper (G R) | midrange | 59.2 | 59 | −7.7 | registered |
+| Bant Countersnake | Flash and Counters (G W U) | midrange | 57.8 | 49 | +4.0 | registered |
+| the Stampede | Gruul Stompy (G R) | aggro | 48.0 | 48 | +6.5 | built |
+| the Aerie | Azorius Skies (W U) | midrange | 42.3 | 46 | −0.1 | registered, guided |
+| the Rabble | Goblins (R u b) | aggro | 39.6 | 41 | +2.3 | registered |
+| Jund Dragons | Dragons (B R G) | midrange | 38.9 | 45 | +1.2 | registered |
+| the Muster | Boros Weenie (W r) | aggro | 38.7 | 42 | −0.9 | built |
+| the Wurmspeaker | Wurm Ramp (G) | midrange | 29.3 | 35 | −1.3 | built |
 
-Archived (kept in the data, out of the field): none.
+Archived (kept in the data, out of the field): Countersnake.
 
 ## Among the lists above 50 (S71a — a reading lens, not the draw)
 
-The 4 lists above 50 in matches, counted against one another only. A list that gains most of its record from the bottom of the field falls here; the field's seat draw still reads the whole table.
+The 5 lists above 50 in matches, counted against one another only. A list that gains most of its record from the bottom of the field falls here; the field's seat draw still reads the whole table.
 
 | | list | among them | the whole field | change |
 |---|---|---|---|---|
-| 1 | Mardu Control | 63.3 ± 7.0 | 72.5 | −9.2 |
-| 2 | Reaper Clio | 48.9 ± 7.3 | 68.5 | −19.6 |
-| 3 | Emerald Snakes | 47.8 ± 7.3 | 61.8 | −14.0 |
-| 4 | Mono-Black Clio | 40.0 ± 7.2 | 60.2 | −20.2 |
+| 1 | Mardu Control | 60.8 ± 6.2 | 68.1 | −7.3 |
+| 2 | Mono-Black Clio | 54.2 ± 6.3 | 62.1 | −7.9 |
+| 3 | Reaper Clio | 50.0 ± 6.3 | 66.1 | −16.1 |
+| 4 | Emerald Snakes | 42.9 ± 6.3 | 59.2 | −16.3 |
+| 5 | Bant Countersnake | 42.1 ± 6.2 | 57.8 | −15.7 |
 
 Head to head (the row list's matches won, %):
 
-| | marducontrol | reaperclio | emeraldsnakes | mbclio |
-|---|---|---|---|---|
-| **marducontrol** | — | 62 | 62 | 67 |
-| **reaperclio** | 38 | — | 57 | 52 |
-| **emeraldsnakes** | 38 | 43 | — | 62 |
-| **mbclio** | 33 | 48 | 38 | — |
+| | marducontrol | mbclio | reaperclio | emeraldsnakes | bantsnake |
+|---|---|---|---|---|---|
+| **marducontrol** | — | 68 | 62 | 62 | 52 |
+| **mbclio** | 32 | — | 52 | 60 | 73 |
+| **reaperclio** | 38 | 48 | — | 57 | 57 |
+| **emeraldsnakes** | 38 | 40 | 43 | — | 50 |
+| **bantsnake** | 48 | 27 | 43 | 50 | — |
 
 ## Staples (ADR-170)
 
-Nonland cards outside the restricted list that more than half of the 11 active lists play: Flametongue Kavu (7 lists, 26 copies); Birds of Paradise (6 lists, 22 copies).
+Nonland cards outside the restricted list that more than half of the 11 active lists play: Flametongue Kavu (7 lists, 26 copies).
 
-The most played: Flametongue Kavu 7 · Birds of Paradise 6 · Reaper's Forerunner 5 · Lightning Bolt 5 · Swords to Plowshares 4 · Manaba 3 · Vampire Nighthawk 3 · Clio, Lady of the Depths 3.
+The most played: Flametongue Kavu 7 · Reaper's Forerunner 5 · Birds of Paradise 5 · Lightning Bolt 5 · Swords to Plowshares 4 · Manaba 3 · Vampire Nighthawk 3 · Restoration Angel 3.
 
 ## Mardu Control — Usher Midrange (W B R)
 
-`marducontrol` · midrange · game one 64 · matches 72.5
+`marducontrol` · midrange · game one 61 · matches 68.1
 
 - **Lands (21):** 4 Badlands · 4 Scrubland · 4 Plateau · 4 Godless Shrine · 1 Cairnbrand · 1 Obsidian Observatory · 2 Blood Crypt · 1 Sacred Foundry
 - **Creatures (26):** 3 Lumen, the Hearth Fire · 3 Restoration Angel · 3 The Jet Witch · 4 Vampire Nighthawk · 4 Blood Artist · 4 Soul Warden · 3 The Usher · 2 Flametongue Kavu
@@ -75,7 +77,7 @@ The most played: Flametongue Kavu 7 · Birds of Paradise 6 · Reaper's Forerunne
 
 ## Reaper Clio — Snakes and Clio (G B u r)
 
-`reaperclio` · midrange · game one 64 · matches 68.5
+`reaperclio` · midrange · game one 63 · matches 66.1
 
 - **Lands (21):** 4 Taiga · 4 Bayou · 4 Tropical Island · 1 Cairnbrand · 1 Tallyflame Court · 1 Wrackroot · 2 Badlands · 2 Volcanic Island · 2 Underground Sea
 - **Creatures (36):** 4 Reaper's Forerunner · 4 Manaba · 4 Rage Cobra · 3 The Reaper · 4 Clio, Lady of the Depths · 4 Birds of Paradise · 4 Wall of Blossoms · 4 Flametongue Kavu · 3 Mystic Snake · 1 The Reeve · 1 Drana, Kalastria Bloodchief
@@ -85,21 +87,9 @@ The most played: Flametongue Kavu 7 · Birds of Paradise 6 · Reaper's Forerunne
 - **History:**
   - contributed — Post-S71a (the Bodies seeds): Reaper Clio from the Open, without the Power — the Power for two duals, three Putrefy (from its fifteen) and a Drana; its fifteen two Pyroclasm for the Putrefy moved in.
 
-## Emerald Snakes — Snake Keeper (G R)
-
-`emeraldsnakes` · midrange · game one 59 · matches 61.8
-
-- **Lands (21):** 2 Bayou · 4 Taiga · 4 Stomping Ground · 1 Tallyflame Court · 1 Wrackroot · 1 Shevelport · 1 Cairnbrand · 4 Tropical Island · 1 Volcanic Island · 2 Forest
-- **Creatures (32):** 4 Birds of Paradise · 4 Manaba · 4 Rage Cobra · 4 The Emerald Keeper · 4 Reaper's Forerunner · 4 Flametongue Kavu · 4 Gaean Wurm · 4 Elvish Visionary
-- **Other (7):** 3 Harmonize · 2 Rancor · 2 Lightning Bolt
-- **Its fifteen (registered):** 2 Airship Crash · 2 Foxglove Dose · 2 Savage Twister · 2 Tormod's Crypt · 2 Pelakka Wurm · 2 Penumbra Wurm · 1 Baru, Wurmspeaker · 2 Wall of Razors
-- **Its sideboard guide:** none — the general rules sideboard it.
-- **History:**
-  - contributed — Post-S71a (the Bodies seeds): Emerald Snakes from the Open, without the Power — the Power for two Forests, a third Harmonize, Rancor and Bolt.
-
 ## Mono-Black Clio — Vampires and Clio (B u r)
 
-`mbclio` · midrange · game one 60 · matches 60.2
+`mbclio` · midrange · game one 59 · matches 62.1
 
 - **Lands (23):** 1 Cairnbrand · 1 Tallyflame Court · 4 Badlands · 4 Blood Crypt · 4 Underground Sea · 4 Watery Grave · 5 Swamp
 - **Creatures (26):** 4 Drana, Kalastria Bloodchief · 4 Vampire Nighthawk · 4 The Jet Witch · 4 Hypnotic Specter · 4 Clio, Lady of the Depths · 4 Dread Presence · 2 Child of Night
@@ -114,21 +104,33 @@ The most played: Flametongue Kavu 7 · Birds of Paradise 6 · Reaper's Forerunne
 - **History:**
   - contributed — Post-S71a (the Bodies seeds): Mono-Black Clio from Grixis, without the Power — from Grixis (Chris's); to twenty-four creatures and past: the Power for a Swamp, a fourth Drana, two Children of Night, three Doom Blades.
 
-## Countersnake — Flash and Counters (G W U b)
+## Emerald Snakes — Snake Keeper (G R)
 
-`countersnake` · midrange · game one 52 · matches 49.5
+`emeraldsnakes` · midrange · game one 59 · matches 59.2
 
-- **Lands (21):** 4 Bayou · 1 Obsidian Observatory · 4 Savannah · 4 Tropical Island · 4 Underground Sea · 1 Wrackroot · 1 Shevelport · 1 Tundra · 1 Breeding Pool
-- **Creatures (27):** 4 Birds of Paradise · 2 Deadly Recluse · 2 Wall of Blossoms · 3 Clio, Lady of the Depths · 4 Reaper's Forerunner · 2 Tidewall · 3 Mystic Snake · 4 Restoration Angel · 3 The Sower
-- **Other (12):** 4 Swords to Plowshares · 4 Counterspell · 2 Absorb · 2 Essence Scatter
-- **Its fifteen (registered):** 2 Tormod's Crypt · 2 Faerie Macabre · 1 Tidewall · 1 Wall of Blossoms · 1 Deadly Recluse · 1 Treetop Snarespinner · 1 Drana, Kalastria Bloodchief · 2 Temporal Spring · 2 Protocol · 2 Essence Scatter
+- **Lands (21):** 2 Bayou · 4 Taiga · 4 Stomping Ground · 1 Tallyflame Court · 1 Wrackroot · 1 Shevelport · 1 Cairnbrand · 4 Tropical Island · 1 Volcanic Island · 2 Forest
+- **Creatures (32):** 4 Birds of Paradise · 4 Manaba · 4 Rage Cobra · 4 The Emerald Keeper · 4 Reaper's Forerunner · 4 Flametongue Kavu · 4 Gaean Wurm · 4 Elvish Visionary
+- **Other (7):** 3 Harmonize · 2 Rancor · 2 Lightning Bolt
+- **Its fifteen (registered):** 2 Airship Crash · 2 Foxglove Dose · 2 Savage Twister · 2 Tormod's Crypt · 2 Pelakka Wurm · 2 Penumbra Wurm · 1 Baru, Wurmspeaker · 2 Wall of Razors
 - **Its sideboard guide:** none — the general rules sideboard it.
 - **History:**
-  - contributed — Post-S71a (the Bodies seeds): Countersnake from the Open, without the Power — the Power for two duals, two Essence Scatter (from its fifteen), a second Absorb, a third Mystic Snake.
+  - contributed — Post-S71a (the Bodies seeds): Emerald Snakes from the Open, without the Power — the Power for two Forests, a third Harmonize, Rancor and Bolt.
+
+## Bant Countersnake — Flash and Counters (G W U)
+
+`bantsnake` · midrange · game one 49 · matches 57.8
+
+- **Lands (23):** 1 Shevelport · 1 Ranksmere · 4 Tropical Island · 4 Tundra · 1 Wrackroot · 4 Savannah · 4 Hallowed Fountain · 2 Breeding Pool · 2 Temple Garden
+- **Creatures (24):** 4 Arcane Collector · 2 Plumecreed Escort · 4 Reaper's Forerunner · 4 Vigil Keeper · 4 Mystic Snake · 4 Restoration Angel · 2 The Sower
+- **Other (13):** 4 Swords to Plowshares · 4 Counterspell · 2 Essence Scatter · 3 Absorb
+- **Its fifteen (registered):** 4 Dazzling Angel · 4 Tidewall · 3 Wrath of God · 4 Wall of Reverence
+- **Its sideboard guide:** none — the general rules sideboard it.
+- **History:**
+  - contributed — Post-S71a (Chris's 75, the Bodies event of 2026-11-10, seed 325496): second of the field — 5–0 in the Swiss, then 2–0, 2–1 and 1–2 in the bracket (15–4 in games), the final lost to Mono-Black Clio. Countersnake without the black: Arcane Collector, Plumecreed Escort and Vigil Keeper for Clio, Birds, Deadly Recluse and Wall of Blossoms; Hallowed Fountain and Temple Garden for the black duals. No guide.
 
 ## the Stampede — Gruul Stompy (G R)
 
-`stampede` · aggro · game one 45 · matches 47.8
+`stampede` · aggro · game one 48 · matches 48.0
 
 - **Lands (20):** 4 Stomping Ground · 4 Taiga · 10 Forest · 2 Mountain
 - **Creatures (32):** 4 Llanowar Elves · 2 Birds of Paradise · 4 Dungrove Elder · 4 Centaur Courser · 4 Rumbling Baloth · 3 Gaean Wurm · 4 Flametongue Kavu · 3 Reaper's Forerunner · 2 Baru, Wurmspeaker · 2 Little Bear
@@ -137,32 +139,9 @@ The most played: Flametongue Kavu 7 · Birds of Paradise 6 · Reaper's Forerunne
 - **History:**
   - contributed — Post-S71a (the Bodies seeds): the Stampede from Naya, without the Power — from Naya; the Power for a Forest and two Little Bears.
 
-## Jund Dragons — Dragons (B R G)
-
-`dragons` · midrange · game one 45 · matches 43.2
-
-- **Lands (23):** 4 Badlands · 4 Bayou · 4 Taiga · 1 Cairnbrand · 4 Stomping Ground · 4 Overgrown Tomb · 1 Blood Crypt · 1 Swamp
-- **Creatures (34):** 3 Drakuseth, Maw of Flames · 2 The Ruby Tyrant · 4 Flametongue Kavu · 4 Reaper's Forerunner · 3 The Jet Witch · 4 Vampire Nighthawk · 4 Shocking Sharpshooter · 4 Manaba · 4 Birds of Paradise · 2 Voracious Cobra
-- **Other (3):** 3 Lightning Bolt
-- **Its fifteen (registered):** 4 Savage Twister · 2 Voracious Cobra · 4 Pyroclasm · 3 Seraphina, the Initiative · 2 Putrefy
-- **Its sideboard guide:** none — the general rules sideboard it.
-- **History:**
-  - contributed — Post-S71a (the Bodies seeds): Jund Dragons from Jund, without the Power — from Jund; the Power for a Swamp, three Bolts and two Voracious Cobras (from its fifteen); its fifteen two Putrefy for the Cobras moved in.
-
-## the Muster — Boros Weenie (W r)
-
-`muster` · aggro · game one 42 · matches 42.1
-
-- **Lands (22):** 4 Plateau · 4 Sacred Foundry · 8 Plains · 4 Mountain · 2 Secluded Steppe
-- **Creatures (24):** 4 Savannah Lions · 4 Soul Warden · 2 Suntail Hawk · 1 Fencing Ace · 3 Emeria Angel · 4 Flametongue Kavu · 3 Vigil Keeper · 3 Dawnwing Marshal
-- **Other (14):** 4 Raise the Alarm · 4 Glorious Anthem · 4 Lightning Bolt · 2 Swords to Plowshares
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — Post-S71a (the Bodies seeds): the Muster from the Open, without the Power — to twenty-four creatures: the Power for three Dawnwing Marshals.
-
 ## the Aerie — Azorius Skies (W U)
 
-`aerie` · midrange · game one 44 · matches 39.8
+`aerie` · midrange · game one 46 · matches 42.3
 
 - **Lands (22):** 4 Hallowed Fountain · 4 Tundra · 1 Obsidian Observatory · 5 Plains · 8 Island
 - **Creatures (27):** 4 Youthful Valkyrie · 4 Inspiring Overseer · 4 Plumecreed Escort · 4 Restoration Angel · 2 Traumatizer · 2 Karmic Mentor · 3 Serra Angel · 3 Emeria Angel · 1 Faerie Formation
@@ -175,7 +154,7 @@ The most played: Flametongue Kavu 7 · Birds of Paradise 6 · Reaper's Forerunne
 
 ## the Rabble — Goblins (R u b)
 
-`rabble` · aggro · game one 41 · matches 38.4
+`rabble` · aggro · game one 41 · matches 39.6
 
 - **Lands (20):** 1 Cairnbrand · 4 Badlands · 1 Tallyflame Court · 4 Volcanic Island · 10 Mountain
 - **Creatures (24):** 4 Raging Goblin · 4 Goblin Chieftain · 4 Seasoned Pyromancer · 4 Flametongue Kavu · 3 Siege-Gang Commander · 4 Boggart Brute · 1 Goblin Matron
@@ -185,9 +164,32 @@ The most played: Flametongue Kavu 7 · Birds of Paradise 6 · Reaper's Forerunne
 - **History:**
   - contributed — Post-S71a (the Bodies seeds): the Rabble from the Open, without the Power — to twenty-four creatures: the Power and the Dragon Fodders for two Mountains, four Boggart Brutes, a third Siege-Gang and a Matron.
 
+## Jund Dragons — Dragons (B R G)
+
+`dragons` · midrange · game one 45 · matches 38.9
+
+- **Lands (23):** 4 Badlands · 4 Bayou · 4 Taiga · 1 Cairnbrand · 4 Stomping Ground · 4 Overgrown Tomb · 1 Blood Crypt · 1 Swamp
+- **Creatures (34):** 3 Drakuseth, Maw of Flames · 2 The Ruby Tyrant · 4 Flametongue Kavu · 4 Reaper's Forerunner · 3 The Jet Witch · 4 Vampire Nighthawk · 4 Shocking Sharpshooter · 4 Manaba · 4 Birds of Paradise · 2 Voracious Cobra
+- **Other (3):** 3 Lightning Bolt
+- **Its fifteen (registered):** 4 Savage Twister · 2 Voracious Cobra · 4 Pyroclasm · 3 Seraphina, the Initiative · 2 Putrefy
+- **Its sideboard guide:** none — the general rules sideboard it.
+- **History:**
+  - contributed — Post-S71a (the Bodies seeds): Jund Dragons from Jund, without the Power — from Jund; the Power for a Swamp, three Bolts and two Voracious Cobras (from its fifteen); its fifteen two Putrefy for the Cobras moved in.
+
+## the Muster — Boros Weenie (W r)
+
+`muster` · aggro · game one 42 · matches 38.7
+
+- **Lands (22):** 4 Plateau · 4 Sacred Foundry · 8 Plains · 4 Mountain · 2 Secluded Steppe
+- **Creatures (24):** 4 Savannah Lions · 4 Soul Warden · 2 Suntail Hawk · 1 Fencing Ace · 3 Emeria Angel · 4 Flametongue Kavu · 3 Vigil Keeper · 3 Dawnwing Marshal
+- **Other (14):** 4 Raise the Alarm · 4 Glorious Anthem · 4 Lightning Bolt · 2 Swords to Plowshares
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — Post-S71a (the Bodies seeds): the Muster from the Open, without the Power — to twenty-four creatures: the Power for three Dawnwing Marshals.
+
 ## the Wurmspeaker — Wurm Ramp (G)
 
-`wurmspeaker` · midrange · game one 34 · matches 26.2
+`wurmspeaker` · midrange · game one 35 · matches 29.3
 
 - **Lands (22):** 20 Forest · 2 Tranquil Thicket
 - **Creatures (31):** 4 Llanowar Elves · 4 Birds of Paradise · 4 Wood Elves · 4 Seedborn Muse · 3 Gaean Wurm · 3 Pelakka Wurm · 3 Baru, Wurmspeaker · 2 Treetop Snarespinner · 2 The Emerald Keeper · 2 Rampaging Baloths
@@ -195,4 +197,22 @@ The most played: Flametongue Kavu 7 · Birds of Paradise 6 · Reaper's Forerunne
 - **Its fifteen:** built by the field's builder for each seat (none registered).
 - **History:**
   - contributed — Post-S71a (the Bodies seeds): the Wurmspeaker from the Open, without the Power — the Lotus and Mox for a third Prey Upon and a third Pelakka Wurm.
+
+# Archived lists
+
+*Kept in the data with their plans and their histories; out of the field, the round-robin and the tables.*
+
+## Countersnake — Flash and Counters (G W U b)
+
+`countersnake` · midrange · **archived**
+
+*Archived:* Post-S71a (Chris, 2026-11-11): Countersnake (with Clio) archived for Bant Countersnake (his 75, second in the Bodies event of 2026-11-10). 400 matches a pairing, seed 91, against the other ten lists: Bant Countersnake better in eight of ten (mean 55.6 to 49.5) — Mardu Control +26.5, Jund Dragons +13.3, the Rabble +10.5, Reaper Clio +9.3; the Wurmspeaker −8.0, the rest within noise. Last measured 49.5 in matches (the first Bodies table).
+
+- **Lands (21):** 4 Bayou · 1 Obsidian Observatory · 4 Savannah · 4 Tropical Island · 4 Underground Sea · 1 Wrackroot · 1 Shevelport · 1 Tundra · 1 Breeding Pool
+- **Creatures (27):** 4 Birds of Paradise · 2 Deadly Recluse · 2 Wall of Blossoms · 3 Clio, Lady of the Depths · 4 Reaper's Forerunner · 2 Tidewall · 3 Mystic Snake · 4 Restoration Angel · 3 The Sower
+- **Other (12):** 4 Swords to Plowshares · 4 Counterspell · 2 Absorb · 2 Essence Scatter
+- **Its fifteen (registered):** 2 Tormod's Crypt · 2 Faerie Macabre · 1 Tidewall · 1 Wall of Blossoms · 1 Deadly Recluse · 1 Treetop Snarespinner · 1 Drana, Kalastria Bloodchief · 2 Temporal Spring · 2 Protocol · 2 Essence Scatter
+- **Its sideboard guide:** none — the general rules sideboard it.
+- **History:**
+  - contributed — Post-S71a (the Bodies seeds): Countersnake from the Open, without the Power — the Power for two duals, two Essence Scatter (from its fifteen), a second Absorb, a third Mystic Snake.
 

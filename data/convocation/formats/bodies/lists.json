@@ -5,7 +5,9 @@
   "small": 22,
   "large": 6
  },
- "archived": {},
+ "archived": {
+  "countersnake": "Post-S71a (Chris, 2026-11-11): Countersnake (with Clio) archived for Bant Countersnake (his 75, second in the Bodies event of 2026-11-10). 400 matches a pairing, seed 91, against the other ten lists: Bant Countersnake better in eight of ten (mean 55.6 to 49.5) — Mardu Control +26.5, Jund Dragons +13.3, the Rabble +10.5, Reaper Clio +9.3; the Wurmspeaker −8.0, the rest within noise. Last measured 49.5 in matches (the first Bodies table)."
+ },
  "guides": {
   "marducontrol": [
    {
@@ -1396,6 +1398,113 @@
     {
      "cardId": "unearth",
      "count": 3
+    }
+   ]
+  },
+  {
+   "key": "bantsnake",
+   "name": "Bant Countersnake",
+   "title": "Flash and Counters (G W U)",
+   "archetype": "midrange",
+   "source": "Post-S71a (Chris's 75, the Bodies event of 2026-11-10, seed 325496): second of the field — 5–0 in the Swiss, then 2–0, 2–1 and 1–2 in the bracket (15–4 in games), the final lost to Mono-Black Clio. Countersnake without the black: Arcane Collector, Plumecreed Escort and Vigil Keeper for Clio, Birds, Deadly Recluse and Wall of Blossoms; Hallowed Fountain and Temple Garden for the black duals. No guide.",
+   "decklist": [
+    {
+     "cardId": "arcane_collector",
+     "count": 4
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 4
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 2
+    },
+    {
+     "cardId": "plumecreed_escort",
+     "count": 2
+    },
+    {
+     "cardId": "absorb",
+     "count": 3
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 4
+    },
+    {
+     "cardId": "vigil_keeper",
+     "count": 4
+    },
+    {
+     "cardId": "mystic_snake",
+     "count": 4
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 4
+    },
+    {
+     "cardId": "the_sower",
+     "count": 2
+    },
+    {
+     "cardId": "shevelport",
+     "count": 1
+    },
+    {
+     "cardId": "ranksmere",
+     "count": 1
+    },
+    {
+     "cardId": "tropical_island",
+     "count": 4
+    },
+    {
+     "cardId": "tundra",
+     "count": 4
+    },
+    {
+     "cardId": "wrackroot",
+     "count": 1
+    },
+    {
+     "cardId": "savannah",
+     "count": 4
+    },
+    {
+     "cardId": "hallowed_fountain",
+     "count": 4
+    },
+    {
+     "cardId": "breeding_pool",
+     "count": 2
+    },
+    {
+     "cardId": "temple_garden",
+     "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "dazzling_angel",
+     "count": 4
+    },
+    {
+     "cardId": "tidewall",
+     "count": 4
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 3
+    },
+    {
+     "cardId": "wall_of_reverence",
+     "count": 4
     }
    ]
   }
