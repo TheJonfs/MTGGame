@@ -26,7 +26,8 @@ export const KEYWORDS = [
 ] as const;
 export type Keyword = (typeof KEYWORDS)[number];
 
-export type Duration = "WHILE_SOURCE_ON_BATTLEFIELD" | "UNTIL_END_OF_TURN" | "UNTIL_SOURCE_LEAVES";
+/** Post-S71a (R-126): INDEFINITELY — a resolved effect with no stated duration lasts as long as its object (CR 611.2a; Correspondence's exchange). */
+export type Duration = "WHILE_SOURCE_ON_BATTLEFIELD" | "UNTIL_END_OF_TURN" | "UNTIL_SOURCE_LEAVES" | "INDEFINITELY";
 
 /**
  * Scopes select sets of objects/players without targeting.
@@ -138,11 +139,17 @@ export interface TargetSpec {
   withoutKeyword?: Keyword;
   /** Exclude a subtype ("non-Angel creature"). */
   notSubtype?: string;
+  /** Post-S71a (R-127, Chris's Terrain Collapse: "target nonbasic land"): the candidate has no Basic supertype (CR 205.4c). */
+  nonbasic?: true;
   /** "another target …": the ability's own source is never legal. */
   other?: boolean;
   /** A8: targets of this spec must differ from every target chosen by EARLIER specs (the Drakuseth
    * ruling's no-stacking — "each of up to two OTHER targets"). */
   distinctFromPrior?: boolean;
+  /** Post-S71a (R-126, Correspondence: "two target permanents that share a permanent type"): this spec's target must
+   * share a permanent type (artifact, creature, enchantment, land, planeswalker — CR 701.12 rulings) with the target
+   * the spec before it chose. */
+  sharesTypeWithPrior?: boolean;
 }
 
 /** ADR-075 A4: a battlefield-permanent predicate for counting / max-power refs. */
@@ -347,6 +354,8 @@ export type EffectBase =
    * effect the control layer reads beside the statics; expires at cleanup (the creature stays tapped
    * if it attacked); survives the source leaving (CR 611.2c — the duration is the turn's, not hers). */
   | { type: "gainControl"; scope?: Scope; target?: number; duration?: Duration }
+  /** Post-S71a (R-126, Correspondence): exchange control of the two targets (CR 701.12) — indefinitely; nothing happens if either is illegal on resolution, they no longer share a permanent type, or one player controls both. */
+  | { type: "exchangeControl"; targets: [number, number] }
   /** ADR-068 Amendment 1: find-may-fail search; chooser sees matching library cards in the request payload; always shuffles after (CR 701.19).
    * ADR-076: predicate may be `subtype:<Subtype>` (Goblin Matron). */
   /** S30 (R-093, Buried Alive): `to: "graveyard"` and `count` ("up to N" — one logged pick per card, decline
@@ -426,6 +435,7 @@ export const EFFECT_TYPES: readonly EffectType[] = [
   "returnFromGraveyard",
   "fight",
   "gainControl",
+  "exchangeControl",
   "searchLibrary",
   "addMana",
   "exileThenReturn",
@@ -722,7 +732,8 @@ export function cardColors(def: CardDef): ("W" | "U" | "B" | "R" | "G")[] {
   if (def.colors) return def.colors;
   const out: ("W" | "U" | "B" | "R" | "G")[] = [];
   for (const c of ["W", "U", "B", "R", "G"] as const) {
-    if (def.manaCost.includes(`{${c}}`)) out.push(c);
+    // R-125: a hybrid symbol ({U/R}) gives the card both its colours (CR 202.2d)
+    if (def.manaCost.includes(`{${c}}`) || def.manaCost.includes(`{${c}/`) || def.manaCost.includes(`/${c}}`)) out.push(c);
   }
   return out;
 }

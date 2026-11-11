@@ -18,7 +18,7 @@ import type { Action } from "./actions.js";
 import { chooseAuraHost } from "./attach.js";
 import { untapPermanent } from "./untap.js";
 import type { EngineCtx } from "./ctx.js";
-import { isLegalTarget } from "./targeting.js";
+import { sharePermanentType, isLegalTarget } from "./targeting.js";
 import { dealDamage, discardCard, drawCard, gainLife, loseLife } from "./ops.js";
 import { createObject, moveBatchToGraveyard, moveObject } from "./zones.js";
 import { getObject, nextTimestamp, opponentOf, type PlayerId, type StackItem } from "./state.js";
@@ -389,6 +389,19 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
 
     draw(player: number, count: number): void {
       for (let i = 0; i < count; i++) drawCard(ctx, player as PlayerId);
+    },
+
+    exchangeControl(idA: string, idB: string): void {
+      // Post-S71a (R-126; CR 701.12a, 611.2a). The relation is read again as it resolves: no longer sharing a
+      // permanent type makes the second target illegal, and the exchange doesn't happen. One controller: nothing.
+      const a = ctx.state.objects[idA], b = ctx.state.objects[idB];
+      if (!a || !b || a.zone !== "battlefield" || b.zone !== "battlefield") return;
+      if (!sharePermanentType(ctx, idA, idB)) return;
+      const ca = a.controller, cb = b.controller;
+      if (ca === cb) return;
+      for (const [objectId, controller] of [[idA, cb], [idB, ca]] as const) {
+        ctx.state.continuousEffects.push({ kind: "gainControl", objectId, controller, duration: "INDEFINITELY", sourceStackItemId: item.id, ...(item.sourceCardId ? { sourceCardId: item.sourceCardId } : {}), timestamp: nextTimestamp(ctx.state) });
+      }
     },
 
     addContinuousEffect(effect: ResolvedContinuousEffect): void {
@@ -885,6 +898,7 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
     draw(player_: number, count: number): void {
       for (let i = 0; i < count; i++) drawCard(ctx, player_ as PlayerId);
     },
+    exchangeControl(): void { throw new Error("exchangeControl outside a resolving spell"); },
     addContinuousEffect(): void {
       throw new Error("initialization effects cannot create continuous effects (no source to bound them)");
     },

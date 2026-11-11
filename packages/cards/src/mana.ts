@@ -11,10 +11,14 @@ export interface ManaCost {
   generic: number;
   xCount: number; // number of {X} symbols (Blaze has 1; the Emerald Keeper's {X}{X} has 2 — announce charges xCount·X, S25 word 1)
   colored: Record<Color, number>;
+  /** Post-S71a (R-125, hybrid mana — Chris's Correspondence): each hybrid pip as the payments it accepts, e.g. {U/R} →
+   * ["U", "R"]. A list of alternatives, not a pair, so a later {2/W} or {W/P} is a new kind of entry, not a new shape;
+   * only two-colour hybrid parses today. Each pip counts one toward mana value (CR 202.3f). */
+  hybrid: Color[][];
 }
 
 export function emptyManaCost(): ManaCost {
-  return { generic: 0, xCount: 0, colored: { W: 0, U: 0, B: 0, R: 0, G: 0 } };
+  return { generic: 0, xCount: 0, colored: { W: 0, U: 0, B: 0, R: 0, G: 0 }, hybrid: [] };
 }
 
 const SYMBOL_RE = /\{([^}]+)\}/g;
@@ -29,6 +33,12 @@ export function parseManaCost(text: string): ManaCost {
     if (sym === "X") cost.xCount += 1;
     else if (/^\d+$/.test(sym)) cost.generic += parseInt(sym, 10);
     else if ((COLORS as readonly string[]).includes(sym)) cost.colored[sym as Color] += 1;
+    else if (sym.includes("/")) {
+      // R-125: two-colour hybrid ({U/R}, CR 107.4e). Monocoloured hybrid ({2/W}) and Phyrexian ({W/P}) are not supported yet.
+      const parts = sym.split("/");
+      if (parts.length !== 2 || parts.some((p) => !(COLORS as readonly string[]).includes(p)) || parts[0] === parts[1]) throw new Error(`Unsupported hybrid mana symbol {${sym}} in "${text}" (only two-colour hybrid such as {U/R})`);
+      cost.hybrid.push(parts as Color[]);
+    }
     else throw new Error(`Unknown mana symbol {${sym}} in "${text}"`);
   }
   if (matchedLength !== text.length) throw new Error(`Malformed mana cost "${text}"`);
@@ -37,7 +47,15 @@ export function parseManaCost(text: string): ManaCost {
 
 /** Converted cost given a chosen X (CR 202.3). */
 export function manaValue(cost: ManaCost, x = 0): number {
-  return cost.generic + cost.xCount * x + COLORS.reduce((n, c) => n + cost.colored[c], 0);
+  return cost.generic + cost.xCount * x + COLORS.reduce((n, c) => n + cost.colored[c], 0) + cost.hybrid.length;
+}
+
+/** R-125: a cost's coloured pips by colour for counting (deck building's land split): a hybrid pip counts half toward
+ * each of its colours. Not for payment — the engine's solver pays a hybrid pip with either colour. */
+export function colourPips(cost: ManaCost): Record<Color, number> {
+  const out = { ...cost.colored };
+  for (const h of cost.hybrid) for (const c of h) out[c] += 1 / h.length;
+  return out;
 }
 
 /** Parse mana produced by addMana effects, e.g. "{R}", "{C}", "{G}{G}". No X. */

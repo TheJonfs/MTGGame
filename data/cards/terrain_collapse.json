@@ -1,0 +1,30 @@
+{
+ "id": "terrain_collapse",
+ "name": "Terrain Collapse",
+ "source": "custom",
+ "text": "Destroy target nonbasic land.",
+ "manaCost": "{R/G}{R/G}",
+ "types": [
+  "Sorcery"
+ ],
+ "targets": [
+  {
+   "count": 1,
+   "predicate": "land",
+   "zone": "battlefield",
+   "nonbasic": true
+  }
+ ],
+ "spellEffect": [
+  {
+   "type": "destroy",
+   "target": 0
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/terrain_collapse.png",
+  "fallback": "rendered"
+ },
+ "printedAsset": "terrain_collapse.jpg",
+ "shopTier": "R"
+}

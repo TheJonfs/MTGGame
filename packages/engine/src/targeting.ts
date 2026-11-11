@@ -51,6 +51,8 @@ export function isLegalTarget(ctx: EngineCtx, spec: TargetSpec, target: Resolved
     return false;
   }
   if (spec.other && sourceId && target.kind === "object" && target.id === sourceId) return false;
+  // R-127 (Terrain Collapse): "nonbasic" — no Basic supertype; read again on resolution like every predicate (CR 608.2b)
+  if (spec.nonbasic && (target.kind !== "object" || !ctx.state.objects[target.id] || (ctx.defs.def(ctx.state.objects[target.id]!.cardId).supertypes ?? []).includes("Basic"))) return false;
   if (target.kind === "object" && (spec.withKeyword || spec.withoutKeyword || spec.notSubtype)) {
     const obj = ctx.state.objects[target.id];
     if (!obj || obj.zone !== "battlefield") return false;
@@ -253,6 +255,14 @@ export function targetCandidates(ctx: EngineCtx, spec: TargetSpec, by: PlayerId,
   return out;
 }
 
+/** Post-S71a (R-126): the permanent types (CR 701.12 rulings: artifact, creature, enchantment, land, planeswalker —
+ * supertypes such as legendary are not permanent types), read from the objects' current characteristics. */
+const PERMANENT_TYPES = ["Artifact", "Creature", "Enchantment", "Land", "Planeswalker"] as const;
+export function sharePermanentType(ctx: EngineCtx, idA: string, idB: string): boolean {
+  const ta = characteristics(ctx, idA).types, tb = characteristics(ctx, idB).types;
+  return PERMANENT_TYPES.some((t) => ta.includes(t) && tb.includes(t));
+}
+
 /**
  * All legal target tuples for a spell/ability's specs (each spec count=1 in
  * the current pool; the cartesian product is bounded by ADR-004's reasoning).
@@ -261,6 +271,9 @@ export function targetCombinations(ctx: EngineCtx, specs: TargetSpec[], by: Play
   if (specs.length === 0) return [[]];
   const key = (t: ResolvedTarget) => JSON.stringify(t);
   let combos: ResolvedTarget[][] = [[]];
+  // R-126: each object's permanent types read once per enumeration, not once per pair
+  const typesMemo = new Map<string, string[]>();
+  const permTypes = (id: string) => { let t = typesMemo.get(id); if (!t) { const ct = characteristics(ctx, id).types; t = PERMANENT_TYPES.filter((x) => ct.includes(x)); typesMemo.set(id, t); } return t; };
   for (const spec of specs) {
     const next: ResolvedTarget[][] = [];
     if (spec.count === "any") {
@@ -274,6 +287,8 @@ export function targetCombinations(ctx: EngineCtx, specs: TargetSpec[], by: Play
       for (const combo of combos) {
         for (const c of cands) {
           if (spec.distinctFromPrior && combo.some((t) => key(t) === key(c))) continue;
+          // R-126: sharing a permanent type with the target before it (Correspondence's second target) — and never the same object
+          if (spec.sharesTypeWithPrior) { const prev = combo[combo.length - 1]; if (!prev || prev.kind !== "object" || c.kind !== "object" || prev.id === c.id || !permTypes(prev.id).some((t) => permTypes(c.id).includes(t))) continue; }
           next.push([...combo, c]);
         }
       }

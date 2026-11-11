@@ -1,0 +1,38 @@
+{
+ "id": "correspondence",
+ "name": "Correspondence",
+ "source": "custom",
+ "text": "Exchange control of two target permanents that share a permanent type.",
+ "manaCost": "{U/R}{U/R}",
+ "types": [
+  "Instant"
+ ],
+ "targets": [
+  {
+   "count": 1,
+   "predicate": "permanent",
+   "zone": "battlefield"
+  },
+  {
+   "count": 1,
+   "predicate": "permanent",
+   "zone": "battlefield",
+   "sharesTypeWithPrior": true
+  }
+ ],
+ "spellEffect": [
+  {
+   "type": "exchangeControl",
+   "targets": [
+    0,
+    1
+   ]
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/correspondence.png",
+  "fallback": "rendered"
+ },
+ "shopTier": "R",
+ "printedAsset": "correspondence.jpg"
+}

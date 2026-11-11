@@ -19,7 +19,7 @@
 import { FORMAT_STRENGTH, OPEN_MEANS } from "./open-matches.generated.js";
 /** S63 (Part 2): the game-one means are generated from data/convocation/formats/<id>/means.json (`open:rr --merge … --record`). */
 export { OPEN_MEANS };
-import { cardColors, manaValue, parseManaCost, type CardDef } from "@shandalar/cards";
+import { cardColors, manaValue, parseManaCost, colourPips, type CardDef } from "@shandalar/cards";
 import type { Decklist } from "./state.js";
 import { BASIC_LANDS, COPY_CAP, checkDeck, isBasic, offColourMana, type DeckCheck, type DeckRule } from "./legality.js";
 import type { ConstructedFormat } from "./formats.js";
@@ -162,7 +162,7 @@ export function buildConstructedDeck(format: ConstructedFormat, rating: CardRati
     .sort((a, b) => (rate(b) + (inSource.has(b) ? CONSTRUCTED_TERMS.inListBonus : 0)) - (rate(a) + (inSource.has(a) ? CONSTRUCTED_TERMS.inListBonus : 0)) || a.localeCompare(b));
   const best = (r: Exclude<Role, "land">) => poolOf(r).find((id) => (deck.get(id) ?? 0) < copyCap(id, rule));
   const basic = () => { // the basic the deck's pips want most, against what it already has
-    const pips: Record<string, number> = {}; for (const [id, k] of deck) { if (role(id) === "land") continue; const c = parseManaCost(def(id).manaCost).colored; for (const col of colours) pips[col] = (pips[col] ?? 0) + c[col] * k; }
+    const pips: Record<string, number> = {}; for (const [id, k] of deck) { if (role(id) === "land") continue; const c = colourPips(parseManaCost(def(id).manaCost)); for (const col of colours) pips[col] = (pips[col] ?? 0) + c[col] * k; }
     const have = (col: string) => [...deck].reduce((n, [id, k]) => n + (id === BASIC_OF[col] ? k : 0), 0);
     const cs = colours.length ? colours : ["W" as const]; const totalPips = cs.reduce((n, c) => n + (pips[c] ?? 0), 0) || 1; const lands = count("land") + 1;
     return BASIC_OF[[...cs].sort((a, b) => ((pips[b] ?? 0) / totalPips - have(b) / lands) - ((pips[a] ?? 0) / totalPips - have(a) / lands) || a.localeCompare(b))[0]!]!;

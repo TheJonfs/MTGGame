@@ -824,3 +824,12 @@ The `shopTier` column (`1 | 2 | 3 | R`) is repo-canonical **on the card defs the
 | id | name | status | vocabulary | notes |
 |---|---|---|---|---|
 | confession | Confession | tested | Sorcery {1}{B}, tier 2; target `creatureYouDontControl` `greatestPower: "opponents"` (R-124); `loseLife` you `targetPower`; `draw` you `targetToughness` (R-124) | Custom (Chris). Priced by trial against Sign in Blood (decision-updates/s71: every cost level; Chris took {1}{B}, to errata if play finds it strong). Art and printed face Chris-delivered. In no list yet. |
+
+## Post-Session 71a addition — Correspondence (Chris, 2026-11-11)
+
+| id | name | status | vocabulary | notes |
+|---|---|---|---|---|
+| correspondence | Correspondence | tested | Instant {U/R}{U/R} (R-125), tier R; targets `permanent`, `permanent` `sharesTypeWithPrior` (R-126); `exchangeControl` (R-126) | Custom (Chris). Priced by trial in two slots — for Control Magic/Phyrexian Purge (Theft, Kiln, Mardu Control) and for Protocol (Theft, Lumen Clio, Grixis Clio, Locks), 160 matches a pairing: every version below the card it replaced (−2.5 to −8), cost ({U/R}{U/R} to {2}{U}{R}) and type (instant/sorcery) not separating. Chris took {U/R}{U/R} at R with the other golds, to revise up if his play finds it strong. Hybrid: blue and red for every colour gate (202.2d). Art and printed face Chris-delivered. In no list yet. |
+| domain_pouncer | Domain Pouncer | tested | Creature — Cat 1/1 {G/W}{G/W} (R-125), tier R; vigilance, reach; two A4 conditional statics — `count` {Land, Mountain} ≥ 1 → `grantKeyword` first strike scope self; {Land, Swamp} ≥ 1 → deathtouch | Custom (Chris, 2026-11-11). No new word. Hybrid green-white: Naya, Bant, Abzan (and the Emberford). Art cropped from Chris's printed face. In no list yet. |
+| terrain_collapse | Terrain Collapse | tested | Sorcery {R/G}{R/G} (R-125), tier R; target `land` `nonbasic` (R-127); `destroy` | Custom (Chris, 2026-11-11). Hybrid red-green: Naya, Jund, Temur (and the Emberford, the Harrowmoor). Art cropped from Chris's printed face. In no list yet. |
+| clutch_guard | Clutch Guard | tested | Creature — Snake 1/1 {G/U}{G/U} (R-125), tier R; ETB `draw` 1; graveyard-zone activated (A5) {3}{G/U}{G/U} + `exileSelf` → `createToken` snake_1_1_g ×2, `draw` 2 | Custom (Chris, 2026-11-11). No new word — Seasoned Pyromancer's graveyard shape; the first hybrid ability cost (fixtures pay it with Forests alone, Islands alone, and both). Hybrid green-blue: Sultai, Temur, Bant (and the Marrowfen). Art cropped from Chris's printed face. In no list yet. |

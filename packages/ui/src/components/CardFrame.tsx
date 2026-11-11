@@ -35,6 +35,17 @@ const CHIP_NEUTRAL = "#cac5c0";
 
 /** One mana/tap symbol as a high-contrast chip: colored disc, bold ink symbol, ink ring. */
 export function ManaChip({ sym }: { sym: string }) {
+  // R-125: a two-colour hybrid pip ({U/R}) — the disc split on the diagonal, each colour's glyph in its half
+  const hy = sym.match(/^([WUBRG])\/([WUBRG])$/);
+  if (hy) {
+    const [, a, b] = hy as unknown as [string, string, string];
+    return (
+      <span className="mana-chip hybrid" title={`{${sym}}`} style={{ background: `linear-gradient(135deg, ${CHIP_BG[a]} 50%, ${CHIP_BG[b]} 50%)` }}>
+        <img className="hy-a" src={`/icons/${CHIP_ICON[a]}.svg`} alt={a} />
+        <img className="hy-b" src={`/icons/${CHIP_ICON[b]}.svg`} alt={b} />
+      </span>
+    );
+  }
   const icon = CHIP_ICON[sym];
   return (
     <span className="mana-chip" style={{ background: CHIP_BG[sym] ?? CHIP_NEUTRAL }}>

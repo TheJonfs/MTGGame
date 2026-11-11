@@ -150,6 +150,41 @@ export class HeuristicAgent implements Agent {
     }
   }
 
+  /** Post-S71a (Correspondence; Chris: the study ran slowly): an exchange's casts are never weighed between two permanents
+   * one player controls (it does nothing — R-126), nor in both orders (the exchange is symmetric, and so is sharing a
+   * type) — the enumeration was every ordered pair of permanents sharing a type, lands included. Of the cross-side
+   * pairs left, only the EXCHANGE_KEEP best by the exchange's own price (view-sim's: what we gain less what we give,
+   * nothing for a borrowed one) go on to be scored in full. */
+  private pruneExchanges(view: GameView, actions: Action[]): Action[] {
+    const EXCHANGE_KEEP = 3;
+    const priced = new Map<Action, { group: string; gain: number }>();
+    const seen = new Set<string>();
+    const out = actions.filter((a) => {
+      if (a.type !== "castSpell" || !a.targets || a.targets.length < 2) return true;
+      const d = this.def(view.hand.find((c) => c.objectId === a.objectId)?.cardId ?? "");
+      const effects = d?.modes ? [] : d?.spellEffect ?? [];
+      if (effects.length !== 1 || effects[0]!.type !== "exchangeControl") return true;
+      const ex = effects[0]!;
+      const ta = a.targets[ex.targets[0]], tb = a.targets[ex.targets[1]];
+      if (ta?.kind !== "object" || tb?.kind !== "object") return true;
+      const oa = view.battlefield.find((o) => o.id === ta.id), ob = view.battlefield.find((o) => o.id === tb.id);
+      if (!oa || !ob) return true;
+      if (oa.controller === ob.controller) return false;
+      const group = `${a.objectId}|${a.x ?? ""}`, k = `${group}|${[ta.id, tb.id].sort().join("|")}`;
+      if (seen.has(k)) return false;
+      seen.add(k);
+      const mine = oa.controller === view.you ? oa : ob, theirs = mine === oa ? ob : oa;
+      priced.set(a, { group, gain: objectValue(this.defs, theirs, this.C) - (mine.controlUntilEndOfTurn ? 0 : objectValue(this.defs, mine, this.C)) });
+      return true;
+    });
+    if (priced.size === 0) return out;
+    const keep = new Set<Action>();
+    const groups = new Map<string, Action[]>();
+    for (const [a, p] of priced) groups.set(p.group, [...(groups.get(p.group) ?? []), a]);
+    for (const list of groups.values()) list.sort((x, y) => priced.get(y)!.gain - priced.get(x)!.gain).slice(0, EXCHANGE_KEEP).forEach((a) => keep.add(a));
+    return out.filter((a) => !priced.has(a) || keep.has(a));
+  }
+
   private def(cardId: string): CardDef | undefined {
     return this.defs.get(cardId);
   }
@@ -1214,7 +1249,7 @@ export class HeuristicAgent implements Agent {
       if (!next || !found) this.pendingPay = null;
       if (found) return found;
     }
-    const candidates = request.actions.filter((a) => a.type !== "tapForMana" && a.type !== "untapForMana"); // S25 r3: takebacks are human conveniences
+    const candidates = this.pruneExchanges(view, request.actions.filter((a) => a.type !== "tapForMana" && a.type !== "untapForMana")); // S25 r3: takebacks are human conveniences
     if (candidates.length === 1) return candidates[0]!;
     // S35 Part 3 (Chris: Oriel skipped her first land twice; measured 24.7% of apprentice first main phases
     // passed over an available land when pass was the only alternative — the softmax at 1.2 over a small

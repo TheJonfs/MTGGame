@@ -92,10 +92,12 @@ export class PlanPlay {
     for (const [c, n] of Object.entries(view.manaPool)) for (let i = 0; i < n; i++) sources.push([c]);
     const pays = (left: string[][]): boolean => {
       const src = [...left, ...[...fuel].map((ch) => (ch === "*" ? "WUBRG".split("") : [ch]))];
-      const pips = (Object.entries(cost.colored) as [string, number][]).flatMap(([c, n]) => Array<string>(n).fill(c));
-      pips.sort((a, b) => src.filter((x) => x.includes(a)).length - src.filter((x) => x.includes(b)).length);
+      // R-125: each pip as the colours it accepts (a hybrid pip, either of two)
+      const pips: string[][] = [...(Object.entries(cost.colored) as [string, number][]).flatMap(([c, n]) => Array<string[]>(n).fill([c])), ...cost.hybrid.map((h) => [...h])];
+      const fits = (x: string[], p: string[]) => p.some((c) => x.includes(c));
+      pips.sort((a, b) => src.filter((x) => fits(x, a)).length - src.filter((x) => fits(x, b)).length);
       for (const c of pips) {
-        const cands = src.map((x, i) => ({ x, i })).filter(({ x }) => x.includes(c)).sort((a, b) => a.x.length - b.x.length);
+        const cands = src.map((x, i) => ({ x, i })).filter(({ x }) => fits(x, c)).sort((a, b) => a.x.length - b.x.length);
         if (!cands.length) return false;
         src.splice(cands[0]!.i, 1);
       }

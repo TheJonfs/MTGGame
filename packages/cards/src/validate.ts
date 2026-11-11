@@ -240,6 +240,7 @@ function validateTargetSpec(t: unknown, err: (m: string) => void): void {
     if (t[k] !== undefined && !(KEYWORDS as readonly string[]).includes(t[k] as string)) err(`target ${k}: unknown keyword "${t[k]}"`);
   }
   if (t.notSubtype !== undefined && typeof t.notSubtype !== "string") err(`target notSubtype must be a string`);
+  if (t.nonbasic !== undefined && t.nonbasic !== true) err(`target nonbasic must be true when present (R-127)`);
   if (t.other !== undefined && typeof t.other !== "boolean") err(`target other must be boolean`);
   if (t.anyOf !== undefined) {
     if (!Array.isArray(t.anyOf) || t.anyOf.length < 2) err(`target anyOf must list at least two alternative specs`);
@@ -659,6 +660,11 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
   fight: (e, err) => {
     const pair = Array.isArray(e.targets) && e.targets.length === 2, self = e.self === true && Number.isInteger(e.target);
     if (pair === self) err(`fight requires targets: [i, j], or self: true with target: i (S58)`);
+  },
+  exchangeControl: (e, err) => {
+    // Post-S71a (R-126): two target indices, distinct
+    const ts = e.targets;
+    if (!Array.isArray(ts) || ts.length !== 2 || ts.some((x) => typeof x !== "number") || ts[0] === ts[1]) err(`exchangeControl needs targets: [i, j], two distinct target indices`);
   },
   gainControl: (e, err) => {
     // ADR-033: the static form is scope "attached". S26 (Lumen): the resolved form is a target index

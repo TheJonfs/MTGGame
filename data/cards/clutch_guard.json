@@ -1,0 +1,59 @@
+{
+ "id": "clutch_guard",
+ "name": "Clutch Guard",
+ "source": "custom",
+ "manaCost": "{G/U}{G/U}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Snake"
+ ],
+ "power": 1,
+ "toughness": 1,
+ "text": "When Clutch Guard enters, draw a card.\n{3}{G/U}{G/U}, Exile this card from your graveyard: Create two 1/1 green Snake creature tokens. Draw two cards.",
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "ENTERS_BATTLEFIELD",
+   "condition": {
+    "source": "self"
+   },
+   "effects": [
+    {
+     "type": "draw",
+     "count": 1,
+     "who": "you"
+    }
+   ],
+   "optional": false
+  },
+  {
+   "kind": "activated",
+   "zone": "graveyard",
+   "cost": {
+    "mana": "{3}{G/U}{G/U}",
+    "exileSelf": true
+   },
+   "effects": [
+    {
+     "type": "createToken",
+     "tokenId": "snake_1_1_g",
+     "count": 2,
+     "who": "you"
+    },
+    {
+     "type": "draw",
+     "count": 2,
+     "who": "you"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/clutch_guard.png",
+  "fallback": "rendered"
+ },
+ "printedAsset": "clutch_guard.jpg",
+ "shopTier": "R"
+}

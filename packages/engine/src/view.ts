@@ -48,6 +48,9 @@ export interface GameView {
     /** Post-S53 (Chris: the field never killed Clio): the counters on it, when any — public (CR 122) — so an agent can
      * read a counter-scaled effect (Clio's depth counters, each −1/−0 to every opposing creature). */
     counters?: Record<string, number>;
+    /** Post-S71a (Correspondence, the Lumen line): its control reverts at cleanup — the latest control effect on it ends
+     * this turn (Lumen's borrow). Public: a change of control is visible to both players. */
+    controlUntilEndOfTurn?: boolean;
   }[];
   /** S32: `targets` (public — the stack's targets are announced) so a creature under fire is visible
    * to the agents: the Escort's save, the Altar's "doomed" read (which had been blind live since S29). */
@@ -64,6 +67,12 @@ export interface GameView {
   pendingEndStepSacrifices: string[];
   /** S36: permanents that return to hand at the next cleanup (the Glaciers). */
   pendingCleanupReturns: string[];
+}
+
+/** Post-S71a: the object's control comes from a stored control effect that ends this turn (the latest one, as the control layer applies them). */
+function borrowedThisTurn(s: { continuousEffects: { kind: string; objectId: string; controller?: number; duration: string; timestamp: number }[] }, id: string, controller: number): boolean {
+  const last = s.continuousEffects.filter((ce) => ce.kind === "gainControl" && ce.objectId === id && ce.controller !== undefined).sort((a, b) => b.timestamp - a.timestamp)[0];
+  return !!last && last.controller === controller && last.duration === "UNTIL_END_OF_TURN";
 }
 
 export function buildView(ctx: EngineCtx, player: PlayerId): GameView {
@@ -107,6 +116,7 @@ export function buildView(ctx: EngineCtx, player: PlayerId): GameView {
         ...(chars.cantAttack ? { cantAttack: true } : {}),
         ...(o.summoningSick && isCreature && !chars.keywords.has("haste") ? { summoningSick: true } : {}),
         ...(Object.values(o.counters).some((n) => n) ? { counters: Object.fromEntries(Object.entries(o.counters).filter(([, n]) => n)) } : {}),
+        ...(borrowedThisTurn(s, id, o.controller) ? { controlUntilEndOfTurn: true } : {}),
       };
     }),
     stack: s.stack.map((item) => ({

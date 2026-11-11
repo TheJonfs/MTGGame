@@ -125,6 +125,9 @@ function revertStatics(view: GameView, gone: GameView["battlefield"][number], de
 
 let predSeq = 0;
 
+/** Post-S71a (book 165): the worth of the card an exchange spends — a swap must gain more than this to be cast. */
+const EXCHANGE_CARD_WORTH = 1;
+
 export function predictAction(
   view: GameView,
   action: Action,
@@ -838,6 +841,22 @@ function applyEffect(
       const o = objAt(e.target);
       if (!o || o.power === null || o.controller === me) return 0;
       return 0.6 + 0.45 * o.power + (o.tapped ? 0 : 0.3);
+    }
+    case "exchangeControl": {
+      // Post-S71a (R-126, Correspondence; the book with it): a permanent exchange — the copy swaps the two controllers and
+      // the evaluator reads the board as it will stand. An exchange between permanents one player controls does nothing.
+      // A borrowed permanent (Lumen's, until end of turn) is ours on the copy but going home at cleanup anyway, so giving
+      // it costs nothing: its worth is credited back (the Lumen line — borrow the small one, exchange it for the big one).
+      const ta = targets[e.targets[0]], tb = targets[e.targets[1]];
+      const a = ta?.kind === "object" ? view.battlefield.find((o) => o.id === ta.id) : undefined;
+      const b = tb?.kind === "object" ? view.battlefield.find((o) => o.id === tb.id) : undefined;
+      if (!a || !b || a.controller === b.controller) return -EXCHANGE_CARD_WORTH - 1; // nothing happens: the card is wasted
+      const mine = a.controller === me ? a : b, theirs = mine === a ? b : a;
+      // Priced directly, not left to the board read (the study's first runs: the copy's swap read as a small gain for a
+      // Mountain against a dual, and the pilot spent the card on lands in its upkeep): what we gain, less what we give
+      // (nothing for a borrowed one), less the card itself. A swap of like for like is then a loss, as it is.
+      const gain = objectValue(defs, theirs, constants) - (mine.controlUntilEndOfTurn ? 0 : objectValue(defs, mine, constants));
+      return gain - EXCHANGE_CARD_WORTH;
     }
     case "searchLibrary":
       return 0.5;

@@ -90,6 +90,8 @@ export interface EffectContext {
    * deathtouch/lifelink apply). Callers have already verified both are legal.
    */
   fight(idA: string, idB: string): void;
+  /** Post-S71a (R-126): exchange control of two permanents, indefinitely (CR 701.12). */
+  exchangeControl(idA: string, idB: string): void;
   /** S62 (R-108, Wave of Reckoning): each of these objects deals damage to itself equal to its power — the object is
    * the source (deathtouch, lifelink), every power read before any damage is dealt. */
   eachDamagesItself(ids: string[]): void;
@@ -347,6 +349,15 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
     const t = ctx.target(e.target);
     if (!t || t.kind !== "object") return;
     ctx.addContinuousEffect({ kind: "gainControl", objectId: t.id, controller: ctx.players("you")[0]!, duration: e.duration ?? "UNTIL_END_OF_TURN" });
+  },
+
+  exchangeControl: (e, ctx) => {
+    // Post-S71a (R-126, Correspondence). Both targets must still be legal (CR 701.12b; the Role Reversal ruling:
+    // "If one of the target permanents is an illegal target when Role Reversal resolves, the exchange won't happen").
+    if (e.type !== "exchangeControl") throw new Error("resolver mismatch");
+    const a = ctx.target(e.targets[0]), b = ctx.target(e.targets[1]);
+    if (!a || !b || a.kind !== "object" || b.kind !== "object") return;
+    ctx.exchangeControl(a.id, b.id);
   },
 
   gainLife: (e, ctx) => {

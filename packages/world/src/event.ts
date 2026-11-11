@@ -10,7 +10,7 @@
  * 0.33), then opponents' game-win share; then the seat's number.
  */
 import type { CardDef } from "@shandalar/cards";
-import { cardColors, parseManaCost } from "@shandalar/cards";
+import { cardColors, parseManaCost, colourPips } from "@shandalar/cards";
 import { runMatch, type Agent, type MatchSpec, type Modifier } from "@shandalar/engine";
 import type { Decklist, Collection } from "./state.js";
 import { checkDeck, isBasic, type DeckCheck, type DeckRule } from "./legality.js";
@@ -323,7 +323,7 @@ const sideboardOf = (pool: readonly string[], deck: Decklist): Decklist => {
 };
 const deckColors = (deck: Decklist, cards: Map<string, CardDef>): string => {
   const pips: Record<string, number> = {};
-  for (const e of deck) { const d = cards.get(e.cardId); if (!d || d.types.includes("Land")) continue; const c = parseManaCost(d.manaCost).colored; for (const k of cardColors(d)) pips[k] = (pips[k] ?? 0) + c[k] * e.count; }
+  for (const e of deck) { const d = cards.get(e.cardId); if (!d || d.types.includes("Land")) continue; const c = colourPips(parseManaCost(d.manaCost)); for (const k of cardColors(d)) pips[k] = (pips[k] ?? 0) + c[k] * e.count; }
   return Object.entries(pips).filter(([, n]) => n > 0).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([k]) => k).join("");
 };
 

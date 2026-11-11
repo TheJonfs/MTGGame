@@ -15,7 +15,7 @@
  * Deterministic: ties break by card id; no randomness.
  */
 import { WorldRng } from "./rng.js";
-import { cardColors, manaValue, parseManaCost, type CardDef } from "@shandalar/cards";
+import { cardColors, manaValue, parseManaCost, colourPips, type CardDef } from "@shandalar/cards";
 import type { Decklist } from "./state.js";
 import { packColors, type PackColor } from "./packs.js";
 import { cardRating, type CardRatingTable } from "./rating.js";
@@ -71,7 +71,7 @@ export function buildLimitedDeck(poolIds: readonly string[], rating: CardRatingT
   const rate = (id: string) => { if (!opts.noise) return cardRating(def(id), rating); if (!noise.has(id)) noise.set(id, opts.noise(id)); return cardRating(def(id), rating) + noise.get(id)!; };
   const isLand = (id: string) => def(id).types.includes("Land");
   const isCreature = (id: string) => def(id).types.includes("Creature");
-  const pips = (id: string, c: PackColor) => parseManaCost(def(id).manaCost).colored[c];
+  const pips = (id: string, c: PackColor) => colourPips(parseManaCost(def(id).manaCost))[c];
   const byRating = (a: string, b: string) => rate(b) - rate(a) || a.localeCompare(b);
   const spells = ids.filter((id) => !isLand(id)), lands = ids.filter(isLand);
   const within = (id: string, cs: readonly PackColor[]) => cardColors(def(id)).every((c) => cs.includes(c));

@@ -74,6 +74,8 @@ export function legalActions(ctx: EngineCtx, player: PlayerId): Action[] {
       ? def.modes.map((m, i) => ({ mode: i, targets: m.targets ?? [] }))
       : [{ targets: def.targets ?? [] }];
     for (const ms of modeSpecs) {
+      // Post-S71a (Correspondence's pairs): an unaffordable fixed-cost spell is skipped before its targets are enumerated
+      if (cost.xCount === 0 && !canPay(ctx, player, cost)) continue;
       const combos = targetCombinations(ctx, ms.targets, player, objectId);
       if (combos.length === 0) continue;
       const modeField = ms.mode !== undefined ? { mode: ms.mode } : {};

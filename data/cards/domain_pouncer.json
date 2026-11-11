@@ -1,0 +1,69 @@
+{
+ "id": "domain_pouncer",
+ "name": "Domain Pouncer",
+ "source": "custom",
+ "manaCost": "{G/W}{G/W}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Cat"
+ ],
+ "power": 1,
+ "toughness": 1,
+ "keywords": [
+  "vigilance",
+  "reach"
+ ],
+ "text": "Vigilance, reach\nDomain Pouncer has first strike as long as you control a Mountain.\nDomain Pouncer has deathtouch as long as you control a Swamp.",
+ "abilities": [
+  {
+   "kind": "static",
+   "condition": {
+    "value": {
+     "ref": "count",
+     "predicate": {
+      "cardType": "Land",
+      "subtype": "Mountain"
+     }
+    },
+    "atLeast": 1
+   },
+   "effects": [
+    {
+     "type": "grantKeyword",
+     "keyword": "first strike",
+     "scope": "self",
+     "duration": "WHILE_SOURCE_ON_BATTLEFIELD"
+    }
+   ]
+  },
+  {
+   "kind": "static",
+   "condition": {
+    "value": {
+     "ref": "count",
+     "predicate": {
+      "cardType": "Land",
+      "subtype": "Swamp"
+     }
+    },
+    "atLeast": 1
+   },
+   "effects": [
+    {
+     "type": "grantKeyword",
+     "keyword": "deathtouch",
+     "scope": "self",
+     "duration": "WHILE_SOURCE_ON_BATTLEFIELD"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/domain_pouncer.png",
+  "fallback": "rendered"
+ },
+ "printedAsset": "domain_pouncer.jpg",
+ "shopTier": "R"
+}

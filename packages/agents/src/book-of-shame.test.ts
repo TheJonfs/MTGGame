@@ -2586,3 +2586,33 @@ describe("book of shame 164 (S71a, Chris's Earthrise final: the Pall's Witch pai
     expect(pall("earthrise").lifeForCardsGated(at(18, 3), draw)).toBe(false);
   });
 });
+
+describe("book of shame 165 (post-S71a, Correspondence — the exchange is read as the board it leaves)", () => {
+  const study = pool; // Correspondence installed ({U/R}{U/R}, post-S71a)
+  const a = new HeuristicAgent(1, study, { archetype: "midrange", opponentDecklist: [{ cardId: "serra_angel", count: 4 }], temperature: 0.35 });
+  const ex = (x: string, y: string) => ({ type: "castSpell" as const, objectId: "c", targets: [{ kind: "object" as const, id: x }, { kind: "object" as const, id: y }] });
+  const lands = ["i1", "i2", "m1"].map((id, i) => ({ id, cardId: i < 2 ? "island" : "mountain", controller: 0 as const }));
+  const board = (extra: Obj[], borrowed: string[] = []) => {
+    const v = mkView({ hand: [{ objectId: "c", cardId: "correspondence" }], battlefield: [...lands, ...extra] });
+    for (const o of v.battlefield) if (borrowed.includes(o.id)) (o as { controlUntilEndOfTurn?: boolean }).controlUntilEndOfTurn = true;
+    return v;
+  };
+  it("our Bears for their Serra Angel: worth more than an exchange between two of theirs, and more than our Angel for their Bears", () => {
+    const v = board([{ id: "mb", cardId: "grizzly_bears", controller: 0 }, { id: "ma", cardId: "serra_angel", controller: 0 }, { id: "ts", cardId: "serra_angel", controller: 1 }, { id: "tb", cardId: "grizzly_bears", controller: 1 }]);
+    const up = a.scorePriorityAction(v, ex("mb", "ts")), theirs = a.scorePriorityAction(v, ex("tb", "ts")), down = a.scorePriorityAction(v, ex("ma", "tb"));
+    expect(up).toBeGreaterThan(theirs);
+    expect(up).toBeGreaterThan(down);
+  });
+  it("a land for a land (the study's first runs: Mountains for duals in its upkeep) is worth less than holding the card", () => {
+    const v = board([{ id: "tv", cardId: "volcanic_island", controller: 1 }, { id: "mp", cardId: "plains", controller: 0 }]);
+    expect(a.scorePriorityAction(v, ex("mp", "tv"))).toBeLessThan(a.scorePriorityAction(v, { type: "pass" }));
+    // and two permanents of one player: nothing happens on resolution
+    const w = board([{ id: "tv", cardId: "volcanic_island", controller: 1 }, { id: "tp", cardId: "plains", controller: 1 }, { id: "mp", cardId: "plains", controller: 0 }]);
+    expect(a.scorePriorityAction(w, ex("tp", "tv"))).toBeLessThan(a.scorePriorityAction(w, { type: "pass" }));
+    expect(a.scorePriorityAction(w, ex("i1", "i2"))).toBeLessThan(a.scorePriorityAction(w, { type: "pass" }));
+  });
+  it("the Lumen line: the Bears we borrowed until end of turn are the ones to give — they were going home anyway", () => {
+    const v = board([{ id: "mb", cardId: "grizzly_bears", controller: 0 }, { id: "lb", cardId: "grizzly_bears", controller: 0 }, { id: "ts", cardId: "serra_angel", controller: 1 }], ["lb"]);
+    expect(a.scorePriorityAction(v, ex("lb", "ts"))).toBeGreaterThan(a.scorePriorityAction(v, ex("mb", "ts")));
+  });
+});

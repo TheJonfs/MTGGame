@@ -13,7 +13,9 @@
 export interface ManaSource { id: string; colors: string[]; creature: boolean }
 export interface Tap { id: string; color: string }
 
-const pipsOf = (cost: string): string[] => cost.match(/\{([WUBRGC])\}/g)?.map((x) => x[1]!) ?? [];
+/** Each pip as the colours it accepts: "U" for {U}; R-125, "UR" for the hybrid {U/R}. */
+const pipsOf = (cost: string): string[] => cost.match(/\{([WUBRGC])(?:\/([WUBRG]))?\}/g)?.map((x) => x.slice(1, -1).replace("/", "")) ?? [];
+const accepts = (colors: string[], pip: string): boolean => colors.some((c) => pip.includes(c));
 const genericOf = (cost: string): number => (cost.match(/\{(\d+)\}/g) ?? []).reduce((n, x) => n + Number(x.slice(1, -1)), 0);
 
 /** Can these sources (each one mana, of one of its colours) pay the cost? Pips matched by backtracking; generic by count. */
@@ -24,7 +26,7 @@ export function payableBy(sources: ManaSource[], cost: string, extraGeneric = 0)
   const match = (k: number): boolean => {
     if (k === pips.length) return true;
     for (let i = 0; i < sources.length; i++) {
-      if (used[i] || !sources[i]!.colors.includes(pips[k]!)) continue;
+      if (used[i] || !accepts(sources[i]!.colors, pips[k]!)) continue;
       used[i] = true; if (match(k + 1)) return true; used[i] = false;
     }
     return false;
@@ -35,7 +37,7 @@ export function payableBy(sources: ManaSource[], cost: string, extraGeneric = 0)
 /** The taps that pay `cost` (plus `x` generic) and leave `hold` payable; null when no such payment exists. A source
  * the held cost has no use for is spent first; a creature last (the engine's own preference: bodies stay untapped). */
 export function reserveTaps(sources: ManaSource[], cost: string, x: number, hold: string): Tap[] | null {
-  const pips = pipsOf(cost), generic = genericOf(cost) + x, holdPips = new Set(pipsOf(hold));
+  const pips = pipsOf(cost), generic = genericOf(cost) + x, holdPips = new Set(pipsOf(hold).join(""));
   if (pips.length + generic === 0) return null;
   if (sources.length < pips.length + generic + pipsOf(hold).length + genericOf(hold)) return null;
   // cheapest to give up first: makes nothing the held cost wants, then fewest colours, then non-creatures
@@ -56,8 +58,8 @@ export function reserveTaps(sources: ManaSource[], cost: string, x: number, hold
   const colored = (k: number): boolean => {
     if (k === pips.length) return generics(0, generic);
     for (let i = 0; i < order.length; i++) {
-      if (used[i] || !order[i]!.colors.includes(pips[k]!)) continue;
-      used[i] = true; taps.push({ id: order[i]!.id, color: pips[k]! });
+      if (used[i] || !accepts(order[i]!.colors, pips[k]!)) continue;
+      used[i] = true; taps.push({ id: order[i]!.id, color: order[i]!.colors.find((c) => pips[k]!.includes(c))! });
       if (colored(k + 1)) return true;
       used[i] = false; taps.pop();
     }

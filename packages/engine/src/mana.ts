@@ -71,14 +71,16 @@ function untappedProducers(ctx: EngineCtx, player: PlayerId): { id: string; symb
   return [...all.filter((p) => !p.creature), ...all.filter((p) => p.creature)];
 }
 
-export function totalCost(cost: ManaCost, x: number): { colored: Record<Color, number>; generic: number } {
-  return { colored: { ...cost.colored }, generic: cost.generic + cost.xCount * x };
+export function totalCost(cost: ManaCost, x: number): { colored: Record<Color, number>; generic: number; hybrid: Color[][] } {
+  return { colored: { ...cost.colored }, generic: cost.generic + cost.xCount * x, hybrid: cost.hybrid.map((h) => [...h]) };
 }
 
 /** S20 solver: a payment plan — which producers tap for which symbol, and what the pool covers. */
 export interface PaymentPlan {
   /** Producer taps in execution order, each with its assigned symbol. */
   taps: { id: string; symbol: ManaSymbol }[];
+  /** R-125: the colour each hybrid pip is paid with, in the cost's pip order. */
+  hybrid: Color[];
 }
 
 /**
@@ -96,26 +98,36 @@ export function solvePayment(
 ): PaymentPlan | null {
   const pool = ctx.state.players[player].manaPool;
   const producers = untappedProducers(ctx, player).filter((p) => !excludeProducers.includes(p.id));
-  const { colored, generic } = totalCost(cost, x);
+  const { colored, generic, hybrid } = totalCost(cost, x);
 
-  // Colored pips not covered by floating mana, expanded to instances in WUBRG order.
-  const pips: Color[] = [];
+  // Colored pips not covered by floating mana, expanded to instances in WUBRG order — each pip is the colours it
+  // accepts (one for a coloured pip). R-125: then the hybrid pips, each accepting either of its colours.
+  const pips: Color[][] = [];
   for (const c of COLORS) {
     const need = Math.max(0, colored[c] - pool[c]);
-    for (let i = 0; i < need; i++) pips.push(c);
+    for (let i = 0; i < need; i++) pips.push([c]);
   }
+  const firstHybrid = pips.length;
+  for (const h of hybrid) pips.push(h);
+  // R-125: floating mana left after the coloured pips joins the matching as one-mana sources, tried before any
+  // producer — so a floating U is not spent on a {U/R} that a Mountain could pay while a {W/U} goes short.
+  const poolAfterColored = { ...pool };
+  for (const c of COLORS) poolAfterColored[c] -= Math.min(poolAfterColored[c], colored[c]);
+  const poolUnits: { id: string; symbols: ManaSymbol[]; creature: boolean; pool: true }[] = [];
+  if (hybrid.length) for (const c of COLORS) for (let i = 0; i < poolAfterColored[c]; i++) poolUnits.push({ id: `pool:${c}:${i}`, symbols: [c], creature: false, pool: true });
+  const sources: { id: string; symbols: ManaSymbol[]; creature: boolean; pool?: true }[] = [...poolUnits, ...producers];
 
   // Kuhn's matching: pip index → producer index. For each pip, producers are tried
   // NON-CREATURES first (S20 playtest, Chris: never tap a body when a land can pay —
   // a dual land is spent before a Llanowar Elves), then mono-color first (save the
   // flexible ones), then battlefield order.
-  const order = (c: Color) =>
-    producers
+  const order = (cs: Color[]) =>
+    sources
       .map((p, i) => ({ p, i }))
-      .filter(({ p }) => p.symbols.includes(c))
-      .sort((a, b) => Number(a.p.creature) - Number(b.p.creature) || new Set(a.p.symbols).size - new Set(b.p.symbols).size || a.i - b.i)
+      .filter(({ p }) => cs.some((c) => p.symbols.includes(c)))
+      .sort((a, b) => Number(!a.p.pool) - Number(!b.p.pool) || Number(a.p.creature) - Number(b.p.creature) || new Set(a.p.symbols).size - new Set(b.p.symbols).size || a.i - b.i)
       .map(({ i }) => i);
-  const matchOf: number[] = new Array(producers.length).fill(-1); // producer → pip
+  const matchOf: number[] = new Array(sources.length).fill(-1); // source → pip
   const tryAssign = (pip: number, seen: Set<number>): boolean => {
     for (const pi of order(pips[pip]!)) {
       if (seen.has(pi)) continue;
@@ -134,15 +146,19 @@ export function solvePayment(
   // Generic: pool leftovers first, then untapped remaining producers — {C} producers, then
   // non-creatures (S20 playtest, Chris: keep-duals-free never outranks keep-bodies-untapped;
   // manual tapping remains the override), then fewest-symbols (keep duals free), then order.
-  const matchedProducers = new Set(matchOf.map((m, i) => (m !== -1 ? i : -1)).filter((i) => i >= 0));
-  const poolLeft = { ...pool };
-  for (const c of COLORS) poolLeft[c] -= Math.min(poolLeft[c], colored[c]);
+  const matchedSources = new Set(matchOf.map((m, i) => (m !== -1 ? i : -1)).filter((i) => i >= 0));
+  // the colour each pip is paid with: a source's first symbol the pip accepts
+  const paidAs = (pip: number, si: number): Color => pips[pip]!.find((c) => sources[si]!.symbols.includes(c))!;
+  const hybridColors: Color[] = hybrid.map(() => "W" as Color);
+  matchOf.forEach((pip, si) => { if (pip >= firstHybrid) hybridColors[pip - firstHybrid] = paidAs(pip, si); });
+  const poolLeft = { ...poolAfterColored };
+  matchOf.forEach((pip, si) => { if (pip !== -1 && sources[si]!.pool) poolLeft[sources[si]!.symbols[0] as Color] -= 1; });
   const poolLeftTotal = MANA_SYMBOLS.reduce((n, s) => n + poolLeft[s], 0);
   let genericFromProducers = Math.max(0, generic - poolLeftTotal);
   const genericTaps: { i: number; symbol: ManaSymbol }[] = [];
-  const free = producers
+  const free = sources
     .map((p, i) => ({ p, i }))
-    .filter(({ i }) => !matchedProducers.has(i))
+    .filter(({ p, i }) => !p.pool && !matchedSources.has(i))
     .sort((a, b) => Number(b.p.symbols.includes("C")) - Number(a.p.symbols.includes("C")) || Number(a.p.creature) - Number(b.p.creature) || new Set(a.p.symbols).size - new Set(b.p.symbols).size || a.i - b.i);
   for (const { p, i } of free) {
     if (genericFromProducers <= 0) break;
@@ -154,11 +170,11 @@ export function solvePayment(
   // Execution order: colored taps in pip order, then generic taps.
   const taps: { id: string; symbol: ManaSymbol }[] = [];
   const byPip: { pip: number; producer: number }[] = [];
-  matchOf.forEach((pip, producer) => { if (pip !== -1) byPip.push({ pip, producer }); });
+  matchOf.forEach((pip, producer) => { if (pip !== -1 && !sources[producer]!.pool) byPip.push({ pip, producer }); });
   byPip.sort((a, b) => a.pip - b.pip);
-  for (const { pip, producer } of byPip) taps.push({ id: producers[producer]!.id, symbol: pips[pip]! });
-  for (const t of genericTaps) taps.push({ id: producers[t.i]!.id, symbol: t.symbol });
-  return { taps };
+  for (const { pip, producer } of byPip) taps.push({ id: sources[producer]!.id, symbol: paidAs(pip, producer) });
+  for (const t of genericTaps) taps.push({ id: sources[t.i]!.id, symbol: t.symbol });
+  return { taps, hybrid: hybridColors };
 }
 
 /**
@@ -246,6 +262,11 @@ export function autoPay(ctx: EngineCtx, player: PlayerId, cost: ManaCost, x = 0)
   for (const c of COLORS) {
     if (pool[c] < colored[c]) throw new Error(`autoPay: pool underflow on ${c}`);
     pool[c] -= colored[c];
+  }
+  // 3b. R-125: deduct each hybrid pip in the colour the solver paid it with.
+  for (const c of plan.hybrid) {
+    if (pool[c] < 1) throw new Error(`autoPay: pool underflow on hybrid ${c}`);
+    pool[c] -= 1;
   }
   // 4. Deduct generic: {C} first (it can pay nothing else), then WUBRG order.
   let remaining = generic;
