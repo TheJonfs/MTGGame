@@ -1,0 +1,51 @@
+{
+ "id": "revivalist",
+ "name": "Revivalist",
+ "source": "custom",
+ "manaCost": "{W/B}{W/B}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Human",
+  "Cleric"
+ ],
+ "power": 1,
+ "toughness": 1,
+ "keywords": [
+  "lifelink"
+ ],
+ "text": "Lifelink\nWhen Revivalist dies, return another target permanent card with mana value 3 or less from your graveyard to your hand.",
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "DIES",
+   "condition": {
+    "source": "self"
+   },
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "permanentCardInYourGraveyard",
+     "zone": "graveyard",
+     "manaValueAtMost": 3,
+     "other": true
+    }
+   ],
+   "effects": [
+    {
+     "type": "returnFromGraveyard",
+     "target": 0,
+     "to": "hand"
+    }
+   ],
+   "optional": false
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/revivalist.png",
+  "fallback": "rendered"
+ },
+ "printedAsset": "revivalist.jpg",
+ "shopTier": "R"
+}

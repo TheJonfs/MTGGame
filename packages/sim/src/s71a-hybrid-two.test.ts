@@ -127,3 +127,41 @@ describe("Post-S71a — Clutch Guard: the draw, and the eggs from the graveyard"
     expect(a.done).toBe(false);
   });
 });
+
+/** Post-S71a — Revivalist ({W/B}{W/B}, 1/1 Human Cleric; Chris's): "Lifelink. When Revivalist dies, return another target permanent
+ * card with mana value 3 or less from your graveyard to your hand." Dutiful Attendant's shape (JMP #226, "return another target creature
+ * card", Scryfall: no rulings) with Unearth's ceiling. The trigger's source is the card in the graveyard (CR 400.7; triggers.ts follows
+ * the dying object to its new id), so "another" excludes it; instants and mana value 4 are not offered. */
+describe("Post-S71a — Revivalist: another permanent card back", () => {
+  /** Player 0 bolts its own permanents in `order`, one per priority in its first main phase. */
+  const bolter = (order: string[]) => {
+    const left = [...order]; const a = { views: [] as GameView[], chooseAction: async (v: GameView, r: ActionRequest): Promise<Action> => {
+      a.views.push(v);
+      if (left.length && r.purpose === "priority" && v.turn === 1 && v.activePlayer === 0 && v.stack.length === 0) {
+        const x = r.actions.find((y) => y.type === "castSpell" && y.targets[0]?.kind === "object" && cardAt(v, (y.targets[0] as { id: string }).id)?.cardId === left[0] && cardAt(v, (y.targets[0] as { id: string }).id)?.controller === 0);
+        if (x) { left.shift(); return x; }
+      }
+      return pass(r);
+    } }; return a;
+  };
+  const zoneOf = (f: Final, cardId: string) => Object.values(f.objects).filter((o) => o.cardId === cardId).map((o) => (o as { zone?: string }).zone).sort();
+
+  it("dies and returns the Bears it outlived — not itself, not the Bolts", async () => {
+    const a = bolter(["grizzly_bears", "revivalist"]);
+    const f = await run("lightning_bolt", [perm(0, "revivalist"), perm(0, "grizzly_bears"), perm(0, "mountain"), perm(0, "mountain")], a);
+    expect(zoneOf(f, "grizzly_bears")).toEqual(["hand"]);
+    expect(zoneOf(f, "revivalist")).toEqual(["graveyard"]);
+  });
+
+  it("mana value 4 is not offered, and with nothing else to take the trigger does nothing", async () => {
+    const a = bolter(["flametongue_kavu", "revivalist"]);
+    const f = await run("lightning_bolt", [perm(0, "revivalist"), perm(0, "flametongue_kavu"), perm(0, "mountain"), perm(0, "mountain")], a);
+    expect(zoneOf(f, "flametongue_kavu")).toEqual(["graveyard"]);
+    expect(zoneOf(f, "revivalist")).toEqual(["graveyard"]);
+  });
+
+  it("has lifelink (the keyword; the engine's existing damage rules apply it)", async () => {
+    const c = caster(); await run("forest", [perm(0, "revivalist")], c);
+    expect(kw(c.views.at(-1), "revivalist")).toEqual(["lifelink"]);
+  });
+});

@@ -19,6 +19,8 @@ const RUNS: { card: string; host: [string, string]; foe: [string, string] }[] = 
   { card: "terrain_collapse", host: ["temur", "kiln"], foe: ["jund", "ashen"] },
   { card: "clutch_guard", host: ["bant", "countersnake"], foe: ["temur", "stompy"] },
   { card: "clutch_guard", host: ["sultai", "writ"], foe: ["bant", "sower"] },
+  { card: "revivalist", host: ["abzan", "bw"], foe: ["mardu", "brremoval"] },
+  { card: "revivalist", host: ["esper", "wbcontrol"], foe: ["jund", "ashen"] },
 ];
 function withFour(f: string, k: string, card: string, cards: Map<string, { types: string[] }>) {
   const l = FORMAT_FIELD[f]?.[k]; if (!l) throw new Error(`no list ${f}:${k}`);
@@ -39,8 +41,8 @@ class Counter implements Agent {
 }
 
 /** Fuzz before fixtures: four copies in two hosts each, both seats, random agents and the heuristic. Zero exceptions, every game
- * terminates, each card cast; replays byte-identical. Smoke: 6 runs × 2 seats × 2 agent kinds × 1 seed (24 games); FUZZ_FULL: 20 seeds (480). Clutch Guard ({G/U}{G/U}; the Pyromancer's graveyard shape with a hybrid ability cost) in a Bant and a Sultai host. */
-describe("Post-S71a fuzz — Domain Pouncer, Terrain Collapse and Clutch Guard", () => {
+ * terminates, each card cast; replays byte-identical. Smoke: 6 runs × 2 seats × 2 agent kinds × 1 seed (24 games); FUZZ_FULL: 20 seeds (640 with Revivalist's two runs — a Mardu and a Jund foe, removal to kill it). Clutch Guard ({G/U}{G/U}; the Pyromancer's graveyard shape with a hybrid ability cost) in a Bant and a Sultai host. */
+describe("Post-S71a fuzz — Domain Pouncer, Terrain Collapse, Clutch Guard and Revivalist", () => {
   const games = process.env.FUZZ_FULL ? 20 : 1;
   it(`${games} games × ${RUNS.length} runs × 2 seats × 2 agents`, async () => {
     const cards = withStudy();
@@ -64,6 +66,7 @@ describe("Post-S71a fuzz — Domain Pouncer, Terrain Collapse and Clutch Guard",
     expect(casts["terrain_collapse"]).toBeGreaterThan(0);
     expect(casts["clutch_guard"]).toBeGreaterThan(0);
     expect(yard).toBeGreaterThan(0);
+    expect(casts["revivalist"]).toBeGreaterThan(0);
   }, 1_800_000);
   it("replay determinism — a game of each run replays byte-identical", async () => {
     const cards = withStudy();
