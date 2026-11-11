@@ -1,0 +1,515 @@
+{
+ "_comment": "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.",
+ "when": "2026-11-09",
+ "matchesAPairing": 60,
+ "byList": {
+  "aerie": {
+   "matches": 39.8,
+   "gameOne": 42.2,
+   "later": 43.4,
+   "n": 600
+  },
+  "countersnake": {
+   "matches": 49.5,
+   "gameOne": 51.7,
+   "later": 49.4,
+   "n": 600
+  },
+  "dragons": {
+   "matches": 43.2,
+   "gameOne": 44.3,
+   "later": 45.7,
+   "n": 600
+  },
+  "emeraldsnakes": {
+   "matches": 61.8,
+   "gameOne": 62.5,
+   "later": 55.3,
+   "n": 600
+  },
+  "marducontrol": {
+   "matches": 72.5,
+   "gameOne": 63.2,
+   "later": 65.2,
+   "n": 600
+  },
+  "mbclio": {
+   "matches": 60.2,
+   "gameOne": 58.5,
+   "later": 55.5,
+   "n": 600
+  },
+  "muster": {
+   "matches": 42.1,
+   "gameOne": 38.6,
+   "later": 47.2,
+   "n": 600
+  },
+  "rabble": {
+   "matches": 38.4,
+   "gameOne": 42.8,
+   "later": 42.6,
+   "n": 600
+  },
+  "reaperclio": {
+   "matches": 68.5,
+   "gameOne": 66.5,
+   "later": 60.7,
+   "n": 600
+  },
+  "stampede": {
+   "matches": 47.8,
+   "gameOne": 44.7,
+   "later": 51.1,
+   "n": 600
+  },
+  "wurmspeaker": {
+   "matches": 26.2,
+   "gameOne": 35.1,
+   "later": 33.7,
+   "n": 600
+  }
+ },
+ "byPair": {
+  "aerie|countersnake": {
+   "w": 17,
+   "n": 60
+  },
+  "aerie|dragons": {
+   "w": 36,
+   "n": 60
+  },
+  "aerie|emeraldsnakes": {
+   "w": 22,
+   "n": 60
+  },
+  "aerie|marducontrol": {
+   "w": 8,
+   "n": 60
+  },
+  "aerie|mbclio": {
+   "w": 17,
+   "n": 60
+  },
+  "aerie|muster": {
+   "w": 23,
+   "n": 60
+  },
+  "aerie|rabble": {
+   "w": 29,
+   "n": 60
+  },
+  "aerie|reaperclio": {
+   "w": 19,
+   "n": 60
+  },
+  "aerie|stampede": {
+   "w": 20,
+   "n": 60
+  },
+  "aerie|wurmspeaker": {
+   "w": 48,
+   "n": 60
+  },
+  "countersnake|aerie": {
+   "w": 43,
+   "n": 60
+  },
+  "countersnake|dragons": {
+   "w": 20,
+   "n": 60
+  },
+  "countersnake|emeraldsnakes": {
+   "w": 26,
+   "n": 60
+  },
+  "countersnake|marducontrol": {
+   "w": 21,
+   "n": 60
+  },
+  "countersnake|mbclio": {
+   "w": 10,
+   "n": 60
+  },
+  "countersnake|muster": {
+   "w": 37,
+   "n": 60
+  },
+  "countersnake|rabble": {
+   "w": 33,
+   "n": 60
+  },
+  "countersnake|reaperclio": {
+   "w": 17,
+   "n": 60
+  },
+  "countersnake|stampede": {
+   "w": 36,
+   "n": 60
+  },
+  "countersnake|wurmspeaker": {
+   "w": 54,
+   "n": 60
+  },
+  "dragons|aerie": {
+   "w": 24,
+   "n": 60
+  },
+  "dragons|countersnake": {
+   "w": 40,
+   "n": 60
+  },
+  "dragons|emeraldsnakes": {
+   "w": 19,
+   "n": 60
+  },
+  "dragons|marducontrol": {
+   "w": 9,
+   "n": 60
+  },
+  "dragons|mbclio": {
+   "w": 25,
+   "n": 60
+  },
+  "dragons|muster": {
+   "w": 31,
+   "n": 60
+  },
+  "dragons|rabble": {
+   "w": 29,
+   "n": 60
+  },
+  "dragons|reaperclio": {
+   "w": 15,
+   "n": 60
+  },
+  "dragons|stampede": {
+   "w": 30,
+   "n": 60
+  },
+  "dragons|wurmspeaker": {
+   "w": 37,
+   "n": 60
+  },
+  "emeraldsnakes|aerie": {
+   "w": 38,
+   "n": 60
+  },
+  "emeraldsnakes|countersnake": {
+   "w": 34,
+   "n": 60
+  },
+  "emeraldsnakes|dragons": {
+   "w": 41,
+   "n": 60
+  },
+  "emeraldsnakes|marducontrol": {
+   "w": 23,
+   "n": 60
+  },
+  "emeraldsnakes|mbclio": {
+   "w": 37,
+   "n": 60
+  },
+  "emeraldsnakes|muster": {
+   "w": 48,
+   "n": 60
+  },
+  "emeraldsnakes|rabble": {
+   "w": 43,
+   "n": 60
+  },
+  "emeraldsnakes|reaperclio": {
+   "w": 26,
+   "n": 60
+  },
+  "emeraldsnakes|stampede": {
+   "w": 38,
+   "n": 60
+  },
+  "emeraldsnakes|wurmspeaker": {
+   "w": 43,
+   "n": 60
+  },
+  "marducontrol|aerie": {
+   "w": 52,
+   "n": 60
+  },
+  "marducontrol|countersnake": {
+   "w": 39,
+   "n": 60
+  },
+  "marducontrol|dragons": {
+   "w": 51,
+   "n": 60
+  },
+  "marducontrol|emeraldsnakes": {
+   "w": 37,
+   "n": 60
+  },
+  "marducontrol|mbclio": {
+   "w": 40,
+   "n": 60
+  },
+  "marducontrol|muster": {
+   "w": 34,
+   "n": 60
+  },
+  "marducontrol|rabble": {
+   "w": 47,
+   "n": 60
+  },
+  "marducontrol|reaperclio": {
+   "w": 37,
+   "n": 60
+  },
+  "marducontrol|stampede": {
+   "w": 41,
+   "n": 60
+  },
+  "marducontrol|wurmspeaker": {
+   "w": 57,
+   "n": 60
+  },
+  "mbclio|aerie": {
+   "w": 43,
+   "n": 60
+  },
+  "mbclio|countersnake": {
+   "w": 50,
+   "n": 60
+  },
+  "mbclio|dragons": {
+   "w": 35,
+   "n": 60
+  },
+  "mbclio|emeraldsnakes": {
+   "w": 23,
+   "n": 60
+  },
+  "mbclio|marducontrol": {
+   "w": 20,
+   "n": 60
+  },
+  "mbclio|muster": {
+   "w": 42,
+   "n": 60
+  },
+  "mbclio|rabble": {
+   "w": 34,
+   "n": 60
+  },
+  "mbclio|reaperclio": {
+   "w": 29,
+   "n": 60
+  },
+  "mbclio|stampede": {
+   "w": 35,
+   "n": 60
+  },
+  "mbclio|wurmspeaker": {
+   "w": 50,
+   "n": 60
+  },
+  "muster|aerie": {
+   "w": 37,
+   "n": 60
+  },
+  "muster|countersnake": {
+   "w": 23,
+   "n": 60
+  },
+  "muster|dragons": {
+   "w": 29,
+   "n": 60
+  },
+  "muster|emeraldsnakes": {
+   "w": 12,
+   "n": 60
+  },
+  "muster|marducontrol": {
+   "w": 26,
+   "n": 60
+  },
+  "muster|mbclio": {
+   "w": 18,
+   "n": 60
+  },
+  "muster|rabble": {
+   "w": 35.5,
+   "n": 60
+  },
+  "muster|reaperclio": {
+   "w": 12,
+   "n": 60
+  },
+  "muster|stampede": {
+   "w": 25,
+   "n": 60
+  },
+  "muster|wurmspeaker": {
+   "w": 35,
+   "n": 60
+  },
+  "rabble|aerie": {
+   "w": 31,
+   "n": 60
+  },
+  "rabble|countersnake": {
+   "w": 27,
+   "n": 60
+  },
+  "rabble|dragons": {
+   "w": 31,
+   "n": 60
+  },
+  "rabble|emeraldsnakes": {
+   "w": 17,
+   "n": 60
+  },
+  "rabble|marducontrol": {
+   "w": 13,
+   "n": 60
+  },
+  "rabble|mbclio": {
+   "w": 26,
+   "n": 60
+  },
+  "rabble|muster": {
+   "w": 24.5,
+   "n": 60
+  },
+  "rabble|reaperclio": {
+   "w": 12,
+   "n": 60
+  },
+  "rabble|stampede": {
+   "w": 21,
+   "n": 60
+  },
+  "rabble|wurmspeaker": {
+   "w": 28,
+   "n": 60
+  },
+  "reaperclio|aerie": {
+   "w": 41,
+   "n": 60
+  },
+  "reaperclio|countersnake": {
+   "w": 43,
+   "n": 60
+  },
+  "reaperclio|dragons": {
+   "w": 45,
+   "n": 60
+  },
+  "reaperclio|emeraldsnakes": {
+   "w": 34,
+   "n": 60
+  },
+  "reaperclio|marducontrol": {
+   "w": 23,
+   "n": 60
+  },
+  "reaperclio|mbclio": {
+   "w": 31,
+   "n": 60
+  },
+  "reaperclio|muster": {
+   "w": 48,
+   "n": 60
+  },
+  "reaperclio|rabble": {
+   "w": 48,
+   "n": 60
+  },
+  "reaperclio|stampede": {
+   "w": 46,
+   "n": 60
+  },
+  "reaperclio|wurmspeaker": {
+   "w": 52,
+   "n": 60
+  },
+  "stampede|aerie": {
+   "w": 40,
+   "n": 60
+  },
+  "stampede|countersnake": {
+   "w": 24,
+   "n": 60
+  },
+  "stampede|dragons": {
+   "w": 30,
+   "n": 60
+  },
+  "stampede|emeraldsnakes": {
+   "w": 22,
+   "n": 60
+  },
+  "stampede|marducontrol": {
+   "w": 19,
+   "n": 60
+  },
+  "stampede|mbclio": {
+   "w": 25,
+   "n": 60
+  },
+  "stampede|muster": {
+   "w": 35,
+   "n": 60
+  },
+  "stampede|rabble": {
+   "w": 39,
+   "n": 60
+  },
+  "stampede|reaperclio": {
+   "w": 14,
+   "n": 60
+  },
+  "stampede|wurmspeaker": {
+   "w": 39,
+   "n": 60
+  },
+  "wurmspeaker|aerie": {
+   "w": 12,
+   "n": 60
+  },
+  "wurmspeaker|countersnake": {
+   "w": 6,
+   "n": 60
+  },
+  "wurmspeaker|dragons": {
+   "w": 23,
+   "n": 60
+  },
+  "wurmspeaker|emeraldsnakes": {
+   "w": 17,
+   "n": 60
+  },
+  "wurmspeaker|marducontrol": {
+   "w": 3,
+   "n": 60
+  },
+  "wurmspeaker|mbclio": {
+   "w": 10,
+   "n": 60
+  },
+  "wurmspeaker|muster": {
+   "w": 25,
+   "n": 60
+  },
+  "wurmspeaker|rabble": {
+   "w": 32,
+   "n": 60
+  },
+  "wurmspeaker|reaperclio": {
+   "w": 8,
+   "n": 60
+  },
+  "wurmspeaker|stampede": {
+   "w": 21,
+   "n": 60
+  }
+ }
+}

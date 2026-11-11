@@ -34,6 +34,11 @@ export type Format = ConstructedFormat | LimitedFormat;
 export const HIGH_GROUNDS = ["tallyflame_court", "wrackroot", "shevelport", "obsidian_observatory", "cairnbrand", "hearthspire", "volmaw", "nightbower", "ranksmere", "burnfallow"] as const;
 /** The five laws — not player cards until phase three; banned in every Convocation format. */
 export const LAW_IDS = ["law_intake", "law_tithe", "law_toll", "law_risen_tide", "law_season"] as const;
+/** Post-S71a (Chris, the Bodies field): THE POWER — the Open's restricted spells, every restricted card but the High
+ * Grounds. A gate format that bans these plays its own plan in the slots the Power took (every Open and triad list spent
+ * five to nine on them). The High Grounds stay restricted: lands, mostly deck-specific, and the fixing a three-colour
+ * deck needs without the Moxen. One list, so every format that bans the Power bans the same cards. */
+export const POWER_IDS = ["black_lotus", "mox_pearl", "mox_sapphire", "mox_jet", "mox_ruby", "mox_emerald", "time_walk", "demonic_tutor", "library_of_alexandria", "balance", "wheel_of_fortune", "earthrise"] as const;
 
 export const OPEN_FORMAT: ConstructedFormat = {
   id: "open",
@@ -78,9 +83,10 @@ export const ABZAN_FORMAT = constructed("abzan", "Abzan", "white, black and gree
 export const TEMUR_FORMAT = constructed("temur", "Temur", "green, blue and red. Great bodies, bounce and burn — the Unwinder sends it all home", { ...OPEN_BASE, colorsWithin: ["G", "U", "R"], manaWithin: true });
 export const BANT_FORMAT = constructed("bant", "Bant", "green, white and blue. Angels and auras, and the Sower plants a forest for every land", { ...OPEN_BASE, colorsWithin: ["G", "W", "U"], manaWithin: true });
 /** The formats that have a field of their own lists (data/convocation/formats/<id>/), a table of record and a door. */
-export const FIELD_FORMAT_IDS = ["open", "peasant", "naya", "esper", "mardu", "grixis", "jund", "jeskai", "sultai", "abzan", "temur", "bant"] as const;
+export const FIELD_FORMAT_IDS = ["open", "peasant", "naya", "esper", "mardu", "grixis", "jund", "jeskai", "sultai", "abzan", "temur", "bant", "bodies"] as const;
 export const PAUPER_FORMAT = constructed("pauper", "Pauper", "tier 1 only — honest creatures and spells", { minCards: 60, maxTier: 1, banned: OPEN_FORMAT.rule.banned! });
-export const BODIES_FORMAT = constructed("bodies", "Bodies", "Odile's gate: twenty-four creatures in sixty", { ...OPEN_BASE, minCreatures: 24 });
+/** Post-S71a (Chris): Bodies bans the Power (POWER_IDS); the High Grounds stay restricted to one. */
+export const BODIES_FORMAT = constructed("bodies", "Bodies", "Odile's gate: twenty-four creatures in sixty, and no Power — the High Grounds one each", { ...OPEN_BASE, banned: [...OPEN_BASE.banned, ...POWER_IDS], minCreatures: 24 });
 export const NOTHING_SMALL_FORMAT = constructed("nothing-small", "Nothing Small", "Zinnia's gate: every creature's power two or more", { ...OPEN_BASE, minCreaturePower: 2 });
 export const NOTHING_SUDDEN_FORMAT = constructed("nothing-sudden", "Nothing Sudden", "Ovna's gate: no instants", { ...OPEN_BASE, bannedTypes: ["Instant"] });
 export const HALF_GROUND_FORMAT = constructed("half-ground", "Half Ground", "Isaura's gate: half the deck is land", { ...OPEN_BASE, minLandFraction: 0.5 });

@@ -72,6 +72,8 @@ type Game = { a: string; b: string; seatA: 0 | 1; winner: "a" | "b" | "draw"; re
 
 /** S71a: a mana source in play (set once the pool is loaded) — for the X record */
 let MANA_SOURCE: (cardId: string) => boolean = () => false;
+const SAVE_GAMES = process.argv.includes("--save-games") ? process.argv[process.argv.indexOf("--save-games") + 1]! : "";
+const saved: unknown[] = [];
 const TRACE_AFTER = process.argv.includes("--trace-after") ? Number(process.argv[process.argv.indexOf("--trace-after") + 1]) : 0;
 class Tracker implements Agent {
   log: SeatLog = { cast: {}, played: {} };
@@ -221,6 +223,8 @@ async function run(): Promise<void> {
         if (process.argv.includes("--progress")) console.error(`match ${m} game ${game.index} seed ${game.seed} start ${game.startingPlayer}`); // a game that never ends is the last line printed
         const r = await runMatch(spec, pool, [t0, t1]);
         series.record(game, r);
+        // Post-S71a (Chris: the Countersnake–Mardu read): `--save-games file.json` keeps every match game's spec and log, for narrate and replay probes
+        if (SAVE_GAMES) saved.push({ list: `${FORMAT_ID}:${d1.key}`, opponent: d1.key, me: d0.key, round: m, game: game.index, eventSeed: 0, phase: "rr", spec, log: r.log, result: { winner: r.winner, reason: r.reason, turns: r.turns } });
         games.push({ a: ka, b: kb, seatA: 0, winner: r.winner === null ? "draw" : r.winner === 0 ? "a" : "b", reason: r.reason, turns: r.turns, life: r.finalLife as [number, number], ...stallOf(r), logA: t0.log, logB: t1.log, match: m, gameNo: game.index });
       }
     }
@@ -241,6 +245,7 @@ async function run(): Promise<void> {
   const out = arg("out", join(ROOT, `analysis/runs/open_rr_shard${si}.json`));
   mkdirSync(dirname(out), { recursive: true });
   writeFileSync(out, JSON.stringify({ games: G, seed: seed0, shard: `${si}/${sn}`, results: games }));
+  if (SAVE_GAMES) writeFileSync(SAVE_GAMES, JSON.stringify({ games: saved }));
 }
 
 /** S59 (ADR-171): the three columns from `--matches` files — per list, and the pairings whose game-one → later delta is largest. */

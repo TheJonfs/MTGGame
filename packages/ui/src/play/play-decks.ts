@@ -27,6 +27,7 @@ export const PLAY_CATEGORIES: { group: string; title: string }[] = [
   { group: "abzan", title: "Abzan's lists" },
   { group: "temur", title: "Temur's lists" },
   { group: "bant", title: "Bant's lists" },
+  { group: "bodies", title: "Bodies' lists" }, // post-S71a (the first gate with a field)
   { group: "saved", title: "Your journey's decks" },
   { group: "mages", title: "The mages" },
   { group: "beasts", title: "The beasts" },

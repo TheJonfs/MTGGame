@@ -1,0 +1,483 @@
+{
+ "name": "open_rr_1",
+ "when": "2026-11-09T19:56:55.164Z",
+ "games": 5500,
+ "table": {
+  "emeraldsnakes": {
+   "reaperclio": [
+    49,
+    100
+   ],
+   "marducontrol": [
+    56,
+    100
+   ],
+   "countersnake": [
+    50,
+    100
+   ],
+   "wurmspeaker": [
+    67,
+    100
+   ],
+   "rabble": [
+    71,
+    100
+   ],
+   "muster": [
+    62,
+    100
+   ],
+   "stampede": [
+    67,
+    100
+   ],
+   "dragons": [
+    63,
+    100
+   ],
+   "aerie": [
+    57,
+    100
+   ],
+   "mbclio": [
+    50,
+    100
+   ]
+  },
+  "reaperclio": {
+   "emeraldsnakes": [
+    51,
+    100
+   ],
+   "marducontrol": [
+    43,
+    100
+   ],
+   "countersnake": [
+    71,
+    100
+   ],
+   "wurmspeaker": [
+    81,
+    100
+   ],
+   "rabble": [
+    64,
+    100
+   ],
+   "muster": [
+    70,
+    100
+   ],
+   "stampede": [
+    70,
+    100
+   ],
+   "dragons": [
+    59,
+    100
+   ],
+   "aerie": [
+    66,
+    100
+   ],
+   "mbclio": [
+    60,
+    100
+   ]
+  },
+  "marducontrol": {
+   "reaperclio": [
+    57,
+    100
+   ],
+   "wurmspeaker": [
+    86,
+    100
+   ],
+   "emeraldsnakes": [
+    44,
+    100
+   ],
+   "rabble": [
+    65,
+    100
+   ],
+   "muster": [
+    62,
+    100
+   ],
+   "stampede": [
+    62,
+    100
+   ],
+   "dragons": [
+    74,
+    100
+   ],
+   "aerie": [
+    67,
+    100
+   ],
+   "mbclio": [
+    59,
+    100
+   ],
+   "countersnake": [
+    59,
+    100
+   ]
+  },
+  "wurmspeaker": {
+   "marducontrol": [
+    14,
+    100
+   ],
+   "reaperclio": [
+    19,
+    100
+   ],
+   "emeraldsnakes": [
+    33,
+    100
+   ],
+   "rabble": [
+    55,
+    100
+   ],
+   "muster": [
+    48,
+    100
+   ],
+   "stampede": [
+    52,
+    100
+   ],
+   "countersnake": [
+    24,
+    100
+   ],
+   "dragons": [
+    39,
+    100
+   ],
+   "aerie": [
+    40,
+    100
+   ],
+   "mbclio": [
+    18,
+    100
+   ]
+  },
+  "countersnake": {
+   "stampede": [
+    52,
+    100
+   ],
+   "reaperclio": [
+    28,
+    100
+   ],
+   "dragons": [
+    48,
+    100
+   ],
+   "emeraldsnakes": [
+    50,
+    100
+   ],
+   "aerie": [
+    66,
+    100
+   ],
+   "mbclio": [
+    31,
+    100
+   ],
+   "wurmspeaker": [
+    76,
+    100
+   ],
+   "rabble": [
+    63,
+    100
+   ],
+   "marducontrol": [
+    41,
+    100
+   ],
+   "muster": [
+    66,
+    100
+   ]
+  },
+  "stampede": {
+   "countersnake": [
+    48,
+    100
+   ],
+   "aerie": [
+    57,
+    100
+   ],
+   "rabble": [
+    56,
+    100
+   ],
+   "mbclio": [
+    34,
+    100
+   ],
+   "marducontrol": [
+    38,
+    100
+   ],
+   "reaperclio": [
+    30,
+    100
+   ],
+   "muster": [
+    55,
+    100
+   ],
+   "emeraldsnakes": [
+    33,
+    100
+   ],
+   "wurmspeaker": [
+    48,
+    100
+   ],
+   "dragons": [
+    52,
+    100
+   ]
+  },
+  "rabble": {
+   "muster": [
+    50,
+    100
+   ],
+   "marducontrol": [
+    35,
+    100
+   ],
+   "stampede": [
+    43,
+    100
+   ],
+   "dragons": [
+    48,
+    100
+   ],
+   "reaperclio": [
+    36,
+    100
+   ],
+   "aerie": [
+    43,
+    100
+   ],
+   "emeraldsnakes": [
+    29,
+    100
+   ],
+   "wurmspeaker": [
+    45,
+    100
+   ],
+   "mbclio": [
+    41,
+    100
+   ],
+   "countersnake": [
+    37,
+    100
+   ]
+  },
+  "muster": {
+   "rabble": [
+    50,
+    100
+   ],
+   "marducontrol": [
+    38,
+    100
+   ],
+   "reaperclio": [
+    30,
+    100
+   ],
+   "emeraldsnakes": [
+    38,
+    100
+   ],
+   "wurmspeaker": [
+    52,
+    100
+   ],
+   "stampede": [
+    45,
+    100
+   ],
+   "dragons": [
+    49,
+    100
+   ],
+   "aerie": [
+    50,
+    100
+   ],
+   "mbclio": [
+    34,
+    100
+   ],
+   "countersnake": [
+    34,
+    100
+   ]
+  },
+  "aerie": {
+   "stampede": [
+    43,
+    100
+   ],
+   "countersnake": [
+    34,
+    100
+   ],
+   "dragons": [
+    53,
+    100
+   ],
+   "rabble": [
+    57,
+    100
+   ],
+   "mbclio": [
+    33,
+    100
+   ],
+   "marducontrol": [
+    33,
+    100
+   ],
+   "reaperclio": [
+    34,
+    100
+   ],
+   "muster": [
+    50,
+    100
+   ],
+   "emeraldsnakes": [
+    43,
+    100
+   ],
+   "wurmspeaker": [
+    60,
+    100
+   ]
+  },
+  "dragons": {
+   "countersnake": [
+    52,
+    100
+   ],
+   "rabble": [
+    51,
+    100
+   ],
+   "aerie": [
+    47,
+    100
+   ],
+   "mbclio": [
+    40,
+    100
+   ],
+   "marducontrol": [
+    26,
+    100
+   ],
+   "reaperclio": [
+    41,
+    100
+   ],
+   "muster": [
+    51,
+    100
+   ],
+   "emeraldsnakes": [
+    37,
+    100
+   ],
+   "wurmspeaker": [
+    61,
+    100
+   ],
+   "stampede": [
+    48,
+    100
+   ]
+  },
+  "mbclio": {
+   "stampede": [
+    66,
+    100
+   ],
+   "countersnake": [
+    69,
+    100
+   ],
+   "dragons": [
+    60,
+    100
+   ],
+   "rabble": [
+    58,
+    100
+   ],
+   "aerie": [
+    67,
+    100
+   ],
+   "marducontrol": [
+    41,
+    100
+   ],
+   "reaperclio": [
+    40,
+    100
+   ],
+   "muster": [
+    66,
+    100
+   ],
+   "emeraldsnakes": [
+    50,
+    100
+   ],
+   "wurmspeaker": [
+    82,
+    100
+   ]
+  }
+ },
+ "means": {
+  "emeraldsnakes": 59,
+  "reaperclio": 64,
+  "marducontrol": 64,
+  "countersnake": 52,
+  "wurmspeaker": 34,
+  "rabble": 41,
+  "muster": 42,
+  "stampede": 45,
+  "dragons": 45,
+  "aerie": 44,
+  "mbclio": 60
+ },
+ "report": "# The Open's round-robin (S46) — 5500 games, master both, 20 life, no entrances; the ROW's win rate\n\n| | emeraldsnakes | reaperclio | marducontrol | countersnake | wurmspeaker | rabble | muster | stampede | dragons | aerie | mbclio | **mean** |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| **emeraldsnakes** | — | 49 | 56 | 50 | 67 | 71 | 62 | 67 | 63 | 57 | 50 | **59** |\n| **reaperclio** | 51 | — | 43 | 71 | 81 | 64 | 70 | 70 | 59 | 66 | 60 | **64** |\n| **marducontrol** | 44 | 57 | — | 59 | 86 | 65 | 62 | 62 | 74 | 67 | 59 | **64** |\n| **countersnake** | 50 | 28 | 41 | — | 76 | 63 | 66 | 52 | 48 | 66 | 31 | **52** |\n| **wurmspeaker** | 33 | 19 | 14 | 24 | — | 55 | 48 | 52 | 39 | 40 | 18 | **34** |\n| **rabble** | 29 | 36 | 35 | 37 | 45 | — | 50 | 43 | 48 | 43 | 41 | **41** |\n| **muster** | 38 | 30 | 38 | 34 | 52 | 50 | — | 45 | 49 | 50 | 34 | **42** |\n| **stampede** | 33 | 30 | 38 | 48 | 48 | 56 | 55 | — | 52 | 57 | 34 | **45** |\n| **dragons** | 37 | 41 | 26 | 52 | 61 | 51 | 51 | 48 | — | 47 | 40 | **45** |\n| **aerie** | 43 | 34 | 33 | 34 | 60 | 57 | 50 | 43 | 53 | — | 33 | **44** |\n| **mbclio** | 50 | 40 | 41 | 69 | 82 | 58 | 66 | 66 | 60 | 67 | — | **60** |\n\nSolvable (a list over 65% against the field): none. Under 35%: wurmspeaker.\nMuster vs Warband: the Muster 0% (0 games).\n\n## Staples (ADR-170)\n\nIn more than half of the 11 lists: Flametongue Kavu (7 lists, 26 copies); Birds of Paradise (6 lists, 22 copies). The most played: Flametongue Kavu 7 · Birds of Paradise 6 · Reaper's Forerunner 5 · Lightning Bolt 5 · Swords to Plowshares 4 · Manaba 3 · Vampire Nighthawk 3 · Clio, Lady of the Depths 3.\n\n## Restricted cards — % of the list's games in which it was cast (or, a land, played)\n\n- **emeraldsnakes**: tallyflame_court 31% · wrackroot 28% · shevelport 27% · cairnbrand 31%\n- **reaperclio**: cairnbrand 35% · tallyflame_court 31% · wrackroot 32%\n- **marducontrol**: cairnbrand 29% · obsidian_observatory 28%\n- **countersnake**: obsidian_observatory 34% · wrackroot 34% · shevelport 35%\n- **rabble**: cairnbrand 27% · tallyflame_court 25%\n- **dragons**: cairnbrand 29%\n- **aerie**: obsidian_observatory 30%\n- **mbclio**: cairnbrand 29% · tallyflame_court 30%\n\n## Key pieces — % of the list's games in which each was cast (a weak pilot reads apart from a weak list)\n\n- **emeraldsnakes**: \n- **reaperclio**: \n- **marducontrol**: \n- **countersnake**: \n- **wurmspeaker**: seedborn_muse 57% · rampaging_baloths 33% · gaean_wurm 53%\n- **rabble**: \n- **muster**: glorious_anthem 60% · vitalist 0% · emeria_angel 47%\n- **stampede**: \n- **dragons**: \n- **aerie**: \n- **mbclio**: \n\n## The Loop — the Usher + an Altar on the battlefield with a Restoration Angel in hand or play\n\nAssembled by turn ten in 0 of 0 games (0%); ever: 0. Altar activations per game: 0.00."
+}
