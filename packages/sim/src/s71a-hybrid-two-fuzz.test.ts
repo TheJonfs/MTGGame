@@ -28,6 +28,15 @@ const RUNS: { card: string; host: [string, string]; foe: [string, string] }[] = 
   // Snake list against tokens and Lumen's borrowing
   { card: "discontinuous_flash", host: ["jeskai", "theft"], foe: ["mardu", "brremoval"] },
   { card: "discontinuous_flash", host: ["bant", "countersnake"], foe: ["jeskai", "watch"] },
+  // Intuitive Mastery ({R/W}{R/W} flash Aura, −1/−1 and double strike): a Goblin list against X/1s; an Elder list against Wurms
+  { card: "intuitive_mastery", host: ["mardu", "warband"], foe: ["naya", "rabble"] },
+  { card: "intuitive_mastery", host: ["naya", "auras"], foe: ["naya", "stompy"] },
+  // Command of the Depths ({U/B}{U/B} instant, choose two — six pair-modes): small creatures to shrink, hands to strip
+  { card: "command_of_the_depths", host: ["grixis", "mbclio"], foe: ["jeskai", "watch"] },
+  { card: "command_of_the_depths", host: ["sultai", "writ"], foe: ["grixis", "rabble"] },
+  // Glory Hound ({B/G}{B/G} 2/2; {B/G}{B/G}, discard: team +1/+1 and menace): creature lists into blockers
+  { card: "glory_hound", host: ["abzan", "bfh"], foe: ["abzan", "roll"] },
+  { card: "glory_hound", host: ["jund", "stompy"], foe: ["mardu", "brremoval"] },
 ];
 function withFour(f: string, k: string, card: string, cards: Map<string, { types: string[] }>) {
   const l = FORMAT_FIELD[f]?.[k]; if (!l) throw new Error(`no list ${f}:${k}`);
@@ -48,8 +57,8 @@ class Counter implements Agent {
 }
 
 /** Fuzz before fixtures: four copies in two hosts each, both seats, random agents and the heuristic. Zero exceptions, every game
- * terminates, each card cast; replays byte-identical. Smoke: 6 runs × 2 seats × 2 agent kinds × 1 seed (24 games); FUZZ_FULL: 20 seeds (800 with Revivalist's two runs — a Mardu and a Jund foe, removal to kill it — Daunting Terror's two: a burn foe and a Stompy foe; and Discontinuous Flash's two — 960 in all). Clutch Guard ({G/U}{G/U}; the Pyromancer's graveyard shape with a hybrid ability cost) in a Bant and a Sultai host. */
-describe("Post-S71a fuzz — Domain Pouncer, Terrain Collapse, Clutch Guard, Revivalist, Daunting Terror and Discontinuous Flash", () => {
+ * terminates, each card cast; replays byte-identical. Smoke: 6 runs × 2 seats × 2 agent kinds × 1 seed (24 games); FUZZ_FULL: 20 seeds (800 with Revivalist's two runs — a Mardu and a Jund foe, removal to kill it — Daunting Terror's two: a burn foe and a Stompy foe; Discontinuous Flash's two; Intuitive Mastery's two; Command of the Depths' two; and Glory Hound's two — 1,440 in all). Clutch Guard ({G/U}{G/U}; the Pyromancer's graveyard shape with a hybrid ability cost) in a Bant and a Sultai host. */
+describe("Post-S71a fuzz — Domain Pouncer, Terrain Collapse, Clutch Guard, Revivalist, Daunting Terror, Discontinuous Flash, Intuitive Mastery, Command of the Depths and Glory Hound", () => {
   const games = process.env.FUZZ_FULL ? 20 : 1;
   it(`${games} games × ${RUNS.length} runs × 2 seats × 2 agents`, async () => {
     const cards = withStudy();
@@ -76,6 +85,9 @@ describe("Post-S71a fuzz — Domain Pouncer, Terrain Collapse, Clutch Guard, Rev
     expect(casts["revivalist"]).toBeGreaterThan(0);
     expect(casts["daunting_terror"]).toBeGreaterThan(0);
     expect(casts["discontinuous_flash"]).toBeGreaterThan(0);
+    expect(casts["intuitive_mastery"]).toBeGreaterThan(0);
+    expect(casts["command_of_the_depths"]).toBeGreaterThan(0);
+    expect(casts["glory_hound"]).toBeGreaterThan(0);
   }, 1_800_000);
   it("replay determinism — a game of each run replays byte-identical", async () => {
     const cards = withStudy();

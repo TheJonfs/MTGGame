@@ -321,6 +321,7 @@ export class HeuristicAgent implements Agent {
     if (this.legendDuplicateGated(view, action)) return -Infinity; // S27 r2: never cast a second copy of a legend we control
     if (this.cantripTimingGated(view, action)) return -Infinity; // S28: Brainstorm at the opponent's end step or in response
     if (this.ownerBlinkTimingGated(view, action)) return -Infinity; // book 167: Discontinuous Flash — a cantrip unless the moment is now
+    if (this.flashAuraHeld(view, action)) return -Infinity; // book 168: the flash keyword Aura waits for blocks
     if (this.entersModesHeld(view, action)) return -Infinity; // book 114: the graveyard answer on a body waits for the graveyard
     if (this.flashTimingGated(view, action)) return -Infinity; // S32: the Escort at the opponent's end step, in response, or when the mana is idle
     if (this.selfCounterGated(view, action)) return -Infinity; // post-S43: Mystic Snake with only our own spell to hit
@@ -335,6 +336,7 @@ export class HeuristicAgent implements Agent {
     if (this.entersHarmGated(view, action)) return -Infinity; // S50 (book 89): the Kavu is not cast into a board where its four can only hit us
     if (this.selfPumpGated(view, action)) return -Infinity; // S50 (book 90): the Whelp's pump is combat damage or a won fight, never idle
     if (this.teamPumpGated(view, action)) return -Infinity; // S64 (book 131): the Marshal's team pump only after blocks or in answer
+    if (this.teamGrantGated(view, action)) return -Infinity; // book 169: Glory Hound — menace before blocks, the pump after
     if (this.secondAnswerGated(view, action)) return -Infinity; // S65 (book 133): no second answer at a creature our own already kills
     if (this.pingTimingGated(view, action)) return -Infinity; // S65 (book 135): a tap-and-discard pinger waits for the main phase; face only at their end step
     if (this.stunTimingGated(view, action)) return -Infinity; // post-S65 (book 138): the Shackle stuns an attacker before attacks, or a blocker before ours
@@ -2193,6 +2195,37 @@ export class HeuristicAgent implements Agent {
     return this.oppAnswers() >= 4 && view.battlefield.some((b) => b.controller === me && b.power !== null && objectValue(this.defs, b, this.C) > own);
   }
 
+  /**
+   * Book 168 (post-S71a, Chris's double-strike Aura study): a FLASH Aura that grants a keyword to its host (`mixedAuraValue`
+   * prices it) is a combat trick first. On our creature it is cast when blocks are final with the host in combat (the fight
+   * it changes), or at a time no combat is coming for it — our second main phase, or the opponent's end step; it is held
+   * before blocks on our turn while the host can still attack (cast then, it only tells them what to block), and on their
+   * turn until they declare blocks (a blocker) or their end step. On their creature (the debuff's removal on an X/1) it is
+   * not held. Off: "flashaura". Exposed.
+   */
+  flashAuraHeld(view: GameView, action: Action): boolean {
+    if (action.type !== "castSpell" || this.profile.off?.includes("flashaura")) return false;
+    const card = view.hand.find((c) => c.objectId === action.objectId);
+    const d = card ? this.def(card.cardId) : undefined;
+    if (!d || !(d.subtypes ?? []).includes("Aura") || !(d.keywords ?? []).includes("flash")) return false;
+    if (!(d.abilities ?? []).some((a) => a.kind === "static" && a.effects.some((e) => e.type === "grantKeyword" && e.scope === "attached"))) return false;
+    const t = action.targets[0];
+    const h = t?.kind === "object" ? view.battlefield.find((b) => b.id === t.id) : undefined;
+    if (!h || h.controller !== view.you) return false;
+    const me = view.you, ourTurn = view.activePlayer === me;
+    // the study's first runs: a second copy cast in response to the first, at the same host — the same Aura twice does nothing
+    if (view.stack.some((it) => it.controller === me && it.cardId === card!.cardId && (it.targets ?? []).some((x) => x.kind === "object" && x.id === h.id))) return true;
+    const inCombat = view.combat.attackers.includes(h.id) || view.combat.blocks.some((b) => b.blocker === h.id);
+    if (view.step === "DECLARE_BLOCKERS" && inCombat) return false;
+    if (ourTurn) {
+      if (view.step === "MAIN2" || view.step === "END") return false;
+      const canAttack = !h.tapped && !h.summoningSick && !h.cantAttack;
+      const beforeCombat = view.step === "UPKEEP" || view.step === "DRAW" || view.step === "MAIN1" || view.step === "BEGIN_COMBAT" || view.step === "DECLARE_ATTACKERS";
+      return beforeCombat ? canAttack || view.combat.attackers.length > 0 : true;
+    }
+    return view.step !== "END";
+  }
+
   // ---------- S36 (ADR-121): the four cards' policies ----------
 
   /** The land drop in hand of a card whose ability returns itself at cleanup (the Glaciers). */
@@ -2399,6 +2432,60 @@ export class HeuristicAgent implements Agent {
     if (!ab.effects.every((e) => e.type === "modifyPT" && e.scope === "creaturesYouControl" && e.duration === "UNTIL_END_OF_TURN" && ptSign(e.power) + ptSign(e.toughness) > 0)) return false;
     const blocksFinal = view.combat.attackers.length > 0 && (view.step === "DECLARE_BLOCKERS" || view.step === "FIRST_STRIKE_DAMAGE" || view.step === "COMBAT_DAMAGE");
     return !blocksFinal && !view.stack.some((s) => s.controller !== view.you);
+  }
+
+  /**
+   * Book 169 (post-S71a, Chris's Glory Hound: "{B/G}{B/G}, Discard a card: Creatures you control get +1/+1 and gain menace
+   * until end of turn"): a TEAM keyword grant with a team pump, until end of turn. Without a tap it can be activated again
+   * and again, and the predictor prices it a hair above passing anywhere — so it is spent only where it changes a combat:
+   *  · our attack, attackers declared, blocks not yet (the evasion's window — CR 702.111b, menace: no single blocker): when
+   *    the damage through rises by 3 or more, or becomes lethal (their untapped creatures block our biggest; with menace
+   *    each block takes two of them);
+   *  · blocks final (either side): when the +N/+N flips a fight — our creature now kills its partner, or now survives it — or
+   *    makes our unblocked damage lethal.
+   * Otherwise held (the cost is a card). A second activation before blocks only for lethal. Keyed on the shape (a team
+   * grantKeyword with a team modifyPT, both until end of turn). Off: "teamgrant". Exposed.
+   */
+  teamGrantGated(view: GameView, action: Action): boolean {
+    if (action.type !== "activateAbility" || this.profile.off?.includes("teamgrant")) return false;
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+    if (!ab || ab.kind !== "activated" || ab.equip || ab.modes) return false;
+    const grant = ab.effects.find((e) => e.type === "grantKeyword" && e.scope === "creaturesYouControl" && e.duration === "UNTIL_END_OF_TURN");
+    const pump = ab.effects.find((e) => e.type === "modifyPT" && e.scope === "creaturesYouControl" && e.duration === "UNTIL_END_OF_TURN");
+    if (!grant || !pump || grant.type !== "grantKeyword" || pump.type !== "modifyPT") return false;
+    // a fixed pump, not paid with a creature (the Reaper's harvest — +X/+0 by the sacrificed power — is book 62's)
+    if (typeof pump.power !== "number" || typeof pump.toughness !== "number" || ab.cost.sacrifice) return false;
+    const dp = pump.power, dt = pump.toughness;
+    const me = view.you, opp = (1 - me) as 0 | 1, ourTurn = view.activePlayer === me;
+    const obj = (id: string) => view.battlefield.find((o) => o.id === id);
+    const attackers = view.combat.attackers.map(obj).filter((o): o is NonNullable<typeof o> => !!o && o.power !== null);
+    const blocked = new Set(view.combat.blocks.map((b) => b.attacker));
+    // the evasion's window
+    if (ourTurn && view.step === "DECLARE_ATTACKERS" && attackers.length > 0 && view.combat.blocks.length === 0) {
+      const blockers = view.battlefield.filter((o) => o.controller === opp && o.power !== null && !o.tapped && !o.cantBlock).length;
+      const through = (pows: number[], k: number) => [...pows].sort((a, b) => b - a).slice(Math.min(k, pows.length)).reduce((a, b) => a + Math.max(0, b), 0);
+      const now = attackers.map((o) => o.power ?? 0);
+      const has = attackers.every((o) => o.keywords.includes(grant.keyword));
+      const before = through(now, has ? Math.floor(blockers / 2) : blockers);
+      const after = through(now.map((p) => p + dp), Math.floor(blockers / 2));
+      if (after >= view.life[opp]) return false;
+      return has || after - before < 3;
+    }
+    // blocks final: the pump flips a fight, or the unblocked damage is lethal
+    if (view.step === "DECLARE_BLOCKERS" && view.combat.attackers.length > 0) {
+      if (ourTurn && attackers.filter((o) => !blocked.has(o.id)).reduce((n, o) => n + Math.max(0, (o.power ?? 0) + dp), 0) >= view.life[opp]) return false;
+      const flips = view.combat.blocks.some((b) => {
+        const mine = obj(ourTurn ? b.attacker : b.blocker), theirs = obj(ourTurn ? b.blocker : b.attacker);
+        if (!mine || !theirs || mine.power === null || theirs.power === null || mine.controller !== me) return false;
+        const tTough = (theirs.toughness ?? 0) - theirs.damage, mTough = (mine.toughness ?? 0) - mine.damage;
+        const dtTheirs = theirs.keywords.includes("deathtouch") && theirs.power > 0, dtMine = mine.keywords.includes("deathtouch") && mine.power > 0;
+        const killsNow = dtMine || mine.power >= tTough, killsAfter = dtMine || mine.power + dp >= tTough;
+        const diesNow = dtTheirs || theirs.power >= mTough, diesAfter = dtTheirs || theirs.power >= mTough + dt;
+        return (killsAfter && !killsNow) || (diesNow && !diesAfter);
+      });
+      return !flips;
+    }
+    return true;
   }
 
   /** Post-S43 (Chris, the Cinquefont fight: the Ruby Tyrant cast, then Mystic Snake in response — its mandatory

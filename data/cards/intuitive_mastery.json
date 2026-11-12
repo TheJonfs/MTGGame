@@ -1,0 +1,49 @@
+{
+ "id": "intuitive_mastery",
+ "name": "Intuitive Mastery",
+ "source": "custom",
+ "manaCost": "{R/W}{R/W}",
+ "types": [
+  "Enchantment"
+ ],
+ "subtypes": [
+  "Aura"
+ ],
+ "keywords": [
+  "flash"
+ ],
+ "text": "Flash\nEnchant creature\nEnchanted creature gets -1/-1 and has double strike.",
+ "targets": [
+  {
+   "count": 1,
+   "predicate": "creature",
+   "zone": "battlefield"
+  }
+ ],
+ "abilities": [
+  {
+   "kind": "static",
+   "effects": [
+    {
+     "type": "modifyPT",
+     "power": -1,
+     "toughness": -1,
+     "scope": "attached",
+     "duration": "WHILE_SOURCE_ON_BATTLEFIELD"
+    },
+    {
+     "type": "grantKeyword",
+     "keyword": "double strike",
+     "scope": "attached",
+     "duration": "WHILE_SOURCE_ON_BATTLEFIELD"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/intuitive_mastery.png",
+  "fallback": "rendered"
+ },
+ "printedAsset": "intuitive_mastery.jpg",
+ "shopTier": "R"
+}

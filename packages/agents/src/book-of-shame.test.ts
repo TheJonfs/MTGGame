@@ -2680,3 +2680,54 @@ describe("book of shame 167 (post-S71a, Discontinuous Flash — the owner-blink 
     expect(a.scorePriorityAction(v, fl("tk"))).toBeGreaterThan(a.scorePriorityAction(v, pass));
   });
 });
+
+describe("book of shame 168 (post-S71a, Intuitive Mastery — a keyword grant with a debuff is priced as its host would stand)", () => {
+  // Chris's flash Aura (−1/−1 and double strike). Classed harmful by its −1/−1, it would have gone on the opponent's creatures; the
+  // predictor now reads the host as it would stand, and the flash waits for blocks.
+  const a = agent("aggro");
+  const m = (t: string) => ({ type: "castSpell" as const, objectId: "im", targets: [{ kind: "object" as const, id: t }] });
+  const lands = [{ id: "mt", cardId: "mountain", controller: 0 as const }, { id: "pl", cardId: "plains", controller: 0 as const }];
+  const hand = [{ objectId: "im", cardId: "intuitive_mastery" }];
+  const pass = { type: "pass" as const };
+  it("our Goblin Piker blocked by their Raging Goblin: not on the Piker (1/0, it dies) — on their Goblin (it dies, ours lives)", () => {
+    const v = mkView({ hand, step: "DECLARE_BLOCKERS", combat: { attackers: ["pk"], blocks: [{ blocker: "rg", attacker: "pk" }] }, battlefield: [...lands, { id: "pk", cardId: "goblin_piker", controller: 0, tapped: true }, { id: "rg", cardId: "raging_goblin", controller: 1 }] });
+    expect(a.scorePriorityAction(v, m("pk"))).toBeLessThan(a.scorePriorityAction(v, pass));
+    expect(a.scorePriorityAction(v, m("rg"))).toBeGreaterThan(a.scorePriorityAction(v, pass));
+  });
+  it("our unblocked Serra Angel after blocks: worth it (3 twice); in our first main phase, with the Angel able to attack, held", () => {
+    const v = mkView({ hand, step: "DECLARE_BLOCKERS", combat: { attackers: ["sa"], blocks: [] }, battlefield: [...lands, { id: "sa", cardId: "serra_angel", controller: 0, tapped: true }] });
+    expect(a.scorePriorityAction(v, m("sa"))).toBeGreaterThan(a.scorePriorityAction(v, pass));
+    const main = mkView({ hand, battlefield: [...lands, { id: "sa", cardId: "serra_angel", controller: 0 }] });
+    expect(a.scorePriorityAction(main, m("sa"))).toBe(-Infinity);
+  });
+  it("never on their healthy creature (double strike is a gift there)", () => {
+    const v = mkView({ hand, battlefield: [...lands, { id: "ta", cardId: "serra_angel", controller: 1 }] });
+    expect(a.scorePriorityAction(v, m("ta"))).toBeLessThan(a.scorePriorityAction(v, pass));
+  });
+});
+
+describe("book of shame 169 (post-S71a, Glory Hound — a team grant with a pump is spent where it changes a combat)", () => {
+  // "{B/G}{B/G}, Discard a card: Creatures you control get +1/+1 and gain menace until end of turn." No tap: the predictor priced it a
+  // hair above passing everywhere, so it would have discarded the hand in a main phase. Menace before blocks; the pump after.
+  const a = agent("aggro");
+  const act = { type: "activateAbility" as const, objectId: "gh", abilityIndex: 0, targets: [] };
+  const pass = { type: "pass" as const };
+  const ours = (tapped: boolean): Obj[] => [{ id: "f1", cardId: "forest", controller: 0 }, { id: "f2", cardId: "swamp", controller: 0 }, { id: "gh", cardId: "glory_hound", controller: 0, tapped }, { id: "gb", cardId: "grizzly_bears", controller: 0, tapped }];
+  const two: Obj[] = [{ id: "b1", cardId: "grizzly_bears", controller: 1 }, { id: "b2", cardId: "grizzly_bears", controller: 1 }];
+  const hand = [{ objectId: "c1", cardId: "forest" }];
+  it("in our first main phase: held (a card for nothing)", () => {
+    expect(a.scorePriorityAction(mkView({ hand, battlefield: [...ours(false), ...two] }), act)).toBe(-Infinity);
+  });
+  it("two attackers into two untapped Bears: menace lets one through (3 more) — spent; into no blockers, the +1s alone (2) — held", () => {
+    const into = mkView({ hand, step: "DECLARE_ATTACKERS", combat: { attackers: ["gh", "gb"], blocks: [] }, battlefield: [...ours(true), ...two] });
+    expect(a.scorePriorityAction(into, act)).toBeGreaterThan(a.scorePriorityAction(into, pass));
+    const open = mkView({ hand, step: "DECLARE_ATTACKERS", combat: { attackers: ["gh", "gb"], blocks: [] }, battlefield: ours(true) });
+    expect(a.scorePriorityAction(open, act)).toBe(-Infinity);
+  });
+  it("after blocks: our 2/2 blocked by a 2/2 — the +1/+1 wins the fight — spent; unblocked and short of lethal — held", () => {
+    const fight = mkView({ hand, step: "DECLARE_BLOCKERS", combat: { attackers: ["gh"], blocks: [{ blocker: "b1", attacker: "gh" }] }, battlefield: [...ours(true), ...two] });
+    expect(a.scorePriorityAction(fight, act)).toBeGreaterThan(a.scorePriorityAction(fight, pass));
+    const clear = mkView({ hand, step: "DECLARE_BLOCKERS", combat: { attackers: ["gh"], blocks: [] }, battlefield: [...ours(true), ...two] });
+    expect(a.scorePriorityAction(clear, act)).toBe(-Infinity);
+  });
+});

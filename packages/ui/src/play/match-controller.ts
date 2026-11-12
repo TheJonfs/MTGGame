@@ -120,6 +120,14 @@ export type UiPhase =
       options: { abilityIndex: number; label: string; variants: Action[] }[];
     }
   | {
+      /** Post-S71a (Chris — Command of the Depths, "choose two"): a modal spell or ability whose modes share target shapes
+       * (draw + −2/−2 and −2/−2 + a Faerie both aim at one creature) asks WHICH mode first, by its printed label; the
+       * targeting then holds only that mode's targets (CR 700.2a: the modes are chosen as part of casting). */
+      kind: "chooseMode";
+      sourceObjectId: string;
+      options: { mode: number; label: string; variants: Action[] }[];
+    }
+  | {
       /** S15 (ADR-068 Amendment 2): a choice-bearing mana ability — pick the colour. */
       kind: "chooseColor";
       sourceObjectId: string;
@@ -751,6 +759,9 @@ export class MatchController {
     }
     const def = this.pool.get(this.game.state.objects[sourceObjectId]?.cardId ?? "") as { targets?: TargetSpecLite[]; spellEffect?: EffectLite[]; abilities?: Ability[] } | undefined;
     if (!def) return null;
+    // Post-S71a: a modal spell's slots are its chosen mode's
+    const mode = (action as { mode?: number }).mode, md = mode !== undefined ? (def as { modes?: { targets?: TargetSpecLite[]; effects?: EffectLite[] }[] }).modes?.[mode] : undefined;
+    if (action.type === "castSpell" && md) return md.targets?.length ? { specs: md.targets, effects: md.effects ?? [] } : null;
     if (action.type === "castSpell") return def.targets?.length ? { specs: def.targets, effects: def.spellEffect ?? [] } : null;
     if (action.type === "activateAbility") { const ab = def.abilities?.[(action as { abilityIndex: number }).abilityIndex]; return ab?.targets?.length ? { specs: ab.targets, effects: ab.effects ?? [] } : null; }
     return null;
@@ -1376,6 +1387,13 @@ export class MatchController {
       this.emit();
       return;
     }
+    // Post-S71a (Command of the Depths): two or more modes on offer → choose the mode, then its X and targets.
+    const modes = [...new Set(variants.map((v) => (v as { mode?: number }).mode).filter((m): m is number => m !== undefined))];
+    if (modes.length > 1) {
+      this.phase = { kind: "chooseMode", sourceObjectId, options: modes.sort((a, b) => a - b).map((mode) => ({ mode, label: this.modeLabel(sourceObjectId, variants.find((v) => (v as { mode?: number }).mode === mode)!), variants: variants.filter((v) => (v as { mode?: number }).mode === mode) })) };
+      this.emit();
+      return;
+    }
     if (variants.some((v) => (v as { color?: string; colors?: string[] }).color !== undefined || (v as { colors?: string[] }).colors !== undefined)) {
       this.phase = { kind: "chooseColor", sourceObjectId, variants };
       this.emit();
@@ -1388,6 +1406,22 @@ export class MatchController {
       return;
     }
     this.enterTargeting(sourceObjectId, variants);
+  }
+
+  /** Post-S71a: the chosen mode's variants go on as a single-mode cast (X, then its targets). */
+  chooseMode(mode: number): void {
+    if (this.phase.kind !== "chooseMode") return;
+    const o = this.phase.options.find((x) => x.mode === mode);
+    if (!o) return;
+    this.beginCast(this.phase.sourceObjectId, o.variants);
+  }
+  /** A mode's printed label — a spell's `modes`, or the activated ability's. */
+  private modeLabel(objectId: string, action: Action): string {
+    const mode = (action as { mode?: number }).mode ?? 0;
+    const d = this.pool.get(this.game.state.objects[objectId]?.cardId ?? "");
+    const ab = action.type === "activateAbility" ? d?.abilities?.[action.abilityIndex] : undefined;
+    const label = action.type === "activateAbility" ? (ab && "modes" in ab ? ab.modes?.[mode]?.label : undefined) : d?.modes?.[mode]?.label;
+    return label ?? `Mode ${mode + 1}`;
   }
 
   /** Post-S53: the chosen ability's activations go on as a single-ability cast (colour, X, then its targets). */

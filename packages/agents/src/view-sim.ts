@@ -83,6 +83,56 @@ function ownerBlinkValue(view: GameView, defs: Map<string, CardDef>, constants: 
   return v;
 }
 
+/**
+ * Book 168 (post-S71a, Chris's {R/W}{R/W} flash Aura: double strike at −1/−0 or −1/−1): an Aura that grants keywords and
+ * shrinks its host, priced as the host would stand. A host the shrink kills (an X/1 under −1/−1) is removal on theirs and a
+ * card and a body thrown away on ours. Otherwise, on ours: the host's value after less before (objectValue), plus double
+ * strike's second hit (0.4 a point of power — the evaluator's keyword bonus is flat), plus the fight it changes when blocks
+ * are final (CR 510.4: a first striker that kills is not struck back; 702.4b: double strike deals in both steps) — the
+ * blocker or attacker it now kills and the host it now saves, each at its value; an unblocked attacker's second hit, 0.3 a
+ * point. On theirs (a gift), −1.2. Mutates nothing (the statics are the engine's).
+ */
+function mixedAuraValue(view: GameView, defs: Map<string, CardDef>, constants: EvalConstants, me: 0 | 1, h: GameView["battlefield"][number], effects: Effect[]): number {
+  if (h.power === null || h.toughness === null) return 0;
+  let dp = 0, dt = 0;
+  const kws = new Set(h.keywords);
+  for (const e of effects) {
+    if (e.type === "modifyPT" && e.scope === "attached") { dp += typeof e.power === "number" ? e.power : 0; dt += typeof e.toughness === "number" ? e.toughness : 0; }
+    if (e.type === "grantKeyword" && e.scope === "attached") kws.add(e.keyword);
+  }
+  const hv = objectValue(defs, h, constants);
+  const p = h.power + dp, t = h.toughness + dt;
+  if (t <= 0 || h.damage >= t) return h.controller === me ? -hv - 1 : hv; // the shrink kills it (SBA, CR 704.5f/g)
+  if (h.controller !== me) return -1.2;
+  const after = { ...h, power: p, toughness: t, keywords: [...kws] };
+  let v = objectValue(defs, after, constants) - hv;
+  const ds = kws.has("double strike") && !h.keywords.includes("double strike");
+  if (ds) v += 0.4 * Math.max(0, p);
+  const blocksFinal = view.combat.attackers.length > 0 && view.step === "DECLARE_BLOCKERS"; // after first-strike damage, too late for the first hit
+  if (!blocksFinal || !ds) return v;
+  const first = (o: { keywords: string[] }) => o.keywords.includes("first strike") || o.keywords.includes("double strike");
+  /** Does `a` (p, t, first) kill `b` and survive, against `b`'s (power, toughness less damage, first)? */
+  const duel = (ap: number, at: number, af: boolean, adbl: boolean, b: GameView["battlefield"][number]) => {
+    const bp = b.power ?? 0, bt = (b.toughness ?? 0) - b.damage, bf = first(b), bdt = b.keywords.includes("deathtouch") && bp > 0, adt = kws.has("deathtouch") && ap > 0;
+    let aHp = at - h.damage, bHp = bt, aDead = false, bDead = false;
+    if (af || bf) { if (af) bHp -= adt ? 999 : ap; if (bf) aHp -= bdt ? 999 : bp; aDead = aHp <= 0; bDead = bHp <= 0; }
+    if (!aDead && !bDead) { if (!af || adbl) bHp -= adt ? 999 : ap; if (!bf || b.keywords.includes("double strike")) aHp -= bdt ? 999 : bp; aDead = aHp <= 0; bDead = bHp <= 0; }
+    else if (!aDead && bDead) { /* struck down first: no damage back */ }
+    else if (aDead && !bDead) { /* we died first */ }
+    return { kills: bDead, dies: aDead };
+  };
+  const oppIds = h.controller === view.activePlayer
+    ? view.combat.blocks.filter((b) => b.attacker === h.id).map((b) => b.blocker)
+    : view.combat.blocks.filter((b) => b.blocker === h.id).map((b) => b.attacker);
+  if (h.controller === view.activePlayer && view.combat.attackers.includes(h.id) && oppIds.length === 0) return v + 0.3 * Math.max(0, p);
+  if (oppIds.length !== 1) return v;
+  const b = view.battlefield.find((o) => o.id === oppIds[0]);
+  if (!b || b.power === null) return v;
+  const was = duel(h.power, h.toughness, first(h), h.keywords.includes("double strike"), b);
+  const now = duel(p, t, true, true, b);
+  return v + (Number(now.kills) - Number(was.kills)) * objectValue(defs, b, constants) + (Number(was.dies) - Number(now.dies)) * hv;
+}
+
 function removeObject(view: GameView, id: string): void {
   const gone = view.battlefield.find((o) => o.id === id);
   if (gone) { if (lastKnown.size > 4096) lastKnown.clear(); lastKnown.set(id, { cardId: gone.cardId, controller: gone.controller as 0 | 1 }); }
@@ -317,7 +367,10 @@ export function predictAction(
         const hostRestricted = hanging.some((o) => restricts(o.cardId));
         if (sameAlready || (hostRestricted && !steals)) return { view, adjustment: 0, unchanged: true };
       }
-      if (hostObj && lifelinkAura) {
+      // Book 168 (post-S71a, Chris's double-strike Aura study): a keyword grant with a debuff is priced as the host would stand.
+      const mixed = cls === "neutral" && effects.some((e) => e.type === "grantKeyword" && e.scope === "attached") && effects.some((e) => e.type === "modifyPT" && e.scope === "attached");
+      if (hostObj && mixed) adjustment += mixedAuraValue(view, defs, constants, me, hostObj, effects);
+      else if (hostObj && lifelinkAura) {
         const power = hostObj.power ?? 0;
         const myBest = Math.max(0, ...view.battlefield.filter((o) => o.controller === me && o.power !== null).map((o) => o.power ?? 0));
         const theirBest = Math.max(0, ...view.battlefield.filter((o) => o.controller !== me && o.power !== null).map((o) => o.power ?? 0));

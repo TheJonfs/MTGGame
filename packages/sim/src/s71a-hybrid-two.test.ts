@@ -294,3 +294,135 @@ describe("Post-S71a — Discontinuous Flash: blink under its owner's control (R-
     expect(on(f, "grizzly_bears").length).toBe(1);
   });
 });
+
+/** Post-S71a — Intuitive Mastery ({R/W}{R/W} Aura, flash; Chris's): "Enchanted creature gets −1/−1 and has double strike." No new word:
+ * flash makes it castable whenever an instant could be (CR 702.8a); double strike deals in both combat damage steps (702.4b); a host the
+ * −1/−1 leaves at 0 toughness is put into its owner's graveyard (704.5f) and the Aura with it (704.5m). Studied against −1/−0 and no
+ * penalty (Chris chose −1/−1: its removal mode on an X/1 pays for the toughness). */
+describe("Post-S71a — Intuitive Mastery: flash, −1/−1 and double strike", () => {
+  type FinalM = { objects: Record<string, { cardId: string; controller: number; zone?: string }>; battlefield: string[]; players: { life: number; graveyard: string[] }[] };
+  const go = async (mods: Modifier[], agents: [Agent, Agent], deck = "intuitive_mastery") => JSON.parse((await runMatch({ seed: 41, players: [{ name: "a", decklist: [{ cardId: deck, count: 60 }], agent: "x" }, { name: "b", decklist: [{ cardId: "forest", count: 60 }], agent: "x" }], rules: rules(2), modifiers: mods } as MatchSpec, cards, agents)).finalStateSerialized) as FinalM;
+  const on = (f: FinalM, cardId: string) => f.battlefield.map((id) => f.objects[id]!).filter((o) => o.cardId === cardId);
+  const gy = (f: FinalM, p: 0 | 1) => f.players[p]!.graveyard.map((id) => f.objects[id]!.cardId).sort();
+  /** Casts Mastery once — at `when` — on the first offered target whose card is `aim`; attacks with everything; never blocks. */
+  const seat0 = (aim: string, when: (v: GameView) => boolean) => { let done = false; return { done: () => done, chooseAction: async (v: GameView, r: ActionRequest): Promise<Action> => {
+    if (!done && r.purpose === "priority" && when(v)) { const x = r.actions.find((y) => y.type === "castSpell" && y.targets[0]?.kind === "object" && cardAt(v, (y.targets[0] as { id: string }).id)?.cardId === aim); if (x) { done = true; return x; } }
+    return r.actions.find((a) => a.type === "declareAttacker") ?? r.actions.find((a) => a.type === "doneDeclaringAttackers") ?? r.actions.find((a) => a.type === "doneDeclaringBlockers") ?? pass(r);
+  } }; };
+  const lands = [perm(0, "mountain"), perm(0, "plains")];
+
+  it("as printed: {R/W}{R/W} Enchantment — Aura, flash; valid", () => {
+    const d = cards.get("intuitive_mastery")!;
+    expect(validateCard(d).errors).toEqual([]);
+    expect(d).toMatchObject({ manaCost: "{R/W}{R/W}", types: ["Enchantment"], subtypes: ["Aura"], keywords: ["flash"], source: "custom", shopTier: "R" });
+  });
+
+  it("on our Serra Angel, attacking unblocked: 3 in each step — 6", async () => {
+    const a = seat0("serra_angel", (v) => v.turn === 1 && v.step === "MAIN1");
+    const f = await go([perm(0, "serra_angel"), ...lands], [a, passer]);
+    expect(a.done()).toBe(true);
+    expect(f.players[1]!.life).toBe(14);
+  });
+
+  it("flash: cast on the opponent's turn (their upkeep), it resolves", async () => {
+    const a = seat0("serra_angel", (v) => v.turn === 2 && v.activePlayer === 1 && v.step === "UPKEEP");
+    const f = await go([perm(0, "serra_angel"), ...lands], [a, passer]);
+    expect(a.done()).toBe(true);
+    expect(on(f, "intuitive_mastery").length).toBe(1);
+  });
+
+  it("on their Raging Goblin (1/1): the −1/−1 kills it, and the Aura goes to our graveyard", async () => {
+    const a = seat0("raging_goblin", (v) => v.turn === 1 && v.step === "MAIN1");
+    const f = await go([perm(1, "raging_goblin"), ...lands], [a, passer]);
+    expect(a.done()).toBe(true);
+    expect(on(f, "raging_goblin")).toEqual([]);
+    expect(gy(f, 1)).toContain("raging_goblin"); // (and a Forest discarded to hand size at their cleanup)
+    expect(gy(f, 0)).toEqual(["intuitive_mastery"]);
+  });
+});
+
+/** Post-S71a — Command of the Depths ({U/B}{U/B} instant; Chris's): "Choose two — • You draw a card. • Target creature gets −2/−2 until
+ * end of turn. • Create a 1/1 blue Faerie creature token with flying. • Target player discards a card." No new word: the six pairs are its
+ * modes (CR 700.2a — chosen as it is cast; 700.2d — no mode twice), each pair's effects in printed order (608.2c). "Target player" reads
+ * the first target, so a pair with the discard puts the player slot first. The discarder chooses (701.9b). */
+describe("Post-S71a — Command of the Depths: choose two of four", () => {
+  type FinalC = { objects: Record<string, { cardId: string; controller: number; zone?: string }>; battlefield: string[]; players: { hand: string[]; graveyard: string[] }[] };
+  const go = async (mods: Modifier[], agent: Agent) => JSON.parse((await runMatch({ seed: 41, players: [{ name: "a", decklist: [{ cardId: "command_of_the_depths", count: 60 }], agent: "x" }, { name: "b", decklist: [{ cardId: "forest", count: 60 }], agent: "x" }], rules: rules(1), modifiers: mods } as MatchSpec, cards, [agent, passer])).finalStateSerialized) as FinalC;
+  /** Casts the Command once in the first main phase in `mode`, at the first variant whose targets `ok` accepts. */
+  const cmd = (mode: number, ok: (v: GameView, a: Action) => boolean = () => true) => { let done = false; return { done: () => done, chooseAction: async (v: GameView, r: ActionRequest): Promise<Action> => {
+    if (!done && r.purpose === "priority" && v.step === "MAIN1") { const x = r.actions.find((y) => y.type === "castSpell" && y.mode === mode && ok(v, y)); if (x) { done = true; return x; } }
+    return pass(r);
+  } }; };
+  const on = (f: FinalC, cardId: string) => f.battlefield.map((id) => f.objects[id]!).filter((o) => o.cardId === cardId);
+  const mana = [perm(0, "island"), perm(0, "swamp")];
+  const theirs = (v: GameView, a: Action) => (a as { targets: { kind: string; player?: number }[] }).targets.every((t) => t.kind !== "player" || t.player === 1);
+
+  it("as printed: {U/B}{U/B} instant, the six pairs of four modes; valid", () => {
+    const d = cards.get("command_of_the_depths")!;
+    expect(validateCard(d).errors).toEqual([]);
+    expect(d).toMatchObject({ manaCost: "{U/B}{U/B}", types: ["Instant"], source: "custom", shopTier: "R" });
+    expect(d.modes!.length).toBe(6);
+    expect(d.modes!.map((m) => (m.targets ?? []).map((t) => t.predicate))).toEqual([["creature"], [], ["player"], ["creature"], ["player", "creature"], ["player"]]);
+  });
+
+  it("−2/−2 and a Faerie: their Bears dies, and we have a 1/1 flier", async () => {
+    const a = cmd(3);
+    const f = await go([...mana, perm(1, "grizzly_bears")], a);
+    expect(a.done()).toBe(true);
+    expect(on(f, "grizzly_bears")).toEqual([]);
+    expect(on(f, "faerie_1_1_u").map((o) => o.controller)).toEqual([0]);
+  });
+
+  it("−2/−2 and a discard (the player first): their Bears dies and they discard one", async () => {
+    const a = cmd(4, theirs);
+    const f = await go([...mana, perm(1, "grizzly_bears")], a);
+    expect(a.done()).toBe(true);
+    expect(on(f, "grizzly_bears")).toEqual([]);
+    expect(f.players[1]!.graveyard.map((id) => f.objects[id]!.cardId).sort()).toEqual(["forest", "grizzly_bears"]);
+  });
+
+  it("a draw and a discard aimed at ourselves: we draw, then discard (seven less the Command, plus one, less one)", async () => {
+    const a = cmd(2, (v, x) => (x as { targets: { kind: string; player?: number }[] }).targets[0]?.player === 0);
+    const f = await go(mana, a);
+    expect(a.done()).toBe(true);
+    expect(f.players[0]!.hand.length).toBe(6);
+    expect(f.players[0]!.graveyard.map((id) => f.objects[id]!.cardId).sort()).toEqual(["command_of_the_depths", "command_of_the_depths"]);
+  });
+});
+
+/** Post-S71a — Glory Hound ({B/G}{B/G} Dog Spellshaper 2/2; Chris's): "{B/G}{B/G}, Discard a card: Creatures you control get +1/+1
+ * and gain menace until end of turn." No new word: Arc Mage's discard cost (no tap — it may be activated again, and the Hound shares
+ * the pump), Dawnwing Marshal's team pump, a team keyword grant. Menace: a creature can't be blocked except by two or more creatures
+ * (CR 702.111b); the cost's discard is the activating player's choice (601.2h, 701.9b). */
+describe("Post-S71a — Glory Hound: discard for the team's +1/+1 and menace", () => {
+  type FinalG = { objects: Record<string, { cardId: string; controller: number }>; players: { life: number; hand: string[]; graveyard: string[] }[] };
+  /** Activates the Hound once in our first main phase, records the next view, attacks with everything; seat 1 blocks with whatever it can. */
+  const hound = () => { let done = false; const a = { after: undefined as GameView | undefined, chooseAction: async (v: GameView, r: ActionRequest): Promise<Action> => {
+    if (done && !a.after && r.purpose === "priority" && v.stack.length === 0) a.after = v;
+    if (!done && r.purpose === "priority" && v.step === "MAIN1") { const x = r.actions.find((y) => y.type === "activateAbility" && cardAt(v, y.objectId)?.cardId === "glory_hound"); if (x) { done = true; return x; } }
+    return r.actions.find((y) => y.type === "declareAttacker") ?? r.actions.find((y) => y.type === "doneDeclaringAttackers") ?? pass(r);
+  } }; return a; };
+  const blockAny: Agent = { chooseAction: async (_v, r) => r.actions.find((y) => y.type === "declareBlocker") ?? r.actions.find((y) => y.type === "doneDeclaringBlockers") ?? pass(r) };
+  const go = async (mods: Modifier[], agents: [Agent, Agent]) => JSON.parse((await runMatch({ seed: 41, players: [{ name: "a", decklist: [{ cardId: "forest", count: 60 }], agent: "x" }, { name: "b", decklist: [{ cardId: "forest", count: 60 }], agent: "x" }], rules: rules(1), modifiers: mods } as MatchSpec, cards, agents)).finalStateSerialized) as FinalG;
+  const mana = [perm(0, "swamp"), perm(0, "forest")];
+
+  it("as printed: {B/G}{B/G} Creature — Dog Spellshaper 2/2; valid", () => {
+    const d = cards.get("glory_hound")!;
+    expect(validateCard(d).errors).toEqual([]);
+    expect(d).toMatchObject({ manaCost: "{B/G}{B/G}", types: ["Creature"], subtypes: ["Dog", "Spellshaper"], power: 2, toughness: 2, source: "custom", shopTier: "R" });
+  });
+
+  it("activated: a card discarded; the Hound and the Bears 3/3 with menace", async () => {
+    const a = hound();
+    const f = await go([perm(0, "glory_hound"), perm(0, "grizzly_bears"), ...mana], [a, passer]);
+    const mine = a.after!.battlefield.filter((o) => o.controller === 0 && o.power !== null);
+    expect(mine.map((o) => [o.cardId, o.power, o.toughness, o.keywords.includes("menace")]).sort()).toEqual([["glory_hound", 3, 3, true], ["grizzly_bears", 3, 3, true]]);
+    expect(f.players[0]!.graveyard.map((id) => f.objects[id]!.cardId)).toEqual(["forest"]);
+    expect(f.players[0]!.hand.length).toBe(6);
+  });
+
+  it("menace: their one Bears cannot block; both attackers connect — 6", async () => {
+    const f = await go([perm(0, "glory_hound"), perm(0, "grizzly_bears"), perm(1, "grizzly_bears"), ...mana], [hound(), blockAny]);
+    expect(f.players[1]!.life).toBe(14);
+  });
+});

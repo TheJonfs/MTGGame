@@ -54,6 +54,9 @@ export function isHelpful(e: Effect): boolean {
 export type EffectClass = "harmful" | "helpful" | "neutral";
 
 export function classifyEffects(effects: Effect[]): EffectClass {
+  // Post-S71a (book 168, the double-strike Aura study): a keyword grant paid for with a debuff (−1/−0, −1/−1) is neither —
+  // a gift on ours, removal on their X/1; the predictor prices the host as it would stand (`mixedAuraValue`).
+  if (effects.some((e) => e.type === "grantKeyword") && effects.some((e) => e.type === "modifyPT" && ptSign(e.power) + ptSign(e.toughness) < 0) && effects.every((e) => e.type === "grantKeyword" || e.type === "modifyPT")) return "neutral";
   // Post-S71a (R-129, book 167): an owner blink's target may be on either side; its draw is not pointed at the target.
   if (effects.some((e) => e.type === "exileThenReturn" && e.under === "owner")) return "neutral";
   if (effects.some(isHarmful)) return "harmful";

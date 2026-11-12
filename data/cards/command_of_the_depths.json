@@ -1,0 +1,160 @@
+{
+ "id": "command_of_the_depths",
+ "name": "Command of the Depths",
+ "source": "custom",
+ "manaCost": "{U/B}{U/B}",
+ "types": [
+  "Instant"
+ ],
+ "text": "Choose two —\n• You draw a card.\n• Target creature gets -2/-2 until end of turn.\n• Create a 1/1 blue Faerie creature token with flying.\n• Target player discards a card.",
+ "modes": [
+  {
+   "label": "You draw a card; target creature gets -2/-2 until end of turn",
+   "effects": [
+    {
+     "type": "draw",
+     "count": 1,
+     "who": "you"
+    },
+    {
+     "type": "modifyPT",
+     "power": -2,
+     "toughness": -2,
+     "target": 0,
+     "duration": "UNTIL_END_OF_TURN"
+    }
+   ],
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "creature",
+     "zone": "battlefield"
+    }
+   ]
+  },
+  {
+   "label": "You draw a card; create a 1/1 blue Faerie creature token with flying",
+   "effects": [
+    {
+     "type": "draw",
+     "count": 1,
+     "who": "you"
+    },
+    {
+     "type": "createToken",
+     "tokenId": "faerie_1_1_u",
+     "count": 1,
+     "who": "you"
+    }
+   ]
+  },
+  {
+   "label": "You draw a card; target player discards a card",
+   "effects": [
+    {
+     "type": "draw",
+     "count": 1,
+     "who": "you"
+    },
+    {
+     "type": "discard",
+     "count": 1,
+     "who": "target",
+     "mode": "ownerChooses"
+    }
+   ],
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "player",
+     "zone": "any"
+    }
+   ]
+  },
+  {
+   "label": "Target creature gets -2/-2 until end of turn; create a 1/1 blue Faerie creature token with flying",
+   "effects": [
+    {
+     "type": "modifyPT",
+     "power": -2,
+     "toughness": -2,
+     "target": 0,
+     "duration": "UNTIL_END_OF_TURN"
+    },
+    {
+     "type": "createToken",
+     "tokenId": "faerie_1_1_u",
+     "count": 1,
+     "who": "you"
+    }
+   ],
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "creature",
+     "zone": "battlefield"
+    }
+   ]
+  },
+  {
+   "label": "Target creature gets -2/-2 until end of turn; target player discards a card",
+   "effects": [
+    {
+     "type": "modifyPT",
+     "power": -2,
+     "toughness": -2,
+     "target": 1,
+     "duration": "UNTIL_END_OF_TURN"
+    },
+    {
+     "type": "discard",
+     "count": 1,
+     "who": "target",
+     "mode": "ownerChooses"
+    }
+   ],
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "player",
+     "zone": "any"
+    },
+    {
+     "count": 1,
+     "predicate": "creature",
+     "zone": "battlefield"
+    }
+   ]
+  },
+  {
+   "label": "Create a 1/1 blue Faerie creature token with flying; target player discards a card",
+   "effects": [
+    {
+     "type": "createToken",
+     "tokenId": "faerie_1_1_u",
+     "count": 1,
+     "who": "you"
+    },
+    {
+     "type": "discard",
+     "count": 1,
+     "who": "target",
+     "mode": "ownerChooses"
+    }
+   ],
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "player",
+     "zone": "any"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/command_of_the_depths.png",
+  "fallback": "rendered"
+ },
+ "printedAsset": "command_of_the_depths.jpg",
+ "shopTier": "R"
+}
