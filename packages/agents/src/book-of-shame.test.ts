@@ -2635,6 +2635,12 @@ describe("book of shame 166 (post-S71a, Daunting Terror — the recoil to each p
     expect(a.planBlocks(v(4), ["rb"])).toEqual([{ blocker: "dt", attacker: "rb" }]);
     expect(a.planBlocks(v(20), ["rb"])).toEqual([]);
   });
+  it("concern 37 — from the other side: at 3 life we do not Bolt their Terror (3 back to each player kills us); our two Bears' block of their attacking Terror (menace: a pair) is the win with them at 4 (4 back to them)", () => {
+    const burn = mkView({ life: [3, 20], hand: [{ objectId: "lb", cardId: "lightning_bolt" }], battlefield: [{ id: "mt", cardId: "mountain", controller: 0 }, { id: "dt", cardId: "daunting_terror", controller: 1 }] });
+    expect(a.scorePriorityAction(burn, { type: "castSpell", objectId: "lb", targets: [{ kind: "object", id: "dt" }] })).toBeLessThan(a.scorePriorityAction(burn, { type: "pass" }));
+    const pair = mkView({ life: [6, 4], activePlayer: 1, step: "DECLARE_ATTACKERS", battlefield: [{ id: "g1", cardId: "grizzly_bears", controller: 0 }, { id: "g2", cardId: "grizzly_bears", controller: 0 }, { id: "dt", cardId: "daunting_terror", controller: 1, tapped: true }], combat: { attackers: ["dt"], blocks: [] } });
+    expect(a.planBlocks(pair, ["dt"]).map((b) => b.blocker).sort()).toEqual(["g1", "g2"]);
+  });
 });
 
 describe("book of shame 167 (post-S71a, Discontinuous Flash — the owner-blink is cast when the moment is now; R-129)", () => {
@@ -2674,10 +2680,30 @@ describe("book of shame 167 (post-S71a, Discontinuous Flash — the owner-blink 
     expect(a.scorePriorityAction(v, fl("sa"))).toBeGreaterThan(a.scorePriorityAction(v, pass));
   });
 
+  it("concern 41 — the cantrip at their end step: our land, not their idle creature (it would return fresh)", () => {
+    const v = view([{ id: "gb", cardId: "grizzly_bears", controller: 1 }], { activePlayer: 1, step: "END" });
+    expect(a.scorePriorityAction(v, fl("is"))).toBeGreaterThan(a.scorePriorityAction(v, fl("gb")));
+  });
+
   it("their token is gone for good: cast in our main phase", () => {
     const v = view([{ id: "tk", cardId: "grizzly_bears", controller: 1 }]);
     (v.battlefield.find((b) => b.id === "tk") as { token?: boolean }).token = true;
     expect(a.scorePriorityAction(v, fl("tk"))).toBeGreaterThan(a.scorePriorityAction(v, pass));
+  });
+});
+
+describe("concern 44 (post-S71a): an instant on our own turn before the first main phase, with nothing on the stack, waits", () => {
+  // The pilot cast Command of the Depths in its own upkeep and draw step about half the time — spending the mana before the draw
+  // and the land drop. Paired: the Open's Rabble +1.6 ± 1.0, the Kiln, Mardu Control and Lumen Clio level (`off: ["upkeepinstant"]`).
+  const a = agent();
+  const cast = { type: "castSpell" as const, objectId: "lb", targets: [{ kind: "object" as const, id: "gb" }] };
+  const bf: Obj[] = [{ id: "mt", cardId: "mountain", controller: 0 }, { id: "gb", cardId: "grizzly_bears", controller: 1 }];
+  const hand = [{ objectId: "lb", cardId: "lightning_bolt" }];
+  it("our upkeep and draw step: held; our main phase: cast; their turn: unchanged", () => {
+    expect(a.scorePriorityAction(mkView({ hand, battlefield: bf, step: "UPKEEP" }), cast)).toBe(-Infinity);
+    expect(a.scorePriorityAction(mkView({ hand, battlefield: bf, step: "DRAW" }), cast)).toBe(-Infinity);
+    expect(a.scorePriorityAction(mkView({ hand, battlefield: bf, step: "MAIN1" }), cast)).toBeGreaterThan(-Infinity);
+    expect(a.scorePriorityAction(mkView({ hand, battlefield: bf, step: "UPKEEP", activePlayer: 1 }), cast)).toBeGreaterThan(-Infinity);
   });
 });
 
@@ -2729,5 +2755,21 @@ describe("book of shame 169 (post-S71a, Glory Hound — a team grant with a pump
     expect(a.scorePriorityAction(fight, act)).toBeGreaterThan(a.scorePriorityAction(fight, pass));
     const clear = mkView({ hand, step: "DECLARE_BLOCKERS", combat: { attackers: ["gh"], blocks: [] }, battlefield: [...ours(true), ...two] });
     expect(a.scorePriorityAction(clear, act)).toBe(-Infinity);
+  });
+  it("concern 45 — the grant in the attack plan: Hound and Bears into their Hill Giant and Bears attack (the pair at +1/+1 with menace), where the plan without it holds back; and the grant is then spent before blocks", async () => {
+    const bf: Obj[] = [{ id: "f1", cardId: "forest", controller: 0 }, { id: "f2", cardId: "swamp", controller: 0 }, { id: "gh", cardId: "glory_hound", controller: 0 }, { id: "gb", cardId: "grizzly_bears", controller: 0 }, { id: "hg", cardId: "hill_giant", controller: 1 }, { id: "tb", cardId: "grizzly_bears", controller: 1 }];
+    const req = { player: 0 as const, purpose: "declareAttacker" as const, actions: [{ type: "doneDeclaringAttackers" as const }, { type: "declareAttacker" as const, objectId: "gh" }, { type: "declareAttacker" as const, objectId: "gb" }] };
+    const off = new HeuristicAgent(1, pool, { archetype: "aggro", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, off: ["teamgrant"] });
+    expect((await off.attackChoice(mkView({ hand, step: "DECLARE_ATTACKERS", battlefield: bf }), req as never)).type).toBe("doneDeclaringAttackers");
+    const on = agent("aggro");
+    const staged: string[] = [];
+    for (let i = 0; i < 3; i++) {
+      const x = await on.attackChoice(mkView({ hand, step: "DECLARE_ATTACKERS", battlefield: bf, combat: { attackers: [...staged], blocks: [] } }), { ...req, actions: req.actions.filter((y) => y.type === "doneDeclaringAttackers" || !staged.includes(y.objectId)) } as never);
+      if (x.type !== "declareAttacker") break;
+      staged.push(x.objectId);
+    }
+    expect(staged.sort()).toEqual(["gb", "gh"]);
+    const declared = mkView({ hand, step: "DECLARE_ATTACKERS", combat: { attackers: staged, blocks: [] }, battlefield: bf.map((o) => (staged.includes(o.id) ? { ...o, tapped: true } : o)) });
+    expect(on.scorePriorityAction(declared, act)).toBeGreaterThan(on.scorePriorityAction(declared, pass));
   });
 });

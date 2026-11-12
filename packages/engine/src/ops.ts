@@ -21,6 +21,8 @@ export function dealDamage(
   target: ResolvedTarget,
   amount: number,
   combat: boolean,
+  /** Post-S71a (concern 39): last-known keywords for a source no longer on the battlefield (CR 702.15b). */
+  lki?: { lifelink?: true },
 ): void {
   if (amount <= 0) return;
 
@@ -31,7 +33,7 @@ export function dealDamage(
     const k = characteristics(ctx, source.id).keywords;
     deathtouch = k.has("deathtouch");
     lifelink = k.has("lifelink");
-  }
+  } else if (lki?.lifelink) lifelink = true;
 
   if (target.kind === "player") {
     const player = target.player as PlayerId;

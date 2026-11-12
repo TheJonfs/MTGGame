@@ -224,6 +224,13 @@ describe("Post-S71a — Daunting Terror: the recoil to each player (R-128)", () 
     const x = await go([perm(0, "daunting_terror_ll"), perm(1, "raging_goblin"), perm(1, "raging_goblin")], [attacker, blockAll], 20, [ll]);
     expect(x.life).toEqual([25, 18]);
 });
+
+  it("with lifelink, killed by two Bears' block: the recoil keeps the lifelink it had (last-known, CR 702.15b) — 20 + 3 − 4 + 4 + 4", async () => {
+    // concern 39: the trigger snapshots the source's lifelink as the damage is dealt; dead before the recoil resolves, it is still its damage
+    const ll: CardDef = { ...cards.get("daunting_terror")!, id: "daunting_terror_ll", keywords: ["menace", "lifelink"] };
+    const x = await go([perm(0, "daunting_terror_ll"), perm(1, "grizzly_bears"), perm(1, "grizzly_bears")], [attacker, blockAll], 20, [ll]);
+    expect(x.life).toEqual([27, 16]);
+  });
 });
 
 /** Post-S71a — Discontinuous Flash ({W/U}{W/U} instant; Chris's): "Exile target permanent, then return it to the battlefield under its

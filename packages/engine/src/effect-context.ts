@@ -377,7 +377,8 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
         dealDamage(ctx, { id: ec.objectId!, cardId: ec.cardId ?? item.sourceCardId, controller: (ec.player ?? controller) as PlayerId }, target, amount, false);
         return;
       }
-      dealDamage(ctx, sourceForDamage(), target, amount, false);
+      // Post-S71a (concern 39): a source gone from the battlefield keeps the lifelink it had (CR 702.15b, last-known information)
+      dealDamage(ctx, sourceForDamage(), target, amount, false, item.eventContext?.sourceLifelink ? { lifelink: true } : undefined);
     },
 
     bounce(objectId: string, to: "hand" | "libraryTop" = "hand"): void {

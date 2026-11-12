@@ -322,6 +322,7 @@ export class HeuristicAgent implements Agent {
     if (this.cantripTimingGated(view, action)) return -Infinity; // S28: Brainstorm at the opponent's end step or in response
     if (this.ownerBlinkTimingGated(view, action)) return -Infinity; // book 167: Discontinuous Flash — a cantrip unless the moment is now
     if (this.flashAuraHeld(view, action)) return -Infinity; // book 168: the flash keyword Aura waits for blocks
+    if (this.upkeepInstantGated(view, action)) return -Infinity; // concern 44: an instant in our upkeep or draw step waits for the main phase
     if (this.entersModesHeld(view, action)) return -Infinity; // book 114: the graveyard answer on a body waits for the graveyard
     if (this.flashTimingGated(view, action)) return -Infinity; // S32: the Escort at the opponent's end step, in response, or when the mana is idle
     if (this.selfCounterGated(view, action)) return -Infinity; // post-S43: Mystic Snake with only our own spell to hit
@@ -1487,22 +1488,68 @@ export class HeuristicAgent implements Agent {
       bestSet = allSet;
     }
     const next = offered.find((a) => bestSet.includes(a.objectId) && !staged.has(a.objectId));
+    // concern 45: the set we stop at relies on Glory Hound's grant — the gate spends it before blocks this turn
+    if (!next && bestSet.length > 0 && this.grantReliance.get(`${[...bestSet].sort().join(",")}|${view.life[0]},${view.life[1]}`)) this.teamGrantTurn = view.turn;
     return (next as Action | undefined) ?? done ?? request.actions[0]!;
   }
 
   /** Exposed for the book-of-shame suite: score of one candidate attack set. */
+  /** Post-S71a (concern 45): the attack sets whose best reading counts on our team grant (memo key → true), and the turn
+   * whose declared attack relies on it. */
+  private grantReliance = new Map<string, boolean>();
+  private teamGrantTurn = -1;
+  private relianceTurn = -1;
+  /** Concern 45: a team grant (book 169's shape) we can pay now — mana in our untapped lands and pool, a card for a discard. */
+  private teamGrantReady(view: GameView): { dp: number; dt: number; keyword: string } | null {
+    const me = view.you;
+    const lands = view.battlefield.filter((o) => o.controller === me && !o.tapped && this.def(o.cardId)?.types.includes("Land")).length + Object.values(view.manaPool ?? {}).reduce((n, v) => n + (v ?? 0), 0);
+    for (const o of view.battlefield) {
+      if (o.controller !== me) continue;
+      for (const ab of this.def(o.cardId)?.abilities ?? []) {
+        if (ab.kind !== "activated" || ab.modes || ab.equip || ab.cost.sacrifice || ab.cost.tap) continue;
+        const g = ab.effects.find((e) => e.type === "grantKeyword" && e.scope === "creaturesYouControl" && e.duration === "UNTIL_END_OF_TURN");
+        const p = ab.effects.find((e) => e.type === "modifyPT" && e.scope === "creaturesYouControl" && e.duration === "UNTIL_END_OF_TURN");
+        if (!g || !p || g.type !== "grantKeyword" || p.type !== "modifyPT" || typeof p.power !== "number" || typeof p.toughness !== "number") continue;
+        if (manaValue(parseManaCost(ab.cost.mana ?? "")) > lands) continue;
+        if (ab.cost.discard && view.hand.length < ab.cost.discard) continue;
+        return { dp: p.power, dt: p.toughness, keyword: g.keyword };
+      }
+    }
+    return null;
+  }
+
   async scoreAttackSet(
     view: GameView,
     creatures: SimObject[],
     me: PlayerId,
     attackers: string[],
   ): Promise<number> {
+    if (this.relianceTurn !== view.turn) { this.grantReliance.clear(); this.relianceTurn = view.turn; }
+    const plain = await this.scoreAttackSetCore(view, creatures, me, attackers, "");
+    // concern 45 (book 169): with Glory Hound's grant affordable, the set is read again as it would stand with the team at
+    // +1/+1 and menace — less a card (the discard) — and the better reading kept; the reliance is remembered for the gate.
+    const grant = attackers.length > 0 && !this.profile.off?.includes("teamgrant") ? this.teamGrantReady(view) : null;
+    if (!grant) return plain;
+    const boosted = creatures.map((c) => (c.controller === me ? { ...c, power: c.power + grant.dp, toughness: c.toughness + grant.dt, keywords: c.keywords.includes(grant.keyword) ? c.keywords : [...c.keywords, grant.keyword] } : c));
+    const withGrant = (await this.scoreAttackSetCore(view, boosted, me, attackers, "|grant")) - 1.5;
+    const key = `${[...attackers].sort().join(",")}|${view.life[0]},${view.life[1]}`;
+    this.grantReliance.set(key, withGrant > plain);
+    return Math.max(plain, withGrant);
+  }
+
+  private async scoreAttackSetCore(
+    view: GameView,
+    creatures: SimObject[],
+    me: PlayerId,
+    attackers: string[],
+    tag: string,
+  ): Promise<number> {
     if (attackers.length === 0) return 0;
     if (this.simMemoTurn !== view.turn) {
       this.simMemo.clear();
       this.simMemoTurn = view.turn;
     }
-    const memoKey = `${[...attackers].sort().join(",")}|${view.life[0]},${view.life[1]}`;
+    const memoKey = `${[...attackers].sort().join(",")}|${view.life[0]},${view.life[1]}${tag}`;
     const hit = this.simMemo.get(memoKey);
     if (hit !== undefined) return hit;
     const opp = (me === 0 ? 1 : 0) as PlayerId;
@@ -1675,10 +1722,18 @@ export class HeuristicAgent implements Agent {
     const taken = !rs || struckFirst ? 0 : Math.max(0, attacker.power);
     const recoil = blocker.keywords.includes("lifelink") && !blockerDies ? 0 : taken;
     const mirror = rs?.each ? taken : 0;
+    // Post-S71a (concern 37): the ATTACKER a recoiler — what our blocker deals it comes back, to its controller and, with
+    // "each player", to us (none if it strikes our blocker down first)
+    const ra = this.recoilShape(attacker.id, view);
+    const back = !ra || (aFirst && !bFirst && blockerDies) ? 0 : Math.max(0, blocker.power);
+    const backToUs = ra?.each ? back : 0; // its lifelink pays its controller, not us
+    const backToThem = attacker.keywords.includes("lifelink") ? 0 : back;
+    if (backToThem > 0 && backToThem >= view.life[attacker.controller] && backToUs < view.life[blocker.controller]) return 1000; // our block makes it kill them
+    if (backToUs > 0 && backToUs >= view.life[blocker.controller]) return -1000; // our block makes it kill us
     if (mirror > 0 && mirror >= view.life[attacker.controller] && recoil < view.life[blocker.controller]) return 1000; // the block that kills them
     if (recoil > 0 && recoil >= view.life[blocker.controller]) return -1000; // the block that kills its own controller
     // the attacking player's share is priced as the damage the block prevents is (w): a symmetric exchange is near neutral
-    const blockTax = (this.selfTax(view, blocker.id, "BLOCKS") + recoil) * this.C.weights[this.profile.archetype].ownLife - mirror * (this.profile.archetype === "control" ? 0.3 : 0.2);
+    const blockTax = (this.selfTax(view, blocker.id, "BLOCKS") + recoil + backToUs) * this.C.weights[this.profile.archetype].ownLife - (mirror + backToThem) * (this.profile.archetype === "control" ? 0.3 : 0.2);
     // S40 (Voracious Cobra): a creature that destroys what it deals combat damage to trades like deathtouch.
     if (attacker.power > 0 && this.destroysWhatItDamages(attacker.id, view) && !(bFirst && !aFirst && kills)) dies = true;
     if (blocker.power > 0 && this.destroysWhatItDamages(blocker.id, view) && !(aFirst && !bFirst && dies)) kills = true;
@@ -1735,7 +1790,13 @@ export class HeuristicAgent implements Agent {
       : attacker.power;
     const w = this.profile.archetype === "control" ? 0.3 : 0.2;
     const lifelinkDenied = attacker.keywords.includes("lifelink") ? prevented * 0.25 : 0;
-    return (kills ? valueOf(attacker.id) : 0) - deadValue + prevented * w + lifelinkDenied;
+    // Post-S71a (concern 37): a recoiling attacker (the Terror has menace — its blocks are pairs) sends back what our pair deals it
+    const ra = this.recoilShape(attacker.id, view);
+    const back = ra ? Math.max(0, b1.power) + Math.max(0, b2.power) : 0;
+    const backToUs = ra?.each ? back : 0, backToThem = attacker.keywords.includes("lifelink") ? 0 : back;
+    if (backToThem > 0 && backToThem >= view.life[attacker.controller] && backToUs < view.life[b1.controller]) return 1000;
+    if (backToUs > 0 && backToUs >= view.life[b1.controller]) return -1000;
+    return (kills ? valueOf(attacker.id) : 0) - deadValue + prevented * w + lifelinkDenied - backToUs * this.C.weights[this.profile.archetype].ownLife + backToThem * w;
   }
 
   private greedyBlocks(
@@ -2226,6 +2287,19 @@ export class HeuristicAgent implements Agent {
     return view.step !== "END";
   }
 
+  /**
+   * Concern 44 (post-S71a — the AI cast Command of the Depths in its own upkeep and draw step about half the time): an
+   * INSTANT cast on our own turn before the first main phase, with nothing on the stack, waits for the main phase — the
+   * draw is seen and the land is played first, and nothing it could do there is lost by waiting (no combat yet, no spell
+   * of theirs to answer). Off: "upkeepinstant". Exposed.
+   */
+  upkeepInstantGated(view: GameView, action: Action): boolean {
+    if (action.type !== "castSpell" || this.profile.off?.includes("upkeepinstant")) return false;
+    if (view.activePlayer !== view.you || (view.step !== "UPKEEP" && view.step !== "DRAW") || view.stack.length > 0) return false;
+    const d = this.def(view.hand.find((c) => c.objectId === action.objectId)?.cardId ?? "");
+    return !!d && d.types.includes("Instant");
+  }
+
   // ---------- S36 (ADR-121): the four cards' policies ----------
 
   /** The land drop in hand of a card whose ability returns itself at cleanup (the Glaciers). */
@@ -2469,6 +2543,7 @@ export class HeuristicAgent implements Agent {
       const before = through(now, has ? Math.floor(blockers / 2) : blockers);
       const after = through(now.map((p) => p + dp), Math.floor(blockers / 2));
       if (after >= view.life[opp]) return false;
+      if (!has && this.teamGrantTurn === view.turn) return false; // concern 45: the declared attack counts on it
       return has || after - before < 3;
     }
     // blocks final: the pump flips a fight, or the unblocked damage is lethal

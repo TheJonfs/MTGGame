@@ -430,7 +430,10 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
     if (!perm || perm.zone !== "battlefield") return;
     (ctx.defs.def(perm.cardId).abilities ?? []).forEach((a, i) => {
       if (a.kind !== "triggered" || a.event !== "DEALT_DAMAGE") return;
-      pend(perm.id, perm.cardId, perm.controller, i, { objectId: perm.id, amount: ev.amount });
+      // Post-S71a (concern 39): the source's lifelink as it is now — if the damage kills it, its recoil is still its own
+      // damage, and lifelink is read from its last-known information (CR 702.15b, 608.2h).
+      const ll = characteristics(ctx, perm.id).keywords.has("lifelink");
+      pend(perm.id, perm.cardId, perm.controller, i, { objectId: perm.id, amount: ev.amount, ...(ll ? { sourceLifelink: true as const } : {}) });
     });
   });
 

@@ -103,7 +103,7 @@ export interface StackItem {
   mode?: number;
   /** A10 (S22): the triggering event's identity, for effects that address it (the Warden's law) and
    * for unlessPay's payer (the Stoker's caster). Captured at collection time — LKI by construction. */
-  eventContext?: { objectId?: string; cardId?: string; player?: PlayerId; amount?: number; power?: number };
+  eventContext?: { objectId?: string; cardId?: string; player?: PlayerId; amount?: number; power?: number; sourceLifelink?: true };
   /** A10 word 7 (S22): the punisher fork — resolution asks the event's player pay-or-suffer. */
   unlessPay?: { life: number };
   /** A10 word 9 rider (S22): an optional trigger whose "yes" pays this mana at resolution. */
@@ -137,7 +137,7 @@ export interface PendingTrigger {
   abilityIndex: number;
   timestamp: number;
   /** A10 (S22): the triggering event's identity, carried onto the StackItem. */
-  eventContext?: { objectId?: string; cardId?: string; player?: PlayerId; amount?: number; power?: number };
+  eventContext?: { objectId?: string; cardId?: string; player?: PlayerId; amount?: number; power?: number; sourceLifelink?: true };
   /** S46 (R-100, Angelic Destiny): the trigger's source is an Aura whose "enchanted creature dies" fired while it was still
    * on the battlefield; when the Aura itself then goes to the graveyard (the SBA), the trigger follows it to its new
    * identity so "return this card" reaches the card (CR 400.7 — the ability refers to the new object). */

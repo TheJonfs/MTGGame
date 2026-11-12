@@ -75,6 +75,8 @@ function ownerBlinkValue(view: GameView, defs: Map<string, CardDef>, constants: 
   if (creature && before !== me && view.combat.attackers.includes(o.id)) v += 0.6 * Math.max(0, o.power ?? 0);
   if (creature && o.tapped) v += sign * (theirTurn && view.combat.attackers.length > 0 && view.combat.blocks.length === 0 ? 0.6 : 0.2);
   if (!creature && o.tapped && (d?.types ?? []).includes("Land") && owner === me) v += 0.2; // a tapped land of ours untaps
+  // concern 41: their creature returns fresh — its damage healed — so with nothing else at stake a land of ours is the cantrip's target
+  if (creature && before !== me && owner !== me) v -= 0.1 + (o.damage > 0 ? 0.3 : 0);
   if (creature && owner === me && !theirTurn && !o.summoningSick && (view.step === "UPKEEP" || view.step === "DRAW" || view.step === "MAIN1" || view.step === "BEGIN_COMBAT")) v -= 0.5; // it cannot attack this turn
   for (const a of view.battlefield) if (a.attachedTo === o.id) a.attachedTo = null;
   removeObject(view, o.id);
@@ -131,6 +133,17 @@ function mixedAuraValue(view: GameView, defs: Map<string, CardDef>, constants: E
   const was = duel(h.power, h.toughness, first(h), h.keywords.includes("double strike"), b);
   const now = duel(p, t, true, true, b);
   return v + (Number(now.kills) - Number(was.kills)) * objectValue(defs, b, constants) + (Number(was.dies) - Number(now.dies)) * hv;
+}
+
+/** Post-S71a (concern 37): a creature whose damage taken comes back (R-128) — "self" (to its controller, Jackal Pup's shape) or
+ * "each" (to each player, Daunting Terror's); undefined for the rest. */
+function recoilKind(defs: Map<string, CardDef>, cardId: string): "self" | "each" | undefined {
+  const ref = (e: Effect, to: string) => e.type === "damage" && e.to === to && typeof e.amount === "object" && e.amount !== null && (e.amount as { ref?: string }).ref === "eventDamage";
+  for (const a of defs.get(cardId)?.abilities ?? []) {
+    if (a.kind !== "triggered" || a.event !== "DEALT_DAMAGE" || !a.effects.some((e) => ref(e, "you"))) continue;
+    return a.effects.some((e) => ref(e, "opponent")) ? "each" : "self";
+  }
+  return undefined;
 }
 
 function removeObject(view: GameView, id: string): void {
@@ -654,11 +667,23 @@ function applyEffect(
         return t.player === me ? -0.8 * amt(e.amount) : traumaMill(amt(e.amount));
       }
       const o = objAt(e.target!);
+      let recoilV = 0;
       if (o && o.toughness !== null) {
-        o.damage += amt(e.amount);
+        // Post-S71a (concern 37): a recoiler hit by our burn sends the damage back — to its controller, and with "each player"
+        // to us too (the life lands on the view; ours charged as burn at our own face)
+        const rc = recoilKind(defs, o.cardId), n = amt(e.amount);
+        if (rc) {
+          // its lifelink (kept by last-known information, concern 39) pays its controller for each half it deals
+          const ll = o.keywords.includes("lifelink");
+          view.life[o.controller as 0 | 1] += ll ? (rc === "each" ? n : 0) : -n;
+          if (rc === "each") view.life[(1 - o.controller) as 0 | 1] -= n;
+          const ours = o.controller === me ? (ll ? 0 : n) : rc === "each" ? n : 0;
+          recoilV -= 0.8 * ours;
+        }
+        o.damage += n;
         if (o.damage >= o.toughness) removeObject(view, o.id);
       }
-      return 0;
+      return recoilV;
     }
     case "damageAll": {
       const gainPer = opts.creatureSource ? 0 : noncreatureDamageGain(view, defs, me); // S40: once per creature hit
