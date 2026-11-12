@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
-import type { CardDef } from "@shandalar/cards";
+import { validateCard, type CardDef } from "@shandalar/cards";
 import { runMatch, type Action, type ActionRequest, type Agent, type GameView, type MatchSpec, type Modifier } from "@shandalar/engine";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
@@ -163,5 +163,134 @@ describe("Post-S71a — Revivalist: another permanent card back", () => {
   it("has lifelink (the keyword; the engine's existing damage rules apply it)", async () => {
     const c = caster(); await run("forest", [perm(0, "revivalist")], c);
     expect(kw(c.views.at(-1), "revivalist")).toEqual(["lifelink"]);
+  });
+});
+
+/** Post-S71a — Daunting Terror ({B/R}{B/R}, 3/3 Horror, menace; Chris's): "Whenever this creature is dealt damage, it deals that much
+ * damage to each player." R-128: the DEALT_DAMAGE trigger (Jackal Pup's shape, TMP: "Whenever this creature is dealt damage, it deals
+ * that much damage to you"). The trigger is collected as the damage is dealt, so a Terror the damage kills still triggers (CR 603.2);
+ * it is the source of the recoil, so its lifelink would apply (CR 702.15b). "Each player" is two damage effects of one resolution: no
+ * state-based actions between them (CR 704.3), so both players at 0 lose at once and the game is a draw (CR 104.4a). */
+describe("Post-S71a — Daunting Terror: the recoil to each player (R-128)", () => {
+  const go = async (mods: Modifier[], agents: [Agent, Agent], life = 20, extra: CardDef[] = []) => {
+    const pool = new Map(cards); for (const d of extra) pool.set(d.id, d);
+    const res = await runMatch({ seed: 41, players: [{ name: "a", decklist: [{ cardId: "lightning_bolt", count: 60 }], agent: "x" }, { name: "b", decklist: [{ cardId: "forest", count: 60 }], agent: "x" }], rules: { ...rules(1), startingLife: life }, modifiers: mods } as MatchSpec, pool, agents);
+    const f = JSON.parse(res.finalStateSerialized) as Omit<Final, "players"> & { players: { life: number; graveyard: string[] }[] };
+    return { life: f.players.map((p) => p.life), winner: res.winner, terror: Object.values(f.objects).filter((o) => o.cardId === "daunting_terror").map((o) => (o as { zone?: string }).zone) };
+  };
+  const attacker: Agent = { chooseAction: async (_v, r) => r.actions.find((a) => a.type === "declareAttacker") ?? r.actions.find((a) => a.type === "doneDeclaringAttackers") ?? pass(r) };
+  const blockAll: Agent = { chooseAction: async (_v, r) => r.actions.find((a) => a.type === "declareBlocker") ?? r.actions.find((a) => a.type === "doneDeclaringBlockers") ?? pass(r) };
+  /** Bolts the Terror once in the first main phase, then passes. */
+  const bolter = (): Agent => { let done = false; return { chooseAction: async (v, r) => {
+    if (!done && r.purpose === "priority" && v.step === "MAIN1" && v.stack.length === 0) {
+      const x = r.actions.find((y) => y.type === "castSpell" && y.targets[0]?.kind === "object" && cardAt(v, (y.targets[0] as { id: string }).id)?.cardId === "daunting_terror");
+      if (x) { done = true; return x; }
+    }
+    return pass(r);
+  } }; };
+
+  it("as printed: {B/R}{B/R}, Creature — Horror 3/3, menace; valid", () => {
+    const d = cards.get("daunting_terror")!;
+    expect(validateCard(d).errors).toEqual([]);
+    expect(d).toMatchObject({ manaCost: "{B/R}{B/R}", types: ["Creature"], subtypes: ["Horror"], power: 3, toughness: 3, keywords: ["menace"], source: "custom", shopTier: "R" });
+  });
+
+  it("unblocked, it is dealt nothing: no recoil", async () => {
+    expect((await go([perm(0, "daunting_terror")], [attacker, passer])).life).toEqual([20, 17]);
+  });
+
+  it("double-blocked by two Bears (menace): dealt 4, it deals 4 to each player and dies", async () => {
+    const x = await go([perm(0, "daunting_terror"), perm(1, "grizzly_bears"), perm(1, "grizzly_bears")], [attacker, blockAll]);
+    expect(x.life).toEqual([16, 16]);
+    expect(x.terror).toEqual(["graveyard"]);
+  });
+
+  it("a Bolt that kills it still triggers: 3 to each player", async () => {
+    const x = await go([perm(0, "daunting_terror"), perm(0, "mountain")], [bolter(), passer]);
+    expect(x.life).toEqual([17, 17]);
+    expect(x.terror).toEqual(["graveyard"]);
+  });
+
+  it("both players at 3, the Bolt: both reach 0 together — a draw", async () => {
+    const x = await go([perm(0, "daunting_terror"), perm(0, "mountain")], [bolter(), passer], 3);
+    expect(x.life).toEqual([0, 0]);
+    expect(x.winner).toBeNull();
+  });
+
+  it("with lifelink, surviving two 1/1 blockers: both halves of the recoil are lifelinked — 20 + 3 − 2 + 2 + 2", async () => {
+    // a test-only copy with lifelink (the Collar or the Reaper would give it in play): its 3 combat damage gains 3; dealt 2, it deals 2
+    // to each player, and it is the source of both, so its controller loses 2 and gains 4
+    const ll: CardDef = { ...cards.get("daunting_terror")!, id: "daunting_terror_ll", keywords: ["menace", "lifelink"] };
+    const x = await go([perm(0, "daunting_terror_ll"), perm(1, "raging_goblin"), perm(1, "raging_goblin")], [attacker, blockAll], 20, [ll]);
+    expect(x.life).toEqual([25, 18]);
+});
+});
+
+/** Post-S71a — Discontinuous Flash ({W/U}{W/U} instant; Chris's): "Exile target permanent, then return it to the battlefield under its
+ * owner's control. Draw a card." R-129: the blink's `under: "owner"`. The returned permanent is a new object (CR 400.7) under its owner's
+ * control (110.2: the controller is whoever it enters under) — a stolen permanent goes home and its stealing Aura falls off; a token does
+ * not return (111.8); an Aura returning is attached to a host its owner chooses as it enters (303.4f), or stays in exile with none
+ * (303.4g); a spell aimed at the old object is left without its target (608.2b). */
+describe("Post-S71a — Discontinuous Flash: blink under its owner's control (R-129)", () => {
+  type FinalX = { objects: Record<string, { cardId: string; controller: number; zone?: string; attachedTo?: string | null }>; battlefield: string[]; players: { hand: string[]; graveyard: string[] }[] };
+  const go = async (deck: { cardId: string; count: number }[], mods: Modifier[], agent: Agent, foe: Agent = passer) => JSON.parse((await runMatch({ seed: 41, players: [{ name: "a", decklist: deck, agent: "x" }, { name: "b", decklist: [{ cardId: "forest", count: 60 }], agent: "x" }], rules: rules(1), modifiers: mods } as MatchSpec, cards, [agent, foe])).finalStateSerialized) as FinalX;
+  /** Casts the listed cards in order in the first main phase, each at the first offered target whose card is `aim` (and controller, if given). */
+  const script = (steps: { card: string; aim: string; controller?: 0 | 1 }[]) => { const left = [...steps]; const a = { cast: [] as string[], chooseAction: async (v: GameView, r: ActionRequest): Promise<Action> => {
+    if (left.length && r.purpose === "priority" && v.turn === 1 && v.activePlayer === 0) {
+      const s = left[0]!;
+      const x = r.actions.find((y) => y.type === "castSpell" && v.hand.find((h) => h.objectId === y.objectId)?.cardId === s.card && y.targets[0]?.kind === "object" && cardAt(v, (y.targets[0] as { id: string }).id)?.cardId === s.aim && (s.controller === undefined || cardAt(v, (y.targets[0] as { id: string }).id)?.controller === s.controller));
+      if (x) { left.shift(); a.cast.push(s.card); return x; }
+    }
+    return pass(r);
+  } }; return a; };
+  const on = (f: FinalX, cardId: string) => f.battlefield.map((id) => f.objects[id]!).filter((o) => o.cardId === cardId);
+  const flashes = [{ cardId: "discontinuous_flash", count: 60 }];
+
+  it("as printed: {W/U}{W/U} instant; target permanent; valid", () => {
+    const d = cards.get("discontinuous_flash")!;
+    expect(validateCard(d).errors).toEqual([]);
+    expect(d).toMatchObject({ manaCost: "{W/U}{W/U}", types: ["Instant"], source: "custom", shopTier: "R", targets: [{ predicate: "permanent" }] });
+  });
+
+  it("our tapped Bears: a new object, untapped, ours; and a card drawn", async () => {
+    const a = script([{ card: "discontinuous_flash", aim: "grizzly_bears" }]);
+    const f = await go(flashes, [perm(0, "grizzly_bears"), perm(0, "plains"), perm(0, "island")], a);
+    expect(a.cast).toEqual(["discontinuous_flash"]);
+    const bears = on(f, "grizzly_bears");
+    expect(bears.map((o) => o.controller)).toEqual([0]);
+    expect(f.players[0]!.hand.length).toBe(7); // seven, less the Flash, plus the draw
+    expect(f.players[0]!.graveyard.map((id) => f.objects[id]!.cardId)).toEqual(["discontinuous_flash"]);
+  });
+
+  it("stolen by our Control Magic, their Bears goes home under its owner — and the Control Magic falls off", async () => {
+    const a = script([{ card: "control_magic", aim: "grizzly_bears", controller: 1 }, { card: "discontinuous_flash", aim: "grizzly_bears", controller: 0 }]);
+    const f = await go([{ cardId: "control_magic", count: 30 }, { cardId: "discontinuous_flash", count: 30 }], [perm(1, "grizzly_bears"), ...Array.from({ length: 6 }, () => perm(0, "island"))], a);
+    expect(a.cast).toEqual(["control_magic", "discontinuous_flash"]);
+    expect(on(f, "grizzly_bears").map((o) => o.controller)).toEqual([1]);
+    expect(f.players[0]!.graveyard.map((id) => f.objects[id]!.cardId).sort()).toEqual(["control_magic", "discontinuous_flash"]);
+  });
+
+  it("their token does not come back (CR 111.8)", async () => {
+    const a = script([{ card: "discontinuous_flash", aim: "goblin_1_1" }]);
+    const f = await go(flashes, [{ type: "effectAtStart", player: 1, effects: [{ type: "createToken", tokenId: "goblin_1_1", count: 1, who: "you" }] } as Modifier, perm(0, "plains"), perm(0, "island")], a);
+    expect(a.cast).toEqual(["discontinuous_flash"]);
+    expect(on(f, "goblin_1_1")).toEqual([]);
+  });
+
+  it("our Pacifism, blinked, returns attached to a creature its owner chooses as it enters (303.4f; with none it stays in exile — R-114's fixture)", async () => {
+    const a = script([{ card: "pacifism", aim: "grizzly_bears", controller: 1 }, { card: "discontinuous_flash", aim: "pacifism" }]);
+    const f = await go([{ cardId: "pacifism", count: 30 }, { cardId: "discontinuous_flash", count: 30 }], [perm(1, "grizzly_bears"), perm(1, "serra_angel"), perm(0, "plains"), perm(0, "plains"), perm(0, "island"), perm(0, "island")], a);
+    expect(a.cast).toEqual(["pacifism", "discontinuous_flash"]);
+    const pac = on(f, "pacifism");
+    expect(pac.length).toBe(1);
+    expect(pac[0]!.controller).toBe(0);
+    expect(["grizzly_bears", "serra_angel"]).toContain(f.objects[pac[0]!.attachedTo!]!.cardId);
+  });
+
+  it("the save: our own Bolt at our Bears, answered by the Flash — the Bolt is left without its target and the Bears lives", async () => {
+    const a = script([{ card: "lightning_bolt", aim: "grizzly_bears" }, { card: "discontinuous_flash", aim: "grizzly_bears" }]);
+    const f = await go([{ cardId: "lightning_bolt", count: 30 }, { cardId: "discontinuous_flash", count: 30 }], [perm(0, "grizzly_bears"), perm(0, "mountain"), perm(0, "plains"), perm(0, "island")], a);
+    expect(a.cast).toEqual(["lightning_bolt", "discontinuous_flash"]);
+    expect(on(f, "grizzly_bears").length).toBe(1);
   });
 });

@@ -21,6 +21,13 @@ const RUNS: { card: string; host: [string, string]; foe: [string, string] }[] = 
   { card: "clutch_guard", host: ["sultai", "writ"], foe: ["bant", "sower"] },
   { card: "revivalist", host: ["abzan", "bw"], foe: ["mardu", "brremoval"] },
   { card: "revivalist", host: ["esper", "wbcontrol"], foe: ["jund", "ashen"] },
+  // Daunting Terror ({B/R}{B/R}; R-128, the dealt-damage trigger, to each player): burn aimed at it, big blockers in its way
+  { card: "daunting_terror", host: ["grixis", "rabble"], foe: ["mardu", "burn"] },
+  { card: "daunting_terror", host: ["mardu", "brremoval"], foe: ["jund", "stompy"] },
+  // Discontinuous Flash ({W/U}{W/U} instant; R-129, blink under its owner's control): a Control Magic list against removal; a
+  // Snake list against tokens and Lumen's borrowing
+  { card: "discontinuous_flash", host: ["jeskai", "theft"], foe: ["mardu", "brremoval"] },
+  { card: "discontinuous_flash", host: ["bant", "countersnake"], foe: ["jeskai", "watch"] },
 ];
 function withFour(f: string, k: string, card: string, cards: Map<string, { types: string[] }>) {
   const l = FORMAT_FIELD[f]?.[k]; if (!l) throw new Error(`no list ${f}:${k}`);
@@ -41,8 +48,8 @@ class Counter implements Agent {
 }
 
 /** Fuzz before fixtures: four copies in two hosts each, both seats, random agents and the heuristic. Zero exceptions, every game
- * terminates, each card cast; replays byte-identical. Smoke: 6 runs × 2 seats × 2 agent kinds × 1 seed (24 games); FUZZ_FULL: 20 seeds (640 with Revivalist's two runs — a Mardu and a Jund foe, removal to kill it). Clutch Guard ({G/U}{G/U}; the Pyromancer's graveyard shape with a hybrid ability cost) in a Bant and a Sultai host. */
-describe("Post-S71a fuzz — Domain Pouncer, Terrain Collapse, Clutch Guard and Revivalist", () => {
+ * terminates, each card cast; replays byte-identical. Smoke: 6 runs × 2 seats × 2 agent kinds × 1 seed (24 games); FUZZ_FULL: 20 seeds (800 with Revivalist's two runs — a Mardu and a Jund foe, removal to kill it — Daunting Terror's two: a burn foe and a Stompy foe; and Discontinuous Flash's two — 960 in all). Clutch Guard ({G/U}{G/U}; the Pyromancer's graveyard shape with a hybrid ability cost) in a Bant and a Sultai host. */
+describe("Post-S71a fuzz — Domain Pouncer, Terrain Collapse, Clutch Guard, Revivalist, Daunting Terror and Discontinuous Flash", () => {
   const games = process.env.FUZZ_FULL ? 20 : 1;
   it(`${games} games × ${RUNS.length} runs × 2 seats × 2 agents`, async () => {
     const cards = withStudy();
@@ -67,6 +74,8 @@ describe("Post-S71a fuzz — Domain Pouncer, Terrain Collapse, Clutch Guard and 
     expect(casts["clutch_guard"]).toBeGreaterThan(0);
     expect(yard).toBeGreaterThan(0);
     expect(casts["revivalist"]).toBeGreaterThan(0);
+    expect(casts["daunting_terror"]).toBeGreaterThan(0);
+    expect(casts["discontinuous_flash"]).toBeGreaterThan(0);
   }, 1_800_000);
   it("replay determinism — a game of each run replays byte-identical", async () => {
     const cards = withStudy();

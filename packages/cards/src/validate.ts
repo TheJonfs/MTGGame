@@ -335,7 +335,7 @@ function validateAbility(a: unknown, err: (m: string) => void, warnings: string[
         validateModes(a.modes, err, warnings, cardId);
       } else {
         // S23: eventDamage refs live only on damage-event triggers (the collectors carry the payload).
-        const damageTrigger = a.event === "DEALS_DAMAGE_TO_PLAYER" || a.event === "DEALS_COMBAT_DAMAGE_TO_PLAYER" || a.event === "DEALS_DAMAGE";
+        const damageTrigger = a.event === "DEALS_DAMAGE_TO_PLAYER" || a.event === "DEALS_COMBAT_DAMAGE_TO_PLAYER" || a.event === "DEALS_DAMAGE" || a.event === "DEALT_DAMAGE";
         // S25: xPaid refs live only on the ETB trigger of a permanent whose own cost announces an X.
         const xTrigger = a.event === "ENTERS_BATTLEFIELD" && xCount >= 1;
         const lawTrigger = a.event === "END_STEP";
@@ -631,7 +631,7 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
   },
   exileThenReturn: (e, err) => {
     needTargetIndex(e, err);
-    if (e.under !== "yourControl") err(`exileThenReturn.under must be "yourControl" (A8)`);
+    if (e.under !== "yourControl" && e.under !== "owner") err(`exileThenReturn.under must be "yourControl" or "owner" (A8, R-129)`);
   },
   tapTarget: (e, err) => {
     // A10 (S22): tapTarget addresses a target index OR a spec index (the Warden's up-to-two).

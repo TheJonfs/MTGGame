@@ -346,14 +346,26 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
       if (hit) for (const e of onHit) await resolveEffect(e, makeEffectContext(ctx, item, requester));
     },
 
-    exileThenReturn(objectId: string): void {
+    async exileThenReturn(objectId: string, under: "yourControl" | "owner" = "yourControl"): Promise<void> {
       // A8 blink: exile (not a death), then back under the effect controller's
       // control as a NEW object — ETB triggers fire from the second move.
+      // Post-S71a (R-129, Discontinuous Flash): `owner` — back under its OWNER's control (CR 110.2: the controller is
+      // whoever it enters under); a new object (400.7): out of combat, untapped, summoning sick, its counters and
+      // damage gone, a spell aimed at it left without its target (608.2b).
       const obj = ctx.state.objects[objectId];
       if (!obj || obj.zone !== "battlefield") return;
       const exiled = moveObject(ctx, objectId, "exile");
-      if (!exiled || !ctx.state.objects[exiled]) return; // tokens cease to exist in exile
-      moveObject(ctx, exiled, "battlefield", { controller });
+      if (!exiled || !ctx.state.objects[exiled]) return; // tokens cease to exist in exile (CR 111.8)
+      const back = under === "owner" ? (ctx.state.objects[exiled]!.owner as PlayerId) : controller;
+      // R-114 (CR 303.4f-g): an Aura returning is attached to a host its new controller chooses as it enters (not
+      // targeted); with no legal host it stays in exile.
+      let attachedTo: string | undefined;
+      if ((ctx.defs.def(ctx.state.objects[exiled]!.cardId).subtypes ?? []).includes("Aura")) {
+        const host = await chooseAuraHost(ctx, ctx.state.objects[exiled]!.cardId, back, requester);
+        if (!host) return;
+        attachedTo = host;
+      }
+      moveObject(ctx, exiled, "battlefield", { controller: back, ...(attachedTo ? { attachedTo } : {}) });
     },
 
     dealDamage(target: ResolvedTarget, amount: number, from?: "eventObject"): void {

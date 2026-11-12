@@ -65,7 +65,7 @@ export interface EffectContext {
    */
   searchLibrary(player: number, predicate: "basicLand" | "landCard" | "anyCard" | "creatureCard" | `subtype:${string}`, to: "hand" | "battlefield" | "graveyard", entersTapped: boolean, count?: number): Promise<void>;
   /** ADR-075 A8: exile the object and return it to the battlefield under the effect controller's control as a new object (ETBs fire). */
-  exileThenReturn(objectId: string): void;
+  exileThenReturn(objectId: string, under?: "yourControl" | "owner"): Promise<void> | void;
   /** S36 (R-096 word 1): schedule the resolving ability's SOURCE to return to its owner's hand at the beginning of the next cleanup step. */
   returnSelfAtCleanup(): void;
   /** S36 (R-096 words 3–4): the controller names a card from the hand's distinct names, a random hand card is revealed, `onHit` resolves on a match. */
@@ -334,10 +334,10 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
     await ctx.revealRandomIfNamed(e.onHit);
   },
 
-  exileThenReturn: (e, ctx) => {
+  exileThenReturn: async (e, ctx) => {
     if (e.type !== "exileThenReturn") throw new Error("resolver mismatch");
     const t = ctx.target(e.target);
-    if (t && t.kind === "object") ctx.exileThenReturn(t.id);
+    if (t && t.kind === "object") await ctx.exileThenReturn(t.id, e.under);
   },
 
   gainControl: (e, ctx) => {

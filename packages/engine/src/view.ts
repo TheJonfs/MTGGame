@@ -51,6 +51,11 @@ export interface GameView {
     /** Post-S71a (Correspondence, the Lumen line): its control reverts at cleanup — the latest control effect on it ends
      * this turn (Lumen's borrow). Public: a change of control is visible to both players. */
     controlUntilEndOfTurn?: boolean;
+    /** Post-S71a (R-129, Discontinuous Flash — "under its owner's control"): its owner, set only when another player
+     * controls it (a stolen permanent); and `token` for a token (CR 111.8: a token that leaves does not come back). Both
+     * public. */
+    owner?: PlayerId;
+    token?: boolean;
   }[];
   /** S32: `targets` (public — the stack's targets are announced) so a creature under fire is visible
    * to the agents: the Escort's save, the Altar's "doomed" read (which had been blind live since S29). */
@@ -117,6 +122,8 @@ export function buildView(ctx: EngineCtx, player: PlayerId): GameView {
         ...(o.summoningSick && isCreature && !chars.keywords.has("haste") ? { summoningSick: true } : {}),
         ...(Object.values(o.counters).some((n) => n) ? { counters: Object.fromEntries(Object.entries(o.counters).filter(([, n]) => n)) } : {}),
         ...(borrowedThisTurn(s, id, o.controller) ? { controlUntilEndOfTurn: true } : {}),
+        ...(o.owner !== o.controller ? { owner: o.owner } : {}),
+        ...(o.isToken ? { token: true } : {}),
       };
     }),
     stack: s.stack.map((item) => ({

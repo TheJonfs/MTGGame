@@ -361,8 +361,9 @@ export type EffectBase =
   /** S30 (R-093, Buried Alive): `to: "graveyard"` and `count` ("up to N" — one logged pick per card, decline
    * ends it); `creatureCard` beside the land/any/subtype predicates. */
   | { type: "searchLibrary"; predicate: "basicLand" | "landCard" | "anyCard" | "creatureCard" | `subtype:${string}`; to: "hand" | "battlefield" | "graveyard"; entersTapped?: boolean; count?: number }
-  /** ADR-075 A8: blink — exile the target and return it to the battlefield under your control as a new object (ETBs fire). */
-  | { type: "exileThenReturn"; target: number; under: "yourControl" }
+  /** ADR-075 A8: blink — exile the target and return it to the battlefield under your control as a new object (ETBs fire).
+   * Post-S71a (R-129, Chris's Discontinuous Flash): `under: "owner"` — under its OWNER's control (a stolen permanent goes home). */
+  | { type: "exileThenReturn"; target: number; under: "yourControl" | "owner" }
   /** ADR-068 Amendment 2: `mana` (fixed production) OR `choice` (Lotus: N mana of any one colour — a five-option choice at activation, no stack). */
   /** Post-S70 (R-122, Koth's "Add {R} for each Mountain you control"): `times` repeats `mana`, counted as it resolves. */
   | { type: "addMana"; mana?: string; times?: ValueRef; choice?: { count: number; anyOneColor: true } | { count: number; anyCombinationOf: ("W" | "U" | "B" | "R" | "G")[] } }
@@ -465,6 +466,9 @@ export type TriggerEvent =
   /** S28 (ADR-098, Spirit Link): damage to ANY recipient — creature or player — with the amount in
    * the event context (the S23 collector shape); `player` is set only when a player was damaged. */
   | "DEALS_DAMAGE"
+  /** Post-S71a (R-128, Chris's B/R two-drop study; Jackal Pup's shape): this permanent was dealt damage — any source, combat
+   * or not; the amount in the context (`eventDamage`). Self only: the trigger's source is the damaged permanent (CR 603.2). */
+  | "DEALT_DAMAGE"
   | "UPKEEP"
   | "END_STEP"
   | "LAND_ENTERS_UNDER_YOUR_CONTROL"
@@ -496,6 +500,7 @@ export const TRIGGER_EVENTS: readonly TriggerEvent[] = [
   "DEALS_DAMAGE_TO_PLAYER",
   "DEALS_COMBAT_DAMAGE_TO_PLAYER",
   "DEALS_DAMAGE",
+  "DEALT_DAMAGE",
   "UPKEEP",
   "END_STEP",
   "LAND_ENTERS_UNDER_YOUR_CONTROL",

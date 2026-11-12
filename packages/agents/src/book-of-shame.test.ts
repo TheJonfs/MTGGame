@@ -2616,3 +2616,67 @@ describe("book of shame 165 (post-S71a, Correspondence — the exchange is read 
     expect(a.scorePriorityAction(v, ex("lb", "ts"))).toBeGreaterThan(a.scorePriorityAction(v, ex("mb", "ts")));
   });
 });
+
+describe("book of shame 166 (post-S71a, Daunting Terror — the recoil to each player is priced; R-128)", () => {
+  // The B/R two-drop study's first pass: a pilot blind to the self-damage trigger lost half its losing games to its own creature.
+  // The combat sim now counts the damage each creature is dealt; the attack and block scores charge the recoil, and read a recoil
+  // that kills a player as the game.
+  const a = agent("aggro");
+  const req = { player: 0 as const, purpose: "declareAttacker" as const, actions: [{ type: "doneDeclaringAttackers" as const }, { type: "declareAttacker" as const, objectId: "dt" }] };
+  it("at 4 life into a Centaur Courser and a Bears it does not attack — their double block deals it 5, and 5 back kills us (the blind pilot attacked)", async () => {
+    const into = mkView({ life: [4, 20], battlefield: [{ id: "dt", cardId: "daunting_terror", controller: 0 }, { id: "cc", cardId: "centaur_courser", controller: 1 }, { id: "gb", cardId: "grizzly_bears", controller: 1 }] });
+    expect((await a.attackChoice(into, req as never)).type).toBe("doneDeclaringAttackers");
+    // nothing to block it: unblocked, it is dealt nothing — it attacks even at 1
+    const open = mkView({ life: [1, 20], battlefield: [{ id: "dt", cardId: "daunting_terror", controller: 0 }] });
+    expect((await a.attackChoice(open, req as never)).type).toBe("declareAttacker");
+  });
+  it("their Baloth attacks with them at 4: the Terror's chump is the win (dealt 4, it deals 4 to each player); at 20 it is only a chump", () => {
+    const v = (theirs: number) => mkView({ life: [10, theirs], battlefield: [{ id: "dt", cardId: "daunting_terror", controller: 0 }, { id: "rb", cardId: "rumbling_baloth", controller: 1 }], combat: { attackers: ["rb"], blocks: [] } });
+    expect(a.planBlocks(v(4), ["rb"])).toEqual([{ blocker: "dt", attacker: "rb" }]);
+    expect(a.planBlocks(v(20), ["rb"])).toEqual([]);
+  });
+});
+
+describe("book of shame 167 (post-S71a, Discontinuous Flash — the owner-blink is cast when the moment is now; R-129)", () => {
+  // Chris's list of its uses: out of combat, an enters trigger again, a stolen permanent home, an untapped blocker, a
+  // removal spell left without its target, a cantrip. The predictor prices the board it leaves; the gate keeps the cantrip
+  // for the opponent's end step.
+  const a = agent();
+  const fl = (target: string) => ({ type: "castSpell" as const, objectId: "fl", targets: [{ kind: "object" as const, id: target }] });
+  const lands = [{ id: "pl", cardId: "plains", controller: 0 as const, tapped: true }, { id: "is", cardId: "island", controller: 0 as const }];
+  const view = (extra: Obj[], o: Parameters<typeof mkView>[0] = {}) => mkView({ hand: [{ objectId: "fl", cardId: "discontinuous_flash" }], battlefield: [...lands, ...extra], ...o });
+  const pass = { type: "pass" as const };
+
+  it("the save: their Doom Blade at our Serra Angel — the Angel, over passing and over a land", () => {
+    const v = view([{ id: "sa", cardId: "serra_angel", controller: 0 }], { activePlayer: 1, stack: [{ id: "db", kind: "spell", cardId: "doom_blade", controller: 1 }] });
+    (v.stack[0] as { targets?: unknown }).targets = [{ kind: "object", id: "sa" }];
+    const save = a.scorePriorityAction(v, fl("sa"));
+    expect(save).toBeGreaterThan(a.scorePriorityAction(v, pass));
+    expect(save).toBeGreaterThan(a.scorePriorityAction(v, fl("pl")));
+  });
+
+  it("a cantrip in our main phase with nothing at stake is held; at their end step it is cast", () => {
+    expect(a.scorePriorityAction(view([]), fl("pl"))).toBe(-Infinity);
+    const end = view([], { activePlayer: 1, step: "END" });
+    expect(a.scorePriorityAction(end, fl("pl"))).toBeGreaterThan(a.scorePriorityAction(end, pass));
+  });
+
+  it("home: our Serra Angel under their control comes back — and their Bears under ours is not given back", () => {
+    const v = view([{ id: "sa", cardId: "serra_angel", controller: 1 }, { id: "gb", cardId: "grizzly_bears", controller: 0 }]);
+    (v.battlefield.find((b) => b.id === "sa") as { owner?: number }).owner = 0;
+    (v.battlefield.find((b) => b.id === "gb") as { owner?: number }).owner = 1;
+    expect(a.scorePriorityAction(v, fl("sa"))).toBeGreaterThan(a.scorePriorityAction(v, pass));
+    expect(a.scorePriorityAction(v, fl("gb"))).toBeLessThan(a.scorePriorityAction(v, fl("sa")));
+  });
+
+  it("their attacking Serra Angel, before blocks, leaves combat — worth casting on their turn", () => {
+    const v = view([{ id: "sa", cardId: "serra_angel", controller: 1, tapped: true }], { activePlayer: 1, step: "DECLARE_ATTACKERS", combat: { attackers: ["sa"], blocks: [] } });
+    expect(a.scorePriorityAction(v, fl("sa"))).toBeGreaterThan(a.scorePriorityAction(v, pass));
+  });
+
+  it("their token is gone for good: cast in our main phase", () => {
+    const v = view([{ id: "tk", cardId: "grizzly_bears", controller: 1 }]);
+    (v.battlefield.find((b) => b.id === "tk") as { token?: boolean }).token = true;
+    expect(a.scorePriorityAction(v, fl("tk"))).toBeGreaterThan(a.scorePriorityAction(v, pass));
+  });
+});

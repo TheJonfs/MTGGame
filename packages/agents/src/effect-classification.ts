@@ -42,7 +42,9 @@ export function isHelpful(e: Effect): boolean {
   return (
     e.type === "grantKeyword" ||
     e.type === "untapTarget" ||
-    e.type === "exileThenReturn" || // A8 blink: you point it at your own creature (Restoration Angel)
+    // A8 blink: you point it at your own creature (Restoration Angel). Post-S71a (R-129): the OWNER blink is neither — it
+    // has a use on either side (their token, their attacker, our stolen permanent); the predictor prices it (book 167).
+    (e.type === "exileThenReturn" && e.under !== "owner") ||
     (e.type === "addCounters" && e.kind === "+1/+1") ||
     (e.type === "modifyPT" && ptSign(e.power) + ptSign(e.toughness) > 0) ||
     e.type === "draw" // draw auras (Curiosity): the payload benefits the enchanted creature's side
@@ -52,6 +54,8 @@ export function isHelpful(e: Effect): boolean {
 export type EffectClass = "harmful" | "helpful" | "neutral";
 
 export function classifyEffects(effects: Effect[]): EffectClass {
+  // Post-S71a (R-129, book 167): an owner blink's target may be on either side; its draw is not pointed at the target.
+  if (effects.some((e) => e.type === "exileThenReturn" && e.under === "owner")) return "neutral";
   if (effects.some(isHarmful)) return "harmful";
   if (effects.some(isHelpful)) return "helpful";
   return "neutral";

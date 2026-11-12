@@ -320,6 +320,7 @@ export class HeuristicAgent implements Agent {
     if (this.tapperGated(view, action)) return -Infinity; // S26 r3: hold the tapper for the opponent's turn
     if (this.legendDuplicateGated(view, action)) return -Infinity; // S27 r2: never cast a second copy of a legend we control
     if (this.cantripTimingGated(view, action)) return -Infinity; // S28: Brainstorm at the opponent's end step or in response
+    if (this.ownerBlinkTimingGated(view, action)) return -Infinity; // book 167: Discontinuous Flash — a cantrip unless the moment is now
     if (this.entersModesHeld(view, action)) return -Infinity; // book 114: the graveyard answer on a body waits for the graveyard
     if (this.flashTimingGated(view, action)) return -Infinity; // S32: the Escort at the opponent's end step, in response, or when the mana is idle
     if (this.selfCounterGated(view, action)) return -Infinity; // post-S43: Mystic Snake with only our own spell to hit
@@ -1581,6 +1582,21 @@ export class HeuristicAgent implements Agent {
     // own-life rate — the 5/5's swing is honest, not free.
     for (const id of attackers) score -= this.selfTax(view, id, "ATTACKS") * this.C.weights[this.profile.archetype].ownLife;
     score -= handedBack;
+    // Post-S71a (R-128, the recoil): our recoilers' damage comes back to us after the combat — an opponent the combat kills
+    // has lost before the triggers resolve (CR 704.3, 603.3), so only an attack that does not win pays it; a recoil that
+    // kills us is a loss. Their recoiling blockers pay theirs.
+    const sel = (side: PlayerId) => creatures.filter((c) => c.controller === side).map((c) => c.id);
+    // An each-player recoiler's damage reaches both players at once: both at 0 is a draw (CR 104.4a, 704.3).
+    const myLoss = sel(me).reduce((n, id) => n + this.recoilOf(view, id, outcome), 0) + sel(opp).reduce((n, id) => n + this.recoilMirror(view, id, outcome), 0);
+    const oppLoss = sel(opp).reduce((n, id) => n + this.recoilOf(view, id, outcome), 0) + sel(me).reduce((n, id) => n + this.recoilMirror(view, id, outcome), 0);
+    const oppLeft = view.life[opp] - outcome.playerDamage[opp], myLeft = view.life[me] - outcome.playerDamage[me];
+    if (oppLeft > 0 && (oppLoss > 0 || myLoss > 0)) {
+      const oppDies = oppLoss >= oppLeft, iDie = myLoss >= myLeft;
+      if (oppDies && !iDie) score += 1000;
+      else if (iDie && !oppDies) score -= 1000;
+      else if (iDie && oppDies) score -= 200;
+      else score += oppLoss * dmgWeight - myLoss * this.C.weights[this.profile.archetype].ownLife;
+    }
     if (view.life[opp] - outcome.playerDamage[opp] <= 0) score += 1000;
     // Book 139 (post-S65, Chris's Open run with the Snake Keeper list: the Mardu pilot at 12 sent its only creature, a
     // Nighthawk, into his 13/13 Cobra; the Writ's at 7 its only 1/1 into exactly seven power): an attack that does
@@ -1649,7 +1665,18 @@ export class HeuristicAgent implements Agent {
     // lifegain — prevented damage counts again at the lifegain rate.
     const lifelinkDenied = attacker.keywords.includes("lifelink") ? prevented * 0.25 : 0;
     // S23 (the Gallows Djinn): blocking's own tax is part of the exchange.
-    const blockTax = this.selfTax(view, blocker.id, "BLOCKS") * this.C.weights[this.profile.archetype].ownLife;
+    // Post-S71a (R-128): a recoiling blocker's damage to the attacker comes back to its controller (none if struck down first).
+    // Post-S71a (R-128, Daunting Terror): a recoiling blocker takes the attacker's damage and sends it back — to its controller,
+    // and with `each` to the attacking player too (none if the blocker strikes the attacker down first; lifelink nets its own).
+    const rs = this.recoilShape(blocker.id, view), blockerDies = attacker.power >= blocker.toughness || aDeathtouch;
+    const struckFirst = bFirst && !aFirst && (blocker.power >= attacker.toughness - attacker.damage || bDeathtouch);
+    const taken = !rs || struckFirst ? 0 : Math.max(0, attacker.power);
+    const recoil = blocker.keywords.includes("lifelink") && !blockerDies ? 0 : taken;
+    const mirror = rs?.each ? taken : 0;
+    if (mirror > 0 && mirror >= view.life[attacker.controller] && recoil < view.life[blocker.controller]) return 1000; // the block that kills them
+    if (recoil > 0 && recoil >= view.life[blocker.controller]) return -1000; // the block that kills its own controller
+    // the attacking player's share is priced as the damage the block prevents is (w): a symmetric exchange is near neutral
+    const blockTax = (this.selfTax(view, blocker.id, "BLOCKS") + recoil) * this.C.weights[this.profile.archetype].ownLife - mirror * (this.profile.archetype === "control" ? 0.3 : 0.2);
     // S40 (Voracious Cobra): a creature that destroys what it deals combat damage to trades like deathtouch.
     if (attacker.power > 0 && this.destroysWhatItDamages(attacker.id, view) && !(bFirst && !aFirst && kills)) dies = true;
     if (blocker.power > 0 && this.destroysWhatItDamages(blocker.id, view) && !(aFirst && !bFirst && dies)) kills = true;
@@ -2132,6 +2159,38 @@ export class HeuristicAgent implements Agent {
     // S32: the engine's step is "END" (S28 wrote "END_STEP" here, so Brainstorm's end-step window
     // never opened live — only the in-response path did; caught by the Escort's pin).
     return !(view.activePlayer !== view.you && view.step === "END");
+  }
+
+  /**
+   * Book 167 (post-S71a, R-129 — Chris's Discontinuous Flash: "exile target permanent, then return it to the battlefield
+   * under its owner's control. Draw a card."): an INSTANT whose payload is an owner-blink (and a draw) is cast now only when
+   * its target makes the moment — a spell of theirs aimed at one of ours (the save), their attacker in combat before
+   * damage, their token (gone for good), a permanent of ours they control (it comes home), or an enters trigger of ours
+   * re-bought in our main phase. Otherwise it is a cantrip: the opponent's end step — and not even then while it is held
+   * as protection (book 130's terms: their list holds four or more one-for-one answers and we control a creature worth
+   * more than a card). Which target is best is the predictor's (`ownerBlinkValue`). Off: "flashblink". Exposed.
+   */
+  ownerBlinkTimingGated(view: GameView, action: Action): boolean {
+    if (action.type !== "castSpell" || this.profile.off?.includes("flashblink")) return false;
+    const card = view.hand.find((c) => c.objectId === action.objectId);
+    const d = card ? this.def(card.cardId) : undefined;
+    if (!d || !d.types.includes("Instant") || !(d.spellEffect ?? []).some((e) => e.type === "exileThenReturn" && e.under === "owner")) return false;
+    if (!(d.spellEffect ?? []).every((e) => (e.type === "exileThenReturn" && e.under === "owner") || e.type === "draw")) return false;
+    const me = view.you, t = action.targets[0];
+    const o = t?.kind === "object" ? view.battlefield.find((b) => b.id === t.id) : undefined;
+    if (!o) return false;
+    const owner = o.owner ?? o.controller;
+    if (o.controller === me && view.stack.some((it) => it.controller !== me && (it.targets ?? []).some((x) => x.kind === "object" && x.id === o.id))) return false; // the save
+    if (o.controller !== me && view.combat.attackers.includes(o.id) && (view.step === "DECLARE_ATTACKERS" || view.step === "DECLARE_BLOCKERS")) return false; // out of combat
+    if (o.controller !== me && o.token) return false; // their token, gone
+    if (owner === me && o.controller !== me && !o.controlUntilEndOfTurn) return false; // ours comes home
+    const etb = (this.def(o.cardId)?.abilities ?? []).some((a) => a.kind === "triggered" && a.event === "ENTERS_BATTLEFIELD");
+    if (o.controller === me && owner === me && etb && view.activePlayer === me && (view.step === "MAIN1" || view.step === "MAIN2") && view.stack.length === 0) return false; // the enters trigger again
+    // the cantrip: the opponent's end step (or in answer to their item), unless held as protection
+    const window = (view.activePlayer !== me && view.step === "END") || view.stack.some((it) => it.controller !== me);
+    if (!window) return true;
+    const own = 2.5; // a card's worth: hold for a creature worth more
+    return this.oppAnswers() >= 4 && view.battlefield.some((b) => b.controller === me && b.power !== null && objectValue(this.defs, b, this.C) > own);
   }
 
   // ---------- S36 (ADR-121): the four cards' policies ----------
@@ -3436,6 +3495,34 @@ export class HeuristicAgent implements Agent {
   private attackSimCreatures(view: GameView): SimObject[] {
     return viewCreatures(view).map((c) => (!c.keywords.includes("deathtouch") && this.destroysWhatItDamages(c.id, view) ? { ...c, keywords: [...c.keywords, "deathtouch"] as SimObject["keywords"] } : c));
   }
+  /** Post-S71a (R-128, Daunting Terror): a creature whose damage taken comes back — Jackal Pup's shape, "whenever this creature
+   * is dealt damage, it deals that much damage to you" — and, with `each`, to each opponent too ("to each player", the Terror).
+   * Keyed on the SHAPE: a self DEALT_DAMAGE trigger whose damage goes to "you" for the eventDamage. Null: not a recoiler. */
+  private recoilShape(objectId: string, view: GameView): { each: boolean } | null {
+    const o = view.battlefield.find((b) => b.id === objectId);
+    const d = o ? this.def(o.cardId) : undefined;
+    const ref = (e: { type: string; to?: string; amount?: unknown }, to: string) => e.type === "damage" && e.to === to && typeof e.amount === "object" && e.amount !== null && (e.amount as { ref?: string }).ref === "eventDamage";
+    for (const a of d?.abilities ?? []) {
+      if (a.kind !== "triggered" || a.event !== "DEALT_DAMAGE" || !a.effects.some((e) => ref(e, "you"))) continue;
+      return { each: a.effects.some((e) => ref(e, "opponent")) };
+    }
+    return null;
+  }
+
+  /** Post-S71a (R-128): the life a recoiler's combat costs its controller in a simulated combat — the damage it was dealt; 0
+   * when it has lifelink and lives to deal the recoil (the recoil is its own damage: the gain matches it; CR 702.15b). */
+  private recoilOf(view: GameView, id: string, outcome: { taken: Map<string, number>; dead: Set<string> }): number {
+    const o = view.battlefield.find((b) => b.id === id);
+    if (!o || !this.recoilShape(id, view)) return 0;
+    if (o.keywords.includes("lifelink") && !outcome.dead.has(id)) return 0;
+    return outcome.taken.get(id) ?? 0;
+  }
+
+  /** Post-S71a (R-128): what an each-player recoiler's combat deals its controller's OPPONENT (the damage it was dealt). */
+  private recoilMirror(view: GameView, id: string, outcome: { taken: Map<string, number> }): number {
+    return this.recoilShape(id, view)?.each ? outcome.taken.get(id) ?? 0 : 0;
+  }
+
   private destroysWhatItDamages(objectId: string, view: GameView): boolean {
     const o = view.battlefield.find((b) => b.id === objectId);
     return (this.def(o?.cardId ?? "")?.abilities ?? []).some((a) => a.kind === "triggered" && a.event === "DEALS_DAMAGE" && a.condition?.recipient === "creature" && a.effects.some((e) => e.type === "destroy" && e.eventObject));

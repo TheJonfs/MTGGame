@@ -41,6 +41,8 @@ export interface CombatOutcome {
   dead: Set<string>;
   /** Damage dealt to each player. */
   playerDamage: [number, number];
+  /** Post-S71a (R-128, Daunting Terror — the recoil price): combat damage each creature was dealt. */
+  taken: Map<string, number>;
 }
 
 function simDef(o: SimObject): CardDef {
@@ -138,6 +140,8 @@ export async function simulateCombat(
   };
 
   const lifeBefore: [number, number] = [state.players[0].life, state.players[1].life];
+  const taken = new Map<string, number>();
+  ctx.bus.on("DAMAGE", (ev) => { if (ev.target.kind === "object") taken.set(ev.target.id, (taken.get(ev.target.id) ?? 0) + ev.amount); });
   // First strike step, then regular — the real two-step pipeline.
   const before = new Set(state.battlefield);
   const fsAssignments = assignCombatDamage(ctx, true);
@@ -151,5 +155,6 @@ export async function simulateCombat(
   return {
     dead,
     playerDamage: [lifeBefore[0] - state.players[0].life, lifeBefore[1] - state.players[1].life],
+    taken,
   };
 }

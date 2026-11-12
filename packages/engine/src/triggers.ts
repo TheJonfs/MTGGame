@@ -421,6 +421,19 @@ export function wireTriggerCollection(ctx: EngineCtx): void {
     }
   });
 
+  // Post-S71a (R-128, Daunting Terror; Jackal Pup's shape): DEALT_DAMAGE — the damaged permanent's own triggers, the amount in the context. The
+  // trigger is collected as the damage is dealt, while the creature is on the battlefield, so one the damage kills still
+  // triggers (CR 603.2: the event happened; the ability resolves without its source).
+  ctx.bus.on("DAMAGE", (ev) => {
+    if (ev.target.kind !== "object") return;
+    const perm = ctx.state.objects[ev.target.id];
+    if (!perm || perm.zone !== "battlefield") return;
+    (ctx.defs.def(perm.cardId).abilities ?? []).forEach((a, i) => {
+      if (a.kind !== "triggered" || a.event !== "DEALT_DAMAGE") return;
+      pend(perm.id, perm.cardId, perm.controller, i, { objectId: perm.id, amount: ev.amount });
+    });
+  });
+
   // Damage-to-player events: scanned across all battlefield permanents with
   // condition evaluation (ADR-021; Curiosity is the first listener).
   ctx.bus.on("DAMAGE", (ev) => {

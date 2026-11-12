@@ -1,0 +1,35 @@
+{
+ "id": "discontinuous_flash",
+ "name": "Discontinuous Flash",
+ "source": "custom",
+ "manaCost": "{W/U}{W/U}",
+ "types": [
+  "Instant"
+ ],
+ "text": "Exile target permanent, then return it to the battlefield under its owner's control. Draw a card.",
+ "targets": [
+  {
+   "count": 1,
+   "predicate": "permanent",
+   "zone": "battlefield"
+  }
+ ],
+ "spellEffect": [
+  {
+   "type": "exileThenReturn",
+   "target": 0,
+   "under": "owner"
+  },
+  {
+   "type": "draw",
+   "count": 1,
+   "who": "you"
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/discontinuous_flash.png",
+  "fallback": "rendered"
+ },
+ "printedAsset": "discontinuous_flash.jpg",
+ "shopTier": "R"
+}

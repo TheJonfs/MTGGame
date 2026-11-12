@@ -46,6 +46,43 @@ function clone(view: GameView): GameView {
  * resolution reads the object as it last existed (CR 608.2h). Object ids are never reused, so the map is safe across
  * copies; it is cleared past a bound. */
 const lastKnown = new Map<string, { cardId: string; controller: 0 | 1 }>();
+/**
+ * Post-S71a (R-129, Discontinuous Flash — book 167): "exile target permanent, then return it to the battlefield under its
+ * owner's control", priced as the board it leaves. A token is gone (CR 111.8): theirs is removal, ours a loss. A stolen
+ * permanent goes home — ours back (little if it was only borrowed until end of turn: it was coming home), theirs given back.
+ * The returned object is new (400.7): its Auras fall off (each Aura's controller loses it), its enters trigger fires again
+ * (good for its owner), it leaves combat (their attacker deals nothing), it returns untapped (ours a blocker on their turn;
+ * theirs a blocker too) and summoning sick (ours cannot attack this turn), and a spell of theirs aimed at it loses its
+ * target (608.2b — the save). Mutates the view: the object changes hands or leaves.
+ */
+function ownerBlinkValue(view: GameView, defs: Map<string, CardDef>, constants: EvalConstants, me: 0 | 1, o: GameView["battlefield"][number] | undefined): number {
+  if (!o) return 0;
+  const val = objectValue(defs, o, constants);
+  const before = o.controller;
+  if (o.token) { removeObject(view, o.id); return before === me ? -val : val; }
+  const owner = o.owner ?? o.controller;
+  let v = 0;
+  if (owner !== before) v += (owner === me ? 1 : -1) * (o.controlUntilEndOfTurn ? 0.5 : 2 * val);
+  const sign = owner === me ? 1 : -1;
+  const d = defs.get(o.cardId);
+  if ((d?.abilities ?? []).some((a) => a.kind === "triggered" && a.event === "ENTERS_BATTLEFIELD")) v += sign * 0.8;
+  for (const a of view.battlefield) if (a.attachedTo === o.id) v += a.controller === me ? -1.0 : 1.0;
+  v -= sign * 0.5 * ((o.counters?.["+1/+1"] ?? 0) - (o.counters?.["-1/-1"] ?? 0)); // its counters go (400.7)
+  // the save: a spell or ability of theirs aimed at one of ours fizzles
+  if (before === me && view.stack.some((it) => it.controller !== me && (it.targets ?? []).some((t) => t.kind === "object" && t.id === o.id))) v += val;
+  const theirTurn = view.activePlayer !== me, creature = o.power !== null;
+  // their attacker leaves combat: what it would have dealt
+  if (creature && before !== me && view.combat.attackers.includes(o.id)) v += 0.6 * Math.max(0, o.power ?? 0);
+  if (creature && o.tapped) v += sign * (theirTurn && view.combat.attackers.length > 0 && view.combat.blocks.length === 0 ? 0.6 : 0.2);
+  if (!creature && o.tapped && (d?.types ?? []).includes("Land") && owner === me) v += 0.2; // a tapped land of ours untaps
+  if (creature && owner === me && !theirTurn && !o.summoningSick && (view.step === "UPKEEP" || view.step === "DRAW" || view.step === "MAIN1" || view.step === "BEGIN_COMBAT")) v -= 0.5; // it cannot attack this turn
+  for (const a of view.battlefield) if (a.attachedTo === o.id) a.attachedTo = null;
+  removeObject(view, o.id);
+  const { counters: _c, owner: _o, controlUntilEndOfTurn: _u, summoningSick: _s, ...rest } = o;
+  view.battlefield.push({ ...rest, controller: owner as 0 | 1, tapped: false, damage: 0, ...(creature ? { summoningSick: true } : {}) });
+  return v;
+}
+
 function removeObject(view: GameView, id: string): void {
   const gone = view.battlefield.find((o) => o.id === id);
   if (gone) { if (lastKnown.size > 4096) lastKnown.clear(); lastKnown.set(id, { cardId: gone.cardId, controller: gone.controller as 0 | 1 }); }
@@ -874,6 +911,7 @@ function applyEffect(
     case "addMana":
       return 0; // Ritual/Prospector: the agent-level mana-burst policy decides (book of shame 12)
     case "exileThenReturn": {
+      if (e.under === "owner") return ownerBlinkValue(view, defs, constants, me, objAt(e.target));
       // A8: blinking our own creature re-buys its ETB and shakes off auras/damage; a flat modest credit,
       // more if the target carries an ETB trigger or an opposing aura.
       // S22 (A10 word 3, the launder pin): a pending-sacrifice target is about to be LOST — blinking
