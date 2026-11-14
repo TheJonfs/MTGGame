@@ -1,0 +1,23 @@
+# The Open in matches (ADR-171) — 960 best-of-three matches, 2373 games; game one on the registered sixties, games two and three sideboarded
+
+| list | matches | game one | games two and three | delta (later − game one) |
+|---|---|---|---|---|
+| **pinnacle** | 66.3 ± 7.3 | 58.8 ± 7.6 | 62.7 ± 6.2 | +3.9 |
+| **lumenclio** | 56.0 ± 3.1 | 51.8 ± 3.2 | 54.4 ± 2.6 | +2.7 |
+| **emeraldsnakes** | 53.1 ± 7.7 | 57.5 ± 7.7 | 50.6 ± 6.4 | -6.9 |
+| **reaperclio** | 48.1 ± 7.7 | 59.4 ± 7.6 | 45.3 ± 6.3 | -14.1 |
+| **minefield** | 39.4 ± 7.6 | 42.5 ± 7.7 | 42.5 ± 6.3 | -0.0 |
+| **countersnake** | 30.6 ± 7.1 | 33.8 ± 7.3 | 38.8 ± 6.2 | +5.1 |
+| **earthrise** | 26.3 ± 6.8 | 37.5 ± 7.5 | 33.6 ± 6.1 | -3.9 |
+
+## The pairings that move most after sideboarding (the row list's side; each is its opponent's loss)
+
+| pairing | matches | game one | games two and three | delta |
+|---|---|---|---|---|
+| lumenclio over reaperclio | 52 (160) | 41 | 55 (243) | +14 |
+| lumenclio over emeraldsnakes | 47 (160) | 43 | 49 (235) | +7 |
+| countersnake over lumenclio | 31 (160) | 34 | 39 (237) | +5 |
+| pinnacle over lumenclio | 66 (160) | 59 | 63 (233) | +4 |
+| lumenclio over earthrise | 74 (160) | 63 | 66 (232) | +4 |
+| lumenclio over minefield | 61 (160) | 58 | 58 (233) | +0 |
+

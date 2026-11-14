@@ -1,0 +1,19 @@
+# The Open in matches (ADR-171) — 640 best-of-three matches, 1580 games; game one on the registered sixties, games two and three sideboarded
+
+| list | matches | game one | games two and three | delta (later − game one) |
+|---|---|---|---|---|
+| **marducontrol** | 56.7 ± 3.8 | 49.2 ± 3.9 | 58.1 ± 3.2 | +8.9 |
+| **bantsnake** | 53.1 ± 7.7 | 60.0 ± 7.6 | 49.6 ± 6.4 | -10.4 |
+| **emeraldsnakes** | 46.9 ± 7.7 | 51.9 ± 7.7 | 43.9 ± 6.2 | -8.0 |
+| **reaperclio** | 38.8 ± 7.5 | 46.3 ± 7.7 | 38.7 ± 6.2 | -7.5 |
+| **countersnake** | 34.4 ± 7.4 | 45.0 ± 7.7 | 35.4 ± 6.2 | -9.6 |
+
+## The pairings that move most after sideboarding (the row list's side; each is its opponent's loss)
+
+| pairing | matches | game one | games two and three | delta |
+|---|---|---|---|---|
+| marducontrol over bantsnake | 47 (160) | 40 | 50 (232) | +10 |
+| marducontrol over countersnake | 66 (160) | 55 | 65 (229) | +10 |
+| marducontrol over emeraldsnakes | 53 (160) | 48 | 56 (244) | +8 |
+| marducontrol over reaperclio | 61 (160) | 54 | 61 (235) | +8 |
+

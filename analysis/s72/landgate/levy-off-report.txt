@@ -1,0 +1,23 @@
+# The Open in matches (ADR-171) — 960 best-of-three matches, 2357 games; game one on the registered sixties, games two and three sideboarded
+
+| list | matches | game one | games two and three | delta (later − game one) |
+|---|---|---|---|---|
+| **reaperclio** | 87.5 ± 5.1 | 80.6 ± 6.1 | 75.8 ± 5.8 | -4.8 |
+| **emeraldsnakes** | 81.9 ± 6.0 | 72.5 ± 6.9 | 70.8 ± 5.8 | -1.7 |
+| **countersnake** | 71.9 ± 7.0 | 68.8 ± 7.2 | 64.3 ± 6.3 | -4.5 |
+| **earthrise** | 65.0 ± 7.4 | 62.5 ± 7.5 | 59.3 ± 6.2 | -3.2 |
+| **pinnacle** | 60.3 ± 7.6 | 63.4 ± 7.5 | 53.7 ± 6.3 | -9.7 |
+| **minefield** | 60.0 ± 7.6 | 59.4 ± 7.6 | 54.8 ± 6.2 | -4.5 |
+| **levy** | 28.9 ± 2.9 | 32.1 ± 3.0 | 37.3 ± 2.5 | +5.1 |
+
+## The pairings that move most after sideboarding (the row list's side; each is its opponent's loss)
+
+| pairing | matches | game one | games two and three | delta |
+|---|---|---|---|---|
+| levy over pinnacle | 40 (160) | 37 | 46 (241) | +10 |
+| levy over reaperclio | 13 (160) | 19 | 24 (211) | +5 |
+| levy over minefield | 40 (160) | 41 | 45 (248) | +5 |
+| levy over countersnake | 28 (160) | 31 | 36 (221) | +4 |
+| levy over earthrise | 35 (160) | 38 | 41 (243) | +3 |
+| levy over emeraldsnakes | 18 (160) | 28 | 29 (233) | +2 |
+

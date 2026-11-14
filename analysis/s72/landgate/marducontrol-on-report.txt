@@ -1,0 +1,23 @@
+# The Open in matches (ADR-171) — 960 best-of-three matches, 2346 games; game one on the registered sixties, games two and three sideboarded
+
+| list | matches | game one | games two and three | delta (later − game one) |
+|---|---|---|---|---|
+| **marducontrol** | 73.5 ± 2.8 | 65.9 ± 3.0 | 67.4 ± 2.5 | +1.4 |
+| **emeraldsnakes** | 43.8 ± 7.7 | 50.6 ± 7.7 | 43.8 ± 6.2 | -6.8 |
+| **pinnacle** | 33.8 ± 7.3 | 34.4 ± 7.4 | 41.4 ± 6.3 | +7.0 |
+| **reaperclio** | 31.9 ± 7.2 | 45.6 ± 7.7 | 35.5 ± 6.0 | -10.1 |
+| **countersnake** | 29.4 ± 7.1 | 34.4 ± 7.4 | 35.0 ± 6.0 | +0.6 |
+| **earthrise** | 11.9 ± 5.0 | 23.8 ± 6.6 | 18.0 ± 5.2 | -5.7 |
+| **minefield** | 8.1 ± 4.2 | 15.6 ± 5.6 | 18.0 ± 5.3 | +2.4 |
+
+## The pairings that move most after sideboarding (the row list's side; each is its opponent's loss)
+
+| pairing | matches | game one | games two and three | delta |
+|---|---|---|---|---|
+| marducontrol over reaperclio | 68 (160) | 54 | 65 (248) | +10 |
+| pinnacle over marducontrol | 34 (160) | 34 | 41 (233) | +7 |
+| marducontrol over emeraldsnakes | 56 (160) | 49 | 56 (249) | +7 |
+| marducontrol over earthrise | 88 (160) | 76 | 82 (211) | +6 |
+| minefield over marducontrol | 8 (160) | 16 | 18 (205) | +2 |
+| countersnake over marducontrol | 29 (160) | 34 | 35 (240) | +1 |
+
