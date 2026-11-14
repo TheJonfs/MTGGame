@@ -1,0 +1,74 @@
+[
+ {
+  "cardId": "plateau",
+  "count": 4
+ },
+ {
+  "cardId": "sacred_foundry",
+  "count": 4
+ },
+ {
+  "cardId": "mountain",
+  "count": 12
+ },
+ {
+  "cardId": "plains",
+  "count": 2
+ },
+ {
+  "cardId": "black_lotus",
+  "count": 1
+ },
+ {
+  "cardId": "mox_ruby",
+  "count": 1
+ },
+ {
+  "cardId": "mox_pearl",
+  "count": 1
+ },
+ {
+  "cardId": "skirk_prospector",
+  "count": 4
+ },
+ {
+  "cardId": "goblin_piker",
+  "count": 4
+ },
+ {
+  "cardId": "goblin_chieftain",
+  "count": 4
+ },
+ {
+  "cardId": "boggart_brute",
+  "count": 2
+ },
+ {
+  "cardId": "siege_gang_commander",
+  "count": 3
+ },
+ {
+  "cardId": "lumen_the_hearth_fire",
+  "count": 3
+ },
+ {
+  "cardId": "hordeling_outburst",
+  "count": 4
+ },
+ {
+  "cardId": "goblin_grenade",
+  "count": 4
+ },
+ {
+  "cardId": "lightning_bolt",
+  "count": 4
+ },
+ {
+  "cardId": "sacred_helix",
+  "count": 1
+ },
+ {
+  "cardId": "flametongue_kavu",
+  "count": 2
+ }
+]

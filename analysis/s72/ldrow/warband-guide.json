@@ -1,0 +1,54 @@
+{
+ "rows": [
+  {
+   "in": "molten_rain",
+   "n": 2,
+   "out": [
+    "goblin_piker",
+    "flametongue_kavu"
+   ],
+   "when": [
+    "creatureDeck",
+    "fewLarge",
+    "control",
+    "plan",
+    "counters",
+    "graveyard",
+    "relics",
+    "small",
+    "someGraveyard",
+    "large",
+    "hexproof",
+    "killers",
+    "sweepers",
+    "shrinks",
+    "wide"
+   ]
+  },
+  {
+   "in": "terrain_collapse",
+   "n": 2,
+   "out": [
+    "goblin_piker",
+    "flametongue_kavu"
+   ],
+   "when": [
+    "creatureDeck",
+    "fewLarge",
+    "control",
+    "plan",
+    "counters",
+    "graveyard",
+    "relics",
+    "small",
+    "someGraveyard",
+    "large",
+    "hexproof",
+    "killers",
+    "sweepers",
+    "shrinks",
+    "wide"
+   ]
+  }
+ ]
+}
